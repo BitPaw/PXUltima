@@ -37,6 +37,7 @@
 #define Windows10DarkModeID 20 // DWMWA_USE_IMMERSIVE_DARK_MODE
 
 #pragma comment(lib, "dwmapi.lib")
+#pragma comment(lib, "Comctl32.lib")
 
 #define DefautPositionX CW_USEDEFAULT
 #define DefautPositionY CW_USEDEFAULT
@@ -1469,10 +1470,45 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
     pxUIElement->Type = pxGUIElementCreateInfo->Type;
     pxUIElement->InteractCallBack = pxGUIElementCreateInfo->InteractCallBack;
     pxUIElement->InteractOwner = pxGUIElementCreateInfo->InteractOwner;
-    //pxUIElement->Parent = pxGUIElementCreateInfo->UIElementParent;
+    pxUIElement->Parent = pxGUIElementCreateInfo->UIElementParent;
 
 
     PXCopy(PXUIElementPosition, &pxGUIElementCreateInfo->Position, &pxUIElement->Position);
+
+
+
+  
+
+#if 1
+    const char* uielementName = PXUIElementTypeToString(pxGUIElementCreateInfo->Type);
+
+    //const char* format = PXEngineCreateTypeToString(pxEngineResourceCreateInfo->CreateType);
+    if(PXUIElementTypeTreeViewItem == pxGUIElementCreateInfo->Type)
+    {
+        PXUIElement* const uiElementSource = pxGUIElementCreateInfo->Data.TreeViewItem.ElementSource;
+
+        const char* uiElementTypeName = PXUIElementTypeToString(uiElementSource->Type);
+        char* name = uiElementSource->NameData;
+
+        if(name[0] == '\0')
+        {
+            name = "**Unnamed**";
+        }
+
+        pxUIElement->NameSize = PXTextPrintA(pxUIElement->NameData, 128, "[%s] %s", uiElementTypeName, name);
+    }
+    else
+    {
+        char* name = pxGUIElementCreateInfo->Name;
+
+        if(!name)
+        {
+            name = "**Unnamed**";
+        }
+
+        pxUIElement->NameSize = PXTextPrintA(pxUIElement->NameData, 128, "%s", name);
+    }
+#endif
 
 
 
@@ -1481,7 +1517,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
 
     PXWindowSizeInfo pxWindowSizeInfo;
 
-    PXWindowID windowID = pxGUIElementCreateInfo->UIElementParent ? pxGUIElementCreateInfo->UIElementParent->ID : PXNull;
+    PXWindowID windowID = pxGUIElementCreateInfo->UIElementWindow ? pxGUIElementCreateInfo->UIElementWindow->ID : PXNull;
 
     PXWindowSizeGet(windowID, &pxWindowSizeInfo);
 
@@ -2076,7 +2112,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
         if(pxGUIElementCreateInfo->UIElementWindow)
         {
             hInstance = (HINSTANCE)GetWindowLongPtr(pxGUIElementCreateInfo->UIElementWindow->ID, GWLP_HINSTANCE); 
-            windowID = pxGUIElementCreateInfo->UIElementWindow->ID;
+            //windowID = pxGUIElementCreateInfo->UIElementWindow->ID;
         }
         else
         {
@@ -2150,7 +2186,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
 #endif
 
 
-#if 1
+#if 0
         if(pxUIElement->ID && pxGUIElementCreateInfo->UIElementParent)
         {
             PXUIElement* parent = pxGUIElementCreateInfo->UIElementParent;
@@ -2170,6 +2206,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
                     0,
                     SWP_NOMOVE | SWP_NOSIZE | SWP_NOCOPYBITS
                 );
+                EndDeferWindowPos(resB);
             }
             else
             {
@@ -2184,9 +2221,10 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
                     0,
                     SWP_NOMOVE | SWP_NOSIZE | SWP_NOCOPYBITS
                 );
+                EndDeferWindowPos(resB);
             }
 
-            EndDeferWindowPos(resA);
+         
         }
 #endif
 
@@ -2239,6 +2277,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
 
 
 
+   
 
 
 
@@ -2282,7 +2321,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
             pxUIElementUpdateInfo[0].UIElement = pxButton;
             pxUIElementUpdateInfo[0].WindowReference = pxGUIElementCreateInfo->UIElementParent;
             pxUIElementUpdateInfo[0].Property = PXUIElementPropertyTextContent;
-            pxUIElementUpdateInfo[0].Data.Button.Text = pxGUIElementCreateInfo->Data.Text.Content;
+            pxUIElementUpdateInfo[0].Data.Text.Content = pxGUIElementCreateInfo->Data.Text.Content;
 
            // PXCopy(PXUIElementTextInfo, &pxUIElement->TextInfo, &pxButton->TextInfo);
 
@@ -2315,6 +2354,9 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
             TVINSERTSTRUCT item;
             PXClear(TVINSERTSTRUCT, &item);
 
+           // item.item.iImage = 1;
+
+
             const char text[] = "[N/A]";
 
             if(pxUIElementTreeViewItemInfo->ItemParent)
@@ -2332,6 +2374,35 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
                 item.item.pszText = pxUIElement->NameData;
                 item.item.cchTextMax = pxUIElement->NameSize;
             }
+
+
+
+     
+
+            switch(pxUIElementTreeViewItemInfo->ElementSource->Type)
+            {
+               // case PXUIElementTypeRenderFrame:
+
+
+                case PXUIElementTypeWindow:                item.item.iImage = 0;                    break;
+                case PXUIElementTypeButton:                item.item.iImage = 1;                    break;      
+                case PXUIElementTypeTextEdit:              item.item.iImage = 2;                    break;
+                case PXUIElementTypeRenderFrame:           item.item.iImage = 3;                    break;
+                case PXUIElementTypeText:                  item.item.iImage = 5;                    break;          
+                case PXUIElementTypeTreeView:              item.item.iImage = 4;                    break;
+                case PXUIElementTypePanel:                 item.item.iImage = 6;                    break;
+          
+               // case PXUIElementTypeWindow:                    item.item.iImage = 1;                    break;
+               // case PXUIElementTypeWindow:                    item.item.iImage = 1;                    break;
+
+
+
+                default:
+                    item.item.iImage = -1;
+                    break;
+            }     
+
+            item.item.iSelectedImage = item.item.iImage;
 
             switch(pxUIElementTreeViewItemInfo->InsertMode)
             {
@@ -2352,7 +2423,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
                     break;
             }
 
-            item.item.mask = TVIF_TEXT;
+            item.item.mask = TVIF_TEXT | TVIF_IMAGE;
 
             HTREEITEM itemID = TreeView_InsertItem(pxUIElementTreeViewItemInfo->TreeView->ID, &item);
 
@@ -2480,10 +2551,74 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
         }
         case PXUIElementTypeTreeView:
         {
+            int sizeX = 16;
+            int sizeY = 16;
+            int amount = 11;
+
             TreeView_SetBkColor(pxUIElement->ID, RGB(30, 30, 30));
 
             TreeView_SetTextColor(pxUIElement->ID, RGB(200, 200, 200));
 
+
+            // Add icons
+            HIMAGELIST imageListHandle = ImageList_Create
+            (
+                sizeX,
+                sizeY,
+                ILC_COLOR,
+                amount,
+                amount
+            );
+
+            
+            HMODULE currentModule = GetModuleHandle(NULL);
+
+
+            char* pathList[11] =
+            {
+                "Texture/Window.bmp",
+                "Texture/Button.bmp",              
+                "Texture/Edit.bmp",
+                "Texture/FrameBuffer.bmp",
+                "Texture/TreeView.bmp",
+                "Texture/Text.bmp",
+                "Texture/Panel.bmp",
+                "Texture/Folder.bmp",
+                "Texture/H.bmp",
+                "Texture/HPP.bmp",
+                "Texture/SquareBlue.bmp"
+            };
+
+
+            for(size_t i = 0; i < amount; i++)
+            {
+               // HBITMAP bitmapHandle = LoadBitmapA(PXNull, OBM_CLOSE);
+
+                char* filePath = pathList[i];
+
+                HBITMAP bitmapHandle = LoadImageA
+                (
+                    PXNull,
+                    filePath,
+                    IMAGE_BITMAP,
+                    sizeX,
+                    sizeY,
+                    LR_LOADFROMFILE
+                );
+
+                int addedID = ImageList_Add(imageListHandle, bitmapHandle, PXNull);
+
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    "GUI",
+                    "ImageList-Add",
+                    "New icon %i",
+                    addedID
+                );
+            }
+
+            TreeView_SetImageList(pxUIElement->ID, imageListHandle, TVSIL_NORMAL);
 
             break;
         }
@@ -2547,16 +2682,17 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
         {
 #if 1
             PXUIElementSceneRenderInfo* const pxUIElementSceneRenderInfo = &pxGUIElementCreateInfo->Data.SceneRender;
-            PXEngine* pxEngine = pxUIElementSceneRenderInfo->Engine;
+            PXEngine* const pxEngine = pxUIElementSceneRenderInfo->Engine;
+            PXEngineStartInfo* const pxEngineStartInfo = pxUIElementSceneRenderInfo->StartInfo;
 
-            PXEngineStartInfo pxEngineStartInfo;
-            pxEngineStartInfo.Mode = PXGraphicInitializeModeOSGUIElement;
-            pxEngineStartInfo.System = PXGraphicSystemOpenGL;
-            pxEngineStartInfo.Width = pxUIElement->Position.Width;
-            pxEngineStartInfo.Height = pxUIElement->Position.Height;
-            pxEngineStartInfo.UIElement = pxUIElement;
+            pxEngineStartInfo->Mode = PXGraphicInitializeModeOSGUIElement;
+            pxEngineStartInfo->Width = pxUIElement->Position.Width;
+            pxEngineStartInfo->Height = pxUIElement->Position.Height;
+            pxEngineStartInfo->UIElement = pxUIElement;
+            pxEngineStartInfo->Name = "UIElement-RenderFrame";
+            pxEngineStartInfo->UseMouseInput = 1;
 
-            PXEngineStart(pxEngine, &pxEngineStartInfo);
+            PXEngineStart(pxEngine, pxEngineStartInfo);
 #endif
 
             break;
@@ -2564,68 +2700,46 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
 
         case PXUIElementTypeWindow:
         {
+            PXGUIElementCreateWindowInfo* const pxGUIElementCreateWindowInfo = &pxGUIElementCreateInfo->Data.Window;
+
             PXWindowTitleBarColorSet(pxUIElement->ID);
             UpdateWindow(pxUIElement->ID);
 
-#if 0
+            // ShowWindow(pxWindow->ID, SW_NORMAL)
 
-            PXWindowTitleBarColorSet(pxWindow);
-            PXWindowLookupAdd(pxWindow);
-
-
-#if PXOSWindowsDestop
-            UpdateWindow(pxWindow->ID);
-
-            if(pxWindow->Mode == PXWindowModeNormal)
+            if(pxGUIElementCreateWindowInfo->RegisterMouse)
             {
-#if 0 // Use animation
-
-                const BOOL animationResult = AnimateWindow(windowID, 10000, AW_ACTIVATE | AW_HOR_POSITIVE);
-
-                if(!animationResult)
-                {
-                    PXActionResult pxActionResult = PXErrorCurrent();
-
-                    printf("ERR\n");
-                }
-#else
-                ShowWindow(pxWindow->ID, SW_NORMAL);
-#endif  
-            }
-
-            pxWindow->HandleDeviceContext = GetDC(pxWindow->ID); // Get the "default" device
-            pxWindow->IsRunning = 1;
-
-
 
 #if PXOSWindowsDestop && WindowsAtleastXP
-            // Register input device
-            {
-                // We're configuring just one RAWINPUTDEVICE, the mouse, so it's a single-element array (a pointer).
-                RAWINPUTDEVICE rid;
-
-                rid.usUsagePage = 0x01;//HID_USAGE_PAGE_GENERIC;
-                rid.usUsage = 0x02;// HID_USAGE_GENERIC_MOUSE;
-                rid.dwFlags = RIDEV_INPUTSINK | RIDEV_DEVNOTIFY;
-                rid.hwndTarget = pxWindow->ID;
-
-                const PXBool result = RegisterRawInputDevices(&rid, 1, sizeof(RAWINPUTDEVICE)); // Windows XP, User32.dll, winuser.h
-
-                if(!result)
+                // Register input device
                 {
-                    //printf("Err\n");
+                    // We're configuring just one RAWINPUTDEVICE, the mouse, so it's a single-element array (a pointer).
+                    RAWINPUTDEVICE rid;
 
-                    // TODO: Handle error
+                    rid.usUsagePage = 0x01;//HID_USAGE_PAGE_GENERIC;
+                    rid.usUsage = 0x02;// HID_USAGE_GENERIC_MOUSE;
+                    rid.dwFlags = RIDEV_INPUTSINK | RIDEV_DEVNOTIFY;
+                    rid.hwndTarget = pxUIElement->ID;
 
+                    const PXBool result = RegisterRawInputDevices(&rid, 1, sizeof(RAWINPUTDEVICE)); // Windows XP, User32.dll, winuser.h
+
+                    if(!result)
+                    {
+                        //printf("Err\n");
+
+                        // TODO: Handle error
+
+                    }
+
+                    // RegisterRawInputDevices should not be used from a library, as it may interfere with any raw input processing logic already present in applications that load it.
                 }
-
-                // RegisterRawInputDevices should not be used from a library, as it may interfere with any raw input processing logic already present in applications that load it.
-            }
 #endif
+            }
 
 
-#elif OSUnix
 #if 0
+#if OSUnix
+
             int numberOfDevices = 0;
 
             const XDeviceInfo* deviceInfoList = XListInputDevices(display, &numberOfDevices);
@@ -2653,7 +2767,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
             }
 #endif
 
-#endif
+
 
             if(info)
             {
@@ -2675,7 +2789,6 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
             }
 
 #endif
-          
 
             break;
         }
@@ -2696,6 +2809,11 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
         case PXUIElementPropertyTextContent:
         {
             PXUIElementTextInfo* const pxUIElementTextInfo = &pxGUIElementUpdateInfo->Data.Text;
+
+            if(!pxUIElement)
+            {
+                return PXActionInvalid;
+            }
 
 #if PXLogEnable && 0
             PXLogPrint
@@ -3580,11 +3698,11 @@ PXBool PXAPI PXWindowInteractable(PXWindow* window)
     }
 }
 
-PXBool PXAPI PXWindowCursorPositionInWindowGet(PXWindow* const pxWindow, PXInt32S* const x, PXInt32S* const y)
+PXBool PXAPI PXWindowCursorPositionInWindowGet(const PXWindowID pxWindowID, PXInt32S* const x, PXInt32S* const y)
 {
     PXInt32S xPos = 0;
     PXInt32S yPos = 0;
-    const PXBool sucessfulA = PXWindowCursorPositionInDestopGet(pxWindow, &xPos, &yPos);
+    const PXBool sucessfulA = PXWindowCursorPositionInDestopGet(pxWindowID, &xPos, &yPos);
 
 #if OSUnix
     return PXFalse;
@@ -3594,7 +3712,7 @@ PXBool PXAPI PXWindowCursorPositionInWindowGet(PXWindow* const pxWindow, PXInt32
     point.x = xPos;
     point.y = yPos;
 
-    const PXBool sucessful = ScreenToClient(pxWindow->ID, &point);  // are now relative to hwnd's client area
+    const PXBool sucessful = ScreenToClient(pxWindowID, &point);  // are now relative to hwnd's client area
 
     if(sucessful)
     {
@@ -3611,7 +3729,7 @@ PXBool PXAPI PXWindowCursorPositionInWindowGet(PXWindow* const pxWindow, PXInt32
 #endif
 }
 
-PXBool PXAPI PXWindowCursorPositionInDestopGet(PXWindow* const pxWindow, PXInt32S* const x, PXInt32S* const y)
+PXBool PXAPI PXWindowCursorPositionInDestopGet(const PXWindowID pxWindowID, PXInt32S* const x, PXInt32S* const y)
 {
 #if OSUnix
     return PXFalse;

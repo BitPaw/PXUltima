@@ -347,6 +347,15 @@ extern "C"
 	typedef GLuint(PXOpenGLAPI* PXOpenGLShaderCreateFunction)(GLenum shaderType); // glCreateShader
 	typedef void (PXOpenGLAPI* PXOpenGLShaderCompileFunction)(GLuint shader);
 	typedef void (PXOpenGLAPI* PXOpenGLShaderGetivFunction)(GLuint shader, GLenum pname, GLint* params);
+
+	typedef void  (PXOpenGLAPI* PXOpenGLActiveAttributeGet)(GLuint program, GLuint index, GLsizei bufSize, GLsizei* length, GLint* size, GLenum* type, char* name);
+
+	typedef void (PXOpenGLAPI* PXOpenGLGetActiveUniform)(GLuint program, GLuint index, GLsizei bufSize, GLsizei* length, GLint* size, GLenum* type, char* name);
+
+	typedef void (PXOpenGLAPI* PXOpenGLGetProgramiv)(GLuint program, GLenum pname, GLint* params);
+
+
+
 	typedef void (PXOpenGLAPI* PXOpenGLShaderLogInfoGetFunction)(GLuint shader, GLsizei maxLength, GLsizei* length, char* infoLog);
 	typedef void (PXOpenGLAPI* PXOpenGLShaderDeleteFunction)(GLuint shader);
 	typedef void (PXOpenGLAPI* PXOpenGLAttachShaderFunction)(GLuint program, GLuint shader); // glAttachShader
@@ -1261,6 +1270,9 @@ extern "C"
 		PXOpenGLShaderCreateFunction ShaderCreate;
 		PXOpenGLShaderSourceFunction	ShaderSource;
 		PXOpenGLShaderCompileFunction	ShaderCompile;
+		PXOpenGLGetProgramiv ShaderProgramGetiv;
+		PXOpenGLActiveAttributeGet ActiveAttributeGet;
+		PXOpenGLGetActiveUniform ActiveUniformGet;
 		PXOpenGLShaderGetivFunction	ShaderGetiv;
 		PXOpenGLShaderLogInfoGetFunction	ShaderLogInfoGet;
 		PXOpenGLShaderDeleteFunction	ShaderDelete;
@@ -1411,6 +1423,8 @@ extern "C"
 	PXPrivate PXInt32U PXAPI PXOpenGLShaderTypeToID(const PXGraphicShaderType pxGraphicShaderType);
 	PXPrivate PXInt32U PXAPI PXOpenGLTypeToID(const PXInt32U pxDataType);
 
+	PXPrivate PXShaderVariableType PXAPI PXOpenGLShaderVariableTypeFromID(const PXInt16U openGLShaderVariableTypeID);
+
 	PXPrivate PXActionResult PXAPI PXOpenGLErrorCurrent(PXOpenGL* const pxOpenGL);
 	PXPrivate PXOpenGLVersion PXAPI PXOpenGLVersionParse(const PXInt32U versionID);
 	//--------------------------------------------------------
@@ -1505,9 +1519,7 @@ extern "C"
 	PXPublic PXActionResult PXAPI PXOpenGLShaderProgramSelect(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram);
 	PXPublic PXActionResult PXAPI PXOpenGLShaderProgramDelete(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram);
 
-	PXPublic PXActionResult PXAPI PXOpenGLShaderVariableIDFetch(PXOpenGL* const pxOpenGL, const PXShaderProgram* const pxShaderProgram, PXInt32U* const shaderVariableID, const char* const name);
-
-	PXPublic PXActionResult PXAPI PXOpenGLShaderVariableSetFunction(PXOpenGL* const pxOpenGL, struct PXGraphicShaderVariable_* const pxGraphicShaderVariable);
+	PXPublic PXActionResult PXAPI PXOpenGLShaderVariableSet(PXOpenGL* const pxOpenGL, const PXShaderProgram* const pxShaderProgram, PXShaderVariable* const pxShaderVariableList, const PXSize amount);
 	//-------------------------------------------------------------------------
 
 	//---<Buffers>-------------------------------------------------------------

@@ -480,10 +480,22 @@ extern "C"
 		PXGraphicInitializeMode Mode;
 		PXGraphicSystem System;
 
+		PXEngineStartUpEvent OnStartUp;
+		PXEngineShutDownEvent OnShutDown;
+		PXEngineUserUpdateEvent OnUserUpdate;
+		PXEngineNetworkUpdateEvent OnNetworkUpdate;
+		PXEngineGameUpdateEvent OnGameUpdate;
+		PXEngineRenderUpdateEvent OnRenderUpdate;
+		PXEngineInteractCallBack OnInteract;
+
+		char* Name;
+		void* Owner;
+
 		PXSize Width;
 		PXSize Height;
 
 		PXBool UseMods;
+		PXBool UseMouseInput;
 
 		struct PXUIElement_* UIElement;
 	}

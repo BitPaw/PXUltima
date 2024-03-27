@@ -17,7 +17,7 @@
 #include <d3dcompiler.h>
 #include <D3DX9Shader.h>
 
-//#include <d3dx9shader.h>
+#include <d3dx9shader.h>
 
 #pragma comment(lib, "D3DCompiler.lib")
 #pragma comment(lib, "D3d9.lib")
@@ -141,10 +141,8 @@ PXActionResult PXAPI PXDirectX9Initialize(PXDirectX9* const pxDirectX9, PXGraphi
     {
         PXGraphic* pxGraphic = pxGraphicInitializeInfo->Graphic;
         pxGraphic->TextureAction = PXDirectX9TextureAction;
-        pxGraphic->ShaderVariableIDFetch = PXDirectX9ShaderVariableIDFetch;
-        pxGraphic->ShaderVariableSet = PXDirectX9ShaderVariableSetFunction;
+        pxGraphic->ShaderVariableSet = PXDirectX9ShaderVariableSet;
         pxGraphic->ScreenBufferRead = PXNull;
-        pxGraphic->ShaderVariableIDFetch = PXNull;
         pxGraphic->DrawModeSet = PXNull;
         pxGraphic->DrawColorRGBAF = PXNull;
         pxGraphic->RectangleDraw = PXNull;
@@ -540,7 +538,135 @@ PXActionResult PXAPI PXDirectX9ShaderProgramCreate(PXDirectX9* const pxDirectX9,
             default:
                 return PXActionRefusedFormatNotSupported;
         }
-    }    
+    
+
+        // Extract variable IDs
+        {
+            typedef struct CTHeader_
+            {
+                PXInt32U Size;
+                PXInt32U Creator;
+                PXInt32U Version;
+                PXInt32U Constants;
+                PXInt32U ConstantInfo;
+                PXInt32U Flags;
+                PXInt32U Target;
+            }
+            CTHeader;
+
+            typedef struct CTInfo_
+            {
+                PXInt32U Name;
+                PXInt16U RegisterSet;
+                PXInt16U RegisterIndex;
+                PXInt16U RegisterCount;
+                PXInt16U Reserved;
+                PXInt32U TypeInfo;
+                PXInt32U DefaultValue;
+            }
+            CTInfo;
+
+            typedef struct CTType_
+            {
+                PXInt16U Class;
+                PXInt16U Type;
+                PXInt16U Rows;
+                PXInt16U Columns;
+                PXInt16U Elements;
+                PXInt16U StructMembers;
+                PXInt32U StructMemberInfo;
+            }
+            CTType;
+
+            // Shader instruction opcodes
+            const PXInt32U SIO_COMMENT = 0x0000FFFE;
+            const PXInt32U SIO_END = 0x0000FFFF;
+            const PXInt32U SI_OPCODE_MASK = 0x0000FFFF;
+            const PXInt32U SI_COMMENTSIZE_MASK = 0x7FFF0000;
+            const PXInt32U CTAB_CONSTANT = 0x42415443;
+
+            const PXInt32U* shaderByteCodeCursor = (PXInt32U*)shaderByteCode;
+            PXBool success = PXFalse;
+
+            while((*++shaderByteCodeCursor != SIO_END))
+            {
+                if((*shaderByteCodeCursor & SI_OPCODE_MASK) == SIO_COMMENT)
+                {
+                    // Check for CTAB comment
+                    PXInt32U comment_size = (*shaderByteCodeCursor & SI_COMMENTSIZE_MASK) >> 16;
+
+                    if(*(shaderByteCodeCursor + 1) != CTAB_CONSTANT)
+                    {
+                        shaderByteCodeCursor += comment_size;
+                        continue;
+                    }
+
+                    // Read header
+                    const char* ctab = shaderByteCodeCursor + 2;
+                    size_t ctab_size = (comment_size - 1) * 4;
+               
+                    const CTHeader* header = (CTHeader*)ctab;
+                    char* m_creator = ctab + header->Creator;
+                    const PXBool isInvalidSize = ctab_size < sizeof(*header) || header->Size != sizeof(*header);
+
+                    //if(isInvalidSize)
+                    //    return false;              
+
+                    // Read constants 
+                    pxShader->VariableListAmount = header->Constants;
+                    PXNewList(PXShaderVariable, header->Constants, &pxShader->VariableListData, PXNull);
+
+                    const CTInfo* info = (CTInfo*)(ctab + header->ConstantInfo);
+                 
+                    for(PXInt32U i = 0; i < header->Constants; ++i)
+                    {
+                        PXShaderVariable* const pxShaderVariable = &pxShader->VariableListData[i];
+
+                        const CTType* type = (CTType*)(ctab + info[i].TypeInfo);
+
+                        char* name = ctab + info[i].Name;
+
+                        PXTextCopyA(name, PXTextLengthUnkown, pxShaderVariable->Name, 32);
+
+                        pxShaderVariable->RegisterIndex = info[i].RegisterIndex;
+                        pxShaderVariable->RegisterCount = info[i].RegisterCount;
+                        pxShaderVariable->Rows = type->Rows;
+                        pxShaderVariable->Columns = type->Columns;
+                        pxShaderVariable->Elements = type->Elements;
+                        pxShaderVariable->StructMembers = type->StructMembers;
+                        pxShaderVariable->DataTypeSize = 4 * type->Elements * type->Rows * type->Columns;
+
+                        switch(info[i].RegisterSet)
+                        {
+                            case 0: // BOOL
+                                pxShaderVariable->DataType = PXShaderVariableTypeBoolSignle;
+                                break;
+
+                            case 1: // RS_INT4
+                                pxShaderVariable->DataType = PXShaderVariableTypeInt32SVector4;
+                                break;
+
+                            case 2: // RS_FLOAT4
+                                pxShaderVariable->DataType = PXShaderVariableTypeFloatVector4;
+                                break;
+
+                            case 3: // RS_SAMPLER
+                                pxShaderVariable->DataType = PXShaderVariableTypeSampler2DF;
+                                break;
+
+                            default:
+                                pxShaderVariable->DataType = PXShaderVariableTypeInvalid;
+                                break;
+                        }
+                    }
+                    
+                    success = PXTrue;
+
+                    break;
+                }
+            }
+        }
+    }
 
     return PXActionSuccessful;
 
@@ -631,107 +757,222 @@ PXActionResult PXAPI PXDirectX9ShaderProgramDelete(PXDirectX9* const pxDirectX9,
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectX9ShaderVariableIDFetch(PXDirectX9* const pxDirectX9, const PXShaderProgram* const pxShaderProgram, PXInt32U* const shaderVariableID, const char* const name)
+PXActionResult PXAPI PXDirectX9ShaderVariableSet(PXDirectX9* const pxDirectX9, const PXShaderProgram* const pxShaderProgram, PXShaderVariable* const pxShaderVariable)
 {
-    IDirect3DVertexShader9* pShader = NULL;
-    ID3DXConstantTable* pConstantTable = NULL;
-    DWORD* pData = NULL;
-
-    const HRESULT fetchResult = pxDirectX9->Device->lpVtbl->GetVertexShader(pxDirectX9->Device, &pShader);
-
-
-    UINT pSizeOfData;
-
-    
-
-    const HRESULT getSizeResult = pShader->lpVtbl->GetFunction(pShader, NULL, &pSizeOfData);
-    //findWeirdMirrorsEdgeShader(pSizeOfData);
-    PXNewList(PXByte, pSizeOfData, &pData, PXNull);
-    const HRESULT getDataResult = pShader->lpVtbl->GetFunction(pShader, pData, &pSizeOfData);
-
-    // bool shaderSeen = hasSeenShader(pSizeOfData);
-
-    D3DXCONSTANT_DESC pConstantDesc[32];
-    UINT pConstantNum = 32;
-
-
-    PXD3DXGetShaderConstantTable pxD3DXGetShaderConstantTable = (PXD3DXGetShaderConstantTable)pxDirectX9->ShaderConstantTableGet;
-
-    const HRESULT err = pxD3DXGetShaderConstantTable(pData, &pConstantTable);
-
-
-
-    D3DXCONSTANTTABLE_DESC pDesc;
-   
-    pConstantTable->lpVtbl->GetDesc(pConstantTable, &pDesc);
-   
-    for(UINT i = 0; i < pDesc.Constants; ++i)
+    if(!(pxDirectX9 && pxShaderProgram && pxShaderVariable))
     {
-        D3DXHANDLE Handle = pConstantTable->lpVtbl->GetConstant(pConstantTable, NULL, i);
-       
-        if(Handle == NULL) 
-            continue;
-      
-        pConstantTable->lpVtbl->GetConstantDesc(pConstantTable, Handle, pConstantDesc, &pConstantNum);
-
-
-        printf("\n");
-
-#if 0
-        for(UINT j = 0; j < pConstantNum; j++)
-        {
-            removeExistingMatrices(pConstantDesc[j]);
-            parse4by4Matrices(pConstantDesc[j]);
-            parseIndividualFloats(pConstantDesc[j]);
-        }
-#endif
+        return PXActionRefusedArgumentNull;
     }
 
-    return PXActionSuccessful;
+    HRESULT setShaderConstantID = PXNull;
 
-    /*
-    ID3DXConstantTable* pConstantTable = PXNull;
-
-    DWORD bufferData[1024];
-    D3DXCONSTANT_DESC pConstantDesc[32];
-    UINT pConstantNum = 32;
-
-    const HRESULT HRESULT = D3DXGetShaderConstantTable(bufferData, &pConstantTable);
-
-    //if (pConstantTable == NULL) goto grexit;
-
-    D3DXCONSTANTTABLE_DESC pDesc;
-
-
-    pConstantTable->lpVtbl->GetDesc(pConstantTable, &pDesc);
-
-
-    for (UINT i = 0; i < pDesc.Constants; i++)
+    // Plan A, use pre-cached data
+    switch(pxShaderVariable->ShaderType)
     {
-        D3DXHANDLE Handle = pConstantTable->GetConstant(NULL, i);
-        if (Handle == NULL) continue;
-        pConstantTable->GetConstantDesc(Handle, pConstantDesc, &pConstantNum);
-        for (UINT j = 0; j < pConstantNum; j++)
+        case PXShaderTypeVertex:
         {
-            removeExistingMatrices(pConstantDesc[j]);
-            parse4by4Matrices(pConstantDesc[j]);
-            parseIndividualFloats(pConstantDesc[j]);
+            switch(pxShaderVariable->DataType)
+            {
+                case PXShaderVariableTypeBoolSignle:
+                {
+                    setShaderConstantID = pxDirectX9->Device->lpVtbl->SetVertexShaderConstantB
+                    (                  
+                        pxDirectX9->Device,       
+                        pxShaderVariable->RegisterIndex,    
+                        pxShaderVariable->Data,        
+                        pxShaderVariable->Amount          
+                    );
+                    break;
+                }
+                case PXShaderVariableTypeFloatVector4:
+                {  
+                    setShaderConstantID = pxDirectX9->Device->lpVtbl->SetVertexShaderConstantF
+                    (
+                        pxDirectX9->Device,
+                        pxShaderVariable->RegisterIndex,
+                        pxShaderVariable->Data,
+                        pxShaderVariable->Amount
+                    );
+                    break;
+                }
+                case PXShaderVariableTypeInt32SVector4:
+                {
+                    setShaderConstantID = pxDirectX9->Device->lpVtbl->SetVertexShaderConstantI
+                    (
+                        pxDirectX9->Device,
+                        pxShaderVariable->RegisterIndex,
+                        pxShaderVariable->Data,
+                        pxShaderVariable->Amount
+                    );
+                    break;
+                }
+
+                default:
+                    return PXActionRefusedArgumentInvalid;
+            }
+
+            break;
+        } 
+        case PXShaderTypePixel:
+        {
+            switch(pxShaderVariable->DataType)
+            {
+                case PXShaderVariableTypeBoolSignle:
+                {
+                    setShaderConstantID = pxDirectX9->Device->lpVtbl->SetPixelShaderConstantB
+                    (
+                        pxDirectX9->Device,
+                        pxShaderVariable->RegisterIndex,
+                        pxShaderVariable->Data,
+                        pxShaderVariable->Amount
+                    );
+                    break;
+                }
+                case PXShaderVariableTypeFloatVector4:
+                {
+                    setShaderConstantID = pxDirectX9->Device->lpVtbl->SetPixelShaderConstantF
+                    (
+                        pxDirectX9->Device,
+                        pxShaderVariable->RegisterIndex,
+                        pxShaderVariable->Data,
+                        pxShaderVariable->Amount
+                    );
+                    break;
+                }
+                case PXShaderVariableTypeInt32SVector4:
+                {
+                    setShaderConstantID = pxDirectX9->Device->lpVtbl->SetPixelShaderConstantI
+                    (
+                        pxDirectX9->Device,
+                        pxShaderVariable->RegisterIndex,
+                        pxShaderVariable->Data,
+                        pxShaderVariable->Amount
+                    );
+                    break;
+                }
+
+                default:
+                    return PXActionRefusedArgumentInvalid;
+            }
+
+            break;
         }
+
+        default:
+            return PXActionRefusedArgumentInvalid;
     }
 
-    pxDirectX->DX10->lpVtbl.tab;
+    // Handle result, exit on success
+    {
+        const PXActionResult shaderConstantResult = PXWindowsHandleErrorFromID(setShaderConstantID);
+
+        if(PXActionSuccessful == shaderConstantResult)
+        {
+            return PXActionSuccessful;
+        } 
+    }
 
 
-    ID3DXConstantTable id3DXConstantTable;
+    // Plan B: Fetch the value over the variable table
+    {
+        PXD3DXGetShaderConstantTable pxD3DXGetShaderConstantTable = (PXD3DXGetShaderConstantTable)pxDirectX9->ShaderConstantTableGet;
 
-    id3DXConstantTable.lpVtbl->
+        LPD3DXCONSTANTTABLE d3dxConstantTable;      
 
-    return NotSupported;*/
-}
+        const HRESULT getTableResult = pxD3DXGetShaderConstantTable(NULL, &d3dxConstantTable);
 
-PXActionResult PXAPI PXDirectX9ShaderVariableSetFunction(PXDirectX9* const pxDirectX9, struct PXGraphicShaderVariable_* const pxGraphicShaderVariable)
-{
-    return PXActionRefusedNotImplemented;
+        const D3DXHANDLE handle = d3dxConstantTable->lpVtbl->GetConstantByName(d3dxConstantTable, PXNull, pxShaderVariable->Name);
+
+        HRESULT setResult = PXNull;
+
+        switch(pxShaderVariable->ShaderType)
+        {
+            case PXShaderVariableTypeBoolSignle:
+            {
+                if(pxShaderVariable->Amount > 1)
+                {
+                    setResult = d3dxConstantTable->lpVtbl->SetBoolArray(d3dxConstantTable, pxDirectX9->Device, handle, pxShaderVariable->Data, pxShaderVariable->Amount);
+                }
+                else
+                {
+                    BOOL value = *(BOOL*)pxShaderVariable->Data;
+
+                    setResult = d3dxConstantTable->lpVtbl->SetBool(d3dxConstantTable, pxDirectX9->Device, handle, value);
+                }
+
+                break;
+            }
+            case PXShaderVariableTypeInt32SSingle:
+            {
+                if(pxShaderVariable->Amount > 1)
+                {
+                    setResult = d3dxConstantTable->lpVtbl->SetIntArray(d3dxConstantTable, pxDirectX9->Device, handle, pxShaderVariable->Data, pxShaderVariable->Amount);
+                }
+                else
+                {
+                    int value = *(int*)pxShaderVariable->Data;
+
+                    setResult = d3dxConstantTable->lpVtbl->SetInt(d3dxConstantTable, pxDirectX9->Device, handle, value);
+                }      
+
+                break;
+            }
+            case PXShaderVariableTypeFloatSingle:
+            {
+                if(pxShaderVariable->Amount > 1)
+                {
+                    setResult = d3dxConstantTable->lpVtbl->SetFloatArray(d3dxConstantTable, pxDirectX9->Device, handle, pxShaderVariable->Data, pxShaderVariable->Amount);
+                }
+                else
+                {
+                    float value = *(float*)pxShaderVariable->Data;
+
+                    setResult = d3dxConstantTable->lpVtbl->SetFloat(d3dxConstantTable, pxDirectX9->Device, handle, value);
+                }      
+
+                break;
+            }
+            case PXShaderVariableTypeMatrix4x4:
+            {
+                if(pxShaderVariable->Amount > 1)
+                {
+                    setResult = d3dxConstantTable->lpVtbl->SetMatrixArray(d3dxConstantTable, pxDirectX9->Device, handle, pxShaderVariable->Data, pxShaderVariable->Amount);
+                }
+                else
+                {
+                    D3DXMATRIX* value = (D3DXMATRIX*)pxShaderVariable->Data;
+
+                    setResult = d3dxConstantTable->lpVtbl->SetMatrix(d3dxConstantTable, pxDirectX9->Device, handle, value);
+                }
+
+                break;
+            }
+            case PXShaderVariableTypeFloatVector4:
+            {
+                if(pxShaderVariable->Amount > 1)
+                {
+                    setResult = d3dxConstantTable->lpVtbl->SetVectorArray(d3dxConstantTable, pxDirectX9->Device, handle, pxShaderVariable->Data, pxShaderVariable->Amount);
+                }
+                else
+                {
+                    D3DXVECTOR4* value = (D3DXVECTOR4*)pxShaderVariable->Data;
+
+                    setResult = d3dxConstantTable->lpVtbl->SetVector(d3dxConstantTable, pxDirectX9->Device, handle, value);
+                }
+
+                break;
+            }
+
+            default:
+                return PXActionRefusedArgumentInvalid;
+        }
+
+        // Hanle erturn code
+        
+        const PXActionResult shaderConstantResult = PXWindowsHandleErrorFromID(setShaderConstantID);
+
+        return shaderConstantResult;
+    }
 }
 
 PXActionResult PXAPI PXDirectX9SceneBegin(PXDirectX9* const pxDirectX9)
@@ -858,6 +1099,9 @@ PXActionResult PXAPI PXDirectX9MaterialSet(PXDirectX9* const pxDirectX9, const P
         pxDirectX9->Device,
         &d3dMaterial
     );
+    const PXActionResult pxActionResult = PXWindowsHandleErrorFromID(result);
+
+    return pxActionResult;
 }
 
 PXActionResult PXAPI PXDirectX9MaterialGet(PXDirectX9* const pxDirectX9, PXMaterial* const pxMaterial)
@@ -869,8 +1113,11 @@ PXActionResult PXAPI PXDirectX9MaterialGet(PXDirectX9* const pxDirectX9, PXMater
         pxDirectX9->Device,
         &d3dMaterial
     );
+    const PXActionResult pxActionResult = PXWindowsHandleErrorFromID(result);
 
     PXDirectXMaterialToPXMaterial(pxMaterial, &d3dMaterial);
+
+    return pxActionResult;
 }
 
 PXActionResult PXAPI PXDirectX9SwapIntervalSet(PXDirectX9* const pxDirectX9, const PXInt32U interval)

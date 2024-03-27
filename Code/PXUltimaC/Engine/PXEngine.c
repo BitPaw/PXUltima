@@ -773,7 +773,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
 
         {
             PXText pxText;
-            PXTextConstructBufferA(&pxText, 64);
+            PXTextConstructBufferA(&pxText, 128);
 
             PXTextClear(&pxText);
 
@@ -795,8 +795,6 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
             pxGUIElementUpdateInfo.Data.Text.Content = pxText.TextA;
 
             PXGUIElementUpdate(&pxEngine->GUISystem, &pxGUIElementUpdateInfo, 1u);
-
-            //PXWindowTitleSet(&pxEngine->Window, &pxText);
         }
 
         if(pxEngine->HasGraphicInterface && pxEngine->Graphic.WindowReference)
@@ -818,7 +816,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
     ++(pxEngine->CounterTimeCPU);
     ++(pxEngine->CounterTimeGPU);
 
-  //  Sleep(20);
+    Sleep(20);
 
     PXThreadYieldToOtherThreads();
 
@@ -1019,6 +1017,8 @@ PXBool PXAPI PXEngineIsRunning(const PXEngine* const pxEngine)
 
 PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* const pxEngineStartInfo)
 {
+    PXClear(PXEngine, pxEngine);
+
     PXCameraConstruct(&pxEngine->CameraDefault);
     PXCameraViewChangeToPerspective(&pxEngine->CameraDefault, 90, PXCameraAspectRatio(&pxEngine->CameraDefault), 0.00, 100000000);
 
@@ -1030,6 +1030,73 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
     pxEngine->FrameTime = 0;
     pxEngine->IsRunning = PXFalse;
     pxEngine->HasGraphicInterface = PXFalse;
+
+    // Fetch from start info
+    {
+        pxEngine->OnStartUp = pxEngineStartInfo->OnStartUp;
+        pxEngine->OnShutDown = pxEngineStartInfo->OnShutDown;
+        pxEngine->OnUserUpdate = pxEngineStartInfo->OnUserUpdate;
+        pxEngine->OnNetworkUpdate = pxEngineStartInfo->OnNetworkUpdate;
+        pxEngine->OnGameUpdate = pxEngineStartInfo->OnGameUpdate;
+        pxEngine->OnRenderUpdate = pxEngineStartInfo->OnRenderUpdate;
+        pxEngine->OnInteract = pxEngineStartInfo->OnInteract;
+        pxEngine->Owner = pxEngineStartInfo->Owner;
+
+        PXTextCopyA(pxEngineStartInfo->Name, PXTextLengthUnkown, pxEngine->ApplicationName, 32);
+    }
+
+
+#if PXLogEnable
+    // Create Banner
+    {
+        char stampBuffer[256];
+
+        PXTextPrintA(stampBuffer, 256, "%s - %s", __DATE__, __TIME__);
+
+        PXConsoleWriteA
+        (
+            // LoggingInfo,
+            "\n"
+            "+++-----------------------------------------------------+++\n"
+            "||| %51s |||\n"
+            "+++-----------------------------------------------------+++\n"
+            "|/| __________ .__   __  __________.__                  |/|\n"
+            "|/| \\______   \\|__|_/  |_\\_  _____/|__|_______   ____   |/|\n"
+            "|/|  |    |  _/|  |\\   __\\|  __)   |  |\\_  __ \\_/ __ \\  |/|\n"
+            "|/|  |    |   \\|  | |  |  |  |     |  | |  | \\/\\  ___/  |/|\n"
+            "|/|  |________/|__| |__|  \\__|     |__| |__|    \\_____> |/|\n"
+            "|/|_____________________________________________________|/|\n"
+            "+-+-----------------------------------------------------+-+\n\n",
+            stampBuffer
+        );
+    }
+
+    // Processor
+    {
+        PXProcessor processor;
+
+        PXProcessorFetchInfo(&processor);
+
+        PXConsoleWriteA
+        (
+            //LoggingInfo,
+            "+---------------------------------------------------------+\n"
+            "| Processor - Information                                 |\n"
+            "+---------------------------------------------------------+\n"
+            "| BrandName : %-43s |\n"
+            "| Identity  : %-43s |\n"
+            "| Cores     : %-43i |\n"
+            "| Family    : %-43i |\n"
+            "| Model     : %-43i |\n"
+            "+---------------------------------------------------------+\n\n",
+            processor.BrandName,
+            processor.IdentityString,
+            processor.NumberOfProcessors,
+            processor.Family,
+            processor.Model
+        );
+    }
+#endif
 
 #if PXLogEnable
     PXLogPrint
@@ -2348,26 +2415,14 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
         {
             PXGUIElementCreateInfo* const pxGUIElementCreateInfo = &pxEngineResourceCreateInfo->UIElement;
 
-           // pxGUIElementCreateInfo->UIElementWindow = pxEngine->Window;
+           // pxGUIElementCreateInfo->U
 
+            //pxUIElementCreateData.UIElement.Data.SceneRender.StartInfo->UseMouseInput
+            pxGUIElementCreateInfo->Name = pxEngineResourceCreateInfo->Name;
+            pxGUIElementCreateInfo->UIElementWindow = pxEngine->Window;
             pxGUIElementCreateInfo->UIElement = pxEngineResourceCreateInfo->ObjectReference;
-            PXGUIElementCreate(&pxEngine->GUISystem, pxGUIElementCreateInfo, 1);
 
-       
-            /*
-            //const char* format = PXEngineCreateTypeToString(pxEngineResourceCreateInfo->CreateType);
-            if(PXUIElementTypeTreeViewItem != pxGUIElementCreateInfo->Type)
-            {
-                const char* uielementName = PXUIElementTypeToString(pxGUIElementCreateInfo->Type);
-
-                pxUIElement->NameSize = PXTextPrintA(pxUIElement->NameData, 64, "[%s] %s", uielementName, pxEngineResourceCreateInfo->Name);
-            }
-            else
-            {
-                pxUIElement->NameSize = PXTextPrintA(pxUIElement->NameData, 64, "%s", pxEngineResourceCreateInfo->Name);
-            }
-            */
-   
+            PXGUIElementCreate(&pxEngine->GUISystem, pxGUIElementCreateInfo, 1);   
 
             PXFunctionInvoke(pxEngine->ResourceAdded, pxEngine->Owner, pxEngine, pxEngineResourceCreateInfo);
 

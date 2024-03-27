@@ -519,13 +519,6 @@ PXActionResult PXAPI PXGraphicSpriteDraw(PXGraphic* const pxGraphic, const PXSpr
             return PXActionNotSupportedByLibrary;
     }
 }
-
-void PXAPI PXGraphicShaderUpdateMatrix4x4F(PXGraphic* const pxGraphic, const unsigned int locationID, const float* const matrix4x4)
-{
-#if PXOpenGLUSE
-    PXOpenGLShaderVariableMatrix4fv(&pxGraphic->OpenGLInstance, locationID, 1, 0, matrix4x4);
-#endif
-}
 #endif
 
 void PXAPI PXCameraConstruct(PXCamera* const camera)

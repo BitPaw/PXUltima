@@ -20,8 +20,7 @@ extern "C"
     PXPublic PXActionResult PXAPI PXDirectX9ShaderProgramSelect(PXDirectX9* const pxDirectX9, PXShaderProgram* const pxShaderProgram);
     PXPublic PXActionResult PXAPI PXDirectX9ShaderProgramDelete(PXDirectX9* const pxDirectX9, PXShaderProgram* const pxShaderProgram);
 
-    PXPublic PXActionResult PXAPI PXDirectX9ShaderVariableIDFetch(PXDirectX9* const pxDirectX9, const PXShaderProgram* const pxShaderProgram, PXInt32U* const shaderVariableID, const char* const name);
-    PXPublic PXActionResult PXAPI PXDirectX9ShaderVariableSetFunction(PXDirectX9* const pxDirectX9, struct PXGraphicShaderVariable_* const pxGraphicShaderVariable);
+    PXPublic PXActionResult PXAPI PXDirectX9ShaderVariableSet(PXDirectX9* const pxDirectX9, const PXShaderProgram* const pxShaderProgram, PXShaderVariable* const pxShaderVariable);
 
     PXPublic PXActionResult PXAPI PXDirectX9SceneBegin(PXDirectX9* const pxDirectX9);
     PXPublic PXActionResult PXAPI PXDirectX9SceneEnd(PXDirectX9* const pxDirectX9);

@@ -54,6 +54,34 @@
 #include "CSS/PXCSS.h"
 #include "DDS/PXDDS.h"
 
+const char* PXAPI PXGraphicShaderTypeToString(const PXGraphicShaderType pxGraphicShaderType)
+{
+    switch(pxGraphicShaderType)
+    {
+        case PXShaderTypeVertex:     // .vert - a vertex shader
+            return "VertexShader";
+
+        case PXShaderTypePixel:   // .frag - a fragment shader
+            return "PixelShader";
+
+        case PXShaderTypeTessellationControl:    // .tesc - a tessellation control shader
+            return "TessellationControlShader";
+
+        case PXShaderTypeTessellationEvaluation:     // .tese - a tessellation evaluation shader
+            return "TessellationEvaluationShader";
+
+        case PXShaderTypeGeometry:      // .geom - a geometry shader
+            return "GeometryShader";
+
+        case PXShaderTypeCompute:   // .comp - a compute shader
+            return "ComputeShader";
+
+        case PXShaderTypeInvalid:
+        default:
+            return PXNull;
+    }
+}
+
 PXInt8U PXAPI PXVertexBufferFormatStrideSize(const PXVertexBufferFormat pxVertexBufferFormat)
 {
     switch (pxVertexBufferFormat)

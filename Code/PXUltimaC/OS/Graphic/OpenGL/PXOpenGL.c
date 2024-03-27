@@ -1994,9 +1994,8 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
     {
         PXGraphic* pxGraphic = pxGraphicInitializeInfo->Graphic;
         pxGraphic->TextureAction = PXOpenGLTextureAction;
-        pxGraphic->ShaderVariableSet = PXOpenGLShaderVariableSetFunction;
-        pxGraphic->ScreenBufferRead = PXOpenGLScreenBufferRead;        
-        pxGraphic->ShaderVariableIDFetch = PXOpenGLShaderVariableIDFetch;
+        pxGraphic->ShaderVariableSet = PXOpenGLShaderVariableSet;
+        pxGraphic->ScreenBufferRead = PXOpenGLScreenBufferRead;
         pxGraphic->DrawModeSet = PXOpenGLDrawMode;
         pxGraphic->DrawColorRGBAF = PXOpenGLDrawColorRGBAF;
         pxGraphic->RectangleDraw = PXOpenGLRectangleDraw;
@@ -2030,7 +2029,6 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
         pxGraphic->LightGet = PXOpenGLLightGet;
         pxGraphic->LightEnableSet = PXNull;
         pxGraphic->LightEnableGet = PXNull;
-        //pxGraphic->Texture2DSelect = PXOpenGLTexture2DBind;
     }
 
 #if OSUnix
@@ -2508,6 +2506,11 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
         pxOpenGL->ShaderSource = pxOpenGL->GetProcAddress("glShaderSource");
         pxOpenGL->ShaderCreate = pxOpenGL->GetProcAddress("glCreateShader");
         pxOpenGL->ShaderCompile = pxOpenGL->GetProcAddress("glCompileShader");
+
+        pxOpenGL->ShaderProgramGetiv = pxOpenGL->GetProcAddress("glGetProgramiv");
+        pxOpenGL->ActiveUniformGet = pxOpenGL->GetProcAddress("glGetActiveUniform");
+        pxOpenGL->ActiveAttributeGet = pxOpenGL->GetProcAddress("glGetActiveAttrib");
+
         pxOpenGL->ShaderGetiv = pxOpenGL->GetProcAddress("glGetShaderiv");
         pxOpenGL->ShaderLogInfoGet = pxOpenGL->GetProcAddress("glGetShaderInfoLog");
         pxOpenGL->ShaderDelete = pxOpenGL->GetProcAddress("glDeleteShader");
@@ -3192,20 +3195,26 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXModel* 
 
     if (canUseShader)
     {
-        PXInt32U _matrixModel;
-        PXInt32U _matrixViewID;
-        PXInt32U _matrixProjectionID;
-
         PXOpenGLShaderProgramSelect(pxOpenGL, pxModel->ShaderProgramReference);
 
-        PXOpenGLShaderVariableIDFetch(pxOpenGL, pxModel->ShaderProgramReference, &_matrixModel, "MatrixModel");
-        PXOpenGLShaderVariableIDFetch(pxOpenGL, pxModel->ShaderProgramReference, &_matrixViewID, "MatrixView");
-        PXOpenGLShaderVariableIDFetch(pxOpenGL, pxModel->ShaderProgramReference, &_matrixProjectionID, "MatrixProjection");
-        // PXOpenGLShaderVariableIDFetch(pxOpenGL, pxSkyBox->ShaderProgramReference, &_materialTextureID, "MaterialTexture");
+        PXShaderVariable pxShaderVariableList[3];
+        PXClearList(PXShaderVariable, pxShaderVariableList, 3);
+        PXTextCopyA("MatrixModel", 11, pxShaderVariableList[0].Name, 64);
+        pxShaderVariableList[0].Amount = 1;
+        pxShaderVariableList[0].Data = modifiedModelMatrix.Data;
+        pxShaderVariableList[0].DataType = PXShaderVariableTypeMatrix4x4;
 
-        pxOpenGL->UniformMatrix4fv(_matrixModel, 1, 0, modifiedModelMatrix.Data);
-        pxOpenGL->UniformMatrix4fv(_matrixViewID, 1, 0, modifiedViewMatrix.Data);
-        pxOpenGL->UniformMatrix4fv(_matrixProjectionID, 1, 0, pxCamera->MatrixProjection.Data);
+        PXTextCopyA("MatrixView", 11, pxShaderVariableList[1].Name, 64);
+        pxShaderVariableList[1].Amount = 1;
+        pxShaderVariableList[1].Data = modifiedViewMatrix.Data;
+        pxShaderVariableList[1].DataType = PXShaderVariableTypeMatrix4x4;
+
+        PXTextCopyA("MatrixProjection", 16, pxShaderVariableList[2].Name, 64);
+        pxShaderVariableList[2].Amount = 1;
+        pxShaderVariableList[2].Data = pxCamera->MatrixProjection.Data;
+        pxShaderVariableList[2].DataType = PXShaderVariableTypeMatrix4x4;
+
+        PXOpenGLShaderVariableSet(pxOpenGL, pxModel->ShaderProgramReference, pxShaderVariableList, 3);
     }
     else // Legacy matrix stuff
     {
@@ -4310,8 +4319,8 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
     (
         PXLoggingInfo,
         "OpenGL",
-        "Shader",
-        "Shaderprogram create <%i>",
+        "Shader-Create",
+        "Program created <%i>",
         pxShaderProgram->ResourceID.OpenGLID
     );
 #endif
@@ -4333,6 +4342,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
     {
         PXShader* const shader = &shaderList[i];
 
+        const char* shaderTypeName = PXGraphicShaderTypeToString(shader->Type);
         const PXInt32U shaderTypeID = PXOpenGLShaderTypeToID(shader->Type);
         shader->ResourceID.OpenGLID = pxOpenGL->ShaderCreate(shaderTypeID); // Create shader
 
@@ -4348,8 +4358,9 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
         (
             PXLoggingInfo,
             "OpenGL",
-            "Shader",
-            "Compile <%i>",
+            "Shader-Compile",
+            "%s <%i>",
+            shaderTypeName,
             shader->ResourceID.OpenGLID
         );
 #endif
@@ -4387,8 +4398,9 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
             (
                 PXLoggingError,
                 "OpenGL",
-                "Shader",
-                "GLSL - Compiler Error\n%s",
+                "Shader-Compile",
+                "GLSL - %s - Error\n%s",
+                shaderTypeName,
                 shaderErrorLengthData
             );
 #endif
@@ -4428,6 +4440,108 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
     {
         return PXActionInvalid;
     }
+
+
+    // Get list of all attributes and uniforms
+    {
+        GLint numberOfUniforms = 0;
+        GLint numberOfAttributes = 0;
+
+        pxOpenGL->ShaderProgramGetiv(pxShaderProgram->ResourceID.OpenGLID, GL_ACTIVE_ATTRIBUTES, &numberOfAttributes);
+        pxOpenGL->ShaderProgramGetiv(pxShaderProgram->ResourceID.OpenGLID, GL_ACTIVE_UNIFORMS, &numberOfUniforms);
+
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "OpenGL",
+            "Shader-GLSL",
+            "Active Uniforms: %i Attributes: %i",
+            numberOfUniforms,
+            numberOfAttributes
+        );
+#endif
+        
+        // Create space
+        pxShaderProgram->VariableListAmount = numberOfUniforms + numberOfAttributes;
+        PXNewListZerod(PXShaderVariable, pxShaderProgram->VariableListAmount, &pxShaderProgram->VariableListData, PXNull);
+
+        PXSize currentIndex = 0;
+
+        for(GLuint i = 0; i < numberOfAttributes; i++)
+        {
+            PXShaderVariable* const pxShaderVariable = &pxShaderProgram->VariableListData[currentIndex];
+
+            GLsizei writtenNameSize = 0;
+            GLint typeSize = 0;
+            GLenum type = 0;
+
+            pxOpenGL->ActiveAttributeGet
+            (
+                pxShaderProgram->ResourceID.OpenGLID,
+                (GLuint)i,
+                PXShaderVariableNameSize,
+                &writtenNameSize,
+                &typeSize,
+                &type,
+                pxShaderVariable->Name
+            );
+
+            pxShaderVariable->Locallity = PXShaderVariableLocallityVertexOnly;
+            pxShaderVariable->DataType = PXOpenGLShaderVariableTypeFromID(type);
+            pxShaderVariable->RegisterIndex = i;
+            pxShaderVariable->DataTypeSize = typeSize;
+            pxShaderVariable->NameSize = writtenNameSize;
+
+            ++currentIndex;
+        }
+
+        for(GLuint i = 0; i < numberOfUniforms; ++i)
+        {
+            PXShaderVariable* const pxShaderVariable = &pxShaderProgram->VariableListData[currentIndex];
+
+            GLsizei writtenNameSize = 0;
+            GLint typeSize = 0;
+            GLenum type = 0;
+
+            pxOpenGL->ActiveUniformGet
+            (
+                pxShaderProgram->ResourceID.OpenGLID,
+                i,
+                PXShaderVariableNameSize,
+                &writtenNameSize,
+                &typeSize,
+                &type,
+                pxShaderVariable->Name
+            );
+
+            pxShaderVariable->Locallity = PXShaderVariableLocallityGlobal;
+            pxShaderVariable->DataType = PXOpenGLShaderVariableTypeFromID(type);
+            pxShaderVariable->RegisterIndex = i;
+            pxShaderVariable->DataTypeSize = typeSize;
+            pxShaderVariable->NameSize = writtenNameSize;
+
+            ++currentIndex;
+        }   
+    }
+
+#if PXLogEnable
+    for(PXSize i = 0; i < pxShaderProgram->VariableListAmount; i++)
+    {
+        PXShaderVariable* const pxShaderVariable = &pxShaderProgram->VariableListData[i];
+
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "OpenGL",
+            "Shader-GLSL",
+            "ID:%i %s",
+            pxShaderVariable->RegisterIndex,
+            pxShaderVariable->Name
+        );
+    } 
+#endif
+
 
     return PXActionSuccessful;
 }
@@ -4902,18 +5016,22 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, PXSkyBox* const pxSkyBox
     // ShaderSetup
     if(pxOpenGL->ShaderCreate && pxSkyBox->ShaderProgramReference)
     {
-        PXInt32U _matrixViewID;
-        PXInt32U _matrixProjectionID;
-
         PXOpenGLShaderProgramSelect(pxOpenGL, pxSkyBox->ShaderProgramReference);
 
-        PXOpenGLShaderVariableIDFetch(pxOpenGL, pxSkyBox->ShaderProgramReference, &_matrixViewID, "MatrixView");
-        PXOpenGLShaderVariableIDFetch(pxOpenGL, pxSkyBox->ShaderProgramReference, &_matrixProjectionID, "MatrixProjection");
-       // PXOpenGLShaderVariableIDFetch(pxOpenGL, pxSkyBox->ShaderProgramReference, &_materialTextureID, "MaterialTexture");
+        PXShaderVariable pxShaderVariableList[2];
+        PXClearList(PXShaderVariable, pxShaderVariableList, 2);
 
-       // pxOpenGL->PXOpenGLUniformMatrix4fvCallBack(_matrixViewID, 1, 0, pxCamera->MatrixView.Data);
-        pxOpenGL->UniformMatrix4fv(_matrixProjectionID, 1, 0, pxCamera->MatrixProjection.Data);
-        pxOpenGL->UniformMatrix4fv(_matrixViewID, 1, 0, viewTri.Data);
+        PXTextCopyA("MatrixView", 11, pxShaderVariableList[0].Name, 64); 
+        pxShaderVariableList[0].Amount = 1;
+        pxShaderVariableList[0].Data = viewTri.Data;
+        pxShaderVariableList[0].DataType = PXShaderVariableTypeMatrix4x4;
+
+        PXTextCopyA("MatrixProjection", 16, pxShaderVariableList[1].Name, 64);
+        pxShaderVariableList[1].Amount = 1;
+        pxShaderVariableList[1].Data = pxCamera->MatrixProjection.Data;
+        pxShaderVariableList[1].DataType = PXShaderVariableTypeMatrix4x4;
+
+        PXOpenGLShaderVariableSet(pxOpenGL, pxSkyBox->ShaderProgramReference, pxShaderVariableList, 2);
     }
     else
     {
@@ -5091,141 +5209,269 @@ GLuint PXAPI PXOpenGLFrameBufferLinkRenderBuffer(PXOpenGL* const pxOpenGL, const
     return pxOpenGL->FrameBufferLinkRenderBuffer(GL_FRAMEBUFFER, attachmentID, GL_RENDERBUFFER, renderbuffer);
 }
 
-PXActionResult PXAPI PXOpenGLShaderVariableIDFetch(PXOpenGL* const pxOpenGL, const PXShaderProgram* const pxShaderProgram, PXInt32U* const shaderVariableID, const char* const name)
+PXActionResult PXAPI PXOpenGLShaderVariableSet(PXOpenGL* const pxOpenGL, const PXShaderProgram* const pxShaderProgram, PXShaderVariable* const pxShaderVariableList, const PXSize amount)
 {
-    *shaderVariableID = pxOpenGL->GetUniformLocation(pxShaderProgram->ResourceID.OpenGLID, name);
-
-    // If no error, exit
-    {
-        const PXBool fetchSuccessful = *shaderVariableID != (PXInt32U)-1;
-
-        if (!fetchSuccessful)
-        {
-            return PXActionSuccessful;
-        }
-    }
-
-    // Fetch error
-    {
-        const PXActionResult createResult = PXOpenGLErrorCurrent(pxOpenGL);
-
-        return createResult;
-    }
-}
-
-PXActionResult PXAPI PXOpenGLShaderVariableSetFunction(PXOpenGL* const pxOpenGL, struct PXGraphicShaderVariable_* const pxGraphicShaderVariable)
-{
-    if(!(pxOpenGL && pxGraphicShaderVariable))
+    if(!(pxOpenGL && pxShaderProgram && pxShaderVariableList))
     {
         return PXActionRefusedArgumentNull;
     }
 
-    if(pxGraphicShaderVariable->Amount == 0)
+    if(amount == 0)
     {
         return PXActionRefusedArgumentInvalid;
     }
 
-    // Do we have an ID?
-
-    switch(pxGraphicShaderVariable->Type)
+    for(PXSize i = 0; i < amount; ++i)
     {
-        case PXGraphicShaderVariableTypeInt32Single:
+        PXShaderVariable* const pxShaderVariable = &pxShaderVariableList[i];
+
+        if(pxShaderVariable->Amount == 0)
         {
-            const int* const data = pxGraphicShaderVariable->Data;
+           // return PXActionRefusedArgumentInvalid;
+            continue;
+        }
 
-            switch(pxGraphicShaderVariable->Amount)
+        // Fetch IDs if not done already
+        if(pxShaderVariable->RegisterIndex == 0)
+        {
+            // Try hyper cached first
+            for(PXSize w = 0; w < pxShaderProgram->VariableListAmount; ++w)
             {
-                case 1:
-                    pxOpenGL->Uniform1i(pxGraphicShaderVariable->IndexID, data[0]);
-                    break;
-                case 2:
-                    pxOpenGL->Uniform2i(pxGraphicShaderVariable->IndexID, data[0], data[1]);
-                    break;
-                case 3:
-                    pxOpenGL->Uniform3i(pxGraphicShaderVariable->IndexID, data[0], data[1], data[2]);
-                    break;
-                case 4:
-                    pxOpenGL->Uniform4i(pxGraphicShaderVariable->IndexID, data[0], data[1], data[2], data[3]);
-                    break;
+                /// ?
+            }
 
-                default:
+            pxShaderVariable->RegisterIndex = pxOpenGL->GetUniformLocation(pxShaderProgram->ResourceID.OpenGLID, pxShaderVariable->Name);
+
+            // If no error, exit
+            {
+                const PXBool fetchSuccessful = pxShaderVariable->RegisterIndex != (PXInt32U)-1;
+
+                if(!fetchSuccessful)
+                {
+                    const PXActionResult createResult = PXOpenGLErrorCurrent(pxOpenGL);
+
+                    //return createResult;
+
+                    continue;
+                }
+            }
+        }
+
+        if(!pxShaderVariable->Data) // If we dont have data, we can't do more.
+        {
+            //return PXActionSuccessful;
+            continue;
+        }
+
+        switch(pxShaderVariable->DataType)
+        {
+            case PXShaderVariableTypeInt32SSingle:
+            {
+                const int* const data = pxShaderVariable->Data;
+
+                if(pxShaderVariable->Amount > 1)
+                {
                     pxOpenGL->Uniform1iv
                     (
-                        pxGraphicShaderVariable->IndexID,
-                        pxGraphicShaderVariable->Amount,
-                        pxGraphicShaderVariable->Data
+                        pxShaderVariable->RegisterIndex,
+                        pxShaderVariable->Amount,
+                        pxShaderVariable->Data
                     );
-                    break;
+                }
+                else
+                {
+                    pxOpenGL->Uniform1i(pxShaderVariable->RegisterIndex, data[0]);
+                }
+
+                break;
             }
-
-            break;
-        }
-        case PXGraphicShaderVariableTypeFloatSingle:
-        {
-            const float* const data = pxGraphicShaderVariable->Data;
-
-            switch(pxGraphicShaderVariable->Amount)
+            case PXShaderVariableTypeInt32SVector2:
             {
-                case 1:
-                    pxOpenGL->Uniform1f(pxGraphicShaderVariable->IndexID, data[0]);
-                    break;
-                case 2:
-                    pxOpenGL->Uniform2f(pxGraphicShaderVariable->IndexID, data[0], data[1]);
-                    break;
-                case 3:
-                    pxOpenGL->Uniform3f(pxGraphicShaderVariable->IndexID, data[0], data[1], data[2]);
-                    break;
-                case 4:
-                    pxOpenGL->Uniform4f(pxGraphicShaderVariable->IndexID, data[0], data[1], data[2], data[3]);
-                    break;
+                const int* const data = pxShaderVariable->Data;
 
-                default:
+                if(pxShaderVariable->Amount > 1)
+                {
+                    pxOpenGL->Uniform2iv
+                    (
+                        pxShaderVariable->RegisterIndex,
+                        pxShaderVariable->Amount,
+                        pxShaderVariable->Data
+                    );
+                }
+                else
+                {
+                    pxOpenGL->Uniform2i(pxShaderVariable->RegisterIndex, data[0], data[1]);
+                }
+
+                break;
+            }
+            case PXShaderVariableTypeInt32SVector3:
+            {
+                const int* const data = pxShaderVariable->Data;
+
+                if(pxShaderVariable->Amount > 1)
+                {
+                    pxOpenGL->Uniform3iv
+                    (
+                        pxShaderVariable->RegisterIndex,
+                        pxShaderVariable->Amount,
+                        pxShaderVariable->Data
+                    );
+                }
+                else
+                {
+                    pxOpenGL->Uniform3i(pxShaderVariable->RegisterIndex, data[0], data[1], data[2]);
+                }
+
+                break;
+            }
+            case PXShaderVariableTypeInt32SVector4:
+            {
+                const int* const data = pxShaderVariable->Data;
+
+                if(pxShaderVariable->Amount > 1)
+                {
+                    pxOpenGL->Uniform4iv
+                    (
+                        pxShaderVariable->RegisterIndex,
+                        pxShaderVariable->Amount,
+                        pxShaderVariable->Data
+                    );
+                }
+                else
+                {
+                    pxOpenGL->Uniform4i(pxShaderVariable->RegisterIndex, data[0], data[1], data[2], data[3]);
+                }
+
+                break;
+            }
+            case PXShaderVariableTypeFloatSingle:
+            {
+                const float* const data = pxShaderVariable->Data;
+
+                if(pxShaderVariable->Amount > 1)
+                {
                     pxOpenGL->Uniform1fv
                     (
-                        pxGraphicShaderVariable->IndexID,
-                        pxGraphicShaderVariable->Amount,
-                        pxGraphicShaderVariable->Data
+                        pxShaderVariable->RegisterIndex,
+                        pxShaderVariable->Amount,
+                        pxShaderVariable->Data
                     );
-                    break;
-            }
+                }
+                else
+                {
+                    pxOpenGL->Uniform1f(pxShaderVariable->RegisterIndex, data[0]);
+                }
 
-            break;
+                break;
+            }
+            case PXShaderVariableTypeFloatVector2:
+            {
+                const float* const data = pxShaderVariable->Data;
+
+                if(pxShaderVariable->Amount > 1)
+                {
+                    pxOpenGL->Uniform2fv
+                    (
+                        pxShaderVariable->RegisterIndex,
+                        pxShaderVariable->Amount,
+                        pxShaderVariable->Data
+                    );
+                }
+                else
+                {
+                    pxOpenGL->Uniform2f(pxShaderVariable->RegisterIndex, data[0], data[1]);
+                }
+
+                break;
+            }
+            case PXShaderVariableTypeFloatVector3:
+            {
+                const float* const data = pxShaderVariable->Data;
+
+                if(pxShaderVariable->Amount > 1)
+                {
+                    pxOpenGL->Uniform3fv
+                    (
+                        pxShaderVariable->RegisterIndex,
+                        pxShaderVariable->Amount,
+                        pxShaderVariable->Data
+                    );
+                }
+                else
+                {
+                    pxOpenGL->Uniform3f(pxShaderVariable->RegisterIndex, data[0], data[1], data[2]);
+                }
+
+                break;
+            }
+            case PXShaderVariableTypeFloatVector4:
+            {
+                const float* const data = pxShaderVariable->Data;
+
+                if(pxShaderVariable->Amount > 1)
+                {
+                    pxOpenGL->Uniform4fv
+                    (
+                        pxShaderVariable->RegisterIndex,
+                        pxShaderVariable->Amount,
+                        pxShaderVariable->Data
+                    );
+                }
+                else
+                {
+                    pxOpenGL->Uniform4f(pxShaderVariable->RegisterIndex, data[0], data[1], data[2], data[3]);
+                }
+
+                break;
+            }
+            case PXShaderVariableTypeMatrix2x2:
+            {
+                pxOpenGL->UniformMatrix2fv
+                (
+                    pxShaderVariable->RegisterIndex,
+                    pxShaderVariable->Amount,
+                    PXFalse,
+                    pxShaderVariable->Data
+                );
+
+                break;
+            }
+            case PXShaderVariableTypeMatrix3x3:
+            {
+                pxOpenGL->UniformMatrix3fv
+                (
+                    pxShaderVariable->RegisterIndex,
+                    pxShaderVariable->Amount,
+                    PXFalse,
+                    pxShaderVariable->Data
+                );
+
+                break;
+            }
+            case PXShaderVariableTypeMatrix4x4:
+            {
+                pxOpenGL->UniformMatrix4fv
+                (
+                    pxShaderVariable->RegisterIndex,
+                    pxShaderVariable->Amount,
+                    PXFalse,
+                    pxShaderVariable->Data
+                );
+
+                break;
+            }
+            default:
+                return PXActionRefusedArgumentInvalid;
         }
-        case PXGraphicShaderVariableTypeMatrix2x2:
+
+        // Fetch error
         {
-            pxOpenGL->UniformMatrix2fv
-            (
-                pxGraphicShaderVariable->IndexID,
-                pxGraphicShaderVariable->Amount,
-                PXFalse,
-                pxGraphicShaderVariable->Data
-            );
+            const PXActionResult uniformResult = PXOpenGLErrorCurrent(pxOpenGL);
+
+            //return uniformResult;
         }
-        case PXGraphicShaderVariableTypeMatrix3x3:
-        {
-            pxOpenGL->UniformMatrix3fv
-            (
-                pxGraphicShaderVariable->IndexID,
-                pxGraphicShaderVariable->Amount,
-                PXFalse,
-                pxGraphicShaderVariable->Data
-            );
-            break;
-        }
-        case PXGraphicShaderVariableTypeMatrix4x4:
-        {
-            pxOpenGL->UniformMatrix4fv
-            (
-                pxGraphicShaderVariable->IndexID,
-                pxGraphicShaderVariable->Amount,
-                PXFalse,
-                pxGraphicShaderVariable->Data
-            );
-            break;
-        }
-        default:
-            return PXActionRefusedArgumentInvalid;
-    }
+    }   
 
     return PXActionSuccessful;
 }
@@ -5362,6 +5608,56 @@ PXInt32U PXAPI PXOpenGLTypeToID(const PXInt32U pxDataType)
 
         default:
             return -1;
+    }
+}
+
+PXShaderVariableType PXAPI PXOpenGLShaderVariableTypeFromID(const PXInt16U openGLShaderVariableTypeID)
+{
+    switch(openGLShaderVariableTypeID)
+    {
+        case GL_FLOAT: return PXShaderVariableTypeFloatSingle; // float
+        case GL_FLOAT_VEC2: return PXShaderVariableTypeFloatVector2; //  	vec2
+        case GL_FLOAT_VEC3: return PXShaderVariableTypeFloatVector3; // 	vec3
+        case GL_FLOAT_VEC4: return PXShaderVariableTypeFloatVector4; // 	vec4
+        case GL_INT: return PXShaderVariableTypeInt32SSingle; // 	int
+        case GL_INT_VEC2: return PXShaderVariableTypeInt32SVector2; // 	ivec2
+        case GL_INT_VEC3: return PXShaderVariableTypeInt32SVector3; // 	ivec3
+        case GL_INT_VEC4: return PXShaderVariableTypeInt32SVector4; // 	ivec4
+        case GL_UNSIGNED_INT: return PXShaderVariableTypeInt32USingle; // unsigned int
+        case GL_UNSIGNED_INT_VEC2: return PXShaderVariableTypeInt32UVector2; // uvec2
+        case GL_UNSIGNED_INT_VEC3: return PXShaderVariableTypeInt32UVector3; // 	uvec3
+        case GL_UNSIGNED_INT_VEC4: return PXShaderVariableTypeInt32UVector4; // 	uvec4
+        case GL_BOOL: return PXShaderVariableTypeBoolSignle; // 	bool
+        case GL_BOOL_VEC2: return PXShaderVariableTypeBoolVector2; // bvec2
+        case GL_BOOL_VEC3: return PXShaderVariableTypeBoolVector3; // 	bvec3
+        case GL_BOOL_VEC4: return PXShaderVariableTypeBoolVector4; // 	bvec4
+        case GL_FLOAT_MAT2: return PXShaderVariableTypeMatrix2x2; // 	mat2
+        case GL_FLOAT_MAT3: return PXShaderVariableTypeMatrix3x3; // 	mat3
+        case GL_FLOAT_MAT4: return PXShaderVariableTypeMatrix4x4; //  	mat4
+        case GL_FLOAT_MAT2x3: return PXShaderVariableTypeMatrix2x3; // 	mat2x3
+        case GL_FLOAT_MAT2x4: return PXShaderVariableTypeMatrix2x4; // 	mat2x4
+        case GL_FLOAT_MAT3x2: return PXShaderVariableTypeMatrix3x2; // 	mat3x2
+        case GL_FLOAT_MAT3x4: return PXShaderVariableTypeMatrix3x4; // 	mat3x4
+        case GL_FLOAT_MAT4x2: return PXShaderVariableTypeMatrix4x2; // 	mat4x2
+        case GL_FLOAT_MAT4x3: return PXShaderVariableTypeMatrix4x3; // 	mat4x3
+        case GL_SAMPLER_2D: return PXShaderVariableTypeSampler2DF; // sampler2D
+        case GL_SAMPLER_3D: return PXShaderVariableTypeSampler3DF; // 	sampler3D
+        case GL_SAMPLER_CUBE: return PXShaderVariableTypeSamplerCubeF; // 	samplerCube
+        case GL_SAMPLER_2D_SHADOW: return PXShaderVariableTypeSamplerF2DShadow; // 	sampler2DShadow
+        case GL_SAMPLER_2D_ARRAY: return PXShaderVariableTypeSampler2DArrayF; // 	sampler2DArray
+        case GL_SAMPLER_2D_ARRAY_SHADOW: return PXShaderVariableTypeSamplerF2DArrayShadow; // 	sampler2DArrayShadow
+        case GL_SAMPLER_CUBE_SHADOW: return PXShaderVariableTypeSamplerFCubeShadow; // 	samplerCubeShadow
+        case GL_INT_SAMPLER_2D: return PXShaderVariableTypeSampler2DI32S; // 	isampler2D
+        case GL_INT_SAMPLER_3D: return PXShaderVariableTypeSampler3DI32S; // 	isampler3D
+        case GL_INT_SAMPLER_CUBE: return PXShaderVariableTypeSamplerCubeI32S; // 	isamplerCube
+        case GL_INT_SAMPLER_2D_ARRAY: return PXShaderVariableTypeSampler2DArrayI32S; //  	isampler2DArray
+        case GL_UNSIGNED_INT_SAMPLER_2D: return PXShaderVariableTypeSampler2DI32U; // 	usampler2D
+        case GL_UNSIGNED_INT_SAMPLER_3D: return PXShaderVariableTypeSampler3DI32U; // 	usampler3D
+        case GL_UNSIGNED_INT_SAMPLER_CUBE: return PXShaderVariableTypeSamplerCubeI32U; // 	usamplerCube
+        case GL_UNSIGNED_INT_SAMPLER_2D_ARRAY: return PXShaderVariableTypeSampler2DArrayI32U; // usampler2DArray 
+
+        default:
+            return PXShaderVariableTypeInvalid;
     }
 }
 

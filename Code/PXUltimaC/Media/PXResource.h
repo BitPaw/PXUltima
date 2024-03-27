@@ -74,6 +74,8 @@ extern "C"
 	}
 	PXGraphicShaderType;
 
+	PXPublic const char* PXAPI PXGraphicShaderTypeToString(const PXGraphicShaderType pxGraphicShaderType);
+
 	typedef enum PXGraphicImageLayout_
 	{
 		PXGraphicImageLayoutInvalid,
@@ -419,6 +421,100 @@ extern "C"
 	PXPublic PXMaterial* PXAPI PXMaterialContainerFind(const PXMaterialContainer* const pxMaterialContainer, struct PXText_* const pxMaterialName);
 
 
+
+	typedef enum PXShaderVariableType_
+	{
+		PXShaderVariableTypeInvalid,
+
+		PXShaderVariableTypeBoolSignle,
+		PXShaderVariableTypeBoolVector2,
+		PXShaderVariableTypeBoolVector3,
+		PXShaderVariableTypeBoolVector4,
+
+		PXShaderVariableTypeInt32SSingle,
+		PXShaderVariableTypeInt32SVector2,
+		PXShaderVariableTypeInt32SVector3,
+		PXShaderVariableTypeInt32SVector4,
+
+		PXShaderVariableTypeInt32USingle,
+		PXShaderVariableTypeInt32UVector2,
+		PXShaderVariableTypeInt32UVector3,
+		PXShaderVariableTypeInt32UVector4,
+
+		PXShaderVariableTypeFloatSingle,
+		PXShaderVariableTypeFloatVector2,
+		PXShaderVariableTypeFloatVector3,
+		PXShaderVariableTypeFloatVector4,
+		PXShaderVariableTypeDouble,
+
+		// Matrix
+		PXShaderVariableTypeMatrix2x2,
+		PXShaderVariableTypeMatrix2x3,
+		PXShaderVariableTypeMatrix2x4,
+		PXShaderVariableTypeMatrix3x2,
+		PXShaderVariableTypeMatrix3x3,
+		PXShaderVariableTypeMatrix3x4,
+		PXShaderVariableTypeMatrix4x2,
+		PXShaderVariableTypeMatrix4x3,
+		PXShaderVariableTypeMatrix4x4,
+
+		PXShaderVariableTypeSampler2DF,
+		PXShaderVariableTypeSampler2DI32S,
+		PXShaderVariableTypeSampler2DI32U,
+		PXShaderVariableTypeSamplerF2DShadow,
+
+		PXShaderVariableTypeSampler2DArrayF,
+		PXShaderVariableTypeSampler2DArrayI32S,
+		PXShaderVariableTypeSampler2DArrayI32U,
+
+		PXShaderVariableTypeSamplerF2DArrayShadow,
+
+		PXShaderVariableTypeSampler3DF,
+		PXShaderVariableTypeSampler3DI32S,
+		PXShaderVariableTypeSampler3DI32U,
+
+		PXShaderVariableTypeSamplerCubeF,
+		PXShaderVariableTypeSamplerCubeI32S,
+		PXShaderVariableTypeSamplerCubeI32U,
+
+		PXShaderVariableTypeSamplerFCubeShadow,
+	}
+	PXShaderVariableType;
+
+	typedef enum PXShaderVariableLocallity_
+	{
+		PXShaderVariableLocallityInvalid,
+		PXShaderVariableLocallityGlobal, // Uniform
+		PXShaderVariableLocallityVertexOnly, // Atrribute
+	}
+	PXShaderVariableLocallity;
+
+#define PXShaderVariableNameSize 32
+
+	typedef struct PXShaderVariable_
+	{
+		char Name[PXShaderVariableNameSize]; // Shader variable name, used only for and ID fetch as it is very slow!
+		PXSize NameSize;
+		PXShaderVariableType DataType;
+		PXInt32U RegisterIndex; // ID to make, 
+		PXSize DataTypeSize;
+
+		// Only for DirectX
+		PXInt32U RegisterCount;
+		PXInt32U Rows;
+		PXInt32U Columns;
+		PXInt32U Elements;
+		PXInt32U StructMembers;
+
+
+		// Used for moving data only
+		void* Data; // Raw data data that is defined by the type
+		PXSize Amount;
+		PXGraphicShaderType ShaderType;
+		PXShaderVariableLocallity Locallity;
+	}
+	PXShaderVariable;
+
 	typedef struct PXShader_
 	{
 		PXResourceID ResourceID;
@@ -433,7 +529,8 @@ extern "C"
 		PXSize ContentSize;
 		const char* Content;
 
-		 
+		PXSize VariableListAmount;
+		PXShaderVariable* VariableListData;
 	}
 	PXShader;
 
@@ -441,6 +538,9 @@ extern "C"
 	typedef struct PXShaderProgram_
 	{
 		PXResourceID ResourceID;
+
+		PXSize VariableListAmount;
+		PXShaderVariable* VariableListData;
 	}
 	PXShaderProgram;
 
@@ -888,6 +988,7 @@ extern "C"
 		PXUIElementTypeComboBox,
 		PXUIElementTypeColorPicker,
 		PXUIElementTypeSlider,
+		PXUIElementTypeImageList,
 		PXUIElementTypeRenderFrame
 	}
 	PXUIElementType;
@@ -923,34 +1024,6 @@ extern "C"
 	}
 	PXUIElementImageInfo;
 
-	typedef struct PXUIElementItemInfo_
-	{
-		char* TextData;
-		PXSize TextSize;
-	}
-	PXUIElementItemInfo;
-
-	typedef struct PXUIElementSceneRenderInfo_
-	{
-		struct PXEngine_* Engine;
-	}
-	PXUIElementSceneRenderInfo;
-
-	typedef struct PXUIElementButtonInfo_
-	{
-		char* Text;
-	}
-	PXUIElementButtonInfo;
-
-	typedef struct PXUIElementProgressBarInfo_
-	{
-		float Percentage;
-		PXColorRGBI8 BarColor;
-	}
-	PXUIElementProgressBarInfo;
-
-
-
 	typedef enum PXUIElementTextAllign_
 	{
 		PXUIElementTextAllignInvalid,
@@ -968,6 +1041,36 @@ extern "C"
 		PXUIElementTextAllign Allign;
 	}
 	PXUIElementTextInfo;
+
+	typedef struct PXUIElementItemInfo_
+	{
+		char* TextData;
+		PXSize TextSize;
+	}
+	PXUIElementItemInfo;
+
+	typedef struct PXUIElementSceneRenderInfo_
+	{
+		struct PXEngine_* Engine;
+		struct PXEngineStartInfo_* StartInfo;
+	}
+	PXUIElementSceneRenderInfo;
+
+	typedef struct PXUIElementButtonInfo_
+	{
+		PXUIElementTextInfo TextInfo;
+	}
+	PXUIElementButtonInfo;
+
+	typedef struct PXUIElementProgressBarInfo_
+	{
+		float Percentage;
+		PXColorRGBI8 BarColor;
+	}
+	PXUIElementProgressBarInfo;
+
+
+
 
 
 
@@ -1035,7 +1138,7 @@ extern "C"
 	// Only image can be image
 	typedef struct PXUIElement_
 	{
-		char NameData[64];
+		char NameData[128];
 		PXSize NameSize;
 
 		//------------------------------

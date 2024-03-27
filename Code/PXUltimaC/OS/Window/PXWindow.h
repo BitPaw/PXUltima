@@ -648,6 +648,8 @@ extern "C"
 		PXBool IsVisible;
 		PXBool CreateMessageThread; // Run events in another thread
 		PXBool MaximizeOnStart;
+
+		PXBool RegisterMouse;
 	}
 	PXGUIElementCreateWindowInfo;
 
@@ -667,6 +669,8 @@ extern "C"
 
 		struct PXUIElement_* ItemParent;
 		struct PXUIElement_* TreeView;
+
+		struct PXUIElement_* ElementSource;
 
 		PXUIElementTreeViewItemInsertMode InsertMode;
 
@@ -729,6 +733,8 @@ extern "C"
 
 		// Additions
 		PXBool AvoidCreation;
+
+		char* Name;
 
 		void* InteractOwner;
 		PXWindowEventFunction InteractCallBack;
@@ -825,8 +831,8 @@ extern "C"
 
 	PXPublic PXBool PXAPI PXWindowInteractable(PXWindow* const pxWindow);
 
-	PXPublic PXBool PXAPI PXWindowCursorPositionInWindowGet(PXWindow* const pxWindow, PXInt32S* const x, PXInt32S* const y);
-	PXPublic PXBool PXAPI PXWindowCursorPositionInDestopGet(PXWindow* const pxWindow, PXInt32S* const x, PXInt32S* const y);
+	PXPublic PXBool PXAPI PXWindowCursorPositionInWindowGet(const PXWindowID pxWindowID, PXInt32S* const x, PXInt32S* const y);
+	PXPublic PXBool PXAPI PXWindowCursorPositionInDestopGet(const PXWindowID pxWindowID, PXInt32S* const x, PXInt32S* const y);
 
 
 	// Checks if the current window is the one in focus.

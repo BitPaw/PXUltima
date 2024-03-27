@@ -1,7 +1,7 @@
 #include "PXMultiMedia.h"
 
 #if PXAudioSystemWindowsMultimediaEnabled
-#if WindowsAtleastVista
+#if WindowsAtleastVista && 00
 #include <mmeapi.h> // Header should be found under XP build but it is not.
 #else 
 #include <MMSystem.h> // alternavive header of MMEAPI.h?

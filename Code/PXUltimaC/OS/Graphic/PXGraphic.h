@@ -180,26 +180,7 @@ extern "C"
 	PXGraphicTexturInfo;
 
 
-	typedef enum PXGraphicShaderVariableType_
-	{
-		PXGraphicShaderVariableTypeInt32Single,
-		PXGraphicShaderVariableTypeFloatSingle,
-		PXGraphicShaderVariableTypeDouble,
-		PXGraphicShaderVariableTypeMatrix2x2,
-		PXGraphicShaderVariableTypeMatrix3x3,
-		PXGraphicShaderVariableTypeMatrix4x4,
-	}
-	PXGraphicShaderVariableType;
 
-	typedef struct PXGraphicShaderVariable_
-	{
-		char* Name;
-		void* Data;
-		PXSize Amount;
-		PXInt32U IndexID;
-		PXGraphicShaderVariableType Type;
-	}
-	PXGraphicShaderVariable;
 
 
 	//-------------------------------------------------------------------------
@@ -265,10 +246,7 @@ extern "C"
 	typedef PXActionResult(PXAPI* PXGraphicShaderProgramSelectFunction)(void* const graphicAPI, PXShaderProgram* const pxShaderProgram);
 	typedef PXActionResult(PXAPI* PXGraphicShaderProgramDeleteFunction)(void* const graphicAPI, PXShaderProgram* const pxShaderProgram);
 
-
-	typedef PXActionResult(PXAPI* PXGraphicShaderVariableIDFetchFunction)(void* const graphicAPI, const PXShader* pxShader, PXInt32U* const shaderVariableID, const char* const name);
-
-	typedef PXActionResult(PXAPI* PXGraphicShaderVariableSetFunction)(void* const graphicAPI, PXGraphicShaderVariable* const pxGraphicShaderVariable);
+	typedef PXActionResult(PXAPI* PXShaderVariableSetFunction)(void* const graphicAPI, const PXShaderProgram* const pxShaderProgram, PXShaderVariable* const pxShaderVariable);
 	//-------------------------------------------------------------------------
 
 
@@ -354,12 +332,11 @@ extern "C"
 		//-------------------------------------------------
 		// Shader
 		//-------------------------------------------------
-		PXGraphicShaderVariableSetFunction ShaderVariableSet;
+		PXShaderVariableSetFunction ShaderVariableSet;
 
 		PXGraphicShaderProgramCreateFunction ShaderProgramCreate;
 		PXGraphicShaderProgramSelectFunction ShaderProgramSelect;
 		PXGraphicShaderProgramDeleteFunction ShaderProgramDelete;
-		PXGraphicShaderVariableIDFetchFunction  ShaderVariableIDFetch;
 		
 		//-------------------------------------------------
 		// Draw
@@ -424,15 +401,6 @@ extern "C"
 
 
 	PXPublic void PXAPI PXRenderableMeshSegmentConstruct(PXRenderableMeshSegment* const pxRenderableMeshSegment);
-
-
-
-
-	//---<Shader>-----------------------------------------------------------------
-
-	PXPublic void PXAPI PXGraphicShaderUpdateMatrix4x4F(PXGraphic* const pxGraphic, const unsigned int locationID, const float* const matrix4x4);
-
-	//-------------------------------------------------------------------------
 
 
 	PXPublic void PXAPI PXGraphicModelShaderSet(PXGraphic* const pxGraphic, PXRenderable* const renderable, const PXShaderProgram* const shaderPXProgram);

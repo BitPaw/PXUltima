@@ -168,8 +168,8 @@ PXActionResult PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* con
 		PXLoggingInfo,
 		"Library",
 		"Load",
-		"Successful <%i>",
-		(int)pxLibrary->ID
+		"Successful <0x%p>",
+		pxLibrary->ID
 	);
 #endif
 

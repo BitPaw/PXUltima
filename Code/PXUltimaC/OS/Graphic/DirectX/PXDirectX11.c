@@ -86,10 +86,8 @@ PXActionResult PXAPI PXDirectX11Initialize(PXDirectX11* const pxDirectX11, PXGra
     {
         PXGraphic* pxGraphic = pxGraphicInitializeInfo->Graphic;
         pxGraphic->TextureAction = PXDirectX11TextureAction;
-        pxGraphic->ShaderVariableIDFetch = PXNull;
         pxGraphic->ShaderVariableSet = PXNull;
         pxGraphic->ScreenBufferRead = PXNull;
-        pxGraphic->ShaderVariableIDFetch = PXNull;
         pxGraphic->DrawModeSet = PXNull;
         pxGraphic->DrawColorRGBAF = PXNull;
         pxGraphic->RectangleDraw = PXNull;
