@@ -3275,13 +3275,13 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXModel* 
     {
         pxOpenGL->Color4f(1, 1, 1, 1);
 
-        const PXBool renderSegmented = pxModel->IndexBuffer.SegmentListSize > 1;
+        const PXBool renderSegmented = pxModel->IndexBuffer.SegmentListAmount > 1;
 
         if (renderSegmented)
         {
             PXSize renderOffset = 0;
 
-            for (size_t i = 0; i < pxModel->IndexBuffer.SegmentListSize; i++)
+            for (size_t i = 0; i < pxModel->IndexBuffer.SegmentListAmount; i++)
             {
                 PXIndexSegment* const pxIndexSegment = &pxModel->IndexBuffer.SegmentList[i];
                 PXTexture2D* pxTexture = PXNull;// pxIndexSegment->Material->DiffuseTexture;
@@ -6124,15 +6124,15 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
 
     // Additional textures
     {
-        for (PXSize containerID = 0; containerID < pxModel->MaterialContaierListSize; ++containerID)
+        for (PXSize containerID = 0; containerID < pxModel->MaterialContaierListAmount; ++containerID)
         {
             PXMaterialContainer* const pxMaterialContainer = &pxModel->MaterialContaierList[containerID];
 
             PXSize pxTextureListCounter = 0;
             PXTexture2D** pxTextureList = PXNull;
-            PXNewStackList(PXTexture2D*, pxMaterialContainer->MaterialListSize, &pxTextureList, PXNull);
+            PXNewStackList(PXTexture2D*, pxMaterialContainer->MaterialListAmount, &pxTextureList, PXNull);
 
-            for (PXSize materialID = 0; materialID < pxMaterialContainer->MaterialListSize; ++materialID)
+            for (PXSize materialID = 0; materialID < pxMaterialContainer->MaterialListAmount; ++materialID)
             {
                 PXMaterial* const pxMaterial = &pxMaterialContainer->MaterialList[materialID];
 
@@ -6153,7 +6153,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
 
             PXOpenGLTextureAction(pxOpenGL, &pxGraphicTexturInfo);
 
-            PXDeleteStackList(PXTexture2D*, pxMaterialContainer->MaterialListSize, &pxTextureList, PXNull);
+            PXDeleteStackList(PXTexture2D*, pxMaterialContainer->MaterialListAmount, &pxTextureList, PXNull);
         }
     }
 

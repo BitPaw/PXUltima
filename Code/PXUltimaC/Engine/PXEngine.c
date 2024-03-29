@@ -218,7 +218,7 @@ void PXAPI PXEngineWindowEvent(PXEngine* const pxEngine, PXWindowEvent* const px
 
 #endif
 
-           // PXFunctionInvoke(pxWindow->MouseClickCallBack, pxWindow->EventReceiver, pxWindow, mouseButton, buttonState);
+            PXFunctionInvoke(pxEngine->OnUserUpdate, pxEngine->Owner, pxEngine, PXNull);
 
             break;
         }
@@ -277,7 +277,7 @@ void PXAPI PXEngineWindowEvent(PXEngine* const pxEngine, PXWindowEvent* const px
                 mouse->Delta[1] = 0;
             }
 
-            //PXFunctionInvoke(window->MouseMoveCallBack, window->EventReceiver, window, mouse);
+            PXFunctionInvoke(pxEngine->OnUserUpdate, pxEngine->Owner, pxEngine, PXNull);
 
             break;
         }
@@ -569,7 +569,7 @@ void PXAPI PXEngineWindowEvent(PXEngine* const pxEngine, PXWindowEvent* const px
                 }
             }
 
-            //PXFunctionInvoke(window->KeyBoardKeyCallBack, window->EventReceiver, window, keyBoardKeyInfo);
+            PXFunctionInvoke(pxEngine->OnUserUpdate, pxEngine->Owner, pxEngine, PXNull);
 
             break;
         }
@@ -600,19 +600,69 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
         if(!isRunningASYNC)
         {
             PXWindowUpdate(pxEngine->Window);
+
+            PXControllerSystemDevicesDataUpdate(&pxEngine->ControllerSystem);
         }
     }
 
     // User input
     {
-        PXWindow* pxWindow = &pxEngine->Window;
+        PXUIElement* pxWindow = pxEngine->Window;
         PXKeyBoard* keyboard = &pxEngine->KeyBoardCurrentInput;
         PXMouse* mouse = &pxEngine->MouseCurrentInput;
 
-        pxEngine->CounterTimeUser = PXTimeCounterStampGet();
+        pxEngine->CounterTimeUser = PXTimeCounterStampGet();       
+
 
         PXPlayerMoveInfo pxPlayerMoveInfo;    
         PXClear(PXPlayerMoveInfo, &pxPlayerMoveInfo);
+
+
+        // Solve controller
+        PXController* const pxController = &pxEngine->ControllerSystem.DeviceListData[0];
+
+        pxEngine->CameraCurrent->WalkSpeed = 1;
+        pxEngine->CameraCurrent->ViewSpeed = 1;
+
+        PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, pxController->AxisNormalised[0] * pxEngine->CameraCurrent->WalkSpeed, 0, -pxController->AxisNormalised[1] * pxEngine->CameraCurrent->WalkSpeed);
+        PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementView, -pxController->AxisNormalised[2] * pxEngine->CameraCurrent->ViewSpeed, pxController->AxisNormalised[3] * pxEngine->CameraCurrent->ViewSpeed, 0);
+
+
+        // Up
+        if(pxController->ButtonPressedBitList & PXControllerButton1) { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, -1, 0); }
+
+        // Down
+        if(pxController->ButtonPressedBitList & PXControllerButton2) { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, 1, 0); }
+
+        // Update
+        if(pxController->ButtonPressedBitList & PXControllerButton3)
+        {
+            PXLogPrint
+            (
+                PXLoggingWarning,
+                "PX",
+                "Update",
+                "Triggerd by user input"
+            );
+
+
+            pxEngine->UpdateUI = 1;
+        }
+
+
+
+        PXCameraMove(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementWalk);
+        PXCameraRotate(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementView);
+        PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->CounterTimeDelta);
+
+        PXControllerSystemDebugPrint(pxController);
+
+
+
+
+
+        //---------------------------------------------------------------------------
+
 
         if (keyboard->Commands & KeyBoardIDShiftLeft)   { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk,  0, -1,  0); }
         if (keyboard->Letters & KeyBoardIDLetterW)      { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk,  0,  0,  1); }
@@ -662,7 +712,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
 
 
         // Extended windows resize check
-        if(pxWindow->HasSizeChanged)
+        if(pxEngine->UpdateUI)
         {
             PXWindowSizeInfo pxWindowSizeInfo;
 
@@ -676,7 +726,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
             pxViewPort.ClippingMinimum = 0;
             pxViewPort.ClippingMaximum = 1;
 
-            pxWindow->HasSizeChanged = PXFalse;
+            pxEngine->UpdateUI = PXFalse;
 
             PXFunctionInvoke(pxEngine->Graphic.ViewPortSet, pxEngine->Graphic.EventOwner, &pxViewPort);
 
@@ -684,6 +734,8 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
             {
                 PXCameraAspectRatioChange(pxEngine->CameraCurrent, pxWindowSizeInfo.Width, pxWindowSizeInfo.Height);
             }   
+
+            PXGUIElementhSizeRefresAll(&pxEngine->GUISystem);
         }
     }
 
@@ -816,7 +868,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
     ++(pxEngine->CounterTimeCPU);
     ++(pxEngine->CounterTimeGPU);
 
-    Sleep(20);
+    //Sleep(20);
 
     PXThreadYieldToOtherThreads();
 
@@ -1204,6 +1256,22 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
 
 
     //-----------------------------------------------------
+    //
+    //-----------------------------------------------------
+    if(pxEngineStartInfo->UseMouseInput)
+    {
+        PXWindowUpdate(pxEngine->Window);
+
+        PXWindowMouseMovementEnable(pxEngine->Window->ID);
+
+        PXControllerSystemInitilize(&pxEngine->ControllerSystem);
+        PXControllerSystemDevicesListRefresh(&pxEngine->ControllerSystem);
+    }
+    //-----------------------------------------------------
+
+
+
+    //-----------------------------------------------------
     // Create graphic instance
     //-----------------------------------------------------
     if(pxEngineStartInfo->Mode != PXGraphicInitializeModeOSGUI) // if we have GDI, we init this later
@@ -1361,7 +1429,7 @@ void PXAPI PXEngineStop(PXEngine* const pxEngine)
     PXFunctionInvoke(pxEngine->OnShutDown, pxEngine->Owner, pxEngine);
 
     PXGraphicRelease(&pxEngine->Graphic);
-    PXWindowDestruct(&pxEngine->Window);
+    //PXWindowDestruct(&pxEngine->Window);
 }
 
 
@@ -1682,6 +1750,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
 
             // Register
             pxEngine->Graphic.ModelRegister(pxEngine->Graphic.EventOwner, pxModel);
+            pxModel->Enabled = 1;
 
             break;
         }
@@ -2959,7 +3028,7 @@ void PXAPI PXEngineCollsisionSolve(PXEngine* const pxEngine)
 
 PXActionResult PXAPI PXEngineSpriteTextureSet(PXEngine* const pxEngine, PXSprite* const pxSprite, PXTexture2D* const pxTexture2D)
 {
-    if (pxSprite->Model.IndexBuffer.SegmentListSize > 0)
+    if (pxSprite->Model.IndexBuffer.SegmentListAmount > 0)
     {
         PXMaterial* materiial = pxSprite->Model.IndexBuffer.SegmentPrime.Material;
 
@@ -2972,7 +3041,7 @@ PXActionResult PXAPI PXEngineSpriteTextureSet(PXEngine* const pxEngine, PXSprite
 
         materiial->DiffuseTexture = pxSprite->Texture;
 
-        pxSprite->Model.IndexBuffer.SegmentListSize = 1;
+        pxSprite->Model.IndexBuffer.SegmentListAmount = 1;
         pxSprite->Model.IndexBuffer.SegmentPrime.Material = materiial;
     }
 

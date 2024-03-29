@@ -611,7 +611,7 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
         "Event",
         "ID:%4i, Parent (0x%p), Sender (0x%p)",
         eventID,
-        windowsID,
+        windowID,
         pxWindowEvent.UIElementReference
     );
 #endif
@@ -937,6 +937,19 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
         }
         case WM_INPUT:
         {
+#if 1
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "Windows",
+                "Event",
+                "ID:%4i, Parent (0x%p), Sender (0x%p)",
+                eventID,
+                windowID,
+                pxWindowEvent.UIElementReference
+            );
+#endif
+
             // MISSING
             const PXSize inputCode = GET_RAWINPUT_CODE_WPARAM(wParam);
             const HRAWINPUT handle = (HRAWINPUT)lParam;
@@ -958,7 +971,7 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
                         &rawInputSize,
                         sizeof(RAWINPUTHEADER)
                     );
-                    const PXBool sucessful = result != -1;
+                    const PXBool sucessful = result == 0;
 
                     if(sucessful)
                     {
@@ -1389,16 +1402,15 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
 }
 #endif
 
-PXThreadResult PXOSAPI PXWindowMessageLoop(PXWindow* const pxWindow)
+PXThreadResult PXOSAPI PXWindowMessageLoop(PXUIElement* const pxUIElement)
 {
-    if (pxWindow->MessageThread.ThreadHandle != 0)
+#if 0
+    while(pxUIElement->IsRunning)
     {
-        while (pxWindow->IsRunning)
-        {
-            PXWindowUpdate(pxWindow);
-            PXThreadYieldToOtherThreads();
-        }
+        PXWindowUpdate(pxWindow);
+        PXThreadYieldToOtherThreads();
     }
+#endif
 
     return PXActionSuccessful;
 }
@@ -2707,34 +2719,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
 
             // ShowWindow(pxWindow->ID, SW_NORMAL)
 
-            if(pxGUIElementCreateWindowInfo->RegisterMouse)
-            {
-
-#if PXOSWindowsDestop && WindowsAtleastXP
-                // Register input device
-                {
-                    // We're configuring just one RAWINPUTDEVICE, the mouse, so it's a single-element array (a pointer).
-                    RAWINPUTDEVICE rid;
-
-                    rid.usUsagePage = 0x01;//HID_USAGE_PAGE_GENERIC;
-                    rid.usUsage = 0x02;// HID_USAGE_GENERIC_MOUSE;
-                    rid.dwFlags = RIDEV_INPUTSINK | RIDEV_DEVNOTIFY;
-                    rid.hwndTarget = pxUIElement->ID;
-
-                    const PXBool result = RegisterRawInputDevices(&rid, 1, sizeof(RAWINPUTDEVICE)); // Windows XP, User32.dll, winuser.h
-
-                    if(!result)
-                    {
-                        //printf("Err\n");
-
-                        // TODO: Handle error
-
-                    }
-
-                    // RegisterRawInputDevices should not be used from a library, as it may interfere with any raw input processing logic already present in applications that load it.
-                }
-#endif
-            }
+          
 
 
 #if 0
@@ -2914,14 +2899,14 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
             PXWindowSizeInfo pxWindowSizeInfo;
             PXWindowID pxWindowID = pxUIElement->Parent ? pxUIElement->Parent->ID : PXNull;
 
-            PXWindowSizeGet(pxWindowID, &pxWindowSizeInfo);
+            PXWindowSizeGet(PXNull, &pxWindowSizeInfo); // TODO: Problematic
 
             pxUIElementPositionCalulcateInfo.WindowWidth = pxWindowSizeInfo.Width;
             pxUIElementPositionCalulcateInfo.WindowHeight = pxWindowSizeInfo.Height;
 
             PXUIElementPositionCalculcate(pxUIElement, &pxUIElementPositionCalulcateInfo);
 
-#if 0
+#if 1
             const PXBool success = MoveWindow
             (
                 pxUIElement->ID,
@@ -3015,9 +3000,40 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
     return PXActionSuccessful;
 }
 
-void PXAPI PXGUIElementhSizeRefresAll(PXGUISystem* const pxGUISystem, const PXUIElement* pxUIElement)
+PXActionResult PXAPI PXGUIElementRelease(PXUIElement* const pxUIElement)
 {
-    if(!(pxGUISystem && pxUIElement))
+#if 0
+
+#if OSUnix
+    glXMakeCurrent(window->DisplayCurrent, None, NULL);
+    //    glXDestroyContext(DisplayCurrent, PXOpenGLConextID);
+    XDestroyWindow(window->DisplayCurrent, window->ID);
+    XCloseDisplay(window->DisplayCurrent);
+
+    window->ID = PXNull;
+
+#elif PXOSWindowsDestop
+
+    // Minimizes but does not destroy the specified window.
+    CloseWindow(window->ID); // Windows 2000, User32.dll, winuser.h
+
+    // Finally destroy the window
+    DestroyWindow(window->ID); // Windows 2000, User32.dll, winuser.h
+
+    window->ID = PXNull;
+
+#else
+    return; // Not supported on this OS
+#endif
+
+#endif
+
+    return PXActionSuccessful;
+}
+
+void PXAPI PXGUIElementhSizeRefresAll(PXGUISystem* const pxGUISystem)
+{
+    if(!(pxGUISystem))
     {
         return;
     }
@@ -3039,7 +3055,7 @@ void PXAPI PXGUIElementhSizeRefresAll(PXGUISystem* const pxGUISystem, const PXUI
         PXGUIElementUpdateInfo pxGUIElementUpdateInfo;
         PXClear(PXGUIElementUpdateInfo, &pxGUIElementUpdateInfo);
         pxGUIElementUpdateInfo.UIElement = uiElement;
-        pxGUIElementUpdateInfo.WindowReference = pxUIElement;
+        pxGUIElementUpdateInfo.WindowReference = uiElement;
         pxGUIElementUpdateInfo.Property = PXUIElementPropertySize;
 
         PXGUIElementUpdate(pxGUISystem, &pxGUIElementUpdateInfo, 1);
@@ -3228,31 +3244,6 @@ void PXAPI PXWindowUpdate(PXUIElement* const pxUIElement)
 
 }
 
-void PXAPI PXWindowDestruct(PXWindow* const window)
-{
-#if OSUnix
-    glXMakeCurrent(window->DisplayCurrent, None, NULL);
-    //    glXDestroyContext(DisplayCurrent, PXOpenGLConextID);
-    XDestroyWindow(window->DisplayCurrent, window->ID);
-    XCloseDisplay(window->DisplayCurrent);
-
-    window->ID = PXNull;
-
-#elif PXOSWindowsDestop
-
-    // Minimizes but does not destroy the specified window.
-    CloseWindow(window->ID); // Windows 2000, User32.dll, winuser.h
-
-    // Finally destroy the window
-    DestroyWindow(window->ID); // Windows 2000, User32.dll, winuser.h
-
-    window->ID = PXNull;
-
-#else
-    return; // Not supported on this OS
-#endif
-}
-
 PXProcessThreadID PXAPI PXWindowThreadProcessID(const PXWindowID windowID)
 {
 #if OSUnix
@@ -3262,98 +3253,6 @@ PXProcessThreadID PXAPI PXWindowThreadProcessID(const PXWindowID windowID)
 #else
     return -1;
 #endif
-}
-
-PXBool PXAPI PXWindowTitleSet(PXWindow* const window, const PXText* const title)
-{
-    // PXTextCopy(title, &window->Title); Useless?
-
-    switch (title->Format)
-    {
-        case TextFormatASCII:
-        case TextFormatUTF8:
-        {
-#if OSUnix
-            return 0;
-#elif PXOSWindowsDestop
-            const PXBool success = SetWindowTextA(window->ID, title->TextA); // Windows 2000, User32.dll, winuser.h
-
-            // could get extended error
-
-            return success;
-#else
-            return PXFalse; // Not supported by OS
-#endif
-        }
-        case TextFormatUNICODE:
-        {
-#if OSUnix
-            return 0;
-#elif PXOSWindowsDestop
-
-            const PXBool success = SetWindowTextW(window->ID, title->TextW); // Windows 2000, User32.dll, winuser.h
-
-            // could get extended error
-
-            return success;
-#else
-            return PXFalse; // Not supported by OS
-#endif
-        }
-    }
-
-    return PXNull;
-}
-
-PXSize PXAPI PXWindowTitleGet(const PXWindow* const window, PXText* const title)
-{
-    switch (title->Format)
-    {
-        case TextFormatASCII:
-        case TextFormatUTF8:
-        {
-#if OSUnix
-            return 0;
-#elif PXOSWindowsDestop
-            const int result = GetWindowTextA(window->ID, title->TextA, title->SizeAllocated); // Windows 2000, User32.dll, winuser.h
-            const PXBool success = result > 0;
-
-            title->SizeUsed = 0;
-
-            // could get extended error
-            if (success)
-            {
-                title->SizeUsed = result;
-            }
-
-            return result;
-#else
-            return PXFalse; // Not supported by OS
-#endif
-        }
-        case TextFormatUNICODE:
-        {
-#if OSUnix
-            return 0;
-#elif PXOSWindowsDestop
-            const int result = GetWindowTextW(window->ID, title->TextW, title->SizeAllocated); // Windows 2000, User32.dll, winuser.h
-            const PXBool success = result > 0;
-
-            title->SizeUsed = 0;
-
-            if (success)
-            {
-                title->SizeUsed = result;
-            }
-
-            return result;
-#else
-            return PXFalse; // Not supported by OS
-#endif
-        }
-        }
-
-    return PXNull;
 }
 
 PXWindowID PXAPI PXWindowFindViaTitle(const PXText* const windowTitle)
@@ -3452,6 +3351,66 @@ PXActionResult PXAPI PXWindowTitleBarColorSet(const PXWindowID pxWindowID)
 #endif
 }
 
+PXActionResult PXAPI PXWindowMouseMovementEnable(const PXWindowID pxWindow)
+{
+#if OSUnix
+    return PXActionRefusedNotImplemented;
+
+#elif OSWindows
+#if PXOSWindowsDestop && WindowsAtleastXP
+    RAWINPUTDEVICE rawInputDeviceList[2];
+    rawInputDeviceList[0].usUsagePage = 0x01;//HID_USAGE_PAGE_GENERIC;
+    rawInputDeviceList[0].usUsage = 0x03;// HID_USAGE_GENERIC_MOUSE;
+    rawInputDeviceList[0].dwFlags = RIDEV_INPUTSINK | RIDEV_DEVNOTIFY;
+    rawInputDeviceList[0].hwndTarget = pxWindow;
+
+    rawInputDeviceList[1].usUsagePage = 0x01;//HID_USAGE_PAGE_GENERIC;
+    rawInputDeviceList[1].usUsage = 0x02;// HID_USAGE_GENERIC_MOUSE;
+    rawInputDeviceList[1].dwFlags = RIDEV_INPUTSINK | RIDEV_DEVNOTIFY;
+    rawInputDeviceList[1].hwndTarget = pxWindow;
+
+    // WARNING
+    // RegisterRawInputDevices should not be used from a library!
+    // As it may interfere with any raw input processing logic already present in applications that load it.
+    const PXBool regsiterResultID = RegisterRawInputDevices(rawInputDeviceList, 2, sizeof(RAWINPUTDEVICE)); // Windows XP, User32.dll, winuser.h
+
+    if(!regsiterResultID)
+    {
+        const PXActionResult regsiterResult = PXErrorCurrent();
+
+        PXLogPrint
+        (
+            PXLoggingError,
+            "GUI",
+            "Input-Mouse",
+            "Failed to registerd device for <0x%p>",
+            pxWindow
+        );
+
+
+        return regsiterResult;
+    }
+
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "GUI", 
+        "Input-Mouse", 
+        "Registerd device for <0x%p>",
+        pxWindow
+    );
+
+    return PXActionSuccessful;
+
+#else
+    return PXActionRefusedNotSupported;
+#endif
+
+    return PXActionRefusedNotSupported;;
+    
+#endif
+}
+
 void PXAPI PXWindowSizeChange(PXWindow* const pxWindow, const PXInt32S x, const PXInt32S y, const PXInt32S width, const PXInt32S height)
 {
 
@@ -3524,7 +3483,7 @@ PXActionResult PXAPI PXWindowSizeSet(const PXWindowID pxWindow, PXWindowSizeInfo
 #endif
 }
 
-PXActionResult PXAPI PXWindowPosition(PXWindow* window, PXInt32S* x, PXInt32S* y)
+PXActionResult PXAPI PXWindowPosition(const PXWindowID pxWindowID, PXInt32S* x, PXInt32S* y)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -3533,7 +3492,7 @@ PXActionResult PXAPI PXWindowPosition(PXWindow* window, PXInt32S* x, PXInt32S* y
     RECT rectangle;
     //const PXBool success = GetWindowRect(window->ID, &rectangle); // Windows 2000, User32.dll, winuser.h
 
-    const PXBool success = GetWindowRect(window->ID, &rectangle);
+    const PXBool success = GetWindowRect(pxWindowID, &rectangle);
 
     if (!success)
     {
@@ -3583,7 +3542,7 @@ void PXAPI PXWindowCursorTexture()
 {
 }
 
-void PXAPI PXWindowCursorCaptureMode(PXWindow* window, const PXWindowCursorMode cursorMode)
+void PXAPI PXWindowCursorCaptureMode(const PXWindowID pxWindowID, const PXWindowCursorMode cursorMode)
 {
     PXInt32S horizontal = 0;
     PXInt32S vertical = 0;
@@ -3602,7 +3561,7 @@ void PXAPI PXWindowCursorCaptureMode(PXWindow* window, const PXWindowCursorMode 
             while(ShowCursor(1) < 0);
 
             const PXBool clipResult = ClipCursor(NULL);
-            const HCURSOR cursorSet = SetCursor(window->CursorID);
+            const HCURSOR cursorSet = SetCursor(pxWindowID);
 
             break;
         }
@@ -3613,9 +3572,9 @@ void PXAPI PXWindowCursorCaptureMode(PXWindow* window, const PXWindowCursorMode 
             // Capture cursor
             {
                 RECT clipRect;
-                GetClientRect(window->ID, &clipRect);
-                ClientToScreen(window->ID, (POINT*)&clipRect.left);
-                ClientToScreen(window->ID, (POINT*)&clipRect.right);
+                GetClientRect(pxWindowID, &clipRect);
+                ClientToScreen(pxWindowID, (POINT*)&clipRect.left);
+                ClientToScreen(pxWindowID, (POINT*)&clipRect.right);
                 ClipCursor(&clipRect);
             }
 
@@ -3629,9 +3588,9 @@ void PXAPI PXWindowCursorCaptureMode(PXWindow* window, const PXWindowCursorMode 
 
             {
                 RECT clipRect;
-                GetClientRect(window->ID, &clipRect);
-                ClientToScreen(window->ID, (POINT*)&clipRect.left);
-                ClientToScreen(window->ID, (POINT*)&clipRect.right);
+                GetClientRect(pxWindowID, &clipRect);
+                ClientToScreen(pxWindowID, (POINT*)&clipRect.left);
+                ClientToScreen(pxWindowID, (POINT*)&clipRect.right);
 
                 int xOff = (clipRect.right - clipRect.left) / 2;
                 int yoFf = (clipRect.bottom - clipRect.top) / 2;
@@ -3661,11 +3620,11 @@ void PXAPI PXWindowCursorCaptureMode(PXWindow* window, const PXWindowCursorMode 
         }
     }
 
-    window->CursorModeCurrent = cursorMode;
+    //window->CursorModeCurrent = cursorMode;
 #endif
 }
 
-PXBool PXAPI PXWindowFrameBufferSwap(const PXWindow* const window)
+PXBool PXAPI PXWindowFrameBufferSwap(const PXWindowID pxWindowID)
 {
 #if OSUnix
     glXSwapBuffers(window->DisplayCurrent, window->ID);
@@ -3673,7 +3632,7 @@ PXBool PXAPI PXWindowFrameBufferSwap(const PXWindow* const window)
 
 #elif OSWindows
 
-   const PXBool result = SwapBuffers(window->HandleDeviceContext);
+    const PXBool result = 0;// SwapBuffers(window->HandleDeviceContext);
 
    return result;
 
@@ -3682,8 +3641,9 @@ PXBool PXAPI PXWindowFrameBufferSwap(const PXWindow* const window)
 #endif
 }
 
-PXBool PXAPI PXWindowInteractable(PXWindow* window)
+PXBool PXAPI PXWindowInteractable(const PXWindowID pxWindowID)
 {
+#if 0
     switch (window->CursorModeCurrent)
     {
         default:
@@ -3696,6 +3656,7 @@ PXBool PXAPI PXWindowInteractable(PXWindow* window)
         case PXWindowCursorLockAndHide:
             return PXTrue;
     }
+#endif
 }
 
 PXBool PXAPI PXWindowCursorPositionInWindowGet(const PXWindowID pxWindowID, PXInt32S* const x, PXInt32S* const y)
@@ -3814,13 +3775,13 @@ PXBool PXAPI PXWindowCursorPositionInDestopGet(const PXWindowID pxWindowID, PXIn
 #endif
 }
 
-PXBool PXAPI PXWindowIsInFocus(const PXWindow* const pxWindow)
+PXBool PXAPI PXWindowIsInFocus(const PXWindowID pxWindowID)
 {
 #if OSUnix
     return PXFalse;
 #elif PXOSWindowsDestop
     const HWND windowIDInFocus = GetForegroundWindow(); // Windows 2000, User32.dll,
-    const PXBool isInFocus = pxWindow->ID == windowIDInFocus;
+    const PXBool isInFocus = pxWindowID == windowIDInFocus;
 
     return isInFocus;
 #endif

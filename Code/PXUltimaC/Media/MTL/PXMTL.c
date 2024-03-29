@@ -106,7 +106,9 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXMaterialContainer* const pxMaterialList
 
 	// Allcoate
 	{
-		PXNewList(PXMaterial, materialAmount, &pxMaterialList->MaterialList, &pxMaterialList->MaterialListSize);
+		pxMaterialList->MaterialListAmount = materialAmount;
+
+		PXNewListZerod(PXMaterial, materialAmount, &pxMaterialList->MaterialList, PXNull);
 
 		materialAmount = 0;
 	}

@@ -1,12 +1,13 @@
 #ifndef PXEngineInclude
 #define PXEngineInclude
 
+#include <Engine/PXMod.h>
 #include <Media/PXResource.h>
 #include <Math/PXMath.h>
 #include <OS/Signal/PXSignal.h>
 #include <OS/Window/PXWindow.h>
 #include <OS/Audio/PXAudio.h>
-#include <Engine/PXMod.h>
+#include <OS/Hardware/PXController.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -402,6 +403,7 @@ extern "C"
 		PXModLoader ModLoader;
 		PXCamera CameraDefault;
 		PXAudio Audio;
+		PXControllerSystem ControllerSystem;
 
 		PXKeyBoard KeyBoardCurrentInput;
 		PXMouse MouseCurrentInput;
@@ -436,6 +438,7 @@ extern "C"
 		PXInt32U FrameTime;
 
 		PXBool IsRunning;
+		PXBool UpdateUI;
 
 		// Register List
 		PXInt32U UniqeIDGeneratorCounter;

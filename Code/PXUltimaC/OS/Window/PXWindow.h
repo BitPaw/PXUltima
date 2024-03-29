@@ -379,29 +379,6 @@ extern "C"
 	PXKeyBoardKeyInfo;
 
 
-	typedef struct PXWindow_
-	{
-		volatile PXBool IsRunning;
-		PXWindowID ID;
-
-		// Live data
-		PXBool HasSizeChanged;
-		PXWindowCursorMode CursorModeCurrent;
-	
-
-#if OSUnix
-		Display* DisplayCurrent;
-		PXWindowID WindowRoot;
-#elif OSWindows
-		HCURSOR CursorID;
-		HDC HandleDeviceContext;
-#endif
-
-		// Interneal
-		PXThread MessageThread;
-	}
-	PXWindow;
-
 
 	
 
@@ -648,8 +625,6 @@ extern "C"
 		PXBool IsVisible;
 		PXBool CreateMessageThread; // Run events in another thread
 		PXBool MaximizeOnStart;
-
-		PXBool RegisterMouse;
 	}
 	PXGUIElementCreateWindowInfo;
 
@@ -772,21 +747,25 @@ extern "C"
 	PXPublic PXActionResult PXAPI PXGUISystemRelease(PXGUISystem* const pxGUISystem);
 
 
-	PXPrivate void PXAPI PXWindowEventConsumer(PXGUISystem* const pxGUISystem, PXWindowEvent* const pxWindowEvent);
+	PXPublic void PXAPI PXWindowEventConsumer(PXGUISystem* const pxGUISystem, PXWindowEvent* const pxWindowEvent);
 
 #if OSUnix
 	PXPrivate void PXWindowEventHandler(PXWindow* const pxWindow, const XEvent* const xEvent);
 #elif PXOSWindowsDestop
-	PXPrivate LRESULT CALLBACK PXWindowEventHandler(const HWND PXWindowsID, const UINT eventID, const WPARAM wParam, const LPARAM lParam);
+	PXPublic LRESULT CALLBACK PXWindowEventHandler(const HWND PXWindowsID, const UINT eventID, const WPARAM wParam, const LPARAM lParam);
 #endif
 
 
-	PXPrivate PXThreadResult PXOSAPI PXWindowMessageLoop(PXWindow* const pxWindow);
+	PXPublic PXThreadResult PXOSAPI PXWindowMessageLoop(PXUIElement* const pxUIElement);
 
 
 	PXPublic PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIElementCreateInfo* const pxGUIElementCreateInfo, const PXSize amount);
 	PXPublic PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIElementUpdateInfo* const pxGUIElementUpdateInfo, const PXSize amount);
-	PXPublic void PXAPI PXGUIElementhSizeRefresAll(PXGUISystem* const pxGUISystem, const PXUIElement* pxUIElement);
+	
+	PXPublic PXActionResult PXAPI PXGUIElementRelease(PXUIElement* const pxUIElement);
+
+
+	PXPublic void PXAPI PXGUIElementhSizeRefresAll(PXGUISystem* const pxGUISystem);
 
 
 
@@ -795,13 +774,8 @@ extern "C"
 
 	PXPublic void PXAPI PXWindowUpdate(PXUIElement* const pxUIElement);
 
-	PXPublic void PXAPI PXWindowDestruct(PXWindow* const window);
-
 
 	PXPublic PXProcessThreadID PXAPI PXWindowThreadProcessID(const PXWindowID windowID);
-
-	PXPublic PXBool PXAPI PXWindowTitleSet(PXWindow* const window, const PXText* const title);
-	PXPublic PXSize PXAPI PXWindowTitleGet(const PXWindow* const window, PXText* const title);
 
 	PXPublic PXWindowID PXAPI PXWindowFindViaTitle(const PXText* const windowTitle);
 
@@ -814,29 +788,30 @@ extern "C"
 	PXPublic PXActionResult PXAPI PXWindowTitleBarColorSet(const PXWindowID pxWindowID);
 
 
+	PXPublic PXActionResult PXAPI PXWindowMouseMovementEnable(const PXWindowID pxWindow);
 
 
-	PXPublic PXActionResult PXAPI PXWindowSizeGet(const PXWindowID pxWindow, PXWindowSizeInfo* const pxWindowSizeInfo);
-	PXPublic PXActionResult PXAPI PXWindowSizeSet(const PXWindowID pxWindow, PXWindowSizeInfo* const pxWindowSizeInfo);
-	PXPublic PXActionResult PXAPI PXWindowPosition(PXWindow* const pxWindow, PXInt32S* x, PXInt32S* y);
+	PXPublic PXActionResult PXAPI PXWindowSizeGet(const PXWindowID pxWindowID, PXWindowSizeInfo* const pxWindowSizeInfo);
+	PXPublic PXActionResult PXAPI PXWindowSizeSet(const PXWindowID pxWindowID, PXWindowSizeInfo* const pxWindowSizeInfo);
+	PXPublic PXActionResult PXAPI PXWindowPosition(const PXWindowID pxWindowID, PXInt32S* x, PXInt32S* y);
 	PXPublic PXActionResult PXAPI PXWindowMove(PXWindow* const pxWindow, const PXInt32S x, const PXInt32S y);
 	PXPublic void PXAPI PXWindowPositonCenterScreen(PXWindow* const pxWindow);
 	PXPublic void PXAPI PXWindowCursor(PXWindow* const pxWindow);
 	//voidPXWindowCursor(const CursorIcon cursorIcon);
 	PXPublic void PXAPI PXWindowCursorTexture();
-	PXPublic void PXAPI PXWindowCursorCaptureMode(PXWindow* const pxWindow, const PXWindowCursorMode cursorMode);
+	PXPublic void PXAPI PXWindowCursorCaptureMode(const PXWindowID pxWindowID, const PXWindowCursorMode cursorMode);
 	//voidPXWindowScreenShotTake(Image image);
 
-	PXPublic PXBool PXAPI PXWindowFrameBufferSwap(const PXWindow* const pxWindow);
+	PXPublic PXBool PXAPI PXWindowFrameBufferSwap(const PXWindowID pxWindowID);
 
-	PXPublic PXBool PXAPI PXWindowInteractable(PXWindow* const pxWindow);
+	PXPublic PXBool PXAPI PXWindowInteractable(const PXWindowID pxWindowID);
 
 	PXPublic PXBool PXAPI PXWindowCursorPositionInWindowGet(const PXWindowID pxWindowID, PXInt32S* const x, PXInt32S* const y);
 	PXPublic PXBool PXAPI PXWindowCursorPositionInDestopGet(const PXWindowID pxWindowID, PXInt32S* const x, PXInt32S* const y);
 
 
 	// Checks if the current window is the one in focus.
-	PXPublic PXBool PXAPI PXWindowIsInFocus(const PXWindow* const window);
+	PXPublic PXBool PXAPI PXWindowIsInFocus(const PXWindowID pxWindowID);
 
 
 	PXPrivate PXInt32U PXAPI PXWindowCursorIconToID(const PXCursorIcon cursorIcon);

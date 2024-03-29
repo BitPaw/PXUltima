@@ -496,10 +496,12 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
 
         pxModel->VertexBuffer.VertexDataRowSize = PXVertexBufferFormatStrideSize(pxModel->VertexBuffer.Format);
 
-        const PXSize amountOfVertexElemets = pxModel->VertexBuffer.VertexDataRowSize * counterIndex;
-        
-        PXNewList(float, amountOfVertexElemets, &pxModel->VertexBuffer.VertexData, &pxModel->VertexBuffer.VertexDataSize);
-        PXNewList(PXIndexSegment, materialUseIndex, &pxModel->IndexBuffer.SegmentList, &pxModel->IndexBuffer.SegmentListSize);
+        pxModel->VertexBuffer.VertexDataAmount = pxModel->VertexBuffer.VertexDataRowSize * counterIndex;
+        pxModel->IndexBuffer.SegmentListAmount = materialUseIndex;
+
+        PXNewListZerod(float, pxModel->VertexBuffer.VertexDataAmount, &pxModel->VertexBuffer.VertexData, &pxModel->VertexBuffer.VertexDataSize);
+        PXNewListZerod(PXIndexSegment, materialUseIndex, &pxModel->IndexBuffer.SegmentList, &pxModel->IndexBuffer.SegmentListSize);
+
 
         materialUseIndex = 0;
 
@@ -521,7 +523,8 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
         pxModel->IndexBuffer.IndexDataSize = 0;
 #endif
 
-        PXNewList(PXMaterialContainer, materialInlcudeIndex, &pxModel->MaterialContaierList, &pxModel->MaterialContaierListSize);
+        pxModel->MaterialContaierListAmount = materialInlcudeIndex;
+        PXNewListZerod(PXMaterialContainer, materialInlcudeIndex, &pxModel->MaterialContaierList, PXNull);
 
 
          // Reset all size values
@@ -619,7 +622,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
                     }
                     case PXWavefrontLineMaterialLibraryUse:
                     {
-                        PXIndexSegment* const pxIndexSegmentLast = &pxModel->IndexBuffer.SegmentList[pxModel->IndexBuffer.SegmentListSize - 1];
+                        PXIndexSegment* const pxIndexSegmentLast = &pxModel->IndexBuffer.SegmentList[pxModel->IndexBuffer.SegmentListAmount - 1];
                         PXIndexSegment* const pxIndexSegmentCurrent = &pxModel->IndexBuffer.SegmentList[materialUseIndex];
                         PXSize offset = counterIndex - currentTotalOffset;
 

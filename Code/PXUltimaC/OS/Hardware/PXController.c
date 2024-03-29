@@ -1,6 +1,8 @@
 #include "PXController.h"
 
 #include <OS/System/PXOSVersion.h>
+#include <OS/Memory/PXMemory.h>
+#include <OS/Console/PXConsole.h>
 
 #if OSUnix
 
@@ -10,139 +12,194 @@
 #include <joystickapi.h> // Missing?? -> documentation says you should use "Dinput.h" but thats not correct.
 
 #pragma comment( lib, "winmm.lib" )
+
+
+typedef UINT(WINAPI* PXjoyGetNumDevs)(void);
+typedef MMRESULT(WINAPI* PXjoyGetDevCapsA)(_In_ UINT_PTR uJoyID, _Out_writes_bytes_(cbjc) LPJOYCAPSA pjc, _In_ UINT cbjc);
+typedef MMRESULT(WINAPI* PXjoyGetPosEx)(_In_ UINT uJoyID, _Out_ LPJOYINFOEX pji);
+
 #endif
 
-PXBool PXAPI PXControllerScanDevices(NewControllerDetectedCallback callback)
+void PXAPI PXControllerSystemInitilize(PXControllerSystem* const pxControllerSystem)
 {
-#if OSUnix
-#elif WindowsAtleastVista
-const PXSize amountOfJoySticksSupported = joyGetNumDevs();
-
-	for (PXSize i = 0; i < amountOfJoySticksSupported; i++)
+	// Library
 	{
-		const PXControllerID joyID = i;
-		JOYCAPSW pjc;
-		const PXSize size = sizeof(JOYCAPSW);
-		const MMRESULT devResult = joyGetDevCapsW(joyID, &pjc, size);
-		const PXBool succesful = devResult == JOYERR_NOERROR;
+		const PXActionResult loadLibResult = PXLibraryOpenA(&pxControllerSystem->InputLibrary, "WINMM.DLL");
 
-		if (succesful)
+		if(PXActionSuccessful != loadLibResult)
 		{
-			if (callback)
-			{
-				callback(joyID);
-			}
+			return PXActionLibraryNotFound;
 		}
-
-		/*
-		//JOYSTICKID1
-		switch (devResult)
-		{
-			case MMSYSERR_BADDEVICEID: // Windows 95 / 98 / Me : The specified joystick identifier is invalid.
-			{
-				printf("MMSYSERR_BADDEVICEID\n");
-				break;
-			}
-			case JOYERR_NOERROR:
-			{
-
-
-
-
-				printf("OK\n");
-
-				break;
-			}
-			case MMSYSERR_NODRIVER://The joystick driver is not present.
-			{
-				printf("No Driver\n");
-				break;
-			}
-			case MMSYSERR_INVALPARAM://An invalid parameter was passed.
-			{
-				printf("Invalid Paramerer\n");
-				break;
-			}
-			case JOYERR_PARMS: //Windows NT / 2000 / XP : The specified joystick identifier is invalid.
-			{
-				printf("JOYERR_PARMS\n");
-				break;
-			}
-			case JOYERR_UNPLUGGED: // The specified joystick is not connected to the system.
-			{
-				printf("JOYERR_UNPLUGGED\n");
-				break;
-			}
-
-			default:
-				break;
-		}*/
 	}
-	return amountOfJoySticksSupported > 0;
 
-#else
-	return PXFalse;
-#endif
+	// Fetch
+	{
+		PXLibraryFuntionEntry pxLibraryFuntionEntryList[] =
+		{
+			{ &pxControllerSystem->NumDevsGet, "joyGetNumDevs"},
+			{ &pxControllerSystem->DevCapsGetA,"joyGetDevCapsA"},
+			{ &pxControllerSystem->GetPosEx,"joyGetPosEx" }
+		};
+
+		const PXSize amount = sizeof(pxLibraryFuntionEntryList) / sizeof(PXLibraryFuntionEntry);
+
+		PXLibraryGetSymbolListA(&pxControllerSystem->InputLibrary, pxLibraryFuntionEntryList, amount);
+	}
 }
 
-PXBool PXAPI PXControllerDataGet(PXController* controller)
+PXActionResult PXAPI PXControllerSystemDevicesListRefresh(PXControllerSystem* const pxControllerSystem)
 {
+	// Get amount
+	{
+		PXjoyGetNumDevs pxjoyGetNumDevs = pxControllerSystem->NumDevsGet;
+
+		pxControllerSystem->DeviceListAmount = pxjoyGetNumDevs();
+	}
+
+	PXNewListZerod(PXController, pxControllerSystem->DeviceListAmount, &pxControllerSystem->DeviceListData, PXNull);
+
+	// Get devices
+	{
+		const PXjoyGetDevCapsA pxjoyGetDevCapsA = pxControllerSystem->DevCapsGetA;
+		
+		for(PXSize i = 0; i < pxControllerSystem->DeviceListAmount; i++)
+		{
+			PXController* const pxController = &pxControllerSystem->DeviceListData[i];
+
+			pxController->ID = i;
+			JOYCAPSA pjc;
+			const PXSize size = sizeof(JOYCAPSA);
+			const MMRESULT devResult = pxjoyGetDevCapsA(i, &pjc, size);
+			const PXBool succesful = devResult == JOYERR_NOERROR;
+
+			if(!succesful)
+			{
+				const PXActionResult devGetError = PXErrorCurrent();
+
+				return devGetError;
+			}
+
+			PXTextCopyA(pjc.szPname, MAXPNAMELEN, pxController->Name, PXControllerNameSize);
+
+			pxController->ButtonAmountInUse = pjc.wNumButtons;
+			pxController->AxesAmountInUse = pjc.wNumAxes;
+
+			pxController->AxisMax[PXControllerAxisX] = pjc.wXmax;
+			pxController->AxisMax[PXControllerAxisY] = pjc.wYmax;
+			pxController->AxisMax[PXControllerAxisZ] = pjc.wZmax;
+			pxController->AxisMax[PXControllerAxisR] = pjc.wRmax;
+			pxController->AxisMax[PXControllerAxisU] = pjc.wUmax;
+			pxController->AxisMax[PXControllerAxisV] = pjc.wVmax;
+
+			pxController->AxisMin[PXControllerAxisX] = pjc.wXmin;
+			pxController->AxisMin[PXControllerAxisY] = pjc.wYmin;
+			pxController->AxisMin[PXControllerAxisZ] = pjc.wZmin;
+			pxController->AxisMin[PXControllerAxisR] = pjc.wRmin;
+			pxController->AxisMin[PXControllerAxisU] = pjc.wUmin;
+			pxController->AxisMin[PXControllerAxisV] = pjc.wVmin;	
+		}
+	}
+
+	return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXControllerSystemDevicesDataUpdate(PXControllerSystem* const pxControllerSystem)
+{
+	for(PXSize i = 0; i < pxControllerSystem->DeviceListAmount; ++i)
+	{
+		PXController* const pxController = &pxControllerSystem->DeviceListData[i];
+
+
 #if OSUnix
-    return 0u;
+		return PXActionRefusedNotImplemented;
 
 #elif WindowsAtleastVista
+
+
+
 #if (Version_Windows_NT)
-	JOYINFOEX joystickInfo; // must set the 'dwSize' and 'dwFlags' or joyGetPosEx will fail.
+		JOYINFOEX joystickInfo; // must set the 'dwSize' and 'dwFlags' or joyGetPosEx will fail.
 
-	joystickInfo.dwSize = sizeof(JOYINFOEX);
-	joystickInfo.dwFlags = JOY_RETURNALL;
+		joystickInfo.dwSize = sizeof(JOYINFOEX);
+		joystickInfo.dwFlags = JOY_RETURNALL;
 
-	// For devices that have four to six axes of movement a point-of-view control,
-	// or more than four buttons, use the joyGetPosEx function. 'joyGetPos()'
-	const MMRESULT positionInfoResult = joyGetPosEx(controller->ID, &joystickInfo);
-	const unsigned char successful = positionInfoResult == 0;
+		// For devices that have four to six axes of movement a point-of-view control,
+		// or more than four buttons, use the joyGetPosEx function. 'joyGetPos()'
 
-	if (successful)
-	{
-		controller->Axis[PXControllerAxisX] = joystickInfo.dwXpos;
-		controller->Axis[PXControllerAxisY] = joystickInfo.dwYpos;
-		controller->Axis[PXControllerAxisZ] = joystickInfo.dwZpos;
-		controller->Axis[PXControllerAxisR] = joystickInfo.dwRpos;
-		controller->Axis[PXControllerAxisU] = joystickInfo.dwUpos;
-		controller->Axis[PXControllerAxisV] = joystickInfo.dwVpos;
-		controller->ButtonPressedBitList = joystickInfo.dwButtons;
-		controller->ButtonAmountPressed = joystickInfo.dwButtonNumber;
-		controller->ControlPad = joystickInfo.dwPOV;
+		const PXjoyGetPosEx pxjoyGetPosEx = pxControllerSystem->GetPosEx;
+		const MMRESULT positionInfoResult = pxjoyGetPosEx(pxController->ID, &joystickInfo);
+		const PXBool successful = positionInfoResult == 0;
 
+		if(successful)
+		{
+			pxController->Axis[PXControllerAxisX] = joystickInfo.dwXpos;
+			pxController->Axis[PXControllerAxisY] = joystickInfo.dwYpos;
+			pxController->Axis[PXControllerAxisZ] = joystickInfo.dwZpos;
+			pxController->Axis[PXControllerAxisR] = joystickInfo.dwRpos;
+			pxController->Axis[PXControllerAxisU] = joystickInfo.dwUpos;
+			pxController->Axis[PXControllerAxisV] = joystickInfo.dwVpos;
+			pxController->ButtonPressedBitList = joystickInfo.dwButtons;
+			pxController->ButtonAmountPressed = joystickInfo.dwButtonNumber;
+			pxController->ControlPad = joystickInfo.dwPOV;
 
-		controller->AxisNormalised[PXControllerAxisX] = (controller->Axis[PXControllerAxisX] * 2.0f) / (float)0xFFFF - 1;
-		controller->AxisNormalised[PXControllerAxisY] = (controller->Axis[PXControllerAxisY] * 2.0f) / (float)0xFFFF - 1;
-		controller->AxisNormalised[PXControllerAxisZ] = (controller->Axis[PXControllerAxisZ] * 2.0f) / (float)0xFFFF - 1;
-		controller->AxisNormalised[PXControllerAxisR] = (controller->Axis[PXControllerAxisR] * 2.0f) / (float)0xFFFF - 1;
-		controller->AxisNormalised[PXControllerAxisU] = (controller->Axis[PXControllerAxisU] * 2.0f) / (float)0xFFFF - 1;
-		controller->AxisNormalised[PXControllerAxisV] = (controller->Axis[PXControllerAxisV] * 2.0f) / (float)0xFFFF - 1;
-	}
-
-	return successful;
+			pxController->AxisNormalised[PXControllerAxisX] = (pxController->Axis[PXControllerAxisX] * 2.0f) / (float)0xFFFF - 1;
+			pxController->AxisNormalised[PXControllerAxisY] = (pxController->Axis[PXControllerAxisY] * 2.0f) / (float)0xFFFF - 1;
+			pxController->AxisNormalised[PXControllerAxisZ] = (pxController->Axis[PXControllerAxisZ] * 2.0f) / (float)0xFFFF - 1;
+			pxController->AxisNormalised[PXControllerAxisR] = (pxController->Axis[PXControllerAxisR] * 2.0f) / (float)0xFFFF - 1;
+			pxController->AxisNormalised[PXControllerAxisU] = (pxController->Axis[PXControllerAxisU] * 2.0f) / (float)0xFFFF - 1;
+			pxController->AxisNormalised[PXControllerAxisV] = (pxController->Axis[PXControllerAxisV] * 2.0f) / (float)0xFFFF - 1;
+		}
 #else
-	JOYINFO joystickInfo{ 0 };
+		JOYINFO joystickInfo{ 0 };
 
-	const MMRESULT positionInfoResult = joyGetPos(controllerID, &joystickInfo);
-	const bool successful = positionInfoResult == 0;
+		const MMRESULT positionInfoResult = joyGetPos(controllerID, &joystickInfo);
+		const bool successful = positionInfoResult == 0;
 
-	if (successful)
-	{
-		controller.Axis[ControllerAxisX] = joystickInfo.wXpos;
-		controller.Axis[ControllerAxisY] = joystickInfo.wYpos;
-		controller.Axis[ControllerAxisZ] = joystickInfo.wZpos;
-		controller.ButtonPressedBitList = joystickInfo.wButtons;
-	}
+		if(successful)
+		{
+			controller.Axis[ControllerAxisX] = joystickInfo.wXpos;
+			controller.Axis[ControllerAxisY] = joystickInfo.wYpos;
+			controller.Axis[ControllerAxisZ] = joystickInfo.wZpos;
+			controller.ButtonPressedBitList = joystickInfo.wButtons;
+		}
 
-	return successful;
+		return successful;
 #endif
 #else
-	return PXFalse;
+		return PXFalse;
 #endif
+	}
+
+	return PXActionSuccessful;
+}
+
+void PXAPI PXControllerSystemDebugPrint(PXController* const pxController)
+{
+	//PXConsoleClear();
+	PXConsoleGoToXY(0,0);
+
+	char bufferAAA[64];
+
+	PXTextFromIntToBinary16U(bufferAAA, 64, pxController->ButtonPressedBitList);
+
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"Controller", 
+		"Data", 
+		"%s, ID: %i\n"
+		"Axis  : X:%5i, Y:%5i, Z:%5i, R:%5i, U:%5i, V:%5i\n"
+		"Button: %s",
+		pxController->Name,
+		pxController->ID,
+		pxController->Axis[PXControllerAxisX],
+		pxController->Axis[PXControllerAxisY],
+		pxController->Axis[PXControllerAxisZ],
+		pxController->Axis[PXControllerAxisR],
+		pxController->Axis[PXControllerAxisU],
+		pxController->Axis[PXControllerAxisV],
+		bufferAAA
+	);
 }
 
 #if PXWindowUSE
@@ -156,7 +213,7 @@ PXBool PXAPI PXControllerAttachToWindow(const PXControllerID controllerID, const
 	BOOL fChanged = 1u;
 
 	const MMRESULT captureResult = joySetCapture(PXWindowID, controllerID, uPeriod, fChanged);
-	const unsigned char successful = captureResult == JOYERR_NOERROR;
+	const PXBool successful = captureResult == JOYERR_NOERROR;
 
 	return successful;
 #else

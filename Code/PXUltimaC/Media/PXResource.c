@@ -114,7 +114,7 @@ PXMaterial* PXAPI PXMaterialContainerFind(const PXMaterialContainer* const pxMat
     //{
        // const PXMaterialContainer* const pxMaterialContaier = &pxModel->MaterialContaierList[materialContainerID];
 
-        for (PXSize materialID = 0; materialID < pxMaterialContainer->MaterialListSize; ++materialID)
+        for (PXSize materialID = 0; materialID < pxMaterialContainer->MaterialListAmount; ++materialID)
         {
             const PXMaterial* const pxMaterial = &pxMaterialContainer->MaterialList[materialID];
 

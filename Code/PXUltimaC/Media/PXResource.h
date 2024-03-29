@@ -18,7 +18,6 @@ extern "C"
 	typedef struct PXFile_ PXFile;
 	typedef struct PXText_ PXText;
 	typedef struct PXDocument_ PXDocument;
-	typedef struct PXWindow_ PXWindow;
 	typedef struct PXUIElement_ PXUIElement;
 	typedef struct PXFileTypeInfo_ PXFileTypeInfo;
 
@@ -412,7 +411,7 @@ extern "C"
 	// Container to save a list of materials.
 	typedef struct PXMaterialContainer_
 	{
-		PXSize MaterialListSize;
+		PXSize MaterialListAmount;
 		PXMaterial* MaterialList;
 	}
 	PXMaterialContainer;
@@ -587,6 +586,7 @@ extern "C"
 
 		void* VertexData;
 		PXSize VertexDataSize;
+		PXSize VertexDataAmount;
 
 		PXSize VertexDataRowSize;
 
@@ -642,6 +642,7 @@ extern "C"
 		PXInt32U DrawModeID;
 
 		PXSize SegmentListSize;
+		PXSize SegmentListAmount;
 
 		union
 		{
@@ -676,7 +677,8 @@ extern "C"
 		struct PXModel_* StructureChild; // Structure can only have one child, all others are siblings to a core child, the first born.
 		//-----------------------------
 
-		PXSize MaterialContaierListSize;
+		//PXSize MaterialContaierListSize;
+		PXSize MaterialContaierListAmount;
 		PXMaterialContainer* MaterialContaierList;
 
 		//-----------------------------
