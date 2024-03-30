@@ -89,6 +89,7 @@ PXInt8U PXAPI PXVertexBufferFormatStrideSize(const PXVertexBufferFormat pxVertex
         case PXVertexBufferFormatT2F_XYZ: return 2u + 3u;
         case PXVertexBufferFormatT2F_N3F_XYZ: return 2u + 3u + 3u;
         case PXVertexBufferFormatXYZ: return 3u;
+        case PXVertexBufferFormatN3F_XYZ: return 3u + 3u;
 
         default:
             return 0u;
@@ -172,6 +173,20 @@ void* PXAPI PXVertexBufferInsertionPoint(const PXVertexBuffer* const pxVertexBuf
             switch (pxVertexBufferDataType)
             {
                 case PXVertexBufferDataTypeVertex:
+                    return &((float*)pxVertexBuffer->VertexData)[rowEntiry + 0];
+
+                default:
+                    return PXNull;
+            }
+        }
+        case PXVertexBufferFormatN3F_XYZ:
+        {
+            switch(pxVertexBufferDataType)
+            {
+                case PXVertexBufferDataTypeVertex:
+                    return &((float*)pxVertexBuffer->VertexData)[rowEntiry + 3];
+
+                case PXVertexBufferDataTypeNormal:
                     return &((float*)pxVertexBuffer->VertexData)[rowEntiry + 0];
 
                 default:

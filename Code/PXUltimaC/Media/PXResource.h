@@ -210,7 +210,7 @@ extern "C"
 		PXVertexBufferFormatC4UB_XY,
 		PXVertexBufferFormatC4UB_XYZ,
 		PXVertexBufferFormatRGBXYZ,
-		PXVertexBufferFormatN3F_XYZ,
+		PXVertexBufferFormatN3F_XYZ, // NNN PPP
 		PXVertexBufferFormatC4F_N3F_XYZ,
 		PXVertexBufferFormatT2F_XYZ, // TT PPP
 		PXVertexBufferFormatT4F_XYZW,

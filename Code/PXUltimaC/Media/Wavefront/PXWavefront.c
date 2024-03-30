@@ -103,6 +103,139 @@ void PXAPI PXWavefrontCompileError(PXCompilerSymbolEntry* const compilerSymbolEn
     );
 }
 
+void PXAPI PXWavefrontFaceLineParse(PXFile* const tokenSteam, PXInt32U* const vertexData)
+{
+    PXCompilerSymbolEntry pxCompilerSymbolEntry;
+
+    PXCompilerSymbolEntryPeek(tokenSteam, &pxCompilerSymbolEntry); // read token, expect int
+
+    const PXBool isExpectedInteger = PXCompilerSymbolLexerInteger == pxCompilerSymbolEntry.ID; // is int`?
+
+    if(!isExpectedInteger) // If not int => Error
+    {
+        PXLogPrint
+        (
+            PXLoggingError,
+            "Wavefront",
+            "Parse",
+            "Faceline element invalid. Line <%i>",
+            pxCompilerSymbolEntry.Line
+        );
+
+        return;
+    }
+
+    PXCompilerSymbolEntryExtract(tokenSteam, &pxCompilerSymbolEntry); // read token, expect int
+
+    // Save 1st value
+    vertexData[0] = pxCompilerSymbolEntry.DataI32U;
+
+    PXCompilerSymbolEntryPeek(tokenSteam, &pxCompilerSymbolEntry); // Peek for next token
+
+    switch(pxCompilerSymbolEntry.ID)
+    {
+        case PXCompilerSymbolLexerInteger: // is syntax A
+        {
+            PXCompilerSymbolEntryExtract(tokenSteam, &pxCompilerSymbolEntry); // Peek sucessful skip to 2nd integer
+
+            vertexData[1] = pxCompilerSymbolEntry.DataI32U; // Save 2nd value
+
+            PXCompilerSymbolEntryPeek(tokenSteam, &pxCompilerSymbolEntry); // Get 3rd integer
+
+            const PXBool isExpectedThridInteger = PXCompilerSymbolLexerInteger == pxCompilerSymbolEntry.ID;
+
+            if(!isExpectedThridInteger)
+            {
+                // Error;
+            }
+
+            PXCompilerSymbolEntryExtract(tokenSteam, &pxCompilerSymbolEntry);
+            vertexData[2] = pxCompilerSymbolEntry.DataI32U;
+
+            break;
+        }
+        case PXCompilerSymbolLexerSlash: // Syntax B or C
+        {
+            PXCompilerSymbolEntryExtract(tokenSteam, &pxCompilerSymbolEntry); // Peek sucessful, remove the first '/'
+
+            PXCompilerSymbolEntryPeek(tokenSteam, &pxCompilerSymbolEntry); // Next token
+
+            switch(pxCompilerSymbolEntry.ID)
+            {
+                case PXCompilerSymbolLexerSlash: // Syntax: "xx//xx"
+                {
+                    PXCompilerSymbolEntryExtract(tokenSteam, &pxCompilerSymbolEntry); // Remove the '/'
+                    PXCompilerSymbolEntryPeek(tokenSteam, &pxCompilerSymbolEntry); // Next token, expect int
+                    const PXBool isThridToken = PXCompilerSymbolLexerInteger == pxCompilerSymbolEntry.ID; // is int?
+
+                    if(!isThridToken) // if not int => error
+                    {
+                        // Error
+                    }
+                 
+                    PXCompilerSymbolEntryExtract(tokenSteam, &pxCompilerSymbolEntry);    // Consume 3rd number
+               
+                    vertexData[2] = pxCompilerSymbolEntry.DataI32U;      // Store 3rd number
+
+                    break;
+                }
+                case PXCompilerSymbolLexerInteger: // Is syntax B
+                {
+                    PXCompilerSymbolEntryExtract(tokenSteam, &pxCompilerSymbolEntry); // Peek sucessful, remove the secound value
+
+                    vertexData[1] = pxCompilerSymbolEntry.DataI32U; // Save value
+
+                    // Exptect 2nd '/'
+                    {
+                        PXCompilerSymbolEntryPeek(tokenSteam, &pxCompilerSymbolEntry); // Peek, expect '/'
+                        const PXBool isSlash = PXCompilerSymbolLexerSlash == pxCompilerSymbolEntry.ID;
+
+                        if(isSlash)
+                        {
+                            PXCompilerSymbolEntryExtract(tokenSteam, &pxCompilerSymbolEntry); // remove '/'
+
+                            // Try get 3nd integer
+                            {
+                                PXCompilerSymbolEntryPeek(tokenSteam, &pxCompilerSymbolEntry); // Next token
+
+                                const PXBool isSecoundToken = PXCompilerSymbolLexerInteger == pxCompilerSymbolEntry.ID;
+
+                                if(!isSecoundToken)
+                                {
+                                    // Error
+                                }
+
+                                vertexData[2] = pxCompilerSymbolEntry.DataI32U;
+
+                                PXCompilerSymbolEntryExtract(tokenSteam, &pxCompilerSymbolEntry);
+                            }
+                        }
+                    }
+
+                    break;
+                }
+                default:
+                {
+                    // Invalid
+                    break;
+                }
+            }
+
+            break;
+        }
+        default:
+        {
+            // Invalid syntax
+            break;
+        }
+    }
+
+    for(PXSize i = 0; i < 3u; ++i)
+    {
+        vertexData[i] -= 1u;
+    }   
+}
+
 PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
     PXModel* const pxModel = (PXModel*)pxResourceLoadInfo->Target;
@@ -280,159 +413,27 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
             }
             case PXWavefrontLineFaceElement:
             {
-                //PXSize cornerPoints = 0;
-              //  PXSize cursorPos = outputStream->DataCursor;
+                const PXSize lineStart = compilerSymbolEntry.Line;
+                PXSize lineCurrent = lineStart;
 
-              //  PXFileWriteI8U(outputStream, 0xFF);
-
-                while (!PXFileIsAtEnd(&tokenSteam))
+                PXBool isDone = PXFalse;
+                
+                do
                 {
                     PXInt32U vertexData[3] = { 0, 0, 0 };
 
-                    // allowed syntax is
-                    // A: "f 1 2 3"
-                    // B: "f 1/2/3"
-                    // C: "f 1//3"
-                    // D: "f 1/3"
-
-
-                    PXCompilerSymbolEntryPeek(&tokenSteam, &compilerSymbolEntry); // read token, expect int
-
-                    const PXBool isExpectedInteger = PXCompilerSymbolLexerInteger == compilerSymbolEntry.ID; // is int`?
-
-                    if (!isExpectedInteger) // If not int => Error
-                    {
-                        break;
-                    }
-
-                    PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // read token, expect int
-
-                    // Save 1st value
-                    vertexData[0] = compilerSymbolEntry.DataI32U;
-
-                    PXCompilerSymbolEntryPeek(&tokenSteam, &compilerSymbolEntry); // Peek for next token
-
-                    switch (compilerSymbolEntry.ID)
-                    {
-                        case PXCompilerSymbolLexerInteger: // is syntax A
-                        {
-                            PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Peek sucessful skip to 2nd integer
-
-                            vertexData[1] = compilerSymbolEntry.DataI32U; // Save 2nd value
-
-                            PXCompilerSymbolEntryPeek(&tokenSteam, &compilerSymbolEntry); // Get 3rd integer
-
-                            const PXBool isExpectedThridInteger = PXCompilerSymbolLexerInteger == compilerSymbolEntry.ID;
-
-                            if (!isExpectedThridInteger)
-                            {
-                                // Error;
-                            }
-
-                            PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
-                            vertexData[2] = compilerSymbolEntry.DataI32U;
-
-                            break;
-                        }
-                        case PXCompilerSymbolLexerSlash: // Syntax B or C
-                        {
-                            PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Peek sucessful, remove the first '/'
-
-                            PXCompilerSymbolEntryPeek(&tokenSteam, &compilerSymbolEntry); // Next token
-
-                            switch (compilerSymbolEntry.ID)
-                            {
-                                case PXCompilerSymbolLexerSlash: // is Syntax C
-                                {
-                                    PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Remove the '/'
-                                    PXCompilerSymbolEntryPeek(&tokenSteam, &compilerSymbolEntry); // Next token, expect int
-                                    const PXBool isThridToken = PXCompilerSymbolLexerInteger == compilerSymbolEntry.ID; // is int?
-
-                                    if (!isThridToken) // if not int => error
-                                    {
-                                        // Error
-                                    }
-
-                                    vertexData[2] = compilerSymbolEntry.DataI32U; // Save value
-
-                                    break;
-                                }
-                                case PXCompilerSymbolLexerInteger: // Is syntax B
-                                {
-                                    PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Peek sucessful, remove the secound value
-
-                                    vertexData[1] = compilerSymbolEntry.DataI32U; // Save value
-
-                                    // Exptect 2nd '/'
-                                    {
-                                        PXCompilerSymbolEntryPeek(&tokenSteam, &compilerSymbolEntry); // Peek, expect '/'
-                                        const PXBool isSlash = PXCompilerSymbolLexerSlash == compilerSymbolEntry.ID;
-
-                                        if (isSlash)
-                                        {
-                                            PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // remove '/'
-
-                                            // Try get 3nd integer
-                                            {
-                                                PXCompilerSymbolEntryPeek(&tokenSteam, &compilerSymbolEntry); // Next token
-
-                                                const PXBool isSecoundToken = PXCompilerSymbolLexerInteger == compilerSymbolEntry.ID;
-
-                                                if (!isSecoundToken)
-                                                {
-                                                    // Error
-                                                }
-
-                                                vertexData[2] = compilerSymbolEntry.DataI32U;
-
-                                                PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
-                                            }
-                                        }
-                                    }
-
-                                    break;
-                                }
-                                default:
-                                {
-                                    // Invalid
-                                    break;
-                                }
-                            }
-
-                            break;
-                        }
-                        default:
-                        {
-                            // Invalid syntax
-                            break;
-                        }
-                    }
-
-
-                    // printf("|%6i| %3s | %12i | %12i | %12i |\n",  compilerSymbolEntry.Line, "f", vertexData[0], vertexData[1], vertexData[2]);
-
-                    for (PXSize i = 0; i < 3u; ++i)
-                    {
-                        vertexData[i] -= 1u;
-                    }
+                    PXWavefrontFaceLineParse(&tokenSteam, vertexData); // Get the data
 
                     counterVertexMaxID = PXMathMaximumIU(counterVertexMaxID, vertexData[0]);
-
-                    //PXFileWriteI32UV(outputStream, vertexData, 3u);
-
-                    //  printf("Face _> %i, %i, %i\n", vertexData[0], vertexData[1], vertexData[2]);
-
-                      //----------------------------------
-
                     ++counterIndex;
-                }
 
-                //pxModel->DataIndexWidth = PXMathMaximum(pxModel->DataIndexWidth, cornerPoints);
+                    PXCompilerSymbolEntryPeek(&tokenSteam, &compilerSymbolEntry); // check what line we are in
 
+                    lineCurrent = compilerSymbolEntry.Line; // Update current line
 
-               // counterIndex += cornerPoints;
-
-              //  PXFileWriteAtI8U(outputStream, cornerPoints, cursorPos);
+                    isDone = PXFileIsAtEnd(&tokenSteam) || (lineStart != lineCurrent);
+                } 
+                while(!isDone);
 
                 break; // [OK]
             }
@@ -466,11 +467,15 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
 
     // Stage - 2 - Allocate space
     {
-        if (counterVertex && counterNormal && counterTexture)
+        const PXBool isVNT = counterVertex && counterNormal && counterTexture;
+        const PXBool isVT = counterVertex && !counterNormal && counterTexture;
+        const PXBool isVN = counterVertex && counterNormal && !counterTexture;
+
+        if (isVNT)
         {
             pxModel->VertexBuffer.Format = PXVertexBufferFormatT2F_N3F_XYZ;
         }
-        else if (counterVertex && !counterNormal && counterTexture)
+        else if (isVT)
         {
             // We would set this in that format, but we want normals.
             // pxModel->VertexBuffer.Format = PXVertexBufferFormatT2F_XYZ;
@@ -478,6 +483,10 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
             pxModel->VertexBuffer.Format = PXVertexBufferFormatT2F_N3F_XYZ;
 
             requireToCalculateNormals = PXTrue;
+        }
+        else if(isVN)
+        {
+            pxModel->VertexBuffer.Format = PXVertexBufferFormatN3F_XYZ;
         }
 
         // Allocate temp cache to use it for later
@@ -709,165 +718,47 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
             {
                 PXSize cornerPoints = 0;
 
-                while (!PXFileIsAtEnd(&tokenSteam))
+
+                const PXSize lineStart = compilerSymbolEntry.Line;
+                PXSize lineCurrent = lineStart;
+
+                PXBool isDone = PXFalse;
+
+                do
                 {
                     PXInt32U vertexData[3] = { 0, 0, 0 };
 
-                    // allowed syntax is
-                    // A: "f 1 2 3"
-                    // B: "f 1/2/3"
-                    // C: "f 1//3"
-                    // D: "f 1/3"
+                    PXWavefrontFaceLineParse(&tokenSteam, vertexData); // Get the data
 
-
-                    PXCompilerSymbolEntryPeek(&tokenSteam, &compilerSymbolEntry); // read token, expect int
-
-                    const PXBool isExpectedInteger = PXCompilerSymbolLexerInteger == compilerSymbolEntry.ID; // is int`?
-
-                    if (!isExpectedInteger) // If not int => Error
-                    {
-                        break;
-                    }
-
-                    PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // read token, expect int
-
-                    // Save 1st value
-                    vertexData[0] = compilerSymbolEntry.DataI32U;
-
-                    PXCompilerSymbolEntryPeek(&tokenSteam, &compilerSymbolEntry); // Peek for next token
-
-                    switch (compilerSymbolEntry.ID)
-                    {
-                        case PXCompilerSymbolLexerInteger: // is syntax A
-                        {
-                            PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Peek sucessful skip to 2nd integer
-
-                            vertexData[1] = compilerSymbolEntry.DataI32U; // Save 2nd value
-
-                            PXCompilerSymbolEntryPeek(&tokenSteam, &compilerSymbolEntry); // Get 3rd integer
-
-                            const PXBool isExpectedThridInteger = PXCompilerSymbolLexerInteger == compilerSymbolEntry.ID;
-
-                            if (!isExpectedThridInteger)
-                            {
-                                // Error;
-                            }
-
-                            PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
-                            vertexData[2] = compilerSymbolEntry.DataI32U;
-
-                            break;
-                        }
-                        case PXCompilerSymbolLexerSlash: // Syntax B or C
-                        {
-                            PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Peek sucessful, remove the first '/'
-
-                            PXCompilerSymbolEntryPeek(&tokenSteam, &compilerSymbolEntry); // Next token
-
-                            switch (compilerSymbolEntry.ID)
-                            {
-                                case PXCompilerSymbolLexerSlash: // is Syntax C
-                                {
-                                    PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Remove the '/'
-                                    PXCompilerSymbolEntryPeek(&tokenSteam, &compilerSymbolEntry); // Next token, expect int
-                                    const PXBool isThridToken = PXCompilerSymbolLexerInteger == compilerSymbolEntry.ID; // is int?
-
-                                    if (!isThridToken) // if not int => error
-                                    {
-                                        // Error
-                                    }
-
-                                    vertexData[2] = compilerSymbolEntry.DataI32U; // Save value
-
-                                    break;
-                                }
-                                case PXCompilerSymbolLexerInteger: // Is syntax B
-                                {
-                                    PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Peek sucessful, remove the secound value
-
-                                    vertexData[1] = compilerSymbolEntry.DataI32U; // Save value
-
-                                    // Exptect 2nd '/'
-                                    {
-                                        PXCompilerSymbolEntryPeek(&tokenSteam, &compilerSymbolEntry); // Peek, expect '/'
-                                        const PXBool isSlash = PXCompilerSymbolLexerSlash == compilerSymbolEntry.ID;
-
-                                        if (isSlash)
-                                        {
-                                            PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // remove '/'
-
-                                            // Try get 3nd integer
-                                            {
-                                                PXCompilerSymbolEntryPeek(&tokenSteam, &compilerSymbolEntry); // Next token
-
-                                                const PXBool isSecoundToken = PXCompilerSymbolLexerInteger == compilerSymbolEntry.ID;
-
-                                                if (!isSecoundToken)
-                                                {
-                                                    // Error
-                                                }
-
-                                                vertexData[2] = compilerSymbolEntry.DataI32U;
-
-                                                PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
-                                            }
-                                        }
-                                    }
-
-                                    break;
-                                }
-                                default:
-                                {
-                                    // Invalid
-                                    break;
-                                }
-                            }
-
-                            break;
-                        }
-                        default:
-                        {
-                            // Invalid syntax
-                            break;
-                        }
-                    }
-
-                    for (PXSize i = 0; i < 3u; ++i)
-                    {
-                        vertexData[i] -= 1u;
-                    }
-
-
-                   // void* const input = (PXAdress)pxModel->IndexBuffer.IndexData + counterIndex * pxModel->IndexBuffer.IndexTypeSize;
-
+       
                     const PXSize dataSize = pxModel->IndexBuffer.IndexTypeSize;
-                   // PXMemoryCopy(vertexData, dataSize, input, dataSize);
+                    // PXMemoryCopy(vertexData, dataSize, input, dataSize);
 
 
-                    //-------------------------------------
-                    // Fill vertex element from index data
-                    //-------------------------------------                              
+                     //-------------------------------------
+                     // Fill vertex element from index data
+                     //-------------------------------------                              
                     float* vertexTextureDataTarget = (float*)PXVertexBufferInsertionPoint(&pxModel->VertexBuffer, PXVertexBufferDataTypeTexture, counterIndex);
                     float* vertexNormalDataTarget = (float*)PXVertexBufferInsertionPoint(&pxModel->VertexBuffer, PXVertexBufferDataTypeNormal, counterIndex);
                     float* vertexPositionDataTarget = (float*)PXVertexBufferInsertionPoint(&pxModel->VertexBuffer, PXVertexBufferDataTypeVertex, counterIndex);
 
-                    if (vertexData[1] != -1)
+                    if(vertexData[1] != -1)
                     {
                         float* vertexTextureDataSource = &vertexTextureDataCache[vertexData[1] * 2u];
                         PXCopyList(float, 2, vertexTextureDataSource, vertexTextureDataTarget);
                     }
 
-                    if (vertexData[2] != -1)
+                    if(vertexData[2] != -1)
                     {
                         float* vertexNormalDataSource = &vertexNormalDataCache[vertexData[2] * 3u];
                         PXCopyList(float, 3, vertexNormalDataSource, vertexNormalDataTarget);
                     }
 
-                    if (vertexData[0] != -1)
+                    if(vertexData[0] != -1)
                     {
                         float* vertexPositionDataSource = &vertexPositionDataCache[vertexData[0] * 3u];
                         PXCopyList(float, 3, vertexPositionDataSource, vertexPositionDataTarget);
-                    }           
+                    }
                     //-------------------------------------
 
 
@@ -882,14 +773,18 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
                         //----------------------------------
 
                     ++cornerPoints;
-                }
 
-                //drawSize[drawCurrentIndex] = PXMathMaximum(drawSize[drawCurrentIndex], cornerPoints);
 
-               // indexListSize += cornerPoints;
-               // drawCurrentCounter += cornerPoints;
 
-              //  PXFileWriteAtI8U(outputStream, cornerPoints, cursorPos);
+
+                    PXCompilerSymbolEntryPeek(&tokenSteam, &compilerSymbolEntry); // check what line we are in
+
+                    lineCurrent = compilerSymbolEntry.Line; // Update current line
+
+                    isDone = PXFileIsAtEnd(&tokenSteam) || (lineStart != lineCurrent);
+                } 
+                while(!isDone);
+
 
                 break; // [OK]
             }

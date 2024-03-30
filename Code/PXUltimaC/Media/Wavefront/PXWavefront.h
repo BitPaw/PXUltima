@@ -71,6 +71,14 @@ extern "C"
 
 	PXPrivate PXWavefrontLineType PXAPI PXWavefrontPeekLine(const void* line, const PXSize size);
 
+
+	// allowed syntax is
+	// A: "f 1 2 3"
+	// B: "f 1/2/3"
+	// C: "f 1//3"
+	// D: "f 1/3"
+	PXPublic void PXAPI PXWavefrontFaceLineParse(PXFile* const pxFile, PXInt32U* const pxInt32U);
+
 	PXPublic PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
 	PXPublic PXActionResult PXAPI PXWavefrontSaveFromFile(PXResourceSaveInfo* const pxResourceSaveInfo);
 

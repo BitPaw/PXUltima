@@ -2047,6 +2047,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
                 PXClear(PXModel, pxModel);
                 pxModel->VertexBuffer.VertexData = (void*)vertexData;
                 pxModel->VertexBuffer.VertexDataSize = sizeof(vertexData);
+                pxModel->VertexBuffer.VertexDataAmount = sizeof(vertexData) / sizeof(float);
                 pxModel->VertexBuffer.VertexDataRowSize = 3;
                 pxModel->VertexBuffer.Format = PXVertexBufferFormatXYZ; // PXVertexBufferFormatXYZC  PXVertexBufferFormatXYZHWC
 
