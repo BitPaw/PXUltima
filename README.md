@@ -25,6 +25,8 @@ We want to be able to fully use modern advancements in operating systems, but al
 |ARM32| :x:  | :x: |:x: |
 |ARM64| :x:  | :x: |:x: |
 
+> I do not own any Apple device nor ARM based CPU systems. They can not be testet by my right now.
+
 ## Supported Formats
 <table>
 <tr>
@@ -86,7 +88,7 @@ We want to be able to fully use modern advancements in operating systems, but al
 |Windows 10 (x64)|Intel i7 6400k|32GB DDR4| Nvidia GTX 970 | :heavy_check_mark:|
 |Windows 10 (x64)|Intel i3 2300M|4GB DDR3| Intel HD 3000 | :heavy_check_mark:|
 |Windows 7 (x64)|Intel Pentium IV 3GHz|3GB DDR2|???|:heavy_check_mark:|
-|Windows XP (x86)|AMD Sempron |1GB DDR1|Nvidia FX5200 (64-Bit)| :warning:|
-|Windows XP (x86)|Intel Pentium II 233MHz|128MB SDRAM|Matrox G100|:warning:|
-|Windows 2000 (x68)|???|???|???|:x:|
+|Windows XP (x86)|AMD Sempron |1GB DDR1|Nvidia FX5200 (64-Bit)| :heavy_check_mark:|
+|Windows XP (x86)|Intel Pentium II 233MHz|128MB SDRAM|Matrox G100|:heavy_check_mark:|
+|Windows 2000 (x86)|???|???|???|:heavy_check_mark:|
 |Windows 98 SE (x86)|Intel Pentium 90 MHz|128MB EDORAM|S3 Trio32|:x:|
