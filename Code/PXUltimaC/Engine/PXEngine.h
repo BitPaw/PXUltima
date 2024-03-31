@@ -5,7 +5,7 @@
 #include <Media/PXResource.h>
 #include <Math/PXMath.h>
 #include <OS/Signal/PXSignal.h>
-#include <OS/Window/PXWindow.h>
+#include <OS/GUI/PXGUI.h>
 #include <OS/Audio/PXAudio.h>
 #include <OS/Hardware/PXController.h>
 
@@ -463,6 +463,8 @@ extern "C"
 		PXBool HasGraphicInterface;
 		PXBool InteractionLock;
 
+		PXSkyBox* DefaultSkyBox; // TODO: Not good, fix this
+
 		char ApplicationName[64];
 	}
 	PXEngine;
@@ -514,6 +516,7 @@ extern "C"
 	PXPublic PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineResourceCreateInfo* const pxEngineResourceCreateInfo);
 	PXPublic PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXEngineResourceRenderInfo* const pxEngineResourceRenderInfo);
 
+	PXPublic PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine);
 
 	PXPublic void PXAPI PXEngineCollsisionSolve(PXEngine* const pxEngine);
 

@@ -1,5 +1,5 @@
-#ifndef PXWindowINCLUDE
-#define PXWindowINCLUDE
+#ifndef PXGUIINCLUDE
+#define PXGUIINCLUDE
 
 #include <Media/PXResource.h>
 #include <Container/Dictionary/PXDictionary.h>

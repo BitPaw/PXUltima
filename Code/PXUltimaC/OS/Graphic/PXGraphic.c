@@ -2,23 +2,18 @@
 
 #if PXGraphicUSE
 
-#include <OS/File/PXFile.h>
 #include <Media/PXText.h>
-#include <OS/Window/PXWindow.h>
 #include <Media/ADLER/PXAdler32.h>
-
+#include <Math/PXMath.h>
+#include <OS/File/PXFile.h>
 #include <OS/Graphic/OpenGL/PXOpenGL.h>
 #include <OS/Graphic/DirectX/PXDirectX.h>
 #include <OS/Graphic/Vulcan/PXVulcan.h>
+#include <OS/GUI/PXGUI.h>
 #include <OS/Console/PXConsole.h>
 #include <OS/Memory/PXMemory.h>
-
-//#include <gl/GL.h> // Not found???
-#include <GL/gl.h>
-
-#include <Math/PXMath.h>
-#include <OS/Window/PXWindow.h>
 #include <OS/Hardware/PXMonitor.h>
+
 #include <stdarg.h>
 
 #define QuadSkybox 0

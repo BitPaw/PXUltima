@@ -1,7 +1,7 @@
 #include "PXVulcan.h"
 
 #include <OS/Memory/PXMemory.h>
-#include <OS/Window/PXWindow.h>
+#include <OS/GUI/PXGUI.h>
 #include <OS/Console/PXConsole.h>
 
 #include <stdio.h>

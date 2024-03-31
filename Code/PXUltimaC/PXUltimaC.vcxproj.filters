@@ -375,7 +375,7 @@
     <ClCompile Include="OS\Time\PXTime.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="OS\Window\PXWindow.c">
+    <ClCompile Include="OS\GUI\PXGUI.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Container\Buffer\PXBuffer.c">
@@ -845,7 +845,7 @@
     <ClInclude Include="OS\Time\PXTime.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="OS\Window\PXWindow.h">
+    <ClInclude Include="OS\GUI\PXGUI.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Container\Buffer\PXBuffer.h">
@@ -969,7 +969,6 @@
     <None Include="Media\PNG\README.md" />
     <None Include="Media\LDAP\README.md" />
     <None Include="Media\RAR\README.md" />
-    <None Include="OS\UI\README.md" />
     <None Include="Media\DDS\README.md" />
   </ItemGroup>
 </Project>

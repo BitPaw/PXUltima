@@ -391,7 +391,7 @@
     <ClCompile Include="OS\Async\PXThread.c" />
     <ClCompile Include="OS\Time\PXStopWatch.c" />
     <ClCompile Include="OS\Time\PXTime.c" />
-    <ClCompile Include="OS\Window\PXWindow.c" />
+    <ClCompile Include="OS\GUI\PXGUI.c" />
     <ClCompile Include="Container\Buffer\PXBuffer.c" />
     <ClCompile Include="Media\COFF\PXCOFF.c" />
     <ClCompile Include="Media\CanonRaw3\PXCanonRaw3.c" />
@@ -548,7 +548,7 @@
     <ClInclude Include="OS\Async\PXThread.h" />
     <ClInclude Include="OS\Time\PXStopWatch.h" />
     <ClInclude Include="OS\Time\PXTime.h" />
-    <ClInclude Include="OS\Window\PXWindow.h" />
+    <ClInclude Include="OS\GUI\PXGUI.h" />
     <ClInclude Include="Container\Buffer\PXBuffer.h" />
     <ClInclude Include="Media\COFF\PXCOFF.h" />
     <ClInclude Include="Media\CanonRaw3\PXCanonRaw3.h" />
@@ -591,7 +591,6 @@
     <None Include="OS\Graphic\OpenGL\README.md" />
     <None Include="OS\Graphic\SoftwareRender\README.md" />
     <None Include="OS\Graphic\Vulcan\README.md" />
-    <None Include="OS\UI\README.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

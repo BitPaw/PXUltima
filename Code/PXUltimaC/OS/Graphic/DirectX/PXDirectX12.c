@@ -15,7 +15,7 @@
 #endif
 
 #include <OS/Graphic/PXGraphic.h>
-#include <OS/Window/PXWindow.h>
+#include <OS/GUI/PXGUI.h>
 #include <OS/Console/PXConsole.h>
 
 PXActionResult PXAPI PXDirectX12Initialize(PXDirectX12* const pxDirectX12, PXGraphicInitializeInfo* const pxGraphicInitializeInfo)

@@ -26,7 +26,7 @@
 #endif
 
 #include <OS/Graphic/PXGraphic.h>
-#include <OS/Window/PXWindow.h>
+#include <OS/GUI/PXGUI.h>
 #include <OS/Memory/PXMemory.h>
 
 typedef IDirect3D9* (WINAPI* PXDirect3DCreate9)(UINT SDKVersion);

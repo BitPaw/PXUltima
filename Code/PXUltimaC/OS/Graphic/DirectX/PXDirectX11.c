@@ -9,7 +9,7 @@
 #endif
 
 #include <OS/Graphic/PXGraphic.h>
-#include <OS/Window/PXWindow.h>
+#include <OS/GUI/PXGUI.h>
 #include <OS/Console/PXConsole.h>
 #include <OS/Memory/PXMemory.h>
 

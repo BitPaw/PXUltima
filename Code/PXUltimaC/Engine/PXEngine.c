@@ -854,6 +854,9 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
 #if 1
             pxEngine->Graphic.Clear(pxEngine->Graphic.EventOwner, &color);
             pxEngine->CounterTimeGPU = PXTimeCounterStampGet();
+
+            PXEngineResourceRenderDefault(pxEngine);
+
             PXFunctionInvoke(pxEngine->OnRenderUpdate, pxEngine->Owner, pxEngine);
             pxEngine->CounterTimeGPU = PXTimeCounterStampGet() - pxEngine->CounterTimeGPU;
             pxEngine->Graphic.SceneDeploy(pxEngine->Graphic.EventOwner);
@@ -1728,7 +1731,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
 
             // Register
             pxModel->ResourceID.PXID = PXEngineGenerateUniqeID(pxEngine);
-            PXDictionaryAdd(&pxEngine->FontLookUp, &pxModel->ResourceID.PXID, pxModel);
+            PXDictionaryAdd(&pxEngine->ModelLookUp, &pxModel->ResourceID.PXID, pxModel);
 
             // Load
             {
@@ -2066,6 +2069,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
                 pxEngine->Graphic.ModelRegister(pxEngine->Graphic.EventOwner, pxModel);
             }
 
+            pxEngine->DefaultSkyBox = pxSkyBox;
 
             break;
         }
@@ -2975,6 +2979,129 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXEngineRe
             return PXActionRefusedArgumentInvalid;
         }
     }
+}
+
+PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
+{
+    {
+        PXEngineResourceRenderInfo pxEngineResourceRenderInfo;
+        pxEngineResourceRenderInfo.Type = PXEngineCreateTypeSkybox;
+        pxEngineResourceRenderInfo.CameraReference = pxEngine->CameraCurrent;
+        pxEngineResourceRenderInfo.ObjectReference = pxEngine->DefaultSkyBox;
+
+        PXEngineResourceRender(pxEngine, &pxEngineResourceRenderInfo);
+    }
+
+    // Sprite
+    {
+        PXDictionary* const modelLookup = &pxEngine->ModelLookUp;
+
+        for(PXSize i = 0; i < modelLookup->EntryAmountCurrent; ++i)
+        {
+            PXDictionaryEntry pxDictionaryEntry;
+            PXModel* pxModel = PXNull;
+
+            PXDictionaryIndex(modelLookup, i, &pxDictionaryEntry);
+
+            pxModel = *(PXModel**)pxDictionaryEntry.Value;
+
+            if(!pxModel->Enabled)
+            {
+                continue;
+            }
+
+            PXEngineResourceRenderInfo pxEngineResourceRenderInfo;
+            pxEngineResourceRenderInfo.Type = PXEngineCreateTypeModel;
+            pxEngineResourceRenderInfo.CameraReference = pxEngine->CameraCurrent;
+            pxEngineResourceRenderInfo.ObjectReference = pxModel;
+
+            PXEngineResourceRender(pxEngine, &pxEngineResourceRenderInfo);
+        }
+    }
+
+
+    // Sprite
+    {
+        PXDictionary* const spirteList = &pxEngine->SpritelLookUp;
+
+        for(PXSize i = 0; i < spirteList->EntryAmountCurrent; ++i)
+        {
+            PXDictionaryEntry pxDictionaryEntry;
+            PXSprite* pxSprite = PXNull;
+
+            PXDictionaryIndex(spirteList, i, &pxDictionaryEntry);
+
+            pxSprite = *(PXSprite**)pxDictionaryEntry.Value;
+
+            if(!pxSprite->Enabled)
+            {
+                continue;
+            }
+
+            PXEngineResourceRenderInfo pxEngineResourceRenderInfo;
+            pxEngineResourceRenderInfo.Type = PXEngineCreateTypeSprite;
+            pxEngineResourceRenderInfo.CameraReference = pxEngine->CameraCurrent;
+            pxEngineResourceRenderInfo.ObjectReference = pxSprite;
+
+            PXEngineResourceRender(pxEngine, &pxEngineResourceRenderInfo);
+        }
+    }
+
+    // Text
+    {
+        PXDictionary* const textList = &pxEngine->TextLookUp;
+
+        for(PXSize i = 0; i < textList->EntryAmountCurrent; ++i)
+        {
+            PXDictionaryEntry pxDictionaryEntry;
+            PXEngineText* pxEngineText = PXNull;
+
+            PXDictionaryIndex(textList, i, &pxDictionaryEntry);
+
+            pxEngineText = *(PXEngineText**)pxDictionaryEntry.Value;
+
+            if(!pxEngineText->Enabled)
+            {
+                continue;
+            }
+
+            PXEngineResourceRenderInfo pxEngineResourceRenderInfo;
+            pxEngineResourceRenderInfo.Type = PXEngineCreateTypeText;
+            pxEngineResourceRenderInfo.CameraReference = pxEngine->CameraCurrent;
+            pxEngineResourceRenderInfo.ObjectReference = pxEngineText;
+
+            PXEngineResourceRender(pxEngine, &pxEngineResourceRenderInfo);
+        }
+    }
+
+    // HitBoxes
+    {
+        PXDictionary* const hitBoxList = &pxEngine->HitBoxLookUp;
+
+        for(PXSize i = 0; i < hitBoxList->EntryAmountCurrent; ++i)
+        {
+            PXDictionaryEntry pxDictionaryEntry;
+            PXHitBox* pxHitBox = PXNull;
+
+            PXDictionaryIndex(hitBoxList, i, &pxDictionaryEntry);
+
+            pxHitBox = *(PXHitBox**)pxDictionaryEntry.Value;
+
+            if(!pxHitBox->Enabled)
+            {
+                continue;
+            }
+
+            PXEngineResourceRenderInfo pxEngineResourceRenderInfo;
+            pxEngineResourceRenderInfo.Type = PXEngineCreateTypeHitBox;
+            pxEngineResourceRenderInfo.CameraReference = pxEngine->CameraCurrent;
+            pxEngineResourceRenderInfo.ObjectReference = pxHitBox;
+
+            PXEngineResourceRender(pxEngine, &pxEngineResourceRenderInfo);
+        }
+    }
+
+    return PXActionSuccessful;
 }
 
 void PXAPI PXEngineCollsisionSolve(PXEngine* const pxEngine)

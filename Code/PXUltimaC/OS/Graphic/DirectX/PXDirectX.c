@@ -8,7 +8,7 @@
 #include <OS/Memory/PXMemory.h>
 #include <Media/PXText.h>
 #include <OS/Graphic/PXGraphic.h>
-#include <OS/Window/PXWindow.h>
+#include <OS/GUI/PXGUI.h>
 #include <OS/Console/PXConsole.h>
 
 #include "PXDirectX9.h"

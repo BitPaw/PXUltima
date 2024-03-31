@@ -1,4 +1,4 @@
-#include "PXWindow.h"
+#include "PXGUI.h"
 
 #include <Media/PXText.h>
 #include <Math/PXMath.h>

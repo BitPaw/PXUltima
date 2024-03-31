@@ -1,7 +1,7 @@
 #include "PXKnowlegeGraph.h"
 
 #include <OS/Graphic/PXGraphic.h>
-#include <OS/Window/PXWindow.h>
+#include <OS/GUI/PXGUI.h>
 #include <Math/PXMath.h>
 
 PXActionResult PXAPI PXKnowlegeGraphNodeInsert(PXKnowlegeGraph* const pxKnowlegeGraph, PXKnowlegeGraphNode* const pxKnowlegeGraphNode)

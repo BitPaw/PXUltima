@@ -1,6 +1,8 @@
-# User Interface (UI)
+
+# Graphical User Interface (GUI)
 
 ## Windows
+### Librarys
 Common used elements, like Buttons, Text and others, are defined in __WinUser.h__ from the __USER32.DLL__.<br>
 These elements, as stupid as it is, are created with the [__CreateWindow()__](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createwindoww) function by passing a spesific name as a parameter.
 The result is to be used closely like an actual window and has the same intended interaction behind it.
@@ -18,7 +20,9 @@ Note:
 - Some events are not send in different threads. so single threaded might be required?
 - Coloring objects does not work as one might think. You can only do it in the event loop. 
 
+
 ### Examples
+- [How to create a Window](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createwindowa)
 - [How to create a Button](https://learn.microsoft.com/en-us/windows/win32/controls/create-a-button)
 
 ### Elements
@@ -58,5 +62,21 @@ Note:
 
 ---
 
-## Linux (X-System)
-> ToDo
+## Linux
+### X11 (X-System)
+#### Librarys
+The "old" way of using a window system under Linux. 
+Many tried to force Wayland to be a successor but fail at the final 
+definition on how it should work. So still to this day, the X-System stands as the defakto standard.
+Sadly, as linux itself does not define a GUI, it's not aruteed that it is present.
+
+```C
+#include <X11/X.h>
+#include <X11/Xlib.h>
+```
+#### Links
+...
+___
+
+### Wayland
+A refreshed overhalled GUI-API that should replace the old X-System
