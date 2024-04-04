@@ -40,7 +40,7 @@ PXActionResult PXAPI PXAudioInitialize(PXAudio* const pxAudio, const PXAudioSyst
 #if PXAudioSystemWindowsMultimediaEnabled
 		case PXAudioSystemWindowsMultiMedia:
 		{
-			pxAudio->Initialize = PXMultiMediaInitialize;
+			pxAudio->Initialize = (PXAudioInitializeFunction)PXMultiMediaInitialize;
 			pxAudio->SystemReference = &pxAudio->MultiMedia;
 			break;
 		}
@@ -49,7 +49,7 @@ PXActionResult PXAPI PXAudioInitialize(PXAudio* const pxAudio, const PXAudioSyst
 #if PXAudioSystemWindowsDirectSoundEnable
 		case PXAudioSystemWindowsDirectSound:
 		{
-			pxAudio->Initialize = PXDirectSoundInitialize;
+			pxAudio->Initialize = (PXAudioInitializeFunction)PXDirectSoundInitialize;
 			pxAudio->SystemReference = &pxAudio->DirectSound;
 			break;
 		}
@@ -58,7 +58,7 @@ PXActionResult PXAPI PXAudioInitialize(PXAudio* const pxAudio, const PXAudioSyst
 #if PXAudioSystemWindowsIAudioEnable
 		case PXAudioSystemWindowsIAudio:
 		{
-			pxAudio->Initialize = PXIAudioInitialize;
+			pxAudio->Initialize = (PXAudioInitializeFunction)PXIAudioInitialize;
 			
 			break;
 		}

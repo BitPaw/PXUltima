@@ -162,7 +162,7 @@ PXActionResult PXAPI PXDataBaseInitialize(PXDataBase* const pxDataBase)
 
 	// Fetch functions
 	{
-		const PXLibraryFuntionEntry pxLibraryFuntionEntry[] =
+		PXLibraryFuntionEntry pxLibraryFuntionEntry[] =
 		{
 			{ &pxDataBase->AllocConnect,"SQLAllocConnect"},
 			{ &pxDataBase->AllocEnv,"SQLAllocEnv"},
@@ -400,9 +400,9 @@ PXActionResult PXAPI PXDataBaseConnect
 	return PXActionRefusedNotImplemented;
 
 #elif PXOSWindowsDestop
-	const PXSQLAllocHandle pxSQLAllocHandle = pxDataBase->AllocHandle;
-	const PXSQLSetEnvAttr pxSQLSetEnvAttr = pxDataBase->SetEnvAttr;
-	const PXSQLSetConnectAttrW pxSQLSetConnectAttrW = pxDataBase->SetConnectAttrW;
+	const PXSQLAllocHandle pxSQLAllocHandle = (PXSQLAllocHandle)pxDataBase->AllocHandle;
+	const PXSQLSetEnvAttr pxSQLSetEnvAttr = (PXSQLSetEnvAttr)pxDataBase->SetEnvAttr;
+	const PXSQLSetConnectAttrW pxSQLSetConnectAttrW = (PXSQLSetConnectAttrW)pxDataBase->SetConnectAttrW;
 
 
 	// Allocate environment handle
@@ -467,7 +467,7 @@ PXActionResult PXAPI PXDataBaseConnect
 			case TextFormatASCII:
 			case TextFormatUTF8:
 			{
-				const PXSQLDriverConnectA pxSQLDriverConnectA = pxDataBase->DriverConnectA;
+				const PXSQLDriverConnectA pxSQLDriverConnectA = (PXSQLDriverConnectA)pxDataBase->DriverConnectA;
 
 				const char driver[] = "MySQL ODBC 8.0 Unicode Driver";
 
@@ -502,7 +502,7 @@ PXActionResult PXAPI PXDataBaseConnect
 			}
 			case TextFormatUNICODE:
 			{
-				const PXSQLDriverConnectW pxSQLDriverConnectW = pxDataBase->DriverConnectW;
+				const PXSQLDriverConnectW pxSQLDriverConnectW = (PXSQLDriverConnectW)pxDataBase->DriverConnectW;
 
 				const wchar_t driver[] = L"MySQL ODBC 8.0 Unicode Driver";
 
@@ -601,8 +601,8 @@ void PXAPI PXDataBaseDisconnect(PXDataBase* const pxDataBase)
 #elif PXOSWindowsDestop
 	if(pxDataBase->ConnectionID)
 	{
-		const PXSQLDisconnect pxSQLDisconnect = pxDataBase->Disconnect;
-		const PXSQLFreeHandle pxSQLFreeHandle = pxDataBase->FreeHandle;
+		const PXSQLDisconnect pxSQLDisconnect = (PXSQLDisconnect)pxDataBase->Disconnect;
+		const PXSQLFreeHandle pxSQLFreeHandle = (PXSQLFreeHandle)pxDataBase->FreeHandle;
 		const SQLRETURN resultDisconnect = pxSQLDisconnect(pxDataBase->ConnectionID);
 		const SQLRETURN resultFree = pxSQLFreeHandle(SQL_HANDLE_DBC, pxDataBase->ConnectionID);
 
@@ -619,7 +619,7 @@ void PXAPI PXDataBaseCleanup(PXDataBase* const pxDataBase)
 #elif PXOSWindowsDestop
 	if(pxDataBase->EnvironmentID)
 	{
-		const PXSQLFreeHandle pxSQLFreeHandle = pxDataBase->FreeHandle;
+		const PXSQLFreeHandle pxSQLFreeHandle = (PXSQLFreeHandle)pxDataBase->FreeHandle;
 		const SQLRETURN result = pxSQLFreeHandle(SQL_HANDLE_ENV, pxDataBase->EnvironmentID);
 
 		pxDataBase->EnvironmentID = PXNull;
@@ -654,7 +654,7 @@ void PXAPI PXDataBaseScanForDrivers(PXDataBase* const pxDataBase)
 		const SQLSMALLINT driverAttributesSize = sizeof(driverAttributes) / sizeof(wchar_t);
 		SQLSMALLINT driverAttributesSizeWritten = 0;
 
-		const PXSQLDriversW pxSQLDriversW = pxDataBase->DriversW;
+		const PXSQLDriversW pxSQLDriversW = (PXSQLDriversW)pxDataBase->DriversW;
 		const SQLRETURN resultDriver = pxSQLDriversW
 		(
 			pxDataBase->EnvironmentID,
@@ -678,7 +678,7 @@ void PXAPI PXDataBaseScanForDrivers(PXDataBase* const pxDataBase)
 					pxDataBase->OnDriverDetectedEvent(driverDescription, driverAttributes);
 				}
 
-				printf("| %-57ls | %-13ls |\n", driverDescription, driverAttributes);
+				//printf("| %-57ls | %-13ls |\n", driverDescription, driverAttributes);
 				break;
 
 			default:
@@ -724,7 +724,7 @@ PXActionResult PXAPI PXDataBaseCommandExecute(PXDataBase* const pxDataBase, cons
 
 	// Alloc statement
 	{
-		const PXSQLAllocHandle pxSQLAllocHandle = pxDataBase->AllocHandle;
+		const PXSQLAllocHandle pxSQLAllocHandle = (PXSQLAllocHandle)pxDataBase->AllocHandle;
 		const SQLRETURN retcode = pxSQLAllocHandle(SQL_HANDLE_STMT, pxDataBase->ConnectionID, &handleStatement);
 		const PXBool sucessfulAlloc = retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO;
 
@@ -743,14 +743,14 @@ PXActionResult PXAPI PXDataBaseCommandExecute(PXDataBase* const pxDataBase, cons
 			case TextFormatASCII:
 			case TextFormatUTF8:
 			{
-				const PXSQLExecDirectA pxSQLExecDirectA = pxDataBase->ExecDirectA;
+				const PXSQLExecDirectA pxSQLExecDirectA = (PXSQLExecDirectA)pxDataBase->ExecDirectA;
 
 				resultExecute = pxSQLExecDirectA(handleStatement, (SQLCHAR*)pxTextSQLStatement->TextA, SQL_NTS);
 				break;
 			}
 			case TextFormatUNICODE:
 			{
-				const PXSQLExecDirectW pxSQLExecDirectW = pxDataBase->ExecDirectW;
+				const PXSQLExecDirectW pxSQLExecDirectW = (PXSQLExecDirectW)pxDataBase->ExecDirectW;
 
 				resultExecute = pxSQLExecDirectW(handleStatement, pxTextSQLStatement->TextW, SQL_NTSL);
 				break;
@@ -770,8 +770,8 @@ PXActionResult PXAPI PXDataBaseCommandExecute(PXDataBase* const pxDataBase, cons
 
 	// Get table size
 	{
-		const PXSQLNumResultCols pxSQLNumResultCols = pxDataBase->NumResultCols;
-		const PXSQLRowCount pxSQLRowCount = pxDataBase->RowCount;
+		const PXSQLNumResultCols pxSQLNumResultCols = (PXSQLNumResultCols)pxDataBase->NumResultCols;
+		const PXSQLRowCount pxSQLRowCount = (PXSQLRowCount)pxDataBase->RowCount;
 
 		SQLSMALLINT nCols = 0;
 		SQLLEN nRows = 0;
@@ -788,11 +788,11 @@ PXActionResult PXAPI PXDataBaseCommandExecute(PXDataBase* const pxDataBase, cons
 		pxDataBase->OnResultEvent(colums, rows);
 	}
 
-	printf("[Result] Rows:%zi Colums:%zi\n", rows, colums);
+	//printf("[Result] Rows:%zi Colums:%zi\n", rows, colums);
 
-	printf("+----------------------+----------------------+----------------------+----------------------+\n");
+	//printf("+----------------------+----------------------+----------------------+----------------------+\n");
 
-	printf("|");
+	//printf("|");
 
 	for(PXSize columIndex = 1; columIndex <= colums; ++columIndex)
 	{
@@ -807,7 +807,7 @@ PXActionResult PXAPI PXDataBaseCommandExecute(PXDataBase* const pxDataBase, cons
 		unsigned char isNullable = 0;
 		unsigned char isBaseType = 0;
 
-		const PXSQLDescribeColW pxSQLDescribeColW = pxDataBase->DescribeColW;
+		const PXSQLDescribeColW pxSQLDescribeColW = (PXSQLDescribeColW)pxDataBase->DescribeColW;
 		const SQLRETURN resultDescriped = pxSQLDescribeColW
 		(
 			handleStatement,
@@ -856,18 +856,18 @@ PXActionResult PXAPI PXDataBaseCommandExecute(PXDataBase* const pxDataBase, cons
 			pxDataBase->OnColumInfoEvent(columIndex, type, isNullable, columnName, columnNameSizeWritten);
 		}
 
-		printf(" %-20ls |", columnName);
+		//printf(" %-20ls |", columnName);
 	}
 
-	printf("\n");
-	printf("+----------------------+----------------------+----------------------+----------------------+\n");
+	//printf("\n");
+	//printf("+----------------------+----------------------+----------------------+----------------------+\n");
 
 	SQLRETURN resultFetch = 0;
-	const PXSQLFetch pxSQLFetch = pxDataBase->Fetch;
+	const PXSQLFetch pxSQLFetch = (PXSQLFetch)pxDataBase->Fetch;
 
 	for(PXSize rowIndex = 0; SQL_SUCCEEDED(resultFetch = pxSQLFetch(handleStatement)); ++rowIndex)
 	{
-		printf("|");
+		//printf("|");
 
 		for(PXSize columIndex = 1; columIndex <= colums; ++columIndex)
 		{
@@ -875,7 +875,7 @@ PXActionResult PXAPI PXDataBaseCommandExecute(PXDataBase* const pxDataBase, cons
 			const PXSize fieldBufferSize = sizeof(fieldBuffer) / sizeof(wchar_t);
 			SQLLEN readLength = 0;
 
-			const PXSQLGetData pxSQLGetData = pxDataBase->GetData;
+			const PXSQLGetData pxSQLGetData = (PXSQLGetData)pxDataBase->GetData;
 			const SQLRETURN resultData = pxSQLGetData(handleStatement, columIndex, SQL_UNICODE_CHAR, fieldBuffer, fieldBufferSize, &readLength);
 			const PXBool success = SQL_SUCCEEDED(resultData);
 
@@ -886,18 +886,18 @@ PXActionResult PXAPI PXDataBaseCommandExecute(PXDataBase* const pxDataBase, cons
 					pxDataBase->OnRowDataEvent(rowIndex, columIndex, fieldBuffer);
 				}
 
-				printf(" %-20ls |", fieldBuffer);
+				//printf(" %-20ls |", fieldBuffer);
 			}
 		}
 
-		printf("\n");
+		//printf("\n");
 	}
 
-	printf("+----------------------+----------------------+----------------------+----------------------+\n");
+	//printf("+----------------------+----------------------+----------------------+----------------------+\n");
 
 	// Free memory
 	{
-		const PXSQLFreeHandle pxSQLFreeHandle = pxDataBase->FreeHandle;
+		const PXSQLFreeHandle pxSQLFreeHandle = (PXSQLFreeHandle)pxDataBase->FreeHandle;
 		const SQLRETURN resultFree = pxSQLFreeHandle(SQL_HANDLE_STMT, handleStatement);
 		const PXBool successful = resultFree == SQL_SUCCESS || resultFree == SQL_SUCCESS_WITH_INFO;
 

@@ -84,8 +84,8 @@ extern "C"
 	
 		// Debug Info
 #if PXMemoryDebug
-		char* File;
-		char* Function;
+		const char* File;
+		const char* Function;
 		PXSize Line;
 #endif
 
@@ -136,8 +136,8 @@ extern "C"
 
 	PXPublic PXBool PXAPI PXMemoryScan(PXMemoryUsage* memoryUsage);
 
-	PXPublic inline const void* PXAPI PXMemoryLocateFirst(const void* PXRestrict inputBuffer, const PXByte byteBlock, const PXSize inputBufferSize);
-	PXPublic inline const void* PXAPI PXMemoryLocateLast(const void* PXRestrict inputBuffer, const PXByte byteBlock, const PXSize inputBufferSize);
+	PXPublic inline const void* PXAPI PXMemoryLocateFirst(const void* const PXRestrict inputBuffer, const PXByte byteBlock, const PXSize inputBufferSize);
+	PXPublic inline const void* PXAPI PXMemoryLocateLast(const void* const PXRestrict inputBuffer, const PXByte byteBlock, const PXSize inputBufferSize);
 	
 
 
@@ -200,7 +200,7 @@ extern "C"
 	PXPublic PXActionResult PXAPI PXMemoryHeapDeallocate(PXMemoryInfo* const pxMemoryAllocateInfo);
 
 #define PXMemoryInfoFill(pxMemoryInfo, type, amount, dataAdress, dataSizeAdress, memoryClear) \
-	pxMemoryHeapAllocateInfo.Data = dataAdress; \
+	pxMemoryHeapAllocateInfo.Data = (void**)dataAdress; \
 	pxMemoryHeapAllocateInfo.SizeTotal = dataSizeAdress; \
 	pxMemoryHeapAllocateInfo.Amount = amount; \
 	pxMemoryHeapAllocateInfo.TypeSize = sizeof(type); \

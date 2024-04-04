@@ -34,7 +34,7 @@ PXActionResult PXAPI PXSignalCallBackRegister(const PXSignalToken pxSignalToken,
 			break;
 
 		default:
-			return PXFalse;
+			return PXActionRefusedArgumentInvalid;
 	}
 
 

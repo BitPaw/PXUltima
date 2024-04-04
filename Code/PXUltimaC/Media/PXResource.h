@@ -931,6 +931,8 @@ extern "C"
 	//-----------------------------------------------------
 	// UI-Element
 	//-----------------------------------------------------
+
+
 #define PXUIElementDoRendering (1 << 0) 
 #define PXUIElementIsActive (1 << 1)
 #define PXUIElementIsHoverable (1 << 2)
@@ -1074,8 +1076,11 @@ extern "C"
 
 
 
-
-
+#if OSUnix
+	typedef PXInt32U PXWindowID; // XID
+#elif OSWindows
+	typedef void* PXWindowID; // HWND
+#endif
 
 
 // Ancering will stick the given edge to a side.
@@ -1182,7 +1187,7 @@ extern "C"
 #endif
 
 		PXUIElementType Type;
-		PXSize ID;
+		PXWindowID ID;
 	}
 	PXUIElement;
 	//-----------------------------------------------------

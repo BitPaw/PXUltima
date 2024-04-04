@@ -294,3 +294,25 @@ unsigned int PXAPI PXMathLiniarClampAsRGBColorF(const float minimum, const float
 
 	return convertedResult;
 }
+
+void PXAPI PXMathFormulaQuadratic(const float a, const float b, const float c, float* const resultA, float* const resultB)
+{
+	const float bNegativ = -b;
+	const float dividor = 2.0f * a;
+	const float rootData = b * b - 4.0f * a * c;
+	const float rootResult = PXMathSquareRoot(rootData);
+
+	*resultA = (bNegativ + rootResult) / dividor;
+	*resultB = (bNegativ - rootResult) / dividor;
+}
+
+void PXAPI PXMathFormulaPQ(const float p, const float q, float* const resultA, float* const resultB)
+{
+	const float pHalf = p / 2.0f;
+	const float pHalfNeg = -pHalf;
+	const float rootData = pHalf * pHalf - q;
+	const float rootResult = PXMathSquareRoot(rootData);
+
+	*resultA = pHalfNeg + rootResult;
+	*resultB = pHalfNeg - rootResult;
+}

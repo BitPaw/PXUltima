@@ -28,7 +28,7 @@ extern "C"
         PXTTFTableEntryLayoutFeature, // feat
         PXTTFTableEntryFontMetrics, // fmtx
         PXTTFTableEntryFontFamilyCompatibility, // fond
-        PXTTFTableEntryFontPXProgram, // fpgm
+        PXTTFTableEntryFontProgram, // fpgm
         PXTTFTableEntryFontVariation, // fvar
         PXTTFTableEntryGridFittingAndScanConversionProcedure, // gasp
         PXTTFTableEntryGlyphOutline, // glyf, defines the appearance of the glyphs in the font.
@@ -51,7 +51,7 @@ extern "C"
         PXTTFTableEntryOpticalBounds, // opbd
         PXTTFTableEntryCompatibility, //  OS/2
         PXTTFTableEntryGlyphNameAndPostScriptCompatibility, // post
-        PXTTFTableEntryControlValuePXProgram, // prep
+        PXTTFTableEntryControlValueProgram, // prep
         PXTTFTableEntryProperties, // prop
         PXTTFTableEntryExtendedBitmaps, // sbix
         PXTTFTableEntryTracking, // trak

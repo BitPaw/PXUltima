@@ -137,7 +137,7 @@ PXTTFTableEntryType PXAPI PXTTFTableEntryTypeFromID(const PXInt32U tableEntryTyp
 		case PXInt32MakeEndianBig('f', 'e', 'a', 't'): return PXTTFTableEntryLayoutFeature;
 		case PXInt32MakeEndianBig('f', 'm', 't', 'x'): return PXTTFTableEntryFontMetrics;
 		case PXInt32MakeEndianBig('f', 'o', 'n', 'd'): return PXTTFTableEntryFontFamilyCompatibility;
-		case PXInt32MakeEndianBig('f', 'p', 'g', 'm'): return PXTTFTableEntryFontPXProgram;
+		case PXInt32MakeEndianBig('f', 'p', 'g', 'm'): return PXTTFTableEntryFontProgram;
 		case PXInt32MakeEndianBig('f', 'v', 'a', 'r'): return PXTTFTableEntryFontVariation;
 		case PXInt32MakeEndianBig('g', 'a', 's', 'p'): return PXTTFTableEntryGridFittingAndScanConversionProcedure;
 		case PXInt32MakeEndianBig('g', 'l', 'y', 'f'): return PXTTFTableEntryGlyphOutline;
@@ -161,7 +161,7 @@ PXTTFTableEntryType PXAPI PXTTFTableEntryTypeFromID(const PXInt32U tableEntryTyp
 		case PXInt32MakeEndianBig('o', 'p', 'b', 'd'): return PXTTFTableEntryOpticalBounds;
 		case PXInt32MakeEndianBig('O', 'S', '/', '2'): return PXTTFTableEntryCompatibility;
 		case PXInt32MakeEndianBig('p', 'o', 's', 't'): return PXTTFTableEntryGlyphNameAndPostScriptCompatibility;
-		case PXInt32MakeEndianBig('p', 'r', 'e', 'p'): return PXTTFTableEntryControlValuePXProgram;
+		case PXInt32MakeEndianBig('p', 'r', 'e', 'p'): return PXTTFTableEntryControlValueProgram;
 		case PXInt32MakeEndianBig('p', 'r', 'o', 'p'): return PXTTFTableEntryProperties;
 		case PXInt32MakeEndianBig('s', 'b', 'i', 'x'): return PXTTFTableEntryExtendedBitmaps;
 		case PXInt32MakeEndianBig('t', 'r', 'a', 'k'): return PXTTFTableEntryTracking;
@@ -530,7 +530,7 @@ PXActionResult PXAPI PXTTFLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 
 				break;
 			}
-			case PXTTFTableEntryControlValuePXProgram: // prep
+			case PXTTFTableEntryControlValueProgram: // prep
 			{
 				// The name 'prep' is anachronistic (the table used to be known as the Pre PXProgram table.)
 				// unsigned char[N]
@@ -539,24 +539,28 @@ PXActionResult PXAPI PXTTFLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 			case PXTTFTableEntryGlyphOutline: // glyf
 			{
 				PXTableEntryGlyphOutlineEntry tableEntryGlyphOutlineEntry;
+				PXClear(PXTableEntryGlyphOutlineEntry, &tableEntryGlyphOutlineEntry);
 
-				PXMemoryClear(&tableEntryGlyphOutlineEntry, sizeof(PXTableEntryGlyphOutlineEntry));
+				const PXFileDataElementType pxDataStreamElementList[] =
+				{
+					{ &tableEntryGlyphOutlineEntry.ContourListSize, PXDataTypeInt16SBE },
+					{ &tableEntryGlyphOutlineEntry.Minimum[0], PXDataTypeInt16UBE },
+					{ &tableEntryGlyphOutlineEntry.Minimum[1], PXDataTypeInt16UBE },
+					{ &tableEntryGlyphOutlineEntry.Maximum[0], PXDataTypeInt16UBE },
+					{ &tableEntryGlyphOutlineEntry.Maximum[1], PXDataTypeInt16UBE }
+				};
 
-				PXFileReadI16SE(pxResourceLoadInfo->FileReference, &tableEntryGlyphOutlineEntry.ContourListSize, PXEndianBig);
-				PXFileReadI16UE(pxResourceLoadInfo->FileReference, &tableEntryGlyphOutlineEntry.Minimum[0], PXEndianBig);
-				PXFileReadI16UE(pxResourceLoadInfo->FileReference, &tableEntryGlyphOutlineEntry.Minimum[1], PXEndianBig);
-				PXFileReadI16UE(pxResourceLoadInfo->FileReference, &tableEntryGlyphOutlineEntry.Maximum[0], PXEndianBig);
-				PXFileReadI16UE(pxResourceLoadInfo->FileReference, &tableEntryGlyphOutlineEntry.Maximum[1], PXEndianBig);
+				PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
 				const PXBool isSimpleGlyph = tableEntryGlyphOutlineEntry.ContourListSize >= 0;
 
 				if (isSimpleGlyph)
 				{
-					PXFileReadI16UVE(pxResourceLoadInfo->FileReference, tableEntryGlyphOutlineEntry.ContourList, tableEntryGlyphOutlineEntry.ContourListSize, PXEndianBig);
+					PXFileReadI16UVE(pxResourceLoadInfo->FileReference, &tableEntryGlyphOutlineEntry.ContourList, tableEntryGlyphOutlineEntry.ContourListSize, PXEndianBig);
 
-					PXFileReadI16SE(pxResourceLoadInfo->FileReference, &tableEntryGlyphOutlineEntry.InstructionListSize, PXEndianBig);
+					PXFileReadI16UE(pxResourceLoadInfo->FileReference, &tableEntryGlyphOutlineEntry.InstructionListSize, PXEndianBig);
 
-					PXFileReadB(pxResourceLoadInfo->FileReference, &tableEntryGlyphOutlineEntry.InstructionList, PXEndianBig);
+					PXFileReadB(pxResourceLoadInfo->FileReference, &tableEntryGlyphOutlineEntry.InstructionList, tableEntryGlyphOutlineEntry.InstructionListSize);
 
 
 					PXFileReadI8U(pxResourceLoadInfo->FileReference, &tableEntryGlyphOutlineEntry.FlagList);
@@ -576,7 +580,7 @@ PXActionResult PXAPI PXTTFLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 
 				break;
 			}
-			case PXTTFTableEntryFontPXProgram: // fpgm
+			case PXTTFTableEntryFontProgram: // fpgm
 			{
 				break;
 			}

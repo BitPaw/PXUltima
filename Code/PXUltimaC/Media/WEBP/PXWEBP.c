@@ -69,7 +69,7 @@ PXActionResult PXAPI PXWEBPSaveToFile(PXResourceSaveInfo* const pxResourceSaveIn
         PXRIFF pxRiff;
         pxRiff.ChunkSize = 0;
         pxRiff.Format = PXRIFFWebPicture;
-        pxRiff.EndianFormat = 0;
+        pxRiff.EndianFormat = PXEndianLittle;
 
         const PXActionResult riffResult = PXRIFFSaveToFile(&pxRiff, pxResourceSaveInfo->FileReference);
     }

@@ -116,7 +116,7 @@ PXActionResult PXAPI PXDirectSoundInitialize(PXAudioDirectSound* const pxAudioDi
 #endif
 
 	{
-		const PXLibraryFuntionEntry pxLibraryFuntionEntry[] =
+		PXLibraryFuntionEntry pxLibraryFuntionEntry[] =
 		{
 			// OpenGL Standard functions
 			{ &pxAudioDirectSound->SoundCreate , "DirectSoundCreate"},
@@ -142,7 +142,7 @@ PXActionResult PXAPI PXDirectSoundInitialize(PXAudioDirectSound* const pxAudioDi
 	{
 		PXAudio* const pxAudio = pxAudioInitializeInfo->AudioReference;
 
-		pxAudio->DeviceAmount = PXDirectSoundDeviceAmount;
+		pxAudio->DeviceAmount = (PXAudioDeviceAmountFunction)PXDirectSoundDeviceAmount;
 		pxAudio->DeviceFetch = PXDirectSoundDeviceFetch;
 		pxAudio->DeviceFetchAll = PXDirectSoundDeviceFetchAll;
 		pxAudio->DeviceOpen = PXDirectSoundDeviceOpen;
@@ -181,12 +181,12 @@ PXActionResult PXAPI PXDirectSoundInitialize(PXAudioDirectSound* const pxAudioDi
 		pxAudio->DistanceFactorGet = PXDirectSoundDeviceDistanceFactorGet;
 		pxAudio->DistanceFactorSet = PXDirectSoundDeviceDistanceFactorSet;
 		pxAudio->DopplerFactorGet = PXDirectSoundDeviceDopplerFactorGet;
-		pxAudio->DopplerFactorSet = PXDirectSoundDeviceDopplerFactorSet;
-		pxAudio->OrientationGet = PXDirectSoundDeviceOrientationGet;
-		pxAudio->OrientationSet = PXDirectSoundDeviceOrientationSet;
-		pxAudio->RolloffFactorGet = PXDirectSoundDeviceRolloffFactorGet;
-		pxAudio->RolloffFactorSet = PXDirectSoundDeviceRolloffFactorSet;
-		pxAudio->DeferredSettingsCommit = PXDirectSoundDeviceDeferredSettingsCommit;
+		pxAudio->DopplerFactorSet = (PXAudioDeviceDopplerFactorSetFunction)PXDirectSoundDeviceDopplerFactorSet;
+		pxAudio->OrientationGet = (PXAudioDeviceOrientationGetFunction)PXDirectSoundDeviceOrientationGet;
+		pxAudio->OrientationSet = (PXAudioDeviceOrientationSetFunction)PXDirectSoundDeviceOrientationSet;
+		pxAudio->RolloffFactorGet = (PXAudioDeviceRolloffFactorGetFunction)PXDirectSoundDeviceRolloffFactorGet;
+		pxAudio->RolloffFactorSet = (PXAudioDeviceRolloffFactorSetFunction)PXDirectSoundDeviceRolloffFactorSet;
+		pxAudio->DeferredSettingsCommit = (PXAudioDeviceDeferredSettingsCommitFunction)PXDirectSoundDeviceDeferredSettingsCommit;
 
 	}
 
@@ -213,18 +213,24 @@ PXActionResult PXAPI PXDirectSoundDeviceAmount(PXAudioDirectSound* const pxAudio
 	//-----------------------------------------------------
 	// Input
 	//-----------------------------------------------------
-	PXDirectSoundCaptureEnumerateA pxDirectSoundCaptureEnumerateA = pxAudioDirectSound->SoundCaptureEnumerateA;
+	{
+		PXDirectSoundCaptureEnumerateA pxDirectSoundCaptureEnumerateA = (PXDirectSoundCaptureEnumerateA)pxAudioDirectSound->SoundCaptureEnumerateA;
+		PXLPDSENUMCALLBACKA callBack = (PXLPDSENUMCALLBACKA)PXAudioDeviceDetectAmountCallBack;
 
-	enumResultID = pxDirectSoundCaptureEnumerateA(PXAudioDeviceDetectAmountCallBack, &pxAudioDeviceAmountInfo->DeviceInput);
+		enumResultID = pxDirectSoundCaptureEnumerateA(callBack, &pxAudioDeviceAmountInfo->DeviceInput);
+	}
 	//-----------------------------------------------------
 
 
 	//-----------------------------------------------------
 	// Output
 	//-----------------------------------------------------
-	PXDirectSoundEnumerateA pxDirectSoundEnumerateA = pxAudioDirectSound->SoundCaptureEnumerateA;
+	{
+		PXDirectSoundEnumerateA pxDirectSoundEnumerateA = (PXDirectSoundEnumerateA)pxAudioDirectSound->SoundCaptureEnumerateA;
+		PXLPDSENUMCALLBACKA callBack = (PXLPDSENUMCALLBACKA)PXAudioDeviceDetectAmountCallBack;
 
-	enumResultID = pxDirectSoundEnumerateA(PXAudioDeviceDetectAmountCallBack, &pxAudioDeviceAmountInfo->DeviceOutput);
+		enumResultID = pxDirectSoundEnumerateA(callBack, &pxAudioDeviceAmountInfo->DeviceOutput);
+	}
 	//-----------------------------------------------------
 
 	const PXActionResult enumResult = PXWindowsHandleErrorFromID(enumResultID);
@@ -301,13 +307,13 @@ PXActionResult PXAPI PXDirectSoundDeviceOpen(PXAudioDirectSound* const pxAudioDi
 
 			if(pxAudioDirectSound->SoundCaptureCreate8) // Can create 8?
 			{
-				PXDirectSoundCaptureCreate8 pxDirectSoundCaptureCreate8 = pxAudioDirectSound->SoundCaptureCreate8;
+				PXDirectSoundCaptureCreate8 pxDirectSoundCaptureCreate8 = (PXDirectSoundCaptureCreate8)pxAudioDirectSound->SoundCaptureCreate8;
 
 				crateResultID = pxDirectSoundCaptureCreate8(PXNull, (IDirectSoundCapture8**)&pxAudioDirectSound->DirectSoundInterface, PXNull);
 			}
 			else
 			{
-				PXDirectSoundCaptureCreate pxDirectSoundCaptureCreate = pxAudioDirectSound->SoundCaptureCreate;
+				PXDirectSoundCaptureCreate pxDirectSoundCaptureCreate = (PXDirectSoundCaptureCreate)pxAudioDirectSound->SoundCaptureCreate;
 
 				crateResultID = pxDirectSoundCaptureCreate(PXNull, (IDirectSoundCapture**)&pxAudioDirectSound->DirectSoundInterface, PXNull);
 			}
@@ -339,13 +345,13 @@ PXActionResult PXAPI PXDirectSoundDeviceOpen(PXAudioDirectSound* const pxAudioDi
 
 				if(pxAudioDirectSound->SoundCreate8) // Can create 8?
 				{
-					PXDirectSoundCaptureCreate8 pxDirectSoundCaptureCreate8 = pxAudioDirectSound->SoundCreate8;
+					PXDirectSoundCaptureCreate8 pxDirectSoundCaptureCreate8 = (PXDirectSoundCaptureCreate8)pxAudioDirectSound->SoundCreate8;
 
 					crateResultID = pxDirectSoundCaptureCreate8(PXNull, (PXDirectSoundOutputInterface**)&pxAudioDirectSound->DirectSoundInterface, PXNull);
 				}
 				else
 				{
-					PXDirectSoundCaptureCreate pxDirectSoundCaptureCreate = pxAudioDirectSound->SoundCreate;
+					PXDirectSoundCaptureCreate pxDirectSoundCaptureCreate = (PXDirectSoundCaptureCreate)pxAudioDirectSound->SoundCreate;
 
 					crateResultID = pxDirectSoundCaptureCreate(PXNull, (PXDirectSoundOutputInterface**)&pxAudioDirectSound->DirectSoundInterface, PXNull);
 				}

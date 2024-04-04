@@ -154,7 +154,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, struct PXGraph
 	{
 		PXGraphic* pxGraphic = pxGraphicInitializeInfo->Graphic;
 
-		pxGraphic->Release = PXVulcanRelease;
+		pxGraphic->Release = (PXGraphicReleaseFunction)PXVulcanRelease;
 	}
 
 
@@ -301,8 +301,8 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, struct PXGraph
 		vkWin32SurfaceCreateInfoKHR.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
 		vkWin32SurfaceCreateInfoKHR.pNext = PXNull;
 		vkWin32SurfaceCreateInfoKHR.flags = PXNull;
-		vkWin32SurfaceCreateInfoKHR.hinstance = GetModuleHandleA(NULL);
-		vkWin32SurfaceCreateInfoKHR.hwnd = pxGraphicInitializeInfo->WindowReference->ID;		
+		vkWin32SurfaceCreateInfoKHR.hinstance = GetModuleHandle(NULL);
+		vkWin32SurfaceCreateInfoKHR.hwnd = pxGraphicInitializeInfo->WindowReference->ID;
 
 		const VkResult createSurface = pxVulcan->SurfaceCreate(pxVulcan->Instance, &vkWin32SurfaceCreateInfoKHR, PXNull, &pxVulcan->SurfaceMainRendering);
 	}

@@ -325,7 +325,7 @@ PXBool PXAPI PXMemorySwap(void* PXRestrict bufferA, void* PXRestrict bufferB, co
 	return PXTrue;
 }
 
-const void* PXAPI PXMemoryLocateFirst(const void* PXRestrict inputBuffer, const PXByte byteBlock, const PXSize inputBufferSize)
+const void* PXAPI PXMemoryLocateFirst(const void* const PXRestrict inputBuffer, const PXByte byteBlock, const PXSize inputBufferSize)
 {
 #if MemoryUseSystemFunction
 	const void* memoryPosition = memchr(inputBuffer, byteBlock, inputBufferSize);
@@ -344,7 +344,7 @@ const void* PXAPI PXMemoryLocateFirst(const void* PXRestrict inputBuffer, const 
 #endif
 }
 
-const void* PXAPI PXMemoryLocateLast(const void* PXRestrict inputBuffer, const PXByte byteBlock, const PXSize inputBufferSize)
+const void* PXAPI PXMemoryLocateLast(const void* const PXRestrict inputBuffer, const PXByte byteBlock, const PXSize inputBufferSize)
 {
 #if MemoryUseSystemFunction
 

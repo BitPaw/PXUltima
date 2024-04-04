@@ -86,6 +86,13 @@ extern "C"
 	PXPublic float PXAPI PXMathNormalizeF(const float minimum, const float maximum, const float value);
 	PXPublic unsigned int PXAPI PXMathLiniarClampAsRGBColorF(const float minimum, const float maximum, const float value);
 
+	// x = (-b +/- b^2 - 4ac) / 2a
+	PXPublic void PXAPI PXMathFormulaQuadratic(const float a, const float b, const float c, float* const resultA, float* const resultB);
+	
+	// x = -(p/2) +/- sqrt((p/2)^2 - q)
+	PXPublic void PXAPI PXMathFormulaPQ(const float p, const float q, float* const resultA, float* const resultB);
+	
+
 #ifdef __cplusplus
 }
 #endif

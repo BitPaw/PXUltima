@@ -472,8 +472,12 @@ PXActionResult PXAPI PXThreadWaitForFinish(PXThread* const pxThread)
 
 	for (;;)
 	{
-		const BOOL result = GetExitCodeThread(pxThread->ThreadHandle, &pxThread->ReturnResult); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
+		DWORD returnCode = 0;
+
+		const BOOL result = GetExitCodeThread(pxThread->ThreadHandle, &returnCode); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
 		const PXBool isDone = STILL_ACTIVE != pxThread->ReturnResult;
+
+		pxThread->ReturnResult = returnCode;
 
 		if (isDone)
 		{

@@ -143,7 +143,7 @@ extern "C"
 		void* delete_extA;
 		void* delete_ext_sW;
 		void* delete_ext_sA;
-		void* delete;
+		void* deleteC;
 		void* delete_s;
 		void* delete_ext;
 		void* delete_ext_s;
@@ -269,8 +269,8 @@ extern "C"
 #if OSUnix
 		void* ID;
 #elif PXOSWindowsDestop
-		struct LDAP* ID;
-		struct LDAPMessage* SearchResult;
+		struct ldap* ID;
+		struct ldapmsg* SearchResult;
 #else 
 		void* ID;
 #endif

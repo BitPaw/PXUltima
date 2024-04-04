@@ -6,26 +6,16 @@
 
 #define PXOpenGLForceLegacy 0
 
-#if OSUnix
-#include <X11/X.h>
-#include <X11/Xlib.h>
-#include <GL/glx.h>
-typedef XID PXWindowID;// XID is PXWindow
-typedef GLXContext PXOpenGLConextID;
-#elif OSWindows
-#include <Windows.h>
-typedef HWND PXWindowID;
-typedef HGLRC PXOpenGLConextID;
-#endif
-
 //---<PXOpenGL>----------------
 #include <GL/gl.h>
 
 #if OSUnix
 #include <GL/glx.h>
 #define PXOpenGLAPI GLAPIENTRY
+typedef GLXContext PXOpenGLConextID;
 #elif OSWindows
 #define PXOpenGLAPI APIENTRY
+typedef HGLRC PXOpenGLConextID;
 #endif
 //---------------------------
 

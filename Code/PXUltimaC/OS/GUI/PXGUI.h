@@ -9,21 +9,6 @@
 #include <OS/Async/PXProcess.h>
 #include <OS/Async/PXThread.h>
 
-#if OSUnix
-
-#include <GL/glx.h>
-#include <X11/X.h>
-#include <X11/Xlib.h>
-
-typedef XID PXWindowID;// XID is PXWindow
-typedef GLXContext PXOpenGLConextID;
-
-#elif OSWindows
-#include <Windows.h>
-typedef HWND PXWindowID;
-typedef HGLRC PXOpenGLConextID;
-#endif
-
 #define UseRawMouseData 1
 #define PXWindowTitleSizeMax 256
 #define PXWindowSizeDefault -1

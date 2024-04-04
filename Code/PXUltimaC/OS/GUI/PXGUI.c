@@ -11,6 +11,8 @@
 
 #if OSUnix
 
+#include <X11/X.h>
+#include <X11/Xlib.h>
 #include <X11/cursorfont.h>
 #include <X11/extensions/XInput.h>
 #include <X11/extensions/XInput2.h>
@@ -3480,6 +3482,8 @@ PXActionResult PXAPI PXWindowSizeSet(const PXWindowID pxWindow, PXWindowSizeInfo
     const PXBool success = result != 0;
 
     // Get Last Error
+
+    return PXActionSuccessful;
 #endif
 }
 
@@ -3512,34 +3516,6 @@ PXActionResult PXAPI PXWindowPosition(const PXWindowID pxWindowID, PXInt32S* x, 
 #else
     return PXActionNotSupportedByOperatingSystem;
 #endif
-}
-
-PXActionResult PXAPI PXWindowMove(PXWindow* const pxWindow, const PXInt32S x, const PXInt32S y)
-{
-#if OSUnix
-    return PXActionRefusedNotImplemented;
-
-#elif PXOSWindowsDestop
-
-   // const PXBool result = MoveWindow(pxWindow->ID, );
-
-    return PXActionRefusedNotImplemented;
-
-#else
-    return PXActionNotSupportedByOperatingSystem;
-#endif
-}
-
-void PXAPI PXWindowPositonCenterScreen(PXWindow* window)
-{
-}
-
-void PXAPI PXWindowCursor(PXWindow* window)
-{
-}
-
-void PXAPI PXWindowCursorTexture()
-{
 }
 
 void PXAPI PXWindowCursorCaptureMode(const PXWindowID pxWindowID, const PXWindowCursorMode cursorMode)
