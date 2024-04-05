@@ -9,43 +9,36 @@
 #include <OS/Audio/PXAudio.h>
 #include <OS/Hardware/PXController.h>
 
-#ifdef __cplusplus
-extern "C"
+typedef struct PXEngine_ PXEngine;
+
+typedef enum PXEngineCreateType_
 {
-#endif
+	PXEngineCreateTypeInvalid,
+	PXEngineCreateTypeCustom,
 
-	typedef struct PXEngine_ PXEngine;
+	// Fudamental components
+	PXEngineCreateTypeModel,
+	PXEngineCreateTypeFont,
+	PXEngineCreateTypeTexture2D,
 
-	typedef enum PXEngineCreateType_
-	{
-		PXEngineCreateTypeInvalid,
-		PXEngineCreateTypeCustom,
+	PXEngineCreateTypeImage,
+	PXEngineCreateTypeTextureCube,
 
-		// Fudamental components
-		PXEngineCreateTypeModel,
-		PXEngineCreateTypeFont,
-		PXEngineCreateTypeTexture2D,
+	PXEngineCreateTypeShaderProgram,
+	PXEngineCreateTypeSkybox,
+	PXEngineCreateTypeSprite,
+	PXEngineCreateTypeText,
+	PXEngineCreateTypeTimer,
+	PXEngineCreateTypeSound,
+	PXEngineCreateTypeEngineSound,
+	PXEngineCreateTypeUIElement,
 
-		PXEngineCreateTypeImage,
-		PXEngineCreateTypeTextureCube,
+	PXEngineCreateTypeHitBox,
 
-		PXEngineCreateTypeShaderProgram,
-		PXEngineCreateTypeSkybox,
-		PXEngineCreateTypeSprite,
-		PXEngineCreateTypeText,
-		PXEngineCreateTypeTimer,
-		PXEngineCreateTypeSound,
-		PXEngineCreateTypeEngineSound,
-		PXEngineCreateTypeUIElement,
-
-		PXEngineCreateTypeHitBox,
-
-		// Extended basic components
-		PXEngineCreateTypeDialogBox
-	}
-	PXEngineCreateType;
-
-	PXPublic const char* PXAPI PXEngineCreateTypeToString(const PXEngineCreateType pxEngineCreateType);
+	// Extended basic components
+	PXEngineCreateTypeDialogBox
+}
+PXEngineCreateType;
 
 
 #define PXEngineResourceInfoExist			0b00000001// Indicated deleted Resource
@@ -55,476 +48,475 @@ extern "C"
 #define PXEngineResourceInfoStorageMemory	0b01000000// Resource exists in RAM
 #define PXEngineResourceInfoStorageDevice	0b10000000// Resource exists in spesific device
 
-	typedef struct PXEngineResourceInfo_
-	{
-		PXInt32U ID;
-		PXInt32U Flags;
-	}
-	PXEngineResourceInfo;
+typedef struct PXEngineResourceInfo_
+{
+	PXInt32U ID;
+	PXInt32U Flags;
+}
+PXEngineResourceInfo;
 
 
 
-	//-----------------------------------------------------
-	// HitBox
-	//-----------------------------------------------------
-	typedef enum PXHitBoxForm_
-	{
-		PXHitBoxTypeInvalid,
-		PXHitBoxTypeBox,
-		PXHitBoxTypeCube,
-		PXHitBoxTypeCircle
+//-----------------------------------------------------
+// HitBox
+//-----------------------------------------------------
+typedef enum PXHitBoxForm_
+{
+	PXHitBoxTypeInvalid,
+	PXHitBoxTypeBox,
+	PXHitBoxTypeCube,
+	PXHitBoxTypeCircle
 
-	}
-	PXHitBoxForm;
+}
+PXHitBoxForm;
 
-	//---------------
-	// BehaviourFlag
-	//---------------
+//---------------
+// BehaviourFlag
+//---------------
 #define PXHitBoxBehaviourKeepOut 0b00000001 // Prevent from entering 
 #define PXHitBoxBehaviourKeepIn  0b00000010 // Prevent from leaving
 #define PXHitBoxBehaviourDetect  0b00000100 // Trigger if in inside
 //#define PXHitBoxBehaviourDetect  0b00001000 // Trigger if in inside
 	//---------------
 
-	typedef enum PXHitBoxCollisionVarriant_
-	{
-		PXHitBoxCollisionVarriantInvalid,
-		PXHitBoxCollisionVarriantEnter,
-		PXHitBoxCollisionVarriantLeave
-	}
-	PXHitBoxCollisionVarriant;
-
-	typedef void(PXAPI* PXHitBoxCollisionDetect)(void* owner, struct PXHitBox_* const pxHitBox, const PXHitBoxCollisionVarriant pxHitBoxCollisionVarriant);
-
-	typedef struct PXHitBox_
-	{
-		PXInt32U PXID;
-		PXBool Enabled;
-
-		PXMatrix4x4F* ModelPosition;
-		
-		PXInt8U BehaviourFlag;
-		PXHitBoxForm Form;
-
-		void* CallBackOwner;
-		PXHitBoxCollisionDetect CollisionDetectCallBack;
-
-	}
-	PXHitBox;
-	//-----------------------------------------------------
-
-
-
-	//-----------------------------------------------------
-	// Timer
-	//-----------------------------------------------------
-	typedef struct PXEngineTimerEventInfo_
-	{
-		struct PXEngineTimer_* TimerReference;
-
-		PXInt32U Acuracy;
-
-		PXBool WasHandled;
-
-		//PXInt32S DelayShift;
-	}
-	PXEngineTimerEventInfo;
-
-	typedef PXActionResult(PXAPI*PXEngineTimerCallBack)(PXEngine* const pxEngine, PXEngineTimerEventInfo* const pxEngineTimerEventInfo, void* const owner);
-
-	typedef struct PXEngineTimer_
-	{
-		PXInt32U PXID;
-		PXBool Enabled; // Is the timer ticking?
-
-		void* Owner;
-		PXEngineTimerCallBack CallBack;
-
-		PXInt32U TimeStampStart;
-
-		PXInt32U TimeDeltaTarget;
-		PXInt32S TimeDelayShift;
-	}
-	PXEngineTimer;
-	//-----------------------------------------------------
-
-
-
-	//-----------------------------------------------------
-	// Text
-	//-----------------------------------------------------
-	typedef struct PXEngineText_
-	{
-		PXInt32U PXID;
-		PXBool Enabled;
-
-		PXVector2F Position;
-		PXVector2F Scaling;
-
-		PXBool DoubleRenderForShadow;
-
-		PXText* Text;
-		PXFont* Font;
-		float FontScaling;
-
-		PXInt32U TextRenderAmount;
-	}
-	PXEngineText;
-	//-----------------------------------------------------
-
-
-
-
-
-	//-----------------------------------------------------
-	// Audio
-	//-----------------------------------------------------
-	typedef struct PXEngineSound_
-	{
-		PXSound* Sound;
-
-		PXInt32U PXID;
-		
-		PXBool SoundLoop;
-	}
-	PXEngineSound;
-
-	typedef struct PXEngineSoundCreateInfo_
-	{
-		PXBool SoundLoop;
-	}
-	PXEngineSoundCreateInfo;
-	//-----------------------------------------------------
-
-
-
-	//-----------------------------------------------------
-	// ShaderProgram
-	//-----------------------------------------------------
-	typedef struct PXShaderProgramCreateData_
-	{
-		char* VertexShaderFilePath;
-		char* PixelShaderFilePath;
-	}
-	PXShaderProgramCreateData;
-	//-----------------------------------------------------
-
-
-	typedef struct PXEngineFontCreateData_
-	{
-		PXShaderProgram* ShaderProgramCurrent;
-	}
-	PXEngineFontCreateData;
-
-	typedef struct PXSkyBoxCreateEventData_
-	{
-		char* SkyBoxShaderVertex;
-		char* SkyBoxShaderPixel;
-		char* SkyBoxTextureA;
-		char* SkyBoxTextureB;
-		char* SkyBoxTextureC;
-		char* SkyBoxTextureD;
-		char* SkyBoxTextureE;
-		char* SkyBoxTextureF;
-	}
-	PXSkyBoxCreateEventData;
-
-	typedef struct PXSpriteCreateEventData_
-	{
-		PXTexture2D* TextureCurrent;
-		PXShaderProgram* ShaderProgramCurrent;
-
-		PXVector2F TextureScalingPoints[4];
-
-		PXBool HitBoxCreate;
-		PXHitBox* HitBox;
-
-		PXVector3F Position;
-		PXVector2F Scaling;
-
-		PXBool ViewRotationIgnore;
-		PXBool ViewPositionIgnore;
-	}
-	PXSpriteCreateEventData;
-
-
-	typedef struct PXTextureCubeCreateData_
-	{
-		char* FilePathA;
-		char* FilePathB;
-		char* FilePathC;
-		char* FilePathD;
-		char* FilePathE;
-		char* FilePathF;
-	}
-	PXTextureCubeCreateData;
-
-	typedef struct PXModelCreateInfo_
-	{
-		PXShaderProgram* ShaderProgramReference;
-		float Scale;
-	}
-	PXModelCreateInfo;
-
-
-
-
-
-	
-
-
-
-
-	typedef struct PXEngineResourceCreateInfo_
-	{
-		void** ObjectReference;
-		char* FilePath;
-
-		char* Name;
-
-		PXEngineCreateType CreateType;
-
-		PXBool SpawnEnabled;
-
-		union
-		{
-			PXEngineFontCreateData Font;
-			PXSkyBoxCreateEventData SkyBox;
-			PXSpriteCreateEventData Sprite;
-			PXEngineSoundCreateInfo Sound;
-			PXShaderProgramCreateData ShaderProgram;
-			PXTextureCubeCreateData TextureCube;
-			PXGUIElementCreateInfo UIElement;
-			PXModelCreateInfo Model;
-		};
-	}
-	PXEngineResourceCreateInfo;
-
-
-
-
-
-
-
-
-
-
-
-
-	typedef struct PXEngineResourceRenderInfo_
-	{
-		PXCamera* CameraReference; // Camera required for rendering
-
-		void* ObjectReference; // Containing the object, type described in 'Type'
-
-		PXEngineCreateType Type;
-	}
-	PXEngineResourceRenderInfo;
-
-
-
-
-
-
-	//-----------------------------------------------------
-	// StateChange
-	//-----------------------------------------------------
-	typedef struct PXEngineResourceStateChangeInfo_
-	{
-		PXEngineCreateType Type;
-		void* Object;
-
-		PXBool Enable;
-	}
-	PXEngineResourceStateChangeInfo;
-	//-----------------------------------------------------
-
-
-
-
-	typedef enum PXEngineResourceActionType_
-	{
-		PXEngineResourceActionTypeInvalid,
-		PXEngineResourceActionTypeCustom,
-		PXEngineResourceActionTypeCreate,
-		PXEngineResourceActionTypeDestroy,
-		PXEngineResourceActionTypeUpdate,
-		PXEngineResourceActionTypeFetch,
-		PXEngineResourceActionTypeSelect,
-		PXEngineResourceActionTypeRender,
-		PXEngineResourceActionTypePlay,
-		PXEngineResourceActionTypeStateChange // Enable or Disable object
-	}
-	PXEngineResourceActionType;
-
-	typedef struct PXEngineResourceActionInfo_
-	{
-		PXEngineResourceActionType Type;
-
-		union
-		{
-			PXEngineResourceCreateInfo Create;
-			PXEngineResourceRenderInfo Render;
-			PXEngineResourceStateChangeInfo ChangeInfo;
-		};
-	}
-	PXEngineResourceActionInfo;
-
-
-
-
-	typedef struct PXPlayerMoveInfo_
-	{
-		PXVector3F MovementWalk;
-		PXVector3F MovementView;
-		PXBool IsWindowInFocus;
-		PXBool ActionCommit; // If this stays true, action will be commited
-	}
-	PXPlayerMoveInfo;
-
-
-	typedef void (PXAPI* PXEngineResourceAdded)(void* const owner, PXEngine* const pxEngine, PXEngineResourceCreateInfo* const pxEngineResourceCreateInfo);
-
-	typedef void (PXAPI* PXEngineStartUpEvent)(void* const owner, PXEngine* const pxEngine);
-	typedef void (PXAPI* PXEngineShutDownEvent)(void* const owner, PXEngine* const pxEngine);
-
-	typedef void (PXAPI* PXEngineInteractCallBack)(void* const owner, PXEngine* const pxEngine);
-
-	typedef void (PXAPI* PXEngineUserUpdateEvent)(void* const owner, PXEngine* const pxEngine, PXPlayerMoveInfo* const pxPlayerMoveInfo);
-	typedef void (PXAPI* PXEngineNetworkUpdateEvent)(void* const owner, PXEngine* const pxEngine);
-	typedef void (PXAPI* PXEngineGameUpdateEvent)(void* const owner, PXEngine* const pxEngine);
-	typedef void (PXAPI* PXEngineRenderUpdateEvent)(void* const owner, PXEngine* const pxEngine);
-
-	typedef struct PXEngine_
-	{
-		PXGUISystem GUISystem;
-		PXGraphic Graphic;
-		PXUIElement* Window; // PXWindow
-		PXModLoader ModLoader;
-		PXCamera CameraDefault;
-		PXAudio Audio;
-		PXControllerSystem ControllerSystem;
-
-		PXKeyBoard KeyBoardCurrentInput;
-		PXMouse MouseCurrentInput;
-
-		PXAudioDevice AudioStandardOutDevice;
-
-		void* Owner;
-		PXCamera* CameraCurrent;
-
-		PXEngineResourceAdded ResourceAdded;
-
-		PXEngineStartUpEvent OnStartUp;
-		PXEngineShutDownEvent OnShutDown;
-		PXEngineUserUpdateEvent OnUserUpdate;
-		PXEngineNetworkUpdateEvent OnNetworkUpdate;
-		PXEngineGameUpdateEvent OnGameUpdate;
-		PXEngineRenderUpdateEvent OnRenderUpdate;
-		PXEngineInteractCallBack OnInteract;
-
-		PXInt32U CounterTimeLast;
-		PXInt32U CounterTimeDelta;
-
-		PXInt32U CounterTimeWindow;
-		PXInt32U CounterTimeUser;
-		PXInt32U CounterTimeNetwork;
-		PXInt64U CounterTimeRenderLast;
-		PXInt32U CounterTimeGPU;
-		PXInt32U CounterTimeCPU;
-		PXInt32U TimeFrequency;
-
-		PXInt32U FramesPerSecound;
-		PXInt32U FrameTime;
-
-		PXBool IsRunning;
-		PXBool UpdateUI;
-
-		// Register List
-		PXInt32U UniqeIDGeneratorCounter;
-
-		PXDictionary SpritelLookUp;
-		PXDictionary FontLookUp;
-		PXDictionary TextLookUp;
-		PXDictionary TimerLookUp;
-		PXDictionary SoundLookUp;
-		PXDictionary HitBoxLookUp;
-		PXDictionary ImageLookUp;
-		PXDictionary TextureLookUp;
-		PXDictionary ModelLookUp;
-		PXDictionary ShaderProgramLookup;
-
-		// Cached most-common objects
-		PXModel SpriteScaled;
-		PXModel SpriteUnScaled;
-
-		PXMathRandomGeneratorSeed RandomGeneratorSeed;
-
-		PXBool HasGraphicInterface;
-		PXBool InteractionLock;
-
-		PXSkyBox* DefaultSkyBox; // TODO: Not good, fix this
-
-		char ApplicationName[64];
-	}
-	PXEngine;
-
-	PXPrivate void PXCDECL PXEngineOnIllegalInstruction(const int signalID);
-	PXPrivate void PXCDECL PXEngineOnMemoryViolation(const int signalID);
-	PXPrivate PXInt32U PXAPI PXEngineGenerateUniqeID(PXEngine* const pxEngine);
-	PXPrivate void PXAPI PXEngineWindowEvent(PXEngine* const pxEngine, PXWindowEvent* const pxWindowEvent);
-
-
-	// Generate a random number with a maximum of the "limiter"
-	PXPublic PXInt32U PXAPI PXEngineGenerateRandom(PXEngine* const pxEngine, const PXInt32U limiter);
-
-	PXPublic PXBool PXAPI PXEngineIsRunning(const PXEngine* const pxEngine);
-
-	typedef struct PXEngineStartInfo_
-	{
-		PXGraphicInitializeMode Mode;
-		PXGraphicSystem System;
-
-		PXEngineStartUpEvent OnStartUp;
-		PXEngineShutDownEvent OnShutDown;
-		PXEngineUserUpdateEvent OnUserUpdate;
-		PXEngineNetworkUpdateEvent OnNetworkUpdate;
-		PXEngineGameUpdateEvent OnGameUpdate;
-		PXEngineRenderUpdateEvent OnRenderUpdate;
-		PXEngineInteractCallBack OnInteract;
-
-		char* Name;
-		void* Owner;
-
-		PXSize Width;
-		PXSize Height;
-
-		PXBool UseMods;
-		PXBool UseMouseInput;
-
-		struct PXUIElement_* UIElement;
-	}
-	PXEngineStartInfo;
-
-	PXPublic PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* const pxEngineStartInfo);
-	PXPublic void PXAPI PXEngineStop(PXEngine* const pxEngine);
-	PXPublic void PXAPI PXEngineUpdate(PXEngine* const pxEngine);
-
-	PXPublic PXActionResult PXAPI PXEngineResourceAction(PXEngine* const pxEngine, PXEngineResourceActionInfo* const pxEngineResourceActionInfo);
-	PXPublic PXActionResult PXAPI PXEngineResourceActionBatch(PXEngine* const pxEngine, PXEngineResourceActionInfo* const pxEngineResourceActionInfoList, const PXSize amount);
-
-	PXPublic PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineResourceCreateInfo* const pxEngineResourceCreateInfo);
-	PXPublic PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXEngineResourceRenderInfo* const pxEngineResourceRenderInfo);
-
-	PXPublic PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine);
-
-	PXPublic void PXAPI PXEngineCollsisionSolve(PXEngine* const pxEngine);
-
-	PXPublic PXActionResult PXAPI PXEngineSpriteTextureSet(PXEngine* const pxEngine, PXSprite* const pxSprite, PXTexture2D* const pxTexture2D);
-
-
-#ifdef __cplusplus
+typedef enum PXHitBoxCollisionVarriant_
+{
+	PXHitBoxCollisionVarriantInvalid,
+	PXHitBoxCollisionVarriantEnter,
+	PXHitBoxCollisionVarriantLeave
 }
-#endif
+PXHitBoxCollisionVarriant;
+
+typedef void(PXAPI* PXHitBoxCollisionDetect)(void* owner, struct PXHitBox_* const pxHitBox, const PXHitBoxCollisionVarriant pxHitBoxCollisionVarriant);
+
+typedef struct PXHitBox_
+{
+	PXInt32U PXID;
+	PXBool Enabled;
+
+	PXMatrix4x4F* ModelPosition;
+
+	PXInt8U BehaviourFlag;
+	PXHitBoxForm Form;
+
+	void* CallBackOwner;
+	PXHitBoxCollisionDetect CollisionDetectCallBack;
+
+}
+PXHitBox;
+//-----------------------------------------------------
+
+
+
+//-----------------------------------------------------
+// Timer
+//-----------------------------------------------------
+typedef struct PXEngineTimerEventInfo_
+{
+	struct PXEngineTimer_* TimerReference;
+
+	PXInt32U Acuracy;
+
+	PXBool WasHandled;
+
+	//PXInt32S DelayShift;
+}
+PXEngineTimerEventInfo;
+
+typedef PXActionResult(PXAPI* PXEngineTimerCallBack)(PXEngine* const pxEngine, PXEngineTimerEventInfo* const pxEngineTimerEventInfo, void* const owner);
+
+typedef struct PXEngineTimer_
+{
+	PXInt32U PXID;
+	PXBool Enabled; // Is the timer ticking?
+
+	void* Owner;
+	PXEngineTimerCallBack CallBack;
+
+	PXInt32U TimeStampStart;
+
+	PXInt32U TimeDeltaTarget;
+	PXInt32S TimeDelayShift;
+}
+PXEngineTimer;
+//-----------------------------------------------------
+
+
+
+//-----------------------------------------------------
+// Text
+//-----------------------------------------------------
+typedef struct PXEngineText_
+{
+	PXInt32U PXID;
+	PXBool Enabled;
+
+	PXVector2F Position;
+	PXVector2F Scaling;
+
+	PXBool DoubleRenderForShadow;
+
+	PXText* Text;
+	PXFont* Font;
+	float FontScaling;
+
+	PXInt32U TextRenderAmount;
+}
+PXEngineText;
+//-----------------------------------------------------
+
+
+
+
+
+//-----------------------------------------------------
+// Audio
+//-----------------------------------------------------
+typedef struct PXEngineSound_
+{
+	PXSound* Sound;
+
+	PXInt32U PXID;
+
+	PXBool SoundLoop;
+}
+PXEngineSound;
+
+typedef struct PXEngineSoundCreateInfo_
+{
+	PXBool SoundLoop;
+}
+PXEngineSoundCreateInfo;
+//-----------------------------------------------------
+
+
+
+//-----------------------------------------------------
+// ShaderProgram
+//-----------------------------------------------------
+typedef struct PXShaderProgramCreateData_
+{
+	char* VertexShaderFilePath;
+	char* PixelShaderFilePath;
+}
+PXShaderProgramCreateData;
+//-----------------------------------------------------
+
+
+typedef struct PXEngineFontCreateData_
+{
+	PXShaderProgram* ShaderProgramCurrent;
+}
+PXEngineFontCreateData;
+
+typedef struct PXSkyBoxCreateEventData_
+{
+	char* SkyBoxShaderVertex;
+	char* SkyBoxShaderPixel;
+	char* SkyBoxTextureA;
+	char* SkyBoxTextureB;
+	char* SkyBoxTextureC;
+	char* SkyBoxTextureD;
+	char* SkyBoxTextureE;
+	char* SkyBoxTextureF;
+}
+PXSkyBoxCreateEventData;
+
+typedef struct PXSpriteCreateEventData_
+{
+	PXTexture2D* TextureCurrent;
+	PXShaderProgram* ShaderProgramCurrent;
+
+	PXVector2F TextureScalingPoints[4];
+
+	PXBool HitBoxCreate;
+	PXHitBox* HitBox;
+
+	PXVector3F Position;
+	PXVector2F Scaling;
+
+	PXBool ViewRotationIgnore;
+	PXBool ViewPositionIgnore;
+}
+PXSpriteCreateEventData;
+
+
+typedef struct PXTextureCubeCreateData_
+{
+	char* FilePathA;
+	char* FilePathB;
+	char* FilePathC;
+	char* FilePathD;
+	char* FilePathE;
+	char* FilePathF;
+}
+PXTextureCubeCreateData;
+
+typedef struct PXModelCreateInfo_
+{
+	PXShaderProgram* ShaderProgramReference;
+	float Scale;
+}
+PXModelCreateInfo;
+
+
+
+
+
+
+
+
+
+
+typedef struct PXEngineResourceCreateInfo_
+{
+	void** ObjectReference;
+	char* FilePath;
+
+	char* Name;
+
+	PXEngineCreateType CreateType;
+
+	PXBool SpawnEnabled;
+
+	union
+	{
+		PXEngineFontCreateData Font;
+		PXSkyBoxCreateEventData SkyBox;
+		PXSpriteCreateEventData Sprite;
+		PXEngineSoundCreateInfo Sound;
+		PXShaderProgramCreateData ShaderProgram;
+		PXTextureCubeCreateData TextureCube;
+		PXGUIElementCreateInfo UIElement;
+		PXModelCreateInfo Model;
+	};
+}
+PXEngineResourceCreateInfo;
+
+
+
+
+
+
+
+
+
+
+
+
+typedef struct PXEngineResourceRenderInfo_
+{
+	PXCamera* CameraReference; // Camera required for rendering
+
+	void* ObjectReference; // Containing the object, type described in 'Type'
+
+	PXEngineCreateType Type;
+}
+PXEngineResourceRenderInfo;
+
+
+
+
+
+
+//-----------------------------------------------------
+// StateChange
+//-----------------------------------------------------
+typedef struct PXEngineResourceStateChangeInfo_
+{
+	PXEngineCreateType Type;
+	void* Object;
+
+	PXBool Enable;
+}
+PXEngineResourceStateChangeInfo;
+//-----------------------------------------------------
+
+
+
+
+typedef enum PXEngineResourceActionType_
+{
+	PXEngineResourceActionTypeInvalid,
+	PXEngineResourceActionTypeCustom,
+	PXEngineResourceActionTypeCreate,
+	PXEngineResourceActionTypeDestroy,
+	PXEngineResourceActionTypeUpdate,
+	PXEngineResourceActionTypeFetch,
+	PXEngineResourceActionTypeSelect,
+	PXEngineResourceActionTypeRender,
+	PXEngineResourceActionTypePlay,
+	PXEngineResourceActionTypeStateChange // Enable or Disable object
+}
+PXEngineResourceActionType;
+
+typedef struct PXEngineResourceActionInfo_
+{
+	PXEngineResourceActionType Type;
+
+	union
+	{
+		PXEngineResourceCreateInfo Create;
+		PXEngineResourceRenderInfo Render;
+		PXEngineResourceStateChangeInfo ChangeInfo;
+	};
+}
+PXEngineResourceActionInfo;
+
+
+
+
+typedef struct PXPlayerMoveInfo_
+{
+	PXVector3F MovementWalk;
+	PXVector3F MovementView;
+	PXBool IsWindowInFocus;
+	PXBool ActionCommit; // If this stays true, action will be commited
+}
+PXPlayerMoveInfo;
+
+
+typedef void (PXAPI* PXEngineResourceAdded)(void* const owner, PXEngine* const pxEngine, PXEngineResourceCreateInfo* const pxEngineResourceCreateInfo);
+
+typedef void (PXAPI* PXEngineStartUpEvent)(void* const owner, PXEngine* const pxEngine);
+typedef void (PXAPI* PXEngineShutDownEvent)(void* const owner, PXEngine* const pxEngine);
+
+typedef void (PXAPI* PXEngineInteractCallBack)(void* const owner, PXEngine* const pxEngine);
+
+typedef void (PXAPI* PXEngineUserUpdateEvent)(void* const owner, PXEngine* const pxEngine, PXPlayerMoveInfo* const pxPlayerMoveInfo);
+typedef void (PXAPI* PXEngineNetworkUpdateEvent)(void* const owner, PXEngine* const pxEngine);
+typedef void (PXAPI* PXEngineGameUpdateEvent)(void* const owner, PXEngine* const pxEngine);
+typedef void (PXAPI* PXEngineRenderUpdateEvent)(void* const owner, PXEngine* const pxEngine);
+
+typedef struct PXEngine_
+{
+	PXGUISystem GUISystem;
+	PXGraphic Graphic;
+	PXUIElement* Window; // PXWindow
+	PXModLoader ModLoader;
+	PXCamera CameraDefault;
+	PXAudio Audio;
+	PXControllerSystem ControllerSystem;
+
+	PXKeyBoard KeyBoardCurrentInput;
+	PXMouse MouseCurrentInput;
+
+	PXAudioDevice AudioStandardOutDevice;
+
+	void* Owner;
+	PXCamera* CameraCurrent;
+
+	PXEngineResourceAdded ResourceAdded;
+
+	PXEngineStartUpEvent OnStartUp;
+	PXEngineShutDownEvent OnShutDown;
+	PXEngineUserUpdateEvent OnUserUpdate;
+	PXEngineNetworkUpdateEvent OnNetworkUpdate;
+	PXEngineGameUpdateEvent OnGameUpdate;
+	PXEngineRenderUpdateEvent OnRenderUpdate;
+	PXEngineInteractCallBack OnInteract;
+
+	PXInt32U CounterTimeLast;
+	PXInt32U CounterTimeDelta;
+
+	PXInt32U CounterTimeWindow;
+	PXInt32U CounterTimeUser;
+	PXInt32U CounterTimeNetwork;
+	PXInt64U CounterTimeRenderLast;
+	PXInt32U CounterTimeGPU;
+	PXInt32U CounterTimeCPU;
+	PXInt32U TimeFrequency;
+
+	PXInt32U FramesPerSecound;
+	PXInt32U FrameTime;
+
+	PXBool IsRunning;
+	PXBool UpdateUI;
+
+	// Register List
+	PXInt32U UniqeIDGeneratorCounter;
+
+	PXDictionary SpritelLookUp;
+	PXDictionary FontLookUp;
+	PXDictionary TextLookUp;
+	PXDictionary TimerLookUp;
+	PXDictionary SoundLookUp;
+	PXDictionary HitBoxLookUp;
+	PXDictionary ImageLookUp;
+	PXDictionary TextureLookUp;
+	PXDictionary ModelLookUp;
+	PXDictionary ShaderProgramLookup;
+
+	// Cached most-common objects
+	PXModel SpriteScaled;
+	PXModel SpriteUnScaled;
+
+	PXMathRandomGeneratorSeed RandomGeneratorSeed;
+
+	PXBool HasGraphicInterface;
+	PXBool InteractionLock;
+
+	PXSkyBox* DefaultSkyBox; // TODO: Not good, fix this
+
+	char ApplicationName[64];
+}
+PXEngine;
+
+typedef struct PXEngineStartInfo_
+{
+	PXGraphicInitializeMode Mode;
+	PXGraphicSystem System;
+
+	PXEngineStartUpEvent OnStartUp;
+	PXEngineShutDownEvent OnShutDown;
+	PXEngineUserUpdateEvent OnUserUpdate;
+	PXEngineNetworkUpdateEvent OnNetworkUpdate;
+	PXEngineGameUpdateEvent OnGameUpdate;
+	PXEngineRenderUpdateEvent OnRenderUpdate;
+	PXEngineInteractCallBack OnInteract;
+
+	char* Name;
+	void* Owner;
+
+	PXSize Width;
+	PXSize Height;
+
+	PXBool UseMods;
+	PXBool UseMouseInput;
+
+	struct PXUIElement_* UIElement;
+}
+PXEngineStartInfo;
+
+
+PXPublic const char* PXAPI PXEngineCreateTypeToString(const PXEngineCreateType pxEngineCreateType);
+
+
+PXPrivate void PXCDECL PXEngineOnIllegalInstruction(const int signalID);
+PXPrivate void PXCDECL PXEngineOnMemoryViolation(const int signalID);
+PXPrivate PXInt32U PXAPI PXEngineGenerateUniqeID(PXEngine* const pxEngine);
+PXPrivate void PXAPI PXEngineWindowEvent(PXEngine* const pxEngine, PXWindowEvent* const pxWindowEvent);
+
+// Generate a random number with a maximum of the "limiter"
+PXPublic PXInt32U PXAPI PXEngineGenerateRandom(PXEngine* const pxEngine, const PXInt32U limiter);
+
+PXPublic PXBool PXAPI PXEngineIsRunning(const PXEngine* const pxEngine);
+
+
+PXPublic PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* const pxEngineStartInfo);
+PXPublic void PXAPI PXEngineStop(PXEngine* const pxEngine);
+PXPublic void PXAPI PXEngineUpdate(PXEngine* const pxEngine);
+
+PXPublic PXActionResult PXAPI PXEngineResourceAction(PXEngine* const pxEngine, PXEngineResourceActionInfo* const pxEngineResourceActionInfo);
+PXPublic PXActionResult PXAPI PXEngineResourceActionBatch(PXEngine* const pxEngine, PXEngineResourceActionInfo* const pxEngineResourceActionInfoList, const PXSize amount);
+
+PXPublic PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineResourceCreateInfo* const pxEngineResourceCreateInfo);
+PXPublic PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXEngineResourceRenderInfo* const pxEngineResourceRenderInfo);
+
+PXPublic PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine);
+
+PXPublic void PXAPI PXEngineCollsisionSolve(PXEngine* const pxEngine);
+
+PXPublic PXActionResult PXAPI PXEngineSpriteTextureSet(PXEngine* const pxEngine, PXSprite* const pxSprite, PXTexture2D* const pxTexture2D);
 
 #endif

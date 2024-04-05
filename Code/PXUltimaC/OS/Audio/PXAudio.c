@@ -152,6 +152,11 @@ PXActionResult PXAPI PXAudioInitialize(PXAudio* const pxAudio, const PXAudioSyst
 	return PXActionSuccessful;
 }
 
+PXActionResult PXAPI PXAudioRelease(PXAudio* const pxAudio)
+{
+	return PXActionSuccessful;
+}
+
 /*
 printf
 	(

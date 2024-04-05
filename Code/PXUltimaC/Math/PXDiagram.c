@@ -3,12 +3,12 @@
 #include <OS/Memory/PXMemory.h>
 #include <Math/PXMath.h>
 
-void PXBoxPlotConstruct(PXBoxPlot* const boxPlot)
+void PXAPI PXBoxPlotConstruct(PXBoxPlot* const boxPlot)
 {
-    PXMemoryClear(boxPlot, sizeof(PXBoxPlot));
+    PXClear(PXBoxPlot, boxPlot);
 }
 
-void PXBoxPlotCalculate(PXBoxPlot* const boxPlot, const float* const inputData, const PXSize inputDataSize)
+void PXAPI PXBoxPlotCalculate(PXBoxPlot* const boxPlot, const float* const inputData, const PXSize inputDataSize)
 {
     const int iqrFactor = 1;
     PXBool hasEvenLengh = 0;

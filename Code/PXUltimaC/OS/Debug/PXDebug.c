@@ -1,7 +1,5 @@
 #include "PXDebug.h"
 
-#if PXDebugUSE
-
 #if OSUnix
 #include <sys/ptrace.h>
 #elif OSWindows
@@ -18,6 +16,50 @@
 #include <OS/Library/PXLibrary.h>
 #include <OS/File/PXFile.h>
 #include <OS/Console/PXConsole.h>
+
+
+#if OSWindows
+typedef BOOL(WINAPI* PXDebugActiveProcessStop)(_In_ DWORD dwProcessId);
+typedef BOOL(WINAPI* PXContinueDebugEvent)(_In_ DWORD dwProcessId, _In_ DWORD dwThreadId, _In_ DWORD dwContinueStatus);
+typedef BOOL(WINAPI* PXWaitForDebugEvent)(_Out_ LPDEBUG_EVENT lpDebugEvent, _In_ DWORD dwMilliseconds);
+typedef BOOL(WINAPI* PXDebugActiveProcess)(_In_ DWORD dwProcessId);
+typedef VOID(WINAPI* PXDebugBreak)(VOID);
+typedef VOID(WINAPI* PXOutputDebugStringA)(_In_opt_ LPCSTR lpOutputString);
+typedef	VOID(WINAPI* PXOutputDebugStringW)(_In_opt_ LPCWSTR lpOutputString);
+typedef BOOL(WINAPI* PXDebugBreakProcess)(_In_ HANDLE Process);
+typedef BOOL(WINAPI* PXIsDebuggerPresent)(VOID);
+typedef BOOL(WINAPI* PXCheckRemoteDebuggerPresent)(_In_ HANDLE hProcess, _Out_ PBOOL pbDebuggerPresent);
+
+typedef BOOL(WINAPI* PXSymCleanup)(_In_ HANDLE hProcess);
+typedef DWORD(WINAPI* PXSymLoadModule)(_In_ HANDLE hProcess, _In_opt_ HANDLE hFile, _In_opt_ PCSTR ImageName, _In_opt_ PCSTR ModuleName, _In_ DWORD BaseOfDll, _In_ DWORD SizeOfDll);
+typedef BOOL(WINAPI* PXSymInitialize)(_In_ HANDLE hProcess, _In_opt_ PCSTR UserSearchPath, _In_ BOOL fInvadeProcess);
+typedef BOOL(WINAPI* PXSymEnumSymbols)(_In_ HANDLE hProcess, _In_ ULONG64 BaseOfDll, _In_opt_ PCSTR Mask, _In_ PSYM_ENUMERATESYMBOLS_CALLBACK EnumSymbolsCallback, _In_opt_ PVOID UserContext);
+typedef BOOL(WINAPI* PXSymEnumSymbolsEx)(_In_ HANDLE hProcess, _In_ ULONG64 BaseOfDll, _In_opt_ PCSTR Mask, _In_ PSYM_ENUMERATESYMBOLS_CALLBACK EnumSymbolsCallback, _In_opt_ PVOID UserContext, _In_ DWORD Options);
+typedef PVOID(WINAPI* PXSymFunctionTableAccess)(__in HANDLE hProcess, __in DWORD AddrBase);
+typedef DWORD(WINAPI* PXSymGetModuleBase)(__in HANDLE hProcess, __in DWORD dwAddr);
+
+
+// Debug
+typedef BOOL(WINAPI* PXStackWalk64)
+(
+	_In_ DWORD MachineType,
+	_In_ HANDLE hProcess,
+	_In_ HANDLE hThread,
+	_Inout_ LPSTACKFRAME64 StackFrame,
+	_Inout_ PVOID ContextRecord,
+	_In_opt_ PREAD_PROCESS_MEMORY_ROUTINE64 ReadMemoryRoutine,
+	_In_opt_ PFUNCTION_TABLE_ACCESS_ROUTINE64 FunctionTableAccessRoutine,
+	_In_opt_ PGET_MODULE_BASE_ROUTINE64 GetModuleBaseRoutine,
+	_In_opt_ PTRANSLATE_ADDRESS_ROUTINE64 TranslateAddress
+	);
+
+typedef DWORD(WINAPI* PXUnDecorateSymbolName)(_In_ PCSTR name, _Out_writes_(maxStringLength) PSTR outputString, _In_ DWORD maxStringLength, _In_ DWORD flags);
+typedef BOOL(WINAPI* PXSymGetSymFromAddr64)(_In_ HANDLE hProcess, _In_ DWORD64 qwAddr, _Out_opt_ PDWORD64 pdwDisplacement, _Inout_ PIMAGEHLP_SYMBOL64  Symbol);
+
+PXPrivate BOOL CALLBACK PXLibraryNameSymbolEnumerate(PSYMBOL_INFO pSymInfo, ULONG SymbolSize, PVOID UserContext);
+
+#endif
+
 
 void PXAPI PXDebugConstruct(PXDebug* const pxDebug)
 {
@@ -36,8 +78,10 @@ PXActionResult PXAPI PXDebugProcessBeeingDebugged(PXDebug* const pxDebug, PXBool
 {
 #if OSUnix
 #elif PXOSWindowsDestop
+	const PXCheckRemoteDebuggerPresent pxCheckRemoteDebuggerPresent = pxDebug->XCheckRemoteDebuggerPresent;
+
 	BOOL debuggerPresent = 0;
-	const BOOL result = pxDebug->XCheckRemoteDebuggerPresent(pxDebug->Process.ProcessHandle, &debuggerPresent); // Windows XP, Kernel32.dll, debugapi.h
+	const BOOL result = pxCheckRemoteDebuggerPresent(pxDebug->Process.ProcessHandle, &debuggerPresent); // Windows XP, Kernel32.dll, debugapi.h
 	const PXBool success = result != 0;
 
 	PXActionOnErrorFetchAndReturn(!success);
@@ -54,7 +98,10 @@ PXBool PXAPI PXDebugProcessBeeingDebuggedCurrent(PXDebug* const pxDebug)
 {
 #if OSUnix
 #elif OSWindows
-	return pxDebug->XIsDebuggerPresent(); // Windows XP (+UWP), Kernel32.dll, debugapi.h
+	const PXIsDebuggerPresent pxIsDebuggerPresent = (PXIsDebuggerPresent)pxDebug->XIsDebuggerPresent;
+	const PXBool result = pxIsDebuggerPresent(); // Windows XP (+UWP), Kernel32.dll, debugapi.h
+
+	return result;
 #endif
 }
 
@@ -67,7 +114,9 @@ void PXAPI PXDebugDebuggerSendMessage(PXDebug* const pxDebug, PXText* const mess
 		{
 #if OSUnix
 #elif OSWindows
-			pxDebug->WOutputDebugStringA(message->TextA); // Windows XP (+UWP), Kernel32.dll, debugapi.h
+			const PXOutputDebugStringA pxOutputDebugStringA = (PXOutputDebugStringA)pxDebug->WOutputDebugStringA;
+
+			pxOutputDebugStringA(message->TextA); // Windows XP (+UWP), Kernel32.dll, debugapi.h
 #endif
 			break;
 		}
@@ -75,7 +124,9 @@ void PXAPI PXDebugDebuggerSendMessage(PXDebug* const pxDebug, PXText* const mess
 		{
 #if OSUnix
 #elif OSWindows
-			pxDebug->WOutputDebugStringW(message->TextW); // Windows XP (+UWP), Kernel32.dll, debugapi.h
+			const PXOutputDebugStringA pxOutputDebugStringW = (PXOutputDebugStringA)pxDebug->WOutputDebugStringW;
+
+			pxOutputDebugStringW(message->TextW); // Windows XP (+UWP), Kernel32.dll, debugapi.h
 #endif
 			break;
 		}
@@ -134,11 +185,13 @@ PXActionResult PXAPI PXDebugDebuggerInitialize(PXDebug* const pxDebug)
 
 	// Init symbol server
 	{
+		const PXSymInitialize pxSymbolServerInitialize = pxDebug->SymbolServerInitialize;
+
 		PCSTR UserSearchPath = NULL;
 		BOOL fInvadeProcess = TRUE;
 
 		// Initializes the symbol handler for a process.
-		const BOOL result = pxDebug->SymbolServerInitialize(pxDebug->Process.ThreadHandle, UserSearchPath, fInvadeProcess); // Dbghelp.dll, Dbghelp.h
+		const BOOL result = pxSymbolServerInitialize(pxDebug->Process.ThreadHandle, UserSearchPath, fInvadeProcess); // Dbghelp.dll, Dbghelp.h
 		const PXBool success = result != 0;
 
 		PXActionReturnOnError(!success);
@@ -169,26 +222,57 @@ PXActionResult PXAPI PXDebugStartProcess(PXDebug* const pxDebug, const PXText* c
 	return PXActionSuccessful;
 }
 
-void PXAPI PXDebugContinue(PXDebug* const pxDebug)
+PXActionResult PXAPI PXDebugContinue(PXDebug* const pxDebug)
 {
+	if(!pxDebug)
+	{
+		return PXActionRefusedArgumentNull;
+	}
+
 #if OSUnix
+
+	return PXActionRefusedNotImplemented;
+
 #elif PXOSWindowsDestop
+	const PXContinueDebugEvent pxContinueDebugEvent = pxDebug->XContinueDebugEvent;
 	const DWORD dwThreadId = 0;
 	const DWORD dwContinueStatus = 0;
-	const PXBool x = pxDebug->XContinueDebugEvent(pxDebug->Process.ProcessID, dwThreadId, dwContinueStatus); // Windows XP, Kernel32.dll, debugapi.h
+	const PXBool x = pxContinueDebugEvent(pxDebug->Process.ProcessID, dwThreadId, dwContinueStatus); // Windows XP, Kernel32.dll, debugapi.h
 	const PXBool isSicc = x != 0;
 
 	//PXActionOnErrorFetchAndReturn(!isSicc);
 
+	return PXActionSuccessful;
+
+#else
+
+	return PXActionRefusedNotImplemented;
+
 #endif
 }
 
-void PXAPI PXDebugPause(PXDebug* const pxDebug)
+PXActionResult PXAPI PXDebugPause(PXDebug* const pxDebug)
 {
+	if(!pxDebug)
+	{
+		return PXActionRefusedArgumentNull;
+	}
+
 #if OSUnix
 
+	return PXActionRefusedNotImplemented;
+
 #elif OSWindows
-	pxDebug->XDebugBreak(); // Windows XP (+UWP), Kernel32.dll, debugapi.h
+	const PXDebugBreak pxDebugBreak = pxDebug->XDebugBreak;
+
+	pxDebugBreak(); // Windows XP (+UWP), Kernel32.dll, debugapi.h
+
+	return PXActionSuccessful; // We dont have any other result
+
+#else
+
+	return PXActionRefusedNotImplemented;
+
 #endif
 }
 
@@ -197,7 +281,9 @@ PXBool PXAPI PXDebugPauseOther(PXDebug* const pxDebug, const PXProcessHandle pxP
 #if OSUnix
     return PXFalse;
 #elif PXOSWindowsDestop
-    return pxDebug->XDebugBreakProcess(pxProcessHandle); // Windows XP, Kernel32.dll, winbase.h
+	const PXDebugBreakProcess pxDebugBreakProcess = pxDebug->XDebugBreakProcess;
+
+    return pxDebugBreakProcess(pxProcessHandle); // Windows XP, Kernel32.dll, winbase.h
 #endif
 }
 
@@ -223,12 +309,14 @@ PXActionResult PXAPI PXDebugDetach(PXDebug* const pxDebug)
 
 #elif PXOSWindowsDestop
 
-	if(!pxDebug->XDebugActiveProcessStop)
+	const PXDebugActiveProcessStop pxDebugActiveProcessStop = pxDebug->XDebugActiveProcessStop;
+
+	if(!pxDebugActiveProcessStop)
 	{
 		return PXActionRefusedNotSupported;
 	}
 
-	const BOOL sucessfulCode = pxDebug->XDebugActiveProcessStop(pxDebug->Process.ProcessID);
+	const BOOL sucessfulCode = pxDebugActiveProcessStop(pxDebug->Process.ProcessID);
 	const PXBool sucessful = sucessfulCode != 0;
 
 	PXActionOnErrorFetchAndReturn(!sucessful);
@@ -291,9 +379,12 @@ void PXAPI PXDebugStackTrace(PXDebug* const pxDebug)
 
 	printf("+\n");
 
+
+	const PXStackWalk64 pxStackWalk64 = pxDebug->XStackWalk64;
+
 	for (PXSize frame = 0; ; ++frame)
 	{
-		const BOOL result = pxDebug->XStackWalk64
+		const BOOL result = pxStackWalk64
 		(
 			machineType,
 			pxDebug->Process.ProcessHandle,
@@ -327,7 +418,8 @@ void PXAPI PXDebugStackTrace(PXDebug* const pxDebug)
 		pxMSDebugSymbol.Symbol.SizeOfStruct = sizeof(PXMSDebugSymbol);
 		pxMSDebugSymbol.Symbol.MaxNameLength = PXMSDebugSymbolNameSize;
 
-		const BOOL getResult = pxDebug->XSymGetSymFromAddr64(pxDebug->Process.ProcessHandle, (ULONG64)stackFrame.AddrPC.Offset, &displacement, &pxMSDebugSymbol.Symbol);
+		const PXSymGetSymFromAddr64 pXSymGetSymFromAddr64 = pxDebug->XSymGetSymFromAddr64;
+		const BOOL getResult = pXSymGetSymFromAddr64(pxDebug->Process.ProcessHandle, (ULONG64)stackFrame.AddrPC.Offset, &displacement, &pxMSDebugSymbol.Symbol);
 		const PXBool getFailed = getResult != 0;
 
 		PXSize nameBufferSize = 512;
@@ -335,8 +427,8 @@ void PXAPI PXDebugStackTrace(PXDebug* const pxDebug)
 
 		PXActionResult xxx = PXErrorCurrent();
 
-
-		const DWORD  decResultSize = pxDebug->XUnDecorateSymbolName(pxMSDebugSymbol.Symbol.Name, (PSTR)nameBuffer, nameBufferSize, UNDNAME_COMPLETE);
+		const PXUnDecorateSymbolName pxUnDecorateSymbolName = pxDebug->XUnDecorateSymbolName;
+		const DWORD  decResultSize = pxUnDecorateSymbolName(pxMSDebugSymbol.Symbol.Name, (PSTR)nameBuffer, nameBufferSize, UNDNAME_COMPLETE);
 
 #if 0
 		printf
@@ -428,6 +520,7 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
 {
 #if OSUnix
 #elif PXOSWindowsDestop
+	const PXWaitForDebugEvent pxWaitForDebugEvent = pxDebug->XWaitForDebugEvent;
 
 	DEBUG_EVENT debugEvent;
 	DWORD dwMilliseconds = 0;
@@ -435,7 +528,7 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
 
 	// WaitForDebugEvent() Windows XP, Kernel32.dll, debugapi.h
 	// WaitForDebugEventEx() Windows 10, Kernel32.dll, debugapi.h
-	const BOOL result = pxDebug->XWaitForDebugEvent(&debugEvent, 0); // Windows XP, Kernel32.dll, debugapi.h
+	const BOOL result = pxWaitForDebugEvent(&debugEvent, 0); // Windows XP, Kernel32.dll, debugapi.h
 	PXActionOnErrorFetchAndReturn(!result);
 
 	switch (debugEvent.dwDebugEventCode) // Process the debugging event code.
@@ -690,12 +783,133 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
 	dwContinueStatus = DBG_EXCEPTION_NOT_HANDLED;
 
 	// Resume executing the thread that reported the debugging event.
-	const BOOL succ = pxDebug->XContinueDebugEvent(debugEvent.dwProcessId, debugEvent.dwThreadId, dwContinueStatus);
+	const PXContinueDebugEvent pxContinueDebugEvent = (PXContinueDebugEvent)pxDebug->XContinueDebugEvent;
+	const BOOL succ = pxContinueDebugEvent(debugEvent.dwProcessId, debugEvent.dwThreadId, dwContinueStatus);
 
 	PXActionOnErrorFetchAndReturn(!succ);
 
 	return PXActionSuccessful;
 
+#endif
+}
+
+
+#if OSUnix
+#elif PXOSWindowsDestop
+BOOL CALLBACK PXLibraryNameSymbolEnumerate(PSYMBOL_INFO pSymInfo, ULONG SymbolSize, PVOID UserContext)
+{
+	PXSymbolEnumerator* const pxSymbolEnumerator = (PXSymbolEnumerator*)UserContext;
+
+	PXSymbol* pxSymbol = &pxSymbolEnumerator->SymbolList[pxSymbolEnumerator->Amount];
+	pxSymbol->TypeIndex = pSymInfo->TypeIndex;
+	pxSymbol->Index = pSymInfo->Index;
+	pxSymbol->Size = pSymInfo->Size;
+	pxSymbol->ModBase = pSymInfo->ModBase;
+	pxSymbol->Flags = pSymInfo->Flags;
+	pxSymbol->Address = pSymInfo->Address;
+	pxSymbol->Register = pSymInfo->Register;
+	pxSymbol->Scope = pSymInfo->Scope;
+	pxSymbol->Type = (PXSymbolType)pSymInfo->Tag;
+
+	PXTextCopyA(pSymInfo->Name, pSymInfo->NameLen, pxSymbol->Name, 64);
+
+	++(pxSymbolEnumerator->Amount);
+
+	return PXTrue;
+}
+#endif
+
+
+PXActionResult PXAPI PXDebugLibrarySymbolsFetch(PXDebug* const pxDebug, const PXText* const libraryFilePath, PXSymbol* const pxSymbolList, PXSize* const amount)
+{
+#if OSUnix
+	return PXFalse;
+
+#elif PXOSWindowsDestop
+
+	PXSymbolEnumerator pxSymbolEnumerator;
+	pxSymbolEnumerator.SymbolList = 0;
+	pxSymbolEnumerator.Amount = 0;
+	pxSymbolEnumerator.Size = 128;
+
+	PXNewList(PXSymbolEnumerator, pxSymbolEnumerator.Size, &pxSymbolEnumerator.SymbolList, PXNull);
+
+	PXProcess pxProcess;
+	PXProcessCurrent(&pxProcess);
+
+	// Initialize
+	{
+		const PXSymInitialize pxSymInitialize = (PXSymInitialize)pxDebug->SymbolServerInitialize;
+		const PXBool status = pxSymInitialize(pxProcess.ProcessHandle, PXNull, PXFalse); // DbgHelp.dll 5.1 or later 
+
+		if(!status)
+		{
+			return PXActionFailedInitialization;
+		}
+	}
+
+	const PXSymLoadModule pxSymbolModuleLoad = pxDebug->SymbolModuleLoad;
+	const DWORD64 baseOfDll = pxSymbolModuleLoad // DbgHelp.dll 5.1 or later        SymLoadModuleEx, DbgHelp.dll 6.0 or later
+	(
+		pxProcess.ProcessHandle,
+		PXNull,
+		libraryFilePath->TextA,
+		PXNull,
+		0,
+		0
+	);
+
+	// On load failure, cleanup and exit
+	{
+		const PXBool wasLoadingSuccessful = baseOfDll != 0;
+
+		if(!wasLoadingSuccessful)
+		{
+			const PXSymCleanup pxSymCleanup = (PXSymCleanup)pxDebug->SymbolServerCleanup;
+			const PXBool cleanupSuccess = pxSymCleanup(pxProcess.ProcessHandle); // DbgHelp.dll 5.1 or later 
+
+			if(!cleanupSuccess)
+			{
+				return PXActionFailedCleanup;
+			}
+
+			return PXActionFailedModuleLoad;
+		}
+	}
+
+	// Enumerate all symvols
+	{
+		// SymEnumSym, SymEnumerateSymbols64 is outdated?
+		const PXSymEnumSymbols pxSymbolEnumerate = (PXSymEnumSymbols)pxDebug->SymbolEnumerate; // DbgHelp.dll 5.1 or later 
+		const PXBool enumerateResult = pxSymbolEnumerate
+		(
+			pxProcess.ProcessHandle,
+			baseOfDll,
+			0,
+			PXLibraryNameSymbolEnumerate,
+			&pxSymbolEnumerator
+		);
+
+		if(!enumerateResult)
+		{
+			return PXActionFailedDataFetch;
+		}
+	}
+
+	// Final cleanup
+	{
+		const PXSymCleanup pxSymCleanup = pxDebug->SymbolServerCleanup;
+		const PXBool cleanupSuccess = pxSymCleanup(pxProcess.ProcessHandle); // DbgHelp.dll 5.1 or later 
+
+		if(!cleanupSuccess)
+		{
+			return PXActionFailedCleanup;
+		}
+	}
+
+	return PXActionSuccessful;
+#else
+	return PXActionNotSupportedByOperatingSystem;
 #endif
 }
 
@@ -721,4 +935,3 @@ PXThreadResult PXAPI PXDebugLoop(PXDebug* const pxDebug)
 
 	return PXActionSuccessful;
 }
-#endif

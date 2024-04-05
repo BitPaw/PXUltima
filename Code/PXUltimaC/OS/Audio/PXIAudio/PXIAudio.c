@@ -1,7 +1,5 @@
 #include "PXIAudio.h"
 
-#if PXAudioSystemWindowsIAudioEnable 
-
 #include <audioclient.h> // Windows Vista (+UWP) 
 //#pragma comment(lib, "dsound.lib") 
 
@@ -287,4 +285,3 @@ PXActionResult PXAPI PXIAudioDevicePause(PXAudio* const pxAudio, PXAudioDevice* 
 {
     return PXActionRefusedNotImplemented;
 }
-#endif

@@ -2,6 +2,7 @@
 
 #include <Media/TIFF/PXTIFF.h>
 #include <OS/File/PXFile.h>
+#include <OS/Console/PXConsole.h>
 
 #define  PXCanonRaw3FTYPID PXInt32Make('f', 't', 'y', 'p')
 #define  PXCanonRaw3FREEID PXInt32Make('f', 'r', 'e', 'e')
@@ -247,13 +248,21 @@ PXActionResult PXAPI PXCanonRaw3BlockRead(PXCanonRaw3Chunk* const pxCanonRaw3Chu
 	}
 }
 
-PXActionResult PXAPI PXCanonRaw3LoadFromFile(PXImage* const pxImage, PXFile* const pxFile)
+PXActionResult PXAPI PXCanonRaw3LoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
-	PXCanonRaw3 pxCanonRaw3;
-	PXClear(PXCanonRaw3, &pxCanonRaw3);
+	PXFile* const pxFile = pxResourceLoadInfo->FileReference;
 
-#if PXCanonRaw3Debug
-	printf("[CR3] Start parsing...\n");
+	PXCanonRaw3 pxCanonRaw3;
+	PXClear(PXCanonRaw3, &pxCanonRaw3);	
+
+#if PXLogEnable && PXCanonRaw3Debug
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"CR3",
+		"Load",
+		"Start parsing..."
+	);
 #endif
 
 	while (!PXFileIsAtEnd(pxFile))
@@ -277,8 +286,17 @@ PXActionResult PXAPI PXCanonRaw3LoadFromFile(PXImage* const pxImage, PXFile* con
 		// if no ftyp is contaned, use "Major_brand='mp41', minor_version=0, and the single compatible brand 'mp41'."
 		PXFileReadI32UE(pxFile, &amountOfContainers, PXEndianBig);
 
-#if PXCanonRaw3Debug
-		printf("[CR3] Boxes detected <%i>\n", amountOfContainers);
+
+
+#if PXLogEnable && PXCanonRaw3Debug
+		PXLogPrint
+		(
+			PXLoggingInfo,
+			"CR3",
+			"Load",
+			"Boxes detected <%i>",
+			amountOfContainers
+		);
 #endif
 
 		for (PXInt32U i = 0; i < amountOfContainers; ++i)
@@ -290,14 +308,7 @@ PXActionResult PXAPI PXCanonRaw3LoadFromFile(PXImage* const pxImage, PXFile* con
 		
 
 		}
-
-	
-
 	}
-
-
-
-
 
 	// int, 24 BE
 	// ftypcrx // char[8]
@@ -306,12 +317,20 @@ PXActionResult PXAPI PXCanonRaw3LoadFromFile(PXImage* const pxImage, PXFile* con
 
 	// MOOV
 
-	printf("[CR3] Finished parsing.\n");
+#if PXLogEnable && PXCanonRaw3Debug
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"CR3",
+		"Load",
+		"Finished parsing"
+	);
+#endif
 
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXCanonRaw3SaveToFile(PXImage* const pxImage, PXFile* const pxFile)
+PXActionResult PXAPI PXCanonRaw3SaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
 {
 	return PXActionRefusedNotImplemented;
 }

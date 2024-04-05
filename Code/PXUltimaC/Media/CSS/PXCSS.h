@@ -3,16 +3,7 @@
 
 #include "../PXResource.h"
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-	PXPublic PXActionResult PXAPI PXCSSLoadFromFile(PXDocument* const pxDocument, PXFile* const pxFile);
-	PXPublic PXActionResult PXAPI PXCSSSaveToFile(PXDocument* const pxDocument, PXFile* const pxFile);
-
-#ifdef __cplusplus
-}
-#endif
+PXPublic PXActionResult PXAPI PXCSSLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXCSSSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
 
 #endif

@@ -620,7 +620,13 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
 
                                 if (sucessful)
                                 {
-                                    const PXActionResult materialFileCompileResult = PXMTLLoadFromFile(pxMaterialContaier, &materialFile);
+                                    PXResourceLoadInfo pxResourceLoadInfo;
+                                    PXClear(PXResourceLoadInfo, &pxResourceLoadInfo);
+                                    pxResourceLoadInfo.Target = pxMaterialContaier;
+                                    pxResourceLoadInfo.FileReference = &materialFile;
+                                    pxResourceLoadInfo.Type = PXGraphicResourceTypeMaterialList;
+
+                                    const PXActionResult materialFileCompileResult = PXMTLLoadFromFile(&pxResourceLoadInfo);
                                 }
                             }
                         }                   

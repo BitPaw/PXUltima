@@ -64,12 +64,6 @@ typedef HRESULT(WINAPI* PXD3DXGetShaderConstantTableEx)(CONST DWORD* pFunction, 
 
 #endif
 
-
-
-
-
-
-
 PXActionResult PXAPI PXDirectX9Initialize(PXDirectX9* const pxDirectX9, PXGraphicInitializeInfo* const pxGraphicInitializeInfo)
 {
     // Open directX9 lib

@@ -4,11 +4,6 @@
 #include <Media/PXResource.h>
 #include <OS/Error/PXActionResult.h>
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
 	typedef enum PXLobbyType_
 	{
 		PXLobbyTypeInvalid,
@@ -195,11 +190,6 @@ extern "C"
 	typedef PXActionResult(PXAPI* PXLobbyEquippedProfileItemHas)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer, PXLobbyPlayerItem* const pxLobbyPlayerItem);
 	typedef PXActionResult(PXAPI* PXLobbyProfileItemPropertyStringGet)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer, PXLobbyPlayerItem* const pxLobbyPlayerItem);
 	typedef PXActionResult(PXAPI* PXLobbyProfileItemPropertyUintGet)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer, PXLobbyPlayerItem* const pxLobbyPlayerItem);
-#endif
-
-
-#ifdef __cplusplus
-}
 #endif
 
 #endif

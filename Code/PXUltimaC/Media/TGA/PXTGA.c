@@ -31,7 +31,7 @@ PXTGABitsPerPixel PXAPI ConvertToPixelDepth(const unsigned char pixelDepth)
 	}
 }
 
-unsigned char PXAPI ConvertFromPixelDepth(const PXTGABitsPerPixel bitsPerPixel)
+PXInt8U PXAPI ConvertFromPixelDepth(const PXTGABitsPerPixel bitsPerPixel)
 {
 	switch(bitsPerPixel)
 	{
@@ -89,7 +89,7 @@ PXTGAImageDataType PXAPI ConvertToImageDataType(const unsigned char id)
 	}
 }
 
-unsigned char PXAPI ConvertFromImageDataType(const PXTGAImageDataType imageDataType)
+PXInt8U PXAPI ConvertFromImageDataType(const PXTGAImageDataType imageDataType)
 {
 	switch(imageDataType)
 	{
@@ -125,11 +125,6 @@ PXSize PXAPI PXTGAFilePredictSize(const PXSize width, const PXSize height, const
 	return 0;
 }
 
-void PXAPI PXTGAConstruct(PXTGA* const tga)
-{
-	PXClear(PXTGA, tga);
-}
-
 void PXAPI PXTGADestruct(PXTGA* const tga)
 {
 
@@ -142,7 +137,7 @@ PXActionResult PXAPI PXTGALoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 	PXTGA tgaOBJ;
 	PXTGA* tga = &tgaOBJ;
 
-	PXTGAConstruct(tga);
+	PXClear(PXTGA, tga);
 
 	PXInt16U colorPaletteChunkEntryIndex = 0;
 	PXInt16U colorPaletteChunkSize = 0;

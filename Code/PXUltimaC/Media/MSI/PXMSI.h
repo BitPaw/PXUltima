@@ -3,22 +3,13 @@
 
 #include "../PXResource.h"
 
-#ifdef __cplusplus
-extern "C"
+typedef struct PXMSI_
 {
-#endif
-
-	typedef struct PXMSI_
-	{
-		int x;
-	}
-	PXMSI;
-
-	PXPublic PXActionResult PXAPI PXMSILoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-	PXPublic PXActionResult PXAPI PXMSISaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
-
-#ifdef __cplusplus
+	int x;
 }
-#endif
+PXMSI;
+
+PXPublic PXActionResult PXAPI PXMSILoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXMSISaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
 
 #endif

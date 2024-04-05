@@ -6,13 +6,17 @@
 
 #if OSUnix
 
-#elif WindowsAtleastVista
+#elif OSWindows  
 
 #include <windows.h>
+
+#if WindowsAtleastVista
 #include <joystickapi.h> // Missing?? -> documentation says you should use "Dinput.h" but thats not correct.
+#else
+#include <MMSystem.h>
+#endif
 
 #pragma comment( lib, "winmm.lib" )
-
 
 typedef UINT(WINAPI* PXjoyGetNumDevs)(void);
 typedef MMRESULT(WINAPI* PXjoyGetDevCapsA)(_In_ UINT_PTR uJoyID, _Out_writes_bytes_(cbjc) LPJOYCAPSA pjc, _In_ UINT cbjc);

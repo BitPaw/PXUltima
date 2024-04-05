@@ -3,22 +3,13 @@
 
 #include "../PXResource.h"
 
-#ifdef __cplusplus
-extern "C"
+typedef struct PXMatroska_
 {
-#endif
-
-	typedef struct PXMatroska_
-	{
-		unsigned int __dummy__;
-	}
-	PXMatroska;
-
-	PXPublic PXActionResult PXAPI PXMatroskaLoadFromFile(PXVideo* const pxVideo, PXFile* const pxFile);
-	PXPublic PXActionResult PXAPI PXMatroskaSaveToFile(PXVideo* const pxVideo, PXFile* const pxFile);
-
-#ifdef __cplusplus
+	unsigned int __dummy__;
 }
-#endif
+PXMatroska;
+
+PXPublic PXActionResult PXAPI PXMatroskaLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXMatroskaSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
 
 #endif

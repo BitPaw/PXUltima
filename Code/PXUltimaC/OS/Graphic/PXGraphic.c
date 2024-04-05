@@ -1,7 +1,5 @@
 #include "PXGraphic.h"
 
-#if PXGraphicUSE
-
 #include <Media/PXText.h>
 #include <Media/ADLER/PXAdler32.h>
 #include <Math/PXMath.h>
@@ -514,7 +512,6 @@ PXActionResult PXAPI PXGraphicSpriteDraw(PXGraphic* const pxGraphic, const PXSpr
             return PXActionNotSupportedByLibrary;
     }
 }
-#endif
 
 void PXAPI PXCameraConstruct(PXCamera* const camera)
 {

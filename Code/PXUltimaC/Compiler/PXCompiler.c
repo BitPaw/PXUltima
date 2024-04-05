@@ -12,12 +12,12 @@
 #include <stdio.h>
 #endif
 
-void PXCompilerSettingsConstruct(PXCompilerSettings* const compilerSettings)
+void PXAPI PXCompilerSettingsConstruct(PXCompilerSettings* const compilerSettings)
 {
 	PXMemoryClear(compilerSettings, sizeof(PXCompilerSettings));
 }
 
-void PXCompilerSymbolEntryAdd(PXFile* const pxFile, const PXCompilerSymbolEntry* const compilerSymbolEntry)
+void PXAPI PXCompilerSymbolEntryAdd(PXFile* const pxFile, const PXCompilerSymbolEntry* const compilerSymbolEntry)
 {
 	const PXInt8U symbolID = compilerSymbolEntry->ID;
 
@@ -279,7 +279,7 @@ void PXCompilerSymbolEntryAdd(PXFile* const pxFile, const PXCompilerSymbolEntry*
 #endif
 }
 
-PXSize PXCompilerSymbolEntryMergeCurrentWithNext(PXFile* const pxFile, PXCompilerSymbolEntry* const compilerSymbolEntry)
+PXSize PXAPI PXCompilerSymbolEntryMergeCurrentWithNext(PXFile* const pxFile, PXCompilerSymbolEntry* const compilerSymbolEntry)
 {
 	PXSize offset = 0;
 	
@@ -335,7 +335,7 @@ PXSize PXCompilerSymbolEntryMergeCurrentWithNext(PXFile* const pxFile, PXCompile
 	return PXActionSuccessful;
 }
 
-PXSize PXCompilerSymbolRewind(PXFile* const pxFile, const PXSize amount)
+PXSize PXAPI PXCompilerSymbolRewind(PXFile* const pxFile, const PXSize amount)
 {
 	PXSize reveredSize = pxFile->DataCursor;
 	PXBool isInvalidToken;
@@ -357,7 +357,7 @@ PXSize PXCompilerSymbolRewind(PXFile* const pxFile, const PXSize amount)
 	return reveredSize;
 }
 
-PXSize PXCompilerSymbolEntryExtract(PXFile* const pxFile, PXCompilerSymbolEntry* const compilerSymbolEntry)
+PXSize PXAPI PXCompilerSymbolEntryExtract(PXFile* const pxFile, PXCompilerSymbolEntry* const compilerSymbolEntry)
 {
 	PXSize readBytes = 0;
 
@@ -392,7 +392,7 @@ PXSize PXCompilerSymbolEntryExtract(PXFile* const pxFile, PXCompilerSymbolEntry*
 	return readBytes;
 }
 
-PXSize PXCompilerSymbolEntryForward(PXFile* const pxFile)
+PXSize PXAPI PXCompilerSymbolEntryForward(PXFile* const pxFile)
 {
 	const PXSize totalSize = 
 		sizeof(PXInt8U) +
@@ -415,7 +415,7 @@ PXSize PXCompilerSymbolEntryForward(PXFile* const pxFile)
 	return pxFile->DataCursor - positionBefore;
 }
 
-PXSize PXCompilerSymbolEntryPeek(PXFile* const pxFile, PXCompilerSymbolEntry* const compilerSymbolEntry)
+PXSize PXAPI PXCompilerSymbolEntryPeek(PXFile* const pxFile, PXCompilerSymbolEntry* const compilerSymbolEntry)
 {
 	const PXSize readBytes = PXCompilerSymbolEntryExtract(pxFile, compilerSymbolEntry);
 
@@ -424,7 +424,7 @@ PXSize PXCompilerSymbolEntryPeek(PXFile* const pxFile, PXCompilerSymbolEntry* co
 	return readBytes;
 }
 
-PXCompilerSymbolLexer PXCompilerTryAnalyseType(PXFile* const tokenStream, const char* const text, const PXSize textSize, PXCompilerSymbolEntry* const compilerSymbolEntry)
+PXCompilerSymbolLexer PXAPI PXCompilerTryAnalyseType(PXFile* const tokenStream, const char* const text, const PXSize textSize, PXCompilerSymbolEntry* const compilerSymbolEntry)
 {
 	if (textSize == 1)
 	{
@@ -1019,7 +1019,7 @@ PXActionResult PXAPI PXCompilerLexicalAnalysis(PXFile* const inputStream, PXFile
 	return PXActionSuccessful;
 }
 
-PXBool PXCompilerParseStringUntilNewLine(PXFile* const inputStream, PXText* const pxText)
+PXBool PXAPI PXCompilerParseStringUntilNewLine(PXFile* const inputStream, PXText* const pxText)
 {
 	PXCompilerSymbolEntry compilerSymbolEntry;
 
@@ -1058,7 +1058,7 @@ PXBool PXCompilerParseStringUntilNewLine(PXFile* const inputStream, PXText* cons
 	return PXYes;
 }
 
-PXBool PXCompilerParseStringUntilNewLineA(PXFile* const inputStream, char* const text, const PXSize textMaxSize, PXSize* const textSize)
+PXBool PXAPI PXCompilerParseStringUntilNewLineA(PXFile* const inputStream, char* const text, const PXSize textMaxSize, PXSize* const textSize)
 {
 	PXText pxText;
 	PXTextConstructFromAdressA(&pxText, text, 0, textMaxSize);
@@ -1069,7 +1069,7 @@ PXBool PXCompilerParseStringUntilNewLineA(PXFile* const inputStream, char* const
 	return result;
 }
 
-PXBool PXCompilerParseIntUnsignedSingle(PXFile* const inputStream, PXCompilerSymbolEntry* const compilerSymbolEntry, unsigned int* const value)
+PXBool PXAPI PXCompilerParseIntUnsignedSingle(PXFile* const inputStream, PXCompilerSymbolEntry* const compilerSymbolEntry, unsigned int* const value)
 {
 	PXCompilerSymbolEntryExtract(inputStream, compilerSymbolEntry);
 
@@ -1080,7 +1080,7 @@ PXBool PXCompilerParseIntUnsignedSingle(PXFile* const inputStream, PXCompilerSym
 	return isInt;
 }
 
-PXBool PXCompilerParseFloatSingle(PXFile* const inputStream, float* const values)
+PXBool PXAPI PXCompilerParseFloatSingle(PXFile* const inputStream, float* const values)
 {
 	PXCompilerSymbolEntry compilerSymbolEntry;
 
@@ -1107,7 +1107,7 @@ PXBool PXCompilerParseFloatSingle(PXFile* const inputStream, float* const values
 	return isValid;
 }
 
-PXBool PXCompilerParseFloatList(PXFile* const inputStream, float* const values, const PXSize valuesMaxSize, PXSize* const valuesSize)
+PXBool PXAPI PXCompilerParseFloatList(PXFile* const inputStream, float* const values, const PXSize valuesMaxSize, PXSize* const valuesSize)
 {
 	for (PXSize i = 0; i < valuesMaxSize; ++i)
 	{

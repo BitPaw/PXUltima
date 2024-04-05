@@ -5,28 +5,18 @@
 
 #define PXCanonRaw3UUIDSize 16u
 
-#ifdef __cplusplus
-extern "C"
+typedef struct PXCanonRaw3_
 {
-#endif
 
 
-	typedef struct PXCanonRaw3_
-	{
+	// ISO chunk
+	PXInt32U ISOChunkSize;
 
-
-		// ISO chunk
-		PXInt32U ISOChunkSize;
-
-		char UUID[PXCanonRaw3UUIDSize];
-	}
-	PXCanonRaw3;
-
-	PXPublic PXActionResult PXAPI PXCanonRaw3LoadFromFile(PXImage* const pxImage, PXFile* const pxFile);
-	PXPublic PXActionResult PXAPI PXCanonRaw3SaveToFile(PXImage* const pxImage, PXFile* const pxFile);
-
-#ifdef __cplusplus
+	char UUID[PXCanonRaw3UUIDSize];
 }
-#endif
+PXCanonRaw3;
+
+PXPublic PXActionResult PXAPI PXCanonRaw3LoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXCanonRaw3SaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
 
 #endif

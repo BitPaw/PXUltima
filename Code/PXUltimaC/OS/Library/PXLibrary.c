@@ -1,22 +1,35 @@
 #include "PXLibrary.h"
 
-#if PXLibraryUSE
-
 #include <OS/Error/PXActionResult.h>
 #include <OS/Memory/PXMemory.h>
 #include <OS/File/PXFile.h>
 #include <OS/Console/PXConsole.h>
 
 #if OSUnix
+#include <sys/types.h>
 #include <dlfcn.h>
+
+
+typedef void* LibraryFunction;
+typedef void* LibraryDirectoryID;
+
 #elif OSWindows
 //#include <dbghelp.h> // MISSING
+#include <windows.h>
+#include <DbgHelp.h>
 #include <stdio.h>
 #include <Psapi.h> // Psapi.lib
 #include <OS/Debug/PXDebug.h>
 
 #pragma comment( lib, "Dbghelp.lib" ) 
 #pragma comment( lib, "Psapi.lib " )
+
+
+//typedef FARPROC LibraryFunction;
+
+typedef int (PXAPI* LibraryFunction)();
+
+//typedef DLL_DIRECTORY_COOKIE LibraryDirectoryID;
 
 /* PSYMBOL_INFO:MISSING
 
@@ -82,7 +95,6 @@ BF::ErrorCode BF::Library::SearchDirectoryRemove(LibraryDirectoryID& libraryDire
 
 	return ErrorCode::Successful;
 }*/
-
 
 
 PXActionResult PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* const filePath)
@@ -316,122 +328,3 @@ PXActionResult PXAPI PXLibraryName(PXLibrary* const pxLibrary, PXText* const lib
 
 	return PXActionSuccessful;
 }
-
-#if OSUnix
-#elif PXOSWindowsDestop
-BOOL CALLBACK PXLibraryNameSymbolEnumerate(PSYMBOL_INFO pSymInfo, ULONG SymbolSize, PVOID UserContext)
-{
-	PXSymbol pxSymbol;
-	pxSymbol.TypeIndex = pSymInfo->TypeIndex;
-	pxSymbol.Index = pSymInfo->Index;
-	pxSymbol.Size = pSymInfo->Size;
-	pxSymbol.ModBase = pSymInfo->ModBase;
-	pxSymbol.Flags = pSymInfo->Flags;
-	pxSymbol.Address = pSymInfo->Address;
-	pxSymbol.Register = pSymInfo->Register;
-	pxSymbol.Scope = pSymInfo->Scope;
-	pxSymbol.Type = (PXSymbolType)pSymInfo->Tag;
-	//pxSymbol.Name;
-	PXTextConstructFromAdressA(&pxSymbol.Name, pSymInfo->Name, pSymInfo->NameLen, pSymInfo->NameLen);
-
-	PXFunctionInvoke(((PXSymbolDetectedEvent)UserContext), &pxSymbol);
-
-	return PXTrue;
-}
-#endif
-/*
-//BOOL PXLibraryNameSymbolEnumerate(PCSTR SymbolName, DWORD64 SymbolAddress, ULONG SymbolSize, PVOID UserContext)
-{
-	printf("| %p | %zi | %-30s |\n", SymbolAddress, SymbolSize, SymbolName);
-
-	return PXTrue;
-}*/
-
-PXActionResult PXAPI PXLibraryParseSymbols(const PXText* const libraryFilePath, PXSymbolDetectedEvent pxSymbolDetectedEvent)
-{
-	PXDebug pxDebug;
-
-#if OSUnix
-	return PXFalse;
-
-#elif PXOSWindowsDestop
-
-	PXDebugDebuggerInitialize(&pxDebug);
-
-	PXProcess pxProcess;
-	PXProcessCurrent(&pxProcess);
-
-	// Initialize
-	{		
-		const PXBool status = pxDebug.SymbolServerInitialize(pxProcess.ProcessHandle, PXNull, PXFalse); // DbgHelp.dll 5.1 or later 
-
-		if (!status)
-		{
-			return PXActionFailedInitialization;
-		}
-	}
-
-	const DWORD64 baseOfDll = pxDebug.SymbolModuleLoad // DbgHelp.dll 5.1 or later        SymLoadModuleEx, DbgHelp.dll 6.0 or later
-	(
-		pxProcess.ProcessHandle,
-		PXNull,
-		libraryFilePath->TextA,
-		PXNull,
-		0,
-		0
-	);
-
-	// On load failure, cleanup and exit
-	{
-		const PXBool wasLoadingSuccessful = baseOfDll != 0;
-
-		if (!wasLoadingSuccessful)
-		{
-			const PXBool cleanupSuccess = pxDebug.SymbolServerCleanup(pxProcess.ProcessHandle); // DbgHelp.dll 5.1 or later 
-
-			if (!cleanupSuccess)
-			{
-				return PXActionFailedCleanup; 
-			}
-
-			return PXActionFailedModuleLoad;
-		}
-	}
-
-	// Enumerate all symvols
-	{
-		// SymEnumSym, SymEnumerateSymbols64 is outdated?
-
-		const PXBool enumerateResult = pxDebug.SymbolEnumerate// DbgHelp.dll 5.1 or later 
-		(
-			pxProcess.ProcessHandle,
-			baseOfDll,
-			0,
-			PXLibraryNameSymbolEnumerate,
-			pxSymbolDetectedEvent
-		);
-
-		if (!enumerateResult)
-		{
-			return PXActionFailedDataFetch;
-		}
-	}
-
-	// Final cleanup
-	{
-		const PXBool cleanupSuccess = pxDebug.SymbolServerCleanup(pxProcess.ProcessHandle); // DbgHelp.dll 5.1 or later 
-
-		if (!cleanupSuccess)
-		{
-			return PXActionFailedCleanup;
-		}
-	}
-
-	PXDebugDestruct(&pxDebug);
-
-	return PXActionSuccessful;
-#else
-	return PXActionNotSupportedByOperatingSystem;
-#endif
-}
-#endif

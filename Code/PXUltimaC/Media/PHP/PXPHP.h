@@ -3,22 +3,13 @@
 
 #include "../PXResource.h"
 
-#ifdef __cplusplus
-extern "C"
+typedef struct PXPHP_
 {
-#endif
-
-	typedef struct PXPHP_
-	{
-		int x;
-	}
-	PXPHP;
-
-	PXPublic PXActionResult PXAPI PXPHPLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-	PXPublic PXActionResult PXAPI PXPHPSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
-
-#ifdef __cplusplus
+	int x;
 }
-#endif
+PXPHP;
+
+PXPublic PXActionResult PXAPI PXPHPLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXPHPSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
 
 #endif

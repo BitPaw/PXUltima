@@ -1,8 +1,5 @@
 #include "PXDirectSound.h"
 
-#if PXAudioSystemWindowsDirectSoundEnable
-
-
 #pragma comment(lib, "dsound.lib") 
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "Dxgi.lib")
@@ -1075,4 +1072,3 @@ PXActionResult PXAPI PXDirectSoundDeviceVelocitySet(PXAudioDirectSound* const px
 
 	return PXActionSuccessful;
 }
-#endif

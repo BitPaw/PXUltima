@@ -52,8 +52,11 @@ PXMTLLineType PXAPI PXMTLPeekLine(const char* const line, const PXSize lineSize)
 	}
 }
 
-PXActionResult PXAPI PXMTLLoadFromFile(PXMaterialContainer* const pxMaterialList, PXFile* const pxFile)
+PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
+	PXMaterialContainer* const pxMaterialList = (PXMaterialContainer*)pxResourceLoadInfo->Target;
+	PXFile* const pxFile = pxResourceLoadInfo->FileReference;
+
 	PXFile compiledSteam;
 
 	PXFileOpenTemporal(&compiledSteam, pxFile->DataAllocated * 6u);
@@ -269,7 +272,7 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXMaterialContainer* const pxMaterialList
 	return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXMTLSaveToFile(PXMaterialContainer* const pxMaterialList, PXFile* const pxFile)
+PXActionResult PXAPI PXMTLSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
 {
 	return PXActionRefusedNotImplemented;
 }
@@ -531,7 +534,7 @@ PXBool PXAPI PXMTLFetchMaterial(const void* const data, const PXSize dataSize, c
 {
 	const PXSize amount = PXMTLFetchAmount(data, dataSize);
 
-	PXMemoryClear(mtlMaterial, sizeof(PXMTLMaterial));
+	PXClear(PXMTLMaterial, mtlMaterial);
 
 	if (materialID > amount) // Material ID wrong/Too high
 	{

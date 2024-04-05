@@ -3,21 +3,13 @@
 
 #include "../PXResource.h"
 
-#ifdef __cplusplus
-extern "C"
+typedef struct PXMP4_
 {
-#endif
-	typedef struct PXMP4_
-	{
-		unsigned int __dummy__;
-	}
-	PXMP4;
-
-	PXPublic PXActionResult PXAPI PXMP4LoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-	PXPublic PXActionResult PXAPI PXMP4SaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
-
-#ifdef __cplusplus
+	unsigned int __dummy__;
 }
-#endif
+PXMP4;
+
+PXPublic PXActionResult PXAPI PXMP4LoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXMP4SaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
 
 #endif

@@ -259,8 +259,8 @@ PXActionResult PXAPI PXProcessHandleListAll(PXProcess* pxProcess)
 	PXNtQuerySystemInformation pxNtQuerySystemInformation;
 	PXNtQueryObject pxNtQueryObject;
 	
-	PXLibraryGetSymbolA(&pxLibraryNTDLL, (LibraryFunction*)&pxNtQuerySystemInformation, "NtQuerySystemInformation");
-	PXLibraryGetSymbolA(&pxLibraryNTDLL, (LibraryFunction*)&pxNtQueryObject, "NtQueryObject");
+	PXLibraryGetSymbolA(&pxLibraryNTDLL, &pxNtQuerySystemInformation, "NtQuerySystemInformation");
+	PXLibraryGetSymbolA(&pxLibraryNTDLL, &pxNtQueryObject, "NtQueryObject");
 
 
 

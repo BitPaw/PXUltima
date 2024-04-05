@@ -3,229 +3,222 @@
 
 #include <Media/PXType.h>
 
-#ifdef __cplusplus
-extern "C"
+// Refused => User error
+// Invalid => State error
+// Failed => Fundamental error
+typedef enum PXActionResult_
 {
-#endif
-
-	// Refused => User error
-	// Invalid => State error
-	// Failed => Fundamental error
-	typedef enum PXActionResult_
-	{
-		//---<General>-----------------------
-		PXActionInvalid, // Default iniitlialisation value, do not use.
-		PXActionSuccessful, // Action finished successful
-		PXActionSuccessWithSubstitution,
-		PXActionDidNothing, // if the function did nothing
-		PXActionFailedUnkownError, // [OTHER] Undefined error
-		//-----------------------------------
-
-		PXActionCanceledLoopDeteced, // LOOP
-
-		//-------------------------------------------------------
-		// Memory 
-		//-------------------------------------------------------
-		PXActionFailedMemoryAllocation, // A call to malloc failed due to not enough memory or the buffer is too big to fit in a free memory block. [NOMEM]
-		PXActionFailedMemoryRelease,
-
-		PXActionRefusedIndexOutOfBounce, // A given index is outside of the given space of the array.
-
-		PXActionFailedBufferRefernceLost, // Windows lost a buffer and it needs to be restord 
-		PXActionRefuedBufferSizeTooSmal,
-
-		PXActionRefuedInputBufferNull, // is NULL
-		PXActionRefuedInputBufferEmpty, // has no data, adress is not NULL but the data is
-		PXActionRefuedInputBufferTooSmal, // cant 
-		PXActionRefuedInputBufferTooBig,
-
-		PXActionRefuedOutputBufferNull, // is NULL 
-		PXActionRefuedOutputBufferTooSmal, // 
-
-		//-------------------------------------------------------
-		// Type
-		//-------------------------------------------------------
-		PXActionRefusedTypeMissmatch, // When two types are not copartible
-
-		//-------------------------------------------------------
-		// Object
-		//-------------------------------------------------------
-		PXActionRefusedObjectNotReady, // Object can't process this function, setup is needed or its busy
-		PXActionRefusedObjectNotFound, // [404] Invalid ID or HANDLE -> Does not exist
-		PXActionRefusedObjectAlreadyExists, // [EXIST]
-		PXActionRefusedObjectStateInvalid,
-		PXActionRefuedObjectStateDoesNotAllowAction,
-		PXActionRefuedObjectInterfaceNotAvailable,
-		PXActionRefuedObjectNotInizialized,
-		PXActionRefuedObjectAlreadyInizialized,
-		PXActionRefuedObjectAlreadyExists,
-		PXActionRefuedObjectTypeInvalid,
-		PXActionRefuedObjectTypeNotSupported,
-		PXActionRefuedObjectAggregationNotSupported,
-		PXActionRefuedObjectPropertyNotAvailable,
-
-		PXActionRefusedObjectNameInvalid,
-		PXActionRefusedWindowsClassNameInvalid,
-		PXActionRefusedNameSpaceInvalid,
-		PXActionRefusedObjectParentInvalid,
-
-		//-------------------------------------------------------
-		// Permission
-		//-------------------------------------------------------
-		PXActionDeniedNoPermission, // [ACCES] You do not have permission to use this command.
-		PXActionDeniedPriorityTooLow,
-		PXActionYieldToOtherProcessWithHigherPriority,
-		//PXActionDenied
-
-		//-------------------------------------------------------
-		// File I/O 
-		//-------------------------------------------------------
-		
-		// Resource is available and has been loaded but containing
-		// elements caused a compile error and thus can't be used.
-		PXActionFailedResourceCompile, 
-
-
-		PXActionFailedFileNameTooLong, // NAMETOOLONG
-		PXActionRefusedTargetIsDirectory, // ISDIR
-		PXActionFailedFileDescriptorValueTooLarge, // MFILE
-		PXActionFailedTooManyLinks, // MLINK
-		PXActionFailedFileTooLarge, // FBIG
-		PXActionRefusedInvalidSeek, // SPIPE
-		PXActionFailedTooManyFilesOpenInSystem, // NFILE
-		PXActionRefusedNotADirectory, // NOTDIR
-		PXActionRefusedDirectoryNotEmpty, // NOTEMPTY
-
+	//---<General>-----------------------
+	PXActionInvalid, // Default iniitlialisation value, do not use.
+	PXActionSuccessful, // Action finished successful
+	PXActionSuccessWithSubstitution,
+	PXActionDidNothing, // if the function did nothing
+	PXActionFailedUnkownError, // [OTHER] Undefined error
+	//-----------------------------------
+
+	PXActionCanceledLoopDeteced, // LOOP
+
+	//-------------------------------------------------------
+	// Memory 
+	//-------------------------------------------------------
+	PXActionFailedMemoryAllocation, // A call to malloc failed due to not enough memory or the buffer is too big to fit in a free memory block. [NOMEM]
+	PXActionFailedMemoryRelease,
+
+	PXActionRefusedIndexOutOfBounce, // A given index is outside of the given space of the array.
+
+	PXActionFailedBufferRefernceLost, // Windows lost a buffer and it needs to be restord 
+	PXActionRefuedBufferSizeTooSmal,
+
+	PXActionRefuedInputBufferNull, // is NULL
+	PXActionRefuedInputBufferEmpty, // has no data, adress is not NULL but the data is
+	PXActionRefuedInputBufferTooSmal, // cant 
+	PXActionRefuedInputBufferTooBig,
+
+	PXActionRefuedOutputBufferNull, // is NULL 
+	PXActionRefuedOutputBufferTooSmal, // 
+
+	//-------------------------------------------------------
+	// Type
+	//-------------------------------------------------------
+	PXActionRefusedTypeMissmatch, // When two types are not copartible
+
+	//-------------------------------------------------------
+	// Object
+	//-------------------------------------------------------
+	PXActionRefusedObjectNotReady, // Object can't process this function, setup is needed or its busy
+	PXActionRefusedObjectNotFound, // [404] Invalid ID or HANDLE -> Does not exist
+	PXActionRefusedObjectAlreadyExists, // [EXIST]
+	PXActionRefusedObjectStateInvalid,
+	PXActionRefuedObjectStateDoesNotAllowAction,
+	PXActionRefuedObjectInterfaceNotAvailable,
+	PXActionRefuedObjectNotInizialized,
+	PXActionRefuedObjectAlreadyInizialized,
+	PXActionRefuedObjectAlreadyExists,
+	PXActionRefuedObjectTypeInvalid,
+	PXActionRefuedObjectTypeNotSupported,
+	PXActionRefuedObjectAggregationNotSupported,
+	PXActionRefuedObjectPropertyNotAvailable,
+
+	PXActionRefusedObjectNameInvalid,
+	PXActionRefusedWindowsClassNameInvalid,
+	PXActionRefusedNameSpaceInvalid,
+	PXActionRefusedObjectParentInvalid,
+
+	//-------------------------------------------------------
+	// Permission
+	//-------------------------------------------------------
+	PXActionDeniedNoPermission, // [ACCES] You do not have permission to use this command.
+	PXActionDeniedPriorityTooLow,
+	PXActionYieldToOtherProcessWithHigherPriority,
+	//PXActionDenied
+
+	//-------------------------------------------------------
+	// File I/O 
+	//-------------------------------------------------------
+
+	// Resource is available and has been loaded but containing
+	// elements caused a compile error and thus can't be used.
+	PXActionFailedResourceCompile,
+
+
+	PXActionFailedFileNameTooLong, // NAMETOOLONG
+	PXActionRefusedTargetIsDirectory, // ISDIR
+	PXActionFailedFileDescriptorValueTooLarge, // MFILE
+	PXActionFailedTooManyLinks, // MLINK
+	PXActionFailedFileTooLarge, // FBIG
+	PXActionRefusedInvalidSeek, // SPIPE
+	PXActionFailedTooManyFilesOpenInSystem, // NFILE
+	PXActionRefusedNotADirectory, // NOTDIR
+	PXActionRefusedDirectoryNotEmpty, // NOTEMPTY
 
-		//-------------------------------------------------------
-		// API 
-		//-------------------------------------------------------
-		PXActionRefusedAPIIsNotLinked, // A required API is not init or failed to do so. 
 
-		//-------------------------------------------------------
-		// Compiler 
-		//-------------------------------------------------------
-		PXActionRefusedSymbolInvalid,
+	//-------------------------------------------------------
+	// API 
+	//-------------------------------------------------------
+	PXActionRefusedAPIIsNotLinked, // A required API is not init or failed to do so. 
 
-		//-------------------------------------------------------
-		// Network 
-		//-------------------------------------------------------
-		PXActionRefusedAlreadyConnected, // [ISCONN]
-		PXActionRefusedNetworkIsDown, // [NETDOWN]
-		PXActionFailedConnectionAbortedByNetwork, // [NETRESET]
-		PXActionFailedNetworkUnreachable, // [NETUNREACH]
-		PXActionRefusedNotASocket, // [NOTSOCK]
-		PXActionFailedConnectionTimedOut, // [TIMEDOUT]
-		PXActionFailedNotConnected, // [NOTCONN]
+	//-------------------------------------------------------
+	// Compiler 
+	//-------------------------------------------------------
+	PXActionRefusedSymbolInvalid,
 
-		//-------------------------------------------------------
-		// Audio/Video
-		//-------------------------------------------------------
-		PXActionRefusedEffectNotAvailable,
+	//-------------------------------------------------------
+	// Network 
+	//-------------------------------------------------------
+	PXActionRefusedAlreadyConnected, // [ISCONN]
+	PXActionRefusedNetworkIsDown, // [NETDOWN]
+	PXActionFailedConnectionAbortedByNetwork, // [NETRESET]
+	PXActionFailedNetworkUnreachable, // [NETUNREACH]
+	PXActionRefusedNotASocket, // [NOTSOCK]
+	PXActionFailedConnectionTimedOut, // [TIMEDOUT]
+	PXActionFailedNotConnected, // [NOTCONN]
 
+	//-------------------------------------------------------
+	// Audio/Video
+	//-------------------------------------------------------
+	PXActionRefusedEffectNotAvailable,
 
-		//-------------------------------------------------------
-		// Functions
-		//-------------------------------------------------------
-		PXActionRefusedArgumentNull, // Some needed Parameter is null
-		PXActionRefusedArgumentInvalid, // [INVAL]	
 
-		//-------------------------------------------------------
-		// Library
-		//-------------------------------------------------------
-		PXActionRefusedNotSupported, // [NOTSUP] Action can't be exectuted, as the function does not exist to be used.
-		PXActionRefusedNotImplemented, // Function that exists but does not contain any code
-		PXActionNotSupportedByLibrary, // 
-		PXActionLibraryNotFound,
-		PXActionNotSupportedByOperatingSystem,
+	//-------------------------------------------------------
+	// Functions
+	//-------------------------------------------------------
+	PXActionRefusedArgumentNull, // Some needed Parameter is null
+	PXActionRefusedArgumentInvalid, // [INVAL]	
 
-		PXActionRefusedLibraryRequiredUpgrade,
+	//-------------------------------------------------------
+	// Library
+	//-------------------------------------------------------
+	PXActionRefusedNotSupported, // [NOTSUP] Action can't be exectuted, as the function does not exist to be used.
+	PXActionRefusedNotImplemented, // Function that exists but does not contain any code
+	PXActionNotSupportedByLibrary, // 
+	PXActionLibraryNotFound,
+	PXActionNotSupportedByOperatingSystem,
 
+	PXActionRefusedLibraryRequiredUpgrade,
 
-		PXActionRefusedMissingCallBack, // Callback is required but missing
 
-		PXActionFailedInitialization, // Re
-		PXActionRedundantAlreadyInitialized,
-		PXActionFailedCleanup,
-		PXActionFailedModuleLoad,
-		PXActionFailedDataFetch,
+	PXActionRefusedMissingCallBack, // Callback is required but missing
 
-		PXActionInterruptedByEvent,
-		PXActionInterruptedByFunctionCall,
+	PXActionFailedInitialization, // Re
+	PXActionRedundantAlreadyInitialized,
+	PXActionFailedCleanup,
+	PXActionFailedModuleLoad,
+	PXActionFailedDataFetch,
 
+	PXActionInterruptedByEvent,
+	PXActionInterruptedByFunctionCall,
 
 
-		PXActionRefuedPermissionDenied,
-		PXActionFailedResourcedNotEnough,
 
-		PXActionWouldBlock,
-		PXActionNowInProgress,
-		PXActionAlreadyInProgress,
+	PXActionRefuedPermissionDenied,
+	PXActionFailedResourcedNotEnough,
 
+	PXActionWouldBlock,
+	PXActionNowInProgress,
+	PXActionAlreadyInProgress,
 
-		PXActionRefusedInvalidOperationSpecified,
-		PXActionFailedStackOverflow,
-		PXActionFailedStackUnderflow,
 
+	PXActionRefusedInvalidOperationSpecified,
+	PXActionFailedStackOverflow,
+	PXActionFailedStackUnderflow,
 
-		PXActionRefuedNetworkNotConnected,
-		PXActionRefuedNetworkNotReachable,
-		PXActionFailedHostNotFound,
 
-		PXActionRefuedServiceNotRunning,
+	PXActionRefuedNetworkNotConnected,
+	PXActionRefuedNetworkNotReachable,
+	PXActionFailedHostNotFound,
 
-		xxxxxxxxxxxx,
+	PXActionRefuedServiceNotRunning,
 
-		PXActionRefuedAlreadyInUse,
+	xxxxxxxxxxxx,
 
-		PXActionRefuedProtocolTypeInvalid,
-		PXActionRefuedProtocolOptionInvalid,
-		PXActionRefuedProtocolNotSupported,
-		PXActionRefuedProtocolFamilyNotSupported,
+	PXActionRefuedAlreadyInUse,
 
-		PXActionRefuedAddressFamilyNotSupportedByProtocol,
+	PXActionRefuedProtocolTypeInvalid,
+	PXActionRefuedProtocolOptionInvalid,
+	PXActionRefuedProtocolNotSupported,
+	PXActionRefuedProtocolFamilyNotSupported,
 
+	PXActionRefuedAddressFamilyNotSupportedByProtocol,
 
 
 
-		PXActionRefuedOperationNotSupported,
 
-		PXActionCancelled,
+	PXActionRefuedOperationNotSupported,
 
-		//---<Function input>---
-		PXActionRefuedAdressInvalid, // System detected an invalid pointer
+	PXActionCancelled,
 
+	//---<Function input>---
+	PXActionRefuedAdressInvalid, // System detected an invalid pointer
 
-	
 
 
-		PXActionRefuedTextFormatUnsupported,
 
 
-		PXActionRefuedInputInvalid,
+	PXActionRefuedTextFormatUnsupported,
 
 
+	PXActionRefuedInputInvalid,
 
 
-		PXActionInvalidStateImpossible, // Is an object is used and has data that should not be possible
 
 
-		PXActionFailedElementNotFound,
+	PXActionInvalidStateImpossible, // Is an object is used and has data that should not be possible
 
-		PXActionInvalidRedundandInteraction, // The function would have no effect and is cancelled imidiatly
 
+	PXActionFailedElementNotFound,
 
+	PXActionInvalidRedundandInteraction, // The function would have no effect and is cancelled imidiatly
 
 
 
-		PXActionRefuedDriverInvalid,
-		PXActionRefuedDriverMissing,
 
 
-			PXActionRefuedFormatIllegal,
-		PXActionRefuedFormatNotSupported,
+	PXActionRefuedDriverInvalid,
+	PXActionRefuedDriverMissing,
 
 
+	PXActionRefuedFormatIllegal,
+	PXActionRefuedFormatNotSupported,
 
 
 
@@ -235,279 +228,272 @@ extern "C"
 
 
 
-		//---<File-General>------------------
-		PXActionRefusedEmptyFilePath,
-		PXActionRefusedInvalidFilePath,
 
-		PXActionFailedFileNotFound,
-		PXActionFailedNotAFile,
 
-		PXActionFailedFileMapping,// mmap() / CreateViewofFile() failed
+	//---<File-General>------------------
+	PXActionRefusedEmptyFilePath,
+	PXActionRefusedInvalidFilePath,
 
-		PXActionFailedFileCreate,
-		PXActionFailedFileDelete,
-		PXActionFailedFileOpen,
-		PXActionFailedFileClose,
-		PXActionFailedFileWrite,
-		PXActionFailedFileRead,
+	PXActionFailedFileNotFound,
+	PXActionFailedNotAFile,
 
-		//---<Socket>---------------------
-		PXActionFailedSocketRecieve,
-		PXActionFailedSocketSend,
-		PXActionRefusedSocketNotConnected,
+	PXActionFailedFileMapping,// mmap() / CreateViewofFile() failed
 
-		PXActionFailedSocketConnect,
-		PXActionFailedSocketCreation,
-		PXActionFailedSocketOption,
-		PXActionFailedSocketBinding,
-		PXActionFailedSocketListening,
+	PXActionFailedFileCreate,
+	PXActionFailedFileDelete,
+	PXActionFailedFileOpen,
+	PXActionFailedFileClose,
+	PXActionFailedFileWrite,
+	PXActionFailedFileRead,
 
-		PXActionRefusedSocketInavlidAdressFamily,
-		PXActionRefusedSocketInvalidFlags,
-		PXActionRefusedNameServerIsTemporaryOffline,
-		PXActionRefusedNameServerIsPermanentOffline,
-		PXActionRefusedSocketTypeNotSupported,
-		PXActionRefusedRequestedAddressFamilyNotSupported,
-		PXActionRefusedHostExistsButHasNoData,
-		PXActionRefusedHostHasNoNetworkAddresses,
-		PXActionRefusedIPOrPortNotKnown,
-		//-----------------------------------
+	//---<Socket>---------------------
+	PXActionFailedSocketRecieve,
+	PXActionFailedSocketSend,
+	PXActionRefusedSocketNotConnected,
 
-		//---<File-Parsing>-------------------
-		PXActionFailedFormatNotDetected,
-		PXActionRefusedFormatNotSupported,
-		PXActionFailedFormatInvalid,
-		PXActionFailedFormatNotAsExpected,
-		PXActionRefusedInvalidHeaderSignature,
-		PXActionRefusedInvalidVersion,
-		PXActionRefusedInvalidSymbol, // While parsing found symbol thats not supported to be read
-		//-----------------------------------
+	PXActionFailedSocketConnect,
+	PXActionFailedSocketCreation,
+	PXActionFailedSocketOption,
+	PXActionFailedSocketBinding,
+	PXActionFailedSocketListening,
 
-		//---<File-Writing>------------------
-		PXActionRefusedFormatSettingNotAllowed,
-		//-----------------------------------
+	PXActionRefusedSocketInavlidAdressFamily,
+	PXActionRefusedSocketInvalidFlags,
+	PXActionRefusedNameServerIsTemporaryOffline,
+	PXActionRefusedNameServerIsPermanentOffline,
+	PXActionRefusedSocketTypeNotSupported,
+	PXActionRefusedRequestedAddressFamilyNotSupported,
+	PXActionRefusedHostExistsButHasNoData,
+	PXActionRefusedHostHasNoNetworkAddresses,
+	PXActionRefusedIPOrPortNotKnown,
+	//-----------------------------------
 
+	//---<File-Parsing>-------------------
+	PXActionFailedFormatNotDetected,
+	PXActionRefusedFormatNotSupported,
+	PXActionFailedFormatInvalid,
+	PXActionFailedFormatNotAsExpected,
+	PXActionRefusedInvalidHeaderSignature,
+	PXActionRefusedInvalidVersion,
+	PXActionRefusedInvalidSymbol, // While parsing found symbol thats not supported to be read
+	//-----------------------------------
 
-		//---<Graphics>-----------------------
-		PXActionFailedResourceRegister,
-		PXActionRefusedResourceRegister,
-		PXActionRefusedResourceDelete,
-		//------------------------------------
+	//---<File-Writing>------------------
+	PXActionRefusedFormatSettingNotAllowed,
+	//-----------------------------------
 
 
+	//---<Graphics>-----------------------
+	PXActionFailedResourceRegister,
+	PXActionRefusedResourceRegister,
+	PXActionRefusedResourceDelete,
+	//------------------------------------
 
-		RequestedServiceNotAvailableForSocket,
 
 
-		//---<Service>-----------------------
-		PXActionNoResposeCountNotConnect,
-		PXActionFailedConnectionFailure,
-		PXActionRefusedNotConnected, // Trying to use a command that requires an already established connection.
-		PXActionFailedSettingsInvalid,
-		PXActionFailedCommandDeploy, // Failure to awns from source to target
-		PXActionFailedCommandExecute, // Faiure to execute on target
-		PXActionFailedCommandRetrieve, // Failure to retrieve result from target
-		//-----------------------------------
+	RequestedServiceNotAvailableForSocket,
 
-		//---<Server>------------------------
-		NoPXClientWithThisID,
-		//-----------------------------------
 
-		//---<Compiler>----------------------
-		PXActionCompilingError,
-		//-----------------------------------
+	//---<Service>-----------------------
+	PXActionNoResposeCountNotConnect,
+	PXActionFailedConnectionFailure,
+	PXActionRefusedNotConnected, // Trying to use a command that requires an already established connection.
+	PXActionFailedSettingsInvalid,
+	PXActionFailedCommandDeploy, // Failure to awns from source to target
+	PXActionFailedCommandExecute, // Faiure to execute on target
+	PXActionFailedCommandRetrieve, // Failure to retrieve result from target
+	//-----------------------------------
 
-		//---[ Windows Only (WindowsSocketAgent) ]-------
-		SubSystemNotReady,
-		VersionNotSupported,
-		BlockedByOtherOperation,
-		LimitReached,
-		SubSystemNotInitialised,
-		SubSystemNetworkFailed,
-		SocketIsBlocking,
+	//---<Server>------------------------
+	NoPXClientWithThisID,
+	//-----------------------------------
 
+	//---<Compiler>----------------------
+	PXActionCompilingError,
+	//-----------------------------------
 
-		PXActionFailedDirectoryIsNotEmpty,
+	//---[ Windows Only (WindowsSocketAgent) ]-------
+	SubSystemNotReady,
+	VersionNotSupported,
+	BlockedByOtherOperation,
+	LimitReached,
+	SubSystemNotInitialised,
+	SubSystemNetworkFailed,
+	SocketIsBlocking,
 
-		PXActionFailedTooManyProcesses,
 
-		PXActionFailedUserQuotaExceeded,
-		PXActionFailedDiskQuotaExceeded,
+	PXActionFailedDirectoryIsNotEmpty,
 
-		PXActionFailedHandleIsStale,
+	PXActionFailedTooManyProcesses,
 
-		PXActionFailedResourceNotAvailableLocally,
+	PXActionFailedUserQuotaExceeded,
+	PXActionFailedDiskQuotaExceeded,
 
-		PXActionFailedNetworkSubsystemNotReady,
+	PXActionFailedHandleIsStale,
 
-		PXActionRefusedResourceIsShuttingdown,
+	PXActionFailedResourceNotAvailableLocally,
 
-		WindowsSocketVersionNotSupported,
-		WindowsSocketSystemNotInitialized,
-		WindowsSocketSystemWasShutdown,
-		//-------------------------------------------------
+	PXActionFailedNetworkSubsystemNotReady,
 
-		//---<Audio>---------------------------------------
-		AudioResultDeviceIDInvalid,
-		AudioResultDeviceHandleInvalid,
-		AudioResultDeviceNoDriver,
+	PXActionRefusedResourceIsShuttingdown,
 
-		AudioResultDriverNotReachable, // Maybe diabled, or deactivated
-		AudioResultDriverNotEnabled, // No driver to use
+	WindowsSocketVersionNotSupported,
+	WindowsSocketSystemNotInitialized,
+	WindowsSocketSystemWasShutdown,
+	//-------------------------------------------------
 
+	//---<Audio>---------------------------------------
+	AudioResultDeviceIDInvalid,
+	AudioResultDeviceHandleInvalid,
+	AudioResultDeviceNoDriver,
 
-		AudioResultDeviceAlreadyAllocated,
+	AudioResultDriverNotReachable, // Maybe diabled, or deactivated
+	AudioResultDriverNotEnabled, // No driver to use
 
 
-		AudioResultErrorValueInvalid,
+	AudioResultDeviceAlreadyAllocated,
 
 
-		AudioResultFlagInvalid,
+	AudioResultErrorValueInvalid,
 
-		AudioResultDeviceHandleBusy,
 
-		AudioResultAliasNotFound,
+	AudioResultFlagInvalid,
 
+	AudioResultDeviceHandleBusy,
 
+	AudioResultAliasNotFound,
 
-		AudioResultPXRegistryValueNotFound,
 
-		AudioResultDriverNoCallback,
 
-		AudioResultMoreData,
+	AudioResultPXRegistryValueNotFound,
 
+	AudioResultDriverNoCallback,
 
-		// Custom
-		AudioResultDeviceListNotBigEnough,
+	AudioResultMoreData,
 
 
-		// Windows spesific
-		AudioResultPXRegistryDatabaseInvalid,
-		AudioResultPXRegistryKeyNotFound,
-		AudioResultPXRegistryWriteError,
-		AudioResultPXRegistryReadError,
-		AudioResultPXRegistryDeleteError,
+	// Custom
+	AudioResultDeviceListNotBigEnough,
 
-		AudioResultErrorUnspecified, 		// Bad, but windows, am i right?
 
+	// Windows spesific
+	AudioResultPXRegistryDatabaseInvalid,
+	AudioResultPXRegistryKeyNotFound,
+	AudioResultPXRegistryWriteError,
+	AudioResultPXRegistryReadError,
+	AudioResultPXRegistryDeleteError,
 
+	AudioResultErrorUnspecified, 		// Bad, but windows, am i right?
 
-		// only
-		
-		AudioResultDeviceIsStillPlaying,
-		AudioResultReaderIsNotPrepared,
-		AudioResultDeviceIsSynchronous,
-		//-------------------------------------------------
 
-		PXActionFailedConnectionTerminatedByNetwork,
-		PXActionFailedConnectionTerminatedByOwnSoftware,
-		PXActionFailedConnectionTerminatedByPeer,
 
-		PXActionFailedMemoryAllocationInternal,
+	// only
 
+	AudioResultDeviceIsStillPlaying,
+	AudioResultReaderIsNotPrepared,
+	AudioResultDeviceIsSynchronous,
+	//-------------------------------------------------
 
-		// POSIX Error codes, these are pre-defined
+	PXActionFailedConnectionTerminatedByNetwork,
+	PXActionFailedConnectionTerminatedByOwnSoftware,
+	PXActionFailedConnectionTerminatedByPeer,
 
+	PXActionFailedMemoryAllocationInternal,
 
-	
-		AddressInUse, // ADDRINUSE
-		AddressNotAvailable, // ADDRNOTAVAIL
-		AddressFamilyNotSupported, // AFNOSUPPORT
-		ResourceUnavailableTryAgain, // AGAIN
-		ConnectionAlreadyInProgress, // ALREADY
-		ArgumentListTooLong, // 2BIG
-		BadFileDescriptor, // BADF
-		BadMessage, // BADMSG
-		PXActionRefusedResourceBusy, // BUSY
-		OperationCanceled,// CANCELED
-		NoChildProcesses, // CHILD
-		ConnectionAborted, // CONNABORTED
-		ConnectionRefused, // CONNREFUSED
-		ConnectionReset, // CONNRESET
-		ResourceDeadlockWouldOccur, // DEADLK
-		DestinationAddressRequired, // DESTADDRREQ
-		PXMathematicsArgumentOutOfDomainOfFunction, // DOM
-	
 
-		BadAddress, // FAULT
+	// POSIX Error codes, these are pre-defined
 
-		HostIsUnreachable, // HOSTUNREACH
-		IdentifierRemoved, // IDRM
-		IllegalByteSequence, // ILSEQ
-		OperationInProgress, // INPROGRESS
-		InterruptedFunction, // INTR
-	
-		IOFailure, // IO
 
 
+	AddressInUse, // ADDRINUSE
+	AddressNotAvailable, // ADDRNOTAVAIL
+	AddressFamilyNotSupported, // AFNOSUPPORT
+	ResourceUnavailableTryAgain, // AGAIN
+	ConnectionAlreadyInProgress, // ALREADY
+	ArgumentListTooLong, // 2BIG
+	BadFileDescriptor, // BADF
+	BadMessage, // BADMSG
+	PXActionRefusedResourceBusy, // BUSY
+	OperationCanceled,// CANCELED
+	NoChildProcesses, // CHILD
+	ConnectionAborted, // CONNABORTED
+	ConnectionRefused, // CONNREFUSED
+	ConnectionReset, // CONNRESET
+	ResourceDeadlockWouldOccur, // DEADLK
+	DestinationAddressRequired, // DESTADDRREQ
+	PXMathematicsArgumentOutOfDomainOfFunction, // DOM
 
 
+	BadAddress, // FAULT
 
-	
+	HostIsUnreachable, // HOSTUNREACH
+	IdentifierRemoved, // IDRM
+	IllegalByteSequence, // ILSEQ
+	OperationInProgress, // INPROGRESS
+	InterruptedFunction, // INTR
 
+	IOFailure, // IO
 
-		MessageTooLarge, // MSGSIZE
 
-	
 
-		NoBufferSpaceAvailable, // NOBUFS
-		NoMessageIsAvailableOnTheStreamHeadReadQueue, // NODATA
-		NoSuchDevice, // NODEV
-		NoSuchFileOrDirectory, // NOENT
-		ExecutableFileFormatError, // NOEXEC
-		NoLocksAvailable, // NOLCK
-		LinkHasBeenSevered, // NOLINK
-		NoMessageOfTheDesiredType, // NOMSG
-		ProtocolNotAvailable, // NOPROTOOPT
-		NoSpaceLeftOnDevice, // NOSPC
-		NoStreamResources, // NOSR
-		NotAStream, // NOSTR
-		FunctionNotSupported, // NOSYS
 
 
-		StateNotRecoverable, // NOTRECOVERABLE
 
 
 
+	MessageTooLarge, // MSGSIZE
 
-		InappropriateIOControlOperation, // NOTTY
-		NoSuchDeviceOrAddress, // NXIO
-		OperationNotSupportedOnSocket, // OPNOTSUPP
-		ValueTooLargeToBeStoredInDataType, // OVERFLOW
-		PreviousOwnerDied, // OWNERDEAD
-		OperationNotPermitted, // PERM
-		BrokenPipe, // PIPE
-		ProtocolError, // PROTO
-		ProtocolNotSupported, // PROTONOSUPPORT
-		ProtocolWrongTypeForSocket, // PROTOTYPE
-		ResultTooLarge, // RANGE,
-		ReadOnlyFileSystem, //ROFS
 
-		NoSuchProcess, // SRCH
-		StreamTimeout, // TIME -> ioctl()
 
-		TextFileBusy, // TXTBSY
-		OperationWouldBlock, // WOULDBLOCK
-		CrossDeviceLink // XDEV
-	}
-	PXActionResult;
+	NoBufferSpaceAvailable, // NOBUFS
+	NoMessageIsAvailableOnTheStreamHeadReadQueue, // NODATA
+	NoSuchDevice, // NODEV
+	NoSuchFileOrDirectory, // NOENT
+	ExecutableFileFormatError, // NOEXEC
+	NoLocksAvailable, // NOLCK
+	LinkHasBeenSevered, // NOLINK
+	NoMessageOfTheDesiredType, // NOMSG
+	ProtocolNotAvailable, // NOPROTOOPT
+	NoSpaceLeftOnDevice, // NOSPC
+	NoStreamResources, // NOSR
+	NotAStream, // NOSTR
+	FunctionNotSupported, // NOSYS
+
+	StateNotRecoverable, // NOTRECOVERABLE
+
+	InappropriateIOControlOperation, // NOTTY
+	NoSuchDeviceOrAddress, // NXIO
+	OperationNotSupportedOnSocket, // OPNOTSUPP
+	ValueTooLargeToBeStoredInDataType, // OVERFLOW
+	PreviousOwnerDied, // OWNERDEAD
+	OperationNotPermitted, // PERM
+	BrokenPipe, // PIPE
+	ProtocolError, // PROTO
+	ProtocolNotSupported, // PROTONOSUPPORT
+	ProtocolWrongTypeForSocket, // PROTOTYPE
+	ResultTooLarge, // RANGE,
+	ReadOnlyFileSystem, //ROFS
+
+	NoSuchProcess, // SRCH
+	StreamTimeout, // TIME -> ioctl()
+
+	TextFileBusy, // TXTBSY
+	OperationWouldBlock, // WOULDBLOCK
+	CrossDeviceLink // XDEV
+}
+PXActionResult;
 
 #define PXActionReturnOnSuccess(actionResult) if (PXActionSuccessful == actionResult) return PXActionSuccessful;
 #define PXActionReturnOnError(actionResult) if (PXActionSuccessful != actionResult) return actionResult;
 #define PXActionContinueOnError(actionResult) if (PXActionSuccessful != actionResult) continue;
 #define PXActionOnErrorFetchAndReturn(b) if(b) { return PXErrorCurrent(); }
 
-	PXPublic PXActionResult PXAPI PXErrorCodeFromID(const int errorCode);
-	PXPublic PXActionResult PXAPI PXErrorCurrent();
+PXPublic PXActionResult PXAPI PXErrorCodeFromID(const int errorCode);
+PXPublic PXActionResult PXAPI PXErrorCurrent();
 
 #if PXOSWindowsDestop
-	PXPublic PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult);
-	PXPublic PXActionResult PXAPI PXWindowsMMAudioConvertFromID(const PXInt32U mmResultID);
-#endif
-
-
-#ifdef __cplusplus
-}
+PXPublic PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult);
+PXPublic PXActionResult PXAPI PXWindowsMMAudioConvertFromID(const PXInt32U mmResultID);
 #endif
 
 #endif

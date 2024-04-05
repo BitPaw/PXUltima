@@ -3,22 +3,13 @@
 
 #include "../PXResource.h"
 
-#ifdef __cplusplus
-extern "C"
+typedef struct PXVRML_
 {
-#endif
-
-	typedef struct PXVRML_
-	{
-		unsigned int __dummy__;
-	}
-	PXVRML;
-
-	PXPublic PXActionResult PXAPI PXVRMLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-	PXPublic PXActionResult PXAPI PXVRMLSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
-
-#ifdef __cplusplus
+	unsigned int __dummy__;
 }
-#endif
+PXVRML;
+
+PXPublic PXActionResult PXAPI PXVRMLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXVRMLSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
 
 #endif

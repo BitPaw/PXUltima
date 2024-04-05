@@ -1,7 +1,6 @@
 #ifndef PXFileINCLUDE
 #define PXFileINCLUDE
 
-
 //---------------------------------------------------------
 // Settings
 //---------------------------------------------------------
@@ -10,12 +9,7 @@
 #define PXFileDebugOutput 0
 //---------------------------------------------------------
 
-
-#define PXFileUSE OSDeviceToUse == OSDeviceDestop
-#if PXFileUSE
-
 #define PXFileCursorPositionInvalid (void*)-1
-
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -70,10 +64,10 @@ extern "C"
 #define PXDirectoryIsDotFolder(s) (PXDirectoryIsRootFolder(s) || (PXDirectoryIsCurrentFolder(s))
 #else
 
-void PXDirectoryIsDotFolder(const char* s)
-{
-    return (((s[0] == '.') && (s[1] == '\0')) || ((s[0] == '.') && (s[1] == '.') && (s[2] == '\0')));
-}
+	void PXDirectoryIsDotFolder(const char* s)
+	{
+		return (((s[0] == '.') && (s[1] == '\0')) || ((s[0] == '.') && (s[1] == '.') && (s[2] == '\0')));
+	}
 
 #endif
 
@@ -178,8 +172,8 @@ void PXDirectoryIsDotFolder(const char* s)
 	}
 	PXFileDataElementType;
 
-	typedef PXActionResult (PXAPI* PXResourceLoadFunction)(struct PXResourceLoadInfo_* const pxResourceLoadInfo);
-	typedef PXActionResult (PXAPI* PXResourceSaveFunction)(struct PXResourceSaveInfo_* const pxResourceSaveInfo);
+	typedef PXActionResult(PXAPI* PXResourceLoadFunction)(struct PXResourceLoadInfo_* const pxResourceLoadInfo);
+	typedef PXActionResult(PXAPI* PXResourceSaveFunction)(struct PXResourceSaveInfo_* const pxResourceSaveInfo);
 
 	typedef struct PXFileTypeInfo_
 	{
@@ -439,7 +433,7 @@ void PXDirectoryIsDotFolder(const char* s)
 
 	PXPublic PXSize PXAPI PXFileReadMultible(PXFile* const pxFile, const PXFileDataElementType* const pxFileElementList, const PXSize pxFileElementListFullSize);
 
-	typedef PXSize (PXAPI* PXFileIOMultibleFunction)(PXFile* const pxFile, void* const value, const PXSize length);
+	typedef PXSize(PXAPI* PXFileIOMultibleFunction)(PXFile* const pxFile, void* const value, const PXSize length);
 
 	PXPublic PXSize PXAPI PXFileIOMultible(PXFile* const pxFile, const PXFileDataElementType* const pxFileElementList, const PXSize pxFileElementListFullSize, PXFileIOMultibleFunction pxFileIOMultibleFunction);
 
@@ -555,13 +549,4 @@ void PXDirectoryIsDotFolder(const char* s)
 	PXPublic PXActionResult PXAPI PXFilePathGet(const PXFile* const pxFile, PXText* const filePath);
 	PXPublic PXActionResult PXAPI PXFIlePathGetLong(PXText* const pxTextInput, PXText* const pxTextOutput);
 
-
-
-
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif
 #endif

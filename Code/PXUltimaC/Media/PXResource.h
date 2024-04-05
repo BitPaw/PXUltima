@@ -48,7 +48,8 @@ extern "C"
 		PXGraphicResourceTypeTexure,
 		PXGraphicResourceTypeSkyBox,
 		PXGraphicResourceTypeFont,
-		PXGraphicResourceTypeSound
+		PXGraphicResourceTypeSound,
+		PXGraphicResourceTypeMaterialList
 	}
 	PXGraphicResourceType;
 
@@ -1079,7 +1080,7 @@ extern "C"
 #if OSUnix
 	typedef PXInt32U PXWindowID; // XID
 #elif OSWindows
-	typedef void* PXWindowID; // HWND
+	typedef HWND PXWindowID; // HWND
 #endif
 
 

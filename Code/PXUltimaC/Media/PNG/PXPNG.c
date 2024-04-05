@@ -14,826 +14,6 @@
 
 const char PXPNGHeaderSequenz[8] = { 0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n' };
 
-unsigned int color_tree_add(PNGColorTree* tree, unsigned char r, unsigned char g, unsigned char b, unsigned char a, unsigned index)
-{
-    for (PXInt8U bit = 0; bit < 8; ++bit)
-    {
-        const int index = 8 * ((r >> bit) & 1) + 4 * ((g >> bit) & 1) + 2 * ((b >> bit) & 1) + 1 * ((a >> bit) & 1);
-        if (!tree->children[index])
-        {
-            PXNew(PNGColorTree, &tree->children[index]);
-
-            if (!tree->children[index])
-                return 83; /*alloc fail*/
-        }
-        tree = tree->children[index];
-    }
-    tree->index = (int)index;
-    return 0;
-}
-
-PXActionResult PXAPI PXPNGImageDataDecompress(const PXPNG* const png, const void* pixelDataIn, void* pixelDataOut, unsigned char bitDepth, PXPNGColorType colorType)
-{
-    LodePNGColorMode colorModeIn;
-    LodePNGColorMode colorModeOut;
-
-    PXMemoryClear(&colorModeIn, sizeof(LodePNGColorMode));
-    PXMemoryClear(&colorModeOut, sizeof(LodePNGColorMode));
-
-    colorModeIn.bitdepth = bitDepth;
-    colorModeIn.colortype = LCT_RGBA;
-
-    colorModeOut.bitdepth = 8;
-    colorModeOut.colortype = LCT_RGBA;
-
-    switch (colorType)
-    {
-        default:
-        case PXPNGColorInvalid:
-            return PXActionRefusedArgumentInvalid;
-
-        case PXPNGColorGrayscale:
-            colorModeIn.colortype = LCT_GREY;
-            break;
-
-        case PXPNGColorRGB:
-            colorModeIn.colortype = LCT_RGB;
-            colorModeOut.colortype = LCT_RGB;
-            break;
-
-        case PXPNGColorPalette:
-            colorModeIn.colortype = LCT_PALETTE;
-            colorModeOut.colortype = LCT_RGBA;
-            break;
-
-        case PXPNGColorGrayscaleAlpha:
-            colorModeIn.colortype = LCT_GREY_ALPHA;
-            break;
-
-        case PXPNGColorRGBA:
-            colorModeIn.colortype = LCT_RGBA;
-            colorModeOut.colortype = LCT_RGBA;
-            break;
-    }
-
-    //colorModeOut.bitdepth = colorModeIn.bitdepth;
-    // colorModeOut.colortype = colorModeIn.colortype;
-
-    PNGColorTree tree;
-    const PXSize width = png->ImageHeader.Width;
-    const PXSize height = png->ImageHeader.Height;
-    const PXSize numpixels = width * height;
-    unsigned error = 0;
-
-    colorModeIn.palettesize = png->PaletteSize;
-    colorModeIn.palette = png->Palette;
-
-    if (colorModeIn.colortype == LCT_PALETTE && !colorModeIn.palette)
-    {
-        return PXActionRefusedArgumentInvalid; /* error: must provide palette if input mode is palette */
-    }
-
-    if (lodepng_color_mode_equal(&colorModeOut, &colorModeIn))
-    {
-        PXSize numbytes = lodepng_get_raw_size(width, height, &colorModeIn);
-        PXMemoryCopy(pixelDataIn, numbytes, pixelDataOut, numbytes);
-        return PXActionSuccessful;
-    }
-
-    if (colorModeOut.colortype == LCT_PALETTE)
-    {
-        PXSize palettesize = colorModeOut.palettesize;
-        const unsigned char* palette = colorModeOut.palette;
-        PXSize palsize = (PXSize)1u << colorModeOut.bitdepth;
-        // if the user specified output palette but did not give the values, assume
-        // they want the values of the input color type (assuming that one is palette).
-        // Note that we never create a new palette ourselves.
-        if (palettesize == 0)
-        {
-            palettesize = colorModeIn.palettesize;
-            palette = colorModeIn.palette;
-            // if the input was also palette with same bitdepth, then the color types are also
-            // equal, so copy literally. This to preserve the exact indices that were in the PNG
-            // even in case there are duplicate colors in the palette.
-            if (colorModeIn.colortype == LCT_PALETTE && colorModeIn.bitdepth == colorModeOut.bitdepth)
-            {
-                const PXSize numbytes = lodepng_get_raw_size(width, height, &colorModeIn);
-                
-                PXMemoryCopy(pixelDataIn, numbytes, pixelDataOut, numbytes);
-                
-                return PXActionSuccessful;
-            }
-        }
-        if (palettesize < palsize) 
-            palsize = palettesize;
-
-        // color_tree_init(&tree);
-
-        for (PXSize i = 0; i != palsize; ++i)
-        {
-            const unsigned char* p = &palette[i * 4];
-            error = color_tree_add(&tree, p[0], p[1], p[2], p[3], i);
-            if (error) break;
-        }
-    }
-
-    if (!error)
-    {
-        if (colorModeIn.bitdepth == 16 && colorModeOut.bitdepth == 16)
-        {
-            for (PXSize i = 0; i != numpixels; ++i)
-            {
-                unsigned short r = 0, g = 0, b = 0, a = 0;
-                getPixelColorRGBA16(&r, &g, &b, &a, pixelDataIn, i, &colorModeIn);
-                rgba16ToPixel(pixelDataOut, i, &colorModeOut, r, g, b, a);
-            }
-        }
-        else if (colorModeOut.bitdepth == 8 && colorModeOut.colortype == LCT_RGBA)
-        {
-            getPixelColorsRGBA8(pixelDataOut, numpixels, pixelDataIn, &colorModeIn);
-        }
-        else if (colorModeOut.bitdepth == 8 && colorModeOut.colortype == LCT_RGB)
-        {
-            getPixelColorsRGB8(pixelDataOut, numpixels, pixelDataIn, &colorModeIn);
-        }
-        else
-        {
-            PXColorRGBAI8 color;
-
-            for (PXSize i = 0; i != numpixels; ++i)
-            {
-                getPixelColorRGBA8(&color, pixelDataIn, i, &colorModeIn);
-
-                const PXActionResult result = rgba8ToPixel(pixelDataOut, i, &colorModeOut, &tree, &color);
-
-                PXActionReturnOnError(result);
-            }
-        }
-    }
-
-    /*
-    if (colorModeOut.colortype == LCT_PALETTE)
-    {
-       // color_tree_cleanup(&tree);
-    }*/
-
-    return error;
-}
-
-unsigned getNumColorChannels(LodePNGColorType colortype)
-{
-    switch (colortype)
-    {
-        case LCT_GREY: return 1;
-        case LCT_RGB: return 3;
-        case LCT_PALETTE: return 1;
-        case LCT_GREY_ALPHA: return 2;
-        case LCT_RGBA: return 4;
-        case LCT_MAX_OCTET_VALUE: return 0; /* invalid color type */
-        default: return 0; /*invalid color type*/
-    }
-}
-
-PXSize lodepng_get_bpp_lct(LodePNGColorType colortype, PXSize bitdepth)
-{
-    /*bits per pixel is amount of channels * bits per channel*/
-    return getNumColorChannels(colortype) * bitdepth;
-}
-
-int lodepng_color_mode_equal(const LodePNGColorMode* a, const LodePNGColorMode* b)
-{
-    PXSize i;
-    if (a->colortype != b->colortype) return 0;
-    if (a->bitdepth != b->bitdepth) return 0;
-    if (a->key_defined != b->key_defined) return 0;
-    if (a->key_defined)
-    {
-        if (a->key_r != b->key_r) return 0;
-        if (a->key_g != b->key_g) return 0;
-        if (a->key_b != b->key_b) return 0;
-    }
-    if (a->palettesize != b->palettesize) return 0;
-    for (i = 0; i != a->palettesize * 4; ++i)
-    {
-        if (a->palette[i] != b->palette[i]) return 0;
-    }
-    return 1;
-}
-
-void getPixelColorRGBA16(unsigned short* r, unsigned short* g, unsigned short* b, unsigned short* a, const unsigned char* in, PXSize i, const LodePNGColorMode* mode)
-{
-    if (mode->colortype == LCT_GREY)
-    {
-        *r = *g = *b = 256 * in[i * 2 + 0] + in[i * 2 + 1];
-        if (mode->key_defined && 256U * in[i * 2 + 0] + in[i * 2 + 1] == mode->key_r) *a = 0;
-        else *a = 65535;
-    }
-    else if (mode->colortype == LCT_RGB)
-    {
-        *r = 256u * in[i * 6 + 0] + in[i * 6 + 1];
-        *g = 256u * in[i * 6 + 2] + in[i * 6 + 3];
-        *b = 256u * in[i * 6 + 4] + in[i * 6 + 5];
-        if (mode->key_defined
-            && 256u * in[i * 6 + 0] + in[i * 6 + 1] == mode->key_r
-            && 256u * in[i * 6 + 2] + in[i * 6 + 3] == mode->key_g
-            && 256u * in[i * 6 + 4] + in[i * 6 + 5] == mode->key_b) *a = 0;
-        else *a = 65535;
-    }
-    else if (mode->colortype == LCT_GREY_ALPHA)
-    {
-        *r = *g = *b = 256u * in[i * 4 + 0] + in[i * 4 + 1];
-        *a = 256u * in[i * 4 + 2] + in[i * 4 + 3];
-    }
-    else if (mode->colortype == LCT_RGBA)
-    {
-        *r = 256u * in[i * 8 + 0] + in[i * 8 + 1];
-        *g = 256u * in[i * 8 + 2] + in[i * 8 + 3];
-        *b = 256u * in[i * 8 + 4] + in[i * 8 + 5];
-        *a = 256u * in[i * 8 + 6] + in[i * 8 + 7];
-    }
-}
-
-void rgba16ToPixel(unsigned char* out, PXSize i, const LodePNGColorMode* mode, unsigned short r, unsigned short g, unsigned short b, unsigned short a)
-{
-    if (mode->colortype == LCT_GREY)
-    {
-        unsigned short gray = r; /*((unsigned)r + g + b) / 3u;*/
-        out[i * 2 + 0] = (gray >> 8) & 255;
-        out[i * 2 + 1] = gray & 255;
-    }
-    else if (mode->colortype == LCT_RGB)
-    {
-        out[i * 6 + 0] = (r >> 8) & 255;
-        out[i * 6 + 1] = r & 255;
-        out[i * 6 + 2] = (g >> 8) & 255;
-        out[i * 6 + 3] = g & 255;
-        out[i * 6 + 4] = (b >> 8) & 255;
-        out[i * 6 + 5] = b & 255;
-    }
-    else if (mode->colortype == LCT_GREY_ALPHA)
-    {
-        unsigned short gray = r; /*((unsigned)r + g + b) / 3u;*/
-        out[i * 4 + 0] = (gray >> 8) & 255;
-        out[i * 4 + 1] = gray & 255;
-        out[i * 4 + 2] = (a >> 8) & 255;
-        out[i * 4 + 3] = a & 255;
-    }
-    else if (mode->colortype == LCT_RGBA)
-    {
-        out[i * 8 + 0] = (r >> 8) & 255;
-        out[i * 8 + 1] = r & 255;
-        out[i * 8 + 2] = (g >> 8) & 255;
-        out[i * 8 + 3] = g & 255;
-        out[i * 8 + 4] = (b >> 8) & 255;
-        out[i * 8 + 5] = b & 255;
-        out[i * 8 + 6] = (a >> 8) & 255;
-        out[i * 8 + 7] = a & 255;
-    }
-}
-
-void getPixelColorsRGBA8(unsigned char* buffer, PXSize numpixels, const unsigned char* in, const LodePNGColorMode* mode)
-{
-    unsigned num_channels = 4;
-    PXSize i;
-    if (mode->colortype == LCT_GREY)
-    {
-        if (mode->bitdepth == 8)
-        {
-            for (i = 0; i != numpixels; ++i, buffer += num_channels)
-            {
-                buffer[0] = buffer[1] = buffer[2] = in[i];
-                buffer[3] = 255;
-            }
-            if (mode->key_defined)
-            {
-                buffer -= numpixels * num_channels;
-                for (i = 0; i != numpixels; ++i, buffer += num_channels)
-                {
-                    if (buffer[0] == mode->key_r) buffer[3] = 0;
-                }
-            }
-        }
-        else if (mode->bitdepth == 16)
-        {
-            for (i = 0; i != numpixels; ++i, buffer += num_channels)
-            {
-                buffer[0] = buffer[1] = buffer[2] = in[i * 2];
-                buffer[3] = mode->key_defined && 256U * in[i * 2 + 0] + in[i * 2 + 1] == mode->key_r ? 0 : 255;
-            }
-        }
-        else
-        {
-            unsigned highest = ((1U << mode->bitdepth) - 1U); /*highest possible value for this bit depth*/
-            PXSize j = 0;
-            for (i = 0; i != numpixels; ++i, buffer += num_channels)
-            {
-                unsigned value = readBitsFromReversedStream(&j, in, mode->bitdepth);
-                buffer[0] = buffer[1] = buffer[2] = (value * 255) / highest;
-                buffer[3] = mode->key_defined && value == mode->key_r ? 0 : 255;
-            }
-        }
-    }
-    else if (mode->colortype == LCT_RGB)
-    {
-        if (mode->bitdepth == 8)
-        {
-            for (i = 0; i != numpixels; ++i, buffer += num_channels)
-            {
-                PXMemoryCopy(&in[i * 3], 3, buffer, 3);
-                buffer[3] = 255;
-            }
-            if (mode->key_defined)
-            {
-                buffer -= numpixels * num_channels;
-                for (i = 0; i != numpixels; ++i, buffer += num_channels)
-                {
-                    if (buffer[0] == mode->key_r && buffer[1] == mode->key_g && buffer[2] == mode->key_b) buffer[3] = 0;
-                }
-            }
-        }
-        else
-        {
-            for (i = 0; i != numpixels; ++i, buffer += num_channels)
-            {
-                buffer[0] = in[i * 6 + 0];
-                buffer[1] = in[i * 6 + 2];
-                buffer[2] = in[i * 6 + 4];
-                buffer[3] = mode->key_defined
-                    && 256U * in[i * 6 + 0] + in[i * 6 + 1] == mode->key_r
-                    && 256U * in[i * 6 + 2] + in[i * 6 + 3] == mode->key_g
-                    && 256U * in[i * 6 + 4] + in[i * 6 + 5] == mode->key_b ? 0 : 255;
-            }
-        }
-    }
-    else if (mode->colortype == LCT_PALETTE)
-    {
-        if (mode->bitdepth == 8)
-        {
-            for (i = 0; i != numpixels; ++i, buffer += num_channels)
-            {
-                unsigned index = in[i];
-                /*out of bounds of palette not checked: see lodepng_color_mode_alloc_palette.*/
-                PXMemoryCopy(&mode->palette[index * 4], 4, buffer, 4u);
-            }
-        }
-        else
-        {
-            PXSize j = 0;
-            for (i = 0; i != numpixels; ++i, buffer += num_channels)
-            {
-                unsigned index = readBitsFromReversedStream(&j, in, mode->bitdepth);
-                /*out of bounds of palette not checked: see lodepng_color_mode_alloc_palette.*/
-                PXMemoryCopy(&mode->palette[index * 4], 4, buffer, 4u);
-            }
-        }
-    }
-    else if (mode->colortype == LCT_GREY_ALPHA)
-    {
-        if (mode->bitdepth == 8)
-        {
-            for (i = 0; i != numpixels; ++i, buffer += num_channels)
-            {
-                buffer[0] = buffer[1] = buffer[2] = in[i * 2 + 0];
-                buffer[3] = in[i * 2 + 1];
-            }
-        }
-        else
-        {
-            for (i = 0; i != numpixels; ++i, buffer += num_channels)
-            {
-                buffer[0] = buffer[1] = buffer[2] = in[i * 4 + 0];
-                buffer[3] = in[i * 4 + 2];
-            }
-        }
-    }
-    else if (mode->colortype == LCT_RGBA)
-    {
-        if (mode->bitdepth == 8)
-        {
-            const PXSize size = numpixels * 4u;
-            
-            PXMemoryCopy(in, size, buffer, size); 
-        }
-        else
-        {
-            for (i = 0; i != numpixels; ++i, buffer += num_channels)
-            {
-                buffer[0] = in[i * 8 + 0];
-                buffer[1] = in[i * 8 + 2];
-                buffer[2] = in[i * 8 + 4];
-                buffer[3] = in[i * 8 + 6];
-            }
-        }
-    }
-}
-
-void getPixelColorsRGB8(unsigned char* buffer, PXSize numpixels, const unsigned char* in, const LodePNGColorMode* mode)
-{
-    const unsigned num_channels = 3;
-    PXSize i;
-    if (mode->colortype == LCT_GREY)
-    {
-        if (mode->bitdepth == 8)
-        {
-            for (i = 0; i != numpixels; ++i, buffer += num_channels)
-            {
-                buffer[0] = buffer[1] = buffer[2] = in[i];
-            }
-        }
-        else if (mode->bitdepth == 16)
-        {
-            for (i = 0; i != numpixels; ++i, buffer += num_channels)
-            {
-                buffer[0] = buffer[1] = buffer[2] = in[i * 2];
-            }
-        }
-        else
-        {
-            unsigned highest = ((1U << mode->bitdepth) - 1U); /*highest possible value for this bit depth*/
-            PXSize j = 0;
-            for (i = 0; i != numpixels; ++i, buffer += num_channels)
-            {
-                unsigned value = readBitsFromReversedStream(&j, in, mode->bitdepth);
-                buffer[0] = buffer[1] = buffer[2] = (value * 255) / highest;
-            }
-        }
-    }
-    else if (mode->colortype == LCT_RGB)
-    {
-        if (mode->bitdepth == 8)
-        {
-            PXSize size = numpixels * 3;
-
-            PXMemoryCopy(in, size, buffer, size);
-        }
-        else
-        {
-            for (i = 0; i != numpixels; ++i, buffer += num_channels)
-            {
-                buffer[0] = in[i * 6 + 0];
-                buffer[1] = in[i * 6 + 2];
-                buffer[2] = in[i * 6 + 4];
-            }
-        }
-    }
-    else if (mode->colortype == LCT_PALETTE)
-    {
-        if (mode->bitdepth == 8)
-        {
-            for (i = 0; i != numpixels; ++i, buffer += num_channels)
-            {
-                unsigned index = in[i];
-                /*out of bounds of palette not checked: see lodepng_color_mode_alloc_palette.*/
-
-                const PXSize size = 3;
-                PXMemoryCopy(&mode->palette[index * 4], size, buffer, size);            
-            }
-        }
-        else
-        {
-            PXSize j = 0;
-            for (i = 0; i != numpixels; ++i, buffer += num_channels)
-            {
-                unsigned index = readBitsFromReversedStream(&j, in, mode->bitdepth);
-                /*out of bounds of palette not checked: see lodepng_color_mode_alloc_palette.*/
-           
-                const PXSize size = 3;
-                PXMemoryCopy(&mode->palette[index * 4], size, buffer, size);
-            }
-        }
-    }
-    else if (mode->colortype == LCT_GREY_ALPHA)
-    {
-        if (mode->bitdepth == 8)
-        {
-            for (i = 0; i != numpixels; ++i, buffer += num_channels)
-            {
-                buffer[0] = buffer[1] = buffer[2] = in[i * 2 + 0];
-            }
-        }
-        else
-        {
-            for (i = 0; i != numpixels; ++i, buffer += num_channels)
-            {
-                buffer[0] = buffer[1] = buffer[2] = in[i * 4 + 0];
-            }
-        }
-    }
-    else if (mode->colortype == LCT_RGBA)
-    {
-        if (mode->bitdepth == 8)
-        {
-            for (i = 0; i != numpixels; ++i, buffer += num_channels)
-            {
-                const PXSize size = 3;
-
-                PXMemoryCopy(&in[i * 4], size, buffer, size);
-            }
-        }
-        else
-        {
-            for (i = 0; i != numpixels; ++i, buffer += num_channels)
-            {
-                buffer[0] = in[i * 8 + 0];
-                buffer[1] = in[i * 8 + 2];
-                buffer[2] = in[i * 8 + 4];
-            }
-        }
-    }
-}
-
-void getPixelColorRGBA8(PXColorRGBAI8* const color, const unsigned char* in, PXSize i, const LodePNGColorMode* mode)
-{
-    if (mode->colortype == LCT_GREY)
-    {
-        if (mode->bitdepth == 8)
-        {
-            color->Red = in[i];
-            color->Green = color->Red;
-            color->Blue = color->Red;
-
-            if (mode->key_defined && color->Red == mode->key_r)
-                color->Alpha = 0;
-            else 
-                color->Alpha = 255;
-        }
-        else if (mode->bitdepth == 16)
-        {
-            color->Red = in[i * 2 + 0];
-            color->Green = color->Red;
-            color->Blue = color->Red;
-
-            if (mode->key_defined && 256U * in[i * 2 + 0] + in[i * 2 + 1] == mode->key_r)
-                color->Alpha = 0;
-            else  
-                color->Alpha = 255;
-        }
-        else
-        {
-            PXSize highest = ((1U << mode->bitdepth) - 1U); /*highest possible value for this bit depth*/
-            PXSize j = i * mode->bitdepth;
-            PXSize value = readBitsFromReversedStream(&j, in, mode->bitdepth);
-
-            color->Red = (value * 255) / highest;
-            color->Green = color->Red;
-            color->Blue = color->Red;
-          
-            if (mode->key_defined && value == mode->key_r) 
-                color->Alpha = 0;
-           
-            else 
-                color->Alpha = 255;
-        }
-    }
-    else if (mode->colortype == LCT_RGB)
-    {
-        if (mode->bitdepth == 8)
-        {
-            color->Red = in[i * 3 + 0];
-            color->Green = in[i * 3 + 1];
-            color->Blue = in[i * 3 + 2];
-           
-            if (mode->key_defined && color->Red == mode->key_r && color->Green == mode->key_g && color->Blue == mode->key_b)
-                color->Alpha = 0;
-            else
-                color->Alpha = 255;
-        }
-        else
-        {
-            color->Red = in[i * 6 + 0];
-            color->Green = in[i * 6 + 2];
-            color->Blue = in[i * 6 + 4];
-
-            if (mode->key_defined && 256U * in[i * 6 + 0] + in[i * 6 + 1] == mode->key_r
-                && 256U * in[i * 6 + 2] + in[i * 6 + 3] == mode->key_g
-                && 256U * in[i * 6 + 4] + in[i * 6 + 5] == mode->key_b) 
-                color->Alpha = 0;
-
-            else 
-                color->Alpha = 255;
-        }
-    }
-    else if (mode->colortype == LCT_PALETTE)
-    {
-        unsigned index;
-        if (mode->bitdepth == 8)
-        {
-            index = in[i];
-        }
-        else
-        {
-            PXSize j = i * mode->bitdepth;
-            index = readBitsFromReversedStream(&j, in, mode->bitdepth);
-        }
-        /*out of bounds of palette not checked: see lodepng_color_mode_alloc_palette.*/
-        color->Red = mode->palette[index * 4 + 0];
-        color->Green = mode->palette[index * 4 + 1];
-        color->Blue = mode->palette[index * 4 + 2];
-        color->Alpha = mode->palette[index * 4 + 3];
-    }
-    else if (mode->colortype == LCT_GREY_ALPHA)
-    {
-        if (mode->bitdepth == 8)
-        {
-            color->Red = in[i * 2 + 0];
-            color->Green = color->Red;
-            color->Blue = color->Red;
-            color->Alpha = in[i * 2 + 1];
-        }
-        else
-        {
-            color->Red = in[i * 4 + 0];
-            color->Green = color->Red;
-            color->Blue = color->Red;
-            color->Alpha = in[i * 4 + 2];
-        }
-    }
-    else if (mode->colortype == LCT_RGBA)
-    {
-        if (mode->bitdepth == 8)
-        {
-            color->Red = in[i * 4 + 0];
-            color->Green = in[i * 4 + 1];
-            color->Blue = in[i * 4 + 2];
-            color->Alpha = in[i * 4 + 3];
-        }
-        else
-        {
-            color->Red = in[i * 8 + 0];
-            color->Green = in[i * 8 + 2];
-            color->Blue = in[i * 8 + 4];
-            color->Alpha = in[i * 8 + 6];
-        }
-    }
-}
-
-PXActionResult PXAPI rgba8ToPixel
-(
-    unsigned char* out, 
-    PXSize i,
-    const LodePNGColorMode* mode,
-    PNGColorTree* tree,
-    const PXColorRGBAI8* const color
-)
-{
-    switch (mode->colortype)
-    {
-        case LCT_GREY:
-        {
-            unsigned char gray = color->Red; /*((unsigned short)r + g + b) / 3u;*/
-            if (mode->bitdepth == 8) out[i] = gray;
-            else if (mode->bitdepth == 16) out[i * 2 + 0] = out[i * 2 + 1] = gray;
-            else
-            {
-                /*take the most significant bits of gray*/
-                gray = ((unsigned)gray >> (8u - mode->bitdepth)) & ((1u << mode->bitdepth) - 1u);
-                addColorBits(out, i, mode->bitdepth, gray);
-            }
-            break;
-        }
-        case LCT_RGB:
-        {
-            if (mode->bitdepth == 8)
-            {
-                out[i * 3 + 0] = color->Red;
-                out[i * 3 + 1] = color->Green;
-                out[i * 3 + 2] = color->Blue;
-            }
-            else
-            {
-                out[i * 6 + 0] = out[i * 6 + 1] = color->Red;
-                out[i * 6 + 2] = out[i * 6 + 3] = color->Green;
-                out[i * 6 + 4] = out[i * 6 + 5] = color->Blue;
-            }
-            break;
-        }
-        case LCT_PALETTE:
-        {
-            int index = color_tree_get(tree, color);
-
-            if (index < 0) 
-                return PXActionInvalid; // color not in palette
-
-            if (mode->bitdepth == 8) 
-                out[i] = index;
-            else 
-                addColorBits(out, i, mode->bitdepth, (unsigned)index);
-
-            break;
-        }
-        case LCT_GREY_ALPHA:
-        {
-            unsigned char gray = color->Red; /*((unsigned short)r + g + b) / 3u;*/
-            if (mode->bitdepth == 8)
-            {
-                out[i * 2 + 0] = gray;
-                out[i * 2 + 1] = color->Alpha;
-            }
-            else if (mode->bitdepth == 16)
-            {
-                out[i * 4 + 0] = out[i * 4 + 1] = gray;
-                out[i * 4 + 2] = out[i * 4 + 3] = color->Alpha;
-            }
-            break;
-        }
-        case LCT_RGBA:
-        {
-            if (mode->bitdepth == 8)
-            {
-                out[i * 4 + 0] = color->Red;
-                out[i * 4 + 1] = color->Green;
-                out[i * 4 + 2] = color->Blue;
-                out[i * 4 + 3] = color->Alpha;
-            }
-            else
-            {
-                out[i * 8 + 0] = out[i * 8 + 1] = color->Red;
-                out[i * 8 + 2] = out[i * 8 + 3] = color->Green;
-                out[i * 8 + 4] = out[i * 8 + 5] = color->Blue;
-                out[i * 8 + 6] = out[i * 8 + 7] = color->Alpha;
-            }
-            break;
-        }
-
-        default:
-            return PXActionRefusedArgumentInvalid;
-    }
-
-    return PXActionSuccessful;
-}
-
-PXSize lodepng_get_raw_size_lct(PXSize w, PXSize h, LodePNGColorType colortype, PXSize bitdepth)
-{
-    PXSize bpp = lodepng_get_bpp_lct(colortype, bitdepth);
-    PXSize n = w * h;
-
-    return ((n / 8u) * bpp) + ((n & 7u) * bpp + 7u) / 8u;
-}
-
-PXSize lodepng_get_raw_size(PXSize w, PXSize h, const LodePNGColorMode* color)
-{
-    return lodepng_get_raw_size_lct(w, h, color->colortype, color->bitdepth);
-}
-
-int color_tree_get(PNGColorTree* tree, const PXColorRGBAI8* const color)
-{
-    for (PXInt8U bit = 0; bit < 8u; ++bit)
-    {
-        int i = 
-            8 * ((color->Red >> bit) & 1) +
-            4 * ((color->Green >> bit) & 1) +
-            2 * ((color->Blue >> bit) & 1) +
-            1 * ((color->Alpha >> bit) & 1);
-       
-        if (!tree->children[i])
-            return -1;
-       
-        else 
-            tree = tree->children[i];
-    }
-
-    return tree ? tree->index : -1;
-}
-
-void addColorBits(unsigned char* out, PXSize index, unsigned int bits, unsigned int in)
-{
-    unsigned int m = bits == 1 ? 7 : bits == 2 ? 3 : 1; /*8 / bits - 1*/
-/*p = the partial index in the byte, e.g. with 4 palettebits it is 0 for first half or 1 for second half*/
-    unsigned int p = index & m;
-
-    in &= (1u << bits) - 1u; /*filter out any other bits of the input value*/
-    in = in << (bits * (m - p));
-
-    if (p == 0)
-    {
-        out[index * bits / 8u] = in;
-    }
-    else
-    {
-        out[index * bits / 8u] |= in;
-    }
-}
-
-unsigned char readBitFromReversedStream(PXSize* bitpointer, const void* bitstream)
-{
-    unsigned char result = (unsigned char)((((char*)bitstream)[(*bitpointer) >> 3] >> (7 - ((*bitpointer) & 0x7))) & 1);
-    ++(*bitpointer);
-    return result;
-}
-
-unsigned readBitsFromReversedStream(PXSize* bitpointer, const unsigned char* bitstream, PXSize nbits)
-{
-    unsigned int result = 0;
-
-    for (PXSize i = 0; i < nbits; ++i)
-    {
-        result <<= 1u;
-        result |= (unsigned int)readBitFromReversedStream(bitpointer, bitstream);
-    }
-
-    return result;
-}
-
 PXPNGChunkType PXAPI PXPNGChunkTypeFromID(const PXInt32U pngchunkType)
 {
     switch (pngchunkType)
@@ -946,11 +126,6 @@ PXInt8U PXAPI PXPNGInterlaceMethodToID(const PXPNGInterlaceMethod interlaceMetho
     }
 }
 
-void PXAPI PXPNGConstruct(PXPNG* const png)
-{
-    PXClear(PXPNG, png);
-}
-
 void PXAPI PXPNGDestruct(PXPNG* const png)
 {
     PXDeleteList(PXByte, png->PixelDataSize, &png->PixelData, &png->PixelDataSize);
@@ -1007,7 +182,7 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
     PXImage* const pxImage = (PXImage*)pxResourceLoadInfo->Target;
 
     PXPNG png;
-    PXPNGConstruct(&png);
+    PXClear(PXPNG, &png);
 
     PXFile imageDataCache;
 
@@ -2466,4 +1641,888 @@ PXActionResult PXAPI PXPNGSaveToFile(PXResourceSaveInfo* const pxResourceSaveInf
     }
 
     return PXActionSuccessful;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+unsigned int color_tree_add(PNGColorTree* tree, unsigned char r, unsigned char g, unsigned char b, unsigned char a, unsigned index)
+{
+    for(PXInt8U bit = 0; bit < 8; ++bit)
+    {
+        const int index = 8 * ((r >> bit) & 1) + 4 * ((g >> bit) & 1) + 2 * ((b >> bit) & 1) + 1 * ((a >> bit) & 1);
+        if(!tree->children[index])
+        {
+            PXNew(PNGColorTree, &tree->children[index]);
+
+            if(!tree->children[index])
+                return 83; /*alloc fail*/
+        }
+        tree = tree->children[index];
+    }
+    tree->index = (int)index;
+    return 0;
+}
+
+PXActionResult PXAPI PXPNGImageDataDecompress(const PXPNG* const png, const void* pixelDataIn, void* pixelDataOut, unsigned char bitDepth, PXPNGColorType colorType)
+{
+    LodePNGColorMode colorModeIn;
+    LodePNGColorMode colorModeOut;
+
+    PXMemoryClear(&colorModeIn, sizeof(LodePNGColorMode));
+    PXMemoryClear(&colorModeOut, sizeof(LodePNGColorMode));
+
+    colorModeIn.bitdepth = bitDepth;
+    colorModeIn.colortype = LCT_RGBA;
+
+    colorModeOut.bitdepth = 8;
+    colorModeOut.colortype = LCT_RGBA;
+
+    switch(colorType)
+    {
+        default:
+        case PXPNGColorInvalid:
+            return PXActionRefusedArgumentInvalid;
+
+        case PXPNGColorGrayscale:
+            colorModeIn.colortype = LCT_GREY;
+            break;
+
+        case PXPNGColorRGB:
+            colorModeIn.colortype = LCT_RGB;
+            colorModeOut.colortype = LCT_RGB;
+            break;
+
+        case PXPNGColorPalette:
+            colorModeIn.colortype = LCT_PALETTE;
+            colorModeOut.colortype = LCT_RGBA;
+            break;
+
+        case PXPNGColorGrayscaleAlpha:
+            colorModeIn.colortype = LCT_GREY_ALPHA;
+            break;
+
+        case PXPNGColorRGBA:
+            colorModeIn.colortype = LCT_RGBA;
+            colorModeOut.colortype = LCT_RGBA;
+            break;
+    }
+
+    //colorModeOut.bitdepth = colorModeIn.bitdepth;
+    // colorModeOut.colortype = colorModeIn.colortype;
+
+    PNGColorTree tree;
+    const PXSize width = png->ImageHeader.Width;
+    const PXSize height = png->ImageHeader.Height;
+    const PXSize numpixels = width * height;
+    unsigned error = 0;
+
+    colorModeIn.palettesize = png->PaletteSize;
+    colorModeIn.palette = png->Palette;
+
+    if(colorModeIn.colortype == LCT_PALETTE && !colorModeIn.palette)
+    {
+        return PXActionRefusedArgumentInvalid; /* error: must provide palette if input mode is palette */
+    }
+
+    if(lodepng_color_mode_equal(&colorModeOut, &colorModeIn))
+    {
+        PXSize numbytes = lodepng_get_raw_size(width, height, &colorModeIn);
+        PXMemoryCopy(pixelDataIn, numbytes, pixelDataOut, numbytes);
+        return PXActionSuccessful;
+    }
+
+    if(colorModeOut.colortype == LCT_PALETTE)
+    {
+        PXSize palettesize = colorModeOut.palettesize;
+        const unsigned char* palette = colorModeOut.palette;
+        PXSize palsize = (PXSize)1u << colorModeOut.bitdepth;
+        // if the user specified output palette but did not give the values, assume
+        // they want the values of the input color type (assuming that one is palette).
+        // Note that we never create a new palette ourselves.
+        if(palettesize == 0)
+        {
+            palettesize = colorModeIn.palettesize;
+            palette = colorModeIn.palette;
+            // if the input was also palette with same bitdepth, then the color types are also
+            // equal, so copy literally. This to preserve the exact indices that were in the PNG
+            // even in case there are duplicate colors in the palette.
+            if(colorModeIn.colortype == LCT_PALETTE && colorModeIn.bitdepth == colorModeOut.bitdepth)
+            {
+                const PXSize numbytes = lodepng_get_raw_size(width, height, &colorModeIn);
+
+                PXMemoryCopy(pixelDataIn, numbytes, pixelDataOut, numbytes);
+
+                return PXActionSuccessful;
+            }
+        }
+        if(palettesize < palsize)
+            palsize = palettesize;
+
+        // color_tree_init(&tree);
+
+        for(PXSize i = 0; i != palsize; ++i)
+        {
+            const unsigned char* p = &palette[i * 4];
+            error = color_tree_add(&tree, p[0], p[1], p[2], p[3], i);
+            if(error) break;
+        }
+    }
+
+    if(!error)
+    {
+        if(colorModeIn.bitdepth == 16 && colorModeOut.bitdepth == 16)
+        {
+            for(PXSize i = 0; i != numpixels; ++i)
+            {
+                unsigned short r = 0, g = 0, b = 0, a = 0;
+                getPixelColorRGBA16(&r, &g, &b, &a, pixelDataIn, i, &colorModeIn);
+                rgba16ToPixel(pixelDataOut, i, &colorModeOut, r, g, b, a);
+            }
+        }
+        else if(colorModeOut.bitdepth == 8 && colorModeOut.colortype == LCT_RGBA)
+        {
+            getPixelColorsRGBA8(pixelDataOut, numpixels, pixelDataIn, &colorModeIn);
+        }
+        else if(colorModeOut.bitdepth == 8 && colorModeOut.colortype == LCT_RGB)
+        {
+            getPixelColorsRGB8(pixelDataOut, numpixels, pixelDataIn, &colorModeIn);
+        }
+        else
+        {
+            PXColorRGBAI8 color;
+
+            for(PXSize i = 0; i != numpixels; ++i)
+            {
+                getPixelColorRGBA8(&color, pixelDataIn, i, &colorModeIn);
+
+                const PXActionResult result = rgba8ToPixel(pixelDataOut, i, &colorModeOut, &tree, &color);
+
+                PXActionReturnOnError(result);
+            }
+        }
+    }
+
+    /*
+    if (colorModeOut.colortype == LCT_PALETTE)
+    {
+       // color_tree_cleanup(&tree);
+    }*/
+
+    return error;
+}
+
+unsigned getNumColorChannels(LodePNGColorType colortype)
+{
+    switch(colortype)
+    {
+        case LCT_GREY: return 1;
+        case LCT_RGB: return 3;
+        case LCT_PALETTE: return 1;
+        case LCT_GREY_ALPHA: return 2;
+        case LCT_RGBA: return 4;
+        case LCT_MAX_OCTET_VALUE: return 0; /* invalid color type */
+        default: return 0; /*invalid color type*/
+    }
+}
+
+PXSize lodepng_get_bpp_lct(LodePNGColorType colortype, PXSize bitdepth)
+{
+    /*bits per pixel is amount of channels * bits per channel*/
+    return getNumColorChannels(colortype) * bitdepth;
+}
+
+int lodepng_color_mode_equal(const LodePNGColorMode* a, const LodePNGColorMode* b)
+{
+    PXSize i;
+    if(a->colortype != b->colortype) return 0;
+    if(a->bitdepth != b->bitdepth) return 0;
+    if(a->key_defined != b->key_defined) return 0;
+    if(a->key_defined)
+    {
+        if(a->key_r != b->key_r) return 0;
+        if(a->key_g != b->key_g) return 0;
+        if(a->key_b != b->key_b) return 0;
+    }
+    if(a->palettesize != b->palettesize) return 0;
+    for(i = 0; i != a->palettesize * 4; ++i)
+    {
+        if(a->palette[i] != b->palette[i]) return 0;
+    }
+    return 1;
+}
+
+void getPixelColorRGBA16(unsigned short* r, unsigned short* g, unsigned short* b, unsigned short* a, const unsigned char* in, PXSize i, const LodePNGColorMode* mode)
+{
+    if(mode->colortype == LCT_GREY)
+    {
+        *r = *g = *b = 256 * in[i * 2 + 0] + in[i * 2 + 1];
+        if(mode->key_defined && 256U * in[i * 2 + 0] + in[i * 2 + 1] == mode->key_r) *a = 0;
+        else *a = 65535;
+    }
+    else if(mode->colortype == LCT_RGB)
+    {
+        *r = 256u * in[i * 6 + 0] + in[i * 6 + 1];
+        *g = 256u * in[i * 6 + 2] + in[i * 6 + 3];
+        *b = 256u * in[i * 6 + 4] + in[i * 6 + 5];
+        if(mode->key_defined
+           && 256u * in[i * 6 + 0] + in[i * 6 + 1] == mode->key_r
+           && 256u * in[i * 6 + 2] + in[i * 6 + 3] == mode->key_g
+           && 256u * in[i * 6 + 4] + in[i * 6 + 5] == mode->key_b) *a = 0;
+        else *a = 65535;
+    }
+    else if(mode->colortype == LCT_GREY_ALPHA)
+    {
+        *r = *g = *b = 256u * in[i * 4 + 0] + in[i * 4 + 1];
+        *a = 256u * in[i * 4 + 2] + in[i * 4 + 3];
+    }
+    else if(mode->colortype == LCT_RGBA)
+    {
+        *r = 256u * in[i * 8 + 0] + in[i * 8 + 1];
+        *g = 256u * in[i * 8 + 2] + in[i * 8 + 3];
+        *b = 256u * in[i * 8 + 4] + in[i * 8 + 5];
+        *a = 256u * in[i * 8 + 6] + in[i * 8 + 7];
+    }
+}
+
+void rgba16ToPixel(unsigned char* out, PXSize i, const LodePNGColorMode* mode, unsigned short r, unsigned short g, unsigned short b, unsigned short a)
+{
+    if(mode->colortype == LCT_GREY)
+    {
+        unsigned short gray = r; /*((unsigned)r + g + b) / 3u;*/
+        out[i * 2 + 0] = (gray >> 8) & 255;
+        out[i * 2 + 1] = gray & 255;
+    }
+    else if(mode->colortype == LCT_RGB)
+    {
+        out[i * 6 + 0] = (r >> 8) & 255;
+        out[i * 6 + 1] = r & 255;
+        out[i * 6 + 2] = (g >> 8) & 255;
+        out[i * 6 + 3] = g & 255;
+        out[i * 6 + 4] = (b >> 8) & 255;
+        out[i * 6 + 5] = b & 255;
+    }
+    else if(mode->colortype == LCT_GREY_ALPHA)
+    {
+        unsigned short gray = r; /*((unsigned)r + g + b) / 3u;*/
+        out[i * 4 + 0] = (gray >> 8) & 255;
+        out[i * 4 + 1] = gray & 255;
+        out[i * 4 + 2] = (a >> 8) & 255;
+        out[i * 4 + 3] = a & 255;
+    }
+    else if(mode->colortype == LCT_RGBA)
+    {
+        out[i * 8 + 0] = (r >> 8) & 255;
+        out[i * 8 + 1] = r & 255;
+        out[i * 8 + 2] = (g >> 8) & 255;
+        out[i * 8 + 3] = g & 255;
+        out[i * 8 + 4] = (b >> 8) & 255;
+        out[i * 8 + 5] = b & 255;
+        out[i * 8 + 6] = (a >> 8) & 255;
+        out[i * 8 + 7] = a & 255;
+    }
+}
+
+void getPixelColorsRGBA8(unsigned char* buffer, PXSize numpixels, const unsigned char* in, const LodePNGColorMode* mode)
+{
+    unsigned num_channels = 4;
+    PXSize i;
+    if(mode->colortype == LCT_GREY)
+    {
+        if(mode->bitdepth == 8)
+        {
+            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            {
+                buffer[0] = buffer[1] = buffer[2] = in[i];
+                buffer[3] = 255;
+            }
+            if(mode->key_defined)
+            {
+                buffer -= numpixels * num_channels;
+                for(i = 0; i != numpixels; ++i, buffer += num_channels)
+                {
+                    if(buffer[0] == mode->key_r) buffer[3] = 0;
+                }
+            }
+        }
+        else if(mode->bitdepth == 16)
+        {
+            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            {
+                buffer[0] = buffer[1] = buffer[2] = in[i * 2];
+                buffer[3] = mode->key_defined && 256U * in[i * 2 + 0] + in[i * 2 + 1] == mode->key_r ? 0 : 255;
+            }
+        }
+        else
+        {
+            unsigned highest = ((1U << mode->bitdepth) - 1U); /*highest possible value for this bit depth*/
+            PXSize j = 0;
+            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            {
+                unsigned value = readBitsFromReversedStream(&j, in, mode->bitdepth);
+                buffer[0] = buffer[1] = buffer[2] = (value * 255) / highest;
+                buffer[3] = mode->key_defined && value == mode->key_r ? 0 : 255;
+            }
+        }
+    }
+    else if(mode->colortype == LCT_RGB)
+    {
+        if(mode->bitdepth == 8)
+        {
+            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            {
+                PXMemoryCopy(&in[i * 3], 3, buffer, 3);
+                buffer[3] = 255;
+            }
+            if(mode->key_defined)
+            {
+                buffer -= numpixels * num_channels;
+                for(i = 0; i != numpixels; ++i, buffer += num_channels)
+                {
+                    if(buffer[0] == mode->key_r && buffer[1] == mode->key_g && buffer[2] == mode->key_b) buffer[3] = 0;
+                }
+            }
+        }
+        else
+        {
+            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            {
+                buffer[0] = in[i * 6 + 0];
+                buffer[1] = in[i * 6 + 2];
+                buffer[2] = in[i * 6 + 4];
+                buffer[3] = mode->key_defined
+                    && 256U * in[i * 6 + 0] + in[i * 6 + 1] == mode->key_r
+                    && 256U * in[i * 6 + 2] + in[i * 6 + 3] == mode->key_g
+                    && 256U * in[i * 6 + 4] + in[i * 6 + 5] == mode->key_b ? 0 : 255;
+            }
+        }
+    }
+    else if(mode->colortype == LCT_PALETTE)
+    {
+        if(mode->bitdepth == 8)
+        {
+            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            {
+                unsigned index = in[i];
+                /*out of bounds of palette not checked: see lodepng_color_mode_alloc_palette.*/
+                PXMemoryCopy(&mode->palette[index * 4], 4, buffer, 4u);
+            }
+        }
+        else
+        {
+            PXSize j = 0;
+            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            {
+                unsigned index = readBitsFromReversedStream(&j, in, mode->bitdepth);
+                /*out of bounds of palette not checked: see lodepng_color_mode_alloc_palette.*/
+                PXMemoryCopy(&mode->palette[index * 4], 4, buffer, 4u);
+            }
+        }
+    }
+    else if(mode->colortype == LCT_GREY_ALPHA)
+    {
+        if(mode->bitdepth == 8)
+        {
+            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            {
+                buffer[0] = buffer[1] = buffer[2] = in[i * 2 + 0];
+                buffer[3] = in[i * 2 + 1];
+            }
+        }
+        else
+        {
+            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            {
+                buffer[0] = buffer[1] = buffer[2] = in[i * 4 + 0];
+                buffer[3] = in[i * 4 + 2];
+            }
+        }
+    }
+    else if(mode->colortype == LCT_RGBA)
+    {
+        if(mode->bitdepth == 8)
+        {
+            const PXSize size = numpixels * 4u;
+
+            PXMemoryCopy(in, size, buffer, size);
+        }
+        else
+        {
+            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            {
+                buffer[0] = in[i * 8 + 0];
+                buffer[1] = in[i * 8 + 2];
+                buffer[2] = in[i * 8 + 4];
+                buffer[3] = in[i * 8 + 6];
+            }
+        }
+    }
+}
+
+void getPixelColorsRGB8(unsigned char* buffer, PXSize numpixels, const unsigned char* in, const LodePNGColorMode* mode)
+{
+    const unsigned num_channels = 3;
+    PXSize i;
+    if(mode->colortype == LCT_GREY)
+    {
+        if(mode->bitdepth == 8)
+        {
+            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            {
+                buffer[0] = buffer[1] = buffer[2] = in[i];
+            }
+        }
+        else if(mode->bitdepth == 16)
+        {
+            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            {
+                buffer[0] = buffer[1] = buffer[2] = in[i * 2];
+            }
+        }
+        else
+        {
+            unsigned highest = ((1U << mode->bitdepth) - 1U); /*highest possible value for this bit depth*/
+            PXSize j = 0;
+            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            {
+                unsigned value = readBitsFromReversedStream(&j, in, mode->bitdepth);
+                buffer[0] = buffer[1] = buffer[2] = (value * 255) / highest;
+            }
+        }
+    }
+    else if(mode->colortype == LCT_RGB)
+    {
+        if(mode->bitdepth == 8)
+        {
+            PXSize size = numpixels * 3;
+
+            PXMemoryCopy(in, size, buffer, size);
+        }
+        else
+        {
+            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            {
+                buffer[0] = in[i * 6 + 0];
+                buffer[1] = in[i * 6 + 2];
+                buffer[2] = in[i * 6 + 4];
+            }
+        }
+    }
+    else if(mode->colortype == LCT_PALETTE)
+    {
+        if(mode->bitdepth == 8)
+        {
+            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            {
+                unsigned index = in[i];
+                /*out of bounds of palette not checked: see lodepng_color_mode_alloc_palette.*/
+
+                const PXSize size = 3;
+                PXMemoryCopy(&mode->palette[index * 4], size, buffer, size);
+            }
+        }
+        else
+        {
+            PXSize j = 0;
+            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            {
+                unsigned index = readBitsFromReversedStream(&j, in, mode->bitdepth);
+                /*out of bounds of palette not checked: see lodepng_color_mode_alloc_palette.*/
+
+                const PXSize size = 3;
+                PXMemoryCopy(&mode->palette[index * 4], size, buffer, size);
+            }
+        }
+    }
+    else if(mode->colortype == LCT_GREY_ALPHA)
+    {
+        if(mode->bitdepth == 8)
+        {
+            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            {
+                buffer[0] = buffer[1] = buffer[2] = in[i * 2 + 0];
+            }
+        }
+        else
+        {
+            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            {
+                buffer[0] = buffer[1] = buffer[2] = in[i * 4 + 0];
+            }
+        }
+    }
+    else if(mode->colortype == LCT_RGBA)
+    {
+        if(mode->bitdepth == 8)
+        {
+            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            {
+                const PXSize size = 3;
+
+                PXMemoryCopy(&in[i * 4], size, buffer, size);
+            }
+        }
+        else
+        {
+            for(i = 0; i != numpixels; ++i, buffer += num_channels)
+            {
+                buffer[0] = in[i * 8 + 0];
+                buffer[1] = in[i * 8 + 2];
+                buffer[2] = in[i * 8 + 4];
+            }
+        }
+    }
+}
+
+void getPixelColorRGBA8(PXColorRGBAI8* const color, const unsigned char* in, PXSize i, const LodePNGColorMode* mode)
+{
+    if(mode->colortype == LCT_GREY)
+    {
+        if(mode->bitdepth == 8)
+        {
+            color->Red = in[i];
+            color->Green = color->Red;
+            color->Blue = color->Red;
+
+            if(mode->key_defined && color->Red == mode->key_r)
+                color->Alpha = 0;
+            else
+                color->Alpha = 255;
+        }
+        else if(mode->bitdepth == 16)
+        {
+            color->Red = in[i * 2 + 0];
+            color->Green = color->Red;
+            color->Blue = color->Red;
+
+            if(mode->key_defined && 256U * in[i * 2 + 0] + in[i * 2 + 1] == mode->key_r)
+                color->Alpha = 0;
+            else
+                color->Alpha = 255;
+        }
+        else
+        {
+            PXSize highest = ((1U << mode->bitdepth) - 1U); /*highest possible value for this bit depth*/
+            PXSize j = i * mode->bitdepth;
+            PXSize value = readBitsFromReversedStream(&j, in, mode->bitdepth);
+
+            color->Red = (value * 255) / highest;
+            color->Green = color->Red;
+            color->Blue = color->Red;
+
+            if(mode->key_defined && value == mode->key_r)
+                color->Alpha = 0;
+
+            else
+                color->Alpha = 255;
+        }
+    }
+    else if(mode->colortype == LCT_RGB)
+    {
+        if(mode->bitdepth == 8)
+        {
+            color->Red = in[i * 3 + 0];
+            color->Green = in[i * 3 + 1];
+            color->Blue = in[i * 3 + 2];
+
+            if(mode->key_defined && color->Red == mode->key_r && color->Green == mode->key_g && color->Blue == mode->key_b)
+                color->Alpha = 0;
+            else
+                color->Alpha = 255;
+        }
+        else
+        {
+            color->Red = in[i * 6 + 0];
+            color->Green = in[i * 6 + 2];
+            color->Blue = in[i * 6 + 4];
+
+            if(mode->key_defined && 256U * in[i * 6 + 0] + in[i * 6 + 1] == mode->key_r
+               && 256U * in[i * 6 + 2] + in[i * 6 + 3] == mode->key_g
+               && 256U * in[i * 6 + 4] + in[i * 6 + 5] == mode->key_b)
+                color->Alpha = 0;
+
+            else
+                color->Alpha = 255;
+        }
+    }
+    else if(mode->colortype == LCT_PALETTE)
+    {
+        unsigned index;
+        if(mode->bitdepth == 8)
+        {
+            index = in[i];
+        }
+        else
+        {
+            PXSize j = i * mode->bitdepth;
+            index = readBitsFromReversedStream(&j, in, mode->bitdepth);
+        }
+        /*out of bounds of palette not checked: see lodepng_color_mode_alloc_palette.*/
+        color->Red = mode->palette[index * 4 + 0];
+        color->Green = mode->palette[index * 4 + 1];
+        color->Blue = mode->palette[index * 4 + 2];
+        color->Alpha = mode->palette[index * 4 + 3];
+    }
+    else if(mode->colortype == LCT_GREY_ALPHA)
+    {
+        if(mode->bitdepth == 8)
+        {
+            color->Red = in[i * 2 + 0];
+            color->Green = color->Red;
+            color->Blue = color->Red;
+            color->Alpha = in[i * 2 + 1];
+        }
+        else
+        {
+            color->Red = in[i * 4 + 0];
+            color->Green = color->Red;
+            color->Blue = color->Red;
+            color->Alpha = in[i * 4 + 2];
+        }
+    }
+    else if(mode->colortype == LCT_RGBA)
+    {
+        if(mode->bitdepth == 8)
+        {
+            color->Red = in[i * 4 + 0];
+            color->Green = in[i * 4 + 1];
+            color->Blue = in[i * 4 + 2];
+            color->Alpha = in[i * 4 + 3];
+        }
+        else
+        {
+            color->Red = in[i * 8 + 0];
+            color->Green = in[i * 8 + 2];
+            color->Blue = in[i * 8 + 4];
+            color->Alpha = in[i * 8 + 6];
+        }
+    }
+}
+
+PXActionResult PXAPI rgba8ToPixel
+(
+    unsigned char* out,
+    PXSize i,
+    const LodePNGColorMode* mode,
+    PNGColorTree* tree,
+    const PXColorRGBAI8* const color
+)
+{
+    switch(mode->colortype)
+    {
+        case LCT_GREY:
+        {
+            unsigned char gray = color->Red; /*((unsigned short)r + g + b) / 3u;*/
+            if(mode->bitdepth == 8) out[i] = gray;
+            else if(mode->bitdepth == 16) out[i * 2 + 0] = out[i * 2 + 1] = gray;
+            else
+            {
+                /*take the most significant bits of gray*/
+                gray = ((unsigned)gray >> (8u - mode->bitdepth)) & ((1u << mode->bitdepth) - 1u);
+                addColorBits(out, i, mode->bitdepth, gray);
+            }
+            break;
+        }
+        case LCT_RGB:
+        {
+            if(mode->bitdepth == 8)
+            {
+                out[i * 3 + 0] = color->Red;
+                out[i * 3 + 1] = color->Green;
+                out[i * 3 + 2] = color->Blue;
+            }
+            else
+            {
+                out[i * 6 + 0] = out[i * 6 + 1] = color->Red;
+                out[i * 6 + 2] = out[i * 6 + 3] = color->Green;
+                out[i * 6 + 4] = out[i * 6 + 5] = color->Blue;
+            }
+            break;
+        }
+        case LCT_PALETTE:
+        {
+            int index = color_tree_get(tree, color);
+
+            if(index < 0)
+                return PXActionInvalid; // color not in palette
+
+            if(mode->bitdepth == 8)
+                out[i] = index;
+            else
+                addColorBits(out, i, mode->bitdepth, (unsigned)index);
+
+            break;
+        }
+        case LCT_GREY_ALPHA:
+        {
+            unsigned char gray = color->Red; /*((unsigned short)r + g + b) / 3u;*/
+            if(mode->bitdepth == 8)
+            {
+                out[i * 2 + 0] = gray;
+                out[i * 2 + 1] = color->Alpha;
+            }
+            else if(mode->bitdepth == 16)
+            {
+                out[i * 4 + 0] = out[i * 4 + 1] = gray;
+                out[i * 4 + 2] = out[i * 4 + 3] = color->Alpha;
+            }
+            break;
+        }
+        case LCT_RGBA:
+        {
+            if(mode->bitdepth == 8)
+            {
+                out[i * 4 + 0] = color->Red;
+                out[i * 4 + 1] = color->Green;
+                out[i * 4 + 2] = color->Blue;
+                out[i * 4 + 3] = color->Alpha;
+            }
+            else
+            {
+                out[i * 8 + 0] = out[i * 8 + 1] = color->Red;
+                out[i * 8 + 2] = out[i * 8 + 3] = color->Green;
+                out[i * 8 + 4] = out[i * 8 + 5] = color->Blue;
+                out[i * 8 + 6] = out[i * 8 + 7] = color->Alpha;
+            }
+            break;
+        }
+
+        default:
+            return PXActionRefusedArgumentInvalid;
+    }
+
+    return PXActionSuccessful;
+}
+
+PXSize lodepng_get_raw_size_lct(PXSize w, PXSize h, LodePNGColorType colortype, PXSize bitdepth)
+{
+    PXSize bpp = lodepng_get_bpp_lct(colortype, bitdepth);
+    PXSize n = w * h;
+
+    return ((n / 8u) * bpp) + ((n & 7u) * bpp + 7u) / 8u;
+}
+
+PXSize lodepng_get_raw_size(PXSize w, PXSize h, const LodePNGColorMode* color)
+{
+    return lodepng_get_raw_size_lct(w, h, color->colortype, color->bitdepth);
+}
+
+int color_tree_get(PNGColorTree* tree, const PXColorRGBAI8* const color)
+{
+    for(PXInt8U bit = 0; bit < 8u; ++bit)
+    {
+        int i =
+            8 * ((color->Red >> bit) & 1) +
+            4 * ((color->Green >> bit) & 1) +
+            2 * ((color->Blue >> bit) & 1) +
+            1 * ((color->Alpha >> bit) & 1);
+
+        if(!tree->children[i])
+            return -1;
+
+        else
+            tree = tree->children[i];
+    }
+
+    return tree ? tree->index : -1;
+}
+
+void addColorBits(unsigned char* out, PXSize index, unsigned int bits, unsigned int in)
+{
+    unsigned int m = bits == 1 ? 7 : bits == 2 ? 3 : 1; /*8 / bits - 1*/
+    /*p = the partial index in the byte, e.g. with 4 palettebits it is 0 for first half or 1 for second half*/
+    unsigned int p = index & m;
+
+    in &= (1u << bits) - 1u; /*filter out any other bits of the input value*/
+    in = in << (bits * (m - p));
+
+    if(p == 0)
+    {
+        out[index * bits / 8u] = in;
+    }
+    else
+    {
+        out[index * bits / 8u] |= in;
+    }
+}
+
+unsigned char readBitFromReversedStream(PXSize* bitpointer, const void* bitstream)
+{
+    unsigned char result = (unsigned char)((((char*)bitstream)[(*bitpointer) >> 3] >> (7 - ((*bitpointer) & 0x7))) & 1);
+    ++(*bitpointer);
+    return result;
+}
+
+unsigned readBitsFromReversedStream(PXSize* bitpointer, const unsigned char* bitstream, PXSize nbits)
+{
+    unsigned int result = 0;
+
+    for(PXSize i = 0; i < nbits; ++i)
+    {
+        result <<= 1u;
+        result |= (unsigned int)readBitFromReversedStream(bitpointer, bitstream);
+    }
+
+    return result;
 }

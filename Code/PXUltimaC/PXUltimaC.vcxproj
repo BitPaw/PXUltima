@@ -151,7 +151,7 @@
       <CompileAs>CompileAsC</CompileAs>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
       <CallingConvention>
       </CallingConvention>
@@ -172,6 +172,8 @@
       <OpenMPSupport>true</OpenMPSupport>
       <ShowIncludes>false</ShowIncludes>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <SDLCheck>false</SDLCheck>
+      <DebugInformationFormat>None</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -217,7 +219,7 @@
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
+      <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -240,7 +242,7 @@
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <DiagnosticsFormat>
       </DiagnosticsFormat>
-      <SupportJustMyCode>true</SupportJustMyCode>
+      <SupportJustMyCode>false</SupportJustMyCode>
       <ExceptionHandling>false</ExceptionHandling>
       <ControlFlowGuard>false</ControlFlowGuard>
       <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
@@ -587,6 +589,8 @@
     <None Include="Media\SQL\README.md" />
     <None Include="Media\STL\README.md" />
     <None Include="Media\XML\README.md" />
+    <None Include="OS\Audio\PXALSA\README.md" />
+    <None Include="OS\Audio\README.md" />
     <None Include="OS\Graphic\DirectX\README.md" />
     <None Include="OS\Graphic\OpenGL\README.md" />
     <None Include="OS\Graphic\SoftwareRender\README.md" />

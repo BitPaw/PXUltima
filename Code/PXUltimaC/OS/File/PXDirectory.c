@@ -1,7 +1,5 @@
 #include "PXDirectory.h"
 
-#if PXDirectoryUSE
-
 #include <OS/File/PXFile.h>
 #include <Media/PXText.h>
 
@@ -607,4 +605,3 @@ PXActionResult PXAPI PXDirectorySpecialFolderGet(const PXDirectioySpecialFolder 
 	return PXActionRefusedNotSupported;
 #endif
 }
-#endif

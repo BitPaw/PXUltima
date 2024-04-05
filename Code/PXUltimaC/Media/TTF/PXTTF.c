@@ -174,11 +174,6 @@ PXTTFTableEntryType PXAPI PXTTFTableEntryTypeFromID(const PXInt32U tableEntryTyp
 	}
 }
 
-void PXAPI PXTTFConstruct(PXTTF* const ttf)
-{
-	PXMemoryClear(ttf, sizeof(PXTTF));
-}
-
 void PXAPI PXTTFDestruct(PXTTF* const ttf)
 {
 	// TODO
@@ -191,7 +186,7 @@ PXActionResult PXAPI PXTTFLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 
 	PXTTFOffsetTable offsetTable;
 
-	PXTTFConstruct(ttf);
+	PXClear(PXTTF, ttf);
 
 	// Ferch header
 	{

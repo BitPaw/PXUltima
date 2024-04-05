@@ -22,13 +22,13 @@ void PXAPI PXMatrix4x4FResetAxisW(PXMatrix4x4F* const matrix4x4F)
 	// ---0
 	// 0001
 
-	matrix4x4F->Data[3] = 0;
-	matrix4x4F->Data[7] = 0;
-	matrix4x4F->Data[11] = 0;
-	matrix4x4F->Data[12] = 0;
-	matrix4x4F->Data[13] = 0;
-	matrix4x4F->Data[14] = 0;
-	matrix4x4F->Data[15] = 1;
+	matrix4x4F->Data[WAxisX] = 0.0f;
+	matrix4x4F->Data[WAxisY] = 0.0f;
+	matrix4x4F->Data[WAxisZ] = 0.0f;
+	matrix4x4F->Data[TransformX] = 0.0f;
+	matrix4x4F->Data[TransformY] = 0.0f;
+	matrix4x4F->Data[TransformZ] = 0.0f;
+	matrix4x4F->Data[TransformW] = 1.0f;
 }
 
 void PXAPI PXMatrix4x4FPositionGet(const PXMatrix4x4F* const matrix, PXVector3F* const position)

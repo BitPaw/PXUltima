@@ -179,9 +179,9 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, struct PXGraph
 		);
 #endif
 
-		PXLibraryGetSymbolA(&pxVulcan->LibraryID, &pxVulcan->InstanceProcAddrGetCallBack, "vkGetInstanceProcAddr");
+		PXLibraryGetSymbolA(&pxVulcan->LibraryID, (void**)&pxVulcan->InstanceProcAddrGetCallBack, "vkGetInstanceProcAddr");
 
-		pxVulcan->InstanceCreate = pxVulcan->InstanceProcAddrGetCallBack(PXNull, "vkCreateInstance");
+		pxVulcan->InstanceCreate = (PXVulkanInstanceCreate)pxVulcan->InstanceProcAddrGetCallBack(PXNull, "vkCreateInstance");
 
 		// Create instance
 		{
@@ -232,20 +232,20 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, struct PXGraph
 
 		}
 
-		pxVulcan->DeviceCreate = pxVulcan->InstanceProcAddrGetCallBack(pxVulcan->Instance, "vkCreateDevice");
-		pxVulcan->DevicePhysicalListEnumerate = pxVulcan->InstanceProcAddrGetCallBack(pxVulcan->Instance, "vkEnumeratePhysicalDevices");
-		pxVulcan->DevicePhysicalPropertiesGet = pxVulcan->InstanceProcAddrGetCallBack(pxVulcan->Instance, "vkGetPhysicalDeviceProperties");
-		pxVulcan->DevicePhysicalDisplayPropertiesGet = pxVulcan->InstanceProcAddrGetCallBack(pxVulcan->Instance, "vkGetPhysicalDeviceDisplayPropertiesKHR");
-		pxVulcan->ExtensionInstancePropertiesEnumerate = pxVulcan->InstanceProcAddrGetCallBack(pxVulcan->Instance, "vkEnumerateInstanceExtensionProperties");
-		pxVulcan->InstanceDestroy = pxVulcan->InstanceProcAddrGetCallBack(pxVulcan->Instance, "vkDestroyInstance");
-		pxVulcan->SwapchainCreate = pxVulcan->InstanceProcAddrGetCallBack(pxVulcan->Instance, "vkDestroyInstance");
+		pxVulcan->DeviceCreate = (PXVulkanDeviceCreate)pxVulcan->InstanceProcAddrGetCallBack(pxVulcan->Instance, "vkCreateDevice");
+		pxVulcan->DevicePhysicalListEnumerate = (PXVulkanDevicePhysicalListEnumerate)pxVulcan->InstanceProcAddrGetCallBack(pxVulcan->Instance, "vkEnumeratePhysicalDevices");
+		pxVulcan->DevicePhysicalPropertiesGet = (PXVulkanDevicePhysicalPropertiesGet)pxVulcan->InstanceProcAddrGetCallBack(pxVulcan->Instance, "vkGetPhysicalDeviceProperties");
+		pxVulcan->DevicePhysicalDisplayPropertiesGet = (PXVulkanDevicePhysicalDisplayPropertiesGet)pxVulcan->InstanceProcAddrGetCallBack(pxVulcan->Instance, "vkGetPhysicalDeviceDisplayPropertiesKHR");
+		pxVulcan->ExtensionInstancePropertiesEnumerate = (PXVulkanExtensionInstancePropertiesEnumerate)pxVulcan->InstanceProcAddrGetCallBack(pxVulcan->Instance, "vkEnumerateInstanceExtensionProperties");
+		pxVulcan->InstanceDestroy = (PXVulkanInstanceDestroy)pxVulcan->InstanceProcAddrGetCallBack(pxVulcan->Instance, "vkDestroyInstance");
+		pxVulcan->SwapchainCreate = (PXVulkanSwapchainCreate)pxVulcan->InstanceProcAddrGetCallBack(pxVulcan->Instance, "vkDestroyInstance");
 
 #if OSUnix
-		pxVulcan->SurfaceCreate = pxVulcan->InstanceProcAddrGetCallBack(pxVulcan->Instance, "yxxxxxxxxxxxxxx");
+		pxVulcan->SurfaceCreate = (PXVulkanSurfaceCreate)pxVulcan->InstanceProcAddrGetCallBack(pxVulcan->Instance, "yxxxxxxxxxxxxxx");
 #elif OSWindows
-		pxVulcan->SurfaceCreate = pxVulcan->InstanceProcAddrGetCallBack(pxVulcan->Instance, "vkCreateWin32SurfaceKHR");
+		pxVulcan->SurfaceCreate = (PXVulkanSurfaceCreate)pxVulcan->InstanceProcAddrGetCallBack(pxVulcan->Instance, "vkCreateWin32SurfaceKHR");
 #elif OSAndroid
-		pxVulcan->SurfaceCreate = pxVulcan->InstanceProcAddrGetCallBack(pxVulcan->Instance, "xxxxxxxxxxxxxxx");
+		pxVulcan->SurfaceCreate = (PXVulkanSurfaceCreate)pxVulcan->InstanceProcAddrGetCallBack(pxVulcan->Instance, "xxxxxxxxxxxxxxx");
 #endif
 
 	}

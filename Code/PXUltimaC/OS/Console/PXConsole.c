@@ -271,7 +271,6 @@ void PXAPI PXLogPrintInvoke(PXLoggingEventData* const pxLoggingEventData, ...)
 	va_end(args);
 }
 
-
 void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source, const char* const action, const char* const format, ...)
 {
 	char loggingTypeSymbol;

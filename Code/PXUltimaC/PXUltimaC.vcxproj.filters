@@ -970,5 +970,7 @@
     <None Include="Media\LDAP\README.md" />
     <None Include="Media\RAR\README.md" />
     <None Include="Media\DDS\README.md" />
+    <None Include="OS\Audio\PXALSA\README.md" />
+    <None Include="OS\Audio\README.md" />
   </ItemGroup>
 </Project>

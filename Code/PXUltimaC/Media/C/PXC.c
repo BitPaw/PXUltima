@@ -1730,8 +1730,11 @@ PXActionResult PXAPI PXCParseTypeEnum(PXDocument* const pxDocument, PXFile* cons
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXCLoadFromFile(PXDocument* const pxDocument, PXFile* const pxFile)
+PXActionResult PXAPI PXCLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
+    PXDocument* pxDocument = (PXDocument*)pxResourceLoadInfo->Target;
+    PXFile* const pxFile = pxResourceLoadInfo->FileReference;
+
     PXFile tokenSteam;
     PXFileConstruct(&tokenSteam);
 
@@ -1950,7 +1953,7 @@ PXActionResult PXAPI PXCLoadFromFile(PXDocument* const pxDocument, PXFile* const
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXCSaveToFile(PXDocument* const pxDocument, PXFile* const pxFile)
+PXActionResult PXAPI PXCSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

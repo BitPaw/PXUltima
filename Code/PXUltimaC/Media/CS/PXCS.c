@@ -330,12 +330,12 @@ void PXCSCreateWrapperFromCSource(PXFile* const inputSteam, PXFile* const output
 	outputStream->DataCursor = 0;
 }
 
-PXActionResult PXAPI PXCSLoadFromFile(PXDocument* const pxDocument, PXFile* const pxFile)
+PXActionResult PXAPI PXCSLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXCSSaveToFile(PXDocument* const pxDocument, PXFile* const pxFile)
+PXActionResult PXAPI PXCSSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
 {
 	return PXActionRefusedNotImplemented;
 }

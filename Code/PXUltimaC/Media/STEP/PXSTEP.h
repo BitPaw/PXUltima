@@ -3,23 +3,14 @@
 
 #include "../PXResource.h"
 
-#ifdef __cplusplus
-extern "C"
+// (St)andard (E)xchange (P)roduct Data (ISO 10303-2xx)
+typedef struct PXSTEP_
 {
-#endif
-
-	// (St)andard (E)xchange (P)roduct Data (ISO 10303-2xx)
-	typedef struct PXSTEP_
-	{
-		unsigned int __dummy__;
-	}
-	PXSTEP;
-
-	PXPublic PXActionResult PXAPI PXSTEPLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-	PXPublic PXActionResult PXAPI PXSTEPSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
-
-#ifdef __cplusplus
+	unsigned int __dummy__;
 }
-#endif
+PXSTEP;
+
+PXPublic PXActionResult PXAPI PXSTEPLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXSTEPSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
 
 #endif

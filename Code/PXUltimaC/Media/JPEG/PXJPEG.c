@@ -242,11 +242,6 @@ PXSize PXAPI PXJPEGFilePredictSize(const PXSize width, const PXSize height, cons
     return sum;
 }
 
-void PXAPI PXJPEGConstruct(PXJPEG* const jpeg)
-{
-    PXMemoryClear(jpeg, sizeof(PXJPEG));
-}
-
 void PXAPI PXJPEGDestruct(PXJPEG* const jpeg)
 {
 
@@ -257,7 +252,7 @@ PXActionResult PXAPI PXJPEGLoadFromImage(PXResourceLoadInfo* const pxResourceLoa
     PXJPEG jpeXg;
     PXJPEG* jpeg = &jpeXg;
 
-    PXJPEGConstruct(jpeg);
+    PXClear(PXJPEG, &jpeg);
 
     // Check Start of Image
     {

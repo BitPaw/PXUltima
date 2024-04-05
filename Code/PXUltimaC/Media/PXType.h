@@ -114,15 +114,25 @@ extern "C"
 
 #define PXAPI PXCDECL
 
-#define PXPrivate static
+//---------------------------------------------------------
+// Change label of functions to C-Style (C++ only)
+//---------------------------------------------------------
+#ifdef __cplusplus
+#define PXFunction extern "C"
+#else
+#define PXFunction
+#endif
+//---------------------------------------------------------
+
+#define PXPrivate PXFunction static
 #define PXInternal 
 
 #if OSUnix
-#define PXPublic extern
+#define PXPublic PXFunction extern
 #define PXMSHandle void*
 #elif OSWindows
 #define PXDLLExport __declspec(dllexport)
-#define PXPublic extern PXDLLExport // The visual studio compiler also wants this definition, for microsoft stuff.
+#define PXPublic PXFunction extern PXDLLExport // The visual studio compiler also wants this definition, for microsoft stuff.
 #define PXMSHandle HANDLE
 #endif
 //-----------------------------------------------------------------------------

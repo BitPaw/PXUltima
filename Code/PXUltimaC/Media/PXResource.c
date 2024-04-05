@@ -108,7 +108,7 @@ PXMaterial* PXAPI PXMaterialContainerFind(const PXMaterialContainer* const pxMat
 {
     if (!pxMaterialContainer)
     {
-        return;
+        return PXNull;
     }
 
     //for (PXSize materialContainerID = 0; materialContainerID < pxMaterialContainer->MaterialContaierListSize; ++materialContainerID)
@@ -117,7 +117,7 @@ PXMaterial* PXAPI PXMaterialContainerFind(const PXMaterialContainer* const pxMat
 
         for (PXSize materialID = 0; materialID < pxMaterialContainer->MaterialListAmount; ++materialID)
         {
-            const PXMaterial* const pxMaterial = &pxMaterialContainer->MaterialList[materialID];
+            PXMaterial* const pxMaterial = &pxMaterialContainer->MaterialList[materialID];
 
             const PXBool isMatch = PXTextCompareA(pxMaterialName->TextA, pxMaterialName->SizeUsed, pxMaterial->Name, PXTextUnkownLength);
 
@@ -439,19 +439,19 @@ PXActionResult PXAPI PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, c
         case PXFileFormatCSharp:
             pxFileTypeInfo->ResourceType = PXFileResourceTypeCode;
             pxFileTypeInfo->ResourceLoad = PXCSLoadFromFile;
-            pxFileTypeInfo->ResourceSave = PXCSLoadFromFile;
+            pxFileTypeInfo->ResourceSave = PXCSSaveToFile;
             break;
 
         case PXFileFormatCSS:
             pxFileTypeInfo->ResourceType = PXFileResourceTypeStructuredText;
             pxFileTypeInfo->ResourceLoad = PXCSSLoadFromFile;
-            pxFileTypeInfo->ResourceSave = PXCSSLoadFromFile;
+            pxFileTypeInfo->ResourceSave = PXCSSSaveToFile;
             break;
 
         case PXFileFormatCPP:
             pxFileTypeInfo->ResourceType = PXFileResourceTypeCode;
             pxFileTypeInfo->ResourceLoad = PXCPPLoadFromFile;
-            pxFileTypeInfo->ResourceSave = PXCPPLoadFromFile;
+            pxFileTypeInfo->ResourceSave = PXCPPSaveToFile;
             break;
 
         case PXFileFormatBinaryWindows:

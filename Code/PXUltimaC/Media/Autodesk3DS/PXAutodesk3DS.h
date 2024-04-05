@@ -3,22 +3,13 @@
 
 #include "../PXResource.h"
 
-#ifdef __cplusplus
-extern "C"
+typedef struct PXAutodesk3DS
 {
-#endif
-
-	typedef struct PXAutodesk3DS
-	{
-		unsigned int __dummy__;
-	}
-	PXAutodesk3DS;
-
-	PXPublic PXActionResult PXAPI PXAutodesk3DSLoadFromFile(PXModel * const pxModel, PXFile* const pxFile);
-	PXPublic PXActionResult PXAPI PXAutodesk3DSSafeFromFile(PXModel* const pxModel, PXFile* const pxFile);
-
-#ifdef __cplusplus
+	unsigned int __dummy__;
 }
-#endif
+PXAutodesk3DS;
+
+PXPublic PXActionResult PXAPI PXAutodesk3DSLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXAutodesk3DSSafeFromFile(PXResourceSaveInfo* const pxResourceSafeInfo);
 
 #endif

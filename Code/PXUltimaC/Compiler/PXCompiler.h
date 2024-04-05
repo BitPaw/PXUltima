@@ -6,11 +6,6 @@
 
 #define PXFlagIsSet(value, flag)  ((value & flag) && 1u)
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
 	typedef enum PXCompilerSymbolLexer_
 	{
 		PXCompilerSymbolLexerInvalid,
@@ -78,7 +73,6 @@ extern "C"
 	typedef struct PXCompilerSymbolEntry_
 	{
 		//---<Temporal data------
-
 		union 
 		{
 			char* Source;
@@ -112,7 +106,6 @@ extern "C"
 		PXSize EndOfCommand;
 		const char* EndOfCommandSize;
 
-
 		PXBool CommentsKeep;
 		PXSize CommentSingleLineSize;
 		const char* CommentSingleLine;
@@ -125,58 +118,35 @@ extern "C"
 	}
 	PXCompilerSettings;
 
-	PXPublic void PXCompilerSettingsConstruct(PXCompilerSettings* const compilerSettings);
+	PXPublic void PXAPI PXCompilerSettingsConstruct(PXCompilerSettings* const compilerSettings);
 
-	PXPrivate void PXCompilerSymbolEntryAdd
-	(
-		PXFile* const pxFile, 
-		const PXCompilerSymbolEntry* const compilerSymbolEntry
-	);
+	PXPrivate void PXAPI PXCompilerSymbolEntryAdd(PXFile* const pxFile, const PXCompilerSymbolEntry* const compilerSymbolEntry);
 
 	// Take current Node and merge it with the next one.
-	PXPublic PXSize PXCompilerSymbolEntryMergeCurrentWithNext
-	(
-		PXFile* const pxFile,
-		PXCompilerSymbolEntry* const compilerSymbolEntry
-	);
+	PXPublic PXSize PXAPI PXCompilerSymbolEntryMergeCurrentWithNext(PXFile* const pxFile, PXCompilerSymbolEntry* const compilerSymbolEntry);
 
 	// rewind one symbol back
-	PXPublic PXSize PXCompilerSymbolRewind(PXFile* const pxFile, const PXSize amount);
+	PXPublic PXSize PXAPI PXCompilerSymbolRewind(PXFile* const pxFile, const PXSize amount);
 
 	// Fetch next symbol without actually changing the file-cursor-position
-	PXPublic PXSize PXCompilerSymbolEntryPeek
-	(
-		PXFile* const pxFile,
-		PXCompilerSymbolEntry* const compilerSymbolEntry
-	);
+	PXPublic PXSize PXAPI PXCompilerSymbolEntryPeek(PXFile* const pxFile, PXCompilerSymbolEntry* const compilerSymbolEntry);
+	
 	// Fetch next symbol and consume symbol
-	PXPublic PXSize PXCompilerSymbolEntryExtract
-	(
-		PXFile* const pxFile,
-		PXCompilerSymbolEntry* const compilerSymbolEntry
-	);
+	PXPublic PXSize PXAPI PXCompilerSymbolEntryExtract(PXFile* const pxFile, PXCompilerSymbolEntry* const compilerSymbolEntry);
+	
 	// Without fetching the symbol, consume it.
-	PXPublic PXSize PXCompilerSymbolEntryForward
-	(
-		PXFile* const pxFile
-	);
+	PXPublic PXSize PXAPI PXCompilerSymbolEntryForward(PXFile* const pxFile);
 
-
-	PXPrivate PXCompilerSymbolLexer PXCompilerTryAnalyseType(PXFile* const inputStream, const char* const text, const PXSize textSize, PXCompilerSymbolEntry* const compilerSymbolEntry);
+	PXPrivate PXCompilerSymbolLexer PXAPI PXCompilerTryAnalyseType(PXFile* const inputStream, const char* const text, const PXSize textSize, PXCompilerSymbolEntry* const compilerSymbolEntry);
 
 	PXPublic PXActionResult PXAPI PXCompilerLexicalAnalysis(PXFile* const inputStream, PXFile* const outputStream, const PXCompilerSettings* const compilerSettings);
 
-
-	PXPublic PXBool PXCompilerParseStringUntilNewLine(PXFile* const inputStream, PXText* const pxText);
-	PXPublic PXBool PXCompilerParseStringUntilNewLineA(PXFile* const inputStream, char* const text, const PXSize textMaxSize, PXSize* const textSize);
+	PXPublic PXBool PXAPI PXCompilerParseStringUntilNewLine(PXFile* const inputStream, PXText* const pxText);
+	PXPublic PXBool PXAPI PXCompilerParseStringUntilNewLineA(PXFile* const inputStream, char* const text, const PXSize textMaxSize, PXSize* const textSize);
 	
-	PXPublic PXBool PXCompilerParseIntUnsignedSingle(PXFile* const inputStream, PXCompilerSymbolEntry* const compilerSymbolEntry, unsigned int* const value);
+	PXPublic PXBool PXAPI PXCompilerParseIntUnsignedSingle(PXFile* const inputStream, PXCompilerSymbolEntry* const compilerSymbolEntry, unsigned int* const value);
 
-	PXPublic PXBool PXCompilerParseFloatSingle(PXFile* const inputStream, float* const values);
-	PXPublic PXBool PXCompilerParseFloatList(PXFile* const inputStream,  float* const values, const PXSize valuesMaxSize, PXSize* const valuesSize);
-
-#ifdef __cplusplus
-}
-#endif
+	PXPublic PXBool PXAPI PXCompilerParseFloatSingle(PXFile* const inputStream, float* const values);
+	PXPublic PXBool PXAPI PXCompilerParseFloatList(PXFile* const inputStream,  float* const values, const PXSize valuesMaxSize, PXSize* const valuesSize);
 
 #endif

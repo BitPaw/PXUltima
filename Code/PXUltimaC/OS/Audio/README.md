@@ -13,5 +13,5 @@
 
 
 # Links
-- WINMM : https://en.wikipedia.org/wiki/Windows_legacy_audio_components
-- WSAPI : https://en.wikipedia.org/wiki/Technical_features_new_to_Windows_Vista#Audio
+- [WINMM](https://en.wikipedia.org/wiki/Windows_legacy_audio_components)
+- [WSAPI](https://en.wikipedia.org/wiki/Technical_features_new_to_Windows_Vista#Audio)

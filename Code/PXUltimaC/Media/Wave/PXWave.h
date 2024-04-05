@@ -5,26 +5,17 @@
 
 #include <Media/FMT/PXFMT.h>
 
-#ifdef __cplusplus
-extern "C"
+// Waveform Audio File
+typedef struct PXWave_
 {
-#endif
+	PXFMT Format;
 
-	// Waveform Audio File
-	typedef struct PXWave_
-	{
-		PXFMT Format;
-
-		PXInt32U SoundDataSize; // 32-Bit
-		void* SoundData;
-	}
-	PXWave;
-
-	PXPublic PXActionResult PXAPI PXWaveLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-	PXPublic PXActionResult PXAPI PXWaveSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
-
-#ifdef __cplusplus
+	PXInt32U SoundDataSize; // 32-Bit
+	void* SoundData;
 }
-#endif
+PXWave;
+
+PXPublic PXActionResult PXAPI PXWaveLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXWaveSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
 
 #endif
