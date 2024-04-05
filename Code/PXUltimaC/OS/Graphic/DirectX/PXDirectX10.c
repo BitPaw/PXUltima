@@ -1,5 +1,6 @@
 #include "PXDirectX10.h"
 
+#include <OS/Console/PXConsole.h>
 
 #if PXDX10Enable
 #include <d3d10.h>
@@ -12,6 +13,16 @@
 
 PXActionResult PXAPI PXDirectX10Initialize(PXDirectX10* const pxDirectX)
 {
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "DirectX10",
+        "Initialize",
+        "Start..."
+    );
+#endif
+
 #if 0
     D3D10_DRIVER_TYPE dxDriverType = 0;
 

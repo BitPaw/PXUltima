@@ -1,6 +1,6 @@
 #include "PXIP.h"
 
-PXIPVersion PXIPAnalyseVersion(const char* ip)
+PXIPVersion PXAPI PXIPAnalyseVersion(const char* ip)
 {
     PXIPVersion ipVersion = IPVersionInvalid;
 
@@ -54,7 +54,7 @@ PXIPVersion PXIPAnalyseVersion(const char* ip)
     return IPVersionInvalid;
 }
 
-PXByte PXIPIsValid(const char* ipAdress)
+PXByte PXAPI PXIPIsValid(const char* ipAdress)
 {
     PXIPVersion ipVersion = PXIPAnalyseVersion(ipAdress);
 
@@ -81,7 +81,7 @@ PXByte PXIPIsValid(const char* ipAdress)
     }
 }
 
-PXByte PXIPv4CheckIfValid(const char* ipAdress)
+PXByte PXAPI PXIPv4CheckIfValid(const char* ipAdress)
 {
     const unsigned char resultIPv4OK = 0;
     const unsigned char resultIPv4NullPointer = 1;
@@ -153,7 +153,7 @@ PXByte PXIPv4CheckIfValid(const char* ipAdress)
     return resultIPv4OK;
 }
 
-unsigned char PXIPv6CheckIfValid(const char* ipAdress)
+unsigned char PXAPI PXIPv6CheckIfValid(const char* ipAdress)
 {
     const char validIPv6Adress = 0;
     const char invalidAmountOfSeperators = 1;

@@ -2707,6 +2707,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
             pxEngineStartInfo->UseMouseInput = 1;
 
             PXEngineStart(pxEngine, pxEngineStartInfo);
+
 #endif
 
             break;

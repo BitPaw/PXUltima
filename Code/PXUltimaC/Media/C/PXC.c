@@ -7,7 +7,7 @@
 
 #define PXCDebugOutput 1
 
-PXBool PXCElementHasName(PXCElement* const pxCElement)
+PXBool PXAPI PXCElementHasName(PXCElement* const pxCElement)
 {
     const PXBool hasName = pxCElement->Name && pxCElement->NameSizeCurrent;
    // const PXBool hasAlias = pxCElement->NameAlias && pxCStructure->NameAliasSizeCurrent;
@@ -15,7 +15,7 @@ PXBool PXCElementHasName(PXCElement* const pxCElement)
     return hasName;
 }
 
-void PXCElementClear(PXCElement* const pxCElement)
+void PXAPI PXCElementClear(PXCElement* const pxCElement)
 {
     char* name = pxCElement->Name;
     PXInt8U nameSize = pxCElement->NameSizeMaximal;
@@ -35,7 +35,7 @@ void PXCElementClear(PXCElement* const pxCElement)
     pxCElement->ElementStructure.NameAliasSizeMaximal = nameSizeSecound;
 }
 
-CKeyWord PXCFileAnalyseElement(const char* name, const PXSize nameSize)
+CKeyWord PXAPI PXCFileAnalyseElement(const char* name, const PXSize nameSize)
 {
     switch (nameSize)
     {
@@ -163,7 +163,7 @@ CKeyWord PXCFileAnalyseElement(const char* name, const PXSize nameSize)
     return CKeyWordUnkown;
 }
 
-PXBool PXCFileParseTypedef(PXFile* const inputStream, PXFile* const outputStream)
+PXBool PXAPI PXCFileParseTypedef(PXFile* const inputStream, PXFile* const outputStream)
 {
     PXCompilerSymbolEntry compilerSymbolEntry;
 
@@ -198,7 +198,7 @@ PXBool PXCFileParseTypedef(PXFile* const inputStream, PXFile* const outputStream
     return PXFalse;
 }
 
-PXBool PXCFileParseStructure(PXFile* const inputStream, PXFile* const outputStream, const CKeyWord structureType, const PXBool isTypeDefitinition)
+PXBool PXAPI PXCFileParseStructure(PXFile* const inputStream, PXFile* const outputStream, const CKeyWord structureType, const PXBool isTypeDefitinition)
 {
     PXCompilerSymbolEntry compilerSymbolEntry;
 
@@ -534,7 +534,7 @@ PXBool PXCFileParseStructure(PXFile* const inputStream, PXFile* const outputStre
     return PXFalse;
 }
 
-PXBool PXCFileParseDeclaration(PXFile* const inputStream, PXFile* const outputStream, PXCompilerSymbolEntry* compilerSymbolEntry)
+PXBool PXAPI PXCFileParseDeclaration(PXFile* const inputStream, PXFile* const outputStream, PXCompilerSymbolEntry* compilerSymbolEntry)
 {
     PXBool finished = 0;
     PXInt8U flagList = MemberFieldFlagIsSigned;
@@ -787,7 +787,7 @@ PXBool PXCFileParseDeclaration(PXFile* const inputStream, PXFile* const outputSt
 
 }
 
-PXBool PXCFileParseFunctionPrototype(PXFile* const inputStream, PXFile* const outputStream, PXCompilerSymbolEntry* compilerSymbolEntry)
+PXBool PXAPI PXCFileParseFunctionPrototype(PXFile* const inputStream, PXFile* const outputStream, PXCompilerSymbolEntry* compilerSymbolEntry)
 {
 
 
@@ -1958,7 +1958,7 @@ PXActionResult PXAPI PXCSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
     return PXActionRefusedNotImplemented;
 }
 
-void PXCElementExtract(PXFile* const inputStream, PXCElement* const pxCElement)
+void PXAPI PXCElementExtract(PXFile* const inputStream, PXCElement* const pxCElement)
 {
     PXCElementClear(pxCElement);
 

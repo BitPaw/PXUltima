@@ -5,7 +5,7 @@
 static const char PXXingInfoSignatureInfo[4] = { 'I', 'n', 'f', 'o' };
 static const char PXXingInfoSignatureXing[4] = { 'X', 'i', 'n', 'g' };
 
-PXActionResult PXXingInfoParse(PXXingInfo* const xingInfo, PXFile* const PXFile)
+PXActionResult PXAPI PXXingInfoParse(PXXingInfo* const xingInfo, PXFile* const PXFile)
 {
 	// parse signature
 	{

@@ -1,11 +1,23 @@
 #include "PXDirectX10x1.h"
 
+#include <OS/Console/PXConsole.h>
+
 #if PXDX10x1Enable
 #pragma comment(lib, "D3d10_1.lib")
 #endif
 
 PXActionResult PXAPI PXDirectX10x1Initialize(PXDirectX10x1* const pxDirectX10x1)
 {
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "DirectX10.1",
+        "Initialize",
+        "Start..."
+    );
+#endif
+
     return PXActionRefusedNotImplemented;
 
 #if 0

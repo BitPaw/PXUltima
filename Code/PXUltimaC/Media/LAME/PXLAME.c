@@ -5,7 +5,7 @@
 
 const char PXLameSignatureID[] = { 'L', 'A', 'M', 'E' };
 
-PXActionResult PXLAMELoadFromFile(PXLAME* const lame, PXFile* const pxFile)
+PXActionResult PXAPI PXLAMELoadFromFile(PXLAME* const lame, PXFile* const pxFile)
 {
 	// Check signature (4 Bytes)
 	{		
@@ -100,7 +100,7 @@ PXActionResult PXLAMELoadFromFile(PXLAME* const lame, PXFile* const pxFile)
     return PXActionSuccessful;
 }
 
-PXActionResult PXLAMESaveToFile(const PXLAME* const lame, PXFile* const pxFile)
+PXActionResult PXAPI PXLAMESaveToFile(const PXLAME* const lame, PXFile* const pxFile)
 {
 	PXFileWriteB(pxFile, PXLameSignatureID, sizeof(PXLameSignatureID));
 

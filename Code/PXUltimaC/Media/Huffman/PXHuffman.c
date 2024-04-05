@@ -531,12 +531,12 @@ PXActionResult PXAPI PXHuffmanDistanceTreeGenerateFixed(PXHuffmanTree* const huf
 	return result;
 }
 
-void PXHuffmanTreeConstruct(PXHuffmanTree* const huffmanTree)
+void PXAPI PXHuffmanTreeConstruct(PXHuffmanTree* const huffmanTree)
 {	
 	PXClear(PXHuffmanTree, huffmanTree);
 }
 
-void PXHuffmanTreeDestruct(PXHuffmanTree* const huffmanTree)
+void PXAPI PXHuffmanTreeDestruct(PXHuffmanTree* const huffmanTree)
 {
 	PXDeleteList(PXInt32U, 0, huffmanTree->CodeSymbols, 0);
 	PXDeleteList(PXInt32U, 0, huffmanTree->LengthsList, 0);

@@ -35,7 +35,6 @@
 #include "TTF/PXTTF.h"
 #include "VRML/PXVRML.h"
 #include "PHP/PXPHP.h"
-#include "M4A/PXM4A.h"
 #include "MP4/PXMP4.h"
 #include "MSI/PXMSI.h"
 #include "Wave/PXWave.h"

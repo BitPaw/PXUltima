@@ -3,20 +3,13 @@
 
 #include "../PXResource.h"
 
-#ifdef __cplusplus
-extern "C"
+typedef struct PXQOI_
 {
-#endif
-	typedef struct PXQOI_
-	{
-		unsigned int __dummy__;
-	}
-	PXQOI;
-
-	PXPublic PXActionResult PXQOIParse(PXQOI* qoi, const void* data, const PXSize dataSize, PXSize* dataRead);
-
-#ifdef __cplusplus
+	unsigned int __dummy__;
 }
-#endif
+PXQOI;
+
+PXPublic PXActionResult PXAPI PXQOILoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXQOISaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
 
 #endif

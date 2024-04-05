@@ -3,23 +3,14 @@
 
 #include <Media/PXType.h>
 
-#ifdef __cplusplus
-extern "C"
+typedef struct PXAwaitInfo_
 {
-#endif
-
-	typedef struct PXAwaitInfo_
-	{
-		volatile void* DataTarget;
-		const void* DataExpect;
-		PXSize DataSize;
-	}
-	PXAwaitInfo;
-
-	PXPublic PXBool PXAPI PXAwaitChange(PXAwaitInfo* const pxAwaitInfo);
-
-#ifdef __cplusplus
+	volatile void* DataTarget;
+	const void* DataExpect;
+	PXSize DataSize;
 }
-#endif
+PXAwaitInfo;
+
+PXPublic PXBool PXAPI PXAwaitChange(PXAwaitInfo* const pxAwaitInfo);
 
 #endif

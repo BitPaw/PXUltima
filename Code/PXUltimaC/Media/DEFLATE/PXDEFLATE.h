@@ -3,36 +3,27 @@
 
 #include "../PXResource.h"
 
-#ifdef __cplusplus
-extern "C"
+typedef enum PXDeflateEncodingMethod_
 {
-#endif
-
-	typedef enum PXDeflateEncodingMethod_
-	{
-		PXDeflateEncodingInvalid,
-		PXDeflateEncodingLiteralRaw,
-		PXDeflateEncodingHuffmanStatic,
-		PXDeflateEncodingHuffmanDynamic,
-		PXDeflateEncodingReserverd
-	}
-	PXDeflateEncodingMethod;
-
-	typedef struct PXDeflateBlock_
-	{
-		PXDeflateEncodingMethod EncodingMethod;
-		PXBool IsLastBlock;
-	}
-	PXDeflateBlock;
-
-	PXPublic PXDeflateEncodingMethod PXDeflateEncodingMethodFromID(const PXInt8U deflateEncodingMethod);
-	PXPublic PXInt8U PXDeflateEncodingMethodToID(const PXDeflateEncodingMethod deflateEncodingMethod);
-
-	PXPublic PXActionResult PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const pxOutputStream);
-	PXPublic PXActionResult PXDEFLATESerialize(PXFile* const pxInputStream, PXFile* const pxOutputStream);
-
-#ifdef __cplusplus
+	PXDeflateEncodingInvalid,
+	PXDeflateEncodingLiteralRaw,
+	PXDeflateEncodingHuffmanStatic,
+	PXDeflateEncodingHuffmanDynamic,
+	PXDeflateEncodingReserverd
 }
-#endif
+PXDeflateEncodingMethod;
+
+typedef struct PXDeflateBlock_
+{
+	PXDeflateEncodingMethod EncodingMethod;
+	PXBool IsLastBlock;
+}
+PXDeflateBlock;
+
+PXPublic PXDeflateEncodingMethod PXAPI PXDeflateEncodingMethodFromID(const PXInt8U deflateEncodingMethod);
+PXPublic PXInt8U PXAPI PXDeflateEncodingMethodToID(const PXDeflateEncodingMethod deflateEncodingMethod);
+
+PXPublic PXActionResult PXAPI PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const pxOutputStream);
+PXPublic PXActionResult PXAPI PXDEFLATESerialize(PXFile* const pxInputStream, PXFile* const pxOutputStream);
 
 #endif

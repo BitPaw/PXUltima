@@ -655,7 +655,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
         PXCameraRotate(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementView);
         PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->CounterTimeDelta);
 
-        PXControllerSystemDebugPrint(pxController);
+       // PXControllerSystemDebugPrint(pxController);
 
 
 
@@ -846,7 +846,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
             pxGUIElementUpdateInfo.Property = PXUIElementPropertyTextContent;
             pxGUIElementUpdateInfo.Data.Text.Content = pxText.TextA;
 
-            PXGUIElementUpdate(&pxEngine->GUISystem, &pxGUIElementUpdateInfo, 1u);
+           // PXGUIElementUpdate(&pxEngine->GUISystem, &pxGUIElementUpdateInfo, 1u);
         }
 
         if(pxEngine->HasGraphicInterface && pxEngine->Graphic.WindowReference)

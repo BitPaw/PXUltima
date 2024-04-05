@@ -13,40 +13,32 @@ typedef sem_t PXLockIDType; // is union, cannot be defined as "sem_t" only -> co
 typedef HANDLE PXLockIDType; // same as void*
 #endif
 
-#ifdef __cplusplus
-extern "C"
+typedef enum PXLockType_
 {
-#endif
+	PXLockTypeInvalid,
+	PXLockTypeGlobal,
+	PXLockTypeProcessOnly
+}
+PXLockType;
 
-	typedef enum PXLockType_
-	{
-		PXLockTypeInvalid,
-		PXLockTypeGlobal,
-		PXLockTypeProcessOnly
-	}
-	PXLockType;
-
-	typedef struct PXLock_
-	{
-		PXLockIDType ID;
-		PXLockType Type;
-		PXInt8U LockCounter;
+typedef struct PXLock_
+{
+	PXLockIDType ID;
+	PXLockType Type;
+	PXInt8U LockCounter;
 
 #if OSWindows
-		CRITICAL_SECTION LockCriticalSection;
+	CRITICAL_SECTION LockCriticalSection;
 #endif
-	}
-	PXLock;
-
-    // Clear value of lock, sets CPrivate data to 0.
-    PXPublic void PXAPI PXLockClear(PXLock* const lock);
-
-	PXPublic PXActionResult PXAPI PXLockCreate(PXLock* const lock, const PXLockType type);
-	PXPublic PXActionResult PXAPI PXLockDelete(PXLock* const lock);
-	PXPublic PXActionResult PXAPI PXLockEngage(PXLock* const lock);
-	PXPublic PXActionResult PXAPI PXLockRelease(PXLock* const lock);
-#ifdef __cplusplus
 }
-#endif
+PXLock;
+
+// Clear value of lock, sets CPrivate data to 0.
+PXPublic void PXAPI PXLockClear(PXLock* const lock);
+
+PXPublic PXActionResult PXAPI PXLockCreate(PXLock* const lock, const PXLockType type);
+PXPublic PXActionResult PXAPI PXLockDelete(PXLock* const lock);
+PXPublic PXActionResult PXAPI PXLockEngage(PXLock* const lock);
+PXPublic PXActionResult PXAPI PXLockRelease(PXLock* const lock);
 
 #endif

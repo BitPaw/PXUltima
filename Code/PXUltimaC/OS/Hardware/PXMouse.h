@@ -21,27 +21,18 @@
 
 #include <Media/PXType.h>
 
-#ifdef __cplusplus
-extern "C"
+typedef struct PXMouse_
 {
-#endif
-
-	typedef struct PXMouse_
-	{
-		float DeltaNormalisized[2];
-		float PositionNormalisized[2];  // Convert Screenspace (width & height) to normal space -1 to +1
-		PXInt32S Position[2]; // Window-Position (0/0 to x/y)
-		PXInt32S Delta[2]; // Relative Input (-x/-y to 0/0 to x/y)	
-		PXInt8U Buttons;
-		PXInt8U ButtonsDelta;
-	}
-	PXMouse;
-
-	PXPublic void PXAPI PXMouseInputReset(PXMouse* const mouse);
-	PXPublic void PXAPI PXMouseInputPrint(const PXMouse* const mouse);
-
-#ifdef __cplusplus
+	float DeltaNormalisized[2];
+	float PositionNormalisized[2];  // Convert Screenspace (width & height) to normal space -1 to +1
+	PXInt32S Position[2]; // Window-Position (0/0 to x/y)
+	PXInt32S Delta[2]; // Relative Input (-x/-y to 0/0 to x/y)	
+	PXInt8U Buttons;
+	PXInt8U ButtonsDelta;
 }
-#endif
+PXMouse;
+
+PXPublic void PXAPI PXMouseInputReset(PXMouse* const mouse);
+PXPublic void PXAPI PXMouseInputPrint(const PXMouse* const mouse);
 
 #endif

@@ -3,21 +3,12 @@
 
 #include "../PXResource.h"
 
-#ifdef __cplusplus
-extern "C"
+typedef struct PXISBN_
 {
-#endif
-
-	typedef struct PXISBN_
-	{
-		int x;
-	}
-	PXISBN;
-
-	PXPublic PXBool PXISBNIsValid(const void* data, const PXSize dataSize);
-
-#ifdef __cplusplus
+	int x;
 }
-#endif
+PXISBN;
+
+PXPublic PXBool PXAPI PXISBNIsValid(const void* data, const PXSize dataSize);
 
 #endif

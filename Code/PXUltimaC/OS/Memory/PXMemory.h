@@ -21,127 +21,122 @@ typedef unsigned long PXMemoryAccessModeType;// DWORD
 #define MemorySanitise 0
 //----------------
 
-#ifdef __cplusplus
-extern "C"
+typedef enum PXMemoryAccessMode_
 {
-#endif
+	PXMemoryAccessModeInvalid,
+	PXMemoryAccessModeNoReadWrite,
+	PXMemoryAccessModeReadOnly,
+	PXMemoryAccessModeWriteOnly,
+	PXMemoryAccessModeReadAndWrite
+}
+PXMemoryAccessMode;
 
-	typedef enum PXMemoryAccessMode_
-	{
-		PXMemoryAccessModeInvalid,
-		PXMemoryAccessModeNoReadWrite,
-		PXMemoryAccessModeReadOnly,
-		PXMemoryAccessModeWriteOnly,
-		PXMemoryAccessModeReadAndWrite
-	}
-	PXMemoryAccessMode;
+typedef enum PXMemoryCachingMode_
+{
+	PXMemoryCachingModeInvalid,
 
-	typedef enum PXMemoryCachingMode_
-	{
-		PXMemoryCachingModeInvalid,
+	PXMemoryCachingModeDefault,
 
-		PXMemoryCachingModeDefault,
+	PXMemoryCachingModeRandom,  // Access data in a random order.
+	PXMemoryCachingModeSequential, // Data sequentially from lower offsets to higher offsets.
+	PXMemoryCachingModeTemporary, // File will not be saves to drive.
+	PXMemoryCachingModeUseOnce, // Access the specified data once and then not reuse it again.
 
-		PXMemoryCachingModeRandom,  // Access data in a random order.
-		PXMemoryCachingModeSequential, // Data sequentially from lower offsets to higher offsets.
-		PXMemoryCachingModeTemporary, // File will not be saves to drive.
-		PXMemoryCachingModeUseOnce, // Access the specified data once and then not reuse it again.
+	// Windows only
+	PXMemoryCachingModeWriteThrough,
+	PXMemoryCachingModeNoBuffering, // No OS Caching, direct to Harddrive if supprted
 
-		// Windows only
-		PXMemoryCachingModeWriteThrough,
-		PXMemoryCachingModeNoBuffering, // No OS Caching, direct to Harddrive if supprted
+	// UNIX only
+	PXMemoryCachingModeNeedLater, // Data is not needed right now. "For later"[near future].
+	PXMemoryCachingModeDontNeedNow // Data will not be cached. "I dont need it yet"
+}
+PXMemoryCachingMode;
 
-		// UNIX only
-		PXMemoryCachingModeNeedLater, // Data is not needed right now. "For later"[near future].
-		PXMemoryCachingModeDontNeedNow // Data will not be cached. "I dont need it yet"
-	}
-	PXMemoryCachingMode;
+typedef struct PXMemoryUsage_
+{
+	PXSize PhysicalRAMSize;
 
-	typedef struct PXMemoryUsage_
-	{
-		PXSize PhysicalRAMSize;
+	PXSize PercentInUse;
+	PXSize PhysicalTotal;
+	PXSize PhysicalAvailable;
+	PXSize VirtualTotal;
+	PXSize VirtualAvailable;
+	PXSize PageFileTotal;
+	PXSize PageFileAvailable;
+	PXSize ExtendedVirtualAvailable;
+}
+PXMemoryUsage;
 
-		PXSize PercentInUse;
-		PXSize PhysicalTotal;
-		PXSize PhysicalAvailable;
-		PXSize VirtualTotal;
-		PXSize VirtualAvailable;
-		PXSize PageFileTotal;
-		PXSize PageFileAvailable;
-		PXSize ExtendedVirtualAvailable;
-	}
-	PXMemoryUsage;
+typedef struct PXMemoryInfo_
+{
+	// OUT
+	void** Data;
+	PXSize* SizeTotal;
 
-	typedef struct PXMemoryInfo_
-	{
-		// OUT
-		void** Data;
-		PXSize* SizeTotal;
+	// Input
+	PXSize Amount;
+	PXSize TypeSize;
 
-		// Input
-		PXSize Amount;
-		PXSize TypeSize;
-	
-		// Debug Info
+	// Debug Info
 #if PXMemoryDebug
-		const char* File;
-		const char* Function;
-		PXSize Line;
+	const char* File;
+	const char* Function;
+	PXSize Line;
 #endif
 
-		PXBool MemoryClear;
-	}
-	PXMemoryInfo;
+	PXBool MemoryClear;
+}
+PXMemoryInfo;
 
 
 
 
-	typedef struct PXMemoryHeapReallocateEventData_
-	{
-		PXSize TypeSize;
-		PXSize AmountDemand;
-		PXSize* AmountCurrent;
-		PXSize* DataSize;
-		void** DataAdress;
+typedef struct PXMemoryHeapReallocateEventData_
+{
+	PXSize TypeSize;
+	PXSize AmountDemand;
+	PXSize* AmountCurrent;
+	PXSize* DataSize;
+	void** DataAdress;
 
-		PXBool DoFillNewSpace;
-		PXByte FillSymbol;
-		PXBool ReduceSizeIfPossible;
+	PXBool DoFillNewSpace;
+	PXByte FillSymbol;
+	PXBool ReduceSizeIfPossible;
 
-		// Additinaional Flags
-		PXBool FreshAllocationPerformed;
-		PXBool WasSuccessful;
-		PXBool WasDataMoved;
+	// Additinaional Flags
+	PXBool FreshAllocationPerformed;
+	PXBool WasSuccessful;
+	PXBool WasDataMoved;
 
-		// Data of added memory space
-		void* PointOfNewData;
-		PXSize PointOfNewDataSize;
-		PXBool WasSizeIncreased;
+	// Data of added memory space
+	void* PointOfNewData;
+	PXSize PointOfNewDataSize;
+	PXBool WasSizeIncreased;
 
 #if PXMemoryDebug
-		const char* CodeFileName;
-		const char* CodeFunctionName;
-		PXSize CodeFileLine;
+	const char* CodeFileName;
+	const char* CodeFunctionName;
+	PXSize CodeFileLine;
 #endif
-	}
-	PXMemoryHeapReallocateEventData;
+}
+PXMemoryHeapReallocateEventData;
 
 
 
 
-	// POSIX
+// POSIX
 
 
 
 
-	PXPublic PXBool PXAPI PXMemoryScan(PXMemoryUsage* memoryUsage);
+PXPublic PXBool PXAPI PXMemoryScan(PXMemoryUsage* memoryUsage);
 
-	PXPublic inline const void* PXAPI PXMemoryLocateFirst(const void* const PXRestrict inputBuffer, const PXByte byteBlock, const PXSize inputBufferSize);
-	PXPublic inline const void* PXAPI PXMemoryLocateLast(const void* const PXRestrict inputBuffer, const PXByte byteBlock, const PXSize inputBufferSize);
-	
+PXPublic inline const void* PXAPI PXMemoryLocateFirst(const void* const PXRestrict inputBuffer, const PXByte byteBlock, const PXSize inputBufferSize);
+PXPublic inline const void* PXAPI PXMemoryLocateLast(const void* const PXRestrict inputBuffer, const PXByte byteBlock, const PXSize inputBufferSize);
 
 
-	// PXPublic char MemoryAdvice(const void* adress, const PXSize length, const FileCachingMode fileCachingMode);
+
+// PXPublic char MemoryAdvice(const void* adress, const PXSize length, const FileCachingMode fileCachingMode);
 
 
 
@@ -160,44 +155,44 @@ extern "C"
 
 
 
-	PXPublic void* PXAPI PXMemoryHeapRealloc(void* buffer, PXSize size);
+PXPublic void* PXAPI PXMemoryHeapRealloc(void* buffer, PXSize size);
 
-	PXPublic PXBool PXAPI PXMemoryHeapReallocate(PXMemoryHeapReallocateEventData* const pxMemoryHeapReallocateInfo);
-
-
-	//PXPublic PXBool PXMemoryHeapResizeArray(PXSize typeSize, void** dataAddress, PXSize* const dataAddressSizeCurrent, const PXSize dataAddressSizeRequired);
-
-	//PXPublic void* PXMemoryHeapReallocateClear(void* const adress, const PXSize sizeBefore, const PXSize sizeAfter);
-	//PXPublic void* PXMemoryHeapReallocateTypeClear(void* const adress, const PXSize objectSize, const PXSize numberOfElementsBefore, const PXSize numberOfElementsAfter);
+PXPublic PXBool PXAPI PXMemoryHeapReallocate(PXMemoryHeapReallocateEventData* const pxMemoryHeapReallocateInfo);
 
 
+//PXPublic PXBool PXMemoryHeapResizeArray(PXSize typeSize, void** dataAddress, PXSize* const dataAddressSizeCurrent, const PXSize dataAddressSizeRequired);
 
-	// Allocate memory in virtual memory space.
-	// The minimal size will be a pagefile (4KB) as the size will be rounded up to the next page boundary.
-	// Only use for bigger datablocks as thic has very hi overhead.
-	PXPublic void* PXAPI PXMemoryVirtualAllocate(PXSize size, const PXMemoryAccessMode PXMemoryAccessMode);
-	PXPublic void PXAPI PXMemoryVirtualPrefetch(const void* adress, const PXSize size);
-	PXPublic void PXAPI PXMemoryVirtualRelease(const void* adress, const PXSize size);
-	PXPublic void* PXAPI PXMemoryVirtualReallocate(const void* adress, const PXSize size);
-
-
-	PXPublic PXMemoryAccessModeType PXAPI PXMemoryAccessModeFromID(const PXMemoryAccessMode PXMemoryAccessMode);
+//PXPublic void* PXMemoryHeapReallocateClear(void* const adress, const PXSize sizeBefore, const PXSize sizeAfter);
+//PXPublic void* PXMemoryHeapReallocateTypeClear(void* const adress, const PXSize objectSize, const PXSize numberOfElementsBefore, const PXSize numberOfElementsAfter);
 
 
 
-
-	// Allocates size bytes on the program stack.
-	// The allocated space is automatically freed when the calling function exits
-	// (not when the allocation merely passes out of scope).
-	PXPublic PXActionResult PXAPI PXMemoryStackAllocate(PXMemoryInfo* const pxMemoryAllocateInfo);
-	
-	// Deallocates stack allocated memory if it was commited to the heap.
-	// Additional size parameter can be ignored	
-	PXPublic PXActionResult PXAPI PXMemoryStackDeallocate(PXMemoryInfo* const pxMemoryAllocateInfo);
+// Allocate memory in virtual memory space.
+// The minimal size will be a pagefile (4KB) as the size will be rounded up to the next page boundary.
+// Only use for bigger datablocks as thic has very hi overhead.
+PXPublic void* PXAPI PXMemoryVirtualAllocate(PXSize size, const PXMemoryAccessMode PXMemoryAccessMode);
+PXPublic void PXAPI PXMemoryVirtualPrefetch(const void* adress, const PXSize size);
+PXPublic void PXAPI PXMemoryVirtualRelease(const void* adress, const PXSize size);
+PXPublic void* PXAPI PXMemoryVirtualReallocate(const void* adress, const PXSize size);
 
 
-	PXPublic PXActionResult PXAPI PXMemoryHeapAllocate(PXMemoryInfo* const pxMemoryAllocateInfo);
-	PXPublic PXActionResult PXAPI PXMemoryHeapDeallocate(PXMemoryInfo* const pxMemoryAllocateInfo);
+PXPublic PXMemoryAccessModeType PXAPI PXMemoryAccessModeFromID(const PXMemoryAccessMode PXMemoryAccessMode);
+
+
+
+
+// Allocates size bytes on the program stack.
+// The allocated space is automatically freed when the calling function exits
+// (not when the allocation merely passes out of scope).
+PXPublic PXActionResult PXAPI PXMemoryStackAllocate(PXMemoryInfo* const pxMemoryAllocateInfo);
+
+// Deallocates stack allocated memory if it was commited to the heap.
+// Additional size parameter can be ignored	
+PXPublic PXActionResult PXAPI PXMemoryStackDeallocate(PXMemoryInfo* const pxMemoryAllocateInfo);
+
+
+PXPublic PXActionResult PXAPI PXMemoryHeapAllocate(PXMemoryInfo* const pxMemoryAllocateInfo);
+PXPublic PXActionResult PXAPI PXMemoryHeapDeallocate(PXMemoryInfo* const pxMemoryAllocateInfo);
 
 #define PXMemoryInfoFill(pxMemoryInfo, type, amount, dataAdress, dataSizeAdress, memoryClear) \
 	pxMemoryHeapAllocateInfo.Data = (void**)dataAdress; \
@@ -217,7 +212,7 @@ extern "C"
 
 #define PXNewList(type, amount, dataAdress, dataSizeAdress) PXNewListSettings(type, amount, dataAdress, dataSizeAdress, PXFalse);
 #define PXNewListZerod(type, amount, dataAdress, dataSizeAdress) PXNewListSettings(type, amount, dataAdress, dataSizeAdress, PXTrue)
-	
+
 #define PXNew(type, dataAdress) PXNewList(type, 1u, dataAdress, PXNull)
 #define PXNewZerod(type, dataAdress) PXNewListZerod(type, 1u, dataAdress, PXNull)
 
@@ -288,7 +283,7 @@ extern "C"
 //---------------------------------------------------------
 // Copy
 //---------------------------------------------------------
-	PXPublic PXSize PXAPI PXMemoryCopy(const void* PXRestrict inputBuffer, const PXSize inputBufferSize, void* outputBuffer, const PXSize outputBufferSize);
+PXPublic PXSize PXAPI PXMemoryCopy(const void* PXRestrict inputBuffer, const PXSize inputBufferSize, void* outputBuffer, const PXSize outputBufferSize);
 
 #if PXMemoryDebug
 #define PXCopy(type, source, target) PXMemoryCopy(source, sizeof(type), target, sizeof(type));
@@ -304,10 +299,10 @@ extern "C"
 //---------------------------------------------------------
 // Clear
 //---------------------------------------------------------
-	PXPublic PXSize PXAPI PXMemoryMove(const void* inputBuffer, const PXSize inputBufferSize, void* outputBuffer, const PXSize outputBufferSize);
+PXPublic PXSize PXAPI PXMemoryMove(const void* inputBuffer, const PXSize inputBufferSize, void* outputBuffer, const PXSize outputBufferSize);
 
 #if PXMemoryDebug
-		
+
 
 //#define PXMove(type, source, target) PXMemoryMove(adress, sizeof(type));
 #else
@@ -321,7 +316,7 @@ extern "C"
 //---------------------------------------------------------
 // Clear
 //---------------------------------------------------------
-	PXPublic void PXAPI PXMemoryClear(void* const PXRestrict bufferA, const PXSize bufferASize);
+PXPublic void PXAPI PXMemoryClear(void* const PXRestrict bufferA, const PXSize bufferASize);
 
 #define PXClear(type, adress) PXMemoryClear(adress, sizeof(type));
 #define PXClearList(type, adress, amount) PXMemoryClear(adress, sizeof(type) * amount);
@@ -339,7 +334,7 @@ extern "C"
 //---------------------------------------------------------
 // Set
 //---------------------------------------------------------
-	PXPublic void PXAPI PXMemorySet(void* const PXRestrict bufferA, const PXByte value, const PXSize bufferSize);
+PXPublic void PXAPI PXMemorySet(void* const PXRestrict bufferA, const PXByte value, const PXSize bufferSize);
 #define PXSet(type, adress, value) PXMemorySet(adress, value, sizeof(type));
 #define PXSetList(type, adress, amount, value) PXMemorySet(adress, value, sizeof(type) * amount);
 
@@ -356,29 +351,18 @@ extern "C"
 // Compare
 //---------------------------------------------------------
 
-	PXPublic int PXAPI PXMemoryCompareThreeWay(const void* PXRestrict bufferA, const PXSize bufferASize, const void* PXRestrict bufferB, const PXSize bufferBSize);
+PXPublic int PXAPI PXMemoryCompareThreeWay(const void* PXRestrict bufferA, const PXSize bufferASize, const void* PXRestrict bufferB, const PXSize bufferBSize);
 
 
-	PXPublic PXBool PXAPI PXMemoryCompareToByte(const void* PXRestrict bufferA, const PXSize bufferASize, const PXByte dataByte);
+PXPublic PXBool PXAPI PXMemoryCompareToByte(const void* PXRestrict bufferA, const PXSize bufferASize, const PXByte dataByte);
 
-	// Returns 1 if correct, 0 if not.
-	// This function is not like memcmp that returns -1, 0, and 1!
-	PXPublic PXBool PXAPI PXMemoryCompare(const void* PXRestrict bufferA, const PXSize bufferASize, const void* PXRestrict bufferB, const PXSize bufferBSize);
-
-
-
+// Returns 1 if correct, 0 if not.
+// This function is not like memcmp that returns -1, 0, and 1!
+PXPublic PXBool PXAPI PXMemoryCompare(const void* PXRestrict bufferA, const PXSize bufferASize, const void* PXRestrict bufferB, const PXSize bufferBSize);
 
 //---------------------------------------------------------
 
-
-
-	PXPublic PXBool PXAPI PXMemoryIsEmpty(const void* PXRestrict buffer, const PXSize bufferSize);
-	PXPublic PXBool PXAPI PXMemorySwap(void* PXRestrict bufferA, void* PXRestrict bufferB, const PXSize size);
-
-
-
-#ifdef __cplusplus
-}
-#endif
+PXPublic PXBool PXAPI PXMemoryIsEmpty(const void* PXRestrict buffer, const PXSize bufferSize);
+PXPublic PXBool PXAPI PXMemorySwap(void* PXRestrict bufferA, void* PXRestrict bufferB, const PXSize size);
 
 #endif

@@ -5,33 +5,24 @@
 
 #define PXXingInfoTOCBufferSize 100u
 
-#ifdef __cplusplus
-extern "C"
+typedef enum PXXingInfoVersion_
 {
-#endif
-
-	typedef enum PXXingInfoVersion_
-	{
-		PXXingInfoVersionInvalid,
-		PXXingInfoVersionInfo,
-		PXXingInfoVersionXing
-	}
-	PXXingInfoVersion;
-
-	typedef struct PXXingInfo_
-	{
-		PXXingInfoVersion Version;
-		PXInt32U NumberOfFrames;
-		PXInt32U SizeInBytes;
-		char TOCBuffer[PXXingInfoTOCBufferSize];
-		PXInt32U VBRScale; // 0-100
-	}
-	PXXingInfo;
-
-	PXPublic PXActionResult PXXingInfoParse(PXXingInfo* const xingInfo, PXFile* const PXFile);
-
-#ifdef __cplusplus
+	PXXingInfoVersionInvalid,
+	PXXingInfoVersionInfo,
+	PXXingInfoVersionXing
 }
-#endif
+PXXingInfoVersion;
+
+typedef struct PXXingInfo_
+{
+	PXXingInfoVersion Version;
+	PXInt32U NumberOfFrames;
+	PXInt32U SizeInBytes;
+	char TOCBuffer[PXXingInfoTOCBufferSize];
+	PXInt32U VBRScale; // 0-100
+}
+PXXingInfo;
+
+PXPublic PXActionResult PXAPI PXXingInfoParse(PXXingInfo* const xingInfo, PXFile* const PXFile);
 
 #endif

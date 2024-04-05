@@ -327,7 +327,6 @@
     <ClCompile Include="Media\JSON\PXJSON.c" />
     <ClCompile Include="Media\LAME\PXLAME.c" />
     <ClCompile Include="Media\LZ77\PXLZ77.c" />
-    <ClCompile Include="Media\M4A\PXM4A.c" />
     <ClCompile Include="Media\MD5\PXMD5.c" />
     <ClCompile Include="Media\MIDI\PXMIDI.c" />
     <ClCompile Include="Media\MP3\PXMP3.c" />
@@ -484,7 +483,6 @@
     <ClInclude Include="Media\JSON\PXJSON.h" />
     <ClInclude Include="Media\LAME\PXLAME.h" />
     <ClInclude Include="Media\LZ77\PXLZ77.h" />
-    <ClInclude Include="Media\M4A\PXM4A.h" />
     <ClInclude Include="Media\MD5\PXMD5.h" />
     <ClInclude Include="Media\MIDI\PXMIDI.h" />
     <ClInclude Include="Media\MP3\PXMP3.h" />
@@ -573,6 +571,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Algorithm\KnowlegeGraph\README.md" />
+    <None Include="Container\Dictionary\README.md" />
     <None Include="Media\AAC\README.md" />
     <None Include="Media\BinaryLinux\README.md" />
     <None Include="Media\Bitmap\README.md" />

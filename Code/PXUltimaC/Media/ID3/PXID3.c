@@ -9,7 +9,7 @@ const char PXID3HeaderSignature[3] = { 'I','D','3' };
 #include <cstdio>
 #endif
 
-PXID3v2xFrameTag PXID3v2xFrameTagFromID(const PXInt32U id3v2xFrameTagID)
+PXID3v2xFrameTag PXAPI PXID3v2xFrameTagFromID(const PXInt32U id3v2xFrameTagID)
 {
     switch(id3v2xFrameTagID)
     {
@@ -94,7 +94,7 @@ PXID3v2xFrameTag PXID3v2xFrameTagFromID(const PXInt32U id3v2xFrameTagID)
     }
 }
 
-PXActionResult PXID3LoadFromFile(PXID3* const id3, PXFile* const PXFile)
+PXActionResult PXAPI PXID3LoadFromFile(PXID3* const id3, PXFile* const PXFile)
 {
     PXID3Version version = PXID3VersionInvalid;
 
@@ -530,7 +530,7 @@ PXActionResult PXID3LoadFromFile(PXID3* const id3, PXFile* const PXFile)
     return PXActionSuccessful;
 }
 
-PXActionResult PXID3SaveToFile(const PXID3* const id3, PXFile* const pxFile)
+PXActionResult PXAPI PXID3SaveToFile(const PXID3* const id3, PXFile* const pxFile)
 {
     //-----------------------------------------------------
     // ID3 - Header write 

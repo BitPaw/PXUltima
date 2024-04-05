@@ -36,7 +36,7 @@ const char PXFTPStat[4] = { 'S', 'T', 'A', 'T' };
 const char PXFTPHelp[4] = { 'H', 'E', 'L', 'P' };
 const char PXFTPNoOperation[4] = { 'N', 'O', 'O', 'P' };
 
-PXFTPResult PXFTPResultParse(const unsigned short resultID)
+PXFTPResult PXAPI PXFTPResultParse(const unsigned short resultID)
 {
 	switch (resultID)
 	{
@@ -133,7 +133,7 @@ PXFTPResult PXFTPResultParse(const unsigned short resultID)
 	}
 }
 
-PXSize PXFTPCommandBuild(const PXFTPCommand pxFTPCommand, PXText* const pxText, const char* const parameterA)
+PXSize PXAPI PXFTPCommandBuild(const PXFTPCommand pxFTPCommand, PXText* const pxText, const char* const parameterA)
 {
 	const char syntaxDouble[] = "%.4s %s\r\n"; 
 	const char syntaxSingle[] = "%.4s \r\n";

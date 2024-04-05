@@ -2,6 +2,20 @@
 
 #include <OS/Memory/PXMemory.h>
 #include <OS/Console/PXConsole.h>
+#include <Media/PXText.h>
+
+
+#if OSUnix
+#elif OSWindows
+#include <windows.h>
+#endif
+
+
+#if OSUnix
+#elif PXOSWindowsDestop
+BOOL WINAPI PXMonitorListCallBack(HMONITOR monitorHandle, HDC hdcMonitor, LPRECT rectangle, LPARAM data);
+#endif
+
 
 #if OSUnix
 #elif PXOSWindowsDestop
@@ -24,7 +38,7 @@ BOOL WINAPI PXMonitorListCallBack(HMONITOR monitorHandle, HDC hdcMonitor, LPRECT
 	monitor.Width = monitorInfo.rcMonitor.right - monitorInfo.rcMonitor.left;
 	monitor.Height = monitorInfo.rcMonitor.bottom - monitorInfo.rcMonitor.top;
 
-	PXTextCopyW(monitorInfo.szDevice, CCHDEVICENAME, monitor.Name, MonitorNameLength);
+	PXTextCopyA(monitorInfo.szDevice, CCHDEVICENAME, monitor.Name, MonitorNameLength);
 
 	/*
 	printf

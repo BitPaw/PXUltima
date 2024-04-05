@@ -4,7 +4,7 @@
 
 static const char FMTSignature[4] = { 'f', 'm', 't', ' ' };
 
-PXActionResult PXFMTLoadFromFile(PXFMT* const fmt, PXFile* const pxFile, const PXEndian endian)
+PXActionResult PXAPI PXFMTLoadFromFile(PXFMT* const fmt, PXFile* const pxFile, const PXEndian endian)
 {
 	PXClear(PXFMT, fmt);
 
@@ -37,7 +37,7 @@ PXActionResult PXFMTLoadFromFile(PXFMT* const fmt, PXFile* const pxFile, const P
 	return PXActionSuccessful;
 }
 
-PXActionResult PXFMTSaveToFile(const PXFMT* const fmt, PXFile* const pxFile, const PXEndian endian)
+PXActionResult PXAPI PXFMTSaveToFile(const PXFMT* const fmt, PXFile* const pxFile, const PXEndian endian)
 {
 	const PXInt32U x16 = endian == PXEndianLittle ? PXDataTypeInt16ULE : PXDataTypeInt16UBE;
 	const PXInt32U x32 = endian == PXEndianLittle ? PXDataTypeInt32ULE : PXDataTypeInt32UBE;

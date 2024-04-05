@@ -1,6 +1,8 @@
 #ifndef PXControllerINCLUDE
 #define PXControllerINCLUDE
 
+#include <Media/PXResource.h>
+#include <OS/GUI/PXGUI.h>
 
 #define PXControllerButton1 (1 << 0)
 #define PXControllerButton2 (1 << 1)
@@ -20,72 +22,55 @@
 #define PXControllerAxisU 4
 #define PXControllerAxisV 5
 
-#include <Media/PXResource.h>
-#include <OS/GUI/PXGUI.h>
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-
 #define PXControllerNameSize 32
 
-	typedef struct PXController_
-	{
-		char Name[PXControllerNameSize];
-		PXInt32U ID;
+typedef struct PXController_
+{
+	char Name[PXControllerNameSize];
+	PXInt32U ID;
 
-		PXInt32S Axis[6];  // X,Y,Z,R,U,V
-		PXInt32U AxisMin[6];
-		PXInt32U AxisMax[6];
+	PXInt32S Axis[6];  // X,Y,Z,R,U,V
+	PXInt32U AxisMin[6];
+	PXInt32U AxisMax[6];
 
-		float AxisNormalised[6];
+	float AxisNormalised[6];
 
-		PXInt32U ButtonPressedBitList;
-		PXInt32U ButtonAmountPressed;        // current button number pressed
-		PXInt32U ControlPad;
-
-
-	
+	PXInt32U ButtonPressedBitList;
+	PXInt32U ButtonAmountPressed;        // current button number pressed
+	PXInt32U ControlPad;
 
 
-		PXInt32U ButtonAmountInUse; 
-		PXInt32U AxesAmountInUse;
-	}
-	PXController;
+	PXInt32U ButtonAmountInUse;
+	PXInt32U AxesAmountInUse;
+}
+PXController;
 
 
-	typedef struct PXControllerSystem_
-	{
-		PXLibrary InputLibrary;
+typedef struct PXControllerSystem_
+{
+	PXLibrary InputLibrary;
 
-		// Funcitons
-		void* NumDevsGet;
-		void* DevCapsGetA;
-		void* GetPosEx;
+	// Funcitons
+	void* NumDevsGet;
+	void* DevCapsGetA;
+	void* GetPosEx;
 
-		// Number of devices
-		PXSize DeviceListAmount;
-		PXController* DeviceListData;
-	}
-	PXControllerSystem;
+	// Number of devices
+	PXSize DeviceListAmount;
+	PXController* DeviceListData;
+}
+PXControllerSystem;
 
 
-	PXPublic void PXAPI PXControllerSystemInitilize(PXControllerSystem* const pxControllerSystem);
-	PXPublic PXActionResult PXAPI PXControllerSystemDevicesListRefresh(PXControllerSystem* const pxControllerSystem);
-	PXPublic PXActionResult PXAPI PXControllerSystemDevicesDataUpdate(PXControllerSystem* const pxControllerSystem);
+PXPublic void PXAPI PXControllerSystemInitilize(PXControllerSystem* const pxControllerSystem);
+PXPublic PXActionResult PXAPI PXControllerSystemDevicesListRefresh(PXControllerSystem* const pxControllerSystem);
+PXPublic PXActionResult PXAPI PXControllerSystemDevicesDataUpdate(PXControllerSystem* const pxControllerSystem);
 
-	PXPublic void PXAPI PXControllerSystemDebugPrint(PXController* const pxController);
-
+PXPublic void PXAPI PXControllerSystemDebugPrint(PXController* const pxController);
 
 #if PXWindowUSE
-	PXPublic PXBool PXAPI PXControllerAttachToWindow(const PXControllerID controllerID, const PXWindowID PXWindowID);
-	PXPublic PXBool PXAPI PXControllerDetachToWindow(const PXControllerID controllerID);
-#endif
-
-#ifdef __cplusplus
-}
+PXPublic PXBool PXAPI PXControllerAttachToWindow(const PXControllerID controllerID, const PXWindowID PXWindowID);
+PXPublic PXBool PXAPI PXControllerDetachToWindow(const PXControllerID controllerID);
 #endif
 
 #endif

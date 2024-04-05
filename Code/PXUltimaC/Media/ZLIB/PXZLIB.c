@@ -5,7 +5,7 @@
 #include <Media/DEFLATE/PXDEFLATE.h>
 #include <Media/ADLER/PXAdler32.h>
 
-PXZLIBCompressionLevel PXZLIBCompressionLevelFromID(const PXInt8U compressionLevel)
+PXZLIBCompressionLevel PXAPI PXZLIBCompressionLevelFromID(const PXInt8U compressionLevel)
 {
     switch(compressionLevel)
     {
@@ -26,7 +26,7 @@ PXZLIBCompressionLevel PXZLIBCompressionLevelFromID(const PXInt8U compressionLev
     }
 }
 
-PXInt8U PXZLIBCompressionLevelToID(const PXZLIBCompressionLevel compressionLevel)
+PXInt8U PXAPI PXZLIBCompressionLevelToID(const PXZLIBCompressionLevel compressionLevel)
 {
     switch(compressionLevel)
     {
@@ -48,7 +48,7 @@ PXInt8U PXZLIBCompressionLevelToID(const PXZLIBCompressionLevel compressionLevel
     }
 }
 
-PXZLIBCompressionMethod PXZLIBCompressionMethodFromID(const PXInt8U compressionMethod)
+PXZLIBCompressionMethod PXAPI PXZLIBCompressionMethodFromID(const PXInt8U compressionMethod)
 {
     switch(compressionMethod)
     {
@@ -63,7 +63,7 @@ PXZLIBCompressionMethod PXZLIBCompressionMethodFromID(const PXInt8U compressionM
     }
 }
 
-PXInt8U PXZLIBCompressionMethodToID(const PXZLIBCompressionMethod compressionMethod)
+PXInt8U PXAPI PXZLIBCompressionMethodToID(const PXZLIBCompressionMethod compressionMethod)
 {
     switch(compressionMethod)
     {
@@ -79,7 +79,7 @@ PXInt8U PXZLIBCompressionMethodToID(const PXZLIBCompressionMethod compressionMet
     }
 }
 
-PXActionResult PXZLIBDecompress(PXFile* const pxInputSteam, PXFile* const pxOutputSteam)
+PXActionResult PXAPI PXZLIBDecompress(PXFile* const pxInputSteam, PXFile* const pxOutputSteam)
 {
     PXZLIB PXZLIB;
 
@@ -181,7 +181,7 @@ PXActionResult PXZLIBDecompress(PXFile* const pxInputSteam, PXFile* const pxOutp
     return PXActionSuccessful;
 }
 
-PXActionResult PXZLIBCompress(PXFile* const pxInputSteam, PXFile* const pxOutputSteam)
+PXActionResult PXAPI PXZLIBCompress(PXFile* const pxInputSteam, PXFile* const pxOutputSteam)
 {
     // Write PXZLIB Header
     {
@@ -233,7 +233,7 @@ PXActionResult PXZLIBCompress(PXFile* const pxInputSteam, PXFile* const pxOutput
     return PXActionSuccessful;
 }
 
-PXSize PXZLIBCalculateExpectedSize(const PXSize width, const PXSize height, const PXSize bpp, const PXPNGInterlaceMethod interlaceMethod)
+PXSize PXAPI PXZLIBCalculateExpectedSize(const PXSize width, const PXSize height, const PXSize bpp, const PXPNGInterlaceMethod interlaceMethod)
 {
     PXSize expected_size = 0;
 
@@ -269,7 +269,7 @@ PXSize PXZLIBCalculateExpectedSize(const PXSize width, const PXSize height, cons
     return expected_size;
 }
 
-PXSize PXZLIBCalculateRawSizeIDAT(const PXSize w, const PXSize h, const PXSize bpp)
+PXSize PXAPI PXZLIBCalculateRawSizeIDAT(const PXSize w, const PXSize h, const PXSize bpp)
 {
     // + 1 for the filter byte, and possibly plus padding bits per line.
     // Ignoring casts, the expression is equal to (w * bpp + 7) / 8 + 1, but avoids overflow of w * bpp

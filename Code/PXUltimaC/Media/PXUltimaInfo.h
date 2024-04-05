@@ -3,15 +3,6 @@
 
 #include <Media/PXText.h>
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-	PXPublic void PXUltimaInfoBuildDate(PXText* const text);
-
-#ifdef __cplusplus
-}
-#endif
+PXPublic void PXAPI PXUltimaInfoBuildDate(PXText* const text);
 
 #endif

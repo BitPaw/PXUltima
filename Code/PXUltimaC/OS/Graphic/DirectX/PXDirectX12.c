@@ -20,8 +20,6 @@
 
 PXActionResult PXAPI PXDirectX12Initialize(PXDirectX12* const pxDirectX12, PXGraphicInitializeInfo* const pxGraphicInitializeInfo)
 {
-#if PXDX12Enable
-
 #if PXLogEnable
     PXLogPrint
     (
@@ -31,7 +29,7 @@ PXActionResult PXAPI PXDirectX12Initialize(PXDirectX12* const pxDirectX12, PXGra
         "Start..."
     );
 #endif
-
+#if PXDX12Enable
 
     // Enable the debug layer.
     {

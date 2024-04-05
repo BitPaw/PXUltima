@@ -2,7 +2,7 @@
 
 #include <Math/PXMath.h>
 
-void PXSoftwareRenderDrawRectangle(PXImage* const image, const PXSize x, const PXSize y, const PXSize width, const PXSize height, const unsigned char red, const unsigned char green, const unsigned char blue, const unsigned char alpha)
+void PXAPI PXSoftwareRenderDrawRectangle(PXImage* const image, const PXSize x, const PXSize y, const PXSize width, const PXSize height, const unsigned char red, const unsigned char green, const unsigned char blue, const unsigned char alpha)
 {
     //unsigned char* data = ImageDataPoint(image, x, y);
 
@@ -23,7 +23,7 @@ void PXSoftwareRenderDrawRectangle(PXImage* const image, const PXSize x, const P
     }
 }
 
-void PXImageDrawTextA(PXImage* const image, const PXSize x, const PXSize y, const PXSize width, const PXSize height, const PXFont* const font, const char* text)
+void PXAPI PXImageDrawTextA(PXImage* const image, const PXSize x, const PXSize y, const PXSize width, const PXSize height, const PXFont* const font, const char* text)
 {
     wchar_t textW[1024];
 
@@ -32,7 +32,7 @@ void PXImageDrawTextA(PXImage* const image, const PXSize x, const PXSize y, cons
     PXImageDrawTextW(image, x, y, width, height, font, textW);
 }
 
-void PXImageDrawTextW(PXImage* const image, const PXSize x, const PXSize y, const PXSize width, const PXSize height, const PXFont* const font, const wchar_t* text)
+void PXAPI PXImageDrawTextW(PXImage* const image, const PXSize x, const PXSize y, const PXSize width, const PXSize height, const PXFont* const font, const wchar_t* text)
 {
 #if 0
     float fontSize = 0.002;
@@ -89,7 +89,7 @@ void PXImageDrawTextW(PXImage* const image, const PXSize x, const PXSize y, cons
 #endif
 }
 
-void PXImageMerge(PXImage* const image, const PXSize x, const PXSize y, const PXSize insertX, const PXSize insertY, const PXSize insertWidth, const PXSize insertHeight, const PXImage* const imageInsert)
+void PXAPI PXImageMerge(PXImage* const image, const PXSize x, const PXSize y, const PXSize insertX, const PXSize insertY, const PXSize insertWidth, const PXSize insertHeight, const PXImage* const imageInsert)
 {
     //unsigned char* data = ImageDataPoint(image, x, y);
 

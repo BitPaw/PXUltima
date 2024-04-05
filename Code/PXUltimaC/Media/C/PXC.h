@@ -247,17 +247,17 @@ typedef struct PXCElement_
 }
 PXCElement;
 
-PXPublic PXBool PXCElementHasName(PXCElement* const pxCElement);
-PXPublic void PXCElementClear(PXCElement* const pxCElement);
+PXPublic PXBool PXAPI PXCElementHasName(PXCElement* const pxCElement);
+PXPublic void PXAPI PXCElementClear(PXCElement* const pxCElement);
 
 
-PXPublic CKeyWord PXCFileAnalyseElement(const char* name, const PXSize nameSize);
+PXPublic CKeyWord PXAPI PXCFileAnalyseElement(const char* name, const PXSize nameSize);
 
 
-PXPublic PXBool PXCFileParseTypedef(PXFile* const inputStream, PXFile* const outputStream);
-PXPublic PXBool PXCFileParseStructure(PXFile* const inputStream, PXFile* const outputStream, const CKeyWord structureType, const PXBool isTypeDefitinition);
-PXPublic PXBool PXCFileParseDeclaration(PXFile* const inputStream, PXFile* const outputStream, PXCompilerSymbolEntry* compilerSymbolEntry);
-PXPublic PXBool PXCFileParseFunctionPrototype(PXFile* const inputStream, PXFile* const outputStream, PXCompilerSymbolEntry* compilerSymbolEntry);
+PXPublic PXBool PXAPI PXCFileParseTypedef(PXFile* const inputStream, PXFile* const outputStream);
+PXPublic PXBool PXAPI PXCFileParseStructure(PXFile* const inputStream, PXFile* const outputStream, const CKeyWord structureType, const PXBool isTypeDefitinition);
+PXPublic PXBool PXAPI PXCFileParseDeclaration(PXFile* const inputStream, PXFile* const outputStream, PXCompilerSymbolEntry* compilerSymbolEntry);
+PXPublic PXBool PXAPI PXCFileParseFunctionPrototype(PXFile* const inputStream, PXFile* const outputStream, PXCompilerSymbolEntry* compilerSymbolEntry);
 
 
 // Parsing functions
@@ -281,6 +281,6 @@ PXPrivate PXActionResult PXAPI PXCParseTypeEnum(PXDocument* const pxDocument, PX
 PXPublic PXActionResult PXAPI PXCLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
 PXPublic PXActionResult PXAPI PXCSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
 
-PXPublic void PXCElementExtract(PXFile* const inputStream, PXCElement* const pxCElement);
+PXPublic void PXAPI PXCElementExtract(PXFile* const inputStream, PXCElement* const pxCElement);
 
 #endif

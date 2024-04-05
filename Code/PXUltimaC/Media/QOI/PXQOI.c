@@ -2,7 +2,12 @@
 
 #include <OS/File/PXFile.h>
 
-PXActionResult PXQOIParse(PXQOI* qoi, const void* data, const PXSize dataSize, PXSize* dataRead)
+PXActionResult PXAPI PXQOILoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
-    return PXActionInvalid;
+    return PXActionRefusedNotSupported;
+}
+
+PXActionResult PXAPI PXQOISaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
+{
+    return PXActionRefusedNotSupported;
 }

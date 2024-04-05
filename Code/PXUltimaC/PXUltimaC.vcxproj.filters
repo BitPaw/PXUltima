@@ -183,9 +183,6 @@
     <ClCompile Include="Media\LZ77\PXLZ77.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Media\M4A\PXM4A.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="Media\MD5\PXMD5.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
@@ -650,9 +647,6 @@
     <ClInclude Include="Media\LZ77\PXLZ77.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Media\M4A\PXM4A.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="Media\MD5\PXMD5.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -972,5 +966,6 @@
     <None Include="Media\DDS\README.md" />
     <None Include="OS\Audio\PXALSA\README.md" />
     <None Include="OS\Audio\README.md" />
+    <None Include="Container\Dictionary\README.md" />
   </ItemGroup>
 </Project>

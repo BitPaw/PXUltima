@@ -49,7 +49,7 @@ PXActionResult PXAPI PXDirectXInitialize(PXDirectX* const pxDirectX, PXGraphicIn
             "Brute force newest version, testing each one."
         );
 
-        const PXSize amountOfSolutions = 5;
+        const PXSize amountOfSolutions = 2;
         const PXGraphicInitializeFunction directXSolutions[5] =
         {
             PXDirectX12Initialize,
@@ -67,8 +67,10 @@ PXActionResult PXAPI PXDirectXInitialize(PXDirectX* const pxDirectX, PXGraphicIn
             &pxDirectX->X9
         };
 
-        for(PXSize i = 0; i < 5; ++i)
+        for(PXSize i = 0; i < amountOfSolutions; ++i)
         {
+            PXClear(PXDirectX, pxDirectX);
+
             pxGraphic->Initialize = directXSolutions[i];
             pxDirectX->DXTargetAPI = directXSolutionsObject[i];
 
@@ -86,9 +88,30 @@ PXActionResult PXAPI PXDirectXInitialize(PXDirectX* const pxDirectX, PXGraphicIn
 
             if(PXActionSuccessful == initializeResult)
             {
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    "DirectX",
+                    "Initialize",
+                    "Creation try successful <%i/%i>",
+                    i + 1,
+                    amountOfSolutions
+                );
+
                 directXCreated = PXTrue;
-                break;
+                
+                return PXActionSuccessful;
             }
+
+            PXLogPrint
+            (
+                PXLoggingWarning,
+                "DirectX",
+                "Initialize",
+                "Failed try <%i/%i>",
+                i + 1,
+                amountOfSolutions
+            );
         }
 
         pxGraphic->Initialize = PXNull;
@@ -97,6 +120,14 @@ PXActionResult PXAPI PXDirectXInitialize(PXDirectX* const pxDirectX, PXGraphicIn
 
     if(!directXCreated)
     {
+        PXLogPrint
+        (
+            PXLoggingError,
+            "DirectX",
+            "Initialize",
+            "Failed all attempts! DirectX API is not reachable. A supported device or drivers might be missing."
+        );
+
         return PXActionFailedInitialization;
     }
 

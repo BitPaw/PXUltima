@@ -145,7 +145,7 @@ PXSize PXAPI PXADAM7CaluclateExpectedSize(PXADAM7* const pxADAM7)
     return ((n / 8u) * pxADAM7->BitsPerPixel) + ((n & 7u) * pxADAM7->BitsPerPixel + 7u) / 8u;
 }
 
-unsigned char PXADAM7paethPredictor(short a, short b, short c)
+unsigned char PXAPI PXADAM7paethPredictor(short a, short b, short c)
 {
     short pa = PXMathAbsoluteI16(b - c);
     short pb = PXMathAbsoluteI16(a - c);
@@ -395,7 +395,7 @@ PXActionResult PXAPI PXADAM7unfilter(PXADAM7* const pxADAM7)
     return PXActionSuccessful;
 }
 
-void PXADAM7removePaddingBits(void* out, const void* in, PXSize olinebits, PXSize ilinebits, PXSize h)
+void PXAPI PXADAM7removePaddingBits(void* out, const void* in, PXSize olinebits, PXSize ilinebits, PXSize h)
 {
     /*
   After filtering there are still padding bits if scanlines have non multiple of 8 bit amounts. They need
@@ -422,14 +422,14 @@ void PXADAM7removePaddingBits(void* out, const void* in, PXSize olinebits, PXSiz
     }
 }
 
-unsigned char PXADAM7readBitFromReversedStream(PXSize* bitpointer, const unsigned char* bitstream)
+unsigned char PXAPI PXADAM7readBitFromReversedStream(PXSize* bitpointer, const unsigned char* bitstream)
 {
     unsigned char result = (unsigned char)((bitstream[(*bitpointer) >> 3] >> (7 - ((*bitpointer) & 0x7))) & 1);
     ++(*bitpointer);
     return result;
 }
 
-void PXADAM7setBitOfReversedStream(PXSize* bitpointer, void* bitstream, unsigned char bit)
+void PXAPI PXADAM7setBitOfReversedStream(PXSize* bitpointer, void* bitstream, unsigned char bit)
 {
     /*the current bit in bitstream may be 0 or 1 for this to work*/
     if (bit == 0) 

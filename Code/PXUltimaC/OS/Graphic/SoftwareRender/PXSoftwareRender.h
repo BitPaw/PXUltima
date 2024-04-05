@@ -12,7 +12,7 @@ typedef struct PXSoftwareRender_
 }
 PXSoftwareRender;
 
-PXPublic void PXSoftwareRenderDrawRectangle
+PXPublic void PXAPI PXSoftwareRenderDrawRectangle
 (
 	PXImage* const image,
 	const PXSize x,
@@ -24,7 +24,7 @@ PXPublic void PXSoftwareRenderDrawRectangle
 	const unsigned char blue,
 	const unsigned char alpha
 );
-PXPublic void PXImageDrawTextA
+PXPublic void PXAPI PXImageDrawTextA
 (
 	PXImage* const image,
 	const PXSize x,
@@ -34,7 +34,7 @@ PXPublic void PXImageDrawTextA
 	const PXFont* const font,
 	const char* text
 );
-PXPublic void PXImageDrawTextW
+PXPublic void PXAPI PXImageDrawTextW
 (
 	PXImage* const image,
 	const PXSize x,
@@ -44,7 +44,7 @@ PXPublic void PXImageDrawTextW
 	const PXFont* const font,
 	const wchar_t* text
 );
-PXPublic void PXImageMerge
+PXPublic void PXAPI PXImageMerge
 (
 	PXImage* const image,
 	const PXSize x,

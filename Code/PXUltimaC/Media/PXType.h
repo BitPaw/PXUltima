@@ -6,11 +6,6 @@
 #include <OS/System/PXOSVersion.h>
 
 #ifdef __cplusplus
-extern "C"
-{
-#endif
-
-#ifdef __cplusplus
 #define PXLanguageC 0
 #define PXLanguageCPP 1
 #else
@@ -61,9 +56,9 @@ extern "C"
 // Before 1998, '__cplusplus' is == 1
 
 #if (CPPVersion >= 199711L)
-	#define CPPVersionAtleast1998 1
+#define CPPVersionAtleast1998 1
 #else
-	#define CPPVersionAtleast1998 0
+#define CPPVersionAtleast1998 0
 #endif
 
 #if (CPPVersion >= 201103L)
@@ -109,10 +104,10 @@ extern "C"
 #define PXSTDCALL _stdcall
 #define PXSYSCALL 
 #define PXAPIFASTCALL _fastcall
- 
+
 #endif
 
-#define PXAPI PXCDECL
+#define PXAPI PXSTDCALL
 
 //---------------------------------------------------------
 // Change label of functions to C-Style (C++ only)
@@ -256,7 +251,7 @@ extern "C"
 #define PXDataTypeInt16U PXDataTypeSize16 | PXDataTypeIntU
 #define PXDataTypeInt16ULE PXDataTypeSize16 | PXDataTypeIntU | PXDataTypeEndianLittle
 #define PXDataTypeInt16UBE PXDataTypeSize16 | PXDataTypeIntU | PXDataTypeEndianBig
- 
+
 #define PXDataTypeInt32S PXDataTypeSize32 | PXDataTypeIntS
 #define PXDataTypeInt32SLE PXDataTypeSize32 | PXDataTypeIntS | PXDataTypeEndianLittle
 #define PXDataTypeInt32SBE PXDataTypeSize32 | PXDataTypeIntS | PXDataTypeEndianBig
@@ -292,51 +287,51 @@ extern "C"
 #define PXDataTypeBit32U(bitSize) PXDataTypeBitFieldHolder32U | PXDataTypeIntUFlexBit | bitSize
 #define PXDataTypeBit64U(bitSize) PXDataTypeBitFieldHolder64U | PXDataTypeIntUFlexBit | bitSize
 
-	typedef unsigned char PXByte;
-	typedef unsigned char PXBool;
-	typedef unsigned char* PXAdress;
+typedef unsigned char PXByte;
+typedef unsigned char PXBool;
+typedef unsigned char* PXAdress;
 
-	// Integer 8-Bit
-	typedef char PXInt8S;
-	typedef unsigned char PXInt8U;
+// Integer 8-Bit
+typedef char PXInt8S;
+typedef unsigned char PXInt8U;
 
-	// Integer 16-Bit, WORD
-	typedef short PXInt16S;
-	typedef unsigned short PXInt16U;
+// Integer 16-Bit, WORD
+typedef short PXInt16S;
+typedef unsigned short PXInt16U;
 
-	// Integer 32-Bit, DWORD
-	typedef int PXInt32S;
-	typedef unsigned int PXInt32U;
+// Integer 32-Bit, DWORD
+typedef int PXInt32S;
+typedef unsigned int PXInt32U;
 
-	// Integer 64-Bit, QWORD
+// Integer 64-Bit, QWORD
 #if OSUnix
-    typedef long long PXInt64S;
-	typedef unsigned long long PXInt64U;
+typedef long long PXInt64S;
+typedef unsigned long long PXInt64U;
 #elif OSWindows
-	typedef __int64 PXInt64S;
-	typedef unsigned __int64 PXInt64U;
+typedef __int64 PXInt64S;
+typedef unsigned __int64 PXInt64U;
 #endif // OSUnix
 
 #if OS32B
-	typedef PXInt32U PXSize;
-	typedef PXInt32S PXOffset;
-	typedef PXInt64U PXAdress64;
+typedef PXInt32U PXSize;
+typedef PXInt32S PXOffset;
+typedef PXInt64U PXAdress64;
 #elif OS64B
-	typedef PXInt64U PXSize;
-	typedef PXInt64S PXOffset;
-	typedef void* PXAdress64;
+typedef PXInt64U PXSize;
+typedef PXInt64S PXOffset;
+typedef void* PXAdress64;
 #else
 #error Invalid Bit Version
 #endif
 
-	// Text
-	typedef char PXCharASCII;
-	typedef wchar_t PXCharUNICODE;
-	typedef PXInt32U PXCharUTF8;
+// Text
+typedef char PXCharASCII;
+typedef wchar_t PXCharUNICODE;
+typedef PXInt32U PXCharUTF8;
 
-	typedef char* const PXTextASCII;
-	typedef char* const PXTextUTF8;
-	typedef wchar_t* const PXTextUNICODE;
+typedef char* const PXTextASCII;
+typedef char* const PXTextUTF8;
+typedef wchar_t* const PXTextUNICODE;
 
 
 
@@ -573,158 +568,158 @@ d = SplittIntLED(i);
 
 #define SplittInt(i, a, b, c, d) SplittIntLE(i, a, b, c, d)
 
-		typedef struct PXInt16SCluster
+typedef struct PXInt16SCluster
+{
+	union
+	{
+		struct
 		{
-			union
-			{
-				struct
-				{
-					PXByte A;
-					PXByte B;
-				};
+			PXByte A;
+			PXByte B;
+		};
 
-				PXByte Data[2];
+		PXByte Data[2];
 
-				PXInt16S Value;
-			};
-		}
-		PXInt16SCluster;
+		PXInt16S Value;
+	};
+}
+PXInt16SCluster;
 
-		typedef struct PXInt16UCluster
+typedef struct PXInt16UCluster
+{
+	union
+	{
+		struct
 		{
-			union
-			{
-				struct
-				{
-					PXByte A;
-					PXByte B;
-				};
+			PXByte A;
+			PXByte B;
+		};
 
-				PXByte Data[2];
+		PXByte Data[2];
 
-				PXInt16S Value;
-			};
-		}
-		PXInt16UCluster;
+		PXInt16S Value;
+	};
+}
+PXInt16UCluster;
 
-		typedef struct PXInt32SCluster_
+typedef struct PXInt32SCluster_
+{
+	union
+	{
+		struct
 		{
-			union
-			{
-				struct
-				{
-					PXByte A;
-					PXByte B;
-					PXByte C;
-					PXByte D;
-				};
+			PXByte A;
+			PXByte B;
+			PXByte C;
+			PXByte D;
+		};
 
-				PXByte Data[4];
+		PXByte Data[4];
 
-				PXInt32S Value;
-			};
-		}
-		PXInt32SCluster;
+		PXInt32S Value;
+	};
+}
+PXInt32SCluster;
 
-		typedef struct PXInt32UCluster_
+typedef struct PXInt32UCluster_
+{
+	union
+	{
+		struct
 		{
-			union
-			{
-				struct
-				{
-					PXByte A;
-					PXByte B;
-					PXByte C;
-					PXByte D;
-				};
+			PXByte A;
+			PXByte B;
+			PXByte C;
+			PXByte D;
+		};
 
-				PXByte Data[4];
+		PXByte Data[4];
 
-				PXInt32U Value;
-			};
-		}
-		PXInt32UCluster;
+		PXInt32U Value;
+	};
+}
+PXInt32UCluster;
 
-		typedef struct PXInt64SCluster_
+typedef struct PXInt64SCluster_
+{
+	union
+	{
+		struct
 		{
-			union
-			{
-				struct
-				{
-					PXByte A;
-					PXByte B;
-					PXByte C;
-					PXByte D;
-					PXByte E;
-					PXByte F;
-					PXByte G;
-					PXByte H;
-				};
+			PXByte A;
+			PXByte B;
+			PXByte C;
+			PXByte D;
+			PXByte E;
+			PXByte F;
+			PXByte G;
+			PXByte H;
+		};
 
-				PXByte Data[8];
+		PXByte Data[8];
 
-				PXInt64S Value;
-			};
-		}
-		PXInt64SCluster;
+		PXInt64S Value;
+	};
+}
+PXInt64SCluster;
 
-		typedef struct PXInt64UCluster_
+typedef struct PXInt64UCluster_
+{
+	union
+	{
+		struct
 		{
-			union
-			{
-				struct
-				{
-					PXByte A;
-					PXByte B;
-					PXByte C;
-					PXByte D;
-					PXByte E;
-					PXByte F;
-					PXByte G;
-					PXByte H;
-				};
+			PXByte A;
+			PXByte B;
+			PXByte C;
+			PXByte D;
+			PXByte E;
+			PXByte F;
+			PXByte G;
+			PXByte H;
+		};
 
-				PXByte Data[8];
+		PXByte Data[8];
 
-				PXInt64U Value;
-			};
-		}
-		PXInt64UCluster;
+		PXInt64U Value;
+	};
+}
+PXInt64UCluster;
 
 
-		typedef enum PXBitFormat_
-		{
-			PXBitFormatInvalid,
-			PXBitFormat8,
-			PXBitFormat16,
-			PXBitFormat32,
-			PXBitFormat64,
-			PXBitFormat128,
-			PXBitFormat256,
-			PXBitFormat512
-		}
-		PXBitFormat;
+typedef enum PXBitFormat_
+{
+	PXBitFormatInvalid,
+	PXBitFormat8,
+	PXBitFormat16,
+	PXBitFormat32,
+	PXBitFormat64,
+	PXBitFormat128,
+	PXBitFormat256,
+	PXBitFormat512
+}
+PXBitFormat;
 
 
 
-		//-----------------------------------------------------------------------------
-		// Endianess detection and conversion
-		//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Endianess detection and conversion
+//-----------------------------------------------------------------------------
 
-			// Ordering or sequencing of bytes
-		typedef enum PXEndian_
-		{
-			PXEndianInvalid,
+	// Ordering or sequencing of bytes
+typedef enum PXEndian_
+{
+	PXEndianInvalid,
 
-			// Left to Right. Left smallest value.
-			PXEndianBig,
+	// Left to Right. Left smallest value.
+	PXEndianBig,
 
-			PXEndianMiddle,
+	PXEndianMiddle,
 
-			// Right to Left. Right smallest value.
-			PXEndianLittle
-		}
-		PXEndian;
+	// Right to Left. Right smallest value.
+	PXEndianLittle
+}
+PXEndian;
 
 #if OSEngianLittle
 #define EndianCurrentSystem PXEndianLittle
@@ -732,22 +727,18 @@ d = SplittIntLED(i);
 #define EndianCurrentSystem PXEndianBig
 #endif
 
-		//typedef PXInt32U PXDataType;
+//typedef PXInt32U PXDataType;
 
-		PXPublic PXInt32U PXDataTypeIntFitting(const PXSize expectedSize);
+PXPublic PXInt32U PXDataTypeIntFitting(const PXSize expectedSize);
 
-		PXPublic void PXEndianSwapI32U(PXInt32U* const value);
-		PXPublic void PXEndianSwapI16U(PXInt16U* const value);
+PXPublic void PXEndianSwapI32U(PXInt32U* const value);
+PXPublic void PXEndianSwapI16U(PXInt16U* const value);
 
 
-		PXPublic void PXEndianSwap(void* const data, const PXSize dataSize, const PXEndian endianFrom, const PXEndian endianTo);
+PXPublic void PXEndianSwap(void* const data, const PXSize dataSize, const PXEndian endianFrom, const PXEndian endianTo);
 
-		PXPublic void PXEndianSwapV(void** const data,  const PXSize dataSize, const PXSize elementSize, const PXEndian endianFrom, const PXEndian endianTo);
+PXPublic void PXEndianSwapV(void** const data, const PXSize dataSize, const PXSize elementSize, const PXEndian endianFrom, const PXEndian endianTo);
 
-		//-----------------------------------------------------------------------------
-
-#ifdef __cplusplus
-}
-#endif
+//-----------------------------------------------------------------------------
 
 #endif
