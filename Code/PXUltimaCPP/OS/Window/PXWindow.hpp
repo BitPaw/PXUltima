@@ -1,6 +1,5 @@
 #pragma once
 
-#include <OS/Window/PXWindow.h>
 #include <Media/PXText.hpp>
 
 namespace PX

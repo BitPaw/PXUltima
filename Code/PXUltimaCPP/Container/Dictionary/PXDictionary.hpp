@@ -15,6 +15,6 @@ namespace PX
 		bool Add(const Key& key, const Value& value);
 		bool Remove(const Key& key);
 		bool RemoveFound(PXDictionary* const dictionary, const void* key, void* const value);
-		bool Find(const Key& key, Value& value);	
+		bool Find(const Key& key, Value& value);
 	};	
 }

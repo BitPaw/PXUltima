@@ -135,6 +135,12 @@
     <ClInclude Include="OS\Graphic\PXGraphic.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Container\Dictionary\PXDictionary.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Compiler\PXCompiler.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataBase\PXDataBase.cpp">
@@ -255,6 +261,12 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="OS\Graphic\PXGraphic.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Container\Dictionary\PXDictionary.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Compiler\PXCompiler.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

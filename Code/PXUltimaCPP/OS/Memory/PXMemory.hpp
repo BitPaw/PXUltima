@@ -66,6 +66,9 @@ namespace PX
 
 		PXDLLExport static void* Locate(const void* inputBuffer, const PXByte byteBlock, const PXSize inputBufferSize);
 
+		template<typename T>
+		PXDLLExport static void Clear(T* const type);
+
 		PXDLLExport static PXSize Copy(const void* inputBuffer, const PXSize inputBufferSize, void* outputBuffer, const PXSize outputBufferSize);
 		PXDLLExport static PXSize Move(const void* inputBuffer, const PXSize inputBufferSize, void* outputBuffer, const PXSize outputBufferSize);
 

@@ -40,3 +40,9 @@ int PX::Memory::CompareThreeWay(const void* bufferA, const PXSize bufferASize, c
 {
 	return PXMemoryCompareThreeWay(bufferA, bufferASize, bufferB, bufferBSize);
 }
+
+template<typename T>
+void PX::Memory::Clear(T* const type)
+{
+	PXMemoryClear(type, sizeof(T));
+}
