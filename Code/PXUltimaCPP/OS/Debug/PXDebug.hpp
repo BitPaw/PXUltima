@@ -1,5 +1,4 @@
-#ifndef PXCPPDebugINLCUDE
-#define PXCPPDebugINLCUDE
+#pragma once
 
 #include <OS/Debug/PXDebug.h>
 #include <OS/Error/PXActionResult.hpp>
@@ -40,4 +39,3 @@ namespace PX
 
 	};
 }
-#endif

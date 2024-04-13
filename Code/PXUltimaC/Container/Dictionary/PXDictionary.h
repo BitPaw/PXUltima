@@ -42,6 +42,7 @@ PXPublic PXSize PXAPI PXDictionaryValueSize(const PXDictionary* const dictionary
 
 PXPublic void PXAPI PXDictionaryResize(PXDictionary* const dictionary, const PXSize entrys);
 PXPublic PXBool PXAPI PXDictionaryAdd(PXDictionary* const dictionary, const void* key, const void* value);
+PXPublic PXBool PXAPI PXDictionaryAddMultible(PXDictionary* const dictionary, const void** key, const void** value, const PXSize amount);
 PXPublic void PXAPI PXDictionaryRemove(PXDictionary* const dictionary, const void* key);
 PXPublic PXBool PXAPI PXDictionaryRemoveFound(PXDictionary* const dictionary, const void* key, void* const value);
 

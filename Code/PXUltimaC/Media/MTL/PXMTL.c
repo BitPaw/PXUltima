@@ -55,11 +55,14 @@ PXMTLLineType PXAPI PXMTLPeekLine(const char* const line, const PXSize lineSize)
 PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
 	PXMaterialContainer* const pxMaterialList = (PXMaterialContainer*)pxResourceLoadInfo->Target;
-	PXFile* const pxFile = pxResourceLoadInfo->FileReference;
 
 	PXFile compiledSteam;
+	PXClear(PXFile, &compiledSteam);
 
-	PXFileOpenTemporal(&compiledSteam, pxFile->DataAllocated * 6u);
+	PXCompiler pxCompiler;
+	PXClear(PXCompiler, &pxCompiler);
+	pxCompiler.FileInput = pxResourceLoadInfo->FileReference;
+	pxCompiler.FileCache = &compiledSteam;
 
 	PXInt32U materialAmount = 0;
 	PXMaterial* pxMaterialCurrent = PXNull;
@@ -67,27 +70,24 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 	// Lexer - Level I
 	{
 		PXCompilerSettings compilerSettings;
-
-		PXCompilerSettingsConstruct(&compilerSettings);
+		PXClear(PXCompilerSettings, &compilerSettings);
 
 		compilerSettings.TryAnalyseTypes = PXYes;
 		compilerSettings.CommentSingleLineSize = 1u;
 		compilerSettings.CommentSingleLine = "#";
 
-		PXCompilerLexicalAnalysis(pxFile, &compiledSteam, &compilerSettings); // Raw-File-Input -> Lexer tokens
+		PXCompilerLexicalAnalysis(&pxCompiler, &compilerSettings); // Raw-File-Input -> Lexer tokens
 	}
 
 	// Analyse -
 	{
 		while (!PXFileIsAtEnd(&compiledSteam))
 		{
-			PXCompilerSymbolEntry compilerSymbolEntry;
+			PXCompilerSymbolEntryExtract(&pxCompiler);
 
-			PXCompilerSymbolEntryExtract(&compiledSteam, &compilerSymbolEntry);	
-
-			if (PXCompilerSymbolLexerGenericElement == compilerSymbolEntry.ID)
+			if (PXCompilerSymbolLexerGenericElement == pxCompiler.SymbolEntryCurrent.ID)
 			{
-				const PXMTLLineType mtlLineType = PXMTLPeekLine(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+				const PXMTLLineType mtlLineType = PXMTLPeekLine(pxCompiler.SymbolEntryCurrent.Source, pxCompiler.SymbolEntryCurrent.Size);
 
 				switch (mtlLineType)
 				{
@@ -119,11 +119,9 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 
 	while (!PXFileIsAtEnd(&compiledSteam))
 	{
-		PXCompilerSymbolEntry compilerSymbolEntry;
+		PXCompilerSymbolEntryExtract(&pxCompiler);
 
-		PXCompilerSymbolEntryExtract(&compiledSteam, &compilerSymbolEntry);
-
-		const PXMTLLineType mtlLineType = PXMTLPeekLine(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+		const PXMTLLineType mtlLineType = PXMTLPeekLine(pxCompiler.SymbolEntryCurrent.Source, pxCompiler.SymbolEntryCurrent.Size);
 
 		switch (mtlLineType)
 		{
@@ -136,7 +134,7 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 				PXText pxText;
 				PXTextConstructFromAdressA(&pxText, pxMaterialCurrent->Name, 0, 32);
 
-				const PXBool isText = PXCompilerParseStringUntilNewLine(&compiledSteam, &pxText);
+				const PXBool isText = PXCompilerParseStringUntilNewLine(&pxCompiler, &pxText);
 
 				if (!isText)
 				{
@@ -153,7 +151,7 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 				PXText nameTexturePath;
 				PXTextConstructNamedBufferA(&nameTexturePath, nameTexturePathBuffer, PXPathSizeMax);
 
-				const PXBool isText = PXCompilerParseStringUntilNewLine(&compiledSteam, &nameTexturePath);
+				const PXBool isText = PXCompilerParseStringUntilNewLine(&pxCompiler, &nameTexturePath);
 
 				if (!isText)
 				{
@@ -162,7 +160,7 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 
 				// TODO: bad
 
-				PXFilePathRelativeFromFile(pxFile, &nameTexturePath, &fullTexturePath);
+				PXFilePathRelativeFromFile(pxCompiler.FileInput, &nameTexturePath, &fullTexturePath);
 
 				// fullTexturePath
 
@@ -183,9 +181,9 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 			case MTLLineDissolved:
 			case MTLLineDensity:
 			{
-				PXCompilerSymbolEntryExtract(&compiledSteam, &compilerSymbolEntry);
+				PXCompilerSymbolEntryExtract(&pxCompiler);
 
-				const PXBool isFloat = compilerSymbolEntry.ID == PXCompilerSymbolLexerFloat;
+				const PXBool isFloat = pxCompiler.SymbolEntryCurrent.ID == PXCompilerSymbolLexerFloat;
 
 				if (!isFloat)
 				{
@@ -196,15 +194,15 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 				switch (mtlLineType)
 				{
 					case MTLLineWeight:
-						pxMaterialCurrent->Weight =  compilerSymbolEntry.DataF;
+						pxMaterialCurrent->Weight = pxCompiler.SymbolEntryCurrent.DataF;
 						break;
 
 					case MTLLineDissolved:
-						pxMaterialCurrent->Dissolved =  compilerSymbolEntry.DataF;
+						pxMaterialCurrent->Dissolved = pxCompiler.SymbolEntryCurrent.DataF;
 						break;
 
 					case MTLLineDensity:
-						pxMaterialCurrent->Density = compilerSymbolEntry.DataF;
+						pxMaterialCurrent->Density = pxCompiler.SymbolEntryCurrent.DataF;
 						break;
 				}
 
@@ -238,7 +236,7 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 						break;
 				}
 
-				const PXBool listParsed = PXCompilerParseFloatList(&compiledSteam, colorVector, colorVectorSize, &valuesDetected);
+				const PXBool listParsed = PXCompilerParseFloatList(&pxCompiler, colorVector, colorVectorSize, &valuesDetected);
 
 				if (!listParsed)
 				{
@@ -250,9 +248,9 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 			}
 			case MTLLineIllumination:
 			{
-				PXCompilerSymbolEntryExtract(&compiledSteam, &compilerSymbolEntry);
+				PXCompilerSymbolEntryExtract(&pxCompiler);
 
-				const PXBool isInt = compilerSymbolEntry.ID == PXCompilerSymbolLexerInteger;
+				const PXBool isInt = pxCompiler.SymbolEntryCurrent.ID == PXCompilerSymbolLexerInteger;
 
 				if (!isInt)
 				{
@@ -260,7 +258,7 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 					break;
 				}
 
-				pxMaterialCurrent->IlluminationMode = PXMTLIlluminationModeFromID(compilerSymbolEntry.DataI32U);
+				pxMaterialCurrent->IlluminationMode = PXMTLIlluminationModeFromID(pxCompiler.SymbolEntryCurrent.DataI32U);
 
 				break;
 			}

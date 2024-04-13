@@ -244,6 +244,16 @@ void PXAPI PXWindowEventConsumer(PXGUISystem* const pxGUISystem, PXWindowEvent* 
             pxUIElement->InteractCallBack(pxUIElement->InteractOwner, pxWindowEvent);
         }
     }
+
+    if(pxWindowEvent->UIElementSender)
+    {
+        PXUIElement* const pxUIElement = pxWindowEvent->UIElementSender;
+
+        if(pxUIElement->InteractCallBack)
+        {
+            pxUIElement->InteractCallBack(pxUIElement->InteractOwner, pxWindowEvent);
+        }
+    }
 }
 
 
@@ -691,6 +701,7 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
         {
             const HWND windowsHandle = (HWND)wParam;
             NMHDR* const notificationCode = (NMHDR*)lParam;
+            HWND sourceObject = notificationCode->hwndFrom;
 
             switch(notificationCode->code)
             {
@@ -705,20 +716,78 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
 
                     if(pxGUISystem)
                     {    
-                        const HWND itemHandle = TreeView_GetSelection(notificationCode->hwndFrom); // Event does not give us the handle, fetch manually.
+                        const HWND itemHandle = TreeView_GetSelection(sourceObject); // Event does not give us the handle, fetch manually.
 
                         // Fetch treeview object
-                        PXDictionaryFindEntry(&pxGUISystem->UIElementLookUp, &notificationCode->hwndFrom, &pxTreeViewContainer);
+                        PXDictionaryFindEntry(&pxGUISystem->UIElementLookUp, &sourceObject, &pxTreeViewContainer);
 
                         // Fetch treeviewitem object
                         PXDictionaryFindEntry(&pxGUISystem->UIElementLookUp, &itemHandle, &pxTreeViewItem);
                     }                  
 
+                    pxWindowEvent.UIElementReference = pxTreeViewContainer;
+                    pxWindowEvent.UIElementSender = pxTreeViewItem;
 
                     pxWindowEvent.Type = PXWindowEventTypeSelect;
                     pxWindowEvent.Select.UIElementSelected = pxTreeViewItem;
 
                     PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);           
+
+                    break;
+                }
+                case TCN_SELCHANGE:
+                {
+                    const int pageID = TabCtrl_GetCurSel(sourceObject);
+
+#if 1
+                    PXUIElement* const pxUIElement = PXNull;
+
+                    PXDictionaryFindEntry(&pxGUISystem->UIElementLookUp, &sourceObject, &pxUIElement);
+
+                    // Hide current page
+                    const PXBool isValidIndex = pxUIElement->ListEESize >= (pageID+1);
+
+                    BOOL success = 0;
+
+                    for(PXSize i = 0; i < pxUIElement->ListEESize; i++)
+                    {
+                        PXUIElement* const pxUIElementEEE = pxUIElement->ListEEData[i];
+
+                        PXGUIElementUpdateInfo pxGUIElementUpdateInfo;
+                        PXClear(PXGUIElementUpdateInfo, &pxGUIElementUpdateInfo);
+                        pxGUIElementUpdateInfo.Show = PXFalse;
+                        pxGUIElementUpdateInfo.UIElement = pxUIElementEEE;
+                        pxGUIElementUpdateInfo.Property = PXUIElementPropertyVisibility;
+
+                        PXGUIElementUpdate(pxGUISystem, &pxGUIElementUpdateInfo, 1);
+                    }
+
+                    // Show new page
+                    if(isValidIndex)
+                    {
+                        PXUIElement* const pxUIElementEEE = pxUIElement->ListEEData[pageID];
+
+                        PXLogPrint
+                        (
+                            PXLoggingInfo,
+                            "GUI",
+                            "Event",
+                            "Tab Select <0x%p>, %15s ID:<%i>",
+                            sourceObject,
+                            pxUIElementEEE->NameData,
+                            pageID
+                        );
+
+                        PXGUIElementUpdateInfo pxGUIElementUpdateInfo;
+                        PXClear(PXGUIElementUpdateInfo, &pxGUIElementUpdateInfo);
+                        pxGUIElementUpdateInfo.Show = PXTrue;
+                        pxGUIElementUpdateInfo.UIElement = pxUIElementEEE;
+                        pxGUIElementUpdateInfo.Property = PXUIElementPropertyVisibility;
+
+                        PXGUIElementUpdate(pxGUISystem, &pxGUIElementUpdateInfo, 1);                     
+                    }    
+           
+#endif
 
                     break;
                 }
@@ -731,13 +800,30 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
                         "Windows",
                         "Event",
                         "Notify <0x%p>, ID:<%i>",
-                        windowsHandle,
+                        sourceObject,
                         notificationCode->code
                     );
 #endif
 
                     break;
                 }
+            }
+
+            break;
+        }
+
+        case WM_PAINT:
+        {
+            PXUIElement* const pxUIElement = PXNull;
+
+            PXDictionaryFindEntry(&pxGUISystem->UIElementLookUp, &windowID, &pxUIElement);
+
+            if(pxUIElement)
+            {
+                if(!pxUIElement->IsEnabled)
+                {
+                  //  return 0;
+                }              
             }
 
             break;
@@ -910,6 +996,7 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
             HWND windowHandleNow = (HWND)lParam;
             HDC hdc = (HDC)wParam;
 
+#if 0
             PXLogPrint
             (
                 PXLoggingInfo,
@@ -919,6 +1006,7 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
                 windowID,
                 windowHandleNow
             );
+#endif
 
             // can you fetch the object?
           //  PXUIElement* pxUIElement = PXNull;
@@ -939,7 +1027,7 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
         }
         case WM_INPUT:
         {
-#if 1
+#if 0
             PXLogPrint
             (
                 PXLoggingInfo,
@@ -1033,6 +1121,10 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
                 PXDictionaryFindEntry(&pxGUISystem->UIElementLookUp, &handle, &pxUIElement);
             }
 
+            if(!pxUIElement->IsEnabled)
+            {
+               // ShowWindow(pxUIElement->ID, SW_HIDE);
+            }
 
             pxWindowEvent.Type = PXWindowEventTypeClick;
             pxWindowEvent.UIElementSender = pxUIElement;
@@ -1402,6 +1494,54 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
     // If nothing had grabbed the event by now, let the default funcion handle it.
     return DefWindowProc(windowID, eventID, wParam, lParam);
 }
+
+void PXAPI PXGUIElementChildListEnumerate(PXGUISystem* const pxGUISystem, PXUIElement* const parent, PXBool visible)
+{
+    for(size_t i = 0; i < pxGUISystem->UIElementLookUp.EntryAmountCurrent; i++)
+    {
+        PXDictionaryEntry pxDictionaryEntry;
+
+        PXUIElement* childElement = PXNull;
+
+        PXDictionaryIndex(&pxGUISystem->UIElementLookUp, i, &pxDictionaryEntry);
+
+        childElement = *(PXUIElement**)pxDictionaryEntry.Value;
+
+        if(childElement->Parent)
+        {
+            if(childElement->Parent->ID == parent->ID)
+            {
+                // found child.
+
+                PXGUIElementUpdateInfo pxGUIElementUpdateInfo;
+                PXClear(PXGUIElementUpdateInfo, &pxGUIElementUpdateInfo);
+
+                pxGUIElementUpdateInfo.UIElement = childElement;
+                pxGUIElementUpdateInfo.Show = visible;
+                pxGUIElementUpdateInfo.Property = PXUIElementPropertyVisibility;
+
+                PXGUIElementUpdate(pxGUISystem, &pxGUIElementUpdateInfo, 1);
+            }
+        }
+    }
+}
+
+BOOL CALLBACK PXWindowEnumChildProc(HWND hwnd, LPARAM lParam)
+{
+    int* mode = *(int*)lParam;
+
+    // Recursion
+    {
+        const BOOL success = EnumChildWindows
+        (
+            hwnd,
+            PXWindowEnumChildProc,
+            mode
+        );
+    } 
+
+    ShowWindow(hwnd, mode);
+}
 #endif
 
 PXThreadResult PXOSAPI PXWindowMessageLoop(PXUIElement* const pxUIElement)
@@ -1427,6 +1567,11 @@ PXActionResult PXAPI PXGUISystemInitialize(PXGUISystem* const pxGUISystem)
 
     PXGUISystemGlobalReference = pxGUISystem;
 
+
+    INITCOMMONCONTROLSEX initCommonControls;
+    initCommonControls.dwSize = sizeof(INITCOMMONCONTROLSEX);
+    initCommonControls.dwICC = ICC_TAB_CLASSES;
+    InitCommonControlsEx(&initCommonControls);
 
 #if OSUnix
 
@@ -1485,7 +1630,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
     pxUIElement->InteractCallBack = pxGUIElementCreateInfo->InteractCallBack;
     pxUIElement->InteractOwner = pxGUIElementCreateInfo->InteractOwner;
     pxUIElement->Parent = pxGUIElementCreateInfo->UIElementParent;
-
+    pxUIElement->IsEnabled = PXTrue;
 
     PXCopy(PXUIElementPosition, &pxGUIElementCreateInfo->Position, &pxUIElement->Position);
 
@@ -1499,17 +1644,85 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
     //const char* format = PXEngineCreateTypeToString(pxEngineResourceCreateInfo->CreateType);
     if(PXUIElementTypeTreeViewItem == pxGUIElementCreateInfo->Type)
     {
-        PXUIElement* const uiElementSource = pxGUIElementCreateInfo->Data.TreeViewItem.ElementSource;
+      // PXUIElement* const uiElementSource
 
-        const char* uiElementTypeName = PXUIElementTypeToString(uiElementSource->Type);
-        char* name = uiElementSource->NameData;
 
-        if(name[0] == '\0')
+
+        switch(pxGUIElementCreateInfo->Data.TreeViewItem.OwningObjectType)
         {
-            name = "**Unnamed**";
-        }
+            case PXFileResourceTypeEmpty:
+            {
+                pxUIElement->NameSize = PXTextPrintA(pxUIElement->NameData, 128, "<%s>", pxGUIElementCreateInfo->Name);
+                break;
+            }
+            case PXFileResourceTypeUI:
+            {
+                PXUIElement* const uiElementSource = pxGUIElementCreateInfo->Data.TreeViewItem.OwningObject;
 
-        pxUIElement->NameSize = PXTextPrintA(pxUIElement->NameData, 128, "[%s] %s", uiElementTypeName, name);
+                const char* uiElementTypeName = PXUIElementTypeToString(uiElementSource->Type);
+                char* name = uiElementSource->NameData;
+
+                if(name[0] == '\0')
+                {
+                    name = "**Unnamed**";
+                }
+
+                pxUIElement->NameSize = PXTextPrintA(pxUIElement->NameData, 128, "[%s] %s", uiElementTypeName, name);
+
+                break;
+            }
+            case PXFileResourceTypeModel:
+            {
+                PXModel* const pxModel = pxGUIElementCreateInfo->Data.TreeViewItem.OwningObject;
+
+                pxUIElement->NameSize = PXTextPrintA
+                (
+                    pxUIElement->NameData,
+                    128,
+                    "[Model] %s ID:%i",              
+                    pxModel->ResourceID.Name,
+                    pxModel->ResourceID.PXID
+                );
+
+                break;
+            }
+            case PXFileResourceTypeRenderShader:
+            {
+                PXShaderProgram* const pxShaderProgram = pxGUIElementCreateInfo->Data.TreeViewItem.OwningObject;
+
+                pxUIElement->NameSize = PXTextPrintA
+                (
+                    pxUIElement->NameData,
+                    128,
+                    "[Shader] %s ID:%i",
+                    pxShaderProgram->ResourceID.Name,
+                    pxShaderProgram->ResourceID.PXID
+                );
+
+                break;
+            }
+            case PXFileResourceTypeImage:
+            {
+                PXImage* const pxImage = pxGUIElementCreateInfo->Data.TreeViewItem.OwningObject;
+
+                pxUIElement->NameSize = PXTextPrintA
+                (
+                    pxUIElement->NameData,
+                    128, 
+                    "[Image] %ix%i",
+                    pxImage->Width, 
+                    pxImage->Height
+                );
+
+                break;
+            }
+            default:
+            { 
+                pxUIElement->NameSize = PXTextPrintA(pxUIElement->NameData, 128, "ERROR");
+
+                break;
+            }
+        }      
     }
     else
     {
@@ -1829,6 +2042,13 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
         {// BS_USERBUTTON 
             pxGUIElementCreateInfo->WindowsClassName = WC_BUTTON;
             // BS_DEFPUSHBUTTON 
+
+
+            pxGUIElementCreateInfo->WindowsTextContent = pxGUIElementCreateInfo->Data.Button.TextInfo.Content;
+
+       
+
+
             break;
         }
         case PXUIElementTypeImage:
@@ -1840,7 +2060,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
         case PXUIElementTypeDropDown:
         {
             pxGUIElementCreateInfo->WindowsClassName = WC_COMBOBOX;
-            pxGUIElementCreateInfo->WindowsStyleFlags |= CBS_HASSTRINGS | WS_OVERLAPPED;
+            pxGUIElementCreateInfo->WindowsStyleFlags |= CBS_HASSTRINGS | CBS_DROPDOWNLIST | WS_OVERLAPPED;
             break;
         }
         case PXUIElementTypeListBox:
@@ -1852,6 +2072,9 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
         {
             pxGUIElementCreateInfo->WindowsClassName = WC_EDIT;
             pxGUIElementCreateInfo->WindowsStyleFlags |= ES_MULTILINE;
+
+            pxGUIElementCreateInfo->WindowsTextContent = pxGUIElementCreateInfo->Data.Button.TextInfo.Content;
+
             break;
         }
         case PXUIElementTypeRichEdit:
@@ -1970,6 +2193,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
         case PXUIElementTypeTabControll:
         {
             pxGUIElementCreateInfo->WindowsClassName = WC_TABCONTROL;
+            pxGUIElementCreateInfo->WindowsStyleFlags |= WS_CLIPSIBLINGS;
             break;
         }
         case PXUIElementTypeToggle:
@@ -2356,7 +2580,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
             pxUIElementUpdateInfo[1].Property = PXUIElementPropertyProgressbarBarColor;
 
 
-         //   PXGUIElementUpdate(pxGUISystem, pxUIElementUpdateInfo, 2);
+         //  PXGUIElementUpdate(pxGUISystem, pxUIElementUpdateInfo, 2);
 
             break;
         }
@@ -2391,30 +2615,33 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
 
 
 
-     
-
-            switch(pxUIElementTreeViewItemInfo->ElementSource->Type)
+            if(pxUIElementTreeViewItemInfo->OwningObjectType == PXFileResourceTypeUI)
             {
-               // case PXUIElementTypeRenderFrame:
+                PXUIElement* const uiElement = pxUIElementTreeViewItemInfo->OwningObject;
+
+                switch(uiElement->Type)
+                {
+                    // case PXUIElementTypeRenderFrame:
 
 
-                case PXUIElementTypeWindow:                item.item.iImage = 0;                    break;
-                case PXUIElementTypeButton:                item.item.iImage = 1;                    break;      
-                case PXUIElementTypeTextEdit:              item.item.iImage = 2;                    break;
-                case PXUIElementTypeRenderFrame:           item.item.iImage = 3;                    break;
-                case PXUIElementTypeText:                  item.item.iImage = 5;                    break;          
-                case PXUIElementTypeTreeView:              item.item.iImage = 4;                    break;
-                case PXUIElementTypePanel:                 item.item.iImage = 6;                    break;
-          
-               // case PXUIElementTypeWindow:                    item.item.iImage = 1;                    break;
-               // case PXUIElementTypeWindow:                    item.item.iImage = 1;                    break;
+                    case PXUIElementTypeWindow:                item.item.iImage = 0;                    break;
+                    case PXUIElementTypeButton:                item.item.iImage = 1;                    break;
+                    case PXUIElementTypeTextEdit:              item.item.iImage = 2;                    break;
+                    case PXUIElementTypeRenderFrame:           item.item.iImage = 3;                    break;
+                    case PXUIElementTypeText:                  item.item.iImage = 5;                    break;
+                    case PXUIElementTypeTreeView:              item.item.iImage = 4;                    break;
+                    case PXUIElementTypePanel:                 item.item.iImage = 6;                    break;
+
+                        // case PXUIElementTypeWindow:                    item.item.iImage = 1;                    break;
+                        // case PXUIElementTypeWindow:                    item.item.iImage = 1;                    break;
 
 
 
-                default:
-                    item.item.iImage = -1;
-                    break;
-            }     
+                    default:
+                        item.item.iImage = -1;
+                        break;
+                }
+            }         
 
             item.item.iSelectedImage = item.item.iImage;
 
@@ -2663,6 +2890,68 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
         }
         case PXUIElementTypeTabControll:
         {
+            HDC pDC = GetDC(pxUIElement->ID);
+            //SetBkMode(pDC, TRANSPARENT);
+           SetBkColor(pDC, RGB(255, 0, 0));
+           SetTextColor(pDC, RGB(0, 0, 255));
+
+            PXUIElementTabPageInfo* const pxUIElementTabPageInfo = &pxGUIElementCreateInfo->Data.TabPage;
+
+
+
+            pxUIElement->ListEESize = pxGUIElementCreateInfo->Data.TabPage.TabPageSingleInfoAmount;
+            PXNewList(PXUIElement*, pxGUIElementCreateInfo->Data.TabPage.TabPageSingleInfoAmount, &pxUIElement->ListEEData, PXNull);
+
+
+            for(PXSize i = 0; i < pxUIElementTabPageInfo->TabPageSingleInfoAmount; ++i)
+            {
+                PXUIElementTabPageSingleInfo* const pxUIElementTabPageSingleInfo = &pxUIElementTabPageInfo->TabPageSingleInfoList[i];
+
+                char buffer[64];                
+                PXTextPrintA(buffer, 64, "TabPage-%i-%s", i, pxUIElementTabPageSingleInfo->PageName);
+
+                // Create a panel for each page, to contain all elements, so that we can hide and show all at once
+                PXGUIElementCreateInfo pxGUIElementCreateInfoPanel;
+                PXClear(PXGUIElementCreateInfo, &pxGUIElementCreateInfoPanel);
+                pxGUIElementCreateInfoPanel.Type = PXUIElementTypePanel;
+                pxGUIElementCreateInfoPanel.Name = buffer;
+                pxGUIElementCreateInfoPanel.UIElement = pxUIElementTabPageSingleInfo->UIElement;
+                pxGUIElementCreateInfoPanel.UIElementWindow = pxGUIElementCreateInfo->UIElementWindow;
+                pxGUIElementCreateInfoPanel.UIElementParent = pxUIElement;
+                pxGUIElementCreateInfoPanel.BehaviourFlags = PXUIElementDecorative;
+                pxGUIElementCreateInfoPanel.StyleFlagList = PXGUIElementStyleDefault;
+                pxGUIElementCreateInfoPanel.Position.FlagListKeep = PXUIElementAllignLeft;
+                pxGUIElementCreateInfoPanel.Position.MarginLeft = 0.005;
+                pxGUIElementCreateInfoPanel.Position.MarginTop = 0.1;
+                pxGUIElementCreateInfoPanel.Position.MarginRight = 0.005;
+                pxGUIElementCreateInfoPanel.Position.MarginBottom = 0.02;
+                pxGUIElementCreateInfoPanel.Data.Text.Content = buffer;
+
+                PXGUIElementCreate(pxGUISystem, &pxGUIElementCreateInfoPanel, 1);
+
+
+                pxUIElement->ListEEData[i] = *pxUIElementTabPageSingleInfo->UIElement;
+
+
+                // Add tabs for each day of the week. 
+                TCITEM tie;
+                tie.mask = TCIF_TEXT | TCIF_IMAGE;
+                tie.iImage = pxUIElementTabPageSingleInfo->ImageID;
+                tie.pszText = pxUIElementTabPageSingleInfo->PageName;
+
+                auto x = TabCtrl_InsertItem(pxUIElement->ID, i, &tie);
+
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    "GUI",
+                    "TabControl-Add",
+                    "Page added %s",
+                    pxUIElementTabPageSingleInfo->PageName
+                );
+            }        
+
+            SendMessage(pxUIElement->ID, TCM_SETCURFOCUS, 0, 0);
 
             break;
         }
@@ -2979,7 +3268,91 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
 
             break;
         }
+        case PXUIElementPropertyVisibility:
+        {
+            PXBool show = pxGUIElementUpdateInfo->Show;
+            int showID = show ? SW_SHOW : SW_HIDE;
 
+            const PXBool isWindowValid = IsWindow(pxUIElement->ID);
+
+            if(!isWindowValid)
+            {
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    "GUI",
+                    "Visibility",
+                    "%20s (0x%p), Invalid",
+                    pxUIElement->NameData,
+                    pxUIElement->ID
+                );
+
+                break;
+            }
+
+            pxUIElement->IsEnabled = show;
+           // EnableWindow(pxUIElement->ID, show);
+
+            ShowWindow(pxUIElement->ID, showID);
+            BOOL res = ShowWindow(pxUIElement->ID, showID); // Twice to prevent some errors
+
+         //  HWND parrent = GetParent(pxUIElement->ID);
+
+         //  HWND grandParrent = GetParent(parrent);
+
+         //  UpdateWindow(pxUIElement->ID);
+          //  UpdateWindow(parrent);
+          //  UpdateWindow(grandParrent);
+
+                  //  UpdateWindow(sourceObject);
+                   // FlashWindow(sourceObject, 1);
+
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "GUI",
+                "Visibility",
+                "Page %20s, (0x%p), Mode:%s Status:%s",
+                pxUIElement->NameData,
+                pxUIElement->ID,
+                show ? "Show" : "Hide",
+                res ? "OK" : "FAIL"
+            );
+
+
+            // Own solution
+            {
+                PXGUIElementChildListEnumerate(pxGUISystem, pxUIElement, show);
+
+                   
+
+            }
+
+           
+            const BOOL success = EnumChildWindows
+            (
+                pxUIElement->ID,
+                PXWindowEnumChildProc,
+                &showID
+            );
+
+            break;
+        }
+        case PXUIElementPropertyComboBoxAdd:
+        {
+            PXUIElementComboBoxInfo* const pxUIElementComboBoxInfo = &pxGUIElementUpdateInfo->Data.ComboBox;
+
+            for(size_t i = 0; i < pxUIElementComboBoxInfo->DataListAmount; i++)
+            {
+                char* name = pxUIElementComboBoxInfo->DataList[i];
+
+                ComboBox_AddString(pxUIElement->ID, name);
+            }
+
+            ComboBox_SetCurSel(pxUIElement->ID, 0);
+
+            break;
+        }
         case PXUIElementPropertyItemAdd:
         {
             PXUIElementItemInfo* pxUIElementItemInfo = &pxGUIElementUpdateInfo->Data.TreeViewItem;

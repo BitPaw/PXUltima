@@ -1733,18 +1733,21 @@ PXActionResult PXAPI PXCParseTypeEnum(PXDocument* const pxDocument, PXFile* cons
 PXActionResult PXAPI PXCLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
     PXDocument* pxDocument = (PXDocument*)pxResourceLoadInfo->Target;
-    PXFile* const pxFile = pxResourceLoadInfo->FileReference;
 
     PXFile tokenSteam;
-    PXFileConstruct(&tokenSteam);
+    PXClear(PXFile, &tokenSteam);
 
-    //-----------------------------------------------------
+    PXCompiler pxCompiler;
+    PXClear(PXCompiler, &pxCompiler);
+    pxCompiler.FileInput = pxResourceLoadInfo->FileReference;
+    pxCompiler.FileCache = &tokenSteam;
+
+     //-----------------------------------------------------
     // Lexer - Level I
     //-----------------------------------------------------
     {
         PXCompilerSettings compilerSettings;
-
-        PXCompilerSettingsConstruct(&compilerSettings);
+        PXClear(PXCompilerSettings, &compilerSettings);
 
         compilerSettings.TryAnalyseTypes = PXYes;
         compilerSettings.CommentsKeep = PXYes;
@@ -1755,9 +1758,7 @@ PXActionResult PXAPI PXCLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInf
         compilerSettings.CommentMultibleLineEnd = "*/";
         compilerSettings.CommentMultibleLineEndSize = 2;
 
-        PXFileBufferAllocate(&tokenSteam, pxFile->DataAllocated * 5);
-
-        PXCompilerLexicalAnalysis(pxFile, &tokenSteam, &compilerSettings);
+        PXCompilerLexicalAnalysis(&pxCompiler, &compilerSettings);
     }
 
 
@@ -1774,17 +1775,15 @@ PXActionResult PXAPI PXCLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInf
 
     while (!PXFileIsAtEnd(&tokenSteam))
     {
-        PXCompilerSymbolEntry compilerSymbolEntry;
+        PXCompilerSymbolEntryExtract(&pxCompiler);
 
-        PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
-
-        switch (compilerSymbolEntry.ID)
+        switch (pxCompiler.SymbolEntryCurrent.ID)
         {
             case PXCompilerSymbolLexerHash: // Probably a preprocessor definition
             {
-                PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // move from '#' to next one
+                PXCompilerSymbolEntryExtract(&pxCompiler); // move from '#' to next one
 
-                const CKeyWord keyWord = PXCFileAnalyseElement(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+                const CKeyWord keyWord = PXCFileAnalyseElement(pxCompiler.SymbolEntryCurrent.Source, pxCompiler.SymbolEntryCurrent.Size);
 
                 switch (keyWord)
                 {
@@ -1837,7 +1836,7 @@ PXActionResult PXAPI PXCLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInf
             }
             case PXCompilerSymbolLexerGenericElement:
             {
-                const CKeyWord keyWord = PXCFileAnalyseElement(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+                const CKeyWord keyWord = PXCFileAnalyseElement(pxCompiler.SymbolEntryCurrent.Source, pxCompiler.SymbolEntryCurrent.Size);
 
                 switch (keyWord)
                 {
@@ -1863,28 +1862,28 @@ PXActionResult PXAPI PXCLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInf
                     }
                     case CKeyWordExtern:
                     {
-                        PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
+                        PXCompilerSymbolEntryExtract(&pxCompiler);
 
-                        switch (compilerSymbolEntry.ID)
+                        switch (pxCompiler.SymbolEntryCurrent.ID)
                         {
                             case PXCompilerSymbolLexerString: // Need to me the extern "C" thing
                             {
-                                const PXBool isNameMangeling = (compilerSymbolEntry.Source[0] == 'C') && (compilerSymbolEntry.Size == 1);
+                                const PXBool isNameMangeling = (pxCompiler.SymbolEntryCurrent.Source[0] == 'C') && (pxCompiler.SymbolEntryCurrent.Size == 1);
 
                                 if (isNameMangeling)
                                 {
                                     // Invalid extern spesifieer
                                 }
 
-                                PXCompilerSymbolEntryPeek(&tokenSteam, &compilerSymbolEntry);
+                                PXCompilerSymbolEntryPeek(&pxCompiler);
 
-                                const PXBool isWrapping = PXCompilerSymbolLexerBracketCurlyOpen == compilerSymbolEntry.ID;
+                                const PXBool isWrapping = PXCompilerSymbolLexerBracketCurlyOpen == pxCompiler.SymbolEntryCurrent.ID;
 
                                 if (isWrapping)
                                 {
                                     // everything is C-Style now
 
-                                    PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Consome '{'
+                                    PXCompilerSymbolEntryExtract(&pxCompiler); // Consome '{'
 
 #if PXCDebugOutput
 
@@ -1924,7 +1923,7 @@ PXActionResult PXAPI PXCLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInf
 
                         // There is no result, so we take this as an extra unrsolved paramater
 
-                        const PXSize index = PXTextFindFirstCharacterBeforeA(compilerSymbolEntry.Source, 260, '(', ';');
+                        const PXSize index = PXTextFindFirstCharacterBeforeA(pxCompiler.SymbolEntryCurrent.Source, 260, '(', ';');
                         const PXBool isFunxtion = index != (PXSize)-1;
 
                         if (isFunxtion)

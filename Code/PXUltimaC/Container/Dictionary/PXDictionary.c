@@ -103,6 +103,26 @@ PXBool PXAPI PXDictionaryAdd(PXDictionary* const dictionary, const void* key, co
 	return PXFalse;
 }
 
+PXBool PXAPI PXDictionaryAddMultible(PXDictionary* const dictionary, const void** keyList, const void** valueList, const PXSize amount)
+{
+	const PXBool hasEnoughSpace = (dictionary->EntryAmountCurrent + amount) < dictionary->EntryAmountMaximal;
+
+	if(!hasEnoughSpace)
+	{
+		PXDictionaryResize(dictionary, dictionary->EntryAmountCurrent + amount + 10);
+	}
+
+	for(PXSize i = 0; i < amount; ++i)
+	{
+		const void* key = keyList[i];
+		const void* value = valueList[i];
+
+		PXDictionaryAdd(dictionary, key, value);
+	}
+
+	return PXTrue;
+}
+
 void PXAPI PXDictionaryRemove(PXDictionary* const dictionary, const void* key)
 {
 	// Find

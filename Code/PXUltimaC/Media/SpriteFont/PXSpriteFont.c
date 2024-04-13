@@ -12,13 +12,22 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXResourceLoadInfo* const pxResour
 {
 	PXFont* const pxFont = (PXFont*)pxResourceLoadInfo->Target;
 
+
+
+	PXFile tokenStream;
+	PXClear(PXFile, &tokenStream);
+
+	PXCompiler pxCompiler;
+	PXClear(PXCompiler, &pxCompiler);
+	pxCompiler.FileCache = &tokenStream;
+	pxCompiler.FileInput = pxResourceLoadInfo->FileReference;
+
+
 	PXSpriteFont pxSpriteFontEE;
 	PXSpriteFont* pxSpriteFont = &pxSpriteFontEE;
 
 	PXClear(PXSpriteFont, pxSpriteFont);
 
-	PXFile tokenStream;
-	PXFileOpenTemporal(&tokenStream, pxResourceLoadInfo->FileReference->DataSize * 8);
 
 	PXSize currentPageIndex = 0;
 	PXSize currentCharacterIndex = 0;
@@ -26,47 +35,45 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXResourceLoadInfo* const pxResour
 	// Lexer - Level I
 	{
 		PXCompilerSettings compilerSettings;
+		PXClear(PXCompilerSettings, &compilerSettings);
 
-		PXCompilerSettingsConstruct(&compilerSettings);
 		compilerSettings.TryAnalyseTypes = PXYes;
 		compilerSettings.CommentSingleLineSize = 1u;
 		compilerSettings.CommentSingleLine = "#";
 
-		PXCompilerLexicalAnalysis(pxResourceLoadInfo->FileReference, &tokenStream, &compilerSettings); // Raw-File-Input -> Lexer tokens
+		PXCompilerLexicalAnalysis(&pxCompiler, &compilerSettings); // Raw-File-Input -> Lexer tokens
 	}
 
 	unsigned int indentCounter = 0;
 
 	while (!PXFileIsAtEnd(&tokenStream))
 	{
-		PXCompilerSymbolEntry compilerSymbolEntry;
+		PXCompilerSymbolEntryExtract(&pxCompiler);
 
-		PXCompilerSymbolEntryExtract(&tokenStream, &compilerSymbolEntry);
-
-		switch (compilerSymbolEntry.ID)
+		switch (pxCompiler.SymbolEntryCurrent.ID)
 		{
 			case PXCompilerSymbolLexerGenericElement:
 			{
-				PXSpriteFontLineType lineType = PeekSymbol(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+				PXSpriteFontLineType lineType = PeekSymbol(pxCompiler.SymbolEntryCurrent.Source, pxCompiler.SymbolEntryCurrent.Size);
 
 				switch (lineType)
 				{
 					case PXSpriteFontSymbolInfo:
 					{
-						const PXSize targetLine = compilerSymbolEntry.Line;
+						const PXSize targetLine = pxCompiler.SymbolEntryCurrent.Line;
 
-						while (targetLine == compilerSymbolEntry.Line)
+						while (targetLine == pxCompiler.SymbolEntryCurrent.Line)
 						{
-							PXCompilerSymbolEntryExtract(&tokenStream, &compilerSymbolEntry);
+							PXCompilerSymbolEntryExtract(&pxCompiler);
 
-							const PXSpriteFontLineType variableName = PeekSymbol(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+							const PXSpriteFontLineType variableName = PeekSymbol(pxCompiler.SymbolEntryCurrent.Source, pxCompiler.SymbolEntryCurrent.Size);
 
 							// if OK
 
 							//---<Check for '='>----------------
-							PXCompilerSymbolEntryExtract(&tokenStream, &compilerSymbolEntry);
+							PXCompilerSymbolEntryExtract(&pxCompiler);
 
-							const PXBool isEqual = compilerSymbolEntry.ID == PXCompilerSymbolLexerEqual;
+							const PXBool isEqual = pxCompiler.SymbolEntryCurrent.ID == PXCompilerSymbolLexerEqual;
 
 							if (!isEqual)
 							{
@@ -75,92 +82,92 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXResourceLoadInfo* const pxResour
 							//-----------------------------------
 
 							//---<Get Value>---------------------
-							PXCompilerSymbolEntryExtract(&tokenStream, &compilerSymbolEntry);
+							PXCompilerSymbolEntryExtract(&pxCompiler);
 							//-----------------------------------
 
 							switch (variableName)
 							{
 								case PXSpriteFontSymbolFontName:
 								{
-									PXTextCopyA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, pxSpriteFont->Info.Name, PXSpriteFontFontNameSize);
+									PXTextCopyA(pxCompiler.SymbolEntryCurrent.Source, pxCompiler.SymbolEntryCurrent.Size, pxSpriteFont->Info.Name, PXSpriteFontFontNameSize);
 									break;
 								}
 								case PXSpriteFontSymbolFontSize:
 								{
-									pxSpriteFont->Info.Size = compilerSymbolEntry.DataI32U;
+									pxSpriteFont->Info.Size = pxCompiler.SymbolEntryCurrent.DataI32U;
 									break;
 								}
 								case PXSpriteFontSymbolBold:
 								{
-									pxSpriteFont->Info.Bold = compilerSymbolEntry.DataC;
+									pxSpriteFont->Info.Bold = pxCompiler.SymbolEntryCurrent.DataC;
 									break;
 								}
 
 								case PXSpriteFontSymbolItalic:
 								{
-									pxSpriteFont->Info.Italic = compilerSymbolEntry.DataC;
+									pxSpriteFont->Info.Italic = pxCompiler.SymbolEntryCurrent.DataC;
 									break;
 								}
 
 								case PXSpriteFontSymbolCharSet:
 								{
-									PXTextCopyA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, pxSpriteFont->Info.CharSet, PXSpriteFontFontNameSize);
+									PXTextCopyA(pxCompiler.SymbolEntryCurrent.Source, pxCompiler.SymbolEntryCurrent.Size, pxSpriteFont->Info.CharSet, PXSpriteFontFontNameSize);
 									break;
 								}
 
 								case PXSpriteFontSymbolUnicode:
 								{
-									pxSpriteFont->Info.Unicode = compilerSymbolEntry.DataC;
+									pxSpriteFont->Info.Unicode = pxCompiler.SymbolEntryCurrent.DataC;
 									break;
 								}
 
 								case PXSpriteFontSymbolStretchH:
 								{
-									pxSpriteFont->Info.StretchH = compilerSymbolEntry.DataI32U;
+									pxSpriteFont->Info.StretchH = pxCompiler.SymbolEntryCurrent.DataI32U;
 									break;
 								}
 
 								case PXSpriteFontSymbolSmooth:
 								{
-									pxSpriteFont->Info.Smooth = compilerSymbolEntry.DataC;
+									pxSpriteFont->Info.Smooth = pxCompiler.SymbolEntryCurrent.DataC;
 									break;
 								}
 
 								case PXSpriteFontSymbolAntilising:
 								{
-									pxSpriteFont->Info.Supersampling = compilerSymbolEntry.DataC;
+									pxSpriteFont->Info.Supersampling = pxCompiler.SymbolEntryCurrent.DataC;
 									break;
 								}
 
 								case PXSpriteFontSymbolPadding:
 								{
-									pxSpriteFont->Info.CharacterPadding[0] = compilerSymbolEntry.DataC;
+									pxSpriteFont->Info.CharacterPadding[0] = pxCompiler.SymbolEntryCurrent.DataC;
 
-									PXCompilerSymbolEntryExtract(&tokenStream, &compilerSymbolEntry);
-									PXCompilerSymbolEntryExtract(&tokenStream, &compilerSymbolEntry);
+									PXCompilerSymbolEntryExtract(&pxCompiler);
+									PXCompilerSymbolEntryExtract(&pxCompiler);
 
-									pxSpriteFont->Info.CharacterPadding[1] = compilerSymbolEntry.DataC;
+									pxSpriteFont->Info.CharacterPadding[1] = pxCompiler.SymbolEntryCurrent.DataC;
 
-									PXCompilerSymbolEntryExtract(&tokenStream, &compilerSymbolEntry);
-									PXCompilerSymbolEntryExtract(&tokenStream, &compilerSymbolEntry);
+									PXCompilerSymbolEntryExtract(&pxCompiler);
+									PXCompilerSymbolEntryExtract(&pxCompiler);
 
-									pxSpriteFont->Info.CharacterPadding[2] = compilerSymbolEntry.DataC;
+									pxSpriteFont->Info.CharacterPadding[2] = pxCompiler.SymbolEntryCurrent.DataC;
 
-									PXCompilerSymbolEntryExtract(&tokenStream, &compilerSymbolEntry);
-									PXCompilerSymbolEntryExtract(&tokenStream, &compilerSymbolEntry);
+									PXCompilerSymbolEntryExtract(&pxCompiler);
+									PXCompilerSymbolEntryExtract(&pxCompiler);
 
-									pxSpriteFont->Info.CharacterPadding[3] = compilerSymbolEntry.DataC;
+									pxSpriteFont->Info.CharacterPadding[3] = pxCompiler.SymbolEntryCurrent.DataC;
 									break;
 							
 								}
 								case PXSpriteFontSymbolSpacing:
 								{
-									pxSpriteFont->Info.SpacerOffset[0] = compilerSymbolEntry.DataC;
+									pxSpriteFont->Info.SpacerOffset[0] = pxCompiler.SymbolEntryCurrent.DataC;
 
-									PXCompilerSymbolEntryExtract(&tokenStream, &compilerSymbolEntry);
-									PXCompilerSymbolEntryExtract(&tokenStream, &compilerSymbolEntry);
+									PXCompilerSymbolEntryExtract(&pxCompiler);
+									PXCompilerSymbolEntryExtract(&pxCompiler);
 
-									pxSpriteFont->Info.SpacerOffset[1] = compilerSymbolEntry.DataC;
+									pxSpriteFont->Info.SpacerOffset[1] = pxCompiler.SymbolEntryCurrent.DataC;
 
 									break;
 								}
@@ -169,27 +176,27 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXResourceLoadInfo* const pxResour
 									break;
 							}
 
-							PXCompilerSymbolEntryPeek(&tokenStream, &compilerSymbolEntry);
+							PXCompilerSymbolEntryPeek(&pxCompiler);
 						}
 
 						break;
 					}
 					case PXSpriteFontSymbolCommon:
 					{
-						const PXSize targetLine = compilerSymbolEntry.Line;
+						const PXSize targetLine = pxCompiler.SymbolEntryCurrent.Line;
 
-						while (targetLine == compilerSymbolEntry.Line)
+						while (targetLine == pxCompiler.SymbolEntryCurrent.Line)
 						{
-							PXCompilerSymbolEntryExtract(&tokenStream, &compilerSymbolEntry);
+							PXCompilerSymbolEntryExtract(&pxCompiler);
 
-							const PXSpriteFontLineType variableName = PeekSymbol(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+							const PXSpriteFontLineType variableName = PeekSymbol(pxCompiler.SymbolEntryCurrent.Source, pxCompiler.SymbolEntryCurrent.Size);
 
 							// if OK
 
 							//---<Check for '='>----------------
-							PXCompilerSymbolEntryExtract(&tokenStream, &compilerSymbolEntry);
+							PXCompilerSymbolEntryExtract(&pxCompiler);
 
-							const PXBool isEqual = compilerSymbolEntry.ID == PXCompilerSymbolLexerEqual;
+							const PXBool isEqual = pxCompiler.SymbolEntryCurrent.ID == PXCompilerSymbolLexerEqual;
 
 							if (!isEqual)
 							{
@@ -198,34 +205,34 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXResourceLoadInfo* const pxResour
 							//-----------------------------------
 
 							//---<Get Value>---------------------
-							PXCompilerSymbolEntryExtract(&tokenStream, &compilerSymbolEntry);
+							PXCompilerSymbolEntryExtract(&pxCompiler);
 							//-----------------------------------
 
 							switch (variableName)
 							{
 								case PXSpriteFontSymbolLineHeight:
 								{
-									pxSpriteFont->CommonData.LineHeight = compilerSymbolEntry.DataI32U;
+									pxSpriteFont->CommonData.LineHeight = pxCompiler.SymbolEntryCurrent.DataI32U;
 									break;
 								}
 								case PXSpriteFontSymbolBase:
 								{
-									pxSpriteFont->CommonData.Base = compilerSymbolEntry.DataI32U;
+									pxSpriteFont->CommonData.Base = pxCompiler.SymbolEntryCurrent.DataI32U;
 									break;
 								}
 								case PXSpriteFontSymbolScaleWidth:
 								{
-									pxSpriteFont->CommonData.ScaleWidth = compilerSymbolEntry.DataI32U;
+									pxSpriteFont->CommonData.ScaleWidth = pxCompiler.SymbolEntryCurrent.DataI32U;
 									break;
 								}
 								case PXSpriteFontSymbolScaleHeight:
 								{
-									pxSpriteFont->CommonData.ScaleHeight = compilerSymbolEntry.DataI32U;
+									pxSpriteFont->CommonData.ScaleHeight = pxCompiler.SymbolEntryCurrent.DataI32U;
 									break;
 								}
 								case PXSpriteFontSymbolPageList:
 								{
-									const PXInt32U amountOfPages = compilerSymbolEntry.DataI32U;
+									const PXInt32U amountOfPages = pxCompiler.SymbolEntryCurrent.DataI32U;
 
 									if (amountOfPages > 1)
 									{
@@ -236,7 +243,7 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXResourceLoadInfo* const pxResour
 								}
 								case PXSpriteFontSymbolPacked:
 								{
-									pxSpriteFont->CommonData.Packed = compilerSymbolEntry.DataC;
+									pxSpriteFont->CommonData.Packed = pxCompiler.SymbolEntryCurrent.DataC;
 									break;
 								}
 
@@ -244,7 +251,7 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXResourceLoadInfo* const pxResour
 									break;
 							}
 
-							PXCompilerSymbolEntryPeek(&tokenStream, &compilerSymbolEntry);
+							PXCompilerSymbolEntryPeek(&pxCompiler);
 						}
 
 						break;
@@ -253,20 +260,20 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXResourceLoadInfo* const pxResour
 					{
 						PXFontPage* const pxFontPage = PXFontPageGet(pxFont, currentPageIndex);
 
-						const PXSize targetLine = compilerSymbolEntry.Line;
+						const PXSize targetLine = pxCompiler.SymbolEntryCurrent.Line;
 
-						while (targetLine == compilerSymbolEntry.Line)
+						while (targetLine == pxCompiler.SymbolEntryCurrent.Line)
 						{
-							PXCompilerSymbolEntryExtract(&tokenStream, &compilerSymbolEntry);
+							PXCompilerSymbolEntryExtract(&pxCompiler);
 
-							const PXSpriteFontLineType variableName = PeekSymbol(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+							const PXSpriteFontLineType variableName = PeekSymbol(pxCompiler.SymbolEntryCurrent.Source, pxCompiler.SymbolEntryCurrent.Size);
 
 							// if OK
 
 							//---<Check for '='>----------------
-							PXCompilerSymbolEntryExtract(&tokenStream, &compilerSymbolEntry);
+							PXCompilerSymbolEntryExtract(&pxCompiler);
 
-							const PXBool isEqual = compilerSymbolEntry.ID == PXCompilerSymbolLexerEqual;
+							const PXBool isEqual = pxCompiler.SymbolEntryCurrent.ID == PXCompilerSymbolLexerEqual;
 
 							if (!isEqual)
 							{
@@ -275,7 +282,7 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXResourceLoadInfo* const pxResour
 							//-----------------------------------
 
 							//---<Get Value>---------------------
-							PXCompilerSymbolEntryExtract(&tokenStream, &compilerSymbolEntry);
+							PXCompilerSymbolEntryExtract(&pxCompiler);
 							//-----------------------------------
 
 							switch (variableName)
@@ -289,7 +296,7 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXResourceLoadInfo* const pxResour
 								case PXSpriteFontSymbolFilePath:
 								{
 									PXText fileName;
-									PXTextConstructFromAdressA(&fileName, compilerSymbolEntry.Source, compilerSymbolEntry.Size, compilerSymbolEntry.Size);
+									PXTextConstructFromAdressA(&fileName, pxCompiler.SymbolEntryCurrent.Source, pxCompiler.SymbolEntryCurrent.Size, pxCompiler.SymbolEntryCurrent.Size);
 
 									// Loading Image
 									{
@@ -312,27 +319,27 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXResourceLoadInfo* const pxResour
 									break;
 							}
 
-							PXCompilerSymbolEntryPeek(&tokenStream, &compilerSymbolEntry);
+							PXCompilerSymbolEntryPeek(&pxCompiler);
 						}
 
 						break;
 					}
 					case PXSpriteFontSymbolCharacterList:
 					{
-						const PXSize targetLine = compilerSymbolEntry.Line;
+						const PXSize targetLine = pxCompiler.SymbolEntryCurrent.Line;
 
-						while (targetLine == compilerSymbolEntry.Line)
+						while (targetLine == pxCompiler.SymbolEntryCurrent.Line)
 						{
-							PXCompilerSymbolEntryExtract(&tokenStream, &compilerSymbolEntry);
+							PXCompilerSymbolEntryExtract(&pxCompiler);
 
-							const PXSpriteFontLineType variableName = PeekSymbol(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+							const PXSpriteFontLineType variableName = PeekSymbol(pxCompiler.SymbolEntryCurrent.Source, pxCompiler.SymbolEntryCurrent.Size);
 
 							// if OK
 
 							//---<Check for '='>----------------
-							PXCompilerSymbolEntryExtract(&tokenStream, &compilerSymbolEntry);
+							PXCompilerSymbolEntryExtract(&pxCompiler);
 
-							const PXBool isEqual = compilerSymbolEntry.ID == PXCompilerSymbolLexerEqual;
+							const PXBool isEqual = pxCompiler.SymbolEntryCurrent.ID == PXCompilerSymbolLexerEqual;
 
 							if (!isEqual)
 							{
@@ -341,7 +348,7 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXResourceLoadInfo* const pxResour
 							//-----------------------------------
 
 							//---<Get Value>---------------------
-							PXCompilerSymbolEntryExtract(&tokenStream, &compilerSymbolEntry);
+							PXCompilerSymbolEntryExtract(&pxCompiler);
 							//-----------------------------------
 
 							switch (variableName)
@@ -350,20 +357,20 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXResourceLoadInfo* const pxResour
 								{
 									PXFontPage* const pxFontPage = PXFontPageGet(pxFont, currentPageIndex);
 
-									pxFontPage->CharacteListEntrys = compilerSymbolEntry.DataI32U;
-									PXNewList(PXFontPageCharacter, compilerSymbolEntry.DataI32U, &pxFontPage->CharacteList, &pxFontPage->CharacteListSize);
+									pxFontPage->CharacteListEntrys = pxCompiler.SymbolEntryCurrent.DataI32U;
+									PXNewList(PXFontPageCharacter, pxCompiler.SymbolEntryCurrent.DataI32U, &pxFontPage->CharacteList, &pxFontPage->CharacteListSize);
 									break;
 								}	
 							}
 
-							PXCompilerSymbolEntryPeek(&tokenStream, &compilerSymbolEntry);
+							PXCompilerSymbolEntryPeek(&pxCompiler);
 						}
 
 						break;
 					}
 					case PXSpriteFontSymbolCharacterDefinition:
 					{
-						const PXSize targetLine = compilerSymbolEntry.Line;
+						const PXSize targetLine = pxCompiler.SymbolEntryCurrent.Line;
 						PXFontPage* const pxFontPage = PXFontPageGet(pxFont, currentPageIndex);
 
 						// Guarantee size of list
@@ -386,18 +393,18 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXResourceLoadInfo* const pxResour
 							
 						PXFontPageCharacter* const pxFontPageCharacter = &pxFontPage->CharacteList[currentCharacterIndex++];
 
-						while (targetLine == compilerSymbolEntry.Line)
+						while (targetLine == pxCompiler.SymbolEntryCurrent.Line)
 						{
-							PXCompilerSymbolEntryExtract(&tokenStream, &compilerSymbolEntry);
+							PXCompilerSymbolEntryExtract(&pxCompiler);
 
-							const PXSpriteFontLineType variableName = PeekSymbol(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+							const PXSpriteFontLineType variableName = PeekSymbol(pxCompiler.SymbolEntryCurrent.Source, pxCompiler.SymbolEntryCurrent.Size);
 
 							// if OK
 
 							//---<Check for '='>----------------
-							PXCompilerSymbolEntryExtract(&tokenStream, &compilerSymbolEntry);
+							PXCompilerSymbolEntryExtract(&pxCompiler);
 
-							const PXBool isEqual = compilerSymbolEntry.ID == PXCompilerSymbolLexerEqual;
+							const PXBool isEqual = pxCompiler.SymbolEntryCurrent.ID == PXCompilerSymbolLexerEqual;
 
 							if (!isEqual)
 							{
@@ -406,50 +413,50 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXResourceLoadInfo* const pxResour
 							//-----------------------------------
 
 							//---<Get Value>---------------------
-							PXCompilerSymbolEntryExtract(&tokenStream, &compilerSymbolEntry);
+							PXCompilerSymbolEntryExtract(&pxCompiler);
 							//-----------------------------------
 
 							switch (variableName)
 							{
 								case PXSpriteFontSymbolID:
 								{
-									pxFontPageCharacter->ID = compilerSymbolEntry.DataI32S;
+									pxFontPageCharacter->ID = pxCompiler.SymbolEntryCurrent.DataI32S;
 									break;
 								}
 								case PXSpriteFontSymbolX:
 								{
-									pxFontPageCharacter->Position[0] = compilerSymbolEntry.DataI32S;
+									pxFontPageCharacter->Position[0] = pxCompiler.SymbolEntryCurrent.DataI32S;
 									break;
 								}
 								case PXSpriteFontSymbolY:
 								{
-									pxFontPageCharacter->Position[1] = compilerSymbolEntry.DataI32S;
+									pxFontPageCharacter->Position[1] = pxCompiler.SymbolEntryCurrent.DataI32S;
 									break;
 								}
 								case PXSpriteFontSymbolScaleWidth:
 								{
-									pxFontPageCharacter->Size[0] = compilerSymbolEntry.DataI32S;
+									pxFontPageCharacter->Size[0] = pxCompiler.SymbolEntryCurrent.DataI32S;
 									break;
 								}
 								case PXSpriteFontSymbolScaleHeight:
 								{
-									pxFontPageCharacter->Size[1] = compilerSymbolEntry.DataI32S;
+									pxFontPageCharacter->Size[1] = pxCompiler.SymbolEntryCurrent.DataI32S;
 									break;
 								}
 								case PXSpriteFontSymbolXOffset:
 								{
-									pxFontPageCharacter->Offset[0] = compilerSymbolEntry.DataI32S;
+									pxFontPageCharacter->Offset[0] = pxCompiler.SymbolEntryCurrent.DataI32S;
 									break;
 								}
 								case PXSpriteFontSymbolYOffset:
 								{
-									pxFontPageCharacter->Offset[1] = compilerSymbolEntry.DataI32S;
+									pxFontPageCharacter->Offset[1] = pxCompiler.SymbolEntryCurrent.DataI32S;
 									break;
 								}
 
 								case PXSpriteFontSymbolXAdvance:
 								{
-									pxFontPageCharacter->XAdvance = compilerSymbolEntry.DataI32S;
+									pxFontPageCharacter->XAdvance = pxCompiler.SymbolEntryCurrent.DataI32S;
 									break;
 								}
 
@@ -469,7 +476,7 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXResourceLoadInfo* const pxResour
 									break;
 							}
 
-							PXCompilerSymbolEntryPeek(&tokenStream, &compilerSymbolEntry);
+							PXCompilerSymbolEntryPeek(&pxCompiler);
 						}
 					}
 					case PXSpriteFontLineUnkown:

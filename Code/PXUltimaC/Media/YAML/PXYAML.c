@@ -65,8 +65,7 @@ PXActionResult PXAPI PXYAMLLoadFromFile(PXResourceLoadInfo* const pxResourceLoad
     // Lexer - Level I
     {
         PXCompilerSettings compilerSettings;
-
-        PXCompilerSettingsConstruct(&compilerSettings);
+        PXClear(PXCompilerSettings, &compilerSettings);
 
         compilerSettings.KeepWhiteSpace = PXYes;
         compilerSettings.KeepWhiteSpaceIndentationLeft = PXYes;

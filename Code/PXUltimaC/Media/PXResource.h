@@ -15,6 +15,7 @@ typedef struct PXText_ PXText;
 typedef struct PXDocument_ PXDocument;
 typedef struct PXUIElement_ PXUIElement;
 typedef struct PXFileTypeInfo_ PXFileTypeInfo;
+typedef struct PXCompiler_ PXCompiler;
 
 
 typedef enum PXRefreshRateMode_
@@ -238,11 +239,15 @@ PXPublic PXInt8U PXAPI PXVertexBufferFormatStrideSize(const PXVertexBufferFormat
 
 
 
+#define ResourceIDNameLength 64
+
 // To keep track of the object reference.
 // OpenGL uses 32-Bit Integer as an ID.
 // DirectX uses direct pointers to object references.
 typedef struct PXResourceID_
 {
+	char Name[ResourceIDNameLength];
+
 	union
 	{
 		void* DirectXInterface;
@@ -1069,6 +1074,13 @@ typedef struct PXUIElementProgressBarInfo_
 }
 PXUIElementProgressBarInfo;
 
+typedef struct PXUIElementComboBoxInfo_
+{
+	char** DataList;
+	PXSize DataListAmount;
+}
+PXUIElementComboBoxInfo;
+
 
 
 
@@ -1144,6 +1156,8 @@ typedef struct PXUIElement_
 	char NameData[128];
 	PXSize NameSize;
 
+	PXBool IsEnabled;
+
 	//------------------------------
 	// References 
 	//------------------------------
@@ -1181,6 +1195,9 @@ typedef struct PXUIElement_
 		PXUIElementSceneRenderInfo SceneRender;
 	};
 #endif
+
+	PXUIElement** ListEEData;
+	PXSize ListEESize;
 
 	PXUIElementType Type;
 	PXWindowID ID;

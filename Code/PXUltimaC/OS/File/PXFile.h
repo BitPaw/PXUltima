@@ -142,6 +142,8 @@ typedef enum PXFileResourceType_
 {
 	PXFileResourceTypeInvalid,
 	PXFileResourceTypeUnkown,
+	PXFileResourceTypeEmpty,
+	PXFileResourceTypeUI,
 	PXFileResourceTypeImage,
 	PXFileResourceTypeSound,
 	PXFileResourceTypeVideo,
@@ -306,6 +308,9 @@ PXFilePathStructure;
 
 PXPublic PXActionResult PXAPI PXFilePathSplitt(const PXText* const fullPath, PXFilePathStructure* const pxFilePathStructure);
 PXPublic PXActionResult PXAPI PXFilePathCombine(const PXText* const fullPath, PXFilePathStructure* const pxFilePathStructure);
+
+
+
 
 PXPublic PXSize PXAPI PXFilePathExtensionGet(const PXText* const filePath, PXText* const extension);
 

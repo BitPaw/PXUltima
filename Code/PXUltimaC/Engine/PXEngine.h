@@ -8,6 +8,7 @@
 #include <OS/GUI/PXGUI.h>
 #include <OS/Audio/PXAudio.h>
 #include <OS/Hardware/PXController.h>
+#include <OS/DataBase/PXDataBase.h>
 
 typedef struct PXEngine_ PXEngine;
 
@@ -397,6 +398,7 @@ typedef struct PXEngine_
 	PXCamera CameraDefault;
 	PXAudio Audio;
 	PXControllerSystem ControllerSystem;
+	PXDataBase DataBase;
 
 	PXKeyBoard KeyBoardCurrentInput;
 	PXMouse MouseCurrentInput;

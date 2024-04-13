@@ -621,91 +621,96 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
         // Solve controller
         PXController* const pxController = &pxEngine->ControllerSystem.DeviceListData[0];
 
-        pxEngine->CameraCurrent->WalkSpeed = 1;
-        pxEngine->CameraCurrent->ViewSpeed = 1;
-
-        PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, pxController->AxisNormalised[0] * pxEngine->CameraCurrent->WalkSpeed, 0, -pxController->AxisNormalised[1] * pxEngine->CameraCurrent->WalkSpeed);
-        PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementView, -pxController->AxisNormalised[2] * pxEngine->CameraCurrent->ViewSpeed, pxController->AxisNormalised[3] * pxEngine->CameraCurrent->ViewSpeed, 0);
-
-
-        // Up
-        if(pxController->ButtonPressedBitList & PXControllerButton1) { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, -1, 0); }
-
-        // Down
-        if(pxController->ButtonPressedBitList & PXControllerButton2) { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, 1, 0); }
-
-        // Update
-        if(pxController->ButtonPressedBitList & PXControllerButton3)
+        if(pxEngine->CameraCurrent)
         {
-            PXLogPrint
-            (
-                PXLoggingWarning,
-                "PX",
-                "Update",
-                "Triggerd by user input"
-            );
+            pxEngine->CameraCurrent->WalkSpeed = 1;
+            pxEngine->CameraCurrent->ViewSpeed = 1;
+
+            PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, pxController->AxisNormalised[0] * pxEngine->CameraCurrent->WalkSpeed, 0, -pxController->AxisNormalised[1] * pxEngine->CameraCurrent->WalkSpeed);
+            PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementView, -pxController->AxisNormalised[2] * pxEngine->CameraCurrent->ViewSpeed, pxController->AxisNormalised[3] * pxEngine->CameraCurrent->ViewSpeed, 0);
 
 
-            pxEngine->UpdateUI = 1;
-        }
+            // Up
+            if(pxController->ButtonPressedBitList & PXControllerButton1) { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, -1, 0); }
 
+            // Down
+            if(pxController->ButtonPressedBitList & PXControllerButton2) { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, 1, 0); }
 
-
-        PXCameraMove(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementWalk);
-        PXCameraRotate(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementView);
-        PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->CounterTimeDelta);
-
-       // PXControllerSystemDebugPrint(pxController);
-
-
-
-
-
-        //---------------------------------------------------------------------------
-
-
-        if (keyboard->Commands & KeyBoardIDShiftLeft)   { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk,  0, -1,  0); }
-        if (keyboard->Letters & KeyBoardIDLetterW)      { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk,  0,  0,  1); }
-        if (keyboard->Letters & KeyBoardIDLetterA)      { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, -1,  0,  0); }
-        if (keyboard->Letters & KeyBoardIDLetterS)      { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk,  0,  0, -1); }
-        if (keyboard->Letters & KeyBoardIDLetterD)      { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk,  1,  0,  0); }
-        if (keyboard->Letters & KeyBoardIDSpace)        { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk,  0,  1,  0); }
-        if (keyboard->Letters & KeyBoardIDLetterF && !pxEngine->InteractionLock)
-        {
-            pxEngine->InteractionLock = PXTrue;
-            PXFunctionInvoke(pxEngine->OnInteract, pxEngine->Owner, pxEngine);
-        }
-        if (!(keyboard->Letters & KeyBoardIDLetterF))
-        {
-            pxEngine->InteractionLock = PXFalse;
-        }
-
-
-        const PXBool hasViewChanged = mouse->Delta[0] != 0 || mouse->Delta[1] != 0;
-        const PXBool hasMoveChanged = mouse->Position[0] != 0 || mouse->Position[1] != 0;
-        const PXBool hasAnyChanged = hasViewChanged || hasMoveChanged;
-
-        if(hasAnyChanged)
-        {
-            pxPlayerMoveInfo.MovementView.X -= mouse->Delta[0];
-            pxPlayerMoveInfo.MovementView.Y += mouse->Delta[1];
-            pxPlayerMoveInfo.ActionCommit = PXTrue; // Always start with a commit, can be canceled
-            pxPlayerMoveInfo.IsWindowInFocus = 1; // PXWindowInteractable(pxWindow);
-
-            PXFunctionInvoke(pxEngine->OnUserUpdate, pxEngine->Owner, pxEngine, &pxPlayerMoveInfo);
-
-            PXMouseInputReset(mouse);
-
-            if(pxPlayerMoveInfo.ActionCommit && pxEngine->CameraCurrent)
+            // Update
+            if(pxController->ButtonPressedBitList & PXControllerButton3)
             {
-                PXCameraMove(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementWalk);
-                PXCameraRotate(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementView);
-                PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->CounterTimeDelta);
-          
-               // printf("[#][OnMouseMove] X:%5.2f Y:%5.2f, %s\n", pxPlayerMoveInfo.MovementView.X, pxPlayerMoveInfo.MovementView.Y, pxEngine->ApplicationName);
+                PXLogPrint
+                (
+                    PXLoggingWarning,
+                    "PX",
+                    "Update",
+                    "Triggerd by user input"
+                );
+
+
+                pxEngine->UpdateUI = 1;
             }
 
-            pxEngine->CounterTimeUser = PXTimeCounterStampGet() - pxEngine->CounterTimeUser;
+
+
+            PXCameraMove(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementWalk);
+            PXCameraRotate(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementView);
+            PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->CounterTimeDelta);
+
+            // PXControllerSystemDebugPrint(pxController);
+
+
+
+
+
+             //---------------------------------------------------------------------------
+
+
+            if(keyboard->Commands & KeyBoardIDShiftLeft) { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, -1, 0); }
+            if(keyboard->Letters & KeyBoardIDLetterW) { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, 0, 1); }
+            if(keyboard->Letters & KeyBoardIDLetterA) { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, -1, 0, 0); }
+            if(keyboard->Letters & KeyBoardIDLetterS) { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, 0, -1); }
+            if(keyboard->Letters & KeyBoardIDLetterD) { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, 1, 0, 0); }
+            if(keyboard->Letters & KeyBoardIDSpace) { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, 1, 0); }
+            if(keyboard->Letters & KeyBoardIDLetterF && !pxEngine->InteractionLock)
+            {
+                pxEngine->InteractionLock = PXTrue;
+                PXFunctionInvoke(pxEngine->OnInteract, pxEngine->Owner, pxEngine);
+            }
+            if(!(keyboard->Letters & KeyBoardIDLetterF))
+            {
+                pxEngine->InteractionLock = PXFalse;
+            }
+
+
+            const PXBool hasViewChanged = mouse->Delta[0] != 0 || mouse->Delta[1] != 0;
+            const PXBool hasMoveChanged = mouse->Position[0] != 0 || mouse->Position[1] != 0;
+            const PXBool hasAnyChanged = hasViewChanged || hasMoveChanged;
+
+            if(hasAnyChanged)
+            {
+                pxPlayerMoveInfo.MovementView.X -= mouse->Delta[0];
+                pxPlayerMoveInfo.MovementView.Y += mouse->Delta[1];
+                pxPlayerMoveInfo.ActionCommit = PXTrue; // Always start with a commit, can be canceled
+                pxPlayerMoveInfo.IsWindowInFocus = 1; // PXWindowInteractable(pxWindow);
+
+                PXFunctionInvoke(pxEngine->OnUserUpdate, pxEngine->Owner, pxEngine, &pxPlayerMoveInfo);
+
+                PXMouseInputReset(mouse);
+
+                if(pxPlayerMoveInfo.ActionCommit && pxEngine->CameraCurrent)
+                {
+                    PXCameraMove(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementWalk);
+                    PXCameraRotate(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementView);
+                    PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->CounterTimeDelta);
+
+                    // printf("[#][OnMouseMove] X:%5.2f Y:%5.2f, %s\n", pxPlayerMoveInfo.MovementView.X, pxPlayerMoveInfo.MovementView.Y, pxEngine->ApplicationName);
+                }
+
+                pxEngine->CounterTimeUser = PXTimeCounterStampGet() - pxEngine->CounterTimeUser;
+        }
+
+        
         }
 
       
@@ -846,21 +851,26 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
             pxGUIElementUpdateInfo.Property = PXUIElementPropertyTextContent;
             pxGUIElementUpdateInfo.Data.Text.Content = pxText.TextA;
 
-           // PXGUIElementUpdate(&pxEngine->GUISystem, &pxGUIElementUpdateInfo, 1u);
+            PXGUIElementUpdate(&pxEngine->GUISystem, &pxGUIElementUpdateInfo, 1u);
         }
 
         if(pxEngine->HasGraphicInterface && pxEngine->Graphic.WindowReference)
         {
+            if(IsWindowEnabled(pxEngine->Graphic.WindowReference->ID))
+            {
 #if 1
-            pxEngine->Graphic.Clear(pxEngine->Graphic.EventOwner, &color);
-            pxEngine->CounterTimeGPU = PXTimeCounterStampGet();
+                pxEngine->Graphic.Clear(pxEngine->Graphic.EventOwner, &color);
+                pxEngine->CounterTimeGPU = PXTimeCounterStampGet();
 
-            PXEngineResourceRenderDefault(pxEngine);
+                PXEngineResourceRenderDefault(pxEngine);
 
-            PXFunctionInvoke(pxEngine->OnRenderUpdate, pxEngine->Owner, pxEngine);
-            pxEngine->CounterTimeGPU = PXTimeCounterStampGet() - pxEngine->CounterTimeGPU;
-            pxEngine->Graphic.SceneDeploy(pxEngine->Graphic.EventOwner);
+                PXFunctionInvoke(pxEngine->OnRenderUpdate, pxEngine->Owner, pxEngine);
+                pxEngine->CounterTimeGPU = PXTimeCounterStampGet() - pxEngine->CounterTimeGPU;
+                pxEngine->Graphic.SceneDeploy(pxEngine->Graphic.EventOwner);        
 #endif
+            }
+
+
         }
     }
 
@@ -893,6 +903,8 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
 
     PXMouseInputPrint(&pxEngine->Window.MouseCurrentInput);
 #endif
+
+    Sleep(1);
 }
 
 PXActionResult PXAPI PXEngineResourceAction(PXEngine* const pxEngine, PXEngineResourceActionInfo* const pxEngineResourceActionInfo)
@@ -1744,11 +1756,22 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
                 PXTextConstructFromAdressA(&pxText, pxEngineResourceCreateInfo->FilePath, PXTextLengthUnkown, PXTextLengthUnkown);
 
                 PXResourceLoad(&pxResourceLoadInfo, &pxText);
+
+
+                PXFilePathStructure pxFilePathStructure;
+
+                PXFilePathSplitt(&pxText, &pxFilePathStructure);
+
+                PXTextCopyA(pxFilePathStructure.FileName.TextA, pxFilePathStructure.FileName.SizeUsed, pxModel->ResourceID.Name, ResourceIDNameLength);
+
             }
 
             // Setup    
             PXMatrix4x4FScaleBy(&pxModel->ModelMatrix, pxModelCreateInfo->Scale);
          
+
+     
+
             pxModel->ShaderProgramReference = pxModelCreateInfo->ShaderProgramReference;
 
             // Register
@@ -2592,11 +2615,20 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
                             2
                         );                      
                     }
+
+                    PXFilePathStructure pxFilePathStructure;
+
+                    PXFilePathSplitt(&pxFileOpenFromPathInfo.Text, &pxFilePathStructure);
+
+                    PXTextCopyA(pxFilePathStructure.FileName.TextA, pxFilePathStructure.FileName.SizeUsed, pxShaderProgram->ResourceID.Name, ResourceIDNameLength);
                 }
 
                 PXFileDestruct(&vertexShaderFile);
                 PXFileDestruct(&fragmentShaderFile);
             }
+
+            pxShaderProgram->ResourceID.PXID = PXEngineGenerateUniqeID(pxEngine);
+            PXDictionaryAdd(&pxEngine->ShaderProgramLookup, &pxShaderProgram->ResourceID.PXID, pxShaderProgram);
 
             break;
         }

@@ -8,6 +8,7 @@
 #include <OS/Hardware/PXKeyBoard.h>
 #include <OS/Async/PXProcess.h>
 #include <OS/Async/PXThread.h>
+#include <OS/File/PXFile.h>
 
 #define UseRawMouseData 1
 #define PXWindowTitleSizeMax 256
@@ -482,6 +483,10 @@ typedef enum PXUIElementProperty_
 	PXUIElementPropertyProgressbarPercentage,
 	PXUIElementPropertyProgressbarBarColor,
 
+	PXUIElementPropertyVisibility,
+
+	PXUIElementPropertyComboBoxAdd,
+
 
 	PXUIElementPropertyItemAdd,
 	PXUIElementPropertyItemDelete,
@@ -609,7 +614,9 @@ typedef struct PXUIElementTreeViewItemInfo_
 	struct PXUIElement_* ItemParent;
 	struct PXUIElement_* TreeView;
 
-	struct PXUIElement_* ElementSource;
+	//struct PXUIElement_* ElementSource;
+	void* OwningObject;
+	PXFileResourceType OwningObjectType;
 
 	PXUIElementTreeViewItemInsertMode InsertMode;
 
@@ -617,6 +624,23 @@ typedef struct PXUIElementTreeViewItemInfo_
 	struct _TREEITEM* ItemHandle;
 }
 PXUIElementTreeViewItemInfo;
+
+
+typedef struct PXUIElementTabPageSingleInfo_
+{
+	PXUIElement** UIElement;
+	char* PageName;
+	PXInt32U ImageID;
+
+}
+PXUIElementTabPageSingleInfo;
+
+typedef struct PXUIElementTabPageInfo_
+{
+	PXUIElementTabPageSingleInfo* TabPageSingleInfoList;
+	PXSize TabPageSingleInfoAmount;
+}
+PXUIElementTabPageInfo;
 
 
 // Behaviour
@@ -640,6 +664,8 @@ typedef union PXGUIElementCreateInfoData_
 	PXUIElementButtonInfo Button;
 	PXUIElementTreeViewItemInfo TreeViewItem;
 	PXUIElementSceneRenderInfo SceneRender;
+	PXUIElementTabPageInfo TabPage;
+	PXUIElementComboBoxInfo ComboBox;
 }
 PXGUIElementCreateInfoData;
 
@@ -689,6 +715,8 @@ typedef struct PXGUIElementUpdateInfo_
 	PXWindow* WindowReference;
 	PXUIElementProperty Property;
 	PXGUIElementCreateInfoData Data;
+
+	PXBool Show;
 }
 PXGUIElementUpdateInfo;
 
@@ -717,6 +745,9 @@ PXPublic void PXAPI PXWindowEventConsumer(PXGUISystem* const pxGUISystem, PXWind
 PXPrivate void PXWindowEventHandler(PXWindow* const pxWindow, const XEvent* const xEvent);
 #elif PXOSWindowsDestop
 PXPublic LRESULT CALLBACK PXWindowEventHandler(const HWND PXWindowsID, const UINT eventID, const WPARAM wParam, const LPARAM lParam);
+
+PXPrivate void PXAPI PXGUIElementChildListEnumerate(PXGUISystem* const pxGUISystem, PXUIElement* const parent, PXBool visible);
+PXPrivate BOOL CALLBACK PXWindowEnumChildProc(HWND hwnd, LPARAM lParam);
 #endif
 
 

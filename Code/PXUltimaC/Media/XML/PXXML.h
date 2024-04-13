@@ -22,7 +22,7 @@ typedef enum PXXMLSymbol_
 PXXMLSymbol;
 
 PXPrivate PXXMLSymbol PXAPI PXXMLPeekLine(const char* const text, const PXSize textSize);
-PXPrivate void PXAPI PXXMLBlockParse(PXDocument* const pxDocument, PXFile* const pxFile);
+PXPrivate void PXAPI PXXMLBlockParse(PXDocument* const pxDocument, PXCompiler* const pxCompiler);
 
 PXPublic PXActionResult PXAPI PXXMLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
 PXPublic PXActionResult PXAPI PXXMLSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);

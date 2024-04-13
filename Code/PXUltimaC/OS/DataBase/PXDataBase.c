@@ -305,6 +305,70 @@ PXActionResult PXAPI PXDataBaseInitialize(PXDataBase* const pxDataBase)
 		PXLibraryGetSymbolListA(&pxDataBase->ODBCLibrary, pxLibraryFuntionEntry, amount);
 	}
 
+
+
+
+
+
+
+	const PXSQLAllocHandle pxSQLAllocHandle = (PXSQLAllocHandle)pxDataBase->AllocHandle;
+	const PXSQLSetEnvAttr pxSQLSetEnvAttr = (PXSQLSetEnvAttr)pxDataBase->SetEnvAttr;
+	const PXSQLSetConnectAttrW pxSQLSetConnectAttrW = (PXSQLSetConnectAttrW)pxDataBase->SetConnectAttrW;
+
+
+	// Allocate environment handle
+	{
+
+		const SQLRETURN result = pxSQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &pxDataBase->EnvironmentID);
+		const PXBool successful = result == SQL_SUCCESS || result == SQL_SUCCESS_WITH_INFO;
+
+		if(!successful)
+		{
+			return PXActionFailedMemoryAllocation;
+		}
+	}
+
+	// Set the ODBC version environment attribute
+	{
+		const SQLRETURN result = pxSQLSetEnvAttr(pxDataBase->EnvironmentID, SQL_ATTR_ODBC_VERSION, (void*)SQL_OV_ODBC3, 0);
+		const PXBool successful = result == SQL_SUCCESS || result == SQL_SUCCESS_WITH_INFO;
+
+		if(!successful)
+		{
+			return PXActionFailedSettingsInvalid;;
+		}
+	}
+
+	// Allocate connection handle
+	{
+		const SQLRETURN result = pxSQLAllocHandle(SQL_HANDLE_DBC, pxDataBase->EnvironmentID, &pxDataBase->ConnectionID);
+		const PXBool successful = result == SQL_SUCCESS || result == SQL_SUCCESS_WITH_INFO;
+
+		if(!successful)
+		{
+			return PXActionFailedMemoryAllocation;
+		}
+	}
+
+	// Set login timeout to 5 seconds
+	{
+		const SQLRETURN resultConnect = pxSQLSetConnectAttrW(pxDataBase->ConnectionID, SQL_LOGIN_TIMEOUT, (SQLPOINTER)5, 0);
+		const PXBool successful = resultConnect == SQL_SUCCESS || resultConnect == SQL_SUCCESS_WITH_INFO;
+
+		if(!successful)
+		{
+			return PXActionFailedSettingsInvalid;
+		}
+	}
+
+
+
+
+
+
+
+
+
 	return PXActionSuccessful;
 }
 
@@ -400,55 +464,6 @@ PXActionResult PXAPI PXDataBaseConnect
 	return PXActionRefusedNotImplemented;
 
 #elif PXOSWindowsDestop
-	const PXSQLAllocHandle pxSQLAllocHandle = (PXSQLAllocHandle)pxDataBase->AllocHandle;
-	const PXSQLSetEnvAttr pxSQLSetEnvAttr = (PXSQLSetEnvAttr)pxDataBase->SetEnvAttr;
-	const PXSQLSetConnectAttrW pxSQLSetConnectAttrW = (PXSQLSetConnectAttrW)pxDataBase->SetConnectAttrW;
-
-
-	// Allocate environment handle
-	{
-
-		const SQLRETURN result = pxSQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &pxDataBase->EnvironmentID);
-		const PXBool successful = result == SQL_SUCCESS || result == SQL_SUCCESS_WITH_INFO;
-
-		if(!successful)
-		{
-			return PXActionFailedMemoryAllocation;
-		}
-	}
-
-	// Set the ODBC version environment attribute
-	{
-		const SQLRETURN result = pxSQLSetEnvAttr(pxDataBase->EnvironmentID, SQL_ATTR_ODBC_VERSION, (void*)SQL_OV_ODBC3, 0);
-		const PXBool successful = result == SQL_SUCCESS || result == SQL_SUCCESS_WITH_INFO;
-
-		if(!successful)
-		{
-			return PXActionFailedSettingsInvalid;;
-		}
-	}
-
-	// Allocate connection handle
-	{
-		const SQLRETURN result = pxSQLAllocHandle(SQL_HANDLE_DBC, pxDataBase->EnvironmentID, &pxDataBase->ConnectionID);
-		const PXBool successful = result == SQL_SUCCESS || result == SQL_SUCCESS_WITH_INFO;
-
-		if(!successful)
-		{
-			return PXActionFailedMemoryAllocation;
-		}
-	}
-
-	// Set login timeout to 5 seconds
-	{
-		const SQLRETURN resultConnect = pxSQLSetConnectAttrW(pxDataBase->ConnectionID, SQL_LOGIN_TIMEOUT, (SQLPOINTER)5, 0);
-		const PXBool successful = resultConnect == SQL_SUCCESS || resultConnect == SQL_SUCCESS_WITH_INFO;
-
-		if(!successful)
-		{
-			return PXActionFailedSettingsInvalid;
-		}
-	}
 
 	PXDataBaseScanForDrivers(pxDataBase);
 
@@ -641,21 +656,61 @@ void PXAPI PXDataBaseScanForDrivers(PXDataBase* const pxDataBase)
 
 #if OSUnix
 #elif PXOSWindowsDestop
+	const PXSQLDriversA pxSQLDriversA = (PXSQLDriversA)pxDataBase->DriversA;
 	SQLUSMALLINT direction = SQL_FETCH_FIRST;
-	unsigned char finished = 0;
+	PXBool finished = PXFalse;
+
+	PXSize totalAmountOfData = 0;
+	PXSize totalAmountOfDataB = 0;
+
+	PXSize dataIndex = 0;
+	PXSize dataCursor = 0;
+
+	wchar_t driverDescription[1024];
+	const SQLSMALLINT driverDescriptionSize = sizeof(driverDescription) / sizeof(wchar_t);
+	SQLSMALLINT driverDescriptionSizeWritten = 0;
+
+	wchar_t driverAttributes[1024];
+	const SQLSMALLINT driverAttributesSize = sizeof(driverAttributes) / sizeof(wchar_t);
+	SQLSMALLINT driverAttributesSizeWritten = 0;
+
+	pxDataBase->DriverListAmount = 0;
+
+	for(;;)
+	{
+		const SQLRETURN resultDriver = pxSQLDriversA
+		(
+			pxDataBase->EnvironmentID,
+			direction,
+			driverDescription,
+			driverDescriptionSize,
+			&driverDescriptionSizeWritten,
+			driverAttributes,
+			driverAttributesSize,
+			&driverAttributesSizeWritten
+		);
+
+		totalAmountOfData += driverDescriptionSizeWritten;
+		totalAmountOfDataB += driverAttributesSizeWritten;
+
+		if(SQL_SUCCESS != resultDriver)
+		{		
+			break;	
+		}
+
+		direction = SQL_FETCH_NEXT; // [!] Important [!] - Mark to go next.
+
+		++(pxDataBase->DriverListAmount);
+	}
+
+	finished = PXFalse;
+	
+	PXNewListZerod(char*, pxDataBase->DriverListAmount, &pxDataBase->DriverList, PXNull);
+	PXNewListZerod(char, totalAmountOfData, &pxDataBase->DriverListData, PXNull);
 
 	while(!finished)
 	{
-		wchar_t driverDescription[1024];
-		const SQLSMALLINT driverDescriptionSize = sizeof(driverDescription) / sizeof(wchar_t);
-		SQLSMALLINT driverDescriptionSizeWritten = 0;
-
-		wchar_t driverAttributes[1024];
-		const SQLSMALLINT driverAttributesSize = sizeof(driverAttributes) / sizeof(wchar_t);
-		SQLSMALLINT driverAttributesSizeWritten = 0;
-
-		const PXSQLDriversW pxSQLDriversW = (PXSQLDriversW)pxDataBase->DriversW;
-		const SQLRETURN resultDriver = pxSQLDriversW
+		const SQLRETURN resultDriver = pxSQLDriversA
 		(
 			pxDataBase->EnvironmentID,
 			direction,
@@ -671,6 +726,11 @@ void PXAPI PXDataBaseScanForDrivers(PXDataBase* const pxDataBase)
 		{
 			case SQL_SUCCESS_WITH_INFO:
 			case SQL_SUCCESS: // Do nothing and go next
+			{
+				pxDataBase->DriverList[dataIndex] = &pxDataBase->DriverListData[dataCursor];
+
+				dataCursor += PXTextCopyA(driverDescription, driverDescriptionSizeWritten, &pxDataBase->DriverListData[dataCursor], totalAmountOfData - dataCursor) + 1;
+
 				direction = SQL_FETCH_NEXT; // [!] Important [!] - Mark to go next.
 
 				if(pxDataBase->OnDriverDetectedEvent)
@@ -678,9 +738,11 @@ void PXAPI PXDataBaseScanForDrivers(PXDataBase* const pxDataBase)
 					pxDataBase->OnDriverDetectedEvent(driverDescription, driverAttributes);
 				}
 
+				++dataIndex;
+
 				//printf("| %-57ls | %-13ls |\n", driverDescription, driverAttributes);
 				break;
-
+			}
 			default:
 			case SQL_ERROR: // Unkown error
 			case SQL_INVALID_HANDLE: // Environment handle was invalid

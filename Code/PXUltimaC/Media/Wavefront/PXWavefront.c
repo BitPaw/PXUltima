@@ -85,129 +85,114 @@ PXWavefrontLineType PXAPI PXWavefrontPeekLine(const void* line, const PXSize siz
     return PXWavefrontLineInvalid;
 }
 
-void PXAPI PXWavefrontCompileError(PXCompilerSymbolEntry* const compilerSymbolEntry, unsigned int expectedID)
+void PXAPI PXWavefrontFaceLineParse(PXCompiler* const pxCompiler, PXInt32U* const vertexData)
 {
-    char textBuffer[32];
-
-    PXTextCopyA(compilerSymbolEntry->Source, 20, textBuffer, 32);
-
-    PXLogPrint
-    (
-        PXLoggingError,
-        "Wavefront",
-        "Compile",
-        "At line <%i> at <%i>, unexpected symbol.\n%s",
-        compilerSymbolEntry->Line,
-        compilerSymbolEntry->Coloum,
-        textBuffer        
-    );
-}
-
-void PXAPI PXWavefrontFaceLineParse(PXFile* const tokenSteam, PXInt32U* const vertexData)
-{
-    PXCompilerSymbolEntry pxCompilerSymbolEntry;
-
-    PXCompilerSymbolEntryPeek(tokenSteam, &pxCompilerSymbolEntry); // read token, expect int
-
-    const PXBool isExpectedInteger = PXCompilerSymbolLexerInteger == pxCompilerSymbolEntry.ID; // is int`?
+    const PXBool isExpectedInteger = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerInteger);
 
     if(!isExpectedInteger) // If not int => Error
     {
-        PXLogPrint
-        (
-            PXLoggingError,
-            "Wavefront",
-            "Parse",
-            "Faceline element invalid. Line <%i>",
-            pxCompilerSymbolEntry.Line
-        );
-
         return;
     }
-
-    PXCompilerSymbolEntryExtract(tokenSteam, &pxCompilerSymbolEntry); // read token, expect int
+     
+    PXCompilerSymbolEntryForward(pxCompiler); // Consume int
 
     // Save 1st value
-    vertexData[0] = pxCompilerSymbolEntry.DataI32U;
+    vertexData[0] = pxCompiler->SymbolEntryCurrent.DataI32U;
 
-    PXCompilerSymbolEntryPeek(tokenSteam, &pxCompilerSymbolEntry); // Peek for next token
 
-    switch(pxCompilerSymbolEntry.ID)
+    // Check
+    {
+        const PXCompilerSymbolLexer pxCompilerSymbolLexerList[2] =
+        {
+            PXCompilerSymbolLexerInteger,
+            PXCompilerSymbolLexerSlash
+        };
+
+        const PXBool isValid = PXCompilerSymbolEntryPeekCheckList(pxCompiler, pxCompilerSymbolLexerList, 2);
+
+        if(!isValid)
+        {
+            return;
+        }
+    }
+
+    PXCompilerSymbolEntryPeek(pxCompiler); // Peek for next token
+
+    switch(pxCompiler->SymbolEntryCurrent.ID)
     {
         case PXCompilerSymbolLexerInteger: // is syntax A
         {
-            PXCompilerSymbolEntryExtract(tokenSteam, &pxCompilerSymbolEntry); // Peek sucessful skip to 2nd integer
+            PXCompilerSymbolEntryForward(pxCompiler); // Peek sucessful skip to 2nd integer
 
-            vertexData[1] = pxCompilerSymbolEntry.DataI32U; // Save 2nd value
+            vertexData[1] = pxCompiler->SymbolEntryCurrent.DataI32U; // Save 2nd value
 
-            PXCompilerSymbolEntryPeek(tokenSteam, &pxCompilerSymbolEntry); // Get 3rd integer
-
-            const PXBool isExpectedThridInteger = PXCompilerSymbolLexerInteger == pxCompilerSymbolEntry.ID;
+            const PXBool isExpectedThridInteger = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerInteger); // Get 3rd integer
 
             if(!isExpectedThridInteger)
             {
                 // Error;
+                return;
             }
 
-            PXCompilerSymbolEntryExtract(tokenSteam, &pxCompilerSymbolEntry);
-            vertexData[2] = pxCompilerSymbolEntry.DataI32U;
+            PXCompilerSymbolEntryForward(pxCompiler);
+
+            vertexData[2] = pxCompiler->SymbolEntryCurrent.DataI32U;
 
             break;
         }
         case PXCompilerSymbolLexerSlash: // Syntax B or C
         {
-            PXCompilerSymbolEntryExtract(tokenSteam, &pxCompilerSymbolEntry); // Peek sucessful, remove the first '/'
+            PXCompilerSymbolEntryForward(pxCompiler); // Peek sucessful, remove the first '/'
 
-            PXCompilerSymbolEntryPeek(tokenSteam, &pxCompilerSymbolEntry); // Next token
+            PXCompilerSymbolEntryPeek(pxCompiler); // Next token
 
-            switch(pxCompilerSymbolEntry.ID)
+            switch(pxCompiler->SymbolEntryCurrent.ID)
             {
                 case PXCompilerSymbolLexerSlash: // Syntax: "xx//xx"
                 {
-                    PXCompilerSymbolEntryExtract(tokenSteam, &pxCompilerSymbolEntry); // Remove the '/'
-                    PXCompilerSymbolEntryPeek(tokenSteam, &pxCompilerSymbolEntry); // Next token, expect int
-                    const PXBool isThridToken = PXCompilerSymbolLexerInteger == pxCompilerSymbolEntry.ID; // is int?
+                    PXCompilerSymbolEntryForward(pxCompiler);  // Remove the '/'
+
+                    const PXBool isThridToken = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerInteger); // Next token, expect int
 
                     if(!isThridToken) // if not int => error
                     {
                         // Error
+                        return;
                     }
                  
-                    PXCompilerSymbolEntryExtract(tokenSteam, &pxCompilerSymbolEntry);    // Consume 3rd number
+                    PXCompilerSymbolEntryForward(pxCompiler); // Consume 3rd number
                
-                    vertexData[2] = pxCompilerSymbolEntry.DataI32U;      // Store 3rd number
+                    vertexData[2] = pxCompiler->SymbolEntryCurrent.DataI32U;      // Store 3rd number
 
                     break;
                 }
                 case PXCompilerSymbolLexerInteger: // Is syntax B
                 {
-                    PXCompilerSymbolEntryExtract(tokenSteam, &pxCompilerSymbolEntry); // Peek sucessful, remove the secound value
+                    PXCompilerSymbolEntryForward(pxCompiler); // Peek sucessful, remove the secound value
 
-                    vertexData[1] = pxCompilerSymbolEntry.DataI32U; // Save value
+                    vertexData[1] = pxCompiler->SymbolEntryCurrent.DataI32U; // Save value
 
                     // Exptect 2nd '/'
                     {
-                        PXCompilerSymbolEntryPeek(tokenSteam, &pxCompilerSymbolEntry); // Peek, expect '/'
-                        const PXBool isSlash = PXCompilerSymbolLexerSlash == pxCompilerSymbolEntry.ID;
+                        const PXBool isSlash = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerSlash); // Peek, expect '/'
 
                         if(isSlash)
                         {
-                            PXCompilerSymbolEntryExtract(tokenSteam, &pxCompilerSymbolEntry); // remove '/'
+                            PXCompilerSymbolEntryForward(pxCompiler);  // remove '/'
 
                             // Try get 3nd integer
                             {
-                                PXCompilerSymbolEntryPeek(tokenSteam, &pxCompilerSymbolEntry); // Next token
-
-                                const PXBool isSecoundToken = PXCompilerSymbolLexerInteger == pxCompilerSymbolEntry.ID;
+                                const PXBool isSecoundToken = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerInteger);
 
                                 if(!isSecoundToken)
                                 {
                                     // Error
+                                    return;
                                 }
 
-                                vertexData[2] = pxCompilerSymbolEntry.DataI32U;
-
-                                PXCompilerSymbolEntryExtract(tokenSteam, &pxCompilerSymbolEntry);
+                                vertexData[2] = pxCompiler->SymbolEntryCurrent.DataI32U;
+            
+                                PXCompilerSymbolEntryForward(pxCompiler);
                             }
                         }
                     }
@@ -223,11 +208,6 @@ void PXAPI PXWavefrontFaceLineParse(PXFile* const tokenSteam, PXInt32U* const ve
 
             break;
         }
-        default:
-        {
-            // Invalid syntax
-            break;
-        }
     }
 
     for(PXSize i = 0; i < 3u; ++i)
@@ -241,7 +221,12 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
     PXModel* const pxModel = (PXModel*)pxResourceLoadInfo->Target;
 
     PXFile tokenSteam;
-    PXSize errorCounter = 0;
+    PXClear(PXFile, &tokenSteam);
+
+    PXCompiler pxCompiler;
+    PXClear(PXCompiler, &pxCompiler);
+    pxCompiler.FileInput = pxResourceLoadInfo->FileReference;
+    pxCompiler.FileCache = &tokenSteam;
 
     PXSize drawoffsetCounter = 0;
     PXSize drawCurrentIndex = 0;
@@ -271,7 +256,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
 
     PXInt32U currentTotalOffset = 0;
 
-    PXFileOpenTemporal(&tokenSteam, pxResourceLoadInfo->FileReference->DataSize * 16);
+    
 
     PXLogPrint
     (
@@ -293,15 +278,14 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
     // Lexer - Level I
     {
         PXCompilerSettings compilerSettings;
-
-        PXCompilerSettingsConstruct(&compilerSettings);
+        PXClear(PXCompilerSettings, &compilerSettings);
 
         compilerSettings.TryAnalyseTypes = PXYes;
         compilerSettings.IntrepredTabsAsWhiteSpace = PXYes;
         compilerSettings.CommentSingleLineSize = 1u;
         compilerSettings.CommentSingleLine = "#";
 
-        PXCompilerLexicalAnalysis(pxResourceLoadInfo->FileReference, &tokenSteam, &compilerSettings); // Raw-File-Input -> Lexer tokens
+        PXCompilerLexicalAnalysis(&pxCompiler, &compilerSettings); // Raw-File-Input -> Lexer tokens
     }
 
     // Stage - 1 - Analyse file
@@ -316,17 +300,15 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
 
     while (!PXFileIsAtEnd(&tokenSteam))
     {
-        PXCompilerSymbolEntry compilerSymbolEntry;
+        PXCompilerSymbolEntryExtract(&pxCompiler); // First in line token
 
-        PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // First in line token
-
-        const PXWavefrontLineType objPeekLine = PXWavefrontPeekLine(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+        const PXWavefrontLineType objPeekLine = PXWavefrontPeekLine(pxCompiler.SymbolEntryCurrent.Source, pxCompiler.SymbolEntryCurrent.Size);
 
         switch (objPeekLine)
         {
             case PXWavefrontLineSmoothShading:
             {
-                PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Expect a name.
+                PXCompilerSymbolEntryExtract(&pxCompiler); // Expect a name.
 
                 // PXFileWriteI8U(outputStream, PXCompilerSymbolLexerInteger);
                 // PXFileWriteI32U(outputStream, compilerSymbolEntry.DataI32U);
@@ -341,12 +323,11 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
                 PXText pxTextElement;
                 PXTextConstructBufferA(&pxTextElement, 260);
 
-                const PXBool isString = PXCompilerParseStringUntilNewLine(&tokenSteam, &pxTextElement);
+                const PXBool isString = PXCompilerParseStringUntilNewLine(&pxCompiler, &pxTextElement);
 
                 if (!isString)
                 {
-                    ++errorCounter;
-                    PXWavefrontCompileError(&compilerSymbolEntry, PXCompilerSymbolLexerGenericElement);
+                    //++errorCounter;
                     break;
                 }
 
@@ -379,7 +360,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
                 PXSize valuesExpected = 16;
                 float vector[4] = { -1, -1, -1, -1 };
 
-                const PXBool listParsed = PXCompilerParseFloatList(&tokenSteam, vector, valuesExpected, &valuesDetected);
+                const PXBool listParsed = PXCompilerParseFloatList(&pxCompiler, vector, valuesExpected, &valuesDetected);
 
                 // Export
                 {
@@ -413,7 +394,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
             }
             case PXWavefrontLineFaceElement:
             {
-                const PXSize lineStart = compilerSymbolEntry.Line;
+                const PXSize lineStart = pxCompiler.SymbolEntryCurrent.Line;
                 PXSize lineCurrent = lineStart;
 
                 PXBool isDone = PXFalse;
@@ -422,14 +403,14 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
                 {
                     PXInt32U vertexData[3] = { 0, 0, 0 };
 
-                    PXWavefrontFaceLineParse(&tokenSteam, vertexData); // Get the data
+                    PXWavefrontFaceLineParse(&pxCompiler, vertexData); // Get the data
 
                     counterVertexMaxID = PXMathMaximumIU(counterVertexMaxID, vertexData[0]);
                     ++counterIndex;
 
-                    PXCompilerSymbolEntryPeek(&tokenSteam, &compilerSymbolEntry); // check what line we are in
+                    PXCompilerSymbolEntryPeek(&pxCompiler); // check what line we are in
 
-                    lineCurrent = compilerSymbolEntry.Line; // Update current line
+                    lineCurrent = pxCompiler.SymbolEntryCurrent.Line; // Update current line
 
                     isDone = PXFileIsAtEnd(&tokenSteam) || (lineStart != lineCurrent);
                 } 
@@ -439,14 +420,13 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
             }
             default: // Error
             {
-                ++errorCounter;
-                PXWavefrontCompileError(&compilerSymbolEntry, PXCompilerSymbolLexerGenericElement);
+               // ++errorCounter;       
 
                 do
                 {
-                    PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
+                    PXCompilerSymbolEntryExtract(&pxCompiler);
                 }
-                while (compilerSymbolEntry.ID != PXCompilerSymbolLexerNewLine);
+                while (pxCompiler.SymbolEntryCurrent.ID != PXCompilerSymbolLexerNewLine);
 
                 break;
             }
@@ -562,17 +542,15 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
     
     while (!PXFileIsAtEnd(&tokenSteam))
     {
-        PXCompilerSymbolEntry compilerSymbolEntry;
+        PXCompilerSymbolEntryExtract(&pxCompiler);
 
-        PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
-
-        const PXWavefrontLineType objPeekLine = PXWavefrontPeekLine(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+        const PXWavefrontLineType objPeekLine = PXWavefrontPeekLine(pxCompiler.SymbolEntryCurrent.Source, pxCompiler.SymbolEntryCurrent.Size);
 
         switch (objPeekLine)
         {
             case PXWavefrontLineSmoothShading:
             {
-                PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // Expect a name .
+                PXCompilerSymbolEntryExtract(&pxCompiler); // Expect a name .
 
                 //PXFileWriteI8U(outputStream, PXCompilerSymbolLexerInteger);
                 //PXFileWriteI32U(outputStream, compilerSymbolEntry.DataI32U);
@@ -587,12 +565,11 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
                 PXText materialFileName;
                 PXTextConstructNamedBufferA(&materialFileName, materialFileNameBuffer, PXPathSizeMax);
 
-                const PXBool isString = PXCompilerParseStringUntilNewLine(&tokenSteam, &materialFileName);
+                const PXBool isString = PXCompilerParseStringUntilNewLine(&pxCompiler, &materialFileName);
 
                 if (!isString)
                 {
-                    ++errorCounter;
-                    PXWavefrontCompileError(&compilerSymbolEntry, PXCompilerSymbolLexerGenericElement);
+                   // ++errorCounter;
                     break;
                 }
 
@@ -672,7 +649,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
                 PXSize valuesExpected = 16;
                 float vector[16] = { -1, -1, -1, -1 };
 
-                const PXBool listParsed = PXCompilerParseFloatList(&tokenSteam, vector, valuesExpected, &valuesDetected);
+                const PXBool listParsed = PXCompilerParseFloatList(&pxCompiler, vector, valuesExpected, &valuesDetected);
 
                 // Export
                 {
@@ -725,7 +702,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
                 PXSize cornerPoints = 0;
 
 
-                const PXSize lineStart = compilerSymbolEntry.Line;
+                const PXSize lineStart = pxCompiler.SymbolEntryCurrent.Line;
                 PXSize lineCurrent = lineStart;
 
                 PXBool isDone = PXFalse;
@@ -734,7 +711,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
                 {
                     PXInt32U vertexData[3] = { 0, 0, 0 };
 
-                    PXWavefrontFaceLineParse(&tokenSteam, vertexData); // Get the data
+                    PXWavefrontFaceLineParse(&pxCompiler, vertexData); // Get the data
 
        
                     const PXSize dataSize = pxModel->IndexBuffer.IndexTypeSize;
@@ -783,9 +760,9 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
 
 
 
-                    PXCompilerSymbolEntryPeek(&tokenSteam, &compilerSymbolEntry); // check what line we are in
+                    PXCompilerSymbolEntryPeek(&pxCompiler); // check what line we are in
 
-                    lineCurrent = compilerSymbolEntry.Line; // Update current line
+                    lineCurrent = pxCompiler.SymbolEntryCurrent.Line; // Update current line
 
                     isDone = PXFileIsAtEnd(&tokenSteam) || (lineStart != lineCurrent);
                 } 
@@ -796,14 +773,13 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
             }
             default: // Error
             {
-                ++errorCounter;
-                PXWavefrontCompileError(&compilerSymbolEntry, PXCompilerSymbolLexerGenericElement);
-
+              //  ++errorCounter;
+   
                 do
                 {
-                    PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
+                    PXCompilerSymbolEntryExtract(&pxCompiler);
                 }
-                while (compilerSymbolEntry.ID != PXCompilerSymbolLexerNewLine);
+                while (pxCompiler.SymbolEntryCurrent.ID != PXCompilerSymbolLexerNewLine);
 
                 break;
             }
@@ -825,10 +801,10 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
     );
 
 
-    if (errorCounter)
-    {
-        return PXActionCompilingError;
-    }
+   // if (errorCounter)
+   // {
+   //     return PXActionCompilingError;
+   // }
 
     if (!requireToCalculateNormals)
     {

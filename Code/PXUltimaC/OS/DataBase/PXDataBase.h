@@ -187,6 +187,10 @@ typedef struct PXDataBase_
     void* ConnectionID;
 #endif	
 
+    char* DriverListData;
+    char** DriverList; // Its a single line of text only beeing seperated by a \0
+    PXSize DriverListAmount;
+
     ConnectedEvent OnConnectedEvent;
     DriverDetectedEvent OnDriverDetectedEvent;
     ResultEvent OnResultEvent;
