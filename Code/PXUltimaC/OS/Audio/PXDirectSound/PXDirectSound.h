@@ -128,4 +128,16 @@ PXPublic PXActionResult PXAPI PXDirectSoundDeviceRestart(PXAudioDirectSound* con
 PXPublic PXActionResult PXAPI PXDirectSoundDeviceStop(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice);
 PXPublic PXActionResult PXAPI PXDirectSoundDevicePause(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice);
 
+
+
+
+PXPublic PXActionResult PXAPI PXDirectSoundEffectEnable(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice);
+
+
+PXPublic PXActionResult PXAPI PXDirectSoundEffectUpdate(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, PXAudioEffect* const pxAudioEffect);
+
+
+
+
+
 #endif

@@ -1,6 +1,5 @@
 #include "PXMultiMedia.h"
 
-#if PXAudioSystemWindowsMultimediaEnabled
 #if WindowsAtleastVista && 00
 #include <mmeapi.h> // Header should be found under XP build but it is not.
 #else 
@@ -902,5 +901,3 @@ PXActionResult PXAPI PXMultiMediaDeviceVolumeSetIndividual(PXAudioMultiMedia* co
 
 	return audioResult;
 }
-
-#endif

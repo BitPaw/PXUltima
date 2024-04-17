@@ -904,7 +904,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
     PXMouseInputPrint(&pxEngine->Window.MouseCurrentInput);
 #endif
 
-    Sleep(1);
+   // Sleep(1);
 }
 
 PXActionResult PXAPI PXEngineResourceAction(PXEngine* const pxEngine, PXEngineResourceActionInfo* const pxEngineResourceActionInfo)

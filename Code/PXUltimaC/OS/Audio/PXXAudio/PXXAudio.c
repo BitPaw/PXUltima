@@ -70,7 +70,28 @@ PXActionResult PXAPI PXXAudioInitialize(PXAudioXSystem* const pxAudioXSystem, PX
 			0,
 			0,
 			0
-		);*/
+		);
+		
+		
+
+				pxAudio->Initialize = PXXAudioInitialize;
+			pxAudio->DeviceAmount = PXXAudioDeviceAmount;
+			pxAudio->DeviceFetch = PXXAudioDeviceFetch;
+			pxAudio->DeviceFetchAll = PXXAudioDeviceFetchAll;
+			pxAudio->DeviceOpen = PXXAudioDeviceOpen;
+			pxAudio->DeviceClose = PXXAudioDeviceClose;
+			pxAudio->DeviceLoad = PXXAudioDeviceLoad;
+			pxAudio->DevicePitchIncrease = PXXAudioDevicePitchIncrease;
+			pxAudio->DevicePitchSet = PXXAudioDevicePitchSet;
+			pxAudio->DevicePitchReduce = PXXAudioDevicePitchReduce;
+			pxAudio->DeviceVolumeGet = PXXAudioDeviceVolumeGet;
+			pxAudio->DeviceVolumeSetEqual = PXXAudioDeviceVolumeSetEqual;
+			pxAudio->DeviceVolumeSetIndividual = PXXAudioDeviceVolumeSetIndividual;
+			pxAudio->DeviceStart = PXXAudioDeviceStart;
+			pxAudio->DeviceStop = PXXAudioDeviceStop;
+			pxAudio->DevicePause = PXXAudioDevicePause;
+		
+		*/
 	}
 
 	return PXActionRefusedNotImplemented;

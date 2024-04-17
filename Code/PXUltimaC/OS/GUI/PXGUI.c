@@ -988,15 +988,19 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
 #endif
 
        // case WM_PAINT:
+        case WM_CTLCOLORMSGBOX:
         case WM_CTLCOLOREDIT:
+        case WM_CTLCOLORLISTBOX:
         case WM_CTLCOLORBTN:
+        case WM_CTLCOLORDLG:
+        case WM_CTLCOLORSCROLLBAR:
         case WM_CTLCOLORSTATIC:
         {
             // HWND windowFocusedHandle = (HWND)GetFocus();;
             HWND windowHandleNow = (HWND)lParam;
             HDC hdc = (HDC)wParam;
 
-#if 0
+#if 1
             PXLogPrint
             (
                 PXLoggingInfo,
@@ -2193,7 +2197,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
         case PXUIElementTypeTabControll:
         {
             pxGUIElementCreateInfo->WindowsClassName = WC_TABCONTROL;
-            pxGUIElementCreateInfo->WindowsStyleFlags |= WS_CLIPSIBLINGS;
+            pxGUIElementCreateInfo->WindowsStyleFlags |= WS_CLIPSIBLINGS | TCS_BUTTONS;
             break;
         }
         case PXUIElementTypeToggle:
@@ -2722,6 +2726,20 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
         }
         case PXUIElementTypeTrackBar:
         {
+            HDC dc = GetDC(pxUIElement->ID);
+
+
+            SetTextColor(dc, RGB(255, 0, 0));
+            SetBkColor(dc, RGB(0, 0, 255));
+
+           // SendMessageA(pxUIElement->ID, SET_BACKGROUND_COLOR, RGB(30, 30, 30), RGB(30, 30, 30));
+
+           // SET_BACKGROUND_COLOR;
+
+           // TreeView_SetBkColor(pxUIElement->ID, RGB(30, 30, 30));
+
+         //   TreeView_SetTextColor(pxUIElement->ID, RGB(200, 200, 200));
+
 
             break;
         }

@@ -378,6 +378,8 @@ void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source,
 		vfprintf(stdout, bufferColor.TextA, args);
 
 		va_end(args);
+
+		//OutputDebugStringA();
 	}
 
 	if (PXLoggingError == loggingType)

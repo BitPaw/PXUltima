@@ -35,55 +35,28 @@ PXActionResult PXAPI PXAudioInitialize(PXAudio* const pxAudio, const PXAudioSyst
 			pxAudio->SystemReference = &pxAudio->MultiMedia;
 			break;
 		}
-#endif
-
-#if PXAudioSystemWindowsMultimediaEnabled
 		case PXAudioSystemWindowsMultiMedia:
 		{
 			pxAudio->Initialize = (PXAudioInitializeFunction)PXMultiMediaInitialize;
 			pxAudio->SystemReference = &pxAudio->MultiMedia;
 			break;
 		}
-#endif
-
-#if PXAudioSystemWindowsDirectSoundEnable
 		case PXAudioSystemWindowsDirectSound:
 		{
 			pxAudio->Initialize = (PXAudioInitializeFunction)PXDirectSoundInitialize;
 			pxAudio->SystemReference = &pxAudio->DirectSound;
 			break;
 		}
-#endif
-
-#if PXAudioSystemWindowsIAudioEnable
 		case PXAudioSystemWindowsIAudio:
 		{
 			pxAudio->Initialize = (PXAudioInitializeFunction)PXIAudioInitialize;
-			
+			pxAudio->SystemReference = &pxAudio->XSystem;
 			break;
 		}
-#endif
-
-#if PXAudioSystemWindowsXAudioEnable
 		case PXAudioSystemWindowsXAudio:
 		{
-			pxAudio->Initialize = PXXAudioInitialize;
-			pxAudio->DeviceAmount = PXXAudioDeviceAmount;
-			pxAudio->DeviceFetch = PXXAudioDeviceFetch;
-			pxAudio->DeviceFetchAll = PXXAudioDeviceFetchAll;
-			pxAudio->DeviceOpen = PXXAudioDeviceOpen;
-			pxAudio->DeviceClose = PXXAudioDeviceClose;
-			pxAudio->DeviceLoad = PXXAudioDeviceLoad;
-			pxAudio->DevicePitchIncrease = PXXAudioDevicePitchIncrease;
-			pxAudio->DevicePitchSet = PXXAudioDevicePitchSet;
-			pxAudio->DevicePitchReduce = PXXAudioDevicePitchReduce;
-			pxAudio->DeviceVolumeGet = PXXAudioDeviceVolumeGet;
-			pxAudio->DeviceVolumeSetEqual = PXXAudioDeviceVolumeSetEqual;
-			pxAudio->DeviceVolumeSetIndividual = PXXAudioDeviceVolumeSetIndividual;
-			pxAudio->DeviceStart = PXXAudioDeviceStart;
-			pxAudio->DeviceStop = PXXAudioDeviceStop;
-			pxAudio->DevicePause = PXXAudioDevicePause;
-
+			//pxAudio->Initialize = (PXAudioInitializeFunction)PXXAudioInitialize;
+			//pxAudio->SystemReference = &pxAudio->XSystem;
 			break;
 		}
 #endif

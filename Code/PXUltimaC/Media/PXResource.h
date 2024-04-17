@@ -1394,7 +1394,7 @@ typedef struct PXAudioDevice_
 	void* FXFlanger;
 	void* FXEcho;
 	void* FXDistortion;
-	void* FXCompressor8;
+	void* FXCompressor;
 	void* FXParamEq;
 	void* FXWavesReverb;
 	void* FXI3DL2Reverb;

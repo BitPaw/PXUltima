@@ -167,6 +167,145 @@ typedef PXActionResult(PXAPI* PXAudioDeviceRestartFunction)(void* const audioAPI
 typedef PXActionResult(PXAPI* PXAudioDeviceResetFunction)(void* const audioAPI, PXAudioDevice* const pxAudioDevice);
 
 
+// Effects
+
+typedef enum PXAudioEffectType_
+{
+	PXAudioEffectTypeInvalid,
+	PXAudioEffectTypeChorus,
+	PXAudioEffectTypeCompressor,
+	PXAudioEffectTypeDistortion,
+	PXAudioEffectTypeEcho,
+	PXAudioEffectTypeFlanger,
+	PXAudioEffectTypeGargle,
+	PXAudioEffectTypeInteractive3DLevel2Reverb,
+	PXAudioEffectTypeParamEq,
+	PXAudioEffectTypeWavesReverb
+}
+PXAudioEffectType;
+
+
+typedef struct PXAudioEffectChorus_
+{
+	float       WetDryMix;
+	float       Depth;
+	float       Feedback;
+	float       Frequency;
+	float        Waveform;          // LFO shape; DSFXCHORUS_WAVE_xxx
+	float       Delay;
+	float        Phase;
+}
+PXAudioEffectChorus;
+
+typedef struct PXAudioEffectCompressor_
+{
+	float Gain;
+	float Attack;
+	float Release;
+	float Threshold;
+	float Ratio;
+	float Predelay;
+}
+PXAudioEffectCompressor;
+
+typedef struct PXAudioEffectDistortion_
+{
+	float Gain;
+	float Edge;
+	float PostEQCenterFrequency;
+	float PostEQBandwidth;
+	float PreLowpassCutoff;
+}
+PXAudioEffectDistortion;
+
+typedef struct PXAudioEffectEcho_
+{
+	float WetDryMix;
+	float Feedback;
+	float LeftDelay;
+	float RightDelay;
+	PXBool PanDelay;
+}
+PXAudioEffectEcho;
+
+typedef struct PXAudioEffectFlanger_
+{
+	FLOAT       WetDryMix;
+	FLOAT       Depth;
+	FLOAT       Feedback;
+	FLOAT       Frequency;
+	LONG        Waveform;
+	FLOAT       Delay;
+	LONG        Phase;
+}
+PXAudioEffectFlanger;
+
+typedef struct PXAudioEffectGargle_
+{
+	DWORD       dwRateHz;               // Rate of modulation in hz
+	DWORD       dwWaveShape;            // DSFXGARGLE_WAVE_xxx
+}
+PXAudioEffectGargle;
+
+typedef struct PXAudioEffectParamEq_
+{
+	FLOAT Center;
+	FLOAT Bandwidth;
+	FLOAT Gain;
+}
+PXAudioEffectParamEq;
+
+typedef struct PXAudioEffectI3DL2Reverb_
+{
+	LONG    Room;                  // [-10000, 0]      default: -1000 mB
+	LONG    RoomHF;                // [-10000, 0]      default: 0 mB
+	FLOAT   RoomRolloffFactor;    // [0.0, 10.0]      default: 0.0
+	FLOAT   DecayTime;            // [0.1, 20.0]      default: 1.49s
+	FLOAT   DecayHFRatio;         // [0.1, 2.0]       default: 0.83
+	LONG    Reflections;           // [-10000, 1000]   default: -2602 mB
+	FLOAT   ReflectionsDelay;     // [0.0, 0.3]       default: 0.007 s
+	LONG    Reverb;                // [-10000, 2000]   default: 200 mB
+	FLOAT   ReverbDelay;          // [0.0, 0.1]       default: 0.011 s
+	FLOAT   Diffusion;            // [0.0, 100.0]     default: 100.0 %
+	FLOAT   Density;              // [0.0, 100.0]     default: 100.0 %
+	FLOAT   HFReference;          // [20.0, 20000.0]  default: 5000.0 Hz
+}
+PXAudioEffectI3DL2Reverb;
+
+typedef struct PXAudioEffectWavesReverb_
+{
+	float InGain;                // [-96.0,0.0]            default: 0.0 dB
+	float ReverbMix;             // [-96.0,0.0]            default: 0.0 db
+	float ReverbTime;            // [0.001,3000.0]         default: 1000.0 ms
+	float HighFreqRTRatio;       // [0.001,0.999]          default: 0.001
+} 
+PXAudioEffectWavesReverb;
+
+
+typedef struct PXAudioEffect_
+{
+	PXAudioEffectType Type;
+	PXBool Enable;
+	PXBool Fetch;
+
+	union
+	{
+		PXAudioEffectChorus Chorus;
+		PXAudioEffectCompressor Compressor;
+		PXAudioEffectDistortion Distortion;
+		PXAudioEffectEcho Echo;
+		PXAudioEffectFlanger Flanger;
+		PXAudioEffectGargle Gargle;
+		PXAudioEffectParamEq ParamEq;
+		PXAudioEffectI3DL2Reverb I3DL2Reverb;
+		PXAudioEffectWavesReverb WavesReverb;
+	};
+}
+PXAudioEffect;
+
+
+typedef PXActionResult(PXAPI* PXAudioDeviceEffectUpdate)(void* const audioAPI, PXAudioDevice* const pxAudioDevice, PXAudioEffect* const pxAudioEffect);
+
 typedef struct PXAudioMultiMedia_
 {
 	PXLibrary MultiMediaLibrary;
@@ -376,6 +515,9 @@ typedef struct PXAudio_
 	PXAudioDeviceRolloffFactorGetFunction RolloffFactorGet;
 	PXAudioDeviceRolloffFactorSetFunction RolloffFactorSet;
 	PXAudioDeviceDeferredSettingsCommitFunction	DeferredSettingsCommit;
+
+	// Effects
+	PXAudioDeviceEffectUpdate DeviceEffectUpdate;
 }
 PXAudio;
 

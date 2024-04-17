@@ -221,8 +221,6 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
     PXModel* const pxModel = (PXModel*)pxResourceLoadInfo->Target;
 
     PXFile tokenSteam;
-    PXClear(PXFile, &tokenSteam);
-
     PXCompiler pxCompiler;
     PXClear(PXCompiler, &pxCompiler);
     pxCompiler.FileInput = pxResourceLoadInfo->FileReference;
