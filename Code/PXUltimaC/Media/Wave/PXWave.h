@@ -15,7 +15,10 @@ typedef struct PXWave_
 }
 PXWave;
 
+#pragma optimize("", off)
 PXPublic PXActionResult PXAPI PXWaveLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
+
+#pragma optimize("", off)
 PXPublic PXActionResult PXAPI PXWaveSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
 
 #endif

@@ -280,8 +280,7 @@ PXActionResult PXAPI PXProcessHandleListAll(PXProcess* pxProcess)
 
 		LONG resultA = pxNtQuerySystemInformation(16, &systemHandleInfo, sizeof(SYSTEM_HANDLE_INFORMATION), &sizeNeeded); // Peek size needed
 
-		printf("");
-
+		
 		sizeAllocated = sizeNeeded;
 
 
@@ -459,6 +458,7 @@ PXActionResult PXAPI PXProcessHandleListAll(PXProcess* pxProcess)
 				break;
 		}
 
+#if PXLogEnable 
 		PXLogPrint
 		(
 			PXLoggingInfo,
@@ -470,6 +470,7 @@ PXActionResult PXAPI PXProcessHandleListAll(PXProcess* pxProcess)
 			pxHandle.TypeName,
 			pxHandle.Description
 		);
+#endif
 	}
 
 	PXDeleteStackList(char, sizeAllocated, &memory, PXNull);
@@ -541,8 +542,8 @@ PXActionResult PXAPI PXProcessCreate(PXProcess* const pxProcess, const PXText* c
 			STARTUPINFOW startupInfo;
 			PROCESS_INFORMATION processInfo;
 
-			PXMemoryClear(&startupInfo, sizeof(STARTUPINFOW));
-			PXMemoryClear(&processInfo, sizeof(PROCESS_INFORMATION));
+			PXClear(STARTUPINFOW, &startupInfo);
+			PXClear(PROCESS_INFORMATION, &processInfo);
 
 			startupInfo.cb = sizeof(STARTUPINFOW);
 
@@ -717,7 +718,7 @@ PXActionResult PXAPI PXProcessMemoryRead(const PXProcess* const pxProcess, const
 
 PXActionResult PXAPI PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemoryInfo)
 {
-	PXMemoryClear(pxProcessMemoryInfo, sizeof(PXProcessMemoryInfo));
+	PXClear(PXProcessMemoryInfo, pxProcessMemoryInfo);
 
 #if OSUnix
 	const int who = RUSAGE_SELF;
@@ -759,7 +760,7 @@ PXActionResult PXAPI PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProce
 		const DWORD processMemoryCountersSize = sizeof(PROCESS_MEMORY_COUNTERS);
 		PROCESS_MEMORY_COUNTERS processMemoryCounters;
 #endif
-		PXMemoryClear(&processMemoryCounters, processMemoryCountersSize);
+		PXClear(PROCESS_MEMORY_COUNTERS, &processMemoryCounters);
 		processMemoryCounters.cb = processMemoryCountersSize;
 
 		const PXBool success = GetProcessMemoryInfo // Windows XP (+UWP), Kernel32.dll, psapi.h

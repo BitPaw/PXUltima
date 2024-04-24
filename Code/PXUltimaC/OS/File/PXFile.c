@@ -12,10 +12,10 @@
 #include <assert.h>
 
 #if OSUnix
-#define PXPrintfvs vsnprintf
+//#define PXPrintfvs vsnprintf
 #elif OSWindows
 // _O_RDONLY, _O_RDWR, _O_RDWR
-#define PXPrintfvs vsprintf_s
+//#define PXPrintfvs vsprintf_s
 #endif
 
 
@@ -97,12 +97,15 @@ PXActionResult PXAPI PXFilePathSplitt(const PXText* const fullPath, PXFilePathSt
 
 			const PXBool hasFileName = hasDot && (indexFirstDot < fullPath->SizeUsed);
 			const PXSize indexFileNameStart = hasDirectory ? endPath + 1 : 0;
-			const PXSize lengthFileName = indexFileNameStart == 0 ? indexFirstDot : endPath + 1;
+		
+			const PXSize lengthExtension = fullPath->SizeUsed - indexFirstDot - 1;
+
+			const PXSize lengthFileName = fullPath->SizeUsed - (endPath + 1) - (lengthExtension + 1);
 
 			if(indexFirstDot)
 			{
-				pxFilePathStructure->Extension.SizeAllocated = fullPath->SizeUsed - indexFirstDot - 1;
-				pxFilePathStructure->Extension.SizeUsed = pxFilePathStructure->Extension.SizeAllocated;
+				pxFilePathStructure->Extension.SizeAllocated = lengthExtension;
+				pxFilePathStructure->Extension.SizeUsed = lengthExtension;
 				pxFilePathStructure->Extension.NumberOfCharacters;
 				pxFilePathStructure->Extension.TextA = fullPath->TextA + indexFirstDot + 1;
 				pxFilePathStructure->Extension.Format = fullPath->Format;
@@ -112,7 +115,7 @@ PXActionResult PXAPI PXFilePathSplitt(const PXText* const fullPath, PXFilePathSt
 			if(hasFileName)
 			{
 				pxFilePathStructure->FileName.SizeAllocated = lengthFileName;
-				pxFilePathStructure->FileName.SizeUsed = pxFilePathStructure->FileName.SizeAllocated;
+				pxFilePathStructure->FileName.SizeUsed = lengthFileName;
 				pxFilePathStructure->FileName.NumberOfCharacters;
 				pxFilePathStructure->FileName.TextA = fullPath->TextA + indexFileNameStart;
 				pxFilePathStructure->FileName.Format = fullPath->Format;
@@ -150,11 +153,16 @@ PXActionResult PXAPI PXFilePathSplitt(const PXText* const fullPath, PXFilePathSt
 					PXLoggingInfo,
 					"File",
 					"Path-Split",
-					"Drive:%s, Folder:%s, File:%s, Extension:%s",
-					bufferDrive,
-					bufferFolder,
-					bufferFile,
-					bufferExtension
+					"%10s : x%-2i %s\n"
+					"%10s : x%-2i %s\n"
+					"%10s : x%-2i %s\n"
+					"%10s : x%-2i %s\n"
+					"%10s : x%-2i %s\n",
+					"Path", fullPath->SizeUsed, fullPath->TextA,
+					"Drive",		pxFilePathStructure->Drive.SizeUsed, bufferDrive,
+					"Folder",		pxFilePathStructure->Directory.SizeUsed, bufferFolder,
+					"File",			pxFilePathStructure->FileName.SizeUsed, bufferFile,
+					"Extension",	pxFilePathStructure->Extension.SizeUsed, bufferExtension
 				);
 
 			}
@@ -305,7 +313,8 @@ PXActionResult PXAPI PXFilePathCombine(const PXText* const fullPath, PXFilePathS
 	PXTextAppend(fullPath, &pxFilePathStructure->FileName);
 	PXTextAppendA(fullPath, ".", 1);
 	PXTextAppend(fullPath, &pxFilePathStructure->Extension);
-
+	
+	fullPath->TextA[fullPath->SizeUsed] = '\0';
 	return PXActionSuccessful;
 }
 
@@ -364,6 +373,7 @@ PXFileFormat PXAPI PXFilePathExtensionDetectTry(const PXText* const filePath)
 			{
 				case PXInt16Make('K', 'O'):
 				case PXInt16Make('S', 'O'): return PXFileFormatBinaryLinux;
+				case PXInt16Make('F', 'F'): return PXFileFormatFastFile;
 			}
 
 			break;
@@ -854,6 +864,14 @@ void PXFilePathSwapFile(const wchar_t* currnetPath, wchar_t* targetPath, const w
 
 void PXAPI PXFilePathRelativeFromFile(const PXFile* const pxFile, const PXText* const targetPath, PXText* const resultPath)
 {
+	if(targetPath->TextA[1] == ':')
+	{
+		// do nothing and keep absolut path
+
+		PXTextCopy(targetPath, resultPath);
+		return;
+	}
+
 	//---<Get current path>----------------
 	PXText currentObjectFilePath;
 	PXTextConstructNamedBufferA(&currentObjectFilePath, currentFilePathBuffer, PXPathSizeMax);
@@ -871,7 +889,6 @@ void PXAPI PXFilePathSwapFileName(const PXText* const inputPath, PXText* const e
 
 	// Run a
 	{
-
 		const PXActionResult result = PXFilePathSplitt(inputPath, &pxFilePathStructureBefore);
 
 		if(PXActionSuccessful != result)
@@ -3229,17 +3246,19 @@ PXSize PXAPI PXFileWriteAF(PXFile* const pxFile, const PXTextASCII format, ...)
 	va_start(args, format);
 
 	const PXSize writableSize = PXFileRemainingSize(pxFile);
-	const int writtenBytes = PXPrintfvs(currentPosition, writableSize, format, args);
+
+	PXText pxText;
+	PXTextConstructFromAdressA(&pxText, currentPosition, writableSize, writableSize);
+
+	const int writtenBytes = PXTextPrintV(&pxText, format, args);
 
 	va_end(args);
 
-	{
-		const PXBool sucessful = writtenBytes >= 0;
+	const PXBool sucessful = writtenBytes >= 0;
 
-		if (!sucessful)
-		{
-			return 0;
-		}
+	if(!sucessful)
+	{
+		return 0;
 	}
 
 	PXFileCursorAdvance(pxFile, writtenBytes);
@@ -3467,8 +3486,6 @@ PXActionResult PXAPI PXFilePathGet(const PXFile* const pxFile, PXText* const fil
 	filePath->SizeUsed = length - 4u;
 	filePath->TextA += 4u;
 	filePath->Format = TextFormatASCII;
-	filePath->SizeUsed = length;
-
 
 	char buffer[PXPathSizeMax];
 

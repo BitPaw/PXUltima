@@ -86,6 +86,7 @@ typedef enum PXFileFormat_
 	PXFileFormatBinaryWindows,
 	PXFileFormatBinaryLinux,
 	PXFileFormatEML,
+	PXFileFormatFastFile,
 	PXFileFormatFilmBox,
 	PXFileFormatFLAC,
 	PXFileFormatSpriteFont,

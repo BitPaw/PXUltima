@@ -1,8 +1,9 @@
 #include "PXMP4.h"
 
 #include <OS/File/PXFile.h>
+#include <OS/Console/PXConsole.h>
 
-#define M4ADebugLog 1
+#define M4ADebugLog 0
 
 #define M4AChunkIDFTYP PXInt32Make('f','t','y','p')
 #define M4AChunkIDMDAT PXInt32Make('m','d','a','t')
@@ -83,10 +84,13 @@ PXActionResult PXAPI PXMP4LoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 		const PXSize positionPrediction = pxFile->DataCursor + chunkSize - 8;
 		const PXM4AChunkID typePrimary = PXMP4ChunkFromID(typePrimaryID.Value);
 
-#if M4ADebugLog
-		printf
+#if PXLogEnable && M4ADebugLog
+		PXLogPrint
 		(
-			"[M4A] Chunk (%c%c%c%c) %i Bytes\n",
+			PXLoggingInfo,
+			"M4A",
+			"Parse-Chunk"
+			"(%c%c%c%c) %i Bytes\n",
 			typePrimaryID.A,
 			typePrimaryID.B,
 			typePrimaryID.C,
@@ -167,7 +171,7 @@ PXActionResult PXAPI PXMP4LoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 		{
 			const unsigned int offset = positionPrediction - pxFile->DataCursor;
 
-#if M4ADebugLog
+#if PXLogEnable && M4ADebugLog
 			printf("[MP4] Illegal allignment detected! Moving %i Bytes\n", offset);
 #endif
 

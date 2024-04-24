@@ -1,7 +1,7 @@
 #include "PXXAudio.h"
 
 
-#if PXAudioSystemWindowsXAudioEnable
+#if PXAudioSystemWindowsXAudioEnable && 1
 #include <initguid.h>
 #include <xaudio2.h> // minimum windows 8?
 //#pragma comment(lib, "XAUDIO2_9.LIB") 

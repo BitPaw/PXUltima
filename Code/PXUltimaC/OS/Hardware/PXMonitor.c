@@ -67,7 +67,7 @@ PXActionResult PXAPI PXMonitorDeviceAmount(PXSize* const amount)
 	displayDevice.cb = sizeof(DISPLAY_DEVICEA);
 
 	// Count how many devices we have.
-	for ( ; EnumDisplayDevicesA(NULL, *amount, &displayDevice, 0); ++(*amount));
+	while (EnumDisplayDevicesA(NULL, *amount, &displayDevice, 0)) ++(*amount);
 
 
 #if PXLogEnable
@@ -96,7 +96,10 @@ void PXAPI PXMonitorFetchAll(PXMonitor* const monitorList, const PXSize monitorL
 
 	PXClear(RECT, &rectangleClip);
 
+#if 0
 	while(EnumDisplayMonitors(hdc, &rectangleClip, lpfnEnum, dwData));
+#endif
+
 #endif
 }
 
@@ -148,6 +151,7 @@ void PXAPI PXPhysicalDeviceFetchAll(PXGraphicDevicePhysical* const pxGraphicDevi
 	DWORD            dwFlags = 0;
 	displayDevice.cb = sizeof(displayDevice);
 
+#if 0
 	for (PXSize deviceID = 0; EnumDisplayDevicesA(0, deviceID, &displayDevice, dwFlags); deviceID++)
 	{
 		PXGraphicDevicePhysical* const pxGraphicDevicePhysical = &pxGraphicDevicePhysicalList[deviceID];
@@ -222,5 +226,7 @@ void PXAPI PXPhysicalDeviceFetchAll(PXGraphicDevicePhysical* const pxGraphicDevi
 		);
 #endif
 	}	
+#endif
+
 #endif
 }

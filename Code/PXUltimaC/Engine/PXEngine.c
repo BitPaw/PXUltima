@@ -719,15 +719,20 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
         // Extended windows resize check
         if(pxEngine->UpdateUI)
         {
-            PXWindowSizeInfo pxWindowSizeInfo;
+            PXGUIElementUpdateInfo pxGUIElementUpdateInfo;
+            PXClear(PXGUIElementUpdateInfo, &pxGUIElementUpdateInfo);
+            pxGUIElementUpdateInfo.UIElement = pxWindow;
+            pxGUIElementUpdateInfo.Property = PXUIElementPropertySize;
 
-            PXWindowSizeGet(pxWindow->ID, &pxWindowSizeInfo);
+            PXGUIElementFetch(&pxEngine->GUISystem, &pxGUIElementUpdateInfo, 1);
+
+
 
             PXViewPort pxViewPort;
             pxViewPort.X = 0;
             pxViewPort.Y = 0;
-            pxViewPort.Width = pxWindowSizeInfo.Width;
-            pxViewPort.Height = pxWindowSizeInfo.Height;
+            pxViewPort.Width = pxGUIElementUpdateInfo.Data.Size.Width;
+            pxViewPort.Height = pxGUIElementUpdateInfo.Data.Size.Height;
             pxViewPort.ClippingMinimum = 0;
             pxViewPort.ClippingMaximum = 1;
 
@@ -737,7 +742,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
 
             if (pxEngine->CameraCurrent)
             {
-                PXCameraAspectRatioChange(pxEngine->CameraCurrent, pxWindowSizeInfo.Width, pxWindowSizeInfo.Height);
+                PXCameraAspectRatioChange(pxEngine->CameraCurrent, pxViewPort.Width, pxViewPort.Height);
             }   
 
             PXGUIElementhSizeRefresAll(&pxEngine->GUISystem);
@@ -1087,7 +1092,6 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
     PXClear(PXEngine, pxEngine);
 
     PXCameraConstruct(&pxEngine->CameraDefault);
-    PXCameraViewChangeToPerspective(&pxEngine->CameraDefault, 90, PXCameraAspectRatio(&pxEngine->CameraDefault), 0.00, 100000000);
 
     pxEngine->CameraCurrent = &pxEngine->CameraDefault;
     pxEngine->CounterTimeLast = 0;
@@ -1120,9 +1124,9 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
 
         PXTextPrintA(stampBuffer, 256, "%s - %s", __DATE__, __TIME__);
 
-        PXConsoleWriteA
+        PXConsoleWriteF
         (
-            // LoggingInfo,
+            0,
             "\n"
             "+++-----------------------------------------------------+++\n"
             "||| %51s |||\n"
@@ -1144,9 +1148,9 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
 
         PXProcessorFetchInfo(&processor);
 
-        PXConsoleWriteA
+        PXConsoleWriteF
         (
-            //LoggingInfo,
+            0,
             "+---------------------------------------------------------+\n"
             "| Processor - Information                                 |\n"
             "+---------------------------------------------------------+\n"
@@ -1435,6 +1439,20 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
     //PXActionResult ww = PXProcessHandleListAll(PXNull);
    // printf("");
 #endif
+
+
+
+
+    // Post rendering fixup, camera needs to be ajusted and also the window itself
+    PXWindowSizeInfo pxWindowSizeInfo;
+
+    //PXWindowSizeGet(pxEngine->Window->ID, &pxWindowSizeInfo);
+
+   // PXCameraAspectRatioChange(pxEngine->CameraCurrent, pxWindowSizeInfo.Width, pxWindowSizeInfo.Width);
+   // PXCameraViewChangeToPerspective(&pxEngine->CameraDefault, 90, PXCameraAspectRatio(&pxEngine->CameraDefault), 0.00, 100000000);
+  //  PXCameraUpdate(pxEngine->CameraCurrent, 1);
+
+
 
     return PXActionSuccessful;
 }
@@ -1745,7 +1763,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
             pxModel->ResourceID.PXID = PXEngineGenerateUniqeID(pxEngine);
             PXDictionaryAdd(&pxEngine->ModelLookUp, &pxModel->ResourceID.PXID, pxModel);
 
-            // Load
+            // Load model
             {
                 PXResourceLoadInfo pxResourceLoadInfo;
                 PXClear(PXResourceLoadInfo, &pxResourceLoadInfo);
@@ -1766,11 +1784,36 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
 
             }
 
-            // Setup    
-            PXMatrix4x4FScaleBy(&pxModel->ModelMatrix, pxModelCreateInfo->Scale);
-         
 
-     
+            // Load additional resources
+            {
+                // Load textures
+
+                for(size_t i = 0; i < pxModel->MaterialContaierListAmount; i++)
+                {
+                    PXMaterialContainer* const pxMaterialContainer = &pxModel->MaterialContaierList[i];
+
+                    for(size_t i = 0; i < pxMaterialContainer->MaterialListAmount; i++)
+                    {
+                        PXMaterial* const pxMaterial = &pxMaterialContainer->MaterialList[i];
+
+                        PXEngineResourceCreateInfo pxEngineResourceCreateInfo;
+                        PXClear(PXEngineResourceCreateInfo, &pxEngineResourceCreateInfo);
+                        pxEngineResourceCreateInfo.CreateType = PXEngineCreateTypeTexture2D;
+                        pxEngineResourceCreateInfo.ObjectReference = &pxMaterial->DiffuseTexture;
+                        pxEngineResourceCreateInfo.FilePath = pxMaterial->DiffuseTextureFilePath;
+
+                        const PXActionResult resultA = PXEngineResourceCreate(pxEngine, &pxEngineResourceCreateInfo);
+                    }
+                }
+
+
+            }
+
+
+
+            // Setup    
+            PXMatrix4x4FScaleBy(&pxModel->ModelMatrix, pxModelCreateInfo->Scale);     
 
             pxModel->ShaderProgramReference = pxModelCreateInfo->ShaderProgramReference;
 

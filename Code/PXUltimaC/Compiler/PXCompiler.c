@@ -927,7 +927,10 @@ PXCompilerSymbolLexer PXAPI PXCompilerTryAnalyseType(PXFile* const tokenStream, 
 	for (i = 0; i < compilerSymbolEntry->Size; ++i)
 	{
 		const char symbol = compilerSymbolEntry->Source[i];
-		const PXBool isNumber = ('A' <= symbol && symbol <= 'Z') || ('a' <= symbol && symbol <= 'z') || symbol == '.' || symbol == '_';
+		const PXBool isNumber = 
+			('A' <= symbol && symbol <= 'Z') || 
+			('a' <= symbol && symbol <= 'z') || 
+			symbol == '.' || symbol == '_' || symbol == ':' || symbol == '/' || symbol == '\\';
 
 		newSize += isNumber;
 

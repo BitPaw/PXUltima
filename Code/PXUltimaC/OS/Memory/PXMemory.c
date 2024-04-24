@@ -144,6 +144,14 @@ void PXAPI PXMemoryClear(void* const PXRestrict bufferA, const PXSize bufferASiz
 	PXMemorySet(bufferA, 0u, bufferASize);
 }
 
+void PXAPI PXMemorySetI32U(int* const PXRestrict bufferA, const int value, const PXSize amount)
+{
+	for(PXSize i = 0; i < amount; ++i)
+	{
+		((int volatile*)bufferA)[i] = value;
+	}
+}
+
 void PXAPI PXMemorySet(void* const PXRestrict buffer, const PXByte value, const PXSize bufferSize)
 {
 //#if MemoryAssertEnable
@@ -337,10 +345,10 @@ const void* PXAPI PXMemoryLocateFirst(const void* const PXRestrict inputBuffer, 
 
 	for (; index < inputBufferSize && !found; ++index)
 	{
-		found = byteBlock == ((PXAdress)inputBuffer)[index];
+		found = byteBlock == ((char volatile*)inputBuffer)[index];
 	}
 
-	return found * (PXSize)((PXAdress)inputBuffer + index);
+	return found * (PXSize)((char volatile*)inputBuffer + index);
 #endif
 }
 
@@ -366,12 +374,12 @@ const void* PXAPI PXMemoryLocateLast(const void* const PXRestrict inputBuffer, c
 
 	for(PXSize i = maxRange; i > 0; --i)
 	{		
-		const char data = ((char*)inputBuffer)[i];
+		const char data = ((char volatile*)inputBuffer)[i];
 		const PXBool isFound = byteBlock == data;
 
 		if(isFound)
 		{
-			return &((char*)inputBuffer)[i];
+			return &((char volatile*)inputBuffer)[i];
 		}
 	}
 
@@ -407,7 +415,7 @@ PXSize PXAPI PXMemoryCopy(const void* PXRestrict inputBuffer, const PXSize input
 #else
 	for (PXSize index = bufferSize ; index ; --index)
 	{
-		((PXAdress)outputBuffer)[index-1] = ((PXAdress)inputBuffer)[index-1];
+		((char volatile*)outputBuffer)[index-1] = ((char volatile*)inputBuffer)[index-1];
 	}
 #endif
 
@@ -422,7 +430,15 @@ PXSize PXAPI PXMemoryMove(const void* inputBuffer, const PXSize inputBufferSize,
 	memmove(outputBuffer, inputBuffer, bufferSize);
 #else
 	// Need a solution for a copy without a variable
-	memmove(outputBuffer, inputBuffer, bufferSize);
+	//memmove(outputBuffer, inputBuffer, bufferSize);
+
+	for(size_t i = 0; i < bufferSize; i++)
+	{
+		char volatile* a = &((char volatile*)outputBuffer)[i];
+		char volatile* b = &((char volatile*)inputBuffer)[i];
+
+		*b = *a;
+	}
 #endif
 
 	return bufferSize;
@@ -901,8 +917,11 @@ PXMemoryAccessModeType PXAPI PXMemoryAccessModeFromID(const PXMemoryAccessMode P
 	}
 }
 
+#define PXMemoryUseStackAllocation 0
+
 PXActionResult PXAPI PXMemoryStackAllocate(PXMemoryInfo* const pxMemoryInfo)
 {
+#if PXMemoryUseStackAllocation
 	const PXSize totalSize = pxMemoryInfo->TypeSize * pxMemoryInfo->Amount;
 	void* const stackAllocated =
 
@@ -914,8 +933,8 @@ PXActionResult PXAPI PXMemoryStackAllocate(PXMemoryInfo* const pxMemoryInfo)
 		_malloca(totalSize);
 #endif
 
-	*pxMemoryInfo->Data = stackAllocated;
-	
+	* pxMemoryInfo->Data = stackAllocated;
+
 	if(pxMemoryInfo->SizeTotal)
 	{
 		*pxMemoryInfo->SizeTotal = totalSize;
@@ -937,6 +956,12 @@ PXActionResult PXAPI PXMemoryStackAllocate(PXMemoryInfo* const pxMemoryInfo)
 	PXLogPrintInvoke(&pxLoggingEventData);
 #endif
 
+#else
+
+	return PXMemoryHeapAllocate(pxMemoryInfo);
+
+#endif
+
 	return PXActionSuccessful;
 }
 
@@ -946,6 +971,8 @@ PXActionResult PXAPI PXMemoryStackDeallocate(PXMemoryInfo* const pxMemoryInfo)
 	{
 		return;
 	}
+
+#if PXMemoryUseStackAllocation
 
 #if OSUnix
 
@@ -976,6 +1003,14 @@ PXActionResult PXAPI PXMemoryStackDeallocate(PXMemoryInfo* const pxMemoryInfo)
 
 	PXLogPrintInvoke(&pxLoggingEventData);
 #endif
+
+#else	
+
+	return PXMemoryHeapDeallocate(pxMemoryInfo);
+
+#endif
+
+
 }
 
 

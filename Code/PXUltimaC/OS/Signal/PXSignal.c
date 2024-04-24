@@ -6,10 +6,7 @@
 
 PXActionResult PXAPI PXSignalCallBackRegister(const PXSignalToken pxSignalToken, PXSignalCallBack pxSignalCallBack)
 {
-#if OSUnix
-	return PXActionRefusedNotImplemented;
-
-#elif OSWindows
+#if OSUnix || OSForcePOSIXForWindows
 	int signalID;
 
 	switch (pxSignalToken)
@@ -47,6 +44,8 @@ PXActionResult PXAPI PXSignalCallBackRegister(const PXSignalToken pxSignalToken,
 	}
 
 	return PXActionSuccessful;
+#elif OSWindows
+	return PXActionRefusedNotImplemented;
 #else
 	return PXActionNotSupportedByOperatingSystem;
 #endif

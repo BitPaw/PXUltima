@@ -73,6 +73,7 @@ PXActionResult PXAPI PXDocumentElementAttributeAdd(PXDocument* const pxDocument,
 				char buffer[64];
 				PXTextCopyA(pxDocumentElementClass.NameAdress, pxDocumentElementClass.NameSize, buffer, 64);
 
+#if PXLogEnable
 				PXLogPrint
 				(
 					PXLoggingInfo,
@@ -84,6 +85,7 @@ PXActionResult PXAPI PXDocumentElementAttributeAdd(PXDocument* const pxDocument,
 					pxDocumentElementClass.AttribtesAmount,
 					pxDocumentElementClass.MemberAmount
 				);
+#endif
 			}
 #endif
 		}
@@ -145,7 +147,7 @@ PXActionResult PXAPI PXDocumentElementWrite(PXDocument* const pxDocument, PXDocu
 
 		PXDocumentElementIO(pxDocument, &pxDocumentElementTemp, PXFileWriteMultible); // Write change		
 
-#if 1
+#if PXLogEnable
 		{
 			char buffer[64];
 			PXTextCopyA(pxDocumentElementTemp.NameAdress, pxDocumentElementTemp.NameSize, buffer, 64);
@@ -169,7 +171,7 @@ PXActionResult PXAPI PXDocumentElementWrite(PXDocument* const pxDocument, PXDocu
 
 	PXDocumentElementIO(pxDocument, pxDocumentElement, PXFileWriteMultible); // Write node
 
-#if 1
+#if PXLogEnable
 	{
 		char buffer[64];
 		PXTextCopyA(pxDocumentElement->NameAdress, pxDocumentElement->NameSize, buffer, 64);
@@ -245,6 +247,7 @@ PXActionResult PXAPI PXDocumentElementAdd(PXDocument* const pxDocument, PXDocume
 
 PXActionResult PXAPI PXDocumentPrintNode(PXDocumentElement* const pxDocumentElement)
 {
+#if PXLogEnable
 	char elementType[64];
 	PXMemoryClear(elementType, 64);
 	char nameBuffer[64];
@@ -347,6 +350,7 @@ PXActionResult PXAPI PXDocumentPrintNode(PXDocumentElement* const pxDocumentElem
 		typeBuffer,
 		valueBuffer
 	);
+#endif
 }
 
 PXActionResult PXAPI PXDocumentPrint(PXDocument* const pxDocument)
@@ -360,7 +364,7 @@ PXActionResult PXAPI PXDocumentPrint(PXDocument* const pxDocument)
 		PXDocumentPrintNode(&pxDocumentElement);
 
 		// Get all
-		printf("");
+		//printf("");
 	}
 
 	return PXActionSuccessful;

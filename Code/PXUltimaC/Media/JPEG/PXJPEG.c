@@ -1,11 +1,9 @@
 #include "PXJPEG.h"
 
-#include <stdlib.h>
-
-#include <OS/Memory/PXMemory.h>
 #include <Math/PXMath.h>
-#include <OS/File/PXFile.h>
 #include <Media/PXColor.h>
+#include <OS/File/PXFile.h>
+#include <OS/Memory/PXMemory.h>
 
 #define JPGDebug 0
 

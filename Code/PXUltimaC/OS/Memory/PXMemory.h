@@ -283,6 +283,7 @@ PXPublic PXActionResult PXAPI PXMemoryHeapDeallocate(PXMemoryInfo* const pxMemor
 //---------------------------------------------------------
 // Copy
 //---------------------------------------------------------
+#pragma optimize( "", off )
 PXPublic PXSize PXAPI PXMemoryCopy(const void* PXRestrict inputBuffer, const PXSize inputBufferSize, void* outputBuffer, const PXSize outputBufferSize);
 
 #if PXMemoryDebug
@@ -299,6 +300,7 @@ PXPublic PXSize PXAPI PXMemoryCopy(const void* PXRestrict inputBuffer, const PXS
 //---------------------------------------------------------
 // Clear
 //---------------------------------------------------------
+#pragma optimize( "", off )
 PXPublic PXSize PXAPI PXMemoryMove(const void* inputBuffer, const PXSize inputBufferSize, void* outputBuffer, const PXSize outputBufferSize);
 
 #if PXMemoryDebug
@@ -316,6 +318,7 @@ PXPublic PXSize PXAPI PXMemoryMove(const void* inputBuffer, const PXSize inputBu
 //---------------------------------------------------------
 // Clear
 //---------------------------------------------------------
+#pragma optimize( "", off )
 PXPublic void PXAPI PXMemoryClear(void* const PXRestrict bufferA, const PXSize bufferASize);
 
 #define PXClear(type, adress) PXMemoryClear(adress, sizeof(type));
@@ -334,6 +337,10 @@ PXPublic void PXAPI PXMemoryClear(void* const PXRestrict bufferA, const PXSize b
 //---------------------------------------------------------
 // Set
 //---------------------------------------------------------
+#pragma optimize( "", off )
+PXPublic void PXAPI PXMemorySetI32U(int* const PXRestrict bufferA, const int value, const PXSize amount);
+
+#pragma optimize( "", off )
 PXPublic void PXAPI PXMemorySet(void* const PXRestrict bufferA, const PXByte value, const PXSize bufferSize);
 #define PXSet(type, adress, value) PXMemorySet(adress, value, sizeof(type));
 #define PXSetList(type, adress, amount, value) PXMemorySet(adress, value, sizeof(type) * amount);

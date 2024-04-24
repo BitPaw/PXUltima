@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Algorithm\Dijkstra\PXDijkstra.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="Algorithm\KalmanFilter\PXKalmanFilter.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
@@ -477,11 +474,17 @@
     <ClCompile Include="Media\DDS\PXDDS.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Algorithm\Dijkstra\PXDijkstra.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Media\Salsa20\PXSalsa20.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Media\FastFile\PXFastFile.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Algorithm\Dijkstra\PXDijkstra.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="Algorithm\KalmanFilter\PXKalmanFilter.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -941,6 +944,15 @@
     <ClInclude Include="Media\DDS\PXDDS.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Algorithm\Dijkstra\PXDijkstra.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Media\Salsa20\PXSalsa20.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Media\FastFile\PXFastFile.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Media\Matroska\README.md" />
@@ -967,5 +979,7 @@
     <None Include="OS\Audio\PXALSA\README.md" />
     <None Include="OS\Audio\README.md" />
     <None Include="Container\Dictionary\README.md" />
+    <None Include="Media\Salsa20\README.md" />
+    <None Include="Media\FastFile\README.md" />
   </ItemGroup>
 </Project>

@@ -342,6 +342,14 @@ typedef enum PXWindowEventType_
 }
 PXWindowEventType;
 
+typedef struct PXWindowSizeInfo_
+{
+	PXInt32S X;
+	PXInt32S Y;
+	PXInt32S Width;
+	PXInt32S Height;
+}
+PXWindowSizeInfo;
 
 typedef struct PXKeyBoardKeyInfo_
 {
@@ -480,8 +488,11 @@ typedef enum PXUIElementProperty_
 	PXUIElementPropertyTextAllign,
 	PXUIElementPropertyTextColor,
 	PXUIElementPropertySize,
+	PXUIElementPropertySizeParent,
 	PXUIElementPropertyProgressbarPercentage,
 	PXUIElementPropertyProgressbarBarColor,
+
+	PXUIElementPropertyBackGroundColor,
 
 	PXUIElementPropertyVisibility,
 
@@ -666,6 +677,9 @@ typedef union PXGUIElementCreateInfoData_
 	PXUIElementSceneRenderInfo SceneRender;
 	PXUIElementTabPageInfo TabPage;
 	PXUIElementComboBoxInfo ComboBox;
+
+	// Fetched
+	PXWindowSizeInfo Size;
 }
 PXGUIElementCreateInfoData;
 
@@ -693,7 +707,7 @@ typedef struct PXGUIElementCreateInfo_
 	PXInt32U WindowsWindowsStyleFlagsExtended;
 	PXInt32U WindowsStyleFlags;
 	char* WindowsTextContent;
-	char* WindowsClassName;
+	const char* WindowsClassName;
 #endif
 
 	// Additions
@@ -712,7 +726,7 @@ PXGUIElementCreateInfo;
 typedef struct PXGUIElementUpdateInfo_
 {
 	PXUIElement* UIElement;
-	PXWindow* WindowReference;
+	PXUIElement* WindowReference;
 	PXUIElementProperty Property;
 	PXGUIElementCreateInfoData Data;
 
@@ -720,14 +734,7 @@ typedef struct PXGUIElementUpdateInfo_
 }
 PXGUIElementUpdateInfo;
 
-typedef struct PXWindowSizeInfo_
-{
-	PXInt32S X;
-	PXInt32S Y;
-	PXInt32S Width;
-	PXInt32S Height;
-}
-PXWindowSizeInfo;
+
 
 
 // Global Variable, bad but needed for SYNC with OS. Stupid design
@@ -755,7 +762,8 @@ PXPublic PXThreadResult PXOSAPI PXWindowMessageLoop(PXUIElement* const pxUIEleme
 
 
 PXPublic PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIElementCreateInfo* const pxGUIElementCreateInfo, const PXSize amount);
-PXPublic PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIElementUpdateInfo* const pxGUIElementUpdateInfo, const PXSize amount);
+PXPublic PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIElementUpdateInfo* const pxGUIElementUpdateInfoList, const PXSize amount);
+PXPublic PXActionResult PXAPI PXGUIElementFetch(PXGUISystem* const pxGUISystem, PXGUIElementUpdateInfo* const pxGUIElementUpdateInfoList, const PXSize amount);
 
 PXPublic PXActionResult PXAPI PXGUIElementRelease(PXUIElement* const pxUIElement);
 
@@ -785,9 +793,6 @@ PXPublic PXActionResult PXAPI PXWindowTitleBarColorSet(const PXWindowID pxWindow
 
 PXPublic PXActionResult PXAPI PXWindowMouseMovementEnable(const PXWindowID pxWindow);
 
-
-PXPublic PXActionResult PXAPI PXWindowSizeGet(const PXWindowID pxWindowID, PXWindowSizeInfo* const pxWindowSizeInfo);
-PXPublic PXActionResult PXAPI PXWindowSizeSet(const PXWindowID pxWindowID, PXWindowSizeInfo* const pxWindowSizeInfo);
 PXPublic PXActionResult PXAPI PXWindowPosition(const PXWindowID pxWindowID, PXInt32S* x, PXInt32S* y);
 PXPublic PXActionResult PXAPI PXWindowMove(PXWindow* const pxWindow, const PXInt32S x, const PXInt32S y);
 PXPublic void PXAPI PXWindowPositonCenterScreen(PXWindow* const pxWindow);

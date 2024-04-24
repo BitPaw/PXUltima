@@ -3,19 +3,10 @@
 
 #include "../PXResource.h"
 
-#ifdef __cplusplus
-extern "C"
+typedef struct PXEmail_
 {
-#endif
-
-	typedef struct PXEmail_
-	{
-		unsigned int __dummy__;
-	}
-	PXEmail;
-
-#ifdef __cplusplus
+	unsigned int __dummy__;
 }
-#endif
+PXEmail;
 
 #endif

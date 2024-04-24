@@ -2,7 +2,7 @@
 
 #include <OS/File/PXFile.h>
 
-#define PXTIFFDebug 1
+#define PXTIFFDebug 0
 
 PXTIFFType PXAPI PXTIFFTypeFromID(const unsigned char tiffTypeID)
 {
@@ -376,7 +376,9 @@ PXActionResult PXAPI PXTIFFLoadFromFile(PXResourceLoadInfo* const pxResourceLoad
                         }
                         else
                         {
+#if PXLogEnable
                             printf("[TIFF] Error: offset is invalid\n");
+#endif
                         }
 
                         break;

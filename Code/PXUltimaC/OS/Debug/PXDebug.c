@@ -360,7 +360,7 @@ void PXAPI PXDebugStackTrace(PXDebug* const pxDebug)
 	//stackFrame.AddrFrame.Offset = contextRecord.Ebp;
 	//stackFrame.AddrFrame.Mode = AddrModeFlat;
 
-
+#if PXLogEnable
 	printf("+");
 
 	for (size_t i = 0; i < 57; i++)
@@ -378,6 +378,7 @@ void PXAPI PXDebugStackTrace(PXDebug* const pxDebug)
 	}
 
 	printf("+\n");
+#endif
 
 
 	const PXStackWalk64 pxStackWalk64 = pxDebug->XStackWalk64;
@@ -430,6 +431,7 @@ void PXAPI PXDebugStackTrace(PXDebug* const pxDebug)
 		const PXUnDecorateSymbolName pxUnDecorateSymbolName = pxDebug->XUnDecorateSymbolName;
 		const DWORD  decResultSize = pxUnDecorateSymbolName(pxMSDebugSymbol.Symbol.Name, (PSTR)nameBuffer, nameBufferSize, UNDNAME_COMPLETE);
 
+#if PXLogEnable
 #if 0
 		printf
 		(
@@ -451,9 +453,10 @@ void PXAPI PXDebugStackTrace(PXDebug* const pxDebug)
 
 		printf("| %-34s | %-18s |\n", functioName, adress);
 #endif
+#endif
 	}
 
-
+#if PXLogEnable
 	printf("+");
 
 	for (size_t i = 0; i < 57; i++)
@@ -462,6 +465,7 @@ void PXAPI PXDebugStackTrace(PXDebug* const pxDebug)
 	}
 
 	printf("+\n");
+#endif
 
 #endif
 }
@@ -497,7 +501,16 @@ void PXAPI OnDebugProcessCreate(PXDebug* const pxDebug)
 
 void PXAPI OnDebugProcessExit(PXDebug* const pxDebug, const PXInt32U exitCode)
 {
-	printf("[PXDebuger] Exit Thread <%i>\n", exitCode);
+#if PXLogEnable 
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"Debugger",
+		"Process",
+		"Exit Thread <%i>",
+		exitCode
+	);
+#endif
 }
 
 void PXAPI OnDebugThreadCreate(PXDebug* const pxDebug)
@@ -545,6 +558,7 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
 					// First chance: Pass this on to the system.
 					// Last chance: Display an appropriate error.
 
+#if PXLogEnable 
 					PXLogPrint
 					(
 						PXLoggingEvent,
@@ -553,6 +567,7 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
 						"Memory access violation at 0x%p",
 						(void*)exceptionRecord->ExceptionAddress
 					);
+#endif
 
 					break;
 				}
@@ -560,6 +575,7 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
 				{
 					// First chance: Display the current instruction and register values.
 
+#if PXLogEnable 
 					PXLogPrint
 					(
 						PXLoggingEvent,
@@ -568,6 +584,7 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
 						"Breakpoint at 0x%p",
 						(void*)exceptionRecord->ExceptionAddress
 					);
+#endif
 
 					break;
 				}
@@ -576,6 +593,7 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
 					// First chance: Pass this on to the system.
 					// Last chance: Display an appropriate error.
 
+#if PXLogEnable 
 					PXLogPrint
 					(
 						PXLoggingEvent,
@@ -584,6 +602,7 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
 						"EXCEPTION_DATATYPE_MISALIGNMENT at 0x%p",
 						(void*)exceptionRecord->ExceptionAddress
 					);
+#endif
 
 					break;
 				}
@@ -592,6 +611,7 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
 					// First chance: Update the display of the
 					// current instruction and register values.
 
+#if PXLogEnable 
 					PXLogPrint
 					(
 						PXLoggingEvent,
@@ -600,6 +620,7 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
 						"EXCEPTION_SINGLE_STEP at 0x%p",
 						(void*)exceptionRecord->ExceptionAddress
 					);
+#endif
 
 					break;
 				}
@@ -608,6 +629,7 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
 					// First chance: Pass this on to the system.
 					// Last chance: Display an appropriate error.
 
+#if PXLogEnable 
 					PXLogPrint
 					(
 						PXLoggingEvent,
@@ -616,6 +638,7 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
 						"DBG_CONTROL_C at 0x%p",
 						(void*)exceptionRecord->ExceptionAddress
 					);
+#endif
 
 					break;
 				}
@@ -623,6 +646,7 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
 				{
 					// Handle other exceptions.
 
+#if PXLogEnable 
 					PXLogPrint
 					(
 						PXLoggingEvent,
@@ -631,6 +655,7 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
 						"Unkown at 0x%p",
 						(void*)exceptionRecord->ExceptionAddress
 					);
+#endif
 
 					dwContinueStatus = DBG_EXCEPTION_NOT_HANDLED;
 					break;
@@ -648,6 +673,7 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
 
 			const CREATE_THREAD_DEBUG_INFO* const createThreadDebugInfo = &debugEvent.u.CreateThread;
 
+#if PXLogEnable 
 			PXLogPrint
 			(
 				PXLoggingEvent,
@@ -658,6 +684,7 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
 				debugEvent.dwThreadId,
 				debugEvent.dwProcessId
 			);
+#endif
 
 			PXThread pxThread;
 			pxThread.ThreadHandle = pxDebug->Process.ThreadHandle;
@@ -684,7 +711,9 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
 
 			const PXActionResult res = PXFileName(&file, &pxText);
 
+#if PXLogEnable 
 			printf("[PXDebuger] Process (%i) create : %s\n", debugEvent.dwProcessId, pxText.TextA);
+#endif
 
 			break;
 		}
@@ -703,7 +732,9 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
 
 			const EXIT_PROCESS_DEBUG_INFO* const exitProcessDebugInfo = &debugEvent.u.ExitProcess;
 
+#if PXLogEnable 
 			printf("[PXDebuger] Exit process <%i>\n", exitProcessDebugInfo->dwExitCode);
+#endif
 
 			pxDebug->IsRunning = PXFalse;
 
@@ -726,7 +757,10 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
 
 			const PXActionResult res = PXFileName(&file, &pxText);
 
+#if PXLogEnable 
 			printf("[PXDebuger] 0x%p | DLL load <%s>\n", loadDLLDebugInfo->lpBaseOfDll, pxText.TextA);
+#endif
+
 			break;
 		}
 		case UNLOAD_DLL_DEBUG_EVENT:
@@ -735,7 +769,9 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
 
 			const UNLOAD_DLL_DEBUG_INFO* const outputDebugStringInfo = &debugEvent.u.UnloadDll;
 
+#if PXLogEnable 
 			printf("[PXDebuger] 0x%p | DLL unload : %s\n", outputDebugStringInfo->lpBaseOfDll, "???");
+#endif
 
 			break;
 		}
@@ -744,6 +780,7 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
 			// Display the output debugging string.
 			const OUTPUT_DEBUG_STRING_INFO* const outputDebugStringInfo = &debugEvent.u.DebugString;
 
+#if PXLogEnable 
 			printf("[PXDebuger] OUTPUT_DEBUG_STRING_EVENT : ");
 
 			if (outputDebugStringInfo->fUnicode)
@@ -756,6 +793,7 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
 			}
 
 			printf("\n");
+#endif
 
 			break;
 		}
@@ -763,6 +801,7 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
 		{
 			const RIP_INFO* const ripInfo = &debugEvent.u.RipInfo;
 
+#if PXLogEnable 
 			PXLogPrint
 			(
 				PXLoggingEvent,
@@ -770,6 +809,7 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
 				"Exception",
 				"RIP_EVENT"
 			);
+#endif
 
 			break;
 		}

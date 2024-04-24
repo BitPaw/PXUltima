@@ -1,36 +1,65 @@
 #include "PXConsole.h"
 
 #include <stdarg.h>
-#include <stdio.h>
 #include <Media/PXText.h>
 #include <OS/Async/PXThread.h>
 #include <OS/Time/PXTime.h>
 #include <OS/File/PXFile.h>
-//#include <stdarg.h>
+
+#if OSUnix || OSForcePOSIXForWindows
+#include <stdio.h>
+#endif
 
 #define PXConsoleColorEnable 0
 
 
 void PXAPI PXConsoleClear()
 {
+#if OSUnix || OSForcePOSIXForWindows
 	printf("\033[H\033[J");
-
+#elif OSWindows
 	//SetConsoleCursorPosition();
-}
-
-void PXAPI PXConsoleWriteA(const char* text, ...)
-{
-	va_list args;
-	va_start(args, text);
-
-	PXSize xx = vprintf(text, args);
-
-	va_end(args);
+	// TODO
+#endif	
 }
 
 void PXAPI PXConsoleGoToXY(const PXInt32U x, const PXInt32U y)
 {
+#if OSUnix || OSForcePOSIXForWindows
 	printf("\033[%d;%dH", y, x);
+#elif OSWindows
+	HWND console = GetConsoleWindow();
+
+	const COORD position = {x, y};
+
+	SetConsoleCursorPosition(console, position);
+#endif	
+}
+
+void PXAPI PXConsoleWriteF(const PXSize length, const char* const source, ...)
+{
+#if 1
+	va_list args;
+	va_start(args, source);
+
+	PXSize xx = vprintf(source, args);
+
+	va_end(args);
+#endif
+}
+
+void PXAPI PXConsoleWrite(const PXSize length, const char* const source)
+{
+	HWND console = GetConsoleWindow();
+
+	WriteConsoleA(console, source, length, 0, 0);
+}
+
+void PXAPI PXConsoleWriteFV(const PXSize length, const char* const source, va_list va_list)
+{
+#if 1
+	PXSize xx = vprintf(source, va_list);
+#endif
 }
 
 void PXAPI PXConsoleTranlateColors(PXText* const bufferInput, PXText* const bufferOuput)
@@ -266,7 +295,9 @@ void PXAPI PXLogPrintInvoke(PXLoggingEventData* const pxLoggingEventData, ...)
 	va_list args;
 	va_start(args, pxLoggingEventData);
 
-	vfprintf(stdout, textColored.TextA, args);
+	PXConsoleWriteFV(0, textColored.TextA, args);
+
+	// vfprintf(stdout, textColored.TextA, args);
 
 	va_end(args);
 }
@@ -365,10 +396,10 @@ void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source,
 	{
 		for (PXSize i = 1; i < 80; ++i)
 		{
-			printf("%c", '-');
+			PXConsoleWrite("%c", '-', 1);
 		}
 
-		printf("\n");
+		PXConsoleWrite("\n", 1);
 	}
 
 	{
@@ -386,26 +417,25 @@ void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source,
 	{
 		for (PXSize i = 1; i < 80; ++i)
 		{
-			printf("%c", '-');
+			PXConsoleWrite("%c", '-', 1);
 		}
 
-		printf("\n");
+		PXConsoleWrite("\n", 1);
 	}
 }
 
-void PXAPI PXLogPrintString(const char* const source, PXSize length)
-{
-	for (PXSize i = 0; i < length; ++i)
-	{
-		const char character = MakePrintable(source[i]);
 
-		//printf("%c", character);
-	}
-}
-
-void PXAPI PXLogPrintStringLine(const char* const source, PXSize length)
-{
-	PXLogPrintString(source, length);
+/*
+* 
+* 	PXLogPrintString(source, length);
 
 	//printf("\n");
+* 
+
+for (PXSize i = 0; i < length; ++i)
+{
+	const char character = MakePrintable(source[i]);
+
+	//printf("%c", character);
 }
+*/

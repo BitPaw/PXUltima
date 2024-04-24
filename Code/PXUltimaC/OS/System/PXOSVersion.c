@@ -2,10 +2,17 @@
 
 #include <OS/Memory/PXMemory.h>
 
-void PXOSVersionGet()
+void PXOSVersionGet(PXOSVersionInfo* const pxOSVersionInfo)
 {
+    PXClear(PXOSVersionInfo, pxOSVersionInfo);
+
 #if OSUnix
+   // pxOSVersionInfo->
+
 #elif OSWindows
+
+    pxOSVersionInfo->Manufacturer = PXOSManufacturerWindows;
+
 
 #if WindowsAtleast10
 
@@ -17,11 +24,65 @@ void PXOSVersionGet()
     PXClear(OSVERSIONINFOEXA, &osVersionInfo);
     osVersionInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXA);
 
-    GetVersionEx(&osVersionInfo); // Windows 2000, Debricated after Windows 8
+    const BOOL success = GetVersionExA(&osVersionInfo); // Windows 2000, Debricated after Windows 8
 
-    const BOOL bIsWindowsXPorLater =
-        ((osVersionInfo.dwMajorVersion > 5) ||
-            ((osVersionInfo.dwMajorVersion == 5) && (osVersionInfo.dwMinorVersion >= 1)));
+    pxOSVersionInfo->VersionMajor = osVersionInfo.dwMajorVersion;
+    pxOSVersionInfo->VersionMinor = osVersionInfo.dwMinorVersion;
+
+    switch(pxOSVersionInfo->VersionMajor)
+    {
+        case 4:
+        {
+            switch(pxOSVersionInfo->VersionMinor)
+            {
+                case 0:
+                    pxOSVersionInfo->VersionWindows = PXOSWindowsversionNT;
+                    break;
+
+                case 1:
+                    pxOSVersionInfo->VersionWindows = PXOSWindowsversionXP;
+                    break;
+            }
+
+            break;
+        }
+        case 5:
+        {
+            switch(pxOSVersionInfo->VersionMinor)
+            {
+                case 0:
+                    pxOSVersionInfo->VersionWindows = PXOSWindowsversion2000;
+                    break;
+
+                case 1:
+                    pxOSVersionInfo->VersionWindows = PXOSWindowsversionXP;
+                    break;
+            }
+
+            break;
+        }
+        case 6:
+        {
+            switch(pxOSVersionInfo->VersionMinor)
+            {
+                case 0:
+                    pxOSVersionInfo->VersionWindows = PXOSWindowsversionVista;
+                    break;
+
+                case 1:
+                    pxOSVersionInfo->VersionWindows = PXOSWindowsversion7;
+                    break;
+
+                case 2:
+                    pxOSVersionInfo->VersionWindows = PXOSWindowsversion8;
+                    break;
+            }
+
+            break;
+        }
+    }
+
+
 #endif
 
 #endif

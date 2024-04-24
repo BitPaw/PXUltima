@@ -379,7 +379,8 @@ PXActionResult PXAPI PXThreadNameSet(PXThread* pxThread, PXText* const threadNam
 
 	const DWORD MS_VC_EXCEPTION = 0x406D1388;
 	const PXSize numberOfArguments = sizeof(info) / sizeof(ULONG_PTR);
-
+	 
+#if 0 // Does not compile as well in 32-Bit under no default lib
 	__try
 	{
 		RaiseException(MS_VC_EXCEPTION, 0, 3, (ULONG_PTR*)&info);
@@ -387,6 +388,8 @@ PXActionResult PXAPI PXThreadNameSet(PXThread* pxThread, PXText* const threadNam
 	__except (EXCEPTION_EXECUTE_HANDLER)
 	{
 	}
+#endif
+
 #endif
 
 #else

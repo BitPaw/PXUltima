@@ -52,6 +52,10 @@
 #include "CPP/PXCPP.h"
 #include "CSS/PXCSS.h"
 #include "DDS/PXDDS.h"
+#include "FastFile/PXFastFile.h"
+
+extern void _chkstk(size_t s) {};
+extern int _fltused = 0;
 
 const char* PXAPI PXGraphicShaderTypeToString(const PXGraphicShaderType pxGraphicShaderType)
 {
@@ -475,6 +479,12 @@ PXActionResult PXAPI PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, c
             pxFileTypeInfo->ResourceType = PXFileResourceTypeStructuredText;
             pxFileTypeInfo->ResourceLoad = PXNull;
             pxFileTypeInfo->ResourceSave = PXNull;
+            break;
+
+        case PXFileFormatFastFile:
+            pxFileTypeInfo->ResourceType = PXFileResourceTypeArchiv;
+            pxFileTypeInfo->ResourceLoad = PXFastFileLoadFromFile;
+            pxFileTypeInfo->ResourceSave = PXFastFileSaveToFile;
             break;
 
         case PXFileFormatFilmBox:

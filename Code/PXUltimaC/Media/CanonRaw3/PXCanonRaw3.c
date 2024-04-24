@@ -104,7 +104,9 @@ PXActionResult PXAPI PXCanonRaw3BlockRead(PXCanonRaw3Chunk* const pxCanonRaw3Chu
 
 	pxCanonRaw3Chunk->PredictedFinalPosition = pxFile->DataCursor + pxCanonRaw3Chunk->SizeData;
 
+#if PXLogEnable
 	printf("[CR3] Chunk %4.4s Size:%iB\n", pxCanonRaw3Chunk->ID.Data, pxCanonRaw3Chunk->SizeTotal);
+#endif
 
 	switch (pxCanonRaw3Chunk->ID.Value)
 	{
@@ -199,27 +201,27 @@ PXActionResult PXAPI PXCanonRaw3BlockRead(PXCanonRaw3Chunk* const pxCanonRaw3Chu
 		}
 		case PXCanonRaw3MOOVCCTPID:
 		{
-			printf("\n");
+			//printf("\n");
 			break;
 		}
 		case PXCanonRaw3MOOVCMT1ID:
 		{
-			printf("\n");
+			//printf("\n");
 			break;
 		}
 		case PXCanonRaw3MOOVCMT2ID:
 		{
-			printf("\n");
+			//printf("\n");
 			break;
 		}
 		case PXCanonRaw3MOOVCMT3ID:
 		{
-			printf("\n");
+			//printf("\n");
 			break;
 		}
 		case PXCanonRaw3MOOVGPSInfoID:
 		{
-			printf("\n");
+			//printf("\n");
 			break;
 		}
 		case PXCanonRaw3MOOVCompressorVersionID:
@@ -229,17 +231,17 @@ PXActionResult PXAPI PXCanonRaw3BlockRead(PXCanonRaw3Chunk* const pxCanonRaw3Chu
 		}
 		case PXCanonRaw3MOOVCNOPID:
 		{
-			printf("\n");
+		//	printf("\n");
 			break;
 		}
 		case PXCanonRaw3MOOVCNTHID:
 		{
-			printf("\n");
+			//printf("\n");
 			break;
 		}
 		case PXCanonRaw3MOOVThumbnailImageID:
 		{
-			printf("\n");
+			//printf("\n");
 			break;
 		}
 

@@ -2663,11 +2663,16 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
     PXFunctionInvoke(pxOpenGL->DebugMessage, PXOpenGLErrorMessageCallback, 0);
     PXFunctionInvoke(pxOpenGL->Enable, GL_DEBUG_OUTPUT);
 
-    PXWindowSizeInfo pxWindowSizeInfo;
+    // Update view 
+    {
+       // PXWindowSizeInfo pxWindowSizeInfo;
 
-    PXWindowSizeGet(pxOpenGL->WindowHandle, &pxWindowSizeInfo);
 
-    pxOpenGL->Viewport(0, 0, pxWindowSizeInfo.Width, pxWindowSizeInfo.Height);
+
+        //PXWindowSizeGet(pxOpenGL->WindowHandle, &pxWindowSizeInfo);
+
+        //pxOpenGL->Viewport(0, 0, pxWindowSizeInfo.Width, pxWindowSizeInfo.Height);
+    }
 
     // List devices
     {
@@ -2698,6 +2703,8 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
             PXTextConstructNamedBufferA(&pxTextVideoMemorySize, pxTextVideoMemorySizeBuffer, 32);
             PXTextFormatSize(&pxTextVideoMemorySize, pxGraphicDevicePhysical.VideoMemoryEvictionSize);
 
+            int percent = (pxGraphicDevicePhysical.VideoMemoryCurrent * 100) / pxGraphicDevicePhysical.VideoMemoryTotal;
+
 #if PXLogEnable
             PXLogPrint
             (
@@ -2706,13 +2713,14 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
                 "Initialize",
                 "%s\n"
                 "%s\n"
-                "Memory  : %s / %s (%s)\n"
+                "Memory  : %s / %s %i%% from (%s)\n"
                 "Evicted : %i / %s",
                 pxGraphicDevicePhysical.Vendor,
                 pxGraphicDevicePhysical.Renderer,
 
                 pxTextVideoMemoryCurrent.TextA,
                 pxTextVideoMemoryTotal.TextA,
+                percent,
                 pxTextVideoMemoryDedicated.TextA,
 
                 pxGraphicDevicePhysical.VideoMemoryEvictionCount,
@@ -2769,8 +2777,6 @@ PXBool PXAPI PXOpenGLDeselect(PXOpenGL* const pxOpenGL)
         "Session"
     );
 #endif
-
-    const PXWindow* const window = (const PXWindow* const)pxOpenGL->AttachedWindow;
 
     const PXBool successful =
 #if OSUnix
@@ -2937,11 +2943,14 @@ PXActionResult PXAPI PXOpenGLDevicePhysicalListFetch(PXOpenGL* const pxOpenGL, c
     }
 
     pxGraphicDevicePhysicalList->VideoMemoryDedicated = PXOpenGLIntergetGet(pxOpenGL, GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX);
-    pxGraphicDevicePhysicalList->VideoMemoryCurrent = PXOpenGLIntergetGet(pxOpenGL, GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX);
     pxGraphicDevicePhysicalList->VideoMemoryTotal = PXOpenGLIntergetGet(pxOpenGL, GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX);
+    pxGraphicDevicePhysicalList->VideoMemoryCurrent = PXOpenGLIntergetGet(pxOpenGL, GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX); 
     pxGraphicDevicePhysicalList->VideoMemoryEvictionCount = PXOpenGLIntergetGet(pxOpenGL, GPU_MEMORY_INFO_EVICTION_COUNT_NVX);
     pxGraphicDevicePhysicalList->VideoMemoryEvictionSize = PXOpenGLIntergetGet(pxOpenGL, GPU_MEMORY_INFO_EVICTED_MEMORY_NVX);
    
+    // Nvidea gives us the free memory, not the used one
+    pxGraphicDevicePhysicalList->VideoMemoryCurrent = pxGraphicDevicePhysicalList->VideoMemoryTotal - pxGraphicDevicePhysicalList->VideoMemoryCurrent;
+
     return PXActionSuccessful;
 }
 
@@ -2963,23 +2972,33 @@ PXActionResult PXAPI PXOpenGLScreenBufferRead(PXOpenGL* const pxOpenGL, PXImage*
 
 PXActionResult PXAPI PXOpenGLRelease(PXOpenGL* const pxOpenGL)
 {
-    const PXWindow* const window = (const PXWindow* const)pxOpenGL->AttachedWindow;
+    if(!pxOpenGL)
+    {
+        return PXActionRefusedArgumentNull;
+    }
 
 #if OSUnix
     const int result = glXMakeCurrent(window->DisplayCurrent, 0, 0);
 
 #elif OSWindows
+    const BOOL success = pxOpenGL->DeleteContext(pxOpenGL->ContextHandle);
 
-#endif
+    if(!success)
+    {
+        return PXActionInvalid;
+    }
 
-    return PXActionRefusedNotImplemented;
+    pxOpenGL->ContextHandle = PXNull;
+#else
+    return PXActionRefusedNotSupported;
+#endif   
+
+    return PXActionSuccessful;
 }
 
 void PXAPI PXOpenGLRenderBufferSwap(PXOpenGL* const pxOpenGL)
 {
-    const PXWindow* const window = (const PXWindow* const)pxOpenGL->AttachedWindow;
-
-    PXWindowFrameBufferSwap(window);
+    PXWindowFrameBufferSwap(pxOpenGL->WindowHandle);
 }
 
 void PXAPI PXOpenGLFlush(PXOpenGL* const pxOpenGL)

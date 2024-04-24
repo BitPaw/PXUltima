@@ -117,7 +117,7 @@ double PXAPI PXMathRoot(unsigned int rootNr, double value)
 			return 0;
 
 		case 2:
-			return sqrt(value);
+			return sqrt(value);  // TODO: Dependeny problem 
 
 		case 3:
 			return 0;// cbrt(value); // TODO:! !!!
@@ -163,7 +163,7 @@ double PXAPI PXMathLogarithmusBase2(double exponent)
 
 double PXAPI PXMathLogarithmusBase10(double exponent)
 {
-	return log10(exponent);
+	return log10(exponent);  // TODO: Dependeny problem 
 }
 
 double PXAPI PXMathNewtonGravitation(double massA, double massB, double distance)
@@ -224,17 +224,17 @@ PXInt32U PXAPI PXMathRandomeNumber(PXMathRandomGeneratorSeed* const pxMathRandom
 
 double PXAPI PXMathSinus(double value)
 {
-	return sin(value);
+	return sin(value); // TODO: Dependeny problem 
 }
 
 double PXAPI PXMathTangens(double value)
 {
-	return tan(value);
+	return tan(value); // TODO: Dependeny problem 
 }
 
 double PXAPI PXMathCosinus(double value)
 {
-	return cos(value);
+	return cos(value); // TODO: Dependeny problem 
 }
 
 unsigned long PXAPI PXMathFibonacci(unsigned long step)

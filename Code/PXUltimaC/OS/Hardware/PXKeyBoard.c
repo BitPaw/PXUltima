@@ -2,10 +2,7 @@
 
 #include <OS/Memory/PXMemory.h>
 #include <Media/PXText.h>
-
-#include <stdio.h>
-
-
+#include <OS/Console/PXConsole.h>
 
 #define PXKeyA 0x41
 #define PXKeyB 0x42
@@ -505,8 +502,11 @@ void PXAPI PXKeyBoardInputPrint(const PXKeyBoard* const keyBoard)
 	PXTextFromBinaryDataA(&keyBoard->Commands, sizeof(unsigned int), commands, 64);
 	PXTextFromBinaryDataA(&keyBoard->Actions, sizeof(unsigned int), actions, 64);
 
-	printf
+	PXLogPrint
 	(
+		PXLoggingInfo,
+		"KeyBoard",
+		"Input\n",
 		"+----------+------------------------------------+\n"
 		"| Letters  | %34s |\n"
 		"| Numbers  | %34s |\n"
@@ -607,7 +607,7 @@ PXBool PXAPI PXKeyBoardVirtualInsertAction(const PXKeyBoardVirtualInput* const i
 
 #elif PXOSWindowsDestop
 	INPUT inputs[4];
-	PXMemoryClear(inputs, sizeof(INPUT) * 4u);
+	PXClearList(INPUT, inputs, 4u);
 
 	// current sateneed to be fetched, as this input here
 	// is not checked for correct order.

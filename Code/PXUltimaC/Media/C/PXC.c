@@ -1,11 +1,10 @@
 #include "PXC.h"
 
 #include <Compiler/PXCompiler.h>
+#include <OS/Console/PXConsole.h>
 #include <Media/PXText.h>
 
-#include <OS/Console/PXConsole.h>
-
-#define PXCDebugOutput 1
+#define PXCDebugOutput 0
 
 PXBool PXAPI PXCElementHasName(PXCElement* const pxCElement)
 {
@@ -26,7 +25,7 @@ void PXAPI PXCElementClear(PXCElement* const pxCElement)
     PXMemoryClear(name, nameSize);
     PXMemoryClear(nameSecound, nameSizeSecound);
 
-    PXMemoryClear(pxCElement, sizeof(PXCElement));
+    PXClear(PXCElement, pxCElement);
 
     pxCElement->Name = name;
     pxCElement->NameSizeMaximal = nameSize;
@@ -250,8 +249,12 @@ PXBool PXAPI PXCFileParseStructure(PXFile* const inputStream, PXFile* const outp
                     break;
             }
 
-            printf
+            PXLogPrint
             (
+                PXLoggingInfo,
+                "C",
+                "Parse",
+                "Object detected\n"
                 "|+--------+-----------------------------------------------+|\n"
                 "|| %-6s | %-45s ||\n"
                 "|+--------+-----------------------------------------------+|\n",
@@ -316,8 +319,12 @@ PXBool PXAPI PXCFileParseStructure(PXFile* const inputStream, PXFile* const outp
             char buffer[64];
             PXTextCopyA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, buffer, 64);
 
-            printf
+            PXLogPrint
             (
+                PXLoggingInfo,
+                "C",
+                "Parse",
+                "Alias detected\n"
                 "|+--------+-----------------------------------------------+|\n"
                 "|| Alias: %-45s ||\n"
                 "|+--------+-----------------------------------------------+|\n",
@@ -446,8 +453,12 @@ PXBool PXAPI PXCFileParseStructure(PXFile* const inputStream, PXFile* const outp
                 char buffer[64];
                 PXTextCopyA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, buffer, 64);
 
-                printf
+                PXLogPrint
                 (
+                    PXLoggingInfo,
+                    "C",
+                    "Parse",
+                    "Alias detected\n"
                     "|+--------+-----------------------------------------------+|\n"
                     "|| Alias: %-45s ||\n"
                     "|+--------+-----------------------------------------------+|\n",
@@ -471,7 +482,13 @@ PXBool PXAPI PXCFileParseStructure(PXFile* const inputStream, PXFile* const outp
 
                 if (!isExpectedComma)
                 {
-                    printf("Missing ';' in structure\n");
+                    PXLogPrint
+                    (
+                        PXLoggingError,
+                        "C",
+                        "Parse",
+                        "Missing ';' in structure"
+                    );
                 }
 
                 return isExpectedComma;
@@ -486,7 +503,14 @@ PXBool PXAPI PXCFileParseStructure(PXFile* const inputStream, PXFile* const outp
                 char buffer[64];
                 PXTextCopyA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, buffer, 64);
 
-                printf("| - %-54s |\n", buffer);
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    "C",
+                    "Parse-Enum",
+                    "| - %-54s |\n",
+                    buffer
+                );
 #endif
 
                 ++memberCounter;
@@ -545,7 +569,13 @@ PXBool PXAPI PXCFileParseDeclaration(PXFile* const inputStream, PXFile* const ou
     if (!isTypeName)
     {
 #if PXCDebugOutput
-        printf("type expected but got something else\n");
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "C",
+            "Parse-Enum",
+            "type expected but got something else"
+        );
 #endif
     }
 
@@ -616,18 +646,30 @@ PXBool PXAPI PXCFileParseDeclaration(PXFile* const inputStream, PXFile* const ou
 
 
 #if PXCDebugOutput
-            printf("| MemberField: %s Type, Name %-20s |\n", variableType, variableName);
-            printf("| - %-17s : %-20s |\n", "Const", PXFlagIsSet(flagList, MemberFieldFlagIsConstType) ? "Yes" : "No");
-            printf("| - %-17s : %-20s |\n", "Singed", PXFlagIsSet(flagList, MemberFieldFlagIsSigned) ? "Yes" : "No");
-            printf("| - %-17s : %-20s |\n", "Adress", PXFlagIsSet(flagList, MemberFieldFlagIsAdress) ? "Yes" : "No");
-            printf("| - %-17s : %-20s |\n", "Readonly Adress", PXFlagIsSet(flagList, MemberFieldFlagIsAdressConst) ? "Yes" : "No");
-            printf("| - %-17s : %-20s |\n", "Volatile", PXFlagIsSet(flagList, MemberFieldFlagVolatile) ? "Yes" : "No");
-            printf("| - %-17s : %-20s |\n", "Register", PXFlagIsSet(flagList, MemberFieldFlagRegister) ? "Yes" : "No");
-            printf("| - %-17s : %-20s |\n", "Resticted", PXFlagIsSet(flagList, MemberFieldFlagResticted) ? "Yes" : "No");
-            printf("| - %-17s : %-20s |\n", "Primitive", PXFlagIsSet(flagList, MemberFieldFlagIsKnownPrimitive) ? "Yes" : "No");
-
-#endif // 1
-
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "C",
+                "Parse",
+                "| MemberField: %s Type, Name %-20s |\n"
+                "| - %-17s : %-20s |\n"
+                "| - %-17s : %-20s |\n"
+                "| - %-17s : %-20s |\n"
+                "| - %-17s : %-20s |\n"
+                "| - %-17s : %-20s |\n"
+                "| - %-17s : %-20s |\n"
+                "| - %-17s : %-20s |\n"
+                "| - %-17s : %-20s |\n",
+                variableType, variableName,
+                "Const", PXFlagIsSet(flagList, MemberFieldFlagIsConstType) ? "Yes" : "No"),
+                "Singed", PXFlagIsSet(flagList, MemberFieldFlagIsSigned) ? "Yes" : "No"),
+                "Adress", PXFlagIsSet(flagList, MemberFieldFlagIsAdress) ? "Yes" : "No"),
+                "Readonly Adress", PXFlagIsSet(flagList, MemberFieldFlagIsAdressConst) ? "Yes" : "No"),
+                "Volatile", PXFlagIsSet(flagList, MemberFieldFlagVolatile) ? "Yes" : "No"),
+                "Resticted", PXFlagIsSet(flagList, MemberFieldFlagResticted) ? "Yes" : "No"),
+                "Primitive", PXFlagIsSet(flagList, MemberFieldFlagIsKnownPrimitive) ? "Yes" : "No")
+            );
+#endif 
 
 
             return PXTrue;
@@ -804,8 +846,8 @@ PXBool PXAPI PXCFileParseFunctionPrototype(PXFile* const inputStream, PXFile* co
 
     PXTextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, buffer, 64);
 
-    printf("| [Function]\n");
-    printf("| Element    : %s |\n", buffer);
+    PXConsoleWrite("| [Function]\n", 0);
+    PXConsoleWrite("| Element    : %s |\n", buffer);
 
 #endif // 0
 
@@ -816,7 +858,7 @@ PXBool PXAPI PXCFileParseFunctionPrototype(PXFile* const inputStream, PXFile* co
 
     PXTextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, buffer, 64);
 
-    printf("| Return Type : %s |\n", buffer);
+    PXConsoleWrite("| Return Type : %s |\n", buffer);
 
 #endif // 0
 
@@ -830,7 +872,7 @@ PXBool PXAPI PXCFileParseFunctionPrototype(PXFile* const inputStream, PXFile* co
 
     PXTextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, buffer, 64);
 
-    printf("| FuntionName : %s |\n", buffer);
+    PXConsoleWrite("| FuntionName : %s |\n", buffer);
 
 #endif // 0
 
@@ -841,7 +883,7 @@ PXBool PXAPI PXCFileParseFunctionPrototype(PXFile* const inputStream, PXFile* co
     if (!isFunction)
     {
 #if PXCDebugOutput
-        printf("Expected funtion but didnt\n");
+        PXConsoleWrite("Expected funtion but didnt\n", 0);
 #endif
     }
 
@@ -882,7 +924,7 @@ PXBool PXAPI PXCFileParseFunctionPrototype(PXFile* const inputStream, PXFile* co
 
         PXTextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, buffer, 64);
 
-        printf("|     Parameter : %s |\n", buffer);
+        PXConsoleWrite("|     Parameter : %s |\n", buffer);
 
 #endif // 0
 
@@ -911,7 +953,7 @@ PXBool PXAPI PXCFileParseFunctionPrototype(PXFile* const inputStream, PXFile* co
     if (!isComma)
     {
 #if PXCDebugOutput
-        printf("Colon missing\n");
+        PXConsoleWrite("Colon missing\n");
 #endif
 
     }
@@ -1119,7 +1161,7 @@ PXActionResult PXAPI PXCParsePreprocessorInclude(PXDocument* const pxDocument, P
 
                     libraryNameLength += pxCompilerSymbolEntry.Size;
 
-                    PXLogPrintString(pxCompilerSymbolEntry.Source, pxCompilerSymbolEntry.Size);
+                    PXConsoleWrite(pxCompilerSymbolEntry.Source, pxCompilerSymbolEntry.Size);
 #endif
 
 
@@ -1201,7 +1243,7 @@ PXActionResult PXAPI PXCParsePreprocessorInclude(PXDocument* const pxDocument, P
 #if PXCDebugOutput
 
             printf("Makro include : ");
-            PXLogPrintStringLine(pxCompilerSymbolEntry.Source, pxCompilerSymbolEntry.Size);
+            PXConsoleWrite(pxCompilerSymbolEntry.Source, pxCompilerSymbolEntry.Size);
 #endif
 
             //PXFileWriteI8U(outputStream, PXCLibraryPathTypeLocale);
@@ -1229,14 +1271,14 @@ PXActionResult PXAPI PXCParsePreprocessorPragma(PXDocument* const pxDocument, PX
     if (!isExpectedText)
     {
 #if PXCDebugOutput
-        printf("Makro pragma has invalid name\n");
+        PXConsoleWrite("Makro pragma has invalid name", 0);
 #endif
     }
 
 #if PXCDebugOutput
 
-    printf("Makro pragma : ");
-    PXLogPrintString(pxCompilerSymbolEntry.Source, pxCompilerSymbolEntry.Size);
+    PXConsoleWrite("Makro pragma : ", 0);
+    PXConsoleWrite(pxCompilerSymbolEntry.Source, pxCompilerSymbolEntry.Size);
 #endif
 
     return PXActionInvalid;
@@ -1333,11 +1375,7 @@ PXActionResult PXAPI PXCParseTypeDefinition(PXDocument* const pxDocument, PXFile
 
                 PXCParseEndOfCommand(pxDocument, pxFile);
             }
-
-          
-
-            printf("");
-
+         
             // Unknown Type
 
             // can be function resturn type
@@ -1401,7 +1439,6 @@ PXActionResult PXAPI PXCParseTypeParameterList(PXDocument* const pxDocument, PXF
 
     if (!isOpenBracked)
     {
-        printf("");
         // Error
         //PXCompilerSymbolEntryExtract(pxFile, &pxCompilerSymbolEntry);
     }
@@ -1942,7 +1979,13 @@ PXActionResult PXAPI PXCLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInf
             default:
             {
 #if PXCDebugOutput
-                printf("[C] Invalid code on this posision\n");
+                PXLogPrint
+                (
+                    PXLoggingError,
+                    "C",
+                    "Parsing",
+                    "Invalid code on this posision"
+                );
 #endif
                 break;
             }

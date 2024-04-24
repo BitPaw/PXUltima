@@ -526,27 +526,6 @@ PXActionResult PXAPI PXDirectSoundDeviceLoad(PXAudioDirectSound* const pxAudioDi
 		const PXActionResult bufferResult = PXWindowsHandleErrorFromID(bufferResultID);
 	}
 
-
-	if (0)
-	{
-
-		IDirectSoundFXEcho8* const directSoundFXEcho = (IDirectSoundFXEcho8*)pxAudioDevice->FXEcho;
-
-		DSFXEcho fxEcho;
-
-		directSoundFXEcho->lpVtbl->GetAllParameters(directSoundFXEcho, &fxEcho);
-
-
-		//fxEcho.fWetDryMix;
-		//fxEcho.fFeedback;
-		//fxEcho.fLeftDelay;
-		//fxEcho.fRightDelay += 2;
-		//fxEcho.lPanDelay;
-
-		directSoundFXEcho->lpVtbl->SetAllParameters(directSoundFXEcho, &fxEcho);
-
-	}
-
 	return PXActionSuccessful;
 }
 
@@ -826,6 +805,8 @@ PXActionResult PXAPI PXDirectSoundDeviceStart(PXAudioDirectSound* const pxAudioD
 		PXActionReturnOnError(getResult);
 	}
 
+	pxAudioDevice->IsRunning = PXTrue;
+
 	return PXActionSuccessful;
 }
 
@@ -861,6 +842,8 @@ PXActionResult PXAPI PXDirectSoundDeviceStop(PXAudioDirectSound* const pxAudioDi
 		PXActionReturnOnError(getResult);
 	}
 
+	pxAudioDevice->IsRunning = PXFalse;
+
 	return PXActionSuccessful;
 }
 
@@ -871,9 +854,7 @@ PXActionResult PXAPI PXDirectSoundDevicePause(PXAudioDirectSound* const pxAudioD
 
 PXActionResult PXAPI PXDirectSoundEffectEnable(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice)
 {
-	PXDirectSoundDeviceStop(pxAudioDirectSound, pxAudioDevice);
-
-
+	const PXBool wasRunning = pxAudioDevice->IsRunning; // Store current state to keep davice playing after setting effect
 	PXDirectSoundBuffer* soundBuffer = (PXDirectSoundBuffer*)pxAudioDevice->SoundBuffer;
 
 	typedef struct PXListEntryEE_
@@ -921,6 +902,13 @@ PXActionResult PXAPI PXDirectSoundEffectEnable(PXAudioDirectSound* const pxAudio
 		effectDESC->guidDSFXClass = *pxListEntry->ElementFilterID;
 	}
 
+	if(wasRunning)
+	{
+		PXDirectSoundDeviceStop(pxAudioDirectSound, pxAudioDevice); // Stop the device, we are not allowed to update effects while playing
+	}
+
+	soundBuffer->lpVtbl->SetFX(soundBuffer, 0, 0, dwResults);
+
 	const HRESULT effectSetResultID = soundBuffer->lpVtbl->SetFX(soundBuffer, amountCounter, &dsEffectList, dwResults);
 	const PXActionResult effectSetResult = PXWindowsHandleErrorFromID(effectSetResultID);
 
@@ -930,14 +918,19 @@ PXActionResult PXAPI PXDirectSoundEffectEnable(PXAudioDirectSound* const pxAudio
 
 		if(!pxListEntry->Enabled)
 		{
+			*pxListEntry->AdressReference = PXNull;
 			continue;
 		}
 
 		soundBuffer->lpVtbl->GetObjectInPath(soundBuffer, pxListEntry->ElementFilterID, 0, pxListEntry->ElementID, pxListEntry->AdressReference);
 	}	
 
+	if(wasRunning)
+	{
+		PXDirectSoundDeviceStart(pxAudioDirectSound, pxAudioDevice);
+	}
 
-	PXDirectSoundDeviceStart(pxAudioDirectSound, pxAudioDevice);
+	return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXDirectSoundEffectUpdate(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, PXAudioEffect* const pxAudioEffect)
@@ -1115,15 +1108,36 @@ PXActionResult PXAPI PXDirectSoundEffectUpdate(PXAudioDirectSound* const pxAudio
 				}
 				else
 				{
-					dsfxCompressor.fGain = pxAudioEffectCompressor->Gain;
-					dsfxCompressor.fAttack = pxAudioEffectCompressor->Attack;
-					dsfxCompressor.fRelease = pxAudioEffectCompressor->Release;
-					dsfxCompressor.fThreshold = pxAudioEffectCompressor->Threshold;
-					dsfxCompressor.fRatio = pxAudioEffectCompressor->Ratio;
-					dsfxCompressor.fPredelay = pxAudioEffectCompressor->Predelay;
+					dsfxCompressor.fGain = PXMathLiniarF(DSFXCOMPRESSOR_GAIN_MIN, DSFXCOMPRESSOR_GAIN_MAX, 0, 1, pxAudioEffectCompressor->Gain);
+					dsfxCompressor.fAttack = PXMathLiniarF(DSFXCOMPRESSOR_ATTACK_MIN, DSFXCOMPRESSOR_ATTACK_MAX, 0, 1, pxAudioEffectCompressor->Attack);
+					dsfxCompressor.fRelease = PXMathLiniarF(DSFXCOMPRESSOR_RELEASE_MIN, DSFXCOMPRESSOR_RELEASE_MAX, 0, 1, pxAudioEffectCompressor->Release);
+					dsfxCompressor.fThreshold = PXMathLiniarF(DSFXCOMPRESSOR_THRESHOLD_MIN, DSFXCOMPRESSOR_THRESHOLD_MAX, 0, 1, pxAudioEffectCompressor->Threshold);
+					dsfxCompressor.fRatio = PXMathLiniarF(DSFXCOMPRESSOR_RATIO_MIN, DSFXCOMPRESSOR_RATIO_MAX, 0, 1, pxAudioEffectCompressor->Ratio);
+					dsfxCompressor.fPredelay = PXMathLiniarF(DSFXCOMPRESSOR_PREDELAY_MIN, DSFXCOMPRESSOR_PREDELAY_MAX, 0, 1, pxAudioEffectCompressor->Predelay);
 
 					result = directSoundFXCompressor->lpVtbl->SetAllParameters(directSoundFXCompressor, &dsfxCompressor);
 				}
+
+				PXLogPrint
+				(
+					PXLoggingInfo,
+					"DirectSound",
+					"FX-Update",
+					"Compressor : %s\n"
+					"%10s : %6.2f\n"
+					"%10s : %6.2f\n"
+					"%10s : %6.2f\n"
+					"%10s : %6.2f\n"
+					"%10s : %6.2f\n"
+					"%10s : %6.2f\n",
+					result == DS_OK ? "OK" : "FAIL",
+					"Gain", dsfxCompressor.fGain,
+					"Attack", dsfxCompressor.fAttack,
+					"Release", dsfxCompressor.fRelease,
+					"Threshold", dsfxCompressor.fThreshold,
+					"Ratio", dsfxCompressor.fRatio,
+					"Predelay", dsfxCompressor.fPredelay
+				);
 
 				break;
 			}
@@ -1145,14 +1159,33 @@ PXActionResult PXAPI PXDirectSoundEffectUpdate(PXAudioDirectSound* const pxAudio
 				}
 				else
 				{
-					dsfxDistortion.fGain = pxAudioEffectDistortion->Gain;
-					dsfxDistortion.fEdge = pxAudioEffectDistortion->Edge;
-					dsfxDistortion.fPostEQCenterFrequency = pxAudioEffectDistortion->PostEQCenterFrequency;
-					dsfxDistortion.fPostEQBandwidth = pxAudioEffectDistortion->PostEQBandwidth;
-					dsfxDistortion.fPreLowpassCutoff = pxAudioEffectDistortion->PreLowpassCutoff;
+					dsfxDistortion.fGain = PXMathLiniarF(DSFXDISTORTION_GAIN_MIN, DSFXDISTORTION_GAIN_MAX, 0, 1, pxAudioEffectDistortion->Gain);
+					dsfxDistortion.fEdge = PXMathLiniarF(DSFXDISTORTION_EDGE_MIN, DSFXDISTORTION_EDGE_MAX, 0, 1, pxAudioEffectDistortion->Edge);
+					dsfxDistortion.fPostEQCenterFrequency = PXMathLiniarF(DSFXDISTORTION_POSTEQCENTERFREQUENCY_MIN, DSFXDISTORTION_POSTEQCENTERFREQUENCY_MAX, 0, 1, pxAudioEffectDistortion->PostEQCenterFrequency);
+					dsfxDistortion.fPostEQBandwidth = PXMathLiniarF(DSFXDISTORTION_POSTEQBANDWIDTH_MIN, DSFXDISTORTION_POSTEQBANDWIDTH_MAX, 0, 1, pxAudioEffectDistortion->PostEQBandwidth);
+					dsfxDistortion.fPreLowpassCutoff = PXMathLiniarF(DSFXDISTORTION_PRELOWPASSCUTOFF_MIN, DSFXDISTORTION_PRELOWPASSCUTOFF_MAX, 0, 1, pxAudioEffectDistortion->PreLowpassCutoff);
 
 					result = directSoundFXDistortion->lpVtbl->SetAllParameters(directSoundFXDistortion, &dsfxDistortion);
 				}
+
+				PXLogPrint
+				(
+					PXLoggingInfo,
+					"DirectSound",
+					"FX-Update",
+					"Distortion : %s\n"
+					"%10s : %6.2f\n"
+					"%10s : %6.2f\n"
+					"%10s : %6.2f\n"
+					"%10s : %6.2f\n"
+					"%10s : %6.2f\n",
+					result == DS_OK ? "OK" : "FAIL",
+					"Gain", dsfxDistortion.fGain,
+					"Edge", dsfxDistortion.fEdge,
+					"PostEQCenterFrequency", dsfxDistortion.fPostEQCenterFrequency,
+					"PostEQBandwidth", dsfxDistortion.fPostEQBandwidth,
+					"PreLowpassCutoff", dsfxDistortion.fPreLowpassCutoff
+				);
 
 				break;
 			}
@@ -1174,14 +1207,33 @@ PXActionResult PXAPI PXDirectSoundEffectUpdate(PXAudioDirectSound* const pxAudio
 				}
 				else
 				{
-					dsfxEcho.fWetDryMix = pxAudioEffectEcho->WetDryMix;
-					dsfxEcho.fFeedback = pxAudioEffectEcho->Feedback;
-					dsfxEcho.fLeftDelay = pxAudioEffectEcho->LeftDelay;
-					dsfxEcho.fRightDelay = pxAudioEffectEcho->RightDelay;
-					dsfxEcho.lPanDelay = pxAudioEffectEcho->PanDelay;
+					dsfxEcho.fWetDryMix = PXMathLiniarF(DSFXECHO_WETDRYMIX_MIN, DSFXECHO_WETDRYMIX_MAX, 0, 1, pxAudioEffectEcho->WetDryMix);
+					dsfxEcho.fFeedback = PXMathLiniarF(DSFXECHO_FEEDBACK_MIN, DSFXECHO_FEEDBACK_MAX, 0, 1, pxAudioEffectEcho->Feedback);
+					dsfxEcho.fLeftDelay = PXMathLiniarF(DSFXECHO_LEFTDELAY_MIN, DSFXECHO_LEFTDELAY_MAX, 0, 1, pxAudioEffectEcho->LeftDelay);
+					dsfxEcho.fRightDelay = PXMathLiniarF(DSFXECHO_RIGHTDELAY_MIN, DSFXECHO_RIGHTDELAY_MAX, 0, 1, pxAudioEffectEcho->RightDelay);
+					dsfxEcho.lPanDelay = PXMathLiniarF(DSFXECHO_PANDELAY_MIN, DSFXECHO_PANDELAY_MAX, 0, 1, pxAudioEffectEcho->PanDelay);
 
 					result = directSoundFXEcho->lpVtbl->SetAllParameters(directSoundFXEcho, &dsfxEcho);
 				}
+
+				PXLogPrint
+				(
+					PXLoggingInfo,
+					"DirectSound",
+					"FX-Update",
+					"Echo : %s\n"
+					"%10s : %6.2f\n"
+					"%10s : %6.2f\n"
+					"%10s : %6.2f\n"
+					"%10s : %6.2f\n"
+					"%10s : %6.2f\n",
+					result == DS_OK ? "OK" : "FAIL",
+					"WetDryMix", dsfxEcho.fWetDryMix,
+					"Feedback", dsfxEcho.fFeedback,
+					"LeftDelay", dsfxEcho.fLeftDelay,
+					"RightDelay", dsfxEcho.fRightDelay,
+					"PanDelay", dsfxEcho.lPanDelay
+				);
 
 				break;
 			}

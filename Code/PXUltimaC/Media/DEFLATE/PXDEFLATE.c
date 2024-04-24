@@ -189,7 +189,7 @@ PXActionResult PXAPI PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const p
 
                         if(PXActionSuccessful != result)
                         {
-                            printf("EE");
+                            return result;
                         }
 
                         break;
@@ -305,10 +305,11 @@ PXActionResult PXAPI PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const p
                             {
                                 start += PXMemoryCopy((PXAdress)pxOutputStream->Data + backward, distance, (PXAdress)pxOutputStream->Data + start, distance);
 
-                                for (PXSize forward = distance; forward < length; ++forward)
-                                {
-                                    ((PXAdress)pxOutputStream->Data)[start++] = ((PXAdress)pxOutputStream->Data)[backward++];
-                                }
+                                PXSize size = length - distance;
+                                void* a = &((char*)pxOutputStream->Data)[start++];
+                                void* b = &((char*)pxOutputStream->Data)[backward++];
+
+                                PXMemoryCopy(a, size, b, size);
                             }
                             else
                             {
@@ -471,21 +472,16 @@ unsigned hash_init(Hash* hash, unsigned windowsize)
         return 83; /*alloc fail*/
     }
 
-    /*initialize hash table*/
-    for(PXSize i = 0; i != HASH_NUM_VALUES; ++i) 
-        hash->head[i] = -1;
-
-    for(PXSize i = 0; i != windowsize; ++i) 
-        hash->val[i] = -1;
+    // initialize hash table
+    PXMemorySetI32U(hash->head, -1, HASH_NUM_VALUES);
+    PXMemorySetI32U(hash->headz, -1, MAX_SUPPORTED_DEFLATE_LENGTH);
 
     for(PXSize i = 0; i != windowsize; ++i)
+    {
+        hash->val[i] = -1;
         hash->chain[i] = i; /*same value as index indicates uninitialized*/
-
-    for(PXSize i = 0; i <= MAX_SUPPORTED_DEFLATE_LENGTH; ++i)
-        hash->headz[i] = -1;
-
-    for(PXSize i = 0; i != windowsize; ++i) 
         hash->chainz[i] = i; /*same value as index indicates uninitialized*/
+    }       
 
     return 0;
 }

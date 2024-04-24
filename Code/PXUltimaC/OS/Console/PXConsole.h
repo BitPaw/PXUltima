@@ -75,10 +75,10 @@ typedef void (PXAPI* PXLogPrintFunction)(const PXLoggingType loggingType, const 
 
 
 PXPublic void PXAPI PXConsoleClear();
-PXPublic void PXAPI PXConsoleWriteA(const char* text, ...);
 PXPublic void PXAPI PXConsoleGoToXY(const PXInt32U x, const PXInt32U y);
-PXPublic void PXAPI PXLogPrintString(const char* const source, PXSize length);
-PXPublic void PXAPI PXLogPrintStringLine(const char* const source, PXSize length);
+PXPublic void PXAPI PXConsoleWriteF(const PXSize length, const char* const source, ...);
+PXPublic void PXAPI PXConsoleWrite(const PXSize length, const char* const source);
+PXPublic void PXAPI PXConsoleWriteFV(const PXSize length, const char* const source, va_list* const va_list);
 
 
 //PXPublic void PXAPI PXConsoleTranlateColorsA(char* const bufferInput, char* const bufferOuput);

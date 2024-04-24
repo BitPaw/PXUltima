@@ -216,6 +216,7 @@ void PXAPI PXWavefrontFaceLineParse(PXCompiler* const pxCompiler, PXInt32U* cons
     }   
 }
 
+#pragma optimize("", off)
 PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
     PXModel* const pxModel = (PXModel*)pxResourceLoadInfo->Target;
@@ -255,7 +256,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
     PXInt32U currentTotalOffset = 0;
 
     
-
+#if PXLogEnable
     PXLogPrint
     (
         PXLoggingInfo,
@@ -263,8 +264,10 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
         "Parsing",
         "Start"
     );
+#endif
 
 
+#if PXLogEnable
     PXLogPrint
     (
         PXLoggingInfo,
@@ -272,6 +275,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
         "Parsing",
         "Step 1, Lexer..."
     );
+#endif
 
     // Lexer - Level I
     {
@@ -279,7 +283,6 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
         PXClear(PXCompilerSettings, &compilerSettings);
 
         compilerSettings.TryAnalyseTypes = PXYes;
-        compilerSettings.IntrepredTabsAsWhiteSpace = PXYes;
         compilerSettings.CommentSingleLineSize = 1u;
         compilerSettings.CommentSingleLine = "#";
 
@@ -288,6 +291,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
 
     // Stage - 1 - Analyse file
 
+#if PXLogEnable
     PXLogPrint
     (
         PXLoggingInfo,
@@ -295,7 +299,9 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
         "Parsing",
         "Step 2, analyse file..."
     );
+#endif
 
+#if 1
     while (!PXFileIsAtEnd(&tokenSteam))
     {
         PXCompilerSymbolEntryExtract(&pxCompiler); // First in line token
@@ -431,7 +437,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
         }
     }
 
-
+#if PXLogEnable
     PXLogPrint
     (
         PXLoggingInfo,
@@ -439,6 +445,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
         "Parsing",
         "Step 3, prealocate memory..."
     );
+#endif
 
     //
     PXBool requireToCalculateNormals = PXFalse;
@@ -586,24 +593,13 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
 
                             PXFilePathRelativeFromFile(pxResourceLoadInfo->FileReference, &materialFileName, &materialFilePathFull);
      
-                            PXFileOpenFromPathInfo pxFileOpenFromPathInfo;
-                            PXFileOpenFromPathInfoMakeLoadOneshot(&pxFileOpenFromPathInfo, materialFilePathFull);
+                            PXResourceLoadInfo pxResourceLoadInfo;
+                            PXClear(PXResourceLoadInfo, &pxResourceLoadInfo);
+                            pxResourceLoadInfo.Target = pxMaterialContaier;
+                            pxResourceLoadInfo.FileReference = &materialFile;
+                            pxResourceLoadInfo.Type = PXGraphicResourceTypeMaterialList;
 
-                            {
-                                const PXActionResult materialFileLoadResult = PXFileOpenFromPath(&materialFile, &pxFileOpenFromPathInfo);
-                                const PXBool sucessful = PXActionSuccessful == materialFileLoadResult;
-
-                                if (sucessful)
-                                {
-                                    PXResourceLoadInfo pxResourceLoadInfo;
-                                    PXClear(PXResourceLoadInfo, &pxResourceLoadInfo);
-                                    pxResourceLoadInfo.Target = pxMaterialContaier;
-                                    pxResourceLoadInfo.FileReference = &materialFile;
-                                    pxResourceLoadInfo.Type = PXGraphicResourceTypeMaterialList;
-
-                                    const PXActionResult materialFileCompileResult = PXMTLLoadFromFile(&pxResourceLoadInfo);
-                                }
-                            }
+                            PXResourceLoad(&pxResourceLoadInfo, &materialFilePathFull);
                         }                   
                       
                         PXFileDestruct(&materialFile);   
@@ -790,6 +786,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
     PXDeleteList(float, vertexDataCacheSize, &vertexDataCache, PXNull); // Delete cached vertex data
 
 
+#if PXLogEnable
     PXLogPrint
     (
         PXLoggingInfo,
@@ -797,6 +794,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
         "Parsing",
         "Done!"
     );
+#endif
 
 
    // if (errorCounter)
@@ -812,6 +810,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
 
     // Calculate normals
 
+#if PXLogEnable
     PXLogPrint
     (
         PXLoggingInfo,
@@ -819,6 +818,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
         "Parsing",
         "Generating missing normals..."
     );
+#endif
 
     for (PXSize i = 0; i < counterVertex; ++i)
     {
@@ -850,6 +850,9 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
         normalData[2] = normalFactor;
     }
 
+#endif
+
+#if PXLogEnable
     PXLogPrint
     (
         PXLoggingInfo,
@@ -857,6 +860,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
         "Parsing",
         "Generated missing normals!"
     );
+#endif
 
 
     return PXActionSuccessful;

@@ -8,8 +8,9 @@
 const static char WAVSignatureLIST[4] = { 'L', 'I', 'S', 'T' };
 const static char WAVSignatureData[4] = { 'd', 'a', 't', 'a' };
 
+#pragma optimize("", off)
 PXActionResult PXAPI PXWaveLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
-{
+{	/*
 	PXSound* const pxSound = (PXSound*)pxResourceLoadInfo->Target;
 
 	PXWave wav;;
@@ -79,12 +80,15 @@ PXActionResult PXAPI PXWaveLoadFromFile(PXResourceLoadInfo* const pxResourceLoad
 	PXNewList(PXByte, wav.SoundDataSize, &pxSound->Data, &pxSound->DataSize);
 
 	PXFileReadB(pxResourceLoadInfo->FileReference, pxSound->Data, pxSound->DataSize);
+	*/
 
 	return PXActionSuccessful;
 }
 
+#pragma optimize("", off)
 PXActionResult PXAPI PXWaveSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
 {
+#if 0
 	unsigned int bitdepth = 16, bpm = 120;
 	float wave = 0, duration = 12;
 	float frequences[120] = { 523.251,/* 523.251, 523.251, 523.251, 523.251,*/ 0,/* 0, 0, 0, 0,*/ 554.365,/* 554.365, 554.365, 554.365, 554.365,*/
@@ -94,11 +98,11 @@ PXActionResult PXAPI PXWaveSaveToFile(PXResourceSaveInfo* const pxResourceSaveIn
 		0, /*0, 0, 0, 0,*/ 830.609, /*830.609, 830.609, 830.609, 830.609,*/ 0, /*0, 0, 0, 0,*/ 880, /*880, 880, 880, 880,*/ 0, /*0, 0, 0, 0,*/
 		932.328, /*932.328, 932.328, 932.328, 932.328,*/ 0, /*0, 0, 0, 0,*/ 987.767, /*987.767, 987.767, 987.767, 987.767*/ };
 	unsigned int maxAmp = 1;
-
+	
 	for (PXSize i = 0; i < bitdepth - 1; i++)
 	{
 		maxAmp = maxAmp << 1;
-	}
+	}	
 
 	maxAmp--;
 	int dataSize = (int)((duration * 44100) * (bitdepth / 8));
@@ -144,6 +148,7 @@ PXActionResult PXAPI PXWaveSaveToFile(PXResourceSaveInfo* const pxResourceSaveIn
 		PXFileWriteI32U(pxResourceSaveInfo->FileReference, dataSize);
 	}
 
+	
 	for (PXSize section = 0; section < (duration / 60) * bpm; section++)
 	{
 		for (PXSize i = 0; i < (44100 * 60) / bpm; i++)
@@ -154,6 +159,7 @@ PXActionResult PXAPI PXWaveSaveToFile(PXResourceSaveInfo* const pxResourceSaveIn
 			wave += 2 * PXMathConstantPI * frequences[section] * (100 / (((i >= ((44100 * 60) / bpm) * i) + 1))) / 44100;
 		}
 	}
-
+#endif
+	
 	return PXActionSuccessful;
 }

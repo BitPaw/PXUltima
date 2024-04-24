@@ -3,16 +3,19 @@
 
 #include <Media/PXResource.h>
 
-#if !WindowsAtleastXP
+#if OSWindows
 
 #include <Windows.h>
+
+
+BOOL WINAPI DllMainCRTStartup(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved);
+
+
+
+#if !WindowsAtleastXP
+
 //#include <libloaderapi.h>
 //#include <interlockedapi.h>
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
 
     int _fltused = 0; // prevent compile errors
 
@@ -101,8 +104,6 @@ extern "C"
     }*/
 
 
-#ifdef __cplusplus
-}
 #endif
 
 #endif

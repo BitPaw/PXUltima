@@ -55,6 +55,39 @@ typedef struct PXOS22XBitMapHeader_
 }
 PXOS22XBitMapHeader;
 
+typedef struct PXBitmapHeaderV5_
+{
+	PXBitMapInfoHeader Header;
+
+	PXInt32U ClrUsed;
+	PXInt32U ClrImportant;
+	PXInt32U RedMask;
+	PXInt32U GreenMask;
+	PXInt32U BlueMask;
+	PXInt32U AlphaMask;
+	PXInt32U CSType;
+
+	PXInt32U EndpointRedX;
+	PXInt32U EndpointRedY;
+	PXInt32U EndpointRedZ;
+
+	PXInt32U EndpointGreenX;
+	PXInt32U EndpointGreenY;
+	PXInt32U EndpointGreenZ;
+
+	PXInt32U EndpointBlueX;
+	PXInt32U EndpointBlueY;
+	PXInt32U EndpointBlueZ;
+
+	PXInt32U GammaRed;
+	PXInt32U GammaGreen;
+	PXInt32U GammaBlue;
+	PXInt32U Intent;
+	PXInt32U ProfileData;
+	PXInt32U ProfileSize;
+}
+PXBitmapHeaderV5;
+
 typedef struct PXBitmapInfoHeader_
 {
 	//---<Shared>---
@@ -71,8 +104,8 @@ typedef struct PXBitmapInfoHeader_
 	{
 		PXBitMapInfoHeader BitMapInfo;
 		PXOS22XBitMapHeader OS22XBitMap;
-	}
-	ExtendedInfo;
+		PXBitmapHeaderV5 HeaderV5;
+	};
 }
 PXBitmapInfoHeader;
 

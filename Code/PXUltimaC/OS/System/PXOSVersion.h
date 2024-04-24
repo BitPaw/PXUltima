@@ -300,8 +300,50 @@ PXWindowsVersion;
 #endif
 //---------------------------------------------------------
 
-void PXOSVersionGet(); 
+typedef enum PXOSManufacturer_
+{
+    PXOSManufacturerInvalid,
+    PXOSManufacturerLinux,
+    PXOSManufacturerAppleOSX,
+    PXOSManufacturerWindows
+}
+PXOSManufacturer;
 
+typedef enum PXOSWindowsversion_
+{
+    PXOSWindowsversionInvalid,
+    PXOSWindowsversion3x11,
+    PXOSWindowsversionNT,
+    PXOSWindowsversion95,
+    PXOSWindowsversion98,
+    PXOSWindowsversion98SE,
+    PXOSWindowsversion2000,
+    PXOSWindowsversionXP,
+    PXOSWindowsversionVista,
+    PXOSWindowsversion7,
+    PXOSWindowsversion8,
+    PXOSWindowsversion8x1,
+    PXOSWindowsversion10,
+    PXOSWindowsversion11,
+    PXOSWindowsversion12
+}
+PXOSWindowsversion;
 
+typedef struct PXOSVersionInfo_
+{
+    PXOSManufacturer Manufacturer;
+
+    int VersionMajor;
+    int VersionMinor;
+
+    union
+    {
+        PXOSWindowsversion VersionWindows;
+    };
+
+}
+PXOSVersionInfo;
+
+void PXOSVersionGet(PXOSVersionInfo* const pxOSVersionInfo);
 
 #endif

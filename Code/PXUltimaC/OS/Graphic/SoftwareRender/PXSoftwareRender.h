@@ -44,6 +44,8 @@ PXPublic void PXAPI PXImageDrawTextW
 	const PXFont* const font,
 	const wchar_t* text
 );
+
+#pragma optimize( "", off )
 PXPublic void PXAPI PXImageMerge
 (
 	PXImage* const image,

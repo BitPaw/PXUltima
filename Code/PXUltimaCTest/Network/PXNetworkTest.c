@@ -6,12 +6,12 @@
 
 void PXTestNetworkAll()
 {
-	PXConsoleWriteA("[i] Network testing start\n");
+	PXConsoleWrite(0, "[i] Network testing start\n");
 
 	PXTestNetworkClient();
 	//PXTestNetworkServer();
 
-	PXConsoleWriteA("[i] Network testing done\n");
+	PXConsoleWrite(0, "[i] Network testing done\n");
 }
 
 void PXTestNetworkServer()

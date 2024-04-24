@@ -2,7 +2,7 @@
 
 #include <OS/Memory/PXMemory.h>
 #include <Media/PXText.h>
-#include <stdio.h>
+#include <OS/Console/PXConsole.h>
 
 void PXAPI PXMouseInputReset(PXMouse* const mouse)
 {
@@ -18,8 +18,12 @@ void PXAPI PXMouseInputPrint(const PXMouse* const mouse)
 	
 	PXTextFromBinaryDataA(&mouse->Buttons, sizeof(PXInt8U), buttons, buttonTextSize);
 
-	printf
+	PXLogPrint
 	(
+		PXLoggingInfo,
+		"Mouse",
+		"Input",
+		"Data\n",
 		"+-----------+---------------|\n"
 		"| Position  | %4i / %-4i |\n"
 		"| InputAxis | %-3.2f / %-3.2f |\n"

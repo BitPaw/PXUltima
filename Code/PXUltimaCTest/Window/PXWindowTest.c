@@ -18,16 +18,12 @@ void PXAPI PXTestWindowAll()
 
 void PXAPI PXTestWindowOpenClose()
 {
-	PXWindow pxWindow;
-	PXWindowConstruct(&pxWindow);
+	//PXWindow pxWindow;
+	//PXWindowConstruct(&pxWindow);
 
+	//PXWindowCreateA(&pxWindow, -1, -1, -1, -1, "TEST", PXFalse);
 
-	PXWindowCreateA(&pxWindow, -1, -1, -1, -1, "TEST", PXFalse);
-
-
-
-
-	PXWindowDestruct(&pxWindow);
+	//PXWindowDestruct(&pxWindow);
 }
 
 void PXAPI PXTestWindowOpenUIRender()

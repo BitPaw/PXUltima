@@ -810,7 +810,6 @@ typedef void (PXOpenGLAPI* glGetDoublei_vFunction)(GLenum target, GLuint index, 
 typedef void (PXOpenGLAPI* glGetInteger64i_vFunction)(GLenum target, GLuint index, PXInt64U* data);
 
 
-typedef struct PXWindow_ PXWindow;
 typedef struct PXGraphicDevicePhysical_	PXGraphicDevicePhysical;
 
 
@@ -883,8 +882,6 @@ typedef struct PXOpenGL_
 	PXOpenGLConextID ContextHandle;
 
 	PXOpenGLVersion Version;
-
-	PXWindow* AttachedWindow;
 
 #if OSUnix
 #elif OSWindows

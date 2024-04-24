@@ -90,7 +90,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 {
 	PXClear(PXCOFF, pxCOFF);
 
-#if PXCOFFDebug
+#if PXLogEnable && PXCOFFDebug
 	PXLogPrint
 	(
 		PXLoggingInfo,
@@ -285,11 +285,11 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 							PXInt32U virtualAddress = 0;
 							PXInt32U size = 0;
 
-							//assert(pxCOFF->OptionalHeader.WindowsNT.NumberOfRvaAndSizes * 2*sizeof(PXInt32U) < pxFile->DataSize);
+							//assert(pxCOFF->OptionalHeader.WindowsNT.NumberOfRvaAndSizes * 2*sizeof(PXInt32U) < pxFile->DataSize);						
 
+#if PXLogEnable && PXCOFFDebug
 							printf("RVA\n");
 
-#if PXCOFFDebug
 							PXLogPrint
 							(
 								PXLoggingInfo,
@@ -304,7 +304,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 								PXFileReadI32U(pxFile, &virtualAddress);
 								PXFileReadI32U(pxFile, &size);
 
-#if PXCOFFDebug
+#if PXLogEnable && PXCOFFDebug
 								PXLogPrint
 								(
 									PXLoggingInfo,
@@ -417,7 +417,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 
 			pxSectionTableCurrent->Type = PXSectionTypeFromID(pxSectionTableCurrent->Name.Value);
 
-#if PXCOFFDebug
+#if PXLogEnable && PXCOFFDebug
 			PXLogPrint
 			(
 				PXLoggingInfo,
@@ -429,8 +429,8 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 				pxSectionTableCurrent->Name.Data,
 				pxSectionTableCurrent->SectionRawDataSize
 			);
-		}
 #endif
+		}
 
 		const PXSize oldPosition = pxFile->DataCursor;
 
@@ -469,6 +469,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 
 						if (isLastEntry)
 						{
+#if PXLogEnable 
 							PXLogPrint
 							(
 								PXLoggingInfo,
@@ -476,6 +477,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 								"Parsing",
 								"[.idata][ImportDirectoryTable] Last entry deteced."
 							);
+#endif
 
 							break;
 						}
@@ -484,6 +486,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 
 						//PXFileCursorRewind(pxFile, namePosition);
 
+#if PXLogEnable 
 						PXLogPrint
 						(
 							PXLoggingInfo,
@@ -491,6 +494,8 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 							"Parsing",
 							"[.idata][ImportDirectoryTable] entry deteced."
 						);
+#endif
+
 
 #if 0
 
@@ -623,7 +628,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 
 				PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
-#if PXCOFFDebug
+#if PXLogEnable && PXCOFFDebug
 				PXLogPrint
 				(
 					PXLoggingInfo,
@@ -658,7 +663,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 				PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
 
-#if PXCOFFDebug
+#if PXLogEnable && PXCOFFDebug
 				PXLogPrint
 				(
 					PXLoggingInfo,
@@ -685,7 +690,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 
 			PXCOFFSymbolTableEntry pxCOFFSymbolTableEntryXX;
 
-#if PXCOFFDebug
+#if PXLogEnable && PXCOFFDebug
 			PXLogPrint
 			(
 				PXLoggingInfo,
@@ -717,7 +722,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 
 				if (pxCOFFSymbolTableEntry->DoesNotUseExternalString && pxCOFFSymbolTableEntry->DoesNotUseExternalString != 0xCCCCCCCC)
 				{
-#if PXCOFFDebug
+#if PXLogEnable && PXCOFFDebug
 					PXLogPrint
 					(
 						PXLoggingInfo,
@@ -737,7 +742,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 					char* xxx = (char*)PXFileCursorPosition(pxFile);
 
 
-#if PXCOFFDebug
+#if PXLogEnable && PXCOFFDebug
 					PXLogPrint
 					(
 						PXLoggingInfo,
@@ -752,7 +757,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 				}
 			}
 		}
-#if PXCOFFDebug
+#if PXLogEnable && PXCOFFDebug
 		else
 		{
 			PXLogPrint
@@ -767,6 +772,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 		
 	}
 
+#if PXLogEnable
 	PXLogPrint
 	(
 		PXLoggingInfo,
@@ -774,6 +780,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 		"Parsing",
 		"--- Finished Parsing ---"
 	);
+#endif
 
 	return PXActionSuccessful;
 }

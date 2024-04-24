@@ -38,6 +38,8 @@ int _fltused = 0;
 #include "Network/PXNetworkTest.h"
 #include "Window/PXWindowTest.h"
 
+#include <OS/Console/PXConsole.h>
+#include <Media/FastFile/PXFastFile.h>
 
 /*
 
@@ -83,10 +85,25 @@ void PXTextMatchTest()
 
 int main()
 {
-	PXConsoleWriteA("[i] Starting testing...\n");
+	PXConsoleWrite(0, "[i] Starting testing...\n");
 
 
 #if 1
+
+	PXResourceLoadInfo pxResourceLoadInfo;
+	pxResourceLoadInfo.Target = 0;
+	pxResourceLoadInfo.FileReference = 0;
+	pxResourceLoadInfo.Type = PXGraphicResourceTypeInvalid;
+
+
+
+	PXResourceLoadA(&pxResourceLoadInfo, "N:\\NAS\\Games\\Steam\\steamapps\\common\\Call of Duty Black Ops II\\zone\\all\\afghanistan.ff");
+
+#endif // 1
+
+
+
+#if 0
 	PXTestWindowAll();
 #endif // 0
 
@@ -597,7 +614,7 @@ int main()
 
 
 
-	PXConsoleWriteA("[i] Finished testing...\n");
+	PXConsoleWrite(0, "[i] Finished testing...\n");
 
 	return 0;
 }

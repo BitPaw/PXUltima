@@ -5,6 +5,7 @@
 
 #include "PXImage.h"
 
+#define PXBoilerPlate 
 
 // Predefine
 typedef enum PXActionResult_ PXActionResult;
@@ -17,6 +18,7 @@ typedef struct PXUIElement_ PXUIElement;
 typedef struct PXFileTypeInfo_ PXFileTypeInfo;
 typedef struct PXCompiler_ PXCompiler;
 
+extern void _chkstk(size_t s);
 
 typedef enum PXRefreshRateMode_
 {
@@ -1334,6 +1336,8 @@ typedef struct PXAudioDevice_
 
 	PXAudioDeviceRole Role;
 	PXAudioDeviceType Type;
+	PXBool IsRunning;
+
 	PXInt32U FXSettingFlagList;
 
 

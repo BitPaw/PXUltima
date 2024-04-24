@@ -317,7 +317,7 @@ PXActionResult PXAPI PXDirectX11TextureAction(PXDirectX11* const pxDirectX11, st
                 }
                 case PXGraphicTextureType2D:
                 {
-                    PXTexture2D* const pxTexture2D = pxGraphicTexturInfo->TextureReference;
+                    PXTexture2D* const pxTexture2D = (PXTexture2D*)pxGraphicTexturInfo->TextureReference;
                     ID3D11Texture2D** texture2D = &(ID3D11Texture2D*)pxTexture2D->ResourceID.DirectXInterface;
 
                     D3D11_TEXTURE2D_DESC textureDescription;

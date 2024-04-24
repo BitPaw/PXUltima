@@ -207,7 +207,6 @@ PXSize PXAPI PXTextPrintV(PXText* const pxText, const char* style, va_list param
 #endif
 			break;
 		}
-
 		case TextFormatUNICODE:
 		{
 #if OSUnix
@@ -1332,7 +1331,7 @@ PXSize PXAPI PXTextFromFloat(PXText* const pxText, const float number)
 #if OSUnix
 			pxText->SizeUsed = snprintf(pxText->TextA, pxText->SizeAllocated, "%f", number);
 #elif OSWindows
-			pxText->SizeUsed = sprintf_s(pxText->TextA, pxText->SizeAllocated, "%f", number);
+			//pxText->SizeUsed = sprintf_s(pxText->TextA, pxText->SizeAllocated, "%f", number);
 #endif
 			return pxText->SizeUsed;
 		}
@@ -1343,7 +1342,7 @@ PXSize PXAPI PXTextFromFloat(PXText* const pxText, const float number)
 #if OSUnix
 			pxText->SizeUsed = snprintf(pxText->TextW, pxText->SizeAllocated, "%f", number);
 #elif OSWindows
-			pxText->SizeUsed = sprintf_s(pxText->TextW, pxText->SizeAllocated, "%f", number);
+			//pxText->SizeUsed = sprintf_s(pxText->TextW, pxText->SizeAllocated, "%f", number);
 #endif
 
 			return pxText->SizeUsed;

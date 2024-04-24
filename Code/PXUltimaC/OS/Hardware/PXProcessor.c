@@ -11,7 +11,8 @@
 
 #include <intrin.h>
 
-#pragma comment(lib, "wbemuuid.lib")
+#pragma comment(lib, "Wbemuuid.lib") // CLSID_WbemLocator 
+
 
 #endif
 
@@ -593,7 +594,7 @@ unsigned int PXAPI PXProcessorFrequencyCurrent()
 #if OSWindows
     FILETIME a, b, c, d;
     const HANDLE process = GetCurrentProcess(); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h 
-    const PXBool sucessful = GetProcessTimes(process, &a, & b, & c, & d); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h 
+    const PXBool sucessful = GetProcessTimes(process, &a, &b, &c, &d); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h 
 
     if (!sucessful)
     {

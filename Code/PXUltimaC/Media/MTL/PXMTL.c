@@ -4,6 +4,7 @@
 #include <Media/PXText.h>
 #include <OS/Memory/PXMemory.h>
 #include <Compiler/PXCompiler.h>
+#include <OS/Console/PXConsole.h>
 
 PXMaterialIlluminationMode PXAPI PXMTLIlluminationModeFromID(const unsigned int illuminationModeID)
 {
@@ -67,6 +68,26 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 	PXInt32U materialAmount = 0;
 	PXMaterial* pxMaterialCurrent = PXNull;
 
+#if PXLogEnable
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"MTL", 
+		"Load", 
+		"---Start---"
+	);
+#endif
+
+#if PXLogEnable
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"MTL",
+		"Parse",
+		"1/4 - Lexer"
+	);
+#endif
+
 	// Lexer - Level I
 	{
 		PXCompilerSettings compilerSettings;
@@ -78,6 +99,17 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 
 		PXCompilerLexicalAnalysis(&pxCompiler, &compilerSettings); // Raw-File-Input -> Lexer tokens
 	}
+
+
+#if PXLogEnable
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"MTL",
+		"Parse",
+		"2/4 - Analyse"
+	);
+#endif
 
 	// Analyse -
 	{
@@ -105,7 +137,16 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 		PXFileCursorToBeginning(&compiledSteam);
 	}
 
-
+#if PXLogEnable
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"MTL",
+		"Parse",
+		"3/4 - Allocating. Detected %i materials",
+		materialAmount
+	);
+#endif
 
 	// Allcoate
 	{
@@ -116,6 +157,15 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 		materialAmount = 0;
 	}
 
+#if PXLogEnable
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"MTL",
+		"Parse",
+		"4/4 - Parse"
+	);
+#endif
 
 	while (!PXFileIsAtEnd(&compiledSteam))
 	{
@@ -165,7 +215,7 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 				// fullTexturePath
 
 
-				PXTextCopyA(nameTexturePath.TextA, nameTexturePath.SizeUsed, pxMaterialCurrent->DiffuseTextureFilePath, 260);
+				PXTextCopyA(fullTexturePath.TextA, fullTexturePath.SizeUsed, pxMaterialCurrent->DiffuseTextureFilePath, 260);
 
 
 				//PXNewZerod(PXTexture2D, &pxMaterialCurrent->DiffuseTexture);				
@@ -266,6 +316,16 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 				break;
 		}
 	}
+
+#if PXLogEnable
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"MTL",
+		"Parse",
+		"---Done---"
+	);
+#endif
 
 	return PXActionSuccessful;
 }

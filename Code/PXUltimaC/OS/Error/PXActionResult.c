@@ -266,15 +266,23 @@ PXActionResult PXAPI PXErrorCodeFromID(const int errorCode)
 
 PXActionResult PXAPI PXErrorCurrent()
 {
+#if OSUnix || OSForcePOSIXForWindows
+
 	const int errorID = errno;
 	const PXActionResult actionResult = PXErrorCodeFromID(errorID);
 
-	/*
-			DWORD error = GetLastError();
-            wchar_t errorBuffer[1024];
-            wsprintf(errorBuffer, L"Error creating window. Error code, decimal %d, hexadecimal %X.", error, error);
-            MessageBox(NULL, errorBuffer, L"Error", MB_ICONHAND);
-	*/
+	return actionResult;
+
+#elif OSWindows
+
+	const DWORD lastErrorID = GetLastError();
+	const PXActionResult actionResult = PXErrorCodeFromID(lastErrorID);
+
+	return actionResult;
+
+#else
+	return PXActionInvalid;
+#endif
 
 	return actionResult;
 }
