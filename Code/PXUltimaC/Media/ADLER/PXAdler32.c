@@ -24,7 +24,7 @@ PXSize PXAPI PXAdler32Create(const PXSize adler, const void* const data, PXSize 
 
     while (length != 0u)
     {
-        /*at least 5552 sums can be done before the sums overflow, saving a lot of module divisions*/
+        // at least 5552 sums can be done before the sums overflow, saving a lot of module divisions
         const PXSize amount = length > 5552u ? 5552u : length;
         
         length -= amount;

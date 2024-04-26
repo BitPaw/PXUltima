@@ -255,7 +255,8 @@ PXActionResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(struct PXFile_* const 
 
 	//if (!ensureBits17(reader, 14)) return 49; //error: the bit pointer is or will go past the memory BBBB
 
-	PXHuffmanTreeConstruct(&tree_cl);
+	PXClear(PXHuffmanTree, &tree_cl);
+
 	PXClearList(PXInt32U, bitlen_lengh, NUM_DEFLATE_CODE_SYMBOLS);
 	PXClearList(PXInt32U, bitlen_distance, NUM_DISTANCE_SYMBOLS);
 	PXClearList(PXInt32U, bitlen_codeLength, NUM_CODE_LENGTH_CODES);
@@ -529,11 +530,6 @@ PXActionResult PXAPI PXHuffmanDistanceTreeGenerateFixed(PXHuffmanTree* const huf
 	const PXActionResult result = PXGenerateFromLengths(huffmanTree, bitlen, numcodes, maxbitlen);
 	
 	return result;
-}
-
-void PXAPI PXHuffmanTreeConstruct(PXHuffmanTree* const huffmanTree)
-{	
-	PXClear(PXHuffmanTree, huffmanTree);
 }
 
 void PXAPI PXHuffmanTreeDestruct(PXHuffmanTree* const huffmanTree)

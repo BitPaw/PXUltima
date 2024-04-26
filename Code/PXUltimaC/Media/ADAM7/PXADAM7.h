@@ -37,6 +37,6 @@ PXPublic PXSize PXAPI PXADAM7lodepng_get_raw_size_idat(PXADAM7* const pxADAM7);
 PXPublic void PXAPI PXADAM7Deinterlace(PXADAM7* const pxADAM7);
 
 PXPublic PXActionResult PXAPI PXADAM7unfilter(PXADAM7* const pxADAM7);
-PXPublic PXActionResult PXAPI PXADAM7unfilterScanline(void* reconXX, const void* scanlineXX, const void* preconXX, PXSize bytewidth, PXInt8U filterType, PXSize length);
+PXPublic PXActionResult PXAPI PXADAM7unfilterScanline(void* reconXX, void* scanlineXX, void* preconXX, PXSize bytewidth, PXInt8U filterType, PXSize length);
 
 #endif

@@ -481,7 +481,18 @@ PXActionResult PXAPI PXMemoryHeapAllocate(PXMemoryInfo* const pxMemoryInfo)
 
 #if MemoryUseSystemFunction
 
-		if(true)
+#if 1
+		if(pxMemoryInfo->MemoryClear)
+		{
+			allocatedMemory = calloc(pxMemoryInfo->Amount, pxMemoryInfo->TypeSize);
+		}
+		else
+		{
+			allocatedMemory = malloc(allocationSize);
+		}
+#else
+
+		if(!pxMemoryInfo->MemoryClear)
 		{
 			allocatedMemory = _malloc_dbg(pxMemoryInfo->Amount, pxMemoryInfo->TypeSize, _NORMAL_BLOCK, pxMemoryInfo->File, pxMemoryInfo->Line); // crtdbg.h
 		}
@@ -489,6 +500,7 @@ PXActionResult PXAPI PXMemoryHeapAllocate(PXMemoryInfo* const pxMemoryInfo)
 		{
 			allocatedMemory = _calloc_dbg(pxMemoryInfo->Amount, pxMemoryInfo->TypeSize, _NORMAL_BLOCK, pxMemoryInfo->File, pxMemoryInfo->Line); // crtdbg.h
 		}
+#endif
 
 		
 #else
@@ -566,6 +578,7 @@ PXActionResult PXAPI PXMemoryHeapDeallocate(PXMemoryInfo* const pxMemoryInfo)
 #endif
 
 #if MemoryUseSystemFunction
+	//_free_dbg(*pxMemoryInfo->Data, _NORMAL_BLOCK);
 	free(*pxMemoryInfo->Data);
 #else
 

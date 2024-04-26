@@ -42,8 +42,8 @@ PXPublic PXSize PXAPI PXMathMaximumIU(const PXSize a, const PXSize b);
 PXPublic int PXAPI PXMathFloorI(const int a);
 PXPublic int PXAPI PXMathFloorD(const double a);
 
-PXPublic PXSize PXAPI PXMathAbsoluteI16(const PXInt16S value);
-PXPublic PXSize PXAPI PXMathAbsoluteI32(const PXInt32S value);
+PXPublic PXInt16U PXAPI PXMathAbsoluteI16(const PXInt16S value);
+PXPublic PXInt32U PXAPI PXMathAbsoluteI32(const PXInt32S value);
 PXPublic double PXAPI PXMathAbsoluteD(const double value);
 
 

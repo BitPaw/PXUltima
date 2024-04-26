@@ -702,16 +702,26 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
         //---------------------------------------------------------------------
         // ZLIB
         //---------------------------------------------------------------------
-        PXFile PXZLIBStream;
-        PXFileBufferExternal(&PXZLIBStream, imageDataChunkCache, imageDataChunkCacheSizeUSED);
+        PXFile pxZLIBStream;
+        PXFileBufferExternal(&pxZLIBStream, imageDataChunkCache, imageDataChunkCacheSizeUSED);
 
         const PXSize expectedPXZLIBCacheSize = PXZLIBCalculateExpectedSize(png.ImageHeader.Width, png.ImageHeader.Height, bitsPerPixel, png.ImageHeader.InterlaceMethod);
 
         PXFile pxZLIBResultStream;
         PXFileMapToMemory(&pxZLIBResultStream, expectedPXZLIBCacheSize, PXMemoryAccessModeReadAndWrite);
 
-        const PXActionResult actionResult = PXZLIBDecompress(&PXZLIBStream, &pxZLIBResultStream);
+
+
+        const PXActionResult actionResult = PXZLIBDecompress(&pxZLIBStream, &pxZLIBResultStream);
         const PXBool success = PXActionSuccessful == actionResult;
+
+#if 0
+        FILE* fileZLIB = fopen("P:\\_Cache\\ZLIB_TEST_PX.bin", "wb");
+
+        fwrite(pxZLIBResultStream.Data, 1, pxZLIBResultStream.DataCursor, fileZLIB);
+
+        fclose(fileZLIB);
+#endif
 
         if (!success)
         {
@@ -725,8 +735,9 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
         // ADAM7
         //---------------------------------------------------------------------
         PXADAM7 pxADAM7;
-        pxADAM7.DataInput = PXNull;
-        pxADAM7.DataOutput = PXNull;
+        PXClear(PXADAM7, &pxADAM7);
+        pxADAM7.DataInput = pxZLIBResultStream.Data;
+        pxADAM7.InputSize = pxZLIBResultStream.DataSize;
         pxADAM7.Width = png.ImageHeader.Width;
         pxADAM7.Height = png.ImageHeader.Height;
         pxADAM7.BitsPerPixel = bitsPerPixel;
@@ -735,7 +746,6 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
         const PXSize expectedadam7CacheSize = PXADAM7CaluclateExpectedSize(&pxADAM7);
 
         PXNewList(PXByte, expectedadam7CacheSize, &pxADAM7.DataOutput, &pxADAM7.OutputSize);
-        pxADAM7.DataInput = pxZLIBResultStream.Data;
 
         const PXActionResult scanDecodeResult = PXADAM7ScanlinesDecode(&pxADAM7);
         //---------------------------------------------------------------------
@@ -2507,9 +2517,9 @@ void addColorBits(unsigned char* out, PXSize index, unsigned int bits, unsigned 
     }
 }
 
-unsigned char readBitFromReversedStream(PXSize* bitpointer, const void* bitstream)
+unsigned char readBitFromReversedStream(PXSize* bitpointer, const char* bitstream)
 {
-    unsigned char result = (unsigned char)((((char*)bitstream)[(*bitpointer) >> 3] >> (7 - ((*bitpointer) & 0x7))) & 1);
+    unsigned char result = (unsigned char)((bitstream[(*bitpointer) >> 3] >> (7 - ((*bitpointer) & 0x7))) & 1);
     ++(*bitpointer);
     return result;
 }

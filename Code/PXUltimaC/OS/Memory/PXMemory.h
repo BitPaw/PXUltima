@@ -17,7 +17,7 @@ typedef unsigned long PXMemoryAccessModeType;// DWORD
 #define MemoryAssertEnable 0
 #define PXMemoryDebug 1
 #define MemoryDebugLeakDetection 0
-#define MemoryUseSystemFunction 0
+#define MemoryUseSystemFunction 1
 #define MemorySanitise 0
 //----------------
 

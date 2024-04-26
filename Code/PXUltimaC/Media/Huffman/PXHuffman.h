@@ -46,8 +46,6 @@ typedef struct PXHuffmanTree_
 }
 PXHuffmanTree;
 
-
-PXPublic void PXAPI PXHuffmanTreeConstruct(PXHuffmanTree* const huffmanTree);
 PXPublic void PXAPI PXHuffmanTreeDestruct(PXHuffmanTree* const huffmanTree);
 
 // Literal : 0 <= x < 256

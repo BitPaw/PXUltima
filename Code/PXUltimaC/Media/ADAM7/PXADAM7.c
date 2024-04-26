@@ -2,6 +2,7 @@
 
 #include <Math/PXMath.h>
 #include <OS/Error/PXActionResult.h>
+#include <OS/Console/PXConsole.h>
 
 /*Try the code, if it returns error, also return the error.*/
 #define CERROR_TRY_RETURN(call){\
@@ -18,6 +19,16 @@ const PXInt8U PXADAM7_DY[7] = { 8, 8, 8, 4, 4, 2, 2 }; /*y delta values*/
 
 PXActionResult PXAPI PXADAM7ScanlinesDecode(PXADAM7* const pxADAM7)
 {
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "ADAM7", 
+        "ScanlinesDecode", 
+        "BitPerPixel:%i",
+        pxADAM7->BitsPerPixel
+    );
+
+
     /*
      This function converts the filtered-padded-interlaced data into pure 2D image buffer with the PNG's colortype.
      Steps:
@@ -43,7 +54,15 @@ PXActionResult PXAPI PXADAM7ScanlinesDecode(PXADAM7* const pxADAM7)
     {
         case PXPNGInterlaceNone:
         {
-            const PXSize additionalStep = 
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "ADAM7",
+                "ScanlinesDecode",
+                "Interlace: None"
+            );
+
+            const PXBool additionalStep = 
                 pxADAM7->BitsPerPixel < 8 && 
                 pxADAM7->Width * pxADAM7->BitsPerPixel !=
                 ((pxADAM7->Width * pxADAM7->BitsPerPixel + 7u) / 8u) * 8u;
@@ -85,6 +104,14 @@ PXActionResult PXAPI PXADAM7ScanlinesDecode(PXADAM7* const pxADAM7)
         }    
         case PXPNGInterlaceADAM7:
         {
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "ADAM7",
+                "ScanlinesDecode",
+                "Interlace: ADAM7"
+            );
+
             unsigned passw[7], passh[7];
             PXSize filter_passstart[8], padded_passstart[8], passstart[8];
 
@@ -147,19 +174,20 @@ PXSize PXAPI PXADAM7CaluclateExpectedSize(PXADAM7* const pxADAM7)
 
 unsigned char PXAPI PXADAM7paethPredictor(short a, short b, short c)
 {
-    short pa = PXMathAbsoluteI16(b - c);
-    short pb = PXMathAbsoluteI16(a - c);
-    short pc = PXMathAbsoluteI16(a + b - c - c);
+    PXInt16U pa = PXMathAbsoluteI16(b - c);
+    PXInt16U pb = PXMathAbsoluteI16(a - c);
+    PXInt16U pc = PXMathAbsoluteI16(a + b - c - c);
     /* return input value associated with smallest of pa, pb, pc (with certain priority if equal) */
     if (pb < pa) { a = b; pa = pb; }
     return (pc < pa) ? c : a;
 }
 
+// OK
 PXActionResult PXAPI PXADAM7unfilterScanline(void* reconXX, const void* scanlineXX, const void* preconXX, PXSize bytewidth, PXInt8U filterType, PXSize length)
 {
-    char* recon = (char*)reconXX;
-    const char* scanline = (char*)scanlineXX;
-    const char* precon = (char*)preconXX;
+    char* const recon = (char*)reconXX;
+    char* const scanline = (char*)scanlineXX;
+    char* const precon = (char*)preconXX;
 
     /*
  For PNG filter method 0
@@ -174,50 +202,53 @@ PXActionResult PXAPI PXADAM7unfilterScanline(void* reconXX, const void* scanline
     {
         case 0:
         {
-            for (PXSize i = 0; i != length; ++i)
+            for(PXSize i = 0; i != length; ++i)
                 recon[i] = scanline[i];
+     
+
             //PXMemoryMove(scanline, length, recon, length);
             break;
         }
         case 1:
         {            
             PXSize j = 0;
-            for (PXSize i = 0; i != bytewidth; ++i) 
+
+            for(PXSize i = 0; i != bytewidth; ++i) 
                 recon[i] = scanline[i];
 
-            for (PXSize i = bytewidth; i != length; ++i, ++j) 
+            for(PXSize i = bytewidth; i != length; ++i, ++j) 
                 recon[i] = scanline[i] + recon[j];
+
            // PXMemoryMove(scanline, bytewidth, recon, bytewidth);
 
-           // for (PXSize i = bytewidth, j = 0; i != length; ++i, ++j)
-            //    ((PXByte*)recon)[i] = ((PXByte*)scanline)[i] + ((PXByte*)recon)[j];
+            //for (PXSize i = bytewidth, j = 0; i != length; ++i, ++j)
+             //   ((PXByte*)recon)[i] = ((PXByte*)scanline)[i] + ((PXByte*)recon)[j];
 
             break;
         }
         case 2:
             if (precon)
             {
-                for (PXSize i = 0; i != length; ++i) 
+                for(PXSize i = 0; i != length; ++i) 
                     recon[i] = scanline[i] + precon[i];
             }
             else
             {
-                for (PXSize i = 0; i != length; ++i) 
+                for(PXSize i = 0; i != length; ++i) 
                     recon[i] = scanline[i];
             }
             break;
         case 3:
-            if (precon)
+            if(precon)
             {
                 PXSize j = 0;
                 PXSize i = 0;
-                for (i = 0; i != bytewidth; ++i) 
-                    recon[i] = scanline[i] + (precon[i] >> 1u);
+                for(i = 0; i != bytewidth; ++i) recon[i] = scanline[i] + (precon[i] >> 1u);
                 /* Unroll independent paths of this predictor. A 6x and 8x version is also possible but that adds
                 too much code. Whether this speeds up anything depends on compiler and settings. */
-                if (bytewidth >= 4)
+                if(bytewidth >= 4)
                 {
-                    for (; i + 3 < length; i += 4, j += 4)
+                    for(; i + 3 < length; i += 4, j += 4)
                     {
                         unsigned char s0 = scanline[i + 0], r0 = recon[j + 0], p0 = precon[i + 0];
                         unsigned char s1 = scanline[i + 1], r1 = recon[j + 1], p1 = precon[i + 1];
@@ -229,9 +260,9 @@ PXActionResult PXAPI PXADAM7unfilterScanline(void* reconXX, const void* scanline
                         recon[i + 3] = s3 + ((r3 + p3) >> 1u);
                     }
                 }
-                else if (bytewidth >= 3)
+                else if(bytewidth >= 3)
                 {
-                    for (; i + 2 < length; i += 3, j += 3)
+                    for(; i + 2 < length; i += 3, j += 3)
                     {
                         unsigned char s0 = scanline[i + 0], r0 = recon[j + 0], p0 = precon[i + 0];
                         unsigned char s1 = scanline[i + 1], r1 = recon[j + 1], p1 = precon[i + 1];
@@ -241,9 +272,9 @@ PXActionResult PXAPI PXADAM7unfilterScanline(void* reconXX, const void* scanline
                         recon[i + 2] = s2 + ((r2 + p2) >> 1u);
                     }
                 }
-                else if (bytewidth >= 2)
+                else if(bytewidth >= 2)
                 {
-                    for (; i + 1 < length; i += 2, j += 2)
+                    for(; i + 1 < length; i += 2, j += 2)
                     {
                         unsigned char s0 = scanline[i + 0], r0 = recon[j + 0], p0 = precon[i + 0];
                         unsigned char s1 = scanline[i + 1], r1 = recon[j + 1], p1 = precon[i + 1];
@@ -251,30 +282,30 @@ PXActionResult PXAPI PXADAM7unfilterScanline(void* reconXX, const void* scanline
                         recon[i + 1] = s1 + ((r1 + p1) >> 1u);
                     }
                 }
-                for (; i != length; ++i, ++j) recon[i] = scanline[i] + ((recon[j] + precon[i]) >> 1u);
+                for(; i != length; ++i, ++j) recon[i] = scanline[i] + ((recon[j] + precon[i]) >> 1u);
             }
             else
             {
                 PXSize j = 0;
-                for (PXSize i = 0; i != bytewidth; ++i) recon[i] = scanline[i];
-                for (PXSize i = bytewidth; i != length; ++i, ++j) recon[i] = scanline[i] + (recon[j] >> 1u);
+                for(PXSize i = 0; i != bytewidth; ++i) recon[i] = scanline[i];
+                for(PXSize i = bytewidth; i != length; ++i, ++j) recon[i] = scanline[i] + (recon[j] >> 1u);
             }
             break;
         case 4:
-            if (precon)
+            if(precon)
             {
                 PXSize j = 0;
                 PXSize i = 0;
-                for (i = 0; i != bytewidth; ++i)
+                for(i = 0; i != bytewidth; ++i)
                 {
                     recon[i] = (scanline[i] + precon[i]); /*paethPredictor(0, precon[i], 0) is always precon[i]*/
                 }
 
                 /* Unroll independent paths of the paeth predictor. A 6x and 8x version is also possible but that
                 adds too much code. Whether this speeds up anything depends on compiler and settings. */
-                if (bytewidth >= 4)
+                if(bytewidth >= 4)
                 {
-                    for (; i + 3 < length; i += 4, j += 4)
+                    for(; i + 3 < length; i += 4, j += 4)
                     {
                         unsigned char s0 = scanline[i + 0], s1 = scanline[i + 1], s2 = scanline[i + 2], s3 = scanline[i + 3];
                         unsigned char r0 = recon[j + 0], r1 = recon[j + 1], r2 = recon[j + 2], r3 = recon[j + 3];
@@ -286,9 +317,9 @@ PXActionResult PXAPI PXADAM7unfilterScanline(void* reconXX, const void* scanline
                         recon[i + 3] = s3 + PXADAM7paethPredictor(r3, p3, q3);
                     }
                 }
-                else if (bytewidth >= 3)
+                else if(bytewidth >= 3)
                 {
-                    for (; i + 2 < length; i += 3, j += 3)
+                    for(; i + 2 < length; i += 3, j += 3)
                     {
                         unsigned char s0 = scanline[i + 0], s1 = scanline[i + 1], s2 = scanline[i + 2];
                         unsigned char r0 = recon[j + 0], r1 = recon[j + 1], r2 = recon[j + 2];
@@ -299,9 +330,9 @@ PXActionResult PXAPI PXADAM7unfilterScanline(void* reconXX, const void* scanline
                         recon[i + 2] = s2 + PXADAM7paethPredictor(r2, p2, q2);
                     }
                 }
-                else if (bytewidth >= 2)
+                else if(bytewidth >= 2)
                 {
-                    for (; i + 1 < length; i += 2, j += 2)
+                    for(; i + 1 < length; i += 2, j += 2)
                     {
                         unsigned char s0 = scanline[i + 0], s1 = scanline[i + 1];
                         unsigned char r0 = recon[j + 0], r1 = recon[j + 1];
@@ -312,7 +343,7 @@ PXActionResult PXAPI PXADAM7unfilterScanline(void* reconXX, const void* scanline
                     }
                 }
 
-                for (; i != length; ++i, ++j)
+                for(; i != length; ++i, ++j)
                 {
                     recon[i] = (scanline[i] + PXADAM7paethPredictor(recon[i - bytewidth], precon[i], precon[j]));
                 }
@@ -320,11 +351,11 @@ PXActionResult PXAPI PXADAM7unfilterScanline(void* reconXX, const void* scanline
             else
             {
                 PXSize j = 0;
-                for (PXSize i = 0; i != bytewidth; ++i)
+                for(PXSize i = 0; i != bytewidth; ++i)
                 {
                     recon[i] = scanline[i];
                 }
-                for (PXSize i = bytewidth; i != length; ++i, ++j)
+                for(PXSize i = bytewidth; i != length; ++i, ++j)
                 {
                     /*paethPredictor(recon[i - bytewidth], 0, 0) is always recon[i - bytewidth]*/
                     recon[i] = (scanline[i] + recon[j]);
@@ -363,7 +394,7 @@ PXActionResult PXAPI PXADAM7unfilter(PXADAM7* const pxADAM7)
     const PXSize bytewidth = (pxADAM7->BitsPerPixel + 7u) / 8u;
     /*the width of a scanline in bytes, not including the filter type*/
 
-    unsigned char* prevline = 0;
+    void* prevline = 0;
     PXSize linebytes = 0;
 
     {
@@ -383,13 +414,13 @@ PXActionResult PXAPI PXADAM7unfilter(PXADAM7* const pxADAM7)
         const PXSize outindex = linebytes * y;
         const PXSize inindex = (1 + linebytes) * y; /*the extra filterbyte added to each row*/
         const PXInt8U filterType = ((PXInt8U*)pxADAM7->DataInput)[inindex];
-        void* outPoint = &((char*)pxADAM7->DataOutput)[outindex];
-        void* inPoint = &((char*)pxADAM7->DataInput)[inindex + 1];
+        void* outPoint = (char*)pxADAM7->DataOutput + outindex;
+        void* inPoint = (char*)pxADAM7->DataInput + inindex + 1;
 
         PXActionResult unfilterResult = PXADAM7unfilterScanline(outPoint, inPoint, prevline, bytewidth, filterType, linebytes);
         PXActionReturnOnError(unfilterResult);
 
-        prevline = &((PXInt8U*)pxADAM7->DataOutput)[outindex];
+        prevline = (char*)pxADAM7->DataOutput + outindex;
     }
 
     return PXActionSuccessful;

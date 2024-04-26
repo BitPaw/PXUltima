@@ -178,8 +178,8 @@ PXActionResult PXAPI PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const p
                 PXHuffmanTree literalAndLengthCodes;
                 PXHuffmanTree distanceCodes;
 
-                PXHuffmanTreeConstruct(&literalAndLengthCodes);
-                PXHuffmanTreeConstruct(&distanceCodes);
+                PXClear(PXHuffmanTree, &literalAndLengthCodes);
+                PXClear(PXHuffmanTree, &distanceCodes);
 
                 switch(deflateBlock.EncodingMethod)
                 {
@@ -662,8 +662,8 @@ unsigned deflateFixed
 
     PXSize error = 0;
 
-    PXHuffmanTreeConstruct(&tree_ll);
-    PXHuffmanTreeConstruct(&tree_d);
+    PXClear(PXHuffmanTree, &tree_ll);
+    PXClear(PXHuffmanTree, &tree_d);
 
     PXHuffmanDistanceTreeGenerateFixedLiteralLengthTree(&tree_ll);
     PXHuffmanDistanceTreeGenerateFixed(&tree_d);
@@ -1295,9 +1295,10 @@ unsigned deflateDynamic
     PXSize HLIT, HDIST, HCLEN;
 
 
-    PXHuffmanTreeConstruct(&tree_ll);
-    PXHuffmanTreeConstruct(&tree_d);
-    PXHuffmanTreeConstruct(&tree_cl);
+    PXClear(PXHuffmanTree, &tree_ll);
+    PXClear(PXHuffmanTree, &tree_d);
+    PXClear(PXHuffmanTree, &tree_cl);
+
     /* could fit on stack, but >1KB is on the larger side so allocate instead */
 
     /*This while loop never loops due to a break at the end, it is here to
