@@ -710,18 +710,8 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
         PXFile pxZLIBResultStream;
         PXFileMapToMemory(&pxZLIBResultStream, expectedPXZLIBCacheSize, PXMemoryAccessModeReadAndWrite);
 
-
-
         const PXActionResult actionResult = PXZLIBDecompress(&pxZLIBStream, &pxZLIBResultStream);
         const PXBool success = PXActionSuccessful == actionResult;
-
-#if 0
-        FILE* fileZLIB = fopen("P:\\_Cache\\ZLIB_TEST_PX.bin", "wb");
-
-        fwrite(pxZLIBResultStream.Data, 1, pxZLIBResultStream.DataCursor, fileZLIB);
-
-        fclose(fileZLIB);
-#endif
 
         if (!success)
         {
@@ -748,6 +738,7 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
         PXNewList(PXByte, expectedadam7CacheSize, &pxADAM7.DataOutput, &pxADAM7.OutputSize);
 
         const PXActionResult scanDecodeResult = PXADAM7ScanlinesDecode(&pxADAM7);
+
         //---------------------------------------------------------------------
 
         //---------------------------------------------------------------------

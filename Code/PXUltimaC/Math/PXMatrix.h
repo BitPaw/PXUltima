@@ -83,9 +83,12 @@ PXPublic void PXAPI PXMatrix4x4FResetAxisW(PXMatrix4x4F* const matrix4x4F);
 PXPublic void PXAPI PXMatrix4x4FPositionGet(const PXMatrix4x4F* const matrix, PXVector3F* const position);
 PXPublic void PXAPI PXMatrix4x4FPositionSet(PXMatrix4x4F* const matrix4x4F, const PXVector3F* const position);
 
+PXPublic void PXAPI PXMatrix4x4FRotationGet(const PXMatrix4x4F* const matrix, PXVector3F* const position);
+PXPublic void PXAPI PXMatrix4x4FRotationSet(PXMatrix4x4F* const matrix4x4F, const PXVector3F* const position);
+PXPublic void PXAPI PXMatrix4x4FRotationMatrixGenerate(PXMatrix4x4F* const matrix4x4F, PXVector3F* const position);
 
 PXPublic void PXAPI PXMatrix4x4FMultiply(const PXMatrix4x4F* matrixA, const PXMatrix4x4F* matrixB, PXMatrix4x4F* const matrixResult);
-PXPublic void PXAPI PXMatrix4x4FRotate(PXMatrix4x4F* const matrix4x4F, const float x, const float y, const float z);
+PXPublic void PXAPI PXMatrix4x4FRotate(PXMatrix4x4F* const matrix4x4F, const PXVector3F* const vector3F);
 
 PXPublic void PXAPI PXMatrix4x4FCopy(const PXMatrix4x4F* const matrixA, PXMatrix4x4F* const matrixResult);
 

@@ -668,22 +668,98 @@ void PXAPI PXCameraMove(PXCamera* const camera, const PXVector3F* const vector3F
 
 void PXAPI PXCameraFollow(PXCamera* const camera, const float deltaTime)
 {
-    PXVector3F cameraPositionCurrent;
-    PXVector3F desiredPosition;
+    PXVector3F positionCurrent;
+    PXVector3F positionDesired;
+
+    PXVector3F rotationCurrent;
+    PXVector3F rotationDesired;
+
+    PXVector3F positionDelta;
+    PXVector3F rotationDelta;
 
     if (!camera->Target)
     {
         return;
     }
 
-    PXMatrix4x4FPositionGet(&camera->MatrixModel, &cameraPositionCurrent); // Get current camera pos
-    PXMatrix4x4FPositionGet(camera->Target, &desiredPosition); // get current target pos
+    PXMatrix4x4FPositionGet(&camera->MatrixModel, &positionCurrent); // Get current camera pos
+    PXMatrix4x4FPositionGet(camera->Target, &positionDesired); // get current target pos
 
-    PXVector3FAdd(&desiredPosition, &camera->Offset); // add offset to target pos
 
-    PXVector3FInterpolate(&cameraPositionCurrent, &desiredPosition, camera->FollowSpeed * deltaTime, &desiredPosition); // calculate delta movement
 
-    PXMatrix4x4FPositionSet(&camera->MatrixModel, &desiredPosition); // Set delte movement
+    PXMatrix4x4FRotationGet(&camera->MatrixView, &rotationCurrent); // Get current camera pos
+    PXMatrix4x4FRotationGet(camera->Target, &rotationDesired); // get current target pos
+
+    camera->FollowSpeed = 12.3;
+
+    //PXVector3FAdd(&positionCurrent, &camera->Offset); // add offset to target pos
+    PXVector3FAdd(&positionDesired, &camera->Offset); // add offset to target pos
+
+
+    PXVector3F eye = {0,0,0};
+    PXVector3F center = {0,0,0};
+    PXVector3F up = {0,1,0};
+
+   // PXMatrix4x4FLookAt(&camera->MatrixModel, &eye, &desiredPosition, &up);
+
+    PXVector3FInterpolate(&positionDesired, &positionCurrent, camera->FollowSpeed * deltaTime); // calculate delta movement
+    PXVector3FInterpolate(&rotationDesired, &rotationCurrent, camera->FollowSpeed * deltaTime); // calculate delta movement
+
+#if 0 
+    // Not how i want it. 
+    // Problem: it snaps to strong if you get in range, then no movement until were too far away again.
+    // We need a deadzone- then a softstart, then a rampup the further away we are
+
+    PXVector3FSet(&positionDelta, &positionCurrent);
+    PXVector3FSubstract(&positionDelta, &positionDesired);
+    PXVector3FAbsolute(&positionDelta);
+
+    PXVector3FSet(&rotationDelta, &rotationCurrent);
+    PXVector3FSubstract(&rotationDelta, &rotationDesired);
+    PXVector3FAbsolute(&positionDelta);
+
+    if(positionDelta.X < camera->DeadZone.X)
+    {
+        // Cancel X movement
+        positionDesired.X = positionCurrent.X;
+    }
+
+    if(positionDelta.Y < camera->DeadZone.Y)
+    {
+        // Cancel Y movement
+        positionDesired.Y = positionCurrent.Y;
+    }
+
+    if(positionDelta.Z < camera->DeadZone.Z)
+    {
+        // Cancel Z movement
+        positionDesired.Z = positionCurrent.Z;
+    }
+#endif
+
+
+
+    PXMatrix4x4FPositionSet(&camera->MatrixModel, &positionDesired); // Set delte movement
+    PXMatrix4x4FRotationSet(&camera->MatrixView, &rotationDesired);
+
+
+    PXVector3F rotation;
+
+    PXMatrix4x4FRotationGet(&camera->MatrixView, &rotation);
+
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "Camera",
+        "Follow",
+        "x:%6.2f y:%6.2f z:%6.2f, Yaw:%6.2f Pitch:%6.2f Roll:%6.2f",
+        camera->Target->Data[TransformX],
+        camera->Target->Data[TransformY],
+        camera->Target->Data[TransformZ],
+        PXMathRadiansToDegree(rotation.X),
+        PXMathRadiansToDegree(rotation.Y),
+        PXMathRadiansToDegree(rotation.Z)
+    );
 }
 
 void PXAPI PXCameraUpdate(PXCamera* const camera, const float deltaTime)

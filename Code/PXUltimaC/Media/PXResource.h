@@ -891,6 +891,11 @@ typedef enum PXCameraPerspective_
 }
 PXCameraPerspective;
 
+#define PXCameraFollowPosition 0
+#define PXCameraFollowRotation 0
+#define PXCameraFollowRotationY 0
+
+
 typedef struct PXCamera_
 {
 	PXMatrix4x4F MatrixModel;
@@ -902,6 +907,8 @@ typedef struct PXCamera_
 
 	//---<Follow>---
 	PXVector3F Offset;
+	PXVector3F DeadZone;
+	//PXInt8U TargetFollowFlag;
 	PXMatrix4x4F* Target;
 	float FollowSpeed; // Ranges from 0 to 1 .. FollowSpeed; = 0.98f
 

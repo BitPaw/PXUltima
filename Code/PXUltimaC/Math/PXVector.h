@@ -75,7 +75,10 @@ PXPublic float PXAPI PXVector2FDotProduct(const PXVector2F* const vectorA, const
 // Vector3
 //-----------------------------------------------------
 PXPublic void PXAPI PXVector3FConstruct(PXVector3F* const pxVector3F);
+PXPublic void PXAPI PXVector3FSet(PXVector3F* const pxVector3F, const PXVector3F* const pxVector3FSource);
 PXPublic void PXAPI PXVector3FSetXYZ(PXVector3F* const pxVector3F, const float x, const float y, const float z);
+
+PXPublic void PXAPI PXVector3FAbsolute(PXVector3F* const pxVector3F);
 
 PXPublic void PXAPI PXVector3FAdd(PXVector3F* const pxVector3F, const PXVector3F* const vectorB);
 PXPublic void PXAPI PXVector3FAddXYZ(PXVector3F* const pxVector3F, const float x, const float y, const float z);
@@ -95,7 +98,7 @@ PXPublic float PXAPI PXVector3FLength(const PXVector3F* const vector);
 
 PXPublic void PXAPI PXVector3FCrossProduct(const PXVector3F* const vectorA, const PXVector3F* const vectorB, PXVector3F* const vectorResult);
 PXPublic float PXAPI PXVector3FDotProduct(const PXVector3F* const vectorA, const PXVector3F* const vectorB);
-PXPublic void PXAPI PXVector3FInterpolate(const PXVector3F* const vectorA, const PXVector3F* const vectorB, const float speed, PXVector3F* const vectorResult);
+PXPublic void PXAPI PXVector3FInterpolate(PXVector3F* const vectorA, const PXVector3F* const vectorB, float speed);
 
 
 

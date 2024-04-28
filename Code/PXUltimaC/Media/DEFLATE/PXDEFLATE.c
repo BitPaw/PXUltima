@@ -8,7 +8,6 @@
 #include <Math/PXMath.h>
 #include <Media/Huffman/PXHuffman.h>
 #include <Media/LZ77/PXLZ77.h>
-#include <OS/Memory/PXMemory.h>
 
 #define DeflateEncodingInvalidID -1
 #define DeflateEncodingLiteralRawID 0b00
@@ -74,7 +73,7 @@ which is possible in case of only 0 or 1 present symbols. */
 #define INVALIDSYMBOL 65535u
 
 
-PXDeflateEncodingMethod PXAPI PXDeflateEncodingMethodFromID(const PXInt8U deflateEncodingMethod)
+PXDeflateEncodingMethod PXDeflateEncodingMethodFromID(const PXInt8U deflateEncodingMethod)
 {
     switch(deflateEncodingMethod)
     {
@@ -95,7 +94,7 @@ PXDeflateEncodingMethod PXAPI PXDeflateEncodingMethodFromID(const PXInt8U deflat
     }
 }
 
-PXInt8U PXAPI PXDeflateEncodingMethodToID(const PXDeflateEncodingMethod deflateEncodingMethod)
+PXInt8U PXDeflateEncodingMethodToID(const PXDeflateEncodingMethod deflateEncodingMethod)
 {
     switch(deflateEncodingMethod)
     {
@@ -114,7 +113,7 @@ PXInt8U PXAPI PXDeflateEncodingMethodToID(const PXDeflateEncodingMethod deflateE
     }
 }
 
-PXActionResult PXAPI PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const pxOutputStream)
+PXActionResult PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const pxOutputStream)
 {
     PXDeflateBlock deflateBlock;
 
@@ -161,7 +160,7 @@ PXActionResult PXAPI PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const p
                     const PXSize readBytes = PXFileReadMultible(pxInputStream, pxDataStreamElementList, sizeof(pxDataStreamElementList));
                     const PXBool validLength = 65535u == (length + lengthInverse);
 
-                    if (!validLength)
+                    if(!validLength)
                     {
                         return PXActionFailedFormatNotAsExpected;
                     }
@@ -291,9 +290,9 @@ PXActionResult PXAPI PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const p
                             /*part 5: fill in all the out[n] values based on the length and dist*/
                             PXSize start = pxOutputStream->DataCursor;//(*outputBufferSizeRead);
 
-                            if(distance > start) 
+                            if(distance > start)
                                 return PXActionRefusedInvalidSymbol; /*too long backward distance*/
-                          
+
                             PXSize backward = start - distance;
 
                             /*(*outputBufferSizeRead)*/ pxOutputStream->DataCursor += length;
@@ -305,11 +304,10 @@ PXActionResult PXAPI PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const p
                             {
                                 start += PXMemoryCopy((PXAdress)pxOutputStream->Data + backward, distance, (PXAdress)pxOutputStream->Data + start, distance);
 
-                                PXSize size = length - distance;
-                                void* a = &((char*)pxOutputStream->Data)[start++];
-                                void* b = &((char*)pxOutputStream->Data)[backward++];
-
-                                PXMemoryCopy(a, size, b, size);
+                                for(PXSize forward = distance; forward < length; ++forward)
+                                {
+                                    ((PXAdress)pxOutputStream->Data)[start++] = ((PXAdress)pxOutputStream->Data)[backward++];
+                                }
                             }
                             else
                             {
@@ -330,8 +328,7 @@ PXActionResult PXAPI PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const p
                 break;
             }
         }
-    }
-    while(!deflateBlock.IsLastBlock);
+    } while(!deflateBlock.IsLastBlock);
 
     //(PXAdress)pxOutputStream->Data -= 2;
 
@@ -361,7 +358,7 @@ typedef struct uivector
 static void uivector_cleanup(void* p)
 {
     ((uivector*)p)->size = ((uivector*)p)->allocsize = 0;
-    PXDelete(PXInt32U,((uivector*)p)->data);
+    PXDelete(PXInt32U, ((uivector*)p)->data);
     ((uivector*)p)->data = NULL;
 }
 
@@ -372,8 +369,7 @@ static unsigned uivector_resize(uivector* p, PXSize size)
     if(allocsize > p->allocsize)
     {
         PXSize newsize = allocsize + (p->allocsize >> 1u);
-        void* data = PXMemoryHeapRealloc(p->data, newsize);
-
+        void* data = realloc(p->data, newsize);
         if(data)
         {
             p->allocsize = newsize;
@@ -417,8 +413,8 @@ struct LodePNGCompressSettings /*deflate = compress*/
 
     /*use custom PXZLIB encoder instead of built in one (default: null)*/
     unsigned (*custom_PXZLIB)(unsigned char**, PXSize*,
-                            const unsigned char*, PXSize,
-                            const LodePNGCompressSettings*);
+                              const unsigned char*, PXSize,
+                              const LodePNGCompressSettings*);
     /*use custom deflate encoder instead of built in one (default: null)
     if custom_PXZLIB is used, custom_deflate is ignored since only the built in
     PXZLIB function will call custom_deflate*/
@@ -454,8 +450,7 @@ typedef struct Hash
     int* headz; /*similar to head, but for chainz*/
     unsigned short* chainz; /*those with same amount of zeros*/
     unsigned short* zeros; /*length of zeros streak, used as a second hash chain*/
-} 
-Hash;
+} Hash;
 
 unsigned hash_init(Hash* hash, unsigned windowsize)
 {
@@ -472,16 +467,13 @@ unsigned hash_init(Hash* hash, unsigned windowsize)
         return 83; /*alloc fail*/
     }
 
-    // initialize hash table
-    PXMemorySetI32U(hash->head, -1, HASH_NUM_VALUES);
-    PXMemorySetI32U(hash->headz, -1, MAX_SUPPORTED_DEFLATE_LENGTH);
+    /*initialize hash table*/
+    for(PXSize i = 0; i != HASH_NUM_VALUES; ++i) hash->head[i] = -1;
+    for(PXSize i = 0; i != windowsize; ++i) hash->val[i] = -1;
+    for(PXSize i = 0; i != windowsize; ++i) hash->chain[i] = i; /*same value as index indicates uninitialized*/
 
-    for(PXSize i = 0; i != windowsize; ++i)
-    {
-        hash->val[i] = -1;
-        hash->chain[i] = i; /*same value as index indicates uninitialized*/
-        hash->chainz[i] = i; /*same value as index indicates uninitialized*/
-    }       
+    for(PXSize i = 0; i <= MAX_SUPPORTED_DEFLATE_LENGTH; ++i) hash->headz[i] = -1;
+    for(PXSize i = 0; i != windowsize; ++i) hash->chainz[i] = i; /*same value as index indicates uninitialized*/
 
     return 0;
 }
@@ -538,7 +530,7 @@ unsigned ucvector_reserve(ucvector* p, PXSize size)
     if(size > p->allocsize)
     {
         PXSize newsize = size + (p->allocsize >> 1u);
-        void* data = PXMemoryHeapRealloc(p->data, newsize);
+        void* data = realloc(p->data, newsize);
         if(data)
         {
             p->allocsize = newsize;
@@ -676,9 +668,9 @@ unsigned deflateFixed
             uivector_init(&lz77_encoded);
             error = encodeLZ77(&lz77_encoded, hash, (unsigned char*)data, datapos, dataend, settings->windowsize,
                                settings->minmatch, settings->nicematch, settings->lazymatching);
-            if (!error)
+            if(!error)
                 writeLZ77data(writer, &lz77_encoded, &tree_ll, &tree_d);
-           
+
             uivector_cleanup(&lz77_encoded);
 
             //PXLZ77ESetting pxLZ77ESetting;
@@ -854,8 +846,9 @@ BPMNode* bpmnode_create(BPMLists* lists, int weight, unsigned index, BPMNode* ta
 /*sort the leaves with stable mergesort*/
 void bpmnode_sort(BPMNode* leaves, PXSize num)
 {
-    BPMNode* mem = PXNull;    
+    BPMNode* mem = PXNull;
     PXNewStackList(BPMNode, num, &mem, PXNull);
+
     PXSize width, counter = 0;
     for(width = 1; width < num; width *= 2)
     {
@@ -875,12 +868,8 @@ void bpmnode_sort(BPMNode* leaves, PXSize num)
         }
         counter++;
     }
-    if(counter & 1)
-    {
-        const PXSize size = sizeof(*leaves) * num;
-        PXMemoryCopy(mem, size, leaves, size);
-    }
-       
+    if(counter & 1) memcpy(leaves, mem, sizeof(*leaves) * num);
+
     PXDeleteStackList(BPMNode, num, &mem, PXNull);
 }
 
@@ -891,9 +880,7 @@ void boundaryPM(BPMLists* lists, BPMNode* leaves, PXSize numpresent, int c, int 
 
     if(c == 0)
     {
-        if(lastindex >= numpresent) 
-            return;
-
+        if(lastindex >= numpresent) return;
         lists->chains0[c] = lists->chains1[c];
         lists->chains1[c] = bpmnode_create(lists, leaves[lastindex].weight, lastindex + 1, 0);
     }
@@ -925,11 +912,9 @@ unsigned HuffmanTree_makeTable(PXHuffmanTree* tree)
     static const unsigned mask = (1u << PXHuffmanFirstBits) /*headsize*/ - 1u;
     PXSize i, numpresent, pointer, size; /*total table size*/
     PXInt32U* maxlens = PXNull;
-    
+
     PXNewList(PXInt32U, headsize, &maxlens, PXNull);
-  
-    if(!maxlens) 
-        return 83; /*alloc fail*/
+    if(!maxlens) return 83; /*alloc fail*/
 
     /* compute maxlens: max total bit length of symbols sharing prefix in the first table*/
     PXMemoryClear(maxlens, headsize * sizeof(*maxlens));
@@ -948,8 +933,7 @@ unsigned HuffmanTree_makeTable(PXHuffmanTree* tree)
     for(i = 0; i < headsize; ++i)
     {
         unsigned int l = maxlens[i];
-        if(l > PXHuffmanFirstBits) 
-            size += (1u << (l - PXHuffmanFirstBits));
+        if(l > PXHuffmanFirstBits) size += (1u << (l - PXHuffmanFirstBits));
     }
     PXNewList(PXInt8U, size, &tree->TableLength, PXNull);
     PXNewList(PXInt16U, size, &tree->TableValue, PXNull);
@@ -974,7 +958,7 @@ unsigned HuffmanTree_makeTable(PXHuffmanTree* tree)
         pointer += (1u << (l - PXHuffmanFirstBits));
     }
 
-    PXDelete(PXInt32U, &maxlens);
+    PXDelete(PXInt32U, maxlens);
 
     /*fill in the first table for short symbols, or secondary table for long symbols*/
     numpresent = 0;
@@ -1013,10 +997,7 @@ unsigned HuffmanTree_makeTable(PXHuffmanTree* tree)
             PXSize start = tree->TableValue[index]; /*starting index in secondary table*/
             PXSize num = 1u << (tablelen - (l - PXHuffmanFirstBits)); /*amount of entries of this symbol in secondary table*/
             PXSize j;
-           
-            if(maxlen < l)
-                return 55; /*invalid tree: long symbol shares prefix with short symbol*/
-           
+            if(maxlen < l) return 55; /*invalid tree: long symbol shares prefix with short symbol*/
             for(j = 0; j < num; ++j)
             {
                 PXSize reverse2 = reverse >> PXHuffmanFirstBits; /* l - FIRSTBITS bits */
@@ -1055,8 +1036,7 @@ unsigned HuffmanTree_makeTable(PXHuffmanTree* tree)
         decoded): an oversubscribed huffman tree, indicated by error 55. */
         for(i = 0; i < size; ++i)
         {
-            if(tree->TableLength[i] == 16) 
-                return 55;
+            if(tree->TableLength[i] == 16) return 55;
         }
     }
 
@@ -1072,19 +1052,14 @@ static unsigned HuffmanTree_makeFromLengths2(PXHuffmanTree* tree)
     PXNewList(PXInt32U, tree->NumberOfSymbols, &tree->CodeSymbols, PXNull);
     PXNewList(PXInt32U, (tree->maxbitlen + 1), &blcount, PXNull);
     PXNewList(PXInt32U, (tree->maxbitlen + 1), &nextcode, PXNull);
-   
-    if(!tree->CodeSymbols || !blcount || !nextcode) 
-        error = 83; /*alloc fail*/
+
+    if(!tree->CodeSymbols || !blcount || !nextcode) error = 83; /*alloc fail*/
 
     if(!error)
     {
-        for(PXSize n = 0; n != tree->maxbitlen + 1; n++) 
-            blcount[n] = nextcode[n] = 0;
-
+        for(PXSize n = 0; n != tree->maxbitlen + 1; n++) blcount[n] = nextcode[n] = 0;
         /*step 1: count number of instances of each code length*/
-        for(PXSize bits = 0; bits != tree->NumberOfSymbols; ++bits)
-            ++blcount[tree->LengthsList[bits]];
-
+        for(PXSize bits = 0; bits != tree->NumberOfSymbols; ++bits) ++blcount[tree->LengthsList[bits]];
         /*step 2: generate the nextcode values*/
         for(PXSize bits = 1; bits <= tree->maxbitlen; ++bits)
         {
@@ -1105,9 +1080,7 @@ static unsigned HuffmanTree_makeFromLengths2(PXHuffmanTree* tree)
     PXDeleteList(PXInt32U, (tree->maxbitlen + 1), &blcount, PXNull);
     PXDeleteList(PXInt32U, (tree->maxbitlen + 1), &nextcode, PXNull);
 
-    if(!error) 
-        error = HuffmanTree_makeTable(tree);
-   
+    if(!error) error = HuffmanTree_makeTable(tree);
     return error;
 }
 
@@ -1115,6 +1088,7 @@ unsigned lodepng_huffman_code_lengths(unsigned* lengths, const unsigned* frequen
                                       PXSize numcodes, unsigned maxbitlen)
 {
     unsigned error = 0;
+    unsigned i;
     PXSize numpresent = 0; /*number of symbols with non-zero frequency*/
     BPMNode* leaves; /*the symbols, only those with > 0 frequency*/
 
@@ -1124,7 +1098,7 @@ unsigned lodepng_huffman_code_lengths(unsigned* lengths, const unsigned* frequen
     PXNewList(BPMNode, numcodes, &leaves, PXNull);
     if(!leaves) return 83; /*alloc fail*/
 
-    for(PXSize i = 0; i != numcodes; ++i)
+    for(i = 0; i != numcodes; ++i)
     {
         if(frequencies[i] > 0)
         {
@@ -1134,7 +1108,7 @@ unsigned lodepng_huffman_code_lengths(unsigned* lengths, const unsigned* frequen
         }
     }
 
-    PXMemoryClear(lengths, numcodes * sizeof(*lengths));
+    memset(lengths, 0, numcodes * sizeof(*lengths));
 
     /*ensure at least two present symbols. There should be at least one symbol
     according to RFC 1951 section 3.2.7. Some decoders incorrectly require two. To
@@ -1165,32 +1139,27 @@ unsigned lodepng_huffman_code_lengths(unsigned* lengths, const unsigned* frequen
         PXNewList(BPMNode*, lists.memsize, &lists.freelist, PXNull);
         PXNewList(BPMNode*, lists.listsize, &lists.chains0, PXNull);
         PXNewList(BPMNode*, lists.listsize, &lists.chains1, PXNull);
-       
-        if(!lists.memory || !lists.freelist || !lists.chains0 || !lists.chains1) 
-            error = 83; /*alloc fail*/
+        if(!lists.memory || !lists.freelist || !lists.chains0 || !lists.chains1) error = 83; /*alloc fail*/
 
         if(!error)
         {
-            for(PXSize i = 0; i != lists.memsize; ++i) 
-                lists.freelist[i] = &lists.memory[i];
+            for(i = 0; i != lists.memsize; ++i) lists.freelist[i] = &lists.memory[i];
 
             bpmnode_create(&lists, leaves[0].weight, 1, 0);
             bpmnode_create(&lists, leaves[1].weight, 2, 0);
 
-            for(PXSize i = 0; i != lists.listsize; ++i)
+            for(i = 0; i != lists.listsize; ++i)
             {
                 lists.chains0[i] = &lists.memory[0];
                 lists.chains1[i] = &lists.memory[1];
             }
 
             /*each boundaryPM call adds one chain to the last list, and we need 2 * numpresent - 2 chains.*/
-            for(PXSize i = 2; i != 2 * numpresent - 2; ++i)
-                boundaryPM(&lists, leaves, numpresent, (int)maxbitlen - 1, (int)i);
+            for(i = 2; i != 2 * numpresent - 2; ++i) boundaryPM(&lists, leaves, numpresent, (int)maxbitlen - 1, (int)i);
 
             for(node = lists.chains1[maxbitlen - 1]; node; node = node->tail)
             {
-                for(PXSize i = 0; i != node->index; ++i) 
-                    ++lengths[leaves[i].index];
+                for(i = 0; i != node->index; ++i) ++lengths[leaves[i].index];
             }
         }
 
@@ -1201,22 +1170,18 @@ unsigned lodepng_huffman_code_lengths(unsigned* lengths, const unsigned* frequen
     }
 
     PXDelete(BPMNode, &leaves);
-
     return error;
 }
 
 unsigned HuffmanTree_makeFromFrequencies(PXHuffmanTree* tree, const unsigned* frequencies, PXSize mincodes, PXSize numcodes, unsigned maxbitlen)
 {
     unsigned error = 0;
-   
-    while(!frequencies[numcodes - 1] && numcodes > mincodes) 
+    while(!frequencies[numcodes - 1] && numcodes > mincodes)
         --numcodes; /*trim zeroes*/
 
     PXNewList(PXInt32U, numcodes, &tree->LengthsList, PXNull);
-    
-    if(!tree->LengthsList) 
-        return 83; /*alloc fail*/
 
+    if(!tree->LengthsList) return 83; /*alloc fail*/
     tree->maxbitlen = maxbitlen;
     tree->NumberOfSymbols = numcodes; /*number of symbols*/
 
@@ -1224,6 +1189,8 @@ unsigned HuffmanTree_makeFromFrequencies(PXHuffmanTree* tree, const unsigned* fr
     if(!error) error = HuffmanTree_makeFromLengths2(tree);
     return error;
 }
+
+
 
 unsigned deflateDynamic
 (
@@ -1236,6 +1203,11 @@ unsigned deflateDynamic
     unsigned char BFINAL
 )
 {
+
+
+
+
+
     LodePNGBitWriter writerThing;
 
     LodePNGBitWriter* writer = &writerThing;
@@ -1298,7 +1270,6 @@ unsigned deflateDynamic
     PXClear(PXHuffmanTree, &tree_ll);
     PXClear(PXHuffmanTree, &tree_d);
     PXClear(PXHuffmanTree, &tree_cl);
-
     /* could fit on stack, but >1KB is on the larger side so allocate instead */
 
     /*This while loop never loops due to a break at the end, it is here to
@@ -1325,14 +1296,14 @@ unsigned deflateDynamic
         else
         {
 
-            if (!uivector_resize(&lz77_encoded, datasize)) ERROR_BREAK(83 /*alloc fail*/);
-            for (i = datapos; i < dataend; ++i) lz77_encoded.data[i - datapos] = ((char*)data)[i]; /*no LZ77, but still will be Huffman compressed*/
+            if(!uivector_resize(&lz77_encoded, datasize)) ERROR_BREAK(83 /*alloc fail*/);
+            for(i = datapos; i < dataend; ++i) lz77_encoded.data[i - datapos] = ((char*)data)[i]; /*no LZ77, but still will be Huffman compressed*/
 
-           //if(!uivector_resize(&lz77_encoded, datasize)) ERROR_BREAK(83 /*alloc fail*/);
-           // for (PXSize index = datapos; index < dataend; ++index) // Data must be atleast "datasize"
-           // {
-           //     ((PXAdress)lz77CacheStream.Data)[index - datapos] = data[index]; // no LZ77, but still will be Huffman compressed
-           // }
+            //if(!uivector_resize(&lz77_encoded, datasize)) ERROR_BREAK(83 /*alloc fail*/);
+            // for (PXSize index = datapos; index < dataend; ++index) // Data must be atleast "datasize"
+            // {
+            //     ((PXAdress)lz77CacheStream.Data)[index - datapos] = data[index]; // no LZ77, but still will be Huffman compressed
+            // }
         }
 
         /*Count the frequencies of lit, len and dist codes*/
@@ -1347,11 +1318,11 @@ unsigned deflateDynamic
                 i += 3;
             }
         }*/
-        for (i = 0; i != lz77_encoded.size; ++i)
+        for(i = 0; i != lz77_encoded.size; ++i)
         {
             unsigned symbol = lz77_encoded.data[i];
             ++frequencies_ll[symbol];
-            if (symbol > 256)
+            if(symbol > 256)
             {
                 unsigned dist = lz77_encoded.data[i + 2];
                 ++frequencies_d[dist];
@@ -1376,17 +1347,11 @@ unsigned deflateDynamic
         PXNewList(PXInt32U, numcodes_lld, &bitlen_lld, PXNull);
         /*numcodes_lld_e never needs more size than bitlen_lld*/
         PXNewList(PXInt32U, numcodes_lld, &bitlen_lld_e, PXNull);
-       
-        if(!bitlen_lld || !bitlen_lld_e)
-           ERROR_BREAK(83); /*alloc fail*/
-      
+        if(!bitlen_lld || !bitlen_lld_e) ERROR_BREAK(83); /*alloc fail*/
         numcodes_lld_e = 0;
 
-        for(i = 0; i != numcodes_ll; ++i) 
-            bitlen_lld[i] = tree_ll.LengthsList[i];
-
-        for(i = 0; i != numcodes_d; ++i) 
-            bitlen_lld[numcodes_ll + i] = tree_d.LengthsList[i];
+        for(i = 0; i != numcodes_ll; ++i) bitlen_lld[i] = tree_ll.LengthsList[i];
+        for(i = 0; i != numcodes_d; ++i) bitlen_lld[numcodes_ll + i] = tree_d.LengthsList[i];
 
         /*run-length compress bitlen_ldd into bitlen_lld_e by using repeat codes 16 (copy length 3-6 times),
         17 (3-10 zeroes), 18 (11-138 zeroes)*/
@@ -1503,8 +1468,7 @@ unsigned deflateDynamic
 
 
         /*error: the length of the end code 256 must be larger than 0*/
-        if(tree_ll.LengthsList[256] == 0)
-            ERROR_BREAK(64);
+        if(tree_ll.LengthsList[256] == 0) ERROR_BREAK(64);
 
         /*write the end code*/
         writeBitsReversed(writer, tree_ll.CodeSymbols[256], tree_ll.LengthsList[256]);
@@ -1517,9 +1481,8 @@ unsigned deflateDynamic
     PXHuffmanTreeDestruct(&tree_ll);
     PXHuffmanTreeDestruct(&tree_d);
     PXHuffmanTreeDestruct(&tree_cl);
-   
-    PXDelete(PXInt32U, bitlen_lld);
-    PXDelete(PXInt32U, bitlen_lld_e);
+    free(bitlen_lld);
+    free(bitlen_lld_e);
 
     pxFile->DataCursorBitOffset = writer->bp;
     pxFile->DataCursor += aaucvector.size;
@@ -1529,7 +1492,7 @@ unsigned deflateDynamic
 
 #define DEFAULT_WINDOWSIZE 2048
 
-PXActionResult PXAPI PXDEFLATESerialize(PXFile* const pxInputStream, PXFile* const pxOutputStream)
+PXActionResult PXDEFLATESerialize(PXFile* const pxInputStream, PXFile* const pxOutputStream)
 {
     unsigned error = 0;
     PXSize blocksize;
@@ -1549,14 +1512,14 @@ PXActionResult PXAPI PXDEFLATESerialize(PXFile* const pxInputStream, PXFile* con
 
     PXDeflateEncodingMethod deflateEncodingMethod = PXDeflateEncodingHuffmanDynamic;// DeflateEncodingHuffmanDynamic;
 
-    switch (deflateEncodingMethod)
+    switch(deflateEncodingMethod)
     {
         case PXDeflateEncodingLiteralRaw:
         {
             const PXSize numdeflateblocks = (pxInputStream->DataSize + 65534u) / 65535u;
             PXSize datapos = 0;
 
-            for (PXSize i = 0; i != numdeflateblocks; ++i)
+            for(PXSize i = 0; i != numdeflateblocks; ++i)
             {
                 const PXBool BFINAL = (i == numdeflateblocks - 1);
                 const PXInt16U chunkLength = PXMathMinimumIU(65535, pxInputStream->DataSize - datapos);
@@ -1576,7 +1539,7 @@ PXActionResult PXAPI PXDEFLATESerialize(PXFile* const pxInputStream, PXFile* con
         case PXDeflateEncodingHuffmanStatic:
         case PXDeflateEncodingHuffmanDynamic:
         {
-            switch (deflateEncodingMethod)
+            switch(deflateEncodingMethod)
             {
                 case PXDeflateEncodingHuffmanStatic:
                 {
@@ -1587,19 +1550,19 @@ PXActionResult PXAPI PXDEFLATESerialize(PXFile* const pxInputStream, PXFile* con
                 {
                     /*on PNGs, deflate blocks of 65-262k seem to give most dense encoding*/
                     blocksize = pxInputStream->DataSize / 8u + 8u;
-                    if (blocksize < 65536) blocksize = 65536;
-                    if (blocksize > 262144) blocksize = 262144;
+                    if(blocksize < 65536) blocksize = 65536;
+                    if(blocksize > 262144) blocksize = 262144;
 
                     break;
                 }
             }
 
             PXSize numdeflateblocks = (pxInputStream->DataSize + blocksize - 1) / blocksize;
-            if (numdeflateblocks == 0) numdeflateblocks = 1;
+            if(numdeflateblocks == 0) numdeflateblocks = 1;
 
             error = hash_init(&hash, lodePNGCompressSettings.windowsize);
 
-            for (PXSize i = 0; i != numdeflateblocks && (error == 0); ++i)
+            for(PXSize i = 0; i != numdeflateblocks && (error == 0); ++i)
             {
                 const PXSize indexStart = i * blocksize;
                 const PXSize indexEnd = PXMathMinimumIU(indexStart + blocksize, pxInputStream->DataSize);
@@ -1607,7 +1570,7 @@ PXActionResult PXAPI PXDEFLATESerialize(PXFile* const pxInputStream, PXFile* con
 
                 // PXFileWriteBits(pxOutputStream, finalBlock, 1u);
 
-                switch (deflateEncodingMethod)
+                switch(deflateEncodingMethod)
                 {
                     case PXDeflateEncodingHuffmanStatic:
                     {
@@ -1698,11 +1661,11 @@ void writeLZ77data
 )
 {
     PXSize i = 0;
-    for (i = 0; i != lz77_encoded->size; ++i)
+    for(i = 0; i != lz77_encoded->size; ++i)
     {
         PXSize val = lz77_encoded->data[i];
         writeBitsReversed(writer, tree_ll->CodeSymbols[val], tree_ll->LengthsList[val]);
-        if (val > 256) /*for a length code, 3 more things have to be added*/
+        if(val > 256) /*for a length code, 3 more things have to be added*/
         {
             PXSize length_index = val - FIRST_LENGTH_CODE_INDEX;
             PXSize n_length_extra_bits = LENGTHEXTRA[length_index];
@@ -1753,22 +1716,22 @@ unsigned encodeLZ77
     const unsigned char* lastptr, * foreptr, * backptr;
     PXSize hashpos;
 
-    if (windowsize == 0 || windowsize > 32768) return 60; /*error: windowsize smaller/larger than allowed*/
-    if ((windowsize & (windowsize - 1)) != 0) return 90; /*error: must be power of two*/
+    if(windowsize == 0 || windowsize > 32768) return 60; /*error: windowsize smaller/larger than allowed*/
+    if((windowsize & (windowsize - 1)) != 0) return 90; /*error: must be power of two*/
 
-    if (nicematch > MAX_SUPPORTED_DEFLATE_LENGTH) nicematch = MAX_SUPPORTED_DEFLATE_LENGTH;
+    if(nicematch > MAX_SUPPORTED_DEFLATE_LENGTH) nicematch = MAX_SUPPORTED_DEFLATE_LENGTH;
 
-    for (pos = inpos; pos < insize; ++pos)
+    for(pos = inpos; pos < insize; ++pos)
     {
         PXSize wpos = pos & (windowsize - 1); /*position for in 'circular' hash buffers*/
         PXSize chainlength = 0;
 
         hashval = getHash(in, insize, pos);
 
-        if (usezeros && hashval == 0)
+        if(usezeros && hashval == 0)
         {
-            if (numzeros == 0) numzeros = countZeros(in, insize, pos);
-            else if (pos + numzeros > insize || in[pos + numzeros - 1] != 0) --numzeros;
+            if(numzeros == 0) numzeros = countZeros(in, insize, pos);
+            else if(pos + numzeros > insize || in[pos + numzeros - 1] != 0) --numzeros;
         }
         else
         {
@@ -1787,77 +1750,77 @@ unsigned encodeLZ77
 
         /*search for the longest string*/
         prev_offset = 0;
-        for (;;)
+        for(;;)
         {
-            if (chainlength++ >= maxchainlength) break;
+            if(chainlength++ >= maxchainlength) break;
             current_offset = (unsigned)(hashpos <= wpos ? wpos - hashpos : wpos - hashpos + windowsize);
 
-            if (current_offset < prev_offset) break; /*stop when went completely around the circular buffer*/
+            if(current_offset < prev_offset) break; /*stop when went completely around the circular buffer*/
             prev_offset = current_offset;
-            if (current_offset > 0)
+            if(current_offset > 0)
             {
                 /*test the next characters*/
                 foreptr = &in[pos];
                 backptr = &in[pos - current_offset];
 
                 /*common case in PNGs is lots of zeros. Quickly skip over them as a speedup*/
-                if (numzeros >= 3)
+                if(numzeros >= 3)
                 {
                     unsigned skip = hash->zeros[hashpos];
-                    if (skip > numzeros) skip = numzeros;
+                    if(skip > numzeros) skip = numzeros;
                     backptr += skip;
                     foreptr += skip;
                 }
 
-                while (foreptr != lastptr && *backptr == *foreptr) /*maximum supported length by deflate is max length*/
+                while(foreptr != lastptr && *backptr == *foreptr) /*maximum supported length by deflate is max length*/
                 {
                     ++backptr;
                     ++foreptr;
                 }
                 current_length = (unsigned)(foreptr - &in[pos]);
 
-                if (current_length > length)
+                if(current_length > length)
                 {
                     length = current_length; /*the longest length*/
                     offset = current_offset; /*the offset that is related to this longest length*/
                     /*jump out once a length of max length is found (speed gain). This also jumps
                     out if length is MAX_SUPPORTED_DEFLATE_LENGTH*/
-                    if (current_length >= nicematch) break;
+                    if(current_length >= nicematch) break;
                 }
             }
 
-            if (hashpos == hash->chain[hashpos]) break;
+            if(hashpos == hash->chain[hashpos]) break;
 
-            if (numzeros >= 3 && length > numzeros)
+            if(numzeros >= 3 && length > numzeros)
             {
                 hashpos = hash->chainz[hashpos];
-                if (hash->zeros[hashpos] != numzeros) break;
+                if(hash->zeros[hashpos] != numzeros) break;
             }
             else
             {
                 hashpos = hash->chain[hashpos];
                 /*outdated hash value, happens if particular value was not encountered in whole last window*/
-                if (hash->val[hashpos] != (int)hashval) break;
+                if(hash->val[hashpos] != (int)hashval) break;
             }
         }
 
-        if (lazymatching)
+        if(lazymatching)
         {
-            if (!lazy && length >= 3 && length <= maxlazymatch && length < MAX_SUPPORTED_DEFLATE_LENGTH)
+            if(!lazy && length >= 3 && length <= maxlazymatch && length < MAX_SUPPORTED_DEFLATE_LENGTH)
             {
                 lazy = 1;
                 lazylength = length;
                 lazyoffset = offset;
                 continue; /*try the next byte*/
             }
-            if (lazy)
+            if(lazy)
             {
                 lazy = 0;
-                if (pos == 0) ERROR_BREAK(81);
-                if (length > lazylength + 1)
+                if(pos == 0) ERROR_BREAK(81);
+                if(length > lazylength + 1)
                 {
                     /*push the previous character as literal*/
-                    if (!uivector_push_back(out, in[pos - 1])) ERROR_BREAK(83 /*alloc fail*/);
+                    if(!uivector_push_back(out, in[pos - 1])) ERROR_BREAK(83 /*alloc fail*/);
                 }
                 else
                 {
@@ -1869,31 +1832,31 @@ unsigned encodeLZ77
                 }
             }
         }
-        if (length >= 3 && offset > windowsize) ERROR_BREAK(86 /*too big (or overflown negative) offset*/);
+        if(length >= 3 && offset > windowsize) ERROR_BREAK(86 /*too big (or overflown negative) offset*/);
 
         /*encode it as length/distance pair or literal value*/
-        if (length < 3) /*only lengths of 3 or higher are supported as length/distance pair*/
+        if(length < 3) /*only lengths of 3 or higher are supported as length/distance pair*/
         {
-            if (!uivector_push_back(out, in[pos])) ERROR_BREAK(83 /*alloc fail*/);
+            if(!uivector_push_back(out, in[pos])) ERROR_BREAK(83 /*alloc fail*/);
         }
-        else if (length < minmatch || (length == 3 && offset > 4096))
+        else if(length < minmatch || (length == 3 && offset > 4096))
         {
             /*compensate for the fact that longer offsets have more extra bits, a
             length of only 3 may be not worth it then*/
-            if (!uivector_push_back(out, in[pos])) ERROR_BREAK(83 /*alloc fail*/);
+            if(!uivector_push_back(out, in[pos])) ERROR_BREAK(83 /*alloc fail*/);
         }
         else
         {
             addLengthDistance(out, length, offset);
-            for (i = 1; i < length; ++i)
+            for(i = 1; i < length; ++i)
             {
                 ++pos;
                 wpos = pos & (windowsize - 1);
                 hashval = getHash(in, insize, pos);
-                if (usezeros && hashval == 0)
+                if(usezeros && hashval == 0)
                 {
-                    if (numzeros == 0) numzeros = countZeros(in, insize, pos);
-                    else if (pos + numzeros > insize || in[pos + numzeros - 1] != 0) --numzeros;
+                    if(numzeros == 0) numzeros = countZeros(in, insize, pos);
+                    else if(pos + numzeros > insize || in[pos + numzeros - 1] != 0) --numzeros;
                 }
                 else
                 {

@@ -45,6 +45,118 @@ void PXAPI PXMatrix4x4FPositionSet(PXMatrix4x4F* const matrix4x4F, const PXVecto
 	matrix4x4F->Data[TransformZ] = position->Z;
 }
 
+void PXAPI PXMatrix4x4FRotationGet(const PXMatrix4x4F* const matrix, PXVector3F* const position)
+{
+	// Pitch
+	position->Y = -PXMathSinusA(matrix->Data[ZAxisX]); // 31
+
+	if(matrix->Data[ZAxisX] == 1.0f)
+	{
+		// Yaw 
+		position->X = 0;
+
+		// Roll 
+		position->Z = PXMathTangensArc2(-matrix->Data[XAxisY], -matrix->Data[XAxisZ]); // -12 -13
+	}
+	else if(matrix->Data[ZAxisX] == -1.0f)
+	{
+		// Yaw 
+		position->X = 0;
+
+		// Roll 
+		position->Z = PXMathTangensArc2(matrix->Data[YAxisX], matrix->Data[XAxisX]); // 12 13
+	}
+	else
+	{
+		// Yaw 
+		position->X = PXMathTangensArc2(matrix->Data[YAxisX], matrix->Data[XAxisX]); // 21 11
+
+		// Roll 
+		position->Z = PXMathTangensArc2(matrix->Data[ZAxisY], matrix->Data[ZAxisZ]); // 32 33
+	}
+}
+
+void PXAPI PXMatrix4x4FRotationSet(PXMatrix4x4F* const matrix4x4F, const PXVector3F* const position)
+{
+	PXMatrix4x4F pxMatrix4x4F;
+
+	PXMatrix4x4FRotationMatrixGenerate(&pxMatrix4x4F, position);
+
+	for(PXSize y = 0; y < 3; ++y)
+	{
+		for(PXSize x = 0; x < 3; ++x)
+		{
+			PXSize index = y * 4 + x;
+
+			matrix4x4F->Data[index] = pxMatrix4x4F.Data[index];
+		}
+	}
+}
+
+void PXAPI PXMatrix4x4FRotationMatrixGenerate(PXMatrix4x4F* const matrix4x4F, PXVector3F* const position)
+{
+	PXMatrix4x4F xRotation;
+	PXMatrix4x4F yRotation;
+	PXMatrix4x4F zRotation;
+
+	PXMatrix4x4FIdentity(&xRotation);
+	PXMatrix4x4FIdentity(&yRotation);
+	PXMatrix4x4FIdentity(&zRotation);
+
+	//-----<X ROT>-----
+	{
+		const float cosResult = PXMathCosinus(position->X);
+		const float sinResult = PXMathSinus(position->X);
+
+		xRotation.Data[5] = cosResult;
+		xRotation.Data[6] = sinResult;
+		xRotation.Data[9] = -sinResult;
+		xRotation.Data[10] = cosResult;
+	}
+
+	//-----<X ROT>-----
+	{
+		const float cosResult = PXMathCosinus(-position->Y);
+		const float sinResult = PXMathSinus(-position->Y);
+
+		yRotation.Data[0] = cosResult;
+		yRotation.Data[2] = -sinResult;
+		yRotation.Data[8] = sinResult;
+		yRotation.Data[10] = cosResult;
+	}
+
+	//-----<X ROT>-----
+	{
+		const float cosResult = PXMathCosinus(position->Z);
+		const float sinResult = PXMathSinus(position->Z);
+
+		zRotation.Data[0] = cosResult;
+		zRotation.Data[1] = -sinResult;
+		zRotation.Data[4] = sinResult;
+		zRotation.Data[5] = cosResult;
+	}
+
+	// Gimble (result = xRotation * yRotation * zRotation;)
+	{
+
+		PXMatrix4x4FIdentity(matrix4x4F);
+
+		PXMatrix4x4FMultiply(matrix4x4F, &zRotation, matrix4x4F);
+		PXMatrix4x4FMultiply(matrix4x4F, &yRotation, matrix4x4F);
+		PXMatrix4x4FMultiply(matrix4x4F, &xRotation, matrix4x4F);
+
+		/*
+				PXMatrix4x4F tempRotation;
+		PXMatrix4x4FIdentity(&tempRotation);
+
+		PXMatrix4x4FMultiply(&yRotation, &zRotation, &tempRotation);
+		PXMatrix4x4FMultiply(&yRotation, &zRotation, &tempRotation);
+		PXMatrix4x4FMultiply(&tempRotation, &xRotation, matrix4x4F);
+		
+		*/
+	}
+}
+
 void PXAPI PXMatrix4x4FMultiply(const PXMatrix4x4F* matrixA, const PXMatrix4x4F* matrixB, PXMatrix4x4F* const matrixResult)
 {
 	float a = matrixA->Data[0];
@@ -102,58 +214,13 @@ void PXAPI PXMatrix4x4FMultiply(const PXMatrix4x4F* matrixA, const PXMatrix4x4F*
 	matrixResult->Data[15] = m * D + n * H + o * L + p * P;
 }
 
-void PXAPI PXMatrix4x4FRotate(PXMatrix4x4F* const matrix4x4F, const float x, const float y, const float z)
+void PXAPI PXMatrix4x4FRotate(PXMatrix4x4F* const matrix4x4F, const PXVector3F* const vector3F)
 {
-	PXMatrix4x4F xRotation;
-	PXMatrix4x4F yRotation;
-	PXMatrix4x4F zRotation;
+	PXMatrix4x4F matrixRotation;
 
-	PXMatrix4x4FIdentity(&xRotation);
-	PXMatrix4x4FIdentity(&yRotation);
-	PXMatrix4x4FIdentity(&zRotation);
+	PXMatrix4x4FRotationMatrixGenerate(&matrixRotation, vector3F);
 
-	//-----<X ROT>-----
-	{
-		const float cosResult = PXMathCosinus(x);
-		const float sinResult = PXMathSinus(x);
-
-		xRotation.Data[5] = cosResult;
-		xRotation.Data[6] = sinResult;
-		xRotation.Data[9] = -sinResult;
-		xRotation.Data[10] = cosResult;
-	}
-
-	//-----<X ROT>-----
-	{
-		const float cosResult = PXMathCosinus(-y);
-		const float sinResult = PXMathSinus(-y);
-
-		yRotation.Data[0] = cosResult;
-		yRotation.Data[2] = -sinResult;
-		yRotation.Data[8] = sinResult;
-		yRotation.Data[10] = cosResult;
-	}
-
-	//-----<X ROT>-----
-	{
-		const float cosResult = PXMathCosinus(z);
-		const float sinResult = PXMathSinus(z);
-
-		zRotation.Data[0] = cosResult;
-		zRotation.Data[1] = -sinResult;
-		zRotation.Data[4] = sinResult;
-		zRotation.Data[5] = cosResult;
-	}
-
-	// Gimble (result = xRotation * yRotation * zRotation;)
-	{
-		PXMatrix4x4F tempRotation;
-		PXMatrix4x4FIdentity(&tempRotation);
-
-		PXMatrix4x4FMultiply(&yRotation, &zRotation, &tempRotation);
-		PXMatrix4x4FMultiply(&yRotation, &zRotation, &tempRotation);
-		PXMatrix4x4FMultiply(&tempRotation, &xRotation, matrix4x4F);
-	}
+	PXMatrix4x4FMultiply(matrix4x4F, &matrixRotation, matrix4x4F);
 }
 
 void PXAPI PXMatrix4x4FCopy(const PXMatrix4x4F* const matrixA, PXMatrix4x4F* const matrixResult)

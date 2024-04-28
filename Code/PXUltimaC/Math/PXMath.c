@@ -237,6 +237,36 @@ double PXAPI PXMathCosinus(double value)
 	return cos(value); // TODO: Dependeny problem 
 }
 
+double PXAPI PXMathSinusArc(double value)
+{
+	return sinh(value);
+}
+
+double PXAPI PXMathSinusA(double value)
+{
+#if 1 // Support asin()
+	return asin(value);
+#else
+	return PXMathSinusArc(value);
+#endif
+
+}
+
+double PXAPI PXMathTangensArc(double value)
+{
+	return tanh(value);
+}
+
+double PXAPI PXMathTangensArc2(double x, double y)
+{
+	return atan2(y, x);
+}
+
+double PXAPI PXMathCosinusArc(double value)
+{
+	return cosh(value);
+}
+
 unsigned long PXAPI PXMathFibonacci(unsigned long step)
 {
 	double rootOfFive = PXMathSquareRoot(5);

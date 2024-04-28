@@ -651,16 +651,25 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
                 pxEngine->UpdateUI = 1;
             }
 
+            // If we have a target, we want to move the camera to it to track it
+            if(pxEngine->CameraCurrent->Target)
+            {
+                PXMatrix4x4FMove3F(pxEngine->CameraCurrent->Target, &pxPlayerMoveInfo.MovementWalk);
 
+                PXCameraFollow(pxEngine->CameraCurrent, pxEngine->CounterTimeDelta / 1000000.0f);
+            }
+            else
+            {
+               // PXCameraMove(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementWalk);         
+            }
 
-            PXCameraMove(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementWalk);
+           // PXCameraMove(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementWalk);
+       
             PXCameraRotate(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementView);
             PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->CounterTimeDelta);
 
+
             // PXControllerSystemDebugPrint(pxController);
-
-
-
 
 
              //---------------------------------------------------------------------------
@@ -1101,6 +1110,9 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
     pxEngine->FrameTime = 0;
     pxEngine->IsRunning = PXFalse;
     pxEngine->HasGraphicInterface = PXFalse;
+
+    pxEngine->CameraCurrent->ViewSpeed = 1;
+    PXCameraRotateXYZ(pxEngine->CameraCurrent, 90,0, 0);
 
     // Fetch from start info
     {

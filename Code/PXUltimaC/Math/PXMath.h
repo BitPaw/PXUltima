@@ -72,6 +72,13 @@ PXPublic PXInt32U PXAPI PXMathRandomeNumber(PXMathRandomGeneratorSeed* const pxM
 PXPublic double PXAPI PXMathSinus(double value);
 PXPublic double PXAPI PXMathTangens(double value);
 PXPublic double PXAPI PXMathCosinus(double value);
+PXPublic double PXAPI PXMathSinusArc(double value);
+PXPublic double PXAPI PXMathSinusA(double value);
+PXPublic double PXAPI PXMathTangensArc(double value);
+
+// Tangens inverse that can handle the values from all the 4 different quadrants
+PXPublic double PXAPI PXMathTangensArc2(double x, double y);
+PXPublic double PXAPI PXMathCosinusArc(double value);
 PXPublic unsigned long PXAPI PXMathFibonacci(unsigned long step);
 PXPublic double PXAPI PXMathRadiansToDegree(double radians);
 PXPublic double PXAPI PXMathDegreeToRadians(double degree);

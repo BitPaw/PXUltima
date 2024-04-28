@@ -7,10 +7,10 @@
 
 typedef struct PXADAM7_
 {
-	void* DataInput;
+	char* DataInput;
 	PXSize InputSize;
 
-	void* DataOutput;
+	char* DataOutput;
 	PXSize OutputSize;
 
 	PXSize Width;
@@ -32,7 +32,7 @@ PXPublic PXActionResult PXAPI PXADAM7ScanlinesDecode(PXADAM7* const pxADAM7);
 PXPublic PXActionResult PXAPI PXADAM7ScanlinesEncode(PXADAM7* const pxADAM7);
 
 PXPublic PXSize PXAPI PXADAM7CaluclateExpectedSize(PXADAM7* const pxADAM7);
-PXPublic PXSize PXAPI PXADAM7lodepng_get_raw_size_idat(PXADAM7* const pxADAM7);
+PXPublic PXSize PXAPI PXADAM7lodepng_get_raw_size_idat(PXSize w, PXSize h, PXSize bpp);
 
 PXPublic void PXAPI PXADAM7Deinterlace(PXADAM7* const pxADAM7);
 

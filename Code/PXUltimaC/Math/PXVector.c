@@ -47,6 +47,13 @@ void PXAPI PXVector3FConstruct(PXVector3F* const vector3F)
 	vector3F->Z = 0;
 }
 
+void PXAPI PXVector3FSet(PXVector3F* const pxVector3F, const PXVector3F* const pxVector3FSource)
+{
+	pxVector3F->X = pxVector3FSource->X;
+	pxVector3F->Y = pxVector3FSource->Y;
+	pxVector3F->Z = pxVector3FSource->Z;
+}
+
 void PXAPI PXVector4FConstruct(PXVector4F* const vector4F)
 {
 	vector4F->X = 0;
@@ -99,6 +106,13 @@ void PXAPI PXVector3FSetXYZ(PXVector3F* const vector, const float x, const float
 	vector->X = x;
 	vector->Y = y;
 	vector->Z = z;
+}
+
+void PXAPI PXVector3FAbsolute(PXVector3F* const pxVector3F)
+{
+	pxVector3F->X = PXMathAbsolute(pxVector3F->X);
+	pxVector3F->Y = PXMathAbsolute(pxVector3F->Y);
+	pxVector3F->Z = PXMathAbsolute(pxVector3F->Z);
 }
 
 void PXAPI PXVector4FSetXYZW(PXVector4F* const vector, const float x, const float y, const float z, const float w)
@@ -193,19 +207,19 @@ void PXAPI PXVector4FAddXYZW(const PXVector4F* const vector, const float x, cons
 	vectorResult->W = vector->W + w;
 }
 
-void PXAPI PXVector3FInterpolate(const PXVector3F* const vectorA, const PXVector3F* const vectorB, const float speed, PXVector3F* const vectorResult)
+void PXAPI PXVector3FInterpolate(PXVector3F* const vectorA, const PXVector3F* const vectorB, float speed)
 {
 	// A * t + (1 - t) * B
 
-	PXVector3F deltaA;
-	PXVector3F deltaB;
+	PXVector3F deltaA = { 0,0,0 };
+	PXVector3F deltaB = { 0,0,0 };
 
 	PXVector3FAdd(&deltaA, vectorA);
 	PXVector3FAdd(&deltaB, vectorB);
 	PXVector3FMultiplyS(&deltaA, 1 - speed);
 	PXVector3FMultiplyS(&deltaB, speed);
 
-	PXVector3FSetXYZ(vectorResult, 0, 0, 0);
-	PXVector3FAdd(vectorResult, &deltaA);
-	PXVector3FAdd(vectorResult, &deltaB);
+	PXVector3FSetXYZ(vectorA, 0, 0, 0);
+	PXVector3FAdd(vectorA, &deltaA);
+	PXVector3FAdd(vectorA, &deltaB);
 }

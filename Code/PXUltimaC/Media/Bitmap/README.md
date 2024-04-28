@@ -9,7 +9,7 @@
 Bitmaps are an image file format that is simple to parse and serialize.<br>
 However, one of the drawbacks is that even for relatively small images, it can consume a significant amount of space.<br>
 Despite receiving some updates over time, the format did not gain as much popularity as other formats did in the early days, and most of its mechanics were copied from other formats.<br>
-As a result of its history, bitmaps are not widely used on the internet.
+As a result of its history, bitmaps are not widely used on the internet although in smal sizes Bitmaps are still much prefered as they are easy to load.
 
 ### Dependecys
 - (None)
@@ -18,7 +18,7 @@ As a result of its history, bitmaps are not widely used on the internet.
 - Easy to read and write
 
 ### Drawbacks
-- Due to little to no compression, does not scale with size
+- Due to little to no compression, does not scale well with size
 - Image pixel data is reversed, BGR instead of RGB
 - As a 32Bit-Format, limited to 4GB maximal size
 - Transparency possible but rarely supported
