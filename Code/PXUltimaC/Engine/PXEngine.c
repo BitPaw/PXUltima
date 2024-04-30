@@ -778,7 +778,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
 
             pxEngineTimer = *(PXEngineTimer**)pxDictionaryEntry.Value;
 
-            if (!pxEngineTimer->Enabled)
+            if (!(pxEngineTimer->Info.Flags & PXEngineResourceInfoEnabled))
             {
                 continue;
             }
@@ -1005,7 +1005,10 @@ PXActionResult PXAPI PXEngineResourceAction(PXEngine* const pxEngine, PXEngineRe
                 {
                     PXEngineText* const pxEngineText = (PXEngineText*)pxEngineResourceStateChangeInfo->Object;
 
-                    pxEngineText->Enabled = pxEngineResourceStateChangeInfo->Enable;
+                    if(pxEngineResourceStateChangeInfo->Enable)
+                    {
+                        pxEngineText->Info.Flags |= PXEngineResourceInfoEnabled;
+                    }                 
 
 #if PXLogEnable
                     PXLogPrint
@@ -1024,7 +1027,11 @@ PXActionResult PXAPI PXEngineResourceAction(PXEngine* const pxEngine, PXEngineRe
                 {
                     PXEngineTimer* const pxEngineTimer = (PXEngineTimer*)pxEngineResourceStateChangeInfo->Object;
 
-                    pxEngineTimer->Enabled = pxEngineResourceStateChangeInfo->Enable;
+                    if(pxEngineResourceStateChangeInfo->Enable)
+                    {
+                        pxEngineTimer->Info.Flags |= PXEngineResourceInfoEnabled;
+                    }
+
                     pxEngineTimer->TimeStampStart = PXTimeCounterStampGet();
 
 #if PXLogEnable
@@ -1112,7 +1119,7 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
     pxEngine->HasGraphicInterface = PXFalse;
 
     pxEngine->CameraCurrent->ViewSpeed = 1;
-    PXCameraRotateXYZ(pxEngine->CameraCurrent, 90,0, 0);
+    PXCameraRotateXYZ(pxEngine->CameraCurrent, 80, 0, 0);
 
     // Fetch from start info
     {
@@ -1650,7 +1657,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
         }
         case PXEngineCreateTypeTextureCube:
         {
-            PXTextureCubeCreateData* const pxTextureCubeCreateData = &pxEngineResourceCreateInfo->TextureCube;
+            PXTextureCubeCreateInfo* const pxTextureCubeCreateData = &pxEngineResourceCreateInfo->TextureCube;
             PXTextureCube* pxTextureCube = *(PXTextureCube**)pxEngineResourceCreateInfo->ObjectReference;
 
             if(!pxEngine->Graphic.TextureAction)
@@ -1903,7 +1910,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
         }
         case PXEngineCreateTypeFont:
         {
-            PXEngineFontCreateData* const pxEngineFontCreateData = &pxEngineResourceCreateInfo->Font;
+            PXEngineFontCreateInfo* const pxEngineFontCreateData = &pxEngineResourceCreateInfo->Font;
             PXFont* pxFont = *(PXFont**)pxEngineResourceCreateInfo->ObjectReference;
 
             // create if not exist
@@ -2000,7 +2007,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
         }
         case PXEngineCreateTypeSkybox:
         {
-            PXSkyBoxCreateEventData* const pxSkyBoxCreateEventData = &pxEngineResourceCreateInfo->SkyBox;
+            PXSkyBoxCreateEventInfo* const pxSkyBoxCreateEventData = &pxEngineResourceCreateInfo->SkyBox;
             PXSkyBox* pxSkyBox = *(PXSkyBox**)pxEngineResourceCreateInfo->ObjectReference;
 
             if(!pxEngine->Graphic.ModelRegister)
@@ -2153,7 +2160,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
         }
         case PXEngineCreateTypeSprite:
         {
-            PXSpriteCreateEventData* const pxSpriteCreateEventData = &pxEngineResourceCreateInfo->Sprite;
+            PXSpriteCreateInfo* const pxSpriteCreateEventData = &pxEngineResourceCreateInfo->Sprite;
             PXSprite* pxSprite = *(PXSprite**)pxEngineResourceCreateInfo->ObjectReference;
 
             if (!pxSprite)
@@ -2171,7 +2178,8 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
                 PXLoggingAllocation,
                 "PX",
                 "Sprite-Create",
-                "Use <%s>",
+                "ID:%i, Use <%s>",
+                pxSprite->PXID,
                 pxEngineResourceCreateInfo->FilePath
             );   
 #endif
@@ -2316,9 +2324,13 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
 
                 pxEngineResourceActionInfo.Type = PXEngineResourceActionTypeCreate;
                 pxEngineResourceActionInfo.Create.CreateType = PXEngineCreateTypeHitBox;
-                pxEngineResourceActionInfo.Create.ObjectReference = &pxSpriteCreateEventData->HitBox;
+                pxEngineResourceActionInfo.Create.ObjectReference = &pxSprite->HitBox;
+                pxEngineResourceActionInfo.Create.HitBox.Flags = 0;
+                pxEngineResourceActionInfo.Create.HitBox.Model = &pxSprite->Model;
 
                 PXEngineResourceAction(pxEngine, &pxEngineResourceActionInfo);
+
+                pxEngineResourceCreateInfo->HitBox.HitBox = pxSprite->HitBox;
             }
 
 
@@ -2367,8 +2379,8 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
             );
 #endif
 
-            pxEngineText->PXID = PXEngineGenerateUniqeID(pxEngine);
-            PXDictionaryAdd(&pxEngine->TextLookUp, &pxEngineText->PXID, pxEngineText);
+            pxEngineText->Info.ID = PXEngineGenerateUniqeID(pxEngine);
+            PXDictionaryAdd(&pxEngine->TextLookUp, &pxEngineText->Info.ID, pxEngineText);
 
             //---------------------------------------------
             // Trigger enable
@@ -2410,10 +2422,10 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
             );
 #endif
 
-            pxEngineTimer->PXID = PXEngineGenerateUniqeID(pxEngine);
+            pxEngineTimer->Info.ID = PXEngineGenerateUniqeID(pxEngine);
             pxEngineTimer->TimeStampStart = PXTimeCounterStampGet();
 
-            PXDictionaryAdd(&pxEngine->TimerLookUp, &pxEngineTimer->PXID, pxEngineTimer);
+            PXDictionaryAdd(&pxEngine->TimerLookUp, &pxEngineTimer->Info.ID, pxEngineTimer);
 
             //---------------------------------------------
             // Trigger enable
@@ -2582,7 +2594,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
         }
         case PXEngineCreateTypeShaderProgram:
         {
-            PXShaderProgramCreateData* const pxShaderProgramCreateData = &pxEngineResourceCreateInfo->ShaderProgram;
+            PXShaderProgramCreateInfo* const pxShaderProgramCreateData = &pxEngineResourceCreateInfo->ShaderProgram;
             PXShaderProgram* pxShaderProgram = *(PXShaderProgram**)pxEngineResourceCreateInfo->ObjectReference;
 
             if(!pxEngine->Graphic.ShaderProgramCreate)
@@ -2706,20 +2718,22 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineRe
                 *pxEngineResourceCreateInfo->ObjectReference = pxHitBox;
             }
 
+            pxHitBox->Info.ID = PXEngineGenerateUniqeID(pxEngine);
+            PXDictionaryAdd(&pxEngine->HitBoxLookUp, &pxHitBox->Info.ID, pxHitBox);
+
+            pxHitBox->Info.Flags |= PXEngineResourceInfoEnabled;
+            pxHitBox->Model = pxEngineResourceCreateInfo->HitBox.Model;
+
 #if PXLogEnable
             PXLogPrint
             (
                 PXLoggingInfo,
                 "PX",
                 "HitBox-Create",
-                ""
+                "ID:%i",
+                pxHitBox->Info.ID
             );
 #endif
-
-            pxHitBox->PXID = PXEngineGenerateUniqeID(pxEngine);
-            PXDictionaryAdd(&pxEngine->HitBoxLookUp, &pxHitBox->PXID, pxHitBox);
-
-            pxHitBox->Enabled = PXTrue;
 
             break;
         }
@@ -2775,27 +2789,87 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXEngineRe
         }
         case PXEngineCreateTypeHitBox:
         {
-            PXHitBox* const pxHitBox = pxEngineResourceRenderInfo->ObjectReference;
+            PXHitBox* const pxHitBox = (PXHitBox*)pxEngineResourceRenderInfo->ObjectReference;
 
-            PXOpenGLBlendingMode(&pxEngine->Graphic.OpenGLInstance, PXBlendingModeOneToOne);
+           // PXOpenGLBlendingMode(&pxEngine->Graphic.OpenGLInstance, PXBlendingModeOneToOne);
 
-            pxEngine->Graphic.DrawColorRGBAF
-            (
-                pxEngine->Graphic.EventOwner,
-                0,
-                1,
-                0,
-                1
-            );
-            pxEngine->Graphic.RectangleDraw
-            (
-                pxEngine->Graphic.EventOwner,
-                -0.5,
-                -0.5,
-                0.5,
-                0.5,
-                0x01
-            );
+            PXBool isEnabled = !(pxHitBox->Info.Flags & PXEngineResourceInfoEnabled);
+
+            float color[4];
+
+            // Store previous state
+
+
+            PXInt32U drawstateBefore = pxHitBox->Model->IndexBuffer.DrawModeID;
+
+
+
+            PXMaterial* material = pxHitBox->Model->IndexBuffer.SegmentPrime.Material;
+
+            if(material == PXNull)
+            {
+                PXNewZerod(PXMaterial, &material);
+                PXNewZerod(PXMaterialContainer, &pxHitBox->Model->MaterialContaierList);
+             
+                pxHitBox->Model->MaterialContaierList[0].MaterialListAmount = 1;
+
+                PXTextCopyA("Wonk", 4, pxHitBox->Model->MaterialContaierList[0].MaterialList->Name, 64);
+
+                PXMaterial* materialPrimae = pxHitBox->Model->MaterialContaierList[0].MaterialList;
+                PXMaterial materialCopy;
+                PXCopy(PXMaterial, pxHitBox->Model->MaterialContaierList[0].MaterialList, &materialCopy);
+
+                pxHitBox->Model->IndexBuffer.SegmentPrime.Material = pxHitBox->Model->MaterialContaierList[0].MaterialList;
+            }
+
+
+          
+
+
+
+            //pxHitBox->Model->IndexBuffer.DrawModeID = PXDrawModeIDLineLoop;
+
+            // Draw red box
+            if(pxHitBox->Info.Behaviour & PXHitBoxBehaviourKeepOut)
+            {
+                // Red
+                material->Diffuse[0] = 1;
+                material->Diffuse[1] = 0;
+                material->Diffuse[2] = 0;
+                material->Diffuse[3] = 0.4;
+      
+                PXOpenGLModelDraw(&pxEngine->Graphic.OpenGLInstance, pxHitBox->Model, pxEngineResourceRenderInfo->CameraReference);
+            }
+
+            // Red border
+            if(pxHitBox->Info.Behaviour & PXHitBoxBehaviourKeepIn)
+            {
+                material->Diffuse[0] = 1;
+                material->Diffuse[1] = 0;
+                material->Diffuse[2] = 0;
+                material->Diffuse[3] = 0.4;
+
+                PXOpenGLModelDraw(&pxEngine->Graphic.OpenGLInstance, pxHitBox->Model, pxEngineResourceRenderInfo->CameraReference);
+            }
+
+
+            // Blue border
+            if(pxHitBox->Info.Behaviour & PXHitBoxBehaviourDetect)
+            {
+                material->Diffuse[0] = 0;
+                material->Diffuse[1] = 0;
+                material->Diffuse[2] = 1;
+                material->Diffuse[3] = 0.4;
+
+                PXOpenGLModelDraw(&pxEngine->Graphic.OpenGLInstance, pxHitBox->Model, pxEngineResourceRenderInfo->CameraReference);
+            }
+
+            material->Diffuse[0] = 1;
+            material->Diffuse[1] = 1;
+            material->Diffuse[2] = 1;
+            material->Diffuse[3] = 1;
+
+            pxHitBox->Model->IndexBuffer.DrawModeID = drawstateBefore;
 
             break;
         }
@@ -2812,7 +2886,7 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXEngineRe
             PXText* const pxText = pxEngineText->Text;
             PXFont* const pxFont = pxEngineText->Font;
 
-            if (!pxEngineText->Enabled)
+            if (!pxEngineText->Info.Flags & PXEngineResourceInfoEnabled)
             {
                 break;
             }
@@ -3079,7 +3153,7 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
         PXEngineResourceRender(pxEngine, &pxEngineResourceRenderInfo);
     }
 
-    // Sprite
+    // Model
     {
         PXDictionary* const modelLookup = &pxEngine->ModelLookUp;
 
@@ -3147,7 +3221,7 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
 
             pxEngineText = *(PXEngineText**)pxDictionaryEntry.Value;
 
-            if(!pxEngineText->Enabled)
+            if(!(pxEngineText->Info.Flags & PXEngineResourceInfoEnabled))
             {
                 continue;
             }
@@ -3174,11 +3248,6 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
 
             pxHitBox = *(PXHitBox**)pxDictionaryEntry.Value;
 
-            if(!pxHitBox->Enabled)
-            {
-                continue;
-            }
-
             PXEngineResourceRenderInfo pxEngineResourceRenderInfo;
             pxEngineResourceRenderInfo.Type = PXEngineCreateTypeHitBox;
             pxEngineResourceRenderInfo.CameraReference = pxEngine->CameraCurrent;
@@ -3204,7 +3273,7 @@ void PXAPI PXEngineCollsisionSolve(PXEngine* const pxEngine)
 
         pxHitBoxA = *(PXHitBox**)pxDictionaryEntryA.Value;
 
-        if (!pxHitBoxA->Enabled)
+        if (!(pxHitBoxA->Info.Flags & PXEngineResourceInfoEnabled))
         {
             continue;
         }
@@ -3218,7 +3287,7 @@ void PXAPI PXEngineCollsisionSolve(PXEngine* const pxEngine)
 
             hitBoxB = *(PXHitBox**)pxDictionaryEntryB.Value;
 
-            if (!pxHitBoxA->Enabled)
+            if (!(pxHitBoxA->Info.Flags & PXEngineResourceInfoEnabled))
             {
                 continue;
             }

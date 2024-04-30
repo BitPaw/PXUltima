@@ -876,6 +876,8 @@ typedef struct PXSprite
 	PXModel Model;
 
 	struct PXTexture2D_* Texture;
+
+	struct PXHitBox_* HitBox;
 }
 PXSprite;
 

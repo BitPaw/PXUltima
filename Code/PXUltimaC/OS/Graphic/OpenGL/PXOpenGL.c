@@ -3216,8 +3216,8 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXModel* 
     {
         PXOpenGLShaderProgramSelect(pxOpenGL, pxModel->ShaderProgramReference);
 
-        PXShaderVariable pxShaderVariableList[3];
-        PXClearList(PXShaderVariable, pxShaderVariableList, 3);
+        PXShaderVariable pxShaderVariableList[6];
+        PXClearList(PXShaderVariable, pxShaderVariableList, 6);
         PXTextCopyA("MatrixModel", 11, pxShaderVariableList[0].Name, 64);
         pxShaderVariableList[0].Amount = 1;
         pxShaderVariableList[0].Data = modifiedModelMatrix.Data;
@@ -3233,7 +3233,25 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXModel* 
         pxShaderVariableList[2].Data = pxCamera->MatrixProjection.Data;
         pxShaderVariableList[2].DataType = PXShaderVariableTypeMatrix4x4;
 
-        PXOpenGLShaderVariableSet(pxOpenGL, pxModel->ShaderProgramReference, pxShaderVariableList, 3);
+
+        float dummyValue[4] = { 1.0f,1.0f ,1.0f ,1.0f };
+
+        PXTextCopyA("Material.Ambient", 17, pxShaderVariableList[3].Name, 64);
+        pxShaderVariableList[3].Amount = 1;
+        pxShaderVariableList[3].Data = dummyValue;
+        pxShaderVariableList[3].DataType = PXShaderVariableTypeFloatVector4;
+
+        PXTextCopyA("Material.Diffuse", 17, pxShaderVariableList[4].Name, 64);
+        pxShaderVariableList[4].Amount = 1;
+        pxShaderVariableList[4].Data = dummyValue;
+        pxShaderVariableList[4].DataType = PXShaderVariableTypeFloatVector4;
+
+        PXTextCopyA("Material.Specular", 18, pxShaderVariableList[5].Name, 64);
+        pxShaderVariableList[5].Amount = 1;
+        pxShaderVariableList[5].Data = dummyValue;
+        pxShaderVariableList[5].DataType = PXShaderVariableTypeFloatVector4;
+
+        PXOpenGLShaderVariableSet(pxOpenGL, pxModel->ShaderProgramReference, pxShaderVariableList, 6);
     }
     else // Legacy matrix stuff
     {
@@ -3303,7 +3321,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXModel* 
             for (size_t i = 0; i < pxModel->IndexBuffer.SegmentListAmount; i++)
             {
                 PXIndexSegment* const pxIndexSegment = &pxModel->IndexBuffer.SegmentList[i];
-                PXTexture2D* pxTexture = PXNull;// pxIndexSegment->Material->DiffuseTexture;
+                PXTexture2D* pxTexture = pxIndexSegment->Material->DiffuseTexture;
 
                 if (pxIndexSegment->Material)
                 {
@@ -3341,6 +3359,32 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXModel* 
 
             if (pxMaterial)
             {
+                PXShaderVariable pxShaderVariableList[3];
+                PXClearList(PXShaderVariable, pxShaderVariableList, 3);
+
+                PXTextCopyA("Material.Ambient", 17, pxShaderVariableList[0].Name, 64);
+                pxShaderVariableList[0].Amount = 1;
+                pxShaderVariableList[0].Data = pxMaterial->Ambient;
+                pxShaderVariableList[0].DataType = PXShaderVariableTypeFloatVector4;
+
+                PXTextCopyA("Material.Diffuse", 17, pxShaderVariableList[1].Name, 64);
+                pxShaderVariableList[1].Amount = 1;
+                pxShaderVariableList[1].Data = pxMaterial->Diffuse;
+                pxShaderVariableList[1].DataType = PXShaderVariableTypeFloatVector4;
+
+                PXTextCopyA("Material.Specular", 18, pxShaderVariableList[2].Name, 64);
+                pxShaderVariableList[2].Amount = 1;
+                pxShaderVariableList[2].Data = pxMaterial->Specular;
+                pxShaderVariableList[2].DataType = PXShaderVariableTypeFloatVector4;
+
+               // PXTextCopyA("MaterialTexture", 16, pxShaderVariableList[2].Name, 64);
+               // pxShaderVariableList[3].Amount = 1;
+              //  pxShaderVariableList[3].Data = pxMaterial->Specular;
+               // pxShaderVariableList[3].DataType = PXShaderVariableTypeSampler2DF;
+
+                PXOpenGLShaderVariableSet(pxOpenGL, pxModel->ShaderProgramReference, pxShaderVariableList, 3);
+
+
                 const PXTexture2D* const pxTexture = pxIndexSegment->Material->DiffuseTexture;
 
                 if (pxTexture)
@@ -3354,6 +3398,12 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXModel* 
                     pxOpenGL->Disable(GL_TEXTURE_2D);
                 }
             }        
+            else
+            {
+                // Has no material
+      
+
+            }
 
             if (pxModel->IndexBuffer.ResourceID.OpenGLID == -1)
             {

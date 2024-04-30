@@ -42,17 +42,21 @@ typedef enum PXEngineCreateType_
 PXEngineCreateType;
 
 
-#define PXEngineResourceInfoExist			0b00000001// Indicated deleted Resource
-#define PXEngineResourceInfoEnabled			0b00000010// Shall it be rendered? Does it tick?
+#define PXEngineResourceInfoExist			0b00000001// Indicate if resource is valid
+#define PXEngineResourceInfoEnabled			0b00000010// Is it interactable or does it tick?
+#define PXEngineResourceInfoVisble			0b00000100// Shall it be rendered?
 #define PXEngineResourceInfoStorageDrive	0b00010000// Resource is in permanent storage
 #define PXEngineResourceInfoStorageCached	0b00100000// Resource is in semi-permanent cache (temp file)
 #define PXEngineResourceInfoStorageMemory	0b01000000// Resource exists in RAM
 #define PXEngineResourceInfoStorageDevice	0b10000000// Resource exists in spesific device
 
+// Internal engine identification
+// Additional use is to define current storage and interactions.
 typedef struct PXEngineResourceInfo_
 {
-	PXInt32U ID;
-	PXInt32U Flags;
+	PXInt32U ID; // Identification of this object
+	PXInt32U Flags; // general information
+	PXInt32U Behaviour; // Depends on the type of the resource
 }
 PXEngineResourceInfo;
 
@@ -67,7 +71,6 @@ typedef enum PXHitBoxForm_
 	PXHitBoxTypeBox,
 	PXHitBoxTypeCube,
 	PXHitBoxTypeCircle
-
 }
 PXHitBoxForm;
 
@@ -80,29 +83,19 @@ PXHitBoxForm;
 //#define PXHitBoxBehaviourDetect  0b00001000 // Trigger if in inside
 	//---------------
 
-typedef enum PXHitBoxCollisionVarriant_
-{
-	PXHitBoxCollisionVarriantInvalid,
-	PXHitBoxCollisionVarriantEnter,
-	PXHitBoxCollisionVarriantLeave
-}
-PXHitBoxCollisionVarriant;
+typedef void(PXAPI* PXHitBoxCollisionDetect)(void* owner, struct PXHitBox_* const pxHitBox);
 
-typedef void(PXAPI* PXHitBoxCollisionDetect)(void* owner, struct PXHitBox_* const pxHitBox, const PXHitBoxCollisionVarriant pxHitBoxCollisionVarriant);
-
+// Collidable entity that can be defined for different behaviours
 typedef struct PXHitBox_
 {
-	PXInt32U PXID;
-	PXBool Enabled;
+	PXEngineResourceInfo Info;
 
-	PXMatrix4x4F* ModelPosition;
+	PXModel* Model;
 
-	PXInt8U BehaviourFlag;
 	PXHitBoxForm Form;
 
 	void* CallBackOwner;
 	PXHitBoxCollisionDetect CollisionDetectCallBack;
-
 }
 PXHitBox;
 //-----------------------------------------------------
@@ -128,8 +121,7 @@ typedef PXActionResult(PXAPI* PXEngineTimerCallBack)(PXEngine* const pxEngine, P
 
 typedef struct PXEngineTimer_
 {
-	PXInt32U PXID;
-	PXBool Enabled; // Is the timer ticking?
+	PXEngineResourceInfo Info;
 
 	void* Owner;
 	PXEngineTimerCallBack CallBack;
@@ -149,8 +141,7 @@ PXEngineTimer;
 //-----------------------------------------------------
 typedef struct PXEngineText_
 {
-	PXInt32U PXID;
-	PXBool Enabled;
+	PXEngineResourceInfo Info;
 
 	PXVector2F Position;
 	PXVector2F Scaling;
@@ -195,22 +186,22 @@ PXEngineSoundCreateInfo;
 //-----------------------------------------------------
 // ShaderProgram
 //-----------------------------------------------------
-typedef struct PXShaderProgramCreateData_
+typedef struct PXShaderProgramCreateInfo_
 {
 	char* VertexShaderFilePath;
 	char* PixelShaderFilePath;
 }
-PXShaderProgramCreateData;
+PXShaderProgramCreateInfo;
 //-----------------------------------------------------
 
 
-typedef struct PXEngineFontCreateData_
+typedef struct PXEngineFontCreateInfo_
 {
 	PXShaderProgram* ShaderProgramCurrent;
 }
-PXEngineFontCreateData;
+PXEngineFontCreateInfo;
 
-typedef struct PXSkyBoxCreateEventData_
+typedef struct PXSkyBoxCreateEventInfo_
 {
 	char* SkyBoxShaderVertex;
 	char* SkyBoxShaderPixel;
@@ -221,28 +212,46 @@ typedef struct PXSkyBoxCreateEventData_
 	char* SkyBoxTextureE;
 	char* SkyBoxTextureF;
 }
-PXSkyBoxCreateEventData;
+PXSkyBoxCreateEventInfo;
 
-typedef struct PXSpriteCreateEventData_
+typedef struct PXHitboxCreateInfo_
+{
+	PXHitBox* HitBox;
+
+	// Mode
+	PXInt32U Flags;
+
+	PXModel* Model;
+}
+PXHitboxCreateInfo;
+
+typedef struct PXSpriteCreateInfo_
 {
 	PXTexture2D* TextureCurrent;
 	PXShaderProgram* ShaderProgramCurrent;
 
 	PXVector2F TextureScalingPoints[4];
 
-	PXBool HitBoxCreate;
-	PXHitBox* HitBox;
-
 	PXVector3F Position;
 	PXVector2F Scaling;
 
 	PXBool ViewRotationIgnore;
 	PXBool ViewPositionIgnore;
+
+	// Extended info if we want a attached hitbox
+	PXBool HitBoxCreate;
+	PXHitboxCreateInfo HitboxData;
+
+
+	
+
+
+
 }
-PXSpriteCreateEventData;
+PXSpriteCreateInfo;
 
 
-typedef struct PXTextureCubeCreateData_
+typedef struct PXTextureCubeCreateInfo_
 {
 	char* FilePathA;
 	char* FilePathB;
@@ -251,7 +260,7 @@ typedef struct PXTextureCubeCreateData_
 	char* FilePathE;
 	char* FilePathF;
 }
-PXTextureCubeCreateData;
+PXTextureCubeCreateInfo;
 
 typedef struct PXModelCreateInfo_
 {
@@ -282,14 +291,15 @@ typedef struct PXEngineResourceCreateInfo_
 
 	union
 	{
-		PXEngineFontCreateData Font;
-		PXSkyBoxCreateEventData SkyBox;
-		PXSpriteCreateEventData Sprite;
+		PXEngineFontCreateInfo Font;
+		PXSkyBoxCreateEventInfo SkyBox;
+		PXSpriteCreateInfo Sprite;
 		PXEngineSoundCreateInfo Sound;
-		PXShaderProgramCreateData ShaderProgram;
-		PXTextureCubeCreateData TextureCube;
+		PXShaderProgramCreateInfo ShaderProgram;
+		PXTextureCubeCreateInfo TextureCube;
 		PXGUIElementCreateInfo UIElement;
 		PXModelCreateInfo Model;
+		PXHitboxCreateInfo HitBox;
 	};
 }
 PXEngineResourceCreateInfo;
