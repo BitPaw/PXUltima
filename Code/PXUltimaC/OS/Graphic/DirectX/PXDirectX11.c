@@ -174,7 +174,7 @@ PXActionResult PXAPI PXDirectX11Initialize(PXDirectX11* const pxDirectX11, PXGra
         dxGISwapChainDescription.SampleDesc.Quality = 0;
         dxGISwapChainDescription.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
         dxGISwapChainDescription.BufferCount = 1;
-        dxGISwapChainDescription.OutputWindow = pxGraphicInitializeInfo->WindowReference->ID;
+        dxGISwapChainDescription.OutputWindow = pxGraphicInitializeInfo->WindowReference->Info.WindowID;
         dxGISwapChainDescription.Windowed = 1u;
 
         const HRESULT resultID = createDeviceAndSwapChain // D3D11CreateDevice()
@@ -256,7 +256,7 @@ PXActionResult PXAPI PXDirectX11TextureAction(PXDirectX11* const pxDirectX11, st
                 case PXGraphicTextureType1D:
                 {
                     PXTexture1D* pxTexture1D = (PXTexture1D*)pxGraphicTexturInfo->TextureReference;
-                    ID3D11Texture1D** dx11Texture1D = &((ID3D11Texture1D*)pxTexture1D->ResourceID.DirectXInterface);
+                    ID3D11Texture1D** dx11Texture1D = &((ID3D11Texture1D*)pxTexture1D->Info.DirectXInterface);
 
                     D3D11_TEXTURE1D_DESC desc;
                     desc.Width = pxTexture1D->Image->Width;
@@ -318,7 +318,7 @@ PXActionResult PXAPI PXDirectX11TextureAction(PXDirectX11* const pxDirectX11, st
                 case PXGraphicTextureType2D:
                 {
                     PXTexture2D* const pxTexture2D = (PXTexture2D*)pxGraphicTexturInfo->TextureReference;
-                    ID3D11Texture2D** texture2D = &(ID3D11Texture2D*)pxTexture2D->ResourceID.DirectXInterface;
+                    ID3D11Texture2D** texture2D = &(ID3D11Texture2D*)pxTexture2D->Info.DirectXInterface;
 
                     D3D11_TEXTURE2D_DESC textureDescription;
                     textureDescription.Width = pxTexture2D->Image->Width,
@@ -409,7 +409,7 @@ PXActionResult PXAPI PXDirectX11TextureAction(PXDirectX11* const pxDirectX11, st
                 case PXGraphicTextureType3D:
                 {
                     PXTexture3D* const pxTexture3D = pxGraphicTexturInfo->TextureReference;
-                    ID3D11Texture3D** dxTexture3D = &(ID3D11Texture3D*)pxTexture3D->ResourceID.DirectXInterface;
+                    ID3D11Texture3D** dxTexture3D = &(ID3D11Texture3D*)pxTexture3D->Info.DirectXInterface;
 
                     D3D11_TEXTURE3D_DESC textureDescription;
                     textureDescription.Width = pxTexture3D->Image->Width,
@@ -530,7 +530,7 @@ PXActionResult PXAPI PXDirectX11Clear(PXDirectX11* const pxDirectX11, const PXCo
 
 PXActionResult PXAPI PXDirectX11VertexBufferCreate(PXDirectX11* const pxDirectX11, PXVertexBuffer* const pxVertexBuffer)
 {
-    ID3D11Buffer** g_pVertexBuffer = &(ID3D11Buffer*)pxVertexBuffer->ResourceID.DirectXInterface;
+    ID3D11Buffer** g_pVertexBuffer = &(ID3D11Buffer*)pxVertexBuffer->Info.DirectXInterface;
 
     // Fill in a buffer description.
     D3D11_BUFFER_DESC bufferDesc;
@@ -563,7 +563,7 @@ PXActionResult PXAPI PXDirectX11ShaderProgramCreate(PXDirectX11* const pxDirectX
     for(PXSize i = 0; i < amount; ++i)
     {
         PXShader* const pxShader = &shaderList[i];
-        ID3DBlob* const shaderCode = (ID3DBlob*)pxShader->Content;
+        ID3DBlob* const shaderCode = (ID3DBlob*)pxShader->ShaderFile->Data;
         const void* const shaderBytecode = shaderCode->lpVtbl->GetBufferPointer(shaderCode);
         const SIZE_T bytecodeLength = shaderCode->lpVtbl->GetBufferSize(shaderCode);
 
@@ -577,7 +577,7 @@ PXActionResult PXAPI PXDirectX11ShaderProgramCreate(PXDirectX11* const pxDirectX
                     shaderBytecode,
                     bytecodeLength,
                     PXNull,
-                    &(ID3D11VertexShader*)pxShader->ResourceID.DirectXInterface
+                    &(ID3D11VertexShader*)pxShader->Info.DirectXInterface
                 );
 
                 break;
@@ -590,7 +590,7 @@ PXActionResult PXAPI PXDirectX11ShaderProgramCreate(PXDirectX11* const pxDirectX
                     shaderBytecode,
                     bytecodeLength,
                     PXNull,
-                    &(ID3D11PixelShader*)pxShader->ResourceID.DirectXInterface
+                    &(ID3D11PixelShader*)pxShader->Info.DirectXInterface
                 );
 
                 break;

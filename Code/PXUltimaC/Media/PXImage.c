@@ -26,12 +26,18 @@ void PXAPI PXImageDestruct(PXImage* const image)
 
 void PXAPI PXImageCopyAsIs(PXImage* const pxImageTarget, const PXImage* const pxImageSource)
 {
-    PXMemoryCopy(pxImageSource, sizeof(PXImage), pxImageTarget, sizeof(PXImage));
+    PXCopy(PXImage, pxImageSource, pxImageTarget);
 }
 
 void PXAPI PXImageCopyAsNew(PXImage* const pxImageTarget, const PXImage* const pxImageSource)
 {
-    
+    PXNewList(PXInt8U, pxImageSource->PixelDataSize, &pxImageTarget->PixelData, &pxImageTarget->PixelDataSize);
+    PXCopyList(PXInt8U, pxImageSource->PixelDataSize, pxImageSource->PixelData, pxImageTarget->PixelData);
+
+    pxImageTarget->Width = pxImageSource->Width;
+    pxImageTarget->Height = pxImageSource->Height;
+    pxImageTarget->Depth = pxImageSource->Depth;
+    pxImageTarget->Format = pxImageSource->Format;
 }
 
 PXBool PXAPI PXImageResize(PXImage* const image, const PXColorFormat dataFormat, const PXSize width, const PXSize height)

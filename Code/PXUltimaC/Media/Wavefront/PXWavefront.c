@@ -488,12 +488,14 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
 
         indexDataCacheSize = counterIndex;
 
-        pxModel->VertexBuffer.VertexDataRowSize = PXVertexBufferFormatStrideSize(pxModel->VertexBuffer.Format);
-
-        pxModel->VertexBuffer.VertexDataAmount = pxModel->VertexBuffer.VertexDataRowSize * counterIndex;
+        //pxModel->VertexBuffer.VertexDataRowSize = PXVertexBufferFormatStrideSize(pxModel->VertexBuffer.Format);
+        //pxModel->VertexBuffer.VertexDataAmount = pxModel->VertexBuffer.VertexDataRowSize * counterIndex;
         pxModel->IndexBuffer.SegmentListAmount = materialUseIndex;
 
-        PXNewListZerod(float, pxModel->VertexBuffer.VertexDataAmount, &pxModel->VertexBuffer.VertexData, &pxModel->VertexBuffer.VertexDataSize);
+        const PXSize vertexDataStride = PXVertexBufferFormatStrideSize(pxModel->VertexBuffer.Format);
+        const PXSize vertexDataAmount = vertexDataStride * counterIndex;
+
+        PXNewListZerod(float, vertexDataAmount, &pxModel->VertexBuffer.VertexData, &pxModel->VertexBuffer.VertexDataSize);
         PXNewListZerod(PXIndexSegment, materialUseIndex, &pxModel->IndexBuffer.SegmentList, &pxModel->IndexBuffer.SegmentListSize);
 
 
@@ -510,9 +512,8 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
         pxModel->IndexBuffer.IndexDataSize = pxModel->IndexBuffer.IndexTypeSize * counterIndex;
 #else
         pxModel->IndexBuffer.DrawModeID = PXDrawModeIDTriangle;// | PXDrawModeIDPoint | PXDrawModeIDLineLoop;
-        pxModel->IndexBuffer.DataType = 0;
-        pxModel->IndexBuffer.IndexTypeSize = 0;
-        pxModel->IndexBuffer.IndexDataAmount = counterIndex;
+        pxModel->IndexBuffer.IndexDataType = 0;
+        //pxModel->IndexBuffer.IndexDataAmount = counterIndex;
         pxModel->IndexBuffer.IndexData = 0;
         pxModel->IndexBuffer.IndexDataSize = 0;
 #endif
@@ -597,7 +598,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
                             PXClear(PXResourceLoadInfo, &pxResourceLoadInfo);
                             pxResourceLoadInfo.Target = pxMaterialContaier;
                             pxResourceLoadInfo.FileReference = &materialFile;
-                            pxResourceLoadInfo.Type = PXGraphicResourceTypeMaterialList;
+                            pxResourceLoadInfo.Type = PXResourceTypeMaterialList;
 
                             PXResourceLoad(&pxResourceLoadInfo, &materialFilePathFull);
                         }                   
@@ -708,7 +709,9 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
                     PXWavefrontFaceLineParse(&pxCompiler, vertexData); // Get the data
 
        
-                    const PXSize dataSize = pxModel->IndexBuffer.IndexTypeSize;
+                   
+
+                 //   const PXSize dataSize = pxModel->IndexBuffer.IndexTypeSize;
                     // PXMemoryCopy(vertexData, dataSize, input, dataSize);
 
 

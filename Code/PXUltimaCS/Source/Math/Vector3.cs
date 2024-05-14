@@ -44,7 +44,6 @@ namespace PX
             Y = y;
             Z = z;
         }
-
     
         public static Vector3 operator +(Vector3 a, Vector3 b)
         {

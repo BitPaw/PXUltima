@@ -74,6 +74,33 @@ PXLoggingEventData;
 typedef void (PXAPI* PXLogPrintFunction)(const PXLoggingType loggingType, const char* const source, ...);
 
 
+
+typedef enum PXConsoleTextColor_
+{
+	PXConsoleTextColorInvalid,
+	PXConsoleTextColorBLACK,
+	PXConsoleTextColorDARKBLUE,
+	PXConsoleTextColorDARKGREEN,
+	PXConsoleTextColorDARKCYAN,
+	PXConsoleTextColorDARKRED,
+	PXConsoleTextColorDARKMAGENTA,
+	PXConsoleTextColorDARKYELLOW,
+	PXConsoleTextColorDARKGRAY,
+	PXConsoleTextColorGRAY,
+	PXConsoleTextColorBLUE,
+	PXConsoleTextColorGREEN,
+	PXConsoleTextColorCYAN,
+	PXConsoleTextColorRED,
+	PXConsoleTextColorMAGENTA,
+	PXConsoleTextColorYELLOW,
+	PXConsoleTextColorWHITE,
+}
+PXConsoleTextColor;
+
+
+PXPublic PXActionResult PXAPI PXConsoleTextColorSet(const PXConsoleTextColor pxConsoleTextColor);
+PXPublic PXActionResult PXAPI PXConsoleTextColorSetFromID(const PXInt16U coliorID);
+
 PXPublic void PXAPI PXConsoleClear();
 PXPublic void PXAPI PXConsoleGoToXY(const PXInt32U x, const PXInt32U y);
 PXPublic void PXAPI PXConsoleWriteF(const PXSize length, const char* const source, ...);
@@ -81,8 +108,11 @@ PXPublic void PXAPI PXConsoleWrite(const PXSize length, const char* const source
 PXPublic void PXAPI PXConsoleWriteFV(const PXSize length, const char* const source, va_list* const va_list);
 
 
+PXPublic void PXAPI PXConsoleWriteTableFloat(const float* const data, const PXSize amount, const PXSize width);
+PXPublic void PXAPI PXConsoleWriteTableInt(const PXInt8U* const data, const PXSize amount, const PXSize width);
+
 //PXPublic void PXAPI PXConsoleTranlateColorsA(char* const bufferInput, char* const bufferOuput);
-PXPublic void PXAPI PXConsoleTranlateColors(PXText* const bufferInput, PXText* const bufferOuput);
+PXPublic void PXAPI PXConsoleWriteWithColorCodes(PXText* const bufferInput);
 
 
 PXPublic void PXAPI PXLogPrintInvoke

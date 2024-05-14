@@ -145,6 +145,8 @@ PXPublic PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug);
 
 PXPublic PXActionResult PXAPI PXDebugLibrarySymbolsFetch(PXDebug* const pxDebug, const PXText* const libraryFilePath, PXSymbol* const pxSymbolList, PXSize* const amount);
 
+PXPublic void PXAPI PXDebugLogMessage(PXText* const pxText);
+
 
 PXPrivate PXThreadResult PXAPI PXDebugLoop(PXDebug* const pxDebug);
 

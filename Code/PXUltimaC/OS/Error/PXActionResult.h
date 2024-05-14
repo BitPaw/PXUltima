@@ -123,7 +123,7 @@ typedef enum PXActionResult_
 	// Functions
 	//-------------------------------------------------------
 	PXActionRefusedArgumentNull, // Some needed Parameter is null
-	PXActionRefusedArgumentInvalid, // [INVAL]	
+	PXActionRefusedArgumentInvalid, // [INVAL] Any given argument is invalid
 
 	//-------------------------------------------------------
 	// Library

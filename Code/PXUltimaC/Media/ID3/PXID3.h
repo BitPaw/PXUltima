@@ -105,8 +105,6 @@ typedef enum PXID3v2xFrameTag_
 }
 PXID3v2xFrameTag;
 
-
-
 typedef struct PXID3_
 {
 	// Version 1.0

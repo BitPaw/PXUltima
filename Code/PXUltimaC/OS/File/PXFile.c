@@ -133,6 +133,8 @@ PXActionResult PXAPI PXFilePathSplitt(const PXText* const fullPath, PXFilePathSt
 
 #if PXLogEnable
 			{
+				char bufferFullPath[260];
+
 				char bufferDrive[260];
 				char bufferFolder[260];
 				char bufferFile[260];
@@ -142,6 +144,8 @@ PXActionResult PXAPI PXFilePathSplitt(const PXText* const fullPath, PXFilePathSt
 				PXClearList(char, bufferFolder, 260);
 				PXClearList(char, bufferFile, 260);
 				PXClearList(char, bufferExtension, 260);
+
+				PXTextCopyA(fullPath->TextA, fullPath->SizeUsed, bufferFullPath, 260);
 
 				PXTextCopyA(pxFilePathStructure->Drive.TextA, pxFilePathStructure->Drive.SizeUsed, bufferDrive, 260);
 				PXTextCopyA(pxFilePathStructure->Directory.TextA, pxFilePathStructure->Directory.SizeUsed, bufferFolder, 260);
@@ -158,7 +162,7 @@ PXActionResult PXAPI PXFilePathSplitt(const PXText* const fullPath, PXFilePathSt
 					"%10s : x%-2i %s\n"
 					"%10s : x%-2i %s\n"
 					"%10s : x%-2i %s\n",
-					"Path", fullPath->SizeUsed, fullPath->TextA,
+					"Path", fullPath->SizeUsed, bufferFullPath,
 					"Drive",		pxFilePathStructure->Drive.SizeUsed, bufferDrive,
 					"Folder",		pxFilePathStructure->Directory.SizeUsed, bufferFolder,
 					"File",			pxFilePathStructure->FileName.SizeUsed, bufferFile,

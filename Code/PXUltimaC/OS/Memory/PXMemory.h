@@ -3,7 +3,6 @@
 
 #include <Media/PXType.h>
 #include <Compiler/PXCompilerSettings.h>
-#include <Media/PXResource.h>
 #include <OS/Error/PXActionResult.h>
 
 #if OSUnix
@@ -14,7 +13,7 @@ typedef unsigned long PXMemoryAccessModeType;// DWORD
 
 //---<Settings>---
 #define MemorySizeUnkown -1
-#define MemoryAssertEnable 0
+#define MemoryAssertEnable 1
 #define PXMemoryDebug 1
 #define MemoryDebugLeakDetection 0
 #define MemoryUseSystemFunction 1
@@ -195,20 +194,20 @@ PXPublic PXActionResult PXAPI PXMemoryHeapAllocate(PXMemoryInfo* const pxMemoryA
 PXPublic PXActionResult PXAPI PXMemoryHeapDeallocate(PXMemoryInfo* const pxMemoryAllocateInfo);
 
 #define PXMemoryInfoFill(pxMemoryInfo, type, amount, dataAdress, dataSizeAdress, memoryClear) \
-	pxMemoryHeapAllocateInfo.Data = (void**)dataAdress; \
-	pxMemoryHeapAllocateInfo.SizeTotal = dataSizeAdress; \
-	pxMemoryHeapAllocateInfo.Amount = amount; \
-	pxMemoryHeapAllocateInfo.TypeSize = sizeof(type); \
-	pxMemoryHeapAllocateInfo.MemoryClear = memoryClear; \
-	pxMemoryHeapAllocateInfo.File = _PX_FILENAME_; \
-	pxMemoryHeapAllocateInfo.Function = _PX_FUNCTION_; \
-	pxMemoryHeapAllocateInfo.Line = _PX_LINE_; \
+	pxMemoryInfo.Data = (void**)dataAdress; \
+	pxMemoryInfo.SizeTotal = dataSizeAdress; \
+	pxMemoryInfo.Amount = amount; \
+	pxMemoryInfo.TypeSize = sizeof(type); \
+	pxMemoryInfo.MemoryClear = memoryClear; \
+	pxMemoryInfo.File = _PX_FILENAME_; \
+	pxMemoryInfo.Function = _PX_FUNCTION_; \
+	pxMemoryInfo.Line = _PX_LINE_; \
 
 
 #define PXNewListSettings(type, amount, dataAdress, dataSizeAdress, memoryClear) { \
-	PXMemoryInfo pxMemoryHeapAllocateInfo; \
+	PXMemoryInfo pxMemoryInfo; \
 	PXMemoryInfoFill(pxMemoryInfo,type, amount, dataAdress, dataSizeAdress, memoryClear); \
-	PXMemoryHeapAllocate(&pxMemoryHeapAllocateInfo); }
+	PXMemoryHeapAllocate(&pxMemoryInfo); }
 
 #define PXNewList(type, amount, dataAdress, dataSizeAdress) PXNewListSettings(type, amount, dataAdress, dataSizeAdress, PXFalse);
 #define PXNewListZerod(type, amount, dataAdress, dataSizeAdress) PXNewListSettings(type, amount, dataAdress, dataSizeAdress, PXTrue)
@@ -217,25 +216,25 @@ PXPublic PXActionResult PXAPI PXMemoryHeapDeallocate(PXMemoryInfo* const pxMemor
 #define PXNewZerod(type, dataAdress) PXNewListZerod(type, 1u, dataAdress, PXNull)
 
 #define PXDeleteList(type, amount, dataAdress, dataSizeAdress) { \
-	PXMemoryInfo pxMemoryHeapAllocateInfo; \
+	PXMemoryInfo pxMemoryInfo; \
 	PXMemoryInfoFill(pxMemoryInfo,type, amount, dataAdress, dataSizeAdress, PXFalse); \
-	PXMemoryHeapDeallocate(&pxMemoryHeapAllocateInfo); }
+	PXMemoryHeapDeallocate(&pxMemoryInfo); }
 
 #define PXDelete(type, dataAdress) PXDeleteList(type, 1u, dataAdress, PXNull)
 
 
 #define PXNewStackList(type, amount, dataAdress, dataSizeAdress) { \
-	PXMemoryInfo pxMemoryHeapAllocateInfo; \
+	PXMemoryInfo pxMemoryInfo; \
 	PXMemoryInfoFill(pxMemoryInfo,type, amount, dataAdress, dataSizeAdress, PXFalse); \
-	PXMemoryStackAllocate(&pxMemoryHeapAllocateInfo); }
+	PXMemoryStackAllocate(&pxMemoryInfo); }
 
 #define PXNewStack(type, dataAdress) PXNewStackList(type, 1u, dataAdress, PXNull)
 
 
 #define PXDeleteStackList(type, amount, dataAdress, dataSizeAdress) { \
-	PXMemoryInfo pxMemoryHeapAllocateInfo; \
+	PXMemoryInfo pxMemoryInfo; \
 	PXMemoryInfoFill(pxMemoryInfo,type, amount, dataAdress, dataSizeAdress, PXFalse); \
-	PXMemoryStackDeallocate(&pxMemoryHeapAllocateInfo); }
+	PXMemoryStackDeallocate(&pxMemoryInfo); }
 
 #define PXDeleteStack(type, dataAdress) PXDeleteStackList(type, 1u, dataAdress, PXNull)
 

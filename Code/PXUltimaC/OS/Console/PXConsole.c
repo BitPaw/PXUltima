@@ -5,13 +5,85 @@
 #include <OS/Async/PXThread.h>
 #include <OS/Time/PXTime.h>
 #include <OS/File/PXFile.h>
+#include <OS/Debug/PXDebug.h>
 
 #if OSUnix || OSForcePOSIXForWindows
 #include <stdio.h>
 #endif
 
-#define PXConsoleColorEnable 0
+#define PXConsoleColorEnable 1
 
+
+PXActionResult PXAPI PXConsoleTextColorSetFromID(const PXInt16U coliorID)
+{
+	PXConsoleTextColor pxConsoleTextColor = 0;
+
+	if('0' <= coliorID && coliorID <= '9') // Number
+	{
+		pxConsoleTextColor = coliorID + 1 - '0';
+	}
+	else if('a' <= coliorID && coliorID <= 'z')
+	{
+		pxConsoleTextColor = (coliorID - 'a') + 11;
+	}
+	else if('A' <= coliorID && coliorID <= 'Z')
+	{
+		pxConsoleTextColor = (coliorID - 'A') + +11;
+	}
+
+	return PXConsoleTextColorSet(pxConsoleTextColor);
+}
+
+PXActionResult PXAPI PXConsoleTextColorSet(const PXConsoleTextColor pxConsoleTextColor)
+{
+	const HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+	WORD colorID = 0;
+
+	switch(pxConsoleTextColor)
+	{
+
+		case PXConsoleTextColorBLACK: 
+		{ colorID = 0;  break; }
+		case PXConsoleTextColorDARKBLUE:
+		{ colorID = FOREGROUND_BLUE;  break; }
+		case PXConsoleTextColorDARKGREEN:
+		{ colorID = FOREGROUND_GREEN;  break; }
+		case PXConsoleTextColorDARKCYAN:
+		{ colorID = FOREGROUND_GREEN | FOREGROUND_BLUE;  break; }
+		case PXConsoleTextColorDARKRED: 
+		{ colorID = FOREGROUND_RED;  break; }
+		case PXConsoleTextColorDARKMAGENTA: 
+		{ colorID = FOREGROUND_RED | FOREGROUND_BLUE;  break; }
+		case PXConsoleTextColorDARKYELLOW:
+		{ colorID = FOREGROUND_RED | FOREGROUND_GREEN;  break; }
+		case PXConsoleTextColorDARKGRAY: 
+		{ colorID = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;  break; }
+		case PXConsoleTextColorGRAY:
+		{ colorID = FOREGROUND_INTENSITY;  break; }
+		case PXConsoleTextColorBLUE:
+		{ colorID = FOREGROUND_INTENSITY | FOREGROUND_BLUE;  break; }
+		case PXConsoleTextColorGREEN:
+		{ colorID = FOREGROUND_INTENSITY | FOREGROUND_GREEN;  break; }
+		case PXConsoleTextColorCYAN: 
+		{ colorID = FOREGROUND_INTENSITY | FOREGROUND_GREEN | FOREGROUND_BLUE;  break; }
+		case PXConsoleTextColorRED: 
+		{ colorID = FOREGROUND_INTENSITY | FOREGROUND_RED;  break; }
+		case PXConsoleTextColorMAGENTA: 
+		{ colorID = FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_BLUE;  break; }
+		case PXConsoleTextColorYELLOW:
+		{ colorID = FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN;  break; }
+
+		default:
+		case PXConsoleTextColorWHITE: 
+		{ colorID = FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;  break; }
+
+
+
+			//return PXActionRefusedArgumentInvalid;
+	}
+
+	SetConsoleTextAttribute(consoleHandle, colorID);
+}
 
 void PXAPI PXConsoleClear()
 {
@@ -28,11 +100,11 @@ void PXAPI PXConsoleGoToXY(const PXInt32U x, const PXInt32U y)
 #if OSUnix || OSForcePOSIXForWindows
 	printf("\033[%d;%dH", y, x);
 #elif OSWindows
-	HWND console = GetConsoleWindow();
+	const HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 
 	const COORD position = {x, y};
 
-	SetConsoleCursorPosition(console, position);
+	SetConsoleCursorPosition(consoleHandle, position);
 #endif	
 }
 
@@ -50,9 +122,14 @@ void PXAPI PXConsoleWriteF(const PXSize length, const char* const source, ...)
 
 void PXAPI PXConsoleWrite(const PXSize length, const char* const source)
 {
-	HWND console = GetConsoleWindow();
+	const HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+	const BOOL success = WriteConsoleA(consoleHandle, source, length, 0, 0);
 
-	WriteConsoleA(console, source, length, 0, 0);
+
+	PXText pxText;
+	PXTextConstructFromAdressA(&pxText, source, length, length);
+
+	PXDebugLogMessage(&pxText);
 }
 
 void PXAPI PXConsoleWriteFV(const PXSize length, const char* const source, va_list va_list)
@@ -62,9 +139,9 @@ void PXAPI PXConsoleWriteFV(const PXSize length, const char* const source, va_li
 #endif
 }
 
-void PXAPI PXConsoleTranlateColors(PXText* const bufferInput, PXText* const bufferOuput)
+void PXAPI PXConsoleWriteWithColorCodes(PXText* const bufferInput)
 {
-	PXTextClear(bufferOuput);
+	PXConsoleTextColorSet(PXConsoleTextColorWHITE);
 
 	for (PXSize i = 0; i < bufferInput->SizeUsed; i++)
 	{
@@ -76,22 +153,12 @@ void PXAPI PXConsoleTranlateColors(PXText* const bufferInput, PXText* const buff
 
 			if (offset == (PXSize)-1)
 			{
-				PXTextAppendA
-				(
-					bufferOuput,
-					&bufferInput->TextA[i],
-					bufferInput->SizeUsed - i
-				);
+				PXConsoleWrite(bufferInput->SizeUsed - i, &bufferInput->TextA[i]);				
 
 				return; // DONE
 			}
 
-			PXTextAppendA
-			(
-				bufferOuput,
-				&bufferInput->TextA[i],
-				offset
-			);
+			PXConsoleWrite(offset, &bufferInput->TextA[i]);
 
 			i += offset - 1;
 
@@ -100,29 +167,51 @@ void PXAPI PXConsoleTranlateColors(PXText* const bufferInput, PXText* const buff
 
 		++i;
 
-		const PXInt8U colorID = bufferInput->TextA[i] - '0';
+#if PXConsoleColorEnable
+		PXConsoleTextColorSetFromID(bufferInput->TextA[i]);
 
-#if PXConsoleColorEnable && 1
-		char buffer[128];
-		PXSize bufferSize = sprintf_s(buffer, 128, "\x1b[38;5;%im", colorID);
-
-
-		PXTextAppendA
-		(
-			bufferOuput,
-			buffer,
-			bufferSize
-		);
+		//PXConsoleTextColorSet(color);
+#else
+		// Nothing
 #endif
 	
 	}
 }
 
-#define PXConsoleColorRed 1
-#define PXConsoleColorGreen 10
-#define PXConsoleColorYellow 11
-#define PXConsoleColorCyan 12
-#define PXConsoleColorGray 7
+void PXAPI PXConsoleWriteTableFloat(const float* const data, const PXSize amount, const PXSize width)
+{	
+	const PXSize rows = amount / 3;
+
+	for(PXSize y = 0; y < rows; ++y)
+	{
+		for(PXSize x = 0; x < width; ++x)
+		{
+			float number = data[x + y * width];
+
+			PXConsoleWriteF(260, "%5.2f ", number);
+		}
+
+		PXConsoleWriteF(260, "\n");
+	}
+}
+
+void PXAPI PXConsoleWriteTableInt(const PXInt8U* const data, const PXSize amount, const PXSize width)
+{
+	const PXSize rows = amount / 3;
+
+	for(PXSize y = 0; y < rows; ++y)
+	{
+		for(PXSize x = 0; x < width; ++x)
+		{
+			PXInt8U number = data[x + y * width];
+
+			PXConsoleWriteF(260, "%3i ", number);
+		}
+
+		PXConsoleWriteF(260, "\n");
+	}
+}
+
 
 void PXAPI PXLogPrintInvoke(PXLoggingEventData* const pxLoggingEventData, ...)
 {
@@ -288,7 +377,11 @@ void PXAPI PXLogPrintInvoke(PXLoggingEventData* const pxLoggingEventData, ...)
 		pxLoggingEventData->PrintFormat
 	);
 
-	PXConsoleTranlateColors(&textPreFormatted, &textColored);
+
+
+
+
+	PXConsoleWriteWithColorCodes(&textPreFormatted, &textColored);
 
 
 
@@ -306,55 +399,56 @@ void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source,
 {
 	char loggingTypeSymbol;
 
-	int symbolColor = 7;
-	int nameColor = 6;
+	char symbolColor = '7';
+	char nameColor = '6';
 
 	switch (loggingType)
 	{
 		case PXLoggingInfo:
 			loggingTypeSymbol = 'i';
-			symbolColor = 6;
+			symbolColor = 'b';
+			nameColor = '7';
 			break;
 
 		case PXLoggingWarning:
 			loggingTypeSymbol = '!';
-			symbolColor = 9;
-			nameColor = 1;
+			symbolColor = 'c';
+			nameColor = 'c';
 			break;
 
 		case PXLoggingQuestion:
 			loggingTypeSymbol = '?';
-			symbolColor = 6;
+			symbolColor = '9';
 			break;
 
 		case PXLoggingError:
 			loggingTypeSymbol = 'E';
-			symbolColor = 9;
-			nameColor = 1;
+			symbolColor = '4';
+			nameColor = 'c';
 			break;
 
 		case PXLoggingFailure:
 			loggingTypeSymbol = 'x';
-			symbolColor = 9;
-			nameColor = 1;
+			symbolColor = '4';
+			nameColor = 'c';
 			break;
 
 		case PXLoggingAllocation:
 			loggingTypeSymbol = '+';
-			symbolColor = 9;
-			nameColor = 1;
+			symbolColor = 'c';
+			nameColor = 'e';
 			break;
 
 		case PXLoggingReallocation:
 			loggingTypeSymbol = '*';
-			symbolColor = 9;
-			nameColor = 1;
+			symbolColor = 'c';
+			nameColor = 'd';
 			break;
 
 		case PXLoggingDeallocation:
 			loggingTypeSymbol = '-';
-			symbolColor = 2;
-			nameColor = 2;
+			symbolColor = 'a';
+			nameColor = 'e';
 			break;
 
 		case PXLoggingTypeInvalid:
@@ -367,17 +461,19 @@ void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source,
 	PXText formattedText;
 	PXTextConstructNamedBufferA(&formattedText, formattedTextBuffer, 512);
 
-	PXText bufferColor;
-	PXTextConstructNamedBufferA(&bufferColor, bufferColorBuffer, 1024);
+	PXText exportText;
+	PXTextConstructNamedBufferA(&exportText, bufferColorBuffer, 4000);
 
 	PXTime pxTime;
 	PXTimeNow(&pxTime);
 
+	// Pre formatting
 	formattedText.SizeUsed = PXTextPrintA
 	(
 		formattedText.TextA,
 		formattedText.SizeAllocated,
-		"[%2.2i:%2.2i:%2.2i] §3%11s §%i%c %-14s §%i%s\n",
+		"§8[§9%2.2i§8:§9%2.2i§8:§9%2.2i§8] §6%11s §%c%c %-14s §%c%s§f\n", //  
+		//"§0# §1# §2# §3# §4# §5# §6# §7# §8# §9# §a# §b# §c# §d# §e# §f#\n",
 		pxTime.Hour,
 		pxTime.Minute,
 		pxTime.Second,
@@ -389,53 +485,43 @@ void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source,
 		format
 	);
 
-	PXConsoleTranlateColors(&formattedText, &bufferColor);
-
-
-	if (PXLoggingError == loggingType)
-	{
-		for (PXSize i = 1; i < 80; ++i)
-		{
-			PXConsoleWrite("%c", '-', 1);
-		}
-
-		PXConsoleWrite("\n", 1);
-	}
-
+	// Add content
 	{
 		va_list args;
 		va_start(args, format);
 
-		vfprintf(stdout, bufferColor.TextA, args);
+		PXTextPrintV(&exportText, formattedText.TextA, args);
+
+		// vfprintf(stdout, exportText.TextA, args);
 
 		va_end(args);
 
 		//OutputDebugStringA();
 	}
 
+
+
+
 	if (PXLoggingError == loggingType)
 	{
 		for (PXSize i = 1; i < 80; ++i)
 		{
-			PXConsoleWrite("%c", '-', 1);
+			PXConsoleWrite(1, "-");
 		}
 
-		PXConsoleWrite("\n", 1);
+		PXConsoleWrite(1, "\n");
+	}
+
+	PXConsoleWriteWithColorCodes(&exportText);
+
+
+	if (PXLoggingError == loggingType)
+	{
+		for (PXSize i = 1; i < 80; ++i)
+		{
+			PXConsoleWrite(1, "-");
+		}
+
+		PXConsoleWrite(1, "\n");
 	}
 }
-
-
-/*
-* 
-* 	PXLogPrintString(source, length);
-
-	//printf("\n");
-* 
-
-for (PXSize i = 0; i < length; ++i)
-{
-	const char character = MakePrintable(source[i]);
-
-	//printf("%c", character);
-}
-*/

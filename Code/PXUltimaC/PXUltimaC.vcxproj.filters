@@ -483,6 +483,9 @@
     <ClCompile Include="Media\FastFile\PXFastFile.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Container\FlexDataCache\PXFlexDataCache.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm\KalmanFilter\PXKalmanFilter.h">
@@ -951,6 +954,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Media\FastFile\PXFastFile.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Container\FlexDataCache\PXFlexDataCache.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

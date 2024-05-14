@@ -84,7 +84,7 @@ PXActionResult PXAPI PXMultiMediaDeviceStart(PXAudioMultiMedia* const pxAudioMul
 		case PXAudioDeviceTypeInput:
 		{
 			PXwaveInStart pxWaveInStart = pxAudioMultiMedia->WaveInStart;
-			HWAVEIN handleWaveIn = (HWAVEIN)pxAudioDevice->ResourceID.DirectXInterface;
+			HWAVEIN handleWaveIn = (HWAVEIN)pxAudioDevice->Info.DirectXInterface;
 
 			result = pxWaveInStart(handleWaveIn);
 			break;
@@ -92,7 +92,7 @@ PXActionResult PXAPI PXMultiMediaDeviceStart(PXAudioMultiMedia* const pxAudioMul
 		case PXAudioDeviceTypeOutput:
 		{
 			PXwaveOutRestart pxwaveOutRestart = pxAudioMultiMedia->WaveOutRestart;
-			HWAVEOUT handleWaveOut = (HWAVEOUT)pxAudioDevice->ResourceID.DirectXInterface;
+			HWAVEOUT handleWaveOut = (HWAVEOUT)pxAudioDevice->Info.DirectXInterface;
 
 			result = pxwaveOutRestart(handleWaveOut);
 			break;
@@ -115,7 +115,7 @@ PXActionResult PXAPI PXMultiMediaDeviceStop(PXAudioMultiMedia* const pxAudioMult
 		case PXAudioDeviceTypeInput:
 		{
 			PXwaveInStop pxwaveInStop = pxAudioMultiMedia->WaveInStop;
-			HWAVEIN waveHandle = (HWAVEIN)pxAudioDevice->ResourceID.DirectXInterface;
+			HWAVEIN waveHandle = (HWAVEIN)pxAudioDevice->Info.DirectXInterface;
 
 			result = pxwaveInStop(waveHandle);
 			break;
@@ -123,7 +123,7 @@ PXActionResult PXAPI PXMultiMediaDeviceStop(PXAudioMultiMedia* const pxAudioMult
 		case PXAudioDeviceTypeOutput:
 		{
 			PXwaveOutPause pxwaveOutPause = pxAudioMultiMedia->WaveOutPause;
-			HWAVEOUT handleWaveOut = (HWAVEOUT)pxAudioDevice->ResourceID.DirectXInterface;
+			HWAVEOUT handleWaveOut = (HWAVEOUT)pxAudioDevice->Info.DirectXInterface;
 
 			result = pxwaveOutPause(handleWaveOut);
 			break;
@@ -152,7 +152,7 @@ PXActionResult PXAPI PXMultiMediaDevicePause(PXAudioMultiMedia* const pxAudioMul
 		case PXAudioDeviceTypeOutput:
 		{
 			const PXwaveOutPause pxWaveOutPause = pxAudioMultiMedia->WaveOutPause;
-			const HWAVEOUT handleWaveOut = (HWAVEOUT)pxAudioDevice->ResourceID.DirectXInterface;
+			const HWAVEOUT handleWaveOut = (HWAVEOUT)pxAudioDevice->Info.DirectXInterface;
 			
 			result = pxWaveOutPause(handleWaveOut);
 			break;
@@ -181,7 +181,7 @@ PXActionResult PXAPI PXMultiMediaDeviceRestart(PXAudioMultiMedia* const pxAudioM
 		case PXAudioDeviceTypeOutput:
 		{
 			const PXwaveOutRestart pxWaveOutRestart = pxAudioMultiMedia->WaveOutRestart;
-			const HWAVEOUT handleWaveOut = (HWAVEOUT)pxAudioDevice->ResourceID.DirectXInterface;
+			const HWAVEOUT handleWaveOut = (HWAVEOUT)pxAudioDevice->Info.DirectXInterface;
 
 			result = pxWaveOutRestart(handleWaveOut);
 			break;
@@ -193,7 +193,7 @@ PXActionResult PXAPI PXMultiMediaDeviceRestart(PXAudioMultiMedia* const pxAudioM
 
 	const PXActionResult audioResult = PXWindowsMMAudioConvertFromID(result);
 
-	pxAudioDevice->ResourceID.DirectXInterface = PXNull;
+	pxAudioDevice->Info.DirectXInterface = PXNull;
 
 	return audioResult;
 }
@@ -207,7 +207,7 @@ PXActionResult PXAPI PXMultiMediaDeviceReset(PXAudioMultiMedia* const pxAudioMul
 		case PXAudioDeviceTypeInput:
 		{
 			const PXwaveInReset pxWaveInReset = pxAudioMultiMedia->WaveInReset;
-			const HWAVEIN handleWaveIn = (HWAVEIN)pxAudioDevice->ResourceID.DirectXInterface;
+			const HWAVEIN handleWaveIn = (HWAVEIN)pxAudioDevice->Info.DirectXInterface;
 
 			result = pxWaveInReset(handleWaveIn);
 			break;
@@ -215,7 +215,7 @@ PXActionResult PXAPI PXMultiMediaDeviceReset(PXAudioMultiMedia* const pxAudioMul
 		case PXAudioDeviceTypeOutput:
 		{
 			const PXwaveOutReset pxWaveOutReset = pxAudioMultiMedia->WaveOutReset;
-			const HWAVEOUT handleWaveOut = (HWAVEOUT)pxAudioDevice->ResourceID.DirectXInterface;
+			const HWAVEOUT handleWaveOut = (HWAVEOUT)pxAudioDevice->Info.DirectXInterface;
 
 			result = pxWaveOutReset(handleWaveOut);
 			break;
@@ -227,7 +227,7 @@ PXActionResult PXAPI PXMultiMediaDeviceReset(PXAudioMultiMedia* const pxAudioMul
 
 	const PXActionResult audioResult = PXWindowsMMAudioConvertFromID(result);
 
-	pxAudioDevice->ResourceID.DirectXInterface = PXNull;
+	pxAudioDevice->Info.DirectXInterface = PXNull;
 
 	return audioResult;
 }
@@ -522,7 +522,7 @@ PXActionResult PXAPI PXMultiMediaDeviceOpen(PXAudioMultiMedia* const pxAudioMult
 		case PXAudioDeviceTypeInput:
 		{
 			const PXwaveInOpen pxWaveInOpen = pxAudioMultiMedia->WaveInOpen;
-			HWAVEIN handleWaveIn = (HWAVEIN)pxAudioDevice->ResourceID.DirectXInterface;
+			HWAVEIN handleWaveIn = (HWAVEIN)pxAudioDevice->Info.DirectXInterface;
 
 			result = pxWaveInOpen
 			(
@@ -539,7 +539,7 @@ PXActionResult PXAPI PXMultiMediaDeviceOpen(PXAudioMultiMedia* const pxAudioMult
 		case PXAudioDeviceTypeOutput:
 		{
 			const PXwaveOutOpen pxWaveOutOpen = pxAudioMultiMedia->WaveOutOpen;
-			HWAVEOUT handleWaveOut = (HWAVEOUT)pxAudioDevice->ResourceID.DirectXInterface;
+			HWAVEOUT handleWaveOut = (HWAVEOUT)pxAudioDevice->Info.DirectXInterface;
 
 			result = pxWaveOutOpen
 			(
@@ -583,7 +583,7 @@ PXActionResult PXAPI PXMultiMediaDeviceClose(PXAudioMultiMedia* const pxAudioMul
 		case PXAudioDeviceTypeInput:
 		{
 			PXwaveInClose pxWaveInClose = pxAudioMultiMedia->WaveInClose;
-			HWAVEIN handleWaveIn = (HWAVEIN)pxAudioDevice->ResourceID.DirectXInterface;
+			HWAVEIN handleWaveIn = (HWAVEIN)pxAudioDevice->Info.DirectXInterface;
 
 			result = pxWaveInClose(handleWaveIn);
 			break;
@@ -591,7 +591,7 @@ PXActionResult PXAPI PXMultiMediaDeviceClose(PXAudioMultiMedia* const pxAudioMul
 		case PXAudioDeviceTypeOutput:
 		{
 			PXwaveOutClose pxWaveOutClose = pxAudioMultiMedia->WaveOutClose;
-			HWAVEOUT handleWaveOut = (HWAVEOUT)pxAudioDevice->ResourceID.DirectXInterface;
+			HWAVEOUT handleWaveOut = (HWAVEOUT)pxAudioDevice->Info.DirectXInterface;
 
 			result = pxWaveOutClose(handleWaveOut);
 			break;
@@ -603,7 +603,7 @@ PXActionResult PXAPI PXMultiMediaDeviceClose(PXAudioMultiMedia* const pxAudioMul
 
 	const PXActionResult audioResult = PXWindowsMMAudioConvertFromID(result);
 
-	pxAudioDevice->ResourceID.DirectXInterface = PXNull;
+	pxAudioDevice->Info.DirectXInterface = PXNull;
 
 	return audioResult;
 }
@@ -635,7 +635,7 @@ PXActionResult PXAPI PXMultiMediaDeviceLoad(PXAudioMultiMedia* const pxAudioMult
 	{
 		case PXAudioDeviceTypeInput:
 		{
-			const HWAVEIN handleWaveOut = (HWAVEIN)pxAudioDevice->ResourceID.DirectXInterface;
+			const HWAVEIN handleWaveOut = (HWAVEIN)pxAudioDevice->Info.DirectXInterface;
 
 			// Prepare
 			{
@@ -655,7 +655,7 @@ PXActionResult PXAPI PXMultiMediaDeviceLoad(PXAudioMultiMedia* const pxAudioMult
 		}
 		case PXAudioDeviceTypeOutput:
 		{
-			const HWAVEOUT handleWaveOut = (HWAVEOUT)pxAudioDevice->ResourceID.DirectXInterface;
+			const HWAVEOUT handleWaveOut = (HWAVEOUT)pxAudioDevice->Info.DirectXInterface;
 
 			// Prepare
 			{
@@ -698,7 +698,7 @@ PXActionResult PXAPI PXMultiMediaDeviceBreakLoop(PXAudioMultiMedia* const pxAudi
 		case PXAudioDeviceTypeOutput:
 		{
 			const PXwaveOutBreakLoop pxWaveOutBreakLoop = pxAudioMultiMedia->WaveOutBreakLoop;
-			const HWAVEOUT handleWaveOut = (HWAVEOUT)pxAudioDevice->ResourceID.DirectXInterface;
+			const HWAVEOUT handleWaveOut = (HWAVEOUT)pxAudioDevice->Info.DirectXInterface;
 
 			result = pxWaveOutBreakLoop(handleWaveOut);
 			break;
@@ -730,7 +730,7 @@ PXActionResult PXAPI PXMultiMediaDevicePositionGet(PXAudioMultiMedia* const pxAu
 			UINT xx = 0;
 
 			const PXwaveOutGetPosition pxWaveOutGetPosition = pxAudioMultiMedia->WaveOutGetPosition;
-			const HWAVEOUT handleWaveOut = (HWAVEOUT)pxAudioDevice->ResourceID.DirectXInterface;
+			const HWAVEOUT handleWaveOut = (HWAVEOUT)pxAudioDevice->Info.DirectXInterface;
 
 			result = pxWaveOutGetPosition(handleWaveOut, &time, xx);
 			break;
@@ -759,7 +759,7 @@ PXActionResult PXAPI PXMultiMediaDevicePlaybackRateGet(PXAudioMultiMedia* const 
 		case PXAudioDeviceTypeOutput:
 		{
 			const PXwaveOutGetPlaybackRate pxWaveOutGetPlaybackRate = pxAudioMultiMedia->WaveOutGetPlaybackRate;
-			const HWAVEOUT handleWaveOut = (HWAVEOUT)pxAudioDevice->ResourceID.DirectXInterface;
+			const HWAVEOUT handleWaveOut = (HWAVEOUT)pxAudioDevice->Info.DirectXInterface;
 			
 			result = pxWaveOutGetPlaybackRate(handleWaveOut, playbackRate);
 			break;
@@ -788,7 +788,7 @@ PXActionResult PXAPI PXMultiMediaDevicePlaybackRateSet(PXAudioMultiMedia* const 
 		case PXAudioDeviceTypeOutput:
 		{
 			const PXwaveOutSetPlaybackRate pxWaveOutSetPlaybackRate = pxAudioMultiMedia->WaveOutSetPlaybackRate;
-			const HWAVEOUT handleWaveOut = (HWAVEOUT)pxAudioDevice->ResourceID.DirectXInterface;
+			const HWAVEOUT handleWaveOut = (HWAVEOUT)pxAudioDevice->Info.DirectXInterface;
 
 			result = pxWaveOutSetPlaybackRate(handleWaveOut, playbackRate);
 			break;
@@ -822,7 +822,7 @@ PXActionResult PXAPI PXMultiMediaDevicePitchSet(PXAudioMultiMedia* const pxAudio
 
 #elif PXOSWindowsDestop
 	const PXwaveOutSetPitch pxWaveOutSetPitch = pxAudioMultiMedia->WaveOutSetPitch;
-	const HWAVEOUT handleWaveOut = (HWAVEOUT)pxAudioDevice->ResourceID.DirectXInterface;
+	const HWAVEOUT handleWaveOut = (HWAVEOUT)pxAudioDevice->Info.DirectXInterface;
 
 	const MMRESULT pitchResultID = pxWaveOutSetPitch(handleWaveOut, pitch);
 	const PXActionResult pitchResult = PXWindowsMMAudioConvertFromID(pitchResultID);
@@ -850,7 +850,7 @@ PXActionResult PXAPI PXMultiMediaDeviceVolumeGet(PXAudioMultiMedia* const pxAudi
 	DWORD volumeDW = 0;
 
 	const PXwaveOutGetVolume pxWaveOutGetVolume = pxAudioMultiMedia->WaveOutGetVolume;
-	const HWAVEOUT handleWaveOut = (HWAVEOUT)pxAudioDevice->ResourceID.DirectXInterface;
+	const HWAVEOUT handleWaveOut = (HWAVEOUT)pxAudioDevice->Info.DirectXInterface;
 	const MMRESULT volumeResultID = pxWaveOutGetVolume(handleWaveOut, &volumeDW);
 	const PXActionResult audioResult = PXWindowsMMAudioConvertFromID(volumeResultID);
 	const PXBool successful = PXActionSuccessful == audioResult;
@@ -879,7 +879,7 @@ PXActionResult PXAPI PXMultiMediaDeviceVolumeSetEqual(PXAudioMultiMedia* const p
 		case PXAudioDeviceTypeOutput:
 		{
 			const PXwaveOutSetVolume pxWaveOutSetVolume = pxAudioMultiMedia->WaveOutSetVolume;
-			const HWAVEOUT handleWaveOut = (HWAVEOUT)pxAudioDevice->ResourceID.DirectXInterface;
+			const HWAVEOUT handleWaveOut = (HWAVEOUT)pxAudioDevice->Info.DirectXInterface;
 
 			volumeResultID = pxWaveOutSetVolume(handleWaveOut, volume);
 			break;

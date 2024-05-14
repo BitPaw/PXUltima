@@ -338,7 +338,7 @@ typedef void  (PXOpenGLAPI* PXOpenGLActiveAttributeGet)(GLuint program, GLuint i
 typedef void (PXOpenGLAPI* PXOpenGLGetActiveUniform)(GLuint program, GLuint index, GLsizei bufSize, GLsizei* length, GLint* size, GLenum* type, char* name);
 
 typedef void (PXOpenGLAPI* PXOpenGLGetProgramiv)(GLuint program, GLenum pname, GLint* params);
-
+typedef void (PXOpenGLAPI* PXOpenGLProgramInfoLogGet)(GLuint program, GLsizei maxLength, GLsizei* length, char* infoLog); // glGetProgramInfoLog
 
 
 typedef void (PXOpenGLAPI* PXOpenGLShaderLogInfoGetFunction)(GLuint shader, GLsizei maxLength, GLsizei* length, char* infoLog);
@@ -1257,6 +1257,7 @@ typedef struct PXOpenGL_
 	PXOpenGLGetActiveUniform ActiveUniformGet;
 	PXOpenGLShaderGetivFunction	ShaderGetiv;
 	PXOpenGLShaderLogInfoGetFunction	ShaderLogInfoGet;
+	PXOpenGLProgramInfoLogGet ProgramInfoLogGet;
 	PXOpenGLShaderDeleteFunction	ShaderDelete;
 	PXOpenGLAttachShaderFunction	ShaderAttach;
 	PXOpenGLLinkPXProgramFunction	ShaderProgramLink;
@@ -1404,6 +1405,9 @@ PXPrivate PXInt32U PXAPI PXOpenGLRenderModeToID(const PXGraphicDrawMode pxGraphi
 PXPrivate PXInt32U PXAPI PXOpenGLTextureTypeToID(const PXGraphicTextureType pxGraphicTextureType);
 PXPrivate PXInt32U PXAPI PXOpenGLShaderTypeToID(const PXGraphicShaderType pxGraphicShaderType);
 PXPrivate PXInt32U PXAPI PXOpenGLTypeToID(const PXInt32U pxDataType);
+PXPrivate PXInt32U PXAPI PXOpenGLGraphicImageLayoutToID(const PXGraphicImageLayout pxGraphicImageLayout);
+PXPrivate PXInt32U PXAPI PXOpenGLGraphicImageWrapToID(const PXGraphicImageWrap pxGraphicImageWrap);
+
 
 PXPrivate PXShaderVariableType PXAPI PXOpenGLShaderVariableTypeFromID(const PXInt16U openGLShaderVariableTypeID);
 

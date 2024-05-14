@@ -10,308 +10,18 @@
 #include <OS/Hardware/PXController.h>
 #include <OS/DataBase/PXDataBase.h>
 
+
+
+
+
+
+
+
+
+
+
+
 typedef struct PXEngine_ PXEngine;
-
-typedef enum PXEngineCreateType_
-{
-	PXEngineCreateTypeInvalid,
-	PXEngineCreateTypeCustom,
-
-	// Fudamental components
-	PXEngineCreateTypeModel,
-	PXEngineCreateTypeFont,
-	PXEngineCreateTypeTexture2D,
-
-	PXEngineCreateTypeImage,
-	PXEngineCreateTypeTextureCube,
-
-	PXEngineCreateTypeShaderProgram,
-	PXEngineCreateTypeSkybox,
-	PXEngineCreateTypeSprite,
-	PXEngineCreateTypeText,
-	PXEngineCreateTypeTimer,
-	PXEngineCreateTypeSound,
-	PXEngineCreateTypeEngineSound,
-	PXEngineCreateTypeUIElement,
-
-	PXEngineCreateTypeHitBox,
-
-	// Extended basic components
-	PXEngineCreateTypeDialogBox
-}
-PXEngineCreateType;
-
-
-#define PXEngineResourceInfoExist			0b00000001// Indicate if resource is valid
-#define PXEngineResourceInfoEnabled			0b00000010// Is it interactable or does it tick?
-#define PXEngineResourceInfoVisble			0b00000100// Shall it be rendered?
-#define PXEngineResourceInfoStorageDrive	0b00010000// Resource is in permanent storage
-#define PXEngineResourceInfoStorageCached	0b00100000// Resource is in semi-permanent cache (temp file)
-#define PXEngineResourceInfoStorageMemory	0b01000000// Resource exists in RAM
-#define PXEngineResourceInfoStorageDevice	0b10000000// Resource exists in spesific device
-
-// Internal engine identification
-// Additional use is to define current storage and interactions.
-typedef struct PXEngineResourceInfo_
-{
-	PXInt32U ID; // Identification of this object
-	PXInt32U Flags; // general information
-	PXInt32U Behaviour; // Depends on the type of the resource
-}
-PXEngineResourceInfo;
-
-
-
-//-----------------------------------------------------
-// HitBox
-//-----------------------------------------------------
-typedef enum PXHitBoxForm_
-{
-	PXHitBoxTypeInvalid,
-	PXHitBoxTypeBox,
-	PXHitBoxTypeCube,
-	PXHitBoxTypeCircle
-}
-PXHitBoxForm;
-
-//---------------
-// BehaviourFlag
-//---------------
-#define PXHitBoxBehaviourKeepOut 0b00000001 // Prevent from entering 
-#define PXHitBoxBehaviourKeepIn  0b00000010 // Prevent from leaving
-#define PXHitBoxBehaviourDetect  0b00000100 // Trigger if in inside
-//#define PXHitBoxBehaviourDetect  0b00001000 // Trigger if in inside
-	//---------------
-
-typedef void(PXAPI* PXHitBoxCollisionDetect)(void* owner, struct PXHitBox_* const pxHitBox);
-
-// Collidable entity that can be defined for different behaviours
-typedef struct PXHitBox_
-{
-	PXEngineResourceInfo Info;
-
-	PXModel* Model;
-
-	PXHitBoxForm Form;
-
-	void* CallBackOwner;
-	PXHitBoxCollisionDetect CollisionDetectCallBack;
-}
-PXHitBox;
-//-----------------------------------------------------
-
-
-
-//-----------------------------------------------------
-// Timer
-//-----------------------------------------------------
-typedef struct PXEngineTimerEventInfo_
-{
-	struct PXEngineTimer_* TimerReference;
-
-	PXInt32U Acuracy;
-
-	PXBool WasHandled;
-
-	//PXInt32S DelayShift;
-}
-PXEngineTimerEventInfo;
-
-typedef PXActionResult(PXAPI* PXEngineTimerCallBack)(PXEngine* const pxEngine, PXEngineTimerEventInfo* const pxEngineTimerEventInfo, void* const owner);
-
-typedef struct PXEngineTimer_
-{
-	PXEngineResourceInfo Info;
-
-	void* Owner;
-	PXEngineTimerCallBack CallBack;
-
-	PXInt32U TimeStampStart;
-
-	PXInt32U TimeDeltaTarget;
-	PXInt32S TimeDelayShift;
-}
-PXEngineTimer;
-//-----------------------------------------------------
-
-
-
-//-----------------------------------------------------
-// Text
-//-----------------------------------------------------
-typedef struct PXEngineText_
-{
-	PXEngineResourceInfo Info;
-
-	PXVector2F Position;
-	PXVector2F Scaling;
-
-	PXBool DoubleRenderForShadow;
-
-	PXText* Text;
-	PXFont* Font;
-	float FontScaling;
-
-	PXInt32U TextRenderAmount;
-}
-PXEngineText;
-//-----------------------------------------------------
-
-
-
-
-
-//-----------------------------------------------------
-// Audio
-//-----------------------------------------------------
-typedef struct PXEngineSound_
-{
-	PXSound* Sound;
-
-	PXInt32U PXID;
-
-	PXBool SoundLoop;
-}
-PXEngineSound;
-
-typedef struct PXEngineSoundCreateInfo_
-{
-	PXBool SoundLoop;
-}
-PXEngineSoundCreateInfo;
-//-----------------------------------------------------
-
-
-
-//-----------------------------------------------------
-// ShaderProgram
-//-----------------------------------------------------
-typedef struct PXShaderProgramCreateInfo_
-{
-	char* VertexShaderFilePath;
-	char* PixelShaderFilePath;
-}
-PXShaderProgramCreateInfo;
-//-----------------------------------------------------
-
-
-typedef struct PXEngineFontCreateInfo_
-{
-	PXShaderProgram* ShaderProgramCurrent;
-}
-PXEngineFontCreateInfo;
-
-typedef struct PXSkyBoxCreateEventInfo_
-{
-	char* SkyBoxShaderVertex;
-	char* SkyBoxShaderPixel;
-	char* SkyBoxTextureA;
-	char* SkyBoxTextureB;
-	char* SkyBoxTextureC;
-	char* SkyBoxTextureD;
-	char* SkyBoxTextureE;
-	char* SkyBoxTextureF;
-}
-PXSkyBoxCreateEventInfo;
-
-typedef struct PXHitboxCreateInfo_
-{
-	PXHitBox* HitBox;
-
-	// Mode
-	PXInt32U Flags;
-
-	PXModel* Model;
-}
-PXHitboxCreateInfo;
-
-typedef struct PXSpriteCreateInfo_
-{
-	PXTexture2D* TextureCurrent;
-	PXShaderProgram* ShaderProgramCurrent;
-
-	PXVector2F TextureScalingPoints[4];
-
-	PXVector3F Position;
-	PXVector2F Scaling;
-
-	PXBool ViewRotationIgnore;
-	PXBool ViewPositionIgnore;
-
-	// Extended info if we want a attached hitbox
-	PXBool HitBoxCreate;
-	PXHitboxCreateInfo HitboxData;
-
-
-	
-
-
-
-}
-PXSpriteCreateInfo;
-
-
-typedef struct PXTextureCubeCreateInfo_
-{
-	char* FilePathA;
-	char* FilePathB;
-	char* FilePathC;
-	char* FilePathD;
-	char* FilePathE;
-	char* FilePathF;
-}
-PXTextureCubeCreateInfo;
-
-typedef struct PXModelCreateInfo_
-{
-	PXShaderProgram* ShaderProgramReference;
-	float Scale;
-}
-PXModelCreateInfo;
-
-
-
-
-
-
-
-
-
-
-typedef struct PXEngineResourceCreateInfo_
-{
-	void** ObjectReference;
-	char* FilePath;
-
-	char* Name;
-
-	PXEngineCreateType CreateType;
-
-	PXBool SpawnEnabled;
-
-	union
-	{
-		PXEngineFontCreateInfo Font;
-		PXSkyBoxCreateEventInfo SkyBox;
-		PXSpriteCreateInfo Sprite;
-		PXEngineSoundCreateInfo Sound;
-		PXShaderProgramCreateInfo ShaderProgram;
-		PXTextureCubeCreateInfo TextureCube;
-		PXGUIElementCreateInfo UIElement;
-		PXModelCreateInfo Model;
-		PXHitboxCreateInfo HitBox;
-	};
-}
-PXEngineResourceCreateInfo;
-
-
-
-
-
-
-
-
-
 
 
 
@@ -321,7 +31,7 @@ typedef struct PXEngineResourceRenderInfo_
 
 	void* ObjectReference; // Containing the object, type described in 'Type'
 
-	PXEngineCreateType Type;
+	PXResourceType Type;
 }
 PXEngineResourceRenderInfo;
 
@@ -335,7 +45,7 @@ PXEngineResourceRenderInfo;
 //-----------------------------------------------------
 typedef struct PXEngineResourceStateChangeInfo_
 {
-	PXEngineCreateType Type;
+	PXResourceType Type;
 	void* Object;
 
 	PXBool Enable;
@@ -367,7 +77,7 @@ typedef struct PXEngineResourceActionInfo_
 
 	union
 	{
-		PXEngineResourceCreateInfo Create;
+		PXResourceCreateInfo Create;
 		PXEngineResourceRenderInfo Render;
 		PXEngineResourceStateChangeInfo ChangeInfo;
 	};
@@ -387,7 +97,7 @@ typedef struct PXPlayerMoveInfo_
 PXPlayerMoveInfo;
 
 
-typedef void (PXAPI* PXEngineResourceAdded)(void* const owner, PXEngine* const pxEngine, PXEngineResourceCreateInfo* const pxEngineResourceCreateInfo);
+typedef void (PXAPI* PXEngineResourceAdded)(void* const owner, PXEngine* const pxEngine, PXResourceCreateInfo* const pxEngineResourceCreateInfo);
 
 typedef void (PXAPI* PXEngineStartUpEvent)(void* const owner, PXEngine* const pxEngine);
 typedef void (PXAPI* PXEngineShutDownEvent)(void* const owner, PXEngine* const pxEngine);
@@ -399,8 +109,27 @@ typedef void (PXAPI* PXEngineNetworkUpdateEvent)(void* const owner, PXEngine* co
 typedef void (PXAPI* PXEngineGameUpdateEvent)(void* const owner, PXEngine* const pxEngine);
 typedef void (PXAPI* PXEngineRenderUpdateEvent)(void* const owner, PXEngine* const pxEngine);
 
+typedef struct PXEngineTimeData_
+{
+	PXInt32U CounterTimeLast;
+	PXInt32U CounterTimeDelta;
+
+	PXInt32U CounterTimeWindow;
+	PXInt32U CounterTimeUser;
+	PXInt32U CounterTimeNetwork;
+	PXInt64U CounterTimeRenderLast;
+	PXInt32U CounterTimeGPU;
+	PXInt32U CounterTimeCPU;
+	PXInt32U TimeFrequency;
+
+	PXInt32U FramesPerSecound;
+	PXInt32U FrameTime;
+}
+PXEngineTimeData;
+
 typedef struct PXEngine_
 {
+	PXResourceManager ResourceManager;
 	PXGUISystem GUISystem;
 	PXGraphic Graphic;
 	PXUIElement* Window; // PXWindow
@@ -428,36 +157,12 @@ typedef struct PXEngine_
 	PXEngineRenderUpdateEvent OnRenderUpdate;
 	PXEngineInteractCallBack OnInteract;
 
-	PXInt32U CounterTimeLast;
-	PXInt32U CounterTimeDelta;
-
-	PXInt32U CounterTimeWindow;
-	PXInt32U CounterTimeUser;
-	PXInt32U CounterTimeNetwork;
-	PXInt64U CounterTimeRenderLast;
-	PXInt32U CounterTimeGPU;
-	PXInt32U CounterTimeCPU;
-	PXInt32U TimeFrequency;
-
-	PXInt32U FramesPerSecound;
-	PXInt32U FrameTime;
+	PXEngineTimeData TimeData;
 
 	PXBool IsRunning;
 	PXBool UpdateUI;
 
-	// Register List
-	PXInt32U UniqeIDGeneratorCounter;
-
-	PXDictionary SpritelLookUp;
-	PXDictionary FontLookUp;
-	PXDictionary TextLookUp;
-	PXDictionary TimerLookUp;
-	PXDictionary SoundLookUp;
-	PXDictionary HitBoxLookUp;
-	PXDictionary ImageLookUp;
-	PXDictionary TextureLookUp;
-	PXDictionary ModelLookUp;
-	PXDictionary ShaderProgramLookup;
+	
 
 	// Cached most-common objects
 	PXModel SpriteScaled;
@@ -467,8 +172,6 @@ typedef struct PXEngine_
 
 	PXBool HasGraphicInterface;
 	PXBool InteractionLock;
-
-	PXSkyBox* DefaultSkyBox; // TODO: Not good, fix this
 
 	char ApplicationName[64];
 }
@@ -500,13 +203,8 @@ typedef struct PXEngineStartInfo_
 }
 PXEngineStartInfo;
 
-
-PXPublic const char* PXAPI PXEngineCreateTypeToString(const PXEngineCreateType pxEngineCreateType);
-
-
 PXPrivate void PXCDECL PXEngineOnIllegalInstruction(const int signalID);
 PXPrivate void PXCDECL PXEngineOnMemoryViolation(const int signalID);
-PXPrivate PXInt32U PXAPI PXEngineGenerateUniqeID(PXEngine* const pxEngine);
 PXPrivate void PXAPI PXEngineWindowEvent(PXEngine* const pxEngine, PXWindowEvent* const pxWindowEvent);
 
 // Generate a random number with a maximum of the "limiter"
@@ -522,8 +220,10 @@ PXPublic void PXAPI PXEngineUpdate(PXEngine* const pxEngine);
 PXPublic PXActionResult PXAPI PXEngineResourceAction(PXEngine* const pxEngine, PXEngineResourceActionInfo* const pxEngineResourceActionInfo);
 PXPublic PXActionResult PXAPI PXEngineResourceActionBatch(PXEngine* const pxEngine, PXEngineResourceActionInfo* const pxEngineResourceActionInfoList, const PXSize amount);
 
-PXPublic PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXEngineResourceCreateInfo* const pxEngineResourceCreateInfo);
+PXPublic PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResourceCreateInfo* const pxEngineResourceCreateInfo);
 PXPublic PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXEngineResourceRenderInfo* const pxEngineResourceRenderInfo);
+
+PXPublic void PXAPI PXEngineResourceDefaultElements(PXEngine* const pxEngine);
 
 PXPublic PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine);
 

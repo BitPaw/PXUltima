@@ -30,7 +30,7 @@ void PXAPI PXEngineDialogBoxPageNext(PXEngine* const pxEngine, PXEngineDialogBox
 
             pxEngineResourceActionInfo.Type = PXEngineResourceActionTypeStateChange;
             pxEngineResourceActionInfo.ChangeInfo.Enable = PXTrue;
-            pxEngineResourceActionInfo.ChangeInfo.Type = PXEngineCreateTypeTimer;
+            pxEngineResourceActionInfo.ChangeInfo.Type = PXResourceTypeTimer;
             pxEngineResourceActionInfo.ChangeInfo.Object = pxEngineDialogBox->DialogBoxTextTimer;
 
             PXEngineResourceAction(pxEngine, &pxEngineResourceActionInfo);
@@ -73,27 +73,27 @@ void PXAPI PXEngineDialogBoxOpen
 
     pxEngineResourceActionInfo[0].Type = PXEngineResourceActionTypeStateChange;
     pxEngineResourceActionInfo[0].ChangeInfo.Enable = PXTrue;
-    pxEngineResourceActionInfo[0].ChangeInfo.Type = PXEngineCreateTypeSprite;
+    pxEngineResourceActionInfo[0].ChangeInfo.Type = PXResourceTypeSprite;
     pxEngineResourceActionInfo[0].ChangeInfo.Object = pxEngineDialogBox->SpriteButtonNextPage;
 
     pxEngineResourceActionInfo[1].Type = PXEngineResourceActionTypeStateChange;
     pxEngineResourceActionInfo[1].ChangeInfo.Enable = PXTrue;
-    pxEngineResourceActionInfo[1].ChangeInfo.Type = PXEngineCreateTypeSprite;
+    pxEngineResourceActionInfo[1].ChangeInfo.Type = PXResourceTypeSprite;
     pxEngineResourceActionInfo[1].ChangeInfo.Object = pxEngineDialogBox->DialogBoxSprite;
 
     pxEngineResourceActionInfo[2].Type = PXEngineResourceActionTypeStateChange;
     pxEngineResourceActionInfo[2].ChangeInfo.Enable = PXTrue;
-    pxEngineResourceActionInfo[2].ChangeInfo.Type = PXEngineCreateTypeSprite;
+    pxEngineResourceActionInfo[2].ChangeInfo.Type = PXResourceTypeSprite;
     pxEngineResourceActionInfo[2].ChangeInfo.Object = pxEngineDialogBox->SpriteCharacterFace;
 
     pxEngineResourceActionInfo[3].Type = PXEngineResourceActionTypeStateChange;
     pxEngineResourceActionInfo[3].ChangeInfo.Enable = PXTrue;
-    pxEngineResourceActionInfo[3].ChangeInfo.Type = PXEngineCreateTypeSprite;
+    pxEngineResourceActionInfo[3].ChangeInfo.Type = PXResourceTypeSprite;
     pxEngineResourceActionInfo[3].ChangeInfo.Object = pxEngineDialogBox->DialogBoxText;
 
     pxEngineResourceActionInfo[4].Type = PXEngineResourceActionTypeStateChange;
     pxEngineResourceActionInfo[4].ChangeInfo.Enable = PXTrue;
-    pxEngineResourceActionInfo[4].ChangeInfo.Type = PXEngineCreateTypeTimer;
+    pxEngineResourceActionInfo[4].ChangeInfo.Type = PXResourceTypeTimer;
     pxEngineResourceActionInfo[4].ChangeInfo.Object = pxEngineDialogBox->DialogBoxTextTimer;
 
     PXEngineResourceActionBatch(pxEngine, pxEngineResourceActionInfo, 5);
@@ -110,27 +110,27 @@ void PXAPI PXEngineDialogBoxClose(PXEngine* const pxEngine, PXEngineDialogBox* c
     
     pxEngineResourceActionInfo[0].Type = PXEngineResourceActionTypeStateChange;
     pxEngineResourceActionInfo[0].ChangeInfo.Enable = PXFalse;
-    pxEngineResourceActionInfo[0].ChangeInfo.Type = PXEngineCreateTypeSprite;
+    pxEngineResourceActionInfo[0].ChangeInfo.Type = PXResourceTypeSprite;
     pxEngineResourceActionInfo[0].ChangeInfo.Object = pxEngineDialogBox->SpriteButtonNextPage;
          
     pxEngineResourceActionInfo[1].Type = PXEngineResourceActionTypeStateChange;
     pxEngineResourceActionInfo[1].ChangeInfo.Enable = PXFalse;
-    pxEngineResourceActionInfo[1].ChangeInfo.Type = PXEngineCreateTypeSprite;
+    pxEngineResourceActionInfo[1].ChangeInfo.Type = PXResourceTypeSprite;
     pxEngineResourceActionInfo[1].ChangeInfo.Object = pxEngineDialogBox->DialogBoxSprite;
 
     pxEngineResourceActionInfo[2].Type = PXEngineResourceActionTypeStateChange;
     pxEngineResourceActionInfo[2].ChangeInfo.Enable = PXFalse;
-    pxEngineResourceActionInfo[2].ChangeInfo.Type = PXEngineCreateTypeSprite;
+    pxEngineResourceActionInfo[2].ChangeInfo.Type = PXResourceTypeSprite;
     pxEngineResourceActionInfo[2].ChangeInfo.Object = pxEngineDialogBox->SpriteCharacterFace;
  
     pxEngineResourceActionInfo[3].Type = PXEngineResourceActionTypeStateChange;
     pxEngineResourceActionInfo[3].ChangeInfo.Enable = PXFalse;
-    pxEngineResourceActionInfo[3].ChangeInfo.Type = PXEngineCreateTypeSprite;
+    pxEngineResourceActionInfo[3].ChangeInfo.Type = PXResourceTypeSprite;
     pxEngineResourceActionInfo[3].ChangeInfo.Object = pxEngineDialogBox->DialogBoxText;
  
     pxEngineResourceActionInfo[4].Type = PXEngineResourceActionTypeStateChange;
     pxEngineResourceActionInfo[4].ChangeInfo.Enable = PXFalse;
-    pxEngineResourceActionInfo[4].ChangeInfo.Type = PXEngineCreateTypeTimer;
+    pxEngineResourceActionInfo[4].ChangeInfo.Type = PXResourceTypeTimer;
     pxEngineResourceActionInfo[4].ChangeInfo.Object = pxEngineDialogBox->DialogBoxTextTimer;
 
     PXEngineResourceActionBatch(pxEngine, pxEngineResourceActionInfo, 5);
@@ -212,7 +212,7 @@ PXActionResult PXAPI PXEngineDialogBoxTimerTrigger(PXEngine* const pxEngine, PXE
 
                 pxEngineResourceActionInfo.Type = PXEngineResourceActionTypeStateChange;
                 pxEngineResourceActionInfo.ChangeInfo.Enable = PXFalse;
-                pxEngineResourceActionInfo.ChangeInfo.Type = PXEngineCreateTypeTimer;
+                pxEngineResourceActionInfo.ChangeInfo.Type = PXResourceTypeTimer;
                 pxEngineResourceActionInfo.ChangeInfo.Object = pxEngineDialogBox->DialogBoxTextTimer;
 
                 PXEngineResourceAction(pxEngine, &pxEngineResourceActionInfo);

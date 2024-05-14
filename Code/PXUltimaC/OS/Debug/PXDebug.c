@@ -953,6 +953,20 @@ PXActionResult PXAPI PXDebugLibrarySymbolsFetch(PXDebug* const pxDebug, const PX
 #endif
 }
 
+void PXAPI PXDebugLogMessage(PXText* const pxText)
+{
+	// because we cant trust the string to be null terminated, and
+	// windows does not have a function that takes in a size, we
+	// have to do it per character. It's a mess. Microsoft please fix
+
+	for(PXSize i = 0; i < pxText->SizeUsed; ++i)
+	{
+		char buffer[4] = { pxText->TextA[i], 0, 0, 0 };
+
+		OutputDebugStringA(buffer);
+	}
+}
+
 PXThreadResult PXAPI PXDebugLoop(PXDebug* const pxDebug)
 {
 	// Create process to debug on

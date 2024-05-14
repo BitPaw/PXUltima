@@ -146,7 +146,7 @@ UIContainerRoot;
 
 typedef struct PXGraphicTexturInfo_
 {
-	void* TextureReference;
+	void** TextureReference;
 	PXSize Amount;
 	PXGraphicTextureType Type;
 	PXResourceAction Action;
@@ -355,9 +355,6 @@ PXPublic void PXAPI PXUIElementSizeSet(PXUIElement* const pxUIElement, const flo
 //-------------------------------------------------------------------------
 PXPublic void PXAPI PXRenderableConstruct(PXRenderable* const pxRenderable);
 
-PXPublic void PXAPI PXShaderConstruct(PXShader* const shader);
-
-PXPublic void PXAPI PXShaderDataSet(PXShader* const shader, const PXGraphicShaderType type, const char* data, const PXSize size);
 PXPublic void PXAPI PXTextureConstruct(PXTexture2D* const texture);
 
 

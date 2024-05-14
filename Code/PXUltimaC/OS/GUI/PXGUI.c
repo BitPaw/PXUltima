@@ -152,7 +152,7 @@ void PXAPI PXWindowEventConsumer(PXGUISystem* const pxGUISystem, PXWindowEvent* 
                 "Windows",
                 "Event-Click",
                 "Sender (%0xp)",
-                pxWindowEvent->UIElementSender->ID
+                pxWindowEvent->UIElementSender->Info.WindowID
             );
 
             break;
@@ -179,14 +179,13 @@ void PXAPI PXWindowEventConsumer(PXGUISystem* const pxGUISystem, PXWindowEvent* 
         case PXWindowEventTypeMove:
         {
 #if PXLogEnable
-            PXLoggingEventData pxLoggingEventData;
-            PXClear(PXLoggingEventData, &pxLoggingEventData);
-            pxLoggingEventData.ModuleSource = "Window";
-            pxLoggingEventData.ModuleAction = "Event";
-            pxLoggingEventData.PrintFormat = "Moved";
-            pxLoggingEventData.Type = PXLoggingInfo;
-
-            PXLogPrintInvoke(&pxLoggingEventData);
+            PXLogPrint
+            (
+                PXLoggingEvent,
+                "Window",
+                "Event-Move",
+                ""
+            );
 #endif
 
             break;
@@ -196,14 +195,15 @@ void PXAPI PXWindowEventConsumer(PXGUISystem* const pxGUISystem, PXWindowEvent* 
             PXWindowEventResize* const pxWindowEventResize = &pxWindowEvent->Resize;
 
 #if PXLogEnable
-            PXLoggingEventData pxLoggingEventData;
-            PXClear(PXLoggingEventData, &pxLoggingEventData);
-            pxLoggingEventData.ModuleSource = "Window";
-            pxLoggingEventData.ModuleAction = "Event";
-            pxLoggingEventData.PrintFormat = "Size changed to <%ix%i>";
-            pxLoggingEventData.Type = PXLoggingInfo;
-
-            PXLogPrintInvoke(&pxLoggingEventData, pxWindowEventResize->Width, pxWindowEventResize->Height);
+            PXLogPrint
+            (
+                PXLoggingEvent,
+                "Window",
+                "Event-Resize",
+                "<%ix%i>",
+                pxWindowEventResize->Width,
+                pxWindowEventResize->Height
+            );
 #endif
 
            // PXGUIElementhSizeRefresAll(pxGUISystem, pxWindowEvent->UIElementReference);
@@ -612,7 +612,7 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
     {
         pxGUISystem = PXGUISystemGlobalReference;
 
-        PXDictionaryFindEntry(&pxGUISystem->UIElementLookUp, &windowID, &pxWindowEvent.UIElementReference);
+        PXDictionaryFindEntry(&pxGUISystem->ResourceManager->GUIElementLookup, &windowID, &pxWindowEvent.UIElementReference);
     }
 
 #if 0
@@ -719,10 +719,10 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
                         const HWND itemHandle = TreeView_GetSelection(sourceObject); // Event does not give us the handle, fetch manually.
 
                         // Fetch treeview object
-                        PXDictionaryFindEntry(&pxGUISystem->UIElementLookUp, &sourceObject, &pxTreeViewContainer);
+                        PXDictionaryFindEntry(&pxGUISystem->ResourceManager->GUIElementLookup, &sourceObject, &pxTreeViewContainer);
 
                         // Fetch treeviewitem object
-                        PXDictionaryFindEntry(&pxGUISystem->UIElementLookUp, &itemHandle, &pxTreeViewItem);
+                        PXDictionaryFindEntry(&pxGUISystem->ResourceManager->GUIElementLookup, &itemHandle, &pxTreeViewItem);
                     }                  
 
                     pxWindowEvent.UIElementReference = pxTreeViewContainer;
@@ -742,7 +742,7 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
 #if 1
                     PXUIElement* const pxUIElement = PXNull;
 
-                    PXDictionaryFindEntry(&pxGUISystem->UIElementLookUp, &sourceObject, &pxUIElement);
+                    PXDictionaryFindEntry(&pxGUISystem->ResourceManager->GUIElementLookup, &sourceObject, &pxUIElement);
 
                     // Hide current page
                     const PXBool isValidIndex = pxUIElement->ListEESize >= (pageID+1);
@@ -774,7 +774,7 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
                             "Event",
                             "Tab Select <0x%p>, %15s ID:<%i>",
                             sourceObject,
-                            pxUIElementEEE->NameData,
+                            "", //pxUIElementEEE->NameData,
                             pageID
                         );
 
@@ -816,14 +816,14 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
         {
             PXUIElement* const pxUIElement = PXNull;
 
-            PXDictionaryFindEntry(&pxGUISystem->UIElementLookUp, &windowID, &pxUIElement);
+            PXDictionaryFindEntry(&pxGUISystem->ResourceManager->GUIElementLookup, &windowID, &pxUIElement);
 
             if(pxUIElement)
             {
-                if(!pxUIElement->IsEnabled)
-                {
+              //  if(!pxUIElement->IsEnabled)
+               // {
                   //  return 0;
-                }              
+              //  }              
             }
 
             break;
@@ -1000,7 +1000,7 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
             HWND windowHandleNow = (HWND)lParam;
             HDC hdc = (HDC)wParam;
 
-#if 1
+#if PXLogEnable && 0
             PXLogPrint
             (
                 PXLoggingInfo,
@@ -1115,17 +1115,17 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
         }
         case WM_COMMAND:
         {
-            PXInt32U buttonType = wParam; // IDOK;
-            HANDLE handle = (HANDLE)lParam;
+            const PXInt32U buttonType = wParam; // IDOK;
+            const HANDLE handle = (HANDLE)lParam;
 
             PXUIElement* const pxUIElement = PXNull;
 
             if(pxGUISystem)
             {
-                PXDictionaryFindEntry(&pxGUISystem->UIElementLookUp, &handle, &pxUIElement);
+                PXDictionaryFindEntry(&pxGUISystem->ResourceManager->GUIElementLookup, &handle, &pxUIElement);
             }
 
-            if(!pxUIElement->IsEnabled)
+            if(!(pxUIElement->Info.Flags & PXEngineResourceInfoEnabled))
             {
                // ShowWindow(pxUIElement->ID, SW_HIDE);
             }
@@ -1501,19 +1501,19 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
 
 void PXAPI PXGUIElementChildListEnumerate(PXGUISystem* const pxGUISystem, PXUIElement* const parent, PXBool visible)
 {
-    for(size_t i = 0; i < pxGUISystem->UIElementLookUp.EntryAmountCurrent; i++)
+    for(size_t i = 0; i < pxGUISystem->ResourceManager->GUIElementLookup.EntryAmountCurrent; i++)
     {
         PXDictionaryEntry pxDictionaryEntry;
 
         PXUIElement* childElement = PXNull;
 
-        PXDictionaryIndex(&pxGUISystem->UIElementLookUp, i, &pxDictionaryEntry);
+        PXDictionaryIndex(&pxGUISystem->ResourceManager->GUIElementLookup, i, &pxDictionaryEntry);
 
         childElement = *(PXUIElement**)pxDictionaryEntry.Value;
 
         if(childElement->Parent)
         {
-            if(childElement->Parent->ID == parent->ID)
+            if(childElement->Parent->Info.WindowID == parent->Info.WindowID)
             {
                 // found child.
 
@@ -1594,7 +1594,7 @@ PXActionResult PXAPI PXGUISystemInitialize(PXGUISystem* const pxGUISystem)
 #endif
 
 
-    PXDictionaryConstruct(&pxGUISystem->UIElementLookUp, sizeof(PXInt32U), sizeof(PXUIElement), PXDictionaryValueLocalityExternalReference);
+
 
 
 
@@ -1605,36 +1605,29 @@ PXActionResult PXAPI PXGUISystemInitialize(PXGUISystem* const pxGUISystem)
 PXActionResult PXAPI PXGUISystemRelease(PXGUISystem* const pxGUISystem)
 {
 
-    PXDictionaryDestruct(&pxGUISystem->UIElementLookUp);
 
     PXGUISystemGlobalReference = PXNull;
 
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIElementCreateInfo* const pxGUIElementCreateInfo, const PXSize amount)
+
+PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResourceCreateInfo* const pxResourceCreateInfo, const PXSize amount)
 {
-    if(!(pxGUISystem && pxGUIElementCreateInfo))
+    if(!(pxGUISystem && pxResourceCreateInfo))
     {
         return PXActionRefusedArgumentNull;
     }
 
     //assert();
 
-    PXUIElement* pxUIElement = *pxGUIElementCreateInfo->UIElement;
+    PXGUIElementCreateInfo* pxGUIElementCreateInfo = &pxResourceCreateInfo->UIElement;
+    PXUIElement* pxUIElement = *(PXUIElement**)pxResourceCreateInfo->ObjectReference;
 
-    if(!pxUIElement)
-    {
-        PXNewZerod(PXUIElement, &pxUIElement);
-        *pxGUIElementCreateInfo->UIElement = pxUIElement;
-    }
-
-    pxUIElement = *pxGUIElementCreateInfo->UIElement;
     pxUIElement->Type = pxGUIElementCreateInfo->Type;
     pxUIElement->InteractCallBack = pxGUIElementCreateInfo->InteractCallBack;
     pxUIElement->InteractOwner = pxGUIElementCreateInfo->InteractOwner;
     pxUIElement->Parent = pxGUIElementCreateInfo->UIElementParent;
-    pxUIElement->IsEnabled = PXTrue;
 
     PXCopy(PXUIElementPosition, &pxGUIElementCreateInfo->Position, &pxUIElement->Position);
 
@@ -1642,7 +1635,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
 
   
 
-#if 1
+#if 0
     const char* uielementName = PXUIElementTypeToString(pxGUIElementCreateInfo->Type);
 
     //const char* format = PXEngineCreateTypeToString(pxEngineResourceCreateInfo->CreateType);
@@ -1684,8 +1677,8 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
                     pxUIElement->NameData,
                     128,
                     "[Model] %s ID:%i",              
-                    pxModel->ResourceID.Name,
-                    pxModel->ResourceID.PXID
+                    "---",//pxModel->Info.Name,
+                    pxModel->Info.ID
                 );
 
                 break;
@@ -1699,8 +1692,8 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
                     pxUIElement->NameData,
                     128,
                     "[Shader] %s ID:%i",
-                    pxShaderProgram->ResourceID.Name,
-                    pxShaderProgram->ResourceID.PXID
+                    "---",// pxShaderProgram->ResourceID.Name,
+                    pxShaderProgram->Info.ID
                 );
 
                 break;
@@ -1746,7 +1739,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
     
         PXGUIElementUpdateInfo sizeInfoAA;
         PXClear(PXGUIElementUpdateInfo, &sizeInfoAA);
-        sizeInfoAA.UIElement = *pxGUIElementCreateInfo->UIElement;
+        //sizeInfoAA.UIElement = *pxGUIElementCreateInfo->UIElement;
         sizeInfoAA.WindowReference = pxGUIElementCreateInfo->UIElementWindow;
         sizeInfoAA.Property = PXUIElementPropertySizeParent;
 
@@ -2043,7 +2036,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
                 if(pxGUIElementCreateInfo->AvoidCreation)
                 {
                     pxUIElement->Type = PXUIElementTypeButtonText;
-                    pxUIElement->ID = 0;
+                    pxUIElement->Info.WindowID = PXNull;
                     //return;
                 }
             }
@@ -2360,11 +2353,11 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
     if(!pxGUIElementCreateInfo->AvoidCreation)
     {
         HINSTANCE hInstance = PXNull;
-        PXWindowID windowID = pxGUIElementCreateInfo->UIElementWindow ? pxGUIElementCreateInfo->UIElementWindow->ID : PXNull;
+        PXWindowID windowID = pxGUIElementCreateInfo->UIElementWindow ? pxGUIElementCreateInfo->UIElementWindow->Info.WindowID : PXNull;
 
         if(pxGUIElementCreateInfo->UIElementWindow)
         {
-            hInstance = (HINSTANCE)GetWindowLongPtr(pxGUIElementCreateInfo->UIElementWindow->ID, GWLP_HINSTANCE); 
+            hInstance = (HINSTANCE)GetWindowLongPtr(pxGUIElementCreateInfo->UIElementWindow->Info.WindowID, GWLP_HINSTANCE); 
             //windowID = pxGUIElementCreateInfo->UIElementWindow->ID;
         }
         else
@@ -2374,7 +2367,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
 
        // const HINSTANCE hInstance = GetModuleHandle(NULL);
 
-        pxUIElement->ID = CreateWindowExA // Windows 2000, User32.dll, winuser.h
+        pxUIElement->Info.WindowID = CreateWindowExA // Windows 2000, User32.dll, winuser.h
         (
             pxGUIElementCreateInfo->WindowsWindowsStyleFlagsExtended,
             pxGUIElementCreateInfo->WindowsClassName,
@@ -2389,7 +2382,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
             hInstance,
             NULL // Pointer not needed.
         );
-        const PXBool success = PXNull != pxUIElement->ID;
+        const PXBool success = PXNull != pxUIElement->Info.WindowID;
 
 
         if(!success)
@@ -2416,7 +2409,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
             return pxActionResult;
         }
 
-        PXDictionaryAdd(&pxGUISystem->UIElementLookUp, &pxUIElement->ID, pxUIElement);
+        PXDictionaryAdd(&pxGUISystem->ResourceManager->GUIElementLookup, &pxUIElement->Info.WindowID, pxUIElement);
 
 #if PXLogEnable
         const char* uielementName = PXUIElementTypeToString(pxGUIElementCreateInfo->Type);
@@ -2431,7 +2424,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
             (int)pxUIElementPositionCalulcateInfo.Y,
             (int)pxUIElementPositionCalulcateInfo.Width,
             (int)pxUIElementPositionCalulcateInfo.Height,         
-            pxUIElement->ID,
+            pxUIElement->Info.WindowID,
             uielementName
         );
 #endif
@@ -2612,7 +2605,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
 
             if(pxUIElementTreeViewItemInfo->ItemParent)
             {
-                item.hParent = pxUIElementTreeViewItemInfo->ItemParent->ID;
+                item.hParent = pxUIElementTreeViewItemInfo->ItemParent->Info.WindowID;
             }
 
             if(pxUIElementTreeViewItemInfo->TextDataOverride)
@@ -2622,8 +2615,8 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
             }
             else
             {
-                item.item.pszText = pxUIElement->NameData;
-                item.item.cchTextMax = pxUIElement->NameSize;
+              //  item.item.pszText = pxUIElement->NameData;
+              //  item.item.cchTextMax = pxUIElement->NameSize;
             }
 
 
@@ -2679,19 +2672,19 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
 
             item.item.mask = TVIF_TEXT | TVIF_IMAGE;
 
-            HTREEITEM itemID = TreeView_InsertItem(pxUIElementTreeViewItemInfo->TreeView->ID, &item);
+            HTREEITEM itemID = TreeView_InsertItem(pxUIElementTreeViewItemInfo->TreeView->Info.WindowID, &item);
 
             if(pxUIElementTreeViewItemInfo->ItemParent)
             {
                 TreeView_Expand
                 (
-                    pxUIElementTreeViewItemInfo->TreeView->ID,
-                    pxUIElementTreeViewItemInfo->ItemParent->ID,
+                    pxUIElementTreeViewItemInfo->TreeView->Info.WindowID,
+                    pxUIElementTreeViewItemInfo->ItemParent->Info.WindowID,
                     TVE_EXPAND
                 );
             }
 
-            pxUIElement->ID = itemID;
+            pxUIElement->Info.WindowID = itemID;
             pxUIElementTreeViewItemInfo->ItemHandle = itemID;
 
             break;
@@ -2735,14 +2728,14 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
         }
         case PXUIElementTypeTrackBar:
         {
-            HDC dc = GetDC(pxUIElement->ID);
+            HDC dc = GetDC(pxUIElement->Info.WindowID);
 
 
             SetTextColor(dc, RGB(255, 0, 0));
             SetBkColor(dc, RGB(0, 0, 255));
 
 
-            SendMessageA(pxUIElement->ID, TBM_SETTIPSIDE, TBTS_RIGHT, PXNull);
+            SendMessageA(pxUIElement->Info.WindowID, TBM_SETTIPSIDE, TBTS_RIGHT, PXNull);
 
 
            // SendMessageA(pxUIElement->ID, SET_BACKGROUND_COLOR, RGB(30, 30, 30), RGB(30, 30, 30));
@@ -2827,9 +2820,9 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
             int sizeY = 16;
             int amount = 11;
 
-            TreeView_SetBkColor(pxUIElement->ID, RGB(30, 30, 30));
+            TreeView_SetBkColor(pxUIElement->Info.WindowID, RGB(30, 30, 30));
 
-            TreeView_SetTextColor(pxUIElement->ID, RGB(200, 200, 200));
+            TreeView_SetTextColor(pxUIElement->Info.WindowID, RGB(200, 200, 200));
 
 
             // Add icons
@@ -2890,7 +2883,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
                 );
             }
 
-            TreeView_SetImageList(pxUIElement->ID, imageListHandle, TVSIL_NORMAL);
+            TreeView_SetImageList(pxUIElement->Info.WindowID, imageListHandle, TVSIL_NORMAL);
 
             break;
         }
@@ -2921,10 +2914,10 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
         }
         case PXUIElementTypeTabControll:
         {
-            HDC pDC = GetDC(pxUIElement->ID);
+            HDC pDC = GetDC(pxUIElement->Info.WindowID);
             //SetBkMode(pDC, TRANSPARENT);
-           SetBkColor(pDC, RGB(255, 0, 0));
-           SetTextColor(pDC, RGB(0, 0, 255));
+            SetBkColor(pDC, RGB(255, 0, 0));
+            SetTextColor(pDC, RGB(0, 0, 255));
 
             PXUIElementTabPageInfo* const pxUIElementTabPageInfo = &pxGUIElementCreateInfo->Data.TabPage;
 
@@ -2942,23 +2935,26 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
                 PXTextPrintA(buffer, 64, "TabPage-%i-%s", i, pxUIElementTabPageSingleInfo->PageName);
 
                 // Create a panel for each page, to contain all elements, so that we can hide and show all at once
-                PXGUIElementCreateInfo pxGUIElementCreateInfoPanel;
-                PXClear(PXGUIElementCreateInfo, &pxGUIElementCreateInfoPanel);
-                pxGUIElementCreateInfoPanel.Type = PXUIElementTypePanel;
-                pxGUIElementCreateInfoPanel.Name = buffer;
-                pxGUIElementCreateInfoPanel.UIElement = pxUIElementTabPageSingleInfo->UIElement;
-                pxGUIElementCreateInfoPanel.UIElementWindow = pxGUIElementCreateInfo->UIElementWindow;
-                pxGUIElementCreateInfoPanel.UIElementParent = pxUIElement;
-                pxGUIElementCreateInfoPanel.BehaviourFlags = PXUIElementDecorative;
-                pxGUIElementCreateInfoPanel.StyleFlagList = PXGUIElementStyleDefault;
-                pxGUIElementCreateInfoPanel.Position.FlagListKeep = PXUIElementAllignLeft;
-                pxGUIElementCreateInfoPanel.Position.MarginLeft = 0.005;
-                pxGUIElementCreateInfoPanel.Position.MarginTop = 0.1;
-                pxGUIElementCreateInfoPanel.Position.MarginRight = 0.005;
-                pxGUIElementCreateInfoPanel.Position.MarginBottom = 0.02;
-                pxGUIElementCreateInfoPanel.Data.Text.Content = buffer;
+                PXResourceCreateInfo pxResourceCreateInfo;
+                PXClear(PXResourceCreateInfo, &pxResourceCreateInfo);
+                pxResourceCreateInfo.Type = PXResourceTypeGUIElement;
+                pxResourceCreateInfo.ObjectReference = pxUIElementTabPageSingleInfo->UIElement;
+                pxResourceCreateInfo.UIElement.Type = PXUIElementTypePanel;
+                pxResourceCreateInfo.UIElement.Name = buffer;
+                pxResourceCreateInfo.UIElement.UIElementWindow = pxGUIElementCreateInfo->UIElementWindow;
+                pxResourceCreateInfo.UIElement.UIElementParent = pxUIElement;
+                pxResourceCreateInfo.UIElement.BehaviourFlags = PXUIElementDecorative;
+                pxResourceCreateInfo.UIElement.StyleFlagList = PXGUIElementStyleDefault;
+                pxResourceCreateInfo.UIElement.Position.FlagListKeep = PXUIElementAllignLeft;
+                pxResourceCreateInfo.UIElement.Position.MarginLeft = 0.005;
+                pxResourceCreateInfo.UIElement.Position.MarginTop = 0.1;
+                pxResourceCreateInfo.UIElement.Position.MarginRight = 0.005;
+                pxResourceCreateInfo.UIElement.Position.MarginBottom = 0.02;
+                pxResourceCreateInfo.UIElement.Data.Text.Content = buffer;
 
-                PXGUIElementCreate(pxGUISystem, &pxGUIElementCreateInfoPanel, 1);
+                PXResourceManagerAdd(pxGUISystem->ResourceManager,&pxResourceCreateInfo, 1);
+
+                PXGUIElementCreate(pxGUISystem, &pxResourceCreateInfo, 1);
 
 
                 pxUIElement->ListEEData[i] = *pxUIElementTabPageSingleInfo->UIElement;
@@ -2970,7 +2966,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
                 tie.iImage = pxUIElementTabPageSingleInfo->ImageID;
                 tie.pszText = pxUIElementTabPageSingleInfo->PageName;
 
-                auto x = TabCtrl_InsertItem(pxUIElement->ID, i, &tie);
+                auto x = TabCtrl_InsertItem(pxUIElement->Info.WindowID, i, &tie);
 
                 PXLogPrint
                 (
@@ -2982,7 +2978,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
                 );
             }        
 
-            SendMessage(pxUIElement->ID, TCM_SETCURFOCUS, 0, 0);
+            SendMessage(pxUIElement->Info.WindowID, TCM_SETCURFOCUS, 0, 0);
 
             break;
         }
@@ -3037,8 +3033,8 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIEle
         {
             PXGUIElementCreateWindowInfo* const pxGUIElementCreateWindowInfo = &pxGUIElementCreateInfo->Data.Window;
 
-            PXWindowTitleBarColorSet(pxUIElement->ID);
-            UpdateWindow(pxUIElement->ID);
+            PXWindowTitleBarColorSet(pxUIElement->Info.WindowID);
+            UpdateWindow(pxUIElement->Info.WindowID);
 
             // ShowWindow(pxWindow->ID, SW_NORMAL)
 
@@ -3115,6 +3111,11 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
         PXGUIElementUpdateInfo* const pxGUIElementUpdateInfo = &pxGUIElementUpdateInfoList[i];
         PXUIElement* const pxUIElement = pxGUIElementUpdateInfo->UIElement;
 
+        if(!pxUIElement)
+        {
+            continue;
+        }
+
         switch(pxGUIElementUpdateInfo->Property)
         {
             case PXUIElementPropertyTextContent:
@@ -3141,7 +3142,7 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
 #if OSUnix
                 XStoreName(pxGUIElementCreateWindowInfo->DisplayCurrent, pxWindow->ID, pxWindow->Title.TextA);
 #elif OSWindows
-                const PXBool success = SetWindowTextA(pxUIElement->ID, pxUIElementTextInfo->Content);
+                const PXBool success = SetWindowTextA(pxUIElement->Info.WindowID, pxUIElementTextInfo->Content);
 
 
                 //   SendMessageA(pxUIElement->ID, PBM_SETPOS, stepsConverted, 0);
@@ -3183,11 +3184,9 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
             {
                 PXUIElementTextInfo* const pxUIElementTextInfo = &pxGUIElementUpdateInfo->Data.Text;
 
-                HDC xx = GetDC(pxUIElement->ID);
+                HDC xx = GetDC(pxUIElement->Info.WindowID);
 
-
-
-                LONG ww = SetWindowLongA(pxUIElement->ID, GWL_EXSTYLE, WS_EX_LEFT | WS_EX_RIGHT);
+                LONG ww = SetWindowLongA(pxUIElement->Info.WindowID, GWL_EXSTYLE, WS_EX_LEFT | WS_EX_RIGHT);
 
                 // const UINT allign = SetTextAlign(xx, TA_CENTER);
                 // const PXBool success = GDI_ERROR == allign;
@@ -3248,7 +3247,7 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
                 {
                     const PXBool success = MoveWindow
                     (
-                        pxUIElement->ID,
+                        pxUIElement->Info.WindowID,
                         pxUIElementPositionCalulcateInfo.X,
                         pxUIElementPositionCalulcateInfo.Y,
                         pxUIElementPositionCalulcateInfo.Width,
@@ -3316,7 +3315,7 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
                 PXUIElementProgressBarInfo* const progressBar = &pxGUIElementUpdateInfo->Data.Text;
 
                 PXInt32U stepsConverted = progressBar->Percentage * 100;
-                SendMessageA(pxUIElement->ID, PBM_SETPOS, stepsConverted, 0);
+                SendMessageA(pxUIElement->Info.WindowID, PBM_SETPOS, stepsConverted, 0);
 
                 break;
             }
@@ -3325,7 +3324,7 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
                 PXUIElementProgressBarInfo* const progressBar = &pxGUIElementUpdateInfo->Data.Text;
 
                 COLORREF color = RGB(progressBar->BarColor.Red, progressBar->BarColor.Green, progressBar->BarColor.Blue);
-                SendMessageA(pxUIElement->ID, PBM_SETBARCOLOR, 0, color);
+                SendMessageA(pxUIElement->Info.WindowID, PBM_SETBARCOLOR, 0, color);
 
                 break;
             }
@@ -3334,7 +3333,7 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
                 PXBool show = pxGUIElementUpdateInfo->Show;
                 int showID = show ? SW_SHOW : SW_HIDE;
 
-                const PXBool isWindowValid = IsWindow(pxUIElement->ID);
+                const PXBool isWindowValid = IsWindow(pxUIElement->Info.WindowID);
 
                 if(!isWindowValid)
                 {
@@ -3344,18 +3343,29 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
                         "GUI",
                         "Visibility",
                         "%20s (0x%p), Invalid",
-                        pxUIElement->NameData,
-                        pxUIElement->ID
+                        "",//pxUIElement->NameData,
+                        pxUIElement->Info.WindowID
                     );
 
                     break;
                 }
 
-                pxUIElement->IsEnabled = show;
+                if(show)
+                {
+                    pxUIElement->Info.Flags |= PXEngineResourceInfoVisble;
+                }
+                else
+                {
+                    pxUIElement->Info.Flags &= ~PXEngineResourceInfoVisble;
+                }
+
+             
+
+
                 // EnableWindow(pxUIElement->ID, show);
 
-                ShowWindow(pxUIElement->ID, showID);
-                BOOL res = ShowWindow(pxUIElement->ID, showID); // Twice to prevent some errors
+                ShowWindow(pxUIElement->Info.WindowID, showID);
+                BOOL res = ShowWindow(pxUIElement->Info.WindowID, showID); // Twice to prevent some errors
 
                 //  HWND parrent = GetParent(pxUIElement->ID);
 
@@ -3368,17 +3378,19 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
                          //  UpdateWindow(sourceObject);
                           // FlashWindow(sourceObject, 1);
 
+#if PXLogEnable && 0
                 PXLogPrint
                 (
                     PXLoggingInfo,
                     "GUI",
                     "Visibility",
                     "Page %20s, (0x%p), Mode:%s Status:%s",
-                    pxUIElement->NameData,
-                    pxUIElement->ID,
+                    "",//pxUIElement->NameData,
+                    pxUIElement->Info.WindowID,
                     show ? "Show" : "Hide",
                     res ? "OK" : "FAIL"
                 );
+#endif
 
 
                 // Own solution
@@ -3392,7 +3404,7 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
 
                 const BOOL success = EnumChildWindows
                 (
-                    pxUIElement->ID,
+                    pxUIElement->Info.WindowID,
                     PXWindowEnumChildProc,
                     &showID
                 );
@@ -3407,10 +3419,10 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
                 {
                     char* name = pxUIElementComboBoxInfo->DataList[i];
 
-                    ComboBox_AddString(pxUIElement->ID, name);
+                    ComboBox_AddString(pxUIElement->Info.WindowID, name);
                 }
 
-                ComboBox_SetCurSel(pxUIElement->ID, 0);
+                ComboBox_SetCurSel(pxUIElement->Info.WindowID, 0);
 
                 break;
             }
@@ -3428,7 +3440,7 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
                 item.hInsertAfter = TVI_ROOT;
                 item.item.mask = TVIF_TEXT;
 
-                TreeView_InsertItem(pxUIElement->ID, &item);
+                TreeView_InsertItem(pxUIElement->Info.WindowID, &item);
 
                 break;
             }
@@ -3486,7 +3498,7 @@ PXActionResult PXAPI PXGUIElementFetch(PXGUISystem* const pxGUISystem, PXGUIElem
                 RECT rect;
 
                 //const PXBool result = GetWindowRect(pxUIElement->ID, &rect); // Windows 2000, User32.dll, winuser.h
-                const PXBool result = GetClientRect(pxUIElement->ID, &rect); // Windows 2000, User32.dll, winuser.h
+                const PXBool result = GetClientRect(pxUIElement->Info.WindowID, &rect); // Windows 2000, User32.dll, winuser.h
 
                 if(!result)
                 {
@@ -3557,7 +3569,7 @@ void PXAPI PXGUIElementhSizeRefresAll(PXGUISystem* const pxGUISystem)
         return;
     }
 
-    PXDictionary* const uiElementLookup = &pxGUISystem->UIElementLookUp;
+    PXDictionary* const uiElementLookup = &pxGUISystem->ResourceManager->GUIElementLookup;
 
     PXUIElementPositionCalulcateInfo pxUIElementPositionCalulcateInfo;
     PXClear(PXUIElementPositionCalulcateInfo, &pxUIElementPositionCalulcateInfo);
@@ -3697,7 +3709,7 @@ void PXAPI PXWindowUpdate(PXUIElement* const pxUIElement)
         return;
     }
 
-    if(!pxUIElement->ID)
+    if(!pxUIElement->Info.WindowID)
     {
         return;
     }
@@ -3747,14 +3759,14 @@ void PXAPI PXWindowUpdate(PXUIElement* const pxUIElement)
     {
         MSG message;
 
-        const PXBool peekResult = PeekMessage(&message, pxUIElement->ID, 0, 0, PM_NOREMOVE); // Windows 2000, User32.dll, winuser.h
+        const PXBool peekResult = PeekMessage(&message, pxUIElement->Info.WindowID, 0, 0, PM_NOREMOVE); // Windows 2000, User32.dll, winuser.h
 
         if (!peekResult)
         {
             break; // Stop, no more messages
         }
 
-        const PXBool messageResult = GetMessage(&message, pxUIElement->ID, 0, 0); // Windows 2000, User32.dll, winuser.h
+        const PXBool messageResult = GetMessage(&message, pxUIElement->Info.WindowID, 0, 0); // Windows 2000, User32.dll, winuser.h
 
         if (!messageResult)
         {

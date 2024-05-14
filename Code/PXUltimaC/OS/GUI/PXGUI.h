@@ -342,14 +342,7 @@ typedef enum PXWindowEventType_
 }
 PXWindowEventType;
 
-typedef struct PXWindowSizeInfo_
-{
-	PXInt32S X;
-	PXInt32S Y;
-	PXInt32S Width;
-	PXInt32S Height;
-}
-PXWindowSizeInfo;
+
 
 typedef struct PXKeyBoardKeyInfo_
 {
@@ -471,268 +464,13 @@ typedef struct PXGUISystem_
 {
 	PXLibrary LibraryWindowsUser32DLL;
 
-
 	PXBool AreOSUIElementsDefined;
 
-
-	// Storage of all known handles
-	PXDictionary UIElementLookUp;
-
+	PXResourceManager* ResourceManager;
 }
 PXGUISystem;
 
-typedef enum PXUIElementProperty_
-{
-	PXUIElementPropertyInvalid,
-	PXUIElementPropertyTextContent,
-	PXUIElementPropertyTextAllign,
-	PXUIElementPropertyTextColor,
-	PXUIElementPropertySize,
-	PXUIElementPropertySizeParent,
-	PXUIElementPropertyProgressbarPercentage,
-	PXUIElementPropertyProgressbarBarColor,
 
-	PXUIElementPropertyBackGroundColor,
-
-	PXUIElementPropertyVisibility,
-
-	PXUIElementPropertyComboBoxAdd,
-
-
-	PXUIElementPropertyItemAdd,
-	PXUIElementPropertyItemDelete,
-	PXUIElementPropertyItemUpdate,
-
-	// Tree view
-
-	PXUIElementPropertyTreeView_CreateDragImage,
-	PXUIElementPropertyTreeView_DeleteAllItems,
-	PXUIElementPropertyTreeView_DeleteItem,
-	PXUIElementPropertyTreeView_EditLabel,
-	PXUIElementPropertyTreeView_EndEditLabelNow,
-	PXUIElementPropertyTreeView_EnsureVisible,
-	PXUIElementPropertyTreeView_Expand,
-	PXUIElementPropertyTreeView_GetBkColor,
-	PXUIElementPropertyTreeView_GetCheckState,
-	PXUIElementPropertyTreeView_GetChild,
-	PXUIElementPropertyTreeView_GetCount,
-	PXUIElementPropertyTreeView_GetDropHilight,
-	PXUIElementPropertyTreeView_GetEditControl,
-	PXUIElementPropertyTreeView_GetExtendedStyle,
-	PXUIElementPropertyTreeView_GetFirstVisible,
-	PXUIElementPropertyTreeView_GetImageList,
-	PXUIElementPropertyTreeView_GetIndent,
-	PXUIElementPropertyTreeView_GetInsertMarkColor,
-	PXUIElementPropertyTreeView_GetISearchString,
-	PXUIElementPropertyTreeView_GetItem,
-	PXUIElementPropertyTreeView_GetItemHeight,
-	PXUIElementPropertyTreeView_GetItemPartRect,
-	PXUIElementPropertyTreeView_GetItemRect,
-	PXUIElementPropertyTreeView_GetItemState,
-	PXUIElementPropertyTreeView_GetLastVisible,
-	PXUIElementPropertyTreeView_GetLineColor,
-	PXUIElementPropertyTreeView_GetNextItem,
-	PXUIElementPropertyTreeView_GetNextSelected,
-	PXUIElementPropertyTreeView_GetNextSibling,
-	PXUIElementPropertyTreeView_GetNextVisible,
-	PXUIElementPropertyTreeView_GetParent,
-	PXUIElementPropertyTreeView_GetPrevSibling,
-	PXUIElementPropertyTreeView_GetPrevVisible,
-	PXUIElementPropertyTreeView_GetRoot,
-	PXUIElementPropertyTreeView_GetScrollTime,
-	PXUIElementPropertyTreeView_GetSelectedCount,
-	PXUIElementPropertyTreeView_GetSelection,
-	PXUIElementPropertyTreeView_GetTextColor,
-	PXUIElementPropertyTreeView_GetToolTips,
-	PXUIElementPropertyTreeView_GetUnicodeFormat,
-	PXUIElementPropertyTreeView_GetVisibleCount,
-	PXUIElementPropertyTreeView_HitTest,
-	PXUIElementPropertyTreeView_InsertItem,
-	PXUIElementPropertyTreeView_MapAccIDToHTREEITEM,
-	PXUIElementPropertyTreeView_MapHTREEITEMtoAccID,
-	PXUIElementPropertyTreeView_Select,
-	PXUIElementPropertyTreeView_SelectDropTarget,
-	PXUIElementPropertyTreeView_SelectItem,
-	PXUIElementPropertyTreeView_SelectSetFirstVisible,
-	PXUIElementPropertyTreeView_SetAutoScrollInfo,
-	PXUIElementPropertyTreeView_SetBkColor,
-	PXUIElementPropertyTreeView_SetBorder,
-	PXUIElementPropertyTreeView_SetCheckState,
-	PXUIElementPropertyTreeView_SetExtendedStyle,
-	PXUIElementPropertyTreeView_SetHot,
-	PXUIElementPropertyTreeView_SetImageList,
-	PXUIElementPropertyTreeView_SetIndent,
-	PXUIElementPropertyTreeView_SetInsertMark,
-	PXUIElementPropertyTreeView_SetInsertMarkColor,
-	PXUIElementPropertyTreeView_SetItem,
-	PXUIElementPropertyTreeView_SetItemHeight,
-	PXUIElementPropertyTreeView_SetItemState,
-	PXUIElementPropertyTreeView_SetLineColor,
-	PXUIElementPropertyTreeView_SetScrollTime,
-	PXUIElementPropertyTreeView_SetTextColor,
-	PXUIElementPropertyTreeView_SetToolTips,
-	PXUIElementPropertyTreeView_SetUnicodeFormat,
-	PXUIElementPropertyTreeView_ShowInfoTip,
-	PXUIElementPropertyTreeView_SortChildren,
-	PXUIElementPropertyTreeView_SortChildrenCB,
-
-}
-PXUIElementProperty;
-
-
-
-typedef struct PXGUIElementCreateWindowInfo_
-{
-	//void* EventFunction;
-	void* EventOwner;
-
-#if OSUnix
-	XID WindowHandle;
-	XID WindowRootHandle;
-	Display* WindowDisplay;
-#elif OSWindows
-	HWND WindowHandle;
-#endif
-
-	PXColorRGBAI8 BackGroundColor;
-
-	PXInt32S X;
-	PXInt32S Y;
-	PXInt32S Width;
-	PXInt32S Height;
-	char* Title;
-
-	PXBool IsVisible;
-	PXBool CreateMessageThread; // Run events in another thread
-	PXBool MaximizeOnStart;
-}
-PXGUIElementCreateWindowInfo;
-
-typedef enum PXUIElementTreeViewItemInsertMode_
-{
-	PXUIElementTreeViewItemInsertModeROOT,
-	PXUIElementTreeViewItemInsertModeFIRST,
-	PXUIElementTreeViewItemInsertModeLAST,
-	PXUIElementTreeViewItemInsertModeSORT
-}
-PXUIElementTreeViewItemInsertMode;
-
-typedef struct PXUIElementTreeViewItemInfo_
-{
-	char* TextDataOverride;
-	PXSize TextSizeOverride;
-
-	struct PXUIElement_* ItemParent;
-	struct PXUIElement_* TreeView;
-
-	//struct PXUIElement_* ElementSource;
-	void* OwningObject;
-	PXFileResourceType OwningObjectType;
-
-	PXUIElementTreeViewItemInsertMode InsertMode;
-
-	// Result
-	struct _TREEITEM* ItemHandle;
-}
-PXUIElementTreeViewItemInfo;
-
-
-typedef struct PXUIElementTabPageSingleInfo_
-{
-	PXUIElement** UIElement;
-	char* PageName;
-	PXInt32U ImageID;
-
-}
-PXUIElementTabPageSingleInfo;
-
-typedef struct PXUIElementTabPageInfo_
-{
-	PXUIElementTabPageSingleInfo* TabPageSingleInfoList;
-	PXSize TabPageSingleInfoAmount;
-}
-PXUIElementTabPageInfo;
-
-
-// Behaviour
-#define PXGUIElementBehaviourDrawOverrride	0b00000001
-#define PXGUIElementBehaviourUseOS			0b00000010 
-#define PXGUIElementBehaviourCanBeTabbed	0b00000100 
-
-// Design
-#define PXGUIElementStyleFlagVisible		0b00000000000000000000000000000001
-#define PXGUIElementStyleFlagBorder			0b00000000000000000000000000000010
-#define PXGUIElementStyleFlagScrollBarHor	0b00000000000000000000000000000100
-#define PXGUIElementStyleFlagScrollBarVer	0b00000000000000000000000000001000
-
-#define PXGUIElementStyleDefault PXGUIElementStyleFlagVisible | PXGUIElementStyleFlagBorder
-
-
-typedef union PXGUIElementCreateInfoData_
-{
-	PXGUIElementCreateWindowInfo Window;
-	PXUIElementTextInfo Text;
-	PXUIElementButtonInfo Button;
-	PXUIElementTreeViewItemInfo TreeViewItem;
-	PXUIElementSceneRenderInfo SceneRender;
-	PXUIElementTabPageInfo TabPage;
-	PXUIElementComboBoxInfo ComboBox;
-
-	// Fetched
-	PXWindowSizeInfo Size;
-}
-PXGUIElementCreateInfoData;
-
-typedef struct PXGUIElementCreateInfo_
-{
-	PXUIElement** UIElement;
-	PXUIElement* UIElementParent;
-	PXUIElement* UIElementWindow;
-
-	PXInt32U FlagList;
-
-	PXUIElementType Type;
-	PXInt32U BehaviourFlags;
-	PXColorRGBAF* ColorTintReference;
-
-	PXColorRGBAF Color;
-
-	PXUIElementPosition Position;
-
-	PXInt32U BehaviourFlagList;
-	PXInt32U StyleFlagList;
-
-#if OSUnix
-#elif OSWindows
-	PXInt32U WindowsWindowsStyleFlagsExtended;
-	PXInt32U WindowsStyleFlags;
-	char* WindowsTextContent;
-	const char* WindowsClassName;
-#endif
-
-	// Additions
-	PXBool AvoidCreation;
-
-	char* Name;
-
-	void* InteractOwner;
-	PXWindowEventFunction InteractCallBack;
-
-	PXGUIElementCreateInfoData Data;
-}
-PXGUIElementCreateInfo;
-
-
-typedef struct PXGUIElementUpdateInfo_
-{
-	PXUIElement* UIElement;
-	PXUIElement* WindowReference;
-	PXUIElementProperty Property;
-	PXGUIElementCreateInfoData Data;
-
-	PXBool Show;
-}
-PXGUIElementUpdateInfo;
 
 
 
@@ -761,7 +499,7 @@ PXPrivate BOOL CALLBACK PXWindowEnumChildProc(HWND hwnd, LPARAM lParam);
 PXPublic PXThreadResult PXOSAPI PXWindowMessageLoop(PXUIElement* const pxUIElement);
 
 
-PXPublic PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXGUIElementCreateInfo* const pxGUIElementCreateInfo, const PXSize amount);
+PXPublic PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResourceCreateInfo* const pxResourceCreateInfo, const PXSize amount);
 PXPublic PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIElementUpdateInfo* const pxGUIElementUpdateInfoList, const PXSize amount);
 PXPublic PXActionResult PXAPI PXGUIElementFetch(PXGUISystem* const pxGUISystem, PXGUIElementUpdateInfo* const pxGUIElementUpdateInfoList, const PXSize amount);
 

@@ -22,7 +22,7 @@ void PXAPI PXGraphicModelShaderSet(PXGraphic* const pxGraphic, PXRenderable* con
     {
         PXRenderableMeshSegment* const pxRenderableMeshSegment = &renderable->MeshSegmentList[i];
 
-        pxRenderableMeshSegment->ShaderID = shaderPXProgram->ResourceID.OpenGLID;
+        pxRenderableMeshSegment->ShaderID = shaderPXProgram->Info.OpenGLID;
     }
 }
 
@@ -42,26 +42,11 @@ PXActionResult PXAPI PXGraphicUIRectangleCreate(PXGraphic* const pxGraphic, PXRe
     return PXActionSuccessful;
 }
 
-void PXAPI PXShaderConstruct(PXShader* const shader)
-{
-    PXMemoryClear(shader, sizeof(PXShader));
-
-    shader->ResourceID.PXID = PXShaderNotRegisterd;
-}
-
-void PXAPI PXShaderDataSet(PXShader* const shader, const PXGraphicShaderType type, const char* data, const PXSize size)
-{
-    shader->ResourceID.PXID = PXShaderNotRegisterd;
-    shader->Type = type;
-    shader->ContentSize = size;
-    shader->Content = data;
-}
-
 void PXAPI PXTextureConstruct(PXTexture2D* const texture)
 {
     PXClear(PXTexture2D, texture);
 
-    PXResourceIDMarkAsUnused(&texture->ResourceID);
+    texture->Info.OpenGLID = -1;
 
     texture->Filter = PXGraphicRenderFilterNoFilter;
     texture->LayoutNear = PXGraphicImageLayoutNearest;
@@ -199,7 +184,7 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
         "Graphic",
         "Instantiate",
         "Creating context on <%x>",
-        pxGraphicInitializeInfo->WindowReference->ID
+        pxGraphicInitializeInfo->WindowReference->Info.WindowID
     );
 #endif
 
@@ -211,7 +196,7 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
     // Get Device context if not already done
     if(!pxGraphicInitializeInfo->HandleDeviceContext)
     {
-        pxGraphicInitializeInfo->HandleDeviceContext = GetDC(pxGraphic->WindowReference->ID);
+        pxGraphicInitializeInfo->HandleDeviceContext = GetDC(pxGraphic->WindowReference->Info.WindowID);
     }
 
 
@@ -251,7 +236,7 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
     {
         PXWindowPixelSystemInfo pxWindowPixelSystemInfo;
         pxWindowPixelSystemInfo.HandleDeviceContext = pxGraphicInitializeInfo->HandleDeviceContext;
-        pxWindowPixelSystemInfo.HandleWindow = pxGraphic->WindowReference->ID;
+        pxWindowPixelSystemInfo.HandleWindow = pxGraphic->WindowReference->Info.WindowID;
         pxWindowPixelSystemInfo.BitPerPixel = 32;
         pxWindowPixelSystemInfo.OpenGL = PXTrue;
         pxWindowPixelSystemInfo.DirectX = PXTrue;
@@ -747,6 +732,7 @@ void PXAPI PXCameraFollow(PXCamera* const camera, const float deltaTime)
 
     PXMatrix4x4FRotationGet(&camera->MatrixView, &rotation);
 
+#if 0
     PXLogPrint
     (
         PXLoggingInfo,
@@ -760,6 +746,7 @@ void PXAPI PXCameraFollow(PXCamera* const camera, const float deltaTime)
         PXMathRadiansToDegree(rotation.Y),
         PXMathRadiansToDegree(rotation.Z)
     );
+#endif
 }
 
 void PXAPI PXCameraUpdate(PXCamera* const camera, const float deltaTime)

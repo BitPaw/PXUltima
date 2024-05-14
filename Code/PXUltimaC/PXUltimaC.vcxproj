@@ -287,6 +287,7 @@
     <ClCompile Include="Container\BinaryTree\PXBinaryTree.c" />
     <ClCompile Include="Container\BTree\PXBTree.c" />
     <ClCompile Include="Container\Dictionary\PXDictionary.c" />
+    <ClCompile Include="Container\FlexDataCache\PXFlexDataCache.c" />
     <ClCompile Include="Container\LinkedList\PXLinkedList.c" />
     <ClCompile Include="Container\List\PXList.c" />
     <ClCompile Include="Container\QuadTree\PXQuadTree.c" />
@@ -445,6 +446,7 @@
     <ClInclude Include="Container\BinaryTree\PXBinaryTree.h" />
     <ClInclude Include="Container\BTree\PXBTree.h" />
     <ClInclude Include="Container\Dictionary\PXDictionary.h" />
+    <ClInclude Include="Container\FlexDataCache\PXFlexDataCache.h" />
     <ClInclude Include="Container\LinkedList\PXLinkedList.h" />
     <ClInclude Include="Container\List\PXList.h" />
     <ClInclude Include="Container\QuadTree\PXQuadTree.h" />

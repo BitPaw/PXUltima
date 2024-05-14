@@ -14,7 +14,7 @@ namespace PX
 
         PXDLLExport bool Open(const Text& const filePath); //  gain access to an executable object file. RTLD_LAZY
         PXDLLExport bool Close(); // close a dlopen object
-        PXDLLExport bool GetSymbol(LibraryFunction* libraryFunction, const Text& symbolName); // obtain the address of a symbol from a dlopen object
+        PXDLLExport bool GetSymbol(void** libraryFunction, const Text& symbolName); // obtain the address of a symbol from a dlopen object
 
         PXDLLExport PX::ActionResult Name(Text& const libraryName);
 

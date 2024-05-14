@@ -4,6 +4,10 @@
 #include <Math/PXMatrix.h>
 
 #include "PXImage.h"
+#include <Container/FlexDataCache/PXFlexDataCache.h>
+#include <Container/Dictionary/PXDictionary.h>
+
+#include <OS/File/PXFile.h>
 
 #define PXBoilerPlate 
 
@@ -37,19 +41,6 @@ typedef enum PXGraphicResourceLocation_
 	PXGraphicResourceLocationRegisteredOnly, // Resouce is uploaded and not loaded anymore.
 }
 PXGraphicResourceLocation;
-
-typedef enum PXGraphicResourceType_
-{
-	PXGraphicResourceTypeInvalid,
-	PXGraphicResourceTypeModel,
-	PXGraphicResourceTypeImage,
-	PXGraphicResourceTypeTexure,
-	PXGraphicResourceTypeSkyBox,
-	PXGraphicResourceTypeFont,
-	PXGraphicResourceTypeSound,
-	PXGraphicResourceTypeMaterialList
-}
-PXGraphicResourceType;
 
 typedef enum PXGraphicRenderFilter_
 {
@@ -221,7 +212,7 @@ typedef enum PXVertexBufferFormat_
 
 	// Direct X
 
-	PXVertexBufferFormatXYZ, // Normal spcace (x, y, z)
+	PXVertexBufferFormatXYZFloat, // Normal spcace (x, y, z)
 	PXVertexBufferFormatXYZC, // Normal spcace (x, y, z, color-RGB as 32-int)
 
 	PXVertexBufferFormatXYZRHW, // DirectX only, use for pixel size instead of normal space.
@@ -241,28 +232,129 @@ PXPublic PXInt8U PXAPI PXVertexBufferFormatStrideSize(const PXVertexBufferFormat
 
 
 
+
+
+
+
+
+
+
+
+
+//---------------------------------------------------------
+// Resource types and structs
+//---------------------------------------------------------
+
+// Describes the exact type of a resource
+typedef enum PXResourceType_
+{
+	PXResourceTypeInvalid, // Invalid, don't use- only for internal 
+	PXResourceTypeCustom, // Undetected but valid format. Needs to be handled by the caller
+
+	//-----------------------------------------------------
+	// Resource Level 1 - Indepepended
+	//-----------------------------------------------------
+	PXResourceTypeImage, // Image for pixeldata
+	PXResourceTypeSound,
+	PXResourceTypeModel, // 3D model, collection of vertex data
+	PXResourceTypeFont, // Collection of spites or points to render text
+	//-----------------------------------------------------
+
+
+	//-----------------------------------------------------
+	// Resource Level 2 - Context spesific
+	//-----------------------------------------------------
+	PXResourceTypeTexture2D, // Texture to render on a surface
+	PXResourceTypeTextureCube,
+	PXResourceTypeShaderProgram,
+	PXResourceTypeSkybox,
+	PXResourceTypeSprite,
+	PXResourceTypeText,
+	PXResourceTypeTimer,
+	PXResourceTypeEngineSound,
+	PXResourceTypeGUIElement,
+	PXResourceTypeHitBox,
+	PXResourceTypeMaterialList,
+	//-----------------------------------------------------
+
+	// Extended basic components
+	PXResourceTypeDialogBox
+}
+PXResourceType;
+
 #define ResourceIDNameLength 64
 
-// To keep track of the object reference.
-// OpenGL uses 32-Bit Integer as an ID.
-// DirectX uses direct pointers to object references.
-typedef struct PXResourceID_
-{
-	char Name[ResourceIDNameLength];
+#define PXEngineResourceInfoIdentityMask    0b0000000000001111
+#define PXEngineResourceInfoExist			0b0000000000000001 // Indicate if resource is valid
+#define PXEngineResourceInfoEnabled			0b0000000000000010 // Is it interactable or does it tick?
+#define PXEngineResourceInfoVisble			0b0000000000000100 // Shall it be rendered?
 
+#define PXEngineResourceInfoStorageMask     0b0000000011110000
+#define PXEngineResourceInfoStorageDrive	0b0000000000010000 // Resource is in permanent storage
+#define PXEngineResourceInfoStorageCached	0b0000000000100000 // Resource is in semi-permanent cache (temp file)
+#define PXEngineResourceInfoStorageMemory	0b0000000001000000 // Resource exists in RAM
+#define PXEngineResourceInfoStorageDevice	0b0000000010000000 // Resource exists in spesific device
+
+
+#define PXEngineResourceInfoNameMask		0b0000001100000000
+#define PXEngineResourceInfoHasName			0b0000000100000000 // Is the name stored
+#define PXEngineResourceInfoHasSource		0b0000001000000000 // Is resource loaded from a path, if yes, path is cached.
+
+
+// Internal engine identification
+// Additional use is to define current storage and interactions.
+typedef struct PXResourceInfo_
+{
+	// IDs used by rendering APIs to keep track of the object reference.
+	// OpenGL uses 32-Bit Integer as an ID.
+	// DirectX uses direct pointers to object references.
 	union
 	{
-		void* DirectXInterface;
-		PXInt32U OpenGLID;
+		PXInt32U OpenGLID; // Simple ID for an object.
+		void* DirectXInterface; // DirectX uses interfaces to communicate to a element.
+		HWND WindowID; // Windows only, used for GUI elements
 	};
 
-	PXInt32U PXID;
+	PXInt32U ID; // Identification of this object managed by the engine itself.
+	PXInt32U Flags; // general information
+	PXInt32U Behaviour; // Depends on the type of the resource
 }
-PXResourceID;
+PXResourceInfo;
 
-#define PXResourceIDIsUnused(pxPesourceID) (pxPesourceID)->DirectXInterface == (void*)-1
-#define PXResourceIDIsUsed(pxPesourceID) (pxPesourceID)->DirectXInterface != (void*)-1
-#define PXResourceIDMarkAsUnused(pxPesourceID) (pxPesourceID)->DirectXInterface = (void*)-1
+// Container to manage resources by loading or saving
+typedef struct PXResourceManager_
+{
+	PXFlexDataCache NameCache;
+	PXFlexDataCache SourcePathCache;
+
+	// Register List
+	PXInt32U UniqeIDGeneratorCounter;
+
+	PXDictionary SpritelLookUp;
+	PXDictionary FontLookUp;
+	PXDictionary TextLookUp;
+	PXDictionary TimerLookUp;
+	PXDictionary SoundLookUp;
+	PXDictionary HitBoxLookUp;
+	PXDictionary ImageLookUp;
+	PXDictionary TextureLookUp;
+	PXDictionary ModelLookUp;
+	PXDictionary SkyBoxLookUp;
+	PXDictionary ShaderProgramLookup;
+	PXDictionary GUIElementLookup;
+
+	struct PXShaderProgram_* ShaderFailback;
+	struct PXModel_* ModelFailback;
+	struct PXTexture2D_* Texture2DFailBack;
+}
+PXResourceManager;
+
+
+
+
+
+
+
 
 
 // PXPadding;: Offset the space as the child container (Make object take more space)
@@ -291,7 +383,7 @@ PXPublic inline void PXAPI PXRectangleOffsetSet
 
 typedef struct PXTexture1D_
 {
-	PXResourceID ResourceID;
+	PXResourceInfo Info;
 
 	PXGraphicRenderFilter Filter;
 	PXGraphicImageLayout LayoutNear;
@@ -305,7 +397,7 @@ PXTexture1D;
 
 typedef struct PXTexture2D_
 {
-	PXResourceID ResourceID;
+	PXResourceInfo Info;
 
 	PXGraphicRenderFilter Filter;
 	PXGraphicImageLayout LayoutNear;
@@ -317,23 +409,9 @@ typedef struct PXTexture2D_
 }
 PXTexture2D;
 
-#define PXTexture2DSet(texture, format, width, height) \
-	(texture)->ResourceID.DirectXInterface = (void*)-1; \
-	(texture)->Filter = PXGraphicRenderFilterNoFilter; \
-	(texture)->LayoutNear = PXGraphicImageLayoutNearest; \
-	(texture)->LayoutFar = PXGraphicImageLayoutNearest; \
-	(texture)->WrapHeight= PXGraphicImageWrapStrechEdges; \
-	(texture)->WrapWidth = PXGraphicImageWrapStrechEdges; \
-	(texture)->Image->Width = width; \
-	(texture)->Image->Height = height;  \
-	(texture)->Image->PixelDataSize = 0;  \
-	(texture)->Image->PixelData = 0; \
-	(texture)->Image->Format = format; \
-
-
 typedef struct PXTexture3D_
 {
-	PXResourceID ResourceID;
+	PXResourceInfo Info;
 
 	struct PXImage_* Image;
 }
@@ -342,7 +420,7 @@ PXTexture3D;
 // A Texture for a cube. 6 Sides, used for actual boxes like a skybox.
 typedef struct PXTextureCube_
 {
-	PXResourceID ResourceID;
+	PXResourceInfo Info;
 
 	PXColorFormat Format;
 
@@ -519,17 +597,14 @@ PXShaderVariable;
 
 typedef struct PXShader_
 {
-	PXResourceID ResourceID;
+	PXResourceInfo Info;
 
 	PXGraphicShaderType Type;
 
 	PXInt8U VersionMajor;
 	PXInt8U VersionMinor;
 
-	char* ShaderFilePath;
-
-	PXSize ContentSize;
-	const char* Content;
+	struct PXFile_* ShaderFile;
 
 	PXSize VariableListAmount;
 	PXShaderVariable* VariableListData;
@@ -539,7 +614,7 @@ PXShader;
 
 typedef struct PXShaderProgram_
 {
-	PXResourceID ResourceID;
+	PXResourceInfo Info;
 
 	PXSize VariableListAmount;
 	PXShaderVariable* VariableListData;
@@ -562,7 +637,7 @@ PXDrawScriptType;
 // for performance reasons but for versitility too.
 typedef struct PXDrawScript_
 {
-	PXResourceID ResourceID;
+	PXResourceInfo Info;
 
 	PXDrawScriptType Type;
 }
@@ -585,13 +660,10 @@ PXVertexBufferDataType;
 
 typedef struct PXVertexBuffer_
 {
-	PXResourceID ResourceID; // IDirect3DVertexBuffer9, ID3D11Buffer
+	PXResourceInfo Info;
 
 	void* VertexData;
 	PXSize VertexDataSize;
-	PXSize VertexDataAmount;
-
-	PXSize VertexDataRowSize;
 
 	PXVertexBufferFormat Format;
 }
@@ -632,17 +704,13 @@ PXIndexSegment;
 // Additionally contains info about how to actually render, like modes.
 typedef struct PXIndexBuffer_
 {
-	PXResourceID ResourceID; // IDirect3DIndexBuffer9
-
-	PXInt8U IndexTypeSize;
+	PXResourceInfo Info;
 
 	void* IndexData;
 	PXSize IndexDataSize;
+	PXInt32U IndexDataType;
 
-	PXInt32U IndexDataAmount;
-
-	PXInt32U DataType;
-	PXInt32U DrawModeID;
+	PXInt32U DrawModeID; // How to draw, modes like triangle or lines
 
 	PXSize SegmentListSize;
 	PXSize SegmentListAmount;
@@ -657,8 +725,7 @@ PXIndexBuffer;
 
 typedef struct PXModel_
 {
-	PXResourceID ResourceID;
-	PXBool Enabled;
+	PXResourceInfo Info;
 
 	//-----------------------------
 	// Render info
@@ -746,9 +813,10 @@ PXViewPort;
 
 #define PXViewPortSetWH(adress, width, height) PXViewPortSetXYWH(adress, 0, 0, width, height)
 
+
 typedef struct PXRenderTarget_
 {
-	PXResourceID ResourceID; // IDirect3DVertexBuffer9
+	PXResourceInfo Info; // IDirect3DVertexBuffer9
 }
 PXRenderTarget;
 
@@ -773,7 +841,7 @@ PXLightType;
 
 typedef struct PXLight_
 {
-	PXResourceID ResourceID; // D3DLIGHT9
+	PXResourceInfo Info;
 
 	float Diffuse[4];           // Diffuse color of light
 	float Specular[4];          // Specular color of light
@@ -826,14 +894,166 @@ PXPublic PXFontPageCharacter* PXAPI PXFontPageCharacterFetch(PXFontPage* const p
 
 typedef struct PXFont_
 {
+	PXResourceInfo Info;
+
 	PXFontPage MainPage;
 
 	PXFontPage* AdditionalPageList;
 	PXSize AdditionalPageListSize;
-
-	PXInt32U PXID;
 }
 PXFont;
+
+
+
+
+
+
+
+
+
+
+
+//-----------------------------------------------------
+// Text
+//-----------------------------------------------------
+typedef struct PXEngineText_
+{
+	PXResourceInfo Info;
+
+	PXVector2F Position;
+	PXVector2F Scaling;
+
+	PXBool DoubleRenderForShadow;
+
+	PXText* Text;
+	PXFont* Font;
+	float FontScaling;
+
+	PXInt32U TextRenderAmount;
+}
+PXEngineText;
+//-----------------------------------------------------
+
+
+
+
+
+//-----------------------------------------------------
+// Audio
+//-----------------------------------------------------
+typedef struct PXEngineSound_
+{
+	struct PXSound_* Sound;
+
+	PXInt32U PXID;
+
+	PXBool SoundLoop;
+}
+PXEngineSound;
+
+
+
+
+
+//-----------------------------------------------------
+// HitBox
+//-----------------------------------------------------
+typedef enum PXHitBoxForm_
+{
+	PXHitBoxTypeInvalid,
+	PXHitBoxTypeBox,
+	PXHitBoxTypeCube,
+	PXHitBoxTypeCircle
+}
+PXHitBoxForm;
+
+//---------------------------------------------------------
+// BehaviourFlag
+//---------------------------------------------------------
+#define PXHitBoxBehaviourKeepOut 0b00000001 // Prevent from entering 
+#define PXHitBoxBehaviourKeepIn  0b00000010 // Prevent from leaving
+#define PXHitBoxBehaviourDetect  0b00000100 // Trigger if in inside
+#define PXHitBoxBehaviourPhysics 0b00001000 // Apply physics
+#define PXHitBoxBehaviourGravity 0b00010000 // Apply Gravity
+//---------------------------------------------------------
+
+typedef void(PXAPI* PXHitBoxCollisionDetect)(void* owner, struct PXHitBox_* const pxHitBox);
+
+// Collidable entity that can be defined for different behaviours
+typedef struct PXHitBox_
+{
+	PXResourceInfo Info;
+
+	PXModel* Model;
+
+	PXHitBoxForm Form;
+
+	void* CallBackOwner;
+	PXHitBoxCollisionDetect CollisionDetectCallBack;
+}
+PXHitBox;
+//-----------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//-----------------------------------------------------
+// Timer
+//-----------------------------------------------------
+typedef struct PXEngineTimerEventInfo_
+{
+	struct PXEngineTimer_* TimerReference;
+
+	PXInt32U Acuracy;
+
+	PXBool WasHandled;
+
+	//PXInt32S DelayShift;
+}
+PXEngineTimerEventInfo;
+
+typedef PXActionResult(PXAPI* PXTimerCallBack)(void* const owner, PXEngineTimerEventInfo* const pxEngineTimerEventInfo);
+
+typedef struct PXEngineTimer_
+{
+	PXResourceInfo Info;
+
+	void* Owner;
+	PXTimerCallBack CallBack;
+
+	PXInt32U TimeStampStart;
+
+	PXInt32U TimeDeltaTarget;
+	PXInt32S TimeDelayShift;
+}
+PXEngineTimer;
+//-----------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -865,19 +1085,14 @@ PXRectangleF;
 
 typedef struct PXSprite
 {
-	PXInt32U PXID;
-	PXBool Enabled;
-
-	char Name[20];
+	PXResourceInfo Info;
 
 	PXVector2F TextureScalePositionOffset;
 	PXVector2F TextureScalePointOffset;
 
-	PXModel Model;
-
-	struct PXTexture2D_* Texture;
-
-	struct PXHitBox_* HitBox;
+	PXModel* Model;
+	PXTexture2D* Texture;
+	PXHitBox* HitBox;
 }
 PXSprite;
 
@@ -930,6 +1145,8 @@ PXCamera;
 
 typedef	struct PXSkyBox_
 {
+	PXResourceInfo Info;
+
 	struct PXModel_* Model;
 	struct PXTextureCube_* TextureCube;
 	struct PXShaderProgram_* ShaderProgramReference;
@@ -943,7 +1160,6 @@ PXSkyBox;
 //-----------------------------------------------------
 // UI-Element
 //-----------------------------------------------------
-
 
 #define PXUIElementDoRendering (1 << 0) 
 #define PXUIElementIsActive (1 << 1)
@@ -1164,10 +1380,7 @@ typedef void (PXAPI* PXWindowEventFunction)(void* const owner, struct PXWindowEv
 // Only image can be image
 typedef struct PXUIElement_
 {
-	char NameData[128];
-	PXSize NameSize;
-
-	PXBool IsEnabled;
+	PXResourceInfo Info;
 
 	//------------------------------
 	// References 
@@ -1211,7 +1424,6 @@ typedef struct PXUIElement_
 	PXSize ListEESize;
 
 	PXUIElementType Type;
-	PXWindowID ID;
 }
 PXUIElement;
 //-----------------------------------------------------
@@ -1247,7 +1459,316 @@ typedef struct PXUIElementPositionCalulcateInfo_
 PXUIElementPositionCalulcateInfo;
 
 
+
+
+// Behaviour
+#define PXGUIElementBehaviourDrawOverrride	0b00000001
+#define PXGUIElementBehaviourUseOS			0b00000010 
+#define PXGUIElementBehaviourCanBeTabbed	0b00000100 
+
+// Design
+#define PXGUIElementStyleFlagVisible		0b00000000000000000000000000000001
+#define PXGUIElementStyleFlagBorder			0b00000000000000000000000000000010
+#define PXGUIElementStyleFlagScrollBarHor	0b00000000000000000000000000000100
+#define PXGUIElementStyleFlagScrollBarVer	0b00000000000000000000000000001000
+
+#define PXGUIElementStyleDefault PXGUIElementStyleFlagVisible | PXGUIElementStyleFlagBorder
+
+typedef enum PXUIElementProperty_
+{
+	PXUIElementPropertyInvalid,
+	PXUIElementPropertyTextContent,
+	PXUIElementPropertyTextAllign,
+	PXUIElementPropertyTextColor,
+	PXUIElementPropertySize,
+	PXUIElementPropertySizeParent,
+	PXUIElementPropertyProgressbarPercentage,
+	PXUIElementPropertyProgressbarBarColor,
+
+	PXUIElementPropertyBackGroundColor,
+
+	PXUIElementPropertyVisibility,
+
+	PXUIElementPropertyComboBoxAdd,
+
+
+	PXUIElementPropertyItemAdd,
+	PXUIElementPropertyItemDelete,
+	PXUIElementPropertyItemUpdate,
+
+	// Tree view
+
+	PXUIElementPropertyTreeView_CreateDragImage,
+	PXUIElementPropertyTreeView_DeleteAllItems,
+	PXUIElementPropertyTreeView_DeleteItem,
+	PXUIElementPropertyTreeView_EditLabel,
+	PXUIElementPropertyTreeView_EndEditLabelNow,
+	PXUIElementPropertyTreeView_EnsureVisible,
+	PXUIElementPropertyTreeView_Expand,
+	PXUIElementPropertyTreeView_GetBkColor,
+	PXUIElementPropertyTreeView_GetCheckState,
+	PXUIElementPropertyTreeView_GetChild,
+	PXUIElementPropertyTreeView_GetCount,
+	PXUIElementPropertyTreeView_GetDropHilight,
+	PXUIElementPropertyTreeView_GetEditControl,
+	PXUIElementPropertyTreeView_GetExtendedStyle,
+	PXUIElementPropertyTreeView_GetFirstVisible,
+	PXUIElementPropertyTreeView_GetImageList,
+	PXUIElementPropertyTreeView_GetIndent,
+	PXUIElementPropertyTreeView_GetInsertMarkColor,
+	PXUIElementPropertyTreeView_GetISearchString,
+	PXUIElementPropertyTreeView_GetItem,
+	PXUIElementPropertyTreeView_GetItemHeight,
+	PXUIElementPropertyTreeView_GetItemPartRect,
+	PXUIElementPropertyTreeView_GetItemRect,
+	PXUIElementPropertyTreeView_GetItemState,
+	PXUIElementPropertyTreeView_GetLastVisible,
+	PXUIElementPropertyTreeView_GetLineColor,
+	PXUIElementPropertyTreeView_GetNextItem,
+	PXUIElementPropertyTreeView_GetNextSelected,
+	PXUIElementPropertyTreeView_GetNextSibling,
+	PXUIElementPropertyTreeView_GetNextVisible,
+	PXUIElementPropertyTreeView_GetParent,
+	PXUIElementPropertyTreeView_GetPrevSibling,
+	PXUIElementPropertyTreeView_GetPrevVisible,
+	PXUIElementPropertyTreeView_GetRoot,
+	PXUIElementPropertyTreeView_GetScrollTime,
+	PXUIElementPropertyTreeView_GetSelectedCount,
+	PXUIElementPropertyTreeView_GetSelection,
+	PXUIElementPropertyTreeView_GetTextColor,
+	PXUIElementPropertyTreeView_GetToolTips,
+	PXUIElementPropertyTreeView_GetUnicodeFormat,
+	PXUIElementPropertyTreeView_GetVisibleCount,
+	PXUIElementPropertyTreeView_HitTest,
+	PXUIElementPropertyTreeView_InsertItem,
+	PXUIElementPropertyTreeView_MapAccIDToHTREEITEM,
+	PXUIElementPropertyTreeView_MapHTREEITEMtoAccID,
+	PXUIElementPropertyTreeView_Select,
+	PXUIElementPropertyTreeView_SelectDropTarget,
+	PXUIElementPropertyTreeView_SelectItem,
+	PXUIElementPropertyTreeView_SelectSetFirstVisible,
+	PXUIElementPropertyTreeView_SetAutoScrollInfo,
+	PXUIElementPropertyTreeView_SetBkColor,
+	PXUIElementPropertyTreeView_SetBorder,
+	PXUIElementPropertyTreeView_SetCheckState,
+	PXUIElementPropertyTreeView_SetExtendedStyle,
+	PXUIElementPropertyTreeView_SetHot,
+	PXUIElementPropertyTreeView_SetImageList,
+	PXUIElementPropertyTreeView_SetIndent,
+	PXUIElementPropertyTreeView_SetInsertMark,
+	PXUIElementPropertyTreeView_SetInsertMarkColor,
+	PXUIElementPropertyTreeView_SetItem,
+	PXUIElementPropertyTreeView_SetItemHeight,
+	PXUIElementPropertyTreeView_SetItemState,
+	PXUIElementPropertyTreeView_SetLineColor,
+	PXUIElementPropertyTreeView_SetScrollTime,
+	PXUIElementPropertyTreeView_SetTextColor,
+	PXUIElementPropertyTreeView_SetToolTips,
+	PXUIElementPropertyTreeView_SetUnicodeFormat,
+	PXUIElementPropertyTreeView_ShowInfoTip,
+	PXUIElementPropertyTreeView_SortChildren,
+	PXUIElementPropertyTreeView_SortChildrenCB,
+
+}
+PXUIElementProperty;
+
+
+
+
+
+typedef enum PXUIElementTreeViewItemInsertMode_
+{
+	PXUIElementTreeViewItemInsertModeROOT,
+	PXUIElementTreeViewItemInsertModeFIRST,
+	PXUIElementTreeViewItemInsertModeLAST,
+	PXUIElementTreeViewItemInsertModeSORT
+}
+PXUIElementTreeViewItemInsertMode;
+
+typedef struct PXUIElementTreeViewItemInfo_
+{
+	char* TextDataOverride;
+	PXSize TextSizeOverride;
+
+	struct PXUIElement_* ItemParent;
+	struct PXUIElement_* TreeView;
+
+	//struct PXUIElement_* ElementSource;
+	void* OwningObject;
+	PXFileResourceType OwningObjectType;
+
+	PXUIElementTreeViewItemInsertMode InsertMode;
+
+	// Result
+	struct _TREEITEM* ItemHandle;
+}
+PXUIElementTreeViewItemInfo;
+
+
+typedef struct PXUIElementTabPageSingleInfo_
+{
+	PXUIElement** UIElement;
+	char* PageName;
+	PXInt32U ImageID;
+
+}
+PXUIElementTabPageSingleInfo;
+
+typedef struct PXUIElementTabPageInfo_
+{
+	PXUIElementTabPageSingleInfo* TabPageSingleInfoList;
+	PXSize TabPageSingleInfoAmount;
+}
+PXUIElementTabPageInfo;
+
+
+
+
+
+typedef struct PXGUIElementCreateWindowInfo_
+{
+	//void* EventFunction;
+	void* EventOwner;
+
+#if OSUnix
+	XID WindowHandle;
+	XID WindowRootHandle;
+	Display* WindowDisplay;
+#elif OSWindows
+	HWND WindowHandle;
+#endif
+
+	PXColorRGBAI8 BackGroundColor;
+
+	PXInt32S X;
+	PXInt32S Y;
+	PXInt32S Width;
+	PXInt32S Height;
+	char* Title;
+
+	PXBool IsVisible;
+	PXBool CreateMessageThread; // Run events in another thread
+	PXBool MaximizeOnStart;
+}
+PXGUIElementCreateWindowInfo;
+
+typedef struct PXWindowSizeInfo_
+{
+	PXInt32S X;
+	PXInt32S Y;
+	PXInt32S Width;
+	PXInt32S Height;
+}
+PXWindowSizeInfo;
+
+typedef union PXGUIElementCreateInfoData_
+{
+	PXGUIElementCreateWindowInfo Window;
+	PXUIElementTextInfo Text;
+	PXUIElementButtonInfo Button;
+	PXUIElementTreeViewItemInfo TreeViewItem;
+	PXUIElementSceneRenderInfo SceneRender;
+	PXUIElementTabPageInfo TabPage;
+	PXUIElementComboBoxInfo ComboBox;
+
+	// Fetched
+	PXWindowSizeInfo Size;
+}
+PXGUIElementCreateInfoData;
+
+typedef struct PXGUIElementUpdateInfo_
+{
+	PXUIElement* UIElement;
+	PXUIElement* WindowReference;
+	PXUIElementProperty Property;
+	PXGUIElementCreateInfoData Data;
+
+	PXBool Show;
+}
+PXGUIElementUpdateInfo;
+
+typedef struct PXGUIElementCreateInfo_
+{
+	PXUIElement* UIElementParent;
+	PXUIElement* UIElementWindow;
+
+	PXInt32U FlagList;
+
+	PXUIElementType Type;
+	PXInt32U BehaviourFlags;
+	PXColorRGBAF* ColorTintReference;
+
+	PXColorRGBAF Color;
+
+	PXUIElementPosition Position;
+
+	PXInt32U BehaviourFlagList;
+	PXInt32U StyleFlagList;
+
+#if OSUnix
+#elif OSWindows
+	PXInt32U WindowsWindowsStyleFlagsExtended;
+	PXInt32U WindowsStyleFlags;
+	char* WindowsTextContent;
+	const char* WindowsClassName;
+#endif
+
+	// Additions
+	PXBool AvoidCreation;
+
+	char* Name;
+
+	void* InteractOwner;
+	PXWindowEventFunction InteractCallBack;
+
+	PXGUIElementCreateInfoData Data;
+}
+PXGUIElementCreateInfo;
+
+
 PXPublic void PXAPI PXUIElementPositionCalculcate(PXUIElement* const pxUIElement, PXUIElementPositionCalulcateInfo* const pxUIElementPositionCalulcateInfo);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1258,6 +1779,8 @@ PXPublic void PXAPI PXUIElementPositionCalculcate(PXUIElement* const pxUIElement
 
 typedef struct PXSound_
 {
+	PXResourceInfo Info;
+
 	void* BaseObject;
 	void* Data;
 
@@ -1332,7 +1855,7 @@ PXAudioDeviceOutput;
 
 typedef struct PXAudioDevice_
 {
-	PXResourceID ResourceID;
+	PXResourceInfo Info;
 
 #if OSWindows
 	union
@@ -1506,7 +2029,7 @@ typedef struct PXResourceLoadInfo_
 {
 	void* Target;
 	PXFile* FileReference;
-	PXGraphicResourceType Type;
+	PXResourceType Type;
 }
 PXResourceLoadInfo;
 
@@ -1514,10 +2037,198 @@ typedef struct PXResourceSaveInfo_
 {
 	void* Target;
 	PXFile* FileReference;
-	PXGraphicResourceType Type;
+	PXResourceType Type;
 	PXFileFormat Format;
 }
 PXResourceSaveInfo;
+
+
+
+
+
+
+
+
+
+
+
+
+typedef struct PXEngineSoundCreateInfo_
+{
+	PXBool SoundLoop;
+}
+PXEngineSoundCreateInfo;
+//-----------------------------------------------------
+
+
+
+//-----------------------------------------------------
+// ShaderProgram
+//-----------------------------------------------------
+typedef struct PXShaderProgramCreateInfo_
+{
+	char* ShaderVertexText;
+	PXSize ShaderVertexTextSize;
+	char* ShaderPixelText;
+	PXSize ShaderPixelTextSize;
+
+	char* ShaderVertexFilePath;
+	char* ShaderPixelFilePath;
+
+	PXFile ShaderVertexFile;
+	PXFile ShaderPixelFile;
+}
+PXShaderProgramCreateInfo;
+//-----------------------------------------------------
+
+
+typedef struct PXEngineFontCreateInfo_
+{
+	PXShaderProgram* ShaderProgramCurrent;
+}
+PXEngineFontCreateInfo;
+
+typedef struct PXSkyBoxCreateEventInfo_
+{
+	PXShaderProgramCreateInfo ShaderProgramCreateInfo;
+
+	char* SkyBoxTextureA;
+	char* SkyBoxTextureB;
+	char* SkyBoxTextureC;
+	char* SkyBoxTextureD;
+	char* SkyBoxTextureE;
+	char* SkyBoxTextureF;
+}
+PXSkyBoxCreateEventInfo;
+
+typedef struct PXHitboxCreateInfo_
+{
+	PXHitBox* HitBox;
+
+	// Mode
+	PXInt32U Flags;
+
+	PXModel* Model;
+}
+PXHitboxCreateInfo;
+
+typedef struct PXSpriteCreateInfo_
+{
+	PXTexture2D* TextureCurrent;
+	PXShaderProgram* ShaderProgramCurrent;
+
+	PXVector2F TextureScalingPoints[4];
+
+	PXVector3F Position;
+	PXVector2F Scaling;
+
+	PXBool ViewRotationIgnore;
+	PXBool ViewPositionIgnore;
+
+	// Extended info if we want a attached hitbox
+	PXBool HitBoxCreate;
+	PXHitboxCreateInfo HitboxData;
+
+
+
+
+
+
+}
+PXSpriteCreateInfo;
+
+
+
+typedef struct PXImageCreateInfo_
+{
+	// if no filepath exists, use this data
+	PXImage Image;
+}
+PXImageCreateInfo;
+
+typedef struct PXTexture2DCreateInfo_
+{
+	// if no filepath exists, use this data
+	PXImageCreateInfo Image;
+
+}
+PXTexture2DCreateInfo;
+
+typedef struct PXTextureCubeCreateInfo_
+{
+	char* FilePathA;
+	char* FilePathB;
+	char* FilePathC;
+	char* FilePathD;
+	char* FilePathE;
+	char* FilePathF;
+}
+PXTextureCubeCreateInfo;
+
+typedef struct PXModelCreateInfo_
+{
+	PXShaderProgram* ShaderProgramReference;
+	float Scale;
+
+
+	// If not loaded by a file, this data shal be used
+	PXVertexBuffer VertexBuffer;
+	PXIndexBuffer IndexBuffer;
+}
+PXModelCreateInfo;
+
+
+
+
+
+
+
+
+
+
+typedef struct PXResourceCreateInfo_
+{
+	void** ObjectReference;
+	char* FilePath;
+
+	char* Name;
+
+	PXResourceType Type;
+
+	PXBool SpawnEnabled;
+
+	union
+	{
+		PXEngineFontCreateInfo Font;
+		PXSkyBoxCreateEventInfo SkyBox;
+		PXSpriteCreateInfo Sprite;
+		PXEngineSoundCreateInfo Sound;
+		PXShaderProgramCreateInfo ShaderProgram;
+		PXTextureCubeCreateInfo TextureCube;
+		PXTexture2DCreateInfo Texture2D;
+		PXImageCreateInfo Image;
+		PXGUIElementCreateInfo UIElement;
+		PXModelCreateInfo Model;
+		PXHitboxCreateInfo HitBox;
+	};
+}
+PXResourceCreateInfo;
+
+
+
+
+PXPublic const char* PXAPI PXResourceTypeToString(const PXResourceType pxResourceType);
+
+
+PXPublic void PXAPI PXResourceManagerInit(PXResourceManager* const pxResourceManager);
+PXPublic void PXAPI PXResourceManagerRelease(PXResourceManager* const pxResourceManager);
+
+
+PXPrivate PXInt32U PXAPI PXResourceManagerGenerateUniqeID(PXResourceManager* const pxResourceManager);
+
+
+// Generate and store new resource. Load if possible
+PXPublic PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceManager, PXResourceCreateInfo* const pxResourceCreateInfoList, const PXSize amount);
 
 
 PXPublic PXActionResult PXAPI PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const PXText* const pxText);

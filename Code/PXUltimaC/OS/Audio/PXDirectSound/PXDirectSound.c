@@ -405,6 +405,11 @@ PXActionResult PXAPI PXDirectSoundDeviceClose(PXAudioDirectSound* const pxAudioD
 
 PXActionResult PXAPI PXDirectSoundDeviceLoad(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, PXSound* const pxSound)
 {
+	if(!(pxAudioDirectSound && pxAudioDevice && pxSound))
+	{
+		return PXActionRefusedArgumentNull;
+	}
+
 	PXDirectSoundOutputInterface* const directSound = (PXDirectSoundOutputInterface*)pxAudioDirectSound->DirectSoundInterface;
 	PXDirectSoundBuffer* soundBuffer = PXNull;
 	const PXBool canUse3DStuff = pxSound->NumerOfChannels == 1u; // DirectSoundBuffer3D can only use MONO sounds 

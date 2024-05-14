@@ -96,7 +96,6 @@ int main()
 	pxResourceLoadInfo.Type = PXGraphicResourceTypeInvalid;
 
 
-
 	PXResourceLoadA(&pxResourceLoadInfo, "N:\\NAS\\Games\\Steam\\steamapps\\common\\Call of Duty Black Ops II\\zone\\all\\afghanistan.ff");
 
 #endif // 1
