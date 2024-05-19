@@ -15,6 +15,8 @@
 #include <stdio.h>
 #include <wchar.h>
 
+#include <Media/PXResource.h>
+
 #include <Media/PXType.h>
 #include <Media/PXText.h>
 #include <OS/Memory/PXMemory.h>
@@ -67,164 +69,7 @@ void PXDirectoryIsDotFolder(const char* s)
 
 #endif
 
-typedef enum PXFileFormat_
-{
-	PXFileFormatInvalid,
-	PXFileFormatUnkown,
 
-	PXFileFormatA3DS,
-	PXFileFormatAAC,
-	PXFileFormatAVI,
-	PXFileFormatBitMap,
-	PXFileFormatBinkVideo,
-	PXFileFormatC,
-	PXFileFormatCSharp,
-	PXFileFormatCSS,
-	PXFileFormatCPP,
-	PXFileFormatCanonRaw3,
-	PXFileFormatDirectDrawSurfaceTexture,
-	PXFileFormatBinaryWindows,
-	PXFileFormatBinaryLinux,
-	PXFileFormatEML,
-	PXFileFormatFastFile,
-	PXFileFormatFilmBox,
-	PXFileFormatFLAC,
-	PXFileFormatSpriteFont,
-	PXFileFormatGIF,
-	PXFileFormatHighEfficiencyImageFile,
-	PXFileFormatHTML,
-	PXFileFormatINI,
-	PXFileFormatEugeneRoshalArchive, // .rar
-	PXFileFormatJPEG,
-	PXFileFormatJSON,
-	PXFileFormatM4A,
-	PXFileFormatMIDI,
-	PXFileFormatMP3,
-	PXFileFormatMP4,
-	PXFileFormatMSI,
-	PXFileFormatMTL,
-	PXFileFormatWavefront,
-	PXFileFormatMatroska, // .mkv
-	PXFileFormatOGG,
-	PXFileFormatPDF,
-	PXFileFormatPHP,
-	PXFileFormatPLY,
-	PXFileFormatPNG,
-	PXFileFormatQOI,
-	PXFileFormatSTEP,
-	PXFileFormatSTL,
-	PXFileFormatSVG,
-	PXFileFormatTGA,
-	PXFileFormatTagImage,
-	PXFileFormatTrueTypeFont,
-	PXFileFormatVRML,
-	PXFileFormatWave,
-	PXFileFormatWEBM,
-	PXFileFormatWEBP,
-	PXFileFormatWMA,
-	PXFileFormatXML,
-	PXFileFormatYAML
-}
-PXFileFormat;
-
-typedef enum PXFileLocationMode_
-{
-	PXFileLocationModeInvalid,
-	PXFileLocationModeInternal, // Memory is handled internally.
-	PXFileLocationModeExternal, // Memory is stored outside this object
-	PXFileLocationModeMappedVirtual, // Used 'VirtalAlloc()' / 'mmap()'
-	PXFileLocationModeMappedFromDisk, // Used 'FileView()' / 'fmap()'
-	PXFileLocationModeDirectCached, // Read & Write operations are cached into a buffer first.
-	PXFileLocationModeDirectUncached // Read & Write operations are directly put into
-}
-PXFileLocationMode;
-
-typedef enum PXFileResourceType_
-{
-	PXFileResourceTypeInvalid,
-	PXFileResourceTypeUnkown,
-	PXFileResourceTypeEmpty,
-	PXFileResourceTypeUI,
-	PXFileResourceTypeImage,
-	PXFileResourceTypeSound,
-	PXFileResourceTypeVideo,
-	PXFileResourceTypeFont,
-	PXFileResourceTypeDocument,
-	PXFileResourceTypeModel,
-	PXFileResourceTypeRenderShader,
-	PXFileResourceTypeRenderMaterial,
-	PXFileResourceTypeBinary,
-	PXFileResourceTypeStructuredText,
-	PXFileResourceTypeCode,
-	PXFileResourceTypeInstaller,
-	PXFileResourceTypeArchiv
-}
-PXFileResourceType;
-
-
-
-typedef struct PXFileDataElementType_
-{
-	void* Adress;
-	PXInt32U Type;
-}
-PXFileDataElementType;
-
-typedef PXActionResult(PXAPI* PXResourceLoadFunction)(struct PXResourceLoadInfo_* const pxResourceLoadInfo);
-typedef PXActionResult(PXAPI* PXResourceSaveFunction)(struct PXResourceSaveInfo_* const pxResourceSaveInfo);
-
-typedef struct PXFileTypeInfo_
-{
-	PXFileFormat FormatExpected;
-	PXFileFormat FormatReal;
-	PXFileResourceType ResourceType; // Type of resource. Image, Sound, Video...
-
-
-	PXResourceLoadFunction ResourceLoad;
-	PXResourceSaveFunction ResourceSave;
-}
-PXFileTypeInfo;
-
-typedef struct PXFile_
-{
-	//---<PosisionData>---
-	void* Data; // [Do not use directly] Data from where to read/write depending on the used method of linking.
-	PXSize DataCursor; // [Do not use directly] Current position of the data.
-	PXSize DataCursorBitOffset; // [Do not use directly] Current offset in bits of current byte
-	PXSize DataSize; // [Do not use directly] The total size of the data block.
-	PXSize DataAllocated; // [Do not use directly] The size of the data pace in which you can move without triggering an invalid access.
-	//--------------------
-
-	PXMemoryAccessMode AccessMode;
-	PXMemoryCachingMode CachingMode;
-	PXFileLocationMode LocationMode;
-
-#if OSUnix || OSForcePOSIXForWindows || PXOSWindowsUseUWP
-	FILE* ID;
-	int MappingID;
-#elif OSWindows
-	HANDLE ID;
-	HANDLE MappingID;
-#endif
-
-	PXBitFormat BitFormatOfData;
-	PXEndian EndiannessOfData;
-
-	PXFileTypeInfo TypeInfo;
-
-	// The file path can't always be fetched from the OS.
-	// for this we store the name here at creation time.
-	PXText FilePath;
-
-	//FILETIME creationTime;
-	//FILETIME lastAccessTime;
-	//FILETIME lastWriteTime;
-
-	// Statistic
-	PXSize CounterOperationsRead;
-	PXSize CounterOperationsWrite;
-}
-PXFile;
 
 typedef struct PXFileOpenFromPathInfo_
 {
@@ -239,6 +84,14 @@ typedef struct PXFileOpenFromPathInfo_
 	PXBool AllowOverrideOnCreate;
 }
 PXFileOpenFromPathInfo;
+
+
+typedef struct PXFileDataElementType_
+{
+	void* Adress;
+	PXInt32U Type;
+}
+PXFileDataElementType;
 
 
 #define PXFileOpenFromPathInfoMakeLoadOneshot(adress, path) \

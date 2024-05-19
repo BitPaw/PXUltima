@@ -14,7 +14,7 @@ typedef enum PXCompilerSymbolLexer_
 	PXCompilerSymbolLexerNewLine,
 	PXCompilerSymbolLexerTab,
 
-	PXCompilerSymbolLexerGenericElement,
+	PXCompilerSymbolLexerGeneric,
 
 	PXCompilerSymbolLexerSingleCharacter,
 
@@ -144,10 +144,13 @@ PXPublic PXSize PXAPI PXCompilerSymbolRewind(PXCompiler* const pxCompiler, const
 PXPublic PXSize PXAPI PXCompilerSymbolEntryPeek(PXCompiler* const pxCompiler);
 
 // Peek enxt symbol but also ensure it is the correct type
+PXPublic PXBool PXAPI PXCompilerSymbolEntryPeekEnsure(PXCompiler* const pxCompiler, const PXCompilerSymbolLexer pxCompilerSymbolLexer);
+
+// Same as PXCompilerSymbolEntryPeekEnsure() but as harsh
 PXPublic PXBool PXAPI PXCompilerSymbolEntryPeekCheck(PXCompiler* const pxCompiler, const PXCompilerSymbolLexer pxCompilerSymbolLexer);
 
 // Exact behaviour as PXCompilerSymbolEntryPeekCheck but allows a list of possible values
-PXPublic PXBool PXAPI PXCompilerSymbolEntryPeekCheckList(PXCompiler* const pxCompiler, const PXCompilerSymbolLexer* const pxCompilerSymbolLexerList, const PXSize amount);
+PXPublic PXBool PXAPI PXCompilerSymbolEntryEnsureCheckList(PXCompiler* const pxCompiler, const PXCompilerSymbolLexer* const pxCompilerSymbolLexerList, const PXSize amount);
 
 // Fetch next symbol and consume symbol
 PXPublic PXSize PXAPI PXCompilerSymbolEntryExtract(PXCompiler* const pxCompiler);

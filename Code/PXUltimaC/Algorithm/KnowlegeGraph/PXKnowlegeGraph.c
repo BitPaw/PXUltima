@@ -128,7 +128,7 @@ void PXDrawCircleList(PXOpenGL* const pxOpenGL, PXCircle* const pxCircleList, co
     }
 }
 
-PXActionResult PXAPI PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph* const pxKnowlegeGraph, PXDocument* const pxDocument, PXImage* const pxImage)
+PXActionResult PXAPI PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph* const pxKnowlegeGraph, PXCodeDocument* const pxDocument, PXImage* const pxImage)
 {
     PXSize imageWidth = pxKnowlegeGraph->SizeMaxWidth;
     PXSize imageHeight = pxKnowlegeGraph->SizeMaxHeight;

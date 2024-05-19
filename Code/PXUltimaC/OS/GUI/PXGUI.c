@@ -1668,7 +1668,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
                 break;
             }
-            case PXFileResourceTypeModel:
+            case PXResourceTypeModel:
             {
                 PXModel* const pxModel = (PXModel*)pxGUIElementCreateInfo->Data.TreeViewItem.OwningObject;
 
@@ -1698,7 +1698,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
                 break;
             }
-            case PXFileResourceTypeImage:
+            case PXResourceTypeImage:
             {
                 PXImage* const pxImage = (PXImage*)pxGUIElementCreateInfo->Data.TreeViewItem.OwningObject;
 
@@ -2621,7 +2621,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
 
 
-            if(pxUIElementTreeViewItemInfo->OwningObjectType == PXFileResourceTypeUI)
+            if(PXResourceTypeGUIElement == pxUIElementTreeViewItemInfo->OwningObjectType)
             {
                 PXUIElement* const uiElement = (PXUIElement*)pxUIElementTreeViewItemInfo->OwningObject;
 

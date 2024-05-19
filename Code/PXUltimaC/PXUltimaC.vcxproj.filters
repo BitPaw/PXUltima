@@ -486,6 +486,9 @@
     <ClCompile Include="Container\FlexDataCache\PXFlexDataCache.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Media\Java\PXJava.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm\KalmanFilter\PXKalmanFilter.h">
@@ -959,6 +962,9 @@
     <ClInclude Include="Container\FlexDataCache\PXFlexDataCache.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Media\Java\PXJava.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Media\Matroska\README.md" />
@@ -987,5 +993,13 @@
     <None Include="Container\Dictionary\README.md" />
     <None Include="Media\Salsa20\README.md" />
     <None Include="Media\FastFile\README.md" />
+    <None Include="Media\Lua\README.md" />
+    <None Include="Media\MTL\README.md" />
+    <None Include="Media\DEFLATE\README.md" />
+    <None Include="Media\Email\README.md" />
+    <None Include="Media\ID3\README.md" />
+    <None Include="Media\Huffman\README.md" />
+    <None Include="Media\HTTP\README.md" />
+    <None Include="Media\Java\README.md" />
   </ItemGroup>
 </Project>

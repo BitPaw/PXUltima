@@ -2,23 +2,154 @@
 
 #include <OS/Console/PXConsole.h>
 
-PXActionResult PXAPI PXDocumentElementRoot(PXDocument* const pxDocument, PXDocumentElement* const pxDocumentElement)
+const char* PXAPI PXDocumentElementTypeToString(const PXDocumentElementType pxDocumentElementType)
+{
+	switch(pxDocumentElementType)
+	{
+		case PXDocumentElementTypeInclude: return "include";
+		case PXDocumentElementTypeNamespace: return "namespace";
+		case PXDocumentElementTypeStruct: return "struct";
+		case PXDocumentElementTypeUnion: return "union";
+		case PXDocumentElementTypeEnum: return "enum";
+		case PXDocumentElementTypeClass: return "class";
+		case PXDocumentElementTypeFunction: return "function";
+		case PXDocumentElementTypeClassMember: return "class-member";
+		case PXDocumentElementTypeClassAttribute: return "attribute";
+		case PXDocumentElementTypeEnumMember: return "enum-member";
+		case PXDocumentElementTypeFunctionParameter: return "fuction-parameter";
+
+		default:
+			return PXNull;
+	}
+}
+
+PXActionResult PXAPI PXDocumentElementRoot(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement)
 {
 	return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDocumentElementChildGet(PXDocument* const pxDocument, PXDocumentElement* const pxDocumentElement)
+PXActionResult PXAPI PXDocumentElementChildGet(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement)
 {
 	return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDocumentElementSiblingGet(PXDocument* const pxDocument, PXDocumentElement* const pxDocumentElement)
+PXActionResult PXAPI PXDocumentElementSiblingGet(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement)
 {
 	return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDocumentElementAttributeAdd(PXDocument* const pxDocument, PXDocumentElement* const pxDocumentElement)
+PXActionResult PXAPI PXDocumentElementAttributeAdd(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement)
 {
+
+#if PXLogEnable
+	const char* typeName = PXDocumentElementTypeToString(pxDocumentElement->Type);
+	
+	char nameBuffer[64];
+	PXMemoryClear(nameBuffer, 64);
+	PXTextCopyA(pxDocumentElement->NameAdress, pxDocumentElement->NameSize, nameBuffer, 64);
+
+	switch(pxDocumentElement->Type)
+	{
+		case PXDocumentElementTypeInclude:
+		{
+			PXLogPrint
+			(
+				PXLoggingInfo,
+				"CodeDocument",
+				"Entry-Add",
+				"\n"
+				"%10s : %s\n"
+				"%10s : %s\n"
+				"%10s : %s\n",
+				"Type", typeName,
+				"Name", nameBuffer,
+				"Global", pxDocumentElement->IsGlobal ? "Yes" : "No"
+			);
+
+			break;
+		}
+		case PXDocumentElementTypeStruct:
+		case PXDocumentElementTypeClass:
+		case PXDocumentElementTypeUnion:
+		case PXDocumentElementTypeEnum:
+		{
+			char aliasBuffer[64];
+			PXMemoryClear(aliasBuffer, 64);
+			PXTextCopyA(pxDocumentElement->AliasAdress, pxDocumentElement->AliasSize, aliasBuffer, 64);
+
+			PXLogPrint
+			(
+				PXLoggingInfo,
+				"CodeDocument",
+				"Entry-Add",
+				"\n"
+				"%10s : %s\n"
+				"%10s : %s\n"
+				"%10s : %s\n"
+				"%10s : %i",
+				"Type", typeName,
+				"Name", nameBuffer,
+				"Alias", aliasBuffer,
+				"Members", pxDocumentElement->MemberAmount
+			);
+
+			break;
+		}
+		case PXDocumentElementTypeClassAttribute:
+		case PXDocumentElementTypeClassMember:
+		case PXDocumentElementTypeFunctionParameter:
+		case PXDocumentElementTypeEnumMember:
+		{
+			PXLogPrint
+			(
+				PXLoggingInfo,
+				"CodeDocument",
+				"Entry-Add",
+				"\n"
+				"%10s : %s\n"
+				"%10s : %s\n",
+				"Type", typeName,
+				"Name", nameBuffer
+			);
+
+			break;
+		}
+		case PXDocumentElementTypeFunction:
+		{
+			PXLogPrint
+			(
+				PXLoggingInfo,
+				"CodeDocument",
+				"Entry-Add",
+				"\n"
+				"%10s : %s\n"
+				"%10s : %s\n"
+				"%10s : %s\n",
+				"Type", typeName,
+				"Name", nameBuffer,
+				"Call", "stst"
+			);
+
+			break;
+		}
+		default:
+			break;
+	}
+
+
+#endif
+
+
+
+	return 0;
+
+
+
+
+
+
+
+
 
 		// This is not an attribute but a member.
 		// We need to get the parent object and use that name to merge it into a data entry
@@ -26,8 +157,8 @@ PXActionResult PXAPI PXDocumentElementAttributeAdd(PXDocument* const pxDocument,
 
 		PXFileCursorMoveTo(&pxDocument->Data, pxDocument->LastEntryOffset); // Move to prev entry
 
-		PXDocumentElement pxDocumentElementClass;
-		PXDocumentElement pxDocumentElementMemberName;
+		PXCodeDocumentElement pxDocumentElementClass;
+		PXCodeDocumentElement pxDocumentElementMemberName;
 
 		{
 			const PXSize readBytes = PXDocumentElementIO(pxDocument, &pxDocumentElementMemberName, PXFileReadMultible); // Read parent entry
@@ -98,7 +229,7 @@ PXActionResult PXAPI PXDocumentElementAttributeAdd(PXDocument* const pxDocument,
 	return PXActionSuccessful;
 }
 
-PXSize PXAPI PXDocumentElementIO(PXDocument* const pxDocument, PXDocumentElement* const pxDocumentElement, PXFileIOMultibleFunction pxFileIOMultibleFunction)
+PXSize PXAPI PXDocumentElementIO(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement, PXFileIOMultibleFunction pxFileIOMultibleFunction)
 {
 	const PXInt8U symbolID = pxDocumentElement->Type;
 	PXInt32U amount = 0;
@@ -123,7 +254,7 @@ PXSize PXAPI PXDocumentElementIO(PXDocument* const pxDocument, PXDocumentElement
 	return bytesTransphered;
 }
 
-PXActionResult PXAPI PXDocumentElementWrite(PXDocument* const pxDocument, PXDocumentElement* const pxDocumentElement)
+PXActionResult PXAPI PXDocumentElementWrite(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement)
 {
 	const PXBool isNotRoot = pxDocumentElement->Depth == (pxDocument->LastEntryDepth + 1);
 		
@@ -135,7 +266,7 @@ PXActionResult PXAPI PXDocumentElementWrite(PXDocument* const pxDocument, PXDocu
 
 		PXFileCursorMoveTo(&pxDocument->Data, pxDocument->LastEntryOffset); // Move to prev entry
 
-		PXDocumentElement pxDocumentElementTemp;
+		PXCodeDocumentElement pxDocumentElementTemp;
 
 		const PXSize readBytes = PXDocumentElementIO(pxDocument, &pxDocumentElementTemp, PXFileReadMultible); // Read parent entry
 
@@ -164,7 +295,7 @@ PXActionResult PXAPI PXDocumentElementWrite(PXDocument* const pxDocument, PXDocu
 #endif
 	}	
 
-	++(pxDocument->AmountOfEntrys);
+	++(pxDocument->ElementListAmount);
 	pxDocumentElement->ParaentDataPosition = parrentPosition;
 	pxDocument->LastEntryOffset = pxDocument->Data.DataCursor;
 	pxDocument->LastEntryDepth = pxDocumentElement->Depth;
@@ -190,23 +321,15 @@ PXActionResult PXAPI PXDocumentElementWrite(PXDocument* const pxDocument, PXDocu
 	return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDocumentElementRead(PXDocument* const pxDocument, PXDocumentElement* const pxDocumentElement)
+PXActionResult PXAPI PXDocumentElementRead(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement)
 {
 	return PXDocumentElementIO(pxDocument, pxDocumentElement, PXFileReadMultible);;
 }
 
-PXActionResult PXAPI PXDocumentElementAdd(PXDocument* const pxDocument, PXDocumentElement* const pxDocumentElement)
+PXActionResult PXAPI PXDocumentElementAdd(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement)
 {
 	switch (pxDocumentElement->Type)
 	{
-		case PXDocumentElementTypeIncludeGlobal:
-		{
-			break;
-		}
-		case PXDocumentElementTypeIncludePath:
-		{
-			break;
-		}
 		case PXDocumentElementTypeNamespace:
 		{
 			break;
@@ -245,7 +368,7 @@ PXActionResult PXAPI PXDocumentElementAdd(PXDocument* const pxDocument, PXDocume
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDocumentPrintNode(PXDocumentElement* const pxDocumentElement)
+PXActionResult PXAPI PXDocumentPrintNode(PXCodeDocumentElement* const pxDocumentElement)
 {
 #if PXLogEnable
 	char elementType[64];
@@ -298,14 +421,6 @@ PXActionResult PXAPI PXDocumentPrintNode(PXDocumentElement* const pxDocumentElem
 
 	switch (pxDocumentElement->Type)
 	{
-		case PXDocumentElementTypeIncludeGlobal:
-		{
-			break;
-		}
-		case PXDocumentElementTypeIncludePath:
-		{
-			break;
-		}
 		case PXDocumentElementTypeNamespace:
 		{
 			break;
@@ -353,9 +468,9 @@ PXActionResult PXAPI PXDocumentPrintNode(PXDocumentElement* const pxDocumentElem
 #endif
 }
 
-PXActionResult PXAPI PXDocumentPrint(PXDocument* const pxDocument)
+PXActionResult PXAPI PXDocumentPrint(PXCodeDocument* const pxDocument)
 {
-	PXDocumentElement pxDocumentElement;
+	PXCodeDocumentElement pxDocumentElement;
 
 	PXDocumentElementIO(pxDocument, &pxDocumentElement, PXFileReadMultible);// Get root
 

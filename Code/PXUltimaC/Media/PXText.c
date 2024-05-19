@@ -166,6 +166,23 @@ PXSize PXAPI PXTextAppendW(wchar_t* const dataString, const PXSize dataStringSiz
 	return fullSize;
 }
 
+PXSize PXAPI PXTextAppendF(PXText* const pxText, const char* const format, ...)
+{
+	PXSize sizeLeft = pxText->SizeAllocated - pxText->SizeUsed;
+	char* beginning = pxText->TextA + pxText->SizeUsed;
+
+	va_list args;
+	va_start(args, format);
+
+	PXSize added = vsprintf_s(beginning, sizeLeft, format, args);
+
+	pxText->SizeUsed += added;
+
+	va_end(args);
+
+	return added;
+}
+
 PXSize PXAPI PXTextPrint(PXText* const pxText, const char* style, ...)
 {
 	va_list args;
@@ -368,7 +385,7 @@ PXSize PXAPI PXTextCopy(const PXText* const source, PXText* const destination)
 
 PXSize PXAPI PXTextCopyA(const char* source, const PXSize sourceLength, char* destination, const PXSize destinationLength)
 {
-	const PXSize minLength = PXMathMinimumIU(sourceLength, destinationLength);
+	PXSize minLength = PXMathMinimumIU(sourceLength, destinationLength);
 	PXSize i = 0;
 
 #if PXTextAssertEnable
@@ -379,6 +396,12 @@ PXSize PXAPI PXTextCopyA(const char* source, const PXSize sourceLength, char* de
 	{
 		return 0;
 	}
+
+	if(minLength == 0) // We have no size to do anything, so quit.
+	{
+		--minLength; // We make room for then \0
+	}
+
 #endif
 
 	for (; (i < minLength) && (source[i] != '\0'); ++i)

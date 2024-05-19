@@ -117,7 +117,7 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 		{
 			PXCompilerSymbolEntryExtract(&pxCompiler);
 
-			if (PXCompilerSymbolLexerGenericElement == pxCompiler.SymbolEntryCurrent.ID)
+			if (PXCompilerSymbolLexerGeneric == pxCompiler.SymbolEntryCurrent.ID)
 			{
 				const PXMTLLineType mtlLineType = PXMTLPeekLine(pxCompiler.SymbolEntryCurrent.Source, pxCompiler.SymbolEntryCurrent.Size);
 

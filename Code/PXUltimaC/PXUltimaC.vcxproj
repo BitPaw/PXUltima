@@ -294,6 +294,7 @@
     <ClCompile Include="Container\Queue\PXQueue.c" />
     <ClCompile Include="Container\RingBuffer\PXRingBuffer.c" />
     <ClCompile Include="Media\FastFile\PXFastFile.c" />
+    <ClCompile Include="Media\Java\PXJava.c" />
     <ClCompile Include="Media\Salsa20\PXSalsa20.c" />
     <ClCompile Include="OS\Graphic\DirectX\PXDirectX10.c" />
     <ClCompile Include="OS\Graphic\DirectX\PXDirectX11.c" />
@@ -453,6 +454,7 @@
     <ClInclude Include="Container\Queue\PXQueue.h" />
     <ClInclude Include="Container\RingBuffer\PXRingBuffer.h" />
     <ClInclude Include="Media\FastFile\PXFastFile.h" />
+    <ClInclude Include="Media\Java\PXJava.h" />
     <ClInclude Include="Media\Salsa20\PXSalsa20.h" />
     <ClInclude Include="OS\Graphic\DirectX\PXDirectX10.h" />
     <ClInclude Include="OS\Graphic\DirectX\PXDirectX11.h" />
@@ -607,9 +609,17 @@
     <None Include="Media\CanonRaw3\README.md" />
     <None Include="Media\C\README.md" />
     <None Include="Media\DDS\README.md" />
+    <None Include="Media\DEFLATE\README.md" />
+    <None Include="Media\Email\README.md" />
     <None Include="Media\FastFile\README.md" />
+    <None Include="Media\HTTP\README.md" />
+    <None Include="Media\Huffman\README.md" />
+    <None Include="Media\ID3\README.md" />
+    <None Include="Media\Java\README.md" />
     <None Include="Media\LDAP\README.md" />
+    <None Include="Media\Lua\README.md" />
     <None Include="Media\Matroska\README.md" />
+    <None Include="Media\MTL\README.md" />
     <None Include="Media\PNG\README.md" />
     <None Include="Media\RAR\README.md" />
     <None Include="Media\RIFF\README.md" />

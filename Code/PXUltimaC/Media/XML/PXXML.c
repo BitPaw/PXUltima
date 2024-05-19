@@ -46,7 +46,7 @@ PXXMLSymbol PXAPI PXXMLPeekLine(const char* const text, const PXSize textSize)
     return PXXMLSymbolUnkown;
 }
 
-void PXAPI PXXMLBlockParse(PXDocument* const pxDocument, PXCompiler* const pxCompiler)
+void PXAPI PXXMLBlockParse(PXCodeDocument* const pxDocument, PXCompiler* const pxCompiler)
 {
     const PXBool isOpenAngleBracked = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerBracketAngleOpen);
 
@@ -97,8 +97,8 @@ void PXAPI PXXMLBlockParse(PXDocument* const pxDocument, PXCompiler* const pxCom
                                 PXCompilerSymbolLexerQuestionmark == pxCompiler->SymbolEntryCurrent.ID &&
                                 PXCompilerSymbolLexerBracketAngleClose == pxCompiler->SymbolEntryCurrent.ID;
 
-                            PXDocumentElement pxDocumentElement;
-                            PXClear(PXDocumentElement, &pxDocumentElement);
+                            PXCodeDocumentElement pxDocumentElement;
+                            PXClear(PXCodeDocumentElement, &pxDocumentElement);
                             pxDocumentElement.Depth = pxDocument->Depth;
                             pxDocumentElement.NameAdress = pxCompiler->SymbolEntryCurrent.Source;
                             pxDocumentElement.NameSize = pxCompiler->SymbolEntryCurrent.Size;
@@ -159,8 +159,8 @@ void PXAPI PXXMLBlockParse(PXDocument* const pxDocument, PXCompiler* const pxCom
                 {
                     PXCompilerSymbolEntryExtract(pxCompiler);
 
-                    PXDocumentElement pxDocumentElement;
-                    PXClear(PXDocumentElement, &pxDocumentElement);
+                    PXCodeDocumentElement pxDocumentElement;
+                    PXClear(PXCodeDocumentElement, &pxDocumentElement);
                     pxDocumentElement.Depth = 0;
                     pxDocumentElement.ElementMember.ValueAdress = pxCompiler->SymbolEntryCurrent.Source;
                     pxDocumentElement.ElementMember.ValueSize = pxCompiler->SymbolEntryCurrent.Size;
@@ -201,7 +201,7 @@ void PXAPI PXXMLBlockParse(PXDocument* const pxDocument, PXCompiler* const pxCom
 
 PXActionResult PXAPI PXXMLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
-    PXDocument* const pxDocument = (PXDocument*)pxResourceLoadInfo->Target;
+    PXCodeDocument* const pxDocument = (PXCodeDocument*)pxResourceLoadInfo->Target;
 
     PXFile tokenSteam;
     PXClear(PXFile, &tokenSteam);
@@ -211,7 +211,7 @@ PXActionResult PXAPI PXXMLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
     pxCompiler.FileInput = pxResourceLoadInfo->FileReference;
     pxCompiler.FileCache = &tokenSteam;
 
-    PXClear(PXDocument, pxDocument);
+    PXClear(PXCodeDocument, pxDocument);
 
     PXFileBufferAllocate(&pxDocument->Data, 2048*10);
 

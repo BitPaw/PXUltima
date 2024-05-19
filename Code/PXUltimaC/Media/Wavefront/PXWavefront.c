@@ -108,7 +108,7 @@ void PXAPI PXWavefrontFaceLineParse(PXCompiler* const pxCompiler, PXInt32U* cons
             PXCompilerSymbolLexerSlash
         };
 
-        const PXBool isValid = PXCompilerSymbolEntryPeekCheckList(pxCompiler, pxCompilerSymbolLexerList, 2);
+        const PXBool isValid = PXCompilerSymbolEntryEnsureCheckList(pxCompiler, pxCompilerSymbolLexerList, 2);
 
         if(!isValid)
         {

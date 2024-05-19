@@ -7,23 +7,23 @@
 typedef enum PXDocumentElementType_
 {
 	PXDocumentElementTypeInvalid,
-	PXDocumentElementTypeIncludeGlobal,
-	PXDocumentElementTypeIncludePath,
+	PXDocumentElementTypeInclude,
 	PXDocumentElementTypeNamespace,
 	PXDocumentElementTypeStruct,
+	PXDocumentElementTypeUnion,
+	PXDocumentElementTypeEnum,
 	PXDocumentElementTypeClass,
 	PXDocumentElementTypeFunction,
 	PXDocumentElementTypeClassMember,
-	PXDocumentElementTypeClassAttribute
+	PXDocumentElementTypeClassAttribute,
+	PXDocumentElementTypeEnumMember,
+	PXDocumentElementTypeFunctionParameter,
 }
 PXDocumentElementType;
 
 typedef struct PXDocumentElementClass_
 {
-	char* AliasAdress;
-	PXSize AliasSize;
-
-	PXBool IsTerminateSignal;
+	PXBool IsTerminateSignal; // Whats this??
 }
 PXDocumentElementClass;
 
@@ -37,13 +37,49 @@ PXDocumentElementMember;
 
 // This containeer needs to hold data for uses like 
 // - reflections, Namespace, Class, MemberName, MemberType, Value 
-typedef struct PXDocumentElement_
+typedef struct PXCodeDocumentElement_
 {
+	// General name of the enum, class, struct
+	char* NameAdress;
+	PXSize NameSize;
+
+	// Used in C for typedefs
+	char* AliasAdress;
+	PXSize AliasSize;
+
+	char* CommentAdress;
+	PXSize CommentSize;
+
+	// Datatype
+	PXBool IsArray;
+	PXSize ArrayAmount;
+
+	PXBool DataTypeIsAdress;
+	PXBool DataTypeIsBuildIn;
+	PXSize DataType; // What type is the data representing, for functions this is the return type
+	PXSize DataTypeSize;
+
+
+	// Functions
+	// return type
+
+
+	PXBool IsTypeDefinition; // in C, is typedef used?
+	PXBool IsPreDefine; // In C, a typedef is used without a body.
+
+
+
+	// managed
 	PXSize ID;
 	PXSize Depth;
 
-	char* NameAdress;
-	PXSize NameSize;
+	struct PXCodeDocumentElement_* ElementParent;
+
+
+	// include
+	PXBool IsGlobal; // In C, Global=<xxxx> local="xxxx"
+
+
 
 	// Attributes
 	PXSize AttribtesAmount;
@@ -64,15 +100,19 @@ typedef struct PXDocumentElement_
 
 	PXDocumentElementType Type;
 }
-PXDocumentElement;
+PXCodeDocumentElement;
 
-typedef struct PXDocument_
+typedef struct PXCodeDocument_
 {
 	PXFile Data;
 
-	PXSize AmountOfEntrys; // How many do we have?
+
 	PXSize Depth;
 
+	PXSize ElementListAmount; // How many do we have?
+	PXCodeDocumentElement* ElementList;
+
+	PXCodeDocumentElement* ElementRoot;
 
 	//-------------------
 	// Current State
@@ -81,26 +121,28 @@ typedef struct PXDocument_
 	PXInt32U LastEntryOffset;
 	PXInt32U LastEntryDepth;
 }
-PXDocument;
+PXCodeDocument;
 
 
-PXPublic PXActionResult PXAPI PXDocumentElementRoot(PXDocument* const pxDocument, PXDocumentElement* const pxDocumentElement);
-PXPublic PXActionResult PXAPI PXDocumentElementChildGet(PXDocument* const pxDocument, PXDocumentElement* const pxDocumentElement);
-PXPublic PXActionResult PXAPI PXDocumentElementSiblingGet(PXDocument* const pxDocument, PXDocumentElement* const pxDocumentElement);
+PXPublic const char* PXAPI PXDocumentElementTypeToString(const PXDocumentElementType pxDocumentElementType);
+
+PXPublic PXActionResult PXAPI PXDocumentElementRoot(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement);
+PXPublic PXActionResult PXAPI PXDocumentElementChildGet(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement);
+PXPublic PXActionResult PXAPI PXDocumentElementSiblingGet(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement);
 
 
-PXPublic PXActionResult PXAPI PXDocumentElementAttributeAdd(PXDocument* const pxDocument, PXDocumentElement* const pxDocumentElement);
+PXPublic PXActionResult PXAPI PXDocumentElementAttributeAdd(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement);
 
 
-PXPublic PXSize PXAPI PXDocumentElementIO(PXDocument* const pxDocument, PXDocumentElement* const pxDocumentElement, PXFileIOMultibleFunction pxFileIOMultibleFunction);
+PXPublic PXSize PXAPI PXDocumentElementIO(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement, PXFileIOMultibleFunction pxFileIOMultibleFunction);
 
-PXPublic PXActionResult PXAPI PXDocumentElementWrite(PXDocument* const pxDocument, PXDocumentElement* const pxDocumentElement);
-PXPublic PXActionResult PXAPI PXDocumentElementRead(PXDocument* const pxDocument, PXDocumentElement* const pxDocumentElement);
+PXPublic PXActionResult PXAPI PXDocumentElementWrite(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement);
+PXPublic PXActionResult PXAPI PXDocumentElementRead(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement);
 
-PXPublic PXActionResult PXAPI PXDocumentElementAdd(PXDocument* const pxDocument, PXDocumentElement* const pxDocumentElement);
+PXPublic PXActionResult PXAPI PXDocumentElementAdd(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement);
 
-PXPublic PXActionResult PXAPI PXDocumentPrint(PXDocument* const pxDocument);
+PXPublic PXActionResult PXAPI PXDocumentPrint(PXCodeDocument* const pxDocument);
 
-PXPublic PXActionResult PXAPI PXDocumentPrintNode(PXDocumentElement* const pxDocumentElement);
+PXPublic PXActionResult PXAPI PXDocumentPrintNode(PXCodeDocumentElement* const pxDocumentElement);
 
 #endif

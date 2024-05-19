@@ -472,7 +472,7 @@ void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source,
 	(
 		formattedText.TextA,
 		formattedText.SizeAllocated,
-		"§8[§9%2.2i§8:§9%2.2i§8:§9%2.2i§8] §6%11s §%c%c %-14s §%c%s§f\n", //  
+		"§8[§9%2.2i§8:§9%2.2i§8:§9%2.2i§8] §6%12s §%c%c %-14s §%c%s§f\n", //  
 		//"§0# §1# §2# §3# §4# §5# §6# §7# §8# §9# §a# §b# §c# §d# §e# §f#\n",
 		pxTime.Hour,
 		pxTime.Minute,

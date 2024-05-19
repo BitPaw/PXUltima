@@ -454,6 +454,7 @@ PXFileFormat PXAPI PXFilePathExtensionDetectTry(const PXText* const filePath)
 			switch (list)
 			{
 				case PXInt32Make('B', 'I', 'K', '2'): return PXFileFormatBinkVideo;
+				case PXInt32Make('J', 'A', 'V', 'A'): return PXFileFormatJava;
 
 				case PXInt32Make('H', 'E', 'I', 'C'): // Fall though
 				case PXInt32Make('H', 'E', 'I', 'F'): return PXFileFormatHighEfficiencyImageFile;
@@ -3449,8 +3450,8 @@ PXActionResult PXAPI PXFilePathSet(PXFile* const pxFile, const PXText* const fil
 		return PXActionSuccessful;
 	}
 #endif
-
-	PXTextCreateCopy(&pxFile->FilePath, filePath);
+	// TODO:
+	//PXTextCreateCopy(&pxFile->FilePath, filePath);
 
 	return PXActionSuccessful;
 }
@@ -3514,8 +3515,8 @@ PXActionResult PXAPI PXFilePathGet(const PXFile* const pxFile, PXText* const fil
 #endif
 
 	// Last resort not to get the file name per handle but from self-storage
-
-	PXTextCopy(&pxFile->FilePath, filePath);
+	// TODO:
+	// PXTextCopy(&pxFile->FilePath, filePath);
 
 	return PXActionSuccessful;
 #endif

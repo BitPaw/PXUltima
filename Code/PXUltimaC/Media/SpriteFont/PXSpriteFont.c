@@ -52,7 +52,7 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXResourceLoadInfo* const pxResour
 
 		switch (pxCompiler.SymbolEntryCurrent.ID)
 		{
-			case PXCompilerSymbolLexerGenericElement:
+			case PXCompilerSymbolLexerGeneric:
 			{
 				PXSpriteFontLineType lineType = PeekSymbol(pxCompiler.SymbolEntryCurrent.Source, pxCompiler.SymbolEntryCurrent.Size);
 

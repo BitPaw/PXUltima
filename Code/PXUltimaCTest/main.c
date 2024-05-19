@@ -40,6 +40,8 @@ int _fltused = 0;
 
 #include <OS/Console/PXConsole.h>
 #include <Media/FastFile/PXFastFile.h>
+#include <Media/C/PXC.h>
+#include <Media/PXDocument.h>
 
 /*
 
@@ -89,6 +91,42 @@ int main()
 
 
 #if 1
+	PXCodeDocument pxCodeDocument;
+
+	{
+		PXResourceLoadInfo pxResourceLoadInfo;
+		PXClear(PXResourceLoadInfo, &pxResourceLoadInfo);
+		pxResourceLoadInfo.Type = PXResourceTypeCodeDocument;
+		pxResourceLoadInfo.Target = &pxCodeDocument;
+
+		PXActionResult resA = PXResourceLoadA(&pxResourceLoadInfo, "C:\\Data\\WorkSpace\\[GIT]\\PXUltima\\Code\\PXUltimaC\\Engine\\PXEngine.h");
+	}
+
+	{
+		PXResourceSaveInfo pxResourceSaveInfo;
+		PXClear(PXResourceLoadInfo, &pxResourceSaveInfo);
+		pxResourceSaveInfo.Type = PXResourceTypeCodeDocument;
+		pxResourceSaveInfo.Target = &pxCodeDocument;
+		pxResourceSaveInfo.Format = PXFileFormatJava;
+
+		PXActionResult resB = PXResourceSaveA(&pxResourceSaveInfo, "N:\\Test.java");
+	}
+
+
+
+
+
+	PXConsoleWrite(0, "");
+#endif
+
+
+
+
+
+
+
+
+#if 0
 
 	PXResourceLoadInfo pxResourceLoadInfo;
 	pxResourceLoadInfo.Target = 0;

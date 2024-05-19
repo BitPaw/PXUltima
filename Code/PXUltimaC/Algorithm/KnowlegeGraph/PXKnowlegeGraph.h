@@ -9,7 +9,7 @@ typedef struct PXKnowlegeGraphNode_
 	float Position[3];
 	float Radius;
 	float Value;
-	PXDocumentElement DocumentElement;
+	PXCodeDocumentElement DocumentElement;
 }
 PXKnowlegeGraphNode;
 
@@ -24,6 +24,6 @@ PXKnowlegeGraph;
 
 PXPublic PXActionResult PXAPI PXKnowlegeGraphNodeInsert(PXKnowlegeGraph* const pxKnowlegeGraph, PXKnowlegeGraphNode* const pxKnowlegeGraphNode);
 
-PXPublic PXActionResult PXAPI PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph* const pxKnowlegeGraph, PXDocument* const pxDocument, PXImage* const pxImage);
+PXPublic PXActionResult PXAPI PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph* const pxKnowlegeGraph, PXCodeDocument* const pxDocument, PXImage* const pxImage);
 
 #endif

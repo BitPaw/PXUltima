@@ -245,7 +245,7 @@ void PXAPI PXJPEGDestruct(PXJPEG* const jpeg)
 
 }
 
-PXActionResult PXAPI PXJPEGLoadFromImage(PXResourceLoadInfo* const pxResourceLoadInfo)
+PXActionResult PXAPI PXJPEGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
     PXJPEG jpeXg;
     PXJPEG* jpeg = &jpeXg;
@@ -911,7 +911,7 @@ void generateHuffmanTable(const PXInt8U numCodes[16], const PXInt8U* values, Bit
     }
 }
 
-PXActionResult PXAPI PXJPEGSaveToImage(PXResourceSaveInfo* const pxResourceSaveInfo)
+PXActionResult PXAPI PXJPEGSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
 {
     PXImage* const pxImage = (PXImage*)pxResourceSaveInfo->FileReference;
 
