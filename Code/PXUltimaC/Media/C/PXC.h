@@ -256,10 +256,10 @@ PXPublic void PXAPI PXCElementClear(PXCElement* const pxCElement);
 PXPublic CKeyWord PXAPI PXCFileAnalyseElement(const char* name, const PXSize nameSize);
 
 
-PXPublic PXBool PXAPI PXCFileParseTypedef(PXFile* const inputStream, PXFile* const outputStream);
-PXPublic PXBool PXAPI PXCFileParseStructure(PXFile* const inputStream, PXFile* const outputStream, const CKeyWord structureType, const PXBool isTypeDefitinition);
+//PXPublic PXBool PXAPI PXCFileParseTypedef(PXFile* const inputStream, PXFile* const outputStream);
+//PXPublic PXBool PXAPI PXCFileParseStructure(PXFile* const inputStream, PXFile* const outputStream, const CKeyWord structureType, const PXBool isTypeDefitinition);
 PXPublic PXBool PXAPI PXCFileParseDeclaration(PXFile* const inputStream, PXFile* const outputStream, PXCompilerSymbolEntry* compilerSymbolEntry);
-PXPublic PXBool PXAPI PXCFileParseFunctionPrototype(PXFile* const inputStream, PXFile* const outputStream, PXCompilerSymbolEntry* compilerSymbolEntry);
+//PXPublic PXBool PXAPI PXCFileParseFunctionPrototype(PXFile* const inputStream, PXFile* const outputStream, PXCompilerSymbolEntry* compilerSymbolEntry);
 
 
 // Parsing functions
@@ -272,7 +272,7 @@ PXPrivate PXActionResult PXAPI PXCParseTypeDefinition(PXCompiler* const pxCompil
 PXPrivate PXActionResult PXAPI PXCParseEndOfCommand(PXCompiler* const pxCompiler);
 
 PXPrivate PXActionResult PXAPI PXCParseTypeParameterList(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent);
-PXPrivate PXActionResult PXAPI PXCParseFunctionDefinition(PXCompiler* const pxCompiler, PXCodeDocument* const pxDocument, PXFile* const pxFile);
+PXPrivate PXActionResult PXAPI PXCParseFunctionDefinition(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent);
 
 PXPrivate PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler, PXCodeDocumentElement* const pxCodeDocumentElement);
 

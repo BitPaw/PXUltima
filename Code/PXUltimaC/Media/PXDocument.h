@@ -7,8 +7,9 @@
 typedef enum PXDocumentElementType_
 {
 	PXDocumentElementTypeInvalid,
-	PXDocumentElementTypeInclude,
-	PXDocumentElementTypeNamespace,
+	PXDocumentElementTypeFile, // Context of a compiled file, used as a global root
+	PXDocumentElementTypeInclude, // includes/dependecny on another file
+	PXDocumentElementTypeNamespace, // namespace
 	PXDocumentElementTypeStruct,
 	PXDocumentElementTypeUnion,
 	PXDocumentElementTypeEnum,

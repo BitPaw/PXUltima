@@ -163,402 +163,6 @@ CKeyWord PXAPI PXCFileAnalyseElement(const char* name, const PXSize nameSize)
     return CKeyWordUnkown;
 }
 
-PXBool PXAPI PXCFileParseTypedef(PXFile* const inputStream, PXFile* const outputStream)
-{
-    PXCompilerSymbolEntry compilerSymbolEntry;
-
-#if PXCDebugOutput
-    printf
-    (
-        "|+--------------------------------------------------------+|\n"
-        "|| Typedefinition                                         ||\n"
-        "|+--------------------------------------------------------+|\n"
-    );
-#endif
-
-    PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry); // Peek for next element
-
-    switch (compilerSymbolEntry.ID)
-    {
-        case PXCompilerSymbolLexerGeneric:
-        {
-            const CKeyWord typeKey = PXCFileAnalyseElement(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
-
-            switch (typeKey)
-            {
-                case CKeyWordEnum:
-                case CKeyWordStruct:
-                case CKeyWordUnion:
-                    return PXCFileParseStructure(inputStream, outputStream, typeKey, PXTrue);
-            }
-            break;
-        }
-    }
-
-    return PXFalse;
-}
-
-PXBool PXAPI PXCFileParseStructure(PXFile* const inputStream, PXFile* const outputStream, const CKeyWord structureType, const PXBool isTypeDefitinition)
-{
-    PXCompilerSymbolEntry compilerSymbolEntry;
-
-    PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry); // Fetch element after 'union' keyword
-
-    switch (structureType)
-    {
-        case CKeyWordEnum:
-            PXFileWriteI8U(outputStream, PXCStructureTypeEnum);
-            break;
-        case CKeyWordUnion:
-            PXFileWriteI8U(outputStream, PXCStructureTypeUnion);
-            break;
-        case CKeyWordStruct:
-            PXFileWriteI8U(outputStream, PXCStructureTypeStruct);
-            break;
-    }
-
-    switch (compilerSymbolEntry.ID)
-    {
-        case PXCompilerSymbolLexerGeneric: // We have a 'union' name
-        {
-#if PXCDebugOutput
-            char buffer[64];
-            PXTextCopyA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, buffer, 64);
-
-            char name[64];
-
-
-            switch (structureType)
-            {
-                case CKeyWordEnum:
-                {
-                    PXTextCopyA("Enum", 4, name, 64);
-                    break;
-                }
-                case CKeyWordUnion:
-                {
-                    PXTextCopyA("Union", 5, name, 64);
-                    break;
-                }
-                case CKeyWordStruct:
-                {
-                    PXTextCopyA("Struct", 6, name, 64);
-                    break;
-                }
-
-                default:
-                    break;
-            }
-
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                "C",
-                "Parse",
-                "Object detected\n"
-                "|+--------+-----------------------------------------------+|\n"
-                "|| %-6s | %-45s ||\n"
-                "|+--------+-----------------------------------------------+|\n",
-                name,
-                buffer
-            );
-
-#endif
-
-            //---<Write name of structure>---
-            PXFileWriteI8U(outputStream, compilerSymbolEntry.Size);
-            PXFileWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
-            //-------------------------------
-
-            PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry); // Fetch next element after "name"
-
-            switch (compilerSymbolEntry.ID)
-            {
-                case PXCompilerSymbolLexerSemiColon:
-                {
-                    return PXTrue; // finished, format is now "struct NAME;"
-                }
-                case PXCompilerSymbolLexerBracketCurlyOpen:
-                {
-                    // OK, proceed. format is now "struct NAME { ..."
-                    break;
-                }
-                case PXCompilerSymbolLexerGeneric:
-                {
-                    // Format  "struct NAME ALIASNAME;"
-                    // We have a direct alias
-
-                    PXFileWriteI8U(outputStream, compilerSymbolEntry.Size);
-                    PXFileWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
-
-
-                    PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry); // Element after alias
-
-                    const PXBool isSemiColon = PXCompilerSymbolLexerSemiColon == compilerSymbolEntry.ID; //
-
-                    if (!isSemiColon)
-                    {
-                        // Error expected ;
-                        return PXFalse;
-                    }
-
-                    return PXTrue;
-                }
-                default:
-                {
-                    return PXFalse;
-                }
-            }
-
-            break;
-        }
-        case PXCompilerSymbolLexerBracketCurlyOpen: // We dont have a name
-        {
-            PXFileWriteI8U(outputStream, 0); // Name size, we dont have one so its always 0
-
-#if PXCDebugOutput
-            char buffer[64];
-            PXTextCopyA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, buffer, 64);
-
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                "C",
-                "Parse",
-                "Alias detected\n"
-                "|+--------+-----------------------------------------------+|\n"
-                "|| Alias: %-45s ||\n"
-                "|+--------+-----------------------------------------------+|\n",
-                "**Unnamed**"
-            );
-#endif
-
-            // OK
-            break;
-        }
-
-        default:
-            return PXFalse; // Illegal formating
-    }
-
-
-    // We are now here
-    // "struct name { | ... };"
-
-
-    // Problem: We need the alias name NOW. And the content of {...} is in the way.
-    // Solution: We do a very far peek and try to check if one is readable.
-    {
-    PXSize range = PXFileRemainingSizeRelativeFromAddress(inputStream, compilerSymbolEntry.Source);
-    char* start = compilerSymbolEntry.Source + 1u;
-
-    PXBool foundInsert = PXFalse;
-
-    while (1)
-    {
-        const PXSize index = PXTextFindFirstCharacterA(start, range, '}');
-        const PXBool found = index != (PXSize)-1;
-
-        if (!found)
-        {
-            // Error
-        }
-
-        const PXSize amountOfOpen = PXTextCountA(start, index, '{');
-
-        start += index + 1u;
-        range -= index + 1u;
-
-        if (amountOfOpen == 0)
-        {
-            // We have found what we need
-            foundInsert = PXTrue;
-            break;
-        }
-
-        // We have one open more than a close, so we look for more
-    }
-
-    if (foundInsert)
-    {
-        // We should be where the } is
-
-        const PXSize semicolonINdex = PXTextFindFirstCharacterA(start, range, ';');
-
-        if (semicolonINdex > 1)
-        {
-            // We have found an alias
-            char* name = start;
-            PXSize range = semicolonINdex;
-
-            // Remove empty space
-            while (IsEmptySpace(name[0]) || IsEndOfLineCharacter(name[0]) || IsTab(name[0]))
-            {
-                ++name;
-                --range;
-            }
-
-
-            PXFileWriteI8U(outputStream, range);
-            PXFileWriteB(outputStream, name, range);
-
-        }
-        else
-        {
-            // No name
-            PXFileWriteI8U(outputStream, 0);
-
-        }
-    }
-    else
-    {
-        PXFileWriteI8U(outputStream, 0);
-    }
-    }
-
-
-
-
-
-
-    PXInt16U memberCounter = 0;
-    PXSize poition = outputStream->DataCursor;
-
-    PXFileWriteI16U(outputStream, 0xFFFF);
-    PXFileWriteI8U(outputStream, isTypeDefitinition);
-
-
-    while (1)
-    {
-        PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry); // Peek for possible '}'
-
-        while (PXCompilerSymbolLexerComment == compilerSymbolEntry.ID)
-        {
-            PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry); // Fetch next
-        }
-
-        const PXBool isAtEnd = PXCompilerSymbolLexerBracketCurlyClose == compilerSymbolEntry.ID; // Do we have a '}'
-
-        if (isAtEnd) // If so, we quit
-        {
-            PXFileWriteAtI16U(outputStream, memberCounter, poition); // Write hoe many elements we've written
-
-
-            PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry);
-
-            const PXBool isExpectedComma = PXCompilerSymbolLexerGeneric == compilerSymbolEntry.ID;
-
-            if (isExpectedComma) // Get alias name
-            {
-#if PXCDebugOutput
-                char buffer[64];
-                PXTextCopyA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, buffer, 64);
-
-                PXLogPrint
-                (
-                    PXLoggingInfo,
-                    "C",
-                    "Parse",
-                    "Alias detected\n"
-                    "|+--------+-----------------------------------------------+|\n"
-                    "|| Alias: %-45s ||\n"
-                    "|+--------+-----------------------------------------------+|\n",
-                    buffer
-                );
-#endif
-
-                // Don't write alias, we hacked that before.
-                // PXFileWriteI8U(outputStream, compilerSymbolEntry.Size);
-                // PXFileWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
-
-
-                PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry); // Go to next
-            }
-
-
-
-            // Expect ';'
-            {
-                const PXBool isExpectedComma = PXCompilerSymbolLexerSemiColon == compilerSymbolEntry.ID;
-
-                if (!isExpectedComma)
-                {
-                    PXLogPrint
-                    (
-                        PXLoggingError,
-                        "C",
-                        "Parse",
-                        "Missing ';' in structure"
-                    );
-                }
-
-                return isExpectedComma;
-            }
-        }
-
-        switch (structureType)
-        {
-            case CKeyWordEnum:
-            {
-#if PXCDebugOutput
-                char buffer[64];
-                PXTextCopyA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, buffer, 64);
-
-                PXLogPrint
-                (
-                    PXLoggingInfo,
-                    "C",
-                    "Parse-Enum",
-                    "| - %-54s |\n",
-                    buffer
-                );
-#endif
-
-                ++memberCounter;
-
-                PXFileWriteI8U(outputStream, compilerSymbolEntry.Size);
-                PXFileWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
-
-
-                // Look forward, we expect a ','
-                {
-                    PXCompilerSymbolEntryPeek(inputStream, &compilerSymbolEntry);
-
-                    const PXBool isExpectedComma = PXCompilerSymbolLexerComma == compilerSymbolEntry.ID;
-
-                    if (isExpectedComma)
-                    {
-                        PXCompilerSymbolEntryExtract(inputStream, &compilerSymbolEntry); // Fetch next
-
-                        //printf("Parsing error, enum value has no ending comma.\n");
-                    }
-                }
-
-                break;
-            }
-
-            case CKeyWordUnion:
-            case CKeyWordStruct:
-            {
-                // If we dont end, we must have fields to parse.
-                const PXBool result = PXCFileParseDeclaration(inputStream, outputStream, &compilerSymbolEntry);
-
-                if (result)
-                {
-                    ++memberCounter;
-                }
-
-                break;
-            }
-
-            default:
-                break;
-        }
-    }
-
-    return PXFalse;
-}
-
 PXBool PXAPI PXCFileParseDeclaration(PXFile* const inputStream, PXFile* const outputStream, PXCompilerSymbolEntry* compilerSymbolEntry)
 {
     PXBool finished = 0;
@@ -590,7 +194,7 @@ PXBool PXAPI PXCFileParseDeclaration(PXFile* const inputStream, PXFile* const ou
 
     if (isStructure)
     {
-        PXCFileParseStructure(inputStream, outputStream, fieldType, PXFalse);
+        //PXCFileParseStructure(inputStream, outputStream, fieldType, PXFalse);
         return PXTrue;
     }
 
@@ -686,13 +290,13 @@ PXBool PXAPI PXCFileParseDeclaration(PXFile* const inputStream, PXFile* const ou
                 {
                     case CKeyWordTypeDefinition:
                     {
-                        PXCFileParseTypedef(inputStream, outputStream);
+                        //PXCFileParseTypedef(inputStream, outputStream);
                         break;
                     }
                     case CKeyWordUnion:
                     case CKeyWordEnum:
                     case CKeyWordStruct:
-                        PXCFileParseStructure(inputStream, outputStream, typeKey, PXFalse);
+                        //PXCFileParseStructure(inputStream, outputStream, typeKey, PXFalse);
                         break;
 
                     case CKeyWordChar:
@@ -816,155 +420,18 @@ PXBool PXAPI PXCFileParseDeclaration(PXFile* const inputStream, PXFile* const ou
 
 
 
-        PXCompilerSymbolEntryExtract(inputStream, compilerSymbolEntry);
+        //PXCompilerSymbolEntryExtract(inputStream, compilerSymbolEntry);
 
         if (compilerSymbolEntry->ID == PXCompilerSymbolLexerComment)
         {
-            PXCompilerSymbolEntryExtract(inputStream, compilerSymbolEntry);
+           // PXCompilerSymbolEntryExtract(inputStream, compilerSymbolEntry);
         }
-    } while (1);
+    } while (0);
 
     // printf("type name expected but got something else\n");
 
         // printf("';' expected but got something else\n");
 
-}
-
-PXBool PXAPI PXCFileParseFunctionPrototype(PXFile* const inputStream, PXFile* const outputStream, PXCompilerSymbolEntry* compilerSymbolEntry)
-{
-
-
-    PXFileWriteI8U(outputStream, PXCStructureTypeFuntion);
-
-    // Name
-
-    // Amount
-
-
-
-#if PXCDebugOutput
-    char buffer[64]; // calling convention?
-
-    PXTextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, buffer, 64);
-
-    PXConsoleWrite("| [Function]\n", 0);
-    PXConsoleWrite("| Element    : %s |\n", buffer);
-#endif // 0
-
-
-    PXCompilerSymbolEntryExtract(inputStream, compilerSymbolEntry);
-
-#if PXCDebugOutput
-
-    PXTextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, buffer, 64);
-
-    PXConsoleWrite("| Return Type : %s |\n", buffer);
-
-#endif // 0
-
-
-    PXCompilerSymbolEntryExtract(inputStream, compilerSymbolEntry);
-
-    PXFileWriteI8U(outputStream, compilerSymbolEntry->Size);
-    PXFileWriteB(outputStream, compilerSymbolEntry->Source, compilerSymbolEntry->Size);
-
-#if PXCDebugOutput
-
-    PXTextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, buffer, 64);
-
-    PXConsoleWrite("| FuntionName : %s |\n", buffer);
-
-#endif // 0
-
-    PXCompilerSymbolEntryExtract(inputStream, compilerSymbolEntry); // Expect '('
-
-    const PXBool isFunction = PXCompilerSymbolLexerBrackedRoundOpen == compilerSymbolEntry->ID;
-
-    if (!isFunction)
-    {
-#if PXCDebugOutput
-        PXConsoleWrite("Expected funtion but didnt\n", 0);
-#endif
-    }
-
-
-    PXSize parameterListLengthDataPosition = outputStream->DataCursor;
-    PXInt8U parameterListLength = 0;
-
-    PXFileWriteI8U(outputStream, 0xFF); // How many parameters?
-
-
-
-    PXBool parameterDone = PXFalse;
-
-    while (1u)
-    {
-        PXCompilerSymbolEntryExtract(inputStream, compilerSymbolEntry); // get next thing
-
-        const PXBool isEndOfParameterList = PXCompilerSymbolLexerBrackedRoundClose == compilerSymbolEntry->ID;
-
-        if (isEndOfParameterList)
-        {
-            PXFileWriteAtI8U(outputStream, parameterListLength, parameterListLength);
-
-            break;
-        }
-
-        ++parameterListLength;
-
-
-        // Get type
-
-
-        // Get name
-        PXFileWriteI8U(outputStream, compilerSymbolEntry->Size);
-        PXFileWriteB(outputStream, compilerSymbolEntry->Source, compilerSymbolEntry->Size);
-
-#if PXCDebugOutput
-
-        PXTextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, buffer, 64);
-
-        PXConsoleWrite("|     Parameter : %s |\n", buffer);
-
-#endif // 0
-
-
-
-
-
-        PXCompilerSymbolEntryPeek(inputStream, compilerSymbolEntry); // Soft Expect ','
-
-        const PXBool isColon = PXCompilerSymbolLexerComma == compilerSymbolEntry->ID;
-
-        if (isColon)
-        {
-            PXCompilerSymbolEntryExtract(inputStream, compilerSymbolEntry); // Remove the ','
-            // new variab
-
-            //printf("Missing semicolon");
-        }
-    }
-
-
-    PXCompilerSymbolEntryExtract(inputStream, compilerSymbolEntry); // Soft Expect ';'
-
-    const PXBool isComma = PXCompilerSymbolLexerSemiColon == compilerSymbolEntry->ID;
-
-    if (!isComma)
-    {
-#if PXCDebugOutput
-        PXLogPrint
-        (
-            PXLoggingError,
-            "C",
-            "Parser",
-            "Colon missing"
-        );
-#endif
-
-    }
-
-    return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXCParsePreprocessorCondition(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent)
@@ -1314,13 +781,24 @@ PXActionResult PXAPI PXCParsePreprocessorPragma(PXCompiler* const pxCompiler, PX
     if (!isExpectedText)
     {
 #if PXCDebugOutput
-        PXConsoleWrite("Makro pragma has invalid name", 0);
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "C",
+            "Parsing",
+            "Makro pragma has invalid name"
+        );
 #endif
     }
 
 #if PXCDebugOutput
-
-    PXConsoleWrite("Makro pragma : ", 0);
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "C",
+        "Parsing",
+        "Makro pragma ..."
+    );
    // PXConsoleWrite(pxCompilerSymbolEntry.Source, pxCompilerSymbolEntry.Size);
 #endif
 
@@ -1332,6 +810,7 @@ PXActionResult PXAPI PXCParseTypeDefinition(PXCompiler* const pxCompiler, PXCode
     PXCodeDocumentElement pxCodeDocumentElement;
     PXClear(PXCodeDocumentElement, &pxCodeDocumentElement);
     pxCodeDocumentElement.IsTypeDefinition = PXTrue;
+    pxCodeDocumentElement.ElementParent = parrent;
 
     PXCompilerSymbolEntryExtract(pxCompiler);
 
@@ -1513,11 +992,11 @@ PXActionResult PXAPI PXCParseTypeParameterList(PXCompiler* const pxCompiler, PXC
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXCParseFunctionDefinition(PXCompiler* const pxCompiler, PXCodeDocument* const pxDocument, PXFile* const pxFile)
+PXActionResult PXAPI PXCParseFunctionDefinition(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent)
 {
-    PXCodeDocumentElement pxCodeDocumentElement;
-    PXClear(PXCodeDocumentElement, &pxCodeDocumentElement);
-    pxCodeDocumentElement.Type = PXDocumentElementTypeFunction;
+    PXCodeDocumentElement* pxCodeDocumentElement = PXNull;
+
+    PXCodeDocumentElementGenerateChild(pxCompiler->CodeDocument, PXDocumentElementTypeFunction, &pxCodeDocumentElement, parrent);
 
     PXCompilerSymbolEntryExtract(pxCompiler);
 
@@ -1550,8 +1029,8 @@ PXActionResult PXAPI PXCParseFunctionDefinition(PXCompiler* const pxCompiler, PX
     PXCompilerSymbolEntryExtract(pxCompiler);
 
     {
-        pxCodeDocumentElement.NameAdress = pxCompiler->SymbolEntryCurrent.Source;
-        pxCodeDocumentElement.NameSize = pxCompiler->SymbolEntryCurrent.Size;
+        pxCodeDocumentElement->NameAdress = pxCompiler->SymbolEntryCurrent.Source;
+        pxCodeDocumentElement->NameSize = pxCompiler->SymbolEntryCurrent.Size;
 
         PXTextCopyA(pxCompiler->SymbolEntryCurrent.Source, pxCompiler->SymbolEntryCurrent.Size, bufferFunctionName, 64);
 
@@ -1566,13 +1045,13 @@ PXActionResult PXAPI PXCParseFunctionDefinition(PXCompiler* const pxCompiler, PX
         );
     }
 
-    PXCParseTypeParameterList(pxCompiler, pxDocument, pxFile);    
+    PXCParseTypeParameterList(pxCompiler, pxCodeDocumentElement);
 
     PXCParseEndOfCommand(pxCompiler);
 
 
     // ALL OK, update entry
-    PXCodeDocumentElementAdd(pxDocument, &pxCodeDocumentElement);
+    PXCodeDocumentElementAdd(pxCompiler->CodeDocument, pxCodeDocumentElement);
 
     return PXActionInvalid;
 }
@@ -1747,11 +1226,11 @@ PXActionResult PXAPI PXCParseTypeDeclarationFull(PXCompiler* const pxCompiler, P
             PXCompilerSymbolEntryExtract(pxCompiler); // Consume comment
 
             pxCodeDocumentElement->CommentAdress = pxCompiler->SymbolEntryCurrent.Source;
-            pxCodeDocumentElement->CommentAdress = pxCompiler->SymbolEntryCurrent.Size;
+            pxCodeDocumentElement->CommentSize = pxCompiler->SymbolEntryCurrent.Size;
         }
     }
 
-    PXCodeDocumentElementAdd(pxCompiler->CodeDocument, &pxCodeDocumentElement);
+    PXCodeDocumentElementAdd(pxCompiler->CodeDocument, pxCodeDocumentElement);
 
     return PXActionRefusedNotImplemented;
 }
@@ -1800,7 +1279,7 @@ PXActionResult PXAPI PXCParseEnumMember(PXCompiler* const pxCompiler, PXCodeDocu
     }
     
 
-    PXCodeDocumentElementAdd(pxCompiler->CodeDocument, &pxCodeDocumentElement);
+    PXCodeDocumentElementAdd(pxCompiler->CodeDocument, pxCodeDocumentElement);
 
     return PXActionSuccessful;
 }
@@ -1996,6 +1475,8 @@ PXActionResult PXAPI PXCLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInf
     pxCompiler.FileInput = pxResourceLoadInfo->FileReference;
     pxCompiler.FileCache = &tokenSteam;
 
+    PXCodeDocumentElement* pxCodeDocumentElementRoot = PXNull;
+
     //-----------------------------------------------------
     // Lexer - Level I
     //-----------------------------------------------------
@@ -2017,10 +1498,10 @@ PXActionResult PXAPI PXCLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInf
 
 
 
-    pxCompiler.CodeDocument = &pxDocument;
+    pxCompiler.CodeDocument = pxDocument;
     pxCompiler.TokenStream = &tokenSteam;
 
-   // PXCodeDocumentElementGenerateChild(&pxDocument, PXDocument);
+    PXCodeDocumentElementGenerateChild(pxDocument, PXDocumentElementTypeFile, &pxCodeDocumentElementRoot, PXNull);
 
 
     //-----------------------------------------------------
@@ -2054,27 +1535,27 @@ PXActionResult PXAPI PXCLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInf
                 {
                     case CKeyWordDefine:
                     {
-                        PXCParsePreprocessorDefine(&pxCompiler, PXNull);
+                        PXCParsePreprocessorDefine(&pxCompiler, pxCodeDocumentElementRoot);
                         break;
                     }
                     case CKeyWordIfDefined:
                     {
-                        PXCParsePreprocessorCondition(&pxCompiler, PXNull);
+                        PXCParsePreprocessorCondition(&pxCompiler, pxCodeDocumentElementRoot);
                         break;
                     }
                     case CKeyWordIfNotDefined:
                     {
-                        PXCParsePreprocessorCondition(&pxCompiler, PXNull);
+                        PXCParsePreprocessorCondition(&pxCompiler, pxCodeDocumentElementRoot);
                         break;
                     }
                     case CKeyWordInclude:
                     {
-                        PXCParsePreprocessorInclude(&pxCompiler, PXNull);
+                        PXCParsePreprocessorInclude(&pxCompiler, pxCodeDocumentElementRoot);
                         break;
                     }
                     case CKeyWordPragma:
                     {
-                        PXCParsePreprocessorPragma(&pxCompiler, PXNull);
+                        PXCParsePreprocessorPragma(&pxCompiler, pxCodeDocumentElementRoot);
                         break;
                     }
                     case CKeyWordDefinitionEnd:
@@ -2105,15 +1586,17 @@ PXActionResult PXAPI PXCLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInf
 
                 switch (keyWord)
                 {
+                    PXCodeDocumentElement pxCodeDocumentElement;
+                    PXClear(PXCodeDocumentElement, &pxCodeDocumentElement);
+                    pxCodeDocumentElement.ElementParent = pxCodeDocumentElementRoot;
+
                     case CKeyWordTypeDefinition:
                     {
-                        PXCParseTypeDefinition(&pxCompiler, 0);
+                        PXCParseTypeDefinition(&pxCompiler, pxCodeDocumentElementRoot);
                         break;
                     }             
                     case CKeyWordEnum:
-                    {
-                        PXCodeDocumentElement pxCodeDocumentElement;
-                        PXClear(PXCodeDocumentElement, &pxCodeDocumentElement);
+                    {                      
                         pxCodeDocumentElement.Type = PXDocumentElementTypeEnum;
 
                         PXCParseTypeEnum(&pxCompiler, &pxCodeDocumentElement);
@@ -2121,8 +1604,6 @@ PXActionResult PXAPI PXCLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInf
                     }
                     case CKeyWordUnion:
                     {
-                        PXCodeDocumentElement pxCodeDocumentElement;
-                        PXClear(PXCodeDocumentElement, &pxCodeDocumentElement);
                         pxCodeDocumentElement.Type = PXDocumentElementTypeUnion;
 
                         PXCParseTypeContainer(&pxCompiler, &pxCodeDocumentElement);
@@ -2130,8 +1611,6 @@ PXActionResult PXAPI PXCLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInf
                     }
                     case CKeyWordStruct:
                     {
-                        PXCodeDocumentElement pxCodeDocumentElement;
-                        PXClear(PXCodeDocumentElement, &pxCodeDocumentElement);
                         pxCodeDocumentElement.Type = PXDocumentElementTypeStruct;
 
                         PXCParseTypeContainer(&pxCompiler, &pxCodeDocumentElement);
@@ -2191,7 +1670,7 @@ PXActionResult PXAPI PXCLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInf
                     }
                     case CKeyWordVoid:
                     {
-                        PXCParseFunctionDefinition(&pxCompiler, pxDocument, &tokenSteam);
+                        PXCParseFunctionDefinition(&pxCompiler, pxCodeDocumentElementRoot);
                         break;
                     }
                     case CKeyWordUnkown: // Might declaration of variable or function.
@@ -2205,7 +1684,7 @@ PXActionResult PXAPI PXCLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInf
 
                         if (isFunxtion)
                         {
-                            PXCParseFunctionDefinition(&pxCompiler, pxDocument, &tokenSteam);
+                            PXCParseFunctionDefinition(&pxCompiler, pxCodeDocumentElementRoot);
                         }
 
                         break;

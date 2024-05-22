@@ -40,132 +40,194 @@ PXActionResult PXAPI PXDocumentElementSiblingGet(PXCodeDocument* const pxDocumen
 
 PXCodeDocumentElement* PXAPI PXCodeDocumentElementAdd(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement)
 {
-	// Generate ID to make dynamic updates later
-	pxDocumentElement->ID = pxDocument->LastCounter++;
-
+	if(pxDocumentElement->ID == 0)
+	{
+		// Generate ID to make dynamic updates later
+		pxDocumentElement->ID = pxDocument->LastCounter++;
 
 #if PXLogEnable
-	const char* typeName = PXDocumentElementTypeToString(pxDocumentElement->Type);
-	
-	char nameBuffer[64];
-	PXMemoryClear(nameBuffer, 64);
-	PXTextCopyA(pxDocumentElement->NameAdress, pxDocumentElement->NameSize, nameBuffer, 64);
+		const char* typeName = PXDocumentElementTypeToString(pxDocumentElement->Type);
+
+		char nameBuffer[64];
+		PXMemoryClear(nameBuffer, 64);
+		PXTextCopyA(pxDocumentElement->NameAdress, pxDocumentElement->NameSize, nameBuffer, 64);
 
 
-	int parrentID = pxDocumentElement->ElementParent ? pxDocumentElement->ElementParent->ID : -1;
+		int parrentID = pxDocumentElement->ElementParent ? pxDocumentElement->ElementParent->ID : -1;
+		int siblingID = pxDocumentElement->ElementSibling ? pxDocumentElement->ElementSibling->ID : -1;
 
-	char identification[256];
-	PXTextPrintA
-	(
-		identification,
-		256,
-		"\n"
-		"%10s : %i\n"
-		"%10s : %s\n"
-		"%10s : %i\n"
-		"%10s : %s", 
-		"ID", pxDocumentElement->ID,
-		"Type", typeName,
-		"Parrent", parrentID,
-		"Name", nameBuffer
-	);
+		char identification[256];
+		PXTextPrintA
+		(
+			identification,
+			256,
+			"\n"
+			"%10s : %i\n"
+			"%10s : %s\n"
+			"%10s : %i\n"
+			"%10s : %i\n"
+			"%10s : %s",
+			"ID", pxDocumentElement->ID,
+			"Type", typeName,
+			"Parrent", parrentID,
+			"Sibling", siblingID,
+			"Name", nameBuffer
+		);
 
-	switch(pxDocumentElement->Type)
-	{
-		case PXDocumentElementTypeInclude:
+		switch(pxDocumentElement->Type)
 		{
-			PXLogPrint
-			(
-				PXLoggingInfo,
-				"CodeDocument",
-				"Entry",
-				"%s\n"
-				"%10s : %s",
-				identification,
-				"Global", pxDocumentElement->IsGlobal ? "Yes" : "No"
-			);
+			case PXDocumentElementTypeInclude:
+			{
+				PXLogPrint
+				(
+					PXLoggingInfo,
+					"CodeDocument",
+					"Entry",
+					"%s\n"
+					"%10s : %s",
+					identification,
+					"Global", pxDocumentElement->IsGlobal ? "Yes" : "No"
+				);
 
-			break;
+				break;
+			}
+			case PXDocumentElementTypeStruct:
+			case PXDocumentElementTypeClass:
+			case PXDocumentElementTypeUnion:
+			case PXDocumentElementTypeEnum:
+			{
+				char aliasBuffer[64];
+				PXMemoryClear(aliasBuffer, 64);
+				PXTextCopyA(pxDocumentElement->AliasAdress, pxDocumentElement->AliasSize, aliasBuffer, 64);
+
+				PXLogPrint
+				(
+					PXLoggingInfo,
+					"CodeDocument",
+					"Entry",
+					"%s\n"
+					"%10s : %s\n"
+					"%10s : %i",
+					identification,
+					"Alias", aliasBuffer,
+					"Members", pxDocumentElement->MemberAmount
+				);
+
+				break;
+			}
+			case PXDocumentElementTypeClassAttribute:
+			case PXDocumentElementTypeClassMember:
+			case PXDocumentElementTypeFunctionParameter:
+			{
+				char buffer[64];
+
+				PXDataTypeToString(pxDocumentElement->DataType, buffer);
+
+				PXLogPrint
+				(
+					PXLoggingInfo,
+					"CodeDocument",
+					"Entry",
+					"%s\n"
+					"%10s : %s",
+					identification,
+					"DataType", buffer
+				);
+
+				break;
+			}
+			case PXDocumentElementTypeEnumMember:
+			{
+				PXLogPrint
+				(
+					PXLoggingInfo,
+					"CodeDocument",
+					"Entry",
+					"%s\n",
+					identification
+				);
+
+				break;
+			}
+			case PXDocumentElementTypeFunction:
+			{
+				PXLogPrint
+				(
+					PXLoggingInfo,
+					"CodeDocument",
+					"Entry",
+					"%s\n"
+					"%10s : %s",
+					identification,
+					"Call", "stst"
+				);
+
+				break;
+			}
+			case PXDocumentElementTypeFile:
+			{
+				PXLogPrint
+				(
+					PXLoggingInfo,
+					"CodeDocument",
+					"Entry",
+					"%s\n"
+					"File",
+					identification
+				);
+
+				break;
+			}
+			default:
+				break;
 		}
-		case PXDocumentElementTypeStruct:
-		case PXDocumentElementTypeClass:
-		case PXDocumentElementTypeUnion:
-		case PXDocumentElementTypeEnum:
-		{
-			char aliasBuffer[64];
-			PXMemoryClear(aliasBuffer, 64);
-			PXTextCopyA(pxDocumentElement->AliasAdress, pxDocumentElement->AliasSize, aliasBuffer, 64);
-
-			PXLogPrint
-			(
-				PXLoggingInfo,
-				"CodeDocument",
-				"Entry",
-				"%s\n"
-				"%10s : %s\n"
-				"%10s : %i",
-				identification,
-				"Alias", aliasBuffer,
-				"Members", pxDocumentElement->MemberAmount
-			);
-
-			break;
-		}
-		case PXDocumentElementTypeClassAttribute:
-		case PXDocumentElementTypeClassMember:
-		case PXDocumentElementTypeFunctionParameter:
-		{
-			char buffer[64];
-
-			PXDataTypeToString(pxDocumentElement->DataType, buffer);
-
-			PXLogPrint
-			(
-				PXLoggingInfo,
-				"CodeDocument",
-				"Entry",
-				"%s\n"
-				"%10s : %s",
-				identification,
-				"DataType", buffer
-			);
-
-			break;
-		}
-		case PXDocumentElementTypeEnumMember:
-		{
-			PXLogPrint
-			(
-				PXLoggingInfo,
-				"CodeDocument",
-				"Entry",
-				"%s\n",
-				identification
-			);
-
-			break;
-		}
-		case PXDocumentElementTypeFunction:
-		{
-			PXLogPrint
-			(
-				PXLoggingInfo,
-				"CodeDocument",
-				"Entry",
-				"%s\n"
-				"%10s : %s",
-				identification,
-				"Call", "stst"
-			);
-
-			break;
-		}
-		default:
-			break;
-	}
 
 
 #endif
+
+	}
+	else
+	{
+
+		const char* typeName = PXDocumentElementTypeToString(pxDocumentElement->Type);
+
+		char nameBuffer[64];
+		PXMemoryClear(nameBuffer, 64);
+		PXTextCopyA(pxDocumentElement->NameAdress, pxDocumentElement->NameSize, nameBuffer, 64);
+
+
+		int parrentID = pxDocumentElement->ElementParent ? pxDocumentElement->ElementParent->ID : -1;
+		int siblingID = pxDocumentElement->ElementSibling ? pxDocumentElement->ElementSibling->ID : -1;
+
+		char identification[256];
+		PXTextPrintA
+		(
+			identification,
+			256,
+			"UPDATE \n"
+			"%10s : %i\n"
+			"%10s : %s\n"
+			"%10s : %i\n"
+			"%10s : %i\n"
+			"%10s : %s",
+			"ID", pxDocumentElement->ID,
+			"Type", typeName,
+			"Parrent", parrentID,
+			"Sibling", siblingID,
+			"Name", nameBuffer
+		);
+
+		PXLogPrint
+		(
+			PXLoggingInfo,
+			"CodeDocument",
+			"Entry-Update",
+			"%s\n",
+			identification
+		);
+	}
+
+
 
 	// Make sure we have enough space
 	if(pxDocument->ElementListAllocated <= (pxDocument->ElementListUsed +1))
@@ -278,20 +340,27 @@ PXActionResult PXAPI PXCodeDocumentElementGenerateChild
 
 	PXCodeDocumentElement* pxCodeDocumentElement = PXCodeDocumentElementAdd(pxDocument, &pxCodeDocumentElementTemp); // Use to pre-register space. aka. allocate object
 
-	if(pxDocumentElementParent->ElementChildFirstBorn) // if we dont have a child yet, we are the first
+	if(pxDocumentElementParent)
 	{
-		pxDocumentElementParent->ElementChildFirstBorn = pxCodeDocumentElement;
-	}
-	else
-	{
-		PXCodeDocumentElement* insertChild = pxDocumentElementParent->ElementChildFirstBorn->ElementChildFirstBorn;
-
-		while(insertChild)
+		if(!pxDocumentElementParent->ElementChildFirstBorn) // if we dont have a child yet, we are the first
 		{
-			insertChild = pxDocumentElementParent->ElementChildFirstBorn;
+			pxDocumentElementParent->ElementChildFirstBorn = pxCodeDocumentElement;
 		}
+		else
+		{
+			PXCodeDocumentElement* insertChild = pxDocumentElementParent->ElementChildFirstBorn;
 
-		pxDocumentElementParent->ElementChildFirstBorn = pxCodeDocumentElement;
+			while(insertChild)
+			{
+				if(!insertChild->ElementSibling) // if has no sibling
+				{
+					insertChild->ElementSibling = pxCodeDocumentElement; // this is not the last sibling
+					break;
+				}
+
+				insertChild = pxDocumentElementParent->ElementSibling;
+			}
+		}
 	}
 
 	*pxDocumentElement = pxCodeDocumentElement;

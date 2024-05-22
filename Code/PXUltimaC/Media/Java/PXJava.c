@@ -115,7 +115,7 @@ void PXAPI PXJavaParameterList(PXCodeDocumentElement* pxCodeDocumentElement, PXF
 
 void PXAPI PXJavaElementWrite(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile)
 {
-	PXCodeDocumentElement* pxCodeDocumentElementSibling = pxCodeDocumentElement->ElementSibling;
+	PXCodeDocumentElement* pxCodeDocumentElementSibling = pxCodeDocumentElement;
 
 	for(size_t i = 0; pxCodeDocumentElementSibling; ++i)
 	{

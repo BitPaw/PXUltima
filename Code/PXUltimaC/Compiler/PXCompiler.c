@@ -443,7 +443,7 @@ PXSize PXAPI PXCompilerSymbolEntryMergeCurrentWithNext(PXCompiler* const pxCompi
 
 	PXCompilerSymbolRewind(pxCompiler, skippedBlocks+2); // Go back again, again
 
-	PXCompilerSymbolEntryPeek(pxCompiler, compilerSymbolEntry);
+	PXCompilerSymbolEntryPeek(pxCompiler);
 
 	return PXActionSuccessful;
 }
