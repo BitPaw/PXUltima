@@ -1,6 +1,8 @@
 #include "PXDebug.h"
 
 #if OSUnix
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <sys/ptrace.h>
 #include <execinfo.h>
 #elif OSWindows
@@ -232,6 +234,8 @@ PXActionResult PXAPI PXDebugContinue(PXDebug* const pxDebug)
 
 #if OSUnix
 
+	const long ree = ptrace(PTRACE_CONT, pxDebug->Process.ProcessID, NULL, NULL);
+
 	return PXActionRefusedNotImplemented;
 
 #elif PXOSWindowsDestop
@@ -292,6 +296,18 @@ PXActionResult PXAPI PXDebugAttach(PXDebug* const pxDebug)
 {
 #if OSUnix
 	const long result = ptrace(PTRACE_ATTACH, pxDebug->Process.ProcessID, 0, 0);
+
+	ptrace(PTRACE_PEEKTEXT / PEEKDATA / PEEKUSER, pid, addr, 0);
+	ptrace(PTRACE_POKETEXT / POKEDATA / POKEUSER, pid, addr, long_val);
+	ptrace(PTRACE_GETREGS / GETFPREGS, pid, 0, &struct);
+	ptrace(PTRACE_SETREGS / SETFPREGS, pid, 0, &struct);
+	ptrace(PTRACE_GETREGSET, pid, NT_foo, &iov);
+	ptrace(PTRACE_SETREGSET, pid, NT_foo, &iov);
+	ptrace(PTRACE_GETSIGINFO, pid, 0, &siginfo);
+	ptrace(PTRACE_SETSIGINFO, pid, 0, &siginfo);
+	ptrace(PTRACE_GETEVENTMSG, pid, 0, &long_var);
+	ptrace(PTRACE_SETOPTIONS, pid, 0, PTRACE_O_flags);
+
 
 #elif PXOSWindowsDestop
 	const BOOL result = DebugActiveProcess(pxDebug->Process.ProcessID);
@@ -546,6 +562,21 @@ void PXAPI OnDebugBreakPoint(PXDebug* const pxDebug)
 PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
 {
 #if OSUnix
+
+	const long result = ptrace(PTRACE_GETEVENTMSG, pxDebug->Process.ProcessID, ); // since Linux 2.5.46
+
+	int waitStatus = 0;
+	pid_t processID = waitpid(pxDebug->Process.ProcessID, &waitStatus, __WALL);
+	PXBool success = -1 != processID;
+
+	if(!success)
+	{
+		PXActionResult pxActionResult = PXErrorCurrent();
+
+		return pxActionResult;
+	}
+
+
 #elif PXOSWindowsDestop
 	const PXWaitForDebugEvent pxWaitForDebugEvent = pxDebug->XWaitForDebugEvent;
 

@@ -1,6 +1,8 @@
 #include "PXType.h"
 
 #include <OS/Memory/PXMemory.h>
+#include <Media/PXText.h>
+
 
 #define PX_X86_BSWAP_ALLOW OS32B 
 
@@ -8,6 +10,26 @@
 #define PXDataTypeInt16ULimit 65535 // 0xFFFF
 #define PXDataTypeInt32ULimit 4294967295 // 0xFFFFFFFF
 #define PXDataTypeInt64ULimit 0xFFFFFFFFFFFFFFFF // 0xFFFFFFFFFFFFFFFF
+
+void PXDataTypeToString(const PXInt32U dataType, char* buffer)
+{
+//	PXText pxText;
+	//PXTextConstructBufferA(&pxText, 256);
+
+	//char bufferBinData[64];
+
+	PXTextFromIntToBinary32U(buffer, 64, dataType);
+
+#if 0
+	PXTextPrintA
+	(
+		buffer,
+		256,
+		"%s\n"
+
+	);
+#endif
+}
 
 PXInt32U PXDataTypeIntFitting(const PXSize expectedSize)
 {

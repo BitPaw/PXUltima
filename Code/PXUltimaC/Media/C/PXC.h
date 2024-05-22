@@ -263,24 +263,27 @@ PXPublic PXBool PXAPI PXCFileParseFunctionPrototype(PXFile* const inputStream, P
 
 
 // Parsing functions
-PXPrivate PXActionResult PXAPI PXCParsePreprocessorCondition(PXCompiler* const pxCompiler, PXCodeDocument* const pxDocument, PXFile* const pxFile);
-PXPrivate PXActionResult PXAPI PXCParsePreprocessorDefine(PXCompiler* const pxCompiler, PXCodeDocument* const pxDocument, PXFile* const pxFile);
-PXPrivate PXActionResult PXAPI PXCParsePreprocessorInclude(PXCompiler* const pxCompiler, PXCodeDocument* const pxDocument, PXFile* const pxFile);
-PXPrivate PXActionResult PXAPI PXCParsePreprocessorPragma(PXCompiler* const pxCompiler, PXCodeDocument* const pxDocument, PXFile* const pxFile);
-PXPrivate PXActionResult PXAPI PXCParseTypeDefinition(PXCompiler* const pxCompiler, PXCodeDocument* const pxDocument, PXFile* const pxFile);
+PXPrivate PXActionResult PXAPI PXCParsePreprocessorCondition(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent);
+PXPrivate PXActionResult PXAPI PXCParsePreprocessorDefine(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent);
+PXPrivate PXActionResult PXAPI PXCParsePreprocessorInclude(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent);
+PXPrivate PXActionResult PXAPI PXCParsePreprocessorPragma(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent);
+PXPrivate PXActionResult PXAPI PXCParseTypeDefinition(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent);
 
 PXPrivate PXActionResult PXAPI PXCParseEndOfCommand(PXCompiler* const pxCompiler);
 
-PXPrivate PXActionResult PXAPI PXCParseTypeParameterList(PXCompiler* const pxCompiler, PXCodeDocument* const pxDocument, PXFile* const pxFile);
+PXPrivate PXActionResult PXAPI PXCParseTypeParameterList(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent);
 PXPrivate PXActionResult PXAPI PXCParseFunctionDefinition(PXCompiler* const pxCompiler, PXCodeDocument* const pxDocument, PXFile* const pxFile);
 
-PXPrivate PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCodeDocumentElement* const pxCodeDocumentElement, PXCompiler* const pxCompiler, PXCodeDocument* const pxDocument, PXFile* const pxFile);
-PXPrivate PXActionResult PXAPI PXCParseTypeDeclarationFull(PXCompiler* const pxCompiler, PXCodeDocument* const pxDocument, PXFile* const pxFile);
+PXPrivate PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler, PXCodeDocumentElement* const pxCodeDocumentElement);
 
-PXPrivate PXActionResult PXAPI PXCParseEnumList(PXCompiler* const pxCompiler, PXCodeDocument* const pxDocument, PXFile* const pxFile);
+// PArse
+PXPrivate PXActionResult PXAPI PXCParseTypeDeclarationFull(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent);
 
-PXPrivate PXActionResult PXAPI PXCParseTypeContainer(PXCodeDocumentElement* const pxCodeDocumentElement, PXCompiler* const pxCompiler,PXCodeDocument* const pxDocument, PXFile* const pxFile);
-PXPrivate PXActionResult PXAPI PXCParseTypeEnum(PXCompiler* const pxCompiler, PXCodeDocument* const pxDocument, PXFile* const pxFile);
+PXPrivate PXActionResult PXAPI PXCParseEnumMember(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent);
+
+// Parse struct, unions and enums
+PXPrivate PXActionResult PXAPI PXCParseTypeContainer(PXCompiler* const pxCompiler, PXCodeDocumentElement* const pxCodeDocumentElement);
+PXPrivate PXActionResult PXAPI PXCParseTypeEnum(PXCompiler* const pxCompiler, PXCodeDocumentElement* const pxCodeDocumentElementParent);
 
 PXPublic PXActionResult PXAPI PXCLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
 PXPublic PXActionResult PXAPI PXCSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);

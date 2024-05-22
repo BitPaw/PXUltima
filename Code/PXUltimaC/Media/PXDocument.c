@@ -38,8 +38,11 @@ PXActionResult PXAPI PXDocumentElementSiblingGet(PXCodeDocument* const pxDocumen
 	return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDocumentElementAttributeAdd(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement)
+PXCodeDocumentElement* PXAPI PXCodeDocumentElementAdd(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement)
 {
+	// Generate ID to make dynamic updates later
+	pxDocumentElement->ID = pxDocument->LastCounter++;
+
 
 #if PXLogEnable
 	const char* typeName = PXDocumentElementTypeToString(pxDocumentElement->Type);
@@ -47,6 +50,25 @@ PXActionResult PXAPI PXDocumentElementAttributeAdd(PXCodeDocument* const pxDocum
 	char nameBuffer[64];
 	PXMemoryClear(nameBuffer, 64);
 	PXTextCopyA(pxDocumentElement->NameAdress, pxDocumentElement->NameSize, nameBuffer, 64);
+
+
+	int parrentID = pxDocumentElement->ElementParent ? pxDocumentElement->ElementParent->ID : -1;
+
+	char identification[256];
+	PXTextPrintA
+	(
+		identification,
+		256,
+		"\n"
+		"%10s : %i\n"
+		"%10s : %s\n"
+		"%10s : %i\n"
+		"%10s : %s", 
+		"ID", pxDocumentElement->ID,
+		"Type", typeName,
+		"Parrent", parrentID,
+		"Name", nameBuffer
+	);
 
 	switch(pxDocumentElement->Type)
 	{
@@ -56,13 +78,10 @@ PXActionResult PXAPI PXDocumentElementAttributeAdd(PXCodeDocument* const pxDocum
 			(
 				PXLoggingInfo,
 				"CodeDocument",
-				"Entry-Add",
-				"\n"
-				"%10s : %s\n"
-				"%10s : %s\n"
-				"%10s : %s\n",
-				"Type", typeName,
-				"Name", nameBuffer,
+				"Entry",
+				"%s\n"
+				"%10s : %s",
+				identification,
 				"Global", pxDocumentElement->IsGlobal ? "Yes" : "No"
 			);
 
@@ -81,14 +100,11 @@ PXActionResult PXAPI PXDocumentElementAttributeAdd(PXCodeDocument* const pxDocum
 			(
 				PXLoggingInfo,
 				"CodeDocument",
-				"Entry-Add",
-				"\n"
-				"%10s : %s\n"
-				"%10s : %s\n"
+				"Entry",
+				"%s\n"
 				"%10s : %s\n"
 				"%10s : %i",
-				"Type", typeName,
-				"Name", nameBuffer,
+				identification,
 				"Alias", aliasBuffer,
 				"Members", pxDocumentElement->MemberAmount
 			);
@@ -98,18 +114,33 @@ PXActionResult PXAPI PXDocumentElementAttributeAdd(PXCodeDocument* const pxDocum
 		case PXDocumentElementTypeClassAttribute:
 		case PXDocumentElementTypeClassMember:
 		case PXDocumentElementTypeFunctionParameter:
+		{
+			char buffer[64];
+
+			PXDataTypeToString(pxDocumentElement->DataType, buffer);
+
+			PXLogPrint
+			(
+				PXLoggingInfo,
+				"CodeDocument",
+				"Entry",
+				"%s\n"
+				"%10s : %s",
+				identification,
+				"DataType", buffer
+			);
+
+			break;
+		}
 		case PXDocumentElementTypeEnumMember:
 		{
 			PXLogPrint
 			(
 				PXLoggingInfo,
 				"CodeDocument",
-				"Entry-Add",
-				"\n"
-				"%10s : %s\n"
-				"%10s : %s\n",
-				"Type", typeName,
-				"Name", nameBuffer
+				"Entry",
+				"%s\n",
+				identification
 			);
 
 			break;
@@ -120,13 +151,10 @@ PXActionResult PXAPI PXDocumentElementAttributeAdd(PXCodeDocument* const pxDocum
 			(
 				PXLoggingInfo,
 				"CodeDocument",
-				"Entry-Add",
-				"\n"
-				"%10s : %s\n"
-				"%10s : %s\n"
-				"%10s : %s\n",
-				"Type", typeName,
-				"Name", nameBuffer,
+				"Entry",
+				"%s\n"
+				"%10s : %s",
+				identification,
 				"Call", "stst"
 			);
 
@@ -139,15 +167,20 @@ PXActionResult PXAPI PXDocumentElementAttributeAdd(PXCodeDocument* const pxDocum
 
 #endif
 
+	// Make sure we have enough space
+	if(pxDocument->ElementListAllocated <= (pxDocument->ElementListUsed +1))
+	{
+		pxDocument->ElementList = PXMemoryHeapRealloc(pxDocument->ElementList, sizeof(PXCodeDocumentElement) * (pxDocument->ElementListAllocated + 10));
+
+		pxDocument->ElementListAllocated += 10;
+	}
+
+	PXCodeDocumentElement* newTarget = &pxDocument->ElementList[pxDocumentElement->ID];
 
 
-	return 0;
+	PXCopy(PXCodeDocumentElement, pxDocumentElement, newTarget);
 
-
-
-
-
-
+	/*
 
 
 
@@ -225,12 +258,48 @@ PXActionResult PXAPI PXDocumentElementAttributeAdd(PXCodeDocument* const pxDocum
 	PXDocumentElementIO(pxDocument, pxDocumentElement, PXFileWriteMultible); // Write change
 
 	PXDocumentPrintNode(pxDocumentElement);
+	*/
 
-	return PXActionSuccessful;
+	return newTarget;
+}
+
+PXActionResult PXAPI PXCodeDocumentElementGenerateChild
+(
+	PXCodeDocument* const pxDocument,
+	PXDocumentElementType pxDocumentElementType,
+	PXCodeDocumentElement** pxDocumentElement,
+	PXCodeDocumentElement* const pxDocumentElementParent
+)
+{
+	PXCodeDocumentElement pxCodeDocumentElementTemp;
+	PXClear(PXCodeDocumentElement, &pxCodeDocumentElementTemp);
+	pxCodeDocumentElementTemp.Type = pxDocumentElementType;
+	pxCodeDocumentElementTemp.ElementParent = pxDocumentElementParent;
+
+	PXCodeDocumentElement* pxCodeDocumentElement = PXCodeDocumentElementAdd(pxDocument, &pxCodeDocumentElementTemp); // Use to pre-register space. aka. allocate object
+
+	if(pxDocumentElementParent->ElementChildFirstBorn) // if we dont have a child yet, we are the first
+	{
+		pxDocumentElementParent->ElementChildFirstBorn = pxCodeDocumentElement;
+	}
+	else
+	{
+		PXCodeDocumentElement* insertChild = pxDocumentElementParent->ElementChildFirstBorn->ElementChildFirstBorn;
+
+		while(insertChild)
+		{
+			insertChild = pxDocumentElementParent->ElementChildFirstBorn;
+		}
+
+		pxDocumentElementParent->ElementChildFirstBorn = pxCodeDocumentElement;
+	}
+
+	*pxDocumentElement = pxCodeDocumentElement;
 }
 
 PXSize PXAPI PXDocumentElementIO(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement, PXFileIOMultibleFunction pxFileIOMultibleFunction)
 {
+#if 0
 	const PXInt8U symbolID = pxDocumentElement->Type;
 	PXInt32U amount = 0;
 
@@ -251,11 +320,17 @@ PXSize PXAPI PXDocumentElementIO(PXCodeDocument* const pxDocument, PXCodeDocumen
 
 	const PXSize bytesTransphered = pxFileIOMultibleFunction(&pxDocument->Data, pxFileDataElementTypeList, sizeof(pxFileDataElementTypeList));
 	
+
 	return bytesTransphered;
+#endif
+
+	return 0;
 }
 
 PXActionResult PXAPI PXDocumentElementWrite(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement)
 {
+
+#if 0
 	const PXBool isNotRoot = pxDocumentElement->Depth == (pxDocument->LastEntryDepth + 1);
 		
 	PXSize parrentPosition = 0;
@@ -295,7 +370,7 @@ PXActionResult PXAPI PXDocumentElementWrite(PXCodeDocument* const pxDocument, PX
 #endif
 	}	
 
-	++(pxDocument->ElementListAmount);
+	//++(pxDocument->ElementListAmount);
 	pxDocumentElement->ParaentDataPosition = parrentPosition;
 	pxDocument->LastEntryOffset = pxDocument->Data.DataCursor;
 	pxDocument->LastEntryDepth = pxDocumentElement->Depth;
@@ -317,6 +392,11 @@ PXActionResult PXAPI PXDocumentElementWrite(PXCodeDocument* const pxDocument, PX
 		);
 	}
 #endif
+
+
+#endif
+
+	return 0;
 
 	return PXActionSuccessful;
 }
@@ -356,7 +436,7 @@ PXActionResult PXAPI PXDocumentElementAdd(PXCodeDocument* const pxDocument, PXCo
 		}
 		case PXDocumentElementTypeClassMember:
 		{
-			PXDocumentElementAttributeAdd(pxDocument, pxDocumentElement);
+			PXCodeDocumentElementAdd(pxDocument, pxDocumentElement);
 			break;
 		}
 		default:
@@ -470,6 +550,7 @@ PXActionResult PXAPI PXDocumentPrintNode(PXCodeDocumentElement* const pxDocument
 
 PXActionResult PXAPI PXDocumentPrint(PXCodeDocument* const pxDocument)
 {
+#if 0
 	PXCodeDocumentElement pxDocumentElement;
 
 	PXDocumentElementIO(pxDocument, &pxDocumentElement, PXFileReadMultible);// Get root
@@ -481,6 +562,7 @@ PXActionResult PXAPI PXDocumentPrint(PXCodeDocument* const pxDocument)
 		// Get all
 		//printf("");
 	}
+#endif
 
 	return PXActionSuccessful;
 }

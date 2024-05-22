@@ -5,6 +5,8 @@
 
 #include <OS/System/PXOSVersion.h>
 
+#include <wchar.h>
+
 #ifdef __cplusplus
 #define PXLanguageC 0
 #define PXLanguageCPP 1
@@ -169,7 +171,7 @@
 #endif
 
 
-
+#define PXDataTypeReadOnlyMask			0b10000000000000000000000000000000
 #define PXDataTypeAdressMask			0b01000000000000000000000000000000 // Used if the type is
 #define PXDataTypeEndianMask			0b00110000000000000000000000000000 // Little or big endian. If No endian is spesified, we can just copy 1:1
 #define PXDataTypeUseFileModeMask		0b00000000000000000000000000000000
@@ -209,6 +211,8 @@
 #define PXDataTypeSize32		4
 #define PXDataTypeSize64		8
 #define PXDataTypeSize128		16
+
+#define PXDataTypeReadOnly PXDataTypeReadOnlyMask
 
 //-------------------------------------------------
 // Adress, read as spesified but store it as (void*)
@@ -728,6 +732,8 @@ PXEndian;
 #endif
 
 //typedef PXInt32U PXDataType;
+
+PXPublic void PXDataTypeToString(const PXInt32U dataType, char* buffer);
 
 PXPublic PXInt32U PXDataTypeIntFitting(const PXSize expectedSize);
 

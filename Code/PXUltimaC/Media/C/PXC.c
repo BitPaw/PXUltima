@@ -849,7 +849,6 @@ PXBool PXAPI PXCFileParseFunctionPrototype(PXFile* const inputStream, PXFile* co
 
     PXConsoleWrite("| [Function]\n", 0);
     PXConsoleWrite("| Element    : %s |\n", buffer);
-
 #endif // 0
 
 
@@ -968,7 +967,7 @@ PXBool PXAPI PXCFileParseFunctionPrototype(PXFile* const inputStream, PXFile* co
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXCParsePreprocessorCondition(PXCompiler* const pxCompiler, PXCodeDocument* const pxDocument, PXFile* const pxFile)
+PXActionResult PXAPI PXCParsePreprocessorCondition(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent)
 {
     PXCompilerSymbolEntryExtract(pxCompiler);
 
@@ -1005,9 +1004,9 @@ PXActionResult PXAPI PXCParsePreprocessorCondition(PXCompiler* const pxCompiler,
     return PXActionInvalid;
 }
 
-PXActionResult PXAPI PXCParsePreprocessorDefine(PXCompiler* const pxCompiler, PXCodeDocument* const pxDocument, PXFile* const pxFile)
+PXActionResult PXAPI PXCParsePreprocessorDefine(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent)
 {
-    const PXSize defineTypePosition = pxFile->DataCursor;
+    const PXSize defineTypePosition = 0;// pxCompiler->DataCursor;
 
     // PXFileWriteI8U(outputStream, 0xFF); // Write dummy define type
 
@@ -1135,7 +1134,7 @@ PXActionResult PXAPI PXCParsePreprocessorDefine(PXCompiler* const pxCompiler, PX
     return PXActionInvalid;
 }
 
-PXActionResult PXAPI PXCParsePreprocessorInclude(PXCompiler* const pxCompiler, PXCodeDocument* const pxDocument, PXFile* const pxFile)
+PXActionResult PXAPI PXCParsePreprocessorInclude(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent)
 {
     PXCodeDocumentElement pxCodeDocumentElement;
     PXClear(PXCodeDocumentElement, &pxCodeDocumentElement);
@@ -1241,7 +1240,7 @@ PXActionResult PXAPI PXCParsePreprocessorInclude(PXCompiler* const pxCompiler, P
             pxCodeDocumentElement.NameSize = libraryNameLength;
             pxCodeDocumentElement.IsGlobal = PXTrue;
 
-            PXDocumentElementAttributeAdd(pxDocument, &pxCodeDocumentElement);
+            PXCodeDocumentElementAdd(pxCompiler->CodeDocument, &pxCodeDocumentElement);
 
 
             break;
@@ -1267,7 +1266,7 @@ PXActionResult PXAPI PXCParsePreprocessorInclude(PXCompiler* const pxCompiler, P
 #endif
             }
 
-            defineTypePosition = (char*)PXFileCursorPosition(pxFile);
+            defineTypePosition = (char*)0;// PXFileCursorPosition(pxFile);
 
             // PXFileWriteI8U(outputStream, PXCLibraryPathTypeGlobal);
             // PXFileWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
@@ -1292,7 +1291,7 @@ PXActionResult PXAPI PXCParsePreprocessorInclude(PXCompiler* const pxCompiler, P
             pxCodeDocumentElement.NameSize = pxCompiler->SymbolEntryCurrent.Size;
             pxCodeDocumentElement.IsGlobal = PXFalse;
 
-            PXDocumentElementAttributeAdd(pxDocument, &pxCodeDocumentElement);
+            PXCodeDocumentElementAdd(pxCompiler->CodeDocument, &pxCodeDocumentElement);
 
             break;
         }
@@ -1306,7 +1305,7 @@ PXActionResult PXAPI PXCParsePreprocessorInclude(PXCompiler* const pxCompiler, P
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXCParsePreprocessorPragma(PXCompiler* const pxCompiler, PXCodeDocument* const pxDocument, PXFile* const pxFile)
+PXActionResult PXAPI PXCParsePreprocessorPragma(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent)
 {
     PXCompilerSymbolEntryExtract(pxCompiler);
 
@@ -1328,7 +1327,7 @@ PXActionResult PXAPI PXCParsePreprocessorPragma(PXCompiler* const pxCompiler, PX
     return PXActionInvalid;
 }
 
-PXActionResult PXAPI PXCParseTypeDefinition(PXCompiler* const pxCompiler, PXCodeDocument* const pxDocument, PXFile* const pxFile)
+PXActionResult PXAPI PXCParseTypeDefinition(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent)
 {
     PXCodeDocumentElement pxCodeDocumentElement;
     PXClear(PXCodeDocumentElement, &pxCodeDocumentElement);
@@ -1351,19 +1350,19 @@ PXActionResult PXAPI PXCParseTypeDefinition(PXCompiler* const pxCompiler, PXCode
         case CKeyWordStruct:
         {
             pxCodeDocumentElement.Type = PXDocumentElementTypeStruct;
-            PXCParseTypeContainer(&pxCodeDocumentElement, pxCompiler, pxDocument, pxFile);
+            PXCParseTypeContainer(pxCompiler, &pxCodeDocumentElement);
             break;
         }
         case CKeyWordUnion:
         {
             pxCodeDocumentElement.Type = PXDocumentElementTypeUnion;
-            PXCParseTypeEnum(&pxCodeDocumentElement, pxDocument, pxFile);
+            PXCParseTypeEnum(pxCompiler, &pxCodeDocumentElement);
             break;
         }
         case CKeyWordEnum:
         {
             pxCodeDocumentElement.Type = PXDocumentElementTypeEnum;
-            PXCParseTypeContainer(&pxCodeDocumentElement, pxCompiler, pxDocument, pxFile);
+            PXCParseTypeContainer(pxCompiler, &pxCodeDocumentElement);
             break;
         }
         default:
@@ -1419,7 +1418,7 @@ PXActionResult PXAPI PXCParseTypeDefinition(PXCompiler* const pxCompiler, PXCode
      
                     const PXBool isAsterics = PXCompilerSymbolLexerBrackedRoundClose == pxCompiler->SymbolEntryCurrent.ID;
 
-                    PXCParseTypeParameterList(pxCompiler, pxDocument, pxFile);
+                    PXCParseTypeParameterList(pxCompiler, &pxCodeDocumentElement);
 
                 }
                 else
@@ -1462,7 +1461,7 @@ PXActionResult PXAPI PXCParseEndOfCommand(PXCompiler* const pxCompiler)
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXCParseTypeParameterList(PXCompiler* const pxCompiler, PXCodeDocument* const pxDocument, PXFile* const pxFile)
+PXActionResult PXAPI PXCParseTypeParameterList(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent)
 {
     // expect '('
     const PXBool isOpenBracked = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerBrackedRoundOpen);
@@ -1476,10 +1475,6 @@ PXActionResult PXAPI PXCParseTypeParameterList(PXCompiler* const pxCompiler, PXC
     {
         PXCompilerSymbolEntryExtract(pxCompiler);
     }
-
-
-
-
 
     for (PXBool doLoop = PXTrue; doLoop; )
     {
@@ -1504,10 +1499,11 @@ PXActionResult PXAPI PXCParseTypeParameterList(PXCompiler* const pxCompiler, PXC
                 PXCodeDocumentElement pxCodeDocumentElement;
                 PXClear(PXCodeDocumentElement, &pxCodeDocumentElement);
                 pxCodeDocumentElement.Type = PXDocumentElementTypeFunctionParameter;
+                pxCodeDocumentElement.ElementParent = parrent;
 
-                PXCParseTypeDeclarationElement(&pxCodeDocumentElement, pxCompiler, pxDocument, pxFile);
+                PXCParseTypeDeclarationElement(pxCompiler, &pxCodeDocumentElement);
 
-                PXDocumentElementAttributeAdd(pxDocument, &pxCodeDocumentElement);
+                PXCodeDocumentElementAdd(pxCompiler->CodeDocument, &pxCodeDocumentElement);
 
                 break;
             }
@@ -1576,12 +1572,12 @@ PXActionResult PXAPI PXCParseFunctionDefinition(PXCompiler* const pxCompiler, PX
 
 
     // ALL OK, update entry
-    PXDocumentElementAttributeAdd(pxDocument, &pxCodeDocumentElement);
+    PXCodeDocumentElementAdd(pxDocument, &pxCodeDocumentElement);
 
     return PXActionInvalid;
 }
 
-PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCodeDocumentElement* const pxCodeDocumentElement, PXCompiler* const pxCompiler, PXCodeDocument* const pxDocument, PXFile* const pxFile)
+PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler, PXCodeDocumentElement* const pxCodeDocumentElement)
 {
     // check if const
     {
@@ -1598,11 +1594,17 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCodeDocumentElement* const
                 case CKeyWordConst:
                 {
                     PXCompilerSymbolEntryExtract(pxCompiler); // consume "const"
+
+                    pxCodeDocumentElement->DataType |= PXDataTypeReadOnly;
+
                     break;
                 }
                 case CKeyWordUnsigned:
                 {
                     PXCompilerSymbolEntryExtract(pxCompiler); // consume "unsigned"
+
+                    pxCodeDocumentElement->DataType |= PXDataTypeUnsigned;
+
                     break;
                 }
 
@@ -1615,7 +1617,7 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCodeDocumentElement* const
 
                     PXCompilerSymbolEntryExtract(pxCompiler); // consume "const"
 
-                    PXCParseTypeContainer(&pxCodeDocumentElementChild, pxCompiler, pxDocument, pxFile);
+                    PXCParseTypeContainer(pxCompiler, &pxCodeDocumentElementChild);
 
                     //PXCompilerSymbolEntryExtract(pxCompiler); // consume ";" 
 
@@ -1643,6 +1645,8 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCodeDocumentElement* const
 
     if (isPointer)
     {
+        pxCodeDocumentElement->DataType |= PXDataTypeAdressMask;
+
         // Throw away '*'
         PXCompilerSymbolEntryExtract(pxCompiler);
 
@@ -1702,9 +1706,8 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCodeDocumentElement* const
         PXLoggingInfo,
         "C",
         "Parsing",
-        "Member : %s, ArraySize:%i",
-        nameBuffer,
-        pxCodeDocumentElement->ArrayAmount
+        "Member : %s",
+        nameBuffer
     );
 #endif
 
@@ -1713,13 +1716,13 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCodeDocumentElement* const
     return PXActionInvalid;
 }
 
-PXActionResult PXAPI PXCParseTypeDeclarationFull(PXCompiler* const pxCompiler, PXCodeDocument* const pxDocument, PXFile* const pxFile)
+PXActionResult PXAPI PXCParseTypeDeclarationFull(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent)
 {   
-    PXCodeDocumentElement pxCodeDocumentElement;
-    PXClear(PXCodeDocumentElement, &pxCodeDocumentElement);
-    pxCodeDocumentElement.Type = PXDocumentElementTypeClassMember;
-    
-    PXCParseTypeDeclarationElement(&pxCodeDocumentElement, pxCompiler, pxDocument, pxFile);
+    PXCodeDocumentElement* pxCodeDocumentElement = PXNull;
+
+    PXCodeDocumentElementGenerateChild(pxCompiler->CodeDocument, PXDocumentElementTypeClassMember, &pxCodeDocumentElement, parrent);
+
+    PXCParseTypeDeclarationElement(pxCompiler, pxCodeDocumentElement);
 
     // ';'   
     const PXBool isSemiColon = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerSemiColon);
@@ -1743,69 +1746,66 @@ PXActionResult PXAPI PXCParseTypeDeclarationFull(PXCompiler* const pxCompiler, P
         {
             PXCompilerSymbolEntryExtract(pxCompiler); // Consume comment
 
-            pxCodeDocumentElement.CommentAdress = pxCompiler->SymbolEntryCurrent.Source;
-            pxCodeDocumentElement.CommentAdress = pxCompiler->SymbolEntryCurrent.Size;
+            pxCodeDocumentElement->CommentAdress = pxCompiler->SymbolEntryCurrent.Source;
+            pxCodeDocumentElement->CommentAdress = pxCompiler->SymbolEntryCurrent.Size;
         }
     }
 
-    PXDocumentElementAttributeAdd(pxDocument, &pxCodeDocumentElement);
+    PXCodeDocumentElementAdd(pxCompiler->CodeDocument, &pxCodeDocumentElement);
 
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXCParseEnumList(PXCompiler* const pxCompiler, PXCodeDocument* const pxDocument, PXFile* const pxFile)
+PXActionResult PXAPI PXCParseEnumMember(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent)
 {
-    PXCodeDocumentElement pxCodeDocumentElement;
-    
-  //  for(;;)
+    PXCodeDocumentElement* pxCodeDocumentElement = PXNull;
+
+    PXCodeDocumentElementGenerateChild(pxCompiler->CodeDocument, PXDocumentElementTypeEnumMember, &pxCodeDocumentElement, parrent);
+
+    const PXBool isValidText = PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerGeneric);
+
+    if(!isValidText)
     {
-        PXClear(PXCodeDocumentElement, &pxCodeDocumentElement);
-        pxCodeDocumentElement.Type = PXDocumentElementTypeEnumMember;
-
-        const PXBool isValidText = PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerGeneric);
-
-        if(!isValidText)
-        {
-            return PXActionSuccessful;
-        }
-
-        PXCompilerSymbolEntryExtract(pxCompiler);
-
-        pxCodeDocumentElement.NameAdress = pxCompiler->SymbolEntryCurrent.Source;
-        pxCodeDocumentElement.NameSize = pxCompiler->SymbolEntryCurrent.Size;
-
-        // TODO: what if an enum has a predefined value!?
-        PXCompilerSymbolEntryPeek(pxCompiler);
-
-        if(pxCompiler->SymbolEntryCurrent.ID == PXCompilerSymbolLexerComment)
-        {
-            pxCodeDocumentElement.CommentAdress = pxCompiler->SymbolEntryCurrent.Source;
-            pxCodeDocumentElement.CommentSize = pxCompiler->SymbolEntryCurrent.Size;
-
-            PXCompilerSymbolEntryExtract(pxCompiler);     
-            PXCompilerSymbolEntryPeek(pxCompiler);
-        }
-
-        switch(pxCompiler->SymbolEntryCurrent.ID)
-        {
-            case PXCompilerSymbolLexerSemiColon: // End of all
-                break;
-
-            case PXCompilerSymbolLexerComma: // end of line
-                PXCompilerSymbolEntryExtract(pxCompiler);
-                break;
-
-            default:
-                break;
-        }
+        return PXActionSuccessful;
     }
 
-    PXDocumentElementAttributeAdd(pxDocument, &pxCodeDocumentElement);
+    PXCompilerSymbolEntryExtract(pxCompiler);
+
+    pxCodeDocumentElement->NameAdress = pxCompiler->SymbolEntryCurrent.Source;
+    pxCodeDocumentElement->NameSize = pxCompiler->SymbolEntryCurrent.Size;
+
+    // TODO: what if an enum has a predefined value!?
+    PXCompilerSymbolEntryPeek(pxCompiler);
+
+    if(pxCompiler->SymbolEntryCurrent.ID == PXCompilerSymbolLexerComment)
+    {
+        pxCodeDocumentElement->CommentAdress = pxCompiler->SymbolEntryCurrent.Source;
+        pxCodeDocumentElement->CommentSize = pxCompiler->SymbolEntryCurrent.Size;
+
+        PXCompilerSymbolEntryExtract(pxCompiler);
+        PXCompilerSymbolEntryPeek(pxCompiler);
+    }
+
+    switch(pxCompiler->SymbolEntryCurrent.ID)
+    {
+        case PXCompilerSymbolLexerSemiColon: // End of all
+            break;
+
+        case PXCompilerSymbolLexerComma: // end of line
+            PXCompilerSymbolEntryExtract(pxCompiler);
+            break;
+
+        default:
+            break;
+    }
+    
+
+    PXCodeDocumentElementAdd(pxCompiler->CodeDocument, &pxCodeDocumentElement);
 
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXCParseTypeContainer(PXCodeDocumentElement* const pxCodeDocumentElement, PXCompiler* const pxCompiler, PXCodeDocument* const pxDocument, PXFile* const pxFile)
+PXActionResult PXAPI PXCParseTypeContainer(PXCompiler* const pxCompiler, PXCodeDocumentElement* const pxCodeDocumentElement)
 {
     // Get name [optional]
     {
@@ -1862,6 +1862,8 @@ PXActionResult PXAPI PXCParseTypeContainer(PXCodeDocumentElement* const pxCodeDo
         }
     }
 
+    // Register element now
+    PXCodeDocumentElementAdd(pxCompiler->CodeDocument, pxCodeDocumentElement);
 
     // expect '{' 
     {
@@ -1881,13 +1883,13 @@ PXActionResult PXAPI PXCParseTypeContainer(PXCodeDocumentElement* const pxCodeDo
                     case PXDocumentElementTypeUnion:
                     case PXDocumentElementTypeClass:
                     {
-                         PXCParseTypeDeclarationFull(pxCompiler, pxDocument, pxFile);
+                         PXCParseTypeDeclarationFull(pxCompiler, pxCodeDocumentElement);
 
                          break;
                     }
                     case PXDocumentElementTypeEnum:
                     {
-                        PXCParseEnumList(pxCompiler, pxDocument, pxFile);
+                        PXCParseEnumMember(pxCompiler, pxCodeDocumentElement);
                         break;
                     }
 
@@ -1912,11 +1914,6 @@ PXActionResult PXAPI PXCParseTypeContainer(PXCodeDocumentElement* const pxCodeDo
             pxCodeDocumentElement->IsPreDefine = PXTrue;
         }
     }
-   
-
-
-
-
 
     // Alias [optional]
     {
@@ -1950,12 +1947,13 @@ PXActionResult PXAPI PXCParseTypeContainer(PXCodeDocumentElement* const pxCodeDo
         }
     }
 
-    PXDocumentElementAttributeAdd(pxDocument, pxCodeDocumentElement);
+    // Update value with new amount of members
+    PXCodeDocumentElementAdd(pxCompiler->CodeDocument, pxCodeDocumentElement);
 
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXCParseTypeEnum(PXCompiler* const pxCompiler, PXCodeDocument* const pxDocument, PXFile* const pxFile)
+PXActionResult PXAPI PXCParseTypeEnum(PXCompiler* const pxCompiler, PXCodeDocumentElement* const pxCodeDocumentElementParent)
 {
     PXCompilerSymbolEntryExtract(pxCompiler);
 
@@ -1977,8 +1975,6 @@ PXActionResult PXAPI PXCParseTypeEnum(PXCompiler* const pxCompiler, PXCodeDocume
 
 PXActionResult PXAPI PXCLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
-
-
 #if PXLogEnable
     PXLogPrint
     (
@@ -1988,7 +1984,6 @@ PXActionResult PXAPI PXCLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInf
         "--- Begin ---"
     );
 #endif
-
 
     PXCodeDocument* pxDocument = (PXCodeDocument*)pxResourceLoadInfo->Target;
     PXClear(PXCodeDocument, pxDocument);
@@ -2001,7 +1996,7 @@ PXActionResult PXAPI PXCLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInf
     pxCompiler.FileInput = pxResourceLoadInfo->FileReference;
     pxCompiler.FileCache = &tokenSteam;
 
-     //-----------------------------------------------------
+    //-----------------------------------------------------
     // Lexer - Level I
     //-----------------------------------------------------
     {
@@ -2020,6 +2015,12 @@ PXActionResult PXAPI PXCLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInf
         PXCompilerLexicalAnalysis(&pxCompiler, &compilerSettings);
     }
 
+
+
+    pxCompiler.CodeDocument = &pxDocument;
+    pxCompiler.TokenStream = &tokenSteam;
+
+   // PXCodeDocumentElementGenerateChild(&pxDocument, PXDocument);
 
 
     //-----------------------------------------------------
@@ -2053,27 +2054,27 @@ PXActionResult PXAPI PXCLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInf
                 {
                     case CKeyWordDefine:
                     {
-                        PXCParsePreprocessorDefine(&pxCompiler, pxDocument, &tokenSteam);
+                        PXCParsePreprocessorDefine(&pxCompiler, PXNull);
                         break;
                     }
                     case CKeyWordIfDefined:
                     {
-                        PXCParsePreprocessorCondition(&pxCompiler, pxDocument, &tokenSteam);
+                        PXCParsePreprocessorCondition(&pxCompiler, PXNull);
                         break;
                     }
                     case CKeyWordIfNotDefined:
                     {
-                        PXCParsePreprocessorCondition(&pxCompiler, pxDocument, &tokenSteam);
+                        PXCParsePreprocessorCondition(&pxCompiler, PXNull);
                         break;
                     }
                     case CKeyWordInclude:
                     {
-                        PXCParsePreprocessorInclude(&pxCompiler, pxDocument, &tokenSteam);
+                        PXCParsePreprocessorInclude(&pxCompiler, PXNull);
                         break;
                     }
                     case CKeyWordPragma:
                     {
-                        PXCParsePreprocessorPragma(&pxCompiler, pxDocument, &tokenSteam);
+                        PXCParsePreprocessorPragma(&pxCompiler, PXNull);
                         break;
                     }
                     case CKeyWordDefinitionEnd:
@@ -2106,7 +2107,7 @@ PXActionResult PXAPI PXCLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInf
                 {
                     case CKeyWordTypeDefinition:
                     {
-                        PXCParseTypeDefinition(&pxCompiler, pxDocument, &tokenSteam);
+                        PXCParseTypeDefinition(&pxCompiler, 0);
                         break;
                     }             
                     case CKeyWordEnum:
@@ -2115,7 +2116,7 @@ PXActionResult PXAPI PXCLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInf
                         PXClear(PXCodeDocumentElement, &pxCodeDocumentElement);
                         pxCodeDocumentElement.Type = PXDocumentElementTypeEnum;
 
-                        PXCParseTypeEnum(&pxCodeDocumentElement, pxDocument, &tokenSteam);
+                        PXCParseTypeEnum(&pxCompiler, &pxCodeDocumentElement);
                         break;
                     }
                     case CKeyWordUnion:
@@ -2124,7 +2125,7 @@ PXActionResult PXAPI PXCLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInf
                         PXClear(PXCodeDocumentElement, &pxCodeDocumentElement);
                         pxCodeDocumentElement.Type = PXDocumentElementTypeUnion;
 
-                        PXCParseTypeContainer(&pxCodeDocumentElement, &pxCompiler, pxDocument, &tokenSteam);
+                        PXCParseTypeContainer(&pxCompiler, &pxCodeDocumentElement);
                         break;
                     }
                     case CKeyWordStruct:
@@ -2133,7 +2134,7 @@ PXActionResult PXAPI PXCLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInf
                         PXClear(PXCodeDocumentElement, &pxCodeDocumentElement);
                         pxCodeDocumentElement.Type = PXDocumentElementTypeStruct;
 
-                        PXCParseTypeContainer(&pxCodeDocumentElement, &pxCompiler, pxDocument, &tokenSteam);
+                        PXCParseTypeContainer(&pxCompiler, &pxCodeDocumentElement);
                         break;
                     }
                     case CKeyWordExtern:

@@ -21,6 +21,17 @@ typedef enum PXDocumentElementType_
 }
 PXDocumentElementType;
 
+typedef enum PXDocumentCallingConvention_
+{
+	PXDocumentCallingConventionInvalid,
+	PXDocumentCallingConventionCDeclaration,
+	PXDocumentCallingConventionStandardCall,
+	PXDocumentCallingConventionFastCall,
+	PXDocumentCallingConventionThisCall
+
+}
+PXDocumentCallingConvention;
+
 typedef struct PXDocumentElementClass_
 {
 	PXBool IsTerminateSignal; // Whats this??
@@ -73,8 +84,9 @@ typedef struct PXCodeDocumentElement_
 	PXSize ID;
 	PXSize Depth;
 
-	struct PXCodeDocumentElement_* ElementParent;
-
+	struct PXCodeDocumentElement_* ElementParent; // Firect parent object
+	struct PXCodeDocumentElement_* ElementSibling; // Like a linked list, contain the next object
+	struct PXCodeDocumentElement_* ElementChildFirstBorn; // contain the first child object
 
 	// include
 	PXBool IsGlobal; // In C, Global=<xxxx> local="xxxx"
@@ -87,8 +99,8 @@ typedef struct PXCodeDocumentElement_
 	// Members
 	PXSize MemberAmount;
 
-	PXSize ElementChildrenAmount;
-	PXSize ElementSiblingsAmount;
+	//PXSize ElementChildrenAmount;
+	//PXSize ElementSiblingsAmount;
 
 	union
 	{
@@ -107,12 +119,13 @@ typedef struct PXCodeDocument_
 	PXFile Data;
 
 
-	PXSize Depth;
+	//PXSize Depth;
 
-	PXSize ElementListAmount; // How many do we have?
+	PXSize ElementListAllocated;
+	PXSize ElementListUsed; // How many do we have?
 	PXCodeDocumentElement* ElementList;
 
-	PXCodeDocumentElement* ElementRoot;
+	//PXCodeDocumentElement* ElementRoot;
 
 	//-------------------
 	// Current State
@@ -124,14 +137,33 @@ typedef struct PXCodeDocument_
 PXCodeDocument;
 
 
+
+
+
 PXPublic const char* PXAPI PXDocumentElementTypeToString(const PXDocumentElementType pxDocumentElementType);
+
+// Add entry to be consumed later.
+// if entry is already registered, this will update the value
+// Returns the newly generated object
+PXPublic PXCodeDocumentElement* PXAPI PXCodeDocumentElementAdd(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement);
+
+PXPublic PXActionResult PXAPI PXCodeDocumentElementGenerateChild
+(
+	PXCodeDocument* const pxDocument,
+	PXDocumentElementType pxDocumentElementType,
+	PXCodeDocumentElement** const pxDocumentElement,
+	PXCodeDocumentElement* const pxDocumentElementParent
+);
+
+
+
 
 PXPublic PXActionResult PXAPI PXDocumentElementRoot(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement);
 PXPublic PXActionResult PXAPI PXDocumentElementChildGet(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement);
 PXPublic PXActionResult PXAPI PXDocumentElementSiblingGet(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement);
 
 
-PXPublic PXActionResult PXAPI PXDocumentElementAttributeAdd(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement);
+
 
 
 PXPublic PXSize PXAPI PXDocumentElementIO(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement, PXFileIOMultibleFunction pxFileIOMultibleFunction);

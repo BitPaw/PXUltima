@@ -1936,8 +1936,9 @@ PXActionResult PXAPI PXResourceSave(PXResourceSaveInfo* const pxResourceSaveInfo
 
     // Try to load assumed format
     {
-        if(pxFile.TypeInfo.FormatExpected == PXFileFormatUnkown)
+        if(PXFileFormatUnkown == pxFile.TypeInfo.FormatExpected)
         {
+#if PXLogEnable
             PXLogPrint
             (
                 PXLoggingError,
@@ -1945,12 +1946,14 @@ PXActionResult PXAPI PXResourceSave(PXResourceSaveInfo* const pxResourceSaveInfo
                 "Save",
                 "Refused : Format not known"
             );
+#endif
 
             return PXActionRefusedNotSupported;
         }
 
-        if(pxFile.TypeInfo.ResourceSave == PXNull)
+        if(PXNull == pxFile.TypeInfo.ResourceSave)
         {
+#if PXLogEnable
             PXLogPrint
             (
                 PXLoggingError,
@@ -1958,17 +1961,20 @@ PXActionResult PXAPI PXResourceSave(PXResourceSaveInfo* const pxResourceSaveInfo
                 "Save",
                 "Refused : Not implemented"
             );
+#endif
 
             return PXActionRefusedNotImplemented;
         }
 
+#if PXLogEnable
         PXInt32U time = PXProcessorTimeReal();
-
+#endif
 
         pxResourceSaveInfo->FileReference = &pxFile;  
 
         const PXActionResult fileParsingResult = pxFile.TypeInfo.ResourceSave(pxResourceSaveInfo);
 
+#if PXLogEnable
         PXInt32U timeDelat = PXProcessorTimeReal() - time;
 
         PXLogPrint
@@ -1981,6 +1987,7 @@ PXActionResult PXAPI PXResourceSave(PXResourceSaveInfo* const pxResourceSaveInfo
             pxFile.CounterOperationsWrite,
             filePath->TextA
         );
+#endif
 
         // PXActionReturnOnSuccess(fileParsingResult); // Exit if this has worked first-try 
 

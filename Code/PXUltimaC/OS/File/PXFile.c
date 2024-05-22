@@ -1068,7 +1068,7 @@ void PXAPI PXFileDestruct(PXFile* const pxFile)
 	switch (pxFile->LocationMode)
 	{
 		case PXFileLocationModeMappedFromDisk:
-			PXFileUnmapFromMemory(pxFile);
+			//PXFileUnmapFromMemory(pxFile);
 			break;
 
 		case PXFileLocationModeInternal:
@@ -3213,6 +3213,16 @@ PXSize PXAPI PXFileWriteFill(PXFile* const pxFile, const PXByte value, const PXS
 	PXDeleteStackList(PXByte, length, &stackMemory, PXNull);
 
 	return writtenBytes;
+}
+
+PXSize PXAPI PXFileWriteNewLine(PXFile* const pxFile)
+{
+	return PXFileWriteB(pxFile, "\n", 1);
+}
+
+PXSize PXAPI PXFileWriteC(PXFile* const pxFile, const char character)
+{
+	return PXFileWriteB(pxFile, character, 1);
 }
 
 PXSize PXAPI PXFileWriteA(PXFile* const pxFile, const PXTextASCII text, PXSize textSize)

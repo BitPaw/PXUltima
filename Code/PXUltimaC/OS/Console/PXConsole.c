@@ -290,6 +290,7 @@ void PXAPI PXLogPrintInvoke(PXLoggingEventData* const pxLoggingEventData, ...)
 	{
 		case PXLoggingTypeTargetFile:
 		{
+#if 0
 			PXFile* pxFile = pxLoggingEventData->FileReference;
 			//PXFilePathGet();
 
@@ -311,6 +312,7 @@ void PXAPI PXLogPrintInvoke(PXLoggingEventData* const pxLoggingEventData, ...)
 				(int)pxFile->ID,
 				pxTextFilePath.TextA
 			);
+#endif
 
 			break;
 		}

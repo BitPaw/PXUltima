@@ -99,10 +99,10 @@ void PXAPI PXXMLBlockParse(PXCodeDocument* const pxDocument, PXCompiler* const p
 
                             PXCodeDocumentElement pxDocumentElement;
                             PXClear(PXCodeDocumentElement, &pxDocumentElement);
-                            pxDocumentElement.Depth = pxDocument->Depth;
+                          //  pxDocumentElement.Depth = pxDocument->Depth;
                             pxDocumentElement.NameAdress = pxCompiler->SymbolEntryCurrent.Source;
                             pxDocumentElement.NameSize = pxCompiler->SymbolEntryCurrent.Size;
-                            pxDocumentElement.Depth = pxDocument->Depth;
+                           // pxDocumentElement.Depth = pxDocument->Depth;
 
                             if (isAttribute)
                             {                                 
@@ -125,13 +125,13 @@ void PXAPI PXXMLBlockParse(PXCodeDocument* const pxDocument, PXCompiler* const p
                             {
                                 if (isClosingTag || isTagEnd)
                                 {
-                                    --(pxDocument->Depth);
+                                  //  --(pxDocument->Depth);
 
-                                    pxDocumentElement.Depth = pxDocument->Depth;
+                                  //  pxDocumentElement.Depth = pxDocument->Depth;
                                 }
                                 else if(isOpeningTag)
                                 {
-                                    ++(pxDocument->Depth);                             
+                                    //++(pxDocument->Depth);                             
 
                                     isOpeningTag = PXFalse;
                                 }                             

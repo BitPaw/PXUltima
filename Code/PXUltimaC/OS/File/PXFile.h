@@ -368,6 +368,10 @@ PXPublic PXSize PXAPI PXFileWriteMultible(PXFile* const pxFile, const PXFileData
 
 PXPublic PXSize PXAPI PXFileWriteFill(PXFile* const pxFile, const PXByte value, const PXSize length);
 
+PXPublic PXSize PXAPI PXFileWriteNewLine(PXFile* const pxFile);
+
+PXPublic PXSize PXAPI PXFileWriteC(PXFile* const pxFile, const char character);
+
 // Write ASCII string \0 terminated.
 PXPublic PXSize PXAPI PXFileWriteA(PXFile* const pxFile, const PXTextASCII text, PXSize textSize);
 

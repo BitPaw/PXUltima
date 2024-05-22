@@ -127,6 +127,10 @@ typedef struct PXCompiler_
 	PXCompilerSymbolEntry SymbolEntryCurrent;
 
 	PXSize ErrorCounter;
+
+	// Used for relational parsing
+	PXCodeDocument* CodeDocument;
+	PXFile* TokenStream;
 }
 PXCompiler;
 

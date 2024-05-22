@@ -1004,7 +1004,7 @@ PXCompilerSymbolLexer PXAPI PXCompilerTryAnalyseType(PXFile* const tokenStream, 
 		const PXBool isNumber = 
 			('A' <= symbol && symbol <= 'Z') || 
 			('a' <= symbol && symbol <= 'z') || 
-			('0' <= symbol && symbol <= '9') || // We already checked if it begins with a letter. This here prevents problems that Texture2D will get splitted
+			('0' <= symbol && symbol <= '9') || // We already checked if it begins with a letter. This here prevents problems that "Texture2D" will get splitted
 			symbol == '.' || symbol == '_' || symbol == ':' || symbol == '/' || symbol == '\\';
 
 		newSize += isNumber;

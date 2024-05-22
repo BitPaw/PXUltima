@@ -15,6 +15,7 @@
 typedef enum PXActionResult_ PXActionResult;
 typedef enum PXFileFormat_ PXFileFormat;
 
+typedef struct PXCodeDocumentElement_ PXCodeDocumentElement;
 typedef struct PXFile_ PXFile;
 typedef struct PXText_ PXText;
 typedef struct PXCodeDocument_ PXCodeDocument;
@@ -329,7 +330,9 @@ typedef struct PXResourceInfo_
 	{
 		PXInt32U OpenGLID; // Simple ID for an object.
 		void* DirectXInterface; // DirectX uses interfaces to communicate to a element.
+#if OSWindows
 		HWND WindowID; // Windows only, used for GUI elements
+#endif
 	};
 
 	PXInt32U ID; // Identification of this object managed by the engine itself.
@@ -1659,8 +1662,6 @@ typedef struct PXUIElementTabPageInfo_
 	PXSize TabPageSingleInfoAmount;
 }
 PXUIElementTabPageInfo;
-
-
 
 
 

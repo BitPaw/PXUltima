@@ -611,32 +611,57 @@ PXActionResult PXAPI PXMemoryHeapDeallocate(PXMemoryInfo* const pxMemoryInfo)
 
 void* PXAPI PXMemoryHeapRealloc(void* buffer, PXSize size)
 {
+#if 0
 	PXMemoryHeapReallocateEventData pxMemoryHeapReallocateEventData;
 	PXMemoryHeapReallocateEventDataFillType(&pxMemoryHeapReallocateEventData, PXByte, size, 0, 0, buffer);
 
 	PXMemoryHeapReallocate(&pxMemoryHeapReallocateEventData);
 
 	return pxMemoryHeapReallocateEventData.DataAdress;
+#else
+
+	return realloc(buffer, size);
+
+
+#endif
 }
 
 PXBool PXAPI PXMemoryHeapReallocate(PXMemoryHeapReallocateEventData* const pxMemoryHeapReallocateInfo)
 {
 	const PXSize sizeToAllocate = pxMemoryHeapReallocateInfo->AmountDemand * pxMemoryHeapReallocateInfo->TypeSize;
+	
+	
+	
+	
+	PXSize oldSize = 0;
+	void* adressOld = PXNull;
 
-	// Need realloc?
+	if(pxMemoryHeapReallocateInfo->DataSize)
 	{
-		const PXSize isEnoughSpace = *pxMemoryHeapReallocateInfo->DataSize >= sizeToAllocate;
-
-		// If there is enough space and we dont want to minimize size, we dont need to realloc
-		if (isEnoughSpace && !pxMemoryHeapReallocateInfo->ReduceSizeIfPossible)
-		{
-			return PXTrue;
-		}
+		oldSize = *pxMemoryHeapReallocateInfo->DataSize;
 	}
 
-	void* const adressOld = *pxMemoryHeapReallocateInfo->DataAdress;
+	if(pxMemoryHeapReallocateInfo->DataAdress)
+	{
+		adressOld = *pxMemoryHeapReallocateInfo->DataAdress;
+	}
+
+
+
+	// Need realloc?
+	const PXSize isEnoughSpace = oldSize >= sizeToAllocate;
+
+	// If there is enough space and we dont want to minimize size, we dont need to realloc
+	if(isEnoughSpace && !pxMemoryHeapReallocateInfo->ReduceSizeIfPossible)
+	{
+		return PXTrue;
+	}
+
+
+	
+
 	void* adressNew = PXNull;
-	const PXSize beforeSize = *pxMemoryHeapReallocateInfo->DataSize;
+	const PXSize beforeSize = oldSize;
 
 
 #if MemoryUseSystemFunction
