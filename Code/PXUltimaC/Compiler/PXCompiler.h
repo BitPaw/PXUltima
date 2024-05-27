@@ -135,6 +135,8 @@ typedef struct PXCompiler_
 	PXSize CommentLine;
 	char* CommentData;
 	PXSize CommentSize;
+
+	PXSize Depth;
 }
 PXCompiler;
 

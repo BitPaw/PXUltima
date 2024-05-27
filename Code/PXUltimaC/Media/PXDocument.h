@@ -166,6 +166,7 @@ PXPublic PXActionResult PXAPI PXCodeDocumentElementGenerateChild
 (
 	PXCodeDocument* const pxDocument,
 	PXDocumentElementType pxDocumentElementType,
+	const PXSize depth,
 	PXCodeDocumentElement** const pxDocumentElement,
 	PXCodeDocumentElement* const pxDocumentElementParent
 );

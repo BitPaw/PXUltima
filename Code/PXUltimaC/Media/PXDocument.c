@@ -17,6 +17,7 @@ const char* PXAPI PXDocumentElementTypeToString(const PXDocumentElementType pxDo
 		case PXDocumentElementTypeClassAttribute: return "attribute";
 		case PXDocumentElementTypeEnumMember: return "enum-member";
 		case PXDocumentElementTypeFunctionParameter: return "fuction-parameter";
+		case PXDocumentElementTypeFile: return "file";
 
 		default:
 			return PXNull;
@@ -59,7 +60,7 @@ PXCodeDocumentElement* PXAPI PXCodeDocumentElementAdd(PXCodeDocument* const pxDo
 
 	PXCopy(PXCodeDocumentElement, pxDocumentElement, newTarget);
 
-	PXCodeDocumentElementPrintSingle(pxDocumentElement, newTarget);
+	//PXCodeDocumentElementPrintSingle(pxDocumentElement, newTarget);
 
 	/*
 
@@ -148,6 +149,7 @@ PXActionResult PXAPI PXCodeDocumentElementGenerateChild
 (
 	PXCodeDocument* const pxDocument,
 	PXDocumentElementType pxDocumentElementType,
+	const PXSize depth,
 	PXCodeDocumentElement** pxDocumentElement,
 	PXCodeDocumentElement* const pxDocumentElementParent
 )
@@ -156,6 +158,7 @@ PXActionResult PXAPI PXCodeDocumentElementGenerateChild
 	PXClear(PXCodeDocumentElement, &pxCodeDocumentElementTemp);
 	pxCodeDocumentElementTemp.Type = pxDocumentElementType;
 	pxCodeDocumentElementTemp.ElementParent = pxDocumentElementParent;
+	pxCodeDocumentElementTemp.Depth = depth;
 
 	PXCodeDocumentElement* pxCodeDocumentElement = PXCodeDocumentElementAdd(pxDocument, &pxCodeDocumentElementTemp); // Use to pre-register space. aka. allocate object
 
@@ -190,9 +193,9 @@ void PXAPI PXCodeDocumentElementPrintSingle(PXCodeDocument* const pxDocument, PX
 #if PXLogEnable
 	const char* typeName = PXDocumentElementTypeToString(pxDocumentElement->Type);
 
-	char commentBuffer[64];
-	PXMemoryClear(commentBuffer, 64);
-	PXTextCopyA(pxDocumentElement->CommentAdress, pxDocumentElement->CommentSize, commentBuffer, 64);
+	char commentBuffer[128];
+	PXMemoryClear(commentBuffer, 128);
+	PXTextCopyA(pxDocumentElement->CommentAdress, pxDocumentElement->CommentSize, commentBuffer, 128);
 
 	char nameBuffer[64];
 	PXMemoryClear(nameBuffer, 64);
@@ -224,12 +227,13 @@ void PXAPI PXCodeDocumentElementPrintSingle(PXCodeDocument* const pxDocument, PX
 	int siblingID = pxDocumentElement->ElementSibling ? pxDocumentElement->ElementSibling->ID : -1;
 	int childID = pxDocumentElement->ElementChildFirstBorn ? pxDocumentElement->ElementChildFirstBorn->ID : -1;
 
-	char identification[256];
+	char identification[515];
 	PXTextPrintA
 	(
 		identification,
-		256,
+		515,
 		"\n"
+		"%10s : %i\n"
 		"%10s : %i\n"
 		"%10s : %s\n"
 		"%10s : %i\n"
@@ -239,6 +243,7 @@ void PXAPI PXCodeDocumentElementPrintSingle(PXCodeDocument* const pxDocument, PX
 		"%10s : %s\n"
 		"%10s : %s",
 		"ID", pxDocumentElement->ID,
+		"Depth", pxDocumentElement->Depth,
 		"Type", typeName,
 		"Parrent", parrentID,
 		"Sibling", siblingID,

@@ -390,7 +390,7 @@ PXSize PXAPI PXTextCopy(const PXText* const source, PXText* const destination)
 
 PXSize PXAPI PXTextCopyA(const char* source, const PXSize sourceLength, char* destination, const PXSize destinationLength)
 {
-	PXSize minLength = PXMathMinimumIU(sourceLength, destinationLength);
+	PXSize maxLength = PXMathMinimumIU(sourceLength, destinationLength);
 	PXSize i = 0;
 
 #if PXTextAssertEnable
@@ -402,14 +402,16 @@ PXSize PXAPI PXTextCopyA(const char* source, const PXSize sourceLength, char* de
 		return 0;
 	}
 
-	if(minLength == 0) // We have no size to do anything, so quit.
+	if(maxLength == 0) // We have no size to do anything, so quit.
 	{
-		--minLength; // We make room for then \0
+		return 0;
 	}
+
+	//--maxLength; // We make room for then \0
 
 #endif
 
-	for (; (i < minLength) && (source[i] != '\0'); ++i)
+	for (; (i < maxLength) && (source[i] != '\0'); ++i)
 	{
 		destination[i] = source[i];
 	}

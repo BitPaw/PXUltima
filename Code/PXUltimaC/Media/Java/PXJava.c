@@ -17,9 +17,12 @@ char PXJavaKeyWordLong[] = "long";
 char PXJavaKeyWordFloat[] = "float";
 char PXJavaKeyWordDouble[] = "double";
 
+#define PXJavaTABSize 2
 
 void PXAPI PXJavaComment(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile)
 {
+	PXFileWriteFill(pxFile, ' ', PXJavaTABSize * pxCodeDocumentElement->Depth);
+
 	if(pxCodeDocumentElement->CommentSize > 0)
 	{
 		PXFileWriteA(pxFile, "// ", 3);
@@ -32,42 +35,16 @@ void PXAPI PXJavaIncludeWrite(PXCodeDocumentElement* pxCodeDocumentElement, PXFi
 {
 	PXFileWriteA(pxFile, "// depends on file ", 19);
 	PXFileWriteA(pxFile, pxCodeDocumentElement->NameAdress, pxCodeDocumentElement->NameSize);
-	PXFileWriteNewLine(pxFile);
-}
-
-void PXAPI PXJavaEnumWrite(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile)
-{
-	PXJavaComment(pxCodeDocumentElement, pxFile);
-
-	PXFileWriteA(pxFile, PXJavaKeyWordPublic, 6);
-	PXFileWriteC(pxFile, ' ');
-	PXFileWriteA(pxFile, PXJavaKeyWordEnum, 4);
-	PXFileWriteC(pxFile, ' ');
-	PXFileWriteA(pxFile, pxCodeDocumentElement->NameAdress, pxCodeDocumentElement->NameSize);
-	PXFileWriteNewLine(pxFile);
-	PXFileWriteA(pxFile, "{", 1);
-
-	for(size_t i = 0; i < pxCodeDocumentElement->MemberAmount; i++)
-	{
-		PXCodeDocumentElement* pxCodeDocumentChild = pxCodeDocumentElement->ElementChildFirstBorn;
-		
-		PXFileWriteA(pxFile, PXJavaKeyWordEnum, 4);
-
-		if(pxCodeDocumentElement->MemberAmount != i) // if not last
-		{
-			PXFileWriteC(pxFile, ',');
-		}
-
-		PXFileWriteNewLine(pxFile);
-	}
-
-	PXFileWriteA(pxFile, "}", 1);
+	//PXFileWriteNewLine(pxFile);
 }
 
 void PXAPI PXJavaContainerWrite(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile)
 {
+	PXFileWriteFill(pxFile, ' ', PXJavaTABSize * pxCodeDocumentElement->Depth);
+
 	PXJavaComment(pxCodeDocumentElement, pxFile);
 
+	PXFileWriteFill(pxFile, ' ', PXJavaTABSize * pxCodeDocumentElement->Depth);
 	PXFileWriteA(pxFile, PXJavaKeyWordPublic, 6);
 	PXFileWriteC(pxFile, ' ');
 
@@ -78,6 +55,7 @@ void PXAPI PXJavaContainerWrite(PXCodeDocumentElement* pxCodeDocumentElement, PX
 			PXFileWriteA(pxFile, PXJavaKeyWordEnum, 4);
 			break;
 		}
+		case PXDocumentElementTypeFile:
 		case PXDocumentElementTypeStruct:
 		case PXDocumentElementTypeClass:
 		{
@@ -91,9 +69,9 @@ void PXAPI PXJavaContainerWrite(PXCodeDocumentElement* pxCodeDocumentElement, PX
 
 	PXFileWriteC(pxFile, ' ');
 
-	if(pxCodeDocumentElement->AliasSize)
+	if(pxCodeDocumentElement->NameShortAdress)
 	{
-		PXFileWriteA(pxFile, pxCodeDocumentElement->AliasAdress, pxCodeDocumentElement->AliasSize);
+		PXFileWriteA(pxFile, pxCodeDocumentElement->NameShortAdress, pxCodeDocumentElement->NameShortSize);
 	}
 	else
 	{
@@ -101,6 +79,7 @@ void PXAPI PXJavaContainerWrite(PXCodeDocumentElement* pxCodeDocumentElement, PX
 	}
 
 	PXFileWriteNewLine(pxFile);
+	PXFileWriteFill(pxFile, ' ', PXJavaTABSize * pxCodeDocumentElement->Depth);
 	PXFileWriteC(pxFile, '{');
 	PXFileWriteNewLine(pxFile);
 
@@ -115,7 +94,8 @@ void PXAPI PXJavaContainerWrite(PXCodeDocumentElement* pxCodeDocumentElement, PX
 		{
 			case PXDocumentElementTypeEnum:
 			{
-				PXFileWriteA(pxFile, child->NameAdress, child->NameSize);
+				PXFileWriteFill(pxFile, ' ', PXJavaTABSize * child->Depth);
+				PXFileWriteA(pxFile, child->NameShortAdress, child->NameShortSize);
 					
 				if(child->ElementSibling) // if not last
 				{
@@ -125,23 +105,26 @@ void PXAPI PXJavaContainerWrite(PXCodeDocumentElement* pxCodeDocumentElement, PX
 				break;
 			}
 			case PXDocumentElementTypeStruct:
+			case PXDocumentElementTypeUnion:
 			case PXDocumentElementTypeClass:
 			{
 				PXJavaDefinitionWrite(child, pxFile);
+				PXFileWriteC(pxFile, ';');
 				break;
 			}
-
 			default:
+				PXJavaElementWrite(child, pxFile);
 				break;
 		}
 
-		PXFileWriteNewLine(pxFile);
-
-
-		//PXJavaElementWrite(pxCodeDocumentChild, pxFile);
+		if(child->ElementSibling)
+		{
+			PXFileWriteNewLine(pxFile);
+		}
 	}
 
 	PXFileWriteNewLine(pxFile);
+	PXFileWriteFill(pxFile, ' ', PXJavaTABSize * pxCodeDocumentElement->Depth);
 	PXFileWriteC(pxFile,  '}');
 	PXFileWriteNewLine(pxFile);
 }
@@ -151,6 +134,8 @@ void PXAPI PXJavaFunctionWrite(PXCodeDocumentElement* pxCodeDocumentElement, PXF
 	// Cleave function name?	
 
 	PXJavaComment(pxCodeDocumentElement, pxFile);
+
+	PXFileWriteFill(pxFile, ' ', PXJavaTABSize * pxCodeDocumentElement->Depth);
 
 	PXFileWriteA(pxFile, PXJavaKeyWordPublic, 6);
 	PXFileWriteC(pxFile, ' ');
@@ -163,18 +148,20 @@ void PXAPI PXJavaFunctionWrite(PXCodeDocumentElement* pxCodeDocumentElement, PXF
 
 	PXFileWriteA(pxFile, PXJavaKeyWordVoid, 4);
 	PXFileWriteC(pxFile, ' ');
-	PXFileWriteA(pxFile, pxCodeDocumentElement->NameAdress, pxCodeDocumentElement->NameSize);
+	PXFileWriteA(pxFile, pxCodeDocumentElement->NameShortAdress, pxCodeDocumentElement->NameShortSize);
 
 	PXJavaParameterList(pxCodeDocumentElement, pxFile);
 
 	PXFileWriteC(pxFile, ';');
-	PXFileWriteNewLine(pxFile);
+	//PXFileWriteNewLine(pxFile);
 
 }
 
 void PXAPI PXJavaDefinitionWrite(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile)
 {
 	PXJavaComment(pxCodeDocumentElement, pxFile);
+
+	//PXFileWriteFill(pxFile, ' ', PXJavaTABSize * pxCodeDocumentElement->Depth);
 
 	// readonly
 	if(pxCodeDocumentElement->DataType & PXDataTypeReadOnly)
@@ -220,29 +207,6 @@ void PXAPI PXJavaDefinitionWrite(PXCodeDocumentElement* pxCodeDocumentElement, P
 
 	PXFileWriteC(pxFile, ' ');
 	PXFileWriteA(pxFile, pxCodeDocumentElement->NameAdress, pxCodeDocumentElement->NameSize);
-
-
-	switch(pxCodeDocumentElement->Type)
-	{
-		case PXDocumentElementTypeClassMember:
-		{
-			PXFileWriteC(pxFile, ';');
-			break;
-		}
-		case PXDocumentElementTypeFunctionParameter:
-		{
-			if(pxCodeDocumentElement->ElementSibling) // is not last entry
-			{
-				PXFileWriteC(pxFile, ',');
-				PXFileWriteC(pxFile, ' ');
-			}
-		
-			break;
-		}
-
-		default:
-			break;
-	}
 }
 
 void PXAPI PXJavaParameterList(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile)
@@ -264,6 +228,36 @@ void PXAPI PXJavaElementWrite(PXCodeDocumentElement* pxCodeDocumentElement, PXFi
 		return;
 	}
 
+#if 1
+	switch(pxCodeDocumentElement->Type)
+	{
+		case PXDocumentElementTypeFile:
+		{
+			PXJavaContainerWrite(pxCodeDocumentElement, pxFile);
+			break;
+		}
+		case PXDocumentElementTypeInclude:
+		{
+			PXJavaIncludeWrite(pxCodeDocumentElement, pxFile);
+			break;
+		}
+		case PXDocumentElementTypeEnum:
+		case PXDocumentElementTypeClass:
+		case PXDocumentElementTypeStruct:
+		{
+			PXJavaContainerWrite(pxCodeDocumentElement, pxFile);
+			break;
+		}
+		case PXDocumentElementTypeFunction:
+		{
+			PXJavaFunctionWrite(pxCodeDocumentElement, pxFile);
+			break;
+		}
+
+		default:
+			break;
+	}
+#else
 	PXCodeDocumentElement* sibling = pxCodeDocumentElement;
 
 	for(size_t i = 0; sibling; ++i)
@@ -273,7 +267,6 @@ void PXAPI PXJavaElementWrite(PXCodeDocumentElement* pxCodeDocumentElement, PXFi
 			case PXDocumentElementTypeFile:
 			{
 				PXJavaContainerWrite(sibling, pxFile);
-				
 				break;
 			}
 			case PXDocumentElementTypeInclude:
@@ -306,6 +299,7 @@ void PXAPI PXJavaElementWrite(PXCodeDocumentElement* pxCodeDocumentElement, PXFi
 
 		sibling = sibling->ElementSibling;
 	}
+#endif
 }
 
 PXActionResult PXAPI PXJavaLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
@@ -339,7 +333,7 @@ PXActionResult PXAPI PXJavaSaveToFile(PXResourceSaveInfo* const pxResourceSaveIn
 		pxFile, 
 		"// This file is generated by PXUltima\n"
 		"// Date: %02i.%02i.%04i\n"
-		"// Time: %02o:%02o:%02i\n\n",
+		"// Time: %02i:%02i:%02i\n\n",
 		(int)pxTime.Day, 
 		(int)pxTime.Month,
 		(int)pxTime.Year,

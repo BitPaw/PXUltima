@@ -605,7 +605,7 @@ PXActionResult PXAPI PXCParsePreprocessorInclude(PXCompiler* const pxCompiler, P
 {
     PXCodeDocumentElement* pxCodeDocumentElement = PXNull;
 
-    PXCodeDocumentElementGenerateChild(pxCompiler->CodeDocument, PXDocumentElementTypeInclude, &pxCodeDocumentElement, parrent);
+    PXCodeDocumentElementGenerateChild(pxCompiler->CodeDocument, PXDocumentElementTypeInclude, pxCompiler->Depth, &pxCodeDocumentElement, parrent);
 
     PXCompilerSymbolEntryExtract(pxCompiler);
 
@@ -808,7 +808,7 @@ PXActionResult PXAPI PXCParseTypeDefinition(PXCompiler* const pxCompiler, PXCode
 {
     PXCodeDocumentElement* pxCodeDocumentElement = PXNull;
 
-    PXCodeDocumentElementGenerateChild(pxCompiler->CodeDocument, PXDocumentElementTypeInvalid, &pxCodeDocumentElement, parrent);
+    PXCodeDocumentElementGenerateChild(pxCompiler->CodeDocument, PXDocumentElementTypeInvalid, pxCompiler->Depth, &pxCodeDocumentElement, parrent);
 
     pxCodeDocumentElement->IsTypeDefinition = PXTrue;
 
@@ -1009,7 +1009,7 @@ PXActionResult PXAPI PXCParseFunctionDefinition(PXCompiler* const pxCompiler, PX
 {
     PXCodeDocumentElement* pxCodeDocumentElement = PXNull;
 
-    PXCodeDocumentElementGenerateChild(pxCompiler->CodeDocument, PXDocumentElementTypeFunction, &pxCodeDocumentElement, parrent);
+    PXCodeDocumentElementGenerateChild(pxCompiler->CodeDocument, PXDocumentElementTypeFunction, pxCompiler->Depth, &pxCodeDocumentElement, parrent);
 
     PXCompilerSymbolEntryExtract(pxCompiler);
 
@@ -1044,6 +1044,8 @@ PXActionResult PXAPI PXCParseFunctionDefinition(PXCompiler* const pxCompiler, PX
     {
         pxCodeDocumentElement->NameAdress = pxCompiler->SymbolEntryCurrent.Source;
         pxCodeDocumentElement->NameSize = pxCompiler->SymbolEntryCurrent.Size;
+
+        PXCNameCleave(pxCompiler, pxCodeDocumentElement);
 
         PXTextCopyA(pxCompiler->SymbolEntryCurrent.Source, pxCompiler->SymbolEntryCurrent.Size, bufferFunctionName, 64);
 
@@ -1093,7 +1095,7 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler
             break;
     }
 
-    PXCodeDocumentElementGenerateChild(pxCompiler->CodeDocument, pxDocumentElementType, &pxCodeDocumentElement, parent);
+    PXCodeDocumentElementGenerateChild(pxCompiler->CodeDocument, pxDocumentElementType, pxCompiler->Depth, &pxCodeDocumentElement, parent);
 
     // check if const
     {
@@ -1390,14 +1392,14 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler
 
 void PXAPI PXCNameCleave(PXCompiler* const pxCompiler, PXCodeDocumentElement* const pxCodeDocumentElement)
 {
+    char* name = pxCodeDocumentElement->AliasAdress ? pxCodeDocumentElement->AliasAdress : pxCodeDocumentElement->NameAdress;
+    PXSize nameSize = pxCodeDocumentElement->AliasSize ? pxCodeDocumentElement->AliasSize : pxCodeDocumentElement->NameSize;
+
     if(pxCodeDocumentElement->ElementParent)
     {
-        PXCodeDocumentElement* parent = pxCodeDocumentElement->ElementParent;
+        PXCodeDocumentElement* parent = pxCodeDocumentElement->ElementParent;      
 
-        char* name = pxCodeDocumentElement->AliasAdress ? pxCodeDocumentElement->AliasAdress : pxCodeDocumentElement->NameAdress;
-        PXSize nameSize = pxCodeDocumentElement->AliasSize ? pxCodeDocumentElement->AliasSize : pxCodeDocumentElement->NameSize;
-
-        PXSize position = PXTextFindFirstStringA
+        PXBool check = PXMemoryCompare
         (
             name,
             nameSize,
@@ -1405,7 +1407,7 @@ void PXAPI PXCNameCleave(PXCompiler* const pxCompiler, PXCodeDocumentElement* co
             parent->NameSpaceSize
         );
 
-        if(-1 != position)
+        if(check)
         {
             pxCodeDocumentElement->NameSpaceAdress = name;
             pxCodeDocumentElement->NameSpaceSize = parent->NameSpaceSize;
@@ -1413,31 +1415,70 @@ void PXAPI PXCNameCleave(PXCompiler* const pxCompiler, PXCodeDocumentElement* co
             pxCodeDocumentElement->NameClassAdress = name + parent->NameSpaceSize;
             pxCodeDocumentElement->NameClassSize = nameSize - parent->NameSpaceSize;
 
-            PXSize position = PXTextFindFirstStringA
+
+            char* className = 0;
+            PXSize classSize = 0;
+
+            if(parent->NameClassAdress)
+            {
+                className = parent->NameClassAdress;
+                classSize = parent->NameClassSize;
+            }
+            else
+            {
+                className = parent->NameShortAdress;
+                classSize = parent->NameShortSize;
+            }
+
+        
+
+
+            check = PXMemoryCompare
             (
-                name,
-                nameSize,
-                parent->NameClassAdress,
-                parent->NameClassSize
+                pxCodeDocumentElement->NameClassAdress,
+                pxCodeDocumentElement->NameClassSize,
+                className,
+                classSize
             );
 
-            if(-1 != position)
+            if(check)
             {
-                pxCodeDocumentElement->NameShortAdress = pxCodeDocumentElement->NameClassAdress + parent->NameClassSize;
-                pxCodeDocumentElement->NameShortSize = pxCodeDocumentElement->NameClassSize - parent->NameClassSize;
+                pxCodeDocumentElement->NameShortAdress = pxCodeDocumentElement->NameClassAdress + classSize;
+                pxCodeDocumentElement->NameShortSize = pxCodeDocumentElement->NameClassSize - classSize;
 
 
                 pxCodeDocumentElement->NameClassSize -= pxCodeDocumentElement->NameShortSize;
+            }
+
+            // For C enums, we have a very detailed name, we need to cleave this further
+            if(pxCodeDocumentElement->Type == PXDocumentElementTypeEnumMember)
+            {
+                check = PXMemoryCompare
+                (
+                    pxCodeDocumentElement->NameShortAdress,
+                    pxCodeDocumentElement->NameShortSize,
+                    parent->NameShortAdress,
+                    parent->NameShortSize
+                );
+
+                if(check)
+                {
+                    pxCodeDocumentElement->NameShortAdress += parent->NameShortSize;
+                    pxCodeDocumentElement->NameShortSize -= parent->NameShortSize;
+                }
             }
         }
     }
     else
     {
-        pxCodeDocumentElement->NameSpaceAdress = pxCodeDocumentElement->NameAdress;
-        pxCodeDocumentElement->NameSpaceSize = PXTextPascalCaseCleave(pxCodeDocumentElement->NameAdress, pxCodeDocumentElement->NameSize);
+        pxCodeDocumentElement->NameSpaceAdress = name;
+        pxCodeDocumentElement->NameSpaceSize = PXTextPascalCaseCleave(name, nameSize);
 
-        pxCodeDocumentElement->NameClassAdress = pxCodeDocumentElement->NameSpaceAdress + pxCodeDocumentElement->NameSpaceSize;
-        pxCodeDocumentElement->NameClassSize = PXTextPascalCaseCleave(pxCodeDocumentElement->NameClassAdress, pxCodeDocumentElement->NameSize - pxCodeDocumentElement->NameSpaceSize);
+        pxCodeDocumentElement->NameClassAdress = 0;
+        pxCodeDocumentElement->NameClassSize = 0;
+
+        pxCodeDocumentElement->NameShortAdress = name + pxCodeDocumentElement->NameSpaceSize;
+        pxCodeDocumentElement->NameShortSize = nameSize - pxCodeDocumentElement->NameSpaceSize;
     }
 }
 
@@ -1445,7 +1486,7 @@ PXActionResult PXAPI PXCParseEnumMember(PXCompiler* const pxCompiler, PXCodeDocu
 {
     PXCodeDocumentElement* pxCodeDocumentElement = PXNull;
 
-    PXCodeDocumentElementGenerateChild(pxCompiler->CodeDocument, PXDocumentElementTypeEnumMember, &pxCodeDocumentElement, parrent);
+    PXCodeDocumentElementGenerateChild(pxCompiler->CodeDocument, PXDocumentElementTypeEnumMember, pxCompiler->Depth, &pxCodeDocumentElement, parrent);
 
     const PXBool isValidText = PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerGeneric);
 
@@ -1556,12 +1597,14 @@ PXActionResult PXAPI PXCParseTypeContainer(PXCompiler* const pxCompiler, PXCodeD
 
     // expect '{' 
     {
-        PXCompilerSymbolEntryExtract(pxCompiler);
-
-        const PXBool isCurlyBrackedOpen = PXCompilerSymbolLexerBracketCurlyOpen == pxCompiler->SymbolEntryCurrent.ID;
+        const PXBool isCurlyBrackedOpen = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerBracketCurlyOpen);
 
         if (isCurlyBrackedOpen)
         {
+            ++pxCompiler->Depth;
+
+            PXCompilerSymbolEntryForward(pxCompiler);
+
             PXBool isCurlyBrackedClose = 0; 
 
             for(;;)
@@ -1597,6 +1640,8 @@ PXActionResult PXAPI PXCParseTypeContainer(PXCompiler* const pxCompiler, PXCodeD
                     break;
                 }                        
             }
+
+            --pxCompiler->Depth;
         }
         else
         {
@@ -1606,9 +1651,7 @@ PXActionResult PXAPI PXCParseTypeContainer(PXCompiler* const pxCompiler, PXCodeD
 
     // Alias [optional]
     {
-        PXCompilerSymbolEntryPeek(pxCompiler);
-
-        const PXBool isText = PXCompilerSymbolLexerGeneric == pxCompiler->SymbolEntryCurrent.ID;
+        const PXBool isText = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerGeneric);
 
         if (isText)
         {
@@ -1640,6 +1683,12 @@ PXActionResult PXAPI PXCParseTypeContainer(PXCompiler* const pxCompiler, PXCodeD
 
     // Update value with new amount of members
     PXCodeDocumentElementAdd(pxCompiler->CodeDocument, pxCodeDocumentElement);
+
+    for(PXCodeDocumentElement* i = pxCodeDocumentElement->ElementChildFirstBorn; i ; i = i->ElementSibling)
+    {
+        PXCNameCleave(pxCompiler, i);
+        PXCodeDocumentElementAdd(pxCompiler->CodeDocument, i);
+    }
 
     return PXActionRefusedNotImplemented;
 }
@@ -1715,7 +1764,7 @@ PXActionResult PXAPI PXCLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInf
     pxCompiler.CodeDocument = pxDocument;
     pxCompiler.TokenStream = &tokenSteam;
 
-    PXCodeDocumentElementGenerateChild(pxDocument, PXDocumentElementTypeFile, &pxCodeDocumentElementRoot, PXNull);
+    PXCodeDocumentElementGenerateChild(pxDocument, PXDocumentElementTypeFile, 0, &pxCodeDocumentElementRoot, PXNull);
 
 
     {
@@ -1728,15 +1777,15 @@ PXActionResult PXAPI PXCLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInf
 
         PXFilePathSplitt(&filePath, &pxFilePathStructure);
 
-        pxCodeDocumentElementRoot->NameSize = PXTextCopyA(pxFilePathStructure.FileName.TextA, pxFilePathStructure.FileName.SizeUsed, mainNodeName, 64);
-        pxCodeDocumentElementRoot->NameAdress = mainNodeName;
+        PXNewList(char, pxFilePathStructure.FileName.SizeUsed, &pxCodeDocumentElementRoot->NameAdress, &pxCodeDocumentElementRoot->NameSize);
+        PXTextCopyA(pxFilePathStructure.FileName.TextA, pxFilePathStructure.FileName.SizeUsed, pxCodeDocumentElementRoot->NameAdress, pxCodeDocumentElementRoot->NameSize);
 
         PXCNameCleave(&pxCompiler, pxCodeDocumentElementRoot);
 
         PXCodeDocumentElementAdd(pxCompiler.CodeDocument, pxCodeDocumentElementRoot);
     }
 
-
+    ++pxCompiler.Depth;
 
     // filename
     //pxCodeDocumentElementRoot->NameAdress = 

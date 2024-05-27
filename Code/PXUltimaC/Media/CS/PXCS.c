@@ -4,6 +4,27 @@
 #include <Media/PXText.h>
 #include <Math/PXMath.h>
 
+#include <Compiler/PXCompiler.h>
+#include <Media/PXDocument.h>
+
+
+char PXCSharpKeyWordPublic[] = "public";
+char PXCSharpKeyWordPrivate[] = "private";
+char PXCSharpKeyWordStruct[] = "struct";
+char PXCSharpKeyWordClass[] = "class";
+char PXCSharpKeyWordEnum[] = "enum";
+char PXCSharpKeyWordVoid[] = "void";
+char PXCSharpKeyWordExpliciLayout[] = "[StructLayout(LayoutKind.Explicit)]";
+
+//char PXJavaKeyWordByte[] = "byte";
+//char PXJavaKeyWordInt[] = "int";
+//char PXJavaKeyWordShort[] = "short";
+//char PXJavaKeyWordLong[] = "long";
+//char PXJavaKeyWordFloat[] = "float";
+//char PXJavaKeyWordDouble[] = "double";
+
+#define PXJavaTABSize 2
+
 PXCSKeyWord PXCSFetchNext(PXFile* const inputSteam)
 {
 	PXCSKeyWord keyWord = PXCSKeyWordInvalid;
@@ -330,6 +351,238 @@ void PXCSCreateWrapperFromCSource(PXFile* const inputSteam, PXFile* const output
 	outputStream->DataCursor = 0;
 }
 
+void PXAPI PXCSharpComment(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile)
+{
+	PXFileWriteFill(pxFile, ' ', PXJavaTABSize * pxCodeDocumentElement->Depth);
+
+	if(pxCodeDocumentElement->CommentSize > 0)
+	{
+		PXFileWriteA(pxFile, "// ", 3);
+		PXFileWriteA(pxFile, pxCodeDocumentElement->CommentAdress, pxCodeDocumentElement->CommentSize);
+		PXFileWriteNewLine(pxFile);
+	}
+}
+
+void PXAPI PXCSharpIncludeWrite(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile)
+{
+	PXFileWriteA(pxFile, "// depends on file ", 19);
+	PXFileWriteA(pxFile, pxCodeDocumentElement->NameAdress, pxCodeDocumentElement->NameSize);
+	//PXFileWriteNewLine(pxFile);
+}
+
+void PXAPI PXCSharpContainerWrite(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile)
+{
+	PXFileWriteFill(pxFile, ' ', PXJavaTABSize * pxCodeDocumentElement->Depth);
+
+	PXCSharpComment(pxCodeDocumentElement, pxFile);
+
+	PXFileWriteFill(pxFile, ' ', PXJavaTABSize * pxCodeDocumentElement->Depth);
+	PXFileWriteA(pxFile, PXCSharpKeyWordPublic, sizeof(PXCSharpKeyWordPublic) - 1);
+	PXFileWriteC(pxFile, ' ');
+
+	switch(pxCodeDocumentElement->Type)
+	{
+		case PXDocumentElementTypeEnum:
+		{
+			PXFileWriteA(pxFile, PXCSharpKeyWordEnum, sizeof(PXCSharpKeyWordEnum) - 1);
+			break;
+		}
+		case PXDocumentElementTypeFile:
+		case PXDocumentElementTypeStruct:
+		{
+			PXFileWriteA(pxFile, PXCSharpKeyWordStruct, sizeof(PXCSharpKeyWordStruct) - 1);
+			break;
+		}
+		case PXDocumentElementTypeClass:
+		{
+			PXFileWriteA(pxFile, PXCSharpKeyWordClass, sizeof(PXCSharpKeyWordClass) - 1);
+			break;
+		}
+
+		default:
+			break;
+	}
+
+	PXFileWriteC(pxFile, ' ');
+
+	if(pxCodeDocumentElement->NameShortAdress)
+	{
+		PXFileWriteA(pxFile, pxCodeDocumentElement->NameShortAdress, pxCodeDocumentElement->NameShortSize);
+	}
+	else
+	{
+		PXFileWriteA(pxFile, pxCodeDocumentElement->NameAdress, pxCodeDocumentElement->NameSize);
+	}
+
+	PXFileWriteNewLine(pxFile);
+	PXFileWriteFill(pxFile, ' ', PXJavaTABSize * pxCodeDocumentElement->Depth);
+	PXFileWriteC(pxFile, '{');
+	PXFileWriteNewLine(pxFile);
+
+	for
+		(
+		PXCodeDocumentElement* child = pxCodeDocumentElement->ElementChildFirstBorn;
+		child;
+		child = child->ElementSibling
+		)
+	{
+		switch(pxCodeDocumentElement->Type)
+		{
+			case PXDocumentElementTypeEnum:
+			{
+				PXFileWriteFill(pxFile, ' ', PXJavaTABSize * child->Depth);
+				PXFileWriteA(pxFile, child->NameShortAdress, child->NameShortSize);
+
+				if(child->ElementSibling) // if not last
+				{
+					PXFileWriteC(pxFile, ',');
+				}
+
+				break;
+			}
+			case PXDocumentElementTypeStruct:
+			case PXDocumentElementTypeUnion:
+			case PXDocumentElementTypeClass:
+			{
+				//PXJavaDefinitionWrite(child, pxFile);
+				PXFileWriteC(pxFile, ';');
+				break;
+			}
+			default:
+			//	PXJavaElementWrite(child, pxFile);
+				break;
+		}
+
+		if(child->ElementSibling)
+		{
+			PXFileWriteNewLine(pxFile);
+		}
+	}
+
+	PXFileWriteNewLine(pxFile);
+	PXFileWriteFill(pxFile, ' ', PXJavaTABSize * pxCodeDocumentElement->Depth);
+	PXFileWriteC(pxFile, '}');
+	PXFileWriteNewLine(pxFile);
+}
+
+void PXAPI PXCSharpFunctionWrite(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile)
+{
+	// Cleave function name?	
+
+	PXCSharpComment(pxCodeDocumentElement, pxFile);
+
+	PXFileWriteFill(pxFile, ' ', PXJavaTABSize * pxCodeDocumentElement->Depth);
+
+	//PXFileWriteA(pxFile, PXJavaKeyWordPublic, 6);
+	PXFileWriteC(pxFile, ' ');
+
+	if(1) // Is native?
+	{
+		//PXFileWriteA(pxFile, PXJavaKeyWordNative, 6);
+		PXFileWriteC(pxFile, ' ');
+	}
+
+	//PXFileWriteA(pxFile, PXJavaKeyWordVoid, 4);
+	PXFileWriteC(pxFile, ' ');
+	PXFileWriteA(pxFile, pxCodeDocumentElement->NameShortAdress, pxCodeDocumentElement->NameShortSize);
+
+//	PXJavaParameterList(pxCodeDocumentElement, pxFile);
+
+	PXFileWriteC(pxFile, ';');
+	//PXFileWriteNewLine(pxFile);
+}
+
+void PXAPI PXCSharpDefinitionWrite(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile)
+{
+	PXCSharpComment(pxCodeDocumentElement, pxFile);
+
+	//PXFileWriteFill(pxFile, ' ', PXJavaTABSize * pxCodeDocumentElement->Depth);
+
+	// const does not exists in this context. const in C# does mean another thing
+
+	// type
+	if(pxCodeDocumentElement->DataTypeIsBuildIn)
+	{
+		switch(pxCodeDocumentElement->DataType & PXDataTypeSizeMask)
+		{
+			case PXDataTypeSize08:
+				//PXFileWriteA(pxFile, PXJavaKeyWordByte, 4);
+				break;
+
+			case PXDataTypeSize16:
+				//PXFileWriteA(pxFile, PXJavaKeyWordShort, 5);
+				break;
+
+			case PXDataTypeSize32:
+			//	PXFileWriteA(pxFile, PXJavaKeyWordInt, 3);
+				break;
+
+			case PXDataTypeSize64:
+				//PXFileWriteA(pxFile, PXJavaKeyWordLong, 4);
+				break;
+
+			default:
+				PXFileWriteA(pxFile, "Error-Type", 10);
+				break;
+		}
+	}
+	else
+	{
+		// Custom type
+		PXFileWriteA(pxFile, pxCodeDocumentElement->TypeNameAdress, pxCodeDocumentElement->TypeNameSize);
+	}
+
+	// Adress?
+
+
+	PXFileWriteC(pxFile, ' ');
+	PXFileWriteA(pxFile, pxCodeDocumentElement->NameAdress, pxCodeDocumentElement->NameSize);
+}
+
+void PXAPI PXCSharpParameterList(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile)
+{
+	PXFileWriteC(pxFile, '(');
+
+	for(PXCodeDocumentElement* i = pxCodeDocumentElement->ElementChildFirstBorn; i; i = i->ElementSibling)
+	{
+		PXCSharpDefinitionWrite(i, pxFile);
+	}
+
+	PXFileWriteC(pxFile, ')');
+}
+
+void PXAPI PXCSharpElementWrite(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile)
+{
+	switch(pxCodeDocumentElement->Type)
+	{
+		case PXDocumentElementTypeFile:
+		{
+			PXCSharpContainerWrite(pxCodeDocumentElement, pxFile);
+			break;
+		}
+		case PXDocumentElementTypeInclude:
+		{
+			PXCSharpIncludeWrite(pxCodeDocumentElement, pxFile);
+			break;
+		}
+		case PXDocumentElementTypeEnum:
+		case PXDocumentElementTypeClass:
+		case PXDocumentElementTypeStruct:
+		{
+			PXCSharpContainerWrite(pxCodeDocumentElement, pxFile);
+			break;
+		}
+		case PXDocumentElementTypeFunction:
+		{
+			PXCSharpFunctionWrite(pxCodeDocumentElement, pxFile);
+			break;
+		}
+
+		default:
+			break;
+	}
+}
+
 PXActionResult PXAPI PXCSLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
 	return PXActionRefusedNotImplemented;
@@ -337,5 +590,40 @@ PXActionResult PXAPI PXCSLoadFromFile(PXResourceLoadInfo* const pxResourceLoadIn
 
 PXActionResult PXAPI PXCSSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
 {
+	PXFile* pxFile = pxResourceSaveInfo->FileReference;
+
+	if(!pxResourceSaveInfo)
+	{
+		return PXActionRefusedArgumentNull;
+	}
+
+	if(PXResourceTypeCodeDocument != pxResourceSaveInfo->Type)
+	{
+		return PXActionRefusedArgumentInvalid;
+	}
+
+	PXCodeDocument* const pxCodeDocument = (PXCodeDocument*)pxResourceSaveInfo->Target;
+
+	PXCodeDocumentElement* const pxCodeDocumentCurrent = &pxCodeDocument->ElementList[0];
+
+	PXTime pxTime;
+	PXTimeNow(&pxTime);
+
+	PXFileWriteAF
+	(
+		pxFile,
+		"// This file is generated by PXUltima\n"
+		"// Date: %02i.%02i.%04i\n"
+		"// Time: %02i:%02i:%02i\n\n",
+		(int)pxTime.Day,
+		(int)pxTime.Month,
+		(int)pxTime.Year,
+		(int)pxTime.Hour,
+		(int)pxTime.Minute,
+		(int)pxTime.Second
+	);
+
+	PXCSharpElementWrite(pxCodeDocumentCurrent, pxFile);
+
 	return PXActionRefusedNotImplemented;
 }
