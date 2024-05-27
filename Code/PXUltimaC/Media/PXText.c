@@ -210,6 +210,15 @@ PXSize PXAPI PXTextPrintA(char* const text, const PXSize size, const char* style
 	return xx;
 }
 
+PXSize PXAPI PXTextPrintAV(char* const text, const PXSize size, const char* style, va_list parameter)
+{
+#if OSUnix
+	return vsnprintf(text, size, style, parameter);
+#elif OSWindows
+	return vsprintf_s(text, size, style, parameter);
+#endif
+}
+
 PXSize PXAPI PXTextPrintV(PXText* const pxText, const char* style, va_list parameter)
 {
 	switch (pxText->Format)
@@ -217,11 +226,7 @@ PXSize PXAPI PXTextPrintV(PXText* const pxText, const char* style, va_list param
 		case TextFormatASCII:
 		case TextFormatUTF8:
 		{
-#if OSUnix
-			pxText->SizeUsed = vsnprintf(pxText->TextA, pxText->SizeAllocated, style, parameter);
-#elif OSWindows
-			pxText->SizeUsed = vsprintf_s(pxText->TextA, pxText->SizeAllocated, style, parameter);
-#endif
+			pxText->SizeUsed = PXTextPrintAV(pxText->TextW, pxText->SizeAllocated, style, parameter);
 			break;
 		}
 		case TextFormatUNICODE:
@@ -601,6 +606,21 @@ PXSize PXAPI PXTextCountW(const wchar_t* pxText, const PXSize textSize, const wc
 	return samecounter;
 }
 
+PXSize PXAPI PXTextPascalCaseCleave(const char* pxText, const PXSize PXTextSize)
+{
+	PXSize index = 0;
+
+	if(PXTextIsLetterCaseUpper(pxText[index]))
+	{
+		index++;
+	}
+
+	for(; PXTextIsLetterCaseUpper(pxText[index]) && PXTextIsLetterCaseUpper(pxText[index+1]) && !IsEndOfString(pxText[index]); ++index);
+	for(; PXTextIsLetterCaseLower(pxText[index]) && !IsEndOfString(pxText[index]); ++index);
+
+	return index;
+}
+
 PXSize PXAPI PXTextCountUntilA(const char* pxText, const PXSize textSize, const char target, const char stopAt)
 {
 	PXSize samecounter = 0;
@@ -887,7 +907,9 @@ PXSize PXAPI PXTextFindFirstStringA(const char* PXRestrict const string, const P
 
 		if (found)
 		{
-			found = PXTextCompareA(&string[index], dataSize - index, &targetString[0], targetStringSize);
+			const PXSize limitedLength = PXMathMinimumI(dataSize - index, targetStringSize);
+
+			found = PXTextCompareA(&string[index], limitedLength, &targetString[0], limitedLength);
 		}
 	}
 

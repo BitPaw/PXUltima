@@ -1158,9 +1158,25 @@ PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler, con
 						compilerSymbolEntry.Size += PXFileSkipLine(pxCompiler->FileInput);
 					}				
 				} 
-				while(isLineComment);
-			
-				if (compilerSettings->CommentsKeep)
+				while(isLineComment);			
+
+				// Cleanup
+				while(compilerSymbolEntry.Source[0] == ' ')
+				{
+					++compilerSymbolEntry.Source;
+					--compilerSymbolEntry.Size;
+				}
+
+				while
+				(
+					compilerSymbolEntry.Source[compilerSymbolEntry.Size - 1] == '\n' ||
+					compilerSymbolEntry.Source[compilerSymbolEntry.Size - 1] == '\r'
+				)
+				{
+					--compilerSymbolEntry.Size;
+				}
+
+				if(compilerSettings->CommentsKeep)
 				{
 					PXCompilerSymbolEntryAdd(pxCompiler, &compilerSymbolEntry);
 

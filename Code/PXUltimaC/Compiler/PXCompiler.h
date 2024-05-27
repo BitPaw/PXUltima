@@ -131,6 +131,10 @@ typedef struct PXCompiler_
 	// Used for relational parsing
 	PXCodeDocument* CodeDocument;
 	PXFile* TokenStream;
+
+	PXSize CommentLine;
+	char* CommentData;
+	PXSize CommentSize;
 }
 PXCompiler;
 

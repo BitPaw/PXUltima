@@ -186,6 +186,7 @@ PXPublic PXSize PXAPI PXTextAppendF(PXText* const pxText, const char* const foma
 
 PXPublic PXSize PXAPI PXTextPrint(PXText* const pxText, const char* style, ...);
 PXPublic PXSize PXAPI PXTextPrintA(char* const text, const PXSize size, const char* style, ...);
+PXPublic PXSize PXAPI PXTextPrintAV(char* const text, const PXSize size, const char* style, va_list parameter);
 PXPublic PXSize PXAPI PXTextPrintV(PXText* const pxText, const char* style, va_list parameter);
 
 PXPublic PXSize PXAPI PXTextClear(PXText* const pxText);
@@ -210,6 +211,9 @@ PXPublic PXSize PXAPI PXTextCopyWU(const PXTextUNICODE source, const PXSize sour
 
 PXPublic PXSize PXAPI PXTextCountA(const char* PXText, const PXSize PXTextSize, const char target);
 PXPublic PXSize PXAPI PXTextCountW(const wchar_t* PXText, const PXSize PXTextSize, const wchar_t target);
+
+PXPublic PXSize PXAPI PXTextPascalCaseCleave(const char* pxText, const PXSize PXTextSize);
+
 
 PXPublic PXSize PXAPI PXTextCountUntilA(const char* PXText, const PXSize PXTextSize, const char target, const char stopAt);
 PXPublic PXSize PXAPI PXTextCountUntilW(const wchar_t* PXText, const PXSize PXTextSize, const wchar_t target, const wchar_t stopAt);

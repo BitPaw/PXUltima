@@ -44,190 +44,7 @@ PXCodeDocumentElement* PXAPI PXCodeDocumentElementAdd(PXCodeDocument* const pxDo
 	{
 		// Generate ID to make dynamic updates later
 		pxDocumentElement->ID = pxDocument->LastCounter++;
-
-#if PXLogEnable
-		const char* typeName = PXDocumentElementTypeToString(pxDocumentElement->Type);
-
-		char nameBuffer[64];
-		PXMemoryClear(nameBuffer, 64);
-		PXTextCopyA(pxDocumentElement->NameAdress, pxDocumentElement->NameSize, nameBuffer, 64);
-
-
-		int parrentID = pxDocumentElement->ElementParent ? pxDocumentElement->ElementParent->ID : -1;
-		int siblingID = pxDocumentElement->ElementSibling ? pxDocumentElement->ElementSibling->ID : -1;
-
-		char identification[256];
-		PXTextPrintA
-		(
-			identification,
-			256,
-			"\n"
-			"%10s : %i\n"
-			"%10s : %s\n"
-			"%10s : %i\n"
-			"%10s : %i\n"
-			"%10s : %s",
-			"ID", pxDocumentElement->ID,
-			"Type", typeName,
-			"Parrent", parrentID,
-			"Sibling", siblingID,
-			"Name", nameBuffer
-		);
-
-		switch(pxDocumentElement->Type)
-		{
-			case PXDocumentElementTypeInclude:
-			{
-				PXLogPrint
-				(
-					PXLoggingInfo,
-					"CodeDocument",
-					"Entry",
-					"%s\n"
-					"%10s : %s",
-					identification,
-					"Global", pxDocumentElement->IsGlobal ? "Yes" : "No"
-				);
-
-				break;
-			}
-			case PXDocumentElementTypeStruct:
-			case PXDocumentElementTypeClass:
-			case PXDocumentElementTypeUnion:
-			case PXDocumentElementTypeEnum:
-			{
-				char aliasBuffer[64];
-				PXMemoryClear(aliasBuffer, 64);
-				PXTextCopyA(pxDocumentElement->AliasAdress, pxDocumentElement->AliasSize, aliasBuffer, 64);
-
-				PXLogPrint
-				(
-					PXLoggingInfo,
-					"CodeDocument",
-					"Entry",
-					"%s\n"
-					"%10s : %s\n"
-					"%10s : %i",
-					identification,
-					"Alias", aliasBuffer,
-					"Members", pxDocumentElement->MemberAmount
-				);
-
-				break;
-			}
-			case PXDocumentElementTypeClassAttribute:
-			case PXDocumentElementTypeClassMember:
-			case PXDocumentElementTypeFunctionParameter:
-			{
-				char buffer[64];
-
-				PXDataTypeToString(pxDocumentElement->DataType, buffer);
-
-				PXLogPrint
-				(
-					PXLoggingInfo,
-					"CodeDocument",
-					"Entry",
-					"%s\n"
-					"%10s : %s",
-					identification,
-					"DataType", buffer
-				);
-
-				break;
-			}
-			case PXDocumentElementTypeEnumMember:
-			{
-				PXLogPrint
-				(
-					PXLoggingInfo,
-					"CodeDocument",
-					"Entry",
-					"%s\n",
-					identification
-				);
-
-				break;
-			}
-			case PXDocumentElementTypeFunction:
-			{
-				PXLogPrint
-				(
-					PXLoggingInfo,
-					"CodeDocument",
-					"Entry",
-					"%s\n"
-					"%10s : %s",
-					identification,
-					"Call", "stst"
-				);
-
-				break;
-			}
-			case PXDocumentElementTypeFile:
-			{
-				PXLogPrint
-				(
-					PXLoggingInfo,
-					"CodeDocument",
-					"Entry",
-					"%s\n"
-					"File",
-					identification
-				);
-
-				break;
-			}
-			default:
-				break;
-		}
-
-
-#endif
-
 	}
-	else
-	{
-
-		const char* typeName = PXDocumentElementTypeToString(pxDocumentElement->Type);
-
-		char nameBuffer[64];
-		PXMemoryClear(nameBuffer, 64);
-		PXTextCopyA(pxDocumentElement->NameAdress, pxDocumentElement->NameSize, nameBuffer, 64);
-
-
-		int parrentID = pxDocumentElement->ElementParent ? pxDocumentElement->ElementParent->ID : -1;
-		int siblingID = pxDocumentElement->ElementSibling ? pxDocumentElement->ElementSibling->ID : -1;
-
-		char identification[256];
-		PXTextPrintA
-		(
-			identification,
-			256,
-			"UPDATE \n"
-			"%10s : %i\n"
-			"%10s : %s\n"
-			"%10s : %i\n"
-			"%10s : %i\n"
-			"%10s : %s",
-			"ID", pxDocumentElement->ID,
-			"Type", typeName,
-			"Parrent", parrentID,
-			"Sibling", siblingID,
-			"Name", nameBuffer
-		);
-
-		PXLogPrint
-		(
-			PXLoggingInfo,
-			"CodeDocument",
-			"Entry-Update",
-			"%s\n",
-			identification
-		);
-	}
-
-
 
 	// Make sure we have enough space
 	if(pxDocument->ElementListAllocated <= (pxDocument->ElementListUsed +1))
@@ -241,6 +58,8 @@ PXCodeDocumentElement* PXAPI PXCodeDocumentElementAdd(PXCodeDocument* const pxDo
 
 
 	PXCopy(PXCodeDocumentElement, pxDocumentElement, newTarget);
+
+	PXCodeDocumentElementPrintSingle(pxDocumentElement, newTarget);
 
 	/*
 
@@ -358,12 +177,195 @@ PXActionResult PXAPI PXCodeDocumentElementGenerateChild
 					break;
 				}
 
-				insertChild = pxDocumentElementParent->ElementSibling;
+				insertChild = insertChild->ElementSibling;
 			}
 		}
 	}
 
 	*pxDocumentElement = pxCodeDocumentElement;
+}
+
+void PXAPI PXCodeDocumentElementPrintSingle(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement)
+{
+#if PXLogEnable
+	const char* typeName = PXDocumentElementTypeToString(pxDocumentElement->Type);
+
+	char commentBuffer[64];
+	PXMemoryClear(commentBuffer, 64);
+	PXTextCopyA(pxDocumentElement->CommentAdress, pxDocumentElement->CommentSize, commentBuffer, 64);
+
+	char nameBuffer[64];
+	PXMemoryClear(nameBuffer, 64);
+	PXTextCopyA(pxDocumentElement->NameAdress, pxDocumentElement->NameSize, nameBuffer, 64);
+
+
+	char nameSpaceBuffer[64];
+	
+	{
+		char AAAAAAAAAAAAAAA[64];
+		PXMemoryClear(AAAAAAAAAAAAAAA, 64);
+		PXTextCopyA(pxDocumentElement->NameSpaceAdress, pxDocumentElement->NameSpaceSize, AAAAAAAAAAAAAAA, 64);
+
+		char BBBBBBBBBB[64];
+		PXMemoryClear(BBBBBBBBBB, 64);
+		PXTextCopyA(pxDocumentElement->NameClassAdress, pxDocumentElement->NameClassSize, BBBBBBBBBB, 64);
+
+		char CCCCCCCCCCCC[64];
+		PXMemoryClear(CCCCCCCCCCCC, 64);
+		PXTextCopyA(pxDocumentElement->NameShortAdress, pxDocumentElement->NameShortSize, CCCCCCCCCCCC, 64);
+
+		PXTextPrintA(nameSpaceBuffer, 64, "S:%s, C:%s, N:%s", AAAAAAAAAAAAAAA, BBBBBBBBBB, CCCCCCCCCCCC);
+	}
+	
+
+
+
+	int parrentID = pxDocumentElement->ElementParent ? pxDocumentElement->ElementParent->ID : -1;
+	int siblingID = pxDocumentElement->ElementSibling ? pxDocumentElement->ElementSibling->ID : -1;
+	int childID = pxDocumentElement->ElementChildFirstBorn ? pxDocumentElement->ElementChildFirstBorn->ID : -1;
+
+	char identification[256];
+	PXTextPrintA
+	(
+		identification,
+		256,
+		"\n"
+		"%10s : %i\n"
+		"%10s : %s\n"
+		"%10s : %i\n"
+		"%10s : %i\n"
+		"%10s : %i\n"
+		"%10s : %s\n"
+		"%10s : %s\n"
+		"%10s : %s",
+		"ID", pxDocumentElement->ID,
+		"Type", typeName,
+		"Parrent", parrentID,
+		"Sibling", siblingID,
+		"Child", childID,
+		"Name", nameBuffer,
+		"--->", nameSpaceBuffer,
+		"Comment", commentBuffer
+	);
+
+	switch(pxDocumentElement->Type)
+	{
+		case PXDocumentElementTypeInclude:
+		{
+			PXLogPrint
+			(
+				PXLoggingInfo,
+				"CodeDocument",
+				"Entry",
+				"%s\n"
+				"%10s : %s",
+				identification,
+				"Global", pxDocumentElement->IsGlobal ? "Yes" : "No"
+			);
+
+			break;
+		}
+		case PXDocumentElementTypeStruct:
+		case PXDocumentElementTypeClass:
+		case PXDocumentElementTypeUnion:
+		case PXDocumentElementTypeEnum:
+		{
+			char aliasBuffer[64];
+			PXMemoryClear(aliasBuffer, 64);
+			PXTextCopyA(pxDocumentElement->AliasAdress, pxDocumentElement->AliasSize, aliasBuffer, 64);
+
+			PXLogPrint
+			(
+				PXLoggingInfo,
+				"CodeDocument",
+				"Entry",
+				"%s\n"
+				"%10s : %s\n"
+				"%10s : %i",
+				identification,
+				"Alias", aliasBuffer,
+				"Members", pxDocumentElement->MemberAmount
+			);
+
+			break;
+		}
+		case PXDocumentElementTypeClassAttribute:
+		case PXDocumentElementTypeClassMember:
+		case PXDocumentElementTypeFunctionParameter:
+		{
+			char buffer[64];
+
+			PXDataTypeToString(pxDocumentElement->DataType, buffer);
+
+			PXLogPrint
+			(
+				PXLoggingInfo,
+				"CodeDocument",
+				"Entry",
+				"%s\n"
+				"%10s : %s",
+				identification,
+				"DataType", buffer
+			);
+
+			break;
+		}
+		case PXDocumentElementTypeEnumMember:
+		{
+			PXLogPrint
+			(
+				PXLoggingInfo,
+				"CodeDocument",
+				"Entry",
+				"%s\n",
+				identification
+			);
+
+			break;
+		}
+		case PXDocumentElementTypeFunction:
+		{
+			PXLogPrint
+			(
+				PXLoggingInfo,
+				"CodeDocument",
+				"Entry",
+				"%s\n"
+				"%10s : %s",
+				identification,
+				"Call", "stst"
+			);
+
+			break;
+		}
+		case PXDocumentElementTypeFile:
+		{
+			PXLogPrint
+			(
+				PXLoggingInfo,
+				"CodeDocument",
+				"Entry",
+				"%s\n"
+				"File",
+				identification
+			);
+
+			break;
+		}
+		default:
+			break;
+	}
+#endif
+}
+
+void PXAPI PXCodeDocumentElementPrintAll(PXCodeDocument* const pxDocument)
+{
+	for(size_t i = 0; i < pxDocument->LastCounter; i++)
+	{
+		PXCodeDocumentElement* pxCodeDocumentElement = &pxDocument->ElementList[i];
+
+		PXCodeDocumentElementPrintSingle(pxDocument, pxCodeDocumentElement);
+	}
 }
 
 PXSize PXAPI PXDocumentElementIO(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement, PXFileIOMultibleFunction pxFileIOMultibleFunction)

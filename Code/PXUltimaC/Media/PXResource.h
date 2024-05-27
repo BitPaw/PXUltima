@@ -2187,6 +2187,7 @@ typedef struct PXFile_
 #elif OSWindows
 	HANDLE ID;
 	HANDLE MappingID;
+	//FILE* IDPOSIX;
 #endif
 
 	PXBitFormat BitFormatOfData;

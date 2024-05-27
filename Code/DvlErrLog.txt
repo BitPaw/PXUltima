@@ -1,0 +1,4 @@
+System.NotImplementedException: Nicht implementiert (Exception from HRESULT: 0x80004001 (E_NOTIMPL))
+   at EnvDTE.Project.get_FullName()
+   at Microsoft.SdvMenuCommand.DriverVerificationLicense..ctor()
+   at Microsoft.SdvMenuCommand.SdvMenuCommandPackage.StaticToolsLogoMenuItemCallback(Object sender, EventArgs e)

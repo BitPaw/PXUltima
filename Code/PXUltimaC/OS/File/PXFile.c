@@ -1352,6 +1352,10 @@ PXActionResult PXAPI PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFr
 		pxFile->AccessMode = pxFileOpenFromPathInfo->AccessMode;
 		pxFile->CachingMode = pxFileOpenFromPathInfo->MemoryCachingMode;
 		pxFile->LocationMode = PXFileLocationModeDirectUncached;
+
+		//int x = _open_osfhandle(pxFile->ID, _O_APPEND);
+		//FILE* fp = _fdopen(x, "rb");
+		//pxFile->IDPOSIX = fp;
 	}
 
 	// Get file size
@@ -1362,6 +1366,7 @@ PXActionResult PXAPI PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFr
 
 		pxFile->DataSize = largeInt.QuadPart;
 	}
+
 
 	PXFilePathSet(pxFile, &pxFileOpenFromPathInfo->Text);
 
@@ -3222,7 +3227,7 @@ PXSize PXAPI PXFileWriteNewLine(PXFile* const pxFile)
 
 PXSize PXAPI PXFileWriteC(PXFile* const pxFile, const char character)
 {
-	return PXFileWriteB(pxFile, character, 1);
+	return PXFileWriteB(pxFile, &character, 1);
 }
 
 PXSize PXAPI PXFileWriteA(PXFile* const pxFile, const PXTextASCII text, PXSize textSize)
@@ -3255,28 +3260,60 @@ PXSize PXAPI PXFileWriteW(PXFile* const pxFile, const PXTextUNICODE const text, 
 
 PXSize PXAPI PXFileWriteAF(PXFile* const pxFile, const PXTextASCII format, ...)
 {
-	void* const currentPosition = PXFileCursorPosition(pxFile);
+	PXSize writtenBytes = 0;
 
 	va_list args;
 	va_start(args, format);
 
-	const PXSize writableSize = PXFileRemainingSize(pxFile);
-
-	PXText pxText;
-	PXTextConstructFromAdressA(&pxText, currentPosition, writableSize, writableSize);
-
-	const int writtenBytes = PXTextPrintV(&pxText, format, args);
-
-	va_end(args);
-
-	const PXBool sucessful = writtenBytes >= 0;
-
-	if(!sucessful)
+	switch(pxFile->LocationMode)
 	{
-		return 0;
+		case PXFileLocationModeInternal: // Memory is handled internally.
+		case PXFileLocationModeExternal: // Memory is stored outside this object
+		case PXFileLocationModeMappedVirtual: // Used 'VirtalAlloc()' / 'mmap()'
+		case PXFileLocationModeMappedFromDisk: // Used 'FileView()' / 'fmap()'
+		case PXFileLocationModeDirectCached: // Read & Write operations are cached into a buffer first.
+		{
+			void* const currentPosition = PXFileCursorPosition(pxFile);
+
+			const PXSize writableSize = PXFileRemainingSize(pxFile);
+
+			PXText pxText;
+			PXTextConstructFromAdressA(&pxText, currentPosition, writableSize, writableSize);
+
+			const int writtenBytes = PXTextPrintV(&pxText, format, args);
+
+			
+
+			const PXBool sucessful = writtenBytes >= 0;
+
+			if(!sucessful)
+			{
+				return 0;
+			}
+
+			PXFileCursorAdvance(pxFile, writtenBytes);
+
+			break;
+		}
+		case PXFileLocationModeDirectUncached:
+		{
+			//const int writtenBytesA = vfprintf(pxFile->IDPOSIX, format, args);
+			char buffer[256];
+
+			writtenBytes = PXTextPrintAV(buffer, 256, format, args);
+
+			pxFile->DataAllocated += writtenBytes;
+			pxFile->DataSize += writtenBytes;
+
+			PXFileWriteB(pxFile, buffer, writtenBytes);
+
+			break;
+		}
+		default:
+			break;
 	}
 
-	PXFileCursorAdvance(pxFile, writtenBytes);
+	va_end(args);
 
 	return writtenBytes;
 }

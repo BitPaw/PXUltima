@@ -10,6 +10,8 @@ typedef struct PXJava_
 PXJava;
 
 
+PXPrivate void PXAPI PXJavaComment(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile);
+
 PXPrivate void PXAPI PXJavaIncludeWrite(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile);
 PXPrivate void PXAPI PXJavaEnumWrite(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile);
 PXPrivate void PXAPI PXJavaContainerWrite(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile);

@@ -15,6 +15,7 @@ typedef enum PXDocumentElementType_
 	PXDocumentElementTypeEnum,
 	PXDocumentElementTypeClass,
 	PXDocumentElementTypeFunction,
+	PXDocumentElementTypeFunctionPointer,
 	PXDocumentElementTypeClassMember,
 	PXDocumentElementTypeClassAttribute,
 	PXDocumentElementTypeEnumMember,
@@ -55,6 +56,15 @@ typedef struct PXCodeDocumentElement_
 	char* NameAdress;
 	PXSize NameSize;
 
+
+	char* NameSpaceAdress;
+	PXSize NameSpaceSize;
+	char* NameClassAdress;
+	PXSize NameClassSize;
+	char* NameShortAdress;
+	PXSize NameShortSize;
+
+
 	// Used in C for typedefs
 	char* AliasAdress;
 	PXSize AliasSize;
@@ -70,6 +80,10 @@ typedef struct PXCodeDocumentElement_
 	PXBool DataTypeIsBuildIn;
 	PXSize DataType; // What type is the data representing, for functions this is the return type
 	PXSize DataTypeSize;
+
+	// only used if type is not build in
+	char* TypeNameAdress;
+	PXSize TypeNameSize;
 
 
 	// Functions
@@ -155,6 +169,10 @@ PXPublic PXActionResult PXAPI PXCodeDocumentElementGenerateChild
 	PXCodeDocumentElement** const pxDocumentElement,
 	PXCodeDocumentElement* const pxDocumentElementParent
 );
+
+
+PXPublic void PXAPI PXCodeDocumentElementPrintSingle(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement);
+PXPublic void PXAPI PXCodeDocumentElementPrintAll(PXCodeDocument* const pxDocument);
 
 
 

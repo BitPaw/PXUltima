@@ -274,10 +274,12 @@ PXPrivate PXActionResult PXAPI PXCParseEndOfCommand(PXCompiler* const pxCompiler
 PXPrivate PXActionResult PXAPI PXCParseTypeParameterList(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent);
 PXPrivate PXActionResult PXAPI PXCParseFunctionDefinition(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent);
 
-PXPrivate PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler, PXCodeDocumentElement* const pxCodeDocumentElement);
+PXPrivate PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parent);
 
-// PArse
-PXPrivate PXActionResult PXAPI PXCParseTypeDeclarationFull(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent);
+// Transform a name with XxxxYyyyZzzzz() into its components like namespace class and function
+// This only works if the naming convention of Object-Oriented C is followed.
+// Most APIs use this as a given standard but some dont follow this defacto standard
+PXPrivate void PXAPI PXCNameCleave(PXCompiler* const pxCompiler, PXCodeDocumentElement* const pxCodeDocumentElement);
 
 PXPrivate PXActionResult PXAPI PXCParseEnumMember(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent);
 
