@@ -12,10 +12,32 @@ typedef enum PXActionResult_
 	PXActionInvalid, // Default iniitlialisation value, do not use.
 	PXActionSuccessful, // Action finished successful
 	PXActionSuccessWithSubstitution,
+	PXActionCancelled, // Action was canceled early.
 	PXActionDidNothing, // if the function did nothing
 	PXActionFailedUnkownError, // [OTHER] Undefined error
 	//-----------------------------------
 
+	PXActionRefusedKeyNotFound, // Key-Value, key not found
+	PXActionRefusedValueNotFound, // Key-value, value not found
+	PXActionFailedRead, // Value couln't be read
+	PXActionFailedRegister, // Value couln't be registered
+	PXActionFailedWrite, // Value couln't be written 
+	PXActionFailedDelete,
+	PXActionFailedUpdate,
+	PXActionFailedCreate, // Creation of a resource failed
+	PXActionFailedLoad, // Loadin a resource failed
+	PXActionFailedSave, // Saving a resource failed
+	PXActionFailedOpen, // Opening a resource failed
+	PXActionFailedClose, // Closing a resource failed
+	PXActionFailedSend, // Tryed to send data but failed
+	PXActionFailedRecieve, // Expected data to be recieved was not successful
+
+	PXActionFailedStackOverflow,
+	PXActionFailedStackUnderflow,
+
+	PXActionRefusedNoDriver, // An object needs a driver to function but no driver is attached
+	PXActionRefusedFeatureNotAvailable, // Setting requested is not available on this device
+	
 	PXActionCanceledLoopDeteced, // LOOP
 
 	//-------------------------------------------------------
@@ -40,24 +62,27 @@ typedef enum PXActionResult_
 	//-------------------------------------------------------
 	// Type
 	//-------------------------------------------------------
-	PXActionRefusedTypeMissmatch, // When two types are not copartible
+	PXActionRefusedTypeMissmatch, // Fields expected to be same type are different types.
 
 	//-------------------------------------------------------
-	// Object
+	// Object / API / Library
 	//-------------------------------------------------------
-	PXActionRefusedObjectNotReady, // Object can't process this function, setup is needed or its busy
-	PXActionRefusedObjectNotFound, // [404] Invalid ID or HANDLE -> Does not exist
-	PXActionRefusedObjectAlreadyExists, // [EXIST]
-	PXActionRefusedObjectStateInvalid,
-	PXActionRefuedObjectStateDoesNotAllowAction,
+	PXActionRefusedNotInitialized, // Object can't be used before it has been initialized
+	PXActionFailedInitialization, // Initialization of this object was tyred but failed while doing so
+	PXActionRefusedAlreadyInizialized, // Object has already been initialized
+	PXActionRefusedAlreadyExists, // Object can't be created, as it alteady exists
+	PXActionRefusedTypeInvalid,
+	PXActionRefusedTypeNotSupported,
+	PXActionRefusedAggregationNotSupported,
+	PXActionRefusedPropertyNotAvailable,
+	PXActionRefusedNotReady, // Object can't process this function, setup is needed or its busy
+	PXActionRefusedNotFound, // [404] Invalid ID or HANDLE -> Does not exist
+	PXActionRefusedAlreadyExists, // [EXIST]
+	PXActionRefusedStateInvalid,
+	PXActionRefusedStateDoesNotAllowAction, // Action can't be used in this current state
 	PXActionRefuedObjectInterfaceNotAvailable,
-	PXActionRefuedObjectNotInizialized,
-	PXActionRefuedObjectAlreadyInizialized,
-	PXActionRefuedObjectAlreadyExists,
-	PXActionRefuedObjectTypeInvalid,
-	PXActionRefuedObjectTypeNotSupported,
-	PXActionRefuedObjectAggregationNotSupported,
-	PXActionRefuedObjectPropertyNotAvailable,
+
+	
 
 	PXActionRefusedObjectNameInvalid,
 	PXActionRefusedWindowsClassNameInvalid,
@@ -81,26 +106,18 @@ typedef enum PXActionResult_
 	PXActionFailedResourceCompile,
 
 
+	PXActionRefusedDirectoryNotEmpty, // [NOTEMPTY]
+	PXActionRefusedTargetIsDirectory, // [ISDIR] 
+	PXActionRefusedNotADirectory, // [NOTDIR]
+
 	PXActionFailedFileNameTooLong, // NAMETOOLONG
-	PXActionRefusedTargetIsDirectory, // ISDIR
+	
 	PXActionFailedFileDescriptorValueTooLarge, // MFILE
 	PXActionFailedTooManyLinks, // MLINK
 	PXActionFailedFileTooLarge, // FBIG
 	PXActionRefusedInvalidSeek, // SPIPE
 	PXActionFailedTooManyFilesOpenInSystem, // NFILE
-	PXActionRefusedNotADirectory, // NOTDIR
-	PXActionRefusedDirectoryNotEmpty, // NOTEMPTY
-
-
-	//-------------------------------------------------------
-	// API 
-	//-------------------------------------------------------
-	PXActionRefusedAPIIsNotLinked, // A required API is not init or failed to do so. 
-
-	//-------------------------------------------------------
-	// Compiler 
-	//-------------------------------------------------------
-	PXActionRefusedSymbolInvalid,
+	
 
 	//-------------------------------------------------------
 	// Network 
@@ -113,11 +130,6 @@ typedef enum PXActionResult_
 	PXActionFailedConnectionTimedOut, // [TIMEDOUT]
 	PXActionFailedNotConnected, // [NOTCONN]
 
-	//-------------------------------------------------------
-	// Audio/Video
-	//-------------------------------------------------------
-	PXActionRefusedEffectNotAvailable,
-
 
 	//-------------------------------------------------------
 	// Functions
@@ -128,105 +140,56 @@ typedef enum PXActionResult_
 	//-------------------------------------------------------
 	// Library
 	//-------------------------------------------------------
-	PXActionRefusedNotSupported, // [NOTSUP] Action can't be exectuted, as the function does not exist to be used.
+	PXActionRefusedNotSupportedByOperatingSystem,
+	PXActionRefusedNotSupportedByLibrary, // [NOTSUP] Action can't be exectuted, as the function does not exist to be used.
 	PXActionRefusedNotImplemented, // Function that exists but does not contain any code
-	PXActionNotSupportedByLibrary, // 
-	PXActionLibraryNotFound,
-	PXActionNotSupportedByOperatingSystem,
-
-	PXActionRefusedLibraryRequiredUpgrade,
-
+	
+	PXActionFailedNotFound, // Object was searched but not found
+	PXActionRefusedVersionTooOld, // Object can't be used, it is requires an update
+	PXActionRefusedVersionTooNew, // Object can't be used, the system requires an update
+	PXActionRefusedVersionInvalid, // Object version is not defined
 
 	PXActionRefusedMissingCallBack, // Callback is required but missing
 
-	PXActionFailedInitialization, // Re
-	PXActionRedundantAlreadyInitialized,
-	PXActionFailedCleanup,
-	PXActionFailedModuleLoad,
-	PXActionFailedDataFetch,
+	PXActionRefusedNotInitialized, // Object is not jet initialized. Initialize it.
+	PXActionFailedInitialization, // Initialization failed.
+	PXActionRedundantAlreadyInitialized, // Object is already initialized. Action has no effect
+
+	PXActionFailedRelease, // Cleanup of an object failed 
+
+
 
 	PXActionInterruptedByEvent,
 	PXActionInterruptedByFunctionCall,
-
-
-
-	PXActionRefuedPermissionDenied,
 	PXActionFailedResourcedNotEnough,
-
 	PXActionWouldBlock,
 	PXActionNowInProgress,
 	PXActionAlreadyInProgress,
-
-
 	PXActionRefusedInvalidOperationSpecified,
-	PXActionFailedStackOverflow,
-	PXActionFailedStackUnderflow,
-
-
 	PXActionRefuedNetworkNotConnected,
 	PXActionRefuedNetworkNotReachable,
 	PXActionFailedHostNotFound,
-
 	PXActionRefuedServiceNotRunning,
-
-	xxxxxxxxxxxx,
-
 	PXActionRefuedAlreadyInUse,
-
 	PXActionRefuedProtocolTypeInvalid,
 	PXActionRefuedProtocolOptionInvalid,
 	PXActionRefuedProtocolNotSupported,
 	PXActionRefuedProtocolFamilyNotSupported,
-
 	PXActionRefuedAddressFamilyNotSupportedByProtocol,
-
-
-
-
-	PXActionRefuedOperationNotSupported,
-
-	PXActionCancelled,
+	PXActionRefuedOperationNotSupported,	
 
 	//---<Function input>---
 	PXActionRefuedAdressInvalid, // System detected an invalid pointer
 
-
-
-
-
 	PXActionRefuedTextFormatUnsupported,
-
-
 	PXActionRefuedInputInvalid,
-
-
-
-
 	PXActionInvalidStateImpossible, // Is an object is used and has data that should not be possible
-
-
 	PXActionFailedElementNotFound,
-
 	PXActionInvalidRedundandInteraction, // The function would have no effect and is cancelled imidiatly
-
-
-
-
-
 	PXActionRefuedDriverInvalid,
 	PXActionRefuedDriverMissing,
-
-
 	PXActionRefuedFormatIllegal,
 	PXActionRefuedFormatNotSupported,
-
-
-
-
-
-
-
-
 
 
 
@@ -239,16 +202,8 @@ typedef enum PXActionResult_
 
 	PXActionFailedFileMapping,// mmap() / CreateViewofFile() failed
 
-	PXActionFailedFileCreate,
-	PXActionFailedFileDelete,
-	PXActionFailedFileOpen,
-	PXActionFailedFileClose,
-	PXActionFailedFileWrite,
-	PXActionFailedFileRead,
 
 	//---<Socket>---------------------
-	PXActionFailedSocketRecieve,
-	PXActionFailedSocketSend,
 	PXActionRefusedSocketNotConnected,
 
 	PXActionFailedSocketConnect,
@@ -269,13 +224,10 @@ typedef enum PXActionResult_
 	//-----------------------------------
 
 	//---<File-Parsing>-------------------
-	PXActionFailedFormatNotDetected,
-	PXActionRefusedFormatNotSupported,
-	PXActionFailedFormatInvalid,
-	PXActionFailedFormatNotAsExpected,
-	PXActionRefusedInvalidHeaderSignature,
-	PXActionRefusedInvalidVersion,
-	PXActionRefusedInvalidSymbol, // While parsing found symbol thats not supported to be read
+	PXActionFailedFormatNotDetected, // Format is not detected and thus unknown
+	PXActionRefusedFormatNotSupported, // Fromat was detected but is not supported
+	PXActionFailedFormatNotAsExpected, // Excpected format differs from what is detected 
+	PXActionRefusedInvalidHeaderSignature, // Expected signature was not detected
 	//-----------------------------------
 
 	//---<File-Writing>------------------
@@ -283,15 +235,7 @@ typedef enum PXActionResult_
 	//-----------------------------------
 
 
-	//---<Graphics>-----------------------
-	PXActionFailedResourceRegister,
-	PXActionRefusedResourceRegister,
-	PXActionRefusedResourceDelete,
-	//------------------------------------
 
-
-
-	RequestedServiceNotAvailableForSocket,
 
 
 	//---<Service>-----------------------
@@ -304,91 +248,39 @@ typedef enum PXActionResult_
 	PXActionFailedCommandRetrieve, // Failure to retrieve result from target
 	//-----------------------------------
 
-	//---<Server>------------------------
-	NoPXClientWithThisID,
-	//-----------------------------------
-
 	//---<Compiler>----------------------
-	PXActionCompilingError,
+	PXActionRefusedCompilerSymbolInvalid, // While parsing found symbol thats not supported to be read
 	//-----------------------------------
 
 	//---[ Windows Only (WindowsSocketAgent) ]-------
 	SubSystemNotReady,
-	VersionNotSupported,
 	BlockedByOtherOperation,
 	LimitReached,
-	SubSystemNotInitialised,
-	SubSystemNetworkFailed,
 	SocketIsBlocking,
 
-
 	PXActionFailedDirectoryIsNotEmpty,
-
 	PXActionFailedTooManyProcesses,
-
 	PXActionFailedUserQuotaExceeded,
 	PXActionFailedDiskQuotaExceeded,
-
 	PXActionFailedHandleIsStale,
-
 	PXActionFailedResourceNotAvailableLocally,
-
-	PXActionFailedNetworkSubsystemNotReady,
-
-	PXActionRefusedResourceIsShuttingdown,
-
-	WindowsSocketVersionNotSupported,
-	WindowsSocketSystemNotInitialized,
-	WindowsSocketSystemWasShutdown,
 	//-------------------------------------------------
 
 	//---<Audio>---------------------------------------
-	AudioResultDeviceIDInvalid,
-	AudioResultDeviceHandleInvalid,
-	AudioResultDeviceNoDriver,
+
 
 	AudioResultDriverNotReachable, // Maybe diabled, or deactivated
 	AudioResultDriverNotEnabled, // No driver to use
 
-
 	AudioResultDeviceAlreadyAllocated,
-
-
 	AudioResultErrorValueInvalid,
-
-
 	AudioResultFlagInvalid,
-
 	AudioResultDeviceHandleBusy,
-
 	AudioResultAliasNotFound,
-
-
-
-	AudioResultPXRegistryValueNotFound,
-
-	AudioResultDriverNoCallback,
-
 	AudioResultMoreData,
-
-
 	// Custom
 	AudioResultDeviceListNotBigEnough,
-
-
-	// Windows spesific
-	AudioResultPXRegistryDatabaseInvalid,
-	AudioResultPXRegistryKeyNotFound,
-	AudioResultPXRegistryWriteError,
-	AudioResultPXRegistryReadError,
-	AudioResultPXRegistryDeleteError,
-
-	AudioResultErrorUnspecified, 		// Bad, but windows, am i right?
-
-
-
 	// only
-
 	AudioResultDeviceIsStillPlaying,
 	AudioResultReaderIsNotPrepared,
 	AudioResultDeviceIsSynchronous,
@@ -402,8 +294,6 @@ typedef enum PXActionResult_
 
 
 	// POSIX Error codes, these are pre-defined
-
-
 
 	AddressInUse, // ADDRINUSE
 	AddressNotAvailable, // ADDRNOTAVAIL
@@ -422,29 +312,14 @@ typedef enum PXActionResult_
 	ResourceDeadlockWouldOccur, // DEADLK
 	DestinationAddressRequired, // DESTADDRREQ
 	PXMathematicsArgumentOutOfDomainOfFunction, // DOM
-
-
 	BadAddress, // FAULT
-
 	HostIsUnreachable, // HOSTUNREACH
 	IdentifierRemoved, // IDRM
 	IllegalByteSequence, // ILSEQ
 	OperationInProgress, // INPROGRESS
 	InterruptedFunction, // INTR
-
 	IOFailure, // IO
-
-
-
-
-
-
-
-
 	MessageTooLarge, // MSGSIZE
-
-
-
 	NoBufferSpaceAvailable, // NOBUFS
 	NoMessageIsAvailableOnTheStreamHeadReadQueue, // NODATA
 	NoSuchDevice, // NODEV
@@ -458,9 +333,7 @@ typedef enum PXActionResult_
 	NoStreamResources, // NOSR
 	NotAStream, // NOSTR
 	FunctionNotSupported, // NOSYS
-
 	StateNotRecoverable, // NOTRECOVERABLE
-
 	InappropriateIOControlOperation, // NOTTY
 	NoSuchDeviceOrAddress, // NXIO
 	OperationNotSupportedOnSocket, // OPNOTSUPP
@@ -473,10 +346,8 @@ typedef enum PXActionResult_
 	ProtocolWrongTypeForSocket, // PROTOTYPE
 	ResultTooLarge, // RANGE,
 	ReadOnlyFileSystem, //ROFS
-
 	NoSuchProcess, // SRCH
 	StreamTimeout, // TIME -> ioctl()
-
 	TextFileBusy, // TXTBSY
 	OperationWouldBlock, // WOULDBLOCK
 	CrossDeviceLink // XDEV
