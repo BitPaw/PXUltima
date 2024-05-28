@@ -156,7 +156,7 @@ PXActionResult PXAPI PXDataBaseInitialize(PXDataBase* const pxDataBase)
 
 		if(PXActionSuccessful != pxActionResult)
 		{
-			return PXActionRefusedNotSupported;
+			return PXActionRefusedNotSupportedByOperatingSystem;
 		}
 	}
 

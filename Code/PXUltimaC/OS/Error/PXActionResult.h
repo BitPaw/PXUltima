@@ -70,14 +70,13 @@ typedef enum PXActionResult_
 	PXActionRefusedNotInitialized, // Object can't be used before it has been initialized
 	PXActionFailedInitialization, // Initialization of this object was tyred but failed while doing so
 	PXActionRefusedAlreadyInizialized, // Object has already been initialized
-	PXActionRefusedAlreadyExists, // Object can't be created, as it alteady exists
+	PXActionRefusedAlreadyExists, // [EXIST] Object can't be created, as it alteady exists
 	PXActionRefusedTypeInvalid,
 	PXActionRefusedTypeNotSupported,
 	PXActionRefusedAggregationNotSupported,
 	PXActionRefusedPropertyNotAvailable,
 	PXActionRefusedNotReady, // Object can't process this function, setup is needed or its busy
 	PXActionRefusedNotFound, // [404] Invalid ID or HANDLE -> Does not exist
-	PXActionRefusedAlreadyExists, // [EXIST]
 	PXActionRefusedStateInvalid,
 	PXActionRefusedStateDoesNotAllowAction, // Action can't be used in this current state
 	PXActionRefuedObjectInterfaceNotAvailable,
@@ -150,10 +149,6 @@ typedef enum PXActionResult_
 	PXActionRefusedVersionInvalid, // Object version is not defined
 
 	PXActionRefusedMissingCallBack, // Callback is required but missing
-
-	PXActionRefusedNotInitialized, // Object is not jet initialized. Initialize it.
-	PXActionFailedInitialization, // Initialization failed.
-	PXActionRedundantAlreadyInitialized, // Object is already initialized. Action has no effect
 
 	PXActionFailedRelease, // Cleanup of an object failed 
 
@@ -249,7 +244,7 @@ typedef enum PXActionResult_
 	//-----------------------------------
 
 	//---<Compiler>----------------------
-	PXActionRefusedCompilerSymbolInvalid, // While parsing found symbol thats not supported to be read
+	PXActionRefusedParserSymbolNotAsExpected, // While parsing found symbol thats not supported to be read
 	//-----------------------------------
 
 	//---[ Windows Only (WindowsSocketAgent) ]-------

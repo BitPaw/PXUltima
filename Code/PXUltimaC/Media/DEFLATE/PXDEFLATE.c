@@ -269,11 +269,11 @@ PXActionResult PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const pxOutpu
                             {
                                 if(isIllegalCode)  /* if(code_d == INVALIDSYMBOL) */
                                 {
-                                    return PXActionRefusedInvalidSymbol; // error: tried to read disallowed huffman symbol
+                                    return PXActionRefusedParserSymbolNotAsExpected; // error: tried to read disallowed huffman symbol
                                 }
                                 else
                                 {
-                                    return PXActionRefusedInvalidSymbol; // error: invalid distance code (30-31 are never used)
+                                    return PXActionRefusedParserSymbolNotAsExpected; // error: invalid distance code (30-31 are never used)
                                 }
                             }
 
@@ -291,7 +291,7 @@ PXActionResult PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const pxOutpu
                             PXSize start = pxOutputStream->DataCursor;//(*outputBufferSizeRead);
 
                             if(distance > start)
-                                return PXActionRefusedInvalidSymbol; /*too long backward distance*/
+                                return PXActionRefusedParserSymbolNotAsExpected; /*too long backward distance*/
 
                             PXSize backward = start - distance;
 

@@ -39,7 +39,7 @@ PXActionResult PXAPI PXGIFLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 
             if (!validVersion)
             {
-                return PXActionRefusedInvalidVersion;
+                return PXActionRefusedVersionInvalid;
             }
         }
     }

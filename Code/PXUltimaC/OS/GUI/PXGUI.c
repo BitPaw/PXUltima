@@ -3507,7 +3507,7 @@ PXActionResult PXAPI PXGUIElementFetch(PXGUISystem* const pxGUISystem, PXGUIElem
                     pxWindowSizeInfo->Width = 0;
                     pxWindowSizeInfo->Height = 0;
 
-                    return PXActionRefusedObjectNotFound;
+                    return PXActionRefusedNotFound;
                 }
 
                 // Get Last Error

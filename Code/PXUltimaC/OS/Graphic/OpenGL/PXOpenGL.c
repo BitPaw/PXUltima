@@ -1369,7 +1369,7 @@ PXActionResult PXAPI PXOpenGLSwapIntervalSet(PXOpenGL* const pxOpenGL, const PXI
         );
 #endif
 
-        return PXActionRefusedNotSupported;
+        return PXActionRefusedNotSupportedByLibrary;
     }
 
 #if PXLogEnable
@@ -1613,7 +1613,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
 
         if (PXActionSuccessful != libOpenResult)
         {
-            return PXActionLibraryNotFound;
+            return PXActionRefusedNotSupportedByOperatingSystem;
         }
 
         // Fetch starting funcions
@@ -4412,7 +4412,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
     if (!pxOpenGL->ShaderProgramCreate)
     {
         //PXResourceIDMarkAsUnused(&pxShaderProgram->Info);
-        return PXActionNotSupportedByLibrary;
+        return PXActionRefusedNotSupportedByLibrary;
     }
 
     // Create shader program
@@ -4714,7 +4714,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramSelect(PXOpenGL* const pxOpenGL, PXSha
 {
     if (!pxOpenGL->ShaderProgramUse)
     {
-        return PXActionNotSupportedByLibrary;
+        return PXActionRefusedNotSupportedByLibrary;
     }
 
     if (!pxShaderProgram)

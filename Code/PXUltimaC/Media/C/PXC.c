@@ -953,7 +953,7 @@ PXActionResult PXAPI PXCParseEndOfCommand(PXCompiler* const pxCompiler)
 
     if (!isSemicolon)
     {
-        return PXActionRefusedSymbolInvalid;
+        return PXActionRefusedParserSymbolNotAsExpected;
     }
 
     PXCompilerSymbolEntryForward(pxCompiler);

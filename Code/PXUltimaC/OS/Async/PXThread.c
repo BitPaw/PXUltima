@@ -264,7 +264,7 @@ PXActionResult PXAPI PXThreadOpen(PXThread* const pxThread)
 
 PXActionResult PXAPI PXThreadSuspend(PXThread* const pxThread)
 {
-	if (pxThread->ThreadHandle == PXHandleNotSet) return PXActionRefusedObjectNotFound;
+	if (pxThread->ThreadHandle == PXHandleNotSet) return PXActionRefusedNotFound;
 
 #if OSUnix
 	return PXActionRefusedNotImplemented;
@@ -283,7 +283,7 @@ PXActionResult PXAPI PXThreadSuspend(PXThread* const pxThread)
 
 PXActionResult PXAPI PXThreadResume(PXThread* const pxThread)
 {
-	if (pxThread->ThreadHandle == PXHandleNotSet) return PXActionRefusedObjectNotFound;
+	if (pxThread->ThreadHandle == PXHandleNotSet) return PXActionRefusedNotFound;
 
 #if OSUnix
 	return PXActionRefusedNotImplemented;
@@ -302,7 +302,7 @@ PXActionResult PXAPI PXThreadResume(PXThread* const pxThread)
 
 PXActionResult PXAPI PXThreadSleep(PXThread* const pxThread, const PXSize sleepTime)
 {
-	//if (pxThread->ThreadID == PXHandleNotSet) return PXActionRefusedObjectNotFound;
+	//if (pxThread->ThreadID == PXHandleNotSet) return PXActionRefusedNotFound;
 
 #if OSUnix
 	return PXActionRefusedNotImplemented;

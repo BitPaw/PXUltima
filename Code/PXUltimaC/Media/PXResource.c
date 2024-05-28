@@ -1829,7 +1829,7 @@ PXActionResult PXAPI PXResourceLoad(PXResourceLoadInfo* const pxResourceLoadInfo
             );
 #endif
 
-            return PXActionRefusedNotSupported;
+            return PXActionRefusedNotSupportedByLibrary;
         }
 
         if(pxFile.TypeInfo.ResourceLoad == PXNull)
@@ -1948,7 +1948,7 @@ PXActionResult PXAPI PXResourceSave(PXResourceSaveInfo* const pxResourceSaveInfo
             );
 #endif
 
-            return PXActionRefusedNotSupported;
+            return PXActionRefusedNotSupportedByLibrary;
         }
 
         if(PXNull == pxFile.TypeInfo.ResourceSave)

@@ -4,10 +4,10 @@
 
 PXActionResult PXAPI PXQOILoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
-    return PXActionRefusedNotSupported;
+    return PXActionRefusedNotImplemented;
 }
 
 PXActionResult PXAPI PXQOISaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
 {
-    return PXActionRefusedNotSupported;
+    return PXActionRefusedNotImplemented;
 }

@@ -258,7 +258,7 @@ PXActionResult PXAPI PXLDAPClienInitialize(PXLDAPClient* const pxLDAPClient)
 
 		if(PXActionSuccessful != pxActionResult)
 		{
-			return PXActionRefusedNotSupported;
+			return PXActionRefusedNotSupportedByOperatingSystem;
 		}
 	}
 	
@@ -642,7 +642,7 @@ PXActionResult PXAPI PXLDAPClientClose(PXLDAPClient* const pxLDAPClient)
 {
 	if (!pxLDAPClient->ID)
 	{
-		return PXActionRefusedObjectNotFound;
+		return PXActionRefusedNotFound;
 	}
 
 #if OSUnix
@@ -666,7 +666,7 @@ PXActionResult PXAPI PXLDAPClientSearch(PXLDAPClient* const pxLDAPClient, PXLDAP
 {
 	if (!pxLDAPClient->ID)
 	{
-		return PXActionRefusedObjectNotFound;
+		return PXActionRefusedNotFound;
 	}
 
 #if OSUnix

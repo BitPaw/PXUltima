@@ -160,7 +160,7 @@ PXActionResult PXAPI PXID3LoadFromFile(PXID3* const id3, PXFile* const PXFile)
 
             if(!isValidVersion)
             {
-                return PXActionRefusedInvalidVersion;
+                return PXActionRefusedVersionInvalid;
             }
         }
     }

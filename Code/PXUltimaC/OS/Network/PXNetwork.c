@@ -208,7 +208,7 @@ PXActionResult PXAPI PXNetworkInitialize(PXNetwork* const pxNetwork)
             );
 #endif
 
-            return PXActionRefusedNotSupported;
+            return PXActionRefusedNotSupportedByOperatingSystem;
         }
 
 #if PXLogEnable
@@ -1679,7 +1679,7 @@ PXActionResult PXAPI PXWindowsSocketAgentErrorFromID(const PXInt32S errorID)
     switch(errorID)
     {
         case WSAEBADF: // fall through
-        case WSA_INVALID_HANDLE: return PXActionRefusedObjectNotFound; // Specified event object handle is invalid.
+            //  case WSA_INVALID_HANDLE: return PXActionRefusedNotFound; // Specified event object handle is invalid.
         case WSA_NOT_ENOUGH_MEMORY: return PXActionFailedMemoryAllocation; // Insufficient memory available.
         case WSAEINVAL: // fall through
         case WSA_INVALID_PARAMETER: return PXActionRefuedInputInvalid; // One or more parameters are invalid.
@@ -1687,19 +1687,19 @@ PXActionResult PXAPI PXWindowsSocketAgentErrorFromID(const PXInt32S errorID)
             //case WSA_IO_INCOMPLETE: return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
             //case WSA_IO_PENDING: return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
         case WSAEINTR: return PXActionInterruptedByFunctionCall; // xxxxxxxxxxxxxxxxx
-        case WSAEACCES: return PXActionRefuedPermissionDenied;
+            //   case WSAEACCES: return PXActionRefuedPermissionDenied;
         case WSAEFAULT: return PXActionRefuedAdressInvalid;
         case WSAEMFILE: return PXActionFailedResourcedNotEnough;
         case WSAEWOULDBLOCK:  return PXActionWouldBlock; // xxxxxxxxxxxxxxxxx
         case WSAEINPROGRESS: return PXActionNowInProgress; // xxxxxxxxxxxxxxxxx
         case WSAEALREADY: return PXActionAlreadyInProgress; // xxxxxxxxxxxxxxxxx
-        case WSAENOTSOCK: return PXActionRefusedObjectNotFound; // Socket operation on nonsocket.
+            //  case WSAENOTSOCK: return PXActionRefusedNotFound; // Socket operation on nonsocket.
             //case WSAEDESTADDRREQ:  return xxxxxxxxxxxx; // Destination address required.
         case WSAEMSGSIZE: return PXActionRefuedInputBufferTooBig; // Message too long.
         case WSAEPROTOTYPE: return PXActionRefuedProtocolTypeInvalid; // Protocol wrong type for socket.
         case WSAENOPROTOOPT: return PXActionRefuedProtocolOptionInvalid; // Bad protocol option.
         case WSAEPROTONOSUPPORT: return PXActionRefuedProtocolNotSupported; // Protocol not supported.
-        case WSAESOCKTNOSUPPORT: return PXActionRefuedObjectTypeNotSupported; // Socket type not supported.
+            // case WSAESOCKTNOSUPPORT: return PXActionRefuedObjectTypeNotSupported; // Socket type not supported.
         case WSAEOPNOTSUPP: return PXActionRefuedOperationNotSupported; // Operation not supported.
         case WSAEPFNOSUPPORT:  return PXActionRefuedProtocolFamilyNotSupported; // Protocol family not supported.
         case WSAEAFNOSUPPORT:   return PXActionRefuedAddressFamilyNotSupportedByProtocol; // Address family not supported by protocol family.
@@ -1713,7 +1713,7 @@ PXActionResult PXAPI PXWindowsSocketAgentErrorFromID(const PXInt32S errorID)
         case WSAENOBUFS:   return PXActionFailedMemoryAllocationInternal; // No buffer space available.
         case WSAEISCONN:   return PXActionRefusedAlreadyConnected; // Socket is already connected.
         case WSAENOTCONN:   return PXActionFailedNotConnected; // Socket is not connected.
-        case WSAESHUTDOWN:  return WindowsSocketSystemWasShutdown; // Cannot send after socket shutdown.
+            //case WSAESHUTDOWN:  return WindowsSocketSystemWasShutdown; // Cannot send after socket shutdown.
             //case WSAETOOMANYREFS:   return xxxxxxxxxxxx; // Too many references.
             //case WSAETIMEDOUT:   return xxxxxxxxxxxx; // Connection timed out.
         case WSAECONNREFUSED:   return PXActionRefuedServiceNotRunning; // Connection refused.
@@ -1727,52 +1727,52 @@ PXActionResult PXAPI PXWindowsSocketAgentErrorFromID(const PXInt32S errorID)
         case WSAEDQUOT:   return PXActionFailedDiskQuotaExceeded; // Disk quota exceeded.
         case WSAESTALE:   return PXActionFailedHandleIsStale; // Stale file handle reference.
         case WSAEREMOTE:   return PXActionFailedResourceNotAvailableLocally; // Item is remote.
-        case WSASYSNOTREADY:   return PXActionFailedNetworkSubsystemNotReady; // Network subsystem is unavailable.
-        case WSAVERNOTSUPPORTED:   return WindowsSocketVersionNotSupported; // Winsock.dll version out of range.
-        case WSANOTINITIALISED:   return WindowsSocketSystemNotInitialized; // Successful WSAStartup not yet performed.
-        case WSAEDISCON:   return PXActionRefusedResourceIsShuttingdown; // Graceful shutdown in progress.
-        case WSAENOMORE:   return xxxxxxxxxxxx; // No more results.
-        case WSAECANCELLED:   return xxxxxxxxxxxx; // Call has been canceled.
-        case WSAEINVALIDPROCTABLE:   return xxxxxxxxxxxx; // Procedure call table is invalid.
-        case WSAEINVALIDPROVIDER:   return xxxxxxxxxxxx; // Service provider is invalid.
-        case WSAEPROVIDERFAILEDINIT:   return xxxxxxxxxxxx; // Service provider failed to initialize
-        case WSASYSCALLFAILURE:   return xxxxxxxxxxxx; // System call failure.
-        case WSASERVICE_NOT_FOUND:   return xxxxxxxxxxxx; // Service not found.
-        case WSATYPE_NOT_FOUND:   return xxxxxxxxxxxx; // Class type not found.
-        case WSA_E_NO_MORE:   return xxxxxxxxxxxx; // No more results.
-        case WSA_E_CANCELLED:   return xxxxxxxxxxxx; // Call was canceled.
-        case WSAEREFUSED:   return xxxxxxxxxxxx; // Database query was refused.
+            //case WSASYSNOTREADY:   return PXActionFailedNetworkSubsystemNotReady; // Network subsystem is unavailable.
+            //case WSAVERNOTSUPPORTED:   return WindowsSocketVersionNotSupported; // Winsock.dll version out of range.
+            //case WSANOTINITIALISED:   return WindowsSocketSystemNotInitialized; // Successful WSAStartup not yet performed.
+            //case WSAEDISCON:   return PXActionRefusedResourceIsShuttingdown; // Graceful shutdown in progress.
+            //case WSAENOMORE:   return xxxxxxxxxxxx; // No more results.
+            //case WSAECANCELLED:   return xxxxxxxxxxxx; // Call has been canceled.
+            //case WSAEINVALIDPROCTABLE:   return xxxxxxxxxxxx; // Procedure call table is invalid.
+            //case WSAEINVALIDPROVIDER:   return xxxxxxxxxxxx; // Service provider is invalid.
+            //case WSAEPROVIDERFAILEDINIT:   return xxxxxxxxxxxx; // Service provider failed to initialize
+            //case WSASYSCALLFAILURE:   return xxxxxxxxxxxx; // System call failure.
+            //case WSASERVICE_NOT_FOUND:   return xxxxxxxxxxxx; // Service not found.
+            //case WSATYPE_NOT_FOUND:   return xxxxxxxxxxxx; // Class type not found.
+            //case WSA_E_NO_MORE:   return xxxxxxxxxxxx; // No more results.
+            //case WSA_E_CANCELLED:   return xxxxxxxxxxxx; // Call was canceled.
+            //case WSAEREFUSED:   return xxxxxxxxxxxx; // Database query was refused.
         case WSAHOST_NOT_FOUND:   return PXActionFailedHostNotFound; // Host not found.
-        case WSATRY_AGAIN:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
-        case WSANO_RECOVERY:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
-        case WSANO_DATA:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
-        case WSA_QOS_RECEIVERS:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
-        case WSA_QOS_SENDERS:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
-        case WSA_QOS_NO_SENDERS:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
-        case WSA_QOS_NO_RECEIVERS:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
-        case WSA_QOS_REQUEST_CONFIRMED:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
-        case WSA_QOS_ADMISSION_FAILURE:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
-        case WSA_QOS_POLICY_FAILURE:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
-        case WSA_QOS_BAD_STYLE:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
-        case WSA_QOS_BAD_OBJECT:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
-        case WSA_QOS_TRAFFIC_CTRL_ERROR:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
-        case WSA_QOS_GENERIC_ERROR:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
-        case WSA_QOS_ESERVICETYPE:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
-        case WSA_QOS_EFLOWSPEC:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
-        case WSA_QOS_EPROVSPECBUF:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
-        case WSA_QOS_EFILTERSTYLE:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
-        case WSA_QOS_EFILTERTYPE:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
-        case WSA_QOS_EFILTERCOUNT:    return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
-        case WSA_QOS_EOBJLENGTH:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
-        case WSA_QOS_EFLOWCOUNT:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
-        case WSA_QOS_EUNKOWNPSOBJ:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
-        case WSA_QOS_EPOLICYOBJ:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
-        case WSA_QOS_EFLOWDESC:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
-        case WSA_QOS_EPSFLOWSPEC:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
-        case WSA_QOS_EPSFILTERSPEC:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
-        case WSA_QOS_ESDMODEOBJ:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
-        case WSA_QOS_ESHAPERATEOBJ:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
-        case WSA_QOS_RESERVED_PETYPE:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+            //case WSATRY_AGAIN:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+            //case WSANO_RECOVERY:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+            //case WSANO_DATA:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+            //case WSA_QOS_RECEIVERS:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+            //case WSA_QOS_SENDERS:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+            //case WSA_QOS_NO_SENDERS:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+            //case WSA_QOS_NO_RECEIVERS:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+            //case WSA_QOS_REQUEST_CONFIRMED:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+            //case WSA_QOS_ADMISSION_FAILURE:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+            //        case WSA_QOS_POLICY_FAILURE:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+            //case WSA_QOS_BAD_STYLE:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+            //case WSA_QOS_BAD_OBJECT:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+            //case WSA_QOS_TRAFFIC_CTRL_ERROR:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+            //case WSA_QOS_GENERIC_ERROR:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+            //case WSA_QOS_ESERVICETYPE:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+            //case WSA_QOS_EFLOWSPEC:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+            //case WSA_QOS_EPROVSPECBUF:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+            //case WSA_QOS_EFILTERSTYLE:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+            //case WSA_QOS_EFILTERTYPE:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+            //case WSA_QOS_EFILTERCOUNT:    return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+            //case WSA_QOS_EOBJLENGTH:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+            //case WSA_QOS_EFLOWCOUNT:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+            //case WSA_QOS_EUNKOWNPSOBJ:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+            //case WSA_QOS_EPOLICYOBJ:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+            //case WSA_QOS_EFLOWDESC:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+            //case WSA_QOS_EPSFLOWSPEC:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+            //case WSA_QOS_EPSFILTERSPEC:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+            //case WSA_QOS_ESDMODEOBJ:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+            // case WSA_QOS_ESHAPERATEOBJ:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
+       // case WSA_QOS_RESERVED_PETYPE:   return xxxxxxxxxxxx; // xxxxxxxxxxxxxxxxx
 
         default:
             return PXActionInvalid;

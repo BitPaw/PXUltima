@@ -234,6 +234,7 @@ PXActionResult PXAPI PXMultiMediaDeviceReset(PXAudioMultiMedia* const pxAudioMul
 
 PXActionResult PXAPI PXMultiMediaInitialize(PXAudioMultiMedia* const pxAudioMultiMedia, PXAudioInitializeInfo* const pxAudioInitializeInfo)
 {
+#if PXLogEnable
 	PXLogPrint
 	(
 		PXLoggingInfo,
@@ -241,6 +242,7 @@ PXActionResult PXAPI PXMultiMediaInitialize(PXAudioMultiMedia* const pxAudioMult
 		"Initialize",
 		"..."
 	);
+#endif
 
 	// Library
 	{
@@ -248,7 +250,7 @@ PXActionResult PXAPI PXMultiMediaInitialize(PXAudioMultiMedia* const pxAudioMult
 
 		if(PXActionSuccessful != loadLibResult)
 		{
-			return PXActionLibraryNotFound;
+			return PXActionFailedNotFound;
 		}	
 	}
 

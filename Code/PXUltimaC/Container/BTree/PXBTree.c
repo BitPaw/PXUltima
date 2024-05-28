@@ -56,7 +56,7 @@ PXActionResult PXAPI PXBTreeInsert(PXBTree* const pxBTree, const void* const key
             switch (swapElement)
             {
                 case 0: // Item cant be added, already exists
-                    return PXActionRefusedObjectAlreadyExists;
+                    return PXActionRefusedAlreadyExists;
 
                 default:
                     break;
@@ -187,7 +187,7 @@ PXActionResult PXAPI PXBTreeNodeInsert(PXBTree* const pxBTree, PXBTreeNode* cons
                 switch (swapElement)
                 {
                     case 0: // Item cant be added, already exists
-                        return PXActionRefusedObjectAlreadyExists;
+                        return PXActionRefusedAlreadyExists;
 
                     case -1:
                         continue;

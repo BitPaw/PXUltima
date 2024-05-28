@@ -169,7 +169,7 @@ PXActionResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, con
 				PXInt32U index = reverse | (j << l);
 
 				if (huffmanTree->TableLength[index] != 16) 
-					return PXActionRefusedInvalidSymbol; // invalid tree: long symbol shares prefix with short symbol
+					return PXActionRefusedParserSymbolNotAsExpected; // invalid tree: long symbol shares prefix with short symbol
 
 				huffmanTree->TableLength[index] = l;
 				huffmanTree->TableValue[index] = i;
@@ -187,7 +187,7 @@ PXActionResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, con
 			const PXInt32U num = 1u << (tablelen - (l - PXHuffmanFirstBits)); /*amount of entries of this symbol in secondary table*/
 
 			if (maxlen < l) 
-				return PXActionRefusedInvalidSymbol; // invalid tree: long symbol shares prefix with short symbol
+				return PXActionRefusedParserSymbolNotAsExpected; // invalid tree: long symbol shares prefix with short symbol
 
 			for (PXInt32U j = 0; j < num; ++j)
 			{
@@ -228,7 +228,7 @@ PXActionResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, con
 		for (PXSize i = 0; i < size; ++i)
 		{
 			if (huffmanTree->TableLength[i] == 16) 
-				return PXActionRefusedInvalidSymbol;
+				return PXActionRefusedParserSymbolNotAsExpected;
 		}
 	}
 	//----------------------------
@@ -329,7 +329,7 @@ PXActionResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(struct PXFile_* const 
 
 			if (!isValid) // INVALIDSYMBOL
 			{
-				return PXActionRefusedInvalidSymbol; // Error: Invalid code, tried to read disallowed huffman symbol
+				return PXActionRefusedParserSymbolNotAsExpected; // Error: Invalid code, tried to read disallowed huffman symbol
 			}
 
 			switch (code)
@@ -343,7 +343,7 @@ PXActionResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(struct PXFile_* const 
 					for (n = 0; n < replength; ++n)
 					{
 						if (i >= huffmanNumberCode.NumberOfLiteralCodes + huffmanNumberCode.NumberOfDistanceCodes) 
-							return PXActionRefusedInvalidSymbol; // error: i is larger than the amount of codes
+							return PXActionRefusedParserSymbolNotAsExpected; // error: i is larger than the amount of codes
 
 						if (i < huffmanNumberCode.NumberOfLiteralCodes) bitlen_lengh[i] = 0;
 						else bitlen_distance[i - huffmanNumberCode.NumberOfLiteralCodes] = 0;
@@ -361,7 +361,7 @@ PXActionResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(struct PXFile_* const 
 					for (n = 0; n < replength; ++n)
 					{
 						if (i >= huffmanNumberCode.NumberOfLiteralCodes + huffmanNumberCode.NumberOfDistanceCodes) 
-							return PXActionRefusedInvalidSymbol; // error: i is larger than the amount of codes
+							return PXActionRefusedParserSymbolNotAsExpected; // error: i is larger than the amount of codes
 
 						if (i < huffmanNumberCode.NumberOfLiteralCodes) bitlen_lengh[i] = 0;
 						else bitlen_distance[i - huffmanNumberCode.NumberOfLiteralCodes] = 0;
@@ -376,7 +376,7 @@ PXActionResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(struct PXFile_* const 
 					PXSize value; /*set value to the previous code*/
 
 					if (i == 0) 
-						return PXActionRefusedInvalidSymbol; // can't repeat previous if i is 0
+						return PXActionRefusedParserSymbolNotAsExpected; // can't repeat previous if i is 0
 
 					replength += PXFileReadBits(pxFile, 2u);
 
@@ -386,7 +386,7 @@ PXActionResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(struct PXFile_* const 
 					for (n = 0; n < replength; ++n)
 					{
 						if (i >= huffmanNumberCode.NumberOfLiteralCodes + huffmanNumberCode.NumberOfDistanceCodes) 
-							return PXActionRefusedInvalidSymbol; /*error: i is larger than the amount of codes*/
+							return PXActionRefusedParserSymbolNotAsExpected; /*error: i is larger than the amount of codes*/
 
 						if (i < huffmanNumberCode.NumberOfLiteralCodes) bitlen_lengh[i] = value;
 						else bitlen_distance[i - huffmanNumberCode.NumberOfLiteralCodes] = value;
@@ -427,7 +427,7 @@ PXActionResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(struct PXFile_* const 
 			const PXBool isEndCodeValid = bitlen_lengh[256] > 0; // the length of the end code 256 must be larger than 0
 
 			if (!isEndCodeValid) 
-				return PXActionRefusedInvalidSymbol;
+				return PXActionRefusedParserSymbolNotAsExpected;
 
 		}
 

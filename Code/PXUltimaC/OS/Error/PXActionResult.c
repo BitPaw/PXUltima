@@ -76,7 +76,7 @@ PXActionResult PXAPI PXErrorCodeFromID(const int errorCode)
 			return PXMathematicsArgumentOutOfDomainOfFunction;
 
 		case EEXIST:
-			return PXActionRefusedObjectAlreadyExists;
+			return PXActionInvalid;//PXActionRefusedObjectAlreadyExists;
 
 		case EFAULT:
 			return BadAddress;
@@ -205,7 +205,7 @@ PXActionResult PXAPI PXErrorCodeFromID(const int errorCode)
 			return OperationWouldBlock;	
 
 		case ENOTSUP: // Same as 'EOPNOTSUPP' in linux
-			return PXActionNotSupportedByOperatingSystem;		
+			return PXActionInvalid;//PXActionNotSupportedByOperatingSystem;		
 #if OSWindows
 		case EAGAIN: // Same as 'EWOULDBLOCK' in linux
 			return ResourceUnavailableTryAgain;
@@ -898,7 +898,7 @@ PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult)
 		// Some methods in WMI classes can return system and network error codes(64 for example).You can check the definition of these types of error codes by using the net helpmsg command in the command prompt window.For example, the command net helpmsg 64 returns the message : The specified network name is no longer available.In C++, you can call FormatMessage and specify C : \Windows\System32\wbem\wmiutils.dll as the message module.
 		//-------------------------------------------------
 		case 	WBEM_E_FAILED: return PXActionFailedUnkownError; //	Call failed.	2147749889 (0x80041001)
-		case 	WBEM_E_NOT_FOUND: return PXActionRefusedObjectNotFound; //	Object cannot be found.	2147749890 (0x80041002)
+		case 	WBEM_E_NOT_FOUND: return PXActionRefusedNotFound; //	Object cannot be found.	2147749890 (0x80041002)
 		case 	WBEM_E_ACCESS_DENIED: return PXActionDeniedNoPermission; //	Current user does not have permission to perform the action.	2147749891 (0x80041003)
 		case 	WBEM_E_PROVIDER_FAILURE: return PXActionInvalid; //	Provider has failed at some time other than during initialization.	2147749892 (0x80041004)
 		case 	WBEM_E_TYPE_MISMATCH: return PXActionRefusedTypeMissmatch; //	Type mismatch occurred.	2147749893 (0x80041005)
@@ -908,7 +908,7 @@ PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult)
 		case 	WBEM_E_NOT_AVAILABLE: return PXActionInvalid; //	Resource, typically a remote server, is not currently available.	2147749897 (0x80041009)
 		case 	WBEM_E_CRITICAL_ERROR: return PXActionInvalid; //	Internal, critical, and unexpected error occurred. Report the error to Microsoft Technical Support.	2147749898 (0x8004100A)
 		case 	WBEM_E_INVALID_STREAM: return PXActionInvalid; //	One or more network packets were corrupted during a remote session.	2147749899 (0x8004100B)
-		case 	WBEM_E_NOT_SUPPORTED: return PXActionRefusedNotSupported; //	Feature or operation is not supported.	2147749900 (0x8004100C)
+		case 	WBEM_E_NOT_SUPPORTED: PXActionInvalid;//return PXActionRefusedNotSupported; //	Feature or operation is not supported.	2147749900 (0x8004100C)
 		case 	WBEM_E_INVALID_SUPERCLASS: return PXActionRefusedObjectParentInvalid; //	Parent class specified is not valid.	2147749901 (0x8004100D)
 		case 	WBEM_E_INVALID_NAMESPACE: return PXActionRefusedNameSpaceInvalid; //	Namespace specified cannot be found.	2147749902 (0x8004100E)
 		case 	WBEM_E_INVALID_OBJECT: return PXActionRefusedObjectNameInvalid; //	Specified instance is not valid.	2147749903 (0x8004100F)
@@ -1085,14 +1085,14 @@ PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult)
 		// Also can indicate that the type of server you requested in the CLSCTX
 		// enumeration is not registered or the values for the server types in the registry are corrupt.
 		case REGDB_E_CLASSNOTREG: 
-			return PXActionRefuedObjectNotInizialized;
+			return PXActionInvalid;//PXActionRefuedObjectNotInizialized;
 
 		// The ppv parameter is NULL.
 		case E_POINTER:  
 			return PXActionRefusedArgumentNull;
 
 		case RPC_E_CHANGED_MODE:
-			return PXActionRedundantAlreadyInitialized;
+			return PXActionInvalid;//PXActionRedundantAlreadyInitialized;
 
 			// The call succeeded, but we had to substitute the 3D algorithm
 		case DS_NO_VIRTUALIZATION:
@@ -1100,11 +1100,11 @@ PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult)
 
 			// The call failed because resources (such as a priority level) were already being used by another caller
 		case DSERR_ALLOCATED:
-			return PXActionRefuedObjectAlreadyExists;
+			return PXActionInvalid;//PXActionRefuedObjectAlreadyExists;
 
 			// The control (vol, pan, etc.) requested by the caller is not available
 		case DSERR_CONTROLUNAVAIL:
-			return PXActionRefuedObjectPropertyNotAvailable;
+			return PXActionInvalid;//PXActionRefuedObjectPropertyNotAvailable;
 
 			// An invalid parameter was passed to the returning function
 		case DSERR_INVALIDPARAM:
@@ -1112,7 +1112,7 @@ PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult)
 
 			// This call is not valid for the current state of this object
 		case DSERR_INVALIDCALL:
-			return PXActionRefuedObjectStateDoesNotAllowAction;
+			return PXActionInvalid;// PXActionRefuedObjectStateDoesNotAllowAction;
 
 			// An undetermined error occurred inside the DirectSound subsystem
 		case DSERR_GENERIC:
@@ -1140,11 +1140,11 @@ PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult)
 
 			// This object is already initialized
 		case DSERR_ALREADYINITIALIZED:
-			return PXActionRefuedObjectAlreadyInizialized;
+			return PXActionInvalid;//PXActionRefuedObjectAlreadyInizialized;
 			
 		case CLASS_E_NOAGGREGATION: // This class cannot be created as part of an aggregate.			
 		//case DSERR_NOAGGREGATION: // This object does not support aggregation
-			return PXActionRefuedObjectAggregationNotSupported;
+			return PXActionInvalid;//PXActionRefuedObjectAggregationNotSupported;
 
 			// The buffer memory has been lost, and must be restored
 		case DSERR_BUFFERLOST:
@@ -1156,7 +1156,7 @@ PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult)
 
 			// This object has not been initialized
 		case DSERR_UNINITIALIZED:
-			return PXActionRefuedObjectNotInizialized;
+			return PXActionInvalid;//PXActionRefuedObjectNotInizialized;
 
 		// The specified class does not implement the requested interface,
 		// or the controlling IUnknown does not expose the requested interface.
@@ -1174,7 +1174,7 @@ PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult)
 
 			// Attempt to use DirectSound 8 functionality on an older DirectSound object
 		case DSERR_DS8_REQUIRED:
-			return PXActionRefusedLibraryRequiredUpgrade;
+			return PXActionInvalid;//PXActionRefusedLibraryRequiredUpgrade;
 
 			// A circular loop of send effects was detected
 		case DSERR_SENDLOOP:
@@ -1182,16 +1182,16 @@ PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult)
 
 			// The GUID specified in an audiopath file does not match a valid MIXIN buffer
 		case DSERR_BADSENDBUFFERGUID:
-			return PXActionRefusedObjectNotFound;
+			return PXActionRefusedNotFound;
 
 			// The object requested was not found (numerically equal to DMUS_E_NOT_FOUND)
 		case DSERR_OBJECTNOTFOUND:
-			return PXActionRefusedObjectNotFound;
+			return PXActionRefusedNotFound;
 
 			// The effects requested could not be found on the system, or they were found
 			// but in the wrong order, or in the wrong hardware/software locations.
 		case DSERR_FXUNAVAILABLE:
-			return PXActionRefusedEffectNotAvailable;
+			return PXActionInvalid;//PXActionRefusedEffectNotAvailable;
 
 		default:
 			return PXActionInvalid;
@@ -1203,26 +1203,26 @@ PXActionResult PXAPI PXWindowsMMAudioConvertFromID(const PXInt32U mmResultID)
 	switch (mmResultID)
 	{
 		case MMSYSERR_NOERROR:  return PXActionSuccessful;
-		case MMSYSERR_ERROR:return AudioResultErrorUnspecified;
-		case MMSYSERR_BADDEVICEID:  return AudioResultDeviceIDInvalid;
+			//case MMSYSERR_ERROR:return AudioResultErrorUnspecified;
+			//case MMSYSERR_BADDEVICEID:  return AudioResultDeviceIDInvalid;
 		case MMSYSERR_NOTENABLED:   return AudioResultDriverNotEnabled;
 		case MMSYSERR_ALLOCATED: return AudioResultDeviceAlreadyAllocated;
-		case MMSYSERR_INVALHANDLE:  return AudioResultDeviceHandleInvalid;
-		case MMSYSERR_NODRIVER:   return AudioResultDeviceNoDriver;
+			//case MMSYSERR_INVALHANDLE:  return AudioResultDeviceHandleInvalid;
+			//case MMSYSERR_NODRIVER:   return AudioResultDeviceNoDriver;
 		case MMSYSERR_NOMEM:return PXActionFailedMemoryAllocation;
-		case MMSYSERR_NOTSUPPORTED: return PXActionRefusedNotSupported;
+			//case MMSYSERR_NOTSUPPORTED: return PXActionRefusedNotSupported;
 		case MMSYSERR_BADERRNUM:  return AudioResultErrorValueInvalid;
 		case MMSYSERR_INVALFLAG: return AudioResultFlagInvalid;
 		case MMSYSERR_INVALPARAM: return PXActionRefusedArgumentInvalid;
 		case MMSYSERR_HANDLEBUSY:return AudioResultDeviceHandleBusy;
 		case MMSYSERR_INVALIDALIAS:return AudioResultAliasNotFound;
-		case MMSYSERR_BADDB: return AudioResultPXRegistryDatabaseInvalid;
-		case MMSYSERR_KEYNOTFOUND: return AudioResultPXRegistryKeyNotFound;
-		case MMSYSERR_READERROR:  return AudioResultPXRegistryReadError;
-		case MMSYSERR_WRITEERROR: return AudioResultPXRegistryWriteError;
-		case MMSYSERR_DELETEERROR:   return AudioResultPXRegistryDeleteError;
-		case MMSYSERR_VALNOTFOUND: return AudioResultPXRegistryValueNotFound;
-		case MMSYSERR_NODRIVERCB:  return AudioResultDriverNoCallback;
+			//case MMSYSERR_BADDB: return AudioResultPXRegistryDatabaseInvalid;
+			//case MMSYSERR_KEYNOTFOUND: return AudioResultPXRegistryKeyNotFound;
+			//case MMSYSERR_READERROR:  return AudioResultPXRegistryReadError;
+			//case MMSYSERR_WRITEERROR: return AudioResultPXRegistryWriteError;
+			//case MMSYSERR_DELETEERROR:   return AudioResultPXRegistryDeleteError;
+			//case MMSYSERR_VALNOTFOUND: return AudioResultPXRegistryValueNotFound;
+		//case MMSYSERR_NODRIVERCB:  return AudioResultDriverNoCallback;
 			//case MMSYSERR_MOREDATA:   return AudioResultMoreData;
 
 		case WAVERR_BADFORMAT: return PXActionRefusedFormatNotSupported;

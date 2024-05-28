@@ -119,7 +119,7 @@ PXActionResult PXAPI PXZLIBDecompress(PXFile* const pxInputSteam, PXFile* const 
 
             if(!isCompressionInfoValid)
             {
-                return PXActionRefusedInvalidVersion;
+                return PXActionRefusedVersionInvalid;
             }
 
             //assert(isCompressionInfoValid);
@@ -172,7 +172,7 @@ PXActionResult PXAPI PXZLIBDecompress(PXFile* const pxInputSteam, PXFile* const 
         case PXZLIBCompressionMethodReserved:
         case PXZLIBCompressionMethodInvalid:
         {
-            return PXActionFailedFormatInvalid;
+            return PXActionFailedFormatNotAsExpected;
         }
     }
 

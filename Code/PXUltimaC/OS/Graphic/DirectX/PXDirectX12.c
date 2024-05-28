@@ -226,7 +226,7 @@ PXActionResult PXAPI PXDirectX12Initialize(PXDirectX12* const pxDirectX12, PXGra
 #endif
 
 #else
-return PXActionRefusedNotSupported;
+return PXActionRefusedNotSupportedByOperatingSystem;
 #endif
 }
 
