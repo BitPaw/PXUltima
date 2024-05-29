@@ -25,7 +25,7 @@ We want to be able to fully use modern advancements in operating systems, but al
 |ARM32| :x:  | :x: |:x: |
 |ARM64| :x:  | :x: |:x: |
 
-> I do not own any Apple device nor ARM based CPU systems. They can not be testet by my right now.
+> I do not own any Apple device nor ARM based CPU systems. They can not be testet by me right now.
 
 ## Supported Formats
 <table>
@@ -83,7 +83,7 @@ We want to be able to fully use modern advancements in operating systems, but al
 
 ## Test Systems
 | OS | CPU | RAM | GPU | Does it run? |
-|:--:|:--:|:--:|:--:|:--:|
+|:--|:--|--:|:--|:--:|
 |Windows 10 (x64)|AMD Ryzen 9 7950X3D |32GB DDR5| Nvidia GTX 1080 | :heavy_check_mark:|
 |Windows 10 (x64)|Intel i7 6400k|32GB DDR4| Nvidia GTX 970 | :heavy_check_mark:|
 |Windows 10 (x64)|Intel i3 2300M|4GB DDR3| Intel HD 3000 | :heavy_check_mark:|
