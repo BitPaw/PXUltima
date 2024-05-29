@@ -119,6 +119,24 @@ typedef struct PXCompilerSettings_
 PXCompilerSettings;
 
 
+// Position where the attached comment to a symbol is in
+typedef enum PXCommentPosition_
+{
+	PXCommentPositionInvalid,
+	PXCommentPositionHeader,
+	PXCommentPositionInline
+}
+PXCommentPosition;
+
+typedef struct PXComment_
+{
+	PXSize Line;
+	char* Data;
+	PXSize Size;
+	PXCommentPosition Position;
+}
+PXComment;
+
 typedef struct PXCompiler_
 {
 	PXFile* FileInput;
@@ -132,11 +150,12 @@ typedef struct PXCompiler_
 	PXCodeDocument* CodeDocument;
 	PXFile* TokenStream;
 
-	PXSize CommentLine;
-	char* CommentData;
-	PXSize CommentSize;
+	// TODO: temp solution
+	// Comment to be parsed if it is out of bounce for the symbol
+	PXComment Comment;
 
-	PXSize Depth;
+	// the current depth of the current object stack
+	PXSize DepthCurrent;
 }
 PXCompiler;
 
