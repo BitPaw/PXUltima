@@ -151,14 +151,14 @@ PXActionResult PXAPI PXCanonRaw3BlockRead(PXCanonRaw3Chunk* const pxCanonRaw3Chu
 
 						PXImage pxxx;
 
-						PXTIFFLoadFromFile(&pxxx, &tiffData);
+						//PXTIFFLoadFromFile(&pxxx, &tiffData);
 
 						break;
 					}
 					case PXCanonRaw3MOOVCCTPID:
 					case PXCanonRaw3MOOVCMT2ID:
 					case PXCanonRaw3MOOVCMT3ID:
-					case PXCanonRaw3MOOVGPSInfoID:				
+					case PXCanonRaw3MOOVGPSInfoID:
 					case PXCanonRaw3MOOVCNOPID:
 					case PXCanonRaw3MOOVCNTHID:
 					case PXCanonRaw3MOOVThumbnailImageID:
@@ -248,6 +248,8 @@ PXActionResult PXAPI PXCanonRaw3BlockRead(PXCanonRaw3Chunk* const pxCanonRaw3Chu
 		default:
 			break;
 	}
+
+	return PXActionRefusedNotImplemented;
 }
 
 PXActionResult PXAPI PXCanonRaw3LoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)

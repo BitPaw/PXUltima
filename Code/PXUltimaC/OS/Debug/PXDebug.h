@@ -68,7 +68,6 @@ typedef struct PXSymbolEnumerator_
 }
 PXSymbolEnumerator;
 
-
 typedef struct PXDebug_
 {
 	PXLibrary LibraryKernel;

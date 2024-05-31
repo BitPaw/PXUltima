@@ -26,6 +26,7 @@ typedef enum PXActionResult_
 	PXActionFailedUpdate,
 	PXActionFailedCreate, // Creation of a resource failed
 	PXActionFailedLoad, // Loadin a resource failed
+	PXActionFailedCleanup,
 	PXActionFailedSave, // Saving a resource failed
 	PXActionFailedOpen, // Opening a resource failed
 	PXActionFailedClose, // Closing a resource failed
@@ -34,6 +35,8 @@ typedef enum PXActionResult_
 
 	PXActionFailedStackOverflow,
 	PXActionFailedStackUnderflow,
+
+	PXActionFailedNoSystemToHandleData, // Action can not compleated, a vital component is missing or not loaded.
 
 	PXActionRefusedNoDriver, // An object needs a driver to function but no driver is attached
 	PXActionRefusedFeatureNotAvailable, // Setting requested is not available on this device
@@ -139,7 +142,7 @@ typedef enum PXActionResult_
 	//-------------------------------------------------------
 	// Library
 	//-------------------------------------------------------
-	PXActionRefusedNotSupportedByOperatingSystem,
+	PXActionRefusedNotSupportedByOperatingSystem, // Given action can't be done due the OS not having the ability to do so
 	PXActionRefusedNotSupportedByLibrary, // [NOTSUP] Action can't be exectuted, as the function does not exist to be used.
 	PXActionRefusedNotImplemented, // Function that exists but does not contain any code
 	
@@ -183,7 +186,7 @@ typedef enum PXActionResult_
 	PXActionInvalidRedundandInteraction, // The function would have no effect and is cancelled imidiatly
 	PXActionRefuedDriverInvalid,
 	PXActionRefuedDriverMissing,
-	PXActionRefuedFormatIllegal,
+	PXActionRefuedFormatIllegal, // Parsed format is not a legal option. The file is wrongly written or corrupted
 	PXActionRefuedFormatNotSupported,
 
 
@@ -293,7 +296,7 @@ typedef enum PXActionResult_
 	AddressInUse, // ADDRINUSE
 	AddressNotAvailable, // ADDRNOTAVAIL
 	AddressFamilyNotSupported, // AFNOSUPPORT
-	ResourceUnavailableTryAgain, // AGAIN
+	PXActionFailedResourceUnavailableTryAgain, // [AGAIN] 
 	ConnectionAlreadyInProgress, // ALREADY
 	ArgumentListTooLong, // 2BIG
 	BadFileDescriptor, // BADF

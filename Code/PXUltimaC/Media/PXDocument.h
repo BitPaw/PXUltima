@@ -94,6 +94,8 @@ typedef struct PXCodeDocumentElement_
 	PXBool IsPreDefine; // In C, a typedef is used without a body.
 
 
+	PXDocumentCallingConvention FunctionCallingConvention;
+
 
 	// managed
 	PXSize ID;

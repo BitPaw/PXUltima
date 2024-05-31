@@ -4,6 +4,7 @@
 #include <Media/PXText.h>
 #include <Math/PXMath.h>
 #include <OS/Console/PXConsole.h>
+#include <Media/PXDocument.h>
 
 #define PXCompilerDebug 1
 #define PXCompilerSanitise 1
@@ -81,9 +82,9 @@ void PXAPI PXCompilerSymbolEntryAdd(PXCompiler* const pxCompiler, const PXCompil
 		&compilerSymbolEntry->Source, PXDataTypeAdress
 	};
 
-	const PXSize written = PXFileWriteMultible(pxCompiler->FileCache, pxFileDataElementType, sizeof(pxFileDataElementType));
+	const PXSize written = PXFileWriteMultible(pxCompiler->ReadInfo.FileCache, pxFileDataElementType, sizeof(pxFileDataElementType));
 
-#if PXCompilerDebug
+#if PXCompilerDebug && PXCompilerDEBUG
 	const char* typeName = PXCompilerCompilerSymbolLexerToString(compilerSymbolEntry->ID);
 
 	switch(compilerSymbolEntry->ID)
@@ -158,238 +159,6 @@ void PXAPI PXCompilerSymbolEntryAdd(PXCompiler* const pxCompiler, const PXCompil
 			break;
 	}
 #endif
-
-#if PXCompilerDebug && 0
-
-	PXSize idBufferSize = 10;
-	char idbuffer[15];
-	PXSize textBufferSize = 20;
-	char textbuffer[25];
-
-	PXMemoryClear(idbuffer, sizeof(idbuffer));
-	PXMemoryClear(textbuffer, sizeof(textbuffer));
-
-	switch (compilerSymbolEntry->ID)
-	{
-		case PXCompilerSymbolLexerQuestionmark:
-		{
-			PXTextCopyA("*Symbol*", 9, idbuffer, idBufferSize);
-			PXTextCopyA("?", 1, textbuffer, textBufferSize);
-			break;
-		}
-		case PXCompilerSymbolLexerExclamation:
-		{
-			PXTextCopyA("*Symbol*", 9, idbuffer, idBufferSize);
-			PXTextCopyA("!", 1, textbuffer, textBufferSize);
-			break;
-		}
-		case PXCompilerSymbolLexerDot:
-		{
-			PXTextCopyA("*Symbol*", 9, idbuffer, idBufferSize);
-			PXTextCopyA(".", 1, textbuffer, textBufferSize);
-			break;
-		}
-		case PXCompilerSymbolLexerComma:
-		{
-			PXTextCopyA("*Symbol*", 9, idbuffer, idBufferSize);
-			PXTextCopyA(",", 1, textbuffer, textBufferSize);
-			break;
-		}
-		case PXCompilerSymbolLexerColon:
-		{
-			PXTextCopyA("*Symbol*", 9, idbuffer, idBufferSize);
-			PXTextCopyA(":", 1, textbuffer, textBufferSize);
-			break;
-		}
-		case PXCompilerSymbolLexerSemiColon:
-		{
-			PXTextCopyA("*Symbol*", 9, idbuffer, idBufferSize);
-			PXTextCopyA(";", 1, textbuffer, textBufferSize);
-			break;
-		}
-		case PXCompilerSymbolLexerPlus:
-		{
-			PXTextCopyA("*Symbol*", 9, idbuffer, idBufferSize);
-			PXTextCopyA("+", 1, textbuffer, textBufferSize);
-			break;
-		}
-		case PXCompilerSymbolLexerMinus:
-		{
-			PXTextCopyA("*Symbol*", 9, idbuffer, idBufferSize);
-			PXTextCopyA("-", 1, textbuffer, textBufferSize);
-			break;
-		}
-		case PXCompilerSymbolLexerSlash:
-		{
-			PXTextCopyA("*Symbol*", 9, idbuffer, idBufferSize);
-			PXTextCopyA("/", 1, textbuffer, textBufferSize);
-			break;
-		}
-		case PXCompilerSymbolLexerAsterisk:
-		{
-			PXTextCopyA("*Symbol*", 9, idbuffer, idBufferSize);
-			PXTextCopyA("*", 1, textbuffer, textBufferSize);
-			break;
-		}
-		case PXCompilerSymbolLexerSlashBack:
-		{
-			PXTextCopyA("*Symbol*", 9, idbuffer, idBufferSize);
-			PXTextCopyA("\\", 1, textbuffer, textBufferSize);
-			break;
-		}
-		case PXCompilerSymbolLexerAmpercant:
-		{
-			PXTextCopyA("*Symbol*", 9, idbuffer, idBufferSize);
-			PXTextCopyA("&", 1, textbuffer, textBufferSize);
-			break;
-		}
-		case PXCompilerSymbolLexerPercent:
-		{
-			PXTextCopyA("*Symbol*", 9, idbuffer, idBufferSize);
-			PXTextCopyA("%", 1, textbuffer, textBufferSize);
-			break;
-		}
-		case PXCompilerSymbolLexerBar:
-		{
-			PXTextCopyA("*Symbol*", 9, idbuffer, idBufferSize);
-			PXTextCopyA("|", 1, textbuffer, textBufferSize);
-			break;
-		}
-		case PXCompilerSymbolLexerHash:
-		{
-			PXTextCopyA("*Symbol*", 9, idbuffer, idBufferSize);
-			PXTextCopyA("#", 1, textbuffer, textBufferSize);
-			break;
-		}
-		case PXCompilerSymbolLexerDegree:
-		{
-			PXTextCopyA("*Symbol*", 9, idbuffer, idBufferSize);
-			PXTextCopyA("°", 1, textbuffer, textBufferSize);
-			break;
-		}
-		case PXCompilerSymbolLexerExponent:
-		{
-			PXTextCopyA("*Symbol*", 9, idbuffer, idBufferSize);
-			PXTextCopyA("^", 1, textbuffer, textBufferSize);
-			break;
-		}
-		case PXCompilerSymbolLexerTilde:
-		{
-			PXTextCopyA("*Symbol*", 9, idbuffer, idBufferSize);
-			PXTextCopyA("~", 1, textbuffer, textBufferSize);
-			break;
-		}
-		case PXCompilerSymbolLexerApostrophe:
-		{
-			PXTextCopyA("*Symbol*", 9, idbuffer, idBufferSize);
-			PXTextCopyA("\'", 1, textbuffer, textBufferSize);
-			break;
-		}
-
-		case PXCompilerSymbolLexerBrackedRoundOpen:
-		{
-			PXTextCopyA("*Symbol*", 9, idbuffer, idBufferSize);
-			PXTextCopyA("(", 1, textbuffer, textBufferSize);
-			break;
-		}
-		case PXCompilerSymbolLexerBrackedRoundClose:
-		{
-			PXTextCopyA("*Symbol*", 9, idbuffer, idBufferSize);
-			PXTextCopyA(")", 1, textbuffer, textBufferSize);
-			break;
-		}
-		case PXCompilerSymbolLexerBracketSquareOpen:
-		{
-			PXTextCopyA("*Symbol*", 9, idbuffer, idBufferSize);
-			PXTextCopyA("[", 1, textbuffer, textBufferSize);
-			break;
-		}
-		case PXCompilerSymbolLexerBracketSquareClose:
-		{
-			PXTextCopyA("*Symbol*", 9, idbuffer, idBufferSize);
-			PXTextCopyA("]", 1, textbuffer, textBufferSize);
-			break;
-		}
-		case PXCompilerSymbolLexerBracketCurlyOpen:
-		{
-			PXTextCopyA("*Symbol*", 9, idbuffer, idBufferSize);
-			PXTextCopyA("{", 1, textbuffer, textBufferSize);
-			break;
-		}
-		case PXCompilerSymbolLexerBracketCurlyClose:
-		{
-			PXTextCopyA("*Symbol*", 9, idbuffer, idBufferSize);
-			PXTextCopyA("}", 1, textbuffer, textBufferSize);
-			break;
-		}
-		case PXCompilerSymbolLexerBracketAngleOpen:
-		{
-			PXTextCopyA("*Symbol*", 9, idbuffer, idBufferSize);
-			PXTextCopyA("<", 1, textbuffer, textBufferSize);
-			break;
-		}
-		case PXCompilerSymbolLexerBracketAngleClose:
-		{
-			PXTextCopyA("*Symbol*", 9, idbuffer, idBufferSize);
-			PXTextCopyA(">", 1, textbuffer, textBufferSize);
-			break;
-		}
-
-		case PXCompilerSymbolLexerWhiteSpace:
-		{
-			PXTextCopyA("***Whitespace***", 17, textbuffer, textBufferSize);
-			break;
-		}
-		case PXCompilerSymbolLexerNewLine:
-		{
-			PXTextCopyA("\\n", 3, idbuffer, idBufferSize);
-			PXTextCopyA("***New Line***", 15, textbuffer, textBufferSize);
-			break;
-		}
-		case PXCompilerSymbolLexerComment:
-			PXTextCopyA("comment", 8, idbuffer, idBufferSize);
-			PXTextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, textbuffer, textBufferSize);
-			break;
-
-		case PXCompilerSymbolLexerBool:
-			PXTextCopyA("bool", 5, idbuffer, idBufferSize);
-			PXConsoleWriteF(0, textbuffer, "%s", compilerSymbolEntry->DataC ? "true" : "false");
-			break;
-
-		case PXCompilerSymbolLexerFloat:
-			PXTextCopyA("float", 6, idbuffer, idBufferSize);
-			PXConsoleWriteF(0, textbuffer, "%f", compilerSymbolEntry->DataF);
-			break;
-
-		case PXCompilerSymbolLexerInteger:
-			PXTextCopyA("int", 4, idbuffer, idBufferSize);
-			PXConsoleWriteF(0, textbuffer, "%i", compilerSymbolEntry->DataI32U);
-			break;
-
-		case PXCompilerSymbolLexerString:
-			PXTextCopyA("string", 7, idbuffer, idBufferSize);
-			PXTextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, textbuffer, textBufferSize);
-			break;
-
-		case PXCompilerSymbolLexerGenericElement:
-		{
-			//PXTextCopyA("*Generic*", 10, idbuffer, idBufferSize);
-			PXTextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, textbuffer, textBufferSize);
-			break;
-		}
-	}
-
-
-	printf
-	(
-		"|| C:%-3i L:%-3i S:%-3i | %-10s -> %-20s ||\n",
-		compilerSymbolEntry->Coloum,
-		compilerSymbolEntry->Line,
-		compilerSymbolEntry->Size,
-		idbuffer,
-		textbuffer
-	);
-#endif
 }
 
 PXSize PXAPI PXCompilerSymbolEntryMergeCurrentWithNext(PXCompiler* const pxCompiler, PXCompilerSymbolEntry* const compilerSymbolEntry)
@@ -418,11 +187,11 @@ PXSize PXAPI PXCompilerSymbolEntryMergeCurrentWithNext(PXCompiler* const pxCompi
 			&oldCopy.Source, PXDataTypeAdress
 		};
 
-		const PXSize written = PXFileWriteMultible(pxCompiler->FileCache, pxFileDataElementType, sizeof(pxFileDataElementType));
+		const PXSize written = PXFileWriteMultible(pxCompiler->ReadInfo.FileCache, pxFileDataElementType, sizeof(pxFileDataElementType));
 	}
 
 	// add magic offset of previous deleted entrys
-	PXFileCursorAdvance(pxCompiler->FileCache, skippedBlocks * 21);
+	PXFileCursorAdvance(pxCompiler->ReadInfo.FileCache, skippedBlocks * 21);
 
 	// delete old symbol
 	{
@@ -438,7 +207,7 @@ PXSize PXAPI PXCompilerSymbolEntryMergeCurrentWithNext(PXCompiler* const pxCompi
 			&emptyAdress, PXDataTypeAdress
 		};
 
-		const PXSize written = PXFileWriteMultible(pxCompiler->FileCache, pxFileDataElementType, sizeof(pxFileDataElementType));
+		const PXSize written = PXFileWriteMultible(pxCompiler->ReadInfo.FileCache, pxFileDataElementType, sizeof(pxFileDataElementType));
 	}
 
 	PXCompilerSymbolRewind(pxCompiler, skippedBlocks+2); // Go back again, again
@@ -457,12 +226,12 @@ PXSize PXAPI PXCompilerSymbolRewind(PXCompiler* const pxCompiler, const PXSize a
 		sizeof(PXInt32U) +
 		sizeof(void*);
 
-	PXSize reveredSize = pxCompiler->FileCache->DataCursor;
+	PXSize reveredSize = pxCompiler->ReadInfo.FileCache->DataCursor;
 	PXBool isInvalidToken;
 
 	do
 	{
-		PXFileCursorRewind(pxCompiler->FileCache, totalSize * amount);
+		PXFileCursorRewind(pxCompiler->ReadInfo.FileCache, totalSize * amount);
 
 		PXCompilerSymbolEntry pxCompilerSymbolEntry;
 
@@ -472,14 +241,14 @@ PXSize PXAPI PXCompilerSymbolRewind(PXCompiler* const pxCompiler, const PXSize a
 	}
 	while (isInvalidToken);
 
-	reveredSize = reveredSize - pxCompiler->FileCache->DataCursor;
+	reveredSize = reveredSize - pxCompiler->ReadInfo.FileCache->DataCursor;
 
 	return reveredSize;
 }
 
 PXSize PXAPI PXCompilerSymbolEntryExtract(PXCompiler* const pxCompiler)
 {
-	PXCompilerSymbolEntry* pxCompilerSymbolEntry = &pxCompiler->SymbolEntryCurrent;
+	PXCompilerSymbolEntry* pxCompilerSymbolEntry = & pxCompiler->ReadInfo.SymbolEntryCurrent;
 
 	PXSize readBytes = 0;
 
@@ -495,7 +264,7 @@ PXSize PXAPI PXCompilerSymbolEntryExtract(PXCompiler* const pxCompiler)
 			&pxCompilerSymbolEntry->Size, PXDataTypeInt32U,
 			&pxCompilerSymbolEntry->Source, PXDataTypeAdress
 		};
-		readBytes += PXFileReadMultible(pxCompiler->FileCache, pxFileDataElementType, sizeof(pxFileDataElementType));
+		readBytes += PXFileReadMultible(pxCompiler->ReadInfo.FileCache, pxFileDataElementType, sizeof(pxFileDataElementType));
 
 		pxCompilerSymbolEntry->ID = (PXCompilerSymbolLexer)symbolID;
 
@@ -525,9 +294,9 @@ PXSize PXAPI PXCompilerSymbolEntryForward(PXCompiler* const pxCompiler)
 
 	PXCompilerSymbolEntry pxCompilerSymbolEntry;
 
-	const PXSize positionBefore = pxCompiler->FileCache->DataCursor;
+	const PXSize positionBefore = pxCompiler->ReadInfo.FileCache->DataCursor;
 
-	PXFileCursorAdvance(pxCompiler->FileCache, totalSize);
+	PXFileCursorAdvance(pxCompiler->ReadInfo.FileCache, totalSize);
 
 	/*
 	* 	do
@@ -540,14 +309,14 @@ PXSize PXAPI PXCompilerSymbolEntryForward(PXCompiler* const pxCompiler)
 	
 
 
-	return pxCompiler->FileCache->DataCursor - positionBefore;
+	return pxCompiler->ReadInfo.FileCache->DataCursor - positionBefore;
 }
 
 PXSize PXAPI PXCompilerSymbolEntryPeek(PXCompiler* const pxCompiler)
 {
 	const PXSize readBytes = PXCompilerSymbolEntryExtract(pxCompiler);
 
-	PXFileCursorRewind(pxCompiler->FileCache, readBytes);
+	PXFileCursorRewind(pxCompiler->ReadInfo.FileCache, readBytes);
 
 	return readBytes;
 }
@@ -557,10 +326,10 @@ PXBool PXAPI PXCompilerSymbolEntryPeekEnsure(PXCompiler* const pxCompiler, const
 	const PXBool isTarget = PXCompilerSymbolEntryPeekCheck(pxCompiler, pxCompilerSymbolLexer);
 
 	if(!isTarget)
-	{
-#if PXLogEnable
+	{ 
+#if PXLogEnable && PXCompilerDEBUG
 		const char* expectedTypeText = PXCompilerCompilerSymbolLexerToString(pxCompilerSymbolLexer);
-		const char* gotTypeText = PXCompilerCompilerSymbolLexerToString(pxCompiler->SymbolEntryCurrent.ID);
+		const char* gotTypeText = PXCompilerCompilerSymbolLexerToString( pxCompiler->ReadInfo.SymbolEntryCurrent.ID);
 
 		PXLogPrint
 		(
@@ -572,9 +341,9 @@ PXBool PXAPI PXCompilerSymbolEntryPeekEnsure(PXCompiler* const pxCompiler, const
 			"Line: %i, Character: %i, Size: %i",
 			expectedTypeText,
 			gotTypeText,
-			pxCompiler->SymbolEntryCurrent.Line,
-			pxCompiler->SymbolEntryCurrent.Coloum,
-			pxCompiler->SymbolEntryCurrent.Size
+			 pxCompiler->ReadInfo.SymbolEntryCurrent.Line,
+			 pxCompiler->ReadInfo.SymbolEntryCurrent.Coloum,
+			 pxCompiler->ReadInfo.SymbolEntryCurrent.Size
 		);		
 #endif
 	}
@@ -585,7 +354,7 @@ PXBool PXAPI PXCompilerSymbolEntryPeekEnsure(PXCompiler* const pxCompiler, const
 PXBool PXAPI PXCompilerSymbolEntryPeekCheck(PXCompiler* const pxCompiler, const PXCompilerSymbolLexer pxCompilerSymbolLexer)
 {
 	const PXSize readBytes = PXCompilerSymbolEntryPeek(pxCompiler);
-	const PXBool isCorrectType = pxCompilerSymbolLexer == pxCompiler->SymbolEntryCurrent.ID;
+	const PXBool isCorrectType = pxCompilerSymbolLexer ==  pxCompiler->ReadInfo.SymbolEntryCurrent.ID;
 
 	return isCorrectType;
 }
@@ -598,7 +367,7 @@ PXBool PXAPI PXCompilerSymbolEntryEnsureCheckList(PXCompiler* const pxCompiler, 
 	{
 		PXCompilerSymbolLexer pxCompilerSymbolLexer = pxCompilerSymbolLexerList[i];	
 
-		PXBool succ = pxCompilerSymbolLexer == pxCompiler->SymbolEntryCurrent.ID;
+		PXBool succ = pxCompilerSymbolLexer ==  pxCompiler->ReadInfo.SymbolEntryCurrent.ID;
 
 		if(succ)
 		{
@@ -606,9 +375,9 @@ PXBool PXAPI PXCompilerSymbolEntryEnsureCheckList(PXCompiler* const pxCompiler, 
 		}
 	}
 
-#if PXLogEnable
+#if PXLogEnable && PXCompilerDEBUG
 
-	const char* gotTypeText = PXCompilerCompilerSymbolLexerToString(pxCompiler->SymbolEntryCurrent.ID);
+	const char* gotTypeText = PXCompilerCompilerSymbolLexerToString( pxCompiler->ReadInfo.SymbolEntryCurrent.ID);
 
 	PXText bufferOptions;
 	PXTextConstructBufferA(&bufferOptions, 64);
@@ -633,9 +402,9 @@ PXBool PXAPI PXCompilerSymbolEntryEnsureCheckList(PXCompiler* const pxCompiler, 
 		"Line: %i, Character: %i, Size: %i",
 		bufferOptions.TextA,
 		gotTypeText,
-		pxCompiler->SymbolEntryCurrent.Line,
-		pxCompiler->SymbolEntryCurrent.Coloum,
-		pxCompiler->SymbolEntryCurrent.Size
+		 pxCompiler->ReadInfo.SymbolEntryCurrent.Line,
+		 pxCompiler->ReadInfo.SymbolEntryCurrent.Coloum,
+		 pxCompiler->ReadInfo.SymbolEntryCurrent.Size
 	);
 #endif
 
@@ -1021,21 +790,25 @@ PXCompilerSymbolLexer PXAPI PXCompilerTryAnalyseType(PXFile* const tokenStream, 
 	return PXCompilerSymbolLexerGeneric;
 }
 
-PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler, const PXCompilerSettings* const compilerSettings)
+PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler)
 {
+	PXFile* const pxFileInput = pxCompiler->ReadInfo.FileInput;
+
+	PXInt64U timeCounter = PXTimeCounterStampGet();
+
 #if PXLogEnable
 	PXLogPrint
 	(
 		PXLoggingInfo,
 		"Compiler",
-		"Parsing",
-		"----- Start -----"
+		"Lexer",
+		"Starting analisis..."
 	);
 #endif
 
 	// Valid call
 	{
-		const PXBool isValidCall = pxCompiler->FileCache && pxCompiler->FileInput && compilerSettings;
+		const PXBool isValidCall = pxCompiler->ReadInfo.FileCache && pxCompiler->ReadInfo.FileInput;
 
 		if (!isValidCall)
 		{
@@ -1054,7 +827,7 @@ PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler, con
 
 
 
-	PXFileOpenTemporal(pxCompiler->FileCache, pxCompiler->FileInput->DataSize * 16);
+	PXFileOpenTemporal(pxCompiler->ReadInfo.FileCache, pxCompiler->ReadInfo.FileInput->DataSize * 16);
 
 
 	PXSize currentLine = 1;
@@ -1065,21 +838,21 @@ PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler, con
 	PXMemorySet(pxCompiler->FileCache, '#', pxCompiler->FileCache->DataSize);
 #endif
 
-	const PXCompilerSymbolLexer newLineSymbol = compilerSettings->IntrepredNewLineAsWhiteSpace ? PXCompilerSymbolLexerWhiteSpace : PXCompilerSymbolLexerNewLine;
+	const PXCompilerSymbolLexer newLineSymbol = pxCompiler->Flags & PXCompilerInterpretNewLineAsWhiteSpace ? PXCompilerSymbolLexerWhiteSpace : PXCompilerSymbolLexerNewLine;
 
-	while (!PXFileIsAtEnd(pxCompiler->FileInput))
+	while (!PXFileIsAtEnd(pxFileInput))
 	{
 		PXCompilerSymbolEntry compilerSymbolEntry;
 		PXClear(PXCompilerSymbolEntry, &compilerSymbolEntry);
 
-		compilerSymbolEntry.Size = PXFileRemainingSize(pxCompiler->FileInput);
-		compilerSymbolEntry.Source = (char*)PXFileCursorPosition(pxCompiler->FileInput);
+		compilerSymbolEntry.Size = PXFileRemainingSize(pxFileInput);
+		compilerSymbolEntry.Source = (char*)PXFileCursorPosition(pxFileInput);
 
 		//-----------------------------------------------------------------------------
 		// Consume whitespace
 		//-----------------------------------------------------------------------------
 		{
-			const PXSize whiteSpaceSize = PXFileSkipEmptySpace(pxCompiler->FileInput); // Skip 'space' and TABs
+			const PXSize whiteSpaceSize = PXFileSkipEmptySpace(pxFileInput); // Skip 'space' and TABs
 
 			currentColoum += whiteSpaceSize;
 
@@ -1092,7 +865,7 @@ PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler, con
 				compilerSymbolEntry.Coloum = currentColoum;
 				compilerSymbolEntry.Size = whiteSpaceSize;
 
-				if (compilerSettings->KeepWhiteSpace && isFirstWhiteSpaceInLine)
+				if (pxCompiler->Flags & PXCompilerKeepWhiteSpace && isFirstWhiteSpaceInLine)
 				{
 					PXCompilerSymbolEntryAdd(pxCompiler, &compilerSymbolEntry);
 				}
@@ -1105,7 +878,7 @@ PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler, con
 		// Consume new line
 		//-----------------------------------------------------------------------------
 		{
-			const PXSize endofLineSize = PXFileSkipEndOfLineCharacters(pxCompiler->FileInput);
+			const PXSize endofLineSize = PXFileSkipEndOfLineCharacters(pxFileInput);
 
 			if (endofLineSize)
 			{
@@ -1121,7 +894,7 @@ PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler, con
 				currentColoum = 1; // Reset, next entry will begin in new line
 				currentLine += linesSkipped;
 
-				if (compilerSettings->KeepNewLines)
+				if (pxCompiler->Flags & PXCompilerKeepNewLine)
 				{
 					PXCompilerSymbolEntryAdd(pxCompiler, &compilerSymbolEntry);
 				}	
@@ -1135,15 +908,15 @@ PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler, con
 		// Extract comments, Single line and multible lines
 		//-----------------------------------------------------------------------------
 		{
-			PXBool isLineComment = PXTextCompareA(compilerSymbolEntry.Source, compilerSettings->CommentSingleLineSize, compilerSettings->CommentSingleLine, compilerSettings->CommentSingleLineSize);
+			PXBool isLineComment = PXTextCompareA(compilerSymbolEntry.Source, pxCompiler->CommentSingleLineSize, pxCompiler->CommentSingleLine, pxCompiler->CommentSingleLineSize);
 
 			if (isLineComment)
 			{
 				compilerSymbolEntry.ID = PXCompilerSymbolLexerComment; // This is a comment 
 				compilerSymbolEntry.Line = currentLine;
 				compilerSymbolEntry.Coloum = currentColoum;
-				compilerSymbolEntry.Source += compilerSettings->CommentSingleLineSize;
-				compilerSymbolEntry.Size = PXFileSkipLine(pxCompiler->FileInput) - compilerSettings->CommentSingleLineSize;
+				compilerSymbolEntry.Source += pxCompiler->CommentSingleLineSize;
+				compilerSymbolEntry.Size = PXFileSkipLine(pxFileInput) - pxCompiler->CommentSingleLineSize;
 
 				// if we have multtible line comments in a row, we want to merge them.
 				PXBool merged = PXFalse;
@@ -1151,11 +924,11 @@ PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler, con
 				do
 				{
 					const char* isChainedComment = &compilerSymbolEntry.Source[compilerSymbolEntry.Size];
-					isLineComment = PXTextCompareA(isChainedComment, compilerSettings->CommentSingleLineSize, compilerSettings->CommentSingleLine, compilerSettings->CommentSingleLineSize);
+					isLineComment = PXTextCompareA(isChainedComment, pxCompiler->CommentSingleLineSize, pxCompiler->CommentSingleLine, pxCompiler->CommentSingleLineSize);
 				
 					if(isLineComment)
 					{
-						compilerSymbolEntry.Size += PXFileSkipLine(pxCompiler->FileInput);
+						compilerSymbolEntry.Size += PXFileSkipLine(pxFileInput);
 					}				
 				} 
 				while(isLineComment);			
@@ -1176,19 +949,19 @@ PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler, con
 					--compilerSymbolEntry.Size;
 				}
 
-				if(compilerSettings->CommentsKeep)
+				if(pxCompiler->Flags & PXCompilerKeepComments)
 				{
 					PXCompilerSymbolEntryAdd(pxCompiler, &compilerSymbolEntry);
-
-					continue;
 				}
+
+				continue;
 			}
 
-			const PXBool isStartOfMultibleLineComment = PXTextCompareA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, compilerSettings->CommentMultibleLineBegin, compilerSettings->CommentMultibleLineBeginSize);
+			const PXBool isStartOfMultibleLineComment = PXTextCompareA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, pxCompiler->CommentMultibleLineBegin, pxCompiler->CommentMultibleLineBeginSize);
 
 			if (isStartOfMultibleLineComment)
 			{
-				const PXSize index = PXTextFindFirstStringA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, compilerSettings->CommentMultibleLineEnd, compilerSettings->CommentMultibleLineEndSize);
+				const PXSize index = PXTextFindFirstStringA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, pxCompiler->CommentMultibleLineEnd, pxCompiler->CommentMultibleLineEndSize);
 				const PXBool isCompleate = index != -1;
 
 				if (!isCompleate)
@@ -1199,11 +972,11 @@ PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler, con
 				}
 
 				compilerSymbolEntry.ID = PXCompilerSymbolLexerComment;
-				compilerSymbolEntry.Source += compilerSettings->CommentMultibleLineEndSize;
-				compilerSymbolEntry.Size -= compilerSettings->CommentMultibleLineEndSize;
+				compilerSymbolEntry.Source += pxCompiler->CommentMultibleLineEndSize;
+				compilerSymbolEntry.Size -= pxCompiler->CommentMultibleLineEndSize;
 				compilerSymbolEntry.Size += index;
 
-				if (compilerSettings->CommentsKeep)
+				if (pxCompiler->Flags & PXCompilerKeepComments)
 				{
 					PXCompilerSymbolEntryAdd(pxCompiler, &compilerSymbolEntry);
 				}
@@ -1217,7 +990,7 @@ PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler, con
 		// Consume block
 		//-----------------------------------------------------------------------------
 		{
-			PXSize fullBlockSize = PXFileSkipBlock(pxCompiler->FileInput);	// consume block
+			PXSize fullBlockSize = PXFileSkipBlock(pxFileInput);	// consume block
 			char* blockStart = compilerSymbolEntry.Source;
 
 			while (fullBlockSize > 0)
@@ -1226,7 +999,7 @@ PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler, con
 				compilerSymbolEntry.Line = currentLine;
 				compilerSymbolEntry.Coloum = currentColoum;
 				compilerSymbolEntry.Size = fullBlockSize;
-				compilerSymbolEntry.ID = PXCompilerTryAnalyseType(pxCompiler->FileInput, compilerSymbolEntry.Source, compilerSymbolEntry.Size, &compilerSymbolEntry);
+				compilerSymbolEntry.ID = PXCompilerTryAnalyseType(pxFileInput, compilerSymbolEntry.Source, compilerSymbolEntry.Size, &compilerSymbolEntry);
 
 				if (compilerSymbolEntry.ID == PXCompilerSymbolLexerWhiteSpace || compilerSymbolEntry.ID == PXCompilerSymbolLexerNewLine)
 				{
@@ -1261,16 +1034,19 @@ PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler, con
 	}
 
 	// Mark end of output Stream
-	pxCompiler->FileCache->DataSize = pxCompiler->FileCache->DataCursor;
-	PXFileCursorToBeginning(pxCompiler->FileCache);
+	pxCompiler->ReadInfo.FileCache->DataSize = pxCompiler->ReadInfo.FileCache->DataCursor;
+	PXFileCursorToBeginning(pxCompiler->ReadInfo.FileCache);
+
+	PXInt64U timeCounterB = PXTimeCounterStampGet() - timeCounter;
 
 #if PXLogEnable
 	PXLogPrint
 	(
 		PXLoggingInfo,
 		"Compiler",
-		"Parsing",
-		"----- Done -----"
+		"Lexer",
+		"Finished analisis. Took %i ticks",
+		timeCounterB
 	);
 #endif
 
@@ -1281,23 +1057,23 @@ PXBool PXAPI PXCompilerParseStringUntilNewLine(PXCompiler* const pxCompiler, PXT
 {
 	PXCompilerSymbolEntryExtract(pxCompiler); // Expect a name.
 
-	const PXBool isText = PXCompilerSymbolLexerGeneric == pxCompiler->SymbolEntryCurrent.ID;
+	const PXBool isText = PXCompilerSymbolLexerGeneric ==  pxCompiler->ReadInfo.SymbolEntryCurrent.ID;
 
 	if (!isText)
 	{
 		return PXNo;
 	}
 
-	PXInt16U line = pxCompiler->SymbolEntryCurrent.Line;
-	PXInt16U coloumStart = pxCompiler->SymbolEntryCurrent.Coloum;
-	PXSize dataBlockSize = pxCompiler->SymbolEntryCurrent.Size;
-	char* dataBlockPoint = pxCompiler->SymbolEntryCurrent.Source;
+	PXInt16U line =  pxCompiler->ReadInfo.SymbolEntryCurrent.Line;
+	PXInt16U coloumStart =  pxCompiler->ReadInfo.SymbolEntryCurrent.Coloum;
+	PXSize dataBlockSize =  pxCompiler->ReadInfo.SymbolEntryCurrent.Size;
+	char* dataBlockPoint =  pxCompiler->ReadInfo.SymbolEntryCurrent.Source;
 
 	while (1u)
 	{
 		PXCompilerSymbolEntryPeek(pxCompiler);
 
-		const PXBool isDone = (pxCompiler->SymbolEntryCurrent.Line != line) || (pxCompiler->SymbolEntryCurrent.ID == PXCompilerSymbolLexerNewLine);
+		const PXBool isDone = ( pxCompiler->ReadInfo.SymbolEntryCurrent.Line != line) || ( pxCompiler->ReadInfo.SymbolEntryCurrent.ID == PXCompilerSymbolLexerNewLine);
 
 		if (isDone)
 		{
@@ -1306,7 +1082,7 @@ PXBool PXAPI PXCompilerParseStringUntilNewLine(PXCompiler* const pxCompiler, PXT
 
 		PXCompilerSymbolEntryExtract(pxCompiler);
 
-		dataBlockSize = (pxCompiler->SymbolEntryCurrent.Coloum - coloumStart) + pxCompiler->SymbolEntryCurrent.Size;
+		dataBlockSize = ( pxCompiler->ReadInfo.SymbolEntryCurrent.Coloum - coloumStart) +  pxCompiler->ReadInfo.SymbolEntryCurrent.Size;
 	}
 
 	pxText->SizeUsed = PXTextCopyA(dataBlockPoint, dataBlockSize, pxText->TextA, pxText->SizeAllocated);
@@ -1329,20 +1105,20 @@ PXBool PXAPI PXCompilerParseFloatSingle(PXCompiler* const pxCompiler, float* con
 {
 	PXCompilerSymbolEntryPeek(pxCompiler);
 
-	const PXBool isFloat = pxCompiler->SymbolEntryCurrent.ID == PXCompilerSymbolLexerFloat;
-	const PXBool isInt = pxCompiler->SymbolEntryCurrent.ID == PXCompilerSymbolLexerInteger;
+	const PXBool isFloat =  pxCompiler->ReadInfo.SymbolEntryCurrent.ID == PXCompilerSymbolLexerFloat;
+	const PXBool isInt =  pxCompiler->ReadInfo.SymbolEntryCurrent.ID == PXCompilerSymbolLexerInteger;
 	const PXBool isValid = isFloat || isInt;
 
 	if (isFloat)
 	{
-		*values = pxCompiler->SymbolEntryCurrent.DataF;
+		*values =  pxCompiler->ReadInfo.SymbolEntryCurrent.DataF;
 
 		PXCompilerSymbolEntryExtract(pxCompiler);
 	}
 
 	if (isInt)
 	{
-		*values = pxCompiler->SymbolEntryCurrent.DataI32S;
+		*values =  pxCompiler->ReadInfo.SymbolEntryCurrent.DataI32S;
 
 		PXCompilerSymbolEntryExtract(pxCompiler);
 	}
@@ -1367,4 +1143,202 @@ PXBool PXAPI PXCompilerParseFloatList(PXCompiler* const pxCompiler, float* const
 	}
 
 	return PXYes;
+}
+
+void PXAPI PXCompilerWrite(PXCompiler* const pxCompiler)
+{
+	PXCompilerWriteInfo* const pxCompilerWriteInfo = &pxCompiler->WriteInfo;
+
+	// Check if valid call
+
+	// Add missing parsing functions
+	pxCompilerWriteInfo->WriteNode = PXCompilerWriteNode;
+
+	if(!pxCompilerWriteInfo->WriteInclude)
+	{
+		pxCompilerWriteInfo->WriteInclude = PXCompilerWriteInclude;
+	}
+
+	if(!pxCompilerWriteInfo->WriteComment)
+	{
+		pxCompilerWriteInfo->WriteComment = PXCompilerWriteComment;
+	}
+
+	if(!pxCompilerWriteInfo->WriteParameter)
+	{
+		pxCompilerWriteInfo->WriteParameter = PXCompilerWriteParameterList;
+	}
+
+	if(pxCompilerWriteInfo->TABSize == 0)
+	{
+		pxCompilerWriteInfo->TABSize = 2;
+	}	
+
+
+	pxCompilerWriteInfo->CodeElementCurrent = &pxCompiler->CodeDocument->ElementList[0];
+
+#if PXLogEnable
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"Compiler",
+		"Writer",
+		"Starting writing..."
+	);
+#endif
+
+	PXInt64U timeCounter = PXTimeCounterStampGet();
+
+	PXTime pxTime;
+	PXTimeNow(&pxTime);
+
+	PXFileWriteAF
+	(
+		pxCompiler->WriteInfo.FileOutput,
+		"// This file is generated by PXUltima!\n"
+		"// Date: %02i.%02i.%04i\n"
+		"// Time: %02i:%02i:%02i\n\n",
+		(int)pxTime.Day,
+		(int)pxTime.Month,
+		(int)pxTime.Year,
+		(int)pxTime.Hour,
+		(int)pxTime.Minute,
+		(int)pxTime.Second
+	);
+
+	PXCompilerWriteNode(pxCompiler);
+
+	PXInt64U timeCounterB = PXTimeCounterStampGet() - timeCounter;
+
+#if PXLogEnable
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"Compiler",
+		"Writer",
+		"Finished writing. Took %i ticks",
+		timeCounterB
+	);
+#endif
+}
+
+void PXAPI PXCompilerWriteNode(PXCompiler* const pxCompiler)
+{
+	PXCodeDocumentElement* const entry = pxCompiler->WriteInfo.CodeElementCurrent;
+
+#if 1
+	switch(entry->Type)
+	{
+		case PXDocumentElementTypeFile:
+		{
+			pxCompiler->WriteInfo.WriteFile(pxCompiler);
+			break;
+		}
+		case PXDocumentElementTypeInclude:
+		{
+			pxCompiler->WriteInfo.WriteInclude(pxCompiler);
+			break;
+		}
+		case PXDocumentElementTypeEnum:
+		case PXDocumentElementTypeClass:
+		case PXDocumentElementTypeStruct:
+		{
+			pxCompiler->WriteInfo.WriteContainer(pxCompiler);
+			break;
+		}
+		case PXDocumentElementTypeFunction:
+		{
+			pxCompiler->WriteInfo.WriteFunction(pxCompiler);
+			break;
+		}
+
+		default:
+			break;
+	}
+#else
+	PXCodeDocumentElement* sibling = pxCodeDocumentElement;
+
+	for(size_t i = 0; sibling; ++i)
+	{
+		switch(sibling->Type)
+		{
+			case PXDocumentElementTypeFile:
+			{
+				PXJavaContainerWrite(sibling, pxFile);
+				break;
+			}
+			case PXDocumentElementTypeInclude:
+			{
+				PXJavaIncludeWrite(sibling, pxFile);
+				break;
+			}
+			case PXDocumentElementTypeEnum:
+			case PXDocumentElementTypeClass:
+			case PXDocumentElementTypeStruct:
+			{
+				PXJavaContainerWrite(sibling, pxFile);
+				break;
+			}
+			case PXDocumentElementTypeFunction:
+			{
+				PXJavaFunctionWrite(sibling, pxFile);
+				break;
+			}
+
+
+			default:
+				break;
+		}
+
+		if(sibling->ElementChildFirstBorn)
+		{
+			PXJavaElementWrite(sibling->ElementChildFirstBorn, pxFile);
+		}
+
+		sibling = sibling->ElementSibling;
+	}
+#endif
+}
+
+void PXAPI PXCompilerWriteInclude(PXCompiler* const pxCompiler)
+{
+	PXFile* const pxFile = pxCompiler->WriteInfo.FileOutput;
+	PXCodeDocumentElement* const entry = pxCompiler->WriteInfo.CodeElementCurrent;
+
+	PXFileWriteFill(pxFile, ' ', pxCompiler->WriteInfo.TABSize * pxCompiler->WriteInfo.CodeElementCurrent->Depth);
+	PXFileWriteA(pxFile, "// depends on file ", 19);
+	PXFileWriteA(pxFile, entry->NameAdress, entry->NameSize);
+}
+
+void PXAPI PXCompilerWriteComment(PXCompiler* const pxCompiler)
+{
+	PXFile* const pxFile = pxCompiler->WriteInfo.FileOutput;
+	PXCodeDocumentElement* const current = pxCompiler->WriteInfo.CodeElementCurrent;
+
+	PXFileWriteFill(pxFile, ' ', pxCompiler->WriteInfo.TABSize * pxCompiler->WriteInfo.CodeElementCurrent->Depth);
+
+	if(current->CommentSize > 0)
+	{
+		PXFileWriteA(pxFile, pxCompiler->CommentSingleLine, pxCompiler->CommentSingleLineSize);
+		PXFileWriteA(pxFile, current->CommentAdress, current->CommentSize);
+		PXFileWriteNewLine(pxFile);
+	}
+}
+
+void PXAPI PXCompilerWriteParameterList(PXCompiler* const pxCompiler)
+{
+	PXFile* const pxFile = pxCompiler->WriteInfo.FileOutput;
+	PXCodeDocumentElement* const current = pxCompiler->WriteInfo.CodeElementCurrent;
+
+	PXFileWriteC(pxFile, '(');
+
+	for(PXCodeDocumentElement* i = current->ElementChildFirstBorn; i; i = i->ElementSibling)
+	{
+		pxCompiler->WriteInfo.CodeElementCurrent = i;
+		pxCompiler->WriteInfo.WriteDefinition(pxCompiler);
+	}
+
+	PXFileWriteC(pxFile, ')');
+
+	pxCompiler->WriteInfo.CodeElementCurrent = current; // Recover
 }

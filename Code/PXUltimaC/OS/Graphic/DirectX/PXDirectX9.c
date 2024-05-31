@@ -82,7 +82,7 @@ PXActionResult PXAPI PXDirectX9Initialize(PXDirectX9* const pxDirectX9, PXGraphi
 
         if (PXActionSuccessful != pxActionResult)
         {
-            return PXActionRefusedNotSupported;
+            return PXActionRefusedNotSupportedByOperatingSystem;
         }
     }
 
@@ -95,7 +95,7 @@ PXActionResult PXAPI PXDirectX9Initialize(PXDirectX9* const pxDirectX9, PXGraphi
         if (PXActionSuccessful != pxActionResult)
         {
             PXLibraryClose(&pxDirectX9->LibraryDirect3D);
-            return PXActionRefusedNotSupported;
+            return PXActionRefusedNotSupportedByOperatingSystem;
         }
 
         pxDirectX9->Context = pxDirect3DCreate(D3D_SDK_VERSION); // Create DirectX context, alternative Direct3DCreate9Ex()  
@@ -386,7 +386,7 @@ PXActionResult PXAPI PXDirectX9TextureAction(PXDirectX9* const pxDirectX9, struc
                 }
 
                 default:
-                    return PXActionNotSupportedByLibrary;
+                    return PXActionRefusedNotSupportedByLibrary;
             }
 
             break;

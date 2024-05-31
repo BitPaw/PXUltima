@@ -1566,7 +1566,7 @@ PXActionResult PXAPI PXGUISystemInitialize(PXGUISystem* const pxGUISystem)
 {
     if(PXGUISystemGlobalReference)
     {
-        return PXActionRefuedObjectAlreadyInizialized;
+        return PXActionRefusedAlreadyInizialized;
     }
 
     PXGUISystemGlobalReference = pxGUISystem;
@@ -3853,10 +3853,9 @@ PXActionResult PXAPI PXWindowTitleBarColorSet(const PXWindowID pxWindowID)
 
         if (PXActionSuccessful != libOpenResult)
         {
-            return PXActionRefusedNotSupported;
+            return PXActionRefusedNotSupportedByOperatingSystem;
         }
     }
-
 
     typedef HRESULT(WINAPI* PXDwmSetWindowAttribute)(HWND hwnd, DWORD dwAttribute, _In_reads_bytes_(cbAttribute) LPCVOID pvAttribute, DWORD cbAttribute);
 
@@ -3868,7 +3867,7 @@ PXActionResult PXAPI PXWindowTitleBarColorSet(const PXWindowID pxWindowID)
     {
         PXLibraryClose(&pyLibrary);
 
-        return PXActionRefusedNotSupported;        
+        return PXActionRefusedNotSupportedByOperatingSystem;
     }
 
     const BOOL useDarkMode = PXTrue;
@@ -3942,7 +3941,7 @@ PXActionResult PXAPI PXWindowMouseMovementEnable(const PXWindowID pxWindow)
     return PXActionRefusedNotSupported;
 #endif
 
-    return PXActionRefusedNotSupported;;
+    return PXActionRefusedNotSupportedByOperatingSystem;
     
 #endif
 }

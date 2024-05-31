@@ -134,6 +134,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <FloatingPointModel>Fast</FloatingPointModel>
       <SmallerTypeCheck>false</SmallerTypeCheck>
+      <OmitDefaultLibName>true</OmitDefaultLibName>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -183,6 +184,7 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <OmitDefaultLibName>true</OmitDefaultLibName>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -217,6 +219,7 @@
       <StringPooling>true</StringPooling>
       <FloatingPointModel>Fast</FloatingPointModel>
       <SmallerTypeCheck>false</SmallerTypeCheck>
+      <OmitDefaultLibName>true</OmitDefaultLibName>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -267,6 +270,7 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <OmitDefaultLibName>true</OmitDefaultLibName>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -330,7 +334,7 @@
     <ClCompile Include="Media\CPP\PXCPP.c" />
     <ClCompile Include="Media\CRC32\PXCRC32.c" />
     <ClCompile Include="Media\CSS\PXCSS.c" />
-    <ClCompile Include="Media\CS\PXCS.c" />
+    <ClCompile Include="Media\CSharp\PXCSharp.c" />
     <ClCompile Include="Media\C\PXC.c" />
     <ClCompile Include="Media\DEFLATE\PXDEFLATE.c" />
     <ClCompile Include="Media\BinaryLinux\PXBinaryLinux.c" />
@@ -490,7 +494,7 @@
     <ClInclude Include="Media\CPP\PXCPP.h" />
     <ClInclude Include="Media\CRC32\PXCRC32.h" />
     <ClInclude Include="Media\CSS\PXCSS.h" />
-    <ClInclude Include="Media\CS\PXCS.h" />
+    <ClInclude Include="Media\CSharp\PXCSharp.h" />
     <ClInclude Include="Media\C\PXC.h" />
     <ClInclude Include="Media\DEFLATE\PXDEFLATE.h" />
     <ClInclude Include="Media\BinaryLinux\PXBinaryLinux.h" />

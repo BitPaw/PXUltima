@@ -330,7 +330,7 @@ PXActionResult PXAPI PXDebugDetach(PXDebug* const pxDebug)
 
 	if(!pxDebugActiveProcessStop)
 	{
-		return PXActionRefusedNotSupported;
+		return PXActionRefusedNotSupportedByOperatingSystem;
 	}
 
 	const BOOL sucessfulCode = pxDebugActiveProcessStop(pxDebug->Process.ProcessID);
@@ -958,7 +958,7 @@ PXActionResult PXAPI PXDebugLibrarySymbolsFetch(PXDebug* const pxDebug, const PX
 				return PXActionFailedCleanup;
 			}
 
-			return PXActionFailedModuleLoad;
+			return PXActionFailedLoad;
 		}
 	}
 
@@ -977,7 +977,7 @@ PXActionResult PXAPI PXDebugLibrarySymbolsFetch(PXDebug* const pxDebug, const PX
 
 		if(!enumerateResult)
 		{
-			return PXActionFailedDataFetch;
+			return PXActionInvalid;
 		}
 	}
 

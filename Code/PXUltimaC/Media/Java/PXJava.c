@@ -1,6 +1,7 @@
 #include "PXJava.h"
 
 #include <Media/PXDocument.h>
+#include <Compiler/PXCompiler.h>
 
 char PXJavaKeyWordPublic[] = "public";
 char PXJavaKeyWordPrivate[] = "private";
@@ -17,38 +18,23 @@ char PXJavaKeyWordLong[] = "long";
 char PXJavaKeyWordFloat[] = "float";
 char PXJavaKeyWordDouble[] = "double";
 
-#define PXJavaTABSize 2
-
-void PXAPI PXJavaComment(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile)
+void PXAPI PXJavaWriteFile(PXCompiler* const pxCompiler)
 {
-	PXFileWriteFill(pxFile, ' ', PXJavaTABSize * pxCodeDocumentElement->Depth);
-
-	if(pxCodeDocumentElement->CommentSize > 0)
-	{
-		PXFileWriteA(pxFile, "// ", 3);
-		PXFileWriteA(pxFile, pxCodeDocumentElement->CommentAdress, pxCodeDocumentElement->CommentSize);
-		PXFileWriteNewLine(pxFile);
-	}
+	PXJavaContainerWrite(pxCompiler);
 }
 
-void PXAPI PXJavaIncludeWrite(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile)
+void PXAPI PXJavaContainerWrite(PXCompiler* const pxCompiler)
 {
-	PXFileWriteA(pxFile, "// depends on file ", 19);
-	PXFileWriteA(pxFile, pxCodeDocumentElement->NameAdress, pxCodeDocumentElement->NameSize);
-	//PXFileWriteNewLine(pxFile);
-}
+	PXFile* const pxFile = pxCompiler->WriteInfo.FileOutput;
+	PXCodeDocumentElement* const entry = pxCompiler->WriteInfo.CodeElementCurrent;
 
-void PXAPI PXJavaContainerWrite(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile)
-{
-	PXFileWriteFill(pxFile, ' ', PXJavaTABSize * pxCodeDocumentElement->Depth);
+	pxCompiler->WriteInfo.WriteComment(pxCompiler);
 
-	PXJavaComment(pxCodeDocumentElement, pxFile);
-
-	PXFileWriteFill(pxFile, ' ', PXJavaTABSize * pxCodeDocumentElement->Depth);
+	PXFileWriteFill(pxFile, ' ', pxCompiler->WriteInfo.TABSize * entry->Depth);
 	PXFileWriteA(pxFile, PXJavaKeyWordPublic, 6);
 	PXFileWriteC(pxFile, ' ');
 
-	switch(pxCodeDocumentElement->Type)
+	switch(entry->Type)
 	{
 		case PXDocumentElementTypeEnum:
 		{
@@ -69,34 +55,36 @@ void PXAPI PXJavaContainerWrite(PXCodeDocumentElement* pxCodeDocumentElement, PX
 
 	PXFileWriteC(pxFile, ' ');
 
-	if(pxCodeDocumentElement->NameShortAdress)
+	if(entry->NameShortAdress)
 	{
-		PXFileWriteA(pxFile, pxCodeDocumentElement->NameShortAdress, pxCodeDocumentElement->NameShortSize);
+		PXFileWriteA(pxFile, entry->NameShortAdress, entry->NameShortSize);
 	}
 	else
 	{
-		PXFileWriteA(pxFile, pxCodeDocumentElement->NameAdress, pxCodeDocumentElement->NameSize);
+		PXFileWriteA(pxFile, entry->NameAdress, entry->NameSize);
 	}
 
 	PXFileWriteNewLine(pxFile);
-	PXFileWriteFill(pxFile, ' ', PXJavaTABSize * pxCodeDocumentElement->Depth);
+	PXFileWriteFill(pxFile, ' ', pxCompiler->WriteInfo.TABSize * entry->Depth);
 	PXFileWriteC(pxFile, '{');
 	PXFileWriteNewLine(pxFile);
 
+	PXCodeDocumentElement* prevSym = pxCompiler->WriteInfo.CodeElementCurrent;
+
 	for
 	(
-		PXCodeDocumentElement* child = pxCodeDocumentElement->ElementChildFirstBorn;
-		child; 
+		PXCodeDocumentElement* child = entry->ElementChildFirstBorn;
+		child;
 		child = child->ElementSibling
 	)
 	{
-		switch(pxCodeDocumentElement->Type)
+		switch(entry->Type)
 		{
 			case PXDocumentElementTypeEnum:
 			{
-				PXFileWriteFill(pxFile, ' ', PXJavaTABSize * child->Depth);
+				PXFileWriteFill(pxFile, ' ', pxCompiler->WriteInfo.TABSize * child->Depth);
 				PXFileWriteA(pxFile, child->NameShortAdress, child->NameShortSize);
-					
+
 				if(child->ElementSibling) // if not last
 				{
 					PXFileWriteC(pxFile, ',');
@@ -108,13 +96,17 @@ void PXAPI PXJavaContainerWrite(PXCodeDocumentElement* pxCodeDocumentElement, PX
 			case PXDocumentElementTypeUnion:
 			case PXDocumentElementTypeClass:
 			{
-				PXJavaDefinitionWrite(child, pxFile);
+				pxCompiler->WriteInfo.CodeElementCurrent = child;
+				pxCompiler->WriteInfo.WriteDefinition(pxCompiler);
 				PXFileWriteC(pxFile, ';');
 				break;
 			}
 			default:
-				PXJavaElementWrite(child, pxFile);
+			{
+				pxCompiler->WriteInfo.CodeElementCurrent = child;
+				pxCompiler->WriteInfo.WriteNode(pxCompiler);
 				break;
+			}	
 		}
 
 		if(child->ElementSibling)
@@ -123,19 +115,23 @@ void PXAPI PXJavaContainerWrite(PXCodeDocumentElement* pxCodeDocumentElement, PX
 		}
 	}
 
+	pxCompiler->WriteInfo.CodeElementCurrent = prevSym;
+
+
 	PXFileWriteNewLine(pxFile);
-	PXFileWriteFill(pxFile, ' ', PXJavaTABSize * pxCodeDocumentElement->Depth);
-	PXFileWriteC(pxFile,  '}');
+	PXFileWriteFill(pxFile, ' ', pxCompiler->WriteInfo.TABSize * entry->Depth);
+	PXFileWriteC(pxFile, '}');
 	PXFileWriteNewLine(pxFile);
 }
 
-void PXAPI PXJavaFunctionWrite(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile)
+void PXAPI PXJavaFunctionWrite(PXCompiler* const pxCompiler)
 {
-	// Cleave function name?	
+	PXFile* const pxFile = pxCompiler->WriteInfo.FileOutput;
+	PXCodeDocumentElement* const entry = pxCompiler->WriteInfo.CodeElementCurrent;
 
-	PXJavaComment(pxCodeDocumentElement, pxFile);
+	pxCompiler->WriteInfo.WriteComment(pxCompiler);
 
-	PXFileWriteFill(pxFile, ' ', PXJavaTABSize * pxCodeDocumentElement->Depth);
+	PXFileWriteFill(pxFile, ' ', pxCompiler->WriteInfo.TABSize * entry->Depth);
 
 	PXFileWriteA(pxFile, PXJavaKeyWordPublic, 6);
 	PXFileWriteC(pxFile, ' ');
@@ -148,32 +144,34 @@ void PXAPI PXJavaFunctionWrite(PXCodeDocumentElement* pxCodeDocumentElement, PXF
 
 	PXFileWriteA(pxFile, PXJavaKeyWordVoid, 4);
 	PXFileWriteC(pxFile, ' ');
-	PXFileWriteA(pxFile, pxCodeDocumentElement->NameShortAdress, pxCodeDocumentElement->NameShortSize);
+	PXFileWriteA(pxFile, entry->NameShortAdress, entry->NameShortSize);
 
-	PXJavaParameterList(pxCodeDocumentElement, pxFile);
+	pxCompiler->WriteInfo.WriteParameter(pxCompiler);
 
 	PXFileWriteC(pxFile, ';');
 	//PXFileWriteNewLine(pxFile);
-
 }
 
-void PXAPI PXJavaDefinitionWrite(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile)
+void PXAPI PXJavaDefinitionWrite(PXCompiler* const pxCompiler)
 {
-	PXJavaComment(pxCodeDocumentElement, pxFile);
+	PXFile* const pxFile = pxCompiler->WriteInfo.FileOutput;
+	PXCodeDocumentElement* const entry = pxCompiler->WriteInfo.CodeElementCurrent;
+
+	pxCompiler->WriteInfo.WriteComment(pxCompiler);
 
 	//PXFileWriteFill(pxFile, ' ', PXJavaTABSize * pxCodeDocumentElement->Depth);
 
 	// readonly
-	if(pxCodeDocumentElement->DataType & PXDataTypeReadOnly)
+	if(entry->DataType & PXDataTypeReadOnly)
 	{
 		PXFileWriteA(pxFile, PXJavaKeyWordReadOnly, 5);
 		PXFileWriteC(pxFile, ' ');
 	}
 
 	// type
-	if(pxCodeDocumentElement->DataTypeIsBuildIn)
+	if(entry->DataTypeIsBuildIn)
 	{
-		switch(pxCodeDocumentElement->DataType & PXDataTypeSizeMask)
+		switch(entry->DataType & PXDataTypeSizeMask)
 		{
 			case PXDataTypeSize08:
 				PXFileWriteA(pxFile, PXJavaKeyWordByte, 4);
@@ -196,110 +194,17 @@ void PXAPI PXJavaDefinitionWrite(PXCodeDocumentElement* pxCodeDocumentElement, P
 				break;
 		}
 	}
-	else 
+	else
 	{
 		// Custom type
-		PXFileWriteA(pxFile, pxCodeDocumentElement->TypeNameAdress, pxCodeDocumentElement->TypeNameSize);
+		PXFileWriteA(pxFile, entry->TypeNameAdress, entry->TypeNameSize);
 	}
 
 	// Adress?
 
 
 	PXFileWriteC(pxFile, ' ');
-	PXFileWriteA(pxFile, pxCodeDocumentElement->NameAdress, pxCodeDocumentElement->NameSize);
-}
-
-void PXAPI PXJavaParameterList(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile)
-{
-	PXFileWriteC(pxFile, '(');
-
-	for(PXCodeDocumentElement* i = pxCodeDocumentElement->ElementChildFirstBorn ; i ; i = i->ElementSibling)
-	{
-		PXJavaDefinitionWrite(i, pxFile);
-	}
-
-	PXFileWriteC(pxFile, ')');
-}
-
-void PXAPI PXJavaElementWrite(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile)
-{
-	if(!pxCodeDocumentElement)
-	{
-		return;
-	}
-
-#if 1
-	switch(pxCodeDocumentElement->Type)
-	{
-		case PXDocumentElementTypeFile:
-		{
-			PXJavaContainerWrite(pxCodeDocumentElement, pxFile);
-			break;
-		}
-		case PXDocumentElementTypeInclude:
-		{
-			PXJavaIncludeWrite(pxCodeDocumentElement, pxFile);
-			break;
-		}
-		case PXDocumentElementTypeEnum:
-		case PXDocumentElementTypeClass:
-		case PXDocumentElementTypeStruct:
-		{
-			PXJavaContainerWrite(pxCodeDocumentElement, pxFile);
-			break;
-		}
-		case PXDocumentElementTypeFunction:
-		{
-			PXJavaFunctionWrite(pxCodeDocumentElement, pxFile);
-			break;
-		}
-
-		default:
-			break;
-	}
-#else
-	PXCodeDocumentElement* sibling = pxCodeDocumentElement;
-
-	for(size_t i = 0; sibling; ++i)
-	{
-		switch(sibling->Type)
-		{
-			case PXDocumentElementTypeFile:
-			{
-				PXJavaContainerWrite(sibling, pxFile);
-				break;
-			}
-			case PXDocumentElementTypeInclude:
-			{
-				PXJavaIncludeWrite(sibling, pxFile);
-				break;
-			}
-			case PXDocumentElementTypeEnum:
-			case PXDocumentElementTypeClass:
-			case PXDocumentElementTypeStruct:
-			{
-				PXJavaContainerWrite(sibling, pxFile);
-				break;
-			}
-			case PXDocumentElementTypeFunction:
-			{
-				PXJavaFunctionWrite(sibling, pxFile);
-				break;
-			}
-	
-
-			default:
-				break;
-		}
-
-		if(sibling->ElementChildFirstBorn)
-		{
-			PXJavaElementWrite(sibling->ElementChildFirstBorn, pxFile);
-		}
-
-		sibling = sibling->ElementSibling;
-	}
-#endif
+	PXFileWriteA(pxFile, entry->NameAdress, entry->NameSize);
 }
 
 PXActionResult PXAPI PXJavaLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
@@ -309,8 +214,6 @@ PXActionResult PXAPI PXJavaLoadFromFile(PXResourceLoadInfo* const pxResourceLoad
 
 PXActionResult PXAPI PXJavaSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
 {
-	PXFile* pxFile = pxResourceSaveInfo->FileReference;
-
 	if(!pxResourceSaveInfo)
 	{
 		return PXActionRefusedArgumentNull;
@@ -319,30 +222,24 @@ PXActionResult PXAPI PXJavaSaveToFile(PXResourceSaveInfo* const pxResourceSaveIn
 	if(PXResourceTypeCodeDocument != pxResourceSaveInfo->Type)
 	{
 		return PXActionRefusedArgumentInvalid;
-	}
+	}	
 
-	PXCodeDocument* const pxCodeDocument = (PXCodeDocument*)pxResourceSaveInfo->Target;
+	PXCompiler pxCompiler;
+	PXClear(PXCompiler, &pxCompiler);
+	pxCompiler.CommentSingleLine = "//";
+	pxCompiler.CommentSingleLineSize = 2;
+	pxCompiler.CommentMultibleLineBegin = "/*";
+	pxCompiler.CommentMultibleLineBeginSize = 2;
+	pxCompiler.CommentMultibleLineEnd = "*/";
+	pxCompiler.CommentMultibleLineEndSize = 2;
+	pxCompiler.CodeDocument = (PXCodeDocument*)pxResourceSaveInfo->Target;
+	pxCompiler.WriteInfo.FileOutput = pxResourceSaveInfo->FileReference;
+	pxCompiler.WriteInfo.WriteFile = PXJavaWriteFile;
+	pxCompiler.WriteInfo.WriteContainer = PXJavaContainerWrite;
+	pxCompiler.WriteInfo.WriteFunction = PXJavaFunctionWrite;
+	pxCompiler.WriteInfo.WriteDefinition = PXJavaDefinitionWrite;
 
-	PXCodeDocumentElement* const pxCodeDocumentCurrent = &pxCodeDocument->ElementList[0];
-	
-	PXTime pxTime;
-	PXTimeNow(&pxTime);
-
-	PXFileWriteAF
-	(
-		pxFile, 
-		"// This file is generated by PXUltima\n"
-		"// Date: %02i.%02i.%04i\n"
-		"// Time: %02i:%02i:%02i\n\n",
-		(int)pxTime.Day, 
-		(int)pxTime.Month,
-		(int)pxTime.Year,
-		(int)pxTime.Hour,
-		(int)pxTime.Minute,
-		(int)pxTime.Second
-	);
-
-	PXJavaElementWrite(pxCodeDocumentCurrent, pxFile);
+	PXCompilerWrite(&pxCompiler);
 
     return PXActionRefusedNotImplemented;
 }

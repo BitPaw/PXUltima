@@ -13,6 +13,7 @@
 #include <OS/Console/PXConsole.h>
 #include <OS/Memory/PXMemory.h>
 
+char PXDirectX11DLL[] = "D3D11.DLL";
 
 typedef HRESULT (WINAPI* PXD3D11CreateDeviceAndSwapChain)
 (
@@ -30,7 +31,6 @@ typedef HRESULT (WINAPI* PXD3D11CreateDeviceAndSwapChain)
     __out_opt ID3D11DeviceContext** ppImmediateContext
 );
 
-
 PXActionResult PXAPI PXDirectX11Initialize(PXDirectX11* const pxDirectX11, PXGraphicInitializeInfo* const pxGraphicInitializeInfo)
 {
     PXD3D11CreateDeviceAndSwapChain createDeviceAndSwapChain = PXNull;
@@ -47,7 +47,7 @@ PXActionResult PXAPI PXDirectX11Initialize(PXDirectX11* const pxDirectX11, PXGra
 
     // OpenLib
     {
-        const PXActionResult pxActionResult = PXLibraryOpenA(&pxDirectX11->DirectX11Library, "D3D11.DLL");
+        const PXActionResult pxActionResult = PXLibraryOpenA(&pxDirectX11->DirectX11Library, PXDirectX11DLL);
 
         if(PXActionSuccessful != pxActionResult)
         {
@@ -61,7 +61,7 @@ PXActionResult PXAPI PXDirectX11Initialize(PXDirectX11* const pxDirectX11, PXGra
             );
 #endif
 
-            return PXActionRefusedNotSupported;
+            return PXActionRefusedNotSupportedByOperatingSystem;
         }
 
 
@@ -273,18 +273,18 @@ PXActionResult PXAPI PXDirectX11TextureAction(PXDirectX11* const pxDirectX11, st
                     initialData.SysMemPitch = 0;
                     initialData.SysMemSlicePitch = 0;
 
-                    const HRESULT hr = pxDirectX11->Device->lpVtbl->CreateTexture1D
+                    const HRESULT createTextureResult = pxDirectX11->Device->lpVtbl->CreateTexture1D
                     (
                         pxDirectX11->Device,
                         &desc, 
                         &initialData,
                         dx11Texture1D
                     );
-                    const PXBool success = SUCCEEDED(hr);
+                    const PXBool success = SUCCEEDED(createTextureResult);
 
                     if(!success)
                     {
-                        return PXActionFailedResourceRegister;
+                        return PXActionFailedRegister;
                     }
 
 #if 0
@@ -525,7 +525,7 @@ PXActionResult PXAPI PXDirectX11Clear(PXDirectX11* const pxDirectX11, const PXCo
         rgba
     );
 
-    return PXActionNotSupportedByLibrary;
+    return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXDirectX11VertexBufferCreate(PXDirectX11* const pxDirectX11, PXVertexBuffer* const pxVertexBuffer)

@@ -247,7 +247,7 @@ PXActionResult PXAPI PXDirectXInitialize(PXDirectX* const pxDirectX, PXGraphicIn
 
 PXActionResult PXAPI PXDirectXRelease(PXDirectX* const pxDirectX)
 {
-    return PXActionNotSupportedByOperatingSystem;
+    return PXActionInvalid;
 
    // return  pxDirectX->Release(pxDirectX->DXTargetAPI);
 }

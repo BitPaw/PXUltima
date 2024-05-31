@@ -95,11 +95,11 @@ PXActionResult PXAPI PXDirectSoundInitialize(PXAudioDirectSound* const pxAudioDi
 
 	// Library Open
 	{
-		const PXActionResult libraryOpenResult  = PXLibraryOpenA(&pxAudioDirectSound->DirectSoundLibrary, "DSOUND.DLL");
+		const PXActionResult libraryOpenResult = PXLibraryOpenA(&pxAudioDirectSound->DirectSoundLibrary, "DSOUND.DLL");
 
 		if(PXActionSuccessful != libraryOpenResult)
 		{
-			return PXActionRefusedNotSupported;
+			return PXActionRefusedNotSupportedByOperatingSystem;
 		}
 	}
 

@@ -97,7 +97,7 @@ void PXAPI PXWavefrontFaceLineParse(PXCompiler* const pxCompiler, PXInt32U* cons
     PXCompilerSymbolEntryForward(pxCompiler); // Consume int
 
     // Save 1st value
-    vertexData[0] = pxCompiler->SymbolEntryCurrent.DataI32U;
+    vertexData[0] =  pxCompiler->ReadInfo.SymbolEntryCurrent.DataI32U;
 
 
     // Check
@@ -118,13 +118,13 @@ void PXAPI PXWavefrontFaceLineParse(PXCompiler* const pxCompiler, PXInt32U* cons
 
     PXCompilerSymbolEntryPeek(pxCompiler); // Peek for next token
 
-    switch(pxCompiler->SymbolEntryCurrent.ID)
+    switch( pxCompiler->ReadInfo.SymbolEntryCurrent.ID)
     {
         case PXCompilerSymbolLexerInteger: // is syntax A
         {
             PXCompilerSymbolEntryForward(pxCompiler); // Peek sucessful skip to 2nd integer
 
-            vertexData[1] = pxCompiler->SymbolEntryCurrent.DataI32U; // Save 2nd value
+            vertexData[1] =  pxCompiler->ReadInfo.SymbolEntryCurrent.DataI32U; // Save 2nd value
 
             const PXBool isExpectedThridInteger = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerInteger); // Get 3rd integer
 
@@ -136,7 +136,7 @@ void PXAPI PXWavefrontFaceLineParse(PXCompiler* const pxCompiler, PXInt32U* cons
 
             PXCompilerSymbolEntryForward(pxCompiler);
 
-            vertexData[2] = pxCompiler->SymbolEntryCurrent.DataI32U;
+            vertexData[2] =  pxCompiler->ReadInfo.SymbolEntryCurrent.DataI32U;
 
             break;
         }
@@ -146,7 +146,7 @@ void PXAPI PXWavefrontFaceLineParse(PXCompiler* const pxCompiler, PXInt32U* cons
 
             PXCompilerSymbolEntryPeek(pxCompiler); // Next token
 
-            switch(pxCompiler->SymbolEntryCurrent.ID)
+            switch( pxCompiler->ReadInfo.SymbolEntryCurrent.ID)
             {
                 case PXCompilerSymbolLexerSlash: // Syntax: "xx//xx"
                 {
@@ -162,7 +162,7 @@ void PXAPI PXWavefrontFaceLineParse(PXCompiler* const pxCompiler, PXInt32U* cons
                  
                     PXCompilerSymbolEntryForward(pxCompiler); // Consume 3rd number
                
-                    vertexData[2] = pxCompiler->SymbolEntryCurrent.DataI32U;      // Store 3rd number
+                    vertexData[2] =  pxCompiler->ReadInfo.SymbolEntryCurrent.DataI32U;      // Store 3rd number
 
                     break;
                 }
@@ -170,7 +170,7 @@ void PXAPI PXWavefrontFaceLineParse(PXCompiler* const pxCompiler, PXInt32U* cons
                 {
                     PXCompilerSymbolEntryForward(pxCompiler); // Peek sucessful, remove the secound value
 
-                    vertexData[1] = pxCompiler->SymbolEntryCurrent.DataI32U; // Save value
+                    vertexData[1] =  pxCompiler->ReadInfo.SymbolEntryCurrent.DataI32U; // Save value
 
                     // Exptect 2nd '/'
                     {
@@ -190,7 +190,7 @@ void PXAPI PXWavefrontFaceLineParse(PXCompiler* const pxCompiler, PXInt32U* cons
                                     return;
                                 }
 
-                                vertexData[2] = pxCompiler->SymbolEntryCurrent.DataI32U;
+                                vertexData[2] =  pxCompiler->ReadInfo.SymbolEntryCurrent.DataI32U;
             
                                 PXCompilerSymbolEntryForward(pxCompiler);
                             }
@@ -222,10 +222,14 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
     PXModel* const pxModel = (PXModel*)pxResourceLoadInfo->Target;
 
     PXFile tokenSteam;
+
     PXCompiler pxCompiler;
     PXClear(PXCompiler, &pxCompiler);
-    pxCompiler.FileInput = pxResourceLoadInfo->FileReference;
-    pxCompiler.FileCache = &tokenSteam;
+    pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileReference;
+    pxCompiler.ReadInfo.FileCache = &tokenSteam;
+    pxCompiler.Flags = PXCompilerKeepAnalyseTypes;
+    pxCompiler.CommentSingleLineSize = 1u;
+    pxCompiler.CommentSingleLine = "#";
 
     PXSize drawoffsetCounter = 0;
     PXSize drawCurrentIndex = 0;
@@ -277,17 +281,9 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
     );
 #endif
 
-    // Lexer - Level I
-    {
-        PXCompilerSettings compilerSettings;
-        PXClear(PXCompilerSettings, &compilerSettings);
-
-        compilerSettings.TryAnalyseTypes = PXYes;
-        compilerSettings.CommentSingleLineSize = 1u;
-        compilerSettings.CommentSingleLine = "#";
-
-        PXCompilerLexicalAnalysis(&pxCompiler, &compilerSettings); // Raw-File-Input -> Lexer tokens
-    }
+    // Lexer - Level I   
+    PXCompilerLexicalAnalysis(&pxCompiler); // Raw-File-Input -> Lexer tokens
+    
 
     // Stage - 1 - Analyse file
 
@@ -306,7 +302,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
     {
         PXCompilerSymbolEntryExtract(&pxCompiler); // First in line token
 
-        const PXWavefrontLineType objPeekLine = PXWavefrontPeekLine(pxCompiler.SymbolEntryCurrent.Source, pxCompiler.SymbolEntryCurrent.Size);
+        const PXWavefrontLineType objPeekLine = PXWavefrontPeekLine(pxCompiler.ReadInfo.SymbolEntryCurrent.Source, pxCompiler.ReadInfo.SymbolEntryCurrent.Size);
 
         switch (objPeekLine)
         {
@@ -398,7 +394,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
             }
             case PXWavefrontLineFaceElement:
             {
-                const PXSize lineStart = pxCompiler.SymbolEntryCurrent.Line;
+                const PXSize lineStart = pxCompiler.ReadInfo.SymbolEntryCurrent.Line;
                 PXSize lineCurrent = lineStart;
 
                 PXBool isDone = PXFalse;
@@ -414,7 +410,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
 
                     PXCompilerSymbolEntryPeek(&pxCompiler); // check what line we are in
 
-                    lineCurrent = pxCompiler.SymbolEntryCurrent.Line; // Update current line
+                    lineCurrent = pxCompiler.ReadInfo.SymbolEntryCurrent.Line; // Update current line
 
                     isDone = PXFileIsAtEnd(&tokenSteam) || (lineStart != lineCurrent);
                 } 
@@ -430,7 +426,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
                 {
                     PXCompilerSymbolEntryExtract(&pxCompiler);
                 }
-                while (pxCompiler.SymbolEntryCurrent.ID != PXCompilerSymbolLexerNewLine);
+                while (pxCompiler.ReadInfo.SymbolEntryCurrent.ID != PXCompilerSymbolLexerNewLine);
 
                 break;
             }
@@ -550,7 +546,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
     {
         PXCompilerSymbolEntryExtract(&pxCompiler);
 
-        const PXWavefrontLineType objPeekLine = PXWavefrontPeekLine(pxCompiler.SymbolEntryCurrent.Source, pxCompiler.SymbolEntryCurrent.Size);
+        const PXWavefrontLineType objPeekLine = PXWavefrontPeekLine(pxCompiler.ReadInfo.SymbolEntryCurrent.Source, pxCompiler.ReadInfo.SymbolEntryCurrent.Size);
 
         switch (objPeekLine)
         {
@@ -697,7 +693,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
                 PXSize cornerPoints = 0;
 
 
-                const PXSize lineStart = pxCompiler.SymbolEntryCurrent.Line;
+                const PXSize lineStart = pxCompiler.ReadInfo.SymbolEntryCurrent.Line;
                 PXSize lineCurrent = lineStart;
 
                 PXBool isDone = PXFalse;
@@ -759,7 +755,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
 
                     PXCompilerSymbolEntryPeek(&pxCompiler); // check what line we are in
 
-                    lineCurrent = pxCompiler.SymbolEntryCurrent.Line; // Update current line
+                    lineCurrent = pxCompiler.ReadInfo.SymbolEntryCurrent.Line; // Update current line
 
                     isDone = PXFileIsAtEnd(&tokenSteam) || (lineStart != lineCurrent);
                 } 
@@ -776,7 +772,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
                 {
                     PXCompilerSymbolEntryExtract(&pxCompiler);
                 }
-                while (pxCompiler.SymbolEntryCurrent.ID != PXCompilerSymbolLexerNewLine);
+                while (pxCompiler.ReadInfo.SymbolEntryCurrent.ID != PXCompilerSymbolLexerNewLine);
 
                 break;
             }

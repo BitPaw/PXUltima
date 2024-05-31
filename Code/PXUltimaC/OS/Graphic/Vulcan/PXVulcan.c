@@ -13,7 +13,7 @@ PXActionResult PXAPI PXVulcanErrorCodeFromID(const VkResult vkResultID)
 	switch (vkResultID)
 	{
 		case VK_SUCCESS: return PXActionSuccessful;
-		case VK_NOT_READY: return ResourceUnavailableTryAgain;
+		case VK_NOT_READY: return PXActionFailedResourceUnavailableTryAgain;
 
 #if 0
 		case VK_TIMEOUT: return 000000000;
@@ -102,7 +102,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, struct PXGraph
 #elif OSWindows
 		PXTextMakeFixedA(&vulcanLibraryName, "vulkan-1.dll");
 #else
-		return PXActionNotSupportedByOperatingSystem;
+		return PXActionRefusedNotImplemented;
 #endif	
 
 		const PXBool libraryLoadResult = PXLibraryOpen(&pxVulcan->LibraryID, &vulcanLibraryName);
@@ -114,7 +114,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, struct PXGraph
 #elif OSApple
 			PXTextMakeFixedA(&vulcanLibraryName, "libvulkan.1.dylib");
 #elif OSWindows
-			return PXActionLibraryNotFound;
+			return PXActionRefusedNotImplemented;
 #else
 			return PXActionNotSupportedByOperatingSystem;
 #endif	
@@ -133,7 +133,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, struct PXGraph
 				);
 #endif
 
-				return PXActionLibraryNotFound;
+				return PXActionRefusedNotSupportedByOperatingSystem;
 			}
 		}
 	}

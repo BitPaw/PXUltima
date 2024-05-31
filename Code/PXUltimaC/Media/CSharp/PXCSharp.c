@@ -1,4 +1,4 @@
-#include "PXCS.h"
+#include "PXCSharp.h"
 
 #include <Media/C/PXC.h>
 #include <Media/PXText.h>
@@ -11,10 +11,16 @@
 char PXCSharpKeyWordPublic[] = "public";
 char PXCSharpKeyWordPrivate[] = "private";
 char PXCSharpKeyWordStruct[] = "struct";
+char PXCSharpKeyWordNamespace[] = "namespace";
 char PXCSharpKeyWordClass[] = "class";
 char PXCSharpKeyWordEnum[] = "enum";
 char PXCSharpKeyWordVoid[] = "void";
 char PXCSharpKeyWordExpliciLayout[] = "[StructLayout(LayoutKind.Explicit)]";
+
+char PXCSharpFunctionCallCdecl[] = "Cdecl";
+char PXCSharpFunctionCallStdCall[] = "StdCall";
+char PXCSharpFunctionCallFastCall[] = "FastCall";
+char PXCSharpFunctionCallThisCall[] = "ThisCall";
 
 //char PXJavaKeyWordByte[] = "byte";
 //char PXJavaKeyWordInt[] = "int";
@@ -23,22 +29,7 @@ char PXCSharpKeyWordExpliciLayout[] = "[StructLayout(LayoutKind.Explicit)]";
 //char PXJavaKeyWordFloat[] = "float";
 //char PXJavaKeyWordDouble[] = "double";
 
-#define PXJavaTABSize 2
-
-PXCSKeyWord PXCSFetchNext(PXFile* const inputSteam)
-{
-	PXCSKeyWord keyWord = PXCSKeyWordInvalid;
-
-	{
-		PXInt8U keyID = 0;
-
-		PXFileReadI8U(inputSteam, &keyID);
-
-		keyWord = (PXCSKeyWord)keyID;
-	}
-
-	return keyWord;
-}
+/*
 
 void PXCSSerialize(PXFile* const inputSteam, PXFile* const outputStream, PXCTranslateStruct* const pxCTranslateStruct)
 {
@@ -350,37 +341,31 @@ void PXCSCreateWrapperFromCSource(PXFile* const inputSteam, PXFile* const output
 	outputStream->DataSize = outputStream->DataCursor;
 	outputStream->DataCursor = 0;
 }
+*/
 
-void PXAPI PXCSharpComment(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile)
+
+void PXAPI PXCSharpWriteFile(PXCompiler* const pxCompiler)
 {
-	PXFileWriteFill(pxFile, ' ', PXJavaTABSize * pxCodeDocumentElement->Depth);
+	PXCSharpContainerWrite(pxCompiler);
+}
 
-	if(pxCodeDocumentElement->CommentSize > 0)
+void PXAPI PXCSharpContainerWrite(PXCompiler* const pxCompiler)
+{
+	PXFile* const pxFile = pxCompiler->WriteInfo.FileOutput;
+	PXCodeDocumentElement* const symbol = pxCompiler->WriteInfo.CodeElementCurrent;
+
+	pxCompiler->WriteInfo.WriteComment(pxCompiler);
+
+	if(symbol->Type != PXDocumentElementTypeFile)
 	{
-		PXFileWriteA(pxFile, "// ", 3);
-		PXFileWriteA(pxFile, pxCodeDocumentElement->CommentAdress, pxCodeDocumentElement->CommentSize);
-		PXFileWriteNewLine(pxFile);
+		PXFileWriteFill(pxFile, ' ', pxCompiler->WriteInfo.TABSize * symbol->Depth);
+		PXFileWriteA(pxFile, PXCSharpKeyWordPublic, sizeof(PXCSharpKeyWordPublic) - 1);
+		PXFileWriteC(pxFile, ' ');
 	}
-}
 
-void PXAPI PXCSharpIncludeWrite(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile)
-{
-	PXFileWriteA(pxFile, "// depends on file ", 19);
-	PXFileWriteA(pxFile, pxCodeDocumentElement->NameAdress, pxCodeDocumentElement->NameSize);
-	//PXFileWriteNewLine(pxFile);
-}
 
-void PXAPI PXCSharpContainerWrite(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile)
-{
-	PXFileWriteFill(pxFile, ' ', PXJavaTABSize * pxCodeDocumentElement->Depth);
 
-	PXCSharpComment(pxCodeDocumentElement, pxFile);
-
-	PXFileWriteFill(pxFile, ' ', PXJavaTABSize * pxCodeDocumentElement->Depth);
-	PXFileWriteA(pxFile, PXCSharpKeyWordPublic, sizeof(PXCSharpKeyWordPublic) - 1);
-	PXFileWriteC(pxFile, ' ');
-
-	switch(pxCodeDocumentElement->Type)
+	switch(symbol->Type)
 	{
 		case PXDocumentElementTypeEnum:
 		{
@@ -388,6 +373,10 @@ void PXAPI PXCSharpContainerWrite(PXCodeDocumentElement* pxCodeDocumentElement, 
 			break;
 		}
 		case PXDocumentElementTypeFile:
+		{
+			PXFileWriteA(pxFile, PXCSharpKeyWordNamespace, sizeof(PXCSharpKeyWordNamespace) - 1);
+			break;
+		}
 		case PXDocumentElementTypeStruct:
 		{
 			PXFileWriteA(pxFile, PXCSharpKeyWordStruct, sizeof(PXCSharpKeyWordStruct) - 1);
@@ -405,32 +394,32 @@ void PXAPI PXCSharpContainerWrite(PXCodeDocumentElement* pxCodeDocumentElement, 
 
 	PXFileWriteC(pxFile, ' ');
 
-	if(pxCodeDocumentElement->NameShortAdress)
+	if(symbol->NameShortAdress)
 	{
-		PXFileWriteA(pxFile, pxCodeDocumentElement->NameShortAdress, pxCodeDocumentElement->NameShortSize);
+		PXFileWriteA(pxFile, symbol->NameShortAdress, symbol->NameShortSize);
 	}
 	else
 	{
-		PXFileWriteA(pxFile, pxCodeDocumentElement->NameAdress, pxCodeDocumentElement->NameSize);
+		PXFileWriteA(pxFile, symbol->NameAdress, symbol->NameSize);
 	}
 
 	PXFileWriteNewLine(pxFile);
-	PXFileWriteFill(pxFile, ' ', PXJavaTABSize * pxCodeDocumentElement->Depth);
+	PXFileWriteFill(pxFile, ' ', pxCompiler->WriteInfo.TABSize * symbol->Depth);
 	PXFileWriteC(pxFile, '{');
 	PXFileWriteNewLine(pxFile);
 
 	for
 		(
-		PXCodeDocumentElement* child = pxCodeDocumentElement->ElementChildFirstBorn;
+		PXCodeDocumentElement* child = symbol->ElementChildFirstBorn;
 		child;
 		child = child->ElementSibling
 		)
 	{
-		switch(pxCodeDocumentElement->Type)
+		switch(symbol->Type)
 		{
 			case PXDocumentElementTypeEnum:
 			{
-				PXFileWriteFill(pxFile, ' ', PXJavaTABSize * child->Depth);
+				PXFileWriteFill(pxFile, ' ', pxCompiler->WriteInfo.TABSize * child->Depth);
 				PXFileWriteA(pxFile, child->NameShortAdress, child->NameShortSize);
 
 				if(child->ElementSibling) // if not last
@@ -444,13 +433,17 @@ void PXAPI PXCSharpContainerWrite(PXCodeDocumentElement* pxCodeDocumentElement, 
 			case PXDocumentElementTypeUnion:
 			case PXDocumentElementTypeClass:
 			{
-				//PXJavaDefinitionWrite(child, pxFile);
+				pxCompiler->WriteInfo.CodeElementCurrent = child;
+				pxCompiler->WriteInfo.WriteDefinition(pxCompiler);
 				PXFileWriteC(pxFile, ';');
 				break;
 			}
 			default:
-			//	PXJavaElementWrite(child, pxFile);
+			{
+				pxCompiler->WriteInfo.CodeElementCurrent = child;
+				pxCompiler->WriteInfo.WriteNode(pxCompiler);
 				break;
+			}
 		}
 
 		if(child->ElementSibling)
@@ -460,50 +453,78 @@ void PXAPI PXCSharpContainerWrite(PXCodeDocumentElement* pxCodeDocumentElement, 
 	}
 
 	PXFileWriteNewLine(pxFile);
-	PXFileWriteFill(pxFile, ' ', PXJavaTABSize * pxCodeDocumentElement->Depth);
+	PXFileWriteFill(pxFile, ' ', pxCompiler->WriteInfo.TABSize * symbol->Depth);
 	PXFileWriteC(pxFile, '}');
 	PXFileWriteNewLine(pxFile);
 }
 
-void PXAPI PXCSharpFunctionWrite(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile)
+void PXAPI PXCSharpFunctionWrite(PXCompiler* const pxCompiler)
 {
-	// Cleave function name?	
+	PXFile* const pxFile = pxCompiler->WriteInfo.FileOutput;
+	PXCodeDocumentElement* const symbol = pxCompiler->WriteInfo.CodeElementCurrent;
 
-	PXCSharpComment(pxCodeDocumentElement, pxFile);
+	pxCompiler->WriteInfo.WriteComment(pxCompiler);
 
-	PXFileWriteFill(pxFile, ' ', PXJavaTABSize * pxCodeDocumentElement->Depth);
+	PXFileWriteFill(pxFile, ' ', pxCompiler->WriteInfo.TABSize * symbol->Depth);
 
 	//PXFileWriteA(pxFile, PXJavaKeyWordPublic, 6);
 	PXFileWriteC(pxFile, ' ');
 
 	if(1) // Is native?
 	{
-		//PXFileWriteA(pxFile, PXJavaKeyWordNative, 6);
-		PXFileWriteC(pxFile, ' ');
+		PXFileWriteA(pxFile, "[DllImport(\"", 12);
+		PXFileWriteA(pxFile, "PXUltima.dll", 12); // DLL NAME
+		PXFileWriteA(pxFile, "\", CallingConvention = CallingConvention.", 41);
+
+		switch(symbol->FunctionCallingConvention)
+		{
+			default:
+			case PXDocumentCallingConventionCDeclaration:
+				PXFileWriteA(pxFile, PXCSharpFunctionCallCdecl, sizeof(PXCSharpFunctionCallCdecl) - 1);
+				break;
+			case PXDocumentCallingConventionStandardCall:
+				PXFileWriteA(pxFile, PXCSharpFunctionCallStdCall, sizeof(PXCSharpFunctionCallStdCall) - 1);
+				break;
+			case PXDocumentCallingConventionFastCall:
+				PXFileWriteA(pxFile, PXCSharpFunctionCallFastCall, sizeof(PXCSharpFunctionCallFastCall) - 1);
+				break;
+			case PXDocumentCallingConventionThisCall:
+				PXFileWriteA(pxFile, PXCSharpFunctionCallThisCall, sizeof(PXCSharpFunctionCallThisCall) - 1);
+				break;
+
+			//default:
+				// ERROR
+				//break;
+		}
+
+		PXFileWriteA(pxFile, ")] private static extern ", 25);
 	}
 
 	//PXFileWriteA(pxFile, PXJavaKeyWordVoid, 4);
-	PXFileWriteC(pxFile, ' ');
-	PXFileWriteA(pxFile, pxCodeDocumentElement->NameShortAdress, pxCodeDocumentElement->NameShortSize);
+	//PXFileWriteC(pxFile, ' ');
+	PXFileWriteA(pxFile, symbol->NameShortAdress, symbol->NameShortSize);
 
-//	PXJavaParameterList(pxCodeDocumentElement, pxFile);
+	pxCompiler->WriteInfo.WriteParameter(pxCompiler);
 
 	PXFileWriteC(pxFile, ';');
 	//PXFileWriteNewLine(pxFile);
 }
 
-void PXAPI PXCSharpDefinitionWrite(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile)
+void PXAPI PXCSharpDefinitionWrite(PXCompiler* const pxCompiler)
 {
-	PXCSharpComment(pxCodeDocumentElement, pxFile);
+	PXFile* const pxFile = pxCompiler->WriteInfo.FileOutput;
+	PXCodeDocumentElement* const symbol = pxCompiler->WriteInfo.CodeElementCurrent;
+
+	pxCompiler->WriteInfo.WriteComment(pxCompiler);
 
 	//PXFileWriteFill(pxFile, ' ', PXJavaTABSize * pxCodeDocumentElement->Depth);
 
 	// const does not exists in this context. const in C# does mean another thing
 
 	// type
-	if(pxCodeDocumentElement->DataTypeIsBuildIn)
+	if(symbol->DataTypeIsBuildIn)
 	{
-		switch(pxCodeDocumentElement->DataType & PXDataTypeSizeMask)
+		switch(symbol->DataType & PXDataTypeSizeMask)
 		{
 			case PXDataTypeSize08:
 				//PXFileWriteA(pxFile, PXJavaKeyWordByte, 4);
@@ -529,66 +550,22 @@ void PXAPI PXCSharpDefinitionWrite(PXCodeDocumentElement* pxCodeDocumentElement,
 	else
 	{
 		// Custom type
-		PXFileWriteA(pxFile, pxCodeDocumentElement->TypeNameAdress, pxCodeDocumentElement->TypeNameSize);
+		PXFileWriteA(pxFile, symbol->TypeNameAdress, symbol->TypeNameSize);
 	}
 
 	// Adress?
 
 
 	PXFileWriteC(pxFile, ' ');
-	PXFileWriteA(pxFile, pxCodeDocumentElement->NameAdress, pxCodeDocumentElement->NameSize);
+	PXFileWriteA(pxFile, symbol->NameAdress, symbol->NameSize);
 }
 
-void PXAPI PXCSharpParameterList(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile)
-{
-	PXFileWriteC(pxFile, '(');
-
-	for(PXCodeDocumentElement* i = pxCodeDocumentElement->ElementChildFirstBorn; i; i = i->ElementSibling)
-	{
-		PXCSharpDefinitionWrite(i, pxFile);
-	}
-
-	PXFileWriteC(pxFile, ')');
-}
-
-void PXAPI PXCSharpElementWrite(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile)
-{
-	switch(pxCodeDocumentElement->Type)
-	{
-		case PXDocumentElementTypeFile:
-		{
-			PXCSharpContainerWrite(pxCodeDocumentElement, pxFile);
-			break;
-		}
-		case PXDocumentElementTypeInclude:
-		{
-			PXCSharpIncludeWrite(pxCodeDocumentElement, pxFile);
-			break;
-		}
-		case PXDocumentElementTypeEnum:
-		case PXDocumentElementTypeClass:
-		case PXDocumentElementTypeStruct:
-		{
-			PXCSharpContainerWrite(pxCodeDocumentElement, pxFile);
-			break;
-		}
-		case PXDocumentElementTypeFunction:
-		{
-			PXCSharpFunctionWrite(pxCodeDocumentElement, pxFile);
-			break;
-		}
-
-		default:
-			break;
-	}
-}
-
-PXActionResult PXAPI PXCSLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
+PXActionResult PXAPI PXCSharpLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
 	return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXCSSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
+PXActionResult PXAPI PXCSharpSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
 {
 	PXFile* pxFile = pxResourceSaveInfo->FileReference;
 
@@ -602,28 +579,22 @@ PXActionResult PXAPI PXCSSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo
 		return PXActionRefusedArgumentInvalid;
 	}
 
-	PXCodeDocument* const pxCodeDocument = (PXCodeDocument*)pxResourceSaveInfo->Target;
+	PXCompiler pxCompiler;
+	PXClear(PXCompiler, &pxCompiler);
+	pxCompiler.CommentSingleLine = "//";
+	pxCompiler.CommentSingleLineSize = 2;
+	pxCompiler.CommentMultibleLineBegin = "/*";
+	pxCompiler.CommentMultibleLineBeginSize = 2;
+	pxCompiler.CommentMultibleLineEnd = "*/";
+	pxCompiler.CommentMultibleLineEndSize = 2;
+	pxCompiler.CodeDocument = (PXCodeDocument*)pxResourceSaveInfo->Target;
+	pxCompiler.WriteInfo.FileOutput = pxResourceSaveInfo->FileReference;
+	pxCompiler.WriteInfo.WriteFile = PXCSharpWriteFile;
+	pxCompiler.WriteInfo.WriteContainer = PXCSharpContainerWrite;
+	pxCompiler.WriteInfo.WriteFunction = PXCSharpFunctionWrite;
+	pxCompiler.WriteInfo.WriteDefinition = PXCSharpDefinitionWrite;
 
-	PXCodeDocumentElement* const pxCodeDocumentCurrent = &pxCodeDocument->ElementList[0];
-
-	PXTime pxTime;
-	PXTimeNow(&pxTime);
-
-	PXFileWriteAF
-	(
-		pxFile,
-		"// This file is generated by PXUltima\n"
-		"// Date: %02i.%02i.%04i\n"
-		"// Time: %02i:%02i:%02i\n\n",
-		(int)pxTime.Day,
-		(int)pxTime.Month,
-		(int)pxTime.Year,
-		(int)pxTime.Hour,
-		(int)pxTime.Minute,
-		(int)pxTime.Second
-	);
-
-	PXCSharpElementWrite(pxCodeDocumentCurrent, pxFile);
+	PXCompilerWrite(&pxCompiler);
 
 	return PXActionRefusedNotImplemented;
 }

@@ -3,23 +3,10 @@
 
 #include "../PXResource.h"
 
-typedef struct PXJava_
-{
-	int Value;
-}
-PXJava;
-
-
-PXPrivate void PXAPI PXJavaComment(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile);
-
-PXPrivate void PXAPI PXJavaIncludeWrite(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile);
-PXPrivate void PXAPI PXJavaContainerWrite(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile);
-PXPrivate void PXAPI PXJavaFunctionWrite(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile);
-
-PXPrivate void PXAPI PXJavaDefinitionWrite(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile);
-PXPrivate void PXAPI PXJavaParameterList(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile);
-PXPrivate void PXAPI PXJavaElementWrite(PXCodeDocumentElement* pxCodeDocumentElement, PXFile* pxFile);
-
+PXPrivate void PXAPI PXJavaWriteFile(PXCompiler* const pxCompiler);
+PXPrivate void PXAPI PXJavaContainerWrite(PXCompiler* const pxCompiler);
+PXPrivate void PXAPI PXJavaFunctionWrite(PXCompiler* const pxCompiler);
+PXPrivate void PXAPI PXJavaDefinitionWrite(PXCompiler* const pxCompiler);
 
 PXPublic PXActionResult PXAPI PXJavaLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
 PXPublic PXActionResult PXAPI PXJavaSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);

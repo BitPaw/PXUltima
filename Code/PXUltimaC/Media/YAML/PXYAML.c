@@ -61,25 +61,19 @@ PXActionResult PXAPI PXYAMLLoadFromFile(PXResourceLoadInfo* const pxResourceLoad
 {
     PXSize errorCounter = 0;
     PXFile tokenSteam;
+    PXClear(PXFile, &tokenSteam);
+
+    PXCompiler pxCompiler;
+    PXClear(PXCompiler, &pxCompiler);
+    pxCompiler.CodeDocument = (PXCodeDocument*)pxResourceLoadInfo->Target;
+    pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileReference;
+    pxCompiler.ReadInfo.FileCache = &tokenSteam;
+    pxCompiler.CommentSingleLineSize = 1u;
+    pxCompiler.CommentSingleLine = "#";
+    pxCompiler.Flags = PXCompilerKeepAnalyseTypes | PXCompilerKeepTABs;
 
     // Lexer - Level I
-    {
-        PXCompilerSettings compilerSettings;
-        PXClear(PXCompilerSettings, &compilerSettings);
-
-        compilerSettings.KeepWhiteSpace = PXYes;
-        compilerSettings.KeepWhiteSpaceIndentationLeft = PXYes;
-        compilerSettings.TryAnalyseTypes = PXYes;
-        compilerSettings.KeepTabs = PXYes;
-        compilerSettings.CommentSingleLineSize = 1u;
-        compilerSettings.CommentSingleLine = "#";
-
-        //PXCompilerLexicalAnalysis(inputStream, outputStream, &compilerSettings); // Raw-File-Input -> Lexer tokens
-
-       // PXFileBufferExternal(&tokenSteam, outputStream->Data, outputStream->DataCursor);
-
-       // outputStream->DataCursor = 0;
-    }
+    PXCompilerLexicalAnalysis(&pxCompiler); // Raw-File-Input -> Lexer tokens
 
 #if 0
 

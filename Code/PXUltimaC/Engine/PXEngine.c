@@ -1554,7 +1554,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
                 );
 #endif
 
-                return PXActionRefusedAPIIsNotLinked;
+                return PXActionFailedNoSystemToHandleData;
             }
 
             PXGraphicTexturInfo pxGraphicTexturInfo;
@@ -1584,7 +1584,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
                 );
 #endif
 
-                return PXActionRefusedAPIIsNotLinked;
+                return PXActionFailedNoSystemToHandleData;
             }
 
             // Register
@@ -1610,7 +1610,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
                 );
 #endif
 
-                return PXActionRefusedAPIIsNotLinked;
+                return PXActionFailedNoSystemToHandleData;
             }         
 
 
@@ -1678,7 +1678,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
                 );
 #endif
 
-                return PXActionRefusedAPIIsNotLinked;
+                return PXActionFailedNoSystemToHandleData;
             }
 
         
@@ -1894,7 +1894,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
                 );
 #endif
 
-                return PXActionRefusedAPIIsNotLinked;
+                return PXActionFailedNoSystemToHandleData;
             }
 
             {

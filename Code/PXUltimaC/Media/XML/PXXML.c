@@ -66,7 +66,7 @@ void PXAPI PXXMLBlockParse(PXCodeDocument* const pxDocument, PXCompiler* const p
 
                 // Exit if closing bracked
                 {
-                    switch (pxCompiler->SymbolEntryCurrent.ID)
+                    switch ( pxCompiler->ReadInfo.SymbolEntryCurrent.ID)
                     {
                         case PXCompilerSymbolLexerBracketAngleClose:
                         {
@@ -92,16 +92,16 @@ void PXAPI PXXMLBlockParse(PXCodeDocument* const pxDocument, PXCompiler* const p
                             PXCompilerSymbolEntryExtract(pxCompiler);
                             PXCompilerSymbolEntryPeek(pxCompiler);
 
-                            PXBool isAttribute = PXCompilerSymbolLexerEqual==pxCompiler->SymbolEntryCurrent.ID;
+                            PXBool isAttribute = PXCompilerSymbolLexerEqual== pxCompiler->ReadInfo.SymbolEntryCurrent.ID;
                             PXBool isTagEnd =
-                                PXCompilerSymbolLexerQuestionmark == pxCompiler->SymbolEntryCurrent.ID &&
-                                PXCompilerSymbolLexerBracketAngleClose == pxCompiler->SymbolEntryCurrent.ID;
+                                PXCompilerSymbolLexerQuestionmark ==  pxCompiler->ReadInfo.SymbolEntryCurrent.ID &&
+                                PXCompilerSymbolLexerBracketAngleClose ==  pxCompiler->ReadInfo.SymbolEntryCurrent.ID;
 
                             PXCodeDocumentElement pxDocumentElement;
                             PXClear(PXCodeDocumentElement, &pxDocumentElement);
                           //  pxDocumentElement.Depth = pxDocument->Depth;
-                            pxDocumentElement.NameAdress = pxCompiler->SymbolEntryCurrent.Source;
-                            pxDocumentElement.NameSize = pxCompiler->SymbolEntryCurrent.Size;
+                            pxDocumentElement.NameAdress =  pxCompiler->ReadInfo.SymbolEntryCurrent.Source;
+                            pxDocumentElement.NameSize =  pxCompiler->ReadInfo.SymbolEntryCurrent.Size;
                            // pxDocumentElement.Depth = pxDocument->Depth;
 
                             if (isAttribute)
@@ -112,8 +112,8 @@ void PXAPI PXXMLBlockParse(PXCodeDocument* const pxDocument, PXCompiler* const p
                                 PXCompilerSymbolEntryExtract(pxCompiler);
                              
                                 pxDocumentElement.ElementMember.ValueType = PXDataTypeString;
-                                pxDocumentElement.ElementMember.ValueAdress = pxCompiler->SymbolEntryCurrent.Source;
-                                pxDocumentElement.ElementMember.ValueSize = pxCompiler->SymbolEntryCurrent.Size;
+                                pxDocumentElement.ElementMember.ValueAdress =  pxCompiler->ReadInfo.SymbolEntryCurrent.Source;
+                                pxDocumentElement.ElementMember.ValueSize =  pxCompiler->ReadInfo.SymbolEntryCurrent.Size;
                             }
                             else
                             {
@@ -153,7 +153,7 @@ void PXAPI PXXMLBlockParse(PXCodeDocument* const pxDocument, PXCompiler* const p
                 PXCompilerSymbolEntryPeek(pxCompiler);
                 PXCompilerSymbolRewind(pxCompiler, 1);
 
-                const PXBool isOpenAngleBracked = PXCompilerSymbolLexerBracketAngleOpen == pxCompiler->SymbolEntryCurrent.ID;
+                const PXBool isOpenAngleBracked = PXCompilerSymbolLexerBracketAngleOpen ==  pxCompiler->ReadInfo.SymbolEntryCurrent.ID;
 
                 if (isOpenAngleBracked)
                 {
@@ -162,11 +162,11 @@ void PXAPI PXXMLBlockParse(PXCodeDocument* const pxDocument, PXCompiler* const p
                     PXCodeDocumentElement pxDocumentElement;
                     PXClear(PXCodeDocumentElement, &pxDocumentElement);
                     pxDocumentElement.Depth = 0;
-                    pxDocumentElement.ElementMember.ValueAdress = pxCompiler->SymbolEntryCurrent.Source;
-                    pxDocumentElement.ElementMember.ValueSize = pxCompiler->SymbolEntryCurrent.Size;
+                    pxDocumentElement.ElementMember.ValueAdress =  pxCompiler->ReadInfo.SymbolEntryCurrent.Source;
+                    pxDocumentElement.ElementMember.ValueSize =  pxCompiler->ReadInfo.SymbolEntryCurrent.Size;
                     pxDocumentElement.Type = PXDocumentElementTypeClassMember;
                
-                    switch (pxCompiler->SymbolEntryCurrent.ID)
+                    switch ( pxCompiler->ReadInfo.SymbolEntryCurrent.ID)
                     {
                         case PXCompilerSymbolLexerBool:
                             pxDocumentElement.ElementMember.ValueType = PXDataTypeInt08S;
@@ -201,40 +201,25 @@ void PXAPI PXXMLBlockParse(PXCodeDocument* const pxDocument, PXCompiler* const p
 
 PXActionResult PXAPI PXXMLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
-    PXCodeDocument* const pxDocument = (PXCodeDocument*)pxResourceLoadInfo->Target;
-
     PXFile tokenSteam;
     PXClear(PXFile, &tokenSteam);
 
     PXCompiler pxCompiler;
     PXClear(PXCompiler, &pxCompiler);
-    pxCompiler.FileInput = pxResourceLoadInfo->FileReference;
-    pxCompiler.FileCache = &tokenSteam;
-
-    PXClear(PXCodeDocument, pxDocument);
-
-    PXFileBufferAllocate(&pxDocument->Data, 2048*10);
+    pxCompiler.CodeDocument = (PXCodeDocument*)pxResourceLoadInfo->Target;
+    pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileReference;
+    pxCompiler.ReadInfo.FileCache = &tokenSteam;
+    //pxCompiler.Flags = 
 
     // Lexer - Level I
-    {
-        PXCompilerSettings compilerSettings;
-        PXClear(PXCompilerSettings, &compilerSettings);
-
-        compilerSettings.KeepWhiteSpace = PXYes;
-        compilerSettings.KeepWhiteSpaceIndentationLeft = PXYes;
-        compilerSettings.IntrepredNewLineAsWhiteSpace = PXYes;
-        compilerSettings.KeepTabs = PXYes;
-        compilerSettings.IntrepredTabsAsWhiteSpace = PXYes;
-
-        PXCompilerLexicalAnalysis(&pxCompiler, &compilerSettings); // Raw-File-Input -> Lexer tokens           
-    }
+    PXCompilerLexicalAnalysis(&pxCompiler); // Raw-File-Input -> Lexer tokens           
 
     while (!PXFileIsAtEnd(&tokenSteam))
     {
-        PXXMLBlockParse(pxDocument, &pxCompiler);
+        PXXMLBlockParse(0, &pxCompiler);
     }
 
-    PXFileCursorPositionTerminate(&pxDocument->Data);
+    PXFileCursorPositionTerminate(0);
 
     return PXActionSuccessful;
 }

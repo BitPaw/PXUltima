@@ -568,8 +568,8 @@ PXActionResult PXAPI PXTTFLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 				}
 				else // compound glyph
 				{
-					PXFileReadI16SE(pxResourceLoadInfo->FileReference, &tableEntryGlyphOutlineEntry.ComponentFlagList, PXEndianBig);
-					PXFileReadI16SE(pxResourceLoadInfo->FileReference, &tableEntryGlyphOutlineEntry.GlyphIndex, PXEndianBig);
+					PXFileReadI16UE(pxResourceLoadInfo->FileReference, &tableEntryGlyphOutlineEntry.ComponentFlagList, PXEndianBig);
+					PXFileReadI16UE(pxResourceLoadInfo->FileReference, &tableEntryGlyphOutlineEntry.GlyphIndex, PXEndianBig);
 				}
 
 

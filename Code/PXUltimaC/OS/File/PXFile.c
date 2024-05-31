@@ -378,6 +378,7 @@ PXFileFormat PXAPI PXFilePathExtensionDetectTry(const PXText* const filePath)
 				case PXInt16Make('K', 'O'):
 				case PXInt16Make('S', 'O'): return PXFileFormatBinaryLinux;
 				case PXInt16Make('F', 'F'): return PXFileFormatFastFile;
+				case PXInt16Make('C', 'S'): return PXFileFormatCSharp;
 			}
 
 			break;
@@ -1370,7 +1371,7 @@ PXActionResult PXAPI PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFr
 
 	PXFilePathSet(pxFile, &pxFileOpenFromPathInfo->Text);
 
-#if PXLogEnable
+#if PXLogEnable && 0
 	PXLoggingEventData pxLoggingEventData;
 	PXClear(PXLoggingEventData, &pxLoggingEventData);
 	pxLoggingEventData.FileReference = pxFile;
@@ -1782,7 +1783,7 @@ PXActionResult PXAPI PXFileClose(PXFile* const pxFile)
 	}
 #endif
 
-#if PXLogEnable
+#if PXLogEnable && 0
 	PXLoggingEventData pxLoggingEventData;
 	PXClear(PXLoggingEventData, &pxLoggingEventData);
 	pxLoggingEventData.FileReference = pxFile;
@@ -1801,7 +1802,7 @@ PXActionResult PXAPI PXFileClose(PXFile* const pxFile)
 
 		if (!successful)
 		{
-			return PXActionFailedFileClose;
+			return PXActionFailedClose;
 		}
 
 		pxFile->ID = PXHandleNotSet;

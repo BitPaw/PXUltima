@@ -41,13 +41,13 @@ PXActionResult PXAPI PXDialogSystemInitialize(PXDialogSystem* const pxDialogSyst
 
         if(PXActionSuccessful != pxActionResult)
         {
-            return PXActionRefusedNotSupported;
+            return PXActionRefusedNotSupportedByOperatingSystem;
         }
     }
 
     // Fetch functions
     {
-        const PXLibraryFuntionEntry pxLibraryFuntionEntry[] =
+        PXLibraryFuntionEntry pxLibraryFuntionEntry[] =
         {
             { &pxDialogSystem->DialogColorChooseA, "ChooseColorA"},
             { &pxDialogSystem->DialogColorChooseW , "ChooseColorW"},
@@ -145,7 +145,7 @@ PXActionResult PXAPI PXDialogFileOpen(PXDialogSystem* const pxDialogSystem, PXTe
             openFileName.lpstrDefExt = "";
 
             {
-                const PXGetOpenFileNameA pxGetOpenFileNameA = pxDialogSystem->DialogFileNameOpenGetA;
+                const PXGetOpenFileNameA pxGetOpenFileNameA = (PXGetOpenFileNameA)pxDialogSystem->DialogFileNameOpenGetA;
                 const PXBool wasSuccesful = pxGetOpenFileNameA(&openFileName); // Windows 2000, Comdlg32.dll, commdlg.h
 
                 PXActionOnErrorFetchAndReturn(!wasSuccesful);
@@ -169,10 +169,10 @@ PXActionResult PXAPI PXDialogFileOpen(PXDialogSystem* const pxDialogSystem, PXTe
             openFileName.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
             openFileName.lpstrDefExt = L"";
 
-            const PXGetOpenFileNameW pxGetOpenFileNameW = pxDialogSystem->DialogFileNameOpenGetW;
+            const PXGetOpenFileNameW pxGetOpenFileNameW = (PXGetOpenFileNameW)pxDialogSystem->DialogFileNameOpenGetW;
             const PXBool wasSuccesful = pxGetOpenFileNameW(&openFileName); // Windows 2000, Comdlg32.dll, commdlg.h
 
-            return wasSuccesful;
+            return PXActionSuccessful;
         }
     }
 
@@ -209,7 +209,7 @@ PXActionResult PXAPI PXDialogFileSave(PXDialogSystem* const pxDialogSystem, PXTe
             openFileName.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
             openFileName.lpstrDefExt = "";
 
-            const PXGetSaveFileNameA pxGetSaveFileNameA = pxDialogSystem->DialogFileNameSaveGetA;
+            const PXGetSaveFileNameA pxGetSaveFileNameA = (PXGetSaveFileNameA)pxDialogSystem->DialogFileNameSaveGetA;
             const PXBool wasSuccesful = pxGetSaveFileNameA(&openFileName); // Windows 2000, Comdlg32.dll, commdlg.h
 
             PXActionOnErrorFetchAndReturn(!wasSuccesful);
@@ -232,7 +232,7 @@ PXActionResult PXAPI PXDialogFileSave(PXDialogSystem* const pxDialogSystem, PXTe
             openFileName.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
             openFileName.lpstrDefExt = L"";
 
-            const PXGetSaveFileNameW pxGetSaveFileNameW = pxDialogSystem->DialogFileNameSaveGetW;
+            const PXGetSaveFileNameW pxGetSaveFileNameW = (PXGetSaveFileNameW)pxDialogSystem->DialogFileNameSaveGetW;
             const PXBool wasSuccesful = pxGetSaveFileNameW(&openFileName); // Windows 2000, Comdlg32.dll, commdlg.h
 
             PXActionOnErrorFetchAndReturn(!wasSuccesful);
@@ -262,7 +262,7 @@ PXBool PXAPI PXDialogColorSelect(PXDialogSystem* const pxDialogSystem, PXColorRG
     chooseColor.lpCustColors = &colorReference;
     chooseColor.Flags = CC_FULLOPEN | CC_SHOWHELP | CC_ANYCOLOR;
 
-    const PXChooseColorW pxChooseColorW = pxDialogSystem->DialogColorChooseA;
+    const PXChooseColorW pxChooseColorW = (PXChooseColorW)pxDialogSystem->DialogColorChooseA;
     const PXBool success = pxChooseColorW(&chooseColor); // Windows 2000, Comdlg32.dll, commdlg.h
 
     if(success)
@@ -293,7 +293,7 @@ PXBool PXAPI PXDialogFontSelect(PXDialogSystem* const pxDialogSystem)
     CHOOSEFONTW choosefonta;
     PXClear(CHOOSEFONTW, &choosefonta);
     choosefonta.lStructSize = sizeof(CHOOSEFONTW);
-    const PXChooseFontW pxChooseFontW = pxDialogSystem->DialogFontChooseW;
+    const PXChooseFontW pxChooseFontW = (PXChooseFontW)pxDialogSystem->DialogFontChooseW;
     const PXBool success = pxChooseFontW(&choosefonta); // Windows 2000, Comdlg32.dll, commdlg.h
 
     return success;
@@ -312,7 +312,7 @@ PXBool PXAPI PXDialogPrint(PXDialogSystem* const pxDialogSystem)
     PXClear(PRINTDLGW, &printdlgw);
     printdlgw.lStructSize = sizeof(PRINTDLGW);
 
-    const PXPrintDlgW pxPrintDlgW = pxDialogSystem->DialogPrintW;
+    const PXPrintDlgW pxPrintDlgW = (PXPrintDlgW)pxDialogSystem->DialogPrintW;
     const PXBool success = pxPrintDlgW(&printdlgw); // Windows 2000, Comdlg32.dll, commdlg.h
 
     return success;

@@ -226,7 +226,7 @@ PXSize PXAPI PXTextPrintV(PXText* const pxText, const char* style, va_list param
 		case TextFormatASCII:
 		case TextFormatUTF8:
 		{
-			pxText->SizeUsed = PXTextPrintAV(pxText->TextW, pxText->SizeAllocated, style, parameter);
+			pxText->SizeUsed = PXTextPrintAV(pxText->TextA, pxText->SizeAllocated, style, parameter);
 			break;
 		}
 		case TextFormatUNICODE:
@@ -831,7 +831,7 @@ PXSize PXAPI PXTextFindLastCharacter(const PXText* const pxText, const char char
 	{
 		case TextFormatASCII:
 		{
-			void* foundAdress = PXMemoryLocateLast(pxText->TextA, character, pxText->SizeUsed);
+			const void* foundAdress = PXMemoryLocateLast(pxText->TextA, character, pxText->SizeUsed);
 
 			if(!foundAdress)
 			{

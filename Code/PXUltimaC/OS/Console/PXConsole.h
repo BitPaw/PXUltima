@@ -32,6 +32,28 @@ typedef enum PXLoggingType_
 }
 PXLoggingType;
 
+typedef enum PXConsoleTextColor_
+{
+	PXConsoleTextColorInvalid,
+	PXConsoleTextColorBLACK,
+	PXConsoleTextColorDARKBLUE,
+	PXConsoleTextColorDARKGREEN,
+	PXConsoleTextColorDARKCYAN,
+	PXConsoleTextColorDARKRED,
+	PXConsoleTextColorDARKMAGENTA,
+	PXConsoleTextColorDARKYELLOW,
+	PXConsoleTextColorDARKGRAY,
+	PXConsoleTextColorGRAY,
+	PXConsoleTextColorBLUE,
+	PXConsoleTextColorGREEN,
+	PXConsoleTextColorCYAN,
+	PXConsoleTextColorRED,
+	PXConsoleTextColorMAGENTA,
+	PXConsoleTextColorYELLOW,
+	PXConsoleTextColorWHITE,
+}
+PXConsoleTextColor;
+
 typedef struct PXLoggingMemoryData_
 {
 	PXSize TypeSize;
@@ -73,31 +95,6 @@ PXLoggingEventData;
 
 typedef void (PXAPI* PXLogPrintFunction)(const PXLoggingType loggingType, const char* const source, ...);
 
-
-
-typedef enum PXConsoleTextColor_
-{
-	PXConsoleTextColorInvalid,
-	PXConsoleTextColorBLACK,
-	PXConsoleTextColorDARKBLUE,
-	PXConsoleTextColorDARKGREEN,
-	PXConsoleTextColorDARKCYAN,
-	PXConsoleTextColorDARKRED,
-	PXConsoleTextColorDARKMAGENTA,
-	PXConsoleTextColorDARKYELLOW,
-	PXConsoleTextColorDARKGRAY,
-	PXConsoleTextColorGRAY,
-	PXConsoleTextColorBLUE,
-	PXConsoleTextColorGREEN,
-	PXConsoleTextColorCYAN,
-	PXConsoleTextColorRED,
-	PXConsoleTextColorMAGENTA,
-	PXConsoleTextColorYELLOW,
-	PXConsoleTextColorWHITE,
-}
-PXConsoleTextColor;
-
-
 PXPublic PXActionResult PXAPI PXConsoleTextColorSet(const PXConsoleTextColor pxConsoleTextColor);
 PXPublic PXActionResult PXAPI PXConsoleTextColorSetFromID(const PXInt16U coliorID);
 
@@ -114,12 +111,7 @@ PXPublic void PXAPI PXConsoleWriteTableInt(const PXInt8U* const data, const PXSi
 //PXPublic void PXAPI PXConsoleTranlateColorsA(char* const bufferInput, char* const bufferOuput);
 PXPublic void PXAPI PXConsoleWriteWithColorCodes(PXText* const bufferInput);
 
-
-PXPublic void PXAPI PXLogPrintInvoke
-(
-	PXLoggingEventData* const pxLoggingEventData,
-	...
-);
+PXPublic void PXAPI PXLogPrintInvoke(PXLoggingEventData* const pxLoggingEventData, ...);
 
 PXPublic void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source, const char* const action, const char* const format, ...);
 

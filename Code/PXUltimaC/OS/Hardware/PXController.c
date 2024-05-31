@@ -32,7 +32,7 @@ void PXAPI PXControllerSystemInitilize(PXControllerSystem* const pxControllerSys
 
 		if(PXActionSuccessful != loadLibResult)
 		{
-			return PXActionLibraryNotFound;
+			return PXActionRefusedNotSupportedByOperatingSystem;
 		}
 	}
 

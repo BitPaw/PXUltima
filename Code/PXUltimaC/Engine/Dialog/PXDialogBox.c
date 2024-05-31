@@ -151,7 +151,7 @@ PXActionResult PXAPI PXEngineDialogBoxTimerTrigger(PXEngine* const pxEngine, PXE
     switch (pxEngineDialogBox->State)
     {
         case PXEngineDialogStateDormant:
-            return PXActionRefusedObjectNotReady;
+            return PXActionFailedResourceUnavailableTryAgain;
 
         case PXEngineDialogStateActive:
         {
@@ -277,7 +277,7 @@ PXActionResult PXAPI PXEngineDialogBoxTimerTrigger(PXEngine* const pxEngine, PXE
             break;
         }
         default:
-            return PXActionRefusedObjectStateInvalid;
+            return PXActionRefusedStateInvalid;
     }
 
     return PXActionSuccessful;

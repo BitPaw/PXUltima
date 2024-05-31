@@ -4,6 +4,8 @@
 #include <OS/Error/PXActionResult.h>
 #include <OS/File/PXFile.h>
 
+#define PXCompilerDEBUG 0
+
 #define PXFlagIsSet(value, flag)  ((value & flag) && 1u)
 
 typedef enum PXCompilerSymbolLexer_
@@ -92,32 +94,6 @@ typedef struct PXCompilerSymbolEntry_
 }
 PXCompilerSymbolEntry;
 
-typedef struct PXCompilerSettings_
-{
-	PXBool KeepWhiteSpace; // Keep or ignore general empty space.
-	PXBool KeepWhiteSpaceIndentationLeft;
-	PXBool TryAnalyseTypes;
-	PXBool IntrepredNewLineAsWhiteSpace;
-	PXBool KeepTabs;
-	PXBool KeepNewLines;
-	PXBool IntrepredTabsAsWhiteSpace;
-	PXBool DoPrintOutput;
-
-	PXSize EndOfCommand;
-	const char* EndOfCommandSize;
-
-	PXBool CommentsKeep;
-	PXSize CommentSingleLineSize;
-	const char* CommentSingleLine;
-
-	PXSize CommentMultibleLineBeginSize;
-	const char* CommentMultibleLineBegin;
-
-	PXSize CommentMultibleLineEndSize;
-	const char* CommentMultibleLineEnd;
-}
-PXCompilerSettings;
-
 
 // Position where the attached comment to a symbol is in
 typedef enum PXCommentPosition_
@@ -137,25 +113,86 @@ typedef struct PXComment_
 }
 PXComment;
 
-typedef struct PXCompiler_
+
+typedef struct PXCompilerReadInfo_
 {
-	PXFile* FileInput;
-	PXFile* FileCache;
-
 	PXCompilerSymbolEntry SymbolEntryCurrent;
-
-	PXSize ErrorCounter;
-
-	// Used for relational parsing
-	PXCodeDocument* CodeDocument;
-	PXFile* TokenStream;
 
 	// TODO: temp solution
 	// Comment to be parsed if it is out of bounce for the symbol
 	PXComment Comment;
 
+	PXFile* FileInput;
+	PXFile* FileCache;
+	//PXFile* TokenStream;
+
 	// the current depth of the current object stack
 	PXSize DepthCurrent;
+
+	PXSize ErrorCounter;
+
+
+}
+PXCompilerReadInfo;
+
+typedef void (PXAPI* PXCompilerWriteFunction)(PXCompiler* const pxCompiler);
+
+typedef struct PXCompilerWriteInfo_
+{
+	PXFile* FileOutput;
+
+	PXCodeDocumentElement* CodeElementCurrent;
+
+	PXCompilerWriteFunction WriteNode;
+	PXCompilerWriteFunction WriteComment; // Special behaviour, if position does not match, dont write
+	PXCompilerWriteFunction WriteFile; // Regarded as the root of all things. The physical file
+	PXCompilerWriteFunction WriteInclude;
+	PXCompilerWriteFunction WriteContainer;
+	PXCompilerWriteFunction WriteFunction;
+	PXCompilerWriteFunction WriteDefinition;
+	PXCompilerWriteFunction WriteParameter;
+
+	PXInt8U TABSize;
+}
+PXCompilerWriteInfo;
+
+
+
+#define PXCompilerKeepWhiteSpace (1 << 0) // Keep or ignore general empty space.
+#define PXCompilerKeepComments (1 << 1)
+#define PXCompilerKeepTABs (1 << 2)
+#define PXCompilerKeepAnalyseTypes (1 << 3)
+#define PXCompilerKeepNewLine (1 << 4)
+#define PXCompilerInterpretNewLineAsWhiteSpace (1 << 5)
+
+typedef struct PXCompiler_
+{
+	union
+	{
+		PXCompilerReadInfo ReadInfo;
+		PXCompilerWriteInfo WriteInfo;
+	};
+
+	PXCodeDocument* CodeDocument;
+
+	PXSize EndOfCommand;
+	const char* EndOfCommandSize;
+
+	PXSize CommentSingleLineSize;
+	const char* CommentSingleLine; // Example : "//" or "#"
+
+	PXSize CommentMultibleLineBeginSize;
+	const char* CommentMultibleLineBegin;  // Example : "/*"
+
+	PXSize CommentMultibleLineEndSize;
+	const char* CommentMultibleLineEnd;  // Example : "*/"
+
+	PXInt32U Flags;
+
+
+	//PXBool IntrepredNewLineAsWhiteSpace;
+	//PXBool IntrepredTabsAsWhiteSpace;
+	//PXBool DoPrintOutput;
 }
 PXCompiler;
 
@@ -189,7 +226,7 @@ PXPublic PXSize PXAPI PXCompilerSymbolEntryForward(PXCompiler* const pxCompiler)
 
 PXPrivate PXCompilerSymbolLexer PXAPI PXCompilerTryAnalyseType(PXFile* const inputStream, const char* const text, const PXSize textSize, PXCompilerSymbolEntry* const compilerSymbolEntry);
 
-PXPublic PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler, const PXCompilerSettings* const compilerSettings);
+PXPublic PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler);
 
 PXPublic PXBool PXAPI PXCompilerParseStringUntilNewLine(PXCompiler* const pxCompiler, PXText* const pxText);
 PXPublic PXBool PXAPI PXCompilerParseStringUntilNewLineA(PXCompiler* const pxCompiler, char* const text, const PXSize textMaxSize, PXSize* const textSize);
@@ -198,5 +235,13 @@ PXPublic PXBool PXAPI PXCompilerParseFloatSingle(PXCompiler* const pxCompiler, f
 PXPublic PXBool PXAPI PXCompilerParseFloatList(PXCompiler* const pxCompiler, float* const values, const PXSize valuesMaxSize, PXSize* const valuesSize);
 
 PXPublic void PXAPI PXCompilerErrorInvoke(PXCompiler* const pxCompiler);
+
+
+// Write a ASL into a given format. Uses a default way to write and can be overloaded
+PXPublic void PXAPI PXCompilerWrite(PXCompiler* const pxCompiler);
+PXPublic void PXAPI PXCompilerWriteNode(PXCompiler* const pxCompiler);
+PXPublic void PXAPI PXCompilerWriteInclude(PXCompiler* const pxCompiler);
+PXPublic void PXAPI PXCompilerWriteComment(PXCompiler* const pxCompiler);
+PXPublic void PXAPI PXCompilerWriteParameterList(PXCompiler* const pxCompiler);
 
 #endif

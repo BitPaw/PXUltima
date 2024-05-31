@@ -158,6 +158,7 @@ PXActionResult PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* con
 	if(!success)
 	{
 		const PXActionResult libraryOpenResult = PXErrorCurrent();
+		
 		// Library couln't be opened
 
 #if PXLogEnable
@@ -171,7 +172,7 @@ PXActionResult PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* con
 		);
 #endif
 
-		return PXActionLibraryNotFound;
+		return PXActionFailedLoad;
 	}
 
 #if PXLogEnable

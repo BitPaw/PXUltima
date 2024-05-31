@@ -600,7 +600,7 @@ PXActionResult PXAPI PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEv
 
 	if (!successfulFetch)
 	{
-		return PXActionFailedDataFetch;
+		return PXActionInvalid;
 	}
 
 	for ( ; successfulFetch; )

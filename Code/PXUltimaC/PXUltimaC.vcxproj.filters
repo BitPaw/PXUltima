@@ -114,7 +114,7 @@
     <ClCompile Include="Media\CRC32\PXCRC32.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Media\CS\PXCS.c">
+    <ClCompile Include="Media\CSharp\PXCSharp.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Media\CSS\PXCSS.c">
@@ -590,7 +590,7 @@
     <ClInclude Include="Media\CRC32\PXCRC32.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Media\CS\PXCS.h">
+    <ClInclude Include="Media\CSharp\PXCSharp.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Media\CSS\PXCSS.h">

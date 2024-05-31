@@ -6181,7 +6181,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
         );
 #endif
 
-        return PXActionRefusedNotSupported;
+        return PXActionSuccessful;
     }
 
 
@@ -6433,7 +6433,7 @@ PXActionResult PXAPI PXOpenGLRectangleDraw(PXOpenGL* const pxOpenGL, const float
             break;
         }
         default:
-            return PXActionRefusedNotSupported;
+            return PXActionRefusedNotSupportedByLibrary;
     }
 
     return PXActionSuccessful;
@@ -6463,7 +6463,7 @@ PXActionResult PXAPI PXOpenGLRectangleDrawTx(PXOpenGL* const pxOpenGL, const flo
             pxOpenGL->End();
         }
         default:
-            return PXActionRefusedNotSupported;
+            return PXActionRefusedNotSupportedByLibrary;
     }
 
     return PXActionSuccessful;

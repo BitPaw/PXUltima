@@ -726,7 +726,7 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
         //---------------------------------------------------------------------
         PXADAM7 pxADAM7;
         PXClear(PXADAM7, &pxADAM7);
-        pxADAM7.DataInput = pxZLIBResultStream.Data;
+        pxADAM7.DataInput = (char*)pxZLIBResultStream.Data;
         pxADAM7.InputSize = pxZLIBResultStream.DataSize;
         pxADAM7.Width = png.ImageHeader.Width;
         pxADAM7.Height = png.ImageHeader.Height;
@@ -1384,7 +1384,7 @@ PXActionResult PXAPI PXPNGSaveToFile(PXResourceSaveInfo* const pxResourceSaveInf
     //---<IHDR> (Image Header)--- 21 Bytes
     {
         unsigned char colorType = 0;
-        const unsigned char interlaceMethod = PXPNGInterlaceMethodToID(PXPNGInterlaceNone);
+        const PXInt8U interlaceMethod = PXPNGInterlaceMethodToID(PXPNGInterlaceNone);
         const unsigned char* chunkStart = PXFileCursorPosition(pxResourceSaveInfo->FileReference);
 
         const unsigned char compressionMethod = 0;
@@ -1393,7 +1393,7 @@ PXActionResult PXAPI PXPNGSaveToFile(PXResourceSaveInfo* const pxResourceSaveInf
         switch (pxImage->Format)
         {
             case PXColorFormatInvalid:
-                return PXActionFailedFormatInvalid;
+                return PXActionRefuedFormatIllegal;
 
             case PXColorFormatA8:
                 colorType = PXPNGColorGrayscaleAlpha;

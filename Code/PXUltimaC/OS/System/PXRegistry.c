@@ -42,7 +42,7 @@ PXActionResult PXAPI PXRegistryInitialize(PXRegistry* const registry)
 
 		if (!result)
 		{
-			return PXActionRefusedNotSupported;
+			return PXActionRefusedNotSupportedByOperatingSystem;
 		}
 	}
 

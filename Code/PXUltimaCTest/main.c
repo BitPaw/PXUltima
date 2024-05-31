@@ -109,11 +109,11 @@ int main()
 		pxResourceSaveInfo.Target = &pxCodeDocument;
 		pxResourceSaveInfo.Format = PXFileFormatJava;
 
-		PXActionResult resA = PXResourceSaveA(&pxResourceSaveInfo, "N:\\Test.java");
+		PXActionResult resA = PXResourceSaveA(&pxResourceSaveInfo, "N:\\Cache\\PXTest.java");
 
 		pxResourceSaveInfo.Format = PXFileFormatCSharp;
 
-		PXActionResult resB = PXResourceSaveA(&pxResourceSaveInfo, "N:\\Test.cs");
+		PXActionResult resB = PXResourceSaveA(&pxResourceSaveInfo, "N:\\Cache\\PXTest.cs");
 	}
 
 

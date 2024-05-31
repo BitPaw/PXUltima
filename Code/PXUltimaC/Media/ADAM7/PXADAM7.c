@@ -52,7 +52,7 @@ PXActionResult PXAPI PXADAM7ScanlinesDecode(PXADAM7* const pxADAM7)
 
                 const PXActionResult pxActionResult = PXADAM7unfilter(pxADAM7);
 
-                pxADAM7->DataOutput = oldPosition;
+                pxADAM7->DataOutput = (char*)oldPosition;
 
 
                 PXADAM7removePaddingBits
@@ -122,7 +122,7 @@ PXActionResult PXAPI PXADAM7ScanlinesDecode(PXADAM7* const pxADAM7)
 
 PXActionResult PXAPI PXADAM7ScanlinesEncode(PXADAM7* const pxADAM7)
 {
-    return 0;
+    return PXActionRefusedNotImplemented;
 }
 
 PXSize PXAPI PXADAM7CaluclateExpectedSize(PXADAM7* const pxADAM7)
@@ -333,7 +333,7 @@ PXActionResult PXAPI PXADAM7unfilter(PXADAM7* const pxADAM7)
     /*the width of a scanline in bytes, not including the filter type*/
     const PXSize linebytes = PXADAM7lodepng_get_raw_size_idat(pxADAM7->Width, 1, pxADAM7->BitsPerPixel) - 1u;
 
-    unsigned char* prevline = 0;
+    char* prevline = 0;
 
     for(PXSize y = 0; y < pxADAM7->Height; ++y)
     {

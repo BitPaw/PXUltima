@@ -208,7 +208,7 @@ PXActionResult PXAPI PXErrorCodeFromID(const int errorCode)
 			return PXActionInvalid;//PXActionNotSupportedByOperatingSystem;		
 #if OSWindows
 		case EAGAIN: // Same as 'EWOULDBLOCK' in linux
-			return ResourceUnavailableTryAgain;
+			return PXActionFailedResourceUnavailableTryAgain;
 
 		case EOPNOTSUPP:
 			return OperationNotSupportedOnSocket;

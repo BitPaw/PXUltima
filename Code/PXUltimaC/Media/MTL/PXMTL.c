@@ -62,8 +62,12 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 
 	PXCompiler pxCompiler;
 	PXClear(PXCompiler, &pxCompiler);
-	pxCompiler.FileInput = pxResourceLoadInfo->FileReference;
-	pxCompiler.FileCache = &compiledSteam;
+	pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileReference;
+	pxCompiler.ReadInfo.FileCache = &compiledSteam;
+	pxCompiler.Flags = PXCompilerKeepAnalyseTypes;
+	pxCompiler.CommentSingleLineSize = 1u;
+	pxCompiler.CommentSingleLine = "#";
+
 
 	PXInt32U materialAmount = 0;
 	PXMaterial* pxMaterialCurrent = PXNull;
@@ -89,16 +93,7 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 #endif
 
 	// Lexer - Level I
-	{
-		PXCompilerSettings compilerSettings;
-		PXClear(PXCompilerSettings, &compilerSettings);
-
-		compilerSettings.TryAnalyseTypes = PXYes;
-		compilerSettings.CommentSingleLineSize = 1u;
-		compilerSettings.CommentSingleLine = "#";
-
-		PXCompilerLexicalAnalysis(&pxCompiler, &compilerSettings); // Raw-File-Input -> Lexer tokens
-	}
+	PXCompilerLexicalAnalysis(&pxCompiler); // Raw-File-Input -> Lexer tokens
 
 
 #if PXLogEnable
@@ -117,9 +112,9 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 		{
 			PXCompilerSymbolEntryExtract(&pxCompiler);
 
-			if (PXCompilerSymbolLexerGeneric == pxCompiler.SymbolEntryCurrent.ID)
+			if (PXCompilerSymbolLexerGeneric == pxCompiler.ReadInfo.SymbolEntryCurrent.ID)
 			{
-				const PXMTLLineType mtlLineType = PXMTLPeekLine(pxCompiler.SymbolEntryCurrent.Source, pxCompiler.SymbolEntryCurrent.Size);
+				const PXMTLLineType mtlLineType = PXMTLPeekLine(pxCompiler.ReadInfo.SymbolEntryCurrent.Source, pxCompiler.ReadInfo.SymbolEntryCurrent.Size);
 
 				switch (mtlLineType)
 				{
@@ -171,7 +166,7 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 	{
 		PXCompilerSymbolEntryExtract(&pxCompiler);
 
-		const PXMTLLineType mtlLineType = PXMTLPeekLine(pxCompiler.SymbolEntryCurrent.Source, pxCompiler.SymbolEntryCurrent.Size);
+		const PXMTLLineType mtlLineType = PXMTLPeekLine(pxCompiler.ReadInfo.SymbolEntryCurrent.Source, pxCompiler.ReadInfo.SymbolEntryCurrent.Size);
 
 		switch (mtlLineType)
 		{
@@ -210,7 +205,7 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 
 				// TODO: bad
 
-				PXFilePathRelativeFromFile(pxCompiler.FileInput, &nameTexturePath, &fullTexturePath);
+				PXFilePathRelativeFromFile(pxCompiler.ReadInfo.FileInput, &nameTexturePath, &fullTexturePath);
 
 				// fullTexturePath
 
@@ -233,7 +228,7 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 			{
 				PXCompilerSymbolEntryExtract(&pxCompiler);
 
-				const PXBool isFloat = pxCompiler.SymbolEntryCurrent.ID == PXCompilerSymbolLexerFloat;
+				const PXBool isFloat = pxCompiler.ReadInfo.SymbolEntryCurrent.ID == PXCompilerSymbolLexerFloat;
 
 				if (!isFloat)
 				{
@@ -244,15 +239,15 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 				switch (mtlLineType)
 				{
 					case MTLLineWeight:
-						pxMaterialCurrent->Weight = pxCompiler.SymbolEntryCurrent.DataF;
+						pxMaterialCurrent->Weight = pxCompiler.ReadInfo.SymbolEntryCurrent.DataF;
 						break;
 
 					case MTLLineDissolved:
-						pxMaterialCurrent->Dissolved = pxCompiler.SymbolEntryCurrent.DataF;
+						pxMaterialCurrent->Dissolved = pxCompiler.ReadInfo.SymbolEntryCurrent.DataF;
 						break;
 
 					case MTLLineDensity:
-						pxMaterialCurrent->Density = pxCompiler.SymbolEntryCurrent.DataF;
+						pxMaterialCurrent->Density = pxCompiler.ReadInfo.SymbolEntryCurrent.DataF;
 						break;
 				}
 
@@ -300,7 +295,7 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 			{
 				PXCompilerSymbolEntryExtract(&pxCompiler);
 
-				const PXBool isInt = pxCompiler.SymbolEntryCurrent.ID == PXCompilerSymbolLexerInteger;
+				const PXBool isInt = pxCompiler.ReadInfo.SymbolEntryCurrent.ID == PXCompilerSymbolLexerInteger;
 
 				if (!isInt)
 				{
@@ -308,7 +303,7 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 					break;
 				}
 
-				pxMaterialCurrent->IlluminationMode = PXMTLIlluminationModeFromID(pxCompiler.SymbolEntryCurrent.DataI32U);
+				pxMaterialCurrent->IlluminationMode = PXMTLIlluminationModeFromID(pxCompiler.ReadInfo.SymbolEntryCurrent.DataI32U);
 
 				break;
 			}

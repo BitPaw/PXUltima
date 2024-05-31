@@ -491,10 +491,10 @@ PXActionResult PXAPI PXGraphicSpriteDraw(PXGraphic* const pxGraphic, const PXSpr
         }
         case PXGraphicSystemDirectX:
         {
-            return PXActionNotSupportedByLibrary;
+            return PXActionRefusedNotImplemented;
         }
         default:
-            return PXActionNotSupportedByLibrary;
+            return PXActionRefusedNotImplemented;
     }
 }
 

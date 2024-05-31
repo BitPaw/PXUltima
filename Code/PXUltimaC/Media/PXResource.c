@@ -48,7 +48,7 @@
 #include "CanonRaw3/PXCanonRaw3.h"
 #include "RAR/PXRAR.h"
 #include "C/PXC.h"
-#include "CS/PXCS.h"
+#include "CSharp/PXCSharp.h"
 #include "CPP/PXCPP.h"
 #include "CSS/PXCSS.h"
 #include "DDS/PXDDS.h"
@@ -426,7 +426,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                             PXResourceCreateInfo pxResourceCreateInfo;
                             PXClear(PXResourceCreateInfo, &pxResourceCreateInfo);
                             pxResourceCreateInfo.Type = PXResourceTypeTexture2D;
-                            pxResourceCreateInfo.ObjectReference = &pxMaterial->DiffuseTexture;
+                            pxResourceCreateInfo.ObjectReference = (void**)&pxMaterial->DiffuseTexture;
                             pxResourceCreateInfo.FilePath = pxMaterial->DiffuseTextureFilePath;
 
                             const PXActionResult resultA = PXResourceManagerAdd(pxResourceManager, &pxResourceCreateInfo, 1);
@@ -502,7 +502,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                     PXResourceCreateInfo pxResourceCreateInfoSub;
                     PXClear(PXResourceCreateInfo, &pxResourceCreateInfoSub);
                     pxResourceCreateInfoSub.Type = PXResourceTypeImage;
-                    pxResourceCreateInfoSub.ObjectReference = &pxTexture2D->Image;
+                    pxResourceCreateInfoSub.ObjectReference = (void**)&pxTexture2D->Image;
                     pxResourceCreateInfoSub.FilePath = pxResourceCreateInfo->FilePath;
                     pxResourceCreateInfoSub.Image = pxResourceCreateInfo->Texture2D.Image;
 
@@ -621,7 +621,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                     // Skybox CubeTexture
                     pxResourceCreateInfoList[0].Type = PXResourceTypeTextureCube;
                     pxResourceCreateInfoList[0].SpawnEnabled = PXTrue;
-                    pxResourceCreateInfoList[0].ObjectReference = &pxSkyBox->TextureCube; // Request object
+                    pxResourceCreateInfoList[0].ObjectReference = (void**)&pxSkyBox->TextureCube; // Request object
                     pxResourceCreateInfoList[0].TextureCube.FilePathA = pxSkyBoxCreateEventData->SkyBoxTextureA;
                     pxResourceCreateInfoList[0].TextureCube.FilePathB = pxSkyBoxCreateEventData->SkyBoxTextureB;
                     pxResourceCreateInfoList[0].TextureCube.FilePathC = pxSkyBoxCreateEventData->SkyBoxTextureC;
@@ -631,7 +631,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
 
                     // Skybox Shader
                     pxResourceCreateInfoList[1].Type = PXResourceTypeShaderProgram;
-                    pxResourceCreateInfoList[1].ObjectReference = &pxSkyBox->ShaderProgramReference; // Request object
+                    pxResourceCreateInfoList[1].ObjectReference = (void**)&pxSkyBox->ShaderProgramReference; // Request object
 
                     PXCopy(PXShaderProgramCreateInfo, pxSkyBoxCreateEventData, &pxResourceCreateInfoList[1].ShaderProgram);
 
@@ -683,7 +683,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                     PXClear(PXResourceCreateInfo, &pxResourceCreateInfoSub);
 
                     pxResourceCreateInfoSub.Type = PXResourceTypeTexture2D;
-                    pxResourceCreateInfoSub.ObjectReference = &pxSprite->Texture;
+                    pxResourceCreateInfoSub.ObjectReference = (void**)&pxSprite->Texture;
                     pxResourceCreateInfoSub.FilePath = pxResourceCreateInfo->FilePath;
 
                     PXResourceManagerAdd(pxResourceManager, &pxResourceCreateInfoSub, 1);
@@ -815,9 +815,9 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                     PXClear(PXResourceCreateInfo, &pxResourceCreateInfoSub);
 
                     pxResourceCreateInfoSub.Type = PXResourceTypeHitBox;
-                    pxResourceCreateInfoSub.ObjectReference = &pxSprite->HitBox;
+                    pxResourceCreateInfoSub.ObjectReference = (void**)&pxSprite->HitBox;
                     pxResourceCreateInfoSub.HitBox.Flags = 0;
-                    pxResourceCreateInfoSub.HitBox.Model = &pxSprite->Model;
+                    pxResourceCreateInfoSub.HitBox.Model = pxSprite->Model;
 
                     PXResourceManagerAdd(pxResourceManager, &pxResourceCreateInfoSub, 1);
 
@@ -1496,8 +1496,8 @@ PXActionResult PXAPI PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, c
 
         case PXFileFormatCSharp:
             pxFileTypeInfo->ResourceType = PXResourceTypeCodeDocument;
-            pxFileTypeInfo->ResourceLoad = PXCSLoadFromFile;
-            pxFileTypeInfo->ResourceSave = PXCSSaveToFile;
+            pxFileTypeInfo->ResourceLoad = PXCSharpLoadFromFile;
+            pxFileTypeInfo->ResourceSave = PXCSharpSaveToFile;
             break;
 
         case PXFileFormatCSS:
@@ -1996,6 +1996,8 @@ PXActionResult PXAPI PXResourceSave(PXResourceSaveInfo* const pxResourceSaveInfo
     }
 
     PXFileClose(&pxFile);
+
+    pxResourceSaveInfo->FileReference = PXNull;
 
     return PXActionSuccessful;
 }
