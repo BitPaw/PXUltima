@@ -21,6 +21,7 @@ void PXAPI PXProcessConstruct(PXProcess* const pxProcess)
 	PXClear(PXProcess, pxProcess);
 }
 
+#if OSWindows
 void PXAPI PXProcessConstructFromHandle(PXProcess* const pxProcess, HANDLE processHandle)
 {
 	PXProcessConstruct(pxProcess);
@@ -29,6 +30,7 @@ void PXAPI PXProcessConstructFromHandle(PXProcess* const pxProcess, HANDLE proce
 	pxProcess->ProcessID = GetProcessId(processHandle); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
 #endif	
 }
+#endif
 
 void PXAPI PXProcessCurrent(PXProcess* const pxProcess)
 {

@@ -6,6 +6,15 @@
 #include "PXImage.h"
 #include <Container/FlexDataCache/PXFlexDataCache.h>
 #include <Container/Dictionary/PXDictionary.h>
+#include <OS/Memory/PXMemory.h>
+
+#include <stdarg.h>
+
+#if OSUnix
+#include <stdio.h>
+#include <X11/X.h> // X11 XID, ulong 8 Byte
+#include <X11/Xlib.h> // XDisplay
+#endif
 
 //#include <OS/File/PXFile.h>
 
@@ -330,7 +339,9 @@ typedef struct PXResourceInfo_
 	{
 		PXInt32U OpenGLID; // Simple ID for an object.
 		void* DirectXInterface; // DirectX uses interfaces to communicate to a element.
-#if OSWindows
+#if OSUnix
+		Window WindowID; // Linux X11 System
+#elif OSWindows
 		HWND WindowID; // Windows only, used for GUI elements
 #endif
 	};
@@ -1465,6 +1476,12 @@ typedef struct PXUIElement_
 	PXUIElement** ListEEData;
 	PXSize ListEESize;
 
+#if OSUnix
+	Display* DisplayHandle;
+#elif OSWindows
+#endif
+
+
 	PXUIElementType Type;
 }
 PXUIElement;
@@ -2177,9 +2194,9 @@ typedef struct PXFile_
 	PXSize DataAllocated; // [Do not use directly] The size of the data pace in which you can move without triggering an invalid access.
 	//--------------------
 
-	enum PXMemoryAccessMode_ AccessMode;
-	enum PXMemoryCachingMode_ CachingMode;
-	enum PXFileLocationMode_ LocationMode;
+	PXMemoryAccessMode AccessMode;
+	PXMemoryCachingMode CachingMode;
+	PXFileLocationMode LocationMode;
 
 #if OSUnix || OSForcePOSIXForWindows || PXOSWindowsUseUWP
 	FILE* ID;

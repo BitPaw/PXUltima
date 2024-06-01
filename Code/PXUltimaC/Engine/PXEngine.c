@@ -794,9 +794,8 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
                     PXEngineTimerEventInfo pxEngineTimerEventInfo;
                     PXClear(PXEngineTimerEventInfo, &pxEngineTimerEventInfo);
                     pxEngineTimerEventInfo.TimerReference = pxEngineTimer;
-
-
-                    pxEngineTimer->CallBack(pxEngine, &pxEngineTimerEventInfo, pxEngineTimer->Owner);
+                    
+                    pxEngineTimer->CallBack(pxEngine, &pxEngineTimerEventInfo);
                 }
             }
         }
@@ -844,7 +843,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
 
         if(pxEngine->HasGraphicInterface && pxEngine->Graphic.WindowReference)
         {
-            if(IsWindowEnabled(pxEngine->Graphic.WindowReference->Info.WindowID))
+            if(IsWindowEnabled(pxEngine->Graphic.WindowReference->Info.ID))
             {
 #if 1
                 pxEngine->Graphic.Clear(pxEngine->Graphic.EventOwner, &color);
@@ -1229,7 +1228,7 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
             {
                 pxResourceCreateInfo.UIElement.Data.Window.IsVisible = PXFalse;
 
-                PXEngineResourceCreate(pxEngine, &pxResourceCreateInfo, 1u);
+                PXEngineResourceCreate(pxEngine, &pxResourceCreateInfo);
                 break;
             }
             case PXGraphicInitializeModeOSGUIElement:
@@ -1245,7 +1244,7 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
             case PXGraphicInitializeModeOSGUI:
             case PXGraphicInitializeModeWindowfull:
             {
-                PXEngineResourceCreate(pxEngine, &pxResourceCreateInfo, 1u);
+                PXEngineResourceCreate(pxEngine, &pxResourceCreateInfo);
                 break;
             }
         }    
@@ -1261,7 +1260,7 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
     {
         PXWindowUpdate(pxEngine->Window);
 
-        PXWindowMouseMovementEnable(pxEngine->Window->Info.WindowID);
+        PXWindowMouseMovementEnable(pxEngine->Window->Info.ID);
 
         PXControllerSystemInitilize(&pxEngine->ControllerSystem);
         PXControllerSystemDevicesListRefresh(&pxEngine->ControllerSystem);
@@ -1642,7 +1641,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
                     pxResourceCreateInfoSub.ObjectReference = (void**)&pxFontPage->Texture;
                     pxResourceCreateInfoSub.FilePath = pxFontPage->TextureFilePath;
 
-                    PXEngineResourceCreate(pxEngine, &pxResourceCreateInfoSub, 1);
+                    PXEngineResourceCreate(pxEngine, &pxResourceCreateInfoSub);
                 }
 
                 for (PXSize i = 0; i < pxFont->AdditionalPageListSize; ++i)

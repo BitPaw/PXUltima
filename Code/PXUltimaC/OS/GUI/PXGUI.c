@@ -46,8 +46,6 @@
 
 #endif
 
-PXWindow* currentWindow = 0;
-
 #if OSUnix
 //#include <gtk/gtk.h>
 #elif OSWindows
@@ -152,7 +150,7 @@ void PXAPI PXWindowEventConsumer(PXGUISystem* const pxGUISystem, PXWindowEvent* 
                 "Windows",
                 "Event-Click",
                 "Sender (%0xp)",
-                pxWindowEvent->UIElementSender->Info.WindowID
+                pxWindowEvent->UIElementSender->Info.ID
             );
 
             break;
@@ -258,101 +256,133 @@ void PXAPI PXWindowEventConsumer(PXGUISystem* const pxGUISystem, PXWindowEvent* 
 
 
 #if OSUnix
-void PXWindowEventHandler(PXWindow* const pxWindow, const XEvent* const event)
+void PXWindowEventHandler(PXUIElement* const pxWindow, const XEvent* const xEventData)
 {
-    switch(event->type)
+    PXGUISystem* pxGUISystem = PXGUISystemGlobalReference;
+
+    PXWindowEvent pxWindowEvent;
+    PXClear(PXWindowEvent, &pxWindowEvent);
+    pxWindowEvent.EventData = xEventData;
+    pxWindowEvent.UIElementReference = pxWindow;
+
+    switch(xEventData->type)
     {
         case KeyPress:
         case KeyRelease:
         {
-            const XKeyEvent* keyEvent = &event->xkey;
+            const XKeyEvent* keyEvent = &xEventData->xkey;
             const unsigned int keyCode = keyEvent->keycode;
-            const PXBool release = event->type == KeyRelease;
-            const KeySym keySym = XKeycodeToKeysym(pxWindow->DisplayCurrent, keyCode, 0);
+            const PXBool release = KeyRelease == xEventData->type;
+            const KeySym keySym = XKeycodeToKeysym(pxWindow->DisplayHandle, keyCode, 0);
             const char* keyName = XKeysymToString(keySym);
 
-            PXVirtualKey keyBoardKey = PXVirtualKeyFromID(keySym);
+            pxWindowEvent.Type = PXWindowEventTypeInputKeyboard;        
+            pxWindowEvent.InputKeyboard.VirtualKey = PXVirtualKeyFromID(keySym);
+            pxWindowEvent.InputKeyboard.CharacterID = keySym;
 
-            PXKeyBoardKeyInfo keyBoardKeyInfo;
-
-            keyBoardKeyInfo.Key = keyBoardKey;
-            keyBoardKeyInfo.Mode = release ? PXKeyPressStateUp : PXKeyPressStateDown;
-            keyBoardKeyInfo.Repeat = 0;
-            keyBoardKeyInfo.ScanCode = keySym;
-            keyBoardKeyInfo.SpecialKey = 0;
-            keyBoardKeyInfo.KontextCode = 0;
-            keyBoardKeyInfo.PreState = 0;
-            keyBoardKeyInfo.GapState = 0;
-
-            PXFunctionInvoke(pxWindow->KeyBoardKeyCallBack, pxWindow->EventReceiver, pxWindow, &keyBoardKeyInfo);
-
-            if(release)
+            switch(xEventData->type)
             {
-                printf("[Event] Key-Release %2i %2i %s\n", keyCode, keySym, keyName);
+                case KeyPress:
+                    pxWindowEvent.InputKeyboard.PressState = PXKeyPressStateDown;
+                    break;
+
+                case KeyRelease:
+                    pxWindowEvent.InputKeyboard.PressState = PXKeyPressStateUp;
+                    break;
+
+                default:
+                    pxWindowEvent.InputKeyboard.PressState = PXKeyPressStateInvalid;
+                    break;
             }
-            else
-            {
-                printf("[Event] Key-Press %2i %2i %s\n", keyCode, keySym, keyName);
-            }
+
+            PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
 
             break;
         }
         case ButtonRelease:
         case ButtonPress:
         {
-            const XButtonEvent* buttonEvent = &event->xbutton;
-            const unsigned int buttonID = buttonEvent->button;
-            const PXKeyPressState buttonState = event->type == ButtonPress ? PXKeyPressStateDown : PXKeyPressStateUp;
-            PXMouseButton mouseButton = PXMouseButtonInvalid;
+            const XButtonEvent* buttonEvent = &xEventData->xbutton;
 
-            switch(buttonID)
+            pxWindowEvent.Type = PXWindowEventTypeInputMouseButton;
+
+            switch(xEventData->type)
+            {
+                case ButtonPress:
+                    pxWindowEvent.InputMouseButton.PressState = PXKeyPressStateDown;
+                    break;
+
+                case ButtonRelease:
+                    pxWindowEvent.InputMouseButton.PressState = PXKeyPressStateUp;
+                    break;
+
+                default:
+                    pxWindowEvent.InputMouseButton.PressState = PXKeyPressStateInvalid;
+                    break;
+            }
+
+            switch(buttonEvent->button)
             {
                 case MouseButtonLeft:
-                    PXFunctionInvoke(pxWindow->MouseClickCallBack, pxWindow->EventReceiver, pxWindow, MouseButtonLeft, buttonState);
+                    pxWindowEvent.InputMouseButton.Button = PXMouseButtonLeft;
                     break;
-
+                
                 case MouseButtonMiddle:
-                    PXFunctionInvoke(pxWindow->MouseClickCallBack, pxWindow->EventReceiver, pxWindow, MouseButtonMiddle, buttonState);
+                    pxWindowEvent.InputMouseButton.Button = PXMouseButtonMiddle;
                     break;
-
+                
                 case MouseButtonRight:
-                    PXFunctionInvoke(pxWindow->MouseClickCallBack, pxWindow->EventReceiver, pxWindow, MouseButtonRight, buttonState);
+                    pxWindowEvent.InputMouseButton.Button = PXMouseButtonRight;
                     break;
-
+                
                 case MouseScrollUp:
-                    PXFunctionInvoke(pxWindow->MouseScrollCallBack, pxWindow->EventReceiver, pxWindow, PXMouseScrollDirectionUp);
+                    pxWindowEvent.InputMouseButton.Button = PXMouseButtonScrollUp;
                     break;
-
+                
                 case MouseScrollDown:
-                    PXFunctionInvoke(pxWindow->MouseScrollCallBack, pxWindow->EventReceiver, pxWindow, PXMouseScrollDirectionDown);
+                    pxWindowEvent.InputMouseButton.Button = PXMouseButtonRightDown;
                     break;
-
+                
+                default:
+                    pxWindowEvent.InputMouseButton.Button = PXMouseButtonInvalid;
+                    break;
             }
+
+            PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
+
+            break;
         }
         case MotionNotify:
         {
-            printf("[Event] MotionNotify \n");
+           // printf("[Event] MotionNotify \n");
+
+          //  pxWindowEvent.Type = PXWindowEventTypeInputMouseMove;
+          //  PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
 
             break;
         }
         case EnterNotify:
         {
-            PXFunctionInvoke(pxWindow->MouseEnterCallBack, pxWindow->EventReceiver, pxWindow);
+            pxWindowEvent.Type = PXWindowEventTypeFocusEnter;
+            PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
             break;
         }
         case LeaveNotify:
         {
-            PXFunctionInvoke(pxWindow->MouseLeaveCallBack, pxWindow->EventReceiver, pxWindow);
+            pxWindowEvent.Type = PXWindowEventTypeFocusLeave;
+            PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
             break;
         }
         case FocusIn:
         {
-            PXFunctionInvoke(pxWindow->FocusEnterCallBack, pxWindow->EventReceiver, pxWindow);
+            pxWindowEvent.Type = PXWindowEventTypeFocusLeave;
+            // PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
             break;
         }
         case FocusOut:
         {
-            PXFunctionInvoke(pxWindow->FocusLeaveCallBack, pxWindow->EventReceiver, pxWindow);
+            pxWindowEvent.Type = PXWindowEventTypeFocusLeave;
+            // PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
             break;
         }
         case KeymapNotify:
@@ -462,13 +492,15 @@ void PXWindowEventHandler(PXWindow* const pxWindow, const XEvent* const event)
         }
         case ResizeRequest:
         {
-            const XResizeRequestEvent resizeRequestEvent = event->xresizerequest;
-            const int width = resizeRequestEvent.width;
-            const int height = resizeRequestEvent.height;
+            const XResizeRequestEvent* resizeRequestEvent = &xEventData->xresizerequest;
+            const int width = resizeRequestEvent->width;
+            const int height = resizeRequestEvent->height;
 
-            // glViewport(0,0, width, height);
+            pxWindowEvent.Type = PXWindowEventTypeResize;
+            pxWindowEvent.Resize.Width = width;
+            pxWindowEvent.Resize.Height = height;
 
-            PXFunctionInvoke(pxWindow->WindowSizeChangedCallBack, pxWindow->EventReceiver, pxWindow);
+            PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
 
             break;
         }
@@ -528,22 +560,20 @@ void PXWindowEventHandler(PXWindow* const pxWindow, const XEvent* const event)
         }
         case GenericEvent:
         {
-            XGenericEventCookie cookie = event->xcookie; // Make Copy
-
-            const int result = XGetEventData(pxWindow->DisplayCurrent, &cookie);
-            const unsigned char sucessful = result != 0 && cookie.data;
+            const XGenericEventCookie* const cookie = &xEventData->xcookie; // Make Copy
+            const int result = XGetEventData(pxWindow->DisplayHandle, &cookie);
+            const unsigned char sucessful = result != 0 && cookie->data;
 
             if(sucessful)
             {
-                switch(cookie.evtype)
+                switch(cookie->evtype)
                 {
                     case XI_RawMotion:
                     {
-                        XIRawEvent* re = (XIRawEvent*)cookie.data;
+                        XIRawEvent* re = (XIRawEvent*)cookie->data;
 
                         if(re->valuators.mask_len)
                         {
-                            PXMouse* mouse = &pxWindow->MouseCurrentInput;
                             const double* values = re->raw_values;
                             const unsigned char isX = XIMaskIsSet(re->valuators.mask, 0);
                             const unsigned char isY = XIMaskIsSet(re->valuators.mask, 1);
@@ -561,30 +591,23 @@ void PXWindowEventHandler(PXWindow* const pxWindow, const XEvent* const event)
                                 ypos += *values;
                             }
 
+                            pxWindowEvent.Type = PXWindowEventTypeInputMouseMove;
+                            pxWindowEvent.InputMouseMove.AxisX = xpos;
+                            pxWindowEvent.InputMouseMove.AxisY = ypos;
+                            pxWindowEvent.InputMouseMove.DeltaX = 0;// mouse->Position[0] - xpos;
+                            pxWindowEvent.InputMouseMove.DeltaY = 0;// mouse->Position[1] - ypos;
 
-                            mouse->Delta[0] = mouse->Position[0] - xpos;
-                            mouse->Delta[1] = mouse->Position[1] - ypos;
-
-                            mouse->Position[0] = xpos;
-                            mouse->Position[1] = ypos;
-
-                            printf("[Event] RawMotion %5.4lf %5.4lf\n", xpos, ypos);
-
-                            PXFunctionInvoke(pxWindow->MouseMoveCallBack, pxWindow->EventReceiver, pxWindow, mouse);
-
-                            //printf("[Event] RawMotion %5.4lf %5.4lf\n", window.MouseDeltaX, window.MouseDeltaY);
-
-                            //PXFunctionInvoke(window.MouseMoveCallBack, window.MousePositionX, window.MousePositionY, window.MouseDeltaX, window.MouseDeltaY);
+                            PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
                         }
                     }
                 }
             }
             else
             {
-                printf("[Event] GenericEvent %i\n", cookie.evtype);
+                printf("[Event] GenericEvent %i\n", cookie->evtype);
             }
 
-            XFreeEventData(pxWindow->DisplayCurrent, &cookie);
+            XFreeEventData(pxWindow->DisplayHandle, &cookie);
 
             break;
         }
@@ -1561,6 +1584,39 @@ PXThreadResult PXOSAPI PXWindowMessageLoop(PXUIElement* const pxUIElement)
     return PXActionSuccessful;
 }
 
+PXBool PXAPI PXGUIElementFind(const PXWindowID pxUIElementID, PXUIElement* const pxUIElement)
+{
+    return PXFalse;
+}
+
+PXBool PXAPI PXGUIElementDelete(const PXWindowID pxUIElementID, PXUIElement* const pxUIElement)
+{
+    return PXFalse;
+}
+
+PXBool PXAPI PXGUIElementTextSet(PXUIElement* const pxUIElement, char* text)
+{
+#if OSUnix
+
+    // Will BadAlloc, BadWindow
+    const int resultID = XStoreName(pxUIElement->DisplayHandle, pxUIElement->Info.WindowID, text);
+
+    return PXTrue;
+
+#elif OSWindows
+    const PXBool success = SetWindowTextA(pxUIElement->Info.WindowID, text);
+
+    if(!success)
+    {
+        return PXFalse;
+    }
+
+    return PXTrue;
+
+#else
+    return PXFalse;
+#endif
+}
 
 PXActionResult PXAPI PXGUISystemInitialize(PXGUISystem* const pxGUISystem)
 {
@@ -1570,13 +1626,7 @@ PXActionResult PXAPI PXGUISystemInitialize(PXGUISystem* const pxGUISystem)
     }
 
     PXGUISystemGlobalReference = pxGUISystem;
-
-
-    INITCOMMONCONTROLSEX initCommonControls;
-    initCommonControls.dwSize = sizeof(INITCOMMONCONTROLSEX);
-    initCommonControls.dwICC = ICC_TAB_CLASSES;
-    InitCommonControlsEx(&initCommonControls);
-
+    
 #if OSUnix
 
     // Make this thread safe
@@ -1584,33 +1634,26 @@ PXActionResult PXAPI PXGUISystemInitialize(PXGUISystem* const pxGUISystem)
         const int result = XInitThreads();
     }
 
-
     // XCloseDisplay();
 
 #elif OSWindows
 
-
+    INITCOMMONCONTROLSEX initCommonControls;
+    initCommonControls.dwSize = sizeof(INITCOMMONCONTROLSEX);
+    initCommonControls.dwICC = ICC_TAB_CLASSES;
+    InitCommonControlsEx(&initCommonControls);
 
 #endif
-
-
-
-
-
-
 
     return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXGUISystemRelease(PXGUISystem* const pxGUISystem)
 {
-
-
     PXGUISystemGlobalReference = PXNull;
 
     return PXActionSuccessful;
 }
-
 
 PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResourceCreateInfo* const pxResourceCreateInfo, const PXSize amount)
 {
@@ -1777,7 +1820,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
         {
             case PXUIElementTypeWindow:
             {
-                PXGUIElementCreateWindowInfo* const pxGUIElementCreateWindowInfo = &pxGUIElementCreateInfo->Window;
+                PXGUIElementCreateWindowInfo* const pxGUIElementCreateWindowInfo = &pxGUIElementCreateInfo->Data.Window;
 
                 Display* display = PXNull;
 
@@ -1887,10 +1930,13 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                     pxGUIElementCreateWindowInfo->WindowHandle = windowhandle;
                 }
 
-
                 // Attach to render engine
                 XMapWindow(pxGUIElementCreateWindowInfo->WindowDisplay, pxGUIElementCreateWindowInfo->WindowHandle);
 
+                // Set Title    
+                PXGUIElementTextSet(pxUIElement, pxGUIElementCreateWindowInfo->Title);
+
+            
 
                 break;
             }
@@ -1900,19 +1946,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
     }
 
 
-
-
-
-  
-
     
-
-    // Set Title
-    {
-  
-
-        XStoreName(pxGUIElementCreateWindowInfo->DisplayCurrent, pxWindow->ID, pxWindow->Title.TextA);
-    }
 
 #if 0 // Grab means literally Drag%Drop grab. This is not mouse motion
     //bool   ret    = false;
@@ -1951,20 +1985,10 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
     eventmask.mask = mask;
 
 
-    XISelectEvents(pxWindow->DisplayCurrent, pxWindow->WindowRoot, &eventmask, 1u);
-    XFlush(pxWindow->DisplayCurrent);
+    XISelectEvents(pxUIElement->DisplayHandle, pxUIElement->WindowRoot, &eventmask, 1u);
+    XFlush(pxUIElement->DisplayHandle);
 
 
-
-
-
-
-
-
-
-
-  
-  
 
 
 #elif OSWindows
@@ -2595,6 +2619,9 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
             PXUIElementTreeViewItemInfo* const pxUIElementTreeViewItemInfo = &pxGUIElementCreateInfo->Data.TreeViewItem;
             // Create ui item for a tree view
 
+#if OSUnix
+#elif OSWindows
+
             TVINSERTSTRUCT item;
             PXClear(TVINSERTSTRUCT, &item);
 
@@ -2686,6 +2713,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
             pxUIElement->Info.WindowID = itemID;
             pxUIElementTreeViewItemInfo->ItemHandle = itemID;
+#endif
 
             break;
         }
@@ -2728,6 +2756,9 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
         }
         case PXUIElementTypeTrackBar:
         {
+#if OSUnix
+#elif OSWindows
+
             HDC dc = GetDC(pxUIElement->Info.WindowID);
 
 
@@ -2745,7 +2776,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
            // TreeView_SetBkColor(pxUIElement->ID, RGB(30, 30, 30));
 
          //   TreeView_SetTextColor(pxUIElement->ID, RGB(200, 200, 200));
-
+#endif
 
             break;
         }
@@ -2816,6 +2847,9 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
         }
         case PXUIElementTypeTreeView:
         {
+#if OSUnix
+#elif OSWindows
+
             int sizeX = 16;
             int sizeY = 16;
             int amount = 11;
@@ -2884,6 +2918,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
             }
 
             TreeView_SetImageList(pxUIElement->Info.WindowID, imageListHandle, TVSIL_NORMAL);
+#endif
 
             break;
         }
@@ -2914,6 +2949,8 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
         }
         case PXUIElementTypeTabControll:
         {
+#if OSUnix
+#elif OSWindows
             HDC pDC = GetDC(pxUIElement->Info.WindowID);
             //SetBkMode(pDC, TRANSPARENT);
             SetBkColor(pDC, RGB(255, 0, 0));
@@ -2980,6 +3017,8 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
             SendMessage(pxUIElement->Info.WindowID, TCM_SETCURFOCUS, 0, 0);
 
+#endif
+
             break;
         }
         case PXUIElementTypeToggle:
@@ -3034,7 +3073,8 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
             PXGUIElementCreateWindowInfo* const pxGUIElementCreateWindowInfo = &pxGUIElementCreateInfo->Data.Window;
 
             PXWindowTitleBarColorSet(pxUIElement->Info.WindowID);
-            UpdateWindow(pxUIElement->Info.WindowID);
+
+            // UpdateWindow(pxUIElement->Info.WindowID);
 
             // ShowWindow(pxWindow->ID, SW_NORMAL)
 
@@ -3137,12 +3177,12 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
                     (int)pxUIElement->ID,
                     pxUIElementTextInfo->Content
                 );
-#endif        
+#endif       
+                
+                PXGUIElementTextSet(pxUIElement, pxUIElementTextInfo->Content);
 
-#if OSUnix
-                XStoreName(pxGUIElementCreateWindowInfo->DisplayCurrent, pxWindow->ID, pxWindow->Title.TextA);
-#elif OSWindows
-                const PXBool success = SetWindowTextA(pxUIElement->Info.WindowID, pxUIElementTextInfo->Content);
+#if OSWindows
+            
 
 
                 //   SendMessageA(pxUIElement->ID, PBM_SETPOS, stepsConverted, 0);
@@ -3184,6 +3224,10 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
             {
                 PXUIElementTextInfo* const pxUIElementTextInfo = &pxGUIElementUpdateInfo->Data.Text;
 
+#if OSUnix
+#elif OSWindows
+
+
                 HDC xx = GetDC(pxUIElement->Info.WindowID);
 
                 LONG ww = SetWindowLongA(pxUIElement->Info.WindowID, GWL_EXSTYLE, WS_EX_LEFT | WS_EX_RIGHT);
@@ -3213,6 +3257,8 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
                     "Allign successful"
                 );
 #endif   
+
+#endif
 
                 break;
             }
@@ -3314,8 +3360,12 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
             {
                 PXUIElementProgressBarInfo* const progressBar = &pxGUIElementUpdateInfo->Data.Text;
 
+#if OSUnix
+#elif OSWindows
+
                 PXInt32U stepsConverted = progressBar->Percentage * 100;
                 SendMessageA(pxUIElement->Info.WindowID, PBM_SETPOS, stepsConverted, 0);
+#endif
 
                 break;
             }
@@ -3323,13 +3373,20 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
             {
                 PXUIElementProgressBarInfo* const progressBar = &pxGUIElementUpdateInfo->Data.Text;
 
+#if OSUnix
+#elif OSWindows
+
                 COLORREF color = RGB(progressBar->BarColor.Red, progressBar->BarColor.Green, progressBar->BarColor.Blue);
                 SendMessageA(pxUIElement->Info.WindowID, PBM_SETBARCOLOR, 0, color);
+#endif
 
                 break;
             }
             case PXUIElementPropertyVisibility:
             {
+#if OSUnix
+#elif OSWindows
+
                 PXBool show = pxGUIElementUpdateInfo->Show;
                 int showID = show ? SW_SHOW : SW_HIDE;
 
@@ -3408,6 +3465,7 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
                     PXWindowEnumChildProc,
                     &showID
                 );
+#endif
 
                 break;
             }
@@ -3430,6 +3488,9 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
             {
                 PXUIElementItemInfo* pxUIElementItemInfo = &pxGUIElementUpdateInfo->Data.TreeViewItem;
 
+#if OSUnix
+#elif OSWindows
+
                 TVINSERTSTRUCT item;
                 PXClear(TVINSERTSTRUCT, &item);
 
@@ -3441,6 +3502,9 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
                 item.item.mask = TVIF_TEXT;
 
                 TreeView_InsertItem(pxUIElement->Info.WindowID, &item);
+
+#endif
+
 
                 break;
             }
@@ -3745,13 +3809,13 @@ void PXAPI PXWindowUpdate(PXUIElement* const pxUIElement)
 
 
 
-    XLockDisplay(pxWindow->DisplayCurrent);
+    XLockDisplay(pxUIElement->DisplayHandle);
 
-    XNextEvent(pxWindow->DisplayCurrent, &windowEvent);
+    XNextEvent(pxUIElement->DisplayHandle, &windowEvent);
 
-    XUnlockDisplay(pxWindow->DisplayCurrent);
+    XUnlockDisplay(pxUIElement->DisplayHandle);
 
-    PXWindowEventHandler(pxWindow, &windowEvent);
+    PXWindowEventHandler(pxUIElement, &windowEvent);
 
 #elif PXOSWindowsDestop     
   
@@ -3829,20 +3893,10 @@ void PXAPI PXWindowIconTaskBar()
 {
 }
 
-PXWindow* PXAPI PXWindowLookupFind(const PXWindowID PXWindowID)
-{
-    return currentWindow;
-}
-
-void PXAPI PXWindowLookupRemove(const PXWindow* window)
-{
-    currentWindow = 0;
-}
-
 PXActionResult PXAPI PXWindowTitleBarColorSet(const PXWindowID pxWindowID)
 {
 #if OSUnix
-    return PXActionNotSupportedByOperatingSystem;
+    return PXActionRefusedNotImplemented;
 #elif OSWindows
 
     PXLibrary pyLibrary;
@@ -4089,7 +4143,7 @@ void PXAPI PXWindowCursorCaptureMode(const PXWindowID pxWindowID, const PXWindow
 PXBool PXAPI PXWindowFrameBufferSwap(const PXWindowID pxWindowID)
 {
 #if OSUnix
-    glXSwapBuffers(window->DisplayCurrent, window->ID);
+   // glXSwapBuffers(window->DisplayCurrent, window->ID);
     return PXFalse;
 
 #elif OSWindows

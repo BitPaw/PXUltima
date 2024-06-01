@@ -10,7 +10,7 @@
 #include <winber.h>
 #define PXLDAPPortDefault LDAP_PORT
 #pragma comment(lib, "Wldap32.lib")
-#endif
+
 
 typedef LDAP* (LDAPAPI* PXldap_openW)( const PWCHAR HostName, ULONG PortNumber);
 typedef LDAP* (LDAPAPI* PXldap_openA)( const PCHAR HostName, ULONG PortNumber);
@@ -244,7 +244,7 @@ typedef ULONG (LDAPAPI* PXldap_close_extended_op)(LDAP* ld, ULONG MessageNumber)
 typedef ULONG (LDAPAPI* PXldapGetLastError)(VOID);
 typedef ULONG (LDAPAPI* PXldapMapErrorToWin32)(ULONG LdapError);
 typedef LDAP* (LDAPAPI* PXldap_conn_from_msg)(LDAP* PrimaryConn, LDAPMessage* res);
-
+#endif
 
 
 

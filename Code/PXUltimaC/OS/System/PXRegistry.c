@@ -33,7 +33,7 @@ typedef	LSTATUS(APIENTRY* PXRegEnumKeyExW)(_In_ HKEY hKey, _In_ DWORD dwIndex, _
 PXActionResult PXAPI PXRegistryInitialize(PXRegistry* const registry)
 {
 #if OSUnix
-	return PXActionRefusedNotSupported;
+	return PXActionRefusedNotSupportedByOperatingSystem;
 #elif OSWindows
 
 	// open Librarfy
@@ -89,7 +89,7 @@ PXActionResult PXAPI PXRegistryConnectSpace(PXRegistry* const registry, const PX
 PXActionResult PXAPI PXRegistryConnectRemote(PXRegistry* const registry, const PXText* const computerName, const PXRegistrySpace registrySpace)
 {
 #if OSUnix
-	return PXActionNotSupportedByOperatingSystem;
+	return PXActionRefusedNotSupportedByOperatingSystem;
 #elif PXOSWindowsDestop
 	HKEY hKey = 0;
 
@@ -150,7 +150,7 @@ PXActionResult PXAPI PXRegistryConnectRemote(PXRegistry* const registry, const P
 PXActionResult PXAPI PXRegistryClose(PXRegistry* const registry)
 {
 #if OSUnix
-	return PXActionNotSupportedByOperatingSystem;
+	return PXActionRefusedNotSupportedByOperatingSystem;
 #elif PXOSWindowsDestop
 	const HKEY registryKey = (HKEY)registry->ID;
 	const PXRegCloseKey pxRegCloseKey = (PXRegCloseKey)registry->RegistryCloseKey;
@@ -171,7 +171,7 @@ PXActionResult PXAPI PXRegistryClose(PXRegistry* const registry)
 PXActionResult PXAPI PXRegistryKeyListAll(PXRegistry* const registry)
 {
 #if OSUnix
-	return PXActionNotSupportedByOperatingSystem;
+	return PXActionRefusedNotSupportedByOperatingSystem;
 #elif PXOSWindowsDestop
 	PXBool repeat = 0;
 
@@ -215,7 +215,7 @@ PXActionResult PXAPI PXRegistryKeyListAll(PXRegistry* const registry)
 PXActionResult PXAPI PXRegistryKeyCreate(PXRegistry* const registry, const PXText* const pxTextKeyName)
 {
 #if OSUnix
-	return PXActionNotSupportedByOperatingSystem;
+	return PXActionRefusedNotSupportedByOperatingSystem;
 #elif PXOSWindowsDestop
 	DWORD Reserved = 0;
 	LPWSTR lpClass = 0;
@@ -289,7 +289,7 @@ PXActionResult PXAPI PXRegistryKeyCreate(PXRegistry* const registry, const PXTex
 PXActionResult PXAPI PXRegistryKeyLoad(PXRegistry* const registry, const PXText* const pxTextKeyName, const PXText* const pxTextFile)
 {
 #if OSUnix
-	return PXActionNotSupportedByOperatingSystem;
+	return PXActionRefusedNotSupportedByOperatingSystem;
 #elif PXOSWindowsDestop
 	SECURITY_ATTRIBUTES securityAttributes;
 	DWORD Flags = 0;
@@ -334,7 +334,7 @@ PXActionResult PXAPI PXRegistryKeyLoad(PXRegistry* const registry, const PXText*
 PXActionResult PXAPI PXRegistryKeySave(PXRegistry* const registry, const PXText* const pxTextKeyName)
 {
 #if OSUnix
-	return PXActionNotSupportedByOperatingSystem;
+	return PXActionRefusedNotSupportedByOperatingSystem;
 #elif PXOSWindowsDestop
 
 	SECURITY_ATTRIBUTES securityAttributes;
@@ -381,7 +381,7 @@ PXActionResult PXAPI PXRegistryKeySave(PXRegistry* const registry, const PXText*
 PXActionResult PXAPI PXRegistryKeyDelete(PXRegistry* const registry, const PXText* const pxTextKeyName)
 {
 #if OSUnix
-	return PXActionNotSupportedByOperatingSystem;
+	return PXActionRefusedNotSupportedByOperatingSystem;
 #elif PXOSWindowsDestop
 
 	const HKEY registryKey = (HKEY)registry->ID;

@@ -1,14 +1,16 @@
 #include "PXDataBase.h"
 
+#include <OS/Memory/PXMemory.h>
+#include <OS/Console/PXConsole.h>
+
 #if OSUnix
 #elif OSWindows
 #include <windows.h>
 #include <sqlext.h>
 #include <sqltypes.h>
-#endif
 
-#include <OS/Memory/PXMemory.h>
-#include <OS/Console/PXConsole.h>
+
+
 
 typedef SQLRETURN(SQL_API* PXSQLAllocConnect)(SQLHENV EnvironmentHandle, __out SQLHDBC* ConnectionHandle);
 typedef SQLRETURN(SQL_API* PXSQLAllocEnv)(__out SQLHENV* EnvironmentHandle);
@@ -145,6 +147,7 @@ typedef SQLRETURN(SQL_API* PXSQLProceduresA)(SQLHSTMT hstmt, SQLCHAR* szCatalogN
 typedef SQLRETURN(SQL_API* PXSQLTablePrivilegesA)(SQLHSTMT hstmt, SQLCHAR* szCatalogName, SQLSMALLINT cbCatalogName, SQLCHAR* szSchemaName, SQLSMALLINT cbSchemaName, SQLCHAR* szTableName, SQLSMALLINT cbTableName);
 typedef SQLRETURN(SQL_API* PXSQLDriversA)(SQLHENV henv, SQLUSMALLINT fDirection, SQLCHAR* szDriverDesc, SQLSMALLINT cbDriverDescMax, SQLSMALLINT* pcbDriverDesc, SQLCHAR* szDriverAttributes, SQLSMALLINT cbDrvrAttrMax, SQLSMALLINT* pcbDrvrAttr);
 
+#endif
 
 PXActionResult PXAPI PXDataBaseInitialize(PXDataBase* const pxDataBase)
 {
@@ -310,6 +313,7 @@ PXActionResult PXAPI PXDataBaseInitialize(PXDataBase* const pxDataBase)
 
 
 
+#if OSWindows
 
 	const PXSQLAllocHandle pxSQLAllocHandle = (PXSQLAllocHandle)pxDataBase->AllocHandle;
 	const PXSQLSetEnvAttr pxSQLSetEnvAttr = (PXSQLSetEnvAttr)pxDataBase->SetEnvAttr;
@@ -360,13 +364,7 @@ PXActionResult PXAPI PXDataBaseInitialize(PXDataBase* const pxDataBase)
 			return PXActionFailedSettingsInvalid;
 		}
 	}
-
-
-
-
-
-
-
+#endif
 
 
 	return PXActionSuccessful;

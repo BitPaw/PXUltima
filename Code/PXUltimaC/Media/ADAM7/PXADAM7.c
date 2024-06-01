@@ -78,7 +78,17 @@ PXActionResult PXAPI PXADAM7ScanlinesDecode(PXADAM7* const pxADAM7)
             unsigned passw[7], passh[7];
             PXSize filter_passstart[8], padded_passstart[8], passstart[8];
 
-            PXADAM7_getpassvalues(passw, passh, filter_passstart, padded_passstart, passstart, pxADAM7->Width, pxADAM7->Height, pxADAM7->BitsPerPixel);
+            PXADAM7_getpassvalues
+            (
+                passw,
+                passh,
+                filter_passstart,
+                padded_passstart,
+                passstart,
+                pxADAM7->Width, 
+                pxADAM7->Height,
+                pxADAM7->BitsPerPixel
+            );
 
             for(PXSize i = 0; i != 7u; ++i)
             {

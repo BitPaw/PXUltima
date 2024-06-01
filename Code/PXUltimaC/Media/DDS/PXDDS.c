@@ -1,10 +1,9 @@
 #include "PXDDS.h"
 
-#include <dxgiformat.h>
 #include <OS/File/PXFile.h>
 #include <OS/Graphic/PXGraphic.h>
 
-const char PXDDSSignature[4] = { 'D', 'D', 'S', ' '}; // 0x20534444
+const char PXDDSSignature[4] = { 'D', 'D', 'S', ' ' }; // 0x20534444
 
 //--------------------------------------------------------------------------------------
 // File: DDSTextureLoader.cpp
@@ -20,6 +19,10 @@ const char PXDDSSignature[4] = { 'D', 'D', 'S', ' '}; // 0x20534444
 //--------------------------------------------------------------------------------------
  
 
+#if OSUnix
+#elif OSWindows
+#include <dxgiformat.h>
+#endif
 
 
 //--------------------------------------------------------------------------------------
@@ -101,7 +104,10 @@ typedef struct PXDirectDrawTexture_
 
 
     // Extra
+#if OSUnix
+#elif OSWindows
     DXGI_FORMAT Format;
+#endif
 
     PXInt8U BitPerPixel;
 
@@ -110,7 +116,10 @@ typedef struct PXDirectDrawTexture_
 PXDirectDrawTexture;
 
 
-static PXInt8U BitsPerPixel(_In_ DXGI_FORMAT fmt)
+#if OSUnix
+#elif OSWindows
+
+static PXInt8U BitsPerPixel(DXGI_FORMAT fmt)
 {
     switch(fmt)
     {
@@ -409,7 +418,7 @@ DXGI_FORMAT PXDXGIFormatGet(PXDirectDrawTexture* const pxDirectDrawTexture)
 #endif
 }
 
-
+#endif
 
 
 
@@ -465,7 +474,10 @@ PXActionResult PXAPI PXDDSLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 
         PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
-        pxDirectDrawTexture.Format = PXDXGIFormatGet(pxDirectDrawTexture.Flags, pxDirectDrawTexture.ddspf);
+#if OSUnix
+#elif OSWindows
+        pxDirectDrawTexture.Format = PXDXGIFormatGet(&pxDirectDrawTexture);
+#endif
 
         pxDirectDrawTexture.IsDX10 = PXInt32Make('D', 'X', '1', '0') == pxDirectDrawTexture.ddspf;
 

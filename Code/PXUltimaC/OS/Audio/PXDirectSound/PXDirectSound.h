@@ -11,6 +11,9 @@ typedef struct PXAudioDeviceDetectObjectEventData_
 }
 PXAudioDeviceDetectObjectEventData;
 
+#if OSUnix
+#elif OSWindows
+
 
 PXPrivate BOOL CALLBACK PXAudioDeviceDetectAmountCallBack(LPGUID guid, LPCSTR cstrDescription, LPCSTR cstrModule, PXInt32U* const amount);
 PXPrivate BOOL CALLBACK PXAudioDeviceDetectObjectCallBack(LPGUID guid, LPCSTR cstrDescription, LPCSTR cstrModule, PXAudioDeviceDetectObjectEventData* const pxAudioDeviceDetectObjectEventData);
@@ -26,6 +29,8 @@ typedef HRESULT(WINAPI* PXDirectSoundCaptureEnumerateA)(PXLPDSENUMCALLBACKA pDSE
 typedef HRESULT(WINAPI* PXDirectSoundCaptureEnumerateW)(PXLPDSENUMCALLBACKW pDSEnumCallback, void* pContext);
 typedef HRESULT(WINAPI* PXDllGetClassObject)(REFCLSID rclsid, REFIID riid, void* ppv);
 typedef HRESULT(WINAPI* PXDllCanUnloadNow)(void);
+
+#endif
 
 //--------------------------------------------------------
 PXPublic PXActionResult PXAPI PXDirectSoundInitialize(PXAudioDirectSound* const pxAudioDirectSound, PXAudioInitializeInfo* const pxAudioInitializeInfo);
@@ -129,15 +134,10 @@ PXPublic PXActionResult PXAPI PXDirectSoundDeviceStop(PXAudioDirectSound* const 
 PXPublic PXActionResult PXAPI PXDirectSoundDevicePause(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice);
 
 
-
-
 PXPublic PXActionResult PXAPI PXDirectSoundEffectEnable(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice);
 
 
 PXPublic PXActionResult PXAPI PXDirectSoundEffectUpdate(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, PXAudioEffect* const pxAudioEffect);
-
-
-
 
 
 #endif

@@ -76,8 +76,8 @@
     <ClInclude Include="..\PXUltimaC\Media\COFF\PXCOFF.h" />
     <ClInclude Include="..\PXUltimaC\Media\CPP\PXCPP.h" />
     <ClInclude Include="..\PXUltimaC\Media\CRC32\PXCRC32.h" />
+    <ClInclude Include="..\PXUltimaC\Media\CSharp\PXCSharp.h" />
     <ClInclude Include="..\PXUltimaC\Media\CSS\PXCSS.h" />
-    <ClInclude Include="..\PXUltimaC\Media\CS\PXCS.h" />
     <ClInclude Include="..\PXUltimaC\Media\C\PXC.h" />
     <ClInclude Include="..\PXUltimaC\Media\DDS\PXDDS.h" />
     <ClInclude Include="..\PXUltimaC\Media\DEFLATE\PXDEFLATE.h" />
@@ -185,9 +185,7 @@
     <ClInclude Include="..\PXUltimaC\OS\Hardware\PXProcessor.h" />
     <ClInclude Include="..\PXUltimaC\OS\Library\PXLibrary.h" />
     <ClInclude Include="..\PXUltimaC\OS\Memory\PXMemory.h" />
-    <ClInclude Include="..\PXUltimaC\OS\Network\PXClient.h" />
     <ClInclude Include="..\PXUltimaC\OS\Network\PXNetwork.h" />
-    <ClInclude Include="..\PXUltimaC\OS\Network\PXServer.h" />
     <ClInclude Include="..\PXUltimaC\OS\Network\PXSocket.h" />
     <ClInclude Include="..\PXUltimaC\OS\Signal\PXSignal.h" />
     <ClInclude Include="..\PXUltimaC\OS\System\PXOSVersion.h" />
@@ -245,8 +243,8 @@
     <ClCompile Include="..\PXUltimaC\Media\COFF\PXCOFF.c" />
     <ClCompile Include="..\PXUltimaC\Media\CPP\PXCPP.c" />
     <ClCompile Include="..\PXUltimaC\Media\CRC32\PXCRC32.c" />
+    <ClCompile Include="..\PXUltimaC\Media\CSharp\PXCSharp.c" />
     <ClCompile Include="..\PXUltimaC\Media\CSS\PXCSS.c" />
-    <ClCompile Include="..\PXUltimaC\Media\CS\PXCS.c" />
     <ClCompile Include="..\PXUltimaC\Media\C\PXC.c" />
     <ClCompile Include="..\PXUltimaC\Media\DDS\PXDDS.c" />
     <ClCompile Include="..\PXUltimaC\Media\DEFLATE\PXDEFLATE.c" />
@@ -354,9 +352,7 @@
     <ClCompile Include="..\PXUltimaC\OS\Hardware\PXProcessor.c" />
     <ClCompile Include="..\PXUltimaC\OS\Library\PXLibrary.c" />
     <ClCompile Include="..\PXUltimaC\OS\Memory\PXMemory.c" />
-    <ClCompile Include="..\PXUltimaC\OS\Network\PXClient.c" />
     <ClCompile Include="..\PXUltimaC\OS\Network\PXNetwork.c" />
-    <ClCompile Include="..\PXUltimaC\OS\Network\PXServer.c" />
     <ClCompile Include="..\PXUltimaC\OS\Network\PXSocket.c" />
     <ClCompile Include="..\PXUltimaC\OS\Signal\PXSignal.c" />
     <ClCompile Include="..\PXUltimaC\OS\System\PXOSVersion.c" />

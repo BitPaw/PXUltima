@@ -166,11 +166,19 @@ PXSize PXAPI PXCompilerSymbolEntryMergeCurrentWithNext(PXCompiler* const pxCompi
 	PXSize offset = 0;
 	
 	PXCompilerSymbolEntry oldCopy;
-	PXCompilerSymbolEntry mergCopy;
+	PXClear(PXCompilerSymbolEntry, &oldCopy);
 
-	PXCompilerSymbolEntryExtract(pxCompiler, &oldCopy);// Copy old value
-	PXSize skippedBytes = PXCompilerSymbolEntryPeek(pxCompiler, &mergCopy);
+	PXCompilerSymbolEntry mergCopy;
+	PXClear(PXCompilerSymbolEntry, &mergCopy);
+
+	PXCompilerSymbolEntryExtract(pxCompiler);// Copy old value
+
+	PXCopy(PXCompilerSymbolEntry, &pxCompiler->ReadInfo.SymbolEntryCurrent, &oldCopy);
+
+	PXSize skippedBytes = PXCompilerSymbolEntryPeek(pxCompiler);
 	PXSize skippedBlocks = (skippedBytes / 21 ) - 1;
+
+	PXCopy(PXCompilerSymbolEntry, &pxCompiler->ReadInfo.SymbolEntryCurrent, &mergCopy);
 
 	PXCompilerSymbolRewind(pxCompiler, 1); // Go back again
 
@@ -233,11 +241,7 @@ PXSize PXAPI PXCompilerSymbolRewind(PXCompiler* const pxCompiler, const PXSize a
 	{
 		PXFileCursorRewind(pxCompiler->ReadInfo.FileCache, totalSize * amount);
 
-		PXCompilerSymbolEntry pxCompilerSymbolEntry;
-
-		PXCompilerSymbolEntryPeek(pxCompiler, &pxCompilerSymbolEntry);
-
-		isInvalidToken = PXCompilerSymbolLexerInvalid == pxCompilerSymbolEntry.ID;
+		isInvalidToken = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerInvalid);
 	}
 	while (isInvalidToken);
 

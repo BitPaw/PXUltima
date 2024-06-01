@@ -1552,9 +1552,11 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
         }
     }
 
-    pxOpenGL->WindowHandle = pxGraphicInitializeInfo->WindowReference->Info.WindowID;
+#if OSUnix
+#elif OSWindows
+    pxOpenGL->WindowHandle = pxGraphicInitializeInfo->WindowReference->Info.ID;
     pxOpenGL->WindowDeviceContextHandle = pxGraphicInitializeInfo->HandleDeviceContext;
-
+#endif
 
 
 #if 0
@@ -1618,12 +1620,9 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
 
         // Fetch starting funcions
         {
-#if OSUnix
             // glXGetProcAddress
             // glXChooseVisual
             // glXCreateContext
-
-#elif OSWindows
 
             const PXLibraryFuntionEntry pxLibraryFuntionEntry[] = 
             {
@@ -1965,6 +1964,10 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
             { &pxOpenGL->VertexPointer , "glVertexPointer"},
             { &pxOpenGL->Viewport , "glViewport"},
 
+#if OSUnix
+            { &pxOpenGL->FunctionPointerGet, "glXGetProcAddress" },
+
+#elif OSWindows
                 // Windows functions
                 { &pxOpenGL->CopyContext, "wglCopyContext"},
                 { &pxOpenGL->CreateContext, "wglCreateContext"},
@@ -1972,11 +1975,12 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
                 { &pxOpenGL->DeleteContext, "wglDeleteContext"},
                 { &pxOpenGL->GetCurrentContext, "wglGetCurrentContext"},
                 { &pxOpenGL->GetCurrentDC, "wglGetCurrentDC"},
-                { &pxOpenGL->GetProcAddress, "wglGetProcAddress"},
+                { &pxOpenGL->FunctionPointerGet, "wglGetProcAddress"},
                 { &pxOpenGL->MakeCurrent, "wglMakeCurrent"},
                 { &pxOpenGL->ShareLists, "wglShareLists"},
                 { &pxOpenGL->UseFontBitmapsA, "wglUseFontBitmapsA"},
                 { &pxOpenGL->UseFontBitmapsW, "wglUseFontBitmapsW"}
+#endif
             };
 
             const PXSize amounnt = sizeof(pxLibraryFuntionEntry) / sizeof(PXLibraryFuntionEntry);
@@ -1984,7 +1988,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
             PXLibraryGetSymbolListA(&pxOpenGL->LibraryOpenGL, pxLibraryFuntionEntry, amounnt);    
 
            
-#endif
+
         }
     }
 
@@ -2032,7 +2036,8 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
 #if OSUnix
     const int attributeList[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
 
-    const XVisualInfo* const visualInfo = glXChooseVisual(pxOpenGL->AttachedWindow->DisplayCurrent, 0, attributeList);
+    Display* display = 0;// pxOpenGL->;
+    const XVisualInfo* const visualInfo = glXChooseVisual(display, 0, attributeList);
 
     {
         const PXBool successful = visualInfo != 0;
@@ -2043,7 +2048,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
         }
     }
 
-    pxOpenGL->PXOpenGLConext = glXCreateContext(pxOpenGL->AttachedWindow->DisplayCurrent, visualInfo, NULL, GL_TRUE);
+    pxOpenGL->ContextHandle = glXCreateContext(display, visualInfo, NULL, GL_TRUE);
 
 #elif OSWindows
 
@@ -2093,7 +2098,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
 #if OSWindows
         // Make multi GOU context
         {
-            pxOpenGL->ContextCreateAttributes = (PXOpenGLContextCreateAttributes)pxOpenGL->GetProcAddress("wglCreateContextAttribsARB");
+            pxOpenGL->ContextCreateAttributes = (PXOpenGLContextCreateAttributes)pxOpenGL->FunctionPointerGet("wglCreateContextAttribsARB");
 
             if (pxOpenGL->ContextCreateAttributes)
             {
@@ -2124,447 +2129,447 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
         // extensions
 #define PXOverrideIfResultNotNull(target, source) { void* sF = (void*)source; if(sF) *(void**)&target = sF; };
 
-        PXOverrideIfResultNotNull(pxOpenGL->Accum, pxOpenGL->GetProcAddress("glAccum"));
-        PXOverrideIfResultNotNull(pxOpenGL->AlphaFunc, pxOpenGL->GetProcAddress("glAlphaFunc"));
-        PXOverrideIfResultNotNull(pxOpenGL->AreTexturesResident, pxOpenGL->GetProcAddress("glAreTexturesResident"));
-        PXOverrideIfResultNotNull(pxOpenGL->ArrayElement, pxOpenGL->GetProcAddress("glArrayElement"));
-        PXOverrideIfResultNotNull(pxOpenGL->Begin, pxOpenGL->GetProcAddress("glBegin"));
-        PXOverrideIfResultNotNull(pxOpenGL->TextureBind, pxOpenGL->GetProcAddress("glBindTexture"));
-        PXOverrideIfResultNotNull(pxOpenGL->Bitmap, pxOpenGL->GetProcAddress("glBitmap"));
-        PXOverrideIfResultNotNull(pxOpenGL->BlendFunc, pxOpenGL->GetProcAddress("glBlendFunc"));
-        PXOverrideIfResultNotNull(pxOpenGL->CallList, pxOpenGL->GetProcAddress("glCallList"));
-        PXOverrideIfResultNotNull(pxOpenGL->CallLists, pxOpenGL->GetProcAddress("glCallLists"));
-        PXOverrideIfResultNotNull(pxOpenGL->Clear, pxOpenGL->GetProcAddress("glClear"));
-        PXOverrideIfResultNotNull(pxOpenGL->ClearAccum, pxOpenGL->GetProcAddress("glClearAccum"));
-        PXOverrideIfResultNotNull(pxOpenGL->ClearColor, pxOpenGL->GetProcAddress("glClearColor"));
-        PXOverrideIfResultNotNull(pxOpenGL->ClearDepth, pxOpenGL->GetProcAddress("glClearDepth"));
-        PXOverrideIfResultNotNull(pxOpenGL->ClearIndex, pxOpenGL->GetProcAddress("glClearIndex"));
-        PXOverrideIfResultNotNull(pxOpenGL->ClearStencil, pxOpenGL->GetProcAddress("glClearStencil"));
-        PXOverrideIfResultNotNull(pxOpenGL->ClipPlane, pxOpenGL->GetProcAddress("glClipPlane"));
-        PXOverrideIfResultNotNull(pxOpenGL->Color3b, pxOpenGL->GetProcAddress("glColor3b"));
-        PXOverrideIfResultNotNull(pxOpenGL->Color3bv, pxOpenGL->GetProcAddress("glColor3bv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Color3d, pxOpenGL->GetProcAddress("glColor3d"));
-        PXOverrideIfResultNotNull(pxOpenGL->Color3dv, pxOpenGL->GetProcAddress("glColor3dv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Color3f, pxOpenGL->GetProcAddress("glColor3f"));
-        PXOverrideIfResultNotNull(pxOpenGL->Color3fv, pxOpenGL->GetProcAddress("glColor3fv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Color3i, pxOpenGL->GetProcAddress("glColor3i"));
-        PXOverrideIfResultNotNull(pxOpenGL->Color3iv, pxOpenGL->GetProcAddress("glColor3iv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Color3s, pxOpenGL->GetProcAddress("glColor3s"));
-        PXOverrideIfResultNotNull(pxOpenGL->Color3sv, pxOpenGL->GetProcAddress("glColor3sv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Color3ub, pxOpenGL->GetProcAddress("glColor3ub"));
-        PXOverrideIfResultNotNull(pxOpenGL->Color3ubv, pxOpenGL->GetProcAddress("glColor3ubv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Color3ui, pxOpenGL->GetProcAddress("glColor3ui"));
-        PXOverrideIfResultNotNull(pxOpenGL->Color3uiv, pxOpenGL->GetProcAddress("glColor3uiv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Color3us, pxOpenGL->GetProcAddress("glColor3us"));
-        PXOverrideIfResultNotNull(pxOpenGL->Color3usv, pxOpenGL->GetProcAddress("glColor3usv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Color4b, pxOpenGL->GetProcAddress("glColor4b"));
-        PXOverrideIfResultNotNull(pxOpenGL->Color4bv, pxOpenGL->GetProcAddress("glColor4bv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Color4d, pxOpenGL->GetProcAddress("glColor4d"));
-        PXOverrideIfResultNotNull(pxOpenGL->Color4dv, pxOpenGL->GetProcAddress("glColor4dv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Color4f, pxOpenGL->GetProcAddress("glColor4f"));
-        PXOverrideIfResultNotNull(pxOpenGL->Color4fv, pxOpenGL->GetProcAddress("glColor4fv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Color4i, pxOpenGL->GetProcAddress("glColor4i"));
-        PXOverrideIfResultNotNull(pxOpenGL->Color4iv, pxOpenGL->GetProcAddress("glColor4iv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Color4s, pxOpenGL->GetProcAddress("glColor4s"));
-        PXOverrideIfResultNotNull(pxOpenGL->Color4sv, pxOpenGL->GetProcAddress("glColor4sv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Color4ub, pxOpenGL->GetProcAddress("glColor4ub"));
-        PXOverrideIfResultNotNull(pxOpenGL->Color4ubv, pxOpenGL->GetProcAddress("glColor4ubv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Color4ui, pxOpenGL->GetProcAddress("glColor4ui"));
-        PXOverrideIfResultNotNull(pxOpenGL->Color4uiv, pxOpenGL->GetProcAddress("glColor4uiv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Color4us, pxOpenGL->GetProcAddress("glColor4us"));
-        PXOverrideIfResultNotNull(pxOpenGL->Color4usv, pxOpenGL->GetProcAddress("glColor4usv"));
-        PXOverrideIfResultNotNull(pxOpenGL->ColorMask, pxOpenGL->GetProcAddress("glColorMask"));
-        PXOverrideIfResultNotNull(pxOpenGL->ColorMaterial, pxOpenGL->GetProcAddress("glColorMaterial"));
-        PXOverrideIfResultNotNull(pxOpenGL->ColorPointer, pxOpenGL->GetProcAddress("glColorPointer"));
-        PXOverrideIfResultNotNull(pxOpenGL->CopyPixels, pxOpenGL->GetProcAddress("glCopyPixels"));
-        PXOverrideIfResultNotNull(pxOpenGL->CopyTexImage1D, pxOpenGL->GetProcAddress("glCopyTexImage1D"));
-        PXOverrideIfResultNotNull(pxOpenGL->CopyTexImage2D, pxOpenGL->GetProcAddress("glCopyTexImage2D"));
-        PXOverrideIfResultNotNull(pxOpenGL->CopyTexSubImage1D, pxOpenGL->GetProcAddress("glCopyTexSubImage1D"));
-        PXOverrideIfResultNotNull(pxOpenGL->CopyTexSubImage2D, pxOpenGL->GetProcAddress("glCopyTexSubImage2D"));
-        PXOverrideIfResultNotNull(pxOpenGL->CullFace, pxOpenGL->GetProcAddress("glCullFace"));
-        PXOverrideIfResultNotNull(pxOpenGL->DeleteLists, pxOpenGL->GetProcAddress("glDeleteLists"));
-        PXOverrideIfResultNotNull(pxOpenGL->TextureDelete, pxOpenGL->GetProcAddress("glDeleteTextures"));
-        PXOverrideIfResultNotNull(pxOpenGL->DepthFunc, pxOpenGL->GetProcAddress("glDepthFunc"));
-        PXOverrideIfResultNotNull(pxOpenGL->DepthMask, pxOpenGL->GetProcAddress("glDepthMask"));
-        PXOverrideIfResultNotNull(pxOpenGL->DepthRange, pxOpenGL->GetProcAddress("glDepthRange"));
-        PXOverrideIfResultNotNull(pxOpenGL->Disable, pxOpenGL->GetProcAddress("glDisable"));
-        PXOverrideIfResultNotNull(pxOpenGL->DisableClientState, pxOpenGL->GetProcAddress("glDisableClientState"));
-        PXOverrideIfResultNotNull(pxOpenGL->DrawArrays, pxOpenGL->GetProcAddress("glDrawArrays"));
-        PXOverrideIfResultNotNull(pxOpenGL->DrawBuffer, pxOpenGL->GetProcAddress("glDrawBuffer"));
-        PXOverrideIfResultNotNull(pxOpenGL->DrawElements, pxOpenGL->GetProcAddress("glDrawElements"));
-        PXOverrideIfResultNotNull(pxOpenGL->DrawPixels, pxOpenGL->GetProcAddress("glDrawPixels"));
-        PXOverrideIfResultNotNull(pxOpenGL->EdgeFlag, pxOpenGL->GetProcAddress("glEdgeFlag"));
-        PXOverrideIfResultNotNull(pxOpenGL->EdgeFlagPointer, pxOpenGL->GetProcAddress("glEdgeFlagPointer"));
-        PXOverrideIfResultNotNull(pxOpenGL->EdgeFlagv, pxOpenGL->GetProcAddress("glEdgeFlagv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Enable, pxOpenGL->GetProcAddress("glEnable"));
-        PXOverrideIfResultNotNull(pxOpenGL->EnableClientState, pxOpenGL->GetProcAddress("glEnableClientState"));
-        PXOverrideIfResultNotNull(pxOpenGL->End, pxOpenGL->GetProcAddress("glEnd"));
-        PXOverrideIfResultNotNull(pxOpenGL->EndList, pxOpenGL->GetProcAddress("glEndList"));
-        PXOverrideIfResultNotNull(pxOpenGL->EvalCoord1d, pxOpenGL->GetProcAddress("glEvalCoord1d"));
-        PXOverrideIfResultNotNull(pxOpenGL->EvalCoord1dv, pxOpenGL->GetProcAddress("glEvalCoord1dv"));
-        PXOverrideIfResultNotNull(pxOpenGL->EvalCoord1f, pxOpenGL->GetProcAddress("glEvalCoord1f"));
-        PXOverrideIfResultNotNull(pxOpenGL->EvalCoord1fv, pxOpenGL->GetProcAddress("glEvalCoord1fv"));
-        PXOverrideIfResultNotNull(pxOpenGL->EvalCoord2d, pxOpenGL->GetProcAddress("glEvalCoord2d"));
-        PXOverrideIfResultNotNull(pxOpenGL->EvalCoord2dv, pxOpenGL->GetProcAddress("glEvalCoord2dv"));
-        PXOverrideIfResultNotNull(pxOpenGL->EvalCoord2f, pxOpenGL->GetProcAddress("glEvalCoord2f"));
-        PXOverrideIfResultNotNull(pxOpenGL->EvalCoord2fv, pxOpenGL->GetProcAddress("glEvalCoord2fv"));
-        PXOverrideIfResultNotNull(pxOpenGL->EvalMesh1, pxOpenGL->GetProcAddress("glEvalMesh1"));
-        PXOverrideIfResultNotNull(pxOpenGL->EvalMesh2, pxOpenGL->GetProcAddress("glEvalMesh2"));
-        PXOverrideIfResultNotNull(pxOpenGL->EvalPoint1, pxOpenGL->GetProcAddress("glEvalPoint1"));
-        PXOverrideIfResultNotNull(pxOpenGL->EvalPoint2, pxOpenGL->GetProcAddress("glEvalPoint2"));
-        PXOverrideIfResultNotNull(pxOpenGL->FeedbackBuffer, pxOpenGL->GetProcAddress("glFeedbackBuffer"));
-        PXOverrideIfResultNotNull(pxOpenGL->Finish, pxOpenGL->GetProcAddress("glFinish"));
-        PXOverrideIfResultNotNull(pxOpenGL->Flush, pxOpenGL->GetProcAddress("glFlush"));
-        PXOverrideIfResultNotNull(pxOpenGL->Fogf, pxOpenGL->GetProcAddress("glFogf"));
-        PXOverrideIfResultNotNull(pxOpenGL->Fogfv, pxOpenGL->GetProcAddress("glFogfv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Fogi, pxOpenGL->GetProcAddress("glFogi"));
-        PXOverrideIfResultNotNull(pxOpenGL->Fogiv, pxOpenGL->GetProcAddress("glFogiv"));
-        PXOverrideIfResultNotNull(pxOpenGL->FrontFace, pxOpenGL->GetProcAddress("glFrontFace"));
-        PXOverrideIfResultNotNull(pxOpenGL->Frustum, pxOpenGL->GetProcAddress("glFrustum"));
-        PXOverrideIfResultNotNull(pxOpenGL->GenLists, pxOpenGL->GetProcAddress("glGenLists"));
-        PXOverrideIfResultNotNull(pxOpenGL->TextureCreate, pxOpenGL->GetProcAddress("glGenTextures"));
-        PXOverrideIfResultNotNull(pxOpenGL->GetBooleanv, pxOpenGL->GetProcAddress("glGetBooleanv"));
-        PXOverrideIfResultNotNull(pxOpenGL->GetClipPlane, pxOpenGL->GetProcAddress("glGetClipPlane"));
-        PXOverrideIfResultNotNull(pxOpenGL->GetDoublev, pxOpenGL->GetProcAddress("glGetDoublev"));
-        PXOverrideIfResultNotNull(pxOpenGL->GetError, pxOpenGL->GetProcAddress("glGetError"));
-        PXOverrideIfResultNotNull(pxOpenGL->GetFloatv, pxOpenGL->GetProcAddress("glGetFloatv"));
-        PXOverrideIfResultNotNull(pxOpenGL->GetIntegerv, pxOpenGL->GetProcAddress("glGetIntegerv"));
-        PXOverrideIfResultNotNull(pxOpenGL->GetLightfv, pxOpenGL->GetProcAddress("glGetLightfv"));
-        PXOverrideIfResultNotNull(pxOpenGL->GetLightiv, pxOpenGL->GetProcAddress("glGetLightiv"));
-        PXOverrideIfResultNotNull(pxOpenGL->GetMapdv, pxOpenGL->GetProcAddress("glGetMapdv"));
-        PXOverrideIfResultNotNull(pxOpenGL->GetMapfv, pxOpenGL->GetProcAddress("glGetMapfv"));
-        PXOverrideIfResultNotNull(pxOpenGL->GetMapiv, pxOpenGL->GetProcAddress("glGetMapiv"));
-        PXOverrideIfResultNotNull(pxOpenGL->GetMaterialfv, pxOpenGL->GetProcAddress("glGetMaterialfv"));
-        PXOverrideIfResultNotNull(pxOpenGL->GetMaterialiv, pxOpenGL->GetProcAddress("glGetMaterialiv"));
-        PXOverrideIfResultNotNull(pxOpenGL->GetPixelMapfv, pxOpenGL->GetProcAddress("glGetPixelMapfv"));
-        PXOverrideIfResultNotNull(pxOpenGL->GetPixelMapuiv, pxOpenGL->GetProcAddress("glGetPixelMapuiv"));
-        PXOverrideIfResultNotNull(pxOpenGL->GetPixelMapusv, pxOpenGL->GetProcAddress("glGetPixelMapusv"));
-        PXOverrideIfResultNotNull(pxOpenGL->GetPointerv, pxOpenGL->GetProcAddress("glGetPointerv"));
-        PXOverrideIfResultNotNull(pxOpenGL->GetPolygonStipple, pxOpenGL->GetProcAddress("glGetPolygonStipple"));
-        PXOverrideIfResultNotNull(pxOpenGL->GetString, pxOpenGL->GetProcAddress("glGetString"));
-        PXOverrideIfResultNotNull(pxOpenGL->GetTexEnvfv, pxOpenGL->GetProcAddress("glGetTexEnvfv"));
-        PXOverrideIfResultNotNull(pxOpenGL->GetTexEnviv, pxOpenGL->GetProcAddress("glGetTexEnviv"));
-        PXOverrideIfResultNotNull(pxOpenGL->GetTexGendv, pxOpenGL->GetProcAddress("glGetTexGendv"));
-        PXOverrideIfResultNotNull(pxOpenGL->GetTexGenfv, pxOpenGL->GetProcAddress("glGetTexGenfv"));
-        PXOverrideIfResultNotNull(pxOpenGL->GetTexGeniv, pxOpenGL->GetProcAddress("glGetTexGeniv"));
-        PXOverrideIfResultNotNull(pxOpenGL->GetTexImage, pxOpenGL->GetProcAddress("glGetTexImage"));
-        PXOverrideIfResultNotNull(pxOpenGL->GetTexLevelParameterfv, pxOpenGL->GetProcAddress("glGetTexLevelParameterfv"));
-        PXOverrideIfResultNotNull(pxOpenGL->GetTexLevelParameteriv, pxOpenGL->GetProcAddress("glGetTexLevelParameteriv"));
-        PXOverrideIfResultNotNull(pxOpenGL->GetTexParameterfv, pxOpenGL->GetProcAddress("glGetTexParameterfv"));
-        PXOverrideIfResultNotNull(pxOpenGL->GetTexParameteriv, pxOpenGL->GetProcAddress("glGetTexParameteriv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Hint, pxOpenGL->GetProcAddress("glHint"));
-        PXOverrideIfResultNotNull(pxOpenGL->IndexMask, pxOpenGL->GetProcAddress("glIndexMask"));
-        PXOverrideIfResultNotNull(pxOpenGL->IndexPointer, pxOpenGL->GetProcAddress("glIndexPointer"));
-        PXOverrideIfResultNotNull(pxOpenGL->Indexd, pxOpenGL->GetProcAddress("glIndexd"));
-        PXOverrideIfResultNotNull(pxOpenGL->Indexdv, pxOpenGL->GetProcAddress("glIndexdv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Indexf, pxOpenGL->GetProcAddress("glIndexf"));
-        PXOverrideIfResultNotNull(pxOpenGL->Indexfv, pxOpenGL->GetProcAddress("glIndexfv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Indexi, pxOpenGL->GetProcAddress("glIndexi"));
-        PXOverrideIfResultNotNull(pxOpenGL->Indexiv, pxOpenGL->GetProcAddress("glIndexiv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Indexs, pxOpenGL->GetProcAddress("glIndexs"));
-        PXOverrideIfResultNotNull(pxOpenGL->Indexsv, pxOpenGL->GetProcAddress("glIndexsv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Indexub, pxOpenGL->GetProcAddress("glIndexub"));
-        PXOverrideIfResultNotNull(pxOpenGL->Indexubv, pxOpenGL->GetProcAddress("glIndexubv"));
-        PXOverrideIfResultNotNull(pxOpenGL->InitNames, pxOpenGL->GetProcAddress("glInitNames"));
-        PXOverrideIfResultNotNull(pxOpenGL->InterleavedArrays, pxOpenGL->GetProcAddress("glInterleavedArrays"));
-        PXOverrideIfResultNotNull(pxOpenGL->PXOpenGLIsEnabled, pxOpenGL->GetProcAddress("glIsEnabled"));
-        PXOverrideIfResultNotNull(pxOpenGL->IsList, pxOpenGL->GetProcAddress("glIsList"));
-        PXOverrideIfResultNotNull(pxOpenGL->IsTexture, pxOpenGL->GetProcAddress("glIsTexture"));
-        PXOverrideIfResultNotNull(pxOpenGL->LightModelf, pxOpenGL->GetProcAddress("glLightModelf"));
-        PXOverrideIfResultNotNull(pxOpenGL->LightModelfv, pxOpenGL->GetProcAddress("glLightModelfv"));
-        PXOverrideIfResultNotNull(pxOpenGL->LightModeli, pxOpenGL->GetProcAddress("glLightModeli"));
-        PXOverrideIfResultNotNull(pxOpenGL->LightModeliv, pxOpenGL->GetProcAddress("glLightModeliv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Lightf, pxOpenGL->GetProcAddress("glLightf"));
-        PXOverrideIfResultNotNull(pxOpenGL->Lightfv, pxOpenGL->GetProcAddress("glLightfv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Lighti, pxOpenGL->GetProcAddress("glLighti"));
-        PXOverrideIfResultNotNull(pxOpenGL->Lightiv, pxOpenGL->GetProcAddress("glLightiv"));
-        PXOverrideIfResultNotNull(pxOpenGL->LineStipple, pxOpenGL->GetProcAddress("glLineStipple"));
-        PXOverrideIfResultNotNull(pxOpenGL->LineWidth, pxOpenGL->GetProcAddress("glLineWidth"));
-        PXOverrideIfResultNotNull(pxOpenGL->ListBase, pxOpenGL->GetProcAddress("glListBase"));
-        PXOverrideIfResultNotNull(pxOpenGL->LoadIdentity, pxOpenGL->GetProcAddress("glLoadIdentity"));
-        PXOverrideIfResultNotNull(pxOpenGL->LoadMatrixd, pxOpenGL->GetProcAddress("glLoadMatrixd"));
-        PXOverrideIfResultNotNull(pxOpenGL->LoadMatrixf, pxOpenGL->GetProcAddress("glLoadMatrixf"));
-        PXOverrideIfResultNotNull(pxOpenGL->LoadName, pxOpenGL->GetProcAddress("glLoadName"));
-        PXOverrideIfResultNotNull(pxOpenGL->LogicOp, pxOpenGL->GetProcAddress("glLogicOp"));
-        PXOverrideIfResultNotNull(pxOpenGL->Map1d, pxOpenGL->GetProcAddress("glMap1d"));
-        PXOverrideIfResultNotNull(pxOpenGL->Map1f, pxOpenGL->GetProcAddress("glMap1f"));
-        PXOverrideIfResultNotNull(pxOpenGL->Map2d, pxOpenGL->GetProcAddress("glMap2d"));
-        PXOverrideIfResultNotNull(pxOpenGL->Map2f, pxOpenGL->GetProcAddress("glMap2f"));
-        PXOverrideIfResultNotNull(pxOpenGL->MapGrid1d, pxOpenGL->GetProcAddress("glMapGrid1d"));
-        PXOverrideIfResultNotNull(pxOpenGL->MapGrid1f, pxOpenGL->GetProcAddress("glMapGrid1f"));
-        PXOverrideIfResultNotNull(pxOpenGL->MapGrid2d, pxOpenGL->GetProcAddress("glMapGrid2d"));
-        PXOverrideIfResultNotNull(pxOpenGL->MapGrid2f, pxOpenGL->GetProcAddress("glMapGrid2f"));
-        PXOverrideIfResultNotNull(pxOpenGL->Materialf, pxOpenGL->GetProcAddress("glMaterialf"));
-        PXOverrideIfResultNotNull(pxOpenGL->Materialfv, pxOpenGL->GetProcAddress("glMaterialfv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Materiali, pxOpenGL->GetProcAddress("glMateriali"));
-        PXOverrideIfResultNotNull(pxOpenGL->Materialiv, pxOpenGL->GetProcAddress("glMaterialiv"));
-        PXOverrideIfResultNotNull(pxOpenGL->MatrixMode, pxOpenGL->GetProcAddress("glMatrixMode"));
-        PXOverrideIfResultNotNull(pxOpenGL->MultMatrixd, pxOpenGL->GetProcAddress("glMultMatrixd"));
-        PXOverrideIfResultNotNull(pxOpenGL->MultMatrixf, pxOpenGL->GetProcAddress("glMultMatrixf"));
-        PXOverrideIfResultNotNull(pxOpenGL->NewList, pxOpenGL->GetProcAddress("glNewList"));
-        PXOverrideIfResultNotNull(pxOpenGL->Normal3b, pxOpenGL->GetProcAddress("glNormal3b"));
-        PXOverrideIfResultNotNull(pxOpenGL->Normal3bv, pxOpenGL->GetProcAddress("glNormal3bv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Normal3d, pxOpenGL->GetProcAddress("glNormal3d"));
-        PXOverrideIfResultNotNull(pxOpenGL->Normal3dv, pxOpenGL->GetProcAddress("glNormal3dv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Normal3f, pxOpenGL->GetProcAddress("glNormal3f"));
-        PXOverrideIfResultNotNull(pxOpenGL->Normal3fv, pxOpenGL->GetProcAddress("glNormal3fv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Normal3i, pxOpenGL->GetProcAddress("glNormal3i"));
-        PXOverrideIfResultNotNull(pxOpenGL->Normal3iv, pxOpenGL->GetProcAddress("glNormal3iv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Normal3s, pxOpenGL->GetProcAddress("glNormal3s"));
-        PXOverrideIfResultNotNull(pxOpenGL->Normal3sv, pxOpenGL->GetProcAddress("glNormal3sv"));
-        PXOverrideIfResultNotNull(pxOpenGL->NormalPointer, pxOpenGL->GetProcAddress("glNormalPointer"));
-        PXOverrideIfResultNotNull(pxOpenGL->Ortho, pxOpenGL->GetProcAddress("glOrtho"));
-        PXOverrideIfResultNotNull(pxOpenGL->PassThrough, pxOpenGL->GetProcAddress("glPassThrough"));
-        PXOverrideIfResultNotNull(pxOpenGL->PixelMapfv, pxOpenGL->GetProcAddress("glPixelMapfv"));
-        PXOverrideIfResultNotNull(pxOpenGL->PixelMapuiv, pxOpenGL->GetProcAddress("glPixelMapuiv"));
-        PXOverrideIfResultNotNull(pxOpenGL->PixelMapusv, pxOpenGL->GetProcAddress("glPixelMapusv"));
-        PXOverrideIfResultNotNull(pxOpenGL->PixelStoref, pxOpenGL->GetProcAddress("glPixelStoref"));
-        PXOverrideIfResultNotNull(pxOpenGL->PixelStorei, pxOpenGL->GetProcAddress("glPixelStorei"));
-        PXOverrideIfResultNotNull(pxOpenGL->PixelTransferf, pxOpenGL->GetProcAddress("glPixelTransferf"));
-        PXOverrideIfResultNotNull(pxOpenGL->PixelTransferi, pxOpenGL->GetProcAddress("glPixelTransferi"));
-        PXOverrideIfResultNotNull(pxOpenGL->PixelZoom, pxOpenGL->GetProcAddress("glPixelZoom"));
-        PXOverrideIfResultNotNull(pxOpenGL->PointSize, pxOpenGL->GetProcAddress("glPointSize"));
-        PXOverrideIfResultNotNull(pxOpenGL->PolygonMode, pxOpenGL->GetProcAddress("glPolygonMode"));
-        PXOverrideIfResultNotNull(pxOpenGL->PolygonOffset, pxOpenGL->GetProcAddress("glPolygonOffset"));
-        PXOverrideIfResultNotNull(pxOpenGL->PolygonStipple, pxOpenGL->GetProcAddress("glPolygonStipple"));
-        PXOverrideIfResultNotNull(pxOpenGL->PopAttrib, pxOpenGL->GetProcAddress("glPopAttrib"));
-        PXOverrideIfResultNotNull(pxOpenGL->PopClientAttrib, pxOpenGL->GetProcAddress("glPopClientAttrib"));
-        PXOverrideIfResultNotNull(pxOpenGL->PopMatrix, pxOpenGL->GetProcAddress("glPopMatrix"));
-        PXOverrideIfResultNotNull(pxOpenGL->PopName, pxOpenGL->GetProcAddress("glPrioritizeTextures"));
-        PXOverrideIfResultNotNull(pxOpenGL->PrioritizeTextures, pxOpenGL->GetProcAddress("glPrioritizeTextures"));
-        PXOverrideIfResultNotNull(pxOpenGL->PushAttrib, pxOpenGL->GetProcAddress("glPushAttrib"));
-        PXOverrideIfResultNotNull(pxOpenGL->PushClientAttrib, pxOpenGL->GetProcAddress("glPushClientAttrib"));
-        PXOverrideIfResultNotNull(pxOpenGL->PushMatrix, pxOpenGL->GetProcAddress("glPushMatrix"));
-        PXOverrideIfResultNotNull(pxOpenGL->PushName, pxOpenGL->GetProcAddress("glPushName"));
-        PXOverrideIfResultNotNull(pxOpenGL->RasterPos2d, pxOpenGL->GetProcAddress("glRasterPos2d"));
-        PXOverrideIfResultNotNull(pxOpenGL->RasterPos2dv, pxOpenGL->GetProcAddress("glRasterPos2dv"));
-        PXOverrideIfResultNotNull(pxOpenGL->RasterPos2f, pxOpenGL->GetProcAddress("glRasterPos2f"));
-        PXOverrideIfResultNotNull(pxOpenGL->RasterPos2fv, pxOpenGL->GetProcAddress("glRasterPos2fv"));
-        PXOverrideIfResultNotNull(pxOpenGL->RasterPos2i, pxOpenGL->GetProcAddress("glRasterPos2i"));
-        PXOverrideIfResultNotNull(pxOpenGL->RasterPos2iv, pxOpenGL->GetProcAddress("glRasterPos2iv"));
-        PXOverrideIfResultNotNull(pxOpenGL->RasterPos2s, pxOpenGL->GetProcAddress("glRasterPos2s"));
-        PXOverrideIfResultNotNull(pxOpenGL->RasterPos2sv, pxOpenGL->GetProcAddress("glRasterPos2sv"));
-        PXOverrideIfResultNotNull(pxOpenGL->RasterPos3d, pxOpenGL->GetProcAddress("glRasterPos3d"));
-        PXOverrideIfResultNotNull(pxOpenGL->RasterPos3dv, pxOpenGL->GetProcAddress("glRasterPos3dv"));
-        PXOverrideIfResultNotNull(pxOpenGL->RasterPos3f, pxOpenGL->GetProcAddress("glRasterPos3f"));
-        PXOverrideIfResultNotNull(pxOpenGL->RasterPos3fv, pxOpenGL->GetProcAddress("glRasterPos3fv"));
-        PXOverrideIfResultNotNull(pxOpenGL->RasterPos3i, pxOpenGL->GetProcAddress("glRasterPos3i"));
-        PXOverrideIfResultNotNull(pxOpenGL->RasterPos3iv, pxOpenGL->GetProcAddress("glRasterPos3iv"));
-        PXOverrideIfResultNotNull(pxOpenGL->RasterPos3s, pxOpenGL->GetProcAddress("glRasterPos3s"));
-        PXOverrideIfResultNotNull(pxOpenGL->RasterPos3sv, pxOpenGL->GetProcAddress("glRasterPos3sv"));
-        PXOverrideIfResultNotNull(pxOpenGL->RasterPos4d, pxOpenGL->GetProcAddress("glRasterPos4d"));
-        PXOverrideIfResultNotNull(pxOpenGL->RasterPos4dv, pxOpenGL->GetProcAddress("glRasterPos4dv"));
-        PXOverrideIfResultNotNull(pxOpenGL->RasterPos4f, pxOpenGL->GetProcAddress("glRasterPos4f"));
-        PXOverrideIfResultNotNull(pxOpenGL->RasterPos4fv, pxOpenGL->GetProcAddress("glRasterPos4fv"));
-        PXOverrideIfResultNotNull(pxOpenGL->RasterPos4i, pxOpenGL->GetProcAddress("glRasterPos4i"));
-        PXOverrideIfResultNotNull(pxOpenGL->RasterPos4iv, pxOpenGL->GetProcAddress("glRasterPos4iv"));
-        PXOverrideIfResultNotNull(pxOpenGL->RasterPos4s, pxOpenGL->GetProcAddress("glRasterPos4s"));
-        PXOverrideIfResultNotNull(pxOpenGL->RasterPos4sv, pxOpenGL->GetProcAddress("glRasterPos4sv"));
-        PXOverrideIfResultNotNull(pxOpenGL->ReadBuffer, pxOpenGL->GetProcAddress("glReadBuffer"));
-        PXOverrideIfResultNotNull(pxOpenGL->ReadPixels, pxOpenGL->GetProcAddress("glReadPixels"));
-        PXOverrideIfResultNotNull(pxOpenGL->Rectd, pxOpenGL->GetProcAddress("glRectd"));
-        PXOverrideIfResultNotNull(pxOpenGL->Rectdv, pxOpenGL->GetProcAddress("glRectdv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Rectf, pxOpenGL->GetProcAddress("glRectf"));
-        PXOverrideIfResultNotNull(pxOpenGL->Rectfv, pxOpenGL->GetProcAddress("glRectfv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Recti, pxOpenGL->GetProcAddress("glRecti"));
-        PXOverrideIfResultNotNull(pxOpenGL->Rectiv, pxOpenGL->GetProcAddress("glRectiv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Rects, pxOpenGL->GetProcAddress("glRects"));
-        PXOverrideIfResultNotNull(pxOpenGL->Rectsv, pxOpenGL->GetProcAddress("glRectsv"));
-        PXOverrideIfResultNotNull(pxOpenGL->RenderMode, pxOpenGL->GetProcAddress("glRenderMode"));
-        PXOverrideIfResultNotNull(pxOpenGL->Rotated, pxOpenGL->GetProcAddress("glRotated"));
-        PXOverrideIfResultNotNull(pxOpenGL->Rotatef, pxOpenGL->GetProcAddress("glRotatef"));
-        PXOverrideIfResultNotNull(pxOpenGL->Scaled, pxOpenGL->GetProcAddress("glScaled"));
-        PXOverrideIfResultNotNull(pxOpenGL->Scalef, pxOpenGL->GetProcAddress("glScalef"));
-        PXOverrideIfResultNotNull(pxOpenGL->Scissor, pxOpenGL->GetProcAddress("glScissor"));
-        PXOverrideIfResultNotNull(pxOpenGL->SelectBuffer, pxOpenGL->GetProcAddress("glSelectBuffer"));
-        PXOverrideIfResultNotNull(pxOpenGL->ShadeModel, pxOpenGL->GetProcAddress("glShadeModel"));
-        PXOverrideIfResultNotNull(pxOpenGL->StencilFunc, pxOpenGL->GetProcAddress("glStencilFunc"));
-        PXOverrideIfResultNotNull(pxOpenGL->StencilMask, pxOpenGL->GetProcAddress("glStencilMask"));
-        PXOverrideIfResultNotNull(pxOpenGL->StencilOp, pxOpenGL->GetProcAddress("glStencilOp"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexCoord1d, pxOpenGL->GetProcAddress("glTexCoord1d"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexCoord1dv, pxOpenGL->GetProcAddress("glTexCoord1dv"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexCoord1f, pxOpenGL->GetProcAddress("glTexCoord1f"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexCoord1fv, pxOpenGL->GetProcAddress("glTexCoord1fv"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexCoord1i, pxOpenGL->GetProcAddress("glTexCoord1i"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexCoord1iv, pxOpenGL->GetProcAddress("glTexCoord1iv"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexCoord1s, pxOpenGL->GetProcAddress("glTexCoord1s"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexCoord1sv, pxOpenGL->GetProcAddress("glTexCoord1sv"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexCoord2d, pxOpenGL->GetProcAddress("glTexCoord2d"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexCoord2dv, pxOpenGL->GetProcAddress("glTexCoord2dv"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexCoord2f, pxOpenGL->GetProcAddress("glTexCoord2f"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexCoord2fv, pxOpenGL->GetProcAddress("glTexCoord2fv"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexCoord2i, pxOpenGL->GetProcAddress("glTexCoord2i"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexCoord2iv, pxOpenGL->GetProcAddress("glTexCoord2iv"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexCoord2s, pxOpenGL->GetProcAddress("glTexCoord2s"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexCoord2sv, pxOpenGL->GetProcAddress("glTexCoord2sv"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexCoord3d, pxOpenGL->GetProcAddress("glTexCoord3d"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexCoord3dv, pxOpenGL->GetProcAddress("glTexCoord3dv"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexCoord3f, pxOpenGL->GetProcAddress("glTexCoord3f"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexCoord3fv, pxOpenGL->GetProcAddress("glTexCoord3fv"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexCoord3i, pxOpenGL->GetProcAddress("glTexCoord3i"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexCoord3iv, pxOpenGL->GetProcAddress("glTexCoord3iv"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexCoord3s, pxOpenGL->GetProcAddress("glTexCoord3s"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexCoord3sv, pxOpenGL->GetProcAddress("glTexCoord3sv"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexCoord4d, pxOpenGL->GetProcAddress("glTexCoord4d"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexCoord4dv, pxOpenGL->GetProcAddress("glTexCoord4dv"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexCoord4f, pxOpenGL->GetProcAddress("glTexCoord4f"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexCoord4fv, pxOpenGL->GetProcAddress("glTexCoord4fv"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexCoord4i, pxOpenGL->GetProcAddress("glTexCoord4i"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexCoord4iv, pxOpenGL->GetProcAddress("glTexCoord4iv"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexCoord4s, pxOpenGL->GetProcAddress("glTexCoord4s"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexCoord4sv, pxOpenGL->GetProcAddress("glTexCoord4sv"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexCoordPointer, pxOpenGL->GetProcAddress("glTexCoordPointer"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexEnvf, pxOpenGL->GetProcAddress("glTexEnvf"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexEnvfv, pxOpenGL->GetProcAddress("glTexEnvfv"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexEnvi, pxOpenGL->GetProcAddress("glTexEnvi"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexEnviv, pxOpenGL->GetProcAddress("glTexEnviv"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexGend, pxOpenGL->GetProcAddress("glTexGend"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexGendv, pxOpenGL->GetProcAddress("glTexGendv"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexGenf, pxOpenGL->GetProcAddress("glTexGenf"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexGenfv, pxOpenGL->GetProcAddress("glTexGenfv"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexGeni, pxOpenGL->GetProcAddress("glTexGeni"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexGeniv, pxOpenGL->GetProcAddress("glTexGeniv"));
-        PXOverrideIfResultNotNull(pxOpenGL->TextureData1D, pxOpenGL->GetProcAddress("glTexImage1D"));
-        PXOverrideIfResultNotNull(pxOpenGL->TextureData2D, pxOpenGL->GetProcAddress("glTexImage2D"));
-        PXOverrideIfResultNotNull(pxOpenGL->TextureParameterF, pxOpenGL->GetProcAddress("glTexParameterf"));
-        PXOverrideIfResultNotNull(pxOpenGL->TextureParameterListF, pxOpenGL->GetProcAddress("glTexParameterfv"));
-        PXOverrideIfResultNotNull(pxOpenGL->TextureParameterI, pxOpenGL->GetProcAddress("glTexParameteri"));
-        PXOverrideIfResultNotNull(pxOpenGL->TextureParameterListI, pxOpenGL->GetProcAddress("glTexParameteriv"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexSubImage1D, pxOpenGL->GetProcAddress("glTexSubImage1D"));
-        PXOverrideIfResultNotNull(pxOpenGL->TexSubImage2D, pxOpenGL->GetProcAddress("glTexSubImage2D"));
-        PXOverrideIfResultNotNull(pxOpenGL->Translated, pxOpenGL->GetProcAddress("glTranslated"));
-        PXOverrideIfResultNotNull(pxOpenGL->Translatef, pxOpenGL->GetProcAddress("glTranslatef"));
-        PXOverrideIfResultNotNull(pxOpenGL->Vertex2d, pxOpenGL->GetProcAddress("glVertex2d"));
-        PXOverrideIfResultNotNull(pxOpenGL->Vertex2dv, pxOpenGL->GetProcAddress("glVertex2dv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Vertex2f, pxOpenGL->GetProcAddress("glVertex2f"));
-        PXOverrideIfResultNotNull(pxOpenGL->Vertex2fv, pxOpenGL->GetProcAddress("glVertex2fv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Vertex2i, pxOpenGL->GetProcAddress("glVertex2i"));
-        PXOverrideIfResultNotNull(pxOpenGL->Vertex2iv, pxOpenGL->GetProcAddress("glVertex2iv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Vertex2s, pxOpenGL->GetProcAddress("glVertex2s"));
-        PXOverrideIfResultNotNull(pxOpenGL->Vertex2sv, pxOpenGL->GetProcAddress("glVertex2sv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Vertex3d, pxOpenGL->GetProcAddress("glVertex3d"));
-        PXOverrideIfResultNotNull(pxOpenGL->Vertex3dv, pxOpenGL->GetProcAddress("glVertex3dv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Vertex3f, pxOpenGL->GetProcAddress("glVertex3f"));
-        PXOverrideIfResultNotNull(pxOpenGL->Vertex3fv, pxOpenGL->GetProcAddress("glVertex3fv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Vertex3i, pxOpenGL->GetProcAddress("glVertex3i"));
-        PXOverrideIfResultNotNull(pxOpenGL->Vertex3iv, pxOpenGL->GetProcAddress("glVertex3iv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Vertex3s, pxOpenGL->GetProcAddress("glVertex3s"));
-        PXOverrideIfResultNotNull(pxOpenGL->Vertex3sv, pxOpenGL->GetProcAddress("glVertex3sv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Vertex4d, pxOpenGL->GetProcAddress("glVertex4d"));
-        PXOverrideIfResultNotNull(pxOpenGL->Vertex4dv, pxOpenGL->GetProcAddress("glVertex4dv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Vertex4f, pxOpenGL->GetProcAddress("glVertex4f"));
-        PXOverrideIfResultNotNull(pxOpenGL->Vertex4fv, pxOpenGL->GetProcAddress("glVertex4fv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Vertex4i, pxOpenGL->GetProcAddress("glVertex4i"));
-        PXOverrideIfResultNotNull(pxOpenGL->Vertex4iv, pxOpenGL->GetProcAddress("glVertex4iv"));
-        PXOverrideIfResultNotNull(pxOpenGL->Vertex4s, pxOpenGL->GetProcAddress("glVertex4s"));
-        PXOverrideIfResultNotNull(pxOpenGL->Vertex4sv, pxOpenGL->GetProcAddress("glVertex4sv"));
-        PXOverrideIfResultNotNull(pxOpenGL->VertexPointer, pxOpenGL->GetProcAddress("glVertexPointer"));
-        PXOverrideIfResultNotNull(pxOpenGL->Viewport, pxOpenGL->GetProcAddress("glViewport"));
+        PXOverrideIfResultNotNull(pxOpenGL->Accum, pxOpenGL->FunctionPointerGet("glAccum"));
+        PXOverrideIfResultNotNull(pxOpenGL->AlphaFunc, pxOpenGL->FunctionPointerGet("glAlphaFunc"));
+        PXOverrideIfResultNotNull(pxOpenGL->AreTexturesResident, pxOpenGL->FunctionPointerGet("glAreTexturesResident"));
+        PXOverrideIfResultNotNull(pxOpenGL->ArrayElement, pxOpenGL->FunctionPointerGet("glArrayElement"));
+        PXOverrideIfResultNotNull(pxOpenGL->Begin, pxOpenGL->FunctionPointerGet("glBegin"));
+        PXOverrideIfResultNotNull(pxOpenGL->TextureBind, pxOpenGL->FunctionPointerGet("glBindTexture"));
+        PXOverrideIfResultNotNull(pxOpenGL->Bitmap, pxOpenGL->FunctionPointerGet("glBitmap"));
+        PXOverrideIfResultNotNull(pxOpenGL->BlendFunc, pxOpenGL->FunctionPointerGet("glBlendFunc"));
+        PXOverrideIfResultNotNull(pxOpenGL->CallList, pxOpenGL->FunctionPointerGet("glCallList"));
+        PXOverrideIfResultNotNull(pxOpenGL->CallLists, pxOpenGL->FunctionPointerGet("glCallLists"));
+        PXOverrideIfResultNotNull(pxOpenGL->Clear, pxOpenGL->FunctionPointerGet("glClear"));
+        PXOverrideIfResultNotNull(pxOpenGL->ClearAccum, pxOpenGL->FunctionPointerGet("glClearAccum"));
+        PXOverrideIfResultNotNull(pxOpenGL->ClearColor, pxOpenGL->FunctionPointerGet("glClearColor"));
+        PXOverrideIfResultNotNull(pxOpenGL->ClearDepth, pxOpenGL->FunctionPointerGet("glClearDepth"));
+        PXOverrideIfResultNotNull(pxOpenGL->ClearIndex, pxOpenGL->FunctionPointerGet("glClearIndex"));
+        PXOverrideIfResultNotNull(pxOpenGL->ClearStencil, pxOpenGL->FunctionPointerGet("glClearStencil"));
+        PXOverrideIfResultNotNull(pxOpenGL->ClipPlane, pxOpenGL->FunctionPointerGet("glClipPlane"));
+        PXOverrideIfResultNotNull(pxOpenGL->Color3b, pxOpenGL->FunctionPointerGet("glColor3b"));
+        PXOverrideIfResultNotNull(pxOpenGL->Color3bv, pxOpenGL->FunctionPointerGet("glColor3bv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Color3d, pxOpenGL->FunctionPointerGet("glColor3d"));
+        PXOverrideIfResultNotNull(pxOpenGL->Color3dv, pxOpenGL->FunctionPointerGet("glColor3dv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Color3f, pxOpenGL->FunctionPointerGet("glColor3f"));
+        PXOverrideIfResultNotNull(pxOpenGL->Color3fv, pxOpenGL->FunctionPointerGet("glColor3fv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Color3i, pxOpenGL->FunctionPointerGet("glColor3i"));
+        PXOverrideIfResultNotNull(pxOpenGL->Color3iv, pxOpenGL->FunctionPointerGet("glColor3iv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Color3s, pxOpenGL->FunctionPointerGet("glColor3s"));
+        PXOverrideIfResultNotNull(pxOpenGL->Color3sv, pxOpenGL->FunctionPointerGet("glColor3sv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Color3ub, pxOpenGL->FunctionPointerGet("glColor3ub"));
+        PXOverrideIfResultNotNull(pxOpenGL->Color3ubv, pxOpenGL->FunctionPointerGet("glColor3ubv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Color3ui, pxOpenGL->FunctionPointerGet("glColor3ui"));
+        PXOverrideIfResultNotNull(pxOpenGL->Color3uiv, pxOpenGL->FunctionPointerGet("glColor3uiv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Color3us, pxOpenGL->FunctionPointerGet("glColor3us"));
+        PXOverrideIfResultNotNull(pxOpenGL->Color3usv, pxOpenGL->FunctionPointerGet("glColor3usv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Color4b, pxOpenGL->FunctionPointerGet("glColor4b"));
+        PXOverrideIfResultNotNull(pxOpenGL->Color4bv, pxOpenGL->FunctionPointerGet("glColor4bv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Color4d, pxOpenGL->FunctionPointerGet("glColor4d"));
+        PXOverrideIfResultNotNull(pxOpenGL->Color4dv, pxOpenGL->FunctionPointerGet("glColor4dv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Color4f, pxOpenGL->FunctionPointerGet("glColor4f"));
+        PXOverrideIfResultNotNull(pxOpenGL->Color4fv, pxOpenGL->FunctionPointerGet("glColor4fv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Color4i, pxOpenGL->FunctionPointerGet("glColor4i"));
+        PXOverrideIfResultNotNull(pxOpenGL->Color4iv, pxOpenGL->FunctionPointerGet("glColor4iv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Color4s, pxOpenGL->FunctionPointerGet("glColor4s"));
+        PXOverrideIfResultNotNull(pxOpenGL->Color4sv, pxOpenGL->FunctionPointerGet("glColor4sv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Color4ub, pxOpenGL->FunctionPointerGet("glColor4ub"));
+        PXOverrideIfResultNotNull(pxOpenGL->Color4ubv, pxOpenGL->FunctionPointerGet("glColor4ubv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Color4ui, pxOpenGL->FunctionPointerGet("glColor4ui"));
+        PXOverrideIfResultNotNull(pxOpenGL->Color4uiv, pxOpenGL->FunctionPointerGet("glColor4uiv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Color4us, pxOpenGL->FunctionPointerGet("glColor4us"));
+        PXOverrideIfResultNotNull(pxOpenGL->Color4usv, pxOpenGL->FunctionPointerGet("glColor4usv"));
+        PXOverrideIfResultNotNull(pxOpenGL->ColorMask, pxOpenGL->FunctionPointerGet("glColorMask"));
+        PXOverrideIfResultNotNull(pxOpenGL->ColorMaterial, pxOpenGL->FunctionPointerGet("glColorMaterial"));
+        PXOverrideIfResultNotNull(pxOpenGL->ColorPointer, pxOpenGL->FunctionPointerGet("glColorPointer"));
+        PXOverrideIfResultNotNull(pxOpenGL->CopyPixels, pxOpenGL->FunctionPointerGet("glCopyPixels"));
+        PXOverrideIfResultNotNull(pxOpenGL->CopyTexImage1D, pxOpenGL->FunctionPointerGet("glCopyTexImage1D"));
+        PXOverrideIfResultNotNull(pxOpenGL->CopyTexImage2D, pxOpenGL->FunctionPointerGet("glCopyTexImage2D"));
+        PXOverrideIfResultNotNull(pxOpenGL->CopyTexSubImage1D, pxOpenGL->FunctionPointerGet("glCopyTexSubImage1D"));
+        PXOverrideIfResultNotNull(pxOpenGL->CopyTexSubImage2D, pxOpenGL->FunctionPointerGet("glCopyTexSubImage2D"));
+        PXOverrideIfResultNotNull(pxOpenGL->CullFace, pxOpenGL->FunctionPointerGet("glCullFace"));
+        PXOverrideIfResultNotNull(pxOpenGL->DeleteLists, pxOpenGL->FunctionPointerGet("glDeleteLists"));
+        PXOverrideIfResultNotNull(pxOpenGL->TextureDelete, pxOpenGL->FunctionPointerGet("glDeleteTextures"));
+        PXOverrideIfResultNotNull(pxOpenGL->DepthFunc, pxOpenGL->FunctionPointerGet("glDepthFunc"));
+        PXOverrideIfResultNotNull(pxOpenGL->DepthMask, pxOpenGL->FunctionPointerGet("glDepthMask"));
+        PXOverrideIfResultNotNull(pxOpenGL->DepthRange, pxOpenGL->FunctionPointerGet("glDepthRange"));
+        PXOverrideIfResultNotNull(pxOpenGL->Disable, pxOpenGL->FunctionPointerGet("glDisable"));
+        PXOverrideIfResultNotNull(pxOpenGL->DisableClientState, pxOpenGL->FunctionPointerGet("glDisableClientState"));
+        PXOverrideIfResultNotNull(pxOpenGL->DrawArrays, pxOpenGL->FunctionPointerGet("glDrawArrays"));
+        PXOverrideIfResultNotNull(pxOpenGL->DrawBuffer, pxOpenGL->FunctionPointerGet("glDrawBuffer"));
+        PXOverrideIfResultNotNull(pxOpenGL->DrawElements, pxOpenGL->FunctionPointerGet("glDrawElements"));
+        PXOverrideIfResultNotNull(pxOpenGL->DrawPixels, pxOpenGL->FunctionPointerGet("glDrawPixels"));
+        PXOverrideIfResultNotNull(pxOpenGL->EdgeFlag, pxOpenGL->FunctionPointerGet("glEdgeFlag"));
+        PXOverrideIfResultNotNull(pxOpenGL->EdgeFlagPointer, pxOpenGL->FunctionPointerGet("glEdgeFlagPointer"));
+        PXOverrideIfResultNotNull(pxOpenGL->EdgeFlagv, pxOpenGL->FunctionPointerGet("glEdgeFlagv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Enable, pxOpenGL->FunctionPointerGet("glEnable"));
+        PXOverrideIfResultNotNull(pxOpenGL->EnableClientState, pxOpenGL->FunctionPointerGet("glEnableClientState"));
+        PXOverrideIfResultNotNull(pxOpenGL->End, pxOpenGL->FunctionPointerGet("glEnd"));
+        PXOverrideIfResultNotNull(pxOpenGL->EndList, pxOpenGL->FunctionPointerGet("glEndList"));
+        PXOverrideIfResultNotNull(pxOpenGL->EvalCoord1d, pxOpenGL->FunctionPointerGet("glEvalCoord1d"));
+        PXOverrideIfResultNotNull(pxOpenGL->EvalCoord1dv, pxOpenGL->FunctionPointerGet("glEvalCoord1dv"));
+        PXOverrideIfResultNotNull(pxOpenGL->EvalCoord1f, pxOpenGL->FunctionPointerGet("glEvalCoord1f"));
+        PXOverrideIfResultNotNull(pxOpenGL->EvalCoord1fv, pxOpenGL->FunctionPointerGet("glEvalCoord1fv"));
+        PXOverrideIfResultNotNull(pxOpenGL->EvalCoord2d, pxOpenGL->FunctionPointerGet("glEvalCoord2d"));
+        PXOverrideIfResultNotNull(pxOpenGL->EvalCoord2dv, pxOpenGL->FunctionPointerGet("glEvalCoord2dv"));
+        PXOverrideIfResultNotNull(pxOpenGL->EvalCoord2f, pxOpenGL->FunctionPointerGet("glEvalCoord2f"));
+        PXOverrideIfResultNotNull(pxOpenGL->EvalCoord2fv, pxOpenGL->FunctionPointerGet("glEvalCoord2fv"));
+        PXOverrideIfResultNotNull(pxOpenGL->EvalMesh1, pxOpenGL->FunctionPointerGet("glEvalMesh1"));
+        PXOverrideIfResultNotNull(pxOpenGL->EvalMesh2, pxOpenGL->FunctionPointerGet("glEvalMesh2"));
+        PXOverrideIfResultNotNull(pxOpenGL->EvalPoint1, pxOpenGL->FunctionPointerGet("glEvalPoint1"));
+        PXOverrideIfResultNotNull(pxOpenGL->EvalPoint2, pxOpenGL->FunctionPointerGet("glEvalPoint2"));
+        PXOverrideIfResultNotNull(pxOpenGL->FeedbackBuffer, pxOpenGL->FunctionPointerGet("glFeedbackBuffer"));
+        PXOverrideIfResultNotNull(pxOpenGL->Finish, pxOpenGL->FunctionPointerGet("glFinish"));
+        PXOverrideIfResultNotNull(pxOpenGL->Flush, pxOpenGL->FunctionPointerGet("glFlush"));
+        PXOverrideIfResultNotNull(pxOpenGL->Fogf, pxOpenGL->FunctionPointerGet("glFogf"));
+        PXOverrideIfResultNotNull(pxOpenGL->Fogfv, pxOpenGL->FunctionPointerGet("glFogfv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Fogi, pxOpenGL->FunctionPointerGet("glFogi"));
+        PXOverrideIfResultNotNull(pxOpenGL->Fogiv, pxOpenGL->FunctionPointerGet("glFogiv"));
+        PXOverrideIfResultNotNull(pxOpenGL->FrontFace, pxOpenGL->FunctionPointerGet("glFrontFace"));
+        PXOverrideIfResultNotNull(pxOpenGL->Frustum, pxOpenGL->FunctionPointerGet("glFrustum"));
+        PXOverrideIfResultNotNull(pxOpenGL->GenLists, pxOpenGL->FunctionPointerGet("glGenLists"));
+        PXOverrideIfResultNotNull(pxOpenGL->TextureCreate, pxOpenGL->FunctionPointerGet("glGenTextures"));
+        PXOverrideIfResultNotNull(pxOpenGL->GetBooleanv, pxOpenGL->FunctionPointerGet("glGetBooleanv"));
+        PXOverrideIfResultNotNull(pxOpenGL->GetClipPlane, pxOpenGL->FunctionPointerGet("glGetClipPlane"));
+        PXOverrideIfResultNotNull(pxOpenGL->GetDoublev, pxOpenGL->FunctionPointerGet("glGetDoublev"));
+        PXOverrideIfResultNotNull(pxOpenGL->GetError, pxOpenGL->FunctionPointerGet("glGetError"));
+        PXOverrideIfResultNotNull(pxOpenGL->GetFloatv, pxOpenGL->FunctionPointerGet("glGetFloatv"));
+        PXOverrideIfResultNotNull(pxOpenGL->GetIntegerv, pxOpenGL->FunctionPointerGet("glGetIntegerv"));
+        PXOverrideIfResultNotNull(pxOpenGL->GetLightfv, pxOpenGL->FunctionPointerGet("glGetLightfv"));
+        PXOverrideIfResultNotNull(pxOpenGL->GetLightiv, pxOpenGL->FunctionPointerGet("glGetLightiv"));
+        PXOverrideIfResultNotNull(pxOpenGL->GetMapdv, pxOpenGL->FunctionPointerGet("glGetMapdv"));
+        PXOverrideIfResultNotNull(pxOpenGL->GetMapfv, pxOpenGL->FunctionPointerGet("glGetMapfv"));
+        PXOverrideIfResultNotNull(pxOpenGL->GetMapiv, pxOpenGL->FunctionPointerGet("glGetMapiv"));
+        PXOverrideIfResultNotNull(pxOpenGL->GetMaterialfv, pxOpenGL->FunctionPointerGet("glGetMaterialfv"));
+        PXOverrideIfResultNotNull(pxOpenGL->GetMaterialiv, pxOpenGL->FunctionPointerGet("glGetMaterialiv"));
+        PXOverrideIfResultNotNull(pxOpenGL->GetPixelMapfv, pxOpenGL->FunctionPointerGet("glGetPixelMapfv"));
+        PXOverrideIfResultNotNull(pxOpenGL->GetPixelMapuiv, pxOpenGL->FunctionPointerGet("glGetPixelMapuiv"));
+        PXOverrideIfResultNotNull(pxOpenGL->GetPixelMapusv, pxOpenGL->FunctionPointerGet("glGetPixelMapusv"));
+        PXOverrideIfResultNotNull(pxOpenGL->GetPointerv, pxOpenGL->FunctionPointerGet("glGetPointerv"));
+        PXOverrideIfResultNotNull(pxOpenGL->GetPolygonStipple, pxOpenGL->FunctionPointerGet("glGetPolygonStipple"));
+        PXOverrideIfResultNotNull(pxOpenGL->GetString, pxOpenGL->FunctionPointerGet("glGetString"));
+        PXOverrideIfResultNotNull(pxOpenGL->GetTexEnvfv, pxOpenGL->FunctionPointerGet("glGetTexEnvfv"));
+        PXOverrideIfResultNotNull(pxOpenGL->GetTexEnviv, pxOpenGL->FunctionPointerGet("glGetTexEnviv"));
+        PXOverrideIfResultNotNull(pxOpenGL->GetTexGendv, pxOpenGL->FunctionPointerGet("glGetTexGendv"));
+        PXOverrideIfResultNotNull(pxOpenGL->GetTexGenfv, pxOpenGL->FunctionPointerGet("glGetTexGenfv"));
+        PXOverrideIfResultNotNull(pxOpenGL->GetTexGeniv, pxOpenGL->FunctionPointerGet("glGetTexGeniv"));
+        PXOverrideIfResultNotNull(pxOpenGL->GetTexImage, pxOpenGL->FunctionPointerGet("glGetTexImage"));
+        PXOverrideIfResultNotNull(pxOpenGL->GetTexLevelParameterfv, pxOpenGL->FunctionPointerGet("glGetTexLevelParameterfv"));
+        PXOverrideIfResultNotNull(pxOpenGL->GetTexLevelParameteriv, pxOpenGL->FunctionPointerGet("glGetTexLevelParameteriv"));
+        PXOverrideIfResultNotNull(pxOpenGL->GetTexParameterfv, pxOpenGL->FunctionPointerGet("glGetTexParameterfv"));
+        PXOverrideIfResultNotNull(pxOpenGL->GetTexParameteriv, pxOpenGL->FunctionPointerGet("glGetTexParameteriv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Hint, pxOpenGL->FunctionPointerGet("glHint"));
+        PXOverrideIfResultNotNull(pxOpenGL->IndexMask, pxOpenGL->FunctionPointerGet("glIndexMask"));
+        PXOverrideIfResultNotNull(pxOpenGL->IndexPointer, pxOpenGL->FunctionPointerGet("glIndexPointer"));
+        PXOverrideIfResultNotNull(pxOpenGL->Indexd, pxOpenGL->FunctionPointerGet("glIndexd"));
+        PXOverrideIfResultNotNull(pxOpenGL->Indexdv, pxOpenGL->FunctionPointerGet("glIndexdv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Indexf, pxOpenGL->FunctionPointerGet("glIndexf"));
+        PXOverrideIfResultNotNull(pxOpenGL->Indexfv, pxOpenGL->FunctionPointerGet("glIndexfv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Indexi, pxOpenGL->FunctionPointerGet("glIndexi"));
+        PXOverrideIfResultNotNull(pxOpenGL->Indexiv, pxOpenGL->FunctionPointerGet("glIndexiv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Indexs, pxOpenGL->FunctionPointerGet("glIndexs"));
+        PXOverrideIfResultNotNull(pxOpenGL->Indexsv, pxOpenGL->FunctionPointerGet("glIndexsv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Indexub, pxOpenGL->FunctionPointerGet("glIndexub"));
+        PXOverrideIfResultNotNull(pxOpenGL->Indexubv, pxOpenGL->FunctionPointerGet("glIndexubv"));
+        PXOverrideIfResultNotNull(pxOpenGL->InitNames, pxOpenGL->FunctionPointerGet("glInitNames"));
+        PXOverrideIfResultNotNull(pxOpenGL->InterleavedArrays, pxOpenGL->FunctionPointerGet("glInterleavedArrays"));
+        PXOverrideIfResultNotNull(pxOpenGL->PXOpenGLIsEnabled, pxOpenGL->FunctionPointerGet("glIsEnabled"));
+        PXOverrideIfResultNotNull(pxOpenGL->IsList, pxOpenGL->FunctionPointerGet("glIsList"));
+        PXOverrideIfResultNotNull(pxOpenGL->IsTexture, pxOpenGL->FunctionPointerGet("glIsTexture"));
+        PXOverrideIfResultNotNull(pxOpenGL->LightModelf, pxOpenGL->FunctionPointerGet("glLightModelf"));
+        PXOverrideIfResultNotNull(pxOpenGL->LightModelfv, pxOpenGL->FunctionPointerGet("glLightModelfv"));
+        PXOverrideIfResultNotNull(pxOpenGL->LightModeli, pxOpenGL->FunctionPointerGet("glLightModeli"));
+        PXOverrideIfResultNotNull(pxOpenGL->LightModeliv, pxOpenGL->FunctionPointerGet("glLightModeliv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Lightf, pxOpenGL->FunctionPointerGet("glLightf"));
+        PXOverrideIfResultNotNull(pxOpenGL->Lightfv, pxOpenGL->FunctionPointerGet("glLightfv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Lighti, pxOpenGL->FunctionPointerGet("glLighti"));
+        PXOverrideIfResultNotNull(pxOpenGL->Lightiv, pxOpenGL->FunctionPointerGet("glLightiv"));
+        PXOverrideIfResultNotNull(pxOpenGL->LineStipple, pxOpenGL->FunctionPointerGet("glLineStipple"));
+        PXOverrideIfResultNotNull(pxOpenGL->LineWidth, pxOpenGL->FunctionPointerGet("glLineWidth"));
+        PXOverrideIfResultNotNull(pxOpenGL->ListBase, pxOpenGL->FunctionPointerGet("glListBase"));
+        PXOverrideIfResultNotNull(pxOpenGL->LoadIdentity, pxOpenGL->FunctionPointerGet("glLoadIdentity"));
+        PXOverrideIfResultNotNull(pxOpenGL->LoadMatrixd, pxOpenGL->FunctionPointerGet("glLoadMatrixd"));
+        PXOverrideIfResultNotNull(pxOpenGL->LoadMatrixf, pxOpenGL->FunctionPointerGet("glLoadMatrixf"));
+        PXOverrideIfResultNotNull(pxOpenGL->LoadName, pxOpenGL->FunctionPointerGet("glLoadName"));
+        PXOverrideIfResultNotNull(pxOpenGL->LogicOp, pxOpenGL->FunctionPointerGet("glLogicOp"));
+        PXOverrideIfResultNotNull(pxOpenGL->Map1d, pxOpenGL->FunctionPointerGet("glMap1d"));
+        PXOverrideIfResultNotNull(pxOpenGL->Map1f, pxOpenGL->FunctionPointerGet("glMap1f"));
+        PXOverrideIfResultNotNull(pxOpenGL->Map2d, pxOpenGL->FunctionPointerGet("glMap2d"));
+        PXOverrideIfResultNotNull(pxOpenGL->Map2f, pxOpenGL->FunctionPointerGet("glMap2f"));
+        PXOverrideIfResultNotNull(pxOpenGL->MapGrid1d, pxOpenGL->FunctionPointerGet("glMapGrid1d"));
+        PXOverrideIfResultNotNull(pxOpenGL->MapGrid1f, pxOpenGL->FunctionPointerGet("glMapGrid1f"));
+        PXOverrideIfResultNotNull(pxOpenGL->MapGrid2d, pxOpenGL->FunctionPointerGet("glMapGrid2d"));
+        PXOverrideIfResultNotNull(pxOpenGL->MapGrid2f, pxOpenGL->FunctionPointerGet("glMapGrid2f"));
+        PXOverrideIfResultNotNull(pxOpenGL->Materialf, pxOpenGL->FunctionPointerGet("glMaterialf"));
+        PXOverrideIfResultNotNull(pxOpenGL->Materialfv, pxOpenGL->FunctionPointerGet("glMaterialfv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Materiali, pxOpenGL->FunctionPointerGet("glMateriali"));
+        PXOverrideIfResultNotNull(pxOpenGL->Materialiv, pxOpenGL->FunctionPointerGet("glMaterialiv"));
+        PXOverrideIfResultNotNull(pxOpenGL->MatrixMode, pxOpenGL->FunctionPointerGet("glMatrixMode"));
+        PXOverrideIfResultNotNull(pxOpenGL->MultMatrixd, pxOpenGL->FunctionPointerGet("glMultMatrixd"));
+        PXOverrideIfResultNotNull(pxOpenGL->MultMatrixf, pxOpenGL->FunctionPointerGet("glMultMatrixf"));
+        PXOverrideIfResultNotNull(pxOpenGL->NewList, pxOpenGL->FunctionPointerGet("glNewList"));
+        PXOverrideIfResultNotNull(pxOpenGL->Normal3b, pxOpenGL->FunctionPointerGet("glNormal3b"));
+        PXOverrideIfResultNotNull(pxOpenGL->Normal3bv, pxOpenGL->FunctionPointerGet("glNormal3bv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Normal3d, pxOpenGL->FunctionPointerGet("glNormal3d"));
+        PXOverrideIfResultNotNull(pxOpenGL->Normal3dv, pxOpenGL->FunctionPointerGet("glNormal3dv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Normal3f, pxOpenGL->FunctionPointerGet("glNormal3f"));
+        PXOverrideIfResultNotNull(pxOpenGL->Normal3fv, pxOpenGL->FunctionPointerGet("glNormal3fv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Normal3i, pxOpenGL->FunctionPointerGet("glNormal3i"));
+        PXOverrideIfResultNotNull(pxOpenGL->Normal3iv, pxOpenGL->FunctionPointerGet("glNormal3iv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Normal3s, pxOpenGL->FunctionPointerGet("glNormal3s"));
+        PXOverrideIfResultNotNull(pxOpenGL->Normal3sv, pxOpenGL->FunctionPointerGet("glNormal3sv"));
+        PXOverrideIfResultNotNull(pxOpenGL->NormalPointer, pxOpenGL->FunctionPointerGet("glNormalPointer"));
+        PXOverrideIfResultNotNull(pxOpenGL->Ortho, pxOpenGL->FunctionPointerGet("glOrtho"));
+        PXOverrideIfResultNotNull(pxOpenGL->PassThrough, pxOpenGL->FunctionPointerGet("glPassThrough"));
+        PXOverrideIfResultNotNull(pxOpenGL->PixelMapfv, pxOpenGL->FunctionPointerGet("glPixelMapfv"));
+        PXOverrideIfResultNotNull(pxOpenGL->PixelMapuiv, pxOpenGL->FunctionPointerGet("glPixelMapuiv"));
+        PXOverrideIfResultNotNull(pxOpenGL->PixelMapusv, pxOpenGL->FunctionPointerGet("glPixelMapusv"));
+        PXOverrideIfResultNotNull(pxOpenGL->PixelStoref, pxOpenGL->FunctionPointerGet("glPixelStoref"));
+        PXOverrideIfResultNotNull(pxOpenGL->PixelStorei, pxOpenGL->FunctionPointerGet("glPixelStorei"));
+        PXOverrideIfResultNotNull(pxOpenGL->PixelTransferf, pxOpenGL->FunctionPointerGet("glPixelTransferf"));
+        PXOverrideIfResultNotNull(pxOpenGL->PixelTransferi, pxOpenGL->FunctionPointerGet("glPixelTransferi"));
+        PXOverrideIfResultNotNull(pxOpenGL->PixelZoom, pxOpenGL->FunctionPointerGet("glPixelZoom"));
+        PXOverrideIfResultNotNull(pxOpenGL->PointSize, pxOpenGL->FunctionPointerGet("glPointSize"));
+        PXOverrideIfResultNotNull(pxOpenGL->PolygonMode, pxOpenGL->FunctionPointerGet("glPolygonMode"));
+        PXOverrideIfResultNotNull(pxOpenGL->PolygonOffset, pxOpenGL->FunctionPointerGet("glPolygonOffset"));
+        PXOverrideIfResultNotNull(pxOpenGL->PolygonStipple, pxOpenGL->FunctionPointerGet("glPolygonStipple"));
+        PXOverrideIfResultNotNull(pxOpenGL->PopAttrib, pxOpenGL->FunctionPointerGet("glPopAttrib"));
+        PXOverrideIfResultNotNull(pxOpenGL->PopClientAttrib, pxOpenGL->FunctionPointerGet("glPopClientAttrib"));
+        PXOverrideIfResultNotNull(pxOpenGL->PopMatrix, pxOpenGL->FunctionPointerGet("glPopMatrix"));
+        PXOverrideIfResultNotNull(pxOpenGL->PopName, pxOpenGL->FunctionPointerGet("glPrioritizeTextures"));
+        PXOverrideIfResultNotNull(pxOpenGL->PrioritizeTextures, pxOpenGL->FunctionPointerGet("glPrioritizeTextures"));
+        PXOverrideIfResultNotNull(pxOpenGL->PushAttrib, pxOpenGL->FunctionPointerGet("glPushAttrib"));
+        PXOverrideIfResultNotNull(pxOpenGL->PushClientAttrib, pxOpenGL->FunctionPointerGet("glPushClientAttrib"));
+        PXOverrideIfResultNotNull(pxOpenGL->PushMatrix, pxOpenGL->FunctionPointerGet("glPushMatrix"));
+        PXOverrideIfResultNotNull(pxOpenGL->PushName, pxOpenGL->FunctionPointerGet("glPushName"));
+        PXOverrideIfResultNotNull(pxOpenGL->RasterPos2d, pxOpenGL->FunctionPointerGet("glRasterPos2d"));
+        PXOverrideIfResultNotNull(pxOpenGL->RasterPos2dv, pxOpenGL->FunctionPointerGet("glRasterPos2dv"));
+        PXOverrideIfResultNotNull(pxOpenGL->RasterPos2f, pxOpenGL->FunctionPointerGet("glRasterPos2f"));
+        PXOverrideIfResultNotNull(pxOpenGL->RasterPos2fv, pxOpenGL->FunctionPointerGet("glRasterPos2fv"));
+        PXOverrideIfResultNotNull(pxOpenGL->RasterPos2i, pxOpenGL->FunctionPointerGet("glRasterPos2i"));
+        PXOverrideIfResultNotNull(pxOpenGL->RasterPos2iv, pxOpenGL->FunctionPointerGet("glRasterPos2iv"));
+        PXOverrideIfResultNotNull(pxOpenGL->RasterPos2s, pxOpenGL->FunctionPointerGet("glRasterPos2s"));
+        PXOverrideIfResultNotNull(pxOpenGL->RasterPos2sv, pxOpenGL->FunctionPointerGet("glRasterPos2sv"));
+        PXOverrideIfResultNotNull(pxOpenGL->RasterPos3d, pxOpenGL->FunctionPointerGet("glRasterPos3d"));
+        PXOverrideIfResultNotNull(pxOpenGL->RasterPos3dv, pxOpenGL->FunctionPointerGet("glRasterPos3dv"));
+        PXOverrideIfResultNotNull(pxOpenGL->RasterPos3f, pxOpenGL->FunctionPointerGet("glRasterPos3f"));
+        PXOverrideIfResultNotNull(pxOpenGL->RasterPos3fv, pxOpenGL->FunctionPointerGet("glRasterPos3fv"));
+        PXOverrideIfResultNotNull(pxOpenGL->RasterPos3i, pxOpenGL->FunctionPointerGet("glRasterPos3i"));
+        PXOverrideIfResultNotNull(pxOpenGL->RasterPos3iv, pxOpenGL->FunctionPointerGet("glRasterPos3iv"));
+        PXOverrideIfResultNotNull(pxOpenGL->RasterPos3s, pxOpenGL->FunctionPointerGet("glRasterPos3s"));
+        PXOverrideIfResultNotNull(pxOpenGL->RasterPos3sv, pxOpenGL->FunctionPointerGet("glRasterPos3sv"));
+        PXOverrideIfResultNotNull(pxOpenGL->RasterPos4d, pxOpenGL->FunctionPointerGet("glRasterPos4d"));
+        PXOverrideIfResultNotNull(pxOpenGL->RasterPos4dv, pxOpenGL->FunctionPointerGet("glRasterPos4dv"));
+        PXOverrideIfResultNotNull(pxOpenGL->RasterPos4f, pxOpenGL->FunctionPointerGet("glRasterPos4f"));
+        PXOverrideIfResultNotNull(pxOpenGL->RasterPos4fv, pxOpenGL->FunctionPointerGet("glRasterPos4fv"));
+        PXOverrideIfResultNotNull(pxOpenGL->RasterPos4i, pxOpenGL->FunctionPointerGet("glRasterPos4i"));
+        PXOverrideIfResultNotNull(pxOpenGL->RasterPos4iv, pxOpenGL->FunctionPointerGet("glRasterPos4iv"));
+        PXOverrideIfResultNotNull(pxOpenGL->RasterPos4s, pxOpenGL->FunctionPointerGet("glRasterPos4s"));
+        PXOverrideIfResultNotNull(pxOpenGL->RasterPos4sv, pxOpenGL->FunctionPointerGet("glRasterPos4sv"));
+        PXOverrideIfResultNotNull(pxOpenGL->ReadBuffer, pxOpenGL->FunctionPointerGet("glReadBuffer"));
+        PXOverrideIfResultNotNull(pxOpenGL->ReadPixels, pxOpenGL->FunctionPointerGet("glReadPixels"));
+        PXOverrideIfResultNotNull(pxOpenGL->Rectd, pxOpenGL->FunctionPointerGet("glRectd"));
+        PXOverrideIfResultNotNull(pxOpenGL->Rectdv, pxOpenGL->FunctionPointerGet("glRectdv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Rectf, pxOpenGL->FunctionPointerGet("glRectf"));
+        PXOverrideIfResultNotNull(pxOpenGL->Rectfv, pxOpenGL->FunctionPointerGet("glRectfv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Recti, pxOpenGL->FunctionPointerGet("glRecti"));
+        PXOverrideIfResultNotNull(pxOpenGL->Rectiv, pxOpenGL->FunctionPointerGet("glRectiv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Rects, pxOpenGL->FunctionPointerGet("glRects"));
+        PXOverrideIfResultNotNull(pxOpenGL->Rectsv, pxOpenGL->FunctionPointerGet("glRectsv"));
+        PXOverrideIfResultNotNull(pxOpenGL->RenderMode, pxOpenGL->FunctionPointerGet("glRenderMode"));
+        PXOverrideIfResultNotNull(pxOpenGL->Rotated, pxOpenGL->FunctionPointerGet("glRotated"));
+        PXOverrideIfResultNotNull(pxOpenGL->Rotatef, pxOpenGL->FunctionPointerGet("glRotatef"));
+        PXOverrideIfResultNotNull(pxOpenGL->Scaled, pxOpenGL->FunctionPointerGet("glScaled"));
+        PXOverrideIfResultNotNull(pxOpenGL->Scalef, pxOpenGL->FunctionPointerGet("glScalef"));
+        PXOverrideIfResultNotNull(pxOpenGL->Scissor, pxOpenGL->FunctionPointerGet("glScissor"));
+        PXOverrideIfResultNotNull(pxOpenGL->SelectBuffer, pxOpenGL->FunctionPointerGet("glSelectBuffer"));
+        PXOverrideIfResultNotNull(pxOpenGL->ShadeModel, pxOpenGL->FunctionPointerGet("glShadeModel"));
+        PXOverrideIfResultNotNull(pxOpenGL->StencilFunc, pxOpenGL->FunctionPointerGet("glStencilFunc"));
+        PXOverrideIfResultNotNull(pxOpenGL->StencilMask, pxOpenGL->FunctionPointerGet("glStencilMask"));
+        PXOverrideIfResultNotNull(pxOpenGL->StencilOp, pxOpenGL->FunctionPointerGet("glStencilOp"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexCoord1d, pxOpenGL->FunctionPointerGet("glTexCoord1d"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexCoord1dv, pxOpenGL->FunctionPointerGet("glTexCoord1dv"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexCoord1f, pxOpenGL->FunctionPointerGet("glTexCoord1f"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexCoord1fv, pxOpenGL->FunctionPointerGet("glTexCoord1fv"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexCoord1i, pxOpenGL->FunctionPointerGet("glTexCoord1i"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexCoord1iv, pxOpenGL->FunctionPointerGet("glTexCoord1iv"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexCoord1s, pxOpenGL->FunctionPointerGet("glTexCoord1s"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexCoord1sv, pxOpenGL->FunctionPointerGet("glTexCoord1sv"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexCoord2d, pxOpenGL->FunctionPointerGet("glTexCoord2d"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexCoord2dv, pxOpenGL->FunctionPointerGet("glTexCoord2dv"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexCoord2f, pxOpenGL->FunctionPointerGet("glTexCoord2f"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexCoord2fv, pxOpenGL->FunctionPointerGet("glTexCoord2fv"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexCoord2i, pxOpenGL->FunctionPointerGet("glTexCoord2i"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexCoord2iv, pxOpenGL->FunctionPointerGet("glTexCoord2iv"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexCoord2s, pxOpenGL->FunctionPointerGet("glTexCoord2s"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexCoord2sv, pxOpenGL->FunctionPointerGet("glTexCoord2sv"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexCoord3d, pxOpenGL->FunctionPointerGet("glTexCoord3d"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexCoord3dv, pxOpenGL->FunctionPointerGet("glTexCoord3dv"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexCoord3f, pxOpenGL->FunctionPointerGet("glTexCoord3f"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexCoord3fv, pxOpenGL->FunctionPointerGet("glTexCoord3fv"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexCoord3i, pxOpenGL->FunctionPointerGet("glTexCoord3i"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexCoord3iv, pxOpenGL->FunctionPointerGet("glTexCoord3iv"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexCoord3s, pxOpenGL->FunctionPointerGet("glTexCoord3s"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexCoord3sv, pxOpenGL->FunctionPointerGet("glTexCoord3sv"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexCoord4d, pxOpenGL->FunctionPointerGet("glTexCoord4d"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexCoord4dv, pxOpenGL->FunctionPointerGet("glTexCoord4dv"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexCoord4f, pxOpenGL->FunctionPointerGet("glTexCoord4f"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexCoord4fv, pxOpenGL->FunctionPointerGet("glTexCoord4fv"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexCoord4i, pxOpenGL->FunctionPointerGet("glTexCoord4i"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexCoord4iv, pxOpenGL->FunctionPointerGet("glTexCoord4iv"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexCoord4s, pxOpenGL->FunctionPointerGet("glTexCoord4s"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexCoord4sv, pxOpenGL->FunctionPointerGet("glTexCoord4sv"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexCoordPointer, pxOpenGL->FunctionPointerGet("glTexCoordPointer"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexEnvf, pxOpenGL->FunctionPointerGet("glTexEnvf"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexEnvfv, pxOpenGL->FunctionPointerGet("glTexEnvfv"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexEnvi, pxOpenGL->FunctionPointerGet("glTexEnvi"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexEnviv, pxOpenGL->FunctionPointerGet("glTexEnviv"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexGend, pxOpenGL->FunctionPointerGet("glTexGend"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexGendv, pxOpenGL->FunctionPointerGet("glTexGendv"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexGenf, pxOpenGL->FunctionPointerGet("glTexGenf"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexGenfv, pxOpenGL->FunctionPointerGet("glTexGenfv"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexGeni, pxOpenGL->FunctionPointerGet("glTexGeni"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexGeniv, pxOpenGL->FunctionPointerGet("glTexGeniv"));
+        PXOverrideIfResultNotNull(pxOpenGL->TextureData1D, pxOpenGL->FunctionPointerGet("glTexImage1D"));
+        PXOverrideIfResultNotNull(pxOpenGL->TextureData2D, pxOpenGL->FunctionPointerGet("glTexImage2D"));
+        PXOverrideIfResultNotNull(pxOpenGL->TextureParameterF, pxOpenGL->FunctionPointerGet("glTexParameterf"));
+        PXOverrideIfResultNotNull(pxOpenGL->TextureParameterListF, pxOpenGL->FunctionPointerGet("glTexParameterfv"));
+        PXOverrideIfResultNotNull(pxOpenGL->TextureParameterI, pxOpenGL->FunctionPointerGet("glTexParameteri"));
+        PXOverrideIfResultNotNull(pxOpenGL->TextureParameterListI, pxOpenGL->FunctionPointerGet("glTexParameteriv"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexSubImage1D, pxOpenGL->FunctionPointerGet("glTexSubImage1D"));
+        PXOverrideIfResultNotNull(pxOpenGL->TexSubImage2D, pxOpenGL->FunctionPointerGet("glTexSubImage2D"));
+        PXOverrideIfResultNotNull(pxOpenGL->Translated, pxOpenGL->FunctionPointerGet("glTranslated"));
+        PXOverrideIfResultNotNull(pxOpenGL->Translatef, pxOpenGL->FunctionPointerGet("glTranslatef"));
+        PXOverrideIfResultNotNull(pxOpenGL->Vertex2d, pxOpenGL->FunctionPointerGet("glVertex2d"));
+        PXOverrideIfResultNotNull(pxOpenGL->Vertex2dv, pxOpenGL->FunctionPointerGet("glVertex2dv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Vertex2f, pxOpenGL->FunctionPointerGet("glVertex2f"));
+        PXOverrideIfResultNotNull(pxOpenGL->Vertex2fv, pxOpenGL->FunctionPointerGet("glVertex2fv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Vertex2i, pxOpenGL->FunctionPointerGet("glVertex2i"));
+        PXOverrideIfResultNotNull(pxOpenGL->Vertex2iv, pxOpenGL->FunctionPointerGet("glVertex2iv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Vertex2s, pxOpenGL->FunctionPointerGet("glVertex2s"));
+        PXOverrideIfResultNotNull(pxOpenGL->Vertex2sv, pxOpenGL->FunctionPointerGet("glVertex2sv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Vertex3d, pxOpenGL->FunctionPointerGet("glVertex3d"));
+        PXOverrideIfResultNotNull(pxOpenGL->Vertex3dv, pxOpenGL->FunctionPointerGet("glVertex3dv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Vertex3f, pxOpenGL->FunctionPointerGet("glVertex3f"));
+        PXOverrideIfResultNotNull(pxOpenGL->Vertex3fv, pxOpenGL->FunctionPointerGet("glVertex3fv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Vertex3i, pxOpenGL->FunctionPointerGet("glVertex3i"));
+        PXOverrideIfResultNotNull(pxOpenGL->Vertex3iv, pxOpenGL->FunctionPointerGet("glVertex3iv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Vertex3s, pxOpenGL->FunctionPointerGet("glVertex3s"));
+        PXOverrideIfResultNotNull(pxOpenGL->Vertex3sv, pxOpenGL->FunctionPointerGet("glVertex3sv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Vertex4d, pxOpenGL->FunctionPointerGet("glVertex4d"));
+        PXOverrideIfResultNotNull(pxOpenGL->Vertex4dv, pxOpenGL->FunctionPointerGet("glVertex4dv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Vertex4f, pxOpenGL->FunctionPointerGet("glVertex4f"));
+        PXOverrideIfResultNotNull(pxOpenGL->Vertex4fv, pxOpenGL->FunctionPointerGet("glVertex4fv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Vertex4i, pxOpenGL->FunctionPointerGet("glVertex4i"));
+        PXOverrideIfResultNotNull(pxOpenGL->Vertex4iv, pxOpenGL->FunctionPointerGet("glVertex4iv"));
+        PXOverrideIfResultNotNull(pxOpenGL->Vertex4s, pxOpenGL->FunctionPointerGet("glVertex4s"));
+        PXOverrideIfResultNotNull(pxOpenGL->Vertex4sv, pxOpenGL->FunctionPointerGet("glVertex4sv"));
+        PXOverrideIfResultNotNull(pxOpenGL->VertexPointer, pxOpenGL->FunctionPointerGet("glVertexPointer"));
+        PXOverrideIfResultNotNull(pxOpenGL->Viewport, pxOpenGL->FunctionPointerGet("glViewport"));
 
 
-        pxOpenGL->glGetBooleanv = (glGetBooleanvFunction)pxOpenGL->GetProcAddress("glGetBooleanv");
-        pxOpenGL->glGetDoublev = (glGetDoublevFunction)pxOpenGL->GetProcAddress("glGetDoublev");
-        pxOpenGL->glGetFloatv = (glGetFloatvFunction)pxOpenGL->GetProcAddress("glGetFloatv");
-        pxOpenGL->glGetIntegerv = (glGetIntegervFunction)pxOpenGL->GetProcAddress("glGetIntegerv");
-        pxOpenGL->glGetInteger64v = (glGetInteger64vFunction)pxOpenGL->GetProcAddress("glGetInteger64v");
-        pxOpenGL->glGetBooleani_v = pxOpenGL->GetProcAddress("glGetBooleani_v");
-        pxOpenGL->glGetIntegeri_v = pxOpenGL->GetProcAddress("glGetIntegeri_v");
-        pxOpenGL->glGetFloati_v = pxOpenGL->GetProcAddress("glGetFloati_v");
-        pxOpenGL->glGetDoublei_v = pxOpenGL->GetProcAddress("glGetDoublei_v");
-        pxOpenGL->glGetInteger64i_v = pxOpenGL->GetProcAddress("glGetInteger64i_v");
+        pxOpenGL->glGetBooleanv = (glGetBooleanvFunction)pxOpenGL->FunctionPointerGet("glGetBooleanv");
+        pxOpenGL->glGetDoublev = (glGetDoublevFunction)pxOpenGL->FunctionPointerGet("glGetDoublev");
+        pxOpenGL->glGetFloatv = (glGetFloatvFunction)pxOpenGL->FunctionPointerGet("glGetFloatv");
+        pxOpenGL->glGetIntegerv = (glGetIntegervFunction)pxOpenGL->FunctionPointerGet("glGetIntegerv");
+        pxOpenGL->glGetInteger64v = (glGetInteger64vFunction)pxOpenGL->FunctionPointerGet("glGetInteger64v");
+        pxOpenGL->glGetBooleani_v = pxOpenGL->FunctionPointerGet("glGetBooleani_v");
+        pxOpenGL->glGetIntegeri_v = pxOpenGL->FunctionPointerGet("glGetIntegeri_v");
+        pxOpenGL->glGetFloati_v = pxOpenGL->FunctionPointerGet("glGetFloati_v");
+        pxOpenGL->glGetDoublei_v = pxOpenGL->FunctionPointerGet("glGetDoublei_v");
+        pxOpenGL->glGetInteger64i_v = pxOpenGL->FunctionPointerGet("glGetInteger64i_v");
 
-        pxOpenGL->ProgramInfoLogGet = pxOpenGL->GetProcAddress("glGetProgramInfoLog");        
-
-
-        pxOpenGL->DebugMessage = pxOpenGL->GetProcAddress("glDebugMessageCallback");
-        pxOpenGL->VertexAttribLPointer = pxOpenGL->GetProcAddress("glVertexAttribLPointer");
-        pxOpenGL->VertexAttribDivisor = pxOpenGL->GetProcAddress("glVertexAttribDivisor");
+        pxOpenGL->ProgramInfoLogGet = pxOpenGL->FunctionPointerGet("glGetProgramInfoLog");        
 
 
-        pxOpenGL->DrawArraysInstanced = pxOpenGL->GetProcAddress("glDrawArraysInstanced");
+        pxOpenGL->DebugMessage = pxOpenGL->FunctionPointerGet("glDebugMessageCallback");
+        pxOpenGL->VertexAttribLPointer = pxOpenGL->FunctionPointerGet("glVertexAttribLPointer");
+        pxOpenGL->VertexAttribDivisor = pxOpenGL->FunctionPointerGet("glVertexAttribDivisor");
 
-        pxOpenGL->StringI = pxOpenGL->GetProcAddress("glGetStringi");
-        pxOpenGL->FrameBufferCreate = pxOpenGL->GetProcAddress("glGenFramebuffers");
-        pxOpenGL->FrameBufferDelete = pxOpenGL->GetProcAddress("glDeleteFramebuffers");
-        pxOpenGL->FrameBufferBind = pxOpenGL->GetProcAddress("glBindFramebuffer");
 
-        pxOpenGL->RenderBufferCreate = pxOpenGL->GetProcAddress("glGenRenderbuffers");
-        pxOpenGL->RenderBufferBind = pxOpenGL->GetProcAddress("glBindRenderbuffer");
-        pxOpenGL->RenderBufferDelete = pxOpenGL->GetProcAddress("glDeleteRenderbuffers");
-        pxOpenGL->RenderBufferStorage = pxOpenGL->GetProcAddress("glRenderbufferStorage");
+        pxOpenGL->DrawArraysInstanced = pxOpenGL->FunctionPointerGet("glDrawArraysInstanced");
 
-        pxOpenGL->FrameBufferLinkTexture2D = pxOpenGL->GetProcAddress("glFramebufferTexture2D");
-        pxOpenGL->FrameBufferLinkRenderBuffer = pxOpenGL->GetProcAddress("glFramebufferRenderbuffer");
+        pxOpenGL->StringI = pxOpenGL->FunctionPointerGet("glGetStringi");
+        pxOpenGL->FrameBufferCreate = pxOpenGL->FunctionPointerGet("glGenFramebuffers");
+        pxOpenGL->FrameBufferDelete = pxOpenGL->FunctionPointerGet("glDeleteFramebuffers");
+        pxOpenGL->FrameBufferBind = pxOpenGL->FunctionPointerGet("glBindFramebuffer");
 
-        pxOpenGL->VertexArraysGenerate = pxOpenGL->GetProcAddress("glGenVertexArrays");
-        pxOpenGL->VertexArrayBind = pxOpenGL->GetProcAddress("glBindVertexArray");
-        pxOpenGL->VertexAttribIPointer = pxOpenGL->GetProcAddress("glVertexAttribIPointer");
+        pxOpenGL->RenderBufferCreate = pxOpenGL->FunctionPointerGet("glGenRenderbuffers");
+        pxOpenGL->RenderBufferBind = pxOpenGL->FunctionPointerGet("glBindRenderbuffer");
+        pxOpenGL->RenderBufferDelete = pxOpenGL->FunctionPointerGet("glDeleteRenderbuffers");
+        pxOpenGL->RenderBufferStorage = pxOpenGL->FunctionPointerGet("glRenderbufferStorage");
 
-        pxOpenGL->ShaderProgramCreate = pxOpenGL->GetProcAddress("glCreateProgram");
-        pxOpenGL->ShaderProgramUse = pxOpenGL->GetProcAddress("glUseProgram");
-        pxOpenGL->ShaderProgramDelete = pxOpenGL->GetProcAddress("glDeleteProgram");
-        pxOpenGL->ShaderSource = pxOpenGL->GetProcAddress("glShaderSource");
-        pxOpenGL->ShaderCreate = pxOpenGL->GetProcAddress("glCreateShader");
-        pxOpenGL->ShaderCompile = pxOpenGL->GetProcAddress("glCompileShader");
+        pxOpenGL->FrameBufferLinkTexture2D = pxOpenGL->FunctionPointerGet("glFramebufferTexture2D");
+        pxOpenGL->FrameBufferLinkRenderBuffer = pxOpenGL->FunctionPointerGet("glFramebufferRenderbuffer");
 
-        pxOpenGL->ShaderProgramGetiv = pxOpenGL->GetProcAddress("glGetProgramiv");
-        pxOpenGL->ActiveUniformGet = pxOpenGL->GetProcAddress("glGetActiveUniform");
-        pxOpenGL->ActiveAttributeGet = pxOpenGL->GetProcAddress("glGetActiveAttrib");
+        pxOpenGL->VertexArraysGenerate = pxOpenGL->FunctionPointerGet("glGenVertexArrays");
+        pxOpenGL->VertexArrayBind = pxOpenGL->FunctionPointerGet("glBindVertexArray");
+        pxOpenGL->VertexAttribIPointer = pxOpenGL->FunctionPointerGet("glVertexAttribIPointer");
 
-        pxOpenGL->ShaderGetiv = pxOpenGL->GetProcAddress("glGetShaderiv");
-        pxOpenGL->ShaderLogInfoGet = pxOpenGL->GetProcAddress("glGetShaderInfoLog");
-        pxOpenGL->ShaderDelete = pxOpenGL->GetProcAddress("glDeleteShader");
-        pxOpenGL->ShaderAttach = pxOpenGL->GetProcAddress("glAttachShader");
-        pxOpenGL->ShaderProgramLink = pxOpenGL->GetProcAddress("glLinkProgram");
-        pxOpenGL->ShaderProgramValidate = pxOpenGL->GetProcAddress("glValidateProgram");
-        pxOpenGL->TextureSlotActive = pxOpenGL->GetProcAddress("glActiveTexture");
-        pxOpenGL->BufferGenerate = pxOpenGL->GetProcAddress("glGenBuffers");
-        pxOpenGL->BufferBind = pxOpenGL->GetProcAddress("glBindBuffer");
-        pxOpenGL->BufferData = pxOpenGL->GetProcAddress("glBufferData");
-        pxOpenGL->VertexAttribPointer = pxOpenGL->GetProcAddress("glVertexAttribPointer");
+        pxOpenGL->ShaderProgramCreate = pxOpenGL->FunctionPointerGet("glCreateProgram");
+        pxOpenGL->ShaderProgramUse = pxOpenGL->FunctionPointerGet("glUseProgram");
+        pxOpenGL->ShaderProgramDelete = pxOpenGL->FunctionPointerGet("glDeleteProgram");
+        pxOpenGL->ShaderSource = pxOpenGL->FunctionPointerGet("glShaderSource");
+        pxOpenGL->ShaderCreate = pxOpenGL->FunctionPointerGet("glCreateShader");
+        pxOpenGL->ShaderCompile = pxOpenGL->FunctionPointerGet("glCompileShader");
 
-        pxOpenGL->VertexAttribArrayEnable = pxOpenGL->GetProcAddress("glEnableVertexAttribArray");
-        pxOpenGL->VertexAttribArrayDisable = pxOpenGL->GetProcAddress("glDisableVertexAttribArray");
+        pxOpenGL->ShaderProgramGetiv = pxOpenGL->FunctionPointerGet("glGetProgramiv");
+        pxOpenGL->ActiveUniformGet = pxOpenGL->FunctionPointerGet("glGetActiveUniform");
+        pxOpenGL->ActiveAttributeGet = pxOpenGL->FunctionPointerGet("glGetActiveAttrib");
 
-        pxOpenGL->DisableVertexArrayAttrib = pxOpenGL->GetProcAddress("glDisableVertexArrayAttrib");
-        pxOpenGL->GetUniformLocation = pxOpenGL->GetProcAddress("glGetUniformLocation");
-        pxOpenGL->Uniform1f = pxOpenGL->GetProcAddress("glUniform1f");
-        pxOpenGL->Uniform1fv = pxOpenGL->GetProcAddress("glUniform1fv");
-        pxOpenGL->Uniform1i = pxOpenGL->GetProcAddress("glUniform1i");
-        pxOpenGL->Uniform1iv = pxOpenGL->GetProcAddress("glUniform1iv");
-        pxOpenGL->Uniform2f = pxOpenGL->GetProcAddress("glUniform2f");
-        pxOpenGL->Uniform2fv = pxOpenGL->GetProcAddress("glUniform2fv");
-        pxOpenGL->Uniform2i = pxOpenGL->GetProcAddress("glUniform2i");
-        pxOpenGL->Uniform2iv = pxOpenGL->GetProcAddress("glUniform2iv");
-        pxOpenGL->Uniform3f = pxOpenGL->GetProcAddress("glUniform3f");
-        pxOpenGL->Uniform3fv = pxOpenGL->GetProcAddress("glUniform3fv");
-        pxOpenGL->Uniform3i = pxOpenGL->GetProcAddress("glUniform3i");
-        pxOpenGL->Uniform3iv = pxOpenGL->GetProcAddress("glUniform3iv");
-        pxOpenGL->Uniform4f = pxOpenGL->GetProcAddress("glUniform4f");
-        pxOpenGL->Uniform4fv = pxOpenGL->GetProcAddress("glUniform4fv");
-        pxOpenGL->Uniform4i = pxOpenGL->GetProcAddress("glUniform4i");
-        pxOpenGL->Uniform4iv = pxOpenGL->GetProcAddress("glUniform4iv");
-        pxOpenGL->UniformMatrix2fv = pxOpenGL->GetProcAddress("glUniformMatrix2fv");
-        pxOpenGL->UniformMatrix3fv = pxOpenGL->GetProcAddress("glUniformMatrix3fv");
-        pxOpenGL->UniformMatrix4fv = pxOpenGL->GetProcAddress("glUniformMatrix4fv");
+        pxOpenGL->ShaderGetiv = pxOpenGL->FunctionPointerGet("glGetShaderiv");
+        pxOpenGL->ShaderLogInfoGet = pxOpenGL->FunctionPointerGet("glGetShaderInfoLog");
+        pxOpenGL->ShaderDelete = pxOpenGL->FunctionPointerGet("glDeleteShader");
+        pxOpenGL->ShaderAttach = pxOpenGL->FunctionPointerGet("glAttachShader");
+        pxOpenGL->ShaderProgramLink = pxOpenGL->FunctionPointerGet("glLinkProgram");
+        pxOpenGL->ShaderProgramValidate = pxOpenGL->FunctionPointerGet("glValidateProgram");
+        pxOpenGL->TextureSlotActive = pxOpenGL->FunctionPointerGet("glActiveTexture");
+        pxOpenGL->BufferGenerate = pxOpenGL->FunctionPointerGet("glGenBuffers");
+        pxOpenGL->BufferBind = pxOpenGL->FunctionPointerGet("glBindBuffer");
+        pxOpenGL->BufferData = pxOpenGL->FunctionPointerGet("glBufferData");
+        pxOpenGL->VertexAttribPointer = pxOpenGL->FunctionPointerGet("glVertexAttribPointer");
+
+        pxOpenGL->VertexAttribArrayEnable = pxOpenGL->FunctionPointerGet("glEnableVertexAttribArray");
+        pxOpenGL->VertexAttribArrayDisable = pxOpenGL->FunctionPointerGet("glDisableVertexAttribArray");
+
+        pxOpenGL->DisableVertexArrayAttrib = pxOpenGL->FunctionPointerGet("glDisableVertexArrayAttrib");
+        pxOpenGL->GetUniformLocation = pxOpenGL->FunctionPointerGet("glGetUniformLocation");
+        pxOpenGL->Uniform1f = pxOpenGL->FunctionPointerGet("glUniform1f");
+        pxOpenGL->Uniform1fv = pxOpenGL->FunctionPointerGet("glUniform1fv");
+        pxOpenGL->Uniform1i = pxOpenGL->FunctionPointerGet("glUniform1i");
+        pxOpenGL->Uniform1iv = pxOpenGL->FunctionPointerGet("glUniform1iv");
+        pxOpenGL->Uniform2f = pxOpenGL->FunctionPointerGet("glUniform2f");
+        pxOpenGL->Uniform2fv = pxOpenGL->FunctionPointerGet("glUniform2fv");
+        pxOpenGL->Uniform2i = pxOpenGL->FunctionPointerGet("glUniform2i");
+        pxOpenGL->Uniform2iv = pxOpenGL->FunctionPointerGet("glUniform2iv");
+        pxOpenGL->Uniform3f = pxOpenGL->FunctionPointerGet("glUniform3f");
+        pxOpenGL->Uniform3fv = pxOpenGL->FunctionPointerGet("glUniform3fv");
+        pxOpenGL->Uniform3i = pxOpenGL->FunctionPointerGet("glUniform3i");
+        pxOpenGL->Uniform3iv = pxOpenGL->FunctionPointerGet("glUniform3iv");
+        pxOpenGL->Uniform4f = pxOpenGL->FunctionPointerGet("glUniform4f");
+        pxOpenGL->Uniform4fv = pxOpenGL->FunctionPointerGet("glUniform4fv");
+        pxOpenGL->Uniform4i = pxOpenGL->FunctionPointerGet("glUniform4i");
+        pxOpenGL->Uniform4iv = pxOpenGL->FunctionPointerGet("glUniform4iv");
+        pxOpenGL->UniformMatrix2fv = pxOpenGL->FunctionPointerGet("glUniformMatrix2fv");
+        pxOpenGL->UniformMatrix3fv = pxOpenGL->FunctionPointerGet("glUniformMatrix3fv");
+        pxOpenGL->UniformMatrix4fv = pxOpenGL->FunctionPointerGet("glUniformMatrix4fv");
 
 
         // Extensions
         {
 #if OSUnix
-            pxOpenGL->SwapIntervalSet = pxOpenGL->GetProcAddress("glXSwapIntervalEXT");
-            pxOpenGL->SwapIntervalGet = pxOpenGL->GetProcAddress("glxGetSwapIntervalEXT");
-            pxOpenGL->StringGetExtensions = pxOpenGL->GetProcAddress("glxGetExtensionsStringARB");
+            pxOpenGL->SwapIntervalSet = pxOpenGL->FunctionPointerGet("glXSwapIntervalEXT");
+            pxOpenGL->SwapIntervalGet = pxOpenGL->FunctionPointerGet("glxGetSwapIntervalEXT");
+            pxOpenGL->StringGetExtensions = pxOpenGL->FunctionPointerGet("glxGetExtensionsStringARB");
 #elif OSWindows
-            pxOpenGL->SwapIntervalSet = pxOpenGL->GetProcAddress("wglSwapIntervalEXT");
-            pxOpenGL->SwapIntervalGet = pxOpenGL->GetProcAddress("wglGetSwapIntervalEXT");
-            pxOpenGL->StringGetExtensions = pxOpenGL->GetProcAddress("wglGetExtensionsStringARB");
+            pxOpenGL->SwapIntervalSet = pxOpenGL->FunctionPointerGet("wglSwapIntervalEXT");
+            pxOpenGL->SwapIntervalGet = pxOpenGL->FunctionPointerGet("wglGetSwapIntervalEXT");
+            pxOpenGL->StringGetExtensions = pxOpenGL->FunctionPointerGet("wglGetExtensionsStringARB");
 
-            pxOpenGL->DevicePhysicalList = pxOpenGL->GetProcAddress("wglEnumGpusNV");
-            pxOpenGL->DevicePhysicalListB = pxOpenGL->GetProcAddress("wglEnumGpuDevicesNV");
-            pxOpenGL->DeviceAffinityCreate = pxOpenGL->GetProcAddress("wglCreateAffinityDCNV");
-            pxOpenGL->DeviceAffinityList = pxOpenGL->GetProcAddress("wglEnumGpusFromAffinityDCNV");
-            pxOpenGL->DeviceAffinityDelete = pxOpenGL->GetProcAddress("wglDeleteDCNV");
+            pxOpenGL->DevicePhysicalList = pxOpenGL->FunctionPointerGet("wglEnumGpusNV");
+            pxOpenGL->DevicePhysicalListB = pxOpenGL->FunctionPointerGet("wglEnumGpuDevicesNV");
+            pxOpenGL->DeviceAffinityCreate = pxOpenGL->FunctionPointerGet("wglCreateAffinityDCNV");
+            pxOpenGL->DeviceAffinityList = pxOpenGL->FunctionPointerGet("wglEnumGpusFromAffinityDCNV");
+            pxOpenGL->DeviceAffinityDelete = pxOpenGL->FunctionPointerGet("wglDeleteDCNV");
 #endif
         }
     }
@@ -2760,7 +2765,7 @@ void PXAPI PXOpenGLSelect(PXOpenGL* const pxOpenGL)
     assert(pxOpenGL);
 
 #if OSUnix
-    const int result = glXMakeCurrent(window->DisplayCurrent, window->ID, pxOpenGL->PXOpenGLConext);
+    const int result = glXMakeCurrent(pxOpenGL->DisplayHandle, pxOpenGL->DrawableHandle, pxOpenGL->ContextHandle);
 #elif OSWindows
     const BOOL result = pxOpenGL->MakeCurrent(pxOpenGL->WindowDeviceContextHandle, pxOpenGL->ContextHandle);
 #endif
@@ -2780,7 +2785,7 @@ PXBool PXAPI PXOpenGLDeselect(PXOpenGL* const pxOpenGL)
 
     const PXBool successful =
 #if OSUnix
-        glXMakeCurrent(0, window->ID, pxOpenGL->PXOpenGLConext);
+        glXMakeCurrent(PXNull, pxOpenGL->DrawableHandle, pxOpenGL->ContextHandle);
 #elif OSWindows
         pxOpenGL->MakeCurrent(0, 0);
 #endif
@@ -2844,7 +2849,7 @@ PXActionResult PXAPI PXOpenGLDevicePhysicalListAmount(PXOpenGL* const pxOpenGL, 
 
     *amount = 1; // ToDo: Bad Hack, get the correct amount!
 
-    return PXActionRefusedNotSupported;
+    return PXActionRefusedNotImplemented;
 
 #elif OSWindows
 
@@ -2978,7 +2983,7 @@ PXActionResult PXAPI PXOpenGLRelease(PXOpenGL* const pxOpenGL)
     }
 
 #if OSUnix
-    const int result = glXMakeCurrent(window->DisplayCurrent, 0, 0);
+    const int result = glXMakeCurrent(pxOpenGL->DisplayHandle, PXNull, PXNull);
 
 #elif OSWindows
     const BOOL success = pxOpenGL->DeleteContext(pxOpenGL->ContextHandle);

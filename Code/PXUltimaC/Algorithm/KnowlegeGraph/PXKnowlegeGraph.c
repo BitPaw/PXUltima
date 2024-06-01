@@ -225,7 +225,7 @@ PXActionResult PXAPI PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph* const pxKnowle
 
         pxGraphic.ScreenBufferRead(pxGraphic.EventOwner, pxImage);
 
-        const PXActionResult pxSaveResult = PXResourceSaveA(pxImage, "_TEST_DATA_INPUT_\\books.bmp", PXFileFormatBitMap);
+        //const PXActionResult pxSaveResult = PXResourceSaveA(pxImage, "_TEST_DATA_INPUT_\\books.bmp", PXFileFormatBitMap);
     }
 
 

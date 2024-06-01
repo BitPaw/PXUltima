@@ -31,6 +31,8 @@ typedef enum PXMouseButton_
 	PXMouseButtonLeft,
 	PXMouseButtonMiddle,
 	PXMouseButtonRight,
+	PXMouseButtonScrollUp,
+	PXMouseButtonRightDown,
 	PXMouseButtonSpecialA,
 	PXMouseButtonSpecialB,
 	PXMouseButtonSpecialC,
@@ -85,6 +87,8 @@ typedef enum PXWindowEventType_
 	PXWindowEventTypeInputMouseMove,
 	PXWindowEventTypeInputKeyboard,
 
+	PXWindowEventTypeFocusEnter,
+	PXWindowEventTypeFocusLeave,
 
 
 	WindowEventActivate,
@@ -408,6 +412,16 @@ PXWindowEventInputKeyboard;
 
 typedef struct PXWindowEvent_
 {
+	union
+	{
+		PXWindowEventClose Close;
+		PXWindowEventResize Resize;
+		PXWindowEventInputMouseButton InputMouseButton;
+		PXWindowEventInputMouseMove InputMouseMove;
+		PXWindowEventInputKeyboard InputKeyboard;
+		PXWindowEventSelect Select;
+	};
+
 	//-----------------------------
 	// Original data
 	//-----------------------------
@@ -427,16 +441,6 @@ typedef struct PXWindowEvent_
 
 	struct PXUIElement_* UIElementReference;
 	struct PXUIElement_* UIElementSender;
-
-	union PXWindowEventUnion
-	{
-		PXWindowEventClose Close;
-		PXWindowEventResize Resize;
-		PXWindowEventInputMouseButton InputMouseButton;
-		PXWindowEventInputMouseMove InputMouseMove;
-		PXWindowEventInputKeyboard InputKeyboard;
-		PXWindowEventSelect Select;
-	};
 }
 PXWindowEvent;
 
@@ -487,7 +491,7 @@ PXPublic PXActionResult PXAPI PXGUISystemRelease(PXGUISystem* const pxGUISystem)
 PXPublic void PXAPI PXWindowEventConsumer(PXGUISystem* const pxGUISystem, PXWindowEvent* const pxWindowEvent);
 
 #if OSUnix
-PXPrivate void PXWindowEventHandler(PXWindow* const pxWindow, const XEvent* const xEvent);
+PXPrivate void PXWindowEventHandler(PXUIElement* const pxWindow, const XEvent* const xEventData);
 #elif PXOSWindowsDestop
 PXPublic LRESULT CALLBACK PXWindowEventHandler(const HWND PXWindowsID, const UINT eventID, const WPARAM wParam, const LPARAM lParam);
 
@@ -497,6 +501,12 @@ PXPrivate BOOL CALLBACK PXWindowEnumChildProc(HWND hwnd, LPARAM lParam);
 
 
 PXPublic PXThreadResult PXOSAPI PXWindowMessageLoop(PXUIElement* const pxUIElement);
+
+
+PXPublic PXBool PXAPI PXGUIElementFind(const PXWindowID pxUIElementID, PXUIElement* const pxUIElement);
+PXPublic PXBool PXAPI PXGUIElementDelete(const PXWindowID pxUIElementID, PXUIElement* const pxUIElement);
+
+PXPublic PXBool PXAPI PXGUIElementTextSet(PXUIElement* const pxUIElement, char* text);
 
 
 PXPublic PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResourceCreateInfo* const pxResourceCreateInfo, const PXSize amount);
@@ -523,8 +533,7 @@ PXPublic PXWindowID PXAPI PXWindowFindViaTitle(const PXText* const windowTitle);
 PXPublic void PXAPI PXWindowIconCorner();
 PXPublic void PXAPI PXWindowIconTaskBar();
 
-PXPublic PXWindow* PXAPI PXWindowLookupFind(const PXWindowID PXWindowID);
-PXPublic void PXAPI PXWindowLookupRemove(const PXWindow* PXWindow);
+
 
 PXPublic PXActionResult PXAPI PXWindowTitleBarColorSet(const PXWindowID pxWindowID);
 
@@ -532,9 +541,9 @@ PXPublic PXActionResult PXAPI PXWindowTitleBarColorSet(const PXWindowID pxWindow
 PXPublic PXActionResult PXAPI PXWindowMouseMovementEnable(const PXWindowID pxWindow);
 
 PXPublic PXActionResult PXAPI PXWindowPosition(const PXWindowID pxWindowID, PXInt32S* x, PXInt32S* y);
-PXPublic PXActionResult PXAPI PXWindowMove(PXWindow* const pxWindow, const PXInt32S x, const PXInt32S y);
-PXPublic void PXAPI PXWindowPositonCenterScreen(PXWindow* const pxWindow);
-PXPublic void PXAPI PXWindowCursor(PXWindow* const pxWindow);
+PXPublic PXActionResult PXAPI PXWindowMove(const PXWindowID pxWindow, const PXInt32S x, const PXInt32S y);
+PXPublic void PXAPI PXWindowPositonCenterScreen(const PXWindowID pxWindow);
+PXPublic void PXAPI PXWindowCursor(const PXWindowID pxWindow);
 //voidPXWindowCursor(const CursorIcon cursorIcon);
 PXPublic void PXAPI PXWindowCursorTexture();
 PXPublic void PXAPI PXWindowCursorCaptureMode(const PXWindowID pxWindowID, const PXWindowCursorMode cursorMode);

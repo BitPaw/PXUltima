@@ -230,45 +230,45 @@ PXAudioEffectEcho;
 
 typedef struct PXAudioEffectFlanger_
 {
-	FLOAT       WetDryMix;
-	FLOAT       Depth;
-	FLOAT       Feedback;
-	FLOAT       Frequency;
-	LONG        Waveform;
-	FLOAT       Delay;
-	LONG        Phase;
+	float    WetDryMix;
+	float    Depth;
+	float    Feedback;
+	float    Frequency;
+	PXInt32U Waveform;
+	float    Delay;
+	PXInt32U Phase;
 }
 PXAudioEffectFlanger;
 
 typedef struct PXAudioEffectGargle_
 {
-	DWORD       dwRateHz;               // Rate of modulation in hz
-	DWORD       dwWaveShape;            // DSFXGARGLE_WAVE_xxx
+	PXInt32U dwRateHz;    // Rate of modulation in hz
+	PXInt32U dwWaveShape; // DSFXGARGLE_WAVE_xxx
 }
 PXAudioEffectGargle;
 
 typedef struct PXAudioEffectParamEq_
 {
-	FLOAT Center;
-	FLOAT Bandwidth;
-	FLOAT Gain;
+	float Center;
+	float Bandwidth;
+	float Gain;
 }
 PXAudioEffectParamEq;
 
 typedef struct PXAudioEffectI3DL2Reverb_
 {
-	LONG    Room;                  // [-10000, 0]      default: -1000 mB
-	LONG    RoomHF;                // [-10000, 0]      default: 0 mB
-	FLOAT   RoomRolloffFactor;    // [0.0, 10.0]      default: 0.0
-	FLOAT   DecayTime;            // [0.1, 20.0]      default: 1.49s
-	FLOAT   DecayHFRatio;         // [0.1, 2.0]       default: 0.83
-	LONG    Reflections;           // [-10000, 1000]   default: -2602 mB
-	FLOAT   ReflectionsDelay;     // [0.0, 0.3]       default: 0.007 s
-	LONG    Reverb;                // [-10000, 2000]   default: 200 mB
-	FLOAT   ReverbDelay;          // [0.0, 0.1]       default: 0.011 s
-	FLOAT   Diffusion;            // [0.0, 100.0]     default: 100.0 %
-	FLOAT   Density;              // [0.0, 100.0]     default: 100.0 %
-	FLOAT   HFReference;          // [20.0, 20000.0]  default: 5000.0 Hz
+	PXInt32U Room;           // [-10000, 0]      default: -1000 mB
+	PXInt32U RoomHF;         // [-10000, 0]      default: 0 mB
+	float RoomRolloffFactor; // [0.0, 10.0]      default: 0.0
+	float DecayTime;         // [0.1, 20.0]      default: 1.49s
+	float DecayHFRatio;      // [0.1, 2.0]       default: 0.83
+	PXInt32U Reflections;    // [-10000, 1000]   default: -2602 mB
+	float ReflectionsDelay;  // [0.0, 0.3]       default: 0.007 s
+	PXInt32U Reverb;         // [-10000, 2000]   default: 200 mB
+	float ReverbDelay;       // [0.0, 0.1]       default: 0.011 s
+	float Diffusion;         // [0.0, 100.0]     default: 100.0 %
+	float Density;           // [0.0, 100.0]     default: 100.0 %
+	float HFReference;       // [20.0, 20000.0]  default: 5000.0 Hz
 }
 PXAudioEffectI3DL2Reverb;
 
@@ -284,10 +284,6 @@ PXAudioEffectWavesReverb;
 
 typedef struct PXAudioEffect_
 {
-	PXAudioEffectType Type;
-	PXBool Enable;
-	PXBool Fetch;
-
 	union
 	{
 		PXAudioEffectChorus Chorus;
@@ -300,6 +296,10 @@ typedef struct PXAudioEffect_
 		PXAudioEffectI3DL2Reverb I3DL2Reverb;
 		PXAudioEffectWavesReverb WavesReverb;
 	};
+
+	PXAudioEffectType Type;
+	PXBool Enable;
+	PXBool Fetch;
 }
 PXAudioEffect;
 

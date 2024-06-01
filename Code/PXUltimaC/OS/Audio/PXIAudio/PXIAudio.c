@@ -1,7 +1,10 @@
 #include "PXIAudio.h"
 
+#if OSUnix
+#elif OSWindows
 #include <audioclient.h> // Windows Vista (+UWP) 
 //#pragma comment(lib, "dsound.lib") 
+#endif
 
 PXActionResult PXAPI PXIAudioInitialize(PXAudio* const pxAudio)
 {

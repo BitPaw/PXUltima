@@ -2167,8 +2167,6 @@ typedef struct PXVulcan_
 }
 PXVulcan;
 
-typedef struct PXWindow_ PXWindow;
-
 PXPrivate PXActionResult PXAPI PXVulcanErrorCodeFromID(const VkResult vkResultID);
 
 PXPublic PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, struct PXGraphicInitializeInfo_* const pxGraphicInitializeInfo);

@@ -1,5 +1,9 @@
 #include "PXDirectSound.h"
 
+#if OSUnix
+#pragma warning(comment, "DirectX does not exist under linux") 
+#elif OSWindows
+
 #pragma comment(lib, "dsound.lib") 
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "Dxgi.lib")
@@ -79,7 +83,7 @@ BOOL CALLBACK PXAudioDeviceDetectObjectCallBack(LPGUID guid, LPCSTR cstrDescript
 
 	return PXFalse;
 }
-
+#endif
 
 PXActionResult PXAPI PXDirectSoundInitialize(PXAudioDirectSound* const pxAudioDirectSound, PXAudioInitializeInfo* const pxAudioInitializeInfo)
 {
@@ -205,6 +209,8 @@ PXActionResult PXAPI PXDirectSoundInitialize(PXAudioDirectSound* const pxAudioDi
 
 PXActionResult PXAPI PXDirectSoundDeviceAmount(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDeviceAmountInfo* const pxAudioDeviceAmountInfo)
 {
+#if OSUnix
+#elif OSWindows
 	HRESULT enumResultID;
 
 	pxAudioDeviceAmountInfo->DeviceInput = 0;
@@ -236,12 +242,15 @@ PXActionResult PXAPI PXDirectSoundDeviceAmount(PXAudioDirectSound* const pxAudio
 	const PXActionResult enumResult = PXWindowsHandleErrorFromID(enumResultID);
 
 	PXActionReturnOnError(enumResult);
+#endif
 
 	return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXDirectSoundDeviceFetch(PXAudioDirectSound* const pxAudioDirectSound, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID, PXAudioDevice* const pxAudioDevice)
 {
+#if OSUnix
+#elif OSWindows
 	PXAudioDeviceDetectObjectEventData pxAudioDeviceDetectObjectEventData;
 	pxAudioDeviceDetectObjectEventData.IndexCurrent = 0;
 	pxAudioDeviceDetectObjectEventData.IndexTarget = deviceID;
@@ -280,6 +289,7 @@ PXActionResult PXAPI PXDirectSoundDeviceFetch(PXAudioDirectSound* const pxAudioD
 	const PXActionResult enumResult = PXWindowsHandleErrorFromID(enumResultID);
 
 	PXActionReturnOnError(enumResult);
+#endif
 
 	return PXActionSuccessful;
 }
@@ -296,6 +306,8 @@ PXActionResult PXAPI PXDirectSoundDeviceFetchAll(PXAudioDirectSound* const pxAud
 
 PXActionResult PXAPI PXDirectSoundDeviceOpen(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID)
 {
+#if OSUnix
+#elif OSWindows
 	pxAudioDevice->Type = pxAudioDeviceType;
 
 	switch (pxAudioDeviceType)
@@ -394,6 +406,7 @@ PXActionResult PXAPI PXDirectSoundDeviceOpen(PXAudioDirectSound* const pxAudioDi
 		default:
 			return PXActionRefusedArgumentInvalid;
 	}
+#endif
 
 	return PXActionSuccessful;	
 }
@@ -409,6 +422,8 @@ PXActionResult PXAPI PXDirectSoundDeviceLoad(PXAudioDirectSound* const pxAudioDi
 	{
 		return PXActionRefusedArgumentNull;
 	}
+#if OSUnix
+#elif OSWindows
 
 	PXDirectSoundOutputInterface* const directSound = (PXDirectSoundOutputInterface*)pxAudioDirectSound->DirectSoundInterface;
 	PXDirectSoundBuffer* soundBuffer = PXNull;
@@ -530,6 +545,7 @@ PXActionResult PXAPI PXDirectSoundDeviceLoad(PXAudioDirectSound* const pxAudioDi
 		const HRESULT bufferResultID = soundBuffer->lpVtbl->QueryInterface(soundBuffer, &IID_IDirectSound3DBuffer, &pxAudioDevice->Buffer3DInterface);
 		const PXActionResult bufferResult = PXWindowsHandleErrorFromID(bufferResultID);
 	}
+#endif
 
 	return PXActionSuccessful;
 }
@@ -541,6 +557,8 @@ PXActionResult PXAPI PXDirectSoundDevicePlayCursorSet(PXAudioDirectSound* const 
 		return PXActionRefusedArgumentNull;
 	}
 
+#if OSUnix
+#elif OSWindows
 	IDirectSoundBuffer* const soundBuffer = (IDirectSoundBuffer*)pxAudioDevice->SoundBuffer;
 
 	if (!soundBuffer)
@@ -552,6 +570,7 @@ PXActionResult PXAPI PXDirectSoundDevicePlayCursorSet(PXAudioDirectSound* const 
 	const PXActionResult setResult = PXWindowsHandleErrorFromID(setResultID);
 
 	PXActionReturnOnError(setResult);
+#endif
 
 	return PXActionSuccessful;
 }
@@ -562,6 +581,9 @@ PXActionResult PXAPI PXDirectSoundDevicePlayCursorGet(PXAudioDirectSound* const 
 	{
 		return PXActionRefusedArgumentNull;
 	}
+
+#if OSUnix
+#elif OSWindows
 
 	IDirectSoundBuffer* const soundBuffer = (IDirectSoundBuffer*)pxAudioDevice->SoundBuffer;
 
@@ -581,6 +603,7 @@ PXActionResult PXAPI PXDirectSoundDevicePlayCursorGet(PXAudioDirectSound* const 
 
 		*offset = positionRead;
 	}
+#endif
 
 	return PXActionSuccessful;
 }
@@ -591,6 +614,8 @@ PXActionResult PXAPI PXDirectSoundDevicePlaySpeedSet(PXAudioDirectSound* const p
 	{
 		return PXActionRefusedArgumentNull;
 	}
+#if OSUnix
+#elif OSWindows
 
 	IDirectSoundBuffer* const soundBuffer = (IDirectSoundBuffer*)pxAudioDevice->SoundBuffer;
 
@@ -605,6 +630,7 @@ PXActionResult PXAPI PXDirectSoundDevicePlaySpeedSet(PXAudioDirectSound* const p
 
 		PXActionReturnOnError(getResult);
 	}
+#endif
 
 	return PXActionSuccessful;
 }
@@ -615,6 +641,9 @@ PXActionResult PXAPI PXDirectSoundDevicePlaySpeedGet(PXAudioDirectSound* const p
 	{
 		return PXActionRefusedArgumentNull;
 	}
+
+#if OSUnix
+#elif OSWindows
 
 	IDirectSoundBuffer* const soundBuffer = (IDirectSoundBuffer*)pxAudioDevice->SoundBuffer;
 
@@ -633,6 +662,7 @@ PXActionResult PXAPI PXDirectSoundDevicePlaySpeedGet(PXAudioDirectSound* const p
 
 		*frequency = frequencyDW;
 	}
+#endif
 
 	return PXActionSuccessful;
 }
@@ -643,6 +673,9 @@ PXActionResult PXAPI PXDirectSoundDevicePositionSet(PXAudioDirectSound* const px
 	{
 		return PXActionRefusedArgumentNull;
 	}
+
+#if OSUnix
+#elif OSWindows
 
 	IDirectSound3DBuffer8* const directSound3DBuffer = (IDirectSound3DBuffer8*)pxAudioDevice->Buffer3DInterface;
 
@@ -655,6 +688,7 @@ PXActionResult PXAPI PXDirectSoundDevicePositionSet(PXAudioDirectSound* const px
 	const PXActionResult getResult = PXWindowsHandleErrorFromID(getResultID);
 
 	PXActionReturnOnError(getResult);
+#endif
 
 	return PXActionSuccessful;
 }
@@ -665,6 +699,9 @@ PXActionResult PXAPI PXDirectSoundDevicePositionGet(PXAudioDirectSound* const px
 	{
 		return PXActionRefusedArgumentNull;
 	}
+
+#if OSUnix
+#elif OSWindows
 
 	IDirectSound3DBuffer8* const directSound3DBuffer = (IDirectSound3DBuffer8*)pxAudioDevice->Buffer3DInterface;
 
@@ -683,6 +720,8 @@ PXActionResult PXAPI PXDirectSoundDevicePositionGet(PXAudioDirectSound* const px
 	*x = vector.x;
 	*y = vector.y;
 	*z = vector.z;
+
+#endif
 
 	return PXActionSuccessful;
 }
@@ -739,6 +778,9 @@ PXActionResult PXAPI PXDirectSoundDeviceVolumeGet(PXAudioDirectSound* const pxAu
 		return PXActionRefusedArgumentNull;
 	}
 
+#if OSUnix
+#elif OSWindows
+
 	IDirectSoundBuffer* const soundBuffer = (IDirectSoundBuffer*)pxAudioDevice->SoundBuffer;
 
 	if (!soundBuffer)
@@ -757,6 +799,8 @@ PXActionResult PXAPI PXDirectSoundDeviceVolumeGet(PXAudioDirectSound* const pxAu
 		*volume = volumeL;
 	}
 
+#endif
+
 	return PXActionSuccessful;
 }
 
@@ -766,6 +810,9 @@ PXActionResult PXAPI PXDirectSoundDeviceVolumeSetEqual(PXAudioDirectSound* const
 	{
 		return PXActionRefusedArgumentNull;
 	}
+
+#if OSUnix
+#elif OSWindows
 
 	IDirectSoundBuffer* const soundBuffer = (IDirectSoundBuffer*)pxAudioDevice->SoundBuffer;
 
@@ -780,6 +827,8 @@ PXActionResult PXAPI PXDirectSoundDeviceVolumeSetEqual(PXAudioDirectSound* const
 
 		PXActionReturnOnError(getResult);
 	}
+
+#endif
 
 	return PXActionSuccessful;
 }
@@ -796,6 +845,9 @@ PXActionResult PXAPI PXDirectSoundDeviceStart(PXAudioDirectSound* const pxAudioD
 		return PXActionRefusedArgumentNull;
 	}
 
+#if OSUnix
+#elif OSWindows
+
 	IDirectSoundBuffer* const soundBuffer = (IDirectSoundBuffer*)pxAudioDevice->SoundBuffer;
 
 	if (!soundBuffer)
@@ -811,6 +863,8 @@ PXActionResult PXAPI PXDirectSoundDeviceStart(PXAudioDirectSound* const pxAudioD
 	}
 
 	pxAudioDevice->IsRunning = PXTrue;
+
+#endif
 
 	return PXActionSuccessful;
 }
@@ -831,6 +885,9 @@ PXActionResult PXAPI PXDirectSoundDeviceStop(PXAudioDirectSound* const pxAudioDi
 		return PXActionRefusedArgumentNull;
 	}
 
+#if OSUnix
+#elif OSWindows
+
 	IDirectSoundBuffer* const soundBuffer = (IDirectSoundBuffer*)pxAudioDevice->SoundBuffer;
 
 	if (!soundBuffer)
@@ -849,6 +906,8 @@ PXActionResult PXAPI PXDirectSoundDeviceStop(PXAudioDirectSound* const pxAudioDi
 
 	pxAudioDevice->IsRunning = PXFalse;
 
+#endif
+
 	return PXActionSuccessful;
 }
 
@@ -859,6 +918,9 @@ PXActionResult PXAPI PXDirectSoundDevicePause(PXAudioDirectSound* const pxAudioD
 
 PXActionResult PXAPI PXDirectSoundEffectEnable(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice)
 {
+#if OSUnix
+#elif OSWindows
+
 	const PXBool wasRunning = pxAudioDevice->IsRunning; // Store current state to keep davice playing after setting effect
 	PXDirectSoundBuffer* soundBuffer = (PXDirectSoundBuffer*)pxAudioDevice->SoundBuffer;
 
@@ -934,12 +996,16 @@ PXActionResult PXAPI PXDirectSoundEffectEnable(PXAudioDirectSound* const pxAudio
 	{
 		PXDirectSoundDeviceStart(pxAudioDirectSound, pxAudioDevice);
 	}
+#endif
 
 	return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXDirectSoundEffectUpdate(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, PXAudioEffect* const pxAudioEffect)
 {
+#if OSUnix
+#elif OSWindows
+
 	// check input
 
 	// Check if enabled
@@ -1412,6 +1478,7 @@ PXActionResult PXAPI PXDirectSoundEffectUpdate(PXAudioDirectSound* const pxAudio
 				return PXActionRefusedArgumentInvalid;
 		}
 	}
+#endif
 
 	return PXActionSuccessful;
 }
@@ -1453,6 +1520,8 @@ PXActionResult PXAPI PXDirectSoundDeviceVelocityGet(PXAudioDirectSound* const px
 		return PXActionRefusedArgumentNull;
 	}
 
+#if OSUnix
+#elif OSWindows
 	IDirectSound3DBuffer8* const directSound3DBuffer = (IDirectSound3DBuffer8*)pxAudioDevice->Buffer3DInterface;
 
 	if (!directSound3DBuffer)
@@ -1470,6 +1539,7 @@ PXActionResult PXAPI PXDirectSoundDeviceVelocityGet(PXAudioDirectSound* const px
 	*x = vector.x;
 	*y = vector.y;
 	*z = vector.z;
+#endif
 
 	return PXActionSuccessful;
 }
@@ -1521,6 +1591,8 @@ PXActionResult PXAPI PXDirectSoundDeviceDeferredSettingsCommit(PXAudioDirectSoun
 
 PXActionResult PXAPI PXDirectSoundDeviceVelocitySet(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, const float x, const float y, const float z)
 {
+#if OSUnix
+#elif OSWindows
 	if (!pxAudioDirectSound || !pxAudioDevice)
 	{
 		return PXActionRefusedArgumentNull;
@@ -1537,6 +1609,7 @@ PXActionResult PXAPI PXDirectSoundDeviceVelocitySet(PXAudioDirectSound* const px
 	const PXActionResult getResult = PXWindowsHandleErrorFromID(getResultID);
 
 	PXActionReturnOnError(getResult);
+#endif
 
 	return PXActionSuccessful;
 }

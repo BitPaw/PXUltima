@@ -33,6 +33,8 @@ typedef HRESULT (WINAPI* PXD3D11CreateDeviceAndSwapChain)
 
 PXActionResult PXAPI PXDirectX11Initialize(PXDirectX11* const pxDirectX11, PXGraphicInitializeInfo* const pxGraphicInitializeInfo)
 {
+#if OSUnix
+#elif OSWindows
     PXD3D11CreateDeviceAndSwapChain createDeviceAndSwapChain = PXNull;
 
 #if PXLogEnable
@@ -236,6 +238,7 @@ PXActionResult PXAPI PXDirectX11Initialize(PXDirectX11* const pxDirectX11, PXGra
         "Done..."
     );
 #endif
+#endif
 
     return PXActionRefusedNotImplemented;
 }
@@ -247,6 +250,9 @@ PXActionResult PXAPI PXDirectX11Release(PXDirectX11* const pxDirectX)
 
 PXActionResult PXAPI PXDirectX11TextureAction(PXDirectX11* const pxDirectX11, struct PXGraphicTexturInfo_* const pxGraphicTexturInfo)
 {
+#if OSUnix
+#elif OSWindows
+
     switch(pxGraphicTexturInfo->Action)
     {
         case PXResourceActionCreate:
@@ -511,11 +517,15 @@ PXActionResult PXAPI PXDirectX11TextureAction(PXDirectX11* const pxDirectX11, st
         }
     }
 
+#endif
+
     return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXDirectX11Clear(PXDirectX11* const pxDirectX11, const PXColorRGBAF* const pxColorRGBAF)
 {
+#if OSUnix
+#elif OSWindows
     const FLOAT rgba[4] = { pxColorRGBAF->Red, pxColorRGBAF->Green, pxColorRGBAF->Blue, pxColorRGBAF->Alpha };
 
     pxDirectX11->Context->lpVtbl->ClearRenderTargetView
@@ -524,12 +534,15 @@ PXActionResult PXAPI PXDirectX11Clear(PXDirectX11* const pxDirectX11, const PXCo
         pxDirectX11->RenderTargetView,
         rgba
     );
+#endif
 
     return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXDirectX11VertexBufferCreate(PXDirectX11* const pxDirectX11, PXVertexBuffer* const pxVertexBuffer)
 {
+#if OSUnix
+#elif OSWindows
     ID3D11Buffer** g_pVertexBuffer = &(ID3D11Buffer*)pxVertexBuffer->Info.DirectXInterface;
 
     // Fill in a buffer description.
@@ -554,12 +567,15 @@ PXActionResult PXAPI PXDirectX11VertexBufferCreate(PXDirectX11* const pxDirectX1
         &InitData, 
         g_pVertexBuffer
     );
+#endif
 
     return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXDirectX11ShaderProgramCreate(PXDirectX11* const pxDirectX11, PXShaderProgram* const pxShaderProgram, PXShader* const shaderList, const PXSize amount)
 {
+#if OSUnix
+#elif OSWindows
     for(PXSize i = 0; i < amount; ++i)
     {
         PXShader* const pxShader = &shaderList[i];
@@ -599,6 +615,7 @@ PXActionResult PXAPI PXDirectX11ShaderProgramCreate(PXDirectX11* const pxDirectX
                 return PXActionRefusedFormatNotSupported;
         }
     }
+#endif
 }
 
 PXActionResult PXAPI PXDirectX11TextureMemoryAvailable(PXDirectX11* const pxDirectX, PXInt32U* const value)

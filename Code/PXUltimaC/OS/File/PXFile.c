@@ -34,9 +34,10 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-//#include <sys/io.h>
+#include <stdio.h>
 #include <dirent.h>
 
+//#include <sys/io.h>
 
 
 #define OSFileOpenA fopen
@@ -255,7 +256,7 @@ PXActionResult PXAPI PXFilePathSplitt(const PXText* const fullPath, PXFilePathSt
 		}
 		case TextFormatUNICODE:
 		{
-#if OSUnix
+#if OSUnix && 0
 			char fullPathA[PXPathSizeMax];
 			char driveA[DriveMaxSize];
 			char directoryA[DirectoryMaxSize];
@@ -811,7 +812,7 @@ PXActionResult PXAPI PXFileCopy(const PXText* const sourceFilePath, const PXText
 
 			if (!fileOpenSuccesful)
 			{
-				return PXActionFailedFileOpen;
+				return PXActionFailedOpen;
 			}
 
 			while (!feof(fileSource))
@@ -1221,7 +1222,12 @@ PXActionResult PXAPI PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFr
 #else
 	pxFile->ID = fopen(pxFileOpenFromPathInfo->Text.TextA, readMode);
 
-	return pxFile->ID ? PXActionSuccessful : PXActionFailedFileOpen;
+	if(PXNull == pxFile->ID)
+	{
+		return PXActionFailedOpen;
+	}
+
+	return PXActionSuccessful;
 #endif
 
 
@@ -1769,7 +1775,7 @@ PXActionResult PXAPI PXFileClose(PXFile* const pxFile)
 			return PXActionSuccessful;
 
 		default:
-			return PXActionFailedFileClose;
+			return PXActionFailedClose;
 	}
 #elif OSWindows
 
@@ -3498,6 +3504,7 @@ PXActionResult PXAPI PXFilePathSet(PXFile* const pxFile, const PXText* const fil
 		return PXActionSuccessful;
 	}
 #endif
+#endif
 	// TODO:
 	//PXTextCreateCopy(&pxFile->FilePath, filePath);
 
@@ -3507,6 +3514,30 @@ PXActionResult PXAPI PXFilePathSet(PXFile* const pxFile, const PXText* const fil
 PXActionResult PXAPI PXFilePathGet(const PXFile* const pxFile, PXText* const filePath)
 {
 #if OSUnix
+	char namePathBuffer[64];
+	const PXSize namePathBuffer = sizeof(namePathBuffer);
+	const int numberDescriptor = fileno(pxFile->ID); // stdio.h
+
+	PXTextPrintA(namePathBuffer, namePathBuffer, "/proc/self/fd/%d", numberDescriptor); // "/prof/self/fd/0123456789"
+
+	const PXSize writtenBytes = readlink(namePathBuffer, filePath->TextA, filePath->SizeAllocated); // [POSIX.1 - 2008]
+	const PXBool success = -1 != writtenBytes;
+
+	if(!success)
+	{
+		// errno
+		return PXActionInvalid;
+	}
+
+
+//	realpath();
+
+	//readlink();
+
+	// Only for Apple-OSX
+	//const int resultID = fcntl(pxFile->ID, F_GETPATH, filePath->TextA); // [POSIX]
+
+
 	return PXActionRefusedNotImplemented; // TODO
 
 #elif OSWindows
@@ -3568,14 +3599,12 @@ PXActionResult PXAPI PXFilePathGet(const PXFile* const pxFile, PXText* const fil
 
 	return PXActionSuccessful;
 #endif
-
-#endif
 }
 
 PXActionResult PXAPI PXFIlePathGetLong(PXText* const pxTextInput, PXText* const pxTextOutput)
 {
 #if OSUnix
-	return PXActionRefusedNotSupported;
+	return PXActionRefusedNotImplemented;
 
 #elif OSWindows
 

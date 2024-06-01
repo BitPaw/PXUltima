@@ -1,6 +1,9 @@
 #include "PXDirectX9.h"
 
+#include <OS/GUI/PXGUI.h>
 #include <OS/Console/PXConsole.h>
+#include <OS/Graphic/PXGraphic.h>
+#include <OS/Memory/PXMemory.h>
 
 #if PXDX9Enable
 #include <d3d9.h>
@@ -25,23 +28,16 @@
 
 #endif
 
-#include <OS/Graphic/PXGraphic.h>
-#include <OS/GUI/PXGUI.h>
-#include <OS/Memory/PXMemory.h>
-
-typedef IDirect3D9* (WINAPI* PXDirect3DCreate9)(UINT SDKVersion);
-
-
 
 #if OSWindows
+typedef IDirect3D9* (WINAPI* PXDirect3DCreate9)(UINT SDKVersion);
+
 PXColorFormat PXAPI PXDirectXColorFormatToID(const D3DFORMAT format);
 D3DFORMAT PXAPI PXDirectXColorFormatFromID(const PXColorFormat pxColorFormat);
 void PXAPI PXDirectXMaterialToPXMaterial(PXMaterial* const pxMaterial, const D3DMATERIAL9* const d3dMaterial);
 void PXAPI PXDirectXMaterialFromPXMaterial(D3DMATERIAL9* const d3dMaterial, const PXMaterial* const pxMaterial);
 D3DPRIMITIVETYPE PXAPI PXDirectXDrawTypeFromPX(const PXGraphicDrawMode PXGraphicDrawMode);
 PXInt32U PXAPI PXDirectXVertexFormatFromPXVertexBufferFormat(const PXVertexBufferFormat pxVertexBufferFormat);
-
-
 
 typedef HRESULT(WINAPI* PXD3DCompile)
 (
@@ -66,6 +62,9 @@ typedef HRESULT(WINAPI* PXD3DXGetShaderConstantTableEx)(CONST DWORD* pFunction, 
 
 PXActionResult PXAPI PXDirectX9Initialize(PXDirectX9* const pxDirectX9, PXGraphicInitializeInfo* const pxGraphicInitializeInfo)
 {
+#if OSUnix
+#elif OSWindows
+
 #if PXLogEnable
     PXLogPrint
     (
@@ -231,11 +230,17 @@ PXActionResult PXAPI PXDirectX9Initialize(PXDirectX9* const pxDirectX9, PXGraphi
     );
 #endif
 
+#endif
+
+
     return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXDirectX9Release(PXDirectX9* const pxDirectX9)
 {
+#if OSUnix
+#elif OSWindows
+
 #if PXLogEnable
     PXLogPrint
     (
@@ -259,6 +264,8 @@ PXActionResult PXAPI PXDirectX9Release(PXDirectX9* const pxDirectX9)
     PXLibraryClose(&pxDirectX9->LibraryDirect3D);
 
     PXClear(PXDirectX9, pxDirectX9);
+#endif
+
 }
 
 void PXAPI PXDirectX9Select(PXDirectX9* const pxDirectX9)
@@ -273,6 +280,9 @@ void PXAPI PXDirectX9Deselect(PXDirectX9* const pxDirectX9)
 
 PXActionResult PXAPI PXDirectX9TextureAction(PXDirectX9* const pxDirectX9, struct PXGraphicTexturInfo_* const pxGraphicTexturInfo)
 {
+#if OSUnix
+#elif OSWindows
+
     switch(pxGraphicTexturInfo->Action)
     {
         case PXResourceActionCreate:
@@ -403,11 +413,16 @@ PXActionResult PXAPI PXDirectX9TextureAction(PXDirectX9* const pxDirectX9, struc
             return PXActionRefusedArgumentInvalid;
     }
 
+#endif
+
     return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXDirectX9ShaderProgramCreate(PXDirectX9* const pxDirectX9, PXShaderProgram* const pxShaderProgram, PXShader* const shaderList, const PXSize amount)
 {
+#if OSUnix
+#elif OSWindows
+
     for(PXSize i = 0; i < amount; i++)
     {
         PXShader* const pxShader = &shaderList[i];  
@@ -679,6 +694,9 @@ PXActionResult PXAPI PXDirectX9ShaderProgramCreate(PXDirectX9* const pxDirectX9,
         }
     }
 
+#endif
+
+
     return PXActionSuccessful;
 
 
@@ -774,6 +792,10 @@ PXActionResult PXAPI PXDirectX9ShaderVariableSet(PXDirectX9* const pxDirectX9, c
     {
         return PXActionRefusedArgumentNull;
     }
+
+#if OSUnix
+#elif OSWindows
+
 
     HRESULT setShaderConstantID = PXNull;
 
@@ -984,22 +1006,36 @@ PXActionResult PXAPI PXDirectX9ShaderVariableSet(PXDirectX9* const pxDirectX9, c
 
         return shaderConstantResult;
     }
+
+#endif
+
 }
 
 PXActionResult PXAPI PXDirectX9SceneBegin(PXDirectX9* const pxDirectX9)
 {
+#if OSUnix
+#elif OSWindows
     const HRESULT result = pxDirectX9->Device->lpVtbl->BeginScene(pxDirectX9->Device);
+#endif
 
     return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXDirectX9SceneEnd(PXDirectX9* const pxDirectX9)
 {
+#if OSUnix
+    return PXActionRefusedNotSupportedByOperatingSystem;
+#elif OSWindows
     const HRESULT result = pxDirectX9->Device->lpVtbl->EndScene(pxDirectX9->Device);
+#else
+    return PXActionRefusedNotSupportedByLibrary;
+#endif
 }
 
 PXActionResult PXAPI PXDirectX9DrawScriptCreate(PXDirectX9* const pxDirectX9, PXDrawScript* const pxDrawScript, const PXDrawScriptType pxDrawScriptType)
 {
+#if OSUnix
+#elif OSWindows
     D3DSTATEBLOCKTYPE stateBlcokType = D3DSBT_FORCE_DWORD;
 
     switch (pxDrawScriptType)
@@ -1019,33 +1055,44 @@ PXActionResult PXAPI PXDirectX9DrawScriptCreate(PXDirectX9* const pxDirectX9, PX
         stateBlcokType,
         &(IDirect3DStateBlock9*)pxDrawScript->Info.DirectXInterface
     );
+#endif
 
     return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXDirectX9DrawScriptBegin(PXDirectX9* const pxDirectX9, PXDrawScript* const pxDrawScript)
 {
+#if OSUnix
+#elif OSWindows
     const HRESULT result = pxDirectX9->Device->lpVtbl->BeginStateBlock(pxDirectX9->Device);
+#endif
 
     return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXDirectX9DrawScriptEnd(PXDirectX9* const pxDirectX9, PXDrawScript* const pxDrawScript)
 {
+#if OSUnix
+#elif OSWindows
     const HRESULT result = pxDirectX9->Device->lpVtbl->EndStateBlock
     (
         pxDirectX9->Device,
         &(IDirect3DStateBlock9*)pxDrawScript->Info.DirectXInterface
     );
+#endif
 
     return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXDirectX9DrawScriptDelete(PXDirectX9* const pxDirectX9, PXDrawScript* const pxDrawScript)
 {
+#if OSUnix
+#elif OSWindows
     IDirect3DStateBlock9* const direct3DStateBlock9 = (IDirect3DStateBlock9*)pxDrawScript->Info.DirectXInterface;
 
     const ULONG result = direct3DStateBlock9->lpVtbl->Release(direct3DStateBlock9);
+
+#endif
 
     return PXActionSuccessful;
 }
@@ -1057,6 +1104,8 @@ PXActionResult PXAPI PXDirectX9DrawScriptExecute(PXDirectX9* const pxDirectX9, P
 
 PXActionResult PXAPI PXDirectX9ViewportSet(PXDirectX9* const pxDirectX9, const PXViewPort* const pxViewPort)
 {
+#if OSUnix
+#elif OSWindows
     D3DVIEWPORT9 viewPort;
 
     // Convert
@@ -1074,11 +1123,15 @@ PXActionResult PXAPI PXDirectX9ViewportSet(PXDirectX9* const pxDirectX9, const P
         pxDirectX9->Device,
         &viewPort
     );
+#endif
+
     return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXDirectX9ViewportGet(PXDirectX9* const pxDirectX9, PXViewPort* const pxViewPort)
 {
+#if OSUnix
+#elif OSWindows
     D3DVIEWPORT9 viewPort;
 
     const HRESULT result = pxDirectX9->Device->lpVtbl->GetViewport
@@ -1096,12 +1149,17 @@ PXActionResult PXAPI PXDirectX9ViewportGet(PXDirectX9* const pxDirectX9, PXViewP
         pxViewPort->ClippingMinimum = viewPort.MinZ;
         pxViewPort->ClippingMaximum = viewPort.MaxZ;
     }
+#endif
 
     return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXDirectX9MaterialSet(PXDirectX9* const pxDirectX9, const PXMaterial* const pxMaterial)
 {
+#if OSUnix
+    return PXActionRefusedNotSupportedByOperatingSystem;
+
+#elif OSWindows
     D3DMATERIAL9 d3dMaterial;
     PXDirectXMaterialFromPXMaterial(&d3dMaterial, pxMaterial);
 
@@ -1113,10 +1171,16 @@ PXActionResult PXAPI PXDirectX9MaterialSet(PXDirectX9* const pxDirectX9, const P
     const PXActionResult pxActionResult = PXWindowsHandleErrorFromID(result);
 
     return pxActionResult;
+
+#endif
 }
 
 PXActionResult PXAPI PXDirectX9MaterialGet(PXDirectX9* const pxDirectX9, PXMaterial* const pxMaterial)
 {
+#if OSUnix
+    return PXActionRefusedNotSupportedByOperatingSystem;
+
+#elif OSWindows
     D3DMATERIAL9 d3dMaterial;
 
     const HRESULT result = pxDirectX9->Device->lpVtbl->GetMaterial
@@ -1129,6 +1193,10 @@ PXActionResult PXAPI PXDirectX9MaterialGet(PXDirectX9* const pxDirectX9, PXMater
     PXDirectXMaterialToPXMaterial(pxMaterial, &d3dMaterial);
 
     return pxActionResult;
+
+#else
+    return PXActionRefusedNotSupportedByLibrary;
+#endif
 }
 
 PXActionResult PXAPI PXDirectX9SwapIntervalSet(PXDirectX9* const pxDirectX9, const PXInt32U interval)
@@ -1185,20 +1253,34 @@ PXActionResult PXAPI PXDirectX9SwapIntervalGet(PXDirectX9* const pxDirectX9, PXI
 
 PXActionResult PXAPI PXDirectX9TextureMemoryAvailable(PXDirectX9* const pxDirectX9, PXInt32U* const value)
 {
+#if OSUnix
+    return PXActionRefusedNotSupportedByOperatingSystem;
+
+#elif OSWindows
     *value = pxDirectX9->Device->lpVtbl->GetAvailableTextureMem(pxDirectX9->Device);
+#endif
 
     return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXDirectX9DevicePhysicalListAmountFunction(PXDirectX9* const pxDirectX9, PXInt32U* const amountOfAdapters)
 {
+#if OSUnix
+    return PXActionRefusedNotSupportedByOperatingSystem;
+
+#elif OSWindows
     *amountOfAdapters = pxDirectX9->Context->lpVtbl->GetAdapterCount(pxDirectX9->Context);
+#endif
 
     return PXActionSuccessful;;
 }
 
 PXActionResult PXAPI PXDirectX9DevicePhysicalListFetchFunction(PXDirectX9* const pxDirectX9, const PXInt32U pxGraphicDevicePhysicalListSize, PXGraphicDevicePhysical* const pxGraphicDevicePhysicalList)
 {
+#if OSUnix
+    return PXActionRefusedNotSupportedByOperatingSystem;
+
+#elif OSWindows
     PXInt32U amountOfDXDevices = 0;
 
     PXDirectX9DevicePhysicalListAmountFunction(pxDirectX9, &amountOfDXDevices);
@@ -1224,10 +1306,15 @@ PXActionResult PXAPI PXDirectX9DevicePhysicalListFetchFunction(PXDirectX9* const
             }
         }
     }
+#endif
 }
 
 PXActionResult PXAPI PXDirectX9Clear(PXDirectX9* const pxDirectX9, const PXColorRGBAF* const pxColorRGBAF)
 {
+#if OSUnix
+    return PXActionRefusedNotSupportedByOperatingSystem;
+
+#elif OSWindows
     const UINT colorI8 = D3DCOLOR_ARGB
     (
         (PXInt8U)(pxColorRGBAF->Alpha * 0xFF),
@@ -1246,12 +1333,15 @@ PXActionResult PXAPI PXDirectX9Clear(PXDirectX9* const pxDirectX9, const PXColor
         1.0f,
         0
     );
+#endif
 
     return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXDirectX9SceneDeploy(PXDirectX9* const pxDirectX9)
 {
+#if OSUnix
+#elif OSWindows
     const HRESULT result = pxDirectX9->Device->lpVtbl->Present
     (
         pxDirectX9->Device,
@@ -1260,12 +1350,15 @@ PXActionResult PXAPI PXDirectX9SceneDeploy(PXDirectX9* const pxDirectX9)
         0,
         0
     );
+#endif
 
     return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXDirectX9PrimitiveDraw(PXDirectX9* const pxDirectX9, const PXGraphicDrawMode PXGraphicDrawMode, const PXInt32U startVertex, const PXInt32U primitiveCount)
 {
+#if OSUnix
+#elif OSWindows
     const D3DPRIMITIVETYPE primitiveType = PXDirectXDrawTypeFromPX(PXGraphicDrawMode);
 
     const HRESULT result = pxDirectX9->Device->lpVtbl->DrawPrimitive
@@ -1275,13 +1368,15 @@ PXActionResult PXAPI PXDirectX9PrimitiveDraw(PXDirectX9* const pxDirectX9, const
         startVertex,
         primitiveCount
     );
-
+#endif
 
     return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXDirectX9VertexFixedFunctionSet(PXDirectX9* const pxDirectX9, const PXVertexBufferFormat pxVertexBufferFormat)
 {
+#if OSUnix
+#elif OSWindows
     const DWORD flagID = PXDirectXVertexFormatFromPXVertexBufferFormat(pxVertexBufferFormat);
 
     const HRESULT result = pxDirectX9->Device->lpVtbl->SetFVF
@@ -1289,12 +1384,15 @@ PXActionResult PXAPI PXDirectX9VertexFixedFunctionSet(PXDirectX9* const pxDirect
         pxDirectX9->Device,
         flagID
     );
+#endif
 
     return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXDirectX9VertexFixedFunctionGet(PXDirectX9* const pxDirectX9, PXVertexBufferFormat* const pxVertexBufferFormat)
 {
+#if OSUnix
+#elif OSWindows
     DWORD flagID = 0;
 
     const HRESULT result = pxDirectX9->Device->lpVtbl->GetFVF
@@ -1302,12 +1400,15 @@ PXActionResult PXAPI PXDirectX9VertexFixedFunctionGet(PXDirectX9* const pxDirect
         pxDirectX9->Device,
         &flagID
     );
+#endif
 
     return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXDirectX9StreamSourceSet(PXDirectX9* const pxDirectX9, const PXInt32U StreamNumber, PXVertexBuffer* pxVertexBuffer, const PXInt32U OffsetInBytes, const PXInt32U Stride)
 {
+#if OSUnix
+#elif OSWindows
     const HRESULT result = pxDirectX9->Device->lpVtbl->SetStreamSource
     (
         pxDirectX9->Device,
@@ -1316,6 +1417,7 @@ PXActionResult PXAPI PXDirectX9StreamSourceSet(PXDirectX9* const pxDirectX9, con
         OffsetInBytes,
         Stride
     );
+#endif
 
     return PXActionSuccessful;
 }
@@ -1338,6 +1440,8 @@ PXActionResult PXAPI PXDirectX9ModelDraw(PXDirectX9* const pxDirectX9, PXModel* 
 
 PXActionResult PXAPI PXDirectX9LightSet(PXDirectX9* const pxDirectX9, PXLight* const pxLight, const PXInt32U index)
 {
+#if OSUnix
+#elif OSWindows
     D3DLIGHT9 d3dLight9;
     d3dLight9.Diffuse.r = pxLight->Diffuse[0];
     d3dLight9.Diffuse.g = pxLight->Diffuse[1];
@@ -1385,34 +1489,42 @@ PXActionResult PXAPI PXDirectX9LightSet(PXDirectX9* const pxDirectX9, PXLight* c
 
     const HRESULT result = pxDirectX9->Device->lpVtbl->SetLight(pxDirectX9->Device, index, &d3dLight9);
 
-    return PXActionSuccessful;
+#endif
 
-  
+    return PXActionSuccessful;  
 }
 
 PXActionResult PXAPI PXDirectX9LightGet(PXDirectX9* const pxDirectX9, PXLight* const pxLight, const PXInt32U index)
 {
+#if OSUnix
+#elif OSWindows
     BOOL enableBool = 0;
 
     const HRESULT result = pxDirectX9->Device->lpVtbl->GetLightEnable(pxDirectX9->Device, index, &enableBool);
 
     pxLight->Enabled = enableBool;
    // *enable = enableBool;
+#endif
 
     return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXDirectX9LightEnableSet(PXDirectX9* const pxDirectX9, PXLight* const pxLight, const PXInt32U index, const PXBool enable)
 {
+#if OSUnix
+#elif OSWindows
     const HRESULT result = pxDirectX9->Device->lpVtbl->LightEnable(pxDirectX9->Device, index, enable);
 
     pxLight->Enabled = enable;
+#endif
 
     return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXDirectX9LightEnableGet(PXDirectX9* const pxDirectX9, PXLight* const pxLight, const PXInt32U index, PXBool* const enable)
 {
+#if OSUnix
+#elif OSWindows
     D3DLIGHT9 d3dLight9;
 
     const HRESULT result = pxDirectX9->Device->lpVtbl->GetLight(pxDirectX9->Device, index, &d3dLight9);
@@ -1462,6 +1574,8 @@ PXActionResult PXAPI PXDirectX9LightEnableGet(PXDirectX9* const pxDirectX9, PXLi
             break;
     }
 
+#endif
+
     return PXActionSuccessful;
 }
 
@@ -1502,6 +1616,8 @@ PXActionResult PXAPI PXDirectX9ShaderCompile(PXDirectX9* const pxDirectX9, PXSha
 
 PXActionResult PXAPI PXDirectX9VertexBufferCreate(PXDirectX9* const pxDirectX9, PXVertexBuffer* const pxVertexBuffer)
 {
+#if OSUnix
+#elif OSWindows
     const DWORD flagID = PXDirectXVertexFormatFromPXVertexBufferFormat(pxVertexBuffer->Format);
 
     const HRESULT bufferCreateResult = pxDirectX9->Device->lpVtbl->CreateVertexBuffer
@@ -1543,11 +1659,15 @@ PXActionResult PXAPI PXDirectX9VertexBufferCreate(PXDirectX9* const pxDirectX9, 
 
     const HRESULT unlockResult = vertexBuffer->lpVtbl->Unlock(vertexBuffer);
 
+#endif
+
     return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXDirectX9IndexBufferCreate(PXDirectX9* const pxDirectX9, PXIndexBuffer* const pxIndexBuffer)
 {
+#if OSUnix
+#elif OSWindows
     D3DFORMAT dataFormat = D3DFMT_UNKNOWN;
 
     // fetch format
@@ -1588,7 +1708,7 @@ PXActionResult PXAPI PXDirectX9IndexBufferCreate(PXDirectX9* const pxDirectX9, P
         &(IDirect3DIndexBuffer9*)pxIndexBuffer->Info.DirectXInterface,
         PXNull
     );
-
+#endif
 
     // Fill data
 
@@ -1629,10 +1749,8 @@ PXActionResult PXAPI PXDirectX9ModelRegister(PXDirectX9* const pxDirectX9, PXMod
 
 
 
-
-
-
-
+#if OSUnix
+#elif OSWindows
 D3DFORMAT PXAPI PXDirectXColorFormatFromID(const PXColorFormat pxColorFormat)
 {
     switch(pxColorFormat)
@@ -1804,3 +1922,4 @@ D3DPRIMITIVETYPE PXAPI PXDirectXDrawTypeFromPX(const PXGraphicDrawMode PXGraphic
             return 0; // Invalid mode does not exist!
     }
 }
+#endif

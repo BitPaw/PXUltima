@@ -13,81 +13,81 @@ PXID3v2xFrameTag PXAPI PXID3v2xFrameTagFromID(const PXInt32U id3v2xFrameTagID)
 {
     switch(id3v2xFrameTagID)
     {
-        case PXInt32Make('A', 'E', 'N', 'C'): return AudioEncryption;
-        case PXInt32Make('A', 'P', 'I', 'C'): return AttachedPicture;
-        case PXInt32Make('C', 'O', 'M', 'M'): return Comments;
-        case PXInt32Make('C', 'O', 'M', 'R'): return CommercialFrame;
-        case PXInt32Make('E', 'N', 'C', 'R'): return EncryptionMethodRegistration;
-        case PXInt32Make('E', 'Q', 'U', 'A'): return Equalization;
-        case PXInt32Make('E', 'T', 'C', 'O'): return EventTimingCodes;
-        case PXInt32Make('G', 'E', 'O', 'B'): return GeneralEncapsulatedObject;
-        case PXInt32Make('G', 'R', 'I', 'D'): return GroupIdentificationRegistration;
-        case PXInt32Make('I', 'P', 'L', 'S'): return InvolvedPeopleList;
-        case PXInt32Make('L', 'I', 'N', 'K'): return LinkedInformation;
-        case PXInt32Make('M', 'C', 'D', 'I'): return MusicCDIdentifier;
-        case PXInt32Make('M', 'L', 'L', 'T'): return MPEGLocationLookupTable;
-        case PXInt32Make('O', 'W', 'N', 'E'): return OwnershipFrame;
-        case PXInt32Make('P', 'R', 'I', 'V'): return PrivateFrame;
-        case PXInt32Make('P', 'C', 'N', 'T'): return PlayCounter;
-        case PXInt32Make('P', 'O', 'P', 'M'): return Popularimeter;
-        case PXInt32Make('P', 'O', 'S', 'S'): return PositionSynchronisationFrame;
-        case PXInt32Make('R', 'B', 'U', 'F'): return RecommendedBufferSize;
-        case PXInt32Make('R', 'V', 'A', 'D'): return RelativeVolumeAdjustment;
-        case PXInt32Make('R', 'V', 'R', 'B'): return Reverb;
-        case PXInt32Make('S', 'Y', 'L', 'T'): return SynchronizedLyric;
-        case PXInt32Make('S', 'Y', 'T', 'C'): return SynchronizedTempocodes;
-        case PXInt32Make('T', 'A', 'L', 'B'): return Album;
-        case PXInt32Make('T', 'B', 'P', 'M'): return BeatsPerMinute;
-        case PXInt32Make('T', 'C', 'O', 'M'): return Composer;
-        case PXInt32Make('T', 'C', 'O', 'N'): return ContentType;
-        case PXInt32Make('T', 'C', 'O', 'P'): return CopyrightMessage;
-        case PXInt32Make('T', 'D', 'A', 'T'): return Date;
-        case PXInt32Make('T', 'D', 'L', 'Y'): return PlaylistDelay;
+        case PXInt32Make('A', 'E', 'N', 'C'): return PXID3v2xFrameTagAudioEncryption;
+        case PXInt32Make('A', 'P', 'I', 'C'): return PXID3v2xFrameTagAttachedPicture;
+        case PXInt32Make('C', 'O', 'M', 'M'): return PXID3v2xFrameTagComments;
+        case PXInt32Make('C', 'O', 'M', 'R'): return PXID3v2xFrameTagCommercialFrame;
+        case PXInt32Make('E', 'N', 'C', 'R'): return PXID3v2xFrameTagEncryptionMethodRegistration;
+        case PXInt32Make('E', 'Q', 'U', 'A'): return PXID3v2xFrameTagEqualization;
+        case PXInt32Make('E', 'T', 'C', 'O'): return PXID3v2xFrameTagEventTimingCodes;
+        case PXInt32Make('G', 'E', 'O', 'B'): return PXID3v2xFrameTagGeneralEncapsulatedObject;
+        case PXInt32Make('G', 'R', 'I', 'D'): return PXID3v2xFrameTagGroupIdentificationRegistration;
+        case PXInt32Make('I', 'P', 'L', 'S'): return PXID3v2xFrameTagInvolvedPeopleList;
+        case PXInt32Make('L', 'I', 'N', 'K'): return PXID3v2xFrameTagLinkedInformation;
+        case PXInt32Make('M', 'C', 'D', 'I'): return PXID3v2xFrameTagMusicCDIdentifier;
+        case PXInt32Make('M', 'L', 'L', 'T'): return PXID3v2xFrameTagMPEGLocationLookupTable;
+        case PXInt32Make('O', 'W', 'N', 'E'): return PXID3v2xFrameTagOwnershipFrame;
+        case PXInt32Make('P', 'R', 'I', 'V'): return PXID3v2xFrameTagPrivateFrame;
+        case PXInt32Make('P', 'C', 'N', 'T'): return PXID3v2xFrameTagPlayCounter;
+        case PXInt32Make('P', 'O', 'P', 'M'): return PXID3v2xFrameTagPopularimeter;
+        case PXInt32Make('P', 'O', 'S', 'S'): return PXID3v2xFrameTagPositionSynchronisationFrame;
+        case PXInt32Make('R', 'B', 'U', 'F'): return PXID3v2xFrameTagRecommendedBufferSize;
+        case PXInt32Make('R', 'V', 'A', 'D'): return PXID3v2xFrameTagRelativeVolumeAdjustment;
+        case PXInt32Make('R', 'V', 'R', 'B'): return PXID3v2xFrameTagReverb;
+        case PXInt32Make('S', 'Y', 'L', 'T'): return PXID3v2xFrameTagSynchronizedLyric;
+        case PXInt32Make('S', 'Y', 'T', 'C'): return PXID3v2xFrameTagSynchronizedTempocodes;
+        case PXInt32Make('T', 'A', 'L', 'B'): return PXID3v2xFrameTagAlbum;
+        case PXInt32Make('T', 'B', 'P', 'M'): return PXID3v2xFrameTagBeatsPerMinute;
+        case PXInt32Make('T', 'C', 'O', 'M'): return PXID3v2xFrameTagComposer;
+        case PXInt32Make('T', 'C', 'O', 'N'): return PXID3v2xFrameTagContentType;
+        case PXInt32Make('T', 'C', 'O', 'P'): return PXID3v2xFrameTagCopyrightMessage;
+        case PXInt32Make('T', 'D', 'A', 'T'): return PXID3v2xFrameTagDate;
+        case PXInt32Make('T', 'D', 'L', 'Y'): return PXID3v2xFrameTagPlaylistDelay;
         //case PXInt32Make('T', 'D', 'T', 'G'): return TaggingTime;
-        case PXInt32Make('T', 'E', 'N', 'C'): return EncodedBy;
-        case PXInt32Make('T', 'E', 'X', 'T'): return Lyricist;
-        case PXInt32Make('T', 'F', 'L', 'T'): return FileType;
-        case PXInt32Make('T', 'I', 'M', 'E'): return Time;
-        case PXInt32Make('T', 'I', 'T', '1'): return ContentGroupDescription;
-        case PXInt32Make('T', 'I', 'T', '2'): return Title;
-        case PXInt32Make('T', 'I', 'T', '3'): return Subtitle;
-        case PXInt32Make('T', 'K', 'E', 'Y'): return InitialKey;
-        case PXInt32Make('T', 'L', 'A', 'N'): return Language;
-        case PXInt32Make('T', 'L', 'E', 'N'): return Length;
-        case PXInt32Make('T', 'M', 'E', 'D'): return MediaType;
-        case PXInt32Make('T', 'O', 'A', 'L'): return OriginalAlbum;
-        case PXInt32Make('T', 'O', 'F', 'N'): return OriginalFilename;
-        case PXInt32Make('T', 'O', 'L', 'Y'): return OriginalLyricist;
-        case PXInt32Make('T', 'O', 'P', 'E'): return OriginalArtist;
-        case PXInt32Make('T', 'O', 'R', 'Y'): return OriginalReleaseYear;
-        case PXInt32Make('T', 'O', 'W', 'N'): return FileOwner;
-        case PXInt32Make('T', 'P', 'E', '1'): return LeadPerformer;
-        case PXInt32Make('T', 'P', 'E', '2'): return Band;
-        case PXInt32Make('T', 'P', 'E', '3'): return Conductor;
-        case PXInt32Make('T', 'P', 'E', '4'): return InterpretedBy;
-        case PXInt32Make('T', 'P', 'O', 'S'): return PartOfASet;
-        case PXInt32Make('T', 'P', 'U', 'B'): return Publisher;
-        case PXInt32Make('T', 'R', 'C', 'K'): return TrackNumber;
-        case PXInt32Make('T', 'R', 'D', 'A'): return RecordingDates;
-        case PXInt32Make('T', 'R', 'S', 'N'): return InternetRadioStationName;
-        case PXInt32Make('T', 'R', 'S', 'O'): return InternetRadioStationOwner;
-        case PXInt32Make('T', 'S', 'I', 'Z'): return Size;
-        case PXInt32Make('T', 'S', 'R', 'C'): return InternationalStandardRecordingCode;
-        case PXInt32Make('T', 'S', 'S', 'E'): return SoftwareHardwaresettingsUsedForEncoding;
-        case PXInt32Make('T', 'Y', 'E', 'R'): return Year;
-        case PXInt32Make('T', 'X', 'X', 'X'): return UserDefinedText;
-        case PXInt32Make('U', 'F', 'I', 'D'): return UniqueFileIdentifier;
-        case PXInt32Make('U', 'S', 'E', 'R'): return TermsOfUse;
-        case PXInt32Make('U', 'S', 'L', 'T'): return UnsychronizedLyric;
-        case PXInt32Make('W', 'C', 'O', 'M'): return CommercialInformation;
-        case PXInt32Make('W', 'C', 'O', 'P'): return CopyrightLegalInformation;
-        case PXInt32Make('W', 'O', 'A', 'F'): return OfficialAudioFileWebpage;
-        case PXInt32Make('W', 'O', 'A', 'R'): return OfficialArtistPerformerWebpage;
-        case PXInt32Make('W', 'O', 'A', 'S'): return OfficialAudioSourceWebpage;
-        case PXInt32Make('W', 'O', 'R', 'S'): return InternetRadioStationHomepage;
-        case PXInt32Make('W', 'P', 'A', 'Y'): return Payment;
-        case PXInt32Make('W', 'P', 'U', 'B'): return PublishersOfficialWebpage;
-        case PXInt32Make('W', 'X', 'X', 'X'): return UserDefinedURLLinkFrame;
+        case PXInt32Make('T', 'E', 'N', 'C'): return PXID3v2xFrameTagEncodedBy;
+        case PXInt32Make('T', 'E', 'X', 'T'): return PXID3v2xFrameTagLyricist;
+        case PXInt32Make('T', 'F', 'L', 'T'): return PXID3v2xFrameTagFileType;
+        case PXInt32Make('T', 'I', 'M', 'E'): return PXID3v2xFrameTagTime;
+        case PXInt32Make('T', 'I', 'T', '1'): return PXID3v2xFrameTagContentGroupDescription;
+        case PXInt32Make('T', 'I', 'T', '2'): return PXID3v2xFrameTagTitle;
+        case PXInt32Make('T', 'I', 'T', '3'): return PXID3v2xFrameTagSubtitle;
+        case PXInt32Make('T', 'K', 'E', 'Y'): return PXID3v2xFrameTagInitialKey;
+        case PXInt32Make('T', 'L', 'A', 'N'): return PXID3v2xFrameTagLanguage;
+        case PXInt32Make('T', 'L', 'E', 'N'): return PXID3v2xFrameTagLength;
+        case PXInt32Make('T', 'M', 'E', 'D'): return PXID3v2xFrameTagMediaType;
+        case PXInt32Make('T', 'O', 'A', 'L'): return PXID3v2xFrameTagOriginalAlbum;
+        case PXInt32Make('T', 'O', 'F', 'N'): return PXID3v2xFrameTagOriginalFilename;
+        case PXInt32Make('T', 'O', 'L', 'Y'): return PXID3v2xFrameTagOriginalLyricist;
+        case PXInt32Make('T', 'O', 'P', 'E'): return PXID3v2xFrameTagOriginalArtist;
+        case PXInt32Make('T', 'O', 'R', 'Y'): return PXID3v2xFrameTagOriginalReleaseYear;
+        case PXInt32Make('T', 'O', 'W', 'N'): return PXID3v2xFrameTagFileOwner;
+        case PXInt32Make('T', 'P', 'E', '1'): return PXID3v2xFrameTagLeadPerformer;
+        case PXInt32Make('T', 'P', 'E', '2'): return PXID3v2xFrameTagBand;
+        case PXInt32Make('T', 'P', 'E', '3'): return PXID3v2xFrameTagConductor;
+        case PXInt32Make('T', 'P', 'E', '4'): return PXID3v2xFrameTagInterpretedBy;
+        case PXInt32Make('T', 'P', 'O', 'S'): return PXID3v2xFrameTagPartOfASet;
+        case PXInt32Make('T', 'P', 'U', 'B'): return PXID3v2xFrameTagPublisher;
+        case PXInt32Make('T', 'R', 'C', 'K'): return PXID3v2xFrameTagTrackNumber;
+        case PXInt32Make('T', 'R', 'D', 'A'): return PXID3v2xFrameTagRecordingDates;
+        case PXInt32Make('T', 'R', 'S', 'N'): return PXID3v2xFrameTagInternetRadioStationName;
+        case PXInt32Make('T', 'R', 'S', 'O'): return PXID3v2xFrameTagInternetRadioStationOwner;
+        case PXInt32Make('T', 'S', 'I', 'Z'): return PXID3v2xFrameTagSize;
+        case PXInt32Make('T', 'S', 'R', 'C'): return PXID3v2xFrameTagInternationalStandardRecordingCode;
+        case PXInt32Make('T', 'S', 'S', 'E'): return PXID3v2xFrameTagSoftwareHardwaresettingsUsedForEncoding;
+        case PXInt32Make('T', 'Y', 'E', 'R'): return PXID3v2xFrameTagYear;
+        case PXInt32Make('T', 'X', 'X', 'X'): return PXID3v2xFrameTagUserDefinedText;
+        case PXInt32Make('U', 'F', 'I', 'D'): return PXID3v2xFrameTagUniqueFileIdentifier;
+        case PXInt32Make('U', 'S', 'E', 'R'): return PXID3v2xFrameTagTermsOfUse;
+        case PXInt32Make('U', 'S', 'L', 'T'): return PXID3v2xFrameTagUnsychronizedLyric;
+        case PXInt32Make('W', 'C', 'O', 'M'): return PXID3v2xFrameTagCommercialInformation;
+        case PXInt32Make('W', 'C', 'O', 'P'): return PXID3v2xFrameTagCopyrightLegalInformation;
+        case PXInt32Make('W', 'O', 'A', 'F'): return PXID3v2xFrameTagOfficialAudioFileWebpage;
+        case PXInt32Make('W', 'O', 'A', 'R'): return PXID3v2xFrameTagOfficialArtistPerformerWebpage;
+        case PXInt32Make('W', 'O', 'A', 'S'): return PXID3v2xFrameTagOfficialAudioSourceWebpage;
+        case PXInt32Make('W', 'O', 'R', 'S'): return PXID3v2xFrameTagInternetRadioStationHomepage;
+        case PXInt32Make('W', 'P', 'A', 'Y'): return PXID3v2xFrameTagPayment;
+        case PXInt32Make('W', 'P', 'U', 'B'): return PXID3v2xFrameTagPublishersOfficialWebpage;
+        case PXInt32Make('W', 'X', 'X', 'X'): return PXID3v2xFrameTagUserDefinedURLLinkFrame;
 
         default:
             return PXID3v2xFrameTagInvalid;
@@ -291,11 +291,11 @@ PXActionResult PXAPI PXID3LoadFromFile(PXID3* const id3, PXFile* const PXFile)
 
                         switch(frameTag)
                         {
-                            case AudioEncryption:
+                            case PXID3v2xFrameTagAudioEncryption:
                                 break;
-                            case AttachedPicture:
+                            case PXID3v2xFrameTagAttachedPicture:
                                 break;
-                            case Comments:
+                            case PXID3v2xFrameTagComments:
                             {
                                 unsigned char textEncoding = 0;
                                 char language[3];
@@ -317,35 +317,35 @@ PXActionResult PXAPI PXID3LoadFromFile(PXID3* const id3, PXFile* const PXFile)
                                 */
                                 break;
                             }
-                            case CommercialFrame:
+                            case PXID3v2xFrameTagCommercialFrame:
                                 break;
-                            case EncryptionMethodRegistration:
+                            case PXID3v2xFrameTagEncryptionMethodRegistration:
                                 break;
-                            case Equalization:
+                            case PXID3v2xFrameTagEqualization:
                                 break;
-                            case EventTimingCodes:
+                            case PXID3v2xFrameTagEventTimingCodes:
                                 break;
-                            case GeneralEncapsulatedObject:
+                            case PXID3v2xFrameTagGeneralEncapsulatedObject:
                                 break;
-                            case GroupIdentificationRegistration:
+                            case PXID3v2xFrameTagGroupIdentificationRegistration:
                                 break;
-                            case InvolvedPeopleList:
+                            case PXID3v2xFrameTagInvolvedPeopleList:
                                 break;
-                            case LinkedInformation:
+                            case PXID3v2xFrameTagLinkedInformation:
                                 break;
-                            case MusicCDIdentifier:
+                            case PXID3v2xFrameTagMusicCDIdentifier:
                                 break;
-                            case MPEGLocationLookupTable:
+                            case PXID3v2xFrameTagMPEGLocationLookupTable:
                                 break;
-                            case OwnershipFrame:
+                            case PXID3v2xFrameTagOwnershipFrame:
                                 break;
-                            case PrivateFrame:
+                            case PXID3v2xFrameTagPrivateFrame:
                             {
                                 break;
                             }
-                            case PlayCounter:
+                            case PXID3v2xFrameTagPlayCounter:
                                 break;
-                            case Popularimeter:
+                            case PXID3v2xFrameTagPopularimeter:
                             {
                                 const char* emailToUser = (char*)PXFileCursorPosition(PXFile);
                                 const PXSize maximalToRead = PXFileRemainingSize(PXFile) - 6u;
@@ -360,152 +360,152 @@ PXActionResult PXAPI PXID3LoadFromFile(PXID3* const id3, PXFile* const PXFile)
 
                                 break;
                             }
-                            case PositionSynchronisationFrame:
+                            case PXID3v2xFrameTagPositionSynchronisationFrame:
                                 break;
-                            case RecommendedBufferSize:
+                            case PXID3v2xFrameTagRecommendedBufferSize:
                                 break;
-                            case RelativeVolumeAdjustment:
+                            case PXID3v2xFrameTagRelativeVolumeAdjustment:
                                 break;
-                            case Reverb:
+                            case PXID3v2xFrameTagReverb:
                                 break;
-                            case SynchronizedLyric:
+                            case PXID3v2xFrameTagSynchronizedLyric:
                                 break;
-                            case SynchronizedTempocodes:
+                            case PXID3v2xFrameTagSynchronizedTempocodes:
                                 break;
-                            case Album:
+                            case PXID3v2xFrameTagAlbum:
                             {
                                // PXFile.CursorAdvance(3u);
                                 //PXFile.Read(Album, frameSize - 3);
 
                                 break;
                             }
-                            case BeatsPerMinute:
+                            case PXID3v2xFrameTagBeatsPerMinute:
                             {
                                 // Is text, convert to int
                                 id3->BeatsPerMinute = 0;
                                 break;
                             }
-                            case Composer:
+                            case PXID3v2xFrameTagComposer:
                             {
                                // PXFile.CursorAdvance(3u);
                                // PXFile.Read(Composer, frameSize - 3);
                                 break;
                             }
-                            case ContentType:
+                            case PXID3v2xFrameTagContentType:
                             {
                                 // GenreString -> enum
                                 break;
                             }
-                            case CopyrightMessage:
+                            case PXID3v2xFrameTagCopyrightMessage:
                                 break;
-                            case Date:
+                            case PXID3v2xFrameTagDate:
                                 break;
-                            case PlaylistDelay:
+                            case PXID3v2xFrameTagPlaylistDelay:
                                 break;
-                            case EncodedBy:
+                            case PXID3v2xFrameTagEncodedBy:
                                 break;
-                            case Lyricist:
+                            case PXID3v2xFrameTagLyricist:
                                 break;
-                            case FileType:
+                            case PXID3v2xFrameTagFileType:
                                 break;
-                            case Time:
+                            case PXID3v2xFrameTagTime:
                                 break;
-                            case ContentGroupDescription:
+                            case PXID3v2xFrameTagContentGroupDescription:
                                 break;
-                            case Title:
+                            case PXID3v2xFrameTagTitle:
                             {
                                // PXFile.CursorAdvance(3u);
                                 //PXFile.Read(Title, frameSize - 3);
                                 break;
                             }
-                            case Subtitle:
+                            case PXID3v2xFrameTagSubtitle:
                             {
                                 break;
                             }
-                            case InitialKey:
+                            case PXID3v2xFrameTagInitialKey:
                                 break;
-                            case Language:
+                            case PXID3v2xFrameTagLanguage:
                                 break;
-                            case Length:
+                            case PXID3v2xFrameTagLength:
                                 break;
-                            case MediaType:
+                            case PXID3v2xFrameTagMediaType:
                                 break;
-                            case OriginalAlbum:
+                            case PXID3v2xFrameTagOriginalAlbum:
                                 break;
-                            case OriginalFilename:
+                            case PXID3v2xFrameTagOriginalFilename:
                                 break;
-                            case OriginalLyricist:
+                            case PXID3v2xFrameTagOriginalLyricist:
                                 break;
-                            case OriginalArtist:
+                            case PXID3v2xFrameTagOriginalArtist:
                                 break;
-                            case OriginalReleaseYear:
+                            case PXID3v2xFrameTagOriginalReleaseYear:
                                 break;
-                            case FileOwner:
+                            case PXID3v2xFrameTagFileOwner:
                                 break;
-                            case LeadPerformer:
+                            case PXID3v2xFrameTagLeadPerformer:
                             {
                                 //PXFile.CursorAdvance(3u);
                                // PXFile.Read(Artist, frameSize - 3);
                                 break;
                             }
-                            case Band:
+                            case PXID3v2xFrameTagBand:
                             {
 
                                 break;
                             }
-                            case Conductor:
+                            case PXID3v2xFrameTagConductor:
                             {
                                 //PXFile.CursorAdvance(3u);
                                 //PXFile.Read(Album, frameSize - 3);
                                 break;
                             }
-                            case InterpretedBy:
+                            case PXID3v2xFrameTagInterpretedBy:
                                 break;
-                            case PartOfASet:
+                            case PXID3v2xFrameTagPartOfASet:
                                 break;
-                            case Publisher:
+                            case PXID3v2xFrameTagPublisher:
                                 break;
-                            case TrackNumber:
+                            case PXID3v2xFrameTagTrackNumber:
                                 break;
-                            case RecordingDates:
+                            case PXID3v2xFrameTagRecordingDates:
                                 break;
-                            case InternetRadioStationName:
+                            case PXID3v2xFrameTagInternetRadioStationName:
                                 break;
-                            case InternetRadioStationOwner:
+                            case PXID3v2xFrameTagInternetRadioStationOwner:
                                 break;
-                            case Size:
+                            case PXID3v2xFrameTagSize:
                                 break;
-                            case InternationalStandardRecordingCode:
+                            case PXID3v2xFrameTagInternationalStandardRecordingCode:
                                 break;
-                            case SoftwareHardwaresettingsUsedForEncoding:
+                            case PXID3v2xFrameTagSoftwareHardwaresettingsUsedForEncoding:
                                 break;
-                            case Year:
+                            case PXID3v2xFrameTagYear:
                                 break;
-                            case UserDefinedText:
+                            case PXID3v2xFrameTagUserDefinedText:
                                 break;
-                            case UniqueFileIdentifier:
+                            case PXID3v2xFrameTagUniqueFileIdentifier:
                                 break;
-                            case TermsOfUse:
+                            case PXID3v2xFrameTagTermsOfUse:
                                 break;
-                            case UnsychronizedLyric:
+                            case PXID3v2xFrameTagUnsychronizedLyric:
                                 break;
-                            case CommercialInformation:
+                            case PXID3v2xFrameTagCommercialInformation:
                                 break;
-                            case CopyrightLegalInformation:
+                            case PXID3v2xFrameTagCopyrightLegalInformation:
                                 break;
-                            case OfficialAudioFileWebpage:
+                            case PXID3v2xFrameTagOfficialAudioFileWebpage:
                                 break;
-                            case OfficialArtistPerformerWebpage:
+                            case PXID3v2xFrameTagOfficialArtistPerformerWebpage:
                                 break;
-                            case OfficialAudioSourceWebpage:
+                            case PXID3v2xFrameTagOfficialAudioSourceWebpage:
                                 break;
-                            case InternetRadioStationHomepage:
+                            case PXID3v2xFrameTagInternetRadioStationHomepage:
                                 break;
-                            case Payment:
+                            case PXID3v2xFrameTagPayment:
                                 break;
-                            case PublishersOfficialWebpage:
+                            case PXID3v2xFrameTagPublishersOfficialWebpage:
                                 break;
-                            case UserDefinedURLLinkFrame:
+                            case PXID3v2xFrameTagUserDefinedURLLinkFrame:
                                 break;
                         }
 

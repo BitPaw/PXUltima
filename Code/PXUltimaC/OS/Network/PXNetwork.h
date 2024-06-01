@@ -4,6 +4,13 @@
 #include <Media/PXResource.h>
 #include <OS/Library/PXLibrary.h>
 
+#if OSUnix
+#include <sys/poll.h>
+#elif OSWindows
+#endif
+
+
+
 typedef enum IPAdressFamily_
 {
 	IPAdressFamilyInvalid,
@@ -126,54 +133,27 @@ typedef enum PXSocketState_
 }
 PXSocketState;
 
-/*
-	accept
-	bind
-	closesocket
-	connect
-	getpeername
-	getsockname
-	getsockopt
-	htonl
-	htons
-	ioctlsocket
-	inet_addr
-	inet_ntoa
-	listen
-	ntohl
-	ntohs
-	recv
-	recvfrom
-	select
-	send
-	sendto
-	setsockopt
-	shutdown
-	socket
-*/
 typedef PXSize PXSocketID;
 
-typedef PXSocketID(WINAPI* PXaccept)(PXSocketID s, struct sockaddr* addr, int* addrlen); // accept
-typedef	PXSocketID(WINAPI* PXSocketCreate)(int af, int type, int protocol); // socket
-typedef int (WINAPI* PXioctlsocket)(PXSocketID s, long cmd, int* argp); // ioctlsocket
-typedef int (WINAPI* PXclosesocket)(PXSocketID s); // closesocket
-typedef int (WINAPI* PXshutdown)(PXSocketID s, int how); // shutdown
-typedef int (WINAPI* PXlisten)(PXSocketID s, int backlog);
-typedef int (WINAPI* PXbind)(PXSocketID s, const struct sockaddr* name, int namelen);
-typedef int (WINAPI* PXconnect)(PXSocketID s, const struct sockaddr* name, int namelen);
-typedef int (WINAPI* PXrecv)(PXSocketID s, char* buf, int len, int flags);
-typedef int (WINAPI* PXsend)(PXSocketID s, const char FAR* buf, int len, int flags);
-typedef int (WINAPI* PXsetsockopt)(PXSocketID s, int level, int optname, const char* optval, int optlen);
-typedef INT(WINAPI* PXgetaddrinfo)(PCSTR pNodeName, PCSTR pServiceName, const void* pHints, void* ppResult);
-typedef struct hostent* (WINAPI* PXgethostbyname)(const char* name);
-
-typedef int (WINAPI* PXselect)(int nfds, void* readfds, void* writefds, void* exceptfds, const struct timeval* timeout);
-
-typedef PXInt32U(WINAPI* PXhtonl)(PXInt32U hostlong);
-typedef PXInt16U(WINAPI* PXhtons)(PXInt16U hostshort);
+typedef PXSocketID(PXSTDCALL* PXaccept)(PXSocketID s, struct sockaddr* addr, int* addrlen); // accept
+typedef	PXSocketID(PXSTDCALL* PXSocketCreate)(int af, int type, int protocol); // socket
+typedef int (PXSTDCALL* PXioctlsocket)(PXSocketID s, long cmd, int* argp); // ioctlsocket
+typedef int (PXSTDCALL* PXclosesocket)(PXSocketID s); // closesocket
+typedef int (PXSTDCALL* PXshutdown)(PXSocketID s, int how); // shutdown
+typedef int (PXSTDCALL* PXlisten)(PXSocketID s, int backlog);
+typedef int (PXSTDCALL* PXbind)(PXSocketID s, const struct sockaddr* name, int namelen);
+typedef int (PXSTDCALL* PXconnect)(PXSocketID s, const struct sockaddr* name, int namelen);
+typedef int (PXSTDCALL* PXrecv)(PXSocketID s, char* buf, int len, int flags);
+typedef int (PXSTDCALL* PXsend)(PXSocketID s, const char* buf, int len, int flags);
+typedef int (PXSTDCALL* PXsetsockopt)(PXSocketID s, int level, int optname, const char* optval, int optlen);
+typedef int (PXSTDCALL* PXgetaddrinfo)(char* pNodeName, char* pServiceName, const void* pHints, void* ppResult);
+typedef struct hostent* (PXSTDCALL* PXgethostbyname)(const char* name);
+typedef int (PXSTDCALL* PXselect)(int nfds, void* readfds, void* writefds, void* exceptfds, const struct timeval* timeout);
+typedef PXInt32U(PXSTDCALL* PXhtonl)(PXInt32U hostlong);
+typedef PXInt16U(PXSTDCALL* PXhtons)(PXInt16U hostshort);
 
 #if OSUnix
-typedef int (WINAPI* PXpoll)(struct pollfd* fds, nfds_t nfds, int timeout);
+typedef int (PXSTDCALL* PXpoll)(struct pollfd* fds, nfds_t nfds, int timeout);
 #elif OSWindows
 typedef int (WINAPI* PXWSAPoll)(void* fdArray, ULONG fds, INT timeout);
 typedef int	(WINAPI* PXWSAGetLastError)(void);
@@ -312,10 +292,13 @@ typedef struct PXNetwork_
 	PXgetaddrinfo AdressInfoGet;
 	PXgethostbyname HostByNameGet;
 
+#if OSUnix
+#elif OSWindows
 	PXWSAGetLastError SocketSystemErrorLastGet;
 	PXWSAStartup SocketSystemStartup;
 	PXWSACleanup SocketSystemCleanup;
 	PXWSAPoll SocketPoll;
+#endif
 }
 PXNetwork;
 
@@ -343,6 +326,8 @@ PXPublic PXActionResult PXAPI PXNetworkSocketBind(PXNetwork* const pxNetwork, PX
 PXPublic PXActionResult PXAPI PXNetworkSocketReceive(PXNetwork* const pxNetwork, PXSocketReadInfo* const pxSocketReadInfo);
 PXPublic PXActionResult PXAPI PXNetworkSocketSend(PXNetwork* const pxNetwork, PXSocketSendInfo* const pxSocketSendInfo);
 PXPublic PXActionResult PXAPI PXNetworkSocketPoll(PXNetwork* const pxNetwork);
+
+
 
 #if OSWindows
 PXPrivate PXActionResult PXAPI PXWindowsSocketAgentErrorFetch(PXNetwork* const pxNetwork);

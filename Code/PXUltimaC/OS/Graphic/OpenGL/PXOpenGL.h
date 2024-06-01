@@ -810,6 +810,8 @@ typedef void (PXOpenGLAPI* glGetDoublei_vFunction)(GLenum target, GLuint index, 
 typedef void (PXOpenGLAPI* glGetInteger64i_vFunction)(GLenum target, GLuint index, PXInt64U* data);
 
 
+typedef void* (PXOpenGLAPI* PXOpenGLFunctionPointerGet)(char* functionName); // wglGetProcAddress, glXGetProcAddress 
+
 typedef struct PXGraphicDevicePhysical_	PXGraphicDevicePhysical;
 
 
@@ -863,7 +865,7 @@ typedef HGLRC(WINAPI* PXOpenGLCreateLayerContext)(HDC, int); // wglCreateLayerCo
 typedef BOOL(WINAPI* PXOpenGLDeleteContext)(HGLRC); // wglDeleteContext
 typedef HGLRC(WINAPI* PXOpenGLCurrentContextGet)(VOID); // wglGetCurrentContext
 typedef HDC(WINAPI* PXOpenGLCurrentDCGet)(VOID); // wglGetCurrentDC
-typedef PROC(WINAPI* PXOpenGLGetProcAddress)(LPCSTR); // wglGetProcAddress
+
 typedef BOOL(WINAPI* PXOpenGLMakeCurrent)(HDC, HGLRC); // wglMakeCurrent
 typedef BOOL(WINAPI* PXOpenGLShareLists)(HGLRC, HGLRC); // wglShareLists
 typedef BOOL(WINAPI* PXOpenGLUseFontBitmapsA)(HDC, DWORD, DWORD, DWORD); // wglUseFontBitmapsA
@@ -884,6 +886,8 @@ typedef struct PXOpenGL_
 	PXOpenGLVersion Version;
 
 #if OSUnix
+	Display* DisplayHandle;
+	GLXDrawable DrawableHandle;
 #elif OSWindows
 	HWND WindowHandle;
 	HDC WindowDeviceContextHandle;
@@ -1368,6 +1372,8 @@ typedef struct PXOpenGL_
 
 	PXOpenGLStringGetExtensionsARB StringGetExtensions;
 
+	PXOpenGLFunctionPointerGet FunctionPointerGet;
+
 #if OSWindows
 	PXOpenGLContextCreateAttributes ContextCreateAttributes;
 
@@ -1384,7 +1390,7 @@ typedef struct PXOpenGL_
 	PXOpenGLDeleteContext DeleteContext;
 	PXOpenGLCurrentContextGet GetCurrentContext;
 	PXOpenGLCurrentDCGet GetCurrentDC;
-	PXOpenGLGetProcAddress GetProcAddress;
+
 	PXOpenGLMakeCurrent MakeCurrent;
 	PXOpenGLShareLists ShareLists;
 	PXOpenGLUseFontBitmapsA UseFontBitmapsA;

@@ -298,13 +298,15 @@ PXActionResult PXAPI PXNetworkInitialize(PXNetwork* const pxNetwork)
 
 PXActionResult PXAPI PXNetworkRelease(PXNetwork* const pxNetwork)
 {
-    const int result = pxNetwork->SocketSystemCleanup();
+#if OSWindows
+    const int result = pxNetwork->SocketSystemCleanup(); // Windows socket agent cleanup
     const PXBool successful = 0 != result;
 
     if(!successful)
     {
         return PXActionSuccessful;
     }
+#endif
 
     PXLibraryClose(&pxNetwork->NetworkLibrary);
 

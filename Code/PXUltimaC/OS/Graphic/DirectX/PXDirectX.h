@@ -2,6 +2,7 @@
 #define PXDirectXINCLUDE
 
 #include <Media/PXResource.h>
+#include <OS/Library/PXLibrary.h>
 
 //-------------------------------------
 // DirectX - Settings
@@ -21,11 +22,9 @@ typedef unsigned int  IDirect3D9; // Dummy value
 #define MAX_DEVICE_IDENTIFIER_STRING 32
 
 typedef void* D3DMATERIAL9;
-#endif
-
-
-#include <OS/Library/PXLibrary.h>
+#elif OSWindows
 #include <d3d9.h>
+#endif
 
 
 typedef struct PXGraphicInitializeInfo_ PXGraphicInitializeInfo;
@@ -151,8 +150,9 @@ typedef struct PXDirectX9_
     void* ShaderConstantTableGet;
     void* ShaderConstantTableGetEx;
 
+#if OSWindows
     D3DCAPS9 DeviceCapabilitiesCurrent;
-
+#endif
 }
 PXDirectX9;
 

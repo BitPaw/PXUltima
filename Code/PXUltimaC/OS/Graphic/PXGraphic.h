@@ -41,7 +41,6 @@ typedef struct PXGraphicResourceInfo_
 }
 PXGraphicResourceInfo;
 
-
 typedef enum PXGraphicInitializeMode_
 {
 	PXGraphicInitializeModeInvalid,
@@ -52,14 +51,16 @@ typedef enum PXGraphicInitializeMode_
 }
 PXGraphicInitializeMode;
 
-
 typedef struct PXGraphicInitializeInfo_
 {
 	PXGraphicInitializeMode Mode;
 	PXUIElement* WindowReference;
 
-	HDC HandleDeviceContext;
+#if OSUnix
 
+#elif OSWindows
+	HDC HandleDeviceContext;
+#endif
 
 	PXSize TargetFrameRate;
 
