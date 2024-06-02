@@ -502,7 +502,7 @@ PXPrivate BOOL CALLBACK PXWindowEnumChildProc(HWND hwnd, LPARAM lParam);
 
 PXPublic PXThreadResult PXOSAPI PXWindowMessageLoop(PXUIElement* const pxUIElement);
 
-
+PXPublic PXBool PXAPI PXGUIElementIsEnabled(const PXWindowID pxUIElementID);
 PXPublic PXBool PXAPI PXGUIElementFind(const PXWindowID pxUIElementID, PXUIElement* const pxUIElement);
 PXPublic PXBool PXAPI PXGUIElementDelete(const PXWindowID pxUIElementID, PXUIElement* const pxUIElement);
 

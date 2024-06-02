@@ -1584,6 +1584,17 @@ PXThreadResult PXOSAPI PXWindowMessageLoop(PXUIElement* const pxUIElement)
     return PXActionSuccessful;
 }
 
+PXBool PXAPI PXGUIElementIsEnabled(const PXWindowID pxUIElementID)
+{
+#if OSUnix
+    return PXFalse;
+#elif OSWindows
+    return IsWindowEnabled(pxUIElementID); // Windows 2000, User32.dll, winuser.h
+#else
+    return PXFalse;
+#endif
+}
+
 PXBool PXAPI PXGUIElementFind(const PXWindowID pxUIElementID, PXUIElement* const pxUIElement)
 {
     return PXFalse;
@@ -3473,6 +3484,9 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
             {
                 PXUIElementComboBoxInfo* const pxUIElementComboBoxInfo = &pxGUIElementUpdateInfo->Data.ComboBox;
 
+#if OSUnix
+#elif OSWindows
+
                 for(size_t i = 0; i < pxUIElementComboBoxInfo->DataListAmount; i++)
                 {
                     char* name = pxUIElementComboBoxInfo->DataList[i];
@@ -3481,6 +3495,7 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
                 }
 
                 ComboBox_SetCurSel(pxUIElement->Info.WindowID, 0);
+#endif
 
                 break;
             }

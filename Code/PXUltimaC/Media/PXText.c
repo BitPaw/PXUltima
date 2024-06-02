@@ -174,7 +174,13 @@ PXSize PXAPI PXTextAppendF(PXText* const pxText, const char* const format, ...)
 	va_list args;
 	va_start(args, format);
 
-	PXSize added = vsprintf_s(beginning, sizeLeft, format, args);
+	PXSize added =
+#if OSUnix
+		vsnprintf
+#elif OSWindows
+		vsprintf_s
+#endif
+		(beginning, sizeLeft, format, args);
 
 	pxText->SizeUsed += added;
 

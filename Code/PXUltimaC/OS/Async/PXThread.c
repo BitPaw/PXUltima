@@ -302,16 +302,31 @@ PXActionResult PXAPI PXThreadResume(PXThread* const pxThread)
 
 PXActionResult PXAPI PXThreadSleep(PXThread* const pxThread, const PXSize sleepTime)
 {
-	//if (pxThread->ThreadID == PXHandleNotSet) return PXActionRefusedNotFound;
-
+	if(pxThread)
+	{
+		// Thread known
 #if OSUnix
-	return PXActionRefusedNotImplemented;
+		return PXActionRefusedNotImplemented;
+#elif OSWindows
+		return PXActionRefusedNotImplemented;
+#else
+		return PXActionRefusedNotImplemented;
+#endif
+	}
+	else
+	{
+		// Use current thread
+#if OSUnix
+		return PXActionRefusedNotImplemented;
 
 #elif OSWindows
-	Sleep(sleepTime); // Windows XP (+UWP), Kernel32.dll, synchapi.h
-#endif
+		Sleep(sleepTime); // Windows XP (+UWP), Kernel32.dll, synchapi.h
 
-	return PXActionSuccessful;
+		return PXActionSuccessful;
+#else
+		return PXActionRefusedNotImplemented;
+#endif
+	}
 }
 
 PXActionResult PXAPI PXThreadCurrentProcessorID(PXInt32U* const processorID)

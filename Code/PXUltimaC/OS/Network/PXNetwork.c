@@ -38,6 +38,7 @@ typedef struct addrinfo AdressInfoType; //#define AdressInfoType (struct addrinf
 #include <OS/Console/PXConsole.h>
 #include <OS/Memory/PXMemory.h>
 #include <Math/PXMath.h>
+#include <OS/Async/PXThread.h>
 
 
 
@@ -517,6 +518,8 @@ PXActionResult PXAPI PXNetworkSocketConnect(PXNetwork* const pxNetwork, PXSocket
 
     if(!connected)
     {
+#if OSUnix
+#elif OSWindows
         const PXActionResult xxxx = PXWindowsSocketAgentErrorFetch(pxNetwork);
 
 
@@ -531,6 +534,7 @@ PXActionResult PXAPI PXNetworkSocketConnect(PXNetwork* const pxNetwork, PXSocket
             pxSocketConnectInfo->IP,
             pxSocketConnectInfo->Port
         );
+#endif
 #endif
 
 #if OSUnix
@@ -936,7 +940,7 @@ PXActionResult PXAPI PXNetworkSocketSend(PXNetwork* const pxNetwork, PXSocketSen
 
         if(pxSocketSendInfo->DataInfo.Percentage < 100 && pxSocketSendInfo->DataInfo.SegmentDelay > 0)
         {
-            Sleep(pxSocketSendInfo->DataInfo.SegmentDelay);
+            PXThreadSleep(PXNull, pxSocketSendInfo->DataInfo.SegmentDelay);
         }
 
 #if 0

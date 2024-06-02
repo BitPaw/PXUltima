@@ -119,7 +119,7 @@ PXDirectDrawTexture;
 #if OSUnix
 #elif OSWindows
 
-static PXInt8U BitsPerPixel(DXGI_FORMAT fmt)
+static PXInt8U PXDXGIBitsPerPixel(DXGI_FORMAT fmt)
 {
     switch(fmt)
     {
@@ -501,7 +501,9 @@ PXActionResult PXAPI PXDDSLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 
         PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
-        pxDirectDrawTexture.BitPerPixel = BitsPerPixel(pxDirectDrawTexture.GIFormatID);
+#if OSWindows
+        pxDirectDrawTexture.BitPerPixel = PXDXGIBitsPerPixel(pxDirectDrawTexture.GIFormatID);
+#endif
     }
 
 

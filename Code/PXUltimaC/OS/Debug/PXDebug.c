@@ -1009,7 +1009,11 @@ void PXAPI PXDebugLogMessage(PXText* const pxText)
 	{
 		char buffer[4] = { pxText->TextA[i], 0, 0, 0 };
 
+#if OSUnix
+		printf(buffer);
+#elif OSWindows
 		OutputDebugStringA(buffer);
+#endif		
 	}
 }
 

@@ -843,7 +843,9 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
 
         if(pxEngine->HasGraphicInterface && pxEngine->Graphic.WindowReference)
         {
-            if(IsWindowEnabled(pxEngine->Graphic.WindowReference->Info.ID))
+            const PXBool isWindowEnabled = PXGUIElementIsEnabled(pxEngine->Graphic.WindowReference->Info.ID);
+
+            if(isWindowEnabled)
             {
 #if 1
                 pxEngine->Graphic.Clear(pxEngine->Graphic.EventOwner, &color);
@@ -868,8 +870,6 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
     ++(pxEngine->TimeData.CounterTimeCPU);
     ++(pxEngine->TimeData.CounterTimeGPU);
 
-    //Sleep(20);
-
     PXThreadYieldToOtherThreads();
 
 #if 0
@@ -891,7 +891,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
     PXMouseInputPrint(&pxEngine->Window.MouseCurrentInput);
 #endif
 
-    Sleep(1);
+    PXThreadSleep(PXNull, 1);
 }
 
 PXActionResult PXAPI PXEngineResourceAction(PXEngine* const pxEngine, PXEngineResourceActionInfo* const pxEngineResourceActionInfo)
