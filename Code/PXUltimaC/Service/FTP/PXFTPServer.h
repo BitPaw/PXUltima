@@ -11,7 +11,8 @@ extern "C"
 
 	typedef struct PXFTPServer_
 	{
-		PXServer Server;
+	    int c;
+		//PXServer Server;
 	}
 	PXFTPServer;
 
