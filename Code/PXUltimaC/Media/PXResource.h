@@ -1691,13 +1691,7 @@ typedef struct PXGUIElementCreateWindowInfo_
 	//void* EventFunction;
 	void* EventOwner;
 
-#if OSUnix
-	XID WindowHandle;
-	XID WindowRootHandle;
-	Display* WindowDisplay;
-#elif OSWindows
-	HWND WindowHandle;
-#endif
+	PXUIElement* UIElementReference;
 
 	PXColorRGBAI8 BackGroundColor;
 

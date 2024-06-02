@@ -1607,6 +1607,18 @@ PXBool PXAPI PXGUIElementDelete(const PXWindowID pxUIElementID, PXUIElement* con
 
 PXBool PXAPI PXGUIElementTextSet(PXUIElement* const pxUIElement, char* text)
 {
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "GUI",
+        "Window-Text",
+        "Set: %s on (0x%p)",
+        text,
+        pxUIElement
+    );
+#endif
+
 #if OSUnix
 
     // Will BadAlloc, BadWindow
@@ -1862,6 +1874,8 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
             {
                 PXGUIElementCreateWindowInfo* const pxGUIElementCreateWindowInfo = &pxGUIElementCreateInfo->Data.Window;
 
+                pxGUIElementCreateWindowInfo->UIElementReference = pxUIElement;
+
                 // Create display
                 {
                     pxUIElement->DisplayHandle = XOpenDisplay(PXNull);   // X11/Xlib.h Create Window
@@ -1884,9 +1898,18 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
                     pxUIElement->WindowRootHandle = DefaultRootWindow(pxUIElement->DisplayHandle); // Make windows root
 
-                    pxGUIElementCreateWindowInfo->WindowDisplay = pxUIElement->DisplayHandle;
-                    pxGUIElementCreateWindowInfo->WindowRootHandle = pxUIElement->WindowRootHandle;
 
+#if PXLogEnable
+                    PXLogPrint
+                    (
+                        PXLoggingInfo,
+                        "X-System",
+                        "Server-Connect",
+                        "%s (0x%p)",
+                        pxUIElement->DisplayHandle->display_name,
+                        pxUIElement->DisplayHandle
+                    );
+#endif
                 }
 
                 const int attributeList[] =
@@ -1905,8 +1928,30 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
                     if(!successful)
                     {
+#if PXLogEnable
+                        PXLogPrint
+                        (
+                            PXLoggingError,
+                            "X-System",
+                            "Visual",
+                            "Choosing failed"
+                        );
+#endif
+
                         return PXActionSuccessful; // no appropriate visual found
                     }
+
+
+#if PXLogEnable
+                    PXLogPrint
+                    (
+                        PXLoggingInfo,
+                        "X-System",
+                        "Visual",
+                        "OK"
+                    );
+#endif
+
                 }
 
                 // Create colormapping
@@ -1956,7 +2001,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                 {
                     int borderWidth = 0;
 
-                    const XID windowhandle = XCreateWindow
+                    pxUIElement->Info.WindowID = XCreateWindow
                     (
                         pxUIElement->DisplayHandle,
                         pxUIElement->WindowRootHandle,
@@ -1971,18 +2016,39 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                         CWColormap | CWEventMask,
                         &setWindowAttributes
                     );
-                    const PXBool sucessful = PXNull != windowhandle;
+                    const PXBool sucessful = PXNull != pxUIElement->Info.WindowID;
 
-                    pxUIElement->Info.WindowID = windowhandle;
-                    pxGUIElementCreateWindowInfo->WindowHandle = windowhandle;
+                    if(!sucessful)
+                    {
+#if PXLogEnable
+                        PXLogPrint
+                        (
+                            PXLoggingError,
+                            "X-System",
+                            "Window-Create",
+                            "Failed!"
+                        );
+#endif
+                        return PXActionFailedCreate;
+                    }
+
+#if PXLogEnable
+                    PXLogPrint
+                    (
+                        PXLoggingInfo,
+                        "X-System",
+                        "Window-Create",
+                        "ID:%i",
+                        pxUIElement->Info.WindowID
+                    );
+#endif
                 }
 
                 // Attach to render engine
-                XMapWindow(pxUIElement->DisplayHandle, pxUIElement->Info.WindowID);
+                const int mapResultID = XMapWindow(pxUIElement->DisplayHandle, pxUIElement->Info.WindowID);
 
                 // Set Title
-                PXGUIElementTextSet(pxUIElement, pxGUIElementCreateWindowInfo->Title);
-
+                const PXBool setTextSuccess = PXGUIElementTextSet(pxUIElement, pxGUIElementCreateWindowInfo->Title);
 
 
                 break;
@@ -2017,11 +2083,13 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
     // Raw mouse movement
     XIEventMask eventmask;
+    PXClear(XIEventMask, &eventmask);
+
     const PXSize maskLength = (XI_LASTEVENT + 7) / 8;
-    unsigned char mask[maskLength];
+    char mask[maskLength];
 
     PXClearList(char, mask, maskLength);
-    PXClear(XIEventMask, &eventmask);
+
 
     XISetMask(mask, XI_RawMotion);
     //XISetMask(mask, XI_RawButtonPress);
@@ -2032,8 +2100,39 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
     eventmask.mask = mask;
 
 
-    XISelectEvents(pxUIElement->DisplayHandle, pxUIElement->WindowRootHandle, &eventmask, 1u);
-    XFlush(pxUIElement->DisplayHandle);
+    const int selectResultID = XISelectEvents(pxUIElement->DisplayHandle, pxUIElement->WindowRootHandle, &eventmask, 1u);
+    const PXBool success = PXNull != selectResultID;
+
+    if(!success)
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingError,
+            "X-System",
+            "Event-Select",
+            "ID:%i Failed",
+            pxUIElement->Info.WindowID
+        );
+#endif
+    }
+    else
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "X-System",
+            "Event-Select",
+            "ID:%i OK",
+            pxUIElement->Info.WindowID
+        );
+#endif
+    }
+
+
+
+    const int flushResultID = XFlush(pxUIElement->DisplayHandle);
 
 
 
