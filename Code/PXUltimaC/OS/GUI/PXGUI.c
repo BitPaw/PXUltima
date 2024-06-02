@@ -1862,24 +1862,30 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
             {
                 PXGUIElementCreateWindowInfo* const pxGUIElementCreateWindowInfo = &pxGUIElementCreateInfo->Data.Window;
 
-                Display* display = PXNull;
-
                 // Create display
                 {
-                    display = XOpenDisplay(PXNull);   // X11/Xlib.h Create Window
-                    const PXBool successful = PXNull != display;
+                    pxUIElement->DisplayHandle = XOpenDisplay(PXNull);   // X11/Xlib.h Create Window
+                    const PXBool successful = PXNull != pxUIElement->DisplayHandle;
 
                     if(!successful)
                     {
+#if PXLogEnable
+                        PXLogPrint
+                        (
+                            PXLoggingError,
+                            "GUI",
+                            "Element-Create",
+                            "Failed to open X server. XOpenDisplay() failed."
+                        );
+#endif
+
                         return PXActionFailedInitialization; // printf("\n\tcannot connect to X server\n\n");
                     }
-                
-                    pxGUIElementCreateWindowInfo->WindowDisplay = display;
 
-                    const XID windowRoot = DefaultRootWindow(display); // Make windows root
-                    //const PXBool successful = windowRoot != 0;
+                    pxUIElement->WindowRootHandle = DefaultRootWindow(pxUIElement->DisplayHandle); // Make windows root
 
-                    pxGUIElementCreateWindowInfo->WindowHandle = windowRoot;
+                    pxGUIElementCreateWindowInfo->WindowDisplay = pxUIElement->DisplayHandle;
+                    pxGUIElementCreateWindowInfo->WindowRootHandle = pxUIElement->WindowRootHandle;
           
                 }
 
@@ -1892,7 +1898,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                     None
                 };
 
-                const XVisualInfo* const visualInfo = glXChooseVisual(display, 0, attributeList);
+                const XVisualInfo* const visualInfo = glXChooseVisual(pxUIElement->DisplayHandle, 0, attributeList);
 
                 {
                     const PXBool successful = visualInfo != 0;
@@ -1906,8 +1912,8 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                 // Create colormapping
                 Colormap colormap = XCreateColormap
                 (
-                    pxGUIElementCreateWindowInfo->WindowDisplay,
-                    pxGUIElementCreateWindowInfo->WindowHandle,
+                    pxUIElement->DisplayHandle,
+                    pxUIElement->WindowRootHandle,
                     visualInfo->visual,
                     AllocNone
                 );
@@ -1952,8 +1958,8 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
                     const XID windowhandle = XCreateWindow
                     (
-                        pxGUIElementCreateWindowInfo->WindowDisplay,
-                        pxGUIElementCreateWindowInfo->WindowRootHandle,
+                        pxUIElement->DisplayHandle,
+                        pxUIElement->WindowRootHandle,
                         pxGUIElementCreateWindowInfo->X,
                         pxGUIElementCreateWindowInfo->Y,
                         pxGUIElementCreateWindowInfo->Width,
@@ -1967,11 +1973,12 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                     );
                     const PXBool sucessful = PXNull != windowhandle;
 
+                    pxUIElement->Info.WindowID = windowhandle;
                     pxGUIElementCreateWindowInfo->WindowHandle = windowhandle;
                 }
 
                 // Attach to render engine
-                XMapWindow(pxGUIElementCreateWindowInfo->WindowDisplay, pxGUIElementCreateWindowInfo->WindowHandle);
+                XMapWindow(pxUIElement->DisplayHandle, pxUIElement->Info.WindowID);
 
                 // Set Title    
                 PXGUIElementTextSet(pxUIElement, pxGUIElementCreateWindowInfo->Title);
