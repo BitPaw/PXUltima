@@ -50,6 +50,10 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="Algorithm/BubbleSort/PXBubbleSort.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Algorithm/BubbleSort/PXBubbleSort.h" />
 		<Unit filename="Algorithm/Dijkstra/PXDijkstra.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -58,6 +62,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Algorithm/KalmanFilter/PXKalmanFilter.h" />
+		<Unit filename="Algorithm/KnowlegeGraph/PXKnowlegeGraph.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Algorithm/KnowlegeGraph/PXKnowlegeGraph.h" />
 		<Unit filename="Compiler/PXCompiler.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -66,6 +74,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Compiler/PXCompilerSettings.h" />
+		<Unit filename="Container/BTree/PXBTree.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Container/BTree/PXBTree.h" />
 		<Unit filename="Container/BinaryTree/PXBinaryTree.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -78,6 +90,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Container/Dictionary/PXDictionary.h" />
+		<Unit filename="Container/FlexDataCache/PXFlexDataCache.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Container/FlexDataCache/PXFlexDataCache.h" />
 		<Unit filename="Container/LinkedList/PXLinkedList.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -98,6 +114,18 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Container/RingBuffer/PXRingBuffer.h" />
+		<Unit filename="Engine/Dialog/PXDialogBox.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Engine/Dialog/PXDialogBox.h" />
+		<Unit filename="Engine/Dialog/PXDialogContainer.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Engine/Dialog/PXDialogContainer.h" />
+		<Unit filename="Engine/Interact/PXSign.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Engine/Interact/PXSign.h" />
 		<Unit filename="Engine/PXEngine.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -114,10 +142,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Language/PXTranslator.h" />
-		<Unit filename="Log/PXLog.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Log/PXLog.h" />
 		<Unit filename="Math/PXCollision.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -190,18 +214,22 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Media/CRC32/PXCRC32.h" />
-		<Unit filename="Media/CS/PXCS.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Media/CS/PXCS.h" />
 		<Unit filename="Media/CSS/PXCSS.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Media/CSS/PXCSS.h" />
+		<Unit filename="Media/CSharp/PXCSharp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Media/CSharp/PXCSharp.h" />
 		<Unit filename="Media/CanonRaw3/PXCanonRaw3.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Media/CanonRaw3/PXCanonRaw3.h" />
+		<Unit filename="Media/DDS/PXDDS.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Media/DDS/PXDDS.h" />
 		<Unit filename="Media/DEFLATE/PXDEFLATE.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -222,6 +250,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Media/FTP/PXFTP.h" />
+		<Unit filename="Media/FastFile/PXFastFile.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Media/FastFile/PXFastFile.h" />
 		<Unit filename="Media/FilmBox/PXFilmBox.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -270,6 +302,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Media/JSON/PXJSON.h" />
+		<Unit filename="Media/Java/PXJava.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Media/Java/PXJava.h" />
 		<Unit filename="Media/LAME/PXLAME.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -278,10 +314,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Media/LZ77/PXLZ77.h" />
-		<Unit filename="Media/M4A/PXM4A.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Media/M4A/PXM4A.h" />
 		<Unit filename="Media/MD5/PXMD5.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -334,6 +366,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Media/PXColor.h" />
+		<Unit filename="Media/PXDocument.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Media/PXDocument.h" />
 		<Unit filename="Media/PXImage.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -358,6 +394,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Media/QOI/PXQOI.h" />
+		<Unit filename="Media/RAR/PXRAR.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Media/RAR/PXRAR.h" />
 		<Unit filename="Media/RIFF/PXRIFF.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -370,6 +410,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Media/SHA/PXSHA.h" />
+		<Unit filename="Media/SQL/PXSQL.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Media/SQL/PXSQL.h" />
 		<Unit filename="Media/STEP/PXSTEP.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -382,6 +426,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Media/SVG/PXSVG.h" />
+		<Unit filename="Media/Salsa20/PXSalsa20.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Media/Salsa20/PXSalsa20.h" />
 		<Unit filename="Media/SpriteFont/PXSpriteFont.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -498,6 +546,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="OS/ClipBoard/PXClipBoard.h" />
+		<Unit filename="OS/Console/PXConsole.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="OS/Console/PXConsole.h" />
 		<Unit filename="OS/DataBase/PXDataBase.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -522,10 +574,34 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="OS/File/PXFile.h" />
+		<Unit filename="OS/GUI/PXGUI.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="OS/GUI/PXGUI.h" />
 		<Unit filename="OS/Graphic/DirectX/PXDirectX.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="OS/Graphic/DirectX/PXDirectX.h" />
+		<Unit filename="OS/Graphic/DirectX/PXDirectX10.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="OS/Graphic/DirectX/PXDirectX10.h" />
+		<Unit filename="OS/Graphic/DirectX/PXDirectX10x1.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="OS/Graphic/DirectX/PXDirectX10x1.h" />
+		<Unit filename="OS/Graphic/DirectX/PXDirectX11.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="OS/Graphic/DirectX/PXDirectX11.h" />
+		<Unit filename="OS/Graphic/DirectX/PXDirectX12.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="OS/Graphic/DirectX/PXDirectX12.h" />
+		<Unit filename="OS/Graphic/DirectX/PXDirectX9.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="OS/Graphic/DirectX/PXDirectX9.h" />
 		<Unit filename="OS/Graphic/OpenGL/PXOpenGL.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -578,6 +654,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="OS/Network/PXClient.h" />
+		<Unit filename="OS/Network/PXNetwork.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="OS/Network/PXNetwork.h" />
 		<Unit filename="OS/Network/PXServer.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -598,6 +678,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="OS/System/PXRegistry.h" />
+		<Unit filename="OS/System/PXWindows.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="OS/System/PXWindows.h" />
 		<Unit filename="OS/Time/PXStopWatch.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -606,18 +690,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="OS/Time/PXTime.h" />
-		<Unit filename="OS/UI/PXUI.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="OS/UI/PXUI.h" />
 		<Unit filename="OS/User/PXUser.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="OS/User/PXUser.h" />
-		<Unit filename="OS/Window/PXWindow.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="OS/Window/PXWindow.h" />
 		<Unit filename="Service/FTP/PXFTPClient.c">
 			<Option compilerVar="CC" />
 		</Unit>

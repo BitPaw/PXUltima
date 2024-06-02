@@ -18,7 +18,7 @@
 
 //#include <OS/File/PXFile.h>
 
-#define PXBoilerPlate 
+#define PXBoilerPlate
 
 // Predefine
 typedef enum PXActionResult_ PXActionResult;
@@ -267,8 +267,8 @@ PXPublic PXInt8U PXAPI PXVertexBufferFormatStrideSize(const PXVertexBufferFormat
 // Describes the exact type of a resource
 typedef enum PXResourceType_
 {
-	PXResourceTypeInvalid, // Invalid, don't use- only for internal 
-		
+	PXResourceTypeInvalid, // Invalid, don't use- only for internal
+
 	PXResourceTypeCustom, // Undetected but valid format. Needs to be handled by the caller
 
 	//-----------------------------------------------------
@@ -299,7 +299,7 @@ typedef enum PXResourceType_
 	PXResourceTypeCodeDocument,
 	PXResourceTypeDocument,
 	PXResourceTypeBinary,
-	PXResourceTypeStructuredText, // 
+	PXResourceTypeStructuredText, //
 	PXResourceTypeInstaller, // compressed executable
 	PXResourceTypeArchiv, // Compressed object
 	//-----------------------------------------------------
@@ -629,7 +629,7 @@ typedef struct PXShaderVariable_
 	char Name[PXShaderVariableNameSize]; // Shader variable name, used only for and ID fetch as it is very slow!
 	PXSize NameSize;
 	PXShaderVariableType DataType;
-	PXInt32U RegisterIndex; // ID to make, 
+	PXInt32U RegisterIndex; // ID to make,
 	PXSize DataTypeSize;
 
 	// Only for DirectX
@@ -1023,7 +1023,7 @@ PXHitBoxForm;
 //---------------------------------------------------------
 // BehaviourFlag
 //---------------------------------------------------------
-#define PXHitBoxBehaviourKeepOut 0b00000001 // Prevent from entering 
+#define PXHitBoxBehaviourKeepOut 0b00000001 // Prevent from entering
 #define PXHitBoxBehaviourKeepIn  0b00000010 // Prevent from leaving
 #define PXHitBoxBehaviourDetect  0b00000100 // Trigger if in inside
 #define PXHitBoxBehaviourPhysics 0b00001000 // Apply physics
@@ -1214,14 +1214,14 @@ PXSkyBox;
 // UI-Element
 //-----------------------------------------------------
 
-#define PXUIElementDoRendering (1 << 0) 
+#define PXUIElementDoRendering (1 << 0)
 #define PXUIElementIsActive (1 << 1)
 #define PXUIElementIsHoverable (1 << 2)
 #define PXUIElementDrawBorder (1 << 3)
 
 #define PXUIElementNormal PXUIElementDoRendering | PXUIElementIsActive | PXUIElementIsHoverable
 #define PXUIElementDecorative PXUIElementDoRendering | PXUIElementIsActive | PXUIElementDrawBorder
-#define PXUIElementText PXUIElementDoRendering | PXUIElementIsActive 
+#define PXUIElementText PXUIElementDoRendering | PXUIElementIsActive
 
 
 typedef enum PXUIHoverState_
@@ -1436,7 +1436,7 @@ typedef struct PXUIElement_
 	PXResourceInfo Info;
 
 	//------------------------------
-	// References 
+	// References
 	//------------------------------
 	struct PXUIElement_* Parent;
 	struct PXUIElement_* Sibling;
@@ -1478,7 +1478,7 @@ typedef struct PXUIElement_
 
 #if OSUnix
 	Display* DisplayHandle;
-	Window WindowHandle;
+	Window WindowRootHandle;
 #elif OSWindows
 #endif
 
@@ -1523,8 +1523,8 @@ PXUIElementPositionCalulcateInfo;
 
 // Behaviour
 #define PXGUIElementBehaviourDrawOverrride	0b00000001
-#define PXGUIElementBehaviourUseOS			0b00000010 
-#define PXGUIElementBehaviourCanBeTabbed	0b00000100 
+#define PXGUIElementBehaviourUseOS			0b00000010
+#define PXGUIElementBehaviourCanBeTabbed	0b00000100
 
 // Design
 #define PXGUIElementStyleFlagVisible		0b00000000000000000000000000000001
@@ -1884,7 +1884,7 @@ typedef enum PXAudioDeviceType_
 PXAudioDeviceType;
 
 #define PXAudioDeviceNameSize 64
-#define PXAudioFX3DPositionEnable	(1 <<  0) 
+#define PXAudioFX3DPositionEnable	(1 <<  0)
 #define PXAudioFXPlaySpeedEnable	(1 <<  1)
 #define PXAudioFXVolumeMONOEnable	(1 <<  2)
 #define PXAudioFXVolumeSTEREOEnable	(1 <<  3)
@@ -1957,18 +1957,18 @@ typedef struct PXAudioDevice_
 
 	PXInt32U FormatSupportFlags;
 
-	PXInt16U FormatTag;         // format type 
+	PXInt16U FormatTag;         // format type
 	PXInt16U Channels;          // number of channels (i.e. mono, stereo...)
 	PXInt32U SamplesPerSecound;     // sample rate
-	PXInt32U AverageBytesPerSecound;    // for buffer estimation 
-	PXInt16U BlockAlignSize;        // block size of data 
+	PXInt32U AverageBytesPerSecound;    // for buffer estimation
+	PXInt16U BlockAlignSize;        // block size of data
 	PXInt16U BitsPerSample;     // number of bits per sample of mono data
 
 	//-------------------------------------------------
 	// Used By MIDI
 	//-------------------------------------------------
-	PXInt16U Technology;           // type of device 
-	PXInt16U Voices;               // # of voices (internal synth only) 
+	PXInt16U Technology;           // type of device
+	PXInt16U Voices;               // # of voices (internal synth only)
 	PXInt16U Notes;                // max # of notes (internal synth only)
 	PXInt16U ChannelMask;          // channels used (internal synth only)
 	//-------------------------------------------------

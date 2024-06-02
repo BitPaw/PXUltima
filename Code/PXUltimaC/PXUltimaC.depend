@@ -719,7 +719,7 @@
 1687010140 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/PXSound.c
 	"PXSound.h"
 
-1717240506 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/PXText.c
+1717339062 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/PXText.c
 	"PXText.h"
 	<OS/System/PXOSVersion.h>
 	<OS/Memory/PXMemory.h>
@@ -920,7 +920,7 @@
 	<unistd.h>
 	<windows.h>
 
-1717240506 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Async/PXThread.c
+1717339062 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Async/PXThread.c
 	"PXThread.h"
 	<OS/Console/PXConsole.h>
 	<OS/File/PXFile.h>
@@ -996,7 +996,7 @@
 	<dsound.h>
 	<WbemCli.h>
 
-1717287348 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Debug/PXDebug.c
+1717339062 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Debug/PXDebug.c
 	"PXDebug.h"
 	<sys/types.h>
 	<sys/wait.h>
@@ -1368,7 +1368,7 @@
 	<dwmapi.h>
 	<winuser.rh>
 
-1717287348 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/PXResource.h
+1717348051 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/PXResource.h
 	<Math/PXMatrix.h>
 	"PXImage.h"
 	<Container/FlexDataCache/PXFlexDataCache.h>
@@ -1562,7 +1562,7 @@
 	<Windows.h>
 	<mmsystem.h>
 
-1717287348 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Engine/PXEngine.c
+1717339062 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Engine/PXEngine.c
 	"PXEngine.h"
 	<Math/PXMath.h>
 	<OS/Console/PXConsole.h>
@@ -1679,7 +1679,7 @@
 	<Media/PXResource.h>
 	<OS/File/PXFile.h>
 
-1717287348 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/GUI/PXGUI.h
+1717344487 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/GUI/PXGUI.h
 	<Media/PXResource.h>
 	<Container/Dictionary/PXDictionary.h>
 	<OS/Graphic/PXGraphic.h>
@@ -1737,7 +1737,7 @@
 1717240506 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/CSharp/PXCSharp.h
 	"../PXResource.h"
 
-1717287348 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/DDS/PXDDS.c
+1717339062 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/DDS/PXDDS.c
 	"PXDDS.h"
 	<OS/File/PXFile.h>
 	<OS/Graphic/PXGraphic.h>
@@ -1856,7 +1856,7 @@
 	<D3DX9Shader.h>
 	<d3dx9shader.h>
 
-1717287348 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/GUI/PXGUI.c
+1717348117 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/GUI/PXGUI.c
 	"PXGUI.h"
 	<Media/PXText.h>
 	<Math/PXMath.h>
@@ -1885,7 +1885,7 @@
 	<winuser.rh>
 	<Engine/PXEngine.h>
 
-1717287348 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Network/PXNetwork.c
+1717339062 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Network/PXNetwork.c
 	"PXNetwork.h"
 	<arpa/inet.h>
 	<netinet/in.h>
@@ -1900,6 +1900,7 @@
 	<OS/Console/PXConsole.h>
 	<OS/Memory/PXMemory.h>
 	<Math/PXMath.h>
+	<OS/Async/PXThread.h>
 
 1717287348 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/Network/PXNetwork.h
 	<Media/PXResource.h>
