@@ -508,6 +508,14 @@ PXPublic PXBool PXAPI PXGUIElementDelete(const PXWindowID pxUIElementID, PXUIEle
 
 PXPublic PXBool PXAPI PXGUIElementTextSet(PXUIElement* const pxUIElement, char* text);
 
+PXPublic PXBool PXAPI PXGUIElementValueFetch
+(
+	PXUIElement* const pxUIElementList, // 
+	const PXSize dataListAmount,
+	const PXUIElementProperty pxUIElementProperty,
+	void* const dataList // The given data
+);
+
 
 PXPublic PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResourceCreateInfo* const pxResourceCreateInfo, const PXSize amount);
 PXPublic PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIElementUpdateInfo* const pxGUIElementUpdateInfoList, const PXSize amount);

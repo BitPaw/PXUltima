@@ -1629,6 +1629,35 @@ PXBool PXAPI PXGUIElementTextSet(PXUIElement* const pxUIElement, char* text)
 #endif
 }
 
+PXBool PXAPI PXGUIElementValueFetch(PXUIElement* const pxUIElementList, const PXSize dataListAmount, const PXUIElementProperty pxUIElementProperty, void* const dataList)
+{
+    for(size_t i = 0; i < dataListAmount; ++i)
+    {
+        PXUIElement* const pxUIElement = &pxUIElementList[i];
+
+        switch(pxUIElementProperty)
+        {
+            case PXUIElementPropertySliderPercentage:
+            {
+                float* target = &((float*)dataList)[i];
+
+#if OSUnix
+           
+#elif OSWindows
+                *target = SendMessageA(pxUIElement->Info.ID, TBM_GETPOS, 0, 0) / 100.f;
+#endif
+
+                break;
+            }
+
+            default:
+                break;
+        }
+    }
+
+    return PXTrue;
+}
+
 PXActionResult PXAPI PXGUISystemInitialize(PXGUISystem* const pxGUISystem)
 {
     if(PXGUISystemGlobalReference)

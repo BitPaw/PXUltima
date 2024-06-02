@@ -1542,6 +1542,9 @@ typedef enum PXUIElementProperty_
 	PXUIElementPropertyTextColor,
 	PXUIElementPropertySize,
 	PXUIElementPropertySizeParent,
+
+	PXUIElementPropertySliderPercentage,
+
 	PXUIElementPropertyProgressbarPercentage,
 	PXUIElementPropertyProgressbarBarColor,
 
