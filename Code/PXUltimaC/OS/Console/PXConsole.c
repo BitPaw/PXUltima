@@ -36,6 +36,8 @@ PXActionResult PXAPI PXConsoleTextColorSetFromID(const PXInt16U coliorID)
 
 PXActionResult PXAPI PXConsoleTextColorSet(const PXConsoleTextColor pxConsoleTextColor)
 {
+#if OSUnix
+#elif OSWindows
 	const HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 	WORD colorID = 0;
 
@@ -83,6 +85,9 @@ PXActionResult PXAPI PXConsoleTextColorSet(const PXConsoleTextColor pxConsoleTex
 	}
 
 	SetConsoleTextAttribute(consoleHandle, colorID);
+#else 
+	return PXActionRefusedNotSupportedByLibrary;
+#endif
 }
 
 void PXAPI PXConsoleClear()
@@ -122,6 +127,8 @@ void PXAPI PXConsoleWriteF(const PXSize length, const char* const source, ...)
 
 void PXAPI PXConsoleWrite(const PXSize length, const char* const source)
 {
+#if OSUnix
+#elif OSWindows
 	const HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 	const BOOL success = WriteConsoleA(consoleHandle, source, length, 0, 0);
 
@@ -130,6 +137,7 @@ void PXAPI PXConsoleWrite(const PXSize length, const char* const source)
 	PXTextConstructFromAdressA(&pxText, source, length, length);
 
 	PXDebugLogMessage(&pxText);
+#endif
 }
 
 void PXAPI PXConsoleWriteFV(const PXSize length, const char* const source, va_list va_list)
@@ -383,7 +391,7 @@ void PXAPI PXLogPrintInvoke(PXLoggingEventData* const pxLoggingEventData, ...)
 
 
 
-	PXConsoleWriteWithColorCodes(&textPreFormatted, &textColored);
+	PXConsoleWriteWithColorCodes(&textPreFormatted);
 
 
 

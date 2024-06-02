@@ -13,11 +13,9 @@
 	#if WindowsAtleastVista
         #include <Shlobj.h>
         #include <combaseapi.h>
-#include "PXDialog.h"
+        #include "PXDialog.h"
 // #include <shobjidl.h> // [This is an internal header. Do not use as such] 		
-	#endif
-#endif
-
+    #endif
 
 typedef BOOL(APIENTRY* PXGetOpenFileNameA)(LPOPENFILENAMEA);
 typedef BOOL(APIENTRY* PXGetOpenFileNameW)(LPOPENFILENAMEW);
@@ -30,9 +28,14 @@ typedef BOOL(APIENTRY* PXChooseFontW)(LPCHOOSEFONTW);
 typedef BOOL(APIENTRY* PXPrintDlgA)(LPPRINTDLGA pPD);
 typedef BOOL(APIENTRY* PXPrintDlgW)(LPPRINTDLGW pPD);
 
+#endif
+
 
 PXActionResult PXAPI PXDialogSystemInitialize(PXDialogSystem* const pxDialogSystem)
 {
+#if OSUnix
+#elif OSWindows
+
     PXClear(PXDialogSystem, pxDialogSystem);
 
     // Load library
@@ -65,6 +68,8 @@ PXActionResult PXAPI PXDialogSystemInitialize(PXDialogSystem* const pxDialogSyst
 
         PXLibraryGetSymbolListA(&pxDialogSystem->CommonDialogLibrary, pxLibraryFuntionEntry, amount);
     }
+
+#endif
 
     return PXActionSuccessful;
 }

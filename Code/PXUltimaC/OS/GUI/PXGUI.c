@@ -1837,7 +1837,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                     pxGUIElementCreateWindowInfo->WindowDisplay = display;
 
                     const XID windowRoot = DefaultRootWindow(display); // Make windows root
-                    const PXBool successful = windowRoot != 0;
+                    //const PXBool successful = windowRoot != 0;
 
                     pxGUIElementCreateWindowInfo->WindowHandle = windowRoot;
           
@@ -1985,7 +1985,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
     eventmask.mask = mask;
 
 
-    XISelectEvents(pxUIElement->DisplayHandle, pxUIElement->WindowRoot, &eventmask, 1u);
+    XISelectEvents(pxUIElement->DisplayHandle, pxUIElement->WindowHandle, &eventmask, 1u);
     XFlush(pxUIElement->DisplayHandle);
 
 

@@ -6,7 +6,7 @@
 PXPublic PXActionResult PXAPI PXDirectX11Initialize(PXDirectX11* const pxDirectX11, PXGraphicInitializeInfo* const pxGraphicInitializeInfo);
 PXPublic PXActionResult PXAPI PXDirectX11Release(PXDirectX11* const pxDirectX11);
 
-PXPublic PXActionResult PXAPI PXDirectX11TextureAction(PXDirectX11* const pxDirectX11, struct PXGraphicTexturInfo_* const pxGraphicTexturInfo);
+PXPublic PXActionResult PXAPI PXDirectX11TextureAction(PXDirectX11* const pxDirectX11, PXGraphicTexturInfo* const pxGraphicTexturInfo);
 
 PXPublic PXActionResult PXAPI PXDirectX11Clear(PXDirectX11* const pxDirectX11, const PXColorRGBAF* const pxColorRGBAF);
 PXPublic PXActionResult PXAPI PXDirectX11VertexBufferCreate(PXDirectX11* const pxDirectX11, PXVertexBuffer* const pxVertexBuffer);

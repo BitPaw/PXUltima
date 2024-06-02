@@ -3003,7 +3003,7 @@ PXActionResult PXAPI PXOpenGLRelease(PXOpenGL* const pxOpenGL)
 
 void PXAPI PXOpenGLRenderBufferSwap(PXOpenGL* const pxOpenGL)
 {
-    PXWindowFrameBufferSwap(pxOpenGL->WindowHandle);
+   // PXWindowFrameBufferSwap(pxOpenGL->);
 }
 
 void PXAPI PXOpenGLFlush(PXOpenGL* const pxOpenGL)
@@ -3086,7 +3086,7 @@ PXBool PXAPI PXOpenGLSceneDeploy(PXOpenGL* const pxOpenGL)
     const PXBool success = PXWindowFrameBufferSwap(pxWindow);
 #endif
 
-    SwapBuffers(pxOpenGL->WindowDeviceContextHandle);
+   // SwapBuffers(pxOpenGL->WindowDeviceContextHandle);
 
     return PXActionSuccessful;
 }
@@ -4850,7 +4850,7 @@ void PXAPI PXOpenGLDrawArraysInstanced(const PXOpenGL* const pxOpenGL, const PXG
     }
 }
 
-PXActionResult PXAPI PXOpenGLTextureAction(PXOpenGL* const pxOpenGL, struct PXGraphicTexturInfo_* const pxGraphicTexturInfo)
+PXActionResult PXAPI PXOpenGLTextureAction(PXOpenGL* const pxOpenGL, PXGraphicTexturInfo* const pxGraphicTexturInfo)
 {
     switch(pxGraphicTexturInfo->Action)
     {

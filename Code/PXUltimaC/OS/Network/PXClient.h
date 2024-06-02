@@ -1,3 +1,4 @@
+#define PXClientInclude
 #ifndef PXClientInclude
 #define PXClientInclude
 

@@ -193,12 +193,14 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
     pxGraphic->WindowReference = pxGraphicInitializeInfo->WindowReference;
     pxGraphicInitializeInfo->Graphic = pxGraphic;
 
+#if OSUnix
+#elif OSWindows
     // Get Device context if not already done
     if(!pxGraphicInitializeInfo->HandleDeviceContext)
     {
         pxGraphicInitializeInfo->HandleDeviceContext = GetDC(pxGraphic->WindowReference->Info.WindowID);
     }
-
+#endif
 
     
     /*
@@ -235,12 +237,18 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
     // Set pixel system
     {
         PXWindowPixelSystemInfo pxWindowPixelSystemInfo;
-        pxWindowPixelSystemInfo.HandleDeviceContext = pxGraphicInitializeInfo->HandleDeviceContext;
-        pxWindowPixelSystemInfo.HandleWindow = pxGraphic->WindowReference->Info.WindowID;
+        PXClear(PXWindowPixelSystemInfo, &pxWindowPixelSystemInfo);
         pxWindowPixelSystemInfo.BitPerPixel = 32;
         pxWindowPixelSystemInfo.OpenGL = PXTrue;
         pxWindowPixelSystemInfo.DirectX = PXTrue;
         pxWindowPixelSystemInfo.GDI = PXFalse;
+
+#if OSUnix
+#elif OSWindows
+        pxWindowPixelSystemInfo.HandleDeviceContext = pxGraphicInitializeInfo->HandleDeviceContext;
+        pxWindowPixelSystemInfo.HandleWindow = pxGraphic->WindowReference->Info.WindowID;
+#endif
+
 
         const PXActionResult pixelSystem = PXWindowPixelSystemSet(&pxWindowPixelSystemInfo);
 

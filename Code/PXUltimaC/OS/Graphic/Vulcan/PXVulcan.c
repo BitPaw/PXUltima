@@ -77,7 +77,7 @@ PXActionResult PXAPI PXVulcanErrorCodeFromID(const VkResult vkResultID)
 	};
 }
 
-PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, struct PXGraphicInitializeInfo_* const pxGraphicInitializeInfo)
+PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicInitializeInfo* const pxGraphicInitializeInfo)
 {
 	PXClear(PXVulcan, pxVulcan);
 

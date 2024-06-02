@@ -9,7 +9,7 @@ PXPublic PXActionResult PXAPI PXDirectX9Release(PXDirectX9* const pxDirectX9);
 PXPublic void PXAPI PXDirectX9Select(PXDirectX9* const pxDirectX9);
 PXPublic void PXAPI PXDirectX9Deselect(PXDirectX9* const pxDirectX9);
 
-PXPublic PXActionResult PXAPI PXDirectX9TextureAction(PXDirectX9* const pxDirectX9, struct PXGraphicTexturInfo_* const pxGraphicTexturInfo);
+PXPublic PXActionResult PXAPI PXDirectX9TextureAction(PXDirectX9* const pxDirectX9, PXGraphicTexturInfo* const pxGraphicTexturInfo);
 
 PXPublic PXActionResult PXAPI PXDirectX9ShaderProgramCreate(PXDirectX9* const pxDirectX9, PXShaderProgram* const pxShaderProgram, PXShader* const shaderList, const PXSize amount);
 PXPublic PXActionResult PXAPI PXDirectX9ShaderProgramSelect(PXDirectX9* const pxDirectX9, PXShaderProgram* const pxShaderProgram);

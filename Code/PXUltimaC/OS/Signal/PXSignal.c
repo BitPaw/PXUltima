@@ -4,6 +4,12 @@
 
 #include <signal.h> // [POSIX] Exists on Linux and Windows
 
+#if OSUnix
+typedef __sighandler_t PXSignalHandle;
+#elif OSWindows
+typedef _crt_signal_t PXSignalHandle;
+#endif
+
 PXActionResult PXAPI PXSignalCallBackRegister(const PXSignalToken pxSignalToken, PXSignalCallBack pxSignalCallBack)
 {
 #if OSUnix || OSForcePOSIXForWindows
@@ -20,9 +26,11 @@ PXActionResult PXAPI PXSignalCallBackRegister(const PXSignalToken pxSignalToken,
 		case PXSignalTokenIllegalInstruction:
 			signalID = SIGILL;
 			break;
+#if OSWindows
 		case PXSignalTokenINT:
 			signalID = SIGBREAK;
 			break;
+#endif
 		case PXSignalTokenMemoryViolation:
 			signalID = SIGSEGV;
 			break;
@@ -35,7 +43,9 @@ PXActionResult PXAPI PXSignalCallBackRegister(const PXSignalToken pxSignalToken,
 	}
 
 
-	const _crt_signal_t functionPointer = signal(signalID, pxSignalCallBack);
+
+
+	const PXSignalHandle functionPointer = signal(signalID, pxSignalCallBack);
 	const PXBool validLinkage = functionPointer != SIG_ERR;
 
 	if (!validLinkage)

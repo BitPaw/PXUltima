@@ -3515,10 +3515,10 @@ PXActionResult PXAPI PXFilePathGet(const PXFile* const pxFile, PXText* const fil
 {
 #if OSUnix
 	char namePathBuffer[64];
-	const PXSize namePathBuffer = sizeof(namePathBuffer);
+	const PXSize namePathBufferSIze = sizeof(namePathBuffer);
 	const int numberDescriptor = fileno(pxFile->ID); // stdio.h
 
-	PXTextPrintA(namePathBuffer, namePathBuffer, "/proc/self/fd/%d", numberDescriptor); // "/prof/self/fd/0123456789"
+	PXTextPrintA(namePathBuffer, namePathBufferSIze, "/proc/self/fd/%d", numberDescriptor); // "/prof/self/fd/0123456789"
 
 	const PXSize writtenBytes = readlink(namePathBuffer, filePath->TextA, filePath->SizeAllocated); // [POSIX.1 - 2008]
 	const PXBool success = -1 != writtenBytes;

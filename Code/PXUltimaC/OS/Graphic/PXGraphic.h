@@ -145,14 +145,6 @@ typedef struct UIContainerRoot_
 }
 UIContainerRoot;
 
-typedef struct PXGraphicTexturInfo_
-{
-	void** TextureReference;
-	PXSize Amount;
-	PXGraphicTextureType Type;
-	PXResourceAction Action;
-}
-PXGraphicTexturInfo;
 
 
 //-------------------------------------------------------------------------

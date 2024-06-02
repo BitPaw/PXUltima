@@ -241,7 +241,7 @@ PXActionResult PXAPI PXDirectXInitialize(PXDirectX* const pxDirectX, PXGraphicIn
 
     return initializeResult;
 #else
-    return PXActionNotSupportedByOperatingSystem;
+    return PXActionRefusedNotSupportedByOperatingSystem;
 #endif
 }
 

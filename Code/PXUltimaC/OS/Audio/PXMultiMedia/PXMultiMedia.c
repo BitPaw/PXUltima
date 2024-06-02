@@ -1,16 +1,21 @@
 #include "PXMultiMedia.h"
 
-#if WindowsAtleastVista && 00
+#if OSWindows
+
+#if WindowsAtleastVista
 #include <mmeapi.h> // Header should be found under XP build but it is not.
 #else 
 #include <MMSystem.h> // alternavive header of MMEAPI.h?
 #endif
 #pragma comment(lib, "winmm.lib") // Library: Windows Multimedia 
 
+#endif
+
 #include <OS/Console/PXConsole.h>
 #include <OS/Memory/PXMemory.h>
 
 
+#if OSWindows
 
 
 typedef MMRESULT(WINAPI* PXwaveOutGetDevCapsA)(UINT_PTR uDeviceID, LPWAVEOUTCAPSA pwoc, UINT cbwoc);
@@ -74,9 +79,15 @@ typedef MMRESULT(WINAPI* PXmixerGetLineControlsW)(HMIXEROBJ hmxobj, LPMIXERLINEC
 typedef MMRESULT(WINAPI* PXmixerGetControlDetailsA)(HMIXEROBJ hmxobj, LPMIXERCONTROLDETAILS pmxcd, DWORD fdwDetails);
 typedef MMRESULT(WINAPI* PXmixerGetControlDetailsW)(HMIXEROBJ hmxobj, LPMIXERCONTROLDETAILS pmxcd, DWORD fdwDetails);
 
+#endif
 
 PXActionResult PXAPI PXMultiMediaDeviceStart(PXAudioMultiMedia* const pxAudioMultiMedia, PXAudioDevice* const pxAudioDevice)
 {
+#if OSUnix
+	return PXActionRefusedNotSupportedByOperatingSystem;
+
+#elif OSWindows
+
 	MMRESULT result;
 
 	switch (pxAudioDevice->Type)
@@ -104,10 +115,16 @@ PXActionResult PXAPI PXMultiMediaDeviceStart(PXAudioMultiMedia* const pxAudioMul
 	const PXActionResult audioResult = PXWindowsMMAudioConvertFromID(result);
 
 	return audioResult;
+#endif
 }
 
 PXActionResult PXAPI PXMultiMediaDeviceStop(PXAudioMultiMedia* const pxAudioMultiMedia, PXAudioDevice* const pxAudioDevice)
 {
+#if OSUnix
+	return PXActionRefusedNotSupportedByOperatingSystem;
+
+#elif OSWindows
+
 	MMRESULT result;
 
 	switch (pxAudioDevice->Type)
@@ -136,10 +153,15 @@ PXActionResult PXAPI PXMultiMediaDeviceStop(PXAudioMultiMedia* const pxAudioMult
 	const PXActionResult audioResult = PXWindowsMMAudioConvertFromID(result);
 
 	return audioResult;
+#endif
 }
 
 PXActionResult PXAPI PXMultiMediaDevicePause(PXAudioMultiMedia* const pxAudioMultiMedia, PXAudioDevice* const pxAudioDevice)
 {
+#if OSUnix
+	return PXActionRefusedNotSupportedByOperatingSystem;
+
+#elif OSWindows
 	MMRESULT result;
 
 	switch (pxAudioDevice->Type)
@@ -165,10 +187,16 @@ PXActionResult PXAPI PXMultiMediaDevicePause(PXAudioMultiMedia* const pxAudioMul
 	const PXActionResult audioResult = PXWindowsMMAudioConvertFromID(result);
 
 	return audioResult;
+#endif
 }
 
 PXActionResult PXAPI PXMultiMediaDeviceRestart(PXAudioMultiMedia* const pxAudioMultiMedia, PXAudioDevice* const pxAudioDevice)
 {
+#if OSUnix
+	return PXActionRefusedNotSupportedByOperatingSystem;
+
+#elif OSWindows
+
 	MMRESULT result;
 
 	switch (pxAudioDevice->Type)
@@ -196,10 +224,15 @@ PXActionResult PXAPI PXMultiMediaDeviceRestart(PXAudioMultiMedia* const pxAudioM
 	pxAudioDevice->Info.DirectXInterface = PXNull;
 
 	return audioResult;
+#endif
 }
 
 PXActionResult PXAPI PXMultiMediaDeviceReset(PXAudioMultiMedia* const pxAudioMultiMedia, PXAudioDevice* const pxAudioDevice)
 {
+#if OSUnix
+	return PXActionRefusedNotSupportedByOperatingSystem;
+
+#elif OSWindows
 	MMRESULT result;
 
 	switch (pxAudioDevice->Type)
@@ -230,10 +263,15 @@ PXActionResult PXAPI PXMultiMediaDeviceReset(PXAudioMultiMedia* const pxAudioMul
 	pxAudioDevice->Info.DirectXInterface = PXNull;
 
 	return audioResult;
+#endif
 }
 
 PXActionResult PXAPI PXMultiMediaInitialize(PXAudioMultiMedia* const pxAudioMultiMedia, PXAudioInitializeInfo* const pxAudioInitializeInfo)
 {
+#if OSUnix
+	return PXActionRefusedNotSupportedByOperatingSystem;
+
+#elif OSWindows
 #if PXLogEnable
 	PXLogPrint
 	(
@@ -394,21 +432,31 @@ PXActionResult PXAPI PXMultiMediaInitialize(PXAudioMultiMedia* const pxAudioMult
 	}
 
 	return PXActionSuccessful;	
+#endif
 }
 
 PXActionResult PXAPI PXMultiMediaDeviceAmount(PXAudioMultiMedia* const pxAudioMultiMedia, PXAudioDeviceAmountInfo* const pxAudioDeviceAmountInfo)
 {
+#if OSUnix
+	return PXActionRefusedNotSupportedByOperatingSystem;
+
+#elif OSWindows
 	const PXwaveInGetNumDevs pxWaveInGetNumDevs = (PXwaveInGetNumDevs)pxAudioMultiMedia->WaveInGetNumDevs;
 	const PXwaveOutGetNumDevs pxWaveOutGetNumDevs = (PXwaveOutGetNumDevs)pxAudioMultiMedia->WaveOutGetNumDevs;
 
 	pxAudioDeviceAmountInfo->DeviceInput = pxWaveInGetNumDevs();
 	pxAudioDeviceAmountInfo->DeviceOutput = pxWaveOutGetNumDevs();
+#endif
 
 	return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXMultiMediaDeviceFetch(PXAudioMultiMedia* const pxAudioMultiMedia, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID, PXAudioDevice* const pxAudioDevice)
 {
+#if OSUnix
+	return PXActionRefusedNotSupportedByOperatingSystem;
+
+#elif OSWindows
 	PXClear(PXAudioDevice, pxAudioDevice);
 
 	MMRESULT result;
@@ -474,6 +522,8 @@ PXActionResult PXAPI PXMultiMediaDeviceFetch(PXAudioMultiMedia* const pxAudioMul
 		pxAudioDevice->DeviceName
 	);
 
+#endif
+
 	return PXActionSuccessful;
 }
 
@@ -491,6 +541,10 @@ PXActionResult PXAPI PXMultiMediaDeviceFetchAll(PXAudioMultiMedia* const pxAudio
 
 PXActionResult PXAPI PXMultiMediaDeviceOpen(PXAudioMultiMedia* const pxAudioMultiMedia, PXAudioDevice* const pxAudioDevice, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID)
 {
+#if OSUnix
+	return PXActionRefusedNotSupportedByOperatingSystem;
+
+#elif OSWindows
 	DWORD_PTR dwCallback = 0;
 	DWORD_PTR dwInstance = 0;
 	DWORD fdwOpen = CALLBACK_NULL;
@@ -574,10 +628,15 @@ PXActionResult PXAPI PXMultiMediaDeviceOpen(PXAudioMultiMedia* const pxAudioMult
 	);
 
 	return audioResult;
+#endif
 }
 
 PXActionResult PXAPI PXMultiMediaDeviceClose(PXAudioMultiMedia* const pxAudioMultiMedia, PXAudioDevice* const pxAudioDevice)
 {
+#if OSUnix
+	return PXActionRefusedNotSupportedByOperatingSystem;
+
+#elif OSWindows
 	MMRESULT result;
 
 	switch (pxAudioDevice->Type)
@@ -608,10 +667,16 @@ PXActionResult PXAPI PXMultiMediaDeviceClose(PXAudioMultiMedia* const pxAudioMul
 	pxAudioDevice->Info.DirectXInterface = PXNull;
 
 	return audioResult;
+#endif
 }
 
 PXActionResult PXAPI PXMultiMediaDeviceLoad(PXAudioMultiMedia* const pxAudioMultiMedia, PXAudioDevice* const pxAudioDevice, PXSound* const pxSound)
 {
+#if OSUnix
+	return PXActionRefusedNotSupportedByOperatingSystem;
+
+#elif OSWindows
+
 	//pxAudioDevice->FormatTag = pxSound->mod
 
 	pxAudioDevice->Channels = pxSound->NumerOfChannels;
@@ -682,12 +747,17 @@ PXActionResult PXAPI PXMultiMediaDeviceLoad(PXAudioMultiMedia* const pxAudioMult
 		default:
 			return PXActionRefusedArgumentInvalid;
 	}
+#endif
 
 	return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXMultiMediaDeviceBreakLoop(PXAudioMultiMedia* const pxAudioMultiMedia, PXAudioDevice* const pxAudioDevice)
 {
+#if OSUnix
+	return PXActionRefusedNotSupportedByOperatingSystem;
+
+#elif OSWindows
 	MMRESULT result;
 
 	switch (pxAudioDevice->Type)
@@ -713,10 +783,15 @@ PXActionResult PXAPI PXMultiMediaDeviceBreakLoop(PXAudioMultiMedia* const pxAudi
 	const PXActionResult audioResult = PXWindowsMMAudioConvertFromID(result);
 
 	return audioResult;
+#endif
 }
 
 PXActionResult PXAPI PXMultiMediaDevicePositionGet(PXAudioMultiMedia* const pxAudioMultiMedia, PXAudioDevice* const pxAudioDevice)
 {
+#if OSUnix
+	return PXActionRefusedNotSupportedByOperatingSystem;
+
+#elif OSWindows
 	MMRESULT result;
 
 	switch (pxAudioDevice->Type)
@@ -745,10 +820,15 @@ PXActionResult PXAPI PXMultiMediaDevicePositionGet(PXAudioMultiMedia* const pxAu
 	const PXActionResult audioResult = PXWindowsMMAudioConvertFromID(result);
 
 	return audioResult;
+#endif
 }
 
 PXActionResult PXAPI PXMultiMediaDevicePlaybackRateGet(PXAudioMultiMedia* const pxAudioMultiMedia, PXAudioDevice* const pxAudioDevice, PXInt32U* const playbackRate)
 {
+#if OSUnix
+	return PXActionRefusedNotSupportedByOperatingSystem;
+
+#elif OSWindows
 	MMRESULT result;
 
 	switch (pxAudioDevice->Type)
@@ -774,10 +854,15 @@ PXActionResult PXAPI PXMultiMediaDevicePlaybackRateGet(PXAudioMultiMedia* const 
 	const PXActionResult audioResult = PXWindowsMMAudioConvertFromID(result);
 
 	return audioResult;
+#endif
 }
 
 PXActionResult PXAPI PXMultiMediaDevicePlaybackRateSet(PXAudioMultiMedia* const pxAudioMultiMedia, PXAudioDevice* const pxAudioDevice, const PXInt32U playbackRate)
 {
+#if OSUnix
+	return PXActionRefusedNotSupportedByOperatingSystem;
+
+#elif OSWindows
 	MMRESULT result;
 
 	switch (pxAudioDevice->Type)
@@ -803,6 +888,7 @@ PXActionResult PXAPI PXMultiMediaDevicePlaybackRateSet(PXAudioMultiMedia* const 
 	const PXActionResult audioResult = PXWindowsMMAudioConvertFromID(result);
 
 	return audioResult;
+#endif
 }
 
 PXActionResult PXAPI PXMultiMediaDevicePitchIncrease(PXAudioMultiMedia* const pxAudioMultiMedia, PXAudioDevice* const pxAudioDevice, float amount)
@@ -820,7 +906,7 @@ PXActionResult PXAPI PXMultiMediaDevicePitchIncrease(PXAudioMultiMedia* const px
 PXActionResult PXAPI PXMultiMediaDevicePitchSet(PXAudioMultiMedia* const pxAudioMultiMedia, PXAudioDevice* const pxAudioDevice, const unsigned int pitch)
 {
 #if OSUnix
-	return PXActionRefusedNotImplemented;
+	return PXActionRefusedNotSupportedByOperatingSystem;
 
 #elif PXOSWindowsDestop
 	const PXwaveOutSetPitch pxWaveOutSetPitch = (PXwaveOutSetPitch)pxAudioMultiMedia->WaveOutSetPitch;
@@ -849,6 +935,10 @@ PXActionResult PXAPI PXMultiMediaDevicePitchReduce(PXAudioMultiMedia* const pxAu
 
 PXActionResult PXAPI PXMultiMediaDeviceVolumeGet(PXAudioMultiMedia* const pxAudioMultiMedia, PXAudioDevice* const pxAudioDevice, unsigned short* const volume)
 {
+#if OSUnix
+	return PXActionRefusedNotSupportedByOperatingSystem;
+
+#elif OSWindows
 	DWORD volumeDW = 0;
 
 	const PXwaveOutGetVolume pxWaveOutGetVolume = (PXwaveOutGetVolume)pxAudioMultiMedia->WaveOutGetVolume;
@@ -864,12 +954,17 @@ PXActionResult PXAPI PXMultiMediaDeviceVolumeGet(PXAudioMultiMedia* const pxAudi
 	}
 
 	*volume = volumeDW;
+#endif
 
 	return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXMultiMediaDeviceVolumeSetEqual(PXAudioMultiMedia* const pxAudioMultiMedia, PXAudioDevice* const pxAudioDevice, const unsigned int volume)
 {
+#if OSUnix
+	return PXActionRefusedNotSupportedByOperatingSystem;
+
+#elif OSWindows
 	MMRESULT volumeResultID;
 
 	switch (pxAudioDevice->Type)
@@ -894,12 +989,18 @@ PXActionResult PXAPI PXMultiMediaDeviceVolumeSetEqual(PXAudioMultiMedia* const p
 	const PXActionResult audioResult = PXWindowsMMAudioConvertFromID(volumeResultID);
 
 	return audioResult;
+#endif
 }
 
 PXActionResult PXAPI PXMultiMediaDeviceVolumeSetIndividual(PXAudioMultiMedia* const pxAudioMultiMedia, PXAudioDevice* const pxAudioDevice, const unsigned short volumeLeft, const unsigned short volumeRight)
 {
+#if OSUnix
+	return PXActionRefusedNotSupportedByOperatingSystem;
+
+#elif OSWindows
 	const unsigned int volumeCombined = (volumeLeft << 16) | volumeRight;
 	const PXActionResult audioResult = PXMultiMediaDeviceVolumeSetEqual(pxAudioMultiMedia, pxAudioDevice, volumeCombined);
 
 	return audioResult;
+#endif
 }

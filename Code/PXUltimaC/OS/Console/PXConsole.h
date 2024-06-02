@@ -102,7 +102,7 @@ PXPublic void PXAPI PXConsoleClear();
 PXPublic void PXAPI PXConsoleGoToXY(const PXInt32U x, const PXInt32U y);
 PXPublic void PXAPI PXConsoleWriteF(const PXSize length, const char* const source, ...);
 PXPublic void PXAPI PXConsoleWrite(const PXSize length, const char* const source);
-PXPublic void PXAPI PXConsoleWriteFV(const PXSize length, const char* const source, va_list* const va_list);
+PXPublic void PXAPI PXConsoleWriteFV(const PXSize length, const char* const source, va_list va_list);
 
 
 PXPublic void PXAPI PXConsoleWriteTableFloat(const float* const data, const PXSize amount, const PXSize width);

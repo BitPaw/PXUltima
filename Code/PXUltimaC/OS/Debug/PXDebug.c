@@ -295,18 +295,19 @@ PXBool PXAPI PXDebugPauseOther(PXDebug* const pxDebug, const PXProcessHandle pxP
 PXActionResult PXAPI PXDebugAttach(PXDebug* const pxDebug)
 {
 #if OSUnix
-	const long result = ptrace(PTRACE_ATTACH, pxDebug->Process.ProcessID, 0, 0);
+	__pid_t processID = pxDebug->Process.ProcessID;
+	const long result = ptrace(PTRACE_ATTACH, processID, 0, 0);
 
-	ptrace(PTRACE_PEEKTEXT / PEEKDATA / PEEKUSER, pid, addr, 0);
-	ptrace(PTRACE_POKETEXT / POKEDATA / POKEUSER, pid, addr, long_val);
-	ptrace(PTRACE_GETREGS / GETFPREGS, pid, 0, &struct);
-	ptrace(PTRACE_SETREGS / SETFPREGS, pid, 0, &struct);
-	ptrace(PTRACE_GETREGSET, pid, NT_foo, &iov);
-	ptrace(PTRACE_SETREGSET, pid, NT_foo, &iov);
-	ptrace(PTRACE_GETSIGINFO, pid, 0, &siginfo);
-	ptrace(PTRACE_SETSIGINFO, pid, 0, &siginfo);
-	ptrace(PTRACE_GETEVENTMSG, pid, 0, &long_var);
-	ptrace(PTRACE_SETOPTIONS, pid, 0, PTRACE_O_flags);
+	//ptrace(PTRACE_PEEKTEXT, processID, addr, 0); // PTRACE_PEEKTEXT / PEEKDATA / PEEKUSER
+	//ptrace(PTRACE_POKETEXT, processID, addr, long_val); // PTRACE_POKETEXT / POKEDATA / POKEUSER
+	//ptrace(PTRACE_GETREGS, processID, 0, &struct); // PTRACE_GETREGS / GETFPREGS
+	//ptrace(PTRACE_SETREGS, processID, 0, &struct); // PTRACE_SETREGS / SETFPREGS
+	//ptrace(PTRACE_GETREGSET, processID, NT_foo, &iov);
+	//ptrace(PTRACE_SETREGSET, processID, NT_foo, &iov);
+	//ptrace(PTRACE_GETSIGINFO, processID, 0, &siginfo);
+	//ptrace(PTRACE_SETSIGINFO, processID, 0, &siginfo);
+	//ptrace(PTRACE_GETEVENTMSG, processID, 0, &long_var);
+	//ptrace(PTRACE_SETOPTIONS, processID, 0, PTRACE_O_flags);
 
 
 #elif PXOSWindowsDestop
@@ -562,11 +563,11 @@ void PXAPI OnDebugBreakPoint(PXDebug* const pxDebug)
 PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
 {
 #if OSUnix
-
-	const long result = ptrace(PTRACE_GETEVENTMSG, pxDebug->Process.ProcessID, ); // since Linux 2.5.46
+	__pid_t processID = pxDebug->Process.ProcessID;
+	const long result = ptrace(PTRACE_GETEVENTMSG, processID, 0); // since Linux 2.5.46
 
 	int waitStatus = 0;
-	pid_t processID = waitpid(pxDebug->Process.ProcessID, &waitStatus, __WALL);
+	pid_t waitedProcessID = waitpid(processID, &waitStatus, __WALL);
 	PXBool success = -1 != processID;
 
 	if(!success)

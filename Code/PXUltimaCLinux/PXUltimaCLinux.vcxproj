@@ -185,6 +185,7 @@
     <ClInclude Include="..\PXUltimaC\OS\Hardware\PXProcessor.h" />
     <ClInclude Include="..\PXUltimaC\OS\Library\PXLibrary.h" />
     <ClInclude Include="..\PXUltimaC\OS\Memory\PXMemory.h" />
+    <ClInclude Include="..\PXUltimaC\OS\Network\PXClient.h" />
     <ClInclude Include="..\PXUltimaC\OS\Network\PXNetwork.h" />
     <ClInclude Include="..\PXUltimaC\OS\Network\PXSocket.h" />
     <ClInclude Include="..\PXUltimaC\OS\Signal\PXSignal.h" />

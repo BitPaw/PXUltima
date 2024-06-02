@@ -455,6 +455,7 @@ PXActionResult PXAPI PXNetworkSocketConnect(PXNetwork* const pxNetwork, PXSocket
 
         if(pxNetwork->AdressInfoGet) // Use modern
         {
+#if OSWindows
             ADDRINFOA* adressResult = PXNull;
             ADDRINFOA adressInput;
             PXClear(ADDRINFOA, &adressInput);     
@@ -466,12 +467,14 @@ PXActionResult PXAPI PXNetworkSocketConnect(PXNetwork* const pxNetwork, PXSocket
             adressInput.ai_family = PXIPAdressFamilyToID(pxSocketConnectInfo->AdressFamily);
             adressInput.ai_socktype = PXSocketTypeToID(pxSocketConnectInfo->Type);
             adressInput.ai_protocol = PXProtocolModeToID(pxSocketConnectInfo->ProtocolMode);
+#if OSWindows
             adressInput.ai_flags = AI_CANONNAME;
+#endif
 
             char localIP[] = "127.0.0.1";
             char* adresspoint = pxSocketConnectInfo->IP ? pxSocketConnectInfo->IP : localIP;
 
-            const INT resultID = pxNetwork->AdressInfoGet
+            const int resultID = pxNetwork->AdressInfoGet
             (
                 adresspoint,
                 portText.TextA,
@@ -480,14 +483,18 @@ PXActionResult PXAPI PXNetworkSocketConnect(PXNetwork* const pxNetwork, PXSocket
             );
             const PXBool success = 0 == resultID;
             
+#if OSWindows
             if(!success)
             {
                 const PXActionResult xxxx = PXWindowsSocketAgentErrorFromID(resultID);
 
                 return xxxx;
             }
+#endif
 
             connectResult = pxNetwork->SocketConnect(pxSocket->ID, adressResult->ai_addr, adressResult->ai_addrlen);
+#endif
+
         }
         else // Use legacy
         {

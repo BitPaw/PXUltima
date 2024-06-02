@@ -1,6 +1,7 @@
 #ifndef PXVulcanINCLUDE
 #define PXVulcanINCLUDE
 
+#include <Media/PXResource.h>
 #include <OS/Library/PXLibrary.h>
 
 // Provided by VK_VERSION_1_0
@@ -2167,9 +2168,11 @@ typedef struct PXVulcan_
 }
 PXVulcan;
 
+typedef struct PXGraphicInitializeInfo_ PXGraphicInitializeInfo;
+
 PXPrivate PXActionResult PXAPI PXVulcanErrorCodeFromID(const VkResult vkResultID);
 
-PXPublic PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, struct PXGraphicInitializeInfo_* const pxGraphicInitializeInfo);
+PXPublic PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicInitializeInfo* const pxGraphicInitializeInfo);
 PXPublic PXActionResult PXAPI PXVulcanRelease(PXVulcan* const pxVulcan);
 
 #endif

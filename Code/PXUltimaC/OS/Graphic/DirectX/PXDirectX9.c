@@ -278,7 +278,7 @@ void PXAPI PXDirectX9Deselect(PXDirectX9* const pxDirectX9)
  
 }
 
-PXActionResult PXAPI PXDirectX9TextureAction(PXDirectX9* const pxDirectX9, struct PXGraphicTexturInfo_* const pxGraphicTexturInfo)
+PXActionResult PXAPI PXDirectX9TextureAction(PXDirectX9* const pxDirectX9, PXGraphicTexturInfo* const pxGraphicTexturInfo)
 {
 #if OSUnix
 #elif OSWindows

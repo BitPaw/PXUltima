@@ -53,6 +53,8 @@ void PXAPI PXControllerSystemInitilize(PXControllerSystem* const pxControllerSys
 
 PXActionResult PXAPI PXControllerSystemDevicesListRefresh(PXControllerSystem* const pxControllerSystem)
 {
+#if OSUnix
+#elif OSWindows
 	// Get amount
 	{
 		PXjoyGetNumDevs pxjoyGetNumDevs = pxControllerSystem->NumDevsGet;
@@ -103,6 +105,7 @@ PXActionResult PXAPI PXControllerSystemDevicesListRefresh(PXControllerSystem* co
 			pxController->AxisMin[PXControllerAxisV] = pjc.wVmin;	
 		}
 	}
+#endif
 
 	return PXActionSuccessful;
 }

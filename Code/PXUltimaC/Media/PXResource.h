@@ -1478,6 +1478,7 @@ typedef struct PXUIElement_
 
 #if OSUnix
 	Display* DisplayHandle;
+	Window WindowHandle;
 #elif OSWindows
 #endif
 
@@ -2433,6 +2434,22 @@ typedef struct PXResourceCreateInfo_
 	};
 }
 PXResourceCreateInfo;
+
+
+
+
+
+typedef struct PXTextureActionInfo_
+{
+	void** TextureReference;
+	PXSize Amount;
+	PXGraphicTextureType Type;
+	PXResourceAction Action;
+}
+PXGraphicTexturInfo;
+
+
+
 
 
 

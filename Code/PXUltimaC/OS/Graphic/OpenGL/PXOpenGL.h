@@ -1493,7 +1493,7 @@ PXPublic void PXAPI PXOpenGLDrawArraysInstanced(const PXOpenGL* const openGLCont
 //-----------------------------------------------------
 // OpenGL - Texture
 //-----------------------------------------------------
-PXPublic PXActionResult PXAPI PXOpenGLTextureAction(PXOpenGL* const pxOpenGL, struct PXGraphicTexturInfo_* const pxGraphicTexturInfo);
+PXPublic PXActionResult PXAPI PXOpenGLTextureAction(PXOpenGL* const pxOpenGL, PXGraphicTexturInfo* const pxGraphicTexturInfo);
 
 
 PXPublic void PXAPI PXOpenGLTextureActivate(PXOpenGL* const openGLContext, const unsigned int index);

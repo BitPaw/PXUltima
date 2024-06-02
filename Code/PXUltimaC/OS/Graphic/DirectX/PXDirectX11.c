@@ -2,9 +2,6 @@
 
 #if PXDX11Enable
 #include <d3d11.h>
-#endif
-
-#if PXDX11Enable
 #pragma comment(lib, "D3d11.lib")
 #endif
 
@@ -12,6 +9,10 @@
 #include <OS/GUI/PXGUI.h>
 #include <OS/Console/PXConsole.h>
 #include <OS/Memory/PXMemory.h>
+
+#if OSUnix
+
+#elif OSWindows
 
 char PXDirectX11DLL[] = "D3D11.DLL";
 
@@ -30,10 +31,13 @@ typedef HRESULT (WINAPI* PXD3D11CreateDeviceAndSwapChain)
     __out_opt D3D_FEATURE_LEVEL* pFeatureLevel,
     __out_opt ID3D11DeviceContext** ppImmediateContext
 );
+#endif
 
 PXActionResult PXAPI PXDirectX11Initialize(PXDirectX11* const pxDirectX11, PXGraphicInitializeInfo* const pxGraphicInitializeInfo)
 {
 #if OSUnix
+    return PXActionRefusedNotSupportedByOperatingSystem;
+
 #elif OSWindows
     PXD3D11CreateDeviceAndSwapChain createDeviceAndSwapChain = PXNull;
 
@@ -248,9 +252,11 @@ PXActionResult PXAPI PXDirectX11Release(PXDirectX11* const pxDirectX)
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectX11TextureAction(PXDirectX11* const pxDirectX11, struct PXGraphicTexturInfo_* const pxGraphicTexturInfo)
+PXActionResult PXAPI PXDirectX11TextureAction(PXDirectX11* const pxDirectX11, PXGraphicTexturInfo* const pxGraphicTexturInfo)
 {
 #if OSUnix
+    return PXActionRefusedNotSupportedByOperatingSystem;
+
 #elif OSWindows
 
     switch(pxGraphicTexturInfo->Action)
@@ -525,6 +531,8 @@ PXActionResult PXAPI PXDirectX11TextureAction(PXDirectX11* const pxDirectX11, st
 PXActionResult PXAPI PXDirectX11Clear(PXDirectX11* const pxDirectX11, const PXColorRGBAF* const pxColorRGBAF)
 {
 #if OSUnix
+    return PXActionRefusedNotSupportedByOperatingSystem;
+
 #elif OSWindows
     const FLOAT rgba[4] = { pxColorRGBAF->Red, pxColorRGBAF->Green, pxColorRGBAF->Blue, pxColorRGBAF->Alpha };
 
@@ -534,14 +542,16 @@ PXActionResult PXAPI PXDirectX11Clear(PXDirectX11* const pxDirectX11, const PXCo
         pxDirectX11->RenderTargetView,
         rgba
     );
-#endif
-
     return PXActionSuccessful;
+
+#endif
 }
 
 PXActionResult PXAPI PXDirectX11VertexBufferCreate(PXDirectX11* const pxDirectX11, PXVertexBuffer* const pxVertexBuffer)
 {
 #if OSUnix
+    return PXActionRefusedNotSupportedByOperatingSystem;
+
 #elif OSWindows
     ID3D11Buffer** g_pVertexBuffer = &(ID3D11Buffer*)pxVertexBuffer->Info.DirectXInterface;
 
@@ -575,6 +585,8 @@ PXActionResult PXAPI PXDirectX11VertexBufferCreate(PXDirectX11* const pxDirectX1
 PXActionResult PXAPI PXDirectX11ShaderProgramCreate(PXDirectX11* const pxDirectX11, PXShaderProgram* const pxShaderProgram, PXShader* const shaderList, const PXSize amount)
 {
 #if OSUnix
+    return PXActionRefusedNotSupportedByOperatingSystem;
+
 #elif OSWindows
     for(PXSize i = 0; i < amount; ++i)
     {
