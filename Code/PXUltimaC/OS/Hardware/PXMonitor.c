@@ -109,6 +109,8 @@ void PXAPI PXMonitorGetSize(PXInt32S* const width, PXInt32S* const height)
     *width = 1200;
     *height = 800;
 
+	// XRRGetScreenResources ?
+
 #elif PXOSWindowsDestop
 	RECT desktop;
 
@@ -129,6 +131,18 @@ void PXAPI PXMonitorGetSize(PXInt32S* const width, PXInt32S* const height)
 #else   
 	*width = -1;
 	*height = -1;
+#endif
+
+#if PXLogEnable
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"Monitor",
+		"Size-Get",
+		"%i x %i",
+		*width,
+		*height
+	);
 #endif
 }
 
