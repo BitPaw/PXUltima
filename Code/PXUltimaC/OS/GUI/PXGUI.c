@@ -1607,6 +1607,35 @@ PXBool PXAPI PXGUIElementDelete(const PXWindowID pxUIElementID, PXUIElement* con
 
 PXBool PXAPI PXGUIElementTextSet(PXUIElement* const pxUIElement, char* text)
 {
+    PXBool success;
+
+#if OSUnix
+    // Will BadAlloc, BadWindow
+    const int resultID = XStoreName(pxUIElement->DisplayHandle, pxUIElement->Info.WindowID, text);
+    success = Success == resultID;
+#elif OSWindows
+    success = SetWindowTextA(pxUIElement->Info.WindowID, text);
+#else
+    success = PXFalse;
+#endif
+
+    if(!success)
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingError,
+            "GUI",
+            "Window-Text",
+            "Failed Set: %s on (0x%p)",
+            text,
+            pxUIElement
+        );
+#endif
+
+        return PXFalse;
+    }
+
 #if PXLogEnable
     PXLogPrint
     (
@@ -1619,26 +1648,8 @@ PXBool PXAPI PXGUIElementTextSet(PXUIElement* const pxUIElement, char* text)
     );
 #endif
 
-#if OSUnix
-
-    // Will BadAlloc, BadWindow
-    const int resultID = XStoreName(pxUIElement->DisplayHandle, pxUIElement->Info.WindowID, text);
 
     return PXTrue;
-
-#elif OSWindows
-    const PXBool success = SetWindowTextA(pxUIElement->Info.WindowID, text);
-
-    if(!success)
-    {
-        return PXFalse;
-    }
-
-    return PXTrue;
-
-#else
-    return PXFalse;
-#endif
 }
 
 PXBool PXAPI PXGUIElementValueFetch(PXUIElement* const pxUIElementList, const PXSize dataListAmount, const PXUIElementProperty pxUIElementProperty, void* const dataList)
@@ -1887,8 +1898,8 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                         PXLogPrint
                         (
                             PXLoggingError,
-                            "GUI",
-                            "Element-Create",
+                            "X-System",
+                            "Server-Connect",
                             "Failed to open X server. XOpenDisplay() failed."
                         );
 #endif
@@ -1905,7 +1916,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                         PXLoggingInfo,
                         "X-System",
                         "Server-Connect",
-                        "%s (0x%p)",
+                        "Name:%s (0x%p)",
                         pxUIElement->DisplayHandle->display_name,
                         pxUIElement->DisplayHandle
                     );
@@ -1948,7 +1959,8 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                         PXLoggingInfo,
                         "X-System",
                         "Visual",
-                        "OK"
+                        "OK (0x%p)",
+                        visualInfo
                     );
 #endif
 
@@ -2038,18 +2050,49 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                         PXLoggingInfo,
                         "X-System",
                         "Window-Create",
-                        "ID:%i",
+                        "X:%4i, Y:%4i, W:%4i, H:%4i ID:%i",
+                        pxGUIElementCreateWindowInfo->X,
+                        pxGUIElementCreateWindowInfo->Y,
+                        pxGUIElementCreateWindowInfo->Width,
+                        pxGUIElementCreateWindowInfo->Height,
                         pxUIElement->Info.WindowID
                     );
 #endif
                 }
 
                 // Attach to render engine
-                const int mapResultID = XMapWindow(pxUIElement->DisplayHandle, pxUIElement->Info.WindowID);
+                {
+                    const int mapResultID = XMapWindow(pxUIElement->DisplayHandle, pxUIElement->Info.WindowID);
+                    const PXBool success = Success == mapResultID;
 
-                // Set Title
-                const PXBool setTextSuccess = PXGUIElementTextSet(pxUIElement, pxGUIElementCreateWindowInfo->Title);
+                    if(!success)
+                    {
+#if PXLogEnable
+                        PXLogPrint
+                        (
+                            PXLoggingError,
+                            "X-System",
+                            "Window-Mapping",
+                            "Failed"
+                        );
+#endif
+                    }                   
 
+#if PXLogEnable
+                    PXLogPrint
+                    (
+                        PXLoggingInfo,
+                        "X-System",
+                        "Window-Mapping",
+                        "OK"
+                    );
+#endif
+                }
+
+                // Set title
+                {
+                    const PXBool setTextSuccess = PXGUIElementTextSet(pxUIElement, pxGUIElementCreateWindowInfo->Title);
+                }
 
                 break;
             }
