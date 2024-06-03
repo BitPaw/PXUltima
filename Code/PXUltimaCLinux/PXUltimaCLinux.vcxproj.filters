@@ -133,7 +133,6 @@
     <ClInclude Include="..\PXUltimaC\Media\BinaryLinux\PXBinaryLinux.h" />
     <ClInclude Include="..\PXUltimaC\Media\BinaryWindows\PXBinaryWindows.h" />
     <ClInclude Include="..\PXUltimaC\Media\CSS\PXCSS.h" />
-    <ClInclude Include="..\PXUltimaC\Media\CS\PXCS.h" />
     <ClInclude Include="..\PXUltimaC\Media\AVI\PXAVI.h" />
     <ClInclude Include="..\PXUltimaC\Media\AAC\PXAAC.h" />
     <ClInclude Include="..\PXUltimaC\Media\Autodesk3DS\PXAutodesk3DS.h" />
@@ -155,7 +154,6 @@
     <ClInclude Include="..\PXUltimaC\Engine\Interact\PXSign.h" />
     <ClInclude Include="..\PXUltimaC\Container\List\PXList.h" />
     <ClInclude Include="..\PXUltimaC\OS\Network\PXClient.h" />
-    <ClInclude Include="..\PXUltimaC\OS\Network\PXServer.h" />
     <ClInclude Include="..\PXUltimaC\Container\BTree\PXBTree.h" />
     <ClInclude Include="..\PXUltimaC\Media\CRC32\PXCRC32.h" />
     <ClInclude Include="..\PXUltimaC\Media\MD5\PXMD5.h" />
@@ -163,8 +161,6 @@
     <ClInclude Include="..\PXUltimaC\Media\SHA\PXSHA.h" />
     <ClInclude Include="..\PXUltimaC\OS\Signal\PXSignal.h" />
     <ClInclude Include="..\PXUltimaC\OS\User\PXUser.h" />
-    <ClInclude Include="..\PXUltimaC\Service\HTTP\PXHTTPServer.h" />
-    <ClInclude Include="..\PXUltimaC\Service\FTP\PXFTPServer.h" />
     <ClInclude Include="..\PXUltimaC\Service\HTTP\PXHTTPClient.h" />
     <ClInclude Include="..\PXUltimaC\Language\PXTranslator.h" />
     <ClInclude Include="..\PXUltimaC\Container\RingBuffer\PXRingBuffer.h" />
@@ -173,6 +169,7 @@
     <ClInclude Include="..\PXUltimaC\Container\LinkedList\PXLinkedList.h" />
     <ClInclude Include="..\PXUltimaC\Container\Buffer\PXBuffer.h" />
     <ClInclude Include="..\PXUltimaC\Container\BinaryTree\PXBinaryTree.h" />
+    <ClInclude Include="..\PXUltimaC\Media\CSharp\PXCSharp.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\PXUltimaC\Media\PXType.c" />
@@ -264,7 +261,6 @@
     <ClCompile Include="..\PXUltimaC\Media\FilmBox\PXFilmBox.c" />
     <ClCompile Include="..\PXUltimaC\Media\CPP\PXCPP.c" />
     <ClCompile Include="..\PXUltimaC\Media\CSS\PXCSS.c" />
-    <ClCompile Include="..\PXUltimaC\Media\CS\PXCS.c" />
     <ClCompile Include="..\PXUltimaC\Media\Autodesk3DS\PXAutodesk3DS.c" />
     <ClCompile Include="..\PXUltimaC\Service\LDAP\PXLDAPClient.c" />
     <ClCompile Include="..\PXUltimaC\OS\System\PXRegistry.c" />
@@ -311,21 +307,17 @@
     <ClCompile Include="..\PXUltimaC\Service\SBP\PXSBP.c" />
     <ClCompile Include="..\PXUltimaC\OS\User\PXUser.c" />
     <ClCompile Include="..\PXUltimaC\OS\Time\PXStopWatch.c" />
-    <ClCompile Include="..\PXUltimaC\OS\Network\PXServer.c" />
     <ClCompile Include="..\PXUltimaC\Math\PXPhysic.c" />
     <ClCompile Include="..\PXUltimaC\Math\PXCollision.c" />
     <ClCompile Include="..\PXUltimaC\Container\BTree\PXBTree.c" />
     <ClCompile Include="..\PXUltimaC\Engine\Interact\PXSign.c" />
     <ClCompile Include="..\PXUltimaC\Media\RIFF\PXRIFF.c" />
     <ClCompile Include="..\PXUltimaC\Container\List\PXList.c" />
-    <ClCompile Include="..\PXUltimaC\OS\Network\PXClient.c" />
     <ClCompile Include="..\PXUltimaC\OS\ClipBoard\PXClipBoard.c" />
     <ClCompile Include="..\PXUltimaC\OS\Async\PXLock.c" />
     <ClCompile Include="..\PXUltimaC\Algorithm\BubbleSort\PXBubbleSort.c" />
     <ClCompile Include="..\PXUltimaC\Engine\PXLobby.c" />
-    <ClCompile Include="..\PXUltimaC\Service\HTTP\PXHTTPServer.c" />
     <ClCompile Include="..\PXUltimaC\Container\LinkedList\PXLinkedList.c" />
-    <ClCompile Include="..\PXUltimaC\Service\FTP\PXFTPServer.c" />
     <ClCompile Include="..\PXUltimaC\Service\HTTP\PXHTTPClient.c" />
     <ClCompile Include="..\PXUltimaC\Media\UUID\PXUUID.c" />
     <ClCompile Include="..\PXUltimaC\Media\SHA\PXSHA.c" />
@@ -342,6 +334,7 @@
     <ClCompile Include="..\PXUltimaC\Compiler\PXCompilerSettings.c" />
     <ClCompile Include="..\PXUltimaC\Algorithm\KalmanFilter\PXKalmanFilter.c" />
     <ClCompile Include="..\PXUltimaC\Algorithm\Dijkstra\PXDijkstra.c" />
+    <ClCompile Include="..\PXUltimaC\Media\CSharp\PXCSharp.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\PXUltimaC\PXUltimaC.cbp" />

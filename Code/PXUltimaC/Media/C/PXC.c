@@ -7,433 +7,6 @@
 
 #define PXCDebugOutput 1
 
-PXBool PXAPI PXCElementHasName(PXCElement* const pxCElement)
-{
-    const PXBool hasName = pxCElement->Name && pxCElement->NameSizeCurrent;
-   // const PXBool hasAlias = pxCElement->NameAlias && pxCStructure->NameAliasSizeCurrent;
-
-    return hasName;
-}
-
-void PXAPI PXCElementClear(PXCElement* const pxCElement)
-{
-    char* name = pxCElement->Name;
-    PXInt8U nameSize = pxCElement->NameSizeMaximal;
-
-    char* nameSecound = pxCElement->ElementStructure.NameAlias;
-    PXInt8U nameSizeSecound = pxCElement->ElementStructure.NameAliasSizeMaximal;
-
-    PXMemoryClear(name, nameSize);
-    PXMemoryClear(nameSecound, nameSizeSecound);
-
-    PXClear(PXCElement, pxCElement);
-
-    pxCElement->Name = name;
-    pxCElement->NameSizeMaximal = nameSize;
-
-    pxCElement->ElementStructure.NameAlias = nameSecound;
-    pxCElement->ElementStructure.NameAliasSizeMaximal = nameSizeSecound;
-}
-
-CKeyWord PXAPI PXCFileAnalyseElement(const char* name, const PXSize nameSize)
-{
-    switch (nameSize)
-    {
-        case 2:
-        {
-            const PXInt16U key = PXInt16FromAdress(name);
-
-            switch (key)
-            {
-                case PXInt16Make('i', 'f'):
-                    return CKeyWordIf;
-
-                case PXInt16Make('d', 'o'):
-                    return CKeyWordDo;
-            }
-
-            break;
-        }
-        case 3:
-        {
-            const PXInt32U key = PXInt24FromAdress(name);
-
-            switch (key)
-            {
-                case PXInt24Make('i', 'n', 't'):
-                    return CKeyWordInt;
-
-                case PXInt24Make('f', 'o', 'r'):
-                    return CKeyWordFor;
-            }
-
-            break;
-        }
-        case 4:
-        {
-            const PXInt32U key = PXInt32FromAdress(name);
-
-            switch (key)
-            {
-                case PXInt32Make('c', 'a', 's', 'e'): return CKeyWordCase;
-                case PXInt32Make('t', 'r', 'u', 'e'): return CKeyWordTrue;
-                case PXInt32Make('b', 'o', 'o', 'l'): return CKeyWordBool;
-                case PXInt32Make('c', 'h', 'a', 'r'): return CKeyWordChar;
-                case PXInt32Make('l', 'o', 'n', 'g'): return CKeyWordLong;
-                case PXInt32Make('a', 'u', 't', 'o'): return CKeyWordAutomaticType;
-                case PXInt32Make('e', 'l', 's', 'e'): return CKeyWordElse;
-                case PXInt32Make('g', 'o', 't', 'o'): return CKeyWordGoTo;
-                case PXInt32Make('e', 'n', 'u', 'm'): return CKeyWordEnum;
-                case PXInt32Make('v', 'o', 'i', 'd'): return CKeyWordVoid;
-            }
-
-            break;
-        }
-        case 5u:
-        {
-            const PXInt64U key = PXInt40FromAdress(name);
-
-            switch (key)
-            {
-                case PXInt40Make('s', 'h', 'o', 'r', 't'): return CKeyWordShort;
-                case PXInt40Make('u', 'n', 'i', 'o', 'n'): return CKeyWordUnion;
-                case PXInt40Make('w', 'h', 'i', 'l', 'e'): return CKeyWordWhile;
-                case PXInt40Make('f', 'a', 'l', 's', 'e'): return CKeyWordFalse;
-                case PXInt40Make('f', 'l', 'o', 'a', 't'): return CKeyWordFloat;
-                case PXInt40Make('c', 'o', 'n', 's', 't'): return CKeyWordConst;
-                case PXInt40Make('b', 'r', 'e', 'a', 'k'): return CKeyWordBreak;
-                case PXInt40Make('i', 'f', 'd', 'e', 'f'): return CKeyWordIfDefined;
-                case PXInt40Make('e', 'n', 'd', 'i', 'f'): return CKeyWordDefinitionEnd;
-            }
-
-            break;
-        }
-        case 6u:
-        {
-            const PXInt64U key = PXInt48FromAdress(name);
-
-            switch (key)
-            {
-                case PXInt48Make('s', 'i', 'z', 'e', 'o', 'f'): return CKeyWordTypeSize;
-                case PXInt48Make('r', 'e', 't', 'u', 'r', 'n'): return CKeyWordReturn;
-                case PXInt48Make('e', 'x', 't', 'e', 'r', 'n'): return CKeyWordExtern;
-                case PXInt48Make('s', 't', 'a', 't', 'i', 'c'): return CKeyWordStatic;
-                case PXInt48Make('s', 't', 'r', 'u', 'c', 't'): return CKeyWordStruct;
-                case PXInt48Make('d', 'o', 'u', 'b', 'l', 'e'): return CKeyWordDouble;
-                case PXInt48Make('s', 'i', 'g', 'n', 'e', 'd'): return CKeyWordSigned;
-                case PXInt48Make('s', 'w', 'i', 't', 'c', 'h'): return CKeyWordSwitch;
-                case PXInt48Make('i', 'f', 'n', 'd', 'e', 'f'): return CKeyWordIfNotDefined;
-                case PXInt48Make('d', 'e', 'f', 'i', 'n', 'e'): return CKeyWordDefine;
-                case PXInt48Make('p', 'r', 'a', 'g', 'm', 'a'): return CKeyWordPragma;
-            }
-
-            break;
-        }
-        case 7u:
-        {
-            const PXInt64U key = PXInt56FromAdress(name);
-
-            switch (key)
-            {
-                case PXInt56Make('d', 'e', 'f', 'a', 'u', 'l', 't'): return CKeyWordDefault;
-                case PXInt56Make('t', 'y', 'p', 'e', 'd', 'e', 'f'): return CKeyWordTypeDefinition;
-                case PXInt56Make('i', 'n', 'c', 'l', 'u', 'd', 'e'): return CKeyWordInclude;
-            }
-
-            break;
-        }
-        case 8u:
-        {
-            const PXInt64U key = PXInt64FromAdress(name);
-
-            switch (key)
-            {
-                case PXInt64Make('c', 'o', 'n', 't', 'i', 'n', 'u', 'e'): return CKeyWordContinue;
-                case PXInt64Make('u', 'n', 's', 'i', 'g', 'n', 'e', 'd'): return CKeyWordUnsigned;
-                case PXInt64Make('r', 'e', 's', 't', 'r', 'i', 'c', 't'): return CKeyWordRegister;
-                case PXInt64Make('v', 'o', 'l', 'a', 't', 'i', 'l', 'e'): return CKeyWordVolitile;
-                case PXInt64Make('r', 'e', 'g', 'i', 's', 't', 'e', 'r'): return CKeyWordRestrict;
-
-            }
-
-            break;
-        }
-    }
-
-    return CKeyWordUnkown;
-}
-
-PXBool PXAPI PXCFileParseDeclaration(PXFile* const inputStream, PXFile* const outputStream, PXCompilerSymbolEntry* compilerSymbolEntry)
-{
-    PXBool finished = 0;
-    PXInt8U flagList = MemberFieldFlagIsSigned;
-    PXInt16U sizeOfType = 0;
-
-    const PXBool isTypeName = PXCompilerSymbolLexerGeneric == compilerSymbolEntry->ID;
-
-    if (!isTypeName)
-    {
-#if PXCDebugOutput
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            "C",
-            "Parse-Enum",
-            "type expected but got something else"
-        );
-#endif
-    }
-
-    // Try fetch type
-    const CKeyWord fieldType = PXCFileAnalyseElement(compilerSymbolEntry->Source, compilerSymbolEntry->Size);
-
-    const PXBool isStructure =
-        CKeyWordEnum == fieldType ||
-        CKeyWordUnion == fieldType ||
-        CKeyWordStruct == fieldType;
-
-    if (isStructure)
-    {
-        //PXCFileParseStructure(inputStream, outputStream, fieldType, PXFalse);
-        return PXTrue;
-    }
-
-
-    PXFileWriteI8U(outputStream, PXCStructureTypeStructElement);
-
-
-    PXBool doesKnowCustomType = PXFalse;
-    CKeyWord variableType = CKeyWordInvalid;
-
-
-    PXSize variableNameSize = 0;
-    char variableName[64];
-
-    PXSize variableTypeNameSize = 0;
-    char variableTypeName[64];
-
-
-    do
-    {
-        const PXBool isFinished = PXCompilerSymbolLexerSemiColon == compilerSymbolEntry->ID;
-
-        if (isFinished)
-        {
-            const PXBool isKnownPrimitive = flagList & MemberFieldFlagIsKnownPrimitive;
-
-            // if we have a primitive type, we only have one 'unkown' name.
-            // If we dont have a primitive, we have two.
-
-
-            if (PXFlagIsSet(flagList, MemberFieldFlagIsAdress))
-            {
-                sizeOfType = sizeof(void*);
-            }
-
-                     // Write name
-            PXFileWriteI8U(outputStream, variableNameSize);
-            PXFileWriteB(outputStream, variableName, variableNameSize);
-
-
-            PXFileWriteI8U(outputStream, flagList); // Write flags
-            PXFileWriteI16U(outputStream, sizeOfType); // Write size of Type
-
-            if (isKnownPrimitive)
-            {
-                PXFileWriteI8U(outputStream, variableType); // Write primitive type
-            }
-            else
-            {
-                // We have a 2nd name, so its a custom type. Write name of custom variable..
-                PXFileWriteI8U(outputStream, variableTypeNameSize);
-                PXFileWriteB(outputStream, variableTypeName, variableTypeNameSize);
-            }
-
-
-#if PXCDebugOutput
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                "C",
-                "Parse",
-                "| MemberField: %s Type, Name %-20s |\n"
-                "| - %-17s : %-20s |\n"
-                "| - %-17s : %-20s |\n"
-                "| - %-17s : %-20s |\n"
-                "| - %-17s : %-20s |\n"
-                "| - %-17s : %-20s |\n"
-                "| - %-17s : %-20s |\n"
-                "| - %-17s : %-20s |\n"
-                "| - %-17s : %-20s |\n",
-                variableType, variableName,
-                "Const", PXFlagIsSet(flagList, MemberFieldFlagIsConstType) ? "Yes" : "No",
-                "Singed", PXFlagIsSet(flagList, MemberFieldFlagIsSigned) ? "Yes" : "No",
-                "Adress", PXFlagIsSet(flagList, MemberFieldFlagIsAdress) ? "Yes" : "No",
-                "Readonly Adress", PXFlagIsSet(flagList, MemberFieldFlagIsAdressConst) ? "Yes" : "No",
-                "Volatile", PXFlagIsSet(flagList, MemberFieldFlagVolatile) ? "Yes" : "No",
-                "Resticted", PXFlagIsSet(flagList, MemberFieldFlagResticted) ? "Yes" : "No",
-                "Primitive", PXFlagIsSet(flagList, MemberFieldFlagIsKnownPrimitive) ? "Yes" : "No"
-            );
-#endif 
-
-
-            return PXTrue;
-        }
-
-        switch (compilerSymbolEntry->ID)
-        {
-            case PXCompilerSymbolLexerGeneric: // Is element
-            {
-                const CKeyWord typeKey = PXCFileAnalyseElement(compilerSymbolEntry->Source, compilerSymbolEntry->Size);
-
-                switch (typeKey)
-                {
-                    case CKeyWordTypeDefinition:
-                    {
-                        //PXCFileParseTypedef(inputStream, outputStream);
-                        break;
-                    }
-                    case CKeyWordUnion:
-                    case CKeyWordEnum:
-                    case CKeyWordStruct:
-                        //PXCFileParseStructure(inputStream, outputStream, typeKey, PXFalse);
-                        break;
-
-                    case CKeyWordChar:
-                    {
-                        variableType = CKeyWordChar;
-                        sizeOfType = sizeof(char);
-                        flagList |= MemberFieldFlagIsKnownPrimitive;
-                        break;
-                    }
-                    case CKeyWordShort:
-                    {
-                        variableType = CKeyWordShort;
-                        sizeOfType = sizeof(short);
-                        flagList |= MemberFieldFlagIsKnownPrimitive;
-                        break;
-                    }
-                    case CKeyWordInt:
-                    {
-                        variableType = CKeyWordInt;
-                        sizeOfType = sizeof(int);
-                        flagList |= MemberFieldFlagIsKnownPrimitive;
-                        break;
-                    }
-                    case CKeyWordLong:
-                    {
-                        variableType = CKeyWordLong;
-                        sizeOfType = sizeof(long);
-                        flagList |= MemberFieldFlagIsKnownPrimitive;
-                        break;
-                    }
-                    case CKeyWordFloat:
-                    {
-                        variableType = CKeyWordFloat;
-                        sizeOfType = sizeof(float);
-                        flagList |= MemberFieldFlagIsKnownPrimitive;
-                        break;
-                    }
-                    case CKeyWordDouble:
-                    {
-                        variableType = CKeyWordDouble;
-                        sizeOfType = sizeof(double);
-                        flagList |= MemberFieldFlagIsKnownPrimitive;
-                        break;
-                    }
-                    case CKeyWordBool:
-                    {
-                        variableType = CKeyWordBool;
-                        sizeOfType = 1u;
-                        flagList |= MemberFieldFlagIsKnownPrimitive;
-                        break;
-                    }
-                    case CKeyWordSigned:
-                    {
-                        flagList |= MemberFieldFlagIsSigned;
-                        break;
-                    }
-                    case CKeyWordUnsigned:
-                    {
-                        flagList ^= MemberFieldFlagIsSigned;
-                        break;
-                    }
-                    case CKeyWordConst:
-                    {
-                        flagList |= MemberFieldFlagIsConstType;
-                        break;
-                    }
-                    case CKeyWordRegister:
-                    {
-                        flagList |= MemberFieldFlagRegister;
-                        break;
-                    }
-                    case CKeyWordVolitile:
-                    {
-                        flagList |= MemberFieldFlagVolatile;
-                        break;
-                    }
-                    case CKeyWordRestrict:
-                    {
-                        flagList |= MemberFieldFlagResticted;
-                        break;
-                    }
-                    case CKeyWordUnkown: // could be the name
-                    {
-                        const PXBool isTypeKnown = PXFlagIsSet(flagList, MemberFieldFlagIsKnownPrimitive) || doesKnowCustomType;
-
-                        if (isTypeKnown)
-                        {
-                            // Name
-                            variableNameSize = PXTextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, variableName, 64);
-                        }
-                        else
-                        {
-                            variableTypeNameSize = PXTextCopyA(compilerSymbolEntry->Source, compilerSymbolEntry->Size, variableTypeName, 64);
-
-                            doesKnowCustomType = PXTrue;
-                        }
-
-                        break;
-                    }
-                    default:
-                        return PXFalse;
-                }
-
-
-
-                break;
-            }
-            case PXCompilerSymbolLexerAsterisk: // Can be pointer
-            {
-                flagList |= MemberFieldFlagIsAdress;
-
-                break;
-            }
-
-            default:
-                return PXFalse;
-        }
-
-
-
-
-
-
-        //PXCompilerSymbolEntryExtract(inputStream, compilerSymbolEntry);
-
-        if (compilerSymbolEntry->ID == PXCompilerSymbolLexerComment)
-        {
-           // PXCompilerSymbolEntryExtract(inputStream, compilerSymbolEntry);
-        }
-    } while (0);
-
-    // printf("type name expected but got something else\n");
-
-        // printf("';' expected but got something else\n");
-
-}
-
 PXActionResult PXAPI PXCParsePreprocessorCondition(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent)
 {
     PXCompilerSymbolEntryExtract(pxCompiler);
@@ -605,7 +178,7 @@ PXActionResult PXAPI PXCParsePreprocessorInclude(PXCompiler* const pxCompiler, P
 {
     PXCodeDocumentElement* pxCodeDocumentElement = PXNull;
 
-    PXCodeDocumentElementGenerateChild(pxCompiler->CodeDocument, PXDocumentElementTypeInclude, pxCompiler->ReadInfo.DepthCurrent, &pxCodeDocumentElement, parrent);
+    PXCodeDocumentElementGenerateChild(pxCompiler->CodeDocument, PXDocumentElementTypePreprocessorInclude, pxCompiler->ReadInfo.DepthCurrent, &pxCodeDocumentElement, parrent);
 
     PXCompilerSymbolEntryExtract(pxCompiler);
 
@@ -824,7 +397,7 @@ PXActionResult PXAPI PXCParseTypeDefinition(PXCompiler* const pxCompiler, PXCode
 
     PXCompilerSymbolEntryExtract(pxCompiler);
 
-    const CKeyWord keyWord = PXCFileAnalyseElement( pxCompiler->ReadInfo.SymbolEntryCurrent.Source,  pxCompiler->ReadInfo.SymbolEntryCurrent.Size);
+    const PXDocumentElementType keyWord = PXDocumentElementAnalyseElement(pxCompiler->ReadInfo.SymbolEntryCurrent.Source,  pxCompiler->ReadInfo.SymbolEntryCurrent.Size);
 
 #if PXLogEnable
     PXLogPrint
@@ -838,26 +411,26 @@ PXActionResult PXAPI PXCParseTypeDefinition(PXCompiler* const pxCompiler, PXCode
 
     switch (keyWord)
     {
-        case CKeyWordStruct:
+        case PXDocumentElementTypeStruct:
         {
             pxCodeDocumentElement->Type = PXDocumentElementTypeStruct;
             PXCParseTypeContainer(pxCompiler, pxCodeDocumentElement);
             break;
         }
-        case CKeyWordUnion:
+        case PXDocumentElementTypeUnion:
         {
             pxCodeDocumentElement->Type = PXDocumentElementTypeUnion;
             PXCParseTypeEnum(pxCompiler, pxCodeDocumentElement);
             break;
         }
-        case CKeyWordEnum:
+        case PXDocumentElementTypeEnum:
         {
             pxCodeDocumentElement->Type = PXDocumentElementTypeEnum;
             PXCParseTypeContainer(pxCompiler, pxCodeDocumentElement);
             break;
         }
         default:
-        case CKeyWordUnkown:
+        case PXDocumentElementTypeUnkown:
         {
             // unkown Return type
 
@@ -1014,8 +587,8 @@ PXActionResult PXAPI PXCParseFunctionDefinition(PXCompiler* const pxCompiler, PX
     PXCompilerSymbolEntryExtract(pxCompiler);
 
     // Return type
-    const CKeyWord keyWord = PXCFileAnalyseElement( pxCompiler->ReadInfo.SymbolEntryCurrent.Source,  pxCompiler->ReadInfo.SymbolEntryCurrent.Size);
-    const PXBool isBuildIn = CKeyWordUnkown != keyWord;
+    const PXDocumentElementType keyWord = PXDocumentElementAnalyseElement(pxCompiler->ReadInfo.SymbolEntryCurrent.Source,  pxCompiler->ReadInfo.SymbolEntryCurrent.Size);
+    const PXBool isBuildIn = PXDocumentElementTypeUnkown != keyWord;
 
     {        
         const PXBool isPointer = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerAsterisk);
@@ -1114,12 +687,11 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler
                 PXCompilerSymbolEntryPeek(pxCompiler);
             }
 
-            const CKeyWord keyWord = PXCFileAnalyseElement( pxCompiler->ReadInfo.SymbolEntryCurrent.Source,  pxCompiler->ReadInfo.SymbolEntryCurrent.Size);
+            const PXDocumentElementType keyWord = PXDocumentElementAnalyseElement( pxCompiler->ReadInfo.SymbolEntryCurrent.Source,  pxCompiler->ReadInfo.SymbolEntryCurrent.Size);
 
             switch (keyWord)
             {
-
-                case CKeyWordChar:
+                case PXDocumentElementTypeChar:
                 {
                     PXCompilerSymbolEntryExtract(pxCompiler); // consume "char"
 
@@ -1131,7 +703,7 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler
 
                     break;
                 }
-                case CKeyWordShort:
+                case PXDocumentElementTypeShort:
                 {
                     PXCompilerSymbolEntryExtract(pxCompiler); // consume "short"
 
@@ -1143,7 +715,7 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler
 
                     break;
                 }
-                case CKeyWordInt:
+                case PXDocumentElementTypeInt:
                 {
                     PXCompilerSymbolEntryExtract(pxCompiler); // consume "const"
 
@@ -1155,7 +727,7 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler
 
                     break;
                 }
-                case CKeyWordLong:
+                case PXDocumentElementTypeLong:
                 {
                     PXCompilerSymbolEntryExtract(pxCompiler); // consume "const"
 
@@ -1168,7 +740,7 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler
 
                     break;
                 }
-                case  CKeyWordFloat:
+                case PXDocumentElementTypeFloat:
                 {
                     PXCompilerSymbolEntryExtract(pxCompiler); // consume "const"
 
@@ -1180,7 +752,7 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler
 
                     break;
                 }
-                case  CKeyWordDouble:
+                case PXDocumentElementTypeDouble:
                 {
                     PXCompilerSymbolEntryExtract(pxCompiler); // consume "const"
 
@@ -1192,7 +764,7 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler
 
                     break;
                 }
-                case  CKeyWordBool:
+                case PXDocumentElementTypeBool:
                 {
                     PXCompilerSymbolEntryExtract(pxCompiler); // consume "const"
 
@@ -1205,7 +777,7 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler
                     break;
                 }
 
-                case CKeyWordConst:
+                case PXDocumentElementTypeConst:
                 {
                     PXCompilerSymbolEntryExtract(pxCompiler); // consume "const"
 
@@ -1213,7 +785,7 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler
 
                     break;
                 }
-                case CKeyWordUnsigned:
+                case PXDocumentElementTypeUnsigned:
                 {
                     PXCompilerSymbolEntryExtract(pxCompiler); // consume "unsigned"
 
@@ -1222,7 +794,7 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler
                     break;
                 }
 
-                case CKeyWordUnion: // might be a union inside a struct
+                case PXDocumentElementTypeUnion: // might be a union inside a struct
                 {
                     PXCodeDocumentElement pxCodeDocumentElementChild;
                     PXClear(PXCodeDocumentElement, &pxCodeDocumentElementChild);
@@ -1243,14 +815,14 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler
 
                    
                 }
-                case PXCompilerSymbolLexerAsterisk:
-                {
-                    PXCompilerSymbolEntryExtract(pxCompiler);
+              //  case PXCompilerSymbolLexerAsterisk:
+               // {
+                //    PXCompilerSymbolEntryExtract(pxCompiler);
 
-                    pxCodeDocumentElement->DataType |= PXDataTypeAdressMask;
-
-                    break;
-                }
+               //     pxCodeDocumentElement->DataType |= PXDataTypeAdressMask;
+//
+               //     break;
+              //  }
                 default:
                 {
                     PXCompilerSymbolEntryExtract(pxCompiler);
@@ -1284,8 +856,8 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler
         // Get new element
         PXCompilerSymbolEntryPeek(pxCompiler);
 
-        const CKeyWord keyWord = PXCFileAnalyseElement( pxCompiler->ReadInfo.SymbolEntryCurrent.Source,  pxCompiler->ReadInfo.SymbolEntryCurrent.Size);
-        const PXBool isConst = CKeyWordConst == keyWord;
+        const PXDocumentElementType keyWord = PXDocumentElementAnalyseElement( pxCompiler->ReadInfo.SymbolEntryCurrent.Source,  pxCompiler->ReadInfo.SymbolEntryCurrent.Size);
+        const PXBool isConst = PXDocumentElementTypeConst == keyWord;
 
         if (isConst)
         {
@@ -1808,36 +1380,36 @@ PXActionResult PXAPI PXCLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInf
             {
                 PXCompilerSymbolEntryExtract(&pxCompiler); // move from '#' to next one
 
-                const CKeyWord keyWord = PXCFileAnalyseElement(pxCompiler.ReadInfo.SymbolEntryCurrent.Source, pxCompiler.ReadInfo.SymbolEntryCurrent.Size);
+                const PXDocumentElementType keyWord = PXDocumentElementAnalyseElement(pxCompiler.ReadInfo.SymbolEntryCurrent.Source, pxCompiler.ReadInfo.SymbolEntryCurrent.Size);
 
                 switch (keyWord)
                 {
-                    case CKeyWordDefine:
+                    case PXDocumentElementTypePreprocessorDefine:
                     {
                         PXCParsePreprocessorDefine(&pxCompiler, pxCodeDocumentElementRoot);
                         break;
                     }
-                    case CKeyWordIfDefined:
+                    case PXDocumentElementTypePreprocessorIfDefined:
                     {
                         PXCParsePreprocessorCondition(&pxCompiler, pxCodeDocumentElementRoot);
                         break;
                     }
-                    case CKeyWordIfNotDefined:
+                    case PXDocumentElementTypePreprocessorIfNotDefined:
                     {
                         PXCParsePreprocessorCondition(&pxCompiler, pxCodeDocumentElementRoot);
                         break;
                     }
-                    case CKeyWordInclude:
+                    case PXDocumentElementTypePreprocessorInclude:
                     {
                         PXCParsePreprocessorInclude(&pxCompiler, pxCodeDocumentElementRoot);
                         break;
                     }
-                    case CKeyWordPragma:
+                    case PXDocumentElementTypePreprocessorPragma:
                     {
                         PXCParsePreprocessorPragma(&pxCompiler, pxCodeDocumentElementRoot);
                         break;
                     }
-                    case CKeyWordDefinitionEnd:
+                    case PXDocumentElementTypePreprocessorDefinitionEnd:
                     {
 #if PXCDebugOutput
                         PXLogPrint
@@ -1861,37 +1433,37 @@ PXActionResult PXAPI PXCLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInf
             }
             case PXCompilerSymbolLexerGeneric:
             {
-                const CKeyWord keyWord = PXCFileAnalyseElement(pxCompiler.ReadInfo.SymbolEntryCurrent.Source, pxCompiler.ReadInfo.SymbolEntryCurrent.Size);
+                const PXDocumentElementType keyWord = PXDocumentElementAnalyseElement(pxCompiler.ReadInfo.SymbolEntryCurrent.Source, pxCompiler.ReadInfo.SymbolEntryCurrent.Size);
 
                 switch (keyWord)
                 {
-                    case CKeyWordTypeDefinition:
+                    case PXDocumentElementTypeTypeDefinition:
                     {
                         PXCParseTypeDefinition(&pxCompiler, pxCodeDocumentElementRoot);
                         break;
                     }             
-                    case CKeyWordEnum:
+                    case PXDocumentElementTypeEnum:
                     {                      
                         // && pxCodeDocumentElement.Type = PXDocumentElementTypeEnum;
 
                        // PXCParseTypeEnum(&pxCompiler, &pxCodeDocumentElement);
                         break;
                     }
-                    case CKeyWordUnion:
+                    case PXDocumentElementTypeUnion:
                     {
                        // pxCodeDocumentElement.Type = PXDocumentElementTypeUnion;
 
                        // PXCParseTypeContainer(&pxCompiler, &pxCodeDocumentElement);
                         break;
                     }
-                    case CKeyWordStruct:
+                    case PXDocumentElementTypeStruct:
                     {
                         // pxCodeDocumentElement.Type = PXDocumentElementTypeStruct;
 
                        // PXCParseTypeContainer(&pxCompiler, &pxCodeDocumentElement);
                         break;
                     }
-                    case CKeyWordExtern:
+                    case PXDocumentElementTypeExtern:
                     {
                         PXCompilerSymbolEntryExtract(&pxCompiler);
 
@@ -1943,12 +1515,12 @@ PXActionResult PXAPI PXCLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInf
 
                         break;
                     }
-                    case CKeyWordVoid:
+                    case PXDocumentElementTypeVoid:
                     {
                         PXCParseFunctionDefinition(&pxCompiler, pxCodeDocumentElementRoot);
                         break;
                     }
-                    case CKeyWordUnkown: // Might declaration of variable or function.
+                    case PXDocumentElementTypeUnkown: // Might declaration of variable or function.
                     {
                         // as we have an unkown type, lets look it up.
 
@@ -2006,74 +1578,9 @@ PXActionResult PXAPI PXCSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
     return PXActionRefusedNotImplemented;
 }
 
-void PXAPI PXCElementExtract(PXFile* const inputStream, PXCElement* const pxCElement)
-{
-    PXCElementClear(pxCElement);
+/*
 
-    {
-        PXInt8U keyID = 0;
-
-        PXFileReadI8U(inputStream, &keyID);
-
-        pxCElement->Type = (PXCStructureType)keyID;
-    }
-
-    // Fake name
-    PXFileReadI8U(inputStream, &pxCElement->NameSizeCurrent);
-    pxCElement->Name = (char*)PXFileCursorPosition(inputStream);
-    PXFileCursorAdvance(inputStream, pxCElement->NameSizeCurrent);
-
-    switch (pxCElement->Type)
-    {
-        case PXCStructureTypeMakroFlag:
-        {
-
-
-            break;
-        }
-        case PXCStructureTypeMakroValue:
-        {
-
-
-            break;
-        }
-        case PXCStructureTypeMakroInlcude:
-        {
-            PXCLibraryPathType pxCLibraryPathType = PXCLibraryPathTypeInvalid;
-
-            {
-                PXInt8U inlcudeType = 0;
-
-                PXFileReadI8U(inputStream, &inlcudeType);
-
-                inlcudeType = (PXCLibraryPathType)inlcudeType;
-            }
-
-            break;
-        }
-        case PXCStructureTypeEnum:
-        case PXCStructureTypeStruct:
-        case PXCStructureTypeUnion:
-        {
-            // Alias
-            PXFileReadI8U(inputStream, &pxCElement->ElementStructure.NameAliasSizeCurrent);
-            pxCElement->ElementStructure.NameAlias = (char*)PXFileCursorPosition(inputStream);
-            PXFileCursorAdvance(inputStream, pxCElement->ElementStructure.NameAliasSizeCurrent);
-
-            PXFileReadI16U(inputStream, &pxCElement->ElementStructure.MemberAmount);
-
-            PXFileReadI8U(inputStream, &pxCElement->IsTypeDefinition);
-
-            break;
-        }
-        case PXCStructureTypeStructElement:
-        {
-            PXInt8U variableInfoFlags = 0;
-
-            PXFileReadI8U(inputStream, &variableInfoFlags); // Write flags
-            PXFileReadI16U(inputStream, &pxCElement->ElementVariable.SizeOfType); // Write size of Type
-
-            pxCElement->ElementVariable.IsKnownPrimitve = PXFlagIsSet(variableInfoFlags, MemberFieldFlagIsKnownPrimitive);
+       pxCElement->ElementVariable.IsKnownPrimitve = PXFlagIsSet(variableInfoFlags, MemberFieldFlagIsKnownPrimitive);
             pxCElement->ElementVariable.IsConstantType = PXFlagIsSet(variableInfoFlags, MemberFieldFlagIsConstType);
             pxCElement->ElementVariable.IsInRegister = PXFlagIsSet(variableInfoFlags, MemberFieldFlagRegister);
             pxCElement->ElementVariable.IsSigned = PXFlagIsSet(variableInfoFlags, MemberFieldFlagIsSigned);
@@ -2082,36 +1589,4 @@ void PXAPI PXCElementExtract(PXFile* const inputStream, PXCElement* const pxCEle
             pxCElement->ElementVariable.IsAdressVolitile = PXFlagIsSet(variableInfoFlags, MemberFieldFlagVolatile);
             pxCElement->ElementVariable.IsAdressRestricted = PXFlagIsSet(variableInfoFlags, MemberFieldFlagResticted);
 
-            if (pxCElement->ElementVariable.IsKnownPrimitve)
-            {
-                // Get Type
-                PXInt8U keyID = 0;
-
-                PXFileReadI8U(inputStream, &keyID);
-
-                pxCElement->ElementVariable.PrimitiveType = (CKeyWord)keyID;
-            }
-            else
-            {
-                PXFileReadI8U(inputStream, &pxCElement->ElementVariable.NameOfTypeSizeCurrent);
-                pxCElement->ElementVariable.NameOfType = (char*)PXFileCursorPosition(inputStream);
-                PXFileCursorAdvance(inputStream, pxCElement->ElementVariable.NameOfTypeSizeCurrent);
-            }
-
-            break;
-        }
-        case PXCStructureTypeFuntion:
-        {
-            PXCFunction* const pxCFunction = &pxCElement->ElementFunction;
-
-            pxCFunction->AccessModifier = PXCAccessModifierPublic;
-            pxCFunction->CallingConvention = PXCCallingConventionCDeclaration;
-
-            PXFileReadI8U(inputStream, &pxCFunction->ParameterListSize);
-
-            break;
-        }
-        default:
-            break;
-    }
-}
+*/

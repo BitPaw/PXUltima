@@ -196,9 +196,7 @@
     <ClInclude Include="..\PXUltimaC\OS\Time\PXTime.h" />
     <ClInclude Include="..\PXUltimaC\OS\User\PXUser.h" />
     <ClInclude Include="..\PXUltimaC\Service\FTP\PXFTPClient.h" />
-    <ClInclude Include="..\PXUltimaC\Service\FTP\PXFTPServer.h" />
     <ClInclude Include="..\PXUltimaC\Service\HTTP\PXHTTPClient.h" />
-    <ClInclude Include="..\PXUltimaC\Service\HTTP\PXHTTPServer.h" />
     <ClInclude Include="..\PXUltimaC\Service\LDAP\PXLDAPClient.h" />
     <ClInclude Include="..\PXUltimaC\Service\SBP\PXSBP.h" />
   </ItemGroup>
@@ -363,9 +361,7 @@
     <ClCompile Include="..\PXUltimaC\OS\Time\PXTime.c" />
     <ClCompile Include="..\PXUltimaC\OS\User\PXUser.c" />
     <ClCompile Include="..\PXUltimaC\Service\FTP\PXFTPClient.c" />
-    <ClCompile Include="..\PXUltimaC\Service\FTP\PXFTPServer.c" />
     <ClCompile Include="..\PXUltimaC\Service\HTTP\PXHTTPClient.c" />
-    <ClCompile Include="..\PXUltimaC\Service\HTTP\PXHTTPServer.c" />
     <ClCompile Include="..\PXUltimaC\Service\LDAP\PXLDAPClient.c" />
     <ClCompile Include="..\PXUltimaC\Service\SBP\PXSBP.c" />
   </ItemGroup>
@@ -484,6 +480,7 @@
     <ClCompile>
       <CompileAs>CompileAsC</CompileAs>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <PreprocessorDefinitions>XLIB_ILLEGAL_ACCESS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
@@ -495,6 +492,7 @@
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <DebugInformationFormat>None</DebugInformationFormat>
       <Optimization>MinSize</Optimization>
+      <PreprocessorDefinitions>XLIB_ILLEGAL_ACCESS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
@@ -504,6 +502,7 @@
     <ClCompile>
       <CompileAs>CompileAsC</CompileAs>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <PreprocessorDefinitions>XLIB_ILLEGAL_ACCESS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
@@ -515,6 +514,7 @@
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <DebugInformationFormat>None</DebugInformationFormat>
       <Optimization>MinSize</Optimization>
+      <PreprocessorDefinitions>XLIB_ILLEGAL_ACCESS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -524,6 +524,7 @@
     <ClCompile>
       <CompileAs>CompileAsC</CompileAs>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <PreprocessorDefinitions>XLIB_ILLEGAL_ACCESS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -535,6 +536,7 @@
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <DebugInformationFormat>None</DebugInformationFormat>
       <Optimization>MinSize</Optimization>
+      <PreprocessorDefinitions>XLIB_ILLEGAL_ACCESS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
@@ -544,6 +546,7 @@
     <ClCompile>
       <CompileAs>CompileAsC</CompileAs>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <PreprocessorDefinitions>XLIB_ILLEGAL_ACCESS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
@@ -555,6 +558,7 @@
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <DebugInformationFormat>None</DebugInformationFormat>
       <Optimization>MinSize</Optimization>
+      <PreprocessorDefinitions>XLIB_ILLEGAL_ACCESS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

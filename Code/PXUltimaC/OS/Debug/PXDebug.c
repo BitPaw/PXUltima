@@ -1010,7 +1010,7 @@ void PXAPI PXDebugLogMessage(PXText* const pxText)
 		char buffer[4] = { pxText->TextA[i], 0, 0, 0 };
 
 #if OSUnix
-		printf(buffer);
+		// Does this exist?
 #elif OSWindows
 		OutputDebugStringA(buffer);
 #endif		

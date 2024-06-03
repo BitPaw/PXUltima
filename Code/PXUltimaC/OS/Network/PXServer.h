@@ -1,3 +1,4 @@
+/*
 #define PXServerINCLUDE
 #ifndef PXServerINCLUDE 
 #define PXServerINCLUDE
@@ -48,3 +49,4 @@ extern "C"
 #endif
 
 #endif
+*/

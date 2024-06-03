@@ -24,12 +24,30 @@
     <ClCompile Include="Window\PXWindowTest.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Compiler\PXTestCompiler.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\PXTestDebug.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Media\PXMediaTest.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Network\PXNetworkTest.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Window\PXWindowTest.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Compiler\PXTestCompiler.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Debug\PXTestDebug.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Media\PXMediaTest.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

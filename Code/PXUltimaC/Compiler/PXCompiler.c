@@ -1238,7 +1238,7 @@ void PXAPI PXCompilerWriteNode(PXCompiler* const pxCompiler)
 			pxCompiler->WriteInfo.WriteFile(pxCompiler);
 			break;
 		}
-		case PXDocumentElementTypeInclude:
+		case PXDocumentElementTypePreprocessorInclude:
 		{
 			pxCompiler->WriteInfo.WriteInclude(pxCompiler);
 			break;

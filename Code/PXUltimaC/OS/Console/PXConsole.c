@@ -37,6 +37,154 @@ PXActionResult PXAPI PXConsoleTextColorSetFromID(const PXInt16U coliorID)
 PXActionResult PXAPI PXConsoleTextColorSet(const PXConsoleTextColor pxConsoleTextColor)
 {
 #if OSUnix
+
+#define PXUnixConsoleColorreset 0
+#define PXUnixConsoleColorbright 1
+#define PXUnixConsoleColordim 2
+#define PXUnixConsoleColorunderscore 4
+#define PXUnixConsoleColorblink 5
+#define PXUnixConsoleColorreverse 7
+#define PXUnixConsoleColorhidden 8
+
+#define PXUnixConsoleColorBlack 30
+#define PXUnixConsoleColorred 31
+#define PXUnixConsoleColorgreen 32
+#define PXUnixConsoleColoryellow 33
+#define PXUnixConsoleColorblue 34
+#define PXUnixConsoleColormagenta 35
+#define PXUnixConsoleColorcyan 36
+#define PXUnixConsoleColorwhite 37
+
+#define PXUnixConsoleColorBGblack 40
+#define PXUnixConsoleColorBGred 41
+#define PXUnixConsoleColorBGgreen 42
+#define PXUnixConsoleColorBGyellow 43
+#define PXUnixConsoleColorBGblue 44
+#define PXUnixConsoleColorBGmagenta 45
+#define PXUnixConsoleColorBGcyan 46
+#define PXUnixConsoleColorBGwhite 47
+
+
+	int colorID = 0;
+	int brightness = 0;
+
+	switch(pxConsoleTextColor)
+	{
+		case PXConsoleTextColorBLACK:
+		{
+			colorID = PXUnixConsoleColorBlack;
+			//brightness = PXUnixConsoleColordim;
+			break;
+		}
+		case PXConsoleTextColorDARKBLUE:
+		{
+			colorID = PXUnixConsoleColorblue;
+			brightness = PXUnixConsoleColordim;
+			break;
+		}
+		case PXConsoleTextColorDARKGREEN:
+		{
+			colorID = PXUnixConsoleColorgreen;
+			brightness = PXUnixConsoleColordim;
+			break;
+		}
+		case PXConsoleTextColorDARKCYAN:
+		{
+			colorID = PXUnixConsoleColorcyan;
+			brightness = PXUnixConsoleColordim;
+			break;
+		}
+		case PXConsoleTextColorDARKRED:
+		{
+			colorID = PXUnixConsoleColorred;
+			brightness = PXUnixConsoleColordim;
+			break;
+		}
+		case PXConsoleTextColorDARKMAGENTA:
+		{
+			colorID = PXUnixConsoleColormagenta;
+			brightness = PXUnixConsoleColordim;
+			break;
+		}
+		case PXConsoleTextColorDARKYELLOW:
+		{
+			colorID = PXUnixConsoleColoryellow;
+			brightness = PXUnixConsoleColordim;
+			break;
+		}
+		case PXConsoleTextColorDARKGRAY:
+		{
+			colorID = PXUnixConsoleColorBGwhite;
+			brightness = PXUnixConsoleColordim;
+			break;
+		}
+		case PXConsoleTextColorGRAY:
+		{
+			colorID = PXUnixConsoleColorBGwhite;
+			brightness = PXUnixConsoleColorbright;
+			break;
+		}
+		case PXConsoleTextColorBLUE:
+		{
+			colorID = PXUnixConsoleColorblue;
+			brightness = PXUnixConsoleColorbright;
+			break;
+		}
+		case PXConsoleTextColorGREEN:
+		{
+			colorID = PXUnixConsoleColorgreen;
+			brightness = PXUnixConsoleColorbright;
+			break;
+		}
+		case PXConsoleTextColorCYAN:
+		{
+			colorID = PXUnixConsoleColorcyan;
+			brightness = PXUnixConsoleColorbright;
+			break;
+		}
+		case PXConsoleTextColorRED:
+		{
+			colorID = PXUnixConsoleColorred;
+			brightness = PXUnixConsoleColorbright;
+			break;
+		}
+		case PXConsoleTextColorMAGENTA:
+		{
+			colorID = PXUnixConsoleColormagenta;
+			brightness = PXUnixConsoleColorbright;
+			break;
+		}
+		case PXConsoleTextColorYELLOW:
+		{
+			colorID = PXUnixConsoleColoryellow;
+			brightness = PXUnixConsoleColorbright;
+			break;
+		}
+
+		default:
+		case PXConsoleTextColorWHITE:
+		{
+			colorID = PXUnixConsoleColorwhite;
+			brightness = PXUnixConsoleColorbright;
+			break;
+		}
+	}
+
+	// \x1b[0m
+
+	// Write color as a excape sequence
+
+	// 48 for background
+	
+	//printf("\x1b[%im", colorID);
+
+	printf("\x1b[38;5;%im", colorID);
+	// 
+	//printf("\x1b[38;5;%im\x1b[%im", brightness, colorID);
+
+
+	
+
 #elif OSWindows
 	const HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 	WORD colorID = 0;
@@ -128,10 +276,19 @@ void PXAPI PXConsoleWriteF(const PXSize length, const char* const source, ...)
 void PXAPI PXConsoleWrite(const PXSize length, const char* const source)
 {
 #if OSUnix
+
+	int writtenBytes = 0;
+
+	for(size_t i = 0; i < length; i++)
+	{
+		char text[4] = { source[i] ,0,0,0};
+
+		writtenBytes += printf(text);
+	}
+
 #elif OSWindows
 	const HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 	const BOOL success = WriteConsoleA(consoleHandle, source, length, 0, 0);
-
 
 	PXText pxText;
 	PXTextConstructFromAdressA(&pxText, source, length, length);

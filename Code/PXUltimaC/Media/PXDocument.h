@@ -7,30 +7,120 @@
 typedef enum PXDocumentElementType_
 {
 	PXDocumentElementTypeInvalid,
+
+	PXDocumentElementTypeUnkown,
+
 	PXDocumentElementTypeFile, // Context of a compiled file, used as a global root
-	PXDocumentElementTypeInclude, // includes/dependecny on another file
 	PXDocumentElementTypeNamespace, // namespace
-	PXDocumentElementTypeStruct,
-	PXDocumentElementTypeUnion,
-	PXDocumentElementTypeEnum,
-	PXDocumentElementTypeClass,
-	PXDocumentElementTypeFunction,
-	PXDocumentElementTypeFunctionPointer,
+	PXDocumentElementTypeTypeDefinition, // typedef 
+	PXDocumentElementTypeStruct, // struct
+	PXDocumentElementTypeUnion, // union
+	PXDocumentElementTypeEnum, // enum
+	PXDocumentElementTypeClass, // class
+	PXDocumentElementTypeFunction, // xxx Function();
+	PXDocumentElementTypeFunctionPointer, // xxx (*XXXX)();
 	PXDocumentElementTypeClassMember,
 	PXDocumentElementTypeClassAttribute,
 	PXDocumentElementTypeEnumMember,
 	PXDocumentElementTypeFunctionParameter,
+
+
+
+	PXDocumentElementTypeAutomaticType,
+
+	// Preprocessor
+	PXDocumentElementTypePreprocessorDefine,
+	PXDocumentElementTypePreprocessorIfNotDefined,
+	PXDocumentElementTypePreprocessorIfDefined,
+	PXDocumentElementTypePreprocessorInclude, // includes/dependecny on another file
+	PXDocumentElementTypePreprocessorPragma,
+	PXDocumentElementTypePreprocessorDefinitionEnd,
+	PXDocumentElementTypePreprocessorValue,
+	PXDocumentElementTypePreprocessorFunction,
+
+	// Switch
+	PXDocumentElementTypeSwitch,
+	PXDocumentElementTypeCase,
+	PXDocumentElementTypeDefault,
+	PXDocumentElementTypeBreak,
+
+	// Type additives
+	PXDocumentElementTypeFinal,
+	PXDocumentElementTypeSigned,
+	PXDocumentElementTypeUnsigned,
+	PXDocumentElementTypeConst,
+	PXDocumentElementTypeRegister,
+	PXDocumentElementTypeVolitile,
+	PXDocumentElementTypeRestrict,
+
+	// Types
+	PXDocumentElementTypeChar,
+	PXDocumentElementTypeShort,
+	PXDocumentElementTypeInt,
+	PXDocumentElementTypeLong,
+	PXDocumentElementTypeFloat,
+	PXDocumentElementTypeDouble,
+	PXDocumentElementTypeBool,
+	PXDocumentElementTypeTrue,
+	PXDocumentElementTypeFalse,
+
+	// Loops
+	PXDocumentElementTypeWhile,
+	PXDocumentElementTypeDo,
+	PXDocumentElementTypeFor,
+	PXDocumentElementTypeContinue,
+
+	// Branches
+	PXDocumentElementTypeIf,
+	PXDocumentElementTypeElse,
+	PXDocumentElementTypeGoTo,
+
+
+	PXDocumentElementTypeStatic,
+	PXDocumentElementTypeExtern,
+
+	PXDocumentElementTypeReturn,
+	PXDocumentElementTypeVoid,
+
+	PXDocumentElementTypeSizeOfType // sizeof()
 }
 PXDocumentElementType;
 
 typedef enum PXDocumentCallingConvention_
 {
 	PXDocumentCallingConventionInvalid,
-	PXDocumentCallingConventionCDeclaration,
-	PXDocumentCallingConventionStandardCall,
-	PXDocumentCallingConventionFastCall,
-	PXDocumentCallingConventionThisCall
 
+	// [cdecl] Default for most C-Compilers
+	// Pushed on the stack right-to-left order
+	// The caller cleans the stack after the function call returns.
+	PXDocumentCallingConventionCDeclaration,
+
+	// [syscall] Same as [cdecl] but mostly just used by OS/2 32-Bit
+	PXCCallingConventionSystemCall,
+
+	// [optlink] used by the IBM VisualAge compilers]
+	PXCCallingConventionOptlink,
+
+	// []
+	PXCCallingConventionPascal,
+
+	// [fastcall]
+	PXDocumentCallingConventionFastCall,
+
+	// [register]
+	PXCCallingConventionRegister,
+
+	// [stdcall]
+	PXDocumentCallingConventionStandardCall,
+
+	// [vectorcall]
+	PXCCallingConventionVectorCall,
+
+	// [safecall]
+	PXCCallingConventionSafeCall,
+
+	// [thiscall]
+	PXDocumentCallingConventionThisCall
 }
 PXDocumentCallingConvention;
 
@@ -154,7 +244,7 @@ typedef struct PXCodeDocument_
 PXCodeDocument;
 
 
-
+PXDocumentElementType PXAPI PXDocumentElementAnalyseElement(const char* name, const PXSize nameSize);
 
 
 PXPublic const char* PXAPI PXDocumentElementTypeToString(const PXDocumentElementType pxDocumentElementType);

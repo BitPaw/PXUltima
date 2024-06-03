@@ -3,18 +3,9 @@
 
 #include <Media/PXResource.h>
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+PXPrivate void PXAPI PXTestWindowAll();
 
-    extern void PXAPI PXTestWindowAll();
-
-    extern void PXAPI PXTestWindowOpenClose();
-    extern void PXAPI PXTestWindowOpenUIRender();
-
-#ifdef __cplusplus
-}
-#endif
+PXPrivate void PXAPI PXTestWindowOpenClose();
+PXPrivate void PXAPI PXTestWindowOpenUIRender();
 
 #endif

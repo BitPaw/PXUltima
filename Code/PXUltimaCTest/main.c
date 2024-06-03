@@ -83,47 +83,19 @@ void PXTextMatchTest()
 	printf("");
 }*/
 
-
+#include "Compiler/PXTestCompiler.h"
+#include "Debug/PXTestDebug.h"
+#include "Media/PXMediaTest.h"
+#include "Window/PXWindowTest.h"
 
 int main()
 {
 	PXConsoleWrite(0, "[i] Starting testing...\n");
 
-
-#if 1
-	PXCodeDocument pxCodeDocument;
-
-	{
-		PXResourceLoadInfo pxResourceLoadInfo;
-		PXClear(PXResourceLoadInfo, &pxResourceLoadInfo);
-		pxResourceLoadInfo.Type = PXResourceTypeCodeDocument;
-		pxResourceLoadInfo.Target = &pxCodeDocument;
-
-		PXActionResult resA = PXResourceLoadA(&pxResourceLoadInfo, "C:\\Data\\WorkSpace\\[GIT]\\PXUltima\\Code\\PXUltimaC\\Engine\\PXEngine.h");
-	}
-
-	{
-		PXResourceSaveInfo pxResourceSaveInfo;
-		PXClear(PXResourceLoadInfo, &pxResourceSaveInfo);
-		pxResourceSaveInfo.Type = PXResourceTypeCodeDocument;
-		pxResourceSaveInfo.Target = &pxCodeDocument;
-		pxResourceSaveInfo.Format = PXFileFormatJava;
-
-		PXActionResult resA = PXResourceSaveA(&pxResourceSaveInfo, "N:\\Cache\\PXTest.java");
-
-		pxResourceSaveInfo.Format = PXFileFormatCSharp;
-
-		PXActionResult resB = PXResourceSaveA(&pxResourceSaveInfo, "N:\\Cache\\PXTest.cs");
-	}
-
-
-
-
-
-	PXConsoleWrite(0, "");
-#endif
-
-
+	PXTestWindowAll();
+	PXMediaTestAll();
+	PXTestCompilerAll();
+	PXTestDebugAll();
 
 
 
@@ -361,35 +333,6 @@ int main()
 
 
 
-
-
-#if 0
-
-
-
-
-
-
-	PXTTF ttf;
-
-	PXFile pxFile;
-
-	PXFileOpenFromPathInfo pxFileOpenFromPathInfo;
-	PXTextMakeFixedA(&pxFileOpenFromPathInfo.Text, "C:\\Windows\\Fonts\\arial.ttf");
-
-	pxFileOpenFromPathInfo.FileSize = 0;
-	pxFileOpenFromPathInfo.AccessMode = PXMemoryAccessModeReadOnly;
-	pxFileOpenFromPathInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
-	pxFileOpenFromPathInfo.AllowMapping = PXTrue;
-	pxFileOpenFromPathInfo.CreateIfNotExist = PXFalse;
-	pxFileOpenFromPathInfo.AllowOverrideOnCreate = PXFalse;
-
-	PXFileOpenFromPath(&pxFile, &pxFileOpenFromPathInfo);
-
-	PXActionResult xx = PXTTFParse(&ttf, &pxFile);
-
-	printf("");
-#endif
 
 #if 0
 
