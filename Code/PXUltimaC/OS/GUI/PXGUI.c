@@ -2051,10 +2051,10 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                         "X-System",
                         "Window-Create",
                         "X:%4i, Y:%4i, W:%4i, H:%4i ID:%i",
-                        pxGUIElementCreateWindowInfo->X,
-                        pxGUIElementCreateWindowInfo->Y,
-                        pxGUIElementCreateWindowInfo->Width,
-                        pxGUIElementCreateWindowInfo->Height,
+                        pxUIElementPositionCalulcateInfo.X,
+                        pxUIElementPositionCalulcateInfo.Y,
+                        pxUIElementPositionCalulcateInfo.Width,
+                        pxUIElementPositionCalulcateInfo.Height,
                         pxUIElement->Info.WindowID
                     );
 #endif
@@ -3722,7 +3722,7 @@ PXActionResult PXAPI PXGUIElementFetch(PXGUISystem* const pxGUISystem, PXGUIElem
 
                // const PXBool hasParent = pxUIElement ? pxUIElement->Parent : PXFalse;
 
-                const PXBool hasParent = pxGUIElementUpdateInfoList->WindowReference;
+                const PXBool hasParent = PXNull != pxGUIElementUpdateInfoList->WindowReference;
 
                 if(!hasParent) // Special behaviour, if ID is null, get the screensize
                 {
@@ -3750,6 +3750,18 @@ PXActionResult PXAPI PXGUIElementFetch(PXGUISystem* const pxGUISystem, PXGUIElem
                 PXWindowSizeInfo* pxWindowSizeInfo = &pxGUIElementUpdateInfo->Data.Size;
 
 #if OSUnix
+               // ScreenCount();
+
+               // ScreenOfDisplay();
+
+                Screen* const xScreen = DefaultScreenOfDisplay(); // X11
+
+                pxWindowSizeInfo->X = 0;
+                pxWindowSizeInfo->Y = 0;
+                pxWindowSizeInfo->Width = WidthOfScreen(xScreen);
+                pxWindowSizeInfo->Height = HeightOfScreen(xScreen);
+
+
 #elif PXOSWindowsDestop
 
                 RECT rect;
