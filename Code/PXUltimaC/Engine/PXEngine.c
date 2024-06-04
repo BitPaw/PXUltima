@@ -42,7 +42,7 @@ void PXAPI PXEngineWindowEvent(PXEngine* const pxEngine, PXWindowEvent* const px
     {
         case PXWindowEventTypeResize:
         {
-            pxEngine->UpdateUI = PXTrue;            
+            pxEngine->UpdateUI = PXTrue;
             break;
         }
 
@@ -262,7 +262,7 @@ void PXAPI PXEngineWindowEvent(PXEngine* const pxEngine, PXWindowEvent* const px
 
             PXInt32U mask = 0;
             PXInt32U data = 0;
-            
+
 
             // printf("[#][Event][Key] ID:%-3i Name:%-3i State:%i\n", keyBoardKeyInfo->KeyID, keyBoardKeyInfo->Key, keyBoardKeyInfo->Mode);
 
@@ -547,7 +547,7 @@ void PXAPI PXEngineWindowEvent(PXEngine* const pxEngine, PXWindowEvent* const px
 
             break;
         }
-        
+
         default:
             break;
     }
@@ -573,7 +573,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
 
         if(!isRunningASYNC)
         {
-            PXWindowUpdate(pxEngine->Window);
+            PXWindowUpdate(&pxEngine->GUISystem, pxEngine->Window);
 
             PXControllerSystemDevicesDataUpdate(&pxEngine->ControllerSystem);
         }
@@ -588,7 +588,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
         pxEngine->TimeData.CounterTimeUser = PXTimeCounterStampGet();
 
 
-        PXPlayerMoveInfo pxPlayerMoveInfo;    
+        PXPlayerMoveInfo pxPlayerMoveInfo;
         PXClear(PXPlayerMoveInfo, &pxPlayerMoveInfo);
 
 
@@ -634,11 +634,11 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
             }
             else
             {
-                PXCameraMove(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementWalk);         
+                PXCameraMove(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementWalk);
             }
 
            // PXCameraMove(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementWalk);
-       
+
             PXCameraRotate(pxEngine->CameraCurrent, &pxPlayerMoveInfo.MovementView);
             PXCameraUpdate(pxEngine->CameraCurrent, pxEngine->TimeData.CounterTimeDelta);
 
@@ -693,10 +693,10 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
                 pxEngine->TimeData.CounterTimeUser = PXTimeCounterStampGet() - pxEngine->TimeData.CounterTimeUser;
         }
 
-        
+
         }
 
-      
+
 
 
         // Extended windows resize check
@@ -726,7 +726,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
             if (pxEngine->CameraCurrent)
             {
                 PXCameraAspectRatioChange(pxEngine->CameraCurrent, pxViewPort.Width, pxViewPort.Height);
-            }   
+            }
 
             PXGUIElementhSizeRefresAll(&pxEngine->GUISystem);
         }
@@ -761,7 +761,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
             const PXInt32U timeStamp = PXTimeCounterStampGet();
             const PXInt32U timeerDeltaTime = timeStamp - pxEngineTimer->TimeStampStart;
             const PXBool isTimeDelayToStrong = ((PXInt32S)pxEngineTimer->TimeDeltaTarget + pxEngineTimer->TimeDelayShift) < 0;
-            const PXBool isLongEnough = 
+            const PXBool isLongEnough =
                 isTimeDelayToStrong ||
                 (timeerDeltaTime > (pxEngineTimer->TimeDeltaTarget + pxEngineTimer->TimeDelayShift));
 
@@ -794,7 +794,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
                     PXEngineTimerEventInfo pxEngineTimerEventInfo;
                     PXClear(PXEngineTimerEventInfo, &pxEngineTimerEventInfo);
                     pxEngineTimerEventInfo.TimerReference = pxEngineTimer;
-                    
+
                     pxEngineTimer->CallBack(pxEngine, &pxEngineTimerEventInfo);
                 }
             }
@@ -855,7 +855,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
 
                 PXFunctionInvoke(pxEngine->OnRenderUpdate, pxEngine->Owner, pxEngine);
                 pxEngine->TimeData.CounterTimeGPU = PXTimeCounterStampGet() - pxEngine->TimeData.CounterTimeGPU;
-                pxEngine->Graphic.SceneDeploy(pxEngine->Graphic.EventOwner);        
+                pxEngine->Graphic.SceneDeploy(pxEngine->Graphic.EventOwner);
 #endif
             }
 
@@ -902,7 +902,7 @@ PXActionResult PXAPI PXEngineResourceAction(PXEngine* const pxEngine, PXEngineRe
     }
 
     switch (pxEngineResourceActionInfo->Type)
-    {     
+    {
         case PXEngineResourceActionTypeCreate:
         {
             return PXEngineResourceCreate(pxEngine, &pxEngineResourceActionInfo->Create);
@@ -982,7 +982,7 @@ PXActionResult PXAPI PXEngineResourceAction(PXEngine* const pxEngine, PXEngineRe
                     if(pxEngineResourceStateChangeInfo->Enable)
                     {
                         pxEngineText->Info.Flags |= PXEngineResourceInfoEnabled;
-                    }                 
+                    }
 
 #if PXLogEnable
                     PXLogPrint
@@ -1034,7 +1034,7 @@ PXActionResult PXAPI PXEngineResourceAction(PXEngine* const pxEngine, PXEngineRe
             return PXActionRefusedNotImplemented;
                 */
         }
-    
+
         case PXEngineResourceActionTypeCustom:
         {
             return PXActionRefusedNotImplemented;
@@ -1193,7 +1193,7 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
 
     // Load all mods now, not fully tho, they may need very early checks before anything happens
     if(pxEngineStartInfo->UseMods)
-    {      
+    {
         PXText pxText;
         PXTextMakeFixedA(&pxText, "Mod\\");
 
@@ -1247,7 +1247,7 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
                 PXEngineResourceCreate(pxEngine, &pxResourceCreateInfo);
                 break;
             }
-        }    
+        }
     }
     //-----------------------------------------------------
 
@@ -1258,7 +1258,7 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
     //-----------------------------------------------------
     if(pxEngineStartInfo->UseMouseInput)
     {
-        PXWindowUpdate(pxEngine->Window);
+        PXWindowUpdate(&pxEngine->GUISystem, pxEngine->Window);
 
         PXWindowMouseMovementEnable(pxEngine->Window->Info.ID);
 
@@ -1277,7 +1277,7 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
         PXGraphicInitializeInfo pxGraphicInitializeInfo;
         PXClear(PXGraphicInitializeInfo, &pxGraphicInitializeInfo);
         pxGraphicInitializeInfo.Mode = pxEngineStartInfo->Mode;
-        pxGraphicInitializeInfo.GraphicSystem = pxEngineStartInfo->System;      
+        pxGraphicInitializeInfo.GraphicSystem = pxEngineStartInfo->System;
         pxGraphicInitializeInfo.WindowReference = pxEngine->Window;
         pxGraphicInitializeInfo.Width = -1;
         pxGraphicInitializeInfo.Height = -1;
@@ -1303,7 +1303,7 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
             if(0) // If its really important that the graphic API exists, we can exit now.
             {
                 return graphicInit;
-            }           
+            }
         }
 
         pxEngine->HasGraphicInterface = PXTrue;
@@ -1335,7 +1335,7 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
 #endif
     }
     //-----------------------------------------------------
-  
+
 
 
     //-----------------------------------------------------
@@ -1533,7 +1533,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
     {
         case PXResourceTypeImage:
         {
-          
+
             break;
         }
         case PXResourceTypeTextureCube:
@@ -1561,8 +1561,8 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
             pxGraphicTexturInfo.Amount = 1u;
             pxGraphicTexturInfo.Type = PXGraphicTextureTypeCubeContainer;
             pxGraphicTexturInfo.Action = PXResourceActionCreate;
-                
-            pxEngine->Graphic.TextureAction(pxEngine->Graphic.EventOwner, &pxGraphicTexturInfo);    
+
+            pxEngine->Graphic.TextureAction(pxEngine->Graphic.EventOwner, &pxGraphicTexturInfo);
 
             break;
         }
@@ -1610,7 +1610,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
 #endif
 
                 return PXActionFailedNoSystemToHandleData;
-            }         
+            }
 
 
             PXGraphicTexturInfo pxGraphicTexturInfo;
@@ -1632,7 +1632,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
             {
                 // Load Textures
                 {
-                    PXFontPage* const pxFontPage = &pxFont->MainPage;                   
+                    PXFontPage* const pxFontPage = &pxFont->MainPage;
 
                     PXResourceCreateInfo pxResourceCreateInfoSub;
                     PXClear(PXResourceCreateInfo, &pxResourceCreateInfoSub);
@@ -1680,7 +1680,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
                 return PXActionFailedNoSystemToHandleData;
             }
 
-        
+
             // Regsieter texture
             {
                 PXGraphicTexturInfo pxGraphicTexturInfo;
@@ -1694,7 +1694,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
 
             // Model create
             {
-                PXModel* pxModel = PXNull;                
+                PXModel* pxModel = PXNull;
                 PXNewZerod(PXModel, &pxModel);
                 pxSkyBox->Model = pxModel;
 
@@ -1787,7 +1787,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
                     pxShader,
                     2
                 );
-            }            
+            }
 
             pxSkyBox->Info.Flags |= PXEngineResourceInfoVisble;
 
@@ -1840,7 +1840,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
                         "Sound-Upload",
                         "Success <%s>!",
                         pxResourceCreateInfo->FilePath
-                    );                  
+                    );
                 }
                 else
                 {
@@ -1861,7 +1861,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
             break;
         }
         case PXResourceTypeGUIElement:
-        {            
+        {
             PXGUIElementCreateInfo* const pxGUIElementCreateInfo = &pxResourceCreateInfo->UIElement;
 
            // pxGUIElementCreateInfo->U
@@ -1873,7 +1873,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
             PXGUIElementCreate(&pxEngine->GUISystem, pxResourceCreateInfo, 1);
 
             PXFunctionInvoke(pxEngine->ResourceAdded, pxEngine->Owner, pxEngine, pxResourceCreateInfo);
-            
+
             break;
         }
         case PXResourceTypeShaderProgram:
@@ -2015,13 +2015,13 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXEngineRe
 
             PXInt32U drawstateBefore = pxHitBox->Model->IndexBuffer.DrawModeID;
 
-            PXMaterial* material = pxHitBox->Model->IndexBuffer.SegmentPrime.Material;   
+            PXMaterial* material = pxHitBox->Model->IndexBuffer.SegmentPrime.Material;
 
             if(material == PXNull)
             {
                 PXNewZerod(PXMaterial, &material);
                 //PXNewZerod(PXMaterialContainer, &pxHitBox->Model->MaterialContaierList);
-             
+
                 pxHitBox->Model->IndexBuffer.SegmentPrime.DataRange = 1;
                 pxHitBox->Model->IndexBuffer.SegmentPrime.Material = material;
 
@@ -2035,7 +2035,7 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXEngineRe
             }
 
 
-          
+
 
 
 
@@ -2049,7 +2049,7 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXEngineRe
                 material->Diffuse[1] = 0;
                 material->Diffuse[2] = 0;
                 material->Diffuse[3] = 0.4;
-      
+
                 PXOpenGLModelDraw(&pxEngine->Graphic.OpenGLInstance, pxHitBox->Model, pxEngineResourceRenderInfo->CameraReference);
             }
 
@@ -2176,7 +2176,7 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXEngineRe
                     float sclaingWidth = (9.0f / 16.0f) * pxEngineText->FontScaling * pxEngineText->Scaling.X;
                     float scalingHeight = pxEngineText->Scaling.Y;
 
-                    float x1 = -1 + offsetX + pxEngineText->Position.X + offsetShadowCurrent.X;// currentOffset.Left + offsetX; // offset // currentOffset.Left  
+                    float x1 = -1 + offsetX + pxEngineText->Position.X + offsetShadowCurrent.X;// currentOffset.Left + offsetX; // offset // currentOffset.Left
                     float y1 = -1 + offsetY + pxEngineText->Position.Y + offsetShadowCurrent.Y;// currentOffset.Bottom;
 
                     // Add offset
@@ -2273,7 +2273,7 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXEngineRe
 
                                 pxEngine->Graphic.TextureAction(pxEngine->Graphic.EventOwner, &pxGraphicTexturInfo);
                             }
-                                            
+
                         }
                     }
                     else
@@ -2304,7 +2304,7 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXEngineRe
                             }
 
                             pxGraphic->RectangleDraw(pxGraphic->EventOwner, x1, y1, x2, y2, 0x01);
-  
+
                             {
                                 PXGraphicTexturInfo pxGraphicTexturInfo;
                                 pxGraphicTexturInfo.TextureReference = pxFont->MainPage.Texture;
@@ -2400,8 +2400,8 @@ void PXAPI PXEngineResourceDefaultElements(PXEngine* const pxEngine)
             "   vec4 texturedColor = texture(MaterialTexture, vertex.Texture);\n"
          // "   fragcolor = vec4(0.64f, 0.02f, 0.98f, 0.35f);\n"
             "   fragcolor = vec4(texturedColor.xyz, 1.00f);\n"
-            "}";            
-        
+            "}";
+
         PXClear(PXResourceCreateInfo, &pxResourceCreateInfo);
         pxResourceCreateInfo.Type = PXResourceTypeShaderProgram;
         pxResourceCreateInfo.ObjectReference = &pxEngine->ResourceManager.ShaderFailback;
@@ -2583,7 +2583,7 @@ void PXAPI PXEngineResourceDefaultElements(PXEngine* const pxEngine)
         PXMatrix4x4FScaleBy(&pxEngine->ResourceManager.ModelFailback->ModelMatrix, 20);
     }
 
-    // Create missing texture 
+    // Create missing texture
     {
         const PXColorRGBI8 pink = { 165, 5, 250 };
         const PXColorRGBI8 black = { 30, 30, 30 };
@@ -2624,7 +2624,7 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
     {
         PXEngineResourceRenderInfo pxEngineResourceRenderInfo;
         pxEngineResourceRenderInfo.Type = PXResourceTypeSkybox;
-        pxEngineResourceRenderInfo.CameraReference = pxEngine->CameraCurrent;    
+        pxEngineResourceRenderInfo.CameraReference = pxEngine->CameraCurrent;
 
         PXDictionaryEntry pxDictionaryEntry;
 

@@ -273,7 +273,7 @@ void PXWindowEventHandler(PXUIElement* const pxWindow, const XEvent* const xEven
             const XKeyEvent* keyEvent = &xEventData->xkey;
             const unsigned int keyCode = keyEvent->keycode;
             const PXBool release = KeyRelease == xEventData->type;
-            const KeySym keySym = XKeycodeToKeysym(pxWindow->DisplayHandle, keyCode, 0);
+            const KeySym keySym = XKeycodeToKeysym(pxGUISystem->DisplayHandle, keyCode, 0);
             const char* keyName = XKeysymToString(keySym);
 
             pxWindowEvent.Type = PXWindowEventTypeInputKeyboard;
@@ -561,7 +561,7 @@ void PXWindowEventHandler(PXUIElement* const pxWindow, const XEvent* const xEven
         case GenericEvent:
         {
             const XGenericEventCookie* const cookie = &xEventData->xcookie; // Make Copy
-            const int result = XGetEventData(pxWindow->DisplayHandle, &cookie);
+            const int result = XGetEventData(pxGUISystem->DisplayHandle, &cookie);
             const unsigned char sucessful = result != 0 && cookie->data;
 
             if(sucessful)
@@ -607,7 +607,7 @@ void PXWindowEventHandler(PXUIElement* const pxWindow, const XEvent* const xEven
                 printf("[Event] GenericEvent %i\n", cookie->evtype);
             }
 
-            XFreeEventData(pxWindow->DisplayHandle, &cookie);
+            XFreeEventData(pxGUISystem->DisplayHandle, &cookie);
 
             break;
         }
@@ -1605,13 +1605,13 @@ PXBool PXAPI PXGUIElementDelete(const PXWindowID pxUIElementID, PXUIElement* con
     return PXFalse;
 }
 
-PXBool PXAPI PXGUIElementTextSet(PXUIElement* const pxUIElement, char* text)
+PXBool PXAPI PXGUIElementTextSet(PXGUISystem* const pxGUISystem, PXUIElement* const pxUIElement, char* text)
 {
     PXBool success;
 
 #if OSUnix
     // Will BadAlloc, BadWindow
-    const int resultID = XStoreName(pxUIElement->DisplayHandle, pxUIElement->Info.WindowID, text);
+    const int resultID = XStoreName(pxGUISystem->DisplayHandle, pxUIElement->Info.WindowID, text);
     success = Success == resultID;
 #elif OSWindows
     success = SetWindowTextA(pxUIElement->Info.WindowID, text);
@@ -2076,7 +2076,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                             "Failed"
                         );
 #endif
-                    }                   
+                    }
 
 #if PXLogEnable
                     PXLogPrint
@@ -2091,7 +2091,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
                 // Set title
                 {
-                    const PXBool setTextSuccess = PXGUIElementTextSet(pxUIElement, pxGUIElementCreateWindowInfo->Title);
+                    const PXBool setTextSuccess = PXGUIElementTextSet(pxGUISystem, pxUIElement, pxGUIElementCreateWindowInfo->Title);
                 }
 
                 break;
@@ -3368,7 +3368,7 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
                 );
 #endif
 
-                PXGUIElementTextSet(pxUIElement, pxUIElementTextInfo->Content);
+                PXGUIElementTextSet(pxGUISystem, pxUIElement, pxUIElementTextInfo->Content);
 
 #if OSWindows
 
@@ -3756,12 +3756,22 @@ PXActionResult PXAPI PXGUIElementFetch(PXGUISystem* const pxGUISystem, PXGUIElem
 
                 // if "display" is null, DefaultScreenOfDisplay will SEGFAULT
 
-                Screen* const xScreen = DefaultScreenOfDisplay(pxGUISystem->DisplayHandle); // X11
+                if(pxGUISystem->DisplayHandle)
+                {
+                    Screen* const xScreen = DefaultScreenOfDisplay(pxGUISystem->DisplayHandle); // X11
 
-                pxWindowSizeInfo->X = 0;
-                pxWindowSizeInfo->Y = 0;
-                pxWindowSizeInfo->Width = WidthOfScreen(xScreen);
-                pxWindowSizeInfo->Height = HeightOfScreen(xScreen);
+                    pxWindowSizeInfo->X = 0;
+                    pxWindowSizeInfo->Y = 0;
+                    pxWindowSizeInfo->Width = WidthOfScreen(xScreen);
+                    pxWindowSizeInfo->Height = HeightOfScreen(xScreen);
+                }
+                else
+                {
+                    pxWindowSizeInfo->X = 0;
+                    pxWindowSizeInfo->Y = 0;
+                    pxWindowSizeInfo->Width = 800;
+                    pxWindowSizeInfo->Height = 600;
+                }
 
 
 #elif PXOSWindowsDestop
@@ -3973,7 +3983,7 @@ PXActionResult PXAPI PXWindowPixelSystemSet(PXWindowPixelSystemInfo* const pxWin
 #endif
 }
 
-void PXAPI PXWindowUpdate(PXUIElement* const pxUIElement)
+void PXAPI PXWindowUpdate(PXGUISystem* const pxGUISystem, PXUIElement* const pxUIElement)
 {
     if(!pxUIElement)
     {
@@ -4016,11 +4026,11 @@ void PXAPI PXWindowUpdate(PXUIElement* const pxUIElement)
 
 
 
-    XLockDisplay(pxUIElement->DisplayHandle);
+    XLockDisplay(pxGUISystem->DisplayHandle);
 
-    XNextEvent(pxUIElement->DisplayHandle, &windowEvent);
+    XNextEvent(pxGUISystem->DisplayHandle, &windowEvent);
 
-    XUnlockDisplay(pxUIElement->DisplayHandle);
+    XUnlockDisplay(pxGUISystem->DisplayHandle);
 
     PXWindowEventHandler(pxUIElement, &windowEvent);
 

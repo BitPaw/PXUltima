@@ -432,7 +432,7 @@ typedef struct PXWindowEvent_
 	UINT EventID;
 	WPARAM ParamW;
 	LPARAM ParamL;
-#endif	
+#endif
 
 	//-----------------------------
 	// Translated Data
@@ -514,11 +514,11 @@ PXPublic PXBool PXAPI PXGUIElementIsEnabled(const PXWindowID pxUIElementID);
 PXPublic PXBool PXAPI PXGUIElementFind(const PXWindowID pxUIElementID, PXUIElement* const pxUIElement);
 PXPublic PXBool PXAPI PXGUIElementDelete(const PXWindowID pxUIElementID, PXUIElement* const pxUIElement);
 
-PXPublic PXBool PXAPI PXGUIElementTextSet(PXUIElement* const pxUIElement, char* text);
+PXPublic PXBool PXAPI PXGUIElementTextSet(PXGUISystem* const pxGUISystem, PXUIElement* const pxUIElement, char* text);
 
 PXPublic PXBool PXAPI PXGUIElementValueFetch
 (
-	PXUIElement* const pxUIElementList, // 
+	PXUIElement* const pxUIElementList, //
 	const PXSize dataListAmount,
 	const PXUIElementProperty pxUIElementProperty,
 	void* const dataList // The given data
@@ -539,7 +539,7 @@ PXPublic void PXAPI PXGUIElementhSizeRefresAll(PXGUISystem* const pxGUISystem);
 
 PXPublic PXActionResult PXAPI PXWindowPixelSystemSet(PXWindowPixelSystemInfo* const pxWindowPixelSystemInfo);
 
-PXPublic void PXAPI PXWindowUpdate(PXUIElement* const pxUIElement);
+PXPublic void PXAPI PXWindowUpdate(PXGUISystem* const pxGUISystem, PXUIElement* const pxUIElement);
 
 
 PXPublic PXProcessThreadID PXAPI PXWindowThreadProcessID(const PXWindowID windowID);

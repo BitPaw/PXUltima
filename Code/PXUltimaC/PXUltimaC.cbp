@@ -15,6 +15,7 @@
 				<Compiler>
 					<Add option="-fPIC" />
 					<Add option="-g" />
+					<Add option="-DXLIB_ILLEGAL_ACCESS" />
 					<Add directory="../PXUltimaC" />
 				</Compiler>
 				<Linker>
@@ -34,6 +35,7 @@
 				<Compiler>
 					<Add option="-O3" />
 					<Add option="-fPIC" />
+					<Add option="-DXLIB_ILLEGAL_ACCESS" />
 					<Add directory="../PXUltimaC" />
 				</Compiler>
 				<Linker>
