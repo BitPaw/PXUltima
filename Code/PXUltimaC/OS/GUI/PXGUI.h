@@ -471,6 +471,14 @@ typedef struct PXGUISystem_
 	PXBool AreOSUIElementsDefined;
 
 	PXResourceManager* ResourceManager;
+
+#if OSUnix
+	Display* DisplayHandle;
+	Window WindowRootHandle;
+#elif OSWindows
+	void* DisplayHandle;
+	int WindowRootHandle;
+#endif
 }
 PXGUISystem;
 

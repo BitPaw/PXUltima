@@ -1476,12 +1476,6 @@ typedef struct PXUIElement_
 	PXUIElement** ListEEData;
 	PXSize ListEESize;
 
-#if OSUnix
-	Display* DisplayHandle;
-	Window WindowRootHandle;
-#elif OSWindows
-#endif
-
 
 	PXUIElementType Type;
 }

@@ -1866,7 +1866,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
         PXUIElementPositionCalculcate(pxUIElement, &pxUIElementPositionCalulcateInfo);
 
 
-#if OSUnix
+#if OSUnix || 1
 
 
     if(pxGUISystem->AreOSUIElementsDefined) //
@@ -1889,8 +1889,8 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
                 // Create display
                 {
-                    pxUIElement->DisplayHandle = XOpenDisplay(PXNull);   // X11/Xlib.h Create Window
-                    const PXBool successful = PXNull != pxUIElement->DisplayHandle;
+                    pxGUISystem->DisplayHandle = XOpenDisplay(PXNull);   // X11/Xlib.h Create Window
+                    const PXBool successful = PXNull != pxGUISystem->DisplayHandle;
 
                     if(!successful)
                     {
@@ -1907,7 +1907,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                         return PXActionFailedInitialization; // printf("\n\tcannot connect to X server\n\n");
                     }
 
-                    pxUIElement->WindowRootHandle = DefaultRootWindow(pxUIElement->DisplayHandle); // Make windows root
+                    pxGUISystem->WindowRootHandle = DefaultRootWindow(pxGUISystem->DisplayHandle); // Make windows root
 
 
 #if PXLogEnable
@@ -1917,8 +1917,8 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                         "X-System",
                         "Server-Connect",
                         "Name:%s (0x%p)",
-                        pxUIElement->DisplayHandle->display_name,
-                        pxUIElement->DisplayHandle
+                        pxGUISystem->DisplayHandle->display_name,
+                        pxGUISystem->DisplayHandle
                     );
 #endif
                 }
@@ -1932,7 +1932,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                     None
                 };
 
-                const XVisualInfo* const visualInfo = glXChooseVisual(pxUIElement->DisplayHandle, 0, attributeList);
+                const XVisualInfo* const visualInfo = glXChooseVisual(pxGUISystem->DisplayHandle, 0, attributeList);
 
                 {
                     const PXBool successful = visualInfo != 0;
@@ -1969,8 +1969,8 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                 // Create colormapping
                 Colormap colormap = XCreateColormap
                 (
-                    pxUIElement->DisplayHandle,
-                    pxUIElement->WindowRootHandle,
+                    pxGUISystem->DisplayHandle,
+                    pxGUISystem->WindowRootHandle,
                     visualInfo->visual,
                     AllocNone
                 );
@@ -2015,8 +2015,8 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
                     pxUIElement->Info.WindowID = XCreateWindow
                     (
-                        pxUIElement->DisplayHandle,
-                        pxUIElement->WindowRootHandle,
+                        pxGUISystem->DisplayHandle,
+                        pxGUISystem->WindowRootHandle,
                         pxUIElementPositionCalulcateInfo.X,
                         pxUIElementPositionCalulcateInfo.Y,
                         pxUIElementPositionCalulcateInfo.Width,
@@ -2062,7 +2062,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
                 // Attach to render engine
                 {
-                    const int mapResultID = XMapWindow(pxUIElement->DisplayHandle, pxUIElement->Info.WindowID);
+                    const int mapResultID = XMapWindow(pxGUISystem->DisplayHandle, pxUIElement->Info.WindowID);
                     const PXBool success = Success == mapResultID;
 
                     if(!success)
@@ -2143,7 +2143,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
     eventmask.mask = mask;
 
 
-    const int selectResultID = XISelectEvents(pxUIElement->DisplayHandle, pxUIElement->WindowRootHandle, &eventmask, 1u);
+    const int selectResultID = XISelectEvents(pxGUISystem->DisplayHandle, pxGUISystem->WindowRootHandle, &eventmask, 1u);
     const PXBool success = PXNull != selectResultID;
 
     if(!success)
@@ -2175,7 +2175,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
 
 
-    const int flushResultID = XFlush(pxUIElement->DisplayHandle);
+    const int flushResultID = XFlush(pxGUISystem->DisplayHandle);
 
 
 
@@ -3754,7 +3754,9 @@ PXActionResult PXAPI PXGUIElementFetch(PXGUISystem* const pxGUISystem, PXGUIElem
 
                // ScreenOfDisplay();
 
-                Screen* const xScreen = DefaultScreenOfDisplay(); // X11
+                // if "display" is null, DefaultScreenOfDisplay will SEGFAULT
+
+                Screen* const xScreen = DefaultScreenOfDisplay(pxGUISystem->DisplayHandle); // X11
 
                 pxWindowSizeInfo->X = 0;
                 pxWindowSizeInfo->Y = 0;
