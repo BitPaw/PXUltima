@@ -273,7 +273,7 @@ void PXWindowEventHandler(PXGUIElement* const pxWindow, const XEvent* const xEve
             const XKeyEvent* keyEvent = &xEventData->xkey;
             const unsigned int keyCode = keyEvent->keycode;
             const PXBool release = KeyRelease == xEventData->type;
-            const KeySym keySym = XKeycodeToKeysym(pxGUISystem->DisplayHandle, keyCode, 0);
+            const KeySym keySym = XKeycodeToKeysym(pxGUISystem->DisplayCurrent.DisplayHandle, keyCode, 0);
             const char* keyName = XKeysymToString(keySym);
 
             pxWindowEvent.Type = PXWindowEventTypeInputKeyboard;
@@ -561,7 +561,7 @@ void PXWindowEventHandler(PXGUIElement* const pxWindow, const XEvent* const xEve
         case GenericEvent:
         {
             const XGenericEventCookie* const cookie = &xEventData->xcookie; // Make Copy
-            const int result = XGetEventData(pxGUISystem->DisplayHandle, &cookie);
+            const int result = XGetEventData(pxGUISystem->DisplayCurrent.DisplayHandle, &cookie);
             const unsigned char sucessful = result != 0 && cookie->data;
 
             if(sucessful)
@@ -607,7 +607,7 @@ void PXWindowEventHandler(PXGUIElement* const pxWindow, const XEvent* const xEve
                 printf("[Event] GenericEvent %i\n", cookie->evtype);
             }
 
-            XFreeEventData(pxGUISystem->DisplayHandle, &cookie);
+            XFreeEventData(pxGUISystem->DisplayCurrent.DisplayHandle, &cookie);
 
             break;
         }
@@ -1604,7 +1604,7 @@ PXActionResult PXAPI PXGUIElementDelete(PXGUISystem* const pxGUISystem, PXGUIEle
     PXActionResult result = PXActionInvalid;
 
 #if OSUnix
-	const int resultID = XDestroyWindow(Display *display, Window w);
+	const int resultID = XDestroyWindow(pxGUISystem->DisplayCurrent.DisplayHandle, pxGUIElement->Info.WindowID);
 	result = PXGUIElementErrorFromXSystem(resultID);
 #elif OSWindows
 	const PXBool success = DestroyWindow(pxGUIElement->Info.WindowID);
@@ -1612,8 +1612,8 @@ PXActionResult PXAPI PXGUIElementDelete(PXGUISystem* const pxGUISystem, PXGUIEle
 #else
     result PXActionRefusedNotSupportedByLibrary;
 #endif
-	
-    if(PXActionSuccessful == success)
+
+    if(PXActionSuccessful == result)
     {
         pxGUIElement->Info.WindowID = 0;
     }
@@ -1627,16 +1627,16 @@ PXActionResult PXAPI PXGUIElementTextSet(PXGUISystem* const pxGUISystem, PXGUIEl
 
 #if OSUnix
     // Will BadAlloc, BadWindow
-    const int resultID = XStoreName(pxGUISystem->DisplayHandle, pxGUIElement->Info.WindowID, text);
-    result = PXGUIElementErrorFromXSystem(resultID);	
+    const int resultID = XStoreName(pxGUISystem->DisplayCurrent.DisplayHandle, pxGUIElement->Info.WindowID, text);
+    result = PXGUIElementErrorFromXSystem(resultID);
 #elif OSWindows
     const PXBool success = SetWindowTextA(pxGUIElement->Info.WindowID, text);
     result = PXWindowsErrorCurrent(success);
 #else
-    result PXActionRefusedNotSupportedByLibrary;
+    result = PXActionRefusedNotSupportedByLibrary;
 #endif
 
-    if(!success)
+    if(PXActionSuccessful != result)
     {
 #if PXLogEnable
         PXLogPrint
@@ -1723,7 +1723,7 @@ PXActionResult PXAPI PXGUISystemInitialize(PXGUISystem* const pxGUISystem)
         PXDisplay* const pxDisplay = &pxGUISystem->DisplayCurrent;
 
         // open a connection to the x-server. NULL here uses the default display.
-        pxDisplay->DisplayHandle = XOpenDisplay(PXNull);   // X11/Xlib.h,  Create Window 
+        pxDisplay->DisplayHandle = XOpenDisplay(PXNull);   // X11/Xlib.h,  Create Window
         const PXBool successful = PXNull != pxDisplay->DisplayHandle;
 
         if(!successful)
@@ -1744,7 +1744,7 @@ PXActionResult PXAPI PXGUISystemInitialize(PXGUISystem* const pxGUISystem)
 
         pxDisplay->Data = XDisplayString(pxDisplay->DisplayHandle);
         pxDisplay->Name = XDisplayName(pxDisplay->DisplayHandle); // if NULL, this is the atempted name what XOpen would use
-           
+
         pxDisplay->ProtocolVersion = XProtocolVersion(pxDisplay->DisplayHandle); // for X11, it is 11
         pxDisplay->ProtocolRevision = XProtocolRevision(pxDisplay->DisplayHandle);
 
@@ -1755,7 +1755,7 @@ PXActionResult PXAPI PXGUISystemInitialize(PXGUISystem* const pxGUISystem)
 
         pxDisplay->ScreenListAmount = XScreenCount(pxDisplay->DisplayHandle);
 
-   
+
 #if PXLogEnable
         PXLogPrint
         (
@@ -1776,7 +1776,7 @@ PXActionResult PXAPI PXGUISystemInitialize(PXGUISystem* const pxGUISystem)
 #endif
 
         // Get default values
-    
+
         for(size_t screenID = 0; screenID < pxDisplay->ScreenListAmount; ++screenID)
         {
             PXDisplayScreen* pxDisplayScreen = &pxDisplay->DisplayScreenList[screenID];
@@ -1787,23 +1787,23 @@ PXActionResult PXAPI PXGUISystemInitialize(PXGUISystem* const pxGUISystem)
             pxDisplayScreen->Planes = XDisplayPlanes(pxDisplay->DisplayHandle, screenID);
             pxDisplayScreen->WidthMM = XDisplayWidthMM(pxDisplay->DisplayHandle, screenID);
             pxDisplayScreen->HeightMM = XDisplayHeightMM(pxDisplay->DisplayHandle, screenID);
-          
+
         }
 
         pxDisplay->WindowRootHandle = XDefaultRootWindow(pxDisplay->DisplayHandle); // Make windows root
     }
-   
-
-
-      
 
 
 
-	
-	
+
+
+
+
+
+
 		// Get amount of screens
-		
-		
+
+
 
 
 
@@ -1818,40 +1818,40 @@ PXActionResult PXAPI PXGUISystemInitialize(PXGUISystem* const pxGUISystem)
 			int *XListDepths(Display *display, int screen_number, int *count_return);
 			GC XDefaultGC(Display *display, int screen_number);
 			Visual *XDefaultVisual(Display *display, int screen_number);
-		
-			
+
+
 
 
 
 			// UI Element needs function to override drawing by OS
-			// Linux does not even have drawing 
+			// Linux does not even have drawing
 			PXGUIElementDrawFunction(GUISystem, PXGUIElement);
 
-			
-			PXGUIElementDrawRectangleFill();
-			
 
-			
+			PXGUIElementDrawRectangleFill();
+
+
+
 			// Drawing routines?
-		
+
 
 			#if OSUnix
 				const int resultID = XFillRectangles(Display *display, Drawable d, GC gc, XRectangle *rectangles, int nrectangles);
 			#elif OSWindows
 				const int resultID = FillRect();
 			#endif
-				
+
 
 Window XCreateSimpleWindow(Display *display, Window parent, int x, int y, unsigned int width, unsigned int height, unsigned int border_width, unsigned long border, unsigned long background);
 
-			
+
 			XGetErrorText();
 			XGetErrorDatabaseText();
-			
+
 			XSetIOErrorHandler():
 			int(int(*handler)(Display *));
-				
-			
+
+
                    */
 
 
@@ -1869,7 +1869,7 @@ Window XCreateSimpleWindow(Display *display, Window parent, int x, int y, unsign
 
 
 
-	
+
 
 #elif OSWindows
 
@@ -1886,13 +1886,13 @@ Window XCreateSimpleWindow(Display *display, Window parent, int x, int y, unsign
 PXActionResult PXAPI PXGUISystemRelease(PXGUISystem* const pxGUISystem)
 {
 #if OSUnix
-	const int resultID = XCloseDisplay(Display *display);
+	const int resultID = XCloseDisplay(pxGUISystem->DisplayCurrent.DisplayHandle);
 #elif OSWindows
-	
+
 #else
 	return PXnursupported;
 #endif
-	
+
     PXGUISystemGlobalReference = PXNull;
 
     return PXActionSuccessful;
@@ -3900,9 +3900,9 @@ PXActionResult PXAPI PXGUIElementFetch(PXGUISystem* const pxGUISystem, PXGUIElem
 
                 // if "display" is null, DefaultScreenOfDisplay will SEGFAULT
 
-                if(pxGUISystem->DisplayHandle)
+                if(pxGUISystem->DisplayCurrent.DisplayHandle)
                 {
-                    Screen* const xScreen = DefaultScreenOfDisplay(pxGUISystem->DisplayHandle); // X11
+                    Screen* const xScreen = DefaultScreenOfDisplay(pxGUISystem->DisplayCurrent.DisplayHandle); // X11
 
                     pxWindowSizeInfo->X = 0;
                     pxWindowSizeInfo->Y = 0;
@@ -4170,11 +4170,11 @@ void PXAPI PXWindowUpdate(PXGUISystem* const pxGUISystem, PXGUIElement* const px
 
 
 
-    XLockDisplay(pxGUISystem->DisplayHandle);
+    XLockDisplay(pxGUISystem->DisplayCurrent.DisplayHandle);
 
-    XNextEvent(pxGUISystem->DisplayHandle, &windowEvent);
+    XNextEvent(pxGUISystem->DisplayCurrent.DisplayHandle, &windowEvent);
 
-    XUnlockDisplay(pxGUISystem->DisplayHandle);
+    XUnlockDisplay(pxGUISystem->DisplayCurrent.DisplayHandle);
 
     PXWindowEventHandler(pxGUIElement, &windowEvent);
 
@@ -4684,7 +4684,7 @@ PXActionResult PXAPI PXGUIElementDrawTextA(PXGUISystem* const pxGUISystem, PXGUI
 {
 #if OSUnix
     // For ANSI and UTF-8 strings
-    const int resultID = XDrawString(Display * display, Drawable d, GC gc, int x, int y, char* string, int length);
+    //const int resultID = XDrawString(pxGUISystem->DisplayCurrent.DisplayHandle, Drawable d, GC gc, int x, int y, char* string, int length);
 
 #elif OSWindows
 
@@ -4709,7 +4709,7 @@ PXActionResult PXAPI PXGUIElementDrawTextW(PXGUISystem* const pxGUISystem, PXGUI
 {
 #if OSUnix
     // For UNICODE
-    const int resultID = XDrawString16(Display * display, Drawable d, GC gc, int x, int y, XChar2b * string, int length);
+   // const int resultID = XDrawString16(Display * display, Drawable d, GC gc, int x, int y, XChar2b * string, int length);
 
 #elif OSWindows
 
@@ -4733,33 +4733,33 @@ PXActionResult PXAPI PXGUIElementDrawTextW(PXGUISystem* const pxGUISystem, PXGUI
 PXActionResult PXAPI PXGUIElementDrawPoint(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y)
 {
 #if OSUnix
-    const int resultID = XDrawPoint(Display *display, Drawable d, GC gc, int x, int y);
+    const int resultID = 0;//XDrawPoint(Display *display, Drawable d, GC gc, int x, int y);
     const PXActionResult result = PXGUIElementErrorFromXSystem(resultID);
     return result;
 #elif OSWindows
     return PXActionRefusedNotImplemented;
 #else
 	return PXActionRefusedNotSupportedByLibrary;
-#endif	
+#endif
 }
 
 PXActionResult PXAPI PXGUIElementDrawPoints(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y, const int width, const int height)
 {
 #if OSUnix
-    const int resultID = XDrawPoints(Display *display, Drawable d, GC gc, XPoint *points, int npoints, int mode);
+    const int resultID = 0;//XDrawPoints(Display *display, Drawable d, GC gc, XPoint *points, int npoints, int mode);
     const PXActionResult result = PXGUIElementErrorFromXSystem(resultID);
     return result;
 #elif OSWindows
     return PXActionRefusedNotImplemented;
 #else
 	return PXActionRefusedNotSupportedByLibrary;
-#endif	
+#endif
 }
 
 PXActionResult PXAPI PXGUIElementDrawLine(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x1, const int y1, const int x2, const int y2)
 {
 #if OSUnix
-	const resultID = XDrawLine(Display *display, Drawable d, GC gc, x1, y1, x2, y2);
+	const resultID = 0;//XDrawLine(Display *display, Drawable d, GC gc, x1, y1, x2, y2);
     const PXActionResult result = PXGUIElementErrorFromXSystem(resultID);
     return result;
 #elif OSWindows
@@ -4768,39 +4768,39 @@ PXActionResult PXAPI PXGUIElementDrawLine(PXGUISystem* const pxGUISystem, PXGUIE
 
 	// Move to a start point, no drawing happens here
 	const BOOL successMove = MoveToEx(pxGUIElement->DeviceContextHandle, x1, y1, &point);
-								      
+
 	// use the previous step to draw a line from there to here
 	const BOOL successDraw = LineTo(pxGUIElement->DeviceContextHandle, x2, y2);
-						  
+
 #else
 	return PXNotSupport;
-#endif	
+#endif
 }
 
 PXActionResult PXAPI PXGUIElementDrawLines(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y, const int width, const int height)
 {
 #if OSUnix
-    const resultID = XDrawLines(Display *display, Drawable d, GC gc, XPoint *points, int npoints, int mode);
+    const resultID = 0;//XDrawLines(Display *display, Drawable d, GC gc, XPoint *points, int npoints, int mode);
     const PXActionResult result = PXGUIElementErrorFromXSystem(resultID);
     return result;
 #elif OSWindows
 	const BOOL success = PolylineTo(pxGUIElement->DeviceContextHandle, 0,  0);
 #else
 	return PXNotSupport;
-#endif	
+#endif
 }
 
 PXActionResult PXAPI PXGUIElementDrawRectangle(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y, const int width, const int height)
 {
 #if OSUnix
-    const resultID = XDrawRectangle(Display *display, Drawable d, GC gc, int x, int y, unsigned int width, unsigned int height);
+    const resultID = 0;//XDrawRectangle(Display *display, Drawable d, GC gc, int x, int y, unsigned int width, unsigned int height);
     const PXActionResult result = PXGUIElementErrorFromXSystem(resultID);
     return result;
 #elif OSWindows
 	const BOOL success = Rectangle(pxGUIElement->DeviceContextHandle, 0, 0, 0, 0);
 #else
 	return PXNotSupport;
-#endif	
+#endif
 }
 
 PXActionResult PXAPI PXGUIElementDrawRectangleRounded(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y, const int width, const int height)
@@ -4822,18 +4822,18 @@ PXActionResult PXAPI PXGUIElementDrawRectangleRounded(PXGUISystem* const pxGUISy
         0,
         0
     );
-#endif	
+#endif
 }
 
 PXActionResult PXAPI PXGUIElementMove(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y)
 {
 #if OSUnix
-    const int resultID = XMoveWindow(pxGUISystem->DisplayHandle, Window w, x, y);
-    const PXActionResult result = PXGUIElementErrorFromXSystem(resultID);	
+    const int resultID = 0;//XMoveWindow(pxGUISystem->DisplayHandle, Window w, x, y);
+    const PXActionResult result = PXGUIElementErrorFromXSystem(resultID);
     return result;
 #elif PXOSWindowsDestop
     const PXBool success = MoveWindow(pxGUIElement->Info.WindowID, 0, 0, 0, 0, PXTrue); // Windows 2000, User32.dll
-	
+
     return PXFalse;
 #endif
 }
@@ -4841,9 +4841,9 @@ PXActionResult PXAPI PXGUIElementMove(PXGUISystem* const pxGUISystem, PXGUIEleme
 PXActionResult PXAPI PXGUIElementResize(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int width, const int height)
 {
 #if OSUnix
-	const int resultID = XResizeWindow(Display *display, Window w, width, height);
-	const PXActionResult result = PXGUIElementErrorFromXSystem(resultID);	
-	
+	const int resultID = 0;//XResizeWindow(Display *display, Window w, width, height);
+	const PXActionResult result = PXGUIElementErrorFromXSystem(resultID);
+
     return result;
 #elif PXOSWindowsDestop
     const PXBool success = MoveWindow(pxGUIElement->Info.WindowID, 0, 0, width, height, PXTrue); // Windows 2000, User32.dll
@@ -4857,12 +4857,12 @@ PXActionResult PXAPI PXGUIElementResize(PXGUISystem* const pxGUISystem, PXGUIEle
 PXActionResult PXAPI PXGUIElementMoveAndResize(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y, const int width, const int height)
 {
 #if OSUnix
-    const int resultID = XMoveResizeWindow(Display *display, Window w, int x, int y, unsigned int width, unsigned int height);
-    const PXActionResult result = PXGUIElementErrorFromXSystem(resultID);	
+    const int resultID = 0;//XMoveResizeWindow(Display *display, Window w, int x, int y, unsigned int width, unsigned int height);
+    const PXActionResult result = PXGUIElementErrorFromXSystem(resultID);
     return PXFalse;
 #elif PXOSWindowsDestop
 	const PXBool success = MoveWindow(pxGUIElement->Info.WindowID, 0, 0, width, height, PXTrue); // Windows 2000, User32.dll, winuser.h
-	
+
     return PXFalse;
 #else
 	return NotSupprort;
@@ -4874,13 +4874,13 @@ PXActionResult PXAPI PXGUIElementErrorFromXSystem(const int xSysstemErrorID)
 {
 	switch(xSysstemErrorID)
 	{
-		case BadValue: return PXInvalid; // input is not valid
-		case BadWindow: return PXInvalid; // object id invalid
+		case BadValue: return PXActionInvalid; // input is not valid
+		case BadWindow: return PXActionInvalid; // object id invalid
 
- // BadAlloc, BadColor, BadCursor, BadMatch, BadPixmap, BadValue, and BadWindow 
-		
+ // BadAlloc, BadColor, BadCursor, BadMatch, BadPixmap, BadValue, and BadWindow
+
 		default:
-			return PXInvalid;
+			return PXActionInvalid;
 	}
 }
 #endif
