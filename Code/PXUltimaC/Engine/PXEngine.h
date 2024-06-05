@@ -115,7 +115,7 @@ typedef struct PXEngine_
 	PXResourceManager ResourceManager;
 	PXGUISystem GUISystem;
 	PXGraphic Graphic;
-	PXUIElement* Window; // PXWindow
+	PXGUIElement* Window; // PXWindow
 	PXModLoader ModLoader;
 	PXCamera CameraDefault;
 	PXAudio Audio;

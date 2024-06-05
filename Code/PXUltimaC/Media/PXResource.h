@@ -28,7 +28,7 @@ typedef struct PXCodeDocumentElement_ PXCodeDocumentElement;
 typedef struct PXFile_ PXFile;
 typedef struct PXText_ PXText;
 typedef struct PXCodeDocument_ PXCodeDocument;
-typedef struct PXUIElement_ PXUIElement;
+typedef struct PXUIElement_ PXGUIElement;
 typedef struct PXFileTypeInfo_ PXFileTypeInfo;
 typedef struct PXCompiler_ PXCompiler;
 
@@ -1473,13 +1473,17 @@ typedef struct PXUIElement_
 	};
 #endif
 
-	PXUIElement** ListEEData;
+	PXGUIElement** ListEEData;
 	PXSize ListEESize;
 
+#if OSUnix
+#elif OSWindows
+	HDC DeviceContextHandle; // Required for manual rendering
+#endif
 
 	PXUIElementType Type;
 }
-PXUIElement;
+PXGUIElement;
 //-----------------------------------------------------
 
 
@@ -1664,7 +1668,7 @@ PXUIElementTreeViewItemInfo;
 
 typedef struct PXUIElementTabPageSingleInfo_
 {
-	PXUIElement** UIElement;
+	PXGUIElement** UIElement;
 	char* PageName;
 	PXInt32U ImageID;
 
@@ -1685,7 +1689,7 @@ typedef struct PXGUIElementCreateWindowInfo_
 	//void* EventFunction;
 	void* EventOwner;
 
-	PXUIElement* UIElementReference;
+	PXGUIElement* UIElementReference;
 
 	PXColorRGBAI8 BackGroundColor;
 
@@ -1727,8 +1731,8 @@ PXGUIElementCreateInfoData;
 
 typedef struct PXGUIElementUpdateInfo_
 {
-	PXUIElement* UIElement;
-	PXUIElement* WindowReference;
+	PXGUIElement* UIElement;
+	PXGUIElement* WindowReference;
 	PXUIElementProperty Property;
 	PXGUIElementCreateInfoData Data;
 
@@ -1738,8 +1742,8 @@ PXGUIElementUpdateInfo;
 
 typedef struct PXGUIElementCreateInfo_
 {
-	PXUIElement* UIElementParent;
-	PXUIElement* UIElementWindow;
+	PXGUIElement* UIElementParent;
+	PXGUIElement* UIElementWindow;
 
 	PXInt32U FlagList;
 
@@ -1775,7 +1779,7 @@ typedef struct PXGUIElementCreateInfo_
 PXGUIElementCreateInfo;
 
 
-PXPublic void PXAPI PXUIElementPositionCalculcate(PXUIElement* const pxUIElement, PXUIElementPositionCalulcateInfo* const pxUIElementPositionCalulcateInfo);
+PXPublic void PXAPI PXUIElementPositionCalculcate(PXGUIElement* const pxGUIElement, PXUIElementPositionCalulcateInfo* const pxUIElementPositionCalulcateInfo);
 
 
 

@@ -387,7 +387,7 @@ PXWindowEventInputMouseButton;
 
 typedef struct PXWindowEventSelect_
 {
-	PXUIElement* UIElementSelected;
+	PXGUIElement* UIElementSelected;
 }
 PXWindowEventSelect;
 
@@ -463,6 +463,53 @@ typedef struct PXWindowPixelSystemInfo_
 PXWindowPixelSystemInfo;
 
 
+// Container where windows can be created in
+typedef struct PXDisplayScreen_
+{
+	char* Name;
+
+	int Width;
+	int Height;
+	int Cells;
+	int Planes;
+	int WidthMM;
+	int HeightMM;
+
+}
+PXDisplayScreen;
+
+
+typedef struct PXDisplay_
+{
+#if OSUnix
+	Display* DisplayHandle;
+#elif OSWindows
+	void* DisplayHandle;
+#endif
+
+#if OSUnix
+	Window WindowRootHandle;
+#elif OSWindows
+	int WindowRootHandle;
+#endif
+
+	char* Data;
+	char* Name;
+
+	int ProtocolVersion;
+	int ProtocolRevision;
+
+	char* ServerVendor;
+	int VendorRelease;
+
+	int ScreenDefaultID;
+	int ScreenListAmount;
+
+	PXDisplayScreen DisplayScreenList[8];
+}
+PXDisplay;
+
+
 // Manages library calls to the operating system window manager
 typedef struct PXGUISystem_
 {
@@ -472,13 +519,7 @@ typedef struct PXGUISystem_
 
 	PXResourceManager* ResourceManager;
 
-#if OSUnix
-	Display* DisplayHandle;
-	Window WindowRootHandle;
-#elif OSWindows
-	void* DisplayHandle;
-	int WindowRootHandle;
-#endif
+	PXDisplay DisplayCurrent;
 }
 PXGUISystem;
 
@@ -499,37 +540,73 @@ PXPublic PXActionResult PXAPI PXGUISystemRelease(PXGUISystem* const pxGUISystem)
 PXPublic void PXAPI PXWindowEventConsumer(PXGUISystem* const pxGUISystem, PXWindowEvent* const pxWindowEvent);
 
 #if OSUnix
-PXPrivate void PXWindowEventHandler(PXUIElement* const pxWindow, const XEvent* const xEventData);
+PXPrivate void PXWindowEventHandler(PXGUIElement* const pxWindow, const XEvent* const xEventData);
 #elif PXOSWindowsDestop
 PXPublic LRESULT CALLBACK PXWindowEventHandler(const HWND PXWindowsID, const UINT eventID, const WPARAM wParam, const LPARAM lParam);
 
-PXPrivate void PXAPI PXGUIElementChildListEnumerate(PXGUISystem* const pxGUISystem, PXUIElement* const parent, PXBool visible);
+PXPrivate void PXAPI PXGUIElementChildListEnumerate(PXGUISystem* const pxGUISystem, PXGUIElement* const parent, PXBool visible);
 PXPrivate BOOL CALLBACK PXWindowEnumChildProc(HWND hwnd, LPARAM lParam);
 #endif
 
 
-PXPublic PXThreadResult PXOSAPI PXWindowMessageLoop(PXUIElement* const pxUIElement);
+PXPublic PXThreadResult PXOSAPI PXWindowMessageLoop(PXGUIElement* const pxGUIElement);
 
 PXPublic PXBool PXAPI PXGUIElementIsEnabled(const PXWindowID pxUIElementID);
-PXPublic PXBool PXAPI PXGUIElementFind(const PXWindowID pxUIElementID, PXUIElement* const pxUIElement);
-PXPublic PXBool PXAPI PXGUIElementDelete(const PXWindowID pxUIElementID, PXUIElement* const pxUIElement);
+PXPublic PXBool PXAPI PXGUIElementFind(const PXWindowID pxUIElementID, PXGUIElement* const pxGUIElement);
+PXPublic PXActionResult PXAPI PXGUIElementDelete(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
 
-PXPublic PXBool PXAPI PXGUIElementTextSet(PXGUISystem* const pxGUISystem, PXUIElement* const pxUIElement, char* text);
 
 PXPublic PXBool PXAPI PXGUIElementValueFetch
 (
-	PXUIElement* const pxUIElementList, //
+	PXGUIElement* const pxUIElementList, //
 	const PXSize dataListAmount,
 	const PXUIElementProperty pxUIElementProperty,
 	void* const dataList // The given data
 );
 
 
+
+
+
+
+PXPublic PXActionResult PXAPI PXGUIElementTextSet(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, char* text);
+
+
+
+// Draw text into a given window
+// Example: Text for a button
+PXPublic PXActionResult PXAPI PXGUIElementDrawText(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXText* const pxText);
+PXPublic PXActionResult PXAPI PXGUIElementDrawTextA(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const char* const text, const PXSize textSize);
+PXPublic PXActionResult PXAPI PXGUIElementDrawTextW(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const wchar_t* const text, const PXSize textSize);
+PXPublic PXActionResult PXAPI PXGUIElementDrawPoint(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y);
+PXPublic PXActionResult PXAPI PXGUIElementDrawPoints(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y, const int width, const int height);
+PXPublic PXActionResult PXAPI PXGUIElementDrawLine(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x1, const int y1, const int x2, const int y2);
+PXPublic PXActionResult PXAPI PXGUIElementDrawLines(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y, const int width, const int height);
+PXPublic PXActionResult PXAPI PXGUIElementDrawRectangle(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y, const int width, const int height);
+PXPublic PXActionResult PXAPI PXGUIElementDrawRectangleRounded(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y, const int width, const int height);
+PXPublic PXActionResult PXAPI PXGUIElementMove(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y);
+PXPublic PXActionResult PXAPI PXGUIElementResize(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int width, const int height);
+PXPublic PXActionResult PXAPI PXGUIElementMoveAndResize(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y, const int width, const int height);
+
+
+
+
+
+
+#if OSUnix
+PXPublic PXActionResult PXAPI PXGUIElementErrorFromXSystem(const int xSysstemErrorID);
+#endif
+
+
+
+
+
+
 PXPublic PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResourceCreateInfo* const pxResourceCreateInfo, const PXSize amount);
 PXPublic PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIElementUpdateInfo* const pxGUIElementUpdateInfoList, const PXSize amount);
 PXPublic PXActionResult PXAPI PXGUIElementFetch(PXGUISystem* const pxGUISystem, PXGUIElementUpdateInfo* const pxGUIElementUpdateInfoList, const PXSize amount);
 
-PXPublic PXActionResult PXAPI PXGUIElementRelease(PXUIElement* const pxUIElement);
+PXPublic PXActionResult PXAPI PXGUIElementRelease(PXGUIElement* const pxGUIElement);
 
 
 PXPublic void PXAPI PXGUIElementhSizeRefresAll(PXGUISystem* const pxGUISystem);
@@ -539,7 +616,7 @@ PXPublic void PXAPI PXGUIElementhSizeRefresAll(PXGUISystem* const pxGUISystem);
 
 PXPublic PXActionResult PXAPI PXWindowPixelSystemSet(PXWindowPixelSystemInfo* const pxWindowPixelSystemInfo);
 
-PXPublic void PXAPI PXWindowUpdate(PXGUISystem* const pxGUISystem, PXUIElement* const pxUIElement);
+PXPublic void PXAPI PXWindowUpdate(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
 
 
 PXPublic PXProcessThreadID PXAPI PXWindowThreadProcessID(const PXWindowID windowID);

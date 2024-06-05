@@ -289,6 +289,20 @@ PXActionResult PXAPI PXErrorCurrent()
 
 
 #if OSWindows
+PXActionResult PXAPI PXWindowsErrorCurrent(const PXBool wasSuccessful)
+{
+	if(wasSuccessful)
+	{
+		return PXActionSuccessful;
+	}
+
+	const DWORD lastErrorID = GetLastError();
+	const PXActionResult actionResult = PXErrorCodeFromID(lastErrorID);
+
+	return actionResult;
+}
+
+
 PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult)
 {
 	switch (handleResult)

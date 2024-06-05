@@ -57,36 +57,36 @@ void PXAPI PXTextureConstruct(PXTexture2D* const texture)
 
 /*
 
-PXActionResult PXAPI PXGraphicUIElementCreate(PXGraphic* const pxGraphic, PXUIElement** const pxUIElement, const PXSize amount, PXUIElement* const pxUIElementParrent)
+PXActionResult PXAPI PXGraphicUIElementCreate(PXGraphic* const pxGraphic, PXGUIElement** const pxGUIElement, const PXSize amount, PXGUIElement* const pxUIElementParrent)
 {
 
 
-    //PXClear(PXUIElement, *pxUIElement);
+    //PXClear(PXGUIElement, *pxGUIElement);
 
 
 
-    //*pxUIElement->Type = pxUIElementType;
-    //*pxUIElement->TextureReference = PXNull;
-    //*pxUIElement->ShaderReference = PXNull;
+    //*pxGUIElement->Type = pxUIElementType;
+    //*pxGUIElement->TextureReference = PXNull;
+    //*pxGUIElement->ShaderReference = PXNull;
 
-    //*pxUIElement->NameTextScale = 1;
+    //*pxGUIElement->NameTextScale = 1;
 
-    PXUIElementColorSet4F(*pxUIElement, 1, 1, 1, 1);
+    PXUIElementColorSet4F(*pxGUIElement, 1, 1, 1, 1);
 
-   // PXTextCopyA("[N/A]", 5, pxUIElement->Name, 32);
+   // PXTextCopyA("[N/A]", 5, pxGUIElement->Name, 32);
 
     if (pxUIElementParrent)
     {
         // Impossible if already has child
 
-        (*pxUIElement)->Parent = pxUIElementParrent; // "It's alway my parent"
+        (*pxGUIElement)->Parent = pxUIElementParrent; // "It's alway my parent"
 
         const PXBool alreadyHasAFirstBorn = pxUIElementParrent->Child != PXNull;
 
         if (alreadyHasAFirstBorn)
         {
             // Add as sibling for firstborn
-            PXUIElement* targetSibling = (*pxUIElement)->Parent->Child;
+            PXGUIElement* targetSibling = (*pxGUIElement)->Parent->Child;
 
             // Search for last sibling to be
             while (targetSibling->Sibling != PXNull)
@@ -94,31 +94,31 @@ PXActionResult PXAPI PXGraphicUIElementCreate(PXGraphic* const pxGraphic, PXUIEl
                 targetSibling = targetSibling->Sibling;
             }
 
-            targetSibling->Sibling = (*pxUIElement); // Add sibling
+            targetSibling->Sibling = (*pxGUIElement); // Add sibling
         }
         else
         {
             // Add as child
-            pxUIElementParrent->Child = (*pxUIElement);
+            pxUIElementParrent->Child = (*pxGUIElement);
         }    
     }
     else
     { 
         if (pxGraphic->UIElementBase.Child) // if Has child, everyone will be sibling from child
         {
-            PXUIElement* insertionNode = pxGraphic->UIElementBase.Child;
+            PXGUIElement* insertionNode = pxGraphic->UIElementBase.Child;
 
             while (insertionNode->Sibling != PXNull)
             {
                 insertionNode = insertionNode->Sibling;
             }
 
-            insertionNode->Sibling = (*pxUIElement); // I am your sibbling
+            insertionNode->Sibling = (*pxGUIElement); // I am your sibbling
         }
         else
         {
-            (*pxUIElement)->Parent = &pxGraphic->UIElementBase; // You are my parent now
-            pxGraphic->UIElementBase.Child = (*pxUIElement); // As I am your child
+            (*pxGUIElement)->Parent = &pxGraphic->UIElementBase; // You are my parent now
+            pxGraphic->UIElementBase.Child = (*pxGUIElement); // As I am your child
         }
     }
 
@@ -138,7 +138,7 @@ void PXAPI PXRenderableConstruct(PXRenderable* const pxRenderable)
     pxRenderable->IBO = -1;
 }
 
-void PXAPI PXUIElementColorSet4F(PXUIElement* const pxUIElement, const float red, const float green, const float blue, const float alpha)
+void PXAPI PXUIElementColorSet4F(PXGUIElement* const pxGUIElement, const float red, const float green, const float blue, const float alpha)
 {
     PXColorRGBAF* color = PXNull;
     PXNewZerod(PXColorRGBAF, &color);
@@ -148,21 +148,21 @@ void PXAPI PXUIElementColorSet4F(PXUIElement* const pxUIElement, const float red
     color->Blue = blue;
     color->Alpha = alpha;
 
-    pxUIElement->ColorTintReference = color;
+    pxGUIElement->ColorTintReference = color;
 }
 
-void PXAPI PXUIElementSizeSet(PXUIElement* const pxUIElement, const float x, const float y, const float width, const float height, const PXInt32U  pxUIElementPositionMode)
+void PXAPI PXUIElementSizeSet(PXGUIElement* const pxGUIElement, const float x, const float y, const float width, const float height, const PXInt32U  pxUIElementPositionMode)
 {
-    //pxUIElement->X = x;
-    //pxUIElement->Y = y;
-    // pxUIElement->Width = width;
-   // pxUIElement->Height = height;
+    //pxGUIElement->X = x;
+    //pxGUIElement->Y = y;
+    // pxGUIElement->Width = width;
+   // pxGUIElement->Height = height;
 
-   // pxUIElement->AncerFlagList = pxUIElementPositionMode;
+   // pxGUIElement->AncerFlagList = pxUIElementPositionMode;
 
-    //PXRectangleOffsetSet(&pxUIElement->Margin, x, y, width, height);
+    //PXRectangleOffsetSet(&pxGUIElement->Margin, x, y, width, height);
 
-   // pxUIElement->PositionMode = pxUIElementPositionMode;
+   // pxGUIElement->PositionMode = pxUIElementPositionMode;
 }
 
 

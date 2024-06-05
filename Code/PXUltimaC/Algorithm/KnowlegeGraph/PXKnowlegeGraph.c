@@ -147,7 +147,7 @@ PXActionResult PXAPI PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph* const pxKnowle
     // Insert all siblings in a cictular pattern?
 
     // for each sibling, add their Siblings
-    PXUIElement pxWindow;
+    PXGUIElement pxWindow;
     //PXWindowConstruct(&pxWindow);
     //PXWindowCreateA(&pxWindow, 50,50, 1000, 1000, "==", PXTrue);
     //PXWindowCreateHidden(&pxWindow, imageWidth, imageHeight, PXTrue);

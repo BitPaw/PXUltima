@@ -581,7 +581,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
 
     // User input
     {
-        PXUIElement* pxWindow = pxEngine->Window;
+        PXGUIElement* pxWindow = pxEngine->Window;
         PXKeyBoard* keyboard = &pxEngine->KeyBoardCurrentInput;
         PXMouse* mouse = &pxEngine->MouseCurrentInput;
 
@@ -2171,7 +2171,7 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXEngineRe
                         ty2 = 1;
                     }
 
-                    //pxUIElement->TextInfo.Scale = 0.35;
+                    //pxGUIElement->TextInfo.Scale = 0.35;
 
                     float sclaingWidth = (9.0f / 16.0f) * pxEngineText->FontScaling * pxEngineText->Scaling.X;
                     float scalingHeight = pxEngineText->Scaling.Y;
@@ -2217,10 +2217,10 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXEngineRe
                     pxGraphic->DrawColorRGBAF // Text color
                     (
                         pxGraphic->EventOwner,
-                        pxUIElement->ColorTintReference->Red,
-                        pxUIElement->ColorTintReference->Green,
-                        pxUIElement->ColorTintReference->Blue,
-                        pxUIElement->ColorTintReference->Alpha
+                        pxGUIElement->ColorTintReference->Red,
+                        pxGUIElement->ColorTintReference->Green,
+                        pxGUIElement->ColorTintReference->Blue,
+                        pxGUIElement->ColorTintReference->Alpha
                     );
 #endif
 

@@ -145,7 +145,7 @@ void PXAPI PXResourceManagerInit(PXResourceManager* const pxResourceManager)
     PXDictionaryConstruct(&pxResourceManager->ShaderProgramLookup, sizeof(PXInt32U), sizeof(PXShaderProgram), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&pxResourceManager->SkyBoxLookUp, sizeof(PXInt32U), sizeof(PXSkyBox), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&pxResourceManager->ImageLookUp, sizeof(PXInt32U), sizeof(PXImage), PXDictionaryValueLocalityExternalReference);
-    PXDictionaryConstruct(&pxResourceManager->GUIElementLookup, sizeof(PXInt32U), sizeof(PXUIElement), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&pxResourceManager->GUIElementLookup, sizeof(PXInt32U), sizeof(PXGUIElement), PXDictionaryValueLocalityExternalReference);
 }
 
 void PXAPI PXResourceManagerRelease(PXResourceManager* const pxResourceManager)
@@ -1130,18 +1130,18 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
             case PXResourceTypeGUIElement:
             {
                 PXGUIElementCreateInfo* const pxGUIElementCreateInfo = &pxResourceCreateInfo->UIElement;
-                PXUIElement* pxUIElement = *(PXUIElement**)pxResourceCreateInfo->ObjectReference;
+                PXGUIElement* pxGUIElement = *(PXGUIElement**)pxResourceCreateInfo->ObjectReference;
 
-                if(!pxUIElement)
+                if(!pxGUIElement)
                 {
-                    PXNewZerod(PXUIElement, &pxUIElement);
-                    *pxResourceCreateInfo->ObjectReference = pxUIElement;
+                    PXNewZerod(PXGUIElement, &pxGUIElement);
+                    *pxResourceCreateInfo->ObjectReference = pxGUIElement;
                 }
 
-                pxUIElement->Info.ID = PXResourceManagerGenerateUniqeID(pxResourceManager);
-                PXDictionaryAdd(&pxResourceManager->GUIElementLookup, &pxUIElement->Info.ID, pxUIElement);
+                pxGUIElement->Info.ID = PXResourceManagerGenerateUniqeID(pxResourceManager);
+                PXDictionaryAdd(&pxResourceManager->GUIElementLookup, &pxGUIElement->Info.ID, pxGUIElement);
 
-                pxUIElement->Info.Flags |= PXEngineResourceInfoEnabled;
+                pxGUIElement->Info.Flags |= PXEngineResourceInfoEnabled;
 
                 break;
             }
@@ -1341,9 +1341,9 @@ const char* PXAPI PXUIElementTypeToString(const PXUIElementType pxUIElementType)
     }
 }
 
-void PXAPI PXUIElementPositionCalculcate(PXUIElement* const pxUIElement, PXUIElementPositionCalulcateInfo* const pxUIElementPositionCalulcateInfo)
+void PXAPI PXUIElementPositionCalculcate(PXGUIElement* const pxGUIElement, PXUIElementPositionCalulcateInfo* const pxUIElementPositionCalulcateInfo)
 {
-    for(PXUIElement* pxUIElementParent = pxUIElement->Parent; pxUIElementParent; pxUIElementParent = pxUIElementParent->Parent)
+    for(PXGUIElement* pxUIElementParent = pxGUIElement->Parent; pxUIElementParent; pxUIElementParent = pxUIElementParent->Parent)
     {
         pxUIElementPositionCalulcateInfo->MarginLeft += pxUIElementParent->Position.MarginLeft;
         pxUIElementPositionCalulcateInfo->MarginTop += pxUIElementParent->Position.MarginTop;
@@ -1351,10 +1351,10 @@ void PXAPI PXUIElementPositionCalculcate(PXUIElement* const pxUIElement, PXUIEle
         pxUIElementPositionCalulcateInfo->MarginBottom += pxUIElementParent->Position.MarginBottom;
     }
 
-    pxUIElementPositionCalulcateInfo->MarginLeft += pxUIElement->Position.MarginLeft;
-    pxUIElementPositionCalulcateInfo->MarginTop += pxUIElement->Position.MarginTop;
-    pxUIElementPositionCalulcateInfo->MarginRight += pxUIElement->Position.MarginRight;
-    pxUIElementPositionCalulcateInfo->MarginBottom += pxUIElement->Position.MarginBottom;
+    pxUIElementPositionCalulcateInfo->MarginLeft += pxGUIElement->Position.MarginLeft;
+    pxUIElementPositionCalulcateInfo->MarginTop += pxGUIElement->Position.MarginTop;
+    pxUIElementPositionCalulcateInfo->MarginRight += pxGUIElement->Position.MarginRight;
+    pxUIElementPositionCalulcateInfo->MarginBottom += pxGUIElement->Position.MarginBottom;
 
     // Normalizied space for OpenGL
     pxUIElementPositionCalulcateInfo->AA = -1 + pxUIElementPositionCalulcateInfo->MarginLeft; 
@@ -1397,18 +1397,18 @@ void PXAPI PXUIElementPositionCalculcate(PXUIElement* const pxUIElement, PXUIEle
     // XYWH for WindowsAPI stuff0
 
 
-    if(pxUIElement->Position.FlagListKeep & PXUIElementKeepWidth)
+    if(pxGUIElement->Position.FlagListKeep & PXUIElementKeepWidth)
     {
-        pxUIElementPositionCalulcateInfo->Width = pxUIElement->Position.Width;
+        pxUIElementPositionCalulcateInfo->Width = pxGUIElement->Position.Width;
     }
     else
     {
         pxUIElementPositionCalulcateInfo->Width = mathWithScaling;
     }
 
-    if(pxUIElement->Position.FlagListKeep & PXUIElementKeepHeight)
+    if(pxGUIElement->Position.FlagListKeep & PXUIElementKeepHeight)
     {
-        pxUIElementPositionCalulcateInfo->Height = pxUIElement->Position.Height;
+        pxUIElementPositionCalulcateInfo->Height = pxGUIElement->Position.Height;
     }
     else
     {
@@ -1417,7 +1417,7 @@ void PXAPI PXUIElementPositionCalculcate(PXUIElement* const pxUIElement, PXUIEle
 
  
 
-    switch(pxUIElement->Position.FlagListKeep & PXUIElementAllignFlags)
+    switch(pxGUIElement->Position.FlagListKeep & PXUIElementAllignFlags)
     {
         default:
         case PXUIElementAllignLeft:

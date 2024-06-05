@@ -54,7 +54,7 @@ PXGraphicInitializeMode;
 typedef struct PXGraphicInitializeInfo_
 {
 	PXGraphicInitializeMode Mode;
-	PXUIElement* WindowReference;
+	PXGUIElement* WindowReference;
 
 #if OSUnix
 
@@ -219,7 +219,7 @@ typedef struct PXGraphic_
 	//-------------------
 	// References
 	//-------------------
-	PXUIElement* WindowReference;
+	PXGUIElement* WindowReference;
 	void* EventOwner;
 	//-------------------
 
@@ -336,11 +336,11 @@ PXPublic PXActionResult PXAPI PXGraphicHotSwap(PXGraphic* const pxGraphic, const
 
 
 
-typedef void (PXAPI* PXGraphicUIElementTrigger)(void* sender, PXUIElement* const pxUIElement);
+typedef void (PXAPI* PXGraphicUIElementTrigger)(void* sender, PXGUIElement* const pxGUIElement);
 
 //-------------------------------------------------------------------------
-PXPublic void PXAPI PXUIElementColorSet4F(PXUIElement* const pxUIElement, const float red, const float green, const float blue, const float alpha);
-PXPublic void PXAPI PXUIElementSizeSet(PXUIElement* const pxUIElement, const float x, const float y, const float width, const float height, const PXInt32U pxUIElementPositionMode);
+PXPublic void PXAPI PXUIElementColorSet4F(PXGUIElement* const pxGUIElement, const float red, const float green, const float blue, const float alpha);
+PXPublic void PXAPI PXUIElementSizeSet(PXGUIElement* const pxGUIElement, const float x, const float y, const float width, const float height, const PXInt32U pxUIElementPositionMode);
 
 //-------------------------------------------------------------------------
 
