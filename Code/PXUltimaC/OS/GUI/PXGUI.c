@@ -1710,10 +1710,126 @@ PXActionResult PXAPI PXGUISystemInitialize(PXGUISystem* const pxGUISystem)
 
     // Make this thread safe
     {
-        const int result = XInitThreads();
+	// This is only needed if we access the X-System with different threads
+	// reason is timing collisions where zwo X-Calls are handled at the same time
+	// This will leed to problems.
+	// On systems where threads are not supported, this will always return NULL
+        const int result = XInitThreads(); 
     }
 
-    // XCloseDisplay();
+   	// open a connection to the x-server. NULL here uses the default display.
+        pxGUISystem->DisplayHandle = XOpenDisplay(PXNull);   // X11/Xlib.h,  Create Window 
+        const PXBool successful = PXNull != pxGUISystem->DisplayHandle;
+
+        if(!successful)
+                    {
+#if PXLogEnable
+                        PXLogPrint
+                        (
+                            PXLoggingError,
+                            "GUI",
+                            "X-System",
+                            "Failed to open X server. XOpenDisplay() failed."
+                        );
+#endif
+
+                        return PXActionFailedInitialization; // printf("\n\tcannot connect to X server\n\n");
+                    }
+
+		// Get default screen
+	   int screen_num = DefaultScreen(disp);
+    int width = XDisplayWidth(pxGUISystem->DisplayHandle, screen_num);
+    int height = XDisplayHeight(pxGUISystem->DisplayHandle, screen_num);
+	
+		// Get amount of screens
+		pxGUISystem->ScreenListAmount = ScreenCount(pxGUISystem->DisplayHandle) 
+		
+
+
+
+		// Fetch additional data of your display
+			const int aaa = XDisplayWidth(pxGUISystem->DisplayHandle);
+			const int bbb = XDisplayHeight(pxGUISystem->DisplayHandle)
+			const int ccc = XDisplayCells(pxGUISystem->DisplayHandle);
+			const int ddd = XDisplayPlanes(pxGUISystem->DisplayHandle);
+			const int eee = XDisplayWidthMM(pxGUISystem->DisplayHandle);
+			const int fff = XDisplayHeightMM(pxGUISystem->DisplayHandle);
+
+			// Default values
+			Colormap XDefaultColormap(Display *display, int screen_number);
+			int XDefaultDepth(Display *display, int screen_number);
+			int *XListDepths(Display *display, int screen_number, int *count_return);
+			GC XDefaultGC(Display *display, int screen_number);
+			Visual *XDefaultVisual(Display *display, int screen_number);
+			char *XDisplayString(Display *display);
+			int XProtocolVersion(Display *display); // for X11, it is 11
+			int XProtocolRevision(Display *display);
+
+			int XScreenCount(Display *display); // Get screens?
+			char *XServerVendor(Display *display);
+			int XVendorRelease(Display *display);
+
+			char *XDisplayName(char *string); // if NULL, this is the atempted name what XOpen would use
+
+
+
+			// UI Element needs function to override drawing by OS
+			// Linux does not even have drawing 
+			PXGUIElementDrawFunction(GUISystem, PXGUIElement);
+
+			
+			PXGUIElementDrawRectangleFill();
+			
+
+			
+			// Drawing routines?
+		
+
+			#if OSUnix
+				const int resultID = XFillRectangles(Display *display, Drawable d, GC gc, XRectangle *rectangles, int nrectangles);
+			#elif OSWindows
+				const int resultID = FillRect();
+			#endif
+				
+
+Window XCreateSimpleWindow(Display *display, Window parent, int x, int y, unsigned int width, unsigned int height, unsigned int border_width, unsigned long border, unsigned long background);
+
+			
+			XGetErrorText();
+			XGetErrorDatabaseText();
+			
+			XSetIOErrorHandler():
+			int(int(*handler)(Display *));
+				
+			
+                    pxGUISystem->WindowRootHandle = XDefaultRootWindow(pxGUISystem->DisplayHandle); // Make windows root
+
+
+#if PXLogEnable
+                    PXLogPrint
+                    (
+                        PXLoggingInfo,
+                        "X-System",
+                        "Server-Connect",
+                        "Name:%s (0x%p)",
+                        pxGUISystem->DisplayHandle->display_name,
+                        pxGUISystem->DisplayHandle
+                    );
+#endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
 
 #elif OSWindows
 
@@ -1729,6 +1845,14 @@ PXActionResult PXAPI PXGUISystemInitialize(PXGUISystem* const pxGUISystem)
 
 PXActionResult PXAPI PXGUISystemRelease(PXGUISystem* const pxGUISystem)
 {
+#if OSUnix
+	const int resultID = XCloseDisplay(Display *display);
+#elif OSWindows
+	
+#else
+	return PXnursupported;
+#endif
+	
     PXGUISystemGlobalReference = PXNull;
 
     return PXActionSuccessful;
@@ -1906,95 +2030,8 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                 // Create display
                 {
 
-			// open a connection to the x-server. NULL here uses the default display.
-                    pxGUISystem->DisplayHandle = XOpenDisplay(PXNull);   // X11/Xlib.h,  Create Window 
-                    const PXBool successful = PXNull != pxGUISystem->DisplayHandle;
-
-                    if(!successful)
-                    {
-#if PXLogEnable
-                        PXLogPrint
-                        (
-                            PXLoggingError,
-                            "X-System",
-                            "Server-Connect",
-                            "Failed to open X server. XOpenDisplay() failed."
-                        );
-#endif
-
-                        return PXActionFailedInitialization; // printf("\n\tcannot connect to X server\n\n");
-                    }
-
-
-		// Fetch additional data of your display
-			XDisplayWidth(pxGUISystem->DisplayHandle);
-			XDisplayHeight(pxGUISystem->DisplayHandle)
-			XDisplayCells(pxGUISystem->DisplayHandle);
-			XDisplayPlanes(pxGUISystem->DisplayHandle);
-			XDisplayWidthMM(pxGUISystem->DisplayHandle);
-			XDisplayHeightMM(pxGUISystem->DisplayHandle);
-
-			// Default values
-			Colormap XDefaultColormap(Display *display, int screen_number);
-			int XDefaultDepth(Display *display, int screen_number);
-			int *XListDepths(Display *display, int screen_number, int *count_return);
-			GC XDefaultGC(Display *display, int screen_number);
-			Visual *XDefaultVisual(Display *display, int screen_number);
-			char *XDisplayString(Display *display);
-			int XProtocolVersion(Display *display); // for X11, it is 11
-			int XProtocolRevision(Display *display);
-
-			int XScreenCount(Display *display); // Get screens?
-			char *XServerVendor(Display *display);
-			int XVendorRelease(Display *display);
-
-			char *XDisplayName(char *string); // if NULL, this is the atempted name what XOpen would use
-
-
-
-			// UI Element needs function to override drawing by OS
-			// Linux does not even have drawing 
-			PXGUIElementDrawFunction(GUISystem, PXGUIElement);
-
-			
-			PXGUIElementDrawRectangleFill();
-			
-
-			
-			// Drawing routines?
 		
 
-			#if OSUnix
-				const int resultID = XFillRectangles(Display *display, Drawable d, GC gc, XRectangle *rectangles, int nrectangles);
-			#elif OSWindows
-				const int resultID = FillRect();
-			#endif
-				
-
-Window XCreateSimpleWindow(Display *display, Window parent, int x, int y, unsigned int width, unsigned int height, unsigned int border_width, unsigned long border, unsigned long background);
-
-			
-			XGetErrorText();
-			XGetErrorDatabaseText();
-			
-			XSetIOErrorHandler():
-			int(int(*handler)(Display *));
-				
-			
-                    pxGUISystem->WindowRootHandle = XDefaultRootWindow(pxGUISystem->DisplayHandle); // Make windows root
-
-
-#if PXLogEnable
-                    PXLogPrint
-                    (
-                        PXLoggingInfo,
-                        "X-System",
-                        "Server-Connect",
-                        "Name:%s (0x%p)",
-                        pxGUISystem->DisplayHandle->display_name,
-                        pxGUISystem->DisplayHandle
-                    );
-#endif
                 }
 
                 const int attributeList[] =
