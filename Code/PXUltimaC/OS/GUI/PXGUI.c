@@ -658,7 +658,7 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
             break;
         case WM_CREATE: // Gets called inside the "CreateWindow" function.
         {
-            // Do nothíng here, as it's too soon to regard the window as 'created'
+            // Do nothÃ­ng here, as it's too soon to regard the window as 'created'
 
             return DefWindowProc(windowID, eventID, wParam, lParam);
         }
@@ -1290,13 +1290,13 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
 
             // TODO: on system 32 Bit error
             /*
-            buttonInfo.Repeat = (characterInfo & 0b00000000000000001111111111111111); // Die Wiederholungsanzahl für die aktuelle Meldung.Der Wert gibt an, wie oft die Tastatureingabe automatisch angezeigt wird, wenn der Benutzer den Schlüssel hält.Die Wiederholungsanzahl ist immer 1 für eine WM _ KEYUP - Nachricht.
-            buttonInfo.ScanCode = (characterInfo & 0b00000000111111110000000000000000) >> 16; // Der Scancode.Der Wert hängt vom OEM ab.
-            buttonInfo.SpecialKey = (characterInfo & 0b00000001000000000000000000000000) >> 24; // Gibt an, ob es sich bei der Taste um eine erweiterte Taste handelt, z.B.die rechte ALT - und STRG - Taste, die auf einer erweiterten Tastatur mit 101 oder 102 Tasten angezeigt werden.Der Wert ist 1, wenn es sich um einen erweiterten Schlüssel handelt.andernfalls ist es 0.
+            buttonInfo.Repeat = (characterInfo & 0b00000000000000001111111111111111); // Die Wiederholungsanzahl fÃ¼r die aktuelle Meldung.Der Wert gibt an, wie oft die Tastatureingabe automatisch angezeigt wird, wenn der Benutzer den SchlÃ¼ssel hÃ¤lt.Die Wiederholungsanzahl ist immer 1 fÃ¼r eine WM _ KEYUP - Nachricht.
+            buttonInfo.ScanCode = (characterInfo & 0b00000000111111110000000000000000) >> 16; // Der Scancode.Der Wert hÃ¤ngt vom OEM ab.
+            buttonInfo.SpecialKey = (characterInfo & 0b00000001000000000000000000000000) >> 24; // Gibt an, ob es sich bei der Taste um eine erweiterte Taste handelt, z.B.die rechte ALT - und STRG - Taste, die auf einer erweiterten Tastatur mit 101 oder 102 Tasten angezeigt werden.Der Wert ist 1, wenn es sich um einen erweiterten SchlÃ¼ssel handelt.andernfalls ist es 0.
             //buttonInfo.ReservedDontUse = (characterInfo & 0b00011110000000000000000000000000) >> 25; //	Reserviert; nicht verwenden.
-            buttonInfo.KontextCode = (characterInfo & 0b00100000000000000000000000000000) >> 29; // Der Kontextcode.Der Wert ist für eine WM _ KEYUP - Nachricht immer 0.
-            buttonInfo.PreState = (characterInfo & 0b01000000000000000000000000000000) >> 30; // Der vorherige Schlüsselzustand.Der Wert ist immer 1 für eine WM _ KEYUP - Nachricht.
-            buttonInfo.GapState = (characterInfo & 0b10000000000000000000000000000000) >> 31; // Der Übergangszustand.Der Wert ist immer 1 für eine WM _ KEYUP - Nachricht.
+            buttonInfo.KontextCode = (characterInfo & 0b00100000000000000000000000000000) >> 29; // Der Kontextcode.Der Wert ist fÃ¼r eine WM _ KEYUP - Nachricht immer 0.
+            buttonInfo.PreState = (characterInfo & 0b01000000000000000000000000000000) >> 30; // Der vorherige SchlÃ¼sselzustand.Der Wert ist immer 1 fÃ¼r eine WM _ KEYUP - Nachricht.
+            buttonInfo.GapState = (characterInfo & 0b10000000000000000000000000000000) >> 31; // Der Ãœbergangszustand.Der Wert ist immer 1 fÃ¼r eine WM _ KEYUP - Nachricht.
             */
 
           //  PXWindowTriggerOnKeyBoardKeyEvent(window, &buttonInfo);
@@ -1889,7 +1889,9 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
                 // Create display
                 {
-                    pxGUISystem->DisplayHandle = XOpenDisplay(PXNull);   // X11/Xlib.h Create Window
+
+			// open a connection to the x-server. NULL here uses the default display.
+                    pxGUISystem->DisplayHandle = XOpenDisplay(PXNull);   // X11/Xlib.h,  Create Window 
                     const PXBool successful = PXNull != pxGUISystem->DisplayHandle;
 
                     if(!successful)
@@ -1907,7 +1909,61 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                         return PXActionFailedInitialization; // printf("\n\tcannot connect to X server\n\n");
                     }
 
-                    pxGUISystem->WindowRootHandle = DefaultRootWindow(pxGUISystem->DisplayHandle); // Make windows root
+
+		// Fetch additional data of your display
+			XDisplayWidth(pxGUISystem->DisplayHandle);
+			XDisplayHeight(pxGUISystem->DisplayHandle)
+			XDisplayCells(pxGUISystem->DisplayHandle);
+			XDisplayPlanes(pxGUISystem->DisplayHandle);
+			XDisplayWidthMM(pxGUISystem->DisplayHandle);
+			XDisplayHeightMM(pxGUISystem->DisplayHandle);
+
+			// Default values
+			Colormap XDefaultColormap(Display *display, int screen_number);
+			int XDefaultDepth(Display *display, int screen_number);
+			int *XListDepths(Display *display, int screen_number, int *count_return);
+			GC XDefaultGC(Display *display, int screen_number);
+			Visual *XDefaultVisual(Display *display, int screen_number);
+			char *XDisplayString(Display *display);
+			int XProtocolVersion(Display *display); // for X11, it is 11
+			int XProtocolRevision(Display *display);
+
+			int XScreenCount(Display *display); // Get screens?
+			char *XServerVendor(Display *display);
+			int XVendorRelease(Display *display);
+
+			char *XDisplayName(char *string); // if NULL, this is the atempted name what XOpen would use
+
+
+
+			// UI Element needs function to override drawing by OS
+			// Linux does not even have drawing 
+			PXGUIElementDrawFunction(GUISystem, PXGUIElement);
+
+			
+			PXGUIElementDrawRectangleFill();
+			
+
+			
+			// Drawing routines?
+		
+
+			#if OSUnix
+				const int resultID = XFillRectangles(Display *display, Drawable d, GC gc, XRectangle *rectangles, int nrectangles);
+			#elif OSWindows
+				const int resultID = FillRect();
+			#endif
+				
+
+			
+			XGetErrorText();
+			XGetErrorDatabaseText();
+			
+			XSetIOErrorHandler():
+			int(int(*handler)(Display *));
+				
+			
+                    pxGUISystem->WindowRootHandle = XDefaultRootWindow(pxGUISystem->DisplayHandle); // Make windows root
 
 
 #if PXLogEnable
@@ -4519,6 +4575,64 @@ PXBool PXAPI PXWindowIsInFocus(const PXWindowID pxWindowID)
     return isInFocus;
 #endif
 }
+
+
+PXBool PXAPI PXWindowMove(PXGUISystem* const pxGUISystem, ..., const int x, const int y)
+{
+#if OSUnix
+
+    XMoveWindow(Display *display, Window w, int x, int y);
+	
+    return PXFalse;
+#elif PXOSWindowsDestop
+    WindowMove(); // Windows 2000, User32.dll
+	
+    return PXFalse;
+#endif
+}
+
+PXBool PXAPI PXWindowResize(PXGUISystem* const pxGUISystem, ..., const int width, const int height)
+{
+#if OSUnix
+
+	XResizeWindow(Display *display, Window w, width, height);
+	
+    return PXFalse;
+#elif PXOSWindowsDestop
+    WindowMove(); // Windows 2000, User32.dll
+	
+    return PXFalse;
+#endif
+}
+
+
+PXBool PXAPI PXWindowMoveResize(PXGUISystem* const pxGUISystem, ..., const int x, const int y, const int width, const int height)
+{
+#if OSUnix
+	const int resultID = XMoveResizeWindow(Display *display, Window w, int x, int y, unsigned int width, unsigned int height);
+	const PXActionResult result = PXGUIElementErrorFromXSystem(resultID);	
+    	return PXFalse;
+#elif PXOSWindowsDestop
+	const PXBool success = WindowMove( [in] HWND hWnd,  X,  Y,  [in] int  nWidth,  [in] int  nHeight,  [in] BOOL bRepaint); // Windows 2000, User32.dll, winuser.h
+	
+    return PXFalse;
+#endif
+}
+
+PXActionResult PXGUIElementErrorFromXSystem(const int xSysstemErrorID)
+{
+	switch(xSysstemErrorID)
+	{
+		case BadValue: return PXInvalid; // input is not valid
+		case BadWindow: return PXInvalid; // object id invalid
+
+ // BadAlloc, BadColor, BadCursor, BadMatch, BadPixmap, BadValue, and BadWindow 
+		
+		default:
+			return PXInvalid;
+	}
+}
+
 
 PXInt32U PXAPI PXWindowCursorIconToID(const PXCursorIcon cursorIcon)
 {
