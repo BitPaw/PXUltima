@@ -11,12 +11,15 @@
 
 #if OSUnix
 
+// Xlib / X-System
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/cursorfont.h>
 #include <X11/extensions/XInput.h>
 #include <X11/extensions/XInput2.h>
 #include <X11/Xmd.h>
+
+#include <wayland-client.h>
 
 #define DefautPositionX 00000000000000
 #define DefautPositionY 00000000000000
@@ -1722,6 +1725,12 @@ PXActionResult PXAPI PXGUISystemInitialize(PXGUISystem* const pxGUISystem)
     {
         PXDisplay* const pxDisplay = &pxGUISystem->DisplayCurrent;
 
+
+	   /*
+        struct wl_display *display = wl_display_connect(NULL);
+    
+    */ 
+
         // open a connection to the x-server. NULL here uses the default display.
         pxDisplay->DisplayHandle = XOpenDisplay(PXNull);   // X11/Xlib.h,  Create Window
         const PXBool successful = PXNull != pxDisplay->DisplayHandle;
@@ -1885,17 +1894,54 @@ Window XCreateSimpleWindow(Display *display, Window parent, int x, int y, unsign
 
 PXActionResult PXAPI PXGUISystemRelease(PXGUISystem* const pxGUISystem)
 {
+	PXActionResult result = PXInvalid;
 #if OSUnix
 	const int resultID = XCloseDisplay(pxGUISystem->DisplayCurrent.DisplayHandle);
+	result = PXnotImplemeneted;
 #elif OSWindows
-
+	// TODO: ???
+	result = PXnotImplemeneted;
 #else
-	return PXnursupported;
+	result = PXnursupported;
 #endif
 
     PXGUISystemGlobalReference = PXNull;
 
     return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXGUIElementStyleUpdate(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement)
+{
+	PXActionResult result = PXInvalid;
+	
+#if OSUnix
+	result = xxxxxxxxxx;	
+#elif OSWindows
+    	SetWindowLongPtr(windowHandle, GWL_STYLE, WS_SYSMENU); //3d argument=style
+	SetWindowPos(windowHandle, HWND_TOPMOST, 100, 100, Width, Height, SWP_SHOWWINDOW);
+#else
+	result = Notsupport;
+#endif
+
+
+	return result;
+}
+
+// Use for a seperate window that needs to be merged into a main one.
+// Given a spesific window we can try to absorb the contens and underlieing elemetns and move them into your own space.
+// Objects shall not be created or destroyed, simply the ownership of those objects should be transphered. (can we do that?)
+PXActionResult PXAPI PXGUIElementAbsorb(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
+{
+	// Create new window resource in target window? or Just take ownership and update the window?
+	// Take ownership of all elements
+	
+	return Notimplemented;
+}
+
+// Use for draging a window outside it own borders to spawn a new one. 
+PXActionResult PXAPI PXGUIElementEmit(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
+{
+	return Notimplemented;
 }
 
 PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResourceCreateInfo* const pxResourceCreateInfo, const PXSize amount)
@@ -2067,6 +2113,8 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
                 pxGUIElementCreateWindowInfo->UIElementReference = pxGUIElement;
 
+		// Get default visuals??
+		    
                 const int attributeList[] =
                 {
                     GLX_RGBA,
@@ -2109,6 +2157,8 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 #endif
 
                 }
+
+		    // default color map?
 
                 // Create colormapping
                 Colormap colormap = XCreateColormap
