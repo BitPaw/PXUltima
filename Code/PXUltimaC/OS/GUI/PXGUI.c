@@ -4869,6 +4869,140 @@ PXActionResult PXAPI PXGUIElementMoveAndResize(PXGUISystem* const pxGUISystem, P
 #endif
 }
 
+PXActionResult PXAPI PXGUIFontListFetch(PXGUISystem* const pxGUISystem, PXSize* const amount)
+{
+
+#if OSUnix
+
+	int fontNameListSizeMax = 0;
+	int fontNameListSizeCurrnet = 0;
+	char** fontNameList = XListFonts(Display *display, PXNull, fontNameListSizeMax, &fontNameListSizeCurrnet);
+
+	// Can also have additional info
+	char **XListFontsWithInfo(Display *display, char *pattern, int maxnames, int *count_return, XFontStruct
+	
+#elif OSWindows
+
+	// Microsoft says: EnumFontFamiliesA() is deprecated and is only provided for compatibility with 16-bit versions 
+	// EnumFontFamiliesEx shall be used instead.
+
+	const int result = EnumFontFamiliesExA(HDC hdc,   LPLOGFONTA lpLogfont,   FONTENUMPROCA lpProc, LPARAM lParam,  0);
+	
+	
+#else
+	return PXNotsuport;
+#endif
+	
+
+
+
+
+
+	
+}
+
+PXActionResult PXAPI PXGUIFontLoad(PXGUISystem* const pxGUISystem, PXFont* const pxFont, const char* const name)
+{
+#if OSUnix
+	XFontStruct* font = XLoadQueryFont (disp, name); // "9x15" <--- linux font? Sometimes not found
+#elif OSWindows
+		
+#endif
+}
+
+PXActionResult PXAPI PXGUIFontRelease(PXGUISystem* const pxGUISystem, PXFont* const pxFont)
+{
+#if OSUnix
+	XFreeFont (disp, font);
+#elif OSWindows
+		
+#endif
+}
+
+PXActionResult PXAPI PXGUIFontSet(PXGUISystem* const pxGUISystem, PXFont* const pxFont)
+{
+#if OSUnix
+	XSetFont (disp, gc, font->fid);
+#elif OSWindows
+	HFONT  fontThatWasUsedBefore = (HFONT)SelectObject(hdc, hFont1);
+#endif
+}
+
+
+PXActionResult PXAPI PXGUIDrawClear(PXGUISystem* const pxGUISystem)
+{
+#if OSUnix
+	  XClearWindow (disp, win);
+#elif OSWindows
+		// Does this exists?
+
+	GetUpdateRect() 
+#endif
+}
+
+PXActionResult PXAPI PXGUIDrawForegroundColorSetRGB(PXGUISystem* const pxGUISystem, char red, char green, char blue)
+{
+#if OSUnix
+	   XSetForeground (disp, gc, red);
+#elif OSWindows
+		
+#endif
+}
+
+PXActionResult PXAPI PXGUIDrawBackgroundColorSetRGB(PXGUISystem* const pxGUISystem, char red, char green, char blue)
+{
+#if OSUnix
+	XSetBackground (disp, gc, red);
+#elif OSWindows	
+	SetBkColor(hdcStatic, RGB(230,230,230));
+#endif
+}
+
+PXActionResult PXAPI PXGUIDrawTextColorSetRGB(PXGUISystem* const pxGUISystem, char red, char green, char blue)
+{
+#if OSUnix
+	
+#elif OSWindows
+	SetTextColor(hdc, RGB(red, green, blue));
+#endif
+}
+
+
+PXActionResult PXAPI PXGUIElementDrawBegin(PXGUISystem* const pxGUISystem)
+{
+#if OSUnix
+	
+#elif OSWindows
+   	PAINTSTRUCT ps;
+	
+	HDC hdc = BeginPaint(hWnd, &ps);
+#endif
+}
+
+
+PXActionResult PXAPI PXGUIElementDrawEnd(PXGUISystem* const pxGUISystem)
+{
+#if OSUnix
+	
+#elif OSWindows
+	    EndPaint(hWnd, &ps);
+#endif
+}
+
+
+
+// Get the amount of font avalible at current time
+PXActionResult PXAPI PXGUIFontListAmount(PXGUISystem* const pxGUISystem, PXSize* const amount)
+{
+	int fontNameListSizeMax = 0;
+	int fontNameListSizeCurrnet = 0;
+	char** fontNameList = XListFonts(Display *display, PXNull, fontNameListSizeMax, &fontNameListSizeCurrnet);
+
+	// Can also have additional info
+	char **XListFontsWithInfo(Display *display, char *pattern, int maxnames, int *count_return, XFontStruct
+}
+
+
 #if OSUnix
 PXActionResult PXAPI PXGUIElementErrorFromXSystem(const int xSysstemErrorID)
 {
