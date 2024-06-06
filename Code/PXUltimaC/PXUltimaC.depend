@@ -1368,7 +1368,7 @@
 	<dwmapi.h>
 	<winuser.rh>
 
-1717618302 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/PXResource.h
+1717710383 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/Media/PXResource.h
 	<Math/PXMatrix.h>
 	"PXImage.h"
 	<Container/FlexDataCache/PXFlexDataCache.h>
@@ -1679,7 +1679,7 @@
 	<Media/PXResource.h>
 	<OS/File/PXFile.h>
 
-1717618302 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/GUI/PXGUI.h
+1717710500 /home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/GUI/PXGUI.h
 	<Media/PXResource.h>
 	<Container/Dictionary/PXDictionary.h>
 	<OS/Graphic/PXGraphic.h>
@@ -1856,7 +1856,7 @@
 	<D3DX9Shader.h>
 	<d3dx9shader.h>
 
-1717511205 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/GUI/PXGUI.c
+1717710612 source:/home/bitpaw/Desktop/PXUltima/Code/PXUltimaC/OS/GUI/PXGUI.c
 	"PXGUI.h"
 	<Media/PXText.h>
 	<Math/PXMath.h>

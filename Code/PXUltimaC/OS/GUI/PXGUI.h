@@ -596,7 +596,7 @@ PXPublic PXActionResult PXAPI PXGUIElementMoveAndResize(PXGUISystem* const pxGUI
 
 PXActionResult PXAPI PXGUIFontLoad(PXGUISystem* const pxGUISystem, PXFont* const pxFont, const char* const name);
 PXActionResult PXAPI PXGUIFontRelease(PXGUISystem* const pxGUISystem, PXFont* const pxFont);
-PXActionResult PXAPI PXGUIFontSet(PXGUISystem* const pxGUISystem, PXFont* const pxFont);
+PXActionResult PXAPI PXGUIFontSet(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXFont* const pxFont);
 PXActionResult PXAPI PXGUIDrawClear(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
 PXActionResult PXAPI PXGUIDrawForegroundColorSetRGB(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, char red, char green, char blue);
 PXActionResult PXAPI PXGUIDrawBackgroundColorSetRGB(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, char red, char green, char blue);
@@ -610,7 +610,7 @@ PXActionResult PXAPI PXGUIElementStyleUpdate(PXGUISystem* const pxGUISystem, PXG
 // Objects shall not be created or destroyed, simply the ownership of those objects should be transphered. (can we do that?)
 PXActionResult PXAPI PXGUIElementAbsorb(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
 
-// Use for draging a window outside it own borders to spawn a new one. 
+// Use for draging a window outside it own borders to spawn a new one.
 PXActionResult PXAPI PXGUIElementEmit(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
 
 

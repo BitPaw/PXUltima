@@ -19,7 +19,7 @@
 #include <X11/extensions/XInput2.h>
 #include <X11/Xmd.h>
 
-#include <wayland-client.h>
+//#include <wayland-client.h>
 
 #define DefautPositionX 00000000000000
 #define DefautPositionY 00000000000000
@@ -1741,8 +1741,8 @@ PXActionResult PXAPI PXGUISystemInitialize(PXGUISystem* const pxGUISystem)
 
 	   /*
         struct wl_display *display = wl_display_connect(NULL);
-    
-    */ 
+
+    */
 
         // open a connection to the x-server. NULL here uses the default display.
         pxDisplay->DisplayHandle = XOpenDisplay(PXNull);   // X11/Xlib.h,  Create Window
@@ -1912,7 +1912,7 @@ PXActionResult PXAPI PXGUISystemRelease(PXGUISystem* const pxGUISystem)
 PXActionResult PXAPI PXGUIElementStyleUpdate(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement)
 {
     PXActionResult result = PXActionInvalid;
-	
+
 #if OSUnix
 	result = PXActionRefusedNotImplemented;
 #elif OSWindows
@@ -1929,7 +1929,7 @@ PXActionResult PXAPI PXGUIElementAbsorb(PXGUISystem* const pxGUISystem, PXGUIEle
 {
 	// Create new window resource in target window? or Just take ownership and update the window?
 	// Take ownership of all elements
-	
+
 	return PXActionRefusedNotImplemented;
 }
 
@@ -2108,7 +2108,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                 pxGUIElementCreateWindowInfo->UIElementReference = pxGUIElement;
 
 		// Get default visuals??
-		    
+
                 const int attributeList[] =
                 {
                     GLX_RGBA,
@@ -2230,7 +2230,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                         );
 #endif
                         return PXActionFailedCreate;
-                    }                
+                    }
 
 #if PXLogEnable
                     PXLogPrint
@@ -4833,7 +4833,7 @@ PXActionResult PXAPI PXGUIElementDrawLines(PXGUISystem* const pxGUISystem, PXGUI
         pxGUISystem->DisplayCurrent.DisplayHandle,
         pxGUIElement->Info.WindowID,
         pxGUISystem->DisplayCurrent.GraphicContent,
-        &points, 
+        &points,
         npoints,
         mode
     );
@@ -4855,7 +4855,7 @@ PXActionResult PXAPI PXGUIElementDrawRectangle(PXGUISystem* const pxGUISystem, P
         pxGUIElement->Info.WindowID,
         pxGUISystem->DisplayCurrent.GraphicContent,
         x,
-        y, 
+        y,
         width,
         height
     );
@@ -4949,32 +4949,32 @@ PXActionResult PXAPI PXGUIFontListFetch(PXGUISystem* const pxGUISystem, PXSize* 
     (
         pxGUISystem->DisplayCurrent.DisplayHandle,
         PXNull,
-        fontNameListSizeMax, 
+        fontNameListSizeMax,
         &fontNameListSizeCurrnet
     );
 
 
 	// Can also have additional info
 	// char **XListFontsWithInfo(Display *display, char *pattern, int maxnames, int *count_return, XFontStruct
-	
+
 #elif OSWindows
 
-	// Microsoft says: EnumFontFamiliesA() is deprecated and is only provided for compatibility with 16-bit versions 
+	// Microsoft says: EnumFontFamiliesA() is deprecated and is only provided for compatibility with 16-bit versions
 	// EnumFontFamiliesEx shall be used instead.
 
     const int result = 0;// EnumFontFamiliesExA(HDC hdc, LPLOGFONTA lpLogfont, FONTENUMPROCA lpProc, LPARAM lParam, 0);
-	
-	
+
+
 #else
 	return PXNotsuport;
 #endif
-	
 
 
 
 
 
-	
+
+
 }
 
 PXActionResult PXAPI PXGUIFontLoad(PXGUISystem* const pxGUISystem, PXFont* const pxFont, const char* const name)
@@ -4986,7 +4986,7 @@ PXActionResult PXAPI PXGUIFontLoad(PXGUISystem* const pxGUISystem, PXFont* const
         name
     ); // "9x15" <--- linux font? Sometimes not found
 #elif OSWindows
-		
+
 #endif
 
     return PXActionRefusedNotImplemented;
@@ -4997,19 +4997,19 @@ PXActionResult PXAPI PXGUIFontRelease(PXGUISystem* const pxGUISystem, PXFont* co
 #if OSUnix
     const int resultID = XFreeFont(pxGUISystem->DisplayCurrent.DisplayHandle, 0);
 #elif OSWindows
-		
+
 #endif
 
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXGUIFontSet(PXGUISystem* const pxGUISystem, PXFont* const pxFont)
+PXActionResult PXAPI PXGUIFontSet(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXFont* const pxFont)
 {
 #if OSUnix
     const int resultID = XSetFont
     (
         pxGUISystem->DisplayCurrent.DisplayHandle,
-        gc, 
+        pxGUISystem->DisplayCurrent.GraphicContent,
         0
     );
 #elif OSWindows
@@ -5036,7 +5036,12 @@ PXActionResult PXAPI PXGUIDrawClear(PXGUISystem* const pxGUISystem, PXGUIElement
 PXActionResult PXAPI PXGUIDrawForegroundColorSetRGB(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, char red, char green, char blue)
 {
 #if OSUnix
-    const int resultID = XSetForeground(pxGUISystem->DisplayCurrent.DisplayHandle, gc, red);
+    const int resultID = XSetForeground
+    (
+     pxGUISystem->DisplayCurrent.DisplayHandle,
+     pxGUISystem->DisplayCurrent.GraphicContent,
+     red
+     );
 #elif OSWindows
     COLORREF xx = SetTextColor(pxGUIElement->DeviceContextHandle, RGB(red, green, blue));
 #endif
@@ -5047,8 +5052,13 @@ PXActionResult PXAPI PXGUIDrawForegroundColorSetRGB(PXGUISystem* const pxGUISyst
 PXActionResult PXAPI PXGUIDrawBackgroundColorSetRGB(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, char red, char green, char blue)
 {
 #if OSUnix
-    const int resultID = XSetBackground(pxGUISystem->DisplayCurrent.DisplayHandle, gc, red);
-#elif OSWindows	
+    const int resultID = XSetBackground
+    (
+     pxGUISystem->DisplayCurrent.DisplayHandle,
+     pxGUISystem->DisplayCurrent.GraphicContent,
+      red
+      );
+#elif OSWindows
     SetBkColor(pxGUIElement->DeviceContextHandle, RGB(230, 230, 230));
 #endif
 

@@ -14,7 +14,7 @@
 	</File>
 	<File name="OS/GUI/PXGUI.h" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="12849" topLine="508" />
+			<Cursor1 position="11499" topLine="472" />
 		</Cursor>
 	</File>
 	<File name="OS/File/PXFile.h" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -22,9 +22,9 @@
 			<Cursor1 position="4798" topLine="171" />
 		</Cursor>
 	</File>
-	<File name="OS/GUI/PXGUI.c" open="1" top="1" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="OS/GUI/PXGUI.c" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="152163" topLine="4860" />
+			<Cursor1 position="157090" topLine="5034" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>
