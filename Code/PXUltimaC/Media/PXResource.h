@@ -28,7 +28,8 @@ typedef struct PXCodeDocumentElement_ PXCodeDocumentElement;
 typedef struct PXFile_ PXFile;
 typedef struct PXText_ PXText;
 typedef struct PXCodeDocument_ PXCodeDocument;
-typedef struct PXUIElement_ PXGUIElement;
+typedef struct PXGUISystem_ PXGUISystem;
+typedef struct PXGUIElement_ PXGUIElement;
 typedef struct PXFileTypeInfo_ PXFileTypeInfo;
 typedef struct PXCompiler_ PXCompiler;
 
@@ -1427,26 +1428,30 @@ PXUIElementPosition;
 
 typedef void (PXAPI* PXWindowEventFunction)(void* const owner, struct PXWindowEvent_* const pxWindowEvent);
 
+typedef PXActionResult(PXAPI* PXGUIElementDrawFunction)(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
+
 
 // Atomic UI-Element
 // Only Text can be text
 // Only image can be image
-typedef struct PXUIElement_
+typedef struct PXGUIElement_
 {
 	PXResourceInfo Info;
 
 	//------------------------------
 	// References
 	//------------------------------
-	struct PXUIElement_* Parent;
-	struct PXUIElement_* Sibling;
-	struct PXUIElement_* Child;
+	struct PXGUIElement_* Parent;
+	struct PXGUIElement_* Sibling;
+	struct PXGUIElement_* Child;
 
 	//------------------------------
 	// Events
 	//------------------------------
 	void* InteractOwner;
 	PXWindowEventFunction InteractCallBack;
+
+	PXGUIElementDrawFunction DrawFunction; // If this is set, override OS-drawing and use this function instead
 
 
 	PXUIElementPosition Position;
@@ -1473,7 +1478,7 @@ typedef struct PXUIElement_
 	};
 #endif
 
-	PXGUIElement** ListEEData;
+	struct PXGUIElement_** ListEEData;
 	PXSize ListEESize;
 
 #if OSUnix
@@ -1651,8 +1656,8 @@ typedef struct PXUIElementTreeViewItemInfo_
 	char* TextDataOverride;
 	PXSize TextSizeOverride;
 
-	struct PXUIElement_* ItemParent;
-	struct PXUIElement_* TreeView;
+	struct PXGUIElement_* ItemParent;
+	struct PXGUIElement_* TreeView;
 
 	//struct PXUIElement_* ElementSource;
 	void* OwningObject;

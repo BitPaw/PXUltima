@@ -439,8 +439,8 @@ typedef struct PXWindowEvent_
 	//-----------------------------
 	PXWindowEventType Type;
 
-	struct PXUIElement_* UIElementReference;
-	struct PXUIElement_* UIElementSender;
+	struct PXGUIElement_* UIElementReference;
+	struct PXGUIElement_* UIElementSender;
 }
 PXWindowEvent;
 
@@ -483,14 +483,12 @@ typedef struct PXDisplay_
 {
 #if OSUnix
 	Display* DisplayHandle;
-#elif OSWindows
-	void* DisplayHandle;
-#endif
-
-#if OSUnix
 	Window WindowRootHandle;
+	GC GraphicContent;
 #elif OSWindows
 	int WindowRootHandle;
+	void* DisplayHandle;
+	int GraphicContent;
 #endif
 
 	char* Data;
@@ -573,6 +571,11 @@ PXPublic PXActionResult PXAPI PXGUIElementTextSet(PXGUISystem* const pxGUISystem
 
 
 
+PXPublic PXActionResult PXAPI PXGUIElementDrawButton(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
+
+
+
+
 // Draw text into a given window
 // Example: Text for a button
 PXPublic PXActionResult PXAPI PXGUIElementDrawText(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXText* const pxText);
@@ -588,6 +591,27 @@ PXPublic PXActionResult PXAPI PXGUIElementMove(PXGUISystem* const pxGUISystem, P
 PXPublic PXActionResult PXAPI PXGUIElementResize(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int width, const int height);
 PXPublic PXActionResult PXAPI PXGUIElementMoveAndResize(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y, const int width, const int height);
 
+
+
+
+PXActionResult PXAPI PXGUIFontLoad(PXGUISystem* const pxGUISystem, PXFont* const pxFont, const char* const name);
+PXActionResult PXAPI PXGUIFontRelease(PXGUISystem* const pxGUISystem, PXFont* const pxFont);
+PXActionResult PXAPI PXGUIFontSet(PXGUISystem* const pxGUISystem, PXFont* const pxFont);
+PXActionResult PXAPI PXGUIDrawClear(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
+PXActionResult PXAPI PXGUIDrawForegroundColorSetRGB(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, char red, char green, char blue);
+PXActionResult PXAPI PXGUIDrawBackgroundColorSetRGB(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, char red, char green, char blue);
+PXActionResult PXAPI PXGUIElementDrawBegin(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
+PXActionResult PXAPI PXGUIElementDrawEnd(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
+
+PXActionResult PXAPI PXGUIElementStyleUpdate(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
+
+// Use for a seperate window that needs to be merged into a main one.
+// Given a spesific window we can try to absorb the contens and underlieing elemetns and move them into your own space.
+// Objects shall not be created or destroyed, simply the ownership of those objects should be transphered. (can we do that?)
+PXActionResult PXAPI PXGUIElementAbsorb(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
+
+// Use for draging a window outside it own borders to spawn a new one. 
+PXActionResult PXAPI PXGUIElementEmit(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
 
 
 
