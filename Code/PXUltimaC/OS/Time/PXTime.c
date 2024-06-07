@@ -3,6 +3,7 @@
 #include <OS/System/PXOSVersion.h>
 
 #if OSUnix
+#include <time.h>
 #elif OSWindows
 #include <Windows.h>
 #endif
@@ -45,6 +46,36 @@ PXTimeDayOfWeek PXAPI PXTimeDayFromID(const PXInt8U dayID)
 void PXAPI PXTimeNow(PXTime* const pxTime)
 {
 #if OSUnix
+
+	// POSIX.1-2008 marks gettimeofday() as obsolete,
+
+	// clock_gettime
+	long             days;
+	struct timespec  ts;
+	
+	const int resultID = clock_gettime(CLOCK_REALTIME, &ts);
+	const PXBool success = -1 == resultID;
+	const PXActionResult result = POSIXError(success);
+
+	if(PXSuccess != result)
+	{
+		// Set 0 if error
+	}
+	
+	time->Year = 000000;
+	time->Month = 000000;
+	time->DayOfWeek = 000000;
+	time->Day = 000000;
+	time->Hour = 000000;
+	time->Minute =000000;
+	time->Second = 000000;
+	time->Milliseconds = ts->tv_sec;
+	
+	
+
+	// ctime
+
+	
 #elif OSWindows
 	SYSTEMTIME systemTime;
 
@@ -92,21 +123,57 @@ PXSize PXAPI PXTimeMillisecondsDelta(const PXTime* timeA, const PXTime* timeB)
 	return millisecondsDelta;
 }
 
+// Generates a timestamp in nanosecound space
 PXInt64U PXAPI PXTimeCounterStampGet()
 {
 #if OSUnix
-	return 0;
+	struct timespec  ts;
+	
+	const int resultID = clock_gettime(CLOCK_MONOTONIC, &ts); // CLOCK_THREAD_CPUTIME_ID
+	const PXBool success = -1 == resultID;
+	const PXActionResult result = POSIXError(success);
+
+	if(success)
+	{
+			return ts-xxxx;
+	}
+	else
+	{
+			return 0;
+	}
+
 #elif OSWindows
 	LARGE_INTEGER largeInteger;
 	const BOOL success = QueryPerformanceCounter(&largeInteger); // Windows 2000, Kernel32.dll
 
-	return largeInteger.QuadPart;
+	if(success)
+	{
+		return largeInteger.QuadPart;
+	}
+	else
+	{
+		return 0;
+	}	
+#else 
+	return 0;
 #endif
 }
 
 PXInt64U PXAPI PXTimeCounterFrequencyGet()
 {
 #if OSUnix
+	/*
+  if (clock_getres(clock, &ts) == -1) {
+               perror("clock_getres");
+               exit(EXIT_FAILURE);
+           }
+
+           if (showRes)
+               printf("     resolution: %10jd.%09ld\n",
+                      (intmax_t) ts.tv_sec, ts.tv_nsec);
+*/
+
+	
 	return 0;
 #elif OSWindows
 	LARGE_INTEGER largeInteger;
