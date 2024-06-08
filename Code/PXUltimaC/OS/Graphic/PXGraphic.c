@@ -148,7 +148,7 @@ void PXAPI PXUIElementColorSet4F(PXGUIElement* const pxGUIElement, const float r
     color->Blue = blue;
     color->Alpha = alpha;
 
-    pxGUIElement->ColorTintReference = color;
+    //pxGUIElement->ColorTintReference = color;
 }
 
 void PXAPI PXUIElementSizeSet(PXGUIElement* const pxGUIElement, const float x, const float y, const float width, const float height, const PXInt32U  pxUIElementPositionMode)

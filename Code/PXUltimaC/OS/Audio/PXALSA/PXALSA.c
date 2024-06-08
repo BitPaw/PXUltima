@@ -8,6 +8,7 @@
 
 PXActionResult PXAPI PXALSAInitialize(PXAudio* const pxAudio)
 {
+#if OSUnix
     // sound PCM (Pulse Code Modulation)
 
     snd_pcm_t* SoundDeviceCurrent;
@@ -259,14 +260,22 @@ PXActionResult PXAPI PXALSAInitialize(PXAudio* const pxAudio)
 		);
 #endif
 
+        return PXActionRefusedNotImplemented;
 
-    return PXActionRefusedNotImplemented;
+#else
+return PXActionRefusedNotSupportedByOperatingSystem;
+#endif
 }
 
 PXActionResult PXAPI PXALSARelease(PXAudio* const pxAudio)
 {
+#if OSUnix
   snd_pcm_close (pxAudio->SoundDeviceCurrent);
   cout << "Audio device has been uninitialized." << endl;
     
   return PXActionRefusedNotImplemented;
+
+#else
+    return PXActionRefusedNotSupportedByOperatingSystem;
+#endif
 }

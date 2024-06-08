@@ -273,6 +273,13 @@ typedef enum PXResourceType_
 	PXResourceTypeCustom, // Undetected but valid format. Needs to be handled by the caller
 
 	//-----------------------------------------------------
+	// Resource Level 0 - Internal OS Resources
+	//-----------------------------------------------------
+	PXResourceTypeBrush,
+	//-----------------------------------------------------
+
+
+	//-----------------------------------------------------
 	// Resource Level 1 - Indepepended
 	//-----------------------------------------------------
 	PXResourceTypeImage, // Image for pixeldata
@@ -344,6 +351,7 @@ typedef struct PXResourceInfo_
 		Window WindowID; // Linux X11 System
 #elif OSWindows
 		HWND WindowID; // Windows only, used for GUI elements
+		HBRUSH BrushHandle;
 #endif
 	};
 
@@ -369,6 +377,7 @@ typedef struct PXResourceManager_
 	PXDictionary SoundLookUp;
 	PXDictionary HitBoxLookUp;
 	PXDictionary ImageLookUp;
+	PXDictionary BrushLookUp;
 	PXDictionary TextureLookUp;
 	PXDictionary ModelLookUp;
 	PXDictionary SkyBoxLookUp;
@@ -1428,7 +1437,30 @@ PXUIElementPosition;
 
 typedef void (PXAPI* PXWindowEventFunction)(void* const owner, struct PXWindowEvent_* const pxWindowEvent);
 
-typedef PXActionResult(PXAPI* PXGUIElementDrawFunction)(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
+typedef struct PXGUIElementDrawInfo_
+{
+#if OSUnix
+	int dummy;
+#elif OSWindows
+	HWND hwnd;
+	HDC hDC;
+	RECT* rcDirty;
+	BOOL bErase;
+#endif
+}
+PXGUIElementDrawInfo;
+
+typedef PXActionResult(PXAPI* PXGUIElementDrawFunction)(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo);
+
+// Color of GUI Element and tools to apply
+typedef struct PXGUIElementBrush_
+{
+	PXResourceInfo Info;
+
+	PXColorRGBI8 Color;
+}
+PXGUIElementBrush;
+
 
 
 // Atomic UI-Element
@@ -1457,7 +1489,9 @@ typedef struct PXGUIElement_
 	PXUIElementPosition Position;
 
 	//---<State-Info>------------------------
-	PXColorRGBAF* ColorTintReference; // Point to a color to be able to share a theme. Can be null, equal to plain white.
+	PXGUIElementBrush* Brush;
+	 
+	//PXColorRGBAF* ColorTintReference; // Point to a color to be able to share a theme. Can be null, equal to plain white.
 	PXUIHoverState Hover;
 	PXInt32U FlagsList;
 	//---------------------------------------
@@ -1757,6 +1791,10 @@ typedef struct PXGUIElementCreateInfo_
 	PXColorRGBAF* ColorTintReference;
 
 	PXColorRGBAF Color;
+
+
+	PXBool UseCustomDraw;
+	void* CustomDrawFunction;
 
 	PXUIElementPosition Position;
 
@@ -2333,6 +2371,14 @@ typedef struct PXHitboxCreateInfo_
 }
 PXHitboxCreateInfo;
 
+
+typedef struct PXBrushCreateInfo_
+{
+	PXColorRGBI8 Color;
+}
+PXBrushCreateInfo;
+
+
 typedef struct PXSpriteCreateInfo_
 {
 	PXTexture2D* TextureCurrent;
@@ -2431,6 +2477,7 @@ typedef struct PXResourceCreateInfo_
 		PXGUIElementCreateInfo UIElement;
 		PXModelCreateInfo Model;
 		PXHitboxCreateInfo HitBox;
+		PXBrushCreateInfo Brush;
 	};
 }
 PXResourceCreateInfo;

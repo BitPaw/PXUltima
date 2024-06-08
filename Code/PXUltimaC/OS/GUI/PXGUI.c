@@ -838,22 +838,90 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
             break;
         }
 
-        case WM_PAINT:
+        case WM_ERASEBKGND:
+            return FALSE;  // Defer erasing into WM_PAINT
+
+        case WM_DRAWITEM:
+      //  case WM_PAINT:
+        {
+            HWND identifier = (HWND)wParam;
+            DRAWITEMSTRUCT* drawItemInfo = (DRAWITEMSTRUCT*)lParam;
+
+            PXGUIElement* const pxGUIElement = PXNull;
+
+            PXDictionaryFindEntry(&pxGUISystem->ResourceManager->GUIElementLookup, &drawItemInfo->hwndItem, &pxGUIElement);
+
+            if(!pxGUIElement)
+            {
+                break; // break: not found
+            }
+
+            if(pxGUIElement->DrawFunction) 
+            {
+               // RECT rc;
+
+               // GetClientRect(pxGUIElement->Info.WindowID, &rc);
+
+               // PAINTSTRUCT paintStruct;
+               // BeginPaint(pxGUIElement->Info.WindowID, &paintStruct);
+
+               // auto xx = pxGUIElement->DeviceContextHandle;
+
+                  //  pxGUIElement->DeviceContextHandle = paintStruct.hdc;
+
+                PXGUIElementDrawInfo pxGUIElementDrawInfo;
+                PXClear(PXGUIElementDrawInfo, &pxGUIElementDrawInfo);
+                pxGUIElementDrawInfo.hwnd = pxGUIElement->Info.WindowID;
+                pxGUIElementDrawInfo.hDC = drawItemInfo->hDC;
+                //pxGUIElementDrawInfo.rcDirty = &paintStruct.rcPaint;
+                //pxGUIElementDrawInfo.rcDirty = &rc;
+                pxGUIElementDrawInfo.rcDirty = &drawItemInfo->rcItem;
+               // pxGUIElementDrawInfo.bErase = paintStruct.fErase;
+
+                pxGUIElement->DrawFunction(pxGUISystem, pxGUIElement, &pxGUIElementDrawInfo);
+
+               // EndPaint(pxGUIElement->Info.WindowID, &paintStruct);
+
+               // pxGUIElement->DeviceContextHandle = xx;
+
+                return TRUE; // We did a custom draw, so return true to mark this as handled
+            }
+
+            break;
+        }
+        case WM_PRINTCLIENT:
         {
             PXGUIElement* const pxGUIElement = PXNull;
 
             PXDictionaryFindEntry(&pxGUISystem->ResourceManager->GUIElementLookup, &windowID, &pxGUIElement);
 
-            if(pxGUIElement)
+            if(!pxGUIElement)
             {
-              //  if(!pxGUIElement->IsEnabled)
-               // {
-                  //  return 0;
-              //  }
+                break; // break: not found
+            }
+
+            if(pxGUIElement->DrawFunction)
+            {
+                RECT rc;
+
+                GetClientRect(windowID, &rc);
+
+                PXGUIElementDrawInfo pxGUIElementDrawInfo;
+                PXClear(PXGUIElementDrawInfo, &pxGUIElementDrawInfo);
+                pxGUIElementDrawInfo.hwnd = windowID;
+                pxGUIElementDrawInfo.hDC = (HDC)wParam;
+                pxGUIElementDrawInfo.rcDirty = &rc;
+                pxGUIElementDrawInfo.bErase = TRUE;
+
+                pxGUIElement->DrawFunction(pxGUISystem, pxGUIElement, &pxGUIElementDrawInfo);
+
+                return 0; // We custom draw, handled
             }
 
             break;
         }
+
+
 
 #if 0
         case WM_ACTIVATE:
@@ -1022,6 +1090,7 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
         case WM_CTLCOLORSCROLLBAR:
         case WM_CTLCOLORSTATIC:
         {
+            /*
             // HWND windowFocusedHandle = (HWND)GetFocus();;
             HWND windowHandleNow = (HWND)lParam;
             HDC hdc = (HDC)wParam;
@@ -1052,8 +1121,11 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
             brush = CreateSolidBrush(RGB(20, 20, 20));
 #endif
 
+  return brush;
+            */
 
-            return brush;
+            break;
+          
         }
         case WM_INPUT:
         {
@@ -1656,7 +1728,7 @@ PXActionResult PXAPI PXGUIElementTextSet(PXGUISystem* const pxGUISystem, PXGUIEl
         return PXFalse;
     }
 
-#if PXLogEnable
+#if PXLogEnable && 0
     PXLogPrint
     (
         PXLoggingInfo,
@@ -1672,15 +1744,48 @@ PXActionResult PXAPI PXGUIElementTextSet(PXGUISystem* const pxGUISystem, PXGUIEl
     return PXTrue;
 }
 
-PXActionResult PXAPI PXGUIElementDrawButton(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement)
+PXActionResult PXAPI PXGUIElementDrawButton(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo)
 {
-    PXGUIDrawClear(pxGUISystem, pxGUIElement);
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "GUI",
+        "Draw",
+        "DRAAAAWWW"
+    );
+#endif
 
-    PXGUIElementDrawBegin(pxGUISystem, pxGUIElement);
+   PXGUIDrawClear(pxGUISystem, pxGUIElement);
 
-    PXGUIElementDrawRectangle(pxGUISystem, pxGUIElement, 100,100,100,100);
 
-    PXGUIElementDrawEnd(pxGUISystem, pxGUIElement);
+   PXGUIDrawBackgroundColorSetRGB(pxGUISystem, pxGUIElement, 0, 255, 0);
+
+   // PXGUIElementDrawBegin(pxGUISystem, pxGUIElement);
+
+   PXGUIElementDrawRectangle
+   (
+       pxGUISystem, 
+       pxGUIElement,
+       pxGUIElementDrawInfo->rcDirty->left,
+       pxGUIElementDrawInfo->rcDirty->top,
+       pxGUIElementDrawInfo->rcDirty->right,
+       pxGUIElementDrawInfo->rcDirty->bottom
+   );
+
+   SetTextColor(pxGUIElement->DeviceContextHandle, RGB(100, 0, 100));
+   char staticText[99];
+
+   char text[] = "*** TEST ***";
+   PXSize length = sizeof(text);
+
+   //int len = SendMessage(pxGUIElement->Info.WindowID, WM_GETTEXT, ARRAYSIZE(staticText), (LPARAM)staticText);
+  // BOOL wedq = TextOut(pxGUIElement->DeviceContextHandle, pxGUIElementDrawInfo->rcDirty->left, pxGUIElementDrawInfo->rcDirty->top, text, length);
+
+
+   PXGUIElementDrawTextA(pxGUISystem, pxGUIElement, pxGUIElementDrawInfo->rcDirty, text, length);
+
+   // PXGUIElementDrawEnd(pxGUISystem, pxGUIElement);
 
     return PXActionSuccessful;
 }
@@ -1886,6 +1991,29 @@ Window XCreateSimpleWindow(Display *display, Window parent, int x, int y, unsign
     InitCommonControlsEx(&initCommonControls);
 
 #endif
+
+
+    // Create brushes
+    
+    PXResourceCreateInfo pxResourceCreateInfoList[10];
+    PXClearList(PXResourceCreateInfo, pxResourceCreateInfoList, 10);
+    pxResourceCreateInfoList[0].ObjectReference = &pxGUISystem->BrushBackgroundDark;
+    pxResourceCreateInfoList[0].Name = "BackgroundDark",
+    pxResourceCreateInfoList[0].Type = PXResourceTypeBrush;
+    pxResourceCreateInfoList[0].Brush.Color.Red = 255; // 30-30-30
+    pxResourceCreateInfoList[0].Brush.Color.Green = 200;
+    pxResourceCreateInfoList[0].Brush.Color.Blue = 0;
+
+    pxResourceCreateInfoList[1].ObjectReference = &pxGUISystem->BrushTextWhite;
+    pxResourceCreateInfoList[1].Name = "TextWhite",
+    pxResourceCreateInfoList[1].Type = PXResourceTypeBrush;
+    pxResourceCreateInfoList[1].Brush.Color.Red = 200;
+    pxResourceCreateInfoList[1].Brush.Color.Green = 200;
+    pxResourceCreateInfoList[1].Brush.Color.Blue = 200;
+
+
+    PXResourceManagerAdd(pxGUISystem->ResourceManager, pxResourceCreateInfoList, 2);
+
 
     return PXActionSuccessful;
 }
@@ -2454,8 +2582,12 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
             pxGUIElementCreateInfo->WindowsTextContent = pxGUIElementCreateInfo->Data.Button.TextInfo.Content;
 
-
-
+            if(pxGUIElementCreateInfo->CustomDrawFunction || 1)
+            {
+                pxGUIElementCreateInfo->WindowsStyleFlags |= BS_OWNERDRAW;
+                pxGUIElement->DrawFunction = PXGUIElementDrawButton;
+                pxGUIElement->Brush = pxGUISystem->BrushBackgroundDark;
+            } 
 
             break;
         }
@@ -2809,6 +2941,11 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
             return pxActionResult;
         }
+
+
+        // Get additional device context for rendering purpose
+        pxGUIElement->DeviceContextHandle = GetDC(pxGUIElement->Info.WindowID);
+
 
         PXDictionaryAdd(&pxGUISystem->ResourceManager->GUIElementLookup, &pxGUIElement->Info.WindowID, pxGUIElement);
 
@@ -4714,17 +4851,17 @@ PXActionResult PXAPI PXGUIElementDrawText(PXGUISystem* const pxGUISystem, PXGUIE
     {
         case TextFormatASCII:
         case TextFormatUTF8:
-            return PXGUIElementDrawTextA(pxGUISystem, pxGUIElement, pxText->TextA, pxText->SizeUsed);
+            return PXGUIElementDrawTextA(pxGUISystem, pxGUIElement, 0, pxText->TextA, pxText->SizeUsed);
 
         case TextFormatUNICODE:
-            return PXGUIElementDrawTextA(pxGUISystem, pxGUIElement, pxText->TextW, pxText->SizeUsed);
+            return PXGUIElementDrawTextW(pxGUISystem, pxGUIElement, pxText->TextW, pxText->SizeUsed);
 
         default:
             return TextFormatInvalid;
     }
 }
 
-PXActionResult PXAPI PXGUIElementDrawTextA(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const char* const text, const PXSize textSize)
+PXActionResult PXAPI PXGUIElementDrawTextA(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, RECT* const rect, const char* const text, const PXSize textSize)
 {
 #if OSUnix
     // For ANSI and UTF-8 strings
@@ -4733,12 +4870,12 @@ PXActionResult PXAPI PXGUIElementDrawTextA(PXGUISystem* const pxGUISystem, PXGUI
 #elif OSWindows
 
     RECT rectangle;
-    UINT format;
+    UINT format = DT_CENTER | DT_SINGLELINE | DT_VCENTER | DT_NOCLIP;
 
     DRAWTEXTPARAMS drawinfo;
     PXClear(DRAWTEXTPARAMS, &drawinfo);
 
-    const int nextHeight = DrawTextExA(pxGUIElement->DeviceContextHandle, text, textSize, &rectangle, format, &drawinfo); // Windows 2000, User32.dll, winuser.h
+    const int nextHeight = DrawTextExA(pxGUIElement->DeviceContextHandle, text, textSize, rect, format, PXNull); // Windows 2000, User32.dll, winuser.h
     const PXBool success = 0 != nextHeight;
     const PXActionResult result = PXWindowsErrorCurrent(success);
 
@@ -4848,8 +4985,14 @@ PXActionResult PXAPI PXGUIElementDrawLines(PXGUISystem* const pxGUISystem, PXGUI
 
 PXActionResult PXAPI PXGUIElementDrawRectangle(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y, const int width, const int height)
 {
+    PXActionResult pxActionResult = PXActionInvalid;
+
 #if OSUnix
-    const resultID = XDrawRectangle
+    PXColorRGBI8* color = &pxGUIElement->Brush->Color;
+
+    PXGUIDrawBackgroundColorSetRGB(pxGUISystem, pxGUIElement, color->Red, color->Green, color->Blue);
+
+    const resultID = XFillRectangle
     (
         pxGUISystem->DisplayCurrent.DisplayHandle,
         pxGUIElement->Info.WindowID,
@@ -4859,13 +5002,67 @@ PXActionResult PXAPI PXGUIElementDrawRectangle(PXGUISystem* const pxGUISystem, P
         width,
         height
     );
-    const PXActionResult result = PXGUIElementErrorFromXSystem(resultID);
-    return result;
+    pxActionResultresult = PXGUIElementErrorFromXSystem(resultID);
 #elif OSWindows
-	const BOOL success = Rectangle(pxGUIElement->DeviceContextHandle, x, y, width, height);
+  //  const BOOL bbbbb = SelectObject(pxGUIElement->DeviceContextHandle, GetStockObject(GRAY_BRUSH));
+
+
+    RECT rect;
+    rect.left = x;
+    rect.top = y;
+    rect.right = width;
+    rect.bottom = height;
+
+   // const COLORREF color = RGB(255, 0, 200);
+   // const HBRUSH brushAA = CreateSolidBrush(color);
+
+
+
+    const BOOL aaaaaa = FillRect(pxGUIElement->DeviceContextHandle, &rect, pxGUIElement->Brush->Info.BrushHandle);
+
+   // DeleteObject();
+
+
+    const BOOL success = 1;// Rectangle(pxGUIElement->DeviceContextHandle, x, y, width, height);
+
+    if(!success)
+    {
+        pxActionResult = PXActionInvalid;
+    }
+
 #else
-	return PXNotSupport;
+    pxActionResult = PXNotSupport;
 #endif
+
+
+#if PXLogEnable
+    if(PXActionSuccessful == pxActionResult)
+    {
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "GUI",
+            "Draw-Button",
+            "%i, X:%i,Y:%i,W:%i,H:%i",
+            pxGUIElement->Info.ID,
+            x, y, width, height
+        );
+    }
+    else
+    {
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "GUI",
+            "Draw-Rectangle",
+            "%i, X:%i,Y:%i,W:%i,H:%i",
+            pxGUIElement->Info.ID,
+            x, y, width, height
+        );
+    }
+#endif
+
+    return pxActionResult;
 }
 
 PXActionResult PXAPI PXGUIElementDrawRectangleRounded(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y, const int width, const int height)
@@ -4890,48 +5087,60 @@ PXActionResult PXAPI PXGUIElementDrawRectangleRounded(PXGUISystem* const pxGUISy
 #endif
 }
 
+// Note:
+// MoveWindow() is a bad function. SetWindowPos() seems to be better in avery case.
+
 PXActionResult PXAPI PXGUIElementMove(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y)
 {
-#if OSUnix
-    const int resultID = 0;//XMoveWindow(pxGUISystem->DisplayHandle, Window w, x, y);
-    const PXActionResult result = PXGUIElementErrorFromXSystem(resultID);
-    return result;
-#elif PXOSWindowsDestop
-    const PXBool success = MoveWindow(pxGUIElement->Info.WindowID, 0, 0, 0, 0, PXTrue); // Windows 2000, User32.dll
+    PXActionResult pxActionResult = PXActionInvalid;
 
-    return PXFalse;
+#if OSUnix
+    const int resultID = XMoveWindow(pxGUISystem->DisplayHandle, pxGUIElement->Info.WindowID, x, y);
+    pxActionResult = PXGUIElementErrorFromXSystem(resultID);
+#elif PXOSWindowsDestop
+    const UINT flags = SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER;
+    const PXBool success = SetWindowPos(pxGUIElement->Info.WindowID, PXNull, x, y, PXNull, PXNull, flags); // Windows 2000, User32.dll
+    pxActionResult = PXWindowsErrorCurrent(success);
+#else
+    pxActionResult = PXActionRefusedNotSupportedByLibrary;
 #endif
+
+    return pxActionResult;
 }
 
 PXActionResult PXAPI PXGUIElementResize(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int width, const int height)
 {
+    PXActionResult pxActionResult = PXActionInvalid;
+
 #if OSUnix
 	const int resultID = 0;//XResizeWindow(Display *display, Window w, width, height);
-	const PXActionResult result = PXGUIElementErrorFromXSystem(resultID);
-
-    return result;
+	pxActionResult = PXGUIElementErrorFromXSystem(resultID);
 #elif PXOSWindowsDestop
-    const PXBool success = MoveWindow(pxGUIElement->Info.WindowID, 0, 0, width, height, PXTrue); // Windows 2000, User32.dll
-
-    return PXFalse;
+    const UINT flags = SWP_NOMOVE | SWP_NOZORDER | SWP_NOOWNERZORDER;
+    const PXBool success = SetWindowPos(pxGUIElement->Info.WindowID, PXNull, PXNull, PXNull, width, height, flags); // Windows 2000, User32.dll
+    pxActionResult = PXWindowsErrorCurrent(success);
 #else
-	return PXNotsupported;
+    pxActionResult = PXActionRefusedNotSupportedByLibrary;
 #endif
+
+    return pxActionResult;
 }
 
 PXActionResult PXAPI PXGUIElementMoveAndResize(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y, const int width, const int height)
 {
+    PXActionResult pxActionResult = PXActionInvalid;
+
 #if OSUnix
     const int resultID = 0;//XMoveResizeWindow(Display *display, Window w, int x, int y, unsigned int width, unsigned int height);
-    const PXActionResult result = PXGUIElementErrorFromXSystem(resultID);
-    return PXFalse;
+    pxActionResult = PXGUIElementErrorFromXSystem(resultID);
 #elif PXOSWindowsDestop
-	const PXBool success = MoveWindow(pxGUIElement->Info.WindowID, 0, 0, width, height, PXTrue); // Windows 2000, User32.dll, winuser.h
-
-    return PXFalse;
+	const PXBool success = MoveWindow(pxGUIElement->Info.WindowID, x, y, width, height, PXTrue); // Windows 2000, User32.dll, winuser.h
+    pxActionResult = PXWindowsErrorCurrent(success);
 #else
-	return NotSupprort;
+    pxActionResult = PXActionRefusedNotSupportedByLibrary;
 #endif
+
+    return pxActionResult;
 }
 
 // Get the amount of font avalible at current time
@@ -5051,18 +5260,39 @@ PXActionResult PXAPI PXGUIDrawForegroundColorSetRGB(PXGUISystem* const pxGUISyst
 
 PXActionResult PXAPI PXGUIDrawBackgroundColorSetRGB(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, char red, char green, char blue)
 {
+    PXActionResult pxActionResult = PXActionInvalid;
+
 #if OSUnix
+    const int color = PXInt32Make(red, green, blue, 0xFF);
     const int resultID = XSetBackground
     (
-     pxGUISystem->DisplayCurrent.DisplayHandle,
-     pxGUISystem->DisplayCurrent.GraphicContent,
-      red
-      );
-#elif OSWindows
-    SetBkColor(pxGUIElement->DeviceContextHandle, RGB(230, 230, 230));
+        pxGUISystem->DisplayCurrent.DisplayHandle,
+        pxGUISystem->DisplayCurrent.GraphicContent,
+        color
+    );
+#elif OSWindows	
+    const COLORREF color = RGB(red, green, blue);
+    const COLORREF colorPrevious = SetBkColor(pxGUIElement->DeviceContextHandle, color);
+    const PXBool successful = CLR_INVALID != colorPrevious;
+
+    if(!successful)
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingError,
+            "GUI",
+            "Color-Set",
+            "Failed set backgroundcolor"
+        );
 #endif
 
-    return PXActionRefusedNotImplemented;
+        return PXActionRefusedArgumentInvalid;
+    }
+
+#endif
+
+    return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXGUIElementDrawBegin(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement)

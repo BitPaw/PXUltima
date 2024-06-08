@@ -518,6 +518,10 @@ typedef struct PXGUISystem_
 	PXResourceManager* ResourceManager;
 
 	PXDisplay DisplayCurrent;
+
+	// private
+	PXGUIElementBrush* BrushBackgroundDark;
+	PXGUIElementBrush* BrushTextWhite;
 }
 PXGUISystem;
 
@@ -570,8 +574,13 @@ PXPublic PXBool PXAPI PXGUIElementValueFetch
 PXPublic PXActionResult PXAPI PXGUIElementTextSet(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, char* text);
 
 
+//---------------------------------------------------------
+// Default rendering functions
+//---------------------------------------------------------
+PXPublic PXActionResult PXAPI PXGUIElementDrawButton(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo);
 
-PXPublic PXActionResult PXAPI PXGUIElementDrawButton(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
+
+//---------------------------------------------------------
 
 
 
@@ -579,7 +588,7 @@ PXPublic PXActionResult PXAPI PXGUIElementDrawButton(PXGUISystem* const pxGUISys
 // Draw text into a given window
 // Example: Text for a button
 PXPublic PXActionResult PXAPI PXGUIElementDrawText(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXText* const pxText);
-PXPublic PXActionResult PXAPI PXGUIElementDrawTextA(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const char* const text, const PXSize textSize);
+PXPublic PXActionResult PXAPI PXGUIElementDrawTextA(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, RECT* const rect, const char* const text, const PXSize textSize);
 PXPublic PXActionResult PXAPI PXGUIElementDrawTextW(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const wchar_t* const text, const PXSize textSize);
 PXPublic PXActionResult PXAPI PXGUIElementDrawPoint(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y);
 PXPublic PXActionResult PXAPI PXGUIElementDrawPoints(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y, const int width, const int height);

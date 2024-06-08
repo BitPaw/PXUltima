@@ -166,6 +166,32 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
 
         switch(pxResourceCreateInfo->Type)
         {
+            case PXResourceTypeBrush:
+            {
+                PXBrushCreateInfo* const pxBrushCreateInfo = &pxResourceCreateInfo->Brush;
+                PXGUIElementBrush* pxGUIElementBrush = *(PXGUIElementBrush**)pxResourceCreateInfo->ObjectReference;
+
+                if(!pxGUIElementBrush)
+                {
+                    PXNewZerod(PXGUIElementBrush, &pxGUIElementBrush);
+                    *pxResourceCreateInfo->ObjectReference = pxGUIElementBrush;
+                }
+
+                pxGUIElementBrush->Info.ID = PXResourceManagerGenerateUniqeID(pxResourceManager);
+
+
+#if OSUnix
+#elif OSWindows
+                COLORREF brushColor = RGB(pxBrushCreateInfo->Color.Red, pxBrushCreateInfo->Color.Green, pxBrushCreateInfo->Color.Blue);
+                HBRUSH brushHandle = CreateSolidBrush(brushColor);
+
+                pxGUIElementBrush->Info.BrushHandle = brushHandle;
+#endif
+
+                PXDictionaryAdd(&pxResourceManager->BrushLookUp, pxGUIElementBrush->Info.ID, pxGUIElementBrush);
+
+                break;
+            }
             case PXResourceTypeImage:
             {
                 PXImageCreateInfo* const pxImageCreateInfo = &pxResourceCreateInfo->Image;

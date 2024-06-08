@@ -1188,8 +1188,10 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
 
     PXMathRandomeSeed(&pxEngine->RandomGeneratorSeed);
 
-    PXGUISystemInitialize(&pxEngine->GUISystem);
+    // TODO: silly
     pxEngine->GUISystem.ResourceManager = &pxEngine->ResourceManager;
+    PXGUISystemInitialize(&pxEngine->GUISystem);
+   
 
     // Load all mods now, not fully tho, they may need very early checks before anything happens
     if(pxEngineStartInfo->UseMods)
