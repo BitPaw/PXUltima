@@ -1437,10 +1437,20 @@ PXUIElementPosition;
 
 typedef void (PXAPI* PXWindowEventFunction)(void* const owner, struct PXWindowEvent_* const pxWindowEvent);
 
+typedef struct RECT_
+{
+    int    left;
+    int    top;
+    int    right;
+    int    bottom;
+}
+RECT;
+
 typedef struct PXGUIElementDrawInfo_
 {
 #if OSUnix
 	int dummy;
+	RECT* rcDirty;
 #elif OSWindows
 	HWND hwnd;
 	HDC hDC;
@@ -1490,7 +1500,7 @@ typedef struct PXGUIElement_
 
 	//---<State-Info>------------------------
 	PXGUIElementBrush* Brush;
-	 
+
 	//PXColorRGBAF* ColorTintReference; // Point to a color to be able to share a theme. Can be null, equal to plain white.
 	PXUIHoverState Hover;
 	PXInt32U FlagsList;

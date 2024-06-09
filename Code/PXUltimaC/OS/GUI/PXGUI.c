@@ -856,7 +856,7 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
                 break; // break: not found
             }
 
-            if(pxGUIElement->DrawFunction) 
+            if(pxGUIElement->DrawFunction)
             {
                // RECT rc;
 
@@ -1125,7 +1125,7 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
             */
 
             break;
-          
+
         }
         case WM_INPUT:
         {
@@ -1765,7 +1765,7 @@ PXActionResult PXAPI PXGUIElementDrawButton(PXGUISystem* const pxGUISystem, PXGU
 
    PXGUIElementDrawRectangle
    (
-       pxGUISystem, 
+       pxGUISystem,
        pxGUIElement,
        pxGUIElementDrawInfo->rcDirty->left,
        pxGUIElementDrawInfo->rcDirty->top,
@@ -1773,7 +1773,7 @@ PXActionResult PXAPI PXGUIElementDrawButton(PXGUISystem* const pxGUISystem, PXGU
        pxGUIElementDrawInfo->rcDirty->bottom
    );
 
-   SetTextColor(pxGUIElement->DeviceContextHandle, RGB(100, 0, 100));
+   //SetTextColor(pxGUIElement->DeviceContextHandle, RGB(100, 0, 100));
    char staticText[99];
 
    char text[] = "*** TEST ***";
@@ -1994,7 +1994,7 @@ Window XCreateSimpleWindow(Display *display, Window parent, int x, int y, unsign
 
 
     // Create brushes
-    
+
     PXResourceCreateInfo pxResourceCreateInfoList[10];
     PXClearList(PXResourceCreateInfo, pxResourceCreateInfoList, 10);
     pxResourceCreateInfoList[0].ObjectReference = &pxGUISystem->BrushBackgroundDark;
@@ -2227,10 +2227,6 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
     {
         // UI Elements not defined, we need it ourself!
 
-        switch(pxGUIElement->Type)
-        {
-            case PXUIElementTypeWindow:
-            {
                 PXGUIElementCreateWindowInfo* const pxGUIElementCreateWindowInfo = &pxGUIElementCreateInfo->Data.Window;
 
                 pxGUIElementCreateWindowInfo->UIElementReference = pxGUIElement;
@@ -2327,9 +2323,12 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
                 // Create window
                 {
-                    int borderWidth = 0;
+                    int borderWidth = 2;
+                    unsigned long border = 2;
 
-                    pxGUIElement->Info.WindowID = XCreateWindow
+                    if(PXUIElementTypeWindow == pxGUIElement->Type)
+                    {
+                        pxGUIElement->Info.WindowID = XCreateWindow
                     (
                         pxGUISystem->DisplayCurrent.DisplayHandle,
                         pxGUISystem->DisplayCurrent.WindowRootHandle,
@@ -2344,6 +2343,25 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                         CWColormap | CWEventMask,
                         &setWindowAttributes
                     );
+                    }
+                    else
+                    {
+                        pxGUIElement->Info.WindowID = XCreateSimpleWindow
+                        (
+                            pxGUISystem->DisplayCurrent.DisplayHandle,
+                            pxGUIElement->Parent->Info.WindowID,
+                            pxUIElementPositionCalulcateInfo.X,
+                            pxUIElementPositionCalulcateInfo.Y,
+                            pxUIElementPositionCalulcateInfo.Width,
+                            pxUIElementPositionCalulcateInfo.Height,
+                            borderWidth,
+                            border,
+                            PXNull
+                        );
+                    }
+
+
+
                     const PXBool sucessful = PXNull != pxGUIElement->Info.WindowID;
 
                     if(!sucessful)
@@ -2410,11 +2428,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                     const PXBool setTextSuccess = PXGUIElementTextSet(pxGUISystem, pxGUIElement, pxGUIElementCreateWindowInfo->Title);
                 }
 
-                break;
-            }
-            default:
-                break;
-        }
+
     }
 
 
@@ -2587,7 +2601,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                 pxGUIElementCreateInfo->WindowsStyleFlags |= BS_OWNERDRAW;
                 pxGUIElement->DrawFunction = PXGUIElementDrawButton;
                 pxGUIElement->Brush = pxGUISystem->BrushBackgroundDark;
-            } 
+            }
 
             break;
         }
@@ -5002,7 +5016,7 @@ PXActionResult PXAPI PXGUIElementDrawRectangle(PXGUISystem* const pxGUISystem, P
         width,
         height
     );
-    pxActionResultresult = PXGUIElementErrorFromXSystem(resultID);
+   // pxActionResultresult = PXGUIElementErrorFromXSystem(resultID);
 #elif OSWindows
   //  const BOOL bbbbb = SelectObject(pxGUIElement->DeviceContextHandle, GetStockObject(GRAY_BRUSH));
 
@@ -5095,7 +5109,7 @@ PXActionResult PXAPI PXGUIElementMove(PXGUISystem* const pxGUISystem, PXGUIEleme
     PXActionResult pxActionResult = PXActionInvalid;
 
 #if OSUnix
-    const int resultID = XMoveWindow(pxGUISystem->DisplayHandle, pxGUIElement->Info.WindowID, x, y);
+    const int resultID = XMoveWindow(pxGUISystem->DisplayCurrent.DisplayHandle, pxGUIElement->Info.WindowID, x, y);
     pxActionResult = PXGUIElementErrorFromXSystem(resultID);
 #elif PXOSWindowsDestop
     const UINT flags = SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER;
@@ -5270,7 +5284,7 @@ PXActionResult PXAPI PXGUIDrawBackgroundColorSetRGB(PXGUISystem* const pxGUISyst
         pxGUISystem->DisplayCurrent.GraphicContent,
         color
     );
-#elif OSWindows	
+#elif OSWindows
     const COLORREF color = RGB(red, green, blue);
     const COLORREF colorPrevious = SetBkColor(pxGUIElement->DeviceContextHandle, color);
     const PXBool successful = CLR_INVALID != colorPrevious;

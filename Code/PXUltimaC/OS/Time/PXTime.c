@@ -12,19 +12,19 @@ PXTimeMonth PXAPI PXTimeMonthFromID(const PXInt8U monthID)
 {
 	switch(monthID)
 	{
-		case 1u: return MonthJanuary; 
-		case 2u: return MonthFebruary; 
-		case 3u: return MonthMarch; 
-		case 4u: return MonthApril; 
-		case 5u: return MonthMarch; 
-		case 6u: return MonthJune; 
-		case 7u: return MonthJuly; 
-		case 8u: return MonthAugust; 
-		case 9u: return MonthSeptember; 
-		case 10u: return MonthOctober; 
-		case 11u: return MonthNovember; 
-		case 12u: return MonthDecember; 
-		default: return MonthInvalid; 
+		case 1u: return MonthJanuary;
+		case 2u: return MonthFebruary;
+		case 3u: return MonthMarch;
+		case 4u: return MonthApril;
+		case 5u: return MonthMarch;
+		case 6u: return MonthJune;
+		case 7u: return MonthJuly;
+		case 8u: return MonthAugust;
+		case 9u: return MonthSeptember;
+		case 10u: return MonthOctober;
+		case 11u: return MonthNovember;
+		case 12u: return MonthDecember;
+		default: return MonthInvalid;
 	}
 }
 
@@ -32,14 +32,14 @@ PXTimeDayOfWeek PXAPI PXTimeDayFromID(const PXInt8U dayID)
 {
 	switch(dayID)
 	{
-		case 1u: return DayMonday; 
-		case 2u: return DayTuesday; 
-		case 3u: return DayWednesday; 
-		case 4u: return DayThursday; 
-		case 5u: return DayFriday; 
-		case 6u: return DaySaturday; 
-		case 0u: return DaySunday; 
-		default: return DayInvalid; 
+		case 1u: return DayMonday;
+		case 2u: return DayTuesday;
+		case 3u: return DayWednesday;
+		case 4u: return DayThursday;
+		case 5u: return DayFriday;
+		case 6u: return DaySaturday;
+		case 0u: return DaySunday;
+		default: return DayInvalid;
 	}
 }
 
@@ -52,30 +52,30 @@ void PXAPI PXTimeNow(PXTime* const pxTime)
 	// clock_gettime
 	long             days;
 	struct timespec  ts;
-	
+
 	const int resultID = clock_gettime(CLOCK_REALTIME, &ts);
 	const PXBool success = -1 == resultID;
-	const PXActionResult result = POSIXError(success);
+	//const PXActionResult result = POSIXError(success);
 
-	if(PXSuccess != result)
+	//if(PXSuccess != result)
 	{
 		// Set 0 if error
 	}
-	
-	time->Year = 000000;
-	time->Month = 000000;
-	time->DayOfWeek = 000000;
-	time->Day = 000000;
-	time->Hour = 000000;
-	time->Minute =000000;
-	time->Second = 000000;
-	time->Milliseconds = ts->tv_sec;
-	
-	
+
+	pxTime->Year = 000000;
+	pxTime->Month = 000000;
+	pxTime->DayOfWeek = 000000;
+	pxTime->Day = 000000;
+	pxTime->Hour = 000000;
+	pxTime->Minute =000000;
+	pxTime->Second = 000000;
+	pxTime->Milliseconds = ts.tv_sec;
+
+
 
 	// ctime
 
-	
+
 #elif OSWindows
 	SYSTEMTIME systemTime;
 
@@ -128,14 +128,14 @@ PXInt64U PXAPI PXTimeCounterStampGet()
 {
 #if OSUnix
 	struct timespec  ts;
-	
+
 	const int resultID = clock_gettime(CLOCK_MONOTONIC, &ts); // CLOCK_THREAD_CPUTIME_ID
 	const PXBool success = -1 == resultID;
-	const PXActionResult result = POSIXError(success);
+	//const PXActionResult result = POSIXError(success);
 
 	if(success)
 	{
-			return ts-xxxx;
+			return ts.tv_sec;
 	}
 	else
 	{
@@ -153,8 +153,8 @@ PXInt64U PXAPI PXTimeCounterStampGet()
 	else
 	{
 		return 0;
-	}	
-#else 
+	}
+#else
 	return 0;
 #endif
 }
@@ -173,7 +173,7 @@ PXInt64U PXAPI PXTimeCounterFrequencyGet()
                       (intmax_t) ts.tv_sec, ts.tv_nsec);
 */
 
-	
+
 	return 0;
 #elif OSWindows
 	LARGE_INTEGER largeInteger;

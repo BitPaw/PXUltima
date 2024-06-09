@@ -1,21 +1,21 @@
 #include "PXALSA.h"
 
 #if OSUnix
-#include <sys/asoundlib.h>
-#include <alsa/asoundlib.h>
+//#include <sys/asoundlib.h>
+//#include <alsa/asoundlib.h>
 #pragma comment(lib, "libasound.so")
 #endif
 
 PXActionResult PXAPI PXALSAInitialize(PXAudio* const pxAudio)
 {
-#if OSUnix
+#if OSUnix && 0
     // sound PCM (Pulse Code Modulation)
 
     snd_pcm_t* SoundDeviceCurrent;
 
 
       snd_pcm_hw_params_t *hw_params;
-    
+
 // https://soundprogramming.net/programming/alsa-tutorial-1-initialization/
 
   int i;
@@ -38,7 +38,7 @@ PXActionResult PXAPI PXALSAInitialize(PXAudio* const pxAudio)
     {
         const PXBool useDefaultDevice = NULL == name;
         const char* deviceName = useDefaultDevice ? "plughw:0,0" : "???";
-    
+
         const int resultID = snd_pcm_open(&pxAudio->SoundDeviceCurrent, deviceName, SND_PCM_STREAM_PLAYBACK, 0 );
         const PXBool success = 0 == resultID;
 
@@ -53,8 +53,8 @@ PXActionResult PXAPI PXALSAInitialize(PXAudio* const pxAudio)
 			"Failed to create Name:<%s>",
 			deviceName
 		);
-#endif            
-            return PXFailedOpen;    
+#endif
+            return PXFailedOpen;
         }
 
 #if PXLogEnable
@@ -66,7 +66,7 @@ PXActionResult PXAPI PXALSAInitialize(PXAudio* const pxAudio)
 			"Success. Name:<%s>",
 			deviceName
 		);
-#endif      
+#endif
     }
 
 
@@ -87,7 +87,7 @@ PXActionResult PXAPI PXALSAInitialize(PXAudio* const pxAudio)
 			"Failed hardware parameter reservation. %s",
             errorMessage
 		);
-#endif 
+#endif
 
         return PXOutOfMem;
     }
@@ -208,7 +208,7 @@ PXActionResult PXAPI PXALSAInitialize(PXAudio* const pxAudio)
 
 
 
-    
+
     // Allocate memory for the device to hold data
     err = snd_pcm_hw_params_malloc (&hw_params);
 
@@ -227,7 +227,7 @@ PXActionResult PXAPI PXALSAInitialize(PXAudio* const pxAudio)
     // Apply
     err = snd_pcm_hw_params (pxAudio->SoundDeviceCurrent, hw_params);
 
-    
+
     snd_pcm_uframes_t bufferSize;
     snd_pcm_hw_params_get_buffer_size( hw_params, &bufferSize );
     cout << "Init: Buffer size = " << bufferSize << " frames." << endl;
@@ -245,10 +245,10 @@ PXActionResult PXAPI PXALSAInitialize(PXAudio* const pxAudio)
     err = snd_pcm_prepare (pxAudio->SoundDeviceCurrent);
 
     // Do something
-    
+
     // After use we need to close it
-    snd_pcm_close (pxAudio->SoundDeviceCurrent);    
-    
+    snd_pcm_close (pxAudio->SoundDeviceCurrent);
+
 
 #if PXLogEnable
 		PXLogPrint
@@ -269,10 +269,10 @@ return PXActionRefusedNotSupportedByOperatingSystem;
 
 PXActionResult PXAPI PXALSARelease(PXAudio* const pxAudio)
 {
-#if OSUnix
+#if OSUnix && 0
   snd_pcm_close (pxAudio->SoundDeviceCurrent);
   cout << "Audio device has been uninitialized." << endl;
-    
+
   return PXActionRefusedNotImplemented;
 
 #else
