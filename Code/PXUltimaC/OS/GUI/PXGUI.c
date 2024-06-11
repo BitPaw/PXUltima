@@ -731,6 +731,19 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
 
             switch(notificationCode->code)
             {
+                case LVN_BEGINDRAG:
+                {
+                  //  if(!bDragging)
+                      //  break;
+
+                   // p.x = LOWORD(lParam);
+                  //  p.y = HIWORD(lParam);
+
+                    //ClientToScreen(hWndMain, &p);
+                   // ImageList_DragMove(p.x, p.y);
+
+                    break;
+                }
                 case TVN_SELCHANGED:
                 {
                     // NOTE:
@@ -873,10 +886,12 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
                 PXClear(PXGUIElementDrawInfo, &pxGUIElementDrawInfo);
                 pxGUIElementDrawInfo.hwnd = pxGUIElement->Info.WindowID;
                 pxGUIElementDrawInfo.hDC = drawItemInfo->hDC;
-                //pxGUIElementDrawInfo.rcDirty = &paintStruct.rcPaint;
-                //pxGUIElementDrawInfo.rcDirty = &rc;
-                pxGUIElementDrawInfo.rcDirty = &drawItemInfo->rcItem;
                // pxGUIElementDrawInfo.bErase = paintStruct.fErase;
+
+                pxGUIElement->Position.Left = drawItemInfo->rcItem.left;
+                pxGUIElement->Position.Top = drawItemInfo->rcItem.top;
+                pxGUIElement->Position.Right = drawItemInfo->rcItem.right;
+                pxGUIElement->Position.Bottom = drawItemInfo->rcItem.bottom;
 
                 pxGUIElement->DrawFunction(pxGUISystem, pxGUIElement, &pxGUIElementDrawInfo);
 
@@ -910,7 +925,7 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
                 PXClear(PXGUIElementDrawInfo, &pxGUIElementDrawInfo);
                 pxGUIElementDrawInfo.hwnd = windowID;
                 pxGUIElementDrawInfo.hDC = (HDC)wParam;
-                pxGUIElementDrawInfo.rcDirty = &rc;
+              //  pxGUIElementDrawInfo.rcDirty = &rc;
                 pxGUIElementDrawInfo.bErase = TRUE;
 
                 pxGUIElement->DrawFunction(pxGUISystem, pxGUIElement, &pxGUIElementDrawInfo);
@@ -1928,12 +1943,14 @@ PXActionResult PXAPI PXGUIDisplayScreenListRefresh(PXGUISystem* const pxGUISyste
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXGUIElementDrawText(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo)
+PXActionResult PXAPI PXGUIElementDrawCustomText(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo)
 {
+    PXGUIElementDrawTextA(pxGUISystem, pxGUIElement, "", 0);
+
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXGUIElementDrawButton(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo)
+PXActionResult PXAPI PXGUIElementDrawCustomButton(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo)
 {
 #if PXLogEnable
     PXLogPrint
@@ -1956,10 +1973,10 @@ PXActionResult PXAPI PXGUIElementDrawButton(PXGUISystem* const pxGUISystem, PXGU
    (
        pxGUISystem,
        pxGUIElement,
-       pxGUIElementDrawInfo->rcDirty->left,
-       pxGUIElementDrawInfo->rcDirty->top,
-       pxGUIElementDrawInfo->rcDirty->right,
-       pxGUIElementDrawInfo->rcDirty->bottom
+       pxGUIElement->Position.Left,
+       pxGUIElement->Position.Top,
+       pxGUIElement->Position.Right,
+       pxGUIElement->Position.Bottom
    );
 
    //SetTextColor(pxGUIElement->DeviceContextHandle, RGB(100, 0, 100));
@@ -1972,11 +1989,37 @@ PXActionResult PXAPI PXGUIElementDrawButton(PXGUISystem* const pxGUISystem, PXGU
   // BOOL wedq = TextOut(pxGUIElement->DeviceContextHandle, pxGUIElementDrawInfo->rcDirty->left, pxGUIElementDrawInfo->rcDirty->top, text, length);
 
 
-   PXGUIElementDrawTextA(pxGUISystem, pxGUIElement, pxGUIElementDrawInfo->rcDirty, text, length);
+   PXGUIElementDrawTextA(pxGUISystem, pxGUIElement, text, length);
 
    // PXGUIElementDrawEnd(pxGUISystem, pxGUIElement);
 
     return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXGUIElementDrawCustomComboBox(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo)
+{
+    return PXActionRefusedNotImplemented;
+}
+
+PXActionResult PXAPI PXGUIElementDrawCustomHexView(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo)
+{
+    return PXActionRefusedNotImplemented;
+}
+
+PXActionResult PXAPI PXGUIElementDragStart(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement)
+{
+    HWND hwndParent = PXNull;
+    HWND hwndFrom = PXNull;
+    UINT fmt = PXNull;
+    ULONG_PTR data = PXNull;
+    HCURSOR hcur = PXNull;
+
+    const DWORD aa = DragObject(hwndParent, hwndFrom, fmt, data, hcur);
+
+    
+    //const BOOL res = DragDetect();
+
+    return PXActionRefusedNotImplemented;
 }
 
 PXBool PXAPI PXGUIElementValueFetch(PXGUIElement* const pxUIElementList, const PXSize dataListAmount, const PXUIElementProperty pxUIElementProperty, void* const dataList)
@@ -2273,7 +2316,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
     {
       // PXGUIElement* const uiElementSource
 
-
+    
 
         switch(pxGUIElementCreateInfo->Data.TreeViewItem.OwningObjectType)
         {
@@ -2286,16 +2329,16 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
             {
                 PXGUIElement* const uiElementSource = (PXGUIElement*)pxGUIElementCreateInfo->Data.TreeViewItem.OwningObject;
 
-                const char* uiElementTypeName = PXUIElementTypeToString(uiElementSource->Type);
+                const char* uiElementTypeName = PXUIElementTypeToString(uiElementSource->Type);              
+
                 const char windowName[256];
 
                 PXGUIElementTextGet(pxGUISystem, uiElementSource, windowName);
 
                 if(windowName[0] == '\0')
                 {
-                   // PXCopy
-                  //  name = "**Unnamed**";
-                }            
+                    PXTextCopyA("**Unnamed**", 11, windowName, 256);
+                }                              
 
                 nameTempLength = PXTextPrintA(nameTemp, 128, "[%s] %s", uiElementTypeName, windowName);
 
@@ -2325,7 +2368,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                     nameTemp,
                     128,
                     "[Shader] %s ID:%i",
-                    "---",// pxShaderProgram->ResourceID.Name,
+                    "---",
                     pxShaderProgram->Info.ID
                 );
 
@@ -2766,6 +2809,13 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                 }
             }
 
+            if(pxGUIElementCreateInfo->CustomDrawFunction || 1)
+            {
+                pxGUIElementCreateInfo->WindowsStyleFlags |= BS_OWNERDRAW;
+                pxGUIElement->DrawFunction = PXGUIElementDrawCustomText;
+                pxGUIElement->Brush = pxGUISystem->BrushBackgroundDark;
+            }
+
           //  return;
 
             break;
@@ -2781,7 +2831,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
             if(pxGUIElementCreateInfo->CustomDrawFunction || 1)
             {
                 pxGUIElementCreateInfo->WindowsStyleFlags |= BS_OWNERDRAW;
-                pxGUIElement->DrawFunction = PXGUIElementDrawButton;
+                pxGUIElement->DrawFunction = PXGUIElementDrawCustomButton;
                 pxGUIElement->Brush = pxGUISystem->BrushBackgroundDark;
             }
 
@@ -5059,7 +5109,7 @@ PXActionResult PXAPI PXGUIElementDrawText(PXGUISystem* const pxGUISystem, PXGUIE
     }
 }*/
 
-PXActionResult PXAPI PXGUIElementDrawTextA(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, RECT* const rect, const char* const text, const PXSize textSize)
+PXActionResult PXAPI PXGUIElementDrawTextA(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const char* const text, const PXSize textSize)
 {
 #if OSUnix
     // For ANSI and UTF-8 strings
@@ -5068,12 +5118,28 @@ PXActionResult PXAPI PXGUIElementDrawTextA(PXGUISystem* const pxGUISystem, PXGUI
 #elif OSWindows
 
     RECT rectangle;
-    UINT format = DT_CENTER | DT_SINGLELINE | DT_VCENTER | DT_NOCLIP;
+    rectangle.left = pxGUIElement->Position.Left;
+    rectangle.top = pxGUIElement->Position.Top;;
+    rectangle.right = pxGUIElement->Position.Right;
+    rectangle.bottom = pxGUIElement->Position.Bottom;
 
-    DRAWTEXTPARAMS drawinfo;
+    UINT format = DT_SINGLELINE | DT_NOCLIP;
+
+    format |= PXFlagIsSet(pxGUIElement->Position.FlagListKeep, PXUIElementAllignTop) * DT_TOP;
+    format |= PXFlagIsSet(pxGUIElement->Position.FlagListKeep, PXUIElementAllignLeft) * DT_LEFT;
+    format |= PXFlagIsSet(pxGUIElement->Position.FlagListKeep, PXUIElementAllignRight) * DT_RIGHT;
+    format |= PXFlagIsSet(pxGUIElement->Position.FlagListKeep, PXUIElementAllignBottom) * DT_BOTTOM;
+
+    if(PXFlagIsSet(pxGUIElement->Position.FlagListKeep, PXUIElementAllignCenter))
+    {
+        format |= DT_VCENTER | DT_CENTER;
+    }
+
+    DRAWTEXTPARAMS drawinfo;   
     PXClear(DRAWTEXTPARAMS, &drawinfo);
+    drawinfo.cbSize = sizeof(DRAWTEXTPARAMS);
 
-    const int nextHeight = DrawTextExA(pxGUIElement->DeviceContextHandle, text, textSize, rect, format, PXNull); // Windows 2000, User32.dll, winuser.h
+    const int nextHeight = DrawTextExA(pxGUIElement->DeviceContextHandle, text, textSize, &rectangle, format, PXNull); // Windows 2000, User32.dll, winuser.h
     const PXBool success = 0 != nextHeight;
     const PXActionResult result = PXWindowsErrorCurrent(success);
 

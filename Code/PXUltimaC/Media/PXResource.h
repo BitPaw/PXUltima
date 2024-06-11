@@ -336,6 +336,14 @@ PXResourceType;
 #define PXEngineResourceInfoHasSource		0b0000001000000000 // Is resource loaded from a path, if yes, path is cached.
 
 
+#define PXResourceBehavíourAllignTOP                      (1<<0)
+#define PXResourceBehavíourAllignLEFT                     (1<<1)
+#define PXResourceBehavíourAllignCENTER                   (1<<2)
+#define PXResourceBehavíourAllignRIGHT                    (1<<3)
+#define PXResourceBehavíourAllignVerticalCENTER           (1<<4)
+#define PXResourceBehavíourAllignBOTTOM                   (1<<5)
+
+
 // Internal engine identification
 // Additional use is to define current storage and interactions.
 typedef struct PXResourceInfo_
@@ -1428,6 +1436,11 @@ typedef struct PXUIElementPosition_
 	float Width;
 	float Height;
 
+	float Left;
+	float Top;
+	float Right;
+	float Bottom;
+
 	PXInt16U FlagListFormat; // Unused
 	PXInt8U FlagListAncer;
 	PXInt8U FlagListKeep;
@@ -1437,26 +1450,26 @@ PXUIElementPosition;
 
 typedef void (PXAPI* PXWindowEventFunction)(void* const owner, struct PXWindowEvent_* const pxWindowEvent);
 
-#if OSUnix
-typedef struct RECT_
+
+typedef struct PXRectangle_
 {
-    int    left;
-    int    top;
-    int    right;
-    int    bottom;
+    int Left;
+    int Top;
+    int Right;
+    int Bottom;
 }
-RECT;
-#endif
+PXRectangle;
+
 
 typedef struct PXGUIElementDrawInfo_
 {
+	PXRectangle Rectangle;
+
 #if OSUnix
 	int dummy;
-	RECT* rcDirty;
 #elif OSWindows
 	HWND hwnd;
 	HDC hDC;
-	RECT* rcDirty;
 	BOOL bErase;
 #endif
 }
@@ -1796,7 +1809,7 @@ typedef struct PXGUIElementCreateInfo_
 	PXGUIElement* UIElementParent;
 	PXGUIElement* UIElementWindow;
 
-	PXInt32U FlagList;
+	//PXInt32U FlagList;
 
 	PXUIElementType Type;
 	PXInt32U BehaviourFlags;
