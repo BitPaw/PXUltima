@@ -843,7 +843,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
 
         if(pxEngine->HasGraphicInterface && pxEngine->Graphic.WindowReference)
         {
-            const PXBool isWindowEnabled = PXGUIElementIsEnabled(pxEngine->Graphic.WindowReference->Info.ID);
+            const PXBool isWindowEnabled = PXGUIElementIsEnabled(&pxEngine->GUISystem, pxEngine->Graphic.WindowReference);
 
             if(isWindowEnabled)
             {
@@ -857,6 +857,8 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
                 pxEngine->TimeData.CounterTimeGPU = PXTimeCounterStampGet() - pxEngine->TimeData.CounterTimeGPU;
                 pxEngine->Graphic.SceneDeploy(pxEngine->Graphic.EventOwner);
 #endif
+
+                PXGUIElementBufferSwap(&pxEngine->GUISystem, pxEngine->Window);
             }
 
 
@@ -1384,7 +1386,9 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
     //-----------------------------------------------------
 
 
-    if(pxEngineStartInfo->Mode != PXGraphicInitializeModeOSGUI)
+
+
+    if(PXGraphicInitializeModeOSGUI != pxEngineStartInfo->Mode)
     {
         PXEngineResourceDefaultElements(pxEngine);
     }

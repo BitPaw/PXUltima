@@ -145,6 +145,7 @@ void PXAPI PXResourceManagerInit(PXResourceManager* const pxResourceManager)
     PXDictionaryConstruct(&pxResourceManager->ShaderProgramLookup, sizeof(PXInt32U), sizeof(PXShaderProgram), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&pxResourceManager->SkyBoxLookUp, sizeof(PXInt32U), sizeof(PXSkyBox), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&pxResourceManager->ImageLookUp, sizeof(PXInt32U), sizeof(PXImage), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&pxResourceManager->BrushLookUp, sizeof(PXInt32U), sizeof(PXGUIElementBrush), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&pxResourceManager->GUIElementLookup, sizeof(PXInt32U), sizeof(PXGUIElement), PXDictionaryValueLocalityExternalReference);
 }
 
@@ -185,10 +186,13 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                 COLORREF brushColor = RGB(pxBrushCreateInfo->Color.Red, pxBrushCreateInfo->Color.Green, pxBrushCreateInfo->Color.Blue);
                 HBRUSH brushHandle = CreateSolidBrush(brushColor);
 
+               // Color xx = Color(255, 0, 0, 255);
+               // SolidBrush ww = opaqueBrush();
+
                 pxGUIElementBrush->Info.BrushHandle = brushHandle;
 #endif
 
-                PXDictionaryAdd(&pxResourceManager->BrushLookUp, pxGUIElementBrush->Info.ID, pxGUIElementBrush);
+                PXDictionaryAdd(&pxResourceManager->BrushLookUp, &pxGUIElementBrush->Info.ID, pxGUIElementBrush);
 
                 break;
             }

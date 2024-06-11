@@ -171,6 +171,14 @@
 #endif
 
 
+//---------------------------------------------------------
+// Flags
+//---------------------------------------------------------
+#define PXFlagIsSet(value, flagID) (1u && (value & flagID))
+#define PXFlagAdd(target, value, flagID) target |= flagID 
+#define PXFlagRemove(target, value, flagID)  target &= ~flagID
+
+
 #define PXDataTypeReadOnlyMask			0b10000000000000000000000000000000
 #define PXDataTypeAdressMask			0b01000000000000000000000000000000 // Used if the type is
 #define PXDataTypeEndianMask			0b00110000000000000000000000000000 // Little or big endian. If No endian is spesified, we can just copy 1:1

@@ -213,14 +213,14 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
 
     // Fetch all graphical devices 
 
-    PXMonitorDeviceAmount(&pxGraphic->DevicePhysicalListSize);
+    //PXMonitorDeviceAmount(&pxGraphic->DevicePhysicalListSize);
 
     if(0)
     {      
         // Allocate space for needed devices
-        PXNewList(PXGraphicDevicePhysical, pxGraphic->DevicePhysicalListSize, &pxGraphic->DevicePhysicalList, &pxGraphic->DevicePhysicalListSize);
+        //PXNewList(PXGraphicDevicePhysical, pxGraphic->DevicePhysicalListSize, &pxGraphic->DevicePhysicalList, &pxGraphic->DevicePhysicalListSize);
 
-        PXPhysicalDeviceFetchAll(pxGraphic->DevicePhysicalList, pxGraphic->DevicePhysicalListSize);
+        //PXPhysicalDeviceFetchAll(pxGraphic->DevicePhysicalList, pxGraphic->DevicePhysicalListSize);
     }  
  
 

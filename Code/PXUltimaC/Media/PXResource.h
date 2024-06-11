@@ -1437,6 +1437,7 @@ PXUIElementPosition;
 
 typedef void (PXAPI* PXWindowEventFunction)(void* const owner, struct PXWindowEvent_* const pxWindowEvent);
 
+#if OSUnix
 typedef struct RECT_
 {
     int    left;
@@ -1445,6 +1446,7 @@ typedef struct RECT_
     int    bottom;
 }
 RECT;
+#endif
 
 typedef struct PXGUIElementDrawInfo_
 {
@@ -1816,6 +1818,7 @@ typedef struct PXGUIElementCreateInfo_
 	PXInt32U WindowsWindowsStyleFlagsExtended;
 	PXInt32U WindowsStyleFlags;
 	char* WindowsTextContent;
+	PXSize WindowsTextSize;
 	const char* WindowsClassName;
 #endif
 

@@ -3001,11 +3001,6 @@ PXActionResult PXAPI PXOpenGLRelease(PXOpenGL* const pxOpenGL)
     return PXActionSuccessful;
 }
 
-void PXAPI PXOpenGLRenderBufferSwap(PXOpenGL* const pxOpenGL)
-{
-   // PXWindowFrameBufferSwap(pxOpenGL->);
-}
-
 void PXAPI PXOpenGLFlush(PXOpenGL* const pxOpenGL)
 {
     pxOpenGL->Flush();

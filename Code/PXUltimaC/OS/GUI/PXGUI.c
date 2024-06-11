@@ -1658,12 +1658,12 @@ PXThreadResult PXOSAPI PXWindowMessageLoop(PXGUIElement* const pxGUIElement)
     return PXActionSuccessful;
 }
 
-PXBool PXAPI PXGUIElementIsEnabled(const PXWindowID pxUIElementID)
+PXBool PXAPI PXGUIElementIsEnabled(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement)
 {
 #if OSUnix
     return PXFalse;
 #elif OSWindows
-    return IsWindowEnabled(pxUIElementID); // Windows 2000, User32.dll, winuser.h
+    return IsWindowEnabled(pxGUIElement->Info.WindowID); // Windows 2000, User32.dll, winuser.h
 #else
     return PXFalse;
 #endif
@@ -1742,6 +1742,195 @@ PXActionResult PXAPI PXGUIElementTextSet(PXGUISystem* const pxGUISystem, PXGUIEl
 
 
     return PXTrue;
+}
+
+PXActionResult PXAPI PXGUIElementTextGet(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, char* text)
+{
+    PXActionResult pxActionResult = PXActionInvalid;
+
+#if OSUnix
+    pxActionResult = PXActionRefusedNotImplemented;
+#elif OSWindows
+
+    const int size = GetWindowTextA(pxGUIElement->Info.WindowID, text, 255);
+
+#else
+    pxActionResult = PXActionRefusedNotSupportedByLibrary;
+#endif
+
+    return pxActionResult;
+}
+
+PXActionResult PXAPI PXGUIDisplayScreenListRefresh(PXGUISystem* const pxGUISystem)
+{
+    // Update amount of items
+
+    PXClearList(PXDisplayScreen, pxGUISystem->DisplayCurrent.DisplayScreenList, 8);
+
+#if OSUnix
+
+    Display xDisplay = pxGUISystem->DisplayCurrent.DisplayHandle;
+
+    pxGUISystem->DisplayCurrent.ScreenDefaultID = XDefaultScreen(xDisplay);
+    pxGUISystem->DisplayCurrent.ScreenListAmount = XScreenCount(xDisplay);
+
+
+    for(size_t screenID = 0; screenID < pxGUISystem->DisplayCurrent.ScreenListAmount->ScreenListAmount; ++screenID)
+    {
+        PXDisplayScreen* pxDisplayScreen = &pxDisplay->DisplayScreenList[screenID];
+
+        pxDisplayScreen->Width = XDisplayWidth(xDisplay, screenID);
+        pxDisplayScreen->Height = XDisplayHeight(xDisplay, screenID);
+        pxDisplayScreen->Cells = XDisplayCells(xDisplay, screenID);
+        pxDisplayScreen->Planes = XDisplayPlanes(xDisplay, screenID);
+        pxDisplayScreen->WidthMM = XDisplayWidthMM(xDisplay, screenID);
+        pxDisplayScreen->HeightMM = XDisplayHeightMM(xDisplay, screenID);
+
+        pxDisplayScreen->IsConnected = PXTrue;
+        pxDisplayScreen->IsPrimary = screenID == pxGUISystem->DisplayCurrent.ScreenDefaultID;       
+    }
+
+#elif OSWindows
+
+    {
+        DWORD amount = 0;
+
+        DISPLAY_DEVICEA displayDevice;
+        displayDevice.cb = sizeof(DISPLAY_DEVICEA);
+
+        // Count how many devices we have.
+        while(EnumDisplayDevicesA(NULL, amount, &displayDevice, 0))
+            ++(amount);
+
+        pxGUISystem->DisplayCurrent.ScreenListAmount = amount;
+    }
+
+    
+
+    pxGUISystem->DisplayCurrent.ScreenListAmount = 0;
+
+    DISPLAY_DEVICEA displayDevice;
+    DWORD            dwFlags = 0;
+    displayDevice.cb = sizeof(displayDevice);
+
+    for(PXSize deviceID = 0; EnumDisplayDevicesA(0, deviceID, &displayDevice, dwFlags); deviceID++)
+    {
+        PXDisplayScreen* const pxDisplayScreen = &pxGUISystem->DisplayCurrent.DisplayScreenList[deviceID];
+
+        //PXGraphicDevicePhysical* const pxGraphicDevicePhysical = &pxGraphicDevicePhysicalList[deviceID];
+
+        DWORD    iModeNum = ENUM_CURRENT_SETTINGS;
+        DEVMODEA devMode = { 0 };
+        DWORD    dwFlags = EDS_RAWMODE;
+
+        devMode.dmSize = sizeof(DEVMODEA);
+
+        const BOOL settingsResult = EnumDisplaySettingsExA
+        (
+            displayDevice.DeviceName,
+            iModeNum,
+            &devMode,
+            dwFlags
+        );
+
+        pxDisplayScreen->IsConnected = PXFlagIsSet(displayDevice.StateFlags, DISPLAY_DEVICE_ATTACHED_TO_DESKTOP);
+       
+        if(!pxDisplayScreen->IsConnected)
+        {
+            continue;
+        }
+
+        ++pxGUISystem->DisplayCurrent.ScreenListAmount;
+        
+        pxDisplayScreen->IsPrimary = PXFlagIsSet(displayDevice.StateFlags, DISPLAY_DEVICE_PRIMARY_DEVICE);
+
+
+        pxDisplayScreen->Width = devMode.dmPelsWidth;
+        pxDisplayScreen->Height = devMode.dmPelsHeight;
+
+        PXTextCopyA(displayDevice.DeviceName, 32, pxDisplayScreen->NameID, PXDisplayScreenNameLength);
+        PXTextCopyA(displayDevice.DeviceString, 128, pxDisplayScreen->GraphicDeviceName, PXDisplayScreenDeviceLength);
+       // PXTextCopyA(displayDevice.DeviceID, 128, pxDisplayScreen->DeviceID, PXDeviceIDSize);
+        //PXTextCopyA(displayDevice.DeviceKey, 128, pxDisplayScreen->DeviceKey, PXDeviceKeySize);
+
+    
+
+        
+
+        {
+            DISPLAY_DEVICEA monitorDeviceA;
+            monitorDeviceA.cb = sizeof(monitorDeviceA);
+
+
+            for(PXSize deviceMonitorID = 0; EnumDisplayDevicesA(displayDevice.DeviceName, deviceMonitorID, &monitorDeviceA, 0); deviceMonitorID++)
+            {
+               // PXMonitor* const monitor = &pxGraphicDevicePhysical->AttachedMonitor;;
+
+               // PXTextCopyA(monitorDeviceA.DeviceString, 128, monitor->Driver, MonitorNameLength);
+
+                PXSize position = PXTextFindFirstCharacterA(monitorDeviceA.DeviceID, 128, '\\');
+
+                PXSize targetZize = 128 - position + 1;
+                char* target = monitorDeviceA.DeviceID + position + 1;
+
+                PXSize positionB = PXTextFindFirstCharacterA(target, targetZize, '\\');
+
+                PXTextCopyA(target, positionB, pxDisplayScreen->NameMonitor, PXDisplayScreenMonitorLength);
+            }
+        }
+        
+
+
+    }
+#endif
+
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "GUI",
+        "Display-Device",
+        "Fetching <%i> monitor devices",
+        pxGUISystem->DisplayCurrent.ScreenListAmount
+    );
+
+    for(size_t i = 0; i < pxGUISystem->DisplayCurrent.ScreenListAmount; i++)
+    {
+        PXDisplayScreen* const pxDisplayScreen = &pxGUISystem->DisplayCurrent.DisplayScreenList[i];
+
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "GUI",
+            "Display-Device",
+            "Detected:\n"
+            "+--------------------------------------------------------+\n"
+            "| DeviceName     : %-27s %-4ix%4i |\n"
+            "| DeviceString   : %-37.37s |\n"
+            "| Monitor Name   : %-37.37s |\n"
+            "| Monitor Driver : %-37.37s |\n"
+            "| DeviceID       : %-37.37s |\n"
+            "| DeviceKey      : %-37.37s |\n"
+            "+--------------------------------------------------------+\n",
+            pxDisplayScreen->NameMonitor,
+            pxDisplayScreen->Width,
+            pxDisplayScreen->Height,
+            displayDevice.DeviceString,
+            pxDisplayScreen->NameID,
+            "???",
+            displayDevice.DeviceID,
+            displayDevice.DeviceKey
+        );
+    }
+#endif
+
+    return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXGUIElementDrawText(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo)
+{
+    return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXGUIElementDrawButton(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo)
@@ -1876,12 +2065,7 @@ PXActionResult PXAPI PXGUISystemInitialize(PXGUISystem* const pxGUISystem)
         pxDisplay->ProtocolRevision = XProtocolRevision(pxDisplay->DisplayHandle);
 
         pxDisplay->ServerVendor = XServerVendor(pxDisplay->DisplayHandle);
-        pxDisplay->VendorRelease = XVendorRelease(pxDisplay->DisplayHandle);
-
-        pxDisplay->ScreenDefaultID = DefaultScreen(pxDisplay->DisplayHandle);
-
-        pxDisplay->ScreenListAmount = XScreenCount(pxDisplay->DisplayHandle);
-
+        pxDisplay->VendorRelease = XVendorRelease(pxDisplay->DisplayHandle); 
 
 #if PXLogEnable
         PXLogPrint
@@ -1892,30 +2076,17 @@ PXActionResult PXAPI PXGUISystemInitialize(PXGUISystem* const pxGUISystem)
             "Successfly opened display (0x%p)\n"
             "%10s: %s, Data: %s\n"
             "%10s: %i.%i\n"
-            "%10s: %s (Relase %i)\n"
-            "%10s: %i, main:%i",
+            "%10s: %s (Relase %i)"
             pxDisplay->DisplayHandle,
             "Name", pxDisplay->Name, pxDisplay->Data,
             "Protocol", pxDisplay->ProtocolVersion, pxDisplay->ProtocolRevision,
-            "Server", pxDisplay->ServerVendor, pxDisplay->VendorRelease,
-            "Screens", pxDisplay->ScreenListAmount, pxDisplay->ScreenDefaultID
+            "Server", pxDisplay->ServerVendor, pxDisplay->VendorRelease
         );
 #endif
 
         // Get default values
 
-        for(size_t screenID = 0; screenID < pxDisplay->ScreenListAmount; ++screenID)
-        {
-            PXDisplayScreen* pxDisplayScreen = &pxDisplay->DisplayScreenList[screenID];
-
-            pxDisplayScreen->Width = XDisplayWidth(pxDisplay->DisplayHandle, screenID);
-            pxDisplayScreen->Height = XDisplayHeight(pxDisplay->DisplayHandle, screenID);
-            pxDisplayScreen->Cells = XDisplayCells(pxDisplay->DisplayHandle, screenID);
-            pxDisplayScreen->Planes = XDisplayPlanes(pxDisplay->DisplayHandle, screenID);
-            pxDisplayScreen->WidthMM = XDisplayWidthMM(pxDisplay->DisplayHandle, screenID);
-            pxDisplayScreen->HeightMM = XDisplayHeightMM(pxDisplay->DisplayHandle, screenID);
-
-        }
+  
 
         pxDisplay->WindowRootHandle = XDefaultRootWindow(pxDisplay->DisplayHandle); // Make windows root
         pxDisplay->GraphicContent = XCreateGC(pxDisplay->DisplayHandle, pxDisplay->WindowRootHandle, 0, 0);
@@ -1991,6 +2162,10 @@ Window XCreateSimpleWindow(Display *display, Window parent, int x, int y, unsign
     InitCommonControlsEx(&initCommonControls);
 
 #endif
+
+
+    PXGUIDisplayScreenListRefresh(pxGUISystem);
+
 
 
     // Create brushes
@@ -2086,10 +2261,11 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
     PXCopy(PXUIElementPosition, &pxGUIElementCreateInfo->Position, &pxGUIElement->Position);
 
 
+    char nameTemp[256];
+    PXSize nameTempLength = 0;
 
 
-
-#if 0
+#if 1
     const char* uielementName = PXUIElementTypeToString(pxGUIElementCreateInfo->Type);
 
     //const char* format = PXEngineCreateTypeToString(pxEngineResourceCreateInfo->CreateType);
@@ -2101,24 +2277,27 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
         switch(pxGUIElementCreateInfo->Data.TreeViewItem.OwningObjectType)
         {
-            case PXFileResourceTypeEmpty:
+            case PXResourceTypeCustom:
             {
-                pxGUIElement->NameSize = PXTextPrintA(pxGUIElement->NameData, 128, "<%s>", pxGUIElementCreateInfo->Name);
+                nameTempLength = PXTextPrintA(nameTemp, 128, "<%s>", pxGUIElementCreateInfo->Name);
                 break;
             }
-            case PXFileResourceTypeUI:
+            case PXResourceTypeGUIElement:
             {
                 PXGUIElement* const uiElementSource = (PXGUIElement*)pxGUIElementCreateInfo->Data.TreeViewItem.OwningObject;
 
                 const char* uiElementTypeName = PXUIElementTypeToString(uiElementSource->Type);
-                const char* name = uiElementSource->NameData;
+                const char windowName[256];
 
-                if(name[0] == '\0')
+                PXGUIElementTextGet(pxGUISystem, uiElementSource, windowName);
+
+                if(windowName[0] == '\0')
                 {
-                    name = "**Unnamed**";
-                }
+                   // PXCopy
+                  //  name = "**Unnamed**";
+                }            
 
-                pxGUIElement->NameSize = PXTextPrintA(pxGUIElement->NameData, 128, "[%s] %s", uiElementTypeName, name);
+                nameTempLength = PXTextPrintA(nameTemp, 128, "[%s] %s", uiElementTypeName, windowName);
 
                 break;
             }
@@ -2126,9 +2305,9 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
             {
                 PXModel* const pxModel = (PXModel*)pxGUIElementCreateInfo->Data.TreeViewItem.OwningObject;
 
-                pxGUIElement->NameSize = PXTextPrintA
+                nameTempLength = PXTextPrintA
                 (
-                    pxGUIElement->NameData,
+                    nameTemp,
                     128,
                     "[Model] %s ID:%i",
                     "---",//pxModel->Info.Name,
@@ -2137,13 +2316,13 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
                 break;
             }
-            case PXFileResourceTypeRenderShader:
+            case PXResourceTypeShaderProgram:
             {
                 PXShaderProgram* const pxShaderProgram = (PXShaderProgram*)pxGUIElementCreateInfo->Data.TreeViewItem.OwningObject;
 
-                pxGUIElement->NameSize = PXTextPrintA
+                nameTempLength = PXTextPrintA
                 (
-                    pxGUIElement->NameData,
+                    nameTemp,
                     128,
                     "[Shader] %s ID:%i",
                     "---",// pxShaderProgram->ResourceID.Name,
@@ -2156,9 +2335,9 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
             {
                 PXImage* const pxImage = (PXImage*)pxGUIElementCreateInfo->Data.TreeViewItem.OwningObject;
 
-                pxGUIElement->NameSize = PXTextPrintA
+                nameTempLength = PXTextPrintA
                 (
-                    pxGUIElement->NameData,
+                    nameTemp,
                     128,
                     "[Image] %ix%i",
                     pxImage->Width,
@@ -2169,11 +2348,14 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
             }
             default:
             {
-                pxGUIElement->NameSize = PXTextPrintA(pxGUIElement->NameData, 128, "ERROR");
+                nameTempLength = PXTextPrintA(nameTemp, 128, "ERROR");
 
                 break;
             }
         }
+
+        pxGUIElementCreateInfo->WindowsTextContent = nameTemp;
+        pxGUIElementCreateInfo->WindowsTextSize = nameTempLength;
     }
     else
     {
@@ -2184,7 +2366,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
             name = "**Unnamed**";
         }
 
-        pxGUIElement->NameSize = PXTextPrintA(pxGUIElement->NameData, 128, "%s", name);
+        nameTempLength = PXTextPrintA(nameTemp, 128, "%s", name);
     }
 #endif
 
@@ -3170,8 +3352,8 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
             }
             else
             {
-              //  item.item.pszText = pxGUIElement->NameData;
-              //  item.item.cchTextMax = pxGUIElement->NameSize;
+               item.item.pszText = pxGUIElementCreateInfo->WindowsTextContent;
+               item.item.cchTextMax = pxGUIElementCreateInfo->WindowsTextSize;
             }
 
 
@@ -4696,21 +4878,22 @@ void PXAPI PXWindowCursorCaptureMode(const PXWindowID pxWindowID, const PXWindow
 #endif
 }
 
-PXBool PXAPI PXWindowFrameBufferSwap(const PXWindowID pxWindowID)
+PXActionResult PXAPI PXGUIElementBufferSwap(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement)
 {
+    PXActionResult pxActionResult = PXActionInvalid;    
+
 #if OSUnix
-   // glXSwapBuffers(window->DisplayCurrent, window->ID);
-    return PXFalse;
+    glXSwapBuffers(pxGUISystem->DisplayCurrent.DisplayHandle, pxGUIElement->Info.WindowID);
+    pxActionResult = PXActionSuccessful; // TODO: Do we have error checking?
 
-#elif OSWindows
-
-    const PXBool result = 0;// SwapBuffers(window->HandleDeviceContext);
-
-   return result;
-
+#elif OSWindows    
+    const PXBool result = SwapBuffers(pxGUIElement->DeviceContextHandle);
+    pxActionResult = PXWindowsErrorCurrent(result);
 #else
-    return PXFalse;
+    pxActionResult = PXActionRefusedNotSupportedByLibrary;
 #endif
+
+    return pxActionResult;
 }
 
 PXBool PXAPI PXWindowInteractable(const PXWindowID pxWindowID)
@@ -4859,6 +5042,7 @@ PXBool PXAPI PXWindowIsInFocus(const PXWindowID pxWindowID)
 #endif
 }
 
+/*
 PXActionResult PXAPI PXGUIElementDrawText(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXText* const pxText)
 {
     switch(pxText->Format)
@@ -4873,7 +5057,7 @@ PXActionResult PXAPI PXGUIElementDrawText(PXGUISystem* const pxGUISystem, PXGUIE
         default:
             return TextFormatInvalid;
     }
-}
+}*/
 
 PXActionResult PXAPI PXGUIElementDrawTextA(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, RECT* const rect, const char* const text, const PXSize textSize)
 {

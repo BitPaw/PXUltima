@@ -1383,7 +1383,6 @@ typedef struct PXOpenGL_
 	PXOpenGLDeviceAffinityList DeviceAffinityList;
 	PXOpenGLDeviceAffinityDelete DeviceAffinityDelete;
 
-
 	PXOpenGLCopyContext CopyContext;
 	PXOpenGLCreateContext CreateContext;
 	PXOpenGLCreateLayerContext CreateLayerContext;
@@ -1441,9 +1440,6 @@ PXPublic PXActionResult PXAPI PXOpenGLDevicePhysicalListAmount(PXOpenGL* const p
 PXPublic PXActionResult PXAPI PXOpenGLDevicePhysicalListFetch(PXOpenGL* const pxOpenGL, const PXInt32U amount, PXGraphicDevicePhysical* const pxGraphicDevicePhysicalList);
 
 PXPublic PXActionResult PXAPI PXOpenGLScreenBufferRead(PXOpenGL* const pxOpenGL, PXImage* const pxImage);
-
-
-PXPublic void PXAPI PXOpenGLRenderBufferSwap(PXOpenGL* const openGLContext);
 
 PXPublic void PXAPI PXOpenGLFlush(PXOpenGL* const openGLContext);
 PXPublic void PXAPI PXOpenGLViewPortSet(PXOpenGL* const openGLContext, const PXViewPort* const pxViewPort);

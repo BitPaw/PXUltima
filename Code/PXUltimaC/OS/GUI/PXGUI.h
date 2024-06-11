@@ -463,10 +463,16 @@ typedef struct PXWindowPixelSystemInfo_
 PXWindowPixelSystemInfo;
 
 
+#define PXDisplayScreenMonitorLength 32
+#define PXDisplayScreenNameLength 32
+#define PXDisplayScreenDeviceLength 128
+
 // Container where windows can be created in
 typedef struct PXDisplayScreen_
 {
-	char* Name;
+	char GraphicDeviceName[PXDisplayScreenDeviceLength];
+	char NameMonitor[PXDisplayScreenMonitorLength];
+	char NameID[PXDisplayScreenNameLength];
 
 	int Width;
 	int Height;
@@ -475,6 +481,8 @@ typedef struct PXDisplayScreen_
 	int WidthMM;
 	int HeightMM;
 
+	PXBool IsConnected;
+	PXBool IsPrimary;
 }
 PXDisplayScreen;
 
@@ -530,14 +538,27 @@ PXGUISystem;
 
 
 
-// Global Variable, bad but needed for SYNC with OS. Stupid design
-
+// TODO: Global Variable, bad but needed for SYNC with OS. Stupid design
 PXPrivate PXGUISystem* PXGUISystemGlobalReference = PXNull;
 
 
+//---------------------------------------------------------
+// GUI system functions
+//---------------------------------------------------------
 PXPublic PXActionResult PXAPI PXGUISystemInitialize(PXGUISystem* const pxGUISystem);
 PXPublic PXActionResult PXAPI PXGUISystemRelease(PXGUISystem* const pxGUISystem);
 
+#if OSUnix
+PXPublic PXActionResult PXAPI PXGUIElementErrorFromXSystem(const int xSysstemErrorID);
+#endif
+//---------------------------------------------------------
+
+
+
+//---------------------------------------------------------
+// Window event functions
+//---------------------------------------------------------
+PXPublic void PXAPI PXWindowUpdate(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
 
 PXPublic void PXAPI PXWindowEventConsumer(PXGUISystem* const pxGUISystem, PXWindowEvent* const pxWindowEvent);
 
@@ -549,14 +570,55 @@ PXPublic LRESULT CALLBACK PXWindowEventHandler(const HWND PXWindowsID, const UIN
 PXPrivate void PXAPI PXGUIElementChildListEnumerate(PXGUISystem* const pxGUISystem, PXGUIElement* const parent, PXBool visible);
 PXPrivate BOOL CALLBACK PXWindowEnumChildProc(HWND hwnd, LPARAM lParam);
 #endif
+//---------------------------------------------------------
 
 
+
+//---------------------------------------------------------
+// Window utility functions
+//---------------------------------------------------------
+PXPublic PXBool PXAPI PXGUIElementFind(const PXWindowID pxUIElementID, PXGUIElement* const pxGUIElement);
 PXPublic PXThreadResult PXOSAPI PXWindowMessageLoop(PXGUIElement* const pxGUIElement);
 
-PXPublic PXBool PXAPI PXGUIElementIsEnabled(const PXWindowID pxUIElementID);
-PXPublic PXBool PXAPI PXGUIElementFind(const PXWindowID pxUIElementID, PXGUIElement* const pxGUIElement);
+PXPublic PXActionResult PXAPI PXGUIFontLoad(PXGUISystem* const pxGUISystem, PXFont* const pxFont, const char* const name);
+PXPublic PXActionResult PXAPI PXGUIFontRelease(PXGUISystem* const pxGUISystem, PXFont* const pxFont);
+PXPublic PXActionResult PXAPI PXGUIFontSet(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXFont* const pxFont);
+
+PXPublic PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResourceCreateInfo* const pxResourceCreateInfo, const PXSize amount);
+PXPublic PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIElementUpdateInfo* const pxGUIElementUpdateInfoList, const PXSize amount);
+PXPublic PXActionResult PXAPI PXGUIElementFetch(PXGUISystem* const pxGUISystem, PXGUIElementUpdateInfo* const pxGUIElementUpdateInfoList, const PXSize amount);
+PXPublic PXActionResult PXAPI PXGUIElementRelease(PXGUIElement* const pxGUIElement);
 PXPublic PXActionResult PXAPI PXGUIElementDelete(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
 
+// Use for a seperate window that needs to be merged into a main one.
+// Given a spesific window we can try to absorb the contens and underlieing elemetns and move them into your own space.
+// Objects shall not be created or destroyed, simply the ownership of those objects should be transphered. (can we do that?)
+PXActionResult PXAPI PXGUIElementAbsorb(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
+
+// Use for draging a window outside it own borders to spawn a new one.
+PXActionResult PXAPI PXGUIElementEmit(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
+//---------------------------------------------------------
+
+
+
+//---------------------------------------------------------
+// Window propertys - Getter / Setter
+//---------------------------------------------------------
+PXPublic PXBool PXAPI PXGUIElementIsEnabled(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
+PXPublic PXActionResult PXAPI PXGUIElementMove(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y);
+PXPublic PXActionResult PXAPI PXGUIElementResize(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int width, const int height);
+PXPublic PXActionResult PXAPI PXGUIElementMoveAndResize(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y, const int width, const int height);
+
+PXPublic PXActionResult PXAPI PXGUIElementTextSet(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, char* text);
+PXPublic PXActionResult PXAPI PXGUIElementTextGet(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, char* text);
+PXPublic PXActionResult PXAPI PXGUIElementStyleUpdate(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
+PXPublic PXActionResult PXAPI PXWindowTitleBarColorSet(const PXWindowID pxWindowID);
+
+
+PXPublic PXBool PXAPI PXWindowInteractable(const PXWindowID pxWindowID);
+
+PXPublic PXBool PXAPI PXWindowCursorPositionInWindowGet(const PXWindowID pxWindowID, PXInt32S* const x, PXInt32S* const y);
+PXPublic PXBool PXAPI PXWindowCursorPositionInDestopGet(const PXWindowID pxWindowID, PXInt32S* const x, PXInt32S* const y);
 
 PXPublic PXBool PXAPI PXGUIElementValueFetch
 (
@@ -568,27 +630,49 @@ PXPublic PXBool PXAPI PXGUIElementValueFetch
 
 
 
+PXPublic PXActionResult PXAPI PXGUIScreenDeviceAmount(PXSize* const amount);
+
+PXPublic void PXAPI PXGUIScreenFetchAll(PXMonitor* const monitorList, const PXSize monitorListSizeMax, const PXSize monitorListSize);
+
+PXPublic void PXAPI PXGUIScreenGetSize(PXInt32S* const width, PXInt32S* const height);
+
+// QueryDisplayConfig 
+
+PXPublic PXActionResult PXAPI PXGUIDisplayScreenListRefresh(PXGUISystem* const pxGUISystem);
 
 
 
-PXPublic PXActionResult PXAPI PXGUIElementTextSet(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, char* text);
+
+
 
 
 //---------------------------------------------------------
 // Default rendering functions
 //---------------------------------------------------------
+PXPublic PXActionResult PXAPI PXGUIElementDrawText(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo);
 PXPublic PXActionResult PXAPI PXGUIElementDrawButton(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo);
-
-
 //---------------------------------------------------------
 
 
 
 
 
+//---------------------------------------------------------
+// Window draw functions
+//---------------------------------------------------------
+
+// Swaps the color buffer. Can prevent flickering.
+PXPublic PXActionResult PXAPI PXGUIElementBufferSwap(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
+
+PXActionResult PXAPI PXGUIDrawClear(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
+PXActionResult PXAPI PXGUIDrawForegroundColorSetRGB(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, char red, char green, char blue);
+PXActionResult PXAPI PXGUIDrawBackgroundColorSetRGB(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, char red, char green, char blue);
+PXActionResult PXAPI PXGUIElementDrawBegin(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
+PXActionResult PXAPI PXGUIElementDrawEnd(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
+
 // Draw text into a given window
 // Example: Text for a button
-PXPublic PXActionResult PXAPI PXGUIElementDrawText(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXText* const pxText);
+//PXPublic PXActionResult PXAPI PXGUIElementDrawText(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXText* const pxText);
 PXPublic PXActionResult PXAPI PXGUIElementDrawTextA(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, RECT* const rect, const char* const text, const PXSize textSize);
 PXPublic PXActionResult PXAPI PXGUIElementDrawTextW(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const wchar_t* const text, const PXSize textSize);
 PXPublic PXActionResult PXAPI PXGUIElementDrawPoint(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y);
@@ -597,50 +681,27 @@ PXPublic PXActionResult PXAPI PXGUIElementDrawLine(PXGUISystem* const pxGUISyste
 PXPublic PXActionResult PXAPI PXGUIElementDrawLines(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y, const int width, const int height);
 PXPublic PXActionResult PXAPI PXGUIElementDrawRectangle(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y, const int width, const int height);
 PXPublic PXActionResult PXAPI PXGUIElementDrawRectangleRounded(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y, const int width, const int height);
-PXPublic PXActionResult PXAPI PXGUIElementMove(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y);
-PXPublic PXActionResult PXAPI PXGUIElementResize(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int width, const int height);
-PXPublic PXActionResult PXAPI PXGUIElementMoveAndResize(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y, const int width, const int height);
 
-
-
-
-PXActionResult PXAPI PXGUIFontLoad(PXGUISystem* const pxGUISystem, PXFont* const pxFont, const char* const name);
-PXActionResult PXAPI PXGUIFontRelease(PXGUISystem* const pxGUISystem, PXFont* const pxFont);
-PXActionResult PXAPI PXGUIFontSet(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXFont* const pxFont);
-PXActionResult PXAPI PXGUIDrawClear(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
-PXActionResult PXAPI PXGUIDrawForegroundColorSetRGB(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, char red, char green, char blue);
-PXActionResult PXAPI PXGUIDrawBackgroundColorSetRGB(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, char red, char green, char blue);
-PXActionResult PXAPI PXGUIElementDrawBegin(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
-PXActionResult PXAPI PXGUIElementDrawEnd(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
-
-PXActionResult PXAPI PXGUIElementStyleUpdate(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
-
-// Use for a seperate window that needs to be merged into a main one.
-// Given a spesific window we can try to absorb the contens and underlieing elemetns and move them into your own space.
-// Objects shall not be created or destroyed, simply the ownership of those objects should be transphered. (can we do that?)
-PXActionResult PXAPI PXGUIElementAbsorb(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
-
-// Use for draging a window outside it own borders to spawn a new one.
-PXActionResult PXAPI PXGUIElementEmit(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
-
-
-
-
-
-#if OSUnix
-PXPublic PXActionResult PXAPI PXGUIElementErrorFromXSystem(const int xSysstemErrorID);
-#endif
+//---------------------------------------------------------
 
 
 
 
 
 
-PXPublic PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResourceCreateInfo* const pxResourceCreateInfo, const PXSize amount);
-PXPublic PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIElementUpdateInfo* const pxGUIElementUpdateInfoList, const PXSize amount);
-PXPublic PXActionResult PXAPI PXGUIElementFetch(PXGUISystem* const pxGUISystem, PXGUIElementUpdateInfo* const pxGUIElementUpdateInfoList, const PXSize amount);
 
-PXPublic PXActionResult PXAPI PXGUIElementRelease(PXGUIElement* const pxGUIElement);
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 PXPublic void PXAPI PXGUIElementhSizeRefresAll(PXGUISystem* const pxGUISystem);
@@ -650,7 +711,7 @@ PXPublic void PXAPI PXGUIElementhSizeRefresAll(PXGUISystem* const pxGUISystem);
 
 PXPublic PXActionResult PXAPI PXWindowPixelSystemSet(PXWindowPixelSystemInfo* const pxWindowPixelSystemInfo);
 
-PXPublic void PXAPI PXWindowUpdate(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
+
 
 
 PXPublic PXProcessThreadID PXAPI PXWindowThreadProcessID(const PXWindowID windowID);
@@ -662,26 +723,21 @@ PXPublic void PXAPI PXWindowIconTaskBar();
 
 
 
-PXPublic PXActionResult PXAPI PXWindowTitleBarColorSet(const PXWindowID pxWindowID);
+
 
 
 PXPublic PXActionResult PXAPI PXWindowMouseMovementEnable(const PXWindowID pxWindow);
 
 PXPublic PXActionResult PXAPI PXWindowPosition(const PXWindowID pxWindowID, PXInt32S* x, PXInt32S* y);
-PXPublic PXActionResult PXAPI PXWindowMove(const PXWindowID pxWindow, const PXInt32S x, const PXInt32S y);
-PXPublic void PXAPI PXWindowPositonCenterScreen(const PXWindowID pxWindow);
-PXPublic void PXAPI PXWindowCursor(const PXWindowID pxWindow);
+
 //voidPXWindowCursor(const CursorIcon cursorIcon);
 PXPublic void PXAPI PXWindowCursorTexture();
 PXPublic void PXAPI PXWindowCursorCaptureMode(const PXWindowID pxWindowID, const PXWindowCursorMode cursorMode);
 //voidPXWindowScreenShotTake(Image image);
 
-PXPublic PXBool PXAPI PXWindowFrameBufferSwap(const PXWindowID pxWindowID);
 
-PXPublic PXBool PXAPI PXWindowInteractable(const PXWindowID pxWindowID);
 
-PXPublic PXBool PXAPI PXWindowCursorPositionInWindowGet(const PXWindowID pxWindowID, PXInt32S* const x, PXInt32S* const y);
-PXPublic PXBool PXAPI PXWindowCursorPositionInDestopGet(const PXWindowID pxWindowID, PXInt32S* const x, PXInt32S* const y);
+
 
 
 // Checks if the current window is the one in focus.
