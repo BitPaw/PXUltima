@@ -3193,11 +3193,11 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
         // Get additional device context for rendering purpose
         pxGUIElement->DeviceContextHandle = GetDC(pxGUIElement->Info.WindowID); 
 
-	// Gegister drag&Drop
-	DROPTARGET draopTarget;
-	    
-	const HRESULT dragResult = RegisterDragDrop(pxGUIElement->Info.WindowID, &draopTarget); // Windows 2000, Ole32.dll, ole2.h
-	    
+        // Gegister drag&Drop
+        IDropTarget dropTarget;
+
+        const HRESULT dragResult = RegisterDragDrop(pxGUIElement->Info.WindowID, &dropTarget); // Windows 2000, Ole32.dll, ole2.h
+
 
         PXDictionaryAdd(&pxGUISystem->ResourceManager->GUIElementLookup, &pxGUIElement->Info.WindowID, pxGUIElement);
 

@@ -3,7 +3,7 @@
 
 #include <Media/PXResource.h>
 
-PXPrivate void PXAPI PXTestCompilerAll();
+PXPublic void PXAPI PXTestCompilerAll();
 
 PXPrivate void PXAPI PXTestCompilerCToLanguages();
 PXPrivate void PXAPI PXTestCompilerOBJ(char* filePath);

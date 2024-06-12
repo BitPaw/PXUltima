@@ -18,6 +18,7 @@ void PXAPI PXTestCompilerAll()
 
 void PXAPI PXTestCompilerCToLanguages()
 {
+	/*
 	PXCodeDocument pxCodeDocument;
 
 	{
@@ -42,10 +43,12 @@ void PXAPI PXTestCompilerCToLanguages()
 
 		PXActionResult resB = PXResourceSaveA(&pxResourceSaveInfo, "N:\\Cache\\PXTest.cs");
 	}
+	*/
 }
 
 void PXAPI PXTestCompilerOBJ(char* filePath)
 {
+	/*
 	PXFile inputStream;
 	PXFile outputStream;
 
@@ -72,10 +75,12 @@ void PXAPI PXTestCompilerOBJ(char* filePath)
 	PXWavefrontParseToModel(&outputStream, &model);
 
 	printf("____\n");
+	*/
 }
 
 void PXAPI PXTestCompilerYAML()
 {
+	/*
 	PXSize size = 1024 * 2;
 	char buffer[1024 * 2];
 
@@ -108,10 +113,12 @@ void PXAPI PXTestCompilerYAML()
 	PXCompilerLexicalAnalysis(&inputStream, &outputStream, &compilerSettings);
 
 	printf("____\n");
+	*/
 }
 
 void PXAPI PXTestCompilerYAML_2()
 {
+	/*
 	PXFile inputStream;
 	PXFile compiledStream;
 
@@ -151,10 +158,12 @@ void PXAPI PXTestCompilerYAML_2()
 
 
 	printf("finish\n");
+	*/
 }
 
 void PXAPI PXTestCompilerXML()
 {
+	/*
 	const char xmlData[] =
 		"<part number=\"1976\">\n"
 		"<name>Windscreen Wiper</name>\n"
@@ -184,4 +193,5 @@ void PXAPI PXTestCompilerXML()
 	PXXMLFileCompile(&inputStream, &outputStream);
 
 	printf("____\n");
+	*/
 }

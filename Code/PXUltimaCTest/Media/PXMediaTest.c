@@ -9,6 +9,7 @@ void PXAPI PXMediaTestAll()
 
 void PXAPI PXMediaTestTTF(char* filePath)
 {
+	/*
 	PXTTF ttf;
 
 	PXFile pxFile;
@@ -28,4 +29,5 @@ void PXAPI PXMediaTestTTF(char* filePath)
 	PXActionResult xx = PXTTFParse(&ttf, &pxFile);
 
 	printf("");
+	*/
 }

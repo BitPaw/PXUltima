@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <Media/PXText.h>
 #include <OS/Memory/PXMemory.h>
+#include <OS/Console/PXConsole.h>
 
 void PXAPI PXProcessorModelNameGet(const PXProcessorModelName processorModelName, char* const name)
 {
@@ -660,6 +661,7 @@ PXActionResult PXAPI PXProcessorTemperature(PXInt32U* const cpuTemp)
     }
 
     {
+        /*
         const HRESULT initializeResultID = CoInitializeSecurity
         (
             NULL,
@@ -675,10 +677,11 @@ PXActionResult PXAPI PXProcessorTemperature(PXInt32U* const cpuTemp)
         const PXActionResult initializeResult = PXWindowsHandleErrorFromID(initializeResultID);
 
         PXActionReturnOnError(initializeResult);
+        */
     }
 
 
-    IWbemLocator* locator = PXNull;
+    IWbemLocator* wmiNameSpace = PXNull;
     IWbemServices* sevices = PXNull;
     IEnumWbemClassObject* objectList = PXNull;
     IWbemClassObject* classObject = PXNull;
@@ -686,11 +689,11 @@ PXActionResult PXAPI PXProcessorTemperature(PXInt32U* const cpuTemp)
     {
         const HRESULT instaceResultID = CoCreateInstance
         (
-            &CLSID_WbemLocator, // CLSID_WbemAdministrativeLocator
+            &CLSID_WbemLocator, // CLSID_WbemAdministrativeLocator , CLSID_WbemLocator
             NULL, 
             CLSCTX_INPROC_SERVER, 
             &IID_IWbemLocator,
-            (LPVOID*)&locator
+            (LPVOID*)&wmiNameSpace
         );
         const PXActionResult instaceResult = PXWindowsHandleErrorFromID(instaceResultID);
 
@@ -699,9 +702,20 @@ PXActionResult PXAPI PXProcessorTemperature(PXInt32U* const cpuTemp)
     
     // Connect
     {
-        BSTR ns = SysAllocString(L"ROOT\\CimV2"); // WIM, cimv2, default
-
-        const HRESULT connectResultID = locator->lpVtbl->ConnectServer(locator, ns, NULL, NULL, NULL, 0, NULL, NULL, &sevices);
+        BSTR ns = SysAllocString(L"ROOT\\CimV2"); // WIM, cimv2, default CimV2
+        
+        const HRESULT connectResultID = wmiNameSpace->lpVtbl->ConnectServer
+        (
+            wmiNameSpace,
+            ns,
+            NULL,
+            NULL, 
+            NULL,
+            WBEM_FLAG_CONNECT_USE_MAX_WAIT,
+            NULL,
+            NULL,
+            &sevices
+        );
         const PXActionResult connectResult = PXWindowsHandleErrorFromID(connectResultID);
 
         //locator->lpVtbl->Release(locator);
@@ -711,6 +725,7 @@ PXActionResult PXAPI PXProcessorTemperature(PXInt32U* const cpuTemp)
     }
            
     {
+        /*
         const HRESULT hres = CoSetProxyBlanket
         (
             sevices,
@@ -722,23 +737,91 @@ PXActionResult PXAPI PXProcessorTemperature(PXInt32U* const cpuTemp)
             NULL,
             EOAC_NONE
         );
+        */
+    }
+
+
+    {
+        // Get me all the classes
+
+        IEnumWbemClassObject* classObj = PXNull;
+
+        const HRESULT huas = sevices->lpVtbl->CreateClassEnum
+        (
+            sevices, 
+            PXNull, 
+            WBEM_FLAG_FORWARD_ONLY,
+            PXNull,
+            &classObj
+        );
+
+
+        for(;;)
+        {
+            IWbemClassObject* clasIJA = PXNull;
+            ULONG xxx = 0;
+
+            const HRESULT iahjs = classObj->lpVtbl->Next(classObj, 0, 1, &clasIJA, &xxx);
+
+
+            VARIANT vvv;
+            SAFEARRAY saveAFGT;
+
+            const HRESULT jfni = clasIJA->lpVtbl->GetNames(clasIJA, 0, 0, &vvv,&saveAFGT);
+
+            printf("");
+        }
+
+        printf("");
     }
 
   
     // Querry
     {
-        BSTR query = SysAllocString(L"SELECT * FROM Win32_TemperatureProbe");
+        // Win32_TemperatureProbe does not seem to work on my machine
+
+       // BSTR query = SysAllocString(L"SELECT * FROM Win32_TemperatureProbe");
+      //  wchar_t strQuery[] = L"SELECT * FROM Win32_TemperatureProbe"; // Win32_BaseBoard Win32_MemoryDevice
+
+        wchar_t strQuery[] = L"SELECT * FROM Win32_Processor"; // Win32_BaseBoard Win32_MemoryDevice
+
+        
         //BSTR query = SysAllocString(L"SELECT * FROM MSAcpi_ThermalZoneTemperature");
         //BSTR query = SysAllocString(L"select * from cim_temperaturesensor");
         //BSTR query = SysAllocString(L"SELECT * FROM CIM_TemperatureSensor");
 
-        BSTR wql = SysAllocString(L"WQL");
+       // BSTR wql = SysAllocString(L"WQL");
+        wchar_t strQueryLanguage[] = L"WQL"; // WQL
   
-        const HRESULT querryResultID = sevices->lpVtbl->ExecQuery(sevices, wql, query, WBEM_FLAG_RETURN_IMMEDIATELY | WBEM_FLAG_FORWARD_ONLY, NULL, &objectList);
+        const HRESULT querryResultID = sevices->lpVtbl->ExecQuery
+        (
+            sevices,
+            strQueryLanguage,
+            strQuery,
+            WBEM_FLAG_FORWARD_ONLY, // WBEM_FLAG_RETURN_IMMEDIATELY | WBEM_FLAG_FORWARD_ONLY,
+            NULL,
+            &objectList
+        );
         const PXActionResult querryResult = PXWindowsHandleErrorFromID(querryResultID);
         
-        SysFreeString(wql);
-        SysFreeString(query);
+        IErrorInfo* errInfo;
+
+        HRESULT wxx = GetErrorInfo(0, &errInfo);
+
+        BSTR buffer = PXNull;
+        BSTR desc = PXNull;
+        BSTR vvvvv = PXNull;
+        BSTR ccc = PXNull;
+        BSTR guiod = PXNull;
+
+        errInfo->lpVtbl->GetSource(errInfo, &guiod);
+        errInfo->lpVtbl->GetSource(errInfo, &buffer);
+        errInfo->lpVtbl->GetDescription(errInfo, &desc);
+        errInfo->lpVtbl->GetHelpFile(errInfo, &vvvvv);
+        errInfo->lpVtbl->GetHelpContext(errInfo, &ccc);
+
+       // SysFreeString(wql);
+        //SysFreeString(query);
         //sevices->lpVtbl->Release(sevices);
 
         PXActionReturnOnError(querryResult);
@@ -747,9 +830,11 @@ PXActionResult PXAPI PXProcessorTemperature(PXInt32U* const cpuTemp)
 
     // Get interface    
     {
+        /*
         COAUTHIDENTITY* userAcct = NULL;
-
-        const HRESULT SSSS = CoSetProxyBlanket(
+                
+        const HRESULT SSSS = CoSetProxyBlanket
+        (
             objectList,
             RPC_C_AUTHN_DEFAULT,
             RPC_C_AUTHZ_DEFAULT,
@@ -759,19 +844,65 @@ PXActionResult PXAPI PXProcessorTemperature(PXInt32U* const cpuTemp)
             userAcct,
             EOAC_NONE
         );
+        */
+
+        for(;;)
+        {
+            ULONG returned = 0;
+            const HRESULT nextResultID = objectList->lpVtbl->Next
+            (
+                objectList,
+                WBEM_INFINITE,
+                1,
+                &classObject,
+                &returned
+            );
+            const PXActionResult nextResult = PXWindowsHandleErrorFromID(nextResultID);
+
+
+            PXActionReturnOnError(nextResult);
+
+            if(S_FALSE == nextResultID)
+            {
+                break;;
+            }
+
+          
+
+
+            while(1)
+            {
+                VARIANT var_val;
+                const HRESULT SSSS = classObject->lpVtbl->Get(classObject, L"Name", 0, &var_val, NULL, NULL);
+
+
+              //  classObject->lpVtbl->Next
+               // (
+                    classObject,
+//
+              //  );
+
+
+                printf("");
+            }
+
+
+
+            printf("");
+        }
+
+
+
      
-        ULONG returned = 0;
-        const HRESULT nextResultID = objectList->lpVtbl->Next(objectList, WBEM_INFINITE, 1, &classObject, &returned);
-        const PXActionResult nextResult = PXWindowsHandleErrorFromID(nextResultID);
+      
 
        // objectList->lpVtbl->Release(objectList);
 
-        PXActionReturnOnError(nextResult);
 
-        if (S_FALSE == nextResultID)
-        {
-            return PXActionInvalid;
-        }
+   
+
+
+     
     }
 
 
@@ -797,6 +928,18 @@ PXActionResult PXAPI PXProcessorTemperature(PXInt32U* const cpuTemp)
 #endif
 
     *cpuTemp = cpuTemperature;
+
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingError,
+        "Processor",
+        "Temp",
+        "%i°C",
+        cpuTemperature
+    );
+#endif
 
     return PXActionSuccessful;
 }

@@ -3,7 +3,7 @@
 
 #include <Media/PXResource.h>
 
-PXPrivate void PXAPI PXTestDebugAll();
+PXPublic void PXAPI PXTestDebugAll();
 PXPrivate void PXAPI PXTestDebugProcess();
 
 #endif

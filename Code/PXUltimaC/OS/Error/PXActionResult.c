@@ -1,6 +1,7 @@
 #include "PXActionResult.h"
 
 #include <OS/System/PXOSVersion.h>
+#include <OS/Console/PXConsole.h>
 
 #include <errno.h> // POSIX
 
@@ -302,32 +303,32 @@ PXActionResult PXAPI PXWindowsErrorCurrent(const PXBool wasSuccessful)
 	const PXActionResult actionResult = PXErrorCodeFromID(lastErrorID); // Translate windows errorID to our own errorID
 
 	char* errorMessageData = 0;
-	PXSize errorMessageLength = 0;
 
 	// Generate an error message string with our current errorID
-	errorMessageLength = FormatMessageA
+	const PXSize errorMessageLength = FormatMessageA
 	(
 		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                NULL, 
-		errorMessageID,
+		NULL,
+		lastErrorID,
 		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
 		(char*)&errorMessageData,
 		0,
 		NULL
 	);
-        
-    	// Free the Win32's string's buffer.
-    	LocalFree(errorMessageData);
 
 #if PXLogEnable
-							PXLogPrint
-							(
-								PXLoggingInfo,
-								"Windows",
-								"Error",
-								"---"
-							);
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"Windows",
+		"Error",
+		"%s",
+		errorMessageData
+	);
 #endif
+
+	// Free the Win32's string's buffer.
+	LocalFree(errorMessageData);
 
 	
 	return actionResult;

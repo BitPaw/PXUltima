@@ -3,7 +3,7 @@
 
 #include <Media/PXResource.h>
 
-PXPrivate void PXAPI PXMediaTestAll();
+PXPublic void PXAPI PXMediaTestAll();
 PXPrivate void PXAPI PXMediaTestTTF(char* filePath);
 
 #endif
