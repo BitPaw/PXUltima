@@ -36,6 +36,7 @@
 #include <wtypes.h>
 //#include <hidusage.h>
 #include <Dbt.h>
+#include <ole2.h> // Object Linking and Embedding
 
 #include <dwmapi.h> // Set tilebar color
 
@@ -3190,8 +3191,13 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
 
         // Get additional device context for rendering purpose
-        pxGUIElement->DeviceContextHandle = GetDC(pxGUIElement->Info.WindowID);
+        pxGUIElement->DeviceContextHandle = GetDC(pxGUIElement->Info.WindowID); 
 
+	// Gegister drag&Drop
+	DROPTARGET draopTarget;
+	    
+	const HRESULT dragResult = RegisterDragDrop(pxGUIElement->Info.WindowID, &draopTarget); // Windows 2000, Ole32.dll, ole2.h
+	    
 
         PXDictionaryAdd(&pxGUISystem->ResourceManager->GUIElementLookup, &pxGUIElement->Info.WindowID, pxGUIElement);
 
