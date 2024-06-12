@@ -291,14 +291,45 @@ PXActionResult PXAPI PXErrorCurrent()
 #if OSWindows
 PXActionResult PXAPI PXWindowsErrorCurrent(const PXBool wasSuccessful)
 {
+	// if we did fail, we dont even aknowlege if an error is set.
 	if(wasSuccessful)
 	{
 		return PXActionSuccessful;
 	}
 
-	const DWORD lastErrorID = GetLastError();
-	const PXActionResult actionResult = PXErrorCodeFromID(lastErrorID);
+	// We will definitly have some error code now.	
+	const DWORD lastErrorID = GetLastError(); // Will fetch the global current errorID
+	const PXActionResult actionResult = PXErrorCodeFromID(lastErrorID); // Translate windows errorID to our own errorID
 
+	char* errorMessageData = 0;
+	PXSize errorMessageLength = 0;
+
+	// Generate an error message string with our current errorID
+	errorMessageLength = FormatMessageA
+	(
+		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                NULL, 
+		errorMessageID,
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(char*)&errorMessageData,
+		0,
+		NULL
+	);
+        
+    	// Free the Win32's string's buffer.
+    	LocalFree(errorMessageData);
+
+#if PXLogEnable
+							PXLogPrint
+							(
+								PXLoggingInfo,
+								"Windows",
+								"Error",
+								"---"
+							);
+#endif
+
+	
 	return actionResult;
 }
 
