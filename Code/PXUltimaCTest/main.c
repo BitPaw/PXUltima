@@ -88,17 +88,22 @@ void PXTextMatchTest()
 #include "Media/PXMediaTest.h"
 #include "Window/PXWindowTest.h"
 
-#include <OS/Hardware/PXProcessor.h>
+#include <OS/Hardware/PXHardware.h>
 
 int main()
 {
 	PXConsoleWrite(0, "[i] Starting testing...\n");
 
+	PXHardwareInfo pxHardwareInfo;
+	PXHardwareInfoScan(&pxHardwareInfo);
+
 	while(1)
 	{
 		PXInt32S temperature = 0;
 
-		PXProcessorTemperature(&temperature);
+
+
+		//PXProcessorTemperature(&temperature);
 
 
 	}

@@ -489,6 +489,9 @@
     <ClCompile Include="Media\Java\PXJava.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="OS\Hardware\PXHardware.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm\KalmanFilter\PXKalmanFilter.h">
@@ -963,6 +966,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Media\Java\PXJava.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="OS\Hardware\PXHardware.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

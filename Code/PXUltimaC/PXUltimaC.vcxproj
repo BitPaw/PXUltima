@@ -307,6 +307,7 @@
     <ClCompile Include="OS\DataBase\PXDataBase.c" />
     <ClCompile Include="Media\PXResource.c" />
     <ClCompile Include="OS\Hardware\PXController.c" />
+    <ClCompile Include="OS\Hardware\PXHardware.c" />
     <ClCompile Include="OS\Hardware\PXKeyBoard.c" />
     <ClCompile Include="OS\Hardware\PXMouse.c" />
     <ClCompile Include="OS\Graphic\PXGraphic.c" />
@@ -467,6 +468,7 @@
     <ClInclude Include="OS\DataBase\PXDataBase.h" />
     <ClInclude Include="Media\PXResource.h" />
     <ClInclude Include="OS\Hardware\PXController.h" />
+    <ClInclude Include="OS\Hardware\PXHardware.h" />
     <ClInclude Include="OS\Hardware\PXKeyBoard.h" />
     <ClInclude Include="OS\Hardware\PXMouse.h" />
     <ClInclude Include="OS\Graphic\PXGraphic.h" />
