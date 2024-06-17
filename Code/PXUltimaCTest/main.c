@@ -95,7 +95,7 @@ int main()
 	PXConsoleWrite(0, "[i] Starting testing...\n");
 
 	PXHardwareInfo pxHardwareInfo;
-	PXHardwareInfoScan(&pxHardwareInfo);
+	PXHardwareInfoScan(&pxHardwareInfo, PXHardwareInfoAll);
 
 	while(1)
 	{

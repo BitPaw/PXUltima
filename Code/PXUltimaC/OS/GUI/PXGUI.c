@@ -853,10 +853,53 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
         }
 
         case WM_ERASEBKGND:
+#if 0
             return FALSE;  // Defer erasing into WM_PAINT
+#else
+            break;
+#endif
 
-        case WM_DRAWITEM:
-      //  case WM_PAINT:
+        case WM_PAINT:
+        {
+            // No parameters
+
+            PXGUIElement* const pxGUIElement = PXNull;
+
+            PXDictionaryFindEntry(&pxGUISystem->ResourceManager->GUIElementLookup, &windowID, &pxGUIElement);
+
+            if(!pxGUIElement)
+            {
+                break; // break: not found
+            }
+
+            if(pxGUIElement->DrawFunction)
+            {
+                PAINTSTRUCT paintStruct;
+
+                const HWND windowHandle = pxGUIElement->Info.WindowID;
+                const HDC hdc = BeginPaint(windowHandle, &paintStruct);
+
+                PXGUIElementDrawInfo pxGUIElementDrawInfo;
+                PXClear(PXGUIElementDrawInfo, &pxGUIElementDrawInfo);
+                pxGUIElementDrawInfo.hwnd = pxGUIElement->Info.WindowID;
+                pxGUIElementDrawInfo.hDC = windowHandle;
+                // pxGUIElementDrawInfo.bErase = paintStruct.fErase;
+
+                pxGUIElement->Position.Left = paintStruct.rcPaint.left;
+                pxGUIElement->Position.Top = paintStruct.rcPaint.top;
+                pxGUIElement->Position.Right = paintStruct.rcPaint.right;
+                pxGUIElement->Position.Bottom = paintStruct.rcPaint.bottom;
+
+                pxGUIElement->DrawFunction(pxGUISystem, pxGUIElement, &pxGUIElementDrawInfo);
+
+                const BOOL endSuccess = EndPaint(windowHandle, &paintStruct);
+
+                return TRUE; // We did a custom draw, so return true to mark this as handled
+            }
+
+            break;
+        }
+        case WM_DRAWITEM: 
         {
             HWND identifier = (HWND)wParam;
             DRAWITEMSTRUCT* drawItemInfo = (DRAWITEMSTRUCT*)lParam;
@@ -869,6 +912,8 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
             {
                 break; // break: not found
             }
+
+           // return PXTrue;
 
             if(pxGUIElement->DrawFunction)
             {
@@ -915,6 +960,8 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
             {
                 break; // break: not found
             }
+
+          //  return PXTrue;
 
             if(pxGUIElement->DrawFunction)
             {
@@ -1106,7 +1153,6 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
         case WM_CTLCOLORSCROLLBAR:
         case WM_CTLCOLORSTATIC:
         {
-            /*
             // HWND windowFocusedHandle = (HWND)GetFocus();;
             HWND windowHandleNow = (HWND)lParam;
             HDC hdc = (HDC)wParam;
@@ -1138,9 +1184,9 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
 #endif
 
   return brush;
-            */
+            
 
-            break;
+           // break;
 
         }
         case WM_INPUT:
@@ -1946,7 +1992,7 @@ PXActionResult PXAPI PXGUIDisplayScreenListRefresh(PXGUISystem* const pxGUISyste
 
 PXActionResult PXAPI PXGUIElementDrawCustomText(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo)
 {
-    PXGUIElementDrawTextA(pxGUISystem, pxGUIElement, "", 0);
+   // PXGUIElementDrawTextA(pxGUISystem, pxGUIElement, "", 0);
 
     return PXActionSuccessful;
 }
@@ -5136,7 +5182,7 @@ PXActionResult PXAPI PXGUIElementDrawTextA(PXGUISystem* const pxGUISystem, PXGUI
     format |= PXFlagIsSet(pxGUIElement->Position.FlagListKeep, PXUIElementAllignRight) * DT_RIGHT;
     format |= PXFlagIsSet(pxGUIElement->Position.FlagListKeep, PXUIElementAllignBottom) * DT_BOTTOM;
 
-    if(PXFlagIsSet(pxGUIElement->Position.FlagListKeep, PXUIElementAllignCenter))
+    if(PXFlagIsSet(pxGUIElement->Position.FlagListKeep, PXUIElementAllignCenter) || 1)
     {
         format |= DT_VCENTER | DT_CENTER;
     }

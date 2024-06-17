@@ -645,6 +645,7 @@ unsigned int PXAPI PXProcessorTimeReal()
 
 PXActionResult PXAPI PXProcessorTemperature(PXInt32U* const cpuTemp)
 {
+#if 0
     PXInt32U cpuTemperature = -1;
 
     *cpuTemp = cpuTemperature;
@@ -939,6 +940,7 @@ PXActionResult PXAPI PXProcessorTemperature(PXInt32U* const cpuTemp)
         "%i°C",
         cpuTemperature
     );
+#endif
 #endif
 
     return PXActionSuccessful;
