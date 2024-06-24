@@ -1700,80 +1700,13 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
 
             // Model create
             {
-                PXModel* pxModel = PXNull;
-                PXNewZerod(PXModel, &pxModel);
-                pxSkyBox->Model = pxModel;
+                PXResourceCreateInfo pxResourceCreateInfo;
+                PXClear(PXResourceCreateInfo, &pxResourceCreateInfo);
+                pxResourceCreateInfo.Type = PXResourceTypeModel;
+                pxResourceCreateInfo.ObjectReference = &pxSkyBox->Model;
+                pxResourceCreateInfo.Model.Form = PXModelFormCube;
 
-                const float vertexData[] =
-                {
-                    -1, -1, -1,
-                     1, -1, -1,
-                    -1,  1, -1,
-                     1,  1, -1,
-                    -1, -1,  1,
-                     1, -1,  1,
-                    -1,  1,  1,
-                     1,  1,  1,
-                };
-
-                const PXInt8U indexList[] =
-                {
-                    #if QuadSkybox
-                    0,1,2,3, // Left OK
-                    4,5,6,7, // Right  OK
-                    4,5,1,0, // Top OK
-                    2,3,7,6, // Bot OK
-                    0,2,6,4, // Front OK
-                    5,7,3,1 // Back OK
-                    #else
-
-                    // Left
-                    0,1,2,
-                    2,3,1,
-
-                    // Right
-                    4,5,6,
-                    6,7,5,
-
-                    // Back
-                    0,2,4,
-                    4,6,2,
-
-                    // Font
-                    1,3,5,
-                    5,7,3,
-
-                    // Bottom
-                    0,1,4,
-                    4,5,1,
-
-                    // Top
-                    2,3,7,
-                    7,6,2
-
-                    #endif
-                };
-
-
-                PXClear(PXModel, pxModel);
-                pxModel->VertexBuffer.VertexData = (void*)vertexData;
-                pxModel->VertexBuffer.VertexDataSize = sizeof(vertexData);
-                //pxModel->VertexBuffer.VertexDataAmount = sizeof(vertexData) / sizeof(float);
-                //pxModel->VertexBuffer.VertexDataRowSize = 3;
-                pxModel->VertexBuffer.Format = PXVertexBufferFormatXYZFloat; // PXVertexBufferFormatXYZC  PXVertexBufferFormatXYZHWC
-
-                pxModel->IndexBuffer.IndexDataType = PXDataTypeInt08U;
-                pxModel->IndexBuffer.IndexData = (void*)indexList;
-                pxModel->IndexBuffer.IndexDataSize = sizeof(indexList);
-                pxModel->IndexBuffer.DrawModeID = 0 |// PXDrawModeIDPoint | PXDrawModeIDLineLoop |
-#if QuadSkybox
-                    PXDrawModeIDSquare
-#else
-                    PXDrawModeIDTriangle
-#endif
-                    ;
-
-                pxEngine->Graphic.ModelRegister(pxEngine->Graphic.EventOwner, pxModel);
+                PXEngineResourceCreate(pxEngine, &pxResourceCreateInfo);
             }
 
             // Shader create
@@ -1803,6 +1736,10 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
         {
             PXSpriteCreateInfo* const pxSpriteCreateEventData = &pxResourceCreateInfo->Sprite;
             PXSprite* pxSprite = *(PXSprite**)pxResourceCreateInfo->ObjectReference;
+
+
+
+
 
             break;
         }
@@ -2573,9 +2510,10 @@ void PXAPI PXEngineResourceDefaultElements(PXEngine* const pxEngine)
         pxResourceCreateInfo.Type = PXResourceTypeModel;
         pxResourceCreateInfo.ObjectReference = &pxEngine->ResourceManager.ModelFailback;
 
+        pxResourceCreateInfo.Model.Form = PXModelFormCustom;
         pxResourceCreateInfo.Model.VertexBuffer.VertexData = vertexData;
         pxResourceCreateInfo.Model.VertexBuffer.VertexDataSize = sizeof(vertexData);
-        pxResourceCreateInfo.Model.VertexBuffer.Format = PXVertexBufferFormatXYZFloat;
+        pxResourceCreateInfo.Model.VertexBuffer.Format = PXVertexBufferFormatXYZFloat;    
 
         pxResourceCreateInfo.Model.IndexBuffer.IndexData = indexList;
         pxResourceCreateInfo.Model.IndexBuffer.IndexDataSize = sizeof(indexList);

@@ -7,6 +7,8 @@
 #include <Media/XML/PXXML.h>
 #include <Media/Wavefront/PXWavefront.h>
 #include <Compiler/PXCompiler.h>
+#include <Media/PXDocument.h>
+#include <OS/Console/PXConsole.h>
 
 void PXAPI PXTestCompilerAll()
 {
@@ -18,7 +20,7 @@ void PXAPI PXTestCompilerAll()
 
 void PXAPI PXTestCompilerCToLanguages()
 {
-	/*
+	
 	PXCodeDocument pxCodeDocument;
 
 	{
@@ -42,8 +44,10 @@ void PXAPI PXTestCompilerCToLanguages()
 		pxResourceSaveInfo.Format = PXFileFormatCSharp;
 
 		PXActionResult resB = PXResourceSaveA(&pxResourceSaveInfo, "N:\\Cache\\PXTest.cs");
+
+		PXConsoleWrite(0, 0);
 	}
-	*/
+	
 }
 
 void PXAPI PXTestCompilerOBJ(char* filePath)

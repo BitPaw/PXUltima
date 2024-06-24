@@ -1169,6 +1169,7 @@ the scanlines with 1 extra byte per scanline
         images only, so disable it*/
         PXZLIBsettings.custom_PXZLIB = 0;
         PXZLIBsettings.custom_deflate = 0;
+
         for (type = 0; type != 5; ++type)
         {
             PXNewList(PXByte, linebytes, &attempt[type], PXNull);
@@ -1176,6 +1177,7 @@ the scanlines with 1 extra byte per scanline
             if (!attempt[type]) 
                 error = 83; /*alloc fail*/
         }
+
         if (!error)
         {
             for (PXSize y = 0; y != height; ++y) /*try the 5 filter types*/
@@ -1243,9 +1245,13 @@ void addPaddingBits(unsigned char* out, const unsigned char* in, PXSize olinebit
             unsigned char bit = readBitFromReversedStream(&ibp, in);
             setBitOfReversedStream(&obp, out, bit);
         }
+
         // obp += diff; --> no, fill in some value in the padding bits too, to avoid
         // "Use of uninitialised value of size ###" warning from valgrind
-        for (PXSize x = 0; x != diff; ++x) setBitOfReversedStream(&obp, out, 0);
+        for(PXSize x = 0; x != diff; ++x) 
+        {
+            setBitOfReversedStream(&obp, out, 0);
+        }
     }
 }
 

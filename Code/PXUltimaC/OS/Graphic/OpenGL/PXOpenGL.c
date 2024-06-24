@@ -5184,10 +5184,13 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, PXSkyBox* const pxSkyBox
     PXModel* const pxModel = pxSkyBox->Model;
     PXTextureCube* const pxTextureCube = pxSkyBox->TextureCube;
 
+    assert(pxModel);
+    assert(pxTextureCube);
+
     void* indexBuffer = 0;
 
     if (!(pxOpenGL && pxSkyBox && pxCamera))
-    {
+    {    
         return;
     }
 
@@ -6209,6 +6212,24 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
             bufferIDs[1]
         );
 #endif
+    }
+
+
+    // Make sure current format is supported.
+    // Transform data is needed from current format to supported one
+    {
+        PXVertexBufferFormat pxVertexBufferFormat[] =
+        {
+            PXVertexBufferFormatXYZFloat,
+            PXVertexBufferFormatT2F_XYZ,
+            PXVertexBufferFormatT2F_N3F_XYZ
+        };
+
+        PXModelFormatTransmuteInfo pxModelFormatTransmuteInfo;
+        pxModelFormatTransmuteInfo.VertexFormatAmount = 3;
+        pxModelFormatTransmuteInfo.VertexFormatList = pxVertexBufferFormat;        
+
+        PXModelFormatTransmute(pxModel, &pxModelFormatTransmuteInfo);
     }
 
 #if PXLogEnable

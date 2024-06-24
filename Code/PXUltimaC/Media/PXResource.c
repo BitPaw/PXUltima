@@ -4,6 +4,7 @@
 #include <OS/Time/PXStopWatch.h>
 #include <OS/Hardware/PXProcessor.h>
 #include <Media/PXText.h>
+#include <Math/PXMath.h>
 
 #include "Autodesk3DS/PXAutodesk3DS.h"
 #include "AAC/PXAAC.h"
@@ -59,6 +60,74 @@
 extern void _chkstk(size_t s) {};
 extern int _fltused = 0;
 
+
+
+const float PXVertexDataTriangle[] =
+{
+    -1.0f, -1.0f,
+    1.0f, -1.0f,
+    0.5f,  1.0f
+};
+
+const PXInt8U PXVertexDatarectangle[] =
+{
+    -1, -1,
+     1, -1,
+    -1,  1,
+     1,  1
+};
+
+const PXInt8U PXVertexDataCube[] =
+{
+    -1, -1, -1,
+     1, -1, -1,
+    -1,  1, -1,
+     1,  1, -1,
+    -1, -1,  1,
+     1, -1,  1,
+    -1,  1,  1,
+     1,  1,  1,
+};
+
+const PXInt8U PXIndexDataCube[] =
+{
+    #if 0
+    0,1,2,3, // Left
+    0,2,4,6, // Back
+    2,3,7,6, // Top
+    4,5,6,7, // Right
+    0,1,4,5, // Bottom
+    1,3,5,7  // Font
+    #else
+
+    // Left
+    0,1,2,
+    2,3,1,
+
+    // Right
+    4,5,6,
+    6,7,5,
+
+    // Back
+    0,2,4,
+    4,6,2,
+
+    // Font
+    1,3,5,
+    5,7,3,
+
+    // Bottom
+    0,1,4,
+    4,5,1,
+
+    // Top
+    2,3,7,
+    7,6,2
+
+    #endif
+};
+
+
 const char* PXAPI PXGraphicShaderTypeToString(const PXGraphicShaderType pxGraphicShaderType)
 {
     switch(pxGraphicShaderType)
@@ -87,10 +156,47 @@ const char* PXAPI PXGraphicShaderTypeToString(const PXGraphicShaderType pxGraphi
     }
 }
 
+const char* PXAPI PXVertexBufferFormatToString(const PXVertexBufferFormat pxVertexBufferFormat)
+{
+    switch(pxVertexBufferFormat)
+    {
+        case PXVertexBufferFormatXYI8: return "XY 8-Bit";
+        case PXVertexBufferFormatXYZI8: return "XYZ 8-Bit";
+        case PXVertexBufferFormatXYFloat: return "XY float";
+        case PXVertexBufferFormatXYZFloat: return "XYZ float";
+        case PXVertexBufferFormatXYZW: return "XYZW float";
+        case PXVertexBufferFormatC4UB_XY: return "xxxxxxxxxxxxxxx";
+        case PXVertexBufferFormatC4UB_XYZ: return "xxxxxxxxxxxxxxx";
+        case PXVertexBufferFormatRGBXYZ: return "RGBXYZ float";
+        case PXVertexBufferFormatN3F_XYZ: return "xxxxxxxxxxxxxxx";
+        case PXVertexBufferFormatC4F_N3F_XYZ: return "xxxxxxxxxxxxxxx";
+        case PXVertexBufferFormatT2F_XYZ: return "xxxxxxxxxxxxxxx";
+        case PXVertexBufferFormatT4F_XYZW: return "xxxxxxxxxxxxxxx";
+        case PXVertexBufferFormatT2F_C4UB_XYZ: return "xxxxxxxxxxxxxxx";
+        case PXVertexBufferFormatT2F_C3F_XYZ: return "xxxxxxxxxxxxxxx";
+        case PXVertexBufferFormatT2F_N3F_XYZ: return "xxxxxxxxxxxxxxx";
+        case PXVertexBufferFormatT2F_C4F_N3F_XYZ: return "xxxxxxxxxxxxxxx";
+        case PXVertexBufferFormatT4F_C4F_N3F_XYZW: return "xxxxxxxxxxxxxxx";
+        case PXVertexBufferFormatXYZC: return "xxxxxxxxxxxxxxx";
+        case PXVertexBufferFormatXYZRHW: return "xxxxxxxxxxxxxxx";
+        case PXVertexBufferFormatXYZHWC: return "xxxxxxxxxxxxxxx";
+        case PXVertexBufferFormatXYZB1: return "xxxxxxxxxxxxxxx";
+        case PXVertexBufferFormatXYZB2: return "xxxxxxxxxxxxxxx";
+        case PXVertexBufferFormatXYZB3: return "xxxxxxxxxxxxxxx";
+        case PXVertexBufferFormatXYZB4: return "xxxxxxxxxxxxxxx";
+        case PXVertexBufferFormatXYZB5: return "xxxxxxxxxxxxxxx";  
+
+        default:
+            return "Invalid";
+    }
+}
+
 PXInt8U PXAPI PXVertexBufferFormatStrideSize(const PXVertexBufferFormat pxVertexBufferFormat)
 {
     switch (pxVertexBufferFormat)
     {
+        case PXVertexBufferFormatXYI8: return 2;
+        case PXVertexBufferFormatXYZI8: return 3;
         case PXVertexBufferFormatT2F_XYZ: return 2u + 3u;
         case PXVertexBufferFormatT2F_N3F_XYZ: return 2u + 3u + 3u;
         case PXVertexBufferFormatXYZFloat: return 3u;
@@ -153,6 +259,8 @@ void PXAPI PXResourceManagerRelease(PXResourceManager* const pxResourceManager)
 {
 
 }
+
+
 
 PXInt32U PXAPI PXResourceManagerGenerateUniqeID(PXResourceManager* const pxResourceManager)
 {
@@ -346,7 +454,6 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                 PXModelCreateInfo* const pxModelCreateInfo = &pxResourceCreateInfo->Model;
                 PXModel* pxModel = *(PXModel**)pxResourceCreateInfo->ObjectReference;
 
-
                 if(!pxModel)
                 {
                     PXNewZerod(PXModel, &pxModel);
@@ -407,38 +514,167 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                     );
 #endif
 
-              
-                    PXCopy(PXVertexBuffer, &pxModelCreateInfo->VertexBuffer, &pxModel->VertexBuffer);
-                    PXCopy(PXIndexBuffer, &pxModelCreateInfo->IndexBuffer, &pxModel->IndexBuffer);
-
-                    // Allocate memory and copy
-                    pxModel->VertexBuffer.VertexData = 0;
-                    pxModel->VertexBuffer.VertexDataSize = 0;
-                    pxModel->IndexBuffer.IndexData = 0;    
-                    pxModel->IndexBuffer.IndexDataSize = 0;
-
-                    PXNewList(PXByte, pxModelCreateInfo->VertexBuffer.VertexDataSize, &pxModel->VertexBuffer.VertexData, &pxModel->VertexBuffer.VertexDataSize);
-                    PXNewList(PXByte, pxModelCreateInfo->IndexBuffer.IndexDataSize, &pxModel->IndexBuffer.IndexData, &pxModel->IndexBuffer.IndexDataSize);
-
-                    PXCopyList
-                    (
-                        PXByte, 
-                        pxModelCreateInfo->VertexBuffer.VertexDataSize,
-                        pxModelCreateInfo->VertexBuffer.VertexData,
-                        pxModel->VertexBuffer.VertexData
-                    );
-                    PXCopyList
-                    (
-                        PXByte,
-                        pxModelCreateInfo->IndexBuffer.IndexDataSize,
-                        pxModelCreateInfo->IndexBuffer.IndexData,
-                        pxModel->IndexBuffer.IndexData
-                    );
 
 
+                    switch(pxModelCreateInfo->Form)
+                    {
+                        case PXModelFormCustom:
+                        {
+                            PXCopy(PXVertexBuffer, &pxModelCreateInfo->VertexBuffer, &pxModel->VertexBuffer);
+                            PXCopy(PXIndexBuffer, &pxModelCreateInfo->IndexBuffer, &pxModel->IndexBuffer);
+
+                            // Allocate memory and copy
+                            pxModel->VertexBuffer.VertexData = 0;
+                            pxModel->VertexBuffer.VertexDataSize = 0;
+                            pxModel->IndexBuffer.IndexData = 0;
+                            pxModel->IndexBuffer.IndexDataSize = 0;
+
+                            PXNewList(PXByte, pxModelCreateInfo->VertexBuffer.VertexDataSize, &pxModel->VertexBuffer.VertexData, &pxModel->VertexBuffer.VertexDataSize);
+                            PXNewList(PXByte, pxModelCreateInfo->IndexBuffer.IndexDataSize, &pxModel->IndexBuffer.IndexData, &pxModel->IndexBuffer.IndexDataSize);
+
+                            PXCopyList
+                            (
+                                PXByte,
+                                pxModelCreateInfo->VertexBuffer.VertexDataSize,
+                                pxModelCreateInfo->VertexBuffer.VertexData,
+                                pxModel->VertexBuffer.VertexData
+                            );
+                            PXCopyList
+                            (
+                                PXByte,
+                                pxModelCreateInfo->IndexBuffer.IndexDataSize,
+                                pxModelCreateInfo->IndexBuffer.IndexData,
+                                pxModel->IndexBuffer.IndexData
+                            );
+
+#if PXLogEnable
+                            PXLogPrint
+                            (
+                                PXLoggingInfo,
+                                "Engine",
+                                "Model-Create",
+                                "From: Custom"
+                            );
+#endif
+
+                            break;
+                        }
+                        case PXModelFormTriangle:
+                        {
+                            pxModel->VertexBuffer.Format = PXVertexBufferFormatXYFloat;
+                            pxModel->VertexBuffer.VertexData = (void*)PXVertexDataTriangle;
+                            pxModel->VertexBuffer.VertexDataSize = sizeof(PXVertexDataTriangle);
+
+#if PXLogEnable
+                            PXLogPrint
+                            (
+                                PXLoggingInfo,
+                                "Engine",
+                                "Model-Create",
+                                "From: Triangle"
+                            );
+#endif
+
+                            break;
+                        }
+                        case PXModelFormRectangle:
+                        {
+                            pxModel->VertexBuffer.Format = PXVertexBufferFormatXYI8;
+                            pxModel->VertexBuffer.VertexData = (void*)PXVertexDatarectangle;
+                            pxModel->VertexBuffer.VertexDataSize = sizeof(PXVertexDatarectangle);
+
+#if PXLogEnable
+                            PXLogPrint
+                            (
+                                PXLoggingInfo,
+                                "Engine",
+                                "Model-Create",
+                                "From: Rectangle"
+                            );
+#endif
+
+                            break;
+                        }
+                        case PXModelFormCircle:
+                        {
+                            float cx = 0;
+                            float cy = 0;
+                            float radius = 1;
+                            int segmentAmount = 16;
+
+                            pxModel->VertexBuffer.Format = PXVertexBufferFormatXYFloat;
+                            PXNewList(float, segmentAmount * 2, &pxModel->VertexBuffer.VertexData, &pxModel->VertexBuffer.VertexDataSize);                           
+                            float* vertexData = (float*)pxModel->VertexBuffer.VertexData;
+
+                            for(PXSize i = 0; i < segmentAmount; ++i)
+                            {
+                                const float theta = 2.0f * 3.14f * i / (float)segmentAmount;//get the current angle
+                                const float x = radius * PXMathCosinus(theta);//calculate the x component
+                                const float y = radius * PXMathSinus(theta);//calculate the y component
+
+                                vertexData[i++] = x + cx;
+                                vertexData[i++] = x + cy; //output vertex
+                            }
+
+#if PXLogEnable
+                            PXLogPrint
+                            (
+                                PXLoggingInfo,
+                                "Engine",
+                                "Model-Create",
+                                "From: Circle"
+                            );
+#endif
+
+                            break;
+                        }
+                        case PXModelFormCube:
+                        {
+                            pxModel->VertexBuffer.Format = PXVertexBufferFormatXYZI8;
+                            pxModel->VertexBuffer.VertexData = (void*)PXVertexDataCube;
+                            pxModel->VertexBuffer.VertexDataSize = sizeof(PXVertexDataCube);
+
+                            pxModel->IndexBuffer.IndexDataType = PXDataTypeInt08U;
+                            pxModel->IndexBuffer.DrawModeID = PXDrawModeIDTriangle;
+                            pxModel->IndexBuffer.IndexData = (void*)PXIndexDataCube;
+                            pxModel->IndexBuffer.IndexDataSize = sizeof(PXIndexDataCube);
+
+
+#if PXLogEnable
+                            PXLogPrint
+                            (
+                                PXLoggingInfo,
+                                "Engine",
+                                "Model-Create",
+                                "From: Cube"
+                            );
+#endif
+
+                            /*
+
+                            float* input = 0;
+                          
+                            float* output = 0;
+                            PXSize outINdex = 0;
+
+                            // QUAD to TRIANGLE
+                            for(size_t i = 0; i < indexLength; i+=4)
+                            {
+                                output[outINdex++] = input[i + 0];
+                                output[outINdex++] = input[i + 1];
+                                output[outINdex++] = input[i + 2];
+                                output[outINdex++] = input[i + 2];
+                                output[outINdex++] = input[i + 3];
+                                output[outINdex++] = input[i + 1];
+                            }
+                            */
+                    
+                            break;
+                        }
+                        default:
+                            break;
+                    }
                 }
-
-
 
 
                 // Load additional resources
@@ -718,6 +954,24 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
 
                     PXResourceManagerAdd(pxResourceManager, &pxResourceCreateInfoSub, 1);
                 }
+
+                // Load sprite model
+                {
+                    // if sprite is normal, load a rectangle model
+                    float vertexData[] =
+                    {
+                    
+                    };
+
+
+                    // if sprite is scalable, ´create that
+
+
+                }
+
+
+
+
 
                 pxSprite->Model = pxResourceManager->ModelFailback;
 
@@ -1176,7 +1430,19 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                 break;
             }
             default:
+            {
+#if PXLogEnable
+                PXLogPrint
+                (
+                    PXLoggingError,
+                    "Resource",
+                    "Add",
+                    "Type is invalid"
+                );
+#endif
+
                 return PXActionRefusedArgumentInvalid;
+            }           
         }
     }
 
@@ -1291,7 +1557,7 @@ void PXAPI PXModelConstruct(PXModel* const pxModel)
 {
     PXClear(PXModel, pxModel);
 
-    PXMatrix4x4FIdentity(&pxModel->ModelMatrix);    
+    PXMatrix4x4FIdentity(&pxModel->ModelMatrix);
     
     PXRectangleOffsetSet(&pxModel->Margin, 1, 1, 1, 1);
 }
@@ -1299,6 +1565,100 @@ void PXAPI PXModelConstruct(PXModel* const pxModel)
 void PXAPI PXModelDestruct(PXModel* const pxModel)
 {
     
+}
+
+void PXAPI PXModelFormatTransmute(PXModel* const pxModel, PXModelFormatTransmuteInfo* const pxModelFormatTransmuteInfo)
+{
+
+
+
+    //-----------------------------------------------------
+    // Vertex
+    //-----------------------------------------------------
+    PXVertexBufferFormat oldFormat = pxModel->VertexBuffer.Format;
+    PXVertexBufferFormat newFormat = PXVertexBufferFormatInvalid;
+
+    switch(pxModel->VertexBuffer.Format)
+    {
+        case PXVertexBufferFormatXYI8:
+        {
+            float* newVertexArray = 0;
+            PXSize newVertexArraySize = 0;
+            PXSize amountFuture = PXVertexBufferFormatStrideSize(PXVertexBufferFormatXYFloat);
+            PXSize amountCurrent = PXVertexBufferFormatStrideSize(PXVertexBufferFormatXYI8);
+            PXSize sizeCurrent = pxModel->VertexBuffer.VertexDataSize / 1;
+
+            PXNewList(float, sizeCurrent, &newVertexArray, &newVertexArraySize);
+
+            PXInt8U* dataSource = (PXInt8U*)pxModel->VertexBuffer.VertexData;
+
+            for(size_t i = 0; i < sizeCurrent; i++)
+            {
+                newVertexArray[i] = dataSource[i];
+            }
+
+            // Memory leak?
+
+            pxModel->VertexBuffer.Format = PXVertexBufferFormatXYFloat;
+            pxModel->VertexBuffer.VertexData = newVertexArray;
+            pxModel->VertexBuffer.VertexDataSize = newVertexArraySize;
+
+            break;
+        }
+        case PXVertexBufferFormatXYZI8:
+        {
+            float* newVertexArray = 0;
+            PXSize newVertexArraySize = 0;
+            PXSize amountFuture = PXVertexBufferFormatStrideSize(PXVertexBufferFormatXYZFloat);
+            PXSize amountCurrent = PXVertexBufferFormatStrideSize(PXVertexBufferFormatXYZI8);
+            PXSize sizeCurrent = pxModel->VertexBuffer.VertexDataSize / 1;
+
+            PXNewList(float, sizeCurrent, &newVertexArray, &newVertexArraySize);
+
+            PXInt8U* dataSource = (PXInt8U*)pxModel->VertexBuffer.VertexData;
+
+            for(size_t i = 0; i < sizeCurrent; i++)
+            {
+                newVertexArray[i] = dataSource[i];
+            }
+
+            // Memory leak?
+
+            pxModel->VertexBuffer.Format = PXVertexBufferFormatXYZFloat;
+            pxModel->VertexBuffer.VertexData = newVertexArray;
+            pxModel->VertexBuffer.VertexDataSize = newVertexArraySize;
+
+
+            break;
+        }
+        default:
+        {
+            break;
+        }
+    } 
+
+    newFormat = pxModel->VertexBuffer.Format;
+
+    const char* oldFomatText = PXVertexBufferFormatToString(oldFormat);
+    const char* newFomatText = PXVertexBufferFormatToString(newFormat);
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "Resource",
+        "Model-Format",
+        "Transmute <%s> to <%s>",
+        oldFomatText,
+        newFomatText
+    );
+#endif
+
+
+    //-----------------------------------------------------
+    // Index
+    //-----------------------------------------------------
+
 }
 
 PXFontPageCharacter* PXAPI PXFontPageCharacterFetch(PXFontPage* const pxFontPage, const PXInt32U characterID)

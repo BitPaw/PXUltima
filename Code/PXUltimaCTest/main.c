@@ -94,6 +94,7 @@ int main()
 {
 	PXConsoleWrite(0, "[i] Starting testing...\n");
 
+#if 0
 	PXHardwareInfo pxHardwareInfo;
 	PXHardwareInfoScan(&pxHardwareInfo, PXHardwareInfoAll);
 
@@ -107,10 +108,13 @@ int main()
 
 
 	}
+#endif
+
+	PXTestCompilerAll();
 
 	PXTestWindowAll();
 	PXMediaTestAll();
-	PXTestCompilerAll();
+	
 	PXTestDebugAll();
 
 

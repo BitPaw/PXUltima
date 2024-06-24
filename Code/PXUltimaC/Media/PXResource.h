@@ -203,11 +203,16 @@ typedef enum PXVertexBufferFormat_
 {
 	PXVertexBufferFormatInvalid,
 
+	// PXUltima-Custom
+	PXVertexBufferFormatXYI8,
+	PXVertexBufferFormatXYZI8, 
+
+
 
 
 	// OpenGL
 
-	PXVertexBufferFormatXY, // GL_V2F
+	PXVertexBufferFormatXYFloat, // GL_V2F
 	PXVertexBufferFormatC4UB_XY,
 	PXVertexBufferFormatC4UB_XYZ,
 	PXVertexBufferFormatRGBXYZ,
@@ -239,6 +244,7 @@ typedef enum PXVertexBufferFormat_
 }
 PXVertexBufferFormat;
 
+PXPublic const char* PXAPI PXVertexBufferFormatToString(const PXVertexBufferFormat pxVertexBufferFormat);
 PXPublic PXInt8U PXAPI PXVertexBufferFormatStrideSize(const PXVertexBufferFormat pxVertexBufferFormat);
 
 
@@ -837,6 +843,20 @@ PXModel;
 PXPublic void PXAPI PXModelConstruct(PXModel* const pxModel);
 PXPublic void PXAPI PXModelDestruct(PXModel* const pxModel);
 
+
+typedef struct PXModelFormatTransmuteInfo_
+{
+	// What formats are supported
+	PXSize VertexFormatAmount;
+	PXVertexBufferFormat* VertexFormatList;
+
+
+	PXVertexBufferFormat VertexFormatPreference;
+}
+PXModelFormatTransmuteInfo;
+
+
+PXPublic void PXAPI PXModelFormatTransmute(PXModel* const pxModel, PXModelFormatTransmuteInfo* const pxModelFormatTransmuteInfo);
 
 
 
@@ -2447,6 +2467,10 @@ typedef struct PXTexture2DCreateInfo_
 }
 PXTexture2DCreateInfo;
 
+
+
+
+
 typedef struct PXTextureCubeCreateInfo_
 {
 	char* FilePathA;
@@ -2458,6 +2482,21 @@ typedef struct PXTextureCubeCreateInfo_
 }
 PXTextureCubeCreateInfo;
 
+
+
+typedef enum PXModelForm_
+{
+	PXModelFormInvalid,
+	PXModelFormCustom,
+	PXModelFormTriangle,
+	PXModelFormRectangle,
+	PXModelFormCircle,
+	PXModelFormCube
+}
+PXModelForm;
+
+
+
 typedef struct PXModelCreateInfo_
 {
 	PXShaderProgram* ShaderProgramReference;
@@ -2467,6 +2506,8 @@ typedef struct PXModelCreateInfo_
 	// If not loaded by a file, this data shal be used
 	PXVertexBuffer VertexBuffer;
 	PXIndexBuffer IndexBuffer;
+
+	PXModelForm Form;
 }
 PXModelCreateInfo;
 
@@ -2535,6 +2576,15 @@ PXPublic void PXAPI PXResourceManagerRelease(PXResourceManager* const pxResource
 
 
 PXPrivate PXInt32U PXAPI PXResourceManagerGenerateUniqeID(PXResourceManager* const pxResourceManager);
+
+
+
+
+
+
+
+
+
 
 
 // Generate and store new resource. Load if possible
