@@ -13,16 +13,6 @@
 
 typedef struct PXEngine_ PXEngine;
 
-// Render a spesific resource
-typedef struct PXEngineResourceRenderInfo_
-{
-	PXCamera* CameraReference; // Camera required for rendering
-
-	void* ObjectReference; // Containing the object, type described in 'Type'
-
-	PXResourceType Type;
-}
-PXEngineResourceRenderInfo;
 
 
 
@@ -64,7 +54,7 @@ typedef struct PXEngineResourceActionInfo_
 	union
 	{
 		PXResourceCreateInfo Create;
-		PXEngineResourceRenderInfo Render;
+		PXRenderEntity Render;
 		PXEngineResourceStateChangeInfo ChangeInfo;
 	};
 }

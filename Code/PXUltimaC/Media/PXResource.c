@@ -69,7 +69,7 @@ const float PXVertexDataTriangle[] =
     0.5f,  1.0f
 };
 
-const PXInt8U PXVertexDatarectangle[] =
+const PXInt8S PXVertexDatarectangle[] =
 {
     -1, -1,
      1, -1,
@@ -77,7 +77,7 @@ const PXInt8U PXVertexDatarectangle[] =
      1,  1
 };
 
-const PXInt8U PXVertexDataCube[] =
+const PXInt8S PXVertexDataCube[] =
 {
     -1, -1, -1,
      1, -1, -1,
@@ -460,6 +460,11 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                     *pxResourceCreateInfo->ObjectReference = pxModel;
                 }
 
+                PXMesh* const pxMesh = &pxModel->Mesh;
+                PXVertexBuffer* const pxVertexBuffer = &pxMesh->VertexBuffer;
+                PXIndexBuffer* const pxIndexBuffer = &pxMesh->IndexBuffer;
+
+
                 // Init
                 PXModelConstruct(pxModel);
 
@@ -520,14 +525,14 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                     {
                         case PXModelFormCustom:
                         {
-                            PXCopy(PXVertexBuffer, &pxModelCreateInfo->VertexBuffer, &pxModel->VertexBuffer);
-                            PXCopy(PXIndexBuffer, &pxModelCreateInfo->IndexBuffer, &pxModel->IndexBuffer);
+                            PXCopy(PXVertexBuffer, &pxModelCreateInfo->VertexBuffer, pxVertexBuffer);
+                            PXCopy(PXIndexBuffer, &pxModelCreateInfo->IndexBuffer, pxIndexBuffer);
 
                             // Allocate memory and copy
-                            pxModel->VertexBuffer.VertexData = 0;
-                            pxModel->VertexBuffer.VertexDataSize = 0;
-                            pxModel->IndexBuffer.IndexData = 0;
-                            pxModel->IndexBuffer.IndexDataSize = 0;
+                            pxVertexBuffer->VertexData = 0;
+                            pxVertexBuffer->VertexDataSize = 0;
+                            pxIndexBuffer->IndexData = 0;
+                            pxIndexBuffer->IndexDataSize = 0;
 
                             PXNewList(PXByte, pxModelCreateInfo->VertexBuffer.VertexDataSize, &pxModel->VertexBuffer.VertexData, &pxModel->VertexBuffer.VertexDataSize);
                             PXNewList(PXByte, pxModelCreateInfo->IndexBuffer.IndexDataSize, &pxModel->IndexBuffer.IndexData, &pxModel->IndexBuffer.IndexDataSize);
@@ -561,9 +566,9 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                         }
                         case PXModelFormTriangle:
                         {
-                            pxModel->VertexBuffer.Format = PXVertexBufferFormatXYFloat;
-                            pxModel->VertexBuffer.VertexData = (void*)PXVertexDataTriangle;
-                            pxModel->VertexBuffer.VertexDataSize = sizeof(PXVertexDataTriangle);
+                            pxVertexBuffer->Format = PXVertexBufferFormatXYFloat;
+                            pxVertexBuffer->VertexData = (void*)PXVertexDataTriangle;
+                            pxVertexBuffer->VertexDataSize = sizeof(PXVertexDataTriangle);
 
 #if PXLogEnable
                             PXLogPrint
@@ -579,9 +584,9 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                         }
                         case PXModelFormRectangle:
                         {
-                            pxModel->VertexBuffer.Format = PXVertexBufferFormatXYI8;
-                            pxModel->VertexBuffer.VertexData = (void*)PXVertexDatarectangle;
-                            pxModel->VertexBuffer.VertexDataSize = sizeof(PXVertexDatarectangle);
+                            pxVertexBuffer->Format = PXVertexBufferFormatXYI8;
+                            pxVertexBuffer->VertexData = (void*)PXVertexDatarectangle;
+                            pxVertexBuffer->VertexDataSize = sizeof(PXVertexDatarectangle);
 
 #if PXLogEnable
                             PXLogPrint
@@ -602,9 +607,9 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                             float radius = 1;
                             int segmentAmount = 16;
 
-                            pxModel->VertexBuffer.Format = PXVertexBufferFormatXYFloat;
-                            PXNewList(float, segmentAmount * 2, &pxModel->VertexBuffer.VertexData, &pxModel->VertexBuffer.VertexDataSize);                           
-                            float* vertexData = (float*)pxModel->VertexBuffer.VertexData;
+                            pxVertexBuffer->Format = PXVertexBufferFormatXYFloat;
+                            PXNewList(float, segmentAmount * 2, &pxVertexBuffer->VertexData, &pxVertexBuffer->VertexDataSize);
+                            float* vertexData = (float*)pxVertexBuffer->VertexData;
 
                             for(PXSize i = 0; i < segmentAmount; ++i)
                             {
@@ -630,14 +635,14 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                         }
                         case PXModelFormCube:
                         {
-                            pxModel->VertexBuffer.Format = PXVertexBufferFormatXYZI8;
-                            pxModel->VertexBuffer.VertexData = (void*)PXVertexDataCube;
-                            pxModel->VertexBuffer.VertexDataSize = sizeof(PXVertexDataCube);
+                            pxVertexBuffer->Format = PXVertexBufferFormatXYZI8;
+                            pxVertexBuffer->VertexData = (void*)PXVertexDataCube;
+                            pxVertexBuffer->VertexDataSize = sizeof(PXVertexDataCube);
 
-                            pxModel->IndexBuffer.IndexDataType = PXDataTypeInt08U;
-                            pxModel->IndexBuffer.DrawModeID = PXDrawModeIDTriangle;
-                            pxModel->IndexBuffer.IndexData = (void*)PXIndexDataCube;
-                            pxModel->IndexBuffer.IndexDataSize = sizeof(PXIndexDataCube);
+                            pxIndexBuffer->IndexDataType = PXDataTypeInt08U;
+                            pxIndexBuffer->DrawModeID = PXDrawModeIDTriangle;
+                            pxIndexBuffer->IndexData = (void*)PXIndexDataCube;
+                            pxIndexBuffer->IndexDataSize = sizeof(PXIndexDataCube);
 
 
 #if PXLogEnable
@@ -927,9 +932,10 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                 }
 
                 pxSprite->Info.ID = PXResourceManagerGenerateUniqeID(pxResourceManager);
-                PXDictionaryAdd(&pxResourceManager->SpritelLookUp, &pxSprite->Info.ID, pxSprite);
-
                 pxSprite->Info.Flags |= PXEngineResourceInfoVisble;
+
+                PXDictionaryAdd(&pxResourceManager->SpritelLookUp, &pxSprite->Info.ID, pxSprite);
+          
 
 #if PXLogEnable
                 PXLogPrint
@@ -943,39 +949,37 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                 );
 #endif
 
-                // Load texture
+                // Load texture & sprite model
                 {
-                    PXResourceCreateInfo pxResourceCreateInfoSub;
-                    PXClear(PXResourceCreateInfo, &pxResourceCreateInfoSub);
+                    PXResourceCreateInfo pxResourceCreateInfoSub[3];
+                    PXClearList(PXResourceCreateInfo, &pxResourceCreateInfoSub, 3);
+                    PXSize amount = 2;
 
-                    pxResourceCreateInfoSub.Type = PXResourceTypeTexture2D;
-                    pxResourceCreateInfoSub.ObjectReference = (void**)&pxSprite->Texture;
-                    pxResourceCreateInfoSub.FilePath = pxResourceCreateInfo->FilePath;
+                    pxResourceCreateInfoSub[0].Type = PXResourceTypeTexture2D;
+                    pxResourceCreateInfoSub[0].ObjectReference = (void**)&pxSprite->Texture;
+                    pxResourceCreateInfoSub[0].FilePath = pxResourceCreateInfo->FilePath;
 
-                    PXResourceManagerAdd(pxResourceManager, &pxResourceCreateInfoSub, 1);
-                }
+                    pxResourceCreateInfoSub[1].Type = PXResourceTypeModel;
+                    pxResourceCreateInfoSub[1].ObjectReference = (void**)&pxSprite->Model;
+                    pxResourceCreateInfoSub[1].Model.Form = PXModelFormRectangle;
 
-                // Load sprite model
-                {
-                    // if sprite is normal, load a rectangle model
-                    float vertexData[] =
+                    // Add hibox if needed
+                    if(pxSpriteCreateEventData->HitBoxCreate)
                     {
-                    
-                    };
+                        pxResourceCreateInfoSub[2].Type = PXResourceTypeHitBox;
+                        pxResourceCreateInfoSub[2].ObjectReference = (void**)&pxSprite->HitBox;
+                        pxResourceCreateInfoSub[2].HitBox.Flags = 0;
+                        pxResourceCreateInfoSub[2].HitBox.Model = pxSprite->Model;
 
+                       // pxResourceCreateInfo->HitBox.HitBox = pxSprite->HitBox;
 
-                    // if sprite is scalable, ´create that
+                        amount++;
+                    }
 
-
+                    PXResourceManagerAdd(pxResourceManager, &pxResourceCreateInfoSub, amount);
                 }
 
-
-
-
-
-                pxSprite->Model = pxResourceManager->ModelFailback;
-
-           
+               // pxSprite->Model = pxResourceManager->ModelFailback;           
 
 
 #if 0
@@ -1092,21 +1096,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
           
 #endif
 
-                // Add hibox if needed
-                if(pxSpriteCreateEventData->HitBoxCreate)
-                {
-                    PXResourceCreateInfo pxResourceCreateInfoSub;
-                    PXClear(PXResourceCreateInfo, &pxResourceCreateInfoSub);
-
-                    pxResourceCreateInfoSub.Type = PXResourceTypeHitBox;
-                    pxResourceCreateInfoSub.ObjectReference = (void**)&pxSprite->HitBox;
-                    pxResourceCreateInfoSub.HitBox.Flags = 0;
-                    pxResourceCreateInfoSub.HitBox.Model = pxSprite->Model;
-
-                    PXResourceManagerAdd(pxResourceManager, &pxResourceCreateInfoSub, 1);
-
-                    pxResourceCreateInfo->HitBox.HitBox = pxSprite->HitBox;
-                }
+             
 
 
 
@@ -1590,7 +1580,7 @@ void PXAPI PXModelFormatTransmute(PXModel* const pxModel, PXModelFormatTransmute
 
             PXNewList(float, sizeCurrent, &newVertexArray, &newVertexArraySize);
 
-            PXInt8U* dataSource = (PXInt8U*)pxModel->VertexBuffer.VertexData;
+            PXInt8S* dataSource = (PXInt8S*)pxModel->VertexBuffer.VertexData;
 
             for(size_t i = 0; i < sizeCurrent; i++)
             {
@@ -1615,7 +1605,7 @@ void PXAPI PXModelFormatTransmute(PXModel* const pxModel, PXModelFormatTransmute
 
             PXNewList(float, sizeCurrent, &newVertexArray, &newVertexArraySize);
 
-            PXInt8U* dataSource = (PXInt8U*)pxModel->VertexBuffer.VertexData;
+            PXInt8S* dataSource = (PXInt8S*)pxModel->VertexBuffer.VertexData;
 
             for(size_t i = 0; i < sizeCurrent; i++)
             {

@@ -1497,7 +1497,7 @@ PXPublic void PXAPI PXOpenGLTexture2DDataWrite(PXOpenGL* const openGLContext, PX
 //-------------------------------------------------------------------------
 
 
-PXPublic void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, PXSkyBox* const pxSkyBox, PXCamera* const pxCamera);
+PXPublic void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, const PXRenderEntity* const pxRenderEntity);
 
 
 //-----------------------------------------------------
@@ -1655,7 +1655,7 @@ PXPublic PXActionResult PXAPI PXOpenGLLightEnableGet(PXOpenGL* const pxOpenGL, P
 // PX-Extrended
 //-----------------------------------------------------
 PXPublic PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* const pxModel);
-PXPublic PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXModel* const pxModel, const PXCamera* const pxCamera);
+PXPublic PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderEntity* const pxRenderEntity);
 PXPublic PXActionResult PXAPI PXOpenGLModelDeregister(PXOpenGL* const pxOpenGL, PXModel* const pxModel);
 
 

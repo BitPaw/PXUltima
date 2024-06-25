@@ -800,23 +800,19 @@ typedef struct PXIndexBuffer_
 }
 PXIndexBuffer;
 
+// A mesh is a structure that contains vertex and index data to render itself
+typedef struct PXMesh_
+{
+	PXVertexBuffer VertexBuffer;
+	PXIndexBuffer IndexBuffer;
+}
+PXMesh;
+
 typedef struct PXModel_
 {
 	PXResourceInfo Info;
 
-	//-----------------------------
-	// Render info
-	//-----------------------------
-	PXMatrix4x4F ModelMatrix;
-	PXShaderProgram* ShaderProgramReference;
-	//-----------------------------
-
-
-	//-----------------------------
-	// Vertex data
-	//-----------------------------
-	PXVertexBuffer VertexBuffer;
-	PXIndexBuffer IndexBuffer;
+	PXMesh Mesh;
 
 	struct PXModel_* StructureOverride; // Used to take the model data from another structure, ther values like matrix stay unaffected
 	struct PXModel_* StructureParent; // Structural parent of structure
@@ -838,6 +834,23 @@ typedef struct PXModel_
 	//-----------------------------
 }
 PXModel;
+
+
+
+typedef struct PXRenderEntity_
+{
+	PXMatrix4x4F MatrixModel; // Position of target to render
+	PXCamera* CameraReference; // Camera required for rendering
+	PXShaderProgram* ShaderProgramReference; // Shader for the whole model
+	void* ObjectReference; // Containing the object, type described in 'Type'
+	PXResourceType Type;
+
+	// Dirty flags
+}
+PXRenderEntity;
+
+
+
 
 
 PXPublic void PXAPI PXModelConstruct(PXModel* const pxModel);

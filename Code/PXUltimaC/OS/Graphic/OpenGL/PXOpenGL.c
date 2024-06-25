@@ -3118,17 +3118,33 @@ void PXAPI PXOpenGLDrawEnd(PXOpenGL* const pxOpenGL)
     pxOpenGL->End();
 }
 
-PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXModel* const pxModel, const PXCamera* const pxCamera)
+PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderEntity* const pxRenderEntity)
 {
-    if (!pxModel->VertexBuffer.VertexData)
+    if(!(pxOpenGL && pxRenderEntity))
+    {
+        return PXActionRefusedArgumentNull;
+    }
+
+
+    PXCamera* const pxCamera = pxRenderEntity->CameraReference;
+    PXMatrix4x4F* const matrixModel = &pxRenderEntity->MatrixModel;
+    PXMatrix4x4F* const matrixView = &pxCamera->MatrixView;
+    PXMatrix4x4F* const matrixProjection = &pxCamera->MatrixProjection;
+
+    PXShaderProgram* const pxShaderProgram = pxRenderEntity->ShaderProgramReference;
+    PXModel* const pxModel = (PXModel*)pxRenderEntity->Type;
+    PXVertexBuffer* const pxVertexBuffer = &pxModel->Mesh.VertexBuffer;
+    PXIndexBuffer* const pxIndexBuffer = &pxModel->Mesh.IndexBuffer;
+
+    if (!pxVertexBuffer->VertexData) // Has data?
     {
         return PXActionRefusedArgumentInvalid;
     }
 
-    const PXBool canUseShader = pxModel->ShaderProgramReference && pxOpenGL->ShaderProgramUse;
+    const PXBool canUseShader = pxShaderProgram && pxOpenGL->ShaderProgramUse;
     const PXBool supportVAO = pxOpenGL->VertexArrayBind != PXNull;
     const PXBool supportBuffers = pxOpenGL->BufferBind != PXNull;
-    const PXInt32U indexBufferTypeID = PXOpenGLTypeToID(pxModel->IndexBuffer.IndexDataType);
+    const PXInt32U indexBufferTypeID = PXOpenGLTypeToID(pxIndexBuffer->IndexDataType);
 
     void* indexData = 0;
 
@@ -3136,21 +3152,21 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXModel* 
     {
         pxOpenGL->VertexArrayBind(pxModel->Info.OpenGLID); // Select VAO
 
-        if(pxModel->VertexBuffer.VertexData)
+        if(pxVertexBuffer->VertexData)
         {
-            pxOpenGL->BufferBind(GL_ARRAY_BUFFER, pxModel->VertexBuffer.Info.OpenGLID);          
+            pxOpenGL->BufferBind(GL_ARRAY_BUFFER, pxVertexBuffer->Info.OpenGLID);
         }
-        if(pxModel->IndexBuffer.IndexData)
+        if(pxIndexBuffer->IndexData)
         {
-            pxOpenGL->BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxModel->IndexBuffer.Info.OpenGLID);
+            pxOpenGL->BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->Info.OpenGLID);
         }
     }
     else
     {
         if (supportBuffers)
         {
-            pxOpenGL->BufferBind(GL_ARRAY_BUFFER, pxModel->VertexBuffer.Info.OpenGLID); // Select VBO
-            pxOpenGL->BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxModel->IndexBuffer.Info.OpenGLID); // Select IBO
+            pxOpenGL->BufferBind(GL_ARRAY_BUFFER, pxVertexBuffer->Info.OpenGLID); // Select VBO
+            pxOpenGL->BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->Info.OpenGLID); // Select IBO
 
             assert(indexBufferTypeID != -1);
 
@@ -3159,13 +3175,13 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXModel* 
         else
         {
             // Setup vertex data client side
-            switch (pxModel->VertexBuffer.Format)
+            switch (pxVertexBuffer->Format)
             {
                 case PXVertexBufferFormatT2F_XYZ:
                 {
                     //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
                     //glEnableClientState(GL_VERTEX_ARRAY);
-                    pxOpenGL->InterleavedArrays(GL_T2F_V3F, 0, pxModel->VertexBuffer.VertexData);
+                    pxOpenGL->InterleavedArrays(GL_T2F_V3F, 0, pxVertexBuffer->VertexData);
                     break;
                 }
                 case PXVertexBufferFormatT2F_N3F_XYZ:
@@ -3173,7 +3189,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXModel* 
                     //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
                     //glEnableClientState(GL_NORMAL_ARRAY);
                     //glEnableClientState(GL_VERTEX_ARRAY);
-                    pxOpenGL->InterleavedArrays(GL_T2F_N3F_V3F, 0, pxModel->VertexBuffer.VertexData);
+                    pxOpenGL->InterleavedArrays(GL_T2F_N3F_V3F, 0, pxVertexBuffer->VertexData);
                     break;
                 }
                 default:
@@ -3185,7 +3201,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXModel* 
 
             GLenum indexTypeID = 0;
 
-            switch (pxModel->IndexBuffer.IndexDataType)
+            switch (pxIndexBuffer->IndexDataType)
             {
                 default:
                     break;
@@ -3193,7 +3209,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXModel* 
 
             //glIndexPointer(indexBufferTypeID, 0, pxModel->IndexBuffer.IndexData);
 
-            indexData = pxModel->IndexBuffer.IndexData;
+            indexData = pxIndexBuffer->IndexData;
         }
     }
 
@@ -3203,8 +3219,8 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXModel* 
     PXMatrix4x4F modifiedViewMatrix;
     PXMatrix4x4F modifiedModelMatrix;
 
-    PXMatrix4x4FCopy(&pxCamera->MatrixView, &modifiedViewMatrix);
-    PXMatrix4x4FCopy(&pxModel->ModelMatrix, &modifiedModelMatrix);
+    PXMatrix4x4FCopy(matrixView, &modifiedViewMatrix);
+    PXMatrix4x4FCopy(matrixModel, &modifiedModelMatrix);
 
     if (pxModel->IgnoreViewPosition)
     {
@@ -3223,7 +3239,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXModel* 
 
     if (canUseShader)
     {
-        PXOpenGLShaderProgramSelect(pxOpenGL, pxModel->ShaderProgramReference);
+        PXOpenGLShaderProgramSelect(pxOpenGL, pxShaderProgram);
 
         PXShaderVariable pxShaderVariableList[6];
         PXClearList(PXShaderVariable, pxShaderVariableList, 6);
@@ -3239,7 +3255,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXModel* 
 
         PXTextCopyA("MatrixProjection", 16, pxShaderVariableList[2].Name, 64);
         pxShaderVariableList[2].Amount = 1;
-        pxShaderVariableList[2].Data = pxCamera->MatrixProjection.Data;
+        pxShaderVariableList[2].Data = matrixProjection->Data;
         pxShaderVariableList[2].DataType = PXShaderVariableTypeMatrix4x4;
 
 
@@ -3260,7 +3276,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXModel* 
         pxShaderVariableList[5].Data = dummyValue;
         pxShaderVariableList[5].DataType = PXShaderVariableTypeFloatVector4;
 
-        PXOpenGLShaderVariableSet(pxOpenGL, pxModel->ShaderProgramReference, pxShaderVariableList, 6);
+        PXOpenGLShaderVariableSet(pxOpenGL, pxShaderProgram, pxShaderVariableList, 6);
     }
     else // Legacy matrix stuff
     {
@@ -3317,29 +3333,29 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXModel* 
     pxOpenGL->LineWidth(2);
 
 
-    const PXSize elementSize = pxModel->IndexBuffer.IndexDataType & PXDataTypeSizeMask;
+    const PXSize elementSize = pxIndexBuffer->IndexDataType & PXDataTypeSizeMask;
     GLsizei drawElementsCount = 0;
 
     if(elementSize != 0)
     {
-        drawElementsCount = pxModel->IndexBuffer.IndexDataSize / elementSize;
+        drawElementsCount = pxIndexBuffer->IndexDataSize / elementSize;
     }
 
-    const PXBool hasNoIndexArray = pxModel->IndexBuffer.Info.OpenGLID == -1;
+    const PXBool hasNoIndexArray = pxIndexBuffer->Info.OpenGLID == -1;
 
-    if (pxModel->IndexBuffer.DrawModeID & PXDrawModeIDTriangle)
+    if (pxIndexBuffer->DrawModeID & PXDrawModeIDTriangle)
     {
         pxOpenGL->Color4f(1, 1, 1, 1);
 
-        const PXBool renderSegmented = pxModel->IndexBuffer.SegmentListAmount > 1;
+        const PXBool renderSegmented = pxIndexBuffer->SegmentListAmount > 1;
 
         if (renderSegmented)
         {
             PXSize renderOffset = 0;
 
-            for (size_t i = 0; i < pxModel->IndexBuffer.SegmentListAmount; i++)
+            for (size_t i = 0; i < pxIndexBuffer->SegmentListAmount; i++)
             {
-                PXIndexSegment* const pxIndexSegment = &pxModel->IndexBuffer.SegmentList[i];
+                PXIndexSegment* const pxIndexSegment = &pxIndexBuffer->SegmentList[i];
                 PXTexture2D* pxTexture = pxIndexSegment->Material->DiffuseTexture;
 
                 if (pxIndexSegment->Material)
@@ -3358,7 +3374,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXModel* 
                     pxOpenGL->Disable(GL_TEXTURE_2D);
                 }
 
-                if (pxModel->IndexBuffer.Info.OpenGLID == -1) // Does this index array exist?
+                if (pxIndexBuffer->Info.OpenGLID == -1) // Does this index array exist?
                 {
                     // Render withoút an index buffer
                     pxOpenGL->DrawArrays(GL_TRIANGLES, renderOffset, pxIndexSegment->DataRange);
@@ -3374,7 +3390,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXModel* 
         }
         else
         {
-            const PXIndexSegment* const pxIndexSegment = &pxModel->IndexBuffer.SegmentPrime;
+            const PXIndexSegment* const pxIndexSegment = &pxIndexBuffer->SegmentPrime;
 
             PXMaterial* const pxMaterial = pxIndexSegment->Material;
 
@@ -3403,7 +3419,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXModel* 
               //  pxShaderVariableList[3].Data = pxMaterial->Specular;
                // pxShaderVariableList[3].DataType = PXShaderVariableTypeSampler2DF;
 
-                PXOpenGLShaderVariableSet(pxOpenGL, pxModel->ShaderProgramReference, pxShaderVariableList, 3);
+                PXOpenGLShaderVariableSet(pxOpenGL, pxShaderProgram, pxShaderVariableList, 3);
 
 
                 const PXTexture2D* const pxTexture = pxIndexSegment->Material->DiffuseTexture;
@@ -3436,7 +3452,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXModel* 
             }
         }
     }
-    if (pxModel->IndexBuffer.DrawModeID & PXDrawModeIDSquare)
+    if (pxIndexBuffer->DrawModeID & PXDrawModeIDSquare)
     {
         pxOpenGL->Color4f(1, 1, 1, 1);
 
@@ -3449,7 +3465,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXModel* 
             pxOpenGL->DrawElements(GL_QUADS, drawElementsCount, indexBufferTypeID, indexData);
         }
     }
-    if (pxModel->IndexBuffer.DrawModeID & PXDrawModeIDLineLoop)
+    if (pxIndexBuffer->DrawModeID & PXDrawModeIDLineLoop)
     {
         pxOpenGL->Color4f(0, 1, 0, 1);
 
@@ -3462,7 +3478,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXModel* 
             pxOpenGL->DrawElements(GL_LINE_LOOP, drawElementsCount, indexBufferTypeID, indexData);
         }
     }
-    if(pxModel->IndexBuffer.DrawModeID & PXDrawModeIDLine)
+    if(pxIndexBuffer->DrawModeID & PXDrawModeIDLine)
     {
         pxOpenGL->Color4f(0, 1, 0, 1);
 
@@ -3475,7 +3491,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXModel* 
             pxOpenGL->DrawElements(GL_LINES, drawElementsCount, indexBufferTypeID, indexData);
         }
     }
-    if (pxModel->IndexBuffer.DrawModeID & PXDrawModeIDPoint)
+    if (pxIndexBuffer->DrawModeID & PXDrawModeIDPoint)
     {
         pxOpenGL->Color4f(1, 1, 0, 1);
 
@@ -5179,8 +5195,21 @@ void PXAPI PXOpenGLTexture2DDataWrite(PXOpenGL* const pxOpenGL, PXTexture2D* con
     );
 }
 
-void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, PXSkyBox* const pxSkyBox, PXCamera* const pxCamera)
+void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, const PXRenderEntity* const pxRenderEntity)
 {
+    if(!(pxOpenGL && pxRenderEntity))
+    {
+        return;
+    }
+
+    PXSkyBox* const pxSkyBox = (PXSkyBox*)pxRenderEntity->ObjectReference;
+
+    PXCamera* const pxCamera = pxRenderEntity->CameraReference;
+    PXMatrix4x4F* const matrixModel = &pxRenderEntity->MatrixModel;
+    PXMatrix4x4F* const matrixView = &pxCamera->MatrixView;
+    PXVertexBuffer* const pxVertexBuffer = &pxSkyBox->Model->Mesh.VertexBuffer;
+    PXIndexBuffer* const pxIndexBuffer = &pxSkyBox->Model->Mesh.IndexBuffer;
+
     PXModel* const pxModel = pxSkyBox->Model;
     PXTextureCube* const pxTextureCube = pxSkyBox->TextureCube;
 
@@ -5189,11 +5218,6 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, PXSkyBox* const pxSkyBox
 
     void* indexBuffer = 0;
 
-    if (!(pxOpenGL && pxSkyBox && pxCamera))
-    {    
-        return;
-    }
-
     PXMatrix4x4F viewTri;
 
     pxOpenGL->Enable(GL_TEXTURE_2D);
@@ -5201,13 +5225,12 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, PXSkyBox* const pxSkyBox
     pxOpenGL->PointSize(10);
 
 
-    PXMatrix4x4FCopy(&pxCamera->MatrixView, &viewTri);
+    PXMatrix4x4FCopy(matrixView, &viewTri);
     PXMatrix4x4FResetAxisW(&viewTri); // if removed, you can move out of the skybox
 
     // PXOpenGLPolygonRenderOrder(pxOpenGL, PXOpenGLPolygonRenderOrderModeCounterClockwise);
 
     pxOpenGL->DepthMask(GL_FALSE);
-
     pxOpenGL->Enable(GL_BLEND);
 
     //PXOpenGLPolygonRenderOrder(pxOpenGL, PXOpenGLPolygonRenderOrderModeClockwise);
@@ -5236,7 +5259,7 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, PXSkyBox* const pxSkyBox
     {
         PXOpenGLShaderProgramSelect(pxOpenGL, 0);
 
-        pxOpenGL->InterleavedArrays(GL_V3F, pxModel->VertexBuffer.VertexDataSize, pxModel->VertexBuffer.VertexData);
+        pxOpenGL->InterleavedArrays(GL_V3F, pxVertexBuffer->VertexDataSize, pxVertexBuffer->VertexData);
 
         pxOpenGL->Color4f(0.5f, 0.2f, 0.2f, 1.0f);
 
@@ -5246,7 +5269,7 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, PXSkyBox* const pxSkyBox
         //glMultMatrixf(pxSkyBox->Model.ModelMatrix.Data);
         pxOpenGL->PushMatrix();
 
-        indexBuffer = pxModel->IndexBuffer.IndexData;
+        indexBuffer = pxIndexBuffer->IndexData;
     }
 
     if (pxOpenGL->VertexArrayBind)
@@ -5269,23 +5292,23 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, PXSkyBox* const pxSkyBox
     //PXOpenGLBufferBind(pxOpenGL, PXOpenGLBufferElementArray, skybox->Model.IndexBuffer.ResourceID.OpenGLID);
    // PXOpenGLTextureBind(pxOpenGL, PXOpenGLTextureTypeCubeMap, skybox->TextureCube.ResourceID.OpenGLID);
 
-    const GLsizei drawElementsCount = pxModel->IndexBuffer.IndexDataSize / (pxModel->IndexBuffer.IndexDataType & PXDataTypeSizeMask);
+    const GLsizei drawElementsCount = pxIndexBuffer->IndexDataSize / (pxIndexBuffer->IndexDataType & PXDataTypeSizeMask);
 
-    if (pxModel->IndexBuffer.DrawModeID & PXDrawModeIDPoint)
+    if (pxIndexBuffer->DrawModeID & PXDrawModeIDPoint)
     {
         pxOpenGL->DrawArrays(GL_POINTS, 0, drawElementsCount);
     }
-    if (pxModel->IndexBuffer.DrawModeID & PXDrawModeIDLineLoop)
+    if (pxIndexBuffer->DrawModeID & PXDrawModeIDLineLoop)
     {
         pxOpenGL->DrawElements(GL_LINE_LOOP, drawElementsCount, GL_UNSIGNED_BYTE, indexBuffer);
     }
 
-    if (pxModel->IndexBuffer.DrawModeID & PXDrawModeIDSquare)
+    if (pxIndexBuffer->DrawModeID & PXDrawModeIDSquare)
     {
         //pxOpenGL->DrawElements(GL_QUADS, 0, pxSkyBox->Model.IndexBuffer.IndexDataAmount, GL_UNSIGNED_BYTE, indexBuffer); // Not supported?
     }
 
-    if (pxModel->IndexBuffer.DrawModeID & PXDrawModeIDTriangle)
+    if (pxIndexBuffer->DrawModeID & PXDrawModeIDTriangle)
     {
         pxOpenGL->DrawElements(GL_TRIANGLES, drawElementsCount, GL_UNSIGNED_BYTE, indexBuffer);
     }
@@ -6124,6 +6147,15 @@ PXActionResult PXAPI PXOpenGLLightEnableGet(PXOpenGL* const pxOpenGL, PXLight* c
 
 PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* const pxModel)
 {
+    if(!(pxOpenGL && pxModel))
+    {
+        return PXActionRefusedArgumentNull;
+    }
+
+    PXVertexBuffer* const pxVertexBuffer = &pxModel->Mesh.VertexBuffer;
+    PXIndexBuffer* const pxIndexBuffer = &pxModel->Mesh.IndexBuffer;
+
+
     if (pxOpenGL->VertexArraysGenerate)
     {
         pxOpenGL->VertexArraysGenerate(1, &(pxModel->Info.OpenGLID)); // VAO
@@ -6162,16 +6194,16 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
         //PXResourceIDMarkAsUnused(&pxModel->IndexBuffer.Info);
 
         // Copy references, we can't trust if these are not on the stack.
-        void* vertexData = pxModel->VertexBuffer.VertexData;
-        void* indexData = pxModel->IndexBuffer.IndexData;
+        void* vertexData = pxVertexBuffer->VertexData;
+        void* indexData = pxIndexBuffer->IndexData;
 
         // Copy vertex data
-        PXNewList(PXByte, pxModel->VertexBuffer.VertexDataSize, &pxModel->VertexBuffer.VertexData, &pxModel->VertexBuffer.VertexDataSize);
-        PXMemoryCopy(vertexData, pxModel->VertexBuffer.VertexDataSize, pxModel->VertexBuffer.VertexData, pxModel->VertexBuffer.VertexDataSize);
+        PXNewList(PXByte, pxVertexBuffer->VertexDataSize, &pxVertexBuffer->VertexData, &pxVertexBuffer->VertexDataSize);
+        PXMemoryCopy(vertexData, pxVertexBuffer->VertexDataSize, pxVertexBuffer->VertexData, pxVertexBuffer->VertexDataSize);
 
         // Copy index data
-        PXNewList(PXByte, pxModel->IndexBuffer.IndexDataSize, &pxModel->IndexBuffer.IndexData, &pxModel->IndexBuffer.IndexDataSize);
-        PXMemoryCopy(indexData, pxModel->IndexBuffer.IndexDataSize, pxModel->IndexBuffer.IndexData, pxModel->IndexBuffer.IndexDataSize);
+        PXNewList(PXByte, pxIndexBuffer->IndexDataSize, &pxIndexBuffer->IndexData, &pxIndexBuffer->IndexDataSize);
+        PXMemoryCopy(indexData, pxIndexBuffer->IndexDataSize, pxIndexBuffer->IndexData, pxIndexBuffer->IndexDataSize);
 
 #if PXLogEnable
         PXLogPrint
@@ -6190,7 +6222,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
 
 
 
-    const PXBool hasIndexData = pxModel->IndexBuffer.IndexDataSize > 0;
+    const PXBool hasIndexData = pxIndexBuffer->IndexDataSize > 0;
 
     {
         // Create IDs
@@ -6198,8 +6230,8 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
         GLuint bufferIDs[2] = {-1, -1};
         pxOpenGL->BufferGenerate(amount, bufferIDs);
 
-        pxModel->VertexBuffer.Info.OpenGLID = bufferIDs[0];
-        pxModel->IndexBuffer.Info.OpenGLID = bufferIDs[1];
+        pxVertexBuffer->Info.OpenGLID = bufferIDs[0];
+        pxIndexBuffer->Info.OpenGLID = bufferIDs[1];
 
 #if PXLogEnable
         PXLogPrint
@@ -6239,24 +6271,24 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
         "OpenGL",
         "Model",
         "VBO:<%i> upload data 0x%p with %i Bytes",
-        pxModel->VertexBuffer.Info.OpenGLID,
-        pxModel->VertexBuffer.VertexData,
-        pxModel->VertexBuffer.VertexDataSize
+        pxVertexBuffer->Info.OpenGLID,
+        pxVertexBuffer->VertexData,
+        pxVertexBuffer->VertexDataSize
     );
 
 
 
 
-    const PXSize amount = pxModel->VertexBuffer.VertexDataSize / sizeof(float);
-    float* data = (float*)pxModel->VertexBuffer.VertexData;
-    const PXSize stride = PXVertexBufferFormatStrideSize(pxModel->VertexBuffer.Format);
+    const PXSize amount = pxVertexBuffer->VertexDataSize / sizeof(float);
+    float* data = (float*)pxVertexBuffer->VertexData;
+    const PXSize stride = PXVertexBufferFormatStrideSize(pxVertexBuffer->Format);
 
   //  PXConsoleWriteTableFloat(data, amount, stride);
 
 #endif
 
-    pxOpenGL->BufferBind(GL_ARRAY_BUFFER, pxModel->VertexBuffer.Info.OpenGLID);
-    pxOpenGL->BufferData(GL_ARRAY_BUFFER, pxModel->VertexBuffer.VertexDataSize, pxModel->VertexBuffer.VertexData, GL_STATIC_DRAW);
+    pxOpenGL->BufferBind(GL_ARRAY_BUFFER, pxVertexBuffer->Info.OpenGLID);
+    pxOpenGL->BufferData(GL_ARRAY_BUFFER, pxVertexBuffer->VertexDataSize, pxVertexBuffer->VertexData, GL_STATIC_DRAW);
    // pxOpenGL->PXOpenGLBindBufferCallBack(GL_ARRAY_BUFFER, 0);
 
 
@@ -6273,20 +6305,20 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
             "OpenGL",
             "Model",
             "IBO:<%i> upload data 0x%p with %i Bytes ",
-            pxModel->IndexBuffer.Info.OpenGLID,
-            pxModel->IndexBuffer.IndexData,
-            pxModel->IndexBuffer.IndexDataSize
+            pxIndexBuffer->Info.OpenGLID,
+            pxIndexBuffer->IndexData,
+            pxIndexBuffer->IndexDataSize
         );
 
-        const PXSize amount = pxModel->IndexBuffer.IndexDataSize;
-        PXInt8U* data = (PXInt8U*)pxModel->IndexBuffer.IndexData;
-        const PXSize stride = PXVertexBufferFormatStrideSize(pxModel->VertexBuffer.Format);
+        const PXSize amount = pxIndexBuffer->IndexDataSize;
+        PXInt8U* data = (PXInt8U*)pxIndexBuffer->IndexData;
+        const PXSize stride = PXVertexBufferFormatStrideSize(pxVertexBuffer->Format);
 
        // PXConsoleWriteTableInt(data, amount, stride);
 #endif
 
-        pxOpenGL->BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxModel->IndexBuffer.Info.OpenGLID);
-        pxOpenGL->BufferData(GL_ELEMENT_ARRAY_BUFFER, pxModel->IndexBuffer.IndexDataSize, pxModel->IndexBuffer.IndexData, GL_STATIC_DRAW);
+        pxOpenGL->BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->Info.OpenGLID);
+        pxOpenGL->BufferData(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->IndexDataSize, pxIndexBuffer->IndexData, GL_STATIC_DRAW);
         //pxOpenGL->PXOpenGLBindBufferCallBack(GL_ELEMENT_ARRAY_BUFFER, 0);
 
         PXActionResult indexDataUpload = PXOpenGLErrorCurrent(pxOpenGL);
@@ -6301,9 +6333,9 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
 
         // make
         {
-            const PXInt8U stride = PXVertexBufferFormatStrideSize(pxModel->VertexBuffer.Format) * sizeof(float);
+            const PXInt8U stride = PXVertexBufferFormatStrideSize(pxVertexBuffer->Format) * sizeof(float);
 
-            switch (pxModel->VertexBuffer.Format)
+            switch (pxVertexBuffer->Format)
             {
                 case PXVertexBufferFormatXYZFloat:
                 {
