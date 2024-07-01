@@ -1264,7 +1264,7 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
     {
         PXWindowUpdate(&pxEngine->GUISystem, pxEngine->Window);
 
-        PXWindowMouseMovementEnable(pxEngine->Window->Info.ID);
+       // PXWindowMouseMovementEnable(pxEngine->Window->Info.WindowID);
 
         PXControllerSystemInitilize(&pxEngine->ControllerSystem);
         PXControllerSystemDevicesListRefresh(&pxEngine->ControllerSystem);
@@ -1883,63 +1883,63 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXEngineResourceRenderInfo* const pxEngineResourceRenderInfo)
+PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEntity* const pxRenderEntity)
 {
-    if (!(pxEngine && pxEngineResourceRenderInfo))
+    if (!(pxEngine && pxRenderEntity))
     {
         return PXActionRefusedArgumentNull;
     }
 
-    if(!pxEngineResourceRenderInfo->ObjectReference)
+    if(!pxRenderEntity->ObjectReference)
     {
         return PXActionRefusedArgumentInvalid;
     }
 
 #if 1
-    switch (pxEngineResourceRenderInfo->Type)
+    switch (pxRenderEntity->Type)
     {
         case PXResourceTypeModel:
         {
-            PXModel* const pxModel = pxEngineResourceRenderInfo->ObjectReference;
+            PXModel* const pxModel = (PXModel*)pxRenderEntity->ObjectReference;
 
             if(!(pxModel->Info.Flags & PXEngineResourceInfoVisble))
             {
                 break; // Skip rendering
             }
 
-            pxEngine->Graphic.ModelDraw(pxEngine->Graphic.EventOwner, pxModel, pxEngineResourceRenderInfo->CameraReference);
+            pxEngine->Graphic.ModelDraw(pxEngine->Graphic.EventOwner, pxRenderEntity);
 
             break;
         }
         case PXResourceTypeSkybox:
         {
-            PXSkyBox* const pxSkyBox = pxEngineResourceRenderInfo->ObjectReference;
+            PXSkyBox* const pxSkyBox = (PXSkyBox*)pxRenderEntity->ObjectReference;
 
             if(!(pxSkyBox->Info.Flags & PXEngineResourceInfoVisble))
             {
                 break; // Skip rendering
             }
 
-            PXOpenGLSkyboxDraw(&pxEngine->Graphic.OpenGLInstance, pxSkyBox, pxEngineResourceRenderInfo->CameraReference);
+            PXOpenGLSkyboxDraw(&pxEngine->Graphic.OpenGLInstance, pxRenderEntity);
 
             break;
         }
         case PXResourceTypeSprite:
         {
-            PXSprite* const pxSprite = pxEngineResourceRenderInfo->ObjectReference;
+            PXSprite* const pxSprite = (PXSprite*)pxRenderEntity->ObjectReference;
 
             if(!(pxSprite->Info.Flags & PXEngineResourceInfoVisble))
             {
                 break; // Skip rendering
             }
 
-            PXGraphicSpriteDraw(&pxEngine->Graphic, pxSprite, pxEngineResourceRenderInfo->CameraReference);
+            pxEngine->Graphic.ModelDraw(pxEngine->Graphic.EventOwner, pxRenderEntity);
 
             break;
         }
         case PXResourceTypeHitBox:
         {
-            PXHitBox* const pxHitBox = (PXHitBox*)pxEngineResourceRenderInfo->ObjectReference;
+            PXHitBox* const pxHitBox = (PXHitBox*)pxRenderEntity->ObjectReference;
 
             if(!(pxHitBox->Info.Flags & PXEngineResourceInfoVisble))
             {
@@ -1956,17 +1956,17 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXEngineRe
             // Store previous state
 
 
-            PXInt32U drawstateBefore = pxHitBox->Model->IndexBuffer.DrawModeID;
+            PXInt32U drawstateBefore = pxHitBox->Model->Mesh.IndexBuffer.DrawModeID;
 
-            PXMaterial* material = pxHitBox->Model->IndexBuffer.SegmentPrime.Material;
+            PXMaterial* material = pxHitBox->Model->Mesh.IndexBuffer.SegmentPrime.Material;
 
             if(material == PXNull)
             {
                 PXNewZerod(PXMaterial, &material);
                 //PXNewZerod(PXMaterialContainer, &pxHitBox->Model->MaterialContaierList);
 
-                pxHitBox->Model->IndexBuffer.SegmentPrime.DataRange = 1;
-                pxHitBox->Model->IndexBuffer.SegmentPrime.Material = material;
+                pxHitBox->Model->Mesh.IndexBuffer.SegmentPrime.DataRange = 1;
+                pxHitBox->Model->Mesh.IndexBuffer.SegmentPrime.Material = material;
 
                // pxHitBox->Model->MaterialContaierList[0].MaterialListAmount = 1;
 
@@ -1993,7 +1993,7 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXEngineRe
                 material->Diffuse[2] = 0;
                 material->Diffuse[3] = 0.4;
 
-                PXOpenGLModelDraw(&pxEngine->Graphic.OpenGLInstance, pxHitBox->Model, pxEngineResourceRenderInfo->CameraReference);
+                pxEngine->Graphic.ModelDraw(pxEngine->Graphic.EventOwner, pxRenderEntity);
             }
 
             // Red border
@@ -2004,7 +2004,7 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXEngineRe
                 material->Diffuse[2] = 0;
                 material->Diffuse[3] = 0.4;
 
-                PXOpenGLModelDraw(&pxEngine->Graphic.OpenGLInstance, pxHitBox->Model, pxEngineResourceRenderInfo->CameraReference);
+                pxEngine->Graphic.ModelDraw(pxEngine->Graphic.EventOwner, pxRenderEntity);
             }
 
 
@@ -2015,8 +2015,7 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXEngineRe
                 material->Diffuse[1] = 0;
                 material->Diffuse[2] = 1;
                 material->Diffuse[3] = 0.4;
-
-                PXOpenGLModelDraw(&pxEngine->Graphic.OpenGLInstance, pxHitBox->Model, pxEngineResourceRenderInfo->CameraReference);
+                pxEngine->Graphic.ModelDraw(pxEngine->Graphic.EventOwner, pxRenderEntity);
             }
 
             material->Diffuse[0] = 1;
@@ -2024,14 +2023,14 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXEngineRe
             material->Diffuse[2] = 1;
             material->Diffuse[3] = 1;
 
-            pxHitBox->Model->IndexBuffer.DrawModeID = drawstateBefore;
+            pxHitBox->Model->Mesh.IndexBuffer.DrawModeID = drawstateBefore;
 
             break;
         }
         case PXResourceTypeText:
         {
             PXGraphic* const pxGraphic = &pxEngine->Graphic;
-            PXEngineText* const pxEngineText = pxEngineResourceRenderInfo->ObjectReference;
+            PXEngineText* const pxEngineText = (PXEngineText*)pxRenderEntity->ObjectReference;
 
             if (!pxEngineText->Text)
             {
@@ -2544,8 +2543,8 @@ void PXAPI PXEngineResourceDefaultElements(PXEngine* const pxEngine)
 
         PXClear(PXResourceCreateInfo, &pxResourceCreateInfo);
         pxResourceCreateInfo.Type = PXResourceTypeTexture2D;
-        pxResourceCreateInfo.ObjectReference = &pxEngine->ResourceManager.Texture2DFailBack;
-        pxResourceCreateInfo.Texture2D.Image.Image.PixelData = colorData;
+        pxResourceCreateInfo.ObjectReference = (void**)&pxEngine->ResourceManager.Texture2DFailBack;
+        pxResourceCreateInfo.Texture2D.Image.Image.PixelData = (void*)colorData;
         pxResourceCreateInfo.Texture2D.Image.Image.PixelDataSize = sizeof(colorData);
         pxResourceCreateInfo.Texture2D.Image.Image.Width = 2;
         pxResourceCreateInfo.Texture2D.Image.Image.Height = 2;
@@ -2559,24 +2558,29 @@ void PXAPI PXEngineResourceDefaultElements(PXEngine* const pxEngine)
 
     PXNew(PXMaterial, &material);
 
-    pxEngine->ResourceManager.ModelFailback->IndexBuffer.SegmentPrime.Material = material;
+    pxEngine->ResourceManager.ModelFailback->Mesh.IndexBuffer.SegmentPrime.Material = material;
     material->DiffuseTexture = pxEngine->ResourceManager.Texture2DFailBack;
 }
 
 PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
 {
     {
-        PXEngineResourceRenderInfo pxEngineResourceRenderInfo;
-        pxEngineResourceRenderInfo.Type = PXResourceTypeSkybox;
-        pxEngineResourceRenderInfo.CameraReference = pxEngine->CameraCurrent;
+        PXRenderEntity pxRenderEntity;
+        pxRenderEntity.Type = PXResourceTypeSkybox;
+        pxRenderEntity.CameraReference = pxEngine->CameraCurrent;
+ 
 
         PXDictionaryEntry pxDictionaryEntry;
 
         PXDictionaryIndex(&pxEngine->ResourceManager.SkyBoxLookUp, 0, &pxDictionaryEntry);
 
-        pxEngineResourceRenderInfo.ObjectReference = *(void**)pxDictionaryEntry.Value;
+        PXSkyBox* const pxSkyBox = *(PXSkyBox**)pxDictionaryEntry.Value;
 
-        PXEngineResourceRender(pxEngine, &pxEngineResourceRenderInfo);
+
+        pxRenderEntity.ObjectReference = pxSkyBox;
+        pxRenderEntity.ShaderProgramReference = pxSkyBox->ShaderProgramReference;
+
+        PXEngineResourceRender(pxEngine, &pxRenderEntity);
     }
 
     // Model
@@ -2597,12 +2601,14 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
                 continue;
             }
 
-            PXEngineResourceRenderInfo pxEngineResourceRenderInfo;
-            pxEngineResourceRenderInfo.Type = PXResourceTypeModel;
-            pxEngineResourceRenderInfo.CameraReference = pxEngine->CameraCurrent;
-            pxEngineResourceRenderInfo.ObjectReference = pxModel;
+            PXRenderEntity pxRenderEntity;
+            pxRenderEntity.Type = PXResourceTypeModel;
+            pxRenderEntity.CameraReference = pxEngine->CameraCurrent;
+            pxRenderEntity.ObjectReference = pxModel;
+            pxRenderEntity.MatrixModel = pxModel->ModelMatrix;
+            pxRenderEntity.ShaderProgramReference = pxModel->ShaderProgramReference;
 
-            PXEngineResourceRender(pxEngine, &pxEngineResourceRenderInfo);
+            PXEngineResourceRender(pxEngine, &pxRenderEntity);
         }
     }
 
@@ -2625,12 +2631,13 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
                 continue;
             }
 
-            PXEngineResourceRenderInfo pxEngineResourceRenderInfo;
-            pxEngineResourceRenderInfo.Type = PXResourceTypeSprite;
-            pxEngineResourceRenderInfo.CameraReference = pxEngine->CameraCurrent;
-            pxEngineResourceRenderInfo.ObjectReference = pxSprite;
+            PXRenderEntity pxRenderEntity;
+            pxRenderEntity.Type = PXResourceTypeSprite;
+            pxRenderEntity.CameraReference = pxEngine->CameraCurrent;
+            pxRenderEntity.ObjectReference = pxSprite;
+            pxRenderEntity.ShaderProgramReference = 0;// pxSprite->Model->ShaderProgramReference;
 
-            PXEngineResourceRender(pxEngine, &pxEngineResourceRenderInfo);
+            PXEngineResourceRender(pxEngine, &pxRenderEntity);
         }
     }
 
@@ -2652,12 +2659,13 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
                 continue;
             }
 
-            PXEngineResourceRenderInfo pxEngineResourceRenderInfo;
-            pxEngineResourceRenderInfo.Type = PXResourceTypeText;
-            pxEngineResourceRenderInfo.CameraReference = pxEngine->CameraCurrent;
-            pxEngineResourceRenderInfo.ObjectReference = pxEngineText;
+            PXRenderEntity pxRenderEntity;
+            pxRenderEntity.Type = PXResourceTypeText;
+            pxRenderEntity.CameraReference = pxEngine->CameraCurrent;
+            pxRenderEntity.ObjectReference = pxEngineText;
+            pxRenderEntity.ShaderProgramReference = 0;; // pxEngineText.->ShaderProgramReference;
 
-            PXEngineResourceRender(pxEngine, &pxEngineResourceRenderInfo);
+            PXEngineResourceRender(pxEngine, &pxRenderEntity);
         }
     }
 
@@ -2674,12 +2682,13 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
 
             pxHitBox = *(PXHitBox**)pxDictionaryEntry.Value;
 
-            PXEngineResourceRenderInfo pxEngineResourceRenderInfo;
-            pxEngineResourceRenderInfo.Type = PXResourceTypeHitBox;
-            pxEngineResourceRenderInfo.CameraReference = pxEngine->CameraCurrent;
-            pxEngineResourceRenderInfo.ObjectReference = pxHitBox;
+            PXRenderEntity pxRenderEntity;
+            pxRenderEntity.Type = PXResourceTypeHitBox;
+            pxRenderEntity.CameraReference = pxEngine->CameraCurrent;
+            pxRenderEntity.ObjectReference = pxHitBox;
+            pxRenderEntity.ShaderProgramReference = 0;;
 
-            PXEngineResourceRender(pxEngine, &pxEngineResourceRenderInfo);
+            PXEngineResourceRender(pxEngine, &pxRenderEntity);
         }
     }
 

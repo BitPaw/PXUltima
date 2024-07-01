@@ -175,7 +175,7 @@ typedef PXActionResult(PXAPI* PXGraphicDrawScriptExecute)(void* const pxGraphicA
 
 
 typedef PXActionResult(PXAPI* PXGraphicModelRegisterFunction)(void* const pxGraphicAPI, PXModel* const pxModel);
-typedef PXActionResult(PXAPI* PXGraphicModelDrawFunction)(void* const pxGraphicAPI, PXModel* const pxModel, const PXCamera* const pxCamera);
+typedef PXActionResult(PXAPI* PXGraphicModelDrawFunction)(void* const pxGraphicAPI, PXRenderEntity* const pxRenderEntity);
 typedef PXActionResult(PXAPI* PXGraphicModelSelectFunction)(void* const pxGraphicAPI, PXModel* const pxModel);
 typedef PXActionResult(PXAPI* PXGraphicModelReleaseFunction)(void* const pxGraphicAPI, PXModel* const pxModel);
 
@@ -357,7 +357,6 @@ PXPublic void PXAPI PXTextureConstruct(PXTexture2D* const texture);
 // Sprite
 //-----------------------------------------------------
 PXPublic PXActionResult PXAPI PXGraphicSpriteConstruct(PXGraphic* const pxGraphic, PXSprite* const pxSprite);
-PXPublic PXActionResult PXAPI PXGraphicSpriteDraw(PXGraphic* const pxGraphic, const PXSprite* const pxSprite, const PXCamera* const pxCamera);
 
 
 

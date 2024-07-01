@@ -354,6 +354,10 @@ PXResourceType;
 // Additional use is to define current storage and interactions.
 typedef struct PXResourceInfo_
 {
+	void* Parrent; 
+	void* Sibling;
+	void* ChildFirstborn;
+
 	// IDs used by rendering APIs to keep track of the object reference.
 	// OpenGL uses 32-Bit Integer as an ID.
 	// DirectX uses direct pointers to object references.
@@ -374,6 +378,56 @@ typedef struct PXResourceInfo_
 	PXInt32U Behaviour; // Depends on the type of the resource
 }
 PXResourceInfo;
+
+// Object to use instead of a plain adress. 
+// This can assure we have the correct and expected object.
+// This should prevent stale references
+typedef struct PXResourceReference_
+{
+	PXInt32U IDExpected; // Key to precheck expected ID behind this reference
+	void* ResourceAdress; // Reference to actual object. Check if this adress is in range.
+}
+PXResourceReference;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+typedef struct PXResource
+{
+	PXResourceInfo Info;
+
+	union
+	{
+		int x;
+		//PXSprite Sprite;
+		//PXFont Font;
+		//PXTimer Timer;
+	};
+};
+
+
 
 // Container to manage resources by loading or saving
 typedef struct PXResourceManager_
@@ -814,6 +868,13 @@ typedef struct PXModel_
 
 	PXMesh Mesh;
 
+	//-----------------------------
+// Render info
+//-----------------------------
+	PXMatrix4x4F ModelMatrix;
+	PXShaderProgram* ShaderProgramReference;
+	//-----------------------------
+
 	struct PXModel_* StructureOverride; // Used to take the model data from another structure, ther values like matrix stay unaffected
 	struct PXModel_* StructureParent; // Structural parent of structure
 	struct PXModel_* StructureSibling; // Stuctual sibling, works like a linked list.
@@ -840,8 +901,8 @@ PXModel;
 typedef struct PXRenderEntity_
 {
 	PXMatrix4x4F MatrixModel; // Position of target to render
-	PXCamera* CameraReference; // Camera required for rendering
-	PXShaderProgram* ShaderProgramReference; // Shader for the whole model
+	struct PXCamera_* CameraReference; // Camera required for rendering
+	struct PXShaderProgram_* ShaderProgramReference; // Shader for the whole model
 	void* ObjectReference; // Containing the object, type described in 'Type'
 	PXResourceType Type;
 
@@ -2606,6 +2667,7 @@ PXPublic PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxRe
 
 PXPublic PXActionResult PXAPI PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const PXText* const pxText);
 
+PXPublic PXActionResult PXAPI PXResourceManagerReferenceValidate(PXResourceManager* const pxResourceManager, PXResourceReference* const pxResourceReference);
 
 PXPublic PXActionResult PXAPI PXResourceLoad(PXResourceLoadInfo* const pxResourceLoadInfo, const PXText* const filePath);
 PXPublic PXActionResult PXAPI PXResourceLoadA(PXResourceLoadInfo* const pxResourceLoadInfo, const char* const filePath);

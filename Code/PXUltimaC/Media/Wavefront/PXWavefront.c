@@ -454,20 +454,20 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
 
         if (isVNT)
         {
-            pxModel->VertexBuffer.Format = PXVertexBufferFormatT2F_N3F_XYZ;
+            pxModel->Mesh.VertexBuffer.Format = PXVertexBufferFormatT2F_N3F_XYZ;
         }
         else if (isVT)
         {
             // We would set this in that format, but we want normals.
             // pxModel->VertexBuffer.Format = PXVertexBufferFormatT2F_XYZ;
 
-            pxModel->VertexBuffer.Format = PXVertexBufferFormatT2F_N3F_XYZ;
+            pxModel->Mesh.VertexBuffer.Format = PXVertexBufferFormatT2F_N3F_XYZ;
 
             requireToCalculateNormals = PXTrue;
         }
         else if(isVN)
         {
-            pxModel->VertexBuffer.Format = PXVertexBufferFormatN3F_XYZ;
+            pxModel->Mesh.VertexBuffer.Format = PXVertexBufferFormatN3F_XYZ;
         }
 
         // Allocate temp cache to use it for later
@@ -486,13 +486,13 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
 
         //pxModel->VertexBuffer.VertexDataRowSize = PXVertexBufferFormatStrideSize(pxModel->VertexBuffer.Format);
         //pxModel->VertexBuffer.VertexDataAmount = pxModel->VertexBuffer.VertexDataRowSize * counterIndex;
-        pxModel->IndexBuffer.SegmentListAmount = materialUseIndex;
+        pxModel->Mesh.IndexBuffer.SegmentListAmount = materialUseIndex;
 
-        const PXSize vertexDataStride = PXVertexBufferFormatStrideSize(pxModel->VertexBuffer.Format);
+        const PXSize vertexDataStride = PXVertexBufferFormatStrideSize(pxModel->Mesh.VertexBuffer.Format);
         const PXSize vertexDataAmount = vertexDataStride * counterIndex;
 
-        PXNewListZerod(float, vertexDataAmount, &pxModel->VertexBuffer.VertexData, &pxModel->VertexBuffer.VertexDataSize);
-        PXNewListZerod(PXIndexSegment, materialUseIndex, &pxModel->IndexBuffer.SegmentList, &pxModel->IndexBuffer.SegmentListSize);
+        PXNewListZerod(float, vertexDataAmount, &pxModel->Mesh.VertexBuffer.VertexData, &pxModel->Mesh.VertexBuffer.VertexDataSize);
+        PXNewListZerod(PXIndexSegment, materialUseIndex, &pxModel->Mesh.IndexBuffer.SegmentList, &pxModel->Mesh.IndexBuffer.SegmentListSize);
 
 
         materialUseIndex = 0;
@@ -507,11 +507,11 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
         pxModel->IndexBuffer.IndexData = PXMemoryHeapAllocateCleared(pxModel->IndexBuffer.IndexTypeSize, counterIndex);
         pxModel->IndexBuffer.IndexDataSize = pxModel->IndexBuffer.IndexTypeSize * counterIndex;
 #else
-        pxModel->IndexBuffer.DrawModeID = PXDrawModeIDTriangle;// | PXDrawModeIDPoint | PXDrawModeIDLineLoop;
-        pxModel->IndexBuffer.IndexDataType = 0;
+        pxModel->Mesh.IndexBuffer.DrawModeID = PXDrawModeIDTriangle;// | PXDrawModeIDPoint | PXDrawModeIDLineLoop;
+        pxModel->Mesh.IndexBuffer.IndexDataType = 0;
         //pxModel->IndexBuffer.IndexDataAmount = counterIndex;
-        pxModel->IndexBuffer.IndexData = 0;
-        pxModel->IndexBuffer.IndexDataSize = 0;
+        pxModel->Mesh.IndexBuffer.IndexData = 0;
+        pxModel->Mesh.IndexBuffer.IndexDataSize = 0;
 #endif
 
         pxModel->MaterialContaierListAmount = materialInlcudeIndex;
@@ -605,15 +605,15 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
                     }
                     case PXWavefrontLineMaterialLibraryUse:
                     {
-                        PXIndexSegment* const pxIndexSegmentLast = &pxModel->IndexBuffer.SegmentList[pxModel->IndexBuffer.SegmentListAmount - 1];
-                        PXIndexSegment* const pxIndexSegmentCurrent = &pxModel->IndexBuffer.SegmentList[materialUseIndex];
+                        PXIndexSegment* const pxIndexSegmentLast = &pxModel->Mesh.IndexBuffer.SegmentList[pxModel->Mesh.IndexBuffer.SegmentListAmount - 1];
+                        PXIndexSegment* const pxIndexSegmentCurrent = &pxModel->Mesh.IndexBuffer.SegmentList[materialUseIndex];
                         PXSize offset = counterIndex - currentTotalOffset;
 
                         pxIndexSegmentCurrent->Material = PXMaterialContainerFind(pxModel->MaterialContaierList, &materialFileName);
 
                         if (offset != 0) 
                         {
-                            PXIndexSegment* const pxIndexSegmentPrevious = &pxModel->IndexBuffer.SegmentList[materialUseIndex - 1];
+                            PXIndexSegment* const pxIndexSegmentPrevious = &pxModel->Mesh.IndexBuffer.SegmentList[materialUseIndex - 1];
 
                             pxIndexSegmentPrevious->DataRange = offset;
 
@@ -714,9 +714,9 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
                      //-------------------------------------
                      // Fill vertex element from index data
                      //-------------------------------------                              
-                    float* vertexTextureDataTarget = (float*)PXVertexBufferInsertionPoint(&pxModel->VertexBuffer, PXVertexBufferDataTypeTexture, counterIndex);
-                    float* vertexNormalDataTarget = (float*)PXVertexBufferInsertionPoint(&pxModel->VertexBuffer, PXVertexBufferDataTypeNormal, counterIndex);
-                    float* vertexPositionDataTarget = (float*)PXVertexBufferInsertionPoint(&pxModel->VertexBuffer, PXVertexBufferDataTypeVertex, counterIndex);
+                    float* vertexTextureDataTarget = (float*)PXVertexBufferInsertionPoint(&pxModel->Mesh.VertexBuffer, PXVertexBufferDataTypeTexture, counterIndex);
+                    float* vertexNormalDataTarget = (float*)PXVertexBufferInsertionPoint(&pxModel->Mesh.VertexBuffer, PXVertexBufferDataTypeNormal, counterIndex);
+                    float* vertexPositionDataTarget = (float*)PXVertexBufferInsertionPoint(&pxModel->Mesh.VertexBuffer, PXVertexBufferDataTypeVertex, counterIndex);
 
                     if(vertexData[1] != -1)
                     {
@@ -821,8 +821,8 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
 
     for (PXSize i = 0; i < counterVertex; ++i)
     {
-        float* const positionData = (float*)PXVertexBufferInsertionPoint(&pxModel->VertexBuffer, PXVertexBufferDataTypeNormal, i);
-        float* const normalData = (float*)PXVertexBufferInsertionPoint(&pxModel->VertexBuffer, PXVertexBufferDataTypeVertex, i);
+        float* const positionData = (float*)PXVertexBufferInsertionPoint(&pxModel->Mesh.VertexBuffer, PXVertexBufferDataTypeNormal, i);
+        float* const normalData = (float*)PXVertexBufferInsertionPoint(&pxModel->Mesh.VertexBuffer, PXVertexBufferDataTypeVertex, i);
 
         PXVector3F normalVector;
         PXVector3F positionVector =

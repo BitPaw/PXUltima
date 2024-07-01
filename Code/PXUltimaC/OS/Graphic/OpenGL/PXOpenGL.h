@@ -1630,7 +1630,6 @@ PXPublic PXActionResult PXAPI PXOpenGLSwapIntervalGet(PXOpenGL* const openGLCont
 
 
 PXPublic PXActionResult PXAPI PXOpenGLSpriteRegister(PXOpenGL* const pxOpenGL, PXSprite* const pxSprite);
-PXPublic PXActionResult PXAPI PXOpenGLSpriteDraw(PXOpenGL* const pxOpenGL, const PXSprite* const pxSprite, const PXCamera* const pxCamera);
 
 //-----------------------------------------------------
 // Fixed Scripting

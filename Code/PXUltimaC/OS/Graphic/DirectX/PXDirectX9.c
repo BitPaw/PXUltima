@@ -1038,15 +1038,15 @@ PXActionResult PXAPI PXDirectX9DrawScriptCreate(PXDirectX9* const pxDirectX9, PX
 #elif OSWindows
     D3DSTATEBLOCKTYPE stateBlcokType = D3DSBT_FORCE_DWORD;
 
-    switch (pxDrawScriptType)
+    switch(pxDrawScriptType)
     {
-    case PXDrawScriptTypeAll: stateBlcokType = D3DSBT_ALL; break;
-    case PXDrawScriptTypePixelState: stateBlcokType = D3DSBT_PIXELSTATE; break;
-    case PXDrawScriptTypeVertexState: stateBlcokType = D3DSBT_VERTEXSTATE; break;
+        case PXDrawScriptTypeAll: stateBlcokType = D3DSBT_ALL; break;
+        case PXDrawScriptTypePixelState: stateBlcokType = D3DSBT_PIXELSTATE; break;
+        case PXDrawScriptTypeVertexState: stateBlcokType = D3DSBT_VERTEXSTATE; break;
 
-    case PXDrawScriptTypeInvalid:
-    default:
-        return PXActionRefusedFormatNotSupported;
+        case PXDrawScriptTypeInvalid:
+        default:
+            return PXActionRefusedFormatNotSupported;
     }
 
     const HRESULT result = pxDirectX9->Device->lpVtbl->CreateStateBlock
@@ -1429,10 +1429,10 @@ PXActionResult PXAPI PXDirectX9StreamSourceGet(PXDirectX9* const pxDirectX9, con
 
 PXActionResult PXAPI PXDirectX9ModelDraw(PXDirectX9* const pxDirectX9, PXModel* const pxModel, const PXCamera* const pxCamera)
 {
-    const PXSize stride = PXVertexBufferFormatStrideSize(pxModel->VertexBuffer.Format);
+    const PXSize stride = PXVertexBufferFormatStrideSize(pxModel->Mesh.VertexBuffer.Format);
 
-    PXDirectX9StreamSourceSet(pxDirectX9, 0, &pxModel->VertexBuffer, 0, stride);
-    PXDirectX9VertexFixedFunctionSet(pxDirectX9, pxModel->VertexBuffer.Format);
+    PXDirectX9StreamSourceSet(pxDirectX9, 0, &pxModel->Mesh.VertexBuffer, 0, stride);
+    PXDirectX9VertexFixedFunctionSet(pxDirectX9, pxModel->Mesh.VertexBuffer.Format);
     PXDirectX9PrimitiveDraw(pxDirectX9, PXGraphicDrawModeTriangle, 0, 1);
 
     return PXActionSuccessful;
@@ -1727,8 +1727,8 @@ PXActionResult PXAPI PXDirectX9DepthStencilSurfaceCreate(PXDirectX9* const pxDir
 
 PXActionResult PXAPI PXDirectX9ModelRegister(PXDirectX9* const pxDirectX9, PXModel* const pxModel)
 {
-    PXDirectX9VertexBufferCreate(pxDirectX9, &pxModel->VertexBuffer);
-    PXDirectX9IndexBufferCreate(pxDirectX9, &pxModel->IndexBuffer);
+    PXDirectX9VertexBufferCreate(pxDirectX9, &pxModel->Mesh.VertexBuffer);
+    PXDirectX9IndexBufferCreate(pxDirectX9, &pxModel->Mesh.IndexBuffer);
 
     return PXActionSuccessful;
 }

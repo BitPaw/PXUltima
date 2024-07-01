@@ -3132,7 +3132,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
     PXMatrix4x4F* const matrixProjection = &pxCamera->MatrixProjection;
 
     PXShaderProgram* const pxShaderProgram = pxRenderEntity->ShaderProgramReference;
-    PXModel* const pxModel = (PXModel*)pxRenderEntity->Type;
+    PXModel* const pxModel = (PXModel*)pxRenderEntity->ObjectReference;
     PXVertexBuffer* const pxVertexBuffer = &pxModel->Mesh.VertexBuffer;
     PXIndexBuffer* const pxIndexBuffer = &pxModel->Mesh.IndexBuffer;
 
@@ -5202,7 +5202,15 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, const PXRenderEntity* co
         return;
     }
 
+ 
+
+
     PXSkyBox* const pxSkyBox = (PXSkyBox*)pxRenderEntity->ObjectReference;
+
+    if(!pxSkyBox)
+    {
+        return;
+    }
 
     PXCamera* const pxCamera = pxRenderEntity->CameraReference;
     PXMatrix4x4F* const matrixModel = &pxRenderEntity->MatrixModel;
@@ -6060,20 +6068,6 @@ PXActionResult PXAPI PXOpenGLSpriteRegister(PXOpenGL* const pxOpenGL, PXSprite* 
         PXOpenGLModelRegister(pxOpenGL, &pxSprite->Model);
     }
 #endif
-
-    return PXActionSuccessful;
-}
-
-PXActionResult PXAPI PXOpenGLSpriteDraw(PXOpenGL* const pxOpenGL, const PXSprite* const pxSprite, const PXCamera* const pxCamera)
-{
-
-
-    PXOpenGLModelDraw(pxOpenGL, pxSprite->Model, pxCamera); // &pxSprite->ModelMatrix
-
-    //pxSprite->Model->IgnoreViewPosition = 0;
-
-
-   // PXMatrix4x4FCopy(&tempCopy, &pxSprite->ModelMatrix);
 
     return PXActionSuccessful;
 }

@@ -489,23 +489,6 @@ PXActionResult PXAPI PXGraphicSpriteConstruct(PXGraphic* const pxGraphic, PXSpri
   //  PXRectangleOffsetSet(&pxSprite->Margin, 1, 1, 1, 1);
 }
 
-PXActionResult PXAPI PXGraphicSpriteDraw(PXGraphic* const pxGraphic, const PXSprite* const pxSprite, const PXCamera* const pxCamera)
-{
-    switch (pxGraphic->GraphicSystem)
-    {
-        case PXGraphicSystemOpenGL:
-        {
-            return PXOpenGLSpriteDraw(&pxGraphic->OpenGLInstance, pxSprite, pxCamera);
-        }
-        case PXGraphicSystemDirectX:
-        {
-            return PXActionRefusedNotImplemented;
-        }
-        default:
-            return PXActionRefusedNotImplemented;
-    }
-}
-
 void PXAPI PXCameraConstruct(PXCamera* const camera)
 {
     PXClear(PXCamera, camera);

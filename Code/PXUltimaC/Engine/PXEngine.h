@@ -194,7 +194,7 @@ PXPublic PXActionResult PXAPI PXEngineResourceAction(PXEngine* const pxEngine, P
 PXPublic PXActionResult PXAPI PXEngineResourceActionBatch(PXEngine* const pxEngine, PXEngineResourceActionInfo* const pxEngineResourceActionInfoList, const PXSize amount);
 
 PXPublic PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResourceCreateInfo* const pxEngineResourceCreateInfo);
-PXPublic PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXEngineResourceRenderInfo* const pxEngineResourceRenderInfo);
+PXPublic PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEntity* const pxRenderEntity);
 
 PXPublic void PXAPI PXEngineResourceDefaultElements(PXEngine* const pxEngine);
 

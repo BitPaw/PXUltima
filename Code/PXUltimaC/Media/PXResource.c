@@ -260,8 +260,6 @@ void PXAPI PXResourceManagerRelease(PXResourceManager* const pxResourceManager)
 
 }
 
-
-
 PXInt32U PXAPI PXResourceManagerGenerateUniqeID(PXResourceManager* const pxResourceManager)
 {
     return 1000 + ++pxResourceManager->UniqeIDGeneratorCounter;
@@ -534,22 +532,22 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                             pxIndexBuffer->IndexData = 0;
                             pxIndexBuffer->IndexDataSize = 0;
 
-                            PXNewList(PXByte, pxModelCreateInfo->VertexBuffer.VertexDataSize, &pxModel->VertexBuffer.VertexData, &pxModel->VertexBuffer.VertexDataSize);
-                            PXNewList(PXByte, pxModelCreateInfo->IndexBuffer.IndexDataSize, &pxModel->IndexBuffer.IndexData, &pxModel->IndexBuffer.IndexDataSize);
+                            PXNewList(PXByte, pxModelCreateInfo->VertexBuffer.VertexDataSize, &pxModel->Mesh.VertexBuffer.VertexData, &pxModel->Mesh.VertexBuffer.VertexDataSize);
+                            PXNewList(PXByte, pxModelCreateInfo->IndexBuffer.IndexDataSize, &pxModel->Mesh.IndexBuffer.IndexData, &pxModel->Mesh.IndexBuffer.IndexDataSize);
 
                             PXCopyList
                             (
                                 PXByte,
                                 pxModelCreateInfo->VertexBuffer.VertexDataSize,
                                 pxModelCreateInfo->VertexBuffer.VertexData,
-                                pxModel->VertexBuffer.VertexData
+                                pxModel->Mesh.VertexBuffer.VertexData
                             );
                             PXCopyList
                             (
                                 PXByte,
                                 pxModelCreateInfo->IndexBuffer.IndexDataSize,
                                 pxModelCreateInfo->IndexBuffer.IndexData,
-                                pxModel->IndexBuffer.IndexData
+                                pxModel->Mesh.IndexBuffer.IndexData
                             );
 
 #if PXLogEnable
@@ -1565,10 +1563,10 @@ void PXAPI PXModelFormatTransmute(PXModel* const pxModel, PXModelFormatTransmute
     //-----------------------------------------------------
     // Vertex
     //-----------------------------------------------------
-    PXVertexBufferFormat oldFormat = pxModel->VertexBuffer.Format;
+    PXVertexBufferFormat oldFormat = pxModel->Mesh.VertexBuffer.Format;
     PXVertexBufferFormat newFormat = PXVertexBufferFormatInvalid;
 
-    switch(pxModel->VertexBuffer.Format)
+    switch(pxModel->Mesh.VertexBuffer.Format)
     {
         case PXVertexBufferFormatXYI8:
         {
@@ -1576,11 +1574,11 @@ void PXAPI PXModelFormatTransmute(PXModel* const pxModel, PXModelFormatTransmute
             PXSize newVertexArraySize = 0;
             PXSize amountFuture = PXVertexBufferFormatStrideSize(PXVertexBufferFormatXYFloat);
             PXSize amountCurrent = PXVertexBufferFormatStrideSize(PXVertexBufferFormatXYI8);
-            PXSize sizeCurrent = pxModel->VertexBuffer.VertexDataSize / 1;
+            PXSize sizeCurrent = pxModel->Mesh.VertexBuffer.VertexDataSize / 1;
 
             PXNewList(float, sizeCurrent, &newVertexArray, &newVertexArraySize);
 
-            PXInt8S* dataSource = (PXInt8S*)pxModel->VertexBuffer.VertexData;
+            PXInt8S* dataSource = (PXInt8S*)pxModel->Mesh.VertexBuffer.VertexData;
 
             for(size_t i = 0; i < sizeCurrent; i++)
             {
@@ -1589,9 +1587,9 @@ void PXAPI PXModelFormatTransmute(PXModel* const pxModel, PXModelFormatTransmute
 
             // Memory leak?
 
-            pxModel->VertexBuffer.Format = PXVertexBufferFormatXYFloat;
-            pxModel->VertexBuffer.VertexData = newVertexArray;
-            pxModel->VertexBuffer.VertexDataSize = newVertexArraySize;
+            pxModel->Mesh.VertexBuffer.Format = PXVertexBufferFormatXYFloat;
+            pxModel->Mesh.VertexBuffer.VertexData = newVertexArray;
+            pxModel->Mesh.VertexBuffer.VertexDataSize = newVertexArraySize;
 
             break;
         }
@@ -1601,11 +1599,11 @@ void PXAPI PXModelFormatTransmute(PXModel* const pxModel, PXModelFormatTransmute
             PXSize newVertexArraySize = 0;
             PXSize amountFuture = PXVertexBufferFormatStrideSize(PXVertexBufferFormatXYZFloat);
             PXSize amountCurrent = PXVertexBufferFormatStrideSize(PXVertexBufferFormatXYZI8);
-            PXSize sizeCurrent = pxModel->VertexBuffer.VertexDataSize / 1;
+            PXSize sizeCurrent = pxModel->Mesh.VertexBuffer.VertexDataSize / 1;
 
             PXNewList(float, sizeCurrent, &newVertexArray, &newVertexArraySize);
 
-            PXInt8S* dataSource = (PXInt8S*)pxModel->VertexBuffer.VertexData;
+            PXInt8S* dataSource = (PXInt8S*)pxModel->Mesh.VertexBuffer.VertexData;
 
             for(size_t i = 0; i < sizeCurrent; i++)
             {
@@ -1614,9 +1612,9 @@ void PXAPI PXModelFormatTransmute(PXModel* const pxModel, PXModelFormatTransmute
 
             // Memory leak?
 
-            pxModel->VertexBuffer.Format = PXVertexBufferFormatXYZFloat;
-            pxModel->VertexBuffer.VertexData = newVertexArray;
-            pxModel->VertexBuffer.VertexDataSize = newVertexArraySize;
+            pxModel->Mesh.VertexBuffer.Format = PXVertexBufferFormatXYZFloat;
+            pxModel->Mesh.VertexBuffer.VertexData = newVertexArray;
+            pxModel->Mesh.VertexBuffer.VertexDataSize = newVertexArraySize;
 
 
             break;
@@ -1627,7 +1625,7 @@ void PXAPI PXModelFormatTransmute(PXModel* const pxModel, PXModelFormatTransmute
         }
     } 
 
-    newFormat = pxModel->VertexBuffer.Format;
+    newFormat = pxModel->Mesh.VertexBuffer.Format;
 
     const char* oldFomatText = PXVertexBufferFormatToString(oldFormat);
     const char* newFomatText = PXVertexBufferFormatToString(newFormat);
@@ -2157,6 +2155,42 @@ PXActionResult PXAPI PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, c
     }
 
     return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXResourceManagerReferenceValidate(PXResourceManager* const pxResourceManager, PXResourceReference* const pxResourceReference)
+{
+    if(!(pxResourceManager && pxResourceReference))
+    {
+        return PXActionRefusedArgumentNull;
+    }
+
+    // is ID refereing to "no object"?
+    {
+        PXBool isResourceReferenceWanted = -1 == pxResourceReference->IDExpected;
+
+        if(!isResourceReferenceWanted)
+        {
+            pxResourceReference->ResourceAdress = PXNull; // Remove dependency if one is present. it is unwanted
+
+            return PXActionSuccessful;
+        }
+    }
+
+    // Check if adress is in range. aka is this a pointer in a valid range?
+    {  
+        PXBool isAdressInRange = 1;
+
+        if(!isAdressInRange)
+        {
+            pxResourceReference->ResourceAdress = PXNull;
+
+            return PXActionSuccessful;
+        }
+    }
+
+
+
+  
 }
 
 PXActionResult PXAPI PXResourceLoad(PXResourceLoadInfo* const pxResourceLoadInfo, const PXText* const filePath)
