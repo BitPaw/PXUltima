@@ -69,13 +69,26 @@ const float PXVertexDataTriangle[] =
     0.5f,  1.0f
 };
 
-const PXInt8S PXVertexDatarectangle[] =
+const PXInt8S PXIndexDataTriangle[] =
+{
+    0,1,2
+};
+
+
+const PXInt8S PXVertexDataRectangle[] =
 {
     -1, -1,
      1, -1,
-    -1,  1,
-     1,  1
+     1,  1,
+    -1,  1
 };
+
+const PXInt8U PXIndexDataRectangle[] =
+{
+    0,1,2,
+    2,3,0
+};
+
 
 const PXInt8S PXVertexDataCube[] =
 {
@@ -160,17 +173,17 @@ const char* PXAPI PXVertexBufferFormatToString(const PXVertexBufferFormat pxVert
 {
     switch(pxVertexBufferFormat)
     {
-        case PXVertexBufferFormatXYI8: return "XY 8-Bit";
-        case PXVertexBufferFormatXYZI8: return "XYZ 8-Bit";
-        case PXVertexBufferFormatXYFloat: return "XY float";
-        case PXVertexBufferFormatXYZFloat: return "XYZ float";
-        case PXVertexBufferFormatXYZW: return "XYZW float";
+        case PXVertexBufferFormatXYI8: return "P2 8-Bit";
+        case PXVertexBufferFormatXYZI8: return "P3 8-Bit";
+        case PXVertexBufferFormatXYFloat: return "P2 float";
+        case PXVertexBufferFormatXYZFloat: return "P3 float";
+        case PXVertexBufferFormatXYZW: return "P4 float";
         case PXVertexBufferFormatC4UB_XY: return "xxxxxxxxxxxxxxx";
         case PXVertexBufferFormatC4UB_XYZ: return "xxxxxxxxxxxxxxx";
-        case PXVertexBufferFormatRGBXYZ: return "RGBXYZ float";
-        case PXVertexBufferFormatN3F_XYZ: return "xxxxxxxxxxxxxxx";
-        case PXVertexBufferFormatC4F_N3F_XYZ: return "xxxxxxxxxxxxxxx";
-        case PXVertexBufferFormatT2F_XYZ: return "xxxxxxxxxxxxxxx";
+        case PXVertexBufferFormatRGBXYZ: return "T2 P3 float";
+        case PXVertexBufferFormatN3F_XYZ: return "N3 P3 float";
+        case PXVertexBufferFormatC4F_N3F_XYZ: return "C4 N3 P3 float";
+        case PXVertexBufferFormatT2F_XYZ: return "T2 XYZ float";
         case PXVertexBufferFormatT4F_XYZW: return "xxxxxxxxxxxxxxx";
         case PXVertexBufferFormatT2F_C4UB_XYZ: return "xxxxxxxxxxxxxxx";
         case PXVertexBufferFormatT2F_C3F_XYZ: return "xxxxxxxxxxxxxxx";
@@ -568,6 +581,13 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                             pxVertexBuffer->VertexData = (void*)PXVertexDataTriangle;
                             pxVertexBuffer->VertexDataSize = sizeof(PXVertexDataTriangle);
 
+                            pxIndexBuffer->IndexDataType = PXDataTypeInt08U;
+                            pxIndexBuffer->DrawModeID = PXDrawModeIDTriangle;
+                            pxIndexBuffer->IndexData = (void*)PXIndexDataTriangle;
+                            pxIndexBuffer->IndexDataSize = sizeof(PXIndexDataTriangle);
+
+
+
 #if PXLogEnable
                             PXLogPrint
                             (
@@ -583,8 +603,13 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                         case PXModelFormRectangle:
                         {
                             pxVertexBuffer->Format = PXVertexBufferFormatXYI8;
-                            pxVertexBuffer->VertexData = (void*)PXVertexDatarectangle;
-                            pxVertexBuffer->VertexDataSize = sizeof(PXVertexDatarectangle);
+                            pxVertexBuffer->VertexData = (void*)PXVertexDataRectangle;
+                            pxVertexBuffer->VertexDataSize = sizeof(PXVertexDataRectangle);
+
+                            pxIndexBuffer->IndexDataType = PXDataTypeInt08U;
+                            pxIndexBuffer->DrawModeID = PXDrawModeIDPoint | PXDrawModeIDLineLoop;
+                            pxIndexBuffer->IndexData = (void*)PXIndexDataRectangle;
+                            pxIndexBuffer->IndexDataSize = sizeof(PXIndexDataRectangle);
 
 #if PXLogEnable
                             PXLogPrint
@@ -677,6 +702,10 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                         default:
                             break;
                     }
+
+
+                    // if we dont have an index array, create one
+                    // TODO: ???
                 }
 
 
@@ -1543,10 +1572,10 @@ void PXAPI PXModelFormatTransmute(PXModel* const pxModel, PXModelFormatTransmute
         {
             float* newVertexArray = 0;
             PXSize newVertexArraySize = 0;
-            PXSize amountFuture = PXVertexBufferFormatStrideSize(PXVertexBufferFormatXYZFloat);
+            PXSize amountFuture = PXVertexBufferFormatStrideSize(PXVertexBufferFormatT2F_XYZ);
             PXSize amountCurrent = PXVertexBufferFormatStrideSize(PXVertexBufferFormatXYI8);
             PXSize sizeBefore = pxModel->Mesh.VertexBuffer.VertexDataSize;
-            PXSize sizeCurrent = (pxModel->Mesh.VertexBuffer.VertexDataSize / 2) * 3;
+            PXSize sizeCurrent = (pxModel->Mesh.VertexBuffer.VertexDataSize / 2) * amountFuture;
 
             PXNewList(float, sizeCurrent, &newVertexArray, &newVertexArraySize);
 
@@ -1556,6 +1585,8 @@ void PXAPI PXModelFormatTransmute(PXModel* const pxModel, PXModelFormatTransmute
 
             for(PXSize i = 0; i < sizeBefore; i+=2)
             {
+                newVertexArray[newOffset++] = 0.0f;
+                newVertexArray[newOffset++] = 0.0f;
                 newVertexArray[newOffset++] = dataSource[i + 0];
                 newVertexArray[newOffset++] = dataSource[i + 1];
                 newVertexArray[newOffset++] = 0.0f;
@@ -1563,7 +1594,7 @@ void PXAPI PXModelFormatTransmute(PXModel* const pxModel, PXModelFormatTransmute
 
             // Memory leak?
 
-            pxModel->Mesh.VertexBuffer.Format = PXVertexBufferFormatXYZFloat;
+            pxModel->Mesh.VertexBuffer.Format = PXVertexBufferFormatT2F_XYZ;
             pxModel->Mesh.VertexBuffer.VertexData = newVertexArray;
             pxModel->Mesh.VertexBuffer.VertexDataSize = newVertexArraySize;
 

@@ -1592,6 +1592,18 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
                 return PXActionFailedNoSystemToHandleData;
             }
 
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingError,
+                "Engine",
+                "Model-Register",
+                "0x%p",
+                pxModel
+            );
+#endif
+
+
             // Register
             pxEngine->Graphic.ModelRegister(pxEngine->Graphic.EventOwner, pxModel);
 
@@ -2639,7 +2651,7 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
             pxRenderEntity.MatrixModel = pxModel->ModelMatrix;
             pxRenderEntity.ShaderProgramReference = pxModel->ShaderProgramReference;
 
-           // PXEngineResourceRender(pxEngine, &pxRenderEntity);
+          // PXEngineResourceRender(pxEngine, &pxRenderEntity);
         }
     }
 
@@ -2667,11 +2679,11 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
             pxRenderEntity.CameraReference = pxEngine->CameraCurrent;
             pxRenderEntity.ObjectReference = pxSprite->Model;
             pxRenderEntity.ShaderProgramReference = pxSprite->ShaderProgarm;
-
+            pxRenderEntity.MatrixModel = pxSprite->Model->ModelMatrix;
             pxSprite->Model->ShaderProgramReference = pxSprite->ShaderProgarm;
           
 
-            PXEngineResourceRender(pxEngine, &pxRenderEntity);
+           PXEngineResourceRender(pxEngine, &pxRenderEntity);
         }
     }
 
