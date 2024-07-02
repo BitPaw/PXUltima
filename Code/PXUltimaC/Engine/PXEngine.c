@@ -1737,10 +1737,41 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
             PXSpriteCreateInfo* const pxSpriteCreateEventData = &pxResourceCreateInfo->Sprite;
             PXSprite* pxSprite = *(PXSprite**)pxResourceCreateInfo->ObjectReference;
 
+            pxSprite->ShaderProgarm = pxSpriteCreateEventData->ShaderProgramCurrent;
+
+            // Load texture & sprite model
+            {
+                PXResourceCreateInfo pxResourceCreateInfoSub[3];
+                PXClearList(PXResourceCreateInfo, &pxResourceCreateInfoSub, 3);
+                PXSize amount = 2;
+
+                pxResourceCreateInfoSub[0].Type = PXResourceTypeTexture2D;
+                pxResourceCreateInfoSub[0].ObjectReference = (void**)&pxSprite->Texture;
+                pxResourceCreateInfoSub[0].FilePath = pxResourceCreateInfo->FilePath;
+
+                pxResourceCreateInfoSub[1].Type = PXResourceTypeModel;
+                pxResourceCreateInfoSub[1].ObjectReference = (void**)&pxSprite->Model;
+                pxResourceCreateInfoSub[1].Model.Form = PXModelFormRectangle;
+
+                // Add hibox if needed
+                if(pxSpriteCreateEventData->HitBoxCreate)
+                {
+                    pxResourceCreateInfoSub[2].Type = PXResourceTypeHitBox;
+                    pxResourceCreateInfoSub[2].ObjectReference = (void**)&pxSprite->HitBox;
+                    pxResourceCreateInfoSub[2].HitBox.Flags = 0;
+                    pxResourceCreateInfoSub[2].HitBox.Model = pxSprite->Model;
+
+                    // pxResourceCreateInfo->HitBox.HitBox = pxSprite->HitBox;
+
+                    amount++;
+                }
+
+                PXEngineResourceCreate(pxEngine, &pxResourceCreateInfoSub[0], amount);
+                PXEngineResourceCreate(pxEngine, &pxResourceCreateInfoSub[1], amount);
+            }
 
 
-
-
+            pxSprite->Model->ShaderProgramReference = pxSpriteCreateEventData->ShaderProgramCurrent;
             break;
         }
         case PXResourceTypeText:
@@ -2608,7 +2639,7 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
             pxRenderEntity.MatrixModel = pxModel->ModelMatrix;
             pxRenderEntity.ShaderProgramReference = pxModel->ShaderProgramReference;
 
-            PXEngineResourceRender(pxEngine, &pxRenderEntity);
+           // PXEngineResourceRender(pxEngine, &pxRenderEntity);
         }
     }
 
@@ -2634,8 +2665,11 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
             PXRenderEntity pxRenderEntity;
             pxRenderEntity.Type = PXResourceTypeSprite;
             pxRenderEntity.CameraReference = pxEngine->CameraCurrent;
-            pxRenderEntity.ObjectReference = pxSprite;
-            pxRenderEntity.ShaderProgramReference = 0;// pxSprite->Model->ShaderProgramReference;
+            pxRenderEntity.ObjectReference = pxSprite->Model;
+            pxRenderEntity.ShaderProgramReference = pxSprite->ShaderProgarm;
+
+            pxSprite->Model->ShaderProgramReference = pxSprite->ShaderProgarm;
+          
 
             PXEngineResourceRender(pxEngine, &pxRenderEntity);
         }
@@ -2686,7 +2720,7 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
             pxRenderEntity.Type = PXResourceTypeHitBox;
             pxRenderEntity.CameraReference = pxEngine->CameraCurrent;
             pxRenderEntity.ObjectReference = pxHitBox;
-            pxRenderEntity.ShaderProgramReference = 0;;
+            pxRenderEntity.ShaderProgramReference = 0;
 
             PXEngineResourceRender(pxEngine, &pxRenderEntity);
         }

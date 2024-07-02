@@ -1258,6 +1258,7 @@ typedef struct PXSprite
 	PXModel* Model;
 	PXTexture2D* Texture;
 	PXHitBox* HitBox;
+	PXShaderProgram* ShaderProgarm;
 }
 PXSprite;
 

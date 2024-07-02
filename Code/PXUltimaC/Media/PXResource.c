@@ -947,35 +947,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                 );
 #endif
 
-                // Load texture & sprite model
-                {
-                    PXResourceCreateInfo pxResourceCreateInfoSub[3];
-                    PXClearList(PXResourceCreateInfo, &pxResourceCreateInfoSub, 3);
-                    PXSize amount = 2;
-
-                    pxResourceCreateInfoSub[0].Type = PXResourceTypeTexture2D;
-                    pxResourceCreateInfoSub[0].ObjectReference = (void**)&pxSprite->Texture;
-                    pxResourceCreateInfoSub[0].FilePath = pxResourceCreateInfo->FilePath;
-
-                    pxResourceCreateInfoSub[1].Type = PXResourceTypeModel;
-                    pxResourceCreateInfoSub[1].ObjectReference = (void**)&pxSprite->Model;
-                    pxResourceCreateInfoSub[1].Model.Form = PXModelFormRectangle;
-
-                    // Add hibox if needed
-                    if(pxSpriteCreateEventData->HitBoxCreate)
-                    {
-                        pxResourceCreateInfoSub[2].Type = PXResourceTypeHitBox;
-                        pxResourceCreateInfoSub[2].ObjectReference = (void**)&pxSprite->HitBox;
-                        pxResourceCreateInfoSub[2].HitBox.Flags = 0;
-                        pxResourceCreateInfoSub[2].HitBox.Model = pxSprite->Model;
-
-                       // pxResourceCreateInfo->HitBox.HitBox = pxSprite->HitBox;
-
-                        amount++;
-                    }
-
-                    PXResourceManagerAdd(pxResourceManager, &pxResourceCreateInfoSub, amount);
-                }
+             
 
                // pxSprite->Model = pxResourceManager->ModelFailback;           
 
@@ -1564,7 +1536,6 @@ void PXAPI PXModelFormatTransmute(PXModel* const pxModel, PXModelFormatTransmute
     // Vertex
     //-----------------------------------------------------
     PXVertexBufferFormat oldFormat = pxModel->Mesh.VertexBuffer.Format;
-    PXVertexBufferFormat newFormat = PXVertexBufferFormatInvalid;
 
     switch(pxModel->Mesh.VertexBuffer.Format)
     {
@@ -1572,22 +1543,27 @@ void PXAPI PXModelFormatTransmute(PXModel* const pxModel, PXModelFormatTransmute
         {
             float* newVertexArray = 0;
             PXSize newVertexArraySize = 0;
-            PXSize amountFuture = PXVertexBufferFormatStrideSize(PXVertexBufferFormatXYFloat);
+            PXSize amountFuture = PXVertexBufferFormatStrideSize(PXVertexBufferFormatXYZFloat);
             PXSize amountCurrent = PXVertexBufferFormatStrideSize(PXVertexBufferFormatXYI8);
-            PXSize sizeCurrent = pxModel->Mesh.VertexBuffer.VertexDataSize / 1;
+            PXSize sizeBefore = pxModel->Mesh.VertexBuffer.VertexDataSize;
+            PXSize sizeCurrent = (pxModel->Mesh.VertexBuffer.VertexDataSize / 2) * 3;
 
             PXNewList(float, sizeCurrent, &newVertexArray, &newVertexArraySize);
 
             PXInt8S* dataSource = (PXInt8S*)pxModel->Mesh.VertexBuffer.VertexData;
 
-            for(size_t i = 0; i < sizeCurrent; i++)
+            PXSize newOffset = 0;
+
+            for(PXSize i = 0; i < sizeBefore; i+=2)
             {
-                newVertexArray[i] = dataSource[i];
+                newVertexArray[newOffset++] = dataSource[i + 0];
+                newVertexArray[newOffset++] = dataSource[i + 1];
+                newVertexArray[newOffset++] = 0.0f;
             }
 
             // Memory leak?
 
-            pxModel->Mesh.VertexBuffer.Format = PXVertexBufferFormatXYFloat;
+            pxModel->Mesh.VertexBuffer.Format = PXVertexBufferFormatXYZFloat;
             pxModel->Mesh.VertexBuffer.VertexData = newVertexArray;
             pxModel->Mesh.VertexBuffer.VertexDataSize = newVertexArraySize;
 
@@ -1625,7 +1601,7 @@ void PXAPI PXModelFormatTransmute(PXModel* const pxModel, PXModelFormatTransmute
         }
     } 
 
-    newFormat = pxModel->Mesh.VertexBuffer.Format;
+    PXVertexBufferFormat newFormat = pxModel->Mesh.VertexBuffer.Format;
 
     const char* oldFomatText = PXVertexBufferFormatToString(oldFormat);
     const char* newFomatText = PXVertexBufferFormatToString(newFormat);

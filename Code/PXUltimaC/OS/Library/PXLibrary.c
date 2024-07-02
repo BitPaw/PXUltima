@@ -249,7 +249,7 @@ PXBool PXAPI PXLibraryGetSymbolListA(PXLibrary* const pxLibrary, PXLibraryFuntio
 
 PXBool PXAPI PXLibraryGetSymbolA(PXLibrary* const pxLibrary, void** const libraryFunction, const char* const symbolName)
 {
-#if PXLogEnable
+#if PXLogEnable && 0
 	PXLogPrint
 	(
 		PXLoggingAllocation,
