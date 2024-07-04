@@ -903,6 +903,8 @@ typedef struct PXRenderEntity_
 	PXMatrix4x4F MatrixModel; // Position of target to render
 	struct PXCamera_* CameraReference; // Camera required for rendering
 	struct PXShaderProgram_* ShaderProgramReference; // Shader for the whole model
+	struct PXMaterial_* MaterialOverride;
+	struct PXTexture2D_* Texture2DOverride;
 	void* ObjectReference; // Containing the object, type described in 'Type'
 	PXResourceType Type;
 
@@ -1257,6 +1259,7 @@ typedef struct PXSprite
 
 	PXModel* Model;
 	PXTexture2D* Texture;
+	PXMaterial* Material; // Use this instand of a texture, right?
 	PXHitBox* HitBox;
 	PXShaderProgram* ShaderProgarm;
 }

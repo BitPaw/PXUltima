@@ -1782,8 +1782,27 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
                 PXEngineResourceCreate(pxEngine, &pxResourceCreateInfoSub[1], amount);
             }
 
+            PXMaterial* pxMaterial = 0;
 
+            PXNewZerod(PXMaterial, &pxMaterial);
+
+            pxMaterial->DiffuseTexture = pxSprite->Texture;
+
+            pxSprite->Material = pxMaterial;
             pxSprite->Model->ShaderProgramReference = pxSpriteCreateEventData->ShaderProgramCurrent;
+
+            
+
+            PXMatrix4x4FMove3F(&pxSprite->Model->ModelMatrix, &pxSpriteCreateEventData->Position);
+            PXMatrix4x4FScaleSetXY
+            (
+                &pxSprite->Model->ModelMatrix, 
+                pxSprite->Texture->Image->Width * pxSpriteCreateEventData->Scaling.X * 0.0005f,
+                pxSprite->Texture->Image->Height * pxSpriteCreateEventData->Scaling.Y * 0.0005f
+            );
+
+     
+
             break;
         }
         case PXResourceTypeText:
@@ -2607,8 +2626,10 @@ void PXAPI PXEngineResourceDefaultElements(PXEngine* const pxEngine)
 
 PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
 {
+    PXRenderEntity pxRenderEntity;
+
     {
-        PXRenderEntity pxRenderEntity;
+        PXClear(PXRenderEntity, &pxRenderEntity);
         pxRenderEntity.Type = PXResourceTypeSkybox;
         pxRenderEntity.CameraReference = pxEngine->CameraCurrent;
  
@@ -2644,7 +2665,7 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
                 continue;
             }
 
-            PXRenderEntity pxRenderEntity;
+            PXClear(PXRenderEntity, &pxRenderEntity);
             pxRenderEntity.Type = PXResourceTypeModel;
             pxRenderEntity.CameraReference = pxEngine->CameraCurrent;
             pxRenderEntity.ObjectReference = pxModel;
@@ -2674,14 +2695,15 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
                 continue;
             }
 
-            PXRenderEntity pxRenderEntity;
+            PXClear(PXRenderEntity, &pxRenderEntity);
             pxRenderEntity.Type = PXResourceTypeSprite;
             pxRenderEntity.CameraReference = pxEngine->CameraCurrent;
             pxRenderEntity.ObjectReference = pxSprite->Model;
             pxRenderEntity.ShaderProgramReference = pxSprite->ShaderProgarm;
             pxRenderEntity.MatrixModel = pxSprite->Model->ModelMatrix;
             pxSprite->Model->ShaderProgramReference = pxSprite->ShaderProgarm;
-          
+            pxRenderEntity.Texture2DOverride = pxSprite->Texture;
+            pxRenderEntity.MaterialOverride = pxSprite->Material;
 
            PXEngineResourceRender(pxEngine, &pxRenderEntity);
         }
@@ -2705,7 +2727,7 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
                 continue;
             }
 
-            PXRenderEntity pxRenderEntity;
+            PXClear(PXRenderEntity, &pxRenderEntity);
             pxRenderEntity.Type = PXResourceTypeText;
             pxRenderEntity.CameraReference = pxEngine->CameraCurrent;
             pxRenderEntity.ObjectReference = pxEngineText;
@@ -2728,7 +2750,7 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
 
             pxHitBox = *(PXHitBox**)pxDictionaryEntry.Value;
 
-            PXRenderEntity pxRenderEntity;
+            PXClear(PXRenderEntity, &pxRenderEntity);
             pxRenderEntity.Type = PXResourceTypeHitBox;
             pxRenderEntity.CameraReference = pxEngine->CameraCurrent;
             pxRenderEntity.ObjectReference = pxHitBox;

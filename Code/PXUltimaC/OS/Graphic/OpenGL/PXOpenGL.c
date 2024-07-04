@@ -3356,7 +3356,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
             for (size_t i = 0; i < pxIndexBuffer->SegmentListAmount; i++)
             {
                 PXIndexSegment* const pxIndexSegment = &pxIndexBuffer->SegmentList[i];
-                PXTexture2D* pxTexture = pxIndexSegment->Material->DiffuseTexture;
+                PXTexture2D* pxTexture = 0;
 
                 if (pxIndexSegment->Material)
                 {
@@ -3392,7 +3392,12 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
         {
             const PXIndexSegment* const pxIndexSegment = &pxIndexBuffer->SegmentPrime;
 
-            PXMaterial* const pxMaterial = pxIndexSegment->Material;
+            PXMaterial* pxMaterial = pxIndexSegment->Material;
+
+            if(pxRenderEntity->MaterialOverride)
+            {
+                pxMaterial = pxRenderEntity->MaterialOverride;
+            }
 
             if (pxMaterial)
             {
@@ -3422,7 +3427,12 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
                 PXOpenGLShaderVariableSet(pxOpenGL, pxShaderProgram, pxShaderVariableList, 3);
 
 
-                const PXTexture2D* const pxTexture = pxIndexSegment->Material->DiffuseTexture;
+                PXTexture2D* pxTexture = pxMaterial->DiffuseTexture;
+
+                if(pxRenderEntity->Texture2DOverride)
+                {
+                    pxTexture = pxRenderEntity->Texture2DOverride;
+                }
 
                 if (pxTexture)
                 {

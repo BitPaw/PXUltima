@@ -607,7 +607,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                             pxVertexBuffer->VertexDataSize = sizeof(PXVertexDataRectangle);
 
                             pxIndexBuffer->IndexDataType = PXDataTypeInt08U;
-                            pxIndexBuffer->DrawModeID = PXDrawModeIDPoint | PXDrawModeIDLineLoop;
+                            pxIndexBuffer->DrawModeID = PXDrawModeIDTriangle;// PXDrawModeIDPoint | PXDrawModeIDLineLoop;
                             pxIndexBuffer->IndexData = (void*)PXIndexDataRectangle;
                             pxIndexBuffer->IndexDataSize = sizeof(PXIndexDataRectangle);
 
@@ -1585,8 +1585,8 @@ void PXAPI PXModelFormatTransmute(PXModel* const pxModel, PXModelFormatTransmute
 
             for(PXSize i = 0; i < sizeBefore; i+=2)
             {
-                newVertexArray[newOffset++] = 0.0f;
-                newVertexArray[newOffset++] = 0.0f;
+                newVertexArray[newOffset++] = (dataSource[i + 0] + 1) / 2.0f;
+                newVertexArray[newOffset++] = -(dataSource[i + 1] + 1) / 2.0f;
                 newVertexArray[newOffset++] = dataSource[i + 0];
                 newVertexArray[newOffset++] = dataSource[i + 1];
                 newVertexArray[newOffset++] = 0.0f;
