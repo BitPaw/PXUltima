@@ -145,10 +145,15 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 
 	// Allcoate
 	{
+		PXResourceCreateInfo pxResourceCreateInfo;
+		PXClear(PXResourceCreateInfo, &pxResourceCreateInfo);
+		pxResourceCreateInfo.Type = PXResourceTypeMaterial;
+		pxResourceCreateInfo.ObjectReference = &pxMaterialList->MaterialList;
+		pxResourceCreateInfo.ObjectAmount = materialAmount;
+
+		PXResourceManagerAdd(pxResourceLoadInfo->Manager, &pxResourceCreateInfo, 1);
+
 		pxMaterialList->MaterialListAmount = materialAmount;
-
-		PXNewListZerod(PXMaterial, materialAmount, &pxMaterialList->MaterialList, PXNull);
-
 		materialAmount = 0;
 	}
 
@@ -175,9 +180,10 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 				pxMaterialCurrent = &pxMaterialList->MaterialList[materialAmount];
 				++materialAmount;
 
+				char cache[64];
 
 				PXText pxText;
-				PXTextConstructFromAdressA(&pxText, pxMaterialCurrent->Name, 0, 32);
+				PXTextConstructFromAdressA(&pxText, cache, 0, 64);
 
 				const PXBool isText = PXCompilerParseStringUntilNewLine(&pxCompiler, &pxText);
 
@@ -185,6 +191,8 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 				{
 					break; // Error
 				}
+				
+				PXResourceStoreName(pxResourceLoadInfo->Manager, &pxMaterialCurrent->Info, cache, pxText.SizeUsed);
 
 				break;
 			}
@@ -210,7 +218,20 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 				// fullTexturePath
 
 
-				PXTextCopyA(fullTexturePath.TextA, fullTexturePath.SizeUsed, pxMaterialCurrent->DiffuseTextureFilePath, 260);
+
+				PXResourceCreateInfo pxResourceCreateInfo;
+				PXClear(PXResourceCreateInfo, &pxResourceCreateInfo);
+				pxResourceCreateInfo.Type = PXResourceTypeTexture2D;
+				pxResourceCreateInfo.ObjectReference = &pxMaterialCurrent->DiffuseTexture;
+				pxResourceCreateInfo.ObjectAmount = 1;
+				pxResourceCreateInfo.FilePath = fullTexturePath.TextA;
+				pxResourceCreateInfo.FilePathSize = fullTexturePath.SizeUsed;
+
+				PXResourceManagerAdd(pxResourceLoadInfo->Manager, &pxResourceCreateInfo, 1);
+
+				//PXTextCopyA(fullTexturePath.TextA, fullTexturePath.SizeUsed, pxMaterialCurrent->DiffuseTextureFilePath, 260);
+
+
 
 
 				//PXNewZerod(PXTexture2D, &pxMaterialCurrent->DiffuseTexture);				
@@ -228,7 +249,7 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 			{
 				PXCompilerSymbolEntryExtract(&pxCompiler);
 
-				const PXBool isFloat = pxCompiler.ReadInfo.SymbolEntryCurrent.ID == PXCompilerSymbolLexerFloat;
+				const PXBool isFloat = PXCompilerSymbolLexerFloat == pxCompiler.ReadInfo.SymbolEntryCurrent.ID;
 
 				if (!isFloat)
 				{

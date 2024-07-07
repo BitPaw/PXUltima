@@ -1,6 +1,7 @@
 #include "PXDictionary.h"
 
 #include <OS/Memory/PXMemory.h>
+#include <OS/Console/PXConsole.h>
 
 void PXAPI PXDictionaryConstruct(PXDictionary* const dictionary, const PXSize keySize, const PXSize valueSize, const PXDictionaryValueLocality pxDictionaryValueLocality)
 {
@@ -9,6 +10,7 @@ void PXAPI PXDictionaryConstruct(PXDictionary* const dictionary, const PXSize ke
 	dictionary->ValueLocality = pxDictionaryValueLocality;
 	dictionary->KeyTypeSize = keySize;
 	dictionary->ValueTypeSize = valueSize;
+	dictionary->EntryAmountGrowth = 16;
 }
 
 void PXAPI PXDictionaryDestruct(PXDictionary* const dictionary)
@@ -60,7 +62,24 @@ PXBool PXAPI PXDictionaryAdd(PXDictionary* const dictionary, const void* key, co
 
 	if (!hasEnoughSpace)
 	{
-		PXDictionaryResize(dictionary, dictionary->EntryAmountCurrent + 10);
+#if PXLogEnable
+		const PXSize sizeBefore = dictionary->EntryAmountMaximal;
+#endif
+
+		PXDictionaryResize(dictionary, dictionary->EntryAmountCurrent + dictionary->EntryAmountGrowth);
+
+#if PXLogEnable
+		PXLogPrint
+		(
+			PXLoggingEvent,
+			"Dictionary",
+			"Resize",
+			"Size not sufficent. %i -> %i (%3i%%)",
+			sizeBefore,
+			dictionary->EntryAmountMaximal,
+			(PXInt32S)((dictionary->EntryAmountCurrent / (float)dictionary->EntryAmountMaximal) * 100.0f)
+		);
+#endif
 	}
 
 	for (PXSize i = 0; i < dictionary->EntryAmountMaximal; ++i)
@@ -73,7 +92,13 @@ PXBool PXAPI PXDictionaryAdd(PXDictionary* const dictionary, const void* key, co
 
 		if (isEmptyKeyField)
 		{
+			// Copy Key
 			PXMemoryCopy(key, dictionary->KeyTypeSize, pxDictionaryEntry.Key, dictionary->KeyTypeSize);
+
+			void* valueSourceAdress = 0;
+			PXSize valueSourceSize = 0;
+			void* valueTargetAdress = 0;
+			PXSize valueTargetSize = 0;
 
 			switch (dictionary->ValueLocality)
 			{
@@ -84,17 +109,42 @@ PXBool PXAPI PXDictionaryAdd(PXDictionary* const dictionary, const void* key, co
 				}
 				case PXDictionaryValueLocalityInternalEmbedded:
 				{
-					PXMemoryCopy(value, dictionary->ValueTypeSize, pxDictionaryEntry.Value, dictionary->ValueTypeSize);
+					valueSourceAdress = value;
+					valueSourceSize = dictionary->ValueTypeSize;
+					valueTargetAdress = pxDictionaryEntry.Value;
+					valueTargetSize = dictionary->ValueTypeSize;
 					break;
 				}
 				case PXDictionaryValueLocalityExternalReference:
 				{
-					PXMemoryCopy(&value, sizeof(void*), pxDictionaryEntry.Value, sizeof(void*));
+					valueSourceAdress = &value;
+					valueSourceSize = sizeof(void*);
+					valueTargetAdress = pxDictionaryEntry.Value;
+					valueTargetSize = sizeof(void*);
 					break;
 				}
 			}
 
+			PXMemoryCopy(valueSourceAdress, valueSourceSize, valueTargetAdress, valueTargetSize);
+
 			++dictionary->EntryAmountCurrent;
+
+#if PXLogEnable
+			PXLogPrint
+			(
+				PXLoggingEvent,
+				"Dictionary",
+				"Add",
+				"Key:%4i Value:0x%p (%3i%%) Size:%i/%i",
+				*(PXInt32U*)key,
+				//valueSourceSize,
+				valueTargetAdress,
+				//valueTargetSize,			
+				(PXInt32S)((dictionary->EntryAmountCurrent / (float)dictionary->EntryAmountMaximal) * 100.0f),
+				dictionary->EntryAmountCurrent,
+				dictionary->EntryAmountMaximal
+			);
+#endif
 
 			return PXTrue;
 		}
@@ -109,7 +159,7 @@ PXBool PXAPI PXDictionaryAddMultible(PXDictionary* const dictionary, const void*
 
 	if(!hasEnoughSpace)
 	{
-		PXDictionaryResize(dictionary, dictionary->EntryAmountCurrent + amount + 10);
+		PXDictionaryResize(dictionary, dictionary->EntryAmountCurrent + amount + dictionary->EntryAmountGrowth);
 	}
 
 	for(PXSize i = 0; i < amount; ++i)

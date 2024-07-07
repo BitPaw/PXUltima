@@ -13,6 +13,8 @@ PXDictionaryValueLocality;
 
 typedef struct PXDictionary_
 {
+	PXSize EntryAmountGrowth; // How much to grow if an allocation if space is insufficent
+
 	PXSize EntryAmountCurrent;
 	PXSize EntryAmountMaximal;
 

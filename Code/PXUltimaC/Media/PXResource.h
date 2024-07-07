@@ -293,6 +293,7 @@ typedef enum PXResourceType_
 	PXResourceTypeVideo,
 	PXResourceTypeModel, // 3D model, collection of vertex data
 	PXResourceTypeFont, // Collection of spites or points to render text
+	PXResourceTypeMaterial,
 	//-----------------------------------------------------
 
 
@@ -438,6 +439,7 @@ typedef struct PXResourceManager_
 	// Register List
 	PXInt32U UniqeIDGeneratorCounter;
 
+	PXDictionary MaterialLookUp;
 	PXDictionary SpritelLookUp;
 	PXDictionary FontLookUp;
 	PXDictionary TextLookUp;
@@ -599,7 +601,10 @@ PXMaterialIlluminationMode;
 // Material for a surface to render on
 typedef struct PXMaterial_
 {
-	char Name[32];
+	PXResourceInfo Info;
+
+	// Name would be too wasteful here, we shall store it in another container
+	// TexturePath can not be put here, but we might store it differently.
 
 	float Diffuse[4];
 	float Ambient[4];
@@ -610,9 +615,6 @@ typedef struct PXMaterial_
 	float Weight; 		// Ranges between 0 and 1000
 	float Dissolved;
 	float Density; // range from 0.001 to 10. A value of 1.0 means that light does not bend as it passes through an object.
-
-
-	char DiffuseTextureFilePath[260];
 
 	struct PXTexture2D_* DiffuseTexture;
 
@@ -1049,13 +1051,12 @@ typedef struct PXFontPage_
 	PXFontPageCharacter* CharacteList;
 
 	struct PXTexture2D_* Texture;
-	char TextureFilePath[260];
 }
 PXFontPage;
 
 PXPublic PXFontPageCharacter* PXAPI PXFontPageCharacterFetch(PXFontPage* const pxFontPage, const PXInt32U characterID);
 
-#define PXFontPageGet(adress, index) (!currentPageIndex) ?  &(adress)->MainPage : &(adress)->AdditionalPageList[currentPageIndex-1];
+#define PXFontPageGet(adress, index) (!currentPageIndex) ?  &(adress)->PagePrime : &(adress)->PageList[currentPageIndex-1];
 
 
 
@@ -1063,10 +1064,13 @@ typedef struct PXFont_
 {
 	PXResourceInfo Info;
 
-	PXFontPage MainPage;
+	PXSize PageListAmount;
 
-	PXFontPage* AdditionalPageList;
-	PXSize AdditionalPageListSize;
+	union
+	{
+		PXFontPage PagePrime;
+		PXFontPage* PageList;
+	};
 }
 PXFont;
 
@@ -2410,14 +2414,18 @@ PXFile;
 
 typedef struct PXResourceLoadInfo_
 {
+	PXResourceManager* Manager;
 	void* Target;
 	PXFile* FileReference;
 	PXResourceType Type;
+
+	//void* Owner;
 }
 PXResourceLoadInfo;
 
 typedef struct PXResourceSaveInfo_
 {
+	PXResourceManager* Manager;
 	void* Target;
 	PXFile* FileReference;
 	PXResourceType Type;
@@ -2600,8 +2608,11 @@ PXModelCreateInfo;
 
 typedef struct PXResourceCreateInfo_
 {
-	void** ObjectReference;
+	void** ObjectReference; // Reference to an adress to be filled with an object
+	PXSize ObjectAmount; // If set to more than one, "ObjectReference" will contain a list of values
+
 	char* FilePath;
+	PXSize FilePathSize;
 
 	char* Name;
 
@@ -2667,6 +2678,12 @@ PXPrivate PXInt32U PXAPI PXResourceManagerGenerateUniqeID(PXResourceManager* con
 
 // Generate and store new resource. Load if possible
 PXPublic PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceManager, PXResourceCreateInfo* const pxResourceCreateInfoList, const PXSize amount);
+
+
+
+PXPublic PXActionResult PXAPI PXResourceStoreName(PXResourceManager* const pxResourceManager, PXResourceInfo* const pxResourceInfo, const char* const name, const PXSize nameSize);
+PXPublic PXActionResult PXAPI PXResourceStorePath(PXResourceManager* const pxResourceManager, PXResourceInfo* const pxResourceInfo, const char* const name, const PXSize nameSize);
+
 
 
 PXPublic PXActionResult PXAPI PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const PXText* const pxText);

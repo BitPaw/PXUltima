@@ -228,7 +228,7 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXResourceLoadInfo* const pxResour
 
 									if (amountOfPages > 1)
 									{
-										PXNewList(PXFontPage, amountOfPages-1, &pxFont->AdditionalPageList, &pxFont->AdditionalPageListSize);
+										PXNewList(PXFontPage, amountOfPages-1, &pxFont->PageList, &pxFont->PageListAmount);
 									}
 								
 									break;
@@ -300,10 +300,30 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXResourceLoadInfo* const pxResour
 										PXFilePathGet(pxResourceLoadInfo->FileReference, &fontFilePath);
 
 										PXFilePathSwapFileName(&fontFilePath, &resultFullPath, &fileName);
+	
+										// Load
+										{
+											PXFontPage* pxFontPage = PXNull;
 
-										PXTextCopyA(resultFullPath.TextA, resultFullPath.SizeUsed, pxFontPage->TextureFilePath, 260);
+											if(pxFont->PageListAmount == 0)
+											{
+												pxFontPage = &pxFont->PagePrime;
+											}
+											else
+											{
+												pxFontPage = &pxFont->PageList[currentPageIndex];
+											}
 
-										// We dont load the texture here as it cause interaction problems with the engine
+											PXResourceCreateInfo pxResourceCreateInfoList;
+											PXClear(PXResourceCreateInfo, &pxResourceCreateInfoList);
+
+											pxResourceCreateInfoList.Type = PXResourceTypeTexture2D;
+											pxResourceCreateInfoList.ObjectReference = (void**)&pxFontPage->Texture;
+											pxResourceCreateInfoList.FilePath = resultFullPath.TextA;
+											pxResourceCreateInfoList.FilePathSize = resultFullPath.SizeUsed;
+
+											PXResourceManagerAdd(pxResourceLoadInfo->Manager, &pxResourceCreateInfoList, 1);
+										}
 									}
 									break;
 								}

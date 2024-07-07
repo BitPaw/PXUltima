@@ -590,13 +590,14 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
 
                             PXFilePathRelativeFromFile(pxResourceLoadInfo->FileReference, &materialFileName, &materialFilePathFull);
      
-                            PXResourceLoadInfo pxResourceLoadInfo;
-                            PXClear(PXResourceLoadInfo, &pxResourceLoadInfo);
-                            pxResourceLoadInfo.Target = pxMaterialContaier;
-                            pxResourceLoadInfo.FileReference = &materialFile;
-                            pxResourceLoadInfo.Type = PXResourceTypeMaterialList;
+                            PXResourceLoadInfo pxMaterialLoadInfo;
+                            PXClear(PXResourceLoadInfo, &pxMaterialLoadInfo);
+                            pxMaterialLoadInfo.Target = pxMaterialContaier;
+                            pxMaterialLoadInfo.FileReference = &materialFile;
+                            pxMaterialLoadInfo.Type = PXResourceTypeMaterialList;
+                            pxMaterialLoadInfo.Manager = pxResourceLoadInfo->Manager;
 
-                            PXResourceLoad(&pxResourceLoadInfo, &materialFilePathFull);
+                            PXResourceLoad(&pxMaterialLoadInfo, &materialFilePathFull);
                         }                   
                       
                         PXFileDestruct(&materialFile);   
@@ -616,7 +617,6 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
                             PXIndexSegment* const pxIndexSegmentPrevious = &pxModel->Mesh.IndexBuffer.SegmentList[materialUseIndex - 1];
 
                             pxIndexSegmentPrevious->DataRange = offset;
-
                         }
                        
                         currentTotalOffset = counterIndex;

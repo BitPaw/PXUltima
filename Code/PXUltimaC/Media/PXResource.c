@@ -57,6 +57,8 @@
 #include "ADLER/PXAdler32.h"
 #include "Java/PXJava.h"
 
+#include <assert.h>
+
 extern void _chkstk(size_t s) {};
 extern int _fltused = 0;
 
@@ -248,11 +250,14 @@ const char* PXAPI PXResourceTypeToString(const PXResourceType pxResourceType)
 
 void PXAPI PXResourceManagerInit(PXResourceManager* const pxResourceManager)
 {
+    assert(pxResourceManager);
+
     PXClear(PXResourceManager, pxResourceManager);
 
     PXFlexDataCacheInit(&pxResourceManager->NameCache, sizeof(PXInt32U));
     PXFlexDataCacheInit(&pxResourceManager->SourcePathCache, sizeof(PXInt32U));
-
+        
+    PXDictionaryConstruct(&pxResourceManager->MaterialLookUp, sizeof(PXInt32U), sizeof(PXMaterial), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&pxResourceManager->SpritelLookUp, sizeof(PXInt32U), sizeof(PXSprite), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&pxResourceManager->FontLookUp, sizeof(PXInt32U), sizeof(PXFont), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&pxResourceManager->TextLookUp, sizeof(PXInt32U), sizeof(PXEngineText), PXDictionaryValueLocalityExternalReference);
@@ -270,16 +275,22 @@ void PXAPI PXResourceManagerInit(PXResourceManager* const pxResourceManager)
 
 void PXAPI PXResourceManagerRelease(PXResourceManager* const pxResourceManager)
 {
-
+    assert(pxResourceManager);
 }
 
 PXInt32U PXAPI PXResourceManagerGenerateUniqeID(PXResourceManager* const pxResourceManager)
 {
+    assert(pxResourceManager);
+
     return 1000 + ++pxResourceManager->UniqeIDGeneratorCounter;
 }
 
 PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceManager, PXResourceCreateInfo* const pxResourceCreateInfoList, const PXSize amount)
 {
+    assert(pxResourceManager);
+    assert(pxResourceCreateInfoList);
+    assert(0 <= amount);
+
     for(PXSize i = 0; i < amount; ++i)
     {
         PXResourceCreateInfo* const pxResourceCreateInfo = &pxResourceCreateInfoList[i];
@@ -372,6 +383,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                     PXClear(PXResourceLoadInfo, &pxResourceLoadInfo);
                     pxResourceLoadInfo.Target = pxImage;
                     pxResourceLoadInfo.Type = PXResourceTypeImage;
+                    pxResourceLoadInfo.Manager = pxResourceManager;
 
                     const PXActionResult loadResult = PXResourceLoad(&pxResourceLoadInfo, &pxText);
 
@@ -506,6 +518,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                         PXClear(PXResourceLoadInfo, &pxResourceLoadInfo);
                         pxResourceLoadInfo.Target = pxModel;
                         pxResourceLoadInfo.Type = PXResourceTypeModel;
+                        pxResourceLoadInfo.Manager = pxResourceManager;
 
                         PXResourceLoadA(&pxResourceLoadInfo, pxResourceCreateInfo->FilePath);
 
@@ -708,7 +721,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                     // TODO: ???
                 }
 
-
+#if 0
                 // Load additional resources
                 {
                     // Load textures
@@ -731,6 +744,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                         }
                     }
                 }
+#endif
 
                 // Setup    
                // PXMatrix4x4FScaleBy(&pxModel->ModelMatrix, pxModelCreateInfo->Scale);
@@ -738,6 +752,43 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                 pxModel->ShaderProgramReference = pxModelCreateInfo->ShaderProgramReference;
 
                 pxModel->Info.Flags |= PXEngineResourceInfoVisble;
+
+                break;
+            }
+            case PXResourceTypeMaterial:
+            {
+                PXMaterial* pxMaterial = *(PXMaterial**)pxResourceCreateInfo->ObjectReference;
+
+#if PXLogEnable
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    "Resource",
+                    "Material-Create",
+                    "Allocating x%i",
+                    pxResourceCreateInfo->ObjectAmount
+                );
+#endif
+
+                if(!pxMaterial)
+                {
+                    PXNewListZerod(PXSprite, pxResourceCreateInfo->ObjectAmount, &pxMaterial, PXNull);
+                    *pxResourceCreateInfo->ObjectReference = pxMaterial;
+                }
+
+                void* keyList[64];
+     
+                for(PXSize materialIndex = 0; materialIndex < pxResourceCreateInfo->ObjectAmount; ++materialIndex)
+                {
+                    PXMaterial* const pxMaterialCurrent = &pxMaterial[materialIndex];
+
+                    pxMaterialCurrent->Info.ID = PXResourceManagerGenerateUniqeID(pxResourceManager);
+                    pxMaterialCurrent->Info.Flags |= PXEngineResourceInfoVisble;
+
+                    keyList[materialIndex] = &pxMaterialCurrent->Info.ID;
+                }              
+
+                PXDictionaryAddMultible(&pxResourceManager->MaterialLookUp, keyList, pxMaterial, pxResourceCreateInfo->ObjectAmount);
 
                 break;
             }
@@ -774,7 +825,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                 }
 
                 pxTexture2D->Info.ID = PXResourceManagerGenerateUniqeID(pxResourceManager);
-                PXDictionaryAdd(&pxResourceManager->FontLookUp, &pxTexture2D->Info.ID, pxTexture2D);
+                PXDictionaryAdd(&pxResourceManager->TextureLookUp, &pxTexture2D->Info.ID, pxTexture2D);
 
 
                 pxTexture2D->Filter = PXGraphicRenderFilterNoFilter;
@@ -802,7 +853,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                     pxResourceCreateInfoSub.Type = PXResourceTypeImage;
                     pxResourceCreateInfoSub.ObjectReference = (void**)&pxTexture2D->Image;
                     pxResourceCreateInfoSub.FilePath = pxResourceCreateInfo->FilePath;
-                    pxResourceCreateInfoSub.Image = pxResourceCreateInfo->Texture2D.Image;
+                    //pxResourceCreateInfoSub.Image = pxResourceCreateInfo->Texture2D.Image;
 
                     PXResourceManagerAdd(pxResourceManager, &pxResourceCreateInfoSub, 1);
                 }              
@@ -843,32 +894,11 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                     PXClear(PXResourceLoadInfo, &pxResourceLoadInfo);
                     pxResourceLoadInfo.Target = pxFont;
                     pxResourceLoadInfo.Type = PXResourceTypeFont;
+                    pxResourceLoadInfo.Manager = pxResourceManager;
 
                     const PXActionResult loadResult = PXResourceLoadA(&pxResourceLoadInfo, pxResourceCreateInfo->FilePath);
 
                     PXActionReturnOnError(loadResult);
-                }
-
-                // Register as normal
-                {
-                    // Load Textures
-                    {
-                        PXFontPage* const pxFontPage = &pxFont->MainPage;
-
-                        PXResourceCreateInfo pxResourceCreateInfoList;
-                        PXClear(PXResourceCreateInfo, &pxResourceCreateInfoList);
-
-                        pxResourceCreateInfoList.Type = PXResourceTypeTexture2D;
-                        pxResourceCreateInfoList.ObjectReference = (void**)&pxFontPage->Texture;
-                        pxResourceCreateInfoList.FilePath = pxFontPage->TextureFilePath;
-
-                        PXResourceManagerAdd(pxResourceManager, &pxResourceCreateInfoList, 1);
-                    }
-
-                    for(PXSize i = 0; i < pxFont->AdditionalPageListSize; ++i)
-                    {
-                        PXFontPage* const pxFontPage = &pxFont->AdditionalPageList[i];
-                    }
                 }
 
                 break;
@@ -1432,8 +1462,48 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
 
                 return PXActionRefusedArgumentInvalid;
             }           
-        }
-    }
+        }     
+     }
+
+    return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXResourceStoreName(PXResourceManager* const pxResourceManager, PXResourceInfo* const pxResourceInfo, const char* const name, const PXSize nameSize)
+{
+#if PXLogEnable
+    char buffer[256];
+
+    PXTextCopyA(name, nameSize, buffer, nameSize);
+
+    PXLogPrint
+    (
+        PXLoggingError,
+        "Resource",
+        "Store-Name",
+        "%s",
+        buffer
+    );
+#endif
+
+    return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXResourceStorePath(PXResourceManager* const pxResourceManager, PXResourceInfo* const pxResourceInfo, const char* const name, const PXSize nameSize)
+{
+#if PXLogEnable
+    char buffer[256];
+
+    PXTextCopyA(name, nameSize, buffer, nameSize);
+
+    PXLogPrint
+    (
+        PXLoggingError,
+        "Resource",
+        "Store-Path",
+        "%s",
+        buffer
+    );
+#endif
 
     return PXActionSuccessful;
 }
@@ -1461,7 +1531,7 @@ PXMaterial* PXAPI PXMaterialContainerFind(const PXMaterialContainer* const pxMat
         {
             PXMaterial* const pxMaterial = &pxMaterialContainer->MaterialList[materialID];
 
-            const PXBool isMatch = PXTextCompareA(pxMaterialName->TextA, pxMaterialName->SizeUsed, pxMaterial->Name, PXTextUnkownLength);
+            const PXBool isMatch = 0;// PXTextCompareA(pxMaterialName->TextA, pxMaterialName->SizeUsed, pxMaterial->Name, PXTextUnkownLength);
 
             if (isMatch)
             {
@@ -2269,7 +2339,6 @@ PXActionResult PXAPI PXResourceLoad(PXResourceLoadInfo* const pxResourceLoadInfo
         }
 
         PXInt32U time = PXProcessorTimeReal();
-
 
         pxResourceLoadInfo->FileReference = &pxFile;
 

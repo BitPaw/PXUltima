@@ -1648,16 +1648,17 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
 
             // Register as normal
             {
+                /*
                 // Load Textures
                 {
-                    PXFontPage* const pxFontPage = &pxFont->MainPage;
+                    PXFontPage* const pxFontPage = &pxFont->;
 
                     PXResourceCreateInfo pxResourceCreateInfoSub;
                     PXClear(PXResourceCreateInfo, &pxResourceCreateInfoSub);
 
                     pxResourceCreateInfoSub.Type = PXResourceTypeTexture2D;
                     pxResourceCreateInfoSub.ObjectReference = (void**)&pxFontPage->Texture;
-                    pxResourceCreateInfoSub.FilePath = pxFontPage->TextureFilePath;
+                   // pxResourceCreateInfoSub.FilePath = pxFontPage->TextureFilePath;
 
                     PXEngineResourceCreate(pxEngine, &pxResourceCreateInfoSub);
                 }
@@ -1673,7 +1674,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
                     pxGraphicTexturInfo.Action = PXResourceActionCreate;
 
                     pxEngine->Graphic.TextureAction(pxEngine->Graphic.EventOwner, &pxGraphicTexturInfo);
-                }
+                }*/
             }
 
             break;
@@ -2032,7 +2033,7 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEn
 
                // pxHitBox->Model->MaterialContaierList[0].MaterialListAmount = 1;
 
-                PXTextCopyA("Wonk", 4, material->Name, 64);
+                //PXTextCopyA("Wonk", 4, material->Name, 64);
 
                 //PXCopy(PXMaterial, pxHitBox->Model->MaterialContaierList[0].MaterialList, &materialCopy);
 
@@ -2123,7 +2124,7 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEn
 
                 {
                     PXGraphicTexturInfo pxGraphicTexturInfo;
-                    pxGraphicTexturInfo.TextureReference = pxFont->MainPage.Texture;
+                    pxGraphicTexturInfo.TextureReference = pxFont->PagePrime.Texture;
                     pxGraphicTexturInfo.Amount = 1u;
                     pxGraphicTexturInfo.Type = PXGraphicTextureType2D;
                     pxGraphicTexturInfo.Action = PXResourceActionSelect;
@@ -2134,7 +2135,7 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEn
                 for (PXSize i = 0; i < pxText->SizeUsed && i < pxEngineText->TextRenderAmount; ++i)
                 {
                     const char character = pxText->TextA[i];
-                    PXFontPageCharacter* const pxFontPageCharacter = PXFontPageCharacterFetch(&pxFont->MainPage, character);
+                    PXFontPageCharacter* const pxFontPageCharacter = PXFontPageCharacterFetch(&pxFont->PagePrime, character);
 
                     float textureWidth;
                     float textureHeight;
@@ -2148,8 +2149,8 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEn
 
                     if (pxFontPageCharacter)
                     {
-                        textureWidth = pxFont->MainPage.Texture->Image->Width;
-                        textureHeight = pxFont->MainPage.Texture->Image->Height;
+                        textureWidth = pxFont->PagePrime.Texture->Image->Width;
+                        textureHeight = pxFont->PagePrime.Texture->Image->Height;
 
                         charWidth = pxFontPageCharacter->Size[0];
                         charHeight = pxFontPageCharacter->Size[1];
@@ -2270,7 +2271,7 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEn
 
                             {
                                 PXGraphicTexturInfo pxGraphicTexturInfo;
-                                pxGraphicTexturInfo.TextureReference = pxFont->MainPage.Texture;
+                                pxGraphicTexturInfo.TextureReference = pxFont->PagePrime.Texture;
                                 pxGraphicTexturInfo.Amount = 1u;
                                 pxGraphicTexturInfo.Type = PXGraphicTextureType2D;
                                 pxGraphicTexturInfo.Action = PXResourceActionSelect;
@@ -2311,7 +2312,7 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEn
 
                             {
                                 PXGraphicTexturInfo pxGraphicTexturInfo;
-                                pxGraphicTexturInfo.TextureReference = pxFont->MainPage.Texture;
+                                pxGraphicTexturInfo.TextureReference = pxFont->PagePrime.Texture;
                                 pxGraphicTexturInfo.Amount = 1u;
                                 pxGraphicTexturInfo.Type = PXGraphicTextureType2D;
                                 pxGraphicTexturInfo.Action = PXResourceActionSelect;
