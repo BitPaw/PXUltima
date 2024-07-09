@@ -492,6 +492,9 @@
     <ClCompile Include="OS\Hardware\PXHardware.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Media\PXLevel\PXLevel.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm\KalmanFilter\PXKalmanFilter.h">
@@ -971,6 +974,9 @@
     <ClInclude Include="OS\Hardware\PXHardware.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Media\PXLevel\PXLevel.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Media\Matroska\README.md" />
@@ -1007,5 +1013,6 @@
     <None Include="Media\Huffman\README.md" />
     <None Include="Media\HTTP\README.md" />
     <None Include="Media\Java\README.md" />
+    <None Include="Media\PXLevel\README.md" />
   </ItemGroup>
 </Project>

@@ -772,7 +772,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
 
                 if(!pxMaterial)
                 {
-                    PXNewListZerod(PXSprite, pxResourceCreateInfo->ObjectAmount, &pxMaterial, PXNull);
+                    PXNewListZerod(PXMaterial, pxResourceCreateInfo->ObjectAmount, &pxMaterial, PXNull);
                     *pxResourceCreateInfo->ObjectReference = pxMaterial;
                 }
 
@@ -853,7 +853,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                     pxResourceCreateInfoSub.Type = PXResourceTypeImage;
                     pxResourceCreateInfoSub.ObjectReference = (void**)&pxTexture2D->Image;
                     pxResourceCreateInfoSub.FilePath = pxResourceCreateInfo->FilePath;
-                    //pxResourceCreateInfoSub.Image = pxResourceCreateInfo->Texture2D.Image;
+                    pxResourceCreateInfoSub.Image = pxResourceCreateInfo->Texture2D.Image; // What is this?
 
                     PXResourceManagerAdd(pxResourceManager, &pxResourceCreateInfoSub, 1);
                 }              
@@ -1485,6 +1485,8 @@ PXActionResult PXAPI PXResourceStoreName(PXResourceManager* const pxResourceMana
     );
 #endif
 
+    PXFlexDataCacheAdd(&pxResourceManager->NameCache, &pxResourceInfo->ID, name, nameSize);
+
     return PXActionSuccessful;
 }
 
@@ -1504,6 +1506,22 @@ PXActionResult PXAPI PXResourceStorePath(PXResourceManager* const pxResourceMana
         buffer
     );
 #endif
+
+    PXFlexDataCacheAdd(&pxResourceManager->NameCache, &pxResourceInfo->ID, name, nameSize);
+
+    return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXResourceFetchName(PXResourceManager* const pxResourceManager, PXResourceInfo* const pxResourceInfo, char** name, PXSize* nameSize)
+{
+    PXFlexDataCacheGet(&pxResourceManager->NameCache, pxResourceInfo->ID, name, nameSize);
+
+    return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXResourceFetchPath(PXResourceManager* const pxResourceManager, PXResourceInfo* const pxResourceInfo, char** name, PXSize* nameSize)
+{
+    PXFlexDataCacheGet(&pxResourceManager->SourcePathCache, pxResourceInfo->ID, name, nameSize);
 
     return PXActionSuccessful;
 }

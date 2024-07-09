@@ -17,6 +17,7 @@ typedef struct PXFlexDataCache_
 	PXSize EntryAmount;
 
 	PXBool ReallocationAllow;
+	PXBool DoNullTerminate;
 }
 PXFlexDataCache;
 

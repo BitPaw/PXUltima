@@ -893,7 +893,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
     PXMouseInputPrint(&pxEngine->Window.MouseCurrentInput);
 #endif
 
-    PXThreadSleep(PXNull, 1);
+    //PXThreadSleep(PXNull, 1);
 }
 
 PXActionResult PXAPI PXEngineResourceAction(PXEngine* const pxEngine, PXEngineResourceActionInfo* const pxEngineResourceActionInfo)
@@ -1526,6 +1526,7 @@ PXActionResult PXAPI PXGraphicLoadImage(PXGraphic* const pxGraphic, PXImage* con
 
 */
 
+
 PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResourceCreateInfo* const pxResourceCreateInfo)
 {
     if (!(pxEngine && pxResourceCreateInfo))
@@ -1595,10 +1596,11 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
 #if PXLogEnable
             PXLogPrint
             (
-                PXLoggingError,
+                PXLoggingInfo,
                 "Engine",
                 "Model-Register",
-                "0x%p",
+                "ID:%i, 0x%p",
+                pxModel->Info.ID,
                 pxModel
             );
 #endif
@@ -1793,13 +1795,18 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
             pxSprite->Model->ShaderProgramReference = pxSpriteCreateEventData->ShaderProgramCurrent;
 
             
+            float txWidth = pxSprite->Texture->Image->Width;
+            float txHeight = pxSprite->Texture->Image->Height;
+
+            PXVector2F aspectScaling = { 1, txHeight / txWidth };
+
 
             PXMatrix4x4FMove3F(&pxSprite->Model->ModelMatrix, &pxSpriteCreateEventData->Position);
             PXMatrix4x4FScaleSetXY
             (
                 &pxSprite->Model->ModelMatrix, 
-                pxSprite->Texture->Image->Width * pxSpriteCreateEventData->Scaling.X * 0.0005f,
-                pxSprite->Texture->Image->Height * pxSpriteCreateEventData->Scaling.Y * 0.0005f
+                aspectScaling.X * pxSpriteCreateEventData->Scaling.X,
+                aspectScaling.Y * pxSpriteCreateEventData->Scaling.Y
             );
 
      

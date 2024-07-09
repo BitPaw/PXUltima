@@ -114,7 +114,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
-      <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;WIN32;_DEBUG;_CONSOLE;WINVER=0x0501;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;WINRT_DIAGNOSTICS;WINRT_NATVIS;WIN32;_DEBUG;_CONSOLE;WINVER=0x0501;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
@@ -196,7 +196,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
-      <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;WINRT_DIAGNOSTICS;WINRT_NATVIS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
@@ -293,6 +293,7 @@
     <ClCompile Include="Container\RingBuffer\PXRingBuffer.c" />
     <ClCompile Include="Media\FastFile\PXFastFile.c" />
     <ClCompile Include="Media\Java\PXJava.c" />
+    <ClCompile Include="Media\PXLevel\PXLevel.c" />
     <ClCompile Include="Media\Salsa20\PXSalsa20.c" />
     <ClCompile Include="OS\Graphic\DirectX\PXDirectX10.c" />
     <ClCompile Include="OS\Graphic\DirectX\PXDirectX11.c" />
@@ -454,6 +455,7 @@
     <ClInclude Include="Container\RingBuffer\PXRingBuffer.h" />
     <ClInclude Include="Media\FastFile\PXFastFile.h" />
     <ClInclude Include="Media\Java\PXJava.h" />
+    <ClInclude Include="Media\PXLevel\PXLevel.h" />
     <ClInclude Include="Media\Salsa20\PXSalsa20.h" />
     <ClInclude Include="OS\Graphic\DirectX\PXDirectX10.h" />
     <ClInclude Include="OS\Graphic\DirectX\PXDirectX11.h" />
@@ -621,6 +623,7 @@
     <None Include="Media\Matroska\README.md" />
     <None Include="Media\MTL\README.md" />
     <None Include="Media\PNG\README.md" />
+    <None Include="Media\PXLevel\README.md" />
     <None Include="Media\RAR\README.md" />
     <None Include="Media\RIFF\README.md" />
     <None Include="Media\Salsa20\README.md" />

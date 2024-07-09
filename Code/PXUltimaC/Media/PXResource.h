@@ -276,47 +276,47 @@ typedef enum PXResourceType_
 {
 	PXResourceTypeInvalid, // Invalid, don't use- only for internal
 
-	PXResourceTypeCustom, // Undetected but valid format. Needs to be handled by the caller
+	PXResourceTypeCustom = PXInt32Make('C', 'U', 'S', 'T'), // Undetected but valid format. Needs to be handled by the caller
 
 	//-----------------------------------------------------
 	// Resource Level 0 - Internal OS Resources
 	//-----------------------------------------------------
-	PXResourceTypeBrush,
+	PXResourceTypeBrush = PXInt32Make('B', 'R', 'S', 'H'),
 	//-----------------------------------------------------
 
 
 	//-----------------------------------------------------
 	// Resource Level 1 - Indepepended
 	//-----------------------------------------------------
-	PXResourceTypeImage, // Image for pixeldata
-	PXResourceTypeSound,
-	PXResourceTypeVideo,
-	PXResourceTypeModel, // 3D model, collection of vertex data
-	PXResourceTypeFont, // Collection of spites or points to render text
-	PXResourceTypeMaterial,
+	PXResourceTypeImage = PXInt32Make('I', 'M', 'G', 'E'), // Image for pixeldata
+	PXResourceTypeSound = PXInt32Make('S', 'O', 'U', 'D'),
+	PXResourceTypeVideo = PXInt32Make('V', 'I', 'D', 'E'),
+	PXResourceTypeModel = PXInt32Make('M', 'O', 'D', 'E'), // 3D model, collection of vertex data
+	PXResourceTypeFont = PXInt32Make('F', 'O', 'N', 'T'), // Collection of spites or points to render text
+	PXResourceTypeMaterial = PXInt32Make('M', 'A', 'T', 'E'),
 	//-----------------------------------------------------
 
 
 	//-----------------------------------------------------
 	// Resource Level 2 - Context spesific
 	//-----------------------------------------------------
-	PXResourceTypeTexture2D, // Texture to render on a surface
-	PXResourceTypeTextureCube,
-	PXResourceTypeShaderProgram,
-	PXResourceTypeSkybox,
-	PXResourceTypeSprite,
-	PXResourceTypeText,
-	PXResourceTypeTimer,
-	PXResourceTypeEngineSound,
-	PXResourceTypeGUIElement,
-	PXResourceTypeHitBox,
-	PXResourceTypeMaterialList,
-	PXResourceTypeCodeDocument,
-	PXResourceTypeDocument,
+	PXResourceTypeTexture2D = PXInt32Make('T', 'X', '2', 'D'), // Texture to render on a surface
+	PXResourceTypeTextureCube = PXInt32Make('T', 'X', 'C', 'U'),
+	PXResourceTypeShaderProgram = PXInt32Make('S', 'H', 'A', 'D'),
+	PXResourceTypeSkybox = PXInt32Make('S', 'K', 'Y', 'B'),
+	PXResourceTypeSprite = PXInt32Make('S', 'P', 'R', 'I'),
+	PXResourceTypeText = PXInt32Make('T', 'E', 'X', 'T'),
+	PXResourceTypeTimer = PXInt32Make('T', 'I', 'M', 'E'),
+	PXResourceTypeEngineSound = PXInt32Make('E', 'S', 'N', 'D'),
+	PXResourceTypeGUIElement = PXInt32Make('G', 'U', 'I', 'E'),
+	PXResourceTypeHitBox = PXInt32Make('H', 'B', 'O', 'X'),
+	PXResourceTypeMaterialList = PXInt32Make('M', 'L', 'I', 'S'),
+	PXResourceTypeCodeDocument = PXInt32Make('C', 'O', 'D', 'E'),
+	PXResourceTypeDocument = PXInt32Make('D', 'O', 'C', 'U'),
 	PXResourceTypeBinary,
 	PXResourceTypeStructuredText, //
-	PXResourceTypeInstaller, // compressed executable
-	PXResourceTypeArchiv, // Compressed object
+	PXResourceTypeInstaller = PXInt32Make('I', 'N', 'S', 'T'), // compressed executable
+	PXResourceTypeArchiv = PXInt32Make('A', 'R', 'C', 'H'), // Compressed object
 	//-----------------------------------------------------
 
 	// Extended basic components
@@ -2683,6 +2683,9 @@ PXPublic PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxRe
 
 PXPublic PXActionResult PXAPI PXResourceStoreName(PXResourceManager* const pxResourceManager, PXResourceInfo* const pxResourceInfo, const char* const name, const PXSize nameSize);
 PXPublic PXActionResult PXAPI PXResourceStorePath(PXResourceManager* const pxResourceManager, PXResourceInfo* const pxResourceInfo, const char* const name, const PXSize nameSize);
+PXPublic PXActionResult PXAPI PXResourceFetchName(PXResourceManager* const pxResourceManager, PXResourceInfo* const pxResourceInfo, char** name, PXSize* nameSize);
+PXPublic PXActionResult PXAPI PXResourceFetchPath(PXResourceManager* const pxResourceManager, PXResourceInfo* const pxResourceInfo, char** name, PXSize* nameSize);
+
 
 
 
