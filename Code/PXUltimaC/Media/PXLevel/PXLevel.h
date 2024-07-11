@@ -26,10 +26,4 @@ PXLevelEntry;
 PXPublic PXActionResult PXAPI PXLevelLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
 PXPublic PXActionResult PXAPI PXLevelSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
 
-
-
-
-
-
-
 #endif

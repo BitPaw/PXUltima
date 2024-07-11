@@ -415,18 +415,12 @@ PXResourceReference;
 
 
 
-typedef struct PXResource
+typedef struct PXResource_
 {
-	PXResourceInfo Info;
-
-	union
-	{
-		int x;
-		//PXSprite Sprite;
-		//PXFont Font;
-		//PXTimer Timer;
-	};
-};
+	PXResourceType Type;
+	void* ResourceAdress;
+}
+PXResource;
 
 
 
@@ -2642,6 +2636,8 @@ PXResourceCreateInfo;
 
 
 
+
+
 typedef struct PXTextureActionInfo_
 {
 	void** TextureReference;
@@ -2698,5 +2694,12 @@ PXPublic PXActionResult PXAPI PXResourceLoadA(PXResourceLoadInfo* const pxResour
 
 PXPublic PXActionResult PXAPI PXResourceSave(PXResourceSaveInfo* const pxResourceSaveInfo, const PXText* const filePath);
 PXPublic PXActionResult PXAPI PXResourceSaveA(PXResourceSaveInfo* const pxResourceSaveInfo, const char* const filePath);
+
+
+
+PXPublic PXActionResult PXAPI PXResourceSerialize(PXResource* const pxResource, PXFile* const pxFile);
+PXPublic PXActionResult PXAPI PXResourceParse(PXResource* const pxResource, PXFile* const pxFile);
+
+
 
 #endif
