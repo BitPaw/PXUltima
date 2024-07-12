@@ -303,6 +303,11 @@ PXPublic PXSize PXAPI PXFileReadTextU(PXFile* const pxFile, PXTextUNICODE value,
 PXPublic void PXAPI PXFileReadUntil(PXFile* const pxFile, void* value, const PXSize length, const char character);
 
 
+// This function swaps the first and secound byte around
+// Some formats are designed that way
+// Takes in the file and will open up a new fake-one and swaps all things
+PXPublic PXSize PXAPI PXFileByteSwap(PXFile* const pxFileTarget, PXFile* const pxFileSource);
+
 
 // Additional check how many bytes are read.
 // Slower version of Read(), this function can't fail.

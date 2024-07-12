@@ -2296,6 +2296,7 @@ typedef enum PXFileFormat_
 	PXFileFormatMP4,
 	PXFileFormatMSI,
 	PXFileFormatMTL,
+	PXFileFormatN64,
 	PXFileFormatWavefront,
 	PXFileFormatMatroska, // .mkv
 	PXFileFormatOGG,

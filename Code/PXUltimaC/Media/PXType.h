@@ -220,6 +220,8 @@
 #define PXDataTypeSize64		8
 #define PXDataTypeSize128		16
 
+#define PXDataTypeText(size) size
+
 #define PXDataTypeReadOnly PXDataTypeReadOnlyMask
 
 //-------------------------------------------------
@@ -298,6 +300,8 @@
 #define PXDataTypeBit16U(bitSize) PXDataTypeBitFieldHolder16U | PXDataTypeIntUFlexBit | bitSize
 #define PXDataTypeBit32U(bitSize) PXDataTypeBitFieldHolder32U | PXDataTypeIntUFlexBit | bitSize
 #define PXDataTypeBit64U(bitSize) PXDataTypeBitFieldHolder64U | PXDataTypeIntUFlexBit | bitSize
+
+#define PXDataTypeNibble PXDataTypeBit08U(4)
 
 typedef unsigned char PXByte;
 typedef unsigned char PXBool;

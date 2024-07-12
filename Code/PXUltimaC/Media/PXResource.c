@@ -35,6 +35,7 @@
 #include "PDF/PXPDF.h"
 #include "TTF/PXTTF.h"
 #include "VRML/PXVRML.h"
+#include "N64/PXN64.h"
 #include "PHP/PXPHP.h"
 #include "MP4/PXMP4.h"
 #include "MSI/PXMSI.h"
@@ -2108,6 +2109,12 @@ PXActionResult PXAPI PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, c
             pxFileTypeInfo->ResourceLoad = PXMTLLoadFromFile;
             pxFileTypeInfo->ResourceSave = PXMTLSaveToFile;
             break;
+
+        case PXFileFormatN64:
+            pxFileTypeInfo->ResourceType = PXResourceTypeBinary;
+            pxFileTypeInfo->ResourceLoad = PXN64LoadFromFile;
+            pxFileTypeInfo->ResourceSave = PXN64SaveToFile;
+            break;            
 
         case PXFileFormatWavefront:
             pxFileTypeInfo->ResourceType = PXResourceTypeModel;

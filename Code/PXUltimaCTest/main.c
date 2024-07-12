@@ -94,6 +94,19 @@ int main()
 {
 	PXConsoleWrite(0, "[i] Starting testing...\n");
 
+
+
+	
+	PXResourceLoadInfo pxResourceLoadInfo;
+	pxResourceLoadInfo.Manager = 0;
+	pxResourceLoadInfo.Target = 0;
+	pxResourceLoadInfo.FileReference = PXNull;
+	pxResourceLoadInfo.Type = 0;
+
+
+	PXResourceLoadA(&pxResourceLoadInfo, "H:\\S.n64");
+
+
 #if 0
 	PXHardwareInfo pxHardwareInfo;
 	PXHardwareInfoScan(&pxHardwareInfo, PXHardwareInfoAll);

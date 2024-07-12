@@ -390,6 +390,10 @@ PXFileFormat PXAPI PXFilePathExtensionDetectTry(const PXText* const filePath)
 
 			switch (list)
 			{
+				case PXInt24Make('V', '6', '4'):
+				case PXInt24Make('Z', '6', '4'):
+				case PXInt24Make('N', '6', '4'): return PXFileFormatN64;
+
 				case PXInt24Make('C', 'P', 'P'):
 				case PXInt24Make('H', 'P', 'P'): return PXFileFormatCPP;
 
@@ -2621,21 +2625,24 @@ PXSize PXAPI PXFileIOMultible(PXFile* const pxFile, const PXFileDataElementType*
 			{
 				const PXSize bitFieldValue = PXFileReadBits(pxFile, sizeOfType);
 
-				switch (pxFileDataElementType->Type & PXDataTypeBitFieldHolderMask)
+				if(pxFileDataElementType->Adress)
 				{
-					case PXDataTypeBitFieldHolder08U:
-						*((PXInt8U*)pxFileDataElementType->Adress) = bitFieldValue;
-						break;
-					case PXDataTypeBitFieldHolder16U:
-						*((PXInt16U*)pxFileDataElementType->Adress) = bitFieldValue;
-						break;
-					case PXDataTypeBitFieldHolder32U:
-						*((PXInt32U*)pxFileDataElementType->Adress) = bitFieldValue;
-						break;
-					case PXDataTypeBitFieldHolder64U:
-						*((PXInt64U*)pxFileDataElementType->Adress) = bitFieldValue;
-						break;
-				}
+					switch(pxFileDataElementType->Type & PXDataTypeBitFieldHolderMask)
+					{
+						case PXDataTypeBitFieldHolder08U:
+							*((PXInt8U*)pxFileDataElementType->Adress) = bitFieldValue;
+							break;
+						case PXDataTypeBitFieldHolder16U:
+							*((PXInt16U*)pxFileDataElementType->Adress) = bitFieldValue;
+							break;
+						case PXDataTypeBitFieldHolder32U:
+							*((PXInt32U*)pxFileDataElementType->Adress) = bitFieldValue;
+							break;
+						case PXDataTypeBitFieldHolder64U:
+							*((PXInt64U*)pxFileDataElementType->Adress) = bitFieldValue;
+							break;
+					}
+				}			
 
 				break;
 			}
@@ -2793,6 +2800,24 @@ void PXAPI PXFileReadUntil(PXFile* const pxFile, void* value, const PXSize lengt
 	const PXSize readableSize = PXFileRemainingSize(pxFile);
 
 	PXMemoryCopy(currentPosition, readableSize, value, lengthCopy);
+}
+
+PXSize PXAPI PXFileByteSwap(PXFile* const pxFileTarget, PXFile* const pxFileSource)
+{
+	pxFileTarget->DataSize = PXFileReadB(pxFileSource, pxFileTarget->Data, pxFileSource->DataAllocated);
+
+	for(size_t i = 0; i < pxFileTarget->DataSize; i += 2)
+	{
+		PXInt8U* cursor = &((PXInt8U*)pxFileTarget->Data)[i];
+		PXInt8U* cursorA = &cursor[0];
+		PXInt8U* cursorB = &cursor[1];
+
+		PXInt8U c = *cursorA;
+		*cursorA = *cursorB;
+		*cursorB = c;
+	}
+
+	return 0;
 }
 
 PXBool PXAPI PXFileReadAndCompareI64U(PXFile* const pxFile, const PXInt64U value)
