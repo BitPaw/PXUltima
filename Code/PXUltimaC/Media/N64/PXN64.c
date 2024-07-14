@@ -3,6 +3,7 @@
 #include <OS/File/PXFile.h>
 #include <OS/Console/PXConsole.h>
 #include <OS/Error/PXActionResult.h>
+#include <Media/CRC32/PXCRC32.h>
 
 PXN64CountryCode PXAPI PXN64CountryCodeFromID(PXInt8U pxN64CountryCodeID)
 {
@@ -111,39 +112,109 @@ PXActionResult PXAPI PXN64LoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 			PXFileByteSwap(&pxN64Data, pxResourceLoadInfo->FileReference);
 
 			pxFile = &pxN64Data;
+			pxFile->EndiannessOfData = PXEndianBig;
 		}
 	}
 
-
+	// Read header
 	{
+		// 0x0000000-ram:b07fffff 
+
 		PXFileDataElementType pxFileDataElementType[] =
 		{
-			{&n64.EndiannessID, PXDataTypeNibble},
-			{PXNull, PXDataTypeNibble},
-			{&n64.initialPI_BSB_DOM1_LAT_REG, PXDataTypeNibble},
-			{&n64.initialPI_BSD_DOM1_PGS_REG, PXDataTypeNibble},
-			{&n64.initialPI_BSD_DOM1_PWD_REG, PXDataTypeInt08U},
-			{&n64.initialPI_BSB_DOM1_PGS_REG, PXDataTypeInt08U},
-			{&n64.ClockRateOverride, PXDataTypeInt32U},
-			{&n64.ProgramCounter, PXDataTypeInt32U},
-			{&n64.ReleaseAddress, PXDataTypeInt32U},
-			{&n64.CRC1Checksum, PXDataTypeInt32U},
-			{&n64.CRC2, PXDataTypeInt32U},
-			{&n64.UnknownA, PXDataTypeInt64U},
-			{n64.ImageName, PXDataTypeText(20)},
-			{&n64.UnknownB, PXDataTypeInt32U},
-			{&n64.MediaFormatID, PXDataTypeInt32U},
-			{&n64.CartridgeID, PXDataTypeDatax2},
-			{&n64.CountryCodeID, PXDataTypeInt08U},
-			{&n64.Version, PXDataTypeInt08U}
+			{&n64.EndiannessID, PXDataTypeNibble}, // 0x00
+			{PXNull, PXDataTypeNibble}, // 0x00
+			{&n64.initialPI_BSB_DOM1_LAT_REG, PXDataTypeNibble}, // 0x01
+			{&n64.initialPI_BSD_DOM1_PGS_REG, PXDataTypeNibble}, // 0x01
+			{&n64.initialPI_BSD_DOM1_PWD_REG, PXDataTypeInt08U}, // 0x02
+			{&n64.initialPI_BSB_DOM1_PGS_REG, PXDataTypeInt08U}, // 0x03
+			{&n64.ClockRateOverride, PXDataTypeInt32UBE}, // 0x04
+			{&n64.RAMEntryPointOffset, PXDataTypeInt32ULE}, // 0x08
+			{&n64.ReleaseAddress, PXDataTypeInt32UBE}, // 0x0C
+			{&n64.CRC1Checksum, PXDataTypeInt32UBE}, // 0x10
+			{&n64.CRC2, PXDataTypeInt32UBE}, // 0x14
+			{&n64.UnknownA, PXDataTypeInt64U}, // 0x18
+			{n64.ImageName, PXDataTypeText(20)}, // 0x20
+			{&n64.UnknownB, PXDataTypeInt32UBE}, // 0x34
+			{n64.MediaFormatID, PXDataTypeDatax4}, // 0x38
+			{n64.CartridgeID, PXDataTypeDatax2}, // 0x3C
+			{&n64.CountryCodeID, PXDataTypeInt08U}, // 0x3E
+			{&n64.Version, PXDataTypeInt08U} // 0x3F
 		};
 		const PXSize pxFileDataElementTypeSize = sizeof(pxFileDataElementType);
 
-		PXFileReadMultible(pxFile, pxFileDataElementType, pxFileDataElementTypeSize);
+		const PXSize readBytes = PXFileReadMultible(pxFile, pxFileDataElementType, pxFileDataElementTypeSize);
+		const PXBool readByteEnough = 64 == pxFile->DataCursor;
 
-		n64.BootCode = PXFileCursorPosition(pxFile);
-		n64.BootCodeSize = 4032;
+		if(!readByteEnough)
+		{
+			return PXActionInvalid;
+		}
+		void* aaw = n64.RAMEntryPointOffset; // Expect 80 00 04 00
+
+		n64.RAMEntryPointAdress = (char*)pxFile->Data + (PXSize)n64.RAMEntryPointOffset;
+
+		// The lower most nybble of the ClockRate is not read.
+		n64.ClockRateOverride &= 0xFFFFFFF0;
+
 		n64.CountryCode = PXN64CountryCodeFromID(n64.CountryCodeID);
+
+		// 4096 - 1052672
+		//  0x1000 to 0x101000
+
+		n64.BootCode = PXFileCursorPosition(pxFile); // 0x40
+		n64.BootCodeSize = 4032; // 0xFC0
+
+		void* a = (char*)pxFile->Data + 4096;
+		PXSize x = 1052672;
+
+		n64.BootCodeCRC = PXCRC32Generate(a, x);
+		// 		n64.BootCodeCRC = PXCRC32Generate(n64.BootCode, n64.BootCodeSize);
+		
+
+		switch(n64.BootCodeCRC)
+		{
+			case 0x0B050EE0: // 184880864
+			{
+				
+				break;
+			}
+			case 0xACC8580A: // 2898810890
+			{
+			
+				break;
+			}
+			default:
+			{
+				// ??? CRC invalid?
+				break;
+			}
+		}	
+
+
+		switch(n64.CICType)
+		{
+			case PXN64CICType6101:
+			case PXN64CICType6102:
+			case PXN64CICType6105:
+			{
+				// Do nothing
+				break;
+			}
+			case PXN64CICType6103:
+			{
+				//n64.RAMEntryPointOffset -= 0x100000; // 1048576
+				break;
+			}
+			case PXN64CICType6106:
+			{
+				//n64.RAMEntryPointOffset -= 0x200000; // 2097152
+				break;
+			}
+			default:
+				break;
+		}
+
 
 		// Special behaviour for the string. its not null terminated but with spaces?
 		for(size_t i = 19; n64.ImageName[i] == ' '; --i)
@@ -151,15 +222,30 @@ PXActionResult PXAPI PXN64LoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 			n64.ImageName[i] = '\0';
 		}
 
+
+		// Caluclate CRC value from bootloader
+	
+
+
+
+
+
+		/*
+		
+                             // .ram 
+                             // RAM content
+                             // ram:80000400-ram:807ff3ff
+		 */
+
+
 	}
 
+#if PXLogEnable
 	PXText sizeText;
 	PXTextConstructBufferA(&sizeText, 64);
 	PXTextFormatSize(&sizeText, pxN64Data.DataSize);
 	
 	const char* countryCodeName = PXN64CountryCodeToString(n64.CountryCode);
-
-
 
 	PXLogPrint
 	(
@@ -174,6 +260,7 @@ PXActionResult PXAPI PXN64LoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 		"Size", sizeText.TextA,
 		"Country", countryCodeName
 	);
+#endif
 
 
 	return PXActionSuccessful;

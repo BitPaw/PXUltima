@@ -2602,7 +2602,7 @@ PXSize PXAPI PXFileIOMultible(PXFile* const pxFile, const PXFileDataElementType*
 
 				totalReadBytes += pxFileIOMultibleFunction(pxFileRedirect, pxFileDataElementType->Adress, sizeOfType); // Get data directly
 
-				if (PXMemoryAccessModeReadOnly == pxFile->AccessMode) // POSR I/O Swap
+				if (PXMemoryAccessModeReadOnly == pxFile->AccessMode || PXMemoryAccessModeReadAndWrite == pxFile->AccessMode) // POSR I/O Swap
 				{
 					switch (pxFileDataElementType->Type & PXDataTypeEndianMask)
 					{
