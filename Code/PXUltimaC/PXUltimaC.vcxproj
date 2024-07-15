@@ -293,6 +293,7 @@
     <ClCompile Include="Container\RingBuffer\PXRingBuffer.c" />
     <ClCompile Include="Media\FastFile\PXFastFile.c" />
     <ClCompile Include="Media\Java\PXJava.c" />
+    <ClCompile Include="Media\MIPS\PXMIPS.c" />
     <ClCompile Include="Media\N64\PXN64.c" />
     <ClCompile Include="Media\PXLevel\PXLevel.c" />
     <ClCompile Include="Media\Salsa20\PXSalsa20.c" />
@@ -456,6 +457,7 @@
     <ClInclude Include="Container\RingBuffer\PXRingBuffer.h" />
     <ClInclude Include="Media\FastFile\PXFastFile.h" />
     <ClInclude Include="Media\Java\PXJava.h" />
+    <ClInclude Include="Media\MIPS\PXMIPS.h" />
     <ClInclude Include="Media\N64\PXN64.h" />
     <ClInclude Include="Media\PXLevel\PXLevel.h" />
     <ClInclude Include="Media\Salsa20\PXSalsa20.h" />
@@ -623,6 +625,7 @@
     <None Include="Media\LDAP\README.md" />
     <None Include="Media\Lua\README.md" />
     <None Include="Media\Matroska\README.md" />
+    <None Include="Media\MIPS\README.md" />
     <None Include="Media\MTL\README.md" />
     <None Include="Media\N64\README.md" />
     <None Include="Media\PNG\README.md" />

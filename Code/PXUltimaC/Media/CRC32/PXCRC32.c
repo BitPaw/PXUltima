@@ -1,7 +1,35 @@
 #include "PXCRC32.h"
 
+
+
+const unsigned char CRC7_POLY = 0x91;
+PXInt32U CRCTable[256];
+
+PXInt32U getCRCForByte(PXInt32U val)
+{
+    for(PXInt32U j = 0; j < 8; j++)
+    {
+        if(val & 1)
+            val ^= CRC7_POLY;
+        val >>= 1;
+    }
+
+    return val;
+}
+
+void buildCRCTable()
+{
+    // fill an array with CRC values of all 256 possible bytes
+    for(PXSize i = 0; i < 256; i++)
+    {
+        CRCTable[i] = getCRCForByte(i);
+    }
+}
+
+
 PXInt32U PXCRC32Generate(const PXByte* const data, const PXSize length)
 {
+#if 1
     PXInt32U r = 0xffffffffu;
 
     const PXInt32U table[256] =
@@ -46,4 +74,44 @@ PXInt32U PXCRC32Generate(const PXByte* const data, const PXSize length)
     }
 
     return r ^ 0xffffffffu;
+#else
+
+
+    /*
+
+    // Very bad, unholy slow
+    const unsigned char CRC7_POLY = 0x91;
+    unsigned char i, j, crc = 0;
+
+    for(i = 0; i < length; i++)
+    {
+        crc ^= data[i];
+        for(j = 0; j < 8; j++)
+        {
+            if(crc & 1)
+                crc ^= CRC7_POLY;
+            crc >>= 1;
+        }
+    }
+    return crc;
+
+    */
+
+    buildCRCTable();
+
+
+
+    PXSize crc = 0;
+
+    for(PXSize i = 0; i < length; ++i)
+    {
+        for(PXSize j = 0; j < 8; j++)
+        {
+            crc = (CRCTable[crc ^ data[i]] >> j) % 2;
+        }      
+    }
+       
+    return crc;
+
+#endif
 }

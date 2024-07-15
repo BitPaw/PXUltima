@@ -4,6 +4,7 @@
 #include <OS/Console/PXConsole.h>
 #include <OS/Error/PXActionResult.h>
 #include <Media/CRC32/PXCRC32.h>
+#include <Media/MIPS/PXMIPS.h>
 
 PXN64CountryCode PXAPI PXN64CountryCodeFromID(PXInt8U pxN64CountryCodeID)
 {
@@ -152,7 +153,8 @@ PXActionResult PXAPI PXN64LoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 		}
 		void* aaw = n64.RAMEntryPointOffset; // Expect 80 00 04 00
 
-		n64.RAMEntryPointAdress = (char*)pxFile->Data + (PXSize)n64.RAMEntryPointOffset;
+		n64.RAMEntryPointAdress = (char*)pxFile->Data + 0x1000;
+		n64.RAMEntryPointLength = pxFile->DataSize - 0x1000;
 
 		// The lower most nybble of the ClockRate is not read.
 		n64.ClockRateOverride &= 0xFFFFFFF0;
@@ -238,6 +240,28 @@ PXActionResult PXAPI PXN64LoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 		 */
 
 
+
+		// Create segments 
+
+
+
+		PXCodeSegment pxCodeSegmentList[] =
+		{
+			{0xB0000000,			  0x0, pxFile->DataCursor,	  pxFile->DataSize,		 ".rom", "ROM image", 111}, // Read only
+			{0xA4000040,			  0x0, n64.BootCode,			  n64.BootCodeSize,		 ".boot", "ROM bootloader", 111}, // read write execute
+			{0x80000000 + n64.RAMEntryPointOffset, 0x0, n64.RAMEntryPointAdress, n64.RAMEntryPointLength, ".ram", "RAM content", 111}, // RWX
+		};
+
+		PXMIPSProcessor pxMIPSProcessor;
+		PXClear(PXMIPSProcessor, &pxMIPSProcessor);
+		pxMIPSProcessor.ROMOffset = (PXSize)0x80000000 + (PXSize)0x400;
+
+		PXMIPSTranslate(&pxMIPSProcessor, n64.RAMEntryPointAdress, n64.RAMEntryPointLength);
+
+
+
+
+		n64.ImageName[19] = '\0';
 	}
 
 #if PXLogEnable

@@ -194,6 +194,7 @@ typedef struct PXN64_
 	PXInt8U initialPI_BSB_DOM1_PGS_REG;
 	PXInt32U ClockRateOverride;
 	PXInt32U RAMEntryPointOffset; // ProgramCounter, LoadAddress
+	PXInt32U RAMEntryPointLength;
 	PXInt32U ReleaseAddress;
 	PXInt32U CRC1Checksum;
 	PXInt32U CRC2;

@@ -498,6 +498,9 @@
     <ClCompile Include="Media\N64\PXN64.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Media\MIPS\PXMIPS.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm\KalmanFilter\PXKalmanFilter.h">
@@ -983,6 +986,9 @@
     <ClInclude Include="Media\N64\PXN64.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Media\MIPS\PXMIPS.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Media\Matroska\README.md" />
@@ -1021,5 +1027,6 @@
     <None Include="Media\Java\README.md" />
     <None Include="Media\PXLevel\README.md" />
     <None Include="Media\N64\README.md" />
+    <None Include="Media\MIPS\README.md" />
   </ItemGroup>
 </Project>
