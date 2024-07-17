@@ -11,13 +11,24 @@ const char* PXAPI PXMIPSInstructionTypeToStringShort(const PXMIPSInstructionType
 {
 	switch(pxMIPSInstruction)
 	{
-		case PXMIPSInstructionTypeLoadUpperImmediate: return "LUI";
+		case PXMIPSInstructionTypeJump: return "J";
+		case PXMIPSInstructionTypeJumpAndLink: return "JAL";
+		case PXMIPSInstructionTypeBranchOnEqual: return "BEQ";
+		case PXMIPSInstructionTypeBranchOnNotEqual: return "BNE";
+		case PXMIPSInstructionTypeBranchOnLessThanOrEqualToZero: return "BLEZ";
+		case PXMIPSInstructionTypeBranchOnGreaterThanZero: return "BGTZ";
 		case PXMIPSInstructionTypeAddImmediate: return "ADDI";
 		case PXMIPSInstructionTypeAddImmediateUnsigned: return "ADDIU";
+		case PXMIPSInstructionTypeSetOnLessThanImmediate: return "SLTI";
+		case PXMIPSInstructionTypeSetOnLessThanImmediateUnsigned: return "SLTIU";
+		case PXMIPSInstructionTypeAndImmediate: return "ANDI";
 		case PXMIPSInstructionTypeORImmediate: return "ORI";
+		case PXMIPSInstructionTypeExclusiveOrImmediate: return "XORI";
+		case PXMIPSInstructionTypeLoadUpperImmediate: return "LUI";
+
+
 		case PXMIPSInstructionTypeStoreWord: return "SW";
 		case PXMIPSInstructionTypeStoreWordLeft: return "SWL";
-		case PXMIPSInstructionTypeBranchOnNotEqual: return "BNE";
 		case PXMIPSInstructionTypeBranchOnNotEqualLikely: return "BNEL";
 		case PXMIPSInstructionTypeJumpRegister: return "JR";
 
@@ -30,13 +41,24 @@ const char* PXAPI PXMIPSInstructionTypeToStringLong(const PXMIPSInstructionType 
 {
 	switch(pxMIPSInstruction)
 	{
-		case PXMIPSInstructionTypeLoadUpperImmediate: return "Load Upper Immediate";
+		case PXMIPSInstructionTypeJump: return "Jump";
+		case PXMIPSInstructionTypeJumpAndLink: return "Jump And Link";
+		case PXMIPSInstructionTypeBranchOnEqual: return "Branch On Equal";
+		case PXMIPSInstructionTypeBranchOnNotEqual: return "Branch On Not Equal";
+		case PXMIPSInstructionTypeBranchOnLessThanOrEqualToZero: return "Branch On Less Than Or Equal To Zero";
+		case PXMIPSInstructionTypeBranchOnGreaterThanZero: return "Branch On Greater Than Zero";
 		case PXMIPSInstructionTypeAddImmediate: return "Add Immediate";
 		case PXMIPSInstructionTypeAddImmediateUnsigned: return "Add Immediate Unsigned";
+		case PXMIPSInstructionTypeSetOnLessThanImmediate: return "Set On Less Than Immediate";
+		case PXMIPSInstructionTypeSetOnLessThanImmediateUnsigned: return "Set On Less Than Immediate Unsigned";
+		case PXMIPSInstructionTypeAndImmediate: return "And Immediate";
 		case PXMIPSInstructionTypeORImmediate: return "OR Immediate";
+		case PXMIPSInstructionTypeExclusiveOrImmediate: return "Exclusive Or Immediate";
+		case PXMIPSInstructionTypeLoadUpperImmediate: return "Load Upper Immediate";
+
+
 		case PXMIPSInstructionTypeStoreWord: return "Store Word";
-		case PXMIPSInstructionTypeStoreWordLeft: return "Store Word Left";
-		case PXMIPSInstructionTypeBranchOnNotEqual: return "Branch On Not Equal";
+		case PXMIPSInstructionTypeStoreWordLeft: return "Store Word Left";	
 		case PXMIPSInstructionTypeBranchOnNotEqualLikely: return "Branch On Not Equal Likely";
 		case PXMIPSInstructionTypeJumpRegister: return "Jump Register";
 
@@ -85,11 +107,37 @@ PXActionResult PXAPI PXMIPSTranslate(PXMIPSProcessor* const pxMIPSProcessor, con
 
 	PXBool jumped = 0;
 
-	for(size_t i = 0; i < length; i += 4)
+	pxMIPSProcessor->ProgramCounter = 0;
+
+
+#if PXLogEnable
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"MIPS",
+		"Execute",
+		"--- Start ---"
+	);
+#endif
+
+
+#if PXLogEnable
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"MIPS",
+		"Execute",
+		"Begin at 0x%p, Size %i",
+		data,
+		length
+	);
+#endif
+
+	for(;;)
 	{
 		PXMIPSTInstruction pxMIPSTInstruction;
-		pxMIPSTInstruction.Adress = (PXInt8U*)programmCounter + i;
-		pxMIPSTInstruction.AdressVirtual = (PXSize)pxMIPSProcessor->ROMOffset + i;
+		pxMIPSTInstruction.Adress = (PXInt8U*)programmCounter + pxMIPSProcessor->ProgramCounter;
+		pxMIPSTInstruction.AdressVirtual = (PXSize)pxMIPSProcessor->ROMOffset + pxMIPSProcessor->ProgramCounter;
 
 		// instruction is big endian, to use our bit extraction, we need to swap it
 
@@ -148,16 +196,54 @@ PXActionResult PXAPI PXMIPSTranslate(PXMIPSProcessor* const pxMIPSProcessor, con
 					PXLoggingInfo,
 					"MIPS",
 					"Jump Register",
-					"Jump to %8.8X (offset:%i)\n\n",
+					"Jump to %8.8X (offset:%i)",
 					vadress,
 					offset
 				);
 #endif
-				i = offset - 4; // -4 because of allignment problem after the for loop
+				pxMIPSProcessor->ProgramCounter = offset;
 
 				jumped = 1;
 
-				break;
+				continue; // Skip the +4 offset
+			}
+			case PXMIPSInstructionTypeJumpAndLink:
+			{
+				/*
+				The 26-bit target is shifted left two bits and combined with the high-order four bits
+				of the address of the delay slot to calculate the address. The program
+				unconditionally jumps to this calculated address with a delay of one instruction.
+				The address of the instruction after the delay slot is placed in the link register, r31.
+				*/
+				const PXSize vAdress = pxMIPSProcessor->ProgramCounter + (PXSize)pxMIPSProcessor->ROMOffset;
+
+				PXSize functionAdress = instructionVal & 0b00000011111111111111111111111111;
+				functionAdress <<= 2; // Shift by 2
+				functionAdress |= vAdress & 0b11110000000000000000000000000000; // Highest 4 bits
+
+				PXSize offset = functionAdress - (PXSize)pxMIPSProcessor->ROMOffset;
+
+
+				pxMIPSProcessor->Register[PXMIPSProcessorLinkAddress] = vAdress + 4; // Next instruction
+
+
+#if PXLogEnable
+				PXLogPrint
+				(
+					PXLoggingInfo,
+					"MIPS",
+					"Jump And Link",
+					"Jump to %8.8X (offset:%i)",
+					functionAdress,
+					offset
+				);
+#endif
+
+
+				// Jump
+				pxMIPSProcessor->ProgramCounter = offset;
+
+				continue; // Skip the +4 offset
 			}
 			case PXMIPSInstructionTypeLoadUpperImmediate:
 			{
@@ -188,7 +274,7 @@ PXActionResult PXAPI PXMIPSTranslate(PXMIPSProcessor* const pxMIPSProcessor, con
 					"Load",
 					"\n"
 					"%16.8X = %16.8X + (%8.4X << 16) Before:%8.8X\n"
-					"%16i = %16i + (%8i << 16) Before:%4i\n\n",
+					"%16i = %16i + (%8i << 16) Before:%4i",
 					pxMIPSProcessor->Register[pxMIPSTInstruction.RT],
 					pxMIPSProcessor->Register[pxMIPSTInstruction.RS],
 					pxMIPSTInstruction.Immediate,
@@ -216,18 +302,21 @@ PXActionResult PXAPI PXMIPSTranslate(PXMIPSProcessor* const pxMIPSProcessor, con
 			
 				PXSize realAdress = virtualAdress - (PXSize)pxMIPSProcessor->ROMOffset;
 
-#if PXLogEnable && 0
-				PXLogPrint
-				(
-					PXLoggingInfo,
-					"MIPS",
-					"StoreWord",
-					"Value:%8.8X -> %8.8X - Base:%8.8X + Offset:%i",
-					pxMIPSProcessor->Register[pxMIPSTInstruction.RT],
-					virtualAdress,
-					base,
-					offset
-				);
+#if PXLogEnable && 1
+				if(jumped)
+				{
+					PXLogPrint
+					(
+						PXLoggingInfo,
+						"MIPS",
+						"StoreWord",
+						"Value:%8.8X -> %8.8X - Base:%8.8X + Offset:%i",
+						pxMIPSProcessor->Register[pxMIPSTInstruction.RT],
+						virtualAdress,
+						base,
+						offset
+					);
+				}
 #endif
 
 				pxMIPSProcessor->Register[pxMIPSTInstruction.RS] += 0x02;
@@ -258,20 +347,25 @@ PXActionResult PXAPI PXMIPSTranslate(PXMIPSProcessor* const pxMIPSProcessor, con
 				{	
 					// delay of oone instruction?
 
-#if PXLogEnable && 0
-					PXLogPrint
-					(
-						PXLoggingInfo,
-						"MIPS",
-						"Jump NEQ",
-						"%8.8X vs %4.4X - Jump to: %i\n\n",
-						pxMIPSProcessor->Register[pxMIPSTInstruction.RS],
-						pxMIPSProcessor->Register[pxMIPSTInstruction.RT],
-						offset
-					);
+#if PXLogEnable && 1
+					if(jumped)
+					{
+						PXLogPrint
+						(
+							PXLoggingInfo,
+							"MIPS",
+							"Jump NEQ",
+							"%8.8X vs %4.4X - Jump to: %i",
+							pxMIPSProcessor->Register[pxMIPSTInstruction.RS],
+							pxMIPSProcessor->Register[pxMIPSTInstruction.RT],
+							offset
+						);
+					}
 #endif
 
-					i += offset;
+					pxMIPSProcessor->ProgramCounter += offset;
+
+					//continue;
 				}
 				else
 				{
@@ -280,8 +374,8 @@ PXActionResult PXAPI PXMIPSTranslate(PXMIPSProcessor* const pxMIPSProcessor, con
 					(
 						PXLoggingInfo,
 						"MIPS",
-						"Jump Register",
-						"No jump. Value equal %8.8X\n\n",
+						"Jump NEQ",
+						"No jump. Value equal %8.8X",
 						pxMIPSProcessor->Register[pxMIPSTInstruction.RS]
 					);
 #endif
@@ -315,24 +409,27 @@ PXActionResult PXAPI PXMIPSTranslate(PXMIPSProcessor* const pxMIPSProcessor, con
 				pxMIPSProcessor->Register[pxMIPSTInstruction.RS] = resukt;
 				pxMIPSProcessor->Register[pxMIPSTInstruction.RT] = resukt;
 
-#if PXLogEnable && 0
-				PXLogPrint
-				(
-					PXLoggingInfo,
-					"MIPS",
-					"Add Signed",
-					"\n"
-					"%16.8X = %16.8X + %16.8X Before:%16.8X\n"
-					"%16i = %16i + %16i Before:%16i\n\n",
-					resukt,
-					rsBefore,
-					value,
-					rtBefore,
-					resukt,
-					rsBefore,
-					value,
-					rtBefore
-				);
+#if PXLogEnable && 1
+				if(jumped)
+				{
+					PXLogPrint
+					(
+						PXLoggingInfo,
+						"MIPS",
+						"Add Signed",
+						"\n"
+						"%16.8X = %16.8X + %16.8X Before:%16.8X\n"
+						"%16i = %16i + %16i Before:%16i",
+						resukt,
+						rsBefore,
+						value,
+						rtBefore,
+						resukt,
+						rsBefore,
+						value,
+						rtBefore
+					);
+				}
 #endif
 
 				break;
@@ -369,7 +466,7 @@ PXActionResult PXAPI PXMIPSTranslate(PXMIPSProcessor* const pxMIPSProcessor, con
 					"Add Unsigned",
 					"\n"
 					"%16.8X = %16.8X + %16.8X Before:%16.8X\n"
-					"%16i = %16i + %16i Before:%16i\n\n",
+					"%16i = %16i + %16i Before:%16i",
 					result,
 					(PXInt64S)pxMIPSProcessor->Register[pxMIPSTInstruction.RS],
 					value,
@@ -408,7 +505,7 @@ PXActionResult PXAPI PXMIPSTranslate(PXMIPSProcessor* const pxMIPSProcessor, con
 					"OR",
 					"\n"
 					"%16.8X = %16.8X | %16.8X Before:%16.8X\n"
-					"%16i = %16i | %16i Before:%16i\n\n",
+					"%16i = %16i | %16i Before:%16i",
 					pxMIPSProcessor->Register[pxMIPSTInstruction.RT],
 					rsBefore,
 					(PXInt64U)pxMIPSTInstruction.Immediate,
@@ -438,9 +535,21 @@ PXActionResult PXAPI PXMIPSTranslate(PXMIPSProcessor* const pxMIPSProcessor, con
 			}
 		}
 
-
-
+		// Next command
+		// MIPS always has 4-Byte commands
+		pxMIPSProcessor->ProgramCounter += 4;
 	}
+
+#if PXLogEnable
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"MIPS",
+		"Execute",
+		"--- Done ---"
+	);
+#endif
+
 
 	return PXActionSuccessful;
 }
