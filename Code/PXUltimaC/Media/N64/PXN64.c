@@ -245,10 +245,11 @@ PXActionResult PXAPI PXN64LoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 
 
 
+
 		PXCodeSegment pxCodeSegmentList[] =
 		{
 			{0xB0000000,			  0x0, pxFile->DataCursor,	  pxFile->DataSize,		 ".rom", "ROM image", 111}, // Read only
-			{0xA4000040,			  0x0, n64.BootCode,			  n64.BootCodeSize,		 ".boot", "ROM bootloader", 111}, // read write execute
+			{0xA4000040,			  0x1000, n64.BootCode,			  n64.BootCodeSize,		 ".boot", "ROM bootloader", 111}, // read write execute
 			{0x80000000 + n64.RAMEntryPointOffset, 0x0, n64.RAMEntryPointAdress, n64.RAMEntryPointLength, ".ram", "RAM content", 111}, // RWX
 		};
 
