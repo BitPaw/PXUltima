@@ -343,7 +343,7 @@ PXActionResult PXAPI PXThreadCurrentProcessorID(PXInt32U* const processorID)
 
 	return PXActionSuccessful;
 #else
-	return PXActionRefusedNotSupported;
+	return PXActionRefusedNotSupportedByOperatingSystem;
 #endif
 
 #else 

@@ -1019,7 +1019,7 @@ PXActionResult PXAPI PXFileName(const PXFile* const pxFile, PXText* const fileNa
 		fileName->SizeUsed = result;
 	}
 #else
-	return PXActionRefusedNotSupported;
+	return PXActionRefusedNotSupportedByOperatingSystem;
 #endif
 
 #endif

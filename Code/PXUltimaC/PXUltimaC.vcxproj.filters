@@ -336,9 +336,6 @@
     <ClCompile Include="OS\Memory\PXMemory.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="OS\Hardware\PXMonitor.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="OS\Async\PXProcess.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
@@ -822,9 +819,6 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="OS\Memory\PXMemory.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="OS\Hardware\PXMonitor.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="OS\Async\PXProcess.h">

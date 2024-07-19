@@ -406,7 +406,6 @@
     <ClCompile Include="OS\Hardware\PXHardDrive.c" />
     <ClCompile Include="OS\Library\PXLibrary.c" />
     <ClCompile Include="OS\Memory\PXMemory.c" />
-    <ClCompile Include="OS\Hardware\PXMonitor.c" />
     <ClCompile Include="OS\Hardware\PXProcessor.c" />
     <ClCompile Include="OS\Async\PXProcess.c" />
     <ClCompile Include="OS\Async\PXProgram.c" />
@@ -570,7 +569,6 @@
     <ClInclude Include="OS\Hardware\PXHardDrive.h" />
     <ClInclude Include="OS\Library\PXLibrary.h" />
     <ClInclude Include="OS\Memory\PXMemory.h" />
-    <ClInclude Include="OS\Hardware\PXMonitor.h" />
     <ClInclude Include="OS\Hardware\PXProcessor.h" />
     <ClInclude Include="OS\Async\PXProcess.h" />
     <ClInclude Include="OS\Async\PXProgram.h" />

@@ -73,7 +73,7 @@ which is possible in case of only 0 or 1 present symbols. */
 #define INVALIDSYMBOL 65535u
 
 
-PXDeflateEncodingMethod PXDeflateEncodingMethodFromID(const PXInt8U deflateEncodingMethod)
+PXDeflateEncodingMethod PXAPI PXDeflateEncodingMethodFromID(const PXInt8U deflateEncodingMethod)
 {
     switch(deflateEncodingMethod)
     {
@@ -94,7 +94,7 @@ PXDeflateEncodingMethod PXDeflateEncodingMethodFromID(const PXInt8U deflateEncod
     }
 }
 
-PXInt8U PXDeflateEncodingMethodToID(const PXDeflateEncodingMethod deflateEncodingMethod)
+PXInt8U PXAPI PXDeflateEncodingMethodToID(const PXDeflateEncodingMethod deflateEncodingMethod)
 {
     switch(deflateEncodingMethod)
     {
@@ -113,7 +113,7 @@ PXInt8U PXDeflateEncodingMethodToID(const PXDeflateEncodingMethod deflateEncodin
     }
 }
 
-PXActionResult PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const pxOutputStream)
+PXActionResult PXAPI PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const pxOutputStream)
 {
     PXDeflateBlock deflateBlock;
 
@@ -1492,7 +1492,7 @@ unsigned deflateDynamic
 
 #define DEFAULT_WINDOWSIZE 2048
 
-PXActionResult PXDEFLATESerialize(PXFile* const pxInputStream, PXFile* const pxOutputStream)
+PXActionResult PXAPI PXDEFLATESerialize(PXFile* const pxInputStream, PXFile* const pxOutputStream)
 {
     unsigned error = 0;
     PXSize blocksize;

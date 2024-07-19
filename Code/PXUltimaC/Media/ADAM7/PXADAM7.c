@@ -142,7 +142,7 @@ PXSize PXAPI PXADAM7CaluclateExpectedSize(PXADAM7* const pxADAM7)
     return ((n / 8u) * pxADAM7->BitsPerPixel) + ((n & 7u) * pxADAM7->BitsPerPixel + 7u) / 8u;
 }
 
-unsigned char PXADAM7paethPredictor(short a, short b, short c)
+unsigned char PXAPI PXADAM7paethPredictor(short a, short b, short c)
 {
     short pa = PXMathAbsoluteI16(b - c);
     short pb = PXMathAbsoluteI16(a - c);
@@ -319,7 +319,7 @@ PXActionResult PXAPI PXADAM7unfilterScanline(unsigned char* recon, const unsigne
     return PXActionSuccessful;
 }
 
-PXSize PXADAM7lodepng_get_raw_size_idat(PXSize w, PXSize h, PXSize bpp)
+PXSize PXAPI PXADAM7lodepng_get_raw_size_idat(PXSize w, PXSize h, PXSize bpp)
 {
     /* + 1 for the filter byte, and possibly plus padding bits per line. */
   /* Ignoring casts, the expression is equal to (w * bpp + 7) / 8 + 1, but avoids overflow of w * bpp */
@@ -359,7 +359,7 @@ PXActionResult PXAPI PXADAM7unfilter(PXADAM7* const pxADAM7)
     return PXActionSuccessful;
 }
 
-void PXADAM7removePaddingBits(unsigned char* out, const unsigned char* in, PXSize olinebits, PXSize ilinebits, PXSize h)
+void PXAPI PXADAM7removePaddingBits(unsigned char* out, const unsigned char* in, PXSize olinebits, PXSize ilinebits, PXSize h)
 {
     /*
   After filtering there are still padding bits if scanlines have non multiple of 8 bit amounts. They need
@@ -386,14 +386,14 @@ void PXADAM7removePaddingBits(unsigned char* out, const unsigned char* in, PXSiz
     }
 }
 
-unsigned char PXADAM7readBitFromReversedStream(PXSize* bitpointer, const unsigned char* bitstream)
+unsigned char PXAPI PXADAM7readBitFromReversedStream(PXSize* bitpointer, const unsigned char* bitstream)
 {
     unsigned char result = (unsigned char)((bitstream[(*bitpointer) >> 3] >> (7 - ((*bitpointer) & 0x7))) & 1);
     ++(*bitpointer);
     return result;
 }
 
-void PXADAM7setBitOfReversedStream(PXSize* bitpointer, unsigned char* bitstream, unsigned char bit)
+void PXAPI PXADAM7setBitOfReversedStream(PXSize* bitpointer, unsigned char* bitstream, unsigned char bit)
 {
     /*the current bit in bitstream may be 0 or 1 for this to work*/
     if(bit == 0) bitstream[(*bitpointer) >> 3u] &= (unsigned char)(~(1u << (7u - ((*bitpointer) & 7u))));
@@ -401,7 +401,7 @@ void PXADAM7setBitOfReversedStream(PXSize* bitpointer, unsigned char* bitstream,
     ++(*bitpointer);
 }
 
-void PXADAM7_getpassvalues(unsigned passw[7], unsigned passh[7], PXSize filter_passstart[8], PXSize padded_passstart[8], PXSize passstart[8], PXSize w, PXSize h, PXSize bpp)
+void PXAPI PXADAM7_getpassvalues(unsigned passw[7], unsigned passh[7], PXSize filter_passstart[8], PXSize padded_passstart[8], PXSize passstart[8], PXSize w, PXSize h, PXSize bpp)
 {
 
 
