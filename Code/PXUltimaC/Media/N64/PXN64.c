@@ -248,14 +248,49 @@ PXActionResult PXAPI PXN64LoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 
 		PXCodeSegment pxCodeSegmentList[] =
 		{
-			{0xB0000000,			  0x0, pxFile->DataCursor,	  pxFile->DataSize,		 ".rom", "ROM image", 111}, // Read only
-			{0xA4000040,			  0x1000, n64.BootCode,			  n64.BootCodeSize,		 ".boot", "ROM bootloader", 111}, // read write execute
+			{0xB0000000,  0x0, pxFile->DataCursor,	  pxFile->DataSize,		 ".rom", "ROM image", 111}, // Read only
+			{0xA4000040,  0x1000, n64.BootCode,			  n64.BootCodeSize,		 ".boot", "ROM bootloader", 111}, // read write execute
 			{0x80000000 + n64.RAMEntryPointOffset, 0x0, n64.RAMEntryPointAdress, n64.RAMEntryPointLength, ".ram", "RAM content", 111}, // RWX
 		};
 
+
+
+
+
+#if PXLogEnable
+		PXText sizeText;
+		PXTextConstructBufferA(&sizeText, 64);
+		PXTextFormatSize(&sizeText, pxN64Data.DataSize);
+
+		const char* countryCodeName = PXN64CountryCodeToString(n64.CountryCode);
+
+		PXLogPrint
+		(
+			PXLoggingInfo,
+			"N64",
+			"Load",
+			"Data\n"
+			"%10s : %s\n"
+			"%10s : %s\n"
+			"%10s : 0x%8.8x\n"
+			"%10s : %s",
+			"Name", n64.ImageName,
+			"Size", sizeText.TextA,
+			"EntyPoint", (0x80000000 + n64.RAMEntryPointOffset),
+			"Country", countryCodeName
+		);
+#endif
+
+
+
+		// 0x00000000, 0x03EFFFFF, "RDRAM Memory", ".rdram")
+
 		PXMIPSProcessor pxMIPSProcessor;
 		PXClear(PXMIPSProcessor, &pxMIPSProcessor);
-		pxMIPSProcessor.ROMOffset = (PXSize)0x80000000 + (PXSize)0x400;
+		pxMIPSProcessor.ROMOffsetVirtual = (PXSize)0x80000000 + (PXSize)0x400;
+		pxMIPSProcessor.RAMAdressVirtual = 0x00000000;
+		pxMIPSProcessor.RAMSize = 0x03EFFFFF;
+		pxMIPSProcessor.RAMAdress = PXMemoryVirtualAllocate(pxMIPSProcessor.RAMSize, PXMemoryAccessModeReadAndWrite);
 
 		PXMIPSTranslate(&pxMIPSProcessor, n64.RAMEntryPointAdress, n64.RAMEntryPointLength);
 
@@ -265,27 +300,7 @@ PXActionResult PXAPI PXN64LoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 		n64.ImageName[19] = '\0';
 	}
 
-#if PXLogEnable
-	PXText sizeText;
-	PXTextConstructBufferA(&sizeText, 64);
-	PXTextFormatSize(&sizeText, pxN64Data.DataSize);
-	
-	const char* countryCodeName = PXN64CountryCodeToString(n64.CountryCode);
 
-	PXLogPrint
-	(
-		PXLoggingInfo,
-		"N64",
-		"Load",
-		"Data\n"
-		"%8s : %s\n"
-		"%8s : %s\n"
-		"%8s : %s",
-		"Name", n64.ImageName,
-		"Size", sizeText.TextA,
-		"Country", countryCodeName
-	);
-#endif
 
 
 	return PXActionSuccessful;

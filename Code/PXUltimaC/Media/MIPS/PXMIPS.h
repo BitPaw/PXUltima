@@ -23,13 +23,13 @@ typedef enum PXMIPSInstructionType_
     PXMIPSInstructionTypeBranchOnNotEqual                   = 0b000101, // BNE
     PXMIPSInstructionTypeBranchOnLessThanOrEqualToZero      = 0b000110, // BLEZ
     PXMIPSInstructionTypeBranchOnGreaterThanZero            = 0b000111, // BGTZ
-    PXMIPSInstructionTypeAddImmediate                       = 0b001000, // ADDI
-    PXMIPSInstructionTypeAddImmediateUnsigned               = 0b001001, // ADDIU
+    PXMIPSInstructionTypeADDImmediate                       = 0b001000, // ADDI
+    PXMIPSInstructionTypeADDImmediateUnsigned               = 0b001001, // ADDIU
     PXMIPSInstructionTypeSetOnLessThanImmediate             = 0b001010, // SLTI
     PXMIPSInstructionTypeSetOnLessThanImmediateUnsigned     = 0b001011, // SLTIU 
-    PXMIPSInstructionTypeAndImmediate                       = 0b001100, // ANDI
+    PXMIPSInstructionTypeANDImmediate                       = 0b001100, // ANDI
     PXMIPSInstructionTypeORImmediate                        = 0b001101, // ORI
-    PXMIPSInstructionTypeExclusiveOrImmediate               = 0b001110, // XORI
+    PXMIPSInstructionTypeExclusiveORImmediate               = 0b001110, // XORI
     PXMIPSInstructionTypeLoadUpperImmediate                 = 0b001111, // LUI
     PXMIPSInstructionTypeCoprocessorZOperation0             = 0b010000, // COP0
     PXMIPSInstructionTypeCoprocessorZOperation1             = 0b010001, // COP1
@@ -118,8 +118,8 @@ typedef enum PXMIPSInstructionType_
     PXMIPSInstructionTypeDoublewordMultiplyUnsigned             = 0b011101 | PXMIPSOPCodeSpecial, // DMULTU
     PXMIPSInstructionTypeDoublewordDivide                       = 0b011110 | PXMIPSOPCodeSpecial, // DDIV
     PXMIPSInstructionTypeDoublewordDivideUnsigned               = 0b011111 | PXMIPSOPCodeSpecial, // DDIVU
-    PXMIPSInstructionTypeAdd                                    = 0b100000 | PXMIPSOPCodeSpecial, // ADD
-    PXMIPSInstructionTypeAddUnsigned                            = 0b100001 | PXMIPSOPCodeSpecial, // ADDU
+    PXMIPSInstructionTypeADD                                    = 0b100000 | PXMIPSOPCodeSpecial, // ADD
+    PXMIPSInstructionTypeADDUnsigned                            = 0b100001 | PXMIPSOPCodeSpecial, // ADDU
     PXMIPSInstructionTypeSubtract                               = 0b100010 | PXMIPSOPCodeSpecial, // SUB
     PXMIPSInstructionTypeSubtractUnsigned                       = 0b100011 | PXMIPSOPCodeSpecial, // SUBU 
     PXMIPSInstructionTypeAND                                    = 0b100100 | PXMIPSOPCodeSpecial, // AND
@@ -244,15 +244,71 @@ PXMIPSInstructionType;
 #define PXMIPSRegisterFT 2
 
 
+typedef struct PXMIPSRegister_
+{
+    PXSize Index; // 0
+    PXSize Random; // 1
+    PXSize EntryLo0; // 2
+    PXSize EntryLo1; // 3
+    PXSize Context; // 4
+    PXSize PageMask; // 5
+    PXSize Wired; // 6
+    PXSize UnusedA; // 7 - unused
+    PXSize BadVAddr; // 8
+    PXSize Count; // 9
+    PXSize EntryHi; // 10
+    PXSize Compare; // 11
+    PXSize Status; // 12
+    PXSize Cause; // 13
+    PXSize EPC; // 14
+    PXSize PRId; // 15
+    PXSize Config; // 16
+    PXSize LLAddr; // 17
+    PXSize WatchLo; // 18
+    PXSize WatchHi; // 19
+    PXSize XContext; // 20
+    PXSize UnusedB; // 21
+    PXSize UnusedC; // 22
+    PXSize UnusedD; // 23
+    PXSize UnusedE; // 24
+    PXSize UnusedF; // 25
+    PXSize ParityError; // 26
+    PXSize CacheError; // 27
+    PXSize TagLo; // 28
+    PXSize TagHi; // 29
+    PXSize ErrorEPC; // 30
+    PXSize UnusedG; // 31
+}
+PXMIPSRegister;
+
+typedef void (PXAPI* PXMIPSTInstructionFunction)(struct PXMIPSProcessor_* const pxMIPSProcessor, struct PXMIPSTInstruction_* const pxMIPSTInstruction);
+
 typedef struct PXMIPSProcessor_
 {
-    void* ROMOffset;
+    PXMIPSTInstructionFunction* GeneralInstructionList;
+    PXMIPSTInstructionFunction* SpecialInstructionList;
+    PXMIPSTInstructionFunction* REGIMMInstructionList;
+    PXMIPSTInstructionFunction* CorpocessorList;
+
+    void* ROMOffsetVirtual;
+    void* ROMOffsetActual;
+    PXSize ROMOffsetCurrent;
+    PXSize ROMOffsetMaximal;
+
+    void* RAMAdressVirtual;
+    void* RAMAdress;
+    PXSize RAMSize;
 
     PXSize ProgramCounter;
     PXSize RegisterStatus;
 
     float RegisterFloat[32];
-    PXSize Register[32]; // GPRs general purpose registers (should be 32)
+
+    union
+    {
+        PXSize RegisterList[32]; // GPRs general purpose registers (should be 32)
+        PXMIPSRegister Register;
+    };  
 }
 PXMIPSProcessor;
 
@@ -268,7 +324,7 @@ typedef struct PXCodeSegment_
 }
 PXCodeSegment;
 
-typedef void (PXAPI* PXMIPSTInstructionFunction)(PXMIPSProcessor* const pxMIPSProcessor, struct PXMIPSTInstruction_* const pxMIPSTInstruction);
+
 
 typedef struct PXMIPSTInstruction_
 {
@@ -276,28 +332,67 @@ typedef struct PXMIPSTInstruction_
     PXInt8U* AdressVirtual;
     PXInt16U Immediate;
 
-    PXInt32U Value;
+    PXInt32U OperationCode;
 
     PXMIPSInstructionType Type;
 
-    PXInt8U RS; // source register ID
-    PXInt8U RT; // target register ID
+    PXInt8U RegisterSourceID;
+    PXInt8U RegisterTargetID; // target register ID
+    PXInt8U RegisterDestinationID; // destination? register ID
+    PXInt8U ShiftAmount;
+
     PXInt8U FS; // Floatingpoint register ID
 
-    PXMIPSTInstructionFunction* GeneralInstructionList;
-    PXMIPSTInstructionFunction* SpecialInstructionList;
-    PXMIPSTInstructionFunction* REGIMMInstructionList;
-    PXMIPSTInstructionFunction* CorpocessorList;
+
+
     PXBool IncrmentCounter;
 }
 PXMIPSTInstruction;
 
 
 
+//---------------------------------------------------------
+// UTility function
+//---------------------------------------------------------
+
+#define PXMIPSMemoryIOStore 0x01
+#define PXMIPSMemoryIOLoad  0x02
+
+void PXAPI PXMIPSMemoryIO(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction, const PXInt32U datatype, PXInt8U mode);
+
+
+#define PXMIPSBranchEqual 0x01
+#define PXMIPSBranchNotEqual  0x02
+#define PXMIPSBranchLessThanZero 0x03
+#define PXMIPSBranchGreaterThanZero 0x04
+#define PXMIPSBranchLessThanOrEqualZero 0x05
+#define PXMIPSBranchGreaterThanOrEqualZero 0x06
+
+typedef struct PXMIPSBranch_
+{
+    void* Address;
+    PXInt8U Mode;
+    PXBool Likely;
+    PXBool CommitJump;
+}
+PXMIPSBranch;
+
+
+void PXAPI PXMIPSBranchCalc(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction, PXMIPSBranch* const pxMIPSBranch);
 
 
 
+typedef struct PXMIPSJump_
+{
+    void* AddressVirual;
+    void* AddressPhysical;
+    PXBool PreserveReturnPoint;
+}
+PXMIPSJump;
 
+void PXAPI PXMIPSJumpCalc(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction, PXMIPSJump* const pxMIPSJump);
+
+//---------------------------------------------------------
 
 
 PXPublic void PXAPI PXMIPSInitializize(PXMIPSProcessor* const pxMIPSProcessor, PXCodeSegment* const pxCodeSegment);
@@ -305,7 +400,11 @@ PXPublic void PXAPI PXMIPSInitializize(PXMIPSProcessor* const pxMIPSProcessor, P
 PXPublic const char* PXAPI PXMIPSInstructionTypeToStringShort(const PXMIPSInstructionType pxMIPSInstruction);
 PXPublic const char* PXAPI PXMIPSInstructionTypeToStringLong(const PXMIPSInstructionType pxMIPSInstruction);
 
+PXPublic void PXAPI PXMIPSInstructionExecute(PXMIPSProcessor* const pxMIPSProcessor);
+
 PXPublic PXActionResult PXAPI PXMIPSTranslate(PXMIPSProcessor* const pxMIPSProcessor, const PXByte* const data, const PXSize length);
+
+PXPublic void* PXAPI PXMIPSTranslateVirtualAdress(PXMIPSProcessor* const pxMIPSProcessor, const PXSize virtualAdress);
 
 
 
@@ -324,7 +423,7 @@ PXPublic void PXAPI PXMIPSInstructionAddImmediate(PXMIPSProcessor* const pxMIPSP
 PXPublic void PXAPI PXMIPSInstructionAddImmediateUnsigned(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction);
 PXPublic void PXAPI PXMIPSInstructionSetOnLessThanImmediate(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction);
 PXPublic void PXAPI PXMIPSInstructionSetOnLessThanImmediateUnsigned(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction);
-PXPublic void PXAPI PXMIPSInstructionAndImmediate(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction);
+PXPublic void PXAPI PXMIPSInstructionANDImmediate(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction);
 PXPublic void PXAPI PXMIPSInstructionORImmediate(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction);
 PXPublic void PXAPI PXMIPSInstructionExclusiveOrImmediate(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction);
 PXPublic void PXAPI PXMIPSInstructionLoadUpperImmediate(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction);
@@ -399,8 +498,8 @@ PXPublic void PXAPI PXMIPSInstructionDoublewordMultiply(PXMIPSProcessor* const p
 PXPublic void PXAPI PXMIPSInstructionDoublewordMultiplyUnsigned(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction);
 PXPublic void PXAPI PXMIPSInstructionDoublewordDivide(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction);
 PXPublic void PXAPI PXMIPSInstructionDoublewordDivideUnsigned(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction);
-PXPublic void PXAPI PXMIPSInstructionAdd(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction);
-PXPublic void PXAPI PXMIPSInstructionAddUnsigned(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction);
+PXPublic void PXAPI PXMIPSInstructionADD(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction);
+PXPublic void PXAPI PXMIPSInstructionADDUnsigned(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction);
 PXPublic void PXAPI PXMIPSInstructionSubtract(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction);
 PXPublic void PXAPI PXMIPSInstructionSubtractUnsigned(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction);
 PXPublic void PXAPI PXMIPSInstructionAND(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction);
