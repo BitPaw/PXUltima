@@ -241,17 +241,33 @@ PXActionResult PXAPI PXN64LoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 
 
 
-		// Create segments 
+        PXCodeSegment pxCodeSegmentList[] =
+        {
+            {0x00000000, 0x00000040, PXNull, PXNull, "N64-Header",""},       
+            {0x00000000, 0x03EFFFFF, PXNull, PXNull, ".rdram",    "RDRAM Memory"},
+            {0xA3F00000, 0xA3F00027, PXNull, PXNull, ".rdreg",    "RDRAM Registers"},
+			{0xA4000040, 0xA4001040, n64.BootCode, n64.BootCodeSize, ".boot",    "ROM bootloader"}, // 0x00000040, 0x00001000
+            {0xa4040000, 0xa404001f, PXNull, PXNull, ".spreg",    "SP Registers"},
+            {0xa4080000, 0xa4080003, PXNull, PXNull, ".spcreg",    "SP_PC_Reg"},
+            {0xA4100000, 0xA410001F, PXNull, PXNull, ".dpcreg",    "DP Command Registers"},
+            {0xA4200000, 0xa420000F, PXNull, PXNull, ".dpsreg",    "DP Span Registers"},
+            {0xa4300000, 0xa430000F, PXNull, PXNull, ".mireg",    "MIPS Interface (MI) Registers"},
+            {0xa4400000, 0xa4400037, PXNull, PXNull, ".vireg",    "Video Interface (VI) Registers"},
+            {0xa4500000, 0xa4500017, PXNull, PXNull, ".aireg",    "Audio Interface (AI) Registers"},
+            {0xa4600000, 0xa4600034, PXNull, PXNull, ".pireg",    "Peripheral Interface (PI) Registers"},
+            {0xa4700000, 0xa470001F, PXNull, PXNull, ".rireg",    "RDRAM Interface (RI) Registers"},
+            {0xa4800000, 0xa480001b, PXNull, PXNull, ".sireg",    "Serial Interface (SI) Registers"},
+            {0xa5000500, 0xa500054b, PXNull, PXNull, ".ddreg",    "N64 Disk Drive (DD) Registers"},
+            {0x1FC00000, 0x1FC007BF, PXNull, PXNull, ".pifrom",    "PIF Boot ROM"},
+            {0x1FC007C0, 0x1FC007FF, PXNull, PXNull, ".pifram",    "PIF RAM"},
+            {0x80000000, 0x800003FF, PXNull, PXNull, ".ivt",    "Interrupt Vector Table"},
+
+            {0xB0000000,  0x0, pxFile->DataCursor,      pxFile->DataSize,         ".rom", "ROM image", 111}, // Read only
+            
+            {0x80000000 + n64.RAMEntryPointOffset, 0x0, n64.RAMEntryPointAdress, n64.RAMEntryPointLength, ".ram", "RAM content", 111}, // RWX
+        };
 
 
-
-
-		PXCodeSegment pxCodeSegmentList[] =
-		{
-			{0xB0000000,  0x0, pxFile->DataCursor,	  pxFile->DataSize,		 ".rom", "ROM image", 111}, // Read only
-			{0xA4000040,  0x1000, n64.BootCode,			  n64.BootCodeSize,		 ".boot", "ROM bootloader", 111}, // read write execute
-			{0x80000000 + n64.RAMEntryPointOffset, 0x0, n64.RAMEntryPointAdress, n64.RAMEntryPointLength, ".ram", "RAM content", 111}, // RWX
-		};
 
 
 
@@ -291,6 +307,9 @@ PXActionResult PXAPI PXN64LoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 		pxMIPSProcessor.RAMAdressVirtual = 0x00000000;
 		pxMIPSProcessor.RAMSize = 0x03EFFFFF;
 		pxMIPSProcessor.RAMAdress = PXMemoryVirtualAllocate(pxMIPSProcessor.RAMSize, PXMemoryAccessModeReadAndWrite);
+
+		pxMIPSProcessor.CoProcessor[0].Enabled = PXTrue;
+		pxMIPSProcessor.CoProcessor[1].Enabled = PXTrue;
 
 		PXMIPSTranslate(&pxMIPSProcessor, n64.RAMEntryPointAdress, n64.RAMEntryPointLength);
 

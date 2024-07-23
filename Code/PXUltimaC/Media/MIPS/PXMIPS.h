@@ -196,26 +196,26 @@ typedef enum PXMIPSInstructionType_
     //----------------------------------------------------------------------------
     // COPz rs
     //----------------------------------------------------------------------------
-    PXMIPSInstructionTypeMoveWordFromFPUCoprocessor1                = 0b00000 | PXMIPSOPCodeCOPz,// MF
+    PXMIPSInstructionTypeMoveWordFromFPUCoprocessor1                = 0b00000 | PXMIPSOPCodeCOPz, // MF
     PXMIPSInstructionTypeDoublewordMoveFromSystemControlCoprocessor = 0b00001 | PXMIPSOPCodeCOPz, // DMFC0
-    // CF
-    // ----
+    PXMIPSInstructionTypeMoveControlWordFromCoprocessorZ            = 0b00010 | PXMIPSOPCodeCOPz, // CFCz - FPU
+    // Reserved = xxxxx, // ???
     PXMIPSInstructionTypeMoveToSystemControlCoprocessor             = 0b00100 | PXMIPSOPCodeCOPz, // MT / MTC0
-    PXMIPSInstructionTypeDoublewordMoveToSystemControlCoprocessor   = 0b00101 | PXMIPSOPCodeCOPz  // DMTC0
-    // CT
-    // ----
-    // BC
+    PXMIPSInstructionTypeDoublewordMoveToSystemControlCoprocessor   = 0b00101 | PXMIPSOPCodeCOPz, // DMTC0
+    PXMIPSInstructionTypeMoveControlToCoprocessorZ                  = 0b00110 | PXMIPSOPCodeCOPz, // CTCz
+    // = 0b00111 // Reserved = xxxxx, // ???
+    // = 0b01000 // BC
     //----------------------------------------------------------------------------
 
 
 
     //----------------------------------------------------------------------------
-    // COPz rt
+    // BC - COPz rt - Only for CoProcessor 1
     //----------------------------------------------------------------------------
-    // BCF
-    // BCT
-    // BCFL
-    // BCTL
+    BranchOnFPUFalse        = 0b00000, // BCF
+    BranchOnFPUFalseLikely  = 0b00010, // BCT
+    BranchOnFPUTrue         = 0b00001, // BCFL
+    BranchOnFPUTrueLikely   = 0b00011, // BCTL
     //----------------------------------------------------------------------------
 
 
@@ -283,6 +283,15 @@ PXMIPSRegister;
 
 typedef void (PXAPI* PXMIPSTInstructionFunction)(struct PXMIPSProcessor_* const pxMIPSProcessor, struct PXMIPSTInstruction_* const pxMIPSTInstruction);
 
+
+typedef struct PXMIPSCoProcessor_
+{
+
+    PXSize RegisterList[32];
+    PXBool Enabled;
+}
+PXMIPSCoProcessor;
+
 typedef struct PXMIPSProcessor_
 {
     PXMIPSTInstructionFunction* GeneralInstructionList;
@@ -308,7 +317,9 @@ typedef struct PXMIPSProcessor_
     {
         PXSize RegisterList[32]; // GPRs general purpose registers (should be 32)
         PXMIPSRegister Register;
-    };  
+    };
+
+    PXMIPSCoProcessor CoProcessor[4];
 }
 PXMIPSProcessor;
 
@@ -346,6 +357,7 @@ typedef struct PXMIPSTInstruction_
 
 
     PXBool IncrmentCounter;
+    PXInt8U CoProcessorID;
 }
 PXMIPSTInstruction;
 
@@ -368,11 +380,19 @@ void PXAPI PXMIPSMemoryIO(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruc
 #define PXMIPSBranchLessThanOrEqualZero 0x05
 #define PXMIPSBranchGreaterThanOrEqualZero 0x06
 
+// We could use these flags at some point but with allignment rules, this would add no gain at all
+#define PXMIPSBranchCondition           0b0000000000001111
+#define PXMIPSBranchLikely              0b0000000000010000
+#define PXMIPSBranchCompareToRegiste    0b0000000000100000
+#define PXMIPSBranchCommitToJump        0b0000000001000000
+
+
 typedef struct PXMIPSBranch_
 {
     void* Address;
     PXInt8U Mode;
     PXBool Likely;
+    PXBool CompareToRegister;
     PXBool CommitJump;
 }
 PXMIPSBranch;
@@ -392,6 +412,23 @@ PXMIPSJump;
 
 void PXAPI PXMIPSJumpCalc(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction, PXMIPSJump* const pxMIPSJump);
 
+
+
+
+typedef struct PXMIPSInstructionCoProcessor_
+{
+    PXInt8U ProcessorID;
+}
+PXMIPSInstructionCoProcessor;
+
+
+void PXAPI PXMIPSInstructionCoProcessorCalc(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction);
+
+
+
+
+void PXAPI PXMIPSInstructionExecuteDeleay(PXMIPSProcessor* const pxMIPSProcessor);
+
 //---------------------------------------------------------
 
 
@@ -403,6 +440,30 @@ PXPublic const char* PXAPI PXMIPSInstructionTypeToStringLong(const PXMIPSInstruc
 PXPublic void PXAPI PXMIPSInstructionExecute(PXMIPSProcessor* const pxMIPSProcessor);
 
 PXPublic PXActionResult PXAPI PXMIPSTranslate(PXMIPSProcessor* const pxMIPSProcessor, const PXByte* const data, const PXSize length);
+
+
+
+typedef enum PXMIPSMemoryRegion_
+{
+    PXMIPSMemoryRegionInvalid,
+    PXMIPSMemoryRegionUnkown,
+    PXMIPSMemoryRegionRDRAMRegistersHandler,
+    PXMIPSMemoryRegionSPRegistersHandler,
+    PXMIPSMemoryRegionDPCommandRegistersHandler,
+    PXMIPSMemoryRegionMIPSInterfaceHandler,
+    PXMIPSMemoryRegionVideoInterfaceHandler,
+    PXMIPSMemoryRegionAudioInterfaceHandler,
+    PXMIPSMemoryRegionPeripheralInterfaceHandler,
+    PXMIPSMemoryRegionRDRAMInterfaceHandler,
+    PXMIPSMemoryRegionSerialInterfaceHandler,
+    PXMIPSMemoryRegionCartridgeDomain2Address1Handler,
+    PXMIPSMemoryRegionCartridgeDomain1Address1Handler,
+    PXMIPSMemoryRegionCartridgeDomain2Address2Handler,
+    PXMIPSMemoryRegionISViewerHandler,
+    PXMIPSMemoryRegionPIFRamHandler,
+    PXMIPSMemoryRegionCartridgeDomain1Address3Handler
+}
+PXMIPSMemoryRegion;
 
 PXPublic void* PXAPI PXMIPSTranslateVirtualAdress(PXMIPSProcessor* const pxMIPSProcessor, const PXSize virtualAdress);
 
@@ -419,8 +480,8 @@ PXPublic void PXAPI PXMIPSInstructionBranchOnEqual(PXMIPSProcessor* const pxMIPS
 PXPublic void PXAPI PXMIPSInstructionBranchOnNotEqual(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction);
 PXPublic void PXAPI PXMIPSInstructionBranchOnLessThanOrEqualToZero(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction);
 PXPublic void PXAPI PXMIPSInstructionBranchOnGreaterThanZero(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction);
-PXPublic void PXAPI PXMIPSInstructionAddImmediate(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction);
-PXPublic void PXAPI PXMIPSInstructionAddImmediateUnsigned(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction);
+PXPublic void PXAPI PXMIPSInstructionADDImmediate(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction);
+PXPublic void PXAPI PXMIPSInstructionADDImmediateUnsigned(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction);
 PXPublic void PXAPI PXMIPSInstructionSetOnLessThanImmediate(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction);
 PXPublic void PXAPI PXMIPSInstructionSetOnLessThanImmediateUnsigned(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction);
 PXPublic void PXAPI PXMIPSInstructionANDImmediate(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction);
@@ -547,12 +608,10 @@ PXPublic void PXAPI PXMIPSInstructionBranchOnGreaterThanOrEqualToZeroAndLinkLike
 
 PXPublic void PXAPI PXMIPSInstructionMoveWordFromFPUCoprocessor1(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction);
 PXPublic void PXAPI PXMIPSInstructionDoublewordMoveFromSystemControlCoprocessor(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction);
-// CF
-// ----
+PXPublic void PXAPI PXMIPSInstructionMoveControlWordFromCoprocessorZ(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction);
 PXPublic void PXAPI PXMIPSInstructionMoveToSystemControlCoprocessor(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction);
 PXPublic void PXAPI PXMIPSInstructionDoublewordMoveToSystemControlCoprocessor(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction);
-// CT
-// ----
+PXPublic void PXAPI PXMIPSInstructionMoveControlToCoprocessorZ(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction);
 // BC
 
 

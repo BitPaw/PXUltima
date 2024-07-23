@@ -2,6 +2,8 @@
 
 #include <OS/Console/PXConsole.h>
 
+const char PXMIPSProcessorName[] = "MIPS-VR43xx";
+
 void PXAPI PXMIPSBranchCalc(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction, PXMIPSBranch* const pxMIPSBranch)
 {
     pxMIPSBranch->Address = (PXInt64S)((PXInt16S)pxMIPSTInstruction->Immediate) << 2; 
@@ -11,7 +13,7 @@ void PXAPI PXMIPSBranchCalc(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstr
     PXLogPrint
     (
         PXLoggingInfo,
-        "MIPS",
+        PXMIPSProcessorName,
         "BranchCalc",
         "%8.8X vs %4.4X - Jump to: %i",
         pxMIPSProcessor->Register[pxMIPSTInstruction->RS],
@@ -67,7 +69,7 @@ void PXAPI PXMIPSBranchCalc(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstr
         PXLogPrint
         (
             PXLoggingInfo,
-            "MIPS",
+            PXMIPSProcessorName,
             "Jump EQ",
             "%8.8X vs %4.4X - Jump to: %i",
             pxMIPSProcessor->Register[pxMIPSTInstruction->RS],
@@ -83,7 +85,7 @@ void PXAPI PXMIPSBranchCalc(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstr
         PXLogPrint
         (
             PXLoggingInfo,
-            "MIPS",
+            PXMIPSProcessorName,
             "Jump EQ",
             "No jump. Value equal %8.8X",
             pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID]
@@ -114,19 +116,12 @@ void PXAPI PXMIPSJumpCalc(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruc
         pxMIPSProcessor->RegisterList[31] = delaySlotAdress + 4; 
     }
 
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        "MIPS",
-        "Delay",
-        "Execute delay instruction"
-    );
-#endif
+
 
     // Delay this instruction by calling another
-    pxMIPSProcessor->ProgramCounter += 4; // go to next instuction
-    PXMIPSInstructionExecute(pxMIPSProcessor); // Call next instruction to re-execute it before current
+    PXMIPSInstructionExecuteDeleay(pxMIPSProcessor);
+
+
     
     pxMIPSProcessor->ProgramCounter = pxMIPSJump->AddressPhysical; // Now, jump to actual target
 
@@ -144,7 +139,7 @@ void PXAPI PXMIPSJumpCalc(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruc
     PXLogPrint
     (
         PXLoggingInfo,
-        "MIPS",
+        PXMIPSProcessorName,
         "JumpCalc",
         "Jump to 0x%8.8X, return:0x%8.8X",
         pxMIPSJump->AddressVirual,
@@ -217,85 +212,81 @@ const char* PXAPI PXMIPSInstructionTypeToStringShort(const PXMIPSInstructionType
         case PXMIPSInstructionTypeStoreWordFromFPUCoprocessor2: return "SEC2";
         case PXMIPSInstructionTypeStoreConditionalDoubleword: return "SCD";
         case PXMIPSInstructionTypeStoreDoublewordFromFPUCoprocessor1: return "SCD1";
-        case  PXMIPSInstructionTypeStoreDoublewordFromFPUCoprocessor2: return "SCD2";
-        case   PXMIPSInstructionTypeStoreDoubleword: return "SD";
-        case  PXMIPSInstructionTypeShiftLeftLogical: return "SLL";
+        case PXMIPSInstructionTypeStoreDoublewordFromFPUCoprocessor2: return "SCD2";
+        case PXMIPSInstructionTypeStoreDoubleword: return "SD";
+        case PXMIPSInstructionTypeShiftLeftLogical: return "SLL";
         case PXMIPSInstructionTypeShiftRightLogical: return "SRL";
-        case  PXMIPSInstructionTypeShiftRightArithmetic: return "SRA";
-        case    PXMIPSInstructionTypeShiftLeftLogicalVariable: return "SLLV";
-        case   PXMIPSInstructionTypeShiftRightLogicalVariable: return "SRLV";
-        case   PXMIPSInstructionTypeShiftRightArithmeticVariable: return "SRAV";
-        case   PXMIPSInstructionTypeJumpRegister: return "JR";
-        case   PXMIPSInstructionTypeJumpAndLinkRegister: return "JALR";
-        case  PXMIPSInstructionTypeSystemCall: return "SYSCALL";
-        case    PXMIPSInstructionTypeBreak: return "BREAK";
-        case   PXMIPSInstructionTypeSynchronize: return "SYNC";
-        case   PXMIPSInstructionTypeMoveFromHI: return "MFHI";
-        case   PXMIPSInstructionTypeMoveToHI: return "MTHI";
-        case   PXMIPSInstructionTypeMoveFromLO: return "MFLO";
-        case   PXMIPSInstructionTypeMoveToLO: return "MTLO";
-        case   PXMIPSInstructionTypeDoublewordShiftLeftLogicalVariable: return "DSLLV";
-        case   PXMIPSInstructionTypeDoublewordShiftRightLogicalVariable: return "DSRLV";
-        case   PXMIPSInstructionTypeDoublewordShiftRightArithmeticVariable: return "DSRAV";
-        case   PXMIPSInstructionTypeMultiply: return "MULT";
-        case   PXMIPSInstructionTypeMultiplyUnsigned: return "MULTU";
-        case   PXMIPSInstructionTypeDivide: return "DIV";
-        case    PXMIPSInstructionTypeDivideUnsigned: return "DIVU";
-        case  PXMIPSInstructionTypeDoublewordMultiply: return "DMULT";
-        case   PXMIPSInstructionTypeDoublewordMultiplyUnsigned: return "DMULTU";
-        case   PXMIPSInstructionTypeDoublewordDivide: return "DDIV";
-        case   PXMIPSInstructionTypeDoublewordDivideUnsigned: return "DDIVU";
-        case   PXMIPSInstructionTypeADD: return "ADD";
-        case  PXMIPSInstructionTypeADDUnsigned: return "ADDU";
-        case    PXMIPSInstructionTypeSubtract: return "SUB";
-        case   PXMIPSInstructionTypeSubtractUnsigned: return "SUBU";
-        case   PXMIPSInstructionTypeAND: return "AND";
-        case   PXMIPSInstructionTypeOR: return "OR";
-        case   PXMIPSInstructionTypeExclusiveOR: return "XOR";
-        case   PXMIPSInstructionTypeNOR: return "NOR";
-        case   PXMIPSInstructionTypeSetOnLessThan: return "SLT";
-        case   PXMIPSInstructionTypeSetOnLessThanUnsigned: return "SLTU";
-        case   PXMIPSInstructionTypeDoublewordADD: return "DADD";
-        case   PXMIPSInstructionTypeDoublewordADDUnsigned: return "DADDU";
-        case   PXMIPSInstructionTypeDoublewordSubtract: return "DSUB";
-        case   PXMIPSInstructionTypeDoublewordSubtractUnsigned: return "DSUBU";
-        case   PXMIPSInstructionTypeTrapIfGreaterThanOrEqual: return "TGE";
-        case   PXMIPSInstructionTypeTrapIfGreaterThanOrEqualUnsigned: return "TGEU";
-        case   PXMIPSInstructionTypeTrapIfLessThan: return "TLT";
-        case   PXMIPSInstructionTypeTrapIfLessThanUnsigned: return "TLTU";
-        case    PXMIPSInstructionTypeTrapIfEqual: return "TEQ";
-        case   PXMIPSInstructionTypeTrapIfNotEqual: return "TNE";
-        case   PXMIPSInstructionTypeDoublewordShiftLeftLogical: return "DSLL";
-        case   PXMIPSInstructionTypeDoublewordShiftRightLogical: return "DSRL";
-        case   PXMIPSInstructionTypeDoublewordShiftRightArithmetic: return "DSRA";
-        case   PXMIPSInstructionTypeDoublewordShiftLeftLogicalPlus32: return "DSLL32";
-        case   PXMIPSInstructionTypeDoublewordShiftRight: return "DSRL32";
-        case    PXMIPSInstructionTypeDoublewordShiftRightArithmeticPlus32: return "DSRA32";
-        case   PXMIPSInstructionTypeBranchOnLessThanZero: return "BLTZ";
-        case   PXMIPSInstructionTypeBranchOnGreaterThanOrEqualToZero: return "BGEZ";
-        case    PXMIPSInstructionTypeBranchOnLessThanZeroLikely: return "BLTZL";
-        case   PXMIPSInstructionTypeBranchOnGreaterThanOrEqualToZeroLikely: return "BGEZL";
-        case   PXMIPSInstructionTypeTrapIfGreaterThanOrEqualImmediate: return "TGEI";
-        case   PXMIPSInstructionTypeTrapIfGreaterThanOrEqualImmediateUnsigned: return "TGEIU";
-        case   PXMIPSInstructionTypeTrapIfLessThanImmediate: return "TLTI";
-        case  PXMIPSInstructionTypeTrapIfLessThanImmediateUnsigned: return "TLTIU";
-        case   PXMIPSInstructionTypeTrapIfEqualImmediate: return "TEQI";
-        case   PXMIPSInstructionTypeTrapIfNotEqualImmediate: return "TNEI";
-        case   PXMIPSInstructionTypeBranchOnLessThanZeroAndLink: return "BLTZAL";
-        case   PXMIPSInstructionTypeBranchOnGreaterThanOrEqualToZeroAndLink: return "BGEZAL";
-        case   PXMIPSInstructionTypeBranchOnLessThanZeroAndLinkLikely: return "BLTZALL";
-        case   PXMIPSInstructionTypeBranchOnGreaterThanOrEqualToZeroAndLinkLikely: return "BGEZALL";
-
-
+        case PXMIPSInstructionTypeShiftRightArithmetic: return "SRA";
+        case PXMIPSInstructionTypeShiftLeftLogicalVariable: return "SLLV";
+        case PXMIPSInstructionTypeShiftRightLogicalVariable: return "SRLV";
+        case PXMIPSInstructionTypeShiftRightArithmeticVariable: return "SRAV";
+        case PXMIPSInstructionTypeJumpRegister: return "JR";
+        case PXMIPSInstructionTypeJumpAndLinkRegister: return "JALR";
+        case PXMIPSInstructionTypeSystemCall: return "SYSCALL";
+        case PXMIPSInstructionTypeBreak: return "BREAK";
+        case PXMIPSInstructionTypeSynchronize: return "SYNC";
+        case PXMIPSInstructionTypeMoveFromHI: return "MFHI";
+        case PXMIPSInstructionTypeMoveToHI: return "MTHI";
+        case PXMIPSInstructionTypeMoveFromLO: return "MFLO";
+        case PXMIPSInstructionTypeMoveToLO: return "MTLO";
+        case PXMIPSInstructionTypeDoublewordShiftLeftLogicalVariable: return "DSLLV";
+        case PXMIPSInstructionTypeDoublewordShiftRightLogicalVariable: return "DSRLV";
+        case PXMIPSInstructionTypeDoublewordShiftRightArithmeticVariable: return "DSRAV";
+        case PXMIPSInstructionTypeMultiply: return "MULT";
+        case PXMIPSInstructionTypeMultiplyUnsigned: return "MULTU";
+        case PXMIPSInstructionTypeDivide: return "DIV";
+        case PXMIPSInstructionTypeDivideUnsigned: return "DIVU";
+        case PXMIPSInstructionTypeDoublewordMultiply: return "DMULT";
+        case PXMIPSInstructionTypeDoublewordMultiplyUnsigned: return "DMULTU";
+        case PXMIPSInstructionTypeDoublewordDivide: return "DDIV";
+        case PXMIPSInstructionTypeDoublewordDivideUnsigned: return "DDIVU";
+        case PXMIPSInstructionTypeADD: return "ADD";
+        case PXMIPSInstructionTypeADDUnsigned: return "ADDU";
+        case PXMIPSInstructionTypeSubtract: return "SUB";
+        case PXMIPSInstructionTypeSubtractUnsigned: return "SUBU";
+        case PXMIPSInstructionTypeAND: return "AND";
+        case PXMIPSInstructionTypeOR: return "OR";
+        case PXMIPSInstructionTypeExclusiveOR: return "XOR";
+        case PXMIPSInstructionTypeNOR: return "NOR";
+        case PXMIPSInstructionTypeSetOnLessThan: return "SLT";
+        case PXMIPSInstructionTypeSetOnLessThanUnsigned: return "SLTU";
+        case PXMIPSInstructionTypeDoublewordADD: return "DADD";
+        case PXMIPSInstructionTypeDoublewordADDUnsigned: return "DADDU";
+        case PXMIPSInstructionTypeDoublewordSubtract: return "DSUB";
+        case PXMIPSInstructionTypeDoublewordSubtractUnsigned: return "DSUBU";
+        case PXMIPSInstructionTypeTrapIfGreaterThanOrEqual: return "TGE";
+        case PXMIPSInstructionTypeTrapIfGreaterThanOrEqualUnsigned: return "TGEU";
+        case PXMIPSInstructionTypeTrapIfLessThan: return "TLT";
+        case PXMIPSInstructionTypeTrapIfLessThanUnsigned: return "TLTU";
+        case PXMIPSInstructionTypeTrapIfEqual: return "TEQ";
+        case PXMIPSInstructionTypeTrapIfNotEqual: return "TNE";
+        case PXMIPSInstructionTypeDoublewordShiftLeftLogical: return "DSLL";
+        case PXMIPSInstructionTypeDoublewordShiftRightLogical: return "DSRL";
+        case PXMIPSInstructionTypeDoublewordShiftRightArithmetic: return "DSRA";
+        case PXMIPSInstructionTypeDoublewordShiftLeftLogicalPlus32: return "DSLL32";
+        case PXMIPSInstructionTypeDoublewordShiftRight: return "DSRL32";
+        case PXMIPSInstructionTypeDoublewordShiftRightArithmeticPlus32: return "DSRA32";
+        case PXMIPSInstructionTypeBranchOnLessThanZero: return "BLTZ";
+        case PXMIPSInstructionTypeBranchOnGreaterThanOrEqualToZero: return "BGEZ";
+        case PXMIPSInstructionTypeBranchOnLessThanZeroLikely: return "BLTZL";
+        case PXMIPSInstructionTypeBranchOnGreaterThanOrEqualToZeroLikely: return "BGEZL";
+        case PXMIPSInstructionTypeTrapIfGreaterThanOrEqualImmediate: return "TGEI";
+        case PXMIPSInstructionTypeTrapIfGreaterThanOrEqualImmediateUnsigned: return "TGEIU";
+        case PXMIPSInstructionTypeTrapIfLessThanImmediate: return "TLTI";
+        case PXMIPSInstructionTypeTrapIfLessThanImmediateUnsigned: return "TLTIU";
+        case PXMIPSInstructionTypeTrapIfEqualImmediate: return "TEQI";
+        case PXMIPSInstructionTypeTrapIfNotEqualImmediate: return "TNEI";
+        case PXMIPSInstructionTypeBranchOnLessThanZeroAndLink: return "BLTZAL";
+        case PXMIPSInstructionTypeBranchOnGreaterThanOrEqualToZeroAndLink: return "BGEZAL";
+        case PXMIPSInstructionTypeBranchOnLessThanZeroAndLinkLikely: return "BLTZALL";
+        case PXMIPSInstructionTypeBranchOnGreaterThanOrEqualToZeroAndLinkLikely: return "BGEZALL";
 
         case PXMIPSInstructionTypeMoveWordFromFPUCoprocessor1: return "MFC0";
         case PXMIPSInstructionTypeDoublewordMoveFromSystemControlCoprocessor: return "DMFC0";
-            // CF
-            // ----
+        case PXMIPSInstructionTypeMoveControlWordFromCoprocessorZ: return "CFCz";
         case PXMIPSInstructionTypeMoveToSystemControlCoprocessor: return "MTC0";
         case PXMIPSInstructionTypeDoublewordMoveToSystemControlCoprocessor: return "DMTC0";
-            // CT
-            // ----
+        case PXMIPSInstructionTypeMoveControlToCoprocessorZ: return "CTCz";
             // BC
 
         default:
@@ -435,12 +426,10 @@ const char* PXAPI PXMIPSInstructionTypeToStringLong(const PXMIPSInstructionType 
 
         case PXMIPSInstructionTypeMoveWordFromFPUCoprocessor1: return "MoveWord From FPU Coprocessor 1";
         case PXMIPSInstructionTypeDoublewordMoveFromSystemControlCoprocessor: return "Doubleword Move From System Control Coprocessor";
-            // CF
-            // ----
+        case PXMIPSInstructionTypeMoveControlWordFromCoprocessorZ: return "Move Control Word From Coprocessor Z";
         case PXMIPSInstructionTypeMoveToSystemControlCoprocessor: return "Move To System Control Coprocessor";
         case PXMIPSInstructionTypeDoublewordMoveToSystemControlCoprocessor: return "Doubleword Move To System Control Coprocessor";
-            // CT
-            // ----
+        case PXMIPSInstructionTypeMoveControlToCoprocessorZ: return "Move Control To Coprocessor Z";
             // BC
 
         default:
@@ -452,6 +441,8 @@ void PXMIPSInstructionPrint(PXMIPSTInstruction* const pxMIPSTInstruction);
 
 void PXAPI PXMIPSInstructionExecute(PXMIPSProcessor* const pxMIPSProcessor)
 {
+    const PXSize instructionWidth = 4;
+
     PXMIPSTInstruction pxMIPSTInstruction;
     pxMIPSTInstruction.IncrmentCounter = PXTrue;
     pxMIPSTInstruction.Adress = (PXInt8U*)pxMIPSProcessor->ROMOffsetActual + pxMIPSProcessor->ProgramCounter;
@@ -467,11 +458,14 @@ void PXAPI PXMIPSInstructionExecute(PXMIPSProcessor* const pxMIPSProcessor)
         PXLogPrint
         (
             PXLoggingInfo,
-            "MIPS",
-            "Instruction",
-            "No Operation"
+            PXMIPSProcessorName,
+            "NOOP",
+            "0x%8.8X   --- No Operation ---",
+            pxMIPSTInstruction.AdressVirtual
         );
 #endif
+        pxMIPSProcessor->ProgramCounter += instructionWidth;
+
         return;
     }
 
@@ -485,7 +479,7 @@ void PXAPI PXMIPSInstructionExecute(PXMIPSProcessor* const pxMIPSProcessor)
 #if PXLogEnable
 
     PXBool noprint =
-        instructionFunction == PXMIPSInstructionAddImmediate ||
+        instructionFunction == PXMIPSInstructionADDImmediate ||
         instructionFunction == PXMIPSInstructionStoreWord ||
         instructionFunction == PXMIPSInstructionBranchOnNotEqual;
 
@@ -500,7 +494,7 @@ void PXAPI PXMIPSInstructionExecute(PXMIPSProcessor* const pxMIPSProcessor)
 
     // Next command
     // MIPS always has 4-Byte commands
-    pxMIPSProcessor->ProgramCounter += (pxMIPSTInstruction.IncrmentCounter * 4);
+    pxMIPSProcessor->ProgramCounter += (pxMIPSTInstruction.IncrmentCounter * instructionWidth);
 }
 
 
@@ -513,7 +507,7 @@ void PXMIPSInstructionPrint(PXMIPSTInstruction* const pxMIPSTInstruction)
     PXLogPrint
     (
         PXLoggingAllocation,
-        "MIPS",
+        PXMIPSProcessorName,
         "Instruction",
         "0x%8.8X   %2.2X %2.2X %2.2X %2.2X   RS:%2.2X RT:%2.2X IMM:%4.4X   %2.2X:%-7s %s",
         (int)pxMIPSTInstruction->AdressVirtual,    
@@ -535,6 +529,8 @@ void PXMIPSInstructionPrint(PXMIPSTInstruction* const pxMIPSTInstruction)
 #define PXMIPSMemoryIOStore 0x01
 #define PXMIPSMemoryIOLoad  0x02
 
+
+
 void PXAPI PXMIPSMemoryIO(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction, const PXInt32U datatype, PXInt8U mode)
 {
     const PXSize base = pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID];
@@ -546,15 +542,15 @@ void PXAPI PXMIPSMemoryIO(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruc
     void* realAdressOffset = PXMIPSTranslateVirtualAdress(pxMIPSProcessor, virtualAdress); // Virtual adress to actual pointer
     void* value = &pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterTargetID]; // Adress of value to store
 
-    PXSize typeSize = datatype & PXDataTypeSizeMask;
-
+    const PXSize typeSize = datatype & PXDataTypeSizeMask;
+    
     if(mode)
     {
 #if PXLogEnable && 0
         PXLogPrint
         (
             PXLoggingInfo,
-            "MIPS",
+            PXMIPSProcessorName,
             "Memory-Store",
             "Value:%8.8X -> %8.8X - Base:%8.8X + Offset:%i",
             pxMIPSProcessor->Register[pxMIPSTInstruction->RegisterTargetID],
@@ -572,7 +568,7 @@ void PXAPI PXMIPSMemoryIO(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruc
         PXLogPrint
         (
             PXLoggingInfo,
-            "MIPS",
+            PXMIPSProcessorName,
             "Memory-Load",
             "Value:%8.8X -> %8.8X - Base:%8.8X + Offset:%i",
             pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterTargetID],
@@ -584,6 +580,8 @@ void PXAPI PXMIPSMemoryIO(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruc
 
         PXMemoryCopy(realAdressOffset, typeSize, value, typeSize);
     }
+
+
 
 
     // pxMIPSProcessor->Register[pxMIPSTInstruction->RegisterSourceID] = pxMIPSProcessor->Register[pxMIPSTInstruction->RegisterTargetID];
@@ -608,7 +606,7 @@ PXActionResult PXAPI PXMIPSTranslate(PXMIPSProcessor* const pxMIPSProcessor, con
     PXLogPrint
     (
         PXLoggingInfo,
-        "MIPS",
+        PXMIPSProcessorName,
         "Execute",
         "--- Start ---"
     );
@@ -619,7 +617,7 @@ PXActionResult PXAPI PXMIPSTranslate(PXMIPSProcessor* const pxMIPSProcessor, con
     PXLogPrint
     (
         PXLoggingInfo,
-        "MIPS",
+        PXMIPSProcessorName,
         "Execute",
         "Begin at 0x%p, Size %i",
         data,
@@ -638,8 +636,8 @@ PXActionResult PXAPI PXMIPSTranslate(PXMIPSProcessor* const pxMIPSProcessor, con
         PXMIPSInstructionBranchOnNotEqual,
         PXMIPSInstructionBranchOnLessThanOrEqualToZero,
         PXMIPSInstructionBranchOnGreaterThanZero,
-        PXMIPSInstructionAddImmediate,
-        PXMIPSInstructionAddImmediateUnsigned,
+        PXMIPSInstructionADDImmediate,
+        PXMIPSInstructionADDImmediateUnsigned,
         PXMIPSInstructionSetOnLessThanImmediate,
         PXMIPSInstructionSetOnLessThanImmediateUnsigned,
         PXMIPSInstructionANDImmediate,
@@ -804,11 +802,11 @@ PXActionResult PXAPI PXMIPSTranslate(PXMIPSProcessor* const pxMIPSProcessor, con
     {
         PXMIPSInstructionMoveWordFromFPUCoprocessor1,
         PXMIPSInstructionDoublewordMoveFromSystemControlCoprocessor,
-        PXMIPSInstructionReserved,
+        PXMIPSInstructionMoveControlWordFromCoprocessorZ,
         PXMIPSInstructionReserved,
         PXMIPSInstructionMoveToSystemControlCoprocessor ,
         PXMIPSInstructionDoublewordMoveToSystemControlCoprocessor ,
-        PXMIPSInstructionReserved,
+        PXMIPSInstructionMoveControlToCoprocessorZ,
         PXMIPSInstructionReserved,
         PXMIPSInstructionReserved
     };
@@ -828,7 +826,7 @@ PXActionResult PXAPI PXMIPSTranslate(PXMIPSProcessor* const pxMIPSProcessor, con
     PXLogPrint
     (
         PXLoggingInfo,
-        "MIPS",
+        PXMIPSProcessorName,
         "Execute",
         "--- Done ---"
     );
@@ -837,30 +835,175 @@ PXActionResult PXAPI PXMIPSTranslate(PXMIPSProcessor* const pxMIPSProcessor, con
     return PXActionSuccessful;
 }
 
-void* PXAPI PXMIPSTranslateVirtualAdress(PXMIPSProcessor* const pxMIPSProcessor, PXSize virtualAdress)
+void PXAPI PXMIPSInstructionCoProcessorCalc(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+{
+   // PXMIPSInstructionCoProcessor pxMIPSInstructionCoProcessor;
+
+    const PXBool instructionID = pxMIPSTInstruction->RegisterSourceID;
+    const PXMIPSTInstructionFunction instuction = pxMIPSProcessor->CorpocessorList[instructionID];
+
+   // pxMIPSInstructionCoProcessor.ProcessorID = pxMIPSTInstruction->Type & 0b11;
+    pxMIPSTInstruction->CoProcessorID = pxMIPSTInstruction->Type & 0b11;
+
+    pxMIPSTInstruction->Type = instructionID | PXMIPSOPCodeCOPz;
+    pxMIPSTInstruction->RegisterDestinationID = (pxMIPSTInstruction->Immediate & 0b1111100000000000) >> 11; // Can also be FS? for floats
+
+    PXMIPSInstructionPrint(pxMIPSTInstruction);
+
+    instuction(pxMIPSProcessor, pxMIPSTInstruction);
+  
+}
+
+void PXAPI PXMIPSInstructionExecuteDeleay(PXMIPSProcessor* const pxMIPSProcessor)
+{
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXMIPSProcessorName,
+        "Delay",
+        "Execute delay instruction"
+    );
+#endif
+
+    pxMIPSProcessor->ProgramCounter += 4; // go to next instuction
+    PXMIPSInstructionExecute(pxMIPSProcessor); // Call next instruction to re-execute it before current
+}
+
+
+PXMIPSMemoryRegion PXMIPSMemoryRegionDetect(void* adress)
+{
+    const PXSize adressVal = (PXSize)adress;
+
+    PXSize adressSpace = (adressVal >> 4) & 0xFFF00000;
+
+    switch(adressSpace)
+    {
+        case 0x03F00000: return PXMIPSMemoryRegionRDRAMRegistersHandler;
+        case 0x04000000: return PXMIPSMemoryRegionSPRegistersHandler;
+        case 0x04100000: return PXMIPSMemoryRegionDPCommandRegistersHandler;
+        case 0x04300000: return PXMIPSMemoryRegionMIPSInterfaceHandler;
+        case 0x04400000: return PXMIPSMemoryRegionVideoInterfaceHandler;
+        case 0x04500000: return PXMIPSMemoryRegionAudioInterfaceHandler;
+        case 0x04600000: return PXMIPSMemoryRegionPeripheralInterfaceHandler;
+        case 0x04700000: return PXMIPSMemoryRegionRDRAMInterfaceHandler;
+        case 0x04800000: return PXMIPSMemoryRegionSerialInterfaceHandler;
+        case 0x05000000: return PXMIPSMemoryRegionCartridgeDomain2Address1Handler;
+        case 0x06000000: return PXMIPSMemoryRegionCartridgeDomain1Address1Handler;
+        case 0x08000000: return PXMIPSMemoryRegionCartridgeDomain2Address2Handler;
+        case 0x13F00000: return PXMIPSMemoryRegionISViewerHandler;
+        case 0x1FC00000: return PXMIPSMemoryRegionPIFRamHandler;
+        case 0x1FF00000: return PXMIPSMemoryRegionCartridgeDomain1Address3Handler;
+
+        default:
+            return PXMIPSMemoryRegionUnkown;
+    }
+}
+
+
+void* PXAPI PXMIPSTranslateVirtualAdress(PXMIPSProcessor* const pxMIPSProcessor, const PXSize virtualAdress)
 {
     const PXBool virtualAdressValid = 0 == (0b11 & virtualAdress);
+    PXSize translatedAdress = virtualAdress;
 
     if(!virtualAdressValid)
     {
         DebugBreak();
     }
 
+    const PXMIPSMemoryRegion region = PXMIPSMemoryRegionDetect(virtualAdress);
 
+    switch(region)
+    {
+        case PXMIPSMemoryRegionRDRAMRegistersHandler:
+        {
+            break;
+        }
+        case PXMIPSMemoryRegionSPRegistersHandler:
+        {
+            break;
+        }
+        case PXMIPSMemoryRegionDPCommandRegistersHandler:
+        {
+            break;
+        }
+        case PXMIPSMemoryRegionMIPSInterfaceHandler:
+        {
+            break;
+        }
+        case PXMIPSMemoryRegionVideoInterfaceHandler:
+        {
+            break;
+        }
+        case PXMIPSMemoryRegionAudioInterfaceHandler:
+        {
+            break;
+        }
+        case PXMIPSMemoryRegionPeripheralInterfaceHandler:
+        {
+            break;
+        }
+        case PXMIPSMemoryRegionRDRAMInterfaceHandler:
+        {
+            break;
+        }
+        case PXMIPSMemoryRegionSerialInterfaceHandler:
+        {
+            break;
+        }
+        case PXMIPSMemoryRegionCartridgeDomain2Address1Handler:
+        {
+            break;
+        }
+        case PXMIPSMemoryRegionCartridgeDomain1Address1Handler:
+        {
+            break;
+        }
+        case PXMIPSMemoryRegionCartridgeDomain2Address2Handler:
+        {
+            translatedAdress -= (PXSize)pxMIPSProcessor->ROMOffsetVirtual;
+            translatedAdress += (PXSize)pxMIPSProcessor->ROMOffsetActual;
+            break;
+        }
+        case PXMIPSMemoryRegionISViewerHandler:
+        {
+            break;
+        }
+        case PXMIPSMemoryRegionPIFRamHandler:
+        {
+            break;
+        }
+        case PXMIPSMemoryRegionCartridgeDomain1Address3Handler:
+        {
+            break;
+        }
+        default:
+        {
+            translatedAdress += (PXSize)pxMIPSProcessor->RAMAdress;
+            break;
+        }
+    }
+
+
+#if PXLogEnable && 0
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXMIPSProcessorName,
+        "TranslateAdress",
+        "V:0x%8.8X -> P:0x%p",
+        virtualAdress,
+        translatedAdress
+
+    );
+#endif
+
+    
     // Check in what range this adress is and then get the proper poition
     //     void* target = (PXInt8U*)pxMIPSProcessor->RAMAdress + realAdressOffset;
 
-    if(virtualAdress > pxMIPSProcessor->ROMOffsetVirtual)
-    {
-        virtualAdress -= (PXSize)pxMIPSProcessor->ROMOffsetVirtual;
-        virtualAdress += (PXSize)pxMIPSProcessor->ROMOffsetActual;
-    }
-    else
-    {
-        virtualAdress += (PXSize)pxMIPSProcessor->RAMAdress;
-    }
 
-    return virtualAdress;
+    return translatedAdress;
 }
 
 void PXAPI PXMIPSInstructionReserved(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
@@ -869,7 +1012,7 @@ void PXAPI PXMIPSInstructionReserved(PXMIPSProcessor* const pxMIPSProcessor, PXM
     PXLogPrint
     (
         PXLoggingFailure,
-        "MIPS",
+        PXMIPSProcessorName,
         "Instruction",
         "Illegal or not implemented!"
     );
@@ -954,7 +1097,7 @@ void PXAPI PXMIPSInstructionBranchOnGreaterThanZero(PXMIPSProcessor* const pxMIP
     PXMIPSBranchCalc(pxMIPSProcessor, pxMIPSTInstruction, &pxMIPSBranch);
 }
 
-void PXAPI PXMIPSInstructionAddImmediate(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionADDImmediate(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
 {
     /*
                 The 16-bit immediate is sign-extended and added to the contents of general
@@ -984,7 +1127,7 @@ void PXAPI PXMIPSInstructionAddImmediate(PXMIPSProcessor* const pxMIPSProcessor,
     PXLogPrint
     (
         PXLoggingInfo,
-        "MIPS",
+        PXMIPSProcessorName,
         "Add Signed",
         "\n"
         "%16.8X = %16.8X + %16.8X Before:%16.8X\n"
@@ -1001,7 +1144,7 @@ void PXAPI PXMIPSInstructionAddImmediate(PXMIPSProcessor* const pxMIPSProcessor,
 #endif
 }
 
-void PXAPI PXMIPSInstructionAddImmediateUnsigned(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionADDImmediateUnsigned(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
 {
     /*
 The 16-bit immediate is sign-extended and added to the contents of general
@@ -1012,7 +1155,7 @@ The only difference between this instruction and the ADDI instruction is that
 ADDIU instruction never causes an integer overflow exception.
 */
 
-    const PXInt64U value = (PXInt16U)pxMIPSTInstruction->Immediate;
+    const PXInt64U value = (PXInt16S)pxMIPSTInstruction->Immediate;
 
 #if PXLogEnable
     const PXSize rsBefore = pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID];
@@ -1030,7 +1173,7 @@ ADDIU instruction never causes an integer overflow exception.
     PXLogPrint
     (
         PXLoggingInfo,
-        "MIPS",
+        PXMIPSProcessorName,
         "Add Unsigned",
         "\n"
         "%16.8X = %16.8X + %16.8X Before:%16.8X\n"
@@ -1039,8 +1182,8 @@ ADDIU instruction never causes an integer overflow exception.
         rsBefore,
         value,
         rtBefore,
-        (PXInt64S)pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterTargetID],
-        (PXInt64S)rsBefore,
+        (PXInt64U)pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterTargetID],
+        (PXInt64U)rsBefore,
         value,
         rtBefore
     );
@@ -1084,7 +1227,7 @@ in general purpose register rt
     PXLogPrint
     (
         PXLoggingInfo,
-        "MIPS",
+        PXMIPSProcessorName,
         "OR",
         "\n"
         "%16.8X = %16.8X | %16.8X Before:%16.8X\n"
@@ -1131,7 +1274,7 @@ void PXAPI PXMIPSInstructionLoadUpperImmediate(PXMIPSProcessor* const pxMIPSProc
     PXLogPrint
     (
         PXLoggingInfo,
-        "MIPS",
+        PXMIPSProcessorName,
         "Load",
         "\n"
         "%16.8X = %16.8X + (%8.4X << 16) Before:%8.8X\n"
@@ -1150,25 +1293,17 @@ void PXAPI PXMIPSInstructionLoadUpperImmediate(PXMIPSProcessor* const pxMIPSProc
 
 void PXAPI PXMIPSInstructionCoprocessorZOperation0(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
 {
-    const PXBool instructionID = pxMIPSTInstruction->RegisterSourceID;
-    const PXMIPSTInstructionFunction instuction = pxMIPSProcessor->CorpocessorList[instructionID];
-
-    pxMIPSTInstruction->Type = instructionID | PXMIPSOPCodeCOPz; 
-    pxMIPSTInstruction->FS = (pxMIPSTInstruction->Immediate & 0b1111100000000000) >> 11;
-
-    PXMIPSInstructionPrint(pxMIPSTInstruction);
-
-    instuction(pxMIPSProcessor, pxMIPSTInstruction);
+    PXMIPSInstructionCoProcessorCalc(pxMIPSProcessor, pxMIPSTInstruction);
 }
 
 void PXAPI PXMIPSInstructionCoprocessorZOperation1(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
 {
-    DebugBreak();
+    PXMIPSInstructionCoProcessorCalc(pxMIPSProcessor, pxMIPSTInstruction);
 }
 
 void PXAPI PXMIPSInstructionCoprocessorZOperation2(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
 {
-    DebugBreak();
+    PXMIPSInstructionCoProcessorCalc(pxMIPSProcessor, pxMIPSTInstruction);
 }
 
 void PXAPI PXMIPSInstructionBranchOnEqualLikely(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
@@ -1420,33 +1555,34 @@ void PXAPI PXMIPSInstructionShiftRightArithmeticVariable(PXMIPSProcessor* const 
     DebugBreak();
 }
 
+
+
 void PXAPI PXMIPSInstructionJumpRegister(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
 {
-    const PXSize vadress = pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID] - 0x10000; // Why ??
-    
-    const PXSize validAdress = 0 == (0b11 & vadress); // Must be word alligned!
+    const PXSize adressVirtual = pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID];
+    const PXSize adressPhysical = adressVirtual - (PXSize)pxMIPSProcessor->ROMOffsetVirtual;
+
+    const PXSize validAdress = 0 == (0b11 & adressVirtual); // Must be word alligned!
     
     if(!validAdress)
     {
         DebugBreak();
     }
 
-    PXSize offset = vadress - (PXSize)pxMIPSProcessor->ROMOffsetVirtual;
+    PXMIPSInstructionExecuteDeleay(pxMIPSProcessor);
 
 #if PXLogEnable
     PXLogPrint
     (
         PXLoggingInfo,
-        "MIPS",
+        PXMIPSProcessorName,
         "Jump Register",
-        "Jump to %8.8X (offset:%i)",
-        vadress,
-        offset
+        "Jump to 0x%8.8X (offset:%i)",
+        adressVirtual,
+        adressPhysical
     );
 #endif
-    pxMIPSProcessor->ProgramCounter = offset;
-
-    // jumped = 1;
+    pxMIPSProcessor->ProgramCounter = adressPhysical;
 
     pxMIPSTInstruction->IncrmentCounter = PXFalse; // Skip the +4 offset
 }
@@ -1815,22 +1951,42 @@ void PXAPI PXMIPSInstructionDoublewordShiftRightArithmeticPlus32(PXMIPSProcessor
 
  void PXAPI PXMIPSInstructionBranchOnLessThanZeroAndLink(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
 {
-     DebugBreak();
+     PXMIPSBranch pxMIPSBranch;
+     pxMIPSBranch.Mode = PXMIPSBranchLessThanZero;
+     pxMIPSBranch.Likely = PXFalse;
+     pxMIPSBranch.CompareToRegister = PXTrue;
+
+     PXMIPSBranchCalc(pxMIPSProcessor, pxMIPSTInstruction, &pxMIPSBranch);
 }
 
  void PXAPI PXMIPSInstructionBranchOnGreaterThanOrEqualToZeroAndLink(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
 {
-     DebugBreak();
+     PXMIPSBranch pxMIPSBranch;
+     pxMIPSBranch.Mode = PXMIPSBranchLessThanOrEqualZero;
+     pxMIPSBranch.Likely = PXFalse;
+     pxMIPSBranch.CompareToRegister = PXTrue;
+
+     PXMIPSBranchCalc(pxMIPSProcessor, pxMIPSTInstruction, &pxMIPSBranch);
 }
 
  void PXAPI PXMIPSInstructionBranchOnLessThanZeroAndLinkLikely(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
 {
-     DebugBreak();
+     PXMIPSBranch pxMIPSBranch;
+     pxMIPSBranch.Mode = PXMIPSBranchLessThanZero;
+     pxMIPSBranch.Likely = PXTrue;
+     pxMIPSBranch.CompareToRegister = PXTrue;
+
+     PXMIPSBranchCalc(pxMIPSProcessor, pxMIPSTInstruction, &pxMIPSBranch);
 }
 
  void PXAPI PXMIPSInstructionBranchOnGreaterThanOrEqualToZeroAndLinkLikely(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
 {
-     DebugBreak();
+     PXMIPSBranch pxMIPSBranch;
+     pxMIPSBranch.Mode = PXMIPSBranchLessThanOrEqualZero;
+     pxMIPSBranch.Likely = PXTrue;
+     pxMIPSBranch.CompareToRegister = PXTrue;
+
+     PXMIPSBranchCalc(pxMIPSProcessor, pxMIPSTInstruction, &pxMIPSBranch);
 }
 
  void PXAPI PXMIPSInstructionMoveWordFromFPUCoprocessor1(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
@@ -1866,11 +2022,11 @@ void PXAPI PXMIPSInstructionDoublewordShiftRightArithmeticPlus32(PXMIPSProcessor
      const PXBool b = 0 == (0b01 == pxMIPSProcessor->RegisterFloat[PXMIPSRegisterFT]);
 
 
-#if PXLogEnable && 1
+#if PXLogEnable
      PXLogPrint
      (
          PXLoggingInfo,
-         "MIPS",
+         PXMIPSProcessorName,
          "Coprocessor-1",
          "--"
      );
@@ -1883,12 +2039,49 @@ void PXAPI PXMIPSInstructionDoublewordShiftRightArithmeticPlus32(PXMIPSProcessor
      DebugBreak();
  }
 
+ void PXAPI PXMIPSInstructionMoveControlWordFromCoprocessorZ(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+ {
+     PXMIPSCoProcessor* const pxMIPSCoProcessor = &pxMIPSProcessor->CoProcessor[pxMIPSTInstruction->CoProcessorID];
+
+     if(pxMIPSTInstruction->CoProcessorID == 0) // This instruction is not valid for CP0
+     {
+         DebugBreak();
+     }
+
+     pxMIPSCoProcessor->RegisterList[pxMIPSTInstruction->RegisterDestinationID] = pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterTargetID];
+ }
+
  void PXAPI PXMIPSInstructionMoveToSystemControlCoprocessor(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
  {
-     DebugBreak();
+     PXMIPSCoProcessor* const pxMIPSCoProcessor = &pxMIPSProcessor->CoProcessor[pxMIPSTInstruction->CoProcessorID];
+
+     if(!pxMIPSCoProcessor->Enabled)
+     {
+         DebugBreak();
+     }
+
+     // The contents of general purpose register rt are loaded into general purpose register rd of CP0.
+     pxMIPSCoProcessor->RegisterList[pxMIPSTInstruction->RegisterDestinationID] = pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterTargetID];
  }
 
  void PXAPI PXMIPSInstructionDoublewordMoveToSystemControlCoprocessor(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
  {
      DebugBreak();
+ }
+
+ void PXAPI PXMIPSInstructionMoveControlToCoprocessorZ(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+ {
+     PXMIPSCoProcessor* const pxMIPSCoProcessor = &pxMIPSProcessor->CoProcessor[pxMIPSTInstruction->CoProcessorID];
+
+     if(pxMIPSTInstruction->CoProcessorID == 0) // This instruction is not valid for CP0
+     {
+         DebugBreak();
+     }
+
+     if(!pxMIPSCoProcessor->Enabled)
+     {
+         DebugBreak();
+     }
+
+     pxMIPSCoProcessor->RegisterList[pxMIPSTInstruction->RegisterDestinationID] = pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterTargetID];
  }
