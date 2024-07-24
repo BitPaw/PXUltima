@@ -404,6 +404,7 @@
     <ClCompile Include="OS\Graphic\OpenGL\PXOpenGL.c" />
     <ClCompile Include="OS\Graphic\Vulcan\PXVulcan.c" />
     <ClCompile Include="OS\Hardware\PXHardDrive.c" />
+    <ClCompile Include="OS\Hardware\PXVideo.c" />
     <ClCompile Include="OS\Library\PXLibrary.c" />
     <ClCompile Include="OS\Memory\PXMemory.c" />
     <ClCompile Include="OS\Hardware\PXProcessor.c" />
@@ -567,6 +568,7 @@
     <ClInclude Include="OS\Graphic\OpenGL\PXOpenGL.h" />
     <ClInclude Include="OS\Graphic\Vulcan\PXVulcan.h" />
     <ClInclude Include="OS\Hardware\PXHardDrive.h" />
+    <ClInclude Include="OS\Hardware\PXVideo.h" />
     <ClInclude Include="OS\Library\PXLibrary.h" />
     <ClInclude Include="OS\Memory\PXMemory.h" />
     <ClInclude Include="OS\Hardware\PXProcessor.h" />

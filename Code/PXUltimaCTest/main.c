@@ -89,10 +89,16 @@ void PXTextMatchTest()
 #include "Window/PXWindowTest.h"
 
 #include <OS/Hardware/PXHardware.h>
+#include <OS/Hardware/PXVideo.h>
 
 int main()
 {
 	PXConsoleWrite(0, "[i] Starting testing...\n");
+
+
+	PXVideoCaptureDeviceList();
+
+
 
 
 

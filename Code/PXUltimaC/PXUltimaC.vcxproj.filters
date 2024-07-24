@@ -498,6 +498,9 @@
     <ClCompile Include="Media\MIPS\PXMIPS.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="OS\Hardware\PXVideo.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm\KalmanFilter\PXKalmanFilter.h">
@@ -981,6 +984,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Media\MIPS\PXMIPS.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="OS\Hardware\PXVideo.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
