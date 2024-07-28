@@ -2533,6 +2533,17 @@ PXSpriteCreateInfo;
 
 
 
+typedef struct PXTimerCreateInfo_
+{
+	void* Owner;
+	void* CallBack;
+	PXSize TimeDeltaTarget;
+}
+PXTimerCreateInfo;
+
+
+
+
 typedef struct PXImageCreateInfo_
 {
 	// if no filepath exists, use this data
@@ -2629,6 +2640,7 @@ typedef struct PXResourceCreateInfo_
 		PXModelCreateInfo Model;
 		PXHitboxCreateInfo HitBox;
 		PXBrushCreateInfo Brush;
+		PXTimerCreateInfo Timer;
 	};
 }
 PXResourceCreateInfo;
@@ -2648,6 +2660,27 @@ typedef struct PXTextureActionInfo_
 }
 PXGraphicTexturInfo;
 
+// KeyFrame, info about each animated frame
+typedef struct PXSpriteAnimatorTimeStamp_
+{
+	PXTexture2D* Texture;
+	float DeltaTime; // The time until we swap to the next screen
+}
+PXSpriteAnimatorTimeStamp;
+
+#define PXSpriteAnimatorPlayOnce (1 << 0)
+
+// Object to handle a sprite animation by switching the attached texture
+typedef struct PXSpriteAnimator_
+{
+	PXSprite* SpriteTarget;
+	
+	PXSpriteAnimatorTimeStamp* TimeStampList;
+	PXSize TimeStampAmount;
+
+	PXInt32U Flags;
+}
+PXSpriteAnimator;
 
 
 

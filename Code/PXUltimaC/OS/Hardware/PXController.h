@@ -30,8 +30,8 @@ typedef struct PXController_
 	PXInt32U ID;
 
 	PXInt32S Axis[6];  // X,Y,Z,R,U,V
-	PXInt32U AxisMin[6];
-	PXInt32U AxisMax[6];
+	PXInt32S AxisMin[6];
+	PXInt32S AxisMax[6];
 
 	float AxisNormalised[6];
 

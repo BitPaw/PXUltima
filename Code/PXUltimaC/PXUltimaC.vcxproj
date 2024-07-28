@@ -297,6 +297,7 @@
     <ClCompile Include="Media\N64\PXN64.c" />
     <ClCompile Include="Media\PXLevel\PXLevel.c" />
     <ClCompile Include="Media\Salsa20\PXSalsa20.c" />
+    <ClCompile Include="OS\Async\PXThreadPool.c" />
     <ClCompile Include="OS\Graphic\DirectX\PXDirectX10.c" />
     <ClCompile Include="OS\Graphic\DirectX\PXDirectX11.c" />
     <ClCompile Include="OS\Graphic\DirectX\PXDirectX12.c" />
@@ -461,6 +462,7 @@
     <ClInclude Include="Media\N64\PXN64.h" />
     <ClInclude Include="Media\PXLevel\PXLevel.h" />
     <ClInclude Include="Media\Salsa20\PXSalsa20.h" />
+    <ClInclude Include="OS\Async\PXThreadPool.h" />
     <ClInclude Include="OS\Graphic\DirectX\PXDirectX10.h" />
     <ClInclude Include="OS\Graphic\DirectX\PXDirectX11.h" />
     <ClInclude Include="OS\Graphic\DirectX\PXDirectX12.h" />

@@ -1191,6 +1191,13 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                 pxEngineTimer->Info.ID = PXResourceManagerGenerateUniqeID(pxResourceManager);
                 PXDictionaryAdd(&pxResourceManager->TimerLookUp, &pxEngineTimer->Info.ID, pxEngineTimer);
 
+
+                pxEngineTimer->Owner = pxEngineTimer->Owner;
+                pxEngineTimer->CallBack = pxEngineTimer->CallBack;
+                pxEngineTimer->TimeDeltaTarget = pxEngineTimer->TimeDeltaTarget;
+
+
+
 #if PXLogEnable
                 PXLogPrint
                 (

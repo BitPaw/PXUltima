@@ -501,6 +501,9 @@
     <ClCompile Include="OS\Hardware\PXVideo.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="OS\Async\PXThreadPool.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm\KalmanFilter\PXKalmanFilter.h">
@@ -987,6 +990,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="OS\Hardware\PXVideo.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="OS\Async\PXThreadPool.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
