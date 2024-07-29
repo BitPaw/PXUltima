@@ -300,19 +300,20 @@ typedef enum PXResourceType_
 	//-----------------------------------------------------
 	// Resource Level 2 - Context spesific
 	//-----------------------------------------------------
-	PXResourceTypeTexture2D = PXInt32Make('T', 'X', '2', 'D'), // Texture to render on a surface
-	PXResourceTypeTextureCube = PXInt32Make('T', 'X', 'C', 'U'),
-	PXResourceTypeShaderProgram = PXInt32Make('S', 'H', 'A', 'D'),
-	PXResourceTypeSkybox = PXInt32Make('S', 'K', 'Y', 'B'),
-	PXResourceTypeSprite = PXInt32Make('S', 'P', 'R', 'I'),
-	PXResourceTypeText = PXInt32Make('T', 'E', 'X', 'T'),
-	PXResourceTypeTimer = PXInt32Make('T', 'I', 'M', 'E'),
-	PXResourceTypeEngineSound = PXInt32Make('E', 'S', 'N', 'D'),
-	PXResourceTypeGUIElement = PXInt32Make('G', 'U', 'I', 'E'),
-	PXResourceTypeHitBox = PXInt32Make('H', 'B', 'O', 'X'),
-	PXResourceTypeMaterialList = PXInt32Make('M', 'L', 'I', 'S'),
-	PXResourceTypeCodeDocument = PXInt32Make('C', 'O', 'D', 'E'),
-	PXResourceTypeDocument = PXInt32Make('D', 'O', 'C', 'U'),
+	PXResourceTypeTexture2D			= PXInt32Make('T', 'X', '2', 'D'), // Texture to render on a surface
+	PXResourceTypeTextureCube		= PXInt32Make('T', 'X', 'C', 'U'),
+	PXResourceTypeShaderProgram		= PXInt32Make('S', 'H', 'A', 'D'),
+	PXResourceTypeSkybox			= PXInt32Make('S', 'K', 'Y', 'B'),
+	PXResourceTypeSprite			= PXInt32Make('S', 'P', 'R', 'I'),
+	PXResourceTypeSpriteAnimator	= PXInt32Make('S', 'A', 'N', 'I'),
+	PXResourceTypeText				= PXInt32Make('T', 'E', 'X', 'T'),
+	PXResourceTypeTimer				= PXInt32Make('T', 'I', 'M', 'E'),
+	PXResourceTypeEngineSound		= PXInt32Make('E', 'S', 'N', 'D'),
+	PXResourceTypeGUIElement		= PXInt32Make('G', 'U', 'I', 'E'),
+	PXResourceTypeHitBox			= PXInt32Make('H', 'B', 'O', 'X'),
+	PXResourceTypeMaterialList		= PXInt32Make('M', 'L', 'I', 'S'),
+	PXResourceTypeCodeDocument		= PXInt32Make('C', 'O', 'D', 'E'),
+	PXResourceTypeDocument			= PXInt32Make('D', 'O', 'C', 'U'),
 	PXResourceTypeBinary,
 	PXResourceTypeStructuredText, //
 	PXResourceTypeInstaller = PXInt32Make('I', 'N', 'S', 'T'), // compressed executable
@@ -447,6 +448,7 @@ typedef struct PXResourceManager_
 	PXDictionary SkyBoxLookUp;
 	PXDictionary ShaderProgramLookup;
 	PXDictionary GUIElementLookup;
+	PXDictionary SpriteAnimator;
 
 	struct PXShaderProgram_* ShaderFailback;
 	struct PXModel_* ModelFailback;
@@ -1944,6 +1946,8 @@ typedef struct PXGUIElementCreateInfo_
 PXGUIElementCreateInfo;
 
 
+
+
 PXPublic void PXAPI PXUIElementPositionCalculcate(PXGUIElement* const pxGUIElement, PXUIElementPositionCalulcateInfo* const pxUIElementPositionCalulcateInfo);
 
 
@@ -2492,7 +2496,7 @@ typedef struct PXHitboxCreateInfo_
 	PXHitBox* HitBox;
 
 	// Mode
-	PXInt32U Flags;
+	PXInt32U Behaviour;
 
 	PXModel* Model;
 }
@@ -2606,6 +2610,55 @@ PXModelCreateInfo;
 
 
 
+typedef struct PXTextureActionInfo_
+{
+	void** TextureReference;
+	PXSize Amount;
+	PXGraphicTextureType Type;
+	PXResourceAction Action;
+}
+PXGraphicTexturInfo;
+
+// KeyFrame, info about each animated frame
+typedef struct PXSpriteAnimatorTimeStamp_
+{
+	PXTexture2D* Texture;
+	float DeltaTime; // The time until we swap to the next screen
+}
+PXSpriteAnimatorTimeStamp;
+
+
+#define PXSpriteAnimatorBehaviourAnimationEnable	(1 << 0)
+#define PXSpriteAnimatorBehaviourPlayOnce			(1 << 1)
+#define PXSpriteAnimatorBehaviourUseUpdateRate		(1 << 2)
+
+// Object to handle a sprite animation by switching the attached texture
+typedef struct PXSpriteAnimator_
+{
+	PXResourceInfo Info;
+
+	PXSprite* SpriteTarget;
+
+	PXInt32U LastUpdate;
+	PXInt32U RateUpdate;
+
+	PXSpriteAnimatorTimeStamp* TimeStampList;
+	PXSize TimeStampAmount;
+	PXSize TimeStampCurrent;
+}
+PXSpriteAnimator;
+
+
+// Info to create this 
+typedef struct PXSpriteAnimatorInfo_
+{
+	PXSpriteAnimatorTimeStamp* TimeStampList;
+	PXSize TimeStampAmount;
+	PXInt32U Behaviour;
+	PXSprite* SpriteTarget;
+	float UpdateRate;
+}
+PXSpriteAnimatorInfo;
 
 
 
@@ -2631,6 +2684,7 @@ typedef struct PXResourceCreateInfo_
 		PXEngineFontCreateInfo Font;
 		PXSkyBoxCreateEventInfo SkyBox;
 		PXSpriteCreateInfo Sprite;
+		PXSpriteAnimatorInfo SpriteAnimator;
 		PXEngineSoundCreateInfo Sound;
 		PXShaderProgramCreateInfo ShaderProgram;
 		PXTextureCubeCreateInfo TextureCube;
@@ -2651,36 +2705,8 @@ PXResourceCreateInfo;
 
 
 
-typedef struct PXTextureActionInfo_
-{
-	void** TextureReference;
-	PXSize Amount;
-	PXGraphicTextureType Type;
-	PXResourceAction Action;
-}
-PXGraphicTexturInfo;
 
-// KeyFrame, info about each animated frame
-typedef struct PXSpriteAnimatorTimeStamp_
-{
-	PXTexture2D* Texture;
-	float DeltaTime; // The time until we swap to the next screen
-}
-PXSpriteAnimatorTimeStamp;
 
-#define PXSpriteAnimatorPlayOnce (1 << 0)
-
-// Object to handle a sprite animation by switching the attached texture
-typedef struct PXSpriteAnimator_
-{
-	PXSprite* SpriteTarget;
-	
-	PXSpriteAnimatorTimeStamp* TimeStampList;
-	PXSize TimeStampAmount;
-
-	PXInt32U Flags;
-}
-PXSpriteAnimator;
 
 
 

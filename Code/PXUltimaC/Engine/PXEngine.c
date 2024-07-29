@@ -803,6 +803,9 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
 
     // Gameupdate
     {
+        PXEngineSpriteAnimatorUpdate(pxEngine);
+
+
         pxEngine->TimeData.CounterTimeCPU = PXTimeCounterStampGet();
         PXFunctionInvoke(pxEngine->OnGameUpdate, pxEngine->Owner, pxEngine);
         pxEngine->TimeData.CounterTimeCPU = PXTimeCounterStampGet() - pxEngine->TimeData.CounterTimeCPU;
@@ -1773,7 +1776,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
                 {
                     pxResourceCreateInfoSub[2].Type = PXResourceTypeHitBox;
                     pxResourceCreateInfoSub[2].ObjectReference = (void**)&pxSprite->HitBox;
-                    pxResourceCreateInfoSub[2].HitBox.Flags = 0;
+                    pxResourceCreateInfoSub[2].HitBox.Behaviour = 0;
                     pxResourceCreateInfoSub[2].HitBox.Model = pxSprite->Model;
 
                     // pxResourceCreateInfo->HitBox.HitBox = pxSprite->HitBox;
@@ -2844,4 +2847,83 @@ PXActionResult PXAPI PXEngineSpriteTextureSet(PXEngine* const pxEngine, PXSprite
 #endif
 
     return PXActionSuccessful;
+}
+
+void PXAPI PXEngineSpriteAnimatorUpdate(PXEngine* const pxEngine)
+{
+    PXDictionary* const spriteAnimatorList = &pxEngine->ResourceManager.SpriteAnimator;
+
+    for(PXSize index = 0; index < spriteAnimatorList->EntryAmountCurrent; ++index)
+    {
+        PXDictionaryEntry pxDictionaryEntry;
+        PXSpriteAnimator* pxSpriteAnimator = PXNull;
+
+        PXDictionaryIndex(spriteAnimatorList, index, &pxDictionaryEntry);
+
+        pxSpriteAnimator = *(PXSpriteAnimator**)pxDictionaryEntry.Value;
+
+        if(!(pxSpriteAnimator->Info.Flags & PXEngineResourceInfoEnabled))
+        {
+            continue;
+        }
+
+        const PXBool proceedAnimate = 
+            pxSpriteAnimator->TimeStampList && 
+            pxSpriteAnimator->TimeStampAmount &&
+            pxSpriteAnimator->Info.Behaviour & PXSpriteAnimatorBehaviourAnimationEnable;
+
+        if(!proceedAnimate)
+        {
+            continue;
+        }
+
+        // Get current keyframe 
+        PXSpriteAnimatorTimeStamp* const pxSpriteAnimatorTimeStamp = &pxSpriteAnimator->TimeStampList[pxSpriteAnimator->TimeStampCurrent];
+   
+        const PXInt32U delta = pxEngine->TimeData.CounterTimeLast - pxSpriteAnimator->LastUpdate;
+        const float deltaTargetms = PXTimeCounterStampToSecoundsF(delta);
+        const float tergetedDelta = pxSpriteAnimatorTimeStamp->DeltaTime;
+ 
+
+        // if time is big enough, update. Else, do nothing
+        const PXBool shalUpdate = deltaTargetms >= tergetedDelta; // pxSpriteAnimator->RateUpdate
+
+
+
+        if(!shalUpdate)
+        {          
+            continue;
+        }
+
+
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "SpriteAnimator",
+            "Updated",
+            "%8.4f / %8.4f",
+            deltaTargetms,
+            tergetedDelta
+        );
+
+
+        pxSpriteAnimator->LastUpdate = pxEngine->TimeData.CounterTimeLast;
+
+        pxSpriteAnimator->SpriteTarget->Texture = pxSpriteAnimatorTimeStamp->Texture;
+
+        ++pxSpriteAnimator->TimeStampCurrent;
+        pxSpriteAnimator->TimeStampCurrent %= pxSpriteAnimator->TimeStampAmount;
+
+        // If it ran once, check if we want to stop the animation
+        {
+            const PXBool isLastFrame = pxSpriteAnimator->TimeStampCurrent == pxSpriteAnimator->TimeStampAmount;
+            const PXBool playOnce = (pxSpriteAnimator->Info.Behaviour & PXSpriteAnimatorBehaviourPlayOnce) > 0;
+            const PXBool stopAnimation = isLastFrame && playOnce;
+
+            if(stopAnimation)
+            {
+                pxSpriteAnimator->Info.Behaviour &= ~PXSpriteAnimatorBehaviourAnimationEnable;
+            }
+        }        
+    }
 }

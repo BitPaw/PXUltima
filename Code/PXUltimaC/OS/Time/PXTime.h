@@ -65,6 +65,8 @@ PXPublic PXSize PXAPI PXTimeDelta(const PXTime* const timeA, const PXTime* const
 PXPublic PXSize PXAPI PXTimeMilliseconds(const PXTime* time);
 PXPublic PXSize PXAPI PXTimeMillisecondsDelta(const PXTime* timeA, const PXTime* timeB);
 
+float PXAPI PXTimeCounterStampToSecoundsF(const PXInt64U timestamp);
+
 PXPublic PXInt64U PXAPI PXTimeCounterStampGet();
 PXPublic PXInt64U PXAPI PXTimeCounterFrequencyGet();
 

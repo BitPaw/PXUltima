@@ -123,6 +123,22 @@ PXSize PXAPI PXTimeMillisecondsDelta(const PXTime* timeA, const PXTime* timeB)
 	return millisecondsDelta;
 }
 
+float PXAPI PXTimeCounterStampToSecoundsF(const PXInt64U timestamp)
+{
+	float result = 0;
+
+	LARGE_INTEGER frequency;
+
+	QueryPerformanceFrequency(&frequency);
+
+	result = timestamp / (float)frequency.QuadPart;
+
+	//result /= 1000.0f;
+
+	return result;
+}
+
+
 // Generates a timestamp in nanosecound space
 PXInt64U PXAPI PXTimeCounterStampGet()
 {
@@ -143,6 +159,8 @@ PXInt64U PXAPI PXTimeCounterStampGet()
 	}
 
 #elif OSWindows
+
+
 	LARGE_INTEGER largeInteger;
 	const BOOL success = QueryPerformanceCounter(&largeInteger); // Windows 2000, Kernel32.dll
 

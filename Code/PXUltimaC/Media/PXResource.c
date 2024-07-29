@@ -272,6 +272,7 @@ void PXAPI PXResourceManagerInit(PXResourceManager* const pxResourceManager)
     PXDictionaryConstruct(&pxResourceManager->ImageLookUp, sizeof(PXInt32U), sizeof(PXImage), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&pxResourceManager->BrushLookUp, sizeof(PXInt32U), sizeof(PXGUIElementBrush), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&pxResourceManager->GUIElementLookup, sizeof(PXInt32U), sizeof(PXGUIElement), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&pxResourceManager->SpriteAnimator, sizeof(PXInt32U), sizeof(PXSpriteAnimator), PXDictionaryValueLocalityExternalReference);
 }
 
 void PXAPI PXResourceManagerRelease(PXResourceManager* const pxResourceManager)
@@ -1007,6 +1008,37 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                 );
 #endif
 
+
+                // Create hitbox if requested
+                if(pxSpriteCreateEventData->HitBoxCreate)
+                {
+                    PXResourceCreateInfo pxResourceCreateInfoList[2];
+                    PXClearList(PXResourceCreateInfo, &pxResourceCreateInfoList, 2);
+
+                    // Skybox CubeTexture
+                    pxResourceCreateInfoList[0].Type = PXResourceTypeHitBox;
+                    pxResourceCreateInfoList[0].SpawnEnabled = PXTrue;
+                    pxResourceCreateInfoList[0].ObjectReference = (void**)&pxSprite->HitBox;
+                    pxResourceCreateInfoList[0].HitBox.Model = pxSprite->Model;
+                    pxResourceCreateInfoList[0].HitBox.Behaviour = 0;
+
+                    PXResourceManagerAdd(pxResourceManager, pxResourceCreateInfoList, 1);
+                }
+
+
+
+                // Scaling?
+
+
+
+
+
+
+
+
+
+
+
              
 
                // pxSprite->Model = pxResourceManager->ModelFailback;           
@@ -1423,7 +1455,8 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                 PXDictionaryAdd(&pxResourceManager->HitBoxLookUp, &pxHitBox->Info.ID, pxHitBox);
 
                 pxHitBox->Info.Flags |= PXEngineResourceInfoEnabled;
-                pxHitBox->Model = pxResourceCreateInfo->HitBox.Model;
+                pxHitBox->Info.Behaviour = pxResourceCreateInfo->HitBox.Behaviour;
+                pxHitBox->Model = pxResourceCreateInfo->HitBox.Model;           
 
 #if PXLogEnable
                 PXLogPrint
@@ -1453,6 +1486,43 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                 PXDictionaryAdd(&pxResourceManager->GUIElementLookup, &pxGUIElement->Info.ID, pxGUIElement);
 
                 pxGUIElement->Info.Flags |= PXEngineResourceInfoEnabled;
+
+                break;
+            }
+            case PXResourceTypeSpriteAnimator:
+            {
+                PXSpriteAnimatorInfo* const pxSpriteAnimatorInfo = &pxResourceCreateInfo->SpriteAnimator;
+                PXSpriteAnimator* pxSpriteAnimator = *(PXSpriteAnimator**)pxResourceCreateInfo->ObjectReference;
+
+                if(!pxSpriteAnimator)
+                {
+                    PXNewZerod(PXSpriteAnimator, &pxSpriteAnimator);
+                    *pxResourceCreateInfo->ObjectReference = pxSpriteAnimator;
+                }
+
+                pxSpriteAnimator->Info.ID = PXResourceManagerGenerateUniqeID(pxResourceManager);
+                PXDictionaryAdd(&pxResourceManager->SpriteAnimator, &pxSpriteAnimator->Info.ID, pxSpriteAnimator);
+
+                pxSpriteAnimator->Info.Flags |= PXEngineResourceInfoEnabled;
+
+                pxSpriteAnimator->Info.Behaviour = pxSpriteAnimatorInfo->Behaviour;
+                pxSpriteAnimator->SpriteTarget = pxSpriteAnimatorInfo->SpriteTarget;
+                pxSpriteAnimator->RateUpdate = pxSpriteAnimatorInfo->UpdateRate;
+                pxSpriteAnimator->TimeStampAmount = pxSpriteAnimatorInfo->TimeStampAmount;
+
+                PXNewList(PXSpriteAnimatorTimeStamp, pxSpriteAnimatorInfo->TimeStampAmount, &pxSpriteAnimator->TimeStampList, PXNull);
+                PXCopyList(PXSpriteAnimatorTimeStamp, pxSpriteAnimatorInfo->TimeStampAmount, pxSpriteAnimatorInfo->TimeStampList, pxSpriteAnimator->TimeStampList);
+
+
+#if PXLogEnable
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    "Resource",
+                    "SpriteAnimator",
+                    "OK"
+                );
+#endif
 
                 break;
             }
