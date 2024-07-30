@@ -501,6 +501,10 @@ void PXAPI PXCameraConstruct(PXCamera* const camera)
     camera->Near = -0.001;
     camera->Far = 100000;
 
+    camera->LockMovement = 0;
+    camera->LockView = 0;
+
+
     PXMatrix4x4FIdentity(&camera->MatrixModel);
     PXMatrix4x4FIdentity(&camera->MatrixView);
     PXMatrix4x4FIdentity(&camera->MatrixProjection);
@@ -576,6 +580,11 @@ void PXAPI PXCameraViewChange(PXCamera* const camera, const PXCameraPerspective 
 
 void PXAPI PXCameraRotate(PXCamera* const camera, const PXVector3F* const vector3F)
 {
+    if(camera->LockView)
+    {
+        return;
+    }
+
     const float maxValue = 85.0f;
     const float minValue = -85.0f;
 
@@ -610,6 +619,11 @@ void PXAPI PXCameraMoveXYZ(PXCamera* const camera, const float x, const float y,
 
 void PXAPI PXCameraMove(PXCamera* const camera, const PXVector3F* const vector3F)
 {
+    if(camera->LockMovement)
+    {
+        return;
+    }
+
     PXVector3F xAxis = { 0,0,0 };
     const PXVector3F yAxis = { 0, vector3F->Y, 0 };
     PXVector3F zAxis = { 0,0,0 };

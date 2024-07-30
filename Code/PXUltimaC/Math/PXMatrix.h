@@ -106,7 +106,8 @@ PXPublic void PXAPI PXMatrix4x4FScaleSet(PXMatrix4x4F* const pxMatrix4x4F, const
 PXPublic void PXAPI PXMatrix4x4FScaleSetXY(PXMatrix4x4F* const pxMatrix4x4F, const float x, const float y);
 PXPublic void PXAPI PXMatrix4x4FScaleSetXYZ(PXMatrix4x4F* const pxMatrix4x4F, const float x, const float y, const float z);
 
-PXPublic void PXAPI PXMatrix4x4FScaleGet(const PXMatrix4x4F* const matrixResult, float* const x, float* const y, float* const z);
+PXPublic void PXAPI PXMatrix4x4FScaleGet(const PXMatrix4x4F* const matrixResult, PXVector3F* const pxVector3F);
+PXPublic void PXAPI PXMatrix4x4FScaleGetXYZ(const PXMatrix4x4F* const matrixResult, float* const x, float* const y, float* const z);
 
 PXPublic void PXAPI PXMatrix4x4FOrthographic(PXMatrix4x4F* const matrix4x4F, const float left, const float right, const float bottom, const float top, const float nearPlane, const float farPlane);
 PXPublic void PXAPI PXMatrix4x4FPerspective(PXMatrix4x4F* const matrix4x4F, const float fielfOfView, const float aspectRatio, const float nearPlane, const float farPlane);

@@ -1155,6 +1155,9 @@ typedef struct PXHitBox_
 
 	PXHitBoxForm Form;
 
+	struct PXHitBox_* ColliderChild;
+	struct PXHitBox_* ColliderParent;
+
 	void* CallBackOwner;
 	PXHitBoxCollisionDetect CollisionDetectCallBack;
 }
@@ -1308,6 +1311,9 @@ typedef struct PXCamera_
 
 	float WalkSpeed;
 	float ViewSpeed;
+
+	PXBool LockMovement;
+	PXBool LockView;
 }
 PXCamera;
 
@@ -2523,14 +2529,9 @@ typedef struct PXSpriteCreateInfo_
 	PXBool ViewRotationIgnore;
 	PXBool ViewPositionIgnore;
 
-	// Extended info if we want a attached hitbox
-	PXBool HitBoxCreate;
-	PXHitboxCreateInfo HitboxData;
 
-
-
-
-
+	// If any vale is set, we will generate a hitbox
+	PXInt32U HitboxBehaviour;
 
 }
 PXSpriteCreateInfo;

@@ -3261,6 +3261,16 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
 
         float dummyValue[4] = { 1.0f,1.0f ,1.0f ,1.0f };
 
+        float* materialDiffuse = dummyValue;
+
+        if(pxModel->Mesh.IndexBuffer.SegmentPrime.Material)
+        {
+            materialDiffuse = &pxModel->Mesh.IndexBuffer.SegmentPrime.Material->Diffuse;
+        }
+
+
+
+
         PXTextCopyA("Material.Ambient", 17, pxShaderVariableList[3].Name, 64);
         pxShaderVariableList[3].Amount = 1;
         pxShaderVariableList[3].Data = dummyValue;
@@ -3268,7 +3278,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
 
         PXTextCopyA("Material.Diffuse", 17, pxShaderVariableList[4].Name, 64);
         pxShaderVariableList[4].Amount = 1;
-        pxShaderVariableList[4].Data = dummyValue;
+        pxShaderVariableList[4].Data = materialDiffuse;
         pxShaderVariableList[4].DataType = PXShaderVariableTypeFloatVector4;
 
         PXTextCopyA("Material.Specular", 18, pxShaderVariableList[5].Name, 64);

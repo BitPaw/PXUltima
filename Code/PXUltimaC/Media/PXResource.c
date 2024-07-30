@@ -1010,7 +1010,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
 
 
                 // Create hitbox if requested
-                if(pxSpriteCreateEventData->HitBoxCreate)
+                if(pxSpriteCreateEventData->HitboxBehaviour > 0)
                 {
                     PXResourceCreateInfo pxResourceCreateInfoList[2];
                     PXClearList(PXResourceCreateInfo, &pxResourceCreateInfoList, 2);

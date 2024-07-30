@@ -331,7 +331,14 @@ void PXAPI PXMatrix4x4FScaleSetXYZ(PXMatrix4x4F* const xpMatrix4x4F, const float
 	PXMatrix4x4FScaleSet(xpMatrix4x4F, &pxVector3F);
 }
 
-void PXAPI PXMatrix4x4FScaleGet(const PXMatrix4x4F* const matrixResult, float* const x, float* const y, float* const z)
+void PXAPI PXMatrix4x4FScaleGet(const PXMatrix4x4F* const matrixResult, PXVector3F* const pxVector3F)
+{
+	pxVector3F->X = matrixResult->Data[ScaleX];
+	pxVector3F->Y = matrixResult->Data[ScaleY];
+	pxVector3F->Z = matrixResult->Data[ScaleZ];
+}
+
+void PXAPI PXMatrix4x4FScaleGetXYZ(const PXMatrix4x4F* const matrixResult, float* const x, float* const y, float* const z)
 {
 	*x = matrixResult->Data[ScaleX];
 	*y = matrixResult->Data[ScaleY];

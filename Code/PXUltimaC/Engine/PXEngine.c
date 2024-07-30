@@ -7,6 +7,7 @@
 #include <Engine/Dialog/PXDialogBox.h>
 #include <Media/ADLER/PXAdler32.h>
 #include <OS/Hardware/PXProcessor.h>
+#include <Math/PXCollision.h>
 
 void PXCDECL PXEngineOnIllegalInstruction(const int signalID)
 {
@@ -739,74 +740,14 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
         pxEngine->TimeData.CounterTimeNetwork = PXTimeCounterStampGet() - pxEngine->TimeData.CounterTimeNetwork;
     }
 
-    // Timer
-    {
-        PXDictionary* const timerList = &pxEngine->ResourceManager.TimerLookUp;
-
-        for (PXSize timerIndex = 0; timerIndex < timerList->EntryAmountCurrent; ++timerIndex)
-        {
-            PXDictionaryEntry pxDictionaryEntry;
-            PXEngineTimer* pxEngineTimer = PXNull;
-
-            PXDictionaryIndex(timerList, timerIndex, &pxDictionaryEntry);
-
-            pxEngineTimer = *(PXEngineTimer**)pxDictionaryEntry.Value;
-
-            if (!(pxEngineTimer->Info.Flags & PXEngineResourceInfoEnabled))
-            {
-                continue;
-            }
-
-            // Check timing, is it time to call yet?
-            const PXInt32U timeStamp = PXTimeCounterStampGet();
-            const PXInt32U timeerDeltaTime = timeStamp - pxEngineTimer->TimeStampStart;
-            const PXBool isTimeDelayToStrong = ((PXInt32S)pxEngineTimer->TimeDeltaTarget + pxEngineTimer->TimeDelayShift) < 0;
-            const PXBool isLongEnough =
-                isTimeDelayToStrong ||
-                (timeerDeltaTime > (pxEngineTimer->TimeDeltaTarget + pxEngineTimer->TimeDelayShift));
-
-            if (isLongEnough)
-            {
-                pxEngineTimer->TimeStampStart = timeStamp;
-
-#if 1
-
-                PXText pxText;
-                PXTextConstructBufferA(&pxText, 64);
-
-                PXTextFormatTime(&pxText, timeerDeltaTime);
-
-#if PXLogEnable
-                PXLogPrint
-                (
-                    PXLoggingInfo,
-                    "PX",
-                    "Timer",
-                    "Trigger, Waited for %10s",
-                    pxText.TextA
-                );
-#endif
-
-#endif
-
-                if (pxEngineTimer->CallBack)
-                {
-                    PXEngineTimerEventInfo pxEngineTimerEventInfo;
-                    PXClear(PXEngineTimerEventInfo, &pxEngineTimerEventInfo);
-                    pxEngineTimerEventInfo.TimerReference = pxEngineTimer;
-
-                    pxEngineTimer->CallBack(pxEngine, &pxEngineTimerEventInfo);
-                }
-            }
-        }
-    }
-
     // Gameupdate
     {
-        PXEngineSpriteAnimatorUpdate(pxEngine);
-
-
         pxEngine->TimeData.CounterTimeCPU = PXTimeCounterStampGet();
+
+        PXEngineTimerUpdate(pxEngine);
+        PXEngineSpriteAnimatorUpdate(pxEngine);
+        PXEngineHitBoxHandle(pxEngine);
+  
         PXFunctionInvoke(pxEngine->OnGameUpdate, pxEngine->Owner, pxEngine);
         pxEngine->TimeData.CounterTimeCPU = PXTimeCounterStampGet() - pxEngine->TimeData.CounterTimeCPU;
     }
@@ -1772,7 +1713,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
                 pxResourceCreateInfoSub[1].Model.Form = PXModelFormRectangle;
 
                 // Add hibox if needed
-                if(pxSpriteCreateEventData->HitBoxCreate)
+                if(pxSpriteCreateEventData->HitboxBehaviour > 0)
                 {
                     pxResourceCreateInfoSub[2].Type = PXResourceTypeHitBox;
                     pxResourceCreateInfoSub[2].ObjectReference = (void**)&pxSprite->HitBox;
@@ -1812,7 +1753,10 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
                 aspectScaling.Y * pxSpriteCreateEventData->Scaling.Y
             );
 
-     
+            if(pxSpriteCreateEventData->HitboxBehaviour > 0)
+            {
+                pxSprite->HitBox->Model = pxSprite->Model;
+            }
 
             break;
         }
@@ -2716,6 +2660,38 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
             pxRenderEntity.Texture2DOverride = pxSprite->Texture;
             pxRenderEntity.MaterialOverride = pxSprite->Material;
 
+
+#if 1 // if show hitbox
+            if(pxSprite->HitBox)
+            {
+                if(pxSprite->HitBox->ColliderChild)
+                {
+                    pxSprite->Material->Diffuse[0] = 0.0f;
+                    pxSprite->Material->Diffuse[1] = 1.0f;
+                    pxSprite->Material->Diffuse[2] = 0.0f;
+                    pxSprite->Material->Diffuse[3] = 1.0f;
+                }
+                else if(pxSprite->HitBox->ColliderParent)
+                {
+                    pxSprite->Material->Diffuse[0] = 1.0f;
+                    pxSprite->Material->Diffuse[1] = 1.0f;
+                    pxSprite->Material->Diffuse[2] = 0.0f;
+                    pxSprite->Material->Diffuse[3] = 1.0f;
+                }
+                else
+                {
+                    pxSprite->Material->Diffuse[0] = 0.0f;
+                    pxSprite->Material->Diffuse[1] = 0.5f;
+                    pxSprite->Material->Diffuse[2] = 0.5f;
+                    pxSprite->Material->Diffuse[3] = 1.0f;
+                }
+            }
+
+     
+
+
+#endif
+
            PXEngineResourceRender(pxEngine, &pxRenderEntity);
         }
     }
@@ -2849,6 +2825,68 @@ PXActionResult PXAPI PXEngineSpriteTextureSet(PXEngine* const pxEngine, PXSprite
     return PXActionSuccessful;
 }
 
+void PXAPI PXEngineTimerUpdate(PXEngine* const pxEngine)
+{
+    PXDictionary* const timerList = &pxEngine->ResourceManager.TimerLookUp;
+
+    for(PXSize timerIndex = 0; timerIndex < timerList->EntryAmountCurrent; ++timerIndex)
+    {
+        PXDictionaryEntry pxDictionaryEntry;
+        PXEngineTimer* pxEngineTimer = PXNull;
+
+        PXDictionaryIndex(timerList, timerIndex, &pxDictionaryEntry);
+
+        pxEngineTimer = *(PXEngineTimer**)pxDictionaryEntry.Value;
+
+        if(!(pxEngineTimer->Info.Flags & PXEngineResourceInfoEnabled))
+        {
+            continue;
+        }
+
+        // Check timing, is it time to call yet?
+        const PXInt32U timeStamp = PXTimeCounterStampGet();
+        const PXInt32U timeerDeltaTime = timeStamp - pxEngineTimer->TimeStampStart;
+        const PXBool isTimeDelayToStrong = ((PXInt32S)pxEngineTimer->TimeDeltaTarget + pxEngineTimer->TimeDelayShift) < 0;
+        const PXBool isLongEnough =
+            isTimeDelayToStrong ||
+            (timeerDeltaTime > (pxEngineTimer->TimeDeltaTarget + pxEngineTimer->TimeDelayShift));
+
+        if(isLongEnough)
+        {
+            pxEngineTimer->TimeStampStart = timeStamp;
+
+#if 1
+
+            PXText pxText;
+            PXTextConstructBufferA(&pxText, 64);
+
+            PXTextFormatTime(&pxText, timeerDeltaTime);
+
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "PX",
+                "Timer",
+                "Trigger, Waited for %10s",
+                pxText.TextA
+            );
+#endif
+
+#endif
+
+            if(pxEngineTimer->CallBack)
+            {
+                PXEngineTimerEventInfo pxEngineTimerEventInfo;
+                PXClear(PXEngineTimerEventInfo, &pxEngineTimerEventInfo);
+                pxEngineTimerEventInfo.TimerReference = pxEngineTimer;
+
+                pxEngineTimer->CallBack(pxEngine, &pxEngineTimerEventInfo);
+            }
+        }
+    }
+}
+
 void PXAPI PXEngineSpriteAnimatorUpdate(PXEngine* const pxEngine)
 {
     PXDictionary* const spriteAnimatorList = &pxEngine->ResourceManager.SpriteAnimator;
@@ -2926,4 +2964,185 @@ void PXAPI PXEngineSpriteAnimatorUpdate(PXEngine* const pxEngine)
             }
         }        
     }
+}
+
+void PXAPI PXEngineHitBoxHandleAvsB(PXEngine* const pxEngine, PXHitBox* const hitBoxA, PXHitBox* const hitBoxB)
+{
+    PXVector3F positionA;
+    PXVector3F positionB;
+    PXVector3F positionSizeA;
+    PXVector3F positionSizeB;
+
+    float boundingBox[8] =
+    {
+        -1.0f, -1.0f,
+         1.0f, -1.0f,
+         1.0f,  1.0f,
+        -1.0f,  1.0f
+    };
+
+
+    PXMatrix4x4FPositionGet(&hitBoxA->Model->ModelMatrix, &positionA);
+    PXMatrix4x4FPositionGet(&hitBoxB->Model->ModelMatrix, &positionB);
+
+    PXMatrix4x4FScaleGet(&hitBoxA->Model->ModelMatrix, &positionSizeA);
+    PXMatrix4x4FScaleGet(&hitBoxB->Model->ModelMatrix, &positionSizeB);
+
+
+    // Get boundingbox
+    {
+
+    }
+
+
+    const PXBool ss = PXCollisionAABB
+    (
+        positionA.X + -1,
+        positionA.Y + -1,
+        positionA.X + 1 * positionSizeA.X,
+        positionA.Y + 1 * positionSizeA.Y,
+        positionB.X + -1,
+        positionB.Y + -1,
+        positionB.X + 1 * positionSizeB.X,
+        positionB.Y + 1 * positionSizeB.Y
+    );
+
+
+    if(ss)
+    {
+
+        // We can add them as a linked list.
+
+        PXHitBox* inserz = hitBoxA;
+
+        while(inserz->ColliderChild)
+        {
+            inserz = inserz->ColliderChild;
+        }
+
+
+        inserz->ColliderChild = hitBoxB;
+
+
+        hitBoxB->ColliderParent = inserz;
+
+       
+
+        /*
+           PXLogPrint
+        (
+            PXLoggingInfo,
+            "HitBox",
+            "Compare",
+            "%p vs %p - COLLISION",
+            hitBoxA,
+            hitBoxB
+        );
+        
+        */
+     
+    }
+    else
+    {
+        //hitBoxA->Collider = PXNull;
+
+/*
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "HitBox",
+            "Compare",
+            "%p vs %p",
+            hitBoxA,
+            hitBoxB
+        );
+            */
+    }
+
+}
+
+void PXAPI PXEngineHitBoxHandle(PXEngine* const pxEngine)
+{
+#if 0
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "HitBox",
+        "Compare",
+        "--- START ---"
+    );
+#endif
+
+    PXDictionary* const hitboxLookup = &pxEngine->ResourceManager.HitBoxLookUp;
+
+
+
+    // Clear
+    {
+
+        for(PXSize index = 0; index < hitboxLookup->EntryAmountCurrent; ++index)
+        {
+            PXDictionaryEntry pxDictionaryEntry;
+            PXHitBox* pxHitBoxA = PXNull;
+
+            PXDictionaryIndex(hitboxLookup, index, &pxDictionaryEntry);
+
+            pxHitBoxA = *(PXHitBox**)pxDictionaryEntry.Value;
+
+            pxHitBoxA->ColliderChild = PXNull;
+            pxHitBoxA->ColliderParent = PXNull;
+        }
+    }
+
+
+
+    for(PXSize index = 0; index < hitboxLookup->EntryAmountCurrent; ++index)
+    {
+        PXDictionaryEntry pxDictionaryEntry;
+        PXHitBox* pxHitBoxA = PXNull;
+
+        PXDictionaryIndex(hitboxLookup, index, &pxDictionaryEntry);
+
+        pxHitBoxA = *(PXHitBox**)pxDictionaryEntry.Value;
+
+        if(!(pxHitBoxA->Info.Flags & PXEngineResourceInfoEnabled))
+        {
+            continue;
+        }
+
+        for(PXSize indexB = 0; indexB < hitboxLookup->EntryAmountCurrent; ++indexB)
+        {
+            PXDictionaryEntry pxDictionaryEntry;
+            PXHitBox* pxHitBoxB = PXNull;
+
+            PXDictionaryIndex(hitboxLookup, indexB, &pxDictionaryEntry);
+
+            pxHitBoxB = *(PXHitBox**)pxDictionaryEntry.Value;
+
+            if(!(pxHitBoxB->Info.Flags & PXEngineResourceInfoEnabled))
+            {
+                continue;
+            }
+
+            if(pxHitBoxA->Info.ID == pxHitBoxB->Info.ID)
+            {
+                continue;
+            }
+
+
+            PXEngineHitBoxHandleAvsB(pxEngine, pxHitBoxA, pxHitBoxB);
+
+        }
+        
+    }
+
+#if 0
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "HitBox",
+        "Compare",
+        "--- DONE ---"
+    );
+#endif
 }
