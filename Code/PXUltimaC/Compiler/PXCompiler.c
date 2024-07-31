@@ -225,6 +225,33 @@ PXSize PXAPI PXCompilerSymbolEntryMergeCurrentWithNext(PXCompiler* const pxCompi
 	return PXActionSuccessful;
 }
 
+PXSize PXAPI PXCompilerSymbolEntryMergeCurrentUntilNextLine(PXCompiler* const pxCompiler, PXCompilerSymbolEntry* const compilerSymbolEntry)
+{
+	const PXSize currentLine = compilerSymbolEntry->Line;
+	
+
+	PXCompilerSymbolEntry mergCopy;
+
+
+	PXBool isInNewLine = currentLine != mergCopy.Line;
+
+	while(!isInNewLine)
+	{
+		PXCompilerSymbolEntryPeek(&mergCopy);
+
+		isInNewLine = currentLine != mergCopy.Line;
+
+		if(!isInNewLine)
+		{
+			PXCompilerSymbolEntryMergeCurrentWithNext(pxCompiler, &mergCopy);
+		}
+	}
+
+	PXCompilerSymbolEntryPeek(&mergCopy);
+
+	return 0;
+}
+
 PXSize PXAPI PXCompilerSymbolRewind(PXCompiler* const pxCompiler, const PXSize amount)
 {
 	const PXSize totalSize =
@@ -831,7 +858,7 @@ PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler)
 
 
 
-	PXFileOpenTemporal(pxCompiler->ReadInfo.FileCache, pxCompiler->ReadInfo.FileInput->DataSize * 16);
+	PXFileOpenTemporal(pxCompiler->ReadInfo.FileCache, pxCompiler->ReadInfo.FileInput->DataSize * 20);
 
 
 	PXSize currentLine = 1;
@@ -1049,8 +1076,11 @@ PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler)
 		PXLoggingInfo,
 		"Compiler",
 		"Lexer",
-		"Finished analisis. Took %i ticks",
-		timeCounterB
+		"Finished analisis. Took %i ticks. Buffer%i/%i (%i%%)",
+		timeCounterB,
+		pxCompiler->ReadInfo.FileCache->DataCursor,
+		pxCompiler->ReadInfo.FileCache->DataAllocated,
+		(int)((pxCompiler->ReadInfo.FileCache->DataSize / (float)pxCompiler->ReadInfo.FileCache->DataAllocated) * 100)
 	);
 #endif
 
@@ -1068,8 +1098,8 @@ PXBool PXAPI PXCompilerParseStringUntilNewLine(PXCompiler* const pxCompiler, PXT
 		return PXNo;
 	}
 
-	PXInt16U line =  pxCompiler->ReadInfo.SymbolEntryCurrent.Line;
-	PXInt16U coloumStart =  pxCompiler->ReadInfo.SymbolEntryCurrent.Coloum;
+	PXSize line =  pxCompiler->ReadInfo.SymbolEntryCurrent.Line;
+	PXSize coloumStart =  pxCompiler->ReadInfo.SymbolEntryCurrent.Coloum;
 	PXSize dataBlockSize =  pxCompiler->ReadInfo.SymbolEntryCurrent.Size;
 	char* dataBlockPoint =  pxCompiler->ReadInfo.SymbolEntryCurrent.Source;
 
@@ -1077,9 +1107,19 @@ PXBool PXAPI PXCompilerParseStringUntilNewLine(PXCompiler* const pxCompiler, PXT
 	{
 		PXCompilerSymbolEntryPeek(pxCompiler);
 
-		const PXBool isDone = ( pxCompiler->ReadInfo.SymbolEntryCurrent.Line != line) || ( pxCompiler->ReadInfo.SymbolEntryCurrent.ID == PXCompilerSymbolLexerNewLine);
+		const PXBool newLine = (pxCompiler->ReadInfo.SymbolEntryCurrent.Line != line);
+		const PXBool validSymbols =
+			(pxCompiler->ReadInfo.SymbolEntryCurrent.ID == PXCompilerSymbolLexerHash) ||
+			(pxCompiler->ReadInfo.SymbolEntryCurrent.ID == PXCompilerSymbolLexerInteger) ||
+			(pxCompiler->ReadInfo.SymbolEntryCurrent.ID == PXCompilerSymbolLexerGeneric);
 
-		if (isDone)
+		const PXBool isDone = 
+			(newLine ||
+			(pxCompiler->ReadInfo.SymbolEntryCurrent.ID == PXCompilerSymbolLexerNewLine)) ||
+			!validSymbols;
+
+
+		if (newLine)
 		{
 			break;
 		}

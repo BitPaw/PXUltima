@@ -203,6 +203,10 @@ PXPrivate void PXAPI PXCompilerSymbolEntryAdd(PXCompiler* const pxCompiler, cons
 // Take current Node and merge it with the next one.
 PXPublic PXSize PXAPI PXCompilerSymbolEntryMergeCurrentWithNext(PXCompiler* const pxCompiler, PXCompilerSymbolEntry* const compilerSymbolEntry);
 
+// Merge all symbols togteher until end of line.
+// This is used for strings that can contain unexpected or illegal symbols
+PXPublic PXSize PXAPI PXCompilerSymbolEntryMergeCurrentUntilNextLine(PXCompiler* const pxCompiler, PXCompilerSymbolEntry* const compilerSymbolEntry);
+
 // rewind one symbol back
 PXPublic PXSize PXAPI PXCompilerSymbolRewind(PXCompiler* const pxCompiler, const PXSize amount);
 

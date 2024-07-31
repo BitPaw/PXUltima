@@ -2606,6 +2606,8 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
     {
         PXDictionary* const modelLookup = &pxEngine->ResourceManager.ModelLookUp;
 
+        PXShaderProgram* qqq = 0;
+
         for(PXSize i = 0; i < modelLookup->EntryAmountCurrent; ++i)
         {
             PXDictionaryEntry pxDictionaryEntry;
@@ -2620,6 +2622,7 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
                 continue;
             }
 
+
             PXClear(PXRenderEntity, &pxRenderEntity);
             pxRenderEntity.Type = PXResourceTypeModel;
             pxRenderEntity.CameraReference = pxEngine->CameraCurrent;
@@ -2627,7 +2630,19 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
             pxRenderEntity.MatrixModel = pxModel->ModelMatrix;
             pxRenderEntity.ShaderProgramReference = pxModel->ShaderProgramReference;
 
-          // PXEngineResourceRender(pxEngine, &pxRenderEntity);
+            // TODO: TEMP FIX
+            if(!qqq)
+            {
+                qqq = pxModel->ShaderProgramReference;
+            }
+            else
+            {
+                pxModel->ShaderProgramReference= qqq;
+                pxRenderEntity.ShaderProgramReference = qqq;
+            }
+
+
+            PXEngineResourceRender(pxEngine, &pxRenderEntity);
         }
     }
 

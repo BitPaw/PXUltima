@@ -331,9 +331,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
                     break;
                 }
 
-                //PXFileWriteI8U(outputStream, PXCompilerSymbolLexerString);
-               // PXFileWriteI16U(outputStream, namedElementSize);
-               // PXFileWriteA(outputStream, namedElement, namedElementSize);
+               // PXCompilerSymbolEntryMergeCurrentUntilNextLine();
 
                 switch (objPeekLine)
                 {
@@ -421,6 +419,17 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
             default: // Error
             {
                // ++errorCounter;       
+
+#if PXLogEnable
+                PXLogPrint
+                (
+                    PXLoggingError,
+                    "WaveFront",
+                    "Parsing",
+                    "Unexpected"
+                );
+#endif
+
 
                 do
                 {
