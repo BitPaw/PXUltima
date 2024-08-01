@@ -2,6 +2,10 @@
 
 #include <OS/Error/PXActionResult.h>
 
+// Linux does not have native support for threadpools.
+// To solve this, you need to create a class yourself with pthreads
+
+
 void PXAPI PXThreadPoolClose(PXThreadPool* const pxThreadPool)
 {
     CloseThreadpool(pxThreadPool->Pool);
@@ -24,7 +28,14 @@ void PXAPI PXThreadPoolCreate(PXThreadPool* const pxThreadPool)
     }
 
 
+    SetThreadpoolThreadMaximum(pool, 4);
+    SetThreadpoolThreadMinimum(pool, 4);
 
+
+    // Associate the pool with a callback environment
+    TP_CALLBACK_ENVIRON cbe;
+    InitializeThreadpoolEnvironment(&cbe);
+    SetThreadpoolCallbackPool(&cbe, pool);
 
 
 }
@@ -52,6 +63,10 @@ PXActionResult PXAPI PXThreadPoolWaitForAll(PXThreadPool* const pxThreadPool, co
 
 #if WindowsAtleastVista
     WaitForThreadpoolWorkCallbacks(pxThreadPool->Work, cancelRunning); // Windows Vista (+UWP), Kernel32.dll, threadpoolapiset.h
+
+    // Clean up
+    CloseThreadpoolWork(work);
+    CloseThreadpool(pool);
 #elif WindowsAtleastXP
 
 #endif
@@ -75,16 +90,18 @@ PXActionResult PXAPI PXThreadPoolQueueWork(PXThreadPool* const pxThreadPool, voi
 #if WindowsAtleastVista && 1
 
     // Creates a new work object.
-    pxThreadPool->Work = CreateThreadpoolWork(PXWindowsVistaPTP_WORK_CALLBACK, parameter, PXNull);
+    pxThreadPool->Work = CreateThreadpoolWork(PXWindowsVistaPTP_WORK_CALLBACK, parameter, PXNull); // 3rd Parameter -> Enviroment TP_CALLBACK_ENVIRON 
     
     PXActionOnErrorFetchAndReturn(PXNull == pxThreadPool->Work);
     
-    SubmitThreadpoolWork(pxThreadPool->Work);
+    SubmitThreadpoolWork(pxThreadPool->Work); // Queue the work
 
     PXActionOnErrorFetchAndReturn(PXNull != pxThreadPool->Work);
 
 
 
+
+    
 
 #elif WindowsAtleastXP
 
