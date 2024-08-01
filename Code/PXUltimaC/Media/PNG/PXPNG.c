@@ -14,38 +14,6 @@
 
 const char PXPNGHeaderSequenz[8] = { 0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n' };
 
-PXPNGChunkType PXAPI PXPNGChunkTypeFromID(const PXInt32U pngchunkType)
-{
-    switch (pngchunkType)
-    {
-        case PXInt32Make('I', 'H', 'D', 'R'): return PXPNGChunkImageHeader; // IHDR
-        case PXInt32Make('I', 'D', 'A', 'T'): return PXPNGChunkImageData; // PLTE
-        case PXInt32Make('I', 'E', 'N', 'D'): return PXPNGChunkImageEnd; // IEND
-        case PXInt32Make('i', 'C', 'C', 'P'): return PXPNGChunkEmbeddedICCProfile; // iCCP
-        case PXInt32Make('i', 'T', 'X', 't'): return PXPNGChunkTransparency; // tRNS
-        case PXInt32Make('s', 'B', 'I', 'T'): return PXPNGChunkSignificantBits; // sBIT
-        case PXInt32Make('s', 'R', 'G', 'B'): return PXPNGChunkStandardRGBColorSpace; // sRGB
-        case PXInt32Make('t', 'R', 'N', 'S'): return PXPNGChunkTransparency; // tRNS
-        case PXInt32Make('t', 'E', 'X', 't'): return PXPNGChunkTextualData; // tEXt
-        case PXInt32Make('t', 'I', 'M', 'E'): return PXPNGChunkLastModificationTime; // tIME
-        case PXInt32Make('P', 'L', 'T', 'E'): return PXPNGChunkPalette; // PLTE
-        case PXInt32Make('c', 'H', 'R', 'M'): return PXPNGChunkPrimaryChromaticities; // cHRM
-        case PXInt32Make('g', 'A', 'M', 'A'): return PXPNGChunkImageGamma;// gAMA
-        case PXInt32Make('b', 'K', 'G', 'D'): return PXPNGChunkBackgroundColor;// bKGD
-        case PXInt32Make('h', 'I', 'S', 'T'): return PXPNGChunkPaletteHistogram;// hIST
-        case PXInt32Make('p', 'H', 'Y', 's'): return PXPNGChunkPhysicalPixelDimensions; //pHYs
-        case PXInt32Make('s', 'P', 'L', 'T'): return PXPNGChunkSuggestedPalette;// sPLT
-        case PXInt32Make('z', 'T', 'X', 't'): return PXPNGChunkCompressedTextualData;// zTXt
-
-        default: return PXPNGChunkInvalid;
-    }
-}
-
-PXInt32U PXAPI PXPNGChunkTypeToID(const PXPNGChunkType pngchunkType)
-{
-    return 0;
-}
-
 PXPNGColorType PXAPI PXPNGColorTypeFromID(const PXInt8U colorType)
 {
     switch (colorType)
@@ -239,7 +207,7 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 
             // Check
             {
-                chunk.ChunkType = PXPNGChunkTypeFromID(chunk.ChunkID.Value);
+                chunk.ChunkType = (PXPNGChunkType)chunk.ChunkID.Value;
 
                 // Ancillary bit : bit 5 of first byte
                 // 0 (uppercase) = critical, 1 (lowercase) = ancillary.
@@ -493,12 +461,6 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
                     // Compressed text datastream 	n bytes
 
                   //  pxFile.DataCursor += chunk.Lengh;
-
-                    break;
-                }
-                case PXPNGChunkInternationalTextualData:
-                {
-                    //  pxFile.DataCursor += chunk.Lengh;
 
                     break;
                 }

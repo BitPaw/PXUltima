@@ -27,7 +27,7 @@ void PXAPI PXFlexDataCacheAdd(PXFlexDataCache* const pxFlexDataCache, const char
 
                 //PXMemoryHeapReallocate();
 
-                pxFlexDataCache->DataAdress = (char*)PXMemoryHeapRealloc(pxFlexDataCache->DataAdress, requiredSize + pxFlexDataCache->DataSizeUsed);
+                pxFlexDataCache->DataAdress = (char*)PXMemoryRealloc(pxFlexDataCache->DataAdress, requiredSize + pxFlexDataCache->DataSizeUsed);
                 pxFlexDataCache->DataSizeAllocated = requiredSize + pxFlexDataCache->DataSizeUsed;
             }
         }

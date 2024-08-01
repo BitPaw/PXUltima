@@ -179,7 +179,7 @@ PXCodeDocumentElement* PXAPI PXCodeDocumentElementAdd(PXCodeDocument* const pxDo
 	// Make sure we have enough space
 	if(pxDocument->ElementListAllocated <= (pxDocument->ElementListUsed +1))
 	{
-		pxDocument->ElementList = PXMemoryHeapRealloc(pxDocument->ElementList, sizeof(PXCodeDocumentElement) * (pxDocument->ElementListAllocated + 10));
+		pxDocument->ElementList = PXMemoryRealloc(pxDocument->ElementList, sizeof(PXCodeDocumentElement) * (pxDocument->ElementListAllocated + 10));
 
 		pxDocument->ElementListAllocated += 10;
 	}

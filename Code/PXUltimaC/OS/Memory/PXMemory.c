@@ -95,6 +95,76 @@ struct MemoryAllocationInfo
 #endif
 //-------------------------------------
 
+void* PXAPI PXMemoryMalloc(const PXSize memorySize)
+{
+	void* adress = PXNull;
+
+	if(!memorySize)
+	{
+		return PXNull;
+	}
+
+#if OSUnix || MemoryUseSystemFunction || OSForcePOSIXForWindows
+	adress = malloc(adress);
+
+	return adress;
+
+#elif OSWindows
+
+	const HANDLE heapHandle = GetProcessHeap(); // Windows 2000 SP4, Kernel32.dll, heapapi.h
+	adress = HeapAlloc(heapHandle, 0, memorySize); // Windows 2000 SP4, Kernel32.dll, heapapi.h
+
+	return adress;
+
+#else
+#error Memory allocate seems not to be supported on this OS
+#endif
+}
+
+PXBool PXAPI PXMemoryFree(const void* const adress)
+{
+	if(!adress)
+	{
+		return PXFalse;
+	}
+
+#if OSUnix || MemoryUseSystemFunction || OSForcePOSIXForWindows
+	free(adress);
+#elif OSWindows
+
+	const HANDLE heapHandle = GetProcessHeap(); // Windows 2000 SP4, Kernel32.dll, heapapi.h
+	const PXBool freeResult = HeapFree(heapHandle, 0, adress); // Windows 2000 SP4, Kernel32.dll, heapapi.h
+
+	return freeResult;
+
+#else
+#error Memory release seems not to be supported on this OS
+#endif
+}
+
+void* PXAPI PXMemoryRealloc(const void* const adress, const PXSize memorySize)
+{
+	void* newAdress = PXNull;
+
+	if(!adress)
+	{
+		return PXFalse;
+	}
+
+#if OSUnix || MemoryUseSystemFunction || OSForcePOSIXForWindows
+	newAdress = realloc(adress, memorySize);
+#elif OSWindows
+
+	const HANDLE heapHandle = GetProcessHeap(); // Windows 2000 SP4, Kernel32.dll, heapapi.h
+	newAdress = HeapReAlloc(heapHandle, 0, adress, memorySize); // Windows 2000 SP4, Kernel32.dll, heapapi.h
+
+	return newAdress;
+
+#else
+#error Memory reallocate seems not to be supported on this OS
+#endif
+}
+
 PXBool PXAPI PXMemoryScan(PXMemoryUsage* memoryUsage)
 {
 	PXMemoryClear(memoryUsage, sizeof(PXMemoryUsage));
@@ -577,26 +647,7 @@ PXActionResult PXAPI PXMemoryHeapDeallocate(PXMemoryInfo* const pxMemoryInfo)
 	PXDictionaryRemove(&_memoryAdressLookup, adress);
 #endif
 
-#if MemoryUseSystemFunction
-	//_free_dbg(*pxMemoryInfo->Data, _NORMAL_BLOCK);
-	free(*pxMemoryInfo->Data);
-#else
-
-#if OSUnix
-
-	// TODO: linux free
-
-#elif OSWindows
-	const HANDLE heapHandle = GetProcessHeap(); // Windows 2000 SP4, Kernel32.dll, heapapi.h
-	const BOOL freeResult = HeapFree(heapHandle, 0, *pxMemoryInfo->Data); // Windows 2000 SP4, Kernel32.dll, heapapi.h
-
-	if(!freeResult)
-	{
-		return PXActionFailedMemoryRelease;
-	}
-#endif
-
-#endif
+	PXMemoryFree(*pxMemoryInfo->Data);
 
 	*pxMemoryInfo->Data = PXNull;
 
@@ -607,23 +658,6 @@ PXActionResult PXAPI PXMemoryHeapDeallocate(PXMemoryInfo* const pxMemoryInfo)
 
 
 	return PXActionSuccessful;
-}
-
-void* PXAPI PXMemoryHeapRealloc(void* buffer, PXSize size)
-{
-#if 0
-	PXMemoryHeapReallocateEventData pxMemoryHeapReallocateEventData;
-	PXMemoryHeapReallocateEventDataFillType(&pxMemoryHeapReallocateEventData, PXByte, size, 0, 0, buffer);
-
-	PXMemoryHeapReallocate(&pxMemoryHeapReallocateEventData);
-
-	return pxMemoryHeapReallocateEventData.DataAdress;
-#else
-
-	return realloc(buffer, size);
-
-
-#endif
 }
 
 PXBool PXAPI PXMemoryHeapReallocate(PXMemoryHeapReallocateEventData* const pxMemoryHeapReallocateInfo)

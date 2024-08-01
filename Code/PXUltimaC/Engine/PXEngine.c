@@ -41,7 +41,7 @@ void PXAPI PXEngineWindowEvent(PXEngine* const pxEngine, PXWindowEvent* const px
 {
     switch(pxWindowEvent->Type)
     {
-        case PXWindowEventTypeResize:
+        case PXWindowEventTypeElementResize:
         {
             pxEngine->UpdateUI = PXTrue;
             break;
@@ -612,7 +612,11 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
             if(pxController->ButtonPressedBitList & PXControllerButton2) { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, 1, 0); }
 
             // Update
-            if(pxController->ButtonPressedBitList & PXControllerButton3)
+            const PXBool doUIUpdate =
+                (pxController->ButtonPressedBitList & PXControllerButton3) ||
+                (keyboard->Letters & KeyBoardIDLetterU);
+
+            if(doUIUpdate)
             {
                 PXLogPrint
                 (
@@ -625,6 +629,27 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
 
                 pxEngine->UpdateUI = 1;
             }
+
+
+            if(keyboard->Commands & KeyBoardIDShiftLeft) { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, -1, 0); }
+            if(keyboard->Letters & KeyBoardIDLetterW) { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, 0, 1); }
+            if(keyboard->Letters & KeyBoardIDLetterA) { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, -1, 0, 0); }
+            if(keyboard->Letters & KeyBoardIDLetterS) { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, 0, -1); }
+            if(keyboard->Letters & KeyBoardIDLetterD) { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, 1, 0, 0); }
+            if(keyboard->Letters & KeyBoardIDSpace) { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, 1, 0); }
+            if(keyboard->Letters & KeyBoardIDLetterF && !pxEngine->InteractionLock)
+            {
+                pxEngine->InteractionLock = PXTrue;
+                PXFunctionInvoke(pxEngine->OnInteract, pxEngine->Owner, pxEngine);
+            }
+            if(!(keyboard->Letters & KeyBoardIDLetterF))
+            {
+                pxEngine->InteractionLock = PXFalse;
+            }
+
+
+
+
 
             // If we have a target, we want to move the camera to it to track it
             if(pxEngine->CameraCurrent->Target)
@@ -650,21 +675,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
              //---------------------------------------------------------------------------
 
 
-            if(keyboard->Commands & KeyBoardIDShiftLeft) { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, -1, 0); }
-            if(keyboard->Letters & KeyBoardIDLetterW) { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, 0, 1); }
-            if(keyboard->Letters & KeyBoardIDLetterA) { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, -1, 0, 0); }
-            if(keyboard->Letters & KeyBoardIDLetterS) { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, 0, -1); }
-            if(keyboard->Letters & KeyBoardIDLetterD) { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, 1, 0, 0); }
-            if(keyboard->Letters & KeyBoardIDSpace) { PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, 1, 0); }
-            if(keyboard->Letters & KeyBoardIDLetterF && !pxEngine->InteractionLock)
-            {
-                pxEngine->InteractionLock = PXTrue;
-                PXFunctionInvoke(pxEngine->OnInteract, pxEngine->Owner, pxEngine);
-            }
-            if(!(keyboard->Letters & KeyBoardIDLetterF))
-            {
-                pxEngine->InteractionLock = PXFalse;
-            }
+          
 
 
             const PXBool hasViewChanged = mouse->Delta[0] != 0 || mouse->Delta[1] != 0;
@@ -1208,7 +1219,7 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
     {
         PXWindowUpdate(&pxEngine->GUISystem, pxEngine->Window);
 
-       // PXWindowMouseMovementEnable(pxEngine->Window->Info.WindowID);
+        PXWindowMouseMovementEnable(pxEngine->Window->Info.WindowID);
 
         PXControllerSystemInitilize(&pxEngine->ControllerSystem);
         PXControllerSystemDevicesListRefresh(&pxEngine->ControllerSystem);

@@ -288,8 +288,6 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 							//assert(pxCOFF->OptionalHeader.WindowsNT.NumberOfRvaAndSizes * 2*sizeof(PXInt32U) < pxFile->DataSize);						
 
 #if PXLogEnable && PXCOFFDebug
-							printf("RVA\n");
-
 							PXLogPrint
 							(
 								PXLoggingInfo,

@@ -74,21 +74,19 @@ typedef enum PXWindowEventType_
 {
 	PXWindowEventTypeInvalid,
 
-	PXWindowEventTypeMove,
-	PXWindowEventTypeResize,
-	PXWindowEventTypeDestroy,
-	PXWindowEventTypeClose,
-	PXWindowEventTypeCreate,
-	PXWindowEventTypeSelect,
-
-	PXWindowEventTypeClick,
+	PXWindowEventTypeElementMove,
+	PXWindowEventTypeElementResize,
+	PXWindowEventTypeElementDestroy,
+	PXWindowEventTypeElementClose,
+	PXWindowEventTypeElementCreate,
+	PXWindowEventTypeElementSelect,
+	PXWindowEventTypeElementClick,
+	PXWindowEventTypeElementFocusEnter,
+	PXWindowEventTypeElementFocusLeave,
 
 	PXWindowEventTypeInputMouseButton,
 	PXWindowEventTypeInputMouseMove,
 	PXWindowEventTypeInputKeyboard,
-
-	PXWindowEventTypeFocusEnter,
-	PXWindowEventTypeFocusLeave,
 
 
 	WindowEventActivate,

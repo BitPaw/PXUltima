@@ -369,7 +369,7 @@ static unsigned uivector_resize(uivector* p, PXSize size)
     if(allocsize > p->allocsize)
     {
         PXSize newsize = allocsize + (p->allocsize >> 1u);
-        void* data = realloc(p->data, newsize);
+        void* data = PXMemoryRealloc(p->data, newsize);
         if(data)
         {
             p->allocsize = newsize;
@@ -530,7 +530,7 @@ unsigned ucvector_reserve(ucvector* p, PXSize size)
     if(size > p->allocsize)
     {
         PXSize newsize = size + (p->allocsize >> 1u);
-        void* data = realloc(p->data, newsize);
+        void* data = PXMemoryRealloc(p->data, newsize);
         if(data)
         {
             p->allocsize = newsize;
@@ -1481,8 +1481,8 @@ unsigned deflateDynamic
     PXHuffmanTreeDestruct(&tree_ll);
     PXHuffmanTreeDestruct(&tree_d);
     PXHuffmanTreeDestruct(&tree_cl);
-    free(bitlen_lld);
-    free(bitlen_lld_e);
+    PXMemoryFree(bitlen_lld);
+    PXMemoryFree(bitlen_lld_e);
 
     pxFile->DataCursorBitOffset = writer->bp;
     pxFile->DataCursor += aaucvector.size;

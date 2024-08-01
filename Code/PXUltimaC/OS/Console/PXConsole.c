@@ -7,12 +7,7 @@
 #include <OS/File/PXFile.h>
 #include <OS/Debug/PXDebug.h>
 
-#if OSUnix || OSForcePOSIXForWindows
-#include <stdio.h>
-#endif
-
 #define PXConsoleColorEnable 1
-
 
 PXActionResult PXAPI PXConsoleTextColorSetFromID(const PXInt16U coliorID)
 {

@@ -105,7 +105,15 @@ PXActionResult PXAPI PXCanonRaw3BlockRead(PXCanonRaw3Chunk* const pxCanonRaw3Chu
 	pxCanonRaw3Chunk->PredictedFinalPosition = pxFile->DataCursor + pxCanonRaw3Chunk->SizeData;
 
 #if PXLogEnable
-	printf("[CR3] Chunk %4.4s Size:%iB\n", pxCanonRaw3Chunk->ID.Data, pxCanonRaw3Chunk->SizeTotal);
+	PXLogPrint
+	(
+		PXLoggingInfo,
+		"CanonRaw3",
+		"Parse",
+		"Chunk %4.4s Size:%iB",
+		pxCanonRaw3Chunk->ID.Data,
+		pxCanonRaw3Chunk->SizeTotal
+	);
 #endif
 
 	switch (pxCanonRaw3Chunk->ID.Value)
@@ -263,7 +271,7 @@ PXActionResult PXAPI PXCanonRaw3LoadFromFile(PXResourceLoadInfo* const pxResourc
 	PXLogPrint
 	(
 		PXLoggingInfo,
-		"CR3",
+		"CanonRaw3",
 		"Load",
 		"Start parsing..."
 	);
@@ -296,7 +304,7 @@ PXActionResult PXAPI PXCanonRaw3LoadFromFile(PXResourceLoadInfo* const pxResourc
 		PXLogPrint
 		(
 			PXLoggingInfo,
-			"CR3",
+			"CanonRaw3",
 			"Load",
 			"Boxes detected <%i>",
 			amountOfContainers
@@ -325,7 +333,7 @@ PXActionResult PXAPI PXCanonRaw3LoadFromFile(PXResourceLoadInfo* const pxResourc
 	PXLogPrint
 	(
 		PXLoggingInfo,
-		"CR3",
+		"CanonRaw3",
 		"Load",
 		"Finished parsing"
 	);

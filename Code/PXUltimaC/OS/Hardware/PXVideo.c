@@ -43,7 +43,7 @@ HRESULT WINAPI QueryInterface(IMFSourceReaderCallback* callBack, REFIID iid, voi
         { (IID*)&IID_IMFSourceReaderCallback, 0 },
         { 0 },
     };
-    return QISearch(callBack, qit, iid, ppv);
+    return QISearch(callBack, qit, iid, ppv); // Windows 2000, Shlwapi.dll, shlwapi.h
 }
 
 HRESULT WINAPI AddRef(IMFSourceReaderCallback* callBack)

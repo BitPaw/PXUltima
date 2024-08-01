@@ -16,7 +16,7 @@ typedef unsigned long PXMemoryAccessModeType;// DWORD
 #define MemoryAssertEnable 1
 #define PXMemoryDebug 1
 #define MemoryDebugLeakDetection 0
-#define MemoryUseSystemFunction 1
+#define MemoryUseSystemFunction 0
 #define MemorySanitise 0
 //----------------
 
@@ -124,8 +124,9 @@ PXMemoryHeapReallocateEventData;
 
 
 // POSIX
-
-
+PXPublic void* PXAPI PXMemoryMalloc(const PXSize memorySize);
+PXPublic PXBool PXAPI PXMemoryFree(const void* const adress);
+PXPublic void* PXAPI PXMemoryRealloc(const void* const adress, const PXSize memorySize);
 
 
 PXPublic PXBool PXAPI PXMemoryScan(PXMemoryUsage* memoryUsage);
@@ -152,9 +153,6 @@ PXPublic inline const void* PXAPI PXMemoryLocateLast(const void* const PXRestric
 
 
 
-
-
-PXPublic void* PXAPI PXMemoryHeapRealloc(void* buffer, PXSize size);
 
 PXPublic PXBool PXAPI PXMemoryHeapReallocate(PXMemoryHeapReallocateEventData* const pxMemoryHeapReallocateInfo);
 

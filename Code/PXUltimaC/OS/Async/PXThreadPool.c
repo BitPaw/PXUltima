@@ -2,19 +2,27 @@
 
 #include <OS/Error/PXActionResult.h>
 
+#include "PXThread.h"
+
+
 // Linux does not have native support for threadpools.
 // To solve this, you need to create a class yourself with pthreads
 
 
 void PXAPI PXThreadPoolClose(PXThreadPool* const pxThreadPool)
 {
+#if (OSUnix || (OSWindows && !WindowsAtleastVista))
+#elif OSWindows
     CloseThreadpool(pxThreadPool->Pool);
 
     pxThreadPool->Pool = PXNull;
+#endif
 }
 
 void PXAPI PXThreadPoolCreate(PXThreadPool* const pxThreadPool)
 {
+#if (OSUnix || (OSWindows && !WindowsAtleastVista))
+#elif OSWindows
     pxThreadPool->Pool = CreateThreadpool(PXNull);
 
     // Get stack info
@@ -34,13 +42,12 @@ void PXAPI PXThreadPoolCreate(PXThreadPool* const pxThreadPool)
     TP_CALLBACK_ENVIRON cbe;
     InitializeThreadpoolEnvironment(&cbe);
     SetThreadpoolCallbackPool(&cbe, pxThreadPool->Pool);
-
-
+#endif
 }
 
 void PXAPI PXThreadPoolThreadMaximumSet(PXThreadPool* const pxThreadPool, const PXInt32U amount)
 {
-#if OSUnix
+#if (OSUnix || (OSWindows && !WindowsAtleastVista))
 #elif OSWindows
     SetThreadpoolThreadMaximum(pxThreadPool->Pool, amount);
 #endif
@@ -48,7 +55,7 @@ void PXAPI PXThreadPoolThreadMaximumSet(PXThreadPool* const pxThreadPool, const 
 
 void PXAPI PXThreadPoolThreadMinimumSet(PXThreadPool* const pxThreadPool, const PXInt32U amount)
 {
-#if OSUnix
+#if (OSUnix || (OSWindows && !WindowsAtleastVista))
 #elif OSWindows
     const PXBool x = SetThreadpoolThreadMinimum(pxThreadPool->Pool, amount);
 #endif
@@ -56,18 +63,14 @@ void PXAPI PXThreadPoolThreadMinimumSet(PXThreadPool* const pxThreadPool, const 
 
 PXActionResult PXAPI PXThreadPoolWaitForAll(PXThreadPool* const pxThreadPool, const PXBool cancelRunning)
 {
-#if OSUnix
+#if (OSUnix || (OSWindows && !WindowsAtleastVista))
 #elif OSWindows
 
-#if WindowsAtleastVista
     WaitForThreadpoolWorkCallbacks(pxThreadPool->Work, cancelRunning); // Windows Vista (+UWP), Kernel32.dll, threadpoolapiset.h
 
     // Clean up
     CloseThreadpoolWork(pxThreadPool->Work);
     CloseThreadpool(pxThreadPool->Pool);
-#elif WindowsAtleastXP
-
-#endif
 
 #endif
 }
@@ -82,10 +85,8 @@ void NTAPI PXWindowsVistaPTP_WORK_CALLBACK(PTP_CALLBACK_INSTANCE Instance, PVOID
 
 PXActionResult PXAPI PXThreadPoolQueueWork(PXThreadPool* const pxThreadPool, void* function, void* parameter)
 {
-#if OSUnix
+#if (OSUnix || (OSWindows && !WindowsAtleastVista))
 #elif OSWindows
-
-#if WindowsAtleastVista && 1
 
     // Creates a new work object.
     pxThreadPool->Work = CreateThreadpoolWork(PXWindowsVistaPTP_WORK_CALLBACK, parameter, PXNull); // 3rd Parameter -> Enviroment TP_CALLBACK_ENVIRON 
@@ -99,19 +100,17 @@ PXActionResult PXAPI PXThreadPoolQueueWork(PXThreadPool* const pxThreadPool, voi
 
 
 
-    
+    /*
 
 #elif WindowsAtleastXP
 
     // Debricated since Vista
     const PXBool result = QueueUserWorkItem((LPTHREAD_START_ROUTINE)function, parameter, WT_EXECUTEDEFAULT); // Windows XP, Kernel32.dll, threadpoollegacyapiset.h 
 
-#endif
-
-
-
+#endif */
 
 #endif
+
 
 
 

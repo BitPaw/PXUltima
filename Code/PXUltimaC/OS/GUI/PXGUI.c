@@ -145,7 +145,7 @@ void PXAPI PXWindowEventConsumer(PXGUISystem* const pxGUISystem, PXWindowEvent* 
 
     switch(pxWindowEvent->Type)
     {
-        case PXWindowEventTypeClick:
+        case PXWindowEventTypeElementClick:
         {
             PXLogPrint
             (
@@ -158,7 +158,7 @@ void PXAPI PXWindowEventConsumer(PXGUISystem* const pxGUISystem, PXWindowEvent* 
 
             break;
         }
-        case PXWindowEventTypeSelect:
+        case PXWindowEventTypeElementSelect:
         {
             PXLogPrint
             (
@@ -169,7 +169,7 @@ void PXAPI PXWindowEventConsumer(PXGUISystem* const pxGUISystem, PXWindowEvent* 
             );
             break;
         }
-        case PXWindowEventTypeDestroy:
+        case PXWindowEventTypeElementDestroy:
         {
 
            // window->IsRunning = PXFalse;
@@ -177,9 +177,9 @@ void PXAPI PXWindowEventConsumer(PXGUISystem* const pxGUISystem, PXWindowEvent* 
             break;
         }
 
-        case PXWindowEventTypeMove:
+        case PXWindowEventTypeElementMove:
         {
-#if PXLogEnable
+#if PXLogEnable && 0
             PXLogPrint
             (
                 PXLoggingEvent,
@@ -191,7 +191,7 @@ void PXAPI PXWindowEventConsumer(PXGUISystem* const pxGUISystem, PXWindowEvent* 
 
             break;
         }
-        case PXWindowEventTypeResize:
+        case PXWindowEventTypeElementResize:
         {
             PXWindowEventResize* const pxWindowEventResize = &pxWindowEvent->Resize;
 
@@ -667,7 +667,7 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
         }
         case WM_DESTROY:
         {
-            pxWindowEvent.Type = PXWindowEventTypeDestroy;
+            pxWindowEvent.Type = PXWindowEventTypeElementDestroy;
 
             PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
 
@@ -675,7 +675,7 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
         }
         case WM_MOVE:
         {
-            pxWindowEvent.Type = PXWindowEventTypeMove;
+            pxWindowEvent.Type = PXWindowEventTypeElementMove;
 
             PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
 
@@ -683,7 +683,7 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
         }
         case WM_SIZE:
         {
-            pxWindowEvent.Type = PXWindowEventTypeResize;
+            pxWindowEvent.Type = PXWindowEventTypeElementResize;
             pxWindowEvent.Resize.Width = LOWORD(lParam);
             pxWindowEvent.Resize.Height = HIWORD(lParam);
 
@@ -693,7 +693,7 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
         }
         case WM_CLOSE:
         {
-            pxWindowEvent.Type = PXWindowEventTypeClose;
+            pxWindowEvent.Type = PXWindowEventTypeElementClose;
             pxWindowEvent.Close.CommitToClose = PXTrue;
 
             PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
@@ -767,7 +767,7 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
                     pxWindowEvent.UIElementReference = pxTreeViewContainer;
                     pxWindowEvent.UIElementSender = pxTreeViewItem;
 
-                    pxWindowEvent.Type = PXWindowEventTypeSelect;
+                    pxWindowEvent.Type = PXWindowEventTypeElementSelect;
                     pxWindowEvent.Select.UIElementSelected = pxTreeViewItem;
 
                     PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
@@ -1224,14 +1224,14 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
                         &rawInputSize,
                         sizeof(RAWINPUTHEADER)
                     );
-                    const PXBool sucessful = result == 0;
+                    const PXBool sucessful = result != -1;
 
                     if(sucessful)
                     {
 #if UseRawMouseData
-                        if(rawInput.header.dwType == RIM_TYPEMOUSE)
+                        if(RIM_TYPEMOUSE == rawInput.header.dwType)
                         {
-                            pxWindowEvent.Type = PXWindowEventTypeMove;
+                            pxWindowEvent.Type = PXWindowEventTypeInputMouseMove;
                             pxWindowEvent.InputMouseMove.AxisX = 0;
                             pxWindowEvent.InputMouseMove.AxisY = 0;
                             pxWindowEvent.InputMouseMove.DeltaX = rawInput.data.mouse.lLastX;
@@ -1289,7 +1289,7 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
                // ShowWindow(pxGUIElement->ID, SW_HIDE);
             }
 
-            pxWindowEvent.Type = PXWindowEventTypeClick;
+            pxWindowEvent.Type = PXWindowEventTypeElementClick;
             pxWindowEvent.UIElementSender = pxGUIElement;
 
             PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);

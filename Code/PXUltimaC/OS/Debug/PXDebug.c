@@ -391,7 +391,9 @@ void PXAPI PXDebugStackTrace(PXDebug* const pxDebug)
 	//stackFrame.AddrFrame.Offset = contextRecord.Ebp;
 	//stackFrame.AddrFrame.Mode = AddrModeFlat;
 
-#if PXLogEnable
+	// TODO: FIX
+
+#if PXLogEnable && 0
 	printf("+");
 
 	for (size_t i = 0; i < 57; i++)
@@ -462,7 +464,7 @@ void PXAPI PXDebugStackTrace(PXDebug* const pxDebug)
 		const PXUnDecorateSymbolName pxUnDecorateSymbolName = pxDebug->XUnDecorateSymbolName;
 		const DWORD  decResultSize = pxUnDecorateSymbolName(pxMSDebugSymbol.Symbol.Name, (PSTR)nameBuffer, nameBufferSize, UNDNAME_COMPLETE);
 
-#if PXLogEnable
+#if PXLogEnable && 0
 #if 0
 		printf
 		(
@@ -487,7 +489,9 @@ void PXAPI PXDebugStackTrace(PXDebug* const pxDebug)
 #endif
 	}
 
-#if PXLogEnable
+	// TODO: FIX
+
+#if PXLogEnable && 0
 	printf("+");
 
 	for (size_t i = 0; i < 57; i++)
@@ -758,7 +762,15 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
 			const PXActionResult res = PXFileName(&file, &pxText);
 
 #if PXLogEnable 
-			printf("[PXDebuger] Process (%i) create : %s\n", debugEvent.dwProcessId, pxText.TextA);
+			PXLogPrint
+			(
+				PXLoggingEvent,
+				"Debugger",
+				"Exception",
+				"Process (%i) create : %s",
+				debugEvent.dwProcessId,
+				pxText.TextA
+			);
 #endif
 
 			break;
@@ -779,7 +791,14 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
 			const EXIT_PROCESS_DEBUG_INFO* const exitProcessDebugInfo = &debugEvent.u.ExitProcess;
 
 #if PXLogEnable 
-			printf("[PXDebuger] Exit process <%i>\n", exitProcessDebugInfo->dwExitCode);
+			PXLogPrint
+			(
+				PXLoggingEvent,
+				"Debugger",
+				"Exception",
+				"Exit process <%i>",
+				exitProcessDebugInfo->dwExitCode
+			);
 #endif
 
 			pxDebug->IsRunning = PXFalse;
@@ -804,7 +823,15 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
 			const PXActionResult res = PXFileName(&file, &pxText);
 
 #if PXLogEnable 
-			printf("[PXDebuger] 0x%p | DLL load <%s>\n", loadDLLDebugInfo->lpBaseOfDll, pxText.TextA);
+			PXLogPrint
+			(
+				PXLoggingEvent,
+				"Debugger",
+				"Exception",
+				"0x%p | DLL load <%s>",
+				loadDLLDebugInfo->lpBaseOfDll,
+				pxText.TextA
+			);
 #endif
 
 			break;
@@ -816,7 +843,15 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
 			const UNLOAD_DLL_DEBUG_INFO* const outputDebugStringInfo = &debugEvent.u.UnloadDll;
 
 #if PXLogEnable 
-			printf("[PXDebuger] 0x%p | DLL unload : %s\n", outputDebugStringInfo->lpBaseOfDll, "???");
+			PXLogPrint
+			(
+				PXLoggingEvent,
+				"Debugger",
+				"Exception",
+				"0x%p | DLL unload : %s",
+				outputDebugStringInfo->lpBaseOfDll,
+				"???"
+			);
 #endif
 
 			break;
@@ -826,7 +861,7 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
 			// Display the output debugging string.
 			const OUTPUT_DEBUG_STRING_INFO* const outputDebugStringInfo = &debugEvent.u.DebugString;
 
-#if PXLogEnable 
+#if PXLogEnable && 0
 			printf("[PXDebuger] OUTPUT_DEBUG_STRING_EVENT : ");
 
 			if (outputDebugStringInfo->fUnicode)
