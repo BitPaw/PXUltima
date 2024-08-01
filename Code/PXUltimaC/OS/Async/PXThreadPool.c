@@ -10,7 +10,7 @@ void PXAPI PXThreadPoolClose(PXThreadPool* const pxThreadPool)
 {
     CloseThreadpool(pxThreadPool->Pool);
 
-    pxThreadPool->Pool = PXNull;     
+    pxThreadPool->Pool = PXNull;
 }
 
 void PXAPI PXThreadPoolCreate(PXThreadPool* const pxThreadPool)
@@ -25,17 +25,15 @@ void PXAPI PXThreadPoolCreate(PXThreadPool* const pxThreadPool)
 
         pxThreadPool->StackCommit = pool_STACK_INFORMATION->StackCommit;
         pxThreadPool->StackReserve = pool_STACK_INFORMATION->StackReserve;
+
+        SetThreadpoolThreadMaximum(pxThreadPool->Pool, pxThreadPool->ThreadsMaximum);
+        const PXBool minResult = SetThreadpoolThreadMinimum(pxThreadPool->Pool, pxThreadPool->ThreadsMinimum);
     }
-
-
-    SetThreadpoolThreadMaximum(pool, 4);
-    SetThreadpoolThreadMinimum(pool, 4);
-
 
     // Associate the pool with a callback environment
     TP_CALLBACK_ENVIRON cbe;
     InitializeThreadpoolEnvironment(&cbe);
-    SetThreadpoolCallbackPool(&cbe, pool);
+    SetThreadpoolCallbackPool(&cbe, pxThreadPool->Pool);
 
 
 }
@@ -65,8 +63,8 @@ PXActionResult PXAPI PXThreadPoolWaitForAll(PXThreadPool* const pxThreadPool, co
     WaitForThreadpoolWorkCallbacks(pxThreadPool->Work, cancelRunning); // Windows Vista (+UWP), Kernel32.dll, threadpoolapiset.h
 
     // Clean up
-    CloseThreadpoolWork(work);
-    CloseThreadpool(pool);
+    CloseThreadpoolWork(pxThreadPool->Work);
+    CloseThreadpool(pxThreadPool->Pool);
 #elif WindowsAtleastXP
 
 #endif

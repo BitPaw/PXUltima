@@ -10,6 +10,9 @@ typedef struct PXThreadPool_
     PXSize StackCommit;
 
     PTP_WORK Work;
+
+    PXInt16U ThreadsMinimum;
+    PXInt16U ThreadsMaximum;
 }
 PXThreadPool;
 
