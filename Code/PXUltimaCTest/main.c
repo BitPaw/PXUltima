@@ -90,11 +90,36 @@ void PXTextMatchTest()
 
 #include <OS/Hardware/PXHardware.h>
 #include <OS/Hardware/PXVideo.h>
+#include <OS/Hardware/PXProcessor.h>
+#include <Math/PXMath.h>
 
 int main()
 {
 	PXConsoleWrite(0, "[i] Starting testing...\n");
 
+
+
+
+
+	for(size_t i = 0; i < 128; i++)
+	{
+		float x = 0xAABBCCDD;// *0.0025f;
+
+		PXConsoleWriteF(0, "[%i] %8.8X\n", i, x);
+
+		x = PXMathSinusF(x);
+
+		PXConsoleWriteF(0, "[%i] %6.4f\n", i, x);
+	}
+
+
+
+
+
+
+	PXProcessor pxProcessor;
+
+	PXProcessorFetchInfo(&pxProcessor);
 
 	PXVideoCaptureDeviceList();
 

@@ -13,11 +13,8 @@
 
 #pragma comment(lib, "Wbemuuid.lib") // CLSID_WbemLocator 
 
-
 #endif
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <Media/PXText.h>
 #include <OS/Memory/PXMemory.h>
 #include <OS/Console/PXConsole.h>
@@ -381,175 +378,206 @@ PXProcessorModelName PXAPI PXProcessorModelNameDetect(const PXProcessorBrand pro
 
 void PXAPI PXProcessorFetchInfo(PXProcessor* const processor)
 {
-    PXMemoryClear(processor, sizeof(PXProcessor));
+    PXInt32U maxInfoValueID = 0; // Maximum Input Value for Basic CPUID Information.
+    PXInt32U maxExtendedFunctionID = 0; // Maximum Input Value for Extended Function CPUID Information.
 
-#if OSUnix
+    PXClear(PXProcessor, processor);
 
-
-#elif OSWindows 
-    //
+    typedef struct PXCPUInfo_
     {
-        int cpuinfo[4] = { 0,0,0,0 };
-
-        __cpuid(cpuinfo, 0);
-
-        processor->IdentityString[0] = cpuinfo[1] & 0xff;
-        processor->IdentityString[1] = cpuinfo[1] >> 8 & 0xff;
-        processor->IdentityString[2] = cpuinfo[1] >> 16 & 0xff;
-        processor->IdentityString[3] = cpuinfo[1] >> 24 & 0xff;
-
-        processor->IdentityString[4] = cpuinfo[3] & 0xff;
-        processor->IdentityString[5] = cpuinfo[3] >> 8 & 0xff;
-        processor->IdentityString[6] = cpuinfo[3] >> 16 & 0xff;
-        processor->IdentityString[7] = cpuinfo[3] >> 24 & 0xff;
-
-        processor->IdentityString[8] = cpuinfo[2] & 0xff;
-        processor->IdentityString[9] = cpuinfo[2] >> 8 & 0xff;
-        processor->IdentityString[10] = cpuinfo[2] >> 16 & 0xff;
-        processor->IdentityString[11] = cpuinfo[2] >> 24 & 0xff;
-        processor->IdentityString[12] = 0;
-
-        processor->BrandID = PXProcessorBrandDetect(processor->IdentityString);
+        PXInt32U EAX;
+        PXInt32U EBX;
+        PXInt32U ECX;
+        PXInt32U EDX;
     }
-
-
+    PXCPUInfo;
+   
+    typedef enum PXCPUIDCommand_
     {
-        int cpuinfo[4] = { 0,0,0,0 };
+        PXCPUIDCommandBasicInformation          = 0x00,
+        PXCPUIDCommandVersionInformation        = 0x01,
+        PXCPUIDCommandCacheAndTLBInformation    = 0x02,
+        PXCPUIDCommandSerialNumber              = 0x03,
 
-        __cpuid(cpuinfo, 1);
-
-        processor->SteppingID = cpuinfo[0] & 0xf;
-        processor->Model = cpuinfo[0] >> 4 & 0xf;
-        processor->Family = cpuinfo[0] >> 8 & 0xf;
-        processor->ProcessorType = cpuinfo[0] >> 12 & 0x3;
-        processor->ReservedBitsA = cpuinfo[0] >> 14 & 0x3;
-        processor->ExtendedModel = cpuinfo[0] >> 16 & 0xf;
-        processor->ExtendedFamily = cpuinfo[0] >> 20 & 0xff;
-        processor->ReservedBitsB = cpuinfo[0] >> 28 & 0xf;
-
-        processor->ModelNameID = PXProcessorModelNameDetect(processor->BrandID, processor->Family, processor->Model);
-
-        processor->BrandIndex = cpuinfo[1] & 0xff;
-        processor->CLflushCacheLineSize = cpuinfo[1] >> 8 & 0xff;
-        processor->logicalProcessors = cpuinfo[1] >> 16 & 0xff;
-        processor->initialApicID = cpuinfo[1] >> 24 & 0xff;
-
-        processor->SSE3Instructions = cpuinfo[2] & 1;
-        processor->ReservedBitsAAB = cpuinfo[2] >> 1 & 3;
-        processor->MonitorMWait = cpuinfo[2] >> 3 & 1;
-        processor->cplQualifiedDebugStore = cpuinfo[2] >> 4 & 1;
-        processor->VirtualmachineExtensions = cpuinfo[2] >> 5 & 1;
-        processor->saferModeExtensions = cpuinfo[2] >> 6 & 1;
-        processor->enhancedIntelSpeedstepExtensions = cpuinfo[2] >> 7 & 1;
-        processor->thermalMonitor = cpuinfo[2] >> 8 & 1;
-        processor->supplementalSSE3 = cpuinfo[2] >> 9 & 1;
-        processor->L1ContextID = cpuinfo[2] >> 10 & 1;
-        processor->ReservedBitsAAC = cpuinfo[2] >> 11 & 1;
-        processor->FMAExtensions = cpuinfo[2] >> 12 & 1;
-        processor->CompareExchange16XSupport = cpuinfo[2] >> 13 & 1;
-        processor->xTPRUpdateControl = cpuinfo[2] >> 14 & 1;
-        processor->performanceDebugCapabilityMSR = cpuinfo[2] >> 15 & 1;
-        processor->ReservedBitsAAF = cpuinfo[2] >> 16 & 3;
-        processor->DirectCacheAccess = cpuinfo[2] >> 18 & 1;
-        processor->SSE4x1Extensions = cpuinfo[2] >> 19 & 1;
-        processor->SSE4x2Extensions = cpuinfo[2] >> 20 & 1;
-        processor->x2APICSupport = cpuinfo[2] >> 21 & 1;
-        processor->MOVBEInstructionSupport = cpuinfo[2] >> 22 & 1;
-        processor->POPCNTInstructionSupport = cpuinfo[2] >> 23 & 1;
-        processor->ReservedBitsAAE = cpuinfo[2] >> 24 & 1;
-        processor->AESInstructionSupport = cpuinfo[2] >> 25 & 1;
-        processor->XSAVEInstructionSupport = cpuinfo[2] >> 26 & 1;
-        processor->OSXSAVEInstructionSupport = cpuinfo[2] >> 27 & 1;
-        processor->AdvancedVectorExtensions = cpuinfo[2] >> 28 & 1;
-        processor->ReservedBitsAAA = cpuinfo[2] >> 29 & 0xf;
-
-
-        // EDX
-        processor->FPU = cpuinfo[3] >> 0 & 1;
-        processor->VME = cpuinfo[3] >> 1 & 1;
-        processor->DE = cpuinfo[3] >> 2 & 1;
-        processor->PSE = cpuinfo[3] >> 3 & 1;
-        processor->TSC = cpuinfo[3] >> 4 & 1;
-        processor->MSR = cpuinfo[3] >> 5 & 1;
-        processor->PAE = cpuinfo[3] >> 6 & 1;
-        processor->MCE = cpuinfo[3] >> 7 & 1;
-        processor->CX8 = cpuinfo[3] >> 8 & 1;
-        processor->APIC = cpuinfo[3] >> 9 & 1;
-        processor->nAAaAAAAA = cpuinfo[3] >> 10 & 1;
-        processor->SEP = cpuinfo[3] >> 11 & 1;
-        processor->MTRR = cpuinfo[3] >> 12 & 1;
-        processor->PGE = cpuinfo[3] >> 13 & 1;
-        processor->MCA = cpuinfo[3] >> 14 & 1;
-        processor->CMOV = cpuinfo[3] >> 15 & 1;
-        processor->PAT = cpuinfo[3] >> 16 & 1;
-        processor->PSEE = cpuinfo[3] >> 17 & 1;
-        processor->PSN = cpuinfo[3] >> 18 & 1;
-        processor->CLFSH = cpuinfo[3] >> 19 & 1;
-        processor->nAA = cpuinfo[3] >> 20 & 1;
-        processor->DS = cpuinfo[3] >> 21 & 1;
-        processor->ACPI = cpuinfo[3] >> 22 & 1;
-        processor->MMX = cpuinfo[3] >> 23 & 1;
-        processor->FXSR = cpuinfo[3] >> 24 & 1;
-        processor->SSE = cpuinfo[3] >> 25 & 1;
-        processor->SSE2 = cpuinfo[3] >> 26 & 1;
-        processor->SS = cpuinfo[3] >> 27 & 1;
-        processor->HTT = cpuinfo[3] >> 28 & 1;
-        processor->TM = cpuinfo[3] >> 29 & 1;
-        processor->nAAAABB = cpuinfo[3] >> 30 & 1;
-        processor->PBE = cpuinfo[3] >> 31 & 1; 
+        PXCPUIDCommandExtendedFunctionInformation   = 0x80000000u,
+        PXCPUIDCommandExtendedProcessorSignature    = 0x80000001u,
+        PXCPUIDCommandProcessorBrandStringA         = 0x80000002u,
+        PXCPUIDCommandProcessorBrandStringB         = 0x80000003u,
+        PXCPUIDCommandProcessorBrandStringC         = 0x80000004u,
+        PXCPUIDCommandReserved                      = 0x80000005u,
+        PXCPUIDCommandCacheLineInfo                 = 0x80000006u,
+        PXCPUIDCommandTSC                           = 0x80000007u,
+        PXCPUIDCommandPhysicalAddress               = 0x80000008u
     }
+    PXCPUIDCommand;
 
-
-
-
-    // Detect CPU Name
+    const PXInt32U cpuIDCommandList[] =
     {
+        PXCPUIDCommandBasicInformation,
+        PXCPUIDCommandVersionInformation,
+        PXCPUIDCommandCacheAndTLBInformation,
+        PXCPUIDCommandSerialNumber,
+        PXCPUIDCommandExtendedFunctionInformation,
+        PXCPUIDCommandExtendedProcessorSignature,
+        PXCPUIDCommandProcessorBrandStringA,
+        PXCPUIDCommandProcessorBrandStringB,
+        PXCPUIDCommandProcessorBrandStringC,
+        PXCPUIDCommandCacheLineInfo,
+        PXCPUIDCommandTSC,
+        PXCPUIDCommandPhysicalAddress
+    };
+    const PXSize amount = sizeof(cpuIDCommandList) / sizeof(PXInt32U);
 
+    for(PXSize i = 0; i < amount; ++i)
+    {
+        const PXCPUIDCommand command = cpuIDCommandList[i];
 
-        int CPUInfo[4] = { 0,0,0,0 };
-        unsigned   nExIds;
-
-        // Get the information associated with each extended ID.
-
-        __cpuid(CPUInfo, 0x80000000);
-
-        nExIds = CPUInfo[0];
-        // Interpret CPU brand string
-        for (PXSize i = 0x80000000; i <= nExIds; ++i)
+        // 32-Bit Registers EAX, EBX, ECX, EDX
+        typedef struct PXCPUInfo_
         {
-            __cpuid(CPUInfo, i);
+            PXInt32U EAX;
+            PXInt32U EBX;
+            PXInt32U ECX;
+            PXInt32U EDX;
+        }
+        PXCPUInfo;
 
-            switch (i)
+        PXCPUInfo pxCPUInfo;
+
+        __cpuid(&pxCPUInfo, command);
+
+        switch(command)
+        {
+            case PXCPUIDCommandBasicInformation:
             {
-                case 0x80000002:
-                case 0x80000003:
-                case 0x80000004:
-                {
-                    processor->BrandNameSize += PXTextCopyA((char*)CPUInfo, sizeof(CPUInfo), processor->BrandName + processor->BrandNameSize, 64);
-                    break;
-                }
-                default:
-                    break;
-            }
-        }
+                maxInfoValueID = pxCPUInfo.EAX;
 
-        if (processor->BrandNameSize < 5)
-        {
-            PXProcessorModelNameGet(processor->ModelNameID, processor->BrandName);
+                processor->IdentityString[0] = 0xFF & (pxCPUInfo.EBX >> 0);
+                processor->IdentityString[1] = 0xFF & (pxCPUInfo.EBX >> 8);
+                processor->IdentityString[2] = 0xFF & (pxCPUInfo.EBX >> 16);
+                processor->IdentityString[3] = 0xFF & (pxCPUInfo.EBX >> 24);
+
+                processor->IdentityString[4] = 0xFF & (pxCPUInfo.EDX >> 0);
+                processor->IdentityString[5] = 0xFF & (pxCPUInfo.EDX >> 8);
+                processor->IdentityString[6] = 0xFF & (pxCPUInfo.EDX >> 16);
+                processor->IdentityString[7] = 0xFF & (pxCPUInfo.EDX >> 24);
+
+                processor->IdentityString[8] = 0xFF & (pxCPUInfo.ECX >> 0);
+                processor->IdentityString[9] = 0xFF & (pxCPUInfo.ECX >> 8);
+                processor->IdentityString[10] = 0xFF & (pxCPUInfo.ECX >> 16);
+                processor->IdentityString[11] = 0xFF & (pxCPUInfo.ECX >> 24);
+                processor->IdentityString[12] = 0;
+
+                processor->BrandID = PXProcessorBrandDetect(processor->IdentityString);
+
+                break;
+            }       
+            case PXCPUIDCommandVersionInformation:
+            {
+                //------------------------
+                // EAX
+                //------------------------
+                processor->SteppingID       = 0x0F & (pxCPUInfo.EAX >> 0); // 0b----------------------------1111
+                processor->Model            = 0x0F & (pxCPUInfo.EAX >> 4); // 0b------------------------11110000
+                processor->Family           = 0x0F & (pxCPUInfo.EAX >> 8); // 0b--------------------111100000000
+                processor->ProcessorType    = 0x03 & (pxCPUInfo.EAX >> 12);
+                processor->ReservedBitsA    = 0x03 & (pxCPUInfo.EAX >> 14);
+                processor->ExtendedModel    = 0x0F & (pxCPUInfo.EAX >> 16);
+                processor->ExtendedFamily   = 0xFF & (pxCPUInfo.EAX >> 20);
+                processor->ReservedBitsB    = 0x0F & (pxCPUInfo.EAX >> 28);
+
+                processor->ModelNameID = PXProcessorModelNameDetect(processor->BrandID, processor->Family, processor->Model);
+                //------------------------
+
+                //------------------------
+                // EBX
+                //------------------------
+                processor->BrandIndex           = 0xFF & (pxCPUInfo.EBX >> 0);
+                processor->CLflushCacheLineSize = 0xFF & (pxCPUInfo.EBX >> 8);
+                processor->logicalProcessors    = 0xFF & (pxCPUInfo.EBX >> 16);
+                processor->initialApicID        = 0xFF & (pxCPUInfo.EBX >> 24);
+                //------------------------
+
+                //------------------------
+                // ECX
+                //------------------------
+                processor->FeatureList = pxCPUInfo.ECX;
+                processor->FeatureList <<= 8;
+                //------------------------
+
+                //------------------------
+                // EDX
+                //------------------------
+                processor->FeatureList |= pxCPUInfo.EDX;
+                //------------------------
+
+                break;
+            }
+            case PXCPUIDCommandExtendedFunctionInformation:
+            {
+                maxExtendedFunctionID = pxCPUInfo.EAX;
+
+                break;
+            }
+            case PXCPUIDCommandProcessorBrandStringA:
+            case PXCPUIDCommandProcessorBrandStringB:
+            case PXCPUIDCommandProcessorBrandStringC:
+            {
+                char* text = (char*)&pxCPUInfo;
+
+                processor->BrandNameSize += PXTextCopyA
+                (
+                    text, 
+                    sizeof(PXCPUInfo),
+                    processor->BrandName + processor->BrandNameSize, 
+                    64 - processor->BrandNameSize
+                );
+                break;
+            }
+            case PXCPUIDCommandCacheLineInfo:
+            {
+                // EAX - Reserved
+                // EBX - Reserved
+                // EDX - Reserved
+
+                processor->L2AssociativityField = 0b00000000000000000000000011111111 & (pxCPUInfo.ECX >> 0);
+                //processor->Reserved           = 0b00000000000000000000111100000000 & (pxCPUInfo.ECX >> 8);
+                processor->CacheSizein1Kunits   = 0b00000000000000001111000000000000 & (pxCPUInfo.ECX >> 12);
+                processor->CacheLineSizeInBytes = 0b11111111111111110000000000000000 & (pxCPUInfo.ECX >> 16);
+
+                break;
+            }
+            case PXCPUIDCommandTSC:
+            {
+                // EAX - Reserved
+                // EBX - Reserved
+                // ECX - Reserved
+
+                processor->IsInvariantTSCAvailable = 0b00000000000000000000000100000000 & (pxCPUInfo.EDX >> 8);
+
+                break;
+            }
+            case PXCPUIDCommandPhysicalAddress:
+            {
+                break;
+            }
+            default:
+                break;
         }
+    }
+
+
+    if(processor->BrandNameSize < 5)
+    {
+        PXProcessorModelNameGet(processor->ModelNameID, processor->BrandName);
     }
 
 
 
     
     {
-
-
         SYSTEM_INFO sysInfo;
         GetSystemInfo(&sysInfo);
-
-
-
 
 #if 0
         printf("Hardware information: \n");
@@ -587,7 +615,6 @@ void PXAPI PXProcessorFetchInfo(PXProcessor* const processor)
         processor->BrandNameSize--;
         processor->BrandName[i] = '\0';
     }
-#endif
 }
 
 unsigned int PXAPI PXProcessorFrequencyCurrent()
@@ -944,6 +971,16 @@ PXActionResult PXAPI PXProcessorTemperature(PXInt32U* const cpuTemp)
 #endif
 
     return PXActionSuccessful;
+}
+
+void PXAPI PXProcessorNoOperation()
+{
+    __nop();
+}
+
+void PXAPI PXProcessorRandomNumber()
+{
+    _rdrand32_step(0);
 }
 
 void PXAPI PXProcessorSwapByteOrderI16U(PXInt16U* const value)

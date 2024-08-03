@@ -250,7 +250,7 @@ PXActionResult PXAPI PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, co
 
         for(PXSize processorID = 0 ; pxHardwareInfo->enumerator ; ++processorID)
         {
-            PXProcessor* const pxProcessor = &pxHardwareInfo->ProcessorList[processorID];
+            PXProcessorWS* const pxProcessor = &pxHardwareInfo->ProcessorList[processorID];
 
             HRESULT EJIE = pxHardwareInfo->enumerator->lpVtbl->Next(pxHardwareInfo->enumerator, WBEM_INFINITE, 1, &pxHardwareInfo->obj, &u_return);
         

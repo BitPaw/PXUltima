@@ -3,6 +3,6 @@
 
 #include "../PXResource.h"
 
-PXPublic PXInt32U PXCRC32Generate(const PXByte* const data, const PXSize length);
+PXPublic PXInt32U PXAPI PXCRC32Generate(const PXByte* const data, const PXSize length);
 
 #endif

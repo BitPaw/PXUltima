@@ -1,6 +1,10 @@
 #include "PXMath.h"
 
 #include <math.h>
+#include <intrin.h>
+#include <immintrin.h>
+#include <wmmintrin.h>
+#include <mmintrin.h>
 
 int PXAPI PXMathMinimumI(const int a, const int b)
 {
@@ -222,9 +226,24 @@ PXInt32U PXAPI PXMathRandomeNumber(PXMathRandomGeneratorSeed* const pxMathRandom
 	return pxMathRandomGeneratorSeed->Z;
 }
 
-double PXAPI PXMathSinus(double value)
+extern _cdecl PXIntrinsicFSIN(float* val);
+
+float PXAPI PXMathSinusF(const float value)
 {
-	return sin(value); // TODO: Dependeny problem 
+	float x = value;
+
+	x = PXIntrinsicFSIN(&x); // sin(value); // TODO: Dependeny problem 
+
+	return x;
+}
+
+double PXAPI PXMathSinus(float value)
+{
+	float x = 0;// value;
+
+	x = PXIntrinsicFSIN(0); // sin(value); // TODO: Dependeny problem 
+
+	return x;
 }
 
 double PXAPI PXMathTangens(double value)

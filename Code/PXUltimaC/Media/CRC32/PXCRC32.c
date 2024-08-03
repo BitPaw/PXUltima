@@ -1,6 +1,6 @@
 #include "PXCRC32.h"
 
-
+#include <intrin.h>
 
 const unsigned char CRC7_POLY = 0x91;
 PXInt32U CRCTable[256];
@@ -27,8 +27,20 @@ void buildCRCTable()
 }
 
 
-PXInt32U PXCRC32Generate(const PXByte* const data, const PXSize length)
+PXInt32U PXAPI PXCRC32Generate(const PXByte* const data, const PXSize length)
 {
+
+
+    PXInt32U crcAccumulator = 0xFFFFFFFF;
+
+    for(PXSize i = 0; i < length; ++i)
+    {
+        crcAccumulator = _mm_crc32_u8(crcAccumulator, data[i]); // 
+    }
+
+    return crcAccumulator;
+ 
+
 #if 1
     PXInt32U r = 0xffffffffu;
 

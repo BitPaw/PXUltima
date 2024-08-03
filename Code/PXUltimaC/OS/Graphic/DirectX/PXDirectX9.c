@@ -8,6 +8,9 @@
 #if PXDX9Enable
 #include <d3d9.h>
 #include <d3d9types.h>
+
+#define PXDX9IsSDKPresent 0
+
 #endif
 
 #if PXDX9Enable
@@ -23,8 +26,13 @@
 #include <d3dx9shader.h>
 
 #pragma comment(lib, "D3DCompiler.lib")
+
+
 #pragma comment(lib, "D3d9.lib")
-#pragma comment(lib, "D3dx9.lib")
+
+#if PXDX9IsSDKPresent
+#pragma comment(lib, "D3dx9.lib") // Only if SDK is inlayy
+#endif
 
 #endif
 

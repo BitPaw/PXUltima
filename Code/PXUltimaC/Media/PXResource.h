@@ -32,6 +32,7 @@ typedef struct PXGUISystem_ PXGUISystem;
 typedef struct PXGUIElement_ PXGUIElement;
 typedef struct PXFileTypeInfo_ PXFileTypeInfo;
 typedef struct PXCompiler_ PXCompiler;
+typedef struct PXProcessor_ PXProcessor;
 
 extern void _chkstk(size_t s);
 

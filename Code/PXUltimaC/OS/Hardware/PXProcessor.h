@@ -98,6 +98,84 @@ typedef enum PXProcessorModelName_
 }
 PXProcessorModelName;
 
+
+
+
+
+
+
+
+
+
+
+
+#define PXProcessorFeatureRDRAND                            ((1 << 30) << 32)
+#define PXProcessorFeatureF16C                              ((1 << 29) << 32)
+#define PXProcessorFeatureAVX                               ((1 << 28) << 32)
+#define PXProcessorFeatureOSXSAVE                           ((1 << 27) << 32)
+#define PXProcessorFeatureXSAVE                             ((1 << 26) << 32)
+#define PXProcessorFeatureAES                               ((1 << 25) << 32)
+#define PXProcessorFeatureTSCDeadline                       ((1 << 24) << 32)
+#define PXProcessorFeaturePOPCNT                            ((1 << 23) << 32)
+#define PXProcessorFeatureMOVBE                             ((1 << 22) << 32)
+#define PXProcessorFeaturex2APIC                            ((1 << 21) << 32)
+#define PXProcessorFeatureSSE4x2                            ((1 << 20) << 32)
+#define PXProcessorFeatureSSE4x1                            ((1 << 19) << 32)
+#define PXProcessorFeatureDirectCacheAccess                 ((1 << 18) << 32)
+#define PXProcessorFeatureProcessContextIdentifiers         ((1 << 17) << 32)
+#define PXProcessorFeatureUnused                            ((1 << 16) << 32)
+#define PXProcessorFeaturePerfDebugCapabilityMSR            ((1 << 15) << 32)
+#define PXProcessorFeaturexTPRUpdateControl                 ((1 << 14) << 32)
+#define PXProcessorFeatureCMPXCHG16B                        ((1 << 13) << 32)
+#define PXProcessorFeatureFusedMultiplyAdd                  ((1 << 12) << 32)
+#define PXProcessorFeatureSDBG                              ((1 << 11) << 32)
+#define PXProcessorFeatureL1ContextID                       ((1 << 10) << 32)
+#define PXProcessorFeatureSSSE3Extensions                   ((1 << 9) << 32)
+#define PXProcessorFeatureThermalMonitor2                   ((1 << 8) << 32)
+#define PXProcessorFeatureEnhancedIntelSpeedStepTechnology  ((1 << 7) << 32)
+#define PXProcessorFeatureSaferModeExtensions               ((1 << 6) << 32)
+#define PXProcessorFeatureVirtualMachineExtensions          ((1 << 5) << 32)
+#define PXProcessorFeatureCPLQualifiedDebugStore            ((1 << 4) << 32)
+#define PXProcessorFeatureMONITORAndMWAIT                   ((1 << 3) << 32)
+#define PXProcessorFeature64BitDSArea                       ((1 << 2) << 32)
+#define PXProcessorFeatureCarrylessMultiplication           ((1 << 1) << 32)
+#define PXProcessorFeatureSSE3                              ((1 << 0) << 32)
+
+
+#define PXProcessorFeature3DNowB                            (1 << 31)
+#define PXProcessorFeature3DNowA                            (1 << 30)
+#define PXProcessorFeatureThermMonitor                      (1 << 29)
+#define PXProcessorFeatureMultithreading                    (1 << 28)
+#define PXProcessorFeatureSelfSnoop                         (1 << 27)
+#define PXProcessorFeatureSSE2Extensions                    (1 << 26)
+#define PXProcessorFeatureSSEExtensions                     (1 << 25)
+#define PXProcessorFeatureFXSAVEFXRSTOR                     (1 << 24)
+#define PXProcessorFeatureMMXTechnology                     (1 << 23)
+#define PXProcessorFeatureThermalMonitorandClockCtrl        (1 << 22)
+#define PXProcessorFeatureDebugStore                        (1 << 21)
+//#define PXProcessorFeaturexxxxxx                          (1 << 20)
+#define PXProcessorFeatureCLFLUSHinstruction                (1 << 19)
+#define PXProcessorFeatureProcessorSerialNumber             (1 << 18)
+#define PXProcessorFeaturePageSizeExtension                 (1 << 17)
+#define PXProcessorFeaturePageAttributeTable                (1 << 16)
+#define PXProcessorFeatureConditionalMoveCompareInstruction (1 << 15)
+#define PXProcessorFeatureMachineCheckArchitecture          (1 << 14)
+#define PXProcessorFeaturePTEGlobalBit                      (1 << 13)
+#define PXProcessorFeatureMemoryTypeRangeRegisters          (1 << 12)
+#define PXProcessorFeatureSYSENTERandSYSEXIT                (1 << 11)
+//#define PXProcessorFeatureXXXXXX                          (1 << 10)
+#define PXProcessorFeatureAPIConChip                        (1 << 9)
+#define PXProcessorFeatureCMPXCHG8BInst                     (1 << 8)
+#define PXProcessorFeatureMachineCheckException             (1 << 7)
+#define PXProcessorFeaturePhysicalAddressExtensions         (1 << 6)
+#define PXProcessorFeatureRDMSRandWRMSRSupport              (1 << 5)
+#define PXProcessorFeatureTimeStampCounter                  (1 << 4)
+#define PXProcessorFeaturePageSizeExtensions                (1 << 3)
+#define PXProcessorFeatureDebuggingExtensions               (1 << 2)
+#define PXProcessorFeatureVirtual8086ModeEnhancement        (1 << 1)
+#define PXProcessorFeatureFPUx87FPUonChip                   (1 << 0)
+
+
 typedef struct PXProcessor_
 {
     char BrandName[64];  // string includes manufacturer, model and clockspeed
@@ -108,6 +186,15 @@ typedef struct PXProcessor_
 
     PXInt8U NumberOfProcessors;
     PXInt8U BrandNameSize;
+
+    PXBool IsInvariantTSCAvailable;
+
+    PXInt8U L2AssociativityField;
+    PXInt8U CacheSizein1Kunits;
+    PXInt16U CacheLineSizeInBytes;
+
+    PXInt64U FeatureList;
+
 
     // eax 
     PXBool SteppingID;
@@ -120,75 +207,10 @@ typedef struct PXProcessor_
     PXBool ReservedBitsB;
 
     // EBX
-    PXBool BrandIndex;
-    PXBool CLflushCacheLineSize;
-    PXBool logicalProcessors;
-    PXBool initialApicID;
-
-
-    // ecx
-    PXBool SSE3Instructions;
-    PXBool ReservedBitsAAB;
-    PXBool MonitorMWait;
-    PXBool cplQualifiedDebugStore;// Intel Only
-    PXBool VirtualmachineExtensions; // Intel Only
-    PXBool saferModeExtensions; // Intel Only
-    PXBool enhancedIntelSpeedstepExtensions;// Intel Only
-    PXBool thermalMonitor;// Intel Only
-    PXBool supplementalSSE3;
-    PXBool L1ContextID; // Intel Only
-    PXBool ReservedBitsAAC;
-    PXBool FMAExtensions;// Intel Only
-    PXBool CompareExchange16XSupport;// Intel Only
-    PXBool xTPRUpdateControl;
-    PXBool performanceDebugCapabilityMSR;
-    PXBool ReservedBitsAAF;
-    PXBool DirectCacheAccess; // Intel Only
-    PXBool SSE4x1Extensions;
-    PXBool SSE4x2Extensions;
-    PXBool x2APICSupport; // Intel Only
-    PXBool MOVBEInstructionSupport; // Intel Only
-    PXBool POPCNTInstructionSupport;
-    PXBool ReservedBitsAAE;
-    PXBool AESInstructionSupport; // Intel Only
-    PXBool XSAVEInstructionSupport; // Intel Only
-    PXBool OSXSAVEInstructionSupport; // Intel Only
-    PXBool AdvancedVectorExtensions;// Intel Only
-    PXBool ReservedBitsAAA;
-
-    // EDX
-    PXBool FPU;// -x87 FPU on chip : % d\n", cpuinfo[3] >> 0 & 1;
-    PXBool VME;//Virtual-8086 mode enhancement: %d\n", cpuinfo[3] >> 1 & 1;
-    PXBool DE;//Debugging extensions: %d\n", cpuinfo[3] >> 2 & 1;
-    PXBool PSE;//Page size extensions: %d\n", cpuinfo[3] >> 3 & 1;
-    PXBool TSC;//Time stamp counter: %d\n", cpuinfo[3] >> 4 & 1;
-    PXBool MSR;//RDMSR and WRMSR support: %d\n", cpuinfo[3] >> 5 & 1;
-    PXBool PAE;//Physical address extensions: %d\n", cpuinfo[3] >> 6 & 1;
-    PXBool MCE;//Machine check exception: %d\n", cpuinfo[3] >> 7 & 1;
-    PXBool CX8;//CMPXCHG8B instruction: %d\n", cpuinfo[3] >> 8 & 1;
-    PXBool APIC;//APIC on chip: %d\n", cpuinfo[3] >> 9 & 1;
-    PXBool nAAaAAAAA;//Reserved: %d\n", cpuinfo[3] >> 10 & 1;
-    PXBool SEP;//SYSENTER and SYSEXIT: %d\n", cpuinfo[3] >> 11 & 1;
-    PXBool MTRR;//Memory type range registers: %d\n", cpuinfo[3] >> 12 & 1;
-    PXBool PGE;//PTE global bit: %d\n", cpuinfo[3] >> 13 & 1;
-    PXBool MCA;//Machine check architecture: %d\n", cpuinfo[3] >> 14 & 1;
-    PXBool CMOV;//Conditional move/compare instruction: %d\n", cpuinfo[3] >> 15 & 1;
-    PXBool PAT;//Page Attribute Table: %d\n", cpuinfo[3] >> 16 & 1;
-    PXBool PSEE;//-36 - 36-bit page size extension: %d\n", cpuinfo[3] >> 17 & 1;
-    PXBool PSN;// Processor serial number: %d\n", cpuinfo[3] >> 18 & 1;
-    PXBool CLFSH;// CFLUSH instruction: %d\n", cpuinfo[3] >> 19 & 1;
-    PXBool nAA;// -/ a Reserved : % d\n", cpuinfo[3] >> 20 & 1;
-    PXBool DS;// Debug store: %d\n", cpuinfo[3] >> 21 & 1;
-    PXBool ACPI;// Thermal monitor and clock control: %d\n", cpuinfo[3] >> 22 & 1;
-    PXBool MMX;// MMX technology: %d\n", cpuinfo[3] >> 23 & 1;
-    PXBool FXSR;// FXSAVE/FXRSTOR: %d\n", cpuinfo[3] >> 24 & 1;
-    PXBool SSE;// SSE extensions: %d\n", cpuinfo[3] >> 25 & 1;
-    PXBool SSE2;// SSE2 extensions: %d\n", cpuinfo[3] >> 26 & 1;
-    PXBool SS;// Self snoop: %d\n", cpuinfo[3] >> 27 & 1;
-    PXBool HTT;// Multithreading: %d\n", cpuinfo[3] >> 28 & 1;
-    PXBool TM;// Thermal monitor: %d\n", cpuinfo[3] >> 29 & 1;
-    PXBool nAAAABB;// Reserved: %d\n", cpuinfo[3] >> 30 & 1;
-    PXBool PBE;// Pending break enable: %d\n", cpuinfo[3] >> 31 & 1;
+    PXInt8U BrandIndex;
+    PXInt8U CLflushCacheLineSize;
+    PXInt8U logicalProcessors;
+    PXInt8U initialApicID;
 }
 PXProcessor;
 
@@ -213,6 +235,7 @@ PXPublic PXActionResult PXAPI PXProcessorTemperature(PXInt32U* const cpuTemp);
 // Can have a side effect where the pipeline can still process stuff
 // So this command is not useless, it can help to flush out parralel running actions.
 PXPublic void PXAPI PXProcessorNoOperation();
+PXPublic void PXAPI PXProcessorRandomNumber();
 
 PXPublic void PXAPI PXProcessorSwapByteOrderI16U(PXInt16U* const value);
 PXPublic void PXAPI PXProcessorSwapByteOrderI32U(PXInt32U* const value);

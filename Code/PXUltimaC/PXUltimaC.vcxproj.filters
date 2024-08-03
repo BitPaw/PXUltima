@@ -1035,4 +1035,9 @@
     <None Include="Media\N64\README.md" />
     <None Include="Media\MIPS\README.md" />
   </ItemGroup>
+  <ItemGroup>
+    <MASM Include="OS\Hardware\PXIntrinsic.asm">
+      <Filter>Quelldateien</Filter>
+    </MASM>
+  </ItemGroup>
 </Project>

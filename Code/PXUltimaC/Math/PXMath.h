@@ -69,7 +69,10 @@ PXPublic int PXAPI PXMathCeilingF(const float value);
 PXPublic int PXAPI PXMathCeilingD(const double value);
 PXPublic void PXAPI PXMathRandomeSeed(PXMathRandomGeneratorSeed* const pxMathRandomGeneratorSeed);
 PXPublic PXInt32U PXAPI PXMathRandomeNumber(PXMathRandomGeneratorSeed* const pxMathRandomGeneratorSeed);
-PXPublic double PXAPI PXMathSinus(double value);
+
+PXPublic float PXAPI PXMathSinusF(const float value);
+
+PXPublic double PXAPI PXMathSinus(float value);
 PXPublic double PXAPI PXMathTangens(double value);
 PXPublic double PXAPI PXMathCosinus(double value);
 PXPublic double PXAPI PXMathSinusArc(double value);

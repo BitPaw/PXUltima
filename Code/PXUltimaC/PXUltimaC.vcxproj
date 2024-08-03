@@ -28,37 +28,23 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <WholeProgramOptimization>false</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
-    <EnableASAN>false</EnableASAN>
-    <EnableFuzzer>
-    </EnableFuzzer>
-    <UseOfMfc>
-    </UseOfMfc>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
-    <EnableASAN>false</EnableASAN>
-    <EnableFuzzer>
-    </EnableFuzzer>
-    <UseOfMfc>
-    </UseOfMfc>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -82,203 +68,97 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
-    <IncludePath>$(ProjectDir);$(DXSDK_DIR)Include;$(IncludePath)</IncludePath>
     <TargetName>PXUltima</TargetName>
-    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
-    <IncludePath>$(ProjectDir);$(DXSDK_DIR)Include;$(IncludePath)</IncludePath>
     <TargetName>PXUltima</TargetName>
-    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
-    <CopyCppRuntimeToOutputDir />
-    <GenerateManifest>false</GenerateManifest>
+    <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
-    <IncludePath>$(ProjectDir);$(DXSDK_DIR)Include;$(IncludePath)</IncludePath>
     <TargetName>PXUltima</TargetName>
-    <LibraryPath>$(DXSDK_DIR)Lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
-    <IncludePath>$(ProjectDir);$(DXSDK_DIR)Include;$(IncludePath)</IncludePath>
     <TargetName>PXUltima</TargetName>
-    <LibraryPath>$(DXSDK_DIR)Lib\x64;$(LibraryPath)</LibraryPath>
-    <CopyCppRuntimeToOutputDir />
-    <GenerateManifest>false</GenerateManifest>
+    <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
-      <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;WINRT_DIAGNOSTICS;WINRT_NATVIS;WIN32;_DEBUG;_CONSOLE;WINVER=0x0501;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
       <CompileAs>CompileAsC</CompileAs>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <CallingConvention>
       </CallingConvention>
       <DisableSpecificWarnings>4114</DisableSpecificWarnings>
-      <EnableEnhancedInstructionSet>NoExtensions</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions512</EnableEnhancedInstructionSet>
       <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
-      <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <ShowIncludes>false</ShowIncludes>
-      <StringPooling>true</StringPooling>
-      <ExceptionHandling>Sync</ExceptionHandling>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <SmallerTypeCheck>false</SmallerTypeCheck>
       <AssemblerOutput>All</AssemblerOutput>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ShowProgress>LinkVerbose</ShowProgress>
-      <NoEntryPoint>true</NoEntryPoint>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <AdditionalDependencies>Comctl32.lib;dxguid.lib;Wbemuuid.lib;Psapi.lib;Mf.lib;Shlwapi.lib;Mfplat.lib;mfreadwrite.lib;mfuuid.lib;vcruntimed.lib;ucrtd.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-    </Link>
+    <Link />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;WIN32;NDEBUG;_CONSOLE;WINVER=0x501;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>false</ConformanceMode>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
       <CompileAs>CompileAsC</CompileAs>
-      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
-      <CallingConvention>
-      </CallingConvention>
-      <DisableSpecificWarnings>4114</DisableSpecificWarnings>
-      <Optimization>MinSpace</Optimization>
-      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
-      <BuildStlModules>false</BuildStlModules>
-      <StringPooling>true</StringPooling>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
-      <OmitFramePointers>true</OmitFramePointers>
-      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <DiagnosticsFormat>
-      </DiagnosticsFormat>
-      <ExceptionHandling>false</ExceptionHandling>
-      <ControlFlowGuard>false</ControlFlowGuard>
-      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
-      <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
-      <OpenMPSupport>false</OpenMPSupport>
-      <ShowIncludes>false</ShowIncludes>
-      <SDLCheck>false</SDLCheck>
-      <DebugInformationFormat>None</DebugInformationFormat>
-      <FloatingPointExceptions>false</FloatingPointExceptions>
-      <AdditionalOptions>/Gs999999 %(AdditionalOptions)</AdditionalOptions>
-      <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <OmitDefaultLibName>true</OmitDefaultLibName>
-      <AssemblerOutput>All</AssemblerOutput>
-    </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
-      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
-      <NoEntryPoint>true</NoEntryPoint>
-      <AdditionalDependencies>Comctl32.lib;dxguid.lib;Wbemuuid.lib;Psapi.lib;Mf.lib;Shlwapi.lib;Mfplat.lib;mfreadwrite.lib;mfuuid.lib;libcmt.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ClCompile>
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-      <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;WINRT_DIAGNOSTICS;WINRT_NATVIS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <CompileAs>CompileAsC</CompileAs>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <CallingConvention>
-      </CallingConvention>
-      <DisableSpecificWarnings>4114</DisableSpecificWarnings>
-      <EnableEnhancedInstructionSet>
-      </EnableEnhancedInstructionSet>
-      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
-      <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
-      <ExceptionHandling>Sync</ExceptionHandling>
-      <StringPooling>true</StringPooling>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <SmallerTypeCheck>false</SmallerTypeCheck>
-      <AssemblerOutput>All</AssemblerOutput>
-    </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <NoEntryPoint>true</NoEntryPoint>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <AdditionalDependencies>Comctl32.lib;dxguid.lib;Wbemuuid.lib;Psapi.lib;Mf.lib;Shlwapi.lib;Mfplat.lib;mfreadwrite.lib;mfuuid.lib;vcruntimed.lib;ucrtd.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ClCompile>
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>false</SDLCheck>
-      <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;WINRT_DIAGNOSTICS;WINRT_NATVIS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>false</ConformanceMode>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <CompileAs>CompileAsC</CompileAs>
-      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions512</EnableEnhancedInstructionSet>
       <CallingConvention>
       </CallingConvention>
       <DisableSpecificWarnings>4114</DisableSpecificWarnings>
-      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
-      <Optimization>MinSpace</Optimization>
       <BuildStlModules>false</BuildStlModules>
-      <StringPooling>true</StringPooling>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
-      <DebugInformationFormat>None</DebugInformationFormat>
-      <OmitFramePointers>true</OmitFramePointers>
-      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <DiagnosticsFormat>
-      </DiagnosticsFormat>
-      <SupportJustMyCode>false</SupportJustMyCode>
-      <ExceptionHandling>false</ExceptionHandling>
-      <ControlFlowGuard>false</ControlFlowGuard>
       <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
-      <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
-      <OpenMPSupport>false</OpenMPSupport>
       <ShowIncludes>false</ShowIncludes>
-      <WholeProgramOptimization>false</WholeProgramOptimization>
-      <FloatingPointExceptions>false</FloatingPointExceptions>
       <AdditionalOptions>/Gs999999 %(AdditionalOptions)</AdditionalOptions>
-      <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <OmitDefaultLibName>true</OmitDefaultLibName>
       <AssemblerOutput>All</AssemblerOutput>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Optimization>MinSpace</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
     </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
-      <NoEntryPoint>true</NoEntryPoint>
-      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
-      <AdditionalDependencies>Comctl32.lib;dxguid.lib;Wbemuuid.lib;Psapi.lib;Mf.lib;Shlwapi.lib;Mfplat.lib;mfreadwrite.lib;mfuuid.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
-      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-    </Link>
+    <Link />
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <CompileAs>CompileAsC</CompileAs>
+      <CallingConvention>
+      </CallingConvention>
+      <DisableSpecificWarnings>4114</DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions512</EnableEnhancedInstructionSet>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <AssemblerOutput>All</AssemblerOutput>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link />
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <CompileAs>CompileAsC</CompileAs>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions512</EnableEnhancedInstructionSet>
+      <CallingConvention>
+      </CallingConvention>
+      <DisableSpecificWarnings>4114</DisableSpecificWarnings>
+      <BuildStlModules>false</BuildStlModules>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <ShowIncludes>false</ShowIncludes>
+      <AdditionalOptions>/Gs999999 %(AdditionalOptions)</AdditionalOptions>
+      <AssemblerOutput>All</AssemblerOutput>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Optimization>MinSpace</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link />
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Algorithm\Dijkstra\PXDijkstra.c" />
@@ -648,6 +528,9 @@
     <None Include="OS\Graphic\OpenGL\README.md" />
     <None Include="OS\Graphic\SoftwareRender\README.md" />
     <None Include="OS\Graphic\Vulcan\README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <MASM Include="OS\Hardware\PXIntrinsic.asm" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

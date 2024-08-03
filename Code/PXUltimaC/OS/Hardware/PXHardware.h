@@ -321,7 +321,7 @@ typedef struct PXSensorTemperature_
 }
 PXSensorTemperature;
 
-typedef struct PXProcessor
+typedef struct PXProcessorWS
 {
 	// Strings
 	char AssetTag[64];
@@ -392,13 +392,13 @@ typedef struct PXProcessor
 	// Date?
 	double InstallDate; // !
 }
-PXProcessor;
+PXProcessorWS;
 
 // 
 typedef struct PXHardwareInfo_
 {
 	PXSize ProcessorListSize;
-	PXProcessor ProcessorList[4];
+	PXProcessorWS ProcessorList[4];
 
 	PXMainBoard MainBoard;
 
