@@ -3366,6 +3366,12 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
     {
         drawElementsCount = pxIndexBuffer->IndexDataSize / elementSize;
     }
+    else
+    {
+        PXInt8U stride = PXVertexBufferFormatStrideSize(pxVertexBuffer->Format) * sizeof(float);
+
+        drawElementsCount = pxVertexBuffer->VertexDataSize / stride;
+    }
 
     const PXBool hasNoIndexArray = pxIndexBuffer->Info.OpenGLID == -1;
 

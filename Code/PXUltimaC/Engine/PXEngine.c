@@ -2642,7 +2642,7 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
             pxRenderEntity.ShaderProgramReference = pxModel->ShaderProgramReference;
 
             pxModel->RenderBothSides = 1;
-            pxModel->Mesh.IndexBuffer.DrawModeID |= PXDrawModeIDPoint;
+           // pxModel->Mesh.IndexBuffer.DrawModeID |= PXDrawModeIDPoint; // For debug only, you can see vertex points
 
 #if 0
             // TODO: TEMP FIX
@@ -2657,8 +2657,13 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
             }
 #endif
 
+            if(pxModel->ShaderProgramReference)
+            {
+                PXEngineResourceRender(pxEngine, &pxRenderEntity);
+            }
 
-            PXEngineResourceRender(pxEngine, &pxRenderEntity);
+
+      
         }
     }
 
