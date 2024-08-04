@@ -226,22 +226,45 @@ PXInt32U PXAPI PXMathRandomeNumber(PXMathRandomGeneratorSeed* const pxMathRandom
 	return pxMathRandomGeneratorSeed->Z;
 }
 
-extern _cdecl PXIntrinsicFSIN(float* val);
+//extern _cdecl PXIntrinsicFSIN(float* val);
+//extern _cdecl PXIntrinsicFSQRT(float* val);
 
 float PXAPI PXMathSinusF(const float value)
 {
 	float x = value;
 
-	x = PXIntrinsicFSIN(&x); // sin(value); // TODO: Dependeny problem 
+#if 0
+	double dx = value;
+
+	PXIntrinsicFSIN(&dx); // sin(value); // TODO: Dependeny problem 
+
+	return dx;
+
+#else
+	x = sin(value);
+#endif
 
 	return x;
 }
 
-double PXAPI PXMathSinus(float value)
+float PXAPI PXMathRootSquareF(const float value)
+{
+	float x = value;
+
+#if 0
+	PXIntrinsicFSQRT(&x); // sin(value); // TODO: Dependeny problem 
+#else
+	x = sqrt(value);
+#endif
+
+	return x;
+}
+
+double PXAPI PXMathSinus(double value)
 {
 	float x = 0;// value;
 
-	x = PXIntrinsicFSIN(0); // sin(value); // TODO: Dependeny problem 
+	x = sin(value); // sin(value); // TODO: Dependeny problem 
 
 	return x;
 }

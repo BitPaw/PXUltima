@@ -146,17 +146,21 @@ void* PXAPI PXMemoryRealloc(const void* const adress, const PXSize memorySize)
 {
 	void* newAdress = PXNull;
 
-	if(!adress)
-	{
-		return PXFalse;
-	}
-
 #if OSUnix || MemoryUseSystemFunction || OSForcePOSIXForWindows
+	// Function allows NULL as an adress
 	newAdress = realloc(adress, memorySize);
 #elif OSWindows
-
+	
 	const HANDLE heapHandle = GetProcessHeap(); // Windows 2000 SP4, Kernel32.dll, heapapi.h
-	newAdress = HeapReAlloc(heapHandle, 0, adress, memorySize); // Windows 2000 SP4, Kernel32.dll, heapapi.h
+
+	if(adress)
+	{
+		newAdress = HeapReAlloc(heapHandle, 0, adress, memorySize); // Windows 2000 SP4, Kernel32.dll, heapapi.h
+	}
+	else
+	{
+		newAdress = HeapAlloc(heapHandle, 0, memorySize); // Windows 2000 SP4, Kernel32.dll, heapapi.h
+	}
 
 	return newAdress;
 
@@ -462,7 +466,13 @@ PXSize PXAPI PXMemoryCopy(const void* PXRestrict inputBuffer, const PXSize input
 {
 	const PXSize bufferSize = PXMathMinimumIU(inputBufferSize, outputBufferSize);
 
-#if MemoryAssertEnable
+	if(bufferSize == 0)
+	{
+		return 0;
+	}
+
+#if MemoryAssertEnable	
+	//assert(bufferSize > 0);
 	assert(inputBuffer);
 	assert(outputBuffer);
 #endif

@@ -2641,6 +2641,10 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
             pxRenderEntity.MatrixModel = pxModel->ModelMatrix;
             pxRenderEntity.ShaderProgramReference = pxModel->ShaderProgramReference;
 
+            pxModel->RenderBothSides = 1;
+            pxModel->Mesh.IndexBuffer.DrawModeID |= PXDrawModeIDPoint;
+
+#if 0
             // TODO: TEMP FIX
             if(!qqq)
             {
@@ -2648,9 +2652,10 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
             }
             else
             {
-                pxModel->ShaderProgramReference= qqq;
+                pxModel->ShaderProgramReference = qqq;
                 pxRenderEntity.ShaderProgramReference = qqq;
             }
+#endif
 
 
             PXEngineResourceRender(pxEngine, &pxRenderEntity);

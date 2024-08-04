@@ -92,27 +92,37 @@ void PXTextMatchTest()
 #include <OS/Hardware/PXVideo.h>
 #include <OS/Hardware/PXProcessor.h>
 #include <Math/PXMath.h>
+#include <OS/Time/PXTime.h>
 
 int main()
 {
 	PXConsoleWrite(0, "[i] Starting testing...\n");
 
 
+	
 
+	const PXSize amount = 100000000;
+	const float res = 1/25.0f;
+	
+	PXConsoleWriteF(0, "[%3i] --- Start ---\n", amount);
+	
+	PXInt64U startTime = PXTimeCounterStampGet();
 
-
-	for(size_t i = 0; i < 128; i++)
+	for(PXSize i = 0; i < amount; i++)
 	{
-		float x = 0xAABBCCDD;// *0.0025f;
+		float input = i * res;
+		float output = PXMathSinusF(input);
 
-		PXConsoleWriteF(0, "[%i] %8.8X\n", i, x);
-
-		x = PXMathSinusF(x);
-
-		PXConsoleWriteF(0, "[%i] %6.4f\n", i, x);
+		//PXConsoleWriteF(0, "[%3i] %6.4f -> %6.4f\n", i, input, output);
 	}
 
+	PXInt64U endTime = PXTimeCounterStampGet();
+	PXInt64U delta = endTime - startTime;
+	float endTimeInS = PXTimeCounterStampToSecoundsF(delta);
 
+	float avg = delta / (float)amount;
+
+	PXConsoleWriteF(0, "[%3i] Took: %6.3fs. AVG: %6.3fus\n", amount, endTimeInS, avg);
 
 
 

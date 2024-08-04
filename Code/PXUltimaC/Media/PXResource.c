@@ -497,6 +497,9 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                 pxModel->Info.ID = PXResourceManagerGenerateUniqeID(pxResourceManager);
                 PXDictionaryAdd(&pxResourceManager->ModelLookUp, &pxModel->Info.ID, pxModel);
 
+                // Add scaling
+                PXMatrix4x4FScaleBy(&pxModel->ModelMatrix, pxModelCreateInfo->Scale);
+
 
                 const PXBool hasFilePath = PXNull != pxResourceCreateInfo->FilePath;
 
@@ -1555,7 +1558,7 @@ PXActionResult PXAPI PXResourceStoreName(PXResourceManager* const pxResourceMana
 
     PXLogPrint
     (
-        PXLoggingError,
+        PXLoggingInfo,
         "Resource",
         "Store-Name",
         "%s",
@@ -1564,6 +1567,8 @@ PXActionResult PXAPI PXResourceStoreName(PXResourceManager* const pxResourceMana
 #endif
 
     PXFlexDataCacheAdd(&pxResourceManager->NameCache, &pxResourceInfo->ID, name, nameSize);
+
+    pxResourceInfo->Flags |= PXEngineResourceInfoHasName;
 
     return PXActionSuccessful;
 }
@@ -1587,12 +1592,14 @@ PXActionResult PXAPI PXResourceStorePath(PXResourceManager* const pxResourceMana
 
     PXFlexDataCacheAdd(&pxResourceManager->NameCache, &pxResourceInfo->ID, name, nameSize);
 
+    pxResourceInfo->Flags |= PXEngineResourceInfoHasSource;
+
     return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXResourceFetchName(PXResourceManager* const pxResourceManager, PXResourceInfo* const pxResourceInfo, char** name, PXSize* nameSize)
 {
-    PXFlexDataCacheGet(&pxResourceManager->NameCache, pxResourceInfo->ID, name, nameSize);
+    PXFlexDataCacheGet(&pxResourceManager->NameCache, &pxResourceInfo->ID, name, nameSize);
 
     return PXActionSuccessful;
 }
@@ -1612,7 +1619,7 @@ void PXAPI PXRectangleOffsetSet(PXRectangleOffset* const pxRectangleOffset, floa
     pxRectangleOffset->Bottom = bottom;
 }
 
-PXMaterial* PXAPI PXMaterialContainerFind(const PXMaterialContainer* const pxMaterialContainer, struct PXText_* const pxMaterialName)
+PXMaterial* PXAPI PXMaterialContainerFind(PXResourceManager* const pxResourceManager, const PXMaterialContainer* const pxMaterialContainer, struct PXText_* const pxMaterialName)
 {
     if (!pxMaterialContainer)
     {
@@ -1626,8 +1633,12 @@ PXMaterial* PXAPI PXMaterialContainerFind(const PXMaterialContainer* const pxMat
         for (PXSize materialID = 0; materialID < pxMaterialContainer->MaterialListAmount; ++materialID)
         {
             PXMaterial* const pxMaterial = &pxMaterialContainer->MaterialList[materialID];
+            char* name = 0;
+            PXSize nameSize = 0;
 
-            const PXBool isMatch = 0;// PXTextCompareA(pxMaterialName->TextA, pxMaterialName->SizeUsed, pxMaterial->Name, PXTextUnkownLength);
+            PXResourceFetchName(pxResourceManager, &pxMaterial->Info, &name, &nameSize);
+
+            const PXBool isMatch = PXTextCompareA(pxMaterialName->TextA, pxMaterialName->SizeUsed, name, nameSize);
 
             if (isMatch)
             {

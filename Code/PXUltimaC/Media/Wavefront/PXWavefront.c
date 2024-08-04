@@ -619,7 +619,12 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
                         PXIndexSegment* const pxIndexSegmentCurrent = &pxModel->Mesh.IndexBuffer.SegmentList[materialUseIndex];
                         PXSize offset = counterIndex - currentTotalOffset;
 
-                        pxIndexSegmentCurrent->Material = PXMaterialContainerFind(pxModel->MaterialContaierList, &materialFileName);
+                        pxIndexSegmentCurrent->Material = PXMaterialContainerFind
+                        (
+                            pxResourceLoadInfo->Manager, 
+                            pxModel->MaterialContaierList,
+                            &materialFileName
+                        );
 
                         if (offset != 0) 
                         {

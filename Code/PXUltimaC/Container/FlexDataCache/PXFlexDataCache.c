@@ -80,7 +80,7 @@ void PXAPI PXFlexDataCacheGet(PXFlexDataCache* const pxFlexDataCache, const char
             return;
         }
 
-        dataCursor += length;
+        dataCursor += length+1;
     }
 
     *data = 0;

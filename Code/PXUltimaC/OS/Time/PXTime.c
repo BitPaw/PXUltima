@@ -133,7 +133,7 @@ float PXAPI PXTimeCounterStampToSecoundsF(const PXInt64U timestamp)
 
 	result = timestamp / (float)frequency.QuadPart;
 
-	//result /= 1000.0f;
+	//result /= 1000000.0f;
 
 	return result;
 }

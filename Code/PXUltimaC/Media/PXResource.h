@@ -619,7 +619,9 @@ typedef struct PXMaterial_
 }
 PXMaterial;
 
+
 // Container to save a list of materials.
+// This is only ment to be a faster lookup for a model.
 typedef struct PXMaterialContainer_
 {
 	PXSize MaterialListAmount;
@@ -627,8 +629,6 @@ typedef struct PXMaterialContainer_
 }
 PXMaterialContainer;
 
-
-PXPublic PXMaterial* PXAPI PXMaterialContainerFind(const PXMaterialContainer* const pxMaterialContainer, struct PXText_* const pxMaterialName);
 
 
 
@@ -2761,6 +2761,11 @@ PXPublic PXActionResult PXAPI PXResourceSaveA(PXResourceSaveInfo* const pxResour
 
 PXPublic PXActionResult PXAPI PXResourceSerialize(PXResource* const pxResource, PXFile* const pxFile);
 PXPublic PXActionResult PXAPI PXResourceParse(PXResource* const pxResource, PXFile* const pxFile);
+
+
+
+PXPublic PXMaterial* PXAPI PXMaterialContainerFind(PXResourceManager* const pxResourceManager, const PXMaterialContainer* const pxMaterialContainer, struct PXText_* const pxMaterialName);
+
 
 
 
