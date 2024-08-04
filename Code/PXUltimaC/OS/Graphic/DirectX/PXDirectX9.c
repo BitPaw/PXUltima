@@ -9,7 +9,7 @@
 #include <d3d9.h>
 #include <d3d9types.h>
 
-#define PXDX9IsSDKPresent 0
+#define PXDX9IsSDKPresent 0 // change this flag if you have the DirectX SDK installed, if not, code might not be compiled!
 
 #endif
 
@@ -21,17 +21,14 @@
 #include <d3dcompiler.h>
 #include <d3d9caps.h>
 #include <d3dcompiler.h>
-#include <D3DX9Shader.h>
 
-#include <d3dx9shader.h>
 
 #pragma comment(lib, "D3DCompiler.lib")
-
-
 #pragma comment(lib, "D3d9.lib")
 
 #if PXDX9IsSDKPresent
-#pragma comment(lib, "D3dx9.lib") // Only if SDK is inlayy
+#include <D3DX9Shader.h>
+#pragma comment(lib, "D3dx9.lib") // Only if SDK is present
 #endif
 
 #endif
@@ -62,9 +59,10 @@ typedef HRESULT(WINAPI* PXD3DCompile)
     __out_opt ID3DBlob** ppErrorMsgs
 );
 
-
+#if PXDX9IsSDKPresent
 typedef HRESULT(WINAPI* PXD3DXGetShaderConstantTable)(CONST DWORD* pFunction, LPD3DXCONSTANTTABLE* ppConstantTable);
 typedef HRESULT(WINAPI* PXD3DXGetShaderConstantTableEx)(CONST DWORD* pFunction, DWORD Flags, LPD3DXCONSTANTTABLE* ppConstantTable);
+#endif
 
 #endif
 
@@ -914,6 +912,7 @@ PXActionResult PXAPI PXDirectX9ShaderVariableSet(PXDirectX9* const pxDirectX9, c
     }
 
 
+#if PXDX9IsSDKPresent
     // Plan B: Fetch the value over the variable table
     {
         PXD3DXGetShaderConstantTable pxD3DXGetShaderConstantTable = (PXD3DXGetShaderConstantTable)pxDirectX9->ShaderConstantTableGet;
@@ -1014,6 +1013,7 @@ PXActionResult PXAPI PXDirectX9ShaderVariableSet(PXDirectX9* const pxDirectX9, c
 
         return shaderConstantResult;
     }
+#endif
 
 #endif
 
