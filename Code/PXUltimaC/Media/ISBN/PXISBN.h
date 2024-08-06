@@ -5,7 +5,7 @@
 
 typedef struct PXISBN_
 {
-	int x;
+    int x;
 }
 PXISBN;
 

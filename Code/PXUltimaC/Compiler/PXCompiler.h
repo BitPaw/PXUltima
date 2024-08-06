@@ -1,8 +1,7 @@
 #ifndef PXCompilerINCLUDE
 #define PXCompilerINCLUDE
 
-#include <OS/Error/PXActionResult.h>
-#include <OS/File/PXFile.h>
+#include <Media/PXResource.h>
 
 #define PXCompilerDEBUG 0
 
@@ -10,87 +9,87 @@
 
 typedef enum PXCompilerSymbolLexer_
 {
-	PXCompilerSymbolLexerInvalid,
+    PXCompilerSymbolLexerInvalid,
 
-	PXCompilerSymbolLexerWhiteSpace,
-	PXCompilerSymbolLexerNewLine,
-	PXCompilerSymbolLexerTab,
+    PXCompilerSymbolLexerWhiteSpace,
+    PXCompilerSymbolLexerNewLine,
+    PXCompilerSymbolLexerTab,
 
-	PXCompilerSymbolLexerGeneric,
+    PXCompilerSymbolLexerGeneric,
 
-	PXCompilerSymbolLexerSingleCharacter,
+    PXCompilerSymbolLexerSingleCharacter,
 
-	PXCompilerSymbolLexerBrackedRoundOpen, // '('
-	PXCompilerSymbolLexerBrackedRoundClose, // ')'
-	PXCompilerSymbolLexerBracketSquareOpen, // '['
-	PXCompilerSymbolLexerBracketSquareClose, // ']'
-	PXCompilerSymbolLexerBracketCurlyOpen, // '{'
-	PXCompilerSymbolLexerBracketCurlyClose, // '}'
-	PXCompilerSymbolLexerBracketAngleOpen, // '<'
-	PXCompilerSymbolLexerBracketAngleClose, // '>'
+    PXCompilerSymbolLexerBrackedRoundOpen, // '('
+    PXCompilerSymbolLexerBrackedRoundClose, // ')'
+    PXCompilerSymbolLexerBracketSquareOpen, // '['
+    PXCompilerSymbolLexerBracketSquareClose, // ']'
+    PXCompilerSymbolLexerBracketCurlyOpen, // '{'
+    PXCompilerSymbolLexerBracketCurlyClose, // '}'
+    PXCompilerSymbolLexerBracketAngleOpen, // '<'
+    PXCompilerSymbolLexerBracketAngleClose, // '>'
 
-	//PXCompilerSymbolLexerBigger,
-	//PXCompilerSymbolLexerSmaler,
-	PXCompilerSymbolLexerBiggerAndEqual,
-	PXCompilerSymbolLexerSmalerAndEqual,
-	PXCompilerSymbolLexerEqual,
-	PXCompilerSymbolLexerEqualDouble,
-	PXCompilerSymbolLexerEqualTrippel,
-	PXCompilerSymbolLexerCompareThreeWay,
+    //PXCompilerSymbolLexerBigger,
+    //PXCompilerSymbolLexerSmaler,
+    PXCompilerSymbolLexerBiggerAndEqual,
+    PXCompilerSymbolLexerSmalerAndEqual,
+    PXCompilerSymbolLexerEqual,
+    PXCompilerSymbolLexerEqualDouble,
+    PXCompilerSymbolLexerEqualTrippel,
+    PXCompilerSymbolLexerCompareThreeWay,
 
-	PXCompilerSymbolLexerQuestionmark,
-	PXCompilerSymbolLexerExclamation,
-	PXCompilerSymbolLexerDot,
-	PXCompilerSymbolLexerComma,
-	PXCompilerSymbolLexerColon,
-	PXCompilerSymbolLexerSemiColon,
-	PXCompilerSymbolLexerHash,
-	PXCompilerSymbolLexerPlus,
-	PXCompilerSymbolLexerMinus,
-	PXCompilerSymbolLexerSlash,
-	PXCompilerSymbolLexerAsterisk, // '*'
-	PXCompilerSymbolLexerSlashBack,
-	PXCompilerSymbolLexerAmpercant,
-	PXCompilerSymbolLexerPercent,
-	PXCompilerSymbolLexerBar,
-	PXCompilerSymbolLexerDegree,
-	PXCompilerSymbolLexerExponent,
-	PXCompilerSymbolLexerTilde,
-	PXCompilerSymbolLexerApostrophe,
+    PXCompilerSymbolLexerQuestionmark,
+    PXCompilerSymbolLexerExclamation,
+    PXCompilerSymbolLexerDot,
+    PXCompilerSymbolLexerComma,
+    PXCompilerSymbolLexerColon,
+    PXCompilerSymbolLexerSemiColon,
+    PXCompilerSymbolLexerHash,
+    PXCompilerSymbolLexerPlus,
+    PXCompilerSymbolLexerMinus,
+    PXCompilerSymbolLexerSlash,
+    PXCompilerSymbolLexerAsterisk, // '*'
+    PXCompilerSymbolLexerSlashBack,
+    PXCompilerSymbolLexerAmpercant,
+    PXCompilerSymbolLexerPercent,
+    PXCompilerSymbolLexerBar,
+    PXCompilerSymbolLexerDegree,
+    PXCompilerSymbolLexerExponent,
+    PXCompilerSymbolLexerTilde,
+    PXCompilerSymbolLexerApostrophe,
 
-	PXCompilerSymbolLexerComment,
+    PXCompilerSymbolLexerComment,
 
-	PXCompilerSymbolLexerBool,
-	PXCompilerSymbolLexerFloat,
-	PXCompilerSymbolLexerInteger,
-	PXCompilerSymbolLexerString,
+    PXCompilerSymbolLexerBool,
+    PXCompilerSymbolLexerFloat,
+    PXCompilerSymbolLexerInteger,
+    PXCompilerSymbolLexerString,
 
-	PXCompilerSymbolLexerStringBegin,
-	PXCompilerSymbolLexerStringEnd,
+    PXCompilerSymbolLexerStringBegin,
+    PXCompilerSymbolLexerStringEnd,
 
-	PXCompilerSymbolLexerEndOfFile
+    PXCompilerSymbolLexerEndOfFile
 }
 PXCompilerSymbolLexer;
 
 typedef struct PXCompilerSymbolEntry_
 {
-	//---<Temporal data------
-	union
-	{
-		char* Source;
-		float DataF;
-		int DataI32S;
-		unsigned int DataI32U;
-		unsigned short DataS;
-		unsigned char DataC;
-	};
+    //---<Temporal data------
+    union
+    {
+        char* Source;
+        float DataF;
+        int DataI32S;
+        unsigned int DataI32U;
+        unsigned short DataS;
+        unsigned char DataC;
+    };
 
-	unsigned int Coloum;
-	unsigned int Line;
-	unsigned int Size;
-	//----------------------
+    unsigned int Coloum;
+    unsigned int Line;
+    unsigned int Size;
+    //----------------------
 
-	PXCompilerSymbolLexer ID;
+    PXCompilerSymbolLexer ID;
 }
 PXCompilerSymbolEntry;
 
@@ -98,38 +97,38 @@ PXCompilerSymbolEntry;
 // Position where the attached comment to a symbol is in
 typedef enum PXCommentPosition_
 {
-	PXCommentPositionInvalid,
-	PXCommentPositionHeader,
-	PXCommentPositionInline
+    PXCommentPositionInvalid,
+    PXCommentPositionHeader,
+    PXCommentPositionInline
 }
 PXCommentPosition;
 
 typedef struct PXComment_
 {
-	PXSize Line;
-	char* Data;
-	PXSize Size;
-	PXCommentPosition Position;
+    PXSize Line;
+    char* Data;
+    PXSize Size;
+    PXCommentPosition Position;
 }
 PXComment;
 
 
 typedef struct PXCompilerReadInfo_
 {
-	PXCompilerSymbolEntry SymbolEntryCurrent;
+    PXCompilerSymbolEntry SymbolEntryCurrent;
 
-	// TODO: temp solution
-	// Comment to be parsed if it is out of bounce for the symbol
-	PXComment Comment;
+    // TODO: temp solution
+    // Comment to be parsed if it is out of bounce for the symbol
+    PXComment Comment;
 
-	PXFile* FileInput;
-	PXFile* FileCache;
-	//PXFile* TokenStream;
+    PXFile* FileInput;
+    PXFile* FileCache;
+    //PXFile* TokenStream;
 
-	// the current depth of the current object stack
-	PXSize DepthCurrent;
+    // the current depth of the current object stack
+    PXSize DepthCurrent;
 
-	PXSize ErrorCounter;
+    PXSize ErrorCounter;
 
 
 }
@@ -139,20 +138,20 @@ typedef void (PXAPI* PXCompilerWriteFunction)(PXCompiler* const pxCompiler);
 
 typedef struct PXCompilerWriteInfo_
 {
-	PXFile* FileOutput;
+    PXFile* FileOutput;
 
-	PXCodeDocumentElement* CodeElementCurrent;
+    PXCodeDocumentElement* CodeElementCurrent;
 
-	PXCompilerWriteFunction WriteNode;
-	PXCompilerWriteFunction WriteComment; // Special behaviour, if position does not match, dont write
-	PXCompilerWriteFunction WriteFile; // Regarded as the root of all things. The physical file
-	PXCompilerWriteFunction WriteInclude;
-	PXCompilerWriteFunction WriteContainer;
-	PXCompilerWriteFunction WriteFunction;
-	PXCompilerWriteFunction WriteDefinition;
-	PXCompilerWriteFunction WriteParameter;
+    PXCompilerWriteFunction WriteNode;
+    PXCompilerWriteFunction WriteComment; // Special behaviour, if position does not match, dont write
+    PXCompilerWriteFunction WriteFile; // Regarded as the root of all things. The physical file
+    PXCompilerWriteFunction WriteInclude;
+    PXCompilerWriteFunction WriteContainer;
+    PXCompilerWriteFunction WriteFunction;
+    PXCompilerWriteFunction WriteDefinition;
+    PXCompilerWriteFunction WriteParameter;
 
-	PXInt8U TABSize;
+    PXInt8U TABSize;
 }
 PXCompilerWriteInfo;
 
@@ -167,32 +166,32 @@ PXCompilerWriteInfo;
 
 typedef struct PXCompiler_
 {
-	union
-	{
-		PXCompilerReadInfo ReadInfo;
-		PXCompilerWriteInfo WriteInfo;
-	};
+    union
+    {
+        PXCompilerReadInfo ReadInfo;
+        PXCompilerWriteInfo WriteInfo;
+    };
 
-	PXCodeDocument* CodeDocument;
+    PXCodeDocument* CodeDocument;
 
-	PXSize EndOfCommand;
-	const char* EndOfCommandSize;
+    PXSize EndOfCommand;
+    const char* EndOfCommandSize;
 
-	PXSize CommentSingleLineSize;
-	const char* CommentSingleLine; // Example : "//" or "#"
+    PXSize CommentSingleLineSize;
+    const char* CommentSingleLine; // Example : "//" or "#"
 
-	PXSize CommentMultibleLineBeginSize;
-	const char* CommentMultibleLineBegin;  // Example : "/*"
+    PXSize CommentMultibleLineBeginSize;
+    const char* CommentMultibleLineBegin;  // Example : "/*"
 
-	PXSize CommentMultibleLineEndSize;
-	const char* CommentMultibleLineEnd;  // Example : "*/"
+    PXSize CommentMultibleLineEndSize;
+    const char* CommentMultibleLineEnd;  // Example : "*/"
 
-	PXInt32U Flags;
+    PXInt32U Flags;
 
 
-	//PXBool IntrepredNewLineAsWhiteSpace;
-	//PXBool IntrepredTabsAsWhiteSpace;
-	//PXBool DoPrintOutput;
+    //PXBool IntrepredNewLineAsWhiteSpace;
+    //PXBool IntrepredTabsAsWhiteSpace;
+    //PXBool DoPrintOutput;
 }
 PXCompiler;
 

@@ -5,17 +5,17 @@
 
 typedef enum PXYAMLLineType_
 {
-	PXYAMLLineTypeInvalid,
-	PXYAMLLineTypeUnkown,
-	PXYAMLLineTypeComment,
-	PXYAMLLineTypeKeyDeclare,
-	PXYAMLLineTypeKeyValueSeperator,
-	PXYAMLLineTypeKeyValueDeclare,
+    PXYAMLLineTypeInvalid,
+    PXYAMLLineTypeUnkown,
+    PXYAMLLineTypeComment,
+    PXYAMLLineTypeKeyDeclare,
+    PXYAMLLineTypeKeyValueSeperator,
+    PXYAMLLineTypeKeyValueDeclare,
 
-	PXYAMLLineTypeListElement,
-	PXYAMLLineTypeSeperator,
-	PXYAMLLineTypeNotationStyleBlock,
-	PXYAMLLineTypeNotationStyleExtendedLine
+    PXYAMLLineTypeListElement,
+    PXYAMLLineTypeSeperator,
+    PXYAMLLineTypeNotationStyleBlock,
+    PXYAMLLineTypeNotationStyleExtendedLine
 }
 PXYAMLLineType;
 

@@ -4,7 +4,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net462</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
-	<ImplicitUsings>disable</ImplicitUsings>
+    <ImplicitUsings>disable</ImplicitUsings>
     <BaseOutputPath>$(SolutionDir)[Export]/$(MSBuildProjectName)/$(PlatformArchitecture)$(Configuration)/</BaseOutputPath>
     <BaseIntermediateOutputPath>$(SolutionDir)[Temp]/$(MSBuildProjectName)/$(PlatformArchitecture)$(Configuration)/</BaseIntermediateOutputPath>
   </PropertyGroup>

@@ -151,162 +151,162 @@ typedef SQLRETURN(SQL_API* PXSQLDriversA)(SQLHENV henv, SQLUSMALLINT fDirection,
 
 PXActionResult PXAPI PXDataBaseInitialize(PXDataBase* const pxDataBase)
 {
-	PXClear(PXDataBase, pxDataBase);
+    PXClear(PXDataBase, pxDataBase);
 
-	// Load library, ODBC
-	{
-		const PXActionResult pxActionResult = PXLibraryOpenA(&pxDataBase->ODBCLibrary, "ODBC32.DLL");
+    // Load library, ODBC
+    {
+        const PXActionResult pxActionResult = PXLibraryOpenA(&pxDataBase->ODBCLibrary, "ODBC32.DLL");
 
-		if(PXActionSuccessful != pxActionResult)
-		{
-			return PXActionRefusedNotSupportedByOperatingSystem;
-		}
-	}
+        if(PXActionSuccessful != pxActionResult)
+        {
+            return PXActionRefusedNotSupportedByOperatingSystem;
+        }
+    }
 
-	// Fetch functions
-	{
-		PXLibraryFuntionEntry pxLibraryFuntionEntry[] =
-		{
-			{ &pxDataBase->AllocConnect,"SQLAllocConnect"},
-			{ &pxDataBase->AllocEnv,"SQLAllocEnv"},
-			{ &pxDataBase->AllocHandle,"SQLAllocHandle"},
-			{ &pxDataBase->AllocStmt,"SQLAllocStmt"},
-			{ &pxDataBase->BindCol,"SQLBindCol"},
-			{ &pxDataBase->BindParam,"SQLBindParam"},
-			{ &pxDataBase->Cancel,"SQLCancel"},
-			{ &pxDataBase->CancelHandle,"SQLCancelHandle"},
-			{ &pxDataBase->CloseCursor,"SQLCloseCursor"},
-		 { &pxDataBase->ColAttribute,"SQLColAttribute"},
-		 { &pxDataBase->Columns,"SQLColumns"},
-		 { &pxDataBase->Connect,"SQLConnect"},
-		 { &pxDataBase->CopyDesc,"SQLCopyDesc"},
-		 { &pxDataBase->DataSources,"SQLDataSources"},
-		 { &pxDataBase->DescribeCol,"SQLDescribeCol"},
-		 { &pxDataBase->Disconnect,"SQLDisconnect"},
-		 { &pxDataBase->EndTran,"SQLEndTran"},
-		 { &pxDataBase->Error,"SQLError"},
-		 { &pxDataBase->ExecDirect,"SQLExecDirect"},
-		 { &pxDataBase->Execute,"SQLExecute"},
-		 { &pxDataBase->Fetch,"SQLFetch"},
-		 { &pxDataBase->FetchScroll,"SQLFetchScroll"},
-		 { &pxDataBase->FreeConnect,"SQLFreeConnect"},
-		 { &pxDataBase->FreeEnv,"SQLFreeEnv"},
-		 { &pxDataBase->FreeHandle,"SQLFreeHandle"},
-		 { &pxDataBase->FreeStmt,"SQLFreeStmt"},
-		 { &pxDataBase->GetConnectAttr,"SQLGetConnectAttr"},
-		 { &pxDataBase->GetConnectOption,"SQLGetConnectOption"},
-		 { &pxDataBase->GetCursorName,"SQLGetCursorName"},
-		 { &pxDataBase->GetData,"SQLGetData"},
-		 { &pxDataBase->GetDescField,"SQLGetDescField"},
-		 { &pxDataBase->GetDescRec,"SQLGetDescRec"},
-		 { &pxDataBase->GetDiagField,"SQLGetDiagField"},
-		 { &pxDataBase->GetDiagRec,"SQLGetDiagRec"},
-		 { &pxDataBase->GetEnvAttr,"SQLGetEnvAttr"},
-		 { &pxDataBase->GetFunctions,"SQLGetFunctions"},
-		 { &pxDataBase->GetInfo,"SQLGetInfo"},
-		 { &pxDataBase->GetStmtAttr,"SQLGetStmtAttr"},
-		 { &pxDataBase->GetStmtOption,"SQLGetStmtOption"},
-		 { &pxDataBase->GetTypeInfo,"SQLGetTypeInfo"},
-		 { &pxDataBase->NumResultCols,"SQLNumResultCols"},
-		 { &pxDataBase->ParamData,"SQLParamData"},
-		 { &pxDataBase->Prepare,"SQLPrepare"},
-		 { &pxDataBase->PutData,"SQLPutData"},
-		 { &pxDataBase->RowCount,"SQLRowCount"},
-		 { &pxDataBase->SetConnectAttr,"SQLSetConnectAttr"},
-		 { &pxDataBase->SetConnectOption,"SQLSetConnectOption"},
-		 { &pxDataBase->SetCursorName,"SQLSetCursorName"},
-		 { &pxDataBase->SetDescField,"SQLSetDescField"},
-		 { &pxDataBase->SetDescRec,"SQLSetDescRec"},
-		 { &pxDataBase->SetEnvAttr,"SQLSetEnvAttr"},
-		 { &pxDataBase->SetParam,"SQLSetParam"},
-		 { &pxDataBase->SetStmtAttr,"SQLSetStmtAttr"},
-		 { &pxDataBase->SetStmtOption,"SQLSetStmtOption"},
-		 { &pxDataBase->SpecialColumns,"SQLSpecialColumns"},
-		 { &pxDataBase->Statistics,"SQLStatistics"},
-		 { &pxDataBase->Tables,"SQLTables"},
-		 { &pxDataBase->Transact,"SQLTransact"},
+    // Fetch functions
+    {
+        PXLibraryFuntionEntry pxLibraryFuntionEntry[] =
+        {
+            { &pxDataBase->AllocConnect,"SQLAllocConnect"},
+            { &pxDataBase->AllocEnv,"SQLAllocEnv"},
+            { &pxDataBase->AllocHandle,"SQLAllocHandle"},
+            { &pxDataBase->AllocStmt,"SQLAllocStmt"},
+            { &pxDataBase->BindCol,"SQLBindCol"},
+            { &pxDataBase->BindParam,"SQLBindParam"},
+            { &pxDataBase->Cancel,"SQLCancel"},
+            { &pxDataBase->CancelHandle,"SQLCancelHandle"},
+            { &pxDataBase->CloseCursor,"SQLCloseCursor"},
+         { &pxDataBase->ColAttribute,"SQLColAttribute"},
+         { &pxDataBase->Columns,"SQLColumns"},
+         { &pxDataBase->Connect,"SQLConnect"},
+         { &pxDataBase->CopyDesc,"SQLCopyDesc"},
+         { &pxDataBase->DataSources,"SQLDataSources"},
+         { &pxDataBase->DescribeCol,"SQLDescribeCol"},
+         { &pxDataBase->Disconnect,"SQLDisconnect"},
+         { &pxDataBase->EndTran,"SQLEndTran"},
+         { &pxDataBase->Error,"SQLError"},
+         { &pxDataBase->ExecDirect,"SQLExecDirect"},
+         { &pxDataBase->Execute,"SQLExecute"},
+         { &pxDataBase->Fetch,"SQLFetch"},
+         { &pxDataBase->FetchScroll,"SQLFetchScroll"},
+         { &pxDataBase->FreeConnect,"SQLFreeConnect"},
+         { &pxDataBase->FreeEnv,"SQLFreeEnv"},
+         { &pxDataBase->FreeHandle,"SQLFreeHandle"},
+         { &pxDataBase->FreeStmt,"SQLFreeStmt"},
+         { &pxDataBase->GetConnectAttr,"SQLGetConnectAttr"},
+         { &pxDataBase->GetConnectOption,"SQLGetConnectOption"},
+         { &pxDataBase->GetCursorName,"SQLGetCursorName"},
+         { &pxDataBase->GetData,"SQLGetData"},
+         { &pxDataBase->GetDescField,"SQLGetDescField"},
+         { &pxDataBase->GetDescRec,"SQLGetDescRec"},
+         { &pxDataBase->GetDiagField,"SQLGetDiagField"},
+         { &pxDataBase->GetDiagRec,"SQLGetDiagRec"},
+         { &pxDataBase->GetEnvAttr,"SQLGetEnvAttr"},
+         { &pxDataBase->GetFunctions,"SQLGetFunctions"},
+         { &pxDataBase->GetInfo,"SQLGetInfo"},
+         { &pxDataBase->GetStmtAttr,"SQLGetStmtAttr"},
+         { &pxDataBase->GetStmtOption,"SQLGetStmtOption"},
+         { &pxDataBase->GetTypeInfo,"SQLGetTypeInfo"},
+         { &pxDataBase->NumResultCols,"SQLNumResultCols"},
+         { &pxDataBase->ParamData,"SQLParamData"},
+         { &pxDataBase->Prepare,"SQLPrepare"},
+         { &pxDataBase->PutData,"SQLPutData"},
+         { &pxDataBase->RowCount,"SQLRowCount"},
+         { &pxDataBase->SetConnectAttr,"SQLSetConnectAttr"},
+         { &pxDataBase->SetConnectOption,"SQLSetConnectOption"},
+         { &pxDataBase->SetCursorName,"SQLSetCursorName"},
+         { &pxDataBase->SetDescField,"SQLSetDescField"},
+         { &pxDataBase->SetDescRec,"SQLSetDescRec"},
+         { &pxDataBase->SetEnvAttr,"SQLSetEnvAttr"},
+         { &pxDataBase->SetParam,"SQLSetParam"},
+         { &pxDataBase->SetStmtAttr,"SQLSetStmtAttr"},
+         { &pxDataBase->SetStmtOption,"SQLSetStmtOption"},
+         { &pxDataBase->SpecialColumns,"SQLSpecialColumns"},
+         { &pxDataBase->Statistics,"SQLStatistics"},
+         { &pxDataBase->Tables,"SQLTables"},
+         { &pxDataBase->Transact,"SQLTransact"},
 
-		 {&pxDataBase->ColAttributeW,"SQLColAttributeW"},
-		 {&pxDataBase->ColAttributesW,"SQLColAttributesW"},
-		 {&pxDataBase->ConnectW,"SQLConnectW"},
-		 {&pxDataBase->DescribeColW,"SQLDescribeColW"},
-		 {&pxDataBase->ErrorW,"SQLErrorW"},
-		 {&pxDataBase->ExecDirectW,"SQLExecDirectW"},
-		 {&pxDataBase->GetConnectAttrW,"SQLGetConnectAttrW"},
-		 {&pxDataBase->GetCursorNameW,"SQLGetCursorNameW"},
-		 {&pxDataBase->SetDescFieldW,"SQLSetDescFieldW"},
-		 {&pxDataBase->GetDescFieldW,"SQLGetDescFieldW"},
-		 {&pxDataBase->GetDescRecW,"SQLGetDescRecW"},
-		 {&pxDataBase->GetDiagFieldW,"SQLGetDiagFieldW"},
-		 {&pxDataBase->GetDiagRecW,"SQLGetDiagRecW"},
-		 {&pxDataBase->PrepareW,"SQLPrepareW"},
-		 {&pxDataBase->SetConnectAttrW,"SQLSetConnectAttrW"},
-		 {&pxDataBase->SetCursorNameW,"SQLSetCursorNameW"},
-		 {&pxDataBase->ColumnsW,"SQLColumnsW"},
-		 {&pxDataBase->GetConnectOptionW,"SQLGetConnectOptionW"},
-		 {&pxDataBase->GetInfoW,"SQLGetInfoW"},
-		 {&pxDataBase->GetTypeInfoW,"SQLGetTypeInfoW"},
-		 {&pxDataBase->SetConnectOptionW,"SQLSetConnectOptionW"},
-		 {&pxDataBase->SpecialColumnsW,"SQLSpecialColumnsW"},
-		 {&pxDataBase->StatisticsW,"SQLStatisticsW"},
-		 {&pxDataBase->TablesW,"SQLTablesW"},
-		 {&pxDataBase->DataSourcesW,"SQLDataSourcesW"},
-		 {&pxDataBase->DriverConnectW,"SQLDriverConnectW"},
-		 {&pxDataBase->BrowseConnectW,"SQLBrowseConnectW"},
-		 {&pxDataBase->ColumnPrivilegesW,"SQLColumnPrivilegesW"},
-		 {&pxDataBase->GetStmtAttrW,"SQLGetStmtAttrW"},
-		 {&pxDataBase->SetStmtAttrW,"SQLSetStmtAttrW"},
-		 {&pxDataBase->ForeignKeysW,"SQLForeignKeysW"},
-		 {&pxDataBase->NativeSqlW,"SQLNativeSqlW"},
-		 {&pxDataBase->PrimaryKeysW,"SQLPrimaryKeysW"},
-		 {&pxDataBase->ProcedureColumnsW,"SQLProcedureColumnsW"},
-		 {&pxDataBase->ProceduresW,"SQLProceduresW"},
-		 {&pxDataBase->TablePrivilegesW,"SQLTablePrivilegesW"},
-		 {&pxDataBase->DriversW,"SQLDriversW"},
-		 {&pxDataBase->ColAttributeA,"SQLColAttributeA"},
-		 {&pxDataBase->ColAttributesA,"SQLColAttributesA"},
-		 {&pxDataBase->ConnectA,"SQLConnectA"},
-		 {&pxDataBase->DescribeColA,"SQLDescribeColA"},
-		 {&pxDataBase->ErrorA,"SQLErrorA"},
-		 {&pxDataBase->ExecDirectA,"SQLExecDirectA"},
-		 {&pxDataBase->GetConnectAttrA,"SQLGetConnectAttrA"},
-		 {&pxDataBase->GetCursorNameA,"SQLGetCursorNameA"},
-		 {&pxDataBase->GetDescFieldA,"SQLGetDescFieldA"},
-		 {&pxDataBase->GetDescRecA,"SQLGetDescRecA"},
-		 {&pxDataBase->GetDiagFieldA,"SQLGetDiagFieldA"},
-		 {&pxDataBase->GetDiagRecA,"SQLGetDiagRecA"},
-		 {&pxDataBase->GetStmtAttrA,"SQLGetStmtAttrA"},
-		 {&pxDataBase->GetTypeInfoA,"SQLGetTypeInfoA"},
-		 {&pxDataBase->PrepareA,"SQLPrepareA"},
-		 {&pxDataBase->SetConnectAttrA,"SQLSetConnectAttrA"},
-		 {&pxDataBase->SetCursorNameA,"SQLSetCursorNameA"},
-		 {&pxDataBase->ColumnsA,"SQLColumnsA"},
-		 {&pxDataBase->GetConnectOptionA,"SQLGetConnectOptionA"},
-		 {&pxDataBase->GetInfoA,"SQLGetInfoA"},
-		 {&pxDataBase->GetStmtOptionA,"SQLGetStmtOptionA"},
-		 {&pxDataBase->SetConnectOptionA,"SQLSetConnectOptionA"},
-		 {&pxDataBase->SetStmtOptionA,"SQLSetStmtOptionA"},
-		 {&pxDataBase->SpecialColumnsA,"SQLSpecialColumnsA"},
-		 {&pxDataBase->StatisticsA,"SQLStatisticsA"},
-		 {&pxDataBase->TablesA,"SQLTablesA"},
-		 {&pxDataBase->DataSourcesA,"SQLDataSourcesA"},
-		 {&pxDataBase->DriverConnectA,"SQLDriverConnectA"},
-		 {&pxDataBase->BrowseConnectA,"SQLBrowseConnectA"},
-		 {&pxDataBase->ColumnPrivilegesA,"SQLColumnPrivilegesA"},
-		 {&pxDataBase->DescribeParamA,"SQLDescribeParamA"},
-		 {&pxDataBase->ForeignKeysA,"SQLForeignKeysA"},
-		 {&pxDataBase->NativeSqlA,"SQLNativeSqlA"},
-		 {&pxDataBase->PrimaryKeysA,"SQLPrimaryKeysA"},
-		 {&pxDataBase->ProcedureColumnsA,"SQLProcedureColumnsA"},
-		 {&pxDataBase->ProceduresA,"SQLProceduresA"},
-		 {&pxDataBase->TablePrivilegesA,"SQLTablePrivilegesA"},
-		 {&pxDataBase->DriversA,"SQLDriversA"},
-		};
+         {&pxDataBase->ColAttributeW,"SQLColAttributeW"},
+         {&pxDataBase->ColAttributesW,"SQLColAttributesW"},
+         {&pxDataBase->ConnectW,"SQLConnectW"},
+         {&pxDataBase->DescribeColW,"SQLDescribeColW"},
+         {&pxDataBase->ErrorW,"SQLErrorW"},
+         {&pxDataBase->ExecDirectW,"SQLExecDirectW"},
+         {&pxDataBase->GetConnectAttrW,"SQLGetConnectAttrW"},
+         {&pxDataBase->GetCursorNameW,"SQLGetCursorNameW"},
+         {&pxDataBase->SetDescFieldW,"SQLSetDescFieldW"},
+         {&pxDataBase->GetDescFieldW,"SQLGetDescFieldW"},
+         {&pxDataBase->GetDescRecW,"SQLGetDescRecW"},
+         {&pxDataBase->GetDiagFieldW,"SQLGetDiagFieldW"},
+         {&pxDataBase->GetDiagRecW,"SQLGetDiagRecW"},
+         {&pxDataBase->PrepareW,"SQLPrepareW"},
+         {&pxDataBase->SetConnectAttrW,"SQLSetConnectAttrW"},
+         {&pxDataBase->SetCursorNameW,"SQLSetCursorNameW"},
+         {&pxDataBase->ColumnsW,"SQLColumnsW"},
+         {&pxDataBase->GetConnectOptionW,"SQLGetConnectOptionW"},
+         {&pxDataBase->GetInfoW,"SQLGetInfoW"},
+         {&pxDataBase->GetTypeInfoW,"SQLGetTypeInfoW"},
+         {&pxDataBase->SetConnectOptionW,"SQLSetConnectOptionW"},
+         {&pxDataBase->SpecialColumnsW,"SQLSpecialColumnsW"},
+         {&pxDataBase->StatisticsW,"SQLStatisticsW"},
+         {&pxDataBase->TablesW,"SQLTablesW"},
+         {&pxDataBase->DataSourcesW,"SQLDataSourcesW"},
+         {&pxDataBase->DriverConnectW,"SQLDriverConnectW"},
+         {&pxDataBase->BrowseConnectW,"SQLBrowseConnectW"},
+         {&pxDataBase->ColumnPrivilegesW,"SQLColumnPrivilegesW"},
+         {&pxDataBase->GetStmtAttrW,"SQLGetStmtAttrW"},
+         {&pxDataBase->SetStmtAttrW,"SQLSetStmtAttrW"},
+         {&pxDataBase->ForeignKeysW,"SQLForeignKeysW"},
+         {&pxDataBase->NativeSqlW,"SQLNativeSqlW"},
+         {&pxDataBase->PrimaryKeysW,"SQLPrimaryKeysW"},
+         {&pxDataBase->ProcedureColumnsW,"SQLProcedureColumnsW"},
+         {&pxDataBase->ProceduresW,"SQLProceduresW"},
+         {&pxDataBase->TablePrivilegesW,"SQLTablePrivilegesW"},
+         {&pxDataBase->DriversW,"SQLDriversW"},
+         {&pxDataBase->ColAttributeA,"SQLColAttributeA"},
+         {&pxDataBase->ColAttributesA,"SQLColAttributesA"},
+         {&pxDataBase->ConnectA,"SQLConnectA"},
+         {&pxDataBase->DescribeColA,"SQLDescribeColA"},
+         {&pxDataBase->ErrorA,"SQLErrorA"},
+         {&pxDataBase->ExecDirectA,"SQLExecDirectA"},
+         {&pxDataBase->GetConnectAttrA,"SQLGetConnectAttrA"},
+         {&pxDataBase->GetCursorNameA,"SQLGetCursorNameA"},
+         {&pxDataBase->GetDescFieldA,"SQLGetDescFieldA"},
+         {&pxDataBase->GetDescRecA,"SQLGetDescRecA"},
+         {&pxDataBase->GetDiagFieldA,"SQLGetDiagFieldA"},
+         {&pxDataBase->GetDiagRecA,"SQLGetDiagRecA"},
+         {&pxDataBase->GetStmtAttrA,"SQLGetStmtAttrA"},
+         {&pxDataBase->GetTypeInfoA,"SQLGetTypeInfoA"},
+         {&pxDataBase->PrepareA,"SQLPrepareA"},
+         {&pxDataBase->SetConnectAttrA,"SQLSetConnectAttrA"},
+         {&pxDataBase->SetCursorNameA,"SQLSetCursorNameA"},
+         {&pxDataBase->ColumnsA,"SQLColumnsA"},
+         {&pxDataBase->GetConnectOptionA,"SQLGetConnectOptionA"},
+         {&pxDataBase->GetInfoA,"SQLGetInfoA"},
+         {&pxDataBase->GetStmtOptionA,"SQLGetStmtOptionA"},
+         {&pxDataBase->SetConnectOptionA,"SQLSetConnectOptionA"},
+         {&pxDataBase->SetStmtOptionA,"SQLSetStmtOptionA"},
+         {&pxDataBase->SpecialColumnsA,"SQLSpecialColumnsA"},
+         {&pxDataBase->StatisticsA,"SQLStatisticsA"},
+         {&pxDataBase->TablesA,"SQLTablesA"},
+         {&pxDataBase->DataSourcesA,"SQLDataSourcesA"},
+         {&pxDataBase->DriverConnectA,"SQLDriverConnectA"},
+         {&pxDataBase->BrowseConnectA,"SQLBrowseConnectA"},
+         {&pxDataBase->ColumnPrivilegesA,"SQLColumnPrivilegesA"},
+         {&pxDataBase->DescribeParamA,"SQLDescribeParamA"},
+         {&pxDataBase->ForeignKeysA,"SQLForeignKeysA"},
+         {&pxDataBase->NativeSqlA,"SQLNativeSqlA"},
+         {&pxDataBase->PrimaryKeysA,"SQLPrimaryKeysA"},
+         {&pxDataBase->ProcedureColumnsA,"SQLProcedureColumnsA"},
+         {&pxDataBase->ProceduresA,"SQLProceduresA"},
+         {&pxDataBase->TablePrivilegesA,"SQLTablePrivilegesA"},
+         {&pxDataBase->DriversA,"SQLDriversA"},
+        };
 
-		const PXSize amount = sizeof(pxLibraryFuntionEntry) / sizeof(PXLibraryFuntionEntry);
+        const PXSize amount = sizeof(pxLibraryFuntionEntry) / sizeof(PXLibraryFuntionEntry);
 
-		PXLibraryGetSymbolListA(&pxDataBase->ODBCLibrary, pxLibraryFuntionEntry, amount);
-	}
+        PXLibraryGetSymbolListA(&pxDataBase->ODBCLibrary, pxLibraryFuntionEntry, amount);
+    }
 
 
 
@@ -315,296 +315,296 @@ PXActionResult PXAPI PXDataBaseInitialize(PXDataBase* const pxDataBase)
 
 #if OSWindows
 
-	const PXSQLAllocHandle pxSQLAllocHandle = (PXSQLAllocHandle)pxDataBase->AllocHandle;
-	const PXSQLSetEnvAttr pxSQLSetEnvAttr = (PXSQLSetEnvAttr)pxDataBase->SetEnvAttr;
-	const PXSQLSetConnectAttrW pxSQLSetConnectAttrW = (PXSQLSetConnectAttrW)pxDataBase->SetConnectAttrW;
+    const PXSQLAllocHandle pxSQLAllocHandle = (PXSQLAllocHandle)pxDataBase->AllocHandle;
+    const PXSQLSetEnvAttr pxSQLSetEnvAttr = (PXSQLSetEnvAttr)pxDataBase->SetEnvAttr;
+    const PXSQLSetConnectAttrW pxSQLSetConnectAttrW = (PXSQLSetConnectAttrW)pxDataBase->SetConnectAttrW;
 
 
-	// Allocate environment handle
-	{
+    // Allocate environment handle
+    {
 
-		const SQLRETURN result = pxSQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &pxDataBase->EnvironmentID);
-		const PXBool successful = result == SQL_SUCCESS || result == SQL_SUCCESS_WITH_INFO;
+        const SQLRETURN result = pxSQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &pxDataBase->EnvironmentID);
+        const PXBool successful = result == SQL_SUCCESS || result == SQL_SUCCESS_WITH_INFO;
 
-		if(!successful)
-		{
-			return PXActionFailedMemoryAllocation;
-		}
-	}
+        if(!successful)
+        {
+            return PXActionFailedMemoryAllocation;
+        }
+    }
 
-	// Set the ODBC version environment attribute
-	{
-		const SQLRETURN result = pxSQLSetEnvAttr(pxDataBase->EnvironmentID, SQL_ATTR_ODBC_VERSION, (void*)SQL_OV_ODBC3, 0);
-		const PXBool successful = result == SQL_SUCCESS || result == SQL_SUCCESS_WITH_INFO;
+    // Set the ODBC version environment attribute
+    {
+        const SQLRETURN result = pxSQLSetEnvAttr(pxDataBase->EnvironmentID, SQL_ATTR_ODBC_VERSION, (void*)SQL_OV_ODBC3, 0);
+        const PXBool successful = result == SQL_SUCCESS || result == SQL_SUCCESS_WITH_INFO;
 
-		if(!successful)
-		{
-			return PXActionFailedSettingsInvalid;;
-		}
-	}
+        if(!successful)
+        {
+            return PXActionFailedSettingsInvalid;;
+        }
+    }
 
-	// Allocate connection handle
-	{
-		const SQLRETURN result = pxSQLAllocHandle(SQL_HANDLE_DBC, pxDataBase->EnvironmentID, &pxDataBase->ConnectionID);
-		const PXBool successful = result == SQL_SUCCESS || result == SQL_SUCCESS_WITH_INFO;
+    // Allocate connection handle
+    {
+        const SQLRETURN result = pxSQLAllocHandle(SQL_HANDLE_DBC, pxDataBase->EnvironmentID, &pxDataBase->ConnectionID);
+        const PXBool successful = result == SQL_SUCCESS || result == SQL_SUCCESS_WITH_INFO;
 
-		if(!successful)
-		{
-			return PXActionFailedMemoryAllocation;
-		}
-	}
+        if(!successful)
+        {
+            return PXActionFailedMemoryAllocation;
+        }
+    }
 
-	// Set login timeout to 5 seconds
-	{
-		const SQLRETURN resultConnect = pxSQLSetConnectAttrW(pxDataBase->ConnectionID, SQL_LOGIN_TIMEOUT, (SQLPOINTER)5, 0);
-		const PXBool successful = resultConnect == SQL_SUCCESS || resultConnect == SQL_SUCCESS_WITH_INFO;
+    // Set login timeout to 5 seconds
+    {
+        const SQLRETURN resultConnect = pxSQLSetConnectAttrW(pxDataBase->ConnectionID, SQL_LOGIN_TIMEOUT, (SQLPOINTER)5, 0);
+        const PXBool successful = resultConnect == SQL_SUCCESS || resultConnect == SQL_SUCCESS_WITH_INFO;
 
-		if(!successful)
-		{
-			return PXActionFailedSettingsInvalid;
-		}
-	}
+        if(!successful)
+        {
+            return PXActionFailedSettingsInvalid;
+        }
+    }
 #endif
 
 
-	return PXActionSuccessful;
+    return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXDataBaseRelease(PXDataBase* const pxDataBase)
 {
-	PXDataBaseCleanup(pxDataBase);
+    PXDataBaseCleanup(pxDataBase);
 
-	PXLibraryClose(&pxDataBase->ODBCLibrary);
+    PXLibraryClose(&pxDataBase->ODBCLibrary);
 
-	PXClear(PXDataBase, pxDataBase);
+    PXClear(PXDataBase, pxDataBase);
 
-	return PXActionSuccessful;
+    return PXActionSuccessful;
 }
 
 PXSQLType PXAPI PXSQLTypeFromID(const PXInt32U sqlTypeID)
 {
 #if OSUnix
-	return PXSQLTypeInvalid;
+    return PXSQLTypeInvalid;
 
 #elif PXOSWindowsDestop
-	switch(sqlTypeID)
-	{
-		// Mysql?
-		case -9: return PXSQLTypeStringUNICODE;
+    switch(sqlTypeID)
+    {
+        // Mysql?
+        case -9: return PXSQLTypeStringUNICODE;
 
-			// is this thenCorrect?
-		case SQL_VARCHAR:return PXSQLTypeStringANSI;
+            // is this thenCorrect?
+        case SQL_VARCHAR:return PXSQLTypeStringANSI;
 
-		case SQL_UNKNOWN_TYPE: return PXSQLTypeUnkown;
-		case SQL_CHAR:return PXSQLTypeCharacter;
-		case SQL_NUMERIC:return PXSQLTypeNumeric;
-		case SQL_DECIMAL:return PXSQLTypeDecimal;
-		case SQL_INTEGER:return PXSQLTypeInteger;
-		case SQL_SMALLINT:return PXSQLTypeShort;
-		case SQL_FLOAT:return PXSQLTypeFloat;
-		case SQL_REAL:return PXSQLTypeReal;
-		case SQL_DOUBLE:return PXSQLTypeDouble;
+        case SQL_UNKNOWN_TYPE: return PXSQLTypeUnkown;
+        case SQL_CHAR:return PXSQLTypeCharacter;
+        case SQL_NUMERIC:return PXSQLTypeNumeric;
+        case SQL_DECIMAL:return PXSQLTypeDecimal;
+        case SQL_INTEGER:return PXSQLTypeInteger;
+        case SQL_SMALLINT:return PXSQLTypeShort;
+        case SQL_FLOAT:return PXSQLTypeFloat;
+        case SQL_REAL:return PXSQLTypeReal;
+        case SQL_DOUBLE:return PXSQLTypeDouble;
 #if (ODBCVER >= 0x0300)
-		case SQL_DATETIME:return PXSQLTypeDATETIME;
+        case SQL_DATETIME:return PXSQLTypeDATETIME;
 #endif
 
 
-			/* One-parameter shortcuts for date/time data types */
+            /* One-parameter shortcuts for date/time data types */
 #if (ODBCVER >= 0x0300)
-		case SQL_TYPE_DATE:return PXSQLTypeTYPE_DATE;
-		case SQL_TYPE_TIME:return PXSQLTypeTYPE_TIME;
-		case SQL_TYPE_TIMESTAMP:return PXSQLTypeTYPE_TIMESTAMP;
+        case SQL_TYPE_DATE:return PXSQLTypeTYPE_DATE;
+        case SQL_TYPE_TIME:return PXSQLTypeTYPE_TIME;
+        case SQL_TYPE_TIMESTAMP:return PXSQLTypeTYPE_TIMESTAMP;
 #endif
 
-		default:
-			return PXSQLTypeInvalid;
-	}
+        default:
+            return PXSQLTypeInvalid;
+    }
 #else 
-	return PXSQLTypeInvalid;
+    return PXSQLTypeInvalid;
 #endif
 }
 
 PXActionResult PXAPI PXDataBaseConnectA
 (
-	PXDataBase* const pxDataBase,
-	const char* const source,
-	const char* const database,
-	const char* const user,
-	const char* const password
+    PXDataBase* const pxDataBase,
+    const char* const source,
+    const char* const database,
+    const char* const user,
+    const char* const password
 )
 {
-	PXText pxTextSource;
-	PXText pxTextDatabase;
-	PXText pxTextUser;
-	PXText pxTextPassword;
+    PXText pxTextSource;
+    PXText pxTextDatabase;
+    PXText pxTextUser;
+    PXText pxTextPassword;
 
-	PXTextConstructFromAdressA(&pxTextSource, source, PXTextLengthUnkown, PXTextLengthUnkown);
-	PXTextConstructFromAdressA(&pxTextDatabase, database, PXTextLengthUnkown, PXTextLengthUnkown);
-	PXTextConstructFromAdressA(&pxTextUser, user, PXTextLengthUnkown, PXTextLengthUnkown);
-	PXTextConstructFromAdressA(&pxTextPassword, password, PXTextLengthUnkown, PXTextLengthUnkown);
+    PXTextConstructFromAdressA(&pxTextSource, source, PXTextLengthUnkown, PXTextLengthUnkown);
+    PXTextConstructFromAdressA(&pxTextDatabase, database, PXTextLengthUnkown, PXTextLengthUnkown);
+    PXTextConstructFromAdressA(&pxTextUser, user, PXTextLengthUnkown, PXTextLengthUnkown);
+    PXTextConstructFromAdressA(&pxTextPassword, password, PXTextLengthUnkown, PXTextLengthUnkown);
 
-	const PXActionResult pxActionResult = PXDataBaseConnect(pxDataBase, &pxTextSource, &pxTextDatabase, &pxTextUser, &pxTextPassword);
+    const PXActionResult pxActionResult = PXDataBaseConnect(pxDataBase, &pxTextSource, &pxTextDatabase, &pxTextUser, &pxTextPassword);
 
 
-	return pxActionResult;
+    return pxActionResult;
 }
 
 PXActionResult PXAPI PXDataBaseConnect
 (
-	PXDataBase* const pxDataBase,
-	const PXText* const source,
-	const PXText* const database,
-	const PXText* const user,
-	const PXText* const password
+    PXDataBase* const pxDataBase,
+    const PXText* const source,
+    const PXText* const database,
+    const PXText* const user,
+    const PXText* const password
 )
 {
 #if OSUnix
-	return PXActionRefusedNotImplemented;
+    return PXActionRefusedNotImplemented;
 
 #elif PXOSWindowsDestop
 
-	PXDataBaseScanForDrivers(pxDataBase);
+    PXDataBaseScanForDrivers(pxDataBase);
 
-	// Connect
-	{
-		PXText pxTextSQLConnectionString;
-		PXTextConstructNamedBufferA(&pxTextSQLConnectionString, pxTextSQLConnectionStringBuffer, 1024u);
+    // Connect
+    {
+        PXText pxTextSQLConnectionString;
+        PXTextConstructNamedBufferA(&pxTextSQLConnectionString, pxTextSQLConnectionStringBuffer, 1024u);
 
-		PXText pxTextSQLConnectionStringResult;
-		PXTextConstructNamedBufferA(&pxTextSQLConnectionStringResult, pxTextSQLConnectionStringResultBuffer, 1024u);
+        PXText pxTextSQLConnectionStringResult;
+        PXTextConstructNamedBufferA(&pxTextSQLConnectionStringResult, pxTextSQLConnectionStringResultBuffer, 1024u);
 
-		SQLRETURN resultDriverConnect = 0;
+        SQLRETURN resultDriverConnect = 0;
 
-		switch(source->Format)
-		{
-			case TextFormatASCII:
-			case TextFormatUTF8:
-			{
-				const PXSQLDriverConnectA pxSQLDriverConnectA = (PXSQLDriverConnectA)pxDataBase->DriverConnectA;
+        switch(source->Format)
+        {
+            case TextFormatASCII:
+            case TextFormatUTF8:
+            {
+                const PXSQLDriverConnectA pxSQLDriverConnectA = (PXSQLDriverConnectA)pxDataBase->DriverConnectA;
 
-				const char driver[] = "MySQL ODBC 8.0 Unicode Driver";
+                const char driver[] = "MySQL ODBC 8.0 Unicode Driver";
 
-				PXTextPrint
-				(
-					&pxTextSQLConnectionString,
-					"Driver={%ls};Server=%ls;Database=%ls;UID=%ls;PWD=%ls;",
-					driver,
-					source->TextA,
-					database->TextA,
-					user->TextA,
-					password->TextA
-				);
+                PXTextPrint
+                (
+                    &pxTextSQLConnectionString,
+                    "Driver={%ls};Server=%ls;Database=%ls;UID=%ls;PWD=%ls;",
+                    driver,
+                    source->TextA,
+                    database->TextA,
+                    user->TextA,
+                    password->TextA
+                );
 
-				SQLSMALLINT writtenSize = 0;
+                SQLSMALLINT writtenSize = 0;
 
-				resultDriverConnect = pxSQLDriverConnectA
-				(
-					pxDataBase->ConnectionID,
-					NULL,
-					(SQLCHAR*)pxTextSQLConnectionString.TextA,
-					pxTextSQLConnectionString.SizeUsed,
-					(SQLCHAR*)pxTextSQLConnectionStringResult.TextA,
-					pxTextSQLConnectionStringResult.SizeAllocated,
-					&writtenSize,
-					SQL_DRIVER_NOPROMPT
-				);
+                resultDriverConnect = pxSQLDriverConnectA
+                (
+                    pxDataBase->ConnectionID,
+                    NULL,
+                    (SQLCHAR*)pxTextSQLConnectionString.TextA,
+                    pxTextSQLConnectionString.SizeUsed,
+                    (SQLCHAR*)pxTextSQLConnectionStringResult.TextA,
+                    pxTextSQLConnectionStringResult.SizeAllocated,
+                    &writtenSize,
+                    SQL_DRIVER_NOPROMPT
+                );
 
-				pxTextSQLConnectionStringResult.SizeUsed = writtenSize;
+                pxTextSQLConnectionStringResult.SizeUsed = writtenSize;
 
-				break;
-			}
-			case TextFormatUNICODE:
-			{
-				const PXSQLDriverConnectW pxSQLDriverConnectW = (PXSQLDriverConnectW)pxDataBase->DriverConnectW;
+                break;
+            }
+            case TextFormatUNICODE:
+            {
+                const PXSQLDriverConnectW pxSQLDriverConnectW = (PXSQLDriverConnectW)pxDataBase->DriverConnectW;
 
-				const wchar_t driver[] = L"MySQL ODBC 8.0 Unicode Driver";
+                const wchar_t driver[] = L"MySQL ODBC 8.0 Unicode Driver";
 
-				pxTextSQLConnectionString.SizeUsed = wsprintfW
-				(
-					pxTextSQLConnectionString.TextW,
-					L"Driver={%ls};Server=%ls;Database=%ls;UID=%ls;PWD=%ls;",
-					driver,
-					source->TextW,
-					database->TextW,
-					user->TextW,
-					password->TextW
-				);
+                pxTextSQLConnectionString.SizeUsed = wsprintfW
+                (
+                    pxTextSQLConnectionString.TextW,
+                    L"Driver={%ls};Server=%ls;Database=%ls;UID=%ls;PWD=%ls;",
+                    driver,
+                    source->TextW,
+                    database->TextW,
+                    user->TextW,
+                    password->TextW
+                );
 
-				SQLSMALLINT writtenSize = 0;
+                SQLSMALLINT writtenSize = 0;
 
-				resultDriverConnect = pxSQLDriverConnectW
-				(
-					pxDataBase->ConnectionID,
-					NULL,
-					pxTextSQLConnectionString.TextW,
-					pxTextSQLConnectionString.SizeUsed,
-					pxTextSQLConnectionStringResult.TextW,
-					pxTextSQLConnectionStringResult.SizeAllocated,
-					&writtenSize,
-					SQL_DRIVER_NOPROMPT
-				);
+                resultDriverConnect = pxSQLDriverConnectW
+                (
+                    pxDataBase->ConnectionID,
+                    NULL,
+                    pxTextSQLConnectionString.TextW,
+                    pxTextSQLConnectionString.SizeUsed,
+                    pxTextSQLConnectionStringResult.TextW,
+                    pxTextSQLConnectionStringResult.SizeAllocated,
+                    &writtenSize,
+                    SQL_DRIVER_NOPROMPT
+                );
 
-				pxTextSQLConnectionStringResult.SizeUsed = writtenSize;
+                pxTextSQLConnectionStringResult.SizeUsed = writtenSize;
 
-				break;
-			}
+                break;
+            }
 
-			default:
-				return PXActionRefuedTextFormatUnsupported;
-		}
+            default:
+                return PXActionRefuedTextFormatUnsupported;
+        }
 
-		const PXBool successfulConnected = resultDriverConnect == SQL_SUCCESS || resultDriverConnect == SQL_SUCCESS_WITH_INFO;
+        const PXBool successfulConnected = resultDriverConnect == SQL_SUCCESS || resultDriverConnect == SQL_SUCCESS_WITH_INFO;
 
-		if(!successfulConnected)
-		{
-			return PXActionFailedConnectionFailure;
-		}
-	}
+        if(!successfulConnected)
+        {
+            return PXActionFailedConnectionFailure;
+        }
+    }
 
 #if 0
-	if(dataBaseConnection->OnConnectedEvent)
-	{
-		// dataBaseConnection->OnConnectedEvent(driver, source, database, user);
-	}
+    if(dataBaseConnection->OnConnectedEvent)
+    {
+        // dataBaseConnection->OnConnectedEvent(driver, source, database, user);
+    }
 #endif
 
-	return PXActionSuccessful;
+    return PXActionSuccessful;
 
-	/*
-	PXSQLWCHAR* serverNameS = (wchar_t*)serverName;
-	const PXSQLSMALLINT serverNameLength = PXSQL_NTSL;
-	PXSQLWCHAR* userName = NULL;
-	const PXSQLSMALLINT userNameLength = 0;
-	PXSQLWCHAR* password = NULL;
-	const PXSQLSMALLINT passwordLength = 0;
+    /*
+    PXSQLWCHAR* serverNameS = (wchar_t*)serverName;
+    const PXSQLSMALLINT serverNameLength = PXSQL_NTSL;
+    PXSQLWCHAR* userName = NULL;
+    const PXSQLSMALLINT userNameLength = 0;
+    PXSQLWCHAR* password = NULL;
+    const PXSQLSMALLINT passwordLength = 0;
 
-	retcode = PXSQLConnectW
-	(
-	connectionHandle,
-	serverNameS,
-	serverNameLength,
-	userName,
-	userNameLength,
-	password,
-	passwordLength
-	);* /
+    retcode = PXSQLConnectW
+    (
+    connectionHandle,
+    serverNameS,
+    serverNameLength,
+    userName,
+    userNameLength,
+    password,
+    passwordLength
+    );* /
 
-	if (successfulConnected)
-	{
-	PXSQLUSMALLINT infoType = PXSQL_PROCEDURES;
-	wchar_t bufferLength[1024];
-	PXSQLSMALLINT cbInfoValueMax = sizeof(bufferLength);
-	PXSQLSMALLINT pcbInfoValue = 0;
+    if (successfulConnected)
+    {
+    PXSQLUSMALLINT infoType = PXSQL_PROCEDURES;
+    wchar_t bufferLength[1024];
+    PXSQLSMALLINT cbInfoValueMax = sizeof(bufferLength);
+    PXSQLSMALLINT pcbInfoValue = 0;
 
-	PXSQLRETURN infoResult = PXSQLGetInfoW
-	(
-	 _handleConnection,
-	 infoType,
-	 bufferLength,
-	 cbInfoValueMax,
-	 &pcbInfoValue
-	);
-	}*/
+    PXSQLRETURN infoResult = PXSQLGetInfoW
+    (
+     _handleConnection,
+     infoType,
+     bufferLength,
+     cbInfoValueMax,
+     &pcbInfoValue
+    );
+    }*/
 #endif
 }
 
@@ -612,366 +612,366 @@ void PXAPI PXDataBaseDisconnect(PXDataBase* const pxDataBase)
 {
 #if OSUnix
 #elif PXOSWindowsDestop
-	if(pxDataBase->ConnectionID)
-	{
-		const PXSQLDisconnect pxSQLDisconnect = (PXSQLDisconnect)pxDataBase->Disconnect;
-		const PXSQLFreeHandle pxSQLFreeHandle = (PXSQLFreeHandle)pxDataBase->FreeHandle;
-		const SQLRETURN resultDisconnect = pxSQLDisconnect(pxDataBase->ConnectionID);
-		const SQLRETURN resultFree = pxSQLFreeHandle(SQL_HANDLE_DBC, pxDataBase->ConnectionID);
+    if(pxDataBase->ConnectionID)
+    {
+        const PXSQLDisconnect pxSQLDisconnect = (PXSQLDisconnect)pxDataBase->Disconnect;
+        const PXSQLFreeHandle pxSQLFreeHandle = (PXSQLFreeHandle)pxDataBase->FreeHandle;
+        const SQLRETURN resultDisconnect = pxSQLDisconnect(pxDataBase->ConnectionID);
+        const SQLRETURN resultFree = pxSQLFreeHandle(SQL_HANDLE_DBC, pxDataBase->ConnectionID);
 
-		pxDataBase->ConnectionID = PXNull;
-	}
+        pxDataBase->ConnectionID = PXNull;
+    }
 #endif
 }
 
 void PXAPI PXDataBaseCleanup(PXDataBase* const pxDataBase)
 {
-	PXDataBaseDisconnect(pxDataBase);
+    PXDataBaseDisconnect(pxDataBase);
 
 #if OSUnix
 #elif PXOSWindowsDestop
-	if(pxDataBase->EnvironmentID)
-	{
-		const PXSQLFreeHandle pxSQLFreeHandle = (PXSQLFreeHandle)pxDataBase->FreeHandle;
-		const SQLRETURN result = pxSQLFreeHandle(SQL_HANDLE_ENV, pxDataBase->EnvironmentID);
+    if(pxDataBase->EnvironmentID)
+    {
+        const PXSQLFreeHandle pxSQLFreeHandle = (PXSQLFreeHandle)pxDataBase->FreeHandle;
+        const SQLRETURN result = pxSQLFreeHandle(SQL_HANDLE_ENV, pxDataBase->EnvironmentID);
 
-		pxDataBase->EnvironmentID = PXNull;
-	}
+        pxDataBase->EnvironmentID = PXNull;
+    }
 #endif
 }
 
 void PXAPI PXDataBaseScanForDrivers(PXDataBase* const pxDataBase)
 {
 #if PXLogEnable
-	PXLogPrint
-	(
-		PXLoggingInfo,
-		"DataBase",
-		"ODBC-Driver",
-		"Scanning..."
-	);
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "DataBase",
+        "ODBC-Driver",
+        "Scanning..."
+    );
 #endif
 
 #if OSUnix
 #elif PXOSWindowsDestop
-	const PXSQLDriversA pxSQLDriversA = (PXSQLDriversA)pxDataBase->DriversA;
-	SQLUSMALLINT direction = SQL_FETCH_FIRST;
-	PXBool finished = PXFalse;
+    const PXSQLDriversA pxSQLDriversA = (PXSQLDriversA)pxDataBase->DriversA;
+    SQLUSMALLINT direction = SQL_FETCH_FIRST;
+    PXBool finished = PXFalse;
 
-	PXSize totalAmountOfData = 0;
-	PXSize totalAmountOfDataB = 0;
+    PXSize totalAmountOfData = 0;
+    PXSize totalAmountOfDataB = 0;
 
-	PXSize dataIndex = 0;
-	PXSize dataCursor = 0;
+    PXSize dataIndex = 0;
+    PXSize dataCursor = 0;
 
-	wchar_t driverDescription[1024];
-	const SQLSMALLINT driverDescriptionSize = sizeof(driverDescription) / sizeof(wchar_t);
-	SQLSMALLINT driverDescriptionSizeWritten = 0;
+    wchar_t driverDescription[1024];
+    const SQLSMALLINT driverDescriptionSize = sizeof(driverDescription) / sizeof(wchar_t);
+    SQLSMALLINT driverDescriptionSizeWritten = 0;
 
-	wchar_t driverAttributes[1024];
-	const SQLSMALLINT driverAttributesSize = sizeof(driverAttributes) / sizeof(wchar_t);
-	SQLSMALLINT driverAttributesSizeWritten = 0;
+    wchar_t driverAttributes[1024];
+    const SQLSMALLINT driverAttributesSize = sizeof(driverAttributes) / sizeof(wchar_t);
+    SQLSMALLINT driverAttributesSizeWritten = 0;
 
-	pxDataBase->DriverListAmount = 0;
+    pxDataBase->DriverListAmount = 0;
 
-	for(;;)
-	{
-		const SQLRETURN resultDriver = pxSQLDriversA
-		(
-			pxDataBase->EnvironmentID,
-			direction,
-			driverDescription,
-			driverDescriptionSize,
-			&driverDescriptionSizeWritten,
-			driverAttributes,
-			driverAttributesSize,
-			&driverAttributesSizeWritten
-		);
+    for(;;)
+    {
+        const SQLRETURN resultDriver = pxSQLDriversA
+        (
+            pxDataBase->EnvironmentID,
+            direction,
+            driverDescription,
+            driverDescriptionSize,
+            &driverDescriptionSizeWritten,
+            driverAttributes,
+            driverAttributesSize,
+            &driverAttributesSizeWritten
+        );
 
-		totalAmountOfData += driverDescriptionSizeWritten;
-		totalAmountOfDataB += driverAttributesSizeWritten;
+        totalAmountOfData += driverDescriptionSizeWritten;
+        totalAmountOfDataB += driverAttributesSizeWritten;
 
-		if(SQL_SUCCESS != resultDriver)
-		{		
-			break;	
-		}
+        if(SQL_SUCCESS != resultDriver)
+        {        
+            break;    
+        }
 
-		direction = SQL_FETCH_NEXT; // [!] Important [!] - Mark to go next.
+        direction = SQL_FETCH_NEXT; // [!] Important [!] - Mark to go next.
 
-		++(pxDataBase->DriverListAmount);
-	}
+        ++(pxDataBase->DriverListAmount);
+    }
 
-	finished = PXFalse;
-	
-	PXNewListZerod(char*, pxDataBase->DriverListAmount, &pxDataBase->DriverList, PXNull);
-	PXNewListZerod(char, totalAmountOfData, &pxDataBase->DriverListData, PXNull);
+    finished = PXFalse;
+    
+    PXNewListZerod(char*, pxDataBase->DriverListAmount, &pxDataBase->DriverList, PXNull);
+    PXNewListZerod(char, totalAmountOfData, &pxDataBase->DriverListData, PXNull);
 
-	while(!finished)
-	{
-		const SQLRETURN resultDriver = pxSQLDriversA
-		(
-			pxDataBase->EnvironmentID,
-			direction,
-			driverDescription,
-			driverDescriptionSize,
-			&driverDescriptionSizeWritten,
-			driverAttributes,
-			driverAttributesSize,
-			&driverAttributesSizeWritten
-		);
+    while(!finished)
+    {
+        const SQLRETURN resultDriver = pxSQLDriversA
+        (
+            pxDataBase->EnvironmentID,
+            direction,
+            driverDescription,
+            driverDescriptionSize,
+            &driverDescriptionSizeWritten,
+            driverAttributes,
+            driverAttributesSize,
+            &driverAttributesSizeWritten
+        );
 
-		switch(resultDriver)
-		{
-			case SQL_SUCCESS_WITH_INFO:
-			case SQL_SUCCESS: // Do nothing and go next
-			{
-				pxDataBase->DriverList[dataIndex] = &pxDataBase->DriverListData[dataCursor];
+        switch(resultDriver)
+        {
+            case SQL_SUCCESS_WITH_INFO:
+            case SQL_SUCCESS: // Do nothing and go next
+            {
+                pxDataBase->DriverList[dataIndex] = &pxDataBase->DriverListData[dataCursor];
 
-				dataCursor += PXTextCopyA(driverDescription, driverDescriptionSizeWritten, &pxDataBase->DriverListData[dataCursor], totalAmountOfData - dataCursor) + 1;
+                dataCursor += PXTextCopyA(driverDescription, driverDescriptionSizeWritten, &pxDataBase->DriverListData[dataCursor], totalAmountOfData - dataCursor) + 1;
 
-				direction = SQL_FETCH_NEXT; // [!] Important [!] - Mark to go next.
+                direction = SQL_FETCH_NEXT; // [!] Important [!] - Mark to go next.
 
-				if(pxDataBase->OnDriverDetectedEvent)
-				{
-					pxDataBase->OnDriverDetectedEvent(driverDescription, driverAttributes);
-				}
+                if(pxDataBase->OnDriverDetectedEvent)
+                {
+                    pxDataBase->OnDriverDetectedEvent(driverDescription, driverAttributes);
+                }
 
-				++dataIndex;
+                ++dataIndex;
 
-				//printf("| %-57ls | %-13ls |\n", driverDescription, driverAttributes);
-				break;
-			}
-			default:
-			case SQL_ERROR: // Unkown error
-			case SQL_INVALID_HANDLE: // Environment handle was invalid
-			case SQL_NO_DATA: // read error : No entry
-				finished = 1;
-				break;
-		}
-	}
+                //printf("| %-57ls | %-13ls |\n", driverDescription, driverAttributes);
+                break;
+            }
+            default:
+            case SQL_ERROR: // Unkown error
+            case SQL_INVALID_HANDLE: // Environment handle was invalid
+            case SQL_NO_DATA: // read error : No entry
+                finished = 1;
+                break;
+        }
+    }
 #endif
 
 #if PXLogEnable
-	PXLogPrint
-	(
-		PXLoggingInfo,
-		"DataBase",
-		"ODBC-Driver",
-		"Scanned"
-	);
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "DataBase",
+        "ODBC-Driver",
+        "Scanned"
+    );
 #endif
 }
 
 PXActionResult PXAPI PXDataBaseCommandExecute(PXDataBase* const pxDataBase, const PXText* const pxTextSQLStatement)
 {
 #if OSUnix
-	return PXActionRefusedNotImplemented;
+    return PXActionRefusedNotImplemented;
 
 #elif PXOSWindowsDestop
-	SQLHSTMT handleStatement = 0;
-	PXSize colums = 0;
-	PXSize rows = 0;
+    SQLHSTMT handleStatement = 0;
+    PXSize colums = 0;
+    PXSize rows = 0;
 
-	// Check connection
-	{
-		const PXBool connected = pxDataBase->ConnectionID != 0;
+    // Check connection
+    {
+        const PXBool connected = pxDataBase->ConnectionID != 0;
 
-		if(!connected)
-		{
-			return PXActionRefusedNotConnected;
-		}
-	}
+        if(!connected)
+        {
+            return PXActionRefusedNotConnected;
+        }
+    }
 
-	// Alloc statement
-	{
-		const PXSQLAllocHandle pxSQLAllocHandle = (PXSQLAllocHandle)pxDataBase->AllocHandle;
-		const SQLRETURN retcode = pxSQLAllocHandle(SQL_HANDLE_STMT, pxDataBase->ConnectionID, &handleStatement);
-		const PXBool sucessfulAlloc = retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO;
+    // Alloc statement
+    {
+        const PXSQLAllocHandle pxSQLAllocHandle = (PXSQLAllocHandle)pxDataBase->AllocHandle;
+        const SQLRETURN retcode = pxSQLAllocHandle(SQL_HANDLE_STMT, pxDataBase->ConnectionID, &handleStatement);
+        const PXBool sucessfulAlloc = retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO;
 
-		if(!sucessfulAlloc)
-		{
-			return PXActionFailedMemoryAllocation;
-		}
-	}
+        if(!sucessfulAlloc)
+        {
+            return PXActionFailedMemoryAllocation;
+        }
+    }
 
-	// Execute command
-	{
-		SQLRETURN resultExecute = 0;
+    // Execute command
+    {
+        SQLRETURN resultExecute = 0;
 
-		switch(pxTextSQLStatement->Format)
-		{
-			case TextFormatASCII:
-			case TextFormatUTF8:
-			{
-				const PXSQLExecDirectA pxSQLExecDirectA = (PXSQLExecDirectA)pxDataBase->ExecDirectA;
+        switch(pxTextSQLStatement->Format)
+        {
+            case TextFormatASCII:
+            case TextFormatUTF8:
+            {
+                const PXSQLExecDirectA pxSQLExecDirectA = (PXSQLExecDirectA)pxDataBase->ExecDirectA;
 
-				resultExecute = pxSQLExecDirectA(handleStatement, (SQLCHAR*)pxTextSQLStatement->TextA, SQL_NTS);
-				break;
-			}
-			case TextFormatUNICODE:
-			{
-				const PXSQLExecDirectW pxSQLExecDirectW = (PXSQLExecDirectW)pxDataBase->ExecDirectW;
+                resultExecute = pxSQLExecDirectA(handleStatement, (SQLCHAR*)pxTextSQLStatement->TextA, SQL_NTS);
+                break;
+            }
+            case TextFormatUNICODE:
+            {
+                const PXSQLExecDirectW pxSQLExecDirectW = (PXSQLExecDirectW)pxDataBase->ExecDirectW;
 
-				resultExecute = pxSQLExecDirectW(handleStatement, pxTextSQLStatement->TextW, SQL_NTSL);
-				break;
-			}
+                resultExecute = pxSQLExecDirectW(handleStatement, pxTextSQLStatement->TextW, SQL_NTSL);
+                break;
+            }
 
-			default:
-				return PXActionRefuedTextFormatUnsupported;
-		}
+            default:
+                return PXActionRefuedTextFormatUnsupported;
+        }
 
-		const PXBool successful = resultExecute == SQL_SUCCESS || resultExecute == SQL_SUCCESS_WITH_INFO;
+        const PXBool successful = resultExecute == SQL_SUCCESS || resultExecute == SQL_SUCCESS_WITH_INFO;
 
-		if(!successful)
-		{
-			return PXActionFailedCommandExecute;
-		}
-	}
+        if(!successful)
+        {
+            return PXActionFailedCommandExecute;
+        }
+    }
 
-	// Get table size
-	{
-		const PXSQLNumResultCols pxSQLNumResultCols = (PXSQLNumResultCols)pxDataBase->NumResultCols;
-		const PXSQLRowCount pxSQLRowCount = (PXSQLRowCount)pxDataBase->RowCount;
+    // Get table size
+    {
+        const PXSQLNumResultCols pxSQLNumResultCols = (PXSQLNumResultCols)pxDataBase->NumResultCols;
+        const PXSQLRowCount pxSQLRowCount = (PXSQLRowCount)pxDataBase->RowCount;
 
-		SQLSMALLINT nCols = 0;
-		SQLLEN nRows = 0;
+        SQLSMALLINT nCols = 0;
+        SQLLEN nRows = 0;
 
-		pxSQLNumResultCols(handleStatement, &nCols);
-		pxSQLRowCount(handleStatement, &nRows);
+        pxSQLNumResultCols(handleStatement, &nCols);
+        pxSQLRowCount(handleStatement, &nRows);
 
-		colums = nCols;
-		rows = nRows;
-	}
+        colums = nCols;
+        rows = nRows;
+    }
 
-	if(pxDataBase->OnResultEvent)
-	{
-		pxDataBase->OnResultEvent(colums, rows);
-	}
+    if(pxDataBase->OnResultEvent)
+    {
+        pxDataBase->OnResultEvent(colums, rows);
+    }
 
-	//printf("[Result] Rows:%zi Colums:%zi\n", rows, colums);
+    //printf("[Result] Rows:%zi Colums:%zi\n", rows, colums);
 
-	//printf("+----------------------+----------------------+----------------------+----------------------+\n");
+    //printf("+----------------------+----------------------+----------------------+----------------------+\n");
 
-	//printf("|");
+    //printf("|");
 
-	for(PXSize columIndex = 1; columIndex <= colums; ++columIndex)
-	{
-		wchar_t columnName[1024];
-		const SQLSMALLINT columnNameSize = sizeof(columnName) / sizeof(wchar_t);
-		SQLSMALLINT columnNameSizeWritten;
+    for(PXSize columIndex = 1; columIndex <= colums; ++columIndex)
+    {
+        wchar_t columnName[1024];
+        const SQLSMALLINT columnNameSize = sizeof(columnName) / sizeof(wchar_t);
+        SQLSMALLINT columnNameSizeWritten;
 
-		SQLSMALLINT DataType;
-		SQLULEN ColumnSize;
-		SQLSMALLINT decimalDigits = 0;
-		SQLSMALLINT isNullableID = 0;
-		unsigned char isNullable = 0;
-		unsigned char isBaseType = 0;
+        SQLSMALLINT DataType;
+        SQLULEN ColumnSize;
+        SQLSMALLINT decimalDigits = 0;
+        SQLSMALLINT isNullableID = 0;
+        unsigned char isNullable = 0;
+        unsigned char isBaseType = 0;
 
-		const PXSQLDescribeColW pxSQLDescribeColW = (PXSQLDescribeColW)pxDataBase->DescribeColW;
-		const SQLRETURN resultDescriped = pxSQLDescribeColW
-		(
-			handleStatement,
-			columIndex,
-			columnName,
-			columnNameSize,
-			&columnNameSizeWritten,
-			&DataType,
-			&ColumnSize,
-			&decimalDigits,
-			&isNullableID
-		);
+        const PXSQLDescribeColW pxSQLDescribeColW = (PXSQLDescribeColW)pxDataBase->DescribeColW;
+        const SQLRETURN resultDescriped = pxSQLDescribeColW
+        (
+            handleStatement,
+            columIndex,
+            columnName,
+            columnNameSize,
+            &columnNameSizeWritten,
+            &DataType,
+            &ColumnSize,
+            &decimalDigits,
+            &isNullableID
+        );
 
-		const PXSQLType type = PXSQLTypeFromID(DataType);
+        const PXSQLType type = PXSQLTypeFromID(DataType);
 
-		//SQLColAttribute();
+        //SQLColAttribute();
 
-		//isBaseType = DataType == PXSQL_COLUMN_DISTINCT_TYPE;
-		isNullable = isNullableID == SQL_NULLABLE; // PXSQL_NO_NULLS
+        //isBaseType = DataType == PXSQL_COLUMN_DISTINCT_TYPE;
+        isNullable = isNullableID == SQL_NULLABLE; // PXSQL_NO_NULLS
 
-		const char* typeName = 0;
+        const char* typeName = 0;
 
-		switch(type)
-		{
-			default:
-			case PXSQLTypeInvalid: typeName = "Invalid"; break;
-			case PXSQLTypeUnkown: typeName = "Unkown"; break;
-			case PXSQLTypeCharacter: typeName = "Character"; break;
-			case PXSQLTypeNumeric:typeName = "Numeric"; break;
-			case PXSQLTypeDecimal:typeName = "Decimal"; break;
-			case PXSQLTypeInteger:typeName = "Integer"; break;
-			case PXSQLTypeShort:typeName = "Short"; break;
-			case PXSQLTypeFloat:typeName = "Invalid"; break;
-			case PXSQLTypeReal:typeName = "Real"; break;
-			case PXSQLTypeDouble:typeName = "Double"; break;
-			case PXSQLTypeDATETIME:typeName = "DATETIME"; break;
-			case PXSQLTypeStringANSI:typeName = "StringANSI"; break;
-			case PXSQLTypeStringUNICODE:typeName = "StringUNICODE"; break;
-			case PXSQLTypeTYPE_DATE:typeName = "TYPE_DATE"; break;
-			case PXSQLTypeTYPE_TIME:typeName = "TYPE_TIME"; break;
-			case PXSQLTypeTYPE_TIMESTAMP:typeName = "TYPE_TIMESTAMP"; break;
-		}
+        switch(type)
+        {
+            default:
+            case PXSQLTypeInvalid: typeName = "Invalid"; break;
+            case PXSQLTypeUnkown: typeName = "Unkown"; break;
+            case PXSQLTypeCharacter: typeName = "Character"; break;
+            case PXSQLTypeNumeric:typeName = "Numeric"; break;
+            case PXSQLTypeDecimal:typeName = "Decimal"; break;
+            case PXSQLTypeInteger:typeName = "Integer"; break;
+            case PXSQLTypeShort:typeName = "Short"; break;
+            case PXSQLTypeFloat:typeName = "Invalid"; break;
+            case PXSQLTypeReal:typeName = "Real"; break;
+            case PXSQLTypeDouble:typeName = "Double"; break;
+            case PXSQLTypeDATETIME:typeName = "DATETIME"; break;
+            case PXSQLTypeStringANSI:typeName = "StringANSI"; break;
+            case PXSQLTypeStringUNICODE:typeName = "StringUNICODE"; break;
+            case PXSQLTypeTYPE_DATE:typeName = "TYPE_DATE"; break;
+            case PXSQLTypeTYPE_TIME:typeName = "TYPE_TIME"; break;
+            case PXSQLTypeTYPE_TIMESTAMP:typeName = "TYPE_TIMESTAMP"; break;
+        }
 
-		if(pxDataBase->OnColumInfoEvent)
-		{
-			pxDataBase->OnColumInfoEvent(columIndex, type, isNullable, columnName, columnNameSizeWritten);
-		}
+        if(pxDataBase->OnColumInfoEvent)
+        {
+            pxDataBase->OnColumInfoEvent(columIndex, type, isNullable, columnName, columnNameSizeWritten);
+        }
 
-		//printf(" %-20ls |", columnName);
-	}
+        //printf(" %-20ls |", columnName);
+    }
 
-	//printf("\n");
-	//printf("+----------------------+----------------------+----------------------+----------------------+\n");
+    //printf("\n");
+    //printf("+----------------------+----------------------+----------------------+----------------------+\n");
 
-	SQLRETURN resultFetch = 0;
-	const PXSQLFetch pxSQLFetch = (PXSQLFetch)pxDataBase->Fetch;
+    SQLRETURN resultFetch = 0;
+    const PXSQLFetch pxSQLFetch = (PXSQLFetch)pxDataBase->Fetch;
 
-	for(PXSize rowIndex = 0; SQL_SUCCEEDED(resultFetch = pxSQLFetch(handleStatement)); ++rowIndex)
-	{
-		//printf("|");
+    for(PXSize rowIndex = 0; SQL_SUCCEEDED(resultFetch = pxSQLFetch(handleStatement)); ++rowIndex)
+    {
+        //printf("|");
 
-		for(PXSize columIndex = 1; columIndex <= colums; ++columIndex)
-		{
-			wchar_t fieldBuffer[1048];
-			const PXSize fieldBufferSize = sizeof(fieldBuffer) / sizeof(wchar_t);
-			SQLLEN readLength = 0;
+        for(PXSize columIndex = 1; columIndex <= colums; ++columIndex)
+        {
+            wchar_t fieldBuffer[1048];
+            const PXSize fieldBufferSize = sizeof(fieldBuffer) / sizeof(wchar_t);
+            SQLLEN readLength = 0;
 
-			const PXSQLGetData pxSQLGetData = (PXSQLGetData)pxDataBase->GetData;
-			const SQLRETURN resultData = pxSQLGetData(handleStatement, columIndex, SQL_UNICODE_CHAR, fieldBuffer, fieldBufferSize, &readLength);
-			const PXBool success = SQL_SUCCEEDED(resultData);
+            const PXSQLGetData pxSQLGetData = (PXSQLGetData)pxDataBase->GetData;
+            const SQLRETURN resultData = pxSQLGetData(handleStatement, columIndex, SQL_UNICODE_CHAR, fieldBuffer, fieldBufferSize, &readLength);
+            const PXBool success = SQL_SUCCEEDED(resultData);
 
-			if(success)
-			{
-				if(pxDataBase->OnRowDataEvent)
-				{
-					pxDataBase->OnRowDataEvent(rowIndex, columIndex, fieldBuffer);
-				}
+            if(success)
+            {
+                if(pxDataBase->OnRowDataEvent)
+                {
+                    pxDataBase->OnRowDataEvent(rowIndex, columIndex, fieldBuffer);
+                }
 
-				//printf(" %-20ls |", fieldBuffer);
-			}
-		}
+                //printf(" %-20ls |", fieldBuffer);
+            }
+        }
 
-		//printf("\n");
-	}
+        //printf("\n");
+    }
 
-	//printf("+----------------------+----------------------+----------------------+----------------------+\n");
+    //printf("+----------------------+----------------------+----------------------+----------------------+\n");
 
-	// Free memory
-	{
-		const PXSQLFreeHandle pxSQLFreeHandle = (PXSQLFreeHandle)pxDataBase->FreeHandle;
-		const SQLRETURN resultFree = pxSQLFreeHandle(SQL_HANDLE_STMT, handleStatement);
-		const PXBool successful = resultFree == SQL_SUCCESS || resultFree == SQL_SUCCESS_WITH_INFO;
+    // Free memory
+    {
+        const PXSQLFreeHandle pxSQLFreeHandle = (PXSQLFreeHandle)pxDataBase->FreeHandle;
+        const SQLRETURN resultFree = pxSQLFreeHandle(SQL_HANDLE_STMT, handleStatement);
+        const PXBool successful = resultFree == SQL_SUCCESS || resultFree == SQL_SUCCESS_WITH_INFO;
 
-		if(successful)
-		{
-			return PXActionFailedMemoryRelease;
-		}
-	}
+        if(successful)
+        {
+            return PXActionFailedMemoryRelease;
+        }
+    }
 
-	return PXActionSuccessful;
+    return PXActionSuccessful;
 #endif
 }
 
 PXActionResult PXAPI PXDataBaseCommandCancel(PXDataBase* const dataBaseConnection)
 {
-	return PXActionRefusedNotImplemented; // SQLRETURN SQL_API SQLCancel(SQLHSTMT StatementHandle);
+    return PXActionRefusedNotImplemented; // SQLRETURN SQL_API SQLCancel(SQLHSTMT StatementHandle);
 }

@@ -108,7 +108,7 @@
     </ClCompile>
     <Link />
     <Link>
-      <AdditionalDependencies>dxguid.lib;Comctl32.lib;Mf.lib;Wbemuuid.lib;mfreadwrite.lib;Mfplat.lib;mfuuid.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxguid.lib;Comctl32.lib;Mf.lib;Wbemuuid.lib;mfreadwrite.lib;Mfplat.lib;mfuuid.lib;Shlwapi.lib;ntdll.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -138,7 +138,7 @@
     </ClCompile>
     <Link />
     <Link>
-      <AdditionalDependencies>dxguid.lib;Comctl32.lib;Mf.lib;Wbemuuid.lib;mfreadwrite.lib;Mfplat.lib;mfuuid.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxguid.lib;Comctl32.lib;Mf.lib;Wbemuuid.lib;mfreadwrite.lib;Mfplat.lib;mfuuid.lib;Shlwapi.lib;ntdll.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -159,7 +159,7 @@
     </ClCompile>
     <Link />
     <Link>
-      <AdditionalDependencies>dxguid.lib;Comctl32.lib;Mf.lib;Wbemuuid.lib;mfreadwrite.lib;Mfplat.lib;mfuuid.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxguid.lib;Comctl32.lib;Mf.lib;Wbemuuid.lib;mfreadwrite.lib;Mfplat.lib;mfuuid.lib;Shlwapi.lib;ntdll.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -189,7 +189,7 @@
     </ClCompile>
     <Link />
     <Link>
-      <AdditionalDependencies>dxguid.lib;Comctl32.lib;Mf.lib;Wbemuuid.lib;mfreadwrite.lib;Mfplat.lib;mfuuid.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxguid.lib;Comctl32.lib;Mf.lib;Wbemuuid.lib;mfreadwrite.lib;Mfplat.lib;mfuuid.lib;Shlwapi.lib;ntdll.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

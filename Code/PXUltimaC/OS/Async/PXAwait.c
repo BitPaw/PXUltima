@@ -39,7 +39,7 @@ PXBool PXAPI PXAwaitChange(volatile void* const dataAdress, const PXSize dataSiz
 
 #if WindowsAtleast8 && 0
     const DWORD timeoutMilliseconds = INFINITE;
-	const PXBool sucessfull = WaitOnAddress(dataAdress, &compareValue, dataSize, timeoutMilliseconds); // Windows 8 (+UWP), Synchronization.lib, synchapi.h 
+    const PXBool sucessfull = WaitOnAddress(dataAdress, &compareValue, dataSize, timeoutMilliseconds); // Windows 8 (+UWP), Synchronization.lib, synchapi.h 
 
     return sucessfull;
 #else // Under windows 8      

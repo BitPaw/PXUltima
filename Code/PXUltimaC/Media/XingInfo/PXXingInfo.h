@@ -7,19 +7,19 @@
 
 typedef enum PXXingInfoVersion_
 {
-	PXXingInfoVersionInvalid,
-	PXXingInfoVersionInfo,
-	PXXingInfoVersionXing
+    PXXingInfoVersionInvalid,
+    PXXingInfoVersionInfo,
+    PXXingInfoVersionXing
 }
 PXXingInfoVersion;
 
 typedef struct PXXingInfo_
 {
-	PXXingInfoVersion Version;
-	PXInt32U NumberOfFrames;
-	PXInt32U SizeInBytes;
-	char TOCBuffer[PXXingInfoTOCBufferSize];
-	PXInt32U VBRScale; // 0-100
+    PXXingInfoVersion Version;
+    PXInt32U NumberOfFrames;
+    PXInt32U SizeInBytes;
+    char TOCBuffer[PXXingInfoTOCBufferSize];
+    PXInt32U VBRScale; // 0-100
 }
 PXXingInfo;
 

@@ -4,10 +4,10 @@
 
 PXActionResult PXAPI PXAutodesk3DSLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
-	return PXActionRefusedNotImplemented;
+    return PXActionRefusedNotImplemented;
 }
 
 PXActionResult PXAPI PXAutodesk3DSSafeFromFile(PXResourceSaveInfo* const pxResourceSafeInfo)
 {
-	return PXActionRefusedNotImplemented;
+    return PXActionRefusedNotImplemented;
 }

@@ -4,10 +4,10 @@
 
 PXActionResult PXAPI PXSTEPLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
-	return PXActionRefusedNotImplemented;
+    return PXActionRefusedNotImplemented;
 }
 
 PXActionResult PXAPI PXSTEPSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
 {
-	return PXActionRefusedNotImplemented;
+    return PXActionRefusedNotImplemented;
 }

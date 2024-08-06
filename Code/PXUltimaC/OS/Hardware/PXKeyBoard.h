@@ -90,7 +90,7 @@
 #define KeyBoardIDLetterX (1u << 23)
 #define KeyBoardIDLetterY (1u << 24)
 #define KeyBoardIDLetterZ (1u << 25)
-#define KeyBoardIDSpace	  (1u << 26)
+#define KeyBoardIDSpace      (1u << 26)
 #define KeyBoardIDAPOSTROPHE  (1u << 27)  /* ' */
 #define KeyBoardIDComma       (1u << 28)  /* , */
 #define KeyBoardIDGRAVE_ACCENT (1u << 29)  /* ` */
@@ -128,210 +128,210 @@
 #define KeyBoardIDNumberKeyPadDIVIDE (1 << 27)
 #define KeyBoardIDNumberKeyPadMULTIPLY (1 << 28)
 #define KeyBoardIDNumberKeyPadSUBTRACT (1 << 29)
-#define KeyBoardIDNumberKeyPadADD (1 << 30)		
+#define KeyBoardIDNumberKeyPadADD (1 << 30)        
 #define KeyBoardIDNumberKeyPadEQUAL (1 << 31)
 
 
 typedef enum PXVirtualKey_
 {
-	KeyInvalid,
-	KeyUnknown,
+    KeyInvalid,
+    KeyUnknown,
 
-	// Command
+    // Command
 
-	KeySpace,
+    KeySpace,
 
-	KeyMinus,  /* - */
-	KeySlash,  /* / */
-	KeyEscape,
-	KeyEnter,
-	KeyTab,
-	KeyBackspace,
-	KeyInsert,
-	KeyDelete,
-	KeyRight,
-	KeyLeft,
-	KeyDown,
-	KeyUp,
-	KeyPageUp,
-	KeyPageDown,
-	KeyHome,
-	KeyEnd,
-	KeyCapsLock,
-	KeyScrollLock,
-	KeyNumLock,
-	KeyPrintScreen,
-	KeyPause,
-
-
-	// Numbers
-	Key0,
-	Key1,
-	Key2,
-	Key3,
-	Key4,
-	Key5,
-	Key6,
-	Key7,
-	Key8,
-	Key9,
-	KeyPad0,
-	KeyPad1,
-	KeyPad2,
-	KeyPad3,
-	KeyPad4,
-	KeyPad5,
-	KeyPad6,
-	KeyPad7,
-	KeyPad8,
-	KeyPad9,
-	KeyPadDecimal,
-	KeyPadDivide,
-	KeyPadMultiply,
-	KeyPadSubtract,
-	KeyPadAdd,
-	KeyPadEnter,
-	KeyPadEqual,
+    KeyMinus,  /* - */
+    KeySlash,  /* / */
+    KeyEscape,
+    KeyEnter,
+    KeyTab,
+    KeyBackspace,
+    KeyInsert,
+    KeyDelete,
+    KeyRight,
+    KeyLeft,
+    KeyDown,
+    KeyUp,
+    KeyPageUp,
+    KeyPageDown,
+    KeyHome,
+    KeyEnd,
+    KeyCapsLock,
+    KeyScrollLock,
+    KeyNumLock,
+    KeyPrintScreen,
+    KeyPause,
 
 
-
-	KeySemicolon,  /* ; */
-	KeyEqual,  /* = */
-
-	// Letters
-
-	KeyA,
-	KeyB,
-	KeyC,
-	KeyD,
-	KeyE,
-	KeyF,
-	KeyG,
-	KeyH,
-	KeyI,
-	KeyJ,
-	KeyK,
-	KeyL,
-	KeyM,
-	KeyN,
-	KeyO,
-	KeyP,
-	KeyQ,
-	KeyR,
-	KeyS,
-	KeyT,
-	KeyU,
-	KeyV,
-	KeyW,
-	KeyX,
-	KeyY,
-	KeyZ,
-
-	KeyASmal,
-	KeyBSmal,
-	KeyCSmal,
-	KeyDSmal,
-	KeyESmal,
-	KeyFSmal,
-	KeyGSmal,
-	KeyHSmal,
-	KeyISmal,
-	KeyJSmal,
-	KeyKSmal,
-	KeyLSmal,
-	KeyMSmal,
-	KeyNSmal,
-	KeyOSmal,
-	KeyPSmal,
-	KeyQSmal,
-	KeyRSmal,
-	KeySSmal,
-	KeyTSmal,
-	KeyUSmal,
-	KeyVSmal,
-	KeyWSmal,
-	KeyXSmal,
-	KeyYSmal,
-	KeyZSmal,
-	KeyApostrophe,  /* ' */
-	KeyComma,  /* , */
-	KeyPeriod,  /* . */
-
-
-	KeyBrackedLeft,  /* [ */
-	KeyBackSlash,  /* \ */
-	KeyBrackedRight,  /* ] */
-	KeyGraveAccent,  /* ` */
-	KeyWorld1, /* non-US #1 */
-	KeyWorld2, /* non-US #2 */
+    // Numbers
+    Key0,
+    Key1,
+    Key2,
+    Key3,
+    Key4,
+    Key5,
+    Key6,
+    Key7,
+    Key8,
+    Key9,
+    KeyPad0,
+    KeyPad1,
+    KeyPad2,
+    KeyPad3,
+    KeyPad4,
+    KeyPad5,
+    KeyPad6,
+    KeyPad7,
+    KeyPad8,
+    KeyPad9,
+    KeyPadDecimal,
+    KeyPadDivide,
+    KeyPadMultiply,
+    KeyPadSubtract,
+    KeyPadAdd,
+    KeyPadEnter,
+    KeyPadEqual,
 
 
 
-	// Function
-	KeyF1,
-	KeyF2,
-	KeyF3,
-	KeyF4,
-	KeyF5,
-	KeyF6,
-	KeyF7,
-	KeyF8,
-	KeyF9,
-	KeyF10,
-	KeyF11,
-	KeyF12,
-	KeyF13,
-	KeyF14,
-	KeyF15,
-	KeyF16,
-	KeyF17,
-	KeyF18,
-	KeyF19,
-	KeyF20,
-	KeyF21,
-	KeyF22,
-	KeyF23,
-	KeyF24,
-	KeyF25,
+    KeySemicolon,  /* ; */
+    KeyEqual,  /* = */
+
+    // Letters
+
+    KeyA,
+    KeyB,
+    KeyC,
+    KeyD,
+    KeyE,
+    KeyF,
+    KeyG,
+    KeyH,
+    KeyI,
+    KeyJ,
+    KeyK,
+    KeyL,
+    KeyM,
+    KeyN,
+    KeyO,
+    KeyP,
+    KeyQ,
+    KeyR,
+    KeyS,
+    KeyT,
+    KeyU,
+    KeyV,
+    KeyW,
+    KeyX,
+    KeyY,
+    KeyZ,
+
+    KeyASmal,
+    KeyBSmal,
+    KeyCSmal,
+    KeyDSmal,
+    KeyESmal,
+    KeyFSmal,
+    KeyGSmal,
+    KeyHSmal,
+    KeyISmal,
+    KeyJSmal,
+    KeyKSmal,
+    KeyLSmal,
+    KeyMSmal,
+    KeyNSmal,
+    KeyOSmal,
+    KeyPSmal,
+    KeyQSmal,
+    KeyRSmal,
+    KeySSmal,
+    KeyTSmal,
+    KeyUSmal,
+    KeyVSmal,
+    KeyWSmal,
+    KeyXSmal,
+    KeyYSmal,
+    KeyZSmal,
+    KeyApostrophe,  /* ' */
+    KeyComma,  /* , */
+    KeyPeriod,  /* . */
 
 
-	KeyShiftLeft,
-	KeyShiftRight,
+    KeyBrackedLeft,  /* [ */
+    KeyBackSlash,  /* \ */
+    KeyBrackedRight,  /* ] */
+    KeyGraveAccent,  /* ` */
+    KeyWorld1, /* non-US #1 */
+    KeyWorld2, /* non-US #2 */
 
-	KeyControlLeft,
-	KeyAltLeft,
-	KeySuperLeft,
 
-	KeyControlRight,
-	KeyAltRight,
-	KeySuperRight,
-	KeyMenu
+
+    // Function
+    KeyF1,
+    KeyF2,
+    KeyF3,
+    KeyF4,
+    KeyF5,
+    KeyF6,
+    KeyF7,
+    KeyF8,
+    KeyF9,
+    KeyF10,
+    KeyF11,
+    KeyF12,
+    KeyF13,
+    KeyF14,
+    KeyF15,
+    KeyF16,
+    KeyF17,
+    KeyF18,
+    KeyF19,
+    KeyF20,
+    KeyF21,
+    KeyF22,
+    KeyF23,
+    KeyF24,
+    KeyF25,
+
+
+    KeyShiftLeft,
+    KeyShiftRight,
+
+    KeyControlLeft,
+    KeyAltLeft,
+    KeySuperLeft,
+
+    KeyControlRight,
+    KeyAltRight,
+    KeySuperRight,
+    KeyMenu
 }
 PXVirtualKey;
 
 typedef enum PXKeyPressState_
 {
-	PXKeyPressStateInvalid,
-	PXKeyPressStateDown,
-	PXKeyPressStateUp,
-	PXKeyPressStateHold,
-	PXKeyPressStateDoubleClick,
+    PXKeyPressStateInvalid,
+    PXKeyPressStateDown,
+    PXKeyPressStateUp,
+    PXKeyPressStateHold,
+    PXKeyPressStateDoubleClick,
 }
 PXKeyPressState;
 
 typedef struct PXKeyBoard_
 {
-	PXInt32U Letters; // A, B, C, D, ...
-	PXInt32U Numbers; // 0,1,2... and +, -, /, ...
-	PXInt32U Commands; // Enter, Escape, ect..
-	PXInt32U Actions; // F-01 to F-xx
+    PXInt32U Letters; // A, B, C, D, ...
+    PXInt32U Numbers; // 0,1,2... and +, -, /, ...
+    PXInt32U Commands; // Enter, Escape, ect..
+    PXInt32U Actions; // F-01 to F-xx
 }
 PXKeyBoard;
 
 typedef struct PXKeyBoardVirtualInput_
 {
-	PXVirtualKey VirtualKey;
-	PXKeyPressState KeyStrokeMode;
+    PXVirtualKey VirtualKey;
+    PXKeyPressState KeyStrokeMode;
 }
 PXKeyBoardVirtualInput;
 

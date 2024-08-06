@@ -5,7 +5,7 @@
 
 typedef struct PXMatroska_
 {
-	unsigned int __dummy__;
+    unsigned int __dummy__;
 }
 PXMatroska;
 

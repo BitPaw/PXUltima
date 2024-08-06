@@ -18,20 +18,20 @@
 
 PXActionResult PXTranslatorEnglishToGerman(PXFile* const inputStreamEnglish, PXFile* const outputStreamGerman)
 {
-	while (!PXFileIsAtEnd(inputStreamEnglish))
-	{
-		char* text = PXFileCursorPosition(inputStreamEnglish);
-		const PXSize textSize = PXFileSkipBlock(inputStreamEnglish);
+    while (!PXFileIsAtEnd(inputStreamEnglish))
+    {
+        char* text = PXFileCursorPosition(inputStreamEnglish);
+        const PXSize textSize = PXFileSkipBlock(inputStreamEnglish);
 
-		char buffer[1024];
+        char buffer[1024];
 
-		PXTextCopyA(text, textSize, buffer, 1024u);		
-	}
+        PXTextCopyA(text, textSize, buffer, 1024u);        
+    }
 
-	return PXActionSuccessful;
+    return PXActionSuccessful;
 }
 
 PXActionResult PXTranslatorGermanToEnglish(PXFile* const inputStreamGerman, PXFile* const outputStreamEnglish)
 {
-	return PXActionSuccessful;
+    return PXActionSuccessful;
 }

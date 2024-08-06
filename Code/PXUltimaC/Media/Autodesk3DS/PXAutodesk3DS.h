@@ -5,7 +5,7 @@
 
 typedef struct PXAutodesk3DS
 {
-	unsigned int __dummy__;
+    unsigned int __dummy__;
 }
 PXAutodesk3DS;
 

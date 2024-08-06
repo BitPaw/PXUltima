@@ -5,35 +5,35 @@
 
 typedef enum PXDictionaryValueLocality_
 {
-	PXDictionaryValueLocalityInvalid,
-	PXDictionaryValueLocalityInternalEmbedded,
-	PXDictionaryValueLocalityExternalReference
+    PXDictionaryValueLocalityInvalid,
+    PXDictionaryValueLocalityInternalEmbedded,
+    PXDictionaryValueLocalityExternalReference
 }
 PXDictionaryValueLocality;
 
 typedef struct PXDictionary_
 {
-	PXSize EntryAmountGrowth; // How much to grow if an allocation if space is insufficent
+    PXSize EntryAmountGrowth; // How much to grow if an allocation if space is insufficent
 
-	PXSize EntryAmountCurrent;
-	PXSize EntryAmountMaximal;
+    PXSize EntryAmountCurrent;
+    PXSize EntryAmountMaximal;
 
-	//---<Need to be predefined>------------
-	PXSize KeyTypeSize;
-	PXSize ValueTypeSize;
-	//--------------------------------------
+    //---<Need to be predefined>------------
+    PXSize KeyTypeSize;
+    PXSize ValueTypeSize;
+    //--------------------------------------
 
-	PXSize DataSize;
-	void* Data;
+    PXSize DataSize;
+    void* Data;
 
-	PXDictionaryValueLocality ValueLocality;
+    PXDictionaryValueLocality ValueLocality;
 }
 PXDictionary;
 
 typedef struct PXDictionaryEntry_
 {
-	void* Key;
-	void* Value;
+    void* Key;
+    void* Value;
 }
 PXDictionaryEntry;
 

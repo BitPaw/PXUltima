@@ -5,7 +5,7 @@
 
 typedef struct PXMSI_
 {
-	int x;
+    int x;
 }
 PXMSI;
 

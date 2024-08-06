@@ -4,10 +4,10 @@
 
 PXActionResult PXAPI PXSVGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
-	return PXActionRefusedNotImplemented;
+    return PXActionRefusedNotImplemented;
 }
 
 PXActionResult PXAPI PXSVGSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
 {
-	return PXActionRefusedNotImplemented;
+    return PXActionRefusedNotImplemented;
 }

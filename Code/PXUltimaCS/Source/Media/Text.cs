@@ -6,8 +6,8 @@ namespace PX
     internal enum PXTextFormat
     {
         TextFormatInvalid,
-        TextFormatASCII,    // 1 Byte per character, range from 0 to 255	
-        TextFormatUNICODE,  // 2 Bytes per character, range from 0 to 65535	
+        TextFormatASCII,    // 1 Byte per character, range from 0 to 255    
+        TextFormatUNICODE,  // 2 Bytes per character, range from 0 to 65535    
         TextFormatUTF8,     // Variable length of characters, 1 to 4 Bytes
         TextFormatUTF16
     }

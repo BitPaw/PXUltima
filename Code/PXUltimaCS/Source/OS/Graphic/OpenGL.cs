@@ -181,15 +181,15 @@ namespace PX
         BufferAtomicCounter,    //Atomic counter storage
         BufferCopyRead,//Buffer copy source
         BufferCopyWrite,//Buffer copy destination
-        BufferDispatchIndirect, //	Indirect compute dispatch commands
+        BufferDispatchIndirect, //    Indirect compute dispatch commands
         BufferDrawIndirect, //Indirect command arguments
         BufferElementArray, //Vertex array indices
         BufferPixelPack,//Pixel read target
-        BufferPixelUnpack,//	Texture data source
+        BufferPixelUnpack,//    Texture data source
         BufferQuery,//Query result buffer
         BufferShaderStorage,    //Read - write storage for shaders
         BufferTexture,// Texture data buffer
-        BufferTransformFeedback,//	Transform feedback buffer
+        BufferTransformFeedback,//    Transform feedback buffer
         BufferUniform
     }
 

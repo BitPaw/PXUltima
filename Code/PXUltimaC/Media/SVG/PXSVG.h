@@ -5,7 +5,7 @@
 
 typedef struct PXSVG_
 {
-	unsigned int __dummy__;
+    unsigned int __dummy__;
 }
 PXSVG;
 

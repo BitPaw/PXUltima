@@ -1,10 +1,11 @@
 #include "PXResource.h"
 
+#include <Math/PXMath.h>
+#include <Media/PXText.h>
 #include <OS/Console/PXConsole.h>
 #include <OS/Time/PXStopWatch.h>
 #include <OS/Hardware/PXProcessor.h>
-#include <Media/PXText.h>
-#include <Math/PXMath.h>
+#include <OS/File/PXFile.h>
 
 #include "Autodesk3DS/PXAutodesk3DS.h"
 #include "AAC/PXAAC.h"
@@ -517,6 +518,8 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                     );
 #endif
 
+                    PXResourceStorePath(&pxResourceManager->SourcePathCache, &pxModel->Info, pxResourceCreateInfo->FilePath, pxResourceCreateInfo->FilePathSize);
+
                     // Load model
                     {
                         PXResourceLoadInfo pxResourceLoadInfo;
@@ -525,14 +528,23 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                         pxResourceLoadInfo.Type = PXResourceTypeModel;
                         pxResourceLoadInfo.Manager = pxResourceManager;
 
-                        PXResourceLoadA(&pxResourceLoadInfo, pxResourceCreateInfo->FilePath);
+                        const PXActionResult loadResult = PXResourceLoadA(&pxResourceLoadInfo, pxResourceCreateInfo->FilePath);
+                        const PXBool success = PXActionSuccessful == loadResult;
 
-                        //  PXFilePathStructure pxFilePathStructure;
-
-                        //  PXFilePathSplitt(&pxText, &pxFilePathStructure);
-
-                       //   PXTextCopyA(pxFilePathStructure.FileName.TextA, pxFilePathStructure.FileName.SizeUsed, pxModel->ResourceID.Name, ResourceIDNameLength);
-
+                        if(!success)
+                        {
+#if PXLogEnable
+                            PXLogPrint
+                            (
+                                PXLoggingInfo,
+                                "Resource",
+                                "Model-Load",
+                                "ID:%i Failed",
+                                pxModel->Info.ID
+                            );
+#endif
+                            return loadResult;
+                        }
                     }
                 }
                 else
@@ -725,31 +737,6 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                     // if we dont have an index array, create one
                     // TODO: ???
                 }
-
-#if 0
-                // Load additional resources
-                {
-                    // Load textures
-
-                    for(PXSize i = 0; i < pxModel->MaterialContaierListAmount; i++)
-                    {
-                        PXMaterialContainer* const pxMaterialContainer = &pxModel->MaterialContaierList[i];
-
-                        for(PXSize i = 0; i < pxMaterialContainer->MaterialListAmount; i++)
-                        {
-                            PXMaterial* const pxMaterial = &pxMaterialContainer->MaterialList[i];
-
-                            PXResourceCreateInfo pxResourceCreateInfo;
-                            PXClear(PXResourceCreateInfo, &pxResourceCreateInfo);
-                            pxResourceCreateInfo.Type = PXResourceTypeTexture2D;
-                            pxResourceCreateInfo.ObjectReference = (void**)&pxMaterial->DiffuseTexture;
-                            pxResourceCreateInfo.FilePath = pxMaterial->DiffuseTextureFilePath;
-
-                            const PXActionResult resultA = PXResourceManagerAdd(pxResourceManager, &pxResourceCreateInfo, 1);
-                        }
-                    }
-                }
-#endif
 
                 // Setup    
                // PXMatrix4x4FScaleBy(&pxModel->ModelMatrix, pxModelCreateInfo->Scale);

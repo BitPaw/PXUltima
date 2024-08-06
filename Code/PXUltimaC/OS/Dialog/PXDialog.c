@@ -4,17 +4,17 @@
 #include <stdio.h>
 
 #if OSUnix
-	#define _MAX_PATH 260
+    #define _MAX_PATH 260
 #elif OSWindows
-	#include <windows.h>
+    #include <windows.h>
 
     #include <CommDlg.h>
 
-	#if WindowsAtleastVista
+    #if WindowsAtleastVista
         #include <Shlobj.h>
         #include <combaseapi.h>
         #include "PXDialog.h"
-// #include <shobjidl.h> // [This is an internal header. Do not use as such] 		
+// #include <shobjidl.h> // [This is an internal header. Do not use as such]         
     #endif
 
 typedef BOOL(APIENTRY* PXGetOpenFileNameA)(LPOPENFILENAMEA);

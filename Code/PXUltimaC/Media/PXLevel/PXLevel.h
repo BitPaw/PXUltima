@@ -5,8 +5,8 @@
 
 typedef struct PXLevel_
 {
-	PXInt16U Version;
-	PXInt32U EntryAmount;
+    PXInt16U Version;
+    PXInt32U EntryAmount;
 }
 PXLevel;
 
@@ -15,11 +15,11 @@ PXLevel;
 
 typedef struct PXLevelEntry_
 {
-	void* DataAdress;
-	PXSize DataSize; // Can also be 0 is size if not known
+    void* DataAdress;
+    PXSize DataSize; // Can also be 0 is size if not known
 
-	PXInt32U Flags;
-	PXResourceType ResourceType; // Expected type
+    PXInt32U Flags;
+    PXResourceType ResourceType; // Expected type
 }
 PXLevelEntry;
 

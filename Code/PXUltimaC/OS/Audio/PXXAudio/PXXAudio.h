@@ -14,9 +14,9 @@ PXPublic PXActionResult PXAPI PXXAudioDeviceOpen(PXAudioXSystem* const pxAudioXS
 PXPublic PXActionResult PXAPI PXXAudioDeviceClose(PXAudioXSystem* const pxAudioXSystem, PXAudioDevice* const pxAudioDevice);
 PXPublic PXActionResult PXAPI PXXAudioDeviceLoad
 (
-	PXAudioXSystem* const pxAudioXSystem,
-	PXAudioDevice* const pxAudioDevice,
-	PXSound* const pxSound
+    PXAudioXSystem* const pxAudioXSystem,
+    PXAudioDevice* const pxAudioDevice,
+    PXSound* const pxSound
 );
 
 //--------------------------------------------------------

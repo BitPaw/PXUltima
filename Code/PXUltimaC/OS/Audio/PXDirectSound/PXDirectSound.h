@@ -5,9 +5,9 @@
 
 typedef struct PXAudioDeviceDetectObjectEventData_
 {
-	PXInt32U IndexCurrent;
-	PXInt32U IndexTarget;
-	PXAudioDevice* AudioDevice;
+    PXInt32U IndexCurrent;
+    PXInt32U IndexTarget;
+    PXAudioDevice* AudioDevice;
 }
 PXAudioDeviceDetectObjectEventData;
 
@@ -43,9 +43,9 @@ PXPublic PXActionResult PXAPI PXDirectSoundDeviceOpen(PXAudioDirectSound* const 
 PXPublic PXActionResult PXAPI PXDirectSoundDeviceClose(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice);
 PXPublic PXActionResult PXAPI PXDirectSoundDeviceLoad
 (
-	PXAudioDirectSound* const pxAudioDirectSound,
-	PXAudioDevice* const pxAudioDevice,
-	PXSound* const pxSound
+    PXAudioDirectSound* const pxAudioDirectSound,
+    PXAudioDevice* const pxAudioDevice,
+    PXSound* const pxSound
 );
 
 //--------------------------------------------------------

@@ -4,30 +4,30 @@
 
 void PXAPI PXMediaTestAll()
 {
-	PXMediaTestTTF("C:\\Windows\\Fonts\\arial.ttf");
+    PXMediaTestTTF("C:\\Windows\\Fonts\\arial.ttf");
 }
 
 void PXAPI PXMediaTestTTF(char* filePath)
 {
-	/*
-	PXTTF ttf;
+    /*
+    PXTTF ttf;
 
-	PXFile pxFile;
+    PXFile pxFile;
 
-	PXFileOpenFromPathInfo pxFileOpenFromPathInfo;
-	PXTextMakeFixedA(&pxFileOpenFromPathInfo.Text, filePath);
+    PXFileOpenFromPathInfo pxFileOpenFromPathInfo;
+    PXTextMakeFixedA(&pxFileOpenFromPathInfo.Text, filePath);
 
-	pxFileOpenFromPathInfo.FileSize = 0;
-	pxFileOpenFromPathInfo.AccessMode = PXMemoryAccessModeReadOnly;
-	pxFileOpenFromPathInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
-	pxFileOpenFromPathInfo.AllowMapping = PXTrue;
-	pxFileOpenFromPathInfo.CreateIfNotExist = PXFalse;
-	pxFileOpenFromPathInfo.AllowOverrideOnCreate = PXFalse;
+    pxFileOpenFromPathInfo.FileSize = 0;
+    pxFileOpenFromPathInfo.AccessMode = PXMemoryAccessModeReadOnly;
+    pxFileOpenFromPathInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
+    pxFileOpenFromPathInfo.AllowMapping = PXTrue;
+    pxFileOpenFromPathInfo.CreateIfNotExist = PXFalse;
+    pxFileOpenFromPathInfo.AllowOverrideOnCreate = PXFalse;
 
-	PXFileOpenFromPath(&pxFile, &pxFileOpenFromPathInfo);
+    PXFileOpenFromPath(&pxFile, &pxFileOpenFromPathInfo);
 
-	PXActionResult xx = PXTTFParse(&ttf, &pxFile);
+    PXActionResult xx = PXTTFParse(&ttf, &pxFile);
 
-	printf("");
-	*/
+    printf("");
+    */
 }

@@ -26,43 +26,45 @@
 
 typedef struct PXController_
 {
-	char Name[PXControllerNameSize];
-	PXInt32U ID;
+    char Name[PXControllerNameSize];
+    PXInt32U ID;
 
-	PXInt32S Axis[6];  // X,Y,Z,R,U,V
-	PXInt32S AxisMin[6];
-	PXInt32S AxisMax[6];
+    PXInt32S Axis[6];  // X,Y,Z,R,U,V
+    PXInt32S AxisMin[6];
+    PXInt32S AxisMax[6];
 
-	float AxisNormalised[6];
+    float AxisNormalised[6];
 
-	PXInt32U ButtonPressedBitList;
-	PXInt32U ButtonAmountPressed;        // current button number pressed
-	PXInt32U ControlPad;
+    PXInt32U ButtonPressedBitList;
+    PXInt32U ButtonAmountPressed;        // current button number pressed
+    PXInt32U ControlPad;
 
 
-	PXInt32U ButtonAmountInUse;
-	PXInt32U AxesAmountInUse;
+    PXInt32U ButtonAmountInUse;
+    PXInt32U AxesAmountInUse;
 }
 PXController;
 
 
 typedef struct PXControllerSystem_
 {
-	PXLibrary InputLibrary;
+    PXLibrary InputLibrary;
 
-	// Funcitons
-	void* NumDevsGet;
-	void* DevCapsGetA;
-	void* GetPosEx;
+    // Funcitons
+    void* NumDevsGet;
+    void* DevCapsGetA;
+    void* GetPosEx;
 
-	// Number of devices
-	PXSize DeviceListAmount;
-	PXController* DeviceListData;
+    // Number of devices
+    PXSize DeviceListAmount;
+    PXController* DeviceListData;
 }
 PXControllerSystem;
 
 
 PXPublic void PXAPI PXControllerSystemInitilize(PXControllerSystem* const pxControllerSystem);
+PXPublic void PXAPI PXControllerSystemShutdown(PXControllerSystem* const pxControllerSystem);
+
 PXPublic PXActionResult PXAPI PXControllerSystemDevicesListRefresh(PXControllerSystem* const pxControllerSystem);
 PXPublic PXActionResult PXAPI PXControllerSystemDevicesDataUpdate(PXControllerSystem* const pxControllerSystem);
 

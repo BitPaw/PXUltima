@@ -4,17 +4,17 @@
 
 void PXAPI PXTestDebugAll()
 {
-	PXTestDebugProcess();
+    PXTestDebugProcess();
 }
 
 void PXAPI PXTestDebugProcess()
 {
-	PXDebug pxDebug;
+    PXDebug pxDebug;
 
-	//PXDebugStartProcessA(&pxDebug, "A:/F/F.exe");
+    //PXDebugStartProcessA(&pxDebug, "A:/F/F.exe");
 
-	while (1)
-	{
+    while (1)
+    {
 
-	}
+    }
 }

@@ -5,13 +5,13 @@
 
 typedef struct PXSalsa20_
 {
-	char* KeyData;
-	PXSize KeyLength;
+    char* KeyData;
+    PXSize KeyLength;
 
-	int DataSectionIndex;
-	PXInt32U DataSize;
+    int DataSectionIndex;
+    PXInt32U DataSize;
 
-	char IV[8];
+    char IV[8];
 }
 PXSalsa20;
 

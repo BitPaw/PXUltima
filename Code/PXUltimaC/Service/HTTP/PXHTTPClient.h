@@ -9,11 +9,11 @@ extern "C"
 {
 #endif
 
-	typedef struct PXHTTPClient_
-	{
-		int x;
-	}
-	PXHTTPClient;
+    typedef struct PXHTTPClient_
+    {
+        int x;
+    }
+    PXHTTPClient;
 
 #ifdef __cplusplus
 }

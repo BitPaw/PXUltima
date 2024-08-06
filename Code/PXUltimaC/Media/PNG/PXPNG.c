@@ -455,10 +455,10 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
                 }
                 case PXPNGChunkCompressedTextualData:
                 {
-                    // Keyword 	                    1 - 79 bytes(character string)
-                    // Null separator 	            1 byte(null character)
-                    // Compression method 	        1 byte
-                    // Compressed text datastream 	n bytes
+                    // Keyword                         1 - 79 bytes(character string)
+                    // Null separator                 1 byte(null character)
+                    // Compression method             1 byte
+                    // Compressed text datastream     n bytes
 
                   //  pxFile.DataCursor += chunk.Lengh;
 

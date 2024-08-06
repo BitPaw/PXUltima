@@ -24,13 +24,13 @@ PXActionResult PXAPI PXALSAInitialize(PXAudio* const pxAudio)
 
 
 #if PXLogEnable
-		PXLogPrint
-		(
-			xxxxxxxxxxxxxxx,
-			"ALSA",
-			"Initialize",
-			"--- Start ---"
-		);
+        PXLogPrint
+        (
+            xxxxxxxxxxxxxxx,
+            "ALSA",
+            "Initialize",
+            "--- Start ---"
+        );
 #endif
 
 
@@ -45,27 +45,27 @@ PXActionResult PXAPI PXALSAInitialize(PXAudio* const pxAudio)
         if(!success)
         {
 #if PXLogEnable
-		PXLogPrint
-		(
-			PXLoggingError,
-			"ALSA",
-			"Device-Create",
-			"Failed to create Name:<%s>",
-			deviceName
-		);
+        PXLogPrint
+        (
+            PXLoggingError,
+            "ALSA",
+            "Device-Create",
+            "Failed to create Name:<%s>",
+            deviceName
+        );
 #endif
             return PXFailedOpen;
         }
 
 #if PXLogEnable
-		PXLogPrint
-		(
-			PXLoggingError,
-			"ALSA",
-			"Device-Create",
-			"Success. Name:<%s>",
-			deviceName
-		);
+        PXLogPrint
+        (
+            PXLoggingError,
+            "ALSA",
+            "Device-Create",
+            "Success. Name:<%s>",
+            deviceName
+        );
 #endif
     }
 
@@ -79,14 +79,14 @@ PXActionResult PXAPI PXALSAInitialize(PXAudio* const pxAudio)
 #if PXLogEnable
         const char* errorMessage = snd_strerror(err);
 
-		PXLogPrint
-		(
-			PXLoggingError,
-			"ALSA",
-			"PCM-Alloc",
-			"Failed hardware parameter reservation. %s",
+        PXLogPrint
+        (
+            PXLoggingError,
+            "ALSA",
+            "PCM-Alloc",
+            "Failed hardware parameter reservation. %s",
             errorMessage
-		);
+        );
 #endif
 
         return PXOutOfMem;
@@ -251,13 +251,13 @@ PXActionResult PXAPI PXALSAInitialize(PXAudio* const pxAudio)
 
 
 #if PXLogEnable
-		PXLogPrint
-		(
-			xxxxxxxxxxxxxxx,
-			"ALSA",
-			"Initialize",
-			"--- Done ---"
-		);
+        PXLogPrint
+        (
+            xxxxxxxxxxxxxxx,
+            "ALSA",
+            "Initialize",
+            "--- Done ---"
+        );
 #endif
 
         return PXActionRefusedNotImplemented;

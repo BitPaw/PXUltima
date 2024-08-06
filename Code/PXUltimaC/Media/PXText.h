@@ -33,34 +33,34 @@
 
 typedef struct ParsingTokenA_
 {
-	const char* String;
-	const char** Value;
+    const char* String;
+    const char** Value;
 }
 ParsingTokenA;
 
 typedef enum PXTextFormat_
 {
-	TextFormatInvalid,
-	TextFormatASCII, 	// 1 Byte per character, range from 0 to 255	
-	TextFormatUNICODE, 	// 2 Bytes per character, range from 0 to 65535	
-	TextFormatUTF8, 	// Variable length of characters, 1 to 4 Bytes
-	TextFormatUTF16
+    TextFormatInvalid,
+    TextFormatASCII,     // 1 Byte per character, range from 0 to 255    
+    TextFormatUNICODE,     // 2 Bytes per character, range from 0 to 65535    
+    TextFormatUTF8,     // Variable length of characters, 1 to 4 Bytes
+    TextFormatUTF16
 }
 PXTextFormat;
 
 typedef struct PXText_
 {
-	PXSize SizeAllocated; // [8 Byte, Offset 0] Size that the buffer ponited to has
-	PXSize SizeUsed; // [8 Byte, Offset 8]
-	PXSize NumberOfCharacters;  // [8 Byte, Offset 16]
+    PXSize SizeAllocated; // [8 Byte, Offset 0] Size that the buffer ponited to has
+    PXSize SizeUsed; // [8 Byte, Offset 8]
+    PXSize NumberOfCharacters;  // [8 Byte, Offset 16]
 
-	union
-	{
-		char* TextA; // [8 Byte, Offset 24]
-		wchar_t* TextW; // [8 Byte, Offset 24]
-	};
+    union
+    {
+        char* TextA; // [8 Byte, Offset 24]
+        wchar_t* TextW; // [8 Byte, Offset 24]
+    };
 
-	PXTextFormat Format; // [4 Byte, Offset 32]		
+    PXTextFormat Format; // [4 Byte, Offset 32]        
 }
 PXText;
 
@@ -70,13 +70,13 @@ PXText;
 
 
 #define PXTextConstructNamedBuffer(pxText, bufferCacheName, bufferCacheSize, format)\
-		char bufferCacheName[bufferCacheSize];\
-		(pxText)->SizeAllocated = sizeof(bufferCacheName);\
-		(pxText)->SizeUsed = 0;\
-		(pxText)->NumberOfCharacters = 0;\
-		(pxText)->Format = format;\
-		(pxText)->TextA = bufferCacheName;\
-		PXMemorySet((pxText)->TextA, '\0', (pxText)->SizeAllocated);
+        char bufferCacheName[bufferCacheSize];\
+        (pxText)->SizeAllocated = sizeof(bufferCacheName);\
+        (pxText)->SizeUsed = 0;\
+        (pxText)->NumberOfCharacters = 0;\
+        (pxText)->Format = format;\
+        (pxText)->TextA = bufferCacheName;\
+        PXMemorySet((pxText)->TextA, '\0', (pxText)->SizeAllocated);
 
 
 #define PXTextConstructNamedBufferA(pxText, bufferCacheName, bufferCacheSize) PXTextConstructNamedBuffer(pxText, bufferCacheName, bufferCacheSize, TextFormatASCII)
@@ -89,20 +89,20 @@ PXText;
 
 
 #define PXTextConstructFromAdress(pxText, address, sizeUsed, sizeAllocated, format) \
-		if((PXSize)sizeAllocated == (PXSize)PXTextLengthUnkown) \
-		{ \
-			(pxText)->SizeAllocated = PXTextLengthA(address, (PXSize)PXTextLengthUnkown); \
-			(pxText)->SizeUsed = (pxText)->SizeAllocated; \
-			(pxText)->NumberOfCharacters = (pxText)->SizeAllocated; \
-		} \
-		else \
-		{ \
-			(pxText)->SizeAllocated = sizeAllocated; \
-			(pxText)->SizeUsed = sizeUsed; \
-			(pxText)->NumberOfCharacters = sizeUsed; \
-		} \
-		(pxText)->Format = format; \
-		(pxText)->TextA = (char*)(address);
+        if((PXSize)sizeAllocated == (PXSize)PXTextLengthUnkown) \
+        { \
+            (pxText)->SizeAllocated = PXTextLengthA(address, (PXSize)PXTextLengthUnkown); \
+            (pxText)->SizeUsed = (pxText)->SizeAllocated; \
+            (pxText)->NumberOfCharacters = (pxText)->SizeAllocated; \
+        } \
+        else \
+        { \
+            (pxText)->SizeAllocated = sizeAllocated; \
+            (pxText)->SizeUsed = sizeUsed; \
+            (pxText)->NumberOfCharacters = sizeUsed; \
+        } \
+        (pxText)->Format = format; \
+        (pxText)->TextA = (char*)(address);
 
 #define PXTextLengthUnkown -1
 
@@ -110,47 +110,47 @@ PXText;
 #define PXTextConstructFromAdressW(pxText, address, sizeUsed, sizeAllocated) PXTextConstructFromAdress(pxText, (char*)address, sizeUsed, sizeAllocated, TextFormatUNICODE)
 
 #define PXTextMakeFixedC(pxText, c)\
-		char character = c; \
-		(pxText)->SizeAllocated = sizeof(character);\
-		(pxText)->SizeUsed = sizeof(character);\
-		(pxText)->NumberOfCharacters = sizeof(character);\
-		(pxText)->Format = TextFormatASCII;\
-		(pxText)->TextA = &character;
+        char character = c; \
+        (pxText)->SizeAllocated = sizeof(character);\
+        (pxText)->SizeUsed = sizeof(character);\
+        (pxText)->NumberOfCharacters = sizeof(character);\
+        (pxText)->Format = TextFormatASCII;\
+        (pxText)->TextA = &character;
 
 #define PXTextMakeFixedA(pxText, s)\
-		char text[] = s;\
-		(pxText)->SizeAllocated = sizeof(text);\
-		(pxText)->SizeUsed = (pxText)->SizeAllocated;\
-		(pxText)->NumberOfCharacters = (pxText)->SizeAllocated;\
-		(pxText)->Format = TextFormatASCII;\
-		(pxText)->TextA = text;
+        char text[] = s;\
+        (pxText)->SizeAllocated = sizeof(text);\
+        (pxText)->SizeUsed = (pxText)->SizeAllocated;\
+        (pxText)->NumberOfCharacters = (pxText)->SizeAllocated;\
+        (pxText)->Format = TextFormatASCII;\
+        (pxText)->TextA = text;
 
 #define PXTextMakeFixedGlobalA(pxText, s) \
-		(pxText)->TextA = s; \
-		(pxText)->SizeAllocated = PXTextLengthA((pxText)->TextA, PXTextLengthUnkown);\
-		(pxText)->SizeUsed = (pxText)->SizeAllocated;\
-		(pxText)->NumberOfCharacters = (pxText)->SizeAllocated;\
-		(pxText)->Format = TextFormatASCII;\
+        (pxText)->TextA = s; \
+        (pxText)->SizeAllocated = PXTextLengthA((pxText)->TextA, PXTextLengthUnkown);\
+        (pxText)->SizeUsed = (pxText)->SizeAllocated;\
+        (pxText)->NumberOfCharacters = (pxText)->SizeAllocated;\
+        (pxText)->Format = TextFormatASCII;\
 
 
 #define PXTextMakeFixedNamed(pxText, name, s, format)\
-		char name[] = s;\
-		(pxText)->SizeAllocated = sizeof(name) - 1u;\
-		(pxText)->SizeUsed = (pxText)->SizeAllocated;\
-		(pxText)->NumberOfCharacters = 0;\
-		(pxText)->Format = format;\
-		(pxText)->TextA = name;
+        char name[] = s;\
+        (pxText)->SizeAllocated = sizeof(name) - 1u;\
+        (pxText)->SizeUsed = (pxText)->SizeAllocated;\
+        (pxText)->NumberOfCharacters = 0;\
+        (pxText)->Format = format;\
+        (pxText)->TextA = name;
 
 #define PXTextMakeFixedNamedA(pxText, name, str) PXTextMakeFixedNamed(pxText, name, str, TextFormatASCII);
 #define PXTextMakeFixedNamedW(pxText, name, str) PXTextMakeFixedNamed(pxText, name, str, TextFormatUNICODE);
 
 #define PXTextMakeFixedW(pxText, s)\
-		wchar_t text[] = s;\
-		(pxText)->SizeAllocated = sizeof(text);\
-		(pxText)->SizeUsed = sizeof(text);\
-		(pxText)->NumberOfCharacters = sizeof(text) / 2;\
-		(pxText)->Format = TextFormatUNICODE;\
-		(pxText)->TextA = text;
+        wchar_t text[] = s;\
+        (pxText)->SizeAllocated = sizeof(text);\
+        (pxText)->SizeUsed = sizeof(text);\
+        (pxText)->NumberOfCharacters = sizeof(text) / 2;\
+        (pxText)->Format = TextFormatUNICODE;\
+        (pxText)->TextA = text;
 
 
 PXPublic enum PXActionResult_ PXAPI PXTextCreateCopy(PXText* const pxText, const PXText* const pxTextSource);
@@ -233,6 +233,8 @@ PXPublic char PXAPI PXTextCompareIgnoreCaseWA(const wchar_t* a, const PXSize aSi
 PXPublic char* PXAPI PXTextFindPositionA(const char* data, PXSize dataSize, const char* target, PXSize targetSize);
 
 PXPublic PXSize PXAPI PXTextFindLastCharacter(const PXText* const pxText, const char character);
+PXPublic PXSize PXAPI PXTextFindLastCharacterA(const char* const text, const PXSize textSize, const char character);
+
 PXPublic PXSize PXAPI PXTextFindFirstCharacter(const PXText* const pxText, const char character);
 
 PXPublic PXSize PXAPI PXTextFindFirstCharacterA(const char* PXRestrict const string, const PXSize dataSize, const char character);

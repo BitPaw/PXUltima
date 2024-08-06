@@ -5,18 +5,18 @@
 
 typedef enum PXDeflateEncodingMethod_
 {
-	PXDeflateEncodingInvalid,
-	PXDeflateEncodingLiteralRaw,
-	PXDeflateEncodingHuffmanStatic,
-	PXDeflateEncodingHuffmanDynamic,
-	PXDeflateEncodingReserverd
+    PXDeflateEncodingInvalid,
+    PXDeflateEncodingLiteralRaw,
+    PXDeflateEncodingHuffmanStatic,
+    PXDeflateEncodingHuffmanDynamic,
+    PXDeflateEncodingReserverd
 }
 PXDeflateEncodingMethod;
 
 typedef struct PXDeflateBlock_
 {
-	PXDeflateEncodingMethod EncodingMethod;
-	PXBool IsLastBlock;
+    PXDeflateEncodingMethod EncodingMethod;
+    PXBool IsLastBlock;
 }
 PXDeflateBlock;
 

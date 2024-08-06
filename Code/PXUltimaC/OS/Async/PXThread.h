@@ -28,28 +28,28 @@ typedef PXThreadResult(PXOSAPI* ThreadFunction)(void* const data);
 
 typedef enum PXThreadMode_
 {
-	PXThreadModeInvalid,
-	PXThreadModeInitializing,
-	PXThreadModeRunning,
-	PXThreadModeStopping,
-	PXThreadModeSuspended,
-	PXThreadModeFinished,
+    PXThreadModeInvalid,
+    PXThreadModeInitializing,
+    PXThreadModeRunning,
+    PXThreadModeStopping,
+    PXThreadModeSuspended,
+    PXThreadModeFinished,
 }
 PXThreadMode;
 
 typedef struct PXThread_
 {
 #if OSUnix
-	void* ReturnResult;
+    void* ReturnResult;
 
-	pthread_t ThreadHandle;
-#elif OSWindows		
-	HANDLE ThreadHandle;
-	PXInt32U ThreadID;
-	PXInt32U ReturnResult;
+    pthread_t ThreadHandle;
+#elif OSWindows        
+    HANDLE ThreadHandle;
+    PXInt32U ThreadID;
+    PXInt32U ReturnResult;
 #endif
 
-	PXThreadMode Mode;
+    PXThreadMode Mode;
 }
 PXThread;
 
@@ -75,9 +75,74 @@ PXPublic PXActionResult PXAPI PXThreadExitCurrent(const PXInt32U exitCode);
 // Causes the calling thread to yield execution to another
 // thread that is ready to run on the current processor.
 // The operating system selects the next thread to be executed.
+// The function returns true if a yield was caused, otherwise the
+// current thread proceeds execution and false is returned.
 PXPublic PXActionResult PXAPI PXThreadYieldToOtherThreads();
 
 PXPublic PXActionResult PXAPI PXThreadOpen(PXThread* const pxThread);
+
+
+// Windows : priority
+// Linux : nice value
+// A value indicating how important a thread is relavtive to 
+// others running. The schedulter uses this hint to give important 
+// processes a faster response time to act and slow down threads
+// that are not as important to respond fast.
+typedef enum PXThreadPriorityMode_
+{
+    PXThreadPriorityModeInvalid,
+
+    PXThreadPriorityModeLowest, // Lowest possible priority
+    PXThreadPriorityModeLow19,
+    PXThreadPriorityModeLow18, 
+    PXThreadPriorityModeLow17,
+    PXThreadPriorityModeLow16,
+    PXThreadPriorityModeLow15,
+    PXThreadPriorityModeLow14,
+    PXThreadPriorityModeLow13,
+    PXThreadPriorityModeLow12,
+    PXThreadPriorityModeLow11,
+    PXThreadPriorityModeLow10,
+    PXThreadPriorityModeLow09,
+    PXThreadPriorityModeLow08,
+    PXThreadPriorityModeLow07,
+    PXThreadPriorityModeLow06,
+    PXThreadPriorityModeLow05,
+    PXThreadPriorityModeLow04,
+    PXThreadPriorityModeLow03,
+    PXThreadPriorityModeLow02,
+    PXThreadPriorityModeLow01, 
+    PXThreadPriorityModeLower,
+    PXThreadPriorityModeNormal,
+    PXThreadPriorityModeHigher,
+    PXThreadPriorityModeHigh01,
+    PXThreadPriorityModeHigh02,
+    PXThreadPriorityModeHigh03,
+    PXThreadPriorityModeHigh04,
+    PXThreadPriorityModeHigh05,
+    PXThreadPriorityModeHigh06,
+    PXThreadPriorityModeHigh07,
+    PXThreadPriorityModeHigh08,
+    PXThreadPriorityModeHigh09,
+    PXThreadPriorityModeHigh10,
+    PXThreadPriorityModeHigh11,
+    PXThreadPriorityModeHigh12,
+    PXThreadPriorityModeHigh13,
+    PXThreadPriorityModeHigh14,
+    PXThreadPriorityModeHigh15,
+    PXThreadPriorityModeHigh16,
+    PXThreadPriorityModeHigh17,
+    PXThreadPriorityModeHigh18,
+    PXThreadPriorityModeHigh19,
+    PXThreadPriorityModeHighest
+}
+PXThreadPriorityMode;
+
+
+
+PXPublic PXActionResult PXAPI PXThreadPrioritySet(PXThread* pxThread, const PXThreadPriorityMode pxThreadPriorityMode);
+PXPublic PXActionResult PXAPI PXThreadPriorityGet(PXThread* pxThread, PXThreadPriorityMode* const pxThreadPriorityMode);
+
 
 PXPublic PXActionResult PXAPI PXThreadSuspend(PXThread* const pxThread);
 PXPublic PXActionResult PXAPI PXThreadResume(PXThread* const pxThread);

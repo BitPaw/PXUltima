@@ -17,22 +17,22 @@ typedef void (PXAPI* PXProgramExecutedEvent)(const PXBool succesful, const PXSiz
 
 typedef struct PXProgram_
 {
-	ProcessHandle Handle;
+    ProcessHandle Handle;
 
 #if OSUnix
-	int MemoryFileHandle;
+    int MemoryFileHandle;
 #endif
 
-	wchar_t FilePath[260];
+    wchar_t FilePath[260];
 
-	PXProgramExecutedEvent PXProgramExecutedCallBack;
+    PXProgramExecutedEvent PXProgramExecutedCallBack;
 
-	PXSize ParameterListSize;
-	char** ParameterList;
+    PXSize ParameterListSize;
+    char** ParameterList;
 
-	PXThread WorkingThread;
-	PXSize ReturnValue;
-	unsigned char ExecutionSuccessfull;
+    PXThread WorkingThread;
+    PXSize ReturnValue;
+    unsigned char ExecutionSuccessfull;
 }
 PXProgram;
 

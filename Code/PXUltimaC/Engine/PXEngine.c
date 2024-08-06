@@ -41,12 +41,16 @@ void PXAPI PXEngineWindowEvent(PXEngine* const pxEngine, PXWindowEvent* const px
 {
     switch(pxWindowEvent->Type)
     {
+        case PXWindowEventTypeElementDestroy:
+        {
+            pxEngine->Window = PXNull; // Window is beeing destroyed, reference illegal
+            break;
+        }
         case PXWindowEventTypeElementResize:
         {
             pxEngine->UpdateUI = PXTrue;
             break;
         }
-
         case PXWindowEventTypeInputMouseButton:
         {
             PXWindowEventInputMouseButton* const inputMouseButton = &pxWindowEvent->InputMouseButton;
@@ -575,6 +579,13 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
         if(!isRunningASYNC)
         {
             PXWindowUpdate(&pxEngine->GUISystem, pxEngine->Window);
+            
+            // if window does not exist anymore
+            if(!pxEngine->Window)
+            {
+                PXEngineStop(pxEngine);
+                return;
+            }
 
             PXControllerSystemDevicesDataUpdate(&pxEngine->ControllerSystem);
         }
@@ -1131,8 +1142,8 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
     );
 #endif
 
-	PXSignalCallBackRegister(PXSignalTokenIllegalInstruction, PXEngineOnIllegalInstruction);
-	PXSignalCallBackRegister(PXSignalTokenMemoryViolation, PXEngineOnMemoryViolation);
+    PXSignalCallBackRegister(PXSignalTokenIllegalInstruction, PXEngineOnIllegalInstruction);
+    PXSignalCallBackRegister(PXSignalTokenMemoryViolation, PXEngineOnMemoryViolation);
 
     {
         PXText pxText;
@@ -1160,7 +1171,7 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
     }
 
     //-----------------------------------------------------
-	// Create window
+    // Create window
     //-----------------------------------------------------
     {
         PXResourceCreateInfo pxResourceCreateInfo;
@@ -1406,10 +1417,90 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
 
 void PXAPI PXEngineStop(PXEngine* const pxEngine)
 {
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "PXEngine",
+        "Shutdown",
+        "All running systems are beeing cloed down"
+    );
+#endif
+
+    pxEngine->IsRunning = PXFalse;
+
     PXFunctionInvoke(pxEngine->OnShutDown, pxEngine->Owner, pxEngine);
 
+
+    PXControllerSystemShutdown(&pxEngine->ControllerSystem);
     PXGraphicRelease(&pxEngine->Graphic);
-    //PXWindowDestruct(&pxEngine->Window);
+
+
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "PXEngine",
+        "Shutdown",
+        "Following data might be a sign of a resource leak. Check and advice"
+    );
+#endif
+
+    // List all open resources, to check for memory and resource leaks
+
+    // List all open threads
+    {
+        
+        PXThread pxThreadList[64];
+        PXClearList(PXThread, pxThreadList, 64);
+        PXSize amountResultInput = 64;
+        PXSize amountResultOutput = 0;
+
+        PXThread* pxThreadListRef = pxThreadList;
+        PXThread** pxThreadListRefRef = &pxThreadListRef;
+
+        PXProcessThreadsListAll(PXNull, pxThreadListRefRef, amountResultInput, &amountResultOutput);
+
+        for(PXSize i = 0; i < amountResultOutput; ++i)
+        {
+            PXThread* const pxThread = &pxThreadList[i];
+
+            PXText text;
+            PXTextConstructBufferA(&text, 256);
+
+            PXThreadNameGet(pxThread, &text);
+
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "PXEngine",
+                "Shutdown",
+                "Thread 0x%p, %s",
+                pxThread->ThreadID,
+                text.TextA
+            );
+#endif
+
+        }
+    }
+
+  
+
+    // list all open handles
+
+    // list all open pointers
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "PXEngine",
+        "Shutdown",
+        "Done"
+    );
+#endif
 }
 
 
@@ -1489,7 +1580,16 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
         return PXActionRefusedArgumentNull;
     }
 
-    PXResourceManagerAdd(&pxEngine->ResourceManager, pxResourceCreateInfo, 1);
+    // Primary load
+    {
+        const PXActionResult resourceAddResult = PXResourceManagerAdd(&pxEngine->ResourceManager, pxResourceCreateInfo, 1);
+        const PXBool success = PXActionSuccessful == resourceAddResult;
+
+        if(!success)
+        {
+            return resourceAddResult;
+        }
+    }
 
     switch (pxResourceCreateInfo->Type)
     {

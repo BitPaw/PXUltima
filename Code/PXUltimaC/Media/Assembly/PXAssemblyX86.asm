@@ -2,7 +2,7 @@
 
 ;.code
 
-; section	.text
+; section    .text
 ;   global PXEndianSwapI32U        ;must be declared for using gcc
 
 

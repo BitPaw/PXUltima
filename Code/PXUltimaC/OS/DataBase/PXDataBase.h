@@ -185,7 +185,7 @@ typedef struct PXDataBase_
 #elif PXOSWindowsDestop
     void* EnvironmentID;
     void* ConnectionID;
-#endif	
+#endif    
 
     char* DriverListData;
     char** DriverList; // Its a single line of text only beeing seperated by a \0

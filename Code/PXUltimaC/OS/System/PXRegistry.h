@@ -5,32 +5,32 @@
 
 typedef enum PXRegistrySpace_
 {
-	PXRegistrySpaceInvalid,
-	PXRegistrySpaceLocalMachine,
-	PXRegistrySpacePerformanceData,
-	PXRegistrySpaceUsers
+    PXRegistrySpaceInvalid,
+    PXRegistrySpaceLocalMachine,
+    PXRegistrySpacePerformanceData,
+    PXRegistrySpaceUsers
 }
 PXRegistrySpace;
 
 typedef struct PXRegistry_
 {
-	PXLibrary Library;
+    PXLibrary Library;
 
-	void* ID;
+    void* ID;
 
-	void* RegistryConnectRegistryA;
-	void* RegistryConnectRegistryW;
-	void* RegistryCloseKey;
-	void* RegistryKeyDeleteA;
-	void* RegistryKeyDeleteW;
-	void* RegistryKeySaveA;
-	void* RegistryKeySaveW;
-	void* RegistryKeyLoadA;
-	void* RegistryKeyLoadW;
-	void* RegistryCreateKeyExA;
-	void* RegistryCreateKeyExW;
-	void* RegistryKeyEnumExA;
-	void* RegistryKeyEnumExW;
+    void* RegistryConnectRegistryA;
+    void* RegistryConnectRegistryW;
+    void* RegistryCloseKey;
+    void* RegistryKeyDeleteA;
+    void* RegistryKeyDeleteW;
+    void* RegistryKeySaveA;
+    void* RegistryKeySaveW;
+    void* RegistryKeyLoadA;
+    void* RegistryKeyLoadW;
+    void* RegistryCreateKeyExA;
+    void* RegistryCreateKeyExW;
+    void* RegistryKeyEnumExA;
+    void* RegistryKeyEnumExW;
 }
 PXRegistry;
 

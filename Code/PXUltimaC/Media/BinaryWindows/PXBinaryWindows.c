@@ -22,8 +22,8 @@ PXActionResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceLoadInfo* const pxRes
     );
 #endif
 
-	// Read header
-	{
+    // Read header
+    {
         PXDOSHeader* const pxDOSHeader = &pxBinaryWindows->Header;
 
         const PXFileDataElementType pxDataStreamElementList[] =
@@ -60,7 +60,7 @@ PXActionResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceLoadInfo* const pxRes
         }
 
         // Extended parse for DOS-Header
-	}
+    }
 
     // Start Parse of PE header
     {
@@ -84,10 +84,10 @@ PXActionResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceLoadInfo* const pxRes
 #endif
 
 
-	return PXActionRefusedNotImplemented;
+    return PXActionRefusedNotImplemented;
 }
 
 PXActionResult PXAPI PXBinaryWindowsSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
 {
-	return PXActionRefusedNotImplemented;
+    return PXActionRefusedNotImplemented;
 }

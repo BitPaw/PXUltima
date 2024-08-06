@@ -13,78 +13,78 @@
 
 void PXDataTypeToString(const PXInt32U dataType, char* buffer)
 {
-//	PXText pxText;
-	//PXTextConstructBufferA(&pxText, 256);
+//    PXText pxText;
+    //PXTextConstructBufferA(&pxText, 256);
 
-	//char bufferBinData[64];
+    //char bufferBinData[64];
 
-	PXTextFromIntToBinary32U(buffer, 64, dataType);
+    PXTextFromIntToBinary32U(buffer, 64, dataType);
 
 #if 0
-	PXTextPrintA
-	(
-		buffer,
-		256,
-		"%s\n"
+    PXTextPrintA
+    (
+        buffer,
+        256,
+        "%s\n"
 
-	);
+    );
 #endif
 }
 
 PXInt32U PXDataTypeIntFitting(const PXSize expectedSize)
 {
-	{
-		const PXBool fitIn08Bit = expectedSize <= (PXSize)PXDataTypeInt08ULimit;
+    {
+        const PXBool fitIn08Bit = expectedSize <= (PXSize)PXDataTypeInt08ULimit;
 
-		if (fitIn08Bit)
-		{
-			return PXDataTypeInt08U;
-		}
-	}
+        if (fitIn08Bit)
+        {
+            return PXDataTypeInt08U;
+        }
+    }
 
-	{
-		const PXBool fitIn16Bit = expectedSize <= (PXSize)PXDataTypeInt16ULimit;
+    {
+        const PXBool fitIn16Bit = expectedSize <= (PXSize)PXDataTypeInt16ULimit;
 
-		if (fitIn16Bit)
-		{
-			return PXDataTypeInt16U;
-		}
-	}
+        if (fitIn16Bit)
+        {
+            return PXDataTypeInt16U;
+        }
+    }
 
-	{
-		const PXBool fitIn32Bit = expectedSize <= (PXSize)PXDataTypeInt32ULimit;
+    {
+        const PXBool fitIn32Bit = expectedSize <= (PXSize)PXDataTypeInt32ULimit;
 
-		if (fitIn32Bit)
-		{
-			return PXDataTypeInt32U;
-		}
-	}
+        if (fitIn32Bit)
+        {
+            return PXDataTypeInt32U;
+        }
+    }
 
-	return PXDataTypeInt64U;
+    return PXDataTypeInt64U;
 }
 
 void PXEndianSwapI32U(PXInt32U* const value)
 {
 
-	
+    
 
 #if PX_X86_BSWAP_ALLOW
 
-	PXInt32U wurst = *value;
-	
-	__asm
-	{
-		mov EAX, 0x0
-		mov EDX, 0x0
+    PXInt32U wurst = *value;
+    
+    __asm
+    {
+        mov EAX, 0x0
+        mov EDX, 0x0
 
-		mov EAX, wurst
-		mov EDX, [wurst] // Load variable into register 
+        mov EAX, wurst
+        mov EDX, [wurst] // Load variable into register 
 
-		BSWAP EDX        // Execute byte swap in register 'EAX'
-		mov [wurst], EDX
-	}
+        BSWAP EDX        // Execute byte swap in register 'EAX'
+        mov [wurst], EDX
+    }
 
-	*value = wurst;
+    *value = wurst;
 
 #else
 
@@ -96,12 +96,12 @@ void PXEndianSwapI16U(PXInt16U* const value)
 
 #if PX_X86_BSWAP_ALLOW
 
-	__asm
-	{
-		mov ax, 4
-		mov bx, 8
-		xchg ax, bx
-	}
+    __asm
+    {
+        mov ax, 4
+        mov bx, 8
+        xchg ax, bx
+    }
 
 #else
 
@@ -114,36 +114,36 @@ void PXEndianSwapI16U(PXInt16U* const value)
 
 void PXEndianSwap(void* const data, const PXSize dataSize, const PXEndian endianFrom, const PXEndian endianTo)
 {
-	{
-		const PXBool inoutIsOutput = endianFrom == endianTo;
+    {
+        const PXBool inoutIsOutput = endianFrom == endianTo;
 
-		if (inoutIsOutput)
-		{
-			return;
-		}
-	}
-	const PXSize runntime = dataSize / 2;
-	const PXByte* endAdress = (PXByte*)data + (dataSize - 1);
+        if (inoutIsOutput)
+        {
+            return;
+        }
+    }
+    const PXSize runntime = dataSize / 2;
+    const PXByte* endAdress = (PXByte*)data + (dataSize - 1);
 
-	for (PXSize i = 0; i < runntime; ++i)
-	{
-		PXByte* a = (PXByte*)data + i;
-		PXByte* b = (PXByte*)endAdress - i;
+    for (PXSize i = 0; i < runntime; ++i)
+    {
+        PXByte* a = (PXByte*)data + i;
+        PXByte* b = (PXByte*)endAdress - i;
 
-		PXByte c = *a; // Backup a
-		*a = *b; // b -> a
-		*b = c; // a -> b
-	}
+        PXByte c = *a; // Backup a
+        *a = *b; // b -> a
+        *b = c; // a -> b
+    }
 }
 
 void PXEndianSwapV(void** const data, const PXSize dataSize, const PXSize elementSize, const PXEndian endianFrom, const PXEndian endianTo)
 {
-	const PXSize amount = dataSize / elementSize;
+    const PXSize amount = dataSize / elementSize;
 
-	for (PXSize i = 0; i < amount; ++i)
-	{
-		void* const insertPoint = data[i];
+    for (PXSize i = 0; i < amount; ++i)
+    {
+        void* const insertPoint = data[i];
 
-		PXEndianSwap(insertPoint, elementSize, endianFrom, endianTo);
-	}
+        PXEndianSwap(insertPoint, elementSize, endianFrom, endianTo);
+    }
 }

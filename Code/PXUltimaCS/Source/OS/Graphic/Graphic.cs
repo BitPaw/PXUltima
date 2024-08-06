@@ -76,9 +76,9 @@ namespace PX
 
 
     [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate PX.ActionResult PXGraphicShaderProgramCreateFromFileVPFunction(UIntPtr graphicAPI, ref PXShaderProgram pxShaderProgram, ref PXText vertexShaderFilePath, ref PXText fragmentShaderFilePath);
-	 [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal unsafe delegate PX.ActionResult PXGraphicShaderProgramCreateFromFileVPAFunction(UIntPtr graphicAPI, ref PXShaderProgram pxShaderProgram, char* vertexShaderFilePath, char* fragmentShaderFilePath);
-	 [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate PX.ActionResult PXGraphicShaderProgramCreateFromStringVPFunction(UIntPtr graphicAPI, ref PXShaderProgram pxShaderProgram, ref PXText vertexShaderFilePath, ref PXText fragmentShaderFilePath);
-	 [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal unsafe delegate PX.ActionResult PXGraphicShaderProgramCreateFromStringVPAFunction(UIntPtr graphicAPI, ref PXShaderProgram pxShaderProgram, char* vertexShaderFilePath, char* fragmentShaderFilePath);
+     [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal unsafe delegate PX.ActionResult PXGraphicShaderProgramCreateFromFileVPAFunction(UIntPtr graphicAPI, ref PXShaderProgram pxShaderProgram, char* vertexShaderFilePath, char* fragmentShaderFilePath);
+     [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal delegate PX.ActionResult PXGraphicShaderProgramCreateFromStringVPFunction(UIntPtr graphicAPI, ref PXShaderProgram pxShaderProgram, ref PXText vertexShaderFilePath, ref PXText fragmentShaderFilePath);
+     [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal unsafe delegate PX.ActionResult PXGraphicShaderProgramCreateFromStringVPAFunction(UIntPtr graphicAPI, ref PXShaderProgram pxShaderProgram, char* vertexShaderFilePath, char* fragmentShaderFilePath);
 
     [UnmanagedFunctionPointer(CallingConvention.StdCall)] internal unsafe delegate PX.ActionResult PXGraphicShaderVariableIDFetchFunction(UIntPtr graphicAPI, ref PXShader pxShader, ref uint shaderVariableID, byte* name);
 

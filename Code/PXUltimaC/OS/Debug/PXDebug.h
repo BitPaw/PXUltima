@@ -10,102 +10,109 @@
 
 typedef enum PXSymbolType_
 {
-	PXSymbolTypeNull,
-	PXSymbolTypeExe,
-	PXSymbolTypeCompiland,
-	PXSymbolTypeCompilandDetails,
-	PXSymbolTypeCompilandEnv,
-	PXSymbolTypeFunction,
-	PXSymbolTypeBlock,
-	PXSymbolTypeData,
-	PXSymbolTypeAnnotation,
-	PXSymbolTypeLabel,
-	PXSymbolTypePublicSymbol,
-	PXSymbolTypeUDT,
-	PXSymbolTypeEnum,
-	PXSymbolTypeFunctionType,
-	PXSymbolTypePointerType,
-	PXSymbolTypeArrayType,
-	PXSymbolTypeBaseType,
-	PXSymbolTypeTypedef,
-	PXSymbolTypeBaseClass,
-	PXSymbolTypeFriend,
-	PXSymbolTypeFunctionArgType,
-	PXSymbolTypeFuncDebugStart,
-	PXSymbolTypeFuncDebugEnd,
-	PXSymbolTypeUsingNamespace,
-	PXSymbolTypeVTableShape,
-	PXSymbolTypeVTable,
-	PXSymbolTypeCustom,
-	PXSymbolTypeThunk,
-	PXSymbolTypeCustomType,
-	PXSymbolTypeManagedType,
-	PXSymbolTypeDimension
+    PXSymbolTypeNull,
+    PXSymbolTypeExe,
+    PXSymbolTypeCompiland,
+    PXSymbolTypeCompilandDetails,
+    PXSymbolTypeCompilandEnv,
+    PXSymbolTypeFunction,
+    PXSymbolTypeBlock,
+    PXSymbolTypeData,
+    PXSymbolTypeAnnotation,
+    PXSymbolTypeLabel,
+    PXSymbolTypePublicSymbol,
+    PXSymbolTypeUDT,
+    PXSymbolTypeEnum,
+    PXSymbolTypeFunctionType,
+    PXSymbolTypePointerType,
+    PXSymbolTypeArrayType,
+    PXSymbolTypeBaseType,
+    PXSymbolTypeTypedef,
+    PXSymbolTypeBaseClass,
+    PXSymbolTypeFriend,
+    PXSymbolTypeFunctionArgType,
+    PXSymbolTypeFuncDebugStart,
+    PXSymbolTypeFuncDebugEnd,
+    PXSymbolTypeUsingNamespace,
+    PXSymbolTypeVTableShape,
+    PXSymbolTypeVTable,
+    PXSymbolTypeCustom,
+    PXSymbolTypeThunk,
+    PXSymbolTypeCustomType,
+    PXSymbolTypeManagedType,
+    PXSymbolTypeDimension
 }
 PXSymbolType;
 
 typedef struct PXSymbol_
 {
-	PXSize TypeIndex;        // Type Index of symbol
-	PXSize Index;
-	PXSize Size;
-	PXSize ModBase;          // Base Address of module comtaining this symbol
-	PXSize Flags;
-	PXSize Address;          // Address of symbol including base address of module
-	PXSize Register;         // register holding value or pointer to value
-	PXSize Scope;            // scope of the symbol
+    PXSize TypeIndex;        // Type Index of symbol
+    PXSize Index;
+    PXSize Size;
+    PXSize ModBase;          // Base Address of module comtaining this symbol
+    PXSize Flags;
+    PXSize Address;          // Address of symbol including base address of module
+    PXSize Register;         // register holding value or pointer to value
+    PXSize Scope;            // scope of the symbol
 
-	PXSymbolType Type;// PDB classification
-	char Name[64];
+    PXSymbolType Type;// PDB classification
+
+    void* ModelAdress;
+    void* SymbolAdress;
+
+    PXSize LineNumber;
+    char NameSymbol[64];
+    char NameFile[64];
+    char NameModule[64];
 }
 PXSymbol;
 
 typedef struct PXSymbolEnumerator_
 {
-	PXSymbol* SymbolList;
-	PXSize Amount;
-	PXSize Size;
+    PXSymbol* SymbolList;
+    PXSize Amount;
+    PXSize Size;
 }
 PXSymbolEnumerator;
 
 typedef struct PXDebug_
 {
-	PXLibrary LibraryKernel;
-	PXLibrary LibraryDebugHelp;
+    PXLibrary LibraryKernel;
+    PXLibrary LibraryDebugHelp;
 
-	PXBool IsRunning;
+    PXBool IsRunning;
 
-	PXProcess Process;
+    PXProcess Process;
 
-	PXThread EventListenLoop;
+    PXThread EventListenLoop;
 
-	PXByte ApplicatioNameBuffer[260];
-	PXText ApplicatioName;
+    PXByte ApplicatioNameBuffer[260];
+    PXText ApplicatioName;
 
 #if OSWindows
-	// Kernel	
-	void* XContinueDebugEvent;
-	void* XWaitForDebugEvent;
-	void* XDebugActiveProcess;
-	void* XDebugBreak;
-	void* WOutputDebugStringA;
-	void* WOutputDebugStringW;
-	void* XDebugBreakProcess;
-	void* XIsDebuggerPresent;
-	void* XCheckRemoteDebuggerPresent;
-	void* XDebugActiveProcessStop;
+    // Kernel    
+    void* XContinueDebugEvent;
+    void* XWaitForDebugEvent;
+    void* XDebugActiveProcess;
+    void* XDebugBreak;
+    void* WOutputDebugStringA;
+    void* WOutputDebugStringW;
+    void* XDebugBreakProcess;
+    void* XIsDebuggerPresent;
+    void* XCheckRemoteDebuggerPresent;
+    void* XDebugActiveProcessStop;
 
-	// Debug
-	void* SymbolServerInitialize;
-	void* SymbolServerCleanup;
-	void* SymbolModuleLoad;
-	void* XStackWalk64;
-	void* XUnDecorateSymbolName;
-	void* XSymGetSymFromAddr64;
-	void* SymbolEnumerate;
-	void* SymbolEnumerateEx;
-	void* SymbolFunctionTableAccess;
-	void* SymbolGetModuleBase;
+    // Debug
+    void* SymbolServerInitialize;
+    void* SymbolServerCleanup;
+    void* SymbolModuleLoad;
+    void* XStackWalk64;
+    void* XUnDecorateSymbolName;
+    void* XSymGetSymFromAddr64;
+    void* SymbolEnumerate;
+    void* SymbolEnumerateEx;
+    void* SymbolFunctionTableAccess;
+    void* SymbolGetModuleBase;
 #endif
 }
 PXDebug;
@@ -145,6 +152,13 @@ PXPublic PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug);
 PXPublic PXActionResult PXAPI PXDebugLibrarySymbolsFetch(PXDebug* const pxDebug, const PXText* const libraryFilePath, PXSymbol* const pxSymbolList, PXSize* const amount);
 
 PXPublic void PXAPI PXDebugLogMessage(PXText* const pxText);
+
+
+PXPrivate PXActionResult PXAPI PXDebugSymbolReadFromAdress(PXDebug* const pxDebug, PXSymbol* const pxSymbol, void* adress);
+
+PXPublic PXActionResult PXAPI PXDebugFetchSymbolThread(PXDebug* const pxDebug, PXSymbol* const pxSymbol, PXThread* pxThread);
+PXPublic PXActionResult PXAPI PXDebugFetchSymbolFromRougeAdress(PXDebug* const pxDebug, PXSymbol* const pxSymbol, void* adress);
+
 
 
 PXPrivate PXThreadResult PXAPI PXDebugLoop(PXDebug* const pxDebug);

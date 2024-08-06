@@ -9,25 +9,25 @@ extern "C"
 {
 #endif
 
-	PXPublic PXActionResult PXAPI PXUserNameGet(PXText* const name);
+    PXPublic PXActionResult PXAPI PXUserNameGet(PXText* const name);
 
-	typedef enum PXUserEnviromentFolderID_
-	{
-		PXUserEnviromentFolderIDInvalid,
+    typedef enum PXUserEnviromentFolderID_
+    {
+        PXUserEnviromentFolderIDInvalid,
 
-		PXUserEnviromentFolderIDAppData,
-		PXUserEnviromentFolderIDDownload,
-		PXUserEnviromentFolderIDDocuments,
-		PXUserEnviromentFolderIDPictures,
-		PXUserEnviromentFolderIDScreenshots,
-		PXUserEnviromentFolderIDVideo,
-		PXUserEnviromentFolderIDDestop,
-		PXUserEnviromentFolderIDFonts,
-		PXUserEnviromentFolderIDMusic
-	}
-	PXUserEnviromentFolderID;
+        PXUserEnviromentFolderIDAppData,
+        PXUserEnviromentFolderIDDownload,
+        PXUserEnviromentFolderIDDocuments,
+        PXUserEnviromentFolderIDPictures,
+        PXUserEnviromentFolderIDScreenshots,
+        PXUserEnviromentFolderIDVideo,
+        PXUserEnviromentFolderIDDestop,
+        PXUserEnviromentFolderIDFonts,
+        PXUserEnviromentFolderIDMusic
+    }
+    PXUserEnviromentFolderID;
 
-	PXPublic PXBool PXAPI PXUserEnviromentFolderGet(PXText* const name, const PXUserEnviromentFolderID pxUserEnviromentFolderID);
+    PXPublic PXBool PXAPI PXUserEnviromentFolderGet(PXText* const name, const PXUserEnviromentFolderID pxUserEnviromentFolderID);
 
 #ifdef __cplusplus
 }

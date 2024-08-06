@@ -5,25 +5,25 @@
 
 typedef enum PXRIFFFormat_
 {
-	PXRIFFInvalid,
-	PXRIFFWebPicture, // WEBP
-	PXRIFFWaveformAudio, // WAVE
-	PXRIFFMultimediaMovieFile, // RMMP
-	PXRIFFPXMIDI, // RMID
-	PXRIFFDeviceIndependentBitmap, // RDIB
-	PXRIFFPalette,  // PAL
-	PXRIFFAudioVideoInterleave, // AVI 
-	//DLS,
+    PXRIFFInvalid,
+    PXRIFFWebPicture, // WEBP
+    PXRIFFWaveformAudio, // WAVE
+    PXRIFFMultimediaMovieFile, // RMMP
+    PXRIFFPXMIDI, // RMID
+    PXRIFFDeviceIndependentBitmap, // RDIB
+    PXRIFFPalette,  // PAL
+    PXRIFFAudioVideoInterleave, // AVI 
+    //DLS,
 }
 PXRIFFFormat;
 
 // Resource Interchange File Format. 
 typedef struct PXRIFF_
 {
-	PXInt32U ChunkSize;
-	PXRIFFFormat Format;
-	PXEndian EndianFormat;
-	PXBool Valid;
+    PXInt32U ChunkSize;
+    PXRIFFFormat Format;
+    PXEndian EndianFormat;
+    PXBool Valid;
 }
 PXRIFF;
 

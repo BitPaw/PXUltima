@@ -6,52 +6,52 @@
 
 typedef enum PXPXZLIBCompressionLevel_
 {
-	PXZLIBCompressionLevelInvalid,
-	PXZLIBCompressionLevelDefault,
-	PXZLIBCompressionLevelSlowest,
-	PXZLIBCompressionLevelFast,
-	PXZLIBCompressionLevelFastest
+    PXZLIBCompressionLevelInvalid,
+    PXZLIBCompressionLevelDefault,
+    PXZLIBCompressionLevelSlowest,
+    PXZLIBCompressionLevelFast,
+    PXZLIBCompressionLevelFastest
 }
 PXZLIBCompressionLevel;
 
 typedef enum PXZLIBCompressionMethod_
 {
-	PXZLIBCompressionMethodInvalid,
-	PXZLIBCompressionMethodDeflate,
-	PXZLIBCompressionMethodReserved
+    PXZLIBCompressionMethodInvalid,
+    PXZLIBCompressionMethodDeflate,
+    PXZLIBCompressionMethodReserved
 }
 PXZLIBCompressionMethod;
 
 typedef struct PXZLIBHeader_
 {
-	PXZLIBCompressionMethod CompressionMethod; // 4 Bits
+    PXZLIBCompressionMethod CompressionMethod; // 4 Bits
 
 
-	/*
-	   4 Bits
+    /*
+       4 Bits
 
-	For CM = 8, CINFO is the base-2 logarithm of the LZ77 window size, minus eight
-	CINFO = 7 indicates a 32K window size).
-	Values of CINFO above 7 are not allowed in this version of the specification.
-	CINFO is not defined in this specification for CM not equal to 8.
-	*/
-	unsigned char CompressionInfo;
+    For CM = 8, CINFO is the base-2 logarithm of the LZ77 window size, minus eight
+    CINFO = 7 indicates a 32K window size).
+    Values of CINFO above 7 are not allowed in this version of the specification.
+    CINFO is not defined in this specification for CM not equal to 8.
+    */
+    unsigned char CompressionInfo;
 
-	PXSize WindowSize;
-	PXInt8U CheckFlag; // 5 Bits
-	PXBool DictionaryPresent; // 1 Bit
-	PXZLIBCompressionLevel CompressionLevel; // 2 Bits
+    PXSize WindowSize;
+    PXInt8U CheckFlag; // 5 Bits
+    PXBool DictionaryPresent; // 1 Bit
+    PXZLIBCompressionLevel CompressionLevel; // 2 Bits
 }
 PXZLIBHeader;
 
 typedef struct PXZLIB_
 {
-	PXZLIBHeader Header;
+    PXZLIBHeader Header;
 
-	PXSize CompressedDataSize;
-	void* CompressedData;
+    PXSize CompressedDataSize;
+    void* CompressedData;
 
-	PXInt32U AdlerChecksum;
+    PXInt32U AdlerChecksum;
 }
 PXZLIB;
 

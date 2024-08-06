@@ -5,7 +5,7 @@
 
 typedef struct PXAAC_
 {
-	unsigned int __dummy__;
+    unsigned int __dummy__;
 }
 PXAAC;
 

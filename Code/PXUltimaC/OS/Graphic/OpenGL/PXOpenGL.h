@@ -30,48 +30,48 @@ typedef struct PXGraphicInitializeInfo_ PXGraphicInitializeInfo;
 //-------------------------------------------------------------------------
 typedef enum PXOpenGLVersion_
 {
-	PXOpenGLVersionInvalid,
-	PXOpenGLVersionNone,
-	PXOpenGLVersion1x0x0,
-	PXOpenGLVersion1x1x0, // 1995              Texture objects, Vertex Arrays
-	PXOpenGLVersion1x2x0, // 1998 March    16. 3D textures, BGRA and packed pixel formats, introduction of the imaging subset useful to image - processing applications
-	PXOpenGLVersion1x2x1, // 1998 October  14. A concept of ARB extensions
-	PXOpenGLVersion1x3x0, // 2001 August   14. Multitexturing, multisampling, texture compression
-	PXOpenGLVersion1x4x0, // 2002 July     24. Depth textures, GLSlang
-	PXOpenGLVersion1x5x0, // 2003 July     29. Vertex Buffer Object(VBO), Occlusion Queries
-	PXOpenGLVersion2x0x0, // 2004 September 7. GLSL 1.10, MRT, Non Power of Two textures, Point Sprites, Two - sided stencil
-	PXOpenGLVersion2x1x0, // 2006 July      2. GLSL 1.20, Pixel Buffer Object(PBO), sRGB Textures
-	PXOpenGLVersion3x0x0, // 2008 August   11. GLSL 1.30, Texture Arrays, Conditional rendering, Frame Buffer Object(FBO)
-	PXOpenGLVersion3x1x0, // 2009 March    24. GLSL 1.40, Instancing, Texture Buffer Object, Uniform Buffer Object, Primitive restart
-	PXOpenGLVersion3x2x0, // 2009 August    3. GLSL 1.50, Geometry Shader, Multi - sampled textures
-	PXOpenGLVersion3x3x0, // 2010 March    11. GLSL 3.30, Backports as much function as possible from the PXOpenGL 4.0 specification
-	PXOpenGLVersion4x0x0, // 2010 March    11. GLSL 4.00, Tessellation on GPU, shaders with 64 - bit precision
-	PXOpenGLVersion4x1x0, // 2010 July     26. GLSL 4.10, Developer - friendly debug outputs, compatibility with PXOpenGL ES 2.0
-	PXOpenGLVersion4x2x0, // 2011 August    8. GLSL 4.20, Shaders with atomic counters, draw transform feedback instanced, shader packing, performance improvements
-	PXOpenGLVersion4x3x0, // 2012 August    6. GLSL 4.30, Compute shaders leveraging GPU parallelism, shader storage buffer objects, high - quality ETC2 / EAC texture compression, increased memory security, a multi - application robustness extension, compatibility with PXOpenGL ES 3.0
-	PXOpenGLVersion4x4x0, // 2013 July     22. GLSL 4.40, Buffer Placement Control, Efficient Asynchronous Queries, Shader Variable Layout, Efficient Multiple Object Binding, Streamlined Porting of Direct3D applications, Bindless Texture Extension, Sparse Texture Extension
-	PXOpenGLVersion4x5x0, // 2014 August   11. GLSL 4.50, Direct State Access(DSA), Flush Control, Robustness, PXOpenGL ES 3.1 API and shader compatibility, DX11 emulation features
-	PXOpenGLVersion4x6x0  // 2017 July     31. GLSL 4.60, More efficient geometry processing and shader execution, more information, no error context, polygon offset clamp, SPIR-V, anisotropic filtering
+    PXOpenGLVersionInvalid,
+    PXOpenGLVersionNone,
+    PXOpenGLVersion1x0x0,
+    PXOpenGLVersion1x1x0, // 1995              Texture objects, Vertex Arrays
+    PXOpenGLVersion1x2x0, // 1998 March    16. 3D textures, BGRA and packed pixel formats, introduction of the imaging subset useful to image - processing applications
+    PXOpenGLVersion1x2x1, // 1998 October  14. A concept of ARB extensions
+    PXOpenGLVersion1x3x0, // 2001 August   14. Multitexturing, multisampling, texture compression
+    PXOpenGLVersion1x4x0, // 2002 July     24. Depth textures, GLSlang
+    PXOpenGLVersion1x5x0, // 2003 July     29. Vertex Buffer Object(VBO), Occlusion Queries
+    PXOpenGLVersion2x0x0, // 2004 September 7. GLSL 1.10, MRT, Non Power of Two textures, Point Sprites, Two - sided stencil
+    PXOpenGLVersion2x1x0, // 2006 July      2. GLSL 1.20, Pixel Buffer Object(PBO), sRGB Textures
+    PXOpenGLVersion3x0x0, // 2008 August   11. GLSL 1.30, Texture Arrays, Conditional rendering, Frame Buffer Object(FBO)
+    PXOpenGLVersion3x1x0, // 2009 March    24. GLSL 1.40, Instancing, Texture Buffer Object, Uniform Buffer Object, Primitive restart
+    PXOpenGLVersion3x2x0, // 2009 August    3. GLSL 1.50, Geometry Shader, Multi - sampled textures
+    PXOpenGLVersion3x3x0, // 2010 March    11. GLSL 3.30, Backports as much function as possible from the PXOpenGL 4.0 specification
+    PXOpenGLVersion4x0x0, // 2010 March    11. GLSL 4.00, Tessellation on GPU, shaders with 64 - bit precision
+    PXOpenGLVersion4x1x0, // 2010 July     26. GLSL 4.10, Developer - friendly debug outputs, compatibility with PXOpenGL ES 2.0
+    PXOpenGLVersion4x2x0, // 2011 August    8. GLSL 4.20, Shaders with atomic counters, draw transform feedback instanced, shader packing, performance improvements
+    PXOpenGLVersion4x3x0, // 2012 August    6. GLSL 4.30, Compute shaders leveraging GPU parallelism, shader storage buffer objects, high - quality ETC2 / EAC texture compression, increased memory security, a multi - application robustness extension, compatibility with PXOpenGL ES 3.0
+    PXOpenGLVersion4x4x0, // 2013 July     22. GLSL 4.40, Buffer Placement Control, Efficient Asynchronous Queries, Shader Variable Layout, Efficient Multiple Object Binding, Streamlined Porting of Direct3D applications, Bindless Texture Extension, Sparse Texture Extension
+    PXOpenGLVersion4x5x0, // 2014 August   11. GLSL 4.50, Direct State Access(DSA), Flush Control, Robustness, PXOpenGL ES 3.1 API and shader compatibility, DX11 emulation features
+    PXOpenGLVersion4x6x0  // 2017 July     31. GLSL 4.60, More efficient geometry processing and shader execution, more information, no error context, polygon offset clamp, SPIR-V, anisotropic filtering
 }
 PXOpenGLVersion;
 
 
 typedef enum PXOpenGLFrameBufferMode_
 {
-	PXOpenGLFrameBufferModeInvalid,
-	PXOpenGLFrameBufferModeDraw,
-	PXOpenGLFrameBufferModeRead,
-	PXOpenGLFrameBufferModeDrawAndRead
+    PXOpenGLFrameBufferModeInvalid,
+    PXOpenGLFrameBufferModeDraw,
+    PXOpenGLFrameBufferModeRead,
+    PXOpenGLFrameBufferModeDrawAndRead
 }
 PXOpenGLFrameBufferMode;
 
 
 typedef enum PXOpenGLRenderBufferAttachmentPoint_
 {
-	PXOpenGLRenderBufferAttachmentPointInvalid,
-	PXOpenGLRenderBufferAttachmentPointColor,
-	PXOpenGLRenderBufferAttachmentPointDepth,
-	PXOpenGLRenderBufferAttachmentPointStencil
+    PXOpenGLRenderBufferAttachmentPointInvalid,
+    PXOpenGLRenderBufferAttachmentPointColor,
+    PXOpenGLRenderBufferAttachmentPointDepth,
+    PXOpenGLRenderBufferAttachmentPointStencil
 }
 PXOpenGLRenderBufferAttachmentPoint;
 
@@ -80,9 +80,9 @@ PXPrivate unsigned int PXAPI PXOpenGLRenderBufferAttachmentPointToID(const PXOpe
 
 typedef enum PXOpenGLPolygonRenderOrderMode_
 {
-	PXOpenGLPolygonRenderOrderModeInvalid,
-	PXOpenGLPolygonRenderOrderModeClockwise,
-	PXOpenGLPolygonRenderOrderModeCounterClockwise,
+    PXOpenGLPolygonRenderOrderModeInvalid,
+    PXOpenGLPolygonRenderOrderModeClockwise,
+    PXOpenGLPolygonRenderOrderModeCounterClockwise,
 }
 PXOpenGLPolygonRenderOrderMode;
 
@@ -90,9 +90,9 @@ PXPrivate GLenum PXAPI PXOpenGLPolygonRenderOrderModeToID(const PXOpenGLPolygonR
 
 typedef enum PXOpenGLRenderBufferFormat_
 {
-	PXOpenGLRenderBufferFormatInvalid,
-	PXOpenGLRenderBufferFormatDepthComponent,
-	PXOpenGLRenderBufferFormatDepth24Stencil8
+    PXOpenGLRenderBufferFormatInvalid,
+    PXOpenGLRenderBufferFormatDepthComponent,
+    PXOpenGLRenderBufferFormatDepth24Stencil8
 }
 PXOpenGLRenderBufferFormat;
 
@@ -101,26 +101,26 @@ PXPrivate int PXAPI PXOpenGLRenderBufferFormatToID(const PXOpenGLRenderBufferFor
 
 typedef enum PXOpenGLTextureParameterMode_
 {
-	PXOpenGLTextureParameterModoInvalid,
-	PXOpenGLDEPTH_STENCIL_TextureMODE,
-	PXOpenGLTextureBASE_LEVEL,
-	PXOpenGLTextureCOMPARE_FUNC,
-	PXOpenGLTextureCOMPARE_MODE,
-	PXOpenGLTextureLOD_BIAS,
-	PXOpenGLTextureMIN_FILTER,
-	PXOpenGLTextureMAG_FILTER,
-	PXOpenGLTextureMIN_LOD,
-	PXOpenGLTextureMAX_LOD,
-	PXOpenGLTextureMAX_LEVEL,
-	PXOpenGLTextureSWIZZLE_R,
-	PXOpenGLTextureSWIZZLE_G,
-	PXOpenGLTextureSWIZZLE_B,
-	PXOpenGLTextureSWIZZLE_A,
-	PXOpenGLTextureWRAP_S,
-	PXOpenGLTextureWRAP_T,
-	PXOpenGLTextureWRAP_R,
-	PXOpenGLTextureBORDER_COLOR,
-	PXOpenGLTextureSWIZZLE_RGBA,
+    PXOpenGLTextureParameterModoInvalid,
+    PXOpenGLDEPTH_STENCIL_TextureMODE,
+    PXOpenGLTextureBASE_LEVEL,
+    PXOpenGLTextureCOMPARE_FUNC,
+    PXOpenGLTextureCOMPARE_MODE,
+    PXOpenGLTextureLOD_BIAS,
+    PXOpenGLTextureMIN_FILTER,
+    PXOpenGLTextureMAG_FILTER,
+    PXOpenGLTextureMIN_LOD,
+    PXOpenGLTextureMAX_LOD,
+    PXOpenGLTextureMAX_LEVEL,
+    PXOpenGLTextureSWIZZLE_R,
+    PXOpenGLTextureSWIZZLE_G,
+    PXOpenGLTextureSWIZZLE_B,
+    PXOpenGLTextureSWIZZLE_A,
+    PXOpenGLTextureWRAP_S,
+    PXOpenGLTextureWRAP_T,
+    PXOpenGLTextureWRAP_R,
+    PXOpenGLTextureBORDER_COLOR,
+    PXOpenGLTextureSWIZZLE_RGBA,
 }
 PXOpenGLTextureParameterMode;
 
@@ -133,20 +133,20 @@ PXPrivate GLenum PXAPI PXOpenGLTextureParameterModeToID(const PXOpenGLTexturePar
 
 typedef enum PXOpenGLBufferType_
 {
-	PXOpenGLBufferArray,//Vertex attributes
-	PXOpenGLBufferAtomicCounter, 	//Atomic counter storage
-	PXOpenGLBufferCopyRead,//Buffer copy source
-	PXOpenGLBufferCopyWrite,//Buffer copy destination
-	PXOpenGLBufferDispatchIndirect, //	Indirect compute dispatch commands
-	PXOpenGLBufferDrawIndirect,	//Indirect command arguments
-	PXOpenGLBufferElementArray,	//Vertex array indices
-	PXOpenGLBufferPixelPack,//Pixel read target
-	PXOpenGLBufferPixelUnpack,//	Texture data source
-	PXOpenGLBufferQuery,//Query result buffer
-	PXOpenGLBufferShaderStorage,	//Read - write storage for shaders
-	PXOpenGLBufferTexture,// Texture data buffer
-	PXOpenGLBufferTransformFeedback,//	Transform feedback buffer
-	PXOpenGLBufferUniform
+    PXOpenGLBufferArray,//Vertex attributes
+    PXOpenGLBufferAtomicCounter,     //Atomic counter storage
+    PXOpenGLBufferCopyRead,//Buffer copy source
+    PXOpenGLBufferCopyWrite,//Buffer copy destination
+    PXOpenGLBufferDispatchIndirect, //    Indirect compute dispatch commands
+    PXOpenGLBufferDrawIndirect,    //Indirect command arguments
+    PXOpenGLBufferElementArray,    //Vertex array indices
+    PXOpenGLBufferPixelPack,//Pixel read target
+    PXOpenGLBufferPixelUnpack,//    Texture data source
+    PXOpenGLBufferQuery,//Query result buffer
+    PXOpenGLBufferShaderStorage,    //Read - write storage for shaders
+    PXOpenGLBufferTexture,// Texture data buffer
+    PXOpenGLBufferTransformFeedback,//    Transform feedback buffer
+    PXOpenGLBufferUniform
 }
 PXOpenGLBufferType;
 
@@ -154,18 +154,18 @@ PXPrivate int PXAPI PXOpenGLBufferTypeToID(const PXOpenGLBufferType openGLBuffer
 
 typedef enum PXOpenGLTextureParameterValue_
 {
-	PXOpenGLTextureParameterValueInvalid,
+    PXOpenGLTextureParameterValueInvalid,
 
-	PXOpenGLTextureParameterValueNEAREST,
-	PXOpenGLTextureParameterValueLINEAR,
+    PXOpenGLTextureParameterValueNEAREST,
+    PXOpenGLTextureParameterValueLINEAR,
 
-	PXOpenGLTextureParameterValueClampToEdge,
-	PXOpenGLTextureParameterValueClampToBorder,
-	PXOpenGLTextureParameterValueMirroredRepeat,
-	PXOpenGLTextureParameterValueRepeat,
-	PXOpenGLTextureParameterValueMirrorClampToEdge,
-	PXOpenGLTextureParameterValueWrapS,
-	PXOpenGLTextureParameterValueWrapR
+    PXOpenGLTextureParameterValueClampToEdge,
+    PXOpenGLTextureParameterValueClampToBorder,
+    PXOpenGLTextureParameterValueMirroredRepeat,
+    PXOpenGLTextureParameterValueRepeat,
+    PXOpenGLTextureParameterValueMirrorClampToEdge,
+    PXOpenGLTextureParameterValueWrapS,
+    PXOpenGLTextureParameterValueWrapR
 }
 PXOpenGLTextureParameterValue;
 
@@ -174,16 +174,16 @@ PXPrivate GLint PXAPI PXOpenGLTextureParameterValueToID(const PXOpenGLTexturePar
 
 typedef enum PXOpenGLStoreMode_
 {
-	PXOpenGLStoreInvalid,
-	PXOpenGLStoreStreamDraw,
-	PXOpenGLStoreStreamRead,
-	PXOpenGLStoreStreamCopy,
-	PXOpenGLStoreStaticDraw,
-	PXOpenGLStoreStaticREAD,
-	PXOpenGLStoreStaticCOPY,
-	PXOpenGLStoreDynamicDraw,
-	PXOpenGLStoreDynamicRead,
-	PXOpenGLStoreDynamicCopy
+    PXOpenGLStoreInvalid,
+    PXOpenGLStoreStreamDraw,
+    PXOpenGLStoreStreamRead,
+    PXOpenGLStoreStreamCopy,
+    PXOpenGLStoreStaticDraw,
+    PXOpenGLStoreStaticREAD,
+    PXOpenGLStoreStaticCOPY,
+    PXOpenGLStoreDynamicDraw,
+    PXOpenGLStoreDynamicRead,
+    PXOpenGLStoreDynamicCopy
 }
 PXOpenGLStoreMode;
 
@@ -192,9 +192,9 @@ PXPrivate int PXAPI PXOpenGLStoreModeToID(const PXOpenGLStoreMode openGLStoreMod
 
 typedef enum PXOpenGLDrawOrderMode_
 {
-	PXOpenGLDrawOrderModeInvalid,
-	PXOpenGLDrawOrderModeClockwise,
-	PXOpenGLDrawOrderModeCounterClockwise
+    PXOpenGLDrawOrderModeInvalid,
+    PXOpenGLDrawOrderModeClockwise,
+    PXOpenGLDrawOrderModeCounterClockwise
 }
 PXOpenGLDrawOrderMode;
 
@@ -204,77 +204,77 @@ PXPrivate GLenum PXAPI PXOpenGLDrawOrderToID(const PXOpenGLDrawOrderMode openGLD
 
 typedef enum PXOpenGLToggle_
 {
-	PXOpenGLToggleInvalid,
+    PXOpenGLToggleInvalid,
 
-	PXOpenGLToggleTextureCubeMapSeamless,
+    PXOpenGLToggleTextureCubeMapSeamless,
 
-	PXOpenGLALPHA_TEST, // If enabled, do alpha testing. See glAlphaFunc.
-	PXOpenGLAUTO_NORMAL, // If enabled, generate normal vectors when either PXOpenGLMAP2_VERTEX_3 or PXOpenGLMAP2_VERTEX_4 is used to generate vertices. See glMap2.
-	PXOpenGLBLEND, // If enabled, blend the computed fragment color values with the values in the color buffers. See glBlendFunc.
-	PXOpenGLCLIP_PLANEi, // If enabled, clip geometry against user-defined clipping plane i. See glClipPlane.
-	PXOpenGLCOLOR_LOGIC_OP, // If enabled, apply the currently selected logical operation to the computed fragment color and color buffer values. See glLogicOp.
-	PXOpenGLCOLOR_MATERIAL, // If enabled, have one or more material parameters track the current color. See glColorMaterial.
-	PXOpenGLCOLOR_SUM, // If enabled and no fragment shader is active, add the secondary color value to the computed fragment color. See glSecondaryColor.
-	PXOpenGLCOLOR_TABLE, // If enabled, perform a color table lookup on the incoming RGBA color values. See glColorTable.
-	PXOpenGLCONVOLUTION_1D, // If enabled, perform a 1D convolution operation on incoming RGBA color values. See glConvolutionFilter1D.
-	PXOpenGLCONVOLUTION_2D, // If enabled, perform a 2D convolution operation on incoming RGBA color values. See glConvolutionFilter2D.
-	PXOpenGLCULL_FACE, // If enabled, cull polygons based on their winding in window coordinates. See glCullFace.
-	PXOpenGLDEPTH_TEST, // If enabled, do depth comparisons and update the depth buffer. Note that even , // If the depth buffer exists and the depth mask is non-zero, the depth buffer is not updated , // If the depth test is disabled. See glDepthFunc and glDepthRange.
-	PXOpenGLDITHER, // If enabled, dither color components or indices before they are written to the color buffer.
-	PXOpenGLFOG, // If enabled and no fragment shader is active, blend a fog color into the post-texturing color. See glFog.
-	PXOpenGLHISTOGRAM, // If enabled, histogram incoming RGBA color values. See glHistogram.
-	PXOpenGLINDEX_LOGIC_OP, // If enabled, apply the currently selected logical operation to the incoming index and color buffer indices. See glLogicOp.
-	PXOpenGLLIGHTi, // If enabled, include light i in the evaluation of the lighting equation. See glLightModel and glLight.
-	PXOpenGLLIGHTING, // If enabled and no vertex shader is active, use the current lighting parameters to compute the vertex color or index. Otherwise, simply associate the current color or index with each vertex. See glMaterial, glLightModel, and glLight.
-	PXOpenGLLINE_SMOOTH, // If enabled, draw lines with correct filtering. Otherwise, draw aliased lines. See glLineWidth.
-	PXOpenGLLINE_STIPPLE, // If enabled, use the current line stipple pattern when drawing lines. See glLineStipple.
-	PXOpenGLMAP1_COLOR_4, // If enabled, calls to glEvalCoord1, glEvalMesh1, and glEvalPoint1 generate RGBA values. See glMap1.
-	PXOpenGLMAP1_INDEX, // If enabled, calls to glEvalCoord1, glEvalMesh1, and glEvalPoint1 generate color indices. See glMap1.
-	PXOpenGLMAP1_NORMAL, // If enabled, calls to glEvalCoord1, glEvalMesh1, and glEvalPoint1 generate normals. See glMap1.
-	PXOpenGLMAP1_TEXTURE_COORD_1, // If enabled, calls to glEvalCoord1, glEvalMesh1, and glEvalPoint1 generate s texture coordinates. See glMap1.
-	PXOpenGLMAP1_TEXTURE_COORD_2, // If enabled, calls to glEvalCoord1, glEvalMesh1, and glEvalPoint1 generate s and t texture coordinates. See glMap1.
-	PXOpenGLMAP1_TEXTURE_COORD_3, // If enabled, calls to glEvalCoord1, glEvalMesh1, and glEvalPoint1 generate s, t, and r texture coordinates. See glMap1.
-	PXOpenGLMAP1_TEXTURE_COORD_4, // If enabled, calls to glEvalCoord1, glEvalMesh1, and glEvalPoint1 generate s, t, r, and q texture coordinates. See glMap1.
-	PXOpenGLMAP1_VERTEX_3, // If enabled, calls to glEvalCoord1, glEvalMesh1, and glEvalPoint1 generate x, y, and z vertex coordinates. See glMap1.
-	PXOpenGLMAP1_VERTEX_4, // If enabled, calls to glEvalCoord1, glEvalMesh1, and glEvalPoint1 generate homogeneous x, y, z, and w vertex coordinates. See glMap1.
-	PXOpenGLMAP2_COLOR_4, // If enabled, calls to glEvalCoord2, glEvalMesh2, and glEvalPoint2 generate RGBA values. See glMap2.
-	PXOpenGLMAP2_INDEX, // If enabled, calls to glEvalCoord2, glEvalMesh2, and glEvalPoint2 generate color indices. See glMap2.
-	PXOpenGLMAP2_NORMAL, // If enabled, calls to glEvalCoord2, glEvalMesh2, and glEvalPoint2 generate normals. See glMap2.
-	PXOpenGLMAP2_TEXTURE_COORD_1, // If enabled, calls to glEvalCoord2, glEvalMesh2, and glEvalPoint2 generate s texture coordinates. See glMap2.
-	PXOpenGLMAP2_TEXTURE_COORD_2, // If enabled, calls to glEvalCoord2, glEvalMesh2, and glEvalPoint2 generate s and t texture coordinates. See glMap2.
-	PXOpenGLMAP2_TEXTURE_COORD_3, // If enabled, calls to glEvalCoord2, glEvalMesh2, and glEvalPoint2 generate s, t, and r texture coordinates. See glMap2.
-	PXOpenGLMAP2_TEXTURE_COORD_4, // If enabled, calls to glEvalCoord2, glEvalMesh2, and glEvalPoint2 generate s, t, r, and q texture coordinates. See glMap2.
-	PXOpenGLMAP2_VERTEX_3, // If enabled, calls to glEvalCoord2, glEvalMesh2, and glEvalPoint2 generate x, y, and z vertex coordinates. See glMap2.
-	PXOpenGLMAP2_VERTEX_4, // If enabled, calls to glEvalCoord2, glEvalMesh2, and glEvalPoint2 generate homogeneous x, y, z, and w vertex coordinates. See glMap2.
-	PXOpenGLMINMAX, // If enabled, compute the minimum and maximum values of incoming RGBA color values. See glMinmax.
-	PXOpenGLMULTISAMPLE, // If enabled, use multiple fragment samples in computing the final color of a pixel. See glSampleCoverage.
-	PXOpenGLNORMALIZE, // If enabled and no vertex shader is active, normal vectors are normalized to unit length after transformation and before lighting. This method is generally less efficient than PXOpenGLRESCALE_NORMAL. See glNormal and glNormalPointer.
-	PXOpenGLPOINT_SMOOTH, // If enabled, draw points with proper filtering. Otherwise, draw aliased points. See glPointSize.
-	PXOpenGLPOINT_SPRITE, // If enabled, calculate texture coordinates for points based on texture environment and point parameter settings. Otherwise texture coordinates are constant across points.
-	PXOpenGLPOLYGON_OFFSET_FILL, // If enabled, and , // If the polygon is rendered in PXOpenGLFILL mode, an offset is added to depth values of a polygon's fragments before the depth comparison is performed. See glPolygonOffset.
-	PXOpenGLPOLYGON_OFFSET_LINE, // If enabled, and , // If the polygon is rendered in PXOpenGLLINE mode, an offset is added to depth values of a polygon's fragments before the depth comparison is performed. See glPolygonOffset.
-	PXOpenGLPOLYGON_OFFSET_POINT, // If enabled, an offset is added to depth values of a polygon's fragments before the depth comparison is performed, , // If the polygon is rendered in PXOpenGLPOINT mode. See glPolygonOffset.
-	PXOpenGLPOLYGON_SMOOTH, // If enabled, draw polygons with proper filtering. Otherwise, draw aliased polygons. For correct antialiased polygons, an alpha buffer is needed and the polygons must be sorted front to back.
-	PXOpenGLPOLYGON_STIPPLE, // If enabled, use the current polygon stipple pattern when rendering polygons. See glPolygonStipple.
-	PXOpenGLPOST_COLOR_MATRIX_COLOR_TABLE, // If enabled, perform a color table lookup on RGBA color values after color matrix transformation. See glColorTable.
-	PXOpenGLPOST_CONVOLUTION_COLOR_TABLE, // If enabled, perform a color table lookup on RGBA color values after convolution. See glColorTable.
-	PXOpenGLRESCALE_NORMAL, // If enabled and no vertex shader is active, normal vectors are scaled after transformation and before lighting by a factor computed from the modelview matrix. , // If the modelview matrix scales space un, // Iformly, this has the effect of restoring the transformed normal to unit length. This method is generally more efficient than PXOpenGLNORMALIZE. See glNormal and glNormalPointer.
-	PXOpenGLSAMPLE_ALPHA_TO_COVERAGE, // If enabled, compute a temporary coverage value where each bit is determined by the alpha value at the corresponding sample location. The temporary coverage value is then ANDed with the fragment coverage value.
-	PXOpenGLSAMPLE_ALPHA_TO_ONE, // If enabled, each sample alpha value is replaced by the maximum representable alpha value.
-	PXOpenGLSAMPLE_COVERAGE, // If enabled, the fragment's coverage is ANDed with the temporary coverage value. , // If PXOpenGLSAMPLE_COVERAGE_INVERT is set to PXOpenGLTRUE, invert the coverage value. See glSampleCoverage.
-	PXOpenGLSEPARABLE_2D, // If enabled, perform a two-dimensional convolution operation using a separable convolution filter on incoming RGBA color values. See glSeparableFilter2D.
-	PXOpenGLSCISSOR_TEST, // If enabled, discard fragments that are outside the scissor rectangle. See glScissor.
-	PXOpenGLSTENCIL_TEST, // If enabled, do stencil testing and update the stencil buffer. See glStencilFunc and glStencilOp.
-	PXOpenGLTEXTURE_1D, // If enabled and no fragment shader is active, one-dimensional texturing is performed (unless two- or three-dimensional or cube-mapped texturing is also enabled). See glTexImage1D.
-	PXOpenGLTEXTURE_2D, // If enabled and no fragment shader is active, two-dimensional texturing is performed (unless three-dimensional or cube-mapped texturing is also enabled). See glTexImage2D.
-	PXOpenGLTEXTURE_3D, // If enabled and no fragment shader is active, three-dimensional texturing is performed (unless cube-mapped texturing is also enabled). See glTexImage3D.
-	PXOpenGLTEXTURE_CUBE_MAP, // If enabled and no fragment shader is active, cube-mapped texturing is performed. See glTexImage2D.
-	PXOpenGLTEXTURE_GEN_Q, // If enabled and no vertex shader is active, the q texture coordinate is computed using the texture generation function defined with glTexGen. Otherwise, the current q texture coordinate is used. See glTexGen.
-	PXOpenGLTEXTURE_GEN_R, // If enabled and no vertex shader is active, the r texture coordinate is computed using the texture generation function defined with glTexGen. Otherwise, the current r texture coordinate is used. See glTexGen.
-	PXOpenGLTEXTURE_GEN_S, // If enabled and no vertex shader is active, the s texture coordinate is computed using the texture generation function defined with glTexGen. Otherwise, the current s texture coordinate is used. See glTexGen.
-	PXOpenGLTEXTURE_GEN_T, // If enabled and no vertex shader is active, the t texture coordinate is computed using the texture generation function defined with glTexGen. Otherwise, the current t texture coordinate is used. See glTexGen.
-	PXOpenGLVERTEX_PROGRAM_POINT_SIZE, // If enabled and a vertex shader is active, then the derived point size is taken from the (potentially clipped) shader builtin PXOpenGLPointSize and clamped to the implementation-dependent point size range.
-	PXOpenGLVERTEX_PROGRAM_TWO_SIDE// If enabled and a vertex shader is active, it spec, // Ifies that the GL will choose between front and back colors based on the polygon's face direction of which the vertex being shaded is a part. It has no effect on points or lines.
+    PXOpenGLALPHA_TEST, // If enabled, do alpha testing. See glAlphaFunc.
+    PXOpenGLAUTO_NORMAL, // If enabled, generate normal vectors when either PXOpenGLMAP2_VERTEX_3 or PXOpenGLMAP2_VERTEX_4 is used to generate vertices. See glMap2.
+    PXOpenGLBLEND, // If enabled, blend the computed fragment color values with the values in the color buffers. See glBlendFunc.
+    PXOpenGLCLIP_PLANEi, // If enabled, clip geometry against user-defined clipping plane i. See glClipPlane.
+    PXOpenGLCOLOR_LOGIC_OP, // If enabled, apply the currently selected logical operation to the computed fragment color and color buffer values. See glLogicOp.
+    PXOpenGLCOLOR_MATERIAL, // If enabled, have one or more material parameters track the current color. See glColorMaterial.
+    PXOpenGLCOLOR_SUM, // If enabled and no fragment shader is active, add the secondary color value to the computed fragment color. See glSecondaryColor.
+    PXOpenGLCOLOR_TABLE, // If enabled, perform a color table lookup on the incoming RGBA color values. See glColorTable.
+    PXOpenGLCONVOLUTION_1D, // If enabled, perform a 1D convolution operation on incoming RGBA color values. See glConvolutionFilter1D.
+    PXOpenGLCONVOLUTION_2D, // If enabled, perform a 2D convolution operation on incoming RGBA color values. See glConvolutionFilter2D.
+    PXOpenGLCULL_FACE, // If enabled, cull polygons based on their winding in window coordinates. See glCullFace.
+    PXOpenGLDEPTH_TEST, // If enabled, do depth comparisons and update the depth buffer. Note that even , // If the depth buffer exists and the depth mask is non-zero, the depth buffer is not updated , // If the depth test is disabled. See glDepthFunc and glDepthRange.
+    PXOpenGLDITHER, // If enabled, dither color components or indices before they are written to the color buffer.
+    PXOpenGLFOG, // If enabled and no fragment shader is active, blend a fog color into the post-texturing color. See glFog.
+    PXOpenGLHISTOGRAM, // If enabled, histogram incoming RGBA color values. See glHistogram.
+    PXOpenGLINDEX_LOGIC_OP, // If enabled, apply the currently selected logical operation to the incoming index and color buffer indices. See glLogicOp.
+    PXOpenGLLIGHTi, // If enabled, include light i in the evaluation of the lighting equation. See glLightModel and glLight.
+    PXOpenGLLIGHTING, // If enabled and no vertex shader is active, use the current lighting parameters to compute the vertex color or index. Otherwise, simply associate the current color or index with each vertex. See glMaterial, glLightModel, and glLight.
+    PXOpenGLLINE_SMOOTH, // If enabled, draw lines with correct filtering. Otherwise, draw aliased lines. See glLineWidth.
+    PXOpenGLLINE_STIPPLE, // If enabled, use the current line stipple pattern when drawing lines. See glLineStipple.
+    PXOpenGLMAP1_COLOR_4, // If enabled, calls to glEvalCoord1, glEvalMesh1, and glEvalPoint1 generate RGBA values. See glMap1.
+    PXOpenGLMAP1_INDEX, // If enabled, calls to glEvalCoord1, glEvalMesh1, and glEvalPoint1 generate color indices. See glMap1.
+    PXOpenGLMAP1_NORMAL, // If enabled, calls to glEvalCoord1, glEvalMesh1, and glEvalPoint1 generate normals. See glMap1.
+    PXOpenGLMAP1_TEXTURE_COORD_1, // If enabled, calls to glEvalCoord1, glEvalMesh1, and glEvalPoint1 generate s texture coordinates. See glMap1.
+    PXOpenGLMAP1_TEXTURE_COORD_2, // If enabled, calls to glEvalCoord1, glEvalMesh1, and glEvalPoint1 generate s and t texture coordinates. See glMap1.
+    PXOpenGLMAP1_TEXTURE_COORD_3, // If enabled, calls to glEvalCoord1, glEvalMesh1, and glEvalPoint1 generate s, t, and r texture coordinates. See glMap1.
+    PXOpenGLMAP1_TEXTURE_COORD_4, // If enabled, calls to glEvalCoord1, glEvalMesh1, and glEvalPoint1 generate s, t, r, and q texture coordinates. See glMap1.
+    PXOpenGLMAP1_VERTEX_3, // If enabled, calls to glEvalCoord1, glEvalMesh1, and glEvalPoint1 generate x, y, and z vertex coordinates. See glMap1.
+    PXOpenGLMAP1_VERTEX_4, // If enabled, calls to glEvalCoord1, glEvalMesh1, and glEvalPoint1 generate homogeneous x, y, z, and w vertex coordinates. See glMap1.
+    PXOpenGLMAP2_COLOR_4, // If enabled, calls to glEvalCoord2, glEvalMesh2, and glEvalPoint2 generate RGBA values. See glMap2.
+    PXOpenGLMAP2_INDEX, // If enabled, calls to glEvalCoord2, glEvalMesh2, and glEvalPoint2 generate color indices. See glMap2.
+    PXOpenGLMAP2_NORMAL, // If enabled, calls to glEvalCoord2, glEvalMesh2, and glEvalPoint2 generate normals. See glMap2.
+    PXOpenGLMAP2_TEXTURE_COORD_1, // If enabled, calls to glEvalCoord2, glEvalMesh2, and glEvalPoint2 generate s texture coordinates. See glMap2.
+    PXOpenGLMAP2_TEXTURE_COORD_2, // If enabled, calls to glEvalCoord2, glEvalMesh2, and glEvalPoint2 generate s and t texture coordinates. See glMap2.
+    PXOpenGLMAP2_TEXTURE_COORD_3, // If enabled, calls to glEvalCoord2, glEvalMesh2, and glEvalPoint2 generate s, t, and r texture coordinates. See glMap2.
+    PXOpenGLMAP2_TEXTURE_COORD_4, // If enabled, calls to glEvalCoord2, glEvalMesh2, and glEvalPoint2 generate s, t, r, and q texture coordinates. See glMap2.
+    PXOpenGLMAP2_VERTEX_3, // If enabled, calls to glEvalCoord2, glEvalMesh2, and glEvalPoint2 generate x, y, and z vertex coordinates. See glMap2.
+    PXOpenGLMAP2_VERTEX_4, // If enabled, calls to glEvalCoord2, glEvalMesh2, and glEvalPoint2 generate homogeneous x, y, z, and w vertex coordinates. See glMap2.
+    PXOpenGLMINMAX, // If enabled, compute the minimum and maximum values of incoming RGBA color values. See glMinmax.
+    PXOpenGLMULTISAMPLE, // If enabled, use multiple fragment samples in computing the final color of a pixel. See glSampleCoverage.
+    PXOpenGLNORMALIZE, // If enabled and no vertex shader is active, normal vectors are normalized to unit length after transformation and before lighting. This method is generally less efficient than PXOpenGLRESCALE_NORMAL. See glNormal and glNormalPointer.
+    PXOpenGLPOINT_SMOOTH, // If enabled, draw points with proper filtering. Otherwise, draw aliased points. See glPointSize.
+    PXOpenGLPOINT_SPRITE, // If enabled, calculate texture coordinates for points based on texture environment and point parameter settings. Otherwise texture coordinates are constant across points.
+    PXOpenGLPOLYGON_OFFSET_FILL, // If enabled, and , // If the polygon is rendered in PXOpenGLFILL mode, an offset is added to depth values of a polygon's fragments before the depth comparison is performed. See glPolygonOffset.
+    PXOpenGLPOLYGON_OFFSET_LINE, // If enabled, and , // If the polygon is rendered in PXOpenGLLINE mode, an offset is added to depth values of a polygon's fragments before the depth comparison is performed. See glPolygonOffset.
+    PXOpenGLPOLYGON_OFFSET_POINT, // If enabled, an offset is added to depth values of a polygon's fragments before the depth comparison is performed, , // If the polygon is rendered in PXOpenGLPOINT mode. See glPolygonOffset.
+    PXOpenGLPOLYGON_SMOOTH, // If enabled, draw polygons with proper filtering. Otherwise, draw aliased polygons. For correct antialiased polygons, an alpha buffer is needed and the polygons must be sorted front to back.
+    PXOpenGLPOLYGON_STIPPLE, // If enabled, use the current polygon stipple pattern when rendering polygons. See glPolygonStipple.
+    PXOpenGLPOST_COLOR_MATRIX_COLOR_TABLE, // If enabled, perform a color table lookup on RGBA color values after color matrix transformation. See glColorTable.
+    PXOpenGLPOST_CONVOLUTION_COLOR_TABLE, // If enabled, perform a color table lookup on RGBA color values after convolution. See glColorTable.
+    PXOpenGLRESCALE_NORMAL, // If enabled and no vertex shader is active, normal vectors are scaled after transformation and before lighting by a factor computed from the modelview matrix. , // If the modelview matrix scales space un, // Iformly, this has the effect of restoring the transformed normal to unit length. This method is generally more efficient than PXOpenGLNORMALIZE. See glNormal and glNormalPointer.
+    PXOpenGLSAMPLE_ALPHA_TO_COVERAGE, // If enabled, compute a temporary coverage value where each bit is determined by the alpha value at the corresponding sample location. The temporary coverage value is then ANDed with the fragment coverage value.
+    PXOpenGLSAMPLE_ALPHA_TO_ONE, // If enabled, each sample alpha value is replaced by the maximum representable alpha value.
+    PXOpenGLSAMPLE_COVERAGE, // If enabled, the fragment's coverage is ANDed with the temporary coverage value. , // If PXOpenGLSAMPLE_COVERAGE_INVERT is set to PXOpenGLTRUE, invert the coverage value. See glSampleCoverage.
+    PXOpenGLSEPARABLE_2D, // If enabled, perform a two-dimensional convolution operation using a separable convolution filter on incoming RGBA color values. See glSeparableFilter2D.
+    PXOpenGLSCISSOR_TEST, // If enabled, discard fragments that are outside the scissor rectangle. See glScissor.
+    PXOpenGLSTENCIL_TEST, // If enabled, do stencil testing and update the stencil buffer. See glStencilFunc and glStencilOp.
+    PXOpenGLTEXTURE_1D, // If enabled and no fragment shader is active, one-dimensional texturing is performed (unless two- or three-dimensional or cube-mapped texturing is also enabled). See glTexImage1D.
+    PXOpenGLTEXTURE_2D, // If enabled and no fragment shader is active, two-dimensional texturing is performed (unless three-dimensional or cube-mapped texturing is also enabled). See glTexImage2D.
+    PXOpenGLTEXTURE_3D, // If enabled and no fragment shader is active, three-dimensional texturing is performed (unless cube-mapped texturing is also enabled). See glTexImage3D.
+    PXOpenGLTEXTURE_CUBE_MAP, // If enabled and no fragment shader is active, cube-mapped texturing is performed. See glTexImage2D.
+    PXOpenGLTEXTURE_GEN_Q, // If enabled and no vertex shader is active, the q texture coordinate is computed using the texture generation function defined with glTexGen. Otherwise, the current q texture coordinate is used. See glTexGen.
+    PXOpenGLTEXTURE_GEN_R, // If enabled and no vertex shader is active, the r texture coordinate is computed using the texture generation function defined with glTexGen. Otherwise, the current r texture coordinate is used. See glTexGen.
+    PXOpenGLTEXTURE_GEN_S, // If enabled and no vertex shader is active, the s texture coordinate is computed using the texture generation function defined with glTexGen. Otherwise, the current s texture coordinate is used. See glTexGen.
+    PXOpenGLTEXTURE_GEN_T, // If enabled and no vertex shader is active, the t texture coordinate is computed using the texture generation function defined with glTexGen. Otherwise, the current t texture coordinate is used. See glTexGen.
+    PXOpenGLVERTEX_PROGRAM_POINT_SIZE, // If enabled and a vertex shader is active, then the derived point size is taken from the (potentially clipped) shader builtin PXOpenGLPointSize and clamped to the implementation-dependent point size range.
+    PXOpenGLVERTEX_PROGRAM_TWO_SIDE// If enabled and a vertex shader is active, it spec, // Ifies that the GL will choose between front and back colors based on the polygon's face direction of which the vertex being shaded is a part. It has no effect on points or lines.
 }
 PXOpenGLToggle;
 
@@ -288,11 +288,11 @@ DECLARE_HANDLE(HGPUNV);
 
 typedef struct _GPU_DEVICE
 {
-	DWORD  cb;
-	CHAR   DeviceName[32];
-	CHAR   DeviceString[128];
-	DWORD  Flags;
-	RECT   rcVirtualScreen;
+    DWORD  cb;
+    CHAR   DeviceName[32];
+    CHAR   DeviceString[128];
+    DWORD  Flags;
+    RECT   rcVirtualScreen;
 }
 GPU_DEVICE,
 * PGPU_DEVICE;
@@ -812,7 +812,7 @@ typedef void (PXOpenGLAPI* glGetInteger64i_vFunction)(GLenum target, GLuint inde
 
 typedef void* (PXOpenGLAPI* PXOpenGLFunctionPointerGet)(char* functionName); // wglGetProcAddress, glXGetProcAddress 
 
-typedef struct PXGraphicDevicePhysical_	PXGraphicDevicePhysical;
+typedef struct PXGraphicDevicePhysical_    PXGraphicDevicePhysical;
 
 
 
@@ -834,17 +834,17 @@ typedef HGLRC(PXOpenGLAPI* PXOpenGLContextCreateAttributes)(HDC hDC, HGLRC hshar
 
 
 
-	// OUTDATED ??
+    // OUTDATED ??
 
 DECLARE_HANDLE(HGPUNV);
 
 typedef struct _GPU_DEVICE
 {
-	DWORD  cb;
-	CHAR   DeviceName[32];
-	CHAR   DeviceString[128];
-	DWORD  Flags;
-	RECT   rcVirtualScreen;
+    DWORD  cb;
+    CHAR   DeviceName[32];
+    CHAR   DeviceString[128];
+    DWORD  Flags;
+    RECT   rcVirtualScreen;
 } GPU_DEVICE, * PGPU_DEVICE;
 
 typedef BOOL(PXOpenGLAPI* PXOpenGLDevicePhysicalList)(UINT iGpuIndex, HGPUNV* phGpu); // wglEnumGpusNV
@@ -879,362 +879,362 @@ typedef BOOL(WINAPI* PXOpenGLUseFontBitmapsW)(HDC, DWORD, DWORD, DWORD); // wglU
 
 typedef struct PXOpenGL_
 {
-	PXLibrary LibraryOpenGL;
+    PXLibrary LibraryOpenGL;
 
-	PXOpenGLConextID ContextHandle;
+    PXOpenGLConextID ContextHandle;
 
-	PXOpenGLVersion Version;
+    PXOpenGLVersion Version;
 
 #if OSUnix
-	Display* DisplayHandle;
-	GLXDrawable DrawableHandle;
+    Display* DisplayHandle;
+    GLXDrawable DrawableHandle;
 #elif OSWindows
-	HWND WindowHandle;
-	HDC WindowDeviceContextHandle;
+    HWND WindowHandle;
+    HDC WindowDeviceContextHandle;
 #endif
 
-	PXBool IsTexture2DEnabled;
+    PXBool IsTexture2DEnabled;
 
-	PXOpenGLAccumFunction	Accum;
-	PXOpenGLAlphaFuncFunction	AlphaFunc;
-	PXOpenGLAreTexturesResidentFunction   	AreTexturesResident;
-	PXOpenGLArrayElementFunction	ArrayElement;
-	PXOpenGLBeginFunction   	Begin;
-	PXOpenGLBindTextureFunction   	TextureBind;
-	PXOpenGLBitmapFunction  	Bitmap;
-	PXOpenGLBlendFuncFunction  	BlendFunc;
-	PXOpenGLCallListFunction	CallList;
-	PXOpenGLCallListsFunction	CallLists;
-	PXOpenGLClearFunction	Clear;
-	PXOpenGLClearAccumFunction	ClearAccum;
-	PXOpenGLClearColorFunction	ClearColor;
-	PXOpenGLClearDepthFunction	ClearDepth;
-	PXOpenGLClearIndexFunction	ClearIndex;
-	PXOpenGLClearStencilFunction	ClearStencil;
-	PXOpenGLClipPlaneFunction	ClipPlane;
-	PXOpenGLColor3bFunction	Color3b;
-	PXOpenGLColor3bvFunction	Color3bv;
-	PXOpenGLColor3dFunction	Color3d;
-	PXOpenGLColor3dvFunction	Color3dv;
-	PXOpenGLColor3fFunction	Color3f;
-	PXOpenGLColor3fvFunction	Color3fv;
-	PXOpenGLColor3iFunction	Color3i;
-	PXOpenGLColor3ivFunction	Color3iv;
-	PXOpenGLColor3sFunction	Color3s;
-	PXOpenGLColor3svFunction	Color3sv;
-	PXOpenGLColor3ubFunction	Color3ub;
-	PXOpenGLColor3ubvFunction	Color3ubv;
-	PXOpenGLColor3uiFunction	Color3ui;
-	PXOpenGLColor3uivFunction	Color3uiv;
-	PXOpenGLColor3usFunction	Color3us;
-	PXOpenGLColor3usvFunction	Color3usv;
-	PXOpenGLColor4bFunction	Color4b;
-	PXOpenGLColor4bvFunction	Color4bv;
-	PXOpenGLColor4dFunction	Color4d;
-	PXOpenGLColor4dvFunction	Color4dv;
-	PXOpenGLColor4fFunction	Color4f;
-	PXOpenGLColor4fvFunction	Color4fv;
-	PXOpenGLColor4iFunction	Color4i;
-	PXOpenGLColor4ivFunction	Color4iv;
-	PXOpenGLColor4sFunction	Color4s;
-	PXOpenGLColor4svFunction	Color4sv;
-	PXOpenGLColor4ubFunction	Color4ub;
-	PXOpenGLColor4ubvFunction	Color4ubv;
-	PXOpenGLColor4uiFunction	Color4ui;
-	PXOpenGLColor4uivFunction	Color4uiv;
-	PXOpenGLColor4usFunction	Color4us;
-	PXOpenGLColor4usvFunction	Color4usv;
-	PXOpenGLColorMaskFunction	ColorMask;
-	PXOpenGLColorMaterialFunction	ColorMaterial;
-	PXOpenGLColorPointerFunction	ColorPointer;
-	PXOpenGLCopyPixelsFunction	CopyPixels;
-	PXOpenGLCopyTexImage1DFunction	CopyTexImage1D;
-	PXOpenGLCopyTexImage2DFunction	CopyTexImage2D;
-	PXOpenGLCopyTexSubImage1DFunction	CopyTexSubImage1D;
-	PXOpenGLCopyTexSubImage2DFunction	CopyTexSubImage2D;
-	PXOpenGLCullFaceFunction	CullFace;
-	PXOpenGLDeleteListsFunction	DeleteLists;
-	PXOpenGLDeleteTexturesFunction	TextureDelete;
-	PXOpenGLDepthFuncFunction	DepthFunc;
-	PXOpenGLDepthMaskFunction	DepthMask;
-	PXOpenGLDepthRangeFunction	DepthRange;
-	PXOpenGLDisableFunction	Disable;
-	PXOpenGLDisableClientStateFunction	DisableClientState;
-	PXOpenGLDrawArraysFunction	DrawArrays;
-	PXOpenGLDrawBufferFunction	DrawBuffer;
-	PXOpenGLDrawElementsFunction	DrawElements;
-	PXOpenGLDrawPixelsFunction	DrawPixels;
-	PXOpenGLEdgeFlagFunction	EdgeFlag;
-	PXOpenGLEdgeFlagPointerFunction	EdgeFlagPointer;
-	PXOpenGLEdgeFlagvFunction	EdgeFlagv;
-	PXOpenGLEnableFunction	Enable;
-	PXOpenGLEnableClientStateFunction	EnableClientState;
-	PXOpenGLEndFunction	End;
-	PXOpenGLEndListFunction	EndList;
-	PXOpenGLEvalCoord1dFunction	EvalCoord1d;
-	PXOpenGLEvalCoord1dvFunction	EvalCoord1dv;
-	PXOpenGLEvalCoord1fFunction	EvalCoord1f;
-	PXOpenGLEvalCoord1fvFunction	EvalCoord1fv;
-	PXOpenGLEvalCoord2dFunction	EvalCoord2d;
-	PXOpenGLEvalCoord2dvFunction	EvalCoord2dv;
-	PXOpenGLEvalCoord2fFunction	EvalCoord2f;
-	PXOpenGLEvalCoord2fvFunction	EvalCoord2fv;
-	PXOpenGLEvalMesh1Function	EvalMesh1;
-	PXOpenGLEvalMesh2Function	EvalMesh2;
-	PXOpenGLEvalPoint1Function	EvalPoint1;
-	PXOpenGLEvalPoint2Function	EvalPoint2;
-	PXOpenGLFeedbackBufferFunction	FeedbackBuffer;
-	PXOpenGLFinishFunction	Finish;
-	PXOpenGLFlushFunction	Flush;
-	PXOpenGLFogfFunction	Fogf;
-	PXOpenGLFogfvFunction	Fogfv;
-	PXOpenGLFogiFunction	Fogi;
-	PXOpenGLFogivFunction	Fogiv;
-	PXOpenGLFrontFaceFunction	FrontFace;
-	PXOpenGLFrustumFunction	Frustum;
-	PXOpenGLGenListsFunction	 GenLists;
-	PXOpenGLGenTexturesFunction	TextureCreate;
-	PXOpenGLGetBooleanvFunction	GetBooleanv;
-	PXOpenGLGetClipPlaneFunction	GetClipPlane;
-	PXOpenGLGetDoublevFunction	GetDoublev;
-	PXOpenGLGetErrorFunction	GetError;
-	PXOpenGLGetFloatvFunction	GetFloatv;
-	PXOpenGLGetIntegervFunction	GetIntegerv;
-	PXOpenGLGetLightfvFunction	GetLightfv;
-	PXOpenGLGetLightivFunction	GetLightiv;
-	PXOpenGLGetMapdvFunction	GetMapdv;
-	PXOpenGLGetMapfvFunction	GetMapfv;
-	PXOpenGLGetMapivFunction	GetMapiv;
-	PXOpenGLGetMaterialfvFunction	GetMaterialfv;
-	PXOpenGLGetMaterialivFunction	GetMaterialiv;
-	PXOpenGLGetPixelMapfvFunction	GetPixelMapfv;
-	PXOpenGLGetPixelMapuivFunction	GetPixelMapuiv;
-	PXOpenGLGetPixelMapusvFunction	GetPixelMapusv;
-	PXOpenGLGetPointervFunction	GetPointerv;
-	PXOpenGLGetPolygonStippleFunction	GetPolygonStipple;
-	PXOpenGLGetStringFunction	GetString;
-	PXOpenGLGetTexEnvfvFunction	GetTexEnvfv;
-	PXOpenGLGetTexEnvivFunction	GetTexEnviv;
-	PXOpenGLGetTexGendvFunction	GetTexGendv;
-	PXOpenGLGetTexGenfvFunction	GetTexGenfv;
-	PXOpenGLGetTexGenivFunction	GetTexGeniv;
-	PXOpenGLGetTexImageFunction	GetTexImage;
-	PXOpenGLGetTexLevelParameterfvFunction	GetTexLevelParameterfv;
-	PXOpenGLGetTexLevelParameterivFunction	GetTexLevelParameteriv;
-	PXOpenGLGetTexParameterfvFunction	GetTexParameterfv;
-	PXOpenGLGetTexParameterivFunction	GetTexParameteriv;
-	PXOpenGLHintFunction	Hint;
-	PXOpenGLIndexMaskFunction	IndexMask;
-	PXOpenGLIndexPointerFunction	IndexPointer;
-	PXOpenGLIndexdFunction	Indexd;
-	PXOpenGLIndexdvFunction	Indexdv;
-	PXOpenGLIndexfFunction	Indexf;
-	PXOpenGLIndexfvFunction	Indexfv;
-	PXOpenGLIndexiFunction	Indexi;
-	PXOpenGLIndexivFunction	Indexiv;
-	PXOpenGLIndexsFunction	Indexs;
-	PXOpenGLIndexsvFunction	Indexsv;
-	PXOpenGLIndexubFunction	Indexub;
-	PXOpenGLIndexubvFunction	Indexubv;
-	PXOpenGLInitNamesFunction	InitNames;
-	PXOpenGLInterleavedArraysFunction	InterleavedArrays;
-	PXOpenGLIsEnabledFunction	 PXOpenGLIsEnabled;
-	PXOpenGLIsListFunction	IsList;
-	PXOpenGLIsTextureFunction	IsTexture;
-	PXOpenGLLightModelfFunction	LightModelf;
-	PXOpenGLLightModelfvFunction	LightModelfv;
-	PXOpenGLLightModeliFunction	LightModeli;
-	PXOpenGLLightModelivFunction	LightModeliv;
-	PXOpenGLLightfFunction	Lightf;
-	PXOpenGLLightfvFunction	Lightfv;
-	PXOpenGLLightiFunction	Lighti;
-	PXOpenGLLightivFunction	Lightiv;
-	PXOpenGLLineStippleFunction	LineStipple;
-	PXOpenGLLineWidthFunction	LineWidth;
-	PXOpenGLListBaseFunction	ListBase;
-	PXOpenGLLoadIdentityFunction	LoadIdentity;
-	PXOpenGLLoadMatrixdFunction	LoadMatrixd;
-	PXOpenGLLoadMatrixfFunction	LoadMatrixf;
-	PXOpenGLLoadNameFunction	LoadName;
-	PXOpenGLLogicOpFunction	LogicOp;
-	PXOpenGLMap1dFunction	Map1d;
-	PXOpenGLMap1fFunction	Map1f;
-	PXOpenGLMap2dFunction	Map2d;
-	PXOpenGLMap2fFunction	Map2f;
-	PXOpenGLMapGrid1dFunction	MapGrid1d;
-	PXOpenGLMapGrid1fFunction	MapGrid1f;
-	PXOpenGLMapGrid2dFunction	MapGrid2d;
-	PXOpenGLMapGrid2fFunction	MapGrid2f;
-	PXOpenGLMaterialfFunction	Materialf;
-	PXOpenGLMaterialfvFunction	Materialfv;
-	PXOpenGLMaterialiFunction	Materiali;
-	PXOpenGLMaterialivFunction	Materialiv;
-	PXOpenGLMatrixModeFunction	MatrixMode;
-	PXOpenGLMultMatrixdFunction	MultMatrixd;
-	PXOpenGLMultMatrixfFunction	MultMatrixf;
-	PXOpenGLNewListFunction	NewList;
-	PXOpenGLNormal3bFunction	Normal3b;
-	PXOpenGLNormal3bvFunction	Normal3bv;
-	PXOpenGLNormal3dFunction	Normal3d;
-	PXOpenGLNormal3dvFunction	Normal3dv;
-	PXOpenGLNormal3fFunction	Normal3f;
-	PXOpenGLNormal3fvFunction	Normal3fv;
-	PXOpenGLNormal3iFunction	Normal3i;
-	PXOpenGLNormal3ivFunction	Normal3iv;
-	PXOpenGLNormal3sFunction	Normal3s;
-	PXOpenGLNormal3svFunction	Normal3sv;
-	PXOpenGLNormalPointerFunction	NormalPointer;
-	PXOpenGLOrthoFunction	Ortho;
-	PXOpenGLPassThroughFunction	PassThrough;
-	PXOpenGLPixelMapfvFunction	PixelMapfv;
-	PXOpenGLPixelMapuivFunction	PixelMapuiv;
-	PXOpenGLPixelMapusvFunction	PixelMapusv;
-	PXOpenGLPixelStorefFunction	PixelStoref;
-	PXOpenGLPixelStoreiFunction	PixelStorei;
-	PXOpenGLPixelTransferfFunction	PixelTransferf;
-	PXOpenGLPixelTransferiFunction	PixelTransferi;
-	PXOpenGLPixelZoomFunction	PixelZoom;
-	PXOpenGLPointSizeFunction	PointSize;
-	PXOpenGLPolygonModeFunction	PolygonMode;
-	PXOpenGLPolygonOffsetFunction	PolygonOffset;
-	PXOpenGLPolygonStippleFunction	PolygonStipple;
-	PXOpenGLPopAttribFunction	PopAttrib;
-	PXOpenGLPopClientAttribFunction	PopClientAttrib;
-	PXOpenGLPopMatrixFunction	PopMatrix;
-	PXOpenGLPopNameFunction	PopName;
-	PXOpenGLPrioritizeTexturesFunction	PrioritizeTextures;
-	PXOpenGLPushAttribFunction	PushAttrib;
-	PXOpenGLPushClientAttribFunction	PushClientAttrib;
-	PXOpenGLPushMatrixFunction	PushMatrix;
-	PXOpenGLPushNameFunction	PushName;
-	PXOpenGLRasterPos2dFunction	RasterPos2d;
-	PXOpenGLRasterPos2dvFunction	RasterPos2dv;
-	PXOpenGLRasterPos2fFunction	RasterPos2f;
-	PXOpenGLRasterPos2fvFunction	RasterPos2fv;
-	PXOpenGLRasterPos2iFunction	RasterPos2i;
-	PXOpenGLRasterPos2ivFunction	RasterPos2iv;
-	PXOpenGLRasterPos2sFunction	RasterPos2s;
-	PXOpenGLRasterPos2svFunction	RasterPos2sv;
-	PXOpenGLRasterPos3dFunction	RasterPos3d;
-	PXOpenGLRasterPos3dvFunction	RasterPos3dv;
-	PXOpenGLRasterPos3fFunction	RasterPos3f;
-	PXOpenGLRasterPos3fvFunction	RasterPos3fv;
-	PXOpenGLRasterPos3iFunction	RasterPos3i;
-	PXOpenGLRasterPos3ivFunction	RasterPos3iv;
-	PXOpenGLRasterPos3sFunction	RasterPos3s;
-	PXOpenGLRasterPos3svFunction	RasterPos3sv;
-	PXOpenGLRasterPos4dFunction	RasterPos4d;
-	PXOpenGLRasterPos4dvFunction	RasterPos4dv;
-	PXOpenGLRasterPos4fFunction	RasterPos4f;
-	PXOpenGLRasterPos4fvFunction	RasterPos4fv;
-	PXOpenGLRasterPos4iFunction	RasterPos4i;
-	PXOpenGLRasterPos4ivFunction	RasterPos4iv;
-	PXOpenGLRasterPos4sFunction	RasterPos4s;
-	PXOpenGLRasterPos4svFunction	RasterPos4sv;
-	PXOpenGLReadBufferFunction	ReadBuffer;
-	PXOpenGLReadPixelsFunction	ReadPixels;
-	PXOpenGLRectdFunction	Rectd;
-	PXOpenGLRectdvFunction	Rectdv;
-	PXOpenGLRectfFunction	Rectf;
-	PXOpenGLRectfvFunction	Rectfv;
-	PXOpenGLRectiFunction	Recti;
-	PXOpenGLRectivFunction	Rectiv;
-	PXOpenGLRectsFunction	Rects;
-	PXOpenGLRectsvFunction	Rectsv;
-	PXOpenGLRenderModeFunction RenderMode;
-	PXOpenGLRotatedFunction	Rotated;
-	PXOpenGLRotatefFunction	Rotatef;
-	PXOpenGLScaledFunction	Scaled;
-	PXOpenGLScalefFunction	Scalef;
-	PXOpenGLScissorFunction	Scissor;
-	PXOpenGLSelectBufferFunction	SelectBuffer;
-	PXOpenGLShadeModelFunction	ShadeModel;
-	PXOpenGLStencilFuncFunction	StencilFunc;
-	PXOpenGLStencilMaskFunction	StencilMask;
-	PXOpenGLStencilOpFunction	StencilOp;
-	PXOpenGLTexCoord1dFunction	TexCoord1d;
-	PXOpenGLTexCoord1dvFunction	TexCoord1dv;
-	PXOpenGLTexCoord1fFunction	TexCoord1f;
-	PXOpenGLTexCoord1fvFunction	TexCoord1fv;
-	PXOpenGLTexCoord1iFunction	TexCoord1i;
-	PXOpenGLTexCoord1ivFunction	TexCoord1iv;
-	PXOpenGLTexCoord1sFunction	TexCoord1s;
-	PXOpenGLTexCoord1svFunction	TexCoord1sv;
-	PXOpenGLTexCoord2dFunction	TexCoord2d;
-	PXOpenGLTexCoord2dvFunction	TexCoord2dv;
-	PXOpenGLTexCoord2fFunction	TexCoord2f;
-	PXOpenGLTexCoord2fvFunction	TexCoord2fv;
-	PXOpenGLTexCoord2iFunction	TexCoord2i;
-	PXOpenGLTexCoord2ivFunction	TexCoord2iv;
-	PXOpenGLTexCoord2sFunction	TexCoord2s;
-	PXOpenGLTexCoord2svFunction	TexCoord2sv;
-	PXOpenGLTexCoord3dFunction	TexCoord3d;
-	PXOpenGLTexCoord3dvFunction	TexCoord3dv;
-	PXOpenGLTexCoord3fFunction	TexCoord3f;
-	PXOpenGLTexCoord3fvFunction	TexCoord3fv;
-	PXOpenGLTexCoord3iFunction	TexCoord3i;
-	PXOpenGLTexCoord3ivFunction	TexCoord3iv;
-	PXOpenGLTexCoord3sFunction	TexCoord3s;
-	PXOpenGLTexCoord3svFunction	TexCoord3sv;
-	PXOpenGLTexCoord4dFunction	TexCoord4d;
-	PXOpenGLTexCoord4dvFunction	TexCoord4dv;
-	PXOpenGLTexCoord4fFunction	TexCoord4f;
-	PXOpenGLTexCoord4fvFunction	TexCoord4fv;
-	PXOpenGLTexCoord4iFunction	TexCoord4i;
-	PXOpenGLTexCoord4ivFunction	TexCoord4iv;
-	PXOpenGLTexCoord4sFunction	TexCoord4s;
-	PXOpenGLTexCoord4svFunction	TexCoord4sv;
-	PXOpenGLTexCoordPointerFunction	TexCoordPointer;
-	PXOpenGLTexEnvfFunction	TexEnvf;
-	PXOpenGLTexEnvfvFunction	TexEnvfv;
-	PXOpenGLTexEnviFunction	TexEnvi;
-	PXOpenGLTexEnvivFunction	TexEnviv;
-	PXOpenGLTexGendFunction	TexGend;
-	PXOpenGLTexGendvFunction	TexGendv;
-	PXOpenGLTexGenfFunction	TexGenf;
-	PXOpenGLTexGenfvFunction	TexGenfv;
-	PXOpenGLTexGeniFunction	TexGeni;
-	PXOpenGLTexGenivFunction	TexGeniv;
-	PXOpenGLTexImage1DFunction	TextureData1D;
-	PXOpenGLTexImage2DFunction	TextureData2D;
-	PXOpenGLTexParameterfFunction	TextureParameterF;
-	PXOpenGLTexParameterfvFunction	TextureParameterListF;
-	PXOpenGLTexParameteriFunction	TextureParameterI;
-	PXOpenGLTexParameterivFunction	TextureParameterListI;
-	PXOpenGLTexSubImage1DFunction	TexSubImage1D;
-	PXOpenGLTexSubImage2DFunction	TexSubImage2D;
-	PXOpenGLTranslatedFunction	Translated;
-	PXOpenGLTranslatefFunction	Translatef;
-	PXOpenGLVertex2dFunction	Vertex2d;
-	PXOpenGLVertex2dvFunction	Vertex2dv;
-	PXOpenGLVertex2fFunction	Vertex2f;
-	PXOpenGLVertex2fvFunction	Vertex2fv;
-	PXOpenGLVertex2iFunction	Vertex2i;
-	PXOpenGLVertex2ivFunction	Vertex2iv;
-	PXOpenGLVertex2sFunction	Vertex2s;
-	PXOpenGLVertex2svFunction	Vertex2sv;
-	PXOpenGLVertex3dFunction	Vertex3d;
-	PXOpenGLVertex3dvFunction	Vertex3dv;
-	PXOpenGLVertex3fFunction	Vertex3f;
-	PXOpenGLVertex3fvFunction	Vertex3fv;
-	PXOpenGLVertex3iFunction	Vertex3i;
-	PXOpenGLVertex3ivFunction	Vertex3iv;
-	PXOpenGLVertex3sFunction	Vertex3s;
-	PXOpenGLVertex3svFunction	Vertex3sv;
-	PXOpenGLVertex4dFunction	Vertex4d;
-	PXOpenGLVertex4dvFunction	Vertex4dv;
-	PXOpenGLVertex4fFunction	Vertex4f;
-	PXOpenGLVertex4fvFunction	Vertex4fv;
-	PXOpenGLVertex4iFunction   	Vertex4i;
-	PXOpenGLVertex4ivFunction 	Vertex4iv;
-	PXOpenGLVertex4sFunction    	Vertex4s;
-	PXOpenGLVertex4svFunction 	Vertex4sv;
-	PXOpenGLVertexPointerFunction   	VertexPointer;
-	PXOpenGLViewportFunction   	Viewport;
+    PXOpenGLAccumFunction    Accum;
+    PXOpenGLAlphaFuncFunction    AlphaFunc;
+    PXOpenGLAreTexturesResidentFunction       AreTexturesResident;
+    PXOpenGLArrayElementFunction    ArrayElement;
+    PXOpenGLBeginFunction       Begin;
+    PXOpenGLBindTextureFunction       TextureBind;
+    PXOpenGLBitmapFunction      Bitmap;
+    PXOpenGLBlendFuncFunction      BlendFunc;
+    PXOpenGLCallListFunction    CallList;
+    PXOpenGLCallListsFunction    CallLists;
+    PXOpenGLClearFunction    Clear;
+    PXOpenGLClearAccumFunction    ClearAccum;
+    PXOpenGLClearColorFunction    ClearColor;
+    PXOpenGLClearDepthFunction    ClearDepth;
+    PXOpenGLClearIndexFunction    ClearIndex;
+    PXOpenGLClearStencilFunction    ClearStencil;
+    PXOpenGLClipPlaneFunction    ClipPlane;
+    PXOpenGLColor3bFunction    Color3b;
+    PXOpenGLColor3bvFunction    Color3bv;
+    PXOpenGLColor3dFunction    Color3d;
+    PXOpenGLColor3dvFunction    Color3dv;
+    PXOpenGLColor3fFunction    Color3f;
+    PXOpenGLColor3fvFunction    Color3fv;
+    PXOpenGLColor3iFunction    Color3i;
+    PXOpenGLColor3ivFunction    Color3iv;
+    PXOpenGLColor3sFunction    Color3s;
+    PXOpenGLColor3svFunction    Color3sv;
+    PXOpenGLColor3ubFunction    Color3ub;
+    PXOpenGLColor3ubvFunction    Color3ubv;
+    PXOpenGLColor3uiFunction    Color3ui;
+    PXOpenGLColor3uivFunction    Color3uiv;
+    PXOpenGLColor3usFunction    Color3us;
+    PXOpenGLColor3usvFunction    Color3usv;
+    PXOpenGLColor4bFunction    Color4b;
+    PXOpenGLColor4bvFunction    Color4bv;
+    PXOpenGLColor4dFunction    Color4d;
+    PXOpenGLColor4dvFunction    Color4dv;
+    PXOpenGLColor4fFunction    Color4f;
+    PXOpenGLColor4fvFunction    Color4fv;
+    PXOpenGLColor4iFunction    Color4i;
+    PXOpenGLColor4ivFunction    Color4iv;
+    PXOpenGLColor4sFunction    Color4s;
+    PXOpenGLColor4svFunction    Color4sv;
+    PXOpenGLColor4ubFunction    Color4ub;
+    PXOpenGLColor4ubvFunction    Color4ubv;
+    PXOpenGLColor4uiFunction    Color4ui;
+    PXOpenGLColor4uivFunction    Color4uiv;
+    PXOpenGLColor4usFunction    Color4us;
+    PXOpenGLColor4usvFunction    Color4usv;
+    PXOpenGLColorMaskFunction    ColorMask;
+    PXOpenGLColorMaterialFunction    ColorMaterial;
+    PXOpenGLColorPointerFunction    ColorPointer;
+    PXOpenGLCopyPixelsFunction    CopyPixels;
+    PXOpenGLCopyTexImage1DFunction    CopyTexImage1D;
+    PXOpenGLCopyTexImage2DFunction    CopyTexImage2D;
+    PXOpenGLCopyTexSubImage1DFunction    CopyTexSubImage1D;
+    PXOpenGLCopyTexSubImage2DFunction    CopyTexSubImage2D;
+    PXOpenGLCullFaceFunction    CullFace;
+    PXOpenGLDeleteListsFunction    DeleteLists;
+    PXOpenGLDeleteTexturesFunction    TextureDelete;
+    PXOpenGLDepthFuncFunction    DepthFunc;
+    PXOpenGLDepthMaskFunction    DepthMask;
+    PXOpenGLDepthRangeFunction    DepthRange;
+    PXOpenGLDisableFunction    Disable;
+    PXOpenGLDisableClientStateFunction    DisableClientState;
+    PXOpenGLDrawArraysFunction    DrawArrays;
+    PXOpenGLDrawBufferFunction    DrawBuffer;
+    PXOpenGLDrawElementsFunction    DrawElements;
+    PXOpenGLDrawPixelsFunction    DrawPixels;
+    PXOpenGLEdgeFlagFunction    EdgeFlag;
+    PXOpenGLEdgeFlagPointerFunction    EdgeFlagPointer;
+    PXOpenGLEdgeFlagvFunction    EdgeFlagv;
+    PXOpenGLEnableFunction    Enable;
+    PXOpenGLEnableClientStateFunction    EnableClientState;
+    PXOpenGLEndFunction    End;
+    PXOpenGLEndListFunction    EndList;
+    PXOpenGLEvalCoord1dFunction    EvalCoord1d;
+    PXOpenGLEvalCoord1dvFunction    EvalCoord1dv;
+    PXOpenGLEvalCoord1fFunction    EvalCoord1f;
+    PXOpenGLEvalCoord1fvFunction    EvalCoord1fv;
+    PXOpenGLEvalCoord2dFunction    EvalCoord2d;
+    PXOpenGLEvalCoord2dvFunction    EvalCoord2dv;
+    PXOpenGLEvalCoord2fFunction    EvalCoord2f;
+    PXOpenGLEvalCoord2fvFunction    EvalCoord2fv;
+    PXOpenGLEvalMesh1Function    EvalMesh1;
+    PXOpenGLEvalMesh2Function    EvalMesh2;
+    PXOpenGLEvalPoint1Function    EvalPoint1;
+    PXOpenGLEvalPoint2Function    EvalPoint2;
+    PXOpenGLFeedbackBufferFunction    FeedbackBuffer;
+    PXOpenGLFinishFunction    Finish;
+    PXOpenGLFlushFunction    Flush;
+    PXOpenGLFogfFunction    Fogf;
+    PXOpenGLFogfvFunction    Fogfv;
+    PXOpenGLFogiFunction    Fogi;
+    PXOpenGLFogivFunction    Fogiv;
+    PXOpenGLFrontFaceFunction    FrontFace;
+    PXOpenGLFrustumFunction    Frustum;
+    PXOpenGLGenListsFunction     GenLists;
+    PXOpenGLGenTexturesFunction    TextureCreate;
+    PXOpenGLGetBooleanvFunction    GetBooleanv;
+    PXOpenGLGetClipPlaneFunction    GetClipPlane;
+    PXOpenGLGetDoublevFunction    GetDoublev;
+    PXOpenGLGetErrorFunction    GetError;
+    PXOpenGLGetFloatvFunction    GetFloatv;
+    PXOpenGLGetIntegervFunction    GetIntegerv;
+    PXOpenGLGetLightfvFunction    GetLightfv;
+    PXOpenGLGetLightivFunction    GetLightiv;
+    PXOpenGLGetMapdvFunction    GetMapdv;
+    PXOpenGLGetMapfvFunction    GetMapfv;
+    PXOpenGLGetMapivFunction    GetMapiv;
+    PXOpenGLGetMaterialfvFunction    GetMaterialfv;
+    PXOpenGLGetMaterialivFunction    GetMaterialiv;
+    PXOpenGLGetPixelMapfvFunction    GetPixelMapfv;
+    PXOpenGLGetPixelMapuivFunction    GetPixelMapuiv;
+    PXOpenGLGetPixelMapusvFunction    GetPixelMapusv;
+    PXOpenGLGetPointervFunction    GetPointerv;
+    PXOpenGLGetPolygonStippleFunction    GetPolygonStipple;
+    PXOpenGLGetStringFunction    GetString;
+    PXOpenGLGetTexEnvfvFunction    GetTexEnvfv;
+    PXOpenGLGetTexEnvivFunction    GetTexEnviv;
+    PXOpenGLGetTexGendvFunction    GetTexGendv;
+    PXOpenGLGetTexGenfvFunction    GetTexGenfv;
+    PXOpenGLGetTexGenivFunction    GetTexGeniv;
+    PXOpenGLGetTexImageFunction    GetTexImage;
+    PXOpenGLGetTexLevelParameterfvFunction    GetTexLevelParameterfv;
+    PXOpenGLGetTexLevelParameterivFunction    GetTexLevelParameteriv;
+    PXOpenGLGetTexParameterfvFunction    GetTexParameterfv;
+    PXOpenGLGetTexParameterivFunction    GetTexParameteriv;
+    PXOpenGLHintFunction    Hint;
+    PXOpenGLIndexMaskFunction    IndexMask;
+    PXOpenGLIndexPointerFunction    IndexPointer;
+    PXOpenGLIndexdFunction    Indexd;
+    PXOpenGLIndexdvFunction    Indexdv;
+    PXOpenGLIndexfFunction    Indexf;
+    PXOpenGLIndexfvFunction    Indexfv;
+    PXOpenGLIndexiFunction    Indexi;
+    PXOpenGLIndexivFunction    Indexiv;
+    PXOpenGLIndexsFunction    Indexs;
+    PXOpenGLIndexsvFunction    Indexsv;
+    PXOpenGLIndexubFunction    Indexub;
+    PXOpenGLIndexubvFunction    Indexubv;
+    PXOpenGLInitNamesFunction    InitNames;
+    PXOpenGLInterleavedArraysFunction    InterleavedArrays;
+    PXOpenGLIsEnabledFunction     PXOpenGLIsEnabled;
+    PXOpenGLIsListFunction    IsList;
+    PXOpenGLIsTextureFunction    IsTexture;
+    PXOpenGLLightModelfFunction    LightModelf;
+    PXOpenGLLightModelfvFunction    LightModelfv;
+    PXOpenGLLightModeliFunction    LightModeli;
+    PXOpenGLLightModelivFunction    LightModeliv;
+    PXOpenGLLightfFunction    Lightf;
+    PXOpenGLLightfvFunction    Lightfv;
+    PXOpenGLLightiFunction    Lighti;
+    PXOpenGLLightivFunction    Lightiv;
+    PXOpenGLLineStippleFunction    LineStipple;
+    PXOpenGLLineWidthFunction    LineWidth;
+    PXOpenGLListBaseFunction    ListBase;
+    PXOpenGLLoadIdentityFunction    LoadIdentity;
+    PXOpenGLLoadMatrixdFunction    LoadMatrixd;
+    PXOpenGLLoadMatrixfFunction    LoadMatrixf;
+    PXOpenGLLoadNameFunction    LoadName;
+    PXOpenGLLogicOpFunction    LogicOp;
+    PXOpenGLMap1dFunction    Map1d;
+    PXOpenGLMap1fFunction    Map1f;
+    PXOpenGLMap2dFunction    Map2d;
+    PXOpenGLMap2fFunction    Map2f;
+    PXOpenGLMapGrid1dFunction    MapGrid1d;
+    PXOpenGLMapGrid1fFunction    MapGrid1f;
+    PXOpenGLMapGrid2dFunction    MapGrid2d;
+    PXOpenGLMapGrid2fFunction    MapGrid2f;
+    PXOpenGLMaterialfFunction    Materialf;
+    PXOpenGLMaterialfvFunction    Materialfv;
+    PXOpenGLMaterialiFunction    Materiali;
+    PXOpenGLMaterialivFunction    Materialiv;
+    PXOpenGLMatrixModeFunction    MatrixMode;
+    PXOpenGLMultMatrixdFunction    MultMatrixd;
+    PXOpenGLMultMatrixfFunction    MultMatrixf;
+    PXOpenGLNewListFunction    NewList;
+    PXOpenGLNormal3bFunction    Normal3b;
+    PXOpenGLNormal3bvFunction    Normal3bv;
+    PXOpenGLNormal3dFunction    Normal3d;
+    PXOpenGLNormal3dvFunction    Normal3dv;
+    PXOpenGLNormal3fFunction    Normal3f;
+    PXOpenGLNormal3fvFunction    Normal3fv;
+    PXOpenGLNormal3iFunction    Normal3i;
+    PXOpenGLNormal3ivFunction    Normal3iv;
+    PXOpenGLNormal3sFunction    Normal3s;
+    PXOpenGLNormal3svFunction    Normal3sv;
+    PXOpenGLNormalPointerFunction    NormalPointer;
+    PXOpenGLOrthoFunction    Ortho;
+    PXOpenGLPassThroughFunction    PassThrough;
+    PXOpenGLPixelMapfvFunction    PixelMapfv;
+    PXOpenGLPixelMapuivFunction    PixelMapuiv;
+    PXOpenGLPixelMapusvFunction    PixelMapusv;
+    PXOpenGLPixelStorefFunction    PixelStoref;
+    PXOpenGLPixelStoreiFunction    PixelStorei;
+    PXOpenGLPixelTransferfFunction    PixelTransferf;
+    PXOpenGLPixelTransferiFunction    PixelTransferi;
+    PXOpenGLPixelZoomFunction    PixelZoom;
+    PXOpenGLPointSizeFunction    PointSize;
+    PXOpenGLPolygonModeFunction    PolygonMode;
+    PXOpenGLPolygonOffsetFunction    PolygonOffset;
+    PXOpenGLPolygonStippleFunction    PolygonStipple;
+    PXOpenGLPopAttribFunction    PopAttrib;
+    PXOpenGLPopClientAttribFunction    PopClientAttrib;
+    PXOpenGLPopMatrixFunction    PopMatrix;
+    PXOpenGLPopNameFunction    PopName;
+    PXOpenGLPrioritizeTexturesFunction    PrioritizeTextures;
+    PXOpenGLPushAttribFunction    PushAttrib;
+    PXOpenGLPushClientAttribFunction    PushClientAttrib;
+    PXOpenGLPushMatrixFunction    PushMatrix;
+    PXOpenGLPushNameFunction    PushName;
+    PXOpenGLRasterPos2dFunction    RasterPos2d;
+    PXOpenGLRasterPos2dvFunction    RasterPos2dv;
+    PXOpenGLRasterPos2fFunction    RasterPos2f;
+    PXOpenGLRasterPos2fvFunction    RasterPos2fv;
+    PXOpenGLRasterPos2iFunction    RasterPos2i;
+    PXOpenGLRasterPos2ivFunction    RasterPos2iv;
+    PXOpenGLRasterPos2sFunction    RasterPos2s;
+    PXOpenGLRasterPos2svFunction    RasterPos2sv;
+    PXOpenGLRasterPos3dFunction    RasterPos3d;
+    PXOpenGLRasterPos3dvFunction    RasterPos3dv;
+    PXOpenGLRasterPos3fFunction    RasterPos3f;
+    PXOpenGLRasterPos3fvFunction    RasterPos3fv;
+    PXOpenGLRasterPos3iFunction    RasterPos3i;
+    PXOpenGLRasterPos3ivFunction    RasterPos3iv;
+    PXOpenGLRasterPos3sFunction    RasterPos3s;
+    PXOpenGLRasterPos3svFunction    RasterPos3sv;
+    PXOpenGLRasterPos4dFunction    RasterPos4d;
+    PXOpenGLRasterPos4dvFunction    RasterPos4dv;
+    PXOpenGLRasterPos4fFunction    RasterPos4f;
+    PXOpenGLRasterPos4fvFunction    RasterPos4fv;
+    PXOpenGLRasterPos4iFunction    RasterPos4i;
+    PXOpenGLRasterPos4ivFunction    RasterPos4iv;
+    PXOpenGLRasterPos4sFunction    RasterPos4s;
+    PXOpenGLRasterPos4svFunction    RasterPos4sv;
+    PXOpenGLReadBufferFunction    ReadBuffer;
+    PXOpenGLReadPixelsFunction    ReadPixels;
+    PXOpenGLRectdFunction    Rectd;
+    PXOpenGLRectdvFunction    Rectdv;
+    PXOpenGLRectfFunction    Rectf;
+    PXOpenGLRectfvFunction    Rectfv;
+    PXOpenGLRectiFunction    Recti;
+    PXOpenGLRectivFunction    Rectiv;
+    PXOpenGLRectsFunction    Rects;
+    PXOpenGLRectsvFunction    Rectsv;
+    PXOpenGLRenderModeFunction RenderMode;
+    PXOpenGLRotatedFunction    Rotated;
+    PXOpenGLRotatefFunction    Rotatef;
+    PXOpenGLScaledFunction    Scaled;
+    PXOpenGLScalefFunction    Scalef;
+    PXOpenGLScissorFunction    Scissor;
+    PXOpenGLSelectBufferFunction    SelectBuffer;
+    PXOpenGLShadeModelFunction    ShadeModel;
+    PXOpenGLStencilFuncFunction    StencilFunc;
+    PXOpenGLStencilMaskFunction    StencilMask;
+    PXOpenGLStencilOpFunction    StencilOp;
+    PXOpenGLTexCoord1dFunction    TexCoord1d;
+    PXOpenGLTexCoord1dvFunction    TexCoord1dv;
+    PXOpenGLTexCoord1fFunction    TexCoord1f;
+    PXOpenGLTexCoord1fvFunction    TexCoord1fv;
+    PXOpenGLTexCoord1iFunction    TexCoord1i;
+    PXOpenGLTexCoord1ivFunction    TexCoord1iv;
+    PXOpenGLTexCoord1sFunction    TexCoord1s;
+    PXOpenGLTexCoord1svFunction    TexCoord1sv;
+    PXOpenGLTexCoord2dFunction    TexCoord2d;
+    PXOpenGLTexCoord2dvFunction    TexCoord2dv;
+    PXOpenGLTexCoord2fFunction    TexCoord2f;
+    PXOpenGLTexCoord2fvFunction    TexCoord2fv;
+    PXOpenGLTexCoord2iFunction    TexCoord2i;
+    PXOpenGLTexCoord2ivFunction    TexCoord2iv;
+    PXOpenGLTexCoord2sFunction    TexCoord2s;
+    PXOpenGLTexCoord2svFunction    TexCoord2sv;
+    PXOpenGLTexCoord3dFunction    TexCoord3d;
+    PXOpenGLTexCoord3dvFunction    TexCoord3dv;
+    PXOpenGLTexCoord3fFunction    TexCoord3f;
+    PXOpenGLTexCoord3fvFunction    TexCoord3fv;
+    PXOpenGLTexCoord3iFunction    TexCoord3i;
+    PXOpenGLTexCoord3ivFunction    TexCoord3iv;
+    PXOpenGLTexCoord3sFunction    TexCoord3s;
+    PXOpenGLTexCoord3svFunction    TexCoord3sv;
+    PXOpenGLTexCoord4dFunction    TexCoord4d;
+    PXOpenGLTexCoord4dvFunction    TexCoord4dv;
+    PXOpenGLTexCoord4fFunction    TexCoord4f;
+    PXOpenGLTexCoord4fvFunction    TexCoord4fv;
+    PXOpenGLTexCoord4iFunction    TexCoord4i;
+    PXOpenGLTexCoord4ivFunction    TexCoord4iv;
+    PXOpenGLTexCoord4sFunction    TexCoord4s;
+    PXOpenGLTexCoord4svFunction    TexCoord4sv;
+    PXOpenGLTexCoordPointerFunction    TexCoordPointer;
+    PXOpenGLTexEnvfFunction    TexEnvf;
+    PXOpenGLTexEnvfvFunction    TexEnvfv;
+    PXOpenGLTexEnviFunction    TexEnvi;
+    PXOpenGLTexEnvivFunction    TexEnviv;
+    PXOpenGLTexGendFunction    TexGend;
+    PXOpenGLTexGendvFunction    TexGendv;
+    PXOpenGLTexGenfFunction    TexGenf;
+    PXOpenGLTexGenfvFunction    TexGenfv;
+    PXOpenGLTexGeniFunction    TexGeni;
+    PXOpenGLTexGenivFunction    TexGeniv;
+    PXOpenGLTexImage1DFunction    TextureData1D;
+    PXOpenGLTexImage2DFunction    TextureData2D;
+    PXOpenGLTexParameterfFunction    TextureParameterF;
+    PXOpenGLTexParameterfvFunction    TextureParameterListF;
+    PXOpenGLTexParameteriFunction    TextureParameterI;
+    PXOpenGLTexParameterivFunction    TextureParameterListI;
+    PXOpenGLTexSubImage1DFunction    TexSubImage1D;
+    PXOpenGLTexSubImage2DFunction    TexSubImage2D;
+    PXOpenGLTranslatedFunction    Translated;
+    PXOpenGLTranslatefFunction    Translatef;
+    PXOpenGLVertex2dFunction    Vertex2d;
+    PXOpenGLVertex2dvFunction    Vertex2dv;
+    PXOpenGLVertex2fFunction    Vertex2f;
+    PXOpenGLVertex2fvFunction    Vertex2fv;
+    PXOpenGLVertex2iFunction    Vertex2i;
+    PXOpenGLVertex2ivFunction    Vertex2iv;
+    PXOpenGLVertex2sFunction    Vertex2s;
+    PXOpenGLVertex2svFunction    Vertex2sv;
+    PXOpenGLVertex3dFunction    Vertex3d;
+    PXOpenGLVertex3dvFunction    Vertex3dv;
+    PXOpenGLVertex3fFunction    Vertex3f;
+    PXOpenGLVertex3fvFunction    Vertex3fv;
+    PXOpenGLVertex3iFunction    Vertex3i;
+    PXOpenGLVertex3ivFunction    Vertex3iv;
+    PXOpenGLVertex3sFunction    Vertex3s;
+    PXOpenGLVertex3svFunction    Vertex3sv;
+    PXOpenGLVertex4dFunction    Vertex4d;
+    PXOpenGLVertex4dvFunction    Vertex4dv;
+    PXOpenGLVertex4fFunction    Vertex4f;
+    PXOpenGLVertex4fvFunction    Vertex4fv;
+    PXOpenGLVertex4iFunction       Vertex4i;
+    PXOpenGLVertex4ivFunction     Vertex4iv;
+    PXOpenGLVertex4sFunction        Vertex4s;
+    PXOpenGLVertex4svFunction     Vertex4sv;
+    PXOpenGLVertexPointerFunction       VertexPointer;
+    PXOpenGLViewportFunction       Viewport;
 
 #if !PXOpenGLForceLegacy
 
-	//---<PXOpenGL v.1.2.0>------------------------------------------------------
+    //---<PXOpenGL v.1.2.0>------------------------------------------------------
 //-------------------------------------------------------------------------
 
 //---<PXOpenGL v.1.2.1>------------------------------------------------------
@@ -1250,150 +1250,150 @@ typedef struct PXOpenGL_
 //-------------------------------------------------------------------------
 
 //---<PXOpenGL v.2.0.0>------------------------------------------------------
-	PXOpenGLShaderPXProgramCreateFunction	ShaderProgramCreate;
-	PXOpenGLShaderPXProgramUseFunction	ShaderProgramUse;
-	PXOpenGLShaderPXProgramDeleteFunction ShaderProgramDelete;
-	PXOpenGLShaderCreateFunction ShaderCreate;
-	PXOpenGLShaderSourceFunction	ShaderSource;
-	PXOpenGLShaderCompileFunction	ShaderCompile;
-	PXOpenGLGetProgramiv ShaderProgramGetiv;
-	PXOpenGLActiveAttributeGet ActiveAttributeGet;
-	PXOpenGLGetActiveUniform ActiveUniformGet;
-	PXOpenGLShaderGetivFunction	ShaderGetiv;
-	PXOpenGLShaderLogInfoGetFunction	ShaderLogInfoGet;
-	PXOpenGLProgramInfoLogGet ProgramInfoLogGet;
-	PXOpenGLShaderDeleteFunction	ShaderDelete;
-	PXOpenGLAttachShaderFunction	ShaderAttach;
-	PXOpenGLLinkPXProgramFunction	ShaderProgramLink;
-	PXOpenGLValidatePXProgramFunction	ShaderProgramValidate;
-	PXOpenGLActiveTextureFunction	TextureSlotActive;
-	PXOpenGLGenBuffersFunction	BufferGenerate;
-	PXOpenGLBindBufferFunction	BufferBind;
-	PXOpenGLBufferDataFunction	BufferData;
-	PXOpenGLVertexAttribPointerFunction VertexAttribPointer;
-	PXOpenGLVertexAttribArrayEnableFunction VertexAttribArrayEnable;
-	PXOpenGLVertexAttribArrayDisableFunction VertexAttribArrayDisable;
-	PXOpenGLDisableVertexArrayAttribFunction	DisableVertexArrayAttrib;
-	PXOpenGLGetUniformLocation	GetUniformLocation;
-	PXOpenGLUniform1fFunction	Uniform1f;
-	PXOpenGLUniform1fvFunction	Uniform1fv;
-	PXOpenGLUniform1iFunction	Uniform1i;
-	PXOpenGLUniform1ivFunction	Uniform1iv;
-	PXOpenGLUniform2fFunction	Uniform2f;
-	PXOpenGLUniform2fvFunction	Uniform2fv;
-	PXOpenGLUniform2iFunction	Uniform2i;
-	PXOpenGLUniform2ivFunction	Uniform2iv;
-	PXOpenGLUniform3fFunction	Uniform3f;
-	PXOpenGLUniform3fvFunction	Uniform3fv;
-	PXOpenGLUniform3iFunction	Uniform3i;
-	PXOpenGLUniform3ivFunction	Uniform3iv;
-	PXOpenGLUniform4fFunction	Uniform4f;
-	PXOpenGLUniform4fvFunction	Uniform4fv;
-	PXOpenGLUniform4iFunction	Uniform4i;
-	PXOpenGLUniform4ivFunction	Uniform4iv;
-	PXOpenGLUniformMatrix2fvFunction	UniformMatrix2fv;
-	PXOpenGLUniformMatrix3fvFunction	UniformMatrix3fv;
-	PXOpenGLUniformMatrix4fvFunction UniformMatrix4fv;
-	//-------------------------------------------------------------------------
+    PXOpenGLShaderPXProgramCreateFunction    ShaderProgramCreate;
+    PXOpenGLShaderPXProgramUseFunction    ShaderProgramUse;
+    PXOpenGLShaderPXProgramDeleteFunction ShaderProgramDelete;
+    PXOpenGLShaderCreateFunction ShaderCreate;
+    PXOpenGLShaderSourceFunction    ShaderSource;
+    PXOpenGLShaderCompileFunction    ShaderCompile;
+    PXOpenGLGetProgramiv ShaderProgramGetiv;
+    PXOpenGLActiveAttributeGet ActiveAttributeGet;
+    PXOpenGLGetActiveUniform ActiveUniformGet;
+    PXOpenGLShaderGetivFunction    ShaderGetiv;
+    PXOpenGLShaderLogInfoGetFunction    ShaderLogInfoGet;
+    PXOpenGLProgramInfoLogGet ProgramInfoLogGet;
+    PXOpenGLShaderDeleteFunction    ShaderDelete;
+    PXOpenGLAttachShaderFunction    ShaderAttach;
+    PXOpenGLLinkPXProgramFunction    ShaderProgramLink;
+    PXOpenGLValidatePXProgramFunction    ShaderProgramValidate;
+    PXOpenGLActiveTextureFunction    TextureSlotActive;
+    PXOpenGLGenBuffersFunction    BufferGenerate;
+    PXOpenGLBindBufferFunction    BufferBind;
+    PXOpenGLBufferDataFunction    BufferData;
+    PXOpenGLVertexAttribPointerFunction VertexAttribPointer;
+    PXOpenGLVertexAttribArrayEnableFunction VertexAttribArrayEnable;
+    PXOpenGLVertexAttribArrayDisableFunction VertexAttribArrayDisable;
+    PXOpenGLDisableVertexArrayAttribFunction    DisableVertexArrayAttrib;
+    PXOpenGLGetUniformLocation    GetUniformLocation;
+    PXOpenGLUniform1fFunction    Uniform1f;
+    PXOpenGLUniform1fvFunction    Uniform1fv;
+    PXOpenGLUniform1iFunction    Uniform1i;
+    PXOpenGLUniform1ivFunction    Uniform1iv;
+    PXOpenGLUniform2fFunction    Uniform2f;
+    PXOpenGLUniform2fvFunction    Uniform2fv;
+    PXOpenGLUniform2iFunction    Uniform2i;
+    PXOpenGLUniform2ivFunction    Uniform2iv;
+    PXOpenGLUniform3fFunction    Uniform3f;
+    PXOpenGLUniform3fvFunction    Uniform3fv;
+    PXOpenGLUniform3iFunction    Uniform3i;
+    PXOpenGLUniform3ivFunction    Uniform3iv;
+    PXOpenGLUniform4fFunction    Uniform4f;
+    PXOpenGLUniform4fvFunction    Uniform4fv;
+    PXOpenGLUniform4iFunction    Uniform4i;
+    PXOpenGLUniform4ivFunction    Uniform4iv;
+    PXOpenGLUniformMatrix2fvFunction    UniformMatrix2fv;
+    PXOpenGLUniformMatrix3fvFunction    UniformMatrix3fv;
+    PXOpenGLUniformMatrix4fvFunction UniformMatrix4fv;
+    //-------------------------------------------------------------------------
 
-	//---<PXOpenGL v.2.1.0>------------------------------------------------------
-	//-------------------------------------------------------------------------
+    //---<PXOpenGL v.2.1.0>------------------------------------------------------
+    //-------------------------------------------------------------------------
 
-	//---<PXOpenGL v.3.0.0>------------------------------------------------------
-	PXOpenGLFrameBufferCreateFunction FrameBufferCreate;
-	PXOpenGLFrameBufferDeleteFunction FrameBufferDelete;
-	PXOpenGLFrameBufferBindFunction FrameBufferBind;
+    //---<PXOpenGL v.3.0.0>------------------------------------------------------
+    PXOpenGLFrameBufferCreateFunction FrameBufferCreate;
+    PXOpenGLFrameBufferDeleteFunction FrameBufferDelete;
+    PXOpenGLFrameBufferBindFunction FrameBufferBind;
 
-	PXOpenGLRenderBufferCreateFunction RenderBufferCreate;
-	PXOpenGLRenderBufferBindFunction  RenderBufferBind;
-	PXOpenGLRenderBufferDeleteFunction RenderBufferDelete;
-	PXOpenGLRenderBufferStorageFunction RenderBufferStorage;
-	PXOpenGLFrameBufferLinkTexture2DFunction FrameBufferLinkTexture2D;
-	PXOpenGLFrameBufferLinkRenderBufferFunction FrameBufferLinkRenderBuffer;
+    PXOpenGLRenderBufferCreateFunction RenderBufferCreate;
+    PXOpenGLRenderBufferBindFunction  RenderBufferBind;
+    PXOpenGLRenderBufferDeleteFunction RenderBufferDelete;
+    PXOpenGLRenderBufferStorageFunction RenderBufferStorage;
+    PXOpenGLFrameBufferLinkTexture2DFunction FrameBufferLinkTexture2D;
+    PXOpenGLFrameBufferLinkRenderBufferFunction FrameBufferLinkRenderBuffer;
 
-	PXOpenGLGenVertexArraysFunction VertexArraysGenerate;
-	PXOpenGLBindVertexArrayFunction VertexArrayBind;
-	PXOpenGLVertexAttribIPointerFunction VertexAttribIPointer;
+    PXOpenGLGenVertexArraysFunction VertexArraysGenerate;
+    PXOpenGLBindVertexArrayFunction VertexArrayBind;
+    PXOpenGLVertexAttribIPointerFunction VertexAttribIPointer;
 
-	PXOpenGLStringIFunction StringI;
-	//-------------------------------------------------------------------------
+    PXOpenGLStringIFunction StringI;
+    //-------------------------------------------------------------------------
 
-	//---<PXOpenGL v.3.1.0>------------------------------------------------------
-	PXOpenGLDrawArraysInstancedFunction DrawArraysInstanced;
-	//-------------------------------------------------------------------------
+    //---<PXOpenGL v.3.1.0>------------------------------------------------------
+    PXOpenGLDrawArraysInstancedFunction DrawArraysInstanced;
+    //-------------------------------------------------------------------------
 
-	//---<PXOpenGL v.3.2.0>------------------------------------------------------
-	//-------------------------------------------------------------------------
+    //---<PXOpenGL v.3.2.0>------------------------------------------------------
+    //-------------------------------------------------------------------------
 
-	//---<PXOpenGL v.3.3.0>------------------------------------------------------
-	PXOpenGLVertexAttribDivisorFunction VertexAttribDivisor;
-	//-------------------------------------------------------------------------
+    //---<PXOpenGL v.3.3.0>------------------------------------------------------
+    PXOpenGLVertexAttribDivisorFunction VertexAttribDivisor;
+    //-------------------------------------------------------------------------
 
-	//---<PXOpenGL v.4.0.0>------------------------------------------------------
-	//-------------------------------------------------------------------------
+    //---<PXOpenGL v.4.0.0>------------------------------------------------------
+    //-------------------------------------------------------------------------
 
-	//---<PXOpenGL v.4.1.0>------------------------------------------------------
-	PXOpenGLVertexAttribLPointerFunction	VertexAttribLPointer;
-	//-------------------------------------------------------------------------
+    //---<PXOpenGL v.4.1.0>------------------------------------------------------
+    PXOpenGLVertexAttribLPointerFunction    VertexAttribLPointer;
+    //-------------------------------------------------------------------------
 
-	//---<PXOpenGL v.4.2.0>------------------------------------------------------
-	//-------------------------------------------------------------------------
+    //---<PXOpenGL v.4.2.0>------------------------------------------------------
+    //-------------------------------------------------------------------------
 
-	//---<PXOpenGL v.4.3.0>------------------------------------------------------
-	PXOpenGLDebugMessageFunction DebugMessage;
-	//-------------------------------------------------------------------------
+    //---<PXOpenGL v.4.3.0>------------------------------------------------------
+    PXOpenGLDebugMessageFunction DebugMessage;
+    //-------------------------------------------------------------------------
 
-	//---<PXOpenGL v.4.4.0>------------------------------------------------------
-	//-------------------------------------------------------------------------
+    //---<PXOpenGL v.4.4.0>------------------------------------------------------
+    //-------------------------------------------------------------------------
 
-	//---<PXOpenGL v.4.5.0>------------------------------------------------------
+    //---<PXOpenGL v.4.5.0>------------------------------------------------------
 
-	//-------------------------------------------------------------------------
+    //-------------------------------------------------------------------------
 
-	//---<PXOpenGL v.4.6.0>------------------------------------------------------
-	//-------------------------------------------------------------------------
+    //---<PXOpenGL v.4.6.0>------------------------------------------------------
+    //-------------------------------------------------------------------------
 
-	//---<Extensions>------------------------------------------------------------
-	PXOpenGLSwapIntervalSetFunction SwapIntervalSet;
-	PXOpenGLSwapIntervalGetFunction SwapIntervalGet;
-	//---------------------------------------------------------------------------
+    //---<Extensions>------------------------------------------------------------
+    PXOpenGLSwapIntervalSetFunction SwapIntervalSet;
+    PXOpenGLSwapIntervalGetFunction SwapIntervalGet;
+    //---------------------------------------------------------------------------
 
 
-	glGetBooleanvFunction glGetBooleanv;
-	glGetDoublevFunction glGetDoublev;
-	glGetFloatvFunction glGetFloatv;
-	glGetIntegervFunction glGetIntegerv;
-	glGetInteger64vFunction glGetInteger64v;
-	glGetBooleani_vFunction glGetBooleani_v;
-	glGetIntegeri_vFunction glGetIntegeri_v;
-	glGetFloati_vFunction glGetFloati_v;
-	glGetDoublei_vFunction glGetDoublei_v;
-	glGetInteger64i_vFunction glGetInteger64i_v;
+    glGetBooleanvFunction glGetBooleanv;
+    glGetDoublevFunction glGetDoublev;
+    glGetFloatvFunction glGetFloatv;
+    glGetIntegervFunction glGetIntegerv;
+    glGetInteger64vFunction glGetInteger64v;
+    glGetBooleani_vFunction glGetBooleani_v;
+    glGetIntegeri_vFunction glGetIntegeri_v;
+    glGetFloati_vFunction glGetFloati_v;
+    glGetDoublei_vFunction glGetDoublei_v;
+    glGetInteger64i_vFunction glGetInteger64i_v;
 
-	PXOpenGLStringGetExtensionsARB StringGetExtensions;
+    PXOpenGLStringGetExtensionsARB StringGetExtensions;
 
-	PXOpenGLFunctionPointerGet FunctionPointerGet;
+    PXOpenGLFunctionPointerGet FunctionPointerGet;
 
 #if OSWindows
-	PXOpenGLContextCreateAttributes ContextCreateAttributes;
+    PXOpenGLContextCreateAttributes ContextCreateAttributes;
 
-	PXOpenGLDevicePhysicalList DevicePhysicalList;
-	PXOpenGLDevicePhysicalListB DevicePhysicalListB;
-	PXOpenGLDeviceAffinityCreate DeviceAffinityCreate;
-	PXOpenGLDeviceAffinityList DeviceAffinityList;
-	PXOpenGLDeviceAffinityDelete DeviceAffinityDelete;
+    PXOpenGLDevicePhysicalList DevicePhysicalList;
+    PXOpenGLDevicePhysicalListB DevicePhysicalListB;
+    PXOpenGLDeviceAffinityCreate DeviceAffinityCreate;
+    PXOpenGLDeviceAffinityList DeviceAffinityList;
+    PXOpenGLDeviceAffinityDelete DeviceAffinityDelete;
 
-	PXOpenGLCopyContext CopyContext;
-	PXOpenGLCreateContext CreateContext;
-	PXOpenGLCreateLayerContext CreateLayerContext;
-	PXOpenGLDeleteContext DeleteContext;
-	PXOpenGLCurrentContextGet GetCurrentContext;
-	PXOpenGLCurrentDCGet GetCurrentDC;
+    PXOpenGLCopyContext CopyContext;
+    PXOpenGLCreateContext CreateContext;
+    PXOpenGLCreateLayerContext CreateLayerContext;
+    PXOpenGLDeleteContext DeleteContext;
+    PXOpenGLCurrentContextGet GetCurrentContext;
+    PXOpenGLCurrentDCGet GetCurrentDC;
 
-	PXOpenGLMakeCurrent MakeCurrent;
-	PXOpenGLShareLists ShareLists;
-	PXOpenGLUseFontBitmapsA UseFontBitmapsA;
-	PXOpenGLUseFontBitmapsW UseFontBitmapsW;
+    PXOpenGLMakeCurrent MakeCurrent;
+    PXOpenGLShareLists ShareLists;
+    PXOpenGLUseFontBitmapsA UseFontBitmapsA;
+    PXOpenGLUseFontBitmapsW UseFontBitmapsW;
 
 #endif
 
@@ -1516,13 +1516,13 @@ PXPublic void PXAPI PXOpenGLVertexArrayBind(PXOpenGL* const openGLContext, const
 PXPublic void PXAPI PXOpenGLVertexArrayUnbind(PXOpenGL* const openGLContext);
 PXPublic void PXAPI PXOpenGLVertexArrayAttributeDefine
 (
-	PXOpenGL* const openGLContext,
-	const PXInt32U index,
-	const PXInt32U size,
-	const PXInt32U datatype,
-	const PXBool normalized,
-	const PXInt32U stride,
-	const PXSize offset
+    PXOpenGL* const openGLContext,
+    const PXInt32U index,
+    const PXInt32U size,
+    const PXInt32U datatype,
+    const PXBool normalized,
+    const PXInt32U stride,
+    const PXSize offset
 );
 PXPublic void PXAPI PXOpenGLVertexAttributeDivisor(PXOpenGL* const openGLContext, const PXSize index, const PXSize divisor);
 PXPublic void PXAPI PXOpenGLVertexArrayEnable(PXOpenGL* const openGLContext, const unsigned int vertexArrayAtributeID);
@@ -1588,41 +1588,41 @@ PXPublic void PXAPI PXOpenGLTexture2DDataReadFrom(PXOpenGL* const openGLContext,
 
 //---<PXOpenGL v.3.0.0>------------------------------------------------------
 
-	//-------------------------------------------------------------------------
+    //-------------------------------------------------------------------------
 
-	//---<PXOpenGL v.3.1.0>------------------------------------------------------
-	//-------------------------------------------------------------------------
+    //---<PXOpenGL v.3.1.0>------------------------------------------------------
+    //-------------------------------------------------------------------------
 
-	//---<PXOpenGL v.3.2.0>------------------------------------------------------
-	//-------------------------------------------------------------------------
-
-
-	//---<PXOpenGL v.4.0.0>------------------------------------------------------
-	//-------------------------------------------------------------------------
-
-	//---<PXOpenGL v.4.1.0>------------------------------------------------------
-
-	//-------------------------------------------------------------------------
-
-	//---<PXOpenGL v.4.2.0>------------------------------------------------------
-	//-------------------------------------------------------------------------
-
-	//---<PXOpenGL v.4.3.0>------------------------------------------------------
-
-	//-------------------------------------------------------------------------
-
-	//---<PXOpenGL v.4.4.0>------------------------------------------------------
-	//-------------------------------------------------------------------------
-
-	//---<PXOpenGL v.4.5.0>------------------------------------------------------
-
-	//-------------------------------------------------------------------------
-
-	//---<PXOpenGL v.4.6.0>------------------------------------------------------
-	//-------------------------------------------------------------------------
+    //---<PXOpenGL v.3.2.0>------------------------------------------------------
+    //-------------------------------------------------------------------------
 
 
-	//---<Extensions>----------------------------------------------------------
+    //---<PXOpenGL v.4.0.0>------------------------------------------------------
+    //-------------------------------------------------------------------------
+
+    //---<PXOpenGL v.4.1.0>------------------------------------------------------
+
+    //-------------------------------------------------------------------------
+
+    //---<PXOpenGL v.4.2.0>------------------------------------------------------
+    //-------------------------------------------------------------------------
+
+    //---<PXOpenGL v.4.3.0>------------------------------------------------------
+
+    //-------------------------------------------------------------------------
+
+    //---<PXOpenGL v.4.4.0>------------------------------------------------------
+    //-------------------------------------------------------------------------
+
+    //---<PXOpenGL v.4.5.0>------------------------------------------------------
+
+    //-------------------------------------------------------------------------
+
+    //---<PXOpenGL v.4.6.0>------------------------------------------------------
+    //-------------------------------------------------------------------------
+
+
+    //---<Extensions>----------------------------------------------------------
 PXPublic PXActionResult PXAPI PXOpenGLSwapIntervalSet(PXOpenGL* const openGLContext, const PXInt32U interval);
 PXPublic PXActionResult PXAPI PXOpenGLSwapIntervalGet(PXOpenGL* const openGLContext, PXInt32U* const interval);
 //-------------------------------------------------------------------------

@@ -15,20 +15,20 @@ typedef HANDLE PXLockIDType; // same as void*
 
 typedef enum PXLockType_
 {
-	PXLockTypeInvalid,
-	PXLockTypeGlobal,
-	PXLockTypeProcessOnly
+    PXLockTypeInvalid,
+    PXLockTypeGlobal,
+    PXLockTypeProcessOnly
 }
 PXLockType;
 
 typedef struct PXLock_
 {
-	PXLockIDType ID;
-	PXLockType Type;
-	PXInt8U LockCounter;
+    PXLockIDType ID;
+    PXLockType Type;
+    PXInt8U LockCounter;
 
 #if OSWindows
-	CRITICAL_SECTION LockCriticalSection;
+    CRITICAL_SECTION LockCriticalSection;
 #endif
 }
 PXLock;

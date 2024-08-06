@@ -8,529 +8,529 @@
 
 PXMaterialIlluminationMode PXAPI PXMTLIlluminationModeFromID(const unsigned int illuminationModeID)
 {
-	switch (illuminationModeID)
-	{
-		case 0u: return IlluminationColorAndAmbientDisable;
-		case 1u: return IlluminationColorAndAmbientEnable;
-		case 2u: return IlluminationHighlightEnable;
-		case 3u: return IlluminationReflectionOnRayTraceEnable;
-		case 4u: return IlluminationReflectionOnRayTraceTransparency;
-		case 5u: return IlluminationReflectionOnRayTraceFresnel;
-		case 6u: return IlluminationReflectionOnRayTraceTransparencyFresnel;
-		case 7u: return IlluminationReflectionOnRayTraceFullEnable;
-		case 8u: return IlluminationReflectionEnable;
-		case 9u: return IlluminationTransparencyEnable;
-		case 10u: return IlluminationShadowsEnable;
+    switch (illuminationModeID)
+    {
+        case 0u: return IlluminationColorAndAmbientDisable;
+        case 1u: return IlluminationColorAndAmbientEnable;
+        case 2u: return IlluminationHighlightEnable;
+        case 3u: return IlluminationReflectionOnRayTraceEnable;
+        case 4u: return IlluminationReflectionOnRayTraceTransparency;
+        case 5u: return IlluminationReflectionOnRayTraceFresnel;
+        case 6u: return IlluminationReflectionOnRayTraceTransparencyFresnel;
+        case 7u: return IlluminationReflectionOnRayTraceFullEnable;
+        case 8u: return IlluminationReflectionEnable;
+        case 9u: return IlluminationTransparencyEnable;
+        case 10u: return IlluminationShadowsEnable;
 
-		default:
-			return IlluminationNone;
-	}
+        default:
+            return IlluminationNone;
+    }
 }
 
 PXMTLLineType PXAPI PXMTLPeekLine(const char* const line, const PXSize lineSize)
 {
-	if (!line || !lineSize)
-	{
-		return MTLLineInvalid;
-	}
+    if (!line || !lineSize)
+    {
+        return MTLLineInvalid;
+    }
 
-	const unsigned short tagID = PXInt16Make(line[0], line[1]);
+    const unsigned short tagID = PXInt16Make(line[0], line[1]);
 
-	switch(tagID)
-	{
-		case PXInt16Make('m', 'a'): return MTLLineTexture; // map_Kd
-		case PXInt16Make('n', 'e'): return MTLLineName; // newmtl
-		case PXInt16Make('N', 's'): return MTLLineWeight;
-		case PXInt16Make('N', 'i'): return MTLLineDensity;
-		case PXInt16Make('K', 'a'): return MTLLineColorAmbient;
-		case PXInt16Make('K', 'd'): return MTLLineColorDiffuse;
-		case PXInt16Make('K', 's'): return MTLLineColorSpecular;
-		case PXInt16Make('K', 'e'): return MTLLineColorEmission;
-		case PXInt16Make('d', ' '): return MTLLineDissolved;
-		case PXInt16Make('i', 'l'): return MTLLineIllumination; // illum
-		default:
-			return MTLLineInvalid;
-	}
+    switch(tagID)
+    {
+        case PXInt16Make('m', 'a'): return MTLLineTexture; // map_Kd
+        case PXInt16Make('n', 'e'): return MTLLineName; // newmtl
+        case PXInt16Make('N', 's'): return MTLLineWeight;
+        case PXInt16Make('N', 'i'): return MTLLineDensity;
+        case PXInt16Make('K', 'a'): return MTLLineColorAmbient;
+        case PXInt16Make('K', 'd'): return MTLLineColorDiffuse;
+        case PXInt16Make('K', 's'): return MTLLineColorSpecular;
+        case PXInt16Make('K', 'e'): return MTLLineColorEmission;
+        case PXInt16Make('d', ' '): return MTLLineDissolved;
+        case PXInt16Make('i', 'l'): return MTLLineIllumination; // illum
+        default:
+            return MTLLineInvalid;
+    }
 }
 
 PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
-	PXMaterialContainer* const pxMaterialList = (PXMaterialContainer*)pxResourceLoadInfo->Target;
+    PXMaterialContainer* const pxMaterialList = (PXMaterialContainer*)pxResourceLoadInfo->Target;
 
-	PXFile compiledSteam;
-	PXClear(PXFile, &compiledSteam);
+    PXFile compiledSteam;
+    PXClear(PXFile, &compiledSteam);
 
-	PXCompiler pxCompiler;
-	PXClear(PXCompiler, &pxCompiler);
-	pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileReference;
-	pxCompiler.ReadInfo.FileCache = &compiledSteam;
-	pxCompiler.Flags = PXCompilerKeepAnalyseTypes;
-	pxCompiler.CommentSingleLineSize = 1u;
-	pxCompiler.CommentSingleLine = "#";
+    PXCompiler pxCompiler;
+    PXClear(PXCompiler, &pxCompiler);
+    pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileReference;
+    pxCompiler.ReadInfo.FileCache = &compiledSteam;
+    pxCompiler.Flags = PXCompilerKeepAnalyseTypes;
+    pxCompiler.CommentSingleLineSize = 1u;
+    pxCompiler.CommentSingleLine = "#";
 
 
-	PXInt32U materialAmount = 0;
-	PXMaterial* pxMaterialCurrent = PXNull;
+    PXInt32U materialAmount = 0;
+    PXMaterial* pxMaterialCurrent = PXNull;
 
 #if PXLogEnable
-	PXLogPrint
-	(
-		PXLoggingInfo,
-		"MTL", 
-		"Load", 
-		"---Start---"
-	);
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "MTL", 
+        "Load", 
+        "---Start---"
+    );
 #endif
 
 #if PXLogEnable
-	PXLogPrint
-	(
-		PXLoggingInfo,
-		"MTL",
-		"Parse",
-		"1/4 - Lexer"
-	);
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "MTL",
+        "Parse",
+        "1/4 - Lexer"
+    );
 #endif
 
-	// Lexer - Level I
-	PXCompilerLexicalAnalysis(&pxCompiler); // Raw-File-Input -> Lexer tokens
+    // Lexer - Level I
+    PXCompilerLexicalAnalysis(&pxCompiler); // Raw-File-Input -> Lexer tokens
 
 
 #if PXLogEnable
-	PXLogPrint
-	(
-		PXLoggingInfo,
-		"MTL",
-		"Parse",
-		"2/4 - Analyse"
-	);
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "MTL",
+        "Parse",
+        "2/4 - Analyse"
+    );
 #endif
 
-	// Analyse -
-	{
-		while (!PXFileIsAtEnd(&compiledSteam))
-		{
-			PXCompilerSymbolEntryExtract(&pxCompiler);
+    // Analyse -
+    {
+        while (!PXFileIsAtEnd(&compiledSteam))
+        {
+            PXCompilerSymbolEntryExtract(&pxCompiler);
 
-			if (PXCompilerSymbolLexerGeneric == pxCompiler.ReadInfo.SymbolEntryCurrent.ID)
-			{
-				const PXMTLLineType mtlLineType = PXMTLPeekLine(pxCompiler.ReadInfo.SymbolEntryCurrent.Source, pxCompiler.ReadInfo.SymbolEntryCurrent.Size);
+            if (PXCompilerSymbolLexerGeneric == pxCompiler.ReadInfo.SymbolEntryCurrent.ID)
+            {
+                const PXMTLLineType mtlLineType = PXMTLPeekLine(pxCompiler.ReadInfo.SymbolEntryCurrent.Source, pxCompiler.ReadInfo.SymbolEntryCurrent.Size);
 
-				switch (mtlLineType)
-				{
-					case MTLLineName:
-					{
-						++materialAmount;
-						break;
-					}
-					default:
-						break;
-				}
-			}			
-		}
+                switch (mtlLineType)
+                {
+                    case MTLLineName:
+                    {
+                        ++materialAmount;
+                        break;
+                    }
+                    default:
+                        break;
+                }
+            }            
+        }
 
-		PXFileCursorToBeginning(&compiledSteam);
-	}
+        PXFileCursorToBeginning(&compiledSteam);
+    }
 
 #if PXLogEnable
-	PXLogPrint
-	(
-		PXLoggingInfo,
-		"MTL",
-		"Parse",
-		"3/4 - Allocating. Detected %i materials",
-		materialAmount
-	);
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "MTL",
+        "Parse",
+        "3/4 - Allocating. Detected %i materials",
+        materialAmount
+    );
 #endif
 
-	// Allcoate
-	{
-		PXResourceCreateInfo pxResourceCreateInfo;
-		PXClear(PXResourceCreateInfo, &pxResourceCreateInfo);
-		pxResourceCreateInfo.Type = PXResourceTypeMaterial;
-		pxResourceCreateInfo.ObjectReference = &pxMaterialList->MaterialList;
-		pxResourceCreateInfo.ObjectAmount = materialAmount;
+    // Allcoate
+    {
+        PXResourceCreateInfo pxResourceCreateInfo;
+        PXClear(PXResourceCreateInfo, &pxResourceCreateInfo);
+        pxResourceCreateInfo.Type = PXResourceTypeMaterial;
+        pxResourceCreateInfo.ObjectReference = &pxMaterialList->MaterialList;
+        pxResourceCreateInfo.ObjectAmount = materialAmount;
 
-		PXResourceManagerAdd(pxResourceLoadInfo->Manager, &pxResourceCreateInfo, 1);
+        PXResourceManagerAdd(pxResourceLoadInfo->Manager, &pxResourceCreateInfo, 1);
 
-		pxMaterialList->MaterialListAmount = materialAmount;
-		materialAmount = 0;
-	}
+        pxMaterialList->MaterialListAmount = materialAmount;
+        materialAmount = 0;
+    }
 
 #if PXLogEnable
-	PXLogPrint
-	(
-		PXLoggingInfo,
-		"MTL",
-		"Parse",
-		"4/4 - Parse"
-	);
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "MTL",
+        "Parse",
+        "4/4 - Parse"
+    );
 #endif
 
-	while (!PXFileIsAtEnd(&compiledSteam))
-	{
-		PXCompilerSymbolEntryExtract(&pxCompiler);
+    while (!PXFileIsAtEnd(&compiledSteam))
+    {
+        PXCompilerSymbolEntryExtract(&pxCompiler);
 
-		const PXMTLLineType mtlLineType = PXMTLPeekLine(pxCompiler.ReadInfo.SymbolEntryCurrent.Source, pxCompiler.ReadInfo.SymbolEntryCurrent.Size);
+        const PXMTLLineType mtlLineType = PXMTLPeekLine(pxCompiler.ReadInfo.SymbolEntryCurrent.Source, pxCompiler.ReadInfo.SymbolEntryCurrent.Size);
 
-		switch (mtlLineType)
-		{
-			case MTLLineName:
-			{
-				pxMaterialCurrent = &pxMaterialList->MaterialList[materialAmount];
-				++materialAmount;
+        switch (mtlLineType)
+        {
+            case MTLLineName:
+            {
+                pxMaterialCurrent = &pxMaterialList->MaterialList[materialAmount];
+                ++materialAmount;
 
-				char cache[64];
+                char cache[64];
 
-				PXText pxText;
-				PXTextConstructFromAdressA(&pxText, cache, 0, 64);
+                PXText pxText;
+                PXTextConstructFromAdressA(&pxText, cache, 0, 64);
 
-				const PXBool isText = PXCompilerParseStringUntilNewLine(&pxCompiler, &pxText);
+                const PXBool isText = PXCompilerParseStringUntilNewLine(&pxCompiler, &pxText);
 
-				if (!isText)
-				{
-					break; // Error
-				}
-				
-				PXResourceStoreName(pxResourceLoadInfo->Manager, &pxMaterialCurrent->Info, cache, pxText.SizeUsed);
+                if (!isText)
+                {
+                    break; // Error
+                }
+                
+                PXResourceStoreName(pxResourceLoadInfo->Manager, &pxMaterialCurrent->Info, cache, pxText.SizeUsed);
 
-				break;
-			}
-			case MTLLineTexture:
-			{
-				PXText fullTexturePath;
-				PXTextConstructNamedBufferA(&fullTexturePath, fullTexturePathBuffer, PXPathSizeMax);
+                break;
+            }
+            case MTLLineTexture:
+            {
+                PXText fullTexturePath;
+                PXTextConstructNamedBufferA(&fullTexturePath, fullTexturePathBuffer, PXPathSizeMax);
 
-				PXText nameTexturePath;
-				PXTextConstructNamedBufferA(&nameTexturePath, nameTexturePathBuffer, PXPathSizeMax);
+                PXText nameTexturePath;
+                PXTextConstructNamedBufferA(&nameTexturePath, nameTexturePathBuffer, PXPathSizeMax);
 
-				const PXBool isText = PXCompilerParseStringUntilNewLine(&pxCompiler, &nameTexturePath);
+                const PXBool isText = PXCompilerParseStringUntilNewLine(&pxCompiler, &nameTexturePath);
 
-				if (!isText)
-				{
-					break; // Error
-				}
+                if (!isText)
+                {
+                    break; // Error
+                }
 
-				// TODO: bad
+                // TODO: bad
 
-				PXFilePathRelativeFromFile(pxCompiler.ReadInfo.FileInput, &nameTexturePath, &fullTexturePath);
+                PXFilePathRelativeFromFile(pxCompiler.ReadInfo.FileInput, &nameTexturePath, &fullTexturePath);
 
-				// fullTexturePath
-
-
-
-				PXResourceCreateInfo pxResourceCreateInfo;
-				PXClear(PXResourceCreateInfo, &pxResourceCreateInfo);
-				pxResourceCreateInfo.Type = PXResourceTypeTexture2D;
-				pxResourceCreateInfo.ObjectReference = &pxMaterialCurrent->DiffuseTexture;
-				pxResourceCreateInfo.ObjectAmount = 1;
-				pxResourceCreateInfo.FilePath = fullTexturePath.TextA;
-				pxResourceCreateInfo.FilePathSize = fullTexturePath.SizeUsed;
-
-				PXResourceManagerAdd(pxResourceLoadInfo->Manager, &pxResourceCreateInfo, 1);
-
-				//PXTextCopyA(fullTexturePath.TextA, fullTexturePath.SizeUsed, pxMaterialCurrent->DiffuseTextureFilePath, 260);
+                // fullTexturePath
 
 
 
+                PXResourceCreateInfo pxResourceCreateInfo;
+                PXClear(PXResourceCreateInfo, &pxResourceCreateInfo);
+                pxResourceCreateInfo.Type = PXResourceTypeTexture2D;
+                pxResourceCreateInfo.ObjectReference = &pxMaterialCurrent->DiffuseTexture;
+                pxResourceCreateInfo.ObjectAmount = 1;
+                pxResourceCreateInfo.FilePath = fullTexturePath.TextA;
+                pxResourceCreateInfo.FilePathSize = fullTexturePath.SizeUsed;
 
-				//PXNewZerod(PXTexture2D, &pxMaterialCurrent->DiffuseTexture);				
-				//PXNewZerod(PXImage, &pxMaterialCurrent->DiffuseTexture->Image);
+                PXResourceManagerAdd(pxResourceLoadInfo->Manager, &pxResourceCreateInfo, 1);
 
-				//PXTexture2DSet(pxMaterialCurrent->DiffuseTexture, 0,0,0);
+                //PXTextCopyA(fullTexturePath.TextA, fullTexturePath.SizeUsed, pxMaterialCurrent->DiffuseTextureFilePath, 260);
 
-				//PXResourceLoad(pxMaterialCurrent->DiffuseTexture->Image, &fullTexturePath);
 
-				break;
-			}
-			case MTLLineWeight:
-			case MTLLineDissolved:
-			case MTLLineDensity:
-			{
-				PXCompilerSymbolEntryExtract(&pxCompiler);
 
-				const PXBool isFloat = PXCompilerSymbolLexerFloat == pxCompiler.ReadInfo.SymbolEntryCurrent.ID;
 
-				if (!isFloat)
-				{
-					// Error
-					break;
-				}
+                //PXNewZerod(PXTexture2D, &pxMaterialCurrent->DiffuseTexture);                
+                //PXNewZerod(PXImage, &pxMaterialCurrent->DiffuseTexture->Image);
 
-				switch (mtlLineType)
-				{
-					case MTLLineWeight:
-						pxMaterialCurrent->Weight = pxCompiler.ReadInfo.SymbolEntryCurrent.DataF;
-						break;
+                //PXTexture2DSet(pxMaterialCurrent->DiffuseTexture, 0,0,0);
 
-					case MTLLineDissolved:
-						pxMaterialCurrent->Dissolved = pxCompiler.ReadInfo.SymbolEntryCurrent.DataF;
-						break;
+                //PXResourceLoad(pxMaterialCurrent->DiffuseTexture->Image, &fullTexturePath);
 
-					case MTLLineDensity:
-						pxMaterialCurrent->Density = pxCompiler.ReadInfo.SymbolEntryCurrent.DataF;
-						break;
-				}
+                break;
+            }
+            case MTLLineWeight:
+            case MTLLineDissolved:
+            case MTLLineDensity:
+            {
+                PXCompilerSymbolEntryExtract(&pxCompiler);
 
-				break;
-			}
-			case MTLLineColorAmbient:
-			case MTLLineColorDiffuse:
-			case MTLLineColorSpecular:
-			case MTLLineColorEmission:
-			{
-				PXSize valuesDetected = 0;
-				const PXSize colorVectorSize = 3u;
-				float* colorVector;
+                const PXBool isFloat = PXCompilerSymbolLexerFloat == pxCompiler.ReadInfo.SymbolEntryCurrent.ID;
 
-				switch (mtlLineType)
-				{
-					case MTLLineColorAmbient:
-						colorVector = pxMaterialCurrent->Ambient;
-						break;
-					case MTLLineColorDiffuse:
-						colorVector = pxMaterialCurrent->Diffuse;
-						break;
-					case MTLLineColorSpecular:
-						colorVector = pxMaterialCurrent->Specular;
-						break;
-					case MTLLineColorEmission:
-						colorVector = pxMaterialCurrent->Emission;
-						break;
-					default:
-						colorVector = PXNull;
-						break;
-				}
+                if (!isFloat)
+                {
+                    // Error
+                    break;
+                }
 
-				const PXBool listParsed = PXCompilerParseFloatList(&pxCompiler, colorVector, colorVectorSize, &valuesDetected);
+                switch (mtlLineType)
+                {
+                    case MTLLineWeight:
+                        pxMaterialCurrent->Weight = pxCompiler.ReadInfo.SymbolEntryCurrent.DataF;
+                        break;
 
-				if (!listParsed)
-				{
-					// Error
-					break;
-				}
+                    case MTLLineDissolved:
+                        pxMaterialCurrent->Dissolved = pxCompiler.ReadInfo.SymbolEntryCurrent.DataF;
+                        break;
 
-				break;
-			}
-			case MTLLineIllumination:
-			{
-				PXCompilerSymbolEntryExtract(&pxCompiler);
+                    case MTLLineDensity:
+                        pxMaterialCurrent->Density = pxCompiler.ReadInfo.SymbolEntryCurrent.DataF;
+                        break;
+                }
 
-				const PXBool isInt = pxCompiler.ReadInfo.SymbolEntryCurrent.ID == PXCompilerSymbolLexerInteger;
+                break;
+            }
+            case MTLLineColorAmbient:
+            case MTLLineColorDiffuse:
+            case MTLLineColorSpecular:
+            case MTLLineColorEmission:
+            {
+                PXSize valuesDetected = 0;
+                const PXSize colorVectorSize = 3u;
+                float* colorVector;
 
-				if (!isInt)
-				{
-					// Error
-					break;
-				}
+                switch (mtlLineType)
+                {
+                    case MTLLineColorAmbient:
+                        colorVector = pxMaterialCurrent->Ambient;
+                        break;
+                    case MTLLineColorDiffuse:
+                        colorVector = pxMaterialCurrent->Diffuse;
+                        break;
+                    case MTLLineColorSpecular:
+                        colorVector = pxMaterialCurrent->Specular;
+                        break;
+                    case MTLLineColorEmission:
+                        colorVector = pxMaterialCurrent->Emission;
+                        break;
+                    default:
+                        colorVector = PXNull;
+                        break;
+                }
 
-				pxMaterialCurrent->IlluminationMode = PXMTLIlluminationModeFromID(pxCompiler.ReadInfo.SymbolEntryCurrent.DataI32U);
+                const PXBool listParsed = PXCompilerParseFloatList(&pxCompiler, colorVector, colorVectorSize, &valuesDetected);
 
-				break;
-			}
-			default:
-				break;
-		}
-	}
+                if (!listParsed)
+                {
+                    // Error
+                    break;
+                }
+
+                break;
+            }
+            case MTLLineIllumination:
+            {
+                PXCompilerSymbolEntryExtract(&pxCompiler);
+
+                const PXBool isInt = pxCompiler.ReadInfo.SymbolEntryCurrent.ID == PXCompilerSymbolLexerInteger;
+
+                if (!isInt)
+                {
+                    // Error
+                    break;
+                }
+
+                pxMaterialCurrent->IlluminationMode = PXMTLIlluminationModeFromID(pxCompiler.ReadInfo.SymbolEntryCurrent.DataI32U);
+
+                break;
+            }
+            default:
+                break;
+        }
+    }
 
 #if PXLogEnable
-	PXLogPrint
-	(
-		PXLoggingInfo,
-		"MTL",
-		"Parse",
-		"---Done---"
-	);
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "MTL",
+        "Parse",
+        "---Done---"
+    );
 #endif
 
-	return PXActionSuccessful;
+    return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXMTLSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
 {
-	return PXActionRefusedNotImplemented;
+    return PXActionRefusedNotImplemented;
 }
 
 
 /*
 PXActionResult MTLParse(MTL* mtl, const void* data, const PXSize dataSize, PXSize* dataRead)
 {
-	PXFile pxFile;
+    PXFile pxFile;
 
-	MTLConstruct(mtl);
-	PXFileConstruct(&pxFile);
-	PXFileBufferExternal(&pxFile, data, dataSize);
-	*dataRead = 0;
+    MTLConstruct(mtl);
+    PXFileConstruct(&pxFile);
+    PXFileBufferExternal(&pxFile, data, dataSize);
+    *dataRead = 0;
 
-	// Count How many materials are needed
-	{
-		PXSize materialCounter = 0;
+    // Count How many materials are needed
+    {
+        PXSize materialCounter = 0;
 
-		do
-		{
-			const unsigned char* currentLine = PXFileCursorPosition(&pxFile);
-			const unsigned char isNewMaterialUsed = *currentLine == 'n';
+        do
+        {
+            const unsigned char* currentLine = PXFileCursorPosition(&pxFile);
+            const unsigned char isNewMaterialUsed = *currentLine == 'n';
 
-			if(isNewMaterialUsed)
-			{
-				++materialCounter;
-			}
-		}
-		while(PXFileSkipLine(&pxFile));
+            if(isNewMaterialUsed)
+            {
+                ++materialCounter;
+            }
+        }
+        while(PXFileSkipLine(&pxFile));
 
-		mtl->MaterialListSize = materialCounter;
-		mtl->MaterialList = MemoryAllocate(sizeof(MTLMaterial) * materialCounter);
+        mtl->MaterialListSize = materialCounter;
+        mtl->MaterialList = MemoryAllocate(sizeof(MTLMaterial) * materialCounter);
 
-		MemorySet(mtl->MaterialList, sizeof(MTLMaterial) * materialCounter, 0);
+        MemorySet(mtl->MaterialList, sizeof(MTLMaterial) * materialCounter, 0);
 
-		PXFileCursorToBeginning(&pxFile);
-	}
+        PXFileCursorToBeginning(&pxFile);
+    }
 
-	// Raw Parse
-	MTLMaterial* material = 0; // current material, has to be here, its state dependend
-	PXSize materialIndex = 0;
+    // Raw Parse
+    MTLMaterial* material = 0; // current material, has to be here, its state dependend
+    PXSize materialIndex = 0;
 
-	do
-	{
-		const char* currentLine = PXFileCursorPosition(&pxFile);
-		const MTLLineType lineType = MTLPeekLine(currentLine);
+    do
+    {
+        const char* currentLine = PXFileCursorPosition(&pxFile);
+        const MTLLineType lineType = MTLPeekLine(currentLine);
 
-		PXFileSkipBlock(&pxFile); // Skip first element
+        PXFileSkipBlock(&pxFile); // Skip first element
 
-		const char* dataPoint = PXFileCursorPosition(&pxFile);
-		const PXSize maxSize = PXFileRemainingSize(&pxFile);
-		const PXSize lineSize = TextLengthUntilA(dataPoint, maxSize, '\n');
+        const char* dataPoint = PXFileCursorPosition(&pxFile);
+        const PXSize maxSize = PXFileRemainingSize(&pxFile);
+        const PXSize lineSize = TextLengthUntilA(dataPoint, maxSize, '\n');
 
-		switch(lineType)
-		{
-			default:
-			case MTLLineInvalid:
-				// Do nothing
-				break;
+        switch(lineType)
+        {
+            default:
+            case MTLLineInvalid:
+                // Do nothing
+                break;
 
-			case MTLLineName:
-			{
-				material = &mtl->MaterialList[materialIndex++];
+            case MTLLineName:
+            {
+                material = &mtl->MaterialList[materialIndex++];
 
-				const char CPrivateText[] = "<CPrivate>";
-				const PXSize CPrivateTextSize = sizeof(CPrivateText);
+                const char CPrivateText[] = "<CPrivate>";
+                const PXSize CPrivateTextSize = sizeof(CPrivateText);
 
-				PXTextCopyA(CPrivateText, CPrivateTextSize, material->TextureFilePath, MTLFilePath);
+                PXTextCopyA(CPrivateText, CPrivateTextSize, material->TextureFilePath, MTLFilePath);
 
-				TextParseA(dataPoint, lineSize, "s", material->Name);
+                TextParseA(dataPoint, lineSize, "s", material->Name);
 
-				break;
-			}
-			case MTLLineTexture:
-			{
-				TextParseA(dataPoint, lineSize, "s", material->TextureFilePath);
-				break;
-			}
-			case MTLLineWeight:
-			{
-				TextParseA(dataPoint, lineSize, "f", &material->Weight);
-				break;
-			}
-			case MTLLineColorAmbient:
-			case MTLLineColorDiffuse:
-			case MTLLineColorSpecular:
-			case MTLLineColorEmission:
-			{
-				float* colorVector = 0;
+                break;
+            }
+            case MTLLineTexture:
+            {
+                TextParseA(dataPoint, lineSize, "s", material->TextureFilePath);
+                break;
+            }
+            case MTLLineWeight:
+            {
+                TextParseA(dataPoint, lineSize, "f", &material->Weight);
+                break;
+            }
+            case MTLLineColorAmbient:
+            case MTLLineColorDiffuse:
+            case MTLLineColorSpecular:
+            case MTLLineColorEmission:
+            {
+                float* colorVector = 0;
 
-				switch(lineType)
-				{
-					case MTLLineColorAmbient:
-						colorVector = material->Ambient;
-						break;
-					case MTLLineColorDiffuse:
-						colorVector = material->Diffuse;
-						break;
-					case MTLLineColorSpecular:
-						colorVector = material->Specular;
-						break;
-					case MTLLineColorEmission:
-						colorVector = material->Emission;
-						break;
-				}
+                switch(lineType)
+                {
+                    case MTLLineColorAmbient:
+                        colorVector = material->Ambient;
+                        break;
+                    case MTLLineColorDiffuse:
+                        colorVector = material->Diffuse;
+                        break;
+                    case MTLLineColorSpecular:
+                        colorVector = material->Specular;
+                        break;
+                    case MTLLineColorEmission:
+                        colorVector = material->Emission;
+                        break;
+                }
 
-				TextParseA(dataPoint, lineSize, "fff", &colorVector[0], &colorVector[1], &colorVector[2]);
+                TextParseA(dataPoint, lineSize, "fff", &colorVector[0], &colorVector[1], &colorVector[2]);
 
-				break;
-			}
-			case MTLLineDissolved:
-			{
-				TextParseA(dataPoint, lineSize, "f", &material->Dissolved);
-				break;
-			}
-			case MTLLineDensity:
-			{
-				TextParseA(dataPoint, lineSize, "f", &material->Density);
-				break;
-			}
-			case MTLLineIllumination:
-			{
-				IlluminationMode mode = IlluminationNone;
-				int number = -1;
+                break;
+            }
+            case MTLLineDissolved:
+            {
+                TextParseA(dataPoint, lineSize, "f", &material->Dissolved);
+                break;
+            }
+            case MTLLineDensity:
+            {
+                TextParseA(dataPoint, lineSize, "f", &material->Density);
+                break;
+            }
+            case MTLLineIllumination:
+            {
+                IlluminationMode mode = IlluminationNone;
+                int number = -1;
 
-				TextParseA(dataPoint, lineSize, "i", &number);
+                TextParseA(dataPoint, lineSize, "i", &number);
 
-				switch(number)
-				{
-					case 0:
-						mode = IlluminationColorAndAmbientDisable;
-						break;
+                switch(number)
+                {
+                    case 0:
+                        mode = IlluminationColorAndAmbientDisable;
+                        break;
 
-					case 1:
-						mode = IlluminationColorAndAmbientEnable;
-						break;
+                    case 1:
+                        mode = IlluminationColorAndAmbientEnable;
+                        break;
 
-					case 2:
-						mode = IlluminationHighlightEnable;
-						break;
+                    case 2:
+                        mode = IlluminationHighlightEnable;
+                        break;
 
-					case 3:
-						mode = IlluminationReflectionOnRayTraceEnable;
-						break;
+                    case 3:
+                        mode = IlluminationReflectionOnRayTraceEnable;
+                        break;
 
-					case 4:
-						mode = IlluminationReflectionOnRayTraceTransparency;
-						break;
+                    case 4:
+                        mode = IlluminationReflectionOnRayTraceTransparency;
+                        break;
 
-					case 5:
-						mode = IlluminationReflectionOnRayTraceFresnel;
-						break;
+                    case 5:
+                        mode = IlluminationReflectionOnRayTraceFresnel;
+                        break;
 
-					case 6:
-						mode = IlluminationReflectionOnRayTraceTransparencyFresnel;
-						break;
+                    case 6:
+                        mode = IlluminationReflectionOnRayTraceTransparencyFresnel;
+                        break;
 
-					case 7:
-						mode = IlluminationReflectionOnRayTraceFullEnable;
-						break;
+                    case 7:
+                        mode = IlluminationReflectionOnRayTraceFullEnable;
+                        break;
 
-					case 8:
-						mode = IlluminationReflectionEnable;
-						break;
+                    case 8:
+                        mode = IlluminationReflectionEnable;
+                        break;
 
-					case 9:
-						mode = IlluminationTransparencyEnable;
-						break;
+                    case 9:
+                        mode = IlluminationTransparencyEnable;
+                        break;
 
-					case 10:
-						mode = IlluminationShadowsEnable;
-						break;
-				}
+                    case 10:
+                        mode = IlluminationShadowsEnable;
+                        break;
+                }
 
-				material->Illumination = mode;
+                material->Illumination = mode;
 
-				break;
-			}
-		}
-	}
-	while(PXFileSkipLine(&pxFile));
+                break;
+            }
+        }
+    }
+    while(PXFileSkipLine(&pxFile));
 
-	return PXActionSuccessful;
+    return PXActionSuccessful;
 }
 
 
@@ -539,190 +539,190 @@ PXActionResult MTLParse(MTL* mtl, const void* data, const PXSize dataSize, PXSiz
 
 void BF::MTL::PrintContent()
 {
-	printf("===[Material]===\n");
+    printf("===[Material]===\n");
 
-	for (PXSize i = 0; i < MaterialListSize; i++)
-	{
-		MTLMaterial& material = MaterialList[i];
+    for (PXSize i = 0; i < MaterialListSize; i++)
+    {
+        MTLMaterial& material = MaterialList[i];
 
-		if (i > 0)
-		{
-			printf("+--------------------+\n");
-		}
+        if (i > 0)
+        {
+            printf("+--------------------+\n");
+        }
 
-		printf
-		(
-			"| ID        : %u\n"
-			"| Name      : %s\n"
-			"| FilePath  : %s\n"
-			"| Weight    : %f\n"
-			"| Ambient   : <%f|%f|%f>\n"
-			"| Diffuse   : <%f|%f|%f>\n"
-			"| Specular  : <%f|%f|%f>\n"
-			"| Emmission : <%f|%f|%f>\n"
-			"| Dissolved : %f\n"
-			"| Density   : %f\n",
-			i,
-			material.Name,
-			material.TextureFilePath,
-			material.Weight,
-			material.Ambient[0],
-			material.Ambient[1],
-			material.Ambient[2],
-			material.Diffuse[0],
-			material.Diffuse[1],
-			material.Diffuse[2],
-			material.Specular[0],
-			material.Specular[1],
-			material.Specular[2],
-			material.Emission[0],
-			material.Emission[1],
-			material.Emission[2],
-			material.Dissolved,
-			material.Density
-		);
-	}
+        printf
+        (
+            "| ID        : %u\n"
+            "| Name      : %s\n"
+            "| FilePath  : %s\n"
+            "| Weight    : %f\n"
+            "| Ambient   : <%f|%f|%f>\n"
+            "| Diffuse   : <%f|%f|%f>\n"
+            "| Specular  : <%f|%f|%f>\n"
+            "| Emmission : <%f|%f|%f>\n"
+            "| Dissolved : %f\n"
+            "| Density   : %f\n",
+            i,
+            material.Name,
+            material.TextureFilePath,
+            material.Weight,
+            material.Ambient[0],
+            material.Ambient[1],
+            material.Ambient[2],
+            material.Diffuse[0],
+            material.Diffuse[1],
+            material.Diffuse[2],
+            material.Specular[0],
+            material.Specular[1],
+            material.Specular[2],
+            material.Emission[0],
+            material.Emission[1],
+            material.Emission[2],
+            material.Dissolved,
+            material.Density
+        );
+    }
 
-	printf("================\n");
+    printf("================\n");
 }*/
 
 PXSize PXAPI PXMTLFetchAmount(const void* const data, const PXSize dataSize)
 {
-	PXFile mtlStream;
+    PXFile mtlStream;
 
-	if (!data || !dataSize)
-	{
-		return 0;
-	}
+    if (!data || !dataSize)
+    {
+        return 0;
+    }
 
-	PXFileBufferExternal(&mtlStream, data, dataSize);
+    PXFileBufferExternal(&mtlStream, data, dataSize);
 
-	unsigned int materialListSize = 0;
+    unsigned int materialListSize = 0;
 
-	PXFileReadI32U(&mtlStream, &materialListSize);
+    PXFileReadI32U(&mtlStream, &materialListSize);
 
-	return materialListSize;
+    return materialListSize;
 }
 
 PXBool PXAPI PXMTLFetchMaterial(const void* const data, const PXSize dataSize, const PXSize materialID, PXMTLMaterial* const mtlMaterial)
 {
-	const PXSize amount = PXMTLFetchAmount(data, dataSize);
+    const PXSize amount = PXMTLFetchAmount(data, dataSize);
 
-	PXClear(PXMTLMaterial, mtlMaterial);
+    PXClear(PXMTLMaterial, mtlMaterial);
 
-	if (materialID > amount) // Material ID wrong/Too high
-	{
-		return PXNo;
-	}
+    if (materialID > amount) // Material ID wrong/Too high
+    {
+        return PXNo;
+    }
 
-	PXFile mtlPXFile;
-	PXFile mtlHeaderStream;
+    PXFile mtlPXFile;
+    PXFile mtlHeaderStream;
 
-	PXFileBufferExternal(&mtlPXFile, (PXAdress)data + 1024, dataSize - sizeof(unsigned int)); // Skip first int, we already got it
-	PXFileBufferExternal(&mtlHeaderStream, (PXAdress)data + sizeof(unsigned int), dataSize- sizeof(unsigned int)); // Skip first int, we already got it
+    PXFileBufferExternal(&mtlPXFile, (PXAdress)data + 1024, dataSize - sizeof(unsigned int)); // Skip first int, we already got it
+    PXFileBufferExternal(&mtlHeaderStream, (PXAdress)data + sizeof(unsigned int), dataSize- sizeof(unsigned int)); // Skip first int, we already got it
 
-	for (PXSize i = 0; i <= materialID; ++i)
-	{
-		const PXBool isTarget = materialID == i;
-		unsigned int materialDataSize = 0;
+    for (PXSize i = 0; i <= materialID; ++i)
+    {
+        const PXBool isTarget = materialID == i;
+        unsigned int materialDataSize = 0;
 
-		PXFileReadI32U(&mtlHeaderStream, &materialDataSize);
+        PXFileReadI32U(&mtlHeaderStream, &materialDataSize);
 
-		if (isTarget)
-		{
-			mtlPXFile.DataSize = materialDataSize;	// Set max size for now
+        if (isTarget)
+        {
+            mtlPXFile.DataSize = materialDataSize;    // Set max size for now
 
-			while (!PXFileIsAtEnd(&mtlPXFile))
-			{
-				PXMTLLineType mtlLineType;
+            while (!PXFileIsAtEnd(&mtlPXFile))
+            {
+                PXMTLLineType mtlLineType;
 
-				{
-					unsigned char lineTypeID = 0;
+                {
+                    unsigned char lineTypeID = 0;
 
-					PXFileReadI8U(&mtlPXFile, &lineTypeID);
+                    PXFileReadI8U(&mtlPXFile, &lineTypeID);
 
-					mtlLineType = lineTypeID;
-				}
+                    mtlLineType = lineTypeID;
+                }
 
-				switch (mtlLineType)
-				{
-					case MTLLineName:
-					{
-						PXFileReadI8U(&mtlPXFile, &mtlMaterial->NameSize);
-						mtlMaterial->Name = (char*)PXFileCursorPosition(&mtlPXFile);
+                switch (mtlLineType)
+                {
+                    case MTLLineName:
+                    {
+                        PXFileReadI8U(&mtlPXFile, &mtlMaterial->NameSize);
+                        mtlMaterial->Name = (char*)PXFileCursorPosition(&mtlPXFile);
 
-						PXFileCursorAdvance(&mtlPXFile, mtlMaterial->NameSize);
-						break;
-					}
-					case MTLLineTexture:
-					{
-						PXFileReadI8U(&mtlPXFile, &mtlMaterial->DiffuseTexturePathSize);
-						mtlMaterial->DiffuseTexturePath = (char*)PXFileCursorPosition(&mtlPXFile);
+                        PXFileCursorAdvance(&mtlPXFile, mtlMaterial->NameSize);
+                        break;
+                    }
+                    case MTLLineTexture:
+                    {
+                        PXFileReadI8U(&mtlPXFile, &mtlMaterial->DiffuseTexturePathSize);
+                        mtlMaterial->DiffuseTexturePath = (char*)PXFileCursorPosition(&mtlPXFile);
 
-						PXFileCursorAdvance(&mtlPXFile, mtlMaterial->DiffuseTexturePathSize);
-						break;
-					}
-					case MTLLineColorAmbient:
-					{
-						PXFileReadFV(&mtlPXFile, mtlMaterial->Ambient, 3u);
-						break;
-					}
-					case MTLLineColorDiffuse:
-					{
-						PXFileReadFV(&mtlPXFile, mtlMaterial->Diffuse, 3u);
-						break;
-					}
-					case MTLLineColorSpecular:
-					{
-						PXFileReadFV(&mtlPXFile, mtlMaterial->Specular, 3u);
-						break;
-					}
-					case MTLLineColorEmission:
-					{
-						PXFileReadFV(&mtlPXFile, mtlMaterial->Emission, 3u);
-						break;
-					}
-					case MTLLineWeight:
-						PXFileReadF(&mtlPXFile, &mtlMaterial->Weight);
-						break;
+                        PXFileCursorAdvance(&mtlPXFile, mtlMaterial->DiffuseTexturePathSize);
+                        break;
+                    }
+                    case MTLLineColorAmbient:
+                    {
+                        PXFileReadFV(&mtlPXFile, mtlMaterial->Ambient, 3u);
+                        break;
+                    }
+                    case MTLLineColorDiffuse:
+                    {
+                        PXFileReadFV(&mtlPXFile, mtlMaterial->Diffuse, 3u);
+                        break;
+                    }
+                    case MTLLineColorSpecular:
+                    {
+                        PXFileReadFV(&mtlPXFile, mtlMaterial->Specular, 3u);
+                        break;
+                    }
+                    case MTLLineColorEmission:
+                    {
+                        PXFileReadFV(&mtlPXFile, mtlMaterial->Emission, 3u);
+                        break;
+                    }
+                    case MTLLineWeight:
+                        PXFileReadF(&mtlPXFile, &mtlMaterial->Weight);
+                        break;
 
-					case MTLLineDissolved:
-						PXFileReadF(&mtlPXFile, &mtlMaterial->Dissolved);
-						break;
+                    case MTLLineDissolved:
+                        PXFileReadF(&mtlPXFile, &mtlMaterial->Dissolved);
+                        break;
 
-					case MTLLineDensity:
-						PXFileReadF(&mtlPXFile, &mtlMaterial->Density);
-						break;
+                    case MTLLineDensity:
+                        PXFileReadF(&mtlPXFile, &mtlMaterial->Density);
+                        break;
 
-					case MTLLineIllumination:
-					{
-						unsigned char illuminationID = 0;
+                    case MTLLineIllumination:
+                    {
+                        unsigned char illuminationID = 0;
 
-						PXFileReadI8U(&mtlPXFile, &illuminationID);
+                        PXFileReadI8U(&mtlPXFile, &illuminationID);
 
-						mtlMaterial->Illumination = illuminationID;
-						break;
-					}
+                        mtlMaterial->Illumination = illuminationID;
+                        break;
+                    }
 
-					default:
-					{
+                    default:
+                    {
 #if 0 // Skip or fail if anything is wrong
-						PXFileCursorAdvance(&mtlPXFile, sizeof(unsigned char)); // Handle
-						break;
+                        PXFileCursorAdvance(&mtlPXFile, sizeof(unsigned char)); // Handle
+                        break;
 #else
-						PXMemoryClear(mtlMaterial, sizeof(PXMTLMaterial));
-						return PXNo;
+                        PXMemoryClear(mtlMaterial, sizeof(PXMTLMaterial));
+                        return PXNo;
 #endif
-					}
-				}
+                    }
+                }
 
-			}
-		}
-		else 		// else, do nothing -> skip
-		{
-			mtlPXFile.Data = ((PXAdress)mtlPXFile.Data) + materialDataSize + 10u; // accumulate Size, missing 10 Bytes??
-		}
-	}
+            }
+        }
+        else         // else, do nothing -> skip
+        {
+            mtlPXFile.Data = ((PXAdress)mtlPXFile.Data) + materialDataSize + 10u; // accumulate Size, missing 10 Bytes??
+        }
+    }
 
-	return PXYes;
+    return PXYes;
 }

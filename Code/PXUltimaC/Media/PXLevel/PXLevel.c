@@ -7,70 +7,70 @@ const char PXLevelSignature[] = {'P', 'X', 'L', 'V'};
 
 PXActionResult PXAPI PXLevelLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
-	// Signature
+    // Signature
 
-	// Version
+    // Version
 
-	// Info
+    // Info
 
-	// container
+    // container
 
-	return PXActionSuccessful;
+    return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXLevelSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
 {
-	PXLevel pxLevel;
+    PXLevel pxLevel;
 
-	// Write Header
-	{
-		PXFileDataElementType pxFileDataElementList[] =
-		{
-			{PXLevelSignature, PXDataTypeDatax4},
-			{&pxLevel.Version, PXDataTypeInt16U},
-			{&pxLevel.EntryAmount, PXDataTypeInt32U},
-		};
-		const PXSize pxFileDataElementListSize = sizeof(pxFileDataElementList);
+    // Write Header
+    {
+        PXFileDataElementType pxFileDataElementList[] =
+        {
+            {PXLevelSignature, PXDataTypeDatax4},
+            {&pxLevel.Version, PXDataTypeInt16U},
+            {&pxLevel.EntryAmount, PXDataTypeInt32U},
+        };
+        const PXSize pxFileDataElementListSize = sizeof(pxFileDataElementList);
 
-		PXFileWriteMultible(pxResourceSaveInfo->FileReference, pxFileDataElementList, pxFileDataElementListSize);
-	}
+        PXFileWriteMultible(pxResourceSaveInfo->FileReference, pxFileDataElementList, pxFileDataElementListSize);
+    }
 
-	// Parse entrys
-	{
-		PXLevelEntry pxLevelEntry;
-		PXClear(PXLevelEntry, &pxLevelEntry);
+    // Parse entrys
+    {
+        PXLevelEntry pxLevelEntry;
+        PXClear(PXLevelEntry, &pxLevelEntry);
 
-		while(!PXFileIsAtEnd(pxResourceSaveInfo->FileReference))
-		{
-			PXFileDataElementType pxFileDataElementList[] =
-			{
-				{&pxLevelEntry.ResourceType, PXDataTypeDatax4},
-				{&pxLevelEntry.DataSize, PXDataTypeInt64U}
-			};
-			const PXSize pxFileDataElementListSize = sizeof(pxFileDataElementList);
+        while(!PXFileIsAtEnd(pxResourceSaveInfo->FileReference))
+        {
+            PXFileDataElementType pxFileDataElementList[] =
+            {
+                {&pxLevelEntry.ResourceType, PXDataTypeDatax4},
+                {&pxLevelEntry.DataSize, PXDataTypeInt64U}
+            };
+            const PXSize pxFileDataElementListSize = sizeof(pxFileDataElementList);
 
-			PXFileWriteMultible(pxResourceSaveInfo->FileReference, pxFileDataElementList, pxFileDataElementListSize);
+            PXFileWriteMultible(pxResourceSaveInfo->FileReference, pxFileDataElementList, pxFileDataElementListSize);
 
-			pxLevelEntry.DataAdress = pxResourceSaveInfo->FileReference->DataCursor;
+            pxLevelEntry.DataAdress = pxResourceSaveInfo->FileReference->DataCursor;
 
 #if PXLogEnable
-			PXLogPrint
-			(
-				PXLoggingInfo,
-				"Level",
-				"Load",
-				"Entry detected : %c%c%c%c, %i B, 0x%p",
-				((char*)pxLevelEntry.ResourceType)[0],
-				((char*)pxLevelEntry.ResourceType)[1],
-				((char*)pxLevelEntry.ResourceType)[2],
-				((char*)pxLevelEntry.ResourceType)[3],
-				pxLevelEntry.DataSize,
-				pxLevelEntry.DataAdress
-			);
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "Level",
+                "Load",
+                "Entry detected : %c%c%c%c, %i B, 0x%p",
+                ((char*)pxLevelEntry.ResourceType)[0],
+                ((char*)pxLevelEntry.ResourceType)[1],
+                ((char*)pxLevelEntry.ResourceType)[2],
+                ((char*)pxLevelEntry.ResourceType)[3],
+                pxLevelEntry.DataSize,
+                pxLevelEntry.DataAdress
+            );
 #endif
-		}
-	}
+        }
+    }
 
 
-	return PXActionRefusedNotImplemented;
+    return PXActionRefusedNotImplemented;
 }

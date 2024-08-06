@@ -24,7 +24,7 @@ namespace PX
 
         [FieldOffset(0)] fixed float Data[16];
 
-        // [FieldOffset(0)] fixed float DataXY[4,4];	// You cant do two-dimensional arrays like this in C# ??
+        // [FieldOffset(0)] fixed float DataXY[4,4];    // You cant do two-dimensional arrays like this in C# ??
     }
 
 

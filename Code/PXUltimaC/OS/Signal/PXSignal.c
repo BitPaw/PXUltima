@@ -13,50 +13,50 @@ typedef _crt_signal_t PXSignalHandle;
 PXActionResult PXAPI PXSignalCallBackRegister(const PXSignalToken pxSignalToken, PXSignalCallBack pxSignalCallBack)
 {
 #if OSUnix || OSForcePOSIXForWindows
-	int signalID;
+    int signalID;
 
-	switch (pxSignalToken)
-	{
-		case PXSignalTokenAbort:
-			signalID = SIGABRT;
-			break;
-		case PXSignalTokenFloatMathError:
-			signalID = SIGFPE;
-			break;
-		case PXSignalTokenIllegalInstruction:
-			signalID = SIGILL;
-			break;
+    switch (pxSignalToken)
+    {
+        case PXSignalTokenAbort:
+            signalID = SIGABRT;
+            break;
+        case PXSignalTokenFloatMathError:
+            signalID = SIGFPE;
+            break;
+        case PXSignalTokenIllegalInstruction:
+            signalID = SIGILL;
+            break;
 #if OSWindows
-		case PXSignalTokenINT:
-			signalID = SIGBREAK;
-			break;
+        case PXSignalTokenINT:
+            signalID = SIGBREAK;
+            break;
 #endif
-		case PXSignalTokenMemoryViolation:
-			signalID = SIGSEGV;
-			break;
-		case PXSignalTokenTerminationRequest:
-			signalID = SIGTERM;
-			break;
+        case PXSignalTokenMemoryViolation:
+            signalID = SIGSEGV;
+            break;
+        case PXSignalTokenTerminationRequest:
+            signalID = SIGTERM;
+            break;
 
-		default:
-			return PXActionRefusedArgumentInvalid;
-	}
-
-
+        default:
+            return PXActionRefusedArgumentInvalid;
+    }
 
 
-	const PXSignalHandle functionPointer = signal(signalID, pxSignalCallBack);
-	const PXBool validLinkage = functionPointer != SIG_ERR;
 
-	if (!validLinkage)
-	{
-		return PXActionRefusedArgumentInvalid;
-	}
 
-	return PXActionSuccessful;
+    const PXSignalHandle functionPointer = signal(signalID, pxSignalCallBack);
+    const PXBool validLinkage = functionPointer != SIG_ERR;
+
+    if (!validLinkage)
+    {
+        return PXActionRefusedArgumentInvalid;
+    }
+
+    return PXActionSuccessful;
 #elif OSWindows
-	return PXActionRefusedNotImplemented;
+    return PXActionRefusedNotImplemented;
 #else
-	return PXActionNotSupportedByOperatingSystem;
+    return PXActionNotSupportedByOperatingSystem;
 #endif
 }

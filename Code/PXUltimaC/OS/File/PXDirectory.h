@@ -18,61 +18,61 @@
 
 typedef enum PXDirectioySpecialFolder_
 {
-	PXDirectioySpecialFolder_ADMINTOOLS,
-	PXDirectioySpecialFolderAPPDATA,
-	PXDirectioySpecialFolderCOMMON_ADMINTOOLS,
-	PXDirectioySpecialFolderCOMMON_APPDATA,
-	PXDirectioySpecialFolderCOMMON_DOCUMENTS,
-	PXDirectioySpecialFolderCOOKIES,
-	PXDirectioySpecialFolderHISTORY,
-	PXDirectioySpecialFolderINTERNET_CACHE,
-	PXDirectioySpecialFolderLOCAL_APPDATA,
-	PXDirectioySpecialFolderPictures,
-	PXDirectioySpecialFolderPERSONAL,
-	PXDirectioySpecialFolderPROGRAM_FILES,
-	PXDirectioySpecialFolderPROGRAM_FILES_COMMON,
-	PXDirectioySpecialFolderSystem,
-	PXDirectioySpecialFolderWinfows
+    PXDirectioySpecialFolder_ADMINTOOLS,
+    PXDirectioySpecialFolderAPPDATA,
+    PXDirectioySpecialFolderCOMMON_ADMINTOOLS,
+    PXDirectioySpecialFolderCOMMON_APPDATA,
+    PXDirectioySpecialFolderCOMMON_DOCUMENTS,
+    PXDirectioySpecialFolderCOOKIES,
+    PXDirectioySpecialFolderHISTORY,
+    PXDirectioySpecialFolderINTERNET_CACHE,
+    PXDirectioySpecialFolderLOCAL_APPDATA,
+    PXDirectioySpecialFolderPictures,
+    PXDirectioySpecialFolderPERSONAL,
+    PXDirectioySpecialFolderPROGRAM_FILES,
+    PXDirectioySpecialFolderPROGRAM_FILES_COMMON,
+    PXDirectioySpecialFolderSystem,
+    PXDirectioySpecialFolderWinfows
 
 }PXDirectioySpecialFolder;
 
 
 typedef enum PXFileElementInfoType_
 {
-	PXFileElementInfoTypeInvalid,
-	PXFileElementInfoTypeUnkown, // DT_UNKNOWN
+    PXFileElementInfoTypeInvalid,
+    PXFileElementInfoTypeUnkown, // DT_UNKNOWN
 
-	PXFileElementInfoTypeFile, // DT_REG
-	PXFileElementInfoTypeDictionary, // DT_DIR
+    PXFileElementInfoTypeFile, // DT_REG
+    PXFileElementInfoTypeDictionary, // DT_DIR
 
-	PXFileElementInfoTypeNamedPipeFIFO, // DT_FIFO
-	PXFileElementInfoTypeLink, // DT_LNK
-	PXFileElementInfoTypeSocket, // DT_SOCK
+    PXFileElementInfoTypeNamedPipeFIFO, // DT_FIFO
+    PXFileElementInfoTypeLink, // DT_LNK
+    PXFileElementInfoTypeSocket, // DT_SOCK
 
-	PXFileElementInfoTypeDeviceCharacter, // DT_CHR
-	PXFileElementInfoTypeDeviceBlock, // DT_BLK
+    PXFileElementInfoTypeDeviceCharacter, // DT_CHR
+    PXFileElementInfoTypeDeviceBlock, // DT_BLK
 
-	PXFileElementInfoTypeDictionaryRoot, // '.'
-	PXFileElementInfoTypeDictionaryParent // '..'
+    PXFileElementInfoTypeDictionaryRoot, // '.'
+    PXFileElementInfoTypeDictionaryParent // '..'
 }
 PXFileElementInfoType;
 
 typedef struct PXFileElementInfo_
 {
-	PXFileElementInfoType Type;
+    PXFileElementInfoType Type;
 
-	PXInt8U Depth;
+    PXInt8U Depth;
 
-	char FullPath[PXPathSizeMax];
-	PXSize FullPathSize;
-	PXSize FullPathOffset;
+    char FullPath[PXPathSizeMax];
+    PXSize FullPathSize;
+    PXSize FullPathOffset;
 
-	char* Name;
-	PXSize NameSize;
+    char* Name;
+    PXSize NameSize;
 
-	PXSize Size;
+    PXSize Size;
 
-	PXBool IsSystemDottedFolder;
+    PXBool IsSystemDottedFolder;
 }
 PXFileElementInfo;
 
@@ -81,34 +81,34 @@ typedef void (PXAPI* PXFileElementDetected)(PXFileElementInfo* pxFileElementInfo
 typedef struct PXDirectoryIterator_
 {
 #if OSUnix
-	DIR* ID;
-	struct dirent* DirectoryEntryCurrent;
+    DIR* ID;
+    struct dirent* DirectoryEntryCurrent;
 #elif OSWindows
-	HANDLE ID;
-	WIN32_FIND_DATA DirectoryEntryCurrent;
+    HANDLE ID;
+    WIN32_FIND_DATA DirectoryEntryCurrent;
 #endif
 
-	PXInt8U EntryDepthCurrent;
-	PXInt8U Recursive;
+    PXInt8U EntryDepthCurrent;
+    PXInt8U Recursive;
 
 
-	PXFileElementInfo EntryCurrent;
+    PXFileElementInfo EntryCurrent;
 }
 PXDirectoryIterator;
 
 typedef struct PXDirectorySearchInfo_
 {
-	PXFileElementDetected Callback;
+    PXFileElementDetected Callback;
 
-	wchar_t* FolderPath;
-	PXSize FolderPathSize;
+    wchar_t* FolderPath;
+    PXSize FolderPathSize;
 
-	wchar_t* FileFilter;
-	PXSize FileFilterSize;
+    wchar_t* FileFilter;
+    PXSize FileFilterSize;
 
-	unsigned int Flags;
-	unsigned char DepthCounter;
-	PXBool Recursion;
+    unsigned int Flags;
+    unsigned char DepthCounter;
+    PXBool Recursion;
 }
 PXDirectorySearchInfo;
 

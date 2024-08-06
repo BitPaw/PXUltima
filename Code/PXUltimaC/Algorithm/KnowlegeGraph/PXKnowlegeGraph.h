@@ -6,19 +6,19 @@
 
 typedef struct PXKnowlegeGraphNode_
 {
-	float Position[3];
-	float Radius;
-	float Value;
-	PXCodeDocumentElement DocumentElement;
+    float Position[3];
+    float Radius;
+    float Value;
+    PXCodeDocumentElement DocumentElement;
 }
 PXKnowlegeGraphNode;
 
 typedef struct PXKnowlegeGraph_
 {
-	PXInt32U NodeMinValue;
-	PXInt32U NodeMaxValue;
-	PXInt32U SizeMaxWidth;
-	PXInt32U SizeMaxHeight;
+    PXInt32U NodeMinValue;
+    PXInt32U NodeMaxValue;
+    PXInt32U SizeMaxWidth;
+    PXInt32U SizeMaxHeight;
 }
 PXKnowlegeGraph;
 

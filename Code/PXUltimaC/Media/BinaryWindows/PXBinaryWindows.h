@@ -6,37 +6,37 @@
 
 typedef struct PXDOSHeader_
 {
-	PXInt16UCluster Magic;
-	PXInt16U LastPageSize;
-	PXInt16U TotalPagesInFile;
-	PXInt16U ReallocationItems;
-	PXInt16U ParagraphsInHeader;
-	PXInt16U ParagraphsExtraMinimum;
-	PXInt16U ParagraphsExtraMaximum;
-	PXInt16U StackInitialSegment;
-	PXInt16U StackInitialPointer;
-	PXInt16U ChecksumCompliment;
-	PXInt16U InstructionPointerInternal;
-	PXInt16U CodeSegmentInitial;
-	PXInt16U e_lfarlc;
-	PXInt16U e_ovno;
-	PXInt16U e_oemid;
-	PXInt16U e_oeminfo;
-	PXInt32U FileOffsetToHeader;
+    PXInt16UCluster Magic;
+    PXInt16U LastPageSize;
+    PXInt16U TotalPagesInFile;
+    PXInt16U ReallocationItems;
+    PXInt16U ParagraphsInHeader;
+    PXInt16U ParagraphsExtraMinimum;
+    PXInt16U ParagraphsExtraMaximum;
+    PXInt16U StackInitialSegment;
+    PXInt16U StackInitialPointer;
+    PXInt16U ChecksumCompliment;
+    PXInt16U InstructionPointerInternal;
+    PXInt16U CodeSegmentInitial;
+    PXInt16U e_lfarlc;
+    PXInt16U e_ovno;
+    PXInt16U e_oemid;
+    PXInt16U e_oeminfo;
+    PXInt32U FileOffsetToHeader;
 }
 PXDOSHeader;
 
 typedef struct PXPEHeader_
 {
-	PXInt32UCluster Signature; // PE--
+    PXInt32UCluster Signature; // PE--
 }
 PXPEHeader;
 
 typedef struct PXBinaryWindows_
 {
-	PXDOSHeader Header;
+    PXDOSHeader Header;
 
-	PXCOFF COFFHeader;
+    PXCOFF COFFHeader;
 }
 PXBinaryWindows;
 

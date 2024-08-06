@@ -9,10 +9,10 @@ typedef struct PXCanonRaw3_
 {
 
 
-	// ISO chunk
-	PXInt32U ISOChunkSize;
+    // ISO chunk
+    PXInt32U ISOChunkSize;
 
-	char UUID[PXCanonRaw3UUIDSize];
+    char UUID[PXCanonRaw3UUIDSize];
 }
 PXCanonRaw3;
 

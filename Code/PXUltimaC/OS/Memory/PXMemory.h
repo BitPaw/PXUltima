@@ -22,68 +22,68 @@ typedef unsigned long PXMemoryAccessModeType;// DWORD
 
 typedef enum PXMemoryAccessMode_
 {
-	PXMemoryAccessModeInvalid,
-	PXMemoryAccessModeNoReadWrite,
-	PXMemoryAccessModeReadOnly,
-	PXMemoryAccessModeWriteOnly,
-	PXMemoryAccessModeReadAndWrite
+    PXMemoryAccessModeInvalid,
+    PXMemoryAccessModeNoReadWrite,
+    PXMemoryAccessModeReadOnly,
+    PXMemoryAccessModeWriteOnly,
+    PXMemoryAccessModeReadAndWrite
 }
 PXMemoryAccessMode;
 
 typedef enum PXMemoryCachingMode_
 {
-	PXMemoryCachingModeInvalid,
+    PXMemoryCachingModeInvalid,
 
-	PXMemoryCachingModeDefault,
+    PXMemoryCachingModeDefault,
 
-	PXMemoryCachingModeRandom,  // Access data in a random order.
-	PXMemoryCachingModeSequential, // Data sequentially from lower offsets to higher offsets.
-	PXMemoryCachingModeTemporary, // File will not be saves to drive.
-	PXMemoryCachingModeUseOnce, // Access the specified data once and then not reuse it again.
+    PXMemoryCachingModeRandom,  // Access data in a random order.
+    PXMemoryCachingModeSequential, // Data sequentially from lower offsets to higher offsets.
+    PXMemoryCachingModeTemporary, // File will not be saves to drive.
+    PXMemoryCachingModeUseOnce, // Access the specified data once and then not reuse it again.
 
-	// Windows only
-	PXMemoryCachingModeWriteThrough,
-	PXMemoryCachingModeNoBuffering, // No OS Caching, direct to Harddrive if supprted
+    // Windows only
+    PXMemoryCachingModeWriteThrough,
+    PXMemoryCachingModeNoBuffering, // No OS Caching, direct to Harddrive if supprted
 
-	// UNIX only
-	PXMemoryCachingModeNeedLater, // Data is not needed right now. "For later"[near future].
-	PXMemoryCachingModeDontNeedNow // Data will not be cached. "I dont need it yet"
+    // UNIX only
+    PXMemoryCachingModeNeedLater, // Data is not needed right now. "For later"[near future].
+    PXMemoryCachingModeDontNeedNow // Data will not be cached. "I dont need it yet"
 }
 PXMemoryCachingMode;
 
 typedef struct PXMemoryUsage_
 {
-	PXSize PhysicalRAMSize;
+    PXSize PhysicalRAMSize;
 
-	PXSize PercentInUse;
-	PXSize PhysicalTotal;
-	PXSize PhysicalAvailable;
-	PXSize VirtualTotal;
-	PXSize VirtualAvailable;
-	PXSize PageFileTotal;
-	PXSize PageFileAvailable;
-	PXSize ExtendedVirtualAvailable;
+    PXSize PercentInUse;
+    PXSize PhysicalTotal;
+    PXSize PhysicalAvailable;
+    PXSize VirtualTotal;
+    PXSize VirtualAvailable;
+    PXSize PageFileTotal;
+    PXSize PageFileAvailable;
+    PXSize ExtendedVirtualAvailable;
 }
 PXMemoryUsage;
 
 typedef struct PXMemoryInfo_
 {
-	// OUT
-	void** Data;
-	PXSize* SizeTotal;
+    // OUT
+    void** Data;
+    PXSize* SizeTotal;
 
-	// Input
-	PXSize Amount;
-	PXSize TypeSize;
+    // Input
+    PXSize Amount;
+    PXSize TypeSize;
 
-	// Debug Info
+    // Debug Info
 #if PXMemoryDebug
-	const char* File;
-	const char* Function;
-	PXSize Line;
+    const char* File;
+    const char* Function;
+    PXSize Line;
 #endif
 
-	PXBool MemoryClear;
+    PXBool MemoryClear;
 }
 PXMemoryInfo;
 
@@ -92,30 +92,30 @@ PXMemoryInfo;
 
 typedef struct PXMemoryHeapReallocateEventData_
 {
-	PXSize TypeSize;
-	PXSize AmountDemand;
-	PXSize* AmountCurrent;
-	PXSize* DataSize;
-	void** DataAdress;
+    PXSize TypeSize;
+    PXSize AmountDemand;
+    PXSize* AmountCurrent;
+    PXSize* DataSize;
+    void** DataAdress;
 
-	PXBool DoFillNewSpace;
-	PXByte FillSymbol;
-	PXBool ReduceSizeIfPossible;
+    PXBool DoFillNewSpace;
+    PXByte FillSymbol;
+    PXBool ReduceSizeIfPossible;
 
-	// Additinaional Flags
-	PXBool FreshAllocationPerformed;
-	PXBool WasSuccessful;
-	PXBool WasDataMoved;
+    // Additinaional Flags
+    PXBool FreshAllocationPerformed;
+    PXBool WasSuccessful;
+    PXBool WasDataMoved;
 
-	// Data of added memory space
-	void* PointOfNewData;
-	PXSize PointOfNewDataSize;
-	PXBool WasSizeIncreased;
+    // Data of added memory space
+    void* PointOfNewData;
+    PXSize PointOfNewDataSize;
+    PXBool WasSizeIncreased;
 
 #if PXMemoryDebug
-	const char* CodeFileName;
-	const char* CodeFunctionName;
-	PXSize CodeFileLine;
+    const char* CodeFileName;
+    const char* CodeFunctionName;
+    PXSize CodeFileLine;
 #endif
 }
 PXMemoryHeapReallocateEventData;
@@ -184,7 +184,7 @@ PXPublic PXMemoryAccessModeType PXAPI PXMemoryAccessModeFromID(const PXMemoryAcc
 PXPublic PXActionResult PXAPI PXMemoryStackAllocate(PXMemoryInfo* const pxMemoryAllocateInfo);
 
 // Deallocates stack allocated memory if it was commited to the heap.
-// Additional size parameter can be ignored	
+// Additional size parameter can be ignored    
 PXPublic PXActionResult PXAPI PXMemoryStackDeallocate(PXMemoryInfo* const pxMemoryAllocateInfo);
 
 
@@ -192,20 +192,20 @@ PXPublic PXActionResult PXAPI PXMemoryHeapAllocate(PXMemoryInfo* const pxMemoryA
 PXPublic PXActionResult PXAPI PXMemoryHeapDeallocate(PXMemoryInfo* const pxMemoryAllocateInfo);
 
 #define PXMemoryInfoFill(pxMemoryInfo, type, amount, dataAdress, dataSizeAdress, memoryClear) \
-	pxMemoryInfo.Data = (void**)dataAdress; \
-	pxMemoryInfo.SizeTotal = dataSizeAdress; \
-	pxMemoryInfo.Amount = amount; \
-	pxMemoryInfo.TypeSize = sizeof(type); \
-	pxMemoryInfo.MemoryClear = memoryClear; \
-	pxMemoryInfo.File = _PX_FILENAME_; \
-	pxMemoryInfo.Function = _PX_FUNCTION_; \
-	pxMemoryInfo.Line = _PX_LINE_; \
+    pxMemoryInfo.Data = (void**)dataAdress; \
+    pxMemoryInfo.SizeTotal = dataSizeAdress; \
+    pxMemoryInfo.Amount = amount; \
+    pxMemoryInfo.TypeSize = sizeof(type); \
+    pxMemoryInfo.MemoryClear = memoryClear; \
+    pxMemoryInfo.File = _PX_FILENAME_; \
+    pxMemoryInfo.Function = _PX_FUNCTION_; \
+    pxMemoryInfo.Line = _PX_LINE_; \
 
 
 #define PXNewListSettings(type, amount, dataAdress, dataSizeAdress, memoryClear) { \
-	PXMemoryInfo pxMemoryInfo; \
-	PXMemoryInfoFill(pxMemoryInfo,type, amount, dataAdress, dataSizeAdress, memoryClear); \
-	PXMemoryHeapAllocate(&pxMemoryInfo); }
+    PXMemoryInfo pxMemoryInfo; \
+    PXMemoryInfoFill(pxMemoryInfo,type, amount, dataAdress, dataSizeAdress, memoryClear); \
+    PXMemoryHeapAllocate(&pxMemoryInfo); }
 
 #define PXNewList(type, amount, dataAdress, dataSizeAdress) PXNewListSettings(type, amount, dataAdress, dataSizeAdress, PXFalse);
 #define PXNewListZerod(type, amount, dataAdress, dataSizeAdress) PXNewListSettings(type, amount, dataAdress, dataSizeAdress, PXTrue)
@@ -214,25 +214,25 @@ PXPublic PXActionResult PXAPI PXMemoryHeapDeallocate(PXMemoryInfo* const pxMemor
 #define PXNewZerod(type, dataAdress) PXNewListZerod(type, 1u, dataAdress, PXNull)
 
 #define PXDeleteList(type, amount, dataAdress, dataSizeAdress) { \
-	PXMemoryInfo pxMemoryInfo; \
-	PXMemoryInfoFill(pxMemoryInfo,type, amount, dataAdress, dataSizeAdress, PXFalse); \
-	PXMemoryHeapDeallocate(&pxMemoryInfo); }
+    PXMemoryInfo pxMemoryInfo; \
+    PXMemoryInfoFill(pxMemoryInfo,type, amount, dataAdress, dataSizeAdress, PXFalse); \
+    PXMemoryHeapDeallocate(&pxMemoryInfo); }
 
 #define PXDelete(type, dataAdress) PXDeleteList(type, 1u, dataAdress, PXNull)
 
 
 #define PXNewStackList(type, amount, dataAdress, dataSizeAdress) { \
-	PXMemoryInfo pxMemoryInfo; \
-	PXMemoryInfoFill(pxMemoryInfo,type, amount, dataAdress, dataSizeAdress, PXFalse); \
-	PXMemoryStackAllocate(&pxMemoryInfo); }
+    PXMemoryInfo pxMemoryInfo; \
+    PXMemoryInfoFill(pxMemoryInfo,type, amount, dataAdress, dataSizeAdress, PXFalse); \
+    PXMemoryStackAllocate(&pxMemoryInfo); }
 
 #define PXNewStack(type, dataAdress) PXNewStackList(type, 1u, dataAdress, PXNull)
 
 
 #define PXDeleteStackList(type, amount, dataAdress, dataSizeAdress) { \
-	PXMemoryInfo pxMemoryInfo; \
-	PXMemoryInfoFill(pxMemoryInfo,type, amount, dataAdress, dataSizeAdress, PXFalse); \
-	PXMemoryStackDeallocate(&pxMemoryInfo); }
+    PXMemoryInfo pxMemoryInfo; \
+    PXMemoryInfoFill(pxMemoryInfo,type, amount, dataAdress, dataSizeAdress, PXFalse); \
+    PXMemoryStackDeallocate(&pxMemoryInfo); }
 
 #define PXDeleteStack(type, dataAdress) PXDeleteStackList(type, 1u, dataAdress, PXNull)
 
@@ -248,31 +248,31 @@ PXPublic PXActionResult PXAPI PXMemoryHeapDeallocate(PXMemoryInfo* const pxMemor
 // PXMemoryHeapReallocateEventData pxMemoryHeapReallocateEventData;
 // PXHeapListResizeSize
 
-#define	PXMemoryHeapReallocateEventDataFill(eventDataAdress, typeSize, target, current, sizeCurrent, dataAdress) \
-	PXMemoryClear(eventDataAdress, sizeof(PXMemoryHeapReallocateEventData));  \
-	(*eventDataAdress).TypeSize = typeSize; \
-	(*eventDataAdress).AmountDemand = target; \
-	(*eventDataAdress).AmountCurrent = current; \
-	(*eventDataAdress).DataSize = sizeCurrent; \
-	(*eventDataAdress).DataAdress = dataAdress; \
-	(*eventDataAdress).ReduceSizeIfPossible = PXTrue; \
-	(*eventDataAdress).CodeFileName = _PX_FILENAME_; \
-	(*eventDataAdress).CodeFunctionName = _PX_FUNCTION_; \
-	(*eventDataAdress).CodeFileLine = _PX_LINE_;
+#define    PXMemoryHeapReallocateEventDataFill(eventDataAdress, typeSize, target, current, sizeCurrent, dataAdress) \
+    PXMemoryClear(eventDataAdress, sizeof(PXMemoryHeapReallocateEventData));  \
+    (*eventDataAdress).TypeSize = typeSize; \
+    (*eventDataAdress).AmountDemand = target; \
+    (*eventDataAdress).AmountCurrent = current; \
+    (*eventDataAdress).DataSize = sizeCurrent; \
+    (*eventDataAdress).DataAdress = dataAdress; \
+    (*eventDataAdress).ReduceSizeIfPossible = PXTrue; \
+    (*eventDataAdress).CodeFileName = _PX_FILENAME_; \
+    (*eventDataAdress).CodeFunctionName = _PX_FUNCTION_; \
+    (*eventDataAdress).CodeFileLine = _PX_LINE_;
 
-#define	PXMemoryHeapReallocateEventDataFillType(eventDataAdress, type, target, current, sizeCurrent, dataAdress) \
-	PXMemoryHeapReallocateEventDataFill(eventDataAdress, sizeof(type), target, current, sizeCurrent, dataAdress)
+#define    PXMemoryHeapReallocateEventDataFillType(eventDataAdress, type, target, current, sizeCurrent, dataAdress) \
+    PXMemoryHeapReallocateEventDataFill(eventDataAdress, sizeof(type), target, current, sizeCurrent, dataAdress)
 
 #define PXMemoryHeapReallocateEventDataFillNew(eventDataAdress, fillSymbol) \
-	(*eventDataAdress).DoFillNewSpace = PXTrue; \
-	(*eventDataAdress).FillSymbol = fillSymbol; \
+    (*eventDataAdress).DoFillNewSpace = PXTrue; \
+    (*eventDataAdress).FillSymbol = fillSymbol; \
 
 
 //#define PXHeapListResize(type, amountDemand, amountCurrent, adress) PXMemoryHeapReallocate(sizeof(type), amountDemand, amountCurrent, adress, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
 //#define PXHeapListResizeT(typeSize, amountDemand, amountCurrent, adress) PXMemoryHeapReallocate(typeSize, amountDemand, amountCurrent, adress, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
 #else 
 #define PXHeapListResize(type, amountDemand, amountCurrent, adress) PXMemoryHeapReallocate(sizeof(type), amountDemand, amountCurrent, adress)
-#endif	
+#endif    
 //---------------------------------------------------------
 
 
@@ -289,7 +289,7 @@ PXPublic PXSize PXAPI PXMemoryCopy(const void* PXRestrict inputBuffer, const PXS
 #else
 #define PXCopy(type, source, target) PXMemoryCopy(source, sizeof(type), target, sizeof(type));
 #define PXCopyList(type, amount, source, target) PXMemoryCopy(source, sizeof(type)*amount, target, sizeof(type)*amount);
-#endif	
+#endif    
 //---------------------------------------------------------
 
 

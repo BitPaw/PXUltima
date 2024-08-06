@@ -10,39 +10,39 @@
 
 typedef enum PXHuffmanCodeType_
 {
-	PXHuffmanCodeInvalid,
-	PXHuffmanCodeLiteral,
-	PXHuffmanCodeLength,
-	PXHuffmanCodeEndOfBlock
+    PXHuffmanCodeInvalid,
+    PXHuffmanCodeLiteral,
+    PXHuffmanCodeLength,
+    PXHuffmanCodeEndOfBlock
 }
 PXHuffmanCodeType;
 
 typedef struct PXHuffmanNumberCode_
 {
-	PXInt16U NumberOfLiteralCodes;
-	PXInt16U NumberOfDistanceCodes;
-	PXInt16U NumberOfLengthCodes;
+    PXInt16U NumberOfLiteralCodes;
+    PXInt16U NumberOfDistanceCodes;
+    PXInt16U NumberOfLengthCodes;
 }
 PXHuffmanNumberCode;
 
 typedef struct PXHuffmanSymbol_
 {
-	PXInt16U Code;
-	PXInt16U Length;
-	PXInt16U Value;
+    PXInt16U Code;
+    PXInt16U Length;
+    PXInt16U Value;
 }
 PXHuffmanSymbol;
 
 typedef struct PXHuffmanTree_
 {
-	PXInt32U* CodeSymbols; // the huffman codes (bit patterns representing the symbols)
-	PXInt32U* LengthsList; // the lengths of the huffman codes
-	PXInt32U maxbitlen; // maximum number of bits a single code can get
-	PXInt32U NumberOfSymbols; // number of symbols in the alphabet = number of codes
+    PXInt32U* CodeSymbols; // the huffman codes (bit patterns representing the symbols)
+    PXInt32U* LengthsList; // the lengths of the huffman codes
+    PXInt32U maxbitlen; // maximum number of bits a single code can get
+    PXInt32U NumberOfSymbols; // number of symbols in the alphabet = number of codes
 
-	// for reading only
-	PXInt8U* TableLength; // length of symbol from lookup table, or max length if secondary lookup needed
-	PXInt16U* TableValue; // value of symbol from lookup table, or pointer to secondary table if needed
+    // for reading only
+    PXInt8U* TableLength; // length of symbol from lookup table, or max length if secondary lookup needed
+    PXInt16U* TableValue; // value of symbol from lookup table, or pointer to secondary table if needed
 }
 PXHuffmanTree;
 

@@ -131,7 +131,7 @@ namespace PX
         public uint SocketSending;
     };
 
-	internal unsafe struct PXSocketDataSendEventData
+    internal unsafe struct PXSocketDataSendEventData
     {
         public void* Data;
         public void* DataSize;

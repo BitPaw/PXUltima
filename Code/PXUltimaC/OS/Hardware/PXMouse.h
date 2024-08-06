@@ -10,7 +10,7 @@
 #define ButtonCustomD 0b01000000
 #define ButtonCustomE 0b10000000
 
-#define IsPressedButtonLeft(buttons)	 (buttons & ButtonLeft)
+#define IsPressedButtonLeft(buttons)     (buttons & ButtonLeft)
 #define IsPressedButtonMiddle(buttons)  ((buttons & ButtonMiddle) >> 1)
 #define IsPressedButtonRight(buttons)   ((buttons & ButtonRight) >> 2)
 #define IsPressedButtonCustomA(buttons) ((buttons & ButtonCustomA) >> 3)
@@ -23,12 +23,12 @@
 
 typedef struct PXMouse_
 {
-	float DeltaNormalisized[2];
-	float PositionNormalisized[2];  // Convert Screenspace (width & height) to normal space -1 to +1
-	PXInt32S Position[2]; // Window-Position (0/0 to x/y)
-	PXInt32S Delta[2]; // Relative Input (-x/-y to 0/0 to x/y)	
-	PXInt8U Buttons;
-	PXInt8U ButtonsDelta;
+    float DeltaNormalisized[2];
+    float PositionNormalisized[2];  // Convert Screenspace (width & height) to normal space -1 to +1
+    PXInt32S Position[2]; // Window-Position (0/0 to x/y)
+    PXInt32S Delta[2]; // Relative Input (-x/-y to 0/0 to x/y)    
+    PXInt8U Buttons;
+    PXInt8U ButtonsDelta;
 }
 PXMouse;
 

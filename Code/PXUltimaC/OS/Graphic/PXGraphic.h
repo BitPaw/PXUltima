@@ -18,10 +18,10 @@
 
 typedef enum PXGraphicSystem_
 {
-	PXGraphicSystemInvalid,
-	PXGraphicSystemOpenGL,
-	PXGraphicSystemDirectX,
-	PXGraphicSystemVulcan
+    PXGraphicSystemInvalid,
+    PXGraphicSystemOpenGL,
+    PXGraphicSystemDirectX,
+    PXGraphicSystemVulcan
 }
 PXGraphicSystem;
 
@@ -29,59 +29,59 @@ typedef PXInt32U PXGraphicResourceID;
 
 typedef struct PXGraphicResourceInfo_
 {
-	PXGraphicResourceID ID;
-	PXGraphicResourceLocation Location;
-	PXGraphicSystem System;
+    PXGraphicResourceID ID;
+    PXGraphicResourceLocation Location;
+    PXGraphicSystem System;
 
-	union
-	{
-		PXMSHandle DirectXID;
-		PXInt32U OpengGLID;
-	};
+    union
+    {
+        PXMSHandle DirectXID;
+        PXInt32U OpengGLID;
+    };
 }
 PXGraphicResourceInfo;
 
 typedef enum PXGraphicInitializeMode_
 {
-	PXGraphicInitializeModeInvalid,
-	PXGraphicInitializeModeWindowfull,
-	PXGraphicInitializeModeWindowless,
-	PXGraphicInitializeModeOSGUI,
-	PXGraphicInitializeModeOSGUIElement
+    PXGraphicInitializeModeInvalid,
+    PXGraphicInitializeModeWindowfull,
+    PXGraphicInitializeModeWindowless,
+    PXGraphicInitializeModeOSGUI,
+    PXGraphicInitializeModeOSGUIElement
 }
 PXGraphicInitializeMode;
 
 typedef struct PXGraphicInitializeInfo_
 {
-	PXGraphicInitializeMode Mode;
-	PXGUIElement* WindowReference;
+    PXGraphicInitializeMode Mode;
+    PXGUIElement* WindowReference;
 
 #if OSUnix
 
 #elif OSWindows
-	HDC HandleDeviceContext;
+    HDC HandleDeviceContext;
 #endif
 
-	PXSize TargetFrameRate;
+    PXSize TargetFrameRate;
 
-	PXSize Width;
-	PXSize Height;
+    PXSize Width;
+    PXSize Height;
 
-	PXDirectXVersion DirectXVersion;
-	PXDirectXDriverType DirectXDriverType;
+    PXDirectXVersion DirectXVersion;
+    PXDirectXDriverType DirectXDriverType;
 
-	PXGraphicSystem GraphicSystem;
+    PXGraphicSystem GraphicSystem;
 
-	struct PXGraphic_* Graphic;
+    struct PXGraphic_* Graphic;
 }
 PXGraphicInitializeInfo;
 
 
 typedef struct PXGraphicConfig_
 {
-	PXRefreshRateMode WindowRefreshRateMode;
-	PXInt32S ScreenResolution[2];
-	PXBool FullScreen;
+    PXRefreshRateMode WindowRefreshRateMode;
+    PXInt32S ScreenResolution[2];
+    PXBool FullScreen;
 }
 PXGraphicConfig;
 
@@ -90,28 +90,28 @@ PXGraphicConfig;
 
 typedef struct PXRenderableMeshSegment_
 {
-	unsigned int NumberOfVertices;
-	unsigned int TextureID;
-	unsigned int ShaderID;
+    unsigned int NumberOfVertices;
+    unsigned int TextureID;
+    unsigned int ShaderID;
 
-	PXGraphicDrawMode RenderMode;
+    PXGraphicDrawMode RenderMode;
 
-	PXBool DoRendering;
+    PXBool DoRendering;
 }
 PXRenderableMeshSegment;
 
 typedef struct PXRenderable_
 {
-	PXMatrix4x4F MatrixModel;
+    PXMatrix4x4F MatrixModel;
 
-	unsigned int VAO;
-	unsigned int VBO;
-	unsigned int IBO;
+    unsigned int VAO;
+    unsigned int VBO;
+    unsigned int IBO;
 
-	PXSize MeshSegmentListSize;
-	PXRenderableMeshSegment* MeshSegmentList;
+    PXSize MeshSegmentListSize;
+    PXRenderableMeshSegment* MeshSegmentList;
 
-	PXBool DoRendering;
+    PXBool DoRendering;
 }
 PXRenderable;
 
@@ -125,23 +125,23 @@ PXRenderable;
 
 typedef enum PXUIState
 {
-	UIStateInvalid,
-	UIStateActive,
-	UIStateHot,
-	UIStateIDLE
+    UIStateInvalid,
+    UIStateActive,
+    UIStateHot,
+    UIStateIDLE
 }
 PXUIState;
 
 typedef enum PXUIScalingType_
 {
-	UIScalingInvalid,
-	UIScalingRelativeToParent
+    UIScalingInvalid,
+    UIScalingRelativeToParent
 }
 PXUIScalingType;
 
 typedef struct UIContainerRoot_
 {
-	unsigned char _SUMMY__;
+    unsigned char _SUMMY__;
 }
 UIContainerRoot;
 
@@ -216,112 +216,112 @@ typedef PXActionResult(PXAPI* PXShaderVariableSetFunction)(void* const graphicAP
 
 typedef struct PXGraphic_
 {
-	//-------------------
-	// References
-	//-------------------
-	PXGUIElement* WindowReference;
-	void* EventOwner;
-	//-------------------
+    //-------------------
+    // References
+    //-------------------
+    PXGUIElement* WindowReference;
+    void* EventOwner;
+    //-------------------
 
-	//-------------------
-	// Functions
-	//-------------------
+    //-------------------
+    // Functions
+    //-------------------
 
 
-	//-------------------------------------------------
-	// Core
-	//-------------------------------------------------
-	PXGraphicInitializeFunction Initialize;
-	PXGraphicReleaseFunction Release;
-	PXGraphicSelectFunction Select;
-	PXGraphicDeselectFunction Deselect;
-	PXGraphicClearFunction Clear;
+    //-------------------------------------------------
+    // Core
+    //-------------------------------------------------
+    PXGraphicInitializeFunction Initialize;
+    PXGraphicReleaseFunction Release;
+    PXGraphicSelectFunction Select;
+    PXGraphicDeselectFunction Deselect;
+    PXGraphicClearFunction Clear;
 
-	//-------------------------------------------------
-	// Info & Settings
-	//-------------------------------------------------
-	PXGraphicSwapIntervalSetFunction SwapIntervalSet;
-	PXGraphicSwapIntervalGetFunction SwapIntervalGet;
-	PXGraphicDevicePhysicalListAmountFunction DevicePhysicalListAmount;
-	PXGraphicDevicePhysicalListFetchFunction DevicePhysicalListFetch;
+    //-------------------------------------------------
+    // Info & Settings
+    //-------------------------------------------------
+    PXGraphicSwapIntervalSetFunction SwapIntervalSet;
+    PXGraphicSwapIntervalGetFunction SwapIntervalGet;
+    PXGraphicDevicePhysicalListAmountFunction DevicePhysicalListAmount;
+    PXGraphicDevicePhysicalListFetchFunction DevicePhysicalListFetch;
 
-	//-------------------------------------------------
-	// Scene
-	//-------------------------------------------------
-	PXGraphicSceneBeginFunction SceneBegin;
-	PXGraphicSceneDeployFunction SceneDeploy;
-	PXGraphicSceneEndFunction SceneEnd;
+    //-------------------------------------------------
+    // Scene
+    //-------------------------------------------------
+    PXGraphicSceneBeginFunction SceneBegin;
+    PXGraphicSceneDeployFunction SceneDeploy;
+    PXGraphicSceneEndFunction SceneEnd;
 
-	//-------------------------------------------------
-	// Screen
-	//-------------------------------------------------
-	PXGraphicScreenBufferReadFunction ScreenBufferRead;
+    //-------------------------------------------------
+    // Screen
+    //-------------------------------------------------
+    PXGraphicScreenBufferReadFunction ScreenBufferRead;
 
-	//-------------------------------------------------
-	// View
-	//-------------------------------------------------
-	PXGraphicViewPortSetFunction ViewPortSet;
-	PXGraphicViewPortGetFunction ViewPortGet;
+    //-------------------------------------------------
+    // View
+    //-------------------------------------------------
+    PXGraphicViewPortSetFunction ViewPortSet;
+    PXGraphicViewPortGetFunction ViewPortGet;
 
-	//-------------------------------------------------
-	// Scripting
-	//-------------------------------------------------
-	PXGraphicDrawScriptCreate DrawScriptCreate;
-	PXGraphicDrawScriptBegin DrawScriptBegin;
-	PXGraphicDrawScriptEnd DrawScriptEnd;
-	PXGraphicDrawScriptDelete DrawScriptDelete;
-	PXGraphicDrawScriptExecute DrawScriptExecute;
+    //-------------------------------------------------
+    // Scripting
+    //-------------------------------------------------
+    PXGraphicDrawScriptCreate DrawScriptCreate;
+    PXGraphicDrawScriptBegin DrawScriptBegin;
+    PXGraphicDrawScriptEnd DrawScriptEnd;
+    PXGraphicDrawScriptDelete DrawScriptDelete;
+    PXGraphicDrawScriptExecute DrawScriptExecute;
 
-	//-------------------------------------------------
-	// Textures
-	//-------------------------------------------------
-	PXGraphicTextureActionFunction TextureAction;
+    //-------------------------------------------------
+    // Textures
+    //-------------------------------------------------
+    PXGraphicTextureActionFunction TextureAction;
 
-	//-------------------------------------------------
-	// Model
-	//-------------------------------------------------
-	PXGraphicModelRegisterFunction ModelRegister;
-	PXGraphicModelDrawFunction ModelDraw;
-	PXGraphicModelSelectFunction ModelSelect;
-	PXGraphicModelReleaseFunction ModelRelease;
+    //-------------------------------------------------
+    // Model
+    //-------------------------------------------------
+    PXGraphicModelRegisterFunction ModelRegister;
+    PXGraphicModelDrawFunction ModelDraw;
+    PXGraphicModelSelectFunction ModelSelect;
+    PXGraphicModelReleaseFunction ModelRelease;
 
-	//-------------------------------------------------
-	// Light
-	//-------------------------------------------------
-	PXGraphicLightSetFunction LightSet;
-	PXGraphicLightGetFunction LightGet;
-	PXGraphicLightEnableSetFunction LightEnableSet;
-	PXGraphicLightEnableGetFunction LightEnableGet;
+    //-------------------------------------------------
+    // Light
+    //-------------------------------------------------
+    PXGraphicLightSetFunction LightSet;
+    PXGraphicLightGetFunction LightGet;
+    PXGraphicLightEnableSetFunction LightEnableSet;
+    PXGraphicLightEnableGetFunction LightEnableGet;
 
-	//-------------------------------------------------
-	// Shader
-	//-------------------------------------------------
-	PXShaderVariableSetFunction ShaderVariableSet;
+    //-------------------------------------------------
+    // Shader
+    //-------------------------------------------------
+    PXShaderVariableSetFunction ShaderVariableSet;
 
-	PXGraphicShaderProgramCreateFunction ShaderProgramCreate;
-	PXGraphicShaderProgramSelectFunction ShaderProgramSelect;
-	PXGraphicShaderProgramDeleteFunction ShaderProgramDelete;
+    PXGraphicShaderProgramCreateFunction ShaderProgramCreate;
+    PXGraphicShaderProgramSelectFunction ShaderProgramSelect;
+    PXGraphicShaderProgramDeleteFunction ShaderProgramDelete;
 
-	//-------------------------------------------------
-	// Draw
-	//-------------------------------------------------
-	PXGraphicDrawModeSetFunction DrawModeSet;
-	PXGraphicDrawColorRGBFFunction DrawColorRGBAF;
-	PXGraphicRectangleDrawFunction RectangleDraw;
-	PXGraphicRectangleDrawTxFunction RectangleDrawTx;
-	//-------------------------------------------------
+    //-------------------------------------------------
+    // Draw
+    //-------------------------------------------------
+    PXGraphicDrawModeSetFunction DrawModeSet;
+    PXGraphicDrawColorRGBFFunction DrawColorRGBAF;
+    PXGraphicRectangleDrawFunction RectangleDraw;
+    PXGraphicRectangleDrawTxFunction RectangleDrawTx;
+    //-------------------------------------------------
 
-	union
-	{
-		PXDirectX DirectXInstance;
-		PXOpenGL OpenGLInstance;
-		PXVulcan VulcanInstance;
-	};
+    union
+    {
+        PXDirectX DirectXInstance;
+        PXOpenGL OpenGLInstance;
+        PXVulcan VulcanInstance;
+    };
 
-	PXGraphicSystem GraphicSystem;
+    PXGraphicSystem GraphicSystem;
 
-	PXSize DevicePhysicalListSize;
-	PXGraphicDevicePhysical* DevicePhysicalList;
+    PXSize DevicePhysicalListSize;
+    PXGraphicDevicePhysical* DevicePhysicalList;
 }
 PXGraphic;
 

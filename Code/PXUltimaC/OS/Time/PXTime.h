@@ -4,39 +4,39 @@
 #include <Media/PXType.h>
 #include <time.h>
 
-#define PXYearMask		0b00000000000000000000000000000000
-#define PXMonthMask		0b00000000000000000000000000000000 // 5 Bits
-#define PXDayMask		0b00000000000000000000000000000000 // 5 Bits
+#define PXYearMask        0b00000000000000000000000000000000
+#define PXMonthMask        0b00000000000000000000000000000000 // 5 Bits
+#define PXDayMask        0b00000000000000000000000000000000 // 5 Bits
 
 
 typedef enum PXTimeDayOfWeek_
 {
-	DayInvalid,
-	DayMonday,
-	DayTuesday,
-	DayWednesday,
-	DayThursday,
-	DayFriday,
-	DaySaturday,
-	DaySunday
+    DayInvalid,
+    DayMonday,
+    DayTuesday,
+    DayWednesday,
+    DayThursday,
+    DayFriday,
+    DaySaturday,
+    DaySunday
 }
 PXTimeDayOfWeek;
 
 typedef enum PXTimeMonth_
 {
-	MonthInvalid,
-	MonthJanuary,
-	MonthFebruary,
-	MonthMarch,
-	MonthApril,
-	MonthMay,
-	MonthJune,
-	MonthJuly,
-	MonthAugust,
-	MonthSeptember,
-	MonthOctober,
-	MonthNovember,
-	MonthDecember
+    MonthInvalid,
+    MonthJanuary,
+    MonthFebruary,
+    MonthMarch,
+    MonthApril,
+    MonthMay,
+    MonthJune,
+    MonthJuly,
+    MonthAugust,
+    MonthSeptember,
+    MonthOctober,
+    MonthNovember,
+    MonthDecember
 }
 PXTimeMonth;
 
@@ -44,14 +44,14 @@ PXTimeMonth;
 // 10 Byte
 typedef struct PXTime_
 {
-	PXInt16U Year;
-	PXInt16U Milliseconds; // 0-1000
-	PXInt8U Second;  // 0-60
-	PXInt8U Minute; // 0-60
-	PXInt8U Hour; // 0-24
-	PXInt8U Day; // 0-31
-	PXInt8U DayOfWeek; // enum
-	PXInt8U Month; // 0-12
+    PXInt16U Year;
+    PXInt16U Milliseconds; // 0-1000
+    PXInt8U Second;  // 0-60
+    PXInt8U Minute; // 0-60
+    PXInt8U Hour; // 0-24
+    PXInt8U Day; // 0-31
+    PXInt8U DayOfWeek; // enum
+    PXInt8U Month; // 0-12
 }
 PXTime;
 

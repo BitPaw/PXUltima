@@ -38,10 +38,10 @@
 
 typedef struct PXCanonRaw3ChunkMOOV_
 {
-	char UUID[16];
+    char UUID[16];
 
-	PXInt8U CompressiorVersionSize;
-	char CompressiorVersion[64];
+    PXInt8U CompressiorVersionSize;
+    char CompressiorVersion[64];
 
 }
 PXCanonRaw3ChunkMOOV;
@@ -49,300 +49,300 @@ PXCanonRaw3ChunkMOOV;
 
 typedef struct PXCanonRaw3ChunkFTYP_
 {
-	PXInt32UCluster TypeBrandMajor;
-	PXInt32U TypeVersionMinor;
-	PXInt32UCluster TypeCompatibleBrands;
+    PXInt32UCluster TypeBrandMajor;
+    PXInt32U TypeVersionMinor;
+    PXInt32UCluster TypeCompatibleBrands;
 }
 PXCanonRaw3ChunkFTYP;
 
 typedef struct PXCanonRaw3ChunkUUID_
 {
-	char UUID[16];
+    char UUID[16];
 }
 PXCanonRaw3ChunkUUID;
 
 typedef struct PXCanonRaw3Chunk_
 {
-	PXInt32UCluster ID;
-	PXInt32U SizeTotal;
-	PXInt32U SizeData;
+    PXInt32UCluster ID;
+    PXInt32U SizeTotal;
+    PXInt32U SizeData;
 
-	PXSize PredictedFinalPosition;
+    PXSize PredictedFinalPosition;
 
-	PXSize BufferSize;
-	char Buffer[64];
+    PXSize BufferSize;
+    char Buffer[64];
 
-	union
-	{
-		PXCanonRaw3ChunkUUID ChunkUUID;
-		PXCanonRaw3ChunkFTYP ChunkFTYP;
+    union
+    {
+        PXCanonRaw3ChunkUUID ChunkUUID;
+        PXCanonRaw3ChunkFTYP ChunkFTYP;
 
-	
-	};
+    
+    };
 }
 PXCanonRaw3Chunk;
 
 
 PXActionResult PXAPI PXCanonRaw3BlockRead(PXCanonRaw3Chunk* const pxCanonRaw3Chunk, PXFile* const pxFile)
 {
-	const PXFileDataElementType pxDataStreamElementList[] =
-	{
-		{&pxCanonRaw3Chunk->SizeTotal, PXDataTypeInt32UBE},
-		{pxCanonRaw3Chunk->ID.Data, PXDataTypeDatax4}
-	};
+    const PXFileDataElementType pxDataStreamElementList[] =
+    {
+        {&pxCanonRaw3Chunk->SizeTotal, PXDataTypeInt32UBE},
+        {pxCanonRaw3Chunk->ID.Data, PXDataTypeDatax4}
+    };
 
-	const PXSize readBytes = PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+    const PXSize readBytes = PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
-	if (pxCanonRaw3Chunk->SizeTotal > 0)
-	{
-		pxCanonRaw3Chunk->SizeData = pxCanonRaw3Chunk->SizeTotal - readBytes;
-	}
-	else
-	{
-		pxCanonRaw3Chunk->SizeData = 0;
-	}
+    if (pxCanonRaw3Chunk->SizeTotal > 0)
+    {
+        pxCanonRaw3Chunk->SizeData = pxCanonRaw3Chunk->SizeTotal - readBytes;
+    }
+    else
+    {
+        pxCanonRaw3Chunk->SizeData = 0;
+    }
 
-	pxCanonRaw3Chunk->PredictedFinalPosition = pxFile->DataCursor + pxCanonRaw3Chunk->SizeData;
+    pxCanonRaw3Chunk->PredictedFinalPosition = pxFile->DataCursor + pxCanonRaw3Chunk->SizeData;
 
 #if PXLogEnable
-	PXLogPrint
-	(
-		PXLoggingInfo,
-		"CanonRaw3",
-		"Parse",
-		"Chunk %4.4s Size:%iB",
-		pxCanonRaw3Chunk->ID.Data,
-		pxCanonRaw3Chunk->SizeTotal
-	);
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "CanonRaw3",
+        "Parse",
+        "Chunk %4.4s Size:%iB",
+        pxCanonRaw3Chunk->ID.Data,
+        pxCanonRaw3Chunk->SizeTotal
+    );
 #endif
 
-	switch (pxCanonRaw3Chunk->ID.Value)
-	{
-		case PXCanonRaw3FTYPID:
-		{
-			const PXFileDataElementType pxDataStreamElementList[] =
-			{
-				{pxCanonRaw3Chunk->ChunkFTYP.TypeBrandMajor.Data, PXDataTypeDatax4},
-				{&pxCanonRaw3Chunk->ChunkFTYP.TypeVersionMinor, PXDataTypeInt32UBE},
-				{pxCanonRaw3Chunk->ChunkFTYP.TypeCompatibleBrands.Data, PXDataTypeDatax4}
-			};
+    switch (pxCanonRaw3Chunk->ID.Value)
+    {
+        case PXCanonRaw3FTYPID:
+        {
+            const PXFileDataElementType pxDataStreamElementList[] =
+            {
+                {pxCanonRaw3Chunk->ChunkFTYP.TypeBrandMajor.Data, PXDataTypeDatax4},
+                {&pxCanonRaw3Chunk->ChunkFTYP.TypeVersionMinor, PXDataTypeInt32UBE},
+                {pxCanonRaw3Chunk->ChunkFTYP.TypeCompatibleBrands.Data, PXDataTypeDatax4}
+            };
 
-			PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+            PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
-			break;
-		}
-		case PXCanonRaw3MOOVID:
-		{
-			PXCanonRaw3ChunkMOOV pxCanonRaw3ChunkMOOV;
+            break;
+        }
+        case PXCanonRaw3MOOVID:
+        {
+            PXCanonRaw3ChunkMOOV pxCanonRaw3ChunkMOOV;
 
-			for (PXBool done = PXFalse ; !done ; )
-			{
-				PXCanonRaw3Chunk pxCanonRaw3ChunkChild;
-				PXCanonRaw3BlockRead(&pxCanonRaw3ChunkChild, pxFile);
+            for (PXBool done = PXFalse ; !done ; )
+            {
+                PXCanonRaw3Chunk pxCanonRaw3ChunkChild;
+                PXCanonRaw3BlockRead(&pxCanonRaw3ChunkChild, pxFile);
 
-				switch (pxCanonRaw3ChunkChild.ID.Value)
-				{
-					case PXCanonRaw3UUIDID:
-					{
-						PXMemoryCopy(pxCanonRaw3ChunkChild.ChunkUUID.UUID, 16, pxCanonRaw3ChunkMOOV.UUID, 16);
-						break;
-					}
-					case PXCanonRaw3MOOVCompressorVersionID:
-					{
-						pxCanonRaw3ChunkMOOV.CompressiorVersionSize = PXTextCopyA(pxCanonRaw3ChunkChild.Buffer, pxCanonRaw3ChunkChild.BufferSize, pxCanonRaw3ChunkMOOV.CompressiorVersion, 64);
-						break;
-					}			
-					case PXCanonRaw3MOOVCMT1ID:
-					{
-						PXFile tiffData;
-						PXFileBufferExternal(&tiffData, PXFileCursorPosition(pxFile), pxCanonRaw3ChunkChild.SizeData);
+                switch (pxCanonRaw3ChunkChild.ID.Value)
+                {
+                    case PXCanonRaw3UUIDID:
+                    {
+                        PXMemoryCopy(pxCanonRaw3ChunkChild.ChunkUUID.UUID, 16, pxCanonRaw3ChunkMOOV.UUID, 16);
+                        break;
+                    }
+                    case PXCanonRaw3MOOVCompressorVersionID:
+                    {
+                        pxCanonRaw3ChunkMOOV.CompressiorVersionSize = PXTextCopyA(pxCanonRaw3ChunkChild.Buffer, pxCanonRaw3ChunkChild.BufferSize, pxCanonRaw3ChunkMOOV.CompressiorVersion, 64);
+                        break;
+                    }            
+                    case PXCanonRaw3MOOVCMT1ID:
+                    {
+                        PXFile tiffData;
+                        PXFileBufferExternal(&tiffData, PXFileCursorPosition(pxFile), pxCanonRaw3ChunkChild.SizeData);
 
-						PXImage pxxx;
+                        PXImage pxxx;
 
-						//PXTIFFLoadFromFile(&pxxx, &tiffData);
+                        //PXTIFFLoadFromFile(&pxxx, &tiffData);
 
-						break;
-					}
-					case PXCanonRaw3MOOVCCTPID:
-					case PXCanonRaw3MOOVCMT2ID:
-					case PXCanonRaw3MOOVCMT3ID:
-					case PXCanonRaw3MOOVGPSInfoID:
-					case PXCanonRaw3MOOVCNOPID:
-					case PXCanonRaw3MOOVCNTHID:
-					case PXCanonRaw3MOOVThumbnailImageID:
-					case PXCanonRaw3FREEID:
-					case PXCanonRaw3MOOVCTBOID:			
-					default:
-					{
-						PXFileCursorAdvance(pxFile, pxCanonRaw3ChunkChild.SizeData);
-						break;
-					}
+                        break;
+                    }
+                    case PXCanonRaw3MOOVCCTPID:
+                    case PXCanonRaw3MOOVCMT2ID:
+                    case PXCanonRaw3MOOVCMT3ID:
+                    case PXCanonRaw3MOOVGPSInfoID:
+                    case PXCanonRaw3MOOVCNOPID:
+                    case PXCanonRaw3MOOVCNTHID:
+                    case PXCanonRaw3MOOVThumbnailImageID:
+                    case PXCanonRaw3FREEID:
+                    case PXCanonRaw3MOOVCTBOID:            
+                    default:
+                    {
+                        PXFileCursorAdvance(pxFile, pxCanonRaw3ChunkChild.SizeData);
+                        break;
+                    }
 
-				}			
-			}		
+                }            
+            }        
 
-			break;
-		}
-		case PXCanonRaw3ISOMID:
-		{
-			
-
-
+            break;
+        }
+        case PXCanonRaw3ISOMID:
+        {
+            
 
 
-			// parse moov
 
-			// parse header mvhd
 
-			// trak
+            // parse moov
 
-			// tref
+            // parse header mvhd
 
-			// trgr
+            // trak
 
-			break;
-		}
-		case PXCanonRaw3UUIDID:
-		{
-			pxCanonRaw3Chunk->BufferSize = PXFileReadB(pxFile, pxCanonRaw3Chunk->ChunkUUID.UUID,16u);
-			break;
-		}
-		case PXCanonRaw3MOOVCCTPID:
-		{
-			//printf("\n");
-			break;
-		}
-		case PXCanonRaw3MOOVCMT1ID:
-		{
-			//printf("\n");
-			break;
-		}
-		case PXCanonRaw3MOOVCMT2ID:
-		{
-			//printf("\n");
-			break;
-		}
-		case PXCanonRaw3MOOVCMT3ID:
-		{
-			//printf("\n");
-			break;
-		}
-		case PXCanonRaw3MOOVGPSInfoID:
-		{
-			//printf("\n");
-			break;
-		}
-		case PXCanonRaw3MOOVCompressorVersionID:
-		{
-			pxCanonRaw3Chunk->BufferSize = PXFileReadB(pxFile, pxCanonRaw3Chunk->Buffer, pxCanonRaw3Chunk->SizeData);
-			break;
-		}
-		case PXCanonRaw3MOOVCNOPID:
-		{
-		//	printf("\n");
-			break;
-		}
-		case PXCanonRaw3MOOVCNTHID:
-		{
-			//printf("\n");
-			break;
-		}
-		case PXCanonRaw3MOOVThumbnailImageID:
-		{
-			//printf("\n");
-			break;
-		}
+            // tref
 
-		default:
-			break;
-	}
+            // trgr
 
-	return PXActionRefusedNotImplemented;
+            break;
+        }
+        case PXCanonRaw3UUIDID:
+        {
+            pxCanonRaw3Chunk->BufferSize = PXFileReadB(pxFile, pxCanonRaw3Chunk->ChunkUUID.UUID,16u);
+            break;
+        }
+        case PXCanonRaw3MOOVCCTPID:
+        {
+            //printf("\n");
+            break;
+        }
+        case PXCanonRaw3MOOVCMT1ID:
+        {
+            //printf("\n");
+            break;
+        }
+        case PXCanonRaw3MOOVCMT2ID:
+        {
+            //printf("\n");
+            break;
+        }
+        case PXCanonRaw3MOOVCMT3ID:
+        {
+            //printf("\n");
+            break;
+        }
+        case PXCanonRaw3MOOVGPSInfoID:
+        {
+            //printf("\n");
+            break;
+        }
+        case PXCanonRaw3MOOVCompressorVersionID:
+        {
+            pxCanonRaw3Chunk->BufferSize = PXFileReadB(pxFile, pxCanonRaw3Chunk->Buffer, pxCanonRaw3Chunk->SizeData);
+            break;
+        }
+        case PXCanonRaw3MOOVCNOPID:
+        {
+        //    printf("\n");
+            break;
+        }
+        case PXCanonRaw3MOOVCNTHID:
+        {
+            //printf("\n");
+            break;
+        }
+        case PXCanonRaw3MOOVThumbnailImageID:
+        {
+            //printf("\n");
+            break;
+        }
+
+        default:
+            break;
+    }
+
+    return PXActionRefusedNotImplemented;
 }
 
 PXActionResult PXAPI PXCanonRaw3LoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
 {
-	PXFile* const pxFile = pxResourceLoadInfo->FileReference;
+    PXFile* const pxFile = pxResourceLoadInfo->FileReference;
 
-	PXCanonRaw3 pxCanonRaw3;
-	PXClear(PXCanonRaw3, &pxCanonRaw3);	
-
-#if PXLogEnable && PXCanonRaw3Debug
-	PXLogPrint
-	(
-		PXLoggingInfo,
-		"CanonRaw3",
-		"Load",
-		"Start parsing..."
-	);
-#endif
-
-	while (!PXFileIsAtEnd(pxFile))
-	{
-		PXCanonRaw3Chunk pxCanonRaw3Chunk;
-
-		PXCanonRaw3BlockRead(&pxCanonRaw3Chunk, pxFile);
-
-		PXFileCursorMoveTo(pxFile, pxCanonRaw3Chunk.PredictedFinalPosition);
-	}
-
-
-
-
-	// Format is orderd in "boxes". No other data is contained.
-
-	// File Type Box
-	{
-		PXInt32U amountOfContainers = 0;
-
-		// if no ftyp is contaned, use "Major_brand='mp41', minor_version=0, and the single compatible brand 'mp41'."
-		PXFileReadI32UE(pxFile, &amountOfContainers, PXEndianBig);
-
-
+    PXCanonRaw3 pxCanonRaw3;
+    PXClear(PXCanonRaw3, &pxCanonRaw3);    
 
 #if PXLogEnable && PXCanonRaw3Debug
-		PXLogPrint
-		(
-			PXLoggingInfo,
-			"CanonRaw3",
-			"Load",
-			"Boxes detected <%i>",
-			amountOfContainers
-		);
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "CanonRaw3",
+        "Load",
+        "Start parsing..."
+    );
 #endif
 
-		for (PXInt32U i = 0; i < amountOfContainers; ++i)
-		{
-			PXInt32UCluster boxID;
+    while (!PXFileIsAtEnd(pxFile))
+    {
+        PXCanonRaw3Chunk pxCanonRaw3Chunk;
 
-			PXFileReadI32U(pxFile, &boxID.Value);
+        PXCanonRaw3BlockRead(&pxCanonRaw3Chunk, pxFile);
 
-		
+        PXFileCursorMoveTo(pxFile, pxCanonRaw3Chunk.PredictedFinalPosition);
+    }
 
-		}
-	}
 
-	// int, 24 BE
-	// ftypcrx // char[8]
-	// int, 1 BE
-	// cry isom => char[x] defined by first int
 
-	// MOOV
+
+    // Format is orderd in "boxes". No other data is contained.
+
+    // File Type Box
+    {
+        PXInt32U amountOfContainers = 0;
+
+        // if no ftyp is contaned, use "Major_brand='mp41', minor_version=0, and the single compatible brand 'mp41'."
+        PXFileReadI32UE(pxFile, &amountOfContainers, PXEndianBig);
+
+
 
 #if PXLogEnable && PXCanonRaw3Debug
-	PXLogPrint
-	(
-		PXLoggingInfo,
-		"CanonRaw3",
-		"Load",
-		"Finished parsing"
-	);
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "CanonRaw3",
+            "Load",
+            "Boxes detected <%i>",
+            amountOfContainers
+        );
 #endif
 
-	return PXActionRefusedNotImplemented;
+        for (PXInt32U i = 0; i < amountOfContainers; ++i)
+        {
+            PXInt32UCluster boxID;
+
+            PXFileReadI32U(pxFile, &boxID.Value);
+
+        
+
+        }
+    }
+
+    // int, 24 BE
+    // ftypcrx // char[8]
+    // int, 1 BE
+    // cry isom => char[x] defined by first int
+
+    // MOOV
+
+#if PXLogEnable && PXCanonRaw3Debug
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "CanonRaw3",
+        "Load",
+        "Finished parsing"
+    );
+#endif
+
+    return PXActionRefusedNotImplemented;
 }
 
 PXActionResult PXAPI PXCanonRaw3SaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
 {
-	return PXActionRefusedNotImplemented;
+    return PXActionRefusedNotImplemented;
 }

@@ -6,7 +6,7 @@
 // Windows Media Audio
 typedef struct PXWMA_
 {
-	unsigned int __dummy__;
+    unsigned int __dummy__;
 }
 PXWMA;
 

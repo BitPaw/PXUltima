@@ -92,17 +92,17 @@ PXActionResult PXAPI PXFastFileLoadFromFile(PXResourceLoadInfo* const pxResource
 #endif
 
 
-	PXFastFile pxFastFile;
-	PXClear(PXFastFile, &pxFastFile);
+    PXFastFile pxFastFile;
+    PXClear(PXFastFile, &pxFastFile);
 
-	PXFile* const pxFile = pxResourceLoadInfo->FileReference;
+    PXFile* const pxFile = pxResourceLoadInfo->FileReference;
 
-	// Signature
-	{
-		const PXBool success = PXFileReadAndCompare(pxFile, PXSignature, 8);
+    // Signature
+    {
+        const PXBool success = PXFileReadAndCompare(pxFile, PXSignature, 8);
 
-		if(!success)
-		{
+        if(!success)
+        {
 #if PXLogEnable
             PXLogPrint
             (
@@ -113,11 +113,11 @@ PXActionResult PXAPI PXFastFileLoadFromFile(PXResourceLoadInfo* const pxResource
             );
 #endif
 
-			return PXActionRefusedInvalidHeaderSignature;
-		}
-	}
-	
-	PXFileReadI32U(pxFile, &pxFastFile.Version);
+            return PXActionRefusedInvalidHeaderSignature;
+        }
+    }
+    
+    PXFileReadI32U(pxFile, &pxFastFile.Version);
   
     switch(pxFastFile.Version)
     {
@@ -253,10 +253,10 @@ PXActionResult PXAPI PXFastFileLoadFromFile(PXResourceLoadInfo* const pxResource
         Strings.Add(ReadASCIIZString(_reader));
 
     */
-	return PXActionSuccessful;
+    return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXFastFileSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
 {
-	return PXActionRefusedNotImplemented;
+    return PXActionRefusedNotImplemented;
 }

@@ -6,7 +6,7 @@
 
 PXActionResult PXAPI PXSalsa20Encrypt(PXSalsa20* const pxSalsa20, PXFile* const input, PXFile* const output)
 {
-	return PXActionRefusedNotImplemented;
+    return PXActionRefusedNotImplemented;
 }
 
 PXActionResult PXAPI PXSalsa20Decrypt(PXSalsa20* const pxSalsa20, PXFile* const input, PXFile* const output)
@@ -23,13 +23,13 @@ PXActionResult PXAPI PXSalsa20Decrypt(PXSalsa20* const pxSalsa20, PXFile* const 
     );
 #endif  
 
-	// Read buffer
+    // Read buffer
 
-	//   byte[] decryptedData = decryptor.TransformFinalBlock(_reader.ReadBytes(size), 0, size);
+    //   byte[] decryptedData = decryptor.TransformFinalBlock(_reader.ReadBytes(size), 0, size);
 
 
 
-	PXFileCursorAdvance(input, pxSalsa20->DataSize);
+    PXFileCursorAdvance(input, pxSalsa20->DataSize);
 
-	return PXActionRefusedNotImplemented;
+    return PXActionRefusedNotImplemented;
 }

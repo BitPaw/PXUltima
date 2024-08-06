@@ -16,56 +16,56 @@
 
 PXActionResult PXAPI PXUserNameGet(PXText* const name)
 {
-	switch (name->Format)
-	{
-		case TextFormatUTF8:
-		case TextFormatASCII:
-		{
+    switch (name->Format)
+    {
+        case TextFormatUTF8:
+        case TextFormatASCII:
+        {
 #if OSUnix
             name->SizeUsed  = getlogin_r(name->TextA, name->SizeAllocated); // unistd.h
 
             const PXBool success = name->SizeUsed > 0;
 
-			return success;
+            return success;
 
 #elif OSWindows
-			DWORD size = name->SizeAllocated;
+            DWORD size = name->SizeAllocated;
 
-			const PXBool sucessful = GetComputerNameA(name->TextA, &size); // Windows 2000 (+UWP), Kernel32.dll, winbase.h
-			
-			PXActionOnErrorFetchAndReturn(!sucessful);
+            const PXBool sucessful = GetComputerNameA(name->TextA, &size); // Windows 2000 (+UWP), Kernel32.dll, winbase.h
+            
+            PXActionOnErrorFetchAndReturn(!sucessful);
 
-			name->SizeUsed = (PXSize)sucessful * (PXSize)size;
+            name->SizeUsed = (PXSize)sucessful * (PXSize)size;
 
-			return PXActionSuccessful;
+            return PXActionSuccessful;
 #endif
 
-			break;
-		}
-		case TextFormatUNICODE:
-		{
+            break;
+        }
+        case TextFormatUNICODE:
+        {
 #if OSUnix
 
-			return 0;
-			
+            return 0;
+            
 #elif OSWindows
-			DWORD size = name->SizeAllocated;
+            DWORD size = name->SizeAllocated;
 
-			const PXBool sucessful = GetComputerNameW(name->TextW, &size); // Windows 2000 (+UWP), Kernel32.dll, winbase.h
+            const PXBool sucessful = GetComputerNameW(name->TextW, &size); // Windows 2000 (+UWP), Kernel32.dll, winbase.h
 
-			PXActionOnErrorFetchAndReturn(!sucessful);
+            PXActionOnErrorFetchAndReturn(!sucessful);
 
-			name->NumberOfCharacters = (PXSize)sucessful * (PXSize)size;
-			name->SizeUsed = name->NumberOfCharacters * sizeof(wchar_t);
+            name->NumberOfCharacters = (PXSize)sucessful * (PXSize)size;
+            name->SizeUsed = name->NumberOfCharacters * sizeof(wchar_t);
 
-			return PXActionSuccessful;
+            return PXActionSuccessful;
 #endif
 
-			break;
-		}
-	}
+            break;
+        }
+    }
 
-	return PXActionRefusedFormatNotSupported;
+    return PXActionRefusedFormatNotSupported;
 }
 
 PXBool PXAPI PXUserEnviromentFolderGet(PXText* const name, const PXUserEnviromentFolderID pxUserEnviromentFolderID)
@@ -78,63 +78,63 @@ PXBool PXAPI PXUserEnviromentFolderGet(PXText* const name, const PXUserEnviromen
 
 #if WindowsAtleastVista && PXOSWindowsDestop
 
-	const GUID* pathID = 0;
+    const GUID* pathID = 0;
 
-	switch (pxUserEnviromentFolderID)
-	{
-		case PXUserEnviromentFolderIDAppData:
-			pathID = &FOLDERID_RoamingAppData;
-			break;
+    switch (pxUserEnviromentFolderID)
+    {
+        case PXUserEnviromentFolderIDAppData:
+            pathID = &FOLDERID_RoamingAppData;
+            break;
 
-		case PXUserEnviromentFolderIDDownload:
-			pathID = &FOLDERID_Downloads;
-			break;
+        case PXUserEnviromentFolderIDDownload:
+            pathID = &FOLDERID_Downloads;
+            break;
 
-		case PXUserEnviromentFolderIDDocuments:
-			pathID = &FOLDERID_Documents;
-			break;
+        case PXUserEnviromentFolderIDDocuments:
+            pathID = &FOLDERID_Documents;
+            break;
 
-		case PXUserEnviromentFolderIDPictures:
-			pathID = &FOLDERID_Pictures;
-			break;
+        case PXUserEnviromentFolderIDPictures:
+            pathID = &FOLDERID_Pictures;
+            break;
 
-		case PXUserEnviromentFolderIDScreenshots:
-			pathID = &FOLDERID_Screenshots;
-			break;
+        case PXUserEnviromentFolderIDScreenshots:
+            pathID = &FOLDERID_Screenshots;
+            break;
 
-		case PXUserEnviromentFolderIDVideo:
-			pathID = &FOLDERID_Videos;
-			break;
+        case PXUserEnviromentFolderIDVideo:
+            pathID = &FOLDERID_Videos;
+            break;
 
-		case PXUserEnviromentFolderIDDestop:
-			pathID = &FOLDERID_Desktop;
-			break;
+        case PXUserEnviromentFolderIDDestop:
+            pathID = &FOLDERID_Desktop;
+            break;
 
-		case PXUserEnviromentFolderIDFonts:
-			pathID = &FOLDERID_Fonts;
-			break;
+        case PXUserEnviromentFolderIDFonts:
+            pathID = &FOLDERID_Fonts;
+            break;
 
-		case PXUserEnviromentFolderIDMusic:
-			pathID = &FOLDERID_Music;
-			break;
+        case PXUserEnviromentFolderIDMusic:
+            pathID = &FOLDERID_Music;
+            break;
 
-		default:
-			return PXFalse;
-	}
+        default:
+            return PXFalse;
+    }
 
-	PXText temporalCache;
-	PXTextConstructBufferW(&temporalCache, 260);
+    PXText temporalCache;
+    PXTextConstructBufferW(&temporalCache, 260);
 
-	const HRESULT result = SHGetKnownFolderPath((KNOWNFOLDERID*)pathID, KF_FLAG_DEFAULT_PATH, PXNull, (PWSTR*)temporalCache.TextW); // Windows Vista, Shell32.dll, shlobj_core.h
-	const PXBool success = S_OK == result;
+    const HRESULT result = SHGetKnownFolderPath((KNOWNFOLDERID*)pathID, KF_FLAG_DEFAULT_PATH, PXNull, (PWSTR*)temporalCache.TextW); // Windows Vista, Shell32.dll, shlobj_core.h
+    const PXBool success = S_OK == result;
 
-	PXTextCopy(&temporalCache, name);
+    PXTextCopy(&temporalCache, name);
 
-	CoTaskMemFree(temporalCache.TextW); // Needs to be called in ANY case.
+    CoTaskMemFree(temporalCache.TextW); // Needs to be called in ANY case.
 
-	return success;
+    return success;
 #else
-	return PXFalse;
+    return PXFalse;
 #endif
 #endif
 }

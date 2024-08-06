@@ -37,43 +37,43 @@
 typedef struct PXRectangleOffset_ PXRectangleOffset;
 
 /*
-	+----+----+----+----+
-	| XA | YA | ZA | Or |
-	+----+----+----+----+
-	|  0 |  1 |  2 |  3 |
-	|  4 |  5 |  6 |  7 |
-	|  8 |  9 | 10 | 11 |
-	| 12 | 13 | 14 | 15 |
-	+----+----+----+----+
+    +----+----+----+----+
+    | XA | YA | ZA | Or |
+    +----+----+----+----+
+    |  0 |  1 |  2 |  3 |
+    |  4 |  5 |  6 |  7 |
+    |  8 |  9 | 10 | 11 |
+    | 12 | 13 | 14 | 15 |
+    +----+----+----+----+
 */
 typedef struct PXMatrix4x4F_
 {
-	union
-	{
-		struct
-		{
-			float XX;
-			float XY;
-			float XZ;
-			float XW;
-			float YX;
-			float YY;
-			float YZ;
-			float YW;
-			float ZX;
-			float ZY;
-			float ZZ;
-			float ZW;
-			float WX;
-			float WY;
-			float WZ;
-			float WW;
-		};
+    union
+    {
+        struct
+        {
+            float XX;
+            float XY;
+            float XZ;
+            float XW;
+            float YX;
+            float YY;
+            float YZ;
+            float YW;
+            float ZX;
+            float ZY;
+            float ZZ;
+            float ZW;
+            float WX;
+            float WY;
+            float WZ;
+            float WW;
+        };
 
-		float Data[16];
+        float Data[16];
 
-		float DataXY[4][4];
-	};
+        float DataXY[4][4];
+    };
 }
 PXMatrix4x4F;
 

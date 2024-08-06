@@ -7,113 +7,113 @@
 PXActionResult PXAPI PXModLoaderScan(PXModLoader* const pxModLoader, const PXText* const pxTextModFileDirectory)
 {
 #if PXLogEnable
-	PXLogPrint
-	(
-		PXLoggingInfo,
-		"ModLoader",
-		"Scan",
-		"Loading Mods..."
-	);
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "ModLoader",
+        "Scan",
+        "Loading Mods..."
+    );
 #endif
 
-	PXDirectoryIterator pxDirectoryIterator;	
+    PXDirectoryIterator pxDirectoryIterator;    
 
-	// Open
-	{
-		const PXActionResult directoryOpenResult = PXDirectoryOpen(&pxDirectoryIterator, pxTextModFileDirectory);
+    // Open
+    {
+        const PXActionResult directoryOpenResult = PXDirectoryOpen(&pxDirectoryIterator, pxTextModFileDirectory);
 
-		PXActionReturnOnError(directoryOpenResult);
-	}
+        PXActionReturnOnError(directoryOpenResult);
+    }
 
-	do
-	{
-		PXMod pxMod;
-		PXClear(PXMod, &pxMod);
+    do
+    {
+        PXMod pxMod;
+        PXClear(PXMod, &pxMod);
 
-		PXLogPrint
-		(
-			PXLoggingInfo,
-			"Mod",
-			"Load",
-			"Possible Mod file deteced <%s>",
-			pxDirectoryIterator.EntryCurrent.Name
-		);
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "Mod",
+            "Load",
+            "Possible Mod file deteced <%s>",
+            pxDirectoryIterator.EntryCurrent.Name
+        );
 
-		PXText pyText;
-		PXTextConstructFromAdressA(&pyText, pxDirectoryIterator.EntryCurrent.FullPath, pxDirectoryIterator.EntryCurrent.FullPathSize, pxDirectoryIterator.EntryCurrent.FullPathSize);
+        PXText pyText;
+        PXTextConstructFromAdressA(&pyText, pxDirectoryIterator.EntryCurrent.FullPath, pxDirectoryIterator.EntryCurrent.FullPathSize, pxDirectoryIterator.EntryCurrent.FullPathSize);
 
-		const PXActionResult pxActionResult = PXLibraryOpen(&pxMod.Library, &pyText);
+        const PXActionResult pxActionResult = PXLibraryOpen(&pxMod.Library, &pyText);
 
-		if (pxActionResult != PXActionSuccessful)
-		{
-			PXLogPrint
-			(
-				PXLoggingError,
-				"Mod",
-				"Load",
-				"File is not a Mod and cannot be opened <%s>",
-				pxDirectoryIterator.EntryCurrent.FullPath
-			);
+        if (pxActionResult != PXActionSuccessful)
+        {
+            PXLogPrint
+            (
+                PXLoggingError,
+                "Mod",
+                "Load",
+                "File is not a Mod and cannot be opened <%s>",
+                pxDirectoryIterator.EntryCurrent.FullPath
+            );
 
-			continue;
-		}
+            continue;
+        }
 
-		PXLogPrint
-		(
-			PXLoggingInfo,
-			"Mod",
-			"Load",
-			"Library detected, try fetching functions in <%s>",
-			pxDirectoryIterator.EntryCurrent.FullPath
-		);
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "Mod",
+            "Load",
+            "Library detected, try fetching functions in <%s>",
+            pxDirectoryIterator.EntryCurrent.FullPath
+        );
 
-		PXLibraryGetSymbolA(&pxMod.Library, &pxMod.Load, PXModLoadFunctionName);
+        PXLibraryGetSymbolA(&pxMod.Library, &pxMod.Load, PXModLoadFunctionName);
 
-		if (!pxMod.Load)
-		{
-			PXLogPrint
-			(
-				PXLoggingError,
-				"Mod",
-				"Load",
-				"Library does not contain function <%s>. Cannot use mod <%s>",
-				PXModLoadFunctionName,
-				pxDirectoryIterator.EntryCurrent.FullPath
-			);
+        if (!pxMod.Load)
+        {
+            PXLogPrint
+            (
+                PXLoggingError,
+                "Mod",
+                "Load",
+                "Library does not contain function <%s>. Cannot use mod <%s>",
+                PXModLoadFunctionName,
+                pxDirectoryIterator.EntryCurrent.FullPath
+            );
 
-			continue;
-		}
-		 
-		PXLogPrint
-		(
-			PXLoggingInfo,
-			"Mod",
-			"Load",
-			"Function detected <%s>. Linking.. <%s>",
-			PXModLoadFunctionName,
-			pxDirectoryIterator.EntryCurrent.FullPath
-		);
+            continue;
+        }
+         
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "Mod",
+            "Load",
+            "Function detected <%s>. Linking.. <%s>",
+            PXModLoadFunctionName,
+            pxDirectoryIterator.EntryCurrent.FullPath
+        );
 
-		PXModLoaderAdd(pxModLoader, &pxMod);
-	}
-	while (PXDirectoryNext(&pxDirectoryIterator));
+        PXModLoaderAdd(pxModLoader, &pxMod);
+    }
+    while (PXDirectoryNext(&pxDirectoryIterator));
 
-	PXDirectoryClose(&pxDirectoryIterator);
+    PXDirectoryClose(&pxDirectoryIterator);
 
-	return PXActionSuccessful;
+    return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXModLoaderAdd(PXModLoader* const pxModLoader, PXMod* const pxMod)
 {
-	pxMod->Load(PXNull, pxMod, 0);
+    pxMod->Load(PXNull, pxMod, 0);
 
-	PXLogPrint
-	(
-		PXLoggingInfo,
-		"Mod",
-		"Load",
-		"<%s>, <%s>",
-		pxMod->Name,
-		pxMod->BuildDate
-	);
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "Mod",
+        "Load",
+        "<%s>, <%s>",
+        pxMod->Name,
+        pxMod->BuildDate
+    );
 }

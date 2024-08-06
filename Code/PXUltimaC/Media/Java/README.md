@@ -71,7 +71,7 @@ Example of a Java function prototype in C:
     // Object creation
     jclass myJavaObjectClass = env->FindClass("com/path/to/package/class"); // Get the class definition
     jobject myJavaObject = env->AllocObject(myJavaObjectClass); // Create the class
-	
+    
     // Get definition of the field
     jfieldID fieldIDName = env->GetFieldID(userDataClass , "name", "Ljava/lang/String;");
     jfieldID fieldIDDoubleValue = env->GetFieldID(userDataClass , "value", "D");

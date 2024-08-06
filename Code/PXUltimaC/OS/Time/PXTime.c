@@ -10,132 +10,132 @@
 
 PXTimeMonth PXAPI PXTimeMonthFromID(const PXInt8U monthID)
 {
-	switch(monthID)
-	{
-		case 1u: return MonthJanuary;
-		case 2u: return MonthFebruary;
-		case 3u: return MonthMarch;
-		case 4u: return MonthApril;
-		case 5u: return MonthMarch;
-		case 6u: return MonthJune;
-		case 7u: return MonthJuly;
-		case 8u: return MonthAugust;
-		case 9u: return MonthSeptember;
-		case 10u: return MonthOctober;
-		case 11u: return MonthNovember;
-		case 12u: return MonthDecember;
-		default: return MonthInvalid;
-	}
+    switch(monthID)
+    {
+        case 1u: return MonthJanuary;
+        case 2u: return MonthFebruary;
+        case 3u: return MonthMarch;
+        case 4u: return MonthApril;
+        case 5u: return MonthMarch;
+        case 6u: return MonthJune;
+        case 7u: return MonthJuly;
+        case 8u: return MonthAugust;
+        case 9u: return MonthSeptember;
+        case 10u: return MonthOctober;
+        case 11u: return MonthNovember;
+        case 12u: return MonthDecember;
+        default: return MonthInvalid;
+    }
 }
 
 PXTimeDayOfWeek PXAPI PXTimeDayFromID(const PXInt8U dayID)
 {
-	switch(dayID)
-	{
-		case 1u: return DayMonday;
-		case 2u: return DayTuesday;
-		case 3u: return DayWednesday;
-		case 4u: return DayThursday;
-		case 5u: return DayFriday;
-		case 6u: return DaySaturday;
-		case 0u: return DaySunday;
-		default: return DayInvalid;
-	}
+    switch(dayID)
+    {
+        case 1u: return DayMonday;
+        case 2u: return DayTuesday;
+        case 3u: return DayWednesday;
+        case 4u: return DayThursday;
+        case 5u: return DayFriday;
+        case 6u: return DaySaturday;
+        case 0u: return DaySunday;
+        default: return DayInvalid;
+    }
 }
 
 void PXAPI PXTimeNow(PXTime* const pxTime)
 {
 #if OSUnix
 
-	// POSIX.1-2008 marks gettimeofday() as obsolete,
+    // POSIX.1-2008 marks gettimeofday() as obsolete,
 
-	// clock_gettime
-	long             days;
-	struct timespec  ts;
+    // clock_gettime
+    long             days;
+    struct timespec  ts;
 
-	const int resultID = clock_gettime(CLOCK_REALTIME, &ts);
-	const PXBool success = -1 == resultID;
-	//const PXActionResult result = POSIXError(success);
+    const int resultID = clock_gettime(CLOCK_REALTIME, &ts);
+    const PXBool success = -1 == resultID;
+    //const PXActionResult result = POSIXError(success);
 
-	//if(PXSuccess != result)
-	{
-		// Set 0 if error
-	}
+    //if(PXSuccess != result)
+    {
+        // Set 0 if error
+    }
 
-	pxTime->Year = 000000;
-	pxTime->Month = 000000;
-	pxTime->DayOfWeek = 000000;
-	pxTime->Day = 000000;
-	pxTime->Hour = 000000;
-	pxTime->Minute =000000;
-	pxTime->Second = 000000;
-	pxTime->Milliseconds = ts.tv_sec;
+    pxTime->Year = 000000;
+    pxTime->Month = 000000;
+    pxTime->DayOfWeek = 000000;
+    pxTime->Day = 000000;
+    pxTime->Hour = 000000;
+    pxTime->Minute =000000;
+    pxTime->Second = 000000;
+    pxTime->Milliseconds = ts.tv_sec;
 
 
 
-	// ctime
+    // ctime
 
 
 #elif OSWindows
-	SYSTEMTIME systemTime;
+    SYSTEMTIME systemTime;
 
-	//GetSystemTime(&st);
-	GetLocalTime(&systemTime);
+    //GetSystemTime(&st);
+    GetLocalTime(&systemTime);
 
-	PXTimeConvertFromOS(pxTime, &systemTime);
+    PXTimeConvertFromOS(pxTime, &systemTime);
 #endif
 }
 
 PXSize PXAPI PXTimeDelta(const PXTime* const timeA, const PXTime* const timeB, PXTime* const timeResult)
 {
-	timeResult->Day = (timeB->Day - timeA->Day);
-	timeResult->Hour = (timeB->Hour - timeA->Hour);
-	timeResult->Minute = (timeB->Minute - timeA->Minute);
-	timeResult->Second = (timeB->Second - timeA->Second);
-	timeResult->Milliseconds = (timeB->Milliseconds - timeA->Milliseconds);
+    timeResult->Day = (timeB->Day - timeA->Day);
+    timeResult->Hour = (timeB->Hour - timeA->Hour);
+    timeResult->Minute = (timeB->Minute - timeA->Minute);
+    timeResult->Second = (timeB->Second - timeA->Second);
+    timeResult->Milliseconds = (timeB->Milliseconds - timeA->Milliseconds);
 
-	return 0;
+    return 0;
 }
 
 PXSize PXAPI PXTimeMilliseconds(const PXTime* time)
 {
-	const PXSize dayDelta = (time->Day);
-	const PXSize hourDelta = (time->Hour) + (dayDelta * 24);
-	const PXSize minuteDelta = (time->Minute) + (hourDelta * 60);
-	const PXSize secondsDelta = (time->Second) + (minuteDelta * 60);
-	const PXSize millisecondsDelta = (time->Milliseconds) + (secondsDelta * 1000);
+    const PXSize dayDelta = (time->Day);
+    const PXSize hourDelta = (time->Hour) + (dayDelta * 24);
+    const PXSize minuteDelta = (time->Minute) + (hourDelta * 60);
+    const PXSize secondsDelta = (time->Second) + (minuteDelta * 60);
+    const PXSize millisecondsDelta = (time->Milliseconds) + (secondsDelta * 1000);
 
-	return millisecondsDelta;
+    return millisecondsDelta;
 }
 
 PXSize PXAPI PXTimeMillisecondsDelta(const PXTime* timeA, const PXTime* timeB)
 {
-	// Year = -1;
-	// Month = Month::Invalid;
-	// DayOfWeek = DayOfWeek::Invalid;;
+    // Year = -1;
+    // Month = Month::Invalid;
+    // DayOfWeek = DayOfWeek::Invalid;;
 
-	const PXSize dayDelta = (timeB->Day - timeA->Day);
-	const PXSize hourDelta = (timeB->Hour - timeA->Hour) + (dayDelta * 24);
-	const PXSize minuteDelta = (timeB->Minute - timeA->Minute) + (hourDelta * 60);
-	const PXSize secondsDelta = (timeB->Second - timeA->Second) + (minuteDelta * 60);
-	const PXSize millisecondsDelta = (timeB->Milliseconds - timeA->Milliseconds) + (secondsDelta * 1000);
+    const PXSize dayDelta = (timeB->Day - timeA->Day);
+    const PXSize hourDelta = (timeB->Hour - timeA->Hour) + (dayDelta * 24);
+    const PXSize minuteDelta = (timeB->Minute - timeA->Minute) + (hourDelta * 60);
+    const PXSize secondsDelta = (timeB->Second - timeA->Second) + (minuteDelta * 60);
+    const PXSize millisecondsDelta = (timeB->Milliseconds - timeA->Milliseconds) + (secondsDelta * 1000);
 
-	return millisecondsDelta;
+    return millisecondsDelta;
 }
 
 float PXAPI PXTimeCounterStampToSecoundsF(const PXInt64U timestamp)
 {
-	float result = 0;
+    float result = 0;
 
-	LARGE_INTEGER frequency;
+    LARGE_INTEGER frequency;
 
-	QueryPerformanceFrequency(&frequency);
+    QueryPerformanceFrequency(&frequency);
 
-	result = timestamp / (float)frequency.QuadPart;
+    result = timestamp / (float)frequency.QuadPart;
 
-	//result /= 1000000.0f;
+    //result /= 1000000.0f;
 
-	return result;
+    return result;
 }
 
 
@@ -143,44 +143,44 @@ float PXAPI PXTimeCounterStampToSecoundsF(const PXInt64U timestamp)
 PXInt64U PXAPI PXTimeCounterStampGet()
 {
 #if OSUnix
-	struct timespec  ts;
+    struct timespec  ts;
 
-	const int resultID = clock_gettime(CLOCK_MONOTONIC, &ts); // CLOCK_THREAD_CPUTIME_ID
-	const PXBool success = -1 == resultID;
-	//const PXActionResult result = POSIXError(success);
+    const int resultID = clock_gettime(CLOCK_MONOTONIC, &ts); // CLOCK_THREAD_CPUTIME_ID
+    const PXBool success = -1 == resultID;
+    //const PXActionResult result = POSIXError(success);
 
-	if(success)
-	{
-			return ts.tv_sec;
-	}
-	else
-	{
-			return 0;
-	}
+    if(success)
+    {
+            return ts.tv_sec;
+    }
+    else
+    {
+            return 0;
+    }
 
 #elif OSWindows
 
 
-	LARGE_INTEGER largeInteger;
-	const BOOL success = QueryPerformanceCounter(&largeInteger); // Windows 2000, Kernel32.dll
+    LARGE_INTEGER largeInteger;
+    const BOOL success = QueryPerformanceCounter(&largeInteger); // Windows 2000, Kernel32.dll
 
-	if(success)
-	{
-		return largeInteger.QuadPart;
-	}
-	else
-	{
-		return 0;
-	}
+    if(success)
+    {
+        return largeInteger.QuadPart;
+    }
+    else
+    {
+        return 0;
+    }
 #else
-	return 0;
+    return 0;
 #endif
 }
 
 PXInt64U PXAPI PXTimeCounterFrequencyGet()
 {
 #if OSUnix
-	/*
+    /*
   if (clock_getres(clock, &ts) == -1) {
                perror("clock_getres");
                exit(EXIT_FAILURE);
@@ -192,25 +192,25 @@ PXInt64U PXAPI PXTimeCounterFrequencyGet()
 */
 
 
-	return 0;
+    return 0;
 #elif OSWindows
-	LARGE_INTEGER largeInteger;
-	const BOOL success = QueryPerformanceFrequency(&largeInteger); // Windows 2000, Kernel32.dll
+    LARGE_INTEGER largeInteger;
+    const BOOL success = QueryPerformanceFrequency(&largeInteger); // Windows 2000, Kernel32.dll
 
-	return largeInteger.QuadPart;
+    return largeInteger.QuadPart;
 #endif
 }
 
 #if OSWindows
 void PXAPI PXTimeConvertFromOS(PXTime* const time, const SYSTEMTIME* const systemTime)
 {
-	time->Year = systemTime->wYear;
-	time->Month = systemTime->wMonth;
-	time->DayOfWeek = systemTime->wDayOfWeek;
-	time->Day = systemTime->wDay;
-	time->Hour = systemTime->wHour;
-	time->Minute = systemTime->wMinute;
-	time->Second = systemTime->wSecond;
-	time->Milliseconds = systemTime->wMilliseconds;
+    time->Year = systemTime->wYear;
+    time->Month = systemTime->wMonth;
+    time->DayOfWeek = systemTime->wDayOfWeek;
+    time->Day = systemTime->wDay;
+    time->Hour = systemTime->wHour;
+    time->Minute = systemTime->wMinute;
+    time->Second = systemTime->wSecond;
+    time->Milliseconds = systemTime->wMilliseconds;
 }
 #endif

@@ -5,32 +5,32 @@
 
 typedef struct PXGIFImageDescriptor_
 {
-	PXInt16U LeftPosition;
-	PXInt16U TopPosition;
-	PXInt16U Width;
-	PXInt16U Height;
-	PXInt8U Separator;
-	PXInt8U LocalColorTableSize;
-	PXInt8U Reserved;
-	PXInt8U SortFlag;
-	PXInt8U InterlaceFlag;
-	PXInt8U LocalColorTableFlag;
+    PXInt16U LeftPosition;
+    PXInt16U TopPosition;
+    PXInt16U Width;
+    PXInt16U Height;
+    PXInt8U Separator;
+    PXInt8U LocalColorTableSize;
+    PXInt8U Reserved;
+    PXInt8U SortFlag;
+    PXInt8U InterlaceFlag;
+    PXInt8U LocalColorTableFlag;
 }
 PXGIFImageDescriptor;
 
 typedef struct PXGIF_
 {
-	PXInt16U Width;
-	PXInt16U Height;
+    PXInt16U Width;
+    PXInt16U Height;
 
-	PXInt8U BackgroundColorIndex;
-	PXInt8U PixelAspectRatio;
+    PXInt8U BackgroundColorIndex;
+    PXInt8U PixelAspectRatio;
 
-	PXInt8U GlobalColorTableSize;
-	PXInt8U ColorResolution;
+    PXInt8U GlobalColorTableSize;
+    PXInt8U ColorResolution;
 
-	PXBool IsGlobalColorTablePresent;
-	PXBool IsSorted;
+    PXBool IsGlobalColorTablePresent;
+    PXBool IsSorted;
 }
 PXGIF;
 

@@ -6,18 +6,18 @@
 
 typedef struct PXDialogSystem_
 {
-	PXLibrary CommonDialogLibrary;
+    PXLibrary CommonDialogLibrary;
 
-	void* DialogColorChooseA;
-	void* DialogColorChooseW;
-	void* DialogFontChooseA;
-	void* DialogFontChooseW;
-	void* DialogFileNameOpenGetA;
-	void* DialogFileNameOpenGetW;
-	void* DialogFileNameSaveGetA;
-	void* DialogFileNameSaveGetW;
-	void* DialogPrintA;
-	void* DialogPrintW;
+    void* DialogColorChooseA;
+    void* DialogColorChooseW;
+    void* DialogFontChooseA;
+    void* DialogFontChooseW;
+    void* DialogFileNameOpenGetA;
+    void* DialogFileNameOpenGetW;
+    void* DialogFileNameSaveGetA;
+    void* DialogFileNameSaveGetW;
+    void* DialogPrintA;
+    void* DialogPrintW;
 }
 PXDialogSystem;
 

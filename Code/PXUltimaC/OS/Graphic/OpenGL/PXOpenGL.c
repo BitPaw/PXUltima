@@ -5921,44 +5921,44 @@ PXShaderVariableType PXAPI PXOpenGLShaderVariableTypeFromID(const PXInt16U openG
     switch(openGLShaderVariableTypeID)
     {
         case GL_FLOAT: return PXShaderVariableTypeFloatSingle; // float
-        case GL_FLOAT_VEC2: return PXShaderVariableTypeFloatVector2; //  	vec2
-        case GL_FLOAT_VEC3: return PXShaderVariableTypeFloatVector3; // 	vec3
-        case GL_FLOAT_VEC4: return PXShaderVariableTypeFloatVector4; // 	vec4
-        case GL_INT: return PXShaderVariableTypeInt32SSingle; // 	int
-        case GL_INT_VEC2: return PXShaderVariableTypeInt32SVector2; // 	ivec2
-        case GL_INT_VEC3: return PXShaderVariableTypeInt32SVector3; // 	ivec3
-        case GL_INT_VEC4: return PXShaderVariableTypeInt32SVector4; // 	ivec4
+        case GL_FLOAT_VEC2: return PXShaderVariableTypeFloatVector2; //      vec2
+        case GL_FLOAT_VEC3: return PXShaderVariableTypeFloatVector3; //     vec3
+        case GL_FLOAT_VEC4: return PXShaderVariableTypeFloatVector4; //     vec4
+        case GL_INT: return PXShaderVariableTypeInt32SSingle; //     int
+        case GL_INT_VEC2: return PXShaderVariableTypeInt32SVector2; //     ivec2
+        case GL_INT_VEC3: return PXShaderVariableTypeInt32SVector3; //     ivec3
+        case GL_INT_VEC4: return PXShaderVariableTypeInt32SVector4; //     ivec4
         case GL_UNSIGNED_INT: return PXShaderVariableTypeInt32USingle; // unsigned int
         case GL_UNSIGNED_INT_VEC2: return PXShaderVariableTypeInt32UVector2; // uvec2
-        case GL_UNSIGNED_INT_VEC3: return PXShaderVariableTypeInt32UVector3; // 	uvec3
-        case GL_UNSIGNED_INT_VEC4: return PXShaderVariableTypeInt32UVector4; // 	uvec4
-        case GL_BOOL: return PXShaderVariableTypeBoolSignle; // 	bool
+        case GL_UNSIGNED_INT_VEC3: return PXShaderVariableTypeInt32UVector3; //     uvec3
+        case GL_UNSIGNED_INT_VEC4: return PXShaderVariableTypeInt32UVector4; //     uvec4
+        case GL_BOOL: return PXShaderVariableTypeBoolSignle; //     bool
         case GL_BOOL_VEC2: return PXShaderVariableTypeBoolVector2; // bvec2
-        case GL_BOOL_VEC3: return PXShaderVariableTypeBoolVector3; // 	bvec3
-        case GL_BOOL_VEC4: return PXShaderVariableTypeBoolVector4; // 	bvec4
-        case GL_FLOAT_MAT2: return PXShaderVariableTypeMatrix2x2; // 	mat2
-        case GL_FLOAT_MAT3: return PXShaderVariableTypeMatrix3x3; // 	mat3
-        case GL_FLOAT_MAT4: return PXShaderVariableTypeMatrix4x4; //  	mat4
-        case GL_FLOAT_MAT2x3: return PXShaderVariableTypeMatrix2x3; // 	mat2x3
-        case GL_FLOAT_MAT2x4: return PXShaderVariableTypeMatrix2x4; // 	mat2x4
-        case GL_FLOAT_MAT3x2: return PXShaderVariableTypeMatrix3x2; // 	mat3x2
-        case GL_FLOAT_MAT3x4: return PXShaderVariableTypeMatrix3x4; // 	mat3x4
-        case GL_FLOAT_MAT4x2: return PXShaderVariableTypeMatrix4x2; // 	mat4x2
-        case GL_FLOAT_MAT4x3: return PXShaderVariableTypeMatrix4x3; // 	mat4x3
+        case GL_BOOL_VEC3: return PXShaderVariableTypeBoolVector3; //     bvec3
+        case GL_BOOL_VEC4: return PXShaderVariableTypeBoolVector4; //     bvec4
+        case GL_FLOAT_MAT2: return PXShaderVariableTypeMatrix2x2; //     mat2
+        case GL_FLOAT_MAT3: return PXShaderVariableTypeMatrix3x3; //     mat3
+        case GL_FLOAT_MAT4: return PXShaderVariableTypeMatrix4x4; //      mat4
+        case GL_FLOAT_MAT2x3: return PXShaderVariableTypeMatrix2x3; //     mat2x3
+        case GL_FLOAT_MAT2x4: return PXShaderVariableTypeMatrix2x4; //     mat2x4
+        case GL_FLOAT_MAT3x2: return PXShaderVariableTypeMatrix3x2; //     mat3x2
+        case GL_FLOAT_MAT3x4: return PXShaderVariableTypeMatrix3x4; //     mat3x4
+        case GL_FLOAT_MAT4x2: return PXShaderVariableTypeMatrix4x2; //     mat4x2
+        case GL_FLOAT_MAT4x3: return PXShaderVariableTypeMatrix4x3; //     mat4x3
         case GL_SAMPLER_2D: return PXShaderVariableTypeSampler2DF; // sampler2D
-        case GL_SAMPLER_3D: return PXShaderVariableTypeSampler3DF; // 	sampler3D
-        case GL_SAMPLER_CUBE: return PXShaderVariableTypeSamplerCubeF; // 	samplerCube
-        case GL_SAMPLER_2D_SHADOW: return PXShaderVariableTypeSamplerF2DShadow; // 	sampler2DShadow
-        case GL_SAMPLER_2D_ARRAY: return PXShaderVariableTypeSampler2DArrayF; // 	sampler2DArray
-        case GL_SAMPLER_2D_ARRAY_SHADOW: return PXShaderVariableTypeSamplerF2DArrayShadow; // 	sampler2DArrayShadow
-        case GL_SAMPLER_CUBE_SHADOW: return PXShaderVariableTypeSamplerFCubeShadow; // 	samplerCubeShadow
-        case GL_INT_SAMPLER_2D: return PXShaderVariableTypeSampler2DI32S; // 	isampler2D
-        case GL_INT_SAMPLER_3D: return PXShaderVariableTypeSampler3DI32S; // 	isampler3D
-        case GL_INT_SAMPLER_CUBE: return PXShaderVariableTypeSamplerCubeI32S; // 	isamplerCube
-        case GL_INT_SAMPLER_2D_ARRAY: return PXShaderVariableTypeSampler2DArrayI32S; //  	isampler2DArray
-        case GL_UNSIGNED_INT_SAMPLER_2D: return PXShaderVariableTypeSampler2DI32U; // 	usampler2D
-        case GL_UNSIGNED_INT_SAMPLER_3D: return PXShaderVariableTypeSampler3DI32U; // 	usampler3D
-        case GL_UNSIGNED_INT_SAMPLER_CUBE: return PXShaderVariableTypeSamplerCubeI32U; // 	usamplerCube
+        case GL_SAMPLER_3D: return PXShaderVariableTypeSampler3DF; //     sampler3D
+        case GL_SAMPLER_CUBE: return PXShaderVariableTypeSamplerCubeF; //     samplerCube
+        case GL_SAMPLER_2D_SHADOW: return PXShaderVariableTypeSamplerF2DShadow; //     sampler2DShadow
+        case GL_SAMPLER_2D_ARRAY: return PXShaderVariableTypeSampler2DArrayF; //     sampler2DArray
+        case GL_SAMPLER_2D_ARRAY_SHADOW: return PXShaderVariableTypeSamplerF2DArrayShadow; //     sampler2DArrayShadow
+        case GL_SAMPLER_CUBE_SHADOW: return PXShaderVariableTypeSamplerFCubeShadow; //     samplerCubeShadow
+        case GL_INT_SAMPLER_2D: return PXShaderVariableTypeSampler2DI32S; //     isampler2D
+        case GL_INT_SAMPLER_3D: return PXShaderVariableTypeSampler3DI32S; //     isampler3D
+        case GL_INT_SAMPLER_CUBE: return PXShaderVariableTypeSamplerCubeI32S; //     isamplerCube
+        case GL_INT_SAMPLER_2D_ARRAY: return PXShaderVariableTypeSampler2DArrayI32S; //      isampler2DArray
+        case GL_UNSIGNED_INT_SAMPLER_2D: return PXShaderVariableTypeSampler2DI32U; //     usampler2D
+        case GL_UNSIGNED_INT_SAMPLER_3D: return PXShaderVariableTypeSampler3DI32U; //     usampler3D
+        case GL_UNSIGNED_INT_SAMPLER_CUBE: return PXShaderVariableTypeSamplerCubeI32U; //     usamplerCube
         case GL_UNSIGNED_INT_SAMPLER_2D_ARRAY: return PXShaderVariableTypeSampler2DArrayI32U; // usampler2DArray 
 
         default:

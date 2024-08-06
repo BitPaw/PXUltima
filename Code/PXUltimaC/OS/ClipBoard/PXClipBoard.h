@@ -6,40 +6,40 @@
 
 typedef enum PXClipBoardFormat_
 {
-	PXClipBoardFormatInvalid,
-	PXClipBoardFormatText,
-	PXClipBoardFormatPictureBitmap,
-	PXClipBoardFormatMetaFilePICT,
-	PXClipBoardFormatSYLK,
-	PXClipBoardFormatDIF,
-	PXClipBoardFormatPictureTIFF,
-	PXClipBoardFormatOEMTEXT,
-	PXClipBoardFormatDIB,
-	PXClipBoardFormatPALETTE,
-	PXClipBoardFormatPENDATA,
-	PXClipBoardFormatRIFF,
-	PXClipBoardFormatWAVE,
-	PXClipBoardFormatUNICODETEXT,
-	PXClipBoardFormatENHMETAFILE,
-	PXClipBoardForPXMathDROP,
-	PXClipBoardFormatLOCALE,
-	PXClipBoardFormatDIBV5,
-	PXClipBoardFormatMAX,
-	PXClipBoardFormatOWNERDISPLAY,
-	PXClipBoardFormatDSPTEXT,
-	PXClipBoardFormatDSPBITMAP,
-	PXClipBoardFormatDSPMETAFILEPICT,
-	PXClipBoardFormatDSPENHMETAFILE,
-	PXClipBoardFormatPRIVATEFIRST,
-	PXClipBoardFormatPRIVATELAST,
-	PXClipBoardFormatGDIOBJFIRST,
-	PXClipBoardFormatGDIOBJLAST,
+    PXClipBoardFormatInvalid,
+    PXClipBoardFormatText,
+    PXClipBoardFormatPictureBitmap,
+    PXClipBoardFormatMetaFilePICT,
+    PXClipBoardFormatSYLK,
+    PXClipBoardFormatDIF,
+    PXClipBoardFormatPictureTIFF,
+    PXClipBoardFormatOEMTEXT,
+    PXClipBoardFormatDIB,
+    PXClipBoardFormatPALETTE,
+    PXClipBoardFormatPENDATA,
+    PXClipBoardFormatRIFF,
+    PXClipBoardFormatWAVE,
+    PXClipBoardFormatUNICODETEXT,
+    PXClipBoardFormatENHMETAFILE,
+    PXClipBoardForPXMathDROP,
+    PXClipBoardFormatLOCALE,
+    PXClipBoardFormatDIBV5,
+    PXClipBoardFormatMAX,
+    PXClipBoardFormatOWNERDISPLAY,
+    PXClipBoardFormatDSPTEXT,
+    PXClipBoardFormatDSPBITMAP,
+    PXClipBoardFormatDSPMETAFILEPICT,
+    PXClipBoardFormatDSPENHMETAFILE,
+    PXClipBoardFormatPRIVATEFIRST,
+    PXClipBoardFormatPRIVATELAST,
+    PXClipBoardFormatGDIOBJFIRST,
+    PXClipBoardFormatGDIOBJLAST,
 }
 PXClipBoardFormat;
 
 typedef struct PXClipBoard_
 {
-	unsigned int __Dummy_;
+    unsigned int __Dummy_;
 }
 PXClipBoard;
 

@@ -11,12 +11,12 @@ typedef struct PXMod_ PXMod;
 
 typedef struct PXModLoadEventData_
 {
-	PXBool IsEssential;
+    PXBool IsEssential;
 
-	// Is 
-	PXBool RequestProgramTermination;
+    // Is 
+    PXBool RequestProgramTermination;
 
-	PXLibrary Library;
+    PXLibrary Library;
 }
 PXModLoadEventData;
 
@@ -27,28 +27,28 @@ typedef PXBool(PXAPI* PXModUnloadFunction)(void* const owner, PXMod* const pxMod
 
 typedef struct PXMod_
 {
-	char Name[32];
-	char BuildDate[32];
+    char Name[32];
+    char BuildDate[32];
 
-	void* Owner;
+    void* Owner;
 
-	PXModLoadFunction Load;
-	PXModInitializeFunction Initialize;
-	PXModDenitializeFunction Denitialize;
-	PXModUnloadFunction Unload;
+    PXModLoadFunction Load;
+    PXModInitializeFunction Initialize;
+    PXModDenitializeFunction Denitialize;
+    PXModUnloadFunction Unload;
 
-	PXLibrary Library;
+    PXLibrary Library;
 
-	// This ID is regulated by the engine.
-	// Used for internal identifaction and will be random each run.
-	PXInt32U ID;
+    // This ID is regulated by the engine.
+    // Used for internal identifaction and will be random each run.
+    PXInt32U ID;
 }
 PXMod;
 
 typedef struct PXModLoader_
 {
-	PXSize ModListSize;
-	PXMod* ModList;
+    PXSize ModListSize;
+    PXMod* ModList;
 }
 PXModLoader;
 

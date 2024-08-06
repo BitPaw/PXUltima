@@ -93,5 +93,5 @@ PXActionResult PXAPI PXHardDriveFetchAll(PXHardDrive* const hardDriveList, const
 
     *hardDriveListSize = (numberOfDrives);
 
-	return PXActionSuccessful;
+    return PXActionSuccessful;
 }

@@ -5,19 +5,19 @@
 
 typedef enum PXXMLSymbol_
 {
-	PXXMLSymbolInvalid,
+    PXXMLSymbolInvalid,
 
-	PXXMLSymbolUnkown,
+    PXXMLSymbolUnkown,
 
-	PXXMLSymbolTagOpenBegin, // <xxxx...
-	PXXMLSymbolTagOpenFull, // <xxxxx>...
+    PXXMLSymbolTagOpenBegin, // <xxxx...
+    PXXMLSymbolTagOpenFull, // <xxxxx>...
 
-	PXXMLSymbolTagCloseCurrent, // .../>
-	PXXMLSymbolTagCloseFull, // </>
+    PXXMLSymbolTagCloseCurrent, // .../>
+    PXXMLSymbolTagCloseFull, // </>
 
-	PXXMLSymbolAttribute,
+    PXXMLSymbolAttribute,
 
-	PXXMLSymbolRawData
+    PXXMLSymbolRawData
 }
 PXXMLSymbol;
 

@@ -1,6 +1,6 @@
 #ifndef PXKalmanFilterINCLUDE
 #define PXKalmanFilterINCLUDE
 
-#include <Media/PXType.h>
+#include <Media/PXResource.h>
 
 #endif

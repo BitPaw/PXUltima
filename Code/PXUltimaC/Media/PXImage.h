@@ -5,14 +5,14 @@
 
 typedef struct PXImage_
 {
-	void* PixelData;
-	PXSize PixelDataSize;
+    void* PixelData;
+    PXSize PixelDataSize;
 
-	PXSize Width;
-	PXSize Height;
-	PXSize Depth;
+    PXSize Width;
+    PXSize Height;
+    PXSize Depth;
 
-	PXColorFormat Format;
+    PXColorFormat Format;
 }
 PXImage;
 
@@ -33,18 +33,18 @@ PXPublic void* PXAPI PXImageDataPoint(const PXImage* const image, const PXSize x
 
 PXPublic PXSize PXAPI PXImagePixelPosition
 (
-	const PXImage* const image,
-	const PXSize x,
-	const PXSize y
+    const PXImage* const image,
+    const PXSize x,
+    const PXSize y
 );
 PXPublic void PXAPI PXImagePixelSetRGB8
 (
-	PXImage* const image,
-	const PXSize x,
-	const PXSize y,
-	const unsigned char red,
-	const unsigned char green,
-	const unsigned char blue
+    PXImage* const image,
+    const PXSize x,
+    const PXSize y,
+    const unsigned char red,
+    const unsigned char green,
+    const unsigned char blue
 );
 
 #endif

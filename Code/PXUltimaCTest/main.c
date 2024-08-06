@@ -47,24 +47,24 @@ int _fltused = 0;
 
 void OnFileElementDetected(PXFileElementInfo* pxFileElementInfo)
 {
-	switch (pxFileElementInfo->Type)
-	{
-		case PXFileElementInfoTypeInvalid:
-		case PXFileElementInfoTypeFile:
-		{
-			printf("| %-4s | %-20ls | %i |\n", "File", pxFileElementInfo->Name, pxFileElementInfo->Size);		
+    switch (pxFileElementInfo->Type)
+    {
+        case PXFileElementInfoTypeInvalid:
+        case PXFileElementInfoTypeFile:
+        {
+            printf("| %-4s | %-20ls | %i |\n", "File", pxFileElementInfo->Name, pxFileElementInfo->Size);        
 
-			break;
-		}
-		case PXFileElementInfoTypeDictionary:
-		{
-			printf("| %-4s | %-20ls |\n", "DIR", pxFileElementInfo->Name);
-			break;
-		}
+            break;
+        }
+        case PXFileElementInfoTypeDictionary:
+        {
+            printf("| %-4s | %-20ls |\n", "DIR", pxFileElementInfo->Name);
+            break;
+        }
 
-		default:
-			break;
-	}
+        default:
+            break;
+    }
 
 
 }
@@ -73,14 +73,14 @@ void OnFileElementDetected(PXFileElementInfo* pxFileElementInfo)
 
 void PXTextMatchTest()
 {
-	const PXBool a = PXTextMatchW(L"MyFile.h", 8, L"*.h", 3);
-	printf("");
+    const PXBool a = PXTextMatchW(L"MyFile.h", 8, L"*.h", 3);
+    printf("");
 
-	const PXBool b = PXTextMatchW(L"MyFile.c", 8, L"*.h", 3);
-	printf("");
+    const PXBool b = PXTextMatchW(L"MyFile.c", 8, L"*.h", 3);
+    printf("");
 
-	const PXBool c = PXTextMatchW(L"MyFile.*", 8, L"*.h", 3);
-	printf("");
+    const PXBool c = PXTextMatchW(L"MyFile.*", 8, L"*.h", 3);
+    printf("");
 }*/
 
 #include "Compiler/PXTestCompiler.h"
@@ -93,83 +93,124 @@ void PXTextMatchTest()
 #include <OS/Hardware/PXProcessor.h>
 #include <Math/PXMath.h>
 #include <OS/Time/PXTime.h>
+#include <OS/Async/PXProcess.h>
+#include <OS/Async/PXThread.h>
 
 int main()
 {
-	PXConsoleWrite(0, "[i] Starting testing...\n");
+    PXConsoleWrite(0, "[i] Starting testing...\n");
 
 
-	
+    PXThread threads[3000];
+    PXClearList(PXThread, threads, 3000);
+    const PXSize xx = 3000;
+    PXSize oeoeo = 0;
 
-	const PXSize amount = 100000000;
-	const float res = 1/25.0f;
-	
-	PXConsoleWriteF(0, "[%3i] --- Start ---\n", amount);
-	
-	PXInt64U startTime = PXTimeCounterStampGet();
 
-	for(PXSize i = 0; i < amount; i++)
-	{
-		float input = i * res;
-		float output = PXMathSinusF(input);
+    PXThread* refA = threads;
+    PXThread** refB = &refA;
 
-		//PXConsoleWriteF(0, "[%3i] %6.4f -> %6.4f\n", i, input, output);
-	}
+    PXProcessThreadsListAll(PXNull, refB, xx, &oeoeo);
 
-	PXInt64U endTime = PXTimeCounterStampGet();
-	PXInt64U delta = endTime - startTime;
-	float endTimeInS = PXTimeCounterStampToSecoundsF(delta);
 
-	float avg = delta / (float)amount;
+    float percent = 0;
 
-	PXConsoleWriteF(0, "[%3i] Took: %6.3fs. AVG: %6.3fus\n", amount, endTimeInS, avg);
+    for(size_t i = 0; i < 60000; i++)
+    {
+        const DWORD max = 0x7FFF;
+        const DWORD min = 0x25;
+    
+        percent += 0.0001;
 
+        DWORD hz = (percent * max) + min;  // 0x25 through 0x7FFF)
 
 
 
-	PXProcessor pxProcessor;
+        Beep(hz, 1);
+        PXConsoleWriteF(0, "[Beep] %i\n", hz);
+    }
 
-	PXProcessorFetchInfo(&pxProcessor);
-
-	PXVideoCaptureDeviceList();
-
-
-
-
-
-	
-	PXResourceLoadInfo pxResourceLoadInfo;
-	pxResourceLoadInfo.Manager = 0;
-	pxResourceLoadInfo.Target = 0;
-	pxResourceLoadInfo.FileReference = PXNull;
-	pxResourceLoadInfo.Type = 0;
+    MessageBeep(0xFFFFFFFF);
+    MessageBeep(MB_ICONASTERISK);
+    MessageBeep(MB_ICONEXCLAMATION);
+    MessageBeep(MB_ICONERROR);
+    MessageBeep(MB_ICONHAND);
+    MessageBeep(MB_ICONINFORMATION);
+    MessageBeep(MB_ICONQUESTION);
+    MessageBeep(MB_ICONSTOP);
+    MessageBeep(MB_ICONWARNING);
+    MessageBeep(MB_OK);
 
 
-	PXResourceLoadA(&pxResourceLoadInfo, "H:\\S.n64");
+    const PXSize amount = 100000000;
+    const float res = 1/25.0f;
+    
+    PXConsoleWriteF(0, "[%3i] --- Start ---\n", amount);
+    
+    PXInt64U startTime = PXTimeCounterStampGet();
+
+    for(PXSize i = 0; i < amount; i++)
+    {
+        float input = i * res;
+        float output = PXMathSinusF(input);
+
+        //PXConsoleWriteF(0, "[%3i] %6.4f -> %6.4f\n", i, input, output);
+    }
+
+    PXInt64U endTime = PXTimeCounterStampGet();
+    PXInt64U delta = endTime - startTime;
+    float endTimeInS = PXTimeCounterStampToSecoundsF(delta);
+
+    float avg = delta / (float)amount;
+
+    PXConsoleWriteF(0, "[%3i] Took: %6.3fs. AVG: %6.3fus\n", amount, endTimeInS, avg);
+
+
+
+
+    PXProcessor pxProcessor;
+
+    PXProcessorFetchInfo(&pxProcessor);
+
+    PXVideoCaptureDeviceList();
+
+
+
+
+
+    
+    PXResourceLoadInfo pxResourceLoadInfo;
+    pxResourceLoadInfo.Manager = 0;
+    pxResourceLoadInfo.Target = 0;
+    pxResourceLoadInfo.FileReference = PXNull;
+    pxResourceLoadInfo.Type = 0;
+
+
+    PXResourceLoadA(&pxResourceLoadInfo, "H:\\S.n64");
 
 
 #if 0
-	PXHardwareInfo pxHardwareInfo;
-	PXHardwareInfoScan(&pxHardwareInfo, PXHardwareInfoAll);
+    PXHardwareInfo pxHardwareInfo;
+    PXHardwareInfoScan(&pxHardwareInfo, PXHardwareInfoAll);
 
-	while(1)
-	{
-		PXInt32S temperature = 0;
-
-
-
-		//PXProcessorTemperature(&temperature);
+    while(1)
+    {
+        PXInt32S temperature = 0;
 
 
-	}
+
+        //PXProcessorTemperature(&temperature);
+
+
+    }
 #endif
 
-	PXTestCompilerAll();
+    PXTestCompilerAll();
 
-	PXTestWindowAll();
-	PXMediaTestAll();
-	
-	PXTestDebugAll();
+    PXTestWindowAll();
+    PXMediaTestAll();
+    
+    PXTestDebugAll();
 
 
 
@@ -178,24 +219,24 @@ int main()
 
 #if 0
 
-	PXResourceLoadInfo pxResourceLoadInfo;
-	pxResourceLoadInfo.Target = 0;
-	pxResourceLoadInfo.FileReference = 0;
-	pxResourceLoadInfo.Type = PXGraphicResourceTypeInvalid;
+    PXResourceLoadInfo pxResourceLoadInfo;
+    pxResourceLoadInfo.Target = 0;
+    pxResourceLoadInfo.FileReference = 0;
+    pxResourceLoadInfo.Type = PXGraphicResourceTypeInvalid;
 
 
-	PXResourceLoadA(&pxResourceLoadInfo, "N:\\NAS\\Games\\Steam\\steamapps\\common\\Call of Duty Black Ops II\\zone\\all\\afghanistan.ff");
+    PXResourceLoadA(&pxResourceLoadInfo, "N:\\NAS\\Games\\Steam\\steamapps\\common\\Call of Duty Black Ops II\\zone\\all\\afghanistan.ff");
 
 #endif // 1
 
 
 
 #if 0
-	PXTestWindowAll();
+    PXTestWindowAll();
 #endif // 0
 
 #if 0
-	PXTestNetworkAll();
+    PXTestNetworkAll();
 #endif // 0
 
 
@@ -204,47 +245,47 @@ int main()
 
 
 #if 0
-	{
-		PXBinaryWindows binaryWindows;
+    {
+        PXBinaryWindows binaryWindows;
 
-		const PXActionResult result = PXResourceLoadA(&binaryWindows, "C:\\Data\\WorkSpace\\[GIT]\\BitFireEngine\\[Export]\\GameCleaved\\32B-Windows-Release\\GameCleaved2K.exe");
+        const PXActionResult result = PXResourceLoadA(&binaryWindows, "C:\\Data\\WorkSpace\\[GIT]\\BitFireEngine\\[Export]\\GameCleaved\\32B-Windows-Release\\GameCleaved2K.exe");
 
-		printf("\n");
-	}
+        printf("\n");
+    }
 #endif // 1
 
 
 
 
 #if 0
-	{
-		PXImage pxImage;
-		PXClear(PXImage, &pxImage);
+    {
+        PXImage pxImage;
+        PXClear(PXImage, &pxImage);
 
-		const PXActionResult pxLoadResult = PXResourceLoadA(&pxImage, "_TEST_DATA_INPUT_\\ImageInput.bmp");
-		const PXActionResult pxSaveResult = PXResourceSaveA(&pxImage, "_TEST_DATA_INPUT_\\ImageInput_COPY.bmp", PXFileFormatBitMap);
+        const PXActionResult pxLoadResult = PXResourceLoadA(&pxImage, "_TEST_DATA_INPUT_\\ImageInput.bmp");
+        const PXActionResult pxSaveResult = PXResourceSaveA(&pxImage, "_TEST_DATA_INPUT_\\ImageInput_COPY.bmp", PXFileFormatBitMap);
 
-		printf("\n");
-	}
+        printf("\n");
+    }
 #endif // 1
 
 
 #if 0 // XML -> Document -> Image
-	{
-		PXKnowlegeGraph pxKnowlegeGraph;
-		PXDocument pxDocument;
-		PXImage pxImage;
+    {
+        PXKnowlegeGraph pxKnowlegeGraph;
+        PXDocument pxDocument;
+        PXImage pxImage;
 
-		const PXActionResult pxLoadResult = PXResourceLoadA(&pxDocument, "_TEST_DATA_INPUT_\\books.xml");
+        const PXActionResult pxLoadResult = PXResourceLoadA(&pxDocument, "_TEST_DATA_INPUT_\\books.xml");
 
-		const PXActionResult pxGraphResult = PXKnowlegeGraphLoadAndBuild(&pxKnowlegeGraph, &pxDocument, &pxImage);
+        const PXActionResult pxGraphResult = PXKnowlegeGraphLoadAndBuild(&pxKnowlegeGraph, &pxDocument, &pxImage);
 
-		const PXActionResult pxSaveResult = PXResourceSaveA(&pxImage, "_TEST_DATA_INPUT_\\books.bmp", PXFileFormatBitMap);
+        const PXActionResult pxSaveResult = PXResourceSaveA(&pxImage, "_TEST_DATA_INPUT_\\books.bmp", PXFileFormatBitMap);
 
-		printf("\n");
+        printf("\n");
 
-		return 0;
-	}
+        return 0;
+    }
 #endif // 1 // XML -> Document -> Image
 
 
@@ -252,48 +293,48 @@ int main()
 
 
 #if 0
-	PXFile pxFile;
+    PXFile pxFile;
 
-	PXResourceLoadA(&pxFile, "C:\\Data\\WorkSpace\\[GIT]\\PXUltima\\Code\\PXUltimaC\\Media\\PXImage.h");
+    PXResourceLoadA(&pxFile, "C:\\Data\\WorkSpace\\[GIT]\\PXUltima\\Code\\PXUltimaC\\Media\\PXImage.h");
 #endif // 0
 
 
 
 
 #if 0
-	PXBinaryWindows pxBinaryWindows;
+    PXBinaryWindows pxBinaryWindows;
 
-	PXResourceLoadA(&pxBinaryWindows, "C:\\Windows\\System32\\user32.dll");
+    PXResourceLoadA(&pxBinaryWindows, "C:\\Windows\\System32\\user32.dll");
 #endif // 0
 
 
-	
+    
 #if 0
-	while (1)
-	{
-		PXInt32U temp;
+    while (1)
+    {
+        PXInt32U temp;
 
-		PXProcessorTemperature(&temp);
+        PXProcessorTemperature(&temp);
 
-		PXonsoleGoToXY(0,0);
-		printf("CPU temp : %i\n", temp);
+        PXonsoleGoToXY(0,0);
+        printf("CPU temp : %i\n", temp);
 
-	}
+    }
 #endif
 
 
 #if 0
-	TestSoundAll();
+    TestSoundAll();
 #endif // 0
 
-	
+    
 
 
 #if 0
-	
-	PXImage pxImage;
+    
+    PXImage pxImage;
 
-	PXResourceLoadA(&pxImage, "N:\\IMG_0147.CR3");
+    PXResourceLoadA(&pxImage, "N:\\IMG_0147.CR3");
 #endif
 
 
@@ -313,93 +354,93 @@ int main()
 
 
 
-	//PXBinaryLinux pxELF;
-	//PXResourceLoadA(&pxELF, "N:\\NAS\\Games\\PC\\Re-Volt_Linux\\rvgl.64.elf");
+    //PXBinaryLinux pxELF;
+    //PXResourceLoadA(&pxELF, "N:\\NAS\\Games\\PC\\Re-Volt_Linux\\rvgl.64.elf");
 
 #if 0
-	
-	PXBinaryWindows pxEXE;
-	//PXResourceLoadA(&pxEXE, "C:/Data/WorkSpace/[GIT]/PXUltima/Code/[Export]/PXUltimaCTest/32B-Windows-Debug/PXUltimaCTest.exe");
-	PXResourceLoadA(&pxEXE, "C:/Data/WorkSpace/[GIT]/PXUltima/Code/[Export]/PXUltimaCTest/64B-Windows-Debug/PXUltima.dll");
+    
+    PXBinaryWindows pxEXE;
+    //PXResourceLoadA(&pxEXE, "C:/Data/WorkSpace/[GIT]/PXUltima/Code/[Export]/PXUltimaCTest/32B-Windows-Debug/PXUltimaCTest.exe");
+    PXResourceLoadA(&pxEXE, "C:/Data/WorkSpace/[GIT]/PXUltima/Code/[Export]/PXUltimaCTest/64B-Windows-Debug/PXUltima.dll");
 #endif
 
 
 #if 0
-	// X86
-	{
-		PXInt32U coolNumber = 0xAABBCCDD;
+    // X86
+    {
+        PXInt32U coolNumber = 0xAABBCCDD;
 
-		//PXEndianSwapI32U(&coolNumber);
+        //PXEndianSwapI32U(&coolNumber);
 
-		PXBool result = coolNumber == 0xDDCCBBAA;
+        PXBool result = coolNumber == 0xDDCCBBAA;
 
-		printf("Hello, \n");
+        printf("Hello, \n");
 
-	}
+    }
 #endif
 
 
 
 
-	
+    
 
 
 
 #if 0
-	// Direct X - Test
-	PXWindow pxWindow;
-	PXWindowConstruct(&pxWindow);
+    // Direct X - Test
+    PXWindow pxWindow;
+    PXWindowConstruct(&pxWindow);
 
-	PXWindowCreateA(&pxWindow, -1, -1, "Direct X - Test", PXTrue);
+    PXWindowCreateA(&pxWindow, -1, -1, "Direct X - Test", PXTrue);
 
-	PXAwaitChangeCU(&pxWindow.IsRunning);
+    PXAwaitChangeCU(&pxWindow.IsRunning);
 
 
-	const float vertices[] =
-	{
+    const float vertices[] =
+    {
 #if 1
-		-0.5f, -0.5f, 1, 0xffff0000, // x, y, z, rhw, color
-		0.0f,  0.5f, 1, 0xff00ffff,
-		 0.5f, -0.5f, 1, 0xff00ff00
-	
+        -0.5f, -0.5f, 1, 0xffff0000, // x, y, z, rhw, color
+        0.0f,  0.5f, 1, 0xff00ffff,
+         0.5f, -0.5f, 1, 0xff00ff00
+    
 
 #else 
-		50.0f, 50.0f, 0.5f, 1.0f, 0xffff0000, // x, y, z, rhw, color
-		250.0f, 250.0f, 0.5f, 1.0f, 0xff00ff00,
-		50.0f, 250.0f, 0.5f, 1.0f, 0xff00ffff,
+        50.0f, 50.0f, 0.5f, 1.0f, 0xffff0000, // x, y, z, rhw, color
+        250.0f, 250.0f, 0.5f, 1.0f, 0xff00ff00,
+        50.0f, 250.0f, 0.5f, 1.0f, 0xff00ffff,
 #endif
 };
 
-	PXGraphicSelect(&pxWindow.GraphicInstance);
+    PXGraphicSelect(&pxWindow.GraphicInstance);
 
 
-	PXModel pxModel;
-	PXObjectClear(PXModel, &pxModel);
-	pxModel.VertexBuffer.VertexData = vertices;
-	pxModel.VertexBuffer.VertexDataSize = sizeof(vertices);// / sizeof(float);
-	pxModel.VertexBuffer.VertexDataRowSize = sizeof(vertices) / 3;
-	pxModel.VertexBuffer.Format = PXVertexBufferFormatXYZC; // PXVertexBufferFormatXYZC  PXVertexBufferFormatXYZHWC
+    PXModel pxModel;
+    PXObjectClear(PXModel, &pxModel);
+    pxModel.VertexBuffer.VertexData = vertices;
+    pxModel.VertexBuffer.VertexDataSize = sizeof(vertices);// / sizeof(float);
+    pxModel.VertexBuffer.VertexDataRowSize = sizeof(vertices) / 3;
+    pxModel.VertexBuffer.Format = PXVertexBufferFormatXYZC; // PXVertexBufferFormatXYZC  PXVertexBufferFormatXYZHWC
 
-	PXGraphicModelRegister(&pxWindow.GraphicInstance, &pxModel);
+    PXGraphicModelRegister(&pxWindow.GraphicInstance, &pxModel);
 
-	while (1)
-	{
-		const PXColorRGBAF pxColorRGBAF = { 0.3f,0.3f,0.3f,1.0f };
+    while (1)
+    {
+        const PXColorRGBAF pxColorRGBAF = { 0.3f,0.3f,0.3f,1.0f };
 
-		PXGraphicClear(&pxWindow.GraphicInstance, &pxColorRGBAF);
+        PXGraphicClear(&pxWindow.GraphicInstance, &pxColorRGBAF);
 
-		PXGraphicSceneBegin(&pxWindow.GraphicInstance);
+        PXGraphicSceneBegin(&pxWindow.GraphicInstance);
 
-		PXGraphicModelDraw(&pxWindow.GraphicInstance, &pxModel);
+        PXGraphicModelDraw(&pxWindow.GraphicInstance, &pxModel);
 
-		PXGraphicSceneEnd(&pxWindow.GraphicInstance);
-		PXGraphicSceneDeploy(&pxWindow.GraphicInstance);
-	}
+        PXGraphicSceneEnd(&pxWindow.GraphicInstance);
+        PXGraphicSceneDeploy(&pxWindow.GraphicInstance);
+    }
 
-	PXWindowDestruct(&pxWindow);
+    PXWindowDestruct(&pxWindow);
 
 
-	printf("\n");
+    printf("\n");
 
 
 
@@ -410,15 +451,15 @@ int main()
 
 #if 0
 
-	vswprintf_s;
+    vswprintf_s;
 
-	PXText filePath;
-	PXTextMakeFixedA(&filePath, "_TEST_DATA_INPUT_/A.fnt");
+    PXText filePath;
+    PXTextMakeFixedA(&filePath, "_TEST_DATA_INPUT_/A.fnt");
 
-	PXSpriteFont pxSpriteFont;
-	PXActionResult result = PXFontLoad(&pxSpriteFont, &filePath);
+    PXSpriteFont pxSpriteFont;
+    PXActionResult result = PXFontLoad(&pxSpriteFont, &filePath);
 
-	printf("OK\n");
+    printf("OK\n");
 
 #endif
 
@@ -426,101 +467,101 @@ int main()
 
 #if PXLDAPTest
 
-	printf("Begin");
+    printf("Begin");
 
-	PXLDAPClient pxLDAP;
-	PXLDAPClientConstruct(&pxLDAP);
+    PXLDAPClient pxLDAP;
+    PXLDAPClientConstruct(&pxLDAP);
 
-	PXLDAPConnectionInfo pxLDAPConnectionInfo;
-	pxLDAPConnectionInfo.ConnectionOriented = PXTrue;
-	PXTextMakeFixedNamedA(&pxLDAPConnectionInfo.Host, Host, "ipa.demo1.freeipa.org");
-	PXTextMakeFixedNamedA(&pxLDAPConnectionInfo.ConnectionDomain, ConnectionDomain, "uid=admin,cn=users,cn=accounts,dc=demo1,dc=freeipa,dc=org");
-	PXTextMakeFixedNamedA(&pxLDAPConnectionInfo.AuthenticationCredentials, AuthenticationCredentials, "Secret123");
-	pxLDAPConnectionInfo.Port = PXLDAPPortDefault;
-	pxLDAPConnectionInfo.SSLUse = 0;
-	pxLDAPConnectionInfo.ConnectTimeout = 2000;
-	pxLDAPConnectionInfo.AuthenticationMethod = PXLDAPAuthenticationMethodInvalid;
+    PXLDAPConnectionInfo pxLDAPConnectionInfo;
+    pxLDAPConnectionInfo.ConnectionOriented = PXTrue;
+    PXTextMakeFixedNamedA(&pxLDAPConnectionInfo.Host, Host, "ipa.demo1.freeipa.org");
+    PXTextMakeFixedNamedA(&pxLDAPConnectionInfo.ConnectionDomain, ConnectionDomain, "uid=admin,cn=users,cn=accounts,dc=demo1,dc=freeipa,dc=org");
+    PXTextMakeFixedNamedA(&pxLDAPConnectionInfo.AuthenticationCredentials, AuthenticationCredentials, "Secret123");
+    pxLDAPConnectionInfo.Port = PXLDAPPortDefault;
+    pxLDAPConnectionInfo.SSLUse = 0;
+    pxLDAPConnectionInfo.ConnectTimeout = 2000;
+    pxLDAPConnectionInfo.AuthenticationMethod = PXLDAPAuthenticationMethodInvalid;
 
-	PXActionResult openResult = PXLDAPClientOpen(&pxLDAP, &pxLDAPConnectionInfo);
-	
+    PXActionResult openResult = PXLDAPClientOpen(&pxLDAP, &pxLDAPConnectionInfo);
+    
 
-	PXLDAPSearchInfo pxLDAPSearchInfo;
-	PXTextMakeFixedNamedA(&pxLDAPSearchInfo.EntryName, EntryName, "dc=demo1,dc=freeipa,dc=org");
-	PXTextMakeFixedNamedA(&pxLDAPSearchInfo.Filter, Filter, "(objectclass=person)");
-	pxLDAPSearchInfo.Async = PXFalse;
-	pxLDAPSearchInfo.OnlyTypesRequired = PXFalse;
-	pxLDAPSearchInfo.AttributeList = PXNull;
-	pxLDAPSearchInfo.Scope = PXLDAPScopeSubTree;
+    PXLDAPSearchInfo pxLDAPSearchInfo;
+    PXTextMakeFixedNamedA(&pxLDAPSearchInfo.EntryName, EntryName, "dc=demo1,dc=freeipa,dc=org");
+    PXTextMakeFixedNamedA(&pxLDAPSearchInfo.Filter, Filter, "(objectclass=person)");
+    pxLDAPSearchInfo.Async = PXFalse;
+    pxLDAPSearchInfo.OnlyTypesRequired = PXFalse;
+    pxLDAPSearchInfo.AttributeList = PXNull;
+    pxLDAPSearchInfo.Scope = PXLDAPScopeSubTree;
 
-	const PXActionResult searchResult = PXLDAPClientSearch(&pxLDAP, &pxLDAPSearchInfo);
-	const PXBool successful = PXActionSuccessful == searchResult;
+    const PXActionResult searchResult = PXLDAPClientSearch(&pxLDAP, &pxLDAPSearchInfo);
+    const PXBool successful = PXActionSuccessful == searchResult;
 
-	if (successful)
-	{
-		
+    if (successful)
+    {
+        
 
-		for (LDAPMessage* msg = ldap_first_entry(pxLDAP.ID, pxLDAP.SearchResult); msg; msg = ldap_next_entry(pxLDAP.ID, msg))
-		{
-			ULONG ReturnCode;                            // returned by server
-			PSTR MatchedDNs;         // free with ldap_memfree
-			PSTR ErrorMessage;       // free with ldap_memfree
-			PZPSTR Referrals;        // free with ldap_value_freeA
-			PLDAPControlA* ServerControls;               // free with ldap_free_controlsA
-			const ULONG result = ldap_parse_resultA(pxLDAP.ID, msg, &ReturnCode, &MatchedDNs,&ErrorMessage,&Referrals, &ServerControls, PXFalse);
-			const PXBool success = LDAP_SUCCESS == result;
+        for (LDAPMessage* msg = ldap_first_entry(pxLDAP.ID, pxLDAP.SearchResult); msg; msg = ldap_next_entry(pxLDAP.ID, msg))
+        {
+            ULONG ReturnCode;                            // returned by server
+            PSTR MatchedDNs;         // free with ldap_memfree
+            PSTR ErrorMessage;       // free with ldap_memfree
+            PZPSTR Referrals;        // free with ldap_value_freeA
+            PLDAPControlA* ServerControls;               // free with ldap_free_controlsA
+            const ULONG result = ldap_parse_resultA(pxLDAP.ID, msg, &ReturnCode, &MatchedDNs,&ErrorMessage,&Referrals, &ServerControls, PXFalse);
+            const PXBool success = LDAP_SUCCESS == result;
 
-			if (success)
-			{
-				BerElement* berElement = 0;
-				
-				printf("[%p] ID:%i Type:%i\n", msg, msg->lm_msgid, msg->lm_msgtype);
+            if (success)
+            {
+                BerElement* berElement = 0;
+                
+                printf("[%p] ID:%i Type:%i\n", msg, msg->lm_msgid, msg->lm_msgtype);
 
-				for (char* attribute = ldap_first_attributeA(pxLDAP.ID, msg, &berElement); attribute; attribute = ldap_next_attributeA(pxLDAP.ID, msg, berElement))
-				{
+                for (char* attribute = ldap_first_attributeA(pxLDAP.ID, msg, &berElement); attribute; attribute = ldap_next_attributeA(pxLDAP.ID, msg, berElement))
+                {
 
-					struct berval** calxx = ldap_get_values_lenA(pxLDAP.ID, msg, attribute);
-					const PXBool valueFetchSuccess = PXNull != calxx;
+                    struct berval** calxx = ldap_get_values_lenA(pxLDAP.ID, msg, attribute);
+                    const PXBool valueFetchSuccess = PXNull != calxx;
 
-					if (valueFetchSuccess)
-					{
-						printf("\t- %-25s : %-25s\n", attribute, (*calxx)->bv_val);
-					
-					}
-					else
-					{
-						printf("\t- %-25s : %-25s\n", attribute, 0);
-					}				
-				}
+                    if (valueFetchSuccess)
+                    {
+                        printf("\t- %-25s : %-25s\n", attribute, (*calxx)->bv_val);
+                    
+                    }
+                    else
+                    {
+                        printf("\t- %-25s : %-25s\n", attribute, 0);
+                    }                
+                }
 
-				printf("\n\n");
-			}
-			else
-			{
-				printf("[%p] Error\n", msg);
-			}
+                printf("\n\n");
+            }
+            else
+            {
+                printf("[%p] Error\n", msg);
+            }
 
-			
-		}
-	}
+            
+        }
+    }
 
 
-	PXLDAPClientDestruct(&pxLDAP);
+    PXLDAPClientDestruct(&pxLDAP);
 
-	printf("END");
+    printf("END");
 
 #endif 
 
 
 #if PXKeyBoardVirtualTest
-	PXKeyBoardVirtualInput inputList[4];
+    PXKeyBoardVirtualInput inputList[4];
 
-	PXKeyBoardVirtualInputSet(&inputList[0], KeyWorld1, PXKeyPressStateDown);
-	PXKeyBoardVirtualInputSet(&inputList[1], KeyD, PXKeyPressStateDown);
+    PXKeyBoardVirtualInputSet(&inputList[0], KeyWorld1, PXKeyPressStateDown);
+    PXKeyBoardVirtualInputSet(&inputList[1], KeyD, PXKeyPressStateDown);
 
-	PXKeyBoardVirtualInputSet(&inputList[2], KeyD, PXKeyPressStateUp);
-	PXKeyBoardVirtualInputSet(&inputList[3], KeyWorld1, PXKeyPressStateUp);
-	
-	PXKeyBoardVirtualInsertAction(&inputList, 4);
+    PXKeyBoardVirtualInputSet(&inputList[2], KeyD, PXKeyPressStateUp);
+    PXKeyBoardVirtualInputSet(&inputList[3], KeyWorld1, PXKeyPressStateUp);
+    
+    PXKeyBoardVirtualInsertAction(&inputList, 4);
 #endif // 0
 
 
@@ -533,40 +574,40 @@ int main()
 
 
 #if 0
-	PXTextMatchTest();
+    PXTextMatchTest();
 
-	//PXActionResult res = PXDirectoryFilesInFolderW(L"B:/Daten/Bilder/*", OnFileElementDetected, 0x02, 0);
-	//res = PXDirectoryFilesInFolderW(L"B:/Daten/Bilder/*png", OnFileElementDetected, 0x01, 0);
-
-
-	printf("");
+    //PXActionResult res = PXDirectoryFilesInFolderW(L"B:/Daten/Bilder/*", OnFileElementDetected, 0x02, 0);
+    //res = PXDirectoryFilesInFolderW(L"B:/Daten/Bilder/*png", OnFileElementDetected, 0x01, 0);
 
 
+    printf("");
 
-	char buffer[64];
 
-	for (size_t i = 0; i <= 0xFF; i++)
-	{
-		TextFromIntToBinary64U(buffer, 64, i);
 
-		printf("[%4i] %s\n", i, buffer);
-	}
+    char buffer[64];
+
+    for (size_t i = 0; i <= 0xFF; i++)
+    {
+        TextFromIntToBinary64U(buffer, 64, i);
+
+        printf("[%4i] %s\n", i, buffer);
+    }
 #endif
-	
+    
 
 #if 0 // TEST FILE DIALOG
 
-	PXText pxText;
-	PXTextMakeFixedA(&pxText, "C:\\Data\\WorkSpace\\[GIT]\\PXUltima\\Code");
+    PXText pxText;
+    PXTextMakeFixedA(&pxText, "C:\\Data\\WorkSpace\\[GIT]\\PXUltima\\Code");
 
-	PXDialogFileOpen(&pxText);
-	PXDialogFileSave(&pxText);
+    PXDialogFileOpen(&pxText);
+    PXDialogFileSave(&pxText);
 
-	PXColorRGBI8 pxColorRGBI8;
+    PXColorRGBI8 pxColorRGBI8;
 
-	PXDialogColorSelect(&pxColorRGBI8);
-	PXDialogFontSelect();
-	PXDialogPrint();
+    PXDialogColorSelect(&pxColorRGBI8);
+    PXDialogFontSelect();
+    PXDialogPrint();
 
 #endif // 0 // TEST FILE DIALOG
 
@@ -574,105 +615,105 @@ int main()
 #define KeyBoardTest 0
 #if KeyBoardTest
 
-	PXWindow pxWindow;
-	PXText pxText;
-	PXTextMakeFixedA(&pxText, "Window input Test");
+    PXWindow pxWindow;
+    PXText pxText;
+    PXTextMakeFixedA(&pxText, "Window input Test");
 
-	PXWindowConstruct(&pxWindow);
-	PXWindowCreate(&pxWindow, 600, 400, &pxText, PXTrue);
+    PXWindowConstruct(&pxWindow);
+    PXWindowCreate(&pxWindow, 600, 400, &pxText, PXTrue);
 
-	while (1)
-	{
-		printf("\033[H\033[J");
-		printf("\033[%d;%dH", 0, 0);
-		PXKeyBoardInputPrint(&pxWindow.KeyBoardCurrentInput);
-		PXThreadSleep(0, 100);
-	}
+    while (1)
+    {
+        printf("\033[H\033[J");
+        printf("\033[%d;%dH", 0, 0);
+        PXKeyBoardInputPrint(&pxWindow.KeyBoardCurrentInput);
+        PXThreadSleep(0, 100);
+    }
 
 #endif // 0
 
 
 
 #if 0
-	while (1)
-	{
-		const PXInt32U temperature = PXProcessorTemperature();
+    while (1)
+    {
+        const PXInt32U temperature = PXProcessorTemperature();
 
-		printf("CPU Temp : %i\n", temperature);
+        printf("CPU Temp : %i\n", temperature);
 
-		PXThreadSleep(0, 100);
-	}
+        PXThreadSleep(0, 100);
+    }
 #endif // 1
 
 
 
 #if 0
-	PXImage image;
+    PXImage image;
 
-	//ImageLoadTest(&image, "C:/Users/BitPaw/Videos/SquareBlue.bmp");
-	ImageLoadTest(&image, "C:/Users/BitPaw/Videos/SquareBlue.png");
+    //ImageLoadTest(&image, "C:/Users/BitPaw/Videos/SquareBlue.bmp");
+    ImageLoadTest(&image, "C:/Users/BitPaw/Videos/SquareBlue.png");
 
-	printf("EE\n");
-	//TestImageAll();
+    printf("EE\n");
+    //TestImageAll();
 #endif // 0
 
 
 #if 0
-	PXTestDebugAll();
+    PXTestDebugAll();
 #endif // 1
 
 
 #if 0
-	TestSoundAll();
+    TestSoundAll();
 #endif
 
 #if 0
-	TestFontAll();
+    TestFontAll();
 #endif // 
 
 #if 0 // PXOpenGL Test
-	TestPXOpenGLAll();
+    TestPXOpenGLAll();
 #endif
 
 
 #if 0
-	TestSocket();
+    TestSocket();
 #endif // 1
 
 
 #if 0
-	TestSBPAll();
+    TestSBPAll();
 #endif // 1
 
 
 #if 0
-	TestFTPAll();
+    TestFTPAll();
 #endif // 0
 
 
 
-	//Image image;
+    //Image image;
 
-	//ImageLoadA(&image, "D:/_Data/Git/PXUltima/PXUltimaTest/_TEST_DATA_INPUT_/ImageInput.bmp");
+    //ImageLoadA(&image, "D:/_Data/Git/PXUltima/PXUltimaTest/_TEST_DATA_INPUT_/ImageInput.bmp");
 
-	//ImageLoadA(&image, "A:/_WorkSpace/Download/at3_1m4_03.tif");
+    //ImageLoadA(&image, "A:/_WorkSpace/Download/at3_1m4_03.tif");
 
-	//TestYAMLAll();
-	//TestSystemInfoAll();
-	//TestPXCompilerAll();
-	//
-	//TestWindowAll();
-	//TestImageAll();
-	// 
-	// 
-	// 
-	//TestSBPAll();
-
-
+    //TestYAMLAll();
+    //TestSystemInfoAll();
+    //TestPXCompilerAll();
+    //
+    //TestWindowAll();
+    //TestImageAll();
+    // 
+    // 
+    // 
+    //TestSBPAll();
 
 
 
-	PXConsoleWrite(0, "[i] Finished testing...\n");
 
-	return 0;
+
+    PXConsoleWrite(0, "[i] Finished testing...\n");
+
+    return 0;
 }

@@ -5,7 +5,7 @@
 
 typedef struct PXQOI_
 {
-	unsigned int __dummy__;
+    unsigned int __dummy__;
 }
 PXQOI;
 

@@ -129,8 +129,8 @@ typedef struct PXTTFVerticalDeviceMetrics_
     unsigned short Version; // Version number(0 or 1).
     unsigned short numRecs; // Number of VDMX groups present
     unsigned short numRatios; // Number of aspect ratio groupings
-    //	RatioRange 	ratRange[numRatios];// 	Ratio record array.
-    //Offset16 	vdmxGroupOffsets[numRatios];// 	Offset from start of this table to the VDMXGroup table for a corresponding RatioRange record.
+    //    RatioRange     ratRange[numRatios];//     Ratio record array.
+    //Offset16     vdmxGroupOffsets[numRatios];//     Offset from start of this table to the VDMXGroup table for a corresponding RatioRange record.
 }
 PXTTFVerticalDeviceMetrics;
 
@@ -193,7 +193,7 @@ typedef struct PXEncodingRecord_
 {
     PXPlatformID Platform;
     PXEncodingID Encoding; // Platform specific.
-    PXInt32U SubtableOffset;// 	Byte__ offset from beginning of table to the subtable for this encoding.
+    PXInt32U SubtableOffset;//     Byte__ offset from beginning of table to the subtable for this encoding.
 }
 PXEncodingRecord;
 
@@ -239,9 +239,9 @@ PXTTFDigitalSignature;
 //------------------
 typedef struct PXTTFKerningPair_
 {
-    unsigned short Left;// 	The glyph index for the left - hand glyph in the kerning pair.
-    unsigned short Right;// 	The glyph index for the right - hand glyph in the kerning pair.
-    short Value;// 	The kerning value for the above pair, in FUnits.If this value is greater than zero, the characters will be moved apart.If this value is less than zero, the character will be moved closer together.
+    unsigned short Left;//     The glyph index for the left - hand glyph in the kerning pair.
+    unsigned short Right;//     The glyph index for the right - hand glyph in the kerning pair.
+    short Value;//     The kerning value for the above pair, in FUnits.If this value is greater than zero, the characters will be moved apart.If this value is less than zero, the character will be moved closer together.
 }
 PXTTFKerningPair;
 
@@ -258,25 +258,25 @@ PXTTFSubtableFormat0;
 
 typedef struct PXTTFSubtableFormat2_
 {
-    unsigned short RowWidth;// 	The width, in bytes, of a row in the table.
-    unsigned short LeftClassOffset;// 	Offset from beginning of this subtable to left - hand class table.
-    unsigned short RightClassOffset;// 	Offset from beginning of this subtable to right - hand class table.
-    unsigned short KerningArrayOffset;// 	Offset from beginning of this subtable to the start of the kerning array.
+    unsigned short RowWidth;//     The width, in bytes, of a row in the table.
+    unsigned short LeftClassOffset;//     Offset from beginning of this subtable to left - hand class table.
+    unsigned short RightClassOffset;//     Offset from beginning of this subtable to right - hand class table.
+    unsigned short KerningArrayOffset;//     Offset from beginning of this subtable to the start of the kerning array.
 }
 PXTTFSubtableFormat2;
 
 typedef struct PXTTFKerningSubtable_
 {
-    unsigned short Version;// 	Kern subtable version number
-    unsigned short Length;// 	Length of the subtable, in bytes(including this header).
-    //unsigned short Coverage;// 	What type of information is contained in this table.
+    unsigned short Version;//     Kern subtable version number
+    unsigned short Length;//     Length of the subtable, in bytes(including this header).
+    //unsigned short Coverage;//     What type of information is contained in this table.
 
-    unsigned char Horizontal;// 	0 	1 	1 if table has horizontal data, 0 if vertical.
-    unsigned char Minimum;// 	1 	1 	If this bit is set to 1, the table has minimum values.If set to 0, the table has kerning values.
-    unsigned char Cross;// - stream 	2 	1 	If set to 1, kerning is perpendicular to the flow of the text.
-    unsigned char Override;//	3 	1 	If this bit is set to 1 the value in this table should replace the value currently being accumulated.
-    unsigned char Reserved;// 	4 - 7 	4 	Reserved.This should be set to zero.
-    unsigned char Format;// 	8 - 15 	8 	Format of the subtable.Only formats 0 and 2 have been defined.Formats 1 and 3 through 255 are reserved for future use.
+    unsigned char Horizontal;//     0     1     1 if table has horizontal data, 0 if vertical.
+    unsigned char Minimum;//     1     1     If this bit is set to 1, the table has minimum values.If set to 0, the table has kerning values.
+    unsigned char Cross;// - stream     2     1     If set to 1, kerning is perpendicular to the flow of the text.
+    unsigned char Override;//    3     1     If this bit is set to 1 the value in this table should replace the value currently being accumulated.
+    unsigned char Reserved;//     4 - 7     4     Reserved.This should be set to zero.
+    unsigned char Format;//     8 - 15     8     Format of the subtable.Only formats 0 and 2 have been defined.Formats 1 and 3 through 255 are reserved for future use.
 
     PXTTFSubtableFormat0 SubtableFormat0;
     PXTTFSubtableFormat2 SubtableFormat2;
@@ -566,15 +566,15 @@ typedef struct PXTTFPostScript_
     // 0x00030000 for version 3.0
     PXTTFVersion Version;
 
-    //Fixed 	italicAngle;// 	Italic angle in counter - clockwise degrees from the vertical.Zero for upright text, negative for text that leans to the right(forward).
-    //FWord 	underlinePosition;// 	This is the suggested distance of the top of the underline from the baseline(negative values indicate below baseline).
+    //Fixed     italicAngle;//     Italic angle in counter - clockwise degrees from the vertical.Zero for upright text, negative for text that leans to the right(forward).
+    //FWord     underlinePosition;//     This is the suggested distance of the top of the underline from the baseline(negative values indicate below baseline).
     // The PostScript definition of this FontInfo dictionary key(the y coordinate of the center of the stroke) is not used for historical reasons.The value of the PostScript key may be calculated by subtracting half the underlineThickness from the value of this field.
-    //FWord 	underlineThickness;// 	Suggested values for the underline thickness.In general, the underline thickness should match the thickness of the underscore character(U + 005F LOW LINE), and should also match the strikeout thickness, which is specified in the OS / 2 table.
-    unsigned int  isFixedPitch;// 	Set to 0 if the font is proportionally spaced, non - zero if the font is not proportionally spaced(i.e.monospaced).
-    unsigned int  minMemType42;// 	Minimum memory usage when an OpenType font is downloaded.
-    unsigned int  maxMemType42;// 	Maximum memory usage when an OpenType font is downloaded.
-    unsigned int  minMemType1;// 	Minimum memory usage when an OpenType font is downloaded as a Type 1 font.
-    unsigned int maxMemType1;// 	Maximum memory usage when an OpenType font is downloaded as a Type 1 font.
+    //FWord     underlineThickness;//     Suggested values for the underline thickness.In general, the underline thickness should match the thickness of the underscore character(U + 005F LOW LINE), and should also match the strikeout thickness, which is specified in the OS / 2 table.
+    unsigned int  isFixedPitch;//     Set to 0 if the font is proportionally spaced, non - zero if the font is not proportionally spaced(i.e.monospaced).
+    unsigned int  minMemType42;//     Minimum memory usage when an OpenType font is downloaded.
+    unsigned int  maxMemType42;//     Maximum memory usage when an OpenType font is downloaded.
+    unsigned int  minMemType1;//     Minimum memory usage when an OpenType font is downloaded as a Type 1 font.
+    unsigned int maxMemType1;//     Maximum memory usage when an OpenType font is downloaded as a Type 1 font.
 
     // Version 1.0
 
@@ -584,7 +584,7 @@ typedef struct PXTTFPostScript_
     char* StringData; // (variable) Storage for the string data.
 
     // Version 2.5
-    // uint16 	numGlyphs 	Number of glyphs
+    // uint16     numGlyphs     Number of glyphs
     char* Offset; // (numGlyphs) Difference between graphic indexand standard order of glyph
 
     // Version 3.0
@@ -610,7 +610,7 @@ typedef struct PXTTFMaximumProfile_
     PXInt16S PointsMaximal; // points in non - compound glyph
     PXInt16S ContoursMaximal; // contours in non - compound glyph
     PXInt16S ComponentPointsMaximal; //points in compound glyph
-    PXInt16S ComponentContoursMaximal; //	contours in compound glyph
+    PXInt16S ComponentContoursMaximal; //    contours in compound glyph
     PXInt16S ZonesMaximal; // set to 2
     PXInt16S TwilightPointsMaximal;//points used in Twilight Zone(Z0)
     PXInt16S StorageMaximal; // number of Storage Area locations

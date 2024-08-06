@@ -6,154 +6,154 @@
 
 void PXTestNetworkAll()
 {
-	PXConsoleWrite(0, "[i] Network testing start\n");
+    PXConsoleWrite(0, "[i] Network testing start\n");
 
-	PXTestNetworkClient();
-	//PXTestNetworkServer();
+    PXTestNetworkClient();
+    //PXTestNetworkServer();
 
-	PXConsoleWrite(0, "[i] Network testing done\n");
+    PXConsoleWrite(0, "[i] Network testing done\n");
 }
 
 void PXTestNetworkServer()
 {
-	PXNetwork pxNetwork;
-	PXSocket pxServer;
-	PXSocket pxClient;
+    PXNetwork pxNetwork;
+    PXSocket pxServer;
+    PXSocket pxClient;
 
-	PXNetworkInitialize(&pxNetwork);
-
-
-	// Create server
-	{
-		PXSocketCreateInfo pxSocketCreateInfo;
-		pxSocketCreateInfo.SocketReference = &pxServer;
-		pxSocketCreateInfo.AdressFamily = IPAdressFamilyINET;
-		pxSocketCreateInfo.Type = PXSocketTypeStream;
-		pxSocketCreateInfo.ProtocolMode = PXProtocolModeTCP;
-
-		PXNetworkSocketCreate(&pxNetwork, &pxSocketCreateInfo);
-	}
+    PXNetworkInitialize(&pxNetwork);
 
 
+    // Create server
+    {
+        PXSocketCreateInfo pxSocketCreateInfo;
+        pxSocketCreateInfo.SocketReference = &pxServer;
+        pxSocketCreateInfo.AdressFamily = IPAdressFamilyINET;
+        pxSocketCreateInfo.Type = PXSocketTypeStream;
+        pxSocketCreateInfo.ProtocolMode = PXProtocolModeTCP;
 
-	// Bind Server
-	{
-		PXSocketBindInfo pxSocketBindInfo;
-		pxSocketBindInfo.SocketReference = &pxServer;
-		pxSocketBindInfo.Port = 25565;
-		pxSocketBindInfo.IP = PXNull;
-		//pxSocketBindInfo.AdressInfo = ;
-		//pxSocketBindInfo.AdressInfoSize;
-
-		PXNetworkSocketBind(&pxNetwork, &pxSocketBindInfo);
-	}
+        PXNetworkSocketCreate(&pxNetwork, &pxSocketCreateInfo);
+    }
 
 
-	// Listen server
-	{
-		PXSocketListenInfo pxSocketListenInfo;
-		pxSocketListenInfo.SocketReference = &pxServer;
-		pxSocketListenInfo.ClientInQueueMaximal = 10;
 
-		PXNetworkSocketListen(&pxNetwork, &pxSocketListenInfo);
-	}
+    // Bind Server
+    {
+        PXSocketBindInfo pxSocketBindInfo;
+        pxSocketBindInfo.SocketReference = &pxServer;
+        pxSocketBindInfo.Port = 25565;
+        pxSocketBindInfo.IP = PXNull;
+        //pxSocketBindInfo.AdressInfo = ;
+        //pxSocketBindInfo.AdressInfoSize;
 
-	while(1)
-	{
-		{
-			PXSocketAcceptInfo pxSocketAcceptInfo;
-			pxSocketAcceptInfo.SocketServerReference = &pxServer;
-			pxSocketAcceptInfo.SocketClientReference = &pxClient;
+        PXNetworkSocketBind(&pxNetwork, &pxSocketBindInfo);
+    }
 
-			PXNetworkSocketAccept(&pxNetwork, &pxSocketAcceptInfo);
-		}
 
-		char messageBuffer[128];
+    // Listen server
+    {
+        PXSocketListenInfo pxSocketListenInfo;
+        pxSocketListenInfo.SocketReference = &pxServer;
+        pxSocketListenInfo.ClientInQueueMaximal = 10;
 
-		while(1)
-		{
-			PXSocketReadInfo pxSocketReadInfo;
-			PXClear(PXSocketReadInfo, &pxSocketReadInfo);
-			pxSocketReadInfo.SocketReciverReference = &pxServer;
-			pxSocketReadInfo.SocketSenderReference = &pxClient;
-			pxSocketReadInfo.DataInfo.Buffer = messageBuffer;
-			pxSocketReadInfo.DataInfo.BufferSize = 128;
-			pxSocketReadInfo.DataInfo.BufferOffset = 0;
-			pxSocketReadInfo.DataInfo.SegmentSize = 128;
+        PXNetworkSocketListen(&pxNetwork, &pxSocketListenInfo);
+    }
 
-			PXNetworkSocketReceive(&pxNetwork, &pxSocketReadInfo);
+    while(1)
+    {
+        {
+            PXSocketAcceptInfo pxSocketAcceptInfo;
+            pxSocketAcceptInfo.SocketServerReference = &pxServer;
+            pxSocketAcceptInfo.SocketClientReference = &pxClient;
 
-			if(pxSocketReadInfo.DataInfo.SocketDestroyed)
-			{
-				break;
-			}
-		}
-	}	
+            PXNetworkSocketAccept(&pxNetwork, &pxSocketAcceptInfo);
+        }
 
-	PXNetworkRelease(&pxNetwork);
+        char messageBuffer[128];
+
+        while(1)
+        {
+            PXSocketReadInfo pxSocketReadInfo;
+            PXClear(PXSocketReadInfo, &pxSocketReadInfo);
+            pxSocketReadInfo.SocketReciverReference = &pxServer;
+            pxSocketReadInfo.SocketSenderReference = &pxClient;
+            pxSocketReadInfo.DataInfo.Buffer = messageBuffer;
+            pxSocketReadInfo.DataInfo.BufferSize = 128;
+            pxSocketReadInfo.DataInfo.BufferOffset = 0;
+            pxSocketReadInfo.DataInfo.SegmentSize = 128;
+
+            PXNetworkSocketReceive(&pxNetwork, &pxSocketReadInfo);
+
+            if(pxSocketReadInfo.DataInfo.SocketDestroyed)
+            {
+                break;
+            }
+        }
+    }    
+
+    PXNetworkRelease(&pxNetwork);
 }
 
 void PXTestNetworkClient()
 {
-	PXNetwork pxNetwork;
-	PXSocket pxClient;
-	PXSocket pxServer;
+    PXNetwork pxNetwork;
+    PXSocket pxClient;
+    PXSocket pxServer;
 
 
-	PXNetworkInitialize(&pxNetwork);
+    PXNetworkInitialize(&pxNetwork);
 
 
-	// Create client
-	{
-		PXSocketCreateInfo pxSocketCreateInfo;
-		pxSocketCreateInfo.SocketReference = &pxClient;
-		pxSocketCreateInfo.AdressFamily = IPAdressFamilyINET;
-		pxSocketCreateInfo.Type = PXSocketTypeStream;
-		pxSocketCreateInfo.ProtocolMode = PXProtocolModeTCP;
+    // Create client
+    {
+        PXSocketCreateInfo pxSocketCreateInfo;
+        pxSocketCreateInfo.SocketReference = &pxClient;
+        pxSocketCreateInfo.AdressFamily = IPAdressFamilyINET;
+        pxSocketCreateInfo.Type = PXSocketTypeStream;
+        pxSocketCreateInfo.ProtocolMode = PXProtocolModeTCP;
 
-		PXNetworkSocketCreate(&pxNetwork, &pxSocketCreateInfo);
-	}
+        PXNetworkSocketCreate(&pxNetwork, &pxSocketCreateInfo);
+    }
 
 
 
-	// Connect
-	{
-		PXSocketConnectInfo pxSocketConnectInfo;
-		pxSocketConnectInfo.SocketReference = &pxClient;
-		pxSocketConnectInfo.IP = PXNull; 
-		pxSocketConnectInfo.Port = 25565;
-		pxSocketConnectInfo.AdressFamily = IPAdressFamilyINET;
-		pxSocketConnectInfo.Type = PXSocketTypeStream;
-		pxSocketConnectInfo.ProtocolMode = PXProtocolModeTCP;
+    // Connect
+    {
+        PXSocketConnectInfo pxSocketConnectInfo;
+        pxSocketConnectInfo.SocketReference = &pxClient;
+        pxSocketConnectInfo.IP = PXNull; 
+        pxSocketConnectInfo.Port = 25565;
+        pxSocketConnectInfo.AdressFamily = IPAdressFamilyINET;
+        pxSocketConnectInfo.Type = PXSocketTypeStream;
+        pxSocketConnectInfo.ProtocolMode = PXProtocolModeTCP;
 
-		PXNetworkSocketConnect(&pxNetwork, &pxSocketConnectInfo);
-	}	
+        PXNetworkSocketConnect(&pxNetwork, &pxSocketConnectInfo);
+    }    
 
-	while(1)
-	{
-		char messge[] = "Hello, this is a test messsage!";
-		const int size = sizeof(messge);
+    while(1)
+    {
+        char messge[] = "Hello, this is a test messsage!";
+        const int size = sizeof(messge);
 
-		while(1)
-		{
-			PXSocketSendInfo pxSocketSendInfo;
-			PXClear(PXSocketSendInfo, &pxSocketSendInfo);
-			pxSocketSendInfo.SocketRecieverReference = &pxClient;
-			pxSocketSendInfo.SocketSenderReference = PXNull;
-			pxSocketSendInfo.DataInfo.Buffer = messge;
-			pxSocketSendInfo.DataInfo.BufferSize = size;
-			pxSocketSendInfo.DataInfo.BufferOffset = 0;
-			pxSocketSendInfo.DataInfo.SegmentSize = 2;
-			pxSocketSendInfo.DataInfo.SegmentDelay = 1000;
+        while(1)
+        {
+            PXSocketSendInfo pxSocketSendInfo;
+            PXClear(PXSocketSendInfo, &pxSocketSendInfo);
+            pxSocketSendInfo.SocketRecieverReference = &pxClient;
+            pxSocketSendInfo.SocketSenderReference = PXNull;
+            pxSocketSendInfo.DataInfo.Buffer = messge;
+            pxSocketSendInfo.DataInfo.BufferSize = size;
+            pxSocketSendInfo.DataInfo.BufferOffset = 0;
+            pxSocketSendInfo.DataInfo.SegmentSize = 2;
+            pxSocketSendInfo.DataInfo.SegmentDelay = 1000;
 
-			PXNetworkSocketSend(&pxNetwork, &pxSocketSendInfo);
+            PXNetworkSocketSend(&pxNetwork, &pxSocketSendInfo);
 
-			if(pxSocketSendInfo.DataInfo.SocketDestroyed)
-			{
-				break;
-			}		
-		}
-	}
+            if(pxSocketSendInfo.DataInfo.SocketDestroyed)
+            {
+                break;
+            }        
+        }
+    }
 
-	PXNetworkRelease(&pxNetwork);
+    PXNetworkRelease(&pxNetwork);
 }

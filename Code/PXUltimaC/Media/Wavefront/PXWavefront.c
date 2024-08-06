@@ -1,10 +1,11 @@
 #include "PXWavefront.h"
 
 #include <Compiler/PXCompiler.h>
-#include <OS/Memory/PXMemory.h>
 #include <Media/PXText.h>
 #include <Math/PXMath.h>
 #include <OS/Console/PXConsole.h>
+#include <OS/File/PXFile.h>
+#include <OS/Memory/PXMemory.h>
 
 #define PXWavefrontDetectMaterial 0
 

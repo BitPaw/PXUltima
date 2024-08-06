@@ -6,7 +6,7 @@
 // (St)andard (E)xchange (P)roduct Data (ISO 10303-2xx)
 typedef struct PXSTEP_
 {
-	unsigned int __dummy__;
+    unsigned int __dummy__;
 }
 PXSTEP;
 

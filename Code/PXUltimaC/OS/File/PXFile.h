@@ -64,7 +64,7 @@
 
 void PXDirectoryIsDotFolder(const char* s)
 {
-	return (((s[0] == '.') && (s[1] == '\0')) || ((s[0] == '.') && (s[1] == '.') && (s[2] == '\0')));
+    return (((s[0] == '.') && (s[1] == '\0')) || ((s[0] == '.') && (s[1] == '.') && (s[2] == '\0')));
 }
 
 #endif
@@ -73,46 +73,46 @@ void PXDirectoryIsDotFolder(const char* s)
 
 typedef struct PXFileOpenFromPathInfo_
 {
-	PXText Text;
+    PXText Text;
 
-	PXSize FileSize;
+    PXSize FileSize;
 
-	PXMemoryAccessMode AccessMode;
-	PXMemoryCachingMode MemoryCachingMode;
-	PXBool AllowMapping;
-	PXBool CreateIfNotExist;
-	PXBool AllowOverrideOnCreate;
+    PXMemoryAccessMode AccessMode;
+    PXMemoryCachingMode MemoryCachingMode;
+    PXBool AllowMapping;
+    PXBool CreateIfNotExist;
+    PXBool AllowOverrideOnCreate;
 }
 PXFileOpenFromPathInfo;
 
 
 typedef struct PXFileDataElementType_
 {
-	void* Adress;
-	PXInt32U Type;
+    void* Adress;
+    PXInt32U Type;
 }
 PXFileDataElementType;
 
 
 #define PXFileOpenFromPathInfoMakeLoadOneshot(adress, path) \
-	(adress)->Text = path; \
-	(adress)->FileSize = 0; \
-	(adress)->AccessMode = PXMemoryAccessModeReadOnly; \
-	(adress)->MemoryCachingMode = PXMemoryCachingModeSequential; \
-	(adress)->AllowMapping = PXTrue; \
-	(adress)->CreateIfNotExist = PXFalse; \
-	(adress)->AllowOverrideOnCreate = PXFalse;
+    (adress)->Text = path; \
+    (adress)->FileSize = 0; \
+    (adress)->AccessMode = PXMemoryAccessModeReadOnly; \
+    (adress)->MemoryCachingMode = PXMemoryCachingModeSequential; \
+    (adress)->AllowMapping = PXTrue; \
+    (adress)->CreateIfNotExist = PXFalse; \
+    (adress)->AllowOverrideOnCreate = PXFalse;
 
 
 
 /*
 typedef struct FilePath_
 {
-	wchar_t Path[PXPathSizeMax];
-	wchar_t Drive[DriveMaxSize];
-	wchar_t Directory[DirectoryMaxSize];
-	wchar_t FileName[FileNameMaxSize];
-	wchar_t Extension[ExtensionMaxSize];
+    wchar_t Path[PXPathSizeMax];
+    wchar_t Drive[DriveMaxSize];
+    wchar_t Directory[DirectoryMaxSize];
+    wchar_t FileName[FileNameMaxSize];
+    wchar_t Extension[ExtensionMaxSize];
 }
 FilePath;*/
 
@@ -121,9 +121,9 @@ PXPublic PXFileFormat PXAPI PXFilePathExtensionDetectTry(const PXText* const fil
 
 PXPublic void PXAPI PXFileDataElementTypeInfo
 (
-	PXFileDataElementType* const pxFileDataElementType,
-	PXText* const dataType,
-	PXText* const dataContent
+    PXFileDataElementType* const pxFileDataElementType,
+    PXText* const dataType,
+    PXText* const dataContent
 );
 
 
@@ -153,10 +153,10 @@ PXPublic PXBool PXAPI PXFileDirectoryPathExtract(const PXFile* const path, PXFil
 
 typedef struct PXFilePathStructure_
 {
-	PXText Drive;
-	PXText Directory;
-	PXText FileName;
-	PXText Extension;
+    PXText Drive;
+    PXText Directory;
+    PXText FileName;
+    PXText Extension;
 }
 PXFilePathStructure;
 
@@ -402,10 +402,10 @@ PXPublic PXSize PXAPI PXFileWriteBits(PXFile* const pxFile, const PXSize bitData
 
 PXPublic PXActionResult PXAPI PXFileTimeGet
 (
-	const PXFile* const pxFile,
-	PXTime* const pxTimeCreation,
-	PXTime* const pxTimeAccessLast,
-	PXTime* const pxTimeWriteLast
+    const PXFile* const pxFile,
+    PXTime* const pxTimeCreation,
+    PXTime* const pxTimeAccessLast,
+    PXTime* const pxTimeWriteLast
 );
 
 PXPublic PXActionResult PXAPI PXFilePathSet(PXFile* const pxFile, const PXText* const filePath);

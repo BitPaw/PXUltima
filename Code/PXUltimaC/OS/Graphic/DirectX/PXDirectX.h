@@ -28,7 +28,7 @@ typedef void* D3DMATERIAL9;
 
 
 typedef struct PXGraphicInitializeInfo_ PXGraphicInitializeInfo;
-typedef struct PXGraphicDevicePhysical_	PXGraphicDevicePhysical;
+typedef struct PXGraphicDevicePhysical_    PXGraphicDevicePhysical;
 
 typedef enum PXDirectXDriverType_
 {

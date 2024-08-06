@@ -6,18 +6,18 @@
 // Store a flexible amount of data in a stream of semi-fixed memory
 typedef struct PXFlexDataCache_
 {
-	char* DataAdress;
-	PXSize DataSizeUsed;
-	PXSize DataSizeAllocated;
+    char* DataAdress;
+    PXSize DataSizeUsed;
+    PXSize DataSizeAllocated;
 
-	PXSize KeySize;
+    PXSize KeySize;
 
-	PXSize InsertionPointOffset;
+    PXSize InsertionPointOffset;
 
-	PXSize EntryAmount;
+    PXSize EntryAmount;
 
-	PXBool ReallocationAllow;
-	PXBool DoNullTerminate;
+    PXBool ReallocationAllow;
+    PXBool DoNullTerminate;
 }
 PXFlexDataCache;
 

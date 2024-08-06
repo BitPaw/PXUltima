@@ -5,7 +5,7 @@
 
 typedef struct PXEmail_
 {
-	unsigned int __dummy__;
+    unsigned int __dummy__;
 }
 PXEmail;
 

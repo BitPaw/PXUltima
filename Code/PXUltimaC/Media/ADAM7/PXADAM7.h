@@ -7,17 +7,17 @@
 
 typedef struct PXADAM7_
 {
-	char* DataInput;
-	PXSize InputSize;
+    char* DataInput;
+    PXSize InputSize;
 
-	char* DataOutput;
-	PXSize OutputSize;
+    char* DataOutput;
+    PXSize OutputSize;
 
-	PXSize Width;
-	PXSize Height;
-	PXSize BitsPerPixel;
+    PXSize Width;
+    PXSize Height;
+    PXSize BitsPerPixel;
 
-	PXPNGInterlaceMethod InterlaceMethod;
+    PXPNGInterlaceMethod InterlaceMethod;
 }
 PXADAM7;
 

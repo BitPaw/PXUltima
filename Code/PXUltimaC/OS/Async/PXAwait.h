@@ -5,9 +5,9 @@
 
 typedef struct PXAwaitInfo_
 {
-	volatile void* DataTarget;
-	const void* DataExpect;
-	PXSize DataSize;
+    volatile void* DataTarget;
+    const void* DataExpect;
+    PXSize DataSize;
 }
 PXAwaitInfo;
 

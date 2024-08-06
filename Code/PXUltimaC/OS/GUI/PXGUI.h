@@ -17,330 +17,330 @@
 // The mode in which the mouse pointer will be.
 typedef enum PXWindowCursorMode_
 {
-	PXWindowCursorIgnore, 	// Show the cursor but dont register any Input.
-	PXWindowCursorShow, 	// Show the cursor and register Input as normal.
-	PXWindowCursorInvisible, 	// Hide Cursor. You can still use it as normal. Not locked.
-	PXWindowCursorLock,
-	PXWindowCursorLockAndHide
+    PXWindowCursorIgnore,     // Show the cursor but dont register any Input.
+    PXWindowCursorShow,     // Show the cursor and register Input as normal.
+    PXWindowCursorInvisible,     // Hide Cursor. You can still use it as normal. Not locked.
+    PXWindowCursorLock,
+    PXWindowCursorLockAndHide
 }
 PXWindowCursorMode;
 
 typedef enum PXMouseButton_
 {
-	PXMouseButtonInvalid,
-	PXMouseButtonLeft,
-	PXMouseButtonMiddle,
-	PXMouseButtonRight,
-	PXMouseButtonScrollUp,
-	PXMouseButtonRightDown,
-	PXMouseButtonSpecialA,
-	PXMouseButtonSpecialB,
-	PXMouseButtonSpecialC,
-	PXMouseButtonSpecialD,
-	PXMouseButtonSpecialE,
+    PXMouseButtonInvalid,
+    PXMouseButtonLeft,
+    PXMouseButtonMiddle,
+    PXMouseButtonRight,
+    PXMouseButtonScrollUp,
+    PXMouseButtonRightDown,
+    PXMouseButtonSpecialA,
+    PXMouseButtonSpecialB,
+    PXMouseButtonSpecialC,
+    PXMouseButtonSpecialD,
+    PXMouseButtonSpecialE,
 }
 PXMouseButton;
 
 typedef enum PXMouseScrollDirection_
 {
-	PXMouseScrollDirectionInvalid,
-	PXMouseScrollDirectionUp,
-	PXMouseScrollDirectionDown,
-	PXMouseScrollDirectionLeft,
-	PXMouseScrollDirectionRight
+    PXMouseScrollDirectionInvalid,
+    PXMouseScrollDirectionUp,
+    PXMouseScrollDirectionDown,
+    PXMouseScrollDirectionLeft,
+    PXMouseScrollDirectionRight
 }
 PXMouseScrollDirection;
 
 typedef enum PXCursorIcon_
 {
-	PXCursorIconInvalid,
-	PXCursorIconNormal,
-	PXCursorIconIBeam,
-	PXCursorIconWait,
-	PXCursorIconCross,
-	PXCursorIconUp,
-	PXCursorIconHand,
-	PXCursorIconNotAllowed,
-	PXCursorIconAppStarting,
-	PXCursorIconResizeHorizontal,
-	PXCursorIconResizeVertical,
-	PXCursorIconResizeClockwise,
-	PXCursorIconResizeClockwiseCounter,
-	PXCursorIconResizeAll,
+    PXCursorIconInvalid,
+    PXCursorIconNormal,
+    PXCursorIconIBeam,
+    PXCursorIconWait,
+    PXCursorIconCross,
+    PXCursorIconUp,
+    PXCursorIconHand,
+    PXCursorIconNotAllowed,
+    PXCursorIconAppStarting,
+    PXCursorIconResizeHorizontal,
+    PXCursorIconResizeVertical,
+    PXCursorIconResizeClockwise,
+    PXCursorIconResizeClockwiseCounter,
+    PXCursorIconResizeAll,
 }
 PXCursorIcon;
 
 typedef enum PXWindowEventType_
 {
-	PXWindowEventTypeInvalid,
+    PXWindowEventTypeInvalid,
 
-	PXWindowEventTypeElementMove,
-	PXWindowEventTypeElementResize,
-	PXWindowEventTypeElementDestroy,
-	PXWindowEventTypeElementClose,
-	PXWindowEventTypeElementCreate,
-	PXWindowEventTypeElementSelect,
-	PXWindowEventTypeElementClick,
-	PXWindowEventTypeElementFocusEnter,
-	PXWindowEventTypeElementFocusLeave,
+    PXWindowEventTypeElementMove,
+    PXWindowEventTypeElementResize,
+    PXWindowEventTypeElementDestroy,
+    PXWindowEventTypeElementClose,
+    PXWindowEventTypeElementCreate,
+    PXWindowEventTypeElementSelect,
+    PXWindowEventTypeElementClick,
+    PXWindowEventTypeElementFocusEnter,
+    PXWindowEventTypeElementFocusLeave,
 
-	PXWindowEventTypeInputMouseButton,
-	PXWindowEventTypeInputMouseMove,
-	PXWindowEventTypeInputKeyboard,
+    PXWindowEventTypeInputMouseButton,
+    PXWindowEventTypeInputMouseMove,
+    PXWindowEventTypeInputKeyboard,
 
 
-	WindowEventActivate,
-	WindowEventRedrawSet,
-	WindowEventFocusSet,
-	WindowEventFocusKill,
-	WindowEventEnable,
-	WindowEventTextSet,
-	WindowEventTextGet,
-	WindowEventTextGetLength,
-	WindowEventPaint,
-	WindowEventClose,
-	WindowEventSessionQuerryEnd,
-	WindowEventSessionEnd,
-	WindowEventQuerryOpen,
-	WindowEventQuit,
-	WindowEventBackgroundErase,
-	WindowEventSystemColorChange,
-	WindowEventShowWindow,
-	WindowEventIconChange,
-	WindowEventSettingChange,
-	WindowEventDeviceModeChange,
-	WindowEventActivateApp,
-	WindowEventFontChange,
-	WindowEventTimeChange,
-	WindowEventCancelMode,
-	WindowEventCursorSet,
-	WindowEventMouseActivate,
-	WindowEventChildActivate,
-	WindowEventQueueSync,
-	WindowEventSizeChange,
-	WindowEventIconPaint,
-	WindowEventIconBackgroundErase,
-	WindowEventDialogControlNext,
-	WindowEventSPOOLERSTATUS,
-	WindowEventItemDraw,
-	WindowEventItemMeasure,
-	WindowEventItemDelete,
-	WindowEventVKEYTOITEM,
-	WindowEventCHARTOITEM,
-	WindowEventFontSet,
-	WindowEventFontGet,
-	WindowEventSETHOTKEY,
-	WindowEventGETHOTKEY,
-	WindowEventQUERYDRAGICON,
-	WindowEventCOMPAREITEM,
-	WindowEventGETOBJECT,
-	WindowEventCOMPACTING,
-	WindowEventCOMMNOTIFY,
-	WindowEventWINDOWPOSCHANGING,
-	WindowEventWINDOWPOSCHANGED,
-	WindowEventPOWER,
-	WindowEventCOPYDATA,
-	WindowEventCANCELJOURNAL,
-	WindowEventNOTIFY,
-	WindowEventINPUTLANGCHANGEREQUEST,
-	WindowEventINPUTLANGCHANGE,
-	WindowEventTCARD,
-	WindowEventHELP,
-	WindowEventUSERCHANGED,
-	WindowEventNOTIFYFORMAT,
-	WindowEventCONTEXTMENU,
-	WindowEventSTYLECHANGING,
-	WindowEventSTYLECHANGED,
-	WindowEventDISPLAYCHANGE,
-	WindowEventGETICON,
-	WindowEventSETICON,
-	WindowEventNCCREATE,
-	WindowEventNCDESTROY,
-	WindowEventNCCALCSIZE,
-	WindowEventNCHITTEST,
-	WindowEventNCPAINT,
-	WindowEventNCACTIVATE,
-	WindowEventGETDLGCODE,
-	WindowEventSYNCPAINT,
-	WindowEventNCMOUSEMOVE,
-	WindowEventNCLBUTTONDOWN,
-	WindowEventNCLBUTTONUP,
-	WindowEventNCLBUTTONDBLCLK,
-	WindowEventNCRBUTTONDOWN,
-	WindowEventNCRBUTTONUP,
-	WindowEventNCRBUTTONDBLCLK,
-	WindowEventNCMBUTTONDOWN,
-	WindowEventNCMBUTTONUP,
-	WindowEventNCMBUTTONDBLCLK,
-	WindowEventNCXBUTTONDOWN,
-	WindowEventNCXBUTTONUP,
-	WindowEventNCXBUTTONDBLCLK,
-	WindowEventINPUT_DEVICE_CHANGE,
-	WindowEventINPUT,
-	WindowEventKEYFIRST,
-	WindowEventKEYDOWN,
-	WindowEventKEYUP,
-	WindowEventCHAR,
-	WindowEventDEADCHAR,
-	WindowEventSYSKEYDOWN,
-	WindowEventSYSKEYUP,
-	WindowEventSYSCHAR,
-	WindowEventSYSDEADCHAR,
-	WindowEventUNICHAR,
-	WindowEventKEYLAST,
-	//UNICODE_NOCHAR,
-	WindowEventIME_STARTCOMPOSITION,
-	WindowEventIME_ENDCOMPOSITION,
-	WindowEventIME_COMPOSITION,
-	WindowEventIME_KEYLAST,
-	WindowEventINITDIALOG,
-	WindowEventCOMMAND,
-	WindowEventSYSCOMMAND,
-	WindowEventTIMER,
-	WindowEventHSCROLL,
-	WindowEventVSCROLL,
-	WindowEventINITMENU,
-	WindowEventINITMENUPOPUP,
-	WindowEventGESTURE,
-	WindowEventGESTURENOTIFY,
-	WindowEventMENUSELECT,
-	WindowEventMENUCHAR,
-	WindowEventENTERIDLE,
-	WindowEventMENURBUTTONUP,
-	WindowEventMENUDRAG,
-	WindowEventMENUGETOBJECT,
-	WindowEventUNINITMENUPOPUP,
-	WindowEventMENUCOMMAND,
-	WindowEventCHANGEUISTATE,
-	WindowEventUPDATEUISTATE,
-	WindowEventQUERYUISTATE,
-	WindowEventCTLCOLORMSGBOX,
-	WindowEventCTLCOLOREDIT,
-	WindowEventCTLCOLORLISTBOX,
-	WindowEventCTLCOLORBTN,
-	WindowEventCTLCOLORDLG,
-	WindowEventCTLCOLORSCROLLBAR,
-	WindowEventCTLCOLORSTATIC,
-	WindowEventGETHMENU,
-	WindowEventMOUSEFIRST,
-	WindowEventMOUSEMOVE,
-	WindowEventLBUTTONDOWN,
-	WindowEventLBUTTONUP,
-	WindowEventLBUTTONDBLCLK,
-	WindowEventRBUTTONDOWN,
-	WindowEventRBUTTONUP,
-	WindowEventRBUTTONDBLCLK,
-	WindowEventMBUTTONDOWN,
-	WindowEventMBUTTONUP,
-	WindowEventMBUTTONDBLCLK,
-	WindowEventMOUSEWHEEL,
-	WindowEventXBUTTONDOWN,
-	WindowEventXBUTTONUP,
-	WindowEventXBUTTONDBLCLK,
-	WindowEventMOUSEHWHEEL,
-	WindowEventMOUSELAST,
-	WindowEventPARENTNOTIFY,
-	WindowEventENTERMENULOOP,
-	WindowEventEXITMENULOOP,
-	WindowEventNEXTMENU,
-	WindowEventSIZING,
-	WindowEventCAPTURECHANGED,
-	WindowEventMOVING,
-	WindowEventPOWERBROADCAST,
-	WindowEventDEVICECHANGE,
-	WindowEventMDICREATE,
-	WindowEventMDIDESTROY,
-	WindowEventMDIACTIVATE,
-	WindowEventMDIRESTORE,
-	WindowEventMDINEXT,
-	WindowEventMDIMAXIMIZE,
-	WindowEventMDITILE,
-	WindowEventMDICASCADE,
-	WindowEventMDIICONARRANGE,
-	WindowEventMDIGETACTIVE,
-	WindowEventMDISETMENU,
-	WindowEventENTERSIZEMOVE,
-	WindowEventEXITSIZEMOVE,
-	WindowEventDROPFILES,
-	WindowEventMDIREFRESHMENU,
-	WindowEventPOINTERDEVICECHANGE,
-	WindowEventPOINTERDEVICEINRANGE,
-	WindowEventPOINTERDEVICEOUTOFRANGE,
-	WindowEventTOUCH,
-	WindowEventNCPOINTERUPDATE,
-	WindowEventNCPOINTERDOWN,
-	WindowEventNCPOINTERUP,
-	WindowEventPOINTERUPDATE,
-	WindowEventPOINTERDOWN,
-	WindowEventPOINTERUP,
-	WindowEventPOINTERENTER,
-	WindowEventPOINTERLEAVE,
-	WindowEventPOINTERACTIVATE,
-	WindowEventPOINTERCAPTURECHANGED,
-	WindowEventTOUCHHITTESTING,
-	WindowEventPOINTERWHEEL,
-	WindowEventPOINTERHWHEEL,
-	WindowEventPOINTERROUTEDTO,
-	WindowEventPOINTERROUTEDAWAY,
-	WindowEventPOINTERROUTEDRELEASED,
-	WindowEventIME_SETCONTEXT,
-	WindowEventIME_NOTIFY,
-	WindowEventIME_CONTROL,
-	WindowEventIME_COMPOSITIONFULL,
-	WindowEventIME_SELECT,
-	WindowEventIME_CHAR,
-	WindowEventIME_REQUEST,
-	WindowEventIME_KEYDOWN,
-	WindowEventIME_KEYUP,
-	WindowEventMOUSEHOVER,
-	WindowEventMOUSELEAVE,
-	WindowEventNCMOUSEHOVER,
-	WindowEventNCMOUSELEAVE,
-	WindowEventWTSSESSION_CHANGE,
-	WindowEventTABLET_FIRST,
-	WindowEventTABLET_LAST,
-	WindowEventDPICHANGED,
-	WindowEventDPICHANGED_BEFOREPARENT,
-	WindowEventDPICHANGED_AFTERPARENT,
-	WindowEventGETDPISCALEDSIZE,
-	WindowEventCUT,
-	WindowEventCOPY,
-	WindowEventPASTE,
-	WindowEventCLEAR,
-	WindowEventUNDO,
-	WindowEventRENDERFORMAT,
-	WindowEventRENDERALLFORMATS,
-	WindowEventDESTROYCLIPBOARD,
-	WindowEventDRAWCLIPBOARD,
-	WindowEventPAINTCLIPBOARD,
-	WindowEventVSCROLLCLIPBOARD,
-	WindowEventSIZECLIPBOARD,
-	WindowEventASKCBFORMATNAME,
-	WindowEventCHANGECBCHAIN,
-	WindowEventHSCROLLCLIPBOARD,
-	WindowEventQUERYNEWPALETTE,
-	WindowEventPALETTEISCHANGING,
-	WindowEventPALETTECHANGED,
-	WindowEventHOTKEY,
-	WindowEventPRINT,
-	WindowEventPRINTCLIENT,
-	WindowEventAPPCOMMAND,
-	WindowEventTHEMECHANGED,
-	WindowEventCLIPBOARDUPDATE,
-	WindowEventDWMCOMPOSITIONCHANGED,
-	WindowEventDWMNCRENDERINGCHANGED,
-	WindowEventDWMCOLORIZATIONCOLORCHANGED,
-	WindowEventDWMWINDOWMAXIMIZEDCHANGE,
-	WindowEventDWMSENDICONICTHUMBNAIL,
-	WindowEventDWMSENDICONICLIVEPREVIEWBITMAP,
-	WindowEventGETTITLEBARINFOEX,
-	WindowEventHANDHELDFIRST,
-	WindowEventHANDHELDLAST,
-	WindowEventAFXFIRST,
-	WindowEventAFXLAST,
-	WindowEventPENWINFIRST,
-	WindowEventPENWINLAST,
-	WindowEventAPP
+    WindowEventActivate,
+    WindowEventRedrawSet,
+    WindowEventFocusSet,
+    WindowEventFocusKill,
+    WindowEventEnable,
+    WindowEventTextSet,
+    WindowEventTextGet,
+    WindowEventTextGetLength,
+    WindowEventPaint,
+    WindowEventClose,
+    WindowEventSessionQuerryEnd,
+    WindowEventSessionEnd,
+    WindowEventQuerryOpen,
+    WindowEventQuit,
+    WindowEventBackgroundErase,
+    WindowEventSystemColorChange,
+    WindowEventShowWindow,
+    WindowEventIconChange,
+    WindowEventSettingChange,
+    WindowEventDeviceModeChange,
+    WindowEventActivateApp,
+    WindowEventFontChange,
+    WindowEventTimeChange,
+    WindowEventCancelMode,
+    WindowEventCursorSet,
+    WindowEventMouseActivate,
+    WindowEventChildActivate,
+    WindowEventQueueSync,
+    WindowEventSizeChange,
+    WindowEventIconPaint,
+    WindowEventIconBackgroundErase,
+    WindowEventDialogControlNext,
+    WindowEventSPOOLERSTATUS,
+    WindowEventItemDraw,
+    WindowEventItemMeasure,
+    WindowEventItemDelete,
+    WindowEventVKEYTOITEM,
+    WindowEventCHARTOITEM,
+    WindowEventFontSet,
+    WindowEventFontGet,
+    WindowEventSETHOTKEY,
+    WindowEventGETHOTKEY,
+    WindowEventQUERYDRAGICON,
+    WindowEventCOMPAREITEM,
+    WindowEventGETOBJECT,
+    WindowEventCOMPACTING,
+    WindowEventCOMMNOTIFY,
+    WindowEventWINDOWPOSCHANGING,
+    WindowEventWINDOWPOSCHANGED,
+    WindowEventPOWER,
+    WindowEventCOPYDATA,
+    WindowEventCANCELJOURNAL,
+    WindowEventNOTIFY,
+    WindowEventINPUTLANGCHANGEREQUEST,
+    WindowEventINPUTLANGCHANGE,
+    WindowEventTCARD,
+    WindowEventHELP,
+    WindowEventUSERCHANGED,
+    WindowEventNOTIFYFORMAT,
+    WindowEventCONTEXTMENU,
+    WindowEventSTYLECHANGING,
+    WindowEventSTYLECHANGED,
+    WindowEventDISPLAYCHANGE,
+    WindowEventGETICON,
+    WindowEventSETICON,
+    WindowEventNCCREATE,
+    WindowEventNCDESTROY,
+    WindowEventNCCALCSIZE,
+    WindowEventNCHITTEST,
+    WindowEventNCPAINT,
+    WindowEventNCACTIVATE,
+    WindowEventGETDLGCODE,
+    WindowEventSYNCPAINT,
+    WindowEventNCMOUSEMOVE,
+    WindowEventNCLBUTTONDOWN,
+    WindowEventNCLBUTTONUP,
+    WindowEventNCLBUTTONDBLCLK,
+    WindowEventNCRBUTTONDOWN,
+    WindowEventNCRBUTTONUP,
+    WindowEventNCRBUTTONDBLCLK,
+    WindowEventNCMBUTTONDOWN,
+    WindowEventNCMBUTTONUP,
+    WindowEventNCMBUTTONDBLCLK,
+    WindowEventNCXBUTTONDOWN,
+    WindowEventNCXBUTTONUP,
+    WindowEventNCXBUTTONDBLCLK,
+    WindowEventINPUT_DEVICE_CHANGE,
+    WindowEventINPUT,
+    WindowEventKEYFIRST,
+    WindowEventKEYDOWN,
+    WindowEventKEYUP,
+    WindowEventCHAR,
+    WindowEventDEADCHAR,
+    WindowEventSYSKEYDOWN,
+    WindowEventSYSKEYUP,
+    WindowEventSYSCHAR,
+    WindowEventSYSDEADCHAR,
+    WindowEventUNICHAR,
+    WindowEventKEYLAST,
+    //UNICODE_NOCHAR,
+    WindowEventIME_STARTCOMPOSITION,
+    WindowEventIME_ENDCOMPOSITION,
+    WindowEventIME_COMPOSITION,
+    WindowEventIME_KEYLAST,
+    WindowEventINITDIALOG,
+    WindowEventCOMMAND,
+    WindowEventSYSCOMMAND,
+    WindowEventTIMER,
+    WindowEventHSCROLL,
+    WindowEventVSCROLL,
+    WindowEventINITMENU,
+    WindowEventINITMENUPOPUP,
+    WindowEventGESTURE,
+    WindowEventGESTURENOTIFY,
+    WindowEventMENUSELECT,
+    WindowEventMENUCHAR,
+    WindowEventENTERIDLE,
+    WindowEventMENURBUTTONUP,
+    WindowEventMENUDRAG,
+    WindowEventMENUGETOBJECT,
+    WindowEventUNINITMENUPOPUP,
+    WindowEventMENUCOMMAND,
+    WindowEventCHANGEUISTATE,
+    WindowEventUPDATEUISTATE,
+    WindowEventQUERYUISTATE,
+    WindowEventCTLCOLORMSGBOX,
+    WindowEventCTLCOLOREDIT,
+    WindowEventCTLCOLORLISTBOX,
+    WindowEventCTLCOLORBTN,
+    WindowEventCTLCOLORDLG,
+    WindowEventCTLCOLORSCROLLBAR,
+    WindowEventCTLCOLORSTATIC,
+    WindowEventGETHMENU,
+    WindowEventMOUSEFIRST,
+    WindowEventMOUSEMOVE,
+    WindowEventLBUTTONDOWN,
+    WindowEventLBUTTONUP,
+    WindowEventLBUTTONDBLCLK,
+    WindowEventRBUTTONDOWN,
+    WindowEventRBUTTONUP,
+    WindowEventRBUTTONDBLCLK,
+    WindowEventMBUTTONDOWN,
+    WindowEventMBUTTONUP,
+    WindowEventMBUTTONDBLCLK,
+    WindowEventMOUSEWHEEL,
+    WindowEventXBUTTONDOWN,
+    WindowEventXBUTTONUP,
+    WindowEventXBUTTONDBLCLK,
+    WindowEventMOUSEHWHEEL,
+    WindowEventMOUSELAST,
+    WindowEventPARENTNOTIFY,
+    WindowEventENTERMENULOOP,
+    WindowEventEXITMENULOOP,
+    WindowEventNEXTMENU,
+    WindowEventSIZING,
+    WindowEventCAPTURECHANGED,
+    WindowEventMOVING,
+    WindowEventPOWERBROADCAST,
+    WindowEventDEVICECHANGE,
+    WindowEventMDICREATE,
+    WindowEventMDIDESTROY,
+    WindowEventMDIACTIVATE,
+    WindowEventMDIRESTORE,
+    WindowEventMDINEXT,
+    WindowEventMDIMAXIMIZE,
+    WindowEventMDITILE,
+    WindowEventMDICASCADE,
+    WindowEventMDIICONARRANGE,
+    WindowEventMDIGETACTIVE,
+    WindowEventMDISETMENU,
+    WindowEventENTERSIZEMOVE,
+    WindowEventEXITSIZEMOVE,
+    WindowEventDROPFILES,
+    WindowEventMDIREFRESHMENU,
+    WindowEventPOINTERDEVICECHANGE,
+    WindowEventPOINTERDEVICEINRANGE,
+    WindowEventPOINTERDEVICEOUTOFRANGE,
+    WindowEventTOUCH,
+    WindowEventNCPOINTERUPDATE,
+    WindowEventNCPOINTERDOWN,
+    WindowEventNCPOINTERUP,
+    WindowEventPOINTERUPDATE,
+    WindowEventPOINTERDOWN,
+    WindowEventPOINTERUP,
+    WindowEventPOINTERENTER,
+    WindowEventPOINTERLEAVE,
+    WindowEventPOINTERACTIVATE,
+    WindowEventPOINTERCAPTURECHANGED,
+    WindowEventTOUCHHITTESTING,
+    WindowEventPOINTERWHEEL,
+    WindowEventPOINTERHWHEEL,
+    WindowEventPOINTERROUTEDTO,
+    WindowEventPOINTERROUTEDAWAY,
+    WindowEventPOINTERROUTEDRELEASED,
+    WindowEventIME_SETCONTEXT,
+    WindowEventIME_NOTIFY,
+    WindowEventIME_CONTROL,
+    WindowEventIME_COMPOSITIONFULL,
+    WindowEventIME_SELECT,
+    WindowEventIME_CHAR,
+    WindowEventIME_REQUEST,
+    WindowEventIME_KEYDOWN,
+    WindowEventIME_KEYUP,
+    WindowEventMOUSEHOVER,
+    WindowEventMOUSELEAVE,
+    WindowEventNCMOUSEHOVER,
+    WindowEventNCMOUSELEAVE,
+    WindowEventWTSSESSION_CHANGE,
+    WindowEventTABLET_FIRST,
+    WindowEventTABLET_LAST,
+    WindowEventDPICHANGED,
+    WindowEventDPICHANGED_BEFOREPARENT,
+    WindowEventDPICHANGED_AFTERPARENT,
+    WindowEventGETDPISCALEDSIZE,
+    WindowEventCUT,
+    WindowEventCOPY,
+    WindowEventPASTE,
+    WindowEventCLEAR,
+    WindowEventUNDO,
+    WindowEventRENDERFORMAT,
+    WindowEventRENDERALLFORMATS,
+    WindowEventDESTROYCLIPBOARD,
+    WindowEventDRAWCLIPBOARD,
+    WindowEventPAINTCLIPBOARD,
+    WindowEventVSCROLLCLIPBOARD,
+    WindowEventSIZECLIPBOARD,
+    WindowEventASKCBFORMATNAME,
+    WindowEventCHANGECBCHAIN,
+    WindowEventHSCROLLCLIPBOARD,
+    WindowEventQUERYNEWPALETTE,
+    WindowEventPALETTEISCHANGING,
+    WindowEventPALETTECHANGED,
+    WindowEventHOTKEY,
+    WindowEventPRINT,
+    WindowEventPRINTCLIENT,
+    WindowEventAPPCOMMAND,
+    WindowEventTHEMECHANGED,
+    WindowEventCLIPBOARDUPDATE,
+    WindowEventDWMCOMPOSITIONCHANGED,
+    WindowEventDWMNCRENDERINGCHANGED,
+    WindowEventDWMCOLORIZATIONCOLORCHANGED,
+    WindowEventDWMWINDOWMAXIMIZEDCHANGE,
+    WindowEventDWMSENDICONICTHUMBNAIL,
+    WindowEventDWMSENDICONICLIVEPREVIEWBITMAP,
+    WindowEventGETTITLEBARINFOEX,
+    WindowEventHANDHELDFIRST,
+    WindowEventHANDHELDLAST,
+    WindowEventAFXFIRST,
+    WindowEventAFXLAST,
+    WindowEventPENWINFIRST,
+    WindowEventPENWINLAST,
+    WindowEventAPP
 }
 PXWindowEventType;
 
@@ -348,97 +348,97 @@ PXWindowEventType;
 
 typedef struct PXKeyBoardKeyInfo_
 {
-	PXVirtualKey Key;
-	PXKeyPressState Mode;
+    PXVirtualKey Key;
+    PXKeyPressState Mode;
 
-	unsigned short Repeat; // Die Wiederholungsanzahl für die aktuelle Meldung.Der Wert gibt an, wie oft die Tastatureingabe automatisch angezeigt wird, wenn der Benutzer den Schlüssel hält.Die Wiederholungsanzahl ist immer 1 für eine WM _ KEYUP - Nachricht.
-	unsigned short ScanCode;// Der Scancode.Der Wert hängt vom OEM ab.
-	unsigned short SpecialKey;// Gibt an, ob es sich bei der Taste um eine erweiterte Taste handelt, z.B.die rechte ALT - und STRG - Taste, die auf einer erweiterten Tastatur mit 101 oder 102 Tasten angezeigt werden.Der Wert ist 1, wenn es sich um einen erweiterten Schlüssel handelt.andernfalls ist es 0.
-	unsigned short KontextCode; // Der Kontextcode.Der Wert ist für eine WM _ KEYUP - Nachricht immer 0.
-	unsigned short PreState; // Der vorherige Schlüsselzustand.Der Wert ist immer 1 für eine WM _ KEYUP - Nachricht.
-	unsigned short GapState;
+    unsigned short Repeat; // Die Wiederholungsanzahl für die aktuelle Meldung.Der Wert gibt an, wie oft die Tastatureingabe automatisch angezeigt wird, wenn der Benutzer den Schlüssel hält.Die Wiederholungsanzahl ist immer 1 für eine WM _ KEYUP - Nachricht.
+    unsigned short ScanCode;// Der Scancode.Der Wert hängt vom OEM ab.
+    unsigned short SpecialKey;// Gibt an, ob es sich bei der Taste um eine erweiterte Taste handelt, z.B.die rechte ALT - und STRG - Taste, die auf einer erweiterten Tastatur mit 101 oder 102 Tasten angezeigt werden.Der Wert ist 1, wenn es sich um einen erweiterten Schlüssel handelt.andernfalls ist es 0.
+    unsigned short KontextCode; // Der Kontextcode.Der Wert ist für eine WM _ KEYUP - Nachricht immer 0.
+    unsigned short PreState; // Der vorherige Schlüsselzustand.Der Wert ist immer 1 für eine WM _ KEYUP - Nachricht.
+    unsigned short GapState;
 
-	unsigned char KeyID;
+    unsigned char KeyID;
 }
 PXKeyBoardKeyInfo;
 
 
 typedef struct PXWindowEventClose_
 {
-	PXBool CommitToClose;
+    PXBool CommitToClose;
 }
 PXWindowEventClose;
 
 typedef struct PXWindowEventResize_
 {
-	PXInt16S Width;
-	PXInt16S Height;
+    PXInt16S Width;
+    PXInt16S Height;
 }
 PXWindowEventResize;
 
 typedef struct PXWindowEventInputMouseButton_
 {
-	PXKeyPressState PressState;
-	PXMouseButton Button;
+    PXKeyPressState PressState;
+    PXMouseButton Button;
 }
 PXWindowEventInputMouseButton;
 
 typedef struct PXWindowEventSelect_
 {
-	PXGUIElement* UIElementSelected;
+    PXGUIElement* UIElementSelected;
 }
 PXWindowEventSelect;
 
 typedef struct PXWindowEventInputMouseMove_
 {
-	PXInt32S AxisX;
-	PXInt32S AxisY;
-	PXInt32S DeltaX;
-	PXInt32S DeltaY;
+    PXInt32S AxisX;
+    PXInt32S AxisY;
+    PXInt32S DeltaX;
+    PXInt32S DeltaY;
 }
 PXWindowEventInputMouseMove;
 
 typedef struct PXWindowEventInputKeyboard_
 {
-	PXKeyPressState PressState;
-	PXVirtualKey VirtualKey;
+    PXKeyPressState PressState;
+    PXVirtualKey VirtualKey;
 
-	PXInt16U CharacterID;
+    PXInt16U CharacterID;
 }
 PXWindowEventInputKeyboard;
 
 
 typedef struct PXWindowEvent_
 {
-	union
-	{
-		PXWindowEventClose Close;
-		PXWindowEventResize Resize;
-		PXWindowEventInputMouseButton InputMouseButton;
-		PXWindowEventInputMouseMove InputMouseMove;
-		PXWindowEventInputKeyboard InputKeyboard;
-		PXWindowEventSelect Select;
-	};
+    union
+    {
+        PXWindowEventClose Close;
+        PXWindowEventResize Resize;
+        PXWindowEventInputMouseButton InputMouseButton;
+        PXWindowEventInputMouseMove InputMouseMove;
+        PXWindowEventInputKeyboard InputKeyboard;
+        PXWindowEventSelect Select;
+    };
 
-	//-----------------------------
-	// Original data
-	//-----------------------------
+    //-----------------------------
+    // Original data
+    //-----------------------------
 #if OSUnix
-	XEvent* EventData;
+    XEvent* EventData;
 #elif OSWindows
-	HWND WindowHandle;
-	UINT EventID;
-	WPARAM ParamW;
-	LPARAM ParamL;
+    HWND WindowHandle;
+    UINT EventID;
+    WPARAM ParamW;
+    LPARAM ParamL;
 #endif
 
-	//-----------------------------
-	// Translated Data
-	//-----------------------------
-	PXWindowEventType Type;
+    //-----------------------------
+    // Translated Data
+    //-----------------------------
+    PXWindowEventType Type;
 
-	struct PXGUIElement_* UIElementReference;
-	struct PXGUIElement_* UIElementSender;
+    struct PXGUIElement_* UIElementReference;
+    struct PXGUIElement_* UIElementSender;
 }
 PXWindowEvent;
 
@@ -447,16 +447,16 @@ typedef struct PXWindowPixelSystemInfo_
 #if OSUnix
 
 #elif OSWindows
-	HDC HandleDeviceContext;
-	HWND HandleWindow;
+    HDC HandleDeviceContext;
+    HWND HandleWindow;
 #endif
 
 
-	PXInt8U BitPerPixel; // 32=8Bit Default
+    PXInt8U BitPerPixel; // 32=8Bit Default
 
-	PXBool OpenGL;
-	PXBool DirectX;
-	PXBool GDI;
+    PXBool OpenGL;
+    PXBool DirectX;
+    PXBool GDI;
 }
 PXWindowPixelSystemInfo;
 
@@ -468,19 +468,19 @@ PXWindowPixelSystemInfo;
 // Container where windows can be created in
 typedef struct PXDisplayScreen_
 {
-	char GraphicDeviceName[PXDisplayScreenDeviceLength];
-	char NameMonitor[PXDisplayScreenMonitorLength];
-	char NameID[PXDisplayScreenNameLength];
+    char GraphicDeviceName[PXDisplayScreenDeviceLength];
+    char NameMonitor[PXDisplayScreenMonitorLength];
+    char NameID[PXDisplayScreenNameLength];
 
-	int Width;
-	int Height;
-	int Cells;
-	int Planes;
-	int WidthMM;
-	int HeightMM;
+    int Width;
+    int Height;
+    int Cells;
+    int Planes;
+    int WidthMM;
+    int HeightMM;
 
-	PXBool IsConnected;
-	PXBool IsPrimary;
+    PXBool IsConnected;
+    PXBool IsPrimary;
 }
 PXDisplayScreen;
 
@@ -488,28 +488,28 @@ PXDisplayScreen;
 typedef struct PXDisplay_
 {
 #if OSUnix
-	Display* DisplayHandle;
-	Window WindowRootHandle;
-	GC GraphicContent;
+    Display* DisplayHandle;
+    Window WindowRootHandle;
+    GC GraphicContent;
 #elif OSWindows
-	int WindowRootHandle;
-	void* DisplayHandle;
-	int GraphicContent;
+    int WindowRootHandle;
+    void* DisplayHandle;
+    int GraphicContent;
 #endif
 
-	char* Data;
-	char* Name;
+    char* Data;
+    char* Name;
 
-	int ProtocolVersion;
-	int ProtocolRevision;
+    int ProtocolVersion;
+    int ProtocolRevision;
 
-	char* ServerVendor;
-	int VendorRelease;
+    char* ServerVendor;
+    int VendorRelease;
 
-	int ScreenDefaultID;
-	int ScreenListAmount;
+    int ScreenDefaultID;
+    int ScreenListAmount;
 
-	PXDisplayScreen DisplayScreenList[8];
+    PXDisplayScreen DisplayScreenList[8];
 }
 PXDisplay;
 
@@ -517,17 +517,17 @@ PXDisplay;
 // Manages library calls to the operating system window manager
 typedef struct PXGUISystem_
 {
-	PXLibrary LibraryWindowsUser32DLL;
+    PXLibrary LibraryWindowsUser32DLL;
 
-	PXBool AreOSUIElementsDefined;
+    PXBool AreOSUIElementsDefined;
 
-	PXResourceManager* ResourceManager;
+    PXResourceManager* ResourceManager;
 
-	PXDisplay DisplayCurrent;
+    PXDisplay DisplayCurrent;
 
-	// private
-	PXGUIElementBrush* BrushBackgroundDark;
-	PXGUIElementBrush* BrushTextWhite;
+    // private
+    PXGUIElementBrush* BrushBackgroundDark;
+    PXGUIElementBrush* BrushTextWhite;
 }
 PXGUISystem;
 
@@ -620,10 +620,10 @@ PXPublic PXBool PXAPI PXWindowCursorPositionInDestopGet(const PXWindowID pxWindo
 
 PXPublic PXBool PXAPI PXGUIElementValueFetch
 (
-	PXGUIElement* const pxUIElementList, //
-	const PXSize dataListAmount,
-	const PXUIElementProperty pxUIElementProperty,
-	void* const dataList // The given data
+    PXGUIElement* const pxUIElementList, //
+    const PXSize dataListAmount,
+    const PXUIElementProperty pxUIElementProperty,
+    void* const dataList // The given data
 );
 
 

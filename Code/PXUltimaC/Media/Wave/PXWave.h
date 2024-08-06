@@ -8,10 +8,10 @@
 // Waveform Audio File
 typedef struct PXWave_
 {
-	PXFMT Format;
+    PXFMT Format;
 
-	PXInt32U SoundDataSize; // 32-Bit
-	void* SoundData;
+    PXInt32U SoundDataSize; // 32-Bit
+    void* SoundData;
 }
 PXWave;
 

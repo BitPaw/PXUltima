@@ -5,7 +5,7 @@
 
 typedef struct PXPHP_
 {
-	int x;
+    int x;
 }
 PXPHP;
 

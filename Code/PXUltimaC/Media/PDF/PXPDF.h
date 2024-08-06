@@ -5,8 +5,8 @@
 
 typedef struct PXPDF_
 {
-	PXInt8U VersionMajor;
-	PXInt8U VersionMinor;
+    PXInt8U VersionMajor;
+    PXInt8U VersionMinor;
 }
 PXPDF;
 

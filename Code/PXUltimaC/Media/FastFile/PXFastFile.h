@@ -5,7 +5,7 @@
 
 typedef struct PXFastFile_
 {
-	PXInt32U Version;
+    PXInt32U Version;
 }
 PXFastFile;
 

@@ -6,14 +6,14 @@
 // Format header
 typedef struct PXFMT_
 {
-	PXInt32U ChunkSize;
-	PXInt32U SampleRate;
-	PXInt32U ByteRate;
+    PXInt32U ChunkSize;
+    PXInt32U SampleRate;
+    PXInt32U ByteRate;
 
-	PXInt16U AudioFormat;
-	PXInt16U NumerOfChannels;
-	PXInt16U BlockAllign;
-	PXInt16U BitsPerSample;
+    PXInt16U AudioFormat;
+    PXInt16U NumerOfChannels;
+    PXInt16U BlockAllign;
+    PXInt16U BitsPerSample;
 }
 PXFMT;
 
