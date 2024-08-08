@@ -95,6 +95,7 @@ void PXTextMatchTest()
 #include <OS/Time/PXTime.h>
 #include <OS/Async/PXProcess.h>
 #include <OS/Async/PXThread.h>
+#include <OS/Debug/PXDebug.h>
 
 int main()
 {
@@ -109,6 +110,8 @@ int main()
 
     PXThread* refA = threads;
     PXThread** refB = &refA;
+
+
 
     PXProcessThreadsListAll(PXNull, refB, xx, &oeoeo);
 

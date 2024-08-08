@@ -8,6 +8,7 @@
 #include <Media/ADLER/PXAdler32.h>
 #include <OS/Hardware/PXProcessor.h>
 #include <Math/PXCollision.h>
+#include <OS/Debug/PXDebug.h>
 
 void PXCDECL PXEngineOnIllegalInstruction(const int signalID)
 {
@@ -1448,6 +1449,9 @@ void PXAPI PXEngineStop(PXEngine* const pxEngine)
 #endif
 
     // List all open resources, to check for memory and resource leaks
+    PXDebug pxDebug;
+    PXDebugDebuggerInitialize(&pxDebug);
+
 
     // List all open threads
     {
@@ -1460,7 +1464,7 @@ void PXAPI PXEngineStop(PXEngine* const pxEngine)
         PXThread* pxThreadListRef = pxThreadList;
         PXThread** pxThreadListRefRef = &pxThreadListRef;
 
-        PXProcessThreadsListAll(PXNull, pxThreadListRefRef, amountResultInput, &amountResultOutput);
+        PXProcessThreadsListAll(&pxDebug, pxThreadListRefRef, amountResultInput, &amountResultOutput);
 
         for(PXSize i = 0; i < amountResultOutput; ++i)
         {
@@ -1469,7 +1473,7 @@ void PXAPI PXEngineStop(PXEngine* const pxEngine)
             PXText text;
             PXTextConstructBufferA(&text, 256);
 
-            PXThreadNameGet(pxThread, &text);
+            PXThreadNameGet(&pxDebug, pxThread, &text);
 
 #if PXLogEnable
             PXLogPrint

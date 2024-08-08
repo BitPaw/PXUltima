@@ -61,6 +61,7 @@ typedef struct PXSymbol_
     void* SymbolAdress;
 
     PXSize LineNumber;
+    char NameUndecorated[64];
     char NameSymbol[64];
     char NameFile[64];
     char NameModule[64];
@@ -106,9 +107,9 @@ typedef struct PXDebug_
     void* SymbolServerInitialize;
     void* SymbolServerCleanup;
     void* SymbolModuleLoad;
-    void* XStackWalk64;
+    void* DBGStackWalk;
     void* XUnDecorateSymbolName;
-    void* XSymGetSymFromAddr64;
+    void* SymbolFromAddress;
     void* SymbolEnumerate;
     void* SymbolEnumerateEx;
     void* SymbolFunctionTableAccess;
@@ -155,6 +156,8 @@ PXPublic void PXAPI PXDebugLogMessage(PXText* const pxText);
 
 
 PXPrivate PXActionResult PXAPI PXDebugSymbolReadFromAdress(PXDebug* const pxDebug, PXSymbol* const pxSymbol, void* adress);
+
+PXPublic PXActionResult PXAPI PXDebugHeapMemoryList(PXDebug* const pxDebug);
 
 PXPublic PXActionResult PXAPI PXDebugFetchSymbolThread(PXDebug* const pxDebug, PXSymbol* const pxSymbol, PXThread* pxThread);
 PXPublic PXActionResult PXAPI PXDebugFetchSymbolFromRougeAdress(PXDebug* const pxDebug, PXSymbol* const pxSymbol, void* adress);

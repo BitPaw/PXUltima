@@ -151,7 +151,7 @@ PXPublic PXActionResult PXAPI PXThreadSleep(PXThread* const pxThread, const PXSi
 PXPublic PXActionResult PXAPI PXThreadCurrentProcessorID(PXInt32U* const processorID);
 
 PXPublic PXActionResult PXAPI PXThreadNameSet(PXThread* pxThread, PXText* const threadName);
-PXPublic PXActionResult PXAPI PXThreadNameGet(PXThread* const pxThread, PXText* const threadName);
+PXPublic PXActionResult PXAPI PXThreadNameGet(struct PXDebug_* const pxDebug, PXThread* const pxThread, PXText* const threadName);
 
 PXPublic PXSize PXAPI PXThreadCurrentID();
 PXPublic void PXAPI PXThreadCurrentGet(PXThread* const pxThread);

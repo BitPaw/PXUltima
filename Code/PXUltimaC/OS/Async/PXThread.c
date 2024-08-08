@@ -933,7 +933,7 @@ HMODULE GetModuleNameFromAddress(void* functionAddress)
 
 
 
-PXActionResult PXAPI PXThreadNameGet(PXThread* const pxThread, PXText* const threadName)
+PXActionResult PXAPI PXThreadNameGet(PXDebug* const pxDebug ,PXThread* const pxThread, PXText* const threadName)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -987,7 +987,7 @@ PXActionResult PXAPI PXThreadNameGet(PXThread* const pxThread, PXText* const thr
     PXSymbol pxSymbol;
 
 
-    PXDebugFetchSymbolThread(PXNull, &pxSymbol, pxThread);
+    PXDebugFetchSymbolThread(pxDebug, &pxSymbol, pxThread);
 
     
 

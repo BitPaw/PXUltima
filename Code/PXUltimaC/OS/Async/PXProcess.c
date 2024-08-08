@@ -15,6 +15,7 @@
 #include <OS/Console/PXConsole.h>
 #include <OS/Async/PXThread.h>
 #include <OS/File/PXFile.h>
+#include <OS/Debug/PXDebug.h>
 
 void PXAPI PXProcessConstruct(PXProcess* const pxProcess)
 {
@@ -184,7 +185,7 @@ PXHandleType PXHandleTypeFromID(const PXInt8U typeID)
     }
 }
 
-PXActionResult PXAPI PXProcessHandleListAll(PXProcess* pxProcess)
+PXActionResult PXAPI PXProcessHandleListAll(PXDebug* const pxDebug, PXProcess* pxProcess)
 {
     PXProcess pxProcessOverride;
 
@@ -407,7 +408,7 @@ PXActionResult PXAPI PXProcessHandleListAll(PXProcess* pxProcess)
                 PXText buffer;
                 PXTextConstructFromAdressA(&buffer, pxHandle.Description, 0, 256);
 
-                PXThreadNameGet(&pxThread, &buffer);
+                PXThreadNameGet(pxDebug, &pxThread, &buffer);
                 
 
                 // Fetch thread Description
@@ -646,6 +647,11 @@ PXActionResult PXAPI PXProcessThreadsListAll(PXProcess* const pxProcess, struct 
         return PXActionInvalid;
     }
 
+    PXDebug pxDebug;
+
+    PXDebugDebuggerInitialize(&pxDebug);
+
+
     DWORD processID = GetCurrentProcessId();
 
 
@@ -667,12 +673,12 @@ PXActionResult PXAPI PXProcessThreadsListAll(PXProcess* const pxProcess, struct 
             {
                 PXThread* const pxThread = &pxThreadList[threadIndex];    
 
-               // PXText text;
-               // PXTextConstructBufferA(&text, 128);               
+                PXText text;
+                PXTextConstructBufferA(&text, 128);               
 
                 pxThread->ThreadID = threadEntry.th32ThreadID;
 
-               // PXThreadNameGet(pxThread, &text);
+               PXThreadNameGet(&pxDebug, pxThread, &text);
 
                 ++threadIndex;
             }
@@ -681,6 +687,13 @@ PXActionResult PXAPI PXProcessThreadsListAll(PXProcess* const pxProcess, struct 
         } 
         while(Thread32Next(snapShotHandle, &threadEntry));
     }
+
+
+   
+
+    PXDebugStackTrace(&pxDebug);
+    PXDebugHeapMemoryList(&pxDebug);
+
 
     CloseHandle(snapShotHandle);
 

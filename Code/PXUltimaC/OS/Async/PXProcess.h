@@ -110,7 +110,7 @@ PXPublic void PXAPI PXProcessExitCurrent(const PXInt32U exitCode);
 // pxProcess can be NULL, current process is used. 
 PXPublic PXActionResult PXAPI PXProcessHandleCountGet(PXProcess* pxProcess, PXSize* const handlesAmount);
 
-PXPublic PXActionResult PXAPI PXProcessHandleListAll(PXProcess* pxProcess);
+PXPublic PXActionResult PXAPI PXProcessHandleListAll(struct PXDebug_* const pxDebug, PXProcess* pxProcess);
 
 
 PXPublic PXActionResult PXAPI PXProcessCreate(PXProcess* const pxProcess, const PXText* const programmPath, const PXProcessCreationMode mode);
