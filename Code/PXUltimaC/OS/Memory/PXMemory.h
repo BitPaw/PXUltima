@@ -4,6 +4,7 @@
 #include <Media/PXType.h>
 #include <Compiler/PXCompilerSettings.h>
 #include <OS/Error/PXActionResult.h>
+#include <Container/Dictionary/PXDictionary.h>
 
 #if OSUnix
 typedef int PXMemoryAccessModeType;
@@ -123,8 +124,70 @@ PXMemoryHeapReallocateEventData;
 
 
 
+
+#define PXSymbolMemoryStateAllocated
+#define PXSymbolMemoryStateFreed
+
+// A special debug symbol that is used for information 
+// about allocations. As the system does not track allocations
+// we are in the need to create them ourselfs.
+typedef struct PXSymbolMemory_
+{
+    void* Adress;
+    void* ModuleAdress; // What EXE or DLL is the creator?
+    char FileAdress[64]; // Calling adress
+    char FunctionAdress[64]; // Name of the 
+    PXSize Amount;
+    PXSize ObjectSize;
+    PXSize LineNumber;
+    //PXInt64U CreationTime;   // timestamps?
+
+  
+
+    // is it reallocated
+    // Thread source? is it from another thread.
+}
+PXSymbolMemory;
+
+
+
+typedef struct PXMemorySymbolLookup_
+{
+    PXDictionary SymbolLookup;
+}
+PXMemorySymbolLookup;
+
+typedef enum PXMemorySymbolInfoMode_
+{
+    PXMemorySymbolInfoModeInvalid,
+    PXMemorySymbolInfoModeAdd,
+    PXMemorySymbolInfoModeUpdate,
+    PXMemorySymbolInfoModeRemove
+}
+PXMemorySymbolInfoMode;
+
+
+// Global memory lookup.
+// This is a ugly solution but due to the 
+// scattered calls of malloc and free, we
+// need to have this global reference to compare to
+
+// Singleton of a global memory table, all PXMemory allocations are regsieterd here
+PXPrivate PXMemorySymbolLookup* const PXAPI PXMemorySymbolLookupInstanceGet(void);
+PXPublic void PXAPI PXMemorySymbolAdd(PXSymbolMemory* const pxSymbolMemory, const PXMemorySymbolInfoMode pxMemorySymbolInfoMode);
+PXPublic PXActionResult PXAPI PXMemorySymbolFetch(const void* const adress, struct PXSymbol_* const pxSymbol);
+
+
+
+
+
+
 // POSIX
 PXPublic void* PXAPI PXMemoryMalloc(const PXSize memorySize);
+
+#define PXMemoryMallocT(type, amount) PXMemoryMalloc(sizeof(type) * amount)
+
+
 PXPublic PXBool PXAPI PXMemoryFree(const void* const adress);
 PXPublic void* PXAPI PXMemoryRealloc(const void* const adress, const PXSize memorySize);
 

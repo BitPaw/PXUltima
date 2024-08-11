@@ -39,7 +39,11 @@ void PXAPI PXDictionaryResize(PXDictionary* const dictionary, const PXSize entry
     const PXSize rowSize = dictionary->KeyTypeSize + PXDictionaryValueSize(dictionary);
     //const PXSize oldPositionOffset = dictionary->EntryAmountMaximal * rowSize;
     //const PXSize dataBlockSize = PXDictionaryValueSize(dictionary);
-
+    
+    
+    //PXMemoryRealloc(rowSize * );
+    
+    
     PXMemoryHeapReallocateEventData pxMemoryHeapReallocateEventData;
 
     PXMemoryHeapReallocateEventDataFill
@@ -260,7 +264,25 @@ PXBool PXAPI PXDictionaryFindEntry(PXDictionary* const dictionary, const void* c
 
         if (isTarget)
         {
-            *valueResult = *(void**)pxDictionaryEntry.Value;
+            switch(dictionary->ValueLocality)
+            {
+                default:
+                case PXDictionaryValueLocalityInvalid:
+                {
+                    return PXFalse; // Illegal call
+                }
+                case PXDictionaryValueLocalityInternalEmbedded:
+                {
+                    *valueResult = pxDictionaryEntry.Value;
+                    break;
+                }
+                case PXDictionaryValueLocalityExternalReference:
+                {
+                    *valueResult = *(void**)pxDictionaryEntry.Value;
+                    break;
+                }
+            }
+       
             return PXTrue;
         }
     }

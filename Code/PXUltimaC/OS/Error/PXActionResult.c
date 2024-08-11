@@ -289,6 +289,7 @@ PXActionResult PXAPI PXErrorCurrent()
     return PXActionInvalid;
 #endif
 
+
     return actionResult;
 }
 
@@ -308,6 +309,8 @@ PXActionResult PXAPI PXWindowsErrorCurrent(const PXBool wasSuccessful)
 
     char* errorMessageData = 0;
 
+   //  GetLocaleInfoEx(); only vista or later
+
     // Generate an error message string with our current errorID
     const PXSize errorMessageLength = FormatMessageA
     (
@@ -315,19 +318,24 @@ PXActionResult PXAPI PXWindowsErrorCurrent(const PXBool wasSuccessful)
         NULL,
         lastErrorID,
         MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+        //MAKELANGID(LANG_ENGLISH, SUBLANG_NEUTRAL), // english does not work?
         (char*)&errorMessageData,
         0,
         NULL
     );
 
+    // There is a new line added automatically, we dont want that "\r\n"
+    errorMessageData[errorMessageLength - 2] = '\0';
+
 #if PXLogEnable
     PXLogPrint
     (
-        PXLoggingInfo,
+        PXLoggingWarning,
         "Windows",
         "Error",
-        "%s",
-        errorMessageData
+        "%s [0x%8.8X]",
+        errorMessageData,
+        lastErrorID
     );
 #endif
 

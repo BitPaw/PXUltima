@@ -639,6 +639,11 @@ PXActionResult PXAPI PXProcessThreadsListAll(PXProcess* const pxProcess, struct 
     return PXActionRefusedNotImplemented;
 #elif OSWindows
 
+    PXDebug* pxDebug = PXDebugInstanceGet();
+
+    const HANDLE processHandle = GetProcessHeap();
+    const BOOL symbolServerInitialize = SymInitialize(processHandle, PXNull, PXTrue);
+
     const HANDLE snapShotHandle = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
     const PXBool isValid = snapShotHandle != INVALID_HANDLE_VALUE;
 
@@ -647,9 +652,7 @@ PXActionResult PXAPI PXProcessThreadsListAll(PXProcess* const pxProcess, struct 
         return PXActionInvalid;
     }
 
-    PXDebug pxDebug;
-
-    PXDebugDebuggerInitialize(&pxDebug);
+  
 
 
     DWORD processID = GetCurrentProcessId();
@@ -678,7 +681,7 @@ PXActionResult PXAPI PXProcessThreadsListAll(PXProcess* const pxProcess, struct 
 
                 pxThread->ThreadID = threadEntry.th32ThreadID;
 
-               PXThreadNameGet(&pxDebug, pxThread, &text);
+               PXThreadNameGet(pxDebug, pxThread, &text);
 
                 ++threadIndex;
             }
@@ -690,9 +693,11 @@ PXActionResult PXAPI PXProcessThreadsListAll(PXProcess* const pxProcess, struct 
 
 
    
+    PXSymbol pxSymbol[6];
 
-    PXDebugStackTrace(&pxDebug);
-    PXDebugHeapMemoryList(&pxDebug);
+
+    PXDebugStackTrace(pxDebug, pxSymbol, 6, 0, 6);
+    PXDebugHeapMemoryList(pxDebug);
 
 
     CloseHandle(snapShotHandle);

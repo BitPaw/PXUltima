@@ -2397,7 +2397,7 @@ Window XCreateSimpleWindow(Display *display, Window parent, int x, int y, unsign
 #endif
 
 
-    PXGUIDisplayScreenListRefresh(pxGUISystem);
+  //  PXGUIDisplayScreenListRefresh(pxGUISystem);
 
 
 

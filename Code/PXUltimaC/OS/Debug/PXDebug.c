@@ -1,6 +1,8 @@
 #include "PXDebug.h"
 
 
+static PXDebug _PXGLOBALDebug;
+static PXBool _PXGLOBALDebugEnable = 0;
 
 #if OSUnix
 #include <sys/types.h>
@@ -24,6 +26,7 @@
 #include <OS/Library/PXLibrary.h>
 #include <OS/File/PXFile.h>
 #include <OS/Console/PXConsole.h>
+#include <TlHelp32.h>
 
 
 
@@ -70,14 +73,21 @@ PXPrivate BOOL CALLBACK PXLibraryNameSymbolEnumerate(PSYMBOL_INFO pSymInfo, ULON
 #endif
 
 
-void PXAPI PXDebugConstruct(PXDebug* const pxDebug)
+PXDebug* PXAPI PXDebugInstanceGet()
 {
-    PXClear(PXDebug, pxDebug);
+    if(!_PXGLOBALDebugEnable)
+    {
+        PXClear(PXDebug, &_PXGLOBALDebug);
 
-    PXTextConstructFromAdressA(&pxDebug->ApplicatioName, pxDebug->ApplicatioNameBuffer, 0, sizeof(pxDebug->ApplicatioNameBuffer));
+        PXDebugDebuggerInitialize(&_PXGLOBALDebug);
+
+        _PXGLOBALDebugEnable = PXTrue;
+    }
+
+    return &_PXGLOBALDebug;
 }
 
-void PXAPI PXDebugDestruct(PXDebug* const pxDebug)
+void PXAPI PXDebugInstanceRelease(PXDebug* const pxDebug)
 {
     PXLibraryClose(&pxDebug->LibraryKernel);
     PXLibraryClose(&pxDebug->LibraryDebugHelp);
@@ -144,6 +154,8 @@ void PXAPI PXDebugDebuggerSendMessage(PXDebug* const pxDebug, PXText* const mess
 
 PXActionResult PXAPI PXDebugDebuggerInitialize(PXDebug* const pxDebug)
 {
+    PXClear(PXDebug, pxDebug);
+
 #if OSUnix
 #elif PXOSWindowsDestop
 
@@ -213,8 +225,6 @@ PXActionResult PXAPI PXDebugDebuggerInitialize(PXDebug* const pxDebug)
 
 PXActionResult PXAPI PXDebugStartProcess(PXDebug* const pxDebug, const PXText* const applicationName)
 {
-    PXDebugConstruct(pxDebug);
-
     PXTextCopy(applicationName, &pxDebug->ApplicatioName);
 
     // Start Thread that will listen to given process.
@@ -349,7 +359,7 @@ PXActionResult PXAPI PXDebugDetach(PXDebug* const pxDebug)
 #endif
 }
 
-void PXAPI PXDebugStackTrace(PXDebug* const pxDebug)
+void PXAPI PXDebugStackTrace(PXDebug* const pxDebug, PXSymbol* const pxSymbolList, const PXSize pxSymbolListAmount, const PXSize start, const PXSize depth)
 {
 #if OSUnix
     void *array[10];
@@ -369,33 +379,14 @@ void PXAPI PXDebugStackTrace(PXDebug* const pxDebug)
 
 #elif PXOSWindowsDestop
 
-    DWORD                          machineType                  = IMAGE_FILE_MACHINE_AMD64; // IMAGE_FILE_MACHINE_I386
-    HANDLE                         hThread                      = GetCurrentThread();
-    STACKFRAME                     stackFrame;
-    CONTEXT                        contextRecord;
-    PREAD_PROCESS_MEMORY_ROUTINE   readMemoryRoutine            = 0;
-    PFUNCTION_TABLE_ACCESS_ROUTINE functionTableAccessRoutine   = 0;
-    PGET_MODULE_BASE_ROUTINE       getModuleBaseRoutine         = 0;
-    PTRANSLATE_ADDRESS_ROUTINE     translateAddress             = 0;
+
 
 
 
 
     // Prevent failure because not inizilized
-    PXClear(STACKFRAME , &stackFrame);
-    PXClear(CONTEXT, &contextRecord);
 
-    RtlCaptureContext(&contextRecord);
 
-    pxDebug->Process.ProcessHandle = GetCurrentProcess();
-
-    DWORD64 displacement = 0;
-    //stackFrame.AddrPC.Offset = contextRecord.Eip;
-    //stackFrame.AddrPC.Mode = AddrModeFlat;
-    //stackFrame.AddrStack.Offset = contextRecord.Esp;
-    //stackFrame.AddrStack.Mode = AddrModeFlat;
-    //stackFrame.AddrFrame.Offset = contextRecord.Ebp;
-    //stackFrame.AddrFrame.Mode = AddrModeFlat;
 
     // TODO: FIX
 
@@ -420,7 +411,7 @@ void PXAPI PXDebugStackTrace(PXDebug* const pxDebug)
 #endif
 
 
-#if PXLogEnable 
+#if PXLogEnable && 0
     PXLogPrint
     (
         PXLoggingInfo,
@@ -433,13 +424,45 @@ void PXAPI PXDebugStackTrace(PXDebug* const pxDebug)
 
     const PXStackWalk64 pxStackWalk64 = pxDebug->DBGStackWalk;
     const PXSymGetSymFromAddr64 pXSymGetSymFromAddr64 = pxDebug->SymbolFromAddress;
+    const HANDLE processHandle = GetCurrentProcess();
+    //const HANDLE processHeapHandle = GetProcessHeap();
+    const HANDLE hThread = GetCurrentThread();
+    const BOOL symbolServerInitialize = SymInitialize(processHandle, PXNull, PXTrue);
 
-    for (PXSize frame = 0; ; ++frame)
+    SymSetOptions(SYMOPT_DEBUG | SYMOPT_LOAD_ANYTHING | SYMOPT_LOAD_LINES);
+   // SymLoadModuleEx(,);
+
+    DWORD                          machineType = IMAGE_FILE_MACHINE_AMD64; // IMAGE_FILE_MACHINE_I386
+
+    STACKFRAME                     stackFrame;
+    CONTEXT                        contextRecord;
+    PREAD_PROCESS_MEMORY_ROUTINE   readMemoryRoutine = 0;
+    PFUNCTION_TABLE_ACCESS_ROUTINE functionTableAccessRoutine = 0;
+    PGET_MODULE_BASE_ROUTINE       getModuleBaseRoutine = 0;
+    PTRANSLATE_ADDRESS_ROUTINE     translateAddress = 0;
+
+    PXClear(STACKFRAME, &stackFrame);
+    PXClear(CONTEXT, &contextRecord);
+
+    RtlCaptureContext(&contextRecord);
+    stackFrame.AddrPC.Offset = contextRecord.Rip;
+    stackFrame.AddrPC.Mode = AddrModeFlat;
+    stackFrame.AddrStack.Offset = contextRecord.Rsp;
+    stackFrame.AddrStack.Mode = AddrModeFlat;
+    stackFrame.AddrFrame.Offset = contextRecord.Rbp;
+    stackFrame.AddrFrame.Mode = AddrModeFlat;
+
+    PXSize frame;
+    PXSize symbolIndex = 0;
+
+    for (frame = 0; frame < (start+depth); ++frame)
     {
+        PXSymbol* pxSymbol = &pxSymbolList[symbolIndex];
+
         const BOOL result = pxStackWalk64
         (
             machineType,
-            pxDebug->Process.ProcessHandle,
+            processHandle,
             hThread,
             &stackFrame,
             &contextRecord,
@@ -455,25 +478,31 @@ void PXAPI PXDebugStackTrace(PXDebug* const pxDebug)
             break;
         }
 
+        if(frame < start) 
+        {
+            continue;
+        }
+
+
         void* symbolAdress = (ULONG64)stackFrame.AddrPC.Offset; // ULONG64
+               
 
-        PXSymbol pxSymbol;
+        PXDebugSymbolReadFromAdress(pxDebug, pxSymbol, symbolAdress);
 
-        PXDebugSymbolReadFromAdress(pxDebug, &pxSymbol, symbolAdress);
-
-
+        ++symbolIndex;
 
 
-#if PXLogEnable 
+#if PXLogEnable  && 0
         PXLogPrint
         (
             PXLoggingInfo,
             "Debugger",
             "StackTrace",
-            "%c %-25s (%s)",
+            "%c %-25s %10s 0x%p",
             (frame == 0  ? '/' : '|'),
-            pxSymbol.NameUndecorated,
-            pxSymbol.NameModule
+            pxSymbol->NameUndecorated,
+            pxSymbol->NameModule,
+            symbolAdress
         );
 #endif
 
@@ -532,20 +561,21 @@ void PXAPI PXDebugStackTrace(PXDebug* const pxDebug)
     }
 
 
-#if PXLogEnable 
+#if PXLogEnable && 0
     PXLogPrint
     (
         PXLoggingInfo,
         "Debugger",
         "StackTrace",
-        "%c %s",
+        "%c %s %i Jumps",
         '^',
-        "(START)"
+        "(START)",
+        frame
     );
 #endif
 
-#if PXLogEnable 
-    PXLogPrint
+#if PXLogEnable && 0
+    PXLogPrint 
     (
         PXLoggingInfo,
         "Debugger",
@@ -991,8 +1021,8 @@ BOOL CALLBACK PXLibraryNameSymbolEnumerate(PSYMBOL_INFO pSymInfo, ULONG SymbolSi
     PXSymbol* pxSymbol = &pxSymbolEnumerator->SymbolList[pxSymbolEnumerator->Amount];
     pxSymbol->TypeIndex = pSymInfo->TypeIndex;
     pxSymbol->Index = pSymInfo->Index;
-    pxSymbol->Size = pSymInfo->Size;
-    pxSymbol->ModBase = pSymInfo->ModBase;
+    pxSymbol->ObjectSize = pSymInfo->Size;
+    pxSymbol->ModuleAdress = pSymInfo->ModBase;
     pxSymbol->Flags = pSymInfo->Flags;
     pxSymbol->Address = pSymInfo->Address;
     pxSymbol->Register = pSymInfo->Register;
@@ -1119,8 +1149,10 @@ void PXAPI PXDebugLogMessage(PXText* const pxText)
     }
 }
 
-PXActionResult PXAPI PXDebugSymbolReadFromAdress(PXDebug* const pxDebug, PXSymbol* const pxSymbol, void* adress)
+PXActionResult PXAPI PXDebugSymbolReadFromAdress(PXDebug* const pxDebug, struct PXSymbol_* const pxSymbol, void* adress)
 {
+    PXClear(PXSymbol, pxSymbol);
+
     const HANDLE processHandle = GetCurrentProcess(); // TODO: what if we want another process?
 
     // Extract symbol
@@ -1129,25 +1161,50 @@ PXActionResult PXAPI PXDebugSymbolReadFromAdress(PXDebug* const pxDebug, PXSymbo
 
         union
         {
-            char buffer[sizeof(SYMBOL_INFO) + MAX_SYM_NAME * sizeof(TCHAR)];
+            char buffer[sizeof(SYMBOL_INFO) + sizeof(TCHAR) * 200]; // MAX_SYM_NAME
             SYMBOL_INFO SymbolInfo;
         }
         symbolInfo;
 
 
         symbolInfo.SymbolInfo.SizeOfStruct = sizeof(SYMBOL_INFO);
-        symbolInfo.SymbolInfo.MaxNameLen = MAX_SYM_NAME;
+        symbolInfo.SymbolInfo.MaxNameLen = 200;
 
         const PXBool symbolFetchSuccess = SymFromAddr(processHandle, adress, &displacement, &symbolInfo.SymbolInfo);
+        const PXActionResult symbolFetchResult = PXWindowsErrorCurrent(symbolFetchSuccess);
 
+          /*
+        BOOL asas = SymGetTypeInfo
+        (
+            processHandle,
+            [in]  DWORD64                   ModBase,
+            [in]  ULONG                     TypeId,
+            [in]  IMAGEHLP_SYMBOL_TYPE_INFO GetType,
+            [out] PVOID                     pInfo
+        );
+        */
+
+        /*
         if(!symbolFetchSuccess)
         {
-            const PXActionResult xxassa = PXErrorCurrent();
-
             // Try again but with another functiuon
+            
+            IMAGEHLP_LINE64 lineInfo;
+            lineInfo.SizeOfStruct = sizeof(IMAGEHLP_LINE64);
+            lineInfo.FileName = &symbolInfo;
+
+            const PXBool symbolFetchSuccessW = SymGetLineFromAddr64(processHandle, adress, &displacement, &lineInfo);
+            const PXActionResult symbolFetchSuccessWRes = PXWindowsErrorCurrent(symbolFetchSuccess);
+
+
+            IMAGEHLP_SYMBOL64* imageHelpSYMBOL = &symbolInfo; // function avove failed, reuse memory
+            imageHelpSYMBOL->SizeOfStruct = sizeof(IMAGEHLP_SYMBOL64);
+            imageHelpSYMBOL->MaxNameLength = 2000;
+
+            const PXBool symbolFetchSuccessB = SymGetSymFromAddr64(processHandle, adress, &displacement, imageHelpSYMBOL);
 
             return PXActionInvalid;
-        }
+        }*/
 
 
         //  SYM_TYPE xx = symbolInfo.SymbolInfo.TypeIndex;
@@ -1158,8 +1215,9 @@ PXActionResult PXAPI PXDebugSymbolReadFromAdress(PXDebug* const pxDebug, PXSymbo
         const DWORD  decResultSize = pxUnDecorateSymbolName(symbolInfo.SymbolInfo.Name, (PSTR)pxSymbol->NameUndecorated, 64, UNDNAME_COMPLETE);
 
 
-
-        pxSymbol->ModelAdress = symbolInfo.SymbolInfo.ModBase;
+        pxSymbol->Amount = 1;
+        pxSymbol->ObjectSize = symbolInfo.SymbolInfo.Size;
+        pxSymbol->ModuleAdress = symbolInfo.SymbolInfo.ModBase;
         pxSymbol->SymbolAdress = symbolInfo.SymbolInfo.Address;
 
         PXTextCopyA(symbolInfo.SymbolInfo.Name, symbolInfo.SymbolInfo.NameLen, pxSymbol->NameSymbol, 64);
@@ -1167,7 +1225,7 @@ PXActionResult PXAPI PXDebugSymbolReadFromAdress(PXDebug* const pxDebug, PXSymbo
 
         // Index
         {
-            const PXBool succca = SymFromIndex(processHandle, pxSymbol->ModelAdress, symbolInfo.SymbolInfo.Index, &symbolInfo.SymbolInfo);
+            const PXBool succca = SymFromIndex(processHandle, pxSymbol->ModuleAdress, symbolInfo.SymbolInfo.Index, &symbolInfo.SymbolInfo);
 
             if(succca)
             {
@@ -1201,79 +1259,6 @@ PXActionResult PXAPI PXDebugSymbolReadFromAdress(PXDebug* const pxDebug, PXSymbo
             }
         }
     }
-
-    // Get module name 
-    {
-        // // Windows XP (+UWP), Kernel32.dll, psapi.h
-
-        // Fetch module from adress
-        HMODULE moduleHandle = PXNull;
-        const PXBool moduleFetchSuccess = GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCTSTR)adress, &moduleHandle);
-
-
-        // net to get moduleinto, but we have those
-       // IMAGEHLP_MODULE64 mMAGEHLP_MODULE64;
-       // mMAGEHLP_MODULE64.SizeOfStruct = sizeof(IMAGEHLP_MODULE64);
-      //  const PXBool moduleFetchSuccessaSAS = SymGetModuleInfo64(processHandle, moduleHandle, &mMAGEHLP_MODULE64);
-
-
-        // Extract names
-        {
-            char moduleName[MAX_PATH];
-            PXClearList(char, moduleName, MAX_PATH);
-            const DWORD moduleNameLength = GetModuleFileNameA(moduleHandle, moduleName, sizeof(moduleName));
-
-            char* molduleNamefixed = moduleName;
-            PXSize actualSize = moduleNameLength;
-
-            const char systemPath[] = "C:\\WINDOWS\\SYSTEM32\\";
-            const PXSize systemPathSize = sizeof(systemPath);
-            const PXBool isSystem = PXTextCompareIgnoreCaseA(systemPath, systemPathSize, moduleName, systemPathSize);
-
-            if(isSystem)
-            {
-                molduleNamefixed += systemPathSize - 1;
-                actualSize -= systemPathSize - 1;
-
-                // Check if its a driver
-                const char driverStoreText[] = "DriverStore";
-                const PXSize driverStoreTextSize = sizeof(driverStoreText);
-
-                const PXBool isDriver = PXTextCompareA(driverStoreText, driverStoreTextSize, molduleNamefixed, driverStoreTextSize);
-
-                if(isDriver)
-                {
-                    // The path is very long and useless, only get the DLL name.
-                    const PXSize lastSlash = PXTextFindLastCharacterA(molduleNamefixed, actualSize, '\\');
-
-                    if(lastSlash != -1)
-                    {
-                        molduleNamefixed += lastSlash + 1;
-                        actualSize -= lastSlash + 1;
-                    }
-                }
-            }
-            else
-            {
-                char currentWorkPath[MAX_PATH];
-                PXClearList(char, currentWorkPath, MAX_PATH);
-                PXSize currentWorkPathSize = GetModuleFileName(NULL, currentWorkPath, MAX_PATH);
-
-
-                PXSize lastSlashA = PXTextFindLastCharacterA(currentWorkPath, currentWorkPathSize, '\\');
-                PXSize lastSlashB = PXTextFindLastCharacterA(moduleName, currentWorkPathSize, '\\');
-                PXBool isRelativePath = PXTextCompareA(currentWorkPath, lastSlashA, moduleName, lastSlashB);
-
-                if(isRelativePath)
-                {
-                    molduleNamefixed += lastSlashA + 1;
-                    actualSize -= lastSlashA + 1;
-                }
-            }
-
-            PXTextCopyA(molduleNamefixed, actualSize, pxSymbol->NameModule, 64);
-        }
-    }
 }
 
 PXActionResult PXAPI PXDebugHeapMemoryList(PXDebug* const pxDebug)
@@ -1283,41 +1268,227 @@ PXActionResult PXAPI PXDebugHeapMemoryList(PXDebug* const pxDebug)
 
     const HANDLE processHandle = GetProcessHeap();
 
+   const BOOL ursiu = SymInitialize(processHandle, PXNull, PXTrue);
+
+    HEAP_SUMMARY heapSUMMARY;
+    heapSUMMARY.cb = sizeof(HEAP_SUMMARY);
+
+    HeapSummary(processHandle, 0, &heapSUMMARY);
+
+
+#if PXLogEnable  
+    PXLogPrint
+    (
+        PXLoggingEvent,
+        "Debugger",
+        "Heap",
+        "\n"
+        " %20s : %20i B\n"
+        " %20s : %20i B\n"
+        " %20s : %20i B",
+        "Allocated", heapSUMMARY.cbAllocated,
+        "Committed", heapSUMMARY.cbCommitted,
+        "MaxReserve", heapSUMMARY.cbMaxReserve
+    );
+#endif
+
+
+#if 1
 
     PROCESS_HEAP_ENTRY processHeapEntry;
     PXClear(PROCESS_HEAP_ENTRY, &processHeapEntry);
     
     // Windows XP, Kernel32.dll, heapapi.h
-    for(PXSize i = 0; HeapWalk(processHandle, &processHeapEntry); ++i) 
+    for(PXSize i = 0; HeapWalk(processHandle, &processHeapEntry); ++i)
     {
-        PXSymbol pxSymbol;
+       
 
-        PXDebugFetchSymbolFromRougeAdress(pxDebug, &pxSymbol, processHeapEntry.lpData);
+        PXBool isBusy = PROCESS_HEAP_ENTRY_BUSY & processHeapEntry.wFlags;
+        PXBool isShare = PROCESS_HEAP_ENTRY_DDESHARE & processHeapEntry.wFlags;
+        PXBool ismovable = PROCESS_HEAP_ENTRY_MOVEABLE & processHeapEntry.wFlags;
+        PXBool isRegion = PROCESS_HEAP_REGION & processHeapEntry.wFlags;
+        PXBool isUncommited = PROCESS_HEAP_UNCOMMITTED_RANGE & processHeapEntry.wFlags;
 
+        void* a = processHeapEntry.lpData;
+        char* target = isRegion ? processHeapEntry.Region.lpFirstBlock : processHeapEntry.Block.hMem;
 
-#if PXLogEnable 
-
-        const PXBool isRegion = PROCESS_HEAP_REGION & processHeapEntry.wFlags;
-
-
-        PXLogPrint
-        (
-            PXLoggingEvent,
-            "Debugger",
-            "Heap",
-            "0x%p %10i B",
-            processHeapEntry.lpData,
-            processHeapEntry.cbData
-        );
-#endif
+        // target += processHeapEntry.cbOverhead;
 
       
+        // As we have a memory space-adress here, we cant use the
+        // windows symbol lookup, because they exist in a whole other memory region
+        // To solve this we have a seperate lookup
+
+   
+
+        //_malloc_dbg
+   
 
 
+
+        if(isRegion)
+        {
+#if PXLogEnable   && 0
+            PXLogPrint
+            (
+                PXLoggingEvent,
+                "Debugger",
+                "Heap",
+                "0x%p %6s - %8i B : 0x%p-0x%p Commit: %i B/ %i B",
+                processHeapEntry.lpData,
+                "REGION",
+                processHeapEntry.cbData,
+                processHeapEntry.Region.lpFirstBlock,
+                processHeapEntry.Region.lpLastBlock,
+                processHeapEntry.Region.dwCommittedSize,
+                processHeapEntry.Region.dwUnCommittedSize,
+                "Unkown"
+            );
+#endif
+        }
+        else
+        {
+            char buffer[260];
+            void* ObjectInformation = buffer;
+            ULONG ObjectInformationLength = 260;
+            ULONG ReturnLength = 0;
+
+            NTSTATUS oikasdo = NtQueryObject
+            (
+                processHeapEntry.Block.hMem,
+                ObjectBasicInformation,
+                ObjectInformation,
+                ObjectInformationLength,
+                &ReturnLength
+            );
+
+            target = (char*)processHeapEntry.lpData;// +(int)processHeapEntry.cbOverhead;
+
+
+            PXSymbol pxSymbol;
+
+            const PXActionResult symbolFetchResult = PXMemorySymbolFetch(target, &pxSymbol);
+            const PXBool success = PXActionSuccessful == symbolFetchResult;
+
+            char symbolInfo[128];
+
+            if(success)
+            {
+                PXTextPrintA
+                (
+                    symbolInfo,
+                    128,
+                    "%s::%s::%s::%i ~ %ix %i B",
+                    pxSymbol.NameModule,
+                    pxSymbol.NameFile,
+                    pxSymbol.NameSymbol,
+                    pxSymbol.LineNumber,
+                    pxSymbol.Amount,
+                    pxSymbol.ObjectSize
+                );
+
+#if PXLogEnable  
+                PXLogPrint
+                (
+                    PXLoggingEvent,
+                    "Debugger",
+                    "Heap",
+                    "0x%p %6s - %8i B + OS: %3i B, - %s",
+                    processHeapEntry.lpData,
+                    "BLOCK",
+                    processHeapEntry.cbData,
+                    (int)processHeapEntry.cbOverhead,
+                    symbolInfo
+                );
+#endif
+            }
+            else
+            {
+                PXTextPrintA
+                (
+                    symbolInfo,
+                    128,
+                    "???"
+                );
+            }
+
+
+
+
+        }
 
     }
 
 
+#else
+
+
+    const HANDLE hHeapSnap = CreateToolhelp32Snapshot(TH32CS_SNAPHEAPLIST, GetCurrentProcessId());
+    const PXBool heapSnapSuccess = INVALID_HANDLE_VALUE != hHeapSnap;
+
+    HEAPLIST32 heapList;
+    PXClear(HEAPLIST32, &heapList);
+    heapList.dwSize = sizeof(HEAPLIST32);
+
+    if(!heapSnapSuccess)
+    {
+        // GetLastError())
+
+        return PXActionInvalid;
+    }
+
+
+    // Fetch first
+    {
+        const PXBool firstFetch = Heap32ListFirst(hHeapSnap, &heapList);
+
+        if(!firstFetch)
+        {
+            return PXActionInvalid;
+        }
+    }
+
+
+
+
+    do
+    {
+        HEAPENTRY32 he;
+        ZeroMemory(&he, sizeof(HEAPENTRY32));
+        he.dwSize = sizeof(HEAPENTRY32);
+
+        if(Heap32First(&he, GetCurrentProcessId(), heapList.th32HeapID))
+        {
+            printf("Heap ID: %d\n", heapList.th32HeapID);
+
+            do
+            {
+             
+
+                PXSymbol pxSymbol;
+
+                void* adress = he.dwAddress;
+
+                PXDebugFetchSymbolFromRougeAdress(pxDebug, &pxSymbol, adress);
+
+
+                printf("0x%p - %6i B   %s\n", adress, he.dwBlockSize, pxSymbol.NameUndecorated);
+
+
+                he.dwSize = sizeof(HEAPENTRY32);
+            } 
+
+            while(Heap32Next(&he));
+        }
+
+        heapList.dwSize = sizeof(HEAPLIST32);
+    } 
+    while(Heap32ListNext(hHeapSnap, &heapList));
+
+
+    CloseHandle(hHeapSnap);
+#endif
+     
 
 #endif
 
@@ -1447,7 +1618,7 @@ PXActionResult PXAPI PXDebugFetchSymbolFromRougeAdress(PXDebug* const pxDebug, P
 {
     const HANDLE processHandle = GetCurrentProcess();
     const PXBool initRes = SymInitialize(processHandle, PXNull, PXTrue);
-    DWORD xxxas = SymSetOptions(SYMOPT_LOAD_LINES);
+    DWORD xxxas = SymSetOptions(SYMOPT_LOAD_ANYTHING); // SYMOPT_LOAD_LINES
 
     PXClear(PXSymbol, pxSymbol);
 
@@ -1520,6 +1691,85 @@ PXThreadResult PXAPI PXDebugLoop(PXDebug* const pxDebug)
         PXActionResult pxActionResult = PXDebugWaitForEvent(pxDebug);
 
         pxActionResult = PXActionInvalid;
+    }
+
+    return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXDebugModuleNameFromAdress(void* adress, char* moduleName)
+{
+    HMODULE moduleHandle = PXNull;
+    const PXBool moduleFetchSuccess = GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCTSTR)adress, &moduleHandle);
+    const PXActionResult moduleFetchResult = PXWindowsErrorCurrent(moduleFetchSuccess);
+
+    const PXActionResult result = PXDebugModuleNameFromModule(moduleHandle, moduleName);
+
+    return result;    
+}
+
+PXActionResult PXAPI PXDebugModuleNameFromModule(HMODULE moduleHandle, char* moduleNameOUT)
+{
+    // net to get moduleinto, but we have those
+    // IMAGEHLP_MODULE64 mMAGEHLP_MODULE64;
+    // mMAGEHLP_MODULE64.SizeOfStruct = sizeof(IMAGEHLP_MODULE64);
+   //  const PXBool moduleFetchSuccessaSAS = SymGetModuleInfo64(processHandle, moduleHandle, &mMAGEHLP_MODULE64);
+
+
+     // Extract names
+    {
+        char moduleName[MAX_PATH];
+        PXClearList(char, moduleName, MAX_PATH);
+        const DWORD moduleNameLength = GetModuleFileNameA(moduleHandle, moduleName, sizeof(moduleName));
+
+        char* molduleNamefixed = moduleName;
+        PXSize actualSize = moduleNameLength;
+
+        const char systemPath[] = "C:\\WINDOWS\\SYSTEM32\\";
+        const PXSize systemPathSize = sizeof(systemPath);
+        const PXBool isSystem = PXTextCompareIgnoreCaseA(systemPath, systemPathSize, moduleName, systemPathSize);
+
+        if(isSystem)
+        {
+            molduleNamefixed += systemPathSize - 1;
+            actualSize -= systemPathSize - 1;
+
+            // Check if its a driver
+            const char driverStoreText[] = "DriverStore";
+            const PXSize driverStoreTextSize = sizeof(driverStoreText);
+
+            const PXBool isDriver = PXTextCompareA(driverStoreText, driverStoreTextSize, molduleNamefixed, driverStoreTextSize);
+
+            if(isDriver)
+            {
+                // The path is very long and useless, only get the DLL name.
+                const PXSize lastSlash = PXTextFindLastCharacterA(molduleNamefixed, actualSize, '\\');
+
+                if(lastSlash != -1)
+                {
+                    molduleNamefixed += lastSlash + 1;
+                    actualSize -= lastSlash + 1;
+                }
+            }
+        }
+        else
+        {
+            char currentWorkPath[MAX_PATH];
+            PXClearList(char, currentWorkPath, MAX_PATH);
+            PXSize currentWorkPathSize = GetModuleFileName(NULL, currentWorkPath, MAX_PATH);
+
+
+            PXSize lastSlashA = PXTextFindLastCharacterA(currentWorkPath, currentWorkPathSize, '\\');
+            PXSize lastSlashB = PXTextFindLastCharacterA(moduleName, currentWorkPathSize, '\\');
+            PXBool isRelativePath = PXTextCompareA(currentWorkPath, lastSlashA, moduleName, lastSlashB);
+
+            if(isRelativePath)
+            {
+                molduleNamefixed += lastSlashA + 1;
+                actualSize -= lastSlashA + 1;
+            }
+        }
+
+        PXTextCopyA(molduleNamefixed, actualSize, moduleNameOUT, 64);
     }
 
     return PXActionSuccessful;

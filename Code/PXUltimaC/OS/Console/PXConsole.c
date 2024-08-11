@@ -624,7 +624,7 @@ void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source,
     PXTextConstructNamedBufferA(&formattedText, formattedTextBuffer, 512);
 
     PXText exportText;
-    PXTextConstructNamedBufferA(&exportText, bufferColorBuffer, 4000);
+    PXTextConstructNamedBufferA(&exportText, bufferColorBuffer, 512);
 
     PXTime pxTime;
     PXTimeNow(&pxTime);

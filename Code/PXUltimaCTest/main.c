@@ -96,21 +96,23 @@ void PXTextMatchTest()
 #include <OS/Async/PXProcess.h>
 #include <OS/Async/PXThread.h>
 #include <OS/Debug/PXDebug.h>
+#include <OS/Memory/PXMemory.h>
 
 int main()
 {
     PXConsoleWrite(0, "[i] Starting testing...\n");
 
+    int* dsfdsf = PXMemoryMallocT(int, 420);
 
-    PXThread threads[3000];
-    PXClearList(PXThread, threads, 3000);
-    const PXSize xx = 3000;
+    PXThread* threads = PXMemoryMallocT(PXThread, 1234);
+    const PXSize xx = 1234;
     PXSize oeoeo = 0;
 
 
     PXThread* refA = threads;
     PXThread** refB = &refA;
 
+   // HeapAlloc();
 
 
     PXProcessThreadsListAll(PXNull, refB, xx, &oeoeo);
@@ -129,7 +131,7 @@ int main()
 
 
 
-        Beep(hz, 1);
+        Beep(hz, 100);
         PXConsoleWriteF(0, "[Beep] %i\n", hz);
     }
 

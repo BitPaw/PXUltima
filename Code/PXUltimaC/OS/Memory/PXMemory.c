@@ -4,6 +4,7 @@
 #include <OS/Error/PXActionResult.h>
 #include <OS/Console/PXConsole.h>
 #include <Media/PXText.h>
+#include <OS/Debug/PXDebug.h>
 
 #include <stdlib.h>
 #include <malloc.h>
@@ -25,7 +26,6 @@
 #define ProtectionIDRead PAGE_READONLY
 #define ProtectionIDWrite PAGE_READWRITE
 #define ProtectionIDReadWrite PAGE_READWRITE
-
 
 PXActionResult PXAPI WindowsProcessPrivilege(const char* pszPrivilege, BOOL bEnable)
 {
@@ -95,6 +95,81 @@ struct MemoryAllocationInfo
 #endif
 //-------------------------------------
 
+
+static PXMemorySymbolLookup _PXGLOBLALMemorySymbolLookup;
+static PXBool _PXGLOBLALMemorySymbolLookupENABLED = PXFalse;
+
+
+PXMemorySymbolLookup* const PXAPI PXMemorySymbolLookupInstanceGet(void)
+{
+    if(!_PXGLOBLALMemorySymbolLookupENABLED)
+    {
+        PXClear(PXMemorySymbolLookup, &_PXGLOBLALMemorySymbolLookup);
+
+        PXDictionaryConstruct(&_PXGLOBLALMemorySymbolLookup, sizeof(void*), sizeof(PXSymbolMemory), PXDictionaryValueLocalityInternalEmbedded);
+
+        _PXGLOBLALMemorySymbolLookupENABLED = PXTrue;
+    }
+
+    return &_PXGLOBLALMemorySymbolLookup;
+}
+
+void PXAPI PXMemorySymbolAdd(PXSymbolMemory* const pxSymbolMemory,  const PXMemorySymbolInfoMode pxMemorySymbolInfoMode)
+{
+    PXMemorySymbolLookup* const pxMemorySymbolLookup = PXMemorySymbolLookupInstanceGet();
+
+    switch(pxMemorySymbolInfoMode)
+    {
+        case PXMemorySymbolInfoModeAdd:
+        {
+            PXDictionaryAdd(&pxMemorySymbolLookup->SymbolLookup, &pxSymbolMemory->Adress, pxSymbolMemory);
+            break;
+        }
+        case PXMemorySymbolInfoModeUpdate:
+        {
+
+            break;
+        }
+        case PXMemorySymbolInfoModeRemove:
+        {
+
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+PXActionResult PXAPI PXMemorySymbolFetch(const void* const adress, PXSymbol* const pxSymbol)
+{
+    PXMemorySymbolLookup* const pxMemorySymbolLookup = PXMemorySymbolLookupInstanceGet();
+    PXSymbolMemory* symbolMemory = PXNull;
+
+    PXBool success = PXDictionaryFindEntry(&pxMemorySymbolLookup->SymbolLookup, &adress, &symbolMemory);
+
+    PXClear(PXSymbol, pxSymbol);
+
+    if(!success)
+    {
+        return PXActionRefusedNotInitialized;
+    }
+
+
+    pxSymbol->Amount = symbolMemory->Amount;
+    pxSymbol->ObjectSize = symbolMemory->ObjectSize;
+
+    // Get module name from adress
+    
+    pxSymbol->ModuleAdress = symbolMemory->ModuleAdress;
+    PXDebugModuleNameFromAdress(symbolMemory->ModuleAdress, pxSymbol->NameModule);
+
+    PXTextCopyA(symbolMemory->FunctionAdress, 64, pxSymbol->NameSymbol, 64);
+    PXTextCopyA(symbolMemory->FileAdress, 64, pxSymbol->NameFile, 64);
+   // PXTextCopyA(symbolMemory->N, 64, pxSymbol->Name, 64);
+
+    return PXActionSuccessful;
+}
+
 void* PXAPI PXMemoryMalloc(const PXSize memorySize)
 {
     void* adress = PXNull;
@@ -106,19 +181,54 @@ void* PXAPI PXMemoryMalloc(const PXSize memorySize)
 
 #if OSUnix || MemoryUseSystemFunction || OSForcePOSIXForWindows
     adress = malloc(adress);
-
-    return adress;
-
 #elif OSWindows
-
     const HANDLE heapHandle = GetProcessHeap(); // Windows 2000 SP4, Kernel32.dll, heapapi.h
     adress = HeapAlloc(heapHandle, 0, memorySize); // Windows 2000 SP4, Kernel32.dll, heapapi.h
-
-    return adress;
-
 #else
 #error Memory allocate seems not to be supported on this OS
 #endif
+
+    // Special logging behaviour
+    {
+        PXSymbolMemory pxSymbolMemory;
+        pxSymbolMemory.Adress = adress; 
+        pxSymbolMemory.Amount = 1;
+        pxSymbolMemory.ObjectSize = memorySize;      
+
+        PXSymbol pxSymbol;
+
+        PXDebug* pxDebug = PXDebugInstanceGet();
+
+        PXDebugStackTrace(pxDebug, &pxSymbol, 1, 2, 1);
+
+        pxSymbolMemory.ModuleAdress = pxSymbol.ModuleAdress;
+        PXTextCopyA(pxSymbol.NameFile, 64, pxSymbolMemory.FileAdress, 64);
+        PXTextCopyA(pxSymbol.NameSymbol, 64, pxSymbolMemory.FunctionAdress, 64);
+        pxSymbolMemory.LineNumber = -1;
+
+        PXMemorySymbolAdd(&pxSymbolMemory, PXMemorySymbolInfoModeAdd);
+
+
+#if PXLogEnable
+        PXDebugModuleNameFromAdress(pxSymbolMemory.ModuleAdress, pxSymbol.NameModule);
+
+        PXLogPrint
+        (
+            PXLoggingAllocation,
+            "PX",
+            "Memory-Alloc",
+            "%s::%s::%s::%i, %ix %i B",
+            pxSymbol.NameModule,
+            pxSymbol.NameFile,
+            pxSymbol.NameSymbol,
+            pxSymbolMemory.LineNumber,
+            pxSymbolMemory.Amount,
+            pxSymbolMemory.ObjectSize
+        );
+#endif 
+    }
+
+    return adress;
 }
 
 PXBool PXAPI PXMemoryFree(const void* const adress)
@@ -134,6 +244,43 @@ PXBool PXAPI PXMemoryFree(const void* const adress)
 
     const HANDLE heapHandle = GetProcessHeap(); // Windows 2000 SP4, Kernel32.dll, heapapi.h
     const PXBool freeResult = HeapFree(heapHandle, 0, adress); // Windows 2000 SP4, Kernel32.dll, heapapi.h
+
+
+    // Special logging behaviour
+    {
+        PXSymbolMemory pxSymbolMemory;
+        pxSymbolMemory.Adress = adress;
+        pxSymbolMemory.Amount = -1;
+        pxSymbolMemory.ObjectSize = -1;
+
+        PXSymbol pxSymbol;
+
+        PXDebug* pxDebug = PXDebugInstanceGet();
+
+        PXDebugStackTrace(pxDebug, &pxSymbol, 1, 2, 1);
+
+        pxSymbolMemory.ModuleAdress = pxSymbol.ModuleAdress;
+        PXTextCopyA(pxSymbol.NameFile, 64, pxSymbolMemory.FileAdress, 64);
+        PXTextCopyA(pxSymbol.NameSymbol, 64, pxSymbolMemory.FunctionAdress, 64);
+        pxSymbolMemory.LineNumber = -1;
+
+        PXMemorySymbolAdd(&pxSymbolMemory, PXMemorySymbolInfoModeRemove);
+
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingAllocation,
+            "PX",
+            "Memory-Free",
+            "%s::%s::%s::%i, %i B",
+            pxSymbol.NameModule,
+            pxSymbol.NameFile,
+            pxSymbol.NameSymbol,
+            pxSymbolMemory.LineNumber,
+            pxSymbolMemory.Amount
+        );
+#endif 
+    }
 
     return freeResult;
 
@@ -151,15 +298,49 @@ void* PXAPI PXMemoryRealloc(const void* const adress, const PXSize memorySize)
     newAdress = realloc(adress, memorySize);
 #elif OSWindows
     
+    if(!adress)
+    {
+        return PXMemoryMalloc(memorySize);
+    }
+
     const HANDLE heapHandle = GetProcessHeap(); // Windows 2000 SP4, Kernel32.dll, heapapi.h
 
-    if(adress)
+    newAdress = HeapReAlloc(heapHandle, 0, adress, memorySize); // Windows 2000 SP4, Kernel32.dll, heapapi.h
+
+    // Special logging behaviour
     {
-        newAdress = HeapReAlloc(heapHandle, 0, adress, memorySize); // Windows 2000 SP4, Kernel32.dll, heapapi.h
-    }
-    else
-    {
-        newAdress = HeapAlloc(heapHandle, 0, memorySize); // Windows 2000 SP4, Kernel32.dll, heapapi.h
+        PXSymbolMemory pxSymbolMemory;
+        pxSymbolMemory.Adress = adress;
+        pxSymbolMemory.Amount = 1;
+        pxSymbolMemory.ObjectSize = memorySize;
+
+        PXSymbol pxSymbol;
+
+        PXDebug* pxDebug = PXDebugInstanceGet();
+
+        PXDebugStackTrace(pxDebug, &pxSymbol, 1, 2, 1);
+
+        pxSymbolMemory.ModuleAdress = pxSymbol.ModuleAdress;
+        PXTextCopyA(pxSymbol.NameFile, 64, pxSymbolMemory.FileAdress, 64);
+        PXTextCopyA(pxSymbol.NameSymbol, 64, pxSymbolMemory.FunctionAdress, 64);
+        pxSymbolMemory.LineNumber = -1;
+
+        PXMemorySymbolAdd(&pxSymbolMemory, PXMemorySymbolInfoModeUpdate);
+
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingAllocation,
+            "PX",
+            "Memory-Realloc",
+            "%s::%s::%s::%i, %i B",
+            pxSymbol.NameModule,
+            pxSymbol.NameFile,
+            pxSymbol.NameSymbol,
+            pxSymbolMemory.LineNumber,
+            pxSymbolMemory.Amount
+        );
+#endif 
     }
 
     return newAdress;

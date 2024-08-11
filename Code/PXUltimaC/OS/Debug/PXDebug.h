@@ -48,8 +48,6 @@ typedef struct PXSymbol_
 {
     PXSize TypeIndex;        // Type Index of symbol
     PXSize Index;
-    PXSize Size;
-    PXSize ModBase;          // Base Address of module comtaining this symbol
     PXSize Flags;
     PXSize Address;          // Address of symbol including base address of module
     PXSize Register;         // register holding value or pointer to value
@@ -57,10 +55,15 @@ typedef struct PXSymbol_
 
     PXSymbolType Type;// PDB classification
 
-    void* ModelAdress;
+    void* ModuleAdress; // Base Address of module comtaining this symbol
+    HMODULE ModuleHandle;
+
     void* SymbolAdress;
 
     PXSize LineNumber;
+    PXSize Amount;
+    PXSize ObjectSize;
+
     char NameUndecorated[64];
     char NameSymbol[64];
     char NameFile[64];
@@ -118,8 +121,19 @@ typedef struct PXDebug_
 }
 PXDebug;
 
-PXPublic void PXAPI PXDebugConstruct(PXDebug* const pxDebug);
-PXPublic void PXAPI PXDebugDestruct(PXDebug* const pxDebug);
+
+
+
+
+
+
+
+
+
+
+PXPublic PXDebug* PXAPI PXDebugInstanceGet();
+PXPublic void PXAPI PXDebugInstanceRelease(PXDebug* const pxDebug);
+
 
 // VS Debugger functions-- maybe
 PXPublic PXActionResult PXAPI PXDebugProcessBeeingDebugged(PXDebug* const pxDebug, PXBool* const isPresent);
@@ -141,7 +155,7 @@ PXPublic PXActionResult PXAPI PXDebugAttach(PXDebug* const pxDebug);
 //PXPublic void PXDebugAttachToDebugger(PXDebug* const pxDebug);
 PXPublic PXActionResult PXAPI PXDebugDetach(PXDebug* const pxDebug);
 
-PXPublic void PXAPI PXDebugStackTrace(PXDebug* const pxDebug);
+PXPublic void PXAPI PXDebugStackTrace(PXDebug* const pxDebug, PXSymbol* const pxSymbolList, const PXSize pxSymbolListAmount, const PXSize start, const PXSize depth);
 
 PXPublic PXSize PXAPI PXDebugMemoryRead(PXDebug* const pxDebug, const void* const adress, void* const outputData, const PXSize outputDataSize);
 PXPublic PXSize PXAPI PXDebugMemoryWrite(PXDebug* const pxDebug, const void* const adress, const void* const inputData, const PXSize inputDataSize);
@@ -155,15 +169,19 @@ PXPublic PXActionResult PXAPI PXDebugLibrarySymbolsFetch(PXDebug* const pxDebug,
 PXPublic void PXAPI PXDebugLogMessage(PXText* const pxText);
 
 
-PXPrivate PXActionResult PXAPI PXDebugSymbolReadFromAdress(PXDebug* const pxDebug, PXSymbol* const pxSymbol, void* adress);
+PXPublic PXActionResult PXAPI PXDebugSymbolReadFromAdress(PXDebug* const pxDebug, struct PXSymbol_* const pxSymbol, void* adress);
 
 PXPublic PXActionResult PXAPI PXDebugHeapMemoryList(PXDebug* const pxDebug);
 
 PXPublic PXActionResult PXAPI PXDebugFetchSymbolThread(PXDebug* const pxDebug, PXSymbol* const pxSymbol, PXThread* pxThread);
 PXPublic PXActionResult PXAPI PXDebugFetchSymbolFromRougeAdress(PXDebug* const pxDebug, PXSymbol* const pxSymbol, void* adress);
 
-
-
 PXPrivate PXThreadResult PXAPI PXDebugLoop(PXDebug* const pxDebug);
+
+
+PXPublic PXActionResult PXAPI PXDebugModuleNameFromAdress(void* adress, char* moduleName);
+PXPublic PXActionResult PXAPI PXDebugModuleNameFromModule(HMODULE moduleHandle, char* moduleName);
+
+
 
 #endif
