@@ -24,7 +24,7 @@ PXXMLSymbol;
 PXPrivate PXXMLSymbol PXAPI PXXMLPeekLine(const char* const text, const PXSize textSize);
 PXPrivate void PXAPI PXXMLBlockParse(PXCodeDocument* const pxDocument, PXCompiler* const pxCompiler);
 
-PXPublic PXActionResult PXAPI PXXMLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXXMLSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
+PXPublic PXActionResult PXAPI PXXMLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXXMLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

@@ -58,29 +58,13 @@ PXBool PXAPI PXImageResize(PXImage* const image, const PXColorFormat dataFormat,
 
     // reallocate
     {
-        PXMemoryHeapReallocateEventData pxMemoryHeapReallocateEventData;
-
-        PXMemoryHeapReallocateEventDataFillType
-        (
-            &pxMemoryHeapReallocateEventData,
-            PXByte,
-            newSize,
-            PXNull,
-            &image->PixelDataSize,
-            &image->PixelData
-        );
-
-        PXMemoryHeapReallocate(&pxMemoryHeapReallocateEventData);
-
-        if (!pxMemoryHeapReallocateEventData.WasSuccessful)
-        {
-            return PXFalse;
-        }
-
+        image->PixelDataSize = newSize;
+        image->PixelData = PXMemoryMallocT(PXByte, newSize);
         image->Format = dataFormat;
         image->Width = width;
         image->Height = height;
 
+        /*
 
         // Set image data, so we dont have a random fully empty image with no alpha
         // Causes wierd problems if you dont expect that.
@@ -116,6 +100,7 @@ PXBool PXAPI PXImageResize(PXImage* const image, const PXColorFormat dataFormat,
                 }
             }      
         }
+        */
 
     }
 

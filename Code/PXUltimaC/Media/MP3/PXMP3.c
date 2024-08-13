@@ -787,7 +787,7 @@ PXInt8U PXAPI PXMPEGGenreToID(const PXMPEGGenre mpegGenre)
     return -1; // MPEGGenreUnknown
 }
 
-PXActionResult PXAPI PXMP3LoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
+PXActionResult PXAPI PXMP3LoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     PXMP3 pxMP3;
     
@@ -1140,7 +1140,7 @@ PXActionResult PXAPI PXMP3LoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXMP3SaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
+PXActionResult PXAPI PXMP3SaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

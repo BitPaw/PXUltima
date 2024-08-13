@@ -8,7 +8,7 @@ PXPrivate void PXAPI PXJavaContainerWrite(PXCompiler* const pxCompiler);
 PXPrivate void PXAPI PXJavaFunctionWrite(PXCompiler* const pxCompiler);
 PXPrivate void PXAPI PXJavaDefinitionWrite(PXCompiler* const pxCompiler);
 
-PXPublic PXActionResult PXAPI PXJavaLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXJavaSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
+PXPublic PXActionResult PXAPI PXJavaLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXJavaSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

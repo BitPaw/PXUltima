@@ -218,9 +218,9 @@ void PXAPI PXWavefrontFaceLineParse(PXCompiler* const pxCompiler, PXInt32U* cons
 }
 
 #pragma optimize("", off)
-PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
+PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
-    PXModel* const pxModel = (PXModel*)pxResourceLoadInfo->Target;
+    PXModel* const pxModel = (PXModel*)pxResourceLoadInfo->ResourceTarget;
 
     PXFile tokenSteam;
 
@@ -600,11 +600,11 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
 
                             PXFilePathRelativeFromFile(pxResourceLoadInfo->FileReference, &materialFileName, &materialFilePathFull);
      
-                            PXResourceLoadInfo pxMaterialLoadInfo;
-                            PXClear(PXResourceLoadInfo, &pxMaterialLoadInfo);
-                            pxMaterialLoadInfo.Target = pxMaterialContaier;
+                            PXResourceTransphereInfo pxMaterialLoadInfo;
+                            PXClear(PXResourceTransphereInfo, &pxMaterialLoadInfo);
+                            pxMaterialLoadInfo.ResourceTarget = pxMaterialContaier;
                             pxMaterialLoadInfo.FileReference = &materialFile;
-                            pxMaterialLoadInfo.Type = PXResourceTypeMaterialList;
+                            pxMaterialLoadInfo.ResourceType = PXResourceTypeMaterialList;
                             pxMaterialLoadInfo.Manager = pxResourceLoadInfo->Manager;
 
                             PXResourceLoad(&pxMaterialLoadInfo, &materialFilePathFull);
@@ -880,7 +880,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourc
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXWavefrontSaveFromFile(PXResourceSaveInfo* const pxResourceSaveInfo)
+PXActionResult PXAPI PXWavefrontSaveFromFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

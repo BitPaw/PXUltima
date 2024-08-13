@@ -5,7 +5,7 @@
 
 const char PXLevelSignature[] = {'P', 'X', 'L', 'V'};
 
-PXActionResult PXAPI PXLevelLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
+PXActionResult PXAPI PXLevelLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     // Signature
 
@@ -18,7 +18,7 @@ PXActionResult PXAPI PXLevelLoadFromFile(PXResourceLoadInfo* const pxResourceLoa
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXLevelSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
+PXActionResult PXAPI PXLevelSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     PXLevel pxLevel;
 

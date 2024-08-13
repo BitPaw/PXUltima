@@ -2,6 +2,7 @@
 
 #include <OS/Memory/PXMemory.h>
 #include <OS/Console/PXConsole.h>
+#include <Media/PXText.h>
 
 void PXAPI PXDictionaryConstruct(PXDictionary* const dictionary, const PXSize keySize, const PXSize valueSize, const PXDictionaryValueLocality pxDictionaryValueLocality)
 {
@@ -133,14 +134,33 @@ PXBool PXAPI PXDictionaryAdd(PXDictionary* const dictionary, const void* key, co
 
             ++dictionary->EntryAmountCurrent;
 
+       
+
 #if PXLogEnable
+            char keyText[64];
+
+            switch(dictionary->KeyTypeSize)
+            {
+                case 4:
+                {
+                    PXTextPrintA(keyText, 64, "0x%8.8X", *(PXInt32U*)key);
+                    break;
+                }
+                default:
+                case 8:
+                {
+                    PXTextPrintA(keyText, 64, "0x%16.16X", key);
+                    break;
+                }
+            }
+
             PXLogPrint
             (
                 PXLoggingEvent,
                 "Dictionary",
                 "Add",
-                "Key:%4i Value:0x%p (%3i%%) Size:%i/%i",
-                *(PXInt32U*)key,
+                "Key:%s Value:0x%p (%3i%%) Size:%i/%i",
+                keyText,
                 //valueSourceSize,
                 valueTargetAdress,
                 //valueTargetSize,            

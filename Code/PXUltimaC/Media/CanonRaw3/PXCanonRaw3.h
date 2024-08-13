@@ -16,7 +16,7 @@ typedef struct PXCanonRaw3_
 }
 PXCanonRaw3;
 
-PXPublic PXActionResult PXAPI PXCanonRaw3LoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXCanonRaw3SaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
+PXPublic PXActionResult PXAPI PXCanonRaw3LoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXCanonRaw3SaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

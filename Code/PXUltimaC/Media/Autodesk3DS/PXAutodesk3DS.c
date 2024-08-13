@@ -2,12 +2,12 @@
 
 #include <OS/File/PXFile.h>
 
-PXActionResult PXAPI PXAutodesk3DSLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
+PXActionResult PXAPI PXAutodesk3DSLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXAutodesk3DSSafeFromFile(PXResourceSaveInfo* const pxResourceSafeInfo)
+PXActionResult PXAPI PXAutodesk3DSSafeFromFile(PXResourceTransphereInfo* const pxResourceSafeInfo)
 {
     return PXActionRefusedNotImplemented;
 }

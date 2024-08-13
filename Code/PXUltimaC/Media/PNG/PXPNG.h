@@ -183,6 +183,13 @@ typedef struct PXPNGImageHeader_
 }
 PXPNGImageHeader;
 
+typedef struct PXPNGDataBlock_
+{
+    PXSize FileOffset;
+    PXSize DataSize;
+}
+PXPNGDataBlock;
+
 typedef struct PXPNG_
 {
     //---[Important Data]--------------------------------------------------------
@@ -221,6 +228,9 @@ typedef struct PXPNG_
     //PXSize PXZLIBHeaderListSize;
     //PXZLIBHeader* PXZLIBHeaderList;
     //---------------------------------------------------------------------------
+    PXPNGDataBlock* DataBlockList;
+    PXSize DataBlockListAmount;
+    PXSize DataBlockTotalSize;
 
     PXSize PixelDataSize;
     void* PixelData;
@@ -387,9 +397,9 @@ PXPublic void PXAPI PXPNGDestruct(PXPNG* const png);
 
 PXPublic PXInt8U PXAPI PXPNGBitsPerPixel(const PXPNG* const png);
 
-PXPublic PXSize PXAPI PXPNGFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
-
-PXPublic PXActionResult PXAPI PXPNGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXPNGSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
+PXPublic PXActionResult PXAPI PXPNGFilePredictSize(PXImage* const pxImage, PXSize* const fileSize);
+PXPublic PXActionResult PXAPI PXPNGPeekFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXPNGLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXPNGSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

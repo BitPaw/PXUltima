@@ -49,7 +49,7 @@ PXMP4;
 
 PXPrivate PXM4AChunkID PXAPI PXMP4ChunkFromID(const PXInt32U chunkID);
 
-PXPublic PXActionResult PXAPI PXMP4LoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXMP4SaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
+PXPublic PXActionResult PXAPI PXMP4LoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXMP4SaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

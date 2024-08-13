@@ -9,7 +9,7 @@ typedef struct PXPHP_
 }
 PXPHP;
 
-PXPublic PXActionResult PXAPI PXPHPLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXPHPSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
+PXPublic PXActionResult PXAPI PXPHPLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXPHPSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

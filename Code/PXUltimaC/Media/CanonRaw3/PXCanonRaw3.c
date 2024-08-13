@@ -260,7 +260,7 @@ PXActionResult PXAPI PXCanonRaw3BlockRead(PXCanonRaw3Chunk* const pxCanonRaw3Chu
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXCanonRaw3LoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
+PXActionResult PXAPI PXCanonRaw3LoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     PXFile* const pxFile = pxResourceLoadInfo->FileReference;
 
@@ -342,7 +342,7 @@ PXActionResult PXAPI PXCanonRaw3LoadFromFile(PXResourceLoadInfo* const pxResourc
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXCanonRaw3SaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
+PXActionResult PXAPI PXCanonRaw3SaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

@@ -30,7 +30,7 @@ typedef struct PXOGG_
 }
 PXOGG;
 
-PXPublic PXActionResult PXAPI PXOGGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXOGGSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
+PXPublic PXActionResult PXAPI PXOGGLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXOGGSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

@@ -434,9 +434,9 @@ DXGI_FORMAT PXDXGIFormatGet(PXDirectDrawTexture* const pxDirectDrawTexture)
 
 */
 
-PXActionResult PXAPI PXDDSLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
+PXActionResult PXAPI PXDDSLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
-    PXTexture* const pxTexture = (PXTexture*)pxResourceLoadInfo->Target;
+    PXTexture* const pxTexture = (PXTexture*)pxResourceLoadInfo->ResourceTarget;
 
     PXDirectDrawTexture pxDirectDrawTexture;
     PXClear(PXDirectDrawTexture, &pxDirectDrawTexture);
@@ -690,7 +690,7 @@ PXActionResult PXAPI PXDDSLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDDSSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
+PXActionResult PXAPI PXDDSSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

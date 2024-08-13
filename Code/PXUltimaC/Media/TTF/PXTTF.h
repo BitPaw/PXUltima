@@ -686,7 +686,7 @@ PXPrivate PXTTFTableEntryType PXAPI PXTTFTableEntryTypeFromID(const PXInt32U tab
 
 PXPublic void PXAPI PXTTFDestruct(PXTTF* const ttf);
 
-PXPublic PXActionResult PXAPI PXTTFLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXTTFSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
+PXPublic PXActionResult PXAPI PXTTFLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXTTFSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

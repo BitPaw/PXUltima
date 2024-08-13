@@ -9,7 +9,7 @@ typedef struct PXQOI_
 }
 PXQOI;
 
-PXPublic PXActionResult PXAPI PXQOILoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXQOISaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
+PXPublic PXActionResult PXAPI PXQOILoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXQOISaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

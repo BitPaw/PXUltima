@@ -173,7 +173,7 @@ PXPublic void PXAPI PXJPEGDestruct(PXJPEG* const jpeg);
 
 PXPublic PXSize PXAPI PXJPEGFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 
-PXPublic PXActionResult PXAPI PXJPEGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXJPEGSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
+PXPublic PXActionResult PXAPI PXJPEGLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXJPEGSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

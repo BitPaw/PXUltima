@@ -9,7 +9,7 @@ typedef struct PXMatroska_
 }
 PXMatroska;
 
-PXPublic PXActionResult PXAPI PXMatroskaLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXMatroskaSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
+PXPublic PXActionResult PXAPI PXMatroskaLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXMatroskaSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

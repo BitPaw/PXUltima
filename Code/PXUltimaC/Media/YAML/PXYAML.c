@@ -57,7 +57,7 @@ PXYAMLLineType PXAPI PXYAMLPeekLine(const void* line, const PXSize size)
     return PXYAMLLineTypeUnkown;
 }
 
-PXActionResult PXAPI PXYAMLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
+PXActionResult PXAPI PXYAMLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     PXSize errorCounter = 0;
     PXFile tokenSteam;
@@ -65,7 +65,7 @@ PXActionResult PXAPI PXYAMLLoadFromFile(PXResourceLoadInfo* const pxResourceLoad
 
     PXCompiler pxCompiler;
     PXClear(PXCompiler, &pxCompiler);
-    pxCompiler.CodeDocument = (PXCodeDocument*)pxResourceLoadInfo->Target;
+    pxCompiler.CodeDocument = (PXCodeDocument*)pxResourceLoadInfo->ResourceTarget;
     pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileReference;
     pxCompiler.ReadInfo.FileCache = &tokenSteam;
     pxCompiler.CommentSingleLineSize = 1u;
@@ -318,7 +318,7 @@ PXActionResult PXAPI PXYAMLLoadFromFile(PXResourceLoadInfo* const pxResourceLoad
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXYAMLSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
+PXActionResult PXAPI PXYAMLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

@@ -130,9 +130,9 @@ void PXAPI PXTGADestruct(PXTGA* const tga)
 
 }
 
-PXActionResult PXAPI PXTGALoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
+PXActionResult PXAPI PXTGALoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
-    PXImage* const pxImage = (PXImage*)pxResourceLoadInfo->Target;
+    PXImage* const pxImage = (PXImage*)pxResourceLoadInfo->ResourceTarget;
 
     PXTGA tgaOBJ;
     PXTGA* tga = &tgaOBJ;
@@ -313,7 +313,7 @@ PXActionResult PXAPI PXTGALoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXTGASaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
+PXActionResult PXAPI PXTGASaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

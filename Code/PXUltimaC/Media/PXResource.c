@@ -382,10 +382,10 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                 // Load texture
                 if(hasFilePath)
                 {
-                    PXResourceLoadInfo pxResourceLoadInfo;
-                    PXClear(PXResourceLoadInfo, &pxResourceLoadInfo);
-                    pxResourceLoadInfo.Target = pxImage;
-                    pxResourceLoadInfo.Type = PXResourceTypeImage;
+                    PXResourceTransphereInfo pxResourceLoadInfo;
+                    PXClear(PXResourceTransphereInfo, &pxResourceLoadInfo);
+                    pxResourceLoadInfo.ResourceTarget = pxImage;
+                    pxResourceLoadInfo.ResourceType = PXResourceTypeImage;
                     pxResourceLoadInfo.Manager = pxResourceManager;
 
                     const PXActionResult loadResult = PXResourceLoad(&pxResourceLoadInfo, &pxText);
@@ -522,10 +522,10 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
 
                     // Load model
                     {
-                        PXResourceLoadInfo pxResourceLoadInfo;
-                        PXClear(PXResourceLoadInfo, &pxResourceLoadInfo);
-                        pxResourceLoadInfo.Target = pxModel;
-                        pxResourceLoadInfo.Type = PXResourceTypeModel;
+                        PXResourceTransphereInfo pxResourceLoadInfo;
+                        PXClear(PXResourceTransphereInfo, &pxResourceLoadInfo);
+                        pxResourceLoadInfo.ResourceTarget = pxModel;
+                        pxResourceLoadInfo.ResourceType = PXResourceTypeModel;
                         pxResourceLoadInfo.Manager = pxResourceManager;
 
                         const PXActionResult loadResult = PXResourceLoadA(&pxResourceLoadInfo, pxResourceCreateInfo->FilePath);
@@ -882,10 +882,10 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
 
                 // Load font
                 {
-                    PXResourceLoadInfo pxResourceLoadInfo;
-                    PXClear(PXResourceLoadInfo, &pxResourceLoadInfo);
-                    pxResourceLoadInfo.Target = pxFont;
-                    pxResourceLoadInfo.Type = PXResourceTypeFont;
+                    PXResourceTransphereInfo pxResourceLoadInfo;
+                    PXClear(PXResourceTransphereInfo, &pxResourceLoadInfo);
+                    pxResourceLoadInfo.ResourceTarget = pxFont;
+                    pxResourceLoadInfo.ResourceType = PXResourceTypeFont;
                     pxResourceLoadInfo.Manager = pxResourceManager;
 
                     const PXActionResult loadResult = PXResourceLoadA(&pxResourceLoadInfo, pxResourceCreateInfo->FilePath);
@@ -1280,10 +1280,10 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                 );
 #endif
 
-                PXResourceLoadInfo pxResourceLoadInfo;
-                PXClear(PXResourceLoadInfo, &pxResourceLoadInfo);
-                pxResourceLoadInfo.Target = pxSound;
-                pxResourceLoadInfo.Type = PXResourceTypeSound;
+                PXResourceTransphereInfo pxResourceLoadInfo;
+                PXClear(PXResourceTransphereInfo, &pxResourceLoadInfo);
+                pxResourceLoadInfo.ResourceTarget = pxSound;
+                pxResourceLoadInfo.ResourceType = PXResourceTypeSound;
 
                 const PXActionResult loadResult = PXResourceLoadA(&pxResourceLoadInfo, pxResourceCreateInfo->FilePath);
 
@@ -1569,7 +1569,7 @@ PXActionResult PXAPI PXResourceStorePath(PXResourceManager* const pxResourceMana
 
     PXLogPrint
     (
-        PXLoggingError,
+        PXLoggingInfo,
         "Resource",
         "Store-Path",
         "%s",
@@ -1998,7 +1998,7 @@ void PXAPI PXUIElementPositionCalculcate(PXGUIElement* const pxGUIElement, PXUIE
 
 }
 
-PXActionResult PXAPI PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const PXText* const pxText)
+PXActionResult PXAPI PXFileTypeInfoProbe(PXResourceTransphereInfo* const pxFileTypeInfo, const PXText* const pxText)
 {
     // Probe for file extension
     {
@@ -2235,6 +2235,8 @@ PXActionResult PXAPI PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, c
 
         case PXFileFormatPNG:
             pxFileTypeInfo->ResourceType = PXResourceTypeImage;
+            pxFileTypeInfo->FileSizePredict = PXPNGFilePredictSize;
+            pxFileTypeInfo->ResourcePeek = PXPNGPeekFromFile; 
             pxFileTypeInfo->ResourceLoad = PXPNGLoadFromFile;
             pxFileTypeInfo->ResourceSave = PXPNGSaveToFile;
             break;
@@ -2370,7 +2372,7 @@ PXActionResult PXAPI PXResourceManagerReferenceValidate(PXResourceManager* const
   
 }
 
-PXActionResult PXAPI PXResourceLoad(PXResourceLoadInfo* const pxResourceLoadInfo, const PXText* const filePath)
+PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLoadInfo, const PXText* const filePath)
 {
     // Parameter exist check
     {
@@ -2389,7 +2391,13 @@ PXActionResult PXAPI PXResourceLoad(PXResourceLoadInfo* const pxResourceLoadInfo
         }
     }
 
+    // try to detect format over file extension
+    PXFileTypeInfoProbe(pxResourceLoadInfo, filePath);
+
+
     PXFile pxFile;
+
+    pxResourceLoadInfo->FileReference = &pxFile;
 
     // Loading file
     {
@@ -2406,9 +2414,56 @@ PXActionResult PXAPI PXResourceLoad(PXResourceLoadInfo* const pxResourceLoadInfo
         PXActionReturnOnError(fileLoadingResult);
     }
 
+    // If a peek method exists, execute it, if not, strait to loading
+    if(pxResourceLoadInfo->ResourcePeek)
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "Resource",
+            "File-Peek",
+            "Start"
+        );
+#endif
+
+        const PXInt64U timeStampA = PXTimeCounterStampGet();
+        const PXActionResult pxPeekResult = pxResourceLoadInfo->ResourcePeek(pxResourceLoadInfo);
+        const PXBool success = PXActionSuccessful == pxPeekResult;
+
+        if(!success)
+        {
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingError,
+                "Resource",
+                "File-Peek",
+                "Failed"
+            );
+#endif
+            return pxPeekResult;
+        }
+
+#if PXLogEnable
+        const PXInt64U timeStampB = PXTimeCounterStampGet() - timeStampA;
+        const float timeDelta = PXTimeCounterStampToSecoundsF(timeStampB);
+
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "Resource",
+            "File-Peek",
+            "Took:%6.3fs",
+            timeDelta
+        );
+#endif
+    }
+
+
     // Try to load assumed format
     {
-        if(pxFile.TypeInfo.FormatExpected == PXFileFormatUnkown)
+        if(pxResourceLoadInfo->FormatExpected == PXFileFormatUnkown)
         {
 #if PXLogEnable
             PXLogPrint
@@ -2423,7 +2478,7 @@ PXActionResult PXAPI PXResourceLoad(PXResourceLoadInfo* const pxResourceLoadInfo
             return PXActionRefusedNotSupportedByLibrary;
         }
 
-        if(pxFile.TypeInfo.ResourceLoad == PXNull)
+        if(pxResourceLoadInfo->ResourceLoad == PXNull)
         {
 #if PXLogEnable
             PXLogPrint
@@ -2438,27 +2493,24 @@ PXActionResult PXAPI PXResourceLoad(PXResourceLoadInfo* const pxResourceLoadInfo
             return PXActionRefusedNotImplemented;
         }
 
-        PXInt32U time = PXProcessorTimeReal();
+        const PXInt64U timeStampA = PXTimeCounterStampGet();
 
         pxResourceLoadInfo->FileReference = &pxFile;
 
 
-        const PXActionResult fileParsingResult = pxFile.TypeInfo.ResourceLoad(pxResourceLoadInfo);
+        const PXActionResult fileParsingResult = pxResourceLoadInfo->ResourceLoad(pxResourceLoadInfo);
 
 #if PXLogEnable
-        PXInt32U timeDelat = PXProcessorTimeReal() - time;
-
-        PXText pxText;
-        PXTextConstructBufferA(&pxText, 32);
-        PXTextFormatTime(&pxText, timeDelat);
+        const PXInt64U timeStampB = PXTimeCounterStampGet() - timeStampA;
+        const float timeDelta = PXTimeCounterStampToSecoundsF(timeStampB);
 
         PXLogPrint
         (
             PXLoggingInfo,
             "Resource",
             "Load",
-            "%6s  ROPs:%-7i <%s>",
-            pxText.TextA,
+            "Took:%6.3f  ROPs:%-7i <%s>",
+            timeDelta,
             pxFile.CounterOperationsRead,
             filePath->TextA
         );
@@ -2494,7 +2546,7 @@ PXActionResult PXAPI PXResourceLoad(PXResourceLoadInfo* const pxResourceLoadInfo
 #endif
 }
 
-PXActionResult PXAPI PXResourceLoadA(PXResourceLoadInfo* const pxResourceLoadInfo, const char* const filePath)
+PXActionResult PXAPI PXResourceLoadA(PXResourceTransphereInfo* const pxResourceLoadInfo, const char* const filePath)
 {
     PXText pxText;
 
@@ -2505,7 +2557,7 @@ PXActionResult PXAPI PXResourceLoadA(PXResourceLoadInfo* const pxResourceLoadInf
     return loadResult;
 }
 
-PXActionResult PXAPI PXResourceSave(PXResourceSaveInfo* const pxResourceSaveInfo, const PXText* const filePath)
+PXActionResult PXAPI PXResourceSave(PXResourceTransphereInfo* const pxResourceSaveInfo, const PXText* const filePath)
 {
     PXFile pxFile;
 
@@ -2526,7 +2578,7 @@ PXActionResult PXAPI PXResourceSave(PXResourceSaveInfo* const pxResourceSaveInfo
 
     // Try to load assumed format
     {
-        if(PXFileFormatUnkown == pxFile.TypeInfo.FormatExpected)
+        if(PXFileFormatUnkown == pxResourceSaveInfo->FormatExpected)
         {
 #if PXLogEnable
             PXLogPrint
@@ -2541,7 +2593,7 @@ PXActionResult PXAPI PXResourceSave(PXResourceSaveInfo* const pxResourceSaveInfo
             return PXActionRefusedNotSupportedByLibrary;
         }
 
-        if(PXNull == pxFile.TypeInfo.ResourceSave)
+        if(PXNull == pxResourceSaveInfo->ResourceSave)
         {
 #if PXLogEnable
             PXLogPrint
@@ -2557,15 +2609,16 @@ PXActionResult PXAPI PXResourceSave(PXResourceSaveInfo* const pxResourceSaveInfo
         }
 
 #if PXLogEnable
-        PXInt32U time = PXProcessorTimeReal();
+        const PXInt64U timeStampA = PXTimeCounterStampGet();
 #endif
 
         pxResourceSaveInfo->FileReference = &pxFile;  
 
-        const PXActionResult fileParsingResult = pxFile.TypeInfo.ResourceSave(pxResourceSaveInfo);
+        const PXActionResult fileParsingResult = pxResourceSaveInfo->ResourceSave(pxResourceSaveInfo);
 
 #if PXLogEnable
-        PXInt32U timeDelat = PXProcessorTimeReal() - time;
+        const PXInt64U timeStampB = PXTimeCounterStampGet() - timeStampA;
+        const float timeDelta = PXTimeCounterStampToSecoundsF(timeStampB);
 
         PXLogPrint
         (
@@ -2573,7 +2626,7 @@ PXActionResult PXAPI PXResourceSave(PXResourceSaveInfo* const pxResourceSaveInfo
             "Resource",
             "Save",
             "%6.3fms SOPs:%-7i <%s>",
-            timeDelat / 1000.0f,
+            timeDelta,
             pxFile.CounterOperationsWrite,
             filePath->TextA
         );
@@ -2592,7 +2645,7 @@ PXActionResult PXAPI PXResourceSave(PXResourceSaveInfo* const pxResourceSaveInfo
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXResourceSaveA(PXResourceSaveInfo* const pxResourceSaveInfo, const char* const filePath)
+PXActionResult PXAPI PXResourceSaveA(PXResourceTransphereInfo* const pxResourceSaveInfo, const char* const filePath)
 {
     PXText pxText;
 

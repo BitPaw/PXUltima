@@ -199,14 +199,14 @@ void PXAPI PXXMLBlockParse(PXCodeDocument* const pxDocument, PXCompiler* const p
     }
 }
 
-PXActionResult PXAPI PXXMLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
+PXActionResult PXAPI PXXMLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     PXFile tokenSteam;
     PXClear(PXFile, &tokenSteam);
 
     PXCompiler pxCompiler;
     PXClear(PXCompiler, &pxCompiler);
-    pxCompiler.CodeDocument = (PXCodeDocument*)pxResourceLoadInfo->Target;
+    pxCompiler.CodeDocument = (PXCodeDocument*)pxResourceLoadInfo->ResourceTarget;
     pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileReference;
     pxCompiler.ReadInfo.FileCache = &tokenSteam;
     //pxCompiler.Flags = 
@@ -224,7 +224,7 @@ PXActionResult PXAPI PXXMLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXXMLSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
+PXActionResult PXAPI PXXMLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

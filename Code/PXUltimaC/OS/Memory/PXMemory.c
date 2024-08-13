@@ -170,6 +170,71 @@ PXActionResult PXAPI PXMemorySymbolFetch(const void* const adress, PXSymbol* con
     return PXActionSuccessful;
 }
 
+void* PXAPI PXMemoryCalloc(const PXSize amount, const PXSize objectSize)
+{
+    void* adress = PXNull;
+
+    const PXSize totalAmount = amount * objectSize;
+
+    if(!totalAmount)
+    {
+        return PXNull;
+    }
+
+
+#if OSUnix || MemoryUseSystemFunction || OSForcePOSIXForWindows
+    adress = malloc(adress);
+#elif OSWindows
+    const HANDLE heapHandle = GetProcessHeap(); // Windows 2000 SP4, Kernel32.dll, heapapi.h
+    adress = HeapAlloc(heapHandle, HEAP_ZERO_MEMORY, totalAmount); // Windows 2000 SP4, Kernel32.dll, heapapi.h
+#else
+#error Memory allocate seems not to be supported on this OS
+#endif
+
+
+    // Special logging behaviour
+    {
+        PXSymbolMemory pxSymbolMemory;
+        pxSymbolMemory.Adress = adress;
+        pxSymbolMemory.Amount = amount;
+        pxSymbolMemory.ObjectSize = objectSize;
+
+        PXSymbol pxSymbol;
+
+        PXDebug* pxDebug = PXDebugInstanceGet();
+
+        PXDebugStackTrace(pxDebug, &pxSymbol, 1, 2, 1);
+
+        pxSymbolMemory.ModuleAdress = pxSymbol.ModuleAdress;
+        PXTextCopyA(pxSymbol.NameFile, 64, pxSymbolMemory.FileAdress, 64);
+        PXTextCopyA(pxSymbol.NameSymbol, 64, pxSymbolMemory.FunctionAdress, 64);
+        pxSymbolMemory.LineNumber = -1;
+
+        PXMemorySymbolAdd(&pxSymbolMemory, PXMemorySymbolInfoModeAdd);
+
+
+#if PXLogEnable
+        PXDebugModuleNameFromAdress(pxSymbolMemory.ModuleAdress, pxSymbol.NameModule);
+
+        PXLogPrint
+        (
+            PXLoggingAllocation,
+            "PX",
+            "Memory-Calloc",
+            "%s::%s::%s::%i, %ix %i B",
+            pxSymbol.NameModule,
+            pxSymbol.NameFile,
+            pxSymbol.NameSymbol,
+            pxSymbolMemory.LineNumber,
+            pxSymbolMemory.Amount,
+            pxSymbolMemory.ObjectSize
+        );
+#endif 
+    }
+
+    return adress;
+}
+
 void* PXAPI PXMemoryMalloc(const PXSize memorySize)
 {
     void* adress = PXNull;
@@ -349,6 +414,92 @@ void* PXAPI PXMemoryRealloc(const void* const adress, const PXSize memorySize)
 #error Memory reallocate seems not to be supported on this OS
 #endif
 }
+
+int PXAPI PXMemoryProtectionIDTranslate(const PXInt8U protectionMode)
+{
+    int protectionID = 0;
+#if OSUnix
+
+    if(PXMemoryProtectModeNoAccess == protectionMode)
+    {
+        protectionID = PROT_NONE;
+    }
+
+    protectionID |=
+        PROT_READ * ((PXMemoryProtectModeRead & protectionMode) > 0) |
+        PROT_WRITE * ((PXMemoryProtectModeWrite & protectionMode) > 0) |
+        PROT_EXEC * ((PXMemoryProtectModeExecute & protectionMode) > 0);
+
+#elif OSWindows
+
+    switch(protectionMode)
+    {   
+        case PXMemoryProtectModeNoAccess:
+            protectionID = PAGE_NOACCESS;
+            break;
+
+        case PXMemoryProtectModeReadOnly:
+            protectionID = PAGE_READONLY;
+            break;
+
+        case PXMemoryProtectModeWriteOnly:
+            protectionID = PAGE_WRITECOPY;
+            break;
+
+        case PXMemoryProtectModeExecute:
+            protectionID = PAGE_EXECUTE;
+            break;
+
+        case PXMemoryProtectModeReadWrite:
+            protectionID = PAGE_READWRITE;
+            break;
+
+        case PXMemoryProtectModeReadExecute:
+            protectionID = PAGE_EXECUTE_READ;
+            break;
+
+        case PXMemoryProtectModeReadWriteExecute:
+            protectionID = PAGE_EXECUTE_READWRITE;
+            break;
+
+        case PXMemoryProtectModeWriteExecute:
+            protectionID = PAGE_EXECUTE_WRITECOPY;
+            break;
+
+        default:
+            break;
+    }
+
+#endif
+
+     return protectionID;
+}
+
+PXActionResult PXAPI PXMemoryProtect(void* dataAdress, const PXSize dataSize, const PXInt8U protectionMode)
+{
+    const int protectionID = PXMemoryProtectionIDTranslate(protectionMode);
+
+#if OSUnix
+    const int result = mprotect(dataAdress, dataSize, protectionID);
+    const PXBool success = 0 == result;
+
+    if(!success)
+    {
+        return PXErrorCurrent();
+    }
+#elif OSWindows
+
+    DWORD oldProtectModeID = 0;
+
+    const PXBool result = VirtualProtect(dataAdress, dataSize, protectionID, &oldProtectModeID); // Windows XP (+UWP), Kernel32.dll, memoryapi.h 
+    const PXActionResult actiobResult = PXWindowsErrorCurrent(result);
+
+    return actiobResult;
+#else
+    return PXActionRefusedTypeNotSupported;
+#endif
+}
+
 
 PXBool PXAPI PXMemoryScan(PXMemoryUsage* memoryUsage)
 {

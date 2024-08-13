@@ -9,7 +9,7 @@ typedef struct PXFastFile_
 }
 PXFastFile;
 
-PXPublic PXActionResult PXAPI PXFastFileLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXFastFileSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
+PXPublic PXActionResult PXAPI PXFastFileLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXFastFileSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

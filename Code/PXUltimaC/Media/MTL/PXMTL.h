@@ -54,7 +54,8 @@ PXPrivate PXMTLLineType PXAPI PXMTLPeekLine(const char* const line, const PXSize
 PXPublic PXSize PXAPI PXMTLFetchAmount(const void* const data, const PXSize dataSize);
 PXPublic PXBool PXAPI PXMTLFetchMaterial(const void* const data, const PXSize dataSize, const PXSize materialID, PXMTLMaterial* const mtlMaterial);
 
-PXPublic PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXMTLSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
+PXPublic PXActionResult PXAPI PXMTLPeekFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXMTLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXMTLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

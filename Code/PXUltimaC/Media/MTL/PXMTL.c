@@ -53,21 +53,18 @@ PXMTLLineType PXAPI PXMTLPeekLine(const char* const line, const PXSize lineSize)
     }
 }
 
-PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
+PXActionResult PXAPI PXMTLPeekFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
-    PXMaterialContainer* const pxMaterialList = (PXMaterialContainer*)pxResourceLoadInfo->Target;
+    PXMaterialContainer* const pxMaterialList = (PXMaterialContainer*)pxResourceLoadInfo->ResourceTarget;
 
-    PXFile compiledSteam;
-    PXClear(PXFile, &compiledSteam);
+    // We dont want to compile, as this can impact performance
 
-    PXCompiler pxCompiler;
-    PXClear(PXCompiler, &pxCompiler);
-    pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileReference;
-    pxCompiler.ReadInfo.FileCache = &compiledSteam;
-    pxCompiler.Flags = PXCompilerKeepAnalyseTypes;
-    pxCompiler.CommentSingleLineSize = 1u;
-    pxCompiler.CommentSingleLine = "#";
+    return PXActionSuccessful;
+}
 
+PXActionResult PXAPI PXMTLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+{
+    PXMaterialContainer* const pxMaterialList = (PXMaterialContainer*)pxResourceLoadInfo->ResourceTarget;
 
     PXInt32U materialAmount = 0;
     PXMaterial* pxMaterialCurrent = PXNull;
@@ -82,12 +79,24 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
     );
 #endif
 
+    PXFile compiledSteam;
+    PXClear(PXFile, &compiledSteam);
+
+    PXCompiler pxCompiler;
+    PXClear(PXCompiler, &pxCompiler);
+    pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileReference;
+    pxCompiler.ReadInfo.FileCache = &compiledSteam;
+    pxCompiler.Flags = PXCompilerKeepAnalyseTypes;
+    pxCompiler.CommentSingleLineSize = 1u;
+    pxCompiler.CommentSingleLine = "#";
+
+
 #if PXLogEnable
     PXLogPrint
     (
         PXLoggingInfo,
         "MTL",
-        "Parse",
+        "Peek",
         "1/4 - Lexer"
     );
 #endif
@@ -101,22 +110,22 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
     (
         PXLoggingInfo,
         "MTL",
-        "Parse",
+        "Peek",
         "2/4 - Analyse"
     );
 #endif
 
     // Analyse -
     {
-        while (!PXFileIsAtEnd(&compiledSteam))
+        while(!PXFileIsAtEnd(&compiledSteam))
         {
             PXCompilerSymbolEntryExtract(&pxCompiler);
 
-            if (PXCompilerSymbolLexerGeneric == pxCompiler.ReadInfo.SymbolEntryCurrent.ID)
+            if(PXCompilerSymbolLexerGeneric == pxCompiler.ReadInfo.SymbolEntryCurrent.ID)
             {
                 const PXMTLLineType mtlLineType = PXMTLPeekLine(pxCompiler.ReadInfo.SymbolEntryCurrent.Source, pxCompiler.ReadInfo.SymbolEntryCurrent.Size);
 
-                switch (mtlLineType)
+                switch(mtlLineType)
                 {
                     case MTLLineName:
                     {
@@ -126,11 +135,13 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
                     default:
                         break;
                 }
-            }            
+            }
         }
 
         PXFileCursorToBeginning(&compiledSteam);
     }
+
+
 
 #if PXLogEnable
     PXLogPrint
@@ -346,7 +357,7 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXMTLSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
+PXActionResult PXAPI PXMTLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

@@ -560,12 +560,12 @@ void PXAPI PXCSharpDefinitionWrite(PXCompiler* const pxCompiler)
     PXFileWriteA(pxFile, symbol->NameAdress, symbol->NameSize);
 }
 
-PXActionResult PXAPI PXCSharpLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
+PXActionResult PXAPI PXCSharpLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXCSharpSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
+PXActionResult PXAPI PXCSharpSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     PXFile* pxFile = pxResourceSaveInfo->FileReference;
 
@@ -574,7 +574,7 @@ PXActionResult PXAPI PXCSharpSaveToFile(PXResourceSaveInfo* const pxResourceSave
         return PXActionRefusedArgumentNull;
     }
 
-    if(PXResourceTypeCodeDocument != pxResourceSaveInfo->Type)
+    if(PXResourceTypeCodeDocument != pxResourceSaveInfo->ResourceType)
     {
         return PXActionRefusedArgumentInvalid;
     }
@@ -587,7 +587,7 @@ PXActionResult PXAPI PXCSharpSaveToFile(PXResourceSaveInfo* const pxResourceSave
     pxCompiler.CommentMultibleLineBeginSize = 2;
     pxCompiler.CommentMultibleLineEnd = "*/";
     pxCompiler.CommentMultibleLineEndSize = 2;
-    pxCompiler.CodeDocument = (PXCodeDocument*)pxResourceSaveInfo->Target;
+    pxCompiler.CodeDocument = (PXCodeDocument*)pxResourceSaveInfo->ResourceTarget;
     pxCompiler.WriteInfo.FileOutput = pxResourceSaveInfo->FileReference;
     pxCompiler.WriteInfo.WriteFile = PXCSharpWriteFile;
     pxCompiler.WriteInfo.WriteContainer = PXCSharpContainerWrite;

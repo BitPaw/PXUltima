@@ -1284,7 +1284,7 @@ PXActionResult PXAPI PXCParseTypeEnum(PXCompiler* const pxCompiler, PXCodeDocume
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXCLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
+PXActionResult PXAPI PXCLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
 #if PXLogEnable
     PXLogPrint
@@ -1296,7 +1296,7 @@ PXActionResult PXAPI PXCLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInf
     );
 #endif
 
-    PXCodeDocument* pxDocument = (PXCodeDocument*)pxResourceLoadInfo->Target;
+    PXCodeDocument* pxDocument = (PXCodeDocument*)pxResourceLoadInfo->ResourceTarget;
     PXClear(PXCodeDocument, pxDocument);
 
     PXFile tokenSteam;
@@ -1573,7 +1573,7 @@ PXActionResult PXAPI PXCLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInf
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXCSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
+PXActionResult PXAPI PXCSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

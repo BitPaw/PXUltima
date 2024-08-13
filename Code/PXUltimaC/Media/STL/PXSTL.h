@@ -9,7 +9,7 @@ typedef struct PXSTL_
 }
 PXSTL;
 
-PXPublic PXActionResult PXAPI PXSTLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXSTLSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
+PXPublic PXActionResult PXAPI PXSTLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXSTLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

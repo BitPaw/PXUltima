@@ -9,7 +9,7 @@ typedef struct PXPLY_
 }
 PXPLY;
 
-PXPublic PXActionResult PXAPI PXPLYLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXPLYSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
+PXPublic PXActionResult PXAPI PXPLYLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXPLYSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

@@ -65,7 +65,7 @@ const char* PXN64CountryCodeToString(const PXN64CountryCode pxN64CountryCode)
     }
 }
 
-PXActionResult PXAPI PXN64LoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
+PXActionResult PXAPI PXN64LoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     PXFile* pxFile = pxResourceLoadInfo->FileReference;
 
@@ -325,7 +325,7 @@ PXActionResult PXAPI PXN64LoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXN64SaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
+PXActionResult PXAPI PXN64SaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

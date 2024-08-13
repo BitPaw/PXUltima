@@ -10,7 +10,7 @@ typedef struct PXWMA_
 }
 PXWMA;
 
-PXPublic PXActionResult PXAPI PXWMALoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXWMASaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
+PXPublic PXActionResult PXAPI PXWMALoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXWMASaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

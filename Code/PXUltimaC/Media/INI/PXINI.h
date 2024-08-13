@@ -3,7 +3,7 @@
 
 #include "../PXResource.h"
 
-PXPublic PXActionResult PXAPI PXINILoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXINISaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
+PXPublic PXActionResult PXAPI PXINILoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXINISaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

@@ -184,7 +184,7 @@ int main()
 
 
     
-    PXResourceLoadInfo pxResourceLoadInfo;
+    PXResourceTransphereInfo pxResourceLoadInfo;
     pxResourceLoadInfo.Manager = 0;
     pxResourceLoadInfo.Target = 0;
     pxResourceLoadInfo.FileReference = PXNull;

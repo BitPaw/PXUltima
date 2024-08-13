@@ -14,7 +14,7 @@ PXSize PXAPI PXGIFFilePredictSize(const PXSize width, const PXSize height, const
     return 0;
 }
 
-PXActionResult PXAPI PXGIFLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
+PXActionResult PXAPI PXGIFLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     PXGIF gif;
 
@@ -115,7 +115,7 @@ PXActionResult PXAPI PXGIFLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXGIFSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
+PXActionResult PXAPI PXGIFSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     PXFileWriteB(pxResourceSaveInfo->FileReference, PXGIFHeader, sizeof(PXGIFHeader));
 

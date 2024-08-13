@@ -219,7 +219,7 @@ PXMP3;
 PXPrivate inline PXInt8U PXAPI PXMPEGGenreToID(const PXMPEGGenre mpegGenre);
 PXPrivate inline PXMPEGGenre PXAPI PXMPEGGenreFromID(const PXInt8U mpegGenre);
 
-PXPublic PXActionResult PXAPI PXMP3LoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXMP3SaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
+PXPublic PXActionResult PXAPI PXMP3LoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXMP3SaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

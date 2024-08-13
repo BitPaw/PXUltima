@@ -24,8 +24,8 @@ void PXAPI PXTestCompilerCToLanguages()
     PXCodeDocument pxCodeDocument;
 
     {
-        PXResourceLoadInfo pxResourceLoadInfo;
-        PXClear(PXResourceLoadInfo, &pxResourceLoadInfo);
+        PXResourceTransphereInfo pxResourceLoadInfo;
+        PXClear(PXResourceTransphereInfo, &pxResourceLoadInfo);
         pxResourceLoadInfo.Type = PXResourceTypeCodeDocument;
         pxResourceLoadInfo.Target = &pxCodeDocument;
 
@@ -33,8 +33,8 @@ void PXAPI PXTestCompilerCToLanguages()
     }
 
     {
-        PXResourceSaveInfo pxResourceSaveInfo;
-        PXClear(PXResourceLoadInfo, &pxResourceSaveInfo);
+        PXResourceTransphereInfo pxResourceSaveInfo;
+        PXClear(PXResourceTransphereInfo, &pxResourceSaveInfo);
         pxResourceSaveInfo.Type = PXResourceTypeCodeDocument;
         pxResourceSaveInfo.Target = &pxCodeDocument;
         pxResourceSaveInfo.Format = PXFileFormatJava;

@@ -2344,18 +2344,51 @@ typedef enum PXFileLocationMode_
 }
 PXFileLocationMode;
 
-typedef PXActionResult(PXAPI* PXResourceLoadFunction)(struct PXResourceLoadInfo_* const pxResourceLoadInfo);
-typedef PXActionResult(PXAPI* PXResourceSaveFunction)(struct PXResourceSaveInfo_* const pxResourceSaveInfo);
 
-typedef struct PXFileTypeInfo_
+
+
+
+typedef struct PXResourceTransphereInfo_ PXResourceTransphereInfo;
+
+typedef PXActionResult (PXAPI* PXResourceFileSizePredict)(void* const resource, PXSize* const fileSize);
+typedef PXActionResult (PXAPI* PXResourceTransphereFunction)(PXResourceTransphereInfo* const pxResourceTransphereInfo);
+
+
+#define PXResourceTransphereDidPeek     (1 << 0)
+#define PXResourceTransphereDidCompile  (1 << 1)
+#define PXResourceTransphereDidLoad     (1 << 2)
+#define PXResourceTransphereDidSave     (1 << 3)
+#define PXResourceTransphereDidRegister (1 << 4)
+#define PXResourceTransphereDidUpload   (1 << 5)
+
+// This object shall be used to define an interaction with a 
+// resource to peek, load or save
+typedef struct PXResourceTransphereInfo_
 {
-    PXFileFormat FormatExpected;
+    void* ResourceTarget;               // Generic object, tager
+    PXResourceManager* Manager; // The callback manager. This is set by the resource loader itself. Used for chain dependencys
+    PXFile* FileReference;      // The attached file that hold the data
+    
+    
+    PXResourceFileSizePredict FileSizePredict;
+    PXResourceTransphereFunction ResourcePeek;
+    PXResourceTransphereFunction ResourceLoad;
+    PXResourceTransphereFunction ResourceSave;
+    
+    
+    void* ResourceSource;
+    PXResourceType ResourceType;        // Type of the resource that 'Target' points to. Example: Image, Sound, Video...
+    
+    
     PXFileFormat FormatReal;
-    PXResourceType ResourceType; // Type of resource. Image, Sound, Video...
-    PXResourceLoadFunction ResourceLoad;
-    PXResourceSaveFunction ResourceSave;
+    PXFileFormat FormatExpected;        // The format detected by the resource loader
+
+    PXInt8U Flags;
+
+    //void* Owner;
 }
-PXFileTypeInfo;
+PXResourceTransphereInfo;
+
 
 typedef struct PXFile_
 {
@@ -2383,8 +2416,6 @@ typedef struct PXFile_
     PXBitFormat BitFormatOfData;
     PXEndian EndiannessOfData;
 
-    PXFileTypeInfo TypeInfo;
-
     // The file path can't always be fetched from the OS.
     // for this we store the name here at creation time.
     char* FilePathData;
@@ -2411,33 +2442,6 @@ PXFile;
 
 
 
-
-
-
-
-
-
-
-typedef struct PXResourceLoadInfo_
-{
-    PXResourceManager* Manager;
-    void* Target;
-    PXFile* FileReference;
-    PXResourceType Type;
-
-    //void* Owner;
-}
-PXResourceLoadInfo;
-
-typedef struct PXResourceSaveInfo_
-{
-    PXResourceManager* Manager;
-    void* Target;
-    PXFile* FileReference;
-    PXResourceType Type;
-    PXFileFormat Format;
-}
-PXResourceSaveInfo;
 
 
 
@@ -2747,15 +2751,15 @@ PXPublic PXActionResult PXAPI PXResourceFetchPath(PXResourceManager* const pxRes
 
 
 
-PXPublic PXActionResult PXAPI PXFileTypeInfoProbe(PXFileTypeInfo* const pxFileTypeInfo, const PXText* const pxText);
+PXPublic PXActionResult PXAPI PXFileTypeInfoProbe(PXResourceTransphereInfo* const pxFileTypeInfo, const PXText* const pxText);
 
 PXPublic PXActionResult PXAPI PXResourceManagerReferenceValidate(PXResourceManager* const pxResourceManager, PXResourceReference* const pxResourceReference);
 
-PXPublic PXActionResult PXAPI PXResourceLoad(PXResourceLoadInfo* const pxResourceLoadInfo, const PXText* const filePath);
-PXPublic PXActionResult PXAPI PXResourceLoadA(PXResourceLoadInfo* const pxResourceLoadInfo, const char* const filePath);
+PXPublic PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLoadInfo, const PXText* const filePath);
+PXPublic PXActionResult PXAPI PXResourceLoadA(PXResourceTransphereInfo* const pxResourceLoadInfo, const char* const filePath);
 
-PXPublic PXActionResult PXAPI PXResourceSave(PXResourceSaveInfo* const pxResourceSaveInfo, const PXText* const filePath);
-PXPublic PXActionResult PXAPI PXResourceSaveA(PXResourceSaveInfo* const pxResourceSaveInfo, const char* const filePath);
+PXPublic PXActionResult PXAPI PXResourceSave(PXResourceTransphereInfo* const pxResourceSaveInfo, const PXText* const filePath);
+PXPublic PXActionResult PXAPI PXResourceSaveA(PXResourceTransphereInfo* const pxResourceSaveInfo, const char* const filePath);
 
 
 

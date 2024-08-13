@@ -8,9 +8,9 @@ const char PXPEHeaderSignatore[4] = { 'P', 'E', '\0', '\0' };
 
 #define PXBinaryWindowsDebug 1
 
-PXActionResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
+PXActionResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
-    PXBinaryWindows* const pxBinaryWindows = (PXBinaryWindows*)pxResourceLoadInfo->Target;
+    PXBinaryWindows* const pxBinaryWindows = (PXBinaryWindows*)pxResourceLoadInfo->ResourceTarget;
 
 #if PXBinaryWindowsDebug
     PXLogPrint
@@ -87,7 +87,7 @@ PXActionResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceLoadInfo* const pxRes
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXBinaryWindowsSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
+PXActionResult PXAPI PXBinaryWindowsSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

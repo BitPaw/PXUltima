@@ -269,9 +269,9 @@ PXELFSegmentType PXAPI PXELFSegmentTypeFromID(const PXInt32U value)
     }
 }
 
-PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
+PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
-    PXBinaryLinux* const pxBinaryLinux = (PXBinaryLinux*)pxResourceLoadInfo->Target;
+    PXBinaryLinux* const pxBinaryLinux = (PXBinaryLinux*)pxResourceLoadInfo->ResourceTarget;
 
     PXClear(PXBinaryLinux, pxBinaryLinux);
 
@@ -427,7 +427,7 @@ PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceLoadInfo* const pxResou
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXBinaryLinuxSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
+PXActionResult PXAPI PXBinaryLinuxSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     PXFileWriteB(pxResourceSaveInfo->FileReference, PXELFSignature, sizeof(PXELFSignature));
 

@@ -9,7 +9,7 @@ const static char WAVSignatureLIST[4] = { 'L', 'I', 'S', 'T' };
 const static char WAVSignatureData[4] = { 'd', 'a', 't', 'a' };
 
 #pragma optimize("", off)
-PXActionResult PXAPI PXWaveLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
+PXActionResult PXAPI PXWaveLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {    /*
     PXSound* const pxSound = (PXSound*)pxResourceLoadInfo->Target;
 
@@ -86,7 +86,7 @@ PXActionResult PXAPI PXWaveLoadFromFile(PXResourceLoadInfo* const pxResourceLoad
 }
 
 #pragma optimize("", off)
-PXActionResult PXAPI PXWaveSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
+PXActionResult PXAPI PXWaveSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
 #if 0
     unsigned int bitdepth = 16, bpm = 120;

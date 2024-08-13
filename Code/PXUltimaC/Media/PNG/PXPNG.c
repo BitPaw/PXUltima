@@ -132,7 +132,7 @@ PXInt8U PXAPI PXPNGBitsPerPixel(const PXPNG* const png)
     return png->ImageHeader.BitDepth * numberOfColorChannels;
 }
 
-PXSize PXAPI PXPNGFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp)
+PXActionResult PXAPI PXPNGFilePredictSize(PXImage* const pxImage, PXSize* const fileSize)
 {
     const PXSize signature = 8;
     const PXSize header = 25;
@@ -140,24 +140,24 @@ PXSize PXAPI PXPNGFilePredictSize(const PXSize width, const PXSize height, const
     const PXSize end = 12;
     const PXSize idat = 32768;
 
-    const PXSize sum = signature + header + time + end + height * width * bbp + 1024u;
+    const PXSize sum = signature + header + time + end + pxImage->Height * pxImage->Height * 0000000 + 1024u; // bbp
 
     return sum;
 }
 
-PXActionResult PXAPI PXPNGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
+PXActionResult PXAPI PXPNGPeekFromFile(PXResourceTransphereInfo* const pxResourceTransphereInfo)
 {
-    PXImage* const pxImage = (PXImage*)pxResourceLoadInfo->Target;
+    PXImage* const pxImage = (PXImage*)pxResourceTransphereInfo->ResourceTarget;
+    PXPNG* png = PXNull;
 
-    PXPNG png;
-    PXClear(PXPNG, &png);
-
+    /*
     PXFile imageDataCache;
 
     PXSize imageDataCounter = 0;
     PXSize imageDataChunkCacheSizeUSED = 0;
     PXSize imageDataChunkCacheSizeMAX = 0u;
     unsigned char* imageDataChunkCache = 0;
+    */
 
     //---<Parse PNG File>------------------------------------------------------
     {
@@ -165,17 +165,18 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 
         //---<Check PNG Header>------------------------------------------------
         {
-            const PXBool isValidHeader = PXFileReadAndCompare(pxResourceLoadInfo->FileReference, PXPNGHeaderSequenz, sizeof(PXPNGHeaderSequenz));
+            const PXBool isValidHeader = PXFileReadAndCompare(pxResourceTransphereInfo->FileReference, PXPNGHeaderSequenz, sizeof(PXPNGHeaderSequenz));
 
-            if (!isValidHeader)
+            if(!isValidHeader)
             {
                 return PXActionRefusedInvalidHeaderSignature;
             }
         }
 
-        // Allocate Memory for later ImageData Chunks
+        // Allocate resource
+        png = PXMemoryCallocT(PXPNG, 1);
+        pxResourceTransphereInfo->ResourceSource = png;
 
-        PXNewList(PXByte, pxResourceLoadInfo->FileReference->DataSize, &imageDataChunkCache, &imageDataChunkCacheSizeMAX);
 
         //---------------------------------------------------------------------
 
@@ -189,7 +190,7 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 #endif
 
         // Parse every chunk until finished.
-        while (!parseFinished)
+        while(!parseFinished)
         {
             PXPNGChunk chunk;
             PXSize predictedOffset = 0;
@@ -202,7 +203,7 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
                     {chunk.ChunkID.Data, PXDataTypeDatax4}
                 };
 
-                PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+                PXFileReadMultible(pxResourceTransphereInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
             }
 
             // Check
@@ -221,7 +222,7 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
                 // 0 (uppercase) = unsafe to copy, 1 (lowercase) = safe to copy.
                 chunk.IsSafeToCopy = PXTextIsLetterCaseUpper(chunk.ChunkID.Data[3]);
 
-                predictedOffset = pxResourceLoadInfo->FileReference->DataCursor + chunk.Lengh;
+                predictedOffset = pxResourceTransphereInfo->FileReference->DataCursor + chunk.Lengh;
             }
 
 #if PNGDebugInfo
@@ -241,7 +242,7 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 #endif
 
             //---Get Chunk Data------------------------------------------
-            switch (chunk.ChunkType)
+            switch(chunk.ChunkType)
             {
                 case PXPNGChunkImageHeader:
                 {
@@ -250,19 +251,19 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 
                     const PXFileDataElementType pxDataStreamElementList[] =
                     {
-                        {&png.ImageHeader.Width, PXDataTypeInt32UBE},
-                        {&png.ImageHeader.Height, PXDataTypeInt32UBE},
-                        {&png.ImageHeader.BitDepth, PXDataTypeInt08U},
+                        {&png->ImageHeader.Width, PXDataTypeInt32UBE},
+                        {&png->ImageHeader.Height, PXDataTypeInt32UBE},
+                        {&png->ImageHeader.BitDepth, PXDataTypeInt08U},
                         {&colorTypeRaw, PXDataTypeInt08U},
-                        {&png.ImageHeader.CompressionMethod, PXDataTypeInt08U},
-                        {&png.ImageHeader.FilterMethod, PXDataTypeInt08U},
+                        {&png->ImageHeader.CompressionMethod, PXDataTypeInt08U},
+                        {&png->ImageHeader.FilterMethod, PXDataTypeInt08U},
                         {&interlaceMethodRaw, PXDataTypeInt08U}
                     };
 
-                    PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+                    PXFileReadMultible(pxResourceTransphereInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
-                    png.ImageHeader.ColorType = PXPNGColorTypeFromID(colorTypeRaw);
-                    png.ImageHeader.InterlaceMethod = PXPNGInterlaceMethodFromID(interlaceMethodRaw);
+                    png->ImageHeader.ColorType = PXPNGColorTypeFromID(colorTypeRaw);
+                    png->ImageHeader.InterlaceMethod = PXPNGInterlaceMethodFromID(interlaceMethodRaw);
 
                     break;
                 }
@@ -271,16 +272,16 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
                     const PXSize palettSize = chunk.Lengh / 3u;
                     const PXBool validSize = palettSize != 0 && palettSize <= 256;
 
-                    if (!validSize)
+                    if(!validSize)
                         return PXActionFailedFormatNotAsExpected; // palette too small or big
 
-                    png.PaletteSize = palettSize;
+                    png->PaletteSize = palettSize;
 
-                    for (PXSize i = 0; i < palettSize; ++i)
+                    for(PXSize i = 0; i < palettSize; ++i)
                     {
-                        unsigned char* paletteInsertion = png.Palette + i * 4;
+                        PXInt8U* paletteInsertion = png->Palette + i * 4;
 
-                        PXFileReadB(pxResourceLoadInfo->FileReference, paletteInsertion, 3u); // Read RGB value
+                        PXFileReadB(pxResourceTransphereInfo->FileReference, paletteInsertion, 3u); // Read RGB value
 
                         paletteInsertion[3] = 0xFF; // Add alpha
                     }
@@ -289,50 +290,14 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
                 }
                 case PXPNGChunkImageData:
                 {
-                    /*
-                    PXZLIB PXZLIB(pxFile.Data + pxFile.DataCursor, chunk.Lengh);
+                    ++png->DataBlockListAmount;
 
-                    // Dump content into buffer
-                    // There may be multiple IDAT chunks; if so, they shall appear consecutively with no other intervening chunks.
-                    // the compressed datastream is then the concatenation of the contents of the data fields of all the IDAT chunks.
+                    png->DataBlockList = PXMemoryReallocT(PXPNGDataBlock, png->DataBlockList, png->DataBlockListAmount);
+                    png->DataBlockTotalSize += chunk.Lengh;
 
-                    printf
-                    (
-                        "| [PXZLIB Header]          |\n"
-                        "| CompressionMethod : %7s |\n"
-                        "| CompressionInfo   : %7i |\n"
-                        "| WindowSize        : %7i |\n"
-                        "| CheckFlag         : %7i |\n"
-                        "| PXDictionaryPresent : %7i |\n"
-                        "| CompressionLevel  : %7s |\n",
-                        CompressionMethodToString(PXZLIB.Header.CompressionMethod),
-                        PXZLIB.Header.CompressionInfo,
-                        PXZLIB.Header.WindowSize,
-                        PXZLIB.Header.CheckFlag,
-                        PXZLIB.Header.PXDictionaryPresent,
-                        CompressionLevelToString(PXZLIB.Header.CompressionLevel)
-                    );
-
-                    printf
-                    (
-                        "| [DEFLATE]                 |\n"
-                        "| IsLastBlock          : %15i |\n"
-                        "| EncodingMethod       : %15s |\n"
-                        "| BitStreamDataRawSize : %15i |\n",
-                        PXZLIB.DeflateData.IsLastBlock,
-                        DeflateEncodingMethodToString(PXZLIB.DeflateData.EncodingMethod),
-                        PXZLIB.DeflateData.BitStreamDataRawSize
-                    );*/
-
-
-                    //PXZLIB.Unpack(imageDataChunkCache, imageDataChunkCacheSizeUSED);
-
-
-                    PXFileReadB(pxResourceLoadInfo->FileReference, imageDataChunkCache + imageDataChunkCacheSizeUSED, chunk.Lengh);
-
-                    imageDataChunkCacheSizeUSED += chunk.Lengh;
-
-                    ++imageDataCounter;
+                    PXPNGDataBlock* pxPNGDataBlock = &png->DataBlockList[png->DataBlockListAmount - 1];
+                    pxPNGDataBlock->FileOffset = pxResourceTransphereInfo->FileReference->DataCursor;
+                    pxPNGDataBlock->DataSize = chunk.Lengh;
 
                     break;
                 }
@@ -343,17 +308,17 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
                 }
                 case PXPNGChunkTransparency:
                 {
-                    switch (png.ImageHeader.ColorType)
+                    switch(png->ImageHeader.ColorType)
                     {
                         case PXPNGColorGrayscale:
                         {
                             /*error: this chunk must be 2 bytes for grayscale image*/
-                            if (chunk.Lengh != 2) 
+                            if(chunk.Lengh != 2)
                                 return PXActionInvalid;
 
                             unsigned short value;
 
-                            PXFileReadI16UE(pxResourceLoadInfo->FileReference, &value, PXEndianBig);
+                            PXFileReadI16UE(pxResourceTransphereInfo->FileReference, &value, PXEndianBig);
 
                             // color->key_defined = 1;
                              //color->key_r = color->key_g = color->key_b = 256u * data[0] + data[1];
@@ -363,16 +328,16 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
                         case PXPNGColorRGB:
                         {
                             /*error: this chunk must be 6 bytes for RGB image*/
-                            if (chunk.Lengh != 6)
+                            if(chunk.Lengh != 6)
                                 return PXActionInvalid;
 
                             unsigned short red;
                             unsigned short green;
                             unsigned short blue;
 
-                            PXFileReadI16UE(pxResourceLoadInfo->FileReference, &red, PXEndianBig);
-                            PXFileReadI16UE(pxResourceLoadInfo->FileReference, &green, PXEndianBig);
-                            PXFileReadI16UE(pxResourceLoadInfo->FileReference, &blue, PXEndianBig);
+                            PXFileReadI16UE(pxResourceTransphereInfo->FileReference, &red, PXEndianBig);
+                            PXFileReadI16UE(pxResourceTransphereInfo->FileReference, &green, PXEndianBig);
+                            PXFileReadI16UE(pxResourceTransphereInfo->FileReference, &blue, PXEndianBig);
 
                             //color->key_defined = 1;
                             //color->key_r = 256u * data[0] + data[1];
@@ -388,13 +353,13 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 
                             //for(PXSize i = 0; i != chunkLength; ++i) color->palette[4 * i + 3] = data[i];
 
-                            for (PXSize i = 0; i < chunk.Lengh; ++i)
+                            for(PXSize i = 0; i < chunk.Lengh; ++i)
                             {
                                 unsigned char value = 0;
 
-                                PXFileReadI8U(pxResourceLoadInfo->FileReference, &value);
+                                PXFileReadI8U(pxResourceTransphereInfo->FileReference, &value);
 
-                                png.Palette[i * 4 + 3] = value;
+                                png->Palette[i * 4 + 3] = value;
                             }
 
                             break;
@@ -410,7 +375,7 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
                 }
                 case PXPNGChunkImageGamma:
                 {
-                    PXFileReadI32UE(pxResourceLoadInfo->FileReference, &png.Gamma, PXEndianBig);
+                    PXFileReadI32UE(pxResourceTransphereInfo->FileReference, &png->Gamma, PXEndianBig);
 
                     break;
                 }
@@ -418,17 +383,17 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
                 {
                     const PXFileDataElementType pxDataStreamElementList[] =
                     {
-                        {&png.PrimaryChromatics.WhiteX, PXDataTypeInt32UBE},
-                        {&png.PrimaryChromatics.WhiteY, PXDataTypeInt32UBE},
-                        {&png.PrimaryChromatics.RedX, PXDataTypeInt32UBE},
-                        {&png.PrimaryChromatics.RedY, PXDataTypeInt32UBE},
-                        {&png.PrimaryChromatics.GreenX, PXDataTypeInt32UBE},
-                        {&png.PrimaryChromatics.GreenY, PXDataTypeInt32UBE},
-                        {&png.PrimaryChromatics.BlueX, PXDataTypeInt32UBE},
-                        {&png.PrimaryChromatics.BlueY, PXDataTypeInt32UBE}
+                        {&png->PrimaryChromatics.WhiteX, PXDataTypeInt32UBE},
+                        {&png->PrimaryChromatics.WhiteY, PXDataTypeInt32UBE},
+                        {&png->PrimaryChromatics.RedX, PXDataTypeInt32UBE},
+                        {&png->PrimaryChromatics.RedY, PXDataTypeInt32UBE},
+                        {&png->PrimaryChromatics.GreenX, PXDataTypeInt32UBE},
+                        {&png->PrimaryChromatics.GreenY, PXDataTypeInt32UBE},
+                        {&png->PrimaryChromatics.BlueX, PXDataTypeInt32UBE},
+                        {&png->PrimaryChromatics.BlueY, PXDataTypeInt32UBE}
                     };
 
-                    PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+                    PXFileReadMultible(pxResourceTransphereInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
                     break;
                 }
@@ -466,7 +431,7 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
                 }
                 case PXPNGChunkBackgroundColor:
                 {
-                    switch (png.ImageHeader.ColorType)
+                    switch(png->ImageHeader.ColorType)
                     {
                         default:
                         case PXPNGColorInvalid:
@@ -499,22 +464,22 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
                 {
                     unsigned char unitSpecifier = 0;
 
-                    PXFileReadI32UE(pxResourceLoadInfo->FileReference, &png.PhysicalPixelDimension.PixelsPerUnit[0], PXEndianBig);
-                    PXFileReadI32UE(pxResourceLoadInfo->FileReference, &png.PhysicalPixelDimension.PixelsPerUnit[1], PXEndianBig);
-                    PXFileReadI8U(pxResourceLoadInfo->FileReference, &unitSpecifier);
+                    PXFileReadI32UE(pxResourceTransphereInfo->FileReference, &png->PhysicalPixelDimension.PixelsPerUnit[0], PXEndianBig);
+                    PXFileReadI32UE(pxResourceTransphereInfo->FileReference, &png->PhysicalPixelDimension.PixelsPerUnit[1], PXEndianBig);
+                    PXFileReadI8U(pxResourceTransphereInfo->FileReference, &unitSpecifier);
 
-                    switch (unitSpecifier)
+                    switch(unitSpecifier)
                     {
                         case 0:
-                            png.PhysicalPixelDimension.UnitSpecifier = PXPNGUnitSpecifierUnkown;
+                            png->PhysicalPixelDimension.UnitSpecifier = PXPNGUnitSpecifierUnkown;
                             break;
 
                         case 1:
-                            png.PhysicalPixelDimension.UnitSpecifier = PXPNGUnitSpecifierMeter;
+                            png->PhysicalPixelDimension.UnitSpecifier = PXPNGUnitSpecifierMeter;
                             break;
 
                         default:
-                            png.PhysicalPixelDimension.UnitSpecifier = PXPNGUnitSpecifierInvalid;
+                            png->PhysicalPixelDimension.UnitSpecifier = PXPNGUnitSpecifierInvalid;
                             break;
                     }
 
@@ -567,9 +532,9 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
                 {
                     const PXInt32U listSize = chunk.Lengh / 2;
 
-                    PXNewList(PXInt16U, listSize, &png.PaletteHistogram.ColorFrequencyList, &png.PaletteHistogram.ColorFrequencyListSize);
+                    PXNewList(PXInt16U, listSize, &png->PaletteHistogram.ColorFrequencyList, &png->PaletteHistogram.ColorFrequencyListSize);
 
-                    PXFileReadI16UVE(pxResourceLoadInfo->FileReference, &png.PaletteHistogram.ColorFrequencyList, listSize, PXEndianBig);
+                    PXFileReadI16UVE(pxResourceTransphereInfo->FileReference, &png->PaletteHistogram.ColorFrequencyList, listSize, PXEndianBig);
 
                     break;
                 }
@@ -577,51 +542,56 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
                 {
                     const PXFileDataElementType pxDataStreamElementList[] =
                     {
-                        {&png.LastModificationTime.Year,PXDataTypeInt16UBE},
-                        {&png.LastModificationTime.Month,PXDataTypeInt08U},
-                        {&png.LastModificationTime.Day,PXDataTypeInt08U},
-                        {&png.LastModificationTime.Hour,PXDataTypeInt08U},
-                        {&png.LastModificationTime.Minute,PXDataTypeInt08U},
-                        {&png.LastModificationTime.Second,PXDataTypeInt08U}
+                        {&png->LastModificationTime.Year,PXDataTypeInt16UBE},
+                        {&png->LastModificationTime.Month,PXDataTypeInt08U},
+                        {&png->LastModificationTime.Day,PXDataTypeInt08U},
+                        {&png->LastModificationTime.Hour,PXDataTypeInt08U},
+                        {&png->LastModificationTime.Minute,PXDataTypeInt08U},
+                        {&png->LastModificationTime.Second,PXDataTypeInt08U}
                     };
 
-                    PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+                    PXFileReadMultible(pxResourceTransphereInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
                     break;
                 }
                 case PXPNGChunkCustom:
                 default:
                 {
-                    PXFileCursorAdvance(pxResourceLoadInfo->FileReference, chunk.Lengh);
+                    PXFileCursorAdvance(pxResourceTransphereInfo->FileReference, chunk.Lengh);
                     break;
                 }
             }
             //---------------------------------------------------------------
 
 #if PNGDebugInfo
-            if (pxFile->DataCursor != predictedOffset)
+            if(pxFile->DataCursor != predictedOffset)
             {
                 printf("[i][PNG] Chunk did not handle all Bytes\n");
             }
 #endif
-            pxResourceLoadInfo->FileReference->DataCursor = predictedOffset;
+            pxResourceTransphereInfo->FileReference->DataCursor = predictedOffset;
 
-            PXFileReadI32UE(pxResourceLoadInfo->FileReference, &chunk.CRC, PXEndianBig); // 4 Bytes
+            PXFileReadI32UE(pxResourceTransphereInfo->FileReference, &chunk.CRC, PXEndianBig); // 4 Bytes
 
             //---<Check CRC>---
             // TODO: Yes
             //-----------------
-         }
+        }
     }
 
+    return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXPNGLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+{
+    PXImage* const pxImage = (PXImage*)pxResourceLoadInfo->ResourceTarget;
+    PXPNG* const png = (PXPNG*)pxResourceLoadInfo->ResourceSource;
+
     //---<Allocate>------------------------------------------------------------
-
-
     {
+        PXColorFormat imageDataFormat;
 
-    PXColorFormat imageDataFormat;
-
-        switch (png.ImageHeader.ColorType)
+        switch(png->ImageHeader.ColorType)
         {
             case PXPNGColorGrayscale:
                 imageDataFormat = PXColorFormatInvalid;
@@ -646,9 +616,9 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
                 break;
         }
 
-        const PXBool allocateResult = PXImageResize(pxImage, imageDataFormat, png.ImageHeader.Width, png.ImageHeader.Height);
+        const PXBool allocateResult = PXImageResize(pxImage, imageDataFormat, png->ImageHeader.Width, png->ImageHeader.Height);
 
-        if (!allocateResult)
+        if(!allocateResult)
         {
             return PXActionFailedMemoryAllocation;
         }
@@ -656,18 +626,43 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
     //-------------------------------------------------------------------------
 
 
+    PXByte* data = PXNull;
+    PXSize dataSize = 0;
+
+    if(png->DataBlockListAmount == 1) // Special behaviour if we only have one chunk
+    {
+        const PXPNGDataBlock* const pxPNGDataBlock = &png->DataBlockList[0];
+
+        data = (PXByte*)pxResourceLoadInfo->FileReference->Data + pxPNGDataBlock->FileOffset;
+        dataSize = pxPNGDataBlock->DataSize;
+    }
+    else
+    {
+        data = PXMemoryMallocT(PXByte, png->DataBlockTotalSize);
+
+        for(PXSize i = 0; i < png->DataBlockListAmount; i++)
+        {
+            const PXPNGDataBlock* const pxPNGDataBlock = &png->DataBlockList[i];
+
+            PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, pxPNGDataBlock->FileOffset);
+            dataSize += PXFileReadB(pxResourceLoadInfo->FileReference, data + dataSize, pxPNGDataBlock->DataSize);
+        }
+    }
+
+
+
     //---<Unpack compressed data>----------------------------------------------
     {
         PXSize workingMemorySize = 0;
-        const PXInt8U bitsPerPixel = PXPNGBitsPerPixel(&png);
+        const PXInt8U bitsPerPixel = PXPNGBitsPerPixel(png);
 
         //---------------------------------------------------------------------
         // ZLIB
         //---------------------------------------------------------------------
         PXFile pxZLIBStream;
-        PXFileBufferExternal(&pxZLIBStream, imageDataChunkCache, imageDataChunkCacheSizeUSED);
+        PXFileBufferExternal(&pxZLIBStream, data, dataSize);
 
-        const PXSize expectedPXZLIBCacheSize = PXZLIBCalculateExpectedSize(png.ImageHeader.Width, png.ImageHeader.Height, bitsPerPixel, png.ImageHeader.InterlaceMethod);
+        const PXSize expectedPXZLIBCacheSize = PXZLIBCalculateExpectedSize(png->ImageHeader.Width, png->ImageHeader.Height, bitsPerPixel, png->ImageHeader.InterlaceMethod);
 
         PXFile pxZLIBResultStream;
         PXFileMapToMemory(&pxZLIBResultStream, expectedPXZLIBCacheSize, PXMemoryAccessModeReadAndWrite);
@@ -689,15 +684,18 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
         PXADAM7 pxADAM7;
         PXClear(PXADAM7, &pxADAM7);
         pxADAM7.DataInput = (char*)pxZLIBResultStream.Data;
+        //pxADAM7.DataOutput = pxImage->PixelData;
+        //pxADAM7.OutputSize = pxImage->PixelDataSize;
         pxADAM7.InputSize = pxZLIBResultStream.DataSize;
-        pxADAM7.Width = png.ImageHeader.Width;
-        pxADAM7.Height = png.ImageHeader.Height;
+        pxADAM7.Width = png->ImageHeader.Width;
+        pxADAM7.Height = png->ImageHeader.Height;
         pxADAM7.BitsPerPixel = bitsPerPixel;
-        pxADAM7.InterlaceMethod = png.ImageHeader.InterlaceMethod;
+        pxADAM7.InterlaceMethod = png->ImageHeader.InterlaceMethod;
 
         const PXSize expectedadam7CacheSize = PXADAM7CaluclateExpectedSize(&pxADAM7);
 
-        PXNewList(PXByte, expectedadam7CacheSize, &pxADAM7.DataOutput, &pxADAM7.OutputSize);
+        pxADAM7.DataOutput = PXMemoryMallocT(PXByte, expectedadam7CacheSize);
+        pxADAM7.OutputSize = expectedadam7CacheSize;
 
         const PXActionResult scanDecodeResult = PXADAM7ScanlinesDecode(&pxADAM7);
 
@@ -706,9 +704,18 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
         //---------------------------------------------------------------------
         // Color Comprerss
         //---------------------------------------------------------------------
-        const PXActionResult decompress = PXPNGImageDataDecompress(&png, pxADAM7.DataOutput, pxImage->PixelData, png.ImageHeader.BitDepth, png.ImageHeader.ColorType);
+        const PXActionResult decompress = PXPNGImageDataDecompress
+        (
+            png, 
+            pxADAM7.DataOutput, 
+            pxImage->PixelData, 
+            png->ImageHeader.BitDepth,
+            png->ImageHeader.ColorType
+        );
 
-        PXDeleteList(PXByte, expectedadam7CacheSize, &pxADAM7.DataOutput, &pxADAM7.OutputSize);
+        PXMemoryFree(pxADAM7.DataOutput);
+        pxADAM7.DataOutput = 0;
+        pxADAM7.OutputSize = 0;
         //---------------------------------------------------------------------
 
 
@@ -717,7 +724,7 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
 
     //-------------------------------------------------------------------------
 
-    PXPNGDestruct(&png);
+    PXPNGDestruct(png);
 
     return PXActionSuccessful;
 }
@@ -1338,22 +1345,22 @@ PXSize preProcessScanlines
     return error;
 }
 
-PXActionResult PXAPI PXPNGSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
+PXActionResult PXAPI PXPNGSaveToFile(PXResourceTransphereInfo* const pxResourceTransphereInfo)
 {
-    PXImage* const pxImage = (PXImage*)pxResourceSaveInfo->Target;
+    PXImage* const pxImage = (PXImage*)pxResourceTransphereInfo->ResourceTarget;
 
     //---<Signature>--- 8 Bytes
     {
         const PXInt64U pngFileHeader = PXPNGHeaderSequenz;
 
-        PXFileWriteI64U(pxResourceSaveInfo->FileReference, pngFileHeader);
+        PXFileWriteI64U(pxResourceTransphereInfo->FileReference, pngFileHeader);
     }
 
     //---<IHDR> (Image Header)--- 21 Bytes
     {
         unsigned char colorType = 0;
         const PXInt8U interlaceMethod = PXPNGInterlaceMethodToID(PXPNGInterlaceNone);
-        const unsigned char* chunkStart = PXFileCursorPosition(pxResourceSaveInfo->FileReference);
+        const unsigned char* chunkStart = PXFileCursorPosition(pxResourceTransphereInfo->FileReference);
 
         const unsigned char compressionMethod = 0;
         const unsigned char filterMethod = 0;
@@ -1379,27 +1386,27 @@ PXActionResult PXAPI PXPNGSaveToFile(PXResourceSaveInfo* const pxResourceSaveInf
         }
         const unsigned int chunkLength = 13u;
 
-        PXFileWriteI32UE(pxResourceSaveInfo->FileReference, chunkLength, PXEndianBig);
-        PXFileWriteB(pxResourceSaveInfo->FileReference, "IHDR", 4u);
+        PXFileWriteI32UE(pxResourceTransphereInfo->FileReference, chunkLength, PXEndianBig);
+        PXFileWriteB(pxResourceTransphereInfo->FileReference, "IHDR", 4u);
 
-        PXFileWriteI32UE(pxResourceSaveInfo->FileReference, pxImage->Width, PXEndianBig);
-        PXFileWriteI32UE(pxResourceSaveInfo->FileReference, pxImage->Height, PXEndianBig);
+        PXFileWriteI32UE(pxResourceTransphereInfo->FileReference, pxImage->Width, PXEndianBig);
+        PXFileWriteI32UE(pxResourceTransphereInfo->FileReference, pxImage->Height, PXEndianBig);
 
         {
             const PXInt8U bitDepth = PXColorFormatBitsPerPixel(pxImage->Format);
 
-            PXFileWriteI8U(pxResourceSaveInfo->FileReference, bitDepth);
+            PXFileWriteI8U(pxResourceTransphereInfo->FileReference, bitDepth);
         }
 
-        PXFileWriteI8U(pxResourceSaveInfo->FileReference, colorType);
-        PXFileWriteI8U(pxResourceSaveInfo->FileReference, compressionMethod);
-        PXFileWriteI8U(pxResourceSaveInfo->FileReference, filterMethod);
-        PXFileWriteI8U(pxResourceSaveInfo->FileReference, interlaceMethod);
+        PXFileWriteI8U(pxResourceTransphereInfo->FileReference, colorType);
+        PXFileWriteI8U(pxResourceTransphereInfo->FileReference, compressionMethod);
+        PXFileWriteI8U(pxResourceTransphereInfo->FileReference, filterMethod);
+        PXFileWriteI8U(pxResourceTransphereInfo->FileReference, interlaceMethod);
 
         {
             const PXInt32U crc = PXCRC32Generate(chunkStart + 4, chunkLength + 4);
 
-            PXFileWriteI32UE(pxResourceSaveInfo->FileReference, crc, PXEndianBig);
+            PXFileWriteI32UE(pxResourceTransphereInfo->FileReference, crc, PXEndianBig);
         }
 
 
@@ -1514,7 +1521,7 @@ PXActionResult PXAPI PXPNGSaveToFile(PXResourceSaveInfo* const pxResourceSaveInf
         pngLastModificationTime.Minute = time.Minute;
         pngLastModificationTime.Second = time.Second;
 
-        const unsigned char* chunkStart = PXFileCursorPosition(pxResourceSaveInfo->FileReference);
+        const unsigned char* chunkStart = PXFileCursorPosition(pxResourceTransphereInfo->FileReference);
         const PXSize chunkLength = 7u;
 
         const PXFileDataElementType pxFileDataElementType[] =
@@ -1529,26 +1536,26 @@ PXActionResult PXAPI PXPNGSaveToFile(PXResourceSaveInfo* const pxResourceSaveInf
             {&pngLastModificationTime.Second, PXDataTypeInt08U},
         };
 
-        PXFileWriteMultible(pxResourceSaveInfo->FileReference, pxFileDataElementType, sizeof(pxFileDataElementType));
+        PXFileWriteMultible(pxResourceTransphereInfo->FileReference, pxFileDataElementType, sizeof(pxFileDataElementType));
 
         {
             const PXInt32U crc = PXCRC32Generate(chunkStart + 4, chunkLength + 4);
 
-            PXFileWriteI32UE(pxResourceSaveInfo->FileReference, crc, PXEndianBig);
+            PXFileWriteI32UE(pxResourceTransphereInfo->FileReference, crc, PXEndianBig);
         }
     }
 #endif
 
     // [IDAT] Image data
     {
-        const PXSize offsetSizeofChunk = pxResourceSaveInfo->FileReference->DataCursor;
+        const PXSize offsetSizeofChunk = pxResourceTransphereInfo->FileReference->DataCursor;
 
-        const void* chunkStart = PXFileCursorPosition(pxResourceSaveInfo->FileReference);
+        const void* chunkStart = PXFileCursorPosition(pxResourceTransphereInfo->FileReference);
 
         PXSize chunkLength = 0;
 
-        PXFileWriteI32UE(pxResourceSaveInfo->FileReference, 0u, PXEndianBig); // Length
-        PXFileWriteB(pxResourceSaveInfo->FileReference, "IDAT", 4u);
+        PXFileWriteI32UE(pxResourceTransphereInfo->FileReference, 0u, PXEndianBig); // Length
+        PXFileWriteB(pxResourceTransphereInfo->FileReference, "IDAT", 4u);
 
         PXFile pxScanlineStream;
         PXFileConstruct(&pxScanlineStream);
@@ -1578,13 +1585,13 @@ PXActionResult PXAPI PXPNGSaveToFile(PXResourceSaveInfo* const pxResourceSaveInf
 
         // PXZLIB
         {
-            PXSize cursorBefore = pxResourceSaveInfo->FileReference->DataCursor;
+            PXSize cursorBefore = pxResourceTransphereInfo->FileReference->DataCursor;
 
-            const PXActionResult PXZLIBResult = PXZLIBCompress(&pxScanlineStream, pxResourceSaveInfo->FileReference);
+            const PXActionResult PXZLIBResult = PXZLIBCompress(&pxScanlineStream, pxResourceTransphereInfo->FileReference);
 
-            chunkLength = pxResourceSaveInfo->FileReference->DataCursor - cursorBefore;
+            chunkLength = pxResourceTransphereInfo->FileReference->DataCursor - cursorBefore;
 
-            PXFileWriteAtI32UE(pxResourceSaveInfo->FileReference, chunkLength, PXEndianBig, offsetSizeofChunk); // override length
+            PXFileWriteAtI32UE(pxResourceTransphereInfo->FileReference, chunkLength, PXEndianBig, offsetSizeofChunk); // override length
         }
 
         PXFileDestruct(&pxScanlineStream);
@@ -1592,7 +1599,7 @@ PXActionResult PXAPI PXPNGSaveToFile(PXResourceSaveInfo* const pxResourceSaveInf
         {
             const PXInt32U crc = PXCRC32Generate(&((PXByte*)chunkStart)[4], chunkLength + 4);
 
-            PXFileWriteI32UE(pxResourceSaveInfo->FileReference, crc, PXEndianBig);
+            PXFileWriteI32UE(pxResourceTransphereInfo->FileReference, crc, PXEndianBig);
         }
     }
 
@@ -1606,7 +1613,7 @@ PXActionResult PXAPI PXPNGSaveToFile(PXResourceSaveInfo* const pxResourceSaveInf
             {(void*)imageEndChunk, sizeof(imageEndChunk)}
         };
 
-        PXFileWriteMultible(pxResourceSaveInfo->FileReference, pxFileDataElementType, sizeof(pxFileDataElementType));
+        PXFileWriteMultible(pxResourceTransphereInfo->FileReference, pxFileDataElementType, sizeof(pxFileDataElementType));
     }
 
     return PXActionSuccessful;

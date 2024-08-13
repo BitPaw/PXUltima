@@ -9,7 +9,7 @@ typedef struct PXMSI_
 }
 PXMSI;
 
-PXPublic PXActionResult PXAPI PXMSILoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXMSISaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
+PXPublic PXActionResult PXAPI PXMSILoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXMSISaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

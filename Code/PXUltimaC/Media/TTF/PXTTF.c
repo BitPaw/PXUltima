@@ -179,7 +179,7 @@ void PXAPI PXTTFDestruct(PXTTF* const ttf)
     // TODO
 }
 
-PXActionResult PXAPI PXTTFLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
+PXActionResult PXAPI PXTTFLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     PXTTF ttfdata;
     PXTTF* ttf = &ttfdata;
@@ -702,7 +702,7 @@ PXActionResult PXAPI PXTTFLoadFromFile(PXResourceLoadInfo* const pxResourceLoadI
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXTTFSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
+PXActionResult PXAPI PXTTFSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

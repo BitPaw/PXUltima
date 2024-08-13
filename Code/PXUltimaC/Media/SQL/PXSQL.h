@@ -40,7 +40,7 @@ typedef enum PXSQLKeyWord_
 }
 PXSQLKeyWord;
 
-PXPublic PXActionResult PXAPI PXSQLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXSQLSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
+PXPublic PXActionResult PXAPI PXSQLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXSQLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

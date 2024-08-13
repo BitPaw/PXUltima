@@ -40,7 +40,7 @@ typedef struct PXBinaryWindows_
 }
 PXBinaryWindows;
 
-PXPublic PXActionResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXBinaryWindowsSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
+PXPublic PXActionResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXBinaryWindowsSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

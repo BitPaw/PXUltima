@@ -1171,11 +1171,6 @@ PXActionResult PXAPI PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFr
 {
     PXFileConstruct(pxFile);
 
-    // Analyse type
-    {
-        PXFileTypeInfoProbe(&pxFile->TypeInfo, &pxFileOpenFromPathInfo->Text);
-    }
-
 
     // Does file even exist? Check only if "read only" or "no override"
     if(PXMemoryAccessModeReadOnly == pxFile->AccessMode)
@@ -1824,7 +1819,7 @@ PXActionResult PXAPI PXFileClose(PXFile* const pxFile)
 
 PXActionResult PXAPI PXFileMapToMemory(PXFile* const pxFile, const PXSize size, const PXMemoryAccessMode protectionMode)
 {
-    void* const data = PXMemoryVirtualAllocate(size, protectionMode);
+    void* const data = PXMemoryMalloc(size);
     const PXBool successful = data != 0;
 
     if (!successful)

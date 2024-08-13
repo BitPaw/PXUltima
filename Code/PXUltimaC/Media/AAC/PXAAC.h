@@ -9,7 +9,7 @@ typedef struct PXAAC_
 }
 PXAAC;
 
-PXPublic PXActionResult PXAPI PXAACLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXAACSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
+PXPublic PXActionResult PXAPI PXAACLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXAACSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

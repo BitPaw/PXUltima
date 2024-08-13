@@ -5,9 +5,9 @@
 
 const char PXWEBPVP[4] = { 'V', 'P', '8', ' ' };
 
-PXActionResult PXAPI PXWEBPLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
+PXActionResult PXAPI PXWEBPLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
-    PXImage* const pxImage = (PXImage*)pxResourceLoadInfo->Target;
+    PXImage* const pxImage = (PXImage*)pxResourceLoadInfo->ResourceTarget;
 
     // Parse RIFF header
     {
@@ -62,7 +62,7 @@ PXActionResult PXAPI PXWEBPLoadFromFile(PXResourceLoadInfo* const pxResourceLoad
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXWEBPSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
+PXActionResult PXAPI PXWEBPSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     // Write RIFF
     {

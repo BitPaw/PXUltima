@@ -75,13 +75,10 @@ PXActionResult PXAPI PXThreadPoolWaitForAll(PXThreadPool* const pxThreadPool, co
 #endif
 }
 
-
 void NTAPI PXWindowsVistaPTP_WORK_CALLBACK(PTP_CALLBACK_INSTANCE Instance, PVOID Context, PTP_WORK Work)
 {
     
 }
-
-
 
 PXActionResult PXAPI PXThreadPoolQueueWork(PXThreadPool* const pxThreadPool, void* function, void* parameter)
 {

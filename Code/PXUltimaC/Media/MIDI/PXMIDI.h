@@ -56,7 +56,7 @@ typedef struct PXMIDI_
 }
 PXMIDI;
 
-PXPublic PXActionResult PXAPI PXMIDILoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXMIDISaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
+PXPublic PXActionResult PXAPI PXMIDILoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXMIDISaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

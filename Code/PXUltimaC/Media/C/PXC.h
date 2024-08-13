@@ -41,7 +41,7 @@ PXPrivate PXActionResult PXAPI PXCParseEnumMember(PXCompiler* const pxCompiler, 
 PXPrivate PXActionResult PXAPI PXCParseTypeContainer(PXCompiler* const pxCompiler, PXCodeDocumentElement* const pxCodeDocumentElement);
 PXPrivate PXActionResult PXAPI PXCParseTypeEnum(PXCompiler* const pxCompiler, PXCodeDocumentElement* const pxCodeDocumentElementParent);
 
-PXPublic PXActionResult PXAPI PXCLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXCSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
+PXPublic PXActionResult PXAPI PXCLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXCSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

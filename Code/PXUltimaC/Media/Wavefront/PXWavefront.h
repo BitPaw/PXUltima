@@ -74,7 +74,7 @@ PXPrivate PXWavefrontLineType PXAPI PXWavefrontPeekLine(const void* line, const 
 // D: "f 1/3"
 PXPublic void PXAPI PXWavefrontFaceLineParse(PXCompiler* const pxCompiler, PXInt32U* const pxInt32U);
 
-PXPublic PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXWavefrontSaveFromFile(PXResourceSaveInfo* const pxResourceSaveInfo);
+PXPublic PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXWavefrontSaveFromFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

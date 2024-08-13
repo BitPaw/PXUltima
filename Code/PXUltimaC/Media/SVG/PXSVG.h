@@ -9,7 +9,7 @@ typedef struct PXSVG_
 }
 PXSVG;
 
-PXPublic PXActionResult PXAPI PXSVGLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXSVGSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
+PXPublic PXActionResult PXAPI PXSVGLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXSVGSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

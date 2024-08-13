@@ -109,8 +109,8 @@ typedef struct PXSpriteFont_
 }
 PXSpriteFont;
 
-PXPublic PXActionResult PXAPI PXSpriteFontLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXSpriteFontSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
+PXPublic PXActionResult PXAPI PXSpriteFontLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXSpriteFontSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 PXPrivate PXSpriteFontLineType PXAPI PeekSymbol(const char* const line, const PXSize fileDataSize);
 

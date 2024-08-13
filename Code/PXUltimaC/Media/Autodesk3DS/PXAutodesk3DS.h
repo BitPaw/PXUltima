@@ -9,7 +9,7 @@ typedef struct PXAutodesk3DS
 }
 PXAutodesk3DS;
 
-PXPublic PXActionResult PXAPI PXAutodesk3DSLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXAutodesk3DSSafeFromFile(PXResourceSaveInfo* const pxResourceSafeInfo);
+PXPublic PXActionResult PXAPI PXAutodesk3DSLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXAutodesk3DSSafeFromFile(PXResourceTransphereInfo* const pxResourceSafeInfo);
 
 #endif

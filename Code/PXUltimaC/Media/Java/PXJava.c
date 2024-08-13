@@ -207,19 +207,19 @@ void PXAPI PXJavaDefinitionWrite(PXCompiler* const pxCompiler)
     PXFileWriteA(pxFile, entry->NameAdress, entry->NameSize);
 }
 
-PXActionResult PXAPI PXJavaLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
+PXActionResult PXAPI PXJavaLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXJavaSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
+PXActionResult PXAPI PXJavaSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     if(!pxResourceSaveInfo)
     {
         return PXActionRefusedArgumentNull;
     }
 
-    if(PXResourceTypeCodeDocument != pxResourceSaveInfo->Type)
+    if(PXResourceTypeCodeDocument != pxResourceSaveInfo->ResourceType)
     {
         return PXActionRefusedArgumentInvalid;
     }    
@@ -232,7 +232,7 @@ PXActionResult PXAPI PXJavaSaveToFile(PXResourceSaveInfo* const pxResourceSaveIn
     pxCompiler.CommentMultibleLineBeginSize = 2;
     pxCompiler.CommentMultibleLineEnd = "*/";
     pxCompiler.CommentMultibleLineEndSize = 2;
-    pxCompiler.CodeDocument = (PXCodeDocument*)pxResourceSaveInfo->Target;
+    pxCompiler.CodeDocument = (PXCodeDocument*)pxResourceSaveInfo->ResourceTarget;
     pxCompiler.WriteInfo.FileOutput = pxResourceSaveInfo->FileReference;
     pxCompiler.WriteInfo.WriteFile = PXJavaWriteFile;
     pxCompiler.WriteInfo.WriteContainer = PXJavaContainerWrite;

@@ -8,9 +8,9 @@
 #include <OS/Memory/PXMemory.h>
 #include <Compiler/PXCompiler.h>
 
-PXActionResult PXAPI PXSpriteFontLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
+PXActionResult PXAPI PXSpriteFontLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
-    PXFont* const pxFont = (PXFont*)pxResourceLoadInfo->Target;
+    PXFont* const pxFont = (PXFont*)pxResourceLoadInfo->ResourceTarget;
 
 
 
@@ -774,7 +774,7 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXResourceLoadInfo* const pxResour
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXSpriteFontSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
+PXActionResult PXAPI PXSpriteFontSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

@@ -47,7 +47,7 @@ PXFLAC;
 
 PXPrivate inline PXFLACBlockType PXAPI PXFLACBlockTypeFromID(const PXInt8U typeID);
 
-PXPublic PXActionResult PXAPI PXFLACLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXFLACSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
+PXPublic PXActionResult PXAPI PXFLACLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXFLACSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

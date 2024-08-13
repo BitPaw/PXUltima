@@ -9,7 +9,7 @@ typedef struct PXVRML_
 }
 PXVRML;
 
-PXPublic PXActionResult PXAPI PXVRMLLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXVRMLSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
+PXPublic PXActionResult PXAPI PXVRMLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXVRMLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

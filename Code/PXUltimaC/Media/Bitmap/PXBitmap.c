@@ -135,9 +135,9 @@ PXInt8U PXBitmapInfoHeaderTypeToID(const PXBitmapInfoHeaderType infoHeaderType)
     }
 }
 
-PXActionResult PXAPI PXBitmapLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
+PXActionResult PXAPI PXBitmapLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
-    PXImage* const pxImage = (PXImage*)pxResourceLoadInfo->Target;
+    PXImage* const pxImage = (PXImage*)pxResourceLoadInfo->ResourceTarget;
 
     PXBitmap bmp;
 
@@ -338,9 +338,9 @@ PXActionResult PXAPI PXBitmapLoadFromFile(PXResourceLoadInfo* const pxResourceLo
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXBitmapSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
+PXActionResult PXAPI PXBitmapSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
-    PXImage* const pxImage = (PXImage*)pxResourceSaveInfo->Target;
+    PXImage* const pxImage = (PXImage*)pxResourceSaveInfo->ResourceTarget;
 
     PXBitmap bitMap;
 

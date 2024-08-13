@@ -21,7 +21,7 @@ PXFLACBlockType PXAPI PXFLACBlockTypeFromID(const PXInt8U typeID)
     }
 }
 
-PXActionResult PXAPI PXFLACLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo)
+PXActionResult PXAPI PXFLACLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     PXFLACSteamInfo pxFLACSteamInfo;
 
@@ -95,7 +95,7 @@ PXActionResult PXAPI PXFLACLoadFromFile(PXResourceLoadInfo* const pxResourceLoad
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXFLACSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo)
+PXActionResult PXAPI PXFLACSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     PXFLACSteamInfo pxFLACSteamInfo;
 

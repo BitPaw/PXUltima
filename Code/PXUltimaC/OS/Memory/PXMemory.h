@@ -183,13 +183,34 @@ PXPublic PXActionResult PXAPI PXMemorySymbolFetch(const void* const adress, stru
 
 
 // POSIX
+PXPublic void* PXAPI PXMemoryCalloc(const PXSize amount, const PXSize objectSize);
 PXPublic void* PXAPI PXMemoryMalloc(const PXSize memorySize);
-
-#define PXMemoryMallocT(type, amount) PXMemoryMalloc(sizeof(type) * amount)
-
-
 PXPublic PXBool PXAPI PXMemoryFree(const void* const adress);
 PXPublic void* PXAPI PXMemoryRealloc(const void* const adress, const PXSize memorySize);
+
+
+#define PXMemoryProtectModeNoAccess 0b00000000
+#define PXMemoryProtectModeRead     0b00000001
+#define PXMemoryProtectModeWrite    0b00000010
+#define PXMemoryProtectModeExecute  0b00000100
+
+#define PXMemoryProtectModeReadOnly             PXMemoryProtectModeRead
+#define PXMemoryProtectModeWriteOnly            PXMemoryProtectModeWrite
+#define PXMemoryProtectModeReadWrite            PXMemoryProtectModeRead | PXMemoryProtectModeWrite
+#define PXMemoryProtectModeReadExecute          PXMemoryProtectModeExecute | PXMemoryProtectModeRead
+#define PXMemoryProtectModeWriteExecute         PXMemoryProtectModeExecute | PXMemoryProtectModeWrite
+#define PXMemoryProtectModeReadWriteExecute     PXMemoryProtectModeExecute | PXMemoryProtectModeReadWrite
+
+PXPublic int PXAPI PXMemoryProtectionIDTranslate(const PXInt8U protectionMode);
+
+PXPublic PXActionResult PXAPI PXMemoryProtect(void* dataAdress, const PXSize dataSize, const PXInt8U protectionMode);
+
+
+// typedefed POSIX
+#define PXMemoryCallocT(type, amount) PXMemoryCalloc(amount, sizeof(type))
+#define PXMemoryMallocT(type, amount) PXMemoryMalloc(sizeof(type) * amount)
+#define PXMemoryReallocT(type, adress, amount) PXMemoryRealloc(adress, sizeof(type) * amount)
+
 
 
 PXPublic PXBool PXAPI PXMemoryScan(PXMemoryUsage* memoryUsage);

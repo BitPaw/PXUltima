@@ -8,7 +8,7 @@ PXPrivate void PXAPI PXCSharpContainerWrite(PXCompiler* const pxCompiler);
 PXPrivate void PXAPI PXCSharpFunctionWrite(PXCompiler* const pxCompiler);
 PXPrivate void PXAPI PXCSharpDefinitionWrite(PXCompiler* const pxCompiler);
 
-PXPublic PXActionResult PXAPI PXCSharpLoadFromFile(PXResourceLoadInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXCSharpSaveToFile(PXResourceSaveInfo* const pxResourceSaveInfo);
+PXPublic PXActionResult PXAPI PXCSharpLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXActionResult PXAPI PXCSharpSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif
