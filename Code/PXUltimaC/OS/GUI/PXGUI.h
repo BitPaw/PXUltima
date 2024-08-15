@@ -671,11 +671,11 @@ PXPublic PXActionResult PXAPI PXGUIElementDragStart(PXGUISystem* const pxGUISyst
 // Swaps the color buffer. Can prevent flickering.
 PXPublic PXActionResult PXAPI PXGUIElementBufferSwap(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
 
-PXActionResult PXAPI PXGUIDrawClear(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
-PXActionResult PXAPI PXGUIDrawForegroundColorSetRGB(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, char red, char green, char blue);
-PXActionResult PXAPI PXGUIDrawBackgroundColorSetRGB(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, char red, char green, char blue);
-PXActionResult PXAPI PXGUIElementDrawBegin(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
-PXActionResult PXAPI PXGUIElementDrawEnd(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
+PXPublic PXActionResult PXAPI PXGUIDrawClear(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
+PXPublic PXActionResult PXAPI PXGUIDrawForegroundColorSetRGB(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, char red, char green, char blue);
+PXPublic PXActionResult PXAPI PXGUIDrawBackgroundColorSetRGB(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, char red, char green, char blue);
+PXPublic PXActionResult PXAPI PXGUIElementDrawBegin(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
+PXPublic PXActionResult PXAPI PXGUIElementDrawEnd(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
 
 // Draw text into a given window
 // Example: Text for a button
@@ -751,5 +751,14 @@ PXPublic void PXAPI PXWindowCursorCaptureMode(const PXWindowID pxWindowID, const
 PXPublic PXBool PXAPI PXWindowIsInFocus(const PXWindowID pxWindowID);
 
 PXPrivate PXInt32U PXAPI PXWindowCursorIconToID(const PXCursorIcon cursorIcon);
+
+
+//-----------------------------------------------------------------------------
+// GUI Draw functions
+//-----------------------------------------------------------------------------
+
+
+
+
 
 #endif

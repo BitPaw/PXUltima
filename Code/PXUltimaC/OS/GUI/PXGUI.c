@@ -900,8 +900,8 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
         }
         case WM_DRAWITEM: 
         {
-            HWND identifier = (HWND)wParam;
-            DRAWITEMSTRUCT* drawItemInfo = (DRAWITEMSTRUCT*)lParam;
+            const HWND identifier = (HWND)wParam;
+            DRAWITEMSTRUCT* const drawItemInfo = (DRAWITEMSTRUCT*)lParam;
 
             PXGUIElement* const pxGUIElement = PXNull;
 
@@ -1991,6 +1991,8 @@ PXActionResult PXAPI PXGUIDisplayScreenListRefresh(PXGUISystem* const pxGUISyste
 
 PXActionResult PXAPI PXGUIElementDrawCustomText(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo)
 {
+    
+
    // PXGUIElementDrawTextA(pxGUISystem, pxGUIElement, "", 0);
 
     return PXActionSuccessful;
@@ -2010,8 +2012,41 @@ PXActionResult PXAPI PXGUIElementDrawCustomButton(PXGUISystem* const pxGUISystem
 
    PXGUIDrawClear(pxGUISystem, pxGUIElement);
 
+   PXGUIElementBrush defaultBrush;
+   defaultBrush.Color.Red = 0xFF;
+   defaultBrush.Color.Green = 0xFF;
+   defaultBrush.Color.Blue = 0xFF;
 
-   PXGUIDrawBackgroundColorSetRGB(pxGUISystem, pxGUIElement, 0, 255, 0);
+   PXGUIElementBrush* brushFront = pxGUIElement->BrushFront;
+   PXGUIElementBrush* brushBackground = pxGUIElement->BrushBackground;
+
+   if(!brushFront)
+   {
+       brushFront = &defaultBrush;
+   }
+
+   if(!brushBackground)
+   {
+       brushBackground = &defaultBrush;
+   }
+
+
+   PXGUIDrawForegroundColorSetRGB
+   (
+       pxGUISystem, 
+       pxGUIElement, 
+       brushFront->Color.Red,
+       brushFront->Color.Green,
+       brushFront->Color.Blue
+   );
+   PXGUIDrawBackgroundColorSetRGB
+   (
+       pxGUISystem,
+       pxGUIElement,
+       brushBackground->Color.Red,
+       brushBackground->Color.Green,
+       brushBackground->Color.Blue
+   );
 
    // PXGUIElementDrawBegin(pxGUISystem, pxGUIElement);
 
@@ -2026,16 +2061,16 @@ PXActionResult PXAPI PXGUIElementDrawCustomButton(PXGUISystem* const pxGUISystem
    );
 
    //SetTextColor(pxGUIElement->DeviceContextHandle, RGB(100, 0, 100));
-   char staticText[99];
+   //char staticText[99];
 
-   char text[] = "*** TEST ***";
-   PXSize length = sizeof(text);
+   //char text[] = "ABCDEF";
+  // PXSize length = sizeof(text);
 
    //int len = SendMessage(pxGUIElement->Info.WindowID, WM_GETTEXT, ARRAYSIZE(staticText), (LPARAM)staticText);
   // BOOL wedq = TextOut(pxGUIElement->DeviceContextHandle, pxGUIElementDrawInfo->rcDirty->left, pxGUIElementDrawInfo->rcDirty->top, text, length);
 
 
-   PXGUIElementDrawTextA(pxGUISystem, pxGUIElement, text, length);
+   PXGUIElementDrawTextA(pxGUISystem, pxGUIElement, pxGUIElement->NameContent, pxGUIElement->NameContentSize);
 
    // PXGUIElementDrawEnd(pxGUISystem, pxGUIElement);
 
@@ -2408,9 +2443,9 @@ Window XCreateSimpleWindow(Display *display, Window parent, int x, int y, unsign
     pxResourceCreateInfoList[0].ObjectReference = &pxGUISystem->BrushBackgroundDark;
     pxResourceCreateInfoList[0].Name = "BackgroundDark",
     pxResourceCreateInfoList[0].Type = PXResourceTypeBrush;
-    pxResourceCreateInfoList[0].Brush.Color.Red = 255; // 30-30-30
-    pxResourceCreateInfoList[0].Brush.Color.Green = 200;
-    pxResourceCreateInfoList[0].Brush.Color.Blue = 0;
+    pxResourceCreateInfoList[0].Brush.Color.Red = 30; // 30-30-30
+    pxResourceCreateInfoList[0].Brush.Color.Green = 30;
+    pxResourceCreateInfoList[0].Brush.Color.Blue = 30;
 
     pxResourceCreateInfoList[1].ObjectReference = &pxGUISystem->BrushTextWhite;
     pxResourceCreateInfoList[1].Name = "TextWhite",
@@ -3003,7 +3038,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
             {
                 pxGUIElementCreateInfo->WindowsStyleFlags |= BS_OWNERDRAW;
                 pxGUIElement->DrawFunction = PXGUIElementDrawCustomText;
-                pxGUIElement->Brush = pxGUISystem->BrushBackgroundDark;
+                pxGUIElement->BrushBackground = pxGUISystem->BrushBackgroundDark;
             }
 
           //  return;
@@ -3022,7 +3057,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
             {
                 pxGUIElementCreateInfo->WindowsStyleFlags |= BS_OWNERDRAW;
                 pxGUIElement->DrawFunction = PXGUIElementDrawCustomButton;
-                pxGUIElement->Brush = pxGUISystem->BrushBackgroundDark;
+                pxGUIElement->BrushBackground = pxGUISystem->BrushBackgroundDark;
             }
 
             break;
@@ -5334,11 +5369,50 @@ PXActionResult PXAPI PXGUIElementDrawTextA(PXGUISystem* const pxGUISystem, PXGUI
     PXClear(DRAWTEXTPARAMS, &drawinfo);
     drawinfo.cbSize = sizeof(DRAWTEXTPARAMS);
 
-    const int nextHeight = DrawTextExA(pxGUIElement->DeviceContextHandle, text, textSize, &rectangle, format, PXNull); // Windows 2000, User32.dll, winuser.h
-    const PXBool success = 0 != nextHeight;
-    const PXActionResult result = PXWindowsErrorCurrent(success);
+    // GetTextExtentPoint32 
 
-    return result;
+    TEXTMETRICA textMetricA;
+    GetTextMetrics(pxGUIElement->DeviceContextHandle, &textMetricA);
+
+    // Draw shadow
+    {
+
+
+        RECT rectangleShadow = rectangle;
+        rectangleShadow.left -= 1;
+        rectangleShadow.top += 1;
+        rectangleShadow.right -= 1;
+        rectangleShadow.bottom += 1;
+
+        PXGUIDrawForegroundColorSetRGB(pxGUISystem, pxGUIElement, 100, 100, 100);
+
+        HFONT hFontAAAA = CreateFontA(
+            30, 0, 0, 0, FW_HEAVY, FALSE, FALSE, FALSE,
+            ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+            DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, "Consolas");
+
+        HFONT hOldFontAAA = (HFONT)SelectObject(pxGUIElement->DeviceContextHandle, hFontAAAA);
+
+        const int nextHeightAAA = DrawTextExA(pxGUIElement->DeviceContextHandle, text, textSize, &rectangleShadow, format, PXNull); // Windows 2000, User32.dll, winuser.h
+
+    }
+    
+
+    PXGUIDrawForegroundColorSetRGB(pxGUISystem, pxGUIElement, 0xff, 0xff, 0xff);
+
+    HFONT hFontBBB = CreateFont(
+        30, 0, 0, 0, FW_THIN, FALSE, FALSE, FALSE,
+        ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+        DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, "Consolas");
+
+    HFONT hOldFontBBB = (HFONT)SelectObject(pxGUIElement->DeviceContextHandle, hFontBBB);
+
+
+    const int nextHeightBBB = DrawTextExA(pxGUIElement->DeviceContextHandle, text, textSize, &rectangle, format, PXNull); // Windows 2000, User32.dll, winuser.h
+   // const PXBool success = 0 != nextHeight;
+   // const PXActionResult result = PXWindowsErrorCurrent(success);
+
+    return 0;
 
 #else
     return NotSupport;
@@ -5477,7 +5551,7 @@ PXActionResult PXAPI PXGUIElementDrawRectangle(PXGUISystem* const pxGUISystem, P
 
 
 
-    const BOOL aaaaaa = FillRect(pxGUIElement->DeviceContextHandle, &rect, pxGUIElement->Brush->Info.BrushHandle);
+    const BOOL aaaaaa = FillRect(pxGUIElement->DeviceContextHandle, &rect, pxGUIElement->BrushBackground->Info.BrushHandle);
 
    // DeleteObject();
 
@@ -5711,7 +5785,8 @@ PXActionResult PXAPI PXGUIDrawForegroundColorSetRGB(PXGUISystem* const pxGUISyst
      red
      );
 #elif OSWindows
-    COLORREF xx = SetTextColor(pxGUIElement->DeviceContextHandle, RGB(red, green, blue));
+    const COLORREF color = RGB(red, green, blue);
+    const COLORREF xx = SetTextColor(pxGUIElement->DeviceContextHandle, color);
 #endif
 
     return PXActionRefusedNotImplemented;
@@ -5730,6 +5805,9 @@ PXActionResult PXAPI PXGUIDrawBackgroundColorSetRGB(PXGUISystem* const pxGUISyst
         color
     );
 #elif OSWindows
+
+    SetBkMode(pxGUIElement->DeviceContextHandle, TRANSPARENT);
+
     const COLORREF color = RGB(red, green, blue);
     const COLORREF colorPrevious = SetBkColor(pxGUIElement->DeviceContextHandle, color);
     const PXBool successful = CLR_INVALID != colorPrevious;

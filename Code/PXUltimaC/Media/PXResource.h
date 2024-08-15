@@ -1619,7 +1619,8 @@ typedef struct PXGUIElement_
     PXUIElementPosition Position;
 
     //---<State-Info>------------------------
-    PXGUIElementBrush* Brush;
+    PXGUIElementBrush* BrushFront;
+    PXGUIElementBrush* BrushBackground;
 
     //PXColorRGBAF* ColorTintReference; // Point to a color to be able to share a theme. Can be null, equal to plain white.
     PXUIHoverState Hover;
@@ -1651,6 +1652,11 @@ typedef struct PXGUIElement_
 #endif
 
     PXUIElementType Type;
+
+
+    // Change this to something better
+    char* NameContent;
+    PXSize NameContentSize;
 }
 PXGUIElement;
 //-----------------------------------------------------
