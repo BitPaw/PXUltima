@@ -1991,9 +1991,57 @@ PXActionResult PXAPI PXGUIDisplayScreenListRefresh(PXGUISystem* const pxGUISyste
 
 PXActionResult PXAPI PXGUIElementDrawCustomText(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo)
 {
-    
+    PXGUIDrawClear(pxGUISystem, pxGUIElement);
 
-   // PXGUIElementDrawTextA(pxGUISystem, pxGUIElement, "", 0);
+    PXGUIElementBrush defaultBrush;
+    defaultBrush.Color.Red = 0xFF;
+    defaultBrush.Color.Green = 0xFF;
+    defaultBrush.Color.Blue = 0xFF;
+
+    PXGUIElementBrush* brushFront = pxGUIElement->BrushFront;
+    PXGUIElementBrush* brushBackground = pxGUIElement->BrushBackground;
+
+    if(!brushFront)
+    {
+        brushFront = &defaultBrush;
+    }
+
+    if(!brushBackground)
+    {
+        brushBackground = &defaultBrush;
+    }
+
+
+    PXGUIDrawForegroundColorSetRGB
+    (
+        pxGUISystem,
+        pxGUIElement,
+        brushFront->Color.Red,
+        brushFront->Color.Green,
+        brushFront->Color.Blue
+    );
+    PXGUIDrawBackgroundColorSetRGB
+    (
+        pxGUISystem,
+        pxGUIElement,
+        brushBackground->Color.Red,
+        brushBackground->Color.Green,
+        brushBackground->Color.Blue
+    );
+
+    // PXGUIElementDrawBegin(pxGUISystem, pxGUIElement);
+
+    PXGUIElementDrawRectangle
+    (
+        pxGUISystem,
+        pxGUIElement,
+        pxGUIElement->Position.Left,
+        pxGUIElement->Position.Top,
+        pxGUIElement->Position.Right,
+        pxGUIElement->Position.Bottom
+    );
+
+    PXGUIElementDrawTextA(pxGUISystem, pxGUIElement, pxGUIElement->NameContent, pxGUIElement->NameContentSize);
 
     return PXActionSuccessful;
 }
@@ -2005,8 +2053,8 @@ PXActionResult PXAPI PXGUIElementDrawCustomButton(PXGUISystem* const pxGUISystem
     (
         PXLoggingInfo,
         "GUI",
-        "Draw",
-        "DRAAAAWWW"
+        "Draw-Button",
+        "E"
     );
 #endif
 
@@ -3039,6 +3087,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                 pxGUIElementCreateInfo->WindowsStyleFlags |= BS_OWNERDRAW;
                 pxGUIElement->DrawFunction = PXGUIElementDrawCustomText;
                 pxGUIElement->BrushBackground = pxGUISystem->BrushBackgroundDark;
+                pxGUIElementCreateInfo->WindowsClassName = WC_BUTTON;
             }
 
           //  return;
@@ -5386,12 +5435,12 @@ PXActionResult PXAPI PXGUIElementDrawTextA(PXGUISystem* const pxGUISystem, PXGUI
 
         PXGUIDrawForegroundColorSetRGB(pxGUISystem, pxGUIElement, 100, 100, 100);
 
-        HFONT hFontAAAA = CreateFontA(
-            30, 0, 0, 0, FW_HEAVY, FALSE, FALSE, FALSE,
-            ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
-            DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, "Consolas");
+        PXFont pxFont;// = pxGUIElement->FontForText;
+        PXClear(PXFont, &pxFont);
 
-        HFONT hOldFontAAA = (HFONT)SelectObject(pxGUIElement->DeviceContextHandle, hFontAAAA);
+        PXGUIFontLoad(pxGUISystem, &pxFont, "Bradley Hand ITC");
+
+        const HFONT fontHandleOld = (HFONT)SelectObject(pxGUIElement->DeviceContextHandle, pxFont.Info.FontHandle);
 
         const int nextHeightAAA = DrawTextExA(pxGUIElement->DeviceContextHandle, text, textSize, &rectangleShadow, format, PXNull); // Windows 2000, User32.dll, winuser.h
 
@@ -5400,12 +5449,13 @@ PXActionResult PXAPI PXGUIElementDrawTextA(PXGUISystem* const pxGUISystem, PXGUI
 
     PXGUIDrawForegroundColorSetRGB(pxGUISystem, pxGUIElement, 0xff, 0xff, 0xff);
 
-    HFONT hFontBBB = CreateFont(
-        30, 0, 0, 0, FW_THIN, FALSE, FALSE, FALSE,
-        ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
-        DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, "Consolas");
 
-    HFONT hOldFontBBB = (HFONT)SelectObject(pxGUIElement->DeviceContextHandle, hFontBBB);
+    PXFont pxFont;// = pxGUIElement->FontForText;
+    PXClear(PXFont, &pxFont);
+
+    PXGUIFontLoad(pxGUISystem, &pxFont, "Bradley Hand ITC");
+
+    HFONT hOldFontBBB = (HFONT)SelectObject(pxGUIElement->DeviceContextHandle, pxFont.Info.FontHandle);
 
 
     const int nextHeightBBB = DrawTextExA(pxGUIElement->DeviceContextHandle, text, textSize, &rectangle, format, PXNull); // Windows 2000, User32.dll, winuser.h
@@ -5718,7 +5768,7 @@ PXActionResult PXAPI PXGUIFontListFetch(PXGUISystem* const pxGUISystem, PXSize* 
 
 
 }
-
+// "Consolas"
 PXActionResult PXAPI PXGUIFontLoad(PXGUISystem* const pxGUISystem, PXFont* const pxFont, const char* const name)
 {
 #if OSUnix
@@ -5728,6 +5778,27 @@ PXActionResult PXAPI PXGUIFontLoad(PXGUISystem* const pxGUISystem, PXFont* const
         name
     ); // "9x15" <--- linux font? Sometimes not found
 #elif OSWindows
+
+
+    const DWORD antialiased = (PXFontAntialiased & pxFont->Info.Behaviour) > 0 ? ANTIALIASED_QUALITY : NONANTIALIASED_QUALITY;
+    const DWORD isItalics   = (PXFontItalics & pxFont->Info.Behaviour) > 0;
+    const DWORD isUnderline = (PXFontUnderline & pxFont->Info.Behaviour) > 0;
+    const DWORD isStrikeOut = (PXFontStrikeOut & pxFont->Info.Behaviour) > 0;
+
+    pxFont->Info.FontHandle = CreateFontA
+    (
+        30, 0, 0, 0,
+        FW_HEAVY,
+        isItalics,
+        isUnderline,
+        isStrikeOut,
+        DEFAULT_CHARSET,
+        OUT_DEFAULT_PRECIS,
+        CLIP_DEFAULT_PRECIS,
+        antialiased,
+        DEFAULT_PITCH | FF_SWISS,
+        name
+    );
 
 #endif
 

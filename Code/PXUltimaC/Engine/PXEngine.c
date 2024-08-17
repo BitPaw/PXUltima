@@ -1938,6 +1938,8 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
         case PXResourceTypeGUIElement:
         {
             PXGUIElementCreateInfo* const pxGUIElementCreateInfo = &pxResourceCreateInfo->UIElement;
+         
+
 
            // pxGUIElementCreateInfo->U
 
@@ -1948,6 +1950,11 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
             PXGUIElementCreate(&pxEngine->GUISystem, pxResourceCreateInfo, 1);
 
             PXFunctionInvoke(pxEngine->ResourceAdded, pxEngine->Owner, pxEngine, pxResourceCreateInfo);
+
+            PXGUIElement* pxGUIElement = *(PXGUIElement**)pxResourceCreateInfo->ObjectReference;
+
+            pxGUIElement->NameContent = pxResourceCreateInfo->Name;
+            pxGUIElement->NameContentSize = -1;
 
             break;
         }

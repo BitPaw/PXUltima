@@ -373,6 +373,7 @@ typedef struct PXResourceInfo_
 #elif OSWindows
         HWND WindowID; // Windows only, used for GUI elements
         HBRUSH BrushHandle;
+        HFONT FontHandle;
 #endif
     };
 
@@ -1057,6 +1058,12 @@ PXPublic PXFontPageCharacter* PXAPI PXFontPageCharacterFetch(PXFontPage* const p
 
 
 
+#define PXFontAntialiased   (1<<0)
+#define PXFontItalics       (1<<1)
+#define PXFontBold          (1<<2)
+#define PXFontStrikeOut     (1<<3)
+#define PXFontUnderline     (1<<4)
+
 typedef struct PXFont_
 {
     PXResourceInfo Info;
@@ -1621,6 +1628,7 @@ typedef struct PXGUIElement_
     //---<State-Info>------------------------
     PXGUIElementBrush* BrushFront;
     PXGUIElementBrush* BrushBackground;
+    PXFont* FontForText;
 
     //PXColorRGBAF* ColorTintReference; // Point to a color to be able to share a theme. Can be null, equal to plain white.
     PXUIHoverState Hover;
