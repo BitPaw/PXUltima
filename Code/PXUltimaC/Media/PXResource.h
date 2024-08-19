@@ -374,6 +374,7 @@ typedef struct PXResourceInfo_
         HWND WindowID; // Windows only, used for GUI elements
         HBRUSH BrushHandle;
         HFONT FontHandle;
+        HMENU MenuHandle;
 #endif
     };
 
@@ -1367,10 +1368,10 @@ typedef enum PXUIElementType_
 {
     PXUIElementTypeInvalid,
     PXUIElementTypeCustom,
-    PXUIElementTypeWindow,
-    PXUIElementTypePanel,
-    PXUIElementTypeText,
-    PXUIElementTypeButton,
+    PXUIElementTypeWindow, // General window to draw into
+    PXUIElementTypePanel, // static generic element
+    PXUIElementTypeText, // text, letters
+    PXUIElementTypeButton, // Button to click
     PXUIElementTypeButtonText,
     PXUIElementTypeImage,
     PXUIElementTypeDropDown,
@@ -1394,7 +1395,7 @@ typedef enum PXUIElementType_
     PXUIElementTypeTreeViewItem,
     PXUIElementTypeIPInput,
     PXUIElementTypeLink,
-    PXUIElementTypeHeader,
+    PXUIElementTypeHeader, // Object insode another for header info
     PXUIElementTypeFontSelector,
     PXUIElementTypePageScroll,
     PXUIElementTypeTabControll,
@@ -1404,7 +1405,9 @@ typedef enum PXUIElementType_
     PXUIElementTypeColorPicker,
     PXUIElementTypeSlider,
     PXUIElementTypeImageList,
-    PXUIElementTypeRenderFrame
+    PXUIElementTypeRenderFrame,
+
+    PXUIElementTypeMenuStrip // Topline of a window that contains a selectable list of things
 }
 PXUIElementType;
 
@@ -1671,6 +1674,62 @@ PXGUIElement;
 
 
 
+
+#define PXGUIMenuItemTypeImage      (1<<0)
+#define PXGUIMenuItemTypeCheckmark  (1<<1)
+#define PXGUIMenuItemTypeDATA       (1<<2)
+#define PXGUIMenuItemTypeFTYPE      (1<<3)
+#define PXGUIMenuItemTypeID         (1<<4)
+#define PXGUIMenuItemTypeSTATE      (1<<5)
+#define PXGUIMenuItemTypeSTRING     (1<<6)
+#define PXGUIMenuItemTypeSUBMENU    (1<<7)
+#define PXGUIMenuItemTypeTYPE       (1<<8)
+#define PXGUIMenuItemTypeMFT_MENUBARBREAK  (1<<10)
+#define PXGUIMenuItemTypeMFT_MENUBREAK          (1<<11)
+#define PXGUIMenuItemTypeMFT_OWNERDRAW         (1<<12)
+#define PXGUIMenuItemTypeMFT_RADIOCHECK         (1<<13)
+#define PXGUIMenuItemTypeMFT_RIGHTJUSTIFY         (1<<14)
+#define PXGUIMenuItemTypeMFT_RIGHTORDER         (1<<15)
+#define PXGUIMenuItemTypeMFT_SEPARATOR         (1<<16)
+#define PXGUIMenuItemTypeMFT_STRING         (1<<17)
+
+#define PXGUIMenuItemStateMFS_CHECKED  (1<<0)
+#define PXGUIMenuItemStateMFS_DEFAULT  (1<<1)
+#define PXGUIMenuItemStateMFS_DISABLED  (1<<2)
+#define PXGUIMenuItemStateMFS_ENABLED  (1<<3)
+#define PXGUIMenuItemStateMFS_GRAYED  (1<<4)
+#define PXGUIMenuItemStateMFS_HILITE  (1<<5)
+#define PXGUIMenuItemStateMFS_UNCHECKED  (1<<6)
+#define PXGUIMenuItemStateMFS_UNHILITE  (1<<7)
+
+
+typedef struct PXGUIElementMenuItemInfo_
+{
+    PXInt32U Flags;
+    PXInt32U State;
+    PXGUIElement* Parent;
+    struct PXGUIElementMenuItemList_* ChildList;
+
+    char* TextData;
+    PXSize TextSize;
+
+
+
+}
+PXGUIElementMenuItemInfo;
+
+typedef struct PXGUIElementMenuItemList_
+{
+    PXGUIElementMenuItemInfo* MenuItemInfoListData;
+    PXSize MenuItemInfoListAmount;
+}
+PXGUIElementMenuItemList;
+
+
+
+
+
+
 typedef struct PXUIElementPositionCalulcateInfo_
 {
     // Input
@@ -1899,6 +1958,7 @@ PXWindowSizeInfo;
 
 typedef union PXGUIElementCreateInfoData_
 {
+    PXGUIElementMenuItemList MenuItem;
     PXGUIElementCreateWindowInfo Window;
     PXUIElementTextInfo Text;
     PXUIElementButtonInfo Button;
