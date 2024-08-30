@@ -36,6 +36,5 @@ namespace PX
 		PXSize MemoryWrite(const void* const adress, const void* const inputData, const PXSize inputDataSize);
 
 		PX::ActionResult WaitForEvent();
-
 	};
 }

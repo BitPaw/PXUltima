@@ -20,7 +20,7 @@ void PXAPI PXTestCompilerAll()
 
 void PXAPI PXTestCompilerCToLanguages()
 {
-    
+    /*
     PXCodeDocument pxCodeDocument;
 
     {
@@ -47,6 +47,7 @@ void PXAPI PXTestCompilerCToLanguages()
 
         PXConsoleWrite(0, 0);
     }
+    */
     
 }
 

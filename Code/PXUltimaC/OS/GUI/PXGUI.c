@@ -1284,6 +1284,11 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
                 PXDictionaryFindEntry(&pxGUISystem->ResourceManager->GUIElementLookup, &handle, &pxGUIElement);
             }
 
+            if(!pxGUIElement) // if we did not find the object, stop
+            {
+                break;
+            }
+
             if(!(pxGUIElement->Info.Flags & PXEngineResourceInfoEnabled))
             {
                // ShowWindow(pxGUIElement->ID, SW_HIDE);
@@ -3612,6 +3617,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
     
 
             HMENU hSubMenu = CreatePopupMenu();
+        
 
             for(PXSize i = 0; i < pxGUIElementMenuItemList->MenuItemInfoListAmount; ++i)
             {
@@ -3634,9 +3640,10 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
                 UINT newID = i;
 
-                 //const PXBool itemAddResult =  AppendMenuA(pxGUIElement->Info.MenuHandle, menuItemInfo.fState, &newID, menuItemInfo.dwTypeData);
-                 const PXBool itemAddResult = AppendMenuA(pxGUIElement->Info.MenuHandle, MF_STRING | MF_POPUP, (UINT_PTR)hSubMenu, menuItemInfo.dwTypeData);
-                 
+                 const PXBool itemAddResult =  AppendMenuA(pxGUIElement->Info.MenuHandle, menuItemInfo.fState, &newID, menuItemInfo.dwTypeData);
+                // const PXBool itemAddResult = AppendMenuA(pxGUIElement->Info.MenuHandle, MF_STRING | MF_POPUP, (UINT_PTR)hSubMenu, menuItemInfo.dwTypeData);
+          
+
                  const PXActionResult sdfsdfghg = PXWindowsErrorCurrent(itemAddResult);
 
                  PXGUIElementMenuItemList* sub = pxGUIElementMenuItemInfo->ChildList;
@@ -5472,6 +5479,9 @@ PXActionResult PXAPI PXGUIElementDrawTextA(PXGUISystem* const pxGUISystem, PXGUI
 
 #elif OSWindows
 
+    const char* fontName = "UniSpace"; // Bradley Hand ITC
+
+
     RECT rectangle;
     rectangle.left = pxGUIElement->Position.Left;
     rectangle.top = pxGUIElement->Position.Top;;
@@ -5514,7 +5524,7 @@ PXActionResult PXAPI PXGUIElementDrawTextA(PXGUISystem* const pxGUISystem, PXGUI
         PXFont pxFont;// = pxGUIElement->FontForText;
         PXClear(PXFont, &pxFont);
 
-        PXGUIFontLoad(pxGUISystem, &pxFont, "Bradley Hand ITC");
+        PXGUIFontLoad(pxGUISystem, &pxFont, fontName);
 
         const HFONT fontHandleOld = (HFONT)SelectObject(pxGUIElement->DeviceContextHandle, pxFont.Info.FontHandle);
 
@@ -5529,7 +5539,7 @@ PXActionResult PXAPI PXGUIElementDrawTextA(PXGUISystem* const pxGUISystem, PXGUI
     PXFont pxFont;// = pxGUIElement->FontForText;
     PXClear(PXFont, &pxFont);
 
-    PXGUIFontLoad(pxGUISystem, &pxFont, "Bradley Hand ITC");
+    PXGUIFontLoad(pxGUISystem, &pxFont, fontName);
 
     HFONT hOldFontBBB = (HFONT)SelectObject(pxGUIElement->DeviceContextHandle, pxFont.Info.FontHandle);
 

@@ -97,10 +97,30 @@ void PXTextMatchTest()
 #include <OS/Async/PXThread.h>
 #include <OS/Debug/PXDebug.h>
 #include <OS/Memory/PXMemory.h>
+#include <Media/BinaryWindows/PXBinaryWindows.h>
 
 int main()
 {
     PXConsoleWrite(0, "[i] Starting testing...\n");
+
+    PXBinaryWindows pxBinaryWindows;
+
+    PXResourceTransphereInfo pxResourceTransphereInfo;
+    PXClear(PXResourceTransphereInfo, &pxResourceTransphereInfo);
+    pxResourceTransphereInfo.ResourceTarget = &pxBinaryWindows;
+
+    PXResourceLoadA(&pxResourceTransphereInfo, "USER.EXE");
+
+
+
+
+
+
+
+
+
+
+
 
     int* dsfdsf = PXMemoryMallocT(int, 420);
 
@@ -186,9 +206,9 @@ int main()
     
     PXResourceTransphereInfo pxResourceLoadInfo;
     pxResourceLoadInfo.Manager = 0;
-    pxResourceLoadInfo.Target = 0;
+   // pxResourceLoadInfo.Target = 0;
     pxResourceLoadInfo.FileReference = PXNull;
-    pxResourceLoadInfo.Type = 0;
+   // pxResourceLoadInfo.Type = 0;
 
 
     PXResourceLoadA(&pxResourceLoadInfo, "H:\\S.n64");
