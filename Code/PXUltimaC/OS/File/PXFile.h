@@ -71,19 +71,21 @@ void PXDirectoryIsDotFolder(const char* s)
 
 
 
-typedef struct PXFileOpenFromPathInfo_
-{
-    PXText Text;
+#define PXFileIOInfoAllowMapping            (1<<0)
+#define PXFileIOInfoCreateIfNotExist        (1<<1)
+#define PXFileIOInfoAllowOverrideOnCreate   (1<<2)
 
-    PXSize FileSize;
+// File IO info, how a file needs to be created or opened
+typedef struct PXFileIOInfo_
+{
+    char* FilePathAdress;   // Path to the file we want to use
+    PXSize FilePathSize;    // Size of "FilePathAdress"
 
     PXMemoryAccessMode AccessMode;
     PXMemoryCachingMode MemoryCachingMode;
-    PXBool AllowMapping;
-    PXBool CreateIfNotExist;
-    PXBool AllowOverrideOnCreate;
+    PXInt32U FlagList;
 }
-PXFileOpenFromPathInfo;
+PXFileIOInfo;
 
 
 typedef struct PXFileDataElementType_
@@ -129,6 +131,7 @@ PXPublic void PXAPI PXFileDataElementTypeInfo
 
 //---<Utility>---------------------------------------------------------
 PXPublic PXBool PXAPI PXFileDoesExist(const PXText* const filePath);
+PXPublic PXBool PXAPI PXFileDoesExistA(const char* const filePath);
 PXPublic PXActionResult PXAPI PXFileRemove(const PXText* const filePath);
 PXPublic PXActionResult PXAPI PXFileRename(const PXText* const oldName, const PXText* const newName);
 
@@ -188,7 +191,7 @@ PXPublic void PXAPI PXFileBufferExternal(PXFile* const pxFile, void* const data,
 //---------------------------------------------------------------------
 
 //---<Open>------------------------------------------------------------
-PXPublic PXActionResult PXAPI PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFromPathInfo* const pxFileOpenFromPathInfo);
+PXPublic PXActionResult PXAPI PXFileOpenFromPath(PXFile* const pxFile, const PXFileIOInfo* const pxFileIOInfo);
 PXPublic PXActionResult PXAPI PXFileOpenTemporal(PXFile* const pxFile, const PXSize expectedFileSize);
 //---------------------------------------------------------------------
 

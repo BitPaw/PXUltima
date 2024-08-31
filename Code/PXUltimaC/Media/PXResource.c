@@ -58,6 +58,7 @@
 #include "FastFile/PXFastFile.h"
 #include "ADLER/PXAdler32.h"
 #include "Java/PXJava.h"
+#include "ZIP/PXZIP.h"
 
 #include <assert.h>
 
@@ -1406,21 +1407,22 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                 }
                 else // load file
                 {
-                    PXFileOpenFromPathInfo pxFileOpenFromPathInfo;
-                    PXClear(PXFileOpenFromPathInfo, &pxFileOpenFromPathInfo);
+                    PXFileIOInfo pxFileOpenFromPathInfo;
+                    PXClear(PXFileIOInfo, &pxFileOpenFromPathInfo);
                     pxFileOpenFromPathInfo.AccessMode = PXMemoryAccessModeReadOnly;
                     pxFileOpenFromPathInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
-                    pxFileOpenFromPathInfo.AllowMapping = PXTrue;
+                    pxFileOpenFromPathInfo.FlagList = PXFileIOInfoAllowMapping;
 
                     // TODO: we can make it a loop?
 
-                    PXTextConstructFromAdressA(&pxFileOpenFromPathInfo.Text, pxShaderProgramCreateData->ShaderVertexFilePath, PXTextLengthUnkown, PXTextLengthUnkown);
+                    pxFileOpenFromPathInfo.FilePathAdress = pxShaderProgramCreateData->ShaderVertexFilePath;
 
                     const PXActionResult vertexLoadResult = PXFileOpenFromPath(&pxShaderProgramCreateData->ShaderVertexFile, &pxFileOpenFromPathInfo);
 
                     PXActionReturnOnError(vertexLoadResult);
 
-                    PXTextConstructFromAdressA(&pxFileOpenFromPathInfo.Text, pxShaderProgramCreateData->ShaderPixelFilePath, PXTextLengthUnkown, PXTextLengthUnkown);
+                    
+                    pxFileOpenFromPathInfo.FilePathAdress = pxShaderProgramCreateData->ShaderPixelFilePath;         
 
                     const PXActionResult fragmentLoadResult = PXFileOpenFromPath(&pxShaderProgramCreateData->ShaderPixelFile, &pxFileOpenFromPathInfo);
 
@@ -2325,6 +2327,12 @@ PXActionResult PXAPI PXFileTypeInfoProbe(PXResourceTransphereInfo* const pxFileT
             pxFileTypeInfo->ResourceSave = PXYAMLSaveToFile;
             break;
 
+        case PXFileFormatZIP:
+            pxFileTypeInfo->ResourceType = PXResourceTypeArchiv;
+            pxFileTypeInfo->ResourceLoad = PXZIPLoadFromFile;
+            pxFileTypeInfo->ResourceSave = PXZIPSaveToFile;
+            break;
+
 
         default:
             pxFileTypeInfo->ResourceType = PXResourceTypeCustom;
@@ -2401,13 +2409,12 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
 
     // Loading file
     {
-        PXFileOpenFromPathInfo pxFileOpenFromPathInfo;
-        pxFileOpenFromPathInfo.Text = *filePath;
+        PXFileIOInfo pxFileOpenFromPathInfo;
+        pxFileOpenFromPathInfo.FilePathAdress = filePath->TextA;
+        pxFileOpenFromPathInfo.FilePathSize = filePath->SizeUsed;
         pxFileOpenFromPathInfo.AccessMode = PXMemoryAccessModeReadOnly;
         pxFileOpenFromPathInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
-        pxFileOpenFromPathInfo.AllowMapping = PXTrue;
-        pxFileOpenFromPathInfo.CreateIfNotExist = PXFalse;
-        pxFileOpenFromPathInfo.AllowOverrideOnCreate = PXFalse;
+        pxFileOpenFromPathInfo.FlagList = PXFileIOInfoAllowMapping;
 
         const PXActionResult fileLoadingResult = PXFileOpenFromPath(&pxFile, &pxFileOpenFromPathInfo);
 
@@ -2563,15 +2570,14 @@ PXActionResult PXAPI PXResourceSave(PXResourceTransphereInfo* const pxResourceSa
 
     // Loading file
     {
-        PXFileOpenFromPathInfo pxFileOpenFromPathInfo;
-        pxFileOpenFromPathInfo.Text = *filePath;
-        pxFileOpenFromPathInfo.AccessMode = PXMemoryAccessModeWriteOnly;
-        pxFileOpenFromPathInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
-        pxFileOpenFromPathInfo.AllowMapping = PXTrue;
-        pxFileOpenFromPathInfo.CreateIfNotExist = PXTrue;
-        pxFileOpenFromPathInfo.AllowOverrideOnCreate = PXFalse;
+        PXFileIOInfo pxFileIOInfo;
+        pxFileIOInfo.FilePathAdress = filePath->TextA;
+        pxFileIOInfo.FilePathSize = filePath->SizeUsed;
+        pxFileIOInfo.AccessMode = PXMemoryAccessModeWriteOnly;
+        pxFileIOInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
+        pxFileIOInfo.FlagList = PXFileIOInfoAllowMapping | PXFileIOInfoCreateIfNotExist;
 
-        const PXActionResult fileLoadingResult = PXFileOpenFromPath(&pxFile, &pxFileOpenFromPathInfo);
+        const PXActionResult fileLoadingResult = PXFileOpenFromPath(&pxFile, &pxFileIOInfo);
 
         PXActionReturnOnError(fileLoadingResult);
     }

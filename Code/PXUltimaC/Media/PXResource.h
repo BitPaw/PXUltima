@@ -2402,7 +2402,8 @@ typedef enum PXFileFormat_
     PXFileFormatWEBP,
     PXFileFormatWMA,
     PXFileFormatXML,
-    PXFileFormatYAML
+    PXFileFormatYAML,
+    PXFileFormatZIP
 }
 PXFileFormat;
 

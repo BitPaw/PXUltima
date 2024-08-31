@@ -73,7 +73,7 @@ PXBool PXAPI PXDictionaryAdd(PXDictionary* const dictionary, const void* key, co
 
         PXDictionaryResize(dictionary, dictionary->EntryAmountCurrent + dictionary->EntryAmountGrowth);
 
-#if PXLogEnable
+#if PXLogEnable 
         PXLogPrint
         (
             PXLoggingEvent,
@@ -136,7 +136,7 @@ PXBool PXAPI PXDictionaryAdd(PXDictionary* const dictionary, const void* key, co
 
        
 
-#if PXLogEnable
+#if PXLogEnable && 0
             char keyText[64];
 
             switch(dictionary->KeyTypeSize)
@@ -258,18 +258,6 @@ void PXAPI PXDictionaryIndex(const PXDictionary* const dictionary, const PXSize 
 
     pxDictionaryEntry->Key = (void*)blockStart;
     pxDictionaryEntry->Value = (void*)(blockStart + dictionary->KeyTypeSize);
-}
-
-PXBool PXAPI PXDictionaryFind(PXDictionary* const dictionary, const void* const key, void** const resultKey)
-{
-    const PXBool found = 0;
-
-    if (!found)
-    {
-        return PXFalse;
-    }    
-
-    return PXTrue;
 }
 
 PXBool PXAPI PXDictionaryFindEntry(PXDictionary* const dictionary, const void* const key, void** const valueResult)

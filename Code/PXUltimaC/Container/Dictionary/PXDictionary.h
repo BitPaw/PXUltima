@@ -51,8 +51,6 @@ PXPublic PXBool PXAPI PXDictionaryRemoveFound(PXDictionary* const dictionary, co
 // Removed the object and returns it 
 PXPublic PXBool PXAPI PXDictionaryExtract(PXDictionary* const dictionary, const void* const key, void* const value);
 PXPublic void PXAPI PXDictionaryIndex(const PXDictionary* const dictionary, const PXSize index, PXDictionaryEntry* const pxDictionaryEntry);
-PXPublic PXBool PXAPI PXDictionaryFind(PXDictionary* const dictionary, const void* const key, void** const value);
-
 PXPublic PXBool PXAPI PXDictionaryFindEntry(PXDictionary* const dictionary, const void* const key, void** const valueResult);
 
 #endif

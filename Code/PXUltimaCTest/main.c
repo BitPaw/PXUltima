@@ -109,7 +109,7 @@ int main()
     PXClear(PXResourceTransphereInfo, &pxResourceTransphereInfo);
     pxResourceTransphereInfo.ResourceTarget = &pxBinaryWindows;
 
-    PXResourceLoadA(&pxResourceTransphereInfo, "USER.EXE");
+    PXResourceLoadA(&pxResourceTransphereInfo, "C:\\Data\\WorkSpace\\[GIT]\\PXUltima\\Code\\[Export]\\PXUltimaCTest\\64B-Windows-Debug\\D.zip");
 
 
 

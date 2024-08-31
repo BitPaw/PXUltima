@@ -449,6 +449,7 @@ PXFileFormat PXAPI PXFilePathExtensionDetectTry(const PXText* const filePath)
                 case PXInt24Make('W', 'M', 'A'): return PXFileFormatWMA;
                 case PXInt24Make('X', 'M', 'L'): return PXFileFormatXML;
                 case PXInt24Make('Y', 'M', 'L'): return PXFileFormatYAML;
+                case PXInt24Make('Z', 'I', 'P'): return PXFileFormatZIP;
             }
 
             break;
@@ -663,6 +664,15 @@ PXBool PXAPI PXFileDoesExist(const PXText* const filePath)
 
             if (doesFileExists && ifFile)
             {
+                PXLogPrint
+                (
+                    PXLoggingError,
+                    "File",
+                    "Exist?",
+                    "requested <%s> does not exists\n",
+                    filePath->TextA
+                );
+
                 return PXTrue;
             }
 #endif
@@ -694,6 +704,14 @@ PXBool PXAPI PXFileDoesExist(const PXText* const filePath)
     }
 
     return PXFalse;
+}
+
+PXBool PXAPI PXFileDoesExistA(const char* const filePath)
+{
+    PXText pxText;
+    PXTextConstructFromAdressA(&pxText, filePath, PXTextLengthUnkown, PXTextLengthUnkown);
+
+    return PXFileDoesExist(&pxText);
 }
 
 PXActionResult PXAPI PXFileRemove(const PXText* const filePath)
@@ -1167,15 +1185,18 @@ void PXAPI PXFileBufferExternal(PXFile* const pxFile, void* const data, const PX
     pxFile->LocationMode = PXFileLocationModeExternal;
 }
 
-PXActionResult PXAPI PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFromPathInfo* const pxFileOpenFromPathInfo)
+PXActionResult PXAPI PXFileOpenFromPath(PXFile* const pxFile, const PXFileIOInfo* const pxFileIOInfo)
 {
     PXFileConstruct(pxFile);
+
+    PXText pxText;
+    PXTextConstructFromAdressA(&pxText, pxFileIOInfo->FilePathAdress, pxFileIOInfo->FilePathSize, pxFileIOInfo->FilePathSize);
 
 
     // Does file even exist? Check only if "read only" or "no override"
     if(PXMemoryAccessModeReadOnly == pxFile->AccessMode)
     {
-        const PXBool doesFileExists = PXFileDoesExist(&pxFileOpenFromPathInfo->Text);
+        const PXBool doesFileExists = PXFileDoesExist(&pxText);
 
         if (!doesFileExists)
         {
@@ -1185,7 +1206,7 @@ PXActionResult PXAPI PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFr
                 "File",
                 "Open",
                 "Does not exist <%s>\n",
-                pxFileOpenFromPathInfo->Text.TextA
+                pxFileIOInfo->FilePathAdress
             );
 
             return PXActionFailedFileNotFound;
@@ -1239,7 +1260,7 @@ PXActionResult PXAPI PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFr
     DWORD flagsAndAttributes = FILE_ATTRIBUTE_NORMAL;
     HANDLE templateFile = PXNull;
 
-    switch (pxFileOpenFromPathInfo->AccessMode)
+    switch (pxFileIOInfo->AccessMode)
     {
         case PXMemoryAccessModeReadOnly:
         {
@@ -1267,7 +1288,7 @@ PXActionResult PXAPI PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFr
 
     // Make directory if needed
     // FilePathExtensionGetW
-    if (pxFileOpenFromPathInfo->AccessMode == PXMemoryAccessModeWriteOnly || pxFileOpenFromPathInfo->AccessMode == PXMemoryAccessModeReadAndWrite)
+    if (pxFileIOInfo->AccessMode == PXMemoryAccessModeWriteOnly || pxFileIOInfo->AccessMode == PXMemoryAccessModeReadAndWrite)
     {
         //const PXActionResult directoryCreateResult = DirectoryCreateA(filePath);
 
@@ -1279,14 +1300,14 @@ PXActionResult PXAPI PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFr
         HANDLE fileHandle = PXNull;
         SECURITY_ATTRIBUTES* securityAttributes = PXNull;
 
-        switch (pxFileOpenFromPathInfo->Text.Format)
+        switch (pxText.Format)
         {
             case TextFormatASCII:
             case TextFormatUTF8:
             {
                 if (PXMemoryAccessModeReadOnly == pxFile->AccessMode)
                 {
-                    const DWORD dwAttrib = GetFileAttributesA(pxFileOpenFromPathInfo->Text.TextA); // Windows XP (+UWP), Kernel32.dll, fileapi.h
+                    const DWORD dwAttrib = GetFileAttributesA(pxText.TextA); // Windows XP (+UWP), Kernel32.dll, fileapi.h
                     const PXBool doesFileExists = dwAttrib != INVALID_FILE_ATTRIBUTES;
                     const PXBool ifFile = !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY);
 
@@ -1303,7 +1324,7 @@ PXActionResult PXAPI PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFr
 
                 fileHandle = CreateFileA // Windows XP, Kernel32.dll, fileapi.h
                 (
-                    pxFileOpenFromPathInfo->Text.TextA,
+                    pxText.TextA,
                     desiredAccess,
                     shareMode,
                     securityAttributes,
@@ -1317,7 +1338,7 @@ PXActionResult PXAPI PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFr
             {
                 if (PXMemoryAccessModeReadOnly == pxFile->AccessMode)
                 {
-                    const DWORD dwAttrib = GetFileAttributesW(pxFileOpenFromPathInfo->Text.TextW); // Windows XP (+UWP), Kernel32.dll, fileapi.h
+                    const DWORD dwAttrib = GetFileAttributesW(pxText.TextW); // Windows XP (+UWP), Kernel32.dll, fileapi.h
                     const PXBool doesFileExists = dwAttrib != INVALID_FILE_ATTRIBUTES;
                     const PXBool ifFile = !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY);
 
@@ -1334,7 +1355,7 @@ PXActionResult PXAPI PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFr
 
                 fileHandle = CreateFileW // Windows XP, Kernel32.dll, fileapi.h
                 (
-                    pxFileOpenFromPathInfo->Text.TextW,
+                    pxText.TextW,
                     desiredAccess,
                     shareMode,
                     securityAttributes,
@@ -1355,8 +1376,8 @@ PXActionResult PXAPI PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFr
         PXActionOnErrorFetchAndReturn(!successful);
 
         pxFile->ID = fileHandle;
-        pxFile->AccessMode = pxFileOpenFromPathInfo->AccessMode;
-        pxFile->CachingMode = pxFileOpenFromPathInfo->MemoryCachingMode;
+        pxFile->AccessMode = pxFileIOInfo->AccessMode;
+        pxFile->CachingMode = pxFileIOInfo->MemoryCachingMode;
         pxFile->LocationMode = PXFileLocationModeDirectUncached;
 
         //int x = _open_osfhandle(pxFile->ID, _O_APPEND);
@@ -1374,7 +1395,7 @@ PXActionResult PXAPI PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFr
     }
 
 
-    PXFilePathSet(pxFile, &pxFileOpenFromPathInfo->Text);
+    PXFilePathSet(pxFile, &pxText);
 
 #if PXLogEnable && 0
     PXLoggingEventData pxLoggingEventData;
@@ -1391,14 +1412,12 @@ PXActionResult PXAPI PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFr
 
     // File is now opened.
     // Can we map the whole file into memory?
-    
+    const PXBool shallMap = (PXFileIOInfoAllowMapping & pxFileIOInfo->FlagList) && PXFileMappingAllow;
 
-    if (!(pxFileOpenFromPathInfo->AllowMapping && PXFileMappingAllow))
+    if (!shallMap)
     {
         return PXActionSuccessful; // No mapping attempt, we are done
     }
-
-
 
     // Attempt mappiung
 
@@ -1501,7 +1520,7 @@ PXActionResult PXAPI PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFr
         dwMaximumSizeLow = pxFile->DataSize & 0x00000000FFFFFFFF;
 #endif
 
-        switch (pxFileOpenFromPathInfo->AccessMode)
+        switch (pxFileIOInfo->AccessMode)
         {
             case PXMemoryAccessModeNoReadWrite:
                 flProtect |= PAGE_NOACCESS;
@@ -1548,7 +1567,7 @@ PXActionResult PXAPI PXFileOpenFromPath(PXFile* const pxFile, const PXFileOpenFr
                     void* baseAddressTarget = 0;
                     //DWORD  numaNodePreferred = -1; // (NUMA_NO_PREFERRED_NODE)
 
-                    switch (pxFileOpenFromPathInfo->AccessMode)
+                    switch (pxFileIOInfo->AccessMode)
                     {
                         case PXMemoryAccessModeReadOnly:
                             desiredAccess |= FILE_MAP_READ;
