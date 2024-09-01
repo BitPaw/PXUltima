@@ -225,7 +225,7 @@ PXActionResult PXAPI PXZLIBCompress(PXFile* const pxInputSteam, PXFile* const px
 
     // Write ADLER
     {
-        const PXInt32U adler = (PXInt32U)PXAdler32Create(1, pxInputSteam->Data, pxInputSteam->DataSize);
+        const PXInt32U adler = (PXInt32U)PXAdler32Create(1, pxInputSteam->Data, pxInputSteam->DataUsed);
 
         PXFileWriteI32UE(pxOutputSteam, adler, PXEndianBig);
     }

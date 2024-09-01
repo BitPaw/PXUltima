@@ -155,7 +155,7 @@ PXActionResult PXAPI PXCanonRaw3BlockRead(PXCanonRaw3Chunk* const pxCanonRaw3Chu
                     case PXCanonRaw3MOOVCMT1ID:
                     {
                         PXFile tiffData;
-                        PXFileBufferExternal(&tiffData, PXFileCursorPosition(pxFile), pxCanonRaw3ChunkChild.SizeData);
+                       // PXFileBufferExternal(&tiffData, PXFileCursorPosition(pxFile), pxCanonRaw3ChunkChild.SizeData);
 
                         PXImage pxxx;
 

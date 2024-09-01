@@ -241,7 +241,7 @@ PXActionResult PXAPI PXID3LoadFromFile(PXID3* const id3, PXFile* const PXFile)
                 case PXID3Versionv2x3:
                 case PXID3Versionv2x4:
                 {
-                    const PXSize posCurrent = PXFile->DataSize;
+                    const PXSize posCurrent = PXFile->DataUsed;
                     const PXSize posExpectedMax = PXFile->DataCursor + sizeOfDataSegment;
 
                    // PXFile->DataSize = (posCurrent < posExpectedMax) ? posCurrent : posExpectedMax;

@@ -478,7 +478,7 @@ PXActionResult PXAPI PXDirectX9ShaderProgramCreate(PXDirectX9* const pxDirectX9,
         const HRESULT resultID = pxD3DCompile // d3dcompiler_47.dll, d3dcompiler.h
         (
             shaderFile->Data,
-            shaderFile->DataSize,
+            shaderFile->DataUsed,
             &pxTextFileName.TextA, // Name?
             PXNull, // Makro count?
             PXNull, // include?

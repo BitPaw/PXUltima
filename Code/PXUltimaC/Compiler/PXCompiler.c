@@ -854,11 +854,12 @@ PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler)
 
     // Settings invalid?
 
+    PXFileOpenInfo pxFileOpenInfo;
+    PXClear(PXFileOpenInfo, &pxFileOpenInfo);
+    pxFileOpenInfo.FlagList = PXFileIOInfoFileTemp;
+    pxFileOpenInfo.FileSizeRequest = pxCompiler->ReadInfo.FileInput->DataUsed * 20u;
 
-
-
-
-    PXFileOpenTemporal(pxCompiler->ReadInfo.FileCache, pxCompiler->ReadInfo.FileInput->DataSize * 20);
+    const PXActionResult pxOpenResult = PXFileOpen(pxCompiler->ReadInfo.FileCache, &pxFileOpenInfo);
 
 
     PXSize currentLine = 1;
@@ -1065,7 +1066,7 @@ PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler)
     }
 
     // Mark end of output Stream
-    pxCompiler->ReadInfo.FileCache->DataSize = pxCompiler->ReadInfo.FileCache->DataCursor;
+    pxCompiler->ReadInfo.FileCache->DataUsed = pxCompiler->ReadInfo.FileCache->DataCursor;
     PXFileCursorToBeginning(pxCompiler->ReadInfo.FileCache);
 
     PXInt64U timeCounterB = PXTimeCounterStampGet() - timeCounter;
@@ -1082,7 +1083,7 @@ PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler)
         delta,
         pxCompiler->ReadInfo.FileCache->DataCursor,
         pxCompiler->ReadInfo.FileCache->DataAllocated,
-        (int)((pxCompiler->ReadInfo.FileCache->DataSize / (float)pxCompiler->ReadInfo.FileCache->DataAllocated) * 100)
+        (int)((pxCompiler->ReadInfo.FileCache->DataUsed / (float)pxCompiler->ReadInfo.FileCache->DataAllocated) * 100)
     );
 #endif
 

@@ -70,13 +70,18 @@ void PXDirectoryIsDotFolder(const char* s)
 #endif
 
 
+#define PXFileIOInfoFileMask                (0b0001111)  
+#define PXFileIOInfoFilePhysical            (1<<0) // Is file a physical file on a disk?
+#define PXFileIOInfoFileVirtual             (1<<1) // Is this file virtual, that is not stored permanently?
+#define PXFileIOInfoFileTemp                (1<<2) // Is this file a temp-file that destroyed on close?
+#define PXFileIOInfoFileMemory              (1<<3) // is this file in memory only?
 
-#define PXFileIOInfoAllowMapping            (1<<0)
-#define PXFileIOInfoCreateIfNotExist        (1<<1)
-#define PXFileIOInfoAllowOverrideOnCreate   (1<<2)
+#define PXFileIOInfoAllowMapping            (1<<4)
+#define PXFileIOInfoCreateIfNotExist        (1<<5)
+#define PXFileIOInfoAllowOverrideOnCreate   (1<<6)
 
 // File IO info, how a file needs to be created or opened
-typedef struct PXFileIOInfo_
+typedef struct PXFileOpenInfo_
 {
     char* FilePathAdress;   // Path to the file we want to use
     PXSize FilePathSize;    // Size of "FilePathAdress"
@@ -84,8 +89,13 @@ typedef struct PXFileIOInfo_
     PXMemoryAccessMode AccessMode;
     PXMemoryCachingMode MemoryCachingMode;
     PXInt32U FlagList;
+
+    // if we write a file, we can preallocate a size. If not this value is ignored
+    PXSize FileSizeRequest;
+    void* BufferData;
+    PXSize BufferSize;
 }
-PXFileIOInfo;
+PXFileOpenInfo;
 
 
 typedef struct PXFileDataElementType_
@@ -96,30 +106,8 @@ typedef struct PXFileDataElementType_
 PXFileDataElementType;
 
 
-#define PXFileOpenFromPathInfoMakeLoadOneshot(adress, path) \
-    (adress)->Text = path; \
-    (adress)->FileSize = 0; \
-    (adress)->AccessMode = PXMemoryAccessModeReadOnly; \
-    (adress)->MemoryCachingMode = PXMemoryCachingModeSequential; \
-    (adress)->AllowMapping = PXTrue; \
-    (adress)->CreateIfNotExist = PXFalse; \
-    (adress)->AllowOverrideOnCreate = PXFalse;
-
-
-
-/*
-typedef struct FilePath_
-{
-    wchar_t Path[PXPathSizeMax];
-    wchar_t Drive[DriveMaxSize];
-    wchar_t Directory[DirectoryMaxSize];
-    wchar_t FileName[FileNameMaxSize];
-    wchar_t Extension[ExtensionMaxSize];
-}
-FilePath;*/
 
 PXPublic PXFileFormat PXAPI PXFilePathExtensionDetectTry(const PXText* const filePath);
-
 
 PXPublic void PXAPI PXFileDataElementTypeInfo
 (
@@ -177,7 +165,6 @@ PXPublic PXSize PXAPI PXFilePathExtensionGet(const PXText* const filePath, PXTex
 PXPublic PXBool PXAPI PXFileCanDirectAccess(const PXFile* const pxFile);
 
 //---------------------------------------------------------------------
-PXPublic void PXAPI PXFileConstruct(PXFile* const pxFile);
 PXPublic void PXAPI PXFileDestruct(PXFile* const pxFile);
 //---------------------------------------------------------------------
 
@@ -185,17 +172,8 @@ PXPublic void PXAPI PXFileDestruct(PXFile* const pxFile);
 PXPrivate PXInt32U PXAPI PXFileMemoryCachingModeConvertToID(const PXMemoryCachingMode pxMemoryCachingMode);
 //---------------------------------------------------------------------
 
-//---<Set>-------------------------------------------------------------
-PXPublic void PXAPI PXFileBufferAllocate(PXFile* const pxFile, const PXSize dataSize);
-PXPublic void PXAPI PXFileBufferExternal(PXFile* const pxFile, void* const data, const PXSize dataSize);
-//---------------------------------------------------------------------
-
-//---<Open>------------------------------------------------------------
-PXPublic PXActionResult PXAPI PXFileOpenFromPath(PXFile* const pxFile, const PXFileIOInfo* const pxFileIOInfo);
-PXPublic PXActionResult PXAPI PXFileOpenTemporal(PXFile* const pxFile, const PXSize expectedFileSize);
-//---------------------------------------------------------------------
-
-//---<Close>-----------------------------------------------------------
+//---<I/O>-------------------------------------------------------------
+PXPublic PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, const PXFileOpenInfo* const pxFileIOInfo);
 PXPublic PXActionResult PXAPI PXFileClose(PXFile* const pxFile);
 //---------------------------------------------------------------------
 

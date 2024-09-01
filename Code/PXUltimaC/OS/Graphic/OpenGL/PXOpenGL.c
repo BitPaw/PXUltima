@@ -4521,7 +4521,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
             const char* shaderTypeName = PXGraphicShaderTypeToString(shader->Type);
             const PXInt32U shaderTypeID = PXOpenGLShaderTypeToID(shader->Type);
             const char* const shaderData = shader->ShaderFile->Data;
-            PXInt32S shaderLength = shader->ShaderFile->DataSize;
+            PXInt32S shaderLength = shader->ShaderFile->DataUsed;
 
             shader->Info.OpenGLID = pxOpenGL->ShaderCreate(shaderTypeID); // Create shader    
 

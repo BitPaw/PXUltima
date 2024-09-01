@@ -228,7 +228,7 @@ PXActionResult PXAPI PXTGALoadFromFile(PXResourceTransphereInfo* const pxResourc
 
     // Check end of pxFile if the pxFile is a Version 2.0 pxFile.
     {
-        footerEntryIndex = pxResourceLoadInfo->FileReference->DataSize - (26u - 1u);
+        footerEntryIndex = pxResourceLoadInfo->FileReference->DataUsed - (26u - 1u);
 
         const PXBool isPXTGAVersionTwo = PXFileReadAndCompare(pxResourceLoadInfo->FileReference, PXTGAFileIdentifier, sizeof(PXTGAFileIdentifier)); // Is this string at this address?;
 

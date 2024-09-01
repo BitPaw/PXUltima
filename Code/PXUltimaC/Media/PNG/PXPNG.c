@@ -659,8 +659,17 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceTransphereInfo* const pxResourc
         //---------------------------------------------------------------------
         // ZLIB
         //---------------------------------------------------------------------
+
+
         PXFile pxZLIBStream;
-        PXFileBufferExternal(&pxZLIBStream, data, dataSize);
+
+        PXFileOpenInfo pxFileOpenInfo;
+        PXClear(PXFileOpenInfo, &pxFileOpenInfo);
+        pxFileOpenInfo.FlagList = PXFileIOInfoFileMemory;
+        pxFileOpenInfo.BufferData = data;
+        pxFileOpenInfo.BufferSize = dataSize;
+
+        const PXActionResult pxOpenResult = PXFileOpen(&pxZLIBStream, &pxFileOpenInfo);
 
         const PXSize expectedPXZLIBCacheSize = PXZLIBCalculateExpectedSize(png->ImageHeader.Width, png->ImageHeader.Height, bitsPerPixel, png->ImageHeader.InterlaceMethod);
 
@@ -686,7 +695,7 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceTransphereInfo* const pxResourc
         pxADAM7.DataInput = (char*)pxZLIBResultStream.Data;
         //pxADAM7.DataOutput = pxImage->PixelData;
         //pxADAM7.OutputSize = pxImage->PixelDataSize;
-        pxADAM7.InputSize = pxZLIBResultStream.DataSize;
+        pxADAM7.InputSize = pxZLIBResultStream.DataUsed;
         pxADAM7.Width = png->ImageHeader.Width;
         pxADAM7.Height = png->ImageHeader.Height;
         pxADAM7.BitsPerPixel = bitsPerPixel;

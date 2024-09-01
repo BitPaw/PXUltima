@@ -606,7 +606,7 @@ PXSize PXAPI PXMTLFetchAmount(const void* const data, const PXSize dataSize)
         return 0;
     }
 
-    PXFileBufferExternal(&mtlStream, data, dataSize);
+   // PXFileBufferExternal(&mtlStream, data, dataSize);
 
     unsigned int materialListSize = 0;
 
@@ -629,8 +629,8 @@ PXBool PXAPI PXMTLFetchMaterial(const void* const data, const PXSize dataSize, c
     PXFile mtlPXFile;
     PXFile mtlHeaderStream;
 
-    PXFileBufferExternal(&mtlPXFile, (PXAdress)data + 1024, dataSize - sizeof(unsigned int)); // Skip first int, we already got it
-    PXFileBufferExternal(&mtlHeaderStream, (PXAdress)data + sizeof(unsigned int), dataSize- sizeof(unsigned int)); // Skip first int, we already got it
+   // PXFileBufferExternal(&mtlPXFile, (PXAdress)data + 1024, dataSize - sizeof(unsigned int)); // Skip first int, we already got it
+   // PXFileBufferExternal(&mtlHeaderStream, (PXAdress)data + sizeof(unsigned int), dataSize- sizeof(unsigned int)); // Skip first int, we already got it
 
     for (PXSize i = 0; i <= materialID; ++i)
     {
@@ -641,7 +641,7 @@ PXBool PXAPI PXMTLFetchMaterial(const void* const data, const PXSize dataSize, c
 
         if (isTarget)
         {
-            mtlPXFile.DataSize = materialDataSize;    // Set max size for now
+            mtlPXFile.DataUsed = materialDataSize;    // Set max size for now
 
             while (!PXFileIsAtEnd(&mtlPXFile))
             {

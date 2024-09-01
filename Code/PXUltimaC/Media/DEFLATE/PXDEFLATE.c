@@ -641,7 +641,7 @@ unsigned deflateFixed
 
     aaucvector.data = (PXAdress)pxFile->Data + pxFile->DataCursor;
     aaucvector.size = 0;
-    aaucvector.allocsize = pxFile->DataSize;
+    aaucvector.allocsize = pxFile->DataUsed;
 
     LodePNGBitWriter_init(writer, &aaucvector);
     writer->bp = pxFile->DataCursorBitOffset + 16u;
@@ -1215,7 +1215,7 @@ unsigned deflateDynamic
 
     aaucvector.data = (PXAdress)pxFile->Data + pxFile->DataCursor;
     aaucvector.size = 0;
-    aaucvector.allocsize = pxFile->DataSize;
+    aaucvector.allocsize = pxFile->DataUsed;
 
     LodePNGBitWriter_init(writer, &aaucvector);
     writer->bp = pxFile->DataCursorBitOffset;// +(2 * 8u);
@@ -1516,13 +1516,13 @@ PXActionResult PXAPI PXDEFLATESerialize(PXFile* const pxInputStream, PXFile* con
     {
         case PXDeflateEncodingLiteralRaw:
         {
-            const PXSize numdeflateblocks = (pxInputStream->DataSize + 65534u) / 65535u;
+            const PXSize numdeflateblocks = (pxInputStream->DataUsed + 65534u) / 65535u;
             PXSize datapos = 0;
 
             for(PXSize i = 0; i != numdeflateblocks; ++i)
             {
                 const PXBool BFINAL = (i == numdeflateblocks - 1);
-                const PXInt16U chunkLength = PXMathMinimumIU(65535, pxInputStream->DataSize - datapos);
+                const PXInt16U chunkLength = PXMathMinimumIU(65535, pxInputStream->DataUsed - datapos);
                 const PXInt16U chunkLengthNegated = 65535 - chunkLength;
 
                 const PXByte firstbyte = BFINAL;//(unsigned char)(BFINAL + ((BTYPE & 1u) << 1u) + ((BTYPE & 2u) << 1u));
@@ -1543,13 +1543,13 @@ PXActionResult PXAPI PXDEFLATESerialize(PXFile* const pxInputStream, PXFile* con
             {
                 case PXDeflateEncodingHuffmanStatic:
                 {
-                    blocksize = pxInputStream->DataSize;
+                    blocksize = pxInputStream->DataUsed;
                     break;
                 }
                 case PXDeflateEncodingHuffmanDynamic:
                 {
                     /*on PNGs, deflate blocks of 65-262k seem to give most dense encoding*/
-                    blocksize = pxInputStream->DataSize / 8u + 8u;
+                    blocksize = pxInputStream->DataUsed / 8u + 8u;
                     if(blocksize < 65536) blocksize = 65536;
                     if(blocksize > 262144) blocksize = 262144;
 
@@ -1557,7 +1557,7 @@ PXActionResult PXAPI PXDEFLATESerialize(PXFile* const pxInputStream, PXFile* con
                 }
             }
 
-            PXSize numdeflateblocks = (pxInputStream->DataSize + blocksize - 1) / blocksize;
+            PXSize numdeflateblocks = (pxInputStream->DataUsed + blocksize - 1) / blocksize;
             if(numdeflateblocks == 0) numdeflateblocks = 1;
 
             error = hash_init(&hash, lodePNGCompressSettings.windowsize);
@@ -1565,7 +1565,7 @@ PXActionResult PXAPI PXDEFLATESerialize(PXFile* const pxInputStream, PXFile* con
             for(PXSize i = 0; i != numdeflateblocks && (error == 0); ++i)
             {
                 const PXSize indexStart = i * blocksize;
-                const PXSize indexEnd = PXMathMinimumIU(indexStart + blocksize, pxInputStream->DataSize);
+                const PXSize indexEnd = PXMathMinimumIU(indexStart + blocksize, pxInputStream->DataUsed);
                 const PXBool finalBlock = (i == numdeflateblocks - 1);
 
                 // PXFileWriteBits(pxOutputStream, finalBlock, 1u);

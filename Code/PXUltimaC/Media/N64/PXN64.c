@@ -109,7 +109,13 @@ PXActionResult PXAPI PXN64LoadFromFile(PXResourceTransphereInfo* const pxResourc
         if(PXEndianMiddle == n64.Endian)
         {
             PXFileCursorToBeginning(pxResourceLoadInfo->FileReference);
-            PXFileBufferAllocate(&pxN64Data, pxResourceLoadInfo->FileReference->DataAllocated);
+
+            PXFileOpenInfo pxFileOpenInfo;
+            PXClear(PXFileOpenInfo, &pxFileOpenInfo);
+            pxFileOpenInfo.FlagList = PXFileIOInfoFileMemory;
+            pxFileOpenInfo.FilePathSize = pxResourceLoadInfo->FileReference->DataAllocated;
+
+            PXFileOpen(&pxN64Data, &pxFileOpenInfo);
             PXFileByteSwap(&pxN64Data, pxResourceLoadInfo->FileReference);
 
             pxFile = &pxN64Data;
@@ -154,7 +160,7 @@ PXActionResult PXAPI PXN64LoadFromFile(PXResourceTransphereInfo* const pxResourc
         void* aaw = n64.RAMEntryPointOffset; // Expect 80 00 04 00
 
         n64.RAMEntryPointAdress = (char*)pxFile->Data + 0x1000;
-        n64.RAMEntryPointLength = pxFile->DataSize - 0x1000;
+        n64.RAMEntryPointLength = pxFile->DataUsed - 0x1000;
 
         // The lower most nybble of the ClockRate is not read.
         n64.ClockRateOverride &= 0xFFFFFFF0;
@@ -262,7 +268,7 @@ PXActionResult PXAPI PXN64LoadFromFile(PXResourceTransphereInfo* const pxResourc
             {0x1FC007C0, 0x1FC007FF, PXNull, PXNull, ".pifram",    "PIF RAM"},
             {0x80000000, 0x800003FF, PXNull, PXNull, ".ivt",    "Interrupt Vector Table"},
 
-            {0xB0000000,  0x0, pxFile->DataCursor,      pxFile->DataSize,         ".rom", "ROM image", 111}, // Read only
+            {0xB0000000,  0x0, pxFile->DataCursor,      pxFile->DataUsed,         ".rom", "ROM image", 111}, // Read only
             
             {0x80000000 + n64.RAMEntryPointOffset, 0x0, n64.RAMEntryPointAdress, n64.RAMEntryPointLength, ".ram", "RAM content", 111}, // RWX
         };
@@ -276,7 +282,7 @@ PXActionResult PXAPI PXN64LoadFromFile(PXResourceTransphereInfo* const pxResourc
 #if PXLogEnable
         PXText sizeText;
         PXTextConstructBufferA(&sizeText, 64);
-        PXTextFormatSize(&sizeText, pxN64Data.DataSize);
+        PXTextFormatSize(&sizeText, pxN64Data.DataUsed);
 
         const char* countryCodeName = PXN64CountryCodeToString(n64.CountryCode);
 

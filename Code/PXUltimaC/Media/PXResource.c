@@ -1400,31 +1400,41 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
 
                 if(isDataPrensent)
                 {
-                    PXFileBufferExternal(&pxShaderProgramCreateData->ShaderVertexFile, pxShaderProgramCreateData->ShaderVertexText, pxShaderProgramCreateData->ShaderVertexTextSize);
-                    PXFileBufferExternal(&pxShaderProgramCreateData->ShaderPixelFile, pxShaderProgramCreateData->ShaderPixelText, pxShaderProgramCreateData->ShaderPixelTextSize);
+                    PXFileOpenInfo pxFileOpenInfo;
+                    PXClear(PXFileOpenInfo, &pxFileOpenInfo);
+                    pxFileOpenInfo.FlagList = PXFileIOInfoFileMemory;
+                    pxFileOpenInfo.BufferData = pxShaderProgramCreateData->ShaderVertexText;
+                    pxFileOpenInfo.BufferSize = pxShaderProgramCreateData->ShaderVertexTextSize;
+
+                    PXFileOpen(&pxShaderProgramCreateData->ShaderVertexFile, &pxFileOpenInfo);
+
+                    pxFileOpenInfo.BufferData = pxShaderProgramCreateData->ShaderPixelText;
+                    pxFileOpenInfo.BufferSize = pxShaderProgramCreateData->ShaderPixelTextSize;
+                   
+                    PXFileOpen(&pxShaderProgramCreateData->ShaderPixelFile, &pxFileOpenInfo);
 
                     pxShaderProgram->Info.Flags |= PXEngineResourceInfoStorageMemory;
                 }
                 else // load file
                 {
-                    PXFileIOInfo pxFileOpenFromPathInfo;
-                    PXClear(PXFileIOInfo, &pxFileOpenFromPathInfo);
+                    PXFileOpenInfo pxFileOpenFromPathInfo;
+                    PXClear(PXFileOpenInfo, &pxFileOpenFromPathInfo);
                     pxFileOpenFromPathInfo.AccessMode = PXMemoryAccessModeReadOnly;
                     pxFileOpenFromPathInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
-                    pxFileOpenFromPathInfo.FlagList = PXFileIOInfoAllowMapping;
+                    pxFileOpenFromPathInfo.FlagList = PXFileIOInfoAllowMapping | PXFileIOInfoFilePhysical;
 
                     // TODO: we can make it a loop?
 
                     pxFileOpenFromPathInfo.FilePathAdress = pxShaderProgramCreateData->ShaderVertexFilePath;
 
-                    const PXActionResult vertexLoadResult = PXFileOpenFromPath(&pxShaderProgramCreateData->ShaderVertexFile, &pxFileOpenFromPathInfo);
+                    const PXActionResult vertexLoadResult = PXFileOpen(&pxShaderProgramCreateData->ShaderVertexFile, &pxFileOpenFromPathInfo);
 
                     PXActionReturnOnError(vertexLoadResult);
 
                     
                     pxFileOpenFromPathInfo.FilePathAdress = pxShaderProgramCreateData->ShaderPixelFilePath;         
 
-                    const PXActionResult fragmentLoadResult = PXFileOpenFromPath(&pxShaderProgramCreateData->ShaderPixelFile, &pxFileOpenFromPathInfo);
+                    const PXActionResult fragmentLoadResult = PXFileOpen(&pxShaderProgramCreateData->ShaderPixelFile, &pxFileOpenFromPathInfo);
 
                     PXActionReturnOnError(fragmentLoadResult);
 
@@ -2409,14 +2419,15 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
 
     // Loading file
     {
-        PXFileIOInfo pxFileOpenFromPathInfo;
-        pxFileOpenFromPathInfo.FilePathAdress = filePath->TextA;
-        pxFileOpenFromPathInfo.FilePathSize = filePath->SizeUsed;
-        pxFileOpenFromPathInfo.AccessMode = PXMemoryAccessModeReadOnly;
-        pxFileOpenFromPathInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
-        pxFileOpenFromPathInfo.FlagList = PXFileIOInfoAllowMapping;
+        PXFileOpenInfo pxFileOpenInfo;
+        PXClear(PXFileOpenInfo, &pxFileOpenInfo);
+        pxFileOpenInfo.FilePathAdress = filePath->TextA;
+        pxFileOpenInfo.FilePathSize = filePath->SizeUsed;
+        pxFileOpenInfo.AccessMode = PXMemoryAccessModeReadOnly;
+        pxFileOpenInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
+        pxFileOpenInfo.FlagList = PXFileIOInfoAllowMapping | PXFileIOInfoFilePhysical;
 
-        const PXActionResult fileLoadingResult = PXFileOpenFromPath(&pxFile, &pxFileOpenFromPathInfo);
+        const PXActionResult fileLoadingResult = PXFileOpen(&pxFile, &pxFileOpenInfo);
 
         PXActionReturnOnError(fileLoadingResult);
     }
@@ -2570,14 +2581,14 @@ PXActionResult PXAPI PXResourceSave(PXResourceTransphereInfo* const pxResourceSa
 
     // Loading file
     {
-        PXFileIOInfo pxFileIOInfo;
+        PXFileOpenInfo pxFileIOInfo;
         pxFileIOInfo.FilePathAdress = filePath->TextA;
         pxFileIOInfo.FilePathSize = filePath->SizeUsed;
         pxFileIOInfo.AccessMode = PXMemoryAccessModeWriteOnly;
         pxFileIOInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
         pxFileIOInfo.FlagList = PXFileIOInfoAllowMapping | PXFileIOInfoCreateIfNotExist;
 
-        const PXActionResult fileLoadingResult = PXFileOpenFromPath(&pxFile, &pxFileIOInfo);
+        const PXActionResult fileLoadingResult = PXFileOpen(&pxFile, &pxFileIOInfo);
 
         PXActionReturnOnError(fileLoadingResult);
     }
