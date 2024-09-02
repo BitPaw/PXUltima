@@ -109,7 +109,7 @@ PXActionResult PXAPI PXWaveSaveToFile(PXResourceTransphereInfo* const pxResource
 
     /*
     PXFile audioFile;
-    PXFileMapToMemoryA(&audioFile, "C:/Users/Jona/Desktop/test.wav", dataSize + 44, PXMemoryAccessModeWriteOnly);
+    PXFileMapToMemoryA(&audioFile, "C:/Users/Jona/Desktop/test.wav", dataSize + 44, PXAccessModeWriteOnly);
 
     if (&audioFile == 0) return 0;
     */

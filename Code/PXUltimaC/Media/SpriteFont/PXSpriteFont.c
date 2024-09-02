@@ -769,7 +769,7 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXResourceTransphereInfo* const px
     }
 #endif
 
-    PXFileDestruct(&tokenStream);
+    PXFileClose(&tokenStream);
 
     return PXActionSuccessful;
 }

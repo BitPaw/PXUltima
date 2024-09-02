@@ -60,7 +60,7 @@ void PXAPI PXTestCompilerOBJ(char* filePath)
     {
         PXFileOpenFromPathInfo pxFileOpenFromPathInfo;
         pxFileOpenFromPathInfo.FileSize = 0;
-        pxFileOpenFromPathInfo.AccessMode = PXMemoryAccessModeReadOnly;
+        pxFileOpenFromPathInfo.AccessMode = PXAccessModeReadOnly;
         pxFileOpenFromPathInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
         pxFileOpenFromPathInfo.AllowMapping = PXTrue;
         pxFileOpenFromPathInfo.CreateIfNotExist = PXFalse;
@@ -71,7 +71,7 @@ void PXAPI PXTestCompilerOBJ(char* filePath)
         PXFileOpenFromPath(&inputStream, &pxFileOpenFromPathInfo);
     }
 
-    PXFileMapToMemory(&outputStream, inputStream.DataSize * 4, PXMemoryAccessModeReadAndWrite);
+    PXFileMapToMemory(&outputStream, inputStream.DataSize * 4, PXAccessModeReadAndWrite);
 
     PXWavefrontFileCompile(&inputStream, &outputStream);
 
@@ -97,7 +97,7 @@ void PXAPI PXTestCompilerYAML()
 
     PXFileOpenFromPathInfo pxFileOpenFromPathInfo;
     pxFileOpenFromPathInfo.FileSize;
-    pxFileOpenFromPathInfo.AccessMode = PXMemoryAccessModeReadOnly;
+    pxFileOpenFromPathInfo.AccessMode = PXAccessModeReadOnly;
     pxFileOpenFromPathInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
     pxFileOpenFromPathInfo.AllowMapping = PXTrue;
     pxFileOpenFromPathInfo.CreateIfNotExist = PXFalse;
@@ -145,7 +145,7 @@ void PXAPI PXTestCompilerYAML_2()
     //----<Load>--------------------------
     PXFileOpenFromPathInfo pxFileOpenFromPathInfo;
     pxFileOpenFromPathInfo.FileSize;
-    pxFileOpenFromPathInfo.AccessMode = PXMemoryAccessModeReadOnly;
+    pxFileOpenFromPathInfo.AccessMode = PXAccessModeReadOnly;
     pxFileOpenFromPathInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
     pxFileOpenFromPathInfo.AllowMapping = PXTrue;
     pxFileOpenFromPathInfo.CreateIfNotExist = PXFalse;
@@ -154,7 +154,7 @@ void PXAPI PXTestCompilerYAML_2()
     PXTextMakeFixedA(&pxFileOpenFromPathInfo.Text, "A:/config.yml");
 
     PXFileOpenFromPath(&inputStream, &pxFileOpenFromPathInfo);
-    PXFileMapToMemory(&compiledStream, inputStream.DataSize * 7, PXMemoryAccessModeReadAndWrite);
+    PXFileMapToMemory(&compiledStream, inputStream.DataSize * 7, PXAccessModeReadAndWrite);
 
     PXYAMLFileCompile(&inputStream, &compiledStream);
 
@@ -191,9 +191,9 @@ void PXAPI PXTestCompilerXML()
 #if 1
     PXFileBufferExternal(&inputStream, xmlData, 299 - 1);
 #else
-    PXFileMapToMemoryA(&inputStream, "A:/index.php", PXMemoryAccessModeReadOnly, FileCachingSequential);
+    PXFileMapToMemoryA(&inputStream, "A:/index.php", PXAccessModeReadOnly, FileCachingSequential);
 #endif
-    PXFileMapToMemory(&outputStream, inputStream.DataSize * 8, PXMemoryAccessModeReadAndWrite);
+    PXFileMapToMemory(&outputStream, inputStream.DataSize * 8, PXAccessModeReadAndWrite);
 
     PXXMLFileCompile(&inputStream, &outputStream);
 

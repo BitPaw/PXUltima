@@ -18,7 +18,7 @@ void PXAPI PXMediaTestTTF(char* filePath)
     PXTextMakeFixedA(&pxFileOpenFromPathInfo.Text, filePath);
 
     pxFileOpenFromPathInfo.FileSize = 0;
-    pxFileOpenFromPathInfo.AccessMode = PXMemoryAccessModeReadOnly;
+    pxFileOpenFromPathInfo.AccessMode = PXAccessModeReadOnly;
     pxFileOpenFromPathInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
     pxFileOpenFromPathInfo.AllowMapping = PXTrue;
     pxFileOpenFromPathInfo.CreateIfNotExist = PXFalse;

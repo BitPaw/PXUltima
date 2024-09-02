@@ -6,11 +6,6 @@
 #include <OS/Error/PXActionResult.h>
 #include <Container/Dictionary/PXDictionary.h>
 
-#if OSUnix
-typedef int PXMemoryAccessModeType;
-#elif OSWindows
-typedef unsigned long PXMemoryAccessModeType;// DWORD
-#endif
 
 //---<Settings>---
 #define MemorySizeUnkown -1
@@ -21,20 +16,41 @@ typedef unsigned long PXMemoryAccessModeType;// DWORD
 #define MemorySanitise 0
 //----------------
 
-typedef enum PXMemoryAccessMode_
+
+//----------------------------------------------------------
+// Access permissiom
+//----------------------------------------------------------
+#define PXAccessREAD      (1<<0)
+#define PXAccessWRITE     (1<<1)
+#define PXAccessEXECUTE   (1<<2)
+
+#define PXAccessNone            0
+#define PXAccessReadOnly        PXAccessREAD
+#define PXAccessWriteOnly       PXAccessWRITE
+#define PXAccessReadWrite       PXAccessReadOnly | PXAccessWriteOnly
+#define PXAccessReadExecute     PXAccessEXECUTE | PXAccessReadOnly 
+#define PXAccessWriteExecute    PXAccessEXECUTE | PXAccessWriteOnly 
+#define PXAccessFull            PXAccessEXECUTE | PXAccessReadWrite
+
+typedef enum PXAccessMode_
 {
-    PXMemoryAccessModeInvalid,
-    PXMemoryAccessModeNoReadWrite,
-    PXMemoryAccessModeReadOnly,
-    PXMemoryAccessModeWriteOnly,
-    PXMemoryAccessModeReadAndWrite
+    PXAccessModeNoAccess,
+    PXAccessModeReadOnly,
+    PXAccessModeWriteOnly,
+    PXAccessModeReadAndWrite,
+    PXAccessModeReadExecute,
+    PXAccessModeWriteExecute,
+    PXAccessModeExecuteOnly,
+    PXAccessModeFull
 }
-PXMemoryAccessMode;
+PXAccessMode;
+//----------------------------------------------------------
+
+
+
 
 typedef enum PXMemoryCachingMode_
 {
-    PXMemoryCachingModeInvalid,
-
     PXMemoryCachingModeDefault,
 
     PXMemoryCachingModeRandom,  // Access data in a random order.
@@ -189,18 +205,6 @@ PXPublic PXBool PXAPI PXMemoryFree(const void* const adress);
 PXPublic void* PXAPI PXMemoryRealloc(const void* const adress, const PXSize memorySize);
 
 
-#define PXMemoryProtectModeNoAccess 0b00000000
-#define PXMemoryProtectModeRead     0b00000001
-#define PXMemoryProtectModeWrite    0b00000010
-#define PXMemoryProtectModeExecute  0b00000100
-
-#define PXMemoryProtectModeReadOnly             PXMemoryProtectModeRead
-#define PXMemoryProtectModeWriteOnly            PXMemoryProtectModeWrite
-#define PXMemoryProtectModeReadWrite            PXMemoryProtectModeRead | PXMemoryProtectModeWrite
-#define PXMemoryProtectModeReadExecute          PXMemoryProtectModeExecute | PXMemoryProtectModeRead
-#define PXMemoryProtectModeWriteExecute         PXMemoryProtectModeExecute | PXMemoryProtectModeWrite
-#define PXMemoryProtectModeReadWriteExecute     PXMemoryProtectModeExecute | PXMemoryProtectModeReadWrite
-
 PXPublic int PXAPI PXMemoryProtectionIDTranslate(const PXInt8U protectionMode);
 
 PXPublic PXActionResult PXAPI PXMemoryProtect(void* dataAdress, const PXSize dataSize, const PXInt8U protectionMode);
@@ -251,13 +255,10 @@ PXPublic PXBool PXAPI PXMemoryHeapReallocate(PXMemoryHeapReallocateEventData* co
 // Allocate memory in virtual memory space.
 // The minimal size will be a pagefile (4KB) as the size will be rounded up to the next page boundary.
 // Only use for bigger datablocks as thic has very hi overhead.
-PXPublic void* PXAPI PXMemoryVirtualAllocate(PXSize size, const PXMemoryAccessMode PXMemoryAccessMode);
+PXPublic void* PXAPI PXMemoryVirtualAllocate(PXSize size, const PXAccessMode PXAccessMode);
 PXPublic void PXAPI PXMemoryVirtualPrefetch(const void* adress, const PXSize size);
 PXPublic void PXAPI PXMemoryVirtualRelease(const void* adress, const PXSize size);
 PXPublic void* PXAPI PXMemoryVirtualReallocate(const void* adress, const PXSize size);
-
-
-PXPublic PXMemoryAccessModeType PXAPI PXMemoryAccessModeFromID(const PXMemoryAccessMode PXMemoryAccessMode);
 
 
 

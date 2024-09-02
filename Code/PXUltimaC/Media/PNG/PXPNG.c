@@ -662,19 +662,30 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceTransphereInfo* const pxResourc
 
 
         PXFile pxZLIBStream;
-
-        PXFileOpenInfo pxFileOpenInfo;
-        PXClear(PXFileOpenInfo, &pxFileOpenInfo);
-        pxFileOpenInfo.FlagList = PXFileIOInfoFileMemory;
-        pxFileOpenInfo.BufferData = data;
-        pxFileOpenInfo.BufferSize = dataSize;
-
-        const PXActionResult pxOpenResult = PXFileOpen(&pxZLIBStream, &pxFileOpenInfo);
-
-        const PXSize expectedPXZLIBCacheSize = PXZLIBCalculateExpectedSize(png->ImageHeader.Width, png->ImageHeader.Height, bitsPerPixel, png->ImageHeader.InterlaceMethod);
-
         PXFile pxZLIBResultStream;
-        PXFileMapToMemory(&pxZLIBResultStream, expectedPXZLIBCacheSize, PXMemoryAccessModeReadAndWrite);
+
+        {
+            PXFileOpenInfo pxFileOpenInfo;
+            PXClear(PXFileOpenInfo, &pxFileOpenInfo);
+            pxFileOpenInfo.AccessMode = PXAccessModeReadAndWrite;
+            pxFileOpenInfo.FlagList = PXFileIOInfoFileMemory;
+            pxFileOpenInfo.BufferData = data;
+            pxFileOpenInfo.BufferSize = dataSize;
+
+            const PXActionResult pxOpenResult = PXFileOpen(&pxZLIBStream, &pxFileOpenInfo);
+        }
+
+        {
+            const PXSize expectedPXZLIBCacheSize = PXZLIBCalculateExpectedSize(png->ImageHeader.Width, png->ImageHeader.Height, bitsPerPixel, png->ImageHeader.InterlaceMethod);
+
+            PXFileOpenInfo pxFileOpenInfo;
+            PXClear(PXFileOpenInfo, &pxFileOpenInfo);
+            pxFileOpenInfo.AccessMode = PXAccessModeReadAndWrite;
+            pxFileOpenInfo.FlagList = PXFileIOInfoFileMemory;
+            pxFileOpenInfo.FileSizeRequest = expectedPXZLIBCacheSize;      
+
+            const PXActionResult pxOpenResult = PXFileOpen(&pxZLIBResultStream, &pxFileOpenInfo);
+        }       
 
         const PXActionResult actionResult = PXZLIBDecompress(&pxZLIBStream, &pxZLIBResultStream);
         const PXBool success = PXActionSuccessful == actionResult;
@@ -728,7 +739,7 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceTransphereInfo* const pxResourc
         //---------------------------------------------------------------------
 
 
-        PXFileDestruct(&pxZLIBResultStream);
+        PXFileClose(&pxZLIBResultStream);
     }
 
     //-------------------------------------------------------------------------
@@ -1262,7 +1273,7 @@ PXSize preProcessScanlines
         case PXPNGInterlaceNone:
         {
             const PXSize outsize = height + (height * ((width * bpp + 7u) / 8u)); /*image size plus an extra byte per scanline + possible padding bits*/
-            const PXActionResult allocationResult = PXFileMapToMemory(pxScanlineStream, outsize, PXMemoryAccessModeReadAndWrite);
+            const PXActionResult allocationResult = PXFileMapToMemory(pxScanlineStream, outsize, PXAccessModeReadAndWrite);
 
             PXActionReturnOnError(allocationResult);
 
@@ -1303,7 +1314,7 @@ PXSize preProcessScanlines
             PXADAM7_getpassvalues(passw, passh, filter_passstart, padded_passstart, passstart, width, height, bpp);
 
             const PXSize outsize = filter_passstart[7]; // image size plus an extra byte per scanline + possible padding bits
-            const PXActionResult allocationResult = PXFileMapToMemory(pxScanlineStream, outsize, PXMemoryAccessModeReadAndWrite);
+            const PXActionResult allocationResult = PXFileMapToMemory(pxScanlineStream, outsize, PXAccessModeReadAndWrite);
 
             PXActionReturnOnError(allocationResult);
 
@@ -1567,7 +1578,7 @@ PXActionResult PXAPI PXPNGSaveToFile(PXResourceTransphereInfo* const pxResourceT
         PXFileWriteB(pxResourceTransphereInfo->FileReference, "IDAT", 4u);
 
         PXFile pxScanlineStream;
-        PXFileConstruct(&pxScanlineStream);
+       // PXFileConstruct(&pxScanlineStream);
 
         // Preprocess scanlines
         {
@@ -1603,7 +1614,7 @@ PXActionResult PXAPI PXPNGSaveToFile(PXResourceTransphereInfo* const pxResourceT
             PXFileWriteAtI32UE(pxResourceTransphereInfo->FileReference, chunkLength, PXEndianBig, offsetSizeofChunk); // override length
         }
 
-        PXFileDestruct(&pxScanlineStream);
+        PXFileClose(&pxScanlineStream);
 
         {
             const PXInt32U crc = PXCRC32Generate(&((PXByte*)chunkStart)[4], chunkLength + 4);

@@ -103,6 +103,36 @@ int main()
 {
     PXConsoleWrite(0, "[i] Starting testing...\n");
 
+
+
+    PXFileOpenInfo pxFileOpenInfo;
+    PXClear(PXFileOpenInfo, &pxFileOpenInfo);
+    pxFileOpenInfo.FilePathAdress = "TEST.txt";
+    pxFileOpenInfo.FlagList = PXFileIOInfoFilePhysical | PXFileIOInfoAllowMapping;
+    pxFileOpenInfo.FileSizeRequest = 420;
+    pxFileOpenInfo.AccessMode = PXAccessModeWriteOnly;
+
+    PXFile pxFile;    
+    PXFileOpen(&pxFile, &pxFileOpenInfo);
+
+    for(size_t i = 0; i < pxFileOpenInfo.FileSizeRequest; ++i)
+    {
+        PXByte x = i % 0xFF;
+
+        PXFileWriteB(&pxFile, &x, 1);
+    }
+
+    PXFileClose(&pxFile);
+
+
+
+
+
+
+
+
+
+
     PXBinaryWindows pxBinaryWindows;
 
     PXResourceTransphereInfo pxResourceTransphereInfo;

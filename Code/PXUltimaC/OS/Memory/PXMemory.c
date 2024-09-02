@@ -434,35 +434,35 @@ int PXAPI PXMemoryProtectionIDTranslate(const PXInt8U protectionMode)
 
     switch(protectionMode)
     {   
-        case PXMemoryProtectModeNoAccess:
+        case PXAccessModeNoAccess:
             protectionID = PAGE_NOACCESS;
             break;
 
-        case PXMemoryProtectModeReadOnly:
+        case PXAccessModeReadOnly:
             protectionID = PAGE_READONLY;
             break;
 
-        case PXMemoryProtectModeWriteOnly:
+        case PXAccessModeWriteOnly:
             protectionID = PAGE_WRITECOPY;
             break;
 
-        case PXMemoryProtectModeExecute:
+        case PXAccessModeExecuteOnly:
             protectionID = PAGE_EXECUTE;
             break;
 
-        case PXMemoryProtectModeReadWrite:
+        case PXAccessModeReadAndWrite:
             protectionID = PAGE_READWRITE;
             break;
 
-        case PXMemoryProtectModeReadExecute:
+        case PXAccessModeReadExecute:
             protectionID = PAGE_EXECUTE_READ;
             break;
 
-        case PXMemoryProtectModeReadWriteExecute:
+        case PXAccessModeFull:
             protectionID = PAGE_EXECUTE_READWRITE;
             break;
 
-        case PXMemoryProtectModeWriteExecute:
+        case PXAccessModeWriteExecute:
             protectionID = PAGE_EXECUTE_WRITECOPY;
             break;
 
@@ -1129,10 +1129,10 @@ PXBool PXAPI PXMemoryHeapReallocate(PXMemoryHeapReallocateEventData* const pxMem
     return adressNew != 0;
 }
 
-void* PXAPI PXMemoryVirtualAllocate(PXSize size, const PXMemoryAccessMode PXMemoryAccessMode)
+void* PXAPI PXMemoryVirtualAllocate(PXSize size, const PXAccessMode PXAccessMode)
 {
     const void* addressPrefered = 0;
-    const PXMemoryAccessModeType protectionModeID = PXMemoryAccessModeFromID(PXMemoryAccessMode);
+   // const PXAccessMode protectionModeID = PXAccessModeFromID(PXAccessMode);
 
 #if OSUnix
     const int flags = MAP_PRIVATE;// | MAP_ANONYMOUS; | MAP_POPULATE; // missing on linux?
@@ -1188,7 +1188,7 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, const PXMemoryAccessMode PXMemo
     }
 #endif
 
-    const void* addressAllocated = VirtualAlloc((void*)addressPrefered, size, allocationType, protectionModeID); // Windows XP (+UWP), Kernel32.dll, memoryapi.h 
+    const void* addressAllocated = VirtualAlloc((void*)addressPrefered, size, allocationType, MEM_COMMIT); // Windows XP (+UWP), Kernel32.dll, memoryapi.h 
 
     PXActionResult x = PXErrorCurrent();
 
@@ -1197,17 +1197,17 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, const PXMemoryAccessMode PXMemo
 #if PXMemoryDebug
     const char* readMode;
 
-    switch(PXMemoryAccessMode)
+    switch(PXAccessMode)
     {
-        case PXMemoryAccessModeWriteOnly:
+        case PXAccessModeWriteOnly:
             readMode = "Write only";
             break;
 
-        case PXMemoryAccessModeReadOnly:
+        case PXAccessModeReadOnly:
             readMode = "Read only";
             break;
 
-        case PXMemoryAccessModeReadAndWrite:
+        case PXAccessModeReadAndWrite:
             readMode = "Read & Write";
             break;
 
@@ -1307,28 +1307,10 @@ void* PXAPI PXMemoryVirtualReallocate(const void* adress, const PXSize size)
 
     if (newAllocation)
     {
-        return PXMemoryVirtualAllocate(size, PXMemoryAccessModeReadAndWrite);
+        return PXMemoryVirtualAllocate(size, PXAccessModeReadAndWrite);
     }
 
     return 0;
-}
-
-PXMemoryAccessModeType PXAPI PXMemoryAccessModeFromID(const PXMemoryAccessMode PXMemoryAccessMode)
-{
-    switch(PXMemoryAccessMode)
-    {
-        case PXMemoryAccessModeReadOnly:
-            return ProtectionIDRead;
-
-        case PXMemoryAccessModeWriteOnly:
-            return ProtectionIDWrite;
-
-        case PXMemoryAccessModeReadAndWrite:
-            return ProtectionIDReadWrite;
-
-        default:
-            return PXMemoryAccessModeInvalid;
-    }
 }
 
 #define PXMemoryUseStackAllocation 0

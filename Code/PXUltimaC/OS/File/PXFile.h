@@ -86,7 +86,7 @@ typedef struct PXFileOpenInfo_
     char* FilePathAdress;   // Path to the file we want to use
     PXSize FilePathSize;    // Size of "FilePathAdress"
 
-    PXMemoryAccessMode AccessMode;
+    PXAccessMode AccessMode;
     PXMemoryCachingMode MemoryCachingMode;
     PXInt32U FlagList;
 
@@ -164,9 +164,6 @@ PXPublic PXSize PXAPI PXFilePathExtensionGet(const PXText* const filePath, PXTex
 
 PXPublic PXBool PXAPI PXFileCanDirectAccess(const PXFile* const pxFile);
 
-//---------------------------------------------------------------------
-PXPublic void PXAPI PXFileDestruct(PXFile* const pxFile);
-//---------------------------------------------------------------------
 
 //---<Convert>---------------------------------------------------------
 PXPrivate PXInt32U PXAPI PXFileMemoryCachingModeConvertToID(const PXMemoryCachingMode pxMemoryCachingMode);
@@ -178,7 +175,7 @@ PXPublic PXActionResult PXAPI PXFileClose(PXFile* const pxFile);
 //---------------------------------------------------------------------
 
 //---<Mapping>---------------------------------------------------------
-PXPublic PXActionResult PXAPI PXFileMapToMemory(PXFile* const pxFile, const PXSize size, const PXMemoryAccessMode protectionMode);
+PXPublic PXActionResult PXAPI PXFileMapToMemory(PXFile* const pxFile, const PXSize size, const PXAccessMode protectionMode);
 PXPublic PXActionResult PXAPI PXFileUnmapFromMemory(PXFile* const pxFile);
 //---------------------------------------------------------------------
 

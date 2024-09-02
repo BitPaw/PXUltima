@@ -610,7 +610,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
                             PXResourceLoad(&pxMaterialLoadInfo, &materialFilePathFull);
                         }                   
                       
-                        PXFileDestruct(&materialFile);   
+                        PXFileClose(&materialFile);   
 
                         break;
                     }
@@ -795,7 +795,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
     }
 
 
-    PXFileDestruct(&tokenSteam);
+    PXFileClose(&tokenSteam);
 
     PXDeleteList(float, vertexDataCacheSize, &vertexDataCache, PXNull); // Delete cached vertex data
 

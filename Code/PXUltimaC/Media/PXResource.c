@@ -1419,7 +1419,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                 {
                     PXFileOpenInfo pxFileOpenFromPathInfo;
                     PXClear(PXFileOpenInfo, &pxFileOpenFromPathInfo);
-                    pxFileOpenFromPathInfo.AccessMode = PXMemoryAccessModeReadOnly;
+                    pxFileOpenFromPathInfo.AccessMode = PXAccessModeReadOnly;
                     pxFileOpenFromPathInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
                     pxFileOpenFromPathInfo.FlagList = PXFileIOInfoAllowMapping | PXFileIOInfoFilePhysical;
 
@@ -2423,7 +2423,7 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
         PXClear(PXFileOpenInfo, &pxFileOpenInfo);
         pxFileOpenInfo.FilePathAdress = filePath->TextA;
         pxFileOpenInfo.FilePathSize = filePath->SizeUsed;
-        pxFileOpenInfo.AccessMode = PXMemoryAccessModeReadOnly;
+        pxFileOpenInfo.AccessMode = PXAccessModeReadOnly;
         pxFileOpenInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
         pxFileOpenInfo.FlagList = PXFileIOInfoAllowMapping | PXFileIOInfoFilePhysical;
 
@@ -2534,7 +2534,7 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
         );
 #endif
 
-        PXFileDestruct(&pxFile);
+        PXFileClose(&pxFile);
 
         PXActionReturnOnSuccess(fileParsingResult); // Exit if this has worked first-try 
 
@@ -2584,7 +2584,7 @@ PXActionResult PXAPI PXResourceSave(PXResourceTransphereInfo* const pxResourceSa
         PXFileOpenInfo pxFileIOInfo;
         pxFileIOInfo.FilePathAdress = filePath->TextA;
         pxFileIOInfo.FilePathSize = filePath->SizeUsed;
-        pxFileIOInfo.AccessMode = PXMemoryAccessModeWriteOnly;
+        pxFileIOInfo.AccessMode = PXAccessModeWriteOnly;
         pxFileIOInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
         pxFileIOInfo.FlagList = PXFileIOInfoAllowMapping | PXFileIOInfoCreateIfNotExist;
 

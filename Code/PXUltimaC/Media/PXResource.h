@@ -2475,7 +2475,7 @@ typedef struct PXFile_
     PXSize DataAllocated; // [Do not use directly] The size of the data pace in which you can move without triggering an invalid access.
     //--------------------
 
-    PXMemoryAccessMode AccessMode;
+    PXAccessMode AccessMode;
     PXMemoryCachingMode CachingMode;
     PXFileLocationMode LocationMode;
 
