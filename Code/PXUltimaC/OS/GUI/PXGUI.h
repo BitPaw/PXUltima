@@ -704,7 +704,7 @@ PXPublic PXActionResult PXAPI PXGUIElementDrawRectangleRounded(PXGUISystem* cons
 
 
 
-
+PXPublic void PXAPI PXGUISystemIconGet(PXGUISystem* const pxGUISystem);
 
 
 
