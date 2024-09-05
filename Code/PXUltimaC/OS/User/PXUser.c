@@ -138,3 +138,83 @@ PXBool PXAPI PXUserEnviromentFolderGet(PXText* const name, const PXUserEnviromen
 #endif
 #endif
 }
+
+
+
+
+
+
+
+
+
+
+void PXAPI PXUserCreate(const char *username, const char *password)
+{
+    #if OSUnix
+    struct passwd pwd;
+    struct spwd spwd;
+    char *encrypted_password;
+
+    // Encrypt the password
+    encrypted_password = crypt(password, "salt");
+
+    // Set up the passwd structure
+    pwd.pw_name = username;
+    pwd.pw_passwd = "x"; // Placeholder for shadow password
+    pwd.pw_uid = 1001; // Example UID
+    pwd.pw_gid = 1001; // Example GID
+    pwd.pw_gecos = "User";
+    pwd.pw_dir = "/home/username";
+    pwd.pw_shell = "/bin/bash";
+
+    // Set up the shadow password structure
+    spwd.sp_namp = username;
+    spwd.sp_pwdp = encrypted_password;
+    spwd.sp_lstchg = (long) time(NULL) / (60 * 60 * 24);
+    spwd.sp_min = 0;
+    spwd.sp_max = 99999;
+    spwd.sp_warn = 7;
+
+    // Add the user to the system
+    FILE *passwd_file = fopen("/etc/passwd", "a");
+    if (passwd_file) {
+        fprintf(passwd_file, "%s:x:%d:%d:%s:%s:%s\n", pwd.pw_name, pwd.pw_uid, pwd.pw_gid, pwd.pw_gecos, pwd.pw_dir, pwd.pw_shell);
+        fclose(passwd_file);
+    }
+
+    FILE *shadow_file = fopen("/etc/shadow", "a");
+    if (shadow_file) {
+        fprintf(shadow_file, "%s:%s:%ld:%d:%d:%d:%d:%d:%d\n", spwd.sp_namp, spwd.sp_pwdp, spwd.sp_lstchg, spwd.sp_min, spwd.sp_max, spwd.sp_warn, -1, -1, -1);
+        fclose(shadow_file);
+    }
+
+    // Create the user's home directory
+    mkdir(pwd.pw_dir, 0755);
+    chown(pwd.pw_dir, pwd.pw_uid, pwd.pw_gid);
+
+#elif OSWindows
+
+    // ...
+
+
+    
+#else
+    
+    #endif   
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
