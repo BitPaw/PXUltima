@@ -6041,6 +6041,34 @@ PXActionResult PXAPI PXGUIElementErrorFromXSystem(const int xSysstemErrorID)
 #endif
 
 
+
+
+
+typedef struct PXGUISystemContextMenuEntry_
+{
+    char* FileTypeExtension;
+    char* FileTypeName;
+    char* FileTypeDefaultIconPath;
+}
+PXGUISystemContextMenuEntry;
+
+PXActionResult PXAPI PXGUISystemContextMenuEntryAdd(PXGUISystemContextMenuEntry* const pxGUISystemContextMenuEntry)
+{    
+    // Go to HKEY_CLASSES_ROOT
+
+    // Create sub folder for your file extension (dont forget the dot)
+    // Name the default value to the name if rge type.
+    // add additional info via keys
+    
+    // Create a sub-folder in that new file-extension
+    // + file extension folder
+    // +---+ shell
+    //     +---+ *Name of what shows in menu*
+    //         +--- command (Add a CMD command as default value)
+}
+
+
+
 void PXAPI PXGUIIconFetch()
 {
     // https://learn.microsoft.com/en-us/windows/win32/api/shellapi/nf-shellapi-shgetstockiconinfo
