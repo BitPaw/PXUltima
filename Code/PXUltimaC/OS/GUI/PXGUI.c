@@ -6040,6 +6040,82 @@ PXActionResult PXAPI PXGUIElementErrorFromXSystem(const int xSysstemErrorID)
 }
 #endif
 
+
+void PXAPI PXGUIIconFetch()
+{
+    // https://learn.microsoft.com/en-us/windows/win32/api/shellapi/nf-shellapi-shgetstockiconinfo
+    
+        // Get icon from system
+        HRESULT result = PInvoke.SHGetStockIconInfo(
+            (SHSTOCKICONID)stockIcon,
+            SHGSI_FLAGS.SHGSI_ICONLOCATION,
+            &info);    
+
+
+
+    HICON ExtractIconA(
+  [in] HINSTANCE hInst,
+  [in] LPCSTR    pszExeFileName,
+       UINT      nIconIndex
+);
+    
+}
+
+void PXAPI PXGUIStartMenuEntryCreate(LPCSTR lpszPathObj, LPCSTR lpszPathLink, LPCSTR lpszDesc) 
+{
+    // If atleast Vista
+    // https://learn.microsoft.com/en-us/windows/win32/api/shobjidl/nf-shobjidl-istartmenupinnedlist-removefromlist
+    
+    HRESULT hres;
+    IShellLink* psl;
+    
+    // Initialize COM library
+    CoInitialize(NULL);
+    
+    // Create an IShellLink object
+    hres = CoCreateInstance(&CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER, &IID_IShellLink, (LPVOID*)&psl);
+    if (SUCCEEDED(hres)) {
+        IPersistFile* ppf;
+        
+        // Set the path to the shortcut target
+        psl->lpVtbl->SetPath(psl, lpszPathObj);
+        
+        // Set the description of the shortcut
+        psl->lpVtbl->SetDescription(psl, lpszDesc);
+        
+        // Query IShellLink for the IPersistFile interface
+        hres = psl->lpVtbl->QueryInterface(psl, &IID_IPersistFile, (LPVOID*)&ppf);
+        if (SUCCEEDED(hres)) {
+            WCHAR wsz[MAX_PATH];
+            
+            // Ensure the string is Unicode
+            MultiByteToWideChar(CP_ACP, 0, lpszPathLink, -1, wsz, MAX_PATH);
+            
+            // Save the link by calling IPersistFile::Save
+            hres = ppf->lpVtbl->Save(ppf, wsz, TRUE);
+            ppf->lpVtbl->Release(ppf);
+        }
+        psl->lpVtbl->Release(psl);
+    }
+    CoUninitialize();
+
+
+    // Emabple use
+      char szPath[MAX_PATH];
+    
+    // Get the path to the Programs folder
+    SHGetSpecialFolderPath(NULL, szPath, CSIDL_PROGRAMS, FALSE);
+    
+    // Append the name of the shortcut
+    strcat(szPath, "\\MyApp.lnk");
+    
+    // Create the shortcut
+    PXGUIStartMenuEntryCreate("C:\\Path\\To\\YourApp.exe", szPath, "My Application");
+    
+}
+
+
+
 PXInt32U PXAPI PXWindowCursorIconToID(const PXCursorIcon cursorIcon)
 {
     switch (cursorIcon)
