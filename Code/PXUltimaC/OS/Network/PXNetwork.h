@@ -182,11 +182,34 @@ typedef struct PXSocketDestroyInfo_
 }
 PXSocketDestroyInfo;
 
+
+#define  PXIPAdressModeNone (1<<0)
+#define  PXIPAdressModeIPv4 (1<<1)
+#define  PXIPAdressModeIPv6 (1<<2)
+#define  PXIPAdressModeText (1<<3)
+
+typedef struct PXIPAdress_
+{
+    // Union, to combine IP versions
+    union
+    {
+        // IP - Version 4
+        char IPv4[4];        // Use to directy update each byte 
+        PXInt32U IPv4ID;     // To use it directly as an int
+
+        // IP - Version 6
+        char IPv6[16];       // 128-Bit
+    };
+
+     char* Text; // if NULL, use 127.0.0.1
+}
+PXIPAdress;
+
 typedef struct PXSocketConnectInfo_
 {
     PXSocket* SocketReference;
 
-    char* IP; // if NULL, use 127.0.0.1
+    PXIPAdress IP;
     PXInt16U Port;
 
     IPAdressFamily AdressFamily;
@@ -327,6 +350,17 @@ PXPublic PXActionResult PXAPI PXNetworkSocketReceive(PXNetwork* const pxNetwork,
 PXPublic PXActionResult PXAPI PXNetworkSocketSend(PXNetwork* const pxNetwork, PXSocketSendInfo* const pxSocketSendInfo);
 PXPublic PXActionResult PXAPI PXNetworkSocketPoll(PXNetwork* const pxNetwork);
 
+
+
+// IP adresses are commonly globally assigned by country and city.
+// With this, we can broadly guess where a connection is comming from.
+// Because of reassignments and sharing of ranges, this info can
+// never be exact and should only be used as a hint and not fact.
+PXPublic PXActionResult PXAPI PXNetworkIPLocate(const PXIPAdress* const pxIPAdress);
+
+// After connecting or accepting a socket, use this function to
+// gather information about the connected peer.
+PXPublic PXActionResult PXAPI PXNetworkSocketPeerGet(PXNetwork* const pxNetwork);
 
 
 #if OSWindows
