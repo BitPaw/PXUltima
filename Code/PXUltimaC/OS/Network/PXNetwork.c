@@ -389,6 +389,21 @@ PXActionResult PXAPI PXNetworkSocketCreate(PXNetwork* const pxNetwork, PXSocketC
     return PXActionSuccessful;
 }
 
+PXActionResult PXAPI PXNetworkIPLocate(const PXIPAdress* const pxIPAdress)
+{
+    
+}
+
+PXActionResult PXAPI PXNetworkSocketPeerGet(PXNetwork* const pxNetwork, const PXSocketID )
+{
+#if OSUnix || OSWindows
+    getpeername();
+#else
+    return xxx;
+#endif
+}
+
+
 PXActionResult PXAPI PXNetworkSocketDestroy(PXNetwork* const pxNetwork, PXSocketDestroyInfo* const pxSocketDestroyInfo)
 {
     PXSocket* const pxSocket = pxSocketDestroyInfo->SocketReference;
@@ -499,7 +514,9 @@ PXActionResult PXAPI PXNetworkSocketConnect(PXNetwork* const pxNetwork, PXSocket
         }
         else // Use legacy
         {
-            struct hostent* host = pxNetwork->HostByNameGet(pxSocketConnectInfo->IP); // deprecated
+            // [Warning - Deprecated]: Can't understand and resolve IPv6 adresses. Will only utilize and understand IPv4
+            // Use getaddrinfo() because it is protocol-independent.
+            struct hostent* host = pxNetwork->HostByNameGet(pxSocketConnectInfo->IP); 
 
             if(!host)
             {
