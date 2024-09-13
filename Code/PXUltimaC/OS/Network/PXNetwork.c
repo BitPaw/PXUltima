@@ -622,16 +622,18 @@ PXActionResult PXAPI PXNetworkSocketAccept(PXNetwork* const pxNetwork, PXSocketA
 
     PXClear(PXSocket, pxSocketClient);
 
-    char buffer[64];
-    struct sockaddr* clientInfo = (struct sockaddr*)buffer;
 
-#if OSUnix
-    socklen_t
-#elif OSWindows
-    int
-#endif
-    clientInfoSize = 64;
-
+    union
+    {
+        struct sockaddr SocketAdressInfo;
+        struct sockaddr_in SocketAdressInfoIPv4;
+        struct sockaddr_in6 SocketAdressInfoIPv6; 
+    }
+    socketAdressInfo;
+    
+   
+    int socketAdressInfoSize = sizeof(struct sockaddr);
+    PXClear(struct sockaddr, &socketAdressInfo);
 
 #if PXLogEnable
     PXLogPrint
@@ -645,7 +647,7 @@ PXActionResult PXAPI PXNetworkSocketAccept(PXNetwork* const pxNetwork, PXSocketA
 #endif
 
 
-    pxSocketClient->ID = pxNetwork->SocketAccept(pxSocketServer->ID, clientInfo, &clientInfoSize);
+    pxSocketClient->ID = pxNetwork->SocketAccept(pxSocketServer->ID, socketAdressInfo, &socketAdressInfoSize);
 
     const PXBool sucessful = -1 != pxSocketClient->ID;
 
@@ -667,6 +669,49 @@ PXActionResult PXAPI PXNetworkSocketAccept(PXNetwork* const pxNetwork, PXSocketA
 #elif OSWindows
         return PXWindowsSocketAgentErrorFetch(pxNetwork);
 #endif
+    }
+
+
+     // We have a socket now, get info
+    {
+        switch(socketAdressInfo->sa_family) // Depending on the protocol, we interpret the struct differently
+        {
+            // IPv4
+            case AF_INET:
+            {
+                struct sockaddr_in* socketAdressInfoIPv4 = (struct sockaddr_in*)&socketAdressInfo;
+
+                // Copy data and set data to format
+                
+                break;
+            }
+            // IPv6
+            case AF_INET6:
+            {
+                 struct sockaddr_in6* socketAdressInfoIPv6 = (struct sockaddr_in6*)&socketAdressInfo;
+                
+                // Copy data and set data to format
+                
+                break;
+            }
+            default:
+                break;
+        }            
+
+        // Reverse DNS search for connected peer, does this work? On clients this should not quite work well.
+        char hostname[NI_MAXHOST];
+        char servInfo[NI_MAXSERV];
+        
+        dwRetval = getnameinfo
+        (
+              (struct sockaddr*) &socketAdressInfo.xxxxxx,
+              socketAdressInfoSize,
+              hostname,
+              NI_MAXHOST,
+              servInfo,
+              NI_MAXSERV,
+              NI_NUMERICSERV
+        );
     }
 
 #if PXLogEnable
