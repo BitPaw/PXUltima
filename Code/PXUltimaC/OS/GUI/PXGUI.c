@@ -4776,6 +4776,11 @@ PXActionResult PXAPI PXGUIElementRelease(PXGUIElement* const pxGUIElement)
     return PXActionSuccessful;
 }
 
+void PXAPI PXGUISystemIconGet(PXGUISystem* const pxGUISystem)
+{
+    // TODO:implement
+}
+
 void PXAPI PXGUIElementhSizeRefresAll(PXGUISystem* const pxGUISystem)
 {
     if(!(pxGUISystem))
@@ -6073,7 +6078,9 @@ void PXAPI PXGUIIconFetch()
 {
     // https://learn.microsoft.com/en-us/windows/win32/api/shellapi/nf-shellapi-shgetstockiconinfo
     
-        // Get icon from system
+    /*
+    
+     // Get icon from system
         HRESULT result = PInvoke.SHGetStockIconInfo(
             (SHSTOCKICONID)stockIcon,
             SHGSI_FLAGS.SHGSI_ICONLOCATION,
@@ -6085,7 +6092,10 @@ void PXAPI PXGUIIconFetch()
   [in] HINSTANCE hInst,
   [in] LPCSTR    pszExeFileName,
        UINT      nIconIndex
-);
+    */
+
+       
+
     
 }
 
@@ -6094,6 +6104,8 @@ void PXAPI PXGUIStartMenuEntryCreate(LPCSTR lpszPathObj, LPCSTR lpszPathLink, LP
     // If atleast Vista
     // https://learn.microsoft.com/en-us/windows/win32/api/shobjidl/nf-shobjidl-istartmenupinnedlist-removefromlist
     
+    /*
+
     HRESULT hres;
     IShellLink* psl;
     
@@ -6139,7 +6151,7 @@ void PXAPI PXGUIStartMenuEntryCreate(LPCSTR lpszPathObj, LPCSTR lpszPathLink, LP
     
     // Create the shortcut
     PXGUIStartMenuEntryCreate("C:\\Path\\To\\YourApp.exe", szPath, "My Application");
-    
+    */
 }
 
 

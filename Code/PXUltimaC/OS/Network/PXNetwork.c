@@ -40,6 +40,7 @@ typedef struct addrinfo AdressInfoType; //#define AdressInfoType (struct addrinf
 #include <Math/PXMath.h>
 #include <OS/Async/PXThread.h>
 
+#pragma comment(lib, "Ws2_32.lib")
 
 
 #define ProtocolInvalid (unsigned int)-1
@@ -391,18 +392,27 @@ PXActionResult PXAPI PXNetworkSocketCreate(PXNetwork* const pxNetwork, PXSocketC
 
 PXActionResult PXAPI PXNetworkIPLocate(const PXIPAdress* const pxIPAdress)
 {
-    
+    return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXNetworkSocketPeerGet(PXNetwork* const pxNetwork, const PXSocketID )
+PXActionResult PXAPI PXNetworkSocketPeerGet(PXNetwork* const pxNetwork, PXSocketConnectionInfo* const pxSocketConnectionInfo)
 {
 #if OSUnix || OSWindows
-    getpeername();
+    struct sockaddr socketAdress;
+    int socketAdressSize = sizeof(struct sockaddr);
+
+    const int resultID = 0;// getpeername(socketID, &socketAdress, &socketAdressSize);
+
+
+
+
+
+
+    return PXActionInvalid;
 #else
-    return xxx;
+    return PXActionInvalid;
 #endif
 }
-
 
 PXActionResult PXAPI PXNetworkSocketDestroy(PXNetwork* const pxNetwork, PXSocketDestroyInfo* const pxSocketDestroyInfo)
 {
@@ -480,7 +490,7 @@ PXActionResult PXAPI PXNetworkSocketConnect(PXNetwork* const pxNetwork, PXSocket
             PXTextConstructNamedBufferA(&portText, portTextBuffer, 32);
             PXTextFromInt(&portText, pxSocketConnectInfo->Port);
 
-            adressInput.ai_family = PXIPAdressFamilyToID(pxSocketConnectInfo->AdressFamily);
+            adressInput.ai_family   = PXIPAdressFamilyToID(pxSocketConnectInfo->AdressFamily);
             adressInput.ai_socktype = PXSocketTypeToID(pxSocketConnectInfo->Type);
             adressInput.ai_protocol = PXProtocolModeToID(pxSocketConnectInfo->ProtocolMode);
 #if OSWindows
@@ -488,7 +498,7 @@ PXActionResult PXAPI PXNetworkSocketConnect(PXNetwork* const pxNetwork, PXSocket
 #endif
 
             char localIP[] = "127.0.0.1";
-            char* adresspoint = pxSocketConnectInfo->IP ? pxSocketConnectInfo->IP : localIP;
+            char* adresspoint = pxSocketConnectInfo->IP.Text ? pxSocketConnectInfo->IP.Text : localIP;
 
             const int resultID = pxNetwork->AdressInfoGet
             (
@@ -508,7 +518,48 @@ PXActionResult PXAPI PXNetworkSocketConnect(PXNetwork* const pxNetwork, PXSocket
             }
 #endif
 
+            for(ADDRINFOA* adress = adressResult; adress ; adress = adressResult->ai_next)
+            {
+#if PXLogEnable
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    "Network",
+                    "Socket",
+                    "Name: %s",
+                    adress->ai_canonname
+                );
+#endif
+            }
+
+
             connectResult = pxNetwork->SocketConnect(pxSocket->ID, adressResult->ai_addr, adressResult->ai_addrlen);
+
+
+            int length = sizeof(ADDRINFOA);
+            ADDRINFOA aaaaa;
+
+            char budder[255];
+
+            PXClear(ADDRINFOA, &aaaaa);
+            PXClearList(char, budder, 255);
+            aaaaa.ai_addrlen = 255;
+            aaaaa.ai_addr = budder;
+
+            int x = getpeername(pxSocket->ID, &aaaaa, &length);
+
+
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "Network",
+                "Socket-Connect",
+                "Connected to %s",
+                adressResult->ai_canonname
+            );
+#endif
+
 #endif
 
         }
@@ -516,7 +567,7 @@ PXActionResult PXAPI PXNetworkSocketConnect(PXNetwork* const pxNetwork, PXSocket
         {
             // [Warning - Deprecated]: Can't understand and resolve IPv6 adresses. Will only utilize and understand IPv4
             // Use getaddrinfo() because it is protocol-independent.
-            struct hostent* host = pxNetwork->HostByNameGet(pxSocketConnectInfo->IP); 
+            struct hostent* host = pxNetwork->HostByNameGet(pxSocketConnectInfo->IP.Text); 
 
             if(!host)
             {
@@ -621,7 +672,7 @@ PXActionResult PXAPI PXNetworkSocketAccept(PXNetwork* const pxNetwork, PXSocketA
     PXSocket* const pxSocketClient = pxSocketAcceptInfo->SocketClientReference;
 
     PXClear(PXSocket, pxSocketClient);
-
+    
 
     union
     {
@@ -632,7 +683,7 @@ PXActionResult PXAPI PXNetworkSocketAccept(PXNetwork* const pxNetwork, PXSocketA
     socketAdressInfo;
     
    
-    int socketAdressInfoSize = sizeof(struct sockaddr);
+    int socketAdressInfoSize = sizeof(socketAdressInfo);
     PXClear(struct sockaddr, &socketAdressInfo);
 
 #if PXLogEnable
@@ -647,7 +698,7 @@ PXActionResult PXAPI PXNetworkSocketAccept(PXNetwork* const pxNetwork, PXSocketA
 #endif
 
 
-    pxSocketClient->ID = pxNetwork->SocketAccept(pxSocketServer->ID, socketAdressInfo, &socketAdressInfoSize);
+    pxSocketClient->ID = pxNetwork->SocketAccept(pxSocketServer->ID, &socketAdressInfo.SocketAdressInfo, &socketAdressInfoSize);
 
     const PXBool sucessful = -1 != pxSocketClient->ID;
 
@@ -671,26 +722,51 @@ PXActionResult PXAPI PXNetworkSocketAccept(PXNetwork* const pxNetwork, PXSocketA
 #endif
     }
 
+    char ipname[128];
+    DWORD ipNameLength = 128;
+
+    char hostname[300];
+    char servInfo[NI_MAXSERV];
+
 
      // We have a socket now, get info
     {
-        switch(socketAdressInfo->sa_family) // Depending on the protocol, we interpret the struct differently
+        switch(socketAdressInfo.SocketAdressInfo.sa_family) // Depending on the protocol, we interpret the struct differently
         {
             // IPv4
             case AF_INET:
             {
-                struct sockaddr_in* socketAdressInfoIPv4 = (struct sockaddr_in*)&socketAdressInfo;
+                struct sockaddr_in* socketAdressInfoIPv4 = &socketAdressInfo.SocketAdressInfoIPv4;
 
-                // Copy data and set data to format
+               // const char* ipv4 = inet_ntoa(socketAdressInfoIPv4->sin_addr);
+               // PXTextCopyA(ipv4, 128, ipname, 128);
+
+                const INT errorID = WSAAddressToStringA
+                (
+                    &socketAdressInfo.SocketAdressInfoIPv4,
+                    socketAdressInfoSize,
+                    PXNull,
+                    ipname,
+                    &ipNameLength
+                );             
                 
                 break;
             }
             // IPv6
             case AF_INET6:
             {
-                 struct sockaddr_in6* socketAdressInfoIPv6 = (struct sockaddr_in6*)&socketAdressInfo;
+                 struct sockaddr_in6* socketAdressInfoIPv6 = &socketAdressInfo.SocketAdressInfoIPv6;
                 
                 // Copy data and set data to format
+
+                 const INT errorID = WSAAddressToStringA
+                 (
+                     &socketAdressInfo.SocketAdressInfoIPv6,
+                     socketAdressInfoSize,
+                     PXNull,
+                     ipname,
+                     &ipNameLength
+                 );
                 
                 break;
             }
@@ -699,18 +775,17 @@ PXActionResult PXAPI PXNetworkSocketAccept(PXNetwork* const pxNetwork, PXSocketA
         }            
 
         // Reverse DNS search for connected peer, does this work? On clients this should not quite work well.
-        char hostname[NI_MAXHOST];
-        char servInfo[NI_MAXSERV];
+     
         
-        dwRetval = getnameinfo
+        const INT dwRetval = getnameinfo
         (
-              (struct sockaddr*) &socketAdressInfo.xxxxxx,
+              &socketAdressInfo.SocketAdressInfo,
               socketAdressInfoSize,
               hostname,
-              NI_MAXHOST,
+              300,
               servInfo,
               NI_MAXSERV,
-              NI_NUMERICSERV
+              0
         );
     }
 
@@ -720,9 +795,11 @@ PXActionResult PXAPI PXNetworkSocketAccept(PXNetwork* const pxNetwork, PXSocketA
         PXLoggingInfo,
         "Network",
         "Socket-Accept",
-        "Server <%i> accepted client <%i>",
+        "Server <%i> accepted client <%i> @ %s:%s",
         (int)pxSocketServer->ID,
-        (int)pxSocketClient->ID        
+        (int)pxSocketClient->ID,
+        hostname,
+        servInfo
     );
 #endif
 
@@ -904,7 +981,7 @@ PXActionResult PXAPI PXNetworkSocketReceive(PXNetwork* const pxNetwork, PXSocket
                     "Network",
                     "Socket-Recive",
                     "<%i> <-- <%i> %-3i%% (+ %s), %s",
-                    pxSocketReciver->ID,
+                    pxSocketReciver ? pxSocketReciver->ID : -1,
                     pxSocketSender->ID,
                     pxSocketReadInfo->DataInfo.Percentage,
                     pxTextTotalGain.TextA,

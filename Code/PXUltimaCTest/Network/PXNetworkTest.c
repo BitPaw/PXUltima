@@ -8,8 +8,8 @@ void PXTestNetworkAll()
 {
     PXConsoleWrite(0, "[i] Network testing start\n");
 
-    PXTestNetworkClient();
-    //PXTestNetworkServer();
+    //PXTestNetworkClient();
+    PXTestNetworkServer();
 
     PXConsoleWrite(0, "[i] Network testing done\n");
 }
@@ -106,6 +106,7 @@ void PXTestNetworkClient()
     // Create client
     {
         PXSocketCreateInfo pxSocketCreateInfo;
+        PXClear(PXSocketCreateInfo, &pxSocketCreateInfo);
         pxSocketCreateInfo.SocketReference = &pxClient;
         pxSocketCreateInfo.AdressFamily = IPAdressFamilyINET;
         pxSocketCreateInfo.Type = PXSocketTypeStream;
@@ -119,8 +120,8 @@ void PXTestNetworkClient()
     // Connect
     {
         PXSocketConnectInfo pxSocketConnectInfo;
+        PXClear(PXSocketConnectInfo, &pxSocketConnectInfo);
         pxSocketConnectInfo.SocketReference = &pxClient;
-        pxSocketConnectInfo.IP = PXNull; 
         pxSocketConnectInfo.Port = 25565;
         pxSocketConnectInfo.AdressFamily = IPAdressFamilyINET;
         pxSocketConnectInfo.Type = PXSocketTypeStream;
@@ -128,6 +129,38 @@ void PXTestNetworkClient()
 
         PXNetworkSocketConnect(&pxNetwork, &pxSocketConnectInfo);
     }    
+
+    while(1)
+    {
+        char buffer[64];
+
+        PXSocketReadInfo pxSocketReadInfo;
+        PXClear(PXSocketReadInfo, &pxSocketReadInfo);
+        pxSocketReadInfo.DataInfo.Buffer = buffer;
+        pxSocketReadInfo.DataInfo.BufferSize = 64;
+        pxSocketReadInfo.SocketSenderReference = &pxClient;
+
+        PXNetworkSocketReceive(&pxNetwork, &pxSocketReadInfo);
+
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "Network",
+            "Socket-Connect",
+            "\n"          
+        );
+
+        for(size_t i = 0; i < pxSocketReadInfo.DataInfo.BufferOffset; i++)
+        {
+            char data = ((char*)pxSocketReadInfo.DataInfo.Buffer)[i];
+
+            PXConsoleWrite(1, &data);
+        }
+
+        PXConsoleWrite(1, "\n");
+#endif
+    }
 
     while(1)
     {

@@ -105,6 +105,13 @@ int main()
 
 
 
+
+
+    PXTestNetworkAll();
+
+
+
+
     PXFileOpenInfo pxFileOpenInfo;
     PXClear(PXFileOpenInfo, &pxFileOpenInfo);
     pxFileOpenInfo.FilePathAdress = "TEST.txt";

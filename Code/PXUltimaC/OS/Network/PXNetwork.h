@@ -9,8 +9,6 @@
 #elif OSWindows
 #endif
 
-
-
 typedef enum IPAdressFamily_
 {
     IPAdressFamilyInvalid,
@@ -202,8 +200,23 @@ typedef struct PXIPAdress_
     };
 
      char* Text; // if NULL, use 127.0.0.1
+     PXSize TextSize;
+     PXSize TextUsed;
 }
 PXIPAdress;
+
+typedef struct PXSocketConnectionInfo_
+{
+    PXSocketID ID;
+    PXIPAdress IP;
+    PXInt16U Port;
+
+    IPAdressFamily AdressFamily;
+    PXSocketType Type;
+    PXProtocolMode ProtocolMode;
+}
+PXSocketConnectionInfo;
+
 
 typedef struct PXSocketConnectInfo_
 {
@@ -360,7 +373,7 @@ PXPublic PXActionResult PXAPI PXNetworkIPLocate(const PXIPAdress* const pxIPAdre
 
 // After connecting or accepting a socket, use this function to
 // gather information about the connected peer.
-PXPublic PXActionResult PXAPI PXNetworkSocketPeerGet(PXNetwork* const pxNetwork);
+PXPublic PXActionResult PXAPI PXNetworkSocketPeerGet(PXNetwork* const pxNetwork, PXSocketConnectionInfo* const pxSocketConnectionInfo);
 
 
 #if OSWindows

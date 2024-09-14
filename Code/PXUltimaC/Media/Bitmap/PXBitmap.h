@@ -144,7 +144,6 @@ PXPrivate inline PXInt8U PXBitmapInfoHeaderTypeToID(const PXBitmapInfoHeaderType
 //----------------------------------------------------------------------------
 
 //---<Public Functions--------------------------------------------------------
-PXPublic void PXAPI PXBitmapConstruct(PXBitmap* const bmp);
 PXPublic void PXAPI PXBitmapDestruct(PXBitmap* const bmp);
 
 // Calculate information about the layout how the raw image data is stored.
@@ -154,8 +153,9 @@ PXPrivate void PXBitmapImageDataLayoutCalculate(PXBitmapImageDataLayout* const b
 //----------------------------------------------------------------------------
 PXPublic PXSize PXAPI PXBitmapFilePredictSize(const PXSize width, const PXSize height, const PXSize bitsPerPixel);
 
-PXPublic PXActionResult PXAPI PXBitmapLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXBitmapSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXActionResult PXAPI PXBitmapPeekFromFile(PXResourceTransphereInfo* const pxResourceTransphereInfo);
+PXPublic PXActionResult PXAPI PXBitmapLoadFromFile(PXResourceTransphereInfo* const pxResourceTransphereInfo);
+PXPublic PXActionResult PXAPI PXBitmapSaveToFile(PXResourceTransphereInfo* const pxResourceTransphereInfo);
 //----------------------------------------------------------------------------
 
 #endif

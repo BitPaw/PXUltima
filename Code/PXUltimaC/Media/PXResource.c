@@ -2039,6 +2039,7 @@ PXActionResult PXAPI PXFileTypeInfoProbe(PXResourceTransphereInfo* const pxFileT
 
         case PXFileFormatBitMap:
             pxFileTypeInfo->ResourceType = PXResourceTypeImage;
+            pxFileTypeInfo->ResourcePeek = PXBitmapPeekFromFile;
             pxFileTypeInfo->ResourceLoad = PXBitmapLoadFromFile;
             pxFileTypeInfo->ResourceSave = PXBitmapSaveToFile;
             break;
