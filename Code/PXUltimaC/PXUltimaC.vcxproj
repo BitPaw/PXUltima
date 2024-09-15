@@ -328,6 +328,7 @@
     <ClCompile Include="OS\Hardware\PXProcessor.c" />
     <ClCompile Include="OS\Async\PXProcess.c" />
     <ClCompile Include="OS\Async\PXProgram.c" />
+    <ClCompile Include="OS\Network\PXDNS.c" />
     <ClCompile Include="OS\Network\PXNetwork.c" />
     <ClCompile Include="OS\Signal\PXSignal.c" />
     <ClCompile Include="OS\System\PXOSVersion.c" />
@@ -494,6 +495,7 @@
     <ClInclude Include="OS\Hardware\PXProcessor.h" />
     <ClInclude Include="OS\Async\PXProcess.h" />
     <ClInclude Include="OS\Async\PXProgram.h" />
+    <ClInclude Include="OS\Network\PXDNS.h" />
     <ClInclude Include="OS\Network\PXNetwork.h" />
     <ClInclude Include="OS\Signal\PXSignal.h" />
     <ClInclude Include="OS\System\PXOSVersion.h" />
