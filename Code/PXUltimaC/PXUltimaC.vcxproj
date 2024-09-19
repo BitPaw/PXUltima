@@ -207,6 +207,7 @@
     <ClCompile Include="Container\QuadTree\PXQuadTree.c" />
     <ClCompile Include="Container\Queue\PXQueue.c" />
     <ClCompile Include="Container\RingBuffer\PXRingBuffer.c" />
+    <ClCompile Include="Engine\PXPlayer.c" />
     <ClCompile Include="Media\FastFile\PXFastFile.c" />
     <ClCompile Include="Media\Java\PXJava.c" />
     <ClCompile Include="Media\MIPS\PXMIPS.c" />
@@ -374,6 +375,7 @@
     <ClInclude Include="Container\QuadTree\PXQuadTree.h" />
     <ClInclude Include="Container\Queue\PXQueue.h" />
     <ClInclude Include="Container\RingBuffer\PXRingBuffer.h" />
+    <ClInclude Include="Engine\PXPlayer.h" />
     <ClInclude Include="Media\FastFile\PXFastFile.h" />
     <ClInclude Include="Media\Java\PXJava.h" />
     <ClInclude Include="Media\MIPS\PXMIPS.h" />

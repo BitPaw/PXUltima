@@ -510,6 +510,9 @@
     <ClCompile Include="OS\Network\PXDNS.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\PXPlayer.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm\KalmanFilter\PXKalmanFilter.h">
@@ -1005,6 +1008,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="OS\Network\PXDNS.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\PXPlayer.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
