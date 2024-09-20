@@ -2428,13 +2428,22 @@ typedef struct PXResourceTransphereInfo_ PXResourceTransphereInfo;
 typedef PXActionResult (PXAPI* PXResourceFileSizePredict)(void* const resource, PXSize* const fileSize);
 typedef PXActionResult (PXAPI* PXResourceTransphereFunction)(PXResourceTransphereInfo* const pxResourceTransphereInfo);
 
+// Used for progress, to know how far we came in peek, load, register, ...
+#define PXResourceTransphereDidPeek             (1 << 0)
+#define PXResourceTransphereDidCompile          (1 << 1)
+#define PXResourceTransphereDidLoad             (1 << 2)
+#define PXResourceTransphereDidSave             (1 << 3)
+#define PXResourceTransphereDidRegister         (1 << 4)
+#define PXResourceTransphereDidUpload           (1 << 5)
+#define PXResourceTransphereDidDestroyInRAM     (1 << 6)
+#define PXResourceTransphereDidDestroyOnDevice  (1 << 7)
 
-#define PXResourceTransphereDidPeek     (1 << 0)
-#define PXResourceTransphereDidCompile  (1 << 1)
-#define PXResourceTransphereDidLoad     (1 << 2)
-#define PXResourceTransphereDidSave     (1 << 3)
-#define PXResourceTransphereDidRegister (1 << 4)
-#define PXResourceTransphereDidUpload   (1 << 5)
+// Used to tell what system can be used
+// Will also be used to tell what system was used
+#define PXResourceTransphereOwnerOS         (1 <<  8) // Handled by OS
+#define PXResourceTransphereOwnerPX         (1 <<  9) // Handled by PXUltima itself
+#define PXResourceTransphereOwnerMOD        (1 << 10) // Handled by a mod that was loaded
+#define PXResourceTransphereOwnerCustom     (1 << 11) // Handles by a custom injected function
 
 // This object shall be used to define an interaction with a 
 // resource to peek, load or save
