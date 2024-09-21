@@ -822,7 +822,7 @@ PXActionResult PXAPI PXDirectSoundDeviceVolumeSetEqual(PXAudioDirectSound* const
     }
 
     {
-        const HRESULT getResultID = soundBuffer->lpVtbl->SetVolume(soundBuffer, 0, 0, DSBPLAY_LOOPING);
+        const HRESULT getResultID = soundBuffer->lpVtbl->SetVolume(soundBuffer, volume); // DSBPLAY_LOOPING
         const PXActionResult getResult = PXWindowsHandleErrorFromID(getResultID);
 
         PXActionReturnOnError(getResult);

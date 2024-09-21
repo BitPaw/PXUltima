@@ -5571,10 +5571,7 @@ PXActionResult PXAPI PXGUIElementDrawTextW(PXGUISystem* const pxGUISystem, PXGUI
     RECT rectangle;
     UINT format;
 
-    DRAWTEXTPARAMS drawinfo;
-    PXClear(DRAWTEXTPARAMS, &drawinfo);
-
-    const int nextHeight = DrawTextW(pxGUIElement->DeviceContextHandle, text, textSize, &rectangle, format, &drawinfo); // Windows 2000, User32.dll, winuser.h
+    const int nextHeight = DrawTextW(pxGUIElement->DeviceContextHandle, text, textSize, &rectangle, format); // Windows 2000, User32.dll, winuser.h
     const PXBool success = 0 != nextHeight;
     const PXActionResult result = PXWindowsErrorCurrent(success);
 

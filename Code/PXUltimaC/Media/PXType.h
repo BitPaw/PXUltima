@@ -18,33 +18,33 @@
 //-----------------------------------------------------------------------------
 // Detect C Version
 //-----------------------------------------------------------------------------
-#define CVersion 201703L
+#define PXCVersion 201703L
 
-#if (CVersion >= 199711L)
+#if (PXCVersion >= 199711L)
 #define CVersionAtleast1998 1
 #else
 #define CVersionAtleast1998 0
 #endif
 
-#if (CVersion >= 201103L)
+#if (PXCVersion >= 201103L)
 #define CVersionNewerThen2011 1
 #else
 #define CVersionNewerThen2011 0
 #endif
 
-#if (CVersion >= 201402L)
+#if (PXCVersion >= 201402L)
 #define CVersionNewerThen2014 1
 #else
 #define CVersionNewerThen2014 0
 #endif
 
-#if (CVersion >= 201703L)
+#if (PXCVersion >= 201703L)
 #define CVersionNewerThen2017 1
 #else
 #define CVersionNewerThen2017 0
 #endif
 
-#if (CVersion >= 202002L)
+#if (PXCVersion >= 202002L)
 #define CVersionNewerThen2020 1
 #else
 #define CVersionNewerThen2020 0

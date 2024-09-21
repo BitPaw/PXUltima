@@ -1840,8 +1840,8 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
                     amount++;
                 }
 
-                PXEngineResourceCreate(pxEngine, &pxResourceCreateInfoSub[0], amount);
-                PXEngineResourceCreate(pxEngine, &pxResourceCreateInfoSub[1], amount);
+                PXEngineResourceCreate(pxEngine, &pxResourceCreateInfoSub[0]);
+                PXEngineResourceCreate(pxEngine, &pxResourceCreateInfoSub[1]);
             }
 
             PXMaterial* pxMaterial = 0;

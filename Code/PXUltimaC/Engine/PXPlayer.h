@@ -1,7 +1,7 @@
 #ifndef PXPlayerInclude
 #define PXPlayerInclude
 
-#include "Media/PXResource.h"
+//#include "Media/PXResource.h"
 
 //---------------------------------------------------------
 // Online status of player
@@ -55,14 +55,15 @@
 typedef struct PXPlayer_
 {
     // "PXPlayer.." flags are stored in the "Info->Flags" field
-    PXResourceInfo Info;
+   // PXResourceInfo Info;
 
     // Profile picture
 
-    PXColorRGBI8 Color;
+  //  PXColorRGBI8 Color;
     
     // PXTimeStamp TimeSeenOnlineFirst;
     // PXTimeStamp TimeSeenOnlineLast;
+    int x;
 }
 PXPlayer;
 
