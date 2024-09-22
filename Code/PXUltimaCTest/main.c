@@ -106,13 +106,242 @@ void PXTextMatchTest()
 #include <conio.h>
 #include <pdh.h>
 #include <pdhmsg.h>
+#include <OS/Memory/PXMemory.h>
 
 #pragma comment(lib, "pdh.lib")
 
 
+#include <wbemidl.h>
+#include <oleauto.h>
+#pragma comment(lib, "wbemuuid.lib")
+
 int main()
 {
     PXConsoleWrite(0, "[i] Starting testing...\n");
+
+
+
+
+
+
+
+    /*
+
+    HRESULT hres;
+
+    // Initialize COM
+    hres = CoInitializeEx(0, COINIT_MULTITHREADED);
+    if(FAILED(hres)) {
+        printf("Failed to initialize COM library. Error code = 0x%x\n", hres);
+        return 1; // Program has failed.
+    }
+
+    // Set general COM security levels
+    hres = CoInitializeSecurity(
+        NULL,
+        -1,                          // COM authentication
+        NULL,                        // Authentication services
+        NULL,                        // Reserved
+        RPC_C_AUTHN_LEVEL_DEFAULT,   // Default authentication
+        RPC_C_IMP_LEVEL_IMPERSONATE, // Default Impersonation
+        NULL,                        // Authentication info
+        EOAC_NONE,                   // Additional capabilities
+        NULL                         // Reserved
+    );
+
+    if(FAILED(hres)) {
+        printf("Failed to initialize security. Error code = 0x%x\n", hres);
+        CoUninitialize();
+        return 1; // Program has failed.
+    }
+
+    // Obtain the initial locator to WMI
+    IWbemLocator* pLoc = NULL;
+
+    hres = CoCreateInstance(
+        CLSID_WbemAdministrativeLocator, //CLSID_WbemLocator,
+        0,
+        CLSCTX_INPROC_SERVER,
+        IID_IWbemLocator,
+        (LPVOID*)&pLoc
+    );
+
+    if(FAILED(hres)) {
+        printf("Failed to create IWbemLocator object. Error code = 0x%x\n", hres);
+        CoUninitialize();
+        return 1; // Program has failed.
+    }
+
+    // Connect to WMI through the IWbemLocator::ConnectServer method
+    IWbemServices* pSvc = NULL;
+
+    hres = pLoc->ConnectServer(
+        L"ROOT\\CIMV2", // WMI namespace
+        NULL,                    // User name
+        NULL,                    // User password
+        0,                       // Locale
+        WBEM_FLAG_CONNECT_USE_MAX_WAIT,                    // Security flags
+        0,                       // Authority
+        0,                       // Context object
+        &pSvc                    // IWbemServices proxy
+    );
+
+    if(FAILED(hres)) {
+        printf("Could not connect. Error code = 0x%x\n", hres);
+        pLoc->Release();
+        CoUninitialize();
+        return 1; // Program has failed.
+    }
+
+    printf("Connected to ROOT\\CIMV2 WMI namespace\n");
+
+    // Set security levels on the proxy
+    hres = CoSetProxyBlanket(
+        pSvc,                        // Indicates the proxy to set
+        RPC_C_AUTHN_WINNT,           // RPC_C_AUTHN_xxx
+        RPC_C_AUTHZ_NONE,            // RPC_C_AUTHZ_xxx
+        NULL,                        // Server principal name
+        RPC_C_AUTHN_LEVEL_CALL,      // RPC_C_AUTHN_LEVEL_xxx
+        RPC_C_IMP_LEVEL_IMPERSONATE, // RPC_C_IMP_LEVEL_xxx
+        NULL,                        // Client identity
+        EOAC_NONE                    // Proxy capabilities
+    );
+
+    if(FAILED(hres)) {
+        printf("Could not set proxy blanket. Error code = 0x%x\n", hres);
+        pSvc->Release();
+        pLoc->Release();
+        CoUninitialize();
+        return 1; // Program has failed.
+    }
+
+    IEnumWbemClassObject* enumWbemClassObject = PXNull;
+
+    HRESULT SS = pSvc->CreateClassEnum
+    (
+        PXNull,
+        WBEM_FLAG_RETURN_IMMEDIATELY | WBEM_FLAG_FORWARD_ONLY,
+        PXNull,
+        &enumWbemClassObject
+    );
+
+
+    {
+
+        IWbemClassObject* pclsObj = NULL;
+        ULONG uReturn = 0;
+
+        HRESULT eeg = 0;
+
+        do
+        {
+            eeg = enumWbemClassObject->Next(WBEM_INFINITE, 1, &pclsObj, &uReturn);
+
+            VARIANT vtProp;
+            PXClear(VARIANT, &vtProp);
+
+            BSTR name = 0;
+
+            // Get the value of the CurrentReading property
+            HRESULT hr = pclsObj->Next(PXNull, &name, &vtProp, PXNull, PXNull);
+
+            PXActionResult xxasew = PXWindowsErrorCurrent(0);
+
+                printf("");
+
+        } while(eeg);
+
+       
+
+
+    }
+
+
+
+
+    // Use the IWbemServices pointer to make requests of WMI
+    IEnumWbemClassObject* pEnumerator = NULL;
+    hres = pSvc->ExecQuery(
+        TEXT("WQL"),
+        TEXT("SELECT * FROM Win32_Processor"),
+        WBEM_FLAG_FORWARD_ONLY,
+        NULL,
+        &pEnumerator);
+
+    if(FAILED(hres)) {
+        printf("Query for temperature probe failed. Error code = 0x%x\n", hres);
+        pSvc->Release();
+        pLoc->Release();
+        CoUninitialize();
+        return 1; // Program has failed.
+    }
+
+    // Get the data from the query
+    IWbemClassObject* pclsObj = NULL;
+    ULONG uReturn = 0;
+
+    while(pEnumerator) {
+        HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1, &pclsObj, &uReturn);
+        PXActionResult xxasew = PXWindowsErrorCurrent(0);
+
+        if(0 == uReturn) {
+            break;
+        }
+
+        VARIANT vtProp;
+        PXClear(VARIANT, &vtProp);
+
+        // Get the value of the CurrentReading property
+        hr = pclsObj->Get(L"Name", 0, &vtProp, 0, 0);
+        if(SUCCEEDED(hr)) {
+
+            switch(vtProp.vt)
+            {
+                case VT_BSTR:
+                {
+                    printf("- %ls\n", vtProp.bstrVal);
+                    break;
+                }
+
+                case VT_INT:
+                {
+                    double tempCelsius = ((double)vtProp.intVal / 10.0) - 273.15;
+                    printf("CPU Temperature: %.2f°C\n", tempCelsius);
+                    break;
+                }
+
+
+                default:
+                    break;
+            }
+
+       
+        }
+        VariantClear(&vtProp);
+
+        pclsObj->Release();
+    }
+
+    // Cleanup
+    pSvc->Release();
+    pLoc->Release();
+    pEnumerator->Release();
+    CoUninitialize();
+
+
+
+
+
+
+
+
+
+
+
+
+    */
+
+
 
 
 
@@ -133,7 +362,7 @@ int main()
     DWORD CounterType;
     SYSTEMTIME SampleTime;
     PDH_BROWSE_DLG_CONFIG BrowseDlgData;
-    WCHAR CounterPathBuffer[PDH_MAX_COUNTER_PATH];
+    WCHAR CounterPathBuffer[512];
 
     //
     // Create a query.
@@ -146,6 +375,10 @@ int main()
         wprintf(L"\nPdhOpenQuery failed with status 0x%x.", Status);
     }
 
+#if 0
+
+
+
     //
     // Initialize the browser dialog window settings.
     //
@@ -153,19 +386,19 @@ int main()
     ZeroMemory(&CounterPathBuffer, sizeof(CounterPathBuffer));
     ZeroMemory(&BrowseDlgData, sizeof(PDH_BROWSE_DLG_CONFIG));
 
-    BrowseDlgData.bIncludeInstanceIndex = FALSE;
-    BrowseDlgData.bSingleCounterPerAdd = TRUE;
-    BrowseDlgData.bSingleCounterPerDialog = TRUE;
-    BrowseDlgData.bLocalCountersOnly = FALSE;
-    BrowseDlgData.bWildCardInstances = TRUE;
-    BrowseDlgData.bHideDetailBox = TRUE;
-    BrowseDlgData.bInitializePath = FALSE;
-    BrowseDlgData.bDisableMachineSelection = FALSE;
-    BrowseDlgData.bIncludeCostlyObjects = FALSE;
-    BrowseDlgData.bShowObjectBrowser = FALSE;
+    BrowseDlgData.bIncludeInstanceIndex = 0;
+    BrowseDlgData.bSingleCounterPerAdd = 0;
+    BrowseDlgData.bSingleCounterPerDialog = 0;
+    BrowseDlgData.bLocalCountersOnly = 0;
+    BrowseDlgData.bWildCardInstances = 0;
+    BrowseDlgData.bHideDetailBox = 0;
+    BrowseDlgData.bInitializePath = 0;
+    BrowseDlgData.bDisableMachineSelection = 0;
+    BrowseDlgData.bIncludeCostlyObjects = 0;
+    BrowseDlgData.bShowObjectBrowser = 0;
     BrowseDlgData.hWndOwner = NULL;
     BrowseDlgData.szReturnPathBuffer = CounterPathBuffer;
-    BrowseDlgData.cchReturnPathLength = PDH_MAX_COUNTER_PATH;
+    BrowseDlgData.cchReturnPathLength = 512;
     BrowseDlgData.pCallBack = NULL;
     BrowseDlgData.dwCallBackArg = 0;
     BrowseDlgData.CallBackStatus = ERROR_SUCCESS;
@@ -179,11 +412,12 @@ int main()
 
     Status = PdhBrowseCounters(&BrowseDlgData);
 
+
     if(Status != ERROR_SUCCESS)
     {
         if(Status == PDH_DIALOG_CANCELLED)
         {
-            wprintf(L"\nDialog canceled by user.");
+            wprintf(L"\nDialog canceled by user. %ls", CounterPathBuffer);
         }
         else
         {
@@ -269,7 +503,164 @@ int main()
     }
 
 
+#else
 
+
+
+
+char* buffer = (char*)malloc(256);
+DWORD bufferSIze = 256;
+
+auto asas = PdhEnumObjectsA
+(
+    PXNull,
+    PXNull,
+    buffer,
+    &bufferSIze,
+    PERF_DETAIL_WIZARD,
+    TRUE
+);
+
+buffer = (char*)malloc(bufferSIze);
+PXClearList(char, buffer, bufferSIze);
+
+asas = PdhEnumObjectsA
+(
+    PXNull,
+    PXNull,
+    buffer,
+    &bufferSIze,
+    PERF_DETAIL_WIZARD,
+    TRUE
+);
+
+
+char* stringCurrent = buffer;
+
+for(size_t i = 0; ; ++i)
+{
+    if(!*stringCurrent)
+    {
+        break;
+    }
+
+    PXSize size = PXTextLengthA(stringCurrent, 512);
+
+    printf("%3i - %s\n", i, stringCurrent);
+
+ 
+
+
+    char* mszCounterList = 0;
+    DWORD mszCounterListSize = 0;
+    char* mszInstanceList = 0;
+    DWORD mszInstanceListSize = 0;
+
+    auto xas = PdhEnumObjectItemsA
+    (
+        PXNull,
+        PXNull,
+        stringCurrent,
+        mszCounterList,
+        &mszCounterListSize,
+        mszInstanceList,
+        &mszInstanceListSize,
+        PERF_DETAIL_WIZARD,
+        TRUE
+    );
+
+    mszCounterList = (char*)malloc(mszCounterListSize);
+    PXClearList(char, mszCounterList, mszCounterListSize);
+
+    mszInstanceList = (char*)malloc(mszInstanceListSize);
+    PXClearList(char, mszInstanceList, mszInstanceListSize);
+
+    xas = PdhEnumObjectItemsA
+    (
+        PXNull,
+        PXNull,
+        stringCurrent,
+        mszCounterList,
+        &mszCounterListSize,
+        mszInstanceList,
+        &mszInstanceListSize,
+        PERF_DETAIL_WIZARD,
+        TRUE
+    );
+
+
+    char* stringCuursorAA = mszCounterList;
+
+    for(size_t w = 0; ; w++)
+    {
+        if(!*stringCuursorAA)
+        {
+            break;
+        }
+
+        PXSize sizeww = PXTextLengthA(stringCuursorAA, 512);
+
+
+
+        printf("         %s\n", stringCuursorAA);
+
+
+        stringCuursorAA += sizeww + 1;
+    }
+
+
+
+    stringCurrent += size + 1;
+}
+
+
+
+
+
+// Add the CPU usage counter to the query
+wchar_t text[] = L"\\System\\System Calls/sec";
+//wchar_t text[] = L"\\Processor(_Total)\\% Processor Time";
+
+if(PdhAddCounter(Query, text, 0, &Counter) != ERROR_SUCCESS) {
+    fprintf(stderr, "PdhAddCounter failed\n");
+    PdhCloseQuery(Query);
+    return 1;
+}
+
+while(1)
+{
+    // Collect the initial data sample
+    if(PdhCollectQueryData(Query) != ERROR_SUCCESS) {
+        fprintf(stderr, "PdhCollectQueryData failed\n");
+        PdhCloseQuery(Query);
+        return 1;
+    }
+
+    // Wait for a second to collect the next sample
+    Sleep(1000);
+
+    // Collect the next data sample and get the formatted counter value
+    if(PdhCollectQueryData(Query) != ERROR_SUCCESS) {
+        fprintf(stderr, "PdhCollectQueryData failed\n");
+        PdhCloseQuery(Query);
+        return 1;
+    }
+
+    if(PdhGetFormattedCounterValue(Counter, PDH_FMT_LARGE, NULL, &DisplayValue) != ERROR_SUCCESS) {
+        fprintf(stderr, "PdhGetFormattedCounterValue failed\n");
+        PdhCloseQuery(Query);
+        return 1;
+    }
+
+    // Print the CPU usage percentage
+    printf("CPU Usage: %li\n", DisplayValue.largeValue);
+}
+
+
+
+
+
+#endif
 
 
 
@@ -346,9 +737,9 @@ int main()
 
 
 
-    int* dsfdsf = PXMemoryMallocT(int, 420);
+    int* dsfdsf = 0;// PXMemoryMallocT(int, 420);
 
-    PXThread* threads = PXMemoryMallocT(PXThread, 1234);
+    PXThread* threads = 0;// PXMemoryMallocT(PXThread, 1234);
     const PXSize xx = 1234;
     PXSize oeoeo = 0;
 
