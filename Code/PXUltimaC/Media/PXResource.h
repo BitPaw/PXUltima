@@ -277,48 +277,48 @@ typedef enum PXResourceType_
 {
     PXResourceTypeInvalid, // Invalid, don't use- only for internal
 
-    PXResourceTypeCustom = PXInt32Make('C', 'U', 'S', 'T'), // Undetected but valid format. Needs to be handled by the caller
+    PXResourceTypeCustom            = PXInt32Make('C', 'U', 'S', 'T'), // Undetected but valid format. Needs to be handled by the caller
 
     //-----------------------------------------------------
     // Resource Level 0 - Internal OS Resources
     //-----------------------------------------------------
-    PXResourceTypeBrush = PXInt32Make('B', 'R', 'S', 'H'),
+    PXResourceTypeBrush             = PXInt32Make('B', 'R', 'S', 'H'),
     //-----------------------------------------------------
 
 
     //-----------------------------------------------------
     // Resource Level 1 - Indepepended
     //-----------------------------------------------------
-    PXResourceTypeImage = PXInt32Make('I', 'M', 'G', 'E'), // Image for pixeldata
-    PXResourceTypeSound = PXInt32Make('S', 'O', 'U', 'D'),
-    PXResourceTypeVideo = PXInt32Make('V', 'I', 'D', 'E'),
-    PXResourceTypeModel = PXInt32Make('M', 'O', 'D', 'E'), // 3D model, collection of vertex data
-    PXResourceTypeFont = PXInt32Make('F', 'O', 'N', 'T'), // Collection of spites or points to render text
-    PXResourceTypeMaterial = PXInt32Make('M', 'A', 'T', 'E'),
+    PXResourceTypeImage             = PXInt32Make('I', 'M', 'A', 'G'), // Image for pixeldata
+    PXResourceTypeSound             = PXInt32Make('S', 'O', 'U', 'D'),
+    PXResourceTypeVideo             = PXInt32Make('V', 'I', 'D', 'E'),
+    PXResourceTypeModel             = PXInt32Make('M', 'O', 'D', 'L'), // 3D model, collection of vertex data
+    PXResourceTypeFont              = PXInt32Make('F', 'O', 'N', 'T'), // Collection of spites or points to render text
+    PXResourceTypeMaterial          = PXInt32Make('M', 'T', 'R', 'L'),
     //-----------------------------------------------------
 
 
     //-----------------------------------------------------
     // Resource Level 2 - Context spesific
     //-----------------------------------------------------
-    PXResourceTypeTexture2D            = PXInt32Make('T', 'X', '2', 'D'), // Texture to render on a surface
-    PXResourceTypeTextureCube        = PXInt32Make('T', 'X', 'C', 'U'),
-    PXResourceTypeShaderProgram        = PXInt32Make('S', 'H', 'A', 'D'),
+    PXResourceTypeTexture2D         = PXInt32Make('T', 'X', '2', 'D'), // Texture to render on a surface
+    PXResourceTypeTextureCube       = PXInt32Make('T', 'X', 'C', 'U'),
+    PXResourceTypeShaderProgram     = PXInt32Make('S', 'H', 'A', 'D'),
     PXResourceTypeSkybox            = PXInt32Make('S', 'K', 'Y', 'B'),
     PXResourceTypeSprite            = PXInt32Make('S', 'P', 'R', 'I'),
     PXResourceTypeSpriteAnimator    = PXInt32Make('S', 'A', 'N', 'I'),
-    PXResourceTypeText                = PXInt32Make('T', 'E', 'X', 'T'),
-    PXResourceTypeTimer                = PXInt32Make('T', 'I', 'M', 'E'),
-    PXResourceTypeEngineSound        = PXInt32Make('E', 'S', 'N', 'D'),
+    PXResourceTypeText              = PXInt32Make('T', 'E', 'X', 'T'),
+    PXResourceTypeTimer             = PXInt32Make('T', 'I', 'M', 'E'),
+    PXResourceTypeEngineSound       = PXInt32Make('E', 'S', 'N', 'D'),
     PXResourceTypeGUIElement        = PXInt32Make('G', 'U', 'I', 'E'),
     PXResourceTypeHitBox            = PXInt32Make('H', 'B', 'O', 'X'),
-    PXResourceTypeMaterialList        = PXInt32Make('M', 'L', 'I', 'S'),
-    PXResourceTypeCodeDocument        = PXInt32Make('C', 'O', 'D', 'E'),
-    PXResourceTypeDocument            = PXInt32Make('D', 'O', 'C', 'U'),
-    PXResourceTypeBinary,
-    PXResourceTypeStructuredText, //
-    PXResourceTypeInstaller = PXInt32Make('I', 'N', 'S', 'T'), // compressed executable
-    PXResourceTypeArchiv = PXInt32Make('A', 'R', 'C', 'H'), // Compressed object
+    PXResourceTypeMaterialList      = PXInt32Make('M', 'L', 'I', 'S'),
+    PXResourceTypeCodeDocument      = PXInt32Make('C', 'O', 'D', 'E'),
+    PXResourceTypeDocument          = PXInt32Make('D', 'O', 'C', 'U'),
+    PXResourceTypeBinary            = PXInt32Make('B', 'I', 'N', 'A'),
+    PXResourceTypeStructuredText    = PXInt32Make('D', 'O', 'C', 'U'),
+    PXResourceTypeInstaller         = PXInt32Make('I', 'N', 'S', 'T'), // compressed executable
+    PXResourceTypeArchiv            = PXInt32Make('A', 'R', 'C', 'H'), // Compressed object
     //-----------------------------------------------------
 
     // Extended basic components
@@ -2426,7 +2426,9 @@ PXFileLocationMode;
 typedef struct PXResourceTransphereInfo_ PXResourceTransphereInfo;
 
 typedef PXActionResult (PXAPI* PXResourceFileSizePredict)(void* const resource, PXSize* const fileSize);
-typedef PXActionResult (PXAPI* PXResourceTransphereFunction)(PXResourceTransphereInfo* const pxResourceTransphereInfo);
+typedef PXActionResult (PXAPI* PXResourceTransphereFunction)(void* const owner, PXResourceTransphereInfo* const pxResourceTransphereInfo);
+
+
 
 // Used for progress, to know how far we came in peek, load, register, ...
 #define PXResourceTransphereDidPeek             (1 << 0)
@@ -2459,6 +2461,8 @@ typedef struct PXResourceTransphereInfo_
     PXResourceTransphereFunction ResourceLoad;
     PXResourceTransphereFunction ResourceSave;
     
+    PXResourceTransphereFunction OnDeviceDataRegister;  // Preallocate resources on the device
+    PXResourceTransphereFunction OnDeviceDataUpload;    // Upload data fully
     
     void* ResourceSource;
     PXResourceType ResourceType;        // Type of the resource that 'Target' points to. Example: Image, Sound, Video...
@@ -2470,6 +2474,11 @@ typedef struct PXResourceTransphereInfo_
     PXInt8U Flags;
 
     //void* Owner;
+
+    float TimePeek;
+    float TimeTransphere;
+    float TimeDeviceDataRegister;
+    float TimeDeviceDataUpload;
 }
 PXResourceTransphereInfo;
 

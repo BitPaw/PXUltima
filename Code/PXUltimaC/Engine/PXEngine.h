@@ -196,6 +196,9 @@ PXPublic PXActionResult PXAPI PXEngineResourceActionBatch(PXEngine* const pxEngi
 PXPublic PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResourceCreateInfo* const pxEngineResourceCreateInfo);
 PXPublic PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEntity* const pxRenderEntity);
 
+PXPublic PXActionResult PXAPI PXEngineDeviceDataRegister(PXEngine* const pxEngine, PXResourceTransphereInfo* const pxResourceTransphereInfo);
+PXPublic PXActionResult PXAPI PXEngineDeviceDataUpload(PXEngine* const pxEngine, PXResourceTransphereInfo* const pxResourceTransphereInfo);
+
 PXPublic void PXAPI PXEngineResourceDefaultElements(PXEngine* const pxEngine);
 
 PXPublic PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine);

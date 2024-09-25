@@ -2437,6 +2437,39 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEn
 #endif
 }
 
+PXActionResult PXAPI PXEngineDeviceDataRegister(PXEngine* const pxEngine, PXResourceTransphereInfo* const pxResourceTransphereInfo)
+{
+    switch(pxResourceTransphereInfo->ResourceType)
+    {
+        case PXResourceTypeTexture2D:
+        {
+            PXGraphic* const pxGraphic = &pxEngine->Graphic;
+
+            PXGraphicTexturInfo pxGraphicTexturInfo;
+            PXClear(PXGraphicTexturInfo, &pxGraphicTexturInfo);
+            pxGraphicTexturInfo.TextureReference = &pxResourceTransphereInfo->ResourceTarget;
+            pxGraphicTexturInfo.Amount = 1;
+            pxGraphicTexturInfo.Type = PXGraphicTextureType2D;
+            pxGraphicTexturInfo.Action = PXResourceActionCreate;
+     
+            const PXActionResult textureAction = pxGraphic->TextureAction(pxGraphic->EventOwner, &pxGraphicTexturInfo);
+
+
+            break;
+        }
+
+        default:
+            break;
+    }
+
+    return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXEngineDeviceDataUpload(PXEngine* const pxEngine, PXResourceTransphereInfo* const pxResourceTransphereInfo)
+{
+    return PXActionSuccessful;
+}
+
 void PXAPI PXEngineResourceDefaultElements(PXEngine* const pxEngine)
 {
     PXResourceCreateInfo pxResourceCreateInfo;

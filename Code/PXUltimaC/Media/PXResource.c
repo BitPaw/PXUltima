@@ -2384,11 +2384,7 @@ PXActionResult PXAPI PXResourceManagerReferenceValidate(PXResourceManager* const
 
             return PXActionSuccessful;
         }
-    }
-
-
-
-  
+    }  
 }
 
 PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLoadInfo, const PXText* const filePath)
@@ -2414,73 +2410,7 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
     PXFileTypeInfoProbe(pxResourceLoadInfo, filePath);
 
 
-    PXFile pxFile;
-
-    pxResourceLoadInfo->FileReference = &pxFile;
-
-    // Loading file
-    {
-        PXFileOpenInfo pxFileOpenInfo;
-        PXClear(PXFileOpenInfo, &pxFileOpenInfo);
-        pxFileOpenInfo.FilePathAdress = filePath->TextA;
-        pxFileOpenInfo.FilePathSize = filePath->SizeUsed;
-        pxFileOpenInfo.AccessMode = PXAccessModeReadOnly;
-        pxFileOpenInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
-        pxFileOpenInfo.FlagList = PXFileIOInfoAllowMapping | PXFileIOInfoFilePhysical;
-
-        const PXActionResult fileLoadingResult = PXFileOpen(&pxFile, &pxFileOpenInfo);
-
-        PXActionReturnOnError(fileLoadingResult);
-    }
-
-    // If a peek method exists, execute it, if not, strait to loading
-    if(pxResourceLoadInfo->ResourcePeek)
-    {
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            "Resource",
-            "File-Peek",
-            "Start"
-        );
-#endif
-
-        const PXInt64U timeStampA = PXTimeCounterStampGet();
-        const PXActionResult pxPeekResult = pxResourceLoadInfo->ResourcePeek(pxResourceLoadInfo);
-        const PXBool success = PXActionSuccessful == pxPeekResult;
-
-        if(!success)
-        {
-#if PXLogEnable
-            PXLogPrint
-            (
-                PXLoggingError,
-                "Resource",
-                "File-Peek",
-                "Failed"
-            );
-#endif
-            return pxPeekResult;
-        }
-
-#if PXLogEnable
-        const PXInt64U timeStampB = PXTimeCounterStampGet() - timeStampA;
-        const float timeDelta = PXTimeCounterStampToSecoundsF(timeStampB);
-
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            "Resource",
-            "File-Peek",
-            "Took:%6.3fs",
-            timeDelta
-        );
-#endif
-    }
-
-
-    // Try to load assumed format
+    // if we dont even have a clue how to load it, let the OS try to load it.
     {
         if(pxResourceLoadInfo->FormatExpected == PXFileFormatUnkown)
         {
@@ -2511,7 +2441,110 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
 
             return PXActionRefusedNotImplemented;
         }
+    }
 
+
+    PXFile pxFile;
+
+    pxResourceLoadInfo->FileReference = &pxFile;
+
+    // Loading and map file if possible
+    {
+        PXFileOpenInfo pxFileOpenInfo;
+        PXClear(PXFileOpenInfo, &pxFileOpenInfo);
+        pxFileOpenInfo.FilePathAdress = filePath->TextA;
+        pxFileOpenInfo.FilePathSize = filePath->SizeUsed;
+        pxFileOpenInfo.AccessMode = PXAccessModeReadOnly;
+        pxFileOpenInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
+        pxFileOpenInfo.FlagList = PXFileIOInfoAllowMapping | PXFileIOInfoFilePhysical;
+
+        const PXActionResult fileLoadingResult = PXFileOpen(&pxFile, &pxFileOpenInfo);
+
+        PXActionReturnOnError(fileLoadingResult);
+    }
+
+    // If a peek method exists, execute it, if not, strait to loading
+    if(pxResourceLoadInfo->ResourcePeek)
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "Resource",
+            "Load-Peek",
+            "Start"
+        );
+#endif
+
+        const PXInt64U timeStampA = PXTimeCounterStampGet();
+        const PXActionResult pxPeekResult = pxResourceLoadInfo->ResourcePeek(pxResourceLoadInfo);
+        const PXBool success = PXActionSuccessful == pxPeekResult;
+
+        if(!success)
+        {
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingError,
+                "Resource",
+                "File-Peek",
+                "Failed"
+            );
+#endif
+            return pxPeekResult;
+        }
+
+        const PXInt64U timeStampB = PXTimeCounterStampGet() - timeStampA;
+        pxResourceLoadInfo->TimePeek = PXTimeCounterStampToSecoundsF(timeStampB);
+
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "Resource",
+            "Load-Peek",
+            "Took:%6.3fs",
+            pxResourceLoadInfo->TimePeek
+        );
+#endif
+    }
+
+    // Preallocate on device
+    if(pxResourceLoadInfo->OnDeviceDataRegister)
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "Resource",
+            "Load",
+            "Preallocate resource on device"
+        );
+#endif
+
+        const PXInt64U timeStampA = PXTimeCounterStampGet();
+
+        pxResourceLoadInfo->OnDeviceDataRegister(pxResourceLoadInfo);
+
+        const PXInt64U timeStampB = PXTimeCounterStampGet() - timeStampA;
+
+        pxResourceLoadInfo->TimeDeviceDataRegister = PXTimeCounterStampToSecoundsF(timeStampB);
+
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "Resource",
+            "Load",
+            "Preallocate took:<%6.3f>",
+            pxResourceLoadInfo->TimeDeviceDataRegister
+        );
+#endif
+    }
+
+    // Try to load assumed format
+    if(pxResourceLoadInfo->ResourceLoad)
+    {
         const PXInt64U timeStampA = PXTimeCounterStampGet();
 
         pxResourceLoadInfo->FileReference = &pxFile;
@@ -2519,17 +2552,18 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
 
         const PXActionResult fileParsingResult = pxResourceLoadInfo->ResourceLoad(pxResourceLoadInfo);
 
-#if PXLogEnable
         const PXInt64U timeStampB = PXTimeCounterStampGet() - timeStampA;
-        const float timeDelta = PXTimeCounterStampToSecoundsF(timeStampB);
 
+        pxResourceLoadInfo->TimeTransphere = PXTimeCounterStampToSecoundsF(timeStampB);
+
+#if PXLogEnable
         PXLogPrint
         (
             PXLoggingInfo,
             "Resource",
             "Load",
             "Took:%6.3f  ROPs:%-7i <%s>",
-            timeDelta,
+            pxResourceLoadInfo->TimeTransphere,
             pxFile.CounterOperationsRead,
             filePath->TextA
         );
