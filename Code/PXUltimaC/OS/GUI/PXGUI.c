@@ -2135,6 +2135,11 @@ PXActionResult PXAPI PXGUIElementDrawCustomComboBox(PXGUISystem* const pxGUISyst
     return PXActionRefusedNotImplemented;
 }
 
+PXActionResult PXAPI PXGUIElementDrawCustomColorPicker(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo)
+{
+    return PXActionRefusedNotImplemented;
+}
+
 PXActionResult PXAPI PXGUIElementDrawCustomHexView(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo)
 {
     return PXActionRefusedNotImplemented;

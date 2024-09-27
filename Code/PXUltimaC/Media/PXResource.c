@@ -2427,7 +2427,7 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
             return PXActionRefusedNotSupportedByLibrary;
         }
 
-        if(pxResourceLoadInfo->ResourceLoad == PXNull)
+        if(!pxResourceLoadInfo->ResourceLoad)
         {
 #if PXLogEnable
             PXLogPrint
@@ -2576,27 +2576,6 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
         return fileParsingResult; // TEMP-FIX: if the file extension is wrong, how can we still load?
 
     }
-
-#if 0
-    {
-
-        PXActionResult fileGuessResult = PXActionInvalid;
-        unsigned int fileFormatID = 1;
-
-        do
-        {
-            const PXFileFormat imageFileFormat = fileGuessResult + fileFormatID;
-
-            fileGuessResult = PXImageLoadD(image, &pxFile, imageFileFormat);
-
-            fileFormatID++;
-        } while(fileGuessResult == PXActionRefusedInvalidHeaderSignature);
-
-        PXFileDestruct(&pxFile);
-
-        return fileGuessResult;
-    }
-#endif
 }
 
 PXActionResult PXAPI PXResourceLoadA(PXResourceTransphereInfo* const pxResourceLoadInfo, const char* const filePath)
