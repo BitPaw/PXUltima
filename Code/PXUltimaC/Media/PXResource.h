@@ -2014,6 +2014,9 @@ typedef struct PXGUIElementCreateInfo_
     const char* WindowsClassName;
 #endif
 
+    PXGUIElementDrawFunction DrawFunctionEngine; // default rendering of the engine
+    PXGUIElementDrawFunction DrawFunctionOverride; // user defined rendering to overruide default
+
     // Additions
     PXBool AvoidCreation;
 
@@ -2426,7 +2429,7 @@ PXFileLocationMode;
 typedef struct PXResourceTransphereInfo_ PXResourceTransphereInfo;
 
 typedef PXActionResult (PXAPI* PXResourceFileSizePredict)(void* const resource, PXSize* const fileSize);
-typedef PXActionResult (PXAPI* PXResourceTransphereFunction)(void* const owner, PXResourceTransphereInfo* const pxResourceTransphereInfo);
+typedef PXActionResult (PXAPI* PXResourceTransphereFunction)(PXResourceTransphereInfo* const pxResourceTransphereInfo);
 
 
 
@@ -2451,7 +2454,8 @@ typedef PXActionResult (PXAPI* PXResourceTransphereFunction)(void* const owner, 
 // resource to peek, load or save
 typedef struct PXResourceTransphereInfo_
 {
-    void* ResourceTarget;               // Generic object, tager
+    void* Owner;                // Who is the caller?
+    void* ResourceTarget;       // Generic object, tager
     PXResourceManager* Manager; // The callback manager. This is set by the resource loader itself. Used for chain dependencys
     PXFile* FileReference;      // The attached file that hold the data
     

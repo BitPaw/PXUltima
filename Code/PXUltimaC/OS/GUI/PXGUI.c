@@ -43,6 +43,7 @@
 
 #pragma comment(lib, "dwmapi.lib")
 #pragma comment(lib, "Comctl32.lib")
+#pragma comment(lib, "Msimg32.lib")
 
 #define DefautPositionX CW_USEDEFAULT
 #define DefautPositionY CW_USEDEFAULT
@@ -2135,8 +2136,339 @@ PXActionResult PXAPI PXGUIElementDrawCustomComboBox(PXGUISystem* const pxGUISyst
     return PXActionRefusedNotImplemented;
 }
 
+
+typedef struct PXColorCircleVertex_
+{
+    float X;
+    float Y;
+    PXInt8U Red;
+    PXInt8U Green;
+    PXInt8U Blue;
+}
+PXColorCircleVertex;
+
+typedef struct PXColorCircle_
+{
+    int StartX;
+    int StartY;
+    int Size;
+    int Precision;
+    PXColorCircleVertex* VertexList;
+
+
+
+
+    // Triangle
+    PXColorCircleVertex VertexListTriangle[3];
+
+    PXColorHSV ColorSelected;
+}
+PXColorCircle;
+
+void PXColorHSVToRGBAI8(PXColorHSV* const pxColorHSV, PXColorRGBAI8* const pxColorRGBAI8)
+{
+    const float c = pxColorHSV->Value * pxColorHSV->Saturation;
+    float xxx = ((int)(pxColorHSV->Hue / 60.0f) % 2) - 1;
+    const float x = c * (1 - PXMathAbsolute(xxx));
+    const float m = pxColorHSV->Value - c;
+    float rN;
+    float gN;
+    float bN;
+
+    if(pxColorHSV->Hue < 60)
+    {
+        rN = c;
+        gN = x;
+        bN = 0;
+    }
+    else if(pxColorHSV->Hue < 120)
+    {
+        rN = x;
+        gN = c;
+        bN = 0;
+    }
+    else if(pxColorHSV->Hue < 180)
+    {
+        rN = 0;
+        gN = c;
+        bN = x;
+    }
+    else if(pxColorHSV->Hue < 240)
+    {
+        rN = 0;
+        gN = x;
+        bN = c;
+    }
+    else if(pxColorHSV->Hue < 300)
+    {
+        rN = x;
+        gN = 0;
+        bN = c;
+    }
+    else // 300..360
+    {
+        rN = c;
+        gN = 0;
+        bN = x;
+    }
+
+    pxColorRGBAI8->Red   = (rN + m) * 0xFF;
+    pxColorRGBAI8->Green = (gN + m) * 0xFF;
+    pxColorRGBAI8->Blue  = (bN + m) * 0xFF;
+}
+
+void PXMathCircle(PXColorCircle* const pxColorCircle)
+{
+
+
+    for(size_t i = 0; i < pxColorCircle->Precision; ++i)
+    {
+        PXColorCircleVertex* vertex = &pxColorCircle->VertexList[i];
+
+        const float steps = 360.f / (float)pxColorCircle->Precision;
+        const float degree = (steps * (i + 0));
+        const float rad = degree * (3.14f / 180.f);
+
+        vertex->X = pxColorCircle->StartX + pxColorCircle->Size * PXMathCosinus(rad);
+        vertex->Y = pxColorCircle->StartY + pxColorCircle->Size * PXMathSinus(rad);
+
+
+        PXColorHSV hsv;
+        hsv.Hue = degree;
+        hsv.Saturation = 1;
+        hsv.Value = 1;
+
+        PXColorRGBAI8 pxColorRGBAI8;
+
+        PXColorHSVToRGBAI8(&hsv, &pxColorRGBAI8);
+
+        vertex->Red     = pxColorRGBAI8.Red;
+        vertex->Green   = pxColorRGBAI8.Green;
+        vertex->Blue    = pxColorRGBAI8.Blue;
+    }  
+
+    // Triangle
+    for(size_t i = 0; i < 3; ++i)
+    {
+        PXColorCircleVertex* vertex = &pxColorCircle->VertexListTriangle[i];
+
+        const float steps = 360.f / (float)3;
+        const float degree = (int)((steps * (i + 0)) + pxColorCircle->ColorSelected.Hue) % 360;
+        const float rad = degree * (3.14f / 180.f);
+
+        vertex->X = pxColorCircle->StartX + pxColorCircle->Size * 0.85f * PXMathCosinus(rad);
+        vertex->Y = pxColorCircle->StartY + pxColorCircle->Size * 0.85f * PXMathSinus(rad);
+    }
+
+
+}
+
+float colorTemp = 20;
+
 PXActionResult PXAPI PXGUIElementDrawCustomColorPicker(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo)
 {
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "GUI",
+        "Draw-ColorPicker",
+        "E"
+    );
+#endif
+
+    PXGUIDrawClear(pxGUISystem, pxGUIElement);
+
+ 
+
+    PXGUIElementDrawRectangle
+    (
+        pxGUISystem,
+        pxGUIElement,
+        pxGUIElement->Position.Left,
+        pxGUIElement->Position.Top,
+        pxGUIElement->Position.Right,
+        pxGUIElement->Position.Bottom
+    );
+
+
+    float scaling = 0.80f;
+    int width = (pxGUIElement->Position.Right  - pxGUIElement->Position.Left) / 2;
+    int height = (pxGUIElement->Position.Bottom - pxGUIElement->Position.Top) / 2;
+    int widthS = (pxGUIElement->Position.Right * scaling - pxGUIElement->Position.Left * scaling) / 2;
+    int heightS = (pxGUIElement->Position.Bottom * scaling - pxGUIElement->Position.Top * scaling) / 2;
+
+    int precision = 8;
+
+    float r = 250;
+
+
+    HBRUSH brush = CreateSolidBrush(RGB(255, 0, 0));
+    SelectObject(pxGUIElement->DeviceContextHandle, brush);
+
+    {
+        TRIVERTEX vertexList[120];
+        GRADIENT_TRIANGLE gRect[120];
+
+        for(size_t i = 0; i < precision; ++i)
+        {
+            TRIVERTEX* const vertex = &vertexList[i];
+            GRADIENT_TRIANGLE* const index = &gRect[i];
+
+            const float steps = 360.f / (float)precision;
+            float degree = (steps * (i+1))*(3.14f / 180.f);
+
+            float x = PXMathCosinus(degree);
+            float y = PXMathSinus(degree);
+
+            vertex->x = r * x + width;
+            vertex->y = r * y + height;
+            vertex->Red = 0xFF;
+            vertex->Green = ((i) / (float)precision)* 0xFF;
+            vertex->Blue = 0x0000;
+            vertex->Alpha = 0;
+
+            index->Vertex1 = 0;
+            index->Vertex2 = i;
+            index->Vertex3 = i+1;
+        }     
+
+        
+       
+
+       // const int precision = 360;
+        PXColorCircleVertex pxColorCircleVertexList[360];
+       
+        PXColorCircle pxColorCircle;
+        pxColorCircle.Precision = 32;
+        pxColorCircle.Size = 225;
+        pxColorCircle.VertexList = pxColorCircleVertexList;
+        pxColorCircle.StartX = width;
+        pxColorCircle.StartY = height;
+        pxColorCircle.ColorSelected.Hue = colorTemp;
+        pxColorCircle.ColorSelected.Saturation = 1;
+        pxColorCircle.ColorSelected.Value = 1;
+
+        PXMathCircle(&pxColorCircle);
+
+        colorTemp += 15; 
+        colorTemp = (int)colorTemp % 360;
+
+        for(size_t i = 0; i < pxColorCircle.Precision; ++i)
+        {
+            int indexA = i;
+            int indexB = (i + 1) % pxColorCircle.Precision;
+
+            PXColorCircleVertex* dataA = &pxColorCircleVertexList[indexA];
+            PXColorCircleVertex* dataB = &pxColorCircleVertexList[indexB];
+
+           // TRIVERTEX* vertexA = &vertexList[i];
+           // TRIVERTEX* vertexB = &vertexList[indexB];
+
+            auto hPen = CreatePen(PS_SOLID, 20, RGB(dataA->Red, dataA->Green, dataA->Blue));
+            SelectObject(pxGUIElement->DeviceContextHandle, hPen);
+
+            MoveToEx(pxGUIElement->DeviceContextHandle, dataA->X, dataA->Y, NULL);
+            LineTo(pxGUIElement->DeviceContextHandle, dataB->X, dataB->Y);
+            
+        }
+
+        GradientFill(pxGUIElement->DeviceContextHandle, vertexList, pxColorCircle.Precision * 3, &gRect, 1, GRADIENT_FILL_TRIANGLE);
+
+
+        
+
+
+
+
+
+
+
+
+
+
+
+        PXColorRGBAI8 pxColorRGBAI8;
+
+        PXColorHSVToRGBAI8(&pxColorCircle.ColorSelected, &pxColorRGBAI8);
+
+        TRIVERTEX vertices[3];
+
+
+        // Define the vertices of the triangle
+        vertices[0].x = pxColorCircle.VertexListTriangle[0].X;
+        vertices[0].y = pxColorCircle.VertexListTriangle[0].Y;
+        vertices[0].Red = 0x0000;
+        vertices[0].Green = 0x0000;
+        vertices[0].Blue = 0x0000;
+        vertices[0].Alpha = 0xFFFF;
+
+        vertices[1].x = pxColorCircle.VertexListTriangle[1].X;
+        vertices[1].y = pxColorCircle.VertexListTriangle[1].Y;
+        vertices[1].Red     = (pxColorRGBAI8.Red / (float)0xFF) * 0xFFFF;
+        vertices[1].Green   = (pxColorRGBAI8.Green / (float)0xFF) * 0xFFFF;
+        vertices[1].Blue    = (pxColorRGBAI8.Blue / (float)0xFF) * 0xFFFF;
+        vertices[1].Alpha = 0xFFFF;
+
+        vertices[2].x = pxColorCircle.VertexListTriangle[2].X;
+        vertices[2].y = pxColorCircle.VertexListTriangle[2].Y;
+        vertices[2].Red = 0xFFFF;
+        vertices[2].Green = 0xFFFF;
+        vertices[2].Blue = 0xFFFF;
+        vertices[2].Alpha = 0xFFFF;
+
+        // Draw the triangle
+       // HBRUSH brush = CreateSolidBrush(RGB(255, 0, 0));
+        GRADIENT_TRIANGLE  gRectaaa;
+        gRectaaa.Vertex1 = 0;
+        gRectaaa.Vertex2 = 1;
+        gRectaaa.Vertex3 = 2;
+
+
+        
+
+        // Draw the gradient rectangle
+        GradientFill(pxGUIElement->DeviceContextHandle, vertices, 3, &gRectaaa, 1, GRADIENT_FILL_TRIANGLE);
+
+
+
+    }
+
+
+
+    /*
+
+    int width = 128;
+    int height = 128;
+    float scale = 80.5;
+
+    for(int i = 0; i < width; ++i) {
+        for(int j = 0; j < height; ++j) {
+            HBRUSH brush = CreateSolidBrush(RGB(i * width * scale, j * height * scale, 128));
+            RECT rect = 
+            {
+                i * 15, 
+                j * 15,
+                (i + 1) * 15, 
+                (j + 1) * 15 
+            };
+
+            rect.left = pxGUIElement->Position.Left - rect.left;
+            rect.top = pxGUIElement->Position.Top - rect.top;
+            rect.right = pxGUIElement->Position.Right - rect.right;
+            rect.bottom = pxGUIElement->Position.Bottom - rect.bottom;
+
+            FillRect(pxGUIElement->DeviceContextHandle, &rect, brush);
+            DeleteObject(brush);
+        }
+    }
+    */
+
+ 
+
+
+ //   PXGUIElementDrawTextA(pxGUISystem, pxGUIElement, pxGUIElement->NameContent, pxGUIElement->NameContentSize);
+
     return PXActionRefusedNotImplemented;
 }
 
@@ -3057,6 +3389,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
         case PXUIElementTypeText:
         {
             pxGUIElementCreateInfo->WindowsClassName = WC_STATIC;
+            pxGUIElementCreateInfo->DrawFunctionEngine = PXGUIElementDrawCustomText;
 
             PXUIElementTextInfo* const pxUIElementTextInfo = &pxGUIElementCreateInfo->Data.Text;
 
@@ -3092,33 +3425,15 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                 }
             }
 
-            if(pxGUIElementCreateInfo->CustomDrawFunction || 1)
-            {
-                pxGUIElementCreateInfo->WindowsStyleFlags |= BS_OWNERDRAW;
-                pxGUIElement->DrawFunction = PXGUIElementDrawCustomText;
-                pxGUIElement->BrushBackground = pxGUISystem->BrushBackgroundDark;
-                pxGUIElementCreateInfo->WindowsClassName = WC_BUTTON;
-            }
-
-          //  return;
-
             break;
         }
         case PXUIElementTypeButton:
-        {// BS_USERBUTTON
-            pxGUIElementCreateInfo->WindowsClassName = WC_BUTTON;
+        {   
             // BS_DEFPUSHBUTTON
-
-
+            // BS_USERBUTTON
+            pxGUIElementCreateInfo->WindowsClassName = WC_BUTTON;
+            pxGUIElementCreateInfo->DrawFunctionEngine = PXGUIElementDrawCustomButton;
             pxGUIElementCreateInfo->WindowsTextContent = pxGUIElementCreateInfo->Data.Button.TextInfo.Content;
-
-            if(pxGUIElementCreateInfo->CustomDrawFunction || 1)
-            {
-                pxGUIElementCreateInfo->WindowsStyleFlags |= BS_OWNERDRAW;
-                pxGUIElement->DrawFunction = PXGUIElementDrawCustomButton;
-                pxGUIElement->BrushBackground = pxGUISystem->BrushBackgroundDark;
-            }
-
             break;
         }
         case PXUIElementTypeImage:
@@ -3142,9 +3457,8 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
         {
             pxGUIElementCreateInfo->WindowsClassName = WC_EDIT;
             pxGUIElementCreateInfo->WindowsStyleFlags |= ES_MULTILINE;
-
+            pxGUIElementCreateInfo->DrawFunctionEngine = PXGUIElementDrawCustomText;
             pxGUIElementCreateInfo->WindowsTextContent = pxGUIElementCreateInfo->Data.Button.TextInfo.Content;
-
             break;
         }
         case PXUIElementTypeRichEdit:
@@ -3166,7 +3480,6 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
         case PXUIElementTypeStatusBar:
         {
             pxGUIElementCreateInfo->WindowsClassName = STATUSCLASSNAMEA;
-
             pxGUIElementCreateInfo->WindowsStyleFlags |= SBARS_SIZEGRIP;
 
             break;
@@ -3279,8 +3592,9 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
         }
         case PXUIElementTypeColorPicker:
         {
-            pxGUIElementCreateInfo->WindowsClassName = 00000000000000000000;
-            pxGUIElementCreateInfo->WindowsStyleFlags = 000000000000000000000000;
+            pxGUIElementCreateInfo->DrawFunctionEngine = PXGUIElementDrawCustomColorPicker;
+            pxGUIElementCreateInfo->WindowsClassName = WC_STATIC;
+            pxGUIElementCreateInfo->WindowsStyleFlags |= SS_WHITEFRAME;
             break;
         }
         case PXUIElementTypeSlider:
@@ -3409,6 +3723,19 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
         }
         default:
             return PXActionRefusedArgumentInvalid;
+    }
+
+
+    // If we hav
+    {
+        const PXBool selfDraw = pxGUIElementCreateInfo->DrawFunctionEngine || pxGUIElementCreateInfo->DrawFunctionOverride;
+
+        if(selfDraw)
+        {
+            pxGUIElementCreateInfo->WindowsStyleFlags |= SS_OWNERDRAW;
+            pxGUIElement->DrawFunction = pxGUIElementCreateInfo->DrawFunctionEngine;
+            pxGUIElement->BrushBackground = pxGUISystem->BrushBackgroundDark;
+        }
     }
 
 

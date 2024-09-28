@@ -92,6 +92,14 @@ typedef struct PXColorRGBI8_
 }
 PXColorRGBI8;
 
+typedef struct PXColorHSV_
+{
+    float Hue;
+    float Saturation;
+    float Value;
+}
+PXColorHSV;
+
 typedef struct PXColorRGBAI8_
 {
     PXInt8U Red;

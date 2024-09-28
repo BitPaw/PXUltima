@@ -21,7 +21,7 @@
 
 
 //#define PXMathAbsolute(a) (a * ((a >= 0) - (a < 0)))
-#define PXMathAbsolute(x) ((x) < 0 ? -(x) : (x))
+#define PXMathAbsolute(x) (((x) > 0) ? (x) : -(x))
 
 //-----------------------------------------------------------------------------
 
