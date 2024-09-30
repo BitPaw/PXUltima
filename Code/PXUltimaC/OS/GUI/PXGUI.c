@@ -2165,57 +2165,74 @@ typedef struct PXColorCircle_
 }
 PXColorCircle;
 
+void PXColorHSVToRGBAF(PXColorHSV* const pxColorHSV, PXColorRGBF* const pxColorRGBF)
+{
+    float baseColor = pxColorHSV->Hue / 60.0f;
+    int baseColorInterval = PXMathFloor(baseColor);
+    float f = baseColor - baseColorInterval;
+
+    const float p = pxColorHSV->Value * (1 - pxColorHSV->Saturation);
+    const float q = pxColorHSV->Value * (1 - pxColorHSV->Saturation * f);
+    const float t = pxColorHSV->Value * (1 - pxColorHSV->Saturation * (1-f));
+
+    switch(baseColorInterval)
+    {
+        case 1:
+        {
+            pxColorRGBF->Red = q;
+            pxColorRGBF->Green = pxColorHSV->Value;
+            pxColorRGBF->Blue = p;
+            break;
+        }
+        case 2:
+        {
+            pxColorRGBF->Red = p;
+            pxColorRGBF->Green = pxColorHSV->Value;
+            pxColorRGBF->Blue = t;
+            break;
+        }
+        case 3:
+        {
+            pxColorRGBF->Red = p;
+            pxColorRGBF->Green = q;
+            pxColorRGBF->Blue = pxColorHSV->Value;
+            break;
+        }
+        case 4:
+        {
+            pxColorRGBF->Red = t;
+            pxColorRGBF->Green = p;
+            pxColorRGBF->Blue = pxColorHSV->Value;
+            break;
+        }
+        case 5:
+        {
+            pxColorRGBF->Red = pxColorHSV->Value;
+            pxColorRGBF->Green = p;
+            pxColorRGBF->Blue = q;
+            break;
+        }
+        default: // 0 or 6
+        {
+            pxColorRGBF->Red = pxColorHSV->Value;
+            pxColorRGBF->Green = t;
+            pxColorRGBF->Blue = p;
+            break;
+        }
+    }
+}
+
 void PXColorHSVToRGBAI8(PXColorHSV* const pxColorHSV, PXColorRGBAI8* const pxColorRGBAI8)
 {
-    const float c = pxColorHSV->Value * pxColorHSV->Saturation;
-    float xxx = ((int)(pxColorHSV->Hue / 60.0f) % 2) - 1;
-    const float x = c * (1 - PXMathAbsolute(xxx));
-    const float m = pxColorHSV->Value - c;
-    float rN;
-    float gN;
-    float bN;
+    PXColorRGBF pxColorRGBF;
 
-    if(pxColorHSV->Hue < 60)
-    {
-        rN = c;
-        gN = x;
-        bN = 0;
-    }
-    else if(pxColorHSV->Hue < 120)
-    {
-        rN = x;
-        gN = c;
-        bN = 0;
-    }
-    else if(pxColorHSV->Hue < 180)
-    {
-        rN = 0;
-        gN = c;
-        bN = x;
-    }
-    else if(pxColorHSV->Hue < 240)
-    {
-        rN = 0;
-        gN = x;
-        bN = c;
-    }
-    else if(pxColorHSV->Hue < 300)
-    {
-        rN = x;
-        gN = 0;
-        bN = c;
-    }
-    else // 300..360
-    {
-        rN = c;
-        gN = 0;
-        bN = x;
-    }
+    PXColorHSVToRGBAF(pxColorHSV, &pxColorRGBF);
 
-    pxColorRGBAI8->Red   = (rN + m) * 0xFF;
-    pxColorRGBAI8->Green = (gN + m) * 0xFF;
-    pxColorRGBAI8->Blue  = (bN + m) * 0xFF;
+    pxColorRGBAI8->Red = pxColorRGBF.Red * 0xFF;
+    pxColorRGBAI8->Green = pxColorRGBF.Green * 0xFF;
+    pxColorRGBAI8->Blue = pxColorRGBF.Blue * 0xFF;
 }
+
 
 void PXMathCircle(PXColorCircle* const pxColorCircle)
 {
@@ -2340,7 +2357,7 @@ PXActionResult PXAPI PXGUIElementDrawCustomColorPicker(PXGUISystem* const pxGUIS
         PXColorCircleVertex pxColorCircleVertexList[360];
        
         PXColorCircle pxColorCircle;
-        pxColorCircle.Precision = 32;
+        pxColorCircle.Precision = 128;
         pxColorCircle.Size = 225;
         pxColorCircle.VertexList = pxColorCircleVertexList;
         pxColorCircle.StartX = width;
@@ -2396,15 +2413,15 @@ PXActionResult PXAPI PXGUIElementDrawCustomColorPicker(PXGUISystem* const pxGUIS
 
 
         // Define the vertices of the triangle
-        vertices[0].x = pxColorCircle.VertexListTriangle[0].X;
-        vertices[0].y = pxColorCircle.VertexListTriangle[0].Y;
+        vertices[0].x = pxColorCircle.VertexListTriangle[1].X;
+        vertices[0].y = pxColorCircle.VertexListTriangle[1].Y;
         vertices[0].Red = 0x0000;
         vertices[0].Green = 0x0000;
         vertices[0].Blue = 0x0000;
         vertices[0].Alpha = 0xFFFF;
 
-        vertices[1].x = pxColorCircle.VertexListTriangle[1].X;
-        vertices[1].y = pxColorCircle.VertexListTriangle[1].Y;
+        vertices[1].x = pxColorCircle.VertexListTriangle[0].X;
+        vertices[1].y = pxColorCircle.VertexListTriangle[0].Y;
         vertices[1].Red     = (pxColorRGBAI8.Red / (float)0xFF) * 0xFFFF;
         vertices[1].Green   = (pxColorRGBAI8.Green / (float)0xFF) * 0xFFFF;
         vertices[1].Blue    = (pxColorRGBAI8.Blue / (float)0xFF) * 0xFFFF;
