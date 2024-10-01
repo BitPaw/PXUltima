@@ -2357,7 +2357,7 @@ PXActionResult PXAPI PXGUIElementDrawCustomColorPicker(PXGUISystem* const pxGUIS
         PXColorCircleVertex pxColorCircleVertexList[360];
        
         PXColorCircle pxColorCircle;
-        pxColorCircle.Precision = 128;
+        pxColorCircle.Precision = 64;
         pxColorCircle.Size = 225;
         pxColorCircle.VertexList = pxColorCircleVertexList;
         pxColorCircle.StartX = width;

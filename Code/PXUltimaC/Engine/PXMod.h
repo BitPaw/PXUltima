@@ -20,13 +20,18 @@ typedef struct PXModLoadEventData_
 }
 PXModLoadEventData;
 
-typedef PXBool(PXAPI* PXModLoadFunction)(void* const owner, PXMod* const pxMod, PXModLoadEventData* const pxModLoadEventData);
-typedef PXBool(PXAPI* PXModInitializeFunction)(void* const owner, PXMod* const pxMod);
-typedef PXBool(PXAPI* PXModDenitializeFunction)(void* const owner, PXMod* const pxMod);
-typedef PXBool(PXAPI* PXModUnloadFunction)(void* const owner, PXMod* const pxMod);
+typedef PXActionResult (PXAPI* PXModLoadFunction)(void* const owner, PXMod* const pxMod, PXModLoadEventData* const pxModLoadEventData);
+typedef PXActionResult (PXAPI* PXModInitializeFunction)(void* const owner, PXMod* const pxMod);
+typedef PXActionResult (PXAPI* PXModDenitializeFunction)(void* const owner, PXMod* const pxMod);
+typedef PXActionResult (PXAPI* PXModUnloadFunction)(void* const owner, PXMod* const pxMod);
+
+
+#define PXModBehaviourIsEssential   0b00001 // Is the mod essential for the functionaly of the program?
 
 typedef struct PXMod_
 {
+    PXResourceInfo Info;
+
     char Name[32];
     char BuildDate[32];
 
@@ -38,10 +43,6 @@ typedef struct PXMod_
     PXModUnloadFunction Unload;
 
     PXLibrary Library;
-
-    // This ID is regulated by the engine.
-    // Used for internal identifaction and will be random each run.
-    PXInt32U ID;
 }
 PXMod;
 
