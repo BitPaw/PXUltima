@@ -799,7 +799,7 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler
                     PXCodeDocumentElement pxCodeDocumentElementChild;
                     PXClear(PXCodeDocumentElement, &pxCodeDocumentElementChild);
                     pxCodeDocumentElementChild.Type = PXDocumentElementTypeUnion;
-                    pxCodeDocumentElementChild.ElementParent = pxCodeDocumentElement;
+                    pxCodeDocumentElementChild.Hierachy.Parrent = pxCodeDocumentElement;
 
                     PXCompilerSymbolEntryExtract(pxCompiler); // consume "const"
 
@@ -967,9 +967,9 @@ void PXAPI PXCNameCleave(PXCompiler* const pxCompiler, PXCodeDocumentElement* co
     char* name = pxCodeDocumentElement->AliasAdress ? pxCodeDocumentElement->AliasAdress : pxCodeDocumentElement->NameAdress;
     PXSize nameSize = pxCodeDocumentElement->AliasSize ? pxCodeDocumentElement->AliasSize : pxCodeDocumentElement->NameSize;
 
-    if(pxCodeDocumentElement->ElementParent)
+    if(pxCodeDocumentElement->Hierachy.Parrent)
     {
-        PXCodeDocumentElement* parent = pxCodeDocumentElement->ElementParent;      
+        PXCodeDocumentElement* parent = (PXCodeDocumentElement*)pxCodeDocumentElement->Hierachy.Parrent;
 
         PXBool check = PXMemoryCompare
         (
@@ -1255,11 +1255,13 @@ PXActionResult PXAPI PXCParseTypeContainer(PXCompiler* const pxCompiler, PXCodeD
     // Update value with new amount of members
     PXCodeDocumentElementAdd(pxCompiler->CodeDocument, pxCodeDocumentElement);
 
+    /*
     for(PXCodeDocumentElement* i = pxCodeDocumentElement->ElementChildFirstBorn; i ; i = i->ElementSibling)
     {
         PXCNameCleave(pxCompiler, i);
         PXCodeDocumentElementAdd(pxCompiler->CodeDocument, i);
     }
+    */
 
     return PXActionRefusedNotImplemented;
 }

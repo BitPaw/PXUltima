@@ -180,7 +180,7 @@ PXActionResult PXAPI PXDirectX11Initialize(PXDirectX11* const pxDirectX11, PXGra
         dxGISwapChainDescription.SampleDesc.Quality = 0;
         dxGISwapChainDescription.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
         dxGISwapChainDescription.BufferCount = 1;
-        dxGISwapChainDescription.OutputWindow = pxGraphicInitializeInfo->WindowReference->Info.WindowID;
+        dxGISwapChainDescription.OutputWindow = pxGraphicInitializeInfo->WindowReference->Info.Handle.WindowID;
         dxGISwapChainDescription.Windowed = 1u;
 
         const HRESULT resultID = createDeviceAndSwapChain // D3D11CreateDevice()
@@ -268,7 +268,7 @@ PXActionResult PXAPI PXDirectX11TextureAction(PXDirectX11* const pxDirectX11, PX
                 case PXGraphicTextureType1D:
                 {
                     PXTexture1D* pxTexture1D = (PXTexture1D*)pxGraphicTexturInfo->TextureReference;
-                    ID3D11Texture1D** dx11Texture1D = &((ID3D11Texture1D*)pxTexture1D->Info.DirectXInterface);
+                    ID3D11Texture1D** dx11Texture1D = &((ID3D11Texture1D*)pxTexture1D->Info.Handle.DirectXInterface);
 
                     D3D11_TEXTURE1D_DESC desc;
                     desc.Width = pxTexture1D->Image->Width;
@@ -330,7 +330,7 @@ PXActionResult PXAPI PXDirectX11TextureAction(PXDirectX11* const pxDirectX11, PX
                 case PXGraphicTextureType2D:
                 {
                     PXTexture2D* const pxTexture2D = (PXTexture2D*)pxGraphicTexturInfo->TextureReference;
-                    ID3D11Texture2D** texture2D = &(ID3D11Texture2D*)pxTexture2D->Info.DirectXInterface;
+                    ID3D11Texture2D** texture2D = &(ID3D11Texture2D*)pxTexture2D->Info.Handle.DirectXInterface;
 
                     D3D11_TEXTURE2D_DESC textureDescription;
                     textureDescription.Width = pxTexture2D->Image->Width,
@@ -421,7 +421,7 @@ PXActionResult PXAPI PXDirectX11TextureAction(PXDirectX11* const pxDirectX11, PX
                 case PXGraphicTextureType3D:
                 {
                     PXTexture3D* const pxTexture3D = pxGraphicTexturInfo->TextureReference;
-                    ID3D11Texture3D** dxTexture3D = &(ID3D11Texture3D*)pxTexture3D->Info.DirectXInterface;
+                    ID3D11Texture3D** dxTexture3D = &(ID3D11Texture3D*)pxTexture3D->Info.Handle.DirectXInterface;
 
                     D3D11_TEXTURE3D_DESC textureDescription;
                     textureDescription.Width = pxTexture3D->Image->Width,
@@ -553,7 +553,7 @@ PXActionResult PXAPI PXDirectX11VertexBufferCreate(PXDirectX11* const pxDirectX1
     return PXActionRefusedNotSupportedByOperatingSystem;
 
 #elif OSWindows
-    ID3D11Buffer** g_pVertexBuffer = &(ID3D11Buffer*)pxVertexBuffer->Info.DirectXInterface;
+    ID3D11Buffer** g_pVertexBuffer = &(ID3D11Buffer*)pxVertexBuffer->Info.Handle.DirectXInterface;
 
     // Fill in a buffer description.
     D3D11_BUFFER_DESC bufferDesc;
@@ -605,7 +605,7 @@ PXActionResult PXAPI PXDirectX11ShaderProgramCreate(PXDirectX11* const pxDirectX
                     shaderBytecode,
                     bytecodeLength,
                     PXNull,
-                    &(ID3D11VertexShader*)pxShader->Info.DirectXInterface
+                    &(ID3D11VertexShader*)pxShader->Info.Handle.DirectXInterface
                 );
 
                 break;
@@ -618,7 +618,7 @@ PXActionResult PXAPI PXDirectX11ShaderProgramCreate(PXDirectX11* const pxDirectX
                     shaderBytecode,
                     bytecodeLength,
                     PXNull,
-                    &(ID3D11PixelShader*)pxShader->Info.DirectXInterface
+                    &(ID3D11PixelShader*)pxShader->Info.Handle.DirectXInterface
                 );
 
                 break;

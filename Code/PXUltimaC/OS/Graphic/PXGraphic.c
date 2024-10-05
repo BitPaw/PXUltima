@@ -21,7 +21,7 @@ void PXAPI PXGraphicModelShaderSet(PXGraphic* const pxGraphic, PXRenderable* con
     {
         PXRenderableMeshSegment* const pxRenderableMeshSegment = &renderable->MeshSegmentList[i];
 
-        pxRenderableMeshSegment->ShaderID = shaderPXProgram->Info.OpenGLID;
+        pxRenderableMeshSegment->ShaderID = shaderPXProgram->Info.Handle.OpenGLID;
     }
 }
 
@@ -45,7 +45,7 @@ void PXAPI PXTextureConstruct(PXTexture2D* const texture)
 {
     PXClear(PXTexture2D, texture);
 
-    texture->Info.OpenGLID = -1;
+    texture->Info.Handle.OpenGLID = -1;
 
     texture->Filter = PXGraphicRenderFilterNoFilter;
     texture->LayoutNear = PXGraphicImageLayoutNearest;
@@ -183,7 +183,7 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
         "Graphic",
         "Instantiate",
         "Creating context on <%x>",
-        pxGraphicInitializeInfo->WindowReference->Info.WindowID
+        pxGraphicInitializeInfo->WindowReference->Info.Handle.WindowID
     );
 #endif
 
@@ -197,7 +197,7 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
     // Get Device context if not already done
     if(!pxGraphicInitializeInfo->HandleDeviceContext)
     {
-        pxGraphicInitializeInfo->HandleDeviceContext = GetDC(pxGraphic->WindowReference->Info.WindowID);
+        pxGraphicInitializeInfo->HandleDeviceContext = GetDC(pxGraphic->WindowReference->Info.Handle.WindowID);
     }
 #endif
 
@@ -245,7 +245,7 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
 #if OSUnix
 #elif OSWindows
         pxWindowPixelSystemInfo.HandleDeviceContext = pxGraphicInitializeInfo->HandleDeviceContext;
-        pxWindowPixelSystemInfo.HandleWindow = pxGraphic->WindowReference->Info.WindowID;
+        pxWindowPixelSystemInfo.HandleWindow = pxGraphic->WindowReference->Info.Handle.WindowID;
 #endif
 
 

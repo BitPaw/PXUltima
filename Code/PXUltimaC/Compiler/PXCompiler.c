@@ -1379,7 +1379,7 @@ void PXAPI PXCompilerWriteParameterList(PXCompiler* const pxCompiler)
 
     PXFileWriteC(pxFile, '(');
 
-    for(PXCodeDocumentElement* i = current->ElementChildFirstBorn; i; i = i->ElementSibling)
+    for(PXHierarchicalNode* i = &current->Hierachy; i; i = i->Sibling)
     {
         pxCompiler->WriteInfo.CodeElementCurrent = i;
         pxCompiler->WriteInfo.WriteDefinition(pxCompiler);

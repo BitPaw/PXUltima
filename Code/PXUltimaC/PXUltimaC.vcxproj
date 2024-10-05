@@ -202,12 +202,14 @@
     <ClCompile Include="Container\BTree\PXBTree.c" />
     <ClCompile Include="Container\Dictionary\PXDictionary.c" />
     <ClCompile Include="Container\FlexDataCache\PXFlexDataCache.c" />
+    <ClCompile Include="Container\HierarchicalList\PXHierarchicalList.c" />
     <ClCompile Include="Container\LinkedList\PXLinkedList.c" />
     <ClCompile Include="Container\List\PXList.c" />
     <ClCompile Include="Container\QuadTree\PXQuadTree.c" />
     <ClCompile Include="Container\Queue\PXQueue.c" />
     <ClCompile Include="Container\RingBuffer\PXRingBuffer.c" />
     <ClCompile Include="Engine\PXPlayer.c" />
+    <ClCompile Include="Graph\Timeline\PXTimeline.c" />
     <ClCompile Include="Media\FastFile\PXFastFile.c" />
     <ClCompile Include="Media\Java\PXJava.c" />
     <ClCompile Include="Media\MIPS\PXMIPS.c" />
@@ -237,7 +239,7 @@
     <ClCompile Include="Language\PXTranslator.c" />
     <ClCompile Include="OS\Console\PXConsole.c" />
     <ClCompile Include="Math\PXCollision.c" />
-    <ClCompile Include="Math\PXDiagram.c" />
+    <ClCompile Include="Graph\BoxPlot\PXBoxPlot.c" />
     <ClCompile Include="Math\PXMath.c" />
     <ClCompile Include="Math\PXMatrix.c" />
     <ClCompile Include="Math\PXPhysic.c" />
@@ -370,12 +372,14 @@
     <ClInclude Include="Container\BTree\PXBTree.h" />
     <ClInclude Include="Container\Dictionary\PXDictionary.h" />
     <ClInclude Include="Container\FlexDataCache\PXFlexDataCache.h" />
+    <ClInclude Include="Container\HierarchicalList\PXHierarchicalList.h" />
     <ClInclude Include="Container\LinkedList\PXLinkedList.h" />
     <ClInclude Include="Container\List\PXList.h" />
     <ClInclude Include="Container\QuadTree\PXQuadTree.h" />
     <ClInclude Include="Container\Queue\PXQueue.h" />
     <ClInclude Include="Container\RingBuffer\PXRingBuffer.h" />
     <ClInclude Include="Engine\PXPlayer.h" />
+    <ClInclude Include="Graph\Timeline\PXTimeline.h" />
     <ClInclude Include="Media\FastFile\PXFastFile.h" />
     <ClInclude Include="Media\Java\PXJava.h" />
     <ClInclude Include="Media\MIPS\PXMIPS.h" />
@@ -405,7 +409,7 @@
     <ClInclude Include="Language\PXTranslator.h" />
     <ClInclude Include="OS\Console\PXConsole.h" />
     <ClInclude Include="Math\PXCollision.h" />
-    <ClInclude Include="Math\PXDiagram.h" />
+    <ClInclude Include="Graph\BoxPlot\PXBoxPlot.h" />
     <ClInclude Include="Math\PXMath.h" />
     <ClInclude Include="Math\PXMatrix.h" />
     <ClInclude Include="Math\PXPhysic.h" />
@@ -531,6 +535,9 @@
   <ItemGroup>
     <None Include="Algorithm\KnowlegeGraph\README.md" />
     <None Include="Container\Dictionary\README.md" />
+    <None Include="Container\HierarchicalList\README.md" />
+    <None Include="Graph\BoxPlot\README.md" />
+    <None Include="Graph\Timeline\README.md" />
     <None Include="Media\AAC\README.md" />
     <None Include="Media\BinaryLinux\README.md" />
     <None Include="Media\Bitmap\README.md" />

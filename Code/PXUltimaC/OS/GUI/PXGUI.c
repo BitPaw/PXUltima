@@ -876,12 +876,12 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
             {
                 PAINTSTRUCT paintStruct;
 
-                const HWND windowHandle = pxGUIElement->Info.WindowID;
+                const HWND windowHandle = pxGUIElement->Info.Handle.WindowID;
                 const HDC hdc = BeginPaint(windowHandle, &paintStruct);
 
                 PXGUIElementDrawInfo pxGUIElementDrawInfo;
                 PXClear(PXGUIElementDrawInfo, &pxGUIElementDrawInfo);
-                pxGUIElementDrawInfo.hwnd = pxGUIElement->Info.WindowID;
+                pxGUIElementDrawInfo.hwnd = pxGUIElement->Info.Handle.WindowID;
                 pxGUIElementDrawInfo.hDC = windowHandle;
                 // pxGUIElementDrawInfo.bErase = paintStruct.fErase;
 
@@ -919,10 +919,10 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
             {
                // RECT rc;
 
-               // GetClientRect(pxGUIElement->Info.WindowID, &rc);
+               // GetClientRect(pxGUIElement->Info.Handle.WindowID, &rc);
 
                // PAINTSTRUCT paintStruct;
-               // BeginPaint(pxGUIElement->Info.WindowID, &paintStruct);
+               // BeginPaint(pxGUIElement->Info.Handle.WindowID, &paintStruct);
 
                // auto xx = pxGUIElement->DeviceContextHandle;
 
@@ -930,7 +930,7 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
 
                 PXGUIElementDrawInfo pxGUIElementDrawInfo;
                 PXClear(PXGUIElementDrawInfo, &pxGUIElementDrawInfo);
-                pxGUIElementDrawInfo.hwnd = pxGUIElement->Info.WindowID;
+                pxGUIElementDrawInfo.hwnd = pxGUIElement->Info.Handle.WindowID;
                 pxGUIElementDrawInfo.hDC = drawItemInfo->hDC;
                // pxGUIElementDrawInfo.bErase = paintStruct.fErase;
 
@@ -941,7 +941,7 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
 
                 pxGUIElement->DrawFunction(pxGUISystem, pxGUIElement, &pxGUIElementDrawInfo);
 
-               // EndPaint(pxGUIElement->Info.WindowID, &paintStruct);
+               // EndPaint(pxGUIElement->Info.Handle.WindowID, &paintStruct);
 
                // pxGUIElement->DeviceContextHandle = xx;
 
@@ -1677,7 +1677,7 @@ void PXAPI PXGUIElementChildListEnumerate(PXGUISystem* const pxGUISystem, PXGUIE
 
         if(childElement->Parent)
         {
-            if(childElement->Parent->Info.WindowID == parent->Info.WindowID)
+            if(childElement->Parent->Info.Handle.WindowID == parent->Info.Handle.WindowID)
             {
                 // found child.
 
@@ -1730,7 +1730,7 @@ PXBool PXAPI PXGUIElementIsEnabled(PXGUISystem* const pxGUISystem, PXGUIElement*
 #if OSUnix
     return PXFalse;
 #elif OSWindows
-    return IsWindowEnabled(pxGUIElement->Info.WindowID); // Windows 2000, User32.dll, winuser.h
+    return IsWindowEnabled(pxGUIElement->Info.Handle.WindowID); // Windows 2000, User32.dll, winuser.h
 #else
     return PXFalse;
 #endif
@@ -1746,10 +1746,10 @@ PXActionResult PXAPI PXGUIElementDelete(PXGUISystem* const pxGUISystem, PXGUIEle
     PXActionResult result = PXActionInvalid;
 
 #if OSUnix
-    const int resultID = XDestroyWindow(pxGUISystem->DisplayCurrent.DisplayHandle, pxGUIElement->Info.WindowID);
+    const int resultID = XDestroyWindow(pxGUISystem->DisplayCurrent.DisplayHandle, pxGUIElement->Info.Handle.WindowID);
     result = PXGUIElementErrorFromXSystem(resultID);
 #elif OSWindows
-    const PXBool success = DestroyWindow(pxGUIElement->Info.WindowID);
+    const PXBool success = DestroyWindow(pxGUIElement->Info.Handle.WindowID);
     result = PXWindowsErrorCurrent(success);
 #else
     result PXActionRefusedNotSupportedByLibrary;
@@ -1757,7 +1757,7 @@ PXActionResult PXAPI PXGUIElementDelete(PXGUISystem* const pxGUISystem, PXGUIEle
 
     if(PXActionSuccessful == result)
     {
-        pxGUIElement->Info.WindowID = 0;
+        pxGUIElement->Info.Handle.WindowID = 0;
     }
 
     return result;
@@ -1769,10 +1769,10 @@ PXActionResult PXAPI PXGUIElementTextSet(PXGUISystem* const pxGUISystem, PXGUIEl
 
 #if OSUnix
     // Will BadAlloc, BadWindow
-    const int resultID = XStoreName(pxGUISystem->DisplayCurrent.DisplayHandle, pxGUIElement->Info.WindowID, text);
+    const int resultID = XStoreName(pxGUISystem->DisplayCurrent.DisplayHandle, pxGUIElement->Info.Handle.WindowID, text);
     result = PXGUIElementErrorFromXSystem(resultID);
 #elif OSWindows
-    const PXBool success = SetWindowTextA(pxGUIElement->Info.WindowID, text);
+    const PXBool success = SetWindowTextA(pxGUIElement->Info.Handle.WindowID, text);
     result = PXWindowsErrorCurrent(success);
 #else
     result = PXActionRefusedNotSupportedByLibrary;
@@ -1819,7 +1819,7 @@ PXActionResult PXAPI PXGUIElementTextGet(PXGUISystem* const pxGUISystem, PXGUIEl
     pxActionResult = PXActionRefusedNotImplemented;
 #elif OSWindows
 
-    const int size = GetWindowTextA(pxGUIElement->Info.WindowID, text, 255);
+    const int size = GetWindowTextA(pxGUIElement->Info.Handle.WindowID, text, 255);
 
 #else
     pxActionResult = PXActionRefusedNotSupportedByLibrary;
@@ -2120,7 +2120,7 @@ PXActionResult PXAPI PXGUIElementDrawCustomButton(PXGUISystem* const pxGUISystem
    //char text[] = "ABCDEF";
   // PXSize length = sizeof(text);
 
-   //int len = SendMessage(pxGUIElement->Info.WindowID, WM_GETTEXT, ARRAYSIZE(staticText), (LPARAM)staticText);
+   //int len = SendMessage(pxGUIElement->Info.Handle.WindowID, WM_GETTEXT, ARRAYSIZE(staticText), (LPARAM)staticText);
   // BOOL wedq = TextOut(pxGUIElement->DeviceContextHandle, pxGUIElementDrawInfo->rcDirty->left, pxGUIElementDrawInfo->rcDirty->top, text, length);
 
 
@@ -2525,7 +2525,7 @@ PXBool PXAPI PXGUIElementValueFetch(PXGUIElement* const pxUIElementList, const P
 #if OSUnix
 
 #elif OSWindows
-                *target = SendMessageA(pxGUIElement->Info.ID, TBM_GETPOS, 0, 0) / 100.f;
+                *target = SendMessageA(pxGUIElement->Info.Handle.WindowID, TBM_GETPOS, 0, 0) / 100.f;
 #endif
 
                 break;
@@ -2894,8 +2894,8 @@ PXActionResult PXAPI PXGUIElementStyleUpdate(PXGUISystem* const pxGUISystem, PXG
 #if OSUnix
     result = PXActionRefusedNotImplemented;
 #elif OSWindows
-    SetWindowLongPtr(pxGUIElement->Info.WindowID, GWL_STYLE, WS_SYSMENU); //3d argument=style
-    const PXBool setSuccess = SetWindowPos(pxGUIElement->Info.WindowID, HWND_TOPMOST, 100, 100, 100, 100, SWP_SHOWWINDOW);
+    SetWindowLongPtr(pxGUIElement->Info.Handle.WindowID, GWL_STYLE, WS_SYSMENU); //3d argument=style
+    const PXBool setSuccess = SetWindowPos(pxGUIElement->Info.Handle.WindowID, HWND_TOPMOST, 100, 100, 100, 100, SWP_SHOWWINDOW);
 #else
     result = PXActionRefusedNotSupportedByLibrary;
 #endif
@@ -2985,7 +2985,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                     nameTemp,
                     128,
                     "[Model] %s ID:%i",
-                    "---",//pxModel->Info.Name,
+                    "---",//pxModel->Info.Handle.Name,
                     pxModel->Info.ID
                 );
 
@@ -3185,7 +3185,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
                     if(PXUIElementTypeWindow == pxGUIElement->Type)
                     {
-                        pxGUIElement->Info.WindowID = XCreateWindow
+                        pxGUIElement->Info.Handle.WindowID = XCreateWindow
                     (
                         pxGUISystem->DisplayCurrent.DisplayHandle,
                         pxGUISystem->DisplayCurrent.WindowRootHandle,
@@ -3203,10 +3203,10 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                     }
                     else
                     {
-                        pxGUIElement->Info.WindowID = XCreateSimpleWindow
+                        pxGUIElement->Info.Handle.WindowID = XCreateSimpleWindow
                         (
                             pxGUISystem->DisplayCurrent.DisplayHandle,
-                            pxGUIElement->Parent->Info.WindowID,
+                            pxGUIElement->Parent->Info.Handle.WindowID,
                             pxUIElementPositionCalulcateInfo.X,
                             pxUIElementPositionCalulcateInfo.Y,
                             pxUIElementPositionCalulcateInfo.Width,
@@ -3219,7 +3219,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
 
 
-                    const PXBool sucessful = PXNull != pxGUIElement->Info.WindowID;
+                    const PXBool sucessful = PXNull != pxGUIElement->Info.Handle.WindowID;
 
                     if(!sucessful)
                     {
@@ -3246,14 +3246,14 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                         pxUIElementPositionCalulcateInfo.Y,
                         pxUIElementPositionCalulcateInfo.Width,
                         pxUIElementPositionCalulcateInfo.Height,
-                        pxGUIElement->Info.WindowID
+                        pxGUIElement->Info.Handle.WindowID
                     );
 #endif
                 }
 
                 // Attach to render engine
                 {
-                    const int mapResultID = XMapWindow(pxGUISystem->DisplayCurrent.DisplayHandle, pxGUIElement->Info.WindowID);
+                    const int mapResultID = XMapWindow(pxGUISystem->DisplayCurrent.DisplayHandle, pxGUIElement->Info.Handle.WindowID);
                     const PXBool success = Success == mapResultID;
 
                     if(!success)
@@ -3342,7 +3342,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
             "X-System",
             "Event-Select",
             "ID:%i Failed",
-            pxGUIElement->Info.WindowID
+            pxGUIElement->Info.Handle.WindowID
         );
 #endif
     }
@@ -3355,7 +3355,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
             "X-System",
             "Event-Select",
             "ID:%i OK",
-            pxGUIElement->Info.WindowID
+            pxGUIElement->Info.Handle.WindowID
         );
 #endif
     }
@@ -3437,7 +3437,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                 if(pxGUIElementCreateInfo->AvoidCreation)
                 {
                     pxGUIElement->Type = PXUIElementTypeButtonText;
-                    pxGUIElement->Info.WindowID = PXNull;
+                    pxGUIElement->Info.Handle.WindowID = PXNull;
                     //return;
                 }
             }
@@ -3766,11 +3766,11 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
     if(!pxGUIElementCreateInfo->AvoidCreation)
     {
         HINSTANCE hInstance = PXNull;
-        PXWindowID windowID = pxGUIElementCreateInfo->UIElementWindow ? pxGUIElementCreateInfo->UIElementWindow->Info.WindowID : PXNull;
+        PXWindowID windowID = pxGUIElementCreateInfo->UIElementWindow ? pxGUIElementCreateInfo->UIElementWindow->Info.Handle.WindowID : PXNull;
 
         if(pxGUIElementCreateInfo->UIElementWindow)
         {
-            hInstance = (HINSTANCE)GetWindowLongPtr(pxGUIElementCreateInfo->UIElementWindow->Info.WindowID, GWLP_HINSTANCE);
+            hInstance = (HINSTANCE)GetWindowLongPtr(pxGUIElementCreateInfo->UIElementWindow->Info.Handle.WindowID, GWLP_HINSTANCE);
             //windowID = pxGUIElementCreateInfo->UIElementWindow->ID;
         }
         else
@@ -3780,7 +3780,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
        // const HINSTANCE hInstance = GetModuleHandle(NULL);
 
-        pxGUIElement->Info.WindowID = CreateWindowExA // Windows 2000, User32.dll, winuser.h
+        pxGUIElement->Info.Handle.WindowID = CreateWindowExA // Windows 2000, User32.dll, winuser.h
         (
             pxGUIElementCreateInfo->WindowsWindowsStyleFlagsExtended,
             pxGUIElementCreateInfo->WindowsClassName,
@@ -3795,7 +3795,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
             hInstance,
             NULL // Pointer not needed.
         );
-        const PXBool success = PXNull != pxGUIElement->Info.WindowID;
+        const PXBool success = PXNull != pxGUIElement->Info.Handle.WindowID;
 
 
         if(!success)
@@ -3824,15 +3824,15 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
 
         // Get additional device context for rendering purpose
-        pxGUIElement->DeviceContextHandle = GetDC(pxGUIElement->Info.WindowID); 
+        pxGUIElement->DeviceContextHandle = GetDC(pxGUIElement->Info.Handle.WindowID); 
 
         // Gegister drag&Drop
         IDropTarget dropTarget;
 
-        const HRESULT dragResult = RegisterDragDrop(pxGUIElement->Info.WindowID, &dropTarget); // Windows 2000, Ole32.dll, ole2.h
+        const HRESULT dragResult = RegisterDragDrop(pxGUIElement->Info.Handle.WindowID, &dropTarget); // Windows 2000, Ole32.dll, ole2.h
 
 
-        PXDictionaryAdd(&pxGUISystem->ResourceManager->GUIElementLookup, &pxGUIElement->Info.WindowID, pxGUIElement);
+        PXDictionaryAdd(&pxGUISystem->ResourceManager->GUIElementLookup, &pxGUIElement->Info.Handle.WindowID, pxGUIElement);
 
 #if PXLogEnable
         const char* uielementName = PXUIElementTypeToString(pxGUIElementCreateInfo->Type);
@@ -3847,7 +3847,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
             (int)pxUIElementPositionCalulcateInfo.Y,
             (int)pxUIElementPositionCalulcateInfo.Width,
             (int)pxUIElementPositionCalulcateInfo.Height,
-            pxGUIElement->Info.WindowID,
+            pxGUIElement->Info.Handle.WindowID,
             uielementName
         );
 #endif
@@ -3959,8 +3959,8 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
         {
             PXGUIElementMenuItemList* const pxGUIElementMenuItemList = &pxGUIElementCreateInfo->Data.MenuItem;
 
-            pxGUIElement->Info.MenuHandle = CreateMenu(); // Windows 2000, User32.dll, winuser.h
-            const PXBool succeess = PXNull != pxGUIElement->Info.MenuHandle;
+            pxGUIElement->Info.Handle.MenuHandle = CreateMenu(); // Windows 2000, User32.dll, winuser.h
+            const PXBool succeess = PXNull != pxGUIElement->Info.Handle.MenuHandle;
             const PXActionResult res = PXWindowsErrorCurrent(succeess);
 
     
@@ -3979,7 +3979,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                 menuItemInfo.fType = MFT_STRING;         // used if MIIM_TYPE (4.0) or MIIM_FTYPE (>4.0)
                 menuItemInfo.fState = MFS_DEFAULT;        // used if MIIM_STATE
                 menuItemInfo.wID = 0;           // used if MIIM_ID
-                menuItemInfo.hSubMenu = pxGUIElement->Info.MenuHandle;      // used if MIIM_SUBMENU
+                menuItemInfo.hSubMenu = pxGUIElement->Info.Handle.MenuHandle;      // used if MIIM_SUBMENU
                 menuItemInfo.hbmpChecked = 0;   // used if MIIM_CHECKMARKS
                 menuItemInfo.hbmpUnchecked = 0; // used if MIIM_CHECKMARKS
                 menuItemInfo.dwItemData = 0;   // used if MIIM_DATA
@@ -3989,8 +3989,8 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
                 UINT newID = i;
 
-                 const PXBool itemAddResult =  AppendMenuA(pxGUIElement->Info.MenuHandle, menuItemInfo.fState, &newID, menuItemInfo.dwTypeData);
-                // const PXBool itemAddResult = AppendMenuA(pxGUIElement->Info.MenuHandle, MF_STRING | MF_POPUP, (UINT_PTR)hSubMenu, menuItemInfo.dwTypeData);
+                 const PXBool itemAddResult =  AppendMenuA(pxGUIElement->Info.Handle.MenuHandle, menuItemInfo.fState, &newID, menuItemInfo.dwTypeData);
+                // const PXBool itemAddResult = AppendMenuA(pxGUIElement->Info.Handle.MenuHandle, MF_STRING | MF_POPUP, (UINT_PTR)hSubMenu, menuItemInfo.dwTypeData);
           
 
                  const PXActionResult sdfsdfghg = PXWindowsErrorCurrent(itemAddResult);
@@ -4013,15 +4013,15 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
             
 
 
-              //  const PXBool itemAddResult = InsertMenuItemA(pxGUIElement->Info.MenuHandle, 0, PXTrue, &menuItemInfo);
+              //  const PXBool itemAddResult = InsertMenuItemA(pxGUIElement->Info.Handle.MenuHandle, 0, PXTrue, &menuItemInfo);
                 const PXActionResult res = PXWindowsErrorCurrent(itemAddResult);
 
-               // DrawMenuBar(pxGUIElement->Parent->Info.WindowID);
+               // DrawMenuBar(pxGUIElement->Parent->Info.Handle.WindowID);
 
                 menuItemInfo.wID += 0;
             }
 
-            const PXBool setResult = SetMenu(pxGUIElement->Parent->Info.WindowID, pxGUIElement->Info.MenuHandle);
+            const PXBool setResult = SetMenu(pxGUIElement->Parent->Info.Handle.WindowID, pxGUIElement->Info.Handle.MenuHandle);
 
 
             break;
@@ -4103,7 +4103,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
             if(pxUIElementTreeViewItemInfo->ItemParent)
             {
-                item.hParent = pxUIElementTreeViewItemInfo->ItemParent->Info.WindowID;
+                item.hParent = pxUIElementTreeViewItemInfo->ItemParent->Info.Handle.WindowID;
             }
 
             if(pxUIElementTreeViewItemInfo->TextDataOverride)
@@ -4170,19 +4170,19 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
             item.item.mask = TVIF_TEXT | TVIF_IMAGE;
 
-            HTREEITEM itemID = TreeView_InsertItem(pxUIElementTreeViewItemInfo->TreeView->Info.WindowID, &item);
+            HTREEITEM itemID = TreeView_InsertItem(pxUIElementTreeViewItemInfo->TreeView->Info.Handle.WindowID, &item);
 
             if(pxUIElementTreeViewItemInfo->ItemParent)
             {
                 TreeView_Expand
                 (
-                    pxUIElementTreeViewItemInfo->TreeView->Info.WindowID,
-                    pxUIElementTreeViewItemInfo->ItemParent->Info.WindowID,
+                    pxUIElementTreeViewItemInfo->TreeView->Info.Handle.WindowID,
+                    pxUIElementTreeViewItemInfo->ItemParent->Info.Handle.WindowID,
                     TVE_EXPAND
                 );
             }
 
-            pxGUIElement->Info.WindowID = itemID;
+            pxGUIElement->Info.Handle.WindowID = itemID;
             pxUIElementTreeViewItemInfo->ItemHandle = itemID;
 #endif
 
@@ -4230,14 +4230,14 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 #if OSUnix
 #elif OSWindows
 
-            HDC dc = GetDC(pxGUIElement->Info.WindowID);
+            HDC dc = GetDC(pxGUIElement->Info.Handle.WindowID);
 
 
             SetTextColor(dc, RGB(255, 0, 0));
             SetBkColor(dc, RGB(0, 0, 255));
 
 
-            SendMessageA(pxGUIElement->Info.WindowID, TBM_SETTIPSIDE, TBTS_RIGHT, PXNull);
+            SendMessageA(pxGUIElement->Info.Handle.WindowID, TBM_SETTIPSIDE, TBTS_RIGHT, PXNull);
 
 
            // SendMessageA(pxGUIElement->ID, SET_BACKGROUND_COLOR, RGB(30, 30, 30), RGB(30, 30, 30));
@@ -4325,9 +4325,9 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
             int sizeY = 16;
             int amount = 11;
 
-            TreeView_SetBkColor(pxGUIElement->Info.WindowID, RGB(30, 30, 30));
+            TreeView_SetBkColor(pxGUIElement->Info.Handle.WindowID, RGB(30, 30, 30));
 
-            TreeView_SetTextColor(pxGUIElement->Info.WindowID, RGB(200, 200, 200));
+            TreeView_SetTextColor(pxGUIElement->Info.Handle.WindowID, RGB(200, 200, 200));
 
 
             // Add icons
@@ -4388,7 +4388,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                 );
             }
 
-            TreeView_SetImageList(pxGUIElement->Info.WindowID, imageListHandle, TVSIL_NORMAL);
+            TreeView_SetImageList(pxGUIElement->Info.Handle.WindowID, imageListHandle, TVSIL_NORMAL);
 #endif
 
             break;
@@ -4422,7 +4422,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
         {
 #if OSUnix
 #elif OSWindows
-            HDC pDC = GetDC(pxGUIElement->Info.WindowID);
+            HDC pDC = GetDC(pxGUIElement->Info.Handle.WindowID);
             //SetBkMode(pDC, TRANSPARENT);
             SetBkColor(pDC, RGB(255, 0, 0));
             SetTextColor(pDC, RGB(0, 0, 255));
@@ -4474,7 +4474,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                 tie.iImage = pxUIElementTabPageSingleInfo->ImageID;
                 tie.pszText = pxUIElementTabPageSingleInfo->PageName;
 
-                auto x = TabCtrl_InsertItem(pxGUIElement->Info.WindowID, i, &tie);
+                auto x = TabCtrl_InsertItem(pxGUIElement->Info.Handle.WindowID, i, &tie);
 
                 PXLogPrint
                 (
@@ -4486,7 +4486,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                 );
             }
 
-            SendMessage(pxGUIElement->Info.WindowID, TCM_SETCURFOCUS, 0, 0);
+            SendMessage(pxGUIElement->Info.Handle.WindowID, TCM_SETCURFOCUS, 0, 0);
 
 #endif
 
@@ -4543,9 +4543,9 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
         {
             PXGUIElementCreateWindowInfo* const pxGUIElementCreateWindowInfo = &pxGUIElementCreateInfo->Data.Window;
 
-            PXWindowTitleBarColorSet(pxGUIElement->Info.WindowID);
+            PXWindowTitleBarColorSet(pxGUIElement->Info.Handle.WindowID);
 
-            // UpdateWindow(pxGUIElement->Info.WindowID);
+            // UpdateWindow(pxGUIElement->Info.Handle.WindowID);
 
             // ShowWindow(pxWindow->ID, SW_NORMAL)
 
@@ -4699,9 +4699,9 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
 #elif OSWindows
 
 
-                HDC xx = GetDC(pxGUIElement->Info.WindowID);
+                HDC xx = GetDC(pxGUIElement->Info.Handle.WindowID);
 
-                LONG ww = SetWindowLongA(pxGUIElement->Info.WindowID, GWL_EXSTYLE, WS_EX_LEFT | WS_EX_RIGHT);
+                LONG ww = SetWindowLongA(pxGUIElement->Info.Handle.WindowID, GWL_EXSTYLE, WS_EX_LEFT | WS_EX_RIGHT);
 
                 // const UINT allign = SetTextAlign(xx, TA_CENTER);
                 // const PXBool success = GDI_ERROR == allign;
@@ -4764,7 +4764,7 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
                 {
                     const PXBool success = MoveWindow
                     (
-                        pxGUIElement->Info.WindowID,
+                        pxGUIElement->Info.Handle.WindowID,
                         pxUIElementPositionCalulcateInfo.X,
                         pxUIElementPositionCalulcateInfo.Y,
                         pxUIElementPositionCalulcateInfo.Width,
@@ -4835,7 +4835,7 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
 #elif OSWindows
 
                 PXInt32U stepsConverted = progressBar->Percentage * 100;
-                SendMessageA(pxGUIElement->Info.WindowID, PBM_SETPOS, stepsConverted, 0);
+                SendMessageA(pxGUIElement->Info.Handle.WindowID, PBM_SETPOS, stepsConverted, 0);
 #endif
 
                 break;
@@ -4848,7 +4848,7 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
 #elif OSWindows
 
                 COLORREF color = RGB(progressBar->BarColor.Red, progressBar->BarColor.Green, progressBar->BarColor.Blue);
-                SendMessageA(pxGUIElement->Info.WindowID, PBM_SETBARCOLOR, 0, color);
+                SendMessageA(pxGUIElement->Info.Handle.WindowID, PBM_SETBARCOLOR, 0, color);
 #endif
 
                 break;
@@ -4861,7 +4861,7 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
                 PXBool show = pxGUIElementUpdateInfo->Show;
                 int showID = show ? SW_SHOW : SW_HIDE;
 
-                const PXBool isWindowValid = IsWindow(pxGUIElement->Info.WindowID);
+                const PXBool isWindowValid = IsWindow(pxGUIElement->Info.Handle.WindowID);
 
                 if(!isWindowValid)
                 {
@@ -4872,7 +4872,7 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
                         "Visibility",
                         "%20s (0x%p), Invalid",
                         "",//pxGUIElement->NameData,
-                        pxGUIElement->Info.WindowID
+                        pxGUIElement->Info.Handle.WindowID
                     );
 
                     break;
@@ -4892,8 +4892,8 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
 
                 // EnableWindow(pxGUIElement->ID, show);
 
-                ShowWindow(pxGUIElement->Info.WindowID, showID);
-                BOOL res = ShowWindow(pxGUIElement->Info.WindowID, showID); // Twice to prevent some errors
+                ShowWindow(pxGUIElement->Info.Handle.WindowID, showID);
+                BOOL res = ShowWindow(pxGUIElement->Info.Handle.WindowID, showID); // Twice to prevent some errors
 
                 //  HWND parrent = GetParent(pxGUIElement->ID);
 
@@ -4914,7 +4914,7 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
                     "Visibility",
                     "Page %20s, (0x%p), Mode:%s Status:%s",
                     "",//pxGUIElement->NameData,
-                    pxGUIElement->Info.WindowID,
+                    pxGUIElement->Info.Handle.WindowID,
                     show ? "Show" : "Hide",
                     res ? "OK" : "FAIL"
                 );
@@ -4932,7 +4932,7 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
 
                 const BOOL success = EnumChildWindows
                 (
-                    pxGUIElement->Info.WindowID,
+                    pxGUIElement->Info.Handle.WindowID,
                     PXWindowEnumChildProc,
                     &showID
                 );
@@ -4951,10 +4951,10 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
                 {
                     char* name = pxUIElementComboBoxInfo->DataList[i];
 
-                    ComboBox_AddString(pxGUIElement->Info.WindowID, name);
+                    ComboBox_AddString(pxGUIElement->Info.Handle.WindowID, name);
                 }
 
-                ComboBox_SetCurSel(pxGUIElement->Info.WindowID, 0);
+                ComboBox_SetCurSel(pxGUIElement->Info.Handle.WindowID, 0);
 #endif
 
                 break;
@@ -4976,7 +4976,7 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
                 item.hInsertAfter = TVI_ROOT;
                 item.item.mask = TVIF_TEXT;
 
-                TreeView_InsertItem(pxGUIElement->Info.WindowID, &item);
+                TreeView_InsertItem(pxGUIElement->Info.Handle.WindowID, &item);
 
 #endif
 
@@ -5061,7 +5061,7 @@ PXActionResult PXAPI PXGUIElementFetch(PXGUISystem* const pxGUISystem, PXGUIElem
                 RECT rect;
 
                 //const PXBool result = GetWindowRect(pxGUIElement->ID, &rect); // Windows 2000, User32.dll, winuser.h
-                const PXBool result = GetClientRect(pxGUIElement->Info.WindowID, &rect); // Windows 2000, User32.dll, winuser.h
+                const PXBool result = GetClientRect(pxGUIElement->Info.Handle.WindowID, &rect); // Windows 2000, User32.dll, winuser.h
 
                 if(!result)
                 {
@@ -5277,7 +5277,7 @@ void PXAPI PXWindowUpdate(PXGUISystem* const pxGUISystem, PXGUIElement* const px
         return;
     }
 
-    if(!pxGUIElement->Info.WindowID)
+    if(!pxGUIElement->Info.Handle.WindowID)
     {
         return;
     }
@@ -5327,14 +5327,14 @@ void PXAPI PXWindowUpdate(PXGUISystem* const pxGUISystem, PXGUIElement* const px
     {
         MSG message;
 
-        const PXBool peekResult = PeekMessage(&message, pxGUIElement->Info.WindowID, 0, 0, PM_NOREMOVE); // Windows 2000, User32.dll, winuser.h
+        const PXBool peekResult = PeekMessage(&message, pxGUIElement->Info.Handle.WindowID, 0, 0, PM_NOREMOVE); // Windows 2000, User32.dll, winuser.h
 
         if (!peekResult)
         {
             break; // Stop, no more messages
         }
 
-        const PXBool messageResult = GetMessage(&message, pxGUIElement->Info.WindowID, 0, 0); // Windows 2000, User32.dll, winuser.h
+        const PXBool messageResult = GetMessage(&message, pxGUIElement->Info.Handle.WindowID, 0, 0); // Windows 2000, User32.dll, winuser.h
 
         if (!messageResult)
         {
@@ -5649,7 +5649,7 @@ PXActionResult PXAPI PXGUIElementBufferSwap(PXGUISystem* const pxGUISystem, PXGU
     PXActionResult pxActionResult = PXActionInvalid;    
 
 #if OSUnix
-    glXSwapBuffers(pxGUISystem->DisplayCurrent.DisplayHandle, pxGUIElement->Info.WindowID);
+    glXSwapBuffers(pxGUISystem->DisplayCurrent.DisplayHandle, pxGUIElement->Info.Handle.WindowID);
     pxActionResult = PXActionSuccessful; // TODO: Do we have error checking?
 
 #elif OSWindows    
@@ -5880,7 +5880,7 @@ PXActionResult PXAPI PXGUIElementDrawTextA(PXGUISystem* const pxGUISystem, PXGUI
 
         PXGUIFontLoad(pxGUISystem, &pxFont, fontName);
 
-        const HFONT fontHandleOld = (HFONT)SelectObject(pxGUIElement->DeviceContextHandle, pxFont.Info.FontHandle);
+        const HFONT fontHandleOld = (HFONT)SelectObject(pxGUIElement->DeviceContextHandle, pxFont.Info.Handle.FontHandle);
 
         const int nextHeightAAA = DrawTextExA(pxGUIElement->DeviceContextHandle, text, textSize, &rectangleShadow, format, PXNull); // Windows 2000, User32.dll, winuser.h
 
@@ -5895,7 +5895,7 @@ PXActionResult PXAPI PXGUIElementDrawTextA(PXGUISystem* const pxGUISystem, PXGUI
 
     PXGUIFontLoad(pxGUISystem, &pxFont, fontName);
 
-    HFONT hOldFontBBB = (HFONT)SelectObject(pxGUIElement->DeviceContextHandle, pxFont.Info.FontHandle);
+    HFONT hOldFontBBB = (HFONT)SelectObject(pxGUIElement->DeviceContextHandle, pxFont.Info.Handle.FontHandle);
 
 
     const int nextHeightBBB = DrawTextExA(pxGUIElement->DeviceContextHandle, text, textSize, &rectangle, format, PXNull); // Windows 2000, User32.dll, winuser.h
@@ -5988,7 +5988,7 @@ PXActionResult PXAPI PXGUIElementDrawLines(PXGUISystem* const pxGUISystem, PXGUI
     const resultID = XDrawLines
     (
         pxGUISystem->DisplayCurrent.DisplayHandle,
-        pxGUIElement->Info.WindowID,
+        pxGUIElement->Info.Handle.WindowID,
         pxGUISystem->DisplayCurrent.GraphicContent,
         &points,
         npoints,
@@ -6015,7 +6015,7 @@ PXActionResult PXAPI PXGUIElementDrawRectangle(PXGUISystem* const pxGUISystem, P
     const resultID = XFillRectangle
     (
         pxGUISystem->DisplayCurrent.DisplayHandle,
-        pxGUIElement->Info.WindowID,
+        pxGUIElement->Info.Handle.WindowID,
         pxGUISystem->DisplayCurrent.GraphicContent,
         x,
         y,
@@ -6038,7 +6038,7 @@ PXActionResult PXAPI PXGUIElementDrawRectangle(PXGUISystem* const pxGUISystem, P
 
 
 
-    const BOOL aaaaaa = FillRect(pxGUIElement->DeviceContextHandle, &rect, pxGUIElement->BrushBackground->Info.BrushHandle);
+    const BOOL aaaaaa = FillRect(pxGUIElement->DeviceContextHandle, &rect, pxGUIElement->BrushBackground->Info.Handle.BrushHandle);
 
    // DeleteObject();
 
@@ -6115,11 +6115,11 @@ PXActionResult PXAPI PXGUIElementMove(PXGUISystem* const pxGUISystem, PXGUIEleme
     PXActionResult pxActionResult = PXActionInvalid;
 
 #if OSUnix
-    const int resultID = XMoveWindow(pxGUISystem->DisplayCurrent.DisplayHandle, pxGUIElement->Info.WindowID, x, y);
+    const int resultID = XMoveWindow(pxGUISystem->DisplayCurrent.DisplayHandle, pxGUIElement->Info.Handle.WindowID, x, y);
     pxActionResult = PXGUIElementErrorFromXSystem(resultID);
 #elif PXOSWindowsDestop
     const UINT flags = SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER;
-    const PXBool success = SetWindowPos(pxGUIElement->Info.WindowID, PXNull, x, y, PXNull, PXNull, flags); // Windows 2000, User32.dll
+    const PXBool success = SetWindowPos(pxGUIElement->Info.Handle.WindowID, PXNull, x, y, PXNull, PXNull, flags); // Windows 2000, User32.dll
     pxActionResult = PXWindowsErrorCurrent(success);
 #else
     pxActionResult = PXActionRefusedNotSupportedByLibrary;
@@ -6137,7 +6137,7 @@ PXActionResult PXAPI PXGUIElementResize(PXGUISystem* const pxGUISystem, PXGUIEle
     pxActionResult = PXGUIElementErrorFromXSystem(resultID);
 #elif PXOSWindowsDestop
     const UINT flags = SWP_NOMOVE | SWP_NOZORDER | SWP_NOOWNERZORDER;
-    const PXBool success = SetWindowPos(pxGUIElement->Info.WindowID, PXNull, PXNull, PXNull, width, height, flags); // Windows 2000, User32.dll
+    const PXBool success = SetWindowPos(pxGUIElement->Info.Handle.WindowID, PXNull, PXNull, PXNull, width, height, flags); // Windows 2000, User32.dll
     pxActionResult = PXWindowsErrorCurrent(success);
 #else
     pxActionResult = PXActionRefusedNotSupportedByLibrary;
@@ -6154,7 +6154,7 @@ PXActionResult PXAPI PXGUIElementMoveAndResize(PXGUISystem* const pxGUISystem, P
     const int resultID = 0;//XMoveResizeWindow(Display *display, Window w, int x, int y, unsigned int width, unsigned int height);
     pxActionResult = PXGUIElementErrorFromXSystem(resultID);
 #elif PXOSWindowsDestop
-    const PXBool success = MoveWindow(pxGUIElement->Info.WindowID, x, y, width, height, PXTrue); // Windows 2000, User32.dll, winuser.h
+    const PXBool success = MoveWindow(pxGUIElement->Info.Handle.WindowID, x, y, width, height, PXTrue); // Windows 2000, User32.dll, winuser.h
     pxActionResult = PXWindowsErrorCurrent(success);
 #else
     pxActionResult = PXActionRefusedNotSupportedByLibrary;
@@ -6222,7 +6222,7 @@ PXActionResult PXAPI PXGUIFontLoad(PXGUISystem* const pxGUISystem, PXFont* const
     const DWORD isUnderline = (PXFontUnderline & pxFont->Info.Behaviour) > 0;
     const DWORD isStrikeOut = (PXFontStrikeOut & pxFont->Info.Behaviour) > 0;
 
-    pxFont->Info.FontHandle = CreateFontA
+    pxFont->Info.Handle.FontHandle = CreateFontA
     (
         30, 0, 0, 0,
         FW_HEAVY,
@@ -6273,7 +6273,7 @@ PXActionResult PXAPI PXGUIFontSet(PXGUISystem* const pxGUISystem, PXGUIElement* 
 PXActionResult PXAPI PXGUIDrawClear(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement)
 {
 #if OSUnix
-    const int resultID = XClearWindow(pxGUISystem->DisplayCurrent.DisplayHandle, pxGUIElement->Info.WindowID);
+    const int resultID = XClearWindow(pxGUISystem->DisplayCurrent.DisplayHandle, pxGUIElement->Info.Handle.WindowID);
 #elif OSWindows
     // Does this exists?
 
@@ -6347,7 +6347,7 @@ PXActionResult PXAPI PXGUIElementDrawBegin(PXGUISystem* const pxGUISystem, PXGUI
 #elif OSWindows
     PAINTSTRUCT ps;
 
-    HDC hdc = BeginPaint(pxGUIElement->Info.WindowID, &ps);
+    HDC hdc = BeginPaint(pxGUIElement->Info.Handle.WindowID, &ps);
 #endif
 
     return PXActionRefusedNotImplemented;
@@ -6361,7 +6361,7 @@ PXActionResult PXAPI PXGUIElementDrawEnd(PXGUISystem* const pxGUISystem, PXGUIEl
 #elif OSWindows
     PAINTSTRUCT ps;
 
-    const PXBool end = EndPaint(pxGUIElement->Info.WindowID, &ps);
+    const PXBool end = EndPaint(pxGUIElement->Info.Handle.WindowID, &ps);
 #endif
 
     return PXActionRefusedNotImplemented;

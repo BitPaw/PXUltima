@@ -71,6 +71,8 @@ void PXAPI PXJavaContainerWrite(PXCompiler* const pxCompiler)
 
     PXCodeDocumentElement* prevSym = pxCompiler->WriteInfo.CodeElementCurrent;
 
+    /*
+
     for
     (
         PXCodeDocumentElement* child = entry->ElementChildFirstBorn;
@@ -114,6 +116,7 @@ void PXAPI PXJavaContainerWrite(PXCompiler* const pxCompiler)
             PXFileWriteNewLine(pxFile);
         }
     }
+    */
 
     pxCompiler->WriteInfo.CodeElementCurrent = prevSym;
 

@@ -323,7 +323,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                // Color xx = Color(255, 0, 0, 255);
                // SolidBrush ww = opaqueBrush();
 
-                pxGUIElementBrush->Info.BrushHandle = brushHandle;
+                pxGUIElementBrush->Info.Handle.BrushHandle = brushHandle;
 #endif
 
                 PXDictionaryAdd(&pxResourceManager->BrushLookUp, &pxGUIElementBrush->Info.ID, pxGUIElementBrush);
@@ -1329,8 +1329,8 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                     *pxResourceCreateInfo->ObjectReference = pxEngineSound;
                 }
 
-              //  pxEngineSound->Info.ID = PXResourceManagerGenerateUniqeID(pxResourceManager);
-               // PXDictionaryAdd(&pxResourceManager->SoundLookUp, &pxEngineSound->Info.ID, pxSound);
+              //  pxEngineSound->Info.Handle.ID = PXResourceManagerGenerateUniqeID(pxResourceManager);
+               // PXDictionaryAdd(&pxResourceManager->SoundLookUp, &pxEngineSound->Info.Handle.ID, pxSound);
 
                 // Register
                 {

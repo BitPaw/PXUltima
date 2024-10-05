@@ -202,7 +202,7 @@ PXActionResult PXAPI PXDirectX9Initialize(PXDirectX9* const pxDirectX9, PXGraphi
         pxDirectX9->Context,
         D3DADAPTER_DEFAULT,
         D3DDEVTYPE_HAL,
-        pxGraphicInitializeInfo->WindowReference->Info.WindowID,
+        pxGraphicInitializeInfo->WindowReference->Info.Handle.WindowID,
         D3DCREATE_SOFTWARE_VERTEXPROCESSING,
         &presentParameters,
         &pxDirectX9->Device
@@ -314,7 +314,7 @@ PXActionResult PXAPI PXDirectX9TextureAction(PXDirectX9* const pxDirectX9, PXGra
                         usage,
                         format,
                         pool,
-                        &(IDirect3DTexture9*)pxTexture2D->Info.DirectXInterface,
+                        &(IDirect3DTexture9*)pxTexture2D->Info.Handle.DirectXInterface,
                         &sharedHandle
                     );
 
@@ -327,7 +327,7 @@ PXActionResult PXAPI PXDirectX9TextureAction(PXDirectX9* const pxDirectX9, PXGra
                         "Created (%ix%i) 0x%p",
                         pxTexture2D->Image->Width,
                         pxTexture2D->Image->Height,
-                        pxTexture2D->Info.DirectXInterface
+                        pxTexture2D->Info.Handle.DirectXInterface
                     );
 #endif
 
@@ -349,7 +349,7 @@ PXActionResult PXAPI PXDirectX9TextureAction(PXDirectX9* const pxDirectX9, PXGra
                         usage,
                         format,
                         pool,
-                        &(IDirect3DVolumeTexture9*)pxTexture3D->Info.DirectXInterface,
+                        &(IDirect3DVolumeTexture9*)pxTexture3D->Info.Handle.DirectXInterface,
                         &sharedHandle
                     );
 
@@ -362,7 +362,7 @@ PXActionResult PXAPI PXDirectX9TextureAction(PXDirectX9* const pxDirectX9, PXGra
                         pxTexture3D->Image->Width,
                         pxTexture3D->Image->Height,
                         pxTexture3D->Image->Depth,
-                        pxTexture3D->Info.DirectXInterface
+                        pxTexture3D->Info.Handle.DirectXInterface
                     );
 #endif
 
@@ -383,7 +383,7 @@ PXActionResult PXAPI PXDirectX9TextureAction(PXDirectX9* const pxDirectX9, PXGra
                         usage,
                         format,
                         pool,
-                        &(IDirect3DCubeTexture9*)pxTextureCube->Info.DirectXInterface,
+                        &(IDirect3DCubeTexture9*)pxTextureCube->Info.Handle.DirectXInterface,
                         &sharedHandle
                     );
 
@@ -393,7 +393,7 @@ PXActionResult PXAPI PXDirectX9TextureAction(PXDirectX9* const pxDirectX9, PXGra
                         PXLoggingInfo,
                         "DirectX9",
                         "TextureCube created 0x%p",
-                        pxTextureCube->Info.DirectXInterface
+                        pxTextureCube->Info.Handle.DirectXInterface
                     );
 #endif
 
@@ -527,7 +527,7 @@ PXActionResult PXAPI PXDirectX9ShaderProgramCreate(PXDirectX9* const pxDirectX9,
                 (
                     pxDirectX9->Device,
                     shaderByteCode,
-                    &(IDirect3DVertexShader9*)pxShader->Info.DirectXInterface
+                    &(IDirect3DVertexShader9*)pxShader->Info.Handle.DirectXInterface
                 );
                 const PXActionResult vertexShaderCreateResult = PXWindowsHandleErrorFromID(result);
 
@@ -538,7 +538,7 @@ PXActionResult PXAPI PXDirectX9ShaderProgramCreate(PXDirectX9* const pxDirectX9,
                     "DirectX9",
                     "Shader-Create",
                     "Vertex 0x%p",
-                    pxShader->Info.DirectXInterface
+                    pxShader->Info.Handle.DirectXInterface
                 );
 #endif
 
@@ -550,7 +550,7 @@ PXActionResult PXAPI PXDirectX9ShaderProgramCreate(PXDirectX9* const pxDirectX9,
                 (
                     pxDirectX9->Device,
                     shaderByteCode,
-                    &(IDirect3DPixelShader9*)pxShader->Info.DirectXInterface
+                    &(IDirect3DPixelShader9*)pxShader->Info.Handle.DirectXInterface
                 );
                 const PXActionResult pixelShaderCreateResult = PXWindowsHandleErrorFromID(result);
 
@@ -561,7 +561,7 @@ PXActionResult PXAPI PXDirectX9ShaderProgramCreate(PXDirectX9* const pxDirectX9,
                     "DirectX9",
                     "Shader-Create",
                     "Pixel 0x%p",
-                    pxShader->Info.DirectXInterface
+                    pxShader->Info.Handle.DirectXInterface
                 );
 #endif
 
@@ -1061,7 +1061,7 @@ PXActionResult PXAPI PXDirectX9DrawScriptCreate(PXDirectX9* const pxDirectX9, PX
     (
         pxDirectX9->Device,
         stateBlcokType,
-        &(IDirect3DStateBlock9*)pxDrawScript->Info.DirectXInterface
+        &(IDirect3DStateBlock9*)pxDrawScript->Info.Handle.DirectXInterface
     );
 #endif
 
@@ -1085,7 +1085,7 @@ PXActionResult PXAPI PXDirectX9DrawScriptEnd(PXDirectX9* const pxDirectX9, PXDra
     const HRESULT result = pxDirectX9->Device->lpVtbl->EndStateBlock
     (
         pxDirectX9->Device,
-        &(IDirect3DStateBlock9*)pxDrawScript->Info.DirectXInterface
+        &(IDirect3DStateBlock9*)pxDrawScript->Info.Handle.DirectXInterface
     );
 #endif
 
@@ -1096,7 +1096,7 @@ PXActionResult PXAPI PXDirectX9DrawScriptDelete(PXDirectX9* const pxDirectX9, PX
 {
 #if OSUnix
 #elif OSWindows
-    IDirect3DStateBlock9* const direct3DStateBlock9 = (IDirect3DStateBlock9*)pxDrawScript->Info.DirectXInterface;
+    IDirect3DStateBlock9* const direct3DStateBlock9 = (IDirect3DStateBlock9*)pxDrawScript->Info.Handle.DirectXInterface;
 
     const ULONG result = direct3DStateBlock9->lpVtbl->Release(direct3DStateBlock9);
 
@@ -1421,7 +1421,7 @@ PXActionResult PXAPI PXDirectX9StreamSourceSet(PXDirectX9* const pxDirectX9, con
     (
         pxDirectX9->Device,
         StreamNumber,
-        pxVertexBuffer->Info.DirectXInterface,
+        pxVertexBuffer->Info.Handle.DirectXInterface,
         OffsetInBytes,
         Stride
     );
@@ -1635,7 +1635,7 @@ PXActionResult PXAPI PXDirectX9VertexBufferCreate(PXDirectX9* const pxDirectX9, 
         0,
         flagID,
         D3DPOOL_DEFAULT,
-        &(IDirect3DVertexBuffer9*)pxVertexBuffer->Info.DirectXInterface,
+        &(IDirect3DVertexBuffer9*)pxVertexBuffer->Info.Handle.DirectXInterface,
         PXNull
     );
     const PXBool bufferCreateSuccess = bufferCreateResult > 0;
@@ -1654,11 +1654,11 @@ PXActionResult PXAPI PXDirectX9VertexBufferCreate(PXDirectX9* const pxDirectX9, 
         PXLoggingInfo,
         "DirectX9",
         "Vertex buffer created 0x%p",
-        pxVertexBuffer->Info.DirectXInterface
+        pxVertexBuffer->Info.Handle.DirectXInterface
     );
 #endif
 
-    IDirect3DVertexBuffer9* const vertexBuffer = (IDirect3DVertexBuffer9*)pxVertexBuffer->Info.DirectXInterface;
+    IDirect3DVertexBuffer9* const vertexBuffer = (IDirect3DVertexBuffer9*)pxVertexBuffer->Info.Handle.DirectXInterface;
     void* targetAdress = PXNull;
 
     const HRESULT lockResult = vertexBuffer->lpVtbl->Lock(vertexBuffer, 0, pxVertexBuffer->VertexDataSize, &targetAdress, 0);
@@ -1713,7 +1713,7 @@ PXActionResult PXAPI PXDirectX9IndexBufferCreate(PXDirectX9* const pxDirectX9, P
         0,
         dataFormat,
         0,
-        &(IDirect3DIndexBuffer9*)pxIndexBuffer->Info.DirectXInterface,
+        &(IDirect3DIndexBuffer9*)pxIndexBuffer->Info.Handle.DirectXInterface,
         PXNull
     );
 #endif

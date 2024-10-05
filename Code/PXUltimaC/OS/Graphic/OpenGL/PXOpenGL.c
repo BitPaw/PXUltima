@@ -1554,7 +1554,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
 
 #if OSUnix
 #elif OSWindows
-    pxOpenGL->WindowHandle = pxGraphicInitializeInfo->WindowReference->Info.ID;
+    pxOpenGL->WindowHandle = pxGraphicInitializeInfo->WindowReference->Info.Handle.WindowID;
     pxOpenGL->WindowDeviceContextHandle = pxGraphicInitializeInfo->HandleDeviceContext;
 #endif
 
@@ -3166,23 +3166,23 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
 
     if (supportVAO)
     {
-        pxOpenGL->VertexArrayBind(pxModel->Info.OpenGLID); // Select VAO
+        pxOpenGL->VertexArrayBind(pxModel->Info.Handle.OpenGLID); // Select VAO
 
         if(pxVertexBuffer->VertexData)
         {
-            pxOpenGL->BufferBind(GL_ARRAY_BUFFER, pxVertexBuffer->Info.OpenGLID);
+            pxOpenGL->BufferBind(GL_ARRAY_BUFFER, pxVertexBuffer->Info.Handle.OpenGLID);
         }
         if(pxIndexBuffer->IndexData)
         {
-            pxOpenGL->BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->Info.OpenGLID);
+            pxOpenGL->BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->Info.Handle.OpenGLID);
         }
     }
     else
     {
         if (supportBuffers)
         {
-            pxOpenGL->BufferBind(GL_ARRAY_BUFFER, pxVertexBuffer->Info.OpenGLID); // Select VBO
-            pxOpenGL->BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->Info.OpenGLID); // Select IBO
+            pxOpenGL->BufferBind(GL_ARRAY_BUFFER, pxVertexBuffer->Info.Handle.OpenGLID); // Select VBO
+            pxOpenGL->BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->Info.Handle.OpenGLID); // Select IBO
 
             assert(indexBufferTypeID != -1);
 
@@ -3373,7 +3373,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
         drawElementsCount = pxVertexBuffer->VertexDataSize / stride;
     }
 
-    const PXBool hasNoIndexArray = pxIndexBuffer->Info.OpenGLID == -1;
+    const PXBool hasNoIndexArray = pxIndexBuffer->Info.Handle.OpenGLID == -1;
 
     if (pxIndexBuffer->DrawModeID & PXDrawModeIDTriangle)
     {
@@ -3398,7 +3398,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
                 if (pxTexture)
                 {
                     pxOpenGL->Enable(GL_TEXTURE_2D);
-                    pxOpenGL->TextureBind(GL_TEXTURE_2D, pxTexture->Info.OpenGLID);
+                    pxOpenGL->TextureBind(GL_TEXTURE_2D, pxTexture->Info.Handle.OpenGLID);
                 }
                 else
                 {
@@ -3406,7 +3406,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
                     pxOpenGL->Disable(GL_TEXTURE_2D);
                 }
 
-                if (pxIndexBuffer->Info.OpenGLID == -1) // Does this index array exist?
+                if (pxIndexBuffer->Info.Handle.OpenGLID == -1) // Does this index array exist?
                 {
                     // Render withoút an index buffer
                     pxOpenGL->DrawArrays(GL_TRIANGLES, renderOffset, pxIndexSegment->DataRange);
@@ -3469,7 +3469,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
                 if (pxTexture)
                 {
                     pxOpenGL->Enable(GL_TEXTURE_2D);
-                    pxOpenGL->TextureBind(GL_TEXTURE_2D, pxTexture->Info.OpenGLID);
+                    pxOpenGL->TextureBind(GL_TEXTURE_2D, pxTexture->Info.Handle.OpenGLID);
                 }
                 else
                 {
@@ -4475,9 +4475,9 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
 
     // Create shader program
     {
-        pxShaderProgram->Info.OpenGLID = pxOpenGL->ShaderProgramCreate(); // Generate an opengl resource
+        pxShaderProgram->Info.Handle.OpenGLID = pxOpenGL->ShaderProgramCreate(); // Generate an opengl resource
 
-        const PXBool shaderProgrammCreateSuccessful = -1 != pxShaderProgram->Info.OpenGLID;
+        const PXBool shaderProgrammCreateSuccessful = -1 != pxShaderProgram->Info.Handle.OpenGLID;
 
         if(!shaderProgrammCreateSuccessful)
         {
@@ -4503,7 +4503,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
             "OpenGL",
             "Shader-Create",
             "Program created <%i>",
-            pxShaderProgram->Info.OpenGLID
+            pxShaderProgram->Info.Handle.OpenGLID
         );
 #endif
     }
@@ -4523,11 +4523,11 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
             const char* const shaderData = shader->ShaderFile->Data;
             PXInt32S shaderLength = shader->ShaderFile->DataUsed;
 
-            shader->Info.OpenGLID = pxOpenGL->ShaderCreate(shaderTypeID); // Create shader    
+            shader->Info.Handle.OpenGLID = pxOpenGL->ShaderCreate(shaderTypeID); // Create shader    
 
-            pxOpenGL->ShaderSource(shader->Info.OpenGLID, 1u, &shaderData, &shaderLength); // Upload data
+            pxOpenGL->ShaderSource(shader->Info.Handle.OpenGLID, 1u, &shaderData, &shaderLength); // Upload data
 
-            pxOpenGL->ShaderCompile(shader->Info.OpenGLID);
+            pxOpenGL->ShaderCompile(shader->Info.Handle.OpenGLID);
 
 #if PXLogEnable
             PXLogPrint
@@ -4537,14 +4537,14 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
                 "Shader-Compile",
                 "%s <%i>",
                 shaderTypeName,
-                shader->Info.OpenGLID
+                shader->Info.Handle.OpenGLID
             );
 #endif
 
             {
                 GLint isCompiled = 0;
 
-                pxOpenGL->ShaderGetiv(shader->Info.OpenGLID, GL_COMPILE_STATUS, &isCompiled);
+                pxOpenGL->ShaderGetiv(shader->Info.Handle.OpenGLID, GL_COMPILE_STATUS, &isCompiled);
 
                 compiledSuccessFully = isCompiled;
             }
@@ -4557,7 +4557,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
                 PXInt32S shaderErrorLengthCurrent = 0;
 
 
-                pxOpenGL->ShaderGetiv(shader->Info.OpenGLID, GL_INFO_LOG_LENGTH, &shaderErrorLengthMaximal);
+                pxOpenGL->ShaderGetiv(shader->Info.Handle.OpenGLID, GL_INFO_LOG_LENGTH, &shaderErrorLengthMaximal);
 
 
                 char* shaderErrorLengthData = PXNull;
@@ -4565,7 +4565,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
 
                 // API* PXOpenGLShaderLogInfoGetFunction)(GLuint shader, GLsizei maxLength, GLsizei* length, char* infoLog);
 
-                pxOpenGL->ShaderLogInfoGet(shader->Info.OpenGLID, shaderErrorLengthMaximal, &shaderErrorLengthCurrent, shaderErrorLengthData);
+                pxOpenGL->ShaderLogInfoGet(shader->Info.Handle.OpenGLID, shaderErrorLengthMaximal, &shaderErrorLengthCurrent, shaderErrorLengthData);
 
                 shaderErrorLengthData[shaderErrorLengthCurrent - 1] = '\0';
 
@@ -4586,7 +4586,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
                 break;
             }
 
-            pxOpenGL->ShaderAttach(pxShaderProgram->Info.OpenGLID, shader->Info.OpenGLID);
+            pxOpenGL->ShaderAttach(pxShaderProgram->Info.Handle.OpenGLID, shader->Info.Handle.OpenGLID);
 
             // This shader is now valid
             shader->Info.Flags |= PXEngineResourceInfoExist;
@@ -4602,25 +4602,25 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
 
         // Link shaders together
         {
-            pxOpenGL->ShaderProgramLink(pxShaderProgram->Info.OpenGLID);
+            pxOpenGL->ShaderProgramLink(pxShaderProgram->Info.Handle.OpenGLID);
 
             GLint linkStatus = 0;
 
-            pxOpenGL->ShaderProgramGetiv(pxShaderProgram->Info.OpenGLID, GL_LINK_STATUS, &linkStatus);
+            pxOpenGL->ShaderProgramGetiv(pxShaderProgram->Info.Handle.OpenGLID, GL_LINK_STATUS, &linkStatus);
 
             if(GL_TRUE != linkStatus)
             {
                 PXInt32S shaderErrorLengthMaximal = 0;
                 PXInt32S shaderErrorLengthCurrent = 0;
 
-                pxOpenGL->ShaderProgramGetiv(pxShaderProgram->Info.OpenGLID, GL_INFO_LOG_LENGTH, &shaderErrorLengthMaximal);
+                pxOpenGL->ShaderProgramGetiv(pxShaderProgram->Info.Handle.OpenGLID, GL_INFO_LOG_LENGTH, &shaderErrorLengthMaximal);
 
                 char* shaderErrorLengthData = PXNull;
                 PXNewStackList(char, shaderErrorLengthMaximal, &shaderErrorLengthData, PXNull);
 
                 // API* PXOpenGLShaderLogInfoGetFunction)(GLuint shader, GLsizei maxLength, GLsizei* length, char* infoLog);
 
-                pxOpenGL->ProgramInfoLogGet(pxShaderProgram->Info.OpenGLID, shaderErrorLengthMaximal, &shaderErrorLengthCurrent, shaderErrorLengthData);
+                pxOpenGL->ProgramInfoLogGet(pxShaderProgram->Info.Handle.OpenGLID, shaderErrorLengthMaximal, &shaderErrorLengthCurrent, shaderErrorLengthData);
 
                 shaderErrorLengthData[shaderErrorLengthCurrent - 1] = '\0';
 
@@ -4642,18 +4642,18 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
         }
 
 
-        pxOpenGL->ShaderProgramValidate(pxShaderProgram->Info.OpenGLID);
+        pxOpenGL->ShaderProgramValidate(pxShaderProgram->Info.Handle.OpenGLID);
     }
 
     // We used the Shaders above to compile, these elements are not used anymore.
     for (PXSize i = 0; i < amount; ++i)
     {
         PXShader* const shader = &shaderList[i];
-        const PXBool isLoaded = shader->Info.OpenGLID != -1;
+        const PXBool isLoaded = shader->Info.Handle.OpenGLID != -1;
 
         if (isLoaded)
         {
-            pxOpenGL->ShaderDelete(shader->Info.OpenGLID);
+            pxOpenGL->ShaderDelete(shader->Info.Handle.OpenGLID);
         }
     }
 
@@ -4669,8 +4669,8 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
         GLint numberOfUniforms = 0;
         GLint numberOfAttributes = 0;
 
-        pxOpenGL->ShaderProgramGetiv(pxShaderProgram->Info.OpenGLID, GL_ACTIVE_ATTRIBUTES, &numberOfAttributes);
-        pxOpenGL->ShaderProgramGetiv(pxShaderProgram->Info.OpenGLID, GL_ACTIVE_UNIFORMS, &numberOfUniforms);
+        pxOpenGL->ShaderProgramGetiv(pxShaderProgram->Info.Handle.OpenGLID, GL_ACTIVE_ATTRIBUTES, &numberOfAttributes);
+        pxOpenGL->ShaderProgramGetiv(pxShaderProgram->Info.Handle.OpenGLID, GL_ACTIVE_UNIFORMS, &numberOfUniforms);
 
 #if PXLogEnable
         PXLogPrint
@@ -4700,7 +4700,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
 
             pxOpenGL->ActiveAttributeGet
             (
-                pxShaderProgram->Info.OpenGLID,
+                pxShaderProgram->Info.Handle.OpenGLID,
                 (GLuint)i,
                 PXShaderVariableNameSize,
                 &writtenNameSize,
@@ -4728,7 +4728,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
 
             pxOpenGL->ActiveUniformGet
             (
-                pxShaderProgram->Info.OpenGLID,
+                pxShaderProgram->Info.Handle.OpenGLID,
                 i,
                 PXShaderVariableNameSize,
                 &writtenNameSize,
@@ -4795,7 +4795,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramSelect(PXOpenGL* const pxOpenGL, PXSha
     );
 #endif
 
-    pxOpenGL->ShaderProgramUse(pxShaderProgram->Info.OpenGLID);
+    pxOpenGL->ShaderProgramUse(pxShaderProgram->Info.Handle.OpenGLID);
 
     const PXActionResult createResult = PXOpenGLErrorCurrent(pxOpenGL);
 
@@ -4808,7 +4808,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramSelect(PXOpenGL* const pxOpenGL, PXSha
             "OpenGL",
             "Shaderprogram",
             "Select failed <%i>",
-            pxShaderProgram->Info.OpenGLID
+            pxShaderProgram->Info.Handle.OpenGLID
         );
 #endif
     }
@@ -4818,7 +4818,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramSelect(PXOpenGL* const pxOpenGL, PXSha
 
 PXActionResult PXAPI PXOpenGLShaderProgramDelete(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram)
 {
-    pxOpenGL->ShaderProgramDelete(pxShaderProgram->Info.OpenGLID);
+    pxOpenGL->ShaderProgramDelete(pxShaderProgram->Info.Handle.OpenGLID);
 
     const PXActionResult createResult = PXOpenGLErrorCurrent(pxOpenGL);
 
@@ -4832,11 +4832,11 @@ PXActionResult PXAPI PXOpenGLShaderProgramDelete(PXOpenGL* const pxOpenGL, PXSha
             "Shader-Delete",
             "ID:%i OpenGLID:%i",
             pxShaderProgram->Info.ID,
-            pxShaderProgram->Info.OpenGLID
+            pxShaderProgram->Info.Handle.OpenGLID
         );
 #endif
 
-        pxShaderProgram->Info.ID = -1;
+        pxShaderProgram->Info.Handle.OpenGLID = -1;
     }
 
     return createResult;
@@ -4954,11 +4954,11 @@ PXActionResult PXAPI PXOpenGLTextureAction(PXOpenGL* const pxOpenGL, PXGraphicTe
                     case PXGraphicTextureType2D:
                     {
                         PXTexture2D* const pxTexture2D = (PXTexture2D*)textureAdress;
-                        pxTexture2D->Info.OpenGLID = textureID;
+                        pxTexture2D->Info.Handle.OpenGLID = textureID;
 
                         // Bind resource
                         {
-                            pxOpenGL->TextureBind(GL_TEXTURE_2D, pxTexture2D->Info.OpenGLID);
+                            pxOpenGL->TextureBind(GL_TEXTURE_2D, pxTexture2D->Info.Handle.OpenGLID);
 
                             const PXActionResult createResult = PXOpenGLErrorCurrent(pxOpenGL);
 
@@ -5009,7 +5009,7 @@ PXActionResult PXAPI PXOpenGLTextureAction(PXOpenGL* const pxOpenGL, PXGraphicTe
                     case PXGraphicTextureType3D:
                     {
                         PXTexture3D* const pxTexture3D = (PXTexture3D*)textureAdress;
-                        pxTexture3D->Info.OpenGLID = textureID;
+                        pxTexture3D->Info.Handle.OpenGLID = textureID;
                        
                         pxOpenGL->TextureBind(GL_TEXTURE_3D, textureID);
 
@@ -5022,7 +5022,7 @@ PXActionResult PXAPI PXOpenGLTextureAction(PXOpenGL* const pxOpenGL, PXGraphicTe
                     case PXGraphicTextureTypeCubeContainer:
                     {
                         PXTextureCube* const pxTextureCube = (PXTextureCube*)textureAdress;
-                        pxTextureCube->Info.OpenGLID = textureID;
+                        pxTextureCube->Info.Handle.OpenGLID = textureID;
 
                         pxOpenGL->TextureBind(GL_TEXTURE_CUBE_MAP, textureID);
 
@@ -5127,7 +5127,7 @@ PXActionResult PXAPI PXOpenGLTextureAction(PXOpenGL* const pxOpenGL, PXGraphicTe
 
                     if(pxTexture2D)
                     {
-                        textureID = pxTexture2D->Info.OpenGLID;
+                        textureID = pxTexture2D->Info.Handle.OpenGLID;
                     }
 
                     textureType = GL_TEXTURE_2D;
@@ -5140,7 +5140,7 @@ PXActionResult PXAPI PXOpenGLTextureAction(PXOpenGL* const pxOpenGL, PXGraphicTe
 
                     if(pxTexture3D)
                     {
-                        textureID = pxTexture3D->Info.OpenGLID;
+                        textureID = pxTexture3D->Info.Handle.OpenGLID;
                     }
 
                     textureType = GL_TEXTURE_3D;
@@ -5153,7 +5153,7 @@ PXActionResult PXAPI PXOpenGLTextureAction(PXOpenGL* const pxOpenGL, PXGraphicTe
 
                     if(pxTextureCube)
                     {
-                        textureID = pxTextureCube->Info.OpenGLID;
+                        textureID = pxTextureCube->Info.Handle.OpenGLID;
                     }
 
                     textureType = GL_TEXTURE_CUBE_MAP;
@@ -5217,7 +5217,7 @@ void PXAPI PXOpenGLTexture2DDataWrite(PXOpenGL* const pxOpenGL, PXTexture2D* con
         "Texture2D",
         "%8s  Data upload <%i> (%ix%i)",
         pxText.TextA,
-        pxTexture2D->Info.OpenGLID,
+        pxTexture2D->Info.Handle.OpenGLID,
         pxTexture2D->Image->Width,
         pxTexture2D->Image->Height
     );
@@ -5324,7 +5324,7 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, const PXRenderEntity* co
 
     if (pxOpenGL->VertexArrayBind)
     {
-        pxOpenGL->VertexArrayBind(pxModel->Info.OpenGLID);
+        pxOpenGL->VertexArrayBind(pxModel->Info.Handle.OpenGLID);
     }
 
 
@@ -5332,7 +5332,7 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, const PXRenderEntity* co
    // pxOpenGL->PXOpenGLBindBufferCallBack(GL_ELEMENT_ARRAY_BUFFER, pxSkyBox->Model.IndexBuffer.ResourceID.OpenGLID);
     if (pxTextureCube)
     {
-        pxOpenGL->TextureBind(GL_TEXTURE_CUBE_MAP, pxTextureCube->Info.OpenGLID);
+        pxOpenGL->TextureBind(GL_TEXTURE_CUBE_MAP, pxTextureCube->Info.Handle.OpenGLID);
     }
 
    
@@ -5514,7 +5514,7 @@ PXActionResult PXAPI PXOpenGLShaderVariableSet(PXOpenGL* const pxOpenGL, const P
                 /// ?
             }
 
-            pxShaderVariable->RegisterIndex = pxOpenGL->GetUniformLocation(pxShaderProgram->Info.OpenGLID, pxShaderVariable->Name);
+            pxShaderVariable->RegisterIndex = pxOpenGL->GetUniformLocation(pxShaderProgram->Info.Handle.OpenGLID, pxShaderVariable->Name);
 
             // If no error, exit
             {
@@ -6117,14 +6117,14 @@ PXActionResult PXAPI PXOpenGLSpriteRegister(PXOpenGL* const pxOpenGL, PXSprite* 
 PXActionResult PXAPI PXOpenGLDrawScriptCreate(PXOpenGL* const pxOpenGL, PXDrawScript* const pxDrawScript)
 {
     // Create one display list
-    pxDrawScript->Info.OpenGLID = pxOpenGL->GenLists(1);
+    pxDrawScript->Info.Handle.OpenGLID = pxOpenGL->GenLists(1);
 
     return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXOpenGLDrawScriptBegin(PXOpenGL* const pxOpenGL, PXDrawScript* const pxDrawScript)
 {
-    pxOpenGL->NewList(pxDrawScript->Info.OpenGLID, GL_COMPILE);
+    pxOpenGL->NewList(pxDrawScript->Info.Handle.OpenGLID, GL_COMPILE);
 
     return PXActionSuccessful;
 }
@@ -6138,16 +6138,16 @@ PXActionResult PXAPI PXOpenGLDrawScriptEnd(PXOpenGL* const pxOpenGL, PXDrawScrip
 
 PXActionResult PXAPI PXOpenGLDrawScriptDelete(PXOpenGL* const pxOpenGL, PXDrawScript* const pxDrawScript)
 {
-    pxOpenGL->DeleteLists(pxDrawScript->Info.OpenGLID, 1);
+    pxOpenGL->DeleteLists(pxDrawScript->Info.Handle.OpenGLID, 1);
 
-    pxDrawScript->Info.OpenGLID = -1;
+    pxDrawScript->Info.Handle.OpenGLID = -1;
 
     return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXOpenGLDrawScriptExecute(PXOpenGL* const pxOpenGL, PXDrawScript* const pxDrawScript)
 {
-    pxOpenGL->CallList(pxDrawScript->Info.OpenGLID);
+    pxOpenGL->CallList(pxDrawScript->Info.Handle.OpenGLID);
 
     return PXActionSuccessful;
 }
@@ -6194,8 +6194,8 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
 
     if (pxOpenGL->VertexArraysGenerate)
     {
-        pxOpenGL->VertexArraysGenerate(1, &(pxModel->Info.OpenGLID)); // VAO
-        pxOpenGL->VertexArrayBind(pxModel->Info.OpenGLID);
+        pxOpenGL->VertexArraysGenerate(1, &(pxModel->Info.Handle.OpenGLID)); // VAO
+        pxOpenGL->VertexArrayBind(pxModel->Info.Handle.OpenGLID);
 
 #if PXLogEnable
         PXLogPrint
@@ -6204,7 +6204,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
             "OpenGL",
             "Model",
             "VAO created <%i>",
-            pxModel->Info.OpenGLID
+            pxModel->Info.Handle.OpenGLID
         );
 #endif
     }
@@ -6217,7 +6217,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
             "OpenGL",
             "Model",
             "VAO not supported",
-            pxModel->Info.OpenGLID
+            pxModel->Info.Handle.OpenGLID
         );
 #endif
     }
@@ -6248,7 +6248,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
             "OpenGL",
             "Model",
             "VBO not supported, Copy for Client-Buffer use.",
-            pxModel->Info.OpenGLID
+            pxModel->Info.Handle.OpenGLID
         );
 #endif
 
@@ -6266,8 +6266,8 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
         GLuint bufferIDs[2] = {-1, -1};
         pxOpenGL->BufferGenerate(amount, bufferIDs);
 
-        pxVertexBuffer->Info.OpenGLID = bufferIDs[0];
-        pxIndexBuffer->Info.OpenGLID = bufferIDs[1];
+        pxVertexBuffer->Info.Handle.OpenGLID = bufferIDs[0];
+        pxIndexBuffer->Info.Handle.OpenGLID = bufferIDs[1];
 
 #if PXLogEnable
         PXLogPrint
@@ -6307,7 +6307,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
         "OpenGL",
         "Model",
         "VBO:<%i> upload data 0x%p with %i Bytes",
-        pxVertexBuffer->Info.OpenGLID,
+        pxVertexBuffer->Info.Handle.OpenGLID,
         pxVertexBuffer->VertexData,
         pxVertexBuffer->VertexDataSize
     );
@@ -6323,7 +6323,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
 
 #endif
 
-    pxOpenGL->BufferBind(GL_ARRAY_BUFFER, pxVertexBuffer->Info.OpenGLID);
+    pxOpenGL->BufferBind(GL_ARRAY_BUFFER, pxVertexBuffer->Info.Handle.OpenGLID);
     pxOpenGL->BufferData(GL_ARRAY_BUFFER, pxVertexBuffer->VertexDataSize, pxVertexBuffer->VertexData, GL_STATIC_DRAW);
    // pxOpenGL->PXOpenGLBindBufferCallBack(GL_ARRAY_BUFFER, 0);
 
@@ -6341,7 +6341,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
             "OpenGL",
             "Model",
             "IBO:<%i> upload data 0x%p with %i Bytes ",
-            pxIndexBuffer->Info.OpenGLID,
+            pxIndexBuffer->Info.Handle.OpenGLID,
             pxIndexBuffer->IndexData,
             pxIndexBuffer->IndexDataSize
         );
@@ -6353,7 +6353,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
        // PXConsoleWriteTableInt(data, amount, stride);
 #endif
 
-        pxOpenGL->BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->Info.OpenGLID);
+        pxOpenGL->BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->Info.Handle.OpenGLID);
         pxOpenGL->BufferData(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->IndexDataSize, pxIndexBuffer->IndexData, GL_STATIC_DRAW);
         //pxOpenGL->PXOpenGLBindBufferCallBack(GL_ELEMENT_ARRAY_BUFFER, 0);
 

@@ -286,13 +286,21 @@ PXActionResult PXAPI PXCodeDocumentElementGenerateChild
     PXCodeDocumentElement pxCodeDocumentElementTemp;
     PXClear(PXCodeDocumentElement, &pxCodeDocumentElementTemp);
     pxCodeDocumentElementTemp.Type = pxDocumentElementType;
-    pxCodeDocumentElementTemp.ElementParent = pxDocumentElementParent;
+   // pxCodeDocumentElementTemp.ElementParent = pxDocumentElementParent;
     pxCodeDocumentElementTemp.Depth = depth;
 
     PXCodeDocumentElement* pxCodeDocumentElement = PXCodeDocumentElementAdd(pxDocument, &pxCodeDocumentElementTemp); // Use to pre-register space. aka. allocate object
 
+
+
+    //PXHierarchicalNodeEntryAdd();
+
+    /*
+
     if(pxDocumentElementParent)
     {
+ 
+
         if(!pxDocumentElementParent->ElementChildFirstBorn) // if we dont have a child yet, we are the first
         {
             pxDocumentElementParent->ElementChildFirstBorn = pxCodeDocumentElement;
@@ -313,6 +321,7 @@ PXActionResult PXAPI PXCodeDocumentElementGenerateChild
             }
         }
     }
+    */
 
     *pxDocumentElement = pxCodeDocumentElement;
 }
@@ -352,9 +361,9 @@ void PXAPI PXCodeDocumentElementPrintSingle(PXCodeDocument* const pxDocument, PX
 
 
 
-    int parrentID = pxDocumentElement->ElementParent ? pxDocumentElement->ElementParent->ID : -1;
-    int siblingID = pxDocumentElement->ElementSibling ? pxDocumentElement->ElementSibling->ID : -1;
-    int childID = pxDocumentElement->ElementChildFirstBorn ? pxDocumentElement->ElementChildFirstBorn->ID : -1;
+    int parrentID = 0;//pxDocumentElement->ElementParent ? pxDocumentElement->ElementParent->ID : -1;
+    int siblingID = 0;//pxDocumentElement->ElementSibling ? pxDocumentElement->ElementSibling->ID : -1;
+    int childID = 0;// pxDocumentElement->ElementChildFirstBorn ? pxDocumentElement->ElementChildFirstBorn->ID : -1;
 
     char identification[515];
     PXTextPrintA

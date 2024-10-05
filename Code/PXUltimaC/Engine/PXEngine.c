@@ -950,7 +950,7 @@ PXActionResult PXAPI PXEngineResourceAction(PXEngine* const pxEngine, PXEngineRe
 
                     if(pxEngineResourceStateChangeInfo->Enable)
                     {
-                        pxEngineText->Info.Flags |= PXEngineResourceInfoEnabled;
+                        pxEngineText->Info.Handle.Flags |= PXEngineResourceInfoEnabled;
                     }
 
 #if PXLogEnable
@@ -972,7 +972,7 @@ PXActionResult PXAPI PXEngineResourceAction(PXEngine* const pxEngine, PXEngineRe
 
                     if(pxEngineResourceStateChangeInfo->Enable)
                     {
-                        pxEngineTimer->Info.Flags |= PXEngineResourceInfoEnabled;
+                        pxEngineTimer->Info.Handle.Flags |= PXEngineResourceInfoEnabled;
                     }
 
                     pxEngineTimer->TimeStampStart = PXTimeCounterStampGet();
@@ -1231,7 +1231,7 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
     {
         PXWindowUpdate(&pxEngine->GUISystem, pxEngine->Window);
 
-        PXWindowMouseMovementEnable(pxEngine->Window->Info.WindowID);
+        PXWindowMouseMovementEnable(pxEngine->Window->Info.Handle.WindowID);
 
         PXControllerSystemInitilize(&pxEngine->ControllerSystem);
         PXControllerSystemDevicesListRefresh(&pxEngine->ControllerSystem);

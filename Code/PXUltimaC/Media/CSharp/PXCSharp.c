@@ -410,22 +410,23 @@ void PXAPI PXCSharpContainerWrite(PXCompiler* const pxCompiler)
 
     for
         (
-        PXCodeDocumentElement* child = symbol->ElementChildFirstBorn;
+        PXHierarchicalNode* child = &symbol->Hierachy;
         child;
-        child = child->ElementSibling
+        child = child->Sibling
         )
     {
         switch(symbol->Type)
         {
             case PXDocumentElementTypeEnum:
             {
+            /*
                 PXFileWriteFill(pxFile, ' ', pxCompiler->WriteInfo.TABSize * child->Depth);
                 PXFileWriteA(pxFile, child->NameShortAdress, child->NameShortSize);
 
                 if(child->ElementSibling) // if not last
                 {
                     PXFileWriteC(pxFile, ',');
-                }
+                }*/
 
                 break;
             }
@@ -446,7 +447,7 @@ void PXAPI PXCSharpContainerWrite(PXCompiler* const pxCompiler)
             }
         }
 
-        if(child->ElementSibling)
+        if(child->Sibling)
         {
             PXFileWriteNewLine(pxFile);
         }

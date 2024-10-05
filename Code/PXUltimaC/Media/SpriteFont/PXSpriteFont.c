@@ -551,18 +551,18 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXResourceTransphereInfo* const px
                     values
                 );
 
-                PXTextCopyA(indexPosition[0] + 1, PXSpriteFontFontNameSize, PXSpriteFont->Info.Name, PXSpriteFontFontNameSize);
-                PXTextToIntA(indexPosition[1], 5, &PXSpriteFont->Info.Size);
-                PXTextToBoolA(indexPosition[2], 5, &PXSpriteFont->Info.Bold);
-                PXTextToBoolA(indexPosition[3], 5, &PXSpriteFont->Info.Italic);
-                PXTextCopyA(indexPosition[4] + 1, PXSpriteFontCharSetNameSize, PXSpriteFont->Info.CharSet, PXSpriteFontCharSetNameSize);
-                PXTextToBoolA(indexPosition[5], 5, &PXSpriteFont->Info.Unicode);
-                PXTextToIntA(indexPosition[6], 5, &PXSpriteFont->Info.StretchH);
-                PXTextToBoolA(indexPosition[7], 5, &PXSpriteFont->Info.Smooth);
-                PXTextToBoolA(indexPosition[8], 5, &PXSpriteFont->Info.Supersampling);
+                PXTextCopyA(indexPosition[0] + 1, PXSpriteFontFontNameSize, PXSpriteFont->Info.Handle.Name, PXSpriteFontFontNameSize);
+                PXTextToIntA(indexPosition[1], 5, &PXSpriteFont->Info.Handle.Size);
+                PXTextToBoolA(indexPosition[2], 5, &PXSpriteFont->Info.Handle.Bold);
+                PXTextToBoolA(indexPosition[3], 5, &PXSpriteFont->Info.Handle.Italic);
+                PXTextCopyA(indexPosition[4] + 1, PXSpriteFontCharSetNameSize, PXSpriteFont->Info.Handle.CharSet, PXSpriteFontCharSetNameSize);
+                PXTextToBoolA(indexPosition[5], 5, &PXSpriteFont->Info.Handle.Unicode);
+                PXTextToIntA(indexPosition[6], 5, &PXSpriteFont->Info.Handle.StretchH);
+                PXTextToBoolA(indexPosition[7], 5, &PXSpriteFont->Info.Handle.Smooth);
+                PXTextToBoolA(indexPosition[8], 5, &PXSpriteFont->Info.Handle.Supersampling);
 
-                PXTextTerminateBeginFromFirstA(PXSpriteFont->Info.Name, PXSpriteFontFontNameSize, '\"');
-                PXTextTerminateBeginFromFirstA(PXSpriteFont->Info.CharSet, PXSpriteFontCharSetNameSize, '\"');
+                PXTextTerminateBeginFromFirstA(PXSpriteFont->Info.Handle.Name, PXSpriteFontFontNameSize, '\"');
+                PXTextTerminateBeginFromFirstA(PXSpriteFont->Info.Handle.CharSet, PXSpriteFontCharSetNameSize, '\"');
 
                 break;
             }
@@ -929,22 +929,22 @@ void PXAPI PXSpriteFontPrtinf(const PXSpriteFont* pxSpriteFont)
 {
 #if 0
     printf(" +-------------------------------------------------------------------------+\n");
-    printf(" | Font (%s) : %s\n", &pxSpriteFont->Info.CharSet[0], &pxSpriteFont->Info.Name[0]);
+    printf(" | Font (%s) : %s\n", &pxSpriteFont->Info.Handle.CharSet[0], &pxSpriteFont->Info.Handle.Name[0]);
     printf(" +-------------------------------------------------------------------------+\n");
-    printf(" | Size     : %4u | Smooth  : %3u |\n", pxSpriteFont->Info.Size, pxSpriteFont->Info.Smooth);
-    printf(" | Bold     : %4s | AA      : %3u |\n", pxSpriteFont->Info.Bold ? "Yes" : "No", pxSpriteFont->Info.Supersampling);
+    printf(" | Size     : %4u | Smooth  : %3u |\n", pxSpriteFont->Info.Handle.Size, pxSpriteFont->Info.Handle.Smooth);
+    printf(" | Bold     : %4s | AA      : %3u |\n", pxSpriteFont->Info.Handle.Bold ? "Yes" : "No", pxSpriteFont->Info.Handle.Supersampling);
     printf
     (
         " | Italic   : %4s | Padding : %u,%u,%u,%u |\n",
-        pxSpriteFont->Info.Italic ? "Yes" : "No",
-        pxSpriteFont->Info.CharacterPadding[0],
-        pxSpriteFont->Info.CharacterPadding[1],
-        pxSpriteFont->Info.CharacterPadding[2],
-        pxSpriteFont->Info.CharacterPadding[3]
+        pxSpriteFont->Info.Handle.Italic ? "Yes" : "No",
+        pxSpriteFont->Info.Handle.CharacterPadding[0],
+        pxSpriteFont->Info.Handle.CharacterPadding[1],
+        pxSpriteFont->Info.Handle.CharacterPadding[2],
+        pxSpriteFont->Info.Handle.CharacterPadding[3]
 
     );
-    printf(" | unicode  : %4s | Spacing : %u,%u |\n", pxSpriteFont->Info.Unicode ? "Yes" : "No", pxSpriteFont->Info.SpacerOffset[0], pxSpriteFont->Info.SpacerOffset[1]);
-    printf(" | stretchH : %4u | Outline : %3u |\n", pxSpriteFont->Info.StretchH, pxSpriteFont->Info.OutlineThickness);
+    printf(" | unicode  : %4s | Spacing : %u,%u |\n", pxSpriteFont->Info.Handle.Unicode ? "Yes" : "No", pxSpriteFont->Info.Handle.SpacerOffset[0], pxSpriteFont->Info.Handle.SpacerOffset[1]);
+    printf(" | stretchH : %4u | Outline : %3u |\n", pxSpriteFont->Info.Handle.StretchH, pxSpriteFont->Info.Handle.OutlineThickness);
 
 
     for(unsigned int pageIndex = 0; pageIndex < pxSpriteFont->FontPageListSize; pageIndex++)

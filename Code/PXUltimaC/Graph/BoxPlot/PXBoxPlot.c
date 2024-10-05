@@ -1,4 +1,4 @@
-#include "PXDiagram.h"
+#include "PXBoxPlot.h"
 
 #include <OS/Memory/PXMemory.h>
 #include <Math/PXMath.h>

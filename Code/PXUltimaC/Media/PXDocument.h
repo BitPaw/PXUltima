@@ -191,9 +191,9 @@ typedef struct PXCodeDocumentElement_
     PXSize ID;
     PXSize Depth;
 
-    struct PXCodeDocumentElement_* ElementParent; // Firect parent object
-    struct PXCodeDocumentElement_* ElementSibling; // Like a linked list, contain the next object
-    struct PXCodeDocumentElement_* ElementChildFirstBorn; // contain the first child object
+    PXHierarchicalNode Hierachy;
+
+
 
     // include
     PXBool IsGlobal; // In C, Global=<xxxx> local="xxxx"

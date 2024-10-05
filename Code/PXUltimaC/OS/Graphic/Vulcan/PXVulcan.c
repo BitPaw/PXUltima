@@ -302,7 +302,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicIniti
         vkWin32SurfaceCreateInfoKHR.pNext = PXNull;
         vkWin32SurfaceCreateInfoKHR.flags = PXNull;
         vkWin32SurfaceCreateInfoKHR.hinstance = GetModuleHandle(NULL);
-        vkWin32SurfaceCreateInfoKHR.hwnd = pxGraphicInitializeInfo->WindowReference->Info.WindowID;
+        vkWin32SurfaceCreateInfoKHR.hwnd = pxGraphicInitializeInfo->WindowReference->Info.Handle.WindowID;
 
         const VkResult createSurface = pxVulcan->SurfaceCreate(pxVulcan->Instance, &vkWin32SurfaceCreateInfoKHR, PXNull, &pxVulcan->SurfaceMainRendering);
     }

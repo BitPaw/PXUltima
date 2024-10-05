@@ -72,7 +72,7 @@
     <ClCompile Include="Math\PXCollision.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Math\PXDiagram.c">
+    <ClCompile Include="Graph\BoxPlot\PXBoxPlot.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Math\PXMath.c">
@@ -513,6 +513,12 @@
     <ClCompile Include="Engine\PXPlayer.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Graph\Timeline\PXTimeline.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Container\HierarchicalList\PXHierarchicalList.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm\KalmanFilter\PXKalmanFilter.h">
@@ -572,7 +578,7 @@
     <ClInclude Include="Math\PXCollision.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Math\PXDiagram.h">
+    <ClInclude Include="Graph\BoxPlot\PXBoxPlot.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Math\PXMath.h">
@@ -1013,6 +1019,12 @@
     <ClInclude Include="Engine\PXPlayer.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Graph\Timeline\PXTimeline.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Container\HierarchicalList\PXHierarchicalList.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Media\Matroska\README.md" />
@@ -1052,5 +1064,8 @@
     <None Include="Media\PXLevel\README.md" />
     <None Include="Media\N64\README.md" />
     <None Include="Media\MIPS\README.md" />
+    <None Include="Graph\Timeline\README.md" />
+    <None Include="Graph\BoxPlot\README.md" />
+    <None Include="Container\HierarchicalList\README.md" />
   </ItemGroup>
 </Project>

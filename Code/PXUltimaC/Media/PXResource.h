@@ -5,6 +5,7 @@
 
 #include "PXImage.h"
 #include <Container/FlexDataCache/PXFlexDataCache.h>
+#include <Container/HierarchicalList/PXHierarchicalList.h>
 #include <Container/Dictionary/PXDictionary.h>
 #include <OS/Memory/PXMemory.h>
 
@@ -33,6 +34,7 @@ typedef struct PXGUIElement_ PXGUIElement;
 typedef struct PXFileTypeInfo_ PXFileTypeInfo;
 typedef struct PXCompiler_ PXCompiler;
 typedef struct PXProcessor_ PXProcessor;
+typedef struct PXHierarchicalNode_ PXHierarchicalNode;
 
 extern void _chkstk(size_t s);
 
@@ -66,12 +68,12 @@ PXGraphicRenderFilter;
 typedef enum PXGraphicShaderType_
 {
     PXShaderTypeInvalid,
-    PXShaderTypeVertex,     // .vert - a vertex shader
-    PXShaderTypePixel,   // .frag - a fragment shader
-    PXShaderTypeTessellationControl,    // .tesc - a tessellation control shader
-    PXShaderTypeTessellationEvaluation,     // .tese - a tessellation evaluation shader
-    PXShaderTypeGeometry,      // .geom - a geometry shader
-    PXShaderTypeCompute,   // .comp - a compute shader
+    PXShaderTypeVertex,                 // .vert - vertex shader
+    PXShaderTypePixel,                  // .frag - fragment shader
+    PXShaderTypeTessellationControl,    // .tesc - tessellation control shader
+    PXShaderTypeTessellationEvaluation, // .tese - tessellation evaluation shader
+    PXShaderTypeGeometry,               // .geom - geometry shader
+    PXShaderTypeCompute,                // .comp - compute shader
 }
 PXGraphicShaderType;
 
@@ -352,31 +354,31 @@ PXResourceType;
 #define PXResourceBehavíourAllignVerticalCENTER           (1<<4)
 #define PXResourceBehavíourAllignBOTTOM                   (1<<5)
 
+// IDs used by rendering APIs to keep track of the object reference.
+// OpenGL uses 32-Bit Integer as an ID.
+// DirectX uses direct pointers to object references.
+typedef union PXOSHandle_
+{
+    PXInt32U OpenGLID; // Simple ID for an object.
+    void* DirectXInterface; // DirectX uses interfaces to communicate to a element.
+#if OSUnix
+    Window WindowID; // Linux X11 System
+#elif OSWindows
+    HWND WindowID; // Windows only, used for GUI elements
+    HBRUSH BrushHandle;
+    HFONT FontHandle;
+    HMENU MenuHandle;
+#endif
+}
+PXOSHandle;
 
 // Internal engine identification
 // Additional use is to define current storage and interactions.
 typedef struct PXResourceInfo_
 {
-    void* Parrent; 
-    void* Sibling;
-    void* ChildFirstborn;
+    PXHierarchicalNode Hierarchy;
 
-    // IDs used by rendering APIs to keep track of the object reference.
-    // OpenGL uses 32-Bit Integer as an ID.
-    // DirectX uses direct pointers to object references.
-    union
-    {
-        PXInt32U OpenGLID; // Simple ID for an object.
-        void* DirectXInterface; // DirectX uses interfaces to communicate to a element.
-#if OSUnix
-        Window WindowID; // Linux X11 System
-#elif OSWindows
-        HWND WindowID; // Windows only, used for GUI elements
-        HBRUSH BrushHandle;
-        HFONT FontHandle;
-        HMENU MenuHandle;
-#endif
-    };
+    PXOSHandle Handle;
 
     PXInt32U ID; // Identification of this object managed by the engine itself.
     PXInt32U Flags; // general information
