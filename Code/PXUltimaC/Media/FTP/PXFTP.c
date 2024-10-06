@@ -38,30 +38,30 @@ const char PXFTPNoOperation[4] = { 'N', 'O', 'O', 'P' };
 
 PXFTPResult PXAPI PXFTPResultParse(const unsigned short resultID)
 {
-    switch (resultID)
+    switch(resultID)
     {
-            // 1xx
-            // 110 Restart marker reply.
-            // 120 Service ready in nnn minutes.
-            // 125 Data connection already open; transfer starting.
-            // 150 File status okay; about to open data connection.
-            // 120 Service ready in nnn minutes.
-            // 150 File status okay; about to open data connection.
+        // 1xx
+        // 110 Restart marker reply.
+        // 120 Service ready in nnn minutes.
+        // 125 Data connection already open; transfer starting.
+        // 150 File status okay; about to open data connection.
+        // 120 Service ready in nnn minutes.
+        // 150 File status okay; about to open data connection.
 
-            //---------------------------------------------------------------------
+        //---------------------------------------------------------------------
 
-            // 2xx
+        // 2xx
 
         case 200: return PXFTPResultOK;
         case 202: return PXFTPResultCommandNotImplemented;
-        case 211: return PXFTPResultSystemStatus; 
-        case 212: return PXFTPResultDirectoryStatus; 
-        case 213: return PXFTPResultFileStatus; 
-        case 214: return PXFTPResultHelp; 
-        case 215: return PXFTPResultName; 
-        case 220: return PXFTPResultLoginReady; 
-        case 221: return PXFTPResultServiceClosed; 
-        case 225: return PXFTPResultServiceReady; 
+        case 211: return PXFTPResultSystemStatus;
+        case 212: return PXFTPResultDirectoryStatus;
+        case 213: return PXFTPResultFileStatus;
+        case 214: return PXFTPResultHelp;
+        case 215: return PXFTPResultName;
+        case 220: return PXFTPResultLoginReady;
+        case 221: return PXFTPResultServiceClosed;
+        case 225: return PXFTPResultServiceReady;
         case 227: return PXFTPResultPassiveModeNowActive;
         case 230: return PXFTPResultLoginCompleate;
         case 250: return PXFTPResultFileActionOK;
@@ -133,60 +133,60 @@ PXFTPResult PXAPI PXFTPResultParse(const unsigned short resultID)
     }
 }
 
-PXSize PXAPI PXFTPCommandBuild(const PXFTPCommand pxFTPCommand, PXText* const pxText, const char* const parameterA)
-{    
-    const char printFormat[] = "%.4s %s\r\n"; 
+PXSize PXAPI PXFTPCommandBuild(const PXFTPCommand pxFTPCommand, PXText* const pxText, const char* parameterA)
+{
+    const char printFormat[] = "%.4s %s\r\n";
     char* commandText = ""; // Empty string, to later not print anything. NULL would be printed as "(null)"
-    
-    switch (pxFTPCommand)
+
+    switch(pxFTPCommand)
     {
         case PXFTPCommandUser:
         {
-            commandText = PXFTPUser;     
-            
-            if (parameterA == PXNull)
+            commandText = PXFTPUser;
+
+            if(parameterA == PXNull)
             {
-                parameterA = "anonymous";         
+                parameterA = "anonymous";
             }
-            
+
             break;
         }
         case PXFTPCommandPassword:                  commandText = PXFTPPassword;     break;
-        case PXFTPCommandAccount:                   commandText = PXFTPAccount;      break;            
+        case PXFTPCommandAccount:                   commandText = PXFTPAccount;      break;
         case PXFTPCommandWorkingDirectoryChange:    commandText = PXFTPCWD;          break;
         case PXFTPCommandDirectoryGoToParent:       commandText = PXFTPCDUP;         break;
         case PXFTPCommandSMNT:                      commandText = PXFTPSMNT;         break;
         case PXFTPCommandQuit:                      commandText = PXFTPQuit;         break;
-        case PXFTPCommandREIN:                      commandText = PXFTPREIN;         break;     
-        case PXFTPCommandPORT:                      commandText = PXFTPPORT;         break; 
+        case PXFTPCommandREIN:                      commandText = PXFTPREIN;         break;
+        case PXFTPCommandPORT:                      commandText = PXFTPPORT;         break;
         case PXFTPCommandPASV:                      commandText = PXFTPPASV;         break;
         case PXFTPCommandTYPE:                      commandText = PXFTPTYPE;         break;
         case PXFTPCommandSTRU:                      commandText = PXFTPSTRU;         break;
-        case PXFTPCommandMODE:                      commandText = PXFTPMODE;         break;    
-        case PXFTPCommandRETR:                      commandText = PXFTPRETR;         break;  
-        case PXFTPCommandSTOR:                      commandText = PXFTPSTOR;         break;         
-        case PXFTPCommandStoreUnique:               commandText = PXFTPSTOU;         break;       
-        case PXFTPCommandAPPE:                      commandText = PXFTPAPPE;         break;         
-        case PXFTPCommandALLO:                      commandText = PXFTPALLO;         break;        
-        case PXFTPCommandREST:                      commandText = PXFTPREST;         break;         
+        case PXFTPCommandMODE:                      commandText = PXFTPMODE;         break;
+        case PXFTPCommandRETR:                      commandText = PXFTPRETR;         break;
+        case PXFTPCommandSTOR:                      commandText = PXFTPSTOR;         break;
+        case PXFTPCommandStoreUnique:               commandText = PXFTPSTOU;         break;
+        case PXFTPCommandAPPE:                      commandText = PXFTPAPPE;         break;
+        case PXFTPCommandALLO:                      commandText = PXFTPALLO;         break;
+        case PXFTPCommandREST:                      commandText = PXFTPREST;         break;
         case PXFTPCommandFileRenameFrom:            commandText = PXFTPRNFR;         break;
-        case PXFTPCommandFileRenameTo:              commandText = PXFTPRNTO;         break;          
-        case PXFTPCommandAbort:                     commandText = PXFTPABOR;         break;         
-        case PXFTPCommandDelete:                    commandText = PXFTPDelete;       break;           
-        case PXFTPCommandDirectoryRemove:           commandText = PXFTPRMD;          break;     
-        case PXFTPCommandMKD:                       commandText = PXFTPMKD;          break;        
+        case PXFTPCommandFileRenameTo:              commandText = PXFTPRNTO;         break;
+        case PXFTPCommandAbort:                     commandText = PXFTPABOR;         break;
+        case PXFTPCommandDelete:                    commandText = PXFTPDelete;       break;
+        case PXFTPCommandDirectoryRemove:           commandText = PXFTPRMD;          break;
+        case PXFTPCommandMKD:                       commandText = PXFTPMKD;          break;
         case PXFTPCommandDirectoryPrint:            commandText = PXFTPPWD;          break;
         case PXFTPCommandList:                      commandText = PXFTPList;         break;
-        case PXFTPCommandNLST:                      commandText = PXFTPNList;        break;      
-        case PXFTPCommandSITE:                      commandText = PXFTPSite;         break;         
-        case PXFTPCommandSYST:                      commandText = PXFTPSyst;         break;           
-        case PXFTPCommandSTAT:                      commandText = PXFTPStat;         break;           
-        case PXFTPCommandHELP:                      commandText = PXFTPHelp;         break;      
-        case PXFTPCommandNOOP:                      commandText = PXFTPNoOperation;  break;  
+        case PXFTPCommandNLST:                      commandText = PXFTPNList;        break;
+        case PXFTPCommandSITE:                      commandText = PXFTPSite;         break;
+        case PXFTPCommandSYST:                      commandText = PXFTPSyst;         break;
+        case PXFTPCommandSTAT:                      commandText = PXFTPStat;         break;
+        case PXFTPCommandHELP:                      commandText = PXFTPHelp;         break;
+        case PXFTPCommandNOOP:                      commandText = PXFTPNoOperation;  break;
         default:
-            return 0;
+            return PXActionRefusedArgumentInvalid;
 
     }
 
-        return PXTextPrint(pxText, printFormat, commandText, parameterA);
+    return PXTextPrint(pxText, printFormat, commandText, parameterA);
 }

@@ -150,6 +150,6 @@ PXFTPResult;
 
 PXPublic PXFTPResult PXAPI PXFTPResultParse(const unsigned short resultID);
 
-PXPublic PXSize PXAPI PXFTPCommandBuild(const PXFTPCommand pxFTPCommand, PXText* const pxText, const char* const parameterA);
+PXPublic PXSize PXAPI PXFTPCommandBuild(const PXFTPCommand pxFTPCommand, PXText* const pxText, const char* parameterA);
 
 #endif

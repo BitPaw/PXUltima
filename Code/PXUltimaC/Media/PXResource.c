@@ -1902,9 +1902,21 @@ const char* PXAPI PXUIElementTypeToString(const PXUIElementType pxUIElementType)
     }
 }
 
+void PXAPI PXGUIElementBrushColorSet(PXGUIElementBrush* const pxGUIElementBrush, const PXByte red, const PXByte green, const PXByte blue)
+{
+    pxGUIElementBrush->Info.Behaviour |= PXGUIElementBrushBehaviourColorEmbeded;
+    pxGUIElementBrush->ColorDate.Red = red;
+    pxGUIElementBrush->ColorDate.Green = green;
+    pxGUIElementBrush->ColorDate.Blue = blue;
+}
+
 void PXAPI PXUIElementPositionCalculcate(PXGUIElement* const pxGUIElement, PXUIElementPositionCalulcateInfo* const pxUIElementPositionCalulcateInfo)
 {
-    for(PXGUIElement* pxUIElementParent = pxGUIElement->Parent; pxUIElementParent; pxUIElementParent = pxUIElementParent->Parent)
+    for(
+        PXGUIElement* pxUIElementParent = (PXGUIElement*)pxGUIElement->Info.Hierarchy.Parrent; 
+        pxUIElementParent;
+        pxUIElementParent = (PXGUIElement*)pxGUIElement->Info.Hierarchy.Parrent
+       )
     {
         pxUIElementPositionCalulcateInfo->MarginLeft += pxUIElementParent->Position.MarginLeft;
         pxUIElementPositionCalulcateInfo->MarginTop += pxUIElementParent->Position.MarginTop;

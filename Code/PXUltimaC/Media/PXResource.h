@@ -1374,7 +1374,6 @@ typedef enum PXUIElementType_
     PXUIElementTypePanel, // static generic element
     PXUIElementTypeText, // text, letters
     PXUIElementTypeButton, // Button to click
-    PXUIElementTypeButtonText,
     PXUIElementTypeImage,
     PXUIElementTypeDropDown,
     PXUIElementTypeListBox,
@@ -1592,16 +1591,32 @@ typedef struct PXGUIElementDrawInfo_
 }
 PXGUIElementDrawInfo;
 
-typedef PXActionResult(PXAPI* PXGUIElementDrawFunction)(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo);
+typedef PXActionResult (PXAPI* PXGUIElementDrawFunction)(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo);
+
+
+//---------------------------------------------------------
+// Brush
+//---------------------------------------------------------
+
+// if true, color is a struct, otherwise a pointer to that struct
+#define PXGUIElementBrushBehaviourColorEmbeded  (1<<0)
 
 // Color of GUI Element and tools to apply
 typedef struct PXGUIElementBrush_
 {
     PXResourceInfo Info;
 
-    PXColorRGBI8 Color;
+    union
+    {
+        PXColorRGBI8 ColorDate;
+        PXColorRGBI8* ColorReference;
+    };
 }
 PXGUIElementBrush;
+
+PXPublic void PXAPI PXGUIElementBrushColorSet(PXGUIElementBrush* const pxGUIElementBrush, const PXByte red, const PXByte green, const PXByte blue);
+
+//---------------------------------------------------------
 
 
 
@@ -1612,19 +1627,13 @@ typedef struct PXGUIElement_
 {
     PXResourceInfo Info;
 
-    //------------------------------
-    // References
-    //------------------------------
-    struct PXGUIElement_* Parent;
-    struct PXGUIElement_* Sibling;
-    struct PXGUIElement_* Child;
+#if OSUnix
+#elif OSWindows
+    HDC DeviceContextHandle; // Required for manual rendering
+#endif
 
-    //------------------------------
-    // Events
-    //------------------------------
-    void* InteractOwner;
-    PXWindowEventFunction InteractCallBack;
-
+    void* InteractOwner; // Object that is the owner of given callbacks
+    PXWindowEventFunction InteractCallBack; // Callback function for all events
     PXGUIElementDrawFunction DrawFunction; // If this is set, override OS-drawing and use this function instead
 
 
@@ -1639,6 +1648,11 @@ typedef struct PXGUIElement_
     PXUIHoverState Hover;
     PXInt32U FlagsList;
     //---------------------------------------
+
+
+    PXUIElementType Type;
+
+
 
     //---<Property>--------------------------
     //PXUIElementPositionMode PositionMode;
@@ -1659,12 +1673,9 @@ typedef struct PXGUIElement_
     struct PXGUIElement_** ListEEData;
     PXSize ListEESize;
 
-#if OSUnix
-#elif OSWindows
-    HDC DeviceContextHandle; // Required for manual rendering
-#endif
 
-    PXUIElementType Type;
+
+  
 
 
     // Change this to something better
@@ -1764,8 +1775,9 @@ PXUIElementPositionCalulcateInfo;
 
 
 // Behaviour
-#define PXGUIElementBehaviourDrawOverrride    0b00000001
-#define PXGUIElementBehaviourUseOS            0b00000010
+#define PXGUIElementBehaviourDrawMask       0b00000111
+#define PXGUIElementBehaviourDrawOverrride  0b00000001
+#define PXGUIElementBehaviourUseOS          0b00000010
 #define PXGUIElementBehaviourCanBeTabbed    0b00000100
 
 // Design
@@ -2004,7 +2016,7 @@ typedef struct PXGUIElementCreateInfo_
 
     PXUIElementPosition Position;
 
-    PXInt32U BehaviourFlagList;
+  //  PXInt32U BehaviourFlagList;
     PXInt32U StyleFlagList;
 
 #if OSUnix

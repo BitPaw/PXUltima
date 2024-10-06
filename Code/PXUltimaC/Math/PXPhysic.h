@@ -17,33 +17,22 @@
 #define PXGravityForceUranus 8.87
 #define PXGravityForcePluto 0.62
 
+typedef struct PXPhysicProperties_
+{
+    PXMatrix4x4F MatrixModel;
+    PXVector3F Velocity;
+    PXVector3F Force;
+    float Mass;
+    float Friction;
+    // Frriction static / dynamic
+    // elastistity / boncyness
 
-#ifdef __cplusplus
-extern "C"
-{ 
-#endif
-
-    typedef struct PXPhysicProperties_
-    {
-        PXMatrix4x4F MatrixModel;
-        PXVector3F Velocity;
-        PXVector3F Force;
-        float Mass;
-        float Friction;
-        // Frriction static / dynamic
-        // elastistity / boncyness
-
-        PXBool EnablePhysics;
-        PXBool EnableGravity;
-        PXBool IsSolid;
-    }
-    PXPhysicProperties;
-
-    PXPublic void PXAPI PXPhysicGravityApply(PXPhysicProperties* const physicProperties, const PXVector3F* const gravityDircetion, const float gravityForce, const float deltaTime);
-
-    
-#ifdef __cplusplus
+    PXBool EnablePhysics;
+    PXBool EnableGravity;
+    PXBool IsSolid;
 }
-#endif
+PXPhysicProperties;
+
+PXPublic void PXAPI PXPhysicGravityApply(PXPhysicProperties* const physicProperties, const PXVector3F* const gravityDircetion, const float gravityForce, const float deltaTime);
 
 #endif

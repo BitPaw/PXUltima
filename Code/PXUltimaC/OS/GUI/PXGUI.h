@@ -648,15 +648,7 @@ PXPublic PXActionResult PXAPI PXGUIDisplayScreenListRefresh(PXGUISystem* const p
 
 
 
-//---------------------------------------------------------
-// Default rendering functions
-//---------------------------------------------------------
-PXPublic PXActionResult PXAPI PXGUIElementDrawCustomText(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo);
-PXPublic PXActionResult PXAPI PXGUIElementDrawCustomButton(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo);
-PXPublic PXActionResult PXAPI PXGUIElementDrawCustomComboBox(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo);
-PXPublic PXActionResult PXAPI PXGUIElementDrawCustomColorPicker(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo);
-PXPublic PXActionResult PXAPI PXGUIElementDrawCustomHexView(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo);
-//---------------------------------------------------------
+
 
 
 
@@ -693,12 +685,20 @@ PXPublic PXActionResult PXAPI PXGUIElementDrawLine(PXGUISystem* const pxGUISyste
 PXPublic PXActionResult PXAPI PXGUIElementDrawLines(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y, const int width, const int height);
 PXPublic PXActionResult PXAPI PXGUIElementDrawRectangle(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y, const int width, const int height);
 PXPublic PXActionResult PXAPI PXGUIElementDrawRectangleRounded(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y, const int width, const int height);
-
 //---------------------------------------------------------
 
 
 
-
+//---------------------------------------------------------
+// Default rendering functions
+//---------------------------------------------------------
+PXPublic PXActionResult PXAPI PXGUIElementDrawCustomFailback(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo);
+PXPublic PXActionResult PXAPI PXGUIElementDrawCustomText(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo);
+PXPublic PXActionResult PXAPI PXGUIElementDrawCustomButton(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo);
+PXPublic PXActionResult PXAPI PXGUIElementDrawCustomComboBox(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo);
+PXPublic PXActionResult PXAPI PXGUIElementDrawCustomColorPicker(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo);
+PXPublic PXActionResult PXAPI PXGUIElementDrawCustomHexView(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo);
+//---------------------------------------------------------
 
 
 

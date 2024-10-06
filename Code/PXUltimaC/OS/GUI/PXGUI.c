@@ -1675,9 +1675,11 @@ void PXAPI PXGUIElementChildListEnumerate(PXGUISystem* const pxGUISystem, PXGUIE
 
         childElement = *(PXGUIElement**)pxDictionaryEntry.Value;
 
-        if(childElement->Parent)
+        PXGUIElement* parrent = (PXGUIElement*)childElement->Info.Hierarchy.Parrent;
+
+        if(parrent)
         {
-            if(childElement->Parent->Info.Handle.WindowID == parent->Info.Handle.WindowID)
+            if(parrent->Info.Handle.WindowID == parent->Info.Handle.WindowID)
             {
                 // found child.
 
@@ -1995,14 +1997,54 @@ PXActionResult PXAPI PXGUIDisplayScreenListRefresh(PXGUISystem* const pxGUISyste
     return PXActionSuccessful;
 }
 
+PXActionResult PXAPI PXGUIElementDrawCustomFailback(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo)
+{
+    PXGUIDrawClear(pxGUISystem, pxGUIElement);
+
+    PXGUIElementBrush brushRed;
+    PXGUIElementBrushColorSet(&brushRed, 0xFF, 0x00, 0x00);
+    PXGUIElementBrush brushFont;
+    PXGUIElementBrushColorSet(&brushFont, 0xFF, 0xA0, 0xA0);
+
+    PXGUIDrawForegroundColorSetRGB
+    (
+        pxGUISystem,
+        pxGUIElement,
+        brushRed.ColorDate.Red,
+        brushRed.ColorDate.Green,
+        brushRed.ColorDate.Blue
+    );
+
+    PXGUIDrawBackgroundColorSetRGB
+    (
+        pxGUISystem,
+        pxGUIElement,
+        brushFont.ColorDate.Red,
+        brushFont.ColorDate.Green,
+        brushFont.ColorDate.Blue
+    );
+
+    PXGUIElementDrawRectangle
+    (
+        pxGUISystem,
+        pxGUIElement,
+        pxGUIElement->Position.Left,
+        pxGUIElement->Position.Top,
+        pxGUIElement->Position.Right,
+        pxGUIElement->Position.Bottom
+    );
+
+    PXGUIElementDrawTextA(pxGUISystem, pxGUIElement, pxGUIElement->NameContent, pxGUIElement->NameContentSize);
+
+    return PXActionSuccessful;
+}
+
 PXActionResult PXAPI PXGUIElementDrawCustomText(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo)
 {
     PXGUIDrawClear(pxGUISystem, pxGUIElement);
 
     PXGUIElementBrush defaultBrush;
-    defaultBrush.Color.Red = 0xFF;
-    defaultBrush.Color.Green = 0xFF;
-    defaultBrush.Color.Blue = 0xFF;
+    PXGUIElementBrushColorSet(&defaultBrush, 0xFF, 0xFF, 0xFF);
 
     PXGUIElementBrush* brushFront = pxGUIElement->BrushFront;
     PXGUIElementBrush* brushBackground = pxGUIElement->BrushBackground;
@@ -2022,17 +2064,17 @@ PXActionResult PXAPI PXGUIElementDrawCustomText(PXGUISystem* const pxGUISystem, 
     (
         pxGUISystem,
         pxGUIElement,
-        brushFront->Color.Red,
-        brushFront->Color.Green,
-        brushFront->Color.Blue
+        brushFront->ColorDate.Red,
+        brushFront->ColorDate.Green,
+        brushFront->ColorDate.Blue
     );
     PXGUIDrawBackgroundColorSetRGB
     (
         pxGUISystem,
         pxGUIElement,
-        brushBackground->Color.Red,
-        brushBackground->Color.Green,
-        brushBackground->Color.Blue
+        brushBackground->ColorDate.Red,
+        brushBackground->ColorDate.Green,
+        brushBackground->ColorDate.Blue
     );
 
     // PXGUIElementDrawBegin(pxGUISystem, pxGUIElement);
@@ -2067,9 +2109,7 @@ PXActionResult PXAPI PXGUIElementDrawCustomButton(PXGUISystem* const pxGUISystem
    PXGUIDrawClear(pxGUISystem, pxGUIElement);
 
    PXGUIElementBrush defaultBrush;
-   defaultBrush.Color.Red = 0xFF;
-   defaultBrush.Color.Green = 0xFF;
-   defaultBrush.Color.Blue = 0xFF;
+   PXGUIElementBrushColorSet(&defaultBrush, 0xFF, 0xFF, 0xFF);
 
    PXGUIElementBrush* brushFront = pxGUIElement->BrushFront;
    PXGUIElementBrush* brushBackground = pxGUIElement->BrushBackground;
@@ -2089,17 +2129,17 @@ PXActionResult PXAPI PXGUIElementDrawCustomButton(PXGUISystem* const pxGUISystem
    (
        pxGUISystem, 
        pxGUIElement, 
-       brushFront->Color.Red,
-       brushFront->Color.Green,
-       brushFront->Color.Blue
+       brushFront->ColorDate.Red,
+       brushFront->ColorDate.Green,
+       brushFront->ColorDate.Blue
    );
    PXGUIDrawBackgroundColorSetRGB
    (
        pxGUISystem,
        pxGUIElement,
-       brushBackground->Color.Red,
-       brushBackground->Color.Green,
-       brushBackground->Color.Blue
+       brushBackground->ColorDate.Red,
+       brushBackground->ColorDate.Green,
+       brushBackground->ColorDate.Blue
    );
 
    // PXGUIElementDrawBegin(pxGUISystem, pxGUIElement);
@@ -2931,13 +2971,14 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
     pxGUIElement->Type = pxGUIElementCreateInfo->Type;
     pxGUIElement->InteractCallBack = pxGUIElementCreateInfo->InteractCallBack;
     pxGUIElement->InteractOwner = pxGUIElementCreateInfo->InteractOwner;
-    pxGUIElement->Parent = pxGUIElementCreateInfo->UIElementParent;
+    pxGUIElement->Info.Hierarchy.Parrent = pxGUIElementCreateInfo->UIElementParent;
 
     PXCopy(PXUIElementPosition, &pxGUIElementCreateInfo->Position, &pxGUIElement->Position);
 
 
     char nameTemp[256];
     PXSize nameTempLength = 0;
+
 
 
 #if 1
@@ -3387,7 +3428,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
         pxGUIElementCreateInfo->WindowsStyleFlags |= WS_CHILD;
     }
 
-    if(pxGUIElementCreateInfo->BehaviourFlagList & PXGUIElementBehaviourCanBeTabbed)
+    if(pxGUIElementCreateInfo->BehaviourFlags & PXGUIElementBehaviourCanBeTabbed)
     {
         pxGUIElementCreateInfo->WindowsStyleFlags |= WS_TABSTOP;
     }
@@ -3430,6 +3471,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
             PXBool hasParenet = 0;// pxGUIElementCreateInfo->UIElementParent;
 
+            /*
             if(hasParenet)
             {
                 pxGUIElementCreateInfo->AvoidCreation = PXUIElementTypeButton == pxGUIElement->Parent->Type;
@@ -3441,6 +3483,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                     //return;
                 }
             }
+            */
 
             break;
         }
@@ -3745,6 +3788,12 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
     // If we hav
     {
+        switch(pxGUIElementCreateInfo->BehaviourFlags & )
+        {
+            default:
+                break;
+        }
+
         const PXBool selfDraw = pxGUIElementCreateInfo->DrawFunctionEngine || pxGUIElementCreateInfo->DrawFunctionOverride;
 
         if(selfDraw)
@@ -3752,6 +3801,17 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
             pxGUIElementCreateInfo->WindowsStyleFlags |= SS_OWNERDRAW;
             pxGUIElement->DrawFunction = pxGUIElementCreateInfo->DrawFunctionEngine;
             pxGUIElement->BrushBackground = pxGUISystem->BrushBackgroundDark;
+        }
+        else
+        {
+            pxGUIElement->DrawFunction = PXGUIElementDrawCustomFailback;
+        }
+
+
+        // if we have an override, definitly use that one
+        if(pxGUIElementCreateInfo->DrawFunctionOverride)
+        {
+            pxGUIElementCreateInfo->DrawFunctionOverride
         }
     }
 
@@ -4021,7 +4081,8 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                 menuItemInfo.wID += 0;
             }
 
-            const PXBool setResult = SetMenu(pxGUIElement->Parent->Info.Handle.WindowID, pxGUIElement->Info.Handle.MenuHandle);
+            PXGUIElement* parentElement = (PXGUIElement*)pxGUIElement->Info.Hierarchy.Parrent;
+            const PXBool setResult = SetMenu(parentElement->Info.Handle.WindowID, pxGUIElement->Info.Handle.MenuHandle);
 
 
             break;
@@ -4047,24 +4108,6 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
             pxUIElementUpdateInfo[1].Property = PXUIElementPropertyTextAllign;
 
            // PXGUIElementUpdate(pxGUISystem, pxUIElementUpdateInfo, 2);
-
-            break;
-        }
-        case PXUIElementTypeButtonText: // Local override for OSStyle buttons
-        {
-            PXGUIElement* pxButton = pxGUIElement->Parent;
-
-            PXGUIElementUpdateInfo pxUIElementUpdateInfo[2];
-            PXClearList(PXGUIElementUpdateInfo, pxUIElementUpdateInfo, 2);
-
-            pxUIElementUpdateInfo[0].UIElement = pxButton;
-            pxUIElementUpdateInfo[0].WindowReference = pxGUIElementCreateInfo->UIElementParent;
-            pxUIElementUpdateInfo[0].Property = PXUIElementPropertyTextContent;
-            pxUIElementUpdateInfo[0].Data.Text.Content = pxGUIElementCreateInfo->Data.Text.Content;
-
-           // PXCopy(PXUIElementTextInfo, &pxGUIElement->TextInfo, &pxButton->TextInfo);
-
-            PXGUIElementUpdate(pxGUISystem, pxUIElementUpdateInfo, 1);
 
             break;
         }
@@ -6036,9 +6079,21 @@ PXActionResult PXAPI PXGUIElementDrawRectangle(PXGUISystem* const pxGUISystem, P
    // const COLORREF color = RGB(255, 0, 200);
    // const HBRUSH brushAA = CreateSolidBrush(color);
 
+    HBRUSH brushHandle = PXNull;
+
+    const PXBool hasBrushAttached = pxGUIElement->BrushBackground;
+
+    if(pxGUIElement->BrushBackground)
+    {
+        brushHandle = pxGUIElement->BrushBackground->Info.Handle.BrushHandle;
+    }
+    else
+    {
+        brushHandle = GetStockObject(DKGRAY_BRUSH);
+    }
 
 
-    const BOOL aaaaaa = FillRect(pxGUIElement->DeviceContextHandle, &rect, pxGUIElement->BrushBackground->Info.Handle.BrushHandle);
+    const BOOL aaaaaa = FillRect(pxGUIElement->DeviceContextHandle, &rect, brushHandle);
 
    // DeleteObject();
 
