@@ -1775,18 +1775,19 @@ PXUIElementPositionCalulcateInfo;
 
 
 // Behaviour
-#define PXGUIElementBehaviourDrawMask       0b00000111
-#define PXGUIElementBehaviourDrawOverrride  0b00000001
-#define PXGUIElementBehaviourUseOS          0b00000010
-#define PXGUIElementBehaviourCanBeTabbed    0b00000100
+#define PXGUIElementBehaviourDrawMask        0b0000000000000000000000000000000000000011
+#define PXGUIElementBehaviourDrawByOS        0b0000000000000000000000000000000000000000
+#define PXGUIElementBehaviourDrawByUser      0b0000000000000000000000000000000000000001
+#define PXGUIElementBehaviourDrawByEngine    0b0000000000000000000000000000000000000010
+#define PXGUIElementBehaviourDrawByUndefined 0b0000000000000000000000000000000000000011
 
-// Design
-#define PXGUIElementStyleFlagVisible        0b00000000000000000000000000000001
-#define PXGUIElementStyleFlagBorder            0b00000000000000000000000000000010
-#define PXGUIElementStyleFlagScrollBarHor    0b00000000000000000000000000000100
-#define PXGUIElementStyleFlagScrollBarVer    0b00000000000000000000000000001000
+#define PXGUIElementBehaviourTABAware        0b0000000000000000000000000000000000000100
+#define PXGUIElementBehaviourVisible         0b0000000000000000000000000000000000001000
+#define PXGUIElementBehaviourBorder          0b0000000000000000000000000000000000010000
+#define PXGUIElementBehaviourScrollBarHor    0b0000000000000000000000000000000000100000
+#define PXGUIElementBehaviourScrollBarVer    0b0000000000000000000000000000000001000000
 
-#define PXGUIElementStyleDefault PXGUIElementStyleFlagVisible | PXGUIElementStyleFlagBorder
+#define PXGUIElementStyleDefault PXGUIElementBehaviourVisible | PXGUIElementBehaviourBorder
 
 typedef enum PXUIElementProperty_
 {

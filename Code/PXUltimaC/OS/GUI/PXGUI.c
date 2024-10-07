@@ -3412,13 +3412,12 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
   //  pxUIElementCreateData->CreationSkip = PXFalse;
 
-
-    if(pxGUIElementCreateInfo->StyleFlagList & PXGUIElementStyleFlagVisible)
+    if(pxGUIElementCreateInfo->StyleFlagList & PXGUIElementBehaviourVisible)
     {
         pxGUIElementCreateInfo->WindowsStyleFlags |= WS_VISIBLE;
     }
 
-    if(pxGUIElementCreateInfo->StyleFlagList & PXGUIElementStyleFlagBorder)
+    if(pxGUIElementCreateInfo->StyleFlagList & PXGUIElementBehaviourBorder)
     {
         pxGUIElementCreateInfo->WindowsStyleFlags |= WS_BORDER;
     }
@@ -3428,7 +3427,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
         pxGUIElementCreateInfo->WindowsStyleFlags |= WS_CHILD;
     }
 
-    if(pxGUIElementCreateInfo->BehaviourFlags & PXGUIElementBehaviourCanBeTabbed)
+    if(pxGUIElementCreateInfo->BehaviourFlags & PXGUIElementBehaviourTABAware)
     {
         pxGUIElementCreateInfo->WindowsStyleFlags |= WS_TABSTOP;
     }
@@ -3788,30 +3787,42 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
     // If we hav
     {
-        switch(pxGUIElementCreateInfo->BehaviourFlags & )
+        switch(PXGUIElementBehaviourDrawMask & pxGUIElementCreateInfo->BehaviourFlags)
         {
-            default:
+            case PXGUIElementBehaviourDrawByOS:
+            {
+                // Do nothing
                 break;
+            }
+            case PXGUIElementBehaviourDrawByUser:
+            {
+                pxGUIElementCreateInfo->WindowsStyleFlags |= SS_OWNERDRAW;
+                pxGUIElement->DrawFunction = pxGUIElementCreateInfo->DrawFunctionEngine;
+                pxGUIElement->BrushBackground = pxGUISystem->BrushBackgroundDark;
+                break;
+            }
+            case PXGUIElementBehaviourDrawByEngine:
+            {
+
+                pxGUIElement->DrawFunction = PXGUIElementDrawCustomFailback;
+                break;
+            }
         }
 
-        const PXBool selfDraw = pxGUIElementCreateInfo->DrawFunctionEngine || pxGUIElementCreateInfo->DrawFunctionOverride;
-
-        if(selfDraw)
+        if(pxGUIElement->DrawFunction)
         {
-            pxGUIElementCreateInfo->WindowsStyleFlags |= SS_OWNERDRAW;
-            pxGUIElement->DrawFunction = pxGUIElementCreateInfo->DrawFunctionEngine;
-            pxGUIElement->BrushBackground = pxGUISystem->BrushBackgroundDark;
-        }
-        else
-        {
-            pxGUIElement->DrawFunction = PXGUIElementDrawCustomFailback;
-        }
+            DWORD magicID = 0;
 
+            switch(pxGUIElement->Type)
+            {
+                case PXUIElementTypePanel:  magicID = SS_OWNERDRAW; break;
+                case PXUIElementTypeButton:  magicID = BS_OWNERDRAW; break;
 
-        // if we have an override, definitly use that one
-        if(pxGUIElementCreateInfo->DrawFunctionOverride)
-        {
-            pxGUIElementCreateInfo->DrawFunctionOverride
+                default:
+                    break;
+            }
+
+            pxGUIElementCreateInfo->WindowsStyleFlags |= magicID;
         }
     }
 

@@ -1863,7 +1863,6 @@ const char* PXAPI PXUIElementTypeToString(const PXUIElementType pxUIElementType)
         case PXUIElementTypePanel: return "Panel";
         case PXUIElementTypeText: return "Text";
         case PXUIElementTypeButton: return "Button";
-        case PXUIElementTypeButtonText: return "ButtonText";
         case PXUIElementTypeImage: return "Image";
         case PXUIElementTypeDropDown: return "DropDown";
         case PXUIElementTypeListBox: return "ListBox";
@@ -1873,9 +1872,9 @@ const char* PXAPI PXUIElementTypeToString(const PXUIElementType pxUIElementType)
         case PXUIElementTypeTrackBar: return "TrackBar";
         case PXUIElementTypeStatusBar: return "StatusBar";
         case PXUIElementTypeUpDown: return "UpDown";
-        case PXUIElementTypeProgressBar: return "";
-        case PXUIElementTypeHotKey: return "";
-        case PXUIElementTypeCalender: return "";
+        case PXUIElementTypeProgressBar: return "ProgressBar";
+        case PXUIElementTypeHotKey: return "HotKey";
+        case PXUIElementTypeCalender: return "Calender";
         case PXUIElementTypeToolTip: return "";
         case PXUIElementTypeAnimate: return "";
         case PXUIElementTypeDatePicker: return "";
@@ -1915,7 +1914,7 @@ void PXAPI PXUIElementPositionCalculcate(PXGUIElement* const pxGUIElement, PXUIE
     for(
         PXGUIElement* pxUIElementParent = (PXGUIElement*)pxGUIElement->Info.Hierarchy.Parrent; 
         pxUIElementParent;
-        pxUIElementParent = (PXGUIElement*)pxGUIElement->Info.Hierarchy.Parrent
+        pxUIElementParent = (PXGUIElement*)pxUIElementParent->Info.Hierarchy.Parrent
        )
     {
         pxUIElementPositionCalulcateInfo->MarginLeft += pxUIElementParent->Position.MarginLeft;
@@ -1970,7 +1969,7 @@ void PXAPI PXUIElementPositionCalculcate(PXGUIElement* const pxGUIElement, PXUIE
     // XYWH for WindowsAPI stuff0
 
 
-    if(pxGUIElement->Position.FlagListKeep & PXUIElementKeepWidth)
+    if(PXUIElementKeepWidth & pxGUIElement->Position.FlagListKeep)
     {
         pxUIElementPositionCalulcateInfo->Width = pxGUIElement->Position.Width;
     }
@@ -1979,7 +1978,7 @@ void PXAPI PXUIElementPositionCalculcate(PXGUIElement* const pxGUIElement, PXUIE
         pxUIElementPositionCalulcateInfo->Width = mathWithScaling;
     }
 
-    if(pxGUIElement->Position.FlagListKeep & PXUIElementKeepHeight)
+    if(PXUIElementKeepHeight & pxGUIElement->Position.FlagListKeep)
     {
         pxUIElementPositionCalulcateInfo->Height = pxGUIElement->Position.Height;
     }
@@ -1988,9 +1987,8 @@ void PXAPI PXUIElementPositionCalculcate(PXGUIElement* const pxGUIElement, PXUIE
         pxUIElementPositionCalulcateInfo->Height = heightWithScaling;
     }
 
- 
 
-    switch(pxGUIElement->Position.FlagListKeep & PXUIElementAllignFlags)
+    switch(PXUIElementAllignFlags & pxGUIElement->Position.FlagListKeep)
     {
         default:
         case PXUIElementAllignLeft:
