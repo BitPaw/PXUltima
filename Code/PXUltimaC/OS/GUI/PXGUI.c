@@ -1290,7 +1290,7 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
                 break;
             }
 
-            if(!(pxGUIElement->Info.Flags & PXEngineResourceInfoEnabled))
+            if(!(pxGUIElement->Info.Flags & PXResourceInfoActive))
             {
                // ShowWindow(pxGUIElement->ID, SW_HIDE);
             }
@@ -2006,22 +2006,20 @@ PXActionResult PXAPI PXGUIElementDrawCustomFailback(PXGUISystem* const pxGUISyst
     PXGUIElementBrush brushFont;
     PXGUIElementBrushColorSet(&brushFont, 0xFF, 0xA0, 0xA0);
 
-    PXGUIDrawForegroundColorSetRGB
+    PXGUIDrawColorSetBrush
     (
         pxGUISystem,
         pxGUIElement,
-        brushRed.ColorDate.Red,
-        brushRed.ColorDate.Green,
-        brushRed.ColorDate.Blue
+        &brushRed,
+        PXGUIDrawModeFront
     );
 
-    PXGUIDrawBackgroundColorSetRGB
+    PXGUIDrawColorSetBrush
     (
         pxGUISystem,
         pxGUIElement,
-        brushFont.ColorDate.Red,
-        brushFont.ColorDate.Green,
-        brushFont.ColorDate.Blue
+        &brushFont,
+        PXGUIDrawModeBack
     );
 
     PXGUIElementDrawRectangle
@@ -2044,7 +2042,7 @@ PXActionResult PXAPI PXGUIElementDrawCustomText(PXGUISystem* const pxGUISystem, 
     PXGUIDrawClear(pxGUISystem, pxGUIElement);
 
     PXGUIElementBrush defaultBrush;
-    PXGUIElementBrushColorSet(&defaultBrush, 0xFF, 0xFF, 0xFF);
+    PXGUIElementBrushColorSet(&defaultBrush, 0xFF, 0x00, 0x00);
 
     PXGUIElementBrush* brushFront = pxGUIElement->BrushFront;
     PXGUIElementBrush* brushBackground = pxGUIElement->BrushBackground;
@@ -2060,21 +2058,19 @@ PXActionResult PXAPI PXGUIElementDrawCustomText(PXGUISystem* const pxGUISystem, 
     }
 
 
-    PXGUIDrawForegroundColorSetRGB
+    PXGUIDrawColorSetBrush
     (
         pxGUISystem,
         pxGUIElement,
-        brushFront->ColorDate.Red,
-        brushFront->ColorDate.Green,
-        brushFront->ColorDate.Blue
+        brushFront,
+        PXGUIDrawModeFront
     );
-    PXGUIDrawBackgroundColorSetRGB
+    PXGUIDrawColorSetBrush
     (
         pxGUISystem,
         pxGUIElement,
-        brushBackground->ColorDate.Red,
-        brushBackground->ColorDate.Green,
-        brushBackground->ColorDate.Blue
+        brushBackground,
+        PXGUIDrawModeBack
     );
 
     // PXGUIElementDrawBegin(pxGUISystem, pxGUIElement);
@@ -2109,7 +2105,7 @@ PXActionResult PXAPI PXGUIElementDrawCustomButton(PXGUISystem* const pxGUISystem
    PXGUIDrawClear(pxGUISystem, pxGUIElement);
 
    PXGUIElementBrush defaultBrush;
-   PXGUIElementBrushColorSet(&defaultBrush, 0xFF, 0xFF, 0xFF);
+   PXGUIElementBrushColorSet(&defaultBrush, 0xFF, 0x00, 0x00);
 
    PXGUIElementBrush* brushFront = pxGUIElement->BrushFront;
    PXGUIElementBrush* brushBackground = pxGUIElement->BrushBackground;
@@ -2124,22 +2120,19 @@ PXActionResult PXAPI PXGUIElementDrawCustomButton(PXGUISystem* const pxGUISystem
        brushBackground = &defaultBrush;
    }
 
-
-   PXGUIDrawForegroundColorSetRGB
-   (
-       pxGUISystem, 
-       pxGUIElement, 
-       brushFront->ColorDate.Red,
-       brushFront->ColorDate.Green,
-       brushFront->ColorDate.Blue
-   );
-   PXGUIDrawBackgroundColorSetRGB
+   PXGUIDrawColorSetBrush
    (
        pxGUISystem,
        pxGUIElement,
-       brushBackground->ColorDate.Red,
-       brushBackground->ColorDate.Green,
-       brushBackground->ColorDate.Blue
+       brushFront,
+       PXGUIDrawModeFront
+   );
+   PXGUIDrawColorSetBrush
+   (
+       pxGUISystem,
+       pxGUIElement,
+       brushBackground,
+       PXGUIDrawModeBack
    );
 
    // PXGUIElementDrawBegin(pxGUISystem, pxGUIElement);
@@ -2972,6 +2965,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
     pxGUIElement->InteractCallBack = pxGUIElementCreateInfo->InteractCallBack;
     pxGUIElement->InteractOwner = pxGUIElementCreateInfo->InteractOwner;
     pxGUIElement->Info.Hierarchy.Parrent = pxGUIElementCreateInfo->UIElementParent;
+    pxGUIElement->Info.Behaviour = pxGUIElementCreateInfo->BehaviourFlags;
 
     PXCopy(PXUIElementPosition, &pxGUIElementCreateInfo->Position, &pxGUIElement->Position);
 
@@ -3412,12 +3406,12 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
   //  pxUIElementCreateData->CreationSkip = PXFalse;
 
-    if(pxGUIElementCreateInfo->StyleFlagList & PXGUIElementBehaviourVisible)
+    if(PXResourceInfoRender & pxGUIElementCreateInfo->BehaviourFlags)
     {
         pxGUIElementCreateInfo->WindowsStyleFlags |= WS_VISIBLE;
     }
 
-    if(pxGUIElementCreateInfo->StyleFlagList & PXGUIElementBehaviourBorder)
+    if(PXGUIElementBehaviourBorder & pxGUIElementCreateInfo->BehaviourFlags)
     {
         pxGUIElementCreateInfo->WindowsStyleFlags |= WS_BORDER;
     }
@@ -3427,7 +3421,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
         pxGUIElementCreateInfo->WindowsStyleFlags |= WS_CHILD;
     }
 
-    if(pxGUIElementCreateInfo->BehaviourFlags & PXGUIElementBehaviourTABAware)
+    if(PXGUIElementBehaviourSelectable & pxGUIElementCreateInfo->BehaviourFlags)
     {
         pxGUIElementCreateInfo->WindowsStyleFlags |= WS_TABSTOP;
     }
@@ -3653,7 +3647,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
         {
             pxGUIElementCreateInfo->DrawFunctionEngine = PXGUIElementDrawCustomColorPicker;
             pxGUIElementCreateInfo->WindowsClassName = WC_STATIC;
-            pxGUIElementCreateInfo->WindowsStyleFlags |= SS_WHITEFRAME;
+            //pxGUIElementCreateInfo->WindowsStyleFlags |= SS_WHITEFRAME;
             break;
         }
         case PXUIElementTypeSlider:
@@ -3787,24 +3781,30 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
     // If we hav
     {
-        switch(PXGUIElementBehaviourDrawMask & pxGUIElementCreateInfo->BehaviourFlags)
+        switch(PXResourceInfoUseByMask & pxGUIElement->Info.Behaviour)
         {
-            case PXGUIElementBehaviourDrawByOS:
+            case PXResourceInfoUseByOS:
             {
                 // Do nothing
                 break;
             }
-            case PXGUIElementBehaviourDrawByUser:
+            case PXResourceInfoUseByUser:
             {
-                pxGUIElementCreateInfo->WindowsStyleFlags |= SS_OWNERDRAW;
                 pxGUIElement->DrawFunction = pxGUIElementCreateInfo->DrawFunctionEngine;
                 pxGUIElement->BrushBackground = pxGUISystem->BrushBackgroundDark;
                 break;
             }
-            case PXGUIElementBehaviourDrawByEngine:
+            case PXResourceInfoUseByEngine:
             {
-
-                pxGUIElement->DrawFunction = PXGUIElementDrawCustomFailback;
+                if(pxGUIElementCreateInfo->DrawFunctionEngine)
+                {
+                    pxGUIElement->DrawFunction = pxGUIElementCreateInfo->DrawFunctionEngine;
+                }
+                else
+                {
+                    pxGUIElement->DrawFunction = PXGUIElementDrawCustomFailback;
+                }
+           
                 break;
             }
         }
@@ -3815,10 +3815,15 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
             switch(pxGUIElement->Type)
             {
-                case PXUIElementTypePanel:  magicID = SS_OWNERDRAW; break;
-                case PXUIElementTypeButton:  magicID = BS_OWNERDRAW; break;
+                case PXUIElementTypeButton: 
+                    magicID = BS_OWNERDRAW;
+                    break;
 
-                default:
+                case PXUIElementTypeRenderFrame:
+                case PXUIElementTypeColorPicker:
+                case PXUIElementTypePanel:
+                default: // TODO: problem with default value, we cant detect if we have the wrong enum type
+                    magicID = SS_OWNERDRAW;
                     break;
             }
 
@@ -4505,9 +4510,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                 pxResourceCreateInfo.UIElement.Name = buffer;
                 pxResourceCreateInfo.UIElement.UIElementWindow = pxGUIElementCreateInfo->UIElementWindow;
                 pxResourceCreateInfo.UIElement.UIElementParent = pxGUIElement;
-                pxResourceCreateInfo.UIElement.BehaviourFlags = PXUIElementDecorative;
-                pxResourceCreateInfo.UIElement.StyleFlagList = PXGUIElementStyleDefault;
-                pxResourceCreateInfo.UIElement.Position.FlagListKeep = PXUIElementAllignLeft;
+                pxResourceCreateInfo.UIElement.BehaviourFlags = PXGUIElementBehaviourDefaultDecorative | PXGUIElementAllignLeft;
                 pxResourceCreateInfo.UIElement.Position.MarginLeft = 0.005;
                 pxResourceCreateInfo.UIElement.Position.MarginTop = 0.1;
                 pxResourceCreateInfo.UIElement.Position.MarginRight = 0.005;
@@ -4934,11 +4937,11 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
 
                 if(show)
                 {
-                    pxGUIElement->Info.Flags |= PXEngineResourceInfoVisble;
+                    pxGUIElement->Info.Flags |= PXResourceInfoRender;
                 }
                 else
                 {
-                    pxGUIElement->Info.Flags &= ~PXEngineResourceInfoVisble;
+                    pxGUIElement->Info.Flags &= ~PXResourceInfoRender;
                 }
 
 
@@ -5492,6 +5495,9 @@ PXActionResult PXAPI PXWindowTitleBarColorSet(const PXWindowID pxWindowID)
         return PXActionCancelled;
     }
 
+    ShowWindow(pxWindowID, SW_HIDE);
+    ShowWindow(pxWindowID, SW_SHOW);
+
     return PXActionSuccessful;
 #else
     return PXActionNotSupportedByOperatingSystem;
@@ -5887,7 +5893,7 @@ PXActionResult PXAPI PXGUIElementDrawTextA(PXGUISystem* const pxGUISystem, PXGUI
 
 #elif OSWindows
 
-    const char* fontName = "UniSpace"; // Bradley Hand ITC
+    const char* fontName = "OCR A"; // Bradley Hand ITC, UniSpace
 
 
     RECT rectangle;
@@ -5898,12 +5904,12 @@ PXActionResult PXAPI PXGUIElementDrawTextA(PXGUISystem* const pxGUISystem, PXGUI
 
     UINT format = DT_SINGLELINE | DT_NOCLIP;
 
-    format |= PXFlagIsSet(pxGUIElement->Position.FlagListKeep, PXUIElementAllignTop) * DT_TOP;
-    format |= PXFlagIsSet(pxGUIElement->Position.FlagListKeep, PXUIElementAllignLeft) * DT_LEFT;
-    format |= PXFlagIsSet(pxGUIElement->Position.FlagListKeep, PXUIElementAllignRight) * DT_RIGHT;
-    format |= PXFlagIsSet(pxGUIElement->Position.FlagListKeep, PXUIElementAllignBottom) * DT_BOTTOM;
+    format |= PXFlagIsSet(pxGUIElement->Info.Behaviour, PXGUIElementAllignTop) * DT_TOP;
+    format |= PXFlagIsSet(pxGUIElement->Info.Behaviour, PXGUIElementAllignLeft) * DT_LEFT;
+    format |= PXFlagIsSet(pxGUIElement->Info.Behaviour, PXGUIElementAllignRight) * DT_RIGHT;
+    format |= PXFlagIsSet(pxGUIElement->Info.Behaviour, PXGUIElementAllignBottom) * DT_BOTTOM;
 
-    if(PXFlagIsSet(pxGUIElement->Position.FlagListKeep, PXUIElementAllignCenter) || 1)
+    if(PXFlagIsSet(pxGUIElement->Info.Behaviour, PXGUIElementAllignCenter) || 1)
     {
         format |= DT_VCENTER | DT_CENTER;
     }
@@ -5927,7 +5933,7 @@ PXActionResult PXAPI PXGUIElementDrawTextA(PXGUISystem* const pxGUISystem, PXGUI
         rectangleShadow.right -= 1;
         rectangleShadow.bottom += 1;
 
-        PXGUIDrawForegroundColorSetRGB(pxGUISystem, pxGUIElement, 100, 100, 100);
+        PXGUIDrawColorSetRGB(pxGUISystem, pxGUIElement, 100, 100, 100, PXGUIDrawModeBack);
 
         PXFont pxFont;// = pxGUIElement->FontForText;
         PXClear(PXFont, &pxFont);
@@ -5941,7 +5947,7 @@ PXActionResult PXAPI PXGUIElementDrawTextA(PXGUISystem* const pxGUISystem, PXGUI
     }
     
 
-    PXGUIDrawForegroundColorSetRGB(pxGUISystem, pxGUIElement, 0xff, 0xff, 0xff);
+    PXGUIDrawColorSetBrush(pxGUISystem, pxGUIElement, pxGUIElement->BrushFront, PXGUIDrawModeFront);
 
 
     PXFont pxFont;// = pxGUIElement->FontForText;
@@ -6349,61 +6355,84 @@ PXActionResult PXAPI PXGUIDrawClear(PXGUISystem* const pxGUISystem, PXGUIElement
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXGUIDrawForegroundColorSetRGB(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, char red, char green, char blue)
+PXActionResult PXAPI PXGUIDrawColorSetBrush(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementBrush* const pxGUIElementBrush, const char mode)
 {
-#if OSUnix
-    const int resultID = XSetForeground
-    (
-     pxGUISystem->DisplayCurrent.DisplayHandle,
-     pxGUISystem->DisplayCurrent.GraphicContent,
-     red
-     );
-#elif OSWindows
-    const COLORREF color = RGB(red, green, blue);
-    const COLORREF xx = SetTextColor(pxGUIElement->DeviceContextHandle, color);
-#endif
+    PXColorRGBI8* colorRef = PXNull;
 
-    return PXActionRefusedNotImplemented;
-}
-
-PXActionResult PXAPI PXGUIDrawBackgroundColorSetRGB(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, char red, char green, char blue)
-{
-    PXActionResult pxActionResult = PXActionInvalid;
-
-#if OSUnix
-    const int color = PXInt32Make(red, green, blue, 0xFF);
-    const int resultID = XSetBackground
-    (
-        pxGUISystem->DisplayCurrent.DisplayHandle,
-        pxGUISystem->DisplayCurrent.GraphicContent,
-        color
-    );
-#elif OSWindows
-
-    SetBkMode(pxGUIElement->DeviceContextHandle, TRANSPARENT);
-
-    const COLORREF color = RGB(red, green, blue);
-    const COLORREF colorPrevious = SetBkColor(pxGUIElement->DeviceContextHandle, color);
-    const PXBool successful = CLR_INVALID != colorPrevious;
-
-    if(!successful)
+    if(PXGUIElementBrushBehaviourColorEmbeded & pxGUIElementBrush->Info.Behaviour)
     {
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingError,
-            "GUI",
-            "Color-Set",
-            "Failed set backgroundcolor"
-        );
-#endif
-
-        return PXActionRefusedArgumentInvalid;
+        colorRef = &pxGUIElementBrush->ColorDate;
+    }
+    else
+    {
+        colorRef = pxGUIElementBrush->ColorReference;
     }
 
+    return PXGUIDrawColorSetV3(pxGUISystem, pxGUIElement, colorRef, mode);
+}
+
+PXActionResult PXAPI PXGUIDrawColorSetV3(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXColorRGBI8* const pxColorRGBI8, const char mode)
+{
+    if(mode == PXGUIDrawModeFront)
+    {
+#if OSUnix
+        const int resultID = XSetForeground
+        (
+            pxGUISystem->DisplayCurrent.DisplayHandle,
+            pxGUISystem->DisplayCurrent.GraphicContent,
+            red
+        );
+#elif OSWindows
+        const COLORREF colorNew      = RGB(pxColorRGBI8->Red, pxColorRGBI8->Green, pxColorRGBI8->Blue);
+        const COLORREF colorPrevious = SetTextColor(pxGUIElement->DeviceContextHandle, colorNew);
+#endif
+    }
+    else
+    {
+        PXActionResult pxActionResult = PXActionInvalid;
+
+#if OSUnix
+        const int color = PXInt32Make(red, green, blue, 0xFF);
+        const int resultID = XSetBackground
+        (
+            pxGUISystem->DisplayCurrent.DisplayHandle,
+            pxGUISystem->DisplayCurrent.GraphicContent,
+            color
+        );
+#elif OSWindows
+
+        SetBkMode(pxGUIElement->DeviceContextHandle, TRANSPARENT);
+
+        const COLORREF colorNew      = RGB(pxColorRGBI8->Red, pxColorRGBI8->Green, pxColorRGBI8->Blue);
+        const COLORREF colorPrevious = SetBkColor(pxGUIElement->DeviceContextHandle, colorNew);
+        const PXBool successful      = CLR_INVALID != colorPrevious;
+
+        if(!successful)
+        {
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingError,
+                "GUI",
+                "Color-Set",
+                "Failed set backgroundcolor"
+            );
 #endif
 
+            return PXActionRefusedArgumentInvalid;
+        }
+
+#endif
+    }
+
     return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXGUIDrawColorSetRGB(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, char red, char green, char blue, const char mode)
+{
+    PXColorRGBI8 color = { red, green, blue };
+
+    return PXGUIDrawColorSetV3(pxGUISystem, pxGUIElement, &color, mode);
 }
 
 PXActionResult PXAPI PXGUIElementDrawBegin(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement)

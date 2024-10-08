@@ -330,29 +330,32 @@ PXResourceType;
 
 #define ResourceIDNameLength 64
 
-#define PXEngineResourceInfoIdentityMask    0b0000000000001111
-#define PXEngineResourceInfoExist            0b0000000000000001 // Indicate if resource is valid
-#define PXEngineResourceInfoEnabled            0b0000000000000010 // Is it interactable or does it tick?
-#define PXEngineResourceInfoVisble            0b0000000000000100 // Shall it be rendered?
+#define PXResourceInfoIdentityMask    0b0000000000001111
+#define PXResourceInfoExist           0b0000000000000001 // Indicate if resource is valid
+#define PXResourceInfoActive          0b0000000000000010 // Is it interactable or does it tick?
+#define PXResourceInfoRender          0b0000000000000100 // Shall it be rendered?
 
-#define PXEngineResourceInfoStorageMask     0b0000000011110000
-#define PXEngineResourceInfoStorageDrive    0b0000000000010000 // Resource is in permanent storage
-#define PXEngineResourceInfoStorageCached    0b0000000000100000 // Resource is in semi-permanent cache (temp file)
-#define PXEngineResourceInfoStorageMemory    0b0000000001000000 // Resource exists in RAM
-#define PXEngineResourceInfoStorageDevice    0b0000000010000000 // Resource exists in spesific device
+#define PXResourceInfoStorageMask     0b0000000011110000
+#define PXResourceInfoStorageDrive    0b0000000000010000 // Resource is in permanent storage
+#define PXResourceInfoStorageCached   0b0000000000100000 // Resource is in semi-permanent cache (temp file)
+#define PXResourceInfoStorageMemory   0b0000000001000000 // Resource exists in RAM
+#define PXResourceInfoStorageDevice   0b0000000010000000 // Resource exists in spesific device
+
+#define PXResourceInfoNameMask        0b0000001100000000
+#define PXResourceInfoHasName         0b0000000100000000 // Is the name stored
+#define PXResourceInfoHasSource       0b0000001000000000 // Is resource loaded from a path, if yes, path is cached.
+
+#define PXResourceInfoUseByMask       0b0001100000000000
+#define PXResourceInfoUseByOS         0b0000000000000000
+#define PXResourceInfoUseByUser       0b0000100000000000
+#define PXResourceInfoUseByEngine     0b0001000000000000
+#define PXResourceInfoUseByUndefined  0b0001100000000000
 
 
-#define PXEngineResourceInfoNameMask        0b0000001100000000
-#define PXEngineResourceInfoHasName            0b0000000100000000 // Is the name stored
-#define PXEngineResourceInfoHasSource        0b0000001000000000 // Is resource loaded from a path, if yes, path is cached.
+#define PXResourceInfoOK              PXResourceInfoExist | PXResourceInfoActive | PXResourceInfoRender
 
 
-#define PXResourceBehavíourAllignTOP                      (1<<0)
-#define PXResourceBehavíourAllignLEFT                     (1<<1)
-#define PXResourceBehavíourAllignCENTER                   (1<<2)
-#define PXResourceBehavíourAllignRIGHT                    (1<<3)
-#define PXResourceBehavíourAllignVerticalCENTER           (1<<4)
-#define PXResourceBehavíourAllignBOTTOM                   (1<<5)
+
 
 // IDs used by rendering APIs to keep track of the object reference.
 // OpenGL uses 32-Bit Integer as an ID.
@@ -368,6 +371,7 @@ typedef union PXOSHandle_
     HBRUSH BrushHandle;
     HFONT FontHandle;
     HMENU MenuHandle;
+    HICON IconHandle;
 #endif
 }
 PXOSHandle;
@@ -468,18 +472,38 @@ PXResourceManager;
 
 
 
+//---------------------------------------------------------
+// Icon/Symbols
+//---------------------------------------------------------
 
+#define PXIconxx
 
+typedef enum PXIconID_
+{
+    PXIconIDInvalid,
+    PXIconIDCustom,
+    PXIconIDError,
+    PXIconIDWarning,
+    PXIconIDQuestionmark
+}
+PXIconID;
 
+// Icon/Symbol to be rendered for GUI Elements
+typedef struct PXIcon_
+{
+    PXResourceInfo Info;
+}
+PXIcon;
 
+typedef struct PXIconAtlas_
+{
+    int dummy;
+}
+PXIconAtlas;
 
+PXPublic void PXAPI PXIconLoad(PXIcon* const pxIcon);
 
-
-
-
-
-
-
+//---------------------------------------------------------
 
 
 
@@ -808,22 +832,22 @@ PXPublic void* PXAPI PXVertexBufferInsertionPoint(const PXVertexBuffer* const px
 
 
 
-#define PXDrawModeIDQuad                    1 << 0
-#define PXDrawModeIDInvalid                    1 << 1
-#define PXDrawModeIDPoint                    1 << 2
-#define PXDrawModeIDLine                    1 << 3
-#define PXDrawModeIDLineLoop                1 << 4
-#define PXDrawModeIDLineStrip                1 << 5
-#define PXDrawModeIDLineStripAdjacency        1 << 6
-#define PXDrawModeIDLineAdjacency            1 << 7
-#define PXDrawModeIDTriangle                1 << 8
-#define PXDrawModeIDTriangleAdjacency        1 << 9
-#define PXDrawModeIDTriangleFAN                1 << 10
-#define PXDrawModeIDTriangleStrip            1 << 11
-#define PXDrawModeIDTriangleStripAdjacency    1 << 12
-#define PXDrawModeIDWireFrame                1 << 13
-#define PXDrawModeIDSquare                    1 << 14
-#define PXDrawModeIDPatches                    1 << 15
+#define PXDrawModeIDQuad                    (1 << 0)
+#define PXDrawModeIDInvalid                 (1 << 1)
+#define PXDrawModeIDPoint                   (1 << 2)
+#define PXDrawModeIDLine                    (1 << 3)
+#define PXDrawModeIDLineLoop                (1 << 4)
+#define PXDrawModeIDLineStrip               (1 << 5)
+#define PXDrawModeIDLineStripAdjacency      (1 << 6)
+#define PXDrawModeIDLineAdjacency           (1 << 7)
+#define PXDrawModeIDTriangle                (1 << 8)
+#define PXDrawModeIDTriangleAdjacency       (1 << 9)
+#define PXDrawModeIDTriangleFAN             (1 << 10)
+#define PXDrawModeIDTriangleStrip           (1 << 11)
+#define PXDrawModeIDTriangleStripAdjacency  (1 << 12)
+#define PXDrawModeIDWireFrame               (1 << 13)
+#define PXDrawModeIDSquare                  (1 << 14)
+#define PXDrawModeIDPatches                 (1 << 15)
 
 
 
@@ -1329,7 +1353,7 @@ typedef struct PXCamera_
 PXCamera;
 
 
-typedef    struct PXSkyBox_
+typedef struct PXSkyBox_
 {
     PXResourceInfo Info;
 
@@ -1347,14 +1371,48 @@ PXSkyBox;
 // UI-Element
 //-----------------------------------------------------
 
-#define PXUIElementDoRendering (1 << 0)
-#define PXUIElementIsActive (1 << 1)
-#define PXUIElementIsHoverable (1 << 2)
-#define PXUIElementDrawBorder (1 << 3)
+// Ancering will stick the given edge to a side.
+// Offset will be interpretet 0=NoSpace, 1=???
+// Goal: Scale the object with screensize
+#define PXGUIElementAncerParent           0b0000000000000000000000000000000000001111
+#define PXGUIElementAncerParentLeft       0b0000000000000000000000000000000000000001
+#define PXGUIElementAncerParentTop        0b0000000000000000000000000000000000000010
+#define PXGUIElementAncerParentRight      0b0000000000000000000000000000000000000100
+#define PXGUIElementAncerParentBottom     0b0000000000000000000000000000000000001000
 
-#define PXUIElementNormal PXUIElementDoRendering | PXUIElementIsActive | PXUIElementIsHoverable
-#define PXUIElementDecorative PXUIElementDoRendering | PXUIElementIsActive | PXUIElementDrawBorder
-#define PXUIElementText PXUIElementDoRendering | PXUIElementIsActive
+// Let siblings calulate their offset themself.
+// Goal: Group multible objects together that belong together
+#define PXGUIElementAncerSibling          0b0000000000000000000000000000000011110000
+#define PXGUIElementAncerSiblingLeft      0b0000000000000000000000000000000000010000
+#define PXGUIElementAncerSiblingTop       0b0000000000000000000000000000000000100000
+#define PXGUIElementAncerSiblingRight     0b0000000000000000000000000000000001000000
+#define PXGUIElementAncerSiblingBottom    0b0000000000000000000000000000000010000000
+
+#define PXGUIElementKeepFlags             0b0000000000000000000000000000111100000000
+#define PXGUIElementKeepPositionX         0b0000000000000000000000000000000100000000
+#define PXGUIElementKeepPositionY         0b0000000000000000000000000000001000000000
+#define PXGUIElementKeepWidth             0b0000000000000000000000000000010000000000
+#define PXGUIElementKeepHeight            0b0000000000000000000000000000100000000000
+
+// Allign content inside a element
+#define PXGUIElementAllignFlags           0b0000000000000000000000011111000000000000
+#define PXGUIElementAllignLeft            0b0000000000000000000000000001000000000000
+#define PXGUIElementAllignTop             0b0000000000000000000000000010000000000000
+#define PXGUIElementAllignRight           0b0000000000000000000000000100000000000000
+#define PXGUIElementAllignBottom          0b0000000000000000000000001000000000000000
+#define PXGUIElementAllignCenter          0b0000000000000000000000010000000000000000
+
+
+#define PXGUIElementBehaviourHoverable    0b0000000000000000000000100000000000000000
+#define PXGUIElementBehaviourSelectable   0b0000000000000000000001000000000000000000
+#define PXGUIElementBehaviourBorder       0b0000000000000000000010000000000000000000
+#define PXGUIElementBehaviourScrollBarHor 0b0000000000000000000100000000000000000000
+#define PXGUIElementBehaviourScrollBarVer 0b0000000000000000001000000000000000000000
+
+#define PXGUIElementBehaviourDefaultKeepAspect   PXGUIElementKeepWidth | PXGUIElementKeepHeight
+#define PXGUIElementBehaviourDefaultDecorative   PXResourceInfoOK | PXGUIElementBehaviourBorder
+#define PXGUIElementBehaviourDefaultInputNormal  PXResourceInfoOK | PXGUIElementBehaviourSelectable | PXGUIElementBehaviourHoverable
+#define PXGUIElementBehaviourDefaultText         PXResourceInfoOK | PXGUIElementAllignTop | PXGUIElementKeepHeight | PXGUIElementAllignCenter
 
 
 typedef enum PXUIHoverState_
@@ -1505,35 +1563,7 @@ typedef HWND PXWindowID; // HWND
 #endif
 
 
-// Ancering will stick the given edge to a side.
-// Offset will be interpretet 0=NoSpace, 1=???
-// Goal: Scale the object with screensize
-#define PXUIElementAncerParent            0b11110000
-#define PXUIElementAncerParentLeft        0b10000000
-#define PXUIElementAncerParentTop        0b01000000
-#define PXUIElementAncerParentRight        0b00100000
-#define PXUIElementAncerParentBottom    0b00010000
 
-// Let siblings calulate their offset themself.
-// Goal: Group multible objects together that belong together
-#define PXUIElementAncerSibling            0b00001111
-#define PXUIElementAncerSiblingLeft        0b00001000
-#define PXUIElementAncerSiblingTop        0b00000100
-#define PXUIElementAncerSiblingRight    0b00000010
-#define PXUIElementAncerSiblingBottom    0b00000001
-
-#define PXUIElementKeepFlags        0b00001111
-#define PXUIElementKeepPositionX    0b00000001
-#define PXUIElementKeepPositionY    0b00000010
-#define PXUIElementKeepWidth        0b00000100
-#define PXUIElementKeepHeight        0b00001000
-
-#define PXUIElementAllignFlags        0b11110000
-#define PXUIElementAllignLeft        0b00010000
-#define PXUIElementAllignTop        0b00100000
-#define PXUIElementAllignRight        0b01000000
-#define PXUIElementAllignBottom        0b10000000
-#define PXUIElementAllignCenter        0b11110000
 
 typedef struct PXUIElementPosition_
 {
@@ -1557,9 +1587,9 @@ typedef struct PXUIElementPosition_
     float Right;
     float Bottom;
 
-    PXInt16U FlagListFormat; // Unused
-    PXInt8U FlagListAncer;
-    PXInt8U FlagListKeep;
+   // PXInt16U FlagListFormat; // Unused
+ //   PXInt8U FlagListAncer;
+   // PXInt8U FlagListKeep;
 }
 PXUIElementPosition;
 
@@ -1774,20 +1804,6 @@ PXUIElementPositionCalulcateInfo;
 
 
 
-// Behaviour
-#define PXGUIElementBehaviourDrawMask        0b0000000000000000000000000000000000000011
-#define PXGUIElementBehaviourDrawByOS        0b0000000000000000000000000000000000000000
-#define PXGUIElementBehaviourDrawByUser      0b0000000000000000000000000000000000000001
-#define PXGUIElementBehaviourDrawByEngine    0b0000000000000000000000000000000000000010
-#define PXGUIElementBehaviourDrawByUndefined 0b0000000000000000000000000000000000000011
-
-#define PXGUIElementBehaviourTABAware        0b0000000000000000000000000000000000000100
-#define PXGUIElementBehaviourVisible         0b0000000000000000000000000000000000001000
-#define PXGUIElementBehaviourBorder          0b0000000000000000000000000000000000010000
-#define PXGUIElementBehaviourScrollBarHor    0b0000000000000000000000000000000000100000
-#define PXGUIElementBehaviourScrollBarVer    0b0000000000000000000000000000000001000000
-
-#define PXGUIElementStyleDefault PXGUIElementBehaviourVisible | PXGUIElementBehaviourBorder
 
 typedef enum PXUIElementProperty_
 {
@@ -2016,9 +2032,6 @@ typedef struct PXGUIElementCreateInfo_
     void* CustomDrawFunction;
 
     PXUIElementPosition Position;
-
-  //  PXInt32U BehaviourFlagList;
-    PXInt32U StyleFlagList;
 
 #if OSUnix
 #elif OSWindows
@@ -2414,6 +2427,7 @@ typedef enum PXFileFormat_
     PXFileFormatTGA,
     PXFileFormatTagImage,
     PXFileFormatTrueTypeFont,
+    PXFileFormatUniversalSceneDescription,
     PXFileFormatVRML,
     PXFileFormatWave,
     PXFileFormatWEBM,

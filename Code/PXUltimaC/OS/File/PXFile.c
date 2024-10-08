@@ -443,6 +443,7 @@ PXFileFormat PXAPI PXFilePathExtensionDetectTry(const PXText* const filePath)
                 case PXInt24Make('S', 'T', 'L'): return PXFileFormatSTL;
                 case PXInt24Make('S', 'V', 'G'): return PXFileFormatSVG;
                 case PXInt24Make('T', 'I', 'F'): return PXFileFormatTagImage;
+                case PXInt24Make('U', 'S', 'D'): return PXFileFormatUniversalSceneDescription;
                 case PXInt24Make('T', 'G', 'A'): return PXFileFormatTGA;
                 case PXInt24Make('T', 'T', 'F'): return PXFileFormatTrueTypeFont;
                 case PXInt24Make('W', 'A', 'V'): return PXFileFormatWave;

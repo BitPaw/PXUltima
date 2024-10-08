@@ -669,8 +669,13 @@ PXPublic PXActionResult PXAPI PXGUIElementDragStart(PXGUISystem* const pxGUISyst
 PXPublic PXActionResult PXAPI PXGUIElementBufferSwap(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
 
 PXPublic PXActionResult PXAPI PXGUIDrawClear(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
-PXPublic PXActionResult PXAPI PXGUIDrawForegroundColorSetRGB(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, char red, char green, char blue);
-PXPublic PXActionResult PXAPI PXGUIDrawBackgroundColorSetRGB(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, char red, char green, char blue);
+
+#define PXGUIDrawModeFront (1<<0)
+#define PXGUIDrawModeBack  (1<<1)
+
+PXPublic PXActionResult PXAPI PXGUIDrawColorSetBrush(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementBrush* const pxGUIElementBrush, const char mode);
+PXPublic PXActionResult PXAPI PXGUIDrawColorSetV3(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXColorRGBI8* const pxColorRGBI8, const char mode);
+PXPublic PXActionResult PXAPI PXGUIDrawColorSetRGB(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, char red, char green, char blue, const char mode);
 PXPublic PXActionResult PXAPI PXGUIElementDrawBegin(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
 PXPublic PXActionResult PXAPI PXGUIElementDrawEnd(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
 

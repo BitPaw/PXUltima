@@ -1,5 +1,5 @@
-#ifndef PXPXTTFINCLUDE
-#define PXPXTTFINCLUDE
+#ifndef PXTTFINCLUDE
+#define PXTTFINCLUDE
 
 #define PXTTFDebug 0
 

@@ -950,7 +950,7 @@ PXActionResult PXAPI PXEngineResourceAction(PXEngine* const pxEngine, PXEngineRe
 
                     if(pxEngineResourceStateChangeInfo->Enable)
                     {
-                        pxEngineText->Info.Handle.Flags |= PXEngineResourceInfoEnabled;
+                        pxEngineText->Info.Handle.Flags |= PXResourceInfoEnabled;
                     }
 
 #if PXLogEnable
@@ -972,7 +972,7 @@ PXActionResult PXAPI PXEngineResourceAction(PXEngine* const pxEngine, PXEngineRe
 
                     if(pxEngineResourceStateChangeInfo->Enable)
                     {
-                        pxEngineTimer->Info.Handle.Flags |= PXEngineResourceInfoEnabled;
+                        pxEngineTimer->Info.Handle.Flags |= PXResourceInfoEnabled;
                     }
 
                     pxEngineTimer->TimeStampStart = PXTimeCounterStampGet();
@@ -1180,7 +1180,7 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
         pxResourceCreateInfo.ObjectReference = &pxEngine->Window;
         pxResourceCreateInfo.Type = PXResourceTypeGUIElement;
         pxResourceCreateInfo.UIElement.Type = PXUIElementTypeWindow;
-        pxResourceCreateInfo.UIElement.StyleFlagList = PXGUIElementStyleDefault;
+        pxResourceCreateInfo.UIElement.BehaviourFlags = PXGUIElementBehaviourDefaultDecorative;
         pxResourceCreateInfo.UIElement.InteractOwner = pxEngine;
         pxResourceCreateInfo.UIElement.InteractCallBack = PXEngineWindowEvent;
         pxResourceCreateInfo.UIElement.Data.Window.EventOwner = pxEngine;
@@ -1418,6 +1418,11 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
 
 void PXAPI PXEngineStop(PXEngine* const pxEngine)
 {
+    if(!pxEngine->IsRunning)
+    {
+        return; // Engine is not running, we dont release
+    }
+
 #if PXLogEnable
     PXLogPrint
     (
@@ -1802,7 +1807,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
                 );
             }
 
-            pxSkyBox->Info.Flags |= PXEngineResourceInfoVisble;
+            pxSkyBox->Info.Flags |= PXResourceInfoRender;
 
             break;
         }
@@ -2041,7 +2046,7 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEn
         {
             PXModel* const pxModel = (PXModel*)pxRenderEntity->ObjectReference;
 
-            if(!(pxModel->Info.Flags & PXEngineResourceInfoVisble))
+            if(!(pxModel->Info.Flags & PXResourceInfoRender))
             {
                 break; // Skip rendering
             }
@@ -2054,7 +2059,7 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEn
         {
             PXSkyBox* const pxSkyBox = (PXSkyBox*)pxRenderEntity->ObjectReference;
 
-            if(!(pxSkyBox->Info.Flags & PXEngineResourceInfoVisble))
+            if(!(pxSkyBox->Info.Flags & PXResourceInfoRender))
             {
                 break; // Skip rendering
             }
@@ -2067,7 +2072,7 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEn
         {
             PXSprite* const pxSprite = (PXSprite*)pxRenderEntity->ObjectReference;
 
-            if(!(pxSprite->Info.Flags & PXEngineResourceInfoVisble))
+            if(!(pxSprite->Info.Flags & PXResourceInfoRender))
             {
                 break; // Skip rendering
             }
@@ -2080,7 +2085,7 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEn
         {
             PXHitBox* const pxHitBox = (PXHitBox*)pxRenderEntity->ObjectReference;
 
-            if(!(pxHitBox->Info.Flags & PXEngineResourceInfoVisble))
+            if(!(pxHitBox->Info.Flags & PXResourceInfoRender))
             {
                 break; // Skip rendering
             }
@@ -2088,7 +2093,7 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEn
 
            // PXOpenGLBlendingMode(&pxEngine->Graphic.OpenGLInstance, PXBlendingModeOneToOne);
 
-            PXBool isEnabled = !(pxHitBox->Info.Flags & PXEngineResourceInfoEnabled);
+            PXBool isEnabled = !(pxHitBox->Info.Flags & PXResourceInfoActive);
 
             float color[4];
 
@@ -2179,7 +2184,7 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEn
             PXText* const pxText = pxEngineText->Text;
             PXFont* const pxFont = pxEngineText->Font;
 
-            if (!pxEngineText->Info.Flags & PXEngineResourceInfoEnabled)
+            if (!pxEngineText->Info.Flags & PXResourceInfoActive)
             {
                 break;
             }
@@ -2772,7 +2777,7 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
 
             pxModel = *(PXModel**)pxDictionaryEntry.Value;
 
-            if(!(pxModel->Info.Flags & PXEngineResourceInfoVisble))
+            if(!(pxModel->Info.Flags & PXResourceInfoRender))
             {
                 continue;
             }
@@ -2825,7 +2830,7 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
 
             pxSprite = *(PXSprite**)pxDictionaryEntry.Value;
 
-            if(!(pxSprite->Info.Flags & PXEngineResourceInfoVisble))
+            if(!(pxSprite->Info.Flags & PXResourceInfoRender))
             {
                 continue;
             }
@@ -2889,7 +2894,7 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
 
             pxEngineText = *(PXEngineText**)pxDictionaryEntry.Value;
 
-            if(!(pxEngineText->Info.Flags & PXEngineResourceInfoEnabled))
+            if(!(pxEngineText->Info.Flags & PXResourceInfoActive))
             {
                 continue;
             }
@@ -2944,7 +2949,7 @@ void PXAPI PXEngineCollsisionSolve(PXEngine* const pxEngine)
 
         pxHitBoxA = *(PXHitBox**)pxDictionaryEntryA.Value;
 
-        if (!(pxHitBoxA->Info.Flags & PXEngineResourceInfoEnabled))
+        if (!(pxHitBoxA->Info.Flags & PXResourceInfoActive))
         {
             continue;
         }
@@ -2958,7 +2963,7 @@ void PXAPI PXEngineCollsisionSolve(PXEngine* const pxEngine)
 
             hitBoxB = *(PXHitBox**)pxDictionaryEntryB.Value;
 
-            if (!(pxHitBoxA->Info.Flags & PXEngineResourceInfoEnabled))
+            if (!(pxHitBoxA->Info.Flags & PXResourceInfoActive))
             {
                 continue;
             }
@@ -3018,7 +3023,7 @@ void PXAPI PXEngineTimerUpdate(PXEngine* const pxEngine)
 
         pxEngineTimer = *(PXEngineTimer**)pxDictionaryEntry.Value;
 
-        if(!(pxEngineTimer->Info.Flags & PXEngineResourceInfoEnabled))
+        if(!(pxEngineTimer->Info.Flags & PXResourceInfoActive))
         {
             continue;
         }
@@ -3080,7 +3085,7 @@ void PXAPI PXEngineSpriteAnimatorUpdate(PXEngine* const pxEngine)
 
         pxSpriteAnimator = *(PXSpriteAnimator**)pxDictionaryEntry.Value;
 
-        if(!(pxSpriteAnimator->Info.Flags & PXEngineResourceInfoEnabled))
+        if(!(pxSpriteAnimator->Info.Flags & PXResourceInfoActive))
         {
             continue;
         }
@@ -3285,7 +3290,7 @@ void PXAPI PXEngineHitBoxHandle(PXEngine* const pxEngine)
 
         pxHitBoxA = *(PXHitBox**)pxDictionaryEntry.Value;
 
-        if(!(pxHitBoxA->Info.Flags & PXEngineResourceInfoEnabled))
+        if(!(pxHitBoxA->Info.Flags & PXResourceInfoActive))
         {
             continue;
         }
@@ -3299,7 +3304,7 @@ void PXAPI PXEngineHitBoxHandle(PXEngine* const pxEngine)
 
             pxHitBoxB = *(PXHitBox**)pxDictionaryEntry.Value;
 
-            if(!(pxHitBoxB->Info.Flags & PXEngineResourceInfoEnabled))
+            if(!(pxHitBoxB->Info.Flags & PXResourceInfoActive))
             {
                 continue;
             }

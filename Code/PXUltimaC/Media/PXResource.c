@@ -59,6 +59,7 @@
 #include "ADLER/PXAdler32.h"
 #include "Java/PXJava.h"
 #include "ZIP/PXZIP.h"
+#include "USD/PXUSD.h"
 
 #include <assert.h>
 
@@ -744,7 +745,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
 
                 pxModel->ShaderProgramReference = pxModelCreateInfo->ShaderProgramReference;
 
-                pxModel->Info.Flags |= PXEngineResourceInfoVisble;
+                pxModel->Info.Flags |= PXResourceInfoRender;
 
                 break;
             }
@@ -776,7 +777,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                     PXMaterial* const pxMaterialCurrent = &pxMaterial[materialIndex];
 
                     pxMaterialCurrent->Info.ID = PXResourceManagerGenerateUniqeID(pxResourceManager);
-                    pxMaterialCurrent->Info.Flags |= PXEngineResourceInfoVisble;
+                    pxMaterialCurrent->Info.Flags |= PXResourceInfoRender;
 
                     keyList[materialIndex] = &pxMaterialCurrent->Info.ID;
                 }              
@@ -909,7 +910,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
 
                 pxSkyBox->Info.ID = PXResourceManagerGenerateUniqeID(pxResourceManager);
                 PXDictionaryAdd(&pxResourceManager->SkyBoxLookUp, &pxSkyBox->Info.ID, pxSkyBox);
-                pxSkyBox->Info.Flags |= PXEngineResourceInfoExist;
+                pxSkyBox->Info.Flags |= PXResourceInfoExist;
 
 #if PXLogEnable
                 PXLogPrint
@@ -982,7 +983,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                 }
 
                 pxSprite->Info.ID = PXResourceManagerGenerateUniqeID(pxResourceManager);
-                pxSprite->Info.Flags |= PXEngineResourceInfoVisble;
+                pxSprite->Info.Flags |= PXResourceInfoRender;
 
                 PXDictionaryAdd(&pxResourceManager->SpritelLookUp, &pxSprite->Info.ID, pxSprite);
           
@@ -1413,7 +1414,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                    
                     PXFileOpen(&pxShaderProgramCreateData->ShaderPixelFile, &pxFileOpenInfo);
 
-                    pxShaderProgram->Info.Flags |= PXEngineResourceInfoStorageMemory;
+                    pxShaderProgram->Info.Flags |= PXResourceInfoStorageMemory;
                 }
                 else // load file
                 {
@@ -1438,7 +1439,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
 
                     PXActionReturnOnError(fragmentLoadResult);
 
-                    pxShaderProgram->Info.Flags |= PXEngineResourceInfoStorageMemory;
+                    pxShaderProgram->Info.Flags |= PXResourceInfoStorageMemory;
                 }
 
                 break;
@@ -1456,7 +1457,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                 pxHitBox->Info.ID = PXResourceManagerGenerateUniqeID(pxResourceManager);
                 PXDictionaryAdd(&pxResourceManager->HitBoxLookUp, &pxHitBox->Info.ID, pxHitBox);
 
-                pxHitBox->Info.Flags |= PXEngineResourceInfoEnabled;
+                pxHitBox->Info.Flags |= PXResourceInfoActive;
                 pxHitBox->Info.Behaviour = pxResourceCreateInfo->HitBox.Behaviour;
                 pxHitBox->Model = pxResourceCreateInfo->HitBox.Model;           
 
@@ -1487,7 +1488,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                 pxGUIElement->Info.ID = PXResourceManagerGenerateUniqeID(pxResourceManager);
                 PXDictionaryAdd(&pxResourceManager->GUIElementLookup, &pxGUIElement->Info.ID, pxGUIElement);
 
-                pxGUIElement->Info.Flags |= PXEngineResourceInfoEnabled;
+                pxGUIElement->Info.Flags |= PXResourceInfoActive;
 
                 break;
             }
@@ -1505,7 +1506,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                 pxSpriteAnimator->Info.ID = PXResourceManagerGenerateUniqeID(pxResourceManager);
                 PXDictionaryAdd(&pxResourceManager->SpriteAnimator, &pxSpriteAnimator->Info.ID, pxSpriteAnimator);
 
-                pxSpriteAnimator->Info.Flags |= PXEngineResourceInfoEnabled;
+                pxSpriteAnimator->Info.Flags |= PXResourceInfoActive;
 
                 pxSpriteAnimator->Info.Behaviour = pxSpriteAnimatorInfo->Behaviour;
                 pxSpriteAnimator->SpriteTarget = pxSpriteAnimatorInfo->SpriteTarget;
@@ -1567,7 +1568,7 @@ PXActionResult PXAPI PXResourceStoreName(PXResourceManager* const pxResourceMana
 
     PXFlexDataCacheAdd(&pxResourceManager->NameCache, &pxResourceInfo->ID, name, nameSize);
 
-    pxResourceInfo->Flags |= PXEngineResourceInfoHasName;
+    pxResourceInfo->Flags |= PXResourceInfoHasName;
 
     return PXActionSuccessful;
 }
@@ -1591,7 +1592,7 @@ PXActionResult PXAPI PXResourceStorePath(PXResourceManager* const pxResourceMana
 
     PXFlexDataCacheAdd(&pxResourceManager->NameCache, &pxResourceInfo->ID, name, nameSize);
 
-    pxResourceInfo->Flags |= PXEngineResourceInfoHasSource;
+    pxResourceInfo->Flags |= PXResourceInfoHasSource;
 
     return PXActionSuccessful;
 }
@@ -1608,6 +1609,17 @@ PXActionResult PXAPI PXResourceFetchPath(PXResourceManager* const pxResourceMana
     PXFlexDataCacheGet(&pxResourceManager->SourcePathCache, pxResourceInfo->ID, name, nameSize);
 
     return PXActionSuccessful;
+}
+
+void PXAPI PXIconLoad(PXIcon* const pxIcon)
+{
+#if OSUnix
+    return PXActionRefusedNotImplemented;
+#elif OSWindows
+    pxIcon->Info.Handle.IconHandle = LoadIcon(NULL, IDI_QUESTION);
+#else 
+    return PXActionRefusedNotSupportedByOperatingSystem;
+#endif
 }
 
 void PXAPI PXRectangleOffsetSet(PXRectangleOffset* const pxRectangleOffset, float left, float top, float right, float bottom)
@@ -1969,7 +1981,7 @@ void PXAPI PXUIElementPositionCalculcate(PXGUIElement* const pxGUIElement, PXUIE
     // XYWH for WindowsAPI stuff0
 
 
-    if(PXUIElementKeepWidth & pxGUIElement->Position.FlagListKeep)
+    if(PXGUIElementKeepWidth & pxGUIElement->Info.Behaviour)
     {
         pxUIElementPositionCalulcateInfo->Width = pxGUIElement->Position.Width;
     }
@@ -1978,7 +1990,7 @@ void PXAPI PXUIElementPositionCalculcate(PXGUIElement* const pxGUIElement, PXUIE
         pxUIElementPositionCalulcateInfo->Width = mathWithScaling;
     }
 
-    if(PXUIElementKeepHeight & pxGUIElement->Position.FlagListKeep)
+    if(PXGUIElementKeepHeight & pxGUIElement->Info.Behaviour)
     {
         pxUIElementPositionCalulcateInfo->Height = pxGUIElement->Position.Height;
     }
@@ -1988,29 +2000,29 @@ void PXAPI PXUIElementPositionCalculcate(PXGUIElement* const pxGUIElement, PXUIE
     }
 
 
-    switch(PXUIElementAllignFlags & pxGUIElement->Position.FlagListKeep)
+    switch(PXGUIElementAllignFlags & pxGUIElement->Info.Behaviour)
     {
         default:
-        case PXUIElementAllignLeft:
+        case PXGUIElementAllignLeft:
         {
             pxUIElementPositionCalulcateInfo->X = remLeft;
             pxUIElementPositionCalulcateInfo->Y = remTop;
             break;
         }
-        case PXUIElementAllignTop:
+        case PXGUIElementAllignTop:
         {
             pxUIElementPositionCalulcateInfo->X = remLeft;
             pxUIElementPositionCalulcateInfo->Y = remTop;
             break;
         }
-        case PXUIElementAllignRight:
+        case PXGUIElementAllignRight:
         {
             pxUIElementPositionCalulcateInfo->X = pxUIElementPositionCalulcateInfo->WindowWidth - (remRight + pxUIElementPositionCalulcateInfo->Width);
             pxUIElementPositionCalulcateInfo->Y = pxUIElementPositionCalulcateInfo->WindowHeight - (remBottom + pxUIElementPositionCalulcateInfo->Height);
             break;
 
         }
-        case PXUIElementAllignBottom:
+        case PXGUIElementAllignBottom:
         {
             pxUIElementPositionCalulcateInfo->X = remLeft;
             pxUIElementPositionCalulcateInfo->Y = pxUIElementPositionCalulcateInfo->WindowHeight - (remBottom + pxUIElementPositionCalulcateInfo->Height);
@@ -2304,6 +2316,12 @@ PXActionResult PXAPI PXFileTypeInfoProbe(PXResourceTransphereInfo* const pxFileT
             pxFileTypeInfo->ResourceType = PXResourceTypeFont;
             pxFileTypeInfo->ResourceLoad = PXTTFLoadFromFile;
             pxFileTypeInfo->ResourceSave = PXTTFSaveToFile;
+            break;
+
+        case PXFileFormatUniversalSceneDescription:
+            pxFileTypeInfo->ResourceType = PXResourceTypeArchiv;
+            pxFileTypeInfo->ResourceLoad = PXUSDLoadFromFile;
+            pxFileTypeInfo->ResourceSave = PXUSDSaveToFile;
             break;
 
         case PXFileFormatVRML:

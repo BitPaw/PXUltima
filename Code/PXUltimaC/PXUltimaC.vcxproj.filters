@@ -519,6 +519,9 @@
     <ClCompile Include="Container\HierarchicalList\PXHierarchicalList.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Media\USD\PXUSD.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm\KalmanFilter\PXKalmanFilter.h">
@@ -1025,6 +1028,9 @@
     <ClInclude Include="Container\HierarchicalList\PXHierarchicalList.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Media\USD\PXUSD.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Media\Matroska\README.md" />
@@ -1067,5 +1073,7 @@
     <None Include="Graph\Timeline\README.md" />
     <None Include="Graph\BoxPlot\README.md" />
     <None Include="Container\HierarchicalList\README.md" />
+    <None Include="Media\USD\README.md" />
+    <None Include="Media\TTF\README.md" />
   </ItemGroup>
 </Project>
