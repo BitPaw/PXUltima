@@ -1096,6 +1096,7 @@ typedef struct PXFont_
     PXResourceInfo Info;
 
     PXSize PageListAmount;
+    PXInt16U Size;
 
     union
     {
@@ -1409,11 +1410,12 @@ PXSkyBox;
 #define PXGUIElementBehaviourScrollBarHor 0b0000000000000000000100000000000000000000
 #define PXGUIElementBehaviourScrollBarVer 0b0000000000000000001000000000000000000000
 
+
 #define PXGUIElementBehaviourDefaultKeepAspect   PXGUIElementKeepWidth | PXGUIElementKeepHeight
 #define PXGUIElementBehaviourDefaultDecorative   PXResourceInfoOK | PXGUIElementBehaviourBorder
 #define PXGUIElementBehaviourDefaultInputNormal  PXResourceInfoOK | PXGUIElementBehaviourSelectable | PXGUIElementBehaviourHoverable
 #define PXGUIElementBehaviourDefaultText         PXResourceInfoOK | PXGUIElementAllignTop | PXGUIElementKeepHeight | PXGUIElementAllignCenter
-
+#define PXGUIElementBehaviourDefaultBuffer       PXGUIElementBehaviourDefaultKeepAspect
 
 typedef enum PXUIHoverState_
 {
@@ -1466,7 +1468,9 @@ typedef enum PXUIElementType_
     PXUIElementTypeImageList,
     PXUIElementTypeRenderFrame,
 
-    PXUIElementTypeMenuStrip // Topline of a window that contains a selectable list of things
+    PXUIElementTypeMenuStrip, // Topline of a window that contains a selectable list of things
+
+    PXUIElementTypeFileManager // TreeView of filesystem with utility
 }
 PXUIElementType;
 

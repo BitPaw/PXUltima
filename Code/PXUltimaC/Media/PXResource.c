@@ -318,13 +318,20 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
 
 #if OSUnix
 #elif OSWindows
+
+           
+
                 COLORREF brushColor = RGB(pxBrushCreateInfo->Color.Red, pxBrushCreateInfo->Color.Green, pxBrushCreateInfo->Color.Blue);
                 HBRUSH brushHandle = CreateSolidBrush(brushColor);
+
+
+                pxGUIElementBrush->Info.Handle.BrushHandle = brushHandle;
+                PXGUIElementBrushColorSet(pxGUIElementBrush, pxBrushCreateInfo->Color.Red, pxBrushCreateInfo->Color.Green, pxBrushCreateInfo->Color.Blue);
 
                // Color xx = Color(255, 0, 0, 255);
                // SolidBrush ww = opaqueBrush();
 
-                pxGUIElementBrush->Info.Handle.BrushHandle = brushHandle;
+       
 #endif
 
                 PXDictionaryAdd(&pxResourceManager->BrushLookUp, &pxGUIElementBrush->Info.ID, pxGUIElementBrush);

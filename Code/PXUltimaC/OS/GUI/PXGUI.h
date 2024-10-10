@@ -703,6 +703,7 @@ PXPublic PXActionResult PXAPI PXGUIElementDrawCustomButton(PXGUISystem* const px
 PXPublic PXActionResult PXAPI PXGUIElementDrawCustomComboBox(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo);
 PXPublic PXActionResult PXAPI PXGUIElementDrawCustomColorPicker(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo);
 PXPublic PXActionResult PXAPI PXGUIElementDrawCustomHexView(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo);
+
 //---------------------------------------------------------
 
 
