@@ -70,10 +70,10 @@ PXActionResult PXAPI PXDirectoryOpen(PXDirectoryIterator* const pxDirectoryItera
     address += PXTextCopyA(directoryName->TextA, directoryName->SizeUsed, address, PXPathSizeMax);
     address += PXTextCopyA("*", 1u, address, PXPathSizeMax); // Get all directory and files
 
-    pxDirectoryIterator->ID = FindFirstFileA(seachDirectoryKey, &pxDirectoryIterator->DirectoryEntryCurrent); // FindFirstFileExW() has literally no additional functionality (for now)
+    pxDirectoryIterator->WindowsDirectoryHandleID = FindFirstFileA(seachDirectoryKey, &pxDirectoryIterator->WindowsDirectoryEntryCurrent); // FindFirstFileExW() has literally no additional functionality (for now)
 
     {
-        const PXBool failed = INVALID_HANDLE_VALUE == pxDirectoryIterator->ID;
+        const PXBool failed = INVALID_HANDLE_VALUE == pxDirectoryIterator->WindowsDirectoryHandleID;
 
         PXActionOnErrorFetchAndReturn(failed);
     }
@@ -91,7 +91,7 @@ PXActionResult PXAPI PXDirectoryOpen(PXDirectoryIterator* const pxDirectoryItera
         PXPathSizeMax
     );
 
-    PXFileElementInfoCOnvertFrom(&pxDirectoryIterator->EntryCurrent, &pxDirectoryIterator->DirectoryEntryCurrent, 1);
+    PXFileElementInfoCOnvertFrom(&pxDirectoryIterator->EntryCurrent, &pxDirectoryIterator->WindowsDirectoryEntryCurrent, 1);
 
 
     PXText pxTextInput;
@@ -122,7 +122,7 @@ PXBool PXAPI PXDirectoryNext(PXDirectoryIterator* const pxDirectoryIterator)
     }
 #elif OSWindows
 
-    const PXBool fetchSuccessful = FindNextFile(pxDirectoryIterator->ID, &pxDirectoryIterator->DirectoryEntryCurrent);
+    const PXBool fetchSuccessful = FindNextFile(pxDirectoryIterator->WindowsDirectoryHandleID, &pxDirectoryIterator->WindowsDirectoryEntryCurrent);
 
     if (!fetchSuccessful)
     {
@@ -131,7 +131,7 @@ PXBool PXAPI PXDirectoryNext(PXDirectoryIterator* const pxDirectoryIterator)
         return PXFalse;
     }
 
-    PXFileElementInfoCOnvertFrom(&pxDirectoryIterator->EntryCurrent, &pxDirectoryIterator->DirectoryEntryCurrent, 1);
+    PXFileElementInfoCOnvertFrom(&pxDirectoryIterator->EntryCurrent, &pxDirectoryIterator->WindowsDirectoryEntryCurrent, 1);
 
     switch (pxDirectoryIterator->EntryCurrent.Type)
     {
@@ -213,7 +213,7 @@ PXBool PXAPI PXDirectoryClose(PXDirectoryIterator* const pxDirectoryIterator)
     PXActionOnErrorFetchAndReturn(!success);
 
 #elif OSWindows
-    const PXBool success = FindClose(pxDirectoryIterator->ID);
+    const PXBool success = FindClose(pxDirectoryIterator->WindowsDirectoryHandleID);
 
     PXActionOnErrorFetchAndReturn(!success);
 #endif

@@ -60,6 +60,7 @@
 #include "Java/PXJava.h"
 #include "ZIP/PXZIP.h"
 #include "USD/PXUSD.h"
+#include "VOB/PXVOB.h"
 
 #include <assert.h>
 
@@ -2329,6 +2330,12 @@ PXActionResult PXAPI PXFileTypeInfoProbe(PXResourceTransphereInfo* const pxFileT
             pxFileTypeInfo->ResourceType = PXResourceTypeArchiv;
             pxFileTypeInfo->ResourceLoad = PXUSDLoadFromFile;
             pxFileTypeInfo->ResourceSave = PXUSDSaveToFile;
+            break;            
+
+        case PXFileFormatVideoObject:
+            pxFileTypeInfo->ResourceType = PXResourceTypeVideo;
+            pxFileTypeInfo->ResourceLoad = PXVOBLLoadFromFile;
+            pxFileTypeInfo->ResourceSave = PXVOBLSaveToFile;
             break;
 
         case PXFileFormatVRML:

@@ -217,6 +217,7 @@
     <ClCompile Include="Media\PXLevel\PXLevel.c" />
     <ClCompile Include="Media\Salsa20\PXSalsa20.c" />
     <ClCompile Include="Media\USD\PXUSD.c" />
+    <ClCompile Include="Media\VOB\PXVOB.c" />
     <ClCompile Include="Media\ZIP\PXZIP.c" />
     <ClCompile Include="OS\Async\PXThreadPool.c" />
     <ClCompile Include="OS\Graphic\DirectX\PXDirectX10.c" />
@@ -388,6 +389,7 @@
     <ClInclude Include="Media\PXLevel\PXLevel.h" />
     <ClInclude Include="Media\Salsa20\PXSalsa20.h" />
     <ClInclude Include="Media\USD\PXUSD.h" />
+    <ClInclude Include="Media\VOB\PXVOB.h" />
     <ClInclude Include="Media\ZIP\PXZIP.h" />
     <ClInclude Include="OS\Async\PXThreadPool.h" />
     <ClInclude Include="OS\Graphic\DirectX\PXDirectX10.h" />
@@ -570,6 +572,8 @@
     <None Include="Media\STL\README.md" />
     <None Include="Media\TTF\README.md" />
     <None Include="Media\USD\README.md" />
+    <None Include="Media\VOB\README.md" />
+    <None Include="Media\VRML\README.md" />
     <None Include="Media\XML\README.md" />
     <None Include="OS\Audio\PXALSA\README.md" />
     <None Include="OS\Audio\README.md" />

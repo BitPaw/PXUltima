@@ -522,6 +522,9 @@
     <ClCompile Include="Media\USD\PXUSD.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Media\VOB\PXVOB.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm\KalmanFilter\PXKalmanFilter.h">
@@ -1031,6 +1034,9 @@
     <ClInclude Include="Media\USD\PXUSD.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Media\VOB\PXVOB.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Media\Matroska\README.md" />
@@ -1075,5 +1081,7 @@
     <None Include="Container\HierarchicalList\README.md" />
     <None Include="Media\USD\README.md" />
     <None Include="Media\TTF\README.md" />
+    <None Include="Media\VOB\README.md" />
+    <None Include="Media\VRML\README.md" />
   </ItemGroup>
 </Project>

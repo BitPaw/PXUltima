@@ -390,6 +390,10 @@ PXFileFormat PXAPI PXFilePathExtensionDetectTry(const PXText* const filePath)
 
             switch (list)
             {
+                case PXInt24Make('V', 'O', 'B'):
+                case PXInt24Make('I', 'F', 'O'):
+                case PXInt24Make('B', 'U', 'P'): return PXFileFormatVideoObject;
+
                 case PXInt24Make('V', '6', '4'):
                 case PXInt24Make('Z', '6', '4'):
                 case PXInt24Make('N', '6', '4'): return PXFileFormatN64;

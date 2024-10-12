@@ -2432,6 +2432,7 @@ typedef enum PXFileFormat_
     PXFileFormatTagImage,
     PXFileFormatTrueTypeFont,
     PXFileFormatUniversalSceneDescription,
+    PXFileFormatVideoObject,
     PXFileFormatVRML,
     PXFileFormatWave,
     PXFileFormatWEBM,

@@ -115,13 +115,85 @@ void PXTextMatchTest()
 #include <oleauto.h>
 #pragma comment(lib, "wbemuuid.lib")
 
+
+
+
+
+
+#include <OS/File/PXDirectory.h>
+
+
+
+
+
+
+
+
+void PXAPI Trace_File()
+{
+    PXText pxText;
+
+    PXDirectoryIterator pxDirectoryIterator;
+
+
+}
+
+void PXAPI Trace_Folder(PXDirectoryIterator* parentDir, PXText* pxText)
+{
+    PXDirectoryIterator pxDirectoryIterator;
+
+    const PXActionResult open = PXDirectoryOpen(&pxDirectoryIterator, pxText);
+
+    do
+    {
+        PXText pxTextSubDir;
+        PXTextConstructFromAdressA(&pxTextSubDir, pxDirectoryIterator.EntryCurrent.FullPath, pxDirectoryIterator.EntryCurrent.FullPathOffset, pxDirectoryIterator.EntryCurrent.FullPathOffset);
+
+
+
+        Trace_Folder(&pxDirectoryIterator, &pxTextSubDir);
+    }     
+    while(PXDirectoryNext(&pxDirectoryIterator));
+
+    Trace_File();
+
+    const PXBool close = PXDirectoryClose(&pxDirectoryIterator);
+}
+
+
+void PXAPI Trace_FolderFiles(PXText* pxText)
+{
+    Trace_Folder(PXNull, pxText);
+}
+
+
+
+
 int main()
 {
     PXConsoleWrite(0, "[i] Starting testing...\n");
 
 
 
-    
+    PXText pxTextSubDir;
+    PXTextMakeFixedA(&pxTextSubDir, "D:\\");
+
+
+
+    Trace_FolderFiles(&pxTextSubDir);
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -505,7 +577,7 @@ int main()
     }
 
 
-#else
+#elif 0
 
 
 

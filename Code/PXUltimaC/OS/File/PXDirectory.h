@@ -80,19 +80,18 @@ typedef void (PXAPI* PXFileElementDetected)(PXFileElementInfo* pxFileElementInfo
 
 typedef struct PXDirectoryIterator_
 {
+    PXFileElementInfo EntryCurrent;
+
 #if OSUnix
     DIR* ID;
     struct dirent* DirectoryEntryCurrent;
 #elif OSWindows
-    HANDLE ID;
-    WIN32_FIND_DATA DirectoryEntryCurrent;
+    HANDLE WindowsDirectoryHandleID;
+    WIN32_FIND_DATA WindowsDirectoryEntryCurrent;
 #endif
 
     PXInt8U EntryDepthCurrent;
     PXInt8U Recursive;
-
-
-    PXFileElementInfo EntryCurrent;
 }
 PXDirectoryIterator;
 

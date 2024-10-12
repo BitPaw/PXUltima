@@ -2877,7 +2877,7 @@ Window XCreateSimpleWindow(Display *display, Window parent, int x, int y, unsign
     pxResourceCreateInfoList[0].ObjectReference = &pxGUISystem->BrushBackgroundDark;
     pxResourceCreateInfoList[0].Name = "BackgroundDark",
     pxResourceCreateInfoList[0].Type = PXResourceTypeBrush;
-    pxResourceCreateInfoList[0].Brush.Color.Red = 160; // 30-30-30
+    pxResourceCreateInfoList[0].Brush.Color.Red = 100; // 30-30-30, 160, 40, 40
     pxResourceCreateInfoList[0].Brush.Color.Green = 40;
     pxResourceCreateInfoList[0].Brush.Color.Blue = 40;
 
