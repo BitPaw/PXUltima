@@ -2521,6 +2521,47 @@ typedef struct PXResourceTransphereInfo_
 PXResourceTransphereInfo;
 
 
+
+
+
+typedef enum PXFileElementInfoType_
+{
+    PXFileElementInfoTypeInvalid,
+    PXFileElementInfoTypeUnkown, // DT_UNKNOWN
+
+    PXFileElementInfoTypeFile, // DT_REG
+    PXFileElementInfoTypeDictionary, // DT_DIR
+
+    PXFileElementInfoTypeNamedPipeFIFO, // DT_FIFO
+    PXFileElementInfoTypeLink, // DT_LNK
+    PXFileElementInfoTypeSocket, // DT_SOCK
+
+    PXFileElementInfoTypeDeviceCharacter, // DT_CHR
+    PXFileElementInfoTypeDeviceBlock, // DT_BLK
+
+    PXFileElementInfoTypeDictionaryRoot, // '.'
+    PXFileElementInfoTypeDictionaryParent // '..'
+}
+PXFileElementInfoType;
+
+
+// Permentant data that is and will be stored on disk.
+typedef struct PXFileEntry_
+{
+    PXInt32U ID;
+
+    char* FilePathData;
+    PXSize FilePathSize;
+
+    PXSize Size;
+    PXInt8U Depth;
+
+    PXFileElementInfoType Type;
+}
+PXFileEntry;
+
+
+
 typedef struct PXFile_
 {
     //---<PosisionData>---

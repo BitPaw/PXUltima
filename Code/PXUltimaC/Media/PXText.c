@@ -1257,11 +1257,7 @@ PXSize PXAPI PXTextReplace(PXText* const pxText, char target, char value)
         case TextFormatASCII:
         case TextFormatUTF8:
         {
-            for (size_t i = 0; i < pxText->SizeUsed; i++)
-            {
-                pxText->TextA[i] = pxText->TextA[i] == target ? value : pxText->TextA[i];
-            }
-
+            PXTextReplaceA(pxText->TextA, pxText->SizeUsed, target, value);
             break;
         }
         case TextFormatUNICODE:
@@ -1276,6 +1272,24 @@ PXSize PXAPI PXTextReplace(PXText* const pxText, char target, char value)
         default:
             return 0;
     }
+}
+
+PXSize PXAPI PXTextReplaceA(char* const text, PXSize textSize, char target, char value)
+{
+    PXSize counter = 0;
+
+    for(PXSize i = 0; i < textSize; ++i)
+    {
+        const char isSame = target == text[i];
+
+        if(isSame)
+        {
+            text[i] = value;
+            ++counter;
+        }
+    }
+
+    return counter;
 }
 
 PXActionResult PXAPI PXTextCreateCopy(PXText* const pxText, const PXText* const pxTextSource)

@@ -365,12 +365,20 @@ void* PXAPI PXMemoryRealloc(const void* const adress, const PXSize memorySize)
     
     if(!adress)
     {
-        return PXMemoryMalloc(memorySize);
+        void* memory = PXMemoryMalloc(memorySize);
+
+        PXMemorySet(memory, '°', memorySize);
+
+        return memory;
     }
 
     const HANDLE heapHandle = GetProcessHeap(); // Windows 2000 SP4, Kernel32.dll, heapapi.h
 
+   // const PXSize oldSize = HeapSize(heapHandle, 0, adress);
+
     newAdress = HeapReAlloc(heapHandle, 0, adress, memorySize); // Windows 2000 SP4, Kernel32.dll, heapapi.h
+
+   // PXMemorySet(newAdress, '°', memorySize - oldSize);
 
     // Special logging behaviour
     {

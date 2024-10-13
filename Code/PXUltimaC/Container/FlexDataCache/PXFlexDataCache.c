@@ -2,7 +2,7 @@
 
 #include <OS/Memory/PXMemory.h>
 
-void PXAPI PXFlexDataCacheAdd(PXFlexDataCache* const pxFlexDataCache, const char* const key, const char* const data, const PXSize dataSize)
+void* PXAPI PXFlexDataCacheAdd(PXFlexDataCache* const pxFlexDataCache, const char* const key, const char* const data, const PXSize dataSize)
 {
     const PXSize rowSize = pxFlexDataCache->KeySize + sizeof(PXSize) + dataSize + pxFlexDataCache->DoNullTerminate; //Key + datasize + data
     const PXSize requiredSize = pxFlexDataCache->DataSizeUsed + rowSize;
@@ -45,6 +45,7 @@ void PXAPI PXFlexDataCacheAdd(PXFlexDataCache* const pxFlexDataCache, const char
     insertAdress += sizeof(PXSize);;
 
     // Writze Data
+    char* insertionBase = insertAdress;
     insertAdress += PXMemoryCopy(data, dataSize, insertAdress, dataSize);
     
 
@@ -57,6 +58,8 @@ void PXAPI PXFlexDataCacheAdd(PXFlexDataCache* const pxFlexDataCache, const char
     {
         insertAdress[0] = '\0';
     }
+
+    return insertionBase;
 }
 
 void PXAPI PXFlexDataCacheGet(PXFlexDataCache* const pxFlexDataCache, const char* const key, char** data, PXSize* dataSize)

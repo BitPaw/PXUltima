@@ -257,5 +257,6 @@ PXPublic void PXAPI PXTextParseFindAllA(const char* string, const PXSize stringS
 PXPublic PXBool PXAPI PXTextMatchW(const wchar_t* input, const PXSize inputSize, const wchar_t* pattern, const PXSize patternSize);
 
 PXPublic PXSize PXAPI PXTextReplace(PXText* const pxText, char target, char value);
+PXPublic PXSize PXAPI PXTextReplaceA(char* const text, PXSize textSize, char target, char value);
 
 #endif

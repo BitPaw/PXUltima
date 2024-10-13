@@ -135,29 +135,12 @@ void PXAPI Trace_File()
 
     PXDirectoryIterator pxDirectoryIterator;
 
-
+  //  PXConsoleWriteF(0, "File: %s\n", pxTextSubDir.TextA);
 }
 
 void PXAPI Trace_Folder(PXDirectoryIterator* parentDir, PXText* pxText)
 {
-    PXDirectoryIterator pxDirectoryIterator;
-
-    const PXActionResult open = PXDirectoryOpen(&pxDirectoryIterator, pxText);
-
-    do
-    {
-        PXText pxTextSubDir;
-        PXTextConstructFromAdressA(&pxTextSubDir, pxDirectoryIterator.EntryCurrent.FullPath, pxDirectoryIterator.EntryCurrent.FullPathOffset, pxDirectoryIterator.EntryCurrent.FullPathOffset);
-
-
-
-        Trace_Folder(&pxDirectoryIterator, &pxTextSubDir);
-    }     
-    while(PXDirectoryNext(&pxDirectoryIterator));
-
-    Trace_File();
-
-    const PXBool close = PXDirectoryClose(&pxDirectoryIterator);
+    
 }
 
 
@@ -176,14 +159,16 @@ int main()
 
 
     PXText pxTextSubDir;
-    PXTextMakeFixedA(&pxTextSubDir, "D:\\");
+    PXTextMakeFixedA(&pxTextSubDir, "N:\\NAS\\");
 
+    PXDirectorySearchCache pxDirectorySearchCache;
 
+    PXDirectorySearch(&pxDirectorySearchCache, &pxTextSubDir);
 
     Trace_FolderFiles(&pxTextSubDir);
 
 
-
+#if 000000000000000000000000
 
 
 
@@ -1424,7 +1409,7 @@ while(1)
     //TestSBPAll();
 
 
-
+#endif
 
 
     PXConsoleWrite(0, "[i] Finished testing...\n");

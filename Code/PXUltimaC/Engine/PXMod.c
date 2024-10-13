@@ -6,6 +6,8 @@
 
 PXActionResult PXAPI PXModLoaderScan(PXModLoader* const pxModLoader, const PXText* const pxTextModFileDirectory)
 {
+#if 00000000000
+
 #if PXLogEnable
     PXLogPrint
     (
@@ -99,6 +101,8 @@ PXActionResult PXAPI PXModLoaderScan(PXModLoader* const pxModLoader, const PXTex
     while (PXDirectoryNext(&pxDirectoryIterator));
 
     PXDirectoryClose(&pxDirectoryIterator);
+
+#endif
 
     return PXActionSuccessful;
 }

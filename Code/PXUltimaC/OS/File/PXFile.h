@@ -58,7 +58,7 @@
 
 #if 1
 #define PXDirectoryIsRootFolder(s) ((s[0] == '.') && (s[1] == '\0'))
-#define PXDirectoryIsCurrentFolder(s) (s[0] == '.') && (s[1] == '.') && (s[2] == '\0'))
+#define PXDirectoryIsCurrentFolder(s) (s[0] == '.') && (s[1] == '.') && (s[2] == '\0')
 #define PXDirectoryIsDotFolder(s) (PXDirectoryIsRootFolder(s) || (PXDirectoryIsCurrentFolder(s))
 #else
 

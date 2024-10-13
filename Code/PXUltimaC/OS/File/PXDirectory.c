@@ -2,6 +2,7 @@
 
 #include <OS/File/PXFile.h>
 #include <Media/PXText.h>
+#include <OS/Console/PXConsole.h>
 
 #if OSUnix
 #include <sys/mman.h>
@@ -18,130 +19,75 @@
 #include <io.h>
 #include <Shlobj.h>
 
-void PXAPI PXFileElementInfoCOnvertFrom(PXFileElementInfo* const pxFileElementInfo, WIN32_FIND_DATA* const findData, PXInt8U depth)
+PXFileElementInfoType PXAPI PXFileTypeGet(WIN32_FIND_DATA* windowsData)
 {
-    pxFileElementInfo->Name = findData->cFileName;
-    pxFileElementInfo->NameSize = PXTextLengthA(findData->cFileName, PXTextUnkownLength);
-
-    if (PXDirectoryIsRootFolder(findData->cFileName))
+    if(PXDirectoryIsRootFolder(windowsData->cFileName))
     {
-        pxFileElementInfo->Type = PXFileElementInfoTypeDictionaryRoot;
+        return PXFileElementInfoTypeDictionaryRoot;
     }
-    else if(PXDirectoryIsRootFolder(findData->cFileName))
+    else if(PXDirectoryIsCurrentFolder(windowsData->cFileName))
     {
-        pxFileElementInfo->Type = PXFileElementInfoTypeDictionaryParent;
+        return PXFileElementInfoTypeDictionaryParent;
     }
     else
     {
-        pxFileElementInfo->Type =
-            ((findData->dwFileAttributes & FILE_ATTRIBUTE_ARCHIVE) != 0) * PXFileElementInfoTypeFile +
-            ((findData->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0) * PXFileElementInfoTypeDictionary;
+        return 
+            ((windowsData->dwFileAttributes & FILE_ATTRIBUTE_ARCHIVE) != 0) * PXFileElementInfoTypeFile +
+            ((windowsData->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0) * PXFileElementInfoTypeDictionary;
     }
+}
 
+void PXAPI PXFileElementInfoCOnvertFrom(PXDirectorySearchCache* const pxDirectorySearchCache, PXFileEntry* const pxFileEntry, WIN32_FIND_DATA* const findData, PXInt8U depth)
+{ 
+    pxFileEntry->FilePathSize = PXTextLengthA(findData->cFileName, MAX_PATH);
+    pxFileEntry->FilePathData = findData->cFileName;
 
-    pxFileElementInfo->Size = (findData->nFileSizeHigh * (MAXDWORD + 1u)) + findData->nFileSizeLow;
-    pxFileElementInfo->Depth = depth; //  pxDirectorySearchInfo->DepthCounter;
+    pxFileEntry->Type = PXFileTypeGet(findData);
+    pxFileEntry->Size = (findData->nFileSizeHigh * (MAXDWORD + 1u)) + findData->nFileSizeLow;
+    pxFileEntry->Depth = depth; //  pxDirectorySearchInfo->DepthCounter;
+
+    /*
 
     // Make full path
     {
-        PXTextCopyA(findData->cFileName, PXTextUnkownLength, pxFileElementInfo->FullPath + pxFileElementInfo->FullPathOffset, pxFileElementInfo->FullPathSize - pxFileElementInfo->FullPathOffset);
+        pxFileElementInfo->FullPathOffset += PXTextCopyA(findData->cFileName, PXTextUnkownLength, pxFileElementInfo->FullPath + pxFileElementInfo->FullPathOffset, pxFileElementInfo->FullPathSize - pxFileElementInfo->FullPathOffset);
     }
+
+    if(pxFileElementInfo->Type == PXFileElementInfoTypeDictionary)
+    {
+        pxFileElementInfo->FullPathOffset += PXTextCopyA("/", 1, pxFileElementInfo->FullPath + pxFileElementInfo->FullPathOffset, pxFileElementInfo->FullPathSize - pxFileElementInfo->FullPathOffset);
+    }
+
+    // Replace all \ with /
+    PXTextReplaceA(pxFileElementInfo->FullPath, pxFileElementInfo->FullPathOffset, '\\', '/');
+    */
 }
 
 #endif
 
-PXActionResult PXAPI PXDirectoryOpen(PXDirectoryIterator* const pxDirectoryIterator, const PXText* const directoryName)
+void PXAPI PXDirectoryEntryStore(PXDirectorySearchCache* const pxDirectorySearchCache, PXFileEntry* const pxFileEntryINPUT)
 {
-    PXClear(PXDirectoryIterator, pxDirectoryIterator);
+    // Get new entry to write in
+    pxDirectorySearchCache->EntryList = PXMemoryReallocT(PXFileEntry, pxDirectorySearchCache->EntryList, pxDirectorySearchCache->EntryAmount+1);
 
-#if OSUnix
+    PXFileEntry* pxFileEntryINSERT = &pxDirectorySearchCache->EntryList[pxDirectorySearchCache->EntryAmount];
 
-    pxDirectoryIterator->ID = opendir(directoryName->TextA); // dirent.h
+    ++pxDirectorySearchCache->EntryAmount;
 
-    const PXBool success = pxDirectoryIterator->ID != PXNull;
-
-    PXActionOnErrorFetchAndReturn(!success);
-
-#elif OSWindows
-
-    char seachDirectoryKey[PXPathSizeMax];
-    char* address = seachDirectoryKey;
-
-    address += PXTextCopyA(directoryName->TextA, directoryName->SizeUsed, address, PXPathSizeMax);
-    address += PXTextCopyA("*", 1u, address, PXPathSizeMax); // Get all directory and files
-
-    pxDirectoryIterator->WindowsDirectoryHandleID = FindFirstFileA(seachDirectoryKey, &pxDirectoryIterator->WindowsDirectoryEntryCurrent); // FindFirstFileExW() has literally no additional functionality (for now)
-
-    {
-        const PXBool failed = INVALID_HANDLE_VALUE == pxDirectoryIterator->WindowsDirectoryHandleID;
-
-        PXActionOnErrorFetchAndReturn(failed);
-    }
+    PXCopy(PXFileEntry, pxFileEntryINPUT, pxFileEntryINSERT);
+    
+    pxFileEntryINPUT->ID = pxDirectorySearchCache->EntryAmount;
+    pxFileEntryINSERT->FilePathData = PXFlexDataCacheAdd(&pxDirectorySearchCache->FilePathCache, &pxFileEntryINPUT->ID, pxFileEntryINPUT->FilePathData, pxFileEntryINPUT->FilePathSize);
 
 
+    PXConsoleWriteF(0, "%s\n", pxFileEntryINPUT->FilePathData);
+    
 
 
+    /*
 
-
-    pxDirectoryIterator->EntryCurrent.FullPathOffset = PXTextCopyA
-    (
-        directoryName->TextA,
-        directoryName->SizeUsed,
-        pxDirectoryIterator->EntryCurrent.FullPath,
-        PXPathSizeMax
-    );
-
-    PXFileElementInfoCOnvertFrom(&pxDirectoryIterator->EntryCurrent, &pxDirectoryIterator->WindowsDirectoryEntryCurrent, 1);
-
-
-    PXText pxTextInput;
-    PXTextConstructFromAdressA(&pxTextInput, pxDirectoryIterator->EntryCurrent.FullPath, pxDirectoryIterator->EntryCurrent.FullPathSize, pxDirectoryIterator->EntryCurrent.FullPathSize);
-
-    PXText pxTextOutInput;
-    PXTextConstructNamedBufferA(&pxTextOutInput, pxTextInputBuffer, PXPathSizeMax);
-
-    //pxDirectoryIterator->EntryCurrent.FullPathOffset = PXFIlePathGetLong(&pxTextInput, &pxTextOutInput);
-
-    return PXActionSuccessful;
-
-#else
-    return PXActionRefusedNotSupported;
-#endif
-}
-
-PXBool PXAPI PXDirectoryNext(PXDirectoryIterator* const pxDirectoryIterator)
+case PXFileElementInfoTypeFile:
 {
-#if OSUnix
-    struct dirent* directoryEntry;
-
-    while ((directoryEntry = readdir(pxDirectoryIterator->ID)) != PXNull)
-    {
-        const PXBool isSystemDottedFolder = PXDirectoryIsDotFolder(directoryEntry->d_name);
-        //const PXInt32U directoryLength = PXTextLength(directory);
-        //const PXInt32U FileNameLength = strlen(directoryEntry->d_name);
-    }
-#elif OSWindows
-
-    const PXBool fetchSuccessful = FindNextFile(pxDirectoryIterator->WindowsDirectoryHandleID, &pxDirectoryIterator->WindowsDirectoryEntryCurrent);
-
-    if (!fetchSuccessful)
-    {
-        PXClear(PXFileElementInfo, &pxDirectoryIterator->EntryCurrent);
-
-        return PXFalse;
-    }
-
-    PXFileElementInfoCOnvertFrom(&pxDirectoryIterator->EntryCurrent, &pxDirectoryIterator->WindowsDirectoryEntryCurrent, 1);
-
-    switch (pxDirectoryIterator->EntryCurrent.Type)
-    {
-        case PXFileElementInfoTypeDictionaryRoot:
-        case PXFileElementInfoTypeDictionaryParent:
-        {
-            return PXTrue; // Root folder, as we go top->down, this is not needed
-        }
-        case PXFileElementInfoTypeFile:
-        {
 #if 0
             const PXBool match = PXTextMatchW(pxDirectoryIterator->.Name, 230, extendedSearchFilter, extendedWriien);
 
@@ -196,15 +142,135 @@ PXBool PXAPI PXDirectoryNext(PXDirectoryIterator* const pxDirectoryIterator)
 
             break;
         }
+        */
+}
+
+PXActionResult PXAPI PXDirectorySearch(PXDirectorySearchCache* const pxDirectorySearchCache, const PXText* const directoryName)
+{
+    PXClear(PXDirectorySearchCache, pxDirectorySearchCache);
+
+    PXFlexDataCacheInit(&pxDirectorySearchCache->FilePathCache, sizeof(PXInt32U));
+
+    const PXActionResult open = PXDirectoryOpen(pxDirectorySearchCache, directoryName);
+
+    if(PXActionSuccessful != open)
+    {
+        return open;
     }
 
+    PXFileEntry pxFileEntry;
+
+    while(PXDirectoryNext(pxDirectorySearchCache, &pxFileEntry));
+
+    const PXBool close = PXDirectoryClose(pxDirectorySearchCache);
+
+    return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXDirectoryOpen(PXDirectorySearchCache* const pxDirectorySearchCache, const PXText* const directoryName)
+{
+   // PXClear(PXDirectorySearchCache, pxDirectorySearchCache);
+
+#if OSUnix
+
+    pxDirectoryIterator->ID = opendir(directoryName->TextA); // dirent.h
+
+    const PXBool success = pxDirectoryIterator->ID != PXNull;
+
+    PXActionOnErrorFetchAndReturn(!success);
+
+#elif OSWindows
+
+    char seachDirectoryKey[PXPathSizeMax];
+    char* address = seachDirectoryKey;
+
+    address += PXTextCopyA(directoryName->TextA, directoryName->SizeUsed, address, PXPathSizeMax);
+    address += PXTextCopyA("*", 1u, address, PXPathSizeMax); // Get all directory and files
+
+    WIN32_FIND_DATAA windowsDirectoryData;
+
+    pxDirectorySearchCache->DirectoryHandleCurrent = FindFirstFileA(seachDirectoryKey, &windowsDirectoryData); // FindFirstFileExW() has literally no additional functionality (for now)
+
+    {
+        const PXBool failed = INVALID_HANDLE_VALUE == pxDirectorySearchCache->DirectoryHandleCurrent;
+
+        PXActionOnErrorFetchAndReturn(failed);
+    }
+
+
+    PXFileEntry pxFileEntry;
+
+    PXFileElementInfoCOnvertFrom(pxDirectorySearchCache, &pxFileEntry, &windowsDirectoryData, 1);
+
+    PXBool isDotFolder =
+        pxFileEntry.Type == PXFileElementInfoTypeDictionaryRoot ||
+        pxFileEntry.Type == PXFileElementInfoTypeDictionaryParent;
+
+    if(isDotFolder)
+    {
+        do
+        {
+            PXBool succes = PXDirectoryNext(pxDirectorySearchCache, &pxFileEntry);
+
+            isDotFolder =
+                pxFileEntry.Type == PXFileElementInfoTypeDictionaryRoot ||
+                pxFileEntry.Type == PXFileElementInfoTypeDictionaryParent;
+        } 
+        while(isDotFolder);
+    }
+
+    return PXActionSuccessful;
+
+#else
+    return PXActionRefusedNotSupported;
+#endif
+}
+
+PXBool PXAPI PXDirectoryNext(PXDirectorySearchCache* const pxDirectorySearchCache, PXFileEntry* pxFileEntry)
+{
+#if OSUnix
+    struct dirent* directoryEntry;
+
+    while ((directoryEntry = readdir(pxDirectoryIterator->ID)) != PXNull)
+    {
+        const PXBool isSystemDottedFolder = PXDirectoryIsDotFolder(directoryEntry->d_name);
+        //const PXInt32U directoryLength = PXTextLength(directory);
+        //const PXInt32U FileNameLength = strlen(directoryEntry->d_name);
+    }
+#elif OSWindows
+
+    for(;;)
+    {
+        WIN32_FIND_DATAA seachResult;
+        const PXBool fetchSuccessful = FindNextFileA(pxDirectorySearchCache->DirectoryHandleCurrent, &seachResult);
+
+        if(!fetchSuccessful)
+        {
+            return PXFalse;
+        }
+
+        PXFileElementInfoCOnvertFrom(pxDirectorySearchCache, pxFileEntry, &seachResult, 0);
+
+        const PXBool isDotFodler =
+            PXFileElementInfoTypeDictionaryRoot == pxFileEntry->Type ||
+            PXFileElementInfoTypeDictionaryParent == pxFileEntry->Type;
+
+        if(isDotFodler)
+        {
+            continue;
+        }
+
+        PXDirectoryEntryStore(pxDirectorySearchCache, pxFileEntry);
+        
+        break;
+    }
 
     return PXTrue;
 
 #endif
 }
 
-PXBool PXAPI PXDirectoryClose(PXDirectoryIterator* const pxDirectoryIterator)
+PXBool PXAPI PXDirectoryClose(PXDirectorySearchCache* const pxDirectorySearchCache)
 {
 #if OSUnix
     const int returnCode = closedir(pxDirectoryIterator->ID);
@@ -213,7 +279,7 @@ PXBool PXAPI PXDirectoryClose(PXDirectoryIterator* const pxDirectoryIterator)
     PXActionOnErrorFetchAndReturn(!success);
 
 #elif OSWindows
-    const PXBool success = FindClose(pxDirectoryIterator->WindowsDirectoryHandleID);
+    const PXBool success = FindClose(pxDirectorySearchCache->DirectoryHandleCurrent);
 
     PXActionOnErrorFetchAndReturn(!success);
 #endif
@@ -410,7 +476,7 @@ PXActionResult PXAPI PXDirectoryFilesInFolderA(const char* folderPath, wchar_t**
     return PXActionInvalid;
 }
 
-PXActionResult PXAPI PXDirectoryFilesInFolderW(const PXDirectorySearchInfo* const pxDirectorySearchInfo)
+PXActionResult PXAPI PXDirectoryFilesInFolderW()
 {
     #if 0
     wchar_t buffer[300];

@@ -37,50 +37,13 @@ typedef enum PXDirectioySpecialFolder_
 }PXDirectioySpecialFolder;
 
 
-typedef enum PXFileElementInfoType_
-{
-    PXFileElementInfoTypeInvalid,
-    PXFileElementInfoTypeUnkown, // DT_UNKNOWN
 
-    PXFileElementInfoTypeFile, // DT_REG
-    PXFileElementInfoTypeDictionary, // DT_DIR
 
-    PXFileElementInfoTypeNamedPipeFIFO, // DT_FIFO
-    PXFileElementInfoTypeLink, // DT_LNK
-    PXFileElementInfoTypeSocket, // DT_SOCK
-
-    PXFileElementInfoTypeDeviceCharacter, // DT_CHR
-    PXFileElementInfoTypeDeviceBlock, // DT_BLK
-
-    PXFileElementInfoTypeDictionaryRoot, // '.'
-    PXFileElementInfoTypeDictionaryParent // '..'
-}
-PXFileElementInfoType;
-
-typedef struct PXFileElementInfo_
-{
-    PXFileElementInfoType Type;
-
-    PXInt8U Depth;
-
-    char FullPath[PXPathSizeMax];
-    PXSize FullPathSize;
-    PXSize FullPathOffset;
-
-    char* Name;
-    PXSize NameSize;
-
-    PXSize Size;
-
-    PXBool IsSystemDottedFolder;
-}
-PXFileElementInfo;
-
-typedef void (PXAPI* PXFileElementDetected)(PXFileElementInfo* pxFileElementInfo);
+//typedef void (PXAPI* PXFileElementDetected)(PXFileElementInfo* pxFileElementInfo);
 
 typedef struct PXDirectoryIterator_
 {
-    PXFileElementInfo EntryCurrent;
+   // PXFileElementInfo EntryCurrent;
 
 #if OSUnix
     DIR* ID;
@@ -92,12 +55,29 @@ typedef struct PXDirectoryIterator_
 
     PXInt8U EntryDepthCurrent;
     PXInt8U Recursive;
+    PXBool UseDotFolders;
 }
 PXDirectoryIterator;
 
-typedef struct PXDirectorySearchInfo_
+// Container to store the search result from a directorySearch
+typedef struct PXDirectorySearchCache_
 {
-    PXFileElementDetected Callback;
+    //PXFileElementDetected Callback; // Notify owner of a detected 
+
+    PXInt8U SearchDepthCurrent;
+    PXInt8U SearchDepthMax;
+
+    PXFlexDataCache FilePathCache;
+
+    PXFileEntry* EntryList;
+    PXSize EntryAmount;
+
+#if OSUnix
+#elif OSWindows
+    HANDLE DirectoryHandleCurrent;
+#endif
+
+
 
     wchar_t* FolderPath;
     PXSize FolderPathSize;
@@ -109,11 +89,16 @@ typedef struct PXDirectorySearchInfo_
     unsigned char DepthCounter;
     PXBool Recursion;
 }
-PXDirectorySearchInfo;
+PXDirectorySearchCache;
 
-PXPublic PXActionResult PXAPI PXDirectoryOpen(PXDirectoryIterator* const pxDirectoryIterator, const PXText* const directoryName);
-PXPublic PXBool PXAPI PXDirectoryNext(PXDirectoryIterator* const pxDirectoryIterator);
-PXPublic PXBool PXAPI PXDirectoryClose(PXDirectoryIterator* const pxDirectoryIterator);
+PXPrivate void PXAPI PXDirectoryEntryStore(PXDirectorySearchCache* const pxDirectorySearchCache, PXFileEntry* const pxFileEntry);
+PXPublic  PXActionResult PXAPI PXDirectorySearch(PXDirectorySearchCache* const pxDirectorySearchCache, const PXText* const directoryName);
+
+PXPublic PXActionResult PXAPI PXDirectoryOpen(PXDirectorySearchCache* const pxDirectorySearchCache, const PXText* const directoryName);
+PXPublic PXBool PXAPI PXDirectoryNext(PXDirectorySearchCache* const pxDirectorySearchCache, PXFileEntry* pxFileEntry);
+PXPublic PXBool PXAPI PXDirectoryClose(PXDirectorySearchCache* const pxDirectorySearchCache);
+
+
 
 PXPublic PXActionResult PXAPI PXDirectoryCreate(const PXText* const directoryName);
 PXPublic PXActionResult PXAPI PXWorkingDirectoryGet(PXText* const workingDirectory);
@@ -122,7 +107,7 @@ PXPublic PXActionResult PXAPI PXWorkingDirectoryChange(const PXText* const direc
 PXPublic PXActionResult PXAPI PXDirectoryDelete(const PXText* const directoryName);
 
 PXPublic PXActionResult PXAPI PXDirectoryFilesInFolderA(const char* folderPath, wchar_t*** list, PXSize* listSize);
-PXPublic PXActionResult PXAPI PXDirectoryFilesInFolderW(const PXDirectorySearchInfo* const pxDirectorySearchInfo);
+PXPublic PXActionResult PXAPI PXDirectoryFilesInFolderW();
 
 PXPublic PXActionResult PXAPI PXDirectorySpecialFolderGet(const PXDirectioySpecialFolder pxDirectioySpecialFolder, PXText* const pxTextSpecialFolder, PXText* const pxTextFileName, const PXBool create);
 

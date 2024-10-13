@@ -23,7 +23,10 @@ PXFlexDataCache;
 
 
 PXPublic void PXAPI PXFlexDataCacheInit(PXFlexDataCache* const pxFlexDataCache, const PXSize keySize);
-PXPublic void PXAPI PXFlexDataCacheAdd(PXFlexDataCache* const pxFlexDataCache, const char* const key,  const char* const data, const PXSize dataSize);
+
+// Adds an entry, data is copyed given the range.
+// a direct adress to the object is returned
+PXPublic void* PXAPI PXFlexDataCacheAdd(PXFlexDataCache* const pxFlexDataCache, const char* const key,  const char* const data, const PXSize dataSize);
 PXPublic void PXAPI PXFlexDataCacheGet(PXFlexDataCache* const pxFlexDataCache, const char* const key, char** data, PXSize* dataSize);
 
 #endif
