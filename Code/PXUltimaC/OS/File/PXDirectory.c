@@ -149,7 +149,7 @@ PXActionResult PXAPI PXDirectorySearch(PXDirectorySearchCache* const pxDirectory
 {
     PXClear(PXDirectorySearchCache, pxDirectorySearchCache);
 
-    PXFlexDataCacheInit(&pxDirectorySearchCache->FilePathCache, sizeof(PXInt32U));
+    PXFlexDataCacheInit(&pxDirectorySearchCache->FilePathCache, sizeof(PXInt32U), PXFlexDataCacheSizeObject1Byte);
 
     const PXActionResult open = PXDirectoryOpen(pxDirectorySearchCache, directoryName);
 

@@ -259,8 +259,8 @@ void PXAPI PXResourceManagerInit(PXResourceManager* const pxResourceManager)
 
     PXClear(PXResourceManager, pxResourceManager);
 
-    PXFlexDataCacheInit(&pxResourceManager->NameCache, sizeof(PXInt32U));
-    PXFlexDataCacheInit(&pxResourceManager->SourcePathCache, sizeof(PXInt32U));
+    PXFlexDataCacheInit(&pxResourceManager->NameCache, sizeof(PXInt32U), PXFlexDataCacheSizeObject2Byte);
+    PXFlexDataCacheInit(&pxResourceManager->SourcePathCache, sizeof(PXInt32U), PXFlexDataCacheSizeObject2Byte);
         
     PXDictionaryConstruct(&pxResourceManager->MaterialLookUp, sizeof(PXInt32U), sizeof(PXMaterial), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&pxResourceManager->SpritelLookUp, sizeof(PXInt32U), sizeof(PXSprite), PXDictionaryValueLocalityExternalReference);

@@ -3,6 +3,11 @@
 
 #include <Media/PXType.h>
 
+#define PXFlexDataCacheSizeObject1Byte 1
+#define PXFlexDataCacheSizeObject2Byte 2
+#define PXFlexDataCacheSizeObject4Byte 3
+#define PXFlexDataCacheSizeObject8Byte 4
+
 // Store a flexible amount of data in a stream of semi-fixed memory
 typedef struct PXFlexDataCache_
 {
@@ -18,11 +23,12 @@ typedef struct PXFlexDataCache_
 
     PXBool ReallocationAllow;
     PXBool DoNullTerminate;
+    PXInt8U SizeInBytes;
 }
 PXFlexDataCache;
 
 
-PXPublic void PXAPI PXFlexDataCacheInit(PXFlexDataCache* const pxFlexDataCache, const PXSize keySize);
+PXPublic void PXAPI PXFlexDataCacheInit(PXFlexDataCache* const pxFlexDataCache, const PXSize keySize, const PXInt8U sizeInBytes);
 
 // Adds an entry, data is copyed given the range.
 // a direct adress to the object is returned
