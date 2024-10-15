@@ -5,6 +5,7 @@
 #include <Media/PXText.h>
 #include <OS/Error/PXActionResult.h>
 #include <OS/File/PXFile.h>
+#include <Container/List/PXList.h>
 
 #define PXDirectorySearchForDirectorys (1 << 0)
 #define PXDirectorySearchForFiles (1 << 1)
@@ -69,8 +70,7 @@ typedef struct PXDirectorySearchCache_
 
     PXFlexDataCache FilePathCache;
 
-    PXFileEntry* EntryList;
-    PXSize EntryAmount;
+    PXList EntryList; // PXFileEntry0
 
 #if OSUnix
 #elif OSWindows

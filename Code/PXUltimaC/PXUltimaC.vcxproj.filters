@@ -1083,5 +1083,6 @@
     <None Include="Media\TTF\README.md" />
     <None Include="Media\VOB\README.md" />
     <None Include="Media\VRML\README.md" />
+    <None Include="OS\Debug\README.md" />
   </ItemGroup>
 </Project>

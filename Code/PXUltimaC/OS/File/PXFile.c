@@ -1185,10 +1185,10 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, const PXFileOpenInfo* cons
             }
 
 
-#if OSUnix || OSForcePOSIXForWindows || PXOSWindowsUseUWP
+#if OSUnix || OSForcePOSIXForWindows || PXOSWindowsUseUWP 
             const char* readMode = 0u;
 
-            switch(pxFileOpenFromPathInfo->AccessMode)
+            switch(pxFileIOInfo->AccessMode)
             {
                 case PXAccessModeReadOnly:
                     readMode = "rb";
@@ -1206,7 +1206,7 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, const PXFileOpenInfo* cons
             // int posix_fadvise64(int fd, off_t offset, off_t len, int advice);
 
 #if CVersionNewerThen2011 && OSWindows
-            const auto result = fopen_s(&pxFile->ID, pxFileOpenFromPathInfo->Text.TextA, readMode); // errno_t
+            const auto result = fopen_s(&pxFile->ID, pxText.TextA, readMode); // errno_t
 
             return result == 0;
 

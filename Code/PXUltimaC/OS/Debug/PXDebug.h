@@ -178,6 +178,8 @@ PXPublic PXActionResult PXAPI PXDebugFetchSymbolFromRougeAdress(PXDebug* const p
 
 PXPrivate PXThreadResult PXAPI PXDebugLoop(PXDebug* const pxDebug);
 
+PXPublic PXActionResult PXAPI PXDebugDumpCreate(PXDebug* const pxDebug);
+
 
 PXPublic PXActionResult PXAPI PXDebugModuleNameFromAdress(void* adress, char* moduleName);
 PXPublic PXActionResult PXAPI PXDebugModuleNameFromModule(HMODULE moduleHandle, char* moduleName);

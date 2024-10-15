@@ -46,6 +46,9 @@ void PXAPI PXFileElementInfoCOnvertFrom(PXDirectorySearchCache* const pxDirector
     pxFileEntry->Size = (findData->nFileSizeHigh * (MAXDWORD + 1u)) + findData->nFileSizeLow;
     pxFileEntry->Depth = depth; //  pxDirectorySearchInfo->DepthCounter;
 
+    // TODO: Time??
+    
+
     /*
 
     // Make full path
@@ -67,20 +70,20 @@ void PXAPI PXFileElementInfoCOnvertFrom(PXDirectorySearchCache* const pxDirector
 
 void PXAPI PXDirectoryEntryStore(PXDirectorySearchCache* const pxDirectorySearchCache, PXFileEntry* const pxFileEntryINPUT)
 {
-    // Get new entry to write in
-    pxDirectorySearchCache->EntryList = PXMemoryReallocT(PXFileEntry, pxDirectorySearchCache->EntryList, pxDirectorySearchCache->EntryAmount+1);
-
-    PXFileEntry* pxFileEntryINSERT = &pxDirectorySearchCache->EntryList[pxDirectorySearchCache->EntryAmount];
-
-    ++pxDirectorySearchCache->EntryAmount;
-
-    PXCopy(PXFileEntry, pxFileEntryINPUT, pxFileEntryINSERT);
-    
-    pxFileEntryINPUT->ID = pxDirectorySearchCache->EntryAmount;
-    pxFileEntryINSERT->FilePathData = PXFlexDataCacheAdd(&pxDirectorySearchCache->FilePathCache, &pxFileEntryINPUT->ID, pxFileEntryINPUT->FilePathData, pxFileEntryINPUT->FilePathSize);
-
-
     PXConsoleWriteF(0, "%s\n", pxFileEntryINPUT->FilePathData);
+
+    // Hijack adress, create
+    pxFileEntryINPUT->ID = pxDirectorySearchCache->EntryList.AmountUsed;
+    // pxFileEntryINSERT->FilePathData = PXFlexDataCacheAdd(&pxDirectorySearchCache->FilePathCache, &pxFileEntryINPUT->ID, pxFileEntryINPUT->FilePathData, pxFileEntryINPUT->FilePathSize);
+
+    PXListAdd(&pxDirectorySearchCache->EntryList, pxFileEntryINPUT);
+    
+    return;
+
+  
+
+
+
     
 
 
@@ -150,6 +153,7 @@ PXActionResult PXAPI PXDirectorySearch(PXDirectorySearchCache* const pxDirectory
     PXClear(PXDirectorySearchCache, pxDirectorySearchCache);
 
     PXFlexDataCacheInit(&pxDirectorySearchCache->FilePathCache, sizeof(PXInt32U), PXFlexDataCacheSizeObject1Byte);
+    PXListInitialize(&pxDirectorySearchCache->EntryList, sizeof(PXFileEntry), 25);
 
     const PXActionResult open = PXDirectoryOpen(pxDirectorySearchCache, directoryName);
 

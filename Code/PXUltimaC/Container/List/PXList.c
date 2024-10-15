@@ -1,35 +1,66 @@
 #include "PXList.h"
 
-void PXAPI PXListConstruct(PXList* const list)
+#include <OS/Memory/PXMemory.h>
+
+void PXAPI PXListInitialize(PXList* const pxList, const PXSize dataTypeSize, const PXSize sizeToAllocate)
 {
+    pxList->DataTypeSize = dataTypeSize;
+    pxList->AmountUsed = 0;
 
-}
-
-void PXAPI PXListDestruct(PXList* const list)
-{
-
-}
-
-void PXAPI PXListInitialize(PXList* const list, void* const data, const PXSize dataTypeSize, const PXSize sizeAllocated)
-{
-
-}
-
-PXBool PXAPI PXListAdd(PXList* const list, void* const dataElement)
-{
-    /*
-    const PXBool hasSpace = linkedListFixed->NodeListSizeMaximal > (linkedListFixed->NodeListSizeCurrent + 1);
-
-    if (!hasSpace)
+    if(sizeToAllocate)
     {
-        return PXNo;
+        // We want to preallocate memory to prepare space for data
+        pxList->Data = PXMemoryCalloc(sizeToAllocate, dataTypeSize);
+        pxList->AmountAllocated = sizeToAllocate;
+    }
+    else
+    {
+        pxList->Data = PXNull;
+        pxList->AmountAllocated = 0;
+    }   
+}
+
+void PXAPI PXListRelease(PXList* const pxList)
+{
+    PXMemoryFree(pxList->Data);
+
+    pxList->Data = PXNull;
+}
+
+PXBool PXAPI PXListReserve(PXList* const pxList, const PXSize sizeToReserve)
+{
+    const PXBool isEnoughSpace = sizeToReserve <= pxList->AmountUsed;
+
+    if(isEnoughSpace)
+    {
+        return PXTrue;
     }
 
-    void* const data = (unsigned char*)linkedListFixed->Data + (linkedListFixed->NodeSize * linkedListFixed->NodeListSizeCurrent);
+    // Try alloc
+    const PXSize newAmount = pxList->GrouthOnAlloc + sizeToReserve;
+    const PXSize newSize = pxList->DataTypeSize * newAmount;
 
-    MemoryCopy(element, linkedListFixed->NodeSize, data, linkedListFixed->NodeSize);
+    void* newMem = PXMemoryRealloc(pxList->Data, newSize);
 
-    ++(linkedListFixed->NodeListSizeCurrent);*/
+    if(!newMem)
+    {
+        return PXFalse;
+    }
+
+    pxList->AmountAllocated = newAmount;
+
+    return PXTrue;
+}
+
+PXBool PXAPI PXListAdd(PXList* const pxList, void* const dataElement)
+{
+    PXListReserve(pxList, pxList->AmountUsed + 1);
+   
+    void* target = (char*)pxList->Data + (pxList->DataTypeSize * pxList->AmountUsed);
+
+    PXMemoryCopy(dataElement, pxList->DataTypeSize, target, pxList->DataTypeSize);
+
+    ++pxList->AmountUsed;
 
     return PXYes;
 }

@@ -1696,6 +1696,39 @@ PXThreadResult PXAPI PXDebugLoop(PXDebug* const pxDebug)
     return PXActionSuccessful;
 }
 
+PXActionResult PXAPI PXDebugDumpCreate(PXDebug* const pxDebug)
+{
+#if OSUnix
+    return PXActionRefusedNotImplemented;
+#elif OSWindows && 0
+
+    const HANDLE hFile = CreateFileA("minidump.dmp", GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    const PXActionResult pxActionResult = PXWindowsErrorCurrent(INVALID_HANDLE_VALUE != hFile);
+
+    if(PXActionSuccessful != pxActionResult)
+    {
+        return pxActionResult;
+    }
+
+    const HANDLE processHandle = GetCurrentProcess();
+    const DWORD processID = GetCurrentProcessId();
+
+    EXCEPTION_POINTERS* exceptionPointers = GetExceptionInformation();
+
+    MINIDUMP_EXCEPTION_INFORMATION exceptionInfo;
+    exceptionInfo.ThreadId = processID;
+    exceptionInfo.ExceptionPointers = exceptionPointers;
+    exceptionInfo.ClientPointers = TRUE;
+
+    const BOOL write = MiniDumpWriteDump(processHandle, processID, hFile, MiniDumpNormal, &exceptionInfo, NULL, NULL);
+
+    CloseHandle(hFile);
+
+#else 
+    return PXActionRefusedNotSupportedByOperatingSystem;
+#endif
+}
+
 PXActionResult PXAPI PXDebugModuleNameFromAdress(void* adress, char* moduleName)
 {
     HMODULE moduleHandle = PXNull;

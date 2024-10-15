@@ -183,7 +183,7 @@ void* PXAPI PXMemoryCalloc(const PXSize amount, const PXSize objectSize)
 
 
 #if OSUnix || MemoryUseSystemFunction || OSForcePOSIXForWindows
-    adress = malloc(adress);
+    adress = calloc(amount, objectSize);
 #elif OSWindows
     const HANDLE heapHandle = GetProcessHeap(); // Windows 2000 SP4, Kernel32.dll, heapapi.h
     adress = HeapAlloc(heapHandle, HEAP_ZERO_MEMORY, totalAmount); // Windows 2000 SP4, Kernel32.dll, heapapi.h
@@ -357,6 +357,7 @@ PXBool PXAPI PXMemoryFree(const void* const adress)
 void* PXAPI PXMemoryRealloc(const void* const adress, const PXSize memorySize)
 {
     void* newAdress = PXNull;
+    PXBool updatedLocation = PXFalse;
 
 #if OSUnix || MemoryUseSystemFunction || OSForcePOSIXForWindows
     // Function allows NULL as an adress
@@ -376,16 +377,18 @@ void* PXAPI PXMemoryRealloc(const void* const adress, const PXSize memorySize)
 
    // const PXSize oldSize = HeapSize(heapHandle, 0, adress);
 
-    newAdress = HeapReAlloc(heapHandle, 0, adress, memorySize); // Windows 2000 SP4, Kernel32.dll, heapapi.h
+    newAdress = HeapReAlloc(heapHandle, HEAP_ZERO_MEMORY, adress, memorySize); // Windows 2000 SP4, Kernel32.dll, heapapi.h
+    updatedLocation = newAdress != adress;
 
    // PXMemorySet(newAdress, '°', memorySize - oldSize);
 
+#if 0
     // Special logging behaviour
     {
         PXSymbolMemory pxSymbolMemory;
         pxSymbolMemory.Adress = adress;
-        pxSymbolMemory.Amount = 1;
-        pxSymbolMemory.ObjectSize = memorySize;
+        pxSymbolMemory.Amount = memorySize;
+        pxSymbolMemory.ObjectSize = 1;
 
         PXSymbol pxSymbol;
 
@@ -400,21 +403,41 @@ void* PXAPI PXMemoryRealloc(const void* const adress, const PXSize memorySize)
 
         PXMemorySymbolAdd(&pxSymbolMemory, PXMemorySymbolInfoModeUpdate);
 
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingAllocation,
-            "PX",
-            "Memory-Realloc",
-            "%s::%s::%s::%i, %i B",
-            pxSymbol.NameModule,
-            pxSymbol.NameFile,
-            pxSymbol.NameSymbol,
-            pxSymbolMemory.LineNumber,
-            pxSymbolMemory.Amount
-        );
+#if PXLogEnable && 0
+        if(updatedLocation)
+        {
+            PXLogPrint
+            (
+                PXLoggingReallocation,
+                "PX",
+                "Memory-Realloc",
+                "%s::%s::%s::%i, %i B",
+                pxSymbol.NameModule,
+                pxSymbol.NameFile,
+                pxSymbol.NameSymbol,
+                pxSymbolMemory.LineNumber,
+                pxSymbolMemory.Amount
+            );
+
+        }
+        else
+        {
+            PXLogPrint
+            (
+                PXLoggingReallocation,
+                "PX",
+                "Memory-Realloc",
+                "%s::%s::%s::%i, %i B (No Move)",
+                pxSymbol.NameModule,
+                pxSymbol.NameFile,
+                pxSymbol.NameSymbol,
+                pxSymbolMemory.LineNumber,
+                pxSymbolMemory.Amount
+            );
+        }
 #endif 
-    }
+}
+#endif
 
     return newAdress;
 

@@ -3,29 +3,20 @@
 
 #include <Media/PXType.h>
 
-#ifdef __cplusplus
-extern "C"
+typedef struct PXList_
 {
-#endif
-
-    typedef struct PXList_
-    {
-        void* Data; // Contains the whole data.
-        PXSize DataTypeSize; // Size of a single object.
-        PXSize SizeUsed;  // Size currently used by data.
-        PXSize SizeAllocated; // Size currently allocated and usable
-    }
-    PXList;
-
-    PXPublic void PXAPI PXListConstruct(PXList* const list);
-    PXPublic void PXAPI PXListDestruct(PXList* const list);
-
-    PXPublic void PXAPI PXListInitialize(PXList* const list, void* const data, const PXSize dataTypeSize, const PXSize sizeAllocated);
-
-    PXPublic PXBool PXAPI PXListAdd(PXList* const list, void* const dataElement);
-
-#ifdef __cplusplus
+    void* Data; // Contains the whole data.
+    PXSize DataTypeSize; // Size of a single object.
+    PXSize AmountUsed;  // Size currently used by data.
+    PXSize AmountAllocated; // Size currently allocated and usable
+    PXSize GrouthOnAlloc;
 }
-#endif
+PXList;
+
+PXPublic void PXAPI PXListInitialize(PXList* const pxList, const PXSize dataTypeSize, const PXSize sizeToAllocate);
+PXPublic void PXAPI PXListRelease(PXList* const pxList);
+
+PXPublic PXBool PXAPI PXListReserve(PXList* const pxList, const PXSize sizeToReserve);
+PXPublic PXBool PXAPI PXListAdd(PXList* const pxList, void* const dataElement);
 
 #endif

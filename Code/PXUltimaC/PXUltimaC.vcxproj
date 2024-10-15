@@ -577,6 +577,7 @@
     <None Include="Media\XML\README.md" />
     <None Include="OS\Audio\PXALSA\README.md" />
     <None Include="OS\Audio\README.md" />
+    <None Include="OS\Debug\README.md" />
     <None Include="OS\Graphic\DirectX\README.md" />
     <None Include="OS\Graphic\OpenGL\README.md" />
     <None Include="OS\Graphic\SoftwareRender\README.md" />
