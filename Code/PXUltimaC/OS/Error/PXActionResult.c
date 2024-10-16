@@ -18,6 +18,79 @@
 #include <WbemCli.h> // Windows Vista
 #endif
 
+PXActionResult PXAPI PXErrorCurrent(const PXBool wasSuccessful)
+{
+    // if we did fail, we dont even aknowlege if an error is set.
+    if(wasSuccessful)
+    {
+        return PXActionSuccessful;
+    }
+
+    // Get error code
+#if OSUnix || OSForcePOSIXForWindows
+    const int errorID = errno; // We will definitly have some error code now.    
+#elif OSWindows
+    const DWORD errorID = GetLastError();  // Will fetch the global current errorID
+#else
+    // Does not exist
+#endif
+    
+
+    const PXActionResult actionResult = PXErrorCodeFromID(errorID); // Translate errorID to our own error-enum
+
+    
+    // get text string from system
+#if OSUnix
+    #define PXErrorMessageBufferSize 256 
+    char errorMessageBuffer[PXErrorMessageBufferSize];
+    
+    strerror_r(errorID, errorMessageBuffer, PXErrorMessageBufferSize);
+#elif OSWindows
+    char* errorMessageBuffer = 0;
+
+   //  GetLocaleInfoEx(); only vista or later
+
+    // Generate an error message string with our current errorID
+    const PXSize errorMessageLength = FormatMessageA
+    (
+        FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+        NULL,
+        errorID,
+        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+        //MAKELANGID(LANG_ENGLISH, SUBLANG_NEUTRAL), // english does not work?
+        (char*)&errorMessageBuffer,
+        0,
+        NULL
+    );
+
+    // There is a new line added automatically, we dont want that "\r\n"
+    errorMessageData[errorMessageLength - 2] = '\0';
+#else
+   
+#endif
+    
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingError,
+        "OS-Kernel",
+        "Error",
+        "%s [0x%8.8X]",
+        errorMessageBuffer,
+        errorID
+    );
+#endif
+
+
+#if OSUnix
+#elif OSWindows
+    LocalFree(errorMessageData);  // Free the Win32's string's buffer.
+#endif
+    
+    return actionResult;
+}
+
+
 PXActionResult PXAPI PXErrorCodeFromID(const int errorCode)
 {
     switch(errorCode)
@@ -269,84 +342,7 @@ PXActionResult PXAPI PXErrorCodeFromID(const int errorCode)
     }
 }
 
-PXActionResult PXAPI PXErrorCurrent()
-{
-#if OSUnix || OSForcePOSIXForWindows
-
-    const int errorID = errno;
-    const PXActionResult actionResult = PXErrorCodeFromID(errorID);
-
-    return actionResult;
-
-#elif OSWindows
-
-    const DWORD lastErrorID = GetLastError();
-    const PXActionResult actionResult = PXErrorCodeFromID(lastErrorID);
-
-    return actionResult;
-
-#else
-    return PXActionInvalid;
-#endif
-
-
-    return actionResult;
-}
-
-
 #if OSWindows
-PXActionResult PXAPI PXWindowsErrorCurrent(const PXBool wasSuccessful)
-{
-    // if we did fail, we dont even aknowlege if an error is set.
-    if(wasSuccessful)
-    {
-        return PXActionSuccessful;
-    }
-
-    // We will definitly have some error code now.    
-    const DWORD lastErrorID = GetLastError(); // Will fetch the global current errorID
-    const PXActionResult actionResult = PXErrorCodeFromID(lastErrorID); // Translate windows errorID to our own errorID
-
-    char* errorMessageData = 0;
-
-   //  GetLocaleInfoEx(); only vista or later
-
-    // Generate an error message string with our current errorID
-    const PXSize errorMessageLength = FormatMessageA
-    (
-        FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-        NULL,
-        lastErrorID,
-        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-        //MAKELANGID(LANG_ENGLISH, SUBLANG_NEUTRAL), // english does not work?
-        (char*)&errorMessageData,
-        0,
-        NULL
-    );
-
-    // There is a new line added automatically, we dont want that "\r\n"
-    errorMessageData[errorMessageLength - 2] = '\0';
-
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingWarning,
-        "Windows",
-        "Error",
-        "%s [0x%8.8X]",
-        errorMessageData,
-        lastErrorID
-    );
-#endif
-
-    // Free the Win32's string's buffer.
-    LocalFree(errorMessageData);
-
-    
-    return actionResult;
-}
-
-
 PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult)
 {
     switch (handleResult)
