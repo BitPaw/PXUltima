@@ -738,7 +738,12 @@ PXActionResult PXAPI PXFileRemove(const PXText* const filePath)
             const PXBool success = DeleteFileA(filePath->TextA);
 #endif
 
-            PXActionOnErrorFetchAndReturn(!success);
+            const PXActionResult pxActionResult = PXErrorCurrent(success);
+
+            if(PXActionSuccessful != pxActionResult)
+            {
+                return pxActionResult;
+            }
 
             break;
         }
@@ -755,7 +760,12 @@ PXActionResult PXAPI PXFileRemove(const PXText* const filePath)
             const PXBool success = DeleteFileW(filePath->TextW);
 #endif
 
-            PXActionOnErrorFetchAndReturn(!success);
+            const PXActionResult pxActionResult = PXErrorCurrent(success);
+
+            if(PXActionSuccessful != pxActionResult)
+            {
+                return pxActionResult;
+            }
 
 #endif
 
@@ -788,10 +798,14 @@ PXActionResult PXAPI PXFileRename(const PXText* const oldName, const PXText* con
 #elif OSWindows
             const PXBool success = MoveFileA(oldName->TextA, newName->TextA); // Windows XP, Kernel32.dll, winbase.h
 #endif
+            const PXActionResult pxActionResult = PXErrorCurrent(success);
 
-            PXActionOnErrorFetchAndReturn(!success);
+            if(PXActionSuccessful != pxActionResult)
+            {
+                return pxActionResult;
+            }
 
-            return PXActionSuccessful;
+            return pxActionResult;
         }
         case TextFormatUNICODE:
         {
@@ -806,9 +820,14 @@ PXActionResult PXAPI PXFileRename(const PXText* const oldName, const PXText* con
             const PXBool success = MoveFileW(oldName->TextW, newName->TextW); // Windows XP, Kernel32.dll, winbase.h
 #endif
 
-            PXActionOnErrorFetchAndReturn(!success);
+            const PXActionResult pxActionResult = PXErrorCurrent(success);
 
-            return PXActionSuccessful;
+            if(PXActionSuccessful != pxActionResult)
+            {
+                return pxActionResult;
+            }
+
+            return pxActionResult;
 
 #endif
         }
@@ -852,8 +871,12 @@ PXActionResult PXAPI PXFileCopy(const PXText* const sourceFilePath, const PXText
             const int closeB = fclose(fileDestination);
 #elif OSWindows
             const PXBool succesfull = CopyFileA(sourceFilePath->TextA, destinationFilePath->TextA, overrideIfExists); // Windows XP (+UWP), Kernel32.dll, winbase.h
+            const PXActionResult pxActionResult = PXErrorCurrent(succesfull);
 
-            PXActionOnErrorFetchAndReturn(!succesfull);
+            if(PXActionSuccessful != pxActionResult)
+            {
+                return pxActionResult;
+            }
 
             return PXActionSuccessful;
 #endif
@@ -868,8 +891,12 @@ PXActionResult PXAPI PXFileCopy(const PXText* const sourceFilePath, const PXText
 
 #elif OSWindows
             const PXBool succesfull = CopyFileW(sourceFilePath->TextW, destinationFilePath->TextW, overrideIfExists); // Windows XP (+UWP), Kernel32.dll, winbase.h
+            const PXActionResult pxActionResult = PXErrorCurrent(succesfull);
 
-            PXActionOnErrorFetchAndReturn(!succesfull);
+            if(PXActionSuccessful != pxActionResult)
+            {
+                return pxActionResult;
+            }
 
             return PXActionSuccessful;
 #endif
@@ -1344,7 +1371,7 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, const PXFileOpenInfo* cons
                 }
 
                 const PXBool successful = fileHandle != INVALID_HANDLE_VALUE;
-                const PXActionResult fileOpenResult = PXWindowsErrorCurrent(successful);
+                const PXActionResult fileOpenResult = PXErrorCurrent(successful);
 
                 if(!successful)
                 {
@@ -1963,23 +1990,35 @@ PXActionResult PXAPI PXFileUnmapFromMemory(PXFile* const pxFile)
             if (isWriteMapped)
             {
                 const BOOL flushSuccessful = FlushViewOfFile(pxFile->Data, pxFile->DataCursor);
+                const PXActionResult pxActionResult = PXErrorCurrent(flushSuccessful);
 
-                PXActionOnErrorFetchAndReturn(flushSuccessful);
+                if(PXActionSuccessful != pxActionResult)
+                {
+                    return pxActionResult;
+                }
             }
         }
 
         {
             const PXBool unmappingSucessful = UnmapViewOfFile(pxFile->Data);
+            const PXActionResult pxActionResult = PXErrorCurrent(unmappingSucessful);
 
-            PXActionOnErrorFetchAndReturn(!unmappingSucessful);
+            if(PXActionSuccessful != pxActionResult)
+            {
+                return pxActionResult;
+            }
 
             pxFile->Data = PXNull;
         }
 
         {
             const PXBool closeMappingSucessful = CloseHandle(pxFile->MappingID);
+            const PXActionResult pxActionResult = PXErrorCurrent(closeMappingSucessful);
 
-            PXActionOnErrorFetchAndReturn(!closeMappingSucessful);
+            if(PXActionSuccessful != pxActionResult)
+            {
+                return pxActionResult;
+            }
 
             pxFile->MappingID = PXHandleNotSet;
         }
@@ -1996,7 +2035,6 @@ PXActionResult PXAPI PXFileUnmapFromMemory(PXFile* const pxFile)
             largeInteger.QuadPart = pxFile->DataCursor;
 
             const BOOL setSuccessful = SetFilePointerEx(pxFile->ID, largeInteger, 0, FILE_BEGIN);
-
             const BOOL endSuccessful = SetEndOfFile(pxFile->ID);
         }
 
@@ -2792,12 +2830,11 @@ PXSize PXAPI PXFileReadB(PXFile* const pxFile, void* const value, const PXSize l
             }
 
             const PXBool success = ReadFile(pxFile->ID, value, length, &writtenBytes, PXNull);
+            const PXActionResult pxActionResult = PXErrorCurrent(success);
 
-            if (!success)
+            if(PXActionSuccessful != pxActionResult)
             {
-                PXActionResult result = PXErrorCurrent();
-
-                return 0;
+                return pxActionResult;
             }
 
 #if PXFileDebugOutput
@@ -3560,8 +3597,12 @@ PXActionResult PXAPI PXFileTimeGet
             &fileTimeList[1],
             &fileTimeList[2]
         );
+        const PXActionResult pxActionResult = PXErrorCurrent(result);
 
-        PXActionOnErrorFetchAndReturn(!result);
+        if(PXActionSuccessful != pxActionResult)
+        {
+            return pxActionResult;
+        }
     }
 
     // Convert

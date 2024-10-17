@@ -120,9 +120,12 @@ PXActionResult PXAPI PXRegistryConnectRemote(PXRegistry* const registry, const P
         {
             const PXRegConnectRegistryA pxRegistryConnectRegistryA = (PXRegConnectRegistryA)registry->RegistryConnectRegistryA;
             const LSTATUS statusID = pxRegistryConnectRegistryA(computerName->TextA, hKey, registryKeyResult);  // Windows 2000, Advapi32.dll, winreg.h
-            const PXBool successful = ERROR_SUCCESS == statusID;
+            const PXActionResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
 
-            PXActionOnErrorFetchAndReturn(!successful);
+            if(PXActionSuccessful != pxActionResult)
+            {
+                return pxActionResult;
+            }
 
             break;
         }
@@ -130,9 +133,12 @@ PXActionResult PXAPI PXRegistryConnectRemote(PXRegistry* const registry, const P
         {
             const PXRegConnectRegistryW pxRegistryConnectRegistryW = (PXRegConnectRegistryW)registry->RegistryConnectRegistryW;
             const LSTATUS statusID = pxRegistryConnectRegistryW(computerName->TextW, hKey, registryKeyResult); // Windows 2000, Advapi32.dll, winreg.h
-            const PXBool successful = ERROR_SUCCESS == statusID;
+            const PXActionResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
 
-            PXActionOnErrorFetchAndReturn(!successful);
+            if(PXActionSuccessful != pxActionResult)
+            {
+                return pxActionResult;
+            }
 
             break;
         }
@@ -155,9 +161,12 @@ PXActionResult PXAPI PXRegistryClose(PXRegistry* const registry)
     const HKEY registryKey = (HKEY)registry->ID;
     const PXRegCloseKey pxRegCloseKey = (PXRegCloseKey)registry->RegistryCloseKey;
     const LSTATUS statusID = pxRegCloseKey(registryKey);
-    const PXBool successful = ERROR_SUCCESS == statusID;
+    const PXActionResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
 
-    PXActionOnErrorFetchAndReturn(!successful);
+    if(PXActionSuccessful != pxActionResult)
+    {
+        return pxActionResult;
+    }
 
     registry->ID = PXNull;
 
@@ -247,9 +256,12 @@ PXActionResult PXAPI PXRegistryKeyCreate(PXRegistry* const registry, const PXTex
                 phkResult,
                 &dwDisposition
             );
-            const PXBool successful = ERROR_SUCCESS == statusID;
+            const PXActionResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
 
-            PXActionOnErrorFetchAndReturn(!successful);
+            if(PXActionSuccessful != pxActionResult)
+            {
+                return pxActionResult;
+            }
 
             break;
         }
@@ -268,9 +280,12 @@ PXActionResult PXAPI PXRegistryKeyCreate(PXRegistry* const registry, const PXTex
                 phkResult,
                 &dwDisposition
             );
-            const PXBool successful = ERROR_SUCCESS == statusID;
+            const PXActionResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
 
-            PXActionOnErrorFetchAndReturn(!successful);
+            if(PXActionSuccessful != pxActionResult)
+            {
+                return pxActionResult;
+            }
 
             break;
         }
@@ -303,9 +318,12 @@ PXActionResult PXAPI PXRegistryKeyLoad(PXRegistry* const registry, const PXText*
         {
             const PXRegLoadKeyA pxRegLoadKeyA = (PXRegLoadKeyA)registry->RegistryKeyLoadA;
             const LSTATUS statusID = pxRegLoadKeyA((HKEY)registry->ID, pxTextKeyName->TextA, pxTextFile->TextA); // Windows 2000, Advapi32.dll, winreg.h
-            const PXBool successful = ERROR_SUCCESS == statusID;
+            const PXActionResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
 
-            PXActionOnErrorFetchAndReturn(!successful);
+            if(PXActionSuccessful != pxActionResult)
+            {
+                return pxActionResult;
+            }
 
             break;
         }
@@ -313,9 +331,12 @@ PXActionResult PXAPI PXRegistryKeyLoad(PXRegistry* const registry, const PXText*
         {
             const PXRegLoadKeyW pxRegLoadKeyW = (PXRegLoadKeyW)registry->RegistryKeyLoadW;
             const LSTATUS statusID = pxRegLoadKeyW((HKEY)registry->ID, pxTextKeyName->TextW, pxTextFile->TextW); // Windows 2000, Advapi32.dll, winreg.h
-            const PXBool successful = ERROR_SUCCESS == statusID;
+            const PXActionResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
 
-            PXActionOnErrorFetchAndReturn(!successful);
+            if(PXActionSuccessful != pxActionResult)
+            {
+                return pxActionResult;
+            }
 
             break;
         }
@@ -350,9 +371,12 @@ PXActionResult PXAPI PXRegistryKeySave(PXRegistry* const registry, const PXText*
         {
             const PXRegSaveKeyA pxRegSaveKeyA = (PXRegSaveKeyA)registry->RegistryKeySaveA;
             const LSTATUS statusID = pxRegSaveKeyA(registryKey, pxTextKeyName->TextA, &securityAttributes); // Windows 2000, Advapi32.dll, winreg.h
-            const PXBool successful = ERROR_SUCCESS == statusID;
+            const PXActionResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
 
-            PXActionOnErrorFetchAndReturn(!successful);
+            if(PXActionSuccessful != pxActionResult)
+            {
+                return pxActionResult;
+            }
 
             break;
         }
@@ -360,9 +384,12 @@ PXActionResult PXAPI PXRegistryKeySave(PXRegistry* const registry, const PXText*
         {
             const PXRegSaveKeyW pxRegSaveKeyw = (PXRegSaveKeyW)registry->RegistryKeySaveW;
             const LSTATUS statusID = pxRegSaveKeyw(registryKey, pxTextKeyName->TextW, &securityAttributes); // Windows 2000, Advapi32.dll, winreg.h
-            const PXBool successful = ERROR_SUCCESS == statusID;
+            const PXActionResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
 
-            PXActionOnErrorFetchAndReturn(!successful);
+            if(PXActionSuccessful != pxActionResult)
+            {
+                return pxActionResult;
+            }
 
             break;
         }
@@ -393,9 +420,12 @@ PXActionResult PXAPI PXRegistryKeyDelete(PXRegistry* const registry, const PXTex
         {
             const PXRegDeleteKeyA pxRegDeleteKeyA = (PXRegDeleteKeyA)registry->RegistryKeyDeleteA;
             const LSTATUS statusID = pxRegDeleteKeyA(registryKey, pxTextKeyName->TextA); // Windows 2000, Advapi32.dll, winreg.h
-            const PXBool successful = ERROR_SUCCESS == statusID;
+            const PXActionResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
 
-            PXActionOnErrorFetchAndReturn(!successful);
+            if(PXActionSuccessful != pxActionResult)
+            {
+                return pxActionResult;
+            }
 
             break;
         }
@@ -403,9 +433,12 @@ PXActionResult PXAPI PXRegistryKeyDelete(PXRegistry* const registry, const PXTex
         {
             const PXRegDeleteKeyW pxRegDeleteKeyW = (PXRegDeleteKeyW)registry->RegistryKeyDeleteW;
             const LSTATUS statusID = pxRegDeleteKeyW(registryKey, pxTextKeyName->TextW); // Windows 2000, Advapi32.dll, winreg.h
-            const PXBool successful = ERROR_SUCCESS == statusID;
+            const PXActionResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
 
-            PXActionOnErrorFetchAndReturn(!successful);
+            if(PXActionSuccessful != pxActionResult)
+            {
+                return pxActionResult;
+            }
 
             break;
         }

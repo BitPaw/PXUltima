@@ -27,6 +27,7 @@
 #define ProtectionIDWrite PAGE_READWRITE
 #define ProtectionIDReadWrite PAGE_READWRITE
 
+/*
 PXActionResult PXAPI WindowsProcessPrivilege(const char* pszPrivilege, BOOL bEnable)
 {
     HANDLE           hToken;
@@ -64,7 +65,7 @@ PXActionResult PXAPI WindowsProcessPrivilege(const char* pszPrivilege, BOOL bEna
         return PXErrorCurrent(); // CloseHandle
 
     return PXActionSuccessful;
-}
+}*/
 
 
 #endif
@@ -523,7 +524,7 @@ PXActionResult PXAPI PXMemoryProtect(void* dataAdress, const PXSize dataSize, co
     DWORD oldProtectModeID = 0;
 
     const PXBool result = VirtualProtect(dataAdress, dataSize, protectionID, &oldProtectModeID); // Windows XP (+UWP), Kernel32.dll, memoryapi.h 
-    const PXActionResult actiobResult = PXWindowsErrorCurrent(result);
+    const PXActionResult actiobResult = PXErrorCurrent(result);
 
     return actiobResult;
 #else
@@ -1220,8 +1221,12 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, const PXAccessMode PXAccessMode
 #endif
 
     const void* addressAllocated = VirtualAlloc((void*)addressPrefered, size, allocationType, MEM_COMMIT); // Windows XP (+UWP), Kernel32.dll, memoryapi.h 
+    const PXActionResult pxActionResult = PXErrorCurrent(!addressAllocated);
 
-    PXActionResult x = PXErrorCurrent();
+    if(PXActionSuccessful != pxActionResult)
+    {
+        return PXNull; // pxActionResult; // TODO: no error code return?
+    }
 
 #endif
 

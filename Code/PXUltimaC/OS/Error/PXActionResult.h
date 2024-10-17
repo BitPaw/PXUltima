@@ -360,7 +360,7 @@ PXActionResult;
 #define PXActionOnErrorFetchAndReturn(b) if(b) { return PXErrorCurrent(); }
 
 PXPublic PXActionResult PXAPI PXErrorCodeFromID(const int errorCode);
-PXPublic PXActionResult PXAPI PXErrorCurrent();
+PXPublic PXActionResult PXAPI PXErrorCurrent(const PXBool wasSuccessful);
 
 
 #if PXOSWindowsDestop
@@ -368,7 +368,6 @@ PXPublic PXActionResult PXAPI PXErrorCurrent();
 // Interesting behaviour, you put in if we successfully did the last operation
 // If so, we just convert it into a successful error code, if not, fetch the 
 // correct error
-PXPublic PXActionResult PXAPI PXWindowsErrorCurrent(const PXBool wasSuccessful);
 PXPublic PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult);
 PXPublic PXActionResult PXAPI PXWindowsMMAudioConvertFromID(const PXInt32U mmResultID);
 #endif

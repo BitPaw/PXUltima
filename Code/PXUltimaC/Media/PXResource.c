@@ -2587,10 +2587,9 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
     // Try to load assumed format
     if(pxResourceLoadInfo->ResourceLoad)
     {
-        const PXInt64U timeStampA = PXTimeCounterStampGet();
-
         pxResourceLoadInfo->FileReference = &pxFile;
 
+        const PXInt64U timeStampA = PXTimeCounterStampGet(); 
 
         const PXActionResult fileParsingResult = pxResourceLoadInfo->ResourceLoad(pxResourceLoadInfo);
 
@@ -2598,22 +2597,41 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
 
         pxResourceLoadInfo->TimeTransphere = PXTimeCounterStampToSecoundsF(timeStampB);
 
+
+
+        PXFileClose(&pxFile);
+
+        if(PXActionSuccessful != fileParsingResult)
+        {
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingError,
+                "Resource",
+                "Load",
+                "Failed. Took:%6.3f  ROPs:%-7i <%s>",
+                pxResourceLoadInfo->TimeTransphere,
+                pxFile.CounterOperationsRead,
+                filePath->TextA
+            );
+#endif
+
+            return fileParsingResult;
+        }
+
 #if PXLogEnable
         PXLogPrint
         (
             PXLoggingInfo,
             "Resource",
             "Load",
-            "Took:%6.3f  ROPs:%-7i <%s>",
+            "Success. Took:%6.3f  ROPs:%-7i <%s>",
             pxResourceLoadInfo->TimeTransphere,
             pxFile.CounterOperationsRead,
             filePath->TextA
         );
 #endif
 
-        PXFileClose(&pxFile);
-
-        PXActionReturnOnSuccess(fileParsingResult); // Exit if this has worked first-try 
 
         return fileParsingResult; // TEMP-FIX: if the file extension is wrong, how can we still load?
 

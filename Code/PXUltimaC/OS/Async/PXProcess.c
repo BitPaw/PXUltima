@@ -99,13 +99,17 @@ PXActionResult PXAPI PXProcessHandleCountGet(PXProcess* pxProcess, PXSize* const
 #elif OSWindows && WindowsAtleastXP
     DWORD handleCount = 0;
 
-    const BOOL result = GetProcessHandleCount // Windows XP, Kernel32.dll, processthreadsapi.h
+    const BOOL successful = GetProcessHandleCount // Windows XP, Kernel32.dll, processthreadsapi.h
     (
         pxProcess->ProcessHandle,
         &handleCount
     );
+    const PXActionResult pxActionResult = PXErrorCurrent(successful);
 
-    PXActionOnErrorFetchAndReturn(!result);
+    if(PXActionSuccessful != pxActionResult)
+    {
+        return pxActionResult;
+    }
 
     *handlesAmount = handleCount;
 
@@ -510,7 +514,7 @@ PXActionResult PXAPI PXProcessCreate(PXProcess* const pxProcess, const PXText* c
                 PROCESS_QUERY_INFORMATION |
                 PROCESS_VM_READ;
 
-            const PXBool success = CreateProcessA // Windows 2000 SP4 (+UWP), Kernel32.dll, processthreadsapi.h
+            const PXBool successful = CreateProcessA // Windows 2000 SP4 (+UWP), Kernel32.dll, processthreadsapi.h
             (
                 programmPath->TextA,
                 NULL,
@@ -523,8 +527,12 @@ PXActionResult PXAPI PXProcessCreate(PXProcess* const pxProcess, const PXText* c
                 &startupInfo,
                 &processInfo
             );
+            const PXActionResult pxActionResult = PXErrorCurrent(successful);
 
-            PXActionOnErrorFetchAndReturn(!success);
+            if(PXActionSuccessful != pxActionResult)
+            {
+                return pxActionResult;
+            }
 
             pxProcess->ProcessHandle = processInfo.hProcess;
             pxProcess->ProcessID = processInfo.dwProcessId;
@@ -549,7 +557,7 @@ PXActionResult PXAPI PXProcessCreate(PXProcess* const pxProcess, const PXText* c
 
             startupInfo.cb = sizeof(STARTUPINFOW);
 
-            const PXBool success = CreateProcessW // Windows 2000 SP4 (+UWP), Kernel32.dll, processthreadsapi.h
+            const PXBool successful = CreateProcessW // Windows 2000 SP4 (+UWP), Kernel32.dll, processthreadsapi.h
             (
                 programmPath->TextW,
                 NULL,
@@ -562,8 +570,12 @@ PXActionResult PXAPI PXProcessCreate(PXProcess* const pxProcess, const PXText* c
                 &startupInfo,
                 &processInfo
             );
+            const PXActionResult pxActionResult = PXErrorCurrent(successful);
 
-            PXActionOnErrorFetchAndReturn(!success);
+            if(PXActionSuccessful != pxActionResult)
+            {
+                return pxActionResult;
+            }
 
             pxProcess->ProcessHandle = processInfo.hProcess;
             pxProcess->ProcessID = processInfo.dwProcessId;
@@ -592,12 +604,18 @@ PXActionResult PXAPI PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEv
     const DWORD flag = TH32CS_SNAPPROCESS;
     const DWORD processID = PXNull;
     const HANDLE snapshotHandle = CreateToolhelp32Snapshot(flag, processID); // Windows XP, Kernel32.dll, tlhelp32.h
-    const PXBool success = snapshotHandle != INVALID_HANDLE_VALUE && snapshotHandle != ((HANDLE)(LONG_PTR)ERROR_BAD_LENGTH);
+    const PXBool successful = snapshotHandle != INVALID_HANDLE_VALUE && snapshotHandle != ((HANDLE)(LONG_PTR)ERROR_BAD_LENGTH);
+    const PXActionResult pxActionResult = PXErrorCurrent(successful);
+
+    if(PXActionSuccessful != pxActionResult)
+    {
+        return pxActionResult;
+    }
+    
+    
     PROCESSENTRY32 processEntryW;
     processEntryW.dwSize = sizeof(PROCESSENTRY32);
     
-    PXActionOnErrorFetchAndReturn(!success);
-
     PXBool successfulFetch = Process32First(snapshotHandle, &processEntryW);
 
     if (!successfulFetch)
@@ -717,9 +735,12 @@ PXActionResult PXAPI PXProcessOpenViaID(PXProcess* const pxProcess, const PXProc
 #elif OSWindows
     const DWORD desiredAccess = PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_VM_OPERATION;
     const HANDLE processHandle = OpenProcess(desiredAccess, FALSE, pxProcessID); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
-    const PXBool successful = processHandle != 0;
+    const PXActionResult pxActionResult = PXErrorCurrent(processHandle != PXNull);
 
-    PXActionOnErrorFetchAndReturn(!successful);
+    if(PXActionSuccessful != pxActionResult)
+    {
+        return pxActionResult;
+    }
 
     pxProcess->ProcessID = pxProcessID;
     pxProcess->ProcessHandle = processHandle;
@@ -736,8 +757,12 @@ PXActionResult PXAPI PXProcessClose(PXProcess* const pxProcess)
     return PXActionRefusedNotImplemented;
 #elif OSWindows
     const BOOL successful = CloseHandle(pxProcess->ProcessHandle); // Windows 2000 (+UWP), Kernel32.dll, handleapi.h
+    const PXActionResult pxActionResult = PXErrorCurrent(successful);
 
-    PXActionOnErrorFetchAndReturn(!successful);
+    if(PXActionSuccessful != pxActionResult)
+    {
+        return pxActionResult;
+    }
 
     pxProcess->ProcessHandle = PXNull;
 
@@ -754,7 +779,7 @@ PXActionResult PXAPI PXProcessMemoryWrite(const PXProcess* const pxProcess, cons
 #elif PXOSWindowsDestop
     SIZE_T numberOfBytesRead;
 
-    const BOOL result = WriteProcessMemory // Windows XP, Kernel32.dll, memoryapi.h
+    const BOOL successful = WriteProcessMemory // Windows XP, Kernel32.dll, memoryapi.h
     (
         pxProcess->ProcessHandle,
         (LPVOID)targetAdress,
@@ -762,8 +787,12 @@ PXActionResult PXAPI PXProcessMemoryWrite(const PXProcess* const pxProcess, cons
         bufferSize,
         &numberOfBytesRead
     );
+    const PXActionResult pxActionResult = PXErrorCurrent(successful);
 
-    PXActionOnErrorFetchAndReturn(!result);
+    if(PXActionSuccessful != pxActionResult)
+    {
+        return pxActionResult;
+    }
 
     return PXActionSuccessful;
 #else
@@ -779,7 +808,7 @@ PXActionResult PXAPI PXProcessMemoryRead(const PXProcess* const pxProcess, const
 #elif PXOSWindowsDestop
     SIZE_T numberOfBytesRead;
 
-    const BOOL result = ReadProcessMemory // Windows XP, Kernel32.dll, memoryapi.h
+    const BOOL successful = ReadProcessMemory // Windows XP, Kernel32.dll, memoryapi.h
     (
         pxProcess->ProcessHandle,
         targetAdress,
@@ -787,8 +816,12 @@ PXActionResult PXAPI PXProcessMemoryRead(const PXProcess* const pxProcess, const
         bufferSize,
         &numberOfBytesRead
     );
+    const PXActionResult pxActionResult = PXErrorCurrent(successful);
 
-    PXActionOnErrorFetchAndReturn(!result);
+    if(PXActionSuccessful != pxActionResult)
+    {
+        return pxActionResult;
+    }
 
     return PXActionSuccessful;
 #else
@@ -843,14 +876,18 @@ PXActionResult PXAPI PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProce
         PXClear(PROCESS_MEMORY_COUNTERS, &processMemoryCounters);
         processMemoryCounters.cb = processMemoryCountersSize;
 
-        const PXBool success = GetProcessMemoryInfo // Windows XP (+UWP), Kernel32.dll, psapi.h
+        const PXBool successful = GetProcessMemoryInfo // Windows XP (+UWP), Kernel32.dll, psapi.h
         (
             currentProcess,
             &processMemoryCounters,
             processMemoryCountersSize
         );
+        const PXActionResult pxActionResult = PXErrorCurrent(successful);
 
-        PXActionOnErrorFetchAndReturn(!success);
+        if(PXActionSuccessful != pxActionResult)
+        {
+            return pxActionResult;
+        }
 
         pxProcessMemoryInfo->PageFaults = processMemoryCounters.PageFaultCount;
         pxProcessMemoryInfo->PeakWorkingSetSize = processMemoryCounters.PeakWorkingSetSize;
@@ -873,7 +910,7 @@ PXActionResult PXAPI PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProce
         SYSTEMTIME systemList[4];
         FILETIME timeStampList[4];
 
-        const BOOL success = GetProcessTimes
+        const BOOL successful = GetProcessTimes
         (
             currentProcess,
             &timeStampList[0], // creationTime
@@ -881,8 +918,12 @@ PXActionResult PXAPI PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProce
             &timeStampList[2], // kernelTime
             &timeStampList[3] // userTime
         );
+        const PXActionResult pxActionResult = PXErrorCurrent(successful);
 
-        PXActionOnErrorFetchAndReturn(!success);
+        if(PXActionSuccessful != pxActionResult)
+        {
+            return pxActionResult;
+        }
 
         // Convert
         for (PXSize i = 0; i < 4u; i++)

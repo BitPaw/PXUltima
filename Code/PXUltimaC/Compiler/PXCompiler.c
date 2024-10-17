@@ -856,8 +856,9 @@ PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler)
 
     PXFileOpenInfo pxFileOpenInfo;
     PXClear(PXFileOpenInfo, &pxFileOpenInfo);
-    pxFileOpenInfo.FlagList = PXFileIOInfoFileTemp;
+    pxFileOpenInfo.FlagList = PXFileIOInfoFileVirtual;
     pxFileOpenInfo.FileSizeRequest = pxCompiler->ReadInfo.FileInput->DataUsed * 20u;
+    pxFileOpenInfo.AccessMode = PXAccessModeReadAndWrite;
 
     const PXActionResult pxOpenResult = PXFileOpen(pxCompiler->ReadInfo.FileCache, &pxFileOpenInfo);
 
@@ -1074,16 +1075,23 @@ PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler)
 
 
 #if PXLogEnable
+    int percentage = 0;
+
+    if(pxCompiler->ReadInfo.FileCache->DataAllocated > 0)
+    {
+        percentage = (int)((pxCompiler->ReadInfo.FileCache->DataUsed / (float)pxCompiler->ReadInfo.FileCache->DataAllocated) * 100);
+    }
+
     PXLogPrint
     (
         PXLoggingInfo,
         "Compiler",
         "Lexer",
-        "Finished analisis. Took %6.3fs. Buffer%i/%i (%i%%)",
+        "Finished analisis. Took %6.3fs. Buffer:%i/%i (%i%%)",
         delta,
         pxCompiler->ReadInfo.FileCache->DataCursor,
         pxCompiler->ReadInfo.FileCache->DataAllocated,
-        (int)((pxCompiler->ReadInfo.FileCache->DataUsed / (float)pxCompiler->ReadInfo.FileCache->DataAllocated) * 100)
+        percentage
     );
 #endif
 

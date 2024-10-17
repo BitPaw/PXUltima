@@ -64,7 +64,7 @@ PXActionResult PXAPI PXErrorCurrent(const PXBool wasSuccessful)
     );
 
     // There is a new line added automatically, we dont want that "\r\n"
-    errorMessageData[errorMessageLength - 2] = '\0';
+    errorMessageBuffer[errorMessageLength - 2] = '\0';
 #else
    
 #endif
@@ -84,7 +84,7 @@ PXActionResult PXAPI PXErrorCurrent(const PXBool wasSuccessful)
 
 #if OSUnix
 #elif OSWindows
-    LocalFree(errorMessageData);  // Free the Win32's string's buffer.
+    LocalFree(errorMessageBuffer);  // Free the Win32's string's buffer.
 #endif
     
     return actionResult;
@@ -347,8 +347,6 @@ PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult)
 {
     switch (handleResult)
     {
-
-
 
         //-------------------------------------------------
         // System Error Codes(0 - 499) (0x0 - 0x1f3)

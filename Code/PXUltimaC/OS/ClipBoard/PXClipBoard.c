@@ -254,11 +254,10 @@ PXActionResult PXAPI PXClipBoardOpen(PXClipBoard* const clipBoard)
 
 #elif PXOSWindowsDestop
     HWND pxWindowID = NULL;
-    const PXBool success = OpenClipboard(pxWindowID); // Windows 2000, User32.dll, winuser.h
+    const PXBool successfull = OpenClipboard(pxWindowID); // Windows 2000, User32.dll, winuser.h
+    const PXActionResult pxActionResult = PXErrorCurrent(successfull);
 
-    PXActionOnErrorFetchAndReturn(!success);
-
-    return PXActionSuccessful;
+    return pxActionResult;
 #else
     return PXActionNotSupportedByOperatingSystem;
 #endif
@@ -271,10 +270,9 @@ PXActionResult PXAPI PXClipBoardClose(PXClipBoard* const clipBoard)
 
 #elif PXOSWindowsDestop
     const PXBool successfull = CloseClipboard(); // Windows 2000, User32.dll, winuser.h
+    const PXActionResult pxActionResult = PXErrorCurrent(successfull);
 
-    PXActionOnErrorFetchAndReturn(!successfull);
-
-    return PXActionSuccessful;
+    return pxActionResult;
 
 #else
     return PXActionNotSupportedByOperatingSystem;
@@ -292,11 +290,9 @@ PXActionResult PXAPI PXClipBoardSet(PXClipBoard* const clipBoard, const PXClipBo
     const HGLOBAL memory = 0;
     const PXInt32U formatID = PXClipBoardFormatToID(format);
     const HANDLE handle = SetClipboardData(formatID, memory); // Windows 2000, User32.dll, winuser.h
-    const PXBool successful = handle != 0;
+    const PXActionResult pxActionResult = PXErrorCurrent(handle != 0);
 
-    PXActionOnErrorFetchAndReturn(!successful);
-
-    return PXActionSuccessful;
+    return pxActionResult;
 #else
     return PXActionNotSupportedByOperatingSystem;
 #endif
@@ -308,10 +304,9 @@ PXActionResult PXAPI PXClipBoardClear(PXClipBoard* const clipBoard)
     return PXActionRefusedNotImplemented;
 #elif PXOSWindowsDestop
     const PXBool successfull = EmptyClipboard(); // Windows 2000, User32.dll, winuser.h
+    const PXActionResult pxActionResult = PXErrorCurrent(!successfull);
 
-    PXActionOnErrorFetchAndReturn(!successfull);
-
-    return PXActionSuccessful;
+    return pxActionResult;
 #else
     return PXActionNotSupportedByOperatingSystem;
 #endif

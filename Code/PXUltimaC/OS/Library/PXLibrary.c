@@ -152,13 +152,10 @@ PXActionResult PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* con
         }
     }
 
+    const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxLibrary->ID);
 
-    const PXBool success = PXNull != pxLibrary->ID;
-
-    if(!success)
+    if(PXActionSuccessful != pxActionResult)
     {
-        const PXActionResult libraryOpenResult = PXErrorCurrent();
-        
         // Library couln't be opened
 
 #if PXLogEnable
@@ -172,7 +169,7 @@ PXActionResult PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* con
         );
 #endif
 
-        return PXActionFailedLoad;
+        return pxActionResult;
     }
 
 #if PXLogEnable
@@ -200,13 +197,17 @@ PXActionResult PXAPI PXLibraryOpenA(PXLibrary* const pxLibrary, const char* cons
 PXActionResult PXAPI PXLibraryClose(PXLibrary* const pxLibrary)
 {
 #if PXLogEnable
+    char moduleName[32];
+
+    PXDebugModuleNameFromModule(pxLibrary->ID, moduleName);
+
     PXLogPrint
     (
         PXLoggingDeallocation,
         "Library",
         "Release",
         "%s",
-        PXNull
+        moduleName
     );
 #endif
 
@@ -217,7 +218,12 @@ PXActionResult PXAPI PXLibraryClose(PXLibrary* const pxLibrary)
         FreeLibrary(pxLibrary->ID); // Windows XP (+UWP), Kernel32.dll, libloaderapi.h
 #endif
 
-    PXActionOnErrorFetchAndReturn(!result);
+    const PXActionResult pxActionResult = PXErrorCurrent(result);
+
+    if(PXActionSuccessful != pxActionResult)
+    {
+        return pxActionResult;
+    }
 
     pxLibrary->ID = PXNull;
 
@@ -265,10 +271,28 @@ PXBool PXAPI PXLibraryGetSymbolA(PXLibrary* const pxLibrary, void** const librar
     const char* errorString = dlerror();
     const PXBool successful = errorString;
 #elif OSWindows
-    *libraryFunction = (void*)GetProcAddress(pxLibrary->ID, symbolName); // Windows XP, Kernel32.dll, libloaderapi.h
-    const PXBool successful = *libraryFunction != PXNull;
+    void* functionAdress = (void*)GetProcAddress(pxLibrary->ID, symbolName); // Windows XP, Kernel32.dll, libloaderapi.h
+    const PXActionResult pxActionResult = PXErrorCurrent(PXNull != functionAdress);
 
-    PXActionOnErrorFetchAndReturn(!successful);
+    if(PXActionSuccessful != pxActionResult)
+    {
+        *libraryFunction = PXNull;
+
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingWarning,
+            "Library",
+            "Symbol-Get",
+            "Missing <%s>",
+            symbolName
+        );
+#endif
+
+        return pxActionResult;
+    }
+
+    *libraryFunction = functionAdress;
 
 #endif
 
@@ -300,8 +324,12 @@ PXActionResult PXAPI PXLibraryName(PXLibrary* const pxLibrary, PXText* const lib
                 libraryName->TextA,
                 libraryName->SizeAllocated
             ); 
+            const PXActionResult pxActionResult = PXErrorCurrent(0 == libraryName->SizeUsed);
 
-            PXActionOnErrorFetchAndReturn(libraryName->SizeUsed == 0);
+            if(PXActionSuccessful != pxActionResult)
+            {
+                return pxActionResult;
+            }
 #endif
 
             break;
@@ -320,8 +348,12 @@ PXActionResult PXAPI PXLibraryName(PXLibrary* const pxLibrary, PXText* const lib
                 libraryName->TextW, 
                 libraryName->SizeAllocated
             ); 
+            const PXActionResult pxActionResult = PXErrorCurrent(0 == libraryName->SizeUsed);
 
-            PXActionOnErrorFetchAndReturn(libraryName->SizeUsed == 0);
+            if(PXActionSuccessful != pxActionResult)
+            {
+                return pxActionResult;
+            }
 #endif
             break;
         }

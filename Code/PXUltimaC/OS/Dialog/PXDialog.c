@@ -152,8 +152,12 @@ PXActionResult PXAPI PXDialogFileOpen(PXDialogSystem* const pxDialogSystem, PXTe
             {
                 const PXGetOpenFileNameA pxGetOpenFileNameA = (PXGetOpenFileNameA)pxDialogSystem->DialogFileNameOpenGetA;
                 const PXBool wasSuccesful = pxGetOpenFileNameA(&openFileName); // Windows 2000, Comdlg32.dll, commdlg.h
+                const PXActionResult pxActionResult = PXErrorCurrent(wasSuccesful);
 
-                PXActionOnErrorFetchAndReturn(!wasSuccesful);
+                if(PXActionSuccessful != pxActionResult)
+                {
+                    return pxActionResult;
+                }
             }
 
             return PXActionSuccessful;
@@ -176,6 +180,12 @@ PXActionResult PXAPI PXDialogFileOpen(PXDialogSystem* const pxDialogSystem, PXTe
 
             const PXGetOpenFileNameW pxGetOpenFileNameW = (PXGetOpenFileNameW)pxDialogSystem->DialogFileNameOpenGetW;
             const PXBool wasSuccesful = pxGetOpenFileNameW(&openFileName); // Windows 2000, Comdlg32.dll, commdlg.h
+            const PXActionResult pxActionResult = PXErrorCurrent(wasSuccesful);
+
+            if(PXActionSuccessful != pxActionResult)
+            {
+                return pxActionResult;
+            }
 
             return PXActionSuccessful;
         }
@@ -216,8 +226,12 @@ PXActionResult PXAPI PXDialogFileSave(PXDialogSystem* const pxDialogSystem, PXTe
 
             const PXGetSaveFileNameA pxGetSaveFileNameA = (PXGetSaveFileNameA)pxDialogSystem->DialogFileNameSaveGetA;
             const PXBool wasSuccesful = pxGetSaveFileNameA(&openFileName); // Windows 2000, Comdlg32.dll, commdlg.h
+            const PXActionResult pxActionResult = PXErrorCurrent(wasSuccesful);
 
-            PXActionOnErrorFetchAndReturn(!wasSuccesful);
+            if(PXActionSuccessful != pxActionResult)
+            {
+                return pxActionResult;
+            }
 
             return PXActionSuccessful;
         }
@@ -239,8 +253,12 @@ PXActionResult PXAPI PXDialogFileSave(PXDialogSystem* const pxDialogSystem, PXTe
 
             const PXGetSaveFileNameW pxGetSaveFileNameW = (PXGetSaveFileNameW)pxDialogSystem->DialogFileNameSaveGetW;
             const PXBool wasSuccesful = pxGetSaveFileNameW(&openFileName); // Windows 2000, Comdlg32.dll, commdlg.h
+            const PXActionResult pxActionResult = PXErrorCurrent(wasSuccesful);
 
-            PXActionOnErrorFetchAndReturn(!wasSuccesful);
+            if(PXActionSuccessful != pxActionResult)
+            {
+                return pxActionResult;
+            }
 
             return PXActionSuccessful;
         }

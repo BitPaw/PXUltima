@@ -1756,7 +1756,7 @@ PXActionResult PXAPI PXGUIElementDelete(PXGUISystem* const pxGUISystem, PXGUIEle
     result = PXGUIElementErrorFromXSystem(resultID);
 #elif OSWindows
     const PXBool success = DestroyWindow(pxGUIElement->Info.Handle.WindowID);
-    result = PXWindowsErrorCurrent(success);
+    result = PXErrorCurrent(success);
 #else
     result PXActionRefusedNotSupportedByLibrary;
 #endif
@@ -1779,7 +1779,7 @@ PXActionResult PXAPI PXGUIElementTextSet(PXGUISystem* const pxGUISystem, PXGUIEl
     result = PXGUIElementErrorFromXSystem(resultID);
 #elif OSWindows
     const PXBool success = SetWindowTextA(pxGUIElement->Info.Handle.WindowID, text);
-    result = PXWindowsErrorCurrent(success);
+    result = PXErrorCurrent(success);
 #else
     result = PXActionRefusedNotSupportedByLibrary;
 #endif
@@ -3867,12 +3867,11 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
             hInstance,
             NULL // Pointer not needed.
         );
-        const PXBool success = PXNull != pxGUIElement->Info.Handle.WindowID;
+        const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxGUIElement->Info.Handle.WindowID);
 
-
-        if(!success)
+        if(PXActionSuccessful != pxActionResult)
         {
-            const PXActionResult pxActionResult = PXErrorCurrent();
+            // Failed to create window
 
 #if PXLogEnable
             const char* uielementName = PXUIElementTypeToString(pxGUIElementCreateInfo->Type);
@@ -3893,7 +3892,6 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
             return pxActionResult;
         }
-
 
         // Get additional device context for rendering purpose
         pxGUIElement->DeviceContextHandle = GetDC(pxGUIElement->Info.Handle.WindowID); 
@@ -4033,7 +4031,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
             pxGUIElement->Info.Handle.MenuHandle = CreateMenu(); // Windows 2000, User32.dll, winuser.h
             const PXBool succeess = PXNull != pxGUIElement->Info.Handle.MenuHandle;
-            const PXActionResult res = PXWindowsErrorCurrent(succeess);
+            const PXActionResult res = PXErrorCurrent(succeess);
 
     
 
@@ -4065,7 +4063,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                 // const PXBool itemAddResult = AppendMenuA(pxGUIElement->Info.Handle.MenuHandle, MF_STRING | MF_POPUP, (UINT_PTR)hSubMenu, menuItemInfo.dwTypeData);
           
 
-                 const PXActionResult sdfsdfghg = PXWindowsErrorCurrent(itemAddResult);
+                 const PXActionResult sdfsdfghg = PXErrorCurrent(itemAddResult);
 
                  PXGUIElementMenuItemList* sub = pxGUIElementMenuItemInfo->ChildList;
 
@@ -4078,7 +4076,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                          PXGUIElementMenuItemInfo* const pxGUIElementMenuItemInfo = &sub->MenuItemInfoListData[i];
 
                          const PXBool asddassdad = AppendMenuA(hSubMenu, menuItemInfo.fState | MF_POPUP, &newIEED, pxGUIElementMenuItemInfo->TextData);
-                         const PXActionResult wewrerew = PXWindowsErrorCurrent(asddassdad);
+                         const PXActionResult wewrerew = PXErrorCurrent(asddassdad);
                      }
                  }
 
@@ -4086,7 +4084,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
 
               //  const PXBool itemAddResult = InsertMenuItemA(pxGUIElement->Info.Handle.MenuHandle, 0, PXTrue, &menuItemInfo);
-                const PXActionResult res = PXWindowsErrorCurrent(itemAddResult);
+                const PXActionResult res = PXErrorCurrent(itemAddResult);
 
                // DrawMenuBar(pxGUIElement->Parent->Info.Handle.WindowID);
 
@@ -5300,11 +5298,10 @@ PXActionResult PXAPI PXWindowPixelSystemSet(PXWindowPixelSystemInfo* const pxWin
     };
     const int letWindowsChooseThisPixelFormat = ChoosePixelFormat(pxWindowPixelSystemInfo->HandleDeviceContext, &pfd);
     const PXBool successul = SetPixelFormat(pxWindowPixelSystemInfo->HandleDeviceContext, letWindowsChooseThisPixelFormat, &pfd);
+    const PXActionResult pxActionResult = PXErrorCurrent(successul);
 
-    if(!successul)
+    if(PXActionSuccessful != pxActionResult)
     {
-        const PXActionResult pxActionResult = PXErrorCurrent();
-
 #if PXLogEnable
         PXLogPrint
         (
@@ -5314,6 +5311,8 @@ PXActionResult PXAPI PXWindowPixelSystemSet(PXWindowPixelSystemInfo* const pxWin
             "Setting failed"
         );
 #endif
+
+        return pxActionResult;
     }
 
     return PXActionSuccessful;
@@ -5521,12 +5520,12 @@ PXActionResult PXAPI PXWindowMouseMovementEnable(const PXWindowID pxWindow)
     // WARNING
     // RegisterRawInputDevices should not be used from a library!
     // As it may interfere with any raw input processing logic already present in applications that load it.
-    const PXBool regsiterResultID = RegisterRawInputDevices(rawInputDeviceList, 2, sizeof(RAWINPUTDEVICE)); // Windows XP, User32.dll, winuser.h
+    const BOOL regsiterRawImputSuccess = RegisterRawInputDevices(rawInputDeviceList, 2, sizeof(RAWINPUTDEVICE)); // Windows XP, User32.dll, winuser.h
+    const PXActionResult pxActionResult = PXErrorCurrent(regsiterRawImputSuccess);
 
-    if(!regsiterResultID)
+    if(PXActionSuccessful != pxActionResult)
     {
-        const PXActionResult regsiterResult = PXErrorCurrent();
-
+#if PXLogEnable
         PXLogPrint
         (
             PXLoggingError,
@@ -5535,11 +5534,12 @@ PXActionResult PXAPI PXWindowMouseMovementEnable(const PXWindowID pxWindow)
             "Failed to registerd device for <0x%p>",
             pxWindow
         );
+#endif
 
-
-        return regsiterResult;
+        return pxActionResult;
     }
 
+#if PXLogEnable
     PXLogPrint
     (
         PXLoggingInfo,
@@ -5548,6 +5548,7 @@ PXActionResult PXAPI PXWindowMouseMovementEnable(const PXWindowID pxWindow)
         "Registerd device for <0x%p>",
         pxWindow
     );
+#endif
 
     return PXActionSuccessful;
 
@@ -5597,13 +5598,14 @@ PXActionResult PXAPI PXWindowPosition(const PXWindowID pxWindowID, PXInt32S* x, 
     //const PXBool success = GetWindowRect(window->ID, &rectangle); // Windows 2000, User32.dll, winuser.h
 
     const PXBool success = GetWindowRect(pxWindowID, &rectangle);
+    const PXActionResult pxActionResult = PXErrorCurrent(success);
 
-    if (!success)
+    if(PXActionSuccessful != pxActionResult)
     {
         *x = -1;
         *y = -1;
 
-        return PXErrorCurrent();
+        return pxActionResult;
     }
 
   //  window->X = rectangle.left;
@@ -5710,7 +5712,7 @@ PXActionResult PXAPI PXGUIElementBufferSwap(PXGUISystem* const pxGUISystem, PXGU
 
 #elif OSWindows    
     const PXBool result = SwapBuffers(pxGUIElement->DeviceContextHandle);
-    pxActionResult = PXWindowsErrorCurrent(result);
+    pxActionResult = PXErrorCurrent(result);
 #else
     pxActionResult = PXActionRefusedNotSupportedByLibrary;
 #endif
@@ -5992,7 +5994,7 @@ PXActionResult PXAPI PXGUIElementDrawTextW(PXGUISystem* const pxGUISystem, PXGUI
 
     const int nextHeight = DrawTextW(pxGUIElement->DeviceContextHandle, text, textSize, &rectangle, format); // Windows 2000, User32.dll, winuser.h
     const PXBool success = 0 != nextHeight;
-    const PXActionResult result = PXWindowsErrorCurrent(success);
+    const PXActionResult result = PXErrorCurrent(success);
 
     return result;
 
@@ -6202,7 +6204,7 @@ PXActionResult PXAPI PXGUIElementMove(PXGUISystem* const pxGUISystem, PXGUIEleme
 #elif PXOSWindowsDestop
     const UINT flags = SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER;
     const PXBool success = SetWindowPos(pxGUIElement->Info.Handle.WindowID, PXNull, x, y, PXNull, PXNull, flags); // Windows 2000, User32.dll
-    pxActionResult = PXWindowsErrorCurrent(success);
+    pxActionResult = PXErrorCurrent(success);
 #else
     pxActionResult = PXActionRefusedNotSupportedByLibrary;
 #endif
@@ -6220,7 +6222,7 @@ PXActionResult PXAPI PXGUIElementResize(PXGUISystem* const pxGUISystem, PXGUIEle
 #elif PXOSWindowsDestop
     const UINT flags = SWP_NOMOVE | SWP_NOZORDER | SWP_NOOWNERZORDER;
     const PXBool success = SetWindowPos(pxGUIElement->Info.Handle.WindowID, PXNull, PXNull, PXNull, width, height, flags); // Windows 2000, User32.dll
-    pxActionResult = PXWindowsErrorCurrent(success);
+    pxActionResult = PXErrorCurrent(success);
 #else
     pxActionResult = PXActionRefusedNotSupportedByLibrary;
 #endif
@@ -6237,7 +6239,7 @@ PXActionResult PXAPI PXGUIElementMoveAndResize(PXGUISystem* const pxGUISystem, P
     pxActionResult = PXGUIElementErrorFromXSystem(resultID);
 #elif PXOSWindowsDestop
     const PXBool success = MoveWindow(pxGUIElement->Info.Handle.WindowID, x, y, width, height, PXTrue); // Windows 2000, User32.dll, winuser.h
-    pxActionResult = PXWindowsErrorCurrent(success);
+    pxActionResult = PXErrorCurrent(success);
 #else
     pxActionResult = PXActionRefusedNotSupportedByLibrary;
 #endif

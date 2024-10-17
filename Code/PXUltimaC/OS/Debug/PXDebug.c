@@ -101,9 +101,12 @@ PXActionResult PXAPI PXDebugProcessBeeingDebugged(PXDebug* const pxDebug, PXBool
 
     BOOL debuggerPresent = 0;
     const BOOL result = pxCheckRemoteDebuggerPresent(pxDebug->Process.ProcessHandle, &debuggerPresent); // Windows XP, Kernel32.dll, debugapi.h
-    const PXBool success = result != 0;
+    const PXActionResult pxActionResult = PXErrorCurrent(result);
 
-    PXActionOnErrorFetchAndReturn(!success);
+    if(PXActionSuccessful != pxActionResult)
+    {
+        return pxActionResult;
+    }
 
     *isPresent = debuggerPresent;
 #else
@@ -328,9 +331,12 @@ PXActionResult PXAPI PXDebugAttach(PXDebug* const pxDebug)
 
 #elif PXOSWindowsDestop
     const BOOL result = DebugActiveProcess(pxDebug->Process.ProcessID);
-    const PXBool sucessful = result != 0;
+    const PXActionResult pxActionResult = PXErrorCurrent(result);
 
-    PXActionOnErrorFetchAndReturn(!sucessful);
+    if(PXActionSuccessful != pxActionResult)
+    {
+        return pxActionResult;
+    }
 
     return PXActionSuccessful;
 #endif
@@ -350,10 +356,13 @@ PXActionResult PXAPI PXDebugDetach(PXDebug* const pxDebug)
         return PXActionRefusedNotSupportedByOperatingSystem;
     }
 
-    const BOOL sucessfulCode = pxDebugActiveProcessStop(pxDebug->Process.ProcessID);
-    const PXBool sucessful = sucessfulCode != 0;
+    const BOOL successful = pxDebugActiveProcessStop(pxDebug->Process.ProcessID);
+    const PXActionResult pxActionResult = PXErrorCurrent(successful);
 
-    PXActionOnErrorFetchAndReturn(!sucessful);
+    if(PXActionSuccessful != pxActionResult)
+    {
+        return pxActionResult;
+    }
 
     return PXActionSuccessful;
 #endif
@@ -689,7 +698,12 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
     // WaitForDebugEvent() Windows XP, Kernel32.dll, debugapi.h
     // WaitForDebugEventEx() Windows 10, Kernel32.dll, debugapi.h
     const BOOL result = pxWaitForDebugEvent(&debugEvent, 0); // Windows XP, Kernel32.dll, debugapi.h
-    PXActionOnErrorFetchAndReturn(!result);
+    const PXActionResult pxActionResult = PXErrorCurrent(result);
+
+    if(PXActionSuccessful != pxActionResult)
+    {
+        return pxActionResult;
+    }
 
     switch (debugEvent.dwDebugEventCode) // Process the debugging event code.
     {
@@ -1002,9 +1016,13 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
 
     // Resume executing the thread that reported the debugging event.
     const PXContinueDebugEvent pxContinueDebugEvent = (PXContinueDebugEvent)pxDebug->XContinueDebugEvent;
-    const BOOL succ = pxContinueDebugEvent(debugEvent.dwProcessId, debugEvent.dwThreadId, dwContinueStatus);
+    const BOOL continueResult = pxContinueDebugEvent(debugEvent.dwProcessId, debugEvent.dwThreadId, dwContinueStatus);
+    const PXActionResult pxContinueActionResult = PXErrorCurrent(continueResult);
 
-    PXActionOnErrorFetchAndReturn(!succ);
+    if(PXActionSuccessful != pxContinueActionResult)
+    {
+        return pxContinueActionResult;
+    }
 
     return PXActionSuccessful;
 
@@ -1171,7 +1189,7 @@ PXActionResult PXAPI PXDebugSymbolReadFromAdress(PXDebug* const pxDebug, struct 
         symbolInfo.SymbolInfo.MaxNameLen = 200;
 
         const PXBool symbolFetchSuccess = SymFromAddr(processHandle, adress, &displacement, &symbolInfo.SymbolInfo);
-        const PXActionResult symbolFetchResult = PXWindowsErrorCurrent(symbolFetchSuccess);
+        const PXActionResult symbolFetchResult = PXErrorCurrent(symbolFetchSuccess);
 
           /*
         BOOL asas = SymGetTypeInfo
@@ -1733,7 +1751,7 @@ PXActionResult PXAPI PXDebugModuleNameFromAdress(void* adress, char* moduleName)
 {
     HMODULE moduleHandle = PXNull;
     const PXBool moduleFetchSuccess = GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCTSTR)adress, &moduleHandle);
-    const PXActionResult moduleFetchResult = PXWindowsErrorCurrent(moduleFetchSuccess);
+    const PXActionResult moduleFetchResult = PXErrorCurrent(moduleFetchSuccess);
 
     const PXActionResult result = PXDebugModuleNameFromModule(moduleHandle, moduleName);
 

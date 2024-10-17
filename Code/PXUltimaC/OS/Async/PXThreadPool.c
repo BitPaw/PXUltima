@@ -87,15 +87,14 @@ PXActionResult PXAPI PXThreadPoolQueueWork(PXThreadPool* const pxThreadPool, voi
 
     // Creates a new work object.
     pxThreadPool->Work = CreateThreadpoolWork(PXWindowsVistaPTP_WORK_CALLBACK, parameter, PXNull); // 3rd Parameter -> Enviroment TP_CALLBACK_ENVIRON 
-    
-    PXActionOnErrorFetchAndReturn(PXNull == pxThreadPool->Work);
+    const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxThreadPool->Work);
+
+    if(PXActionSuccessful != pxActionResult)
+    {
+        return pxActionResult;
+    }
     
     SubmitThreadpoolWork(pxThreadPool->Work); // Queue the work
-
-    PXActionOnErrorFetchAndReturn(PXNull != pxThreadPool->Work);
-
-
-
 
     /*
 

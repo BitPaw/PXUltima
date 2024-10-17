@@ -663,7 +663,7 @@ void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source,
 
 
 
-
+#if 0
     if (PXLoggingError == loggingType)
     {
         for (PXSize i = 1; i < 80; ++i)
@@ -673,10 +673,12 @@ void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source,
 
         PXConsoleWrite(1, "\n");
     }
+#endif
 
     PXConsoleWriteWithColorCodes(&exportText);
 
 
+#if 0
     if (PXLoggingError == loggingType)
     {
         for (PXSize i = 1; i < 80; ++i)
@@ -686,4 +688,5 @@ void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source,
 
         PXConsoleWrite(1, "\n");
     }
+#endif
 }

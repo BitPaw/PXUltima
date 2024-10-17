@@ -193,14 +193,16 @@ PXActionResult PXAPI PXDirectoryOpen(PXDirectorySearchCache* const pxDirectorySe
 
     WIN32_FIND_DATAA windowsDirectoryData;
 
-    pxDirectorySearchCache->DirectoryHandleCurrent = FindFirstFileA(seachDirectoryKey, &windowsDirectoryData); // FindFirstFileExW() has literally no additional functionality (for now)
-
+    // First entry
     {
-        const PXBool failed = INVALID_HANDLE_VALUE == pxDirectorySearchCache->DirectoryHandleCurrent;
+        pxDirectorySearchCache->DirectoryHandleCurrent = FindFirstFileA(seachDirectoryKey, &windowsDirectoryData); // FindFirstFileExW() has literally no additional functionality (for now)
+        const PXActionResult pxActionResult = PXErrorCurrent(INVALID_HANDLE_VALUE == pxDirectorySearchCache->DirectoryHandleCurrent);
 
-        PXActionOnErrorFetchAndReturn(failed);
+        if(PXActionSuccessful != pxActionResult)
+        {
+            return pxActionResult;
+        }
     }
-
 
     PXFileEntry pxFileEntry;
 
@@ -284,8 +286,12 @@ PXBool PXAPI PXDirectoryClose(PXDirectorySearchCache* const pxDirectorySearchCac
 
 #elif OSWindows
     const PXBool success = FindClose(pxDirectorySearchCache->DirectoryHandleCurrent);
+    const PXActionResult pxActionResult = PXErrorCurrent(success);
 
-    PXActionOnErrorFetchAndReturn(!success);
+    if(PXActionSuccessful != pxActionResult)
+    {
+        return pxActionResult;
+    }
 #endif
 }
 
@@ -310,7 +316,12 @@ PXActionResult PXAPI PXDirectoryCreate(const PXText* const directoryName)
 
 #endif
 
-            PXActionOnErrorFetchAndReturn(!successCreate);
+            const PXActionResult pxActionResult = PXErrorCurrent(successCreate);
+
+            if(PXActionSuccessful != pxActionResult)
+            {
+                return pxActionResult;
+            }
 
             break;
         }
@@ -333,7 +344,12 @@ PXActionResult PXAPI PXDirectoryCreate(const PXText* const directoryName)
 #endif
 
 #endif
-            PXActionOnErrorFetchAndReturn(!successCreate);
+            const PXActionResult pxActionResult = PXErrorCurrent(successCreate);
+
+            if(PXActionSuccessful != pxActionResult)
+            {
+                return pxActionResult;
+            }
 
             break;
         }
@@ -380,10 +396,15 @@ PXActionResult PXAPI PXWorkingDirectoryChange(const PXText* const directoryName)
 #if OSUnix
         const int resultID = chdir(directoryName->TextA);
 #elif OSWindows
-        const PXBool resultID = SetCurrentDirectoryA(directoryName->TextA); // _chdir()
+        const BOOL resultID = SetCurrentDirectoryA(directoryName->TextA); // _chdir()
 #endif
 
-        PXActionOnErrorFetchAndReturn(!resultID);
+        const PXActionResult pxActionResult = PXErrorCurrent(resultID);
+
+        if(PXActionSuccessful != pxActionResult)
+        {
+            return pxActionResult;
+        }
 
         return PXActionSuccessful;
     }
@@ -392,10 +413,15 @@ PXActionResult PXAPI PXWorkingDirectoryChange(const PXText* const directoryName)
 #if OSUnix
         const int resultID = 0; // TODO: Add conversion?
 #elif OSWindows
-        const PXBool resultID = SetCurrentDirectoryW(directoryName->TextW); // _wchdir()
+        const BOOL resultID = SetCurrentDirectoryW(directoryName->TextW); // _wchdir()
 #endif
 
-        PXActionOnErrorFetchAndReturn(!resultID);
+        const PXActionResult pxActionResult = PXErrorCurrent(resultID);
+
+        if(PXActionSuccessful != pxActionResult)
+        {
+            return pxActionResult;
+        }
 
         return PXActionSuccessful;
     }
@@ -416,9 +442,12 @@ PXActionResult PXAPI PXWorkingDirectoryGet(PXText* const workingDirectory)
 #elif OSWindows
         workingDirectory->SizeUsed = GetCurrentDirectoryA(workingDirectory->SizeAllocated, workingDirectory->TextA); // _getcwd()
 #endif
-        const PXBool successful = workingDirectory->SizeUsed > 0;
+        const PXActionResult pxActionResult = PXErrorCurrent(workingDirectory->SizeUsed > 0);
 
-        PXActionOnErrorFetchAndReturn(!successful);
+        if(PXActionSuccessful != pxActionResult)
+        {
+            return pxActionResult;
+        }
 
         return PXActionSuccessful;
     }
@@ -429,9 +458,12 @@ PXActionResult PXAPI PXWorkingDirectoryGet(PXText* const workingDirectory)
 #elif OSWindows
         workingDirectory->SizeUsed = GetCurrentDirectoryW(workingDirectory->SizeAllocated, workingDirectory->TextW); // _wgetcwd()
 #endif
-        const PXBool successful = workingDirectory->SizeUsed > 0;
+        const PXActionResult pxActionResult = PXErrorCurrent(workingDirectory->SizeUsed > 0);
 
-        PXActionOnErrorFetchAndReturn(!successful);
+        if(PXActionSuccessful != pxActionResult)
+        {
+            return pxActionResult;
+        }
 
         return PXActionSuccessful;
     }
@@ -453,7 +485,13 @@ PXActionResult PXAPI PXDirectoryDelete(const PXText* const directoryName)
 #elif OSWindows
         const PXBool successul = RemoveDirectoryA(directoryName->TextA); // Windows XP, Kernel32.dll, fileapi.h
 #endif
-        PXActionOnErrorFetchAndReturn(!successul);
+
+        const PXActionResult pxActionResult = PXErrorCurrent(successul);
+
+        if(PXActionSuccessful != pxActionResult)
+        {
+            return pxActionResult;
+        }
 
 
         return PXActionSuccessful;
@@ -465,8 +503,12 @@ PXActionResult PXAPI PXDirectoryDelete(const PXText* const directoryName)
 #elif OSWindows
         const PXBool successul = RemoveDirectoryW(directoryName->TextW); // Windows XP, Kernel32.dll, fileapi.h
 #endif
+        const PXActionResult pxActionResult = PXErrorCurrent(successul);
 
-        PXActionOnErrorFetchAndReturn(!successul);
+        if(PXActionSuccessful != pxActionResult)
+        {
+            return pxActionResult;
+        }
 
         return PXActionSuccessful;
     }

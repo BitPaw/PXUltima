@@ -91,12 +91,10 @@ PXActionResult PXAPI PXThreadRun(PXThread* const pxThread, const char* const thr
         0, // dwCreationFlags
         NULL // lpThreadId
     );
-    const PXBool wasSucessful = threadID != 0;
+    const PXActionResult pxActionResult = PXErrorCurrent(PXNull != threadID);
 
-    if(!wasSucessful)
+    if(PXActionSuccessful != pxActionResult)
     {
-        const PXActionResult threadResult = PXErrorCurrent();
-
 #if PXLogEnable
         PXLogPrint
         (
@@ -107,8 +105,7 @@ PXActionResult PXAPI PXThreadRun(PXThread* const pxThread, const char* const thr
             threadName
         );
 #endif
-
-        return threadResult;
+        return pxActionResult;
     }
 
 
@@ -169,9 +166,12 @@ PXActionResult PXAPI PXThreadRunInOtherProcess(PXThread* const pxThread, const v
         dwCreationFlags,
         lpThreadId
     );
-    const PXBool successful = PXNull != threadID;
+    const PXActionResult pxActionResult = PXErrorCurrent(PXNull != threadID);
 
-    PXActionOnErrorFetchAndReturn(!successful);
+    if(PXActionSuccessful != pxActionResult)
+    {
+        return pxActionResult;
+    }
 
     pxThread->ThreadHandle = threadID;
 
@@ -241,9 +241,12 @@ PXActionResult PXAPI PXThreadOpen(PXThread* const pxThread)
     DWORD dwThreadId = 0;
 
     const HANDLE threadID = OpenThread(dwDesiredAccess, bInheritHandle, dwThreadId); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
-    const PXBool success = PXNull != threadID;
+    const PXActionResult pxActionResult = PXErrorCurrent(PXNull != threadID);
 
-    PXActionOnErrorFetchAndReturn(!success);
+    if(PXActionSuccessful != pxActionResult)
+    {
+        return pxActionResult;
+    }
 
     return PXActionSuccessful;
 #else 
@@ -714,14 +717,14 @@ PXActionResult PXAPI PXThreadPrioritySet(PXThread* pxThread, const PXThreadPrior
     return PXActionSuccessful;
 #elif OSWindows
     // SetPriorityClass() also exists, but is it needed?
-    const PXBool result = SetThreadPriority(pxThread->ThreadHandle, threadPriority); 
+    const BOOL success = SetThreadPriority(pxThread->ThreadHandle, threadPriority); 
+    const PXActionResult pxActionResult = PXErrorCurrent(PXNull != success);
 
-    if(!result)
+    if(PXActionSuccessful != pxActionResult)
     {
-        const PXActionResult setResult = PXErrorCurrent();
-
-        return setResult;
+        return pxActionResult;
     }
+
     return PXActionSuccessful;
 
 #else
@@ -759,9 +762,12 @@ PXActionResult PXAPI PXThreadSuspend(PXThread* const pxThread)
 
 #elif OSWindows
     const DWORD result = SuspendThread(pxThread->ThreadHandle); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
-    const PXBool successful = result != -1;
+    const PXActionResult pxActionResult = PXErrorCurrent(-1 != result);
 
-    PXActionOnErrorFetchAndReturn(!successful);
+    if(PXActionSuccessful != pxActionResult)
+    {
+        return pxActionResult;
+    }
 
     pxThread->Mode = PXThreadModeSuspended;
 
@@ -778,9 +784,12 @@ PXActionResult PXAPI PXThreadResume(PXThread* const pxThread)
 
 #elif OSWindows
     const DWORD suspendCount = ResumeThread(pxThread->ThreadHandle); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
-    const PXBool successful = suspendCount != -1;
+    const PXActionResult pxActionResult = PXErrorCurrent(-1 != suspendCount);
 
-    PXActionOnErrorFetchAndReturn(!successful);
+    if(PXActionSuccessful != pxActionResult)
+    {
+        return pxActionResult;
+    }
 
     pxThread->Mode = PXThreadModeRunning;
 

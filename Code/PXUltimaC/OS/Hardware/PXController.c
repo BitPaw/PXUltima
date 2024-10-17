@@ -18,6 +18,8 @@
 
 #pragma comment( lib, "winmm.lib" )
 
+
+
 typedef UINT(WINAPI* PXjoyGetNumDevs)(void);
 typedef MMRESULT(WINAPI* PXjoyGetDevCapsA)(_In_ UINT_PTR uJoyID, _Out_writes_bytes_(cbjc) LPJOYCAPSA pjc, _In_ UINT cbjc);
 typedef MMRESULT(WINAPI* PXjoyGetPosEx)(_In_ UINT uJoyID, _Out_ LPJOYINFOEX pji);
@@ -68,7 +70,9 @@ PXActionResult PXAPI PXControllerSystemDevicesListRefresh(PXControllerSystem* co
     {
         PXjoyGetNumDevs pxjoyGetNumDevs = pxControllerSystem->NumDevsGet;
 
-        pxControllerSystem->DeviceListAmount = pxjoyGetNumDevs();
+        pxControllerSystem->DeviceListAmount = 1;
+
+        //pxControllerSystem->DeviceListAmount = pxjoyGetNumDevs();
     }
 
     PXNewListZerod(PXController, pxControllerSystem->DeviceListAmount, &pxControllerSystem->DeviceListData, PXNull);
@@ -77,7 +81,7 @@ PXActionResult PXAPI PXControllerSystemDevicesListRefresh(PXControllerSystem* co
     {
         const PXjoyGetDevCapsA pxjoyGetDevCapsA = pxControllerSystem->DevCapsGetA;
         
-        for(PXSize i = 0; i < pxControllerSystem->DeviceListAmount; i++)
+        for(PXSize i = 0; i < pxControllerSystem->DeviceListAmount; ++i)
         {
             PXController* const pxController = &pxControllerSystem->DeviceListData[i];
 
@@ -85,13 +89,11 @@ PXActionResult PXAPI PXControllerSystemDevicesListRefresh(PXControllerSystem* co
             JOYCAPSA pjc;
             const PXSize size = sizeof(JOYCAPSA);
             const MMRESULT devResult = pxjoyGetDevCapsA(i, &pjc, size);
-            const PXBool succesful = devResult == JOYERR_NOERROR;
+            const PXActionResult pxActionResult = PXErrorCurrent(JOYERR_NOERROR == devResult);
 
-            if(!succesful)
+            if(PXActionSuccessful != pxActionResult)
             {
-                const PXActionResult devGetError = PXErrorCurrent();
-
-                return devGetError;
+                return pxActionResult;
             }
 
             PXTextCopyA(pjc.szPname, MAXPNAMELEN, pxController->Name, PXControllerNameSize);

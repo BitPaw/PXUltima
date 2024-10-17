@@ -545,9 +545,12 @@ PXActionResult PXAPI PXLDAPClientOpen(PXLDAPClient* const pxLDAPClient, const PX
                 pxLDAPClient->ID = pxcldap_openA(pxLDAPInfo->Host.TextA, pxLDAPInfo->Port); // Windows Vista, Wldap32.dll, winldap.h
             }
 
-            const PXBool successful = PXNull != pxLDAPClient->ID;
+            const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
 
-            PXActionOnErrorFetchAndReturn(!successful); // LdapGetLastError()
+            if(PXActionSuccessful != pxActionResult)
+            {
+                return pxActionResult; // LdapGetLastError()
+            }
 
             break;
 #else
@@ -573,9 +576,12 @@ PXActionResult PXAPI PXLDAPClientOpen(PXLDAPClient* const pxLDAPClient, const PX
                 pxLDAPClient->ID = pxcldap_openW(pxLDAPInfo->Host.TextW, pxLDAPInfo->Port); // Windows Vista, Wldap32.dll, winldap.h
             }
 
-            const PXBool successful = PXNull != pxLDAPClient->ID;
+            const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
 
-            PXActionOnErrorFetchAndReturn(!successful); // LdapGetLastError()
+            if(PXActionSuccessful != pxActionResult)
+            {
+                return pxActionResult; // LdapGetLastError()
+            }
 
             break;
 #else
@@ -600,9 +606,12 @@ PXActionResult PXAPI PXLDAPClientOpen(PXLDAPClient* const pxLDAPClient, const PX
         const ULONG optionSetResult = pxldap_set_option(pxLDAPClient->ID, LDAP_OPT_PROTOCOL_VERSION, &version);
         const PXBool optionSetSuccessful = LDAP_SUCCESS == optionSetResult;
 
-        //LdapGetLastError();
+        const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
 
-        PXActionOnErrorFetchAndReturn(!optionSetSuccessful); // LdapGetLastError()
+        if(PXActionSuccessful != pxActionResult)
+        {
+            return pxActionResult; // LdapGetLastError()
+        }
     }
 #endif
 
@@ -614,7 +623,12 @@ PXActionResult PXAPI PXLDAPClientOpen(PXLDAPClient* const pxLDAPClient, const PX
         const ULONG connectResult = pxldap_connect(pxLDAPClient->ID, &ldaptime);
         const PXBool connectionSuccessful = LDAP_SUCCESS == connectResult;
 
-        PXActionOnErrorFetchAndReturn(!connectionSuccessful); // LdapGetLastError()
+        const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
+
+        if(PXActionSuccessful != pxActionResult)
+        {
+            return pxActionResult; // LdapGetLastError()
+        }
     }
 
     // Binding
@@ -629,7 +643,12 @@ PXActionResult PXAPI PXLDAPClientOpen(PXLDAPClient* const pxLDAPClient, const PX
         );
         const PXBool bindSuccessful = LDAP_SUCCESS == bindResult;
 
-        PXActionOnErrorFetchAndReturn(!bindSuccessful); // LdapGetLastError()
+        const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
+
+        if(PXActionSuccessful != pxActionResult)
+        {
+            return pxActionResult; // LdapGetLastError()
+        }
     }
 
     return PXActionSuccessful;
@@ -652,7 +671,12 @@ PXActionResult PXAPI PXLDAPClientClose(PXLDAPClient* const pxLDAPClient)
     const ULONG result = pxldap_unbind(pxLDAPClient->ID);
     const PXBool successful = LDAP_SUCCESS == result;
 
-    PXActionOnErrorFetchAndReturn(!successful);
+    const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
+
+    if(PXActionSuccessful != pxActionResult)
+    {
+        return pxActionResult; // LdapGetLastError()
+    }
 
     pxLDAPClient->ID = PXNull;
 
@@ -726,7 +750,12 @@ PXActionResult PXAPI PXLDAPClientSearch(PXLDAPClient* const pxLDAPClient, PXLDAP
 
                 const PXBool successful = LDAP_SUCCESS == messageID;
 
-                PXActionOnErrorFetchAndReturn(!successful);
+                const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
+
+                if(PXActionSuccessful != pxActionResult)
+                {
+                    return pxActionResult; // LdapGetLastError()
+                }
             }
             else
             {
@@ -745,7 +774,12 @@ PXActionResult PXAPI PXLDAPClientSearch(PXLDAPClient* const pxLDAPClient, PXLDAP
 
                 const PXBool successful = LDAP_SUCCESS == searchResult;
 
-                PXActionOnErrorFetchAndReturn(!successful);
+                const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
+
+                if(PXActionSuccessful != pxActionResult)
+                {
+                    return pxActionResult; // LdapGetLastError()
+                }
             }
 
             return PXActionSuccessful;
@@ -771,7 +805,12 @@ PXActionResult PXAPI PXLDAPClientSearch(PXLDAPClient* const pxLDAPClient, PXLDAP
             );
             const PXBool successful = LDAP_SUCCESS == messageID;
 
-            PXActionOnErrorFetchAndReturn(!successful);        
+            const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
+
+            if(PXActionSuccessful != pxActionResult)
+            {
+                return pxActionResult; // LdapGetLastError()
+            }
 
             return PXActionSuccessful;
 #else

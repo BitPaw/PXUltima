@@ -2055,12 +2055,10 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
     // Check if failed
     {
         const HGLRC handle = pxOpenGL->CreateContext(pxGraphicInitializeInfo->HandleDeviceContext);
-        const PXBool successful = handle != 0;
+        const PXActionResult pxActionResult = PXErrorCurrent(PXNull != handle);
 
-        if(!successful) // Failed context create
+        if(PXActionSuccessful != pxActionResult) // Failed context create
         {
-            const PXActionResult createContextResult = PXErrorCurrent();
-
 #if PXLogEnable
             PXLogPrint
             (
@@ -2072,7 +2070,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
             );
 #endif
 
-            return createContextResult;
+            return pxActionResult;
         }
 
         pxOpenGL->ContextHandle = handle;

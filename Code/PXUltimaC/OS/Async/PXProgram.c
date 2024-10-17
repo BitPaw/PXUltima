@@ -212,7 +212,9 @@ PXActionResult PXAPI PXProgramWaitForFinish(PXProgram* const program, PXInt32U* 
         }
         case WAIT_FAILED:
         {
-            return PXErrorCurrent();
+            const PXActionResult pxActionResult = PXErrorCurrent(PXFalse);
+
+            return pxActionResult;
         }
         case WAIT_ABANDONED:
         case WAIT_OBJECT_0:
@@ -221,9 +223,13 @@ PXActionResult PXAPI PXProgramWaitForFinish(PXProgram* const program, PXInt32U* 
             break;
     }
 
-    const BOOL getSuccess = GetExitCodeProcess(program->Handle, &result); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h 
+    const BOOL exitCodeGetSuccess = GetExitCodeProcess(program->Handle, &result); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h 
+    const PXActionResult pxActionResult = PXErrorCurrent(exitCodeGetSuccess);
 
-    PXActionOnErrorFetchAndReturn(!getSuccess);
+    if(PXActionSuccessful != pxActionResult)
+    {
+        return pxActionResult;
+    }
 
     *returnCode = result;
 
@@ -269,9 +275,12 @@ PXActionResult PXAPI PXProgramAttach(PXProgram* const pxProgram)
     BOOL bInheritHandle = 0;
     DWORD dwProcessID = 0;
     pxProgram->Handle = OpenProcess(dwDesiredAccess, bInheritHandle, dwProcessID); // Windows XP (+UWP), Kernel32.dll
-    const PXBool openSuccess = pxProgram->Handle != PXNull;
+    const PXActionResult pxActionResult = PXErrorCurrent(pxProgram->Handle != PXNull);
 
-    PXActionOnErrorFetchAndReturn(!openSuccess);
+    if(PXActionSuccessful != pxActionResult)
+    {
+        return pxActionResult;
+    }
 
     return PXActionSuccessful;
 #else
@@ -291,8 +300,12 @@ PXActionResult PXAPI PXProgramDetach(PXProgram* const pxProgram)
     HANDLE handleID = 0;
 
     const PXBool closeResult = CloseHandle(pxProgram->Handle);
+    const PXActionResult pxActionResult = PXErrorCurrent(closeResult);
 
-    PXActionOnErrorFetchAndReturn(!closeResult);
+    if(PXActionSuccessful != pxActionResult)
+    {
+        return pxActionResult;
+    }
 
     pxProgram->Handle = PXNull;
 
@@ -315,8 +328,12 @@ PXActionResult PXAPI PXProgramReadMemory(PXProgram* const pxProgram, const void*
     SIZE_T readSize = 0;
 
     const PXBool readResult = ReadProcessMemory(pxProgram->Handle, adress, buffer, bufferSize, &readSize); // Windows XP, Kernel32.dll, memoryapi.h
+    const PXActionResult pxActionResult = PXErrorCurrent(readResult);
 
-    PXActionOnErrorFetchAndReturn(!readResult);
+    if(PXActionSuccessful != pxActionResult)
+    {
+        return pxActionResult;
+    }
 
     *bufferSizeWritten = readSize;
 
@@ -339,8 +356,12 @@ PXActionResult PXAPI PXProgramWriteMemory(PXProgram* const pxProgram, const void
     SIZE_T writtenSize = 0;
 
     const PXBool readResult = WriteProcessMemory(pxProgram->Handle, (LPVOID)adress, buffer, bufferSize, &writtenSize); // Windows XP, Kernel32.dll, memoryapi.h
+    const PXActionResult pxActionResult = PXErrorCurrent(readResult);
 
-    PXActionOnErrorFetchAndReturn(!readResult);
+    if(PXActionSuccessful != pxActionResult)
+    {
+        return pxActionResult;
+    }
 
     *bufferSizeWritten = writtenSize;
 

@@ -30,15 +30,12 @@ PXActionResult PXAPI PXLockCreate(PXLock* const lock, const PXLockType type)
             LPCWSTR lpName = L"BFE_ASYNC_LOCK";
 
             const HANDLE handle = CreateSemaphoreW(lpSemaphoreAttributes, lInitialCount, lMaximumCount, lpName);
-            const PXBool sucessful = handle != 0;
+            const PXActionResult pxActionResult = PXErrorCurrent(handle != PXNull);
 
-            if (!sucessful)
+            if(PXActionSuccessful != pxActionResult)
             {
-                const PXActionResult actionResult = PXErrorCurrent();
-
                 PXLockClear(lock);
-
-                return actionResult;
+                return pxActionResult;
             }
 
             lock->ID = handle;
