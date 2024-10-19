@@ -255,6 +255,8 @@ PXBool PXAPI PXLibraryGetSymbolListA(PXLibrary* const pxLibrary, PXLibraryFuntio
 
 PXBool PXAPI PXLibraryGetSymbolA(PXLibrary* const pxLibrary, void** const libraryFunction, const char* const symbolName)
 {
+    void* functionAdress = PXNull;
+
 #if PXLogEnable && 0
     PXLogPrint
     (
@@ -267,11 +269,10 @@ PXBool PXAPI PXLibraryGetSymbolA(PXLibrary* const pxLibrary, void** const librar
 #endif
 
 #if OSUnix
-    *libraryFunction = (LibraryFunction*)dlsym(pxLibrary->ID, symbolName);
+    functionAdress = (void*)dlsym(pxLibrary->ID, symbolName);
     const char* errorString = dlerror();
-    const PXBool successful = errorString;
 #elif OSWindows
-    void* functionAdress = (void*)GetProcAddress(pxLibrary->ID, symbolName); // Windows XP, Kernel32.dll, libloaderapi.h
+    functionAdress = (void*)GetProcAddress(pxLibrary->ID, symbolName); // Windows XP, Kernel32.dll, libloaderapi.h
     const PXActionResult pxActionResult = PXErrorCurrent(PXNull != functionAdress);
 
     if(PXActionSuccessful != pxActionResult)

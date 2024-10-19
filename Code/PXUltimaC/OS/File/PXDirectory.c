@@ -196,7 +196,7 @@ PXActionResult PXAPI PXDirectoryOpen(PXDirectorySearchCache* const pxDirectorySe
     // First entry
     {
         pxDirectorySearchCache->DirectoryHandleCurrent = FindFirstFileA(seachDirectoryKey, &windowsDirectoryData); // FindFirstFileExW() has literally no additional functionality (for now)
-        const PXActionResult pxActionResult = PXErrorCurrent(INVALID_HANDLE_VALUE == pxDirectorySearchCache->DirectoryHandleCurrent);
+        const PXActionResult pxActionResult = PXErrorCurrent(INVALID_HANDLE_VALUE != pxDirectorySearchCache->DirectoryHandleCurrent);
 
         if(PXActionSuccessful != pxActionResult)
         {
