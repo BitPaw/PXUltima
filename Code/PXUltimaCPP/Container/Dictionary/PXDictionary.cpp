@@ -5,30 +5,31 @@
 template<typename Key, typename Value>
 PX::Dictionary<Key, Value>::Dictionary()
 {
-	PX::Memory::Clear(this);
+	PX::Memory::Clear(&_dictionary);
 }
 
 template<typename Key, typename Value>
 PX::Dictionary<Key, Value>::~Dictionary()
 {
-	PXDictionaryDestruct(this);
+	PXDictionaryDestruct(&_dictionary);
 }
 
 template<typename Key, typename Value>
 void PX::Dictionary<Key, Value>::Resize(const PXSize entrys)
 {
+
 }
 
 template<typename Key, typename Value>
 bool PX::Dictionary<Key, Value>::Add(const Key& key, const Value& value)
 {
-	return PXDictionaryAdd(this, &key, &value);
+	return PXDictionaryAdd(&_dictionary, &key, &value);
 }
 
 template<typename Key, typename Value>
 bool PX::Dictionary<Key, Value>::Remove(const Key& key)
 {
-	PXDictionaryRemove(this, &key);
+	PXDictionaryRemove(&_dictionary, &key);
 }
 
 template<typename Key, typename Value>

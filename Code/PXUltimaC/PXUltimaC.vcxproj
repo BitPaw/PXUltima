@@ -540,6 +540,7 @@
     <None Include="Algorithm\KnowlegeGraph\README.md" />
     <None Include="Container\Dictionary\README.md" />
     <None Include="Container\HierarchicalList\README.md" />
+    <None Include="Container\List\README.md" />
     <None Include="Graph\BoxPlot\README.md" />
     <None Include="Graph\Timeline\README.md" />
     <None Include="Media\AAC\README.md" />
@@ -578,10 +579,14 @@
     <None Include="OS\Audio\PXALSA\README.md" />
     <None Include="OS\Audio\README.md" />
     <None Include="OS\Debug\README.md" />
+    <None Include="OS\File\README.md" />
     <None Include="OS\Graphic\DirectX\README.md" />
     <None Include="OS\Graphic\OpenGL\README.md" />
     <None Include="OS\Graphic\SoftwareRender\README.md" />
     <None Include="OS\Graphic\Vulcan\README.md" />
+    <None Include="OS\GUI\README.md" />
+    <None Include="OS\Library\README.md" />
+    <None Include="OS\Memory\README.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="Compiler\PXCompiler.hpp" />
     <ClInclude Include="Container\Dictionary\PXDictionary.hpp" />
+    <ClInclude Include="Container\List\PXList.hpp" />
     <ClInclude Include="DataBase\PXDataBase.hpp" />
     <ClInclude Include="Media\PXColor.hpp" />
     <ClInclude Include="OS\Async\PXProcess.hpp" />
@@ -65,6 +66,7 @@
   <ItemGroup>
     <ClCompile Include="Compiler\PXCompiler.cpp" />
     <ClCompile Include="Container\Dictionary\PXDictionary.cpp" />
+    <ClCompile Include="Container\List\PXList.cpp" />
     <ClCompile Include="DataBase\PXDataBase.cpp" />
     <ClCompile Include="Media\PXColor.cpp" />
     <ClCompile Include="OS\Async\PXProcess.cpp" />

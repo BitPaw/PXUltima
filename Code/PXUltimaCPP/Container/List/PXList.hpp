@@ -5,10 +5,13 @@
 namespace PX
 {
 	template<typename T>
-	class List : public PXList
+	class List
 	{
+		protected:
+		PXList _list;
+
 		public:
-		List();
+		List(const PXSize startSize);
 		~List();
 
 		void Resize(const PXSize entrys);

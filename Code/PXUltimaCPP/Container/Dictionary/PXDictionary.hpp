@@ -7,6 +7,9 @@ namespace PX
 	template<typename Key, typename Value>
 	class Dictionary : public PXDictionary
 	{
+		protected:
+		PXDictionary _dictionary;
+
 		public:
 		Dictionary();
 		~Dictionary();

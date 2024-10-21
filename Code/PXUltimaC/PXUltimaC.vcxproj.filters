@@ -1084,5 +1084,10 @@
     <None Include="Media\VOB\README.md" />
     <None Include="Media\VRML\README.md" />
     <None Include="OS\Debug\README.md" />
+    <None Include="Container\List\README.md" />
+    <None Include="OS\Library\README.md" />
+    <None Include="OS\GUI\README.md" />
+    <None Include="OS\File\README.md" />
+    <None Include="OS\Memory\README.md" />
   </ItemGroup>
 </Project>

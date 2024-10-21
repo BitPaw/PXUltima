@@ -7,6 +7,7 @@
 #include <OS/Graphic/PXGraphic.h>
 #include <OS/Console/PXConsole.h>
 #include <Engine/PXEngine.h>
+#include <OS/File/PXDirectory.h>
 
 #if OSUnix
 
@@ -40,6 +41,7 @@
 #include <dwmapi.h> // Set tilebar color
 //#include <gdiplusgraphics.h>
 //#include <ddrawgdi.h>
+#include <shellapi.h>
 
 #define Windows10DarkModeID 20 // DWMWA_USE_IMMERSIVE_DARK_MODE
 
@@ -2003,6 +2005,16 @@ PXActionResult PXAPI PXGUIDisplayScreenListRefresh(PXGUISystem* const pxGUISyste
 
 PXActionResult PXAPI PXGUIElementDrawCustomFailback(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo)
 {
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "GUI",
+        "Draw",
+        "FailBack"
+    );
+#endif
+
     PXGUIDrawClear(pxGUISystem, pxGUIElement);
 
     PXGUIElementBrush brushRed;
@@ -2043,6 +2055,16 @@ PXActionResult PXAPI PXGUIElementDrawCustomFailback(PXGUISystem* const pxGUISyst
 
 PXActionResult PXAPI PXGUIElementDrawCustomText(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo)
 {
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "GUI",
+        "Draw",
+        "Text"
+    );
+#endif
+
     PXGUIDrawClear(pxGUISystem, pxGUIElement);
 
     PXGUIDrawColorSetBrush
@@ -2084,8 +2106,8 @@ PXActionResult PXAPI PXGUIElementDrawCustomButton(PXGUISystem* const pxGUISystem
     (
         PXLoggingInfo,
         "GUI",
-        "Draw-Button",
-        "E"
+        "Draw",
+        "Button"
     );
 #endif
 
@@ -2316,8 +2338,8 @@ PXActionResult PXAPI PXGUIElementDrawCustomColorPicker(PXGUISystem* const pxGUIS
     (
         PXLoggingInfo,
         "GUI",
-        "Draw-ColorPicker",
-        "E"
+        "Draw",
+        "ColorPicker"
     );
 #endif
 
@@ -2517,8 +2539,116 @@ PXActionResult PXAPI PXGUIElementDrawCustomColorPicker(PXGUISystem* const pxGUIS
 }
 
 PXActionResult PXAPI PXGUIElementDrawCustomHexView(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo)
-{
+{ 
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "GUI",
+        "Draw",
+        "HexView"
+    );
+#endif
+
     return PXActionRefusedNotImplemented;
+}
+
+PXActionResult PXAPI PXGUIElementDrawFileDirectoryView(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo)
+{
+    PXDirectorySearchCache* const pxDirectorySearchCache = (PXDirectorySearchCache*)pxGUIElement->ExtendedData;
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "GUI",
+        "Draw",
+        "FileDirectoryView"
+    );
+#endif
+
+    PXGUIDrawClear(pxGUISystem, pxGUIElement);
+
+    PXGUIElementDrawRectangle
+    (
+        pxGUISystem,
+        pxGUIElement,
+        pxGUIElement->Position.Left,
+        pxGUIElement->Position.Top,
+        pxGUIElement->Position.Right,
+        pxGUIElement->Position.Bottom
+    );
+
+    PXText pxTExt;
+    PXTextMakeFixedA(&pxTExt, "./");
+
+    PXDirectorySearch(pxDirectorySearchCache, &pxTExt);
+
+    PXGUIElement pxGUIElementSub;
+    PXCopy(PXGUIElement, pxGUIElement, &pxGUIElementSub);
+    pxGUIElementSub.Info.Behaviour = PXResourceInfoOK | PXGUIElementAllignTop | PXGUIElementKeepHeight | PXGUIElementAllignLeft;
+    pxGUIElementSub.Position.Height = 20;
+    pxGUIElementSub.Position.Left = 20;
+
+
+
+
+    //HICON icon = LoadIcon(NULL, IDI_QUESTION);
+
+    SHSTOCKICONINFO info;
+    PXClear(SHSTOCKICONINFO, &info);
+    info.cbSize = sizeof(SHSTOCKICONINFO);
+
+    HRESULT resultFodler = SHGetStockIconInfo(SIID_FOLDER, SHGSI_ICON, &info);
+ 
+
+    HICON folderIcon = info.hIcon;
+
+    HRESULT resultFile = SHGetStockIconInfo(SIID_DOCNOASSOC, SHGSI_ICON, &info);
+
+    HICON fileIcon = info.hIcon;
+
+    for(PXSize i = 0; i < pxDirectorySearchCache->EntryList.AmountUsed; ++i)
+    {
+        PXFileEntry* const pxFileEntry = PXListEntyrGetT(PXFileEntry, &pxDirectorySearchCache->EntryList, i);
+
+        pxGUIElementSub.Position.Top += 1 * pxGUIElementSub.Position.Height;
+
+        HICON icon = 0;
+
+        switch(pxFileEntry->Type)
+        {
+            default:
+            case PXFileElementInfoTypeFile:
+            {
+                icon = fileIcon;
+                break;
+            }
+            case PXFileElementInfoTypeDictionary:
+            {
+                icon = folderIcon;
+                break;
+            }
+        }
+
+        DrawIconEx
+        (
+            pxGUIElementSub.DeviceContextHandle,
+            pxGUIElementSub.Position.Left - 20,
+            pxGUIElementSub.Position.Top,
+            icon,
+            pxGUIElementSub.Position.Height, // Width same as height
+            pxGUIElementSub.Position.Height,
+            0,
+            0,
+            DI_NORMAL
+        );
+
+        PXGUIElementDrawTextA(pxGUISystem, &pxGUIElementSub, pxFileEntry->FilePathData, pxFileEntry->FilePathSize);
+    }
+
+
+    return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXGUIElementDragStart(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement)
@@ -3599,6 +3729,12 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                 TVS_LINESATROOT;
             break;
         }
+        case PXUIElementTypeFileDirectyView:
+        {
+            pxGUIElementCreateInfo->WindowsClassName = WC_STATIC;
+            pxGUIElementCreateInfo->DrawFunctionEngine = PXGUIElementDrawFileDirectoryView;
+            break;
+        }        
         case PXUIElementTypeIPInput:
         {
             pxGUIElementCreateInfo->WindowsClassName = WC_IPADDRESS;
@@ -3641,8 +3777,8 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
         }
         case PXUIElementTypeColorPicker:
         {
-            pxGUIElementCreateInfo->DrawFunctionEngine = PXGUIElementDrawCustomColorPicker;
             pxGUIElementCreateInfo->WindowsClassName = WC_STATIC;
+            pxGUIElementCreateInfo->DrawFunctionEngine = PXGUIElementDrawCustomColorPicker;        
             //pxGUIElementCreateInfo->WindowsStyleFlags |= SS_WHITEFRAME;
             break;
         }
@@ -4101,6 +4237,14 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
         case PXUIElementTypePanel:
         {
 
+
+            break;
+        }
+        case PXUIElementTypeFileDirectyView:
+        {
+            PXDirectorySearchCache* pxDirectorySearchCache = PXMemoryCallocT(PXDirectorySearchCache, 1);
+
+            pxGUIElement->ExtendedData = pxDirectorySearchCache;
 
             break;
         }
@@ -5891,6 +6035,16 @@ PXActionResult PXAPI PXGUIElementDrawTextA(PXGUISystem* const pxGUISystem, PXGUI
 
 #elif OSWindows
 
+
+    PXGUIDrawColorSetBrush
+    (
+        pxGUISystem,
+        pxGUIElement,
+        pxGUIElement->BrushBackground,
+        PXGUIDrawModeBack
+    );
+
+
     //const char* fontName = "Eras Medium ITC"; // Bradley Hand ITC, UniSpace,OCR A, Cascadia Mono
     const char* fontName = "UniSpace";
 
@@ -5907,7 +6061,7 @@ PXActionResult PXAPI PXGUIElementDrawTextA(PXGUISystem* const pxGUISystem, PXGUI
     format |= PXFlagIsSet(pxGUIElement->Info.Behaviour, PXGUIElementAllignRight) * DT_RIGHT;
     format |= PXFlagIsSet(pxGUIElement->Info.Behaviour, PXGUIElementAllignBottom) * DT_BOTTOM;
 
-    if(PXFlagIsSet(pxGUIElement->Info.Behaviour, PXGUIElementAllignCenter) || 1)
+    if(PXFlagIsSet(pxGUIElement->Info.Behaviour, PXGUIElementAllignCenter))
     {
         format |= DT_VCENTER | DT_CENTER;
     }
@@ -5954,21 +6108,13 @@ PXActionResult PXAPI PXGUIElementDrawTextA(PXGUISystem* const pxGUISystem, PXGUI
 
         const HFONT fontHandleOld = (HFONT)SelectObject(pxGUIElement->DeviceContextHandle, pxFont.Info.Handle.FontHandle);
 
-        
-     //   LOGFONT logfont;
-      //  GetObject(fontHandleOld, sizeof(LOGFONT), &logfont);
-      //  logfont.lfHeight = 50;
-
         const int nextHeightAAA = DrawTextExA(pxGUIElement->DeviceContextHandle, text, textSize, &rectangleShadow, format, PXNull); // Windows 2000, User32.dll, winuser.h
-
     }
     
 
     PXGUIDrawColorSetBrush(pxGUISystem, pxGUIElement, pxGUIElement->BrushFront, PXGUIDrawModeFront);
 
-
     HFONT hOldFontBBB = (HFONT)SelectObject(pxGUIElement->DeviceContextHandle, pxFont.Info.Handle.FontHandle);
-
 
     const int nextHeightBBB = DrawTextExA(pxGUIElement->DeviceContextHandle, text, textSize, &rectangle, format, PXNull); // Windows 2000, User32.dll, winuser.h
    // const PXBool success = 0 != nextHeight;
@@ -6139,7 +6285,7 @@ PXActionResult PXAPI PXGUIElementDrawRectangle(PXGUISystem* const pxGUISystem, P
 #endif
 
 
-#if PXLogEnable
+#if PXLogEnable && 0
     if(PXActionSuccessful == pxActionResult)
     {
         PXLogPrint

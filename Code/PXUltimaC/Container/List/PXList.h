@@ -19,4 +19,8 @@ PXPublic void PXAPI PXListRelease(PXList* const pxList);
 PXPublic PXBool PXAPI PXListReserve(PXList* const pxList, const PXSize sizeToReserve);
 PXPublic PXBool PXAPI PXListAdd(PXList* const pxList, void* const dataElement);
 
+
+PXPublic void* PXAPI PXListEntyrGet(PXList* const pxList, const PXSize index);
+#define PXListEntyrGetT(Type, pxList, index) (Type*)PXListEntyrGet(pxList, index)
+
 #endif

@@ -69,7 +69,7 @@ void* PXAPI PXFlexDataCacheAdd(PXFlexDataCache* const pxFlexDataCache, const cha
     insertAdress += PXMemoryCopy(data, dataSize, insertAdress, dataSize);
     
 
-    pxFlexDataCache->DataSizeUsed += rowSizeNew;
+     pxFlexDataCache->DataSizeUsed += rowSizeNew;
     pxFlexDataCache->InsertionPointOffset += rowSizeNew;
     ++(pxFlexDataCache->EntryAmount); // increse the amount of items we have stored
 

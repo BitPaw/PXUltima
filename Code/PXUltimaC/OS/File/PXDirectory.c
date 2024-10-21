@@ -72,9 +72,13 @@ void PXAPI PXDirectoryEntryStore(PXDirectorySearchCache* const pxDirectorySearch
 {
     PXConsoleWriteF(0, "%s\n", pxFileEntryINPUT->FilePathData);
 
+    
     // Hijack adress, create
+    pxFileEntryINPUT->FilePathData = PXFlexDataCacheAdd(&pxDirectorySearchCache->FilePathCache, &pxFileEntryINPUT->ID, pxFileEntryINPUT->FilePathData, pxFileEntryINPUT->FilePathSize);
+
+
     pxFileEntryINPUT->ID = pxDirectorySearchCache->EntryList.AmountUsed;
-    // pxFileEntryINSERT->FilePathData = PXFlexDataCacheAdd(&pxDirectorySearchCache->FilePathCache, &pxFileEntryINPUT->ID, pxFileEntryINPUT->FilePathData, pxFileEntryINPUT->FilePathSize);
+    
 
     PXListAdd(&pxDirectorySearchCache->EntryList, pxFileEntryINPUT);
     

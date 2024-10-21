@@ -211,9 +211,9 @@ PXPublic PXActionResult PXAPI PXMemoryProtect(void* dataAdress, const PXSize dat
 
 
 // typedefed POSIX
-#define PXMemoryCallocT(type, amount) PXMemoryCalloc(amount, sizeof(type))
-#define PXMemoryMallocT(type, amount) PXMemoryMalloc(sizeof(type) * amount)
-#define PXMemoryReallocT(type, adress, amount) PXMemoryRealloc(adress, sizeof(type) * amount)
+#define PXMemoryCallocT(type, amount) (type*)PXMemoryCalloc(amount, sizeof(type))
+#define PXMemoryMallocT(type, amount) (type*)PXMemoryMalloc(sizeof(type) * amount)
+#define PXMemoryReallocT(type, adress, amount) (type*)PXMemoryRealloc(adress, sizeof(type) * amount)
 
 
 

@@ -141,6 +141,9 @@
     <ClInclude Include="Compiler\PXCompiler.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Container\List\PXList.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataBase\PXDataBase.cpp">
@@ -267,6 +270,9 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Compiler\PXCompiler.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Container\List\PXList.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

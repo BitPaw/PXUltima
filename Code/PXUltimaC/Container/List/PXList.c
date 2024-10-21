@@ -64,3 +64,19 @@ PXBool PXAPI PXListAdd(PXList* const pxList, void* const dataElement)
 
     return PXYes;
 }
+
+void* PXAPI PXListEntyrGet(PXList* const pxList, const PXSize index)
+{
+#if 0 // Additional safety
+    const PXBool isInBounce = pxList->AmountUsed >= index;
+
+    if(!isInBounce)
+    {
+        return PXNull;
+    }
+#endif
+
+    void* const adress = (char*)pxList->Data + pxList->DataTypeSize * index;
+
+    return adress;
+}

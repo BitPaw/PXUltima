@@ -7,6 +7,7 @@
 #include <Container/FlexDataCache/PXFlexDataCache.h>
 #include <Container/HierarchicalList/PXHierarchicalList.h>
 #include <Container/Dictionary/PXDictionary.h>
+//#include <OS/File/PXDirectory.h>
 #include <OS/Memory/PXMemory.h>
 
 #include <stdarg.h>
@@ -35,6 +36,7 @@ typedef struct PXFileTypeInfo_ PXFileTypeInfo;
 typedef struct PXCompiler_ PXCompiler;
 typedef struct PXProcessor_ PXProcessor;
 typedef struct PXHierarchicalNode_ PXHierarchicalNode;
+typedef struct PXFileEntry_ PXFileEntry;
 
 extern void _chkstk(size_t s);
 
@@ -1454,6 +1456,8 @@ typedef enum PXUIElementType_
     PXUIElementTypeGroupRadioButton,
     PXUIElementTypeTreeView,
     PXUIElementTypeTreeViewItem,
+    PXUIElementTypeFileDirectyView,
+    PXUIElementTypeFileDirectyViewEntry,
     PXUIElementTypeIPInput,
     PXUIElementTypeLink,
     PXUIElementTypeHeader, // Object insode another for header info
@@ -1652,7 +1656,16 @@ PXPublic void PXAPI PXGUIElementBrushColorSet(PXGUIElementBrush* const pxGUIElem
 
 //---------------------------------------------------------
 
-
+/*
+typedef struct PXGUIElementData_
+{
+    union
+    {
+        PXDirectorySearchCache DirectorySearchCache; // Used for a treeview
+    };     
+}
+PXGUIElementData;
+*/
 
 // Atomic UI-Element
 // Only Text can be text
@@ -1686,7 +1699,7 @@ typedef struct PXGUIElement_
 
     PXUIElementType Type;
 
-
+    void* ExtendedData; // Extra data that will be allocated seperatly for additional use
 
     //---<Property>--------------------------
     //PXUIElementPositionMode PositionMode;
