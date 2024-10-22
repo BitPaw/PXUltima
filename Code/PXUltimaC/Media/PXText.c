@@ -949,7 +949,7 @@ PXSize PXAPI PXTextFindFirstW(const wchar_t* string, const PXSize dataSize, cons
     return found ? i + 1 : PXTextIndexNotFound;
 }
 
-PXBool PXAPI PXTextFindLast(const PXText* const stringSource, const PXText* const stringTarget, PXText* const stringResult)
+PXSize PXAPI PXTextFindLast(const PXText* const stringSource, const PXText* const stringTarget, PXText* const stringResult)
 {
     PXBool found = 0;
     PXSize i = stringSource->SizeUsed - stringTarget->SizeUsed; // As we start from the back, the symbol can only be as long
@@ -982,6 +982,8 @@ PXBool PXAPI PXTextFindLast(const PXText* const stringSource, const PXText* cons
             stringResult->SizeUsed = stringSource->SizeUsed - i - 1;
             stringResult->NumberOfCharacters = stringSource->SizeUsed - i - 1;
             stringResult->TextA = stringSource->TextA + i + 1;
+
+            return i;
         }
     }
 
@@ -1009,10 +1011,11 @@ PXBool PXAPI PXTextFindLast(const PXText* const stringSource, const PXText* cons
             stringResult->SizeUsed = stringSource->SizeUsed - i - 1;
             stringResult->NumberOfCharacters = stringSource->SizeUsed - i - 1;
             stringResult->TextW = stringSource->TextW + i + 1;
+            return i;
         }
     }
 
-    return found;
+    return PXTextIndexNotFound;
 }
 
 void PXAPI PXTextMoveByOffset(PXText* const pxText, const PXSize offset)
@@ -1462,58 +1465,59 @@ PXSize PXAPI PXTextToInt(const PXText* const pxText, int* const number)
         case TextFormatUTF8:
         case TextFormatASCII:
         {
-            int accumulator = 0;
-            PXSize index = 0;
-            PXBool isNegative = 0;
-
-            if (!pxText->TextA)
-            {
-                return 0;
-            }
-
-            if (pxText->TextA[0] == '-')
-            {
-                index++;
-                isNegative = 1u;
-            }
-
-            while (pxText->TextA[index] != '\0')
-            {
-                char character = pxText->TextA[index];
-                const PXBool isValidCharacter = (character >= '0' && character <= '9');
-                int numberElement = character - '0';
-
-                if (!isValidCharacter)
-                {
-                    break;
-                }
-
-                accumulator *= 10; // "Shft number to left" Example 12 -> 120
-                accumulator += numberElement; // ASCII character to actual number.
-
-                ++index;
-            }
-
-            if (isNegative)
-            {
-                accumulator *= -1;
-            }
-
-            *number = accumulator;
-
-            return index;
+            return PXTextToIntA(pxText->TextA, pxText->SizeUsed, number);
         }
-
-
         case TextFormatUNICODE:
         {
-
-
             return sizeof(wchar_t);
         }
     }
 
     return 0;
+}
+
+PXSize PXAPI PXTextToIntA(const char* const text, const PXSize textSize, int* const number)
+{
+    int accumulator = 0;
+    PXSize index = 0;
+    PXBool isNegative = 0;
+
+    if(!text)
+    {
+        return 0;
+    }
+
+    if(text[0] == '-')
+    {
+        index++;
+        isNegative = 1u;
+    }
+
+    while(text[index] != '\0')
+    {
+        char character = text[index];
+        const PXBool isValidCharacter = (character >= '0' && character <= '9');
+        int numberElement = character - '0';
+
+        if(!isValidCharacter)
+        {
+            break;
+        }
+
+        accumulator *= 10; // "Shft number to left" Example 12 -> 120
+        accumulator += numberElement; // ASCII character to actual number.
+
+        ++index;
+    }
+
+    if(isNegative)
+    {
+        accumulator *= -1;
+    }
+
+    *number = accumulator;
+
+    return index;
 }
 
 PXSize PXAPI PXTextToBool(const PXText* const pxText, PXBool* const number)

@@ -163,6 +163,7 @@ PXPublic PXSize PXAPI PXTextFromFloat(PXText* const pxText, const float number);
 PXPublic PXSize PXAPI PXTextFromBinaryDataA(const void* data, const PXSize dataSize, char* string, const PXSize stringSize);
 
 PXPublic PXSize PXAPI PXTextToInt(const PXText* const pxText, int* const number);
+PXPublic PXSize PXAPI PXTextToIntA(const char* const text, const PXSize textSize, int* const number);
 PXPublic PXSize PXAPI PXTextToBool(const PXText* const pxText, PXBool* const number);
 PXPublic PXSize PXAPI PXTextToFloat(const PXText* const pxText, float* const number);
 
@@ -244,7 +245,7 @@ PXPublic PXSize PXAPI PXTextFindFirstCharacterOfListA(const char* PXRestrict con
 PXPublic PXSize PXAPI PXTextFindFirstStringA(const char* __restrict string, const PXSize dataSize, const char* PXRestrict const targetString, const PXSize targetStringSize);
 PXPublic PXSize PXAPI PXTextFindFirstW(const wchar_t* string, const PXSize dataSize, const wchar_t character);
 
-PXPublic PXBool PXAPI PXTextFindLast(const PXText* const stringSource, const PXText* const stringTarget, PXText* const stringResult);
+PXPublic PXSize PXAPI PXTextFindLast(const PXText* const stringSource, const PXText* const stringTarget, PXText* const stringResult);
 
 PXPublic void PXAPI PXTextMoveByOffset(PXText* const pxText, const PXSize offset);
 

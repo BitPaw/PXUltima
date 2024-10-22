@@ -5,8 +5,8 @@
 
 #define PXFlexDataCacheSizeObject1Byte 1
 #define PXFlexDataCacheSizeObject2Byte 2
-#define PXFlexDataCacheSizeObject4Byte 3
-#define PXFlexDataCacheSizeObject8Byte 4
+#define PXFlexDataCacheSizeObject4Byte 4
+#define PXFlexDataCacheSizeObject8Byte 8
 
 // Store a flexible amount of data in a stream of semi-fixed memory
 typedef struct PXFlexDataCache_

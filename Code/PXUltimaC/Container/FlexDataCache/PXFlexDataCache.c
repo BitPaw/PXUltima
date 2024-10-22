@@ -86,24 +86,48 @@ void PXAPI PXFlexDataCacheGet(PXFlexDataCache* const pxFlexDataCache, const char
 {
     char* dataCursor = pxFlexDataCache->DataAdress;
 
-    for(size_t i = 0; i < pxFlexDataCache->EntryAmount; i++)
+    for(PXSize i = 0; i < pxFlexDataCache->EntryAmount; i++)
     {
         const PXBool isTarget = PXMemoryCompare(dataCursor, pxFlexDataCache->KeySize, key, pxFlexDataCache->KeySize);
-
         dataCursor += pxFlexDataCache->KeySize;
 
-        const PXSize length = *(PXSize*)dataCursor;
-        dataCursor += sizeof(PXSize);
+
+        PXSize dataLength = 0; 
+
+        switch(pxFlexDataCache->SizeInBytes)
+        {
+            case PXFlexDataCacheSizeObject1Byte:
+            {
+                dataLength = *(PXInt8U*)dataCursor;
+                break;
+            }
+            case PXFlexDataCacheSizeObject2Byte:
+            {
+                dataLength = *(PXInt16U*)dataCursor;
+                break;
+            }
+            case PXFlexDataCacheSizeObject4Byte:
+            {
+                dataLength = *(PXInt32U*)dataCursor;
+                break;
+            }
+            case PXFlexDataCacheSizeObject8Byte:
+            {
+                dataLength = *(PXInt64U*)dataCursor;
+                break;
+            }
+        }
+        dataCursor += pxFlexDataCache->SizeInBytes;     
 
         if(isTarget)
         {
-            *dataSize = length;
+            *dataSize = dataLength;
             *data = dataCursor;
 
             return;
         }
 
-        dataCursor += length+1;
+        dataCursor += dataLength + 1;
     }
 
     *data = 0;

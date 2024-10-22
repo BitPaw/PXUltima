@@ -2569,16 +2569,6 @@ PXActionResult PXAPI PXGUIElementDrawFileDirectoryView(PXGUISystem* const pxGUIS
 
     PXGUIDrawClear(pxGUISystem, pxGUIElement);
 
-    PXGUIElementDrawRectangle
-    (
-        pxGUISystem,
-        pxGUIElement,
-        pxGUIElement->Position.Left,
-        pxGUIElement->Position.Top,
-        pxGUIElement->Position.Right,
-        pxGUIElement->Position.Bottom
-    );
-
     PXText pxTExt;
     PXTextMakeFixedA(&pxTExt, "./");
 
@@ -2612,9 +2602,21 @@ PXActionResult PXAPI PXGUIElementDrawFileDirectoryView(PXGUISystem* const pxGUIS
     {
         PXFileEntry* const pxFileEntry = PXListEntyrGetT(PXFileEntry, &pxDirectorySearchCache->EntryList, i);
 
-        pxGUIElementSub.Position.Top += 1 * pxGUIElementSub.Position.Height;
+
 
         HICON icon = 0;
+
+        SHFILEINFOA shFileInfo;
+        ZeroMemory(&shFileInfo, sizeof(shFileInfo));
+
+
+        const PXBool fetch = SHGetFileInfoA(pxFileEntry->FilePathData, 0, &shFileInfo, sizeof(SHFILEINFOA), SHGFI_ICON | SHGFI_DISPLAYNAME | SHGFI_SMALLICON | SHGFI_LARGEICON);
+
+        if(fetch)
+        {
+            icon = shFileInfo.hIcon;
+        }
+        /*
 
         switch(pxFileEntry->Type)
         {
@@ -2622,6 +2624,32 @@ PXActionResult PXAPI PXGUIElementDrawFileDirectoryView(PXGUISystem* const pxGUIS
             case PXFileElementInfoTypeFile:
             {
                 icon = fileIcon;
+
+#if 0
+
+                PXText pxTextA;
+                PXTextConstructFromAdressA(&pxTextA, pxFileEntry->FilePathData, pxFileEntry->FilePathSize, pxFileEntry->FilePathSize);
+
+                PXText pxTextB;
+                PXTextConstructBufferA(&pxTextB, 64);
+
+                PXSize extensionSize = PXFilePathExtensionGet(&pxTextA, &pxTextB);
+
+                if(extensionSize != 0)
+                {
+                    HICON smsm = PXGUIIconGetViaExtension(pxTextB.TextA);
+
+                    if(smsm)
+                    {
+                        icon = smsm;
+                    }
+                }   
+#else
+           
+
+
+#endif
+
                 break;
             }
             case PXFileElementInfoTypeDictionary:
@@ -2630,25 +2658,133 @@ PXActionResult PXAPI PXGUIElementDrawFileDirectoryView(PXGUISystem* const pxGUIS
                 break;
             }
         }
+        */
 
         DrawIconEx
         (
             pxGUIElementSub.DeviceContextHandle,
-            pxGUIElementSub.Position.Left - 20,
-            pxGUIElementSub.Position.Top,
+            pxGUIElementSub.Position.Left - (pxGUIElementSub.Position.Width + 19),
+            pxGUIElementSub.Position.Top + 2,
             icon,
-            pxGUIElementSub.Position.Height, // Width same as height
-            pxGUIElementSub.Position.Height,
+            16, // Width same as height
+            16,
             0,
             0,
             DI_NORMAL
         );
 
         PXGUIElementDrawTextA(pxGUISystem, &pxGUIElementSub, pxFileEntry->FilePathData, pxFileEntry->FilePathSize);
+
+        pxGUIElementSub.Position.Top += 1 * pxGUIElementSub.Position.Height;
     }
 
 
     return PXActionSuccessful;
+}
+
+HICON PXAPI PXGUIIconGetViaExtension(const char* fileExtension)
+{
+    char moduleName[MAX_PATH];
+    PXInt16U moduleNameSize = 0;
+    PXInt16U iconID = 0;
+
+    char nameFile[MAX_PATH];
+    DWORD nameFileSize = MAX_PATH;
+    char objectName[MAX_PATH];
+    DWORD dataSize = MAX_PATH;
+
+
+    // Search file extension
+    {
+        char fileExtensionKey[MAX_PATH];
+
+        PXTextPrintA(fileExtensionKey, MAX_PATH, ".%s", fileExtension);
+
+        LSTATUS res = RegGetValueA(HKEY_CLASSES_ROOT, fileExtensionKey, NULL, RRF_RT_REG_SZ, NULL, objectName, &dataSize);
+        PXErrorCurrent(ERROR_SUCCESS == res);
+
+        PXConsoleWriteF(0, "\n");
+    }
+
+    // Search redirect
+    {
+        // Most programs dont put the default icon under the extension, so we need to follow a redirect
+
+        LSTATUS res = RegGetValueA(HKEY_CLASSES_ROOT, objectName, NULL, RRF_RT_REG_SZ, NULL, nameFile, &nameFileSize);
+        PXErrorCurrent(ERROR_SUCCESS == res);
+
+        // Probe for default icon
+
+
+        char defaultIconPath[MAX_PATH];
+
+        PXTextPrintA(defaultIconPath, MAX_PATH, "%s\\%s", objectName, "DefaultIcon");
+
+        char iconPath[MAX_PATH];
+        DWORD iconPathSize = MAX_PATH;
+
+        LSTATUS ressss = RegGetValueA(HKEY_CLASSES_ROOT, defaultIconPath, NULL, RRF_RT_REG_SZ, NULL, iconPath, &iconPathSize);
+        PXErrorCurrent(ERROR_SUCCESS == res);
+
+
+        // Unravel default icon string, format ""xxx", 0"
+        const PXBool isFormat = iconPath[0] == '\"';
+        PXSize comma = 0;
+        char* text = 0;
+        PXSize textSize = 0;
+
+        char* iconTextData = 0;
+        PXSize iconTextSize = 0;
+
+        if(isFormat)
+        {
+            comma = PXTextFindLastCharacterA(iconPath, iconPathSize, ',');
+            text = &iconPath[1];
+            textSize = comma - 2;
+
+            iconTextData = &iconPath[comma+1];
+            iconTextSize = comma - textSize;
+
+            iconID = PXTextToIntA(iconTextData, iconTextSize, &iconID);
+        }    
+
+        moduleNameSize = PXTextCopyA(text, textSize, moduleName, MAX_PATH);
+
+
+        PXConsoleWriteF(0, "\n");
+
+
+    
+
+       
+    }
+
+
+#if 1
+    // SHGetFileInfoA() would make sense to be used but can crash the whole thread on error.
+    SHFILEINFOA shFileInfo;
+    ZeroMemory(&shFileInfo, sizeof(shFileInfo));
+
+
+    const PXBool fetch = SHGetFileInfoA(moduleName, 0, &shFileInfo, sizeof(SHFILEINFOA), SHGFI_ICON | SHGFI_DISPLAYNAME | SHGFI_SMALLICON | SHGFI_LARGEICON);
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "GUI",
+        "Icon-Fetch",
+        "%s",
+        shFileInfo.szDisplayName
+    );
+#endif
+
+    return shFileInfo.hIcon; // Return the handle to the icon
+
+#else
+    LoadModule();
+#endif
+
 }
 
 PXActionResult PXAPI PXGUIElementDragStart(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement)

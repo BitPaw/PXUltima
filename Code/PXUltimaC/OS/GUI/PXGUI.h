@@ -709,6 +709,7 @@ PXPublic PXActionResult PXAPI PXGUIElementDrawFileDirectoryView(PXGUISystem* con
 
 
 
+PXPublic HICON PXAPI PXGUIIconGetViaExtension(const char* fileExtension);
 
 
 

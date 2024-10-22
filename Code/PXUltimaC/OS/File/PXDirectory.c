@@ -70,18 +70,32 @@ void PXAPI PXFileElementInfoCOnvertFrom(PXDirectorySearchCache* const pxDirector
 
 void PXAPI PXDirectoryEntryStore(PXDirectorySearchCache* const pxDirectorySearchCache, PXFileEntry* const pxFileEntryINPUT)
 {
-    PXConsoleWriteF(0, "%s\n", pxFileEntryINPUT->FilePathData);
+    pxFileEntryINPUT->ID = pxDirectorySearchCache->EntryList.AmountUsed + 100;
 
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "FileDir",
+        "Search-Register",
+        "ID:%3i - %s",
+        pxFileEntryINPUT->ID,
+        pxFileEntryINPUT->FilePathData
+    );
+#endif
     
     // Hijack adress, create
     pxFileEntryINPUT->FilePathData = PXFlexDataCacheAdd(&pxDirectorySearchCache->FilePathCache, &pxFileEntryINPUT->ID, pxFileEntryINPUT->FilePathData, pxFileEntryINPUT->FilePathSize);
 
-
-    pxFileEntryINPUT->ID = pxDirectorySearchCache->EntryList.AmountUsed;
-    
-
     PXListAdd(&pxDirectorySearchCache->EntryList, pxFileEntryINPUT);
     
+
+
+
+
+
+
+
     return;
 
   
@@ -171,6 +185,31 @@ PXActionResult PXAPI PXDirectorySearch(PXDirectorySearchCache* const pxDirectory
     while(PXDirectoryNext(pxDirectorySearchCache, &pxFileEntry));
 
     const PXBool close = PXDirectoryClose(pxDirectorySearchCache);
+
+
+    // Fix stale references because an reallocation could have moved the data
+    for(size_t i = 0; i < pxDirectorySearchCache->EntryList.AmountUsed; ++i)
+    {
+        PXFileEntry* const pxFileEntry = PXListEntyrGetT(PXFileEntry, &pxDirectorySearchCache->EntryList, i);
+
+        PXInt32U key = i+100;
+
+        PXFlexDataCacheGet(&pxDirectorySearchCache->FilePathCache, &key, &pxFileEntry->FilePathData, &pxFileEntry->FilePathSize);
+
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "FileDir",
+            "Search",
+            "ID:%3i - %s",
+            key,
+            pxFileEntry->FilePathData
+        );
+#endif
+    }
+
+
 
     return PXActionSuccessful;
 }

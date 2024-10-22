@@ -150,11 +150,15 @@ void PXAPI Trace_FolderFiles(PXText* pxText)
 }
 
 
-
+#include <OS/GUI/PXGUI.h>
 
 int main()
 {
     PXConsoleWrite(0, "[i] Starting testing...\n");
+
+
+
+    PXGUIIconGetViaExtension("vob");
 
 
 
