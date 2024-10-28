@@ -16,13 +16,15 @@ Similar to a hierarchical state machine, it describes a flow of conditions and a
 </p>
 
 ### Nodes
+> Warning: Althouh it seems more comfortable to use these node based development, it is important to remember that those instructions are incredibly slow to execute. OFcourse i am refering to a very tiny timescale but if you intent to use this for alot of entitys and complex behaviour trees, you gonna have a bad time. To avoid this, stay in the compiled-code realm as long as possible and only use this system to take advantage of its runtime flexibility.
+
 Those can be one of the following, or more:
-  
-#### Task Sequence
+
+#### Task Sequence (Function call SYNC)
   A list of tasks that will be executed one after another.<br>
   If one task fails, the chain of events is cancelled and does return to the parent.<br>
   Use this for actions that need to happen in order, that depend on each other.
-#### Task Set
+#### Task Set (Function call ASYNC)
   A list of tasks that will be executed at once in an ASYNC way. The order is irrelevant.<br>
   Failures must be handled by the parent.<br>
   Use this when tasks can be executed in parrallel, like searching or general calculating or computing of solutions.
