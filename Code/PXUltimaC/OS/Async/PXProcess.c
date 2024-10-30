@@ -8,6 +8,7 @@
 #include <psapi.h>
 #include <tlhelp32.h>
 #include <winternl.h> // ntexapi.h.
+#include <dbghelp.h>
 #endif
 
 #include <OS/Memory/PXMemory.h>
@@ -659,7 +660,7 @@ PXActionResult PXAPI PXProcessThreadsListAll(PXProcess* const pxProcess, struct 
     PXDebug* pxDebug = PXDebugInstanceGet();
 
     const HANDLE processHandle = GetProcessHeap();
-    const BOOL symbolServerInitialize = SymInitialize(processHandle, PXNull, PXTrue);
+    const BOOL symbolServerInitialize = SymInitialize(processHandle, PXNull, PXTrue); // DbgHelp.dll 5.1
 
     const HANDLE snapShotHandle = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
     const PXBool isValid = snapShotHandle != INVALID_HANDLE_VALUE;

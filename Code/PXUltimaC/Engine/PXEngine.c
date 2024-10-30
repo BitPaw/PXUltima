@@ -803,7 +803,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
 
             pxGUIElementUpdateInfo.UIElement = pxEngine->Window;
             pxGUIElementUpdateInfo.Property = PXUIElementPropertyTextContent;
-            pxGUIElementUpdateInfo.Data.Text.Content = pxText.TextA;
+           // pxGUIElementUpdateInfo.Data.Text.Content = pxText.TextA;
 
             PXGUIElementUpdate(&pxEngine->GUISystem, &pxGUIElementUpdateInfo, 1u);
         }

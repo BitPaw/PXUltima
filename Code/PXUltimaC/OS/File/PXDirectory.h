@@ -69,7 +69,7 @@ typedef struct PXDirectorySearchCache_
     PXInt8U SearchDepthCurrent;
     PXInt8U SearchDepthMax;
 
-    PXFlexDataCache FilePathCache;
+    PXListDynamic FilePathCache;
 
     PXList EntryList; // PXFileEntry0
 

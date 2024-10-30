@@ -380,6 +380,7 @@ PXFileFormat PXAPI PXFilePathExtensionDetectTry(const PXText* const filePath)
                 case PXInt16Make('S', 'O'): return PXFileFormatBinaryLinux;
                 case PXInt16Make('F', 'F'): return PXFileFormatFastFile;
                 case PXInt16Make('C', 'S'): return PXFileFormatCSharp;
+                case PXInt16Make('J', 'S'): return PXFileFormatJavaScript;
             }
 
             break;

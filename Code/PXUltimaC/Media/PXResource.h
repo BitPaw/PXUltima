@@ -1,14 +1,13 @@
 #ifndef PXResourceINCLUDE
 #define PXResourceINCLUDE
 
-#include <Math/PXMatrix.h>
-
 #include "PXImage.h"
-#include <Container/FlexDataCache/PXFlexDataCache.h>
-#include <Container/HierarchicalList/PXHierarchicalList.h>
+
+#include <Container/ListDynamic/PXListDynamic.h>
+#include <Container/ListHierarchical/PXListHierarchical.h>
 #include <Container/Dictionary/PXDictionary.h>
-//#include <OS/File/PXDirectory.h>
 #include <OS/Memory/PXMemory.h>
+#include <Math/PXMatrix.h>
 
 #include <stdarg.h>
 
@@ -439,8 +438,8 @@ PXResource;
 // Container to manage resources by loading or saving
 typedef struct PXResourceManager_
 {
-    PXFlexDataCache NameCache;
-    PXFlexDataCache SourcePathCache;
+    PXListDynamic NameCache;
+    PXListDynamic SourcePathCache;
 
     // Register List
     PXInt32U UniqeIDGeneratorCounter;
@@ -2008,7 +2007,7 @@ typedef union PXGUIElementCreateInfoData_
 {
     PXGUIElementMenuItemList MenuItem;
     PXGUIElementCreateWindowInfo Window;
-    PXUIElementTextInfo Text;
+  //  PXUIElementTextInfo Text;
     PXUIElementButtonInfo Button;
     PXUIElementTreeViewItemInfo TreeViewItem;
     PXUIElementSceneRenderInfo SceneRender;
@@ -2416,11 +2415,14 @@ typedef enum PXFileFormat_
     PXFileFormatFLAC,
     PXFileFormatSpriteFont,
     PXFileFormatGIF,
+    PXFileFormatOpenGLShader,
+    PXFileFormatDirectXShader,
     PXFileFormatHighEfficiencyImageFile,
     PXFileFormatHTML,
     PXFileFormatINI,
     PXFileFormatEugeneRoshalArchive, // .rar
-    PXFileFormatJava,
+    PXFileFormatJava, // .jar
+    PXFileFormatJavaScript, // .js
     PXFileFormatJPEG,
     PXFileFormatJSON,
     PXFileFormatM4A,
@@ -2441,6 +2443,7 @@ typedef enum PXFileFormat_
     PXFileFormatSTEP,
     PXFileFormatSTL,
     PXFileFormatSVG,
+    PXFileFormatTAR, 
     PXFileFormatTGA,
     PXFileFormatTagImage,
     PXFileFormatTrueTypeFont,
@@ -2671,6 +2674,8 @@ PXShaderProgramCreateInfo;
 typedef struct PXEngineFontCreateInfo_
 {
     PXShaderProgram* ShaderProgramCurrent;
+
+    char* RegisteredName; // Name of the font, registered by the OS
 }
 PXEngineFontCreateInfo;
 

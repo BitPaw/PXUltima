@@ -2003,6 +2003,27 @@ PXActionResult PXAPI PXGUIDisplayScreenListRefresh(PXGUISystem* const pxGUISyste
     return PXActionSuccessful;
 }
 
+PXActionResult PXAPI PXGUIElementDrawCustomTabList(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo)
+{
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "GUI",
+        "Draw",
+        "TabList"
+    );
+#endif
+
+    PXGUIDrawClear(pxGUISystem, pxGUIElement);
+
+
+
+
+
+    return PXActionSuccessful;
+}
+
 PXActionResult PXAPI PXGUIElementDrawCustomFailback(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo)
 {
 #if PXLogEnable
@@ -2061,7 +2082,8 @@ PXActionResult PXAPI PXGUIElementDrawCustomText(PXGUISystem* const pxGUISystem, 
         PXLoggingInfo,
         "GUI",
         "Draw",
-        "Text"
+        "Text: %s",
+        pxGUIElement->NameContent
     );
 #endif
 
@@ -3138,25 +3160,33 @@ Window XCreateSimpleWindow(Display *display, Window parent, int x, int y, unsign
 
     // Create brushes
 
-    PXResourceCreateInfo pxResourceCreateInfoList[10];
-    PXClearList(PXResourceCreateInfo, pxResourceCreateInfoList, 10);
+    PXResourceCreateInfo pxResourceCreateInfoList[4];
+    PXClearList(PXResourceCreateInfo, pxResourceCreateInfoList, 4);
     pxResourceCreateInfoList[0].ObjectReference = &pxGUISystem->BrushBackgroundDark;
-    pxResourceCreateInfoList[0].Name = "BackgroundDark",
+    pxResourceCreateInfoList[0].Name = "BackgroundDark";
     pxResourceCreateInfoList[0].Type = PXResourceTypeBrush;
     pxResourceCreateInfoList[0].Brush.Color.Red = 100; // 30-30-30, 160, 40, 40
     pxResourceCreateInfoList[0].Brush.Color.Green = 40;
     pxResourceCreateInfoList[0].Brush.Color.Blue = 40;
 
     pxResourceCreateInfoList[1].ObjectReference = &pxGUISystem->BrushTextWhite;
-    pxResourceCreateInfoList[1].Name = "TextWhite",
+    pxResourceCreateInfoList[1].Name = "TextWhite";
     pxResourceCreateInfoList[1].Type = PXResourceTypeBrush;
     pxResourceCreateInfoList[1].Brush.Color.Red = 0xff; // 200-200-200
     pxResourceCreateInfoList[1].Brush.Color.Green = 200;
     pxResourceCreateInfoList[1].Brush.Color.Blue = 200;
 
+    pxResourceCreateInfoList[2].ObjectReference = &pxGUISystem->FontTitle;
+    pxResourceCreateInfoList[2].Name = "FontTitle";
+    pxResourceCreateInfoList[2].Type = PXResourceTypeFont;
+    pxResourceCreateInfoList[3].Font.RegisteredName = "UniSpace";
 
-    PXResourceManagerAdd(pxGUISystem->ResourceManager, pxResourceCreateInfoList, 2);
+    pxResourceCreateInfoList[3].ObjectReference = &pxGUISystem->FontContent;
+    pxResourceCreateInfoList[3].Name = "FontContent";
+    pxResourceCreateInfoList[3].Type = PXResourceTypeFont;
+    pxResourceCreateInfoList[3].Font.RegisteredName = "Eras Medium ITC";
 
+    PXResourceManagerAdd(pxGUISystem->ResourceManager, pxResourceCreateInfoList, 4);
 
     return PXActionSuccessful;
 }
@@ -3704,6 +3734,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
             pxGUIElementCreateInfo->WindowsClassName = WC_STATIC;
             pxGUIElementCreateInfo->DrawFunctionEngine = PXGUIElementDrawCustomText;
 
+            /*
             PXUIElementTextInfo* const pxUIElementTextInfo = &pxGUIElementCreateInfo->Data.Text;
 
             pxGUIElementCreateInfo->WindowsTextContent = pxUIElementTextInfo->Content;
@@ -3723,6 +3754,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                     pxGUIElementCreateInfo->WindowsStyleFlags |= SS_CENTER;
                     break;
             }
+            */
 
             PXBool hasParenet = 0;// pxGUIElementCreateInfo->UIElementParent;
 
@@ -3884,8 +3916,6 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
         case PXUIElementTypeHeader:
         {
             pxGUIElementCreateInfo->WindowsClassName = WC_HEADER;
-
-
             break;
         }
         case PXUIElementTypeFontSelector:
@@ -3902,7 +3932,10 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
         case PXUIElementTypeTabControll:
         {
             pxGUIElementCreateInfo->WindowsClassName = WC_TABCONTROL;
-            pxGUIElementCreateInfo->WindowsStyleFlags |= WS_CLIPSIBLINGS | TCS_BUTTONS;
+            //pxGUIElementCreateInfo->WindowsStyleFlags |= WS_CLIPSIBLINGS | TCS_BUTTONS;
+
+           // pxGUIElementCreateInfo->WindowsClassName = WC_STATIC;
+            pxGUIElementCreateInfo->DrawFunctionEngine = PXGUIElementDrawCustomTabList;
             break;
         }
         case PXUIElementTypeToggle:
@@ -4153,12 +4186,13 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                 PXLoggingError,
                 "GUI",
                 "Element-Create",
-                "Failed: X:%4i, Y:%4i, W:%4i, H:%4i, (%s)",
+                "Failed: X:%4i, Y:%4i, W:%4i, H:%4i, (%s) : [%s]",
                 (int)pxUIElementPositionCalulcateInfo.X,
                 (int)pxUIElementPositionCalulcateInfo.Y,
                 (int)pxUIElementPositionCalulcateInfo.Width,
                 (int)pxUIElementPositionCalulcateInfo.Height,
-                uielementName
+                uielementName,
+                pxGUIElementCreateInfo->WindowsTextContent
             );
 #endif
 
@@ -4184,13 +4218,14 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
             PXLoggingInfo,
             "GUI",
             "Element-Create",
-            "X:%4i Y:%4i W:%4i H:%4i 0x%p %s",
+            "X:%4i Y:%4i W:%4i H:%4i %12s : %s", // 0x%p
             (int)pxUIElementPositionCalulcateInfo.X,
             (int)pxUIElementPositionCalulcateInfo.Y,
             (int)pxUIElementPositionCalulcateInfo.Width,
             (int)pxUIElementPositionCalulcateInfo.Height,
-            pxGUIElement->Info.Handle.WindowID,
-            uielementName
+           // pxGUIElement->Info.Handle.WindowID,
+            uielementName,
+            pxGUIElementCreateInfo->WindowsTextContent
         );
 #endif
 
@@ -4789,7 +4824,6 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
                 pxResourceCreateInfo.UIElement.Position.MarginTop = 0.1;
                 pxResourceCreateInfo.UIElement.Position.MarginRight = 0.005;
                 pxResourceCreateInfo.UIElement.Position.MarginBottom = 0.02;
-                pxResourceCreateInfo.UIElement.Data.Text.Content = buffer;
 
                 PXResourceManagerAdd(pxGUISystem->ResourceManager,&pxResourceCreateInfo, 1);
 
@@ -4962,6 +4996,7 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
         {
             case PXUIElementPropertyTextContent:
             {
+#if 0
                 PXUIElementTextInfo* const pxUIElementTextInfo = &pxGUIElementUpdateInfo->Data.Text;
 
                 if(!pxGUIElement)
@@ -4982,6 +5017,8 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
 #endif
 
                 PXGUIElementTextSet(pxGUISystem, pxGUIElement, pxUIElementTextInfo->Content);
+#endif
+
 
 #if OSWindows
 
@@ -5024,7 +5061,7 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
             }
             case PXUIElementPropertyTextAllign:
             {
-                PXUIElementTextInfo* const pxUIElementTextInfo = &pxGUIElementUpdateInfo->Data.Text;
+               // PXUIElementTextInfo* const pxUIElementTextInfo = &pxGUIElementUpdateInfo->Data.Text;
 
 #if OSUnix
 #elif OSWindows
@@ -5160,6 +5197,7 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
             }
             case PXUIElementPropertyProgressbarPercentage:
             {
+#if 0
                 PXUIElementProgressBarInfo* const progressBar = &pxGUIElementUpdateInfo->Data.Text;
 
 #if OSUnix
@@ -5168,11 +5206,13 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
                 PXInt32U stepsConverted = progressBar->Percentage * 100;
                 SendMessageA(pxGUIElement->Info.Handle.WindowID, PBM_SETPOS, stepsConverted, 0);
 #endif
+#endif
 
                 break;
             }
             case PXUIElementPropertyProgressbarBarColor:
             {
+#if 0
                 PXUIElementProgressBarInfo* const progressBar = &pxGUIElementUpdateInfo->Data.Text;
 
 #if OSUnix
@@ -5180,6 +5220,7 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
 
                 COLORREF color = RGB(progressBar->BarColor.Red, progressBar->BarColor.Green, progressBar->BarColor.Blue);
                 SendMessageA(pxGUIElement->Info.Handle.WindowID, PBM_SETBARCOLOR, 0, color);
+#endif
 #endif
 
                 break;

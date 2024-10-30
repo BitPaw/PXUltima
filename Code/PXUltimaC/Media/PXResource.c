@@ -61,6 +61,10 @@
 #include "ZIP/PXZIP.h"
 #include "USD/PXUSD.h"
 #include "VOB/PXVOB.h"
+#include "JavaScript/PXJavaScript.h"
+#include "TAR/PXTAR.h"
+#include "GLSL/PXGLSL.h"
+#include "HLSL/PXHLSL.h"
 
 #include <assert.h>
 
@@ -259,8 +263,8 @@ void PXAPI PXResourceManagerInit(PXResourceManager* const pxResourceManager)
 
     PXClear(PXResourceManager, pxResourceManager);
 
-    PXFlexDataCacheInit(&pxResourceManager->NameCache, sizeof(PXInt32U), PXFlexDataCacheSizeObject2Byte);
-    PXFlexDataCacheInit(&pxResourceManager->SourcePathCache, sizeof(PXInt32U), PXFlexDataCacheSizeObject2Byte);
+    PXListDynamicInit(&pxResourceManager->NameCache, sizeof(PXInt32U), PXListDynamicSizeObject2Byte);
+    PXListDynamicInit(&pxResourceManager->SourcePathCache, sizeof(PXInt32U), PXListDynamicSizeObject2Byte);
         
     PXDictionaryConstruct(&pxResourceManager->MaterialLookUp, sizeof(PXInt32U), sizeof(PXMaterial), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&pxResourceManager->SpritelLookUp, sizeof(PXInt32U), sizeof(PXSprite), PXDictionaryValueLocalityExternalReference);
@@ -1574,7 +1578,7 @@ PXActionResult PXAPI PXResourceStoreName(PXResourceManager* const pxResourceMana
     );
 #endif
 
-    PXFlexDataCacheAdd(&pxResourceManager->NameCache, &pxResourceInfo->ID, name, nameSize);
+    PXListDynamicAdd(&pxResourceManager->NameCache, &pxResourceInfo->ID, name, nameSize);
 
     pxResourceInfo->Flags |= PXResourceInfoHasName;
 
@@ -1598,7 +1602,7 @@ PXActionResult PXAPI PXResourceStorePath(PXResourceManager* const pxResourceMana
     );
 #endif
 
-    PXFlexDataCacheAdd(&pxResourceManager->NameCache, &pxResourceInfo->ID, name, nameSize);
+    PXListDynamicAdd(&pxResourceManager->NameCache, &pxResourceInfo->ID, name, nameSize);
 
     pxResourceInfo->Flags |= PXResourceInfoHasSource;
 
@@ -1607,14 +1611,14 @@ PXActionResult PXAPI PXResourceStorePath(PXResourceManager* const pxResourceMana
 
 PXActionResult PXAPI PXResourceFetchName(PXResourceManager* const pxResourceManager, PXResourceInfo* const pxResourceInfo, char** name, PXSize* nameSize)
 {
-    PXFlexDataCacheGet(&pxResourceManager->NameCache, &pxResourceInfo->ID, name, nameSize);
+    PXListDynamicGet(&pxResourceManager->NameCache, &pxResourceInfo->ID, name, nameSize);
 
     return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXResourceFetchPath(PXResourceManager* const pxResourceManager, PXResourceInfo* const pxResourceInfo, char** name, PXSize* nameSize)
 {
-    PXFlexDataCacheGet(&pxResourceManager->SourcePathCache, pxResourceInfo->ID, name, nameSize);
+    PXListDynamicGet(&pxResourceManager->SourcePathCache, pxResourceInfo->ID, name, nameSize);
 
     return PXActionSuccessful;
 }
@@ -1895,19 +1899,21 @@ const char* PXAPI PXUIElementTypeToString(const PXUIElementType pxUIElementType)
         case PXUIElementTypeProgressBar: return "ProgressBar";
         case PXUIElementTypeHotKey: return "HotKey";
         case PXUIElementTypeCalender: return "Calender";
-        case PXUIElementTypeToolTip: return "";
-        case PXUIElementTypeAnimate: return "";
-        case PXUIElementTypeDatePicker: return "";
+        case PXUIElementTypeToolTip: return "ToolTip";
+        case PXUIElementTypeAnimate: return "Animate";
+        case PXUIElementTypeDatePicker: return "DatePicker";
         case PXUIElementTypeGroupBox: return "GroupBox";
-        case PXUIElementTypeRadioButton: return "";
-        case PXUIElementTypeGroupRadioButton: return "";
+        case PXUIElementTypeRadioButton: return "RadioButton";
+        case PXUIElementTypeGroupRadioButton: return "GroupRadioButton";
         case PXUIElementTypeTreeView: return "TreeView";
         case PXUIElementTypeTreeViewItem: return "TreeViewItem";
-        case PXUIElementTypeIPInput: return "";
-        case PXUIElementTypeLink: return "";
-        case PXUIElementTypeHeader: return "";
-        case PXUIElementTypeFontSelector: return "";
-        case PXUIElementTypePageScroll: return "";
+        case PXUIElementTypeFileDirectyView: return "FileDirectyView";
+        case PXUIElementTypeFileDirectyViewEntry: return "FileDirectyViewEntry";
+        case PXUIElementTypeIPInput: return "IPInput";
+        case PXUIElementTypeLink: return "Link";
+        case PXUIElementTypeHeader: return "Header";
+        case PXUIElementTypeFontSelector: return "FontSelector";
+        case PXUIElementTypePageScroll: return "PageScroll";
         case PXUIElementTypeTabControll: return "TabControll";
         case PXUIElementTypeToggle: return "Toggle";
         case PXUIElementTypeCheckBox: return "CheckBox";
@@ -2158,6 +2164,18 @@ PXActionResult PXAPI PXFileTypeInfoProbe(PXResourceTransphereInfo* const pxFileT
             pxFileTypeInfo->ResourceSave = PXGIFSaveToFile;
             break;
 
+        case PXFileFormatOpenGLShader:
+            pxFileTypeInfo->ResourceType = PXResourceTypeShaderProgram;
+            pxFileTypeInfo->ResourceLoad = PXGLSLLoadFromFile;
+            pxFileTypeInfo->ResourceSave = PXGLSLSaveToFile;
+            break;
+
+        case PXFileFormatDirectXShader:
+            pxFileTypeInfo->ResourceType = PXResourceTypeShaderProgram;
+            pxFileTypeInfo->ResourceLoad = PXHLSLLoadFromFile;
+            pxFileTypeInfo->ResourceSave = PXHLSLSaveToFile;
+            break;
+
         case PXFileFormatHighEfficiencyImageFile:
             pxFileTypeInfo->ResourceType = PXResourceTypeImage;
             pxFileTypeInfo->ResourceLoad = PXHEIFLoadFromFile;
@@ -2177,9 +2195,15 @@ PXActionResult PXAPI PXFileTypeInfoProbe(PXResourceTransphereInfo* const pxFileT
             break;
 
         case PXFileFormatJava:
-            pxFileTypeInfo->ResourceType = PXResourceTypeImage;
+            pxFileTypeInfo->ResourceType = PXResourceTypeCodeDocument;
             pxFileTypeInfo->ResourceLoad = PXJavaLoadFromFile;
             pxFileTypeInfo->ResourceSave = PXJavaSaveToFile;
+            break;
+
+        case PXFileFormatJavaScript:
+            pxFileTypeInfo->ResourceType = PXResourceTypeCodeDocument;
+            pxFileTypeInfo->ResourceLoad = PXJavaScriptLoadFromFile;
+            pxFileTypeInfo->ResourceSave = PXJavaScriptSaveToFile;
             break;
 
         case PXFileFormatJPEG:
@@ -2306,6 +2330,12 @@ PXActionResult PXAPI PXFileTypeInfoProbe(PXResourceTransphereInfo* const pxFileT
             pxFileTypeInfo->ResourceType = PXResourceTypeImage;
             pxFileTypeInfo->ResourceLoad = PXSVGLoadFromFile;
             pxFileTypeInfo->ResourceSave = PXSVGSaveToFile;
+            break;
+             
+        case PXFileFormatTAR:
+            pxFileTypeInfo->ResourceType = PXResourceTypeArchiv;
+            pxFileTypeInfo->ResourceLoad = PXTARLoadFromFile;
+            pxFileTypeInfo->ResourceSave = PXTARSaveToFile;
             break;
 
         case PXFileFormatTGA:

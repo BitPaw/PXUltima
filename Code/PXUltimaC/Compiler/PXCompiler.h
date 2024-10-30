@@ -78,15 +78,15 @@ typedef struct PXCompilerSymbolEntry_
     {
         char* Source;
         float DataF;
-        int DataI32S;
-        unsigned int DataI32U;
-        unsigned short DataS;
-        unsigned char DataC;
+        PXInt32S DataI32S;
+        PXInt32U DataI32U;
+        PXInt16U DataI16U;
+        PXInt8U DataC;
     };
 
-    unsigned int Coloum;
-    unsigned int Line;
-    unsigned int Size;
+    PXInt32U Coloum;
+    PXInt32U Line;
+    PXInt32U Size;
     //----------------------
 
     PXCompilerSymbolLexer ID;

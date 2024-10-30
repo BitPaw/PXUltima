@@ -528,6 +528,9 @@ typedef struct PXGUISystem_
     // private
     PXGUIElementBrush* BrushBackgroundDark;
     PXGUIElementBrush* BrushTextWhite;
+
+    PXFont* FontTitle;
+    PXFont* FontContent;
 }
 PXGUISystem;
 
@@ -697,6 +700,7 @@ PXPublic PXActionResult PXAPI PXGUIElementDrawRectangleRounded(PXGUISystem* cons
 //---------------------------------------------------------
 // Default rendering functions
 //---------------------------------------------------------
+PXPublic PXActionResult PXAPI PXGUIElementDrawCustomTabList(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo);
 PXPublic PXActionResult PXAPI PXGUIElementDrawCustomFailback(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo);
 PXPublic PXActionResult PXAPI PXGUIElementDrawCustomText(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo);
 PXPublic PXActionResult PXAPI PXGUIElementDrawCustomButton(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo);

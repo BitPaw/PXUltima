@@ -1,5 +1,5 @@
-#ifndef PXPXTIFFINCLUDE
-#define PXPXTIFFINCLUDE
+#ifndef PXTIFFInclude
+#define PXTIFFInclude
 
 #include "../PXResource.h"
 

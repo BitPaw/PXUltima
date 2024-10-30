@@ -454,12 +454,20 @@ void PXAPI PXDebugStackTrace(PXDebug* const pxDebug, PXSymbol* const pxSymbolLis
     PXClear(CONTEXT, &contextRecord);
 
     RtlCaptureContext(&contextRecord);
-    stackFrame.AddrPC.Offset = contextRecord.Rip;
     stackFrame.AddrPC.Mode = AddrModeFlat;
-    stackFrame.AddrStack.Offset = contextRecord.Rsp;
-    stackFrame.AddrStack.Mode = AddrModeFlat;
-    stackFrame.AddrFrame.Offset = contextRecord.Rbp;
+    stackFrame.AddrStack.Mode = AddrModeFlat;  
     stackFrame.AddrFrame.Mode = AddrModeFlat;
+
+#if OS32B
+    stackFrame.AddrPC.Offset = contextRecord.Eip;
+    stackFrame.AddrStack.Offset = contextRecord.Esp;
+    stackFrame.AddrFrame.Offset = contextRecord.Ebp;
+#elif OS64B
+    stackFrame.AddrPC.Offset = contextRecord.Rip;
+    stackFrame.AddrStack.Offset = contextRecord.Rsp;
+    stackFrame.AddrFrame.Offset = contextRecord.Rbp;
+#endif
+
 
     PXSize frame;
     PXSize symbolIndex = 0;

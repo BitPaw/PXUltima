@@ -843,7 +843,7 @@ PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler)
 
         if (!isValidCall)
         {
-            return;
+            return PXActionRefusedArgumentInvalid;
         }
     }
 
@@ -1387,7 +1387,7 @@ void PXAPI PXCompilerWriteParameterList(PXCompiler* const pxCompiler)
 
     PXFileWriteC(pxFile, '(');
 
-    for(PXHierarchicalNode* i = &current->Hierachy; i; i = i->Sibling)
+    for(PXHierarchicalNode* i = &current->Hierachy; i; i = (PXHierarchicalNode*)i->Sibling)
     {
         pxCompiler->WriteInfo.CodeElementCurrent = i;
         pxCompiler->WriteInfo.WriteDefinition(pxCompiler);

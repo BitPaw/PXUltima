@@ -85,7 +85,7 @@ void PXAPI PXDirectoryEntryStore(PXDirectorySearchCache* const pxDirectorySearch
 #endif
     
     // Hijack adress, create
-    pxFileEntryINPUT->FilePathData = PXFlexDataCacheAdd(&pxDirectorySearchCache->FilePathCache, &pxFileEntryINPUT->ID, pxFileEntryINPUT->FilePathData, pxFileEntryINPUT->FilePathSize);
+    pxFileEntryINPUT->FilePathData = PXListDynamicAdd(&pxDirectorySearchCache->FilePathCache, &pxFileEntryINPUT->ID, pxFileEntryINPUT->FilePathData, pxFileEntryINPUT->FilePathSize);
 
     PXListAdd(&pxDirectorySearchCache->EntryList, pxFileEntryINPUT);
     
@@ -170,7 +170,7 @@ PXActionResult PXAPI PXDirectorySearch(PXDirectorySearchCache* const pxDirectory
 {
     PXClear(PXDirectorySearchCache, pxDirectorySearchCache);
 
-    PXFlexDataCacheInit(&pxDirectorySearchCache->FilePathCache, sizeof(PXInt32U), PXFlexDataCacheSizeObject1Byte);
+    PXListDynamicInit(&pxDirectorySearchCache->FilePathCache, sizeof(PXInt32U), PXListDynamicSizeObject1Byte);
     PXListInitialize(&pxDirectorySearchCache->EntryList, sizeof(PXFileEntry), 25);
 
     const PXActionResult open = PXDirectoryOpen(pxDirectorySearchCache, directoryName);
@@ -194,7 +194,7 @@ PXActionResult PXAPI PXDirectorySearch(PXDirectorySearchCache* const pxDirectory
 
         PXInt32U key = i+100;
 
-        PXFlexDataCacheGet(&pxDirectorySearchCache->FilePathCache, &key, &pxFileEntry->FilePathData, &pxFileEntry->FilePathSize);
+        PXListDynamicGet(&pxDirectorySearchCache->FilePathCache, &key, &pxFileEntry->FilePathData, &pxFileEntry->FilePathSize);
 
 #if PXLogEnable
         PXLogPrint

@@ -4,11 +4,7 @@
 #include <Media/PXType.h>
 #include <Media/PXImage.h>
 #include <Media/PXColor.h>
-#include <Media/PXColor.h>
 #include <Media/PXResource.h>
-#include <Math/PXMatrix.h>
-#include <Container/LinkedList/PXLinkedList.h>
-#include <Container/Dictionary/PXDictionary.h>
 #include <OS/Async/PXLock.h>
 #include <OS/Graphic/DirectX/PXDirectX.h>
 #include <OS/Graphic/OpenGL/PXOpenGL.h>
