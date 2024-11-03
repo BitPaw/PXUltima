@@ -509,7 +509,8 @@ typedef struct PXDisplay_
     int ScreenDefaultID;
     int ScreenListAmount;
 
-    PXDisplayScreen DisplayScreenList[8];
+    PXSize DisplayScreenListAmount;
+    PXDisplayScreen* DisplayScreenList;
 }
 PXDisplay;
 
@@ -598,10 +599,10 @@ PXPublic PXActionResult PXAPI PXGUIElementDelete(PXGUISystem* const pxGUISystem,
 // Use for a seperate window that needs to be merged into a main one.
 // Given a spesific window we can try to absorb the contens and underlieing elemetns and move them into your own space.
 // Objects shall not be created or destroyed, simply the ownership of those objects should be transphered. (can we do that?)
-PXActionResult PXAPI PXGUIElementAbsorb(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
+PXPublic PXActionResult PXAPI PXGUIElementAbsorb(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
 
 // Use for draging a window outside it own borders to spawn a new one.
-PXActionResult PXAPI PXGUIElementEmit(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
+PXPublic PXActionResult PXAPI PXGUIElementEmit(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement);
 //---------------------------------------------------------
 
 
@@ -641,7 +642,7 @@ PXPublic void PXAPI PXGUIScreenFetchAll(PXMonitor* const monitorList, const PXSi
 
 PXPublic void PXAPI PXGUIScreenGetSize(PXInt32S* const width, PXInt32S* const height);
 
-// QueryDisplayConfig 
+// QueryDisplayConfig
 
 PXPublic PXActionResult PXAPI PXGUIDisplayScreenListRefresh(PXGUISystem* const pxGUISystem);
 
@@ -712,17 +713,8 @@ PXPublic PXActionResult PXAPI PXGUIElementDrawFileDirectoryView(PXGUISystem* con
 
 
 
-
-PXPublic HICON PXAPI PXGUIIconGetViaExtension(const char* fileExtension);
-
-
-
-
-
-
-PXPublic void PXAPI PXGUISystemIconGet(PXGUISystem* const pxGUISystem);
-
-
+PXPublic PXActionResult PXAPI PXGUIIconGetSystem(PXIcon* const pxIcon, const int iconID);
+PXPublic PXActionResult PXAPI PXGUIIconGetViaFilePath(PXIcon* const pxIcon, const char* fileExtension);
 
 
 

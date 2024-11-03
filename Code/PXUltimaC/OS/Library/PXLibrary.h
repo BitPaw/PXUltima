@@ -5,6 +5,19 @@
 #include <Media/PXText.h>
 #include <OS/Async/PXProcess.h>
 
+
+// Handle to the module used for libraray IDs
+typedef
+#if OSUnix
+void*
+#elif OSWindows
+HMODULE // HINSTANCE(semms is also okey)
+#else
+void*
+#endif
+PXHandleModule;
+
+
 typedef struct PXLibraryFuntionEntry_
 {
     void** Function;
@@ -14,12 +27,7 @@ PXLibraryFuntionEntry;
 
 typedef struct PXLibrary_
 {
-#if OSUnix
-    void* ID;
-#elif OSWindows
-    HMODULE ID; // LibraryHandle, HINSTANCE (semms is also okey)
-#endif
-
+    PXHandleModule ID;
     PXProcessHandle ProcessHandle;
 }
 PXLibrary;

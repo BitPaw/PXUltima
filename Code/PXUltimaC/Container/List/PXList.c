@@ -17,7 +17,7 @@ void PXAPI PXListInitialize(PXList* const pxList, const PXSize dataTypeSize, con
     {
         pxList->Data = PXNull;
         pxList->AmountAllocated = 0;
-    }   
+    }
 }
 
 void PXAPI PXListRelease(PXList* const pxList)
@@ -55,7 +55,7 @@ PXBool PXAPI PXListReserve(PXList* const pxList, const PXSize sizeToReserve)
 PXBool PXAPI PXListAdd(PXList* const pxList, void* const dataElement)
 {
     PXListReserve(pxList, pxList->AmountUsed + 1);
-   
+
     void* target = (char*)pxList->Data + (pxList->DataTypeSize * pxList->AmountUsed);
 
     PXMemoryCopy(dataElement, pxList->DataTypeSize, target, pxList->DataTypeSize);

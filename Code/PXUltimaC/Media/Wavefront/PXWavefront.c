@@ -30,57 +30,68 @@ PXWavefrontLineType PXAPI PXWavefrontPeekLine(const void* line, const PXSize siz
 
     switch (size)
     {
-        case 1:
+    case 1:
+    {
+        switch (text[0])
         {
-            switch (text[0])
-            {
-                case 'v': return PXWavefrontLineVertexGeometric;
-                case 'f': return PXWavefrontLineFaceElement;
-                case '#': return PXWavefrontLineComment;
-                case 'o': return PXWavefrontLineObjectName;
-                case 's': return PXWavefrontLineSmoothShading;
-                case 'g': return PXWavefrontLineObjectGroup;
-            }
-
-            break;
+        case 'v':
+            return PXWavefrontLineVertexGeometric;
+        case 'f':
+            return PXWavefrontLineFaceElement;
+        case '#':
+            return PXWavefrontLineComment;
+        case 'o':
+            return PXWavefrontLineObjectName;
+        case 's':
+            return PXWavefrontLineSmoothShading;
+        case 'g':
+            return PXWavefrontLineObjectGroup;
         }
-        case 2:
+
+        break;
+    }
+    case 2:
+    {
+        const PXInt16U lineTagID = PXInt16Make(text[0], text[1]);
+
+        switch (lineTagID)
         {
-            const PXInt16U lineTagID = PXInt16Make(text[0], text[1]);
+        case PXInt16Make('v', 't'):
+            return PXWavefrontLineVertexTexture;
+        case PXInt16Make('v', 'n'):
+            return PXWavefrontLineVertexNormal;
+        case PXInt16Make('v', 'p'):
+            return PXWavefrontLineVertexParameter;
+        }
+
+        break;
+    }
+
+    case 6:
+    {
+        const unsigned long long lineTagID = PXInt32Make(text[0], text[1], text[2], text[3]);
+
+        switch (lineTagID)
+        {
+        case PXInt32Make('m', 't', 'l', 'l'):
+        case PXInt32Make('u', 's', 'e', 'm'):
+        {
+            const unsigned short lineTagID = PXInt16Make(text[4], text[5]);
 
             switch (lineTagID)
             {
-                case PXInt16Make('v', 't'): return PXWavefrontLineVertexTexture;
-                case PXInt16Make('v', 'n'): return PXWavefrontLineVertexNormal;
-                case PXInt16Make('v', 'p'): return PXWavefrontLineVertexParameter;
+            case PXInt16Make('i', 'b'):
+                return PXWavefrontLineMaterialLibraryInclude;
+            case PXInt16Make('t', 'l'):
+                return PXWavefrontLineMaterialLibraryUse;
             }
 
             break;
         }
-
-        case 6:
-        {
-            const unsigned long long lineTagID = PXInt32Make(text[0], text[1], text[2], text[3]);
-
-            switch (lineTagID)
-            {
-                case PXInt32Make('m', 't', 'l', 'l'):
-                case PXInt32Make('u', 's', 'e', 'm'):
-                {
-                    const unsigned short lineTagID = PXInt16Make(text[4], text[5]);
-
-                    switch (lineTagID)
-                    {
-                        case PXInt16Make('i', 'b'): return PXWavefrontLineMaterialLibraryInclude;
-                        case PXInt16Make('t', 'l'): return PXWavefrontLineMaterialLibraryUse;
-                    }
-
-                    break;
-                }
-            }
-
-            break;
         }
+
+        break;
+    }
     }
 
     return PXWavefrontLineInvalid;
@@ -94,7 +105,7 @@ void PXAPI PXWavefrontFaceLineParse(PXCompiler* const pxCompiler, PXInt32U* cons
     {
         return;
     }
-     
+
     PXCompilerSymbolEntryForward(pxCompiler); // Consume int
 
     // Save 1st value
@@ -121,100 +132,100 @@ void PXAPI PXWavefrontFaceLineParse(PXCompiler* const pxCompiler, PXInt32U* cons
 
     switch( pxCompiler->ReadInfo.SymbolEntryCurrent.ID)
     {
-        case PXCompilerSymbolLexerInteger: // is syntax A
+    case PXCompilerSymbolLexerInteger: // is syntax A
+    {
+        PXCompilerSymbolEntryForward(pxCompiler); // Peek sucessful skip to 2nd integer
+
+        vertexData[1] =  pxCompiler->ReadInfo.SymbolEntryCurrent.DataI32U; // Save 2nd value
+
+        const PXBool isExpectedThridInteger = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerInteger); // Get 3rd integer
+
+        if(!isExpectedThridInteger)
         {
-            PXCompilerSymbolEntryForward(pxCompiler); // Peek sucessful skip to 2nd integer
+            // Error;
+            return;
+        }
 
-            vertexData[1] =  pxCompiler->ReadInfo.SymbolEntryCurrent.DataI32U; // Save 2nd value
+        PXCompilerSymbolEntryForward(pxCompiler);
 
-            const PXBool isExpectedThridInteger = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerInteger); // Get 3rd integer
+        vertexData[2] =  pxCompiler->ReadInfo.SymbolEntryCurrent.DataI32U;
 
-            if(!isExpectedThridInteger)
+        break;
+    }
+    case PXCompilerSymbolLexerSlash: // Syntax B or C
+    {
+        PXCompilerSymbolEntryForward(pxCompiler); // Peek sucessful, remove the first '/'
+
+        PXCompilerSymbolEntryPeek(pxCompiler); // Next token
+
+        switch( pxCompiler->ReadInfo.SymbolEntryCurrent.ID)
+        {
+        case PXCompilerSymbolLexerSlash: // Syntax: "xx//xx"
+        {
+            PXCompilerSymbolEntryForward(pxCompiler);  // Remove the '/'
+
+            const PXBool isThridToken = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerInteger); // Next token, expect int
+
+            if(!isThridToken) // if not int => error
             {
-                // Error;
+                // Error
                 return;
             }
 
-            PXCompilerSymbolEntryForward(pxCompiler);
+            PXCompilerSymbolEntryForward(pxCompiler); // Consume 3rd number
 
-            vertexData[2] =  pxCompiler->ReadInfo.SymbolEntryCurrent.DataI32U;
+            vertexData[2] =  pxCompiler->ReadInfo.SymbolEntryCurrent.DataI32U;      // Store 3rd number
 
             break;
         }
-        case PXCompilerSymbolLexerSlash: // Syntax B or C
+        case PXCompilerSymbolLexerInteger: // Is syntax B
         {
-            PXCompilerSymbolEntryForward(pxCompiler); // Peek sucessful, remove the first '/'
+            PXCompilerSymbolEntryForward(pxCompiler); // Peek sucessful, remove the secound value
 
-            PXCompilerSymbolEntryPeek(pxCompiler); // Next token
+            vertexData[1] =  pxCompiler->ReadInfo.SymbolEntryCurrent.DataI32U; // Save value
 
-            switch( pxCompiler->ReadInfo.SymbolEntryCurrent.ID)
+            // Exptect 2nd '/'
             {
-                case PXCompilerSymbolLexerSlash: // Syntax: "xx//xx"
+                const PXBool isSlash = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerSlash); // Peek, expect '/'
+
+                if(isSlash)
                 {
-                    PXCompilerSymbolEntryForward(pxCompiler);  // Remove the '/'
+                    PXCompilerSymbolEntryForward(pxCompiler);  // remove '/'
 
-                    const PXBool isThridToken = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerInteger); // Next token, expect int
-
-                    if(!isThridToken) // if not int => error
+                    // Try get 3nd integer
                     {
-                        // Error
-                        return;
-                    }
-                 
-                    PXCompilerSymbolEntryForward(pxCompiler); // Consume 3rd number
-               
-                    vertexData[2] =  pxCompiler->ReadInfo.SymbolEntryCurrent.DataI32U;      // Store 3rd number
+                        const PXBool isSecoundToken = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerInteger);
 
-                    break;
-                }
-                case PXCompilerSymbolLexerInteger: // Is syntax B
-                {
-                    PXCompilerSymbolEntryForward(pxCompiler); // Peek sucessful, remove the secound value
-
-                    vertexData[1] =  pxCompiler->ReadInfo.SymbolEntryCurrent.DataI32U; // Save value
-
-                    // Exptect 2nd '/'
-                    {
-                        const PXBool isSlash = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerSlash); // Peek, expect '/'
-
-                        if(isSlash)
+                        if(!isSecoundToken)
                         {
-                            PXCompilerSymbolEntryForward(pxCompiler);  // remove '/'
-
-                            // Try get 3nd integer
-                            {
-                                const PXBool isSecoundToken = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerInteger);
-
-                                if(!isSecoundToken)
-                                {
-                                    // Error
-                                    return;
-                                }
-
-                                vertexData[2] =  pxCompiler->ReadInfo.SymbolEntryCurrent.DataI32U;
-            
-                                PXCompilerSymbolEntryForward(pxCompiler);
-                            }
+                            // Error
+                            return;
                         }
-                    }
 
-                    break;
-                }
-                default:
-                {
-                    // Invalid
-                    break;
+                        vertexData[2] =  pxCompiler->ReadInfo.SymbolEntryCurrent.DataI32U;
+
+                        PXCompilerSymbolEntryForward(pxCompiler);
+                    }
                 }
             }
 
             break;
         }
+        default:
+        {
+            // Invalid
+            break;
+        }
+        }
+
+        break;
+    }
     }
 
     for(PXSize i = 0; i < 3u; ++i)
     {
         vertexData[i] -= 1u;
-    }   
+    }
 }
 
 #pragma optimize("", off)
@@ -260,7 +271,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
 
     PXInt32U currentTotalOffset = 0;
 
-    
+
 #if PXLogEnable
     PXLogPrint
     (
@@ -282,9 +293,9 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
     );
 #endif
 
-    // Lexer - Level I   
+    // Lexer - Level I
     PXCompilerLexicalAnalysis(&pxCompiler); // Raw-File-Input -> Lexer tokens
-    
+
 
     // Stage - 1 - Analyse file
 
@@ -307,139 +318,139 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
 
         switch (objPeekLine)
         {
-            case PXWavefrontLineSmoothShading:
+        case PXWavefrontLineSmoothShading:
+        {
+            PXCompilerSymbolEntryExtract(&pxCompiler); // Expect a name.
+
+            // PXFileWriteI8U(outputStream, PXCompilerSymbolLexerInteger);
+            // PXFileWriteI32U(outputStream, compilerSymbolEntry.DataI32U);
+
+            break;
+        }
+        case PXWavefrontLineMaterialLibraryInclude:
+        case PXWavefrontLineMaterialLibraryUse:
+        case PXWavefrontLineObjectName:
+        case PXWavefrontLineObjectGroup:
+        {
+            PXText pxTextElement;
+            PXTextConstructBufferA(&pxTextElement, 260);
+
+            const PXBool isString = PXCompilerParseStringUntilNewLine(&pxCompiler, &pxTextElement);
+
+            if (!isString)
             {
-                PXCompilerSymbolEntryExtract(&pxCompiler); // Expect a name.
-
-                // PXFileWriteI8U(outputStream, PXCompilerSymbolLexerInteger);
-                // PXFileWriteI32U(outputStream, compilerSymbolEntry.DataI32U);
-
+                //++errorCounter;
                 break;
             }
-            case PXWavefrontLineMaterialLibraryInclude:
-            case PXWavefrontLineMaterialLibraryUse:
-            case PXWavefrontLineObjectName:
-            case PXWavefrontLineObjectGroup:
+
+            // PXCompilerSymbolEntryMergeCurrentUntilNextLine();
+
+            switch (objPeekLine)
             {
-                PXText pxTextElement;
-                PXTextConstructBufferA(&pxTextElement, 260);
+            case PXWavefrontLineMaterialLibraryInclude:
+            {
+                ++materialInlcudeIndex;
+                break;
+            }
+            case PXWavefrontLineMaterialLibraryUse:
+            {
+                ++materialUseIndex;
+                break;
+            }
+            }
 
-                const PXBool isString = PXCompilerParseStringUntilNewLine(&pxCompiler, &pxTextElement);
+            break; // [OK]
+        }
+        case PXWavefrontLineVertexTexture:
+        case PXWavefrontLineVertexGeometric:
+        case PXWavefrontLineVertexNormal:
+        case PXWavefrontLineVertexParameter:
+        {
+            PXSize valuesDetected = 0;
+            PXSize valuesExpected = 16;
+            float vector[4] = { -1, -1, -1, -1 };
 
-                if (!isString)
-                {
-                    //++errorCounter;
-                    break;
-                }
+            const PXBool listParsed = PXCompilerParseFloatList(&pxCompiler, vector, valuesExpected, &valuesDetected);
 
-               // PXCompilerSymbolEntryMergeCurrentUntilNextLine();
-
+            // Export
+            {
                 switch (objPeekLine)
                 {
-                    case PXWavefrontLineMaterialLibraryInclude:
-                    {
-                        ++materialInlcudeIndex;
-                        break;
-                    }
-                    case PXWavefrontLineMaterialLibraryUse:
-                    {
-                        ++materialUseIndex;
-                        break;
-                    }
+                case PXWavefrontLineVertexGeometric:
+                    ++counterVertex;
+                    //printf("|%6i| %3s | %12.6f | %12.6f | %12.6f |\n", compilerSymbolEntry.Line, "v", vector[0], vector[1], vector[2]);
+                    //pxModel->DataVertexWidth = PXMathMaximum(pxModel->DataVertexWidth, valuesDetected);
+                    break;
+
+                case PXWavefrontLineVertexNormal:
+                    ++counterNormal;
+                    // printf("|%6i| %3s | %12.6f | %12.6f | %12.6f |\n", compilerSymbolEntry.Line, "vn", vector[0], vector[1], vector[2]);
+                    //pxModel->DataNormalWidth = PXMathMaximum(pxModel->DataNormalWidth, valuesDetected);
+                    break;
+
+                case PXWavefrontLineVertexParameter:
+                    //pxModel-> += valuesDetected;
+                    break;
+
+                case PXWavefrontLineVertexTexture:
+                    ++counterTexture;
+                    //  printf("|%6i| %3s | %12.6f | %12.6f | %12.6f |\n", compilerSymbolEntry.Line, "vt", vector[0], vector[1], vector[2]);
+                    //pxModel->DataTextureWidth = PXMathMaximum(pxModel->DataTextureWidth, valuesDetected);
+                    break;
                 }
-
-                break; // [OK]
             }
-            case PXWavefrontLineVertexTexture:
-            case PXWavefrontLineVertexGeometric:
-            case PXWavefrontLineVertexNormal:
-            case PXWavefrontLineVertexParameter:
+
+            break; // [OK]
+        }
+        case PXWavefrontLineFaceElement:
+        {
+            const PXSize lineStart = pxCompiler.ReadInfo.SymbolEntryCurrent.Line;
+            PXSize lineCurrent = lineStart;
+
+            PXBool isDone = PXFalse;
+
+            do
             {
-                PXSize valuesDetected = 0;
-                PXSize valuesExpected = 16;
-                float vector[4] = { -1, -1, -1, -1 };
+                PXInt32U vertexData[3] = { 0, 0, 0 };
 
-                const PXBool listParsed = PXCompilerParseFloatList(&pxCompiler, vector, valuesExpected, &valuesDetected);
+                PXWavefrontFaceLineParse(&pxCompiler, vertexData); // Get the data
 
-                // Export
-                {
-                    switch (objPeekLine)
-                    {
-                        case PXWavefrontLineVertexGeometric:
-                            ++counterVertex;
-                            //printf("|%6i| %3s | %12.6f | %12.6f | %12.6f |\n", compilerSymbolEntry.Line, "v", vector[0], vector[1], vector[2]);
-                            //pxModel->DataVertexWidth = PXMathMaximum(pxModel->DataVertexWidth, valuesDetected);
-                            break;
+                counterVertexMaxID = PXMathMaximumIU(counterVertexMaxID, vertexData[0]);
+                ++counterIndex;
 
-                        case PXWavefrontLineVertexNormal:
-                            ++counterNormal;
-                            // printf("|%6i| %3s | %12.6f | %12.6f | %12.6f |\n", compilerSymbolEntry.Line, "vn", vector[0], vector[1], vector[2]);
-                             //pxModel->DataNormalWidth = PXMathMaximum(pxModel->DataNormalWidth, valuesDetected);
-                            break;
+                PXCompilerSymbolEntryPeek(&pxCompiler); // check what line we are in
 
-                        case PXWavefrontLineVertexParameter:
-                            //pxModel-> += valuesDetected;
-                            break;
+                lineCurrent = pxCompiler.ReadInfo.SymbolEntryCurrent.Line; // Update current line
 
-                        case PXWavefrontLineVertexTexture:
-                            ++counterTexture;
-                            //  printf("|%6i| %3s | %12.6f | %12.6f | %12.6f |\n", compilerSymbolEntry.Line, "vt", vector[0], vector[1], vector[2]);
-                              //pxModel->DataTextureWidth = PXMathMaximum(pxModel->DataTextureWidth, valuesDetected);
-                            break;
-                    }
-                }
-
-                break; // [OK]
+                isDone = PXFileIsAtEnd(&tokenSteam) || (lineStart != lineCurrent);
             }
-            case PXWavefrontLineFaceElement:
-            {
-                const PXSize lineStart = pxCompiler.ReadInfo.SymbolEntryCurrent.Line;
-                PXSize lineCurrent = lineStart;
+            while(!isDone);
 
-                PXBool isDone = PXFalse;
-                
-                do
-                {
-                    PXInt32U vertexData[3] = { 0, 0, 0 };
-
-                    PXWavefrontFaceLineParse(&pxCompiler, vertexData); // Get the data
-
-                    counterVertexMaxID = PXMathMaximumIU(counterVertexMaxID, vertexData[0]);
-                    ++counterIndex;
-
-                    PXCompilerSymbolEntryPeek(&pxCompiler); // check what line we are in
-
-                    lineCurrent = pxCompiler.ReadInfo.SymbolEntryCurrent.Line; // Update current line
-
-                    isDone = PXFileIsAtEnd(&tokenSteam) || (lineStart != lineCurrent);
-                } 
-                while(!isDone);
-
-                break; // [OK]
-            }
-            default: // Error
-            {
-               // ++errorCounter;       
+            break; // [OK]
+        }
+        default: // Error
+        {
+            // ++errorCounter;
 
 #if PXLogEnable
-                PXLogPrint
-                (
-                    PXLoggingError,
-                    "WaveFront",
-                    "Parsing",
-                    "Unexpected"
-                );
+            PXLogPrint
+            (
+                PXLoggingError,
+                "WaveFront",
+                "Parsing",
+                "Unexpected"
+            );
 #endif
 
 
-                do
-                {
-                    PXCompilerSymbolEntryExtract(&pxCompiler);
-                }
-                while (pxCompiler.ReadInfo.SymbolEntryCurrent.ID != PXCompilerSymbolLexerNewLine);
-
-                break;
+            do
+            {
+                PXCompilerSymbolEntryExtract(&pxCompiler);
             }
+            while (pxCompiler.ReadInfo.SymbolEntryCurrent.ID != PXCompilerSymbolLexerNewLine);
+
+            break;
+        }
         }
     }
 
@@ -488,9 +499,9 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
         vertexDataCacheSize = vertexPositionDataCacheSize + vertexTextureDataCacheSize + vertexNormalDataCacheSize;
         PXNewList(float, vertexDataCacheSize, &vertexDataCache, PXNull);
 
-        vertexTextureDataCache = vertexDataCache;    
+        vertexTextureDataCache = vertexDataCache;
         vertexNormalDataCache = &vertexTextureDataCache[vertexNormalDataCacheSize];
-        vertexPositionDataCache = &vertexNormalDataCache[vertexTextureDataCacheSize];     
+        vertexPositionDataCache = &vertexNormalDataCache[vertexTextureDataCacheSize];
 
         indexDataCacheSize = counterIndex;
 
@@ -528,7 +539,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
         PXNewListZerod(PXMaterialContainer, materialInlcudeIndex, &pxModel->MaterialContaierList, PXNull);
 
 
-         // Reset all size values
+        // Reset all size values
         counterVertex = 0;
         counterNormal = 0;
         counterTexture = 0;
@@ -551,7 +562,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
         "Step 4, extract data..."
     );
 #endif
-    
+
     while (!PXFileIsAtEnd(&tokenSteam))
     {
         PXCompilerSymbolEntryExtract(&pxCompiler);
@@ -560,237 +571,237 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
 
         switch (objPeekLine)
         {
-            case PXWavefrontLineSmoothShading:
-            {
-                PXCompilerSymbolEntryExtract(&pxCompiler); // Expect a name .
+        case PXWavefrontLineSmoothShading:
+        {
+            PXCompilerSymbolEntryExtract(&pxCompiler); // Expect a name .
 
-                //PXFileWriteI8U(outputStream, PXCompilerSymbolLexerInteger);
-                //PXFileWriteI32U(outputStream, compilerSymbolEntry.DataI32U);
+            //PXFileWriteI8U(outputStream, PXCompilerSymbolLexerInteger);
+            //PXFileWriteI32U(outputStream, compilerSymbolEntry.DataI32U);
+
+            break;
+        }
+        case PXWavefrontLineMaterialLibraryInclude:
+        case PXWavefrontLineMaterialLibraryUse:
+        case PXWavefrontLineObjectName:
+        case PXWavefrontLineObjectGroup:
+        {
+            PXText materialFileName;
+            PXTextConstructNamedBufferA(&materialFileName, materialFileNameBuffer, PXPathSizeMax);
+
+            const PXBool isString = PXCompilerParseStringUntilNewLine(&pxCompiler, &materialFileName);
+
+            if (!isString)
+            {
+                // ++errorCounter;
+                break;
+            }
+
+            switch (objPeekLine)
+            {
+            case PXWavefrontLineMaterialLibraryInclude:
+            {
+                PXMaterialContainer* const pxMaterialContaier = &pxModel->MaterialContaierList[materialInlcudeIndex++];
+                PXFile materialFile;
+
+                // Open and load
+                {
+                    //-------------------------------
+                    PXText materialFilePathFull;
+                    PXTextConstructNamedBufferA(&materialFilePathFull, materialFilePathFullBuffer, PXPathSizeMax);
+
+                    PXFilePathRelativeFromFile(pxResourceLoadInfo->FileReference, &materialFileName, &materialFilePathFull);
+
+                    PXResourceTransphereInfo pxMaterialLoadInfo;
+                    PXClear(PXResourceTransphereInfo, &pxMaterialLoadInfo);
+                    pxMaterialLoadInfo.ResourceTarget = pxMaterialContaier;
+                    pxMaterialLoadInfo.FileReference = &materialFile;
+                    pxMaterialLoadInfo.ResourceType = PXResourceTypeMaterialList;
+                    pxMaterialLoadInfo.Manager = pxResourceLoadInfo->Manager;
+
+                    PXResourceLoad(&pxMaterialLoadInfo, &materialFilePathFull);
+                }
+
+                PXFileClose(&materialFile);
 
                 break;
             }
-            case PXWavefrontLineMaterialLibraryInclude:
             case PXWavefrontLineMaterialLibraryUse:
-            case PXWavefrontLineObjectName:
-            case PXWavefrontLineObjectGroup:
             {
-                PXText materialFileName;
-                PXTextConstructNamedBufferA(&materialFileName, materialFileNameBuffer, PXPathSizeMax);
+                PXIndexSegment* const pxIndexSegmentLast = &pxModel->Mesh.IndexBuffer.SegmentList[pxModel->Mesh.IndexBuffer.SegmentListAmount - 1];
+                PXIndexSegment* const pxIndexSegmentCurrent = &pxModel->Mesh.IndexBuffer.SegmentList[materialUseIndex];
+                PXSize offset = counterIndex - currentTotalOffset;
 
-                const PXBool isString = PXCompilerParseStringUntilNewLine(&pxCompiler, &materialFileName);
+                pxIndexSegmentCurrent->Material = PXMaterialContainerFind
+                                                  (
+                                                      pxResourceLoadInfo->Manager,
+                                                      pxModel->MaterialContaierList,
+                                                      &materialFileName
+                                                  );
 
-                if (!isString)
+                if (offset != 0)
                 {
-                   // ++errorCounter;
-                    break;
+                    PXIndexSegment* const pxIndexSegmentPrevious = &pxModel->Mesh.IndexBuffer.SegmentList[materialUseIndex - 1];
+
+                    pxIndexSegmentPrevious->DataRange = offset;
                 }
+
+                currentTotalOffset = counterIndex;
+
+                pxIndexSegmentLast->DataRange = indexDataCacheSize - currentTotalOffset;
+
+                ++materialUseIndex;
+
+                break;
+            }
+            }
+
+            break; // [OK]
+        }
+        case PXWavefrontLineVertexTexture:
+        case PXWavefrontLineVertexGeometric:
+        case PXWavefrontLineVertexNormal:
+        case PXWavefrontLineVertexParameter:
+        {
+            PXSize valuesDetected = 0;
+            PXSize valuesExpected = 16;
+            float vector[16] = { -1, -1, -1, -1 };
+
+            const PXBool listParsed = PXCompilerParseFloatList(&pxCompiler, vector, valuesExpected, &valuesDetected);
+
+            // Export
+            {
+                // We dont write the data directly into the vertex buffer.
+                // As this data is compressed and is not directly useable for the rendering API.
 
                 switch (objPeekLine)
                 {
-                    case PXWavefrontLineMaterialLibraryInclude:
-                    {
-                        PXMaterialContainer* const pxMaterialContaier = &pxModel->MaterialContaierList[materialInlcudeIndex++];
-                        PXFile materialFile; 
+                case PXWavefrontLineVertexGeometric:
+                {
+                    float* const insertPosition = &vertexPositionDataCache[counterVertex * 3u];
 
-                        // Open and load
-                        {
-                            //-------------------------------
-                            PXText materialFilePathFull;
-                            PXTextConstructNamedBufferA(&materialFilePathFull, materialFilePathFullBuffer, PXPathSizeMax);
+                    PXCopyList(float, 3u, vector, insertPosition);
 
-                            PXFilePathRelativeFromFile(pxResourceLoadInfo->FileReference, &materialFileName, &materialFilePathFull);
-     
-                            PXResourceTransphereInfo pxMaterialLoadInfo;
-                            PXClear(PXResourceTransphereInfo, &pxMaterialLoadInfo);
-                            pxMaterialLoadInfo.ResourceTarget = pxMaterialContaier;
-                            pxMaterialLoadInfo.FileReference = &materialFile;
-                            pxMaterialLoadInfo.ResourceType = PXResourceTypeMaterialList;
-                            pxMaterialLoadInfo.Manager = pxResourceLoadInfo->Manager;
+                    //float* const position = (float*)PXVertexBufferInsertionPoint(&pxModel->VertexBuffer, PXVertexBufferDataTypeVertex, counterVertex);
+                    //PXMemoryCopy(vector, sizeof(float) * valuesDetected, position, sizeof(float) * valuesDetected);
 
-                            PXResourceLoad(&pxMaterialLoadInfo, &materialFilePathFull);
-                        }                   
-                      
-                        PXFileClose(&materialFile);   
+                    ++counterVertex;
+                    break;
+                }
+                case PXWavefrontLineVertexNormal:
+                {
+                    float* const insertPosition = &vertexNormalDataCache[counterNormal * 3u];
 
-                        break;
-                    }
-                    case PXWavefrontLineMaterialLibraryUse:
-                    {
-                        PXIndexSegment* const pxIndexSegmentLast = &pxModel->Mesh.IndexBuffer.SegmentList[pxModel->Mesh.IndexBuffer.SegmentListAmount - 1];
-                        PXIndexSegment* const pxIndexSegmentCurrent = &pxModel->Mesh.IndexBuffer.SegmentList[materialUseIndex];
-                        PXSize offset = counterIndex - currentTotalOffset;
+                    PXCopyList(float, 3u, vector, insertPosition);
 
-                        pxIndexSegmentCurrent->Material = PXMaterialContainerFind
-                        (
-                            pxResourceLoadInfo->Manager, 
-                            pxModel->MaterialContaierList,
-                            &materialFileName
-                        );
+                    ++counterNormal;
+                    break;
+                }
+                case PXWavefrontLineVertexParameter:
 
-                        if (offset != 0) 
-                        {
-                            PXIndexSegment* const pxIndexSegmentPrevious = &pxModel->Mesh.IndexBuffer.SegmentList[materialUseIndex - 1];
+                    break;
 
-                            pxIndexSegmentPrevious->DataRange = offset;
-                        }
-                       
-                        currentTotalOffset = counterIndex;
+                case PXWavefrontLineVertexTexture:
+                {
+                    float* const insertPosition = &vertexTextureDataCache[counterTexture * 2u];
 
-                        pxIndexSegmentLast->DataRange = indexDataCacheSize - currentTotalOffset;
+                    PXCopyList(float, 2u, vector, insertPosition);
 
-                        ++materialUseIndex;
+                    ++counterTexture;
+                    break;
+                }
+                }
+            }
 
-                        break;
-                    }
+            break; // [OK]
+        }
+        case PXWavefrontLineFaceElement:
+        {
+            PXSize cornerPoints = 0;
+
+
+            const PXSize lineStart = pxCompiler.ReadInfo.SymbolEntryCurrent.Line;
+            PXSize lineCurrent = lineStart;
+
+            PXBool isDone = PXFalse;
+
+            do
+            {
+                PXInt32U vertexData[3] = { 0, 0, 0 };
+
+                PXWavefrontFaceLineParse(&pxCompiler, vertexData); // Get the data
+
+
+
+
+                //   const PXSize dataSize = pxModel->IndexBuffer.IndexTypeSize;
+                // PXMemoryCopy(vertexData, dataSize, input, dataSize);
+
+
+                //-------------------------------------
+                // Fill vertex element from index data
+                //-------------------------------------
+                float* vertexTextureDataTarget = (float*)PXVertexBufferInsertionPoint(&pxModel->Mesh.VertexBuffer, PXVertexBufferDataTypeTexture, counterIndex);
+                float* vertexNormalDataTarget = (float*)PXVertexBufferInsertionPoint(&pxModel->Mesh.VertexBuffer, PXVertexBufferDataTypeNormal, counterIndex);
+                float* vertexPositionDataTarget = (float*)PXVertexBufferInsertionPoint(&pxModel->Mesh.VertexBuffer, PXVertexBufferDataTypeVertex, counterIndex);
+
+                if(vertexData[1] != -1)
+                {
+                    float* vertexTextureDataSource = &vertexTextureDataCache[vertexData[1] * 2u];
+                    PXCopyList(float, 2, vertexTextureDataSource, vertexTextureDataTarget);
                 }
 
-                break; // [OK]
-            }
-            case PXWavefrontLineVertexTexture:
-            case PXWavefrontLineVertexGeometric:
-            case PXWavefrontLineVertexNormal:
-            case PXWavefrontLineVertexParameter:
-            {
-                PXSize valuesDetected = 0;
-                PXSize valuesExpected = 16;
-                float vector[16] = { -1, -1, -1, -1 };
-
-                const PXBool listParsed = PXCompilerParseFloatList(&pxCompiler, vector, valuesExpected, &valuesDetected);
-
-                // Export
+                if(vertexData[2] != -1)
                 {
-                    // We dont write the data directly into the vertex buffer.
-                    // As this data is compressed and is not directly useable for the rendering API.
-
-                    switch (objPeekLine)
-                    {
-                        case PXWavefrontLineVertexGeometric:
-                        {
-                            float* const insertPosition = &vertexPositionDataCache[counterVertex * 3u];
-
-                            PXCopyList(float, 3u, vector, insertPosition);
-
-                            //float* const position = (float*)PXVertexBufferInsertionPoint(&pxModel->VertexBuffer, PXVertexBufferDataTypeVertex, counterVertex);
-                            //PXMemoryCopy(vector, sizeof(float) * valuesDetected, position, sizeof(float) * valuesDetected);
-
-                            ++counterVertex;
-                            break;
-                        }
-                        case PXWavefrontLineVertexNormal:
-                        {
-                            float* const insertPosition = &vertexNormalDataCache[counterNormal * 3u];
-
-                            PXCopyList(float, 3u, vector, insertPosition);
-
-                            ++counterNormal;
-                            break;
-                        }
-                        case PXWavefrontLineVertexParameter:
-
-                            break;
-
-                        case PXWavefrontLineVertexTexture:
-                        {
-                            float* const insertPosition = &vertexTextureDataCache[counterTexture * 2u];
-
-                            PXCopyList(float, 2u, vector, insertPosition);
-
-                            ++counterTexture;
-                            break;
-                        }                        
-                    }
+                    float* vertexNormalDataSource = &vertexNormalDataCache[vertexData[2] * 3u];
+                    PXCopyList(float, 3, vertexNormalDataSource, vertexNormalDataTarget);
                 }
 
-                break; // [OK]
-            }
-            case PXWavefrontLineFaceElement:
-            {
-                PXSize cornerPoints = 0;
-
-
-                const PXSize lineStart = pxCompiler.ReadInfo.SymbolEntryCurrent.Line;
-                PXSize lineCurrent = lineStart;
-
-                PXBool isDone = PXFalse;
-
-                do
+                if(vertexData[0] != -1)
                 {
-                    PXInt32U vertexData[3] = { 0, 0, 0 };
-
-                    PXWavefrontFaceLineParse(&pxCompiler, vertexData); // Get the data
-
-       
-                   
-
-                 //   const PXSize dataSize = pxModel->IndexBuffer.IndexTypeSize;
-                    // PXMemoryCopy(vertexData, dataSize, input, dataSize);
-
-
-                     //-------------------------------------
-                     // Fill vertex element from index data
-                     //-------------------------------------                              
-                    float* vertexTextureDataTarget = (float*)PXVertexBufferInsertionPoint(&pxModel->Mesh.VertexBuffer, PXVertexBufferDataTypeTexture, counterIndex);
-                    float* vertexNormalDataTarget = (float*)PXVertexBufferInsertionPoint(&pxModel->Mesh.VertexBuffer, PXVertexBufferDataTypeNormal, counterIndex);
-                    float* vertexPositionDataTarget = (float*)PXVertexBufferInsertionPoint(&pxModel->Mesh.VertexBuffer, PXVertexBufferDataTypeVertex, counterIndex);
-
-                    if(vertexData[1] != -1)
-                    {
-                        float* vertexTextureDataSource = &vertexTextureDataCache[vertexData[1] * 2u];
-                        PXCopyList(float, 2, vertexTextureDataSource, vertexTextureDataTarget);
-                    }
-
-                    if(vertexData[2] != -1)
-                    {
-                        float* vertexNormalDataSource = &vertexNormalDataCache[vertexData[2] * 3u];
-                        PXCopyList(float, 3, vertexNormalDataSource, vertexNormalDataTarget);
-                    }
-
-                    if(vertexData[0] != -1)
-                    {
-                        float* vertexPositionDataSource = &vertexPositionDataCache[vertexData[0] * 3u];
-                        PXCopyList(float, 3, vertexPositionDataSource, vertexPositionDataTarget);
-                    }
-                    //-------------------------------------
-
-
-
-                    counterIndex++;
-
-
-                    //  PXFileWriteI32UV(outputStream, vertexData, 3u);
-
-                      //  printf("Face _> %i, %i, %i\n", vertexData[0], vertexData[1], vertexData[2]);
-
-                        //----------------------------------
-
-                    ++cornerPoints;
-
-
-
-
-                    PXCompilerSymbolEntryPeek(&pxCompiler); // check what line we are in
-
-                    lineCurrent = pxCompiler.ReadInfo.SymbolEntryCurrent.Line; // Update current line
-
-                    isDone = PXFileIsAtEnd(&tokenSteam) || (lineStart != lineCurrent);
-                } 
-                while(!isDone);
-
-
-                break; // [OK]
-            }
-            default: // Error
-            {
-              //  ++errorCounter;
-   
-                do
-                {
-                    PXCompilerSymbolEntryExtract(&pxCompiler);
+                    float* vertexPositionDataSource = &vertexPositionDataCache[vertexData[0] * 3u];
+                    PXCopyList(float, 3, vertexPositionDataSource, vertexPositionDataTarget);
                 }
-                while (pxCompiler.ReadInfo.SymbolEntryCurrent.ID != PXCompilerSymbolLexerNewLine);
+                //-------------------------------------
 
-                break;
+
+
+                counterIndex++;
+
+
+                //  PXFileWriteI32UV(outputStream, vertexData, 3u);
+
+                //  printf("Face _> %i, %i, %i\n", vertexData[0], vertexData[1], vertexData[2]);
+
+                //----------------------------------
+
+                ++cornerPoints;
+
+
+
+
+                PXCompilerSymbolEntryPeek(&pxCompiler); // check what line we are in
+
+                lineCurrent = pxCompiler.ReadInfo.SymbolEntryCurrent.Line; // Update current line
+
+                isDone = PXFileIsAtEnd(&tokenSteam) || (lineStart != lineCurrent);
             }
+            while(!isDone);
+
+
+            break; // [OK]
+        }
+        default: // Error
+        {
+            //  ++errorCounter;
+
+            do
+            {
+                PXCompilerSymbolEntryExtract(&pxCompiler);
+            }
+            while (pxCompiler.ReadInfo.SymbolEntryCurrent.ID != PXCompilerSymbolLexerNewLine);
+
+            break;
+        }
         }
     }
 
@@ -811,10 +822,10 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
 #endif
 
 
-   // if (errorCounter)
-   // {
-   //     return PXActionCompilingError;
-   // }
+    // if (errorCounter)
+    // {
+    //     return PXActionCompilingError;
+    // }
 
     if (!requireToCalculateNormals)
     {

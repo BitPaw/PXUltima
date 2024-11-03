@@ -121,23 +121,23 @@ void PXAPI PXMemorySymbolAdd(PXSymbolMemory* const pxSymbolMemory,  const PXMemo
 
     switch(pxMemorySymbolInfoMode)
     {
-        case PXMemorySymbolInfoModeAdd:
-        {
-            PXDictionaryAdd(&pxMemorySymbolLookup->SymbolLookup, &pxSymbolMemory->Adress, pxSymbolMemory);
-            break;
-        }
-        case PXMemorySymbolInfoModeUpdate:
-        {
+    case PXMemorySymbolInfoModeAdd:
+    {
+        PXDictionaryAdd(&pxMemorySymbolLookup->SymbolLookup, &pxSymbolMemory->Adress, pxSymbolMemory);
+        break;
+    }
+    case PXMemorySymbolInfoModeUpdate:
+    {
 
-            break;
-        }
-        case PXMemorySymbolInfoModeRemove:
-        {
+        break;
+    }
+    case PXMemorySymbolInfoModeRemove:
+    {
 
-            break;
-        }
-        default:
-            break;
+        break;
+    }
+    default:
+        break;
     }
 }
 
@@ -160,13 +160,13 @@ PXActionResult PXAPI PXMemorySymbolFetch(const void* const adress, PXSymbol* con
     pxSymbol->ObjectSize = symbolMemory->ObjectSize;
 
     // Get module name from adress
-    
+
     pxSymbol->ModuleAdress = symbolMemory->ModuleAdress;
-    PXDebugModuleNameFromAdress(symbolMemory->ModuleAdress, pxSymbol->NameModule);
+    PXDebugModuleHandleToName(symbolMemory->ModuleAdress, pxSymbol->NameModule);
 
     PXTextCopyA(symbolMemory->FunctionAdress, 64, pxSymbol->NameSymbol, 64);
     PXTextCopyA(symbolMemory->FileAdress, 64, pxSymbol->NameFile, 64);
-   // PXTextCopyA(symbolMemory->N, 64, pxSymbol->Name, 64);
+    // PXTextCopyA(symbolMemory->N, 64, pxSymbol->Name, 64);
 
     return PXActionSuccessful;
 }
@@ -215,7 +215,7 @@ void* PXAPI PXMemoryCalloc(const PXSize amount, const PXSize objectSize)
 
 
 #if PXLogEnable
-        PXDebugModuleNameFromAdress(pxSymbolMemory.ModuleAdress, pxSymbol.NameModule);
+        PXDebugModuleHandleToName(pxSymbolMemory.ModuleAdress, pxSymbol.NameModule);
 
         PXLogPrint
         (
@@ -230,7 +230,7 @@ void* PXAPI PXMemoryCalloc(const PXSize amount, const PXSize objectSize)
             pxSymbolMemory.Amount,
             pxSymbolMemory.ObjectSize
         );
-#endif 
+#endif
     }
 
     return adress;
@@ -257,9 +257,9 @@ void* PXAPI PXMemoryMalloc(const PXSize memorySize)
     // Special logging behaviour
     {
         PXSymbolMemory pxSymbolMemory;
-        pxSymbolMemory.Adress = adress; 
+        pxSymbolMemory.Adress = adress;
         pxSymbolMemory.Amount = 1;
-        pxSymbolMemory.ObjectSize = memorySize;      
+        pxSymbolMemory.ObjectSize = memorySize;
 
         PXSymbol pxSymbol;
 
@@ -276,7 +276,7 @@ void* PXAPI PXMemoryMalloc(const PXSize memorySize)
 
 
 #if PXLogEnable
-        PXDebugModuleNameFromAdress(pxSymbolMemory.ModuleAdress, pxSymbol.NameModule);
+        PXDebugModuleHandleToName(pxSymbolMemory.ModuleAdress, pxSymbol.NameModule);
 
         PXLogPrint
         (
@@ -291,7 +291,7 @@ void* PXAPI PXMemoryMalloc(const PXSize memorySize)
             pxSymbolMemory.Amount,
             pxSymbolMemory.ObjectSize
         );
-#endif 
+#endif
     }
 
     return adress;
@@ -345,7 +345,7 @@ PXBool PXAPI PXMemoryFree(const void* const adress)
             pxSymbolMemory.LineNumber,
             pxSymbolMemory.Amount
         );
-#endif 
+#endif
     }
 
     return freeResult;
@@ -364,7 +364,7 @@ void* PXAPI PXMemoryRealloc(const void* const adress, const PXSize memorySize)
     // Function allows NULL as an adress
     newAdress = realloc(adress, memorySize);
 #elif OSWindows
-    
+
     if(!adress)
     {
         void* memory = PXMemoryMalloc(memorySize);
@@ -376,12 +376,12 @@ void* PXAPI PXMemoryRealloc(const void* const adress, const PXSize memorySize)
 
     const HANDLE heapHandle = GetProcessHeap(); // Windows 2000 SP4, Kernel32.dll, heapapi.h
 
-   // const PXSize oldSize = HeapSize(heapHandle, 0, adress);
+    // const PXSize oldSize = HeapSize(heapHandle, 0, adress);
 
     newAdress = HeapReAlloc(heapHandle, HEAP_ZERO_MEMORY, adress, memorySize); // Windows 2000 SP4, Kernel32.dll, heapapi.h
     updatedLocation = newAdress != adress;
 
-   // PXMemorySet(newAdress, '°', memorySize - oldSize);
+    // PXMemorySet(newAdress, '°', memorySize - oldSize);
 
 #if 0
     // Special logging behaviour
@@ -436,8 +436,8 @@ void* PXAPI PXMemoryRealloc(const void* const adress, const PXSize memorySize)
                 pxSymbolMemory.Amount
             );
         }
-#endif 
-}
+#endif
+    }
 #endif
 
     return newAdress;
@@ -452,78 +452,71 @@ int PXAPI PXMemoryProtectionIDTranslate(const PXInt8U protectionMode)
     int protectionID = 0;
 #if OSUnix
 
-    if(PXMemoryProtectModeNoAccess == protectionMode)
+    if(PXAccessModeNoAccess == PXAccessNone)
     {
         protectionID = PROT_NONE;
     }
 
     protectionID |=
-        PROT_READ * ((PXMemoryProtectModeRead & protectionMode) > 0) |
-        PROT_WRITE * ((PXMemoryProtectModeWrite & protectionMode) > 0) |
-        PROT_EXEC * ((PXMemoryProtectModeExecute & protectionMode) > 0);
+        PROT_READ  * ((PXAccessREAD    & protectionMode) > 0) |
+        PROT_WRITE * ((PXAccessWRITE   & protectionMode) > 0) |
+        PROT_EXEC  * ((PXAccessEXECUTE & protectionMode) > 0);
 
 #elif OSWindows
 
     switch(protectionMode)
-    {   
-        case PXAccessModeNoAccess:
-            protectionID = PAGE_NOACCESS;
-            break;
+    {
+    case PXAccessModeNoAccess:
+        protectionID = PAGE_NOACCESS;
+        break;
 
-        case PXAccessModeReadOnly:
-            protectionID = PAGE_READONLY;
-            break;
+    case PXAccessModeReadOnly:
+        protectionID = PAGE_READONLY;
+        break;
 
-        case PXAccessModeWriteOnly:
-            protectionID = PAGE_WRITECOPY;
-            break;
+    case PXAccessModeWriteOnly:
+        protectionID = PAGE_WRITECOPY;
+        break;
 
-        case PXAccessModeExecuteOnly:
-            protectionID = PAGE_EXECUTE;
-            break;
+    case PXAccessModeReadAndWrite:
+        protectionID = PAGE_READWRITE;
+        break;
 
-        case PXAccessModeReadAndWrite:
-            protectionID = PAGE_READWRITE;
-            break;
+    case PXAccessModeReadExecute:
+        protectionID = PAGE_EXECUTE_READ;
+        break;
 
-        case PXAccessModeReadExecute:
-            protectionID = PAGE_EXECUTE_READ;
-            break;
+    case PXAccessModeFull:
+        protectionID = PAGE_EXECUTE_READWRITE;
+        break;
 
-        case PXAccessModeFull:
-            protectionID = PAGE_EXECUTE_READWRITE;
-            break;
+    case PXAccessModeWriteExecute:
+        protectionID = PAGE_EXECUTE_WRITECOPY;
+        break;
 
-        case PXAccessModeWriteExecute:
-            protectionID = PAGE_EXECUTE_WRITECOPY;
-            break;
-
-        default:
-            break;
+    default:
+        break;
     }
 
 #endif
 
-     return protectionID;
+    return protectionID;
 }
 
 PXActionResult PXAPI PXMemoryProtect(void* dataAdress, const PXSize dataSize, const PXInt8U protectionMode)
 {
-    const int protectionID = PXMemoryProtectionIDTranslate(protectionMode);
+    const PXInt32U protectionID = PXMemoryProtectionIDTranslate(protectionMode);
 
 #if OSUnix
-    const int result = mprotect(dataAdress, dataSize, protectionID);
-    const PXBool success = 0 == result;
+    const int protectResultID = mprotect(dataAdress, dataSize, protectionID); // libc.so, sys/mman.h
+    const PXActionResult protectResult = PXErrorCurrent(0 == protectResultID);
 
-    if(!success)
-    {
-        return PXErrorCurrent();
-    }
+    return protectResult;
 #elif OSWindows
 
     DWORD oldProtectModeID = 0;
 
-    const PXBool result = VirtualProtect(dataAdress, dataSize, protectionID, &oldProtectModeID); // Windows XP (+UWP), Kernel32.dll, memoryapi.h 
+    const PXBool result = VirtualProtect(dataAdress, dataSize, protectionID, &oldProtectModeID); // Windows XP (+UWP), Kernel32.dll, memoryapi.h
     const PXActionResult actiobResult = PXErrorCurrent(result);
 
     return actiobResult;
@@ -535,7 +528,7 @@ PXActionResult PXAPI PXMemoryProtect(void* dataAdress, const PXSize dataSize, co
 
 PXBool PXAPI PXMemoryScan(PXMemoryUsage* memoryUsage)
 {
-    PXMemoryClear(memoryUsage, sizeof(PXMemoryUsage));
+    PXClear(PXMemoryUsage, memoryUsage);
 
 #if OSUnix
 #elif WindowsAtleastXP
@@ -631,7 +624,7 @@ int PXAPI PXMemoryCompareThreeWay(const void* PXRestrict bufferA, const PXSize b
         PXLoggingInfo,
         "Memory",
         "Compare",
-        "%6zi B  0x%p == 0x%p",    
+        "%6zi B  0x%p == 0x%p",
         bufferSize,
         bufferA,
         bufferB
@@ -727,7 +720,7 @@ PXBool PXAPI PXMemoryCompare(const void* PXRestrict bufferA, const PXSize buffer
         );
     }
 
-    
+
 #endif
 
 #if MemoryUseSystemFunction
@@ -811,7 +804,7 @@ const void* PXAPI PXMemoryLocateLast(const void* const PXRestrict inputBuffer, c
 
 
     for(PXSize i = maxRange; i > 0; --i)
-    {        
+    {
         const char data = ((char volatile*)inputBuffer)[i];
         const PXBool isFound = byteBlock == data;
 
@@ -835,7 +828,7 @@ PXSize PXAPI PXMemoryCopy(const void* PXRestrict inputBuffer, const PXSize input
         return 0;
     }
 
-#if MemoryAssertEnable    
+#if MemoryAssertEnable
     //assert(bufferSize > 0);
     assert(inputBuffer);
     assert(outputBuffer);
@@ -849,7 +842,7 @@ PXSize PXAPI PXMemoryCopy(const void* PXRestrict inputBuffer, const PXSize input
         "Copy",
         "%6zi B  0x%p -> 0x%p",
         bufferSize,
-        inputBuffer,    
+        inputBuffer,
         outputBufferSize
     );
 #endif
@@ -946,7 +939,7 @@ PXActionResult PXAPI PXMemoryHeapAllocate(PXMemoryInfo* const pxMemoryInfo)
         }
 #endif
 
-        
+
 #else
         const HANDLE healHandle = GetProcessHeap(); // Windows 2000 SP4, Kernel32.dll, heapapi.h
         const DWORD flags = pxMemoryInfo->MemoryClear * HEAP_ZERO_MEMORY;
@@ -1037,10 +1030,10 @@ PXActionResult PXAPI PXMemoryHeapDeallocate(PXMemoryInfo* const pxMemoryInfo)
 PXBool PXAPI PXMemoryHeapReallocate(PXMemoryHeapReallocateEventData* const pxMemoryHeapReallocateInfo)
 {
     const PXSize sizeToAllocate = pxMemoryHeapReallocateInfo->AmountDemand * pxMemoryHeapReallocateInfo->TypeSize;
-    
-    
-    
-    
+
+
+
+
     PXSize oldSize = 0;
     void* adressOld = PXNull;
 
@@ -1066,13 +1059,13 @@ PXBool PXAPI PXMemoryHeapReallocate(PXMemoryHeapReallocateEventData* const pxMem
     }
 
 
-    
+
 
     void* adressNew = PXNull;
     const PXSize beforeSize = oldSize;
 
 
-#if MemoryUseSystemFunction
+#if OSUnix || MemoryUseSystemFunction
     adressNew = realloc(adressOld, sizeToAllocate);
 #else
     const HANDLE heapHandle = GetProcessHeap();
@@ -1111,7 +1104,7 @@ PXBool PXAPI PXMemoryHeapReallocate(PXMemoryHeapReallocateEventData* const pxMem
         pxMemoryHeapReallocateInfo->WasSizeIncreased = pxMemoryHeapReallocateInfo->AmountDemand > *pxMemoryHeapReallocateInfo->AmountCurrent;
     }
 
-    
+
     pxMemoryHeapReallocateInfo->WasSuccessful = PXTrue;
 
     if (pxMemoryHeapReallocateInfo->AmountCurrent)
@@ -1133,7 +1126,7 @@ PXBool PXAPI PXMemoryHeapReallocate(PXMemoryHeapReallocateEventData* const pxMem
                 pxMemoryHeapReallocateInfo->FillSymbol,
                 pxMemoryHeapReallocateInfo->PointOfNewDataSize
             );
-        }    
+        }
     }
     else
     {
@@ -1161,17 +1154,18 @@ PXBool PXAPI PXMemoryHeapReallocate(PXMemoryHeapReallocateEventData* const pxMem
     return adressNew != 0;
 }
 
-void* PXAPI PXMemoryVirtualAllocate(PXSize size, const PXAccessMode PXAccessMode)
+void* PXAPI PXMemoryVirtualAllocate(const PXSize size, const PXAccessMode pxAccessMode)
 {
-    const void* addressPrefered = 0;
-   // const PXAccessMode protectionModeID = PXAccessModeFromID(PXAccessMode);
+    void* addressAllocated = PXNull;
+    void* addressPrefered = 0;
+    // const PXAccessMode protectionModeID = PXAccessModeFromID(PXAccessMode);
 
-#if OSUnix
+#if OSUnix && 0
     const int flags = MAP_PRIVATE;// | MAP_ANONYMOUS; | MAP_POPULATE; // missing on linux?
     const int fileDescriptor = -1;
     const off_t offset = 0;
 
-    const void* addressAllocated = mmap
+    addressAllocated = mmap
     (
         (void*)addressPrefered,
         size,
@@ -1180,15 +1174,11 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, const PXAccessMode PXAccessMode
         fileDescriptor,
         offset
     );
+    const PXActionResult mapResult = PXErrorCurrent(MAP_FAILED != addressAllocated);
 
-    // Check if mmap was sucessful
+    if(PXActionSuccessful != mapResult)
     {
-        const unsigned char sucessful = addressAllocated != MAP_FAILED;
-
-        if(!sucessful)
-        {
-            return 0;
-        }
+        return mapResult;
     }
 
 #elif OSWindows
@@ -1220,7 +1210,7 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, const PXAccessMode PXAccessMode
     }
 #endif
 
-    const void* addressAllocated = VirtualAlloc((void*)addressPrefered, size, allocationType, MEM_COMMIT); // Windows XP (+UWP), Kernel32.dll, memoryapi.h 
+    addressAllocated = VirtualAlloc(addressPrefered, size, allocationType, MEM_COMMIT); // Windows XP (+UWP), Kernel32.dll, memoryapi.h
     const PXActionResult pxActionResult = PXErrorCurrent(!addressAllocated);
 
     if(PXActionSuccessful != pxActionResult)
@@ -1233,23 +1223,23 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, const PXAccessMode PXAccessMode
 #if PXMemoryDebug
     const char* readMode;
 
-    switch(PXAccessMode)
+    switch(pxAccessMode)
     {
-        case PXAccessModeWriteOnly:
-            readMode = "Write only";
-            break;
+    case PXAccessModeWriteOnly:
+        readMode = "Write only";
+        break;
 
-        case PXAccessModeReadOnly:
-            readMode = "Read only";
-            break;
+    case PXAccessModeReadOnly:
+        readMode = "Read only";
+        break;
 
-        case PXAccessModeReadAndWrite:
-            readMode = "Read & Write";
-            break;
+    case PXAccessModeReadAndWrite:
+        readMode = "Read & Write";
+        break;
 
-        default:
-            readMode = "???";
-            break;
+    default:
+        readMode = "???";
+        break;
     }
 
 #if PXLogEnable
@@ -1263,7 +1253,7 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, const PXAccessMode PXAccessMode
     pxLoggingEventData.Type = PXLoggingAllocation;
     pxLoggingEventData.Target = PXLoggingTypeTargetMemory;
 
-    PXLogPrintInvoke(&pxLoggingEventData, addressAllocated,    readMode);
+    PXLogPrintInvoke(&pxLoggingEventData, addressAllocated, readMode);
 #endif
 #endif
 
@@ -1317,7 +1307,7 @@ void PXAPI PXMemoryVirtualRelease(const void* adress, const PXSize size)
 
 #elif OSWindows
     DWORD freeType = MEM_RELEASE;
-    const PXBool result = VirtualFree((void*)adress, 0, freeType); // Windows XP (+UWP), Kernel32.dll, memoryapi.h 
+    const PXBool result = VirtualFree((void*)adress, 0, freeType); // Windows XP (+UWP), Kernel32.dll, memoryapi.h
 #endif
 
 #if PXLogEnable && PXMemoryDebug
@@ -1436,7 +1426,7 @@ PXActionResult PXAPI PXMemoryStackDeallocate(PXMemoryInfo* const pxMemoryInfo)
     PXLogPrintInvoke(&pxLoggingEventData);
 #endif
 
-#else    
+#else
 
     return PXMemoryHeapDeallocate(pxMemoryInfo);
 

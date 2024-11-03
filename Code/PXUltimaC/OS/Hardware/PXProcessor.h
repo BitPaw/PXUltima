@@ -196,7 +196,7 @@ typedef struct PXProcessor_
     PXInt64U FeatureList;
 
 
-    // eax 
+    // eax
     PXBool SteppingID;
     PXBool Model;
     PXBool Family;

@@ -262,7 +262,7 @@ typedef struct PXLDAPClient_
 #elif PXOSWindowsDestop
     struct ldap* ID;
     struct ldapmsg* SearchResult;
-#else 
+#else
     void* ID;
 #endif
 }
@@ -273,7 +273,7 @@ typedef struct PXLDAPConnectionInfo_
     // 1=TCP, 0=UDP
     PXBool ConnectionOriented;
 
-    // Init    
+    // Init
     PXText Host;
     PXInt16U Port;
     PXBool SSLUse;

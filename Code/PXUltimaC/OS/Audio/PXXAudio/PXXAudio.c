@@ -4,8 +4,8 @@
 #if PXAudioSystemWindowsXAudioEnable && 1
 #include <initguid.h>
 #include <xaudio2.h> // minimum windows 8?
-//#pragma comment(lib, "XAUDIO2_9.LIB") 
-//#pragma comment(lib, "XAUDIO2_10.LIB") 
+//#pragma comment(lib, "XAUDIO2_9.LIB")
+//#pragma comment(lib, "XAUDIO2_10.LIB")
 #pragma comment(lib, "Xaudio2.lib") // Library: Windows XAudio
 #pragma comment(lib, "strmiids.lib")
 #pragma comment(lib, "SetupApi.lib")
@@ -21,7 +21,7 @@ PXActionResult PXAPI PXXAudioInitialize(PXAudioXSystem* const pxAudioXSystem, PX
         PXActionReturnOnError(initializeResult);
     }
 
-    // Create API interface 
+    // Create API interface
     {
         const HRESULT createResultID = XAudio2Create(&pxAudioXSystem->XAudioInterface, 0, XAUDIO2_DEFAULT_PROCESSOR); //  Xaudio2.lib, xaudio2.h
         const PXActionResult createResult = PXWindowsHandleErrorFromID(createResultID);
@@ -32,7 +32,7 @@ PXActionResult PXAPI PXXAudioInitialize(PXAudioXSystem* const pxAudioXSystem, PX
     // Output
     {
         /*/
-        
+
 
         pxAudio->DeviceOutputList = PXNewList(PXAudioDevice, pxAudio->DeviceOutputAmount);
 
@@ -71,8 +71,8 @@ PXActionResult PXAPI PXXAudioInitialize(PXAudioXSystem* const pxAudioXSystem, PX
             0,
             0
         );
-        
-        
+
+
 
                 pxAudio->Initialize = PXXAudioInitialize;
             pxAudio->DeviceAmount = PXXAudioDeviceAmount;
@@ -90,7 +90,7 @@ PXActionResult PXAPI PXXAudioInitialize(PXAudioXSystem* const pxAudioXSystem, PX
             pxAudio->DeviceStart = PXXAudioDeviceStart;
             pxAudio->DeviceStop = PXXAudioDeviceStop;
             pxAudio->DevicePause = PXXAudioDevicePause;
-        
+
         */
     }
 
@@ -113,7 +113,7 @@ PXActionResult PXAPI PXXAudioDeviceAmount(PXAudioXSystem* const pxAudioXSystem, 
     }
 
     const HRESULT getCountResult = pxAudioXSystem->XAudioInterface->lpVtbl->GetDeviceCount(pxAudioXSystem->XAudioInterface, &pxAudioDeviceAmountInfo->DeviceOutput);
-    
+
 
     return PXActionSuccessful;;
 }
@@ -168,11 +168,11 @@ PXActionResult PXAPI PXXAudioDeviceLoad(PXAudioXSystem* const pxAudioXSystem,   
     XAUDIO2_BUFFER_WMA xAudioBufferWMA;
 
     const HRESULT result = audio2SourceVoice->lpVtbl->SubmitSourceBuffer
-    (
-        audio2SourceVoice,
-        &xAudioBuffer,
-        &xAudioBufferWMA
-    );
+                           (
+                               audio2SourceVoice,
+                               &xAudioBuffer,
+                               &xAudioBufferWMA
+                           );
 
     return PXActionRefusedNotImplemented;
 }

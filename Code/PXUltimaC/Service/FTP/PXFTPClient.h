@@ -11,14 +11,14 @@ extern "C"
 {
 #endif
 
-    typedef struct PXFTPClient_
-    {
-        int x;
-        //PXClient Client;
-    }
-    PXFTPClient;
+typedef struct PXFTPClient_
+{
+    int x;
+    //PXClient Client;
+}
+PXFTPClient;
 
-    PXPublic PXActionResult PXFTPClientConnectToServer(PXFTPClient* const pxFTPClient, const PXText* const ip, const PXInt16U port);
+PXPublic PXActionResult PXFTPClientConnectToServer(PXFTPClient* const pxFTPClient, const PXText* const ip, const PXInt16U port);
 
 
 #ifdef __cplusplus

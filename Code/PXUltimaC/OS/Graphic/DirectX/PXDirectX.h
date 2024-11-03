@@ -67,7 +67,7 @@ typedef enum PXDirectXVersion_
     //PXDirectXVersion11Emulate12x0,
     //PXDirectXVersion11Emulate12x1,
     //PXDirectXVersion11Emulate12x2,
-    // 
+    //
     // DirectX 12 - Windows 10, 11
     PXDirectXVersion12Emulate1x0Core,
     PXDirectXVersion12Emulate9x1,

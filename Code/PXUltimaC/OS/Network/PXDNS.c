@@ -10,6 +10,9 @@
 
 PXActionResult PXAPI PXDNSFetch(const char* name)
 {
+#if OSUnix
+    return PXActionRefusedNotImplemented;
+#elif OSWindows
     PDNS_RECORD dnsRECORD;
 
     const DNS_STATUS dnsStatus = DnsQuery_UTF8
@@ -23,4 +26,7 @@ PXActionResult PXAPI PXDNSFetch(const char* name)
     ); // Windows 2000, Dnsapi.dll, windns.h
 
     return PXActionSuccessful;
+#else
+    return PXActionRefusedNotSupportedByOperatingSystem;
+#endif
 }

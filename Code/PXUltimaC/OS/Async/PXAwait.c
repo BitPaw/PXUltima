@@ -14,9 +14,9 @@ PXBool PXAPI PXAwaitChange(volatile void* const dataAdress, const PXSize dataSiz
 {
 #if OSUnix
 
-    // futex ? 
+    // futex ?
 
-#elif OSWindows    
+#elif OSWindows
 
     // Check
     {
@@ -30,7 +30,7 @@ PXBool PXAPI PXAwaitChange(volatile void* const dataAdress, const PXSize dataSiz
 
             default:
                 return PXFalse;
-        }  
+        }
     }
 
     unsigned char compareValue[8];
@@ -39,10 +39,10 @@ PXBool PXAPI PXAwaitChange(volatile void* const dataAdress, const PXSize dataSiz
 
 #if WindowsAtleast8 && 0
     const DWORD timeoutMilliseconds = INFINITE;
-    const PXBool sucessfull = WaitOnAddress(dataAdress, &compareValue, dataSize, timeoutMilliseconds); // Windows 8 (+UWP), Synchronization.lib, synchapi.h 
+    const PXBool sucessfull = WaitOnAddress(dataAdress, &compareValue, dataSize, timeoutMilliseconds); // Windows 8 (+UWP), Synchronization.lib, synchapi.h
 
     return sucessfull;
-#else // Under windows 8      
+#else // Under windows 8
 
     for(;;)
     {
@@ -55,9 +55,9 @@ PXBool PXAPI PXAwaitChange(volatile void* const dataAdress, const PXSize dataSiz
 
         //__asm volatile ("nop"); // This does not compile. Bad solution anyway
 
-        // [Fix?] Could we tell the scheduler not to bother with this thread and skip it? 
-        // So it just uses very smal timeframe to do stuff. 
-   
+        // [Fix?] Could we tell the scheduler not to bother with this thread and skip it?
+        // So it just uses very smal timeframe to do stuff.
+
     }
 
     return PXFalse;
@@ -90,7 +90,7 @@ PXBool PXAPI PXAwaitChange(PXAwaitInfo* const pxAwaitInfo)
         }
 
         PXThreadSleep(PXNull, 1);
-       // PXThreadYieldToOtherThreads();
+        // PXThreadYieldToOtherThreads();
     }
 
 #if PXLogEnable

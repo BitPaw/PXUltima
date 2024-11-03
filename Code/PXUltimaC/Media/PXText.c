@@ -67,23 +67,23 @@ PXSize PXAPI PXTextToLowerCase(const PXText* const pxTextSource, PXText* const p
 {
     switch (pxTextSource->Format)
     {
-        case TextFormatASCII:
-        case TextFormatUTF8:
+    case TextFormatASCII:
+    case TextFormatUTF8:
+    {
+        for (PXSize i = 0; i < pxTextSource->SizeUsed; ++i)
         {
-            for (PXSize i = 0; i < pxTextSource->SizeUsed; ++i)
-            {
-                pxTextTarget->TextA[i] = MakeLetterCaseLower(pxTextSource->TextA[i]);
-            }
+            pxTextTarget->TextA[i] = MakeLetterCaseLower(pxTextSource->TextA[i]);
         }
-        case TextFormatUNICODE:
+    }
+    case TextFormatUNICODE:
+    {
+        for (PXSize i = 0; i < pxTextSource->SizeUsed; ++i)
         {
-            for (PXSize i = 0; i < pxTextSource->SizeUsed; ++i)
-            {
-                pxTextTarget->TextW[i] = MakeLetterCaseLower(pxTextSource->TextW[i]);
-            }
+            pxTextTarget->TextW[i] = MakeLetterCaseLower(pxTextSource->TextW[i]);
+        }
 
-            break;
-        }
+        break;
+    }
     }
 
     pxTextTarget->SizeAllocated = pxTextSource->SizeAllocated;
@@ -98,25 +98,25 @@ PXSize PXAPI PXTextToUpperCase(const PXText* const pxTextSource, PXText* const p
 {
     switch (pxTextSource->Format)
     {
-        case TextFormatASCII:
-        case TextFormatUTF8:
+    case TextFormatASCII:
+    case TextFormatUTF8:
+    {
+        for (PXSize i = 0; i < pxTextSource->SizeUsed; ++i)
         {
-            for (PXSize i = 0; i < pxTextSource->SizeUsed; ++i)
-            {
-                pxTextTarget->TextA[i] = MakeLetterCaseUpper(pxTextSource->TextA[i]);
-            }
-
-            break;
+            pxTextTarget->TextA[i] = MakeLetterCaseUpper(pxTextSource->TextA[i]);
         }
-        case TextFormatUNICODE:
+
+        break;
+    }
+    case TextFormatUNICODE:
+    {
+        for (PXSize i = 0; i < pxTextSource->SizeUsed; ++i)
         {
-            for (PXSize i = 0; i < pxTextSource->SizeUsed; ++i)
-            {
-                pxTextTarget->TextW[i] = MakeLetterCaseUpper(pxTextSource->TextW[i]);
-            }
-
-            break;
+            pxTextTarget->TextW[i] = MakeLetterCaseUpper(pxTextSource->TextW[i]);
         }
+
+        break;
+    }
     }
 
     pxTextTarget->SizeAllocated = pxTextSource->SizeAllocated;
@@ -147,12 +147,12 @@ PXSize PXAPI PXTextAppend(PXText* const currentString, const PXText* const appen
 PXSize PXAPI PXTextAppendA(PXText* const currentString, const char* const appaendString, const char appaendStringSize)
 {
     currentString->SizeUsed += PXTextCopyA
-    (
-        appaendString,
-        appaendStringSize,
-        &currentString->TextA[currentString->SizeUsed],
-        currentString->SizeAllocated - currentString->SizeUsed
-    );
+                               (
+                                   appaendString,
+                                   appaendStringSize,
+                                   &currentString->TextA[currentString->SizeUsed],
+                                   currentString->SizeAllocated - currentString->SizeUsed
+                               );
 
     return currentString->SizeUsed;
 }
@@ -229,24 +229,24 @@ PXSize PXAPI PXTextPrintV(PXText* const pxText, const char* style, va_list param
 {
     switch (pxText->Format)
     {
-        case TextFormatASCII:
-        case TextFormatUTF8:
-        {
-            pxText->SizeUsed = PXTextPrintAV(pxText->TextA, pxText->SizeAllocated, style, parameter);
-            break;
-        }
-        case TextFormatUNICODE:
-        {
+    case TextFormatASCII:
+    case TextFormatUTF8:
+    {
+        pxText->SizeUsed = PXTextPrintAV(pxText->TextA, pxText->SizeAllocated, style, parameter);
+        break;
+    }
+    case TextFormatUNICODE:
+    {
 #if OSUnix
-            //pxText->SizeUsed = vsnwprintf(pxText->TextW, pxText->SizeAllocated / 2, style, args);
+        //pxText->SizeUsed = vsnwprintf(pxText->TextW, pxText->SizeAllocated / 2, style, args);
 #elif OSWindows
-            pxText->SizeUsed = vswprintf_s(pxText->TextW, pxText->SizeAllocated / 2, (wchar_t*)style, parameter);
+        pxText->SizeUsed = vswprintf_s(pxText->TextW, pxText->SizeAllocated / 2, (wchar_t*)style, parameter);
 #endif
-            break;
-        }
+        break;
+    }
 
-        default:
-            return 0;
+    default:
+        return 0;
     }
 
     pxText->NumberOfCharacters = pxText->SizeUsed;
@@ -336,59 +336,59 @@ PXSize PXAPI PXTextCopy(const PXText* const source, PXText* const destination)
 
     switch (source->Format)
     {
-        case TextFormatASCII:
-        case TextFormatUTF8:
-        {
-            PXSize i = 0;
+    case TextFormatASCII:
+    case TextFormatUTF8:
+    {
+        PXSize i = 0;
 
 #if PXTextAssertEnable
-            assert(destination);
-            assert(source);
+        assert(destination);
+        assert(source);
 #else
-            if (!(destination && source))
-            {
-                return 0;
-            }
+        if (!(destination && source))
+        {
+            return 0;
+        }
 #endif
 
-            for (; (i < minLength) && (source->TextA[i] != '\0'); ++i)
-            {
-                destination->TextA[i] = source->TextA[i];
-            }
-
-            destination->Format = TextFormatASCII;
-            destination->TextA[i] = '\0';
-            destination->SizeUsed = i;
-            destination->NumberOfCharacters = i;
-
-            return i;
-
-            break;
+        for (; (i < minLength) && (source->TextA[i] != '\0'); ++i)
+        {
+            destination->TextA[i] = source->TextA[i];
         }
 
-        case TextFormatUNICODE:
-        {
-            PXSize i = 0;
+        destination->Format = TextFormatASCII;
+        destination->TextA[i] = '\0';
+        destination->SizeUsed = i;
+        destination->NumberOfCharacters = i;
+
+        return i;
+
+        break;
+    }
+
+    case TextFormatUNICODE:
+    {
+        PXSize i = 0;
 
 #if PXTextAssertEnable
-            assert(destination);
-            assert(source);
+        assert(destination);
+        assert(source);
 #endif
 
-            for (; (i < minLength) && (source->TextW[i] != '\0'); ++i)
-            {
-                destination->TextW[i] = source->TextW[i];
-            }
-
-            destination->Format = TextFormatUNICODE;
-            destination->TextW[i] = '\0';
-            destination->SizeUsed = i;
-            destination->NumberOfCharacters = i;
-
-            return i;
-
-            break;
+        for (; (i < minLength) && (source->TextW[i] != '\0'); ++i)
+        {
+            destination->TextW[i] = source->TextW[i];
         }
+
+        destination->Format = TextFormatUNICODE;
+        destination->TextW[i] = '\0';
+        destination->SizeUsed = i;
+        destination->NumberOfCharacters = i;
+
+        return i;
+
+        break;
+    }
     }
 
     return 0;
@@ -503,26 +503,26 @@ void PXAPI PXTextToUTFConvert(const PXSize symbol, PXByte* dataBuffer, PXSize* d
 
     switch (utfTrailBytesAmount)
     {
-        case 0u:
-        {
-            dataBuffer[0] = (PXByte)symbol;  // 0xxxxxxx -
-            break;
-        }
-        case 1u:
-        {
-            dataBuffer[0] = 0b11000000 | ((symbol & (0b11111 << 6u)) >> 6u);  // 110xxxxx
-            break;
-        }
-        case 2u:
-        {
-            dataBuffer[0] = 0b11100000 | ((symbol & (0b1111 << 12u)) >> 12u); // 1110xxxx
-            break;
-        }
-        case 3u:
-        {
-            dataBuffer[0] = 0b11110000 | ((symbol & (0b111 << 18u)) >> 18u); // 1110xxxx
-            break;
-        }
+    case 0u:
+    {
+        dataBuffer[0] = (PXByte)symbol;  // 0xxxxxxx -
+        break;
+    }
+    case 1u:
+    {
+        dataBuffer[0] = 0b11000000 | ((symbol & (0b11111 << 6u)) >> 6u);  // 110xxxxx
+        break;
+    }
+    case 2u:
+    {
+        dataBuffer[0] = 0b11100000 | ((symbol & (0b1111 << 12u)) >> 12u); // 1110xxxx
+        break;
+    }
+    case 3u:
+    {
+        dataBuffer[0] = 0b11110000 | ((symbol & (0b111 << 18u)) >> 18u); // 1110xxxx
+        break;
+    }
     }
 
     for (PXSize i = 1; i < (PXSize)utfTrailBytesAmount; ++i)
@@ -835,10 +835,10 @@ PXSize PXAPI PXTextFindLastCharacter(const PXText* const pxText, const char char
 {
     switch(pxText->Format)
     {
-        case TextFormatASCII:
-        {
-            return PXTextFindLastCharacterA(pxText->TextA, pxText->SizeUsed, character);
-        }
+    case TextFormatASCII:
+    {
+        return PXTextFindLastCharacterA(pxText->TextA, pxText->SizeUsed, character);
+    }
     }
 
     return -1;
@@ -1022,23 +1022,23 @@ void PXAPI PXTextMoveByOffset(PXText* const pxText, const PXSize offset)
 {
     switch (pxText->Format)
     {
-        case TextFormatASCII:
-        case TextFormatUTF8:
-        {
-            pxText->SizeAllocated -= sizeof(char) * offset;
-            pxText->SizeUsed -= sizeof(char) * offset;
-            pxText->NumberOfCharacters -= 1 * offset;
-            pxText->TextA += 1 * offset;
-            break;
-        }
-        case TextFormatUNICODE:
-        {
-            pxText->SizeAllocated -= sizeof(wchar_t) * offset;
-            pxText->SizeUsed -= sizeof(wchar_t) * offset;
-            pxText->NumberOfCharacters -= 1 * offset;
-            pxText->TextW += 1 * offset;
-            break;
-        }
+    case TextFormatASCII:
+    case TextFormatUTF8:
+    {
+        pxText->SizeAllocated -= sizeof(char) * offset;
+        pxText->SizeUsed -= sizeof(char) * offset;
+        pxText->NumberOfCharacters -= 1 * offset;
+        pxText->TextA += 1 * offset;
+        break;
+    }
+    case TextFormatUNICODE:
+    {
+        pxText->SizeAllocated -= sizeof(wchar_t) * offset;
+        pxText->SizeUsed -= sizeof(wchar_t) * offset;
+        pxText->NumberOfCharacters -= 1 * offset;
+        pxText->TextW += 1 * offset;
+        break;
+    }
     }
 }
 
@@ -1085,68 +1085,68 @@ void PXAPI PXTextParseA(const char* buffer, const PXSize bufferSize, const char*
 
         switch (commandKey)
         {
-            case '§':
-            {
-                ++offsetData;
-                break;
-            }
-            case 's':
-            {
-                char* destination = va_arg(args, char*);
-                const char* source = buffer + offsetData;
+        case '§':
+        {
+            ++offsetData;
+            break;
+        }
+        case 's':
+        {
+            char* destination = va_arg(args, char*);
+            const char* source = buffer + offsetData;
 
-                const PXSize readBytes = PXTextCopyA(source, offsetLength, destination, -1);
+            const PXSize readBytes = PXTextCopyA(source, offsetLength, destination, -1);
 
-                offsetData += readBytes;
+            offsetData += readBytes;
 
-                break;
-            }
-            case 'i':
-            case 'd':
-            case 'u':
-            {
-                int* const i = va_arg(args, int*);
+            break;
+        }
+        case 'i':
+        case 'd':
+        case 'u':
+        {
+            int* const i = va_arg(args, int*);
 
-                PXText pxTextInt;
-                PXTextConstructFromAdressA(&pxTextInt, buffer + offsetData, offsetLength, offsetLength);
+            PXText pxTextInt;
+            PXTextConstructFromAdressA(&pxTextInt, buffer + offsetData, offsetLength, offsetLength);
 
-                const PXSize readBytes = PXTextToInt(&pxTextInt, i);
-
-#if PXTextAssertEnable
-                assert(readBytes);
-#endif
-
-                offsetData += readBytes;
-
-                break;
-            }
-            case 'f':
-            {
-                float* number = va_arg(args, float*);
-                PXText pxTextFloat;
-                PXTextConstructFromAdressA(&pxTextFloat, buffer + offsetData, offsetLength, offsetLength);
-
-                const PXSize readBytes = PXTextToFloat(&pxTextFloat, number);
+            const PXSize readBytes = PXTextToInt(&pxTextInt, i);
 
 #if PXTextAssertEnable
-                assert(readBytes);
+            assert(readBytes);
 #endif
 
-                offsetData += readBytes;
+            offsetData += readBytes;
 
-                break;
-            }
-            case 'c':
-            {
-                char* character = va_arg(args, char*);
-                const char* source = buffer + offsetData;
+            break;
+        }
+        case 'f':
+        {
+            float* number = va_arg(args, float*);
+            PXText pxTextFloat;
+            PXTextConstructFromAdressA(&pxTextFloat, buffer + offsetData, offsetLength, offsetLength);
 
-                *character = *source;
+            const PXSize readBytes = PXTextToFloat(&pxTextFloat, number);
 
-                break;
-            }
-            default:
-                break;
+#if PXTextAssertEnable
+            assert(readBytes);
+#endif
+
+            offsetData += readBytes;
+
+            break;
+        }
+        case 'c':
+        {
+            char* character = va_arg(args, char*);
+            const char* source = buffer + offsetData;
+
+            *character = *source;
+
+            break;
+        }
+        default:
+            break;
         }
 
         while (offsetData < bufferSize)
@@ -1257,23 +1257,23 @@ PXSize PXAPI PXTextReplace(PXText* const pxText, char target, char value)
 {
     switch (pxText->Format)
     {
-        case TextFormatASCII:
-        case TextFormatUTF8:
+    case TextFormatASCII:
+    case TextFormatUTF8:
+    {
+        PXTextReplaceA(pxText->TextA, pxText->SizeUsed, target, value);
+        break;
+    }
+    case TextFormatUNICODE:
+    {
+        for (size_t i = 0; i < pxText->SizeUsed; i++)
         {
-            PXTextReplaceA(pxText->TextA, pxText->SizeUsed, target, value);
-            break;
+            pxText->TextW[i] = pxText->TextW[i] == target ? value : pxText->TextW[i];
         }
-        case TextFormatUNICODE:
-        {
-            for (size_t i = 0; i < pxText->SizeUsed; i++)
-            {
-                pxText->TextW[i] = pxText->TextW[i] == target ? value : pxText->TextW[i];
-            }
 
-            break;
-        }
-        default:
-            return 0;
+        break;
+    }
+    default:
+        return 0;
     }
 }
 
@@ -1315,65 +1315,66 @@ PXSize PXAPI PXTextFromInt(PXText* const pxText, int number)
 {
     switch (pxText->Format)
     {
-        case TextFormatUTF8:
-        case TextFormatASCII:
+    case TextFormatUTF8:
+    case TextFormatASCII:
+    {
+        PXBool isSigned = PXFalse;
+        pxText->SizeUsed = 0; // Current offset of the data buffer
+
+        if (number < 0) // number negative
         {
-            PXBool isSigned = PXFalse;
-            pxText->SizeUsed = 0; // Current offset of the data buffer
-
-            if (number < 0) // number negative
-            {
-                isSigned = PXTrue; // Save state that we have a negative number
-                number *= -1; // Remove negative value
-            }
-
-            do
-            {
-                pxText->TextA[pxText->SizeUsed++] = number % 10 + '0'; // Get the value of the most right digit and convert to ASCII-Number
-            } while ((number /= 10) > 0); // Remove the most right digit by interget division and check if we still have a number to process
-
-            if (isSigned) // if we had a minus, add it now
-            {
-                pxText->TextA[pxText->SizeUsed++] = '-'; // Add the minus
-            }
-
-            pxText->TextA[pxText->SizeUsed] = '\0'; // Add the termination byte
-
-            // Reverse the order of the string
-            {
-                const PXSize halfSize = pxText->SizeUsed / 2u;
-
-                for (PXSize i = 0; i < halfSize; i++)
-                {
-                    const PXSize index = pxText->SizeUsed - 1 - i; // index from end position, before the \0
-                    const PXByte temp = pxText->TextA[index];
-
-                    pxText->TextA[index] = pxText->TextA[i];
-                    pxText->TextA[i] = temp;
-                }
-            }
-
-            //itoa(number, string, dataSize);
-
-            //int bytesWritten = PrintSN(string, dataSize, "%i", number);
-
-            return pxText->SizeUsed;
+            isSigned = PXTrue; // Save state that we have a negative number
+            number *= -1; // Remove negative value
         }
 
-
-        case TextFormatUNICODE:
+        do
         {
-            PXText pxTextA;
-            PXTextConstructBufferA(&pxTextA, 16);
-
-            PXTextFromInt(&pxTextA, number);
-
-            PXTextCopyAW(pxTextA.TextA, pxTextA.SizeUsed, pxText->TextW, pxText->SizeAllocated);
-             
-            return pxText->SizeUsed;
+            pxText->TextA[pxText->SizeUsed++] = number % 10 + '0'; // Get the value of the most right digit and convert to ASCII-Number
         }
-        default:
-            return 0;
+        while ((number /= 10) > 0);   // Remove the most right digit by interget division and check if we still have a number to process
+
+        if (isSigned) // if we had a minus, add it now
+        {
+            pxText->TextA[pxText->SizeUsed++] = '-'; // Add the minus
+        }
+
+        pxText->TextA[pxText->SizeUsed] = '\0'; // Add the termination byte
+
+        // Reverse the order of the string
+        {
+            const PXSize halfSize = pxText->SizeUsed / 2u;
+
+            for (PXSize i = 0; i < halfSize; i++)
+            {
+                const PXSize index = pxText->SizeUsed - 1 - i; // index from end position, before the \0
+                const PXByte temp = pxText->TextA[index];
+
+                pxText->TextA[index] = pxText->TextA[i];
+                pxText->TextA[i] = temp;
+            }
+        }
+
+        //itoa(number, string, dataSize);
+
+        //int bytesWritten = PrintSN(string, dataSize, "%i", number);
+
+        return pxText->SizeUsed;
+    }
+
+
+    case TextFormatUNICODE:
+    {
+        PXText pxTextA;
+        PXTextConstructBufferA(&pxTextA, 16);
+
+        PXTextFromInt(&pxTextA, number);
+
+        PXTextCopyAW(pxTextA.TextA, pxTextA.SizeUsed, pxText->TextW, pxText->SizeAllocated);
+
+        return pxText->SizeUsed;
+    }
+    default:
+        return 0;
     }
 }
 
@@ -1381,23 +1382,23 @@ PXSize PXAPI PXTextFromBool(PXText* const pxText, const PXBool number)
 {
     switch (pxText->Format)
     {
-        case TextFormatUTF8:
-        case TextFormatASCII:
-        {
-            pxText->TextA[0] = number ? '1' : '0';
+    case TextFormatUTF8:
+    case TextFormatASCII:
+    {
+        pxText->TextA[0] = number ? '1' : '0';
 
-            return sizeof(char);
-        }
+        return sizeof(char);
+    }
 
 
-        case TextFormatUNICODE:
-        {
-            pxText->TextW[0] = number ? '1' : '0';
+    case TextFormatUNICODE:
+    {
+        pxText->TextW[0] = number ? '1' : '0';
 
-            return sizeof(wchar_t);
-        }
-        default:
-            return 0;
+        return sizeof(wchar_t);
+    }
+    default:
+        return 0;
     }
 }
 
@@ -1405,30 +1406,30 @@ PXSize PXAPI PXTextFromFloat(PXText* const pxText, const float number)
 {
     switch (pxText->Format)
     {
-        case TextFormatUTF8:
-        case TextFormatASCII:
-        {
+    case TextFormatUTF8:
+    case TextFormatASCII:
+    {
 #if OSUnix
-            pxText->SizeUsed = snprintf(pxText->TextA, pxText->SizeAllocated, "%f", number);
+        pxText->SizeUsed = snprintf(pxText->TextA, pxText->SizeAllocated, "%f", number);
 #elif OSWindows
-            //pxText->SizeUsed = sprintf_s(pxText->TextA, pxText->SizeAllocated, "%f", number);
+        //pxText->SizeUsed = sprintf_s(pxText->TextA, pxText->SizeAllocated, "%f", number);
 #endif
-            return pxText->SizeUsed;
-        }
+        return pxText->SizeUsed;
+    }
 
 
-        case TextFormatUNICODE:
-        {
+    case TextFormatUNICODE:
+    {
 #if OSUnix
-            pxText->SizeUsed = snprintf(pxText->TextW, pxText->SizeAllocated, "%f", number);
+        pxText->SizeUsed = snprintf(pxText->TextW, pxText->SizeAllocated, "%f", number);
 #elif OSWindows
-            //pxText->SizeUsed = sprintf_s(pxText->TextW, pxText->SizeAllocated, "%f", number);
+        //pxText->SizeUsed = sprintf_s(pxText->TextW, pxText->SizeAllocated, "%f", number);
 #endif
 
-            return pxText->SizeUsed;
-        }
-        default:
-            return 0;
+        return pxText->SizeUsed;
+    }
+    default:
+        return 0;
     }
 }
 
@@ -1462,15 +1463,15 @@ PXSize PXAPI PXTextToInt(const PXText* const pxText, int* const number)
 {
     switch (pxText->Format)
     {
-        case TextFormatUTF8:
-        case TextFormatASCII:
-        {
-            return PXTextToIntA(pxText->TextA, pxText->SizeUsed, number);
-        }
-        case TextFormatUNICODE:
-        {
-            return sizeof(wchar_t);
-        }
+    case TextFormatUTF8:
+    case TextFormatASCII:
+    {
+        return PXTextToIntA(pxText->TextA, pxText->SizeUsed, number);
+    }
+    case TextFormatUNICODE:
+    {
+        return sizeof(wchar_t);
+    }
     }
 
     return 0;
@@ -1524,35 +1525,35 @@ PXSize PXAPI PXTextToBool(const PXText* const pxText, PXBool* const number)
 {
     switch (pxText->Format)
     {
-        case TextFormatUTF8:
-        case TextFormatASCII:
+    case TextFormatUTF8:
+    case TextFormatASCII:
+    {
+        switch (pxText->TextA[0])
         {
-            switch (pxText->TextA[0])
-            {
-                default:
-                case '0':
-                case 'F':
-                case 'f':
-                    *number = 0;
-                    break;
+        default:
+        case '0':
+        case 'F':
+        case 'f':
+            *number = 0;
+            break;
 
-                case '1':
-                case 'T':
-                case 't':
-                    *number = 1u;
-                    break;
-            }
-
-            return sizeof(char);
+        case '1':
+        case 'T':
+        case 't':
+            *number = 1u;
+            break;
         }
 
+        return sizeof(char);
+    }
 
-        case TextFormatUNICODE:
-        {
+
+    case TextFormatUNICODE:
+    {
 
 
-            return sizeof(wchar_t);
-        }
+        return sizeof(wchar_t);
+    }
     }
 
     return 0;
@@ -1562,92 +1563,92 @@ PXSize PXAPI PXTextToFloat(const PXText* const pxText, float* const number)
 {
     switch (pxText->Format)
     {
-        case TextFormatUTF8:
-        case TextFormatASCII:
+    case TextFormatUTF8:
+    case TextFormatASCII:
+    {
+        int accumulator = 0;
+        PXSize digitsAfterDot = 1;
+        PXSize index = 0;
+        unsigned char isNegative = 0;
+        unsigned char isWholeNumberChunk = 1;
+
+
+
+        if (!pxText)
         {
-            int accumulator = 0;
-            PXSize digitsAfterDot = 1;
-            PXSize index = 0;
-            unsigned char isNegative = 0;
-            unsigned char isWholeNumberChunk = 1;
-
-
-
-            if (!pxText)
-            {
-                return 0;
-            }
-
-            if (pxText->TextA[0] == '-')
-            {
-                index++;
-                isNegative = 1;
-            }
-
-            for (; pxText->TextA[index] != '\0'; ++index)
-            {
-                const char character = pxText->TextA[index];
-                const PXBool isDot = character == '.';
-                const PXBool isValidCharacter = (character >= '0' && character <= '9') || isDot;
-                const int numberElement = character - '0';
-
-                if (!isValidCharacter)
-                {
-                    break;
-                }
-
-                // Trigger when we switch to after dot
-                if (isDot && isWholeNumberChunk)
-                {
-                    isWholeNumberChunk = 0;
-                    continue;
-                }
-
-                accumulator *= 10; // "Shft number to left" Example 12 -> 120
-                accumulator += numberElement; // ASCII character to actual number.
-
-                if (!isWholeNumberChunk)
-                {
-                    digitsAfterDot *= 10;
-                }
-            }
-
-            if (isNegative)
-            {
-                accumulator *= -1;
-            }
-
-            //double stdResult = std::strtof(string, 0); // STD Method
-
-            // Calculate
-            {
-                const double a = accumulator;
-                const double b = digitsAfterDot;
-                const double c = a / b;
-
-                *number = c;
-            }
-
-            return index;
+            return 0;
         }
 
-
-        case TextFormatUNICODE:
+        if (pxText->TextA[0] == '-')
         {
-
-
-            return sizeof(wchar_t);
+            index++;
+            isNegative = 1;
         }
+
+        for (; pxText->TextA[index] != '\0'; ++index)
+        {
+            const char character = pxText->TextA[index];
+            const PXBool isDot = character == '.';
+            const PXBool isValidCharacter = (character >= '0' && character <= '9') || isDot;
+            const int numberElement = character - '0';
+
+            if (!isValidCharacter)
+            {
+                break;
+            }
+
+            // Trigger when we switch to after dot
+            if (isDot && isWholeNumberChunk)
+            {
+                isWholeNumberChunk = 0;
+                continue;
+            }
+
+            accumulator *= 10; // "Shft number to left" Example 12 -> 120
+            accumulator += numberElement; // ASCII character to actual number.
+
+            if (!isWholeNumberChunk)
+            {
+                digitsAfterDot *= 10;
+            }
+        }
+
+        if (isNegative)
+        {
+            accumulator *= -1;
+        }
+
+        //double stdResult = std::strtof(string, 0); // STD Method
+
+        // Calculate
+        {
+            const double a = accumulator;
+            const double b = digitsAfterDot;
+            const double c = a / b;
+
+            *number = c;
+        }
+
+        return index;
+    }
+
+
+    case TextFormatUNICODE:
+    {
+
+
+        return sizeof(wchar_t);
+    }
     }
 
     return 0;
 }
 
-#define PXSizeKB 1000 
-#define PXSizeMB 1000000 
-#define PXSizeGB 1000000000 
-#define PXSizeTB 1000000000000 
-#define PXSizePB 1000000000000000  
+#define PXSizeKB 1000
+#define PXSizeMB 1000000
+#define PXSizeGB 1000000000
+#define PXSizeTB 1000000000000
+#define PXSizePB 1000000000000000
 #define PXSizeEB 1000000000000000000
 
 PXSize PXAPI PXTextFormatTime(PXText* const pxText, const PXSize pxTime)
@@ -1729,7 +1730,7 @@ PXSize PXAPI PXTextFormatData(PXText* const pxText, const void* data, const PXSi
         pxText->SizeUsed += 1;
     }
 
-    pxText->TextA[pxText->SizeUsed+1] = 0; 
+    pxText->TextA[pxText->SizeUsed+1] = 0;
 
     return dataSize;
 }

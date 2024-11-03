@@ -4,10 +4,10 @@ PXBool PXAPI PXISBNIsValid(const void* data, const PXSize dataSize)
 {
     // Splitt
 
-   // Zahlen 
-   // 10 * []
+    // Zahlen
+    // 10 * []
 
-   // 1 * x;
+    // 1 * x;
 
     return 0;
 }

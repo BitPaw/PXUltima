@@ -5,10 +5,10 @@
 #elif OSWindows
 #if WindowsAtleastVista
 #include <mmeapi.h> // Header should be found under XP build but it is not.
-#else 
+#else
 #include <MMSystem.h> // alternavive header of MMEAPI.h?
 #endif
-#pragma comment(lib, "winmm.lib") // Library: Windows Multimedia 
+#pragma comment(lib, "winmm.lib") // Library: Windows Multimedia
 #endif
 /*
 midiOutGetDevCapsA
@@ -114,9 +114,9 @@ PXActionResult PXAPI PXMIDIInitialize(PXAudio* const pxAudio)
     PXWindowsAudioMultimedia* pxWindowsAudioMultimedia = PXNew(PXWindowsAudioMultimedia);
     pxAudio->WindowsMultiMediaInterface = pxWindowsAudioMultimedia;
 
-    // MAke new 
+    // MAke new
     {
-        
+
     }
 
     // Fetch all functions
@@ -170,7 +170,7 @@ PXActionResult PXAPI PXMIDIInitialize(PXAudio* const pxAudio)
         pxAudio->RolloffFactorSet = PXMIDIDeviceRolloffFactorSet;
         pxAudio->DeferredSettingsCommit = PXMIDIDeviceDeferredSettingsCommit;
     }
-    
+
 
     return PXActionRefusedNotImplemented;
 }
@@ -188,16 +188,16 @@ PXActionResult PXAPI PXMIDIDeviceAmount(PXAudio* const pxAudio, const PXAudioDev
 
     switch (pxAudioDeviceType)
     {
-        case PXAudioDeviceTypeInput:
-            *amount = pxWindowsAudioMultimedia->midiInGetNumDevs();
-            break;
+    case PXAudioDeviceTypeInput:
+        *amount = pxWindowsAudioMultimedia->midiInGetNumDevs();
+        break;
 
-        case PXAudioDeviceTypeOutput:
-            *amount = pxWindowsAudioMultimedia->midiOutGetNumDevs();
-            break;
+    case PXAudioDeviceTypeOutput:
+        *amount = pxWindowsAudioMultimedia->midiOutGetNumDevs();
+        break;
 
-        default:
-            return PXActionRefusedArgumentInvalid;
+    default:
+        return PXActionRefusedArgumentInvalid;
     }
 
     return PXActionSuccessful;
@@ -213,50 +213,50 @@ PXActionResult PXAPI PXMIDIDeviceFetch(PXAudio* const pxAudio, const PXAudioDevi
 
     switch (pxAudioDeviceType)
     {
-        case PXAudioDeviceTypeInput:
-        {
-            MIDIOUTCAPSA midi;
+    case PXAudioDeviceTypeInput:
+    {
+        MIDIOUTCAPSA midi;
 
-            mmresultID = pxWindowsAudioMultimedia->midiOutGetDevCapsA(deviceID, &midi, sizeof(midi));
+        mmresultID = pxWindowsAudioMultimedia->midiOutGetDevCapsA(deviceID, &midi, sizeof(midi));
 
-            pxAudioDevice->ManufacturerID = midi.wMid;  
-            pxAudioDevice->ProductID = midi.wPid;                  
-            pxAudioDevice->DriverVersionMajor = HIBYTE(midi.vDriverVersion);
-            pxAudioDevice->DriverVersionMinor = LOBYTE(midi.vDriverVersion);
+        pxAudioDevice->ManufacturerID = midi.wMid;
+        pxAudioDevice->ProductID = midi.wPid;
+        pxAudioDevice->DriverVersionMajor = HIBYTE(midi.vDriverVersion);
+        pxAudioDevice->DriverVersionMinor = LOBYTE(midi.vDriverVersion);
 
-            PXTextCopyA(midi.szPname, MAXPNAMELEN, pxAudioDevice->DeviceName, PXAudioDeviceNameSize);
-
-#if (WINVER >= 0x0400)
-            pxAudioDevice->SupportFlags = midi.dwSupport;
-#endif
-            break;
-        }
-
-        case PXAudioDeviceTypeOutput:
-        {
-            MIDIOUTCAPS midi;
-
-            mmresultID = pxWindowsAudioMultimedia->midiOutGetDevCapsA(deviceID, &midi, sizeof(midi));
-
-            pxAudioDevice->ManufacturerID = midi.wMid;
-            pxAudioDevice->ProductID = midi.wPid;
-            pxAudioDevice->DriverVersionMajor = HIBYTE(midi.vDriverVersion);
-            pxAudioDevice->DriverVersionMinor = LOBYTE(midi.vDriverVersion);
-            pxAudioDevice->Technology = midi.wTechnology;
-            pxAudioDevice->Voices = midi.wVoices;
-            pxAudioDevice->Notes = midi.wNotes;
-            pxAudioDevice->ChannelMask = midi.wChannelMask;
-
-            PXTextCopyA(midi.szPname, MAXPNAMELEN, pxAudioDevice->DeviceName, PXAudioDeviceNameSize);
+        PXTextCopyA(midi.szPname, MAXPNAMELEN, pxAudioDevice->DeviceName, PXAudioDeviceNameSize);
 
 #if (WINVER >= 0x0400)
-            pxAudioDevice->SupportFlags = midi.dwSupport;
+        pxAudioDevice->SupportFlags = midi.dwSupport;
+#endif
+        break;
+    }
+
+    case PXAudioDeviceTypeOutput:
+    {
+        MIDIOUTCAPS midi;
+
+        mmresultID = pxWindowsAudioMultimedia->midiOutGetDevCapsA(deviceID, &midi, sizeof(midi));
+
+        pxAudioDevice->ManufacturerID = midi.wMid;
+        pxAudioDevice->ProductID = midi.wPid;
+        pxAudioDevice->DriverVersionMajor = HIBYTE(midi.vDriverVersion);
+        pxAudioDevice->DriverVersionMinor = LOBYTE(midi.vDriverVersion);
+        pxAudioDevice->Technology = midi.wTechnology;
+        pxAudioDevice->Voices = midi.wVoices;
+        pxAudioDevice->Notes = midi.wNotes;
+        pxAudioDevice->ChannelMask = midi.wChannelMask;
+
+        PXTextCopyA(midi.szPname, MAXPNAMELEN, pxAudioDevice->DeviceName, PXAudioDeviceNameSize);
+
+#if (WINVER >= 0x0400)
+        pxAudioDevice->SupportFlags = midi.dwSupport;
 #endif
 
-            break;
-        }
-        default:
-            return PXActionRefusedArgumentInvalid;
+        break;
+    }
+    default:
+        return PXActionRefusedArgumentInvalid;
     }
 
     return PXActionSuccessful;
@@ -282,31 +282,31 @@ PXActionResult PXAPI PXMIDIDeviceOpen(PXAudio* const pxAudio, PXAudioDevice* con
 
     switch (pxAudioDevice->Type)
     {
-        case PXAudioDeviceTypeInput:
-        {
-            resultID = pxWindowsAudioMultimedia->midiInOpen
-            (
-                &(HMIDIIN*)pxAudio->DirectSoundInterface,
-                deviceID,
-                (DWORD_PTR)PXMIDIInputMessageEvent,
-                (DWORD_PTR)pxAudioDevice,
-                CALLBACK_FUNCTION
-            );
-            break;
-        }
-        case PXAudioDeviceTypeOutput:
-            resultID = pxWindowsAudioMultimedia->midiOutOpen
-            (
-                &(HMIDIOUT*)pxAudio->DirectSoundInterface, 
-                deviceID, 
-                (DWORD_PTR)PXMIDIOutputMessageEvent,
-                (DWORD_PTR)pxAudioDevice,
-                CALLBACK_FUNCTION
-            );
-            break;
+    case PXAudioDeviceTypeInput:
+    {
+        resultID = pxWindowsAudioMultimedia->midiInOpen
+                   (
+                       &(HMIDIIN*)pxAudio->DirectSoundInterface,
+                       deviceID,
+                       (DWORD_PTR)PXMIDIInputMessageEvent,
+                       (DWORD_PTR)pxAudioDevice,
+                       CALLBACK_FUNCTION
+                   );
+        break;
+    }
+    case PXAudioDeviceTypeOutput:
+        resultID = pxWindowsAudioMultimedia->midiOutOpen
+                   (
+                       &(HMIDIOUT*)pxAudio->DirectSoundInterface,
+                       deviceID,
+                       (DWORD_PTR)PXMIDIOutputMessageEvent,
+                       (DWORD_PTR)pxAudioDevice,
+                       CALLBACK_FUNCTION
+                   );
+        break;
 
-        default:
-            return PXActionRefusedArgumentInvalid;
+    default:
+        return PXActionRefusedArgumentInvalid;
     }
     const PXActionResult result = PXWindowsMMAudioConvertFromID(resultID);
 
@@ -323,16 +323,16 @@ PXActionResult PXAPI PXMIDIDeviceClose(PXAudio* const pxAudio, PXAudioDevice* co
 
     switch (pxAudioDevice->Type)
     {
-        case PXAudioDeviceTypeInput:        
-            resultID = pxWindowsAudioMultimedia->midiInClose((HMIDIIN)pxAudio->DirectSoundInterface);
-            break;
-        
-        case PXAudioDeviceTypeOutput:
-            resultID = pxWindowsAudioMultimedia->midiOutClose((HMIDIOUT)pxAudio->DirectSoundInterface);
-            break;
+    case PXAudioDeviceTypeInput:
+        resultID = pxWindowsAudioMultimedia->midiInClose((HMIDIIN)pxAudio->DirectSoundInterface);
+        break;
 
-        default:
-            return PXActionRefusedArgumentInvalid;
+    case PXAudioDeviceTypeOutput:
+        resultID = pxWindowsAudioMultimedia->midiOutClose((HMIDIOUT)pxAudio->DirectSoundInterface);
+        break;
+
+    default:
+        return PXActionRefusedArgumentInvalid;
     }
     const PXActionResult result = PXWindowsMMAudioConvertFromID(resultID);
 
@@ -516,22 +516,22 @@ PXActionResult PXAPI PXMIDIDeviceVolumeGet(PXAudio* const pxAudio, PXAudioDevice
 
     switch (pxAudioDevice->Type)
     {
-        //case PXAudioDeviceTypeInput:
-        //    resultID = midiInGetVolume((HMIDIIN)pxAudio->DirectSoundInterface);
-        //    break;
+    //case PXAudioDeviceTypeInput:
+    //    resultID = midiInGetVolume((HMIDIIN)pxAudio->DirectSoundInterface);
+    //    break;
 
-        case PXAudioDeviceTypeOutput:
-        {
-            DWORD volumeDW = 0;
+    case PXAudioDeviceTypeOutput:
+    {
+        DWORD volumeDW = 0;
 
-            resultID = pxWindowsAudioMultimedia->midiOutGetVolume((HMIDIOUT)pxAudio->DirectSoundInterface, &volumeDW);
+        resultID = pxWindowsAudioMultimedia->midiOutGetVolume((HMIDIOUT)pxAudio->DirectSoundInterface, &volumeDW);
 
-            *volume = volumeDW;
+        *volume = volumeDW;
 
-            break;
-        }
-        default:
-            return PXActionRefusedArgumentInvalid;
+        break;
+    }
+    default:
+        return PXActionRefusedArgumentInvalid;
     }
     const PXActionResult result = PXWindowsMMAudioConvertFromID(resultID);
 
@@ -550,16 +550,16 @@ PXActionResult PXAPI PXMIDIDeviceVolumeSetEqual(PXAudio* const pxAudio, PXAudioD
 
     switch (pxAudioDevice->Type)
     {
-        case PXAudioDeviceTypeInput:
-            resultID = pxWindowsAudioMultimedia->midiInClose((HMIDIIN)pxAudio->DirectSoundInterface);
-            break;
+    case PXAudioDeviceTypeInput:
+        resultID = pxWindowsAudioMultimedia->midiInClose((HMIDIIN)pxAudio->DirectSoundInterface);
+        break;
 
-        case PXAudioDeviceTypeOutput:
-            resultID = pxWindowsAudioMultimedia->midiOutSetVolume((HMIDIOUT)pxAudio->DirectSoundInterface, 0);
-            break;
+    case PXAudioDeviceTypeOutput:
+        resultID = pxWindowsAudioMultimedia->midiOutSetVolume((HMIDIOUT)pxAudio->DirectSoundInterface, 0);
+        break;
 
-        default:
-            return PXActionRefusedArgumentInvalid;
+    default:
+        return PXActionRefusedArgumentInvalid;
     }
     const PXActionResult result = PXWindowsMMAudioConvertFromID(resultID);
 
@@ -583,16 +583,16 @@ PXActionResult PXAPI PXMIDIDeviceStart(PXAudio* const pxAudio, PXAudioDevice* co
 
     switch (pxAudioDevice->Type)
     {
-        case PXAudioDeviceTypeInput:
-            resultID = pxWindowsAudioMultimedia->midiInStart((HMIDIIN)pxAudioDevice->ResourceID.DirectXInterface);
-            break;
+    case PXAudioDeviceTypeInput:
+        resultID = pxWindowsAudioMultimedia->midiInStart((HMIDIIN)pxAudioDevice->ResourceID.DirectXInterface);
+        break;
 
-        //case PXAudioDeviceTypeOutput:
-        //    resultID = midiOutStart((HMIDIIN)pxAudioDevice->ResourceID.DirectXInterface);
-        //    break;
+    //case PXAudioDeviceTypeOutput:
+    //    resultID = midiOutStart((HMIDIIN)pxAudioDevice->ResourceID.DirectXInterface);
+    //    break;
 
-        default:
-            return PXActionRefusedArgumentInvalid;
+    default:
+        return PXActionRefusedArgumentInvalid;
     }
 
     const PXActionResult result = PXWindowsMMAudioConvertFromID(resultID);
@@ -603,23 +603,23 @@ PXActionResult PXAPI PXMIDIDeviceStart(PXAudio* const pxAudio, PXAudioDevice* co
 }
 
 PXActionResult PXAPI PXMIDIDeviceStop(PXAudio* const pxAudio, PXAudioDevice* const pxAudioDevice)
-{    
+{
     PXWindowsAudioMultimedia* pxWindowsAudioMultimedia = (PXWindowsAudioMultimedia*)pxAudio->WindowsMultiMediaInterface;
 
-    MMRESULT resultID = 0;        
+    MMRESULT resultID = 0;
 
     switch (pxAudioDevice->Type)
     {
-        case PXAudioDeviceTypeInput:
-            resultID = pxWindowsAudioMultimedia->midiInStop((HMIDIIN)pxAudioDevice->ResourceID.DirectXInterface);
-            break;
+    case PXAudioDeviceTypeInput:
+        resultID = pxWindowsAudioMultimedia->midiInStop((HMIDIIN)pxAudioDevice->ResourceID.DirectXInterface);
+        break;
 
-        //case PXAudioDeviceTypeOutput:
-        //    *amount = midiOutStop();
-        //    break;
+    //case PXAudioDeviceTypeOutput:
+    //    *amount = midiOutStop();
+    //    break;
 
-        default:
-            return PXActionRefusedArgumentInvalid;
+    default:
+        return PXActionRefusedArgumentInvalid;
     }
 
     const PXActionResult result = PXWindowsMMAudioConvertFromID(resultID);
@@ -637,16 +637,16 @@ PXActionResult PXAPI PXMIDIDevicePause(PXAudio* const pxAudio, PXAudioDevice* co
 
     switch (pxAudioDevice->Type)
     {
-        case PXAudioDeviceTypeInput:
-            resultID = pxWindowsAudioMultimedia->midiInReset((HMIDIIN)pxAudioDevice->ResourceID.DirectXInterface);
-            break;
+    case PXAudioDeviceTypeInput:
+        resultID = pxWindowsAudioMultimedia->midiInReset((HMIDIIN)pxAudioDevice->ResourceID.DirectXInterface);
+        break;
 
-        case PXAudioDeviceTypeOutput:
-            resultID = pxWindowsAudioMultimedia->midiOutReset((HMIDIOUT)pxAudioDevice->ResourceID.DirectXInterface);
-            break;
+    case PXAudioDeviceTypeOutput:
+        resultID = pxWindowsAudioMultimedia->midiOutReset((HMIDIOUT)pxAudioDevice->ResourceID.DirectXInterface);
+        break;
 
-        default:
-            return PXActionRefusedArgumentInvalid;
+    default:
+        return PXActionRefusedArgumentInvalid;
     }
 
     const PXActionResult result = PXWindowsMMAudioConvertFromID(resultID);

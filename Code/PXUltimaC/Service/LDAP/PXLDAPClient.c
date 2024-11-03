@@ -261,7 +261,7 @@ PXActionResult PXAPI PXLDAPClienInitialize(PXLDAPClient* const pxLDAPClient)
             return PXActionRefusedNotSupportedByOperatingSystem;
         }
     }
-    
+
     // Fetch functions
     {
         const PXLibraryFuntionEntry pxLibraryFuntionEntry[] =
@@ -273,205 +273,205 @@ PXActionResult PXAPI PXLDAPClienInitialize(PXLDAPClient* const pxLDAPClient)
             { &pxLDAPClient->sslinitW,"ldap_sslinitW" },
             { &pxLDAPClient->sslinitA,"ldap_sslinitA" },
             { &pxLDAPClient->connect,"ldap_connect" },
-        { &pxLDAPClient->open,"ldap_open" },
-        { &pxLDAPClient->init,"ldap_init" },
-        { &pxLDAPClient->sslinit,"ldap_sslinit" },
-        { &pxLDAPClient->copenW,"cldap_openW" },
-        { &pxLDAPClient->copenA,"cldap_openA" },
-        { &pxLDAPClient->copen,"cldap_open" },
-        { &pxLDAPClient->unbind,"ldap_unbind" },
-        { &pxLDAPClient->unbind_s,"ldap_unbind_s" },
-        { &pxLDAPClient->get_optionA,"ldap_getion" },
-        { &pxLDAPClient->get_optionW,"ldap_getionW" },
-        { &pxLDAPClient->set_optionA,"ldap_setion" },
-        { &pxLDAPClient->set_optionW,"ldap_setionW" },
-        { &pxLDAPClient->simple_bindW,"ldap_simple_bindW" },
-        { &pxLDAPClient->simple_bindA,"ldap_simple_bindA" },
-        { &pxLDAPClient->simple_bind_sW,"ldap_simple_bind_sW" },
-        { &pxLDAPClient->simple_bind_sA,"ldap_simple_bind_sA" },
-        { &pxLDAPClient->bindW,"ldap_bindW" },
-        { &pxLDAPClient->bindA,"ldap_bindA" },
-        { &pxLDAPClient->bind_sW,"ldap_bind_sW" },
-        { &pxLDAPClient->bind_sA,"ldap_bind_sA" },
-        { &pxLDAPClient->sasl_bindA,"ldap_sasl_bindA" },
-        { &pxLDAPClient->sasl_bindW,"ldap_sasl_bindW" },
-        { &pxLDAPClient->sasl_bind_sA,"ldap_sasl_bind_sA" },
-        { &pxLDAPClient->sasl_bind_sW,"ldap_sasl_bind_sW" },
-        { &pxLDAPClient->simple_bind,"ldap_simple_bind" },
-        { &pxLDAPClient->simple_bind_s,"ldap_simple_bind_s" },
-        { &pxLDAPClient->bind,"ldap_bind" },
-        { &pxLDAPClient->bind_s,"ldap_bind_s" },
-        { &pxLDAPClient->searchW,"ldap_searchW" },
-        { &pxLDAPClient->searchA,"ldap_searchA" },
-        { &pxLDAPClient->search_sW,"ldap_search_sW" },
-        { &pxLDAPClient->search_sA,"ldap_search_sA" },
-        { &pxLDAPClient->search_stW,"ldap_search_stW" },
-        { &pxLDAPClient->search_stA,"ldap_search_stA" },
-        { &pxLDAPClient->search_extW,"ldap_search_extW" },
-        { &pxLDAPClient->search_extA,"ldap_search_extA" },
-        { &pxLDAPClient->search_ext_sW,"ldap_search_ext_sW" },
-        { &pxLDAPClient->search_ext_sA,"ldap_search_ext_sA" },
-        { &pxLDAPClient->search,"ldap_search" },
-        { &pxLDAPClient->search_s,"ldap_search_s" },
-        { &pxLDAPClient->search_st,"ldap_search_st" },
-        { &pxLDAPClient->search_ext,"ldap_search_ext" },
-        { &pxLDAPClient->search_ext_s,"ldap_search_ext_s" },
-        { &pxLDAPClient->check_filterW,"ldap_check_filterW" },
-        { &pxLDAPClient->check_filterA,"ldap_check_filterA" },
-        { &pxLDAPClient->modifyW,"ldap_modifyW" },
-        { &pxLDAPClient->modifyA,"ldap_modifyA" },
-        { &pxLDAPClient->modify_sW,"ldap_modify_sW" },
-        { &pxLDAPClient->modify_sA,"ldap_modify_sA" },
-        { &pxLDAPClient->modify_extW,"ldap_modify_extW" },
-        { &pxLDAPClient->modify_extA,"ldap_modify_extA" },
-        { &pxLDAPClient->modify_ext_sW,"ldap_modify_ext_sW" },
-        { &pxLDAPClient->modify_ext_sA,"ldap_modify_ext_sA" },
-        { &pxLDAPClient->modify,"ldap_modify" },
-        { &pxLDAPClient->modify_s,"ldap_modify_s" },
-        { &pxLDAPClient->modify_ext,"ldap_modify_ext" },
-        { &pxLDAPClient->modify_ext_s,"ldap_modify_ext_s" },
-        { &pxLDAPClient->modrdn2W,"ldap_modrdn2W" },
-        { &pxLDAPClient->modrdn2A,"ldap_modrdn2A" },
-        { &pxLDAPClient->modrdnW,"ldap_modrdnW" },
-        { &pxLDAPClient->modrdnA,"ldap_modrdnA" },
-        { &pxLDAPClient->modrdn2_sW,"ldap_modrdn2_sW" },
-        { &pxLDAPClient->modrdn2_sA,"ldap_modrdn2_sA" },
-        { &pxLDAPClient->modrdn_sW,"ldap_modrdn_sW" },
-        { &pxLDAPClient->modrdn_sA,"ldap_modrdn_sA" },
-        { &pxLDAPClient->modrdn2,"ldap_modrdn2" },
-        { &pxLDAPClient->modrdn,"ldap_modrdn" },
-        { &pxLDAPClient->modrdn2_s,"ldap_modrdn2_s" },
-        { &pxLDAPClient->modrdn_s,"ldap_modrdn_s" },
-        { &pxLDAPClient->rename_extW,"ldap_rename_extW" },
-        { &pxLDAPClient->rename_extA,"ldap_rename_extA" },
-        { &pxLDAPClient->rename_ext_sW,"ldap_rename_ext_sW" },
-        { &pxLDAPClient->rename_ext_sA,"ldap_rename_ext_sA" },
-        { &pxLDAPClient->rename_ext,"ldap_rename_ext" },
-        { &pxLDAPClient->rename_ext_s,"ldap_rename_ext_s" },
-        { &pxLDAPClient->addW,"ldap_addW" },
-        { &pxLDAPClient->addA,"ldap_addA" },
-        { &pxLDAPClient->add_sW,"ldap_add_sW" },
-        { &pxLDAPClient->add_sA,"ldap_add_sA" },
-        { &pxLDAPClient->add_extW,"ldap_add_extW" },
-        { &pxLDAPClient->add_extA,"ldap_add_extA" },
-        { &pxLDAPClient->add_ext_sW,"ldap_add_ext_sW" },
-        { &pxLDAPClient->add_ext_sA,"ldap_add_ext_sA" },
-        { &pxLDAPClient->add,"ldap_add" },
-        { &pxLDAPClient->add_s,"ldap_add_s" },
-        { &pxLDAPClient->add_ext,"ldap_add_ext" },
-        { &pxLDAPClient->add_ext_s,"ldap_add_ext_s" },
-        { &pxLDAPClient->compareW,"ldap_compareW" },
-        { &pxLDAPClient->compareA,"ldap_compareA" },
-        { &pxLDAPClient->compare_sW,"ldap_compare_sW" },
-        { &pxLDAPClient->compare_sA,"ldap_compare_sA" },
-        { &pxLDAPClient->compare,"ldap_compare" },
-        { &pxLDAPClient->compare_s,"ldap_compare_s" },
-        { &pxLDAPClient->compare_extW,"ldap_compare_extW" },
-        { &pxLDAPClient->compare_extA,"ldap_compare_extA" },
-        { &pxLDAPClient->compare_ext_sW,"ldap_compare_ext_sW" },
-        { &pxLDAPClient->compare_ext_sA,"ldap_compare_ext_sA" },
-        { &pxLDAPClient->compare_ext,"ldap_compare_ext" },
-        { &pxLDAPClient->compare_ext_s,"ldap_compare_ext_s" },
-        { &pxLDAPClient->deleteW,"ldap_deleteW" },
-        { &pxLDAPClient->deleteA,"ldap_deleteA" },
-        { &pxLDAPClient->delete_sW,"ldap_delete_sW" },
-        { &pxLDAPClient->delete_sA,"ldap_delete_sA" },
-        { &pxLDAPClient->delete_extW,"ldap_delete_extW" },
-        { &pxLDAPClient->delete_extA,"ldap_delete_extA" },
-        { &pxLDAPClient->delete_ext_sW,"ldap_delete_ext_sW" },
-        { &pxLDAPClient->delete_ext_sA,"ldap_delete_ext_sA" },
-        { &pxLDAPClient->deleteC,"ldap_delete" },
-        { &pxLDAPClient->delete_s,"ldap_delete_s" },
-        { &pxLDAPClient->delete_ext,"ldap_delete_ext" },
-        { &pxLDAPClient->delete_ext_s,"ldap_delete_ext_s" },
-        { &pxLDAPClient->abandon,"ldap_abandon" },
-        { &pxLDAPClient->result,"ldap_result" },
-        { &pxLDAPClient->msgfree,"ldap_msgfree" },
-        { &pxLDAPClient->result2error,"ldap_result2error" },
-        { &pxLDAPClient->parse_resultW,"ldap_parse_resultW" },
-        { &pxLDAPClient->parse_resultA,"ldap_parse_resultA" },
-        { &pxLDAPClient->parse_extended_resultA,"ldap_parse_extended_resultA" },
-        { &pxLDAPClient->parse_extended_resultW,"ldap_parse_extended_resultW" },
-        { &pxLDAPClient->controls_freeA,"ldap_controls_freeA" },
-        { &pxLDAPClient->control_freeA,"ldap_control_freeA" },
-        { &pxLDAPClient->controls_freeW,"ldap_controls_freeW" },
-        { &pxLDAPClient->control_freeW,"ldap_control_freeW" },
-        { &pxLDAPClient->free_controlsW,"ldap_free_controlsW" },
-        { &pxLDAPClient->free_controlsA,"ldap_free_controlsA" },
-        { &pxLDAPClient->parse_result,"ldap_parse_result" },
-        { &pxLDAPClient->controls_free,"ldap_controls_free" },
-        { &pxLDAPClient->control_free,"ldap_control_free" },
-        { &pxLDAPClient->free_controls,"ldap_free_controls" },
-        { &pxLDAPClient->err2stringW,"ldap_err2stringW" },
-        { &pxLDAPClient->err2stringA,"ldap_err2stringA" },
-        { &pxLDAPClient->err2string,"ldap_err2string" },
-        { &pxLDAPClient->perror,"ldap_perror" },
-        { &pxLDAPClient->first_entry,"ldap_first_entry" },
-        { &pxLDAPClient->next_entry,"ldap_next_entry" },
-        { &pxLDAPClient->count_entries,"ldap_count_entries" },
-        { &pxLDAPClient->first_attributeW,"ldap_first_attributeW" },
-        { &pxLDAPClient->first_attributeA,"ldap_first_attributeA" },
-        { &pxLDAPClient->first_attribute,"ldap_first_attribute" },
-        { &pxLDAPClient->next_attributeW,"ldap_next_attributeW" },
-        { &pxLDAPClient->next_attributeA,"ldap_next_attributeA" },
-        { &pxLDAPClient->next_attribute,"ldap_next_attribute" },
-        { &pxLDAPClient->get_valuesW,"ldap_get_valuesW" },
-        { &pxLDAPClient->get_valuesA,"ldap_get_valuesA" },
-        { &pxLDAPClient->get_values,"ldap_get_values" },
-        { &pxLDAPClient->get_values_lenW,"ldap_get_values_lenW" },
-        { &pxLDAPClient->get_values_lenA,"ldap_get_values_lenA" },
-        { &pxLDAPClient->get_values_len,"ldap_get_values_len" },
-        { &pxLDAPClient->count_valuesW,"ldap_count_valuesW" },
-        { &pxLDAPClient->count_valuesA,"ldap_count_valuesA" },
-        { &pxLDAPClient->count_values,"ldap_count_values" },
-        { &pxLDAPClient->count_values_len,"ldap_count_values_len" },
-        { &pxLDAPClient->value_freeW,"ldap_value_freeW" },
-        { &pxLDAPClient->value_freeA,"ldap_value_freeA" },
-        { &pxLDAPClient->value_free,"ldap_value_free" },
-        { &pxLDAPClient->value_free_len,"ldap_value_free_len" },
-        { &pxLDAPClient->get_dnW,"ldap_get_dnW" },
-        { &pxLDAPClient->get_dnA,"ldap_get_dnA" },
-        { &pxLDAPClient->get_dn,"ldap_get_dn" },
-        { &pxLDAPClient->explode_dnW,"ldap_explode_dnW" },
-        { &pxLDAPClient->explode_dnA,"ldap_explode_dnA" },
-        { &pxLDAPClient->explode_dn,"ldap_explode_dn" },
-        { &pxLDAPClient->dn2ufnW,"ldap_dn2ufnW" },
-        { &pxLDAPClient->dn2ufnA,"ldap_dn2ufnA" },
-        { &pxLDAPClient->dn2ufn,"ldap_dn2ufn" },
-        { &pxLDAPClient->memfreeW,"ldap_memfreeW" },
-        { &pxLDAPClient->memfreeA,"ldap_memfreeA" },
-        { &pxLDAPClient->ber_bvfree,"ber_bvfree" },
-        { &pxLDAPClient->memfree,"ldap_memfree" },
-        { &pxLDAPClient->ufn2dnW,"ldap_ufn2dnW" },
-        { &pxLDAPClient->ufn2dnA,"ldap_ufn2dnA" },
-        { &pxLDAPClient->ufn2dn,"ldap_ufn2dn" },
-        { &pxLDAPClient->startup,"ldap_startup" },
-        { &pxLDAPClient->cleanup,"ldap_cleanup" },
-        { &pxLDAPClient->escape_filter_elementW,"ldap_escape_filter_elementW" },
-        { &pxLDAPClient->escape_filter_elementA,"ldap_escape_filter_elementA" },
-        { &pxLDAPClient->escape_filter_element,"ldap_escape_filter_element" },
-        { &pxLDAPClient->set_dbg_flags,"ldap_set_dbg_flags" },
-        { &pxLDAPClient->set_dbg_routine,"ldap_set_dbg_routine" },
-        { &pxLDAPClient->LdapUTF8ToUnicode,"LdapUTF8ToUnicode" },
-        { &pxLDAPClient->LdapUnicodeToUTF8,"LdapUnicodeToUTF8" },
-        { &pxLDAPClient->create_sort_controlA,"ldap_create_sort_controlA" },
-        { &pxLDAPClient->create_sort_controlW,"ldap_create_sort_controlW" },
-        { &pxLDAPClient->parse_sort_controlA,"ldap_parse_sort_controlA" },
-        { &pxLDAPClient->parse_sort_controlW,"ldap_parse_sort_controlW" },
-        { &pxLDAPClient->create_sort_control,"ldap_create_sort_control" },
-        { &pxLDAPClient->parse_sort_control,"ldap_parse_sort_control" },
-        { &pxLDAPClient->encode_sort_controlW,"ldap_encode_sort_controlW" },
-        { &pxLDAPClient->encode_sort_controlA,"ldap_encode_sort_controlA" },
-        { &pxLDAPClient->encode_sort_control,"ldap_encode_sort_control" },
-        { &pxLDAPClient->create_page_controlW,"ldap_create_page_controlW" },
-        { &pxLDAPClient->create_page_controlA,"ldap_create_page_controlA" },
-        { &pxLDAPClient->parse_page_controlW,"ldap_parse_page_controlW" },
-        { &pxLDAPClient->parse_page_controlA,"ldap_parse_page_controlA" },
-        { &pxLDAPClient->create_page_control,"ldap_create_page_control" },
-        { &pxLDAPClient->parse_page_control,"ldap_parse_page_control" },
-        { &pxLDAPClient->search_init_pageW,"ldap_search_init_pageW" },
-        { &pxLDAPClient->search_init_pageA,"ldap_search_init_pageA" },
-        { &pxLDAPClient->search_init_page,"ldap_search_init_page" },
+            { &pxLDAPClient->open,"ldap_open" },
+            { &pxLDAPClient->init,"ldap_init" },
+            { &pxLDAPClient->sslinit,"ldap_sslinit" },
+            { &pxLDAPClient->copenW,"cldap_openW" },
+            { &pxLDAPClient->copenA,"cldap_openA" },
+            { &pxLDAPClient->copen,"cldap_open" },
+            { &pxLDAPClient->unbind,"ldap_unbind" },
+            { &pxLDAPClient->unbind_s,"ldap_unbind_s" },
+            { &pxLDAPClient->get_optionA,"ldap_getion" },
+            { &pxLDAPClient->get_optionW,"ldap_getionW" },
+            { &pxLDAPClient->set_optionA,"ldap_setion" },
+            { &pxLDAPClient->set_optionW,"ldap_setionW" },
+            { &pxLDAPClient->simple_bindW,"ldap_simple_bindW" },
+            { &pxLDAPClient->simple_bindA,"ldap_simple_bindA" },
+            { &pxLDAPClient->simple_bind_sW,"ldap_simple_bind_sW" },
+            { &pxLDAPClient->simple_bind_sA,"ldap_simple_bind_sA" },
+            { &pxLDAPClient->bindW,"ldap_bindW" },
+            { &pxLDAPClient->bindA,"ldap_bindA" },
+            { &pxLDAPClient->bind_sW,"ldap_bind_sW" },
+            { &pxLDAPClient->bind_sA,"ldap_bind_sA" },
+            { &pxLDAPClient->sasl_bindA,"ldap_sasl_bindA" },
+            { &pxLDAPClient->sasl_bindW,"ldap_sasl_bindW" },
+            { &pxLDAPClient->sasl_bind_sA,"ldap_sasl_bind_sA" },
+            { &pxLDAPClient->sasl_bind_sW,"ldap_sasl_bind_sW" },
+            { &pxLDAPClient->simple_bind,"ldap_simple_bind" },
+            { &pxLDAPClient->simple_bind_s,"ldap_simple_bind_s" },
+            { &pxLDAPClient->bind,"ldap_bind" },
+            { &pxLDAPClient->bind_s,"ldap_bind_s" },
+            { &pxLDAPClient->searchW,"ldap_searchW" },
+            { &pxLDAPClient->searchA,"ldap_searchA" },
+            { &pxLDAPClient->search_sW,"ldap_search_sW" },
+            { &pxLDAPClient->search_sA,"ldap_search_sA" },
+            { &pxLDAPClient->search_stW,"ldap_search_stW" },
+            { &pxLDAPClient->search_stA,"ldap_search_stA" },
+            { &pxLDAPClient->search_extW,"ldap_search_extW" },
+            { &pxLDAPClient->search_extA,"ldap_search_extA" },
+            { &pxLDAPClient->search_ext_sW,"ldap_search_ext_sW" },
+            { &pxLDAPClient->search_ext_sA,"ldap_search_ext_sA" },
+            { &pxLDAPClient->search,"ldap_search" },
+            { &pxLDAPClient->search_s,"ldap_search_s" },
+            { &pxLDAPClient->search_st,"ldap_search_st" },
+            { &pxLDAPClient->search_ext,"ldap_search_ext" },
+            { &pxLDAPClient->search_ext_s,"ldap_search_ext_s" },
+            { &pxLDAPClient->check_filterW,"ldap_check_filterW" },
+            { &pxLDAPClient->check_filterA,"ldap_check_filterA" },
+            { &pxLDAPClient->modifyW,"ldap_modifyW" },
+            { &pxLDAPClient->modifyA,"ldap_modifyA" },
+            { &pxLDAPClient->modify_sW,"ldap_modify_sW" },
+            { &pxLDAPClient->modify_sA,"ldap_modify_sA" },
+            { &pxLDAPClient->modify_extW,"ldap_modify_extW" },
+            { &pxLDAPClient->modify_extA,"ldap_modify_extA" },
+            { &pxLDAPClient->modify_ext_sW,"ldap_modify_ext_sW" },
+            { &pxLDAPClient->modify_ext_sA,"ldap_modify_ext_sA" },
+            { &pxLDAPClient->modify,"ldap_modify" },
+            { &pxLDAPClient->modify_s,"ldap_modify_s" },
+            { &pxLDAPClient->modify_ext,"ldap_modify_ext" },
+            { &pxLDAPClient->modify_ext_s,"ldap_modify_ext_s" },
+            { &pxLDAPClient->modrdn2W,"ldap_modrdn2W" },
+            { &pxLDAPClient->modrdn2A,"ldap_modrdn2A" },
+            { &pxLDAPClient->modrdnW,"ldap_modrdnW" },
+            { &pxLDAPClient->modrdnA,"ldap_modrdnA" },
+            { &pxLDAPClient->modrdn2_sW,"ldap_modrdn2_sW" },
+            { &pxLDAPClient->modrdn2_sA,"ldap_modrdn2_sA" },
+            { &pxLDAPClient->modrdn_sW,"ldap_modrdn_sW" },
+            { &pxLDAPClient->modrdn_sA,"ldap_modrdn_sA" },
+            { &pxLDAPClient->modrdn2,"ldap_modrdn2" },
+            { &pxLDAPClient->modrdn,"ldap_modrdn" },
+            { &pxLDAPClient->modrdn2_s,"ldap_modrdn2_s" },
+            { &pxLDAPClient->modrdn_s,"ldap_modrdn_s" },
+            { &pxLDAPClient->rename_extW,"ldap_rename_extW" },
+            { &pxLDAPClient->rename_extA,"ldap_rename_extA" },
+            { &pxLDAPClient->rename_ext_sW,"ldap_rename_ext_sW" },
+            { &pxLDAPClient->rename_ext_sA,"ldap_rename_ext_sA" },
+            { &pxLDAPClient->rename_ext,"ldap_rename_ext" },
+            { &pxLDAPClient->rename_ext_s,"ldap_rename_ext_s" },
+            { &pxLDAPClient->addW,"ldap_addW" },
+            { &pxLDAPClient->addA,"ldap_addA" },
+            { &pxLDAPClient->add_sW,"ldap_add_sW" },
+            { &pxLDAPClient->add_sA,"ldap_add_sA" },
+            { &pxLDAPClient->add_extW,"ldap_add_extW" },
+            { &pxLDAPClient->add_extA,"ldap_add_extA" },
+            { &pxLDAPClient->add_ext_sW,"ldap_add_ext_sW" },
+            { &pxLDAPClient->add_ext_sA,"ldap_add_ext_sA" },
+            { &pxLDAPClient->add,"ldap_add" },
+            { &pxLDAPClient->add_s,"ldap_add_s" },
+            { &pxLDAPClient->add_ext,"ldap_add_ext" },
+            { &pxLDAPClient->add_ext_s,"ldap_add_ext_s" },
+            { &pxLDAPClient->compareW,"ldap_compareW" },
+            { &pxLDAPClient->compareA,"ldap_compareA" },
+            { &pxLDAPClient->compare_sW,"ldap_compare_sW" },
+            { &pxLDAPClient->compare_sA,"ldap_compare_sA" },
+            { &pxLDAPClient->compare,"ldap_compare" },
+            { &pxLDAPClient->compare_s,"ldap_compare_s" },
+            { &pxLDAPClient->compare_extW,"ldap_compare_extW" },
+            { &pxLDAPClient->compare_extA,"ldap_compare_extA" },
+            { &pxLDAPClient->compare_ext_sW,"ldap_compare_ext_sW" },
+            { &pxLDAPClient->compare_ext_sA,"ldap_compare_ext_sA" },
+            { &pxLDAPClient->compare_ext,"ldap_compare_ext" },
+            { &pxLDAPClient->compare_ext_s,"ldap_compare_ext_s" },
+            { &pxLDAPClient->deleteW,"ldap_deleteW" },
+            { &pxLDAPClient->deleteA,"ldap_deleteA" },
+            { &pxLDAPClient->delete_sW,"ldap_delete_sW" },
+            { &pxLDAPClient->delete_sA,"ldap_delete_sA" },
+            { &pxLDAPClient->delete_extW,"ldap_delete_extW" },
+            { &pxLDAPClient->delete_extA,"ldap_delete_extA" },
+            { &pxLDAPClient->delete_ext_sW,"ldap_delete_ext_sW" },
+            { &pxLDAPClient->delete_ext_sA,"ldap_delete_ext_sA" },
+            { &pxLDAPClient->deleteC,"ldap_delete" },
+            { &pxLDAPClient->delete_s,"ldap_delete_s" },
+            { &pxLDAPClient->delete_ext,"ldap_delete_ext" },
+            { &pxLDAPClient->delete_ext_s,"ldap_delete_ext_s" },
+            { &pxLDAPClient->abandon,"ldap_abandon" },
+            { &pxLDAPClient->result,"ldap_result" },
+            { &pxLDAPClient->msgfree,"ldap_msgfree" },
+            { &pxLDAPClient->result2error,"ldap_result2error" },
+            { &pxLDAPClient->parse_resultW,"ldap_parse_resultW" },
+            { &pxLDAPClient->parse_resultA,"ldap_parse_resultA" },
+            { &pxLDAPClient->parse_extended_resultA,"ldap_parse_extended_resultA" },
+            { &pxLDAPClient->parse_extended_resultW,"ldap_parse_extended_resultW" },
+            { &pxLDAPClient->controls_freeA,"ldap_controls_freeA" },
+            { &pxLDAPClient->control_freeA,"ldap_control_freeA" },
+            { &pxLDAPClient->controls_freeW,"ldap_controls_freeW" },
+            { &pxLDAPClient->control_freeW,"ldap_control_freeW" },
+            { &pxLDAPClient->free_controlsW,"ldap_free_controlsW" },
+            { &pxLDAPClient->free_controlsA,"ldap_free_controlsA" },
+            { &pxLDAPClient->parse_result,"ldap_parse_result" },
+            { &pxLDAPClient->controls_free,"ldap_controls_free" },
+            { &pxLDAPClient->control_free,"ldap_control_free" },
+            { &pxLDAPClient->free_controls,"ldap_free_controls" },
+            { &pxLDAPClient->err2stringW,"ldap_err2stringW" },
+            { &pxLDAPClient->err2stringA,"ldap_err2stringA" },
+            { &pxLDAPClient->err2string,"ldap_err2string" },
+            { &pxLDAPClient->perror,"ldap_perror" },
+            { &pxLDAPClient->first_entry,"ldap_first_entry" },
+            { &pxLDAPClient->next_entry,"ldap_next_entry" },
+            { &pxLDAPClient->count_entries,"ldap_count_entries" },
+            { &pxLDAPClient->first_attributeW,"ldap_first_attributeW" },
+            { &pxLDAPClient->first_attributeA,"ldap_first_attributeA" },
+            { &pxLDAPClient->first_attribute,"ldap_first_attribute" },
+            { &pxLDAPClient->next_attributeW,"ldap_next_attributeW" },
+            { &pxLDAPClient->next_attributeA,"ldap_next_attributeA" },
+            { &pxLDAPClient->next_attribute,"ldap_next_attribute" },
+            { &pxLDAPClient->get_valuesW,"ldap_get_valuesW" },
+            { &pxLDAPClient->get_valuesA,"ldap_get_valuesA" },
+            { &pxLDAPClient->get_values,"ldap_get_values" },
+            { &pxLDAPClient->get_values_lenW,"ldap_get_values_lenW" },
+            { &pxLDAPClient->get_values_lenA,"ldap_get_values_lenA" },
+            { &pxLDAPClient->get_values_len,"ldap_get_values_len" },
+            { &pxLDAPClient->count_valuesW,"ldap_count_valuesW" },
+            { &pxLDAPClient->count_valuesA,"ldap_count_valuesA" },
+            { &pxLDAPClient->count_values,"ldap_count_values" },
+            { &pxLDAPClient->count_values_len,"ldap_count_values_len" },
+            { &pxLDAPClient->value_freeW,"ldap_value_freeW" },
+            { &pxLDAPClient->value_freeA,"ldap_value_freeA" },
+            { &pxLDAPClient->value_free,"ldap_value_free" },
+            { &pxLDAPClient->value_free_len,"ldap_value_free_len" },
+            { &pxLDAPClient->get_dnW,"ldap_get_dnW" },
+            { &pxLDAPClient->get_dnA,"ldap_get_dnA" },
+            { &pxLDAPClient->get_dn,"ldap_get_dn" },
+            { &pxLDAPClient->explode_dnW,"ldap_explode_dnW" },
+            { &pxLDAPClient->explode_dnA,"ldap_explode_dnA" },
+            { &pxLDAPClient->explode_dn,"ldap_explode_dn" },
+            { &pxLDAPClient->dn2ufnW,"ldap_dn2ufnW" },
+            { &pxLDAPClient->dn2ufnA,"ldap_dn2ufnA" },
+            { &pxLDAPClient->dn2ufn,"ldap_dn2ufn" },
+            { &pxLDAPClient->memfreeW,"ldap_memfreeW" },
+            { &pxLDAPClient->memfreeA,"ldap_memfreeA" },
+            { &pxLDAPClient->ber_bvfree,"ber_bvfree" },
+            { &pxLDAPClient->memfree,"ldap_memfree" },
+            { &pxLDAPClient->ufn2dnW,"ldap_ufn2dnW" },
+            { &pxLDAPClient->ufn2dnA,"ldap_ufn2dnA" },
+            { &pxLDAPClient->ufn2dn,"ldap_ufn2dn" },
+            { &pxLDAPClient->startup,"ldap_startup" },
+            { &pxLDAPClient->cleanup,"ldap_cleanup" },
+            { &pxLDAPClient->escape_filter_elementW,"ldap_escape_filter_elementW" },
+            { &pxLDAPClient->escape_filter_elementA,"ldap_escape_filter_elementA" },
+            { &pxLDAPClient->escape_filter_element,"ldap_escape_filter_element" },
+            { &pxLDAPClient->set_dbg_flags,"ldap_set_dbg_flags" },
+            { &pxLDAPClient->set_dbg_routine,"ldap_set_dbg_routine" },
+            { &pxLDAPClient->LdapUTF8ToUnicode,"LdapUTF8ToUnicode" },
+            { &pxLDAPClient->LdapUnicodeToUTF8,"LdapUnicodeToUTF8" },
+            { &pxLDAPClient->create_sort_controlA,"ldap_create_sort_controlA" },
+            { &pxLDAPClient->create_sort_controlW,"ldap_create_sort_controlW" },
+            { &pxLDAPClient->parse_sort_controlA,"ldap_parse_sort_controlA" },
+            { &pxLDAPClient->parse_sort_controlW,"ldap_parse_sort_controlW" },
+            { &pxLDAPClient->create_sort_control,"ldap_create_sort_control" },
+            { &pxLDAPClient->parse_sort_control,"ldap_parse_sort_control" },
+            { &pxLDAPClient->encode_sort_controlW,"ldap_encode_sort_controlW" },
+            { &pxLDAPClient->encode_sort_controlA,"ldap_encode_sort_controlA" },
+            { &pxLDAPClient->encode_sort_control,"ldap_encode_sort_control" },
+            { &pxLDAPClient->create_page_controlW,"ldap_create_page_controlW" },
+            { &pxLDAPClient->create_page_controlA,"ldap_create_page_controlA" },
+            { &pxLDAPClient->parse_page_controlW,"ldap_parse_page_controlW" },
+            { &pxLDAPClient->parse_page_controlA,"ldap_parse_page_controlA" },
+            { &pxLDAPClient->create_page_control,"ldap_create_page_control" },
+            { &pxLDAPClient->parse_page_control,"ldap_parse_page_control" },
+            { &pxLDAPClient->search_init_pageW,"ldap_search_init_pageW" },
+            { &pxLDAPClient->search_init_pageA,"ldap_search_init_pageA" },
+            { &pxLDAPClient->search_init_page,"ldap_search_init_page" },
             { &pxLDAPClient->get_next_page,"ldap_get_next_page" },
             { &pxLDAPClient->get_next_page_s,"ldap_get_next_page_s" },
             { &pxLDAPClient->get_paged_count,"ldap_get_paged_count" },
@@ -497,7 +497,7 @@ PXActionResult PXAPI PXLDAPClienInitialize(PXLDAPClient* const pxLDAPClient)
             { &pxLDAPClient->close_extended_op,"ldap_close_extended_op" },
             { &pxLDAPClient->LdapGetLastError,"LdapGetLastError" },
             { &pxLDAPClient->LdapMapErrorToWin32,"LdapMapErrorToWin32" },
-            { &pxLDAPClient->conn_from_msg,"ldap_conn_from_msg" } 
+            { &pxLDAPClient->conn_from_msg,"ldap_conn_from_msg" }
         };
 
         const PXSize amount = sizeof(pxLibraryFuntionEntry) / sizeof(PXLibraryFuntionEntry);
@@ -525,72 +525,72 @@ PXActionResult PXAPI PXLDAPClientOpen(PXLDAPClient* const pxLDAPClient, const PX
 {
     switch (pxLDAPInfo->Host.Format)
     {
-        case TextFormatASCII:
-        case TextFormatUTF8:
-        {
+    case TextFormatASCII:
+    case TextFormatUTF8:
+    {
 #if OSUnix
-            return PXActionRefusedNotImplemented;
+        return PXActionRefusedNotImplemented;
 #elif PXOSWindowsDestop
 
-            if (pxLDAPInfo->ConnectionOriented)
-            {
-                const PXldap_sslinitA pxldap_sslinitA = (PXldap_sslinitA)pxLDAPClient->sslinitA;
-
-                pxLDAPClient->ID = pxldap_sslinitA(pxLDAPInfo->Host.TextA, pxLDAPInfo->Port, pxLDAPInfo->SSLUse); // Windows Vista, Wldap32.dll, winldap.h
-            }
-            else
-            {
-                const PXcldap_openA pxcldap_openA = (PXcldap_openA)pxLDAPClient->openA;
-
-                pxLDAPClient->ID = pxcldap_openA(pxLDAPInfo->Host.TextA, pxLDAPInfo->Port); // Windows Vista, Wldap32.dll, winldap.h
-            }
-
-            const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
-
-            if(PXActionSuccessful != pxActionResult)
-            {
-                return pxActionResult; // LdapGetLastError()
-            }
-
-            break;
-#else
-            return PXActionNotSupportedByOperatingSystem;
-#endif        
-        }
-        case TextFormatUNICODE:
+        if (pxLDAPInfo->ConnectionOriented)
         {
+            const PXldap_sslinitA pxldap_sslinitA = (PXldap_sslinitA)pxLDAPClient->sslinitA;
+
+            pxLDAPClient->ID = pxldap_sslinitA(pxLDAPInfo->Host.TextA, pxLDAPInfo->Port, pxLDAPInfo->SSLUse); // Windows Vista, Wldap32.dll, winldap.h
+        }
+        else
+        {
+            const PXcldap_openA pxcldap_openA = (PXcldap_openA)pxLDAPClient->openA;
+
+            pxLDAPClient->ID = pxcldap_openA(pxLDAPInfo->Host.TextA, pxLDAPInfo->Port); // Windows Vista, Wldap32.dll, winldap.h
+        }
+
+        const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
+
+        if(PXActionSuccessful != pxActionResult)
+        {
+            return pxActionResult; // LdapGetLastError()
+        }
+
+        break;
+#else
+        return PXActionNotSupportedByOperatingSystem;
+#endif
+    }
+    case TextFormatUNICODE:
+    {
 #if OSUnix
-            return PXActionRefusedNotImplemented;
+        return PXActionRefusedNotImplemented;
 #elif PXOSWindowsDestop
 
-            if (pxLDAPInfo->ConnectionOriented)
-            {
-                const PXldap_sslinitW pxldap_sslinitW = (PXldap_sslinitW)pxLDAPClient->sslinitW;
+        if (pxLDAPInfo->ConnectionOriented)
+        {
+            const PXldap_sslinitW pxldap_sslinitW = (PXldap_sslinitW)pxLDAPClient->sslinitW;
 
-                pxLDAPClient->ID = pxldap_sslinitW(pxLDAPInfo->Host.TextW, pxLDAPInfo->Port, pxLDAPInfo->SSLUse); // Windows Vista, Wldap32.dll, winldap.h
-            }
-            else
-            {
-                const PXcldap_openW pxcldap_openW = (PXcldap_openW)pxLDAPClient->openW;
+            pxLDAPClient->ID = pxldap_sslinitW(pxLDAPInfo->Host.TextW, pxLDAPInfo->Port, pxLDAPInfo->SSLUse); // Windows Vista, Wldap32.dll, winldap.h
+        }
+        else
+        {
+            const PXcldap_openW pxcldap_openW = (PXcldap_openW)pxLDAPClient->openW;
 
-                pxLDAPClient->ID = pxcldap_openW(pxLDAPInfo->Host.TextW, pxLDAPInfo->Port); // Windows Vista, Wldap32.dll, winldap.h
-            }
-
-            const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
-
-            if(PXActionSuccessful != pxActionResult)
-            {
-                return pxActionResult; // LdapGetLastError()
-            }
-
-            break;
-#else
-            return PXActionNotSupportedByOperatingSystem;
-#endif            
+            pxLDAPClient->ID = pxcldap_openW(pxLDAPInfo->Host.TextW, pxLDAPInfo->Port); // Windows Vista, Wldap32.dll, winldap.h
         }
 
-        default:
-            return PXActionRefusedFormatNotSupported;
+        const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
+
+        if(PXActionSuccessful != pxActionResult)
+        {
+            return pxActionResult; // LdapGetLastError()
+        }
+
+        break;
+#else
+        return PXActionNotSupportedByOperatingSystem;
+#endif
+    }
+
+    default:
+        return PXActionRefusedFormatNotSupported;
     }
 
 #if OSUnix
@@ -598,7 +598,7 @@ PXActionResult PXAPI PXLDAPClientOpen(PXLDAPClient* const pxLDAPClient, const PX
 
 #if 1
     // Set options
-    {        
+    {
         int version = 2;
 
         // Set the version to 3.0 (default is 2.0).
@@ -635,12 +635,12 @@ PXActionResult PXAPI PXLDAPClientOpen(PXLDAPClient* const pxLDAPClient, const PX
     {
         const PXldap_bind_sA pxldap_bind_sA = (PXldap_bind_sA)pxLDAPClient->bind_sA;
         const ULONG bindResult = pxldap_bind_sA
-        (
-            pxLDAPClient->ID,
-            pxLDAPInfo->ConnectionDomain.TextA,
-            pxLDAPInfo->AuthenticationCredentials.TextA,
-            LDAP_AUTH_SIMPLE
-        );
+                                 (
+                                     pxLDAPClient->ID,
+                                     pxLDAPInfo->ConnectionDomain.TextA,
+                                     pxLDAPInfo->AuthenticationCredentials.TextA,
+                                     LDAP_AUTH_SIMPLE
+                                 );
         const PXBool bindSuccessful = LDAP_SUCCESS == bindResult;
 
         const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
@@ -701,25 +701,25 @@ PXActionResult PXAPI PXLDAPClientSearch(PXLDAPClient* const pxLDAPClient, PXLDAP
 
     switch (pxLDAPSearchInfo->Scope)
     {
-        case PXLDAPScopeBase:
-        {
-            scope = LDAP_SCOPE_BASE;
-            break;
-        }
-        case PXLDAPScopeOneLevel:
-        {
-            scope = LDAP_SCOPE_ONELEVEL;
-            break;
-        }
-        case PXLDAPScopeSubTree:
-        {
-            scope = LDAP_SCOPE_SUBTREE;
-            break;
-        }
-        case PXLDAPScopeInvalid:
-        default:
-            scope = -1;
-            break;
+    case PXLDAPScopeBase:
+    {
+        scope = LDAP_SCOPE_BASE;
+        break;
+    }
+    case PXLDAPScopeOneLevel:
+    {
+        scope = LDAP_SCOPE_ONELEVEL;
+        break;
+    }
+    case PXLDAPScopeSubTree:
+    {
+        scope = LDAP_SCOPE_SUBTREE;
+        break;
+    }
+    case PXLDAPScopeInvalid:
+    default:
+        scope = -1;
+        break;
     }
 #else
     return PXActionNotSupportedByOperatingSystem;
@@ -727,82 +727,27 @@ PXActionResult PXAPI PXLDAPClientSearch(PXLDAPClient* const pxLDAPClient, PXLDAP
 
     switch (pxLDAPSearchInfo->EntryName.Format)
     {
-        case TextFormatASCII:
-        case TextFormatUTF8:
-        {
+    case TextFormatASCII:
+    case TextFormatUTF8:
+    {
 #if OSUnix
-            return PXActionRefusedNotImplemented;
+        return PXActionRefusedNotImplemented;
 #elif PXOSWindowsDestop
 
-            if (pxLDAPSearchInfo->Async)
-            {
-                const PXldap_searchA pxldap_searchA = (PXldap_searchA)pxLDAPClient->searchA;
-
-                const ULONG messageID = pxldap_searchA
-                (
-                    pxLDAPClient->ID,
-                    pxLDAPSearchInfo->EntryName.TextA,
-                    scope,
-                    pxLDAPSearchInfo->Filter.TextA,
-                    pxLDAPSearchInfo->AttributeList,
-                    pxLDAPSearchInfo->OnlyTypesRequired
-                );                
-
-                const PXBool successful = LDAP_SUCCESS == messageID;
-
-                const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
-
-                if(PXActionSuccessful != pxActionResult)
-                {
-                    return pxActionResult; // LdapGetLastError()
-                }
-            }
-            else
-            {
-                const PXldap_search_sA pxldap_search_sA = (PXldap_search_sA)pxLDAPClient->search_sA;
-
-                const ULONG searchResult = pxldap_search_sA
-                (
-                    pxLDAPClient->ID,
-                    pxLDAPSearchInfo->EntryName.TextA,
-                    scope,
-                    pxLDAPSearchInfo->Filter.TextA,
-                    pxLDAPSearchInfo->AttributeList,
-                    pxLDAPSearchInfo->OnlyTypesRequired,
-                    &pxLDAPClient->SearchResult
-                );
-
-                const PXBool successful = LDAP_SUCCESS == searchResult;
-
-                const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
-
-                if(PXActionSuccessful != pxActionResult)
-                {
-                    return pxActionResult; // LdapGetLastError()
-                }
-            }
-
-            return PXActionSuccessful;
-#else
-            return PXActionNotSupportedByOperatingSystem;
-#endif
-        }
-        case TextFormatUNICODE:
+        if (pxLDAPSearchInfo->Async)
         {
-#if OSUnix
-            return PXActionRefusedNotImplemented;
-#elif PXOSWindowsDestop
-            const PXldap_searchW pxldap_searchW = (PXldap_searchW)pxLDAPClient->searchW;
+            const PXldap_searchA pxldap_searchA = (PXldap_searchA)pxLDAPClient->searchA;
 
-            const ULONG messageID = pxldap_searchW
-            (
-                pxLDAPClient->ID,
-                pxLDAPSearchInfo->EntryName.TextW,
-                scope,
-                pxLDAPSearchInfo->Filter.TextW,
-                pxLDAPSearchInfo->AttributeList,
-                pxLDAPSearchInfo->OnlyTypesRequired
-            );
+            const ULONG messageID = pxldap_searchA
+                                    (
+                                        pxLDAPClient->ID,
+                                        pxLDAPSearchInfo->EntryName.TextA,
+                                        scope,
+                                        pxLDAPSearchInfo->Filter.TextA,
+                                        pxLDAPSearchInfo->AttributeList,
+                                        pxLDAPSearchInfo->OnlyTypesRequired
+                                    );
+
             const PXBool successful = LDAP_SUCCESS == messageID;
 
             const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
@@ -811,15 +756,70 @@ PXActionResult PXAPI PXLDAPClientSearch(PXLDAPClient* const pxLDAPClient, PXLDAP
             {
                 return pxActionResult; // LdapGetLastError()
             }
+        }
+        else
+        {
+            const PXldap_search_sA pxldap_search_sA = (PXldap_search_sA)pxLDAPClient->search_sA;
 
-            return PXActionSuccessful;
-#else
-            return PXActionNotSupportedByOperatingSystem;
-#endif
+            const ULONG searchResult = pxldap_search_sA
+                                       (
+                                           pxLDAPClient->ID,
+                                           pxLDAPSearchInfo->EntryName.TextA,
+                                           scope,
+                                           pxLDAPSearchInfo->Filter.TextA,
+                                           pxLDAPSearchInfo->AttributeList,
+                                           pxLDAPSearchInfo->OnlyTypesRequired,
+                                           &pxLDAPClient->SearchResult
+                                       );
+
+            const PXBool successful = LDAP_SUCCESS == searchResult;
+
+            const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
+
+            if(PXActionSuccessful != pxActionResult)
+            {
+                return pxActionResult; // LdapGetLastError()
+            }
         }
 
-        default:
-            return PXActionRefusedFormatNotSupported;
+        return PXActionSuccessful;
+#else
+        return PXActionNotSupportedByOperatingSystem;
+#endif
+    }
+    case TextFormatUNICODE:
+    {
+#if OSUnix
+        return PXActionRefusedNotImplemented;
+#elif PXOSWindowsDestop
+        const PXldap_searchW pxldap_searchW = (PXldap_searchW)pxLDAPClient->searchW;
+
+        const ULONG messageID = pxldap_searchW
+                                (
+                                    pxLDAPClient->ID,
+                                    pxLDAPSearchInfo->EntryName.TextW,
+                                    scope,
+                                    pxLDAPSearchInfo->Filter.TextW,
+                                    pxLDAPSearchInfo->AttributeList,
+                                    pxLDAPSearchInfo->OnlyTypesRequired
+                                );
+        const PXBool successful = LDAP_SUCCESS == messageID;
+
+        const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
+
+        if(PXActionSuccessful != pxActionResult)
+        {
+            return pxActionResult; // LdapGetLastError()
+        }
+
+        return PXActionSuccessful;
+#else
+        return PXActionNotSupportedByOperatingSystem;
+#endif
+    }
+
+    default:
+        return PXActionRefusedFormatNotSupported;
     }
 
     return PXActionSuccessful;

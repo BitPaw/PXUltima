@@ -26,7 +26,7 @@ PXActionResult PXAPI PXOGGLoadFromFile(PXResourceTransphereInfo* const pxResourc
         PXInt32UCluster signature;
 
         const PXFileDataElementType pxDataStreamElementList[] =
-        { 
+        {
             {signature.Data, PXDataTypeDatax4},
             {&page.Version, PXDataTypeInt08U},
             {&page.HeaderType, PXDataTypeInt08U},
@@ -53,8 +53,8 @@ PXActionResult PXAPI PXOGGLoadFromFile(PXResourceTransphereInfo* const pxResourc
 #if PXOPGGDebug
         printf
         (
-            "|         | %7s | %4s | %8s | %6s | %7s | 
-            
+            "|         | %7s | %4s | %8s | %6s | %7s |
+
             s | %4s |\n"
             "|  Chunk  | %7i | %4i | %8zi | %6i | %7i | %11i | %4i |\n",
 
@@ -124,7 +124,7 @@ PXActionResult PXAPI PXOGGLoadFromFile(PXResourceTransphereInfo* const pxResourc
 }
 
 PXActionResult PXAPI PXOGGSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
-{    
+{
     PXFileWriteB(pxResourceSaveInfo->FileReference, PXOGGHeaderSignature, sizeof(PXOGGHeaderSignature));
 
     return PXActionRefusedNotImplemented;

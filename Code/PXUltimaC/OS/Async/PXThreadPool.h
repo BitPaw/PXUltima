@@ -5,11 +5,14 @@
 
 typedef struct PXThreadPool_
 {
+#if OSUnix
+#elif OSWindows
     PTP_POOL Pool;
+    PTP_WORK Work;
+#endif
+
     PXSize StackReserve;
     PXSize StackCommit;
-
-    PTP_WORK Work;
 
     PXInt16U ThreadsMinimum;
     PXInt16U ThreadsMaximum;

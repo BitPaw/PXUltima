@@ -6,7 +6,7 @@
 
 PXActionResult PXAPI PXKnowlegeGraphNodeInsert(PXKnowlegeGraph* const pxKnowlegeGraph, PXKnowlegeGraphNode* const pxKnowlegeGraphNode)
 {
-    
+
 
     return PXActionSuccessful;
 }
@@ -14,9 +14,12 @@ PXActionResult PXAPI PXKnowlegeGraphNodeInsert(PXKnowlegeGraph* const pxKnowlege
 void PXDrawTriangle(PXOpenGL* pxOpenGL)
 {
     pxOpenGL->Begin(GL_TRIANGLES);
-    pxOpenGL->Color3f(1, 0, 0); pxOpenGL->Vertex2f(-0.5f, -0.5f);
-    pxOpenGL->Color3f(0, 1, 0); pxOpenGL->Vertex2f(0.5f, -0.5f);
-    pxOpenGL->Color3f(0, 0, 1); pxOpenGL->Vertex2f(0, 0.5f);
+    pxOpenGL->Color3f(1, 0, 0);
+    pxOpenGL->Vertex2f(-0.5f, -0.5f);
+    pxOpenGL->Color3f(0, 1, 0);
+    pxOpenGL->Vertex2f(0.5f, -0.5f);
+    pxOpenGL->Color3f(0, 0, 1);
+    pxOpenGL->Vertex2f(0, 0.5f);
     pxOpenGL->End();
 }
 
@@ -68,7 +71,7 @@ void PXDrawLine(PXOpenGL* const pxOpenGL, PXLine* const pxLine)
         }
     }
 
-   
+
 }
 
 void PXDrawCircle(PXOpenGL* const pxOpenGL, PXCircle* const pxCircle)
@@ -114,7 +117,7 @@ void PXDrawCircleList(PXOpenGL* const pxOpenGL, PXCircle* const pxCircleList, co
         PXCircle* const pxCircle = &pxCircleList[i];
 
         pxLine.Positon[2] = pxCircle->Positon[0];
-        pxLine.Positon[3] = pxCircle->Positon[1];       
+        pxLine.Positon[3] = pxCircle->Positon[1];
 
         PXDrawCircle(pxOpenGL, pxCircle);
 
@@ -138,11 +141,11 @@ PXActionResult PXAPI PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph* const pxKnowle
 
     // How many nodes do we have, allocate space for it.
 
-   // PXDocumentPrint(pxDocument);
+    // PXDocumentPrint(pxDocument);
 
 
     // Insert Root at (0,0,0)
-    
+
 
     // Insert all siblings in a cictular pattern?
 
@@ -172,7 +175,7 @@ PXActionResult PXAPI PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph* const pxKnowle
 
     pxGraphic.OpenGLInstance.Viewport(0,0, imageWidth, imageHeight);
 
-    // Render image  
+    // Render image
     {
         PXColorRGBAF clearColor = { 0.1,0,0,1 };
         PXColorRGBAF drawColor = { 1,0,0,0 };
@@ -182,13 +185,13 @@ PXActionResult PXAPI PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph* const pxKnowle
         //glViewport(0,0, pxWindow.Width, pxWindow.Height);
 
         for (size_t i = 0; i < 4; i++)
-        //while (1)
+            //while (1)
         {
             //pxGraphic.SceneBegin(pxGraphic.EventOwner);
 
             pxGraphic.Clear(pxGraphic.EventOwner, &clearColor);
-      
-                       
+
+
             PXColorRGBAF fillColor = { 1,0,0,1 };
             PXColorRGBAF borderColor = { 1,1,1,1 };
 
@@ -210,16 +213,16 @@ PXActionResult PXAPI PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph* const pxKnowle
             PXDrawCircleList(&pxGraphic.OpenGLInstance, pxCircleList, 5);
 
 
-           // pxGraphic.DrawColorRGBAF(pxGraphic.EventOwner, 1, 0, 0, 1);
+            // pxGraphic.DrawColorRGBAF(pxGraphic.EventOwner, 1, 0, 0, 1);
             //pxGraphic.RectangleDraw(pxGraphic.EventOwner, -0.5, 0.2, 0.5, 0.6, 0x01);
-           // pxGraphic.SceneEnd(pxGraphic.EventOwner);
+            // pxGraphic.SceneEnd(pxGraphic.EventOwner);
             pxGraphic.SceneDeploy(pxGraphic.EventOwner);
-        }    
+        }
     }
 
     // Screenshot Scene
     {
-        PXClear(PXImage, pxImage);    
+        PXClear(PXImage, pxImage);
 
         PXImageResize(pxImage, PXColorFormatRGBI8, imageWidth, imageHeight);
 
@@ -231,7 +234,7 @@ PXActionResult PXAPI PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph* const pxKnowle
 
 
     PXGraphicRelease(&pxGraphic);
-  //  PXWindowDestruct(&pxWindow);
+    //  PXWindowDestruct(&pxWindow);
 
 
     return PXActionSuccessful;

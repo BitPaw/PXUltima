@@ -6,6 +6,8 @@
 #include <OS/Error/PXActionResult.h>
 #include <Container/Dictionary/PXDictionary.h>
 
+typedef struct PXSymbol_ PXSymbol;
+
 
 //---<Settings>---
 #define MemorySizeUnkown -1
@@ -28,20 +30,19 @@
 #define PXAccessReadOnly        PXAccessREAD
 #define PXAccessWriteOnly       PXAccessWRITE
 #define PXAccessReadWrite       PXAccessReadOnly | PXAccessWriteOnly
-#define PXAccessReadExecute     PXAccessEXECUTE | PXAccessReadOnly 
-#define PXAccessWriteExecute    PXAccessEXECUTE | PXAccessWriteOnly 
+#define PXAccessReadExecute     PXAccessEXECUTE | PXAccessReadOnly
+#define PXAccessWriteExecute    PXAccessEXECUTE | PXAccessWriteOnly
 #define PXAccessFull            PXAccessEXECUTE | PXAccessReadWrite
 
 typedef enum PXAccessMode_
 {
-    PXAccessModeNoAccess,
-    PXAccessModeReadOnly,
-    PXAccessModeWriteOnly,
-    PXAccessModeReadAndWrite,
-    PXAccessModeReadExecute,
-    PXAccessModeWriteExecute,
-    PXAccessModeExecuteOnly,
-    PXAccessModeFull
+    PXAccessModeNoAccess     = PXAccessNone,
+    PXAccessModeReadOnly     = PXAccessReadOnly,
+    PXAccessModeWriteOnly    = PXAccessWriteOnly,
+    PXAccessModeReadAndWrite = PXAccessReadWrite,
+    PXAccessModeReadExecute  = PXAccessReadExecute,
+    PXAccessModeWriteExecute = PXAccessWriteExecute,
+    PXAccessModeFull         = PXAccessFull
 }
 PXAccessMode;
 //----------------------------------------------------------
@@ -144,7 +145,7 @@ PXMemoryHeapReallocateEventData;
 #define PXSymbolMemoryStateAllocated
 #define PXSymbolMemoryStateFreed
 
-// A special debug symbol that is used for information 
+// A special debug symbol that is used for information
 // about allocations. As the system does not track allocations
 // we are in the need to create them ourselfs.
 typedef struct PXSymbolMemory_
@@ -152,13 +153,13 @@ typedef struct PXSymbolMemory_
     void* Adress;
     void* ModuleAdress; // What EXE or DLL is the creator?
     char FileAdress[64]; // Calling adress
-    char FunctionAdress[64]; // Name of the 
+    char FunctionAdress[64]; // Name of the
     PXSize Amount;
     PXSize ObjectSize;
     PXSize LineNumber;
     //PXInt64U CreationTime;   // timestamps?
 
-  
+
 
     // is it reallocated
     // Thread source? is it from another thread.
@@ -184,14 +185,14 @@ PXMemorySymbolInfoMode;
 
 
 // Global memory lookup.
-// This is a ugly solution but due to the 
+// This is a ugly solution but due to the
 // scattered calls of malloc and free, we
 // need to have this global reference to compare to
 
 // Singleton of a global memory table, all PXMemory allocations are regsieterd here
 PXPrivate PXMemorySymbolLookup* const PXAPI PXMemorySymbolLookupInstanceGet(void);
 PXPublic void PXAPI PXMemorySymbolAdd(PXSymbolMemory* const pxSymbolMemory, const PXMemorySymbolInfoMode pxMemorySymbolInfoMode);
-PXPublic PXActionResult PXAPI PXMemorySymbolFetch(const void* const adress, struct PXSymbol_* const pxSymbol);
+PXPublic PXActionResult PXAPI PXMemorySymbolFetch(const void* const adress, PXSymbol* const pxSymbol);
 
 
 
@@ -255,7 +256,7 @@ PXPublic PXBool PXAPI PXMemoryHeapReallocate(PXMemoryHeapReallocateEventData* co
 // Allocate memory in virtual memory space.
 // The minimal size will be a pagefile (4KB) as the size will be rounded up to the next page boundary.
 // Only use for bigger datablocks as thic has very hi overhead.
-PXPublic void* PXAPI PXMemoryVirtualAllocate(PXSize size, const PXAccessMode PXAccessMode);
+PXPublic void* PXAPI PXMemoryVirtualAllocate(const PXSize size, const PXAccessMode pxAccessMode);
 PXPublic void PXAPI PXMemoryVirtualPrefetch(const void* adress, const PXSize size);
 PXPublic void PXAPI PXMemoryVirtualRelease(const void* adress, const PXSize size);
 PXPublic void* PXAPI PXMemoryVirtualReallocate(const void* adress, const PXSize size);
@@ -269,7 +270,7 @@ PXPublic void* PXAPI PXMemoryVirtualReallocate(const void* adress, const PXSize 
 PXPublic PXActionResult PXAPI PXMemoryStackAllocate(PXMemoryInfo* const pxMemoryAllocateInfo);
 
 // Deallocates stack allocated memory if it was commited to the heap.
-// Additional size parameter can be ignored    
+// Additional size parameter can be ignored
 PXPublic PXActionResult PXAPI PXMemoryStackDeallocate(PXMemoryInfo* const pxMemoryAllocateInfo);
 
 
@@ -355,9 +356,9 @@ PXPublic PXActionResult PXAPI PXMemoryHeapDeallocate(PXMemoryInfo* const pxMemor
 
 //#define PXHeapListResize(type, amountDemand, amountCurrent, adress) PXMemoryHeapReallocate(sizeof(type), amountDemand, amountCurrent, adress, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
 //#define PXHeapListResizeT(typeSize, amountDemand, amountCurrent, adress) PXMemoryHeapReallocate(typeSize, amountDemand, amountCurrent, adress, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
-#else 
+#else
 #define PXHeapListResize(type, amountDemand, amountCurrent, adress) PXMemoryHeapReallocate(sizeof(type), amountDemand, amountCurrent, adress)
-#endif    
+#endif
 //---------------------------------------------------------
 
 
@@ -374,7 +375,7 @@ PXPublic PXSize PXAPI PXMemoryCopy(const void* PXRestrict inputBuffer, const PXS
 #else
 #define PXCopy(type, source, target) PXMemoryCopy(source, sizeof(type), target, sizeof(type));
 #define PXCopyList(type, amount, source, target) PXMemoryCopy(source, sizeof(type)*amount, target, sizeof(type)*amount);
-#endif    
+#endif
 //---------------------------------------------------------
 
 

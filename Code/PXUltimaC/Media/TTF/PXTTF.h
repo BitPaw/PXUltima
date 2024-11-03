@@ -56,7 +56,7 @@ typedef enum PXTTFTableEntryType_
     PXTTFTableEntryGlyphReference, // Zapf
 
     // Additional
-    PXTTFTableEntryDigitalSignature, // DSIG 
+    PXTTFTableEntryDigitalSignature, // DSIG
     PXTTFTableEntryLinearThreshold, // LTSH
     PXTTFTableEntryVerticalDeviceMetrics // VDMX
 }

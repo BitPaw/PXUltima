@@ -31,12 +31,12 @@ PXActionResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, con
 
     //PXInt32U* blcount = PXNewList(PXInt32U, maxBitLenghAA);
     //PXInt32U* nextcode = PXNewList(PXInt32U, maxBitLenghAA);
-    
+
     PXInt32U blcount[16];
     PXInt32U nextcode[16];
     PXClearList(PXInt32U, blcount, 16);
     PXClearList(PXInt32U, nextcode, 16);
-    
+
     unsigned error = 0;
 
     if (!huffmanTree->CodeSymbols || !blcount || !nextcode) error = 83; /*alloc fail*/
@@ -132,7 +132,7 @@ PXActionResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, con
         {
             const PXInt32U l = maxlens[i];
 
-            if (l <= PXHuffmanFirstBits) 
+            if (l <= PXHuffmanFirstBits)
                 continue;
 
             huffmanTree->TableLength[i] = l;
@@ -152,7 +152,7 @@ PXActionResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, con
         const PXInt32U symbol = huffmanTree->CodeSymbols[i]; // the huffman bit pattern. i itself is the value.
         // reverse bits, because the huffman bits are given in MSB first order but the bit reader reads LSB first
         const PXInt32U reverse = reverseBits(symbol, l);
-        
+
         if (l == 0)
             continue;
 
@@ -168,7 +168,7 @@ PXActionResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, con
                 // bit reader will read the l bits of symbol first, the remaining FIRSTBITS - l bits go to the MSB's
                 PXInt32U index = reverse | (j << l);
 
-                if (huffmanTree->TableLength[index] != 16) 
+                if (huffmanTree->TableLength[index] != 16)
                     return PXActionRefusedParserSymbolNotAsExpected; // invalid tree: long symbol shares prefix with short symbol
 
                 huffmanTree->TableLength[index] = l;
@@ -186,7 +186,7 @@ PXActionResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, con
             const PXInt16U start = huffmanTree->TableValue[index]; /*starting index in secondary table*/
             const PXInt32U num = 1u << (tablelen - (l - PXHuffmanFirstBits)); /*amount of entries of this symbol in secondary table*/
 
-            if (maxlen < l) 
+            if (maxlen < l)
                 return PXActionRefusedParserSymbolNotAsExpected; // invalid tree: long symbol shares prefix with short symbol
 
             for (PXInt32U j = 0; j < num; ++j)
@@ -227,7 +227,7 @@ PXActionResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, con
         // decoded): an oversubscribed huffman tree, indicated by error 55.
         for (PXSize i = 0; i < size; ++i)
         {
-            if (huffmanTree->TableLength[i] == 16) 
+            if (huffmanTree->TableLength[i] == 16)
                 return PXActionRefusedParserSymbolNotAsExpected;
         }
     }
@@ -293,162 +293,162 @@ PXActionResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(struct PXFile_* const 
 
     //while (!actionError)
     //{
-        /*read the code length codes out of 3 * (amount of code length codes) bits*/
-        /*if (lodepng_gtofl(reader->bp, huffmanNumberCode.NumberOfLengthCodes * 3, reader->bitsize))
+    /*read the code length codes out of 3 * (amount of code length codes) bits*/
+    /*if (lodepng_gtofl(reader->bp, huffmanNumberCode.NumberOfLengthCodes * 3, reader->bitsize))
+    {
+        // throw(50); // error: the bit pointer is or will go past the memory* AAAA/
+    }*/
+    for (PXInt8U index = 0; index != huffmanNumberCode.NumberOfLengthCodes; ++index)
+    {
+        //ensureBits9(reader, 3); /*out of bounds already checked above */
+        bitlen_codeLength[codeLengthIndex[index]] = PXFileReadBits(pxFile, 3u);
+    }
+    for (PXInt8U index = huffmanNumberCode.NumberOfLengthCodes; index != NUM_CODE_LENGTH_CODES; ++index)
+    {
+        bitlen_codeLength[codeLengthIndex[index]] = 0;
+    }
+
+    {
+        const PXActionResult generateError = PXGenerateFromLengths(&tree_cl, bitlen_codeLength, NUM_CODE_LENGTH_CODES, 7);
+
+        PXActionReturnOnError(generateError);
+    }
+
+    // now we can use this tree to read the lengths for the tree that this function will return
+
+
+
+    /*i is the current symbol we're reading in the part that contains the code lengths of lit/len and dist codes*/
+
+    for (PXSize i = 0; i < huffmanNumberCode.NumberOfLiteralCodes + huffmanNumberCode.NumberOfDistanceCodes; )
+    {
+        //ensureBits25(reader, 22); /* up to 15 bits for huffman code, up to 7 extra bits below*/
+
+        const PXInt16U code = PXHuffmanSymbolDecode(pxFile, &tree_cl);
+        const PXBool isValid = 19 > code; // valid is 0..18
+
+        if (!isValid) // INVALIDSYMBOL
         {
-            // throw(50); // error: the bit pointer is or will go past the memory* AAAA/
+            return PXActionRefusedParserSymbolNotAsExpected; // Error: Invalid code, tried to read disallowed huffman symbol
+        }
+
+        switch (code)
+        {
+        case 18: // repeat "0" 11-138 times
+        {
+            PXSize replength = 11; // read in the bits that indicate repeat length
+            replength += PXFileReadBits(pxFile, 7u);
+
+            // repeat this value in the next lengths
+            for (n = 0; n < replength; ++n)
+            {
+                if (i >= huffmanNumberCode.NumberOfLiteralCodes + huffmanNumberCode.NumberOfDistanceCodes)
+                    return PXActionRefusedParserSymbolNotAsExpected; // error: i is larger than the amount of codes
+
+                if (i < huffmanNumberCode.NumberOfLiteralCodes) bitlen_lengh[i] = 0;
+                else bitlen_distance[i - huffmanNumberCode.NumberOfLiteralCodes] = 0;
+                ++i;
+            }
+
+            break;
+        }
+        case 17: // repeat "0" 3-10 times
+        {
+            PXSize replength = 3; // read in the bits that indicate repeat length
+            replength += PXFileReadBits(pxFile, 3u);
+
+            /*repeat this value in the next lengths*/
+            for (n = 0; n < replength; ++n)
+            {
+                if (i >= huffmanNumberCode.NumberOfLiteralCodes + huffmanNumberCode.NumberOfDistanceCodes)
+                    return PXActionRefusedParserSymbolNotAsExpected; // error: i is larger than the amount of codes
+
+                if (i < huffmanNumberCode.NumberOfLiteralCodes) bitlen_lengh[i] = 0;
+                else bitlen_distance[i - huffmanNumberCode.NumberOfLiteralCodes] = 0;
+                ++i;
+            }
+
+            break;
+        }
+        case 16: // repeat previous
+        {
+            PXSize replength = 3; /*read in the 2 bits that indicate repeat length (3-6)*/
+            PXSize value; /*set value to the previous code*/
+
+            if (i == 0)
+                return PXActionRefusedParserSymbolNotAsExpected; // can't repeat previous if i is 0
+
+            replength += PXFileReadBits(pxFile, 2u);
+
+            if (i < huffmanNumberCode.NumberOfLiteralCodes + 1) value = bitlen_lengh[i - 1];
+            else value = bitlen_distance[i - huffmanNumberCode.NumberOfLiteralCodes - 1];
+            /*repeat this value in the next lengths*/
+            for (n = 0; n < replength; ++n)
+            {
+                if (i >= huffmanNumberCode.NumberOfLiteralCodes + huffmanNumberCode.NumberOfDistanceCodes)
+                    return PXActionRefusedParserSymbolNotAsExpected; /*error: i is larger than the amount of codes*/
+
+                if (i < huffmanNumberCode.NumberOfLiteralCodes) bitlen_lengh[i] = value;
+                else bitlen_distance[i - huffmanNumberCode.NumberOfLiteralCodes] = value;
+                ++i;
+            }
+
+            break;
+        }
+        default: // 0..15 : A length code
+        {
+            if (i < huffmanNumberCode.NumberOfLiteralCodes)
+            {
+                bitlen_lengh[i] = code;
+            }
+            else
+            {
+                bitlen_distance[i - huffmanNumberCode.NumberOfLiteralCodes] = code;
+            }
+            ++i;
+
+            break;
+        }
+        }
+
+        /*check if any of the ensureBits above went out of bounds*/
+        /*if (reader->bp > reader->bitsize)
+        {
+            /*return error code 10 or 11 depending on the situation that happened in huffmanDecodeSymbol
+            (10=no endcode, 11=wrong jump outside of tree)*/
+        /* TODO: revise error codes 10,11,50: the above comment is no longer valid * /
+        throw(50); /*error, bit pointer jumps past memory* /
         }*/
-        for (PXInt8U index = 0; index != huffmanNumberCode.NumberOfLengthCodes; ++index)
-        {
-            //ensureBits9(reader, 3); /*out of bounds already checked above */
-            bitlen_codeLength[codeLengthIndex[index]] = PXFileReadBits(pxFile, 3u);
-        }
-        for (PXInt8U index = huffmanNumberCode.NumberOfLengthCodes; index != NUM_CODE_LENGTH_CODES; ++index)
-        {
-            bitlen_codeLength[codeLengthIndex[index]] = 0;
-        }
+    }
 
-        {
-            const PXActionResult generateError = PXGenerateFromLengths(&tree_cl, bitlen_codeLength, NUM_CODE_LENGTH_CODES, 7);
+    //if (actionError) break;
 
-            PXActionReturnOnError(generateError);
-        }
+    {
+        const PXBool isEndCodeValid = bitlen_lengh[256] > 0; // the length of the end code 256 must be larger than 0
 
-        // now we can use this tree to read the lengths for the tree that this function will return
+        if (!isEndCodeValid)
+            return PXActionRefusedParserSymbolNotAsExpected;
 
-    
+    }
 
-        /*i is the current symbol we're reading in the part that contains the code lengths of lit/len and dist codes*/
+    // now we've finally got huffmanNumberCode.NumberOfLiteralCodes and
+    // huffmanNumberCode.NumberOfDistanceCodes, so generate the code trees,
+    // and the function is done
 
-        for (PXSize i = 0; i < huffmanNumberCode.NumberOfLiteralCodes + huffmanNumberCode.NumberOfDistanceCodes; )
-        {
-            //ensureBits25(reader, 22); /* up to 15 bits for huffman code, up to 7 extra bits below*/
-        
-            const PXInt16U code = PXHuffmanSymbolDecode(pxFile, &tree_cl);
-            const PXBool isValid = 19 > code; // valid is 0..18
+    {
+        const PXActionResult generateError = PXGenerateFromLengths(treeLength, bitlen_lengh, NUM_DEFLATE_CODE_SYMBOLS, 15); // treeLength
 
-            if (!isValid) // INVALIDSYMBOL
-            {
-                return PXActionRefusedParserSymbolNotAsExpected; // Error: Invalid code, tried to read disallowed huffman symbol
-            }
-
-            switch (code)
-            {
-                case 18: // repeat "0" 11-138 times
-                {
-                    PXSize replength = 11; // read in the bits that indicate repeat length
-                    replength += PXFileReadBits(pxFile, 7u);
-
-                    // repeat this value in the next lengths
-                    for (n = 0; n < replength; ++n)
-                    {
-                        if (i >= huffmanNumberCode.NumberOfLiteralCodes + huffmanNumberCode.NumberOfDistanceCodes) 
-                            return PXActionRefusedParserSymbolNotAsExpected; // error: i is larger than the amount of codes
-
-                        if (i < huffmanNumberCode.NumberOfLiteralCodes) bitlen_lengh[i] = 0;
-                        else bitlen_distance[i - huffmanNumberCode.NumberOfLiteralCodes] = 0;
-                        ++i;
-                    }
-
-                    break;
-                }
-                case 17: // repeat "0" 3-10 times
-                {
-                    PXSize replength = 3; // read in the bits that indicate repeat length
-                    replength += PXFileReadBits(pxFile, 3u);
-
-                    /*repeat this value in the next lengths*/
-                    for (n = 0; n < replength; ++n)
-                    {
-                        if (i >= huffmanNumberCode.NumberOfLiteralCodes + huffmanNumberCode.NumberOfDistanceCodes) 
-                            return PXActionRefusedParserSymbolNotAsExpected; // error: i is larger than the amount of codes
-
-                        if (i < huffmanNumberCode.NumberOfLiteralCodes) bitlen_lengh[i] = 0;
-                        else bitlen_distance[i - huffmanNumberCode.NumberOfLiteralCodes] = 0;
-                        ++i;
-                    }
-
-                    break;
-                }
-                case 16: // repeat previous
-                {
-                    PXSize replength = 3; /*read in the 2 bits that indicate repeat length (3-6)*/
-                    PXSize value; /*set value to the previous code*/
-
-                    if (i == 0) 
-                        return PXActionRefusedParserSymbolNotAsExpected; // can't repeat previous if i is 0
-
-                    replength += PXFileReadBits(pxFile, 2u);
-
-                    if (i < huffmanNumberCode.NumberOfLiteralCodes + 1) value = bitlen_lengh[i - 1];
-                    else value = bitlen_distance[i - huffmanNumberCode.NumberOfLiteralCodes - 1];
-                    /*repeat this value in the next lengths*/
-                    for (n = 0; n < replength; ++n)
-                    {
-                        if (i >= huffmanNumberCode.NumberOfLiteralCodes + huffmanNumberCode.NumberOfDistanceCodes) 
-                            return PXActionRefusedParserSymbolNotAsExpected; /*error: i is larger than the amount of codes*/
-
-                        if (i < huffmanNumberCode.NumberOfLiteralCodes) bitlen_lengh[i] = value;
-                        else bitlen_distance[i - huffmanNumberCode.NumberOfLiteralCodes] = value;
-                        ++i;
-                    }
-
-                    break;
-                }
-                default: // 0..15 : A length code
-                {
-                    if (i < huffmanNumberCode.NumberOfLiteralCodes)
-                    {
-                        bitlen_lengh[i] = code;
-                    }
-                    else
-                    {
-                        bitlen_distance[i - huffmanNumberCode.NumberOfLiteralCodes] = code;
-                    }
-                    ++i;
-
-                    break;
-                }
-            }
-        
-            /*check if any of the ensureBits above went out of bounds*/
-            /*if (reader->bp > reader->bitsize)
-            {
-                /*return error code 10 or 11 depending on the situation that happened in huffmanDecodeSymbol
-                (10=no endcode, 11=wrong jump outside of tree)*/
-                /* TODO: revise error codes 10,11,50: the above comment is no longer valid * /
-                throw(50); /*error, bit pointer jumps past memory* /
-            }*/
-        }
-        
-        //if (actionError) break;
-
-        {
-            const PXBool isEndCodeValid = bitlen_lengh[256] > 0; // the length of the end code 256 must be larger than 0
-
-            if (!isEndCodeValid) 
-                return PXActionRefusedParserSymbolNotAsExpected;
-
-        }
-
-        // now we've finally got huffmanNumberCode.NumberOfLiteralCodes and 
-        // huffmanNumberCode.NumberOfDistanceCodes, so generate the code trees, 
-        // and the function is done
-
-        {
-            const PXActionResult generateError = PXGenerateFromLengths(treeLength, bitlen_lengh, NUM_DEFLATE_CODE_SYMBOLS, 15); // treeLength
-            
-            PXActionReturnOnError(generateError);
-        }
+        PXActionReturnOnError(generateError);
+    }
 
 
-        {
-            const PXActionResult generateError = PXGenerateFromLengths(treeDistance, bitlen_distance, NUM_DISTANCE_SYMBOLS, 15); // treeDistance
-        
-            PXActionReturnOnError(generateError);
-        }
+    {
+        const PXActionResult generateError = PXGenerateFromLengths(treeDistance, bitlen_distance, NUM_DISTANCE_SYMBOLS, 15); // treeDistance
 
-        //break; /*end of error-while*/
+        PXActionReturnOnError(generateError);
+    }
+
+    //break; /*end of error-while*/
     //}
 
     return PXActionSuccessful;
@@ -501,7 +501,7 @@ PXActionResult PXAPI PXHuffmanDistanceTreeGenerateFixedLiteralLengthTree(PXHuffm
     const PXSize numcodes = NUM_DEFLATE_CODE_SYMBOLS;
     PXInt32U bitlen[NUM_DEFLATE_CODE_SYMBOLS];
 
-    // 288 possible codes: 
+    // 288 possible codes:
     // 0-255=literals, 256=endcode, 257-285=lengthcodes, 286-287=unused*/
     for (PXInt16U i = 0u; i <= 143u; ++i) bitlen[i] = 8u;
     for (PXInt16U i = 144u; i <= 255u; ++i) bitlen[i] = 9u;
@@ -528,7 +528,7 @@ PXActionResult PXAPI PXHuffmanDistanceTreeGenerateFixed(PXHuffmanTree* const huf
     }
 
     const PXActionResult result = PXGenerateFromLengths(huffmanTree, bitlen, numcodes, maxbitlen);
-    
+
     return result;
 }
 
@@ -542,11 +542,11 @@ void PXAPI PXHuffmanTreeDestruct(PXHuffmanTree* const huffmanTree)
 
 PXHuffmanCodeType PXAPI PXHuffmanCodeTypeFromCode(const PXInt16U code)
 {
-    if (285u < code) return PXHuffmanCodeInvalid; // if too big => Invalid  
+    if (285u < code) return PXHuffmanCodeInvalid; // if too big => Invalid
 
-    if (256u < code) return PXHuffmanCodeLength; // if 0..255 => Literal 
+    if (256u < code) return PXHuffmanCodeLength; // if 0..255 => Literal
 
-    if (256u == code) return PXHuffmanCodeEndOfBlock; // if exactly 256 => End 
+    if (256u == code) return PXHuffmanCodeEndOfBlock; // if exactly 256 => End
 
-    return PXHuffmanCodeLiteral; // if 0..254 => Literal 
+    return PXHuffmanCodeLiteral; // if 0..254 => Literal
 }

@@ -2,7 +2,7 @@
 
 #include <OS/File/PXFile.h>
 
-const char PXRARSignature[] = { 'R', 'a', 'r', '!', 0x1A ,0x07 };
+const char PXRARSignature[] = { 'R', 'a', 'r', '!', 0x1A,0x07 };
 
 PXActionResult PXAPI PXRARLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
@@ -24,32 +24,32 @@ PXActionResult PXAPI PXRARLoadFromFile(PXResourceTransphereInfo* const pxResourc
 
         switch (checkA)
         {
-            case 0: // OK
+        case 0: // OK
+        {
+            pxRAR.Version = PXRARVersion1x5;
+            break;
+        }
+        case 1:
+        {
+            const char checkB[2] = { 1,0 };
+
+            const PXBool isSignatureB = PXFileReadAndCompare(pxResourceLoadInfo->FileReference, checkB, 2u);
+
+            if (!isSignatureB)
             {
-                pxRAR.Version = PXRARVersion1x5;
-                break;
-            }            
-            case 1:
-            {
-                const char checkB[2] = { 1,0 };
-
-                const PXBool isSignatureB = PXFileReadAndCompare(pxResourceLoadInfo->FileReference, checkB, 2u);
-
-                if (!isSignatureB)
-                {
-                    return PXActionRefusedInvalidHeaderSignature;
-                }
-
-                pxRAR.Version = PXRARVersion5x0;
-
-                break;
+                return PXActionRefusedInvalidHeaderSignature;
             }
 
-            default:
-                return PXActionRefusedInvalidHeaderSignature;
+            pxRAR.Version = PXRARVersion5x0;
+
+            break;
+        }
+
+        default:
+            return PXActionRefusedInvalidHeaderSignature;
         }
     }
-    
+
     return PXActionRefusedNotImplemented;
 }
 

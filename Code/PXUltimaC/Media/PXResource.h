@@ -36,6 +36,7 @@ typedef struct PXCompiler_ PXCompiler;
 typedef struct PXProcessor_ PXProcessor;
 typedef struct PXHierarchicalNode_ PXHierarchicalNode;
 typedef struct PXFileEntry_ PXFileEntry;
+typedef struct PXDebug_ PXDebug;
 
 extern void _chkstk(size_t s);
 
@@ -209,7 +210,7 @@ typedef enum PXVertexBufferFormat_
 
     // PXUltima-Custom
     PXVertexBufferFormatXYI8,
-    PXVertexBufferFormatXYZI8, 
+    PXVertexBufferFormatXYZI8,
 
 
 
@@ -391,7 +392,7 @@ typedef struct PXResourceInfo_
 }
 PXResourceInfo;
 
-// Object to use instead of a plain adress. 
+// Object to use instead of a plain adress.
 // This can assure we have the correct and expected object.
 // This should prevent stale references
 typedef struct PXResourceReference_
@@ -1594,9 +1595,9 @@ typedef struct PXUIElementPosition_
     float Right;
     float Bottom;
 
-   // PXInt16U FlagListFormat; // Unused
- //   PXInt8U FlagListAncer;
-   // PXInt8U FlagListKeep;
+    // PXInt16U FlagListFormat; // Unused
+//   PXInt8U FlagListAncer;
+    // PXInt8U FlagListKeep;
 }
 PXUIElementPosition;
 
@@ -1661,7 +1662,7 @@ typedef struct PXGUIElementData_
     union
     {
         PXDirectorySearchCache DirectorySearchCache; // Used for a treeview
-    };     
+    };
 }
 PXGUIElementData;
 */
@@ -1721,7 +1722,7 @@ typedef struct PXGUIElement_
 
 
 
-  
+
 
 
     // Change this to something better
@@ -2007,7 +2008,7 @@ typedef union PXGUIElementCreateInfoData_
 {
     PXGUIElementMenuItemList MenuItem;
     PXGUIElementCreateWindowInfo Window;
-  //  PXUIElementTextInfo Text;
+    //  PXUIElementTextInfo Text;
     PXUIElementButtonInfo Button;
     PXUIElementTreeViewItemInfo TreeViewItem;
     PXUIElementSceneRenderInfo SceneRender;
@@ -2443,7 +2444,7 @@ typedef enum PXFileFormat_
     PXFileFormatSTEP,
     PXFileFormatSTL,
     PXFileFormatSVG,
-    PXFileFormatTAR, 
+    PXFileFormatTAR,
     PXFileFormatTGA,
     PXFileFormatTagImage,
     PXFileFormatTrueTypeFont,
@@ -2500,7 +2501,7 @@ typedef PXActionResult (PXAPI* PXResourceTransphereFunction)(PXResourceTranspher
 #define PXResourceTransphereOwnerMOD        (1 << 10) // Handled by a mod that was loaded
 #define PXResourceTransphereOwnerCustom     (1 << 11) // Handles by a custom injected function
 
-// This object shall be used to define an interaction with a 
+// This object shall be used to define an interaction with a
 // resource to peek, load or save
 typedef struct PXResourceTransphereInfo_
 {
@@ -2508,20 +2509,20 @@ typedef struct PXResourceTransphereInfo_
     void* ResourceTarget;       // Generic object, tager
     PXResourceManager* Manager; // The callback manager. This is set by the resource loader itself. Used for chain dependencys
     PXFile* FileReference;      // The attached file that hold the data
-    
-    
+
+
     PXResourceFileSizePredict FileSizePredict;
     PXResourceTransphereFunction ResourcePeek;
     PXResourceTransphereFunction ResourceLoad;
     PXResourceTransphereFunction ResourceSave;
-    
+
     PXResourceTransphereFunction OnDeviceDataRegister;  // Preallocate resources on the device
     PXResourceTransphereFunction OnDeviceDataUpload;    // Upload data fully
-    
+
     void* ResourceSource;
     PXResourceType ResourceType;        // Type of the resource that 'Target' points to. Example: Image, Sound, Video...
-    
-    
+
+
     PXFileFormat FormatReal;
     PXFileFormat FormatExpected;        // The format detected by the resource loader
 
@@ -2845,7 +2846,7 @@ typedef struct PXSpriteAnimator_
 PXSpriteAnimator;
 
 
-// Info to create this 
+// Info to create this
 typedef struct PXSpriteAnimatorInfo_
 {
     PXSpriteAnimatorTimeStamp* TimeStampList;

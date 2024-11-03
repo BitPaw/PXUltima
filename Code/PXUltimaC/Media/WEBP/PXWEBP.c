@@ -35,25 +35,25 @@ PXActionResult PXAPI PXWEBPLoadFromFile(PXResourceTransphereInfo* const pxResour
 
         switch (chunkID.Value)
         {
-            case PXInt32Make('V', 'P', '8', 'L'):
-            {
-                PXInt32U streamSize = 0;
-                PXFileReadI32UE(pxResourceLoadInfo->FileReference, &streamSize, PXEndianLittle);
+        case PXInt32Make('V', 'P', '8', 'L'):
+        {
+            PXInt32U streamSize = 0;
+            PXFileReadI32UE(pxResourceLoadInfo->FileReference, &streamSize, PXEndianLittle);
 
-                const char signature = 0x2f;
-                const PXBool isValid = PXFileReadAndCompare(pxResourceLoadInfo->FileReference, &signature, sizeof(char));
+            const char signature = 0x2f;
+            const PXBool isValid = PXFileReadAndCompare(pxResourceLoadInfo->FileReference, &signature, sizeof(char));
 
-                // Images can only be 16384x16384 
-                pxImage->Width = PXFileReadBits(pxResourceLoadInfo->FileReference, 14u) + 1u;
-                pxImage->Height = PXFileReadBits(pxResourceLoadInfo->FileReference, 14u) + 1u;
+            // Images can only be 16384x16384
+            pxImage->Width = PXFileReadBits(pxResourceLoadInfo->FileReference, 14u) + 1u;
+            pxImage->Height = PXFileReadBits(pxResourceLoadInfo->FileReference, 14u) + 1u;
 
-                PXBool hasAlpha = PXFileReadBits(pxResourceLoadInfo->FileReference, 1u);
-                PXBool version = PXFileReadBits(pxResourceLoadInfo->FileReference, 3u);
+            PXBool hasAlpha = PXFileReadBits(pxResourceLoadInfo->FileReference, 1u);
+            PXBool version = PXFileReadBits(pxResourceLoadInfo->FileReference, 3u);
 
-                break;
-            }
-            default:
-                break;
+            break;
+        }
+        default:
+            break;
         }
 
     }

@@ -1,10 +1,15 @@
 #include "PXMath.h"
 
 #include <math.h>
-#include <intrin.h>
+
 #include <immintrin.h>
 #include <wmmintrin.h>
 #include <mmintrin.h>
+
+#if OSUnix
+#elif OSWindows
+#include <intrin.h>
+#endif
 
 int PXAPI PXMathMinimumI(const int a, const int b)
 {
@@ -114,20 +119,20 @@ double PXAPI PXMathRoot(unsigned int rootNr, double value)
 {
     switch(rootNr)
     {
-        case 0:
-            return 0;
+    case 0:
+        return 0;
 
-        case 1:
-            return 0;
+    case 1:
+        return 0;
 
-        case 2:
-            return sqrt(value);  // TODO: Dependeny problem 
+    case 2:
+        return sqrt(value);  // TODO: Dependeny problem
 
-        case 3:
-            return 0;// cbrt(value); // TODO:! !!!
+    case 3:
+        return 0;// cbrt(value); // TODO:! !!!
 
-        default:
-            return 0;
+    default:
+        return 0;
     }
 }
 
@@ -157,7 +162,7 @@ double PXAPI PXMathLogarithmus(int base, double exponent)
     return 0; // TODO: not implemented?
 #elif OSWindows
     return 0;// _dlog(exponent, base); // TODO: !!!
-#endif    
+#endif
 }
 
 double PXAPI PXMathLogarithmusBase2(double exponent)
@@ -167,7 +172,7 @@ double PXAPI PXMathLogarithmusBase2(double exponent)
 
 double PXAPI PXMathLogarithmusBase10(double exponent)
 {
-    return log10(exponent);  // TODO: Dependeny problem 
+    return log10(exponent);  // TODO: Dependeny problem
 }
 
 double PXAPI PXMathNewtonGravitation(double massA, double massB, double distance)
@@ -236,7 +241,7 @@ float PXAPI PXMathSinusF(const float value)
 #if 0
     double dx = value;
 
-    PXIntrinsicFSIN(&dx); // sin(value); // TODO: Dependeny problem 
+    PXIntrinsicFSIN(&dx); // sin(value); // TODO: Dependeny problem
 
     return dx;
 
@@ -252,7 +257,7 @@ float PXAPI PXMathRootSquareF(const float value)
     float x = value;
 
 #if 0
-    PXIntrinsicFSQRT(&x); // sin(value); // TODO: Dependeny problem 
+    PXIntrinsicFSQRT(&x); // sin(value); // TODO: Dependeny problem
 #else
     x = sqrt(value);
 #endif
@@ -264,19 +269,19 @@ double PXAPI PXMathSinus(double value)
 {
     float x = 0;// value;
 
-    x = sin(value); // sin(value); // TODO: Dependeny problem 
+    x = sin(value); // sin(value); // TODO: Dependeny problem
 
     return x;
 }
 
 double PXAPI PXMathTangens(double value)
 {
-    return tan(value); // TODO: Dependeny problem 
+    return tan(value); // TODO: Dependeny problem
 }
 
 double PXAPI PXMathCosinus(double value)
 {
-    return cos(value); // TODO: Dependeny problem 
+    return cos(value); // TODO: Dependeny problem
 }
 
 double PXAPI PXMathSinusArc(double value)
@@ -319,7 +324,7 @@ unsigned long PXAPI PXMathFibonacci(unsigned long step)
     }
     else
     {
-        // (1 + W/5)^n - (1 - W/5)^n 
+        // (1 + W/5)^n - (1 - W/5)^n
         // -------------------------
         //         2^n * W/5
 

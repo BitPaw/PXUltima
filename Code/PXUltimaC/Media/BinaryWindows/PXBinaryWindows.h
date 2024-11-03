@@ -6,9 +6,9 @@
 
 typedef struct PXDOSHeader_
 {
-    PXInt16UCluster Magic;          // "MZ" 
-    PXInt16U LastPageSize;          // Size of final block in the file, or 0 if the final block is a full 512 bytes. 
-    PXInt16U TotalPagesInFile;      // Number of 512-byte blocks in the file, including the final block which may not be the full 512 bytes. 
+    PXInt16UCluster Magic;          // "MZ"
+    PXInt16U LastPageSize;          // Size of final block in the file, or 0 if the final block is a full 512 bytes.
+    PXInt16U TotalPagesInFile;      // Number of 512-byte blocks in the file, including the final block which may not be the full 512 bytes.
     PXInt16U ReallocationItems;
     PXInt16U ParagraphsInHeader;
     PXInt16U ParagraphsExtraMinimum;

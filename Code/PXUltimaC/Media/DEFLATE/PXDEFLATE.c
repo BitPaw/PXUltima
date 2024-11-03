@@ -31,23 +31,27 @@
 
 /*the base lengths represented by codes 257-285*/
 static const unsigned LENGTHBASE[29]
-= { 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 31, 35, 43, 51, 59,
-   67, 83, 99, 115, 131, 163, 195, 227, 258 };
+    = { 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 31, 35, 43, 51, 59,
+        67, 83, 99, 115, 131, 163, 195, 227, 258
+      };
 
 /*the extra bits used by codes 257-285 (added to base length)*/
 static const unsigned LENGTHEXTRA[29]
-= { 0, 0, 0, 0, 0, 0, 0,  0,  1,  1,  1,  1,  2,  2,  2,  2,  3,  3,  3,  3,
-    4,  4,  4,   4,   5,   5,   5,   5,   0 };
+    = { 0, 0, 0, 0, 0, 0, 0,  0,  1,  1,  1,  1,  2,  2,  2,  2,  3,  3,  3,  3,
+        4,  4,  4,   4,   5,   5,   5,   5,   0
+      };
 
 /*the base backwards distances (the bits of distance codes appear after length codes and use their own huffman tree)*/
 static const unsigned DISTANCEBASE[30]
-= { 1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193, 257, 385, 513,
-   769, 1025, 1537, 2049, 3073, 4097, 6145, 8193, 12289, 16385, 24577 };
+    = { 1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193, 257, 385, 513,
+        769, 1025, 1537, 2049, 3073, 4097, 6145, 8193, 12289, 16385, 24577
+      };
 
 /*the extra bits of backwards distances (added to base)*/
 static const unsigned DISTANCEEXTRA[30]
-= { 0, 0, 0, 0, 1, 1, 2,  2,  3,  3,  4,  4,  5,  5,   6,   6,   7,   7,   8,
-     8,    9,    9,   10,   10,   11,   11,   12,    12,    13,    13 };
+    = { 0, 0, 0, 0, 1, 1, 2,  2,  3,  3,  4,  4,  5,  5,   6,   6,   7,   7,   8,
+        8,    9,    9,   10,   10,   11,   11,   12,    12,    13,    13
+      };
 
 
 /*
@@ -77,20 +81,20 @@ PXDeflateEncodingMethod PXAPI PXDeflateEncodingMethodFromID(const PXInt8U deflat
 {
     switch(deflateEncodingMethod)
     {
-        case DeflateEncodingLiteralRawID:
-            return PXDeflateEncodingLiteralRaw;
+    case DeflateEncodingLiteralRawID:
+        return PXDeflateEncodingLiteralRaw;
 
-        case DeflateEncodingHuffmanStaticID:
-            return PXDeflateEncodingHuffmanStatic;
+    case DeflateEncodingHuffmanStaticID:
+        return PXDeflateEncodingHuffmanStatic;
 
-        case DeflateEncodingHuffmanDynamicID:
-            return PXDeflateEncodingHuffmanDynamic;
+    case DeflateEncodingHuffmanDynamicID:
+        return PXDeflateEncodingHuffmanDynamic;
 
-        case DeflateEncodingReserverdID:
-            return PXDeflateEncodingReserverd;
+    case DeflateEncodingReserverdID:
+        return PXDeflateEncodingReserverd;
 
-        default:
-            return PXDeflateEncodingInvalid;
+    default:
+        return PXDeflateEncodingInvalid;
     }
 }
 
@@ -98,18 +102,18 @@ PXInt8U PXAPI PXDeflateEncodingMethodToID(const PXDeflateEncodingMethod deflateE
 {
     switch(deflateEncodingMethod)
     {
-        case PXDeflateEncodingLiteralRaw:
-            return DeflateEncodingLiteralRawID;
+    case PXDeflateEncodingLiteralRaw:
+        return DeflateEncodingLiteralRawID;
 
-        case PXDeflateEncodingHuffmanStatic:
-            return DeflateEncodingHuffmanStaticID;
+    case PXDeflateEncodingHuffmanStatic:
+        return DeflateEncodingHuffmanStaticID;
 
-        case PXDeflateEncodingHuffmanDynamic:
-            return DeflateEncodingHuffmanDynamicID;
+    case PXDeflateEncodingHuffmanDynamic:
+        return DeflateEncodingHuffmanDynamicID;
 
-        default:
-        case PXDeflateEncodingReserverd:
-            return DeflateEncodingReserverdID;
+    default:
+    case PXDeflateEncodingReserverd:
+        return DeflateEncodingReserverdID;
     }
 }
 
@@ -136,199 +140,200 @@ PXActionResult PXAPI PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const p
 
         switch(deflateBlock.EncodingMethod)
         {
-            default:
-            case PXDeflateEncodingReserverd:
-            case PXDeflateEncodingInvalid:
-            {
-                return PXActionRefusedFormatSettingNotAllowed;
-            }
-            case PXDeflateEncodingLiteralRaw:
-            {
-                PXInt16U length = 0;
+        default:
+        case PXDeflateEncodingReserverd:
+        case PXDeflateEncodingInvalid:
+        {
+            return PXActionRefusedFormatSettingNotAllowed;
+        }
+        case PXDeflateEncodingLiteralRaw:
+        {
+            PXInt16U length = 0;
 
+            {
+                PXInt16U lengthInverse = 0;
+
+                PXFileSkipBitsToNextByte(pxInputStream); // Skip remaining Bytes
+
+                const PXFileDataElementType pxDataStreamElementList[] =
                 {
-                    PXInt16U lengthInverse = 0;
+                    {&length, PXDataTypeInt16U},
+                    {&lengthInverse, PXDataTypeInt16U}
+                };
 
-                    PXFileSkipBitsToNextByte(pxInputStream); // Skip remaining Bytes
+                const PXSize readBytes = PXFileReadMultible(pxInputStream, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+                const PXBool validLength = 65535u == (length + lengthInverse);
 
-                    const PXFileDataElementType pxDataStreamElementList[] =
-                    {
-                        {&length, PXDataTypeInt16U},
-                        {&lengthInverse, PXDataTypeInt16U}
-                    };
-
-                    const PXSize readBytes = PXFileReadMultible(pxInputStream, pxDataStreamElementList, sizeof(pxDataStreamElementList));
-                    const PXBool validLength = 65535u == (length + lengthInverse);
-
-                    if(!validLength)
-                    {
-                        return PXActionFailedFormatNotAsExpected;
-                    }
+                if(!validLength)
+                {
+                    return PXActionFailedFormatNotAsExpected;
                 }
+            }
 
-                const PXSize dataRead = PXFileDataCopy(pxInputStream, pxOutputStream, length);
+            const PXSize dataRead = PXFileDataCopy(pxInputStream, pxOutputStream, length);
+
+            break;
+        }
+        case PXDeflateEncodingHuffmanDynamic:
+        case PXDeflateEncodingHuffmanStatic:
+        {
+            PXBool foundEndOFBlock = PXFalse;
+            PXHuffmanTree literalAndLengthCodes;
+            PXHuffmanTree distanceCodes;
+
+            PXClear(PXHuffmanTree, &literalAndLengthCodes);
+            PXClear(PXHuffmanTree, &distanceCodes);
+
+            switch(deflateBlock.EncodingMethod)
+            {
+            case PXDeflateEncodingHuffmanDynamic:
+            {
+                const PXActionResult result = PXHuffmanDistanceTreeGenerateDynamic(pxInputStream, &literalAndLengthCodes, &distanceCodes);
+
+                if(PXActionSuccessful != result)
+                {
+                    return result;
+                }
 
                 break;
             }
-            case PXDeflateEncodingHuffmanDynamic:
             case PXDeflateEncodingHuffmanStatic:
             {
-                PXBool foundEndOFBlock = PXFalse;
-                PXHuffmanTree literalAndLengthCodes;
-                PXHuffmanTree distanceCodes;
-
-                PXClear(PXHuffmanTree, &literalAndLengthCodes);
-                PXClear(PXHuffmanTree, &distanceCodes);
-
-                switch(deflateBlock.EncodingMethod)
-                {
-                    case PXDeflateEncodingHuffmanDynamic:
-                    {
-                        const PXActionResult result = PXHuffmanDistanceTreeGenerateDynamic(pxInputStream, &literalAndLengthCodes, &distanceCodes);
-
-                        if(PXActionSuccessful != result)
-                        {
-                            return result;
-                        }
-
-                        break;
-                    }
-                    case PXDeflateEncodingHuffmanStatic:
-                    {
-                        PXHuffmanDistanceTreeGenerateFixedLiteralLengthTree(&literalAndLengthCodes);
-                        PXHuffmanDistanceTreeGenerateFixed(&distanceCodes);
-                        break;
-                    }
-                }
-
-                while(!foundEndOFBlock)
-                {
-                    const unsigned int resultLengthCode = PXHuffmanSymbolDecode(pxInputStream, &literalAndLengthCodes);
-                    const PXHuffmanCodeType huffmanCodeType = PXHuffmanCodeTypeFromCode(resultLengthCode);
-
-                    switch(huffmanCodeType)
-                    {
-                        case PXHuffmanCodeInvalid:
-                        {
-                            // printf("[Symbol] Error: Invalid\n");
-                            break; // ERROR
-                        }
-                        case PXHuffmanCodeLiteral:
-                        {
-                            // printf("[Symbol] <%2x>(%3i) Literal.\n", resultLengthCode, resultLengthCode);
-                            PXFileWriteI8U(pxOutputStream, resultLengthCode);
-                            break;
-                        }
-                        case PXHuffmanCodeLength:
-                        {
-                            // printf("[Symbol] <%2x>(%3i) Length.\n", resultLengthCode, resultLengthCode);
-
-                            PXSize distance = 0;
-                            PXSize numextrabits_l = 0;
-                            PXSize numextrabits_d = 0; /*extra bits for length and distance*/
-                            PXSize length;
-
-                            /*the base lengths represented by codes 257-285*/
-                            const unsigned int LENGTHBASE[29] = { 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 31, 35, 43, 51, 59, 67, 83, 99, 115, 131, 163, 195, 227, 258 };
-
-                            /*the extra bits used by codes 257-285 (added to base length)*/
-                            const unsigned int LENGTHEXTRA[29] = { 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0 };
-
-                            /*the base backwards distances (the bits of distance codes appear after length codes and use their own huffman tree)*/
-                            const unsigned DISTANCEBASE[30] = { 1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193, 257, 385, 513,                                           769, 1025, 1537, 2049, 3073, 4097, 6145, 8193, 12289, 16385, 24577 };
-
-                            /*the extra bits of backwards distances (added to base)*/
-                            const unsigned DISTANCEEXTRA[30] = { 0, 0, 0, 0, 1, 1, 2,  2,  3,  3,  4,  4,  5,  5,   6,   6,   7,   7,   8, 8,    9,    9,   10,   10,   11,   11,   12,    12,    13,    13 };
-
-
-                            {
-                                //const unsigned int FIRST_LENGTH_CODE_INDEX = 257u;
-                                //const unsigned int LAST_LENGTH_CODE_INDEX = 285u;
-
-                                /*part 1: get length base*/
-                                length = LENGTHBASE[resultLengthCode - FIRST_LENGTH_CODE_INDEX];
-
-                                /*part 2: get extra bits and add the value of that to length*/
-                                numextrabits_l = LENGTHEXTRA[resultLengthCode - FIRST_LENGTH_CODE_INDEX];
-                            }
-
-
-                            if(numextrabits_l != 0)
-                            {
-                                /* bits already ensured above */
-                                length += PXFileReadBits(pxInputStream, numextrabits_l);
-                            }
-
-                            /*part 3: get distance code*/
-                            //ensureBits32(reader, 28); /* up to 15 for the huffman symbol, up to 13 for the extra bits */
-                            const unsigned int resultDistanceCode = PXHuffmanSymbolDecode(pxInputStream, &distanceCodes);
-                            PXBool isUnsupportedCode = resultDistanceCode > 29u;
-                            PXBool isIllegalCode = resultDistanceCode > 31u;
-
-                            if(isUnsupportedCode)
-                            {
-                                if(isIllegalCode)  /* if(code_d == INVALIDSYMBOL) */
-                                {
-                                    return PXActionRefusedParserSymbolNotAsExpected; // error: tried to read disallowed huffman symbol
-                                }
-                                else
-                                {
-                                    return PXActionRefusedParserSymbolNotAsExpected; // error: invalid distance code (30-31 are never used)
-                                }
-                            }
-
-                            distance = DISTANCEBASE[resultDistanceCode];
-
-                            /*part 4: get extra bits from distance*/
-                            numextrabits_d = DISTANCEEXTRA[resultDistanceCode];
-                            if(numextrabits_d != 0)
-                            {
-                                /* bits already ensured above */
-                                distance += PXFileReadBits(pxInputStream, numextrabits_d);
-                            }
-
-                            /*part 5: fill in all the out[n] values based on the length and dist*/
-                            PXSize start = pxOutputStream->DataCursor;//(*outputBufferSizeRead);
-
-                            if(distance > start)
-                                return PXActionRefusedParserSymbolNotAsExpected; /*too long backward distance*/
-
-                            PXSize backward = start - distance;
-
-                            /*(*outputBufferSizeRead)*/ pxOutputStream->DataCursor += length;
-
-                            // if (!ucvector_resize(out, out->size + length)) ERROR_BREAK(83 /*alloc fail*/);
-
-
-                            if(distance < length)
-                            {
-                                start += PXMemoryCopy((PXAdress)pxOutputStream->Data + backward, distance, (PXAdress)pxOutputStream->Data + start, distance);
-
-                                for(PXSize forward = distance; forward < length; ++forward)
-                                {
-                                    ((PXAdress)pxOutputStream->Data)[start++] = ((PXAdress)pxOutputStream->Data)[backward++];
-                                }
-                            }
-                            else
-                            {
-                                PXMemoryCopy((PXAdress)pxOutputStream->Data + backward, length, (PXAdress)pxOutputStream->Data + start, length);
-                            }
-                            break;
-                        }
-                        case PXHuffmanCodeEndOfBlock:
-                        {
-                            //printf("[Symbol] <%2x>(%3i) End of Block.\n", resultLengthCode, resultLengthCode);
-                            foundEndOFBlock = PXTrue;
-
-                            break; // FINISHED!
-                        }
-                    }
-                }
-
+                PXHuffmanDistanceTreeGenerateFixedLiteralLengthTree(&literalAndLengthCodes);
+                PXHuffmanDistanceTreeGenerateFixed(&distanceCodes);
                 break;
             }
+            }
+
+            while(!foundEndOFBlock)
+            {
+                const unsigned int resultLengthCode = PXHuffmanSymbolDecode(pxInputStream, &literalAndLengthCodes);
+                const PXHuffmanCodeType huffmanCodeType = PXHuffmanCodeTypeFromCode(resultLengthCode);
+
+                switch(huffmanCodeType)
+                {
+                case PXHuffmanCodeInvalid:
+                {
+                    // printf("[Symbol] Error: Invalid\n");
+                    break; // ERROR
+                }
+                case PXHuffmanCodeLiteral:
+                {
+                    // printf("[Symbol] <%2x>(%3i) Literal.\n", resultLengthCode, resultLengthCode);
+                    PXFileWriteI8U(pxOutputStream, resultLengthCode);
+                    break;
+                }
+                case PXHuffmanCodeLength:
+                {
+                    // printf("[Symbol] <%2x>(%3i) Length.\n", resultLengthCode, resultLengthCode);
+
+                    PXSize distance = 0;
+                    PXSize numextrabits_l = 0;
+                    PXSize numextrabits_d = 0; /*extra bits for length and distance*/
+                    PXSize length;
+
+                    /*the base lengths represented by codes 257-285*/
+                    const unsigned int LENGTHBASE[29] = { 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 31, 35, 43, 51, 59, 67, 83, 99, 115, 131, 163, 195, 227, 258 };
+
+                    /*the extra bits used by codes 257-285 (added to base length)*/
+                    const unsigned int LENGTHEXTRA[29] = { 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0 };
+
+                    /*the base backwards distances (the bits of distance codes appear after length codes and use their own huffman tree)*/
+                    const unsigned DISTANCEBASE[30] = { 1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193, 257, 385, 513,                                           769, 1025, 1537, 2049, 3073, 4097, 6145, 8193, 12289, 16385, 24577 };
+
+                    /*the extra bits of backwards distances (added to base)*/
+                    const unsigned DISTANCEEXTRA[30] = { 0, 0, 0, 0, 1, 1, 2,  2,  3,  3,  4,  4,  5,  5,   6,   6,   7,   7,   8, 8,    9,    9,   10,   10,   11,   11,   12,    12,    13,    13 };
+
+
+                    {
+                        //const unsigned int FIRST_LENGTH_CODE_INDEX = 257u;
+                        //const unsigned int LAST_LENGTH_CODE_INDEX = 285u;
+
+                        /*part 1: get length base*/
+                        length = LENGTHBASE[resultLengthCode - FIRST_LENGTH_CODE_INDEX];
+
+                        /*part 2: get extra bits and add the value of that to length*/
+                        numextrabits_l = LENGTHEXTRA[resultLengthCode - FIRST_LENGTH_CODE_INDEX];
+                    }
+
+
+                    if(numextrabits_l != 0)
+                    {
+                        /* bits already ensured above */
+                        length += PXFileReadBits(pxInputStream, numextrabits_l);
+                    }
+
+                    /*part 3: get distance code*/
+                    //ensureBits32(reader, 28); /* up to 15 for the huffman symbol, up to 13 for the extra bits */
+                    const unsigned int resultDistanceCode = PXHuffmanSymbolDecode(pxInputStream, &distanceCodes);
+                    PXBool isUnsupportedCode = resultDistanceCode > 29u;
+                    PXBool isIllegalCode = resultDistanceCode > 31u;
+
+                    if(isUnsupportedCode)
+                    {
+                        if(isIllegalCode)  /* if(code_d == INVALIDSYMBOL) */
+                        {
+                            return PXActionRefusedParserSymbolNotAsExpected; // error: tried to read disallowed huffman symbol
+                        }
+                        else
+                        {
+                            return PXActionRefusedParserSymbolNotAsExpected; // error: invalid distance code (30-31 are never used)
+                        }
+                    }
+
+                    distance = DISTANCEBASE[resultDistanceCode];
+
+                    /*part 4: get extra bits from distance*/
+                    numextrabits_d = DISTANCEEXTRA[resultDistanceCode];
+                    if(numextrabits_d != 0)
+                    {
+                        /* bits already ensured above */
+                        distance += PXFileReadBits(pxInputStream, numextrabits_d);
+                    }
+
+                    /*part 5: fill in all the out[n] values based on the length and dist*/
+                    PXSize start = pxOutputStream->DataCursor;//(*outputBufferSizeRead);
+
+                    if(distance > start)
+                        return PXActionRefusedParserSymbolNotAsExpected; /*too long backward distance*/
+
+                    PXSize backward = start - distance;
+
+                    /*(*outputBufferSizeRead)*/ pxOutputStream->DataCursor += length;
+
+                    // if (!ucvector_resize(out, out->size + length)) ERROR_BREAK(83 /*alloc fail*/);
+
+
+                    if(distance < length)
+                    {
+                        start += PXMemoryCopy((PXAdress)pxOutputStream->Data + backward, distance, (PXAdress)pxOutputStream->Data + start, distance);
+
+                        for(PXSize forward = distance; forward < length; ++forward)
+                        {
+                            ((PXAdress)pxOutputStream->Data)[start++] = ((PXAdress)pxOutputStream->Data)[backward++];
+                        }
+                    }
+                    else
+                    {
+                        PXMemoryCopy((PXAdress)pxOutputStream->Data + backward, length, (PXAdress)pxOutputStream->Data + start, length);
+                    }
+                    break;
+                }
+                case PXHuffmanCodeEndOfBlock:
+                {
+                    //printf("[Symbol] <%2x>(%3i) End of Block.\n", resultLengthCode, resultLengthCode);
+                    foundEndOFBlock = PXTrue;
+
+                    break; // FINISHED!
+                }
+                }
+            }
+
+            break;
         }
-    } while(!deflateBlock.IsLastBlock);
+        }
+    }
+    while(!deflateBlock.IsLastBlock);
 
     //(PXAdress)pxOutputStream->Data -= 2;
 
@@ -585,7 +590,8 @@ void LodePNGBitWriter_init(LodePNGBitWriter* writer, ucvector* data)
 void PNGwriteBits(LodePNGBitWriter* writer, PXSize value, PXSize nbits)
 {
     if(nbits == 1)
-    { /* compiler should statically compile this case if nbits == 1 */
+    {
+        /* compiler should statically compile this case if nbits == 1 */
         WRITEBIT(writer, value);
     }
     else
@@ -749,10 +755,10 @@ PXSize searchCodeIndex(const unsigned* array, PXSize array_size, PXSize value)
 void addLengthDistance(uivector* values, PXSize length, PXSize distance)
 {
     /*values in encoded vector are those used by deflate:
- 0-255: literal bytes
- 256: end
- 257-285: length/distance pair (length code, followed by extra length bits, distance code, extra distance bits)
- 286-287: invalid*/
+    0-255: literal bytes
+    256: end
+    257-285: length/distance pair (length code, followed by extra length bits, distance code, extra distance bits)
+    286-287: invalid*/
 
     unsigned length_code = (unsigned)searchCodeIndex(LENGTHBASE, 29, length);
     unsigned extra_length = (unsigned)(length - LENGTHBASE[length_code]);
@@ -778,7 +784,7 @@ void addLengthDistance(uivector* values, PXSize length, PXSize distance)
 /*the order in which "code length alphabet code lengths" are stored as specified by deflate, out of this the huffman
 tree of the dynamic huffman tree lengths is generated*/
 const unsigned CLCL_ORDER[NUM_CODE_LENGTH_CODES]
-= { 16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15 };
+    = { 16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15 };
 
 
 
@@ -1239,7 +1245,8 @@ unsigned deflateDynamic
     */
 
     /*The lz77 encoded data, represented with integers since there will also be length and distance codes in it*/
-    uivector lz77_encoded;    uivector_init(&lz77_encoded);
+    uivector lz77_encoded;
+    uivector_init(&lz77_encoded);
     //PXFile lz77CacheStream;     PXFileConstruct(&lz77CacheStream);
 
 
@@ -1307,17 +1314,17 @@ unsigned deflateDynamic
         }
 
         /*Count the frequencies of lit, len and dist codes*/
-       /* for (i = 0; i != lz77CacheStream.DataSize; ++i)
-        {
-            unsigned int symbol = ((PXAdress)lz77CacheStream.Data)[i];
-            ++frequencies_ll[symbol];
-            if(symbol > 256)
-            {
-                unsigned int dist = ((PXAdress)lz77CacheStream.Data)[i + 2];
-                ++frequencies_d[dist];
-                i += 3;
-            }
-        }*/
+        /* for (i = 0; i != lz77CacheStream.DataSize; ++i)
+         {
+             unsigned int symbol = ((PXAdress)lz77CacheStream.Data)[i];
+             ++frequencies_ll[symbol];
+             if(symbol > 256)
+             {
+                 unsigned int dist = ((PXAdress)lz77CacheStream.Data)[i + 2];
+                 ++frequencies_d[dist];
+                 i += 3;
+             }
+         }*/
         for(i = 0; i != lz77_encoded.size; ++i)
         {
             unsigned symbol = lz77_encoded.data[i];
@@ -1514,87 +1521,87 @@ PXActionResult PXAPI PXDEFLATESerialize(PXFile* const pxInputStream, PXFile* con
 
     switch(deflateEncodingMethod)
     {
-        case PXDeflateEncodingLiteralRaw:
+    case PXDeflateEncodingLiteralRaw:
+    {
+        const PXSize numdeflateblocks = (pxInputStream->DataUsed + 65534u) / 65535u;
+        PXSize datapos = 0;
+
+        for(PXSize i = 0; i != numdeflateblocks; ++i)
         {
-            const PXSize numdeflateblocks = (pxInputStream->DataUsed + 65534u) / 65535u;
-            PXSize datapos = 0;
+            const PXBool BFINAL = (i == numdeflateblocks - 1);
+            const PXInt16U chunkLength = PXMathMinimumIU(65535, pxInputStream->DataUsed - datapos);
+            const PXInt16U chunkLengthNegated = 65535 - chunkLength;
 
-            for(PXSize i = 0; i != numdeflateblocks; ++i)
-            {
-                const PXBool BFINAL = (i == numdeflateblocks - 1);
-                const PXInt16U chunkLength = PXMathMinimumIU(65535, pxInputStream->DataUsed - datapos);
-                const PXInt16U chunkLengthNegated = 65535 - chunkLength;
+            const PXByte firstbyte = BFINAL;//(unsigned char)(BFINAL + ((BTYPE & 1u) << 1u) + ((BTYPE & 2u) << 1u));
 
-                const PXByte firstbyte = BFINAL;//(unsigned char)(BFINAL + ((BTYPE & 1u) << 1u) + ((BTYPE & 2u) << 1u));
+            PXFileWriteI8U(pxOutputStream, firstbyte);
+            PXFileWriteI16U(pxOutputStream, chunkLength);
+            PXFileWriteI16U(pxOutputStream, chunkLengthNegated);
 
-                PXFileWriteI8U(pxOutputStream, firstbyte);
-                PXFileWriteI16U(pxOutputStream, chunkLength);
-                PXFileWriteI16U(pxOutputStream, chunkLengthNegated);
+            PXFileWriteB(pxOutputStream, (PXAdress)pxInputStream->Data + datapos, chunkLength);
 
-                PXFileWriteB(pxOutputStream, (PXAdress)pxInputStream->Data + datapos, chunkLength);
-
-                datapos += chunkLength;
-            }
+            datapos += chunkLength;
         }
+    }
+    case PXDeflateEncodingHuffmanStatic:
+    case PXDeflateEncodingHuffmanDynamic:
+    {
+        switch(deflateEncodingMethod)
+        {
         case PXDeflateEncodingHuffmanStatic:
+        {
+            blocksize = pxInputStream->DataUsed;
+            break;
+        }
         case PXDeflateEncodingHuffmanDynamic:
         {
-            switch(deflateEncodingMethod)
-            {
-                case PXDeflateEncodingHuffmanStatic:
-                {
-                    blocksize = pxInputStream->DataUsed;
-                    break;
-                }
-                case PXDeflateEncodingHuffmanDynamic:
-                {
-                    /*on PNGs, deflate blocks of 65-262k seem to give most dense encoding*/
-                    blocksize = pxInputStream->DataUsed / 8u + 8u;
-                    if(blocksize < 65536) blocksize = 65536;
-                    if(blocksize > 262144) blocksize = 262144;
-
-                    break;
-                }
-            }
-
-            PXSize numdeflateblocks = (pxInputStream->DataUsed + blocksize - 1) / blocksize;
-            if(numdeflateblocks == 0) numdeflateblocks = 1;
-
-            error = hash_init(&hash, lodePNGCompressSettings.windowsize);
-
-            for(PXSize i = 0; i != numdeflateblocks && (error == 0); ++i)
-            {
-                const PXSize indexStart = i * blocksize;
-                const PXSize indexEnd = PXMathMinimumIU(indexStart + blocksize, pxInputStream->DataUsed);
-                const PXBool finalBlock = (i == numdeflateblocks - 1);
-
-                // PXFileWriteBits(pxOutputStream, finalBlock, 1u);
-
-                switch(deflateEncodingMethod)
-                {
-                    case PXDeflateEncodingHuffmanStatic:
-                    {
-                        PXFileWriteBits(pxOutputStream, 1u, 2u);
-                        error = deflateFixed(pxOutputStream, &hash, pxInputStream->Data, indexStart, indexEnd, &lodePNGCompressSettings);
-                        break;
-                    }
-                    case PXDeflateEncodingHuffmanDynamic:
-                    {
-                        //PXFileWriteBits(pxOutputStream, 2u, 2u);
-                        error = deflateDynamic(pxOutputStream, &hash, pxInputStream->Data, indexStart, indexEnd, &lodePNGCompressSettings, finalBlock);
-                        break;
-                    }
-                }
-            }
-
-            hash_cleanup(&hash);
+            /*on PNGs, deflate blocks of 65-262k seem to give most dense encoding*/
+            blocksize = pxInputStream->DataUsed / 8u + 8u;
+            if(blocksize < 65536) blocksize = 65536;
+            if(blocksize > 262144) blocksize = 262144;
 
             break;
         }
-        case PXDeflateEncodingReserverd:
-        case PXDeflateEncodingInvalid:
-        default:
-            return PXActionRefusedFormatSettingNotAllowed;
+        }
+
+        PXSize numdeflateblocks = (pxInputStream->DataUsed + blocksize - 1) / blocksize;
+        if(numdeflateblocks == 0) numdeflateblocks = 1;
+
+        error = hash_init(&hash, lodePNGCompressSettings.windowsize);
+
+        for(PXSize i = 0; i != numdeflateblocks && (error == 0); ++i)
+        {
+            const PXSize indexStart = i * blocksize;
+            const PXSize indexEnd = PXMathMinimumIU(indexStart + blocksize, pxInputStream->DataUsed);
+            const PXBool finalBlock = (i == numdeflateblocks - 1);
+
+            // PXFileWriteBits(pxOutputStream, finalBlock, 1u);
+
+            switch(deflateEncodingMethod)
+            {
+            case PXDeflateEncodingHuffmanStatic:
+            {
+                PXFileWriteBits(pxOutputStream, 1u, 2u);
+                error = deflateFixed(pxOutputStream, &hash, pxInputStream->Data, indexStart, indexEnd, &lodePNGCompressSettings);
+                break;
+            }
+            case PXDeflateEncodingHuffmanDynamic:
+            {
+                //PXFileWriteBits(pxOutputStream, 2u, 2u);
+                error = deflateDynamic(pxOutputStream, &hash, pxInputStream->Data, indexStart, indexEnd, &lodePNGCompressSettings, finalBlock);
+                break;
+            }
+            }
+        }
+
+        hash_cleanup(&hash);
+
+        break;
+    }
+    case PXDeflateEncodingReserverd:
+    case PXDeflateEncodingInvalid:
+    default:
+        return PXActionRefusedFormatSettingNotAllowed;
     }
 
     return PXActionSuccessful;

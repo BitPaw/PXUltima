@@ -122,7 +122,7 @@ void PXCSSerialize(PXFile* const inputSteam, PXFile* const outputStream, PXCTran
             }
 
             pxCTranslateStruct->AreInUnion = PXCStructureTypeUnion == pxCTranslateStruct->Element.Type;
-        
+
             if (!isUnnamed)
             {
                 PXFileWriteB(outputStream, "\t}\n", 3);
@@ -299,9 +299,9 @@ void PXCSSerialize(PXFile* const inputSteam, PXFile* const outputStream, PXCTran
 
             for (PXSize i = 0; i < pxCFunction->ParameterListSize; ++i)
             {
-                
+
             }
-        
+
             PXFileWriteB(outputStream, ");\n", 3);
             break;
         }
@@ -367,29 +367,29 @@ void PXAPI PXCSharpContainerWrite(PXCompiler* const pxCompiler)
 
     switch(symbol->Type)
     {
-        case PXDocumentElementTypeEnum:
-        {
-            PXFileWriteA(pxFile, PXCSharpKeyWordEnum, sizeof(PXCSharpKeyWordEnum) - 1);
-            break;
-        }
-        case PXDocumentElementTypeFile:
-        {
-            PXFileWriteA(pxFile, PXCSharpKeyWordNamespace, sizeof(PXCSharpKeyWordNamespace) - 1);
-            break;
-        }
-        case PXDocumentElementTypeStruct:
-        {
-            PXFileWriteA(pxFile, PXCSharpKeyWordStruct, sizeof(PXCSharpKeyWordStruct) - 1);
-            break;
-        }
-        case PXDocumentElementTypeClass:
-        {
-            PXFileWriteA(pxFile, PXCSharpKeyWordClass, sizeof(PXCSharpKeyWordClass) - 1);
-            break;
-        }
+    case PXDocumentElementTypeEnum:
+    {
+        PXFileWriteA(pxFile, PXCSharpKeyWordEnum, sizeof(PXCSharpKeyWordEnum) - 1);
+        break;
+    }
+    case PXDocumentElementTypeFile:
+    {
+        PXFileWriteA(pxFile, PXCSharpKeyWordNamespace, sizeof(PXCSharpKeyWordNamespace) - 1);
+        break;
+    }
+    case PXDocumentElementTypeStruct:
+    {
+        PXFileWriteA(pxFile, PXCSharpKeyWordStruct, sizeof(PXCSharpKeyWordStruct) - 1);
+        break;
+    }
+    case PXDocumentElementTypeClass:
+    {
+        PXFileWriteA(pxFile, PXCSharpKeyWordClass, sizeof(PXCSharpKeyWordClass) - 1);
+        break;
+    }
 
-        default:
-            break;
+    default:
+        break;
     }
 
     PXFileWriteC(pxFile, ' ');
@@ -409,16 +409,16 @@ void PXAPI PXCSharpContainerWrite(PXCompiler* const pxCompiler)
     PXFileWriteNewLine(pxFile);
 
     for
-        (
+    (
         PXHierarchicalNode* child = &symbol->Hierachy;
         child;
         child = child->Sibling
-        )
+    )
     {
         switch(symbol->Type)
         {
-            case PXDocumentElementTypeEnum:
-            {
+        case PXDocumentElementTypeEnum:
+        {
             /*
                 PXFileWriteFill(pxFile, ' ', pxCompiler->WriteInfo.TABSize * child->Depth);
                 PXFileWriteA(pxFile, child->NameShortAdress, child->NameShortSize);
@@ -428,23 +428,23 @@ void PXAPI PXCSharpContainerWrite(PXCompiler* const pxCompiler)
                     PXFileWriteC(pxFile, ',');
                 }*/
 
-                break;
-            }
-            case PXDocumentElementTypeStruct:
-            case PXDocumentElementTypeUnion:
-            case PXDocumentElementTypeClass:
-            {
-                pxCompiler->WriteInfo.CodeElementCurrent = child;
-                pxCompiler->WriteInfo.WriteDefinition(pxCompiler);
-                PXFileWriteC(pxFile, ';');
-                break;
-            }
-            default:
-            {
-                pxCompiler->WriteInfo.CodeElementCurrent = child;
-                pxCompiler->WriteInfo.WriteNode(pxCompiler);
-                break;
-            }
+            break;
+        }
+        case PXDocumentElementTypeStruct:
+        case PXDocumentElementTypeUnion:
+        case PXDocumentElementTypeClass:
+        {
+            pxCompiler->WriteInfo.CodeElementCurrent = child;
+            pxCompiler->WriteInfo.WriteDefinition(pxCompiler);
+            PXFileWriteC(pxFile, ';');
+            break;
+        }
+        default:
+        {
+            pxCompiler->WriteInfo.CodeElementCurrent = child;
+            pxCompiler->WriteInfo.WriteNode(pxCompiler);
+            break;
+        }
         }
 
         if(child->Sibling)
@@ -479,23 +479,23 @@ void PXAPI PXCSharpFunctionWrite(PXCompiler* const pxCompiler)
 
         switch(symbol->FunctionCallingConvention)
         {
-            default:
-            case PXDocumentCallingConventionCDeclaration:
-                PXFileWriteA(pxFile, PXCSharpFunctionCallCdecl, sizeof(PXCSharpFunctionCallCdecl) - 1);
-                break;
-            case PXDocumentCallingConventionStandardCall:
-                PXFileWriteA(pxFile, PXCSharpFunctionCallStdCall, sizeof(PXCSharpFunctionCallStdCall) - 1);
-                break;
-            case PXDocumentCallingConventionFastCall:
-                PXFileWriteA(pxFile, PXCSharpFunctionCallFastCall, sizeof(PXCSharpFunctionCallFastCall) - 1);
-                break;
-            case PXDocumentCallingConventionThisCall:
-                PXFileWriteA(pxFile, PXCSharpFunctionCallThisCall, sizeof(PXCSharpFunctionCallThisCall) - 1);
-                break;
+        default:
+        case PXDocumentCallingConventionCDeclaration:
+            PXFileWriteA(pxFile, PXCSharpFunctionCallCdecl, sizeof(PXCSharpFunctionCallCdecl) - 1);
+            break;
+        case PXDocumentCallingConventionStandardCall:
+            PXFileWriteA(pxFile, PXCSharpFunctionCallStdCall, sizeof(PXCSharpFunctionCallStdCall) - 1);
+            break;
+        case PXDocumentCallingConventionFastCall:
+            PXFileWriteA(pxFile, PXCSharpFunctionCallFastCall, sizeof(PXCSharpFunctionCallFastCall) - 1);
+            break;
+        case PXDocumentCallingConventionThisCall:
+            PXFileWriteA(pxFile, PXCSharpFunctionCallThisCall, sizeof(PXCSharpFunctionCallThisCall) - 1);
+            break;
 
             //default:
-                // ERROR
-                //break;
+            // ERROR
+            //break;
         }
 
         PXFileWriteA(pxFile, ")] private static extern ", 25);
@@ -527,25 +527,25 @@ void PXAPI PXCSharpDefinitionWrite(PXCompiler* const pxCompiler)
     {
         switch(symbol->DataType & PXDataTypeSizeMask)
         {
-            case PXDataTypeSize08:
-                //PXFileWriteA(pxFile, PXJavaKeyWordByte, 4);
-                break;
+        case PXDataTypeSize08:
+            //PXFileWriteA(pxFile, PXJavaKeyWordByte, 4);
+            break;
 
-            case PXDataTypeSize16:
-                //PXFileWriteA(pxFile, PXJavaKeyWordShort, 5);
-                break;
+        case PXDataTypeSize16:
+            //PXFileWriteA(pxFile, PXJavaKeyWordShort, 5);
+            break;
 
-            case PXDataTypeSize32:
+        case PXDataTypeSize32:
             //    PXFileWriteA(pxFile, PXJavaKeyWordInt, 3);
-                break;
+            break;
 
-            case PXDataTypeSize64:
-                //PXFileWriteA(pxFile, PXJavaKeyWordLong, 4);
-                break;
+        case PXDataTypeSize64:
+            //PXFileWriteA(pxFile, PXJavaKeyWordLong, 4);
+            break;
 
-            default:
-                PXFileWriteA(pxFile, "Error-Type", 10);
-                break;
+        default:
+            PXFileWriteA(pxFile, "Error-Type", 10);
+            break;
         }
     }
     else

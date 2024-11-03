@@ -27,7 +27,7 @@ PXActionResult PXAPI PXClientSendData(PXClient* const pxClient, const void* cons
         return PXActionRefusedObjectNotFound;
     }
 
-    PXBufferConstruct(&pxClient->SocketClient.BufferOutput, (void*)data, dataSize, PXBufferExtern); 
+    PXBufferConstruct(&pxClient->SocketClient.BufferOutput, (void*)data, dataSize, PXBufferExtern);
 
     const PXActionResult sendResult = PXSocketSend(&pxClient->SocketClient, pxClient->SocketClient.ID);
 
@@ -58,18 +58,18 @@ PXActionResult PXAPI PXClientConnectToServer(PXClient* const client, const PXTex
     {
         const PXSocketAdressSetupInfo pxSocketAdressSetupInfoList[1] =
         {
-              *ip, port, IPAdressFamilyUnspecified, PXSocketTypeStream, PXProtocolModeTCP
+            *ip, port, IPAdressFamilyUnspecified, PXSocketTypeStream, PXProtocolModeTCP
         };
         const PXSize pxSocketAdressSetupInfoListSize = sizeof(pxSocketAdressSetupInfoList) / sizeof(PXSocketAdressSetupInfo);
 
         const PXActionResult setupResult = PXSocketSetupAdress
-        (
-            pxSocketList,
-            pxSocketListSizeMax,
-            &socketListSize,
-            pxSocketAdressSetupInfoList,
-            pxSocketAdressSetupInfoListSize
-        );
+                                           (
+                                               pxSocketList,
+                                               pxSocketListSizeMax,
+                                               &socketListSize,
+                                               pxSocketAdressSetupInfoList,
+                                               pxSocketAdressSetupInfoListSize
+                                           );
 
         PXActionReturnOnError(setupResult);
 
@@ -92,9 +92,9 @@ PXActionResult PXAPI PXClientConnectToServer(PXClient* const client, const PXTex
         pxSocketTemp->Owner = client->Owner;
 
         lastError = PXSocketCreate(pxSocketTemp, pxSocketTemp->Family, pxSocketTemp->Type, pxSocketTemp->Protocol);
-       
+
         PXActionContinueOnError(lastError);
-        
+
         lastError = PXSocketConnect(pxSocketTemp, &client->SocketServer);
 
         PXActionContinueOnError(lastError);
@@ -131,14 +131,14 @@ PXThreadResult PXOSAPI PXClientCommunicationThread(PXSocket* const pxSocket)
     PXBufferConstruct(&pxSocket->BufferInput, buffer, PXSocketBufferSize, PXBufferTypeStack);
 
     while (PXSocketIsCurrentlyUsed(pxSocket))
-    {   
+    {
         const PXActionResult receiveingResult = PXSocketReceive(pxSocket, pxSocket->ID);
         const PXBool sucessful = PXActionSuccessful == receiveingResult;
 
         if (!sucessful)
         {
             pxSocket->CommunicationThread.Mode = PXThreadModeFinished;
-          
+
             return 1;
         }
     }

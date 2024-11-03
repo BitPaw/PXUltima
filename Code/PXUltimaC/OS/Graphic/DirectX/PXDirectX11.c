@@ -142,13 +142,21 @@ PXActionResult PXAPI PXDirectX11Initialize(PXDirectX11* const pxDirectX11, PXGra
 
         switch(pxGraphicInitializeInfo->DirectXDriverType)
         {
-            case PXDirectXDriverTypeHardwareDevice: dxDriverType = D3D_DRIVER_TYPE_HARDWARE; break;
-            case PXDirectXDriverTypeReferencDevice:dxDriverType = D3D_DRIVER_TYPE_REFERENCE; break;
-            case PXDirectXDriverTypeReferencDeviceWithoutRender:dxDriverType = D3D_DRIVER_TYPE_NULL; break;
-            case PXDirectXDriverTypeSoftware:dxDriverType = D3D_DRIVER_TYPE_WARP; break;
+        case PXDirectXDriverTypeHardwareDevice:
+            dxDriverType = D3D_DRIVER_TYPE_HARDWARE;
+            break;
+        case PXDirectXDriverTypeReferencDevice:
+            dxDriverType = D3D_DRIVER_TYPE_REFERENCE;
+            break;
+        case PXDirectXDriverTypeReferencDeviceWithoutRender:
+            dxDriverType = D3D_DRIVER_TYPE_NULL;
+            break;
+        case PXDirectXDriverTypeSoftware:
+            dxDriverType = D3D_DRIVER_TYPE_WARP;
+            break;
 
-            default:
-                return PXActionRefuedInputInvalid;
+        default:
+            return PXActionRefuedInputInvalid;
         }
 
         D3D_FEATURE_LEVEL featureLevels[] =
@@ -169,7 +177,7 @@ PXActionResult PXAPI PXDirectX11Initialize(PXDirectX11* const pxDirectX11, PXGra
 #if defined( DEBUG ) || defined( _DEBUG )
         flags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
-  
+
 
         DXGI_SWAP_CHAIN_DESC dxGISwapChainDescription;
         PXClear(DXGI_SWAP_CHAIN_DESC, &dxGISwapChainDescription);
@@ -184,20 +192,20 @@ PXActionResult PXAPI PXDirectX11Initialize(PXDirectX11* const pxDirectX11, PXGra
         dxGISwapChainDescription.Windowed = 1u;
 
         const HRESULT resultID = createDeviceAndSwapChain // D3D11CreateDevice()
-        (
-            PXNull, // &pxDirectX->VideoAdapter,
-            dxDriverType,
-            PXNull,
-            flags,
-            featureLevels,
-            numFeatureLevels,
-            D3D11_SDK_VERSION,
-            &dxGISwapChainDescription,
-            &pxDirectX11->SwapChain,
-            &pxDirectX11->Device,
-            &featureLevelResult,
-            &pxDirectX11->Context
-        );
+                                 (
+                                     PXNull, // &pxDirectX->VideoAdapter,
+                                     dxDriverType,
+                                     PXNull,
+                                     flags,
+                                     featureLevels,
+                                     numFeatureLevels,
+                                     D3D11_SDK_VERSION,
+                                     &dxGISwapChainDescription,
+                                     &pxDirectX11->SwapChain,
+                                     &pxDirectX11->Device,
+                                     &featureLevelResult,
+                                     &pxDirectX11->Context
+                                 );
         const PXActionResult result = PXWindowsHandleErrorFromID(resultID);
 
 #if PXLogEnable
@@ -215,21 +223,21 @@ PXActionResult PXAPI PXDirectX11Initialize(PXDirectX11* const pxDirectX11, PXGra
     // xxxx
     {
         const HRESULT getBufferResult = pxDirectX11->SwapChain->lpVtbl->GetBuffer
-        (
-            pxDirectX11->SwapChain,
-            0,
-            &IID_ID3D11Texture2D,
-            &pxDirectX11->FrameBuffer
-        );
+                                        (
+                                            pxDirectX11->SwapChain,
+                                            0,
+                                            &IID_ID3D11Texture2D,
+                                            &pxDirectX11->FrameBuffer
+                                        );
 
         const HRESULT createRenderResultID = pxDirectX11->Device->lpVtbl->CreateRenderTargetView
-        (
-            pxDirectX11->Device,
-            pxDirectX11->FrameBuffer,
-            0,
-            &pxDirectX11->RenderTargetView
-        );
- 
+                                             (
+                                                     pxDirectX11->Device,
+                                                     pxDirectX11->FrameBuffer,
+                                                     0,
+                                                     &pxDirectX11->RenderTargetView
+                                             );
+
         //pxDirectX11->FrameBuffer->lpVtbl->Release();
     }
 
@@ -261,60 +269,210 @@ PXActionResult PXAPI PXDirectX11TextureAction(PXDirectX11* const pxDirectX11, PX
 
     switch(pxGraphicTexturInfo->Action)
     {
-        case PXResourceActionCreate:
+    case PXResourceActionCreate:
+    {
+        switch(pxGraphicTexturInfo->Type)
         {
-            switch(pxGraphicTexturInfo->Type)
+        case PXGraphicTextureType1D:
+        {
+            PXTexture1D* pxTexture1D = (PXTexture1D*)pxGraphicTexturInfo->TextureReference;
+            ID3D11Texture1D** dx11Texture1D = &((ID3D11Texture1D*)pxTexture1D->Info.Handle.DirectXInterface);
+
+            D3D11_TEXTURE1D_DESC desc;
+            desc.Width = pxTexture1D->Image->Width;
+            desc.MipLevels = 0;// static_cast<UINT>(mipCount);
+            desc.ArraySize = 0;//static_cast<UINT>(arraySize);
+            desc.Format = 0;
+            desc.Usage = D3D11_USAGE_DEFAULT;
+            desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+            desc.CPUAccessFlags = 0;
+            desc.MiscFlags = 0;
+
+            D3D11_SUBRESOURCE_DATA initialData;
+            initialData.pSysMem = 0;
+            initialData.SysMemPitch = 0;
+            initialData.SysMemSlicePitch = 0;
+
+            const HRESULT createTextureResult = pxDirectX11->Device->lpVtbl->CreateTexture1D
+                                                (
+                                                    pxDirectX11->Device,
+                                                    &desc,
+                                                    &initialData,
+                                                    dx11Texture1D
+                                                );
+            const PXBool success = SUCCEEDED(createTextureResult);
+
+            if(!success)
             {
-                case PXGraphicTextureType1D:
-                {
-                    PXTexture1D* pxTexture1D = (PXTexture1D*)pxGraphicTexturInfo->TextureReference;
-                    ID3D11Texture1D** dx11Texture1D = &((ID3D11Texture1D*)pxTexture1D->Info.Handle.DirectXInterface);
-
-                    D3D11_TEXTURE1D_DESC desc;
-                    desc.Width = pxTexture1D->Image->Width;
-                    desc.MipLevels = 0;// static_cast<UINT>(mipCount);
-                    desc.ArraySize = 0;//static_cast<UINT>(arraySize);
-                    desc.Format = 0;
-                    desc.Usage = D3D11_USAGE_DEFAULT;
-                    desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-                    desc.CPUAccessFlags = 0;
-                    desc.MiscFlags = 0;
-
-                    D3D11_SUBRESOURCE_DATA initialData;
-                    initialData.pSysMem = 0;
-                    initialData.SysMemPitch = 0;
-                    initialData.SysMemSlicePitch = 0;
-
-                    const HRESULT createTextureResult = pxDirectX11->Device->lpVtbl->CreateTexture1D
-                    (
-                        pxDirectX11->Device,
-                        &desc, 
-                        &initialData,
-                        dx11Texture1D
-                    );
-                    const PXBool success = SUCCEEDED(createTextureResult);
-
-                    if(!success)
-                    {
-                        return PXActionFailedRegister;
-                    }
+                return PXActionFailedRegister;
+            }
 
 #if 0
-                    D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc;
-                    PXClear(D3D11_SHADER_RESOURCE_VIEW_DESC, &SRVDesc);
-                    SRVDesc.Format = format;
+            D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc;
+            PXClear(D3D11_SHADER_RESOURCE_VIEW_DESC, &SRVDesc);
+            SRVDesc.Format = format;
 
-                    if(arraySize > 1)
+            if(arraySize > 1)
+            {
+                SRVDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE1DARRAY;
+                SRVDesc.Texture1DArray.MipLevels = desc.MipLevels;
+                SRVDesc.Texture1DArray.ArraySize = static_cast<UINT>(arraySize);
+            }
+            else
+            {
+                SRVDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE1D;
+                SRVDesc.Texture1D.MipLevels = desc.MipLevels;
+            }
+
+            hr = d3dDevice->CreateShaderResourceView(tex, &SRVDesc, textureView);
+
+            if(FAILED(hr))
+            {
+                tex->Release();
+                return hr;
+            }
+#endif
+
+            break;
+        }
+        case PXGraphicTextureType2D:
+        {
+            PXTexture2D* const pxTexture2D = (PXTexture2D*)pxGraphicTexturInfo->TextureReference;
+            ID3D11Texture2D** texture2D = &(ID3D11Texture2D*)pxTexture2D->Info.Handle.DirectXInterface;
+
+            D3D11_TEXTURE2D_DESC textureDescription;
+            textureDescription.Width = pxTexture2D->Image->Width,
+            textureDescription.Height = pxTexture2D->Image->Height,
+            textureDescription.MipLevels = 0;
+            textureDescription.ArraySize = 0;
+            // textureDescription.Format = format;
+            textureDescription.SampleDesc.Count = 1;
+            textureDescription.SampleDesc.Quality = 0;
+            textureDescription.Usage = D3D11_USAGE_DEFAULT;
+            textureDescription.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+            textureDescription.CPUAccessFlags = 0;
+            // textureDescription.MiscFlags = (isCubeMap) ? D3D11_RESOURCE_MISC_TEXTURECUBE : 0;
+
+
+            D3D11_SUBRESOURCE_DATA pInitialData;
+            pInitialData.pSysMem = 0;
+            pInitialData.SysMemPitch = 0;
+            pInitialData.SysMemSlicePitch = 0;
+
+            const HRESULT result = pxDirectX11->Device->lpVtbl->CreateTexture2D
+                                   (
+                                       pxDirectX11->Device,
+                                       &textureDescription,
+                                       &pInitialData,
+                                       texture2D
+                                   );
+
+
+#if 0
+            if(textureView != 0)
+            {
+                D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc;
+                memset(&SRVDesc, 0, sizeof(SRVDesc));
+                SRVDesc.Format = format;
+
+                if(isCubeMap)
+                {
+                    if(arraySize > 6)
                     {
-                        SRVDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE1DARRAY;
-                        SRVDesc.Texture1DArray.MipLevels = desc.MipLevels;
-                        SRVDesc.Texture1DArray.ArraySize = static_cast<UINT>(arraySize);
+                        SRVDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURECUBEARRAY;
+                        SRVDesc.TextureCubeArray.MipLevels = desc.MipLevels;
+
+                        // Earlier, we set arraySize to (NumCubes * 6).
+                        SRVDesc.TextureCubeArray.NumCubes = static_cast<UINT>(arraySize / 6);
                     }
                     else
                     {
-                        SRVDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE1D;
-                        SRVDesc.Texture1D.MipLevels = desc.MipLevels;
+                        SRVDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURECUBE;
+                        SRVDesc.TextureCube.MipLevels = desc.MipLevels;
                     }
+                }
+                else if(arraySize > 1)
+                {
+                    SRVDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE2DARRAY;
+                    SRVDesc.Texture2DArray.MipLevels = desc.MipLevels;
+                    SRVDesc.Texture2DArray.ArraySize = static_cast<UINT>(arraySize);
+                }
+                else
+                {
+                    SRVDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE2D;
+                    SRVDesc.Texture2D.MipLevels = desc.MipLevels;
+                }
+
+                hr = d3dDevice->CreateShaderResourceView(tex, &SRVDesc, textureView);
+
+                if(FAILED(hr))
+                {
+                    tex->Release();
+                    return hr;
+                }
+            }
+
+            if(texture != 0)
+            {
+                *texture = tex;
+            }
+            else
+            {
+                tex->Release();
+            }
+#endif
+
+
+
+            break;
+        }
+        case PXGraphicTextureType3D:
+        {
+            PXTexture3D* const pxTexture3D = pxGraphicTexturInfo->TextureReference;
+            ID3D11Texture3D** dxTexture3D = &(ID3D11Texture3D*)pxTexture3D->Info.Handle.DirectXInterface;
+
+            D3D11_TEXTURE3D_DESC textureDescription;
+            textureDescription.Width = pxTexture3D->Image->Width,
+            textureDescription.Height = pxTexture3D->Image->Height,
+            textureDescription.Depth = pxTexture3D->Image->Depth,
+            //textureDescription.MipLevels = static_cast<UINT>(mipCount);
+            //textureDescription.Format = format;
+            textureDescription.Usage = D3D11_USAGE_DEFAULT;
+            textureDescription.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+            textureDescription.CPUAccessFlags = 0;
+            textureDescription.MiscFlags = 0;
+
+            //textureDescription.ArraySize = pxTexture3D->Image->PixelDataSize;
+            //textureDescription.Format = PXDirectXColorFormatFromID(pxTexture->Image.Format);
+            textureDescription.Usage = 0;
+            textureDescription.BindFlags = 0;
+            textureDescription.CPUAccessFlags = 0;
+            textureDescription.MiscFlags = 0;
+
+            D3D11_SUBRESOURCE_DATA pInitialData;
+            pInitialData.pSysMem = 0;
+            pInitialData.SysMemPitch = 0;
+            pInitialData.SysMemSlicePitch = 0;
+
+            const HRESULT result = pxDirectX11->Device->lpVtbl->CreateTexture3D
+                                   (
+                                       pxDirectX11->Device,
+                                       &textureDescription,
+                                       &pInitialData,
+                                       dxTexture3D
+                                   );
+            const PXBool successful = SUCCEEDED(result);
+
+#if 0
+            if(SUCCEEDED(hr) && tex != 0)
+            {
+                if(textureView != 0)
+                {
+                    D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc;
+                    memset(&SRVDesc, 0, sizeof(SRVDesc));
+                    SRVDesc.Format = format;
+                    SRVDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE3D;
+                    SRVDesc.Texture3D.MipLevels = desc.MipLevels;
 
                     hr = d3dDevice->CreateShaderResourceView(tex, &SRVDesc, textureView);
 
@@ -323,184 +481,34 @@ PXActionResult PXAPI PXDirectX11TextureAction(PXDirectX11* const pxDirectX11, PX
                         tex->Release();
                         return hr;
                     }
-#endif
-
-                    break;
                 }
-                case PXGraphicTextureType2D:
+
+                if(texture != 0)
                 {
-                    PXTexture2D* const pxTexture2D = (PXTexture2D*)pxGraphicTexturInfo->TextureReference;
-                    ID3D11Texture2D** texture2D = &(ID3D11Texture2D*)pxTexture2D->Info.Handle.DirectXInterface;
-
-                    D3D11_TEXTURE2D_DESC textureDescription;
-                    textureDescription.Width = pxTexture2D->Image->Width,
-                    textureDescription.Height = pxTexture2D->Image->Height,
-                    textureDescription.MipLevels = 0;
-                    textureDescription.ArraySize = 0;
-                   // textureDescription.Format = format;
-                    textureDescription.SampleDesc.Count = 1;
-                    textureDescription.SampleDesc.Quality = 0;
-                    textureDescription.Usage = D3D11_USAGE_DEFAULT;
-                    textureDescription.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-                    textureDescription.CPUAccessFlags = 0;
-                   // textureDescription.MiscFlags = (isCubeMap) ? D3D11_RESOURCE_MISC_TEXTURECUBE : 0;
-
-
-                    D3D11_SUBRESOURCE_DATA pInitialData;
-                    pInitialData.pSysMem = 0;
-                    pInitialData.SysMemPitch = 0;
-                    pInitialData.SysMemSlicePitch = 0;
-
-                    const HRESULT result = pxDirectX11->Device->lpVtbl->CreateTexture2D
-                    (
-                        pxDirectX11->Device,
-                        &textureDescription,
-                        &pInitialData,
-                        texture2D
-                    );
-
-
-#if 0
-                    if(textureView != 0)
-                    {
-                        D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc;
-                        memset(&SRVDesc, 0, sizeof(SRVDesc));
-                        SRVDesc.Format = format;
-
-                        if(isCubeMap)
-                        {
-                            if(arraySize > 6)
-                            {
-                                SRVDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURECUBEARRAY;
-                                SRVDesc.TextureCubeArray.MipLevels = desc.MipLevels;
-
-                                // Earlier, we set arraySize to (NumCubes * 6).
-                                SRVDesc.TextureCubeArray.NumCubes = static_cast<UINT>(arraySize / 6);
-                            }
-                            else
-                            {
-                                SRVDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURECUBE;
-                                SRVDesc.TextureCube.MipLevels = desc.MipLevels;
-                            }
-                        }
-                        else if(arraySize > 1)
-                        {
-                            SRVDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE2DARRAY;
-                            SRVDesc.Texture2DArray.MipLevels = desc.MipLevels;
-                            SRVDesc.Texture2DArray.ArraySize = static_cast<UINT>(arraySize);
-                        }
-                        else
-                        {
-                            SRVDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE2D;
-                            SRVDesc.Texture2D.MipLevels = desc.MipLevels;
-                        }
-
-                        hr = d3dDevice->CreateShaderResourceView(tex, &SRVDesc, textureView);
-
-                        if(FAILED(hr))
-                        {
-                            tex->Release();
-                            return hr;
-                        }
-                    }
-
-                    if(texture != 0)
-                    {
-                        *texture = tex;
-                    }
-                    else
-                    {
-                        tex->Release();
-                    }
-#endif
-
-
-
-                    break;
+                    *texture = tex;
                 }
-                case PXGraphicTextureType3D:
+                else
                 {
-                    PXTexture3D* const pxTexture3D = pxGraphicTexturInfo->TextureReference;
-                    ID3D11Texture3D** dxTexture3D = &(ID3D11Texture3D*)pxTexture3D->Info.Handle.DirectXInterface;
-
-                    D3D11_TEXTURE3D_DESC textureDescription;
-                    textureDescription.Width = pxTexture3D->Image->Width,
-                    textureDescription.Height = pxTexture3D->Image->Height,
-                    textureDescription.Depth = pxTexture3D->Image->Depth,
-                    //textureDescription.MipLevels = static_cast<UINT>(mipCount);
-                    //textureDescription.Format = format;
-                    textureDescription.Usage = D3D11_USAGE_DEFAULT;
-                    textureDescription.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-                    textureDescription.CPUAccessFlags = 0;
-                    textureDescription.MiscFlags = 0;
-
-                    //textureDescription.ArraySize = pxTexture3D->Image->PixelDataSize;
-                    //textureDescription.Format = PXDirectXColorFormatFromID(pxTexture->Image.Format);
-                    textureDescription.Usage = 0;
-                    textureDescription.BindFlags = 0;
-                    textureDescription.CPUAccessFlags = 0;
-                    textureDescription.MiscFlags = 0;
-
-                    D3D11_SUBRESOURCE_DATA pInitialData;
-                    pInitialData.pSysMem = 0;
-                    pInitialData.SysMemPitch = 0;
-                    pInitialData.SysMemSlicePitch = 0;
-
-                    const HRESULT result = pxDirectX11->Device->lpVtbl->CreateTexture3D
-                    (
-                        pxDirectX11->Device,
-                        &textureDescription,
-                        &pInitialData,
-                        dxTexture3D
-                    );
-                    const PXBool successful = SUCCEEDED(result);
-
-#if 0
-                    if(SUCCEEDED(hr) && tex != 0)
-                    {
-                        if(textureView != 0)
-                        {
-                            D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc;
-                            memset(&SRVDesc, 0, sizeof(SRVDesc));
-                            SRVDesc.Format = format;
-                            SRVDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE3D;
-                            SRVDesc.Texture3D.MipLevels = desc.MipLevels;
-
-                            hr = d3dDevice->CreateShaderResourceView(tex, &SRVDesc, textureView);
-
-                            if(FAILED(hr))
-                            {
-                                tex->Release();
-                                return hr;
-                            }
-                        }
-
-                        if(texture != 0)
-                        {
-                            *texture = tex;
-                        }
-                        else
-                        {
-                            tex->Release();
-                        }
+                    tex->Release();
+                }
 
 #endif
 
 
 
-                    break;
-                }
-                case PXGraphicTextureTypeCubeContainer:
-                {
-                    PXTextureCube* const pxTextureCube = pxGraphicTexturInfo->TextureReference;
+                break;
+            }
+            case PXGraphicTextureTypeCubeContainer:
+            {
+                PXTextureCube* const pxTextureCube = pxGraphicTexturInfo->TextureReference;
 
-                    // ???
+                // ???
 
-                    break;
-                }
+                break;
+            }
 
-                default:
-                    break;
+            default:
+                break;
             }
 
             break;
@@ -525,7 +533,7 @@ PXActionResult PXAPI PXDirectX11TextureAction(PXDirectX11* const pxDirectX11, PX
 
 #endif
 
-    return PXActionSuccessful;
+return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXDirectX11Clear(PXDirectX11* const pxDirectX11, const PXColorRGBAF* const pxColorRGBAF)
@@ -571,12 +579,12 @@ PXActionResult PXAPI PXDirectX11VertexBufferCreate(PXDirectX11* const pxDirectX1
 
     // Create the vertex buffer.
     const HRESULT bufferCreateResult = pxDirectX11->Device->lpVtbl->CreateBuffer
-    (
-        pxDirectX11->Device, 
-        &bufferDesc,
-        &InitData, 
-        g_pVertexBuffer
-    );
+                                       (
+                                           pxDirectX11->Device,
+                                           &bufferDesc,
+                                           &InitData,
+                                           g_pVertexBuffer
+                                       );
 #endif
 
     return PXActionSuccessful;
@@ -597,34 +605,34 @@ PXActionResult PXAPI PXDirectX11ShaderProgramCreate(PXDirectX11* const pxDirectX
 
         switch(pxShader->Type)
         {
-            case PXShaderTypeVertex:
-            {
-                const HRESULT result = pxDirectX11->Device->lpVtbl->CreateVertexShader
-                (
-                    pxDirectX11->Device,
-                    shaderBytecode,
-                    bytecodeLength,
-                    PXNull,
-                    &(ID3D11VertexShader*)pxShader->Info.Handle.DirectXInterface
-                );
+        case PXShaderTypeVertex:
+        {
+            const HRESULT result = pxDirectX11->Device->lpVtbl->CreateVertexShader
+                                   (
+                                       pxDirectX11->Device,
+                                       shaderBytecode,
+                                       bytecodeLength,
+                                       PXNull,
+                                       &(ID3D11VertexShader*)pxShader->Info.Handle.DirectXInterface
+                                   );
 
-                break;
-            }
-            case PXShaderTypePixel:
-            {
-                const HRESULT result = pxDirectX11->Device->lpVtbl->CreatePixelShader
-                (
-                    pxDirectX11->Device,
-                    shaderBytecode,
-                    bytecodeLength,
-                    PXNull,
-                    &(ID3D11PixelShader*)pxShader->Info.Handle.DirectXInterface
-                );
+            break;
+        }
+        case PXShaderTypePixel:
+        {
+            const HRESULT result = pxDirectX11->Device->lpVtbl->CreatePixelShader
+                                   (
+                                       pxDirectX11->Device,
+                                       shaderBytecode,
+                                       bytecodeLength,
+                                       PXNull,
+                                       &(ID3D11PixelShader*)pxShader->Info.Handle.DirectXInterface
+                                   );
 
-                break;
-            }
-            default:
-                return PXActionRefusedFormatNotSupported;
+            break;
+        }
+        default:
+            return PXActionRefusedFormatNotSupported;
         }
     }
 #endif
@@ -647,22 +655,46 @@ PXActionResult PXAPI PXDirectX11DevicePhysicalListAmountFunction(PXDirectX11* co
 
     switch (pxDirectXVersion)
     {
-    case PXDirectXVersion11Emulate1x0Core: pFeatureLevels = D3D_FEATURE_LEVEL_1_0_CORE; break;
-    case PXDirectXVersion11Emulate9x1:pFeatureLevels = D3D_FEATURE_LEVEL_9_1; break;
-    case PXDirectXVersion11Emulate9x2:pFeatureLevels = D3D_FEATURE_LEVEL_9_2; break;
-    case PXDirectXVersion11Emulate9x3:pFeatureLevels = D3D_FEATURE_LEVEL_9_3; break;
-    case PXDirectXVersion11Emulate10x0:pFeatureLevels = D3D_FEATURE_LEVEL_10_0; break;
-    case PXDirectXVersion11Emulate10x1:pFeatureLevels = D3D_FEATURE_LEVEL_10_1; break;
-    case PXDirectXVersion11Emulate11x0:pFeatureLevels = D3D_FEATURE_LEVEL_11_0; break;
-    case PXDirectXVersion11Emulate11x1:pFeatureLevels = D3D_FEATURE_LEVEL_11_1; break;
+    case PXDirectXVersion11Emulate1x0Core:
+        pFeatureLevels = D3D_FEATURE_LEVEL_1_0_CORE;
+        break;
+    case PXDirectXVersion11Emulate9x1:
+        pFeatureLevels = D3D_FEATURE_LEVEL_9_1;
+        break;
+    case PXDirectXVersion11Emulate9x2:
+        pFeatureLevels = D3D_FEATURE_LEVEL_9_2;
+        break;
+    case PXDirectXVersion11Emulate9x3:
+        pFeatureLevels = D3D_FEATURE_LEVEL_9_3;
+        break;
+    case PXDirectXVersion11Emulate10x0:
+        pFeatureLevels = D3D_FEATURE_LEVEL_10_0;
+        break;
+    case PXDirectXVersion11Emulate10x1:
+        pFeatureLevels = D3D_FEATURE_LEVEL_10_1;
+        break;
+    case PXDirectXVersion11Emulate11x0:
+        pFeatureLevels = D3D_FEATURE_LEVEL_11_0;
+        break;
+    case PXDirectXVersion11Emulate11x1:
+        pFeatureLevels = D3D_FEATURE_LEVEL_11_1;
+        break;
     }
 
     switch (pxDirectXDriverType)
     {
-    case PXDirectXDriverTypeHardwareDevice: dxDriverType = D3D_DRIVER_TYPE_HARDWARE; break;
-    case PXDirectXDriverTypeReferencDevice:dxDriverType = D3D_DRIVER_TYPE_REFERENCE; break;
-    case PXDirectXDriverTypeReferencDeviceWithoutRender:dxDriverType = D3D_DRIVER_TYPE_NULL; break;
-    case PXDirectXDriverTypeSoftware:dxDriverType = D3D_DRIVER_TYPE_WARP; break;
+    case PXDirectXDriverTypeHardwareDevice:
+        dxDriverType = D3D_DRIVER_TYPE_HARDWARE;
+        break;
+    case PXDirectXDriverTypeReferencDevice:
+        dxDriverType = D3D_DRIVER_TYPE_REFERENCE;
+        break;
+    case PXDirectXDriverTypeReferencDeviceWithoutRender:
+        dxDriverType = D3D_DRIVER_TYPE_NULL;
+        break;
+    case PXDirectXDriverTypeSoftware:
+        dxDriverType = D3D_DRIVER_TYPE_WARP;
+        break;
 
     default:
         return PXActionRefuedInputInvalid;
@@ -682,18 +714,18 @@ PXActionResult PXAPI PXDirectX11DevicePhysicalListAmountFunction(PXDirectX11* co
 
 
     const HRESULT result = D3D11CreateDevice
-    (
-        PXNull, // &pxDirectX->VideoAdapter,
-        dxDriverType,
-        PXNull,
-        Flags,
-        featureLevels,
-        numFeatureLevels,
-        D3D11_SDK_VERSION,
-        &pxDirectX->DX11,
-        PXNull,
-        &pxDirectX->DX11Context
-    );
+                           (
+                               PXNull, // &pxDirectX->VideoAdapter,
+                               dxDriverType,
+                               PXNull,
+                               Flags,
+                               featureLevels,
+                               numFeatureLevels,
+                               D3D11_SDK_VERSION,
+                               &pxDirectX->DX11,
+                               PXNull,
+                               &pxDirectX->DX11Context
+                           );
 #endif
 
     return PXActionRefusedNotImplemented;

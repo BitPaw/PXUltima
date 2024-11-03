@@ -9,15 +9,24 @@ PXFLACBlockType PXAPI PXFLACBlockTypeFromID(const PXInt8U typeID)
 {
     switch (typeID)
     {
-        case 0: return PXFLACBlockTypeSTREAMINFO;
-        case 1: return PXFLACBlockTypePADDING;
-        case 2: return PXFLACBlockTypeAPPLICATION;
-        case 3: return PXFLACBlockTypeSEEKTABLE;
-        case 4: return PXFLACBlockTypeVORBIS_COMMENT;
-        case 5: return PXFLACBlockTypeCUESHEET;
-        case 6: return PXFLACBlockTypePICTURE;
-        case 127: return PXFLACBlockTypeInvalid;
-        default: return PXFLACBlockTypeReserved;
+    case 0:
+        return PXFLACBlockTypeSTREAMINFO;
+    case 1:
+        return PXFLACBlockTypePADDING;
+    case 2:
+        return PXFLACBlockTypeAPPLICATION;
+    case 3:
+        return PXFLACBlockTypeSEEKTABLE;
+    case 4:
+        return PXFLACBlockTypeVORBIS_COMMENT;
+    case 5:
+        return PXFLACBlockTypeCUESHEET;
+    case 6:
+        return PXFLACBlockTypePICTURE;
+    case 127:
+        return PXFLACBlockTypeInvalid;
+    default:
+        return PXFLACBlockTypeReserved;
     }
 }
 

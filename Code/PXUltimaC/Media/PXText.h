@@ -41,8 +41,8 @@ ParsingTokenA;
 typedef enum PXTextFormat_
 {
     TextFormatInvalid,
-    TextFormatASCII,     // 1 Byte per character, range from 0 to 255    
-    TextFormatUNICODE,     // 2 Bytes per character, range from 0 to 65535    
+    TextFormatASCII,     // 1 Byte per character, range from 0 to 255
+    TextFormatUNICODE,     // 2 Bytes per character, range from 0 to 65535
     TextFormatUTF8,     // Variable length of characters, 1 to 4 Bytes
     TextFormatUTF16
 }
@@ -60,7 +60,7 @@ typedef struct PXText_
         wchar_t* TextW; // [8 Byte, Offset 24]
     };
 
-    PXTextFormat Format; // [4 Byte, Offset 32]        
+    PXTextFormat Format; // [4 Byte, Offset 32]
 }
 PXText;
 

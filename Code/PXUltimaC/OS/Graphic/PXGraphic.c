@@ -28,7 +28,7 @@ void PXAPI PXGraphicModelShaderSet(PXGraphic* const pxGraphic, PXRenderable* con
 PXActionResult PXAPI PXGraphicUIRectangleCreate(PXGraphic* const pxGraphic, PXRenderable* const renderable, const PXSize x, const PXSize y, const PXSize sidth, const PXSize height)
 {
     PXMatrix4x4FMoveXY(&renderable->MatrixModel, x, y);
-   // PXMatrix4x4FScaleXYZSet(&renderable->MatrixModel, sidth, height, 1);
+    // PXMatrix4x4FScaleXYZSet(&renderable->MatrixModel, sidth, height, 1);
 
     // Register rectangle
     {
@@ -99,10 +99,10 @@ PXActionResult PXAPI PXGraphicUIElementCreate(PXGraphic* const pxGraphic, PXGUIE
         {
             // Add as child
             pxUIElementParrent->Child = (*pxGUIElement);
-        }    
+        }
     }
     else
-    { 
+    {
         if (pxGraphic->UIElementBase.Child) // if Has child, everyone will be sibling from child
         {
             PXGUIElement* insertionNode = pxGraphic->UIElementBase.Child;
@@ -155,13 +155,13 @@ void PXAPI PXUIElementSizeSet(PXGUIElement* const pxGUIElement, const float x, c
     //pxGUIElement->X = x;
     //pxGUIElement->Y = y;
     // pxGUIElement->Width = width;
-   // pxGUIElement->Height = height;
+    // pxGUIElement->Height = height;
 
-   // pxGUIElement->AncerFlagList = pxUIElementPositionMode;
+    // pxGUIElement->AncerFlagList = pxUIElementPositionMode;
 
     //PXRectangleOffsetSet(&pxGUIElement->Margin, x, y, width, height);
 
-   // pxGUIElement->PositionMode = pxUIElementPositionMode;
+    // pxGUIElement->PositionMode = pxUIElementPositionMode;
 }
 
 
@@ -201,7 +201,7 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
     }
 #endif
 
-    
+
     /*
     for (size_t displayID = 0; displayID < EnumDisplayMonitors(PXNull, ); ++displayID)
     {
@@ -210,18 +210,18 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
 
     // EnumDisplayDevicesA
 
-    // Fetch all graphical devices 
+    // Fetch all graphical devices
 
     //PXMonitorDeviceAmount(&pxGraphic->DevicePhysicalListSize);
 
     if(0)
-    {      
+    {
         // Allocate space for needed devices
         //PXNewList(PXGraphicDevicePhysical, pxGraphic->DevicePhysicalListSize, &pxGraphic->DevicePhysicalList, &pxGraphic->DevicePhysicalListSize);
 
         //PXPhysicalDeviceFetchAll(pxGraphic->DevicePhysicalList, pxGraphic->DevicePhysicalListSize);
-    }  
- 
+    }
+
 
 #if 0
     // Create GPU affinity
@@ -260,34 +260,34 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
 
 #if 0
 
-   // void choose_ogl_vendor(const char* vendor_id)
-   // {
-        int idx;
-   
-        HDC dc;
-        PIXELFORMATDESCRIPTOR pfd;
+    // void choose_ogl_vendor(const char* vendor_id)
+    // {
+    int idx;
 
-        dd.cb = sizeof(dd);
-        idx = 0;
-        while (1)
-        {
-            if (!EnumDisplayDevicesA(NULL, idx, &dd, 0))
-                return; // not found!
-            if (strstr(dd.DeviceID, vendor_pxOpenGL->AttachedWindowid))
-                break; // there we go
-            idx += 1;
-        }
+    HDC dc;
+    PIXELFORMATDESCRIPTOR pfd;
 
-        dc = CreateDCA(dd.DeviceName, NULL, NULL, NULL);
-        memset(&pfd, 0, sizeof(pfd));
-        pfd.nSize = sizeof(pfd);
-        pfd.nVersion = 1;
-        // those flags are not important, they just need to be valid (and nondemanding, just in case).
-        // later you will use whatever flags you wish when you are creating your actual gl context
-        pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER | PFD_DEPTH_DONTCARE;
-        ChoosePixelFormat(dc, &pfd);
-        DeleteDC(dc);
-  //  }
+    dd.cb = sizeof(dd);
+    idx = 0;
+    while (1)
+    {
+        if (!EnumDisplayDevicesA(NULL, idx, &dd, 0))
+            return; // not found!
+        if (strstr(dd.DeviceID, vendor_pxOpenGL->AttachedWindowid))
+            break; // there we go
+        idx += 1;
+    }
+
+    dc = CreateDCA(dd.DeviceName, NULL, NULL, NULL);
+    memset(&pfd, 0, sizeof(pfd));
+    pfd.nSize = sizeof(pfd);
+    pfd.nVersion = 1;
+    // those flags are not important, they just need to be valid (and nondemanding, just in case).
+    // later you will use whatever flags you wish when you are creating your actual gl context
+    pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER | PFD_DEPTH_DONTCARE;
+    ChoosePixelFormat(dc, &pfd);
+    DeleteDC(dc);
+    //  }
 #endif
 
 
@@ -297,27 +297,27 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
     //-------------------------------------------------------------------------
     switch (pxGraphic->GraphicSystem)
     {
-        case PXGraphicSystemOpenGL:
-        {
-            pxGraphic->EventOwner = &pxGraphic->OpenGLInstance;
-            pxGraphic->Initialize = PXOpenGLInitialize;
-            break;
-        }
-        case PXGraphicSystemDirectX:
-        {
-            pxGraphic->EventOwner = &pxGraphic->DirectXInstance;
-            pxGraphic->Initialize = PXDirectXInitialize;
-            break;
-        }
-        case PXGraphicSystemVulcan:
-        {
-            pxGraphic->EventOwner = &pxGraphic->VulcanInstance;
-            pxGraphic->Initialize = PXVulcanInitialize;
-            break;
-        }
+    case PXGraphicSystemOpenGL:
+    {
+        pxGraphic->EventOwner = &pxGraphic->OpenGLInstance;
+        pxGraphic->Initialize = PXOpenGLInitialize;
+        break;
+    }
+    case PXGraphicSystemDirectX:
+    {
+        pxGraphic->EventOwner = &pxGraphic->DirectXInstance;
+        pxGraphic->Initialize = PXDirectXInitialize;
+        break;
+    }
+    case PXGraphicSystemVulcan:
+    {
+        pxGraphic->EventOwner = &pxGraphic->VulcanInstance;
+        pxGraphic->Initialize = PXVulcanInitialize;
+        break;
+    }
 
-        default:
-            return PXActionRefusedArgumentInvalid;
+    default:
+        return PXActionRefusedArgumentInvalid;
     }
 
     // Graphic initialize
@@ -342,7 +342,7 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
                 "Failure initializing API. Thinking about plan B"
             );
 
-#if OSUnix 
+#if OSUnix
             return pxActionResult; // On linux systems, dont try a plan B, if opengl does not work, nothing will be
 #elif OSWindows
             // On windows, try DirectX. some version will work, hopefully.
@@ -392,7 +392,7 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
         else
         {
             PXTextPrintA(targetBuffer, 64, "%s, (%s)", pxGraphicDevicePhysical->DeviceDisplay, pxGraphicDevicePhysical->IsConnectedToMonitor ? "Connected" : "Not Connected");
-        }      
+        }
 
         printf
         (
@@ -407,7 +407,7 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
             "+---------------------------------------------------------+\n\n",
             i+1,
             pxGraphic->DevicePhysicalListSize,
-            pxGraphicDevicePhysical->DeviceName,          
+            pxGraphicDevicePhysical->DeviceName,
             targetBuffer,
             pxGraphicDevicePhysical->Vendor,
             pxGraphicDevicePhysical->Renderer,
@@ -431,7 +431,7 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
 #endif
 
     //PXMatrix4x4FIdentity(&pxGraphic->SpriteScaled.ModelMatrix);
-   // PXMatrix4x4FIdentity(&pxGraphic->SpriteUnScaled.ModelMatrix);
+    // PXMatrix4x4FIdentity(&pxGraphic->SpriteUnScaled.ModelMatrix);
 
 #if PXLogEnable
     PXLogPrint
@@ -485,7 +485,7 @@ PXActionResult PXAPI PXGraphicSpriteConstruct(PXGraphic* const pxGraphic, PXSpri
 
     PXVector2FSetXY(&pxSprite->TextureScalePositionOffset, 1, 1);
 
-  //  PXRectangleOffsetSet(&pxSprite->Margin, 1, 1, 1, 1);
+    //  PXRectangleOffsetSet(&pxSprite->Margin, 1, 1, 1, 1);
 }
 
 void PXAPI PXCameraConstruct(PXCamera* const camera)
@@ -561,20 +561,20 @@ void PXAPI PXCameraViewChange(PXCamera* const camera, const PXCameraPerspective 
 
     switch (cameraPerspective)
     {
-        case PXCameraPerspective2D:
-        {
-            PXCameraViewChangeToOrthographic(camera, camera->Width, camera->Height, camera->Near, camera->Far);
-            break;
-        }
+    case PXCameraPerspective2D:
+    {
+        PXCameraViewChangeToOrthographic(camera, camera->Width, camera->Height, camera->Near, camera->Far);
+        break;
+    }
 
-        case PXCameraPerspective3D:
-        {
-            const float aspectRatio = PXCameraAspectRatio(camera);
+    case PXCameraPerspective3D:
+    {
+        const float aspectRatio = PXCameraAspectRatio(camera);
 
-            PXCameraViewChangeToPerspective(camera, camera->FieldOfView, aspectRatio, camera->Near, camera->Far);
+        PXCameraViewChangeToPerspective(camera, camera->FieldOfView, aspectRatio, camera->Near, camera->Far);
 
-            break;
-        }
+        break;
+    }
     }
 }
 
@@ -689,13 +689,13 @@ void PXAPI PXCameraFollow(PXCamera* const camera, const float deltaTime)
     PXVector3F center = {0,0,0};
     PXVector3F up = {0,1,0};
 
-   // PXMatrix4x4FLookAt(&camera->MatrixModel, &eye, &desiredPosition, &up);
+    // PXMatrix4x4FLookAt(&camera->MatrixModel, &eye, &desiredPosition, &up);
 
     PXVector3FInterpolate(&positionDesired, &positionCurrent, camera->FollowSpeed * deltaTime); // calculate delta movement
     PXVector3FInterpolate(&rotationDesired, &rotationCurrent, camera->FollowSpeed * deltaTime); // calculate delta movement
 
-#if 0 
-    // Not how i want it. 
+#if 0
+    // Not how i want it.
     // Problem: it snaps to strong if you get in range, then no movement until were too far away again.
     // We need a deadzone- then a softstart, then a rampup the further away we are
 

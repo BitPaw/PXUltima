@@ -34,12 +34,12 @@ PXActionResult PXAPI PXDirectX12Initialize(PXDirectX12* const pxDirectX12, PXGra
     // Enable the debug layer.
     {
         ID3D12Debug* debugController = PXNull;
-       // IID_PPV_ARGS()
+        // IID_PPV_ARGS()
         const HRESULT xx = D3D12GetDebugInterface // D3D12.dll, d3d12.h
-        (
-            &CLSID_D3D12Debug,
-            &debugController
-        );
+                           (
+                               &CLSID_D3D12Debug,
+                               &debugController
+                           );
 
         debugController->lpVtbl->EnableDebugLayer(debugController);
 
@@ -56,7 +56,7 @@ PXActionResult PXAPI PXDirectX12Initialize(PXDirectX12* const pxDirectX12, PXGra
     }
 
     // Factory
-    {        
+    {
         const HRESULT resultID = CreateDXGIFactory(&IID_IDXGIFactory, &pxDirectX12->GIFactory);
     }
 
@@ -65,12 +65,12 @@ PXActionResult PXAPI PXDirectX12Initialize(PXDirectX12* const pxDirectX12, PXGra
     // Create the device.
     {
         const HRESULT createDeviceResultID = D3D12CreateDevice // D3D12.dll, d3d12.h
-        (
-            PXNull, // VideoAdapter
-            D3D_FEATURE_LEVEL_12_0,
-            &IID_ID3D12Device,
-            &pxDirectX12->Device
-        );
+                                             (
+                                                     PXNull, // VideoAdapter
+                                                     D3D_FEATURE_LEVEL_12_0,
+                                                     &IID_ID3D12Device,
+                                                     &pxDirectX12->Device
+                                             );
 
 #if PXLogEnable
         PXLogPrint
@@ -91,12 +91,12 @@ PXActionResult PXAPI PXDirectX12Initialize(PXDirectX12* const pxDirectX12, PXGra
         D3D12CommandQueueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 
         const HRESULT resultID = pxDirectX12->Device->lpVtbl->CreateCommandQueue // D3D12.dll, d3d12.h
-        (
-            pxDirectX12->Device,
-            &D3D12CommandQueueDesc,
-            &IID_ID3D12CommandQueue,
-            &pxDirectX12->CommandQueue
-        );
+                                 (
+                                     pxDirectX12->Device,
+                                     &D3D12CommandQueueDesc,
+                                     &IID_ID3D12CommandQueue,
+                                     &pxDirectX12->CommandQueue
+                                 );
 
 #if PXLogEnable
         PXLogPrint
@@ -123,12 +123,12 @@ PXActionResult PXAPI PXDirectX12Initialize(PXDirectX12* const pxDirectX12, PXGra
         dxGISwapChainDescription.Windowed = TRUE;
 
         const HRESULT resultID = pxDirectX12->GIFactory->lpVtbl->CreateSwapChain // Windows 10, Dxgi.lib, dxgi1_4.h
-        (
-            pxDirectX12->GIFactory,
-            pxDirectX12->Device,
-            &dxGISwapChainDescription,
-            &pxDirectX12->SwapChain
-        );
+                                 (
+                                     pxDirectX12->GIFactory,
+                                     pxDirectX12->Device,
+                                     &dxGISwapChainDescription,
+                                     &pxDirectX12->SwapChain
+                                 );
 
         //const UINT index = GetCurrentBackBufferIndex();
 
@@ -154,14 +154,14 @@ PXActionResult PXAPI PXDirectX12Initialize(PXDirectX12* const pxDirectX12, PXGra
         descriptiorHeapDescription.NodeMask = 0;
 
         const HRESULT resultID = pxDirectX12->Device->lpVtbl->CreateDescriptorHeap
-        (
-            pxDirectX12->Device,
-            &descriptiorHeapDescription,
-            &IID_ID3D12DescriptorHeap,
-            &pxDirectX12->HeapDescriptor
-        );
+                                 (
+                                     pxDirectX12->Device,
+                                     &descriptiorHeapDescription,
+                                     &IID_ID3D12DescriptorHeap,
+                                     &pxDirectX12->HeapDescriptor
+                                 );
 
-       // const UINT number = GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+        // const UINT number = GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
 
 #if PXLogEnable
@@ -192,12 +192,12 @@ PXActionResult PXAPI PXDirectX12Initialize(PXDirectX12* const pxDirectX12, PXGra
         // Create a command allocator.
         {
             const HRESULT resultID = pxDirectX12->Device->lpVtbl->CreateCommandAllocator
-            (
-                pxDirectX12->Device,
-                D3D12_COMMAND_LIST_TYPE_DIRECT,
-                &IID_ID3D12CommandAllocator,
-                &pxDirectX12->CommandAllocator
-            );
+                                     (
+                                         pxDirectX12->Device,
+                                         D3D12_COMMAND_LIST_TYPE_DIRECT,
+                                         &IID_ID3D12CommandAllocator,
+                                         &pxDirectX12->CommandAllocator
+                                     );
 
 #if PXLogEnable
             PXLogPrint
@@ -226,7 +226,7 @@ PXActionResult PXAPI PXDirectX12Initialize(PXDirectX12* const pxDirectX12, PXGra
 #endif
 
 #else
-return PXActionRefusedNotSupportedByOperatingSystem;
+    return PXActionRefusedNotSupportedByOperatingSystem;
 #endif
 }
 
@@ -242,28 +242,50 @@ PXActionResult PXAPI PXDirectX12DevicePhysicalListAmountFunction(PXDirectX12* co
 
     switch (pxDirectXVersion)
     {
-    case PXDirectXVersion12Emulate1x0Core: featureLevel = D3D_FEATURE_LEVEL_1_0_CORE; break;
-    case PXDirectXVersion12Emulate9x1:featureLevel = D3D_FEATURE_LEVEL_9_1; break;
-    case PXDirectXVersion12Emulate9x2:featureLevel = D3D_FEATURE_LEVEL_9_2; break;
-    case PXDirectXVersion12Emulate9x3:featureLevel = D3D_FEATURE_LEVEL_9_3; break;
-    case PXDirectXVersion12Emulate10x0:featureLevel = D3D_FEATURE_LEVEL_10_0; break;
-    case PXDirectXVersion12Emulate10x1:featureLevel = D3D_FEATURE_LEVEL_10_1; break;
-    case PXDirectXVersion12Emulate11x0:featureLevel = D3D_FEATURE_LEVEL_11_0; break;
-    case PXDirectXVersion12Emulate11x1:featureLevel = D3D_FEATURE_LEVEL_11_1; break;
-    case PXDirectXVersion12Emulate12x0:featureLevel = D3D_FEATURE_LEVEL_12_0; break;
-    case PXDirectXVersion12Emulate12x1:featureLevel = D3D_FEATURE_LEVEL_12_1; break;
-    case PXDirectXVersion12Emulate12x2:featureLevel = D3D_FEATURE_LEVEL_12_2; break;
+    case PXDirectXVersion12Emulate1x0Core:
+        featureLevel = D3D_FEATURE_LEVEL_1_0_CORE;
+        break;
+    case PXDirectXVersion12Emulate9x1:
+        featureLevel = D3D_FEATURE_LEVEL_9_1;
+        break;
+    case PXDirectXVersion12Emulate9x2:
+        featureLevel = D3D_FEATURE_LEVEL_9_2;
+        break;
+    case PXDirectXVersion12Emulate9x3:
+        featureLevel = D3D_FEATURE_LEVEL_9_3;
+        break;
+    case PXDirectXVersion12Emulate10x0:
+        featureLevel = D3D_FEATURE_LEVEL_10_0;
+        break;
+    case PXDirectXVersion12Emulate10x1:
+        featureLevel = D3D_FEATURE_LEVEL_10_1;
+        break;
+    case PXDirectXVersion12Emulate11x0:
+        featureLevel = D3D_FEATURE_LEVEL_11_0;
+        break;
+    case PXDirectXVersion12Emulate11x1:
+        featureLevel = D3D_FEATURE_LEVEL_11_1;
+        break;
+    case PXDirectXVersion12Emulate12x0:
+        featureLevel = D3D_FEATURE_LEVEL_12_0;
+        break;
+    case PXDirectXVersion12Emulate12x1:
+        featureLevel = D3D_FEATURE_LEVEL_12_1;
+        break;
+    case PXDirectXVersion12Emulate12x2:
+        featureLevel = D3D_FEATURE_LEVEL_12_2;
+        break;
     }
 
     void* adpater = 0;
 
     const HRESULT result = D3D12CreateDevice
-    (
-        adpater,
-        featureLevel,
-        0,
-        0
-    );
+                           (
+                               adpater,
+                               featureLevel,
+                               0,
+                               0
+                           );
 #endif
 
     return PXActionSuccessful;

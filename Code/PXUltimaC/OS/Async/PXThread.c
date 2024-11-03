@@ -6,7 +6,7 @@
 #include <OS/Debug/PXDebug.h>
 
 #if OSUnix
-#include <sys/resource.h> // getpriority, setpriority 
+#include <sys/resource.h> // getpriority, setpriority
 #elif OSWindows
 #include <Windows.h>
 #include <dbghelp.h>
@@ -41,7 +41,7 @@ void PXAPI PXThreadDestruct(PXThread* const pxThread)
     const HANDLE currentThread = GetCurrentThread();
     const PXBool isTargetCurrentThread = currentThread == pxThread->ThreadHandle;
     const PXBool success = CloseHandle(pxThread->ThreadHandle); // Windows 2000 Professional (+UWP), Kernel32.dll, handleapi.h
-    
+
     if (!success)
     {
         return;
@@ -72,14 +72,14 @@ PXActionResult PXAPI PXThreadRun(PXThread* const pxThread, const char* const thr
 {
     if (!pxThread || !threadFunction)
     {
-        return PXActionRefusedArgumentInvalid;
+        return PXActionRefusedArgumentNull;
     }
 
 #if OSUnix
-    const int result = pthread_create(&pxThread->ThreadHandle, 0, threadFunction, (void*)parameter);
-    const PXBool successful = 0 == result;
+    const int threadCreateID = pthread_create(&pxThread->ThreadHandle, 0, threadFunction, (void*)parameter);
+    const PXActionResult threadCreate = PXErrorCurrent(0 == threadCreateID);
 
-    PXActionOnErrorFetchAndReturn(!successful);
+    return threadCreate;
 
 #elif OSWindows
     const HANDLE threadID = CreateThread // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
@@ -157,15 +157,15 @@ PXActionResult PXAPI PXThreadRunInOtherProcess(PXThread* const pxThread, const v
     DWORD                  dwCreationFlags = 0;
     LPDWORD                lpThreadId = 0;
     const HANDLE threadID = CreateRemoteThread // Windows XP, Kernel32.dll, processthreadsapi.h
-    (
-        processHandle,
-        lpThreadAttributes,
-        dwStackSize,
-        lpStartAddress,
-        lpParameter,
-        dwCreationFlags,
-        lpThreadId
-    );
+                            (
+                                processHandle,
+                                lpThreadAttributes,
+                                dwStackSize,
+                                lpStartAddress,
+                                lpParameter,
+                                dwCreationFlags,
+                                lpThreadId
+                            );
     const PXActionResult pxActionResult = PXErrorCurrent(PXNull != threadID);
 
     if(PXActionSuccessful != pxActionResult)
@@ -176,7 +176,7 @@ PXActionResult PXAPI PXThreadRunInOtherProcess(PXThread* const pxThread, const v
     pxThread->ThreadHandle = threadID;
 
     return PXActionSuccessful;
-#else 
+#else
     return PXActionRefusedNotSupported;
 #endif
 }
@@ -190,7 +190,7 @@ PXActionResult PXAPI PXThreadExitCurrent(const PXInt32U exitCode)
     ExitThread(exitCode); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
 
     return PXActionSuccessful;
-#else 
+#else
     return PXActionRefusedNotSupported;
 #endif
 }
@@ -198,34 +198,24 @@ PXActionResult PXAPI PXThreadExitCurrent(const PXInt32U exitCode)
 PXActionResult PXAPI PXThreadYieldToOtherThreads()
 {
 #if OSUnix
-
-#if 0 // deprecated
-    const int resultID = pthread_yield(); // [deprecated] pthread.h
-    const PXActionResult yieldResult = PXErrorCodeFromID();
+    const int yieldResultID = 
+#if 0
+        pthread_yield(); // [deprecated] pthread.h
+#else
+        sched_yield(); // sched.h
+#endif
+    const PXActionResult yieldResult = PXErrorCurrent(0 != yieldResultID);
 
     return yieldResult;
-#else
-    const int resultID = sched_yield(); // sched.h
-    const PXBool successful = -1 == resultID;
-
-    PXActionOnErrorFetchAndReturn(!successful);
-
-    return PXActionSuccessful;
-
-#endif
 
 #elif OSWindows
     // UmsThreadYield() // Windows 7 (64-Bit only), Kernel32.dll, winbase.h [Debcricated in Windows 11]
 
-    const PXBool successful = SwitchToThread(); // Windows 2000 SP4 (+UWP), Kernel32.dll, processthreadsapi.h
+    const PXBool switchSuccessful = SwitchToThread(); // Windows 2000 SP4 (+UWP), Kernel32.dll, processthreadsapi.h
+    const PXActionResult pxActionResult = PXErrorCurrent(switchSuccessful);
 
-    if(!successful)
-    {
-        return PXActionDidNothing;
-    }
-
-    return PXActionSuccessful;
-#else 
+    return pxActionResult;
+#else
     return PXActionNotSupportedByOperatingSystem;
 #endif
 }
@@ -249,7 +239,7 @@ PXActionResult PXAPI PXThreadOpen(PXThread* const pxThread)
     }
 
     return PXActionSuccessful;
-#else 
+#else
     return PXActionNotSupportedByOperatingSystem;
 #endif
 }
@@ -258,436 +248,461 @@ PXPrivate int PXAPI PXThreadPriorityToID(const PXThreadPriorityMode pxThreadPrio
 {
     switch(pxThreadPriorityMode)
     {
-        case PXThreadPriorityModeLowest:
-        {
-            return 
+    case PXThreadPriorityModeLowest:
+    {
+        return
 #if OSUnix
-                20;
+            20;
 #elif OSWindows
-                IDLE_PRIORITY_CLASS | THREAD_PRIORITY_IDLE
+            IDLE_PRIORITY_CLASS | THREAD_PRIORITY_IDLE
 #endif
-                ;
-         
-        }
-        case PXThreadPriorityModeLow19:
-        {
-            return 
-#if OSUnix
-                19;
-#elif OSWindows
-                IDLE_PRIORITY_CLASS | THREAD_PRIORITY_LOWEST
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeLow18:
-        {
-            return 
-#if OSUnix
-                18;
-#elif OSWindows
-                IDLE_PRIORITY_CLASS | THREAD_PRIORITY_BELOW_NORMAL
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeLow17:
-        {
-            return 
-#if OSUnix
-                17;
-#elif OSWindows
-                IDLE_PRIORITY_CLASS | THREAD_PRIORITY_NORMAL
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeLow16: {
-            return 
-#if OSUnix
-                16;
-#elif OSWindows
-                IDLE_PRIORITY_CLASS | THREAD_PRIORITY_ABOVE_NORMAL
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeLow15: {
-            return 
-#if OSUnix
-                15;
-#elif OSWindows
-                IDLE_PRIORITY_CLASS | THREAD_PRIORITY_HIGHEST
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeLow14: {
-            return 
-#if OSUnix
-                14;
-#elif OSWindows
-                IDLE_PRIORITY_CLASS | THREAD_PRIORITY_TIME_CRITICAL
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeLow13: {
-            return 
-#if OSUnix
-                13;
-#elif OSWindows
-                THREAD_PRIORITY_IDLE
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeLow12: {
-            return 
-#if OSUnix
-                12;
-#elif OSWindows
-                THREAD_PRIORITY_IDLE
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeLow11: {
-            return 
-#if OSUnix
-                11;
-#elif OSWindows
-                THREAD_PRIORITY_IDLE
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeLow10: {
-            return 
-#if OSUnix
-                10;
-#elif OSWindows
-                THREAD_PRIORITY_IDLE
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeLow09: {
-            return 
-#if OSUnix
-                9;
-#elif OSWindows
-                THREAD_PRIORITY_IDLE
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeLow08: {
-            return 
-#if OSUnix
-                8;
-#elif OSWindows
-                THREAD_PRIORITY_IDLE
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeLow07: {
-            return 
-#if OSUnix
-                7;
-#elif OSWindows
-                THREAD_PRIORITY_IDLE
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeLow06: {
-            return 
-#if OSUnix
-                6;
-#elif OSWindows
-                THREAD_PRIORITY_IDLE
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeLow05: {
-            return 
-#if OSUnix
-                5;
-#elif OSWindows
-                THREAD_PRIORITY_IDLE
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeLow04: {
-            return 
-#if OSUnix
-                4;
-#elif OSWindows
-                THREAD_PRIORITY_IDLE
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeLow03: {
-            return 
-#if OSUnix
-                3;
-#elif OSWindows
-                THREAD_PRIORITY_IDLE
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeLow02:
-        {
-            return 
-#if OSUnix
-                2;
-#elif OSWindows
-                THREAD_PRIORITY_IDLE
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeLow01:
-        case PXThreadPriorityModeLower:
-        {
-            return 
-#if OSUnix
-                1;
-#elif OSWindows
-                THREAD_PRIORITY_IDLE
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeNormal:
-        {
-            return 
-#if OSUnix
-                0;
-#elif OSWindows
-                THREAD_PRIORITY_IDLE
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeHigher:
-        case PXThreadPriorityModeHigh01:
-        {
-            return 
-#if OSUnix
-                - 1;
-#elif OSWindows
-                THREAD_PRIORITY_IDLE
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeHigh02:
-        {
-            return 
-#if OSUnix
-                - 2;
-#elif OSWindows
-                THREAD_PRIORITY_IDLE
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeHigh03: {
-            return 
-#if OSUnix
-                - 3;
-#elif OSWindows
-                THREAD_PRIORITY_IDLE
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeHigh04: {
-            return 
-#if OSUnix
-                - 4;
-#elif OSWindows
-                THREAD_PRIORITY_IDLE
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeHigh05: {
-            return 
-#if OSUnix
-                - 5;
-#elif OSWindows
-                THREAD_PRIORITY_IDLE
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeHigh06: {
-            return 
-#if OSUnix
-                - 6;
-#elif OSWindows
-                THREAD_PRIORITY_IDLE
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeHigh07: {
-            return 
-#if OSUnix
-                - 7;
-#elif OSWindows
-                THREAD_PRIORITY_IDLE
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeHigh08: {
-            return 
-#if OSUnix
-                - 8;
-#elif OSWindows
-                THREAD_PRIORITY_IDLE
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeHigh09: {
-            return 
-#if OSUnix
-                - 9;
-#elif OSWindows
-                THREAD_PRIORITY_IDLE
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeHigh10: {
-            return 
-#if OSUnix
-                - 10;
-#elif OSWindows
-                THREAD_PRIORITY_IDLE
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeHigh11: {
-            return 
-#if OSUnix
-                - 11;
-#elif OSWindows
-                THREAD_PRIORITY_IDLE
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeHigh12: {
-            return 
-#if OSUnix
-                - 12;
-#elif OSWindows
-                THREAD_PRIORITY_IDLE
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeHigh13: {
-            return 
-#if OSUnix
-                - 13;
-#elif OSWindows
-                THREAD_PRIORITY_IDLE
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeHigh14:
-        {
-            return 
-#if OSUnix
-                - 14;
-#elif OSWindows
-                THREAD_PRIORITY_IDLE
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeHigh15:
-        {
-            return 
-#if OSUnix
-                - 15;
-#elif OSWindows
-                THREAD_PRIORITY_IDLE
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeHigh16:
-        {
-            return 
-#if OSUnix
-                - 16;
-#elif OSWindows
-                THREAD_PRIORITY_IDLE
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeHigh17:
-        {
-            return 
-#if OSUnix
-                - 17;
-#elif OSWindows
-                THREAD_PRIORITY_IDLE
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeHigh18:
-        {
-            return 
-#if OSUnix
-                - 18;
-#elif OSWindows
-                THREAD_PRIORITY_IDLE
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeHigh19:
-        {
-            return 
-#if OSUnix
-                - 19;
-#elif OSWindows
-                THREAD_PRIORITY_IDLE
-#endif
-                ;
-         
-        }
-        case PXThreadPriorityModeHighest:
-        {
-            return
-#if OSUnix
-                20;
-#elif OSWindows
-                THREAD_PRIORITY_IDLE
-#endif
-                ;
-        }
+        ;
 
-        default:
-            return 0;
+    }
+    case PXThreadPriorityModeLow19:
+    {
+        return
+#if OSUnix
+            19;
+#elif OSWindows
+            IDLE_PRIORITY_CLASS | THREAD_PRIORITY_LOWEST
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeLow18:
+    {
+        return
+#if OSUnix
+            18;
+#elif OSWindows
+            IDLE_PRIORITY_CLASS | THREAD_PRIORITY_BELOW_NORMAL
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeLow17:
+    {
+        return
+#if OSUnix
+            17;
+#elif OSWindows
+            IDLE_PRIORITY_CLASS | THREAD_PRIORITY_NORMAL
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeLow16:
+    {
+        return
+#if OSUnix
+            16;
+#elif OSWindows
+            IDLE_PRIORITY_CLASS | THREAD_PRIORITY_ABOVE_NORMAL
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeLow15:
+    {
+        return
+#if OSUnix
+            15;
+#elif OSWindows
+            IDLE_PRIORITY_CLASS | THREAD_PRIORITY_HIGHEST
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeLow14:
+    {
+        return
+#if OSUnix
+            14;
+#elif OSWindows
+            IDLE_PRIORITY_CLASS | THREAD_PRIORITY_TIME_CRITICAL
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeLow13:
+    {
+        return
+#if OSUnix
+            13;
+#elif OSWindows
+            THREAD_PRIORITY_IDLE
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeLow12:
+    {
+        return
+#if OSUnix
+            12;
+#elif OSWindows
+            THREAD_PRIORITY_IDLE
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeLow11:
+    {
+        return
+#if OSUnix
+            11;
+#elif OSWindows
+            THREAD_PRIORITY_IDLE
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeLow10:
+    {
+        return
+#if OSUnix
+            10;
+#elif OSWindows
+            THREAD_PRIORITY_IDLE
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeLow09:
+    {
+        return
+#if OSUnix
+            9;
+#elif OSWindows
+            THREAD_PRIORITY_IDLE
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeLow08:
+    {
+        return
+#if OSUnix
+            8;
+#elif OSWindows
+            THREAD_PRIORITY_IDLE
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeLow07:
+    {
+        return
+#if OSUnix
+            7;
+#elif OSWindows
+            THREAD_PRIORITY_IDLE
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeLow06:
+    {
+        return
+#if OSUnix
+            6;
+#elif OSWindows
+            THREAD_PRIORITY_IDLE
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeLow05:
+    {
+        return
+#if OSUnix
+            5;
+#elif OSWindows
+            THREAD_PRIORITY_IDLE
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeLow04:
+    {
+        return
+#if OSUnix
+            4;
+#elif OSWindows
+            THREAD_PRIORITY_IDLE
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeLow03:
+    {
+        return
+#if OSUnix
+            3;
+#elif OSWindows
+            THREAD_PRIORITY_IDLE
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeLow02:
+    {
+        return
+#if OSUnix
+            2;
+#elif OSWindows
+            THREAD_PRIORITY_IDLE
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeLow01:
+    case PXThreadPriorityModeLower:
+    {
+        return
+#if OSUnix
+            1;
+#elif OSWindows
+            THREAD_PRIORITY_IDLE
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeNormal:
+    {
+        return
+#if OSUnix
+            0;
+#elif OSWindows
+            THREAD_PRIORITY_IDLE
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeHigher:
+    case PXThreadPriorityModeHigh01:
+    {
+        return
+#if OSUnix
+            - 1;
+#elif OSWindows
+            THREAD_PRIORITY_IDLE
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeHigh02:
+    {
+        return
+#if OSUnix
+            - 2;
+#elif OSWindows
+            THREAD_PRIORITY_IDLE
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeHigh03:
+    {
+        return
+#if OSUnix
+            - 3;
+#elif OSWindows
+            THREAD_PRIORITY_IDLE
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeHigh04:
+    {
+        return
+#if OSUnix
+            - 4;
+#elif OSWindows
+            THREAD_PRIORITY_IDLE
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeHigh05:
+    {
+        return
+#if OSUnix
+            - 5;
+#elif OSWindows
+            THREAD_PRIORITY_IDLE
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeHigh06:
+    {
+        return
+#if OSUnix
+            - 6;
+#elif OSWindows
+            THREAD_PRIORITY_IDLE
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeHigh07:
+    {
+        return
+#if OSUnix
+            - 7;
+#elif OSWindows
+            THREAD_PRIORITY_IDLE
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeHigh08:
+    {
+        return
+#if OSUnix
+            - 8;
+#elif OSWindows
+            THREAD_PRIORITY_IDLE
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeHigh09:
+    {
+        return
+#if OSUnix
+            - 9;
+#elif OSWindows
+            THREAD_PRIORITY_IDLE
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeHigh10:
+    {
+        return
+#if OSUnix
+            - 10;
+#elif OSWindows
+            THREAD_PRIORITY_IDLE
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeHigh11:
+    {
+        return
+#if OSUnix
+            - 11;
+#elif OSWindows
+            THREAD_PRIORITY_IDLE
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeHigh12:
+    {
+        return
+#if OSUnix
+            - 12;
+#elif OSWindows
+            THREAD_PRIORITY_IDLE
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeHigh13:
+    {
+        return
+#if OSUnix
+            - 13;
+#elif OSWindows
+            THREAD_PRIORITY_IDLE
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeHigh14:
+    {
+        return
+#if OSUnix
+            - 14;
+#elif OSWindows
+            THREAD_PRIORITY_IDLE
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeHigh15:
+    {
+        return
+#if OSUnix
+            - 15;
+#elif OSWindows
+            THREAD_PRIORITY_IDLE
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeHigh16:
+    {
+        return
+#if OSUnix
+            - 16;
+#elif OSWindows
+            THREAD_PRIORITY_IDLE
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeHigh17:
+    {
+        return
+#if OSUnix
+            - 17;
+#elif OSWindows
+            THREAD_PRIORITY_IDLE
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeHigh18:
+    {
+        return
+#if OSUnix
+            - 18;
+#elif OSWindows
+            THREAD_PRIORITY_IDLE
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeHigh19:
+    {
+        return
+#if OSUnix
+            - 19;
+#elif OSWindows
+            THREAD_PRIORITY_IDLE
+#endif
+        ;
+
+    }
+    case PXThreadPriorityModeHighest:
+    {
+        return
+#if OSUnix
+            20;
+#elif OSWindows
+            THREAD_PRIORITY_IDLE
+#endif
+        ;
+    }
+
+    default:
+        return 0;
     }
 }
 
@@ -705,19 +720,18 @@ PXActionResult PXAPI PXThreadPrioritySet(PXThread* pxThread, const PXThreadPrior
 
 #if OSUnix
     const int newPriority = setpriority(0, pxThread->ThreadHandle, threadPriority);
-    const PXBool success = -1 != newPriority;
+    const PXActionResult pxActionResult = PXErrorCurrent(-1 != newPriority);
 
-    if(!success)
+    if(PXActionSuccessful != pxActionResult)
     {
-        const PXActionResult setResult = PXErrorCurrent();
-
-        return setResult;
+        return pxActionResult;
     }
 
     return PXActionSuccessful;
+
 #elif OSWindows
     // SetPriorityClass() also exists, but is it needed?
-    const BOOL success = SetThreadPriority(pxThread->ThreadHandle, threadPriority); 
+    const BOOL success = SetThreadPriority(pxThread->ThreadHandle, threadPriority);
     const PXActionResult pxActionResult = PXErrorCurrent(PXNull != success);
 
     if(PXActionSuccessful != pxActionResult)
@@ -728,7 +742,7 @@ PXActionResult PXAPI PXThreadPrioritySet(PXThread* pxThread, const PXThreadPrior
     return PXActionSuccessful;
 
 #else
-    return PXActionRefusedNotSupportedByOperatingSystem; 
+    return PXActionRefusedNotSupportedByOperatingSystem;
 #endif
 }
 
@@ -742,15 +756,15 @@ PXActionResult PXAPI PXThreadPriorityGet(PXThread* pxThread, PXThreadPriorityMod
         pxThread = &dummyThread;
     }
 
-     int priorityID = 0;
+    int priorityID = 0;
 
 #if OSUnix
-     priorityID = getpriority(0, pxThread->ThreadHandle); // sys/resource.h
+    priorityID = getpriority(0, pxThread->ThreadHandle); // sys/resource.h
 #elif OSWindows
-     priorityID = GetThreadPriority(pxThread->ThreadHandle);
+    priorityID = GetThreadPriority(pxThread->ThreadHandle);
 #endif
 
-     return PXActionSuccessful;
+    return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXThreadSuspend(PXThread* const pxThread)
@@ -794,7 +808,7 @@ PXActionResult PXAPI PXThreadResume(PXThread* const pxThread)
     pxThread->Mode = PXThreadModeRunning;
 
     return PXActionSuccessful;
-#endif    
+#endif
 }
 
 PXActionResult PXAPI PXThreadSleep(PXThread* const pxThread, const PXSize sleepTime)
@@ -843,7 +857,7 @@ PXActionResult PXAPI PXThreadCurrentProcessorID(PXInt32U* const processorID)
     return PXActionRefusedNotSupportedByOperatingSystem;
 #endif
 
-#else 
+#else
     return PXActionRefusedNotSupported;
 #endif
 }
@@ -891,7 +905,7 @@ PXActionResult PXAPI PXThreadNameSet(PXThread* pxThread, PXText* const threadNam
 
     const DWORD MS_VC_EXCEPTION = 0x406D1388;
     const PXSize numberOfArguments = sizeof(info) / sizeof(ULONG_PTR);
-     
+
 #if 0 // Does not compile as well in 32-Bit under no default lib
     __try
     {
@@ -909,40 +923,7 @@ PXActionResult PXAPI PXThreadNameSet(PXThread* pxThread, PXText* const threadNam
 #endif
 }
 
-
-
-
-HMODULE GetModuleNameFromAddress(void* functionAddress) 
-{
-    HMODULE hModule = NULL;
-
-    const PXBool success = GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCTSTR)functionAddress, &hModule);
-
-    if(!success)
-    {
-        return PXNull;
-    }
-
-    return hModule;
-
-    /*
-
-    if() {
-        std::cerr << "Failed to get module handle!" << std::endl;
-        return "";
-    }
-    char moduleName[MAX_PATH];
-    if(GetModuleFileName(hModule, moduleName, sizeof(moduleName)) == 0) {
-        std::cerr << "Failed to get module name!" << std::endl;
-        return "";
-    }
-    return std::string(moduleName);
-    */
-}
-
-
-
-PXActionResult PXAPI PXThreadNameGet(PXDebug* const pxDebug ,PXThread* const pxThread, PXText* const threadName)
+PXActionResult PXAPI PXThreadNameGet(PXDebug* const pxDebug,PXThread* const pxThread, PXText* const threadName)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -955,7 +936,7 @@ PXActionResult PXAPI PXThreadNameGet(PXDebug* const pxDebug ,PXThread* const pxT
     // if we dont have a thread handle and only a thread ID
     if(!pxThread->ThreadHandle)
     {
-        pxThread->ThreadHandle = OpenThread(THREAD_ALL_ACCESS, PXFalse, pxThread->ThreadID);       
+        pxThread->ThreadHandle = OpenThread(THREAD_ALL_ACCESS, PXFalse, pxThread->ThreadID);
         //PXBool xxa = DuplicateHandle(GetCurrentProcess(), PXNull, GetCurrentProcess(), &pxThread->ThreadHandle, THREAD_QUERY_INFORMATION, FALSE, 0);
 
 
@@ -977,7 +958,7 @@ PXActionResult PXAPI PXThreadNameGet(PXDebug* const pxDebug ,PXThread* const pxT
     {
         threadName->SizeUsed = PXTextCopyA("[N/A]", 5, threadName->TextA, threadName->SizeAllocated);
     }
-    
+
     LocalFree(tempThreadDescription);
 
 
@@ -998,11 +979,11 @@ PXActionResult PXAPI PXThreadNameGet(PXDebug* const pxDebug ,PXThread* const pxT
 
     PXDebugFetchSymbolThread(pxDebug, &pxSymbol, pxThread);
 
-    
+
 
     const PXBool hasFullName = (pxSymbol.LineNumber > 0) && (pxSymbol.NameFile[0] != '\0');
 
-    // [DLLL]    
+    // [DLLL]
     if(hasFullName)
     {
         PXTextAppendF
@@ -1033,7 +1014,7 @@ PXActionResult PXAPI PXThreadNameGet(PXDebug* const pxDebug ,PXThread* const pxT
 
 
 
-  
+
 
     /*
     threadNameInformation.ThreadName.Buffer = subsystemInfomationType;
@@ -1041,19 +1022,19 @@ PXActionResult PXAPI PXThreadNameGet(PXDebug* const pxDebug ,PXThread* const pxT
     threadNameInformation.ThreadName.MaximumLength = 128;
 
 
-   const NTSTATUS x = NtQueryInformationThread
-   (
+    const NTSTATUS x = NtQueryInformationThread
+    (
        pxThread->ThreadHandle,
        ThreadNameInformation,
        &threadNameInformation,
        ThreadInformationLength,
        &returnLength
-   );
+    );
 
 
 
-   CloseHandle(pxThread->ThreadHandle);
-   pxThread->ThreadHandle = PXNull;*/
+    CloseHandle(pxThread->ThreadHandle);
+    pxThread->ThreadHandle = PXNull;*/
 
 
 #else

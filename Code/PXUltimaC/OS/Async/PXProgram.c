@@ -44,29 +44,29 @@ PXThreadResult PXOSAPI PXProgramExecuteThreadFunction(void* data)
     startupInfo.cb = sizeof(STARTUPINFOA);
 
     const BOOL createSuccessful = CreateProcessA
-    (
-        program->FilePath, // lpApplicationName,
-        PXNull,            // lpCommandLine,
-        PXNull,            // LPSECURITY_ATTRIBUTES lpProcessAttributes,
-        PXNull,            // LPSECURITY_ATTRIBUTES lpThreadAttributes,
-        PXFalse,           // bInheritHandles,
-        0,                  // dwCreationFlags,
-        PXNull,            //     LPVOID                lpEnvironment,
-        PXNull,            //     LPCSTR                lpCurrentDirectory,
-        &startupInfo,
-        &processInformation
-    );
+                                  (
+                                      program->FilePath, // lpApplicationName,
+                                      PXNull,            // lpCommandLine,
+                                      PXNull,            // LPSECURITY_ATTRIBUTES lpProcessAttributes,
+                                      PXNull,            // LPSECURITY_ATTRIBUTES lpThreadAttributes,
+                                      PXFalse,           // bInheritHandles,
+                                      0,                  // dwCreationFlags,
+                                      PXNull,            //     LPVOID                lpEnvironment,
+                                      PXNull,            //     LPCSTR                lpCurrentDirectory,
+                                      &startupInfo,
+                                      &processInformation
+                                  );
 
-  //  pxProgram.Handle = processInformation.han
+    //  pxProgram.Handle = processInformation.han
 
-   // PXProgramWaitForFinish();
+    // PXProgramWaitForFinish();
 
 #else
     program->ReturnValue = _spawnv(_P_WAIT, program->FilePath, (const char* const*)program->ParameterList);
     program->ExecutionSuccessfull = program->ReturnValue == 0;
 #endif
 
- 
+
 #else
     return -1;
 #endif
@@ -182,7 +182,7 @@ PXActionResult PXAPI PXProgramExecuteWS(PXProgram* const program, const wchar_t*
     char parameterListA[1024];
 
     //wcstombs(programPathA, programPath, 1024);
-   // wcstombs(parameterListA, parameterList, 1024);
+    // wcstombs(parameterListA, parameterList, 1024);
 
     //  return PXProgram::Execute(programPathA, parameterListA, callback);
 
@@ -193,37 +193,37 @@ PXActionResult PXAPI PXProgramWaitForFinish(PXProgram* const program, PXInt32U* 
 {
 #if OSUnix
 
-    const pid_t  processID = waitpid(program->Handle, &program->ReturnValue, 0); // Linux, sys/wait.h
-    const PXBool waitSuccessful = program->Handle != -1;
+    const pid_t processID = waitpid(program->Handle, &program->ReturnValue, 0); // Linux, sys/wait.h
+    const PXActionResult waitResult = PXErrorCurrent(-1 != processID);
 
-    PXActionOnErrorFetchAndReturn(!waitSuccessful);
+    return waitResult;
 
 #elif OSWindows
 
     DWORD result = -1;
 
-    const DWORD waitEventTrigger = WaitForSingleObject(program->Handle, INFINITE); // Windows XP (+UWP), Kernel32.dll, synchapi.h 
+    const DWORD waitEventTrigger = WaitForSingleObject(program->Handle, INFINITE); // Windows XP (+UWP), Kernel32.dll, synchapi.h
 
     switch (waitEventTrigger)
-    {        
-        case WAIT_TIMEOUT:
-        {
-            return PXActionFailedConnectionTimedOut;
-        }
-        case WAIT_FAILED:
-        {
-            const PXActionResult pxActionResult = PXErrorCurrent(PXFalse);
+    {
+    case WAIT_TIMEOUT:
+    {
+        return PXActionFailedConnectionTimedOut;
+    }
+    case WAIT_FAILED:
+    {
+        const PXActionResult pxActionResult = PXErrorCurrent(PXFalse);
 
-            return pxActionResult;
-        }
-        case WAIT_ABANDONED:
-        case WAIT_OBJECT_0:
-        default:
-            // Success, do nothing.
-            break;
+        return pxActionResult;
+    }
+    case WAIT_ABANDONED:
+    case WAIT_OBJECT_0:
+    default:
+        // Success, do nothing.
+        break;
     }
 
-    const BOOL exitCodeGetSuccess = GetExitCodeProcess(program->Handle, &result); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h 
+    const BOOL exitCodeGetSuccess = GetExitCodeProcess(program->Handle, &result); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
     const PXActionResult pxActionResult = PXErrorCurrent(exitCodeGetSuccess);
 
     if(PXActionSuccessful != pxActionResult)

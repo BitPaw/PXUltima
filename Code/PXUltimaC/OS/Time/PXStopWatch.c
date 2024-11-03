@@ -25,7 +25,7 @@ PXBool PXAPI PXStopWatchTrigger(PXStopWatch* const stopWatch, PXTime* const time
 {
     /*
     const PXBool canDo = stopWatch->TimeStampDataSizeAllocated > (stopWatch->TimeStampDataSizeUsed + 1);
-   
+
     if (!canDo)
     {
         PXMemoryClear(time, sizeof(PXTime));

@@ -3,10 +3,10 @@
 
 #include "../PXResource.h"
 
-#define PXMIPSOPCodeNormal  0b00000000 
-#define PXMIPSOPCodeSpecial 0b01000000 
-#define PXMIPSOPCodeREGIMM  0b10000000 
-#define PXMIPSOPCodeCOPz    0b11000000 
+#define PXMIPSOPCodeNormal  0b00000000
+#define PXMIPSOPCodeSpecial 0b01000000
+#define PXMIPSOPCodeREGIMM  0b10000000
+#define PXMIPSOPCodeCOPz    0b11000000
 
 typedef enum PXMIPSInstructionType_
 {
@@ -26,7 +26,7 @@ typedef enum PXMIPSInstructionType_
     PXMIPSInstructionTypeADDImmediate                       = 0b001000, // ADDI
     PXMIPSInstructionTypeADDImmediateUnsigned               = 0b001001, // ADDIU
     PXMIPSInstructionTypeSetOnLessThanImmediate             = 0b001010, // SLTI
-    PXMIPSInstructionTypeSetOnLessThanImmediateUnsigned     = 0b001011, // SLTIU 
+    PXMIPSInstructionTypeSetOnLessThanImmediateUnsigned     = 0b001011, // SLTIU
     PXMIPSInstructionTypeANDImmediate                       = 0b001100, // ANDI
     PXMIPSInstructionTypeORImmediate                        = 0b001101, // ORI
     PXMIPSInstructionTypeExclusiveORImmediate               = 0b001110, // XORI
@@ -34,7 +34,7 @@ typedef enum PXMIPSInstructionType_
     PXMIPSInstructionTypeCoprocessorZOperation0             = 0b010000, // COP0
     PXMIPSInstructionTypeCoprocessorZOperation1             = 0b010001, // COP1
     PXMIPSInstructionTypeCoprocessorZOperation2             = 0b010010, // COP2
-    // Reserved = 0b010011, // ??? 
+    // Reserved = 0b010011, // ???
     PXMIPSInstructionTypeBranchOnEqualLikely                = 0b010100, // BEQL
     PXMIPSInstructionTypeBranchOnNotEqualLikely             = 0b010101, // BNEL
     PXMIPSInstructionTypeBranchOnLessThan                   = 0b010110, // BLEZL
@@ -43,7 +43,7 @@ typedef enum PXMIPSInstructionType_
     PXMIPSInstructionTypeDoublewordADDImmediateUnsigned     = 0b011001, // DADDIU
     PXMIPSInstructionTypeLoadDoublewordLeft                 = 0b011010, // LDL
     PXMIPSInstructionTypeLoadDoublewordRight                = 0b011011, // LDR
-    // Reserved = 0b011100, // ??? 
+    // Reserved = 0b011100, // ???
     // Reserved = 0b011101, // ???
     // Reserved = 0b011110, // ???
     // Reserved = 0b011111, // ???
@@ -121,11 +121,11 @@ typedef enum PXMIPSInstructionType_
     PXMIPSInstructionTypeADD                                    = 0b100000 | PXMIPSOPCodeSpecial, // ADD
     PXMIPSInstructionTypeADDUnsigned                            = 0b100001 | PXMIPSOPCodeSpecial, // ADDU
     PXMIPSInstructionTypeSubtract                               = 0b100010 | PXMIPSOPCodeSpecial, // SUB
-    PXMIPSInstructionTypeSubtractUnsigned                       = 0b100011 | PXMIPSOPCodeSpecial, // SUBU 
+    PXMIPSInstructionTypeSubtractUnsigned                       = 0b100011 | PXMIPSOPCodeSpecial, // SUBU
     PXMIPSInstructionTypeAND                                    = 0b100100 | PXMIPSOPCodeSpecial, // AND
     PXMIPSInstructionTypeOR                                     = 0b100101 | PXMIPSOPCodeSpecial, // OR
     PXMIPSInstructionTypeExclusiveOR                            = 0b100110 | PXMIPSOPCodeSpecial, // XOR
-    PXMIPSInstructionTypeNOR                                    = 0b100111 | PXMIPSOPCodeSpecial, // NOR 
+    PXMIPSInstructionTypeNOR                                    = 0b100111 | PXMIPSOPCodeSpecial, // NOR
     // Reserved = 0b101000, // ???
     // Reserved = 0b111001, // ???
     PXMIPSInstructionTypeSetOnLessThan                          = 0b101010 | PXMIPSOPCodeSpecial, // SLT
@@ -246,38 +246,38 @@ PXMIPSInstructionType;
 
 typedef struct PXMIPSRegister_
 {
-    PXSize Index; // 0
-    PXSize Random; // 1
-    PXSize EntryLo0; // 2
-    PXSize EntryLo1; // 3
-    PXSize Context; // 4
-    PXSize PageMask; // 5
-    PXSize Wired; // 6
-    PXSize UnusedA; // 7 - unused
-    PXSize BadVAddr; // 8
-    PXSize Count; // 9
-    PXSize EntryHi; // 10
-    PXSize Compare; // 11
-    PXSize Status; // 12
-    PXSize Cause; // 13
-    PXSize EPC; // 14
-    PXSize PRId; // 15
-    PXSize Config; // 16
-    PXSize LLAddr; // 17
-    PXSize WatchLo; // 18
-    PXSize WatchHi; // 19
-    PXSize XContext; // 20
-    PXSize UnusedB; // 21
-    PXSize UnusedC; // 22
-    PXSize UnusedD; // 23
-    PXSize UnusedE; // 24
-    PXSize UnusedF; // 25
-    PXSize ParityError; // 26
-    PXSize CacheError; // 27
-    PXSize TagLo; // 28
-    PXSize TagHi; // 29
-    PXSize ErrorEPC; // 30
-    PXSize UnusedG; // 31
+    PXSize PXMIPSRegisterIndex; // 0
+    PXSize PXMIPSRegisterRandom; // 1
+    PXSize PXMIPSRegisterEntryLo0; // 2
+    PXSize PXMIPSRegisterEntryLo1; // 3
+    PXSize PXMIPSRegisterContext; // 4
+    PXSize PXMIPSRegisterPageMask; // 5
+    PXSize PXMIPSRegisterWired; // 6
+    PXSize PXMIPSRegisterUnusedA; // 7 - unused
+    PXSize PXMIPSRegisterBadVAddr; // 8
+    PXSize PXMIPSRegisterCount; // 9
+    PXSize PXMIPSRegisterEntryHi; // 10
+    PXSize PXMIPSRegisterCompare; // 11
+    PXSize PXMIPSRegisterStatus; // 12
+    PXSize PXMIPSRegisterCause; // 13
+    PXSize PXMIPSRegisterEPC; // 14
+    PXSize PXMIPSRegisterPRId; // 15
+    PXSize PXMIPSRegisterConfig; // 16
+    PXSize PXMIPSRegisterLLAddr; // 17
+    PXSize PXMIPSRegisterWatchLo; // 18
+    PXSize PXMIPSRegisterWatchHi; // 19
+    PXSize PXMIPSRegisterContextX; // 20
+    PXSize PXMIPSRegisterUnusedB; // 21
+    PXSize PXMIPSRegisterUnusedC; // 22
+    PXSize PXMIPSRegisterUnusedD; // 23
+    PXSize PXMIPSRegisterUnusedE; // 24
+    PXSize PXMIPSRegisterUnusedF; // 25
+    PXSize PXMIPSRegisterParityError; // 26
+    PXSize PXMIPSRegisterCacheError; // 27
+    PXSize PXMIPSRegisterTagLo; // 28
+    PXSize PXMIPSRegisterTagHi; // 29
+    PXSize PXMIPSRegisterErrorEPC; // 30
+    PXSize PXMIPSRegisterUnusedG; // 31
 }
 PXMIPSRegister;
 

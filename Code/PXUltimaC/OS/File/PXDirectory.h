@@ -36,7 +36,7 @@ typedef enum PXDirectioySpecialFolder_
     PXDirectioySpecialFolderSystem,
     PXDirectioySpecialFolderWinfows
 
-}PXDirectioySpecialFolder;
+} PXDirectioySpecialFolder;
 
 
 
@@ -45,7 +45,7 @@ typedef enum PXDirectioySpecialFolder_
 
 typedef struct PXDirectoryIterator_
 {
-   // PXFileElementInfo EntryCurrent;
+    // PXFileElementInfo EntryCurrent;
 
 #if OSUnix
     DIR* ID;
@@ -64,7 +64,7 @@ PXDirectoryIterator;
 // Container to store the search result from a directorySearch
 typedef struct PXDirectorySearchCache_
 {
-    //PXFileElementDetected Callback; // Notify owner of a detected 
+    //PXFileElementDetected Callback; // Notify owner of a detected
 
     PXInt8U SearchDepthCurrent;
     PXInt8U SearchDepthMax;
@@ -74,6 +74,7 @@ typedef struct PXDirectorySearchCache_
     PXList EntryList; // PXFileEntry0
 
 #if OSUnix
+    DIR* DirectoryHandleCurrent;
 #elif OSWindows
     HANDLE DirectoryHandleCurrent;
 #endif

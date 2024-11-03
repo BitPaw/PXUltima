@@ -34,13 +34,13 @@ typedef enum PXTGAImageDataType_
     PXTGAImageDataUncompressedBlackAndWhite, // 3 (grayscale) image
     PXTGAImageDataRunLengthEncodedColorMapped,  // 9
     PXTGAImageDataRunLengthEncodedTrueColor, // 10
-    PXTGAImageDataRunLengthEncodedBlackAndWhite // 11 (grayscale) image 
+    PXTGAImageDataRunLengthEncodedBlackAndWhite // 11 (grayscale) image
 }
 PXTGAImageDataType;
 
 typedef struct PXTGA_
 {
-    //---[Header]----------------------    
+    //---[Header]----------------------
     PXInt8U ColorPaletteType;
     PXTGAImageDataType ImageDataType;
 
@@ -58,16 +58,16 @@ typedef struct PXTGA_
     PXSize ColorMapDataSize;
     unsigned char* ColorMapData; // Look-up table containing color map data
     PXSize ImageDataSize;
-    PXByte* ImageData; // Stored according to the image descriptor     
+    PXByte* ImageData; // Stored according to the image descriptor
     //----------------------------------
 
 
     //---- Versiion 2.0 only----------------
     // Extension Area
-    char AuthorName[41]; // Name of the author. If not used, bytes should be set to NULL (\0) or spaces 
-    char AuthorComment[324]; // A comment, organized as four lines, each consisting of 80 characters plus a NULL 
+    char AuthorName[41]; // Name of the author. If not used, bytes should be set to NULL (\0) or spaces
+    char AuthorComment[324]; // A comment, organized as four lines, each consisting of 80 characters plus a NULL
 
-    PXInt16U DateTimeMonth;// Date and time at which the image was created 
+    PXInt16U DateTimeMonth;// Date and time at which the image was created
     PXInt16U JobTimeDay;
     PXInt16U JobTimeYear;
     PXInt16U JobTimeHour;
@@ -75,10 +75,10 @@ typedef struct PXTGA_
     PXInt16U JobTimeSecond;
 
     char JobID[41];
-    PXInt16U JobTimeHours; // spent creating the file (for billing, etc.) 
+    PXInt16U JobTimeHours; // spent creating the file (for billing, etc.)
     PXInt16U JobTimeMinutes;
     PXInt16U JobTimeSeconds;
-    char SoftwareName[41]; // The application that created the file. 
+    char SoftwareName[41]; // The application that created the file.
     PXInt16U VersionNumber;
     char SoftwareVersion;
     PXInt32U BackGroundColor;
@@ -89,7 +89,7 @@ typedef struct PXTGA_
 
     PXInt32U ColorCorrectionOffset; // Number of bytes from the beginning of the file to the color correction table if present
     PXInt32U PostagestampOffset; // Number of bytes from the beginning of the file to the postage stamp image if present
-    PXInt32U ScanlineOffset; // Number of bytes from the beginning of the file to the scan lines table if present 
+    PXInt32U ScanlineOffset; // Number of bytes from the beginning of the file to the scan lines table if present
     PXInt8U AttributesType; // Specifies the alpha channel
     //-------------------------------
 }

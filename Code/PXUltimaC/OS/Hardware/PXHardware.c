@@ -1,13 +1,17 @@
 #include "PXHardware.h"
 
+#if OSUnix
+#elif OSWindows
 #include <Windows.h>
 #include <WbemIdl.h>
 #include <WbemCli.h>
+#endif
 
+#if OSWindows
 typedef struct PXWindowsWMIEntry_
 {
     enum VARENUM VarriantType;
-    char* FieldName; 
+    char* FieldName;
     void* DataAdress;
 }
 PXWindowsWMIEntry;
@@ -58,6 +62,7 @@ void PXAPI PXWindowsWMIExtractValue(PXHardwareInfo* const pxHardwareInfo, PXWind
         VariantClear(&varriant);
     }
 }
+
 
 PXBool PXAPI PXWindowsWMIPathOpen(PXHardwareInfo* const pxHardwareInfo, const char* pathName)
 {
@@ -120,9 +125,12 @@ PXBool PXAPI PXWindowsWMIClassOpen(PXHardwareInfo* const pxHardwareInfo, const c
 
     return PXTrue;
 }
+#endif
 
 PXActionResult PXAPI PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, const PXInt32U fetchFlags)
 {
+#if OSUnix
+#elif OSWindows
     PXClear(PXHardwareInfo, pxHardwareInfo);
 
     IWbemLocator* locator = PXNull;
@@ -137,12 +145,12 @@ PXActionResult PXAPI PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, co
             PXNull,
             RPC_C_AUTHN_LEVEL_DEFAULT, RPC_C_IMP_LEVEL_IMPERSONATE,
             PXNull,
-            EOAC_NONE, 
+            EOAC_NONE,
             PXNull
         );
         res &= CoInitializeEx(PXNull, COINIT_MULTITHREADED);
         res &= CoCreateInstance(&CLSID_WbemLocator, PXNull, CLSCTX_INPROC_SERVER, &IID_IWbemLocator, (LPVOID*)&pxHardwareInfo->locator);
-      
+
 
         locator = pxHardwareInfo->locator;
 
@@ -151,7 +159,7 @@ PXActionResult PXAPI PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, co
             return;
         }
 
-        
+
     }
 
     PXWindowsWMIPathOpen(pxHardwareInfo, "root\\wmi");
@@ -178,7 +186,7 @@ PXActionResult PXAPI PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, co
 
             PXSensorTemperature* const pxSensorTemperature = &xxxSensorTemperature;
 
-            HRESULT EJIE = pxHardwareInfo->enumerator->lpVtbl->Next(pxHardwareInfo->enumerator, WBEM_INFINITE, 1, &pxHardwareInfo->obj, &u_return);          
+            HRESULT EJIE = pxHardwareInfo->enumerator->lpVtbl->Next(pxHardwareInfo->enumerator, WBEM_INFINITE, 1, &pxHardwareInfo->obj, &u_return);
             PXActionResult xx = PXWindowsHandleErrorFromID(EJIE);
 
             if(!u_return)
@@ -215,14 +223,14 @@ PXActionResult PXAPI PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, co
   {VT_UI2   ,"PowerManagementCapabilities[]", &pxSensorTemperature->PowerManagementCapabilities},
   {VT_BOOL  ,"PowerManagementSupported", &pxSensorTemperature->PowerManagementSupported},
   {VT_UI4   ,"Resolution", &pxSensorTemperature->Resolution},
-  {VT_BSTR   ,"Status", pxSensorTemperature->Status},
+  {VT_BSTR   ,"Status", pxSensorTemperature->SensorStatus},
   {VT_UI2   ,"StatusInfo", &pxSensorTemperature->StatusInfo},
   {VT_BSTR   ,"SystemCreationClassName", pxSensorTemperature->SystemCreationClassName},
   {VT_BSTR   ,"SystemName", pxSensorTemperature->SystemName},
   {VT_I4   ,"Tolerance", &pxSensorTemperature->Tolerance},
   {VT_I4   ,"UpperThresholdCritical", &pxSensorTemperature->UpperThresholdCritical},
   {VT_I4   ,"UpperThresholdFatal", &pxSensorTemperature->UpperThresholdFatal},
-  {VT_I4   ,"UpperThresholdNonCritical", &pxSensorTemperature->UpperThresholdNonCritical}                
+  {VT_I4   ,"UpperThresholdNonCritical", &pxSensorTemperature->UpperThresholdNonCritical}
             };
             const PXSize amount = sizeof(valFetchList) / sizeof(PXWindowsWMIEntry);
 
@@ -241,7 +249,7 @@ PXActionResult PXAPI PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, co
     {
         const PXBool success = PXWindowsWMIClassOpen(pxHardwareInfo, "Win32_Processor");
 
-        if(!success) 
+        if(!success)
         {
             return PXActionInvalid;
         }
@@ -253,14 +261,14 @@ PXActionResult PXAPI PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, co
             PXProcessorWS* const pxProcessor = &pxHardwareInfo->ProcessorList[processorID];
 
             HRESULT EJIE = pxHardwareInfo->enumerator->lpVtbl->Next(pxHardwareInfo->enumerator, WBEM_INFINITE, 1, &pxHardwareInfo->obj, &u_return);
-        
-            if(!u_return) 
+
+            if(!u_return)
             {
                 break;
             }
-       
+
             ++(pxHardwareInfo->ProcessorListSize);
-        
+
 
             PXWindowsWMIEntry valFetchList[] =
             {
@@ -309,7 +317,7 @@ PXActionResult PXAPI PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, co
   {VT_BOOL,  "SecondLevelAddressTranslationExtensions", &pxProcessor->SecondLevelAddressTranslationExtensions},
   {VT_BSTR, "SerialNumber", pxProcessor->SerialNumber},
   {VT_BSTR, "SocketDesignation", pxProcessor->SocketDesignation},
-  {VT_BSTR, "Status", pxProcessor->Status},
+  {VT_BSTR, "Status", pxProcessor->ProcessorStatus},
   {VT_UI2,   "StatusInfo", &pxProcessor->StatusInfo},
   {VT_BSTR, "Stepping", pxProcessor->Stepping},
   {VT_BSTR, "SystemCreationClassName", pxProcessor->SystemCreationClassName},
@@ -364,7 +372,7 @@ PXActionResult PXAPI PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, co
             }
 
             PXWindowsWMIEntry valFetchList[] =
-            {               
+            {
                 {VT_UI2,  "Availability", &pxMainBoard->Availability},
                 {VT_BSTR, "Caption", pxMainBoard->Caption},
                 {VT_UI4,  "ConfigManagerErrorCode", &pxMainBoard->ConfigManagerErrorCode},
@@ -383,7 +391,7 @@ PXActionResult PXAPI PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, co
                 {VT_BSTR, "PrimaryBusType", pxMainBoard->PrimaryBusType},
                 {VT_BSTR, "RevisionNumber", pxMainBoard->RevisionNumber},
                 {VT_BSTR, "SecondaryBusType", pxMainBoard->SecondaryBusType},
-                {VT_BSTR, "Status", pxMainBoard->Status},
+                {VT_BSTR, "Status", pxMainBoard->BoardStatus},
                 {VT_UI2,  "StatusInfo", &pxMainBoard->StatusInfo},
                 {VT_BSTR, "SystemCreationClassName", pxMainBoard->SystemCreationClassName},
                 {VT_BSTR, "SystemName", pxMainBoard->SystemName}
@@ -472,7 +480,7 @@ PXActionResult PXAPI PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, co
                 {VT_UI2,  "ProtocolSupported", &pxVideoDevice->ProtocolSupported},
                 {VT_UI4,  "ReservedSystemPaletteEntries", &pxVideoDevice->ReservedSystemPaletteEntries},
                 {VT_UI4,  "SpecificationVersion", &pxVideoDevice->SpecificationVersion},
-                {VT_BSTR, "Status", pxVideoDevice->Status},
+                {VT_BSTR, "Status", pxVideoDevice->VideoStatus},
                 {VT_UI2,  "StatusInfo", &pxVideoDevice->StatusInfo},
                 {VT_BSTR, "SystemCreationClassName", pxVideoDevice->SystemCreationClassName},
                 {VT_BSTR, "SystemName", pxVideoDevice->SystemName},
@@ -519,7 +527,7 @@ PXActionResult PXAPI PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, co
             ++(pxHardwareInfo->CacheMemorySize);
 
             PXWindowsWMIEntry valFetchList[] =
-            {      
+            {
                 {VT_UI2,  "Access", &pxCacheMemory->Access},
                 {VT_UI1,  "AdditionalErrorData[]", &pxCacheMemory->AdditionalErrorData},
                 {VT_UI2,  "Associativity", &pxCacheMemory->Associativity},
@@ -566,7 +574,7 @@ PXActionResult PXAPI PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, co
                 {VT_UI2,  "ReadPolicy", &pxCacheMemory->ReadPolicy},
                 {VT_UI2,  "ReplacementPolicy", &pxCacheMemory->ReplacementPolicy},
                 {VT_UI8,  "StartingAddress", &pxCacheMemory->StartingAddress},
-                {VT_BSTR, "Status", &pxCacheMemory->Status},
+                {VT_BSTR, "Status", &pxCacheMemory->MemoryStatus},
                 {VT_UI2,  "StatusInfo", &pxCacheMemory->StatusInfo},
                 {VT_UI2,  "SupportedSRAM[]", &pxCacheMemory->SupportedSRAM},
                 {VT_BSTR, "SystemCreationClassName", &pxCacheMemory->SystemCreationClassName},
@@ -609,7 +617,7 @@ PXActionResult PXAPI PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, co
             ++(pxHardwareInfo->CCCCMemorySize);
 
             PXWindowsWMIEntry valFetchList[] =
-            {        
+            {
                 {VT_UI2,  "Access", &pxRAMMemory->Access},
                 {VT_UI1,  "AdditionalErrorData[]", &pxRAMMemory->AdditionalErrorData},
                 {VT_UI2,  "Availability", &pxRAMMemory->Availability},
@@ -644,7 +652,7 @@ PXActionResult PXAPI PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, co
                 {VT_BOOL, "PowerManagementSupported", &pxRAMMemory->PowerManagementSupported},
                 {VT_BSTR, "Purpose", pxRAMMemory->Purpose},
                 {VT_UI8,  "StartingAddress", &pxRAMMemory->StartingAddress},
-                {VT_BSTR, "Status", pxRAMMemory->Status},
+                {VT_BSTR, "Status", pxRAMMemory->CCStatus},
                 {VT_UI2,  "StatusInfo", &pxRAMMemory->StatusInfo},
                 {VT_BSTR, "SystemCreationClassName", pxRAMMemory->SystemCreationClassName},
                 {VT_BOOL, "SystemLevelAddress", &pxRAMMemory->SystemLevelAddress},
@@ -718,12 +726,12 @@ PXActionResult PXAPI PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, co
                 {VT_BSTR, "SKU", pxPhysicalMemory->SKU},
                 {VT_UI4,  "SMBIOSMemoryType", &pxPhysicalMemory->SMBIOSMemoryType},
                 {VT_UI4,  "Speed", &pxPhysicalMemory->Speed},
-                {VT_BSTR, "Status", pxPhysicalMemory->Status},
+                {VT_BSTR, "Status", pxPhysicalMemory->MemoryStatus},
                 {VT_BSTR, "Tag", pxPhysicalMemory->Tag},
                 {VT_UI2,  "TotalWidth", &pxPhysicalMemory->TotalWidth},
                 {VT_UI2,  "TypeDetail", &pxPhysicalMemory->TypeDetail},
                 {VT_BSTR, "Version", pxPhysicalMemory->Version},
-                
+
             };
             const PXSize amount = sizeof(valFetchList) / sizeof(PXWindowsWMIEntry);
 
@@ -762,7 +770,7 @@ PXActionResult PXAPI PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, co
             ++(pxHardwareInfo->PhysicalMemoryListSize);
 
             PXWindowsWMIEntry valFetchList[] =
-            {                
+            {
                 {VT_UI2,  "BiosCharacteristics[]", &pxBIOS->BiosCharacteristics},
                 {VT_BSTR, "BIOSVersion[]", pxBIOS->BIOSVersion},
                 {VT_BSTR, "BuildNumber", pxBIOS->BuildNumber},
@@ -789,7 +797,7 @@ PXActionResult PXAPI PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, co
                 {VT_BOOL, "SMBIOSPresent", &pxBIOS->SMBIOSPresent},
                 {VT_BSTR, "SoftwareElementID", pxBIOS->SoftwareElementID},
                 {VT_UI2,  "SoftwareElementState", &pxBIOS->SoftwareElementState},
-                {VT_BSTR, "Status", pxBIOS->Status},
+                {VT_BSTR, "Status", pxBIOS->BIOSStatus},
                 {VT_UI1,  "SystemBiosMajorVersion", &pxBIOS->SystemBiosMajorVersion},
                 {VT_UI1,  "SystemBiosMinorVersion", &pxBIOS->SystemBiosMinorVersion},
                 {VT_UI2,  "TargetOperatingSystem", &pxBIOS->TargetOperatingSystem},
@@ -805,4 +813,5 @@ PXActionResult PXAPI PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, co
     }
 
     return PXActionSuccessful;
+#endif
 }

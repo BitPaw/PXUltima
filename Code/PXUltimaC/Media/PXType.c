@@ -4,7 +4,7 @@
 #include <Media/PXText.h>
 
 
-#define PX_X86_BSWAP_ALLOW OS32B 
+#define PX_X86_BSWAP_ALLOW OS32B
 
 #define PXDataTypeInt08ULimit 255 // 0xFF
 #define PXDataTypeInt16ULimit 65535 // 0xFFFF
@@ -66,19 +66,19 @@ PXInt32U PXDataTypeIntFitting(const PXSize expectedSize)
 void PXEndianSwapI32U(PXInt32U* const value)
 {
 
-    
+
 
 #if PX_X86_BSWAP_ALLOW
 
     PXInt32U wurst = *value;
-    
+
     __asm
     {
         mov EAX, 0x0
         mov EDX, 0x0
 
         mov EAX, wurst
-        mov EDX, [wurst] // Load variable into register 
+        mov EDX, [wurst] // Load variable into register
 
         BSWAP EDX        // Execute byte swap in register 'EAX'
         mov [wurst], EDX

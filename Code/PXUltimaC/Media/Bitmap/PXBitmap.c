@@ -21,26 +21,26 @@ PXBitmapType PXBitmapTypeFromID(const PXInt16U bmpTypeID)
 {
     switch(bmpTypeID)
     {
-        case PXBitmapHeaderIDOS2StructBitmapArray:
-            return PXBitmapOS2StructBitmapArray;
+    case PXBitmapHeaderIDOS2StructBitmapArray:
+        return PXBitmapOS2StructBitmapArray;
 
-        case PXBitmapHeaderIDWindows:
-            return PXBitmapWindows;
+    case PXBitmapHeaderIDWindows:
+        return PXBitmapWindows;
 
-        case PXBitmapHeaderIDOS2StructColorIcon:
-            return PXBitmapOS2StructColorIcon;
+    case PXBitmapHeaderIDOS2StructColorIcon:
+        return PXBitmapOS2StructColorIcon;
 
-        case PXBitmapHeaderIDOS2ConstColorPointer:
-            return PXBitmapOS2ConstColorPointer;
+    case PXBitmapHeaderIDOS2ConstColorPointer:
+        return PXBitmapOS2ConstColorPointer;
 
-        case PXBitmapHeaderIDOS2StructIcon:
-            return PXBitmapOS2StructIcon;
+    case PXBitmapHeaderIDOS2StructIcon:
+        return PXBitmapOS2StructIcon;
 
-        case PXBitmapHeaderIDOS2Pointer:
-            return PXBitmapOS2Pointer;
+    case PXBitmapHeaderIDOS2Pointer:
+        return PXBitmapOS2Pointer;
 
-        default:
-            return PXBitmapInvalid;
+    default:
+        return PXBitmapInvalid;
     }
 }
 
@@ -48,27 +48,27 @@ PXInt16U PXBitmapTypeToID(const PXBitmapType headerType)
 {
     switch(headerType)
     {
-        default:
-        case PXBitmapInvalid:
-            return 0;
+    default:
+    case PXBitmapInvalid:
+        return 0;
 
-        case PXBitmapWindows:
-            return PXBitmapHeaderIDWindows;
+    case PXBitmapWindows:
+        return PXBitmapHeaderIDWindows;
 
-        case PXBitmapOS2StructBitmapArray:
-            return PXBitmapHeaderIDOS2StructBitmapArray;
+    case PXBitmapOS2StructBitmapArray:
+        return PXBitmapHeaderIDOS2StructBitmapArray;
 
-        case PXBitmapOS2StructColorIcon:
-            return PXBitmapHeaderIDOS2StructColorIcon;
+    case PXBitmapOS2StructColorIcon:
+        return PXBitmapHeaderIDOS2StructColorIcon;
 
-        case PXBitmapOS2ConstColorPointer:
-            return PXBitmapHeaderIDOS2ConstColorPointer;
+    case PXBitmapOS2ConstColorPointer:
+        return PXBitmapHeaderIDOS2ConstColorPointer;
 
-        case PXBitmapOS2StructIcon:
-            return PXBitmapHeaderIDOS2StructIcon;
+    case PXBitmapOS2StructIcon:
+        return PXBitmapHeaderIDOS2StructIcon;
 
-        case PXBitmapOS2Pointer:
-            return PXBitmapHeaderIDOS2Pointer;
+    case PXBitmapOS2Pointer:
+        return PXBitmapHeaderIDOS2Pointer;
     }
 }
 
@@ -76,30 +76,30 @@ PXBitmapInfoHeaderType PXBitmapInfoHeaderTypeFromID(const PXInt8U infoHeaderType
 {
     switch(infoHeaderType)
     {
-        case 12u:
-            //const unsigned char bitMapCoreHeaderSize = 12;
-            return PXBitmapHeaderOS21XBitMapHeader;
+    case 12u:
+        //const unsigned char bitMapCoreHeaderSize = 12;
+        return PXBitmapHeaderOS21XBitMapHeader;
 
-        case 16u:
-            return PXBitmapHeaderOS22XBitMapHeader;
+    case 16u:
+        return PXBitmapHeaderOS22XBitMapHeader;
 
-        case 40u:
-            return PXBitmapHeaderBitMapInfoHeader;
+    case 40u:
+        return PXBitmapHeaderBitMapInfoHeader;
 
-        case 52u:
-            return PXBitmapHeaderBitMapV2InfoHeader;
+    case 52u:
+        return PXBitmapHeaderBitMapV2InfoHeader;
 
-        case 56u:
-            return PXBitmapHeaderBitMapV3InfoHeader;
+    case 56u:
+        return PXBitmapHeaderBitMapV3InfoHeader;
 
-        case 108u:
-            return PXBitmapHeaderBitMapV4Header;
+    case 108u:
+        return PXBitmapHeaderBitMapV4Header;
 
-        case 124u:
-            return PXBitmapHeaderBitMapV5Header;
+    case 124u:
+        return PXBitmapHeaderBitMapV5Header;
 
-        default:
-            return PXBitmapHeaderUnkownOrInvalid;
+    default:
+        return PXBitmapHeaderUnkownOrInvalid;
     }
 }
 
@@ -107,31 +107,31 @@ PXInt8U PXBitmapInfoHeaderTypeToID(const PXBitmapInfoHeaderType infoHeaderType)
 {
     switch(infoHeaderType)
     {
-        default:
-        case PXBitmapHeaderUnkownOrInvalid:
-            return -1;
+    default:
+    case PXBitmapHeaderUnkownOrInvalid:
+        return -1;
 
-        case PXBitmapHeaderBitMapCoreHeader:
-        case PXBitmapHeaderOS21XBitMapHeader:
-            return 12u;
+    case PXBitmapHeaderBitMapCoreHeader:
+    case PXBitmapHeaderOS21XBitMapHeader:
+        return 12u;
 
-        case PXBitmapHeaderOS22XBitMapHeader:
-            return 16u;
+    case PXBitmapHeaderOS22XBitMapHeader:
+        return 16u;
 
-        case PXBitmapHeaderBitMapInfoHeader:
-            return 40u;
+    case PXBitmapHeaderBitMapInfoHeader:
+        return 40u;
 
-        case PXBitmapHeaderBitMapV2InfoHeader:
-            return 52u;
+    case PXBitmapHeaderBitMapV2InfoHeader:
+        return 52u;
 
-        case PXBitmapHeaderBitMapV3InfoHeader:
-            return 56u;
+    case PXBitmapHeaderBitMapV3InfoHeader:
+        return 56u;
 
-        case PXBitmapHeaderBitMapV4Header:
-            return 108u;
+    case PXBitmapHeaderBitMapV4Header:
+        return 108u;
 
-        case PXBitmapHeaderBitMapV5Header:
-            return 124u;
+    case PXBitmapHeaderBitMapV5Header:
+        return 124u;
     }
 }
 
@@ -176,103 +176,103 @@ PXActionResult PXAPI PXBitmapPeekFromFile(PXResourceTransphereInfo* const pxReso
     {
         switch(bmp->InfoHeaderType)
         {
-            case PXBitmapHeaderBitMapInfoHeader:
-            case PXBitmapHeaderBitMapV5Header:
+        case PXBitmapHeaderBitMapInfoHeader:
+        case PXBitmapHeaderBitMapV5Header:
+        {
+            const PXFileDataElementType pxDataStreamElementList[] =
+            {
+                {&bmp->InfoHeader.Width,PXDataTypeInt32SLE},
+                {&bmp->InfoHeader.Height,PXDataTypeInt32SLE},
+                {&bmp->InfoHeader.NumberOfColorPlanes, PXDataTypeInt16ULE},
+                {&bmp->InfoHeader.NumberOfBitsPerPixel, PXDataTypeInt16ULE},
+                {&bmp->InfoHeader.BitMapInfo.CompressionMethod, PXDataTypeInt32ULE},
+                {&bmp->InfoHeader.BitMapInfo.ImageSize, PXDataTypeInt32ULE},
+                {&bmp->InfoHeader.BitMapInfo.HorizontalResolution,PXDataTypeInt32SLE},
+                {&bmp->InfoHeader.BitMapInfo.VerticalResolution,PXDataTypeInt32SLE},
+                {&bmp->InfoHeader.BitMapInfo.NumberOfColorsInTheColorPalette, PXDataTypeInt32ULE},
+                {&bmp->InfoHeader.BitMapInfo.NumberOfImportantColorsUsed,PXDataTypeInt32ULE},
+            };
+
+            PXFileReadMultible(pxResourceTransphereInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+
+            if(PXBitmapHeaderBitMapV5Header == bmp->InfoHeaderType)
             {
                 const PXFileDataElementType pxDataStreamElementList[] =
                 {
-                    {&bmp->InfoHeader.Width,PXDataTypeInt32SLE},
-                    {&bmp->InfoHeader.Height,PXDataTypeInt32SLE},
-                    {&bmp->InfoHeader.NumberOfColorPlanes, PXDataTypeInt16ULE},
-                    {&bmp->InfoHeader.NumberOfBitsPerPixel, PXDataTypeInt16ULE},
-                    {&bmp->InfoHeader.BitMapInfo.CompressionMethod, PXDataTypeInt32ULE},
-                    {&bmp->InfoHeader.BitMapInfo.ImageSize, PXDataTypeInt32ULE},
-                    {&bmp->InfoHeader.BitMapInfo.HorizontalResolution,PXDataTypeInt32SLE},
-                    {&bmp->InfoHeader.BitMapInfo.VerticalResolution,PXDataTypeInt32SLE},
-                    {&bmp->InfoHeader.BitMapInfo.NumberOfColorsInTheColorPalette, PXDataTypeInt32ULE},
-                    {&bmp->InfoHeader.BitMapInfo.NumberOfImportantColorsUsed,PXDataTypeInt32ULE},
+                    {&bmp->InfoHeader.HeaderV5.ClrUsed, PXDataTypeInt32ULE},
+                    {&bmp->InfoHeader.HeaderV5.ClrImportant, PXDataTypeInt32ULE},
+                    {&bmp->InfoHeader.HeaderV5.RedMask, PXDataTypeInt32ULE},
+                    {&bmp->InfoHeader.HeaderV5.GreenMask, PXDataTypeInt32ULE},
+                    {&bmp->InfoHeader.HeaderV5.BlueMask, PXDataTypeInt32ULE},
+                    {&bmp->InfoHeader.HeaderV5.AlphaMask, PXDataTypeInt32ULE},
+                    {&bmp->InfoHeader.HeaderV5.CSType, PXDataTypeInt32ULE},
+                    {&bmp->InfoHeader.HeaderV5.EndpointRedX, PXDataTypeInt32ULE},
+                    {&bmp->InfoHeader.HeaderV5.EndpointRedY, PXDataTypeInt32ULE},
+                    {&bmp->InfoHeader.HeaderV5.EndpointRedZ, PXDataTypeInt32ULE},
+                    {&bmp->InfoHeader.HeaderV5.EndpointGreenX, PXDataTypeInt32ULE},
+                    {&bmp->InfoHeader.HeaderV5.EndpointGreenY, PXDataTypeInt32ULE},
+                    {&bmp->InfoHeader.HeaderV5.EndpointGreenZ, PXDataTypeInt32ULE},
+                    {&bmp->InfoHeader.HeaderV5.EndpointBlueX, PXDataTypeInt32ULE},
+                    {&bmp->InfoHeader.HeaderV5.EndpointBlueY, PXDataTypeInt32ULE},
+                    {&bmp->InfoHeader.HeaderV5.EndpointBlueZ, PXDataTypeInt32ULE},
+                    {&bmp->InfoHeader.HeaderV5.GammaRed, PXDataTypeInt32ULE},
+                    {&bmp->InfoHeader.HeaderV5.GammaGreen, PXDataTypeInt32ULE},
+                    {&bmp->InfoHeader.HeaderV5.GammaBlue, PXDataTypeInt32ULE},
+                    {&bmp->InfoHeader.HeaderV5.Intent, PXDataTypeInt32ULE},
+                    {&bmp->InfoHeader.HeaderV5.ProfileData, PXDataTypeInt32ULE},
+                    {&bmp->InfoHeader.HeaderV5.ProfileSize, PXDataTypeInt32ULE},
+                    {PXNull, PXDataTypePadding(4)},
                 };
 
                 PXFileReadMultible(pxResourceTransphereInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
-
-                if(PXBitmapHeaderBitMapV5Header == bmp->InfoHeaderType)
-                {
-                    const PXFileDataElementType pxDataStreamElementList[] =
-                    {
-                        {&bmp->InfoHeader.HeaderV5.ClrUsed, PXDataTypeInt32ULE},
-                        {&bmp->InfoHeader.HeaderV5.ClrImportant, PXDataTypeInt32ULE},
-                        {&bmp->InfoHeader.HeaderV5.RedMask, PXDataTypeInt32ULE},
-                        {&bmp->InfoHeader.HeaderV5.GreenMask, PXDataTypeInt32ULE},
-                        {&bmp->InfoHeader.HeaderV5.BlueMask, PXDataTypeInt32ULE},
-                        {&bmp->InfoHeader.HeaderV5.AlphaMask, PXDataTypeInt32ULE},
-                        {&bmp->InfoHeader.HeaderV5.CSType, PXDataTypeInt32ULE},
-                        {&bmp->InfoHeader.HeaderV5.EndpointRedX, PXDataTypeInt32ULE},
-                        {&bmp->InfoHeader.HeaderV5.EndpointRedY, PXDataTypeInt32ULE},
-                        {&bmp->InfoHeader.HeaderV5.EndpointRedZ, PXDataTypeInt32ULE},
-                        {&bmp->InfoHeader.HeaderV5.EndpointGreenX, PXDataTypeInt32ULE},
-                        {&bmp->InfoHeader.HeaderV5.EndpointGreenY, PXDataTypeInt32ULE},
-                        {&bmp->InfoHeader.HeaderV5.EndpointGreenZ, PXDataTypeInt32ULE},
-                        {&bmp->InfoHeader.HeaderV5.EndpointBlueX, PXDataTypeInt32ULE},
-                        {&bmp->InfoHeader.HeaderV5.EndpointBlueY, PXDataTypeInt32ULE},
-                        {&bmp->InfoHeader.HeaderV5.EndpointBlueZ, PXDataTypeInt32ULE},
-                        {&bmp->InfoHeader.HeaderV5.GammaRed, PXDataTypeInt32ULE},
-                        {&bmp->InfoHeader.HeaderV5.GammaGreen, PXDataTypeInt32ULE},
-                        {&bmp->InfoHeader.HeaderV5.GammaBlue, PXDataTypeInt32ULE},
-                        {&bmp->InfoHeader.HeaderV5.Intent, PXDataTypeInt32ULE},
-                        {&bmp->InfoHeader.HeaderV5.ProfileData, PXDataTypeInt32ULE},
-                        {&bmp->InfoHeader.HeaderV5.ProfileSize, PXDataTypeInt32ULE},
-                        {PXNull, PXDataTypePadding(4)},
-                    };
-
-                    PXFileReadMultible(pxResourceTransphereInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
-                }
-
-                break;
             }
-            case PXBitmapHeaderOS21XBitMapHeader:
-            case PXBitmapHeaderOS22XBitMapHeader:
+
+            break;
+        }
+        case PXBitmapHeaderOS21XBitMapHeader:
+        case PXBitmapHeaderOS22XBitMapHeader:
+        {
             {
+                PXInt16U height;
+                PXInt16U width;
+
+                const PXFileDataElementType pxDataStreamElementList[] =
                 {
-                    PXInt16U height;
-                    PXInt16U width;
+                    {&height,PXDataTypeInt16ULE},
+                    {&width,PXDataTypeInt16ULE},
+                    {&bmp->InfoHeader.NumberOfColorPlanes,PXDataTypeInt16ULE},
+                    {&bmp->InfoHeader.NumberOfBitsPerPixel,PXDataTypeInt16ULE}
+                };
 
-                    const PXFileDataElementType pxDataStreamElementList[] =
-                    {
-                        {&height,PXDataTypeInt16ULE},
-                        {&width,PXDataTypeInt16ULE},
-                        {&bmp->InfoHeader.NumberOfColorPlanes,PXDataTypeInt16ULE},
-                        {&bmp->InfoHeader.NumberOfBitsPerPixel,PXDataTypeInt16ULE}
-                    };
-
-                    PXFileReadMultible(pxResourceTransphereInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
-                }
-
-                if(bmp->InfoHeaderType == PXBitmapHeaderOS22XBitMapHeader)
-                {
-                    unsigned short paddingBytes = 0; // Padding.Ignored and should be zero
-
-                    const PXFileDataElementType pxDataStreamElementList[] =
-                    {
-                        {&bmp->InfoHeader.OS22XBitMap.HorizontalandVerticalResolutions, PXDataTypeInt16ULE},
-                        {&paddingBytes, PXDataTypeInt16ULE},
-                        {&bmp->InfoHeader.OS22XBitMap.DirectionOfBits, PXDataTypeInt16ULE},
-                        {&bmp->InfoHeader.OS22XBitMap.halftoningAlgorithm, PXDataTypeInt16ULE},
-                        {&bmp->InfoHeader.OS22XBitMap.HalftoningParameterA, PXDataTypeInt32ULE},
-                        {&bmp->InfoHeader.OS22XBitMap.HalftoningParameterB, PXDataTypeInt32ULE},
-                        {&bmp->InfoHeader.OS22XBitMap.ColorEncoding, PXDataTypeInt32ULE},
-                        {&bmp->InfoHeader.OS22XBitMap.ApplicationDefinedByte, PXDataTypeInt32ULE}
-                    };
-
-                    PXFileReadMultible(pxResourceTransphereInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
-                }
-
-                break;
+                PXFileReadMultible(pxResourceTransphereInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
             }
-            default:
+
+            if(bmp->InfoHeaderType == PXBitmapHeaderOS22XBitMapHeader)
             {
-                // Unkown Header
-                return PXActionRefusedFormatNotSupported;
+                unsigned short paddingBytes = 0; // Padding.Ignored and should be zero
+
+                const PXFileDataElementType pxDataStreamElementList[] =
+                {
+                    {&bmp->InfoHeader.OS22XBitMap.HorizontalandVerticalResolutions, PXDataTypeInt16ULE},
+                    {&paddingBytes, PXDataTypeInt16ULE},
+                    {&bmp->InfoHeader.OS22XBitMap.DirectionOfBits, PXDataTypeInt16ULE},
+                    {&bmp->InfoHeader.OS22XBitMap.halftoningAlgorithm, PXDataTypeInt16ULE},
+                    {&bmp->InfoHeader.OS22XBitMap.HalftoningParameterA, PXDataTypeInt32ULE},
+                    {&bmp->InfoHeader.OS22XBitMap.HalftoningParameterB, PXDataTypeInt32ULE},
+                    {&bmp->InfoHeader.OS22XBitMap.ColorEncoding, PXDataTypeInt32ULE},
+                    {&bmp->InfoHeader.OS22XBitMap.ApplicationDefinedByte, PXDataTypeInt32ULE}
+                };
+
+                PXFileReadMultible(pxResourceTransphereInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
             }
+
+            break;
+        }
+        default:
+        {
+            // Unkown Header
+            return PXActionRefusedFormatNotSupported;
+        }
         }
     }
     //-----------------------------------------------------------
@@ -292,27 +292,27 @@ PXActionResult PXAPI PXBitmapLoadFromFile(PXResourceTransphereInfo* const pxReso
 
         switch(bmp->InfoHeader.NumberOfBitsPerPixel)
         {
-            case 4:
-                bmp->InfoHeader.NumberOfBitsPerPixel = 24;
-                pxColorFormat = PXColorFormatRGBI8;
-                break;
+        case 4:
+            bmp->InfoHeader.NumberOfBitsPerPixel = 24;
+            pxColorFormat = PXColorFormatRGBI8;
+            break;
 
-            case 8:
-                bmp->InfoHeader.NumberOfBitsPerPixel = 24;
-                pxColorFormat = PXColorFormatRGBI8;
-                break;
+        case 8:
+            bmp->InfoHeader.NumberOfBitsPerPixel = 24;
+            pxColorFormat = PXColorFormatRGBI8;
+            break;
 
-            case 24:
-                pxColorFormat = PXColorFormatRGBI8;
-                break;
+        case 24:
+            pxColorFormat = PXColorFormatRGBI8;
+            break;
 
-            case 32:
-                pxColorFormat = PXColorFormatRGBAI8;
-                break;
+        case 32:
+            pxColorFormat = PXColorFormatRGBAI8;
+            break;
 
-            default:
-                pxColorFormat = PXColorFormatInvalid;
-                break;
+        default:
+            pxColorFormat = PXColorFormatInvalid;
+            break;
         }
 
         const PXBool allocationSuccess = PXImageResize(pxImage, pxColorFormat, bmp->InfoHeader.Width, bmp->InfoHeader.Height);
@@ -331,7 +331,7 @@ PXActionResult PXAPI PXBitmapLoadFromFile(PXResourceTransphereInfo* const pxReso
     PXBitmapImageDataLayoutCalculate(&imageDataLayout, bmp->InfoHeader.Width, bmp->InfoHeader.Height, bmp->InfoHeader.NumberOfBitsPerPixel);
 
     while(imageDataLayout.RowAmount--) // loop through each image row
-    { 
+    {
         PXByte* const data = (PXByte* const)pxImage->PixelData + (imageDataLayout.RowImageDataSize * imageDataLayout.RowAmount); // Get the starting point of each row
 
         PXFileReadB(pxResourceTransphereInfo->FileReference, data, imageDataLayout.RowImageDataSize); // Read/Write image data
@@ -395,29 +395,29 @@ PXActionResult PXAPI PXBitmapSaveToFile(PXResourceTransphereInfo* const pxResour
 
         switch (bmpInfoHeaderType)
         {
-            case PXBitmapHeaderBitMapInfoHeader:
+        case PXBitmapHeaderBitMapInfoHeader:
+        {
+            bitMap.InfoHeader.BitMapInfo.HorizontalResolution = 1u;
+            bitMap.InfoHeader.BitMapInfo.VerticalResolution = 1u;
+
+            const PXFileDataElementType pxDataStreamElementList[] =
             {
-                bitMap.InfoHeader.BitMapInfo.HorizontalResolution = 1u;
-                bitMap.InfoHeader.BitMapInfo.VerticalResolution = 1u;
+                {&bitMap.InfoHeader.Width, PXDataTypeInt32SLE},
+                {&bitMap.InfoHeader.Height, PXDataTypeInt32SLE},
+                {&bitMap.InfoHeader.NumberOfColorPlanes, PXDataTypeInt16ULE},
+                {&bitMap.InfoHeader.NumberOfBitsPerPixel, PXDataTypeInt16ULE},
+                {&bitMap.InfoHeader.BitMapInfo.CompressionMethod, PXDataTypeInt32ULE},
+                {&bitMap.InfoHeader.BitMapInfo.ImageSize, PXDataTypeInt32ULE},
+                {&bitMap.InfoHeader.BitMapInfo.HorizontalResolution, PXDataTypeInt32SLE},
+                {&bitMap.InfoHeader.BitMapInfo.VerticalResolution, PXDataTypeInt32SLE},
+                {&bitMap.InfoHeader.BitMapInfo.NumberOfColorsInTheColorPalette, PXDataTypeInt32ULE},
+                {&bitMap.InfoHeader.BitMapInfo.NumberOfImportantColorsUsed, PXDataTypeInt32ULE},
+            };
 
-                const PXFileDataElementType pxDataStreamElementList[] =
-                {
-                    {&bitMap.InfoHeader.Width, PXDataTypeInt32SLE},
-                    {&bitMap.InfoHeader.Height, PXDataTypeInt32SLE},
-                    {&bitMap.InfoHeader.NumberOfColorPlanes, PXDataTypeInt16ULE},
-                    {&bitMap.InfoHeader.NumberOfBitsPerPixel, PXDataTypeInt16ULE},
-                    {&bitMap.InfoHeader.BitMapInfo.CompressionMethod, PXDataTypeInt32ULE},
-                    {&bitMap.InfoHeader.BitMapInfo.ImageSize, PXDataTypeInt32ULE},
-                    {&bitMap.InfoHeader.BitMapInfo.HorizontalResolution, PXDataTypeInt32SLE},
-                    {&bitMap.InfoHeader.BitMapInfo.VerticalResolution, PXDataTypeInt32SLE},
-                    {&bitMap.InfoHeader.BitMapInfo.NumberOfColorsInTheColorPalette, PXDataTypeInt32ULE},
-                    {&bitMap.InfoHeader.BitMapInfo.NumberOfImportantColorsUsed, PXDataTypeInt32ULE},
-                };
+            PXFileWriteMultible(pxResourceSaveInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
-                PXFileWriteMultible(pxResourceSaveInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
-
-                break;
-            }
+            break;
+        }
         }
     }
     //-----------------------------------------------------
@@ -433,9 +433,9 @@ PXActionResult PXAPI PXBitmapSaveToFile(PXResourceTransphereInfo* const pxResour
 
             for(PXSize i = 0; i < imageDataLayout.RowImageDataSize; i += 3) // Will result in RGB Pixel Data
             {
-                const PXByte pixelBuffer[3u] = 
-                {                 
-                    dataInsertPoint[i+2u], 
+                const PXByte pixelBuffer[3u] =
+                {
+                    dataInsertPoint[i+2u],
                     dataInsertPoint[i+1u],
                     dataInsertPoint[i]
                 };

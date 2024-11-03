@@ -28,24 +28,32 @@ PXActionResult PXAPI PXDirectX10Initialize(PXDirectX10* const pxDirectX)
 
     switch (pxDirectXDriverType)
     {
-    case PXDirectXDriverTypeHardwareDevice: dxDriverType = D3D10_DRIVER_TYPE_HARDWARE; break;
-    case PXDirectXDriverTypeReferencDevice:dxDriverType = D3D10_DRIVER_TYPE_REFERENCE; break;
-    case PXDirectXDriverTypeReferencDeviceWithoutRender:dxDriverType = D3D10_DRIVER_TYPE_NULL; break;
-    case PXDirectXDriverTypeSoftware:dxDriverType = D3D10_DRIVER_TYPE_WARP; break;
+    case PXDirectXDriverTypeHardwareDevice:
+        dxDriverType = D3D10_DRIVER_TYPE_HARDWARE;
+        break;
+    case PXDirectXDriverTypeReferencDevice:
+        dxDriverType = D3D10_DRIVER_TYPE_REFERENCE;
+        break;
+    case PXDirectXDriverTypeReferencDeviceWithoutRender:
+        dxDriverType = D3D10_DRIVER_TYPE_NULL;
+        break;
+    case PXDirectXDriverTypeSoftware:
+        dxDriverType = D3D10_DRIVER_TYPE_WARP;
+        break;
 
     default:
         return PXActionRefuedInputInvalid;
     }
 
     const HRESULT result = D3D10CreateDevice
-    (
-        &pxDirectX->VideoAdapter,
-        dxDriverType,
-        dxSoftware,
-        Flags,
-        D3D10_SDK_VERSION,
-        &pxDirectX->DX10
-    );
+                           (
+                               &pxDirectX->VideoAdapter,
+                               dxDriverType,
+                               dxSoftware,
+                               Flags,
+                               D3D10_SDK_VERSION,
+                               &pxDirectX->DX10
+                           );
 
     pxDirectX->DirectXVersion = pxDirectXDriverType;
 

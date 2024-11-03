@@ -17,29 +17,29 @@ PXActionResult PXAPI PXSignalCallBackRegister(const PXSignalToken pxSignalToken,
 
     switch (pxSignalToken)
     {
-        case PXSignalTokenAbort:
-            signalID = SIGABRT;
-            break;
-        case PXSignalTokenFloatMathError:
-            signalID = SIGFPE;
-            break;
-        case PXSignalTokenIllegalInstruction:
-            signalID = SIGILL;
-            break;
+    case PXSignalTokenAbort:
+        signalID = SIGABRT;
+        break;
+    case PXSignalTokenFloatMathError:
+        signalID = SIGFPE;
+        break;
+    case PXSignalTokenIllegalInstruction:
+        signalID = SIGILL;
+        break;
 #if OSWindows
-        case PXSignalTokenINT:
-            signalID = SIGBREAK;
-            break;
+    case PXSignalTokenINT:
+        signalID = SIGBREAK;
+        break;
 #endif
-        case PXSignalTokenMemoryViolation:
-            signalID = SIGSEGV;
-            break;
-        case PXSignalTokenTerminationRequest:
-            signalID = SIGTERM;
-            break;
+    case PXSignalTokenMemoryViolation:
+        signalID = SIGSEGV;
+        break;
+    case PXSignalTokenTerminationRequest:
+        signalID = SIGTERM;
+        break;
 
-        default:
-            return PXActionRefusedArgumentInvalid;
+    default:
+        return PXActionRefusedArgumentInvalid;
     }
 
 

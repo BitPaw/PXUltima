@@ -70,7 +70,7 @@ void PXDirectoryIsDotFolder(const char* s)
 #endif
 
 
-#define PXFileIOInfoFileMask                (0b0001111)  
+#define PXFileIOInfoFileMask                (0b0001111)
 #define PXFileIOInfoFilePhysical            (1<<0) // Is file a physical file on a disk?
 #define PXFileIOInfoFileVirtual             (1<<1) // Is this file virtual, that is not stored permanently?
 #define PXFileIOInfoFileTemp                (1<<2) // Is this file a temp-file that destroyed on close?

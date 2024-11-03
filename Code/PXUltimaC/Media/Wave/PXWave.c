@@ -10,7 +10,8 @@ const static char WAVSignatureData[4] = { 'd', 'a', 't', 'a' };
 
 #pragma optimize("", off)
 PXActionResult PXAPI PXWaveLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
-{    /*
+{
+    /*
     PXSound* const pxSound = (PXSound*)pxResourceLoadInfo->Target;
 
     PXWave wav;;
@@ -22,57 +23,57 @@ PXActionResult PXAPI PXWaveLoadFromFile(PXResourceTransphereInfo* const pxResour
 
     // PXRIFF
     {
-        const PXActionResult actionResult = PXRIFFLoadFromFile(&riff, pxResourceLoadInfo->FileReference);
+       const PXActionResult actionResult = PXRIFFLoadFromFile(&riff, pxResourceLoadInfo->FileReference);
 
-        PXActionReturnOnError(actionResult);
+       PXActionReturnOnError(actionResult);
 
-        // Valid PXRIFF
-        {
-            const PXBool isAVI = riff.Format == PXRIFFWaveformAudio;
+       // Valid PXRIFF
+       {
+           const PXBool isAVI = riff.Format == PXRIFFWaveformAudio;
 
-            if (!isAVI)
-            {
-                return PXActionRefusedInvalidHeaderSignature;
-            }
-        }
+           if (!isAVI)
+           {
+               return PXActionRefusedInvalidHeaderSignature;
+           }
+       }
     }
     //-------------------------------------------------------------------------
 
     //---<FMT Chunk>-----------------------------------------------------------
     {
-        const PXActionResult actionResult = PXFMTLoadFromFile(&wav.Format, pxResourceLoadInfo->FileReference, riff.EndianFormat);
+       const PXActionResult actionResult = PXFMTLoadFromFile(&wav.Format, pxResourceLoadInfo->FileReference, riff.EndianFormat);
 
-        PXActionReturnOnError(actionResult);
+       PXActionReturnOnError(actionResult);
 
-        pxSound->ChunkSize = wav.Format.ChunkSize;
-        pxSound->AudioFormat = wav.Format.AudioFormat;
-        pxSound->NumerOfChannels = wav.Format.NumerOfChannels;
-        pxSound->SampleRate = wav.Format.SampleRate;
-        pxSound->ByteRate = wav.Format.ByteRate;
-        pxSound->BlockAllign = wav.Format.BlockAllign;
-        pxSound->BitsPerSample = wav.Format.BitsPerSample;
-        
-        //pxSound->BlockAllign = (wav->Format.NumerOfChannels * wav->Format.BitsPerSample) / 8u;
+       pxSound->ChunkSize = wav.Format.ChunkSize;
+       pxSound->AudioFormat = wav.Format.AudioFormat;
+       pxSound->NumerOfChannels = wav.Format.NumerOfChannels;
+       pxSound->SampleRate = wav.Format.SampleRate;
+       pxSound->ByteRate = wav.Format.ByteRate;
+       pxSound->BlockAllign = wav.Format.BlockAllign;
+       pxSound->BitsPerSample = wav.Format.BitsPerSample;
+
+       //pxSound->BlockAllign = (wav->Format.NumerOfChannels * wav->Format.BitsPerSample) / 8u;
     }
     //---------------------------------------
 
     //---------------------------------------
     {
-        const PXBool isPXRIFFListChunk = PXFileReadAndCompare(pxResourceLoadInfo->FileReference, WAVSignatureLIST, sizeof(WAVSignatureLIST));
+       const PXBool isPXRIFFListChunk = PXFileReadAndCompare(pxResourceLoadInfo->FileReference, WAVSignatureLIST, sizeof(WAVSignatureLIST));
 
-        if (isPXRIFFListChunk)
-        {
-            PXFileCursorAdvance(pxResourceLoadInfo->FileReference, 30u);
-        }
+       if (isPXRIFFListChunk)
+       {
+           PXFileCursorAdvance(pxResourceLoadInfo->FileReference, 30u);
+       }
     }
     //---------------------------------------
     {
-        const PXBool validDataChunk = PXFileReadAndCompare(pxResourceLoadInfo->FileReference, WAVSignatureData, sizeof(WAVSignatureData));
+       const PXBool validDataChunk = PXFileReadAndCompare(pxResourceLoadInfo->FileReference, WAVSignatureData, sizeof(WAVSignatureData));
 
-        if (!validDataChunk)
-        {
-            return PXActionFailedFormatNotAsExpected;
-        }
+       if (!validDataChunk)
+       {
+           return PXActionFailedFormatNotAsExpected;
+       }
     }
 
     PXFileReadI32UE(pxResourceLoadInfo->FileReference, &wav.SoundDataSize, riff.EndianFormat);
@@ -92,17 +93,18 @@ PXActionResult PXAPI PXWaveSaveToFile(PXResourceTransphereInfo* const pxResource
     unsigned int bitdepth = 16, bpm = 120;
     float wave = 0, duration = 12;
     float frequences[120] = { 523.251,/* 523.251, 523.251, 523.251, 523.251,*/ 0,/* 0, 0, 0, 0,*/ 554.365,/* 554.365, 554.365, 554.365, 554.365,*/
-        0,/* 0, 0, 0, 0,*/ 587.330, /*587.330, 587.330, 587.330, 587.330,*/ 0,/* 0, 0, 0, 0,*/ 622.254,/* 622.254, 622.254, 622.254, 622.254,*/
-        0,/* 0, 0, 0, 0,*/ 659.255, /*659.255, 659.255, 659.255, 659.255,*/ 0, /*0, 0, 0, 0,*/ 698.456, /*698.456, 698.456, 698.456, 698.456,*/
-        0, /*0, 0, 0, 0,*/ 739.989, /*739.989, 739.989, 739.989, 739.989,*/ 0, /*0, 0, 0, 0,*/ 783.991, /*783.991, 783.991, 783.991, 783.991,*/
-        0, /*0, 0, 0, 0,*/ 830.609, /*830.609, 830.609, 830.609, 830.609,*/ 0, /*0, 0, 0, 0,*/ 880, /*880, 880, 880, 880,*/ 0, /*0, 0, 0, 0,*/
-        932.328, /*932.328, 932.328, 932.328, 932.328,*/ 0, /*0, 0, 0, 0,*/ 987.767, /*987.767, 987.767, 987.767, 987.767*/ };
+                              0,/* 0, 0, 0, 0,*/ 587.330, /*587.330, 587.330, 587.330, 587.330,*/ 0,/* 0, 0, 0, 0,*/ 622.254,/* 622.254, 622.254, 622.254, 622.254,*/
+                              0,/* 0, 0, 0, 0,*/ 659.255, /*659.255, 659.255, 659.255, 659.255,*/ 0, /*0, 0, 0, 0,*/ 698.456, /*698.456, 698.456, 698.456, 698.456,*/
+                              0, /*0, 0, 0, 0,*/ 739.989, /*739.989, 739.989, 739.989, 739.989,*/ 0, /*0, 0, 0, 0,*/ 783.991, /*783.991, 783.991, 783.991, 783.991,*/
+                              0, /*0, 0, 0, 0,*/ 830.609, /*830.609, 830.609, 830.609, 830.609,*/ 0, /*0, 0, 0, 0,*/ 880, /*880, 880, 880, 880,*/ 0, /*0, 0, 0, 0,*/
+                              932.328, /*932.328, 932.328, 932.328, 932.328,*/ 0, /*0, 0, 0, 0,*/ 987.767, /*987.767, 987.767, 987.767, 987.767*/
+                            };
     unsigned int maxAmp = 1;
-    
+
     for (PXSize i = 0; i < bitdepth - 1; i++)
     {
         maxAmp = maxAmp << 1;
-    }    
+    }
 
     maxAmp--;
     int dataSize = (int)((duration * 44100) * (bitdepth / 8));
@@ -148,7 +150,7 @@ PXActionResult PXAPI PXWaveSaveToFile(PXResourceTransphereInfo* const pxResource
         PXFileWriteI32U(pxResourceSaveInfo->FileReference, dataSize);
     }
 
-    
+
     for (PXSize section = 0; section < (duration / 60) * bpm; section++)
     {
         for (PXSize i = 0; i < (44100 * 60) / bpm; i++)
@@ -160,6 +162,6 @@ PXActionResult PXAPI PXWaveSaveToFile(PXResourceTransphereInfo* const pxResource
         }
     }
 #endif
-    
+
     return PXActionSuccessful;
 }

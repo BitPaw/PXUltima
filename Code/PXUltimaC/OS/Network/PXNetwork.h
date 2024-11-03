@@ -192,16 +192,16 @@ typedef struct PXIPAdress_
     union
     {
         // IP - Version 4
-        char IPv4[4];        // Use to directy update each byte 
+        char IPv4[4];        // Use to directy update each byte
         PXInt32U IPv4ID;     // To use it directly as an int
 
         // IP - Version 6
         char IPv6[16];       // 128-Bit
     };
 
-     char* Text; // if NULL, use 127.0.0.1
-     PXSize TextSize;
-     PXSize TextUsed;
+    char* Text; // if NULL, use 127.0.0.1
+    PXSize TextSize;
+    PXSize TextUsed;
 }
 PXIPAdress;
 
@@ -250,7 +250,7 @@ PXSocketBindInfo;
 typedef struct PXSocketDataInfo_
 {
     void* Buffer; // Data source/target
-    PXSize BufferSize; // How much can we transphere    
+    PXSize BufferSize; // How much can we transphere
     PXSize BufferOffset;
 
     PXSize SegmentSize; // Size of each action of send/read

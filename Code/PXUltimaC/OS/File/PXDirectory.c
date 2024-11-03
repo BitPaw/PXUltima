@@ -31,14 +31,14 @@ PXFileElementInfoType PXAPI PXFileTypeGet(WIN32_FIND_DATA* windowsData)
     }
     else
     {
-        return 
+        return
             ((windowsData->dwFileAttributes & FILE_ATTRIBUTE_ARCHIVE) != 0) * PXFileElementInfoTypeFile +
             ((windowsData->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0) * PXFileElementInfoTypeDictionary;
     }
 }
 
 void PXAPI PXFileElementInfoCOnvertFrom(PXDirectorySearchCache* const pxDirectorySearchCache, PXFileEntry* const pxFileEntry, WIN32_FIND_DATA* const findData, PXInt8U depth)
-{ 
+{
     pxFileEntry->FilePathSize = PXTextLengthA(findData->cFileName, MAX_PATH);
     pxFileEntry->FilePathData = findData->cFileName;
 
@@ -47,7 +47,7 @@ void PXAPI PXFileElementInfoCOnvertFrom(PXDirectorySearchCache* const pxDirector
     pxFileEntry->Depth = depth; //  pxDirectorySearchInfo->DepthCounter;
 
     // TODO: Time??
-    
+
 
     /*
 
@@ -83,12 +83,12 @@ void PXAPI PXDirectoryEntryStore(PXDirectorySearchCache* const pxDirectorySearch
         pxFileEntryINPUT->FilePathData
     );
 #endif
-    
+
     // Hijack adress, create
     pxFileEntryINPUT->FilePathData = PXListDynamicAdd(&pxDirectorySearchCache->FilePathCache, &pxFileEntryINPUT->ID, pxFileEntryINPUT->FilePathData, pxFileEntryINPUT->FilePathSize);
 
     PXListAdd(&pxDirectorySearchCache->EntryList, pxFileEntryINPUT);
-    
+
 
 
 
@@ -98,18 +98,18 @@ void PXAPI PXDirectoryEntryStore(PXDirectorySearchCache* const pxDirectorySearch
 
     return;
 
-  
 
 
 
-    
+
+
 
 
     /*
 
-case PXFileElementInfoTypeFile:
-{
-#if 0
+    case PXFileElementInfoTypeFile:
+    {
+    #if 0
             const PXBool match = PXTextMatchW(pxDirectoryIterator->.Name, 230, extendedSearchFilter, extendedWriien);
 
 
@@ -125,13 +125,13 @@ case PXFileElementInfoTypeFile:
 
                 pxDirectorySearchInfo->Callback(&fileElementInfoCurrent);
             }
-#endif
+    #endif
 
             break;
         }
         case PXFileElementInfoTypeDictionary:
         {
-#if 0
+    #if 0
             wchar_t seachDirectoryKey[300];
             wchar_t* address = seachDirectoryKey;
 
@@ -159,7 +159,7 @@ case PXFileElementInfoTypeFile:
 
                 PXDirectoryFilesInFolderW(&recusiveCallInfo);
             }
-#endif
+    #endif
 
             break;
         }
@@ -216,15 +216,25 @@ PXActionResult PXAPI PXDirectorySearch(PXDirectorySearchCache* const pxDirectory
 
 PXActionResult PXAPI PXDirectoryOpen(PXDirectorySearchCache* const pxDirectorySearchCache, const PXText* const directoryName)
 {
-   // PXClear(PXDirectorySearchCache, pxDirectorySearchCache);
+    // PXClear(PXDirectorySearchCache, pxDirectorySearchCache);
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "FileDir",
+        "Open",
+        "%s",
+        directoryName->TextA
+    );
+#endif
 
 #if OSUnix
 
-    pxDirectoryIterator->ID = opendir(directoryName->TextA); // dirent.h
+    pxDirectorySearchCache->DirectoryHandleCurrent = opendir(directoryName->TextA); // dirent.h
+    PXActionResult openResult = PXErrorCurrent(PXNull != pxDirectorySearchCache->DirectoryHandleCurrent);
 
-    const PXBool success = pxDirectoryIterator->ID != PXNull;
-
-    PXActionOnErrorFetchAndReturn(!success);
+    return openResult;
 
 #elif OSWindows
 
@@ -264,7 +274,7 @@ PXActionResult PXAPI PXDirectoryOpen(PXDirectorySearchCache* const pxDirectorySe
             isDotFolder =
                 pxFileEntry.Type == PXFileElementInfoTypeDictionaryRoot ||
                 pxFileEntry.Type == PXFileElementInfoTypeDictionaryParent;
-        } 
+        }
         while(isDotFolder);
     }
 
@@ -280,9 +290,9 @@ PXBool PXAPI PXDirectoryNext(PXDirectorySearchCache* const pxDirectorySearchCach
 #if OSUnix
     struct dirent* directoryEntry;
 
-    while ((directoryEntry = readdir(pxDirectoryIterator->ID)) != PXNull)
+    while ((directoryEntry = readdir(pxDirectorySearchCache->DirectoryHandleCurrent)) != PXNull)
     {
-        const PXBool isSystemDottedFolder = PXDirectoryIsDotFolder(directoryEntry->d_name);
+        //const PXBool isSystemDottedFolder = PXDirectoryIsDotFolder(directoryEntry->d);
         //const PXInt32U directoryLength = PXTextLength(directory);
         //const PXInt32U FileNameLength = strlen(directoryEntry->d_name);
     }
@@ -310,7 +320,7 @@ PXBool PXAPI PXDirectoryNext(PXDirectorySearchCache* const pxDirectorySearchCach
         }
 
         PXDirectoryEntryStore(pxDirectorySearchCache, pxFileEntry);
-        
+
         break;
     }
 
@@ -322,19 +332,16 @@ PXBool PXAPI PXDirectoryNext(PXDirectorySearchCache* const pxDirectorySearchCach
 PXBool PXAPI PXDirectoryClose(PXDirectorySearchCache* const pxDirectorySearchCache)
 {
 #if OSUnix
-    const int returnCode = closedir(pxDirectoryIterator->ID);
-    const PXBool success = -1 != returnCode;
+    const int returnCode = closedir(pxDirectorySearchCache->DirectoryHandleCurrent);
+    const PXActionResult pxActionResult = PXErrorCurrent(0 != returnCode);
 
-    PXActionOnErrorFetchAndReturn(!success);
+    return pxActionResult;
 
 #elif OSWindows
     const PXBool success = FindClose(pxDirectorySearchCache->DirectoryHandleCurrent);
     const PXActionResult pxActionResult = PXErrorCurrent(success);
 
-    if(PXActionSuccessful != pxActionResult)
-    {
-        return pxActionResult;
-    }
+    return pxActionResult;
 #endif
 }
 
@@ -342,60 +349,60 @@ PXActionResult PXAPI PXDirectoryCreate(const PXText* const directoryName)
 {
     switch (directoryName->Format)
     {
-        case TextFormatASCII:
-        case TextFormatUTF8:
-        {
+    case TextFormatASCII:
+    case TextFormatUTF8:
+    {
 #if OSUnix
-            const int creationResult = mkdir(directoryName->TextA, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-            const PXBool successCreate = creationResult == 0;
+        const int creationResult = mkdir(directoryName->TextA, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+        const PXBool successCreate = creationResult == 0;
 #elif OSWindows
 
 #if OSForcePOSIXForWindows
-            const int resultID = _mkdir(directoryName->TextA);
-            const PXBool successCreate = 0 == resultID;
+        const int resultID = _mkdir(directoryName->TextA);
+        const PXBool successCreate = 0 == resultID;
 #else
-            const PXBool successCreate = CreateDirectoryA(directoryName->TextA, PXNull); // Windows XP, Kernel32.dll, fileapi.h
+        const PXBool successCreate = CreateDirectoryA(directoryName->TextA, PXNull); // Windows XP, Kernel32.dll, fileapi.h
 #endif
 
 #endif
 
-            const PXActionResult pxActionResult = PXErrorCurrent(successCreate);
+        const PXActionResult pxActionResult = PXErrorCurrent(successCreate);
 
-            if(PXActionSuccessful != pxActionResult)
-            {
-                return pxActionResult;
-            }
-
-            break;
+        if(PXActionSuccessful != pxActionResult)
+        {
+            return pxActionResult;
         }
 
-            // 2 Bytes per character, range from 0 to 65535
-        case TextFormatUNICODE:
-        {
-#if OSUnix
-            // CONVERT
+        break;
+    }
 
-            const PXBool successCreate = PXFalse;
+    // 2 Bytes per character, range from 0 to 65535
+    case TextFormatUNICODE:
+    {
+#if OSUnix
+        // CONVERT
+
+        const PXBool successCreate = PXFalse;
 
 #elif OSWindows
 
 #if OSForcePOSIXForWindows
-            const int resultID = _wmkdir(directoryName->TextW);
-            const PXBool successCreate = 0 == resultID;
+        const int resultID = _wmkdir(directoryName->TextW);
+        const PXBool successCreate = 0 == resultID;
 #else
-            const PXBool successCreate = CreateDirectoryW(directoryName->TextW, PXNull); // Windows XP, Kernel32.dll, fileapi.h
+        const PXBool successCreate = CreateDirectoryW(directoryName->TextW, PXNull); // Windows XP, Kernel32.dll, fileapi.h
 #endif
 
 #endif
-            const PXActionResult pxActionResult = PXErrorCurrent(successCreate);
+        const PXActionResult pxActionResult = PXErrorCurrent(successCreate);
 
-            if(PXActionSuccessful != pxActionResult)
-            {
-                return pxActionResult;
-            }
-
-            break;
+        if(PXActionSuccessful != pxActionResult)
+        {
+            return pxActionResult;
         }
+
+        break;
+    }
     }
 
     /*
@@ -567,7 +574,7 @@ PXActionResult PXAPI PXDirectoryFilesInFolderA(const char* folderPath, wchar_t**
 
 PXActionResult PXAPI PXDirectoryFilesInFolderW()
 {
-    #if 0
+#if 0
     wchar_t buffer[300];
     wchar_t extendedSearchFilter[50];
     PXSize wriien = PXFileDirectoryPathExtract(pxDirectorySearchInfo->FolderPath, 512, buffer, 512);
@@ -637,59 +644,60 @@ PXActionResult PXAPI PXDirectoryFilesInFolderW()
 
         switch (fileElementInfoCurrent.Type)
         {
-            case PXFileElementInfoTypeFile:
-            {
-                const PXBool match = PXTextMatchW(fileElementInfoCurrent.Name, 230, extendedSearchFilter, extendedWriien);
+        case PXFileElementInfoTypeFile:
+        {
+            const PXBool match = PXTextMatchW(fileElementInfoCurrent.Name, 230, extendedSearchFilter, extendedWriien);
 
-                if (pxDirectorySearchInfo->Flags & 0x01 && match)
-                {
-                    wchar_t seachDirectoryKey[300];
-                    wchar_t* address = seachDirectoryKey;
-
-                    address += PXTextCopyW(buffer, wriien, address, 300);
-                    address += PXTextCopyW(findFileData.cFileName, 512, address, 512);
-
-                    fileElementInfoCurrent.FullPath = seachDirectoryKey;
-
-                    pxDirectorySearchInfo->Callback(&fileElementInfoCurrent);
-                }
-
-                break;
-            }
-            case PXFileElementInfoTypeDictionary:
+            if (pxDirectorySearchInfo->Flags & 0x01 && match)
             {
                 wchar_t seachDirectoryKey[300];
                 wchar_t* address = seachDirectoryKey;
 
                 address += PXTextCopyW(buffer, wriien, address, 300);
                 address += PXTextCopyW(findFileData.cFileName, 512, address, 512);
-                address += PXTextCopyW(L"/", 1, address, 512);
-                address += PXTextCopyW(extendedSearchFilter, extendedWriien, address, 512);
 
-                if (pxDirectorySearchInfo->Flags & 0x02)
-                {
-                    pxDirectorySearchInfo->Callback(&fileElementInfoCurrent);
-                }
+                fileElementInfoCurrent.FullPath = seachDirectoryKey;
 
-                if (pxDirectorySearchInfo->Recursion)
-                {
-                    PXDirectorySearchInfo recusiveCallInfo;
-                    recusiveCallInfo.Callback = pxDirectorySearchInfo->Callback;
-                    recusiveCallInfo.FolderPath = seachDirectoryKey;
-                    recusiveCallInfo.FolderPathSize = 0;
-                    recusiveCallInfo.FileFilter = pxDirectorySearchInfo->FileFilter;
-                    recusiveCallInfo.FileFilterSize = pxDirectorySearchInfo->FileFilterSize;
-                    recusiveCallInfo.Flags = pxDirectorySearchInfo->Flags;
-                    recusiveCallInfo.DepthCounter = fileElementInfoCurrent.Depth + 1;
-                    recusiveCallInfo.Recursion = PXYes;
-
-                    PXDirectoryFilesInFolderW(&recusiveCallInfo);
-                }
-
-                break;
+                pxDirectorySearchInfo->Callback(&fileElementInfoCurrent);
             }
+
+            break;
         }
-    } while (FindNextFile(iteratorHandle, &findFileData) != 0);
+        case PXFileElementInfoTypeDictionary:
+        {
+            wchar_t seachDirectoryKey[300];
+            wchar_t* address = seachDirectoryKey;
+
+            address += PXTextCopyW(buffer, wriien, address, 300);
+            address += PXTextCopyW(findFileData.cFileName, 512, address, 512);
+            address += PXTextCopyW(L"/", 1, address, 512);
+            address += PXTextCopyW(extendedSearchFilter, extendedWriien, address, 512);
+
+            if (pxDirectorySearchInfo->Flags & 0x02)
+            {
+                pxDirectorySearchInfo->Callback(&fileElementInfoCurrent);
+            }
+
+            if (pxDirectorySearchInfo->Recursion)
+            {
+                PXDirectorySearchInfo recusiveCallInfo;
+                recusiveCallInfo.Callback = pxDirectorySearchInfo->Callback;
+                recusiveCallInfo.FolderPath = seachDirectoryKey;
+                recusiveCallInfo.FolderPathSize = 0;
+                recusiveCallInfo.FileFilter = pxDirectorySearchInfo->FileFilter;
+                recusiveCallInfo.FileFilterSize = pxDirectorySearchInfo->FileFilterSize;
+                recusiveCallInfo.Flags = pxDirectorySearchInfo->Flags;
+                recusiveCallInfo.DepthCounter = fileElementInfoCurrent.Depth + 1;
+                recusiveCallInfo.Recursion = PXYes;
+
+                PXDirectoryFilesInFolderW(&recusiveCallInfo);
+            }
+
+            break;
+        }
+        }
+    }
+    while (FindNextFile(iteratorHandle, &findFileData) != 0);
 
     FindClose(iteratorHandle);
 #endif
@@ -708,25 +716,40 @@ PXActionResult PXAPI PXDirectorySpecialFolderGet(const PXDirectioySpecialFolder 
 
     switch (pxDirectioySpecialFolder)
     {
-        case PXDirectioySpecialFolder_ADMINTOOLS: folderID = CSIDL_ADMINTOOLS;
-        case PXDirectioySpecialFolderAPPDATA: folderID = CSIDL_APPDATA ;
-        case PXDirectioySpecialFolderCOMMON_ADMINTOOLS: folderID = CSIDL_COMMON_ADMINTOOLS;
-        case PXDirectioySpecialFolderCOMMON_APPDATA: folderID = CSIDL_COMMON_APPDATA;
-        case PXDirectioySpecialFolderCOMMON_DOCUMENTS: folderID = CSIDL_COMMON_DOCUMENTS;
-        case PXDirectioySpecialFolderCOOKIES: folderID = CSIDL_COOKIES;
-        case PXDirectioySpecialFolderHISTORY: folderID = CSIDL_HISTORY;
-        case PXDirectioySpecialFolderINTERNET_CACHE: folderID = CSIDL_INTERNET_CACHE;
-        case PXDirectioySpecialFolderLOCAL_APPDATA: folderID = CSIDL_LOCAL_APPDATA;
-        case PXDirectioySpecialFolderPictures: folderID = CSIDL_MYPICTURES;
-        case PXDirectioySpecialFolderPERSONAL: folderID = CSIDL_PERSONAL;
-        case PXDirectioySpecialFolderPROGRAM_FILES: folderID = CSIDL_PROGRAM_FILES;
-        case PXDirectioySpecialFolderPROGRAM_FILES_COMMON: folderID = CSIDL_PROGRAM_FILES_COMMON;
-        case PXDirectioySpecialFolderSystem: folderID = CSIDL_SYSTEM;
-        case PXDirectioySpecialFolderWinfows: folderID = CSIDL_WINDOWS;
+    case PXDirectioySpecialFolder_ADMINTOOLS:
+        folderID = CSIDL_ADMINTOOLS;
+    case PXDirectioySpecialFolderAPPDATA:
+        folderID = CSIDL_APPDATA ;
+    case PXDirectioySpecialFolderCOMMON_ADMINTOOLS:
+        folderID = CSIDL_COMMON_ADMINTOOLS;
+    case PXDirectioySpecialFolderCOMMON_APPDATA:
+        folderID = CSIDL_COMMON_APPDATA;
+    case PXDirectioySpecialFolderCOMMON_DOCUMENTS:
+        folderID = CSIDL_COMMON_DOCUMENTS;
+    case PXDirectioySpecialFolderCOOKIES:
+        folderID = CSIDL_COOKIES;
+    case PXDirectioySpecialFolderHISTORY:
+        folderID = CSIDL_HISTORY;
+    case PXDirectioySpecialFolderINTERNET_CACHE:
+        folderID = CSIDL_INTERNET_CACHE;
+    case PXDirectioySpecialFolderLOCAL_APPDATA:
+        folderID = CSIDL_LOCAL_APPDATA;
+    case PXDirectioySpecialFolderPictures:
+        folderID = CSIDL_MYPICTURES;
+    case PXDirectioySpecialFolderPERSONAL:
+        folderID = CSIDL_PERSONAL;
+    case PXDirectioySpecialFolderPROGRAM_FILES:
+        folderID = CSIDL_PROGRAM_FILES;
+    case PXDirectioySpecialFolderPROGRAM_FILES_COMMON:
+        folderID = CSIDL_PROGRAM_FILES_COMMON;
+    case PXDirectioySpecialFolderSystem:
+        folderID = CSIDL_SYSTEM;
+    case PXDirectioySpecialFolderWinfows:
+        folderID = CSIDL_WINDOWS;
 
-        default:
-            folderID = 0;
-            break;
+    default:
+        folderID = 0;
+        break;
     }
 
     if (create)

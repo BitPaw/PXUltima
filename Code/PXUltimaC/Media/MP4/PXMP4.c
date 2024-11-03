@@ -34,32 +34,57 @@ PXM4AChunkID PXAPI PXMP4ChunkFromID(const PXInt32U chunkID)
 {
     switch(chunkID)
     {
-        case  M4AChunkIDFTYP: return M4AChunkFTYP;
-        case  M4AChunkIDMDAT: return M4AChunkMDAT;
-        case  M4AChunkIDMOOV: return M4AChunkMOOV;
-        case  M4AChunkIDPNOT: return M4AChunkPNOT;
-        case  M4AChunkIDUDTA: return M4AChunkUDTA;
-        case  M4AChunkIDUUID: return M4AChunkUUID;
-        case  M4AChunkIDMOOF: return M4AChunkMOOF;
-        case  M4AChunkIDFREE: return M4AChunkFREE;
-        case  M4AChunkIDSKIP: return M4AChunkSKIP;
-        case  M4AChunkIDJP2: return M4AChunkJP2;
-        case  M4AChunkIDWIDE: return M4AChunkWIDE;
-        case  M4AChunkIDLOAD: return M4AChunkLOAD;
-        case  M4AChunkIDCTAB: return M4AChunkCTAB;
-        case  M4AChunkIDIMAP: return M4AChunkIMAP;
-        case  M4AChunkIDMATT: return M4AChunkMATT;
-        case  M4AChunkIDKMAT: return M4AChunkKMAT;
-        case  M4AChunkIDCLIP: return M4AChunkCLIP;
-        case  M4AChunkIDCRGN: return M4AChunkCRGN;
-        case  M4AChunkIDSYNC: return M4AChunkSYNC;
-        case  M4AChunkIDCHAP: return M4AChunkCHAP;
-        case  M4AChunkIDTMCD: return M4AChunkTMCD;
-        case  M4AChunkIDSCPT: return M4AChunkSCPT;
-        case  M4AChunkIDSSRC: return M4AChunkSSRC;
-        case  M4AChunkIDPICT: return M4AChunkPICT;
+    case  M4AChunkIDFTYP:
+        return M4AChunkFTYP;
+    case  M4AChunkIDMDAT:
+        return M4AChunkMDAT;
+    case  M4AChunkIDMOOV:
+        return M4AChunkMOOV;
+    case  M4AChunkIDPNOT:
+        return M4AChunkPNOT;
+    case  M4AChunkIDUDTA:
+        return M4AChunkUDTA;
+    case  M4AChunkIDUUID:
+        return M4AChunkUUID;
+    case  M4AChunkIDMOOF:
+        return M4AChunkMOOF;
+    case  M4AChunkIDFREE:
+        return M4AChunkFREE;
+    case  M4AChunkIDSKIP:
+        return M4AChunkSKIP;
+    case  M4AChunkIDJP2:
+        return M4AChunkJP2;
+    case  M4AChunkIDWIDE:
+        return M4AChunkWIDE;
+    case  M4AChunkIDLOAD:
+        return M4AChunkLOAD;
+    case  M4AChunkIDCTAB:
+        return M4AChunkCTAB;
+    case  M4AChunkIDIMAP:
+        return M4AChunkIMAP;
+    case  M4AChunkIDMATT:
+        return M4AChunkMATT;
+    case  M4AChunkIDKMAT:
+        return M4AChunkKMAT;
+    case  M4AChunkIDCLIP:
+        return M4AChunkCLIP;
+    case  M4AChunkIDCRGN:
+        return M4AChunkCRGN;
+    case  M4AChunkIDSYNC:
+        return M4AChunkSYNC;
+    case  M4AChunkIDCHAP:
+        return M4AChunkCHAP;
+    case  M4AChunkIDTMCD:
+        return M4AChunkTMCD;
+    case  M4AChunkIDSCPT:
+        return M4AChunkSCPT;
+    case  M4AChunkIDSSRC:
+        return M4AChunkSSRC;
+    case  M4AChunkIDPICT:
+        return M4AChunkPICT;
 
-        default: return M4AChunkInvalid;
+    default:
+        return M4AChunkInvalid;
     }
 }
 
@@ -101,70 +126,70 @@ PXActionResult PXAPI PXMP4LoadFromFile(PXResourceTransphereInfo* const pxResourc
 
         switch(typePrimary)
         {
-            case M4AChunkFTYP:
-            {
-                unsigned int sizeB = 0;
-                char isoSignature[8]; // isom3gp4
+        case M4AChunkFTYP:
+        {
+            unsigned int sizeB = 0;
+            char isoSignature[8]; // isom3gp4
 
-                PXFileReadB(pxFile, chunk.TypeSub, 4u);
-                PXFileReadI32UE(pxFile, &sizeB, PXEndianBig);
-                PXFileReadB(pxFile, isoSignature, 8u);
+            PXFileReadB(pxFile, chunk.TypeSub, 4u);
+            PXFileReadI32UE(pxFile, &sizeB, PXEndianBig);
+            PXFileReadB(pxFile, isoSignature, 8u);
 
-                break;
-            }
-            case M4AChunkMDAT:
-                break;
-            case M4AChunkMOOV:
-                break;
-            case M4AChunkPNOT:
-                break;
-            case M4AChunkUDTA:
-                break;
-            case M4AChunkUUID:
-                break;
-            case M4AChunkMOOF:
-                break;
-            case M4AChunkFREE:
-                break;
-            case M4AChunkSKIP:
-                break;
-            case M4AChunkJP2:
-                break;
-            case M4AChunkWIDE:
-                break;
-            case M4AChunkLOAD:
-                break;
-            case M4AChunkCTAB:
-                break;
-            case M4AChunkIMAP:
-                break;
-            case M4AChunkMATT:
-                break;
-            case M4AChunkKMAT:
-                break;
-            case M4AChunkCLIP:
-                break;
-            case M4AChunkCRGN:
-                break;
-            case M4AChunkSYNC:
-                break;
-            case M4AChunkCHAP:
-                break;
-            case M4AChunkTMCD:
-                break;
-            case M4AChunkSCPT:
-                break;
-            case M4AChunkSSRC:
-                break;
-            case M4AChunkPICT:
-                break;
+            break;
+        }
+        case M4AChunkMDAT:
+            break;
+        case M4AChunkMOOV:
+            break;
+        case M4AChunkPNOT:
+            break;
+        case M4AChunkUDTA:
+            break;
+        case M4AChunkUUID:
+            break;
+        case M4AChunkMOOF:
+            break;
+        case M4AChunkFREE:
+            break;
+        case M4AChunkSKIP:
+            break;
+        case M4AChunkJP2:
+            break;
+        case M4AChunkWIDE:
+            break;
+        case M4AChunkLOAD:
+            break;
+        case M4AChunkCTAB:
+            break;
+        case M4AChunkIMAP:
+            break;
+        case M4AChunkMATT:
+            break;
+        case M4AChunkKMAT:
+            break;
+        case M4AChunkCLIP:
+            break;
+        case M4AChunkCRGN:
+            break;
+        case M4AChunkSYNC:
+            break;
+        case M4AChunkCHAP:
+            break;
+        case M4AChunkTMCD:
+            break;
+        case M4AChunkSCPT:
+            break;
+        case M4AChunkSSRC:
+            break;
+        case M4AChunkPICT:
+            break;
 
-            case M4AChunkInvalid:
-            default:
-            {
-                // Unhandled chunk
-                break;
-            }
+        case M4AChunkInvalid:
+        default:
+        {
+            // Unhandled chunk
+            break;
+        }
         }
 
         if(pxFile->DataCursor < positionPrediction)

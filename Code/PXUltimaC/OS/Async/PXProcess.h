@@ -25,6 +25,9 @@ typedef HANDLE PXProcessThreadHandle;
 typedef DWORD PXProcessThreadID;
 #endif
 
+typedef struct PXThread_ PXThread;
+typedef struct PXDebug_ PXDebug;
+
 typedef struct PXProcess_
 {
     // Main Process
@@ -107,17 +110,17 @@ PXPublic void PXAPI PXProcessParent(PXProcess* const pxProcess);
 PXPublic void PXAPI PXProcessExitCurrent(const PXInt32U exitCode);
 
 // Get all open handles from given process.
-// pxProcess can be NULL, current process is used. 
+// pxProcess can be NULL, current process is used.
 PXPublic PXActionResult PXAPI PXProcessHandleCountGet(PXProcess* pxProcess, PXSize* const handlesAmount);
 
-PXPublic PXActionResult PXAPI PXProcessHandleListAll(struct PXDebug_* const pxDebug, PXProcess* pxProcess);
+PXPublic PXActionResult PXAPI PXProcessHandleListAll(PXDebug* const pxDebug, PXProcess* pxProcess);
 
 
 PXPublic PXActionResult PXAPI PXProcessCreate(PXProcess* const pxProcess, const PXText* const programmPath, const PXProcessCreationMode mode);
 
 PXPublic PXActionResult PXAPI PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEvent);
 
-PXPublic PXActionResult PXAPI PXProcessThreadsListAll(PXProcess* const pxProcess, struct PXThread_** pxThreadListRef, const PXSize amount, PXSize* resultSIze);
+PXPublic PXActionResult PXAPI PXProcessThreadsListAll(PXProcess* const pxProcess, PXThread** pxThreadListRef, const PXSize amount, PXSize* resultSIze);
 
 PXPublic PXActionResult PXAPI PXProcessOpenViaID(PXProcess* const pxProcess, const PXProcessID pxProcessID);
 PXPublic PXActionResult PXAPI PXProcessClose(PXProcess* const pxProcess);

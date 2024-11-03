@@ -7,45 +7,45 @@ void PXAPI PXEngineDialogBoxPageNext(PXEngine* const pxEngine, PXEngineDialogBox
 {
     switch (pxEngineDialogBox->State)
     {
-        case PXEngineDialogStateActive:
-        {
-            break;
-        }
-        case PXEngineDialogStateReadyForNextPage:
-        {
-            pxEngineDialogBox->IsNewWord = PXFalse;
-            pxEngineDialogBox->LineNumber = 0;
-            pxEngineDialogBox->DialogBoxText->TextRenderAmount = 0;
+    case PXEngineDialogStateActive:
+    {
+        break;
+    }
+    case PXEngineDialogStateReadyForNextPage:
+    {
+        pxEngineDialogBox->IsNewWord = PXFalse;
+        pxEngineDialogBox->LineNumber = 0;
+        pxEngineDialogBox->DialogBoxText->TextRenderAmount = 0;
 
-            ++(pxEngineDialogBox->PageAmountCurrent);
+        ++(pxEngineDialogBox->PageAmountCurrent);
 
-            PXDialogMessagePage* const pxDialogMessagePage = &pxEngineDialogBox->DialogMessagePageList[pxEngineDialogBox->PageAmountCurrent];
+        PXDialogMessagePage* const pxDialogMessagePage = &pxEngineDialogBox->DialogMessagePageList[pxEngineDialogBox->PageAmountCurrent];
 
-            PXEngineSpriteTextureSet(pxEngine, pxEngineDialogBox->SpriteCharacterFace, pxDialogMessagePage->CharacterSprite);
+        PXEngineSpriteTextureSet(pxEngine, pxEngineDialogBox->SpriteCharacterFace, pxDialogMessagePage->CharacterSprite);
 
-            pxEngineDialogBox->State = PXEngineDialogStateActive;
+        pxEngineDialogBox->State = PXEngineDialogStateActive;
 
-            PXEngineResourceActionInfo pxEngineResourceActionInfo;
-            PXClear(PXEngineResourceActionInfo, &pxEngineResourceActionInfo);
+        PXEngineResourceActionInfo pxEngineResourceActionInfo;
+        PXClear(PXEngineResourceActionInfo, &pxEngineResourceActionInfo);
 
-            pxEngineResourceActionInfo.Type = PXEngineResourceActionTypeStateChange;
-            pxEngineResourceActionInfo.ChangeInfo.Enable = PXTrue;
-            pxEngineResourceActionInfo.ChangeInfo.Type = PXResourceTypeTimer;
-            pxEngineResourceActionInfo.ChangeInfo.Object = pxEngineDialogBox->DialogBoxTextTimer;
+        pxEngineResourceActionInfo.Type = PXEngineResourceActionTypeStateChange;
+        pxEngineResourceActionInfo.ChangeInfo.Enable = PXTrue;
+        pxEngineResourceActionInfo.ChangeInfo.Type = PXResourceTypeTimer;
+        pxEngineResourceActionInfo.ChangeInfo.Object = pxEngineDialogBox->DialogBoxTextTimer;
 
-            PXEngineResourceAction(pxEngine, &pxEngineResourceActionInfo);
+        PXEngineResourceAction(pxEngine, &pxEngineResourceActionInfo);
 
 
-            break;
-        }
-        case PXEngineDialogStateReadyToClose:
-        {
-            PXEngineDialogBoxClose(pxEngine, pxEngineDialogBox);
-            break;
-        }
+        break;
+    }
+    case PXEngineDialogStateReadyToClose:
+    {
+        PXEngineDialogBoxClose(pxEngine, pxEngineDialogBox);
+        break;
+    }
 
-        default:
-            break;
+    default:
+        break;
     }
 }
 
@@ -58,7 +58,7 @@ void PXAPI PXEngineDialogBoxOpen
 )
 {
     PXEngineText* const dialogBoxText = pxEngineDialogBox->DialogBoxText;
-     
+
     pxEngineDialogBox->State = PXEngineDialogStateActive;
     pxEngineDialogBox->PageAmountCurrent = 0;
     pxEngineDialogBox->DialogMessagePageList = pxDialogMessagePage;
@@ -107,12 +107,12 @@ void PXAPI PXEngineDialogBoxClose(PXEngine* const pxEngine, PXEngineDialogBox* c
 {
     PXEngineResourceActionInfo pxEngineResourceActionInfo[5];
     PXClearList(PXEngineResourceActionInfo, &pxEngineResourceActionInfo, 5);
-    
+
     pxEngineResourceActionInfo[0].Type = PXEngineResourceActionTypeStateChange;
     pxEngineResourceActionInfo[0].ChangeInfo.Enable = PXFalse;
     pxEngineResourceActionInfo[0].ChangeInfo.Type = PXResourceTypeSprite;
     pxEngineResourceActionInfo[0].ChangeInfo.Object = pxEngineDialogBox->SpriteButtonNextPage;
-         
+
     pxEngineResourceActionInfo[1].Type = PXEngineResourceActionTypeStateChange;
     pxEngineResourceActionInfo[1].ChangeInfo.Enable = PXFalse;
     pxEngineResourceActionInfo[1].ChangeInfo.Type = PXResourceTypeSprite;
@@ -122,12 +122,12 @@ void PXAPI PXEngineDialogBoxClose(PXEngine* const pxEngine, PXEngineDialogBox* c
     pxEngineResourceActionInfo[2].ChangeInfo.Enable = PXFalse;
     pxEngineResourceActionInfo[2].ChangeInfo.Type = PXResourceTypeSprite;
     pxEngineResourceActionInfo[2].ChangeInfo.Object = pxEngineDialogBox->SpriteCharacterFace;
- 
+
     pxEngineResourceActionInfo[3].Type = PXEngineResourceActionTypeStateChange;
     pxEngineResourceActionInfo[3].ChangeInfo.Enable = PXFalse;
     pxEngineResourceActionInfo[3].ChangeInfo.Type = PXResourceTypeSprite;
     pxEngineResourceActionInfo[3].ChangeInfo.Object = pxEngineDialogBox->DialogBoxText;
- 
+
     pxEngineResourceActionInfo[4].Type = PXEngineResourceActionTypeStateChange;
     pxEngineResourceActionInfo[4].ChangeInfo.Enable = PXFalse;
     pxEngineResourceActionInfo[4].ChangeInfo.Type = PXResourceTypeTimer;
@@ -150,134 +150,134 @@ PXActionResult PXAPI PXEngineDialogBoxTimerTrigger(PXEngine* const pxEngine, PXE
 
     switch (pxEngineDialogBox->State)
     {
-        case PXEngineDialogStateDormant:
-            return PXActionFailedResourceUnavailableTryAgain;
+    case PXEngineDialogStateDormant:
+        return PXActionFailedResourceUnavailableTryAgain;
 
-        case PXEngineDialogStateActive:
+    case PXEngineDialogStateActive:
+    {
+        PXEngineText* const dialogBoxText = pxEngineDialogBox->DialogBoxText;
+        PXDialogMessagePage* const pxDialogMessagePage = &pxEngineDialogBox->DialogMessagePageList[pxEngineDialogBox->PageAmountCurrent];
+        PXText* const pxTextDialog = &pxDialogMessagePage->Text;
+
+        if (!pxTextDialog)
         {
-            PXEngineText* const dialogBoxText = pxEngineDialogBox->DialogBoxText;
-            PXDialogMessagePage* const pxDialogMessagePage = &pxEngineDialogBox->DialogMessagePageList[pxEngineDialogBox->PageAmountCurrent];
-            PXText* const pxTextDialog = &pxDialogMessagePage->Text;
+            PXEngineDialogBoxClose(pxEngine, pxEngineDialogBox);
 
-            if (!pxTextDialog)
+            return PXActionSuccessful;
+        }
+
+        dialogBoxText->Text = pxTextDialog;
+
+        const PXBool hasNextLetter = dialogBoxText->TextRenderAmount < pxTextDialog->SizeUsed;
+
+        if (!hasNextLetter) // If we dont have any more text, fetch next page
+        {
+            const PXBool hasNextPage = (pxEngineDialogBox->PageAmountCurrent +1)< (pxEngineDialogBox->PageAmountLoaded);
+
+            if (hasNextPage) // if we dont have any new page, we are done
             {
-                PXEngineDialogBoxClose(pxEngine, pxEngineDialogBox);
-
-                return PXActionSuccessful;
-            }
-
-            dialogBoxText->Text = pxTextDialog;
-
-            const PXBool hasNextLetter = dialogBoxText->TextRenderAmount < pxTextDialog->SizeUsed;
-
-            if (!hasNextLetter) // If we dont have any more text, fetch next page
-            {
-                const PXBool hasNextPage = (pxEngineDialogBox->PageAmountCurrent +1)< (pxEngineDialogBox->PageAmountLoaded);
-
-                if (hasNextPage) // if we dont have any new page, we are done
-                {
-                    pxEngineDialogBox->State = PXEngineDialogStateReadyForNextPage;
+                pxEngineDialogBox->State = PXEngineDialogStateReadyForNextPage;
 
 #if PXLogEnable
-                    PXLogPrint
-                    (
-                        PXLoggingInfo,
-                        "PX",
-                        "Dialog",
-                        "Done with page <%i/%i>. Ready for <%i>",
-                        pxEngineDialogBox->PageAmountCurrent + 1,
-                        pxEngineDialogBox->PageAmountLoaded,
-                        pxEngineDialogBox->PageAmountCurrent + 2                  
-                    );
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    "PX",
+                    "Dialog",
+                    "Done with page <%i/%i>. Ready for <%i>",
+                    pxEngineDialogBox->PageAmountCurrent + 1,
+                    pxEngineDialogBox->PageAmountLoaded,
+                    pxEngineDialogBox->PageAmountCurrent + 2
+                );
 #endif
-                }
-                else
-                {
-                    pxEngineDialogBox->State = PXEngineDialogStateReadyToClose;     
+            }
+            else
+            {
+                pxEngineDialogBox->State = PXEngineDialogStateReadyToClose;
 
 #if PXLogEnable
-                    PXLogPrint
-                    (
-                        PXLoggingInfo,
-                        "PX",
-                        "Dialog",
-                        "Done with all pages <%i>.",
-                        pxEngineDialogBox->PageAmountCurrent + 1
-                    );
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    "PX",
+                    "Dialog",
+                    "Done with all pages <%i>.",
+                    pxEngineDialogBox->PageAmountCurrent + 1
+                );
 #endif
-                }
-
-                PXEngineResourceActionInfo pxEngineResourceActionInfo;
-                PXClear(PXEngineResourceActionInfo, &pxEngineResourceActionInfo);
-
-                pxEngineResourceActionInfo.Type = PXEngineResourceActionTypeStateChange;
-                pxEngineResourceActionInfo.ChangeInfo.Enable = PXFalse;
-                pxEngineResourceActionInfo.ChangeInfo.Type = PXResourceTypeTimer;
-                pxEngineResourceActionInfo.ChangeInfo.Object = pxEngineDialogBox->DialogBoxTextTimer;
-
-                PXEngineResourceAction(pxEngine, &pxEngineResourceActionInfo);
-
-                break;
             }
 
-            ++(dialogBoxText->TextRenderAmount);
+            PXEngineResourceActionInfo pxEngineResourceActionInfo;
+            PXClear(PXEngineResourceActionInfo, &pxEngineResourceActionInfo);
 
-            char character = pxTextDialog->TextA[dialogBoxText->TextRenderAmount];
+            pxEngineResourceActionInfo.Type = PXEngineResourceActionTypeStateChange;
+            pxEngineResourceActionInfo.ChangeInfo.Enable = PXFalse;
+            pxEngineResourceActionInfo.ChangeInfo.Type = PXResourceTypeTimer;
+            pxEngineResourceActionInfo.ChangeInfo.Object = pxEngineDialogBox->DialogBoxTextTimer;
 
-            const PXInt32U rendomDelay = (PXEngineGenerateRandom(pxEngine, 400) - 200) * 1000; // -2000 to 2000
-            PXEngineTimer* const pxEngineTimer = pxEngineTimerEventInfo->TimerReference;
-
-            pxEngineTimer->TimeDelayShift = 0;
-
-            // pxEngineDialogBox->DialogBoxCharacterImage = pxEngineDialogBox->PageNumber > 0? &pxChracterImageA : &pxChracterImageB;
-
-
-            //pxChracterImageA.Invinsilbe = pxEngineDialogBox->PageNumber == 0;
-            //pxChracterImageB.Invinsilbe = pxEngineDialogBox->PageNumber > 1;
-
-            switch (character)
-            {
-                case '\n':
-                {
-                    pxEngine->Audio.DeviceStop(&pxEngine->Audio, &pxEngine->AudioStandardOutDevice);
-
-                    pxEngineDialogBox->LineNumber++;
-
-                    pxEngineTimer->TimeDelayShift = 5000000;
-
-                    break;
-                }
-                case '\0':
-                case ' ':
-                {
-                    pxEngine->Audio.DeviceStop(&pxEngine->Audio, &pxEngine->AudioStandardOutDevice);
-                    pxEngineDialogBox->IsNewWord = PXFalse;
-                    // Nothing
-                    break;
-                }
-                default:
-                {
-                    pxEngineTimer->TimeDelayShift = rendomDelay;
-
-                    if (!pxEngineDialogBox->IsNewWord || 1)
-                    {
-                        pxEngine->Audio.DeviceRestart(&pxEngine->Audio, &pxEngine->AudioStandardOutDevice);
-                        pxEngineDialogBox->IsNewWord = PXTrue;
-                    }
-
-                    break;
-                }
-            }
+            PXEngineResourceAction(pxEngine, &pxEngineResourceActionInfo);
 
             break;
         }
-        case PXEngineDialogStateReadyToClose:
+
+        ++(dialogBoxText->TextRenderAmount);
+
+        char character = pxTextDialog->TextA[dialogBoxText->TextRenderAmount];
+
+        const PXInt32U rendomDelay = (PXEngineGenerateRandom(pxEngine, 400) - 200) * 1000; // -2000 to 2000
+        PXEngineTimer* const pxEngineTimer = pxEngineTimerEventInfo->TimerReference;
+
+        pxEngineTimer->TimeDelayShift = 0;
+
+        // pxEngineDialogBox->DialogBoxCharacterImage = pxEngineDialogBox->PageNumber > 0? &pxChracterImageA : &pxChracterImageB;
+
+
+        //pxChracterImageA.Invinsilbe = pxEngineDialogBox->PageNumber == 0;
+        //pxChracterImageB.Invinsilbe = pxEngineDialogBox->PageNumber > 1;
+
+        switch (character)
         {
-            //PXEngineDialogBoxClose(pxEngine, pxEngineDialogBox);
+        case '\n':
+        {
+            pxEngine->Audio.DeviceStop(&pxEngine->Audio, &pxEngine->AudioStandardOutDevice);
+
+            pxEngineDialogBox->LineNumber++;
+
+            pxEngineTimer->TimeDelayShift = 5000000;
+
+            break;
+        }
+        case '\0':
+        case ' ':
+        {
+            pxEngine->Audio.DeviceStop(&pxEngine->Audio, &pxEngine->AudioStandardOutDevice);
+            pxEngineDialogBox->IsNewWord = PXFalse;
+            // Nothing
             break;
         }
         default:
-            return PXActionRefusedStateInvalid;
+        {
+            pxEngineTimer->TimeDelayShift = rendomDelay;
+
+            if (!pxEngineDialogBox->IsNewWord || 1)
+            {
+                pxEngine->Audio.DeviceRestart(&pxEngine->Audio, &pxEngine->AudioStandardOutDevice);
+                pxEngineDialogBox->IsNewWord = PXTrue;
+            }
+
+            break;
+        }
+        }
+
+        break;
+    }
+    case PXEngineDialogStateReadyToClose:
+    {
+        //PXEngineDialogBoxClose(pxEngine, pxEngineDialogBox);
+        break;
+    }
+    default:
+        return PXActionRefusedStateInvalid;
     }
 
     return PXActionSuccessful;

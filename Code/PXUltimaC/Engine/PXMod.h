@@ -13,7 +13,7 @@ typedef struct PXModLoadEventData_
 {
     PXBool IsEssential;
 
-    // Is 
+    // Is
     PXBool RequestProgramTermination;
 
     PXLibrary Library;

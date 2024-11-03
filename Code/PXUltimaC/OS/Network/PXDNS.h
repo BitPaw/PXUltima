@@ -1,8 +1,8 @@
-#pragma once
+#ifndef PXDNSINLCUDE
+#define PXDNSINLCUDE
 
 #include "Media/PXResource.h"
 
-PXPublic PXActionResult PXAPI PXDNSFetch();
+PXPublic PXActionResult PXAPI PXDNSFetch(const char* name);
 
-// Dodo: later
-
+#endif

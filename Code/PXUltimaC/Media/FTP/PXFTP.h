@@ -73,7 +73,7 @@ typedef enum PXFTPResult_
     PXFTPResultPassiveModeNowActive,// 227 Entering Passive Mode(h1, h2, h3, h4, p1, p2).
     PXFTPResultLoginCompleate,// 230 User logged in, proceed.
     PXFTPResultFileActionOK,// 250 Requested file action okay, completed.
-    PXFTPResultPathNameCreated,// 257 "PATHNAME" created. 
+    PXFTPResultPathNameCreated,// 257 "PATHNAME" created.
     //---------------------------------------------------------------------
 
 

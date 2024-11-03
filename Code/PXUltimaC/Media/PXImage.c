@@ -98,7 +98,7 @@ PXBool PXAPI PXImageResize(PXImage* const image, const PXColorFormat dataFormat,
                     }
                     break;
                 }
-            }      
+            }
         }
         */
 
@@ -138,7 +138,7 @@ void PXAPI PXImageFlipVertical(PXImage* image)
     const PXSize scanLineWidthSize = image->Width * bbp;
     const PXSize scanLinesToSwap = image->Height / 2u;
     PXByte* copyBufferRow = PXNull;
-    
+
     PXNewList(PXByte, scanLineWidthSize, &copyBufferRow, PXNull);
 
     if(!copyBufferRow)

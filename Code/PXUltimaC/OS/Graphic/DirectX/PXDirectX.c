@@ -99,7 +99,7 @@ PXActionResult PXAPI PXDirectXInitialize(PXDirectX* const pxDirectX, PXGraphicIn
                 );
 
                 directXCreated = PXTrue;
-                
+
                 return PXActionSuccessful;
             }
 
@@ -133,100 +133,100 @@ PXActionResult PXAPI PXDirectXInitialize(PXDirectX* const pxDirectX, PXGraphicIn
 
     switch(pxDirectX->DirectXVersion)
     {
-        case PXDirectXVersionNewest:
-        case PXDirectXVersion12Emulate1x0Core:
-        case PXDirectXVersion12Emulate9x1:
-        case PXDirectXVersion12Emulate9x2:
-        case PXDirectXVersion12Emulate9x3:
-        case PXDirectXVersion12Emulate10x0:
-        case PXDirectXVersion12Emulate10x1:
-        case PXDirectXVersion12Emulate11x0:
-        case PXDirectXVersion12Emulate11x1:
-        case PXDirectXVersion12Emulate12x0:
-        case PXDirectXVersion12Emulate12x1:
-        case PXDirectXVersion12Emulate12x2:
-        {
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                "DirectX",
-                "Initialize",
-                "Select DirectX 12"
-            );
+    case PXDirectXVersionNewest:
+    case PXDirectXVersion12Emulate1x0Core:
+    case PXDirectXVersion12Emulate9x1:
+    case PXDirectXVersion12Emulate9x2:
+    case PXDirectXVersion12Emulate9x3:
+    case PXDirectXVersion12Emulate10x0:
+    case PXDirectXVersion12Emulate10x1:
+    case PXDirectXVersion12Emulate11x0:
+    case PXDirectXVersion12Emulate11x1:
+    case PXDirectXVersion12Emulate12x0:
+    case PXDirectXVersion12Emulate12x1:
+    case PXDirectXVersion12Emulate12x2:
+    {
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "DirectX",
+            "Initialize",
+            "Select DirectX 12"
+        );
 
-            pxGraphic->Initialize = PXDirectX12Initialize;
-            pxDirectX->DXTargetAPI = &pxDirectX->X12;
-            break;
-        }
-        case PXDirectXVersion11Emulate1x0Core:
-        case PXDirectXVersion11Emulate9x1:
-        case PXDirectXVersion11Emulate9x2:
-        case PXDirectXVersion11Emulate9x3:
-        case PXDirectXVersion11Emulate10x0:
-        case PXDirectXVersion11Emulate10x1:
-        case PXDirectXVersion11Emulate11x0:
-        case PXDirectXVersion11Emulate11x1:
-        {
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                "DirectX",
-                "Initialize",
-                "Select DirectX 11"
-            );
+        pxGraphic->Initialize = PXDirectX12Initialize;
+        pxDirectX->DXTargetAPI = &pxDirectX->X12;
+        break;
+    }
+    case PXDirectXVersion11Emulate1x0Core:
+    case PXDirectXVersion11Emulate9x1:
+    case PXDirectXVersion11Emulate9x2:
+    case PXDirectXVersion11Emulate9x3:
+    case PXDirectXVersion11Emulate10x0:
+    case PXDirectXVersion11Emulate10x1:
+    case PXDirectXVersion11Emulate11x0:
+    case PXDirectXVersion11Emulate11x1:
+    {
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "DirectX",
+            "Initialize",
+            "Select DirectX 11"
+        );
 
-            pxGraphic->Initialize = PXDirectX11Initialize;
-            pxDirectX->DXTargetAPI = &pxDirectX->X11;
-            break;
-        }
-        case PXDirectXVersion10x1Simulate10x0:
-        case PXDirectXVersion10x1Simulate9x1:
-        case PXDirectXVersion10x1Simulate9x2:
-        case PXDirectXVersion10x1Simulate9x3:
-        case PXDirectXVersion10x1:
-        {
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                "DirectX",
-                "Initialize",
-                "Select DirectX 10.1"
-            );
+        pxGraphic->Initialize = PXDirectX11Initialize;
+        pxDirectX->DXTargetAPI = &pxDirectX->X11;
+        break;
+    }
+    case PXDirectXVersion10x1Simulate10x0:
+    case PXDirectXVersion10x1Simulate9x1:
+    case PXDirectXVersion10x1Simulate9x2:
+    case PXDirectXVersion10x1Simulate9x3:
+    case PXDirectXVersion10x1:
+    {
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "DirectX",
+            "Initialize",
+            "Select DirectX 10.1"
+        );
 
-            pxGraphic->Initialize = PXDirectX10x1Initialize;
-            pxDirectX->DXTargetAPI = &pxDirectX->X10x1;
-            break;
-        }
-        case PXDirectXVersion10x0:
-        {
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                "DirectX",
-                "Initialize",
-                "Select DirectX 10"
-            );
+        pxGraphic->Initialize = PXDirectX10x1Initialize;
+        pxDirectX->DXTargetAPI = &pxDirectX->X10x1;
+        break;
+    }
+    case PXDirectXVersion10x0:
+    {
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "DirectX",
+            "Initialize",
+            "Select DirectX 10"
+        );
 
-            pxGraphic->Initialize = PXDirectX10Initialize;
-            pxDirectX->DXTargetAPI = &pxDirectX->X10;
-            break;
-        }
-        case PXDirectXVersion9:
-        {
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                "DirectX",
-                "Initialize",
-                "Select DirectX 9"
-            );
+        pxGraphic->Initialize = PXDirectX10Initialize;
+        pxDirectX->DXTargetAPI = &pxDirectX->X10;
+        break;
+    }
+    case PXDirectXVersion9:
+    {
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "DirectX",
+            "Initialize",
+            "Select DirectX 9"
+        );
 
-            pxGraphic->Initialize = PXDirectX9Initialize;
-            pxDirectX->DXTargetAPI = &pxDirectX->X9;
-            break;
-        }
-        default:
-            return PXActionRefusedFormatNotSupported;
+        pxGraphic->Initialize = PXDirectX9Initialize;
+        pxDirectX->DXTargetAPI = &pxDirectX->X9;
+        break;
+    }
+    default:
+        return PXActionRefusedFormatNotSupported;
     }
 
     PXLogPrint
@@ -249,5 +249,5 @@ PXActionResult PXAPI PXDirectXRelease(PXDirectX* const pxDirectX)
 {
     return PXActionInvalid;
 
-   // return  pxDirectX->Release(pxDirectX->DXTargetAPI);
+    // return  pxDirectX->Release(pxDirectX->DXTargetAPI);
 }

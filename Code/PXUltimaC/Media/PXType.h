@@ -104,7 +104,7 @@
 
 #define PXCDECL _cdecl
 #define PXSTDCALL _stdcall
-#define PXSYSCALL 
+#define PXSYSCALL
 #define PXAPIFASTCALL _fastcall
 
 #endif
@@ -122,7 +122,7 @@
 //---------------------------------------------------------
 
 #define PXPrivate PXFunction static
-#define PXInternal 
+#define PXInternal
 
 #if OSUnix
 #define PXPublic PXFunction extern
@@ -175,7 +175,7 @@
 // Flags
 //---------------------------------------------------------
 #define PXFlagIsSet(value, flagID) (1u && (value & flagID))
-#define PXFlagAdd(target, value, flagID) target |= flagID 
+#define PXFlagAdd(target, value, flagID) target |= flagID
 #define PXFlagRemove(target, value, flagID)  target &= ~flagID
 
 
@@ -722,7 +722,7 @@ PXBitFormat;
 // Endianess detection and conversion
 //-----------------------------------------------------------------------------
 
-    // Ordering or sequencing of bytes
+// Ordering or sequencing of bytes
 typedef enum PXEndian_
 {
     PXEndianInvalid,

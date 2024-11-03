@@ -30,7 +30,7 @@ void PXAPI PXProcessConstructFromHandle(PXProcess* const pxProcess, HANDLE proce
 
 #if WindowsAtleastXP
     pxProcess->ProcessID = GetProcessId(processHandle); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
-#endif    
+#endif
 }
 #endif
 
@@ -101,10 +101,10 @@ PXActionResult PXAPI PXProcessHandleCountGet(PXProcess* pxProcess, PXSize* const
     DWORD handleCount = 0;
 
     const BOOL successful = GetProcessHandleCount // Windows XP, Kernel32.dll, processthreadsapi.h
-    (
-        pxProcess->ProcessHandle,
-        &handleCount
-    );
+                            (
+                                pxProcess->ProcessHandle,
+                                &handleCount
+                            );
     const PXActionResult pxActionResult = PXErrorCurrent(successful);
 
     if(PXActionSuccessful != pxActionResult)
@@ -116,9 +116,9 @@ PXActionResult PXAPI PXProcessHandleCountGet(PXProcess* pxProcess, PXSize* const
 
     return PXActionSuccessful;
 
-#else 
+#else
     return PXActionNotSupportedByOperatingSystem;
-#endif    
+#endif
 }
 
 typedef enum PXHandleType_
@@ -128,7 +128,7 @@ typedef enum PXHandleType_
     PXHandleTypeThread,
     PXHandleTypeProcess,
     PXHandleTypeIOCompletionReserve,
-    PXHandleTypeEvent, 
+    PXHandleTypeEvent,
     PXHandleTypeMutant,
     PXHandleTypeSemaphore,
     PXHandleTypeTimer,
@@ -160,33 +160,49 @@ PXHandleType PXHandleTypeFromID(const PXInt8U typeID)
 {
     switch (typeID)
     {
-        case 37: 
-            return PXHandleTypeFile;
+    case 37:
+        return PXHandleTypeFile;
 
-        case 3: return PXHandleTypeDirectory;
-        case 8: return PXHandleTypeThread;
-        case 11: return PXHandleTypeIOCompletionReserve;
-        case 16: return PXHandleTypeEvent; 
-        case 17: return PXHandleTypeMutant; 
-        case 19: return PXHandleTypeSemaphore; 
-        case 20: return PXHandleTypeTimer;
-        case 21: return PXHandleTypeIETimer;
-        case 24: return PXHandleTypeWindowStation;
-        case 25: return PXHandleTypeDesktop;
+    case 3:
+        return PXHandleTypeDirectory;
+    case 8:
+        return PXHandleTypeThread;
+    case 11:
+        return PXHandleTypeIOCompletionReserve;
+    case 16:
+        return PXHandleTypeEvent;
+    case 17:
+        return PXHandleTypeMutant;
+    case 19:
+        return PXHandleTypeSemaphore;
+    case 20:
+        return PXHandleTypeTimer;
+    case 21:
+        return PXHandleTypeIETimer;
+    case 24:
+        return PXHandleTypeWindowStation;
+    case 25:
+        return PXHandleTypeDesktop;
 
-        case 36: return PXHandleTypeWaitCompleation; 
+    case 36:
+        return PXHandleTypeWaitCompleation;
 
-        case 35: 
-            return PXHandleTypeIoCompleation;
+    case 35:
+        return PXHandleTypeIoCompleation;
 
-        case 30: return PXHandleTypeTpWorkerFactor;
-        case 42: return PXHandleTypeSection;
-        case 44: return PXHandleTypeKey;
-        case 46: return PXHandleTypeALPCPort;
-        case 50: return PXHandleTypeEtwRegistration;
+    case 30:
+        return PXHandleTypeTpWorkerFactor;
+    case 42:
+        return PXHandleTypeSection;
+    case 44:
+        return PXHandleTypeKey;
+    case 46:
+        return PXHandleTypeALPCPort;
+    case 50:
+        return PXHandleTypeEtwRegistration;
 
-        default:
-            return PXHandleTypeInvalid;
+    default:
+        return PXHandleTypeInvalid;
     }
 }
 
@@ -236,15 +252,15 @@ PXActionResult PXAPI PXProcessHandleListAll(PXDebug* const pxDebug, PXProcess* p
     {
         ULONG            NumberOfHandles;
         SYSTEM_HANDLE_TABLE_ENTRY_INFO    Handles[1];
-    } 
+    }
     SYSTEM_HANDLE_INFORMATION;
 
     typedef LONG (*NTAPI PXNtQuerySystemInformation)
     (
-            const PXInt32U SystemInformationClass, // enum SYSTEM_INFORMATION_CLASS
-            void* const SystemInformation,
-            const PXInt32U SystemInformationLength,
-            PXInt32U* const ReturnLength
+        const PXInt32U SystemInformationClass, // enum SYSTEM_INFORMATION_CLASS
+        void* const SystemInformation,
+        const PXInt32U SystemInformationLength,
+        PXInt32U* const ReturnLength
     );
 
     typedef LONG(*NTAPI PXNtQueryObject)
@@ -266,7 +282,7 @@ PXActionResult PXAPI PXProcessHandleListAll(PXDebug* const pxDebug, PXProcess* p
 
     PXNtQuerySystemInformation pxNtQuerySystemInformation;
     PXNtQueryObject pxNtQueryObject;
-    
+
     PXLibraryGetSymbolA(&pxLibraryNTDLL, &pxNtQuerySystemInformation, "NtQuerySystemInformation");
     PXLibraryGetSymbolA(&pxLibraryNTDLL, &pxNtQueryObject, "NtQueryObject");
 
@@ -280,7 +296,7 @@ PXActionResult PXAPI PXProcessHandleListAll(PXDebug* const pxDebug, PXProcess* p
 
     // Dummy peek
     {
-    
+
     }
 
     {
@@ -288,14 +304,14 @@ PXActionResult PXAPI PXProcessHandleListAll(PXDebug* const pxDebug, PXProcess* p
 
         LONG resultA = pxNtQuerySystemInformation(16, &systemHandleInfo, sizeof(SYSTEM_HANDLE_INFORMATION), &sizeNeeded); // Peek size needed
 
-        
+
         sizeAllocated = sizeNeeded;
 
 
         //PXSize amunum = 0;
         //PXProcessHandleCountGet(PXNull, &amunum); // Get Peeked size from this source, for some reason other one is bad
         //sizeAllocated = sizeof(SYSTEM_HANDLE_INFORMATION) * sizeNeeded * amunum;
-    }    
+    }
 
     //PXSize sizeAllocated = sizeof(SYSTEM_HANDLE_INFORMATION) * sizeNeeded;
     SYSTEM_HANDLE_INFORMATION* memory = (SYSTEM_HANDLE_INFORMATION*)(sizeAllocated);
@@ -303,7 +319,7 @@ PXActionResult PXAPI PXProcessHandleListAll(PXDebug* const pxDebug, PXProcess* p
 
     LONG resultB = pxNtQuerySystemInformation(16, memory, sizeAllocated, &sizeNeeded);
 
-    
+
     char buffer[200];
     PUBLIC_OBJECT_TYPE_INFORMATION* objectTypeInfo = buffer;
 
@@ -315,21 +331,21 @@ PXActionResult PXAPI PXProcessHandleListAll(PXDebug* const pxDebug, PXProcess* p
         SYSTEM_HANDLE_TABLE_ENTRY_INFO* sysHandle = &memory->Handles[i];
 
         HANDLE handleCurrent = sysHandle->HandleValue;
-        const PXBool isSameProcess = pxProcess->ProcessID == sysHandle->UniqueProcessId; 
+        const PXBool isSameProcess = pxProcess->ProcessID == sysHandle->UniqueProcessId;
 
         // We only want our own handles, if we would want the others aswell
         // use OpenProcess() and DuplicateHandle() to fetch the handle to this process and use it
-        
-        if (!isSameProcess) 
+
+        if (!isSameProcess)
         {
 #if 1
             continue;
 #else
             // Open the remote process
             const HANDLE remoteProcessHandle = OpenProcess
-            (
-                sysHandle->UniqueProcessId
-            );
+                                               (
+                                                   sysHandle->UniqueProcessId
+                                               );
             const PXBool success = NULL != remoteProcessHandle;
 
             if (!success)
@@ -339,19 +355,19 @@ PXActionResult PXAPI PXProcessHandleListAll(PXDebug* const pxDebug, PXProcess* p
             HANDLE supedHandle = 0;
 
             const PXBool duplicateResult = DuplicateHandle
-            (
-                remoteProcessHandle,
-                handleCurrent,
-                0,
-                &supedHandle,
-                DUPLICATE_SAME_ACCESS,
-                FALSE,
-                DUPLICATE_SAME_ACCESS
-            );
+                                           (
+                                               remoteProcessHandle,
+                                               handleCurrent,
+                                               0,
+                                               &supedHandle,
+                                               DUPLICATE_SAME_ACCESS,
+                                               FALSE,
+                                               DUPLICATE_SAME_ACCESS
+                                           );
 
             if (!duplicateResult)
                 continue;
-                            
+
 
             handleCurrent = supedHandle;
 #endif
@@ -374,98 +390,98 @@ PXActionResult PXAPI PXProcessHandleListAll(PXDebug* const pxDebug, PXProcess* p
 
         switch (pxHandle.Type)
         {
-            case PXHandleTypeFile:
-            {    
-                PXFile pxFile;
-                pxFile.ID = handleCurrent;
+        case PXHandleTypeFile:
+        {
+            PXFile pxFile;
+            pxFile.ID = handleCurrent;
 
-                PXText buffer;
-                PXTextConstructNamedBufferA(&buffer, bufferAA, 256);
+            PXText buffer;
+            PXTextConstructNamedBufferA(&buffer, bufferAA, 256);
 
-                PXActionResult result = PXFilePathGet(&pxFile, &buffer);
+            PXActionResult result = PXFilePathGet(&pxFile, &buffer);
 
-                if (PXActionSuccessful == result)
-                {
-                    PXTextCopyA(buffer.TextA, buffer.SizeUsed, pxHandle.Description, 256);
-                }
-                else
-                {
-                    PXTextCopyA("[N/A]", 5, pxHandle.Description, 256);
-                }        
-
-                break;
-            }
-            case PXHandleTypeProcess:
+            if (PXActionSuccessful == result)
             {
-                PXProcess pxProcess;
-                PXProcessConstructFromHandle(&pxProcess, handleCurrent);
-
-                break;
+                PXTextCopyA(buffer.TextA, buffer.SizeUsed, pxHandle.Description, 256);
             }
-            case PXHandleTypeThread:
+            else
             {
-                PXThread pxThread;
-                PXThreadConstructFromHandle(&pxThread, handleCurrent);
-        
+                PXTextCopyA("[N/A]", 5, pxHandle.Description, 256);
+            }
 
-                // GetThreadInformation()
-                PXText buffer;
-                PXTextConstructFromAdressA(&buffer, pxHandle.Description, 0, 256);
+            break;
+        }
+        case PXHandleTypeProcess:
+        {
+            PXProcess pxProcess;
+            PXProcessConstructFromHandle(&pxProcess, handleCurrent);
 
-                PXThreadNameGet(pxDebug, &pxThread, &buffer);
-                
+            break;
+        }
+        case PXHandleTypeThread:
+        {
+            PXThread pxThread;
+            PXThreadConstructFromHandle(&pxThread, handleCurrent);
 
-                // Fetch thread Description
-                {
-            
+
+            // GetThreadInformation()
+            PXText buffer;
+            PXTextConstructFromAdressA(&buffer, pxHandle.Description, 0, 256);
+
+            PXThreadNameGet(pxDebug, &pxThread, &buffer);
+
+
+            // Fetch thread Description
+            {
+
 #if 0
 
-                    HANDLE process = GetCurrentProcess();
+                HANDLE process = GetCurrentProcess();
 
-                    const BOOL ww = SymInitialize
-                    (
-                        process,
-                        PXNull,
-                        0
-                    );
-                    auto wwwwa = GetLastError();
-                    PXActionResult xwwx = PXWindowsHandleErrorFromID(wwwwa);
+                const BOOL ww = SymInitialize
+                                (
+                                    process,
+                                    PXNull,
+                                    0
+                                );
+                auto wwwwa = GetLastError();
+                PXActionResult xwwx = PXWindowsHandleErrorFromID(wwwwa);
 
 
-                    char symBuffer[300];
-                    SYMBOL_INFO* symbolInfo = symBuffer;
+                char symBuffer[300];
+                SYMBOL_INFO* symbolInfo = symBuffer;
 
-                    PXClearList(char, symbolInfo, 300);
-                    symbolInfo->SizeOfStruct = sizeof(SYMBOL_INFO);
-                    symbolInfo->MaxNameLen = symbolInfo->SizeOfStruct - sizeof(SYMBOL_INFO);
+                PXClearList(char, symbolInfo, 300);
+                symbolInfo->SizeOfStruct = sizeof(SYMBOL_INFO);
+                symbolInfo->MaxNameLen = symbolInfo->SizeOfStruct - sizeof(SYMBOL_INFO);
 
-                    const BOOL rr = SymFromAddr
-                    (
-                        process,
-                        sysHandle->Object,
-                        PXNull,
-                        symbolInfo
-                    );
-                    auto wwa = GetLastError();
-                    PXActionResult xx = PXWindowsHandleErrorFromID(wwa);
+                const BOOL rr = SymFromAddr
+                                (
+                                    process,
+                                    sysHandle->Object,
+                                    PXNull,
+                                    symbolInfo
+                                );
+                auto wwa = GetLastError();
+                PXActionResult xx = PXWindowsHandleErrorFromID(wwa);
 
-                    if (rr)
-                    {
-                        PXTextCopyAW(symbolInfo->Name, symbolInfo->NameLen, pxHandle.Description, 256);
-                        printf("");
-                    }
+                if (rr)
+                {
+                    PXTextCopyAW(symbolInfo->Name, symbolInfo->NameLen, pxHandle.Description, 256);
+                    printf("");
+                }
 #endif
 
-                }
-
-                break;
             }
 
-            default:
-                break;
+            break;
         }
 
-#if PXLogEnable 
+        default:
+            break;
+        }
+
+#if PXLogEnable
         PXLogPrint
         (
             PXLoggingInfo,
@@ -494,99 +510,99 @@ PXActionResult PXAPI PXProcessCreate(PXProcess* const pxProcess, const PXText* c
 
     switch (programmPath->Format)
     {
-        case TextFormatASCII:
-        case TextFormatUTF8:
-        {
+    case TextFormatASCII:
+    case TextFormatUTF8:
+    {
 #if OSUnix
-            return PXActionRefusedNotImplemented;
+        return PXActionRefusedNotImplemented;
 
 #elif OSWindows
-            STARTUPINFOA startupInfo;
-            PROCESS_INFORMATION processInfo;
+        STARTUPINFOA startupInfo;
+        PROCESS_INFORMATION processInfo;
 
-            PXClear(STARTUPINFOA , &startupInfo);
-            PXClear(PROCESS_INFORMATION, &processInfo);
+        PXClear(STARTUPINFOA, &startupInfo);
+        PXClear(PROCESS_INFORMATION, &processInfo);
 
-            startupInfo.cb = sizeof(STARTUPINFOA);
+        startupInfo.cb = sizeof(STARTUPINFOA);
 
-            const DWORD creationflags =
-                DEBUG_ONLY_THIS_PROCESS |
-                CREATE_NEW_CONSOLE |
-                PROCESS_QUERY_INFORMATION |
-                PROCESS_VM_READ;
+        const DWORD creationflags =
+            DEBUG_ONLY_THIS_PROCESS |
+            CREATE_NEW_CONSOLE |
+            PROCESS_QUERY_INFORMATION |
+            PROCESS_VM_READ;
 
-            const PXBool successful = CreateProcessA // Windows 2000 SP4 (+UWP), Kernel32.dll, processthreadsapi.h
-            (
-                programmPath->TextA,
-                NULL,
-                NULL,
-                NULL,
-                0,
-                creationflags,
-                NULL,
-                NULL,
-                &startupInfo,
-                &processInfo
-            );
-            const PXActionResult pxActionResult = PXErrorCurrent(successful);
+        const PXBool successful = CreateProcessA // Windows 2000 SP4 (+UWP), Kernel32.dll, processthreadsapi.h
+                                  (
+                                      programmPath->TextA,
+                                      NULL,
+                                      NULL,
+                                      NULL,
+                                      0,
+                                      creationflags,
+                                      NULL,
+                                      NULL,
+                                      &startupInfo,
+                                      &processInfo
+                                  );
+        const PXActionResult pxActionResult = PXErrorCurrent(successful);
 
-            if(PXActionSuccessful != pxActionResult)
-            {
-                return pxActionResult;
-            }
+        if(PXActionSuccessful != pxActionResult)
+        {
+            return pxActionResult;
+        }
 
-            pxProcess->ProcessHandle = processInfo.hProcess;
-            pxProcess->ProcessID = processInfo.dwProcessId;
-            pxProcess->ThreadHandle = processInfo.hThread;
-            pxProcess->ThreadID = processInfo.dwThreadId;
+        pxProcess->ProcessHandle = processInfo.hProcess;
+        pxProcess->ProcessID = processInfo.dwProcessId;
+        pxProcess->ThreadHandle = processInfo.hThread;
+        pxProcess->ThreadID = processInfo.dwThreadId;
 
 #endif
 
-            break;
-        }
-        case TextFormatUNICODE:
-        {
+        break;
+    }
+    case TextFormatUNICODE:
+    {
 #if OSUnix
-            return PXActionRefusedNotImplemented;
+        return PXActionRefusedNotImplemented;
 
 #elif OSWindows
-            STARTUPINFOW startupInfo;
-            PROCESS_INFORMATION processInfo;
+        STARTUPINFOW startupInfo;
+        PROCESS_INFORMATION processInfo;
 
-            PXClear(STARTUPINFOW, &startupInfo);
-            PXClear(PROCESS_INFORMATION, &processInfo);
+        PXClear(STARTUPINFOW, &startupInfo);
+        PXClear(PROCESS_INFORMATION, &processInfo);
 
-            startupInfo.cb = sizeof(STARTUPINFOW);
+        startupInfo.cb = sizeof(STARTUPINFOW);
 
-            const PXBool successful = CreateProcessW // Windows 2000 SP4 (+UWP), Kernel32.dll, processthreadsapi.h
-            (
-                programmPath->TextW,
-                NULL,
-                NULL,
-                NULL,
-                0,
-                DEBUG_PROCESS,
-                NULL,
-                NULL,
-                &startupInfo,
-                &processInfo
-            );
-            const PXActionResult pxActionResult = PXErrorCurrent(successful);
+        const PXBool successful = CreateProcessW // Windows 2000 SP4 (+UWP), Kernel32.dll, processthreadsapi.h
+                                  (
+                                      programmPath->TextW,
+                                      NULL,
+                                      NULL,
+                                      NULL,
+                                      0,
+                                      DEBUG_PROCESS,
+                                      NULL,
+                                      NULL,
+                                      &startupInfo,
+                                      &processInfo
+                                  );
+        const PXActionResult pxActionResult = PXErrorCurrent(successful);
 
-            if(PXActionSuccessful != pxActionResult)
-            {
-                return pxActionResult;
-            }
+        if(PXActionSuccessful != pxActionResult)
+        {
+            return pxActionResult;
+        }
 
-            pxProcess->ProcessHandle = processInfo.hProcess;
-            pxProcess->ProcessID = processInfo.dwProcessId;
-            pxProcess->ThreadHandle = processInfo.hThread;
-            pxProcess->ThreadID = processInfo.dwThreadId;
+        pxProcess->ProcessHandle = processInfo.hProcess;
+        pxProcess->ProcessID = processInfo.dwProcessId;
+        pxProcess->ThreadHandle = processInfo.hThread;
+        pxProcess->ThreadID = processInfo.dwThreadId;
 
 #endif
 
-            break;
-        }
+        break;
+    }
     }
 
     return PXActionSuccessful;
@@ -612,11 +628,11 @@ PXActionResult PXAPI PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEv
     {
         return pxActionResult;
     }
-    
-    
+
+
     PROCESSENTRY32 processEntryW;
     processEntryW.dwSize = sizeof(PROCESSENTRY32);
-    
+
     PXBool successfulFetch = Process32First(snapshotHandle, &processEntryW);
 
     if (!successfulFetch)
@@ -649,7 +665,7 @@ PXActionResult PXAPI PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEv
 #endif
 }
 
-PXActionResult PXAPI PXProcessThreadsListAll(PXProcess* const pxProcess, struct PXThread_** pxThreadListRef, const PXSize amount, PXSize* resultSIze)
+PXActionResult PXAPI PXProcessThreadsListAll(PXProcess* const pxProcess, PXThread** pxThreadListRef, const PXSize amount, PXSize* resultSIze)
 {
     PXSize threadIndex = 0;
 
@@ -670,7 +686,7 @@ PXActionResult PXAPI PXProcessThreadsListAll(PXProcess* const pxProcess, struct 
         return PXActionInvalid;
     }
 
-  
+
 
 
     DWORD processID = GetCurrentProcessId();
@@ -686,31 +702,31 @@ PXActionResult PXAPI PXProcessThreadsListAll(PXProcess* const pxProcess, struct 
     {
         do
         {
-            const PXBool isTarget = 
+            const PXBool isTarget =
                 (threadEntry.dwSize >= FIELD_OFFSET(THREADENTRY32, th32OwnerProcessID) + sizeof(threadEntry.th32OwnerProcessID)) &&
                 (threadEntry.th32OwnerProcessID == processID);
-                 
+
             if(isTarget)
             {
-                PXThread* const pxThread = &pxThreadList[threadIndex];    
+                PXThread* const pxThread = &pxThreadList[threadIndex];
 
                 PXText text;
-                PXTextConstructBufferA(&text, 128);               
+                PXTextConstructBufferA(&text, 128);
 
                 pxThread->ThreadID = threadEntry.th32ThreadID;
 
-               PXThreadNameGet(pxDebug, pxThread, &text);
+                PXThreadNameGet(pxDebug, pxThread, &text);
 
                 ++threadIndex;
             }
 
             threadEntry.dwSize = sizeof(threadEntry);
-        } 
+        }
         while(Thread32Next(snapShotHandle, &threadEntry));
     }
 
 
-   
+
     PXSymbol pxSymbol[6];
 
 
@@ -781,13 +797,13 @@ PXActionResult PXAPI PXProcessMemoryWrite(const PXProcess* const pxProcess, cons
     SIZE_T numberOfBytesRead;
 
     const BOOL successful = WriteProcessMemory // Windows XP, Kernel32.dll, memoryapi.h
-    (
-        pxProcess->ProcessHandle,
-        (LPVOID)targetAdress,
-        buffer,
-        bufferSize,
-        &numberOfBytesRead
-    );
+                            (
+                                pxProcess->ProcessHandle,
+                                (LPVOID)targetAdress,
+                                buffer,
+                                bufferSize,
+                                &numberOfBytesRead
+                            );
     const PXActionResult pxActionResult = PXErrorCurrent(successful);
 
     if(PXActionSuccessful != pxActionResult)
@@ -810,13 +826,13 @@ PXActionResult PXAPI PXProcessMemoryRead(const PXProcess* const pxProcess, const
     SIZE_T numberOfBytesRead;
 
     const BOOL successful = ReadProcessMemory // Windows XP, Kernel32.dll, memoryapi.h
-    (
-        pxProcess->ProcessHandle,
-        targetAdress,
-        buffer,
-        bufferSize,
-        &numberOfBytesRead
-    );
+                            (
+                                pxProcess->ProcessHandle,
+                                targetAdress,
+                                buffer,
+                                bufferSize,
+                                &numberOfBytesRead
+                            );
     const PXActionResult pxActionResult = PXErrorCurrent(successful);
 
     if(PXActionSuccessful != pxActionResult)
@@ -837,10 +853,13 @@ PXActionResult PXAPI PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProce
 #if OSUnix
     const int who = RUSAGE_SELF;
     struct rusage rusageData;
-    const int returnCode = getrusage(who, &rusageData);
-    const PXBool success = returnCode == 0;
+    const int usageResultID = getrusage(who, &rusageData);
+    const PXActionResult usageResult = PXErrorCurrent(0 != usageResultID);
 
-    PXActionOnErrorFetchAndReturn(!success);
+    if(PXActionSuccessful != usageResult)
+    {
+        return usageResult;
+    }
 
     {
         PXTime* pxTime = &pxProcessMemoryInfo->ExecuteTimeUser;
@@ -878,11 +897,11 @@ PXActionResult PXAPI PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProce
         processMemoryCounters.cb = processMemoryCountersSize;
 
         const PXBool successful = GetProcessMemoryInfo // Windows XP (+UWP), Kernel32.dll, psapi.h
-        (
-            currentProcess,
-            &processMemoryCounters,
-            processMemoryCountersSize
-        );
+                                  (
+                                      currentProcess,
+                                      &processMemoryCounters,
+                                      processMemoryCountersSize
+                                  );
         const PXActionResult pxActionResult = PXErrorCurrent(successful);
 
         if(PXActionSuccessful != pxActionResult)
@@ -912,13 +931,13 @@ PXActionResult PXAPI PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProce
         FILETIME timeStampList[4];
 
         const BOOL successful = GetProcessTimes
-        (
-            currentProcess,
-            &timeStampList[0], // creationTime
-            &timeStampList[1], // exitTime: undefined if process is not finished
-            &timeStampList[2], // kernelTime
-            &timeStampList[3] // userTime
-        );
+                                (
+                                    currentProcess,
+                                    &timeStampList[0], // creationTime
+                                    &timeStampList[1], // exitTime: undefined if process is not finished
+                                    &timeStampList[2], // kernelTime
+                                    &timeStampList[3] // userTime
+                                );
         const PXActionResult pxActionResult = PXErrorCurrent(successful);
 
         if(PXActionSuccessful != pxActionResult)

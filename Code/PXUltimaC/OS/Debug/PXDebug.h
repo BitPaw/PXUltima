@@ -7,6 +7,7 @@
 #include <OS/Async/PXThread.h>
 #include <OS/Error/PXActionResult.h>
 #include <OS/GUI/PXGUI.h>
+#include <Media/PXResource.h>
 
 typedef enum PXSymbolType_
 {
@@ -44,6 +45,9 @@ typedef enum PXSymbolType_
 }
 PXSymbolType;
 
+
+
+
 typedef struct PXSymbol_
 {
     PXSize TypeIndex;        // Type Index of symbol
@@ -56,7 +60,8 @@ typedef struct PXSymbol_
     PXSymbolType Type;// PDB classification
 
     void* ModuleAdress; // Base Address of module comtaining this symbol
-    HMODULE ModuleHandle;
+
+    PXHandleModule ModuleHandle; // OS depended handle to the module
 
     void* SymbolAdress;
 
@@ -94,7 +99,7 @@ typedef struct PXDebug_
     PXText ApplicatioName;
 
 #if OSWindows
-    // Kernel    
+    // Kernel
     void* XContinueDebugEvent;
     void* XWaitForDebugEvent;
     void* XDebugActiveProcess;
@@ -181,9 +186,10 @@ PXPrivate PXThreadResult PXAPI PXDebugLoop(PXDebug* const pxDebug);
 PXPublic PXActionResult PXAPI PXDebugDumpCreate(PXDebug* const pxDebug);
 
 
-PXPublic PXActionResult PXAPI PXDebugModuleNameFromAdress(void* adress, char* moduleName);
-PXPublic PXActionResult PXAPI PXDebugModuleNameFromModule(HMODULE moduleHandle, char* moduleName);
+// Adress to module HANDLE
+PXPublic PXActionResult PXAPI PXDebugModuleHandleFromAdress(PXHandleModule* const pxHandleModule, const void* const adress);
 
-
+// HANDLE to name
+PXPublic PXActionResult PXAPI PXDebugModuleHandleToName(const PXHandleModule pxHandleModule, char* moduleName);
 
 #endif

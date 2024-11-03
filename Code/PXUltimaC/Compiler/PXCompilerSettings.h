@@ -12,7 +12,7 @@
 
 #if defined(_DEBUG)
 #define _PX_DEBUG 1u
-#else 
+#else
 #define _PX_DEBUG 0u
 #endif
 

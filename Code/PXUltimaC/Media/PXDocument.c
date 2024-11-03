@@ -6,126 +6,165 @@ PXDocumentElementType PXAPI PXDocumentElementAnalyseElement(const char* name, co
 {
     switch(nameSize)
     {
-        case 2:
+    case 2:
+    {
+        const PXInt16U key = PXInt16FromAdress(name);
+
+        switch(key)
         {
-            const PXInt16U key = PXInt16FromAdress(name);
+        case PXInt16Make('i', 'f'):
+            return PXDocumentElementTypeIf;
 
-            switch(key)
-            {
-                case PXInt16Make('i', 'f'):
-                    return PXDocumentElementTypeIf;
-
-                case PXInt16Make('d', 'o'):
-                    return PXDocumentElementTypeDo;
-            }
-
-            break;
+        case PXInt16Make('d', 'o'):
+            return PXDocumentElementTypeDo;
         }
-        case 3:
+
+        break;
+    }
+    case 3:
+    {
+        const PXInt32U key = PXInt24FromAdress(name);
+
+        switch(key)
         {
-            const PXInt32U key = PXInt24FromAdress(name);
+        case PXInt24Make('i', 'n', 't'):
+            return PXDocumentElementTypeInt;
 
-            switch(key)
-            {
-                case PXInt24Make('i', 'n', 't'):
-                    return PXDocumentElementTypeInt;
-
-                case PXInt24Make('f', 'o', 'r'):
-                    return PXDocumentElementTypeFor;
-            }
-
-            break;
+        case PXInt24Make('f', 'o', 'r'):
+            return PXDocumentElementTypeFor;
         }
-        case 4:
+
+        break;
+    }
+    case 4:
+    {
+        const PXInt32U key = PXInt32FromAdress(name);
+
+        switch(key)
         {
-            const PXInt32U key = PXInt32FromAdress(name);
-
-            switch(key)
-            {
-                case PXInt32Make('c', 'a', 's', 'e'): return PXDocumentElementTypeCase;
-                case PXInt32Make('t', 'r', 'u', 'e'): return PXDocumentElementTypeTrue;
-                case PXInt32Make('b', 'o', 'o', 'l'): return PXDocumentElementTypeBool;
-                case PXInt32Make('c', 'h', 'a', 'r'): return PXDocumentElementTypeChar;
-                case PXInt32Make('l', 'o', 'n', 'g'): return PXDocumentElementTypeLong;
-                case PXInt32Make('a', 'u', 't', 'o'): return PXDocumentElementTypeAutomaticType;
-                case PXInt32Make('e', 'l', 's', 'e'): return PXDocumentElementTypeElse;
-                case PXInt32Make('g', 'o', 't', 'o'): return PXDocumentElementTypeGoTo;
-                case PXInt32Make('e', 'n', 'u', 'm'): return PXDocumentElementTypeEnum;
-                case PXInt32Make('v', 'o', 'i', 'd'): return PXDocumentElementTypeVoid;
-            }
-
-            break;
+        case PXInt32Make('c', 'a', 's', 'e'):
+            return PXDocumentElementTypeCase;
+        case PXInt32Make('t', 'r', 'u', 'e'):
+            return PXDocumentElementTypeTrue;
+        case PXInt32Make('b', 'o', 'o', 'l'):
+            return PXDocumentElementTypeBool;
+        case PXInt32Make('c', 'h', 'a', 'r'):
+            return PXDocumentElementTypeChar;
+        case PXInt32Make('l', 'o', 'n', 'g'):
+            return PXDocumentElementTypeLong;
+        case PXInt32Make('a', 'u', 't', 'o'):
+            return PXDocumentElementTypeAutomaticType;
+        case PXInt32Make('e', 'l', 's', 'e'):
+            return PXDocumentElementTypeElse;
+        case PXInt32Make('g', 'o', 't', 'o'):
+            return PXDocumentElementTypeGoTo;
+        case PXInt32Make('e', 'n', 'u', 'm'):
+            return PXDocumentElementTypeEnum;
+        case PXInt32Make('v', 'o', 'i', 'd'):
+            return PXDocumentElementTypeVoid;
         }
-        case 5u:
+
+        break;
+    }
+    case 5u:
+    {
+        const PXInt64U key = PXInt40FromAdress(name);
+
+        switch(key)
         {
-            const PXInt64U key = PXInt40FromAdress(name);
-
-            switch(key)
-            {
-                case PXInt40Make('f', 'i', 'n', 'a', 'l'): return PXDocumentElementTypeFinal;
-                case PXInt40Make('s', 'h', 'o', 'r', 't'): return PXDocumentElementTypeShort;
-                case PXInt40Make('u', 'n', 'i', 'o', 'n'): return PXDocumentElementTypeUnion;
-                case PXInt40Make('w', 'h', 'i', 'l', 'e'): return PXDocumentElementTypeWhile;
-                case PXInt40Make('f', 'a', 'l', 's', 'e'): return PXDocumentElementTypeFalse;
-                case PXInt40Make('f', 'l', 'o', 'a', 't'): return PXDocumentElementTypeFloat;
-                case PXInt40Make('c', 'o', 'n', 's', 't'): return PXDocumentElementTypeConst;
-                case PXInt40Make('b', 'r', 'e', 'a', 'k'): return PXDocumentElementTypeBreak;
-                case PXInt40Make('i', 'f', 'd', 'e', 'f'): return PXDocumentElementTypePreprocessorIfDefined;
-                case PXInt40Make('e', 'n', 'd', 'i', 'f'): return PXDocumentElementTypePreprocessorDefinitionEnd;
-            }
-
-            break;
+        case PXInt40Make('f', 'i', 'n', 'a', 'l'):
+            return PXDocumentElementTypeFinal;
+        case PXInt40Make('s', 'h', 'o', 'r', 't'):
+            return PXDocumentElementTypeShort;
+        case PXInt40Make('u', 'n', 'i', 'o', 'n'):
+            return PXDocumentElementTypeUnion;
+        case PXInt40Make('w', 'h', 'i', 'l', 'e'):
+            return PXDocumentElementTypeWhile;
+        case PXInt40Make('f', 'a', 'l', 's', 'e'):
+            return PXDocumentElementTypeFalse;
+        case PXInt40Make('f', 'l', 'o', 'a', 't'):
+            return PXDocumentElementTypeFloat;
+        case PXInt40Make('c', 'o', 'n', 's', 't'):
+            return PXDocumentElementTypeConst;
+        case PXInt40Make('b', 'r', 'e', 'a', 'k'):
+            return PXDocumentElementTypeBreak;
+        case PXInt40Make('i', 'f', 'd', 'e', 'f'):
+            return PXDocumentElementTypePreprocessorIfDefined;
+        case PXInt40Make('e', 'n', 'd', 'i', 'f'):
+            return PXDocumentElementTypePreprocessorDefinitionEnd;
         }
-        case 6u:
+
+        break;
+    }
+    case 6u:
+    {
+        const PXInt64U key = PXInt48FromAdress(name);
+
+        switch(key)
         {
-            const PXInt64U key = PXInt48FromAdress(name);
-
-            switch(key)
-            {
-                case PXInt48Make('s', 'i', 'z', 'e', 'o', 'f'): return PXDocumentElementTypeSizeOfType;
-                case PXInt48Make('r', 'e', 't', 'u', 'r', 'n'): return PXDocumentElementTypeReturn;
-                case PXInt48Make('e', 'x', 't', 'e', 'r', 'n'): return PXDocumentElementTypeExtern;
-                case PXInt48Make('s', 't', 'a', 't', 'i', 'c'): return PXDocumentElementTypeStatic;
-                case PXInt48Make('s', 't', 'r', 'u', 'c', 't'): return PXDocumentElementTypeStruct;
-                case PXInt48Make('d', 'o', 'u', 'b', 'l', 'e'): return PXDocumentElementTypeDouble;
-                case PXInt48Make('s', 'i', 'g', 'n', 'e', 'd'): return PXDocumentElementTypeSigned;
-                case PXInt48Make('s', 'w', 'i', 't', 'c', 'h'): return PXDocumentElementTypeSwitch;
-                case PXInt48Make('i', 'f', 'n', 'd', 'e', 'f'): return PXDocumentElementTypePreprocessorIfNotDefined;
-                case PXInt48Make('d', 'e', 'f', 'i', 'n', 'e'): return PXDocumentElementTypePreprocessorDefine;
-                case PXInt48Make('p', 'r', 'a', 'g', 'm', 'a'): return PXDocumentElementTypePreprocessorPragma;
-            }
-
-            break;
+        case PXInt48Make('s', 'i', 'z', 'e', 'o', 'f'):
+            return PXDocumentElementTypeSizeOfType;
+        case PXInt48Make('r', 'e', 't', 'u', 'r', 'n'):
+            return PXDocumentElementTypeReturn;
+        case PXInt48Make('e', 'x', 't', 'e', 'r', 'n'):
+            return PXDocumentElementTypeExtern;
+        case PXInt48Make('s', 't', 'a', 't', 'i', 'c'):
+            return PXDocumentElementTypeStatic;
+        case PXInt48Make('s', 't', 'r', 'u', 'c', 't'):
+            return PXDocumentElementTypeStruct;
+        case PXInt48Make('d', 'o', 'u', 'b', 'l', 'e'):
+            return PXDocumentElementTypeDouble;
+        case PXInt48Make('s', 'i', 'g', 'n', 'e', 'd'):
+            return PXDocumentElementTypeSigned;
+        case PXInt48Make('s', 'w', 'i', 't', 'c', 'h'):
+            return PXDocumentElementTypeSwitch;
+        case PXInt48Make('i', 'f', 'n', 'd', 'e', 'f'):
+            return PXDocumentElementTypePreprocessorIfNotDefined;
+        case PXInt48Make('d', 'e', 'f', 'i', 'n', 'e'):
+            return PXDocumentElementTypePreprocessorDefine;
+        case PXInt48Make('p', 'r', 'a', 'g', 'm', 'a'):
+            return PXDocumentElementTypePreprocessorPragma;
         }
-        case 7u:
+
+        break;
+    }
+    case 7u:
+    {
+        const PXInt64U key = PXInt56FromAdress(name);
+
+        switch(key)
         {
-            const PXInt64U key = PXInt56FromAdress(name);
-
-            switch(key)
-            {
-                case PXInt56Make('d', 'e', 'f', 'a', 'u', 'l', 't'): return PXDocumentElementTypeDefault;
-                case PXInt56Make('t', 'y', 'p', 'e', 'd', 'e', 'f'): return PXDocumentElementTypeTypeDefinition;
-                case PXInt56Make('i', 'n', 'c', 'l', 'u', 'd', 'e'): return PXDocumentElementTypePreprocessorInclude;
-            }
-
-            break;
+        case PXInt56Make('d', 'e', 'f', 'a', 'u', 'l', 't'):
+            return PXDocumentElementTypeDefault;
+        case PXInt56Make('t', 'y', 'p', 'e', 'd', 'e', 'f'):
+            return PXDocumentElementTypeTypeDefinition;
+        case PXInt56Make('i', 'n', 'c', 'l', 'u', 'd', 'e'):
+            return PXDocumentElementTypePreprocessorInclude;
         }
-        case 8u:
+
+        break;
+    }
+    case 8u:
+    {
+        const PXInt64U key = PXInt64FromAdress(name);
+
+        switch(key)
         {
-            const PXInt64U key = PXInt64FromAdress(name);
+        case PXInt64Make('c', 'o', 'n', 't', 'i', 'n', 'u', 'e'):
+            return PXDocumentElementTypeContinue;
+        case PXInt64Make('u', 'n', 's', 'i', 'g', 'n', 'e', 'd'):
+            return PXDocumentElementTypeUnsigned;
+        case PXInt64Make('r', 'e', 's', 't', 'r', 'i', 'c', 't'):
+            return PXDocumentElementTypeRestrict;
+        case PXInt64Make('v', 'o', 'l', 'a', 't', 'i', 'l', 'e'):
+            return PXDocumentElementTypeVolitile;
+        case PXInt64Make('r', 'e', 'g', 'i', 's', 't', 'e', 'r'):
+            return PXDocumentElementTypeRegister;
 
-            switch(key)
-            {
-                case PXInt64Make('c', 'o', 'n', 't', 'i', 'n', 'u', 'e'): return PXDocumentElementTypeContinue;
-                case PXInt64Make('u', 'n', 's', 'i', 'g', 'n', 'e', 'd'): return PXDocumentElementTypeUnsigned;
-                case PXInt64Make('r', 'e', 's', 't', 'r', 'i', 'c', 't'): return PXDocumentElementTypeRestrict;
-                case PXInt64Make('v', 'o', 'l', 'a', 't', 'i', 'l', 'e'): return PXDocumentElementTypeVolitile;
-                case PXInt64Make('r', 'e', 'g', 'i', 's', 't', 'e', 'r'): return PXDocumentElementTypeRegister;
-
-            }
-
-            break;
         }
+
+        break;
+    }
     }
 
     return PXDocumentElementTypeUnkown;
@@ -135,21 +174,33 @@ const char* PXAPI PXDocumentElementTypeToString(const PXDocumentElementType pxDo
 {
     switch(pxDocumentElementType)
     {
-        case PXDocumentElementTypePreprocessorInclude: return "include";
-        case PXDocumentElementTypeNamespace: return "namespace";
-        case PXDocumentElementTypeStruct: return "struct";
-        case PXDocumentElementTypeUnion: return "union";
-        case PXDocumentElementTypeEnum: return "enum";
-        case PXDocumentElementTypeClass: return "class";
-        case PXDocumentElementTypeFunction: return "function";
-        case PXDocumentElementTypeClassMember: return "class-member";
-        case PXDocumentElementTypeClassAttribute: return "attribute";
-        case PXDocumentElementTypeEnumMember: return "enum-member";
-        case PXDocumentElementTypeFunctionParameter: return "fuction-parameter";
-        case PXDocumentElementTypeFile: return "file";
+    case PXDocumentElementTypePreprocessorInclude:
+        return "include";
+    case PXDocumentElementTypeNamespace:
+        return "namespace";
+    case PXDocumentElementTypeStruct:
+        return "struct";
+    case PXDocumentElementTypeUnion:
+        return "union";
+    case PXDocumentElementTypeEnum:
+        return "enum";
+    case PXDocumentElementTypeClass:
+        return "class";
+    case PXDocumentElementTypeFunction:
+        return "function";
+    case PXDocumentElementTypeClassMember:
+        return "class-member";
+    case PXDocumentElementTypeClassAttribute:
+        return "attribute";
+    case PXDocumentElementTypeEnumMember:
+        return "enum-member";
+    case PXDocumentElementTypeFunctionParameter:
+        return "fuction-parameter";
+    case PXDocumentElementTypeFile:
+        return "file";
 
-        default:
-            return PXNull;
+    default:
+        return PXNull;
     }
 }
 
@@ -216,11 +267,11 @@ PXCodeDocumentElement* PXAPI PXCodeDocumentElementAdd(PXCodeDocument* const pxDo
                 pxDocumentElement->NameAdress = pxDocumentElementMemberName.NameAdress;
                 pxDocumentElement->NameSize = pxDocumentElementMemberName.NameSize;
                 pxDocumentElement->Type = PXDocumentElementTypeClassMember;
-            }    
+            }
         }
 
         {
-            // Go even further to resize 
+            // Go even further to resize
             const PXSize currentPosition = pxDocument->Data.DataCursor;
 
             PXFileCursorMoveTo(&pxDocument->Data, pxDocumentElementMemberName.ParaentDataPosition);
@@ -235,7 +286,7 @@ PXCodeDocumentElement* PXAPI PXCodeDocumentElementAdd(PXCodeDocument* const pxDo
             else
             {
                 ++(pxDocumentElementClass.MemberAmount);
-            }            
+            }
 
             pxDocumentElement->ParaentDataPosition = pxDocument->Data.DataCursor;
 
@@ -243,12 +294,12 @@ PXCodeDocumentElement* PXAPI PXCodeDocumentElementAdd(PXCodeDocument* const pxDo
 
             PXFileCursorMoveTo(&pxDocument->Data, currentPosition); // Reset
 
-#if 1
+    #if 1
             {
                 char buffer[64];
                 PXTextCopyA(pxDocumentElementClass.NameAdress, pxDocumentElementClass.NameSize, buffer, 64);
 
-#if PXLogEnable
+    #if PXLogEnable
                 PXLogPrint
                 (
                     PXLoggingInfo,
@@ -260,11 +311,11 @@ PXCodeDocumentElement* PXAPI PXCodeDocumentElementAdd(PXCodeDocument* const pxDo
                     pxDocumentElementClass.AttribtesAmount,
                     pxDocumentElementClass.MemberAmount
                 );
-#endif
+    #endif
             }
-#endif
+    #endif
         }
-    
+
 
     PXDocumentElementIO(pxDocument, pxDocumentElement, PXFileWriteMultible); // Write change
 
@@ -286,7 +337,7 @@ PXActionResult PXAPI PXCodeDocumentElementGenerateChild
     PXCodeDocumentElement pxCodeDocumentElementTemp;
     PXClear(PXCodeDocumentElement, &pxCodeDocumentElementTemp);
     pxCodeDocumentElementTemp.Type = pxDocumentElementType;
-   // pxCodeDocumentElementTemp.ElementParent = pxDocumentElementParent;
+    // pxCodeDocumentElementTemp.ElementParent = pxDocumentElementParent;
     pxCodeDocumentElementTemp.Depth = depth;
 
     PXCodeDocumentElement* pxCodeDocumentElement = PXCodeDocumentElementAdd(pxDocument, &pxCodeDocumentElementTemp); // Use to pre-register space. aka. allocate object
@@ -299,7 +350,7 @@ PXActionResult PXAPI PXCodeDocumentElementGenerateChild
 
     if(pxDocumentElementParent)
     {
- 
+
 
         if(!pxDocumentElementParent->ElementChildFirstBorn) // if we dont have a child yet, we are the first
         {
@@ -341,7 +392,7 @@ void PXAPI PXCodeDocumentElementPrintSingle(PXCodeDocument* const pxDocument, PX
 
 
     char nameSpaceBuffer[64];
-    
+
     {
         char AAAAAAAAAAAAAAA[64];
         PXMemoryClear(AAAAAAAAAAAAAAA, 64);
@@ -357,7 +408,7 @@ void PXAPI PXCodeDocumentElementPrintSingle(PXCodeDocument* const pxDocument, PX
 
         PXTextPrintA(nameSpaceBuffer, 64, "S:%s, C:%s, N:%s", AAAAAAAAAAAAAAA, BBBBBBBBBB, CCCCCCCCCCCC);
     }
-    
+
 
 
 
@@ -393,110 +444,110 @@ void PXAPI PXCodeDocumentElementPrintSingle(PXCodeDocument* const pxDocument, PX
 
     switch(pxDocumentElement->Type)
     {
-        case PXDocumentElementTypePreprocessorInclude:
-        {
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                "CodeDocument",
-                "Entry",
-                "%s\n"
-                "%10s : %s",
-                identification,
-                "Global", pxDocumentElement->IsGlobal ? "Yes" : "No"
-            );
+    case PXDocumentElementTypePreprocessorInclude:
+    {
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "CodeDocument",
+            "Entry",
+            "%s\n"
+            "%10s : %s",
+            identification,
+            "Global", pxDocumentElement->IsGlobal ? "Yes" : "No"
+        );
 
-            break;
-        }
-        case PXDocumentElementTypeStruct:
-        case PXDocumentElementTypeClass:
-        case PXDocumentElementTypeUnion:
-        case PXDocumentElementTypeEnum:
-        {
-            char aliasBuffer[64];
-            PXMemoryClear(aliasBuffer, 64);
-            PXTextCopyA(pxDocumentElement->AliasAdress, pxDocumentElement->AliasSize, aliasBuffer, 64);
+        break;
+    }
+    case PXDocumentElementTypeStruct:
+    case PXDocumentElementTypeClass:
+    case PXDocumentElementTypeUnion:
+    case PXDocumentElementTypeEnum:
+    {
+        char aliasBuffer[64];
+        PXMemoryClear(aliasBuffer, 64);
+        PXTextCopyA(pxDocumentElement->AliasAdress, pxDocumentElement->AliasSize, aliasBuffer, 64);
 
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                "CodeDocument",
-                "Entry",
-                "%s\n"
-                "%10s : %s\n"
-                "%10s : %i",
-                identification,
-                "Alias", aliasBuffer,
-                "Members", pxDocumentElement->MemberAmount
-            );
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "CodeDocument",
+            "Entry",
+            "%s\n"
+            "%10s : %s\n"
+            "%10s : %i",
+            identification,
+            "Alias", aliasBuffer,
+            "Members", pxDocumentElement->MemberAmount
+        );
 
-            break;
-        }
-        case PXDocumentElementTypeClassAttribute:
-        case PXDocumentElementTypeClassMember:
-        case PXDocumentElementTypeFunctionParameter:
-        {
-            char buffer[64];
+        break;
+    }
+    case PXDocumentElementTypeClassAttribute:
+    case PXDocumentElementTypeClassMember:
+    case PXDocumentElementTypeFunctionParameter:
+    {
+        char buffer[64];
 
-            PXDataTypeToString(pxDocumentElement->DataType, buffer);
+        PXDataTypeToString(pxDocumentElement->DataType, buffer);
 
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                "CodeDocument",
-                "Entry",
-                "%s\n"
-                "%10s : %s",
-                identification,
-                "DataType", buffer
-            );
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "CodeDocument",
+            "Entry",
+            "%s\n"
+            "%10s : %s",
+            identification,
+            "DataType", buffer
+        );
 
-            break;
-        }
-        case PXDocumentElementTypeEnumMember:
-        {
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                "CodeDocument",
-                "Entry",
-                "%s\n",
-                identification
-            );
+        break;
+    }
+    case PXDocumentElementTypeEnumMember:
+    {
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "CodeDocument",
+            "Entry",
+            "%s\n",
+            identification
+        );
 
-            break;
-        }
-        case PXDocumentElementTypeFunction:
-        {
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                "CodeDocument",
-                "Entry",
-                "%s\n"
-                "%10s : %s",
-                identification,
-                "Call", "stst"
-            );
+        break;
+    }
+    case PXDocumentElementTypeFunction:
+    {
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "CodeDocument",
+            "Entry",
+            "%s\n"
+            "%10s : %s",
+            identification,
+            "Call", "stst"
+        );
 
-            break;
-        }
-        case PXDocumentElementTypeFile:
-        {
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                "CodeDocument",
-                "Entry",
-                "%s\n"
-                "File",
-                identification
-            );
+        break;
+    }
+    case PXDocumentElementTypeFile:
+    {
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "CodeDocument",
+            "Entry",
+            "%s\n"
+            "File",
+            identification
+        );
 
-            break;
-        }
-        default:
-            break;
+        break;
+    }
+    default:
+        break;
     }
 #endif
 }
@@ -533,7 +584,7 @@ PXSize PXAPI PXDocumentElementIO(PXCodeDocument* const pxDocument, PXCodeDocumen
     };
 
     const PXSize bytesTransphered = pxFileIOMultibleFunction(&pxDocument->Data, pxFileDataElementTypeList, sizeof(pxFileDataElementTypeList));
-    
+
 
     return bytesTransphered;
 #endif
@@ -546,7 +597,7 @@ PXActionResult PXAPI PXDocumentElementWrite(PXCodeDocument* const pxDocument, PX
 
 #if 0
     const PXBool isNotRoot = pxDocumentElement->Depth == (pxDocument->LastEntryDepth + 1);
-        
+
     PXSize parrentPosition = 0;
 
     if (isNotRoot)
@@ -565,7 +616,7 @@ PXActionResult PXAPI PXDocumentElementWrite(PXCodeDocument* const pxDocument, PX
 
         parrentPosition = pxDocument->Data.DataCursor;
 
-        PXDocumentElementIO(pxDocument, &pxDocumentElementTemp, PXFileWriteMultible); // Write change        
+        PXDocumentElementIO(pxDocument, &pxDocumentElementTemp, PXFileWriteMultible); // Write change
 
 #if PXLogEnable
         {
@@ -582,7 +633,7 @@ PXActionResult PXAPI PXDocumentElementWrite(PXCodeDocument* const pxDocument, PX
             );
         }
 #endif
-    }    
+    }
 
     //++(pxDocument->ElementListAmount);
     pxDocumentElement->ParaentDataPosition = parrentPosition;
@@ -624,39 +675,39 @@ PXActionResult PXAPI PXDocumentElementAdd(PXCodeDocument* const pxDocument, PXCo
 {
     switch (pxDocumentElement->Type)
     {
-        case PXDocumentElementTypeNamespace:
+    case PXDocumentElementTypeNamespace:
+    {
+        break;
+    }
+    case PXDocumentElementTypeStruct:
+    {
+        break;
+    }
+    case PXDocumentElementTypeClass:
+    {
+        if (pxDocumentElement->ElementClass.IsTerminateSignal)
         {
-            break;
-        }
-        case PXDocumentElementTypeStruct:
-        {
-            break;
-        }
-        case PXDocumentElementTypeClass:
-        {
-            if (pxDocumentElement->ElementClass.IsTerminateSignal)
-            {
 
-                return;
-            }
+            return;
+        }
 
-            PXDocumentElementWrite(pxDocument, pxDocumentElement);
+        PXDocumentElementWrite(pxDocument, pxDocumentElement);
 
-            break;
-        }
-        case PXDocumentElementTypeFunction:
-        {
-            break;
-        }
-        case PXDocumentElementTypeClassMember:
-        {
-            PXCodeDocumentElementAdd(pxDocument, pxDocumentElement);
-            break;
-        }
-        default:
-        {
-            break;
-        }
+        break;
+    }
+    case PXDocumentElementTypeFunction:
+    {
+        break;
+    }
+    case PXDocumentElementTypeClassMember:
+    {
+        PXCodeDocumentElementAdd(pxDocument, pxDocumentElement);
+        break;
+    }
+    default:
+    {
+        break;
+    }
     }
 
     return PXActionSuccessful;
@@ -676,77 +727,77 @@ PXActionResult PXAPI PXDocumentPrintNode(PXCodeDocumentElement* const pxDocument
 
     switch (pxDocumentElement->ElementMember.ValueType)
     {
-        case PXDataTypeBool:
-        {
-            PXBool value;
-            PXCopy(PXBool, &pxDocumentElement->ElementMember.ValueAdress, &value);
+    case PXDataTypeBool:
+    {
+        PXBool value;
+        PXCopy(PXBool, &pxDocumentElement->ElementMember.ValueAdress, &value);
 
-            PXTextPrintA(typeBuffer, 64, "bool");
-            PXTextPrintA(valueBuffer, 64, "%s", value ? "true" : "false");
-            break;
-        }
-        case PXDataTypeFloat:
-        {
-            float value;
-            PXCopy(float, &pxDocumentElement->ElementMember.ValueAdress, &value);
+        PXTextPrintA(typeBuffer, 64, "bool");
+        PXTextPrintA(valueBuffer, 64, "%s", value ? "true" : "false");
+        break;
+    }
+    case PXDataTypeFloat:
+    {
+        float value;
+        PXCopy(float, &pxDocumentElement->ElementMember.ValueAdress, &value);
 
-            PXTextPrintA(typeBuffer, 64, "float");
-            PXTextPrintA(valueBuffer, 64, "%-5.2f", value);
-            break;
-        }
-        case PXDataTypeIntS:
-        {
-            int value;
-            PXCopy(int, &pxDocumentElement->ElementMember.ValueAdress, &value);
+        PXTextPrintA(typeBuffer, 64, "float");
+        PXTextPrintA(valueBuffer, 64, "%-5.2f", value);
+        break;
+    }
+    case PXDataTypeIntS:
+    {
+        int value;
+        PXCopy(int, &pxDocumentElement->ElementMember.ValueAdress, &value);
 
-            PXTextPrintA(typeBuffer, 64, "int");
-            PXTextPrintA(valueBuffer, 64, "%i", value);
-            break;
-        }
-        case PXDataTypeString:
-        {
-            PXTextPrintA(typeBuffer, 64, "string");
-            PXTextCopyA(pxDocumentElement->ElementMember.ValueAdress, pxDocumentElement->ElementMember.ValueSize, valueBuffer, 63);
-            break;
-        }
-        default:
-            break;
+        PXTextPrintA(typeBuffer, 64, "int");
+        PXTextPrintA(valueBuffer, 64, "%i", value);
+        break;
+    }
+    case PXDataTypeString:
+    {
+        PXTextPrintA(typeBuffer, 64, "string");
+        PXTextCopyA(pxDocumentElement->ElementMember.ValueAdress, pxDocumentElement->ElementMember.ValueSize, valueBuffer, 63);
+        break;
+    }
+    default:
+        break;
     }
 
     switch (pxDocumentElement->Type)
     {
-        case PXDocumentElementTypeNamespace:
-        {
-            break;
-        }
-        case PXDocumentElementTypeStruct:
-        {
-            break;
-        }
-        case PXDocumentElementTypeClass:
-        {
-            PXTextPrintA(elementType, 64, "class");
-            break;
-        }
-        case PXDocumentElementTypeFunction:
-        {
-            PXTextPrintA(elementType, 64, "function");
-            break;
-        }
-        case PXDocumentElementTypeClassMember:
-        {
-            PXTextPrintA(elementType, 64, "member");
-            break;
-        }
-        case PXDocumentElementTypeClassAttribute:
-        {
-            PXTextPrintA(elementType, 64, "attribute");
-            break;
-        }    
-        default:
-        {
-            break;
-        }
+    case PXDocumentElementTypeNamespace:
+    {
+        break;
+    }
+    case PXDocumentElementTypeStruct:
+    {
+        break;
+    }
+    case PXDocumentElementTypeClass:
+    {
+        PXTextPrintA(elementType, 64, "class");
+        break;
+    }
+    case PXDocumentElementTypeFunction:
+    {
+        PXTextPrintA(elementType, 64, "function");
+        break;
+    }
+    case PXDocumentElementTypeClassMember:
+    {
+        PXTextPrintA(elementType, 64, "member");
+        break;
+    }
+    case PXDocumentElementTypeClassAttribute:
+    {
+        PXTextPrintA(elementType, 64, "attribute");
+        break;
+    }
+    default:
+    {
+        break;
+    }
     }
 
     PXLogPrint

@@ -64,7 +64,7 @@ PXActionResult PXAPI PXGIFLoadFromFile(PXResourceTransphereInfo* const pxResourc
             gif.IsSorted = (packedFields & 0b00001000) >> 3;
             gif.ColorResolution = (packedFields & 0b01110000) >> 4;
             gif.IsGlobalColorTablePresent = (packedFields & 0b10000000) >> 7;
-        }  
+        }
 
         if (gif.IsGlobalColorTablePresent)
         {
@@ -95,7 +95,7 @@ PXActionResult PXAPI PXGIFLoadFromFile(PXResourceTransphereInfo* const pxResourc
                 imageDescriptor.SortFlag = (packedFields & 0b00100000) >> 5;
                 imageDescriptor.InterlaceFlag = (packedFields & 0b01000000) >> 6;
                 imageDescriptor.LocalColorTableFlag = (packedFields & 0b10000000) >> 7;
-            }     
+            }
 
             if (imageDescriptor.LocalColorTableFlag)
             {

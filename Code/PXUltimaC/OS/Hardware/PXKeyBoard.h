@@ -118,17 +118,17 @@
 #define KeyBoardIDNumberBlock7 (1 << 17)
 #define KeyBoardIDNumberBlock8 (1 << 18)
 #define KeyBoardIDNumberBlock9 (1 << 19)
-#define KeyBoardIDNumberKeyMinus (1 << 20) 
-#define KeyBoardIDNumberKeyPeriod (1 << 21) 
-#define KeyBoardIDNumberKeySlash (1 << 22) 
-#define KeyBoardIDNumberKeyEqual (1 << 23) 
-#define KeyBoardIDNumberKeyLEFT_BRACKET (1 << 24)  
-#define KeyBoardIDNumberKeyBACKSLASH (1 << 25)  
-#define KeyBoardIDNumberKeyRIGHT_BRACKET (1 << 26) 
+#define KeyBoardIDNumberKeyMinus (1 << 20)
+#define KeyBoardIDNumberKeyPeriod (1 << 21)
+#define KeyBoardIDNumberKeySlash (1 << 22)
+#define KeyBoardIDNumberKeyEqual (1 << 23)
+#define KeyBoardIDNumberKeyLEFT_BRACKET (1 << 24)
+#define KeyBoardIDNumberKeyBACKSLASH (1 << 25)
+#define KeyBoardIDNumberKeyRIGHT_BRACKET (1 << 26)
 #define KeyBoardIDNumberKeyPadDIVIDE (1 << 27)
 #define KeyBoardIDNumberKeyPadMULTIPLY (1 << 28)
 #define KeyBoardIDNumberKeyPadSUBTRACT (1 << 29)
-#define KeyBoardIDNumberKeyPadADD (1 << 30)        
+#define KeyBoardIDNumberKeyPadADD (1 << 30)
 #define KeyBoardIDNumberKeyPadEQUAL (1 << 31)
 
 
@@ -354,7 +354,7 @@ PXPublic unsigned char PXAPI PXInputButtonIsPressed(const unsigned char value);
 PXPublic PXKeyPressState PXAPI PXKeyPressStateFromID(const PXInt8U pxKeyPressStateID);
 PXPublic PXInt8U PXAPI PXKeyPressStateToID(const PXKeyPressState pxKeyPressState);
 
-#define PXKeyBoardVirtualInputSet(adress, pxVirtualKey, PXKeyPressState) (adress)->VirtualKey = pxVirtualKey; (adress)->KeyStrokeMode = PXKeyPressState; 
+#define PXKeyBoardVirtualInputSet(adress, pxVirtualKey, PXKeyPressState) (adress)->VirtualKey = pxVirtualKey; (adress)->KeyStrokeMode = PXKeyPressState;
 
 PXPublic PXBool PXAPI PXKeyBoardVirtualInsertAction(const PXKeyBoardVirtualInput* const inputList, const PXSize inputListSize);
 

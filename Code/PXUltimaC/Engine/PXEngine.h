@@ -135,7 +135,7 @@ typedef struct PXEngine_
     PXBool IsRunning;
     PXBool UpdateUI;
 
-    
+
 
     // Cached most-common objects
     PXModel SpriteScaled;

@@ -60,7 +60,7 @@ PXActionResult PXAPI PXMIDILoadFromFile(PXResourceTransphereInfo* const pxResour
 
         track->ID = i;
         PXNewList(PXByte, chunkLength, &track->EventData, &track->EventDataSize);
-        
+
         PXFileReadB(pxResourceLoadInfo->FileReference, track->EventData, chunkLength);
     }
 
@@ -83,7 +83,7 @@ PXActionResult PXAPI PXMIDISaveToFile(PXResourceTransphereInfo* const pxResource
         };
 
         PXFileWriteMultible(pxResourceSaveInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
-    }    
+    }
 
     for (PXInt16U i = 0; i < pxMIDI->TrackListSize; ++i)
     {

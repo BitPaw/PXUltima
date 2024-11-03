@@ -17,7 +17,7 @@ PXSize PXAPI PXHardDriveListSize()
 
 #elif PXOSWindowsDestop
 
-   // GetLogicalDriveStringsA();
+    // GetLogicalDriveStringsA();
 
 
     DWORD bitmaskDrives = GetLogicalDrives(); //_getdrives(); -> Not supported in windows runtime
@@ -34,7 +34,7 @@ PXSize PXAPI PXHardDriveListSize()
 
 #else
     return 0;
-#endif   
+#endif
 }
 
 PXActionResult PXAPI PXHardDriveFetchAll(PXHardDrive* const hardDriveList, const PXSize hardDriveListMaxSize, PXSize* hardDriveListSize)
@@ -56,14 +56,14 @@ PXActionResult PXAPI PXHardDriveFetchAll(PXHardDrive* const hardDriveList, const
 #if OSUnix
     return PXActionInvalid;
 
-#elif PXOSWindowsDestop   
+#elif PXOSWindowsDestop
 
     // GetDriveTypeA()
     // GetDiskFreeSpaceA
 
 #if 0
 
-    DWORD bitmaskDrives = GetLogicalDrives(); 
+    DWORD bitmaskDrives = GetLogicalDrives();
 
     for (PXSize indexDrive = 1; numberOfDrives; ++indexDrive)
     {

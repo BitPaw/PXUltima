@@ -48,7 +48,7 @@ PXPublic PXBool PXAPI PXDictionaryAddMultible(PXDictionary* const dictionary, co
 PXPublic void PXAPI PXDictionaryRemove(PXDictionary* const dictionary, const void* key);
 PXPublic PXBool PXAPI PXDictionaryRemoveFound(PXDictionary* const dictionary, const void* key, void* const value);
 
-// Removed the object and returns it 
+// Removed the object and returns it
 PXPublic PXBool PXAPI PXDictionaryExtract(PXDictionary* const dictionary, const void* const key, void* const value);
 PXPublic void PXAPI PXDictionaryIndex(const PXDictionary* const dictionary, const PXSize index, PXDictionaryEntry* const pxDictionaryEntry);
 PXPublic PXBool PXAPI PXDictionaryFindEntry(PXDictionary* const dictionary, const void* const key, void** const valueResult);

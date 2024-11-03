@@ -12,55 +12,102 @@ PXActionResult PXAPI PXVulcanErrorCodeFromID(const VkResult vkResultID)
 {
     switch (vkResultID)
     {
-        case VK_SUCCESS: return PXActionSuccessful;
-        case VK_NOT_READY: return PXActionFailedResourceUnavailableTryAgain;
+    case VK_SUCCESS:
+        return PXActionSuccessful;
+    case VK_NOT_READY:
+        return PXActionFailedResourceUnavailableTryAgain;
 
 #if 0
-        case VK_TIMEOUT: return 000000000;
-        case VK_EVENT_SET:return 000000000;
-        case VK_EVENT_RESET:return 000000000;
-        case VK_INCOMPLETE: return PXActionRefuedInputBufferTooSmal;
-        case VK_ERROR_OUT_OF_HOST_MEMORY:return 000000000;
-        case VK_ERROR_OUT_OF_DEVICE_MEMORY:return 000000000;
-        case VK_ERROR_INITIALIZATION_FAILED:return 000000000;
-        case VK_ERROR_DEVICE_LOST:return 000000000;
-        case VK_ERROR_MEMORY_MAP_FAILED:return 000000000;
-        case VK_ERROR_LAYER_NOT_PRESENT:return 000000000;
-        case VK_ERROR_EXTENSION_NOT_PRESENT:return 000000000;
-        case VK_ERROR_FEATURE_NOT_PRESENT:return 000000000;
-        case VK_ERROR_INCOMPATIBLE_DRIVER:return 000000000;
-        case VK_ERROR_TOO_MANY_OBJECTS:return 000000000;
-        case VK_ERROR_FORMAT_NOT_SUPPORTED:return 000000000;
-        case VK_ERROR_FRAGMENTED_POOL:return 000000000;
-        case VK_ERROR_UNKNOWN: return PXActionFailedUnkownError;
-        case VK_ERROR_OUT_OF_POOL_MEMORY:return 000000000;
-        case VK_ERROR_INVALID_EXTERNAL_HANDLE: return 000000000;
-        case VK_ERROR_FRAGMENTATION: return 000000000;
-        case VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS: return 000000000;
-        case VK_PIPELINE_COMPILE_REQUIRED: return 000000000;
-        case VK_ERROR_SURFACE_LOST_KHR: return 000000000;
-        case VK_ERROR_NATIVE_WINDOW_IN_USE_KHR: return 000000000;
-        case VK_SUBOPTIMAL_KHR: return 000000000;
-        case VK_ERROR_OUT_OF_DATE_KHR: return 000000000;
-        case VK_ERROR_INCOMPATIBLE_DISPLAY_KHR: return 000000000;
-        case VK_ERROR_VALIDATION_FAILED_EXT: return 000000000;
-        case VK_ERROR_INVALID_SHADER_NV: return 000000000;
-        case VK_ERROR_IMAGE_USAGE_NOT_SUPPORTED_KHR: return 000000000;
-        case VK_ERROR_VIDEO_PICTURE_LAYOUT_NOT_SUPPORTED_KHR: return 000000000;
-        case VK_ERROR_VIDEO_PROFILE_OPERATION_NOT_SUPPORTED_KHR: return 000000000;
-        case VK_ERROR_VIDEO_PROFILE_FORMAT_NOT_SUPPORTED_KHR: return 000000000;
-        case VK_ERROR_VIDEO_PROFILE_CODEC_NOT_SUPPORTED_KHR: return 000000000;
-        case VK_ERROR_VIDEO_STD_VERSION_NOT_SUPPORTED_KHR: return 000000000;
-        case VK_ERROR_INVALID_DRM_FORMAT_MODIFIER_PLANE_LAYOUT_EXT: return 000000000;
-        case VK_ERROR_NOT_PERMITTED_KHR: return 000000000;
-        case VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT: return 000000000;
-        case VK_THREAD_IDLE_KHR: return 000000000;
-        case VK_THREAD_DONE_KHR: return 000000000;
-        case VK_OPERATION_DEFERRED_KHR: return 000000000;
-        case VK_OPERATION_NOT_DEFERRED_KHR: return 000000000;
-        case VK_ERROR_INVALID_VIDEO_STD_PARAMETERS_KHR: return 000000000;
-        case VK_ERROR_COMPRESSION_EXHAUSTED_EXT: return 000000000;
-        case VK_ERROR_INCOMPATIBLE_SHADER_BINARY_EXT: return 000000000;
+    case VK_TIMEOUT:
+        return 000000000;
+    case VK_EVENT_SET:
+        return 000000000;
+    case VK_EVENT_RESET:
+        return 000000000;
+    case VK_INCOMPLETE:
+        return PXActionRefuedInputBufferTooSmal;
+    case VK_ERROR_OUT_OF_HOST_MEMORY:
+        return 000000000;
+    case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+        return 000000000;
+    case VK_ERROR_INITIALIZATION_FAILED:
+        return 000000000;
+    case VK_ERROR_DEVICE_LOST:
+        return 000000000;
+    case VK_ERROR_MEMORY_MAP_FAILED:
+        return 000000000;
+    case VK_ERROR_LAYER_NOT_PRESENT:
+        return 000000000;
+    case VK_ERROR_EXTENSION_NOT_PRESENT:
+        return 000000000;
+    case VK_ERROR_FEATURE_NOT_PRESENT:
+        return 000000000;
+    case VK_ERROR_INCOMPATIBLE_DRIVER:
+        return 000000000;
+    case VK_ERROR_TOO_MANY_OBJECTS:
+        return 000000000;
+    case VK_ERROR_FORMAT_NOT_SUPPORTED:
+        return 000000000;
+    case VK_ERROR_FRAGMENTED_POOL:
+        return 000000000;
+    case VK_ERROR_UNKNOWN:
+        return PXActionFailedUnkownError;
+    case VK_ERROR_OUT_OF_POOL_MEMORY:
+        return 000000000;
+    case VK_ERROR_INVALID_EXTERNAL_HANDLE:
+        return 000000000;
+    case VK_ERROR_FRAGMENTATION:
+        return 000000000;
+    case VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS:
+        return 000000000;
+    case VK_PIPELINE_COMPILE_REQUIRED:
+        return 000000000;
+    case VK_ERROR_SURFACE_LOST_KHR:
+        return 000000000;
+    case VK_ERROR_NATIVE_WINDOW_IN_USE_KHR:
+        return 000000000;
+    case VK_SUBOPTIMAL_KHR:
+        return 000000000;
+    case VK_ERROR_OUT_OF_DATE_KHR:
+        return 000000000;
+    case VK_ERROR_INCOMPATIBLE_DISPLAY_KHR:
+        return 000000000;
+    case VK_ERROR_VALIDATION_FAILED_EXT:
+        return 000000000;
+    case VK_ERROR_INVALID_SHADER_NV:
+        return 000000000;
+    case VK_ERROR_IMAGE_USAGE_NOT_SUPPORTED_KHR:
+        return 000000000;
+    case VK_ERROR_VIDEO_PICTURE_LAYOUT_NOT_SUPPORTED_KHR:
+        return 000000000;
+    case VK_ERROR_VIDEO_PROFILE_OPERATION_NOT_SUPPORTED_KHR:
+        return 000000000;
+    case VK_ERROR_VIDEO_PROFILE_FORMAT_NOT_SUPPORTED_KHR:
+        return 000000000;
+    case VK_ERROR_VIDEO_PROFILE_CODEC_NOT_SUPPORTED_KHR:
+        return 000000000;
+    case VK_ERROR_VIDEO_STD_VERSION_NOT_SUPPORTED_KHR:
+        return 000000000;
+    case VK_ERROR_INVALID_DRM_FORMAT_MODIFIER_PLANE_LAYOUT_EXT:
+        return 000000000;
+    case VK_ERROR_NOT_PERMITTED_KHR:
+        return 000000000;
+    case VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT:
+        return 000000000;
+    case VK_THREAD_IDLE_KHR:
+        return 000000000;
+    case VK_THREAD_DONE_KHR:
+        return 000000000;
+    case VK_OPERATION_DEFERRED_KHR:
+        return 000000000;
+    case VK_OPERATION_NOT_DEFERRED_KHR:
+        return 000000000;
+    case VK_ERROR_INVALID_VIDEO_STD_PARAMETERS_KHR:
+        return 000000000;
+    case VK_ERROR_COMPRESSION_EXHAUSTED_EXT:
+        return 000000000;
+    case VK_ERROR_INCOMPATIBLE_SHADER_BINARY_EXT:
+        return 000000000;
         // case VK_ERROR_OUT_OF_POOL_MEMORY_KHR: return 000000000;
         // case VK_ERROR_INVALID_EXTERNAL_HANDLE_KHR: return 000000000;
         // case VK_ERROR_FRAGMENTATION_EXT: return 000000000;
@@ -72,8 +119,8 @@ PXActionResult PXAPI PXVulcanErrorCodeFromID(const VkResult vkResultID)
         // case VK_ERROR_PIPELINE_COMPILE_REQUIRED_EXT_: return 000000000;
 #endif
 
-        default:
-            return PXActionInvalid;
+    default:
+        return PXActionInvalid;
     };
 }
 
@@ -103,7 +150,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicIniti
         PXTextMakeFixedA(&vulcanLibraryName, "vulkan-1.dll");
 #else
         return PXActionRefusedNotImplemented;
-#endif    
+#endif
 
         const PXBool libraryLoadResult = PXLibraryOpen(&pxVulcan->LibraryID, &vulcanLibraryName);
 
@@ -117,7 +164,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicIniti
             return PXActionRefusedNotImplemented;
 #else
             return PXActionNotSupportedByOperatingSystem;
-#endif    
+#endif
 
             const PXBool libraryReloadResult = PXLibraryOpen(&pxVulcan->LibraryID, &vulcanLibraryName);
 
@@ -185,9 +232,9 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicIniti
 
         // Create instance
         {
-            const char* buffer[] = 
+            const char* buffer[] =
             {
-                "VK_KHR_surface",  
+                "VK_KHR_surface",
                 "VK_KHR_win32_surface",
                 //"VK_KHR_display" // Some say this is only in linux
             };
@@ -212,11 +259,11 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicIniti
             pxVulkanInstanceCreateInfo.ppEnabledExtensionNames = buffer;
 
             const VkResult createResult = pxVulcan->InstanceCreate
-            (
-                &pxVulkanInstanceCreateInfo,
-                PXNull,
-                &pxVulcan->Instance
-            );
+                                          (
+                                              &pxVulkanInstanceCreateInfo,
+                                              PXNull,
+                                              &pxVulcan->Instance
+                                          );
 
 
 #if PXVulcanDebug
@@ -347,14 +394,14 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicIniti
                 "Init",
                 "[Device %i/%i] %s",
                 i + 1,
-                numberOfDevices, 
+                numberOfDevices,
                 pxVulkanDevicePhysicalProperties.deviceName
             );
 #endif
         }
         pxVulcan->DevicePhysical = pxVulkanDevicePhysicalList[1];
     }
-        
+
     // Create virtual device
     {
         PXVulkanDeviceCreateInfo pxVulkanDeviceCreateInfo;
@@ -371,12 +418,12 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicIniti
 
 
         const VkResult createResult = pxVulcan->DeviceCreate
-        (
-            pxVulcan->DevicePhysical,
-            &pxVulkanDeviceCreateInfo,
-            PXNull,
-            &pxVulcan->DeviceVirtual
-        );
+                                      (
+                                          pxVulcan->DevicePhysical,
+                                          &pxVulkanDeviceCreateInfo,
+                                          PXNull,
+                                          &pxVulcan->DeviceVirtual
+                                      );
 
 #if PXVulcanDebug
         PXLogPrint

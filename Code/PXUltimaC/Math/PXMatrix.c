@@ -52,26 +52,26 @@ void PXAPI PXMatrix4x4FRotationGet(const PXMatrix4x4F* const matrix, PXVector3F*
 
     if(matrix->Data[ZAxisX] == 1.0f)
     {
-        // Yaw 
+        // Yaw
         position->X = 0;
 
-        // Roll 
+        // Roll
         position->Z = PXMathTangensArc2(-matrix->Data[XAxisY], -matrix->Data[XAxisZ]); // -12 -13
     }
     else if(matrix->Data[ZAxisX] == -1.0f)
     {
-        // Yaw 
+        // Yaw
         position->X = 0;
 
-        // Roll 
+        // Roll
         position->Z = PXMathTangensArc2(matrix->Data[YAxisX], matrix->Data[XAxisX]); // 12 13
     }
     else
     {
-        // Yaw 
+        // Yaw
         position->X = PXMathTangensArc2(matrix->Data[YAxisX], matrix->Data[XAxisX]); // 21 11
 
-        // Roll 
+        // Roll
         position->Z = PXMathTangensArc2(matrix->Data[ZAxisY], matrix->Data[ZAxisZ]); // 32 33
     }
 }
@@ -152,7 +152,7 @@ void PXAPI PXMatrix4x4FRotationMatrixGenerate(PXMatrix4x4F* const matrix4x4F, PX
         PXMatrix4x4FMultiply(&yRotation, &zRotation, &tempRotation);
         PXMatrix4x4FMultiply(&yRotation, &zRotation, &tempRotation);
         PXMatrix4x4FMultiply(&tempRotation, &xRotation, matrix4x4F);
-        
+
         */
     }
 }
@@ -264,7 +264,7 @@ void PXAPI PXMatrix4x4FScaleByMargin(PXMatrix4x4F* const pxMatrix4x4F, const PXR
 {
 #if 1
 
-    const PXRectangleOffset offset = 
+    const PXRectangleOffset offset =
     {
         1 - pxMargin->Left,
         1 - pxMargin->Top,

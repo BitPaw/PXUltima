@@ -8,7 +8,7 @@ const char PXLameSignatureID[] = { 'L', 'A', 'M', 'E' };
 PXActionResult PXAPI PXLAMELoadFromFile(PXLAME* const lame, PXFile* const pxFile)
 {
     // Check signature (4 Bytes)
-    {        
+    {
         const PXSize signatueSize = sizeof(PXLameSignatureID);
         const PXBool isValid = PXFileReadAndCompare(pxFile, PXLameSignatureID, sizeof(PXLameSignatureID));
 
@@ -30,8 +30,8 @@ PXActionResult PXAPI PXLAMELoadFromFile(PXLAME* const lame, PXFile* const pxFile
         const PXFileDataElementType pxDataStreamElementList[] =
         {
             {&lame->Revision,PXDataTypeInt08U},
-            {&lame->VBRType ,PXDataTypeInt08U},
-            {&lame->LowpassFrequency ,PXDataTypeInt08U},
+            {&lame->VBRType,PXDataTypeInt08U},
+            {&lame->LowpassFrequency,PXDataTypeInt08U},
             {&lame->Peak_signal, PXDataTypeInt32UBE},
             {&lame->Radio_replay_pad, PXDataTypeInt16UBE },
             {&lame->Radio_replay_set_name, PXDataTypeInt16UBE},
@@ -64,25 +64,25 @@ PXActionResult PXAPI PXLAMELoadFromFile(PXLAME* const lame, PXFile* const pxFile
 
         switch(sourcefrequencyID)
         {
-            case 0b00:
-                lame->SourceFrequency = PXLAMESourceFrequencykHz32OrLess;
-                break;
+        case 0b00:
+            lame->SourceFrequency = PXLAMESourceFrequencykHz32OrLess;
+            break;
 
-            case 0b01:
-                lame->SourceFrequency = PXLAMESourceFrequencykHz44x1;
-                break;
+        case 0b01:
+            lame->SourceFrequency = PXLAMESourceFrequencykHz44x1;
+            break;
 
-            case 0b10:
-                lame->SourceFrequency = PXLAMESourceFrequencykHz48;
-                break;
+        case 0b10:
+            lame->SourceFrequency = PXLAMESourceFrequencykHz48;
+            break;
 
-            case 0b11:
-                lame->SourceFrequency = PXLAMESourceFrequencykHz48Over;
-                break;
+        case 0b11:
+            lame->SourceFrequency = PXLAMESourceFrequencykHz48Over;
+            break;
 
-            default:
-                lame->SourceFrequency = PXLAMESourceFrequencyInvalid;
-                break;
+        default:
+            lame->SourceFrequency = PXLAMESourceFrequencyInvalid;
+            break;
         }
     }
 

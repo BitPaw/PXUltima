@@ -61,7 +61,7 @@ PXLobbyPlayerItem;
 
 typedef struct PXLobbyPlayer_
 {
-    PXInt64U ProfileID; // Unique ID for the user.    
+    PXInt64U ProfileID; // Unique ID for the user.
     PXInt32U ProfileAccountLevel; // Used in some programs
 
     char Name[64]; // Username, can be changed at will.

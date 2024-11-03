@@ -9,12 +9,12 @@ extern "C"
 {
 #endif
 
-	typedef struct PXFTPServer_
-	{
-	    int c;
-		//PXServer Server;
-	}
-	PXFTPServer;
+typedef struct PXFTPServer_
+{
+    int c;
+    //PXServer Server;
+}
+PXFTPServer;
 
 #ifdef __cplusplus
 }

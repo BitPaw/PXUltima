@@ -8,26 +8,26 @@ PXTGABitsPerPixel PXAPI ConvertToPixelDepth(const unsigned char pixelDepth)
 {
     switch(pixelDepth)
     {
-        case 1u:
-            return PXTGABitsPerPixelX1;
+    case 1u:
+        return PXTGABitsPerPixelX1;
 
-        case 8u:
-            return PXTGABitsPerPixelX8;
+    case 8u:
+        return PXTGABitsPerPixelX8;
 
-        case 15u:
-            return PXTGABitsPerPixelX15;
+    case 15u:
+        return PXTGABitsPerPixelX15;
 
-        case 16u:
-            return PXTGABitsPerPixelX16;
+    case 16u:
+        return PXTGABitsPerPixelX16;
 
-        case 24u:
-            return PXTGABitsPerPixelX24;
+    case 24u:
+        return PXTGABitsPerPixelX24;
 
-        case 32u:
-            return PXTGABitsPerPixelX32;
+    case 32u:
+        return PXTGABitsPerPixelX32;
 
-        default:
-            return PXTGABitsPerPixelInvalid;
+    default:
+        return PXTGABitsPerPixelInvalid;
     }
 }
 
@@ -35,27 +35,27 @@ PXInt8U PXAPI ConvertFromPixelDepth(const PXTGABitsPerPixel bitsPerPixel)
 {
     switch(bitsPerPixel)
     {
-        default:
-        case PXTGABitsPerPixelInvalid:
-            return -1;
+    default:
+    case PXTGABitsPerPixelInvalid:
+        return -1;
 
-        case PXTGABitsPerPixelX1:
-            return 1u;
+    case PXTGABitsPerPixelX1:
+        return 1u;
 
-        case PXTGABitsPerPixelX8:
-            return 8u;
+    case PXTGABitsPerPixelX8:
+        return 8u;
 
-        case PXTGABitsPerPixelX15:
-            return 15u;
+    case PXTGABitsPerPixelX15:
+        return 15u;
 
-        case PXTGABitsPerPixelX16:
-            return 16u;
+    case PXTGABitsPerPixelX16:
+        return 16u;
 
-        case PXTGABitsPerPixelX24:
-            return 24u;
+    case PXTGABitsPerPixelX24:
+        return 24u;
 
-        case PXTGABitsPerPixelX32:
-            return 32u;
+    case PXTGABitsPerPixelX32:
+        return 32u;
     }
 }
 
@@ -63,29 +63,29 @@ PXTGAImageDataType PXAPI ConvertToImageDataType(const unsigned char id)
 {
     switch(id)
     {
-        case 0u:
-            return PXTGAImageDataNoImageDataIsPresent;
+    case 0u:
+        return PXTGAImageDataNoImageDataIsPresent;
 
-        case 1u:
-            return PXTGAImageDataUncompressedColorMapped;
+    case 1u:
+        return PXTGAImageDataUncompressedColorMapped;
 
-        case 2u:
-            return PXTGAImageDataUncompressedTrueColor;
+    case 2u:
+        return PXTGAImageDataUncompressedTrueColor;
 
-        case 3u:
-            return PXTGAImageDataUncompressedBlackAndWhite;
+    case 3u:
+        return PXTGAImageDataUncompressedBlackAndWhite;
 
-        case 9u:
-            return PXTGAImageDataRunLengthEncodedColorMapped;
+    case 9u:
+        return PXTGAImageDataRunLengthEncodedColorMapped;
 
-        case 10u:
-            return PXTGAImageDataRunLengthEncodedTrueColor;
+    case 10u:
+        return PXTGAImageDataRunLengthEncodedTrueColor;
 
-        case 11u:
-            return PXTGAImageDataRunLengthEncodedBlackAndWhite;
+    case 11u:
+        return PXTGAImageDataRunLengthEncodedBlackAndWhite;
 
-        default:
-            return PXTGAImageDataInvalid;
+    default:
+        return PXTGAImageDataInvalid;
     }
 }
 
@@ -93,30 +93,30 @@ PXInt8U PXAPI ConvertFromImageDataType(const PXTGAImageDataType imageDataType)
 {
     switch(imageDataType)
     {
-        default:
-        case PXTGAImageDataInvalid:
-            return -1;
+    default:
+    case PXTGAImageDataInvalid:
+        return -1;
 
-        case PXTGAImageDataNoImageDataIsPresent:
-            return 0;
+    case PXTGAImageDataNoImageDataIsPresent:
+        return 0;
 
-        case PXTGAImageDataUncompressedColorMapped:
-            return 1u;
+    case PXTGAImageDataUncompressedColorMapped:
+        return 1u;
 
-        case PXTGAImageDataUncompressedTrueColor:
-            return 2u;
+    case PXTGAImageDataUncompressedTrueColor:
+        return 2u;
 
-        case PXTGAImageDataUncompressedBlackAndWhite:
-            return 3u;
+    case PXTGAImageDataUncompressedBlackAndWhite:
+        return 3u;
 
-        case PXTGAImageDataRunLengthEncodedColorMapped:
-            return 9u;
+    case PXTGAImageDataRunLengthEncodedColorMapped:
+        return 9u;
 
-        case PXTGAImageDataRunLengthEncodedTrueColor:
-            return 10u;
+    case PXTGAImageDataRunLengthEncodedTrueColor:
+        return 10u;
 
-        case PXTGAImageDataRunLengthEncodedBlackAndWhite:
-            return 11u;
+    case PXTGAImageDataRunLengthEncodedBlackAndWhite:
+        return 11u;
     }
 }
 
@@ -183,24 +183,24 @@ PXActionResult PXAPI PXTGALoadFromFile(PXResourceTransphereInfo* const pxResourc
 
         switch (tga->ImageDataType)
         {
-            case PXTGAImageDataUncompressedTrueColor: // RGB
-            case PXTGAImageDataRunLengthEncodedTrueColor:
-            {
-                pxColorFormat = PXColorFormatRGBI8;
-                break;
-            }
-            case PXTGAImageDataUncompressedBlackAndWhite:
-            {
-                pxColorFormat = PXColorFormatAlphaBinary;
-                break;
-            }
-            case PXTGAImageDataNoImageDataIsPresent:
-            case PXTGAImageDataUncompressedColorMapped:
-            case PXTGAImageDataRunLengthEncodedColorMapped:        
-            case PXTGAImageDataRunLengthEncodedBlackAndWhite:
-            default:
-                pxColorFormat = PXColorFormatInvalid;
-                break;
+        case PXTGAImageDataUncompressedTrueColor: // RGB
+        case PXTGAImageDataRunLengthEncodedTrueColor:
+        {
+            pxColorFormat = PXColorFormatRGBI8;
+            break;
+        }
+        case PXTGAImageDataUncompressedBlackAndWhite:
+        {
+            pxColorFormat = PXColorFormatAlphaBinary;
+            break;
+        }
+        case PXTGAImageDataNoImageDataIsPresent:
+        case PXTGAImageDataUncompressedColorMapped:
+        case PXTGAImageDataRunLengthEncodedColorMapped:
+        case PXTGAImageDataRunLengthEncodedBlackAndWhite:
+        default:
+            pxColorFormat = PXColorFormatInvalid;
+            break;
         }
 
         PXImageResize(pxImage, pxColorFormat, tga->Width, tga->Height);
@@ -275,7 +275,7 @@ PXActionResult PXAPI PXTGALoadFromFile(PXResourceTransphereInfo* const pxResourc
         {
             {tga->AuthorName, 41u},
             {tga->AuthorComment, 324u},
-        
+
             // 12 Bytes
             {&tga->DateTimeMonth, PXDataTypeInt16ULE},
             {&tga->JobTimeDay, PXDataTypeInt16ULE},

@@ -6,7 +6,7 @@
 
 #if OSUnix
 
-#elif OSWindows  
+#elif OSWindows
 
 #include <windows.h>
 
@@ -80,7 +80,7 @@ PXActionResult PXAPI PXControllerSystemDevicesListRefresh(PXControllerSystem* co
     // Get devices
     {
         const PXjoyGetDevCapsA pxjoyGetDevCapsA = pxControllerSystem->DevCapsGetA;
-        
+
         for(PXSize i = 0; i < pxControllerSystem->DeviceListAmount; ++i)
         {
             PXController* const pxController = &pxControllerSystem->DeviceListData[i];
@@ -113,7 +113,7 @@ PXActionResult PXAPI PXControllerSystemDevicesListRefresh(PXControllerSystem* co
             pxController->AxisMin[PXControllerAxisZ] = pjc.wZmin;
             pxController->AxisMin[PXControllerAxisR] = pjc.wRmin;
             pxController->AxisMin[PXControllerAxisU] = pjc.wUmin;
-            pxController->AxisMin[PXControllerAxisV] = pjc.wVmin;    
+            pxController->AxisMin[PXControllerAxisV] = pjc.wVmin;
         }
     }
 #endif
@@ -168,7 +168,7 @@ PXActionResult PXAPI PXControllerSystemDevicesDataUpdate(PXControllerSystem* con
             pxController->AxisNormalised[PXControllerAxisV] = (pxController->Axis[PXControllerAxisV] * 2.0f) / (float)0xFFFF - 1;
         }
 #else
-        JOYINFO joystickInfo{ 0 };
+        JOYINFO joystickInfo { 0 };
 
         const MMRESULT positionInfoResult = joyGetPos(controllerID, &joystickInfo);
         const bool successful = positionInfoResult == 0;
@@ -203,8 +203,8 @@ void PXAPI PXControllerSystemDebugPrint(PXController* const pxController)
     PXLogPrint
     (
         PXLoggingInfo,
-        "Controller", 
-        "Data", 
+        "Controller",
+        "Data",
         "%s, ID: %i\n"
         "Axis  : X:%5i, Y:%5i, Z:%5i, R:%5i, U:%5i, V:%5i\n"
         "Button: %s",

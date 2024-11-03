@@ -36,21 +36,21 @@ void PXAPI PXJavaContainerWrite(PXCompiler* const pxCompiler)
 
     switch(entry->Type)
     {
-        case PXDocumentElementTypeEnum:
-        {
-            PXFileWriteA(pxFile, PXJavaKeyWordEnum, 4);
-            break;
-        }
-        case PXDocumentElementTypeFile:
-        case PXDocumentElementTypeStruct:
-        case PXDocumentElementTypeClass:
-        {
-            PXFileWriteA(pxFile, PXJavaKeyWordClass, 5);
-            break;
-        }
+    case PXDocumentElementTypeEnum:
+    {
+        PXFileWriteA(pxFile, PXJavaKeyWordEnum, 4);
+        break;
+    }
+    case PXDocumentElementTypeFile:
+    case PXDocumentElementTypeStruct:
+    case PXDocumentElementTypeClass:
+    {
+        PXFileWriteA(pxFile, PXJavaKeyWordClass, 5);
+        break;
+    }
 
-        default:
-            break;
+    default:
+        break;
     }
 
     PXFileWriteC(pxFile, ' ');
@@ -108,7 +108,7 @@ void PXAPI PXJavaContainerWrite(PXCompiler* const pxCompiler)
                 pxCompiler->WriteInfo.CodeElementCurrent = child;
                 pxCompiler->WriteInfo.WriteNode(pxCompiler);
                 break;
-            }    
+            }
         }
 
         if(child->ElementSibling)
@@ -176,25 +176,25 @@ void PXAPI PXJavaDefinitionWrite(PXCompiler* const pxCompiler)
     {
         switch(entry->DataType & PXDataTypeSizeMask)
         {
-            case PXDataTypeSize08:
-                PXFileWriteA(pxFile, PXJavaKeyWordByte, 4);
-                break;
+        case PXDataTypeSize08:
+            PXFileWriteA(pxFile, PXJavaKeyWordByte, 4);
+            break;
 
-            case PXDataTypeSize16:
-                PXFileWriteA(pxFile, PXJavaKeyWordShort, 5);
-                break;
+        case PXDataTypeSize16:
+            PXFileWriteA(pxFile, PXJavaKeyWordShort, 5);
+            break;
 
-            case PXDataTypeSize32:
-                PXFileWriteA(pxFile, PXJavaKeyWordInt, 3);
-                break;
+        case PXDataTypeSize32:
+            PXFileWriteA(pxFile, PXJavaKeyWordInt, 3);
+            break;
 
-            case PXDataTypeSize64:
-                PXFileWriteA(pxFile, PXJavaKeyWordLong, 4);
-                break;
+        case PXDataTypeSize64:
+            PXFileWriteA(pxFile, PXJavaKeyWordLong, 4);
+            break;
 
-            default:
-                PXFileWriteA(pxFile, "Error-Type", 10);
-                break;
+        default:
+            PXFileWriteA(pxFile, "Error-Type", 10);
+            break;
         }
     }
     else
@@ -225,7 +225,7 @@ PXActionResult PXAPI PXJavaSaveToFile(PXResourceTransphereInfo* const pxResource
     if(PXResourceTypeCodeDocument != pxResourceSaveInfo->ResourceType)
     {
         return PXActionRefusedArgumentInvalid;
-    }    
+    }
 
     PXCompiler pxCompiler;
     PXClear(PXCompiler, &pxCompiler);

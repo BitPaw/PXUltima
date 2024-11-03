@@ -7,7 +7,7 @@ void PXOSVersionGet(PXOSVersionInfo* const pxOSVersionInfo)
     PXClear(PXOSVersionInfo, pxOSVersionInfo);
 
 #if OSUnix
-   // pxOSVersionInfo->
+    // pxOSVersionInfo->
 
 #elif OSWindows
 
@@ -31,55 +31,55 @@ void PXOSVersionGet(PXOSVersionInfo* const pxOSVersionInfo)
 
     switch(pxOSVersionInfo->VersionMajor)
     {
-        case 4:
+    case 4:
+    {
+        switch(pxOSVersionInfo->VersionMinor)
         {
-            switch(pxOSVersionInfo->VersionMinor)
-            {
-                case 0:
-                    pxOSVersionInfo->VersionWindows = PXOSWindowsversionNT;
-                    break;
+        case 0:
+            pxOSVersionInfo->VersionWindows = PXOSWindowsversionNT;
+            break;
 
-                case 1:
-                    pxOSVersionInfo->VersionWindows = PXOSWindowsversionXP;
-                    break;
-            }
-
+        case 1:
+            pxOSVersionInfo->VersionWindows = PXOSWindowsversionXP;
             break;
         }
-        case 5:
+
+        break;
+    }
+    case 5:
+    {
+        switch(pxOSVersionInfo->VersionMinor)
         {
-            switch(pxOSVersionInfo->VersionMinor)
-            {
-                case 0:
-                    pxOSVersionInfo->VersionWindows = PXOSWindowsversion2000;
-                    break;
+        case 0:
+            pxOSVersionInfo->VersionWindows = PXOSWindowsversion2000;
+            break;
 
-                case 1:
-                    pxOSVersionInfo->VersionWindows = PXOSWindowsversionXP;
-                    break;
-            }
-
+        case 1:
+            pxOSVersionInfo->VersionWindows = PXOSWindowsversionXP;
             break;
         }
-        case 6:
+
+        break;
+    }
+    case 6:
+    {
+        switch(pxOSVersionInfo->VersionMinor)
         {
-            switch(pxOSVersionInfo->VersionMinor)
-            {
-                case 0:
-                    pxOSVersionInfo->VersionWindows = PXOSWindowsversionVista;
-                    break;
+        case 0:
+            pxOSVersionInfo->VersionWindows = PXOSWindowsversionVista;
+            break;
 
-                case 1:
-                    pxOSVersionInfo->VersionWindows = PXOSWindowsversion7;
-                    break;
+        case 1:
+            pxOSVersionInfo->VersionWindows = PXOSWindowsversion7;
+            break;
 
-                case 2:
-                    pxOSVersionInfo->VersionWindows = PXOSWindowsversion8;
-                    break;
-            }
-
+        case 2:
+            pxOSVersionInfo->VersionWindows = PXOSWindowsversion8;
             break;
         }
+
+        break;
+    }
     }
 
 

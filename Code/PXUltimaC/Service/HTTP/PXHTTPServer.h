@@ -9,14 +9,14 @@ extern "C"
 {
 #endif
 
-	typedef struct PXHTTPServer_
-	{
-		int x;
-	}
-	PXHTTPServer;
+typedef struct PXHTTPServer_
+{
+    int x;
+}
+PXHTTPServer;
 
-	PXPublic PXActionResult PXHTTPServerStart(PXHTTPServer* const pxHTTPServer);
-	PXPublic PXActionResult PXHTTPServerStop(PXHTTPServer* const pxHTTPServer);
+PXPublic PXActionResult PXHTTPServerStart(PXHTTPServer* const pxHTTPServer);
+PXPublic PXActionResult PXHTTPServerStop(PXHTTPServer* const pxHTTPServer);
 
 #ifdef __cplusplus
 }

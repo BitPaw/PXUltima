@@ -12,12 +12,12 @@ typedef enum PXRIFFFormat_
     PXRIFFPXMIDI, // RMID
     PXRIFFDeviceIndependentBitmap, // RDIB
     PXRIFFPalette,  // PAL
-    PXRIFFAudioVideoInterleave, // AVI 
+    PXRIFFAudioVideoInterleave, // AVI
     //DLS,
 }
 PXRIFFFormat;
 
-// Resource Interchange File Format. 
+// Resource Interchange File Format.
 typedef struct PXRIFF_
 {
     PXInt32U ChunkSize;

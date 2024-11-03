@@ -25,7 +25,7 @@ PXActionResult PXTranslatorEnglishToGerman(PXFile* const inputStreamEnglish, PXF
 
         char buffer[1024];
 
-        PXTextCopyA(text, textSize, buffer, 1024u);        
+        PXTextCopyA(text, textSize, buffer, 1024u);
     }
 
     return PXActionSuccessful;

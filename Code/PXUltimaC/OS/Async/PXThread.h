@@ -43,7 +43,7 @@ typedef struct PXThread_
     void* ReturnResult;
 
     pthread_t ThreadHandle;
-#elif OSWindows        
+#elif OSWindows
     HANDLE ThreadHandle;
     PXInt32U ThreadID;
     PXInt32U ReturnResult;
@@ -58,7 +58,7 @@ PXPublic void PXAPI PXThreadDestruct(PXThread* const pxThread);
 
 #if OSWindows
 PXPublic void PXAPI PXThreadConstructFromHandle(PXThread* const pxThread, HANDLE threadHandle);
-#endif // OSWindows
+#endif
 
 
 // This function create a handle for the thread.
@@ -84,8 +84,8 @@ PXPublic PXActionResult PXAPI PXThreadOpen(PXThread* const pxThread);
 
 // Windows : priority
 // Linux : nice value
-// A value indicating how important a thread is relavtive to 
-// others running. The schedulter uses this hint to give important 
+// A value indicating how important a thread is relavtive to
+// others running. The schedulter uses this hint to give important
 // processes a faster response time to act and slow down threads
 // that are not as important to respond fast.
 typedef enum PXThreadPriorityMode_
@@ -94,7 +94,7 @@ typedef enum PXThreadPriorityMode_
 
     PXThreadPriorityModeLowest, // Lowest possible priority
     PXThreadPriorityModeLow19,
-    PXThreadPriorityModeLow18, 
+    PXThreadPriorityModeLow18,
     PXThreadPriorityModeLow17,
     PXThreadPriorityModeLow16,
     PXThreadPriorityModeLow15,
@@ -111,7 +111,7 @@ typedef enum PXThreadPriorityMode_
     PXThreadPriorityModeLow04,
     PXThreadPriorityModeLow03,
     PXThreadPriorityModeLow02,
-    PXThreadPriorityModeLow01, 
+    PXThreadPriorityModeLow01,
     PXThreadPriorityModeLower,
     PXThreadPriorityModeNormal,
     PXThreadPriorityModeHigher,

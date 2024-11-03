@@ -21,7 +21,7 @@ typedef void* LibraryDirectoryID;
 #include <Psapi.h> // Psapi.lib
 #include <OS/Debug/PXDebug.h>
 
-#pragma comment( lib, "Dbghelp.lib" ) 
+#pragma comment( lib, "Dbghelp.lib" )
 #pragma comment( lib, "Psapi.lib " )
 
 
@@ -44,7 +44,7 @@ BOOL CALLBACK EnumSymProc(PSYMBOL_INFO pSymInfo, ULONG SymbolSize, PVOID UserCon
 
 #endif
 
-// SymGetModuleInfo64 
+// SymGetModuleInfo64
 
 
 
@@ -114,42 +114,39 @@ PXActionResult PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* con
 
     switch (filePath->Format)
     {
-        case TextFormatUTF8:
-        case TextFormatASCII:
-        {
+    case TextFormatUTF8:
+    case TextFormatASCII:
+    {
 #if OSUnix
-            dlerror(); // Clear any existing error
+        dlerror(); // Clear any existing error
 
-            const int mode = RTLD_NOW;
-            pxLibrary->ID = dlopen(filePath->TextA, mode);
-
-            PXActionOnErrorFetchAndReturn(pxLibrary->ID != PXNull);
+        const int mode = RTLD_NOW;
+        pxLibrary->ID = dlopen(filePath->TextA, mode); // dlfcn.h   
 
 #elif PXOSWindowsDestop
-            SetLastError(0);
+        SetLastError(0);
 
-            pxLibrary->ID = LoadLibraryA(filePath->TextA); // Windows XP, Kernel32.dll, libloaderapi.h
-#else 
-            return PXActionRefusedNotSupported;
-#endif    
+        pxLibrary->ID = LoadLibraryA(filePath->TextA); // Windows XP, Kernel32.dll, libloaderapi.h
+#else
+        return PXActionRefusedNotSupported;
+#endif
+        break;
+    }
 
-            break;
-        }
-
-        case TextFormatUNICODE:
-        {
+    case TextFormatUNICODE:
+    {
 #if OSUnix
-            return 0;
+        return 0;
 
 #elif PXOSWindowsDestop
-            SetLastError(0);
+        SetLastError(0);
 
-            pxLibrary->ID = LoadLibraryW(filePath->TextW); // Windows XP, Kernel32.dll, libloaderapi.h
-#else 
-            return PXActionRefusedNotSupported;
-#endif    
-            break;
-        }
+        pxLibrary->ID = LoadLibraryW(filePath->TextW); // Windows XP, Kernel32.dll, libloaderapi.h
+#else
+        return PXActionRefusedNotSupported;
+#endif
+        break;
+    }
     }
 
     const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxLibrary->ID);
@@ -199,7 +196,7 @@ PXActionResult PXAPI PXLibraryClose(PXLibrary* const pxLibrary)
 #if PXLogEnable
     char moduleName[32];
 
-    PXDebugModuleNameFromModule(pxLibrary->ID, moduleName);
+    PXDebugModuleHandleToName(pxLibrary->ID, moduleName);
 
     PXLogPrint
     (
@@ -311,53 +308,53 @@ PXActionResult PXAPI PXLibraryName(PXLibrary* const pxLibrary, PXText* const lib
 
     switch (libraryName->Format)
     {
-        case TextFormatUTF8:
-        case TextFormatASCII:
-        {
+    case TextFormatUTF8:
+    case TextFormatASCII:
+    {
 #if OSUnix
-            return PXActionRefusedNotImplemented;
+        return PXActionRefusedNotImplemented;
 
 #elif OSWindows
-            libraryName->SizeUsed = GetModuleFileNameExA // Windows XP, Kernel32.dll, psapi.h
-            (
-                pxLibrary->ProcessHandle,
-                pxLibrary->ID, 
-                libraryName->TextA,
-                libraryName->SizeAllocated
-            ); 
-            const PXActionResult pxActionResult = PXErrorCurrent(0 == libraryName->SizeUsed);
+        libraryName->SizeUsed = GetModuleFileNameExA // Windows XP, Kernel32.dll, psapi.h
+                                (
+                                    pxLibrary->ProcessHandle,
+                                    pxLibrary->ID,
+                                    libraryName->TextA,
+                                    libraryName->SizeAllocated
+                                );
+        const PXActionResult pxActionResult = PXErrorCurrent(0 == libraryName->SizeUsed);
 
-            if(PXActionSuccessful != pxActionResult)
-            {
-                return pxActionResult;
-            }
+        if(PXActionSuccessful != pxActionResult)
+        {
+            return pxActionResult;
+        }
 #endif
 
-            break;
-        }
+        break;
+    }
 
-        case TextFormatUNICODE:
-        {
+    case TextFormatUNICODE:
+    {
 #if OSUnix
-            return PXActionRefusedNotImplemented;
+        return PXActionRefusedNotImplemented;
 
 #elif OSWindows
-            libraryName->SizeUsed = GetModuleFileNameExW // Windows XP, Kernel32.dll, psapi.h
-            (
-                pxLibrary->ProcessHandle,
-                pxLibrary->ID,
-                libraryName->TextW, 
-                libraryName->SizeAllocated
-            ); 
-            const PXActionResult pxActionResult = PXErrorCurrent(0 == libraryName->SizeUsed);
+        libraryName->SizeUsed = GetModuleFileNameExW // Windows XP, Kernel32.dll, psapi.h
+                                (
+                                    pxLibrary->ProcessHandle,
+                                    pxLibrary->ID,
+                                    libraryName->TextW,
+                                    libraryName->SizeAllocated
+                                );
+        const PXActionResult pxActionResult = PXErrorCurrent(0 == libraryName->SizeUsed);
 
-            if(PXActionSuccessful != pxActionResult)
-            {
-                return pxActionResult;
-            }
-#endif
-            break;
+        if(PXActionSuccessful != pxActionResult)
+        {
+            return pxActionResult;
         }
+#endif
+        break;
+    }
     }
 
     return PXActionSuccessful;

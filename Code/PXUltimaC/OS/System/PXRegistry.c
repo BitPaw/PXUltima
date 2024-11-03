@@ -95,56 +95,56 @@ PXActionResult PXAPI PXRegistryConnectRemote(PXRegistry* const registry, const P
 
     switch (registrySpace)
     {
-        case PXRegistrySpaceLocalMachine:
-            hKey = HKEY_LOCAL_MACHINE;
-            break;
+    case PXRegistrySpaceLocalMachine:
+        hKey = HKEY_LOCAL_MACHINE;
+        break;
 
-        case PXRegistrySpacePerformanceData:
-            hKey = HKEY_PERFORMANCE_DATA;
-            break;
+    case PXRegistrySpacePerformanceData:
+        hKey = HKEY_PERFORMANCE_DATA;
+        break;
 
-        case PXRegistrySpaceUsers:
-            hKey = HKEY_USERS;
-            break;
+    case PXRegistrySpaceUsers:
+        hKey = HKEY_USERS;
+        break;
 
-        default:
-            return PXActionRefuedInputInvalid;
+    default:
+        return PXActionRefuedInputInvalid;
     }
 
     PHKEY registryKeyResult = (PHKEY)&registry->ID;
 
     switch (computerName->Format)
     {
-        case TextFormatASCII:
-        case TextFormatUTF8:
+    case TextFormatASCII:
+    case TextFormatUTF8:
+    {
+        const PXRegConnectRegistryA pxRegistryConnectRegistryA = (PXRegConnectRegistryA)registry->RegistryConnectRegistryA;
+        const LSTATUS statusID = pxRegistryConnectRegistryA(computerName->TextA, hKey, registryKeyResult);  // Windows 2000, Advapi32.dll, winreg.h
+        const PXActionResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
+
+        if(PXActionSuccessful != pxActionResult)
         {
-            const PXRegConnectRegistryA pxRegistryConnectRegistryA = (PXRegConnectRegistryA)registry->RegistryConnectRegistryA;
-            const LSTATUS statusID = pxRegistryConnectRegistryA(computerName->TextA, hKey, registryKeyResult);  // Windows 2000, Advapi32.dll, winreg.h
-            const PXActionResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
-
-            if(PXActionSuccessful != pxActionResult)
-            {
-                return pxActionResult;
-            }
-
-            break;
-        }
-        case TextFormatUNICODE:
-        {
-            const PXRegConnectRegistryW pxRegistryConnectRegistryW = (PXRegConnectRegistryW)registry->RegistryConnectRegistryW;
-            const LSTATUS statusID = pxRegistryConnectRegistryW(computerName->TextW, hKey, registryKeyResult); // Windows 2000, Advapi32.dll, winreg.h
-            const PXActionResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
-
-            if(PXActionSuccessful != pxActionResult)
-            {
-                return pxActionResult;
-            }
-
-            break;
+            return pxActionResult;
         }
 
-        default:
-            return PXActionRefuedTextFormatUnsupported;
+        break;
+    }
+    case TextFormatUNICODE:
+    {
+        const PXRegConnectRegistryW pxRegistryConnectRegistryW = (PXRegConnectRegistryW)registry->RegistryConnectRegistryW;
+        const LSTATUS statusID = pxRegistryConnectRegistryW(computerName->TextW, hKey, registryKeyResult); // Windows 2000, Advapi32.dll, winreg.h
+        const PXActionResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
+
+        if(PXActionSuccessful != pxActionResult)
+        {
+            return pxActionResult;
+        }
+
+        break;
+    }
+
+    default:
+        return PXActionRefuedTextFormatUnsupported;
     }
 
     return PXActionSuccessful;
@@ -195,16 +195,16 @@ PXActionResult PXAPI PXRegistryKeyListAll(PXRegistry* const registry)
 
         const PXRegEnumKeyExA pxRegEnumKeyExA = (PXRegEnumKeyExA)registry->RegistryKeyEnumExA;
         const LSTATUS statusID = pxRegEnumKeyExA
-        (
-            registryKey,
-            i,
-            pxTextKeyName.TextA,
-            &textSize,
-            0, // lpReserved
-            0, // lpClass
-            0, // lpcchClass
-            0 // lpftLastWriteTime
-        );
+                                 (
+                                     registryKey,
+                                     i,
+                                     pxTextKeyName.TextA,
+                                     &textSize,
+                                     0, // lpReserved
+                                     0, // lpClass
+                                     0, // lpcchClass
+                                     0 // lpftLastWriteTime
+                                 );
         const PXBool successful = ERROR_SUCCESS == statusID;
 
         if (successful)
@@ -240,57 +240,57 @@ PXActionResult PXAPI PXRegistryKeyCreate(PXRegistry* const registry, const PXTex
 
     switch (pxTextKeyName->Format)
     {
-        case TextFormatASCII:
-        case TextFormatUTF8:
+    case TextFormatASCII:
+    case TextFormatUTF8:
+    {
+        const PXRegCreateKeyExA pxRegCreateKeyExA = (PXRegCreateKeyExA)registry->RegistryCreateKeyExA;
+        const LSTATUS statusID = pxRegCreateKeyExA // Windows 2000, Advapi32.dll, winreg.h
+                                 (
+                                     registryKey,
+                                     pxTextKeyName->TextA,
+                                     Reserved,
+                                     lpClass,
+                                     dwOptions,
+                                     samDesired,
+                                     &securityAttributes,
+                                     phkResult,
+                                     &dwDisposition
+                                 );
+        const PXActionResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
+
+        if(PXActionSuccessful != pxActionResult)
         {
-            const PXRegCreateKeyExA pxRegCreateKeyExA = (PXRegCreateKeyExA)registry->RegistryCreateKeyExA;
-            const LSTATUS statusID = pxRegCreateKeyExA // Windows 2000, Advapi32.dll, winreg.h
-            (
-                registryKey,
-                pxTextKeyName->TextA,
-                Reserved,
-                lpClass,
-                dwOptions,
-                samDesired,
-                &securityAttributes,
-                phkResult,
-                &dwDisposition
-            );
-            const PXActionResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
-
-            if(PXActionSuccessful != pxActionResult)
-            {
-                return pxActionResult;
-            }
-
-            break;
+            return pxActionResult;
         }
-        case TextFormatUNICODE:
+
+        break;
+    }
+    case TextFormatUNICODE:
+    {
+        const PXRegCreateKeyExW pxRegCreateKeyExW = (PXRegCreateKeyExW)registry->RegistryCreateKeyExW;
+        const LSTATUS statusID = pxRegCreateKeyExW // Windows 2000, Advapi32.dll, winreg.h
+                                 (
+                                     registryKey,
+                                     pxTextKeyName->TextW,
+                                     Reserved,
+                                     lpClass,
+                                     dwOptions,
+                                     samDesired,
+                                     &securityAttributes,
+                                     phkResult,
+                                     &dwDisposition
+                                 );
+        const PXActionResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
+
+        if(PXActionSuccessful != pxActionResult)
         {
-            const PXRegCreateKeyExW pxRegCreateKeyExW = (PXRegCreateKeyExW)registry->RegistryCreateKeyExW;
-            const LSTATUS statusID = pxRegCreateKeyExW // Windows 2000, Advapi32.dll, winreg.h
-            (
-                registryKey,
-                pxTextKeyName->TextW,
-                Reserved,
-                lpClass,
-                dwOptions,
-                samDesired,
-                &securityAttributes,
-                phkResult,
-                &dwDisposition
-            );
-            const PXActionResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
-
-            if(PXActionSuccessful != pxActionResult)
-            {
-                return pxActionResult;
-            }
-
-            break;
+            return pxActionResult;
         }
-        default:
-            return PXActionRefuedTextFormatUnsupported;
+
+        break;
+    }
+    default:
+        return PXActionRefuedTextFormatUnsupported;
     }
 
 
@@ -313,36 +313,36 @@ PXActionResult PXAPI PXRegistryKeyLoad(PXRegistry* const registry, const PXText*
 
     switch (pxTextKeyName->Format)
     {
-        case TextFormatASCII:
-        case TextFormatUTF8:
+    case TextFormatASCII:
+    case TextFormatUTF8:
+    {
+        const PXRegLoadKeyA pxRegLoadKeyA = (PXRegLoadKeyA)registry->RegistryKeyLoadA;
+        const LSTATUS statusID = pxRegLoadKeyA((HKEY)registry->ID, pxTextKeyName->TextA, pxTextFile->TextA); // Windows 2000, Advapi32.dll, winreg.h
+        const PXActionResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
+
+        if(PXActionSuccessful != pxActionResult)
         {
-            const PXRegLoadKeyA pxRegLoadKeyA = (PXRegLoadKeyA)registry->RegistryKeyLoadA;
-            const LSTATUS statusID = pxRegLoadKeyA((HKEY)registry->ID, pxTextKeyName->TextA, pxTextFile->TextA); // Windows 2000, Advapi32.dll, winreg.h
-            const PXActionResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
-
-            if(PXActionSuccessful != pxActionResult)
-            {
-                return pxActionResult;
-            }
-
-            break;
-        }
-        case TextFormatUNICODE:
-        {
-            const PXRegLoadKeyW pxRegLoadKeyW = (PXRegLoadKeyW)registry->RegistryKeyLoadW;
-            const LSTATUS statusID = pxRegLoadKeyW((HKEY)registry->ID, pxTextKeyName->TextW, pxTextFile->TextW); // Windows 2000, Advapi32.dll, winreg.h
-            const PXActionResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
-
-            if(PXActionSuccessful != pxActionResult)
-            {
-                return pxActionResult;
-            }
-
-            break;
+            return pxActionResult;
         }
 
-        default:
-            return PXActionRefuedTextFormatUnsupported;
+        break;
+    }
+    case TextFormatUNICODE:
+    {
+        const PXRegLoadKeyW pxRegLoadKeyW = (PXRegLoadKeyW)registry->RegistryKeyLoadW;
+        const LSTATUS statusID = pxRegLoadKeyW((HKEY)registry->ID, pxTextKeyName->TextW, pxTextFile->TextW); // Windows 2000, Advapi32.dll, winreg.h
+        const PXActionResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
+
+        if(PXActionSuccessful != pxActionResult)
+        {
+            return pxActionResult;
+        }
+
+        break;
+    }
+
+    default:
+        return PXActionRefuedTextFormatUnsupported;
     }
 
 #else
@@ -366,36 +366,36 @@ PXActionResult PXAPI PXRegistryKeySave(PXRegistry* const registry, const PXText*
 
     switch (pxTextKeyName->Format)
     {
-        case TextFormatASCII:
-        case TextFormatUTF8:
+    case TextFormatASCII:
+    case TextFormatUTF8:
+    {
+        const PXRegSaveKeyA pxRegSaveKeyA = (PXRegSaveKeyA)registry->RegistryKeySaveA;
+        const LSTATUS statusID = pxRegSaveKeyA(registryKey, pxTextKeyName->TextA, &securityAttributes); // Windows 2000, Advapi32.dll, winreg.h
+        const PXActionResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
+
+        if(PXActionSuccessful != pxActionResult)
         {
-            const PXRegSaveKeyA pxRegSaveKeyA = (PXRegSaveKeyA)registry->RegistryKeySaveA;
-            const LSTATUS statusID = pxRegSaveKeyA(registryKey, pxTextKeyName->TextA, &securityAttributes); // Windows 2000, Advapi32.dll, winreg.h
-            const PXActionResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
-
-            if(PXActionSuccessful != pxActionResult)
-            {
-                return pxActionResult;
-            }
-
-            break;
-        }
-        case TextFormatUNICODE:
-        {
-            const PXRegSaveKeyW pxRegSaveKeyw = (PXRegSaveKeyW)registry->RegistryKeySaveW;
-            const LSTATUS statusID = pxRegSaveKeyw(registryKey, pxTextKeyName->TextW, &securityAttributes); // Windows 2000, Advapi32.dll, winreg.h
-            const PXActionResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
-
-            if(PXActionSuccessful != pxActionResult)
-            {
-                return pxActionResult;
-            }
-
-            break;
+            return pxActionResult;
         }
 
-        default:
-            return PXActionRefuedTextFormatUnsupported;
+        break;
+    }
+    case TextFormatUNICODE:
+    {
+        const PXRegSaveKeyW pxRegSaveKeyw = (PXRegSaveKeyW)registry->RegistryKeySaveW;
+        const LSTATUS statusID = pxRegSaveKeyw(registryKey, pxTextKeyName->TextW, &securityAttributes); // Windows 2000, Advapi32.dll, winreg.h
+        const PXActionResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
+
+        if(PXActionSuccessful != pxActionResult)
+        {
+            return pxActionResult;
+        }
+
+        break;
+    }
+
+    default:
+        return PXActionRefuedTextFormatUnsupported;
     }
 
     return PXActionSuccessful;
@@ -415,36 +415,36 @@ PXActionResult PXAPI PXRegistryKeyDelete(PXRegistry* const registry, const PXTex
 
     switch (pxTextKeyName->Format)
     {
-        case TextFormatASCII:
-        case TextFormatUTF8:
+    case TextFormatASCII:
+    case TextFormatUTF8:
+    {
+        const PXRegDeleteKeyA pxRegDeleteKeyA = (PXRegDeleteKeyA)registry->RegistryKeyDeleteA;
+        const LSTATUS statusID = pxRegDeleteKeyA(registryKey, pxTextKeyName->TextA); // Windows 2000, Advapi32.dll, winreg.h
+        const PXActionResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
+
+        if(PXActionSuccessful != pxActionResult)
         {
-            const PXRegDeleteKeyA pxRegDeleteKeyA = (PXRegDeleteKeyA)registry->RegistryKeyDeleteA;
-            const LSTATUS statusID = pxRegDeleteKeyA(registryKey, pxTextKeyName->TextA); // Windows 2000, Advapi32.dll, winreg.h
-            const PXActionResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
-
-            if(PXActionSuccessful != pxActionResult)
-            {
-                return pxActionResult;
-            }
-
-            break;
-        }
-        case TextFormatUNICODE:
-        {
-            const PXRegDeleteKeyW pxRegDeleteKeyW = (PXRegDeleteKeyW)registry->RegistryKeyDeleteW;
-            const LSTATUS statusID = pxRegDeleteKeyW(registryKey, pxTextKeyName->TextW); // Windows 2000, Advapi32.dll, winreg.h
-            const PXActionResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
-
-            if(PXActionSuccessful != pxActionResult)
-            {
-                return pxActionResult;
-            }
-
-            break;
+            return pxActionResult;
         }
 
-        default:
-            return PXActionRefuedTextFormatUnsupported;
+        break;
+    }
+    case TextFormatUNICODE:
+    {
+        const PXRegDeleteKeyW pxRegDeleteKeyW = (PXRegDeleteKeyW)registry->RegistryKeyDeleteW;
+        const LSTATUS statusID = pxRegDeleteKeyW(registryKey, pxTextKeyName->TextW); // Windows 2000, Advapi32.dll, winreg.h
+        const PXActionResult pxActionResult = PXErrorCurrent(ERROR_SUCCESS == statusID);
+
+        if(PXActionSuccessful != pxActionResult)
+        {
+            return pxActionResult;
+        }
+
+        break;
+    }
+
+    default:
+        return PXActionRefuedTextFormatUnsupported;
     }
 
     return PXActionSuccessful;

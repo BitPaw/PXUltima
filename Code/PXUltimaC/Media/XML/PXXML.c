@@ -36,11 +36,16 @@ PXXMLSymbol PXAPI PXXMLPeekLine(const char* const text, const PXSize textSize)
 
     switch (result)
     {
-        case 'A': return PXXMLSymbolTagOpenBegin;
-        case 'B': return PXXMLSymbolTagOpenFull;
-        case 'C': return PXXMLSymbolTagCloseCurrent;
-        case 'D': return PXXMLSymbolTagCloseFull;
-        case 'F': return PXXMLSymbolAttribute;
+    case 'A':
+        return PXXMLSymbolTagOpenBegin;
+    case 'B':
+        return PXXMLSymbolTagOpenFull;
+    case 'C':
+        return PXXMLSymbolTagCloseCurrent;
+    case 'D':
+        return PXXMLSymbolTagCloseFull;
+    case 'F':
+        return PXXMLSymbolAttribute;
     }
 
     return PXXMLSymbolUnkown;
@@ -52,14 +57,14 @@ void PXAPI PXXMLBlockParse(PXCodeDocument* const pxDocument, PXCompiler* const p
 
     // Expect '<'
     {
-        if (isOpenAngleBracked) // Is XML tag <xxxx> 
+        if (isOpenAngleBracked) // Is XML tag <xxxx>
         {
             PXCompilerSymbolEntryForward(pxCompiler);
-         
+
             PXBool isOpeningTag = PXTrue;
 
             for (;;)
-            {         
+            {
                 PXBool isClosingTag = PXFalse;
 
                 PXCompilerSymbolEntryPeek(pxCompiler);
@@ -68,81 +73,81 @@ void PXAPI PXXMLBlockParse(PXCodeDocument* const pxDocument, PXCompiler* const p
                 {
                     switch ( pxCompiler->ReadInfo.SymbolEntryCurrent.ID)
                     {
-                        case PXCompilerSymbolLexerBracketAngleClose:
-                        {
-                            PXCompilerSymbolEntryExtract(pxCompiler);
-                            return; // DONE
-                        }
-                        case PXCompilerSymbolLexerBracketAngleOpen:    // Go deeper into
-                        {
-                            PXXMLBlockParse(pxDocument, pxCompiler);
-                            continue;
-                        }
-                        case PXCompilerSymbolLexerSlash: // Closing Tag 
-                        {
-                            //PXCompilerSymbolEntryMergeCurrentWithNext(pxFile, &pxCompilerSymbolEntry);
-                            PXCompilerSymbolEntryExtract(pxCompiler);
-
-                            isClosingTag = PXTrue;
-
-                            // Fall through
-                        }
-                        default:
-                        {
-                            PXCompilerSymbolEntryExtract(pxCompiler);
-                            PXCompilerSymbolEntryPeek(pxCompiler);
-
-                            PXBool isAttribute = PXCompilerSymbolLexerEqual== pxCompiler->ReadInfo.SymbolEntryCurrent.ID;
-                            PXBool isTagEnd =
-                                PXCompilerSymbolLexerQuestionmark ==  pxCompiler->ReadInfo.SymbolEntryCurrent.ID &&
-                                PXCompilerSymbolLexerBracketAngleClose ==  pxCompiler->ReadInfo.SymbolEntryCurrent.ID;
-
-                            PXCodeDocumentElement pxDocumentElement;
-                            PXClear(PXCodeDocumentElement, &pxDocumentElement);
-                          //  pxDocumentElement.Depth = pxDocument->Depth;
-                            pxDocumentElement.NameAdress =  pxCompiler->ReadInfo.SymbolEntryCurrent.Source;
-                            pxDocumentElement.NameSize =  pxCompiler->ReadInfo.SymbolEntryCurrent.Size;
-                           // pxDocumentElement.Depth = pxDocument->Depth;
-
-                            if (isAttribute)
-                            {                                 
-                                pxDocumentElement.Type = PXDocumentElementTypeClassMember;
-
-                                PXCompilerSymbolEntryExtract(pxCompiler);
-                                PXCompilerSymbolEntryExtract(pxCompiler);
-                             
-                                pxDocumentElement.ElementMember.ValueType = PXDataTypeString;
-                                pxDocumentElement.ElementMember.ValueAdress =  pxCompiler->ReadInfo.SymbolEntryCurrent.Source;
-                                pxDocumentElement.ElementMember.ValueSize =  pxCompiler->ReadInfo.SymbolEntryCurrent.Size;
-                            }
-                            else
-                            {
-                                pxDocumentElement.Type = PXDocumentElementTypeClass;     
-                                pxDocumentElement.ElementClass.IsTerminateSignal = isClosingTag;
-                            }   
-
-                            // Calc Depth
-                            {
-                                if (isClosingTag || isTagEnd)
-                                {
-                                  //  --(pxDocument->Depth);
-
-                                  //  pxDocumentElement.Depth = pxDocument->Depth;
-                                }
-                                else if(isOpeningTag)
-                                {
-                                    //++(pxDocument->Depth);                             
-
-                                    isOpeningTag = PXFalse;
-                                }                             
-                            }
-
-                            PXDocumentElementAdd(pxDocument, &pxDocumentElement);
-
-                            break;
-                        }
+                    case PXCompilerSymbolLexerBracketAngleClose:
+                    {
+                        PXCompilerSymbolEntryExtract(pxCompiler);
+                        return; // DONE
                     }
-                }               
+                    case PXCompilerSymbolLexerBracketAngleOpen:    // Go deeper into
+                    {
+                        PXXMLBlockParse(pxDocument, pxCompiler);
+                        continue;
+                    }
+                    case PXCompilerSymbolLexerSlash: // Closing Tag
+                    {
+                        //PXCompilerSymbolEntryMergeCurrentWithNext(pxFile, &pxCompilerSymbolEntry);
+                        PXCompilerSymbolEntryExtract(pxCompiler);
+
+                        isClosingTag = PXTrue;
+
+                        // Fall through
+                    }
+                    default:
+                    {
+                        PXCompilerSymbolEntryExtract(pxCompiler);
+                        PXCompilerSymbolEntryPeek(pxCompiler);
+
+                        PXBool isAttribute = PXCompilerSymbolLexerEqual== pxCompiler->ReadInfo.SymbolEntryCurrent.ID;
+                        PXBool isTagEnd =
+                            PXCompilerSymbolLexerQuestionmark ==  pxCompiler->ReadInfo.SymbolEntryCurrent.ID &&
+                            PXCompilerSymbolLexerBracketAngleClose ==  pxCompiler->ReadInfo.SymbolEntryCurrent.ID;
+
+                        PXCodeDocumentElement pxDocumentElement;
+                        PXClear(PXCodeDocumentElement, &pxDocumentElement);
+                        //  pxDocumentElement.Depth = pxDocument->Depth;
+                        pxDocumentElement.NameAdress =  pxCompiler->ReadInfo.SymbolEntryCurrent.Source;
+                        pxDocumentElement.NameSize =  pxCompiler->ReadInfo.SymbolEntryCurrent.Size;
+                        // pxDocumentElement.Depth = pxDocument->Depth;
+
+                        if (isAttribute)
+                        {
+                            pxDocumentElement.Type = PXDocumentElementTypeClassMember;
+
+                            PXCompilerSymbolEntryExtract(pxCompiler);
+                            PXCompilerSymbolEntryExtract(pxCompiler);
+
+                            pxDocumentElement.ElementMember.ValueType = PXDataTypeString;
+                            pxDocumentElement.ElementMember.ValueAdress =  pxCompiler->ReadInfo.SymbolEntryCurrent.Source;
+                            pxDocumentElement.ElementMember.ValueSize =  pxCompiler->ReadInfo.SymbolEntryCurrent.Size;
+                        }
+                        else
+                        {
+                            pxDocumentElement.Type = PXDocumentElementTypeClass;
+                            pxDocumentElement.ElementClass.IsTerminateSignal = isClosingTag;
+                        }
+
+                        // Calc Depth
+                        {
+                            if (isClosingTag || isTagEnd)
+                            {
+                                //  --(pxDocument->Depth);
+
+                                //  pxDocumentElement.Depth = pxDocument->Depth;
+                            }
+                            else if(isOpeningTag)
+                            {
+                                //++(pxDocument->Depth);
+
+                                isOpeningTag = PXFalse;
+                            }
+                        }
+
+                        PXDocumentElementAdd(pxDocument, &pxDocumentElement);
+
+                        break;
+                    }
+                    }
+                }
             }
         }
         else // Is plain text, not an XML tag
@@ -165,25 +170,25 @@ void PXAPI PXXMLBlockParse(PXCodeDocument* const pxDocument, PXCompiler* const p
                     pxDocumentElement.ElementMember.ValueAdress =  pxCompiler->ReadInfo.SymbolEntryCurrent.Source;
                     pxDocumentElement.ElementMember.ValueSize =  pxCompiler->ReadInfo.SymbolEntryCurrent.Size;
                     pxDocumentElement.Type = PXDocumentElementTypeClassMember;
-               
+
                     switch ( pxCompiler->ReadInfo.SymbolEntryCurrent.ID)
                     {
-                        case PXCompilerSymbolLexerBool:
-                            pxDocumentElement.ElementMember.ValueType = PXDataTypeInt08S;
-                            break;
+                    case PXCompilerSymbolLexerBool:
+                        pxDocumentElement.ElementMember.ValueType = PXDataTypeInt08S;
+                        break;
 
-                        case PXCompilerSymbolLexerFloat:
-                            pxDocumentElement.ElementMember.ValueType = PXDataTypeFloat;
-                            break;
+                    case PXCompilerSymbolLexerFloat:
+                        pxDocumentElement.ElementMember.ValueType = PXDataTypeFloat;
+                        break;
 
-                        case PXCompilerSymbolLexerInteger:
-                            pxDocumentElement.ElementMember.ValueType = PXDataTypeIntS;
-                            break;
+                    case PXCompilerSymbolLexerInteger:
+                        pxDocumentElement.ElementMember.ValueType = PXDataTypeIntS;
+                        break;
 
-                        default:
-                        case PXCompilerSymbolLexerString:
-                            pxDocumentElement.ElementMember.ValueType = PXDataTypeString;
-                            break;
+                    default:
+                    case PXCompilerSymbolLexerString:
+                        pxDocumentElement.ElementMember.ValueType = PXDataTypeString;
+                        break;
                     }
 
                     PXDocumentElementAdd(pxDocument, &pxDocumentElement);
@@ -193,8 +198,8 @@ void PXAPI PXXMLBlockParse(PXCodeDocument* const pxDocument, PXCompiler* const p
 
                 PXCompilerSymbolEntryMergeCurrentWithNext(pxCompiler, PXNull);
                 // Check if we need to merge more
-             
-            }                    
+
+            }
         }
     }
 }
@@ -209,10 +214,10 @@ PXActionResult PXAPI PXXMLLoadFromFile(PXResourceTransphereInfo* const pxResourc
     pxCompiler.CodeDocument = (PXCodeDocument*)pxResourceLoadInfo->ResourceTarget;
     pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileReference;
     pxCompiler.ReadInfo.FileCache = &tokenSteam;
-    //pxCompiler.Flags = 
+    //pxCompiler.Flags =
 
     // Lexer - Level I
-    PXCompilerLexicalAnalysis(&pxCompiler); // Raw-File-Input -> Lexer tokens           
+    PXCompilerLexicalAnalysis(&pxCompiler); // Raw-File-Input -> Lexer tokens
 
     while (!PXFileIsAtEnd(&tokenSteam))
     {

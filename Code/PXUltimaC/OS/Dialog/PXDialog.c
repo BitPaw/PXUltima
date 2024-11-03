@@ -4,18 +4,18 @@
 #include <stdio.h>
 
 #if OSUnix
-    #define _MAX_PATH 260
+#define _MAX_PATH 260
 #elif OSWindows
-    #include <windows.h>
+#include <windows.h>
 
-    #include <CommDlg.h>
+#include <CommDlg.h>
 
-    #if WindowsAtleastVista
-        #include <Shlobj.h>
-        #include <combaseapi.h>
-        #include "PXDialog.h"
-// #include <shobjidl.h> // [This is an internal header. Do not use as such]         
-    #endif
+#if WindowsAtleastVista
+#include <Shlobj.h>
+#include <combaseapi.h>
+#include "PXDialog.h"
+// #include <shobjidl.h> // [This is an internal header. Do not use as such]
+#endif
 
 typedef BOOL(APIENTRY* PXGetOpenFileNameA)(LPOPENFILENAMEA);
 typedef BOOL(APIENTRY* PXGetOpenFileNameW)(LPOPENFILENAMEW);
@@ -53,15 +53,15 @@ PXActionResult PXAPI PXDialogSystemInitialize(PXDialogSystem* const pxDialogSyst
         PXLibraryFuntionEntry pxLibraryFuntionEntry[] =
         {
             { &pxDialogSystem->DialogColorChooseA, "ChooseColorA"},
-            { &pxDialogSystem->DialogColorChooseW , "ChooseColorW"},
-            { &pxDialogSystem->DialogFontChooseA , "ChooseFontA"},
-            { &pxDialogSystem->DialogFontChooseW , "ChooseFontW"},
-            { &pxDialogSystem->DialogFileNameOpenGetA , "GetOpenFileNameA"},
-            { &pxDialogSystem->DialogFileNameOpenGetW , "GetOpenFileNameW"},
-            { &pxDialogSystem->DialogFileNameSaveGetA , "GetSaveFileNameA"},
-            { &pxDialogSystem->DialogFileNameSaveGetW , "GetSaveFileNameW"},
-            { &pxDialogSystem->DialogPrintA , "PrintDlgA"},
-            { &pxDialogSystem->DialogPrintW , "PrintDlgW"}
+            { &pxDialogSystem->DialogColorChooseW, "ChooseColorW"},
+            { &pxDialogSystem->DialogFontChooseA, "ChooseFontA"},
+            { &pxDialogSystem->DialogFontChooseW, "ChooseFontW"},
+            { &pxDialogSystem->DialogFileNameOpenGetA, "GetOpenFileNameA"},
+            { &pxDialogSystem->DialogFileNameOpenGetW, "GetOpenFileNameW"},
+            { &pxDialogSystem->DialogFileNameSaveGetA, "GetSaveFileNameA"},
+            { &pxDialogSystem->DialogFileNameSaveGetW, "GetSaveFileNameW"},
+            { &pxDialogSystem->DialogPrintA, "PrintDlgA"},
+            { &pxDialogSystem->DialogPrintW, "PrintDlgW"}
         };
 
         const PXSize amount = sizeof(pxLibraryFuntionEntry) / sizeof(PXLibraryFuntionEntry);
@@ -98,20 +98,20 @@ PXActionResult PXAPI PXDialogFileOpen(PXDialogSystem* const pxDialogSystem, PXTe
 
     //HRESULT BasicFileOpen()
 
-        // CoCreate the File Open Dialog object.
+    // CoCreate the File Open Dialog object.
     IFileDialog* fileDialog = PXNull;
     //MemoryClear(&pfd, sizeof(IFileDialog));
 
-   // fileDialog->lpVtbl-> = bufferAAA;
+    // fileDialog->lpVtbl-> = bufferAAA;
 
     // hr = CoCreateInstance(&CLSID_IExample, 0, CLSCTX_INPROC_SERVER, &IID_IExample, & exampleObj)))
 
-   // HRESULT hr = CoCreateInstance(&CLSID_FileOpenDialog, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pfd));
+    // HRESULT hr = CoCreateInstance(&CLSID_FileOpenDialog, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pfd));
 
     // IID_IFolderView
     // IID_IFileDialogEvents
     // IID_IFileDialog
-    //                 
+    //
 
     const HRESULT resss = CoInitialize(NULL);
 
@@ -132,63 +132,63 @@ PXActionResult PXAPI PXDialogFileOpen(PXDialogSystem* const pxDialogSystem, PXTe
 
     switch(filePath->Format)
     {
-        case TextFormatASCII:
-        case TextFormatUTF8:
+    case TextFormatASCII:
+    case TextFormatUTF8:
+    {
+        const char filter[] = "All Files (*.*)\0*.*\0";
+        HWND owner = NULL;
+
+        OPENFILENAMEA openFileName;
+        PXClear(OPENFILENAMEA, &openFileName);
+
+        openFileName.lStructSize = sizeof(OPENFILENAMEA);
+        openFileName.hwndOwner = owner;
+        openFileName.lpstrFilter = filter;
+        openFileName.lpstrFile = filePath->TextA;
+        openFileName.nMaxFile = filePath->SizeAllocated;
+        openFileName.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+        openFileName.lpstrDefExt = "";
+
         {
-            const char filter[] = "All Files (*.*)\0*.*\0";
-            HWND owner = NULL;
-
-            OPENFILENAMEA openFileName;
-            PXClear(OPENFILENAMEA, &openFileName);
-
-            openFileName.lStructSize = sizeof(OPENFILENAMEA);
-            openFileName.hwndOwner = owner;
-            openFileName.lpstrFilter = filter;
-            openFileName.lpstrFile = filePath->TextA;
-            openFileName.nMaxFile = filePath->SizeAllocated;
-            openFileName.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
-            openFileName.lpstrDefExt = "";
-
-            {
-                const PXGetOpenFileNameA pxGetOpenFileNameA = (PXGetOpenFileNameA)pxDialogSystem->DialogFileNameOpenGetA;
-                const PXBool wasSuccesful = pxGetOpenFileNameA(&openFileName); // Windows 2000, Comdlg32.dll, commdlg.h
-                const PXActionResult pxActionResult = PXErrorCurrent(wasSuccesful);
-
-                if(PXActionSuccessful != pxActionResult)
-                {
-                    return pxActionResult;
-                }
-            }
-
-            return PXActionSuccessful;
-        }
-        case TextFormatUNICODE:
-        {
-            const wchar_t filter[] = L"All Files (*.*)\0*.*\0";
-            HWND owner = NULL;
-
-            OPENFILENAMEW openFileName;
-            PXClear(OPENFILENAMEW , &openFileName);
-
-            openFileName.lStructSize = sizeof(OPENFILENAMEW);
-            openFileName.hwndOwner = owner;
-            openFileName.lpstrFilter = filter;
-            openFileName.lpstrFile = filePath->TextW;
-            openFileName.nMaxFile = filePath->SizeAllocated;
-            openFileName.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
-            openFileName.lpstrDefExt = L"";
-
-            const PXGetOpenFileNameW pxGetOpenFileNameW = (PXGetOpenFileNameW)pxDialogSystem->DialogFileNameOpenGetW;
-            const PXBool wasSuccesful = pxGetOpenFileNameW(&openFileName); // Windows 2000, Comdlg32.dll, commdlg.h
+            const PXGetOpenFileNameA pxGetOpenFileNameA = (PXGetOpenFileNameA)pxDialogSystem->DialogFileNameOpenGetA;
+            const PXBool wasSuccesful = pxGetOpenFileNameA(&openFileName); // Windows 2000, Comdlg32.dll, commdlg.h
             const PXActionResult pxActionResult = PXErrorCurrent(wasSuccesful);
 
             if(PXActionSuccessful != pxActionResult)
             {
                 return pxActionResult;
             }
-
-            return PXActionSuccessful;
         }
+
+        return PXActionSuccessful;
+    }
+    case TextFormatUNICODE:
+    {
+        const wchar_t filter[] = L"All Files (*.*)\0*.*\0";
+        HWND owner = NULL;
+
+        OPENFILENAMEW openFileName;
+        PXClear(OPENFILENAMEW, &openFileName);
+
+        openFileName.lStructSize = sizeof(OPENFILENAMEW);
+        openFileName.hwndOwner = owner;
+        openFileName.lpstrFilter = filter;
+        openFileName.lpstrFile = filePath->TextW;
+        openFileName.nMaxFile = filePath->SizeAllocated;
+        openFileName.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+        openFileName.lpstrDefExt = L"";
+
+        const PXGetOpenFileNameW pxGetOpenFileNameW = (PXGetOpenFileNameW)pxDialogSystem->DialogFileNameOpenGetW;
+        const PXBool wasSuccesful = pxGetOpenFileNameW(&openFileName); // Windows 2000, Comdlg32.dll, commdlg.h
+        const PXActionResult pxActionResult = PXErrorCurrent(wasSuccesful);
+
+        if(PXActionSuccessful != pxActionResult)
+        {
+            return pxActionResult;
+        }
+
+        return PXActionSuccessful;
+    }
     }
 
     return PXActionInvalid;
@@ -207,62 +207,62 @@ PXActionResult PXAPI PXDialogFileSave(PXDialogSystem* const pxDialogSystem, PXTe
 #elif PXOSWindowsDestop
     switch(filePath->Format)
     {
-        case TextFormatASCII:
-        case TextFormatUTF8:
+    case TextFormatASCII:
+    case TextFormatUTF8:
+    {
+        const char filter[] = "All Files (*.*)\0*.*\0";
+        HWND owner = NULL;
+
+        OPENFILENAMEA openFileName;
+        PXMemoryClear(&openFileName, sizeof(OPENFILENAMEA));
+
+        openFileName.lStructSize = sizeof(OPENFILENAMEA);
+        openFileName.hwndOwner = owner;
+        openFileName.lpstrFilter = filter;
+        openFileName.lpstrFile = filePath->TextA;
+        openFileName.nMaxFile = MAX_PATH;
+        openFileName.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+        openFileName.lpstrDefExt = "";
+
+        const PXGetSaveFileNameA pxGetSaveFileNameA = (PXGetSaveFileNameA)pxDialogSystem->DialogFileNameSaveGetA;
+        const PXBool wasSuccesful = pxGetSaveFileNameA(&openFileName); // Windows 2000, Comdlg32.dll, commdlg.h
+        const PXActionResult pxActionResult = PXErrorCurrent(wasSuccesful);
+
+        if(PXActionSuccessful != pxActionResult)
         {
-            const char filter[] = "All Files (*.*)\0*.*\0";
-            HWND owner = NULL;
-
-            OPENFILENAMEA openFileName;
-            PXMemoryClear(&openFileName, sizeof(OPENFILENAMEA));
-
-            openFileName.lStructSize = sizeof(OPENFILENAMEA);
-            openFileName.hwndOwner = owner;
-            openFileName.lpstrFilter = filter;
-            openFileName.lpstrFile = filePath->TextA;
-            openFileName.nMaxFile = MAX_PATH;
-            openFileName.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
-            openFileName.lpstrDefExt = "";
-
-            const PXGetSaveFileNameA pxGetSaveFileNameA = (PXGetSaveFileNameA)pxDialogSystem->DialogFileNameSaveGetA;
-            const PXBool wasSuccesful = pxGetSaveFileNameA(&openFileName); // Windows 2000, Comdlg32.dll, commdlg.h
-            const PXActionResult pxActionResult = PXErrorCurrent(wasSuccesful);
-
-            if(PXActionSuccessful != pxActionResult)
-            {
-                return pxActionResult;
-            }
-
-            return PXActionSuccessful;
+            return pxActionResult;
         }
-        case TextFormatUNICODE:
+
+        return PXActionSuccessful;
+    }
+    case TextFormatUNICODE:
+    {
+        const wchar_t filter[] = L"All Files (*.*)\0*.*\0";
+        HWND owner = NULL;
+
+        OPENFILENAMEW openFileName;
+        PXClear(OPENFILENAMEW, &openFileName);
+
+        openFileName.lStructSize = sizeof(OPENFILENAMEW);
+        openFileName.hwndOwner = owner;
+        openFileName.lpstrFilter = filter;
+        openFileName.lpstrFile = filePath->TextW;
+        openFileName.nMaxFile = MAX_PATH;
+        openFileName.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+        openFileName.lpstrDefExt = L"";
+
+        const PXGetSaveFileNameW pxGetSaveFileNameW = (PXGetSaveFileNameW)pxDialogSystem->DialogFileNameSaveGetW;
+        const PXBool wasSuccesful = pxGetSaveFileNameW(&openFileName); // Windows 2000, Comdlg32.dll, commdlg.h
+        const PXActionResult pxActionResult = PXErrorCurrent(wasSuccesful);
+
+        if(PXActionSuccessful != pxActionResult)
         {
-            const wchar_t filter[] = L"All Files (*.*)\0*.*\0";
-            HWND owner = NULL;
-
-            OPENFILENAMEW openFileName;
-            PXClear(OPENFILENAMEW, &openFileName);
-
-            openFileName.lStructSize = sizeof(OPENFILENAMEW);
-            openFileName.hwndOwner = owner;
-            openFileName.lpstrFilter = filter;
-            openFileName.lpstrFile = filePath->TextW;
-            openFileName.nMaxFile = MAX_PATH;
-            openFileName.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
-            openFileName.lpstrDefExt = L"";
-
-            const PXGetSaveFileNameW pxGetSaveFileNameW = (PXGetSaveFileNameW)pxDialogSystem->DialogFileNameSaveGetW;
-            const PXBool wasSuccesful = pxGetSaveFileNameW(&openFileName); // Windows 2000, Comdlg32.dll, commdlg.h
-            const PXActionResult pxActionResult = PXErrorCurrent(wasSuccesful);
-
-            if(PXActionSuccessful != pxActionResult)
-            {
-                return pxActionResult;
-            }
-
-            return PXActionSuccessful;
+            return pxActionResult;
         }
-}
+
+        return PXActionSuccessful;
+    }
+    }
 
     return PXActionInvalid;
 #else

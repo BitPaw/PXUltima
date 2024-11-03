@@ -58,13 +58,13 @@ PXActionResult PXAPI PXServerStart(PXServer* const server, const PXInt16U port, 
         }
 
         const PXActionResult adressResult = PXSocketSetupAdress
-        (
-            server->ServerSocketList,
-            server->ServerSocketListSizeAllocated,
-            &server->ServerSocketListSize,
-            pxSocketAdressSetupInfoList,
-            pxSocketAdressSetupInfoListSize
-        );
+                                            (
+                                                server->ServerSocketList,
+                                                server->ServerSocketListSizeAllocated,
+                                                &server->ServerSocketListSize,
+                                                pxSocketAdressSetupInfoList,
+                                                pxSocketAdressSetupInfoListSize
+                                            );
 
         PXActionReturnOnError(adressResult);
     }
@@ -105,7 +105,7 @@ PXActionResult PXAPI PXServerStart(PXServer* const server, const PXInt16U port, 
             const PXActionResult actionResult = PXSocketListen(pxSocket);
 
             PXActionReturnOnError(actionResult);
-        }   
+        }
 
         PXSocketStateChange(pxSocket, SocketIDLE);
 
@@ -141,7 +141,7 @@ PXActionResult PXAPI PXServerStop(PXServer* const server)
 
 PXActionResult PXAPI PXServerKickClient(PXServer* const server, const PXSocketID socketID)
 {
-	return PXActionInvalid;
+    return PXActionInvalid;
 }
 
 PXActionResult PXAPI PXServerSendToAll(PXServer* const server, const void* const data, const PXSize dataSize)
@@ -156,15 +156,15 @@ PXActionResult PXAPI PXServerSendToAll(PXServer* const server, const void* const
 
             PXDictionaryIndex(&serverSubSocket->SocketLookup, i, &pxDictionaryEntry);
 
-            const PXSocketID clientID = *(PXSocketID*)pxDictionaryEntry.Key;          
+            const PXSocketID clientID = *(PXSocketID*)pxDictionaryEntry.Key;
 
             PXBufferConstruct(&serverSubSocket->BufferOutput, (void*)data, dataSize, PXBufferTypeStack);
 
-            PXSocketSend(serverSubSocket, clientID);          
+            PXSocketSend(serverSubSocket, clientID);
         }
 
         PXBufferDestruct(&serverSubSocket->BufferOutput);
-    }      
+    }
 
     return PXActionSuccessful;
 }

@@ -17,8 +17,8 @@
 //#pragma comment(lib, "mfidl.lib")
 #pragma comment(lib, "mfuuid.lib")
 #pragma comment(lib, "Mfplat.lib")
-#pragma comment(lib, "Mf.lib") 
-#pragma comment(lib, "mfreadwrite.lib") 
+#pragma comment(lib, "Mf.lib")
+#pragma comment(lib, "mfreadwrite.lib")
 #pragma comment(lib, "Shlwapi.lib")
 #endif
 
@@ -29,12 +29,8 @@
 
 
 
-
+#if OSWindows
 typedef HRESULT (WINAPI* PXVideoOnReadSampleFunction)(HRESULT hrStatus, DWORD dwStreamIndex, DWORD dwStreamFlags, LONGLONG llTimestamp, IMFSample* pSample);
-
-
-
-
 
 HRESULT WINAPI QueryInterface(IMFSourceReaderCallback* callBack, REFIID iid, void** ppv)
 {
@@ -91,15 +87,18 @@ HRESULT WINAPI PXVideoOnReadSample(HRESULT hrStatus, DWORD dwStreamIndex, DWORD 
 
     return S_OK;
 }
-
+#endif
 
 PXActionResult PXAPI PXVideoCaptureDeviceList()
 {
+    #if OSUnix
+    #elif OSWindows
+
     PXVideoDeviceEE* pxVideoDeviceList = PXNull;
 
     const HRESULT c = CoInitialize(PXNull);
 
-  
+
     IMFMediaSource* imfMediaSource;
 
     IMFAttributes* attributeList = NULL;
@@ -119,9 +118,9 @@ PXActionResult PXAPI PXVideoCaptureDeviceList()
     {
         // Windows Vista, Mfuuid.lib, mfobjects.h
         // Source type: video capture devices
-        const HRESULT hr = attributeList->lpVtbl->SetGUID 
+        const HRESULT hr = attributeList->lpVtbl->SetGUID
         (
-            attributeList,            
+            attributeList,
             &MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE,
             &MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID // MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_AUDCAP_GUID
         );
@@ -203,7 +202,7 @@ PXActionResult PXAPI PXVideoCaptureDeviceList()
             );
 
 
-             
+
 
 
 
@@ -216,7 +215,7 @@ PXActionResult PXAPI PXVideoCaptureDeviceList()
 
 
 
-    
+
 
 
 
@@ -229,9 +228,9 @@ PXActionResult PXAPI PXVideoCaptureDeviceList()
         }
 
 
-   
 
-        
+
+
 
         PCWSTR pszURL;
         IMFSourceReaderCallback* pCallback;
@@ -271,7 +270,7 @@ PXActionResult PXAPI PXVideoCaptureDeviceList()
             &MF_SOURCE_READER_ASYNC_CALLBACK,
             &imfSourceReaderCallback
         );
-      
+
         if(FAILED(hr))
         {
             goto done;
@@ -279,10 +278,10 @@ PXActionResult PXAPI PXVideoCaptureDeviceList()
 
         hr = MFCreateSourceReaderFromURL(pszURL, pAttributes, &ppReader);
 
-    
-        
-        
-       
+
+
+
+
 
 
         // Request the first sample.
@@ -290,7 +289,7 @@ PXActionResult PXAPI PXVideoCaptureDeviceList()
         (
             ppReader,
             MF_SOURCE_READER_FIRST_VIDEO_STREAM,
-            0, 
+            0,
             NULL,
             NULL,
             NULL,
@@ -316,9 +315,9 @@ PXActionResult PXAPI PXVideoCaptureDeviceList()
        // const HRESULT haaar = MFCreateDeviceSource(pAttributes, ppSource);
     }
 
-  
 
- 
+
+
 
 
 
@@ -326,7 +325,7 @@ PXActionResult PXAPI PXVideoCaptureDeviceList()
 
 
     int x = 1;
-      
+
     while(1)
     {
         x <<= 1;
@@ -349,6 +348,9 @@ done:
     */
 
     return PXActionSuccessful;
+#else
+    return ..;
+#endif
 }
 
 

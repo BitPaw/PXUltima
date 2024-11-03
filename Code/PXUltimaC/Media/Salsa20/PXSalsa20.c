@@ -21,7 +21,7 @@ PXActionResult PXAPI PXSalsa20Decrypt(PXSalsa20* const pxSalsa20, PXFile* const 
         pxSalsa20->DataSectionIndex,
         pxSalsa20->DataSize
     );
-#endif  
+#endif
 
     // Read buffer
 

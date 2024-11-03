@@ -18,7 +18,7 @@ PXSoundPlayStyle;
 typedef enum PXAudioSystem_
 {
     PXAudioSystemInvalid,
-    PXAudioSystemWindowsMultiMedia, // Windows 2000 
+    PXAudioSystemWindowsMultiMedia, // Windows 2000
     PXAudioSystemWindowsMIDI,
     PXAudioSystemWindowsDirectSound, // Windows XP (successor to WINMM)
     PXAudioSystemWindowsIAudio, // Windows Vista (successor to DirectSound)
@@ -73,7 +73,7 @@ typedef PXActionResult(PXAPI* PXAudioDeviceLoadFunction)
     void* const audioAPI,
     PXAudioDevice* const pxAudioDevice,
     PXSound* const pxSound
-    );
+);
 
 typedef PXActionResult(PXAPI* PXAudioDeviceUnloadFunction)
 (
@@ -82,7 +82,7 @@ typedef PXActionResult(PXAPI* PXAudioDeviceUnloadFunction)
     PXSound* const pxSound,
     const PXAudioDeviceType pxAudioDeviceType,
     const PXInt32U deviceID
-    );
+);
 
 //--------------------------------------------------------
 // Device - Input
@@ -278,7 +278,7 @@ typedef struct PXAudioEffectWavesReverb_
     float ReverbMix;             // [-96.0,0.0]            default: 0.0 db
     float ReverbTime;            // [0.001,3000.0]         default: 1000.0 ms
     float HighFreqRTRatio;       // [0.001,0.999]          default: 0.001
-} 
+}
 PXAudioEffectWavesReverb;
 
 
@@ -530,7 +530,7 @@ PXPublic void PXAPI PXAudioSpeakerBeep(const PXInt32U hz, const PXInt32U time);
 
 typedef enum PXAudioSystemSoundBeepType_
 {
-    PXAudioSystemSoundBeepTypeSimple,// A simple beep.If the sound card is not available, the sound is generated using the speaker.    
+    PXAudioSystemSoundBeepTypeSimple,// A simple beep.If the sound card is not available, the sound is generated using the speaker.
     PXAudioSystemSoundBeepTypexxxxxxxxxxxx,
     PXAudioSystemSoundBeepType, // A simple beep.If the sound card is not available, the sound is generated using the speaker.
     PXAudioSystemSoundBeepType, // See MB_ICONINFORMATION.

@@ -29,51 +29,51 @@ PXActionResult PXAPI PXAudioInitialize(PXAudio* const pxAudio, const PXAudioSyst
     switch (pxAudioSystem)
     {
 #if OSWindows
-        case PXAudioSystemWindowsMIDI:
-        {
-            //pxAudio->Initialize = PXMIDIInitialize;
-            pxAudio->SystemReference = &pxAudio->MultiMedia;
-            break;
-        }
-        case PXAudioSystemWindowsMultiMedia:
-        {
-            pxAudio->Initialize = (PXAudioInitializeFunction)PXMultiMediaInitialize;
-            pxAudio->SystemReference = &pxAudio->MultiMedia;
-            break;
-        }
-        case PXAudioSystemWindowsDirectSound:
-        {
-            pxAudio->Initialize = (PXAudioInitializeFunction)PXDirectSoundInitialize;
-            pxAudio->SystemReference = &pxAudio->DirectSound;
-            break;
-        }
-        case PXAudioSystemWindowsIAudio:
-        {
-            pxAudio->Initialize = (PXAudioInitializeFunction)PXIAudioInitialize;
-            pxAudio->SystemReference = &pxAudio->XSystem;
-            break;
-        }
-        case PXAudioSystemWindowsXAudio:
-        {
-            //pxAudio->Initialize = (PXAudioInitializeFunction)PXXAudioInitialize;
-            //pxAudio->SystemReference = &pxAudio->XSystem;
-            break;
-        }
+    case PXAudioSystemWindowsMIDI:
+    {
+        //pxAudio->Initialize = PXMIDIInitialize;
+        pxAudio->SystemReference = &pxAudio->MultiMedia;
+        break;
+    }
+    case PXAudioSystemWindowsMultiMedia:
+    {
+        pxAudio->Initialize = (PXAudioInitializeFunction)PXMultiMediaInitialize;
+        pxAudio->SystemReference = &pxAudio->MultiMedia;
+        break;
+    }
+    case PXAudioSystemWindowsDirectSound:
+    {
+        pxAudio->Initialize = (PXAudioInitializeFunction)PXDirectSoundInitialize;
+        pxAudio->SystemReference = &pxAudio->DirectSound;
+        break;
+    }
+    case PXAudioSystemWindowsIAudio:
+    {
+        pxAudio->Initialize = (PXAudioInitializeFunction)PXIAudioInitialize;
+        pxAudio->SystemReference = &pxAudio->XSystem;
+        break;
+    }
+    case PXAudioSystemWindowsXAudio:
+    {
+        //pxAudio->Initialize = (PXAudioInitializeFunction)PXXAudioInitialize;
+        //pxAudio->SystemReference = &pxAudio->XSystem;
+        break;
+    }
 #endif
-        default:
-        {
+    default:
+    {
 #if PXLogEnable
-            PXLogPrint
-            (
-                PXLoggingError,
-                "Audio",
-                "Initialize",
-                "There is no audio system"
-            );
+        PXLogPrint
+        (
+            PXLoggingError,
+            "Audio",
+            "Initialize",
+            "There is no audio system"
+        );
 #endif
-            return PXActionRefusedArgumentInvalid;
+        return PXActionRefusedArgumentInvalid;
 
-        }    
+    }
     }
 
     // Initialize

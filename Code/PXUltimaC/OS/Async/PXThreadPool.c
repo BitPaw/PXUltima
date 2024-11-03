@@ -75,10 +75,12 @@ PXActionResult PXAPI PXThreadPoolWaitForAll(PXThreadPool* const pxThreadPool, co
 #endif
 }
 
+#if OSWindows
 void NTAPI PXWindowsVistaPTP_WORK_CALLBACK(PTP_CALLBACK_INSTANCE Instance, PVOID Context, PTP_WORK Work)
 {
-    
+
 }
+#endif
 
 PXActionResult PXAPI PXThreadPoolQueueWork(PXThreadPool* const pxThreadPool, void* function, void* parameter)
 {
@@ -86,14 +88,14 @@ PXActionResult PXAPI PXThreadPoolQueueWork(PXThreadPool* const pxThreadPool, voi
 #elif OSWindows
 
     // Creates a new work object.
-    pxThreadPool->Work = CreateThreadpoolWork(PXWindowsVistaPTP_WORK_CALLBACK, parameter, PXNull); // 3rd Parameter -> Enviroment TP_CALLBACK_ENVIRON 
+    pxThreadPool->Work = CreateThreadpoolWork(PXWindowsVistaPTP_WORK_CALLBACK, parameter, PXNull); // 3rd Parameter -> Enviroment TP_CALLBACK_ENVIRON
     const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxThreadPool->Work);
 
     if(PXActionSuccessful != pxActionResult)
     {
         return pxActionResult;
     }
-    
+
     SubmitThreadpoolWork(pxThreadPool->Work); // Queue the work
 
     /*
@@ -101,7 +103,7 @@ PXActionResult PXAPI PXThreadPoolQueueWork(PXThreadPool* const pxThreadPool, voi
 #elif WindowsAtleastXP
 
     // Debricated since Vista
-    const PXBool result = QueueUserWorkItem((LPTHREAD_START_ROUTINE)function, parameter, WT_EXECUTEDEFAULT); // Windows XP, Kernel32.dll, threadpoollegacyapiset.h 
+    const PXBool result = QueueUserWorkItem((LPTHREAD_START_ROUTINE)function, parameter, WT_EXECUTEDEFAULT); // Windows XP, Kernel32.dll, threadpoollegacyapiset.h
 
 #endif */
 

@@ -31,7 +31,7 @@ typedef struct PXBIOS_
     PXBool  SMBIOSPresent;
     char   SoftwareElementID[64];
     PXInt16U   SoftwareElementState;
-    char   Status[64];
+    char   BIOSStatus[64];
     PXInt8U    SystemBiosMajorVersion;
     PXInt8U    SystemBiosMinorVersion;
     PXInt16U   TargetOperatingSystem;
@@ -72,7 +72,7 @@ typedef struct PXPhysicalMemory_
     char   SKU[64];
     PXInt32U   SMBIOSMemoryType;
     PXInt32U   Speed;
-    char   Status[64];
+    char   MemoryStatus[64];
     char   Tag[64];
     PXInt16U   TotalWidth;
     PXInt16U   TypeDetail;
@@ -116,7 +116,7 @@ typedef struct PXCCCCMemory_
     PXBool  PowerManagementSupported;
     char   Purpose[64];
     PXInt64U   StartingAddress;
-    char   Status[64];
+    char   CCStatus[64];
     PXInt16U   StatusInfo;
     char   SystemCreationClassName[64];
     PXBool  SystemLevelAddress;
@@ -172,7 +172,7 @@ typedef struct PXCacheMemory_
     PXInt16U   ReadPolicy;
     PXInt16U   ReplacementPolicy;
     PXInt64U   StartingAddress;
-    char   Status[64];
+    char   MemoryStatus[64];
     PXInt16U   StatusInfo;
     PXInt16U   SupportedSRAM[10];
     char   SystemCreationClassName[64];
@@ -232,7 +232,7 @@ typedef struct PXVideoDevice_
     PXInt16U   ProtocolSupported;
     PXInt32U   ReservedSystemPaletteEntries;
     PXInt32U   SpecificationVersion;
-    char   Status[64];
+    char   VideoStatus[64];
     PXInt16U   StatusInfo;
     char   SystemCreationClassName[64];
     char   SystemName[64];
@@ -258,7 +258,7 @@ typedef struct PXMainBoard_
     char PrimaryBusType[64];
     char RevisionNumber[64];
     char SecondaryBusType[64];
-    char Status[64];
+    char BoardStatus[64];
     char SystemCreationClassName[64];
     char SystemName[64];
 
@@ -278,7 +278,7 @@ typedef struct PXMainBoard_
 PXMainBoard;
 
 typedef struct PXSensorTemperature_
-{    
+{
     char Caption[64];
     char CreationClassName[64];
     char Description[64];
@@ -286,7 +286,7 @@ typedef struct PXSensorTemperature_
     char ErrorDescription[64];
     char Name[64];
     char PNPDeviceID[64];
-    char Status[64];
+    char SensorStatus[64];
     char SystemCreationClassName[64];
     char SystemName[64];
 
@@ -339,7 +339,7 @@ typedef struct PXProcessorWS
     char Role[64];
     char SerialNumber[64];
     char SocketDesignation[64];
-    char Status[64];
+    char ProcessorStatus[64];
     char Stepping[64];
     char SystemCreationClassName[64];
     char SystemName[64];
@@ -380,7 +380,7 @@ typedef struct PXProcessorWS
     PXInt16U   StatusInfo;
     PXInt16U   UpgradeMethod;
 
-    // bool     
+    // bool
     PXBool  ConfigManagerUserConfig;
     PXBool  ErrorCleared;
     PXBool  PowerManagementSupported;
@@ -394,7 +394,7 @@ typedef struct PXProcessorWS
 }
 PXProcessorWS;
 
-// 
+//
 typedef struct PXHardwareInfo_
 {
     PXSize ProcessorListSize;

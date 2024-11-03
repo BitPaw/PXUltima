@@ -66,7 +66,7 @@ defined(WIN64) || \
 defined(_WIN64) || \
 defined(__WIN64) || \
 defined(__WIN64__)
-  
+
 #define OS32B 0u
 #define OS64B 1u
 
@@ -119,19 +119,19 @@ defined(__WIN32__)
 
 #if OSVersionOutput
 #if OSUnix
-    #pragma message("[PX] Operating system: UNIX")
+#pragma message("[PX] Operating system: UNIX")
 #elif OSLinux
-    #pragma message("[PX] Operating system: Linux")
+#pragma message("[PX] Operating system: Linux")
 #elif OSApple
-    #pragma message("[PX] Operating system: Apple")
+#pragma message("[PX] Operating system: Apple")
 #elif OSAndroid
-    #pragma message("[PX] Operating system: Android")
+#pragma message("[PX] Operating system: Android")
 #elif OSWindows64B
-    #pragma message("[PX] Operating system: Windows 64-Bit detected")
+#pragma message("[PX] Operating system: Windows 64-Bit detected")
 #elif OSWindows32B
-    #pragma message("[PX] Operating system: Windows 32-Bit detected")
+#pragma message("[PX] Operating system: Windows 32-Bit detected")
 #else
-    #error [PX] Operating system could not be detected!
+#error [PX] Operating system could not be detected!
 #endif
 #endif
 //-----------------------------------------------------------------------------
@@ -163,109 +163,109 @@ PXWindowsVersion;
 
 #if OSWindows // Detect which windows version is used
 
-    #include <Windows.h>
-    #include <SdkDdkVer.h>
+#include <Windows.h>
+#include <SdkDdkVer.h>
 
-    #define Version_Windows WINVER
+#define Version_Windows WINVER
 
-    #define Version_Windows_NT 0x0400
-    #define Version_Windows_2000 0x0500
-    #define Version_Windows_XP 0x0501
-    #define Version_Windows_Server_2003 0x0502
-    #define Version_Windows_Vista 0x0600
-    #define Version_Windows_Server_2008 0x0600
-    #define Version_Windows_7 0x0601
-    #define Version_Windows_8 0x0602
-    #define Version_Windows_8_1 0x0603
-    #define Version_Windows_10 0x0A00
-    #define Version_Windows_11 0x0A01
-    #define Version_Windows_12 0x0A02
+#define Version_Windows_NT 0x0400
+#define Version_Windows_2000 0x0500
+#define Version_Windows_XP 0x0501
+#define Version_Windows_Server_2003 0x0502
+#define Version_Windows_Vista 0x0600
+#define Version_Windows_Server_2008 0x0600
+#define Version_Windows_7 0x0601
+#define Version_Windows_8 0x0602
+#define Version_Windows_8_1 0x0603
+#define Version_Windows_10 0x0A00
+#define Version_Windows_11 0x0A01
+#define Version_Windows_12 0x0A02
 
-    #if Version_Windows >= Version_Windows_NT
-        #define WindowsAtleastNT 1u
-    #else
-        #define WindowsAtleastNT 0u
-    #endif
+#if Version_Windows >= Version_Windows_NT
+#define WindowsAtleastNT 1u
+#else
+#define WindowsAtleastNT 0u
+#endif
 
-    #if Version_Windows >= Version_Windows_2000
-        #define WindowsAtleast2000 1u
-    #else
-        #define WindowsAtleast2000 0u
-    #endif
+#if Version_Windows >= Version_Windows_2000
+#define WindowsAtleast2000 1u
+#else
+#define WindowsAtleast2000 0u
+#endif
 
-    #if Version_Windows >= Version_Windows_XP
-        #define WindowsAtleastXP 1u
-    #else
-        #define WindowsAtleastXP 0u
-    #endif
+#if Version_Windows >= Version_Windows_XP
+#define WindowsAtleastXP 1u
+#else
+#define WindowsAtleastXP 0u
+#endif
 
-    #if Version_Windows >= Version_Windows_Vista
-        #define WindowsAtleastVista 1u
-    #else
-        #define WindowsAtleastVista 0u
-    #endif
+#if Version_Windows >= Version_Windows_Vista
+#define WindowsAtleastVista 1u
+#else
+#define WindowsAtleastVista 0u
+#endif
 
-    #if Version_Windows >= Version_Windows_7
-        #define WindowsAtleast7 1u
-    #else
-        #define WindowsAtleast7 0u
-    #endif
+#if Version_Windows >= Version_Windows_7
+#define WindowsAtleast7 1u
+#else
+#define WindowsAtleast7 0u
+#endif
 
-    #if Version_Windows >= Version_Windows_8
-        #define WindowsAtleast8 1u
-    #else
-        #define WindowsAtleast8 0u
-    #endif
+#if Version_Windows >= Version_Windows_8
+#define WindowsAtleast8 1u
+#else
+#define WindowsAtleast8 0u
+#endif
 
-    #if Version_Windows >= Version_Windows_10
-        #define WindowsAtleast10 1u
-    #else
-        #define WindowsAtleast10 0u
-    #endif
+#if Version_Windows >= Version_Windows_10
+#define WindowsAtleast10 1u
+#else
+#define WindowsAtleast10 0u
+#endif
 
-    #if Version_Windows >= Version_Windows_11
-        #define WindowsAtleast11 1u
-    #else
-        #define WindowsAtleast11 0u
-    #endif
+#if Version_Windows >= Version_Windows_11
+#define WindowsAtleast11 1u
+#else
+#define WindowsAtleast11 0u
+#endif
 
-    #if Version_Windows >= Version_Windows_12
-        #define WindowsAtleast12 1u
-    #else
-        #define WindowsAtleast12 0u
-    #endif
+#if Version_Windows >= Version_Windows_12
+#define WindowsAtleast12 1u
+#else
+#define WindowsAtleast12 0u
+#endif
 
 
-    #if Version_Windows == Version_Windows_XP
-        #define OSWindowsXP 1u
-        typedef struct IUnknown IUnknown;
-    #else
-        #define OSWindowsXP 0u
-    #endif
+#if Version_Windows == Version_Windows_XP
+#define OSWindowsXP 1u
+typedef struct IUnknown IUnknown;
+#else
+#define OSWindowsXP 0u
+#endif
 
-    #if Version_Windows == Version_Windows_7
-        #define OSWindows7 1u
-    #else
-        #define OSWindows7 0u
-    #endif
+#if Version_Windows == Version_Windows_7
+#define OSWindows7 1u
+#else
+#define OSWindows7 0u
+#endif
 
-    #if Version_Windows == Version_Windows_10
-        #define OSWindows10 1u
-    #else
-        #define OSWindows10 0u
-    #endif
+#if Version_Windows == Version_Windows_10
+#define OSWindows10 1u
+#else
+#define OSWindows10 0u
+#endif
 
-    #if Version_Windows == Version_Windows_11
-        #define OSWindows11 1u
-    #else
-        #define OSWindows11 0u
-    #endif
+#if Version_Windows == Version_Windows_11
+#define OSWindows11 1u
+#else
+#define OSWindows11 0u
+#endif
 
-    #if Version_Windows == Version_Windows_12
-        #define OSWindows12 1u
-    #else
-        #define OSWindows12 0u
-    #endif
+#if Version_Windows == Version_Windows_12
+#define OSWindows12 1u
+#else
+#define OSWindows12 0u
+#endif
 
 //-----------------------------------------------------------------------------
 #endif

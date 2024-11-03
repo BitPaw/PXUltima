@@ -26,7 +26,7 @@ typedef struct PXMouse_
     float DeltaNormalisized[2];
     float PositionNormalisized[2];  // Convert Screenspace (width & height) to normal space -1 to +1
     PXInt32S Position[2]; // Window-Position (0/0 to x/y)
-    PXInt32S Delta[2]; // Relative Input (-x/-y to 0/0 to x/y)    
+    PXInt32S Delta[2]; // Relative Input (-x/-y to 0/0 to x/y)
     PXInt8U Buttons;
     PXInt8U ButtonsDelta;
 }

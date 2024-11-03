@@ -12,7 +12,7 @@ typedef enum PXDocumentElementType_
 
     PXDocumentElementTypeFile, // Context of a compiled file, used as a global root
     PXDocumentElementTypeNamespace, // namespace
-    PXDocumentElementTypeTypeDefinition, // typedef 
+    PXDocumentElementTypeTypeDefinition, // typedef
     PXDocumentElementTypeStruct, // struct
     PXDocumentElementTypeUnion, // union
     PXDocumentElementTypeEnum, // enum
@@ -138,8 +138,8 @@ typedef struct PXDocumentElementMember_
 }
 PXDocumentElementMember;
 
-// This containeer needs to hold data for uses like 
-// - reflections, Namespace, Class, MemberName, MemberType, Value 
+// This containeer needs to hold data for uses like
+// - reflections, Namespace, Class, MemberName, MemberType, Value
 typedef struct PXCodeDocumentElement_
 {
     // General name of the enum, class, struct

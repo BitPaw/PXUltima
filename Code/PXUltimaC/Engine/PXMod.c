@@ -18,7 +18,7 @@ PXActionResult PXAPI PXModLoaderScan(PXModLoader* const pxModLoader, const PXTex
     );
 #endif
 
-    PXDirectoryIterator pxDirectoryIterator;    
+    PXDirectoryIterator pxDirectoryIterator;
 
     // Open
     {
@@ -85,7 +85,7 @@ PXActionResult PXAPI PXModLoaderScan(PXModLoader* const pxModLoader, const PXTex
 
             continue;
         }
-         
+
         PXLogPrint
         (
             PXLoggingInfo,

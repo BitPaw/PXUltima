@@ -77,7 +77,7 @@ typedef struct PXCanonRaw3Chunk_
         PXCanonRaw3ChunkUUID ChunkUUID;
         PXCanonRaw3ChunkFTYP ChunkFTYP;
 
-    
+
     };
 }
 PXCanonRaw3Chunk;
@@ -118,143 +118,143 @@ PXActionResult PXAPI PXCanonRaw3BlockRead(PXCanonRaw3Chunk* const pxCanonRaw3Chu
 
     switch (pxCanonRaw3Chunk->ID.Value)
     {
-        case PXCanonRaw3FTYPID:
+    case PXCanonRaw3FTYPID:
+    {
+        const PXFileDataElementType pxDataStreamElementList[] =
         {
-            const PXFileDataElementType pxDataStreamElementList[] =
+            {pxCanonRaw3Chunk->ChunkFTYP.TypeBrandMajor.Data, PXDataTypeDatax4},
+            {&pxCanonRaw3Chunk->ChunkFTYP.TypeVersionMinor, PXDataTypeInt32UBE},
+            {pxCanonRaw3Chunk->ChunkFTYP.TypeCompatibleBrands.Data, PXDataTypeDatax4}
+        };
+
+        PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+
+        break;
+    }
+    case PXCanonRaw3MOOVID:
+    {
+        PXCanonRaw3ChunkMOOV pxCanonRaw3ChunkMOOV;
+
+        for (PXBool done = PXFalse ; !done ; )
+        {
+            PXCanonRaw3Chunk pxCanonRaw3ChunkChild;
+            PXCanonRaw3BlockRead(&pxCanonRaw3ChunkChild, pxFile);
+
+            switch (pxCanonRaw3ChunkChild.ID.Value)
             {
-                {pxCanonRaw3Chunk->ChunkFTYP.TypeBrandMajor.Data, PXDataTypeDatax4},
-                {&pxCanonRaw3Chunk->ChunkFTYP.TypeVersionMinor, PXDataTypeInt32UBE},
-                {pxCanonRaw3Chunk->ChunkFTYP.TypeCompatibleBrands.Data, PXDataTypeDatax4}
-            };
-
-            PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
-
-            break;
-        }
-        case PXCanonRaw3MOOVID:
-        {
-            PXCanonRaw3ChunkMOOV pxCanonRaw3ChunkMOOV;
-
-            for (PXBool done = PXFalse ; !done ; )
+            case PXCanonRaw3UUIDID:
             {
-                PXCanonRaw3Chunk pxCanonRaw3ChunkChild;
-                PXCanonRaw3BlockRead(&pxCanonRaw3ChunkChild, pxFile);
+                PXMemoryCopy(pxCanonRaw3ChunkChild.ChunkUUID.UUID, 16, pxCanonRaw3ChunkMOOV.UUID, 16);
+                break;
+            }
+            case PXCanonRaw3MOOVCompressorVersionID:
+            {
+                pxCanonRaw3ChunkMOOV.CompressiorVersionSize = PXTextCopyA(pxCanonRaw3ChunkChild.Buffer, pxCanonRaw3ChunkChild.BufferSize, pxCanonRaw3ChunkMOOV.CompressiorVersion, 64);
+                break;
+            }
+            case PXCanonRaw3MOOVCMT1ID:
+            {
+                PXFile tiffData;
+                // PXFileBufferExternal(&tiffData, PXFileCursorPosition(pxFile), pxCanonRaw3ChunkChild.SizeData);
 
-                switch (pxCanonRaw3ChunkChild.ID.Value)
-                {
-                    case PXCanonRaw3UUIDID:
-                    {
-                        PXMemoryCopy(pxCanonRaw3ChunkChild.ChunkUUID.UUID, 16, pxCanonRaw3ChunkMOOV.UUID, 16);
-                        break;
-                    }
-                    case PXCanonRaw3MOOVCompressorVersionID:
-                    {
-                        pxCanonRaw3ChunkMOOV.CompressiorVersionSize = PXTextCopyA(pxCanonRaw3ChunkChild.Buffer, pxCanonRaw3ChunkChild.BufferSize, pxCanonRaw3ChunkMOOV.CompressiorVersion, 64);
-                        break;
-                    }            
-                    case PXCanonRaw3MOOVCMT1ID:
-                    {
-                        PXFile tiffData;
-                       // PXFileBufferExternal(&tiffData, PXFileCursorPosition(pxFile), pxCanonRaw3ChunkChild.SizeData);
+                PXImage pxxx;
 
-                        PXImage pxxx;
+                //PXTIFFLoadFromFile(&pxxx, &tiffData);
 
-                        //PXTIFFLoadFromFile(&pxxx, &tiffData);
+                break;
+            }
+            case PXCanonRaw3MOOVCCTPID:
+            case PXCanonRaw3MOOVCMT2ID:
+            case PXCanonRaw3MOOVCMT3ID:
+            case PXCanonRaw3MOOVGPSInfoID:
+            case PXCanonRaw3MOOVCNOPID:
+            case PXCanonRaw3MOOVCNTHID:
+            case PXCanonRaw3MOOVThumbnailImageID:
+            case PXCanonRaw3FREEID:
+            case PXCanonRaw3MOOVCTBOID:
+            default:
+            {
+                PXFileCursorAdvance(pxFile, pxCanonRaw3ChunkChild.SizeData);
+                break;
+            }
 
-                        break;
-                    }
-                    case PXCanonRaw3MOOVCCTPID:
-                    case PXCanonRaw3MOOVCMT2ID:
-                    case PXCanonRaw3MOOVCMT3ID:
-                    case PXCanonRaw3MOOVGPSInfoID:
-                    case PXCanonRaw3MOOVCNOPID:
-                    case PXCanonRaw3MOOVCNTHID:
-                    case PXCanonRaw3MOOVThumbnailImageID:
-                    case PXCanonRaw3FREEID:
-                    case PXCanonRaw3MOOVCTBOID:            
-                    default:
-                    {
-                        PXFileCursorAdvance(pxFile, pxCanonRaw3ChunkChild.SizeData);
-                        break;
-                    }
-
-                }            
-            }        
-
-            break;
+            }
         }
-        case PXCanonRaw3ISOMID:
-        {
-            
+
+        break;
+    }
+    case PXCanonRaw3ISOMID:
+    {
 
 
 
 
-            // parse moov
 
-            // parse header mvhd
+        // parse moov
 
-            // trak
+        // parse header mvhd
 
-            // tref
+        // trak
 
-            // trgr
+        // tref
 
-            break;
-        }
-        case PXCanonRaw3UUIDID:
-        {
-            pxCanonRaw3Chunk->BufferSize = PXFileReadB(pxFile, pxCanonRaw3Chunk->ChunkUUID.UUID,16u);
-            break;
-        }
-        case PXCanonRaw3MOOVCCTPID:
-        {
-            //printf("\n");
-            break;
-        }
-        case PXCanonRaw3MOOVCMT1ID:
-        {
-            //printf("\n");
-            break;
-        }
-        case PXCanonRaw3MOOVCMT2ID:
-        {
-            //printf("\n");
-            break;
-        }
-        case PXCanonRaw3MOOVCMT3ID:
-        {
-            //printf("\n");
-            break;
-        }
-        case PXCanonRaw3MOOVGPSInfoID:
-        {
-            //printf("\n");
-            break;
-        }
-        case PXCanonRaw3MOOVCompressorVersionID:
-        {
-            pxCanonRaw3Chunk->BufferSize = PXFileReadB(pxFile, pxCanonRaw3Chunk->Buffer, pxCanonRaw3Chunk->SizeData);
-            break;
-        }
-        case PXCanonRaw3MOOVCNOPID:
-        {
+        // trgr
+
+        break;
+    }
+    case PXCanonRaw3UUIDID:
+    {
+        pxCanonRaw3Chunk->BufferSize = PXFileReadB(pxFile, pxCanonRaw3Chunk->ChunkUUID.UUID,16u);
+        break;
+    }
+    case PXCanonRaw3MOOVCCTPID:
+    {
+        //printf("\n");
+        break;
+    }
+    case PXCanonRaw3MOOVCMT1ID:
+    {
+        //printf("\n");
+        break;
+    }
+    case PXCanonRaw3MOOVCMT2ID:
+    {
+        //printf("\n");
+        break;
+    }
+    case PXCanonRaw3MOOVCMT3ID:
+    {
+        //printf("\n");
+        break;
+    }
+    case PXCanonRaw3MOOVGPSInfoID:
+    {
+        //printf("\n");
+        break;
+    }
+    case PXCanonRaw3MOOVCompressorVersionID:
+    {
+        pxCanonRaw3Chunk->BufferSize = PXFileReadB(pxFile, pxCanonRaw3Chunk->Buffer, pxCanonRaw3Chunk->SizeData);
+        break;
+    }
+    case PXCanonRaw3MOOVCNOPID:
+    {
         //    printf("\n");
-            break;
-        }
-        case PXCanonRaw3MOOVCNTHID:
-        {
-            //printf("\n");
-            break;
-        }
-        case PXCanonRaw3MOOVThumbnailImageID:
-        {
-            //printf("\n");
-            break;
-        }
+        break;
+    }
+    case PXCanonRaw3MOOVCNTHID:
+    {
+        //printf("\n");
+        break;
+    }
+    case PXCanonRaw3MOOVThumbnailImageID:
+    {
+        //printf("\n");
+        break;
+    }
 
-        default:
-            break;
+    default:
+        break;
     }
 
     return PXActionRefusedNotImplemented;
@@ -265,7 +265,7 @@ PXActionResult PXAPI PXCanonRaw3LoadFromFile(PXResourceTransphereInfo* const pxR
     PXFile* const pxFile = pxResourceLoadInfo->FileReference;
 
     PXCanonRaw3 pxCanonRaw3;
-    PXClear(PXCanonRaw3, &pxCanonRaw3);    
+    PXClear(PXCanonRaw3, &pxCanonRaw3);
 
 #if PXLogEnable && PXCanonRaw3Debug
     PXLogPrint
@@ -317,7 +317,7 @@ PXActionResult PXAPI PXCanonRaw3LoadFromFile(PXResourceTransphereInfo* const pxR
 
             PXFileReadI32U(pxFile, &boxID.Value);
 
-        
+
 
         }
     }

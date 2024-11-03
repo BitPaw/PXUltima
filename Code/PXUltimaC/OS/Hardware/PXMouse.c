@@ -15,7 +15,7 @@ void PXAPI PXMouseInputPrint(const PXMouse* const mouse)
 {
     const PXSize buttonTextSize = 2 + 4 * 8+1;
     char buttons[34+1];
-    
+
     PXTextFromBinaryDataA(&mouse->Buttons, sizeof(PXInt8U), buttons, buttonTextSize);
 
     PXLogPrint

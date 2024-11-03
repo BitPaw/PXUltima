@@ -1,6 +1,7 @@
 #include "PXTime.h"
 
 #include <OS/System/PXOSVersion.h>
+#include <OS/Error/PXActionResult.h>
 
 #if OSUnix
 #include <time.h>
@@ -12,19 +13,32 @@ PXTimeMonth PXAPI PXTimeMonthFromID(const PXInt8U monthID)
 {
     switch(monthID)
     {
-        case 1u: return MonthJanuary;
-        case 2u: return MonthFebruary;
-        case 3u: return MonthMarch;
-        case 4u: return MonthApril;
-        case 5u: return MonthMarch;
-        case 6u: return MonthJune;
-        case 7u: return MonthJuly;
-        case 8u: return MonthAugust;
-        case 9u: return MonthSeptember;
-        case 10u: return MonthOctober;
-        case 11u: return MonthNovember;
-        case 12u: return MonthDecember;
-        default: return MonthInvalid;
+    case 1u:
+        return MonthJanuary;
+    case 2u:
+        return MonthFebruary;
+    case 3u:
+        return MonthMarch;
+    case 4u:
+        return MonthApril;
+    case 5u:
+        return MonthMarch;
+    case 6u:
+        return MonthJune;
+    case 7u:
+        return MonthJuly;
+    case 8u:
+        return MonthAugust;
+    case 9u:
+        return MonthSeptember;
+    case 10u:
+        return MonthOctober;
+    case 11u:
+        return MonthNovember;
+    case 12u:
+        return MonthDecember;
+    default:
+        return MonthInvalid;
     }
 }
 
@@ -32,14 +46,22 @@ PXTimeDayOfWeek PXAPI PXTimeDayFromID(const PXInt8U dayID)
 {
     switch(dayID)
     {
-        case 1u: return DayMonday;
-        case 2u: return DayTuesday;
-        case 3u: return DayWednesday;
-        case 4u: return DayThursday;
-        case 5u: return DayFriday;
-        case 6u: return DaySaturday;
-        case 0u: return DaySunday;
-        default: return DayInvalid;
+    case 1u:
+        return DayMonday;
+    case 2u:
+        return DayTuesday;
+    case 3u:
+        return DayWednesday;
+    case 4u:
+        return DayThursday;
+    case 5u:
+        return DayFriday;
+    case 6u:
+        return DaySaturday;
+    case 0u:
+        return DaySunday;
+    default:
+        return DayInvalid;
     }
 }
 
@@ -53,23 +75,25 @@ void PXAPI PXTimeNow(PXTime* const pxTime)
     long             days;
     struct timespec  ts;
 
-    const int resultID = clock_gettime(CLOCK_REALTIME, &ts);
-    const PXBool success = -1 == resultID;
-    //const PXActionResult result = POSIXError(success);
+    const int getTimeResultID = clock_gettime(CLOCK_REALTIME, &ts);
+    const PXActionResult getTimeResult = PXErrorCurrent(0 == getTimeResultID);
 
-    //if(PXSuccess != result)
+    if(PXActionSuccessful != getTimeResult)
     {
-        // Set 0 if error
+        return getTimeResult;
     }
 
-    pxTime->Year = 000000;
-    pxTime->Month = 000000;
-    pxTime->DayOfWeek = 000000;
-    pxTime->Day = 000000;
-    pxTime->Hour = 000000;
-    pxTime->Minute =000000;
-    pxTime->Second = 000000;
-    pxTime->Milliseconds = ts.tv_sec;
+    struct tm *tm_info = localtime(&ts.tv_sec);
+     //strftime(buffer, buffer_size, "%Y-%m-%d %H:%M:%S", tm_info);
+
+    pxTime->Year         = tm_info->tm_year;
+    pxTime->Month        = tm_info->tm_mon;
+    pxTime->DayOfWeek    = 0;
+    pxTime->Day          = tm_info->tm_mday;
+    pxTime->Hour         = tm_info->tm_hour;
+    pxTime->Minute       = tm_info->tm_min;
+    pxTime->Second       = tm_info->tm_sec;
+    pxTime->Milliseconds = 0;
 
 
 
@@ -127,6 +151,9 @@ float PXAPI PXTimeCounterStampToSecoundsF(const PXInt64U timestamp)
 {
     float result = 0;
 
+#if OSUnix
+
+#elif OSWindows
     LARGE_INTEGER frequency;
 
     QueryPerformanceFrequency(&frequency);
@@ -134,6 +161,9 @@ float PXAPI PXTimeCounterStampToSecoundsF(const PXInt64U timestamp)
     result = timestamp / (float)frequency.QuadPart;
 
     //result /= 1000000.0f;
+#else
+    // Not supported
+#endif
 
     return result;
 }
@@ -151,11 +181,11 @@ PXInt64U PXAPI PXTimeCounterStampGet()
 
     if(success)
     {
-            return ts.tv_sec;
+        return ts.tv_sec;
     }
     else
     {
-            return 0;
+        return 0;
     }
 
 #elif OSWindows
@@ -181,7 +211,7 @@ PXInt64U PXAPI PXTimeCounterFrequencyGet()
 {
 #if OSUnix
     /*
-  if (clock_getres(clock, &ts) == -1) {
+    if (clock_getres(clock, &ts) == -1) {
                perror("clock_getres");
                exit(EXIT_FAILURE);
            }
@@ -189,7 +219,7 @@ PXInt64U PXAPI PXTimeCounterFrequencyGet()
            if (showRes)
                printf("     resolution: %10jd.%09ld\n",
                       (intmax_t) ts.tv_sec, ts.tv_nsec);
-*/
+    */
 
 
     return 0;

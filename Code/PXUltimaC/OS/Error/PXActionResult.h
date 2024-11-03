@@ -21,7 +21,7 @@ typedef enum PXActionResult_
     PXActionRefusedValueNotFound, // Key-value, value not found
     PXActionFailedRead, // Value couln't be read
     PXActionFailedRegister, // Value couln't be registered
-    PXActionFailedWrite, // Value couln't be written 
+    PXActionFailedWrite, // Value couln't be written
     PXActionFailedDelete,
     PXActionFailedUpdate,
     PXActionFailedCreate, // Creation of a resource failed
@@ -40,29 +40,29 @@ typedef enum PXActionResult_
 
     PXActionRefusedNoDriver, // An object needs a driver to function but no driver is attached
     PXActionRefusedFeatureNotAvailable, // Setting requested is not available on this device
-    
+
     PXActionCanceledLoopDeteced, // LOOP
 
     //-------------------------------------------------------
-    // Memory 
+    // Memory
     //-------------------------------------------------------
     PXActionRefusedAdressInvalid, // Attempt to access invalid address.
-    
+
     PXActionFailedMemoryAllocation, // A call to malloc failed due to not enough memory or the buffer is too big to fit in a free memory block. [NOMEM]
     PXActionFailedMemoryRelease,
 
     PXActionRefusedIndexOutOfBounce, // A given index is outside of the given space of the array.
 
-    PXActionFailedBufferRefernceLost, // Windows lost a buffer and it needs to be restord 
+    PXActionFailedBufferRefernceLost, // Windows lost a buffer and it needs to be restord
     PXActionRefuedBufferSizeTooSmal,
 
     PXActionRefuedInputBufferNull, // is NULL
     PXActionRefuedInputBufferEmpty, // has no data, adress is not NULL but the data is
-    PXActionRefuedInputBufferTooSmal, // cant 
+    PXActionRefuedInputBufferTooSmal, // cant
     PXActionRefuedInputBufferTooBig,
 
-    PXActionRefuedOutputBufferNull, // is NULL 
-    PXActionRefuedOutputBufferTooSmal, // 
+    PXActionRefuedOutputBufferNull, // is NULL
+    PXActionRefuedOutputBufferTooSmal, //
 
     //-------------------------------------------------------
     // Type
@@ -86,7 +86,7 @@ typedef enum PXActionResult_
     PXActionRefusedStateDoesNotAllowAction, // Action can't be used in this current state
     PXActionRefuedObjectInterfaceNotAvailable,
 
-    
+
 
     PXActionRefusedObjectNameInvalid,
     PXActionRefusedWindowsClassNameInvalid,
@@ -102,7 +102,7 @@ typedef enum PXActionResult_
     //PXActionDenied
 
     //-------------------------------------------------------
-    // File I/O 
+    // File I/O
     //-------------------------------------------------------
 
     // Resource is available and has been loaded but containing
@@ -111,20 +111,20 @@ typedef enum PXActionResult_
 
 
     PXActionRefusedDirectoryNotEmpty, // [NOTEMPTY]
-    PXActionRefusedTargetIsDirectory, // [ISDIR] 
+    PXActionRefusedTargetIsDirectory, // [ISDIR]
     PXActionRefusedNotADirectory, // [NOTDIR]
 
     PXActionFailedFileNameTooLong, // NAMETOOLONG
-    
+
     PXActionFailedFileDescriptorValueTooLarge, // MFILE
     PXActionFailedTooManyLinks, // MLINK
     PXActionFailedFileTooLarge, // FBIG
     PXActionRefusedInvalidSeek, // SPIPE
     PXActionFailedTooManyFilesOpenInSystem, // NFILE
-    
+
 
     //-------------------------------------------------------
-    // Network 
+    // Network
     //-------------------------------------------------------
     PXActionRefusedAlreadyConnected, // [ISCONN]
     PXActionRefusedNetworkIsDown, // [NETDOWN]
@@ -147,7 +147,7 @@ typedef enum PXActionResult_
     PXActionRefusedNotSupportedByOperatingSystem, // Given action can't be done due the OS not having the ability to do so
     PXActionRefusedNotSupportedByLibrary, // [NOTSUP] Action can't be exectuted, as the function does not exist to be used.
     PXActionRefusedNotImplemented, // Function that exists but does not contain any code
-    
+
     PXActionFailedNotFound, // Object was searched but not found
     PXActionRefusedVersionTooOld, // Object can't be used, it is requires an update
     PXActionRefusedVersionTooNew, // Object can't be used, the system requires an update
@@ -155,7 +155,7 @@ typedef enum PXActionResult_
 
     PXActionRefusedMissingCallBack, // Callback is required but missing
 
-    PXActionFailedRelease, // Cleanup of an object failed 
+    PXActionFailedRelease, // Cleanup of an object failed
 
 
 
@@ -176,7 +176,7 @@ typedef enum PXActionResult_
     PXActionRefuedProtocolNotSupported,
     PXActionRefuedProtocolFamilyNotSupported,
     PXActionRefuedAddressFamilyNotSupportedByProtocol,
-    PXActionRefuedOperationNotSupported,    
+    PXActionRefuedOperationNotSupported,
 
     //---<Function input>---
     PXActionRefuedAdressInvalid, // System detected an invalid pointer
@@ -226,7 +226,7 @@ typedef enum PXActionResult_
     //---<File-Parsing>-------------------
     PXActionFailedFormatNotDetected, // Format is not detected and thus unknown
     PXActionRefusedFormatNotSupported, // Fromat was detected but is not supported
-    PXActionFailedFormatNotAsExpected, // Excpected format differs from what is detected 
+    PXActionFailedFormatNotAsExpected, // Excpected format differs from what is detected
     PXActionRefusedInvalidHeaderSignature, // Expected signature was not detected
     //-----------------------------------
 
@@ -298,7 +298,7 @@ typedef enum PXActionResult_
     AddressInUse, // ADDRINUSE
     AddressNotAvailable, // ADDRNOTAVAIL
     AddressFamilyNotSupported, // AFNOSUPPORT
-    PXActionFailedResourceUnavailableTryAgain, // [AGAIN] 
+    PXActionFailedResourceUnavailableTryAgain, // [AGAIN]
     ConnectionAlreadyInProgress, // ALREADY
     ArgumentListTooLong, // 2BIG
     BadFileDescriptor, // BADF
@@ -357,7 +357,7 @@ PXActionResult;
 #define PXActionReturnOnSuccess(actionResult) if (PXActionSuccessful == actionResult) return PXActionSuccessful;
 #define PXActionReturnOnError(actionResult) if (PXActionSuccessful != actionResult) return actionResult;
 #define PXActionContinueOnError(actionResult) if (PXActionSuccessful != actionResult) continue;
-#define PXActionOnErrorFetchAndReturn(b) if(b) { return PXErrorCurrent(); }
+//#define PXActionOnErrorFetchAndReturn(b) if(b) { return PXErrorCurrent(); }
 
 PXPublic PXActionResult PXAPI PXErrorCodeFromID(const int errorCode);
 PXPublic PXActionResult PXAPI PXErrorCurrent(const PXBool wasSuccessful);
@@ -366,7 +366,7 @@ PXPublic PXActionResult PXAPI PXErrorCurrent(const PXBool wasSuccessful);
 #if PXOSWindowsDestop
 
 // Interesting behaviour, you put in if we successfully did the last operation
-// If so, we just convert it into a successful error code, if not, fetch the 
+// If so, we just convert it into a successful error code, if not, fetch the
 // correct error
 PXPublic PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult);
 PXPublic PXActionResult PXAPI PXWindowsMMAudioConvertFromID(const PXInt32U mmResultID);

@@ -9,20 +9,20 @@ PXZLIBCompressionLevel PXAPI PXZLIBCompressionLevelFromID(const PXInt8U compress
 {
     switch(compressionLevel)
     {
-        case 0u:
-            return PXZLIBCompressionLevelFastest;
+    case 0u:
+        return PXZLIBCompressionLevelFastest;
 
-        case 1u:
-            return PXZLIBCompressionLevelFast;
+    case 1u:
+        return PXZLIBCompressionLevelFast;
 
-        case 2u:
-            return PXZLIBCompressionLevelDefault;
+    case 2u:
+        return PXZLIBCompressionLevelDefault;
 
-        case 3u:
-            return PXZLIBCompressionLevelSlowest;
+    case 3u:
+        return PXZLIBCompressionLevelSlowest;
 
-        default:
-            return PXZLIBCompressionLevelInvalid;
+    default:
+        return PXZLIBCompressionLevelInvalid;
     }
 }
 
@@ -30,21 +30,21 @@ PXInt8U PXAPI PXZLIBCompressionLevelToID(const PXZLIBCompressionLevel compressio
 {
     switch(compressionLevel)
     {
-        default:
-        case PXZLIBCompressionLevelInvalid:
-            return -1;
+    default:
+    case PXZLIBCompressionLevelInvalid:
+        return -1;
 
-        case PXZLIBCompressionLevelDefault:
-            return 2u;
+    case PXZLIBCompressionLevelDefault:
+        return 2u;
 
-        case PXZLIBCompressionLevelSlowest:
-            return 3u;
+    case PXZLIBCompressionLevelSlowest:
+        return 3u;
 
-        case PXZLIBCompressionLevelFast:
-            return 1u;
+    case PXZLIBCompressionLevelFast:
+        return 1u;
 
-        case PXZLIBCompressionLevelFastest:
-            return 0u;
+    case PXZLIBCompressionLevelFastest:
+        return 0u;
     }
 }
 
@@ -52,14 +52,14 @@ PXZLIBCompressionMethod PXAPI PXZLIBCompressionMethodFromID(const PXInt8U compre
 {
     switch(compressionMethod)
     {
-        case 8u:
-            return PXZLIBCompressionMethodDeflate;
+    case 8u:
+        return PXZLIBCompressionMethodDeflate;
 
-        case 15u:
-            return PXZLIBCompressionMethodReserved;
+    case 15u:
+        return PXZLIBCompressionMethodReserved;
 
-        default:
-            return PXZLIBCompressionMethodInvalid;
+    default:
+        return PXZLIBCompressionMethodInvalid;
     }
 }
 
@@ -67,15 +67,15 @@ PXInt8U PXAPI PXZLIBCompressionMethodToID(const PXZLIBCompressionMethod compress
 {
     switch(compressionMethod)
     {
-        default:
-        case PXZLIBCompressionMethodInvalid:
-            return -1;
+    default:
+    case PXZLIBCompressionMethodInvalid:
+        return -1;
 
-        case PXZLIBCompressionMethodDeflate:
-            return 8u;
+    case PXZLIBCompressionMethodDeflate:
+        return 8u;
 
-        case PXZLIBCompressionMethodReserved:
-            return 15u;
+    case PXZLIBCompressionMethodReserved:
+        return 15u;
     }
 }
 
@@ -136,14 +136,14 @@ PXActionResult PXAPI PXZLIBDecompress(PXFile* const pxInputSteam, PXFile* const 
             PXZLIB.Header.DictionaryPresent = ((flagByte & 0b00100000) >> 5) == 1;
             PXZLIB.Header.CompressionLevel = PXZLIBCompressionLevelFromID(compressionLevelValue);
         }
-        //-------------------------------------------------------------------------        
+        //-------------------------------------------------------------------------
     }
 
 
     //---<PXDictionary Parse>----------------------------------------------------
     if(PXZLIB.Header.DictionaryPresent)
     {
-        // Parse DICT dictionary identifier 
+        // Parse DICT dictionary identifier
 
     }
     //-------------------------------------------------------------------------
@@ -160,20 +160,20 @@ PXActionResult PXAPI PXZLIBDecompress(PXFile* const pxInputSteam, PXFile* const 
 
     switch(PXZLIB.Header.CompressionMethod)
     {
-        case PXZLIBCompressionMethodDeflate:
-        {
-            const PXActionResult deflateResult = PXDEFLATEParse(pxInputSteam, pxOutputSteam);
+    case PXZLIBCompressionMethodDeflate:
+    {
+        const PXActionResult deflateResult = PXDEFLATEParse(pxInputSteam, pxOutputSteam);
 
-            PXActionReturnOnError(deflateResult);
+        PXActionReturnOnError(deflateResult);
 
-            break;
-        }
-        default:
-        case PXZLIBCompressionMethodReserved:
-        case PXZLIBCompressionMethodInvalid:
-        {
-            return PXActionFailedFormatNotAsExpected;
-        }
+        break;
+    }
+    default:
+    case PXZLIBCompressionMethodReserved:
+    case PXZLIBCompressionMethodInvalid:
+    {
+        return PXActionFailedFormatNotAsExpected;
+    }
     }
 
     PXFileReadI32UE(pxInputSteam, &PXZLIB.AdlerChecksum, PXEndianBig);
@@ -199,19 +199,19 @@ PXActionResult PXAPI PXZLIBCompress(PXFile* const pxInputSteam, PXFile* const px
         // 0b11000000
         // 0b00100000
 
-        PXByte buffer[2] = 
+        PXByte buffer[2] =
         {
             compressionMethod | compressionInfo << 4u,
-            (level & 0b11) << 6u | (dictionary & 0b01) << 5u
+                                                (level & 0b11) << 6u | (dictionary & 0b01) << 5u
         };
-        
+
         // Check
         {
             const PXInt16U checksum = PXInt16Make(buffer[0], buffer[1]);
             const PXInt8U multble = 31-checksum % 31;
 
             buffer[1] += multble;
-        }    
+        }
 
         PXFileWriteB(pxOutputSteam, buffer, 2u);
     }
@@ -239,31 +239,31 @@ PXSize PXAPI PXZLIBCalculateExpectedSize(const PXSize width, const PXSize height
 
     switch(interlaceMethod)
     {
-        default:
-        case PXPNGInterlaceInvalid:
-            break;
+    default:
+    case PXPNGInterlaceInvalid:
+        break;
 
-        case PXPNGInterlaceNone:
-        {
-            // predict output size, to allocate exact size for output buffer to avoid more dynamic allocation.
-            // If the decompressed size does not match the prediction, the image must be corrupt.
-            expected_size = PXZLIBCalculateRawSizeIDAT(width, height, bpp);
-            break;
-        }
-        case PXPNGInterlaceADAM7:
-        {
-            // Adam-7 interlaced: expected size is the sum of the 7 sub-images sizes
-            expected_size = 0;
-            expected_size += PXZLIBCalculateRawSizeIDAT((width + 7) >> 3, (height + 7) >> 3, bpp);
-            if(width > 4) expected_size += PXZLIBCalculateRawSizeIDAT((width + 3) >> 3, (height + 7) >> 3, bpp);
-            expected_size += PXZLIBCalculateRawSizeIDAT((width + 3) >> 2, (height + 3) >> 3, bpp);
-            if(width > 2) expected_size += PXZLIBCalculateRawSizeIDAT((width + 1) >> 2, (height + 3) >> 2, bpp);
-            expected_size += PXZLIBCalculateRawSizeIDAT((width + 1) >> 1, (height + 1) >> 2, bpp);
-            if(width > 1) expected_size += PXZLIBCalculateRawSizeIDAT((width + 0) >> 1, (height + 1) >> 1, bpp);
-            expected_size += PXZLIBCalculateRawSizeIDAT((width + 0), (height + 0) >> 1, bpp);
+    case PXPNGInterlaceNone:
+    {
+        // predict output size, to allocate exact size for output buffer to avoid more dynamic allocation.
+        // If the decompressed size does not match the prediction, the image must be corrupt.
+        expected_size = PXZLIBCalculateRawSizeIDAT(width, height, bpp);
+        break;
+    }
+    case PXPNGInterlaceADAM7:
+    {
+        // Adam-7 interlaced: expected size is the sum of the 7 sub-images sizes
+        expected_size = 0;
+        expected_size += PXZLIBCalculateRawSizeIDAT((width + 7) >> 3, (height + 7) >> 3, bpp);
+        if(width > 4) expected_size += PXZLIBCalculateRawSizeIDAT((width + 3) >> 3, (height + 7) >> 3, bpp);
+        expected_size += PXZLIBCalculateRawSizeIDAT((width + 3) >> 2, (height + 3) >> 3, bpp);
+        if(width > 2) expected_size += PXZLIBCalculateRawSizeIDAT((width + 1) >> 2, (height + 3) >> 2, bpp);
+        expected_size += PXZLIBCalculateRawSizeIDAT((width + 1) >> 1, (height + 1) >> 2, bpp);
+        if(width > 1) expected_size += PXZLIBCalculateRawSizeIDAT((width + 0) >> 1, (height + 1) >> 1, bpp);
+        expected_size += PXZLIBCalculateRawSizeIDAT((width + 0), (height + 0) >> 1, bpp);
 
-            break;
-        }
+        break;
+    }
     }
 
     return expected_size;

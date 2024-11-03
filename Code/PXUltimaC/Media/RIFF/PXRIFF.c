@@ -22,9 +22,12 @@ PXEndian PXAPI PXRIFFEndianFromID(const PXInt32U value)
 {
     switch (value)
     {
-        case RIFXSignature:        return PXEndianBig;
-        case PXRIFFSignature:    return PXEndianLittle;
-        default:                return PXEndianInvalid;
+    case RIFXSignature:
+        return PXEndianBig;
+    case PXRIFFSignature:
+        return PXEndianLittle;
+    default:
+        return PXEndianInvalid;
     }
 }
 
@@ -32,9 +35,12 @@ PXInt32U PXAPI PXRIFFEndianToID(const PXEndian value)
 {
     switch (value)
     {
-        case PXEndianBig:        return RIFXSignature;
-        case PXEndianLittle:    return PXRIFFSignature;
-        default:                return 0;
+    case PXEndianBig:
+        return RIFXSignature;
+    case PXEndianLittle:
+        return PXRIFFSignature;
+    default:
+        return 0;
     }
 }
 
@@ -42,15 +48,24 @@ PXRIFFFormat PXAPI PXRIFFFormatFromID(const PXInt32U value)
 {
     switch (value)
     {
-        case PXRIFFSubTypeAVI:    return PXRIFFAudioVideoInterleave;
-        case PXRIFFSubTypeAVIX: return PXRIFFAudioVideoInterleave; // Is this a different version?
-        case PXRIFFSubTypeRDIB:    return PXRIFFDeviceIndependentBitmap;
-        case PXRIFFSubTypePAL:    return PXRIFFPalette;
-        case PXRIFFSubTypeRMMP:    return PXRIFFMultimediaMovieFile;
-        case PXRIFFSubTypeRMID:    return PXRIFFPXMIDI;
-        case PXRIFFSubTypeWAVE:    return PXRIFFWaveformAudio;
-        case PXRIFFSubTypeWEBP: return PXRIFFWebPicture;
-        default: return PXRIFFInvalid;
+    case PXRIFFSubTypeAVI:
+        return PXRIFFAudioVideoInterleave;
+    case PXRIFFSubTypeAVIX:
+        return PXRIFFAudioVideoInterleave; // Is this a different version?
+    case PXRIFFSubTypeRDIB:
+        return PXRIFFDeviceIndependentBitmap;
+    case PXRIFFSubTypePAL:
+        return PXRIFFPalette;
+    case PXRIFFSubTypeRMMP:
+        return PXRIFFMultimediaMovieFile;
+    case PXRIFFSubTypeRMID:
+        return PXRIFFPXMIDI;
+    case PXRIFFSubTypeWAVE:
+        return PXRIFFWaveformAudio;
+    case PXRIFFSubTypeWEBP:
+        return PXRIFFWebPicture;
+    default:
+        return PXRIFFInvalid;
     }
 }
 
@@ -58,15 +73,23 @@ PXInt32U PXAPI PXRIFFFormatToID(const PXRIFFFormat value)
 {
     switch (value)
     {
-        case PXRIFFAudioVideoInterleave: return PXRIFFSubTypeAVI;
-        //case PXRIFFAudioVideoInterleave: return PXRIFFSubTypeAVIX; // Is this a different version?
-        case PXRIFFDeviceIndependentBitmap:    return PXRIFFSubTypeRDIB;
-        case PXRIFFPalette:    return PXRIFFSubTypePAL;
-        case PXRIFFMultimediaMovieFile:    return PXRIFFSubTypeRMMP;
-        case PXRIFFPXMIDI:    return PXRIFFSubTypeRMID;
-        case PXRIFFWaveformAudio:    return PXRIFFSubTypeWAVE;
-        case PXRIFFWebPicture: return PXRIFFSubTypeWEBP;
-        default: return 0;
+    case PXRIFFAudioVideoInterleave:
+        return PXRIFFSubTypeAVI;
+    //case PXRIFFAudioVideoInterleave: return PXRIFFSubTypeAVIX; // Is this a different version?
+    case PXRIFFDeviceIndependentBitmap:
+        return PXRIFFSubTypeRDIB;
+    case PXRIFFPalette:
+        return PXRIFFSubTypePAL;
+    case PXRIFFMultimediaMovieFile:
+        return PXRIFFSubTypeRMMP;
+    case PXRIFFPXMIDI:
+        return PXRIFFSubTypeRMID;
+    case PXRIFFWaveformAudio:
+        return PXRIFFSubTypeWAVE;
+    case PXRIFFWebPicture:
+        return PXRIFFSubTypeWEBP;
+    default:
+        return 0;
     }
 }
 

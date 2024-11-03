@@ -13,34 +13,34 @@ PXYAMLLineType PXAPI PXYAMLPeekLine(const void* line, const PXSize size)
 
     switch (id)
     {
-        case '#':
-            return PXYAMLLineTypeComment;
+    case '#':
+        return PXYAMLLineTypeComment;
 
-        case ':':
-            return PXYAMLLineTypeKeyValueSeperator;
+    case ':':
+        return PXYAMLLineTypeKeyValueSeperator;
 
-        case '>':
-            return PXYAMLLineTypeNotationStyleExtendedLine;
+    case '>':
+        return PXYAMLLineTypeNotationStyleExtendedLine;
 
-        case '|':
-            return PXYAMLLineTypeNotationStyleBlock;
+    case '|':
+        return PXYAMLLineTypeNotationStyleBlock;
 
-        case '-':
+    case '-':
+    {
+        const unsigned char* data = (unsigned char*)line + 1;
+        const PXInt16U checkA = PXInt16Make('-', '-');
+        const PXInt16U checkB = PXInt16Make(data[0], data[1]);
+        const PXBool isSeperator = checkA == checkB;
+
+        if (isSeperator)
         {
-            const unsigned char* data = (unsigned char*)line + 1;
-            const PXInt16U checkA = PXInt16Make('-', '-');
-            const PXInt16U checkB = PXInt16Make(data[0], data[1]);
-            const PXBool isSeperator = checkA == checkB;
-
-            if (isSeperator)
-            {
-                return PXYAMLLineTypeSeperator;
-            }
-            else
-            {
-                return PXYAMLLineTypeListElement;
-            }
+            return PXYAMLLineTypeSeperator;
         }
+        else
+        {
+            return PXYAMLLineTypeListElement;
+        }
+    }
     }
 
     // unkown thing detected, check if it is a declaration
@@ -87,111 +87,111 @@ PXActionResult PXAPI PXYAMLLoadFromFile(PXResourceTransphereInfo* const pxResour
 
         switch (compilerSymbolEntry.ID)
         {
-            case PXCompilerSymbolLexerWhiteSpace:
-                indentCounter = compilerSymbolEntry.Size;
-                break;
+        case PXCompilerSymbolLexerWhiteSpace:
+            indentCounter = compilerSymbolEntry.Size;
+            break;
 
-            case PXCompilerSymbolLexerNewLine:
-                indentCounter = 0;
-                break;
+        case PXCompilerSymbolLexerNewLine:
+            indentCounter = 0;
+            break;
 
-            default:
+        default:
+        {
+            break;
+        }
+        case PXCompilerSymbolLexerSingleCharacter:
+        case PXCompilerSymbolLexerGenericElement:
+        {
+            const PXYAMLLineType lineType = PXYAMLPeekLine(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+
+            switch (lineType)
             {
-                break;
+            case PXYAMLLineTypeNotationStyleExtendedLine:
+            {
+                // interpret a new line as a whitespace.
+                // Line ends after new symbol declaration
             }
-            case PXCompilerSymbolLexerSingleCharacter:
-            case PXCompilerSymbolLexerGenericElement:
+
+            case PXYAMLLineTypeUnkown:
             {
+                PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
+
                 const PXYAMLLineType lineType = PXYAMLPeekLine(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+                const PXBool isColonSymbol = PXYAMLLineTypeKeyValueSeperator == lineType;
 
-                switch (lineType)
+                if (!isColonSymbol) // Format: xxxx :
                 {
-                    case PXYAMLLineTypeNotationStyleExtendedLine:
-                    {
-                        // interpret a new line as a whitespace.
-                        // Line ends after new symbol declaration
-                    }
+                    // Error
+                    continue;
+                }
 
-                    case PXYAMLLineTypeUnkown:
-                    {
-                        PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry);
+                // Fall though
+            }
+            case PXYAMLLineTypeKeyDeclare: // xxxx:
+            {
+                char* declname = compilerSymbolEntry.Source;
+                unsigned short declSize = compilerSymbolEntry.Size - 1;
 
-                        const PXYAMLLineType lineType = PXYAMLPeekLine(compilerSymbolEntry.Source, compilerSymbolEntry.Size);
-                        const PXBool isColonSymbol = PXYAMLLineTypeKeyValueSeperator == lineType;
-
-                        if (!isColonSymbol) // Format: xxxx :
-                        {
-                            // Error
-                            continue;
-                        }
-
-                        // Fall though
-                    }
-                    case PXYAMLLineTypeKeyDeclare: // xxxx:
-                    {
-                        char* declname = compilerSymbolEntry.Source;
-                        unsigned short declSize = compilerSymbolEntry.Size - 1;
-
-                        PXFileWriteI8U(outputStream, PXYAMLLineTypeKeyValueDeclare);
-                        PXFileWriteI8U(outputStream, indentCounter);
-                        PXFileWriteI16U(outputStream, declSize);
-                        PXFileWriteB(outputStream, declname, declSize);
+                PXFileWriteI8U(outputStream, PXYAMLLineTypeKeyValueDeclare);
+                PXFileWriteI8U(outputStream, indentCounter);
+                PXFileWriteI16U(outputStream, declSize);
+                PXFileWriteB(outputStream, declname, declSize);
 
 
-                        // Fetch next value
-                        PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // consume "xxxxx: "
-                        PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // sonsume empty space or number
+                // Fetch next value
+                PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // consume "xxxxx: "
+                PXCompilerSymbolEntryExtract(&tokenSteam, &compilerSymbolEntry); // sonsume empty space or number
 
 
-                        switch (compilerSymbolEntry.ID)
-                        {
+                switch (compilerSymbolEntry.ID)
+                {
 
-                            case PXCompilerSymbolLexerNewLine:
-                            case PXCompilerSymbolLexerWhiteSpace:
-                                PXFileWriteI16U(outputStream, 0);
-                                indentCounter = compilerSymbolEntry.Size;
-                                break;
+                case PXCompilerSymbolLexerNewLine:
+                case PXCompilerSymbolLexerWhiteSpace:
+                    PXFileWriteI16U(outputStream, 0);
+                    indentCounter = compilerSymbolEntry.Size;
+                    break;
 
-                            case PXCompilerSymbolLexerBool:
-                            {
-                                PXFileWriteI16U(outputStream, sizeof(unsigned char));
-                                PXFileWriteI8U(outputStream, PXCompilerSymbolLexerBool);
-                                PXFileWriteI8U(outputStream, compilerSymbolEntry.DataC);
-                                break;
-                            }
+                case PXCompilerSymbolLexerBool:
+                {
+                    PXFileWriteI16U(outputStream, sizeof(unsigned char));
+                    PXFileWriteI8U(outputStream, PXCompilerSymbolLexerBool);
+                    PXFileWriteI8U(outputStream, compilerSymbolEntry.DataC);
+                    break;
+                }
 
-                            case PXCompilerSymbolLexerInteger:
-                            {
-                                PXFileWriteI16U(outputStream, sizeof(unsigned int));
-                                PXFileWriteI8U(outputStream, PXCompilerSymbolLexerInteger);
-                                PXFileWriteI32U(outputStream, compilerSymbolEntry.DataI32U);
-                                break;
-                            }
+                case PXCompilerSymbolLexerInteger:
+                {
+                    PXFileWriteI16U(outputStream, sizeof(unsigned int));
+                    PXFileWriteI8U(outputStream, PXCompilerSymbolLexerInteger);
+                    PXFileWriteI32U(outputStream, compilerSymbolEntry.DataI32U);
+                    break;
+                }
 
-                            case PXCompilerSymbolLexerFloat:
-                            {
-                                PXFileWriteI16U(outputStream, sizeof(float));
-                                PXFileWriteI8U(outputStream, PXCompilerSymbolLexerFloat);
-                                PXFileWriteF(outputStream, compilerSymbolEntry.DataF);
-                                break;
-                            }
-                            case PXCompilerSymbolLexerGenericElement:
-                            case PXCompilerSymbolLexerString:
-                            {
-                                PXFileWriteI16U(outputStream, compilerSymbolEntry.Size);
-                                PXFileWriteI8U(outputStream, PXCompilerSymbolLexerString);
-                                PXFileWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
-                                break;
-                            }
-                        }
-
-                        break;
-                    }
-
+                case PXCompilerSymbolLexerFloat:
+                {
+                    PXFileWriteI16U(outputStream, sizeof(float));
+                    PXFileWriteI8U(outputStream, PXCompilerSymbolLexerFloat);
+                    PXFileWriteF(outputStream, compilerSymbolEntry.DataF);
+                    break;
+                }
+                case PXCompilerSymbolLexerGenericElement:
+                case PXCompilerSymbolLexerString:
+                {
+                    PXFileWriteI16U(outputStream, compilerSymbolEntry.Size);
+                    PXFileWriteI8U(outputStream, PXCompilerSymbolLexerString);
+                    PXFileWriteB(outputStream, compilerSymbolEntry.Source, compilerSymbolEntry.Size);
+                    break;
+                }
                 }
 
                 break;
             }
+
+            }
+
+            break;
+        }
         }
     }
 
@@ -224,91 +224,91 @@ PXActionResult PXAPI PXYAMLLoadFromFile(PXResourceTransphereInfo* const pxResour
 
         switch (lineType)
         {
-            case PXYAMLLineTypeKeyValueDeclare:
+        case PXYAMLLineTypeKeyValueDeclare:
+        {
+            unsigned short textASize = 0;
+            char textA[256];
+            unsigned short textBSize = 0;
+            char textB[256];
+
+            PXText pxTextBuffer;
+            PXTextConstructFromAdressA(&pxTextBuffer, textB, 0, 256);
+
+            char emotySpace[25];
+
+            PXMemoryClear(textA, 256u);
+            PXMemoryClear(textB, 256u);
+            PXMemoryClear(emotySpace, 25u);
+
+            PXFileReadI16U(outputStream, &textASize);
+            PXFileReadB(outputStream, textA, textASize);
+            PXFileReadI16U(outputStream, &textBSize);
+
+            for (PXSize i = 0; i < depth; i++)
             {
-                unsigned short textASize = 0;
-                char textA[256];
-                unsigned short textBSize = 0;
-                char textB[256];
-
-                PXText pxTextBuffer;
-                PXTextConstructFromAdressA(&pxTextBuffer, textB, 0, 256);
-
-                char emotySpace[25];
-
-                PXMemoryClear(textA, 256u);
-                PXMemoryClear(textB, 256u);
-                PXMemoryClear(emotySpace, 25u);
-
-                PXFileReadI16U(outputStream, &textASize);
-                PXFileReadB(outputStream, textA, textASize);
-                PXFileReadI16U(outputStream, &textBSize);
-
-                for (PXSize i = 0; i < depth; i++)
-                {
-                    emotySpace[i] = ' ';
-                }
-
-                if (textBSize > 0)
-                {
-                    PXCompilerSymbolLexer lexer;
-
-                    {
-                        PXInt8U lx = 0;
-
-                        PXFileReadI8U(outputStream, &lx);
-
-                        lexer = (PXCompilerSymbolLexer)lx;
-                    }
-
-                    switch (lexer)
-                    {
-                        case PXCompilerSymbolLexerBool:
-                        {
-                            PXBool x = 0;
-
-                            PXFileReadI8U(outputStream, &x);
-
-                            PXTextFromBool(&pxTextBuffer, x);
-
-                            break;
-                        }
-
-                        case PXCompilerSymbolLexerInteger:
-                        {
-                            PXInt32U x = 0;
-
-                            PXFileReadI32U(outputStream, &x);
-
-                            PXTextFromInt(&pxTextBuffer, x);
-
-                            break;
-                        }
-
-                        case PXCompilerSymbolLexerFloat:
-                        {
-                            float x = 0;
-
-                            PXFileReadF(outputStream, &x);
-
-                            PXTextFromInt(&pxTextBuffer, x);
-
-                            break;
-                        }
-
-                        case PXCompilerSymbolLexerString:
-                        {
-                            PXFileReadB(outputStream, textB, textBSize);
-                            break;
-                        }
-                    }
-                }
-
-                printf("[YAML][%i] %s %s:%s\n", depth, emotySpace, textA, textB);
+                emotySpace[i] = ' ';
             }
 
-            default:
-                break;
+            if (textBSize > 0)
+            {
+                PXCompilerSymbolLexer lexer;
+
+                {
+                    PXInt8U lx = 0;
+
+                    PXFileReadI8U(outputStream, &lx);
+
+                    lexer = (PXCompilerSymbolLexer)lx;
+                }
+
+                switch (lexer)
+                {
+                case PXCompilerSymbolLexerBool:
+                {
+                    PXBool x = 0;
+
+                    PXFileReadI8U(outputStream, &x);
+
+                    PXTextFromBool(&pxTextBuffer, x);
+
+                    break;
+                }
+
+                case PXCompilerSymbolLexerInteger:
+                {
+                    PXInt32U x = 0;
+
+                    PXFileReadI32U(outputStream, &x);
+
+                    PXTextFromInt(&pxTextBuffer, x);
+
+                    break;
+                }
+
+                case PXCompilerSymbolLexerFloat:
+                {
+                    float x = 0;
+
+                    PXFileReadF(outputStream, &x);
+
+                    PXTextFromInt(&pxTextBuffer, x);
+
+                    break;
+                }
+
+                case PXCompilerSymbolLexerString:
+                {
+                    PXFileReadB(outputStream, textB, textBSize);
+                    break;
+                }
+                }
+            }
+
+            printf("[YAML][%i] %s %s:%s\n", depth, emotySpace, textA, textB);
+        }
+
+        default:
+            break;
         }
     }
     outputStream->DataCursor = oldpos;
