@@ -3005,6 +3005,21 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEn
             pxResourceCreateInfo.ShaderProgram.ShaderPixelText = pixelShaderData;
             pxResourceCreateInfo.ShaderProgram.ShaderPixelTextSize = sizeof(pixelShaderData) - 1;
 
+
+            PXFileOpenInfo pxFileOpenInfo;
+            PXClear(PXFileOpenInfo, &pxFileOpenInfo);
+            pxFileOpenInfo.AccessMode = PXAccessModeReadOnly;
+            pxFileOpenInfo.FlagList = PXFileIOInfoFileMemory;
+
+            pxFileOpenInfo.BufferData = pxResourceCreateInfo.ShaderProgram.ShaderVertexText;
+            pxFileOpenInfo.BufferSize = pxResourceCreateInfo.ShaderProgram.ShaderVertexTextSize;
+            PXFileOpen(&pxResourceCreateInfo.ShaderProgram.ShaderVertexFile, &pxFileOpenInfo);
+
+            pxFileOpenInfo.BufferData = pxResourceCreateInfo.ShaderProgram.ShaderPixelText;
+            pxFileOpenInfo.BufferSize = pxResourceCreateInfo.ShaderProgram.ShaderPixelTextSize;
+            PXFileOpen(&pxResourceCreateInfo.ShaderProgram.ShaderPixelFile, &pxFileOpenInfo);
+
+
             PXEngineResourceCreate(pxEngine, &pxResourceCreateInfo);
         }
 

@@ -586,10 +586,6 @@ PXPublic PXActionResult PXAPI PXGUIFontLoad(PXGUISystem* const pxGUISystem, PXFo
 PXPublic PXActionResult PXAPI PXGUIFontRelease(PXGUISystem* const pxGUISystem, PXFont* const pxFont);
 PXPublic PXActionResult PXAPI PXGUIFontSet(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXFont* const pxFont);
 
-// Function is only used in the PXGUIElementCreate() function
-// Used to add OS depended flags and manage them
-PXPrivate void PXAPI PXGUIElementCreatePrepare(PXGUISystem* const pxGUISystem, PXResourceCreateInfo* const pxResourceCreateInfo);
-
 PXPublic PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResourceCreateInfo* const pxResourceCreateInfo, const PXSize amount);
 PXPublic PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIElementUpdateInfo* const pxGUIElementUpdateInfoList, const PXSize amount);
 PXPublic PXActionResult PXAPI PXGUIElementFetch(PXGUISystem* const pxGUISystem, PXGUIElementUpdateInfo* const pxGUIElementUpdateInfoList, const PXSize amount);

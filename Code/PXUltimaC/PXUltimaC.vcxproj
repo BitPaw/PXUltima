@@ -308,6 +308,7 @@
     <ClCompile Include="Media\YAML\PXYAML.c" />
     <ClCompile Include="Media\ZIP\PXZIP.c" />
     <ClCompile Include="Media\ZLIB\PXZLIB.c" />
+    <ClCompile Include="OS\AI\PXAI.c" />
     <ClCompile Include="OS\Async\PXThreadPool.c" />
     <ClCompile Include="OS\Graphic\DirectX\PXDirectX10.c" />
     <ClCompile Include="OS\Graphic\DirectX\PXDirectX11.c" />
@@ -489,6 +490,7 @@
     <ClInclude Include="Media\YAML\PXYAML.h" />
     <ClInclude Include="Media\ZIP\PXZIP.h" />
     <ClInclude Include="Media\ZLIB\PXZLIB.h" />
+    <ClInclude Include="OS\AI\PXAI.h" />
     <ClInclude Include="OS\Async\PXThreadPool.h" />
     <ClInclude Include="OS\Graphic\DirectX\PXDirectX10.h" />
     <ClInclude Include="OS\Graphic\DirectX\PXDirectX11.h" />

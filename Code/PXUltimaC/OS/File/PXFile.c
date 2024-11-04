@@ -1253,612 +1253,595 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, const PXFileOpenInfo* cons
 
     switch(PXFileIOInfoFileMask & pxFileIOInfo->FlagList)
     {
-    case PXFileIOInfoFilePhysical:
-    {
-
-        // Does file even exist? Check only if "read only" or "no override"
-        if(PXAccessModeReadOnly == pxFile->AccessMode)
+        case PXFileIOInfoFilePhysical:
         {
-            const PXBool doesFileExists = PXFileDoesExist(&pxText);
 
-            if(!doesFileExists)
+            // Does file even exist? Check only if "read only" or "no override"
+            if(PXAccessModeReadOnly == pxFile->AccessMode)
             {
+                const PXBool doesFileExists = PXFileDoesExist(&pxText);
+
+                if(!doesFileExists)
+                {
 #if PXLogEnable
-                PXLogPrint
-                (
-                    PXLoggingError,
-                    "File",
-                    "Open",
-                    "Does not exist <%s>\n",
-                    pxFileIOInfo->FilePathAdress
-                );
+                    PXLogPrint
+                    (
+                        PXLoggingError,
+                        "File",
+                        "Open",
+                        "Does not exist <%s>\n",
+                        pxFileIOInfo->FilePathAdress
+                    );
 #endif
 
-                return PXActionFailedFileNotFound;
+                    return PXActionFailedFileNotFound;
+                }
             }
-        }
 
 
 #if OSUnix || OSForcePOSIXForWindows || PXOSWindowsUseUWP
-        const char* readMode = 0u;
+            const char* readMode = 0u;
 
-        switch(pxFileIOInfo->AccessMode)
-        {
-        case PXAccessModeReadOnly:
-            readMode = "rb";
-            break;
+            switch(pxFileIOInfo->AccessMode)
+            {
+                case PXAccessModeReadOnly:
+                    readMode = "rb";
+                    break;
 
-        case PXAccessModeWriteOnly:
-            readMode = "wb";
-            break;
-        default:
-            return PXFalse;
-        }
+                case PXAccessModeWriteOnly:
+                    readMode = "wb";
+                    break;
+                default:
+                    return PXFalse;
+            }
 
-        // Use this somewhere here
-        // int posix_fadvise(int fd, off_t offset, off_t len, int advice);
-        // int posix_fadvise64(int fd, off_t offset, off_t len, int advice);
+            // Use this somewhere here
+            // int posix_fadvise(int fd, off_t offset, off_t len, int advice);
+            // int posix_fadvise64(int fd, off_t offset, off_t len, int advice);
 
 #if CVersionNewerThen2011 && OSWindows
-        const auto result = fopen_s(&pxFile->ID, pxText.TextA, readMode); // errno_t
+            const auto result = fopen_s(&pxFile->ID, pxText.TextA, readMode); // errno_t
 
-        return result == 0;
+            return result == 0;
 
 #else
-        pxFile->ID = fopen(pxText.TextA, readMode);
+            pxFile->ID = fopen(pxText.TextA, readMode);
 
-        if(PXNull == pxFile->ID)
-        {
-            return PXActionFailedOpen;
-        }
+            if(PXNull == pxFile->ID)
+            {
+                return PXActionFailedOpen;
+            }
 
-        return PXActionSuccessful;
+            return PXActionSuccessful;
 #endif
 
 
 
 
 #elif OSWindows
-        DWORD desiredAccess = 0;
-        DWORD shareMode = 0;
-        DWORD creationDisposition = 0;
-        DWORD flagsAndAttributes = FILE_ATTRIBUTE_NORMAL;
-        HANDLE templateFile = PXNull;
+            DWORD desiredAccess = 0;
+            DWORD shareMode = 0;
+            DWORD creationDisposition = 0;
+            DWORD flagsAndAttributes = FILE_ATTRIBUTE_NORMAL;
+            HANDLE templateFile = PXNull;
 
-        switch(pxFileIOInfo->AccessMode)
-        {
-        case PXAccessModeReadOnly:
-        {
-            shareMode = FILE_SHARE_READ;
-            creationDisposition = OPEN_EXISTING;
-            desiredAccess = GENERIC_READ;
-            break;
-        }
-        case PXAccessModeWriteOnly:
-        {
-            creationDisposition = CREATE_ALWAYS;
-            desiredAccess = GENERIC_READ | GENERIC_WRITE;
-            break;
-        }
-        case PXAccessModeReadAndWrite:
-        {
-            creationDisposition = CREATE_ALWAYS;
-            desiredAccess = GENERIC_READ | GENERIC_WRITE;
-            break;
-        }
-        }
-
-        //creationDisposition |= PXFileMemoryCachingModeConvertToID(pxFileOpenFromPathInfo->MemoryCachingMode);
-
-
-        // Create the directory path if needed.
-        // Otherwise the file creation will fail because it does not automatically create itself.
-        // FilePathExtensionGetW
-        if(pxFileIOInfo->AccessMode == PXAccessModeWriteOnly || pxFileIOInfo->AccessMode == PXAccessModeReadAndWrite)
-        {
-            //const PXActionResult directoryCreateResult = DirectoryCreateA(filePath);
-
-            //PXActionExitOnError(directoryCreateResult);
-        }
-
-        // Open file
-        {
-            HANDLE fileHandle = PXNull;
-            SECURITY_ATTRIBUTES* securityAttributes = PXNull;
-
-            switch(pxText.Format)
+            switch(pxFileIOInfo->AccessMode)
             {
-            case TextFormatASCII:
-            case TextFormatUTF8:
-            {
-                if(PXAccessModeReadOnly == pxFile->AccessMode)
+                case PXAccessModeReadOnly:
                 {
-                    const DWORD dwAttrib = GetFileAttributesA(pxText.TextA); // Windows XP (+UWP), Kernel32.dll, fileapi.h
-                    const PXBool doesFileExists = dwAttrib != INVALID_FILE_ATTRIBUTES;
-                    const PXBool ifFile = !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY);
+                    shareMode = FILE_SHARE_READ;
+                    creationDisposition = OPEN_EXISTING;
+                    desiredAccess = GENERIC_READ;
+                    break;
+                }
+                case PXAccessModeWriteOnly:
+                {
+                    creationDisposition = CREATE_ALWAYS;
+                    desiredAccess = GENERIC_READ | GENERIC_WRITE;
+                    break;
+                }
+                case PXAccessModeReadAndWrite:
+                {
+                    creationDisposition = CREATE_ALWAYS;
+                    desiredAccess = GENERIC_READ | GENERIC_WRITE;
+                    break;
+                }
+            }
 
-                    if(!doesFileExists)
+            //creationDisposition |= PXFileMemoryCachingModeConvertToID(pxFileOpenFromPathInfo->MemoryCachingMode);
+
+
+            // Create the directory path if needed.
+            // Otherwise the file creation will fail because it does not automatically create itself.
+            // FilePathExtensionGetW
+            if(pxFileIOInfo->AccessMode == PXAccessModeWriteOnly || pxFileIOInfo->AccessMode == PXAccessModeReadAndWrite)
+            {
+                //const PXActionResult directoryCreateResult = DirectoryCreateA(filePath);
+
+                //PXActionExitOnError(directoryCreateResult);
+            }
+
+            // Open file
+            {
+                HANDLE fileHandle = PXNull;
+                SECURITY_ATTRIBUTES* securityAttributes = PXNull;
+
+                switch(pxText.Format)
+                {
+                    case TextFormatASCII:
+                    case TextFormatUTF8:
                     {
-                        return PXActionFailedFileNotFound;
+                        if(PXAccessModeReadOnly == pxFile->AccessMode)
+                        {
+                            const DWORD dwAttrib = GetFileAttributesA(pxText.TextA); // Windows XP (+UWP), Kernel32.dll, fileapi.h
+                            const PXBool doesFileExists = dwAttrib != INVALID_FILE_ATTRIBUTES;
+                            const PXBool ifFile = !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY);
+
+                            if(!doesFileExists)
+                            {
+                                return PXActionFailedFileNotFound;
+                            }
+
+                            if(!ifFile)
+                            {
+                                return PXActionFailedNotAFile;
+                            }
+                        }
+
+                        fileHandle = CreateFileA // Windows XP, Kernel32.dll, fileapi.h
+                        (
+                            pxText.TextA,
+                            desiredAccess,
+                            shareMode,
+                            securityAttributes,
+                            creationDisposition,
+                            flagsAndAttributes,
+                            templateFile
+                        );
+                        break;
                     }
-
-                    if(!ifFile)
+                    case TextFormatUNICODE:
                     {
-                        return PXActionFailedNotAFile;
+                        if(PXAccessModeReadOnly == pxFile->AccessMode)
+                        {
+                            const DWORD dwAttrib = GetFileAttributesW(pxText.TextW); // Windows XP (+UWP), Kernel32.dll, fileapi.h
+                            const PXBool doesFileExists = dwAttrib != INVALID_FILE_ATTRIBUTES;
+                            const PXBool ifFile = !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY);
+
+                            if(!doesFileExists)
+                            {
+                                return PXActionFailedFileNotFound;
+                            }
+
+                            if(!ifFile)
+                            {
+                                return PXActionFailedNotAFile;
+                            }
+                        }
+
+                        fileHandle = CreateFileW // Windows XP, Kernel32.dll, fileapi.h
+                        (
+                            pxText.TextW,
+                            desiredAccess,
+                            shareMode,
+                            securityAttributes,
+                            creationDisposition,
+                            flagsAndAttributes,
+                            templateFile
+                        );
+                        break;
+                    }
+                    default:
+                    {
+                        return PXActionRefusedInvalidFilePath;
                     }
                 }
 
-                fileHandle = CreateFileA // Windows XP, Kernel32.dll, fileapi.h
-                             (
-                                 pxText.TextA,
-                                 desiredAccess,
-                                 shareMode,
-                                 securityAttributes,
-                                 creationDisposition,
-                                 flagsAndAttributes,
-                                 templateFile
-                             );
-                break;
-            }
-            case TextFormatUNICODE:
-            {
-                if(PXAccessModeReadOnly == pxFile->AccessMode)
+                const PXBool successful = fileHandle != INVALID_HANDLE_VALUE;
+                const PXActionResult fileOpenResult = PXErrorCurrent(successful);
+
+                if(!successful)
                 {
-                    const DWORD dwAttrib = GetFileAttributesW(pxText.TextW); // Windows XP (+UWP), Kernel32.dll, fileapi.h
-                    const PXBool doesFileExists = dwAttrib != INVALID_FILE_ATTRIBUTES;
-                    const PXBool ifFile = !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY);
-
-                    if(!doesFileExists)
-                    {
-                        return PXActionFailedFileNotFound;
-                    }
-
-                    if(!ifFile)
-                    {
-                        return PXActionFailedNotAFile;
-                    }
+                    return fileOpenResult;
                 }
 
-                fileHandle = CreateFileW // Windows XP, Kernel32.dll, fileapi.h
-                             (
-                                 pxText.TextW,
-                                 desiredAccess,
-                                 shareMode,
-                                 securityAttributes,
-                                 creationDisposition,
-                                 flagsAndAttributes,
-                                 templateFile
-                             );
-                break;
+                pxFile->ID = fileHandle;
+                pxFile->AccessMode = pxFileIOInfo->AccessMode;
+                pxFile->CachingMode = pxFileIOInfo->MemoryCachingMode;
+                pxFile->LocationMode = PXFileLocationModeDirectUncached;
+
+                //int x = _open_osfhandle(pxFile->ID, _O_APPEND);
+                //FILE* fp = _fdopen(x, "rb");
+                //pxFile->IDPOSIX = fp;
             }
-            default:
+
+            // Get file size
+
+
+            if(PXAccessModeReadOnly == pxFile->AccessMode)
             {
-                return PXActionRefusedInvalidFilePath;
-            }
-            }
+                LARGE_INTEGER largeInt;
 
-            const PXBool successful = fileHandle != INVALID_HANDLE_VALUE;
-            const PXActionResult fileOpenResult = PXErrorCurrent(successful);
+                const BOOL sizeResult = GetFileSizeEx(pxFile->ID, &largeInt); // Windows XP, Kernel32.dll, fileapi.h
 
-            if(!successful)
-            {
-                return fileOpenResult;
+                pxFile->DataUsed = largeInt.QuadPart;
+                pxFile->DataAllocated = largeInt.QuadPart;
+
             }
 
-            pxFile->ID = fileHandle;
-            pxFile->AccessMode = pxFileIOInfo->AccessMode;
-            pxFile->CachingMode = pxFileIOInfo->MemoryCachingMode;
-            pxFile->LocationMode = PXFileLocationModeDirectUncached;
 
-            //int x = _open_osfhandle(pxFile->ID, _O_APPEND);
-            //FILE* fp = _fdopen(x, "rb");
-            //pxFile->IDPOSIX = fp;
-        }
-
-        // Get file size
-
-
-        if(PXAccessModeReadOnly == pxFile->AccessMode)
-        {
-            LARGE_INTEGER largeInt;
-
-            const BOOL sizeResult = GetFileSizeEx(pxFile->ID, &largeInt); // Windows XP, Kernel32.dll, fileapi.h
-
-            pxFile->DataUsed = largeInt.QuadPart;
-            pxFile->DataAllocated = largeInt.QuadPart;
-
-        }
-
-
-        PXFilePathSet(pxFile, &pxText);
+            PXFilePathSet(pxFile, &pxText);
 
 #if PXLogEnable && 0
-        PXLoggingEventData pxLoggingEventData;
-        PXClear(PXLoggingEventData, &pxLoggingEventData);
-        pxLoggingEventData.FileReference = pxFile;
-        pxLoggingEventData.ModuleSource = "File";
-        pxLoggingEventData.ModuleAction = "Opening";
-        pxLoggingEventData.PrintFormat = "";
-        pxLoggingEventData.Type = PXLoggingAllocation;
-        pxLoggingEventData.Target = PXLoggingTypeTargetFile;
+            PXLoggingEventData pxLoggingEventData;
+            PXClear(PXLoggingEventData, &pxLoggingEventData);
+            pxLoggingEventData.FileReference = pxFile;
+            pxLoggingEventData.ModuleSource = "File";
+            pxLoggingEventData.ModuleAction = "Opening";
+            pxLoggingEventData.PrintFormat = "";
+            pxLoggingEventData.Type = PXLoggingAllocation;
+            pxLoggingEventData.Target = PXLoggingTypeTargetFile;
 
-        PXLogPrintInvoke(&pxLoggingEventData);
+            PXLogPrintInvoke(&pxLoggingEventData);
 #endif
 
-        // File is now opened.
-        // Can we map the whole file into memory?
-        const PXBool shallMap = (PXFileIOInfoAllowMapping & pxFileIOInfo->FlagList) && PXFileMappingAllow;
+            // File is now opened.
+            // Can we map the whole file into memory?
+            const PXBool shallMap = (PXFileIOInfoAllowMapping & pxFileIOInfo->FlagList) && PXFileMappingAllow;
 
-        if(!shallMap)
-        {
-            return PXActionSuccessful; // No mapping attempt, we are done
-        }
+            if(!shallMap)
+            {
+                return PXActionSuccessful; // No mapping attempt, we are done
+            }
 
-        // Attempt mappiung
+            // Attempt mappiung
 
 #if OSUnix
 
-        int accessType = PROT_READ;
-        int flags = MAP_PRIVATE;// | MAP_POPULATE;
-        int fileDescriptor = 0;
-        off_t length = 0;
+            int accessType = PROT_READ;
+            int flags = MAP_PRIVATE;// | MAP_POPULATE;
+            int fileDescriptor = 0;
+            off_t length = 0;
 
-        // Open file
-        {
-            int openFlag = 0;
-
-            switch(protectionMode)
+            // Open file
             {
-            case MemoryNoReadWrite:
-                openFlag = 0;
-                break;
+                int openFlag = 0;
 
-            case PXAccessModeReadOnly:
-                openFlag = O_RDONLY;
-                break;
+                switch(protectionMode)
+                {
+                    case MemoryNoReadWrite:
+                        openFlag = 0;
+                        break;
 
-            case PXAccessModeWriteOnly:
-                openFlag = O_WRONLY;
-                break;
+                    case PXAccessModeReadOnly:
+                        openFlag = O_RDONLY;
+                        break;
 
-            case PXAccessModeReadAndWrite:
-                openFlag = O_RDWR;
-                break;
+                    case PXAccessModeWriteOnly:
+                        openFlag = O_WRONLY;
+                        break;
+
+                    case PXAccessModeReadAndWrite:
+                        openFlag = O_RDWR;
+                        break;
+                }
+
+                const int fileDescriptor = open64(filePath, openFlag);
+                const PXBool sucessfulOpen = fileDescriptor != -1;
+
+                PXActionOnErrorFetchAndExit(!sucessfulOpen)
+
+                    pxFile->IDMapping = fileDescriptor;
             }
 
-            const int fileDescriptor = open64(filePath, openFlag);
-            const PXBool sucessfulOpen = fileDescriptor != -1;
-
-            PXActionOnErrorFetchAndExit(!sucessfulOpen)
-
-            pxFile->IDMapping = fileDescriptor;
-        }
-
-        // Get file length
-        {
-            const PXSize fileLength = lseek64(pxFile->IDMapping, 0, SEEK_END);
-            const PXBool sucessful = fileLength > 0;
-
-            if(!sucessful)
+            // Get file length
             {
-                return PXActionFailedFileRead;
+                const PXSize fileLength = lseek64(pxFile->IDMapping, 0, SEEK_END);
+                const PXBool sucessful = fileLength > 0;
+
+                if(!sucessful)
+                {
+                    return PXActionFailedFileRead;
+                }
+
+                pxFile->DataSize = fileLength;
             }
 
-            pxFile->DataSize = fileLength;
-        }
-
-        // Map data
-        {
-            const PXAccessModeType protectionModeID = ConvertFromPXAccessMode(protectionMode);
-            const int flags = MAP_PRIVATE;// | MAP_POPULATE;
-            const off_t offset = 0;
-
-            const void* mappedData = mmap
-                                     (
-                                         0, // addressPrefered
-                                         pxFile->DataSize,
-                                         protectionModeID,
-                                         flags,
-                                         pxFile->IDMapping, // fileDescriptor
-                                         offset
-                                     );
-            const PXBool successfulMapping = mappedData != 0;
-
-            if(!successfulMapping)
+            // Map data
             {
-                return PXActionFailedFileMapping;
+                const PXAccessModeType protectionModeID = ConvertFromPXAccessMode(protectionMode);
+                const int flags = MAP_PRIVATE;// | MAP_POPULATE;
+                const off_t offset = 0;
+
+                const void* mappedData = mmap
+                (
+                    0, // addressPrefered
+                    pxFile->DataSize,
+                    protectionModeID,
+                    flags,
+                    pxFile->IDMapping, // fileDescriptor
+                    offset
+                );
+                const PXBool successfulMapping = mappedData != 0;
+
+                if(!successfulMapping)
+                {
+                    return PXActionFailedFileMapping;
+                }
+
+                pxFile->Data = mappedData;
             }
 
-            pxFile->Data = mappedData;
-        }
+            pxFile->DataLocation = FileLocationMappedFromDisk;
 
-        pxFile->DataLocation = FileLocationMappedFromDisk;
+            close(pxFile->IDMapping);
 
-        close(pxFile->IDMapping);
-
-        pxFile->IDMapping = 0;
+            pxFile->IDMapping = 0;
 
 
 #elif OSWindows
 
         // Create mapping
-        {
-            DWORD flProtect = SEC_COMMIT;
-
-            LARGE_INTEGER maximumSize;
-            maximumSize.QuadPart = 0;
-
-            if(PXAccessModeReadAndWrite == pxFile->AccessMode || PXAccessModeWriteOnly == pxFile->AccessMode)
             {
-                maximumSize.QuadPart = pxFileIOInfo->FileSizeRequest;
-            }
+                DWORD flProtect = SEC_COMMIT;
+
+                LARGE_INTEGER maximumSize;
+                maximumSize.QuadPart = 0;
+
+                if(PXAccessModeReadAndWrite == pxFile->AccessMode || PXAccessModeWriteOnly == pxFile->AccessMode)
+                {
+                    maximumSize.QuadPart = pxFileIOInfo->FileSizeRequest;
+                }
 
 
-            //  DWORD dwMaximumSizeHigh = 0;
-            // DWORD dwMaximumSizeLow = 0; // Problem if file is 0 Length
+                //  DWORD dwMaximumSizeHigh = 0;
+                // DWORD dwMaximumSizeLow = 0; // Problem if file is 0 Length
 
 #if OS32Bit
-            dwMaximumSizeHigh = 0;
-            dwMaximumSizeLow = pxFile->DataSize;
+                dwMaximumSizeHigh = 0;
+                dwMaximumSizeLow = pxFile->DataSize;
 #elif OS64Bit
-            dwMaximumSizeHigh = (pxFile->DataSize & 0xFFFFFFFF00000000) >> 32u;
-            dwMaximumSizeLow = pxFile->DataSize & 0x00000000FFFFFFFF;
+                dwMaximumSizeHigh = (pxFile->DataSize & 0xFFFFFFFF00000000) >> 32u;
+                dwMaximumSizeLow = pxFile->DataSize & 0x00000000FFFFFFFF;
 #endif
 
-            switch(pxFileIOInfo->AccessMode)
-            {
-            case PXAccessModeNoAccess:
-                flProtect |= PAGE_NOACCESS;
-                break;
-
-            case PXAccessModeReadOnly:
-                flProtect |= PAGE_READONLY;
-                break;
-
-            case PXAccessModeWriteOnly:
-                flProtect |= PAGE_READWRITE; // PAGE_WRITECOPY
-                break;
-
-            case PXAccessModeReadAndWrite:
-                flProtect |= PAGE_READWRITE;
-                break;
-            }
-
-            // [i] I want to add LargePage support but it seems you cant do that with files.
-
-            const HANDLE fileMappingHandleResult = CreateFileMappingA
-                                                   (
-                                                           pxFile->ID,
-                                                           PXNull, // No security attributes
-                                                           flProtect,
-                                                           maximumSize.HighPart,
-                                                           maximumSize.LowPart,
-                                                           PXNull // No Name
-                                                   );
-
-            // check if successful
-            {
-                const PXBool successful = fileMappingHandleResult != PXNull;
-
-                if(successful)
+                switch(pxFileIOInfo->AccessMode)
                 {
-                    pxFile->MappingID = fileMappingHandleResult; // Mapping [OK]
+                    case PXAccessModeNoAccess:
+                        flProtect |= PAGE_NOACCESS;
+                        break;
 
-                    if(pxFile->DataUsed == 0)
+                    case PXAccessModeReadOnly:
+                        flProtect |= PAGE_READONLY;
+                        break;
+
+                    case PXAccessModeWriteOnly:
+                        flProtect |= PAGE_READWRITE; // PAGE_WRITECOPY
+                        break;
+
+                    case PXAccessModeReadAndWrite:
+                        flProtect |= PAGE_READWRITE;
+                        break;
+                }
+
+                // [i] I want to add LargePage support but it seems you cant do that with files.
+
+                const HANDLE fileMappingHandleResult = CreateFileMappingA
+                (
+                    pxFile->ID,
+                    PXNull, // No security attributes
+                    flProtect,
+                    maximumSize.HighPart,
+                    maximumSize.LowPart,
+                    PXNull // No Name
+                );
+
+                // check if successful
+                {
+                    const PXBool successful = fileMappingHandleResult != PXNull;
+
+                    if(successful)
                     {
-                        pxFile->DataUsed = maximumSize.QuadPart;
-                        pxFile->DataAllocated = maximumSize.QuadPart;
+                        pxFile->MappingID = fileMappingHandleResult; // Mapping [OK]
 
-                    }
-
-
-                    {
-                        DWORD desiredAccess = 0;
-                        DWORD fileOffsetHigh = 0;
-                        DWORD fileOffsetLow = 0;
-                        PXSize numberOfBytesToMap = 0;
-                        void* baseAddressTarget = 0;
-                        //DWORD  numaNodePreferred = -1; // (NUMA_NO_PREFERRED_NODE)
-
-                        switch(pxFileIOInfo->AccessMode)
+                        if(pxFile->DataUsed == 0)
                         {
-                        case PXAccessModeReadOnly:
-                            desiredAccess |= FILE_MAP_READ;
-                            break;
+                            pxFile->DataUsed = maximumSize.QuadPart;
+                            pxFile->DataAllocated = maximumSize.QuadPart;
 
-                        case PXAccessModeWriteOnly:
-                            desiredAccess |= FILE_MAP_WRITE;
-                            break;
-
-                        case PXAccessModeReadAndWrite:
-                            desiredAccess |= FILE_MAP_ALL_ACCESS;
-                            break;
                         }
 
-                        // if large pages are supported, anable if
+
+                        {
+                            DWORD desiredAccess = 0;
+                            DWORD fileOffsetHigh = 0;
+                            DWORD fileOffsetLow = 0;
+                            PXSize numberOfBytesToMap = 0;
+                            void* baseAddressTarget = 0;
+                            //DWORD  numaNodePreferred = -1; // (NUMA_NO_PREFERRED_NODE)
+
+                            switch(pxFileIOInfo->AccessMode)
+                            {
+                                case PXAccessModeReadOnly:
+                                    desiredAccess |= FILE_MAP_READ;
+                                    break;
+
+                                case PXAccessModeWriteOnly:
+                                    desiredAccess |= FILE_MAP_WRITE;
+                                    break;
+
+                                case PXAccessModeReadAndWrite:
+                                    desiredAccess |= FILE_MAP_ALL_ACCESS;
+                                    break;
+                            }
+
+                            // if large pages are supported, anable if
 #if WindowsAtleastVista && 0
-                        if(useLargeMemoryPages)
-                        {
-                            desiredAccess |= FILE_MAP_LARGE_PAGES;
-                        }
+                            if(useLargeMemoryPages)
+                            {
+                                desiredAccess |= FILE_MAP_LARGE_PAGES;
+                            }
 #endif
 
-                        void* const fileMapped = MapViewOfFile // MapViewOfFileExNuma is only useable starting windows vista, this function in XP
-                                                 (
-                                                     pxFile->MappingID,
-                                                     desiredAccess,
-                                                     fileOffsetHigh,
-                                                     fileOffsetLow,
-                                                     numberOfBytesToMap
-                                                 );
+                            void* const fileMapped = MapViewOfFile // MapViewOfFileExNuma is only useable starting windows vista, this function in XP
+                            (
+                                pxFile->MappingID,
+                                desiredAccess,
+                                fileOffsetHigh,
+                                fileOffsetLow,
+                                numberOfBytesToMap
+                            );
 
-                        pxFile->Data = fileMapped;
+                            pxFile->Data = fileMapped;
 
 
 #if PXLogEnable
-                        PXLoggingEventData pxLoggingEventData;
-                        PXClear(PXLoggingEventData, &pxLoggingEventData);
-                        pxLoggingEventData.FileReference = pxFile;
-                        pxLoggingEventData.ModuleSource = "File";
-                        pxLoggingEventData.ModuleAction = "MMAP-Create";
-                        pxLoggingEventData.PrintFormat = "";
-                        pxLoggingEventData.Type = PXLoggingAllocation;
-                        pxLoggingEventData.Target = PXLoggingTypeTargetFile;
+                            PXLoggingEventData pxLoggingEventData;
+                            PXClear(PXLoggingEventData, &pxLoggingEventData);
+                            pxLoggingEventData.FileReference = pxFile;
+                            pxLoggingEventData.ModuleSource = "File";
+                            pxLoggingEventData.ModuleAction = "MMAP-Create";
+                            pxLoggingEventData.PrintFormat = "";
+                            pxLoggingEventData.Type = PXLoggingAllocation;
+                            pxLoggingEventData.Target = PXLoggingTypeTargetFile;
 
-                        PXLogPrintInvoke(&pxLoggingEventData);
+                            PXLogPrintInvoke(&pxLoggingEventData);
 #endif
 
 
-                        PXMemoryVirtualPrefetch(fileMapped, pxFile->DataUsed);
+                            PXMemoryVirtualPrefetch(fileMapped, pxFile->DataUsed);
+                        }
+
+#endif
+
+                        pxFile->LocationMode = PXFileLocationModeMappedFromDisk;
+
+                        return PXActionSuccessful;
                     }
-
+                }
+            }
 #endif
 
-        pxFile->LocationMode = PXFileLocationModeMappedFromDisk;
-
-        return PXActionSuccessful;
-    }
-}
-}
-#endif
-
-        // Filemapping failed, maybe due to lack of memory. File exists and is loaded, so we proceed normally.
+            // Filemapping failed, maybe due to lack of memory. File exists and is loaded, so we proceed normally.
 
 
-        // Try allocating cache. To fetch data into
+            // Try allocating cache. To fetch data into
 #if 0
-        pxFile->DataAllocated = 420;
-        pxFile->Data = MemoryAllocate(420);
-        pxFile->LocationMode = PXFileLocationModeDirectCached;
+            pxFile->DataAllocated = 420;
+            pxFile->Data = MemoryAllocate(420);
+            pxFile->LocationMode = PXFileLocationModeDirectCached;
 #endif
 
-        // Mapping and allocating failed, we now read/write direct from/to file.
+            // Mapping and allocating failed, we now read/write direct from/to file.
 
-        // We dont do anything
+            // We dont do anything
 
 
 
 #if 0
         // Get a FILE* from file HANDLE
-        {
-            int osHandleMode = 0;
-            const char* fdOpenMode = 0;
-
-            switch(fileOpenMode)
             {
-            case PXAccessModeReadOnly:
-            {
-                osHandleMode = _O_RDONLY;
-                fdOpenMode = "rb";
-                break;
-            }
-            case  PXAccessModeWriteOnly:
-            {
-                osHandleMode = _O_RDWR;//_O_WRONLY;
-                fdOpenMode = "wb";
-                break;
-            }
-            case  PXAccessModeReadAndWrite:
-            {
-                osHandleMode = _O_RDWR;
-                fdOpenMode = "wb";
-                break;
-            }
-            }
+                int osHandleMode = 0;
+                const char* fdOpenMode = 0;
 
-
-            const int nHandle = _open_osfhandle((intptr_t)pxFile->ID, osHandleMode);
-            const PXBool sucessful = nHandle != -1;
-
-            if(sucessful)
-            {
-                FILE* fp = _fdopen(nHandle, fdOpenMode);
-                const PXBool result = fp;
-
-                if(result)
+                switch(fileOpenMode)
                 {
-                    pxFile->FileHandleCStyle = fp;
+                    case PXAccessModeReadOnly:
+                    {
+                        osHandleMode = _O_RDONLY;
+                        fdOpenMode = "rb";
+                        break;
+                    }
+                    case  PXAccessModeWriteOnly:
+                    {
+                        osHandleMode = _O_RDWR;//_O_WRONLY;
+                        fdOpenMode = "wb";
+                        break;
+                    }
+                    case  PXAccessModeReadAndWrite:
+                    {
+                        osHandleMode = _O_RDWR;
+                        fdOpenMode = "wb";
+                        break;
+                    }
+                }
+
+
+                const int nHandle = _open_osfhandle((intptr_t)pxFile->ID, osHandleMode);
+                const PXBool sucessful = nHandle != -1;
+
+                if(sucessful)
+                {
+                    FILE* fp = _fdopen(nHandle, fdOpenMode);
+                    const PXBool result = fp;
+
+                    if(result)
+                    {
+                        pxFile->FileHandleCStyle = fp;
+                    }
+                    else
+                    {
+                        // handle?
+                    }
                 }
                 else
                 {
                     // handle?
                 }
-            }
-            else
-            {
-                // handle?
-            }
 
-        }
+            }
 #endif
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        break;
-    }
-    case PXFileIOInfoFileVirtual:
-    {
-        // TODO: fix?
+            break;
+        }
+        case PXFileIOInfoFileVirtual:
+        {
+            // TODO: fix?
 #if OSUnix
 #elif OSWindows
 
-        PXText tempFileFullPath;
-        PXTextConstructNamedBufferW(&tempFileFullPath, tempFileFullPathBuffer, MAX_PATH);
+            PXText tempFileFullPath;
+            PXTextConstructNamedBufferW(&tempFileFullPath, tempFileFullPathBuffer, MAX_PATH);
 
-        {
-            PXText tempPath;
-            PXTextConstructNamedBufferW(&tempPath, tempPathBuffer, MAX_PATH);
+            {
+                PXText tempPath;
+                PXTextConstructNamedBufferW(&tempPath, tempPathBuffer, MAX_PATH);
 
-            // Gets the temp path env string (no guarantee it's a valid path).
-            tempPath.SizeUsed = GetTempPathW(tempPath.SizeAllocated / 2, tempPath.TextW); // Windows XP (+UWP), Kernel32.dll, fileapi.h
+                // Gets the temp path env string (no guarantee it's a valid path).
+                tempPath.SizeUsed = GetTempPathW(tempPath.SizeAllocated / 2, tempPath.TextW); // Windows XP (+UWP), Kernel32.dll, fileapi.h
 
-            const PXBool successfulTempPathFetch = tempPath.SizeUsed > 0;
-
-
-            // Generates a temporary file name.
-            tempFileFullPath.SizeUsed = GetTempFileNameW
-                                        (
-                                            tempPath.TextW, // directory for tmp files
-                                            L"PXUltima",     // temp file name prefix
-                                            0,                // create unique name
-                                            tempFileFullPath.TextW // buffer for name
-                                        );
+                const PXBool successfulTempPathFetch = tempPath.SizeUsed > 0;
 
 
-
-            const PXBool successfulTempPathCreate = tempFileFullPath.SizeUsed > 0;
-        }
-
-        pxFile->ID = CreateFileW  // Windows XP, Kernel32.dll, fileapi.h
-                     (
-                         tempFileFullPath.TextW, // file name
-                         GENERIC_ALL,            // open for write
-                         0,                        // do not share
-                         NULL,                    // default security
-                         CREATE_ALWAYS,            // overwrite existing
-                         FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE,// normal file
-                         NULL                    // no template
-                     );
+                // Generates a temporary file name.
+                tempFileFullPath.SizeUsed = GetTempFileNameW
+                (
+                    tempPath.TextW, // directory for tmp files
+                    L"PXUltima",     // temp file name prefix
+                    0,                // create unique name
+                    tempFileFullPath.TextW // buffer for name
+                );
 
 
-        pxFile->AccessMode = PXAccessModeReadAndWrite;
-        pxFile->CachingMode = PXMemoryCachingModeTemporary;
-        pxFile->LocationMode = PXFileLocationModeDirectCached;
+
+                const PXBool successfulTempPathCreate = tempFileFullPath.SizeUsed > 0;
+            }
+
+            pxFile->ID = CreateFileW  // Windows XP, Kernel32.dll, fileapi.h
+            (
+                tempFileFullPath.TextW, // file name
+                GENERIC_ALL,            // open for write
+                0,                        // do not share
+                NULL,                    // default security
+                CREATE_ALWAYS,            // overwrite existing
+                FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE,// normal file
+                NULL                    // no template
+            );
+
+
+            pxFile->AccessMode = PXAccessModeReadAndWrite;
+            pxFile->CachingMode = PXMemoryCachingModeTemporary;
+            pxFile->LocationMode = PXFileLocationModeDirectCached;
 
 
 #else
@@ -1867,37 +1850,37 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, const PXFileOpenInfo* cons
 
 
 
-        break;
-    }
-    case PXFileIOInfoFileTemp:
-    {
-        break;
-    }
-    case PXFileIOInfoFileMemory:
-    {
-        const PXBool hasSource = pxFileIOInfo->BufferData > 0;
-
-        pxFile->AccessMode = pxFileIOInfo->AccessMode;
-        pxFile->LocationMode = PXFileLocationModeInternal;
-
-        if(hasSource)
-        {
-            pxFile->Data = pxFileIOInfo->BufferData;
-            pxFile->DataAllocated = pxFileIOInfo->BufferSize;
+            break;
         }
-        else
+        case PXFileIOInfoFileTemp:
         {
-            pxFile->Data = PXMemoryCallocT(PXByte, pxFileIOInfo->FileSizeRequest);
-            pxFile->DataAllocated = pxFileIOInfo->FileSizeRequest;
+            break;
+        }
+        case PXFileIOInfoFileMemory:
+        {
+            const PXBool hasSource = pxFileIOInfo->BufferData > 0;
+
+            pxFile->AccessMode = pxFileIOInfo->AccessMode;
+            pxFile->LocationMode = PXFileLocationModeInternal;
+
+            if(hasSource)
+            {
+                pxFile->Data = pxFileIOInfo->BufferData;
+                pxFile->DataAllocated = pxFileIOInfo->BufferSize;
+            }
+            else
+            {
+                pxFile->Data = PXMemoryCallocT(PXByte, pxFileIOInfo->FileSizeRequest);
+                pxFile->DataAllocated = pxFileIOInfo->FileSizeRequest;
+            }
+
+            pxFile->DataUsed = pxFile->DataAllocated;
+
+            break;
         }
 
-        pxFile->DataUsed = pxFile->DataAllocated;
-
-        break;
-    }
-
-    default:
-        return PXActionInvalid;
+        default:
+            return PXActionInvalid;
     }
 
     return PXActionSuccessful;

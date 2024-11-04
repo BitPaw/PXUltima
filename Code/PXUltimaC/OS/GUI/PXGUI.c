@@ -2745,13 +2745,13 @@ PXActionResult PXAPI PXGUIIconGetViaFilePath(PXIcon* const pxIcon, const char* f
     ZeroMemory(&shFileInfo, sizeof(shFileInfo));
 
     const PXBool fetch = SHGetFileInfoA // Windows 2000, Shell32.dll 4.0, shellapi.h
-                         (
-                             fileName,
-                             0,
-                             &shFileInfo,
-                             sizeof(SHFILEINFOA),
-                             SHGFI_ICON | SHGFI_DISPLAYNAME | SHGFI_SMALLICON | SHGFI_LARGEICON
-                         );
+    (
+        fileName,
+        0,
+        &shFileInfo,
+        sizeof(SHFILEINFOA),
+        SHGFI_ICON | SHGFI_DISPLAYNAME | SHGFI_SMALLICON | SHGFI_LARGEICON
+    );
 
     pxIcon->Info.Handle.IconHandle = shFileInfo.hIcon;
 
@@ -2886,7 +2886,7 @@ PXActionResult PXAPI PXGUIElementDragStart(PXGUISystem* const pxGUISystem, PXGUI
 
     const DWORD aa = DragObject(hwndParent, hwndFrom, fmt, data, hcur);
 #else
-    PXActionRefusedNotSupportedByOperatingSystem;
+    return PXActionRefusedNotSupportedByOperatingSystem;
 #endif
 
     //const BOOL res = DragDetect();
@@ -6494,15 +6494,15 @@ PXActionResult PXAPI PXGUIElementDrawRectangle(PXGUISystem* const pxGUISystem, P
     PXGUIDrawColorSetBrush(pxGUISystem, pxGUIElement, brushBackGround, PXGUIDrawModeBack);
 
     const resultID = XFillRectangle
-                     (
-                         pxGUISystem->DisplayCurrent.DisplayHandle,
-                         pxGUIElement->Info.Handle.WindowID,
-                         pxGUISystem->DisplayCurrent.GraphicContent,
-                         x,
-                         y,
-                         width,
-                         height
-                     );
+    (
+        pxGUISystem->DisplayCurrent.DisplayHandle,
+        pxGUIElement->Info.Handle.WindowID,
+        pxGUISystem->DisplayCurrent.GraphicContent,
+        x,
+        y,
+        width,
+        height
+    );
     // pxActionResultresult = PXGUIElementErrorFromXSystem(resultID);
 #elif OSWindows
     //  const BOOL bbbbb = SelectObject(pxGUIElement->DeviceContextHandle, GetStockObject(GRAY_BRUSH));
@@ -6518,7 +6518,7 @@ PXActionResult PXAPI PXGUIElementDrawRectangle(PXGUISystem* const pxGUISystem, P
     // const COLORREF color = RGB(255, 0, 200);
     // const HBRUSH brushAA = CreateSolidBrush(color);
 
-    const BOOL aaaaaa = FillRect(pxGUIElement->DeviceContextHandle, &rect, brushBackGround);
+    const BOOL aaaaaa = FillRect(pxGUIElement->DeviceContextHandle, &rect, brushBackGround->Info.Handle.BrushHandle);
 
     // DeleteObject();
 

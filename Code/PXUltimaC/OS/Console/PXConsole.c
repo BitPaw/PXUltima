@@ -650,7 +650,7 @@ void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source,
             break;
 
         case PXLoggingReallocation:
-            loggingTypeSymbol = '*';
+            loggingTypeSymbol = '>';
             symbolColor = 'c';
             nameColor = 'd';
             break;

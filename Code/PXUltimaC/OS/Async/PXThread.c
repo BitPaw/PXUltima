@@ -212,7 +212,7 @@ PXActionResult PXAPI PXThreadYieldToOtherThreads()
     // UmsThreadYield() // Windows 7 (64-Bit only), Kernel32.dll, winbase.h [Debcricated in Windows 11]
 
     const PXBool switchSuccessful = SwitchToThread(); // Windows 2000 SP4 (+UWP), Kernel32.dll, processthreadsapi.h
-    const PXActionResult pxActionResult = PXErrorCurrent(switchSuccessful);
+    const PXActionResult pxActionResult = PXActionSuccessful; // cant fail
 
     return pxActionResult;
 #else
