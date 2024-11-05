@@ -353,6 +353,13 @@ PXResourceType;
 #define PXResourceInfoUseByEngine     0b0001000000000000
 #define PXResourceInfoUseByUndefined  0b0001100000000000
 
+#define PXResourceInfoPermissionMask    0b1110000000000000
+#define PXResourceInfoPermissionREAD    0b1000000000000000
+#define PXResourceInfoPermissionWRITE   0b0100000000000000
+#define PXResourceInfoPermissionEXECUTE 0b0010000000000000
+
+
+#define PXResourceInfoConstData PXResourceInfoPermissionREAD | PXResourceInfoStorageMemory | PXResourceInfoExist | PXResourceInfoActive | PXResourceInfoRender
 
 #define PXResourceInfoOK              PXResourceInfoExist | PXResourceInfoActive | PXResourceInfoRender
 

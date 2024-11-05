@@ -2718,6 +2718,11 @@ PXActionResult PXAPI PXGUIElementDrawFileDirectoryView(PXGUISystem* const pxGUIS
 
 PXActionResult PXAPI PXGUIIconGetSystem(PXIcon* const pxIcon, const int iconID)
 {
+    if(!pxIcon)
+    {
+        return PXActionRefusedArgumentNull;
+    }
+
 #if OSUnix
     return PXActionRefusedNotImplemented;
 #elif OSWindows
@@ -2737,6 +2742,11 @@ PXActionResult PXAPI PXGUIIconGetSystem(PXIcon* const pxIcon, const int iconID)
 
 PXActionResult PXAPI PXGUIIconGetViaFilePath(PXIcon* const pxIcon, const char* fileName)
 {
+    if(!(pxIcon && fileName))
+    {
+        return PXActionRefusedArgumentNull;
+    }
+
 #if OSUnix
     return PXActionRefusedNotImplemented;
 #elif OSWindows

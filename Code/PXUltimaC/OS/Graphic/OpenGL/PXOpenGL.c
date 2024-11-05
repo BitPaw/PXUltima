@@ -4656,6 +4656,36 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
         return PXActionRefusedNotSupportedByLibrary;
     }
 
+    // Check if we have data to even compile shader
+    {
+        for(PXSize i = 0; i < amount; ++i)
+        {
+            const PXShader* const shader = &shaderList[i];
+
+            const PXBool validCall = shader->ShaderFile->Data && (shader->ShaderFile->DataUsed > 0);
+
+            if(!validCall)
+            {
+#if PXLogEnable
+                const char* shaderTypeName = PXGraphicShaderTypeToString(shader->Type);
+
+                PXLogPrint
+                (
+                    PXLoggingError,
+                    "OpenGL",
+                    "Shader-Error",
+                    "%s [%i] has no data attached!",
+                    shaderTypeName,
+                    shader->Info.ID
+                );
+#endif
+
+                return PXActionRefusedArgumentInvalid;
+            }
+        }
+    }
+
+
     // Create shader program
     {
         pxShaderProgram->Info.Handle.OpenGLID = pxOpenGL->ShaderProgramCreate(); // Generate an opengl resource
@@ -4705,6 +4735,10 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
             const PXInt32U shaderTypeID = PXOpenGLShaderTypeToID(shader->Type);
             const char* const shaderData = shader->ShaderFile->Data;
             PXInt32S shaderLength = shader->ShaderFile->DataUsed;
+
+
+
+
 
             shader->Info.Handle.OpenGLID = pxOpenGL->ShaderCreate(shaderTypeID); // Create shader
 
