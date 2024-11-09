@@ -36,8 +36,8 @@ void PXAPI PXTestWindowOpenUIRender()
 
     
 
-    PXGUIElement textA;
-    PXClear(PXGUIElement, &textA);
+    PXWindow textA;
+    PXClear(PXWindow, &textA);
     textA.Type = PXUIElementTypeText;
     textA.Position.X = 20;
     textA.Position.Y = 20;
@@ -47,8 +47,8 @@ void PXAPI PXTestWindowOpenUIRender()
     PXUIElementCreateOSStyle(&textA, &pxWindow);
 
 
-    PXGUIElement button;
-    PXClear(PXGUIElement, &button);
+    PXWindow button;
+    PXClear(PXWindow, &button);
     button.Type = PXUIElementTypeButton;
     button.Position.X = 20;
     button.Position.Y = 70;
@@ -67,8 +67,8 @@ void PXAPI PXTestWindowOpenUIRender()
     PXUIElementCreateOSStyle(&button, &pxWindow);
 
 
-    PXGUIElement dropDown;
-    PXClear(PXGUIElement, &dropDown);
+    PXWindow dropDown;
+    PXClear(PXWindow, &dropDown);
     dropDown.Type = PXUIElementTypeComboBox;
     dropDown.Position.X = 20;
     dropDown.Position.Y = 120;
@@ -77,8 +77,8 @@ void PXAPI PXTestWindowOpenUIRender()
     PXUIElementCreateOSStyle(&dropDown, &pxWindow);
 
 
-    PXGUIElement textEdit;
-    PXClear(PXGUIElement, &textEdit);
+    PXWindow textEdit;
+    PXClear(PXWindow, &textEdit);
     textEdit.Type = PXUIElementTypeTextEdit;
     textEdit.Position.X = 20;
     textEdit.Position.Y = 170;
@@ -87,8 +87,8 @@ void PXAPI PXTestWindowOpenUIRender()
     PXUIElementCreateOSStyle(&textEdit, &pxWindow);
 
 
-    PXGUIElement progressBar;
-    PXClear(PXGUIElement, &progressBar);
+    PXWindow progressBar;
+    PXClear(PXWindow, &progressBar);
     progressBar.Type = PXUIElementTypeProgressBar;
     progressBar.Position.X = 20;
     progressBar.Position.Y = 220;
@@ -98,8 +98,8 @@ void PXAPI PXTestWindowOpenUIRender()
     PXUIElementCreateOSStyle(&progressBar, &pxWindow);
 
 
-    PXGUIElement listbox;
-    PXClear(PXGUIElement, &listbox);
+    PXWindow listbox;
+    PXClear(PXWindow, &listbox);
     listbox.Type = PXUIElementTypeListBox;
     listbox.Position.X = 20;
     listbox.Position.Y = 270;
@@ -108,8 +108,8 @@ void PXAPI PXTestWindowOpenUIRender()
     PXUIElementCreateOSStyle(&listbox, &pxWindow);
 
 
-    PXGUIElement radioButtonA;
-    PXClear(PXGUIElement, &radioButtonA);
+    PXWindow radioButtonA;
+    PXClear(PXWindow, &radioButtonA);
     radioButtonA.Type = PXUIElementTypeRadioButton;
     radioButtonA.Position.X = 20;
     radioButtonA.Position.Y = 320;
@@ -117,8 +117,8 @@ void PXAPI PXTestWindowOpenUIRender()
     radioButtonA.Position.Height = 35;
     PXUIElementCreateOSStyle(&radioButtonA, &pxWindow);
     
-    PXGUIElement radioButtonB;
-    PXClear(PXGUIElement, &radioButtonB);
+    PXWindow radioButtonB;
+    PXClear(PXWindow, &radioButtonB);
     radioButtonB.Type = PXUIElementTypeRadioButton;
     radioButtonB.Position.X = 100;
     radioButtonB.Position.Y = 320;
@@ -134,13 +134,13 @@ void PXAPI PXTestWindowOpenUIRender()
 
     while(1)
     {
-        PXGUIElementUpdateInfo pxGUIElementUpdateInfo;
-        PXClear(PXGUIElementUpdateInfo, &pxGUIElementUpdateInfo);
+        PXWindowUpdateInfo pxGUIElementUpdateInfo;
+        PXClear(PXWindowUpdateInfo, &pxGUIElementUpdateInfo);
         pxGUIElementUpdateInfo.UIElement = &button;
         pxGUIElementUpdateInfo.WindowReference = &pxWindow;
         pxGUIElementUpdateInfo.Property = PXUIElementPropertySize;
 
-        PXGUIElementUpdate(PXNull, &pxGUIElementUpdateInfo, 1);
+        PXWindowUpdate(PXNull, &pxGUIElementUpdateInfo, 1);
 
         PXWindowUpdate(&pxWindow);
         PXWindowFrameBufferSwap(&pxWindow);

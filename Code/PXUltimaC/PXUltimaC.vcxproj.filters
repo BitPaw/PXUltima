@@ -558,6 +558,9 @@
     <ClCompile Include="OS\AI\PXAI.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="OS\Graphic\NativDraw\PXNativDraw.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm\KalmanFilter\PXKalmanFilter.h">
@@ -1098,6 +1101,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="OS\AI\PXAI.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="OS\Graphic\NativDraw\PXNativDraw.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

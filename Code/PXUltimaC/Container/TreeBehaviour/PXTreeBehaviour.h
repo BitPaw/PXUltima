@@ -1,6 +1,8 @@
 #ifndef PXTreeBehaviourDEFINED
 #define PXTreeBehaviourDEFINED
 
+#include <Media/PXType.h>
+
 typedef (PXAPI* PXTreeBehaviourNodeCallBack)(void* owner);
 
 #define PXTreeBehaviourNodeFlagMask

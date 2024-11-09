@@ -325,8 +325,8 @@ void PXAPI PXResourceManagerInit(PXResourceManager* const pxResourceManager)
     PXDictionaryConstruct(&pxResourceManager->ShaderProgramLookup, sizeof(PXInt32U), sizeof(PXShaderProgram), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&pxResourceManager->SkyBoxLookUp, sizeof(PXInt32U), sizeof(PXSkyBox), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&pxResourceManager->ImageLookUp, sizeof(PXInt32U), sizeof(PXImage), PXDictionaryValueLocalityExternalReference);
-    PXDictionaryConstruct(&pxResourceManager->BrushLookUp, sizeof(PXInt32U), sizeof(PXGUIElementBrush), PXDictionaryValueLocalityExternalReference);
-    PXDictionaryConstruct(&pxResourceManager->GUIElementLookup, sizeof(PXInt32U), sizeof(PXGUIElement), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&pxResourceManager->BrushLookUp, sizeof(PXInt32U), sizeof(PXWindowBrush), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&pxResourceManager->GUIElementLookup, sizeof(PXInt32U), sizeof(PXWindow), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&pxResourceManager->SpriteAnimator, sizeof(PXInt32U), sizeof(PXSpriteAnimator), PXDictionaryValueLocalityExternalReference);
 }
 
@@ -357,11 +357,11 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
             case PXResourceTypeBrush:
             {
                 PXBrushCreateInfo* const pxBrushCreateInfo = &pxResourceCreateInfo->Brush;
-                PXGUIElementBrush* pxGUIElementBrush = *(PXGUIElementBrush**)pxResourceCreateInfo->ObjectReference;
+                PXWindowBrush* pxGUIElementBrush = *(PXWindowBrush**)pxResourceCreateInfo->ObjectReference;
 
                 if(!pxGUIElementBrush)
                 {
-                    PXNewZerod(PXGUIElementBrush, &pxGUIElementBrush);
+                    PXNewZerod(PXWindowBrush, &pxGUIElementBrush);
                     *pxResourceCreateInfo->ObjectReference = pxGUIElementBrush;
                 }
 
@@ -378,7 +378,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
 
 
                 pxGUIElementBrush->Info.Handle.BrushHandle = brushHandle;
-                PXGUIElementBrushColorSet(pxGUIElementBrush, pxBrushCreateInfo->Color.Red, pxBrushCreateInfo->Color.Green, pxBrushCreateInfo->Color.Blue);
+                PXWindowBrushColorSet(pxGUIElementBrush, pxBrushCreateInfo->Color.Red, pxBrushCreateInfo->Color.Green, pxBrushCreateInfo->Color.Blue);
 
                 // Color xx = Color(255, 0, 0, 255);
                 // SolidBrush ww = opaqueBrush();
@@ -1541,12 +1541,12 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
             }
             case PXResourceTypeGUIElement:
             {
-                PXGUIElementCreateInfo* const pxGUIElementCreateInfo = &pxResourceCreateInfo->UIElement;
-                PXGUIElement* pxGUIElement = *(PXGUIElement**)pxResourceCreateInfo->ObjectReference;
+                PXWindowCreateInfo* const pxGUIElementCreateInfo = &pxResourceCreateInfo->UIElement;
+                PXWindow* pxGUIElement = *(PXWindow**)pxResourceCreateInfo->ObjectReference;
 
                 if(!pxGUIElement)
                 {
-                    PXNewZerod(PXGUIElement, &pxGUIElement);
+                    PXNewZerod(PXWindow, &pxGUIElement);
                     *pxResourceCreateInfo->ObjectReference = pxGUIElement;
                 }
 
@@ -2019,20 +2019,20 @@ const char* PXAPI PXUIElementTypeToString(const PXUIElementType pxUIElementType)
     }
 }
 
-void PXAPI PXGUIElementBrushColorSet(PXGUIElementBrush* const pxGUIElementBrush, const PXByte red, const PXByte green, const PXByte blue)
+void PXAPI PXWindowBrushColorSet(PXWindowBrush* const pxGUIElementBrush, const PXByte red, const PXByte green, const PXByte blue)
 {
-    pxGUIElementBrush->Info.Behaviour |= PXGUIElementBrushBehaviourColorEmbeded;
+    pxGUIElementBrush->Info.Behaviour |= PXWindowBrushBehaviourColorEmbeded;
     pxGUIElementBrush->ColorDate.Red = red;
     pxGUIElementBrush->ColorDate.Green = green;
     pxGUIElementBrush->ColorDate.Blue = blue;
 }
 
-void PXAPI PXUIElementPositionCalculcate(PXGUIElement* const pxGUIElement, PXUIElementPositionCalulcateInfo* const pxUIElementPositionCalulcateInfo)
+void PXAPI PXUIElementPositionCalculcate(PXWindow* const pxGUIElement, PXUIElementPositionCalulcateInfo* const pxUIElementPositionCalulcateInfo)
 {
     for(
-        PXGUIElement* pxUIElementParent = (PXGUIElement*)pxGUIElement->Info.Hierarchy.Parrent;
+        PXWindow* pxUIElementParent = (PXWindow*)pxGUIElement->Info.Hierarchy.Parrent;
         pxUIElementParent;
-        pxUIElementParent = (PXGUIElement*)pxUIElementParent->Info.Hierarchy.Parrent
+        pxUIElementParent = (PXWindow*)pxUIElementParent->Info.Hierarchy.Parrent
         )
     {
         pxUIElementPositionCalulcateInfo->MarginLeft += pxUIElementParent->Position.MarginLeft;
@@ -2087,7 +2087,7 @@ void PXAPI PXUIElementPositionCalculcate(PXGUIElement* const pxGUIElement, PXUIE
     // XYWH for WindowsAPI stuff0
 
 
-    if(PXGUIElementKeepWidth & pxGUIElement->Info.Behaviour)
+    if(PXWindowKeepWidth & pxGUIElement->Info.Behaviour)
     {
         pxUIElementPositionCalulcateInfo->Width = pxGUIElement->Position.Width;
     }
@@ -2096,7 +2096,7 @@ void PXAPI PXUIElementPositionCalculcate(PXGUIElement* const pxGUIElement, PXUIE
         pxUIElementPositionCalulcateInfo->Width = mathWithScaling;
     }
 
-    if(PXGUIElementKeepHeight & pxGUIElement->Info.Behaviour)
+    if(PXWindowKeepHeight & pxGUIElement->Info.Behaviour)
     {
         pxUIElementPositionCalulcateInfo->Height = pxGUIElement->Position.Height;
     }
@@ -2106,29 +2106,29 @@ void PXAPI PXUIElementPositionCalculcate(PXGUIElement* const pxGUIElement, PXUIE
     }
 
 
-    switch(PXGUIElementAllignFlags & pxGUIElement->Info.Behaviour)
+    switch(PXWindowAllignFlags & pxGUIElement->Info.Behaviour)
     {
         default:
-        case PXGUIElementAllignLeft:
+        case PXWindowAllignLeft:
         {
             pxUIElementPositionCalulcateInfo->X = remLeft;
             pxUIElementPositionCalulcateInfo->Y = remTop;
             break;
         }
-        case PXGUIElementAllignTop:
+        case PXWindowAllignTop:
         {
             pxUIElementPositionCalulcateInfo->X = remLeft;
             pxUIElementPositionCalulcateInfo->Y = remTop;
             break;
         }
-        case PXGUIElementAllignRight:
+        case PXWindowAllignRight:
         {
             pxUIElementPositionCalulcateInfo->X = pxUIElementPositionCalulcateInfo->WindowWidth - (remRight + pxUIElementPositionCalulcateInfo->Width);
             pxUIElementPositionCalulcateInfo->Y = pxUIElementPositionCalulcateInfo->WindowHeight - (remBottom + pxUIElementPositionCalulcateInfo->Height);
             break;
 
         }
-        case PXGUIElementAllignBottom:
+        case PXWindowAllignBottom:
         {
             pxUIElementPositionCalulcateInfo->X = remLeft;
             pxUIElementPositionCalulcateInfo->Y = pxUIElementPositionCalulcateInfo->WindowHeight - (remBottom + pxUIElementPositionCalulcateInfo->Height);

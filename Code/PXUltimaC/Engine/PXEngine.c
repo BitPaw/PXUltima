@@ -1035,7 +1035,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
 
         if(!isRunningASYNC)
         {
-            PXWindowUpdate(&pxEngine->GUISystem, pxEngine->Window);
+            PXWindowEventUpdate(&pxEngine->GUISystem, pxEngine->Window);
 
             // if window does not exist anymore
             if(!pxEngine->Window)
@@ -1050,7 +1050,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
 
     // User input
     {
-        PXGUIElement* pxWindow = pxEngine->Window;
+        PXWindow* pxWindow = pxEngine->Window;
         PXKeyBoard* keyboard = &pxEngine->KeyBoardCurrentInput;
         PXMouse* mouse = &pxEngine->MouseCurrentInput;
 
@@ -1206,12 +1206,12 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
         // Extended windows resize check
         if(pxEngine->UpdateUI)
         {
-            PXGUIElementUpdateInfo pxGUIElementUpdateInfo;
-            PXClear(PXGUIElementUpdateInfo, &pxGUIElementUpdateInfo);
+            PXWindowUpdateInfo pxGUIElementUpdateInfo;
+            PXClear(PXWindowUpdateInfo, &pxGUIElementUpdateInfo);
             pxGUIElementUpdateInfo.UIElement = pxWindow;
             pxGUIElementUpdateInfo.Property = PXUIElementPropertySize;
 
-            PXGUIElementFetch(&pxEngine->GUISystem, &pxGUIElementUpdateInfo, 1);
+            PXWindowFetch(&pxEngine->GUISystem, &pxGUIElementUpdateInfo, 1);
 
 
 
@@ -1232,7 +1232,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
                 PXCameraAspectRatioChange(pxEngine->CameraCurrent, pxViewPort.Width, pxViewPort.Height);
             }
 
-            PXGUIElementhSizeRefresAll(&pxEngine->GUISystem);
+            PXWindowhSizeRefresAll(&pxEngine->GUISystem);
         }
     }
 
@@ -1278,19 +1278,19 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
             PXTextPrint(&pxText, "[%s] (Build:%s %s) FPS:%-3i CPU:%i°C", pxEngine->ApplicationName, date, time, pxEngine->TimeData.FramesPerSecound, cpuTemp);
 
 
-            PXGUIElementUpdateInfo pxGUIElementUpdateInfo;
-            PXClear(PXGUIElementUpdateInfo, &pxGUIElementUpdateInfo);
+            PXWindowUpdateInfo pxGUIElementUpdateInfo;
+            PXClear(PXWindowUpdateInfo, &pxGUIElementUpdateInfo);
 
             pxGUIElementUpdateInfo.UIElement = pxEngine->Window;
             pxGUIElementUpdateInfo.Property = PXUIElementPropertyTextContent;
             // pxGUIElementUpdateInfo.Data.Text.Content = pxText.TextA;
 
-            PXGUIElementUpdate(&pxEngine->GUISystem, &pxGUIElementUpdateInfo, 1u);
+            PXWindowUpdate(&pxEngine->GUISystem, &pxGUIElementUpdateInfo, 1u);
         }
 
         if(pxEngine->HasGraphicInterface && pxEngine->Graphic.WindowReference)
         {
-            const PXBool isWindowEnabled = PXGUIElementIsEnabled(&pxEngine->GUISystem, pxEngine->Graphic.WindowReference);
+            const PXBool isWindowEnabled = PXWindowIsEnabled(&pxEngine->GUISystem, pxEngine->Graphic.WindowReference);
 
             if(isWindowEnabled)
             {
@@ -1305,7 +1305,9 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
                 pxEngine->Graphic.SceneDeploy(pxEngine->Graphic.EventOwner);
 #endif
 
-                PXGUIElementBufferSwap(&pxEngine->GUISystem, pxEngine->Window);
+                PXNativDrawWindowBufferSwap(PXNull, pxEngine->Window);
+
+                //PXWindowBufferSwap(&pxEngine->GUISystem, pxEngine->Window);
             }
 
 
@@ -1660,7 +1662,7 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
         pxResourceCreateInfo.ObjectReference = &pxEngine->Window;
         pxResourceCreateInfo.Type = PXResourceTypeGUIElement;
         pxResourceCreateInfo.UIElement.Type = PXUIElementTypeWindow;
-        pxResourceCreateInfo.UIElement.BehaviourFlags = PXGUIElementBehaviourDefaultDecorative;
+        pxResourceCreateInfo.UIElement.BehaviourFlags = PXWindowBehaviourDefaultDecorative;
         pxResourceCreateInfo.UIElement.InteractOwner = pxEngine;
         pxResourceCreateInfo.UIElement.InteractCallBack = PXEngineWindowEvent;
         pxResourceCreateInfo.UIElement.Data.Window.EventOwner = pxEngine;
@@ -1709,7 +1711,7 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
     //-----------------------------------------------------
     if(pxEngineStartInfo->UseMouseInput)
     {
-        PXWindowUpdate(&pxEngine->GUISystem, pxEngine->Window);
+        PXWindowEventUpdate(&pxEngine->GUISystem, pxEngine->Window);
 
         PXWindowMouseMovementEnable(pxEngine->Window->Info.Handle.WindowID);
 
@@ -2418,7 +2420,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
         }
         case PXResourceTypeGUIElement:
         {
-            PXGUIElementCreateInfo* const pxGUIElementCreateInfo = &pxResourceCreateInfo->UIElement;
+            PXWindowCreateInfo* const pxGUIElementCreateInfo = &pxResourceCreateInfo->UIElement;
 
 
 
@@ -2428,11 +2430,11 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
             pxGUIElementCreateInfo->Name = pxResourceCreateInfo->Name;
             pxGUIElementCreateInfo->UIElementWindow = pxEngine->Window;
 
-            PXGUIElementCreate(&pxEngine->GUISystem, pxResourceCreateInfo, 1);
+            PXWindowCreate(&pxEngine->GUISystem, pxResourceCreateInfo, 1);
 
             PXFunctionInvoke(pxEngine->ResourceAdded, pxEngine->Owner, pxEngine, pxResourceCreateInfo);
 
-            PXGUIElement* pxGUIElement = *(PXGUIElement**)pxResourceCreateInfo->ObjectReference;
+            PXWindow* pxGUIElement = *(PXWindow**)pxResourceCreateInfo->ObjectReference;
 
             pxGUIElement->NameContent = pxResourceCreateInfo->Name;
             pxGUIElement->NameContentSize = -1;

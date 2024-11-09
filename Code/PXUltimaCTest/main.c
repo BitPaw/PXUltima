@@ -151,14 +151,21 @@ void PXAPI Trace_FolderFiles(PXText* pxText)
 
 
 #include <OS/GUI/PXGUI.h>
+#include <OS/Graphic/NativDraw/PXNativDraw.h>
 
 int main()
 {
     PXConsoleWrite(0, "[i] Starting testing...\n");
 
 
+    PXNativDraw pxNativDraw;
+    PXClear(PXNativDraw, &pxNativDraw);
 
-    PXGUIIconGetViaExtension("vob");
+    PXNativDrawDisplayListFetch(&pxNativDraw);
+    
+
+
+    //PXGUIIconGetViaExtension("vob");
 
 
 

@@ -8,6 +8,7 @@
 #include <OS/Console/PXConsole.h>
 #include <Engine/PXEngine.h>
 #include <OS/File/PXDirectory.h>
+#include <OS/Graphic/NativDraw/PXNativDraw.h>
 
 #if OSUnix
 
@@ -152,100 +153,100 @@ void PXAPI PXWindowEventConsumer(PXGUISystem* const pxGUISystem, PXWindowEvent* 
 
     switch(pxWindowEvent->Type)
     {
-    case PXWindowEventTypeElementClick:
-    {
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            "Windows",
-            "Event-Click",
-            "Sender (%0xp)",
-            pxWindowEvent->UIElementSender->Info.ID
-        );
+        case PXWindowEventTypeElementClick:
+        {
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "Windows",
+                "Event-Click",
+                "Sender (%0xp)",
+                pxWindowEvent->UIElementSender->Info.ID
+            );
 
-        break;
-    }
-    case PXWindowEventTypeElementSelect:
-    {
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            "Windows",
-            "Event-Select",
-            "ID:<%i>"
-        );
-        break;
-    }
-    case PXWindowEventTypeElementDestroy:
-    {
+            break;
+        }
+        case PXWindowEventTypeElementSelect:
+        {
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "Windows",
+                "Event-Select",
+                "ID:<%i>"
+            );
+            break;
+        }
+        case PXWindowEventTypeElementDestroy:
+        {
 
-        // window->IsRunning = PXFalse;
+            // window->IsRunning = PXFalse;
 
-        break;
-    }
+            break;
+        }
 
-    case PXWindowEventTypeElementMove:
-    {
+        case PXWindowEventTypeElementMove:
+        {
 #if PXLogEnable && 0
-        PXLogPrint
-        (
-            PXLoggingEvent,
-            "Window",
-            "Event-Move",
-            ""
-        );
+            PXLogPrint
+            (
+                PXLoggingEvent,
+                "Window",
+                "Event-Move",
+                ""
+            );
 #endif
 
-        break;
-    }
-    case PXWindowEventTypeElementResize:
-    {
-        PXWindowEventResize* const pxWindowEventResize = &pxWindowEvent->Resize;
+            break;
+        }
+        case PXWindowEventTypeElementResize:
+        {
+            PXWindowEventResize* const pxWindowEventResize = &pxWindowEvent->Resize;
 
 #if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingEvent,
-            "Window",
-            "Event-Resize",
-            "<%ix%i>",
-            pxWindowEventResize->Width,
-            pxWindowEventResize->Height
-        );
+            PXLogPrint
+            (
+                PXLoggingEvent,
+                "Window",
+                "Event-Resize",
+                "<%ix%i>",
+                pxWindowEventResize->Width,
+                pxWindowEventResize->Height
+            );
 #endif
 
-        // PXGUIElementhSizeRefresAll(pxGUISystem, pxWindowEvent->UIElementReference);
+            // PXWindowhSizeRefresAll(pxGUISystem, pxWindowEvent->UIElementReference);
 
 
-        // window->Width = pxWindowEventResize->Width;
-        // window->Height = pxWindowEventResize->Height;
-        // window->HasSizeChanged = PXYes;
+            // window->Width = pxWindowEventResize->Width;
+            // window->Height = pxWindowEventResize->Height;
+            // window->HasSizeChanged = PXYes;
 
-        //  PXFunctionInvoke(window->WindowSizeChangedCallBack, window->EventReceiver, window);
+            //  PXFunctionInvoke(window->WindowSizeChangedCallBack, window->EventReceiver, window);
 
-        break;
-    }
-    case PXWindowEventTypeInputMouseButton:
-    {
-        break;
-    }
-    case PXWindowEventTypeInputMouseMove:
-    {
-        break;
-    }
-    case PXWindowEventTypeInputKeyboard:
-    {
-        break;
-    }
-    default:
-    {
-        break;
-    }
+            break;
+        }
+        case PXWindowEventTypeInputMouseButton:
+        {
+            break;
+        }
+        case PXWindowEventTypeInputMouseMove:
+        {
+            break;
+        }
+        case PXWindowEventTypeInputKeyboard:
+        {
+            break;
+        }
+        default:
+        {
+            break;
+        }
     }
 
     if(pxWindowEvent->UIElementReference)
     {
-        PXGUIElement* const pxGUIElement = pxWindowEvent->UIElementReference;
+        PXWindow* const pxGUIElement = pxWindowEvent->UIElementReference;
 
         if(pxGUIElement->InteractCallBack)
         {
@@ -255,7 +256,7 @@ void PXAPI PXWindowEventConsumer(PXGUISystem* const pxGUISystem, PXWindowEvent* 
 
     if(pxWindowEvent->UIElementSender)
     {
-        PXGUIElement* const pxGUIElement = pxWindowEvent->UIElementSender;
+        PXWindow* const pxGUIElement = pxWindowEvent->UIElementSender;
 
         if(pxGUIElement->InteractCallBack)
         {
@@ -266,7 +267,7 @@ void PXAPI PXWindowEventConsumer(PXGUISystem* const pxGUISystem, PXWindowEvent* 
 
 
 #if OSUnix
-void PXWindowEventHandler(PXGUIElement* const pxWindow, const XEvent* const xEventData)
+void PXWindowEventHandler(PXWindow* const pxWindow, const XEvent* const xEventData)
 {
     PXGUISystem* pxGUISystem = PXGUISystemGlobalReference;
 
@@ -277,356 +278,356 @@ void PXWindowEventHandler(PXGUIElement* const pxWindow, const XEvent* const xEve
 
     switch(xEventData->type)
     {
-    case KeyPress:
-    case KeyRelease:
-    {
-        const XKeyEvent* keyEvent = &xEventData->xkey;
-        const unsigned int keyCode = keyEvent->keycode;
-        const PXBool release = KeyRelease == xEventData->type;
-        const KeySym keySym = XKeycodeToKeysym(pxGUISystem->DisplayCurrent.DisplayHandle, keyCode, 0);
-        const char* keyName = XKeysymToString(keySym);
-
-        pxWindowEvent.Type = PXWindowEventTypeInputKeyboard;
-        pxWindowEvent.InputKeyboard.VirtualKey = PXVirtualKeyFromID(keySym);
-        pxWindowEvent.InputKeyboard.CharacterID = keySym;
-
-        switch(xEventData->type)
-        {
         case KeyPress:
-            pxWindowEvent.InputKeyboard.PressState = PXKeyPressStateDown;
-            break;
-
         case KeyRelease:
-            pxWindowEvent.InputKeyboard.PressState = PXKeyPressStateUp;
-            break;
+        {
+            const XKeyEvent* keyEvent = &xEventData->xkey;
+            const unsigned int keyCode = keyEvent->keycode;
+            const PXBool release = KeyRelease == xEventData->type;
+            const KeySym keySym = XKeycodeToKeysym(pxGUISystem->DisplayCurrent.DisplayHandle, keyCode, 0);
+            const char* keyName = XKeysymToString(keySym);
 
-        default:
-            pxWindowEvent.InputKeyboard.PressState = PXKeyPressStateInvalid;
+            pxWindowEvent.Type = PXWindowEventTypeInputKeyboard;
+            pxWindowEvent.InputKeyboard.VirtualKey = PXVirtualKeyFromID(keySym);
+            pxWindowEvent.InputKeyboard.CharacterID = keySym;
+
+            switch(xEventData->type)
+            {
+                case KeyPress:
+                    pxWindowEvent.InputKeyboard.PressState = PXKeyPressStateDown;
+                    break;
+
+                case KeyRelease:
+                    pxWindowEvent.InputKeyboard.PressState = PXKeyPressStateUp;
+                    break;
+
+                default:
+                    pxWindowEvent.InputKeyboard.PressState = PXKeyPressStateInvalid;
+                    break;
+            }
+
+            PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
+
             break;
         }
-
-        PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
-
-        break;
-    }
-    case ButtonRelease:
-    case ButtonPress:
-    {
-        const XButtonEvent* buttonEvent = &xEventData->xbutton;
-
-        pxWindowEvent.Type = PXWindowEventTypeInputMouseButton;
-
-        switch(xEventData->type)
-        {
-        case ButtonPress:
-            pxWindowEvent.InputMouseButton.PressState = PXKeyPressStateDown;
-            break;
-
         case ButtonRelease:
-            pxWindowEvent.InputMouseButton.PressState = PXKeyPressStateUp;
-            break;
+        case ButtonPress:
+        {
+            const XButtonEvent* buttonEvent = &xEventData->xbutton;
 
-        default:
-            pxWindowEvent.InputMouseButton.PressState = PXKeyPressStateInvalid;
+            pxWindowEvent.Type = PXWindowEventTypeInputMouseButton;
+
+            switch(xEventData->type)
+            {
+                case ButtonPress:
+                    pxWindowEvent.InputMouseButton.PressState = PXKeyPressStateDown;
+                    break;
+
+                case ButtonRelease:
+                    pxWindowEvent.InputMouseButton.PressState = PXKeyPressStateUp;
+                    break;
+
+                default:
+                    pxWindowEvent.InputMouseButton.PressState = PXKeyPressStateInvalid;
+                    break;
+            }
+
+            switch(buttonEvent->button)
+            {
+                case MouseButtonLeft:
+                    pxWindowEvent.InputMouseButton.Button = PXMouseButtonLeft;
+                    break;
+
+                case MouseButtonMiddle:
+                    pxWindowEvent.InputMouseButton.Button = PXMouseButtonMiddle;
+                    break;
+
+                case MouseButtonRight:
+                    pxWindowEvent.InputMouseButton.Button = PXMouseButtonRight;
+                    break;
+
+                case MouseScrollUp:
+                    pxWindowEvent.InputMouseButton.Button = PXMouseButtonScrollUp;
+                    break;
+
+                case MouseScrollDown:
+                    pxWindowEvent.InputMouseButton.Button = PXMouseButtonRightDown;
+                    break;
+
+                default:
+                    pxWindowEvent.InputMouseButton.Button = PXMouseButtonInvalid;
+                    break;
+            }
+
+            PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
+
             break;
         }
-
-        switch(buttonEvent->button)
+        case MotionNotify:
         {
-        case MouseButtonLeft:
-            pxWindowEvent.InputMouseButton.Button = PXMouseButtonLeft;
-            break;
+            // printf("[Event] MotionNotify \n");
 
-        case MouseButtonMiddle:
-            pxWindowEvent.InputMouseButton.Button = PXMouseButtonMiddle;
-            break;
+            //  pxWindowEvent.Type = PXWindowEventTypeInputMouseMove;
+            //  PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
 
-        case MouseButtonRight:
-            pxWindowEvent.InputMouseButton.Button = PXMouseButtonRight;
-            break;
-
-        case MouseScrollUp:
-            pxWindowEvent.InputMouseButton.Button = PXMouseButtonScrollUp;
-            break;
-
-        case MouseScrollDown:
-            pxWindowEvent.InputMouseButton.Button = PXMouseButtonRightDown;
-            break;
-
-        default:
-            pxWindowEvent.InputMouseButton.Button = PXMouseButtonInvalid;
             break;
         }
-
-        PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
-
-        break;
-    }
-    case MotionNotify:
-    {
-        // printf("[Event] MotionNotify \n");
-
-        //  pxWindowEvent.Type = PXWindowEventTypeInputMouseMove;
-        //  PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
-
-        break;
-    }
-    case EnterNotify:
-    {
-        pxWindowEvent.Type = PXWindowEventTypeElementFocusEnter;
-        PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
-        break;
-    }
-    case LeaveNotify:
-    {
-        pxWindowEvent.Type = PXWindowEventTypeElementFocusLeave;
-        PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
-        break;
-    }
-    case FocusIn:
-    {
-        pxWindowEvent.Type = PXWindowEventTypeElementFocusEnter;
-        // PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
-        break;
-    }
-    case FocusOut:
-    {
-        pxWindowEvent.Type = PXWindowEventTypeElementFocusLeave;
-        // PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
-        break;
-    }
-    case KeymapNotify:
-    {
-        printf("[Event] KeymapNotify \n");
-
-        break;
-    }
-    case Expose:
-    {
-        printf("[Event] Expose \n");
-
-        /*
-          XWindowAttributes gwa;
-
-                    XGetWindowAttributes(window.Dis, PXWindowID, &gwa);
-                    glViewport(0, 0, gwa.width, gwa.height);
-
-
-                    glClearColor(1.0, 1.0, 1.0, 1.0);
-                    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-                    glBegin(GL_POLYGON);
-                    glColor3f(1, 0, 0); glVertex3f(-0.6, -0.75, 0.5);
-                    glColor3f(0, 1, 0); glVertex3f(0.6, -0.75, 0);
-                    glColor3f(0, 0, 1); glVertex3f(0, 0.75, 0);
-                    glEnd();
-
-                    // Flush drawing command buffer to make drawing happen as soon as possible.
-                    //glFlush();
-
-                    window.FrameBufferSwap();*/
-
-        break;
-    }
-    case GraphicsExpose:
-    {
-        printf("[Event] PXGraphicsExpose \n");
-
-        break;
-    }
-    case NoExpose:
-    {
-        printf("[Event] NoExpose \n");
-
-        break;
-    }
-    case VisibilityNotify:
-    {
-        printf("[Event] VisibilityNotify \n");
-
-        break;
-    }
-    case CreateNotify:
-    {
-        printf("[Event] CreateNotify \n");
-
-        break;
-    }
-    case DestroyNotify:
-    {
-        printf("[Event] DestroyNotify \n");
-
-        break;
-    }
-    case UnmapNotify:
-    {
-        printf("[Event] UnmapNotify \n");
-
-        break;
-    }
-    case MapNotify:
-    {
-        printf("[Event] MapNotify \n");
-
-        break;
-    }
-    case MapRequest:
-    {
-        printf("[Event] MapRequest \n");
-
-        break;
-    }
-    case ReparentNotify:
-    {
-        printf("[Event] ReparentNotify \n");
-
-        break;
-    }
-    case ConfigureNotify:
-    {
-        printf("[Event] ConfigureNotify \n");
-
-        break;
-    }
-    case ConfigureRequest:
-    {
-        printf("[Event] Destroyed \n");
-
-        break;
-    }
-    case GravityNotify:
-    {
-        printf("[Event] GravityNotify \n");
-
-        break;
-    }
-    case ResizeRequest:
-    {
-        const XResizeRequestEvent* resizeRequestEvent = &xEventData->xresizerequest;
-        const int width = resizeRequestEvent->width;
-        const int height = resizeRequestEvent->height;
-
-        pxWindowEvent.Type = PXWindowEventTypeElementResize;
-        pxWindowEvent.Resize.Width = width;
-        pxWindowEvent.Resize.Height = height;
-
-        PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
-
-        break;
-    }
-    case CirculateNotify:
-    {
-        printf("[Event] CirculateNotify \n");
-
-        break;
-    }
-    case CirculateRequest:
-    {
-        printf("[Event] CirculateRequest \n");
-
-        break;
-    }
-    case PropertyNotify:
-    {
-        printf("[Event] PropertyNotify \n");
-
-        break;
-    }
-    case SelectionClear:
-    {
-        printf("[Event] SelectionClear \n");
-
-        break;
-    }
-    case SelectionRequest:
-    {
-        printf("[Event] SelectionRequest \n");
-
-        break;
-    }
-    case SelectionNotify:
-    {
-        printf("[Event] SelectionNotify \n");
-
-        break;
-    }
-    case ColormapNotify:
-    {
-        printf("[Event] ColormapNotify \n");
-
-        break;
-    }
-    case ClientMessage:
-    {
-        printf("[Event] ClientMessage \n");
-
-        break;
-    }
-    case MappingNotify:
-    {
-        printf("[Event] MappingNotify \n");
-
-        break;
-    }
-    case GenericEvent:
-    {
-        const XGenericEventCookie* const cookie = &xEventData->xcookie; // Make Copy
-        const int result = XGetEventData(pxGUISystem->DisplayCurrent.DisplayHandle, &cookie);
-        const unsigned char sucessful = result != 0 && cookie->data;
-
-        if(sucessful)
+        case EnterNotify:
         {
-            switch(cookie->evtype)
-            {
-            case XI_RawMotion:
-            {
-                XIRawEvent* re = (XIRawEvent*)cookie->data;
+            pxWindowEvent.Type = PXWindowEventTypeElementFocusEnter;
+            PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
+            break;
+        }
+        case LeaveNotify:
+        {
+            pxWindowEvent.Type = PXWindowEventTypeElementFocusLeave;
+            PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
+            break;
+        }
+        case FocusIn:
+        {
+            pxWindowEvent.Type = PXWindowEventTypeElementFocusEnter;
+            // PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
+            break;
+        }
+        case FocusOut:
+        {
+            pxWindowEvent.Type = PXWindowEventTypeElementFocusLeave;
+            // PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
+            break;
+        }
+        case KeymapNotify:
+        {
+            printf("[Event] KeymapNotify \n");
 
-                if(re->valuators.mask_len)
+            break;
+        }
+        case Expose:
+        {
+            printf("[Event] Expose \n");
+
+            /*
+              XWindowAttributes gwa;
+
+                        XGetWindowAttributes(window.Dis, PXWindowID, &gwa);
+                        glViewport(0, 0, gwa.width, gwa.height);
+
+
+                        glClearColor(1.0, 1.0, 1.0, 1.0);
+                        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+                        glBegin(GL_POLYGON);
+                        glColor3f(1, 0, 0); glVertex3f(-0.6, -0.75, 0.5);
+                        glColor3f(0, 1, 0); glVertex3f(0.6, -0.75, 0);
+                        glColor3f(0, 0, 1); glVertex3f(0, 0.75, 0);
+                        glEnd();
+
+                        // Flush drawing command buffer to make drawing happen as soon as possible.
+                        //glFlush();
+
+                        window.FrameBufferSwap();*/
+
+            break;
+        }
+        case GraphicsExpose:
+        {
+            printf("[Event] PXGraphicsExpose \n");
+
+            break;
+        }
+        case NoExpose:
+        {
+            printf("[Event] NoExpose \n");
+
+            break;
+        }
+        case VisibilityNotify:
+        {
+            printf("[Event] VisibilityNotify \n");
+
+            break;
+        }
+        case CreateNotify:
+        {
+            printf("[Event] CreateNotify \n");
+
+            break;
+        }
+        case DestroyNotify:
+        {
+            printf("[Event] DestroyNotify \n");
+
+            break;
+        }
+        case UnmapNotify:
+        {
+            printf("[Event] UnmapNotify \n");
+
+            break;
+        }
+        case MapNotify:
+        {
+            printf("[Event] MapNotify \n");
+
+            break;
+        }
+        case MapRequest:
+        {
+            printf("[Event] MapRequest \n");
+
+            break;
+        }
+        case ReparentNotify:
+        {
+            printf("[Event] ReparentNotify \n");
+
+            break;
+        }
+        case ConfigureNotify:
+        {
+            printf("[Event] ConfigureNotify \n");
+
+            break;
+        }
+        case ConfigureRequest:
+        {
+            printf("[Event] Destroyed \n");
+
+            break;
+        }
+        case GravityNotify:
+        {
+            printf("[Event] GravityNotify \n");
+
+            break;
+        }
+        case ResizeRequest:
+        {
+            const XResizeRequestEvent* resizeRequestEvent = &xEventData->xresizerequest;
+            const int width = resizeRequestEvent->width;
+            const int height = resizeRequestEvent->height;
+
+            pxWindowEvent.Type = PXWindowEventTypeElementResize;
+            pxWindowEvent.Resize.Width = width;
+            pxWindowEvent.Resize.Height = height;
+
+            PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
+
+            break;
+        }
+        case CirculateNotify:
+        {
+            printf("[Event] CirculateNotify \n");
+
+            break;
+        }
+        case CirculateRequest:
+        {
+            printf("[Event] CirculateRequest \n");
+
+            break;
+        }
+        case PropertyNotify:
+        {
+            printf("[Event] PropertyNotify \n");
+
+            break;
+        }
+        case SelectionClear:
+        {
+            printf("[Event] SelectionClear \n");
+
+            break;
+        }
+        case SelectionRequest:
+        {
+            printf("[Event] SelectionRequest \n");
+
+            break;
+        }
+        case SelectionNotify:
+        {
+            printf("[Event] SelectionNotify \n");
+
+            break;
+        }
+        case ColormapNotify:
+        {
+            printf("[Event] ColormapNotify \n");
+
+            break;
+        }
+        case ClientMessage:
+        {
+            printf("[Event] ClientMessage \n");
+
+            break;
+        }
+        case MappingNotify:
+        {
+            printf("[Event] MappingNotify \n");
+
+            break;
+        }
+        case GenericEvent:
+        {
+            const XGenericEventCookie* const cookie = &xEventData->xcookie; // Make Copy
+            const int result = XGetEventData(pxGUISystem->DisplayCurrent.DisplayHandle, &cookie);
+            const unsigned char sucessful = result != 0 && cookie->data;
+
+            if(sucessful)
+            {
+                switch(cookie->evtype)
                 {
-                    const double* values = re->raw_values;
-                    const unsigned char isX = XIMaskIsSet(re->valuators.mask, 0);
-                    const unsigned char isY = XIMaskIsSet(re->valuators.mask, 1);
-                    double xpos = 0;
-                    double ypos = 0;
-
-                    if(isX)
+                    case XI_RawMotion:
                     {
-                        xpos += *values;
-                        ++values;
+                        XIRawEvent* re = (XIRawEvent*)cookie->data;
+
+                        if(re->valuators.mask_len)
+                        {
+                            const double* values = re->raw_values;
+                            const unsigned char isX = XIMaskIsSet(re->valuators.mask, 0);
+                            const unsigned char isY = XIMaskIsSet(re->valuators.mask, 1);
+                            double xpos = 0;
+                            double ypos = 0;
+
+                            if(isX)
+                            {
+                                xpos += *values;
+                                ++values;
+                            }
+
+                            if(isY)
+                            {
+                                ypos += *values;
+                            }
+
+                            pxWindowEvent.Type = PXWindowEventTypeInputMouseMove;
+                            pxWindowEvent.InputMouseMove.AxisX = xpos;
+                            pxWindowEvent.InputMouseMove.AxisY = ypos;
+                            pxWindowEvent.InputMouseMove.DeltaX = 0;// mouse->Position[0] - xpos;
+                            pxWindowEvent.InputMouseMove.DeltaY = 0;// mouse->Position[1] - ypos;
+
+                            PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
+                        }
                     }
-
-                    if(isY)
-                    {
-                        ypos += *values;
-                    }
-
-                    pxWindowEvent.Type = PXWindowEventTypeInputMouseMove;
-                    pxWindowEvent.InputMouseMove.AxisX = xpos;
-                    pxWindowEvent.InputMouseMove.AxisY = ypos;
-                    pxWindowEvent.InputMouseMove.DeltaX = 0;// mouse->Position[0] - xpos;
-                    pxWindowEvent.InputMouseMove.DeltaY = 0;// mouse->Position[1] - ypos;
-
-                    PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
                 }
             }
+            else
+            {
+                printf("[Event] GenericEvent %i\n", cookie->evtype);
             }
+
+            XFreeEventData(pxGUISystem->DisplayCurrent.DisplayHandle, &cookie);
+
+            break;
         }
-        else
+        default:
         {
-            printf("[Event] GenericEvent %i\n", cookie->evtype);
+            printf("[Event] default: unkown event \n");
+
+            break;
         }
-
-        XFreeEventData(pxGUISystem->DisplayCurrent.DisplayHandle, &cookie);
-
-        break;
-    }
-    default:
-    {
-        printf("[Event] default: unkown event \n");
-
-        break;
-    }
     }
 }
 #elif PXOSWindowsDestop
@@ -663,181 +664,640 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
 
     switch(eventID)
     {
-    default:
-    case WM_NULL:
-        break;
-    case WM_CREATE: // Gets called inside the "CreateWindow" function.
-    {
-        // Do nothíng here, as it's too soon to regard the window as 'created'
-
-        return DefWindowProc(windowID, eventID, wParam, lParam);
-    }
-    case WM_DESTROY:
-    {
-        pxWindowEvent.Type = PXWindowEventTypeElementDestroy;
-
-        PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
-
-        break;
-    }
-    case WM_MOVE:
-    {
-        pxWindowEvent.Type = PXWindowEventTypeElementMove;
-
-        PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
-
-        break;
-    }
-    case WM_SIZE:
-    {
-        pxWindowEvent.Type = PXWindowEventTypeElementResize;
-        pxWindowEvent.Resize.Width = LOWORD(lParam);
-        pxWindowEvent.Resize.Height = HIWORD(lParam);
-
-        PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
-
-        break;
-    }
-    case WM_CLOSE:
-    {
-        pxWindowEvent.Type = PXWindowEventTypeElementClose;
-        pxWindowEvent.Close.CommitToClose = PXTrue;
-
-        PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
-
-        if(!pxWindowEvent.Close.CommitToClose)
-        {
-            return PXFalse;
-        }
-
-        break;
-    }
-    case WM_SETCURSOR:
-    {
-        const HWND windowsHandle = (HWND)wParam;
-        const WORD hitTestResult = LOWORD(lParam);
-        const WORD sourceMessage = HIWORD(lParam);
-        const PXBool showCursor = PXTrue;//!(window->CursorModeCurrent == PXWindowCursorInvisible || window->CursorModeCurrent == PXWindowCursorLockAndHide);
-
-        if(showCursor)
-        {
-            while(ShowCursor(1) < 0);
-        }
-        else
-        {
-            while(ShowCursor(0) >= 0);
-        }
-
-        return 1; // prevent further processing
-    }
-    case WM_NOTIFY:
-    {
-        const HWND windowsHandle = (HWND)wParam;
-        NMHDR* const notificationCode = (NMHDR*)lParam;
-        HWND sourceObject = notificationCode->hwndFrom;
-
-        switch(notificationCode->code)
-        {
-        case LVN_BEGINDRAG:
-        {
-            //  if(!bDragging)
-            //  break;
-
-            // p.x = LOWORD(lParam);
-            //  p.y = HIWORD(lParam);
-
-            //ClientToScreen(hWndMain, &p);
-            // ImageList_DragMove(p.x, p.y);
-
+        default:
+        case WM_NULL:
             break;
-        }
-        case TVN_SELCHANGED:
+        case WM_CREATE: // Gets called inside the "CreateWindow" function.
         {
-            // NOTE:
-            // On treeview item selection, "wParam" will might always be NULL.
-            // It's a copy of the item "lParam" parameter on creation.
+            // Do nothíng here, as it's too soon to regard the window as 'created'
 
-            PXGUIElement* pxTreeViewContainer = PXNull;
-            PXGUIElement* pxTreeViewItem = PXNull;
-
-            if(pxGUISystem)
-            {
-                const HWND itemHandle = TreeView_GetSelection(sourceObject); // Event does not give us the handle, fetch manually.
-
-                // Fetch treeview object
-                PXDictionaryFindEntry(&pxGUISystem->ResourceManager->GUIElementLookup, &sourceObject, &pxTreeViewContainer);
-
-                // Fetch treeviewitem object
-                PXDictionaryFindEntry(&pxGUISystem->ResourceManager->GUIElementLookup, &itemHandle, &pxTreeViewItem);
-            }
-
-            pxWindowEvent.UIElementReference = pxTreeViewContainer;
-            pxWindowEvent.UIElementSender = pxTreeViewItem;
-
-            pxWindowEvent.Type = PXWindowEventTypeElementSelect;
-            pxWindowEvent.Select.UIElementSelected = pxTreeViewItem;
+            return DefWindowProc(windowID, eventID, wParam, lParam);
+        }
+        case WM_DESTROY:
+        {
+            pxWindowEvent.Type = PXWindowEventTypeElementDestroy;
 
             PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
 
             break;
         }
-        case TCN_SELCHANGE:
+        case WM_MOVE:
         {
-            const int pageID = TabCtrl_GetCurSel(sourceObject);
+            pxWindowEvent.Type = PXWindowEventTypeElementMove;
 
-#if 1
-            PXGUIElement* const pxGUIElement = PXNull;
-
-            PXDictionaryFindEntry(&pxGUISystem->ResourceManager->GUIElementLookup, &sourceObject, &pxGUIElement);
-
-            // Hide current page
-            const PXBool isValidIndex = pxGUIElement->ListEESize >= (pageID+1);
-
-            BOOL success = 0;
-
-            for(PXSize i = 0; i < pxGUIElement->ListEESize; i++)
-            {
-                PXGUIElement* const pxUIElementEEE = pxGUIElement->ListEEData[i];
-
-                PXGUIElementUpdateInfo pxGUIElementUpdateInfo;
-                PXClear(PXGUIElementUpdateInfo, &pxGUIElementUpdateInfo);
-                pxGUIElementUpdateInfo.Show = PXFalse;
-                pxGUIElementUpdateInfo.UIElement = pxUIElementEEE;
-                pxGUIElementUpdateInfo.Property = PXUIElementPropertyVisibility;
-
-                PXGUIElementUpdate(pxGUISystem, &pxGUIElementUpdateInfo, 1);
-            }
-
-            // Show new page
-            if(isValidIndex)
-            {
-                PXGUIElement* const pxUIElementEEE = pxGUIElement->ListEEData[pageID];
-
-                PXLogPrint
-                (
-                    PXLoggingInfo,
-                    "GUI",
-                    "Event",
-                    "Tab Select <0x%p>, %15s ID:<%i>",
-                    sourceObject,
-                    "", //pxUIElementEEE->NameData,
-                    pageID
-                );
-
-                PXGUIElementUpdateInfo pxGUIElementUpdateInfo;
-                PXClear(PXGUIElementUpdateInfo, &pxGUIElementUpdateInfo);
-                pxGUIElementUpdateInfo.Show = PXTrue;
-                pxGUIElementUpdateInfo.UIElement = pxUIElementEEE;
-                pxGUIElementUpdateInfo.Property = PXUIElementPropertyVisibility;
-
-                PXGUIElementUpdate(pxGUISystem, &pxGUIElementUpdateInfo, 1);
-            }
-
-#endif
+            PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
 
             break;
         }
-        default:
+        case WM_SIZE:
+        {
+            pxWindowEvent.Type = PXWindowEventTypeElementResize;
+            pxWindowEvent.Resize.Width = LOWORD(lParam);
+            pxWindowEvent.Resize.Height = HIWORD(lParam);
+
+            PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
+
+            break;
+        }
+        case WM_CLOSE:
+        {
+            pxWindowEvent.Type = PXWindowEventTypeElementClose;
+            pxWindowEvent.Close.CommitToClose = PXTrue;
+
+            PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
+
+            if(!pxWindowEvent.Close.CommitToClose)
+            {
+                return PXFalse;
+            }
+
+            break;
+        }
+        case WM_SETCURSOR:
+        {
+            const HWND windowsHandle = (HWND)wParam;
+            const WORD hitTestResult = LOWORD(lParam);
+            const WORD sourceMessage = HIWORD(lParam);
+            const PXBool showCursor = PXTrue;//!(window->CursorModeCurrent == PXWindowCursorInvisible || window->CursorModeCurrent == PXWindowCursorLockAndHide);
+
+            if(showCursor)
+            {
+                while(ShowCursor(1) < 0);
+            }
+            else
+            {
+                while(ShowCursor(0) >= 0);
+            }
+
+            return 1; // prevent further processing
+        }
+        case WM_NOTIFY:
+        {
+            const HWND windowsHandle = (HWND)wParam;
+            NMHDR* const notificationCode = (NMHDR*)lParam;
+            HWND sourceObject = notificationCode->hwndFrom;
+
+            switch(notificationCode->code)
+            {
+                case LVN_BEGINDRAG:
+                {
+                    //  if(!bDragging)
+                    //  break;
+
+                    // p.x = LOWORD(lParam);
+                    //  p.y = HIWORD(lParam);
+
+                    //ClientToScreen(hWndMain, &p);
+                    // ImageList_DragMove(p.x, p.y);
+
+                    break;
+                }
+                case TVN_SELCHANGED:
+                {
+                    // NOTE:
+                    // On treeview item selection, "wParam" will might always be NULL.
+                    // It's a copy of the item "lParam" parameter on creation.
+
+                    PXWindow* pxTreeViewContainer = PXNull;
+                    PXWindow* pxTreeViewItem = PXNull;
+
+                    if(pxGUISystem)
+                    {
+                        const HWND itemHandle = TreeView_GetSelection(sourceObject); // Event does not give us the handle, fetch manually.
+
+                        // Fetch treeview object
+                        PXDictionaryFindEntry(&pxGUISystem->ResourceManager->GUIElementLookup, &sourceObject, &pxTreeViewContainer);
+
+                        // Fetch treeviewitem object
+                        PXDictionaryFindEntry(&pxGUISystem->ResourceManager->GUIElementLookup, &itemHandle, &pxTreeViewItem);
+                    }
+
+                    pxWindowEvent.UIElementReference = pxTreeViewContainer;
+                    pxWindowEvent.UIElementSender = pxTreeViewItem;
+
+                    pxWindowEvent.Type = PXWindowEventTypeElementSelect;
+                    pxWindowEvent.Select.UIElementSelected = pxTreeViewItem;
+
+                    PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
+
+                    break;
+                }
+                case TCN_SELCHANGE:
+                {
+                    const int pageID = TabCtrl_GetCurSel(sourceObject);
+
+#if 1
+                    PXWindow* const pxGUIElement = PXNull;
+
+                    PXDictionaryFindEntry(&pxGUISystem->ResourceManager->GUIElementLookup, &sourceObject, &pxGUIElement);
+
+                    // Hide current page
+                    const PXBool isValidIndex = pxGUIElement->ListEESize >= (pageID + 1);
+
+                    BOOL success = 0;
+
+                    for(PXSize i = 0; i < pxGUIElement->ListEESize; i++)
+                    {
+                        PXWindow* const pxUIElementEEE = pxGUIElement->ListEEData[i];
+
+                        PXWindowUpdateInfo pxGUIElementUpdateInfo;
+                        PXClear(PXWindowUpdateInfo, &pxGUIElementUpdateInfo);
+                        pxGUIElementUpdateInfo.Show = PXFalse;
+                        pxGUIElementUpdateInfo.UIElement = pxUIElementEEE;
+                        pxGUIElementUpdateInfo.Property = PXUIElementPropertyVisibility;
+
+                        PXWindowUpdate(pxGUISystem, &pxGUIElementUpdateInfo, 1);
+                    }
+
+                    // Show new page
+                    if(isValidIndex)
+                    {
+                        PXWindow* const pxUIElementEEE = pxGUIElement->ListEEData[pageID];
+
+                        PXLogPrint
+                        (
+                            PXLoggingInfo,
+                            "GUI",
+                            "Event",
+                            "Tab Select <0x%p>, %15s ID:<%i>",
+                            sourceObject,
+                            "", //pxUIElementEEE->NameData,
+                            pageID
+                        );
+
+                        PXWindowUpdateInfo pxGUIElementUpdateInfo;
+                        PXClear(PXWindowUpdateInfo, &pxGUIElementUpdateInfo);
+                        pxGUIElementUpdateInfo.Show = PXTrue;
+                        pxGUIElementUpdateInfo.UIElement = pxUIElementEEE;
+                        pxGUIElementUpdateInfo.Property = PXUIElementPropertyVisibility;
+
+                        PXWindowUpdate(pxGUISystem, &pxGUIElementUpdateInfo, 1);
+                    }
+
+#endif
+
+                    break;
+                }
+                default:
+                {
+#if 0
+                    PXLogPrint
+                    (
+                        PXLoggingInfo,
+                        "Windows",
+                        "Event",
+                        "Notify <0x%p>, ID:<%i>",
+                        sourceObject,
+                        notificationCode->code
+                    );
+#endif
+
+                    break;
+                }
+            }
+
+            break;
+        }
+
+        case WM_ERASEBKGND:
+#if 0
+            return FALSE;  // Defer erasing into WM_PAINT
+#else
+            break;
+#endif
+
+        case WM_PAINT:
+        {
+            // No parameters
+
+            PXWindow* const pxGUIElement = PXNull;
+
+            PXDictionaryFindEntry(&pxGUISystem->ResourceManager->GUIElementLookup, &windowID, &pxGUIElement);
+
+            if(!pxGUIElement)
+            {
+                break; // break: not found
+            }
+
+            if(pxGUIElement->DrawFunction)
+            {
+                PAINTSTRUCT paintStruct;
+
+                const HWND windowHandle = pxGUIElement->Info.Handle.WindowID;
+                const HDC hdc = BeginPaint(windowHandle, &paintStruct);
+
+                PXWindowDrawInfo pxGUIElementDrawInfo;
+                PXClear(PXWindowDrawInfo, &pxGUIElementDrawInfo);
+                pxGUIElementDrawInfo.hwnd = pxGUIElement->Info.Handle.WindowID;
+                pxGUIElementDrawInfo.hDC = windowHandle;
+                // pxGUIElementDrawInfo.bErase = paintStruct.fErase;
+
+                pxGUIElement->Position.Left = paintStruct.rcPaint.left;
+                pxGUIElement->Position.Top = paintStruct.rcPaint.top;
+                pxGUIElement->Position.Right = paintStruct.rcPaint.right;
+                pxGUIElement->Position.Bottom = paintStruct.rcPaint.bottom;
+
+                pxGUIElement->DrawFunction(pxGUISystem, pxGUIElement, &pxGUIElementDrawInfo);
+
+                const BOOL endSuccess = EndPaint(windowHandle, &paintStruct);
+
+                return TRUE; // We did a custom draw, so return true to mark this as handled
+            }
+
+            break;
+        }
+        case WM_DRAWITEM:
+        {
+            const HWND identifier = (HWND)wParam;
+            DRAWITEMSTRUCT* const drawItemInfo = (DRAWITEMSTRUCT*)lParam;
+
+            PXWindow* const pxGUIElement = PXNull;
+
+            PXDictionaryFindEntry(&pxGUISystem->ResourceManager->GUIElementLookup, &drawItemInfo->hwndItem, &pxGUIElement);
+
+            if(!pxGUIElement)
+            {
+                break; // break: not found
+            }
+
+            // return PXTrue;
+
+            if(pxGUIElement->DrawFunction)
+            {
+                // RECT rc;
+
+                // GetClientRect(pxGUIElement->Info.Handle.WindowID, &rc);
+
+                // PAINTSTRUCT paintStruct;
+                // BeginPaint(pxGUIElement->Info.Handle.WindowID, &paintStruct);
+
+                // auto xx = pxGUIElement->DeviceContextHandle;
+
+                //  pxGUIElement->DeviceContextHandle = paintStruct.hdc;
+
+                PXWindowDrawInfo pxGUIElementDrawInfo;
+                PXClear(PXWindowDrawInfo, &pxGUIElementDrawInfo);
+                pxGUIElementDrawInfo.hwnd = pxGUIElement->Info.Handle.WindowID;
+                pxGUIElementDrawInfo.hDC = drawItemInfo->hDC;
+                // pxGUIElementDrawInfo.bErase = paintStruct.fErase;
+
+                pxGUIElement->Position.Left = drawItemInfo->rcItem.left;
+                pxGUIElement->Position.Top = drawItemInfo->rcItem.top;
+                pxGUIElement->Position.Right = drawItemInfo->rcItem.right;
+                pxGUIElement->Position.Bottom = drawItemInfo->rcItem.bottom;
+
+                pxGUIElement->DrawFunction(pxGUISystem, pxGUIElement, &pxGUIElementDrawInfo);
+
+                // EndPaint(pxGUIElement->Info.Handle.WindowID, &paintStruct);
+
+                // pxGUIElement->DeviceContextHandle = xx;
+
+                return TRUE; // We did a custom draw, so return true to mark this as handled
+            }
+
+            break;
+        }
+        case WM_PRINTCLIENT:
+        {
+            PXWindow* const pxGUIElement = PXNull;
+
+            PXDictionaryFindEntry(&pxGUISystem->ResourceManager->GUIElementLookup, &windowID, &pxGUIElement);
+
+            if(!pxGUIElement)
+            {
+                break; // break: not found
+            }
+
+            //  return PXTrue;
+
+            if(pxGUIElement->DrawFunction)
+            {
+                RECT rc;
+
+                GetClientRect(windowID, &rc);
+
+                PXWindowDrawInfo pxGUIElementDrawInfo;
+                PXClear(PXWindowDrawInfo, &pxGUIElementDrawInfo);
+                pxGUIElementDrawInfo.hwnd = windowID;
+                pxGUIElementDrawInfo.hDC = (HDC)wParam;
+                //  pxGUIElementDrawInfo.rcDirty = &rc;
+                pxGUIElementDrawInfo.bErase = TRUE;
+
+                pxGUIElement->DrawFunction(pxGUISystem, pxGUIElement, &pxGUIElementDrawInfo);
+
+                return 0; // We custom draw, handled
+            }
+
+            break;
+        }
+
+
+
+#if 0
+        case WM_ACTIVATE:
+            break;
+        case WM_SETREDRAW:
+            break;
+        case WM_SETFOCUS:
+            break;
+        case WM_KILLFOCUS:
+            break;
+        case WM_ENABLE:
+            break;
+        case WM_SETTEXT:
+            break;
+        case WM_GETTEXT:
+            break;
+        case WM_GETTEXTLENGTH:
+            break;
+
+        case WM_PAINT:
+        {
+            break;
+        }
+        case WM_QUERYENDSESSION:
+            break;
+        case WM_ENDSESSION:
+            break;
+        case WM_QUERYOPEN:
+            break;
+        case WM_QUIT:
+            break;
+        case WM_ERASEBKGND:
+            break;
+        case WM_SYSCOLORCHANGE:
+            break;
+        case WM_SHOWWINDOW:
+            break;
+        case WM_WININICHANGE:
+            break;
+            //  case WM_SETTINGCHANGE:
+            //     break;
+        case WM_DEVMODECHANGE:
+            return WindowEventDeviceModeChange;
+        case WM_ACTIVATEAPP:
+            return WindowEventActivateApp;
+        case WM_FONTCHANGE:
+            return WindowEventFontChange;
+        case WM_TIMECHANGE:
+            return WindowEventTimeChange;
+        case WM_CANCELMODE:
+            return WindowEventCancelMode;
+        case WM_MOUSEACTIVATE:
+            return WindowEventMouseActivate;
+        case WM_CHILDACTIVATE:
+            return WindowEventChildActivate;
+        case WM_QUEUESYNC:
+            return WindowEventQueueSync;
+        case WM_GETMINMAXINFO:
+            return WindowEventSizeChange;
+        case WM_PAINTICON:
+            return WindowEventIconPaint;
+        case WM_ICONERASEBKGND:
+            return WindowEventIconBackgroundErase;
+        case WM_NEXTDLGCTL:
+            return WindowEventDialogControlNext;
+        case WM_SPOOLERSTATUS:
+            return WindowEventSPOOLERSTATUS;
+        case WM_DRAWITEM:
+            return WindowEventItemDraw;
+        case WM_MEASUREITEM:
+            return WindowEventItemMeasure;
+        case WM_DELETEITEM:
+            return WindowEventItemDelete;
+        case WM_VKEYTOITEM:
+            return WindowEventVKEYTOITEM;
+        case WM_CHARTOITEM:
+            return WindowEventCHARTOITEM;
+        case WM_SETFONT:
+            return WindowEventFontSet;
+        case WM_GETFONT:
+            return WindowEventFontGet;
+        case WM_SETHOTKEY:
+            return WindowEventSETHOTKEY;
+        case WM_GETHOTKEY:
+            return WindowEventGETHOTKEY;
+        case WM_QUERYDRAGICON:
+            return WindowEventQUERYDRAGICON;
+        case WM_COMPAREITEM:
+            return WindowEventCOMPAREITEM;
+        case WM_GETOBJECT:
+            return WindowEventGETOBJECT;
+        case WM_COMPACTING:
+            return WindowEventCOMPACTING;
+        case WM_COMMNOTIFY:
+            return WindowEventCOMMNOTIFY;   /* no longer suported */
+        case WM_WINDOWPOSCHANGING:
+            return WindowEventWINDOWPOSCHANGING;
+        case WM_WINDOWPOSCHANGED:
+            return WindowEventWINDOWPOSCHANGED;
+        case WM_POWER:
+            return WindowEventPOWER;
+        case WM_COPYDATA:
+            return WindowEventCOPYDATA;
+        case WM_CANCELJOURNAL:
+            return WindowEventCANCELJOURNAL;
+
+        case WM_INPUTLANGCHANGEREQUEST:
+            return WindowEventINPUTLANGCHANGEREQUEST;
+        case WM_INPUTLANGCHANGE:
+            return WindowEventINPUTLANGCHANGE;
+        case WM_TCARD:
+            return WindowEventTCARD;
+        case WM_HELP:
+            return WindowEventHELP;
+        case WM_USERCHANGED:
+            return WindowEventUSERCHANGED;
+        case WM_NOTIFYFORMAT:
+            return WindowEventNOTIFYFORMAT;
+        case WM_CONTEXTMENU:
+            return WindowEventCONTEXTMENU;
+        case WM_STYLECHANGING:
+            return WindowEventSTYLECHANGING;
+        case WM_STYLECHANGED:
+            return WindowEventSTYLECHANGED;
+        case WM_DISPLAYCHANGE:
+            return WindowEventDISPLAYCHANGE;
+        case WM_GETICON:
+            return WindowEventGETICON;
+        case WM_SETICON:
+            return WindowEventSETICON;
+        case WM_NCCREATE:
+            return WindowEventNCCREATE;
+        case WM_NCDESTROY:
+            return WindowEventNCDESTROY;
+        case WM_NCCALCSIZE:
+            return WindowEventNCCALCSIZE;
+        case WM_NCHITTEST:
+            return WindowEventNCHITTEST;
+        case WM_NCPAINT:
+            return WindowEventNCPAINT;
+        case WM_NCACTIVATE:
+            return WindowEventNCACTIVATE;
+        case WM_GETDLGCODE:
+            return WindowEventGETDLGCODE;
+        case WM_SYNCPAINT:
+            return WindowEventSYNCPAINT;
+        case WM_NCMOUSEMOVE:
+            return WindowEventNCMOUSEMOVE;
+        case WM_NCLBUTTONDOWN:
+            return WindowEventNCLBUTTONDOWN;
+        case WM_NCLBUTTONUP:
+            return WindowEventNCLBUTTONUP;
+        case WM_NCLBUTTONDBLCLK:
+            return WindowEventNCLBUTTONDBLCLK;
+        case WM_NCRBUTTONDOWN:
+            return WindowEventNCRBUTTONDOWN;
+        case WM_NCRBUTTONUP:
+            return WindowEventNCRBUTTONUP;
+        case WM_NCRBUTTONDBLCLK:
+            return WindowEventNCRBUTTONDBLCLK;
+        case WM_NCMBUTTONDOWN:
+            return WindowEventNCMBUTTONDOWN;
+        case WM_NCMBUTTONUP:
+            return WindowEventNCMBUTTONUP;
+        case WM_NCMBUTTONDBLCLK:
+            return WindowEventNCMBUTTONDBLCLK;
+        case WM_NCXBUTTONDOWN:
+            return WindowEventNCXBUTTONDOWN;
+        case WM_NCXBUTTONUP:
+            return WindowEventNCXBUTTONUP;
+        case WM_NCXBUTTONDBLCLK:
+            return WindowEventNCXBUTTONDBLCLK;
+        case WM_INPUT_DEVICE_CHANGE:
+            return WindowEventINPUT_DEVICE_CHANGE;
+            // ?? case WM_KEYFIRST: return WindowEventKEYFIRST;
+
+        case WM_CHAR:
+            return WindowEventCHAR;
+        case WM_DEADCHAR:
+            return WindowEventDEADCHAR;
+        case WM_SYSKEYDOWN:
+            return WindowEventSYSKEYDOWN;
+        case WM_SYSKEYUP:
+            return WindowEventSYSKEYUP;
+        case WM_SYSCHAR:
+            return WindowEventSYSCHAR;
+        case WM_SYSDEADCHAR:
+            return WindowEventSYSDEADCHAR;
+            // case WM_UNICHAR: return WindowEventUNICHAR;
+            //case WM_KEYLAST: return WindowEventKEYLAST;
+            // case UNICODE_NOCHAR: return WindowEventXXXXXXXXXXXXXXX;
+
+        case WM_IME_STARTCOMPOSITION:
+            return WindowEventIME_STARTCOMPOSITION;
+        case WM_IME_ENDCOMPOSITION:
+            return WindowEventIME_ENDCOMPOSITION;
+        case WM_IME_COMPOSITION:
+            return WindowEventIME_COMPOSITION;
+            //case WM_IME_KEYLAST: return WindowEventIME_KEYLAST;
+        case WM_INITDIALOG:
+            return WindowEventINITDIALOG;
+
+        case WM_SYSCOMMAND:
+            return WindowEventSYSCOMMAND;
+        case WM_TIMER:
+            return WindowEventTIMER;
+        case WM_HSCROLL:
+            return WindowEventHSCROLL;
+        case WM_VSCROLL:
+            return WindowEventVSCROLL;
+        case WM_INITMENU:
+            return WindowEventINITMENU;
+        case WM_INITMENUPOPUP:
+            return WindowEventINITMENUPOPUP;
+            //  case WM_GESTURE: return WindowEventGESTURE;
+            //   case WM_GESTURENOTIFY: return WindowEventGESTURENOTIFY;
+        case WM_MENUSELECT:
+            return WindowEventMENUSELECT;
+        case WM_MENUCHAR:
+            return WindowEventMENUCHAR;
+        case WM_ENTERIDLE:
+            return WindowEventENTERIDLE;
+        case WM_MENURBUTTONUP:
+            return WindowEventMENURBUTTONUP;
+        case WM_MENUDRAG:
+            return WindowEventMENUDRAG;
+        case WM_MENUGETOBJECT:
+            return WindowEventMENUGETOBJECT;
+        case WM_UNINITMENUPOPUP:
+            return WindowEventUNINITMENUPOPUP;
+        case WM_MENUCOMMAND:
+            return WindowEventMENUCOMMAND;
+        case WM_CHANGEUISTATE:
+            return WindowEventCHANGEUISTATE;
+        case WM_UPDATEUISTATE:
+            return WindowEventUPDATEUISTATE;
+        case WM_QUERYUISTATE:
+            return WindowEventQUERYUISTATE;
+        case WM_CTLCOLORMSGBOX:
+            return WindowEventCTLCOLORMSGBOX;
+        case WM_CTLCOLOREDIT:
+            return WindowEventCTLCOLOREDIT;
+        case WM_CTLCOLORLISTBOX:
+            return WindowEventCTLCOLORLISTBOX;
+        case WM_CTLCOLORBTN:
+            return WindowEventCTLCOLORBTN;
+        case WM_CTLCOLORDLG:
+            return WindowEventCTLCOLORDLG;
+        case WM_CTLCOLORSCROLLBAR:
+            return WindowEventCTLCOLORSCROLLBAR;
+
+        case WM_CTLCOLORSTATIC:
+            return WindowEventCTLCOLORSTATIC;
+            //  case MN_GETHMENU: return WindowEventGETHMENU;
+            //case WM_MOUSEFIRST: return WindowEventMOUSEFIRST;
+        case WM_MOUSEMOVE:
+            return WindowEventMOUSEMOVE;
+
+#endif
+
+            // case WM_PAINT:
+        case WM_CTLCOLORMSGBOX:
+        case WM_CTLCOLOREDIT:
+        case WM_CTLCOLORLISTBOX:
+        case WM_CTLCOLORBTN:
+        case WM_CTLCOLORDLG:
+        case WM_CTLCOLORSCROLLBAR:
+        case WM_CTLCOLORSTATIC:
+        {
+            // HWND windowFocusedHandle = (HWND)GetFocus();;
+            HWND windowHandleNow = (HWND)lParam;
+            HDC hdc = (HDC)wParam;
+
+#if PXLogEnable && 0
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "Window",
+                "Event",
+                "Color Edit (0x%p) -> (0x%p)",
+                windowID,
+                windowHandleNow
+            );
+#endif
+
+            // can you fetch the object?
+            //  PXWindow* pxGUIElement = PXNull;
+
+            SetTextColor(hdc, RGB(200, 200, 200));
+            SetBkColor(hdc, RGB(50, 50, 50));            // yellow
+
+
+            HBRUSH brush = 0;
+#if 0
+            brush = GetStockObject(WHITE_BRUSH);
+#else
+            brush = CreateSolidBrush(RGB(20, 20, 20));
+#endif
+
+            return brush;
+
+
+            // break;
+
+        }
+        case WM_INPUT:
         {
 #if 0
             PXLogPrint
@@ -845,902 +1305,443 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
                 PXLoggingInfo,
                 "Windows",
                 "Event",
-                "Notify <0x%p>, ID:<%i>",
-                sourceObject,
-                notificationCode->code
+                "ID:%4i, Parent (0x%p), Sender (0x%p)",
+                eventID,
+                windowID,
+                pxWindowEvent.UIElementReference
             );
 #endif
 
-            break;
-        }
-        }
+            // MISSING
+            const PXSize inputCode = GET_RAWINPUT_CODE_WPARAM(wParam);
+            const HRAWINPUT handle = (HRAWINPUT)lParam;
+            const UINT uiCommand = RID_INPUT; // RID_HEADER
 
-        break;
-    }
-
-    case WM_ERASEBKGND:
-#if 0
-        return FALSE;  // Defer erasing into WM_PAINT
-#else
-        break;
-#endif
-
-    case WM_PAINT:
-    {
-        // No parameters
-
-        PXGUIElement* const pxGUIElement = PXNull;
-
-        PXDictionaryFindEntry(&pxGUISystem->ResourceManager->GUIElementLookup, &windowID, &pxGUIElement);
-
-        if(!pxGUIElement)
-        {
-            break; // break: not found
-        }
-
-        if(pxGUIElement->DrawFunction)
-        {
-            PAINTSTRUCT paintStruct;
-
-            const HWND windowHandle = pxGUIElement->Info.Handle.WindowID;
-            const HDC hdc = BeginPaint(windowHandle, &paintStruct);
-
-            PXGUIElementDrawInfo pxGUIElementDrawInfo;
-            PXClear(PXGUIElementDrawInfo, &pxGUIElementDrawInfo);
-            pxGUIElementDrawInfo.hwnd = pxGUIElement->Info.Handle.WindowID;
-            pxGUIElementDrawInfo.hDC = windowHandle;
-            // pxGUIElementDrawInfo.bErase = paintStruct.fErase;
-
-            pxGUIElement->Position.Left = paintStruct.rcPaint.left;
-            pxGUIElement->Position.Top = paintStruct.rcPaint.top;
-            pxGUIElement->Position.Right = paintStruct.rcPaint.right;
-            pxGUIElement->Position.Bottom = paintStruct.rcPaint.bottom;
-
-            pxGUIElement->DrawFunction(pxGUISystem, pxGUIElement, &pxGUIElementDrawInfo);
-
-            const BOOL endSuccess = EndPaint(windowHandle, &paintStruct);
-
-            return TRUE; // We did a custom draw, so return true to mark this as handled
-        }
-
-        break;
-    }
-    case WM_DRAWITEM:
-    {
-        const HWND identifier = (HWND)wParam;
-        DRAWITEMSTRUCT* const drawItemInfo = (DRAWITEMSTRUCT*)lParam;
-
-        PXGUIElement* const pxGUIElement = PXNull;
-
-        PXDictionaryFindEntry(&pxGUISystem->ResourceManager->GUIElementLookup, &drawItemInfo->hwndItem, &pxGUIElement);
-
-        if(!pxGUIElement)
-        {
-            break; // break: not found
-        }
-
-        // return PXTrue;
-
-        if(pxGUIElement->DrawFunction)
-        {
-            // RECT rc;
-
-            // GetClientRect(pxGUIElement->Info.Handle.WindowID, &rc);
-
-            // PAINTSTRUCT paintStruct;
-            // BeginPaint(pxGUIElement->Info.Handle.WindowID, &paintStruct);
-
-            // auto xx = pxGUIElement->DeviceContextHandle;
-
-            //  pxGUIElement->DeviceContextHandle = paintStruct.hdc;
-
-            PXGUIElementDrawInfo pxGUIElementDrawInfo;
-            PXClear(PXGUIElementDrawInfo, &pxGUIElementDrawInfo);
-            pxGUIElementDrawInfo.hwnd = pxGUIElement->Info.Handle.WindowID;
-            pxGUIElementDrawInfo.hDC = drawItemInfo->hDC;
-            // pxGUIElementDrawInfo.bErase = paintStruct.fErase;
-
-            pxGUIElement->Position.Left = drawItemInfo->rcItem.left;
-            pxGUIElement->Position.Top = drawItemInfo->rcItem.top;
-            pxGUIElement->Position.Right = drawItemInfo->rcItem.right;
-            pxGUIElement->Position.Bottom = drawItemInfo->rcItem.bottom;
-
-            pxGUIElement->DrawFunction(pxGUISystem, pxGUIElement, &pxGUIElementDrawInfo);
-
-            // EndPaint(pxGUIElement->Info.Handle.WindowID, &paintStruct);
-
-            // pxGUIElement->DeviceContextHandle = xx;
-
-            return TRUE; // We did a custom draw, so return true to mark this as handled
-        }
-
-        break;
-    }
-    case WM_PRINTCLIENT:
-    {
-        PXGUIElement* const pxGUIElement = PXNull;
-
-        PXDictionaryFindEntry(&pxGUISystem->ResourceManager->GUIElementLookup, &windowID, &pxGUIElement);
-
-        if(!pxGUIElement)
-        {
-            break; // break: not found
-        }
-
-        //  return PXTrue;
-
-        if(pxGUIElement->DrawFunction)
-        {
-            RECT rc;
-
-            GetClientRect(windowID, &rc);
-
-            PXGUIElementDrawInfo pxGUIElementDrawInfo;
-            PXClear(PXGUIElementDrawInfo, &pxGUIElementDrawInfo);
-            pxGUIElementDrawInfo.hwnd = windowID;
-            pxGUIElementDrawInfo.hDC = (HDC)wParam;
-            //  pxGUIElementDrawInfo.rcDirty = &rc;
-            pxGUIElementDrawInfo.bErase = TRUE;
-
-            pxGUIElement->DrawFunction(pxGUISystem, pxGUIElement, &pxGUIElementDrawInfo);
-
-            return 0; // We custom draw, handled
-        }
-
-        break;
-    }
-
-
-
-#if 0
-    case WM_ACTIVATE:
-        break;
-    case WM_SETREDRAW:
-        break;
-    case WM_SETFOCUS:
-        break;
-    case WM_KILLFOCUS:
-        break;
-    case WM_ENABLE:
-        break;
-    case WM_SETTEXT:
-        break;
-    case WM_GETTEXT:
-        break;
-    case WM_GETTEXTLENGTH:
-        break;
-
-    case WM_PAINT:
-    {
-        break;
-    }
-    case WM_QUERYENDSESSION:
-        break;
-    case WM_ENDSESSION:
-        break;
-    case WM_QUERYOPEN:
-        break;
-    case WM_QUIT:
-        break;
-    case WM_ERASEBKGND:
-        break;
-    case WM_SYSCOLORCHANGE:
-        break;
-    case WM_SHOWWINDOW:
-        break;
-    case WM_WININICHANGE:
-        break;
-    //  case WM_SETTINGCHANGE:
-    //     break;
-    case WM_DEVMODECHANGE:
-        return WindowEventDeviceModeChange;
-    case WM_ACTIVATEAPP:
-        return WindowEventActivateApp;
-    case WM_FONTCHANGE:
-        return WindowEventFontChange;
-    case WM_TIMECHANGE:
-        return WindowEventTimeChange;
-    case WM_CANCELMODE:
-        return WindowEventCancelMode;
-    case WM_MOUSEACTIVATE:
-        return WindowEventMouseActivate;
-    case WM_CHILDACTIVATE:
-        return WindowEventChildActivate;
-    case WM_QUEUESYNC:
-        return WindowEventQueueSync;
-    case WM_GETMINMAXINFO:
-        return WindowEventSizeChange;
-    case WM_PAINTICON:
-        return WindowEventIconPaint;
-    case WM_ICONERASEBKGND:
-        return WindowEventIconBackgroundErase;
-    case WM_NEXTDLGCTL:
-        return WindowEventDialogControlNext;
-    case WM_SPOOLERSTATUS:
-        return WindowEventSPOOLERSTATUS;
-    case WM_DRAWITEM:
-        return WindowEventItemDraw;
-    case WM_MEASUREITEM:
-        return WindowEventItemMeasure;
-    case WM_DELETEITEM:
-        return WindowEventItemDelete;
-    case WM_VKEYTOITEM:
-        return WindowEventVKEYTOITEM;
-    case WM_CHARTOITEM:
-        return WindowEventCHARTOITEM;
-    case WM_SETFONT:
-        return WindowEventFontSet;
-    case WM_GETFONT:
-        return WindowEventFontGet;
-    case WM_SETHOTKEY:
-        return WindowEventSETHOTKEY;
-    case WM_GETHOTKEY:
-        return WindowEventGETHOTKEY;
-    case WM_QUERYDRAGICON:
-        return WindowEventQUERYDRAGICON;
-    case WM_COMPAREITEM:
-        return WindowEventCOMPAREITEM;
-    case WM_GETOBJECT:
-        return WindowEventGETOBJECT;
-    case WM_COMPACTING:
-        return WindowEventCOMPACTING;
-    case WM_COMMNOTIFY:
-        return WindowEventCOMMNOTIFY;   /* no longer suported */
-    case WM_WINDOWPOSCHANGING:
-        return WindowEventWINDOWPOSCHANGING;
-    case WM_WINDOWPOSCHANGED:
-        return WindowEventWINDOWPOSCHANGED;
-    case WM_POWER:
-        return WindowEventPOWER;
-    case WM_COPYDATA:
-        return WindowEventCOPYDATA;
-    case WM_CANCELJOURNAL:
-        return WindowEventCANCELJOURNAL;
-
-    case WM_INPUTLANGCHANGEREQUEST:
-        return WindowEventINPUTLANGCHANGEREQUEST;
-    case WM_INPUTLANGCHANGE:
-        return WindowEventINPUTLANGCHANGE;
-    case WM_TCARD:
-        return WindowEventTCARD;
-    case WM_HELP:
-        return WindowEventHELP;
-    case WM_USERCHANGED:
-        return WindowEventUSERCHANGED;
-    case WM_NOTIFYFORMAT:
-        return WindowEventNOTIFYFORMAT;
-    case WM_CONTEXTMENU:
-        return WindowEventCONTEXTMENU;
-    case WM_STYLECHANGING:
-        return WindowEventSTYLECHANGING;
-    case WM_STYLECHANGED:
-        return WindowEventSTYLECHANGED;
-    case WM_DISPLAYCHANGE:
-        return WindowEventDISPLAYCHANGE;
-    case WM_GETICON:
-        return WindowEventGETICON;
-    case WM_SETICON:
-        return WindowEventSETICON;
-    case WM_NCCREATE:
-        return WindowEventNCCREATE;
-    case WM_NCDESTROY:
-        return WindowEventNCDESTROY;
-    case WM_NCCALCSIZE:
-        return WindowEventNCCALCSIZE;
-    case WM_NCHITTEST:
-        return WindowEventNCHITTEST;
-    case WM_NCPAINT:
-        return WindowEventNCPAINT;
-    case WM_NCACTIVATE:
-        return WindowEventNCACTIVATE;
-    case WM_GETDLGCODE:
-        return WindowEventGETDLGCODE;
-    case WM_SYNCPAINT:
-        return WindowEventSYNCPAINT;
-    case WM_NCMOUSEMOVE:
-        return WindowEventNCMOUSEMOVE;
-    case WM_NCLBUTTONDOWN:
-        return WindowEventNCLBUTTONDOWN;
-    case WM_NCLBUTTONUP:
-        return WindowEventNCLBUTTONUP;
-    case WM_NCLBUTTONDBLCLK:
-        return WindowEventNCLBUTTONDBLCLK;
-    case WM_NCRBUTTONDOWN:
-        return WindowEventNCRBUTTONDOWN;
-    case WM_NCRBUTTONUP:
-        return WindowEventNCRBUTTONUP;
-    case WM_NCRBUTTONDBLCLK:
-        return WindowEventNCRBUTTONDBLCLK;
-    case WM_NCMBUTTONDOWN:
-        return WindowEventNCMBUTTONDOWN;
-    case WM_NCMBUTTONUP:
-        return WindowEventNCMBUTTONUP;
-    case WM_NCMBUTTONDBLCLK:
-        return WindowEventNCMBUTTONDBLCLK;
-    case WM_NCXBUTTONDOWN:
-        return WindowEventNCXBUTTONDOWN;
-    case WM_NCXBUTTONUP:
-        return WindowEventNCXBUTTONUP;
-    case WM_NCXBUTTONDBLCLK:
-        return WindowEventNCXBUTTONDBLCLK;
-    case WM_INPUT_DEVICE_CHANGE:
-        return WindowEventINPUT_DEVICE_CHANGE;
-    // ?? case WM_KEYFIRST: return WindowEventKEYFIRST;
-
-    case WM_CHAR:
-        return WindowEventCHAR;
-    case WM_DEADCHAR:
-        return WindowEventDEADCHAR;
-    case WM_SYSKEYDOWN:
-        return WindowEventSYSKEYDOWN;
-    case WM_SYSKEYUP:
-        return WindowEventSYSKEYUP;
-    case WM_SYSCHAR:
-        return WindowEventSYSCHAR;
-    case WM_SYSDEADCHAR:
-        return WindowEventSYSDEADCHAR;
-    // case WM_UNICHAR: return WindowEventUNICHAR;
-    //case WM_KEYLAST: return WindowEventKEYLAST;
-    // case UNICODE_NOCHAR: return WindowEventXXXXXXXXXXXXXXX;
-
-    case WM_IME_STARTCOMPOSITION:
-        return WindowEventIME_STARTCOMPOSITION;
-    case WM_IME_ENDCOMPOSITION:
-        return WindowEventIME_ENDCOMPOSITION;
-    case WM_IME_COMPOSITION:
-        return WindowEventIME_COMPOSITION;
-    //case WM_IME_KEYLAST: return WindowEventIME_KEYLAST;
-    case WM_INITDIALOG:
-        return WindowEventINITDIALOG;
-
-    case WM_SYSCOMMAND:
-        return WindowEventSYSCOMMAND;
-    case WM_TIMER:
-        return WindowEventTIMER;
-    case WM_HSCROLL:
-        return WindowEventHSCROLL;
-    case WM_VSCROLL:
-        return WindowEventVSCROLL;
-    case WM_INITMENU:
-        return WindowEventINITMENU;
-    case WM_INITMENUPOPUP:
-        return WindowEventINITMENUPOPUP;
-    //  case WM_GESTURE: return WindowEventGESTURE;
-    //   case WM_GESTURENOTIFY: return WindowEventGESTURENOTIFY;
-    case WM_MENUSELECT:
-        return WindowEventMENUSELECT;
-    case WM_MENUCHAR:
-        return WindowEventMENUCHAR;
-    case WM_ENTERIDLE:
-        return WindowEventENTERIDLE;
-    case WM_MENURBUTTONUP:
-        return WindowEventMENURBUTTONUP;
-    case WM_MENUDRAG:
-        return WindowEventMENUDRAG;
-    case WM_MENUGETOBJECT:
-        return WindowEventMENUGETOBJECT;
-    case WM_UNINITMENUPOPUP:
-        return WindowEventUNINITMENUPOPUP;
-    case WM_MENUCOMMAND:
-        return WindowEventMENUCOMMAND;
-    case WM_CHANGEUISTATE:
-        return WindowEventCHANGEUISTATE;
-    case WM_UPDATEUISTATE:
-        return WindowEventUPDATEUISTATE;
-    case WM_QUERYUISTATE:
-        return WindowEventQUERYUISTATE;
-    case WM_CTLCOLORMSGBOX:
-        return WindowEventCTLCOLORMSGBOX;
-    case WM_CTLCOLOREDIT:
-        return WindowEventCTLCOLOREDIT;
-    case WM_CTLCOLORLISTBOX:
-        return WindowEventCTLCOLORLISTBOX;
-    case WM_CTLCOLORBTN:
-        return WindowEventCTLCOLORBTN;
-    case WM_CTLCOLORDLG:
-        return WindowEventCTLCOLORDLG;
-    case WM_CTLCOLORSCROLLBAR:
-        return WindowEventCTLCOLORSCROLLBAR;
-
-    case WM_CTLCOLORSTATIC:
-        return WindowEventCTLCOLORSTATIC;
-    //  case MN_GETHMENU: return WindowEventGETHMENU;
-    //case WM_MOUSEFIRST: return WindowEventMOUSEFIRST;
-    case WM_MOUSEMOVE:
-        return WindowEventMOUSEMOVE;
-
-#endif
-
-    // case WM_PAINT:
-    case WM_CTLCOLORMSGBOX:
-    case WM_CTLCOLOREDIT:
-    case WM_CTLCOLORLISTBOX:
-    case WM_CTLCOLORBTN:
-    case WM_CTLCOLORDLG:
-    case WM_CTLCOLORSCROLLBAR:
-    case WM_CTLCOLORSTATIC:
-    {
-        // HWND windowFocusedHandle = (HWND)GetFocus();;
-        HWND windowHandleNow = (HWND)lParam;
-        HDC hdc = (HDC)wParam;
-
-#if PXLogEnable && 0
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            "Window",
-            "Event",
-            "Color Edit (0x%p) -> (0x%p)",
-            windowID,
-            windowHandleNow
-        );
-#endif
-
-        // can you fetch the object?
-        //  PXGUIElement* pxGUIElement = PXNull;
-
-        SetTextColor(hdc, RGB(200, 200, 200));
-        SetBkColor(hdc, RGB(50, 50, 50));            // yellow
-
-
-        HBRUSH brush = 0;
-#if 0
-        brush = GetStockObject(WHITE_BRUSH);
-#else
-        brush = CreateSolidBrush(RGB(20, 20, 20));
-#endif
-
-        return brush;
-
-
-        // break;
-
-    }
-    case WM_INPUT:
-    {
-#if 0
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            "Windows",
-            "Event",
-            "ID:%4i, Parent (0x%p), Sender (0x%p)",
-            eventID,
-            windowID,
-            pxWindowEvent.UIElementReference
-        );
-#endif
-
-        // MISSING
-        const PXSize inputCode = GET_RAWINPUT_CODE_WPARAM(wParam);
-        const HRAWINPUT handle = (HRAWINPUT)lParam;
-        const UINT uiCommand = RID_INPUT; // RID_HEADER
-
-        switch(inputCode)
-        {
-        case RIM_INPUT: // Input occurred while the application was in the foreground.
-        {
-            RAWINPUT rawInput;
-            UINT rawInputSize = sizeof(RAWINPUT); // Can't be 'const' !
+            switch(inputCode)
+            {
+                case RIM_INPUT: // Input occurred while the application was in the foreground.
+                {
+                    RAWINPUT rawInput;
+                    UINT rawInputSize = sizeof(RAWINPUT); // Can't be 'const' !
 
 #if WindowsAtleastXP
-            const UINT result = GetRawInputData // Windows XP, User32.dll, winuser.h
-                                (
-                                    handle,
-                                    uiCommand,
-                                    &rawInput,
-                                    &rawInputSize,
-                                    sizeof(RAWINPUTHEADER)
-                                );
-            const PXBool sucessful = result != -1;
+                    const UINT result = GetRawInputData // Windows XP, User32.dll, winuser.h
+                    (
+                        handle,
+                        uiCommand,
+                        &rawInput,
+                        &rawInputSize,
+                        sizeof(RAWINPUTHEADER)
+                    );
+                    const PXBool sucessful = result != -1;
 
-            if(sucessful)
-            {
+                    if(sucessful)
+                    {
 #if UseRawMouseData
-                if(RIM_TYPEMOUSE == rawInput.header.dwType)
-                {
-                    pxWindowEvent.Type = PXWindowEventTypeInputMouseMove;
-                    pxWindowEvent.InputMouseMove.AxisX = 0;
-                    pxWindowEvent.InputMouseMove.AxisY = 0;
-                    pxWindowEvent.InputMouseMove.DeltaX = rawInput.data.mouse.lLastX;
-                    pxWindowEvent.InputMouseMove.DeltaY = rawInput.data.mouse.lLastY;
+                        if(RIM_TYPEMOUSE == rawInput.header.dwType)
+                        {
+                            pxWindowEvent.Type = PXWindowEventTypeInputMouseMove;
+                            pxWindowEvent.InputMouseMove.AxisX = 0;
+                            pxWindowEvent.InputMouseMove.AxisY = 0;
+                            pxWindowEvent.InputMouseMove.DeltaX = rawInput.data.mouse.lLastX;
+                            pxWindowEvent.InputMouseMove.DeltaY = rawInput.data.mouse.lLastY;
 
-                    PXWindowCursorPositionInWindowGet(windowID, &pxWindowEvent.InputMouseMove.AxisX, &pxWindowEvent.InputMouseMove.AxisY);
+                            PXWindowCursorPositionInWindowGet(windowID, &pxWindowEvent.InputMouseMove.AxisX, &pxWindowEvent.InputMouseMove.AxisY);
 
-                    PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
-
-
-                    //PXWindowTriggerOnMouseMoveEvent(window, positionX, positionY, deltaX, deltaY);
+                            PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
 
 
+                            //PXWindowTriggerOnMouseMoveEvent(window, positionX, positionY, deltaX, deltaY);
 
-                    // Wheel data needs to be pointer casted to interpret an unsigned short as a short, with no conversion
-                    // otherwise it'll overflow when going negative.
-                    // Didn't happen before some minor changes in the code, doesn't seem to go away
-                    // so it's going to have to be like this.
-                    // if (raw->data.mouse.usButtonFlags & RI_MOUSE_WHEEL)
-                    //     input.mouse.wheel = (*(short*)&raw->data.mouse.usButtonData) / WHEEL_DELTA;
+
+
+                            // Wheel data needs to be pointer casted to interpret an unsigned short as a short, with no conversion
+                            // otherwise it'll overflow when going negative.
+                            // Didn't happen before some minor changes in the code, doesn't seem to go away
+                            // so it's going to have to be like this.
+                            // if (raw->data.mouse.usButtonFlags & RI_MOUSE_WHEEL)
+                            //     input.mouse.wheel = (*(short*)&raw->data.mouse.usButtonData) / WHEEL_DELTA;
+                        }
+#endif
+
+
+                    }
+#endif
+
+                    break;
                 }
-#endif
+                case RIM_INPUTSINK: // Input occurred while the application was not in the foreground.
+                {
+                    break;
+                }
 
-
+                default:
+                    break;
             }
-#endif
 
             break;
         }
-        case RIM_INPUTSINK: // Input occurred while the application was not in the foreground.
+        case WM_COMMAND:
         {
+            const PXInt32U buttonType = wParam; // IDOK;
+            const HANDLE handle = (HANDLE)lParam;
+
+            PXWindow* const pxGUIElement = PXNull;
+
+            if(pxGUISystem)
+            {
+                PXDictionaryFindEntry(&pxGUISystem->ResourceManager->GUIElementLookup, &handle, &pxGUIElement);
+            }
+
+            if(!pxGUIElement) // if we did not find the object, stop
+            {
+                break;
+            }
+
+            if(!(pxGUIElement->Info.Flags & PXResourceInfoActive))
+            {
+                // ShowWindow(pxGUIElement->ID, SW_HIDE);
+            }
+
+            pxWindowEvent.Type = PXWindowEventTypeElementClick;
+            pxWindowEvent.UIElementSender = pxGUIElement;
+
+            PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
+
             break;
         }
+        case WM_LBUTTONDOWN:
+        {
+            pxWindowEvent.Type = PXWindowEventTypeInputMouseButton;
+            pxWindowEvent.InputMouseButton.Button = PXMouseButtonLeft;
+            pxWindowEvent.InputMouseButton.PressState = PXKeyPressStateDown;
 
-        default:
+            PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
+
             break;
         }
-
-        break;
-    }
-    case WM_COMMAND:
-    {
-        const PXInt32U buttonType = wParam; // IDOK;
-        const HANDLE handle = (HANDLE)lParam;
-
-        PXGUIElement* const pxGUIElement = PXNull;
-
-        if(pxGUISystem)
+        case WM_LBUTTONUP:
         {
-            PXDictionaryFindEntry(&pxGUISystem->ResourceManager->GUIElementLookup, &handle, &pxGUIElement);
-        }
+            pxWindowEvent.Type = PXWindowEventTypeInputMouseButton;
+            pxWindowEvent.InputMouseButton.Button = PXMouseButtonLeft;
+            pxWindowEvent.InputMouseButton.PressState = PXKeyPressStateUp;
 
-        if(!pxGUIElement) // if we did not find the object, stop
-        {
+            PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
+
             break;
         }
-
-        if(!(pxGUIElement->Info.Flags & PXResourceInfoActive))
+        case WM_LBUTTONDBLCLK:
         {
-            // ShowWindow(pxGUIElement->ID, SW_HIDE);
+            pxWindowEvent.Type = PXWindowEventTypeInputMouseButton;
+            pxWindowEvent.InputMouseButton.Button = PXMouseButtonLeft;
+            pxWindowEvent.InputMouseButton.PressState = PXKeyPressStateDoubleClick;
+
+            PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
+
+            break;
         }
-
-        pxWindowEvent.Type = PXWindowEventTypeElementClick;
-        pxWindowEvent.UIElementSender = pxGUIElement;
-
-        PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
-
-        break;
-    }
-    case WM_LBUTTONDOWN:
-    {
-        pxWindowEvent.Type = PXWindowEventTypeInputMouseButton;
-        pxWindowEvent.InputMouseButton.Button = PXMouseButtonLeft;
-        pxWindowEvent.InputMouseButton.PressState = PXKeyPressStateDown;
-
-        PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
-
-        break;
-    }
-    case WM_LBUTTONUP:
-    {
-        pxWindowEvent.Type = PXWindowEventTypeInputMouseButton;
-        pxWindowEvent.InputMouseButton.Button = PXMouseButtonLeft;
-        pxWindowEvent.InputMouseButton.PressState = PXKeyPressStateUp;
-
-        PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
-
-        break;
-    }
-    case WM_LBUTTONDBLCLK:
-    {
-        pxWindowEvent.Type = PXWindowEventTypeInputMouseButton;
-        pxWindowEvent.InputMouseButton.Button = PXMouseButtonLeft;
-        pxWindowEvent.InputMouseButton.PressState = PXKeyPressStateDoubleClick;
-
-        PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
-
-        break;
-    }
-    case WM_RBUTTONDOWN:
-    {
-        pxWindowEvent.Type = PXWindowEventTypeInputMouseButton;
-        pxWindowEvent.InputMouseButton.Button = PXMouseButtonRight;
-        pxWindowEvent.InputMouseButton.PressState = PXKeyPressStateDown;
-
-        PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
-
-        break;
-    }
-    case WM_RBUTTONUP:
-    {
-        pxWindowEvent.Type = PXWindowEventTypeInputMouseButton;
-        pxWindowEvent.InputMouseButton.Button = PXMouseButtonRight;
-        pxWindowEvent.InputMouseButton.PressState = PXKeyPressStateUp;
-
-        PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
-
-        break;
-    }
-    case WM_RBUTTONDBLCLK:
-    {
-        pxWindowEvent.Type = PXWindowEventTypeInputMouseButton;
-        pxWindowEvent.InputMouseButton.Button = PXMouseButtonRight;
-        pxWindowEvent.InputMouseButton.PressState = PXKeyPressStateDoubleClick;
-
-        PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
-
-        break;
-    }
-    case WM_MBUTTONDOWN:
-    {
-        pxWindowEvent.Type = PXWindowEventTypeInputMouseButton;
-        pxWindowEvent.InputMouseButton.Button = PXMouseButtonMiddle;
-        pxWindowEvent.InputMouseButton.PressState = PXKeyPressStateDown;
-
-        PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
-
-        break;
-    }
-    case WM_MBUTTONUP:
-    {
-        pxWindowEvent.Type = PXWindowEventTypeInputMouseButton;
-        pxWindowEvent.InputMouseButton.Button = PXMouseButtonMiddle;
-        pxWindowEvent.InputMouseButton.PressState = PXKeyPressStateUp;
-
-        PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
-
-        break;
-    }
-    case WM_MBUTTONDBLCLK:
-    {
-        pxWindowEvent.Type = PXWindowEventTypeInputMouseButton;
-        pxWindowEvent.InputMouseButton.Button = PXMouseButtonMiddle;
-        pxWindowEvent.InputMouseButton.PressState = PXKeyPressStateDoubleClick;
-
-        PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
-
-        break;
-    }
-    case WM_MOUSEWHEEL:
-    {
-
-        break;
-    }
-    case WM_KEYDOWN:
-    case WM_KEYUP:
-    {
-        const PXSize characterInfo = lParam;
-
-        pxWindowEvent.Type = PXWindowEventTypeInputKeyboard;
-        pxWindowEvent.InputKeyboard.CharacterID = wParam;
-        pxWindowEvent.InputKeyboard.VirtualKey = PXVirtualKeyFromID(wParam);
-
-        switch(eventID)
+        case WM_RBUTTONDOWN:
         {
-        case WM_KEYUP:
+            pxWindowEvent.Type = PXWindowEventTypeInputMouseButton;
+            pxWindowEvent.InputMouseButton.Button = PXMouseButtonRight;
+            pxWindowEvent.InputMouseButton.PressState = PXKeyPressStateDown;
+
+            PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
+
+            break;
+        }
+        case WM_RBUTTONUP:
         {
-            pxWindowEvent.InputKeyboard.PressState = PXKeyPressStateUp;
+            pxWindowEvent.Type = PXWindowEventTypeInputMouseButton;
+            pxWindowEvent.InputMouseButton.Button = PXMouseButtonRight;
+            pxWindowEvent.InputMouseButton.PressState = PXKeyPressStateUp;
+
+            PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
+
+            break;
+        }
+        case WM_RBUTTONDBLCLK:
+        {
+            pxWindowEvent.Type = PXWindowEventTypeInputMouseButton;
+            pxWindowEvent.InputMouseButton.Button = PXMouseButtonRight;
+            pxWindowEvent.InputMouseButton.PressState = PXKeyPressStateDoubleClick;
+
+            PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
+
+            break;
+        }
+        case WM_MBUTTONDOWN:
+        {
+            pxWindowEvent.Type = PXWindowEventTypeInputMouseButton;
+            pxWindowEvent.InputMouseButton.Button = PXMouseButtonMiddle;
+            pxWindowEvent.InputMouseButton.PressState = PXKeyPressStateDown;
+
+            PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
+
+            break;
+        }
+        case WM_MBUTTONUP:
+        {
+            pxWindowEvent.Type = PXWindowEventTypeInputMouseButton;
+            pxWindowEvent.InputMouseButton.Button = PXMouseButtonMiddle;
+            pxWindowEvent.InputMouseButton.PressState = PXKeyPressStateUp;
+
+            PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
+
+            break;
+        }
+        case WM_MBUTTONDBLCLK:
+        {
+            pxWindowEvent.Type = PXWindowEventTypeInputMouseButton;
+            pxWindowEvent.InputMouseButton.Button = PXMouseButtonMiddle;
+            pxWindowEvent.InputMouseButton.PressState = PXKeyPressStateDoubleClick;
+
+            PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
+
+            break;
+        }
+        case WM_MOUSEWHEEL:
+        {
+
             break;
         }
         case WM_KEYDOWN:
+        case WM_KEYUP:
         {
-            pxWindowEvent.InputKeyboard.PressState = PXKeyPressStateDown;
-            break;
-        }
-        }
+            const PXSize characterInfo = lParam;
 
-        PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
+            pxWindowEvent.Type = PXWindowEventTypeInputKeyboard;
+            pxWindowEvent.InputKeyboard.CharacterID = wParam;
+            pxWindowEvent.InputKeyboard.VirtualKey = PXVirtualKeyFromID(wParam);
 
-
-        /*
-        PXKeyBoardKeyInfo buttonInfo;
-        buttonInfo.KeyID = character;
-        buttonInfo.Key = virtualKey;
-        buttonInfo.Mode = mode;
-        */
-
-        // TODO: on system 32 Bit error
-        /*
-        buttonInfo.Repeat = (characterInfo & 0b00000000000000001111111111111111); // Die Wiederholungsanzahl für die aktuelle Meldung.Der Wert gibt an, wie oft die Tastatureingabe automatisch angezeigt wird, wenn der Benutzer den Schlüssel hält.Die Wiederholungsanzahl ist immer 1 für eine WM _ KEYUP - Nachricht.
-        buttonInfo.ScanCode = (characterInfo & 0b00000000111111110000000000000000) >> 16; // Der Scancode.Der Wert hängt vom OEM ab.
-        buttonInfo.SpecialKey = (characterInfo & 0b00000001000000000000000000000000) >> 24; // Gibt an, ob es sich bei der Taste um eine erweiterte Taste handelt, z.B.die rechte ALT - und STRG - Taste, die auf einer erweiterten Tastatur mit 101 oder 102 Tasten angezeigt werden.Der Wert ist 1, wenn es sich um einen erweiterten Schlüssel handelt.andernfalls ist es 0.
-        //buttonInfo.ReservedDontUse = (characterInfo & 0b00011110000000000000000000000000) >> 25; //    Reserviert; nicht verwenden.
-        buttonInfo.KontextCode = (characterInfo & 0b00100000000000000000000000000000) >> 29; // Der Kontextcode.Der Wert ist für eine WM _ KEYUP - Nachricht immer 0.
-        buttonInfo.PreState = (characterInfo & 0b01000000000000000000000000000000) >> 30; // Der vorherige Schlüsselzustand.Der Wert ist immer 1 für eine WM _ KEYUP - Nachricht.
-        buttonInfo.GapState = (characterInfo & 0b10000000000000000000000000000000) >> 31; // Der Übergangszustand.Der Wert ist immer 1 für eine WM _ KEYUP - Nachricht.
-        */
-
-        //  PXWindowTriggerOnKeyBoardKeyEvent(window, &buttonInfo);
-
-        break;
-    }
-    case WM_XBUTTONDOWN: // Fall though
-    case WM_XBUTTONUP:
-    {
-        PXMouseButton mouseButton = PXMouseButtonInvalid;
-        PXKeyPressState buttonState = PXKeyPressStateInvalid;
-
-        const WORD releaseID = HIWORD(wParam);
-        // const WORD xxxxx = LOWORD(wParam);
-        // const WORD fwKeys = GET_KEYSTATE_WPARAM(wParam);
-        // const WORD fwButton = GET_XBUTTON_WPARAM(wParam);
-        // const int xPos = GET_X_LPARAM(lParam);
-        // const int yPos = GET_Y_LPARAM(lParam);
-
-        {
             switch(eventID)
             {
-
-            case WindowEventXBUTTONUP:
-            {
-                buttonState = PXKeyPressStateUp;
-                break;
+                case WM_KEYUP:
+                {
+                    pxWindowEvent.InputKeyboard.PressState = PXKeyPressStateUp;
+                    break;
+                }
+                case WM_KEYDOWN:
+                {
+                    pxWindowEvent.InputKeyboard.PressState = PXKeyPressStateDown;
+                    break;
+                }
             }
 
-            case WindowEventXBUTTONDOWN:
-            {
-                buttonState = PXKeyPressStateDown;
-                break;
-            }
-            }
+            PXWindowEventConsumer(pxGUISystem, &pxWindowEvent);
 
-
-            switch(releaseID)
-            {
-            case XBUTTON1:
-                mouseButton = PXMouseButtonSpecialA;
-                break;
-
-            case XBUTTON2:
-                mouseButton = PXMouseButtonSpecialB;
-                break;
-            }
 
             /*
-                    switch(fwKeys)
-                    {
-                        case MK_XBUTTON1:
-                            mouseButton = MouseButtonSpecialA;
-                            break;
-
-                        case MK_XBUTTON2:
-                            mouseButton = MouseButtonSpecialB;
-                            break;
-
-                        default:
-                            mouseButton = MouseButtonInvalid;
-                            break;
-                    }
+            PXKeyBoardKeyInfo buttonInfo;
+            buttonInfo.KeyID = character;
+            buttonInfo.Key = virtualKey;
+            buttonInfo.Mode = mode;
             */
 
+            // TODO: on system 32 Bit error
+            /*
+            buttonInfo.Repeat = (characterInfo & 0b00000000000000001111111111111111); // Die Wiederholungsanzahl für die aktuelle Meldung.Der Wert gibt an, wie oft die Tastatureingabe automatisch angezeigt wird, wenn der Benutzer den Schlüssel hält.Die Wiederholungsanzahl ist immer 1 für eine WM _ KEYUP - Nachricht.
+            buttonInfo.ScanCode = (characterInfo & 0b00000000111111110000000000000000) >> 16; // Der Scancode.Der Wert hängt vom OEM ab.
+            buttonInfo.SpecialKey = (characterInfo & 0b00000001000000000000000000000000) >> 24; // Gibt an, ob es sich bei der Taste um eine erweiterte Taste handelt, z.B.die rechte ALT - und STRG - Taste, die auf einer erweiterten Tastatur mit 101 oder 102 Tasten angezeigt werden.Der Wert ist 1, wenn es sich um einen erweiterten Schlüssel handelt.andernfalls ist es 0.
+            //buttonInfo.ReservedDontUse = (characterInfo & 0b00011110000000000000000000000000) >> 25; //    Reserviert; nicht verwenden.
+            buttonInfo.KontextCode = (characterInfo & 0b00100000000000000000000000000000) >> 29; // Der Kontextcode.Der Wert ist für eine WM _ KEYUP - Nachricht immer 0.
+            buttonInfo.PreState = (characterInfo & 0b01000000000000000000000000000000) >> 30; // Der vorherige Schlüsselzustand.Der Wert ist immer 1 für eine WM _ KEYUP - Nachricht.
+            buttonInfo.GapState = (characterInfo & 0b10000000000000000000000000000000) >> 31; // Der Übergangszustand.Der Wert ist immer 1 für eine WM _ KEYUP - Nachricht.
+            */
 
-            // PXWindowTriggerOnMouseClickEvent(window, mouseButton, buttonState);
+            //  PXWindowTriggerOnKeyBoardKeyEvent(window, &buttonInfo);
+
+            break;
+        }
+        case WM_XBUTTONDOWN: // Fall though
+        case WM_XBUTTONUP:
+        {
+            PXMouseButton mouseButton = PXMouseButtonInvalid;
+            PXKeyPressState buttonState = PXKeyPressStateInvalid;
+
+            const WORD releaseID = HIWORD(wParam);
+            // const WORD xxxxx = LOWORD(wParam);
+            // const WORD fwKeys = GET_KEYSTATE_WPARAM(wParam);
+            // const WORD fwButton = GET_XBUTTON_WPARAM(wParam);
+            // const int xPos = GET_X_LPARAM(lParam);
+            // const int yPos = GET_Y_LPARAM(lParam);
+
+            {
+                switch(eventID)
+                {
+
+                    case WindowEventXBUTTONUP:
+                    {
+                        buttonState = PXKeyPressStateUp;
+                        break;
+                    }
+
+                    case WindowEventXBUTTONDOWN:
+                    {
+                        buttonState = PXKeyPressStateDown;
+                        break;
+                    }
+                }
+
+
+                switch(releaseID)
+                {
+                    case XBUTTON1:
+                        mouseButton = PXMouseButtonSpecialA;
+                        break;
+
+                    case XBUTTON2:
+                        mouseButton = PXMouseButtonSpecialB;
+                        break;
+                }
+
+                /*
+                        switch(fwKeys)
+                        {
+                            case MK_XBUTTON1:
+                                mouseButton = MouseButtonSpecialA;
+                                break;
+
+                            case MK_XBUTTON2:
+                                mouseButton = MouseButtonSpecialB;
+                                break;
+
+                            default:
+                                mouseButton = MouseButtonInvalid;
+                                break;
+                        }
+                */
+
+
+                // PXWindowTriggerOnMouseClickEvent(window, mouseButton, buttonState);
+            }
+
+            break;
         }
 
-        break;
-    }
+        /*
 
-    /*
+        case WM_XBUTTONDBLCLK: return WindowEventXBUTTONDBLCLK;
+            //   case WM_MOUSEHWHEEL: return WindowEventMOUSEHWHEEL;
+                   //case WM_MOUSELAST: return WindowEventMOUSELAST;
+        case WM_PARENTNOTIFY: return WindowEventPARENTNOTIFY;
+        case WM_ENTERMENULOOP: return WindowEventENTERMENULOOP;
+        case WM_EXITMENULOOP: return WindowEventEXITMENULOOP;
+        case WM_NEXTMENU: return WindowEventNEXTMENU;
+        case WM_SIZING: return WindowEventSIZING;
+        case WM_CAPTURECHANGED: return WindowEventCAPTURECHANGED;
+        case WM_MOVING: return WindowEventMOVING;
+        case WM_POWERBROADCAST: return WindowEventPOWERBROADCAST;
+        case WM_DEVICECHANGE: return WindowEventDEVICECHANGE;
+        case WM_MDICREATE: return WindowEventMDICREATE;
+        case WM_MDIDESTROY: return WindowEventMDIDESTROY;
+        case WM_MDIACTIVATE: return WindowEventMDIACTIVATE;
+        case WM_MDIRESTORE: return WindowEventMDIRESTORE;
+        case WM_MDINEXT: return WindowEventMDINEXT;
 
-    case WM_XBUTTONDBLCLK: return WindowEventXBUTTONDBLCLK;
-        //   case WM_MOUSEHWHEEL: return WindowEventMOUSEHWHEEL;
-               //case WM_MOUSELAST: return WindowEventMOUSELAST;
-    case WM_PARENTNOTIFY: return WindowEventPARENTNOTIFY;
-    case WM_ENTERMENULOOP: return WindowEventENTERMENULOOP;
-    case WM_EXITMENULOOP: return WindowEventEXITMENULOOP;
-    case WM_NEXTMENU: return WindowEventNEXTMENU;
-    case WM_SIZING: return WindowEventSIZING;
-    case WM_CAPTURECHANGED: return WindowEventCAPTURECHANGED;
-    case WM_MOVING: return WindowEventMOVING;
-    case WM_POWERBROADCAST: return WindowEventPOWERBROADCAST;
-    case WM_DEVICECHANGE: return WindowEventDEVICECHANGE;
-    case WM_MDICREATE: return WindowEventMDICREATE;
-    case WM_MDIDESTROY: return WindowEventMDIDESTROY;
-    case WM_MDIACTIVATE: return WindowEventMDIACTIVATE;
-    case WM_MDIRESTORE: return WindowEventMDIRESTORE;
-    case WM_MDINEXT: return WindowEventMDINEXT;
-
-    case WM_MDIMAXIMIZE: return WindowEventMDIMAXIMIZE;
-    case WM_MDITILE: return WindowEventMDITILE;
-    case WM_MDICASCADE: return WindowEventMDICASCADE;
-    case WM_MDIICONARRANGE: return WindowEventMDIICONARRANGE;
-    case WM_MDIGETACTIVE: return WindowEventMDIGETACTIVE;
-    case WM_MDISETMENU: return WindowEventMDISETMENU;
-    case WM_ENTERSIZEMOVE: return WindowEventENTERSIZEMOVE;
-    case WM_EXITSIZEMOVE: return WindowEventEXITSIZEMOVE;
-    case WM_DROPFILES: return WindowEventDROPFILES;
-    case WM_MDIREFRESHMENU: return WindowEventMDIREFRESHMENU;
-        //case WM_POINTERDEVICECHANGE: return WindowEventPOINTERDEVICECHANGE;
-    //case WM_POINTERDEVICEINRANGE: return WindowEventPOINTERDEVICEINRANGE;
-    //case WM_POINTERDEVICEOUTOFRANGE: return WindowEventPOINTERDEVICEOUTOFRANGE;
-    //  case WM_TOUCH: return WindowEventTOUCH;
-        //case WM_NCPOINTERUPDATE: return WindowEventNCPOINTERUPDATE;
-    //case WM_NCPOINTERDOWN: return WindowEventNCPOINTERDOWN;
-    //case WM_NCPOINTERUP: return WindowEventNCPOINTERUP;
-    //case WM_POINTERUPDATE: return WindowEventPOINTERUPDATE;
-    //case WM_POINTERDOWN: return WindowEventPOINTERDOWN;
-    //case WM_POINTERUP: return WindowEventPOINTERUP;
-    //case WM_POINTERENTER: return WindowEventPOINTERENTER;
-    //case WM_POINTERLEAVE: return WindowEventPOINTERLEAVE;
-    //case WM_POINTERACTIVATE: return WindowEventPOINTERACTIVATE;
-    //case WM_POINTERCAPTURECHANGED: return WindowEventPOINTERCAPTURECHANGED;
-    //case WM_TOUCHHITTESTING: return WindowEventTOUCHHITTESTING;
-    //case WM_POINTERWHEEL: return WindowEventPOINTERWHEEL;
-    //case WM_POINTERHWHEEL: return WindowEventPOINTERHWHEEL;
-        //case WM_POINTERROUTEDTO: return WindowEventPOINTERROUTEDTO;
-        //case WM_POINTERROUTEDAWAY: return WindowEventPOINTERROUTEDAWAY;
-    //case WM_POINTERROUTEDRELEASED: return WindowEventPOINTERROUTEDRELEASED;
-    case WM_IME_SETCONTEXT: return WindowEventIME_SETCONTEXT;
-    case WM_IME_NOTIFY: return WindowEventIME_NOTIFY;
-    case WM_IME_CONTROL: return WindowEventIME_CONTROL;
-    case WM_IME_COMPOSITIONFULL: return WindowEventIME_COMPOSITIONFULL;
-    case WM_IME_SELECT: return WindowEventIME_SELECT;
-    case WM_IME_CHAR: return WindowEventIME_CHAR;
-    case WM_IME_REQUEST: return WindowEventIME_REQUEST;
-    case WM_IME_KEYDOWN: return WindowEventIME_KEYDOWN;
-    case WM_IME_KEYUP: return WindowEventIME_KEYUP;
-    case WM_MOUSEHOVER: return WindowEventMOUSEHOVER;
-    case WM_MOUSELEAVE: return WindowEventMOUSELEAVE;
-    case WM_NCMOUSEHOVER: return WindowEventNCMOUSEHOVER;
-    case WM_NCMOUSELEAVE: return WindowEventNCMOUSELEAVE;
-        //  case WM_WTSSESSION_CHANGE: return WindowEventWTSSESSION_CHANGE;
-        //  case WM_TABLET_FIRST: return WindowEventTABLET_FIRST;
-        //  case WM_TABLET_LAST: return WindowEventTABLET_LAST;
-              //case WM_DPICHANGED: return WindowEventDPICHANGED;
-              //case WM_DPICHANGED_BEFOREPARENT: return WindowEventDPICHANGED_BEFOREPARENT;
-              //case WM_DPICHANGED_AFTERPARENT: return WindowEventDPICHANGED_AFTERPARENT;
-              // case WM_GETDPISCALEDSIZE: return WindowEventGETDPISCALEDSIZE;
-    case WM_CUT: return WindowEventCUT;
-    case WM_COPY: return WindowEventCOPY;
-    case WM_PASTE: return WindowEventPASTE;
-    case WM_CLEAR: return WindowEventCLEAR;
-    case WM_UNDO: return WindowEventUNDO;
-    case WM_RENDERFORMAT: return WindowEventRENDERFORMAT;
-    case WM_RENDERALLFORMATS: return WindowEventRENDERALLFORMATS;
-    case WM_DESTROYCLIPBOARD: return WindowEventDESTROYCLIPBOARD;
-    case WM_DRAWCLIPBOARD: return WindowEventDRAWCLIPBOARD;
-    case WM_PAINTCLIPBOARD: return WindowEventPAINTCLIPBOARD;
-    case WM_VSCROLLCLIPBOARD: return WindowEventVSCROLLCLIPBOARD;
-    case WM_SIZECLIPBOARD: return WindowEventSIZECLIPBOARD;
-    case WM_ASKCBFORMATNAME: return WindowEventASKCBFORMATNAME;
-    case WM_CHANGECBCHAIN: return WindowEventCHANGECBCHAIN;
-    case WM_HSCROLLCLIPBOARD: return WindowEventHSCROLLCLIPBOARD;
-    case WM_QUERYNEWPALETTE: return WindowEventQUERYNEWPALETTE;
-    case WM_PALETTEISCHANGING: return WindowEventPALETTEISCHANGING;
-    case WM_PALETTECHANGED: return WindowEventPALETTECHANGED;
-    case WM_HOTKEY: return WindowEventHOTKEY;
-    case WM_PRINT: return WindowEventPRINT;
-    case WM_PRINTCLIENT: return WindowEventPRINTCLIENT;
-    case WM_APPCOMMAND: return WindowEventAPPCOMMAND;
-    case WM_THEMECHANGED: return WindowEventTHEMECHANGED;
-        //  case WM_CLIPBOARDUPDATE: return WindowEventCLIPBOARDUPDATE;
-        //  case WM_DWMCOMPOSITIONCHANGED: return WindowEventDWMCOMPOSITIONCHANGED;
-       //   case WM_DWMNCRENDERINGCHANGED: return WindowEventDWMNCRENDERINGCHANGED;
-       //   case WM_DWMCOLORIZATIONCOLORCHANGED: return WindowEventDWMCOLORIZATIONCOLORCHANGED;
-      //    case WM_DWMWINDOWMAXIMIZEDCHANGE: return WindowEventDWMWINDOWMAXIMIZEDCHANGE;
-      //    case WM_DWMSENDICONICTHUMBNAIL: return WindowEventDWMSENDICONICTHUMBNAIL;
-       //   case WM_DWMSENDICONICLIVEPREVIEWBITMAP: return WindowEventDWMSENDICONICLIVEPREVIEWBITMAP;
-       //   case WM_GETTITLEBARINFOEX: return WindowEventGETTITLEBARINFOEX;
-    case WM_HANDHELDFIRST: return WindowEventHANDHELDFIRST;
-    case WM_HANDHELDLAST: return WindowEventHANDHELDLAST;
-    case WM_AFXFIRST: return WindowEventAFXFIRST;
-    case WM_AFXLAST: return WindowEventAFXLAST;
-    case WM_PENWINFIRST: return WindowEventPENWINFIRST;
-    case WM_PENWINLAST: return WindowEventPENWINLAST;
-    case WM_APP: return WindowEventAPP;
+        case WM_MDIMAXIMIZE: return WindowEventMDIMAXIMIZE;
+        case WM_MDITILE: return WindowEventMDITILE;
+        case WM_MDICASCADE: return WindowEventMDICASCADE;
+        case WM_MDIICONARRANGE: return WindowEventMDIICONARRANGE;
+        case WM_MDIGETACTIVE: return WindowEventMDIGETACTIVE;
+        case WM_MDISETMENU: return WindowEventMDISETMENU;
+        case WM_ENTERSIZEMOVE: return WindowEventENTERSIZEMOVE;
+        case WM_EXITSIZEMOVE: return WindowEventEXITSIZEMOVE;
+        case WM_DROPFILES: return WindowEventDROPFILES;
+        case WM_MDIREFRESHMENU: return WindowEventMDIREFRESHMENU;
+            //case WM_POINTERDEVICECHANGE: return WindowEventPOINTERDEVICECHANGE;
+        //case WM_POINTERDEVICEINRANGE: return WindowEventPOINTERDEVICEINRANGE;
+        //case WM_POINTERDEVICEOUTOFRANGE: return WindowEventPOINTERDEVICEOUTOFRANGE;
+        //  case WM_TOUCH: return WindowEventTOUCH;
+            //case WM_NCPOINTERUPDATE: return WindowEventNCPOINTERUPDATE;
+        //case WM_NCPOINTERDOWN: return WindowEventNCPOINTERDOWN;
+        //case WM_NCPOINTERUP: return WindowEventNCPOINTERUP;
+        //case WM_POINTERUPDATE: return WindowEventPOINTERUPDATE;
+        //case WM_POINTERDOWN: return WindowEventPOINTERDOWN;
+        //case WM_POINTERUP: return WindowEventPOINTERUP;
+        //case WM_POINTERENTER: return WindowEventPOINTERENTER;
+        //case WM_POINTERLEAVE: return WindowEventPOINTERLEAVE;
+        //case WM_POINTERACTIVATE: return WindowEventPOINTERACTIVATE;
+        //case WM_POINTERCAPTURECHANGED: return WindowEventPOINTERCAPTURECHANGED;
+        //case WM_TOUCHHITTESTING: return WindowEventTOUCHHITTESTING;
+        //case WM_POINTERWHEEL: return WindowEventPOINTERWHEEL;
+        //case WM_POINTERHWHEEL: return WindowEventPOINTERHWHEEL;
+            //case WM_POINTERROUTEDTO: return WindowEventPOINTERROUTEDTO;
+            //case WM_POINTERROUTEDAWAY: return WindowEventPOINTERROUTEDAWAY;
+        //case WM_POINTERROUTEDRELEASED: return WindowEventPOINTERROUTEDRELEASED;
+        case WM_IME_SETCONTEXT: return WindowEventIME_SETCONTEXT;
+        case WM_IME_NOTIFY: return WindowEventIME_NOTIFY;
+        case WM_IME_CONTROL: return WindowEventIME_CONTROL;
+        case WM_IME_COMPOSITIONFULL: return WindowEventIME_COMPOSITIONFULL;
+        case WM_IME_SELECT: return WindowEventIME_SELECT;
+        case WM_IME_CHAR: return WindowEventIME_CHAR;
+        case WM_IME_REQUEST: return WindowEventIME_REQUEST;
+        case WM_IME_KEYDOWN: return WindowEventIME_KEYDOWN;
+        case WM_IME_KEYUP: return WindowEventIME_KEYUP;
+        case WM_MOUSEHOVER: return WindowEventMOUSEHOVER;
+        case WM_MOUSELEAVE: return WindowEventMOUSELEAVE;
+        case WM_NCMOUSEHOVER: return WindowEventNCMOUSEHOVER;
+        case WM_NCMOUSELEAVE: return WindowEventNCMOUSELEAVE;
+            //  case WM_WTSSESSION_CHANGE: return WindowEventWTSSESSION_CHANGE;
+            //  case WM_TABLET_FIRST: return WindowEventTABLET_FIRST;
+            //  case WM_TABLET_LAST: return WindowEventTABLET_LAST;
+                  //case WM_DPICHANGED: return WindowEventDPICHANGED;
+                  //case WM_DPICHANGED_BEFOREPARENT: return WindowEventDPICHANGED_BEFOREPARENT;
+                  //case WM_DPICHANGED_AFTERPARENT: return WindowEventDPICHANGED_AFTERPARENT;
+                  // case WM_GETDPISCALEDSIZE: return WindowEventGETDPISCALEDSIZE;
+        case WM_CUT: return WindowEventCUT;
+        case WM_COPY: return WindowEventCOPY;
+        case WM_PASTE: return WindowEventPASTE;
+        case WM_CLEAR: return WindowEventCLEAR;
+        case WM_UNDO: return WindowEventUNDO;
+        case WM_RENDERFORMAT: return WindowEventRENDERFORMAT;
+        case WM_RENDERALLFORMATS: return WindowEventRENDERALLFORMATS;
+        case WM_DESTROYCLIPBOARD: return WindowEventDESTROYCLIPBOARD;
+        case WM_DRAWCLIPBOARD: return WindowEventDRAWCLIPBOARD;
+        case WM_PAINTCLIPBOARD: return WindowEventPAINTCLIPBOARD;
+        case WM_VSCROLLCLIPBOARD: return WindowEventVSCROLLCLIPBOARD;
+        case WM_SIZECLIPBOARD: return WindowEventSIZECLIPBOARD;
+        case WM_ASKCBFORMATNAME: return WindowEventASKCBFORMATNAME;
+        case WM_CHANGECBCHAIN: return WindowEventCHANGECBCHAIN;
+        case WM_HSCROLLCLIPBOARD: return WindowEventHSCROLLCLIPBOARD;
+        case WM_QUERYNEWPALETTE: return WindowEventQUERYNEWPALETTE;
+        case WM_PALETTEISCHANGING: return WindowEventPALETTEISCHANGING;
+        case WM_PALETTECHANGED: return WindowEventPALETTECHANGED;
+        case WM_HOTKEY: return WindowEventHOTKEY;
+        case WM_PRINT: return WindowEventPRINT;
+        case WM_PRINTCLIENT: return WindowEventPRINTCLIENT;
+        case WM_APPCOMMAND: return WindowEventAPPCOMMAND;
+        case WM_THEMECHANGED: return WindowEventTHEMECHANGED;
+            //  case WM_CLIPBOARDUPDATE: return WindowEventCLIPBOARDUPDATE;
+            //  case WM_DWMCOMPOSITIONCHANGED: return WindowEventDWMCOMPOSITIONCHANGED;
+           //   case WM_DWMNCRENDERINGCHANGED: return WindowEventDWMNCRENDERINGCHANGED;
+           //   case WM_DWMCOLORIZATIONCOLORCHANGED: return WindowEventDWMCOLORIZATIONCOLORCHANGED;
+          //    case WM_DWMWINDOWMAXIMIZEDCHANGE: return WindowEventDWMWINDOWMAXIMIZEDCHANGE;
+          //    case WM_DWMSENDICONICTHUMBNAIL: return WindowEventDWMSENDICONICTHUMBNAIL;
+           //   case WM_DWMSENDICONICLIVEPREVIEWBITMAP: return WindowEventDWMSENDICONICLIVEPREVIEWBITMAP;
+           //   case WM_GETTITLEBARINFOEX: return WindowEventGETTITLEBARINFOEX;
+        case WM_HANDHELDFIRST: return WindowEventHANDHELDFIRST;
+        case WM_HANDHELDLAST: return WindowEventHANDHELDLAST;
+        case WM_AFXFIRST: return WindowEventAFXFIRST;
+        case WM_AFXLAST: return WindowEventAFXLAST;
+        case WM_PENWINFIRST: return WindowEventPENWINFIRST;
+        case WM_PENWINLAST: return WindowEventPENWINLAST;
+        case WM_APP: return WindowEventAPP;
 
 
 
 
-    */
+        */
 
-    case WM_DISPLAYCHANGE:
-    {
-        // Some display got plugged in, out or some setting changed
-        // We need to update our monitors/displays
+        case WM_DISPLAYCHANGE:
+        {
+            // Some display got plugged in, out or some setting changed
+            // We need to update our monitors/displays
 
 
 
-        break;
-    }
+            break;
+        }
 
 
 
@@ -1753,15 +1754,15 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
 
 
 #if 0 // Not useable for resize event. Its not what it seems
-    case WindowEventSizeChange:
-    {
-        //wParam is unused
-        const MINMAXINFO* minmaxInfo = (MINMAXINFO*)lParam;
-        const LONG width = minmaxInfo->ptMaxSize.x;
-        const LONG height = minmaxInfo->ptMaxSize.y;
+        case WindowEventSizeChange:
+        {
+            //wParam is unused
+            const MINMAXINFO* minmaxInfo = (MINMAXINFO*)lParam;
+            const LONG width = minmaxInfo->ptMaxSize.x;
+            const LONG height = minmaxInfo->ptMaxSize.y;
 
-        break;
-    }
+            break;
+        }
 #endif
 
     }
@@ -1770,19 +1771,19 @@ LRESULT CALLBACK PXWindowEventHandler(const HWND windowID, const UINT eventID, c
     return DefWindowProc(windowID, eventID, wParam, lParam);
 }
 
-void PXAPI PXGUIElementChildListEnumerate(PXGUISystem* const pxGUISystem, PXGUIElement* const parent, PXBool visible)
+void PXAPI PXWindowChildListEnumerate(PXGUISystem* const pxGUISystem, PXWindow* const parent, PXBool visible)
 {
     for(size_t i = 0; i < pxGUISystem->ResourceManager->GUIElementLookup.EntryAmountCurrent; i++)
     {
         PXDictionaryEntry pxDictionaryEntry;
 
-        PXGUIElement* childElement = PXNull;
+        PXWindow* childElement = PXNull;
 
         PXDictionaryIndex(&pxGUISystem->ResourceManager->GUIElementLookup, i, &pxDictionaryEntry);
 
-        childElement = *(PXGUIElement**)pxDictionaryEntry.Value;
+        childElement = *(PXWindow**)pxDictionaryEntry.Value;
 
-        PXGUIElement* parrent = (PXGUIElement*)childElement->Info.Hierarchy.Parrent;
+        PXWindow* parrent = (PXWindow*)childElement->Info.Hierarchy.Parrent;
 
         if(parrent)
         {
@@ -1790,14 +1791,14 @@ void PXAPI PXGUIElementChildListEnumerate(PXGUISystem* const pxGUISystem, PXGUIE
             {
                 // found child.
 
-                PXGUIElementUpdateInfo pxGUIElementUpdateInfo;
-                PXClear(PXGUIElementUpdateInfo, &pxGUIElementUpdateInfo);
+                PXWindowUpdateInfo pxGUIElementUpdateInfo;
+                PXClear(PXWindowUpdateInfo, &pxGUIElementUpdateInfo);
 
                 pxGUIElementUpdateInfo.UIElement = childElement;
                 pxGUIElementUpdateInfo.Show = visible;
                 pxGUIElementUpdateInfo.Property = PXUIElementPropertyVisibility;
 
-                PXGUIElementUpdate(pxGUISystem, &pxGUIElementUpdateInfo, 1);
+                PXWindowUpdate(pxGUISystem, &pxGUIElementUpdateInfo, 1);
             }
         }
     }
@@ -1810,31 +1811,19 @@ BOOL CALLBACK PXWindowEnumChildProc(HWND hwnd, LPARAM lParam)
     // Recursion
     {
         const BOOL success = EnumChildWindows
-                             (
-                                 hwnd,
-                                 PXWindowEnumChildProc,
-                                 lParam
-                             );
+        (
+            hwnd,
+            PXWindowEnumChildProc,
+            lParam
+        );
     }
 
     ShowWindow(hwnd, mode);
 }
 #endif
 
-PXThreadResult PXOSAPI PXWindowMessageLoop(PXGUIElement* const pxGUIElement)
-{
-#if 0
-    while(pxGUIElement->IsRunning)
-    {
-        PXWindowUpdate(pxWindow);
-        PXThreadYieldToOtherThreads();
-    }
-#endif
 
-    return PXActionSuccessful;
-}
-
-PXBool PXAPI PXGUIElementIsEnabled(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement)
+PXBool PXAPI PXWindowIsEnabled(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement)
 {
 #if OSUnix
     return PXFalse;
@@ -1845,18 +1834,13 @@ PXBool PXAPI PXGUIElementIsEnabled(PXGUISystem* const pxGUISystem, PXGUIElement*
 #endif
 }
 
-PXBool PXAPI PXGUIElementFind(const PXWindowID pxUIElementID, PXGUIElement* const pxGUIElement)
-{
-    return PXFalse;
-}
-
-PXActionResult PXAPI PXGUIElementDelete(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement)
+PXActionResult PXAPI PXWindowDelete(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement)
 {
     PXActionResult result = PXActionInvalid;
 
 #if OSUnix
     const int resultID = XDestroyWindow(pxGUISystem->DisplayCurrent.DisplayHandle, pxGUIElement->Info.Handle.WindowID);
-    result = PXGUIElementErrorFromXSystem(resultID);
+    result = PXWindowErrorFromXSystem(resultID);
 #elif OSWindows
     const PXBool success = DestroyWindow(pxGUIElement->Info.Handle.WindowID);
     result = PXErrorCurrent(success);
@@ -1866,20 +1850,20 @@ PXActionResult PXAPI PXGUIElementDelete(PXGUISystem* const pxGUISystem, PXGUIEle
 
     if(PXActionSuccessful == result)
     {
-        pxGUIElement->Info.Handle.WindowID = 0;
+        pxGUIElement->Info.Handle.WindowID = PXNull;
     }
 
     return result;
 }
 
-PXActionResult PXAPI PXGUIElementTextSet(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, char* text)
+PXActionResult PXAPI PXWindowTextSet(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, char* text)
 {
     PXActionResult result = PXActionInvalid;
 
 #if OSUnix
     // Will BadAlloc, BadWindow
     const int resultID = XStoreName(pxGUISystem->DisplayCurrent.DisplayHandle, pxGUIElement->Info.Handle.WindowID, text);
-    result = PXGUIElementErrorFromXSystem(resultID);
+    result = PXWindowErrorFromXSystem(resultID);
 #elif OSWindows
     const PXBool success = SetWindowTextA(pxGUIElement->Info.Handle.WindowID, text);
     result = PXErrorCurrent(success);
@@ -1920,7 +1904,7 @@ PXActionResult PXAPI PXGUIElementTextSet(PXGUISystem* const pxGUISystem, PXGUIEl
     return PXTrue;
 }
 
-PXActionResult PXAPI PXGUIElementTextGet(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, char* text)
+PXActionResult PXAPI PXWindowTextGet(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, char* text)
 {
     PXActionResult pxActionResult = PXActionInvalid;
 
@@ -1937,165 +1921,7 @@ PXActionResult PXAPI PXGUIElementTextGet(PXGUISystem* const pxGUISystem, PXGUIEl
     return pxActionResult;
 }
 
-PXActionResult PXAPI PXGUIDisplayScreenListRefresh(PXGUISystem* const pxGUISystem)
-{
-    // Update amount of items
-
-    PXClearList(PXDisplayScreen, pxGUISystem->DisplayCurrent.DisplayScreenList, 8);
-
-#if OSUnix
-
-    Display* xDisplay = pxGUISystem->DisplayCurrent.DisplayHandle;
-
-    pxGUISystem->DisplayCurrent.ScreenDefaultID = XDefaultScreen(xDisplay);
-    pxGUISystem->DisplayCurrent.ScreenListAmount = XScreenCount(xDisplay);
-
-    for(PXSize screenID = 0; screenID < pxGUISystem->DisplayCurrent.ScreenListAmount; ++screenID)
-    {
-        PXDisplayScreen* pxDisplayScreen = &pxGUISystem->DisplayCurrent.DisplayScreenList[screenID];
-
-        pxDisplayScreen->Width = XDisplayWidth(xDisplay, screenID);
-        pxDisplayScreen->Height = XDisplayHeight(xDisplay, screenID);
-        pxDisplayScreen->Cells = XDisplayCells(xDisplay, screenID);
-        pxDisplayScreen->Planes = XDisplayPlanes(xDisplay, screenID);
-        pxDisplayScreen->WidthMM = XDisplayWidthMM(xDisplay, screenID);
-        pxDisplayScreen->HeightMM = XDisplayHeightMM(xDisplay, screenID);
-
-        pxDisplayScreen->IsConnected = PXTrue;
-        pxDisplayScreen->IsPrimary = screenID == pxGUISystem->DisplayCurrent.ScreenDefaultID;
-    }
-
-#elif OSWindows
-
-    {
-        DWORD amount = 0;
-
-        DISPLAY_DEVICEA displayDevice;
-        displayDevice.cb = sizeof(DISPLAY_DEVICEA);
-
-        // Count how many devices we have.
-        while(EnumDisplayDevicesA(NULL, amount, &displayDevice, 0))
-            ++(amount);
-
-        pxGUISystem->DisplayCurrent.ScreenListAmount = amount;
-    }
-
-
-
-    pxGUISystem->DisplayCurrent.ScreenListAmount = 0;
-
-    DISPLAY_DEVICEA displayDevice;
-    DWORD            dwFlags = 0;
-    displayDevice.cb = sizeof(displayDevice);
-
-    for(PXSize deviceID = 0; EnumDisplayDevicesA(0, deviceID, &displayDevice, dwFlags); deviceID++)
-    {
-        PXDisplayScreen* const pxDisplayScreen = &pxGUISystem->DisplayCurrent.DisplayScreenList[deviceID];
-
-        //PXGraphicDevicePhysical* const pxGraphicDevicePhysical = &pxGraphicDevicePhysicalList[deviceID];
-
-        DWORD    iModeNum = ENUM_CURRENT_SETTINGS;
-        DEVMODEA devMode = { 0 };
-        DWORD    dwFlags = EDS_RAWMODE;
-
-        devMode.dmSize = sizeof(DEVMODEA);
-
-        const BOOL settingsResult = EnumDisplaySettingsExA
-                                    (
-                                        displayDevice.DeviceName,
-                                        iModeNum,
-                                        &devMode,
-                                        dwFlags
-                                    );
-
-        pxDisplayScreen->IsConnected = PXFlagIsSet(displayDevice.StateFlags, DISPLAY_DEVICE_ATTACHED_TO_DESKTOP);
-
-        if(!pxDisplayScreen->IsConnected)
-        {
-            continue;
-        }
-
-        ++pxGUISystem->DisplayCurrent.ScreenListAmount;
-
-        pxDisplayScreen->IsPrimary = PXFlagIsSet(displayDevice.StateFlags, DISPLAY_DEVICE_PRIMARY_DEVICE);
-
-
-        pxDisplayScreen->Width = devMode.dmPelsWidth;
-        pxDisplayScreen->Height = devMode.dmPelsHeight;
-
-        PXTextCopyA(displayDevice.DeviceName, 32, pxDisplayScreen->NameID, PXDisplayScreenNameLength);
-        PXTextCopyA(displayDevice.DeviceString, 128, pxDisplayScreen->GraphicDeviceName, PXDisplayScreenDeviceLength);
-        // PXTextCopyA(displayDevice.DeviceID, 128, pxDisplayScreen->DeviceID, PXDeviceIDSize);
-        //PXTextCopyA(displayDevice.DeviceKey, 128, pxDisplayScreen->DeviceKey, PXDeviceKeySize);
-
-
-
-
-
-        {
-            DISPLAY_DEVICEA monitorDeviceA;
-            monitorDeviceA.cb = sizeof(monitorDeviceA);
-
-
-            for(PXSize deviceMonitorID = 0; EnumDisplayDevicesA(displayDevice.DeviceName, deviceMonitorID, &monitorDeviceA, 0); deviceMonitorID++)
-            {
-                // PXMonitor* const monitor = &pxGraphicDevicePhysical->AttachedMonitor;;
-
-                // PXTextCopyA(monitorDeviceA.DeviceString, 128, monitor->Driver, MonitorNameLength);
-
-                PXSize position = PXTextFindFirstCharacterA(monitorDeviceA.DeviceID, 128, '\\');
-
-                PXSize targetZize = 128 - position + 1;
-                char* target = monitorDeviceA.DeviceID + position + 1;
-
-                PXSize positionB = PXTextFindFirstCharacterA(target, targetZize, '\\');
-
-                PXTextCopyA(target, positionB, pxDisplayScreen->NameMonitor, PXDisplayScreenMonitorLength);
-            }
-        }
-
-
-
-    }
-#endif
-
-
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        "GUI",
-        "Display-Device",
-        "Fetching <%i> monitor devices",
-        pxGUISystem->DisplayCurrent.ScreenListAmount
-    );
-
-    for(PXSize i = 0; i < pxGUISystem->DisplayCurrent.ScreenListAmount; ++i)
-    {
-        PXDisplayScreen* const pxDisplayScreen = &pxGUISystem->DisplayCurrent.DisplayScreenList[i];
-
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            "GUI",
-            "Display-Device",
-            "Detected:\n"
-            "+--------------------------------------------------------+\n"
-            "| DeviceName     : %-27s %-4ix%4i |\n"
-            "| DeviceString   : %-37.37s |\n"
-            "+--------------------------------------------------------+\n",
-            pxDisplayScreen->NameMonitor,
-            pxDisplayScreen->Width,
-            pxDisplayScreen->Height,
-            pxDisplayScreen->NameID
-        );
-    }
-#endif
-
-    return PXActionSuccessful;
-}
-
-PXActionResult PXAPI PXGUIElementDrawCustomTabList(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo)
+PXActionResult PXAPI PXWindowDrawCustomTabList(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
 {
 #if PXLogEnable
     PXLogPrint
@@ -2107,12 +1933,12 @@ PXActionResult PXAPI PXGUIElementDrawCustomTabList(PXGUISystem* const pxGUISyste
     );
 #endif
 
-    PXGUIDrawClear(pxGUISystem, pxGUIElement);
+    PXNativeDrawClear(pxGUISystem, pxGUIElement);
 
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXGUIElementDrawCustomFailback(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo)
+PXActionResult PXAPI PXWindowDrawCustomFailback(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
 {
 #if PXLogEnable
     PXLogPrint
@@ -2124,12 +1950,12 @@ PXActionResult PXAPI PXGUIElementDrawCustomFailback(PXGUISystem* const pxGUISyst
     );
 #endif
 
-    PXGUIDrawClear(pxGUISystem, pxGUIElement);
+    PXNativeDrawClear(pxGUISystem, pxGUIElement);
 
-    PXGUIElementBrush brushRed;
-    PXGUIElementBrushColorSet(&brushRed, 0xFF, 0x00, 0x00);
-    PXGUIElementBrush brushFont;
-    PXGUIElementBrushColorSet(&brushFont, 0xFF, 0xA0, 0xA0);
+    PXWindowBrush brushRed;
+    PXWindowBrushColorSet(&brushRed, 0xFF, 0x00, 0x00);
+    PXWindowBrush brushFont;
+    PXWindowBrushColorSet(&brushFont, 0xFF, 0xA0, 0xA0);
 
     PXGUIDrawColorSetBrush
     (
@@ -2147,7 +1973,7 @@ PXActionResult PXAPI PXGUIElementDrawCustomFailback(PXGUISystem* const pxGUISyst
         PXGUIDrawModeBack
     );
 
-    PXGUIElementDrawRectangle
+    PXWindowDrawRectangle
     (
         pxGUISystem,
         pxGUIElement,
@@ -2157,12 +1983,12 @@ PXActionResult PXAPI PXGUIElementDrawCustomFailback(PXGUISystem* const pxGUISyst
         pxGUIElement->Position.Bottom
     );
 
-    PXGUIElementDrawTextA(pxGUISystem, pxGUIElement, pxGUIElement->NameContent, pxGUIElement->NameContentSize);
+    PXWindowDrawTextA(pxGUISystem, pxGUIElement, pxGUIElement->NameContent, pxGUIElement->NameContentSize);
 
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXGUIElementDrawCustomText(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo)
+PXActionResult PXAPI PXWindowDrawCustomText(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
 {
 #if PXLogEnable
     PXLogPrint
@@ -2175,7 +2001,7 @@ PXActionResult PXAPI PXGUIElementDrawCustomText(PXGUISystem* const pxGUISystem, 
     );
 #endif
 
-    PXGUIDrawClear(pxGUISystem, pxGUIElement);
+    PXNativeDrawClear(pxGUISystem, pxGUIElement);
 
     PXGUIDrawColorSetBrush
     (
@@ -2192,9 +2018,9 @@ PXActionResult PXAPI PXGUIElementDrawCustomText(PXGUISystem* const pxGUISystem, 
         PXGUIDrawModeBack
     );
 
-    // PXGUIElementDrawBegin(pxGUISystem, pxGUIElement);
+    // PXWindowDrawBegin(pxGUISystem, pxGUIElement);
 
-    PXGUIElementDrawRectangle
+    PXWindowDrawRectangle
     (
         pxGUISystem,
         pxGUIElement,
@@ -2204,12 +2030,12 @@ PXActionResult PXAPI PXGUIElementDrawCustomText(PXGUISystem* const pxGUISystem, 
         pxGUIElement->Position.Bottom
     );
 
-    PXGUIElementDrawTextA(pxGUISystem, pxGUIElement, pxGUIElement->NameContent, pxGUIElement->NameContentSize);
+    PXWindowDrawTextA(pxGUISystem, pxGUIElement, pxGUIElement->NameContent, pxGUIElement->NameContentSize);
 
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXGUIElementDrawCustomButton(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo)
+PXActionResult PXAPI PXWindowDrawCustomButton(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
 {
 #if PXLogEnable
     PXLogPrint
@@ -2221,10 +2047,10 @@ PXActionResult PXAPI PXGUIElementDrawCustomButton(PXGUISystem* const pxGUISystem
     );
 #endif
 
-    PXGUIDrawClear(pxGUISystem, pxGUIElement);
+    PXNativeDrawClear(pxGUISystem, pxGUIElement);
 
-    PXGUIElementBrush* brushFront = pxGUIElement->BrushFront;
-    PXGUIElementBrush* brushBackground = pxGUIElement->BrushBackground;
+    PXWindowBrush* brushFront = pxGUIElement->BrushFront;
+    PXWindowBrush* brushBackground = pxGUIElement->BrushBackground;
 
     PXGUIDrawColorSetBrush
     (
@@ -2241,7 +2067,7 @@ PXActionResult PXAPI PXGUIElementDrawCustomButton(PXGUISystem* const pxGUISystem
         PXGUIDrawModeBack
     );
 
-    PXGUIElementDrawRectangle
+    PXWindowDrawRectangle
     (
         pxGUISystem,
         pxGUIElement,
@@ -2256,17 +2082,17 @@ PXActionResult PXAPI PXGUIElementDrawCustomButton(PXGUISystem* const pxGUISystem
 
 #if 0
     const COLORREF highColor = RGB
-                               (
-                                   highFactor * brushBackground->ColorDate.Red,
-                                   highFactor * brushBackground->ColorDate.Green,
-                                   highFactor * brushBackground->ColorDate.Blue
-                               );
+    (
+        highFactor * brushBackground->ColorDate.Red,
+        highFactor * brushBackground->ColorDate.Green,
+        highFactor * brushBackground->ColorDate.Blue
+    );
     const COLORREF lowColor = RGB
-                              (
-                                  lowFactor * brushBackground->ColorDate.Red,
-                                  lowFactor * brushBackground->ColorDate.Green,
-                                  lowFactor * brushBackground->ColorDate.Blue
-                              );
+    (
+        lowFactor * brushBackground->ColorDate.Red,
+        lowFactor * brushBackground->ColorDate.Green,
+        lowFactor * brushBackground->ColorDate.Blue
+    );
 
     const DWORD penStyle = PS_ENDCAP_SQUARE | PS_GEOMETRIC | PS_SOLID;
     const DWORD penSize = 3;
@@ -2286,14 +2112,14 @@ PXActionResult PXAPI PXGUIElementDrawCustomButton(PXGUISystem* const pxGUISystem
     DeletePen(aaa);
     DeletePen(bbbb);
 
-    PXGUIElementDrawTextA(pxGUISystem, pxGUIElement, pxGUIElement->NameContent, pxGUIElement->NameContentSize);
+    PXWindowDrawTextA(pxGUISystem, pxGUIElement, pxGUIElement->NameContent, pxGUIElement->NameContentSize);
 #endif
 
 
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXGUIElementDrawCustomComboBox(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo)
+PXActionResult PXAPI PXWindowDrawCustomComboBox(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
 {
     return PXActionRefusedNotImplemented;
 }
@@ -2355,9 +2181,9 @@ void PXMathCircle(PXColorCircle* const pxColorCircle)
 
         PXColorHSVToRGBAI8(&hsv, &pxColorRGBAI8);
 
-        vertex->Red     = pxColorRGBAI8.Red;
-        vertex->Green   = pxColorRGBAI8.Green;
-        vertex->Blue    = pxColorRGBAI8.Blue;
+        vertex->Red = pxColorRGBAI8.Red;
+        vertex->Green = pxColorRGBAI8.Green;
+        vertex->Blue = pxColorRGBAI8.Blue;
     }
 
     // Triangle
@@ -2378,7 +2204,7 @@ void PXMathCircle(PXColorCircle* const pxColorCircle)
 
 float colorTemp = 20;
 
-PXActionResult PXAPI PXGUIElementDrawCustomColorPicker(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo)
+PXActionResult PXAPI PXWindowDrawCustomColorPicker(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
 {
 #if PXLogEnable
     PXLogPrint
@@ -2390,11 +2216,11 @@ PXActionResult PXAPI PXGUIElementDrawCustomColorPicker(PXGUISystem* const pxGUIS
     );
 #endif
 
-    PXGUIDrawClear(pxGUISystem, pxGUIElement);
+    PXNativeDrawClear(pxGUISystem, pxGUIElement);
 
 
 
-    PXGUIElementDrawRectangle
+    PXWindowDrawRectangle
     (
         pxGUISystem,
         pxGUIElement,
@@ -2406,7 +2232,7 @@ PXActionResult PXAPI PXGUIElementDrawCustomColorPicker(PXGUISystem* const pxGUIS
 
 
     float scaling = 0.80f;
-    int width = (pxGUIElement->Position.Right  - pxGUIElement->Position.Left) / 2;
+    int width = (pxGUIElement->Position.Right - pxGUIElement->Position.Left) / 2;
     int height = (pxGUIElement->Position.Bottom - pxGUIElement->Position.Top) / 2;
     int widthS = (pxGUIElement->Position.Right * scaling - pxGUIElement->Position.Left * scaling) / 2;
     int heightS = (pxGUIElement->Position.Bottom * scaling - pxGUIElement->Position.Top * scaling) / 2;
@@ -2430,7 +2256,7 @@ PXActionResult PXAPI PXGUIElementDrawCustomColorPicker(PXGUISystem* const pxGUIS
             GRADIENT_TRIANGLE* const index = &gRect[i];
 
             const float steps = 360.f / (float)precision;
-            float degree = (steps * (i+1))*(3.14f / 180.f);
+            float degree = (steps * (i + 1)) * (3.14f / 180.f);
 
             float x = PXMathCosinus(degree);
             float y = PXMathSinus(degree);
@@ -2438,13 +2264,13 @@ PXActionResult PXAPI PXGUIElementDrawCustomColorPicker(PXGUISystem* const pxGUIS
             vertex->x = r * x + width;
             vertex->y = r * y + height;
             vertex->Red = 0xFF;
-            vertex->Green = ((i) / (float)precision)* 0xFF;
+            vertex->Green = ((i) / (float)precision) * 0xFF;
             vertex->Blue = 0x0000;
             vertex->Alpha = 0;
 
             index->Vertex1 = 0;
             index->Vertex2 = i;
-            index->Vertex3 = i+1;
+            index->Vertex3 = i + 1;
         }
 
 
@@ -2519,9 +2345,9 @@ PXActionResult PXAPI PXGUIElementDrawCustomColorPicker(PXGUISystem* const pxGUIS
 
         vertices[1].x = pxColorCircle.VertexListTriangle[0].X;
         vertices[1].y = pxColorCircle.VertexListTriangle[0].Y;
-        vertices[1].Red     = (pxColorRGBAI8.Red / (float)0xFF) * 0xFFFF;
-        vertices[1].Green   = (pxColorRGBAI8.Green / (float)0xFF) * 0xFFFF;
-        vertices[1].Blue    = (pxColorRGBAI8.Blue / (float)0xFF) * 0xFFFF;
+        vertices[1].Red = (pxColorRGBAI8.Red / (float)0xFF) * 0xFFFF;
+        vertices[1].Green = (pxColorRGBAI8.Green / (float)0xFF) * 0xFFFF;
+        vertices[1].Blue = (pxColorRGBAI8.Blue / (float)0xFF) * 0xFFFF;
         vertices[1].Alpha = 0xFFFF;
 
         vertices[2].x = pxColorCircle.VertexListTriangle[2].X;
@@ -2583,12 +2409,12 @@ PXActionResult PXAPI PXGUIElementDrawCustomColorPicker(PXGUISystem* const pxGUIS
 
 
 
-//   PXGUIElementDrawTextA(pxGUISystem, pxGUIElement, pxGUIElement->NameContent, pxGUIElement->NameContentSize);
+    //   PXWindowDrawTextA(pxGUISystem, pxGUIElement, pxGUIElement->NameContent, pxGUIElement->NameContentSize);
 
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXGUIElementDrawCustomHexView(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo)
+PXActionResult PXAPI PXWindowDrawCustomHexView(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
 {
 #if PXLogEnable
     PXLogPrint
@@ -2603,7 +2429,7 @@ PXActionResult PXAPI PXGUIElementDrawCustomHexView(PXGUISystem* const pxGUISyste
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXGUIElementDrawFileDirectoryView(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo)
+PXActionResult PXAPI PXWindowDrawFileDirectoryView(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
 {
     PXDirectorySearchCache* const pxDirectorySearchCache = (PXDirectorySearchCache*)pxGUIElement->ExtendedData;
 
@@ -2617,16 +2443,16 @@ PXActionResult PXAPI PXGUIElementDrawFileDirectoryView(PXGUISystem* const pxGUIS
     );
 #endif
 
-    PXGUIDrawClear(pxGUISystem, pxGUIElement);
+    PXNativeDrawClear(pxGUISystem, pxGUIElement);
 
     PXText pxTExt;
     PXTextMakeFixedA(&pxTExt, "./");
 
     PXDirectorySearch(pxDirectorySearchCache, &pxTExt);
 
-    PXGUIElement pxGUIElementSub;
-    PXCopy(PXGUIElement, pxGUIElement, &pxGUIElementSub);
-    pxGUIElementSub.Info.Behaviour = PXResourceInfoOK | PXGUIElementAllignTop | PXGUIElementKeepHeight | PXGUIElementAllignLeft;
+    PXWindow pxGUIElementSub;
+    PXCopy(PXWindow, pxGUIElement, &pxGUIElementSub);
+    pxGUIElementSub.Info.Behaviour = PXResourceInfoOK | PXWindowAllignTop | PXWindowKeepHeight | PXWindowAllignLeft;
     pxGUIElementSub.Position.Height = 20;
     pxGUIElementSub.Position.Left = 20;
 
@@ -2707,7 +2533,7 @@ PXActionResult PXAPI PXGUIElementDrawFileDirectoryView(PXGUISystem* const pxGUIS
         );
 #endif
 
-        PXGUIElementDrawTextA(pxGUISystem, &pxGUIElementSub, pxFileEntry->FilePathData, pxFileEntry->FilePathSize);
+        PXWindowDrawTextA(pxGUISystem, &pxGUIElementSub, pxFileEntry->FilePathData, pxFileEntry->FilePathSize);
 
         pxGUIElementSub.Position.Top += 1 * pxGUIElementSub.Position.Height;
     }
@@ -2884,7 +2710,7 @@ PXActionResult PXAPI PXGUIIconGetViaFilePath(PXIcon* const pxIcon, const char* f
 
 }
 
-PXActionResult PXAPI PXGUIElementDragStart(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement)
+PXActionResult PXAPI PXWindowDragStart(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement)
 {
 #if OSUnix
 #elif OSWindows
@@ -2904,134 +2730,33 @@ PXActionResult PXAPI PXGUIElementDragStart(PXGUISystem* const pxGUISystem, PXGUI
     return PXActionRefusedNotImplemented;
 }
 
-PXBool PXAPI PXGUIElementValueFetch(PXGUIElement* const pxUIElementList, const PXSize dataListAmount, const PXUIElementProperty pxUIElementProperty, void* const dataList)
+PXBool PXAPI PXWindowValueFetch(PXWindow* const pxUIElementList, const PXSize dataListAmount, const PXUIElementProperty pxUIElementProperty, void* const dataList)
 {
     for(size_t i = 0; i < dataListAmount; ++i)
     {
-        PXGUIElement* const pxGUIElement = &pxUIElementList[i];
+        PXWindow* const pxGUIElement = &pxUIElementList[i];
 
         switch(pxUIElementProperty)
         {
-        case PXUIElementPropertySliderPercentage:
-        {
-            float* target = &((float*)dataList)[i];
+            case PXUIElementPropertySliderPercentage:
+            {
+                float* target = &((float*)dataList)[i];
 
 #if OSUnix
 
 #elif OSWindows
-            *target = SendMessageA(pxGUIElement->Info.Handle.WindowID, TBM_GETPOS, 0, 0) / 100.f;
+                * target = SendMessageA(pxGUIElement->Info.Handle.WindowID, TBM_GETPOS, 0, 0) / 100.f;
 #endif
 
-            break;
-        }
+                break;
+            }
 
-        default:
-            break;
+            default:
+                break;
         }
     }
 
     return PXTrue;
-}
-
-
-
-
-#if OSUnix
-#elif PXOSWindowsDestop
-BOOL WINAPI PXMonitorListCallBack(HMONITOR monitorHandle, HDC hdcMonitor, LPRECT rectangle, LPARAM data);
-#endif
-
-
-#if OSUnix
-#elif PXOSWindowsDestop
-BOOL WINAPI PXMonitorListCallBack(HMONITOR monitorHandle, HDC hdcMonitor, LPRECT rectangle, LPARAM data)
-{
-    MONITORINFOEXA monitorInfo;
-
-    monitorInfo.cbSize = sizeof(monitorInfo);
-
-    const BOOL result = GetMonitorInfoA(monitorHandle, &monitorInfo);
-
-    if(!result)
-    {
-        return 1;
-    }
-
-    PXMonitor monitor;
-    monitor.X = monitorInfo.rcMonitor.left;
-    monitor.Y = monitorInfo.rcMonitor.top;
-    monitor.Width = monitorInfo.rcMonitor.right - monitorInfo.rcMonitor.left;
-    monitor.Height = monitorInfo.rcMonitor.bottom - monitorInfo.rcMonitor.top;
-
-    PXTextCopyA(monitorInfo.szDevice, CCHDEVICENAME, monitor.Name, MonitorNameLength);
-
-    /*
-    printf
-    (
-        "[Monitor] %p <%ls> %ix%i\n",
-        monitorHandle,
-        monitorInfo.szDevice,
-        monitor.Width,
-        monitor.Height
-    );
-    */
-
-    return 1;
-}
-#endif
-
-PXActionResult PXAPI PXMonitorDeviceAmount(PXSize* const amount)
-{
-    *amount = 0;
-
-#if OSUnix
-    return PXActionRefusedNotImplemented;
-
-#elif OSWindows
-    DISPLAY_DEVICEA displayDevice;
-    displayDevice.cb = sizeof(DISPLAY_DEVICEA);
-
-    // Count how many devices we have.
-    while(EnumDisplayDevicesA(NULL, *amount, &displayDevice, 0)) ++(*amount);
-
-
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        "Monitor",
-        "Device",
-        "Detected <%i> monitor devices",
-        *amount
-    );
-#endif
-
-    return PXActionSuccessful;
-#endif
-}
-
-
-PXActionResult PXAPI PXGUIScreenDeviceAmount(PXSize* const amount)
-{
-    return 2;
-}
-
-void PXAPI PXGUIScreenFetchAll(PXMonitor* const monitorList, const PXSize monitorListSizeMax, const PXSize monitorListSize)
-{
-#if OSUnix
-#elif PXOSWindowsDestop
-    HDC             hdc = 0;
-    RECT         rectangleClip;
-    MONITORENUMPROC lpfnEnum = PXMonitorListCallBack;
-    LPARAM          dwData = 0;
-
-    PXClear(RECT, &rectangleClip);
-
-#if 0
-    while(EnumDisplayMonitors(hdc, &rectangleClip, lpfnEnum, dwData));
-#endif
-
-#endif
 }
 
 void PXAPI PXGUIScreenGetSize(PXInt32S* const width, PXInt32S* const height)
@@ -3193,10 +2918,10 @@ PXActionResult PXAPI PXGUISystemInitialize(PXGUISystem* const pxGUISystem)
 
             // UI Element needs function to override drawing by OS
             // Linux does not even have drawing
-            PXGUIElementDrawFunction(GUISystem, PXGUIElement);
+            PXWindowDrawFunction(GUISystem, PXWindow);
 
 
-            PXGUIElementDrawRectangleFill();
+            PXWindowDrawRectangleFill();
 
 
 
@@ -3289,7 +3014,7 @@ PXActionResult PXAPI PXGUISystemRelease(PXGUISystem* const pxGUISystem)
     return result;
 }
 
-PXActionResult PXAPI PXGUIElementStyleUpdate(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement)
+PXActionResult PXAPI PXWindowStyleUpdate(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement)
 {
     PXActionResult result = PXActionInvalid;
 
@@ -3305,20 +3030,7 @@ PXActionResult PXAPI PXGUIElementStyleUpdate(PXGUISystem* const pxGUISystem, PXG
     return result;
 }
 
-PXActionResult PXAPI PXGUIElementAbsorb(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement)
-{
-    // Create new window resource in target window? or Just take ownership and update the window?
-    // Take ownership of all elements
-
-    return PXActionRefusedNotImplemented;
-}
-
-PXActionResult PXAPI PXGUIElementEmit(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement)
-{
-    return PXActionRefusedNotImplemented;
-}
-
-PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResourceCreateInfo* const pxResourceCreateInfo, const PXSize amount)
+PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCreateInfo* const pxResourceCreateInfo, const PXSize amount)
 {
     if(!(pxGUISystem && pxResourceCreateInfo))
     {
@@ -3327,8 +3039,8 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
     //assert();
 
-    PXGUIElementCreateInfo* pxGUIElementCreateInfo = &pxResourceCreateInfo->UIElement;
-    PXGUIElement* pxGUIElement = *(PXGUIElement**)pxResourceCreateInfo->ObjectReference;
+    PXWindowCreateInfo* pxGUIElementCreateInfo = &pxResourceCreateInfo->UIElement;
+    PXWindow* pxGUIElement = *(PXWindow**)pxResourceCreateInfo->ObjectReference;
 
     pxGUIElement->Type = pxGUIElementCreateInfo->Type;
     pxGUIElement->InteractCallBack = pxGUIElementCreateInfo->InteractCallBack;
@@ -3352,87 +3064,87 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
     //const char* format = PXEngineCreateTypeToString(pxEngineResourceCreateInfo->CreateType);
     if(PXUIElementTypeTreeViewItem == pxGUIElementCreateInfo->Type)
     {
-        // PXGUIElement* const uiElementSource
+        // PXWindow* const uiElementSource
 
 
 
         switch(pxGUIElementCreateInfo->Data.TreeViewItem.OwningObjectType)
         {
-        case PXResourceTypeCustom:
-        {
-            nameTempLength = PXTextPrintA(nameTemp, 128, "<%s>", pxGUIElementCreateInfo->Name);
-            break;
-        }
-        case PXResourceTypeGUIElement:
-        {
-            PXGUIElement* const uiElementSource = (PXGUIElement*)pxGUIElementCreateInfo->Data.TreeViewItem.OwningObject;
-
-            const char* uiElementTypeName = PXUIElementTypeToString(uiElementSource->Type);
-
-            const char windowName[256];
-
-            PXGUIElementTextGet(pxGUISystem, uiElementSource, windowName);
-
-            if(windowName[0] == '\0')
+            case PXResourceTypeCustom:
             {
-                PXTextCopyA("**Unnamed**", 11, windowName, 256);
+                nameTempLength = PXTextPrintA(nameTemp, 128, "<%s>", pxGUIElementCreateInfo->Name);
+                break;
             }
+            case PXResourceTypeGUIElement:
+            {
+                PXWindow* const uiElementSource = (PXWindow*)pxGUIElementCreateInfo->Data.TreeViewItem.OwningObject;
 
-            nameTempLength = PXTextPrintA(nameTemp, 128, "[%s] %s", uiElementTypeName, windowName);
+                const char* uiElementTypeName = PXUIElementTypeToString(uiElementSource->Type);
 
-            break;
-        }
-        case PXResourceTypeModel:
-        {
-            PXModel* const pxModel = (PXModel*)pxGUIElementCreateInfo->Data.TreeViewItem.OwningObject;
+                const char windowName[256];
 
-            nameTempLength = PXTextPrintA
-                             (
-                                 nameTemp,
-                                 128,
-                                 "[Model] %s ID:%i",
-                                 "---",//pxModel->Info.Handle.Name,
-                                 pxModel->Info.ID
-                             );
+                PXWindowTextGet(pxGUISystem, uiElementSource, windowName);
 
-            break;
-        }
-        case PXResourceTypeShaderProgram:
-        {
-            PXShaderProgram* const pxShaderProgram = (PXShaderProgram*)pxGUIElementCreateInfo->Data.TreeViewItem.OwningObject;
+                if(windowName[0] == '\0')
+                {
+                    PXTextCopyA("**Unnamed**", 11, windowName, 256);
+                }
 
-            nameTempLength = PXTextPrintA
-                             (
-                                 nameTemp,
-                                 128,
-                                 "[Shader] %s ID:%i",
-                                 "---",
-                                 pxShaderProgram->Info.ID
-                             );
+                nameTempLength = PXTextPrintA(nameTemp, 128, "[%s] %s", uiElementTypeName, windowName);
 
-            break;
-        }
-        case PXResourceTypeImage:
-        {
-            PXImage* const pxImage = (PXImage*)pxGUIElementCreateInfo->Data.TreeViewItem.OwningObject;
+                break;
+            }
+            case PXResourceTypeModel:
+            {
+                PXModel* const pxModel = (PXModel*)pxGUIElementCreateInfo->Data.TreeViewItem.OwningObject;
 
-            nameTempLength = PXTextPrintA
-                             (
-                                 nameTemp,
-                                 128,
-                                 "[Image] %ix%i",
-                                 pxImage->Width,
-                                 pxImage->Height
-                             );
+                nameTempLength = PXTextPrintA
+                (
+                    nameTemp,
+                    128,
+                    "[Model] %s ID:%i",
+                    "---",//pxModel->Info.Handle.Name,
+                    pxModel->Info.ID
+                );
 
-            break;
-        }
-        default:
-        {
-            nameTempLength = PXTextPrintA(nameTemp, 128, "ERROR");
+                break;
+            }
+            case PXResourceTypeShaderProgram:
+            {
+                PXShaderProgram* const pxShaderProgram = (PXShaderProgram*)pxGUIElementCreateInfo->Data.TreeViewItem.OwningObject;
 
-            break;
-        }
+                nameTempLength = PXTextPrintA
+                (
+                    nameTemp,
+                    128,
+                    "[Shader] %s ID:%i",
+                    "---",
+                    pxShaderProgram->Info.ID
+                );
+
+                break;
+            }
+            case PXResourceTypeImage:
+            {
+                PXImage* const pxImage = (PXImage*)pxGUIElementCreateInfo->Data.TreeViewItem.OwningObject;
+
+                nameTempLength = PXTextPrintA
+                (
+                    nameTemp,
+                    128,
+                    "[Image] %ix%i",
+                    pxImage->Width,
+                    pxImage->Height
+                );
+
+                break;
+            }
+            default:
+            {
+                nameTempLength = PXTextPrintA(nameTemp, 128, "ERROR");
+
+                break;
+            }
         }
 
 #if 0
@@ -3456,8 +3168,8 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
     // Resize
 
-    PXGUIElementUpdateInfo sizeInfoAA;
-    PXClear(PXGUIElementUpdateInfo, &sizeInfoAA);
+    PXWindowUpdateInfo sizeInfoAA;
+    PXClear(PXWindowUpdateInfo, &sizeInfoAA);
     //sizeInfoAA.UIElement = *pxGUIElementCreateInfo->UIElement;
     sizeInfoAA.WindowReference = pxGUIElementCreateInfo->UIElementWindow;
     sizeInfoAA.Property = PXUIElementPropertySizeParent;
@@ -3471,7 +3183,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
     //  PXWindowSizeGet(windowID, &pxWindowSizeInfo);
 
-    PXGUIElementFetch(pxGUISystem, &sizeInfoAA, 1);
+    PXWindowFetch(pxGUISystem, &sizeInfoAA, 1);
 
     pxUIElementPositionCalulcateInfo.WindowWidth = sizeInfoAA.Data.Size.Width;
     pxUIElementPositionCalulcateInfo.WindowHeight = sizeInfoAA.Data.Size.Height;
@@ -3482,240 +3194,23 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 #if OSUnix
 
 
-    if(pxGUISystem->AreOSUIElementsDefined) //
-    {
-        // Try to create the correct UI Element with the library "GTK"
-        //
-        // TODO: ...
-    }
-    else
-    {
-        // UI Elements not defined, we need it ourself!
-
-        PXGUIElementCreateWindowInfo* const pxGUIElementCreateWindowInfo = &pxGUIElementCreateInfo->Data.Window;
-
-        pxGUIElementCreateWindowInfo->UIElementReference = pxGUIElement;
-
-        // Get default visuals??
-
-        const int attributeList[] =
-        {
-            GLX_RGBA,
-            GLX_DEPTH_SIZE,
-            24,
-            GLX_DOUBLEBUFFER,
-            None
-        };
-
-        const XVisualInfo* const visualInfo = glXChooseVisual(pxGUISystem->DisplayCurrent.DisplayHandle, 0, attributeList);
-
-        {
-            const PXBool successful = visualInfo != 0;
-
-            if(!successful)
-            {
-#if PXLogEnable
-                PXLogPrint
-                (
-                    PXLoggingError,
-                    "X-System",
-                    "Visual",
-                    "Choosing failed"
-                );
-#endif
-
-                return PXActionSuccessful; // no appropriate visual found
-            }
-
-
-#if PXLogEnable
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                "X-System",
-                "Visual",
-                "OK (0x%p)",
-                visualInfo
-            );
-#endif
-
-        }
-
-        // default color map?
-
-        // Create colormapping
-        Colormap colormap = XCreateColormap
-                            (
-                                pxGUISystem->DisplayCurrent.DisplayHandle,
-                                pxGUISystem->DisplayCurrent.WindowRootHandle,
-                                visualInfo->visual,
-                                AllocNone
-                            );
-
-        XSetWindowAttributes setWindowAttributes;
-        //setWindowAttributes.cursor = ;
-        setWindowAttributes.colormap = colormap;
-        setWindowAttributes.event_mask =
-            KeyPressMask |
-            KeyReleaseMask |
-            ButtonPressMask |
-            ButtonReleaseMask |
-            EnterWindowMask |
-            LeaveWindowMask |
-            PointerMotionMask |
-            PointerMotionHintMask |
-            Button1MotionMask |
-            Button2MotionMask |
-            Button3MotionMask |
-            Button4MotionMask |
-            Button5MotionMask |
-            ButtonMotionMask |
-            KeymapStateMask |
-            ExposureMask |
-            VisibilityChangeMask |
-            StructureNotifyMask |
-            ResizeRedirectMask |
-            SubstructureNotifyMask |
-            SubstructureRedirectMask |
-            FocusChangeMask |
-            PropertyChangeMask |
-            ColormapChangeMask |
-            OwnerGrabButtonMask |
-            // XI_RawMotion |
-            0;
-
-
-
-        // Create window
-        {
-            int borderWidth = 2;
-            unsigned long border = 2;
-
-            if(PXUIElementTypeWindow == pxGUIElement->Type)
-            {
-                pxGUIElement->Info.Handle.WindowID = XCreateWindow
-                                                     (
-                                                             pxGUISystem->DisplayCurrent.DisplayHandle,
-                                                             pxGUISystem->DisplayCurrent.WindowRootHandle,
-                                                             pxUIElementPositionCalulcateInfo.X,
-                                                             pxUIElementPositionCalulcateInfo.Y,
-                                                             pxUIElementPositionCalulcateInfo.Width,
-                                                             pxUIElementPositionCalulcateInfo.Height,
-                                                             borderWidth,
-                                                             visualInfo->depth,
-                                                             InputOutput,
-                                                             visualInfo->visual,
-                                                             CWColormap | CWEventMask,
-                                                             &setWindowAttributes
-                                                     );
-            }
-            else
-            {
-                pxGUIElement->Info.Handle.WindowID = XCreateSimpleWindow
-                                                     (
-                                                             pxGUISystem->DisplayCurrent.DisplayHandle,
-                                                             pxGUISystem->DisplayCurrent.WindowRootHandle,
-                                                             pxUIElementPositionCalulcateInfo.X,
-                                                             pxUIElementPositionCalulcateInfo.Y,
-                                                             pxUIElementPositionCalulcateInfo.Width,
-                                                             pxUIElementPositionCalulcateInfo.Height,
-                                                             borderWidth,
-                                                             border,
-                                                             PXNull
-                                                     );
-            }
-
-
-
-            const PXBool sucessful = PXNull != pxGUIElement->Info.Handle.WindowID;
-
-            if(!sucessful)
-            {
-#if PXLogEnable
-                PXLogPrint
-                (
-                    PXLoggingError,
-                    "X-System",
-                    "Window-Create",
-                    "Failed!"
-                );
-#endif
-                return PXActionFailedCreate;
-            }
-
-#if PXLogEnable
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                "X-System",
-                "Window-Create",
-                "X:%4i, Y:%4i, W:%4i, H:%4i ID:%i",
-                pxUIElementPositionCalulcateInfo.X,
-                pxUIElementPositionCalulcateInfo.Y,
-                pxUIElementPositionCalulcateInfo.Width,
-                pxUIElementPositionCalulcateInfo.Height,
-                pxGUIElement->Info.Handle.WindowID
-            );
-#endif
-        }
-
-        // Attach to render engine
-        {
-            const int mapResultID = XMapWindow(pxGUISystem->DisplayCurrent.DisplayHandle, pxGUIElement->Info.Handle.WindowID);
-            const PXBool success = Success == mapResultID;
-
-            if(!success)
-            {
-#if PXLogEnable
-                PXLogPrint
-                (
-                    PXLoggingError,
-                    "X-System",
-                    "Window-Mapping",
-                    "Failed"
-                );
-#endif
-            }
-
-#if PXLogEnable
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                "X-System",
-                "Window-Mapping",
-                "OK"
-            );
-#endif
-        }
-
-        // Set title
-        {
-            const PXBool setTextSuccess = PXGUIElementTextSet(pxGUISystem, pxGUIElement, pxGUIElementCreateWindowInfo->Title);
-        }
-
-
-    }
-
-
-
-
 #if 0 // Grab means literally Drag%Drop grab. This is not mouse motion
     //bool   ret    = false;
     XID cursor = XCreateFontCursor(display, XC_crosshair);
     int    root = DefaultRootWindow(display);
 
     const int grabResult = XGrabPointer
-                           (
-                               display,
-                               root,
-                               0,
-                               ButtonMotionMask,
-                               GrabModeAsync,
-                               GrabModeAsync,
-                               root,
-                               None,
-                               CurrentTime
-                           );
+    (
+        display,
+        root,
+        0,
+        ButtonMotionMask,
+        GrabModeAsync,
+        GrabModeAsync,
+        root,
+        None,
+        CurrentTime
+    );
 #endif
 
 
@@ -3784,7 +3279,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
         pxGUIElementCreateInfo->WindowsStyleFlags |= WS_VISIBLE;
     }
 
-    if(PXGUIElementBehaviourBorder & pxGUIElementCreateInfo->BehaviourFlags)
+    if(PXWindowBehaviourBorder & pxGUIElementCreateInfo->BehaviourFlags)
     {
         pxGUIElementCreateInfo->WindowsStyleFlags |= WS_BORDER;
     }
@@ -3794,7 +3289,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
         pxGUIElementCreateInfo->WindowsStyleFlags |= WS_CHILD;
     }
 
-    if(PXGUIElementBehaviourSelectable & pxGUIElementCreateInfo->BehaviourFlags)
+    if(PXWindowBehaviourSelectable & pxGUIElementCreateInfo->BehaviourFlags)
     {
         pxGUIElementCreateInfo->WindowsStyleFlags |= WS_TABSTOP;
     }
@@ -3802,362 +3297,365 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
     switch(pxGUIElement->Type)
     {
-    case PXUIElementTypePanel:
-    {
-        pxGUIElementCreateInfo->WindowsClassName = WC_STATIC;
-
-        pxGUIElementCreateInfo->WindowsStyleFlags |= SS_BLACKFRAME;
-
-        break;
-    }
-    case PXUIElementTypeText:
-    {
-        pxGUIElementCreateInfo->WindowsClassName = WC_STATIC;
-        pxGUIElementCreateInfo->DrawFunctionEngine = PXGUIElementDrawCustomText;
-
-        /*
-        PXUIElementTextInfo* const pxUIElementTextInfo = &pxGUIElementCreateInfo->Data.Text;
-
-        pxGUIElementCreateInfo->WindowsTextContent = pxUIElementTextInfo->Content;
-
-        switch(pxUIElementTextInfo->Allign)
+        case PXUIElementTypePanel:
         {
-            case PXUIElementTextAllignLeft:
-                pxGUIElementCreateInfo->WindowsStyleFlags |= SS_LEFT;
-                break;
+            pxGUIElementCreateInfo->WindowsClassName = WC_STATIC;
 
-            case PXUIElementTextAllignRight:
-                pxGUIElementCreateInfo->WindowsStyleFlags |= SS_RIGHT;
-                break;
+            pxGUIElementCreateInfo->WindowsStyleFlags |= SS_BLACKFRAME;
 
-            default:
-            case PXUIElementTextAllignCenter:
-                pxGUIElementCreateInfo->WindowsStyleFlags |= SS_CENTER;
-                break;
+            break;
         }
-        */
-
-        PXBool hasParenet = 0;// pxGUIElementCreateInfo->UIElementParent;
-
-        /*
-        if(hasParenet)
+        case PXUIElementTypeText:
         {
-            pxGUIElementCreateInfo->AvoidCreation = PXUIElementTypeButton == pxGUIElement->Parent->Type;
+            pxGUIElementCreateInfo->WindowsClassName = WC_STATIC;
+            pxGUIElementCreateInfo->DrawFunctionEngine = PXWindowDrawCustomText;
 
-            if(pxGUIElementCreateInfo->AvoidCreation)
+            /*
+            PXUIElementTextInfo* const pxUIElementTextInfo = &pxGUIElementCreateInfo->Data.Text;
+
+            pxGUIElementCreateInfo->WindowsTextContent = pxUIElementTextInfo->Content;
+
+            switch(pxUIElementTextInfo->Allign)
             {
-                pxGUIElement->Type = PXUIElementTypeButtonText;
-                pxGUIElement->Info.Handle.WindowID = PXNull;
-                //return;
+                case PXUIElementTextAllignLeft:
+                    pxGUIElementCreateInfo->WindowsStyleFlags |= SS_LEFT;
+                    break;
+
+                case PXUIElementTextAllignRight:
+                    pxGUIElementCreateInfo->WindowsStyleFlags |= SS_RIGHT;
+                    break;
+
+                default:
+                case PXUIElementTextAllignCenter:
+                    pxGUIElementCreateInfo->WindowsStyleFlags |= SS_CENTER;
+                    break;
             }
-        }
-        */
+            */
 
-        break;
-    }
-    case PXUIElementTypeButton:
-    {
-        // BS_DEFPUSHBUTTON
-        // BS_USERBUTTON
-        pxGUIElementCreateInfo->WindowsClassName = WC_BUTTON;
-        pxGUIElementCreateInfo->DrawFunctionEngine = PXGUIElementDrawCustomButton;
-        pxGUIElementCreateInfo->WindowsTextContent = pxGUIElementCreateInfo->Data.Button.TextInfo.Content;
-        break;
-    }
-    case PXUIElementTypeImage:
-    {
-        // pxUIElementCreateData->WindowsClassName = WC_IMAGE;
-        //pxUIElementCreateData->WindowsStyleFlags = WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER;
-        break;
-    }
-    case PXUIElementTypeDropDown:
-    {
-        pxGUIElementCreateInfo->WindowsClassName = WC_COMBOBOX;
-        pxGUIElementCreateInfo->WindowsStyleFlags |= CBS_HASSTRINGS | CBS_DROPDOWNLIST | WS_OVERLAPPED;
-        break;
-    }
-    case PXUIElementTypeListBox:
-    {
-        pxGUIElementCreateInfo->WindowsClassName = WC_LISTBOX;
-        break;
-    }
-    case PXUIElementTypeTextEdit:
-    {
-        pxGUIElementCreateInfo->WindowsClassName = WC_EDIT;
-        pxGUIElementCreateInfo->WindowsStyleFlags |= ES_MULTILINE;
-        pxGUIElementCreateInfo->DrawFunctionEngine = PXGUIElementDrawCustomText;
-        pxGUIElementCreateInfo->WindowsTextContent = pxGUIElementCreateInfo->Data.Button.TextInfo.Content;
-        break;
-    }
-    case PXUIElementTypeRichEdit:
-    {
-        pxGUIElementCreateInfo->WindowsClassName = "RICHEDIT_CLASS";
-        break;
-    }
-    case PXUIElementTypeScrollBar:
-    {
-        pxGUIElementCreateInfo->WindowsClassName = WC_SCROLLBAR;
-        break;
-    }
-    case PXUIElementTypeTrackBar:
-    {
-        pxGUIElementCreateInfo->WindowsClassName = TRACKBAR_CLASS;
-        pxGUIElementCreateInfo->WindowsStyleFlags |= TBS_AUTOTICKS | TBS_TOOLTIPS;
-        break;
-    }
-    case PXUIElementTypeStatusBar:
-    {
-        pxGUIElementCreateInfo->WindowsClassName = STATUSCLASSNAMEA;
-        pxGUIElementCreateInfo->WindowsStyleFlags |= SBARS_SIZEGRIP;
+            PXBool hasParenet = 0;// pxGUIElementCreateInfo->UIElementParent;
 
-        break;
-    }
-    case PXUIElementTypeUpDown:
-    {
-        pxGUIElementCreateInfo->WindowsClassName = UPDOWN_CLASS;
-        break;
-    }
-    case PXUIElementTypeProgressBar:
-    {
-        pxGUIElementCreateInfo->WindowsClassName = PROGRESS_CLASS;
-        break;
-    }
-    case PXUIElementTypeHotKey:
-    {
-        pxGUIElementCreateInfo->WindowsClassName = HOTKEY_CLASS;
-        break;
-    }
-    case PXUIElementTypeCalender:
-    {
-        pxGUIElementCreateInfo->WindowsClassName = MONTHCAL_CLASS;
-        break;
-    }
-    case PXUIElementTypeToolTip:
-    {
-        pxGUIElementCreateInfo->WindowsClassName = TOOLTIPS_CLASS;
-        break;
-    }
-    case PXUIElementTypeAnimate:
-    {
-        pxGUIElementCreateInfo->WindowsClassName = ANIMATE_CLASS;
-        break;
-    }
-    case PXUIElementTypeDatePicker:
-    {
-        pxGUIElementCreateInfo->WindowsClassName = DATETIMEPICK_CLASS;
-        break;
-    }
-    case PXUIElementTypeGroupBox:
-    {
-        pxGUIElementCreateInfo->WindowsClassName = WC_BUTTON;
-        pxGUIElementCreateInfo->WindowsStyleFlags |= BS_GROUPBOX;
-        break;
-    }
-    case PXUIElementTypeRadioButton:
-    {
-        pxGUIElementCreateInfo->WindowsClassName = WC_BUTTON;
-        pxGUIElementCreateInfo->WindowsStyleFlags |= BS_RADIOBUTTON;
-        break;
-    }
-    case PXUIElementTypeGroupRadioButton:
-    {
-        pxGUIElementCreateInfo->WindowsClassName = WC_BUTTON;
-        pxGUIElementCreateInfo->WindowsStyleFlags |= BS_AUTORADIOBUTTON;
-        break;
-    }
-    case PXUIElementTypeTreeView:
-    {
-        pxGUIElementCreateInfo->WindowsClassName = WC_TREEVIEW;
-        pxGUIElementCreateInfo->WindowsStyleFlags |=
-            TVIF_TEXT |
-            TVIF_IMAGE |
-            TVIF_SELECTEDIMAGE |
-            TVIF_PARAM | // Required to get the a selected item, otherwise its just NULL.
-            TVS_HASBUTTONS |
-            TVS_HASLINES |
-            TVS_LINESATROOT;
-        break;
-    }
-    case PXUIElementTypeFileDirectyView:
-    {
-        pxGUIElementCreateInfo->WindowsClassName = WC_STATIC;
-        pxGUIElementCreateInfo->DrawFunctionEngine = PXGUIElementDrawFileDirectoryView;
-        break;
-    }
-    case PXUIElementTypeIPInput:
-    {
-        pxGUIElementCreateInfo->WindowsClassName = WC_IPADDRESS;
-        break;
-    }
-    case PXUIElementTypeLink:
-    {
-        pxGUIElementCreateInfo->WindowsClassName = "SysLink"; // WC_LINK
-        break;
-    }
-    case PXUIElementTypeHeader:
-    {
-        pxGUIElementCreateInfo->WindowsClassName = WC_HEADER;
-        break;
-    }
-    case PXUIElementTypeFontSelector:
-    {
-        pxGUIElementCreateInfo->WindowsClassName = WC_NATIVEFONTCTL;
-        // NFS_USEFONTASSOC
-        break;
-    }
-    case PXUIElementTypePageScroll:
-    {
-        pxGUIElementCreateInfo->WindowsClassName = WC_PAGESCROLLER;
-        break;
-    }
-    case PXUIElementTypeTabControll:
-    {
-        pxGUIElementCreateInfo->WindowsClassName = WC_TABCONTROL;
-        //pxGUIElementCreateInfo->WindowsStyleFlags |= WS_CLIPSIBLINGS | TCS_BUTTONS;
-
-        // pxGUIElementCreateInfo->WindowsClassName = WC_STATIC;
-        pxGUIElementCreateInfo->DrawFunctionEngine = PXGUIElementDrawCustomTabList;
-        break;
-    }
-    case PXUIElementTypeToggle:
-    {
-        pxGUIElementCreateInfo->WindowsClassName = 00000000000000000000;
-        pxGUIElementCreateInfo->WindowsStyleFlags = 000000000000000000000000;
-        break;
-    }
-    case PXUIElementTypeColorPicker:
-    {
-        pxGUIElementCreateInfo->WindowsClassName = WC_STATIC;
-        pxGUIElementCreateInfo->DrawFunctionEngine = PXGUIElementDrawCustomColorPicker;
-        //pxGUIElementCreateInfo->WindowsStyleFlags |= SS_WHITEFRAME;
-        break;
-    }
-    case PXUIElementTypeSlider:
-    {
-        pxGUIElementCreateInfo->WindowsClassName = 00000000000000000000;
-        pxGUIElementCreateInfo->WindowsStyleFlags = 000000000000000000000000;
-        break;
-    }
-    case PXUIElementTypeCheckBox:
-    {
-        pxGUIElementCreateInfo->WindowsClassName = WC_BUTTON;
-        pxGUIElementCreateInfo->WindowsStyleFlags |= BS_CHECKBOX;
-
-        //CheckDlgButton(uiCheckBox->ID, 1, BST_CHECKED); // BST_UNCHECKED
-
-        break;
-    }
-    case PXUIElementTypeComboBox:
-    {
-        pxGUIElementCreateInfo->WindowsClassName = WC_COMBOBOXEX;
-        break;
-    }
-    case PXUIElementTypeRenderFrame:
-    {
-        // HBRUSH hbrBackground = CreateSolidBrush(RGB(38, 38, 38));
-        pxGUIElementCreateInfo->WindowsClassName = WC_STATIC;
-        pxGUIElementCreateInfo->WindowsStyleFlags |= CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
-        break;
-    }
-    case PXUIElementTypeWindow:
-    {
-        PXGUIElementCreateWindowInfo* const windowInfo = &pxGUIElementCreateInfo->Data.Window;
-
-        pxGUIElementCreateInfo->WindowsWindowsStyleFlagsExtended = WS_EX_APPWINDOW | WS_EX_DLGMODALFRAME | WS_EX_CONTEXTHELP;
-        pxGUIElementCreateInfo->WindowsClassName = "PXWindow";
-        pxGUIElementCreateInfo->WindowsStyleFlags |=
-            WS_OVERLAPPEDWINDOW |
-            CS_OWNDC |
-            CS_HREDRAW |
-            CS_VREDRAW;
-
-
-        PXWindowID windowID = 0;
-
-        DWORD dwStyle = 0;
-        HWND hWndParent = 0;
-        HMENU hMenu = 0;
-        void* lpParam = 0;
-
-        // HICON       hIcon =
-        // HCURSOR     hCursor = pxWindow->CursorID;
-        // HBRUSH      hbrBackground = (HBRUSH)(COLOR_BTNFACE + 1); //(HBRUSH)GetStockObject(COLOR_BACKGROUND);
-
-        //  HBRUSH hbrBackground =
-
-        /*
-        // Cursor setup
-        {
-           // const HCURSOR cursorID = LoadCursor(hInstance, IDC_ARROW);
-            //pxWindow->CursorID = cursorID;
-
-            if(pxWindow->Mode == PXWindowModeNormal)
+            /*
+            if(hasParenet)
             {
-                const int xx = WS_OVERLAPPEDWINDOW;
+                pxGUIElementCreateInfo->AvoidCreation = PXUIElementTypeButton == pxGUIElement->Parent->Type;
 
-                dwStyle |= WS_OVERLAPPEDWINDOW;// | WS_VISIBLE;
+                if(pxGUIElementCreateInfo->AvoidCreation)
+                {
+                    pxGUIElement->Type = PXUIElementTypeButtonText;
+                    pxGUIElement->Info.Handle.WindowID = PXNull;
+                    //return;
+                }
             }
-        }
-        */
+            */
 
-        // Registering of class
+            break;
+        }
+        case PXUIElementTypeButton:
         {
-            WNDCLASSA wndclass;
-
-            PXClear(WNDCLASSA, &wndclass);
-
-            wndclass.style = 0; // Can't apply
-            wndclass.lpfnWndProc = PXWindowEventHandler;
-            wndclass.cbClsExtra = 0;
-            wndclass.cbWndExtra = 0;
-            wndclass.hInstance = GetModuleHandleA(NULL);
-            wndclass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-            wndclass.hCursor = PXNull;
-            wndclass.hbrBackground = CreateSolidBrush(RGB(windowInfo->BackGroundColor.Red, windowInfo->BackGroundColor.Green, windowInfo->BackGroundColor.Blue));
-            wndclass.lpszMenuName = 0;
-            wndclass.lpszClassName = "PXWindow";
-
-
-            const ATOM classID = RegisterClassA(&wndclass);
-            const PXBool success = 0 != classID;
-
-            if(!success)
-            {
-                const DWORD errorID = GetLastError();
-                const PXActionResult result = PXWindowsHandleErrorFromID(errorID);
-            }
-
-            pxGUIElementCreateInfo->WindowsClassName = (char*)classID;
+            // BS_DEFPUSHBUTTON
+            // BS_USERBUTTON
+            pxGUIElementCreateInfo->WindowsClassName = WC_BUTTON;
+            pxGUIElementCreateInfo->DrawFunctionEngine = PXWindowDrawCustomButton;
+            pxGUIElementCreateInfo->WindowsTextContent = pxGUIElementCreateInfo->Data.Button.TextInfo.Content;
+            break;
         }
-
-        // Calc size
+        case PXUIElementTypeImage:
         {
-            const PXBool isDefaultSize = 1;// windowInfo->Width == 0 && windowInfo->Height == 0;
-
-            if(isDefaultSize)
-            {
-                PXInt32S screenWidth = 0;
-                PXInt32S screenHeight = 0;
-
-                PXGUIScreenGetSize(&screenWidth, &screenHeight);
-
-                pxUIElementPositionCalulcateInfo.X = screenWidth * 0.125f;
-                pxUIElementPositionCalulcateInfo.Y = screenHeight * 0.125f;
-                pxUIElementPositionCalulcateInfo.Width = screenWidth * 0.75f;
-                pxUIElementPositionCalulcateInfo.Height = screenHeight * 0.75f;
-            }
+            // pxUIElementCreateData->WindowsClassName = WC_IMAGE;
+            //pxUIElementCreateData->WindowsStyleFlags = WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER;
+            break;
         }
+        case PXUIElementTypeDropDown:
+        {
+            pxGUIElementCreateInfo->WindowsClassName = WC_COMBOBOX;
+            pxGUIElementCreateInfo->WindowsStyleFlags |= CBS_HASSTRINGS | CBS_DROPDOWNLIST | WS_OVERLAPPED;
+            break;
+        }
+        case PXUIElementTypeListBox:
+        {
+            pxGUIElementCreateInfo->WindowsClassName = WC_LISTBOX;
+            break;
+        }
+        case PXUIElementTypeTextEdit:
+        {
+            pxGUIElementCreateInfo->WindowsClassName = WC_EDIT;
+            pxGUIElementCreateInfo->WindowsStyleFlags |= ES_MULTILINE;
+            pxGUIElementCreateInfo->DrawFunctionEngine = PXWindowDrawCustomText;
+            pxGUIElementCreateInfo->WindowsTextContent = pxGUIElementCreateInfo->Data.Button.TextInfo.Content;
+            break;
+        }
+        case PXUIElementTypeRichEdit:
+        {
+            pxGUIElementCreateInfo->WindowsClassName = "RICHEDIT_CLASS";
+            break;
+        }
+        case PXUIElementTypeScrollBar:
+        {
+            pxGUIElementCreateInfo->WindowsClassName = WC_SCROLLBAR;
+            break;
+        }
+        case PXUIElementTypeTrackBar:
+        {
+            pxGUIElementCreateInfo->WindowsClassName = TRACKBAR_CLASS;
+            pxGUIElementCreateInfo->WindowsStyleFlags |= TBS_AUTOTICKS | TBS_TOOLTIPS;
+            break;
+        }
+        case PXUIElementTypeStatusBar:
+        {
+            pxGUIElementCreateInfo->WindowsClassName = STATUSCLASSNAMEA;
+            pxGUIElementCreateInfo->WindowsStyleFlags |= SBARS_SIZEGRIP;
 
-        break;
-    }
-    case PXUIElementTypeMenuStrip:
-    case PXUIElementTypeTreeViewItem:
-    {
-        pxGUIElementCreateInfo->AvoidCreation = PXTrue;
-        break;
-    }
-    default:
-        return PXActionRefusedArgumentInvalid;
+            break;
+        }
+        case PXUIElementTypeUpDown:
+        {
+            pxGUIElementCreateInfo->WindowsClassName = UPDOWN_CLASS;
+            break;
+        }
+        case PXUIElementTypeProgressBar:
+        {
+            pxGUIElementCreateInfo->WindowsClassName = PROGRESS_CLASS;
+            break;
+        }
+        case PXUIElementTypeHotKey:
+        {
+            pxGUIElementCreateInfo->WindowsClassName = HOTKEY_CLASS;
+            break;
+        }
+        case PXUIElementTypeCalender:
+        {
+            pxGUIElementCreateInfo->WindowsClassName = MONTHCAL_CLASS;
+            break;
+        }
+        case PXUIElementTypeToolTip:
+        {
+            pxGUIElementCreateInfo->WindowsClassName = TOOLTIPS_CLASS;
+            break;
+        }
+        case PXUIElementTypeAnimate:
+        {
+            pxGUIElementCreateInfo->WindowsClassName = ANIMATE_CLASS;
+            break;
+        }
+        case PXUIElementTypeDatePicker:
+        {
+            pxGUIElementCreateInfo->WindowsClassName = DATETIMEPICK_CLASS;
+            break;
+        }
+        case PXUIElementTypeGroupBox:
+        {
+            pxGUIElementCreateInfo->WindowsClassName = WC_BUTTON;
+            pxGUIElementCreateInfo->WindowsStyleFlags |= BS_GROUPBOX;
+            break;
+        }
+        case PXUIElementTypeRadioButton:
+        {
+            pxGUIElementCreateInfo->WindowsClassName = WC_BUTTON;
+            pxGUIElementCreateInfo->WindowsStyleFlags |= BS_RADIOBUTTON;
+            break;
+        }
+        case PXUIElementTypeGroupRadioButton:
+        {
+            pxGUIElementCreateInfo->WindowsClassName = WC_BUTTON;
+            pxGUIElementCreateInfo->WindowsStyleFlags |= BS_AUTORADIOBUTTON;
+            break;
+        }
+        case PXUIElementTypeTreeView:
+        {
+            pxGUIElementCreateInfo->WindowsClassName = WC_TREEVIEW;
+            pxGUIElementCreateInfo->WindowsStyleFlags |=
+                TVIF_TEXT |
+                TVIF_IMAGE |
+                TVIF_SELECTEDIMAGE |
+                TVIF_PARAM | // Required to get the a selected item, otherwise its just NULL.
+                TVS_HASBUTTONS |
+                TVS_HASLINES |
+                TVS_LINESATROOT;
+            break;
+        }
+        case PXUIElementTypeFileDirectyView:
+        {
+            pxGUIElementCreateInfo->WindowsClassName = WC_STATIC;
+            pxGUIElementCreateInfo->DrawFunctionEngine = PXWindowDrawFileDirectoryView;
+            break;
+        }
+        case PXUIElementTypeIPInput:
+        {
+            pxGUIElementCreateInfo->WindowsClassName = WC_IPADDRESS;
+            break;
+        }
+        case PXUIElementTypeLink:
+        {
+            pxGUIElementCreateInfo->WindowsClassName = "SysLink"; // WC_LINK
+            break;
+        }
+        case PXUIElementTypeHeader:
+        {
+            pxGUIElementCreateInfo->WindowsClassName = WC_HEADER;
+            break;
+        }
+        case PXUIElementTypeFontSelector:
+        {
+            pxGUIElementCreateInfo->WindowsClassName = WC_NATIVEFONTCTL;
+            // NFS_USEFONTASSOC
+            break;
+        }
+        case PXUIElementTypePageScroll:
+        {
+            pxGUIElementCreateInfo->WindowsClassName = WC_PAGESCROLLER;
+            break;
+        }
+        case PXUIElementTypeTabControll:
+        {
+            pxGUIElementCreateInfo->WindowsClassName = WC_TABCONTROL;
+            //pxGUIElementCreateInfo->WindowsStyleFlags |= WS_CLIPSIBLINGS | TCS_BUTTONS;
+
+            // pxGUIElementCreateInfo->WindowsClassName = WC_STATIC;
+            pxGUIElementCreateInfo->DrawFunctionEngine = PXWindowDrawCustomTabList;
+            break;
+        }
+        case PXUIElementTypeTabPage:
+        {
+            pxGUIElementCreateInfo->WindowsClassName = WC_STATIC;
+            break;
+        }
+        case PXUIElementTypeToggle:
+        {
+            pxGUIElementCreateInfo->WindowsClassName = 00000000000000000000;
+            pxGUIElementCreateInfo->WindowsStyleFlags = 000000000000000000000000;
+            break;
+        }
+        case PXUIElementTypeColorPicker:
+        {
+            pxGUIElementCreateInfo->WindowsClassName = WC_STATIC;
+            pxGUIElementCreateInfo->DrawFunctionEngine = PXWindowDrawCustomColorPicker;
+            //pxGUIElementCreateInfo->WindowsStyleFlags |= SS_WHITEFRAME;
+            break;
+        }
+        case PXUIElementTypeSlider:
+        {
+            pxGUIElementCreateInfo->WindowsClassName = 00000000000000000000;
+            pxGUIElementCreateInfo->WindowsStyleFlags = 000000000000000000000000;
+            break;
+        }
+        case PXUIElementTypeCheckBox:
+        {
+            pxGUIElementCreateInfo->WindowsClassName = WC_BUTTON;
+            pxGUIElementCreateInfo->WindowsStyleFlags |= BS_CHECKBOX;
+
+            //CheckDlgButton(uiCheckBox->ID, 1, BST_CHECKED); // BST_UNCHECKED
+
+            break;
+        }
+        case PXUIElementTypeComboBox:
+        {
+            pxGUIElementCreateInfo->WindowsClassName = WC_COMBOBOXEX;
+            break;
+        }
+        case PXUIElementTypeRenderFrame:
+        {
+            pxGUIElementCreateInfo->WindowsClassName = WC_STATIC;
+            pxGUIElementCreateInfo->WindowsStyleFlags |= CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
+            break;
+        }
+        case PXUIElementTypeWindow:
+        {
+            PXWindowCreateWindowInfo* const windowInfo = &pxGUIElementCreateInfo->Data.Window;
+
+            pxGUIElementCreateInfo->WindowsWindowsStyleFlagsExtended = WS_EX_APPWINDOW | WS_EX_DLGMODALFRAME | WS_EX_CONTEXTHELP;
+            pxGUIElementCreateInfo->WindowsClassName = "PXWindow";
+            pxGUIElementCreateInfo->WindowsStyleFlags |=
+                WS_OVERLAPPEDWINDOW |
+                CS_OWNDC |
+                CS_HREDRAW |
+                CS_VREDRAW;
+                        
+            PXNativDrawWindowHandle windowID = 0;
+
+            DWORD dwStyle = 0;
+            HWND hWndParent = 0;
+            HMENU hMenu = 0;
+            void* lpParam = 0;
+
+            // HICON       hIcon =
+            // HCURSOR     hCursor = pxWindow->CursorID;
+            // HBRUSH      hbrBackground = (HBRUSH)(COLOR_BTNFACE + 1); //(HBRUSH)GetStockObject(COLOR_BACKGROUND);
+
+            //  HBRUSH hbrBackground =
+
+            /*
+            // Cursor setup
+            {
+               // const HCURSOR cursorID = LoadCursor(hInstance, IDC_ARROW);
+                //pxWindow->CursorID = cursorID;
+
+                if(pxWindow->Mode == PXWindowModeNormal)
+                {
+                    const int xx = WS_OVERLAPPEDWINDOW;
+
+                    dwStyle |= WS_OVERLAPPEDWINDOW;// | WS_VISIBLE;
+                }
+            }
+            */
+
+            // Registering of class
+            {
+                WNDCLASSA wndclass;
+
+                PXClear(WNDCLASSA, &wndclass);
+
+                wndclass.style = 0; // Can't apply
+                wndclass.lpfnWndProc = PXWindowEventHandler;
+                wndclass.cbClsExtra = 0;
+                wndclass.cbWndExtra = 0;
+                wndclass.hInstance = GetModuleHandleA(NULL);
+                wndclass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+                wndclass.hCursor = PXNull;
+                wndclass.hbrBackground = CreateSolidBrush(RGB(windowInfo->BackGroundColor.Red, windowInfo->BackGroundColor.Green, windowInfo->BackGroundColor.Blue));
+                wndclass.lpszMenuName = 0;
+                wndclass.lpszClassName = "PXWindow";
+
+
+                const ATOM classID = RegisterClassA(&wndclass);
+                const PXBool success = 0 != classID;
+
+                if(!success)
+                {
+                    const DWORD errorID = GetLastError();
+                    const PXActionResult result = PXWindowsHandleErrorFromID(errorID);
+                }
+
+                pxGUIElementCreateInfo->WindowsClassName = (char*)classID;
+            }
+
+            // Calc size
+            {
+                const PXBool isDefaultSize = 1;// windowInfo->Width == 0 && windowInfo->Height == 0;
+
+                if(isDefaultSize)
+                {
+                    PXInt32S screenWidth = 0;
+                    PXInt32S screenHeight = 0;
+
+                    PXGUIScreenGetSize(&screenWidth, &screenHeight);
+
+                    pxUIElementPositionCalulcateInfo.X = screenWidth * 0.125f;
+                    pxUIElementPositionCalulcateInfo.Y = screenHeight * 0.125f;
+                    pxUIElementPositionCalulcateInfo.Width = screenWidth * 0.75f;
+                    pxUIElementPositionCalulcateInfo.Height = screenHeight * 0.75f;
+                }
+            }
+
+            break;
+        }
+        case PXUIElementTypeMenuStrip:
+        case PXUIElementTypeTreeViewItem:
+        {
+            pxGUIElementCreateInfo->AvoidCreation = PXTrue;
+            break;
+        }
+        default:
+            return PXActionRefusedArgumentInvalid;
     }
 
 
@@ -4165,30 +3663,30 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
     {
         switch(PXResourceInfoUseByMask & pxGUIElement->Info.Behaviour)
         {
-        case PXResourceInfoUseByOS:
-        {
-            // Do nothing
-            break;
-        }
-        case PXResourceInfoUseByUser:
-        {
-            pxGUIElement->DrawFunction = pxGUIElementCreateInfo->DrawFunctionEngine;
-            pxGUIElement->BrushBackground = pxGUISystem->BrushBackgroundDark;
-            break;
-        }
-        case PXResourceInfoUseByEngine:
-        {
-            if(pxGUIElementCreateInfo->DrawFunctionEngine)
+            case PXResourceInfoUseByOS:
+            {
+                // Do nothing
+                break;
+            }
+            case PXResourceInfoUseByUser:
             {
                 pxGUIElement->DrawFunction = pxGUIElementCreateInfo->DrawFunctionEngine;
+                pxGUIElement->BrushBackground = pxGUISystem->BrushBackgroundDark;
+                break;
             }
-            else
+            case PXResourceInfoUseByEngine:
             {
-                pxGUIElement->DrawFunction = PXGUIElementDrawCustomFailback;
-            }
+                if(pxGUIElementCreateInfo->DrawFunctionEngine)
+                {
+                    pxGUIElement->DrawFunction = pxGUIElementCreateInfo->DrawFunctionEngine;
+                }
+                else
+                {
+                    pxGUIElement->DrawFunction = PXWindowDrawCustomFailback;
+                }
 
-            break;
-        }
+                break;
+            }
         }
 
         if(pxGUIElement->DrawFunction)
@@ -4197,16 +3695,16 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
             switch(pxGUIElement->Type)
             {
-            case PXUIElementTypeButton:
-                magicID = BS_OWNERDRAW;
-                break;
+                case PXUIElementTypeButton:
+                    magicID = BS_OWNERDRAW;
+                    break;
 
-            case PXUIElementTypeRenderFrame:
-            case PXUIElementTypeColorPicker:
-            case PXUIElementTypePanel:
-            default: // TODO: problem with default value, we cant detect if we have the wrong enum type
-                magicID = SS_OWNERDRAW;
-                break;
+                case PXUIElementTypeRenderFrame:
+                case PXUIElementTypeColorPicker:
+                case PXUIElementTypePanel:
+                default: // TODO: problem with default value, we cant detect if we have the wrong enum type
+                    magicID = SS_OWNERDRAW;
+                    break;
             }
 
             pxGUIElementCreateInfo->WindowsStyleFlags |= magicID;
@@ -4224,7 +3722,7 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
     if(!pxGUIElementCreateInfo->AvoidCreation)
     {
         HINSTANCE hInstance = PXNull;
-        PXWindowID windowID = pxGUIElementCreateInfo->UIElementWindow ? pxGUIElementCreateInfo->UIElementWindow->Info.Handle.WindowID : PXNull;
+        PXNativDrawWindowHandle windowID = pxGUIElementCreateInfo->UIElementWindow ? pxGUIElementCreateInfo->UIElementWindow->Info.Handle.WindowID : PXNull;
 
         if(pxGUIElementCreateInfo->UIElementWindow)
         {
@@ -4238,22 +3736,26 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 
         // const HINSTANCE hInstance = GetModuleHandle(NULL);
 
-        pxGUIElement->Info.Handle.WindowID = CreateWindowExA // Windows 2000, User32.dll, winuser.h
-                                             (
-                                                     pxGUIElementCreateInfo->WindowsWindowsStyleFlagsExtended,
-                                                     pxGUIElementCreateInfo->WindowsClassName,
-                                                     pxGUIElementCreateInfo->WindowsTextContent, // Text content
-                                                     pxGUIElementCreateInfo->WindowsStyleFlags,
-                                                     pxUIElementPositionCalulcateInfo.X,
-                                                     pxUIElementPositionCalulcateInfo.Y,
-                                                     pxUIElementPositionCalulcateInfo.Width,
-                                                     pxUIElementPositionCalulcateInfo.Height,
-                                                     windowID,
-                                                     PXNull,  // No menu.
-                                                     hInstance,
-                                                     NULL // Pointer not needed.
-                                             );
-        const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxGUIElement->Info.Handle.WindowID);
+
+
+        PXWindowCreateInfo pxWindowCreateInfo;
+        PXClear(PXWindowCreateInfo, &pxWindowCreateInfo);
+        pxWindowCreateInfo.ParentID = windowID;
+        pxWindowCreateInfo.InstanceHandle = hInstance;
+        pxWindowCreateInfo.X = pxUIElementPositionCalulcateInfo.X;
+        pxWindowCreateInfo.Y = pxUIElementPositionCalulcateInfo.Y;
+        pxWindowCreateInfo.Width = pxUIElementPositionCalulcateInfo.Width;
+        pxWindowCreateInfo.Height = pxUIElementPositionCalulcateInfo.Height;
+        pxWindowCreateInfo.BorderWidth = 2;
+        pxWindowCreateInfo.Border = 2;
+        pxWindowCreateInfo.WindowsWindowsStyleFlagsExtended = pxGUIElementCreateInfo->WindowsWindowsStyleFlagsExtended;
+        pxWindowCreateInfo.WindowsStyleFlags = pxGUIElementCreateInfo->WindowsStyleFlags;
+        pxWindowCreateInfo.WindowsTextContent = pxGUIElementCreateInfo->WindowsTextContent;
+    //    pxNativDrawWindow.WindowsTextSize;
+        pxWindowCreateInfo.WindowsClassName = pxGUIElementCreateInfo->WindowsClassName;
+
+        const PXActionResult pxActionResult = PXNativDrawWindowCreate(PXNull, pxGUIElement, &pxWindowCreateInfo);
+
 
         if(PXActionSuccessful != pxActionResult)
         {
@@ -4314,38 +3816,38 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 #if 0
         if(pxGUIElement->ID && pxGUIElementCreateInfo->UIElementParent)
         {
-            PXGUIElement* parent = pxGUIElementCreateInfo->UIElementParent;
+            PXWindow* parent = pxGUIElementCreateInfo->UIElementParent;
 
             HDWP resA = BeginDeferWindowPos(1);
 
             if(PXUIElementTypeButtonText == pxGUIElement->Type)
             {
                 HDWP resB = DeferWindowPos
-                            (
-                                resA,
-                                parent->ID,
-                                pxGUIElement->ID,
-                                0,
-                                0,
-                                0,
-                                0,
-                                SWP_NOMOVE | SWP_NOSIZE | SWP_NOCOPYBITS
-                            );
+                (
+                    resA,
+                    parent->ID,
+                    pxGUIElement->ID,
+                    0,
+                    0,
+                    0,
+                    0,
+                    SWP_NOMOVE | SWP_NOSIZE | SWP_NOCOPYBITS
+                );
                 EndDeferWindowPos(resB);
             }
             else
             {
                 HDWP resB = DeferWindowPos
-                            (
-                                resA,
-                                pxGUIElement->ID,
-                                parent->ID,
-                                0,
-                                0,
-                                0,
-                                0,
-                                SWP_NOMOVE | SWP_NOSIZE | SWP_NOCOPYBITS
-                            );
+                (
+                    resA,
+                    pxGUIElement->ID,
+                    parent->ID,
+                    0,
+                    0,
+                    0,
+                    0,
+                    SWP_NOMOVE | SWP_NOSIZE | SWP_NOCOPYBITS
+                );
                 EndDeferWindowPos(resB);
             }
 
@@ -4413,604 +3915,626 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
     //-------------------------------------------------------------------------
     switch(pxGUIElement->Type)
     {
-    case PXUIElementTypeMenuStrip:
-    {
-        PXGUIElementMenuItemList* const pxGUIElementMenuItemList = &pxGUIElementCreateInfo->Data.MenuItem;
+        case PXUIElementTypeMenuStrip:
+        {
+            PXWindowMenuItemList* const pxGUIElementMenuItemList = &pxGUIElementCreateInfo->Data.MenuItem;
 
 #if OSWindows
 
-        pxGUIElement->Info.Handle.MenuHandle = CreateMenu(); // Windows 2000, User32.dll, winuser.h
-        const PXBool succeess = PXNull != pxGUIElement->Info.Handle.MenuHandle;
-        const PXActionResult res = PXErrorCurrent(succeess);
+            pxGUIElement->Info.Handle.MenuHandle = CreateMenu(); // Windows 2000, User32.dll, winuser.h
+            const PXBool succeess = PXNull != pxGUIElement->Info.Handle.MenuHandle;
+            const PXActionResult res = PXErrorCurrent(succeess);
 
 
 
-        HMENU hSubMenu = CreatePopupMenu();
+            HMENU hSubMenu = CreatePopupMenu();
 
 
-        for(PXSize i = 0; i < pxGUIElementMenuItemList->MenuItemInfoListAmount; ++i)
-        {
-            PXGUIElementMenuItemInfo* const pxGUIElementMenuItemInfo = &pxGUIElementMenuItemList->MenuItemInfoListData[i];
-
-            MENUITEMINFOA menuItemInfo;
-            PXClear(MENUITEMINFOA, &menuItemInfo);
-            menuItemInfo.cbSize = sizeof(MENUITEMINFOA);
-            menuItemInfo.fMask = MIIM_STRING | MIIM_STATE | MIIM_SUBMENU;
-            menuItemInfo.fType = MFT_STRING;         // used if MIIM_TYPE (4.0) or MIIM_FTYPE (>4.0)
-            menuItemInfo.fState = MFS_DEFAULT;        // used if MIIM_STATE
-            menuItemInfo.wID = 0;           // used if MIIM_ID
-            menuItemInfo.hSubMenu = pxGUIElement->Info.Handle.MenuHandle;      // used if MIIM_SUBMENU
-            menuItemInfo.hbmpChecked = 0;   // used if MIIM_CHECKMARKS
-            menuItemInfo.hbmpUnchecked = 0; // used if MIIM_CHECKMARKS
-            menuItemInfo.dwItemData = 0;   // used if MIIM_DATA
-            menuItemInfo.dwTypeData = pxGUIElementMenuItemInfo->TextData;    // used if MIIM_TYPE (4.0) or MIIM_STRING (>4.0)
-            menuItemInfo.cch = pxGUIElementMenuItemInfo->TextSize;           // used if MIIM_TYPE (4.0) or MIIM_STRING (>4.0)
-            menuItemInfo.hbmpItem = 0;      // used if MIIM_BITMAP
-
-            UINT newID = i;
-
-            const PXBool itemAddResult =  AppendMenuA(pxGUIElement->Info.Handle.MenuHandle, menuItemInfo.fState, &newID, menuItemInfo.dwTypeData);
-            // const PXBool itemAddResult = AppendMenuA(pxGUIElement->Info.Handle.MenuHandle, MF_STRING | MF_POPUP, (UINT_PTR)hSubMenu, menuItemInfo.dwTypeData);
-
-
-            const PXActionResult sdfsdfghg = PXErrorCurrent(itemAddResult);
-
-            PXGUIElementMenuItemList* sub = pxGUIElementMenuItemInfo->ChildList;
-
-            if(sub)
+            for(PXSize i = 0; i < pxGUIElementMenuItemList->MenuItemInfoListAmount; ++i)
             {
-                for(size_t i = 0; i < sub->MenuItemInfoListAmount; i++)
+                PXWindowMenuItemInfo* const pxGUIElementMenuItemInfo = &pxGUIElementMenuItemList->MenuItemInfoListData[i];
+
+                MENUITEMINFOA menuItemInfo;
+                PXClear(MENUITEMINFOA, &menuItemInfo);
+                menuItemInfo.cbSize = sizeof(MENUITEMINFOA);
+                menuItemInfo.fMask = MIIM_STRING | MIIM_STATE | MIIM_SUBMENU;
+                menuItemInfo.fType = MFT_STRING;         // used if MIIM_TYPE (4.0) or MIIM_FTYPE (>4.0)
+                menuItemInfo.fState = MFS_DEFAULT;        // used if MIIM_STATE
+                menuItemInfo.wID = 0;           // used if MIIM_ID
+                menuItemInfo.hSubMenu = pxGUIElement->Info.Handle.MenuHandle;      // used if MIIM_SUBMENU
+                menuItemInfo.hbmpChecked = 0;   // used if MIIM_CHECKMARKS
+                menuItemInfo.hbmpUnchecked = 0; // used if MIIM_CHECKMARKS
+                menuItemInfo.dwItemData = 0;   // used if MIIM_DATA
+                menuItemInfo.dwTypeData = pxGUIElementMenuItemInfo->TextData;    // used if MIIM_TYPE (4.0) or MIIM_STRING (>4.0)
+                menuItemInfo.cch = pxGUIElementMenuItemInfo->TextSize;           // used if MIIM_TYPE (4.0) or MIIM_STRING (>4.0)
+                menuItemInfo.hbmpItem = 0;      // used if MIIM_BITMAP
+
+                UINT newID = i;
+
+                const PXBool itemAddResult = AppendMenuA(pxGUIElement->Info.Handle.MenuHandle, menuItemInfo.fState, &newID, menuItemInfo.dwTypeData);
+                // const PXBool itemAddResult = AppendMenuA(pxGUIElement->Info.Handle.MenuHandle, MF_STRING | MF_POPUP, (UINT_PTR)hSubMenu, menuItemInfo.dwTypeData);
+
+
+                const PXActionResult sdfsdfghg = PXErrorCurrent(itemAddResult);
+
+                PXWindowMenuItemList* sub = pxGUIElementMenuItemInfo->ChildList;
+
+                if(sub)
                 {
-                    UINT newIEED = newID;
+                    for(size_t i = 0; i < sub->MenuItemInfoListAmount; i++)
+                    {
+                        UINT newIEED = newID;
 
-                    PXGUIElementMenuItemInfo* const pxGUIElementMenuItemInfo = &sub->MenuItemInfoListData[i];
+                        PXWindowMenuItemInfo* const pxGUIElementMenuItemInfo = &sub->MenuItemInfoListData[i];
 
-                    const PXBool asddassdad = AppendMenuA(hSubMenu, menuItemInfo.fState | MF_POPUP, &newIEED, pxGUIElementMenuItemInfo->TextData);
-                    const PXActionResult wewrerew = PXErrorCurrent(asddassdad);
+                        const PXBool asddassdad = AppendMenuA(hSubMenu, menuItemInfo.fState | MF_POPUP, &newIEED, pxGUIElementMenuItemInfo->TextData);
+                        const PXActionResult wewrerew = PXErrorCurrent(asddassdad);
+                    }
+                }
+
+
+
+
+                //  const PXBool itemAddResult = InsertMenuItemA(pxGUIElement->Info.Handle.MenuHandle, 0, PXTrue, &menuItemInfo);
+                const PXActionResult res = PXErrorCurrent(itemAddResult);
+
+                // DrawMenuBar(pxGUIElement->Parent->Info.Handle.WindowID);
+
+                menuItemInfo.wID += 0;
+            }
+
+            PXWindow* parentElement = (PXWindow*)pxGUIElement->Info.Hierarchy.Parrent;
+            const PXBool setResult = SetMenu(parentElement->Info.Handle.WindowID, pxGUIElement->Info.Handle.MenuHandle);
+
+#endif
+
+            break;
+        }
+
+        case PXUIElementTypePanel:
+        {
+
+
+            break;
+        }
+        case PXUIElementTypeFileDirectyView:
+        {
+            PXDirectorySearchCache* pxDirectorySearchCache = PXMemoryCallocT(PXDirectorySearchCache, 1);
+
+            pxGUIElement->ExtendedData = pxDirectorySearchCache;
+
+            break;
+        }
+        case PXUIElementTypeText:
+        {
+            PXWindowUpdateInfo pxUIElementUpdateInfo[2];
+            PXClearList(PXWindowUpdateInfo, pxUIElementUpdateInfo, 2);
+
+            pxUIElementUpdateInfo[0].UIElement = pxGUIElement;
+            pxUIElementUpdateInfo[0].WindowReference = pxGUIElementCreateInfo->UIElementParent;
+            pxUIElementUpdateInfo[0].Property = PXUIElementPropertyTextContent;
+
+            pxUIElementUpdateInfo[1].UIElement = pxGUIElement;
+            pxUIElementUpdateInfo[1].WindowReference = pxGUIElementCreateInfo->UIElementParent;
+            pxUIElementUpdateInfo[1].Property = PXUIElementPropertyTextAllign;
+
+            // PXWindowUpdate(pxGUISystem, pxUIElementUpdateInfo, 2);
+
+            break;
+        }
+        case PXUIElementTypeButton:
+        {
+            PXWindowUpdateInfo pxUIElementUpdateInfo[2];
+            PXClearList(PXWindowUpdateInfo, pxUIElementUpdateInfo, 2);
+
+            pxUIElementUpdateInfo[0].UIElement = pxGUIElement;
+            pxUIElementUpdateInfo[0].WindowReference = pxGUIElementCreateInfo->UIElementParent;
+            pxUIElementUpdateInfo[0].Property = PXUIElementPropertyProgressbarPercentage;
+            pxUIElementUpdateInfo[1].UIElement = pxGUIElement;
+            pxUIElementUpdateInfo[1].WindowReference = pxGUIElementCreateInfo->UIElementParent;
+            pxUIElementUpdateInfo[1].Property = PXUIElementPropertyProgressbarBarColor;
+
+
+            //  PXWindowUpdate(pxGUISystem, pxUIElementUpdateInfo, 2);
+
+            break;
+        }
+        case PXUIElementTypeTreeViewItem:
+        {
+            PXUIElementTreeViewItemInfo* const pxUIElementTreeViewItemInfo = &pxGUIElementCreateInfo->Data.TreeViewItem;
+            // Create ui item for a tree view
+
+#if OSUnix
+#elif OSWindows
+
+            TVINSERTSTRUCT item;
+            PXClear(TVINSERTSTRUCT, &item);
+
+            // item.item.iImage = 1;
+
+
+            const char text[] = "[N/A]";
+
+            if(pxUIElementTreeViewItemInfo->ItemParent)
+            {
+                item.hParent = pxUIElementTreeViewItemInfo->ItemParent->Info.Handle.WindowID;
+            }
+
+            if(pxUIElementTreeViewItemInfo->TextDataOverride)
+            {
+                item.item.pszText = pxUIElementTreeViewItemInfo->TextDataOverride;
+                item.item.cchTextMax = pxUIElementTreeViewItemInfo->TextSizeOverride;
+            }
+            else
+            {
+                item.item.pszText = pxGUIElementCreateInfo->WindowsTextContent;
+                item.item.cchTextMax = pxGUIElementCreateInfo->WindowsTextSize;
+            }
+
+
+
+            if(PXResourceTypeGUIElement == pxUIElementTreeViewItemInfo->OwningObjectType)
+            {
+                PXWindow* const uiElement = (PXWindow*)pxUIElementTreeViewItemInfo->OwningObject;
+
+                switch(uiElement->Type)
+                {
+                    // case PXUIElementTypeRenderFrame:
+
+
+                    case PXUIElementTypeWindow:
+                        item.item.iImage = 0;
+                        break;
+                    case PXUIElementTypeButton:
+                        item.item.iImage = 1;
+                        break;
+                    case PXUIElementTypeTextEdit:
+                        item.item.iImage = 2;
+                        break;
+                    case PXUIElementTypeRenderFrame:
+                        item.item.iImage = 3;
+                        break;
+                    case PXUIElementTypeText:
+                        item.item.iImage = 5;
+                        break;
+                    case PXUIElementTypeTreeView:
+                        item.item.iImage = 4;
+                        break;
+                    case PXUIElementTypePanel:
+                        item.item.iImage = 6;
+                        break;
+
+                        // case PXUIElementTypeWindow:                    item.item.iImage = 1;                    break;
+                        // case PXUIElementTypeWindow:                    item.item.iImage = 1;                    break;
+
+
+
+                    default:
+                        item.item.iImage = -1;
+                        break;
                 }
             }
 
+            item.item.iSelectedImage = item.item.iImage;
 
-
-
-            //  const PXBool itemAddResult = InsertMenuItemA(pxGUIElement->Info.Handle.MenuHandle, 0, PXTrue, &menuItemInfo);
-            const PXActionResult res = PXErrorCurrent(itemAddResult);
-
-            // DrawMenuBar(pxGUIElement->Parent->Info.Handle.WindowID);
-
-            menuItemInfo.wID += 0;
-        }
-
-        PXGUIElement* parentElement = (PXGUIElement*)pxGUIElement->Info.Hierarchy.Parrent;
-        const PXBool setResult = SetMenu(parentElement->Info.Handle.WindowID, pxGUIElement->Info.Handle.MenuHandle);
-
-#endif
-
-        break;
-    }
-
-    case PXUIElementTypePanel:
-    {
-
-
-        break;
-    }
-    case PXUIElementTypeFileDirectyView:
-    {
-        PXDirectorySearchCache* pxDirectorySearchCache = PXMemoryCallocT(PXDirectorySearchCache, 1);
-
-        pxGUIElement->ExtendedData = pxDirectorySearchCache;
-
-        break;
-    }
-    case PXUIElementTypeText:
-    {
-        PXGUIElementUpdateInfo pxUIElementUpdateInfo[2];
-        PXClearList(PXGUIElementUpdateInfo, pxUIElementUpdateInfo, 2);
-
-        pxUIElementUpdateInfo[0].UIElement = pxGUIElement;
-        pxUIElementUpdateInfo[0].WindowReference = pxGUIElementCreateInfo->UIElementParent;
-        pxUIElementUpdateInfo[0].Property = PXUIElementPropertyTextContent;
-
-        pxUIElementUpdateInfo[1].UIElement = pxGUIElement;
-        pxUIElementUpdateInfo[1].WindowReference = pxGUIElementCreateInfo->UIElementParent;
-        pxUIElementUpdateInfo[1].Property = PXUIElementPropertyTextAllign;
-
-        // PXGUIElementUpdate(pxGUISystem, pxUIElementUpdateInfo, 2);
-
-        break;
-    }
-    case PXUIElementTypeButton:
-    {
-        PXGUIElementUpdateInfo pxUIElementUpdateInfo[2];
-        PXClearList(PXGUIElementUpdateInfo, pxUIElementUpdateInfo, 2);
-
-        pxUIElementUpdateInfo[0].UIElement = pxGUIElement;
-        pxUIElementUpdateInfo[0].WindowReference = pxGUIElementCreateInfo->UIElementParent;
-        pxUIElementUpdateInfo[0].Property = PXUIElementPropertyProgressbarPercentage;
-        pxUIElementUpdateInfo[1].UIElement = pxGUIElement;
-        pxUIElementUpdateInfo[1].WindowReference = pxGUIElementCreateInfo->UIElementParent;
-        pxUIElementUpdateInfo[1].Property = PXUIElementPropertyProgressbarBarColor;
-
-
-        //  PXGUIElementUpdate(pxGUISystem, pxUIElementUpdateInfo, 2);
-
-        break;
-    }
-    case PXUIElementTypeTreeViewItem:
-    {
-        PXUIElementTreeViewItemInfo* const pxUIElementTreeViewItemInfo = &pxGUIElementCreateInfo->Data.TreeViewItem;
-        // Create ui item for a tree view
-
-#if OSUnix
-#elif OSWindows
-
-        TVINSERTSTRUCT item;
-        PXClear(TVINSERTSTRUCT, &item);
-
-        // item.item.iImage = 1;
-
-
-        const char text[] = "[N/A]";
-
-        if(pxUIElementTreeViewItemInfo->ItemParent)
-        {
-            item.hParent = pxUIElementTreeViewItemInfo->ItemParent->Info.Handle.WindowID;
-        }
-
-        if(pxUIElementTreeViewItemInfo->TextDataOverride)
-        {
-            item.item.pszText = pxUIElementTreeViewItemInfo->TextDataOverride;
-            item.item.cchTextMax = pxUIElementTreeViewItemInfo->TextSizeOverride;
-        }
-        else
-        {
-            item.item.pszText = pxGUIElementCreateInfo->WindowsTextContent;
-            item.item.cchTextMax = pxGUIElementCreateInfo->WindowsTextSize;
-        }
-
-
-
-        if(PXResourceTypeGUIElement == pxUIElementTreeViewItemInfo->OwningObjectType)
-        {
-            PXGUIElement* const uiElement = (PXGUIElement*)pxUIElementTreeViewItemInfo->OwningObject;
-
-            switch(uiElement->Type)
+            switch(pxUIElementTreeViewItemInfo->InsertMode)
             {
-            // case PXUIElementTypeRenderFrame:
+                case PXUIElementTreeViewItemInsertModeROOT:
+                    item.hInsertAfter = TVI_ROOT;
+                    break;
 
+                case PXUIElementTreeViewItemInsertModeFIRST:
+                    item.hInsertAfter = TVI_FIRST;
+                    break;
 
-            case PXUIElementTypeWindow:
-                item.item.iImage = 0;
-                break;
-            case PXUIElementTypeButton:
-                item.item.iImage = 1;
-                break;
-            case PXUIElementTypeTextEdit:
-                item.item.iImage = 2;
-                break;
-            case PXUIElementTypeRenderFrame:
-                item.item.iImage = 3;
-                break;
-            case PXUIElementTypeText:
-                item.item.iImage = 5;
-                break;
-            case PXUIElementTypeTreeView:
-                item.item.iImage = 4;
-                break;
-            case PXUIElementTypePanel:
-                item.item.iImage = 6;
-                break;
+                case PXUIElementTreeViewItemInsertModeLAST:
+                    item.hInsertAfter = TVI_LAST;
+                    break;
 
-            // case PXUIElementTypeWindow:                    item.item.iImage = 1;                    break;
-            // case PXUIElementTypeWindow:                    item.item.iImage = 1;                    break;
-
-
-
-            default:
-                item.item.iImage = -1;
-                break;
+                case PXUIElementTreeViewItemInsertModeSORT:
+                    item.hInsertAfter = TVI_SORT;
+                    break;
             }
-        }
 
-        item.item.iSelectedImage = item.item.iImage;
+            item.item.mask = TVIF_TEXT | TVIF_IMAGE;
 
-        switch(pxUIElementTreeViewItemInfo->InsertMode)
-        {
-        case PXUIElementTreeViewItemInsertModeROOT:
-            item.hInsertAfter = TVI_ROOT;
-            break;
+            HTREEITEM itemID = TreeView_InsertItem(pxUIElementTreeViewItemInfo->TreeView->Info.Handle.WindowID, &item);
 
-        case PXUIElementTreeViewItemInsertModeFIRST:
-            item.hInsertAfter = TVI_FIRST;
-            break;
+            if(pxUIElementTreeViewItemInfo->ItemParent)
+            {
+                TreeView_Expand
+                (
+                    pxUIElementTreeViewItemInfo->TreeView->Info.Handle.WindowID,
+                    pxUIElementTreeViewItemInfo->ItemParent->Info.Handle.WindowID,
+                    TVE_EXPAND
+                );
+            }
 
-        case PXUIElementTreeViewItemInsertModeLAST:
-            item.hInsertAfter = TVI_LAST;
-            break;
-
-        case PXUIElementTreeViewItemInsertModeSORT:
-            item.hInsertAfter = TVI_SORT;
-            break;
-        }
-
-        item.item.mask = TVIF_TEXT | TVIF_IMAGE;
-
-        HTREEITEM itemID = TreeView_InsertItem(pxUIElementTreeViewItemInfo->TreeView->Info.Handle.WindowID, &item);
-
-        if(pxUIElementTreeViewItemInfo->ItemParent)
-        {
-            TreeView_Expand
-            (
-                pxUIElementTreeViewItemInfo->TreeView->Info.Handle.WindowID,
-                pxUIElementTreeViewItemInfo->ItemParent->Info.Handle.WindowID,
-                TVE_EXPAND
-            );
-        }
-
-        pxGUIElement->Info.Handle.WindowID = itemID;
-        pxUIElementTreeViewItemInfo->ItemHandle = itemID;
+            pxGUIElement->Info.Handle.WindowID = itemID;
+            pxUIElementTreeViewItemInfo->ItemHandle = itemID;
 #endif
 
-        break;
-    }
-    case PXUIElementTypeImage:
-    {
+            break;
+        }
+        case PXUIElementTypeImage:
+        {
 
-        break;
-    }
-    case PXUIElementTypeDropDown:
-    {
+            break;
+        }
+        case PXUIElementTypeDropDown:
+        {
 
-        break;
-    }
-    case PXUIElementTypeListBox:
-    {
+            break;
+        }
+        case PXUIElementTypeListBox:
+        {
 
-        break;
-    }
-    case PXUIElementTypeTextEdit:
-    {
-
-
+            break;
+        }
+        case PXUIElementTypeTextEdit:
+        {
 
 
-        break;
-    }
-    case PXUIElementTypeRichEdit:
-    {
 
 
-        // EM_SETBKGNDCOLOR(pxGUIElement->ID, RGB(10, 10, 10));
-        // EM_SETTEXTCOLOR(pxGUIElement->ID, RGB(200, 200, 200));
+            break;
+        }
+        case PXUIElementTypeRichEdit:
+        {
 
-        break;
-    }
-    case PXUIElementTypeScrollBar:
-    {
 
-        break;
-    }
-    case PXUIElementTypeTrackBar:
-    {
+            // EM_SETBKGNDCOLOR(pxGUIElement->ID, RGB(10, 10, 10));
+            // EM_SETTEXTCOLOR(pxGUIElement->ID, RGB(200, 200, 200));
+
+            break;
+        }
+        case PXUIElementTypeScrollBar:
+        {
+
+            break;
+        }
+        case PXUIElementTypeTrackBar:
+        {
 #if OSUnix
 #elif OSWindows
 
-        HDC dc = GetDC(pxGUIElement->Info.Handle.WindowID);
+            HDC dc = GetDC(pxGUIElement->Info.Handle.WindowID);
 
 
-        SetTextColor(dc, RGB(255, 0, 0));
-        SetBkColor(dc, RGB(0, 0, 255));
+            SetTextColor(dc, RGB(255, 0, 0));
+            SetBkColor(dc, RGB(0, 0, 255));
 
 
-        SendMessageA(pxGUIElement->Info.Handle.WindowID, TBM_SETTIPSIDE, TBTS_RIGHT, PXNull);
+            SendMessageA(pxGUIElement->Info.Handle.WindowID, TBM_SETTIPSIDE, TBTS_RIGHT, PXNull);
 
 
-        // SendMessageA(pxGUIElement->ID, SET_BACKGROUND_COLOR, RGB(30, 30, 30), RGB(30, 30, 30));
+            // SendMessageA(pxGUIElement->ID, SET_BACKGROUND_COLOR, RGB(30, 30, 30), RGB(30, 30, 30));
 
-        // SET_BACKGROUND_COLOR;
+            // SET_BACKGROUND_COLOR;
 
-        // TreeView_SetBkColor(pxGUIElement->ID, RGB(30, 30, 30));
+            // TreeView_SetBkColor(pxGUIElement->ID, RGB(30, 30, 30));
 
-        //   TreeView_SetTextColor(pxGUIElement->ID, RGB(200, 200, 200));
+            //   TreeView_SetTextColor(pxGUIElement->ID, RGB(200, 200, 200));
 #endif
 
-        break;
-    }
-    case PXUIElementTypeStatusBar:
-    {
+            break;
+        }
+        case PXUIElementTypeStatusBar:
+        {
 
-        break;
-    }
-    case PXUIElementTypeUpDown:
-    {
+            break;
+        }
+        case PXUIElementTypeUpDown:
+        {
 
-        break;
-    }
-    case PXUIElementTypeProgressBar:
-    {
-        PXGUIElementUpdateInfo pxUIElementUpdateInfo[2];
-        PXClearList(PXGUIElementUpdateInfo, pxUIElementUpdateInfo, 2);
+            break;
+        }
+        case PXUIElementTypeProgressBar:
+        {
+            PXWindowUpdateInfo pxUIElementUpdateInfo[2];
+            PXClearList(PXWindowUpdateInfo, pxUIElementUpdateInfo, 2);
 
-        pxUIElementUpdateInfo[0].UIElement = pxGUIElement;
-        pxUIElementUpdateInfo[0].WindowReference = pxGUIElementCreateInfo->UIElementParent;
-        pxUIElementUpdateInfo[0].Property = PXUIElementPropertyProgressbarPercentage;
-        pxUIElementUpdateInfo[1].UIElement = pxGUIElement;
-        pxUIElementUpdateInfo[1].WindowReference = pxGUIElementCreateInfo->UIElementParent;
-        pxUIElementUpdateInfo[1].Property = PXUIElementPropertyProgressbarBarColor;
+            pxUIElementUpdateInfo[0].UIElement = pxGUIElement;
+            pxUIElementUpdateInfo[0].WindowReference = pxGUIElementCreateInfo->UIElementParent;
+            pxUIElementUpdateInfo[0].Property = PXUIElementPropertyProgressbarPercentage;
+            pxUIElementUpdateInfo[1].UIElement = pxGUIElement;
+            pxUIElementUpdateInfo[1].WindowReference = pxGUIElementCreateInfo->UIElementParent;
+            pxUIElementUpdateInfo[1].Property = PXUIElementPropertyProgressbarBarColor;
 
-        PXGUIElementUpdate(pxGUISystem, pxUIElementUpdateInfo, 2);
-        break;
-    }
-    case PXUIElementTypeHotKey:
-    {
+            PXWindowUpdate(pxGUISystem, pxUIElementUpdateInfo, 2);
+            break;
+        }
+        case PXUIElementTypeHotKey:
+        {
 
-        break;
-    }
-    case PXUIElementTypeCalender:
-    {
+            break;
+        }
+        case PXUIElementTypeCalender:
+        {
 
-        break;
-    }
-    case PXUIElementTypeToolTip:
-    {
+            break;
+        }
+        case PXUIElementTypeToolTip:
+        {
 
-        break;
-    }
-    case PXUIElementTypeAnimate:
-    {
+            break;
+        }
+        case PXUIElementTypeAnimate:
+        {
 
-        break;
-    }
-    case PXUIElementTypeDatePicker:
-    {
+            break;
+        }
+        case PXUIElementTypeDatePicker:
+        {
 
-        break;
-    }
-    case PXUIElementTypeGroupBox:
-    {
+            break;
+        }
+        case PXUIElementTypeGroupBox:
+        {
 
-        break;
-    }
-    case PXUIElementTypeRadioButton:
-    {
+            break;
+        }
+        case PXUIElementTypeRadioButton:
+        {
 
-        break;
-    }
-    case PXUIElementTypeGroupRadioButton:
-    {
+            break;
+        }
+        case PXUIElementTypeGroupRadioButton:
+        {
 
-        break;
-    }
-    case PXUIElementTypeTreeView:
-    {
+            break;
+        }
+        case PXUIElementTypeTreeView:
+        {
 #if OSUnix
 #elif OSWindows
 
-        int sizeX = 16;
-        int sizeY = 16;
-        int amount = 11;
+            int sizeX = 16;
+            int sizeY = 16;
+            int amount = 11;
 
-        TreeView_SetBkColor(pxGUIElement->Info.Handle.WindowID, RGB(30, 30, 30));
+            TreeView_SetBkColor(pxGUIElement->Info.Handle.WindowID, RGB(30, 30, 30));
 
-        TreeView_SetTextColor(pxGUIElement->Info.Handle.WindowID, RGB(200, 200, 200));
-
-
-        // Add icons
-        HIMAGELIST imageListHandle = ImageList_Create
-                                     (
-                                         sizeX,
-                                         sizeY,
-                                         ILC_COLOR,
-                                         amount,
-                                         amount
-                                     );
+            TreeView_SetTextColor(pxGUIElement->Info.Handle.WindowID, RGB(200, 200, 200));
 
 
-        HMODULE currentModule = GetModuleHandle(NULL);
-
-
-        const char* pathList[11] =
-        {
-            "Texture/Window.bmp",
-            "Texture/Button.bmp",
-            "Texture/Edit.bmp",
-            "Texture/FrameBuffer.bmp",
-            "Texture/TreeView.bmp",
-            "Texture/Text.bmp",
-            "Texture/Panel.bmp",
-            "Texture/Folder.bmp",
-            "Texture/H.bmp",
-            "Texture/HPP.bmp",
-            "Texture/SquareBlue.bmp"
-        };
-
-
-        for(size_t i = 0; i < amount; i++)
-        {
-            // HBITMAP bitmapHandle = LoadBitmapA(PXNull, OBM_CLOSE);
-
-            const char* filePath = pathList[i];
-
-            HBITMAP bitmapHandle = LoadImageA
-                                   (
-                                       PXNull,
-                                       filePath,
-                                       IMAGE_BITMAP,
-                                       sizeX,
-                                       sizeY,
-                                       LR_LOADFROMFILE
-                                   );
-
-            int addedID = ImageList_Add(imageListHandle, bitmapHandle, PXNull);
-
-            PXLogPrint
+            // Add icons
+            HIMAGELIST imageListHandle = ImageList_Create
             (
-                PXLoggingInfo,
-                "GUI",
-                "ImageList-Add",
-                "New icon %i",
-                addedID
+                sizeX,
+                sizeY,
+                ILC_COLOR,
+                amount,
+                amount
             );
-        }
 
-        TreeView_SetImageList(pxGUIElement->Info.Handle.WindowID, imageListHandle, TVSIL_NORMAL);
+
+            HMODULE currentModule = GetModuleHandle(NULL);
+
+
+            const char* pathList[11] =
+            {
+                "Texture/Window.bmp",
+                "Texture/Button.bmp",
+                "Texture/Edit.bmp",
+                "Texture/FrameBuffer.bmp",
+                "Texture/TreeView.bmp",
+                "Texture/Text.bmp",
+                "Texture/Panel.bmp",
+                "Texture/Folder.bmp",
+                "Texture/H.bmp",
+                "Texture/HPP.bmp",
+                "Texture/SquareBlue.bmp"
+            };
+
+
+            for(size_t i = 0; i < amount; i++)
+            {
+                // HBITMAP bitmapHandle = LoadBitmapA(PXNull, OBM_CLOSE);
+
+                const char* filePath = pathList[i];
+
+                HBITMAP bitmapHandle = LoadImageA
+                (
+                    PXNull,
+                    filePath,
+                    IMAGE_BITMAP,
+                    sizeX,
+                    sizeY,
+                    LR_LOADFROMFILE
+                );
+
+                int addedID = ImageList_Add(imageListHandle, bitmapHandle, PXNull);
+
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    "GUI",
+                    "ImageList-Add",
+                    "New icon %i",
+                    addedID
+                );
+            }
+
+            TreeView_SetImageList(pxGUIElement->Info.Handle.WindowID, imageListHandle, TVSIL_NORMAL);
 #endif
 
-        break;
-    }
-    case PXUIElementTypeIPInput:
-    {
+            break;
+        }
+        case PXUIElementTypeIPInput:
+        {
 
-        break;
-    }
-    case PXUIElementTypeLink:
-    {
+            break;
+        }
+        case PXUIElementTypeLink:
+        {
 
-        break;
-    }
-    case PXUIElementTypeHeader:
-    {
+            break;
+        }
+        case PXUIElementTypeHeader:
+        {
 
-        break;
-    }
-    case PXUIElementTypeFontSelector:
-    {
+            break;
+        }
+        case PXUIElementTypeFontSelector:
+        {
 
-        break;
-    }
-    case PXUIElementTypePageScroll:
-    {
+            break;
+        }
+        case PXUIElementTypePageScroll:
+        {
 
-        break;
-    }
-    case PXUIElementTypeTabControll:
-    {
+            break;
+        }
+        case PXUIElementTypeTabControll:
+        {
 #if OSUnix
 #elif OSWindows
-        HDC pDC = GetDC(pxGUIElement->Info.Handle.WindowID);
-        //SetBkMode(pDC, TRANSPARENT);
-        SetBkColor(pDC, RGB(255, 0, 0));
-        SetTextColor(pDC, RGB(0, 0, 255));
+            HDC pDC = GetDC(pxGUIElement->Info.Handle.WindowID);
+            //SetBkMode(pDC, TRANSPARENT);
+            SetBkColor(pDC, RGB(255, 0, 0));
+            SetTextColor(pDC, RGB(0, 0, 255));
 
-        PXUIElementTabPageInfo* const pxUIElementTabPageInfo = &pxGUIElementCreateInfo->Data.TabPage;
-
-
-
-        pxGUIElement->ListEESize = pxGUIElementCreateInfo->Data.TabPage.TabPageSingleInfoAmount;
-        PXNewList(PXGUIElement*, pxGUIElementCreateInfo->Data.TabPage.TabPageSingleInfoAmount, &pxGUIElement->ListEEData, PXNull);
+            PXUIElementTabPageInfo* const pxUIElementTabPageInfo = &pxGUIElementCreateInfo->Data.TabPage;
 
 
-        for(PXSize i = 0; i < pxUIElementTabPageInfo->TabPageSingleInfoAmount; ++i)
-        {
-            PXUIElementTabPageSingleInfo* const pxUIElementTabPageSingleInfo = &pxUIElementTabPageInfo->TabPageSingleInfoList[i];
 
-            char buffer[64];
-            PXTextPrintA(buffer, 64, "TabPage-%i-%s", i, pxUIElementTabPageSingleInfo->PageName);
-
-            // Create a panel for each page, to contain all elements, so that we can hide and show all at once
-            PXResourceCreateInfo pxResourceCreateInfo;
-            PXClear(PXResourceCreateInfo, &pxResourceCreateInfo);
-            pxResourceCreateInfo.Type = PXResourceTypeGUIElement;
-            pxResourceCreateInfo.ObjectReference = pxUIElementTabPageSingleInfo->UIElement;
-            pxResourceCreateInfo.UIElement.Type = PXUIElementTypePanel;
-            pxResourceCreateInfo.UIElement.Name = buffer;
-            pxResourceCreateInfo.UIElement.UIElementWindow = pxGUIElementCreateInfo->UIElementWindow;
-            pxResourceCreateInfo.UIElement.UIElementParent = pxGUIElement;
-            pxResourceCreateInfo.UIElement.BehaviourFlags = PXGUIElementBehaviourDefaultDecorative | PXGUIElementAllignLeft;
-            pxResourceCreateInfo.UIElement.Position.MarginLeft = 0.005;
-            pxResourceCreateInfo.UIElement.Position.MarginTop = 0.1;
-            pxResourceCreateInfo.UIElement.Position.MarginRight = 0.005;
-            pxResourceCreateInfo.UIElement.Position.MarginBottom = 0.02;
-
-            PXResourceManagerAdd(pxGUISystem->ResourceManager,&pxResourceCreateInfo, 1);
-
-            PXGUIElementCreate(pxGUISystem, &pxResourceCreateInfo, 1);
+            pxGUIElement->ListEESize = pxGUIElementCreateInfo->Data.TabPage.TabPageSingleInfoAmount;
+            PXNewList(PXWindow*, pxGUIElementCreateInfo->Data.TabPage.TabPageSingleInfoAmount, &pxGUIElement->ListEEData, PXNull);
 
 
-            pxGUIElement->ListEEData[i] = *pxUIElementTabPageSingleInfo->UIElement;
+            for(PXSize i = 0; i < pxUIElementTabPageInfo->TabPageSingleInfoAmount; ++i)
+            {
+                PXUIElementTabPageSingleInfo* const pxUIElementTabPageSingleInfo = &pxUIElementTabPageInfo->TabPageSingleInfoList[i];
+
+                char buffer[64];
+                PXTextPrintA(buffer, 64, "TabPage-%i-%s", i, pxUIElementTabPageSingleInfo->PageName);
+
+                // Create a panel for each page, to contain all elements, so that we can hide and show all at once
+                PXResourceCreateInfo pxResourceCreateInfo;
+                PXClear(PXResourceCreateInfo, &pxResourceCreateInfo);
+                pxResourceCreateInfo.Type = PXResourceTypeGUIElement;
+                pxResourceCreateInfo.ObjectReference = pxUIElementTabPageSingleInfo->UIElement;
+                pxResourceCreateInfo.UIElement.Type = PXUIElementTypeTabPage;
+                pxResourceCreateInfo.UIElement.Name = buffer;
+                pxResourceCreateInfo.UIElement.UIElementWindow = pxGUIElementCreateInfo->UIElementWindow;
+                pxResourceCreateInfo.UIElement.UIElementParent = pxGUIElement;
+                pxResourceCreateInfo.UIElement.BehaviourFlags = PXWindowBehaviourDefaultDecorative | PXWindowAllignLeft;
+                pxResourceCreateInfo.UIElement.Position.MarginLeft = 0.005;
+                pxResourceCreateInfo.UIElement.Position.MarginTop = 0.1;
+                pxResourceCreateInfo.UIElement.Position.MarginRight = 0.005;
+                pxResourceCreateInfo.UIElement.Position.MarginBottom = 0.02;
+
+                PXResourceManagerAdd(pxGUISystem->ResourceManager, &pxResourceCreateInfo, 1);
+
+                PXWindowCreate(pxGUISystem, &pxResourceCreateInfo, 1);
 
 
-            // Add tabs for each day of the week.
-            TCITEM tie;
-            tie.mask = TCIF_TEXT | TCIF_IMAGE;
-            tie.iImage = pxUIElementTabPageSingleInfo->ImageID;
-            tie.pszText = pxUIElementTabPageSingleInfo->PageName;
+                pxGUIElement->ListEEData[i] = *pxUIElementTabPageSingleInfo->UIElement;        
 
-            auto x = TabCtrl_InsertItem(pxGUIElement->Info.Handle.WindowID, i, &tie);
 
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                "GUI",
-                "TabControl-Add",
-                "Page added %s",
-                pxUIElementTabPageSingleInfo->PageName
-            );
-        }
+                switch(PXResourceInfoUseByMask & pxGUIElement->Info.Flags)
+                {
+                    case PXResourceInfoUseByOS:
+                    {
+#if OSUnix
+#elif OSWindows
+                        TCITEM tie;
+                        tie.mask = TCIF_TEXT | TCIF_IMAGE;
+                        tie.iImage = pxUIElementTabPageSingleInfo->ImageID;
+                        tie.pszText = pxUIElementTabPageSingleInfo->PageName;
 
-        SendMessage(pxGUIElement->Info.Handle.WindowID, TCM_SETCURFOCUS, 0, 0);
+                        auto x = TabCtrl_InsertItem(pxGUIElement->Info.Handle.WindowID, i, &tie);
+#endif
+                        break;
+                    }
+
+                    case PXResourceInfoUseByEngine:
+                    {
+
+
+                        break;
+                    }
+
+                    default:
+                        break;
+                }         
+
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    "GUI",
+                    "TabControl-Add",
+                    "Page added %s",
+                    pxUIElementTabPageSingleInfo->PageName
+                );
+            }
+
+#if OSUnix
+#elif OSWindows
+            SendMessage(pxGUIElement->Info.Handle.WindowID, TCM_SETCURFOCUS, 0, 0);
+#endif
 
 #endif
 
-        break;
-    }
-    case PXUIElementTypeToggle:
-    {
+            break;
+        }
+        case PXUIElementTypeToggle:
+        {
 
-        break;
-    }
-    case PXUIElementTypeColorPicker:
-    {
+            break;
+        }
+        case PXUIElementTypeColorPicker:
+        {
 
-        break;
-    }
-    case PXUIElementTypeSlider:
-    {
+            break;
+        }
+        case PXUIElementTypeSlider:
+        {
 
-        break;
-    }
-    case PXUIElementTypeCheckBox:
-    {
+            break;
+        }
+        case PXUIElementTypeCheckBox:
+        {
 
 
-        break;
-    }
-    case PXUIElementTypeComboBox:
-    {
+            break;
+        }
+        case PXUIElementTypeComboBox:
+        {
 
-        break;
-    }
-    case PXUIElementTypeRenderFrame:
-    {
+            break;
+        }
+        case PXUIElementTypeRenderFrame:
+        {
 #if 1
-        PXUIElementSceneRenderInfo* const pxUIElementSceneRenderInfo = &pxGUIElementCreateInfo->Data.SceneRender;
-        PXEngine* const pxEngine = pxUIElementSceneRenderInfo->Engine;
-        PXEngineStartInfo* const pxEngineStartInfo = pxUIElementSceneRenderInfo->StartInfo;
+            PXUIElementSceneRenderInfo* const pxUIElementSceneRenderInfo = &pxGUIElementCreateInfo->Data.SceneRender;
+            PXEngine* const pxEngine = pxUIElementSceneRenderInfo->Engine;
+            PXEngineStartInfo* const pxEngineStartInfo = pxUIElementSceneRenderInfo->StartInfo;
 
-        pxEngineStartInfo->Mode = PXGraphicInitializeModeOSGUIElement;
-        pxEngineStartInfo->Width = pxGUIElement->Position.Width;
-        pxEngineStartInfo->Height = pxGUIElement->Position.Height;
-        pxEngineStartInfo->UIElement = pxGUIElement;
-        pxEngineStartInfo->Name = "UIElement-RenderFrame";
-        pxEngineStartInfo->UseMouseInput = 1;
+            pxEngineStartInfo->Mode = PXGraphicInitializeModeOSGUIElement;
+            pxEngineStartInfo->Width = pxGUIElement->Position.Width;
+            pxEngineStartInfo->Height = pxGUIElement->Position.Height;
+            pxEngineStartInfo->UIElement = pxGUIElement;
+            pxEngineStartInfo->Name = "UIElement-RenderFrame";
+            pxEngineStartInfo->UseMouseInput = 1;
 
-        PXEngineStart(pxEngine, pxEngineStartInfo);
+            PXEngineStart(pxEngine, pxEngineStartInfo);
 
 #endif
 
-        break;
-    }
+            break;
+        }
 
-    case PXUIElementTypeWindow:
-    {
-        PXGUIElementCreateWindowInfo* const pxGUIElementCreateWindowInfo = &pxGUIElementCreateInfo->Data.Window;
+        case PXUIElementTypeWindow:
+        {
+            PXWindowCreateWindowInfo* const pxGUIElementCreateWindowInfo = &pxGUIElementCreateInfo->Data.Window;
 
-        PXWindowTitleBarColorSet(pxGUIElement->Info.Handle.WindowID);
+            PXWindowTitleBarColorSet(pxGUIElement->Info.Handle.WindowID);
 
-        // UpdateWindow(pxGUIElement->Info.Handle.WindowID);
+            // UpdateWindow(pxGUIElement->Info.Handle.WindowID);
 
-        // ShowWindow(pxWindow->ID, SW_NORMAL)
+            // ShowWindow(pxWindow->ID, SW_NORMAL)
 
 
 
@@ -5018,72 +4542,72 @@ PXActionResult PXAPI PXGUIElementCreate(PXGUISystem* const pxGUISystem, PXResour
 #if 0
 #if OSUnix
 
-        int numberOfDevices = 0;
+            int numberOfDevices = 0;
 
-        const XDeviceInfo* deviceInfoList = XListInputDevices(display, &numberOfDevices);
+            const XDeviceInfo* deviceInfoList = XListInputDevices(display, &numberOfDevices);
 
-        for(int i = 0; i < numberOfDevices; ++i)
-        {
-            const XDeviceInfo& xDeviceInfo = deviceInfoList[i];
+            for(int i = 0; i < numberOfDevices; ++i)
+            {
+                const XDeviceInfo& xDeviceInfo = deviceInfoList[i];
 
-            printf
-            (
-                "[Device] ID:%i Name:%s Use:%i\n",
-                xDeviceInfo.id,
-                xDeviceInfo.name,
-                xDeviceInfo.use
-            );
+                printf
+                (
+                    "[Device] ID:%i Name:%s Use:%i\n",
+                    xDeviceInfo.id,
+                    xDeviceInfo.name,
+                    xDeviceInfo.use
+                );
 
-            // XOpenDevice(display, i); // Cannot open mouse or keyboard??  invalid call
+                // XOpenDevice(display, i); // Cannot open mouse or keyboard??  invalid call
 
-            // XEventClass eventList[8]={0,0,0,0,0,0,0,0};
-            //  int listSize = xDeviceInfo.num_classes;
+                // XEventClass eventList[8]={0,0,0,0,0,0,0,0};
+                //  int listSize = xDeviceInfo.num_classes;
 
-            //  int resultE = XSelectExtensionEvent(display, PXWindowID, eventList, listSize);
+                //  int resultE = XSelectExtensionEvent(display, PXWindowID, eventList, listSize);
 
-            // printf("");
-        }
+                // printf("");
+            }
 #endif
 
 
 
-        if(info)
-        {
-            const PXActionResult actionResult = PXThreadRun(&window->MessageThread, "PXWindowMessageLoop", PXWindowMessageLoop, window);
-            const PXBool sucessful = PXActionSuccessful == actionResult;
-
-            if(!sucessful)
+            if(info)
             {
-                return; // TODO: return something?
+                const PXActionResult actionResult = PXThreadRun(&window->MessageThread, "PXWindowMessageLoop", PXWindowMessageLoop, window);
+                const PXBool sucessful = PXActionSuccessful == actionResult;
+
+                if(!sucessful)
+                {
+                    return; // TODO: return something?
+                }
+
+                PXBool expected = PXTrue;
+                PXAwaitInfo pxAwaitInfo;
+                pxAwaitInfo.DataTarget = &window->IsRunning;
+                pxAwaitInfo.DataExpect = &expected;
+                pxAwaitInfo.DataSize = sizeof(PXBool);
+
+                PXAwaitChange(&pxAwaitInfo);
             }
 
-            PXBool expected = PXTrue;
-            PXAwaitInfo pxAwaitInfo;
-            pxAwaitInfo.DataTarget = &window->IsRunning;
-            pxAwaitInfo.DataExpect = &expected;
-            pxAwaitInfo.DataSize = sizeof(PXBool);
-
-            PXAwaitChange(&pxAwaitInfo);
-        }
-
 #endif
 
-        break;
-    }
+            break;
+        }
 
-    default:
-        return PXActionRefusedArgumentInvalid;
+        default:
+            return PXActionRefusedArgumentInvalid;
     }
 
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIElementUpdateInfo* const pxGUIElementUpdateInfoList, const PXSize amount)
+PXActionResult PXAPI PXWindowUpdate(PXGUISystem* const pxGUISystem, PXWindowUpdateInfo* const pxGUIElementUpdateInfoList, const PXSize amount)
 {
     for(PXSize i = 0; i < amount; ++i)
     {
-        PXGUIElementUpdateInfo* const pxGUIElementUpdateInfo = &pxGUIElementUpdateInfoList[i];
-        PXGUIElement* const pxGUIElement = pxGUIElementUpdateInfo->UIElement;
+        PXWindowUpdateInfo* const pxGUIElementUpdateInfo = &pxGUIElementUpdateInfoList[i];
+        PXWindow* const pxGUIElement = pxGUIElementUpdateInfo->UIElement;
 
         if(!pxGUIElement)
         {
@@ -5092,29 +4616,29 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
 
         switch(pxGUIElementUpdateInfo->Property)
         {
-        case PXUIElementPropertyTextContent:
-        {
-#if 0
-            PXUIElementTextInfo* const pxUIElementTextInfo = &pxGUIElementUpdateInfo->Data.Text;
-
-            if(!pxGUIElement)
+            case PXUIElementPropertyTextContent:
             {
-                return PXActionInvalid;
-            }
+#if 0
+                PXUIElementTextInfo* const pxUIElementTextInfo = &pxGUIElementUpdateInfo->Data.Text;
+
+                if(!pxGUIElement)
+                {
+                    return PXActionInvalid;
+                }
 
 #if PXLogEnable && 0
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                "GUI",
-                "Update-Text",
-                "(0x%p) %s",
-                (int)pxGUIElement->ID,
-                pxUIElementTextInfo->Content
-            );
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    "GUI",
+                    "Update-Text",
+                    "(0x%p) %s",
+                    (int)pxGUIElement->ID,
+                    pxUIElementTextInfo->Content
+                );
 #endif
 
-            PXGUIElementTextSet(pxGUISystem, pxGUIElement, pxUIElementTextInfo->Content);
+                PXWindowTextSet(pxGUISystem, pxGUIElement, pxUIElementTextInfo->Content);
 #endif
 
 
@@ -5122,440 +4646,440 @@ PXActionResult PXAPI PXGUIElementUpdate(PXGUISystem* const pxGUISystem, PXGUIEle
 
 
 
-            //   SendMessageA(pxGUIElement->ID, PBM_SETPOS, stepsConverted, 0);
+                //   SendMessageA(pxGUIElement->ID, PBM_SETPOS, stepsConverted, 0);
 
 
 #if 0
-            PXUIElementPositionCalulcateInfo pxUIElementPositionCalulcateInfo;
-            PXClear(PXUIElementPositionCalulcateInfo, &pxUIElementPositionCalulcateInfo);
+                PXUIElementPositionCalulcateInfo pxUIElementPositionCalulcateInfo;
+                PXClear(PXUIElementPositionCalulcateInfo, &pxUIElementPositionCalulcateInfo);
 
-            PXWindowSizeInfo pxWindowSizeInfo;
+                PXWindowSizeInfo pxWindowSizeInfo;
 
-            PXWindowID pxWindowID = pxGUIElementUpdateInfo->WindowReference ? pxGUIElementUpdateInfo->WindowReference->ID : PXNull;
+                PXWindowID pxWindowID = pxGUIElementUpdateInfo->WindowReference ? pxGUIElementUpdateInfo->WindowReference->ID : PXNull;
 
-            PXWindowSizeGet(pxWindowID, &pxWindowSizeInfo);
+                PXWindowSizeGet(pxWindowID, &pxWindowSizeInfo);
 
-            pxUIElementPositionCalulcateInfo.WindowWidth = pxWindowSizeInfo.Width;
-            pxUIElementPositionCalulcateInfo.WindowHeight = pxWindowSizeInfo.Height;
+                pxUIElementPositionCalulcateInfo.WindowWidth = pxWindowSizeInfo.Width;
+                pxUIElementPositionCalulcateInfo.WindowHeight = pxWindowSizeInfo.Height;
 
-            PXUIElementPositionCalculcate(pxGUIElement, &pxUIElementPositionCalulcateInfo);
+                PXUIElementPositionCalculcate(pxGUIElement, &pxUIElementPositionCalulcateInfo);
 
-            const PXBool succes54s = MoveWindow
-                                     (
-                                         pxGUIElement->ID,
-                                         pxUIElementPositionCalulcateInfo.X,
-                                         pxUIElementPositionCalulcateInfo.Y,
-                                         pxUIElementPositionCalulcateInfo.Width,
-                                         pxUIElementPositionCalulcateInfo.Height,
-                                         PXTrue
-                                     );
+                const PXBool succes54s = MoveWindow
+                (
+                    pxGUIElement->ID,
+                    pxUIElementPositionCalulcateInfo.X,
+                    pxUIElementPositionCalulcateInfo.Y,
+                    pxUIElementPositionCalulcateInfo.Width,
+                    pxUIElementPositionCalulcateInfo.Height,
+                    PXTrue
+                );
 #endif
 #endif
 
 
 
 
-            break;
-        }
-        case PXUIElementPropertyTextAllign:
-        {
-            // PXUIElementTextInfo* const pxUIElementTextInfo = &pxGUIElementUpdateInfo->Data.Text;
+                break;
+            }
+            case PXUIElementPropertyTextAllign:
+            {
+                // PXUIElementTextInfo* const pxUIElementTextInfo = &pxGUIElementUpdateInfo->Data.Text;
 
 #if OSUnix
 #elif OSWindows
 
 
-            HDC xx = GetDC(pxGUIElement->Info.Handle.WindowID);
+                HDC xx = GetDC(pxGUIElement->Info.Handle.WindowID);
 
-            LONG ww = SetWindowLongA(pxGUIElement->Info.Handle.WindowID, GWL_EXSTYLE, WS_EX_LEFT | WS_EX_RIGHT);
+                LONG ww = SetWindowLongA(pxGUIElement->Info.Handle.WindowID, GWL_EXSTYLE, WS_EX_LEFT | WS_EX_RIGHT);
 
-            // const UINT allign = SetTextAlign(xx, TA_CENTER);
-            // const PXBool success = GDI_ERROR == allign;
+                // const UINT allign = SetTextAlign(xx, TA_CENTER);
+                // const PXBool success = GDI_ERROR == allign;
 
-            if(!ww)
-            {
+                if(!ww)
+                {
+#if PXLogEnable
+                    PXLogPrint
+                    (
+                        PXLoggingError,
+                        "UI",
+                        "Text-Update",
+                        "Allign Failed"
+                    );
+#endif
+                }
+
 #if PXLogEnable
                 PXLogPrint
                 (
-                    PXLoggingError,
+                    PXLoggingInfo,
                     "UI",
                     "Text-Update",
-                    "Allign Failed"
+                    "Allign successful"
                 );
 #endif
-            }
-
-#if PXLogEnable
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                "UI",
-                "Text-Update",
-                "Allign successful"
-            );
-#endif
 
 #endif
 
-            break;
-        }
-        case PXUIElementPropertySize:
-        {
-            PXGUIElementUpdateInfo sizeFetchInfo;
-            PXClear(PXGUIElementUpdateInfo, &sizeFetchInfo);
-            sizeFetchInfo.UIElement = pxGUIElementUpdateInfoList->WindowReference;
-            sizeFetchInfo.Property = PXUIElementPropertySize;
-
-            PXGUIElementFetch(pxGUISystem, &sizeFetchInfo, 1);
-
-            PXUIElementPositionCalulcateInfo pxUIElementPositionCalulcateInfo;
-            PXClear(PXUIElementPositionCalulcateInfo, &pxUIElementPositionCalulcateInfo);
-
-            //PXWindowSizeInfo pxWindowSizeInfo;
-            //PXWindowID pxWindowID = pxGUIElement->Parent ? pxGUIElement->Parent->ID : PXNull;
-
-            //PXWindowSizeGet(PXNull, &pxWindowSizeInfo); // TODO: Problematic
-
-            pxUIElementPositionCalulcateInfo.WindowWidth = sizeFetchInfo.Data.Size.Width;
-            pxUIElementPositionCalulcateInfo.WindowHeight = sizeFetchInfo.Data.Size.Height;
-
-            PXUIElementPositionCalculcate(pxGUIElement, &pxUIElementPositionCalulcateInfo);
-
-
-
-            // If the window is an actual window, we will have bad allignment if we use MoveWindow
-            //if(pxGUIElement->Type != PXUIElementTypeWindow)
-
-            if(0)
-            {
-                const PXBool success = MoveWindow
-                                       (
-                                           pxGUIElement->Info.Handle.WindowID,
-                                           pxUIElementPositionCalulcateInfo.X,
-                                           pxUIElementPositionCalulcateInfo.Y,
-                                           pxUIElementPositionCalulcateInfo.Width,
-                                           pxUIElementPositionCalulcateInfo.Height,
-                                           PXTrue
-                                       );
+                break;
             }
-#if 0
-            else
+            case PXUIElementPropertySize:
             {
-                const BOOL result = SetWindowPos
-                                    (
-                                        pxGUIElement->ID,
-                                        PXNull,
-                                        pxUIElementPositionCalulcateInfo.X,
-                                        pxUIElementPositionCalulcateInfo.Y,
-                                        pxUIElementPositionCalulcateInfo.Width,
-                                        pxUIElementPositionCalulcateInfo.Height,
-                                        SWP_NOZORDER
-                                    );
-            }
-#endif
+                PXWindowUpdateInfo sizeFetchInfo;
+                PXClear(PXWindowUpdateInfo, &sizeFetchInfo);
+                sizeFetchInfo.UIElement = pxGUIElementUpdateInfoList->WindowReference;
+                sizeFetchInfo.Property = PXUIElementPropertySize;
 
-            // If we have a render window, we also need to fix the viewport
-            if(PXUIElementTypeRenderFrame == pxGUIElement->Type)
-            {
-                PXUIElementSceneRenderInfo* const pxUIElementSceneRenderInfo = &pxGUIElementUpdateInfo->Data.SceneRender;
-                PXEngine* pxEngine = pxUIElementSceneRenderInfo->Engine;
+                PXWindowFetch(pxGUISystem, &sizeFetchInfo, 1);
 
-                if(pxEngine)
+                PXUIElementPositionCalulcateInfo pxUIElementPositionCalulcateInfo;
+                PXClear(PXUIElementPositionCalulcateInfo, &pxUIElementPositionCalulcateInfo);
+
+                //PXWindowSizeInfo pxWindowSizeInfo;
+                //PXWindowID pxWindowID = pxGUIElement->Parent ? pxGUIElement->Parent->ID : PXNull;
+
+                //PXWindowSizeGet(PXNull, &pxWindowSizeInfo); // TODO: Problematic
+
+                pxUIElementPositionCalulcateInfo.WindowWidth = sizeFetchInfo.Data.Size.Width;
+                pxUIElementPositionCalulcateInfo.WindowHeight = sizeFetchInfo.Data.Size.Height;
+
+                PXUIElementPositionCalculcate(pxGUIElement, &pxUIElementPositionCalulcateInfo);
+
+
+
+                // If the window is an actual window, we will have bad allignment if we use MoveWindow
+                //if(pxGUIElement->Type != PXUIElementTypeWindow)
+
+                if(0)
                 {
-                    PXViewPort pxViewPort;
+                    const PXBool success = MoveWindow
+                    (
+                        pxGUIElement->Info.Handle.WindowID,
+                        pxUIElementPositionCalulcateInfo.X,
+                        pxUIElementPositionCalulcateInfo.Y,
+                        pxUIElementPositionCalulcateInfo.Width,
+                        pxUIElementPositionCalulcateInfo.Height,
+                        PXTrue
+                    );
+                }
+#if 0
+                else
+                {
+                    const BOOL result = SetWindowPos
+                    (
+                        pxGUIElement->ID,
+                        PXNull,
+                        pxUIElementPositionCalulcateInfo.X,
+                        pxUIElementPositionCalulcateInfo.Y,
+                        pxUIElementPositionCalulcateInfo.Width,
+                        pxUIElementPositionCalulcateInfo.Height,
+                        SWP_NOZORDER
+                    );
+                }
+#endif
 
-                    PXFunctionInvoke(pxEngine->Graphic.ViewPortGet, pxEngine->Graphic.EventOwner, &pxViewPort);
+                // If we have a render window, we also need to fix the viewport
+                if(PXUIElementTypeRenderFrame == pxGUIElement->Type)
+                {
+                    PXUIElementSceneRenderInfo* const pxUIElementSceneRenderInfo = &pxGUIElementUpdateInfo->Data.SceneRender;
+                    PXEngine* pxEngine = pxUIElementSceneRenderInfo->Engine;
 
-                    pxViewPort.X = 0;//  pxUIElementPositionCalulcateInfo.X;
-                    pxViewPort.Y = 0;// pxUIElementPositionCalulcateInfo.Y;
-                    pxViewPort.Width = pxUIElementPositionCalulcateInfo.Width;
-                    pxViewPort.Height = pxUIElementPositionCalulcateInfo.Height;
+                    if(pxEngine)
+                    {
+                        PXViewPort pxViewPort;
 
-                    PXFunctionInvoke(pxEngine->Graphic.ViewPortSet, pxEngine->Graphic.EventOwner, &pxViewPort);
+                        PXFunctionInvoke(pxEngine->Graphic.ViewPortGet, pxEngine->Graphic.EventOwner, &pxViewPort);
+
+                        pxViewPort.X = 0;//  pxUIElementPositionCalulcateInfo.X;
+                        pxViewPort.Y = 0;// pxUIElementPositionCalulcateInfo.Y;
+                        pxViewPort.Width = pxUIElementPositionCalulcateInfo.Width;
+                        pxViewPort.Height = pxUIElementPositionCalulcateInfo.Height;
+
+                        PXFunctionInvoke(pxEngine->Graphic.ViewPortSet, pxEngine->Graphic.EventOwner, &pxViewPort);
+                    }
+
                 }
 
-            }
-
 
 #if PXLogEnable
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                "GUI",
-                "Update-Size",
-                "X:%4i, Y:%4i, W:%4i, H:%4i",
-                (int)pxUIElementPositionCalulcateInfo.X,
-                (int)pxUIElementPositionCalulcateInfo.Y,
-                (int)pxUIElementPositionCalulcateInfo.Width,
-                (int)pxUIElementPositionCalulcateInfo.Height
-            );
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    "GUI",
+                    "Update-Size",
+                    "X:%4i, Y:%4i, W:%4i, H:%4i",
+                    (int)pxUIElementPositionCalulcateInfo.X,
+                    (int)pxUIElementPositionCalulcateInfo.Y,
+                    (int)pxUIElementPositionCalulcateInfo.Width,
+                    (int)pxUIElementPositionCalulcateInfo.Height
+                );
 #endif
 
-            break;
-        }
-        case PXUIElementPropertyProgressbarPercentage:
-        {
-#if 0
-            PXUIElementProgressBarInfo* const progressBar = &pxGUIElementUpdateInfo->Data.Text;
-
-#if OSUnix
-#elif OSWindows
-
-            PXInt32U stepsConverted = progressBar->Percentage * 100;
-            SendMessageA(pxGUIElement->Info.Handle.WindowID, PBM_SETPOS, stepsConverted, 0);
-#endif
-#endif
-
-            break;
-        }
-        case PXUIElementPropertyProgressbarBarColor:
-        {
-#if 0
-            PXUIElementProgressBarInfo* const progressBar = &pxGUIElementUpdateInfo->Data.Text;
-
-#if OSUnix
-#elif OSWindows
-
-            COLORREF color = RGB(progressBar->BarColor.Red, progressBar->BarColor.Green, progressBar->BarColor.Blue);
-            SendMessageA(pxGUIElement->Info.Handle.WindowID, PBM_SETBARCOLOR, 0, color);
-#endif
-#endif
-
-            break;
-        }
-        case PXUIElementPropertyVisibility:
-        {
-#if OSUnix
-#elif OSWindows
-
-            PXBool show = pxGUIElementUpdateInfo->Show;
-            int showID = show ? SW_SHOW : SW_HIDE;
-
-            const PXBool isWindowValid = IsWindow(pxGUIElement->Info.Handle.WindowID);
-
-            if(!isWindowValid)
+                break;
+            }
+            case PXUIElementPropertyProgressbarPercentage:
             {
+#if 0
+                PXUIElementProgressBarInfo* const progressBar = &pxGUIElementUpdateInfo->Data.Text;
+
+#if OSUnix
+#elif OSWindows
+
+                PXInt32U stepsConverted = progressBar->Percentage * 100;
+                SendMessageA(pxGUIElement->Info.Handle.WindowID, PBM_SETPOS, stepsConverted, 0);
+#endif
+#endif
+
+                break;
+            }
+            case PXUIElementPropertyProgressbarBarColor:
+            {
+#if 0
+                PXUIElementProgressBarInfo* const progressBar = &pxGUIElementUpdateInfo->Data.Text;
+
+#if OSUnix
+#elif OSWindows
+
+                COLORREF color = RGB(progressBar->BarColor.Red, progressBar->BarColor.Green, progressBar->BarColor.Blue);
+                SendMessageA(pxGUIElement->Info.Handle.WindowID, PBM_SETBARCOLOR, 0, color);
+#endif
+#endif
+
+                break;
+            }
+            case PXUIElementPropertyVisibility:
+            {
+#if OSUnix
+#elif OSWindows
+
+                PXBool show = pxGUIElementUpdateInfo->Show;
+                int showID = show ? SW_SHOW : SW_HIDE;
+
+                const PXBool isWindowValid = IsWindow(pxGUIElement->Info.Handle.WindowID);
+
+                if(!isWindowValid)
+                {
+                    PXLogPrint
+                    (
+                        PXLoggingInfo,
+                        "GUI",
+                        "Visibility",
+                        "%20s (0x%p), Invalid",
+                        "",//pxGUIElement->NameData,
+                        pxGUIElement->Info.Handle.WindowID
+                    );
+
+                    break;
+                }
+
+                if(show)
+                {
+                    pxGUIElement->Info.Flags |= PXResourceInfoRender;
+                }
+                else
+                {
+                    pxGUIElement->Info.Flags &= ~PXResourceInfoRender;
+                }
+
+
+
+
+                // EnableWindow(pxGUIElement->ID, show);
+
+                ShowWindow(pxGUIElement->Info.Handle.WindowID, showID);
+                BOOL res = ShowWindow(pxGUIElement->Info.Handle.WindowID, showID); // Twice to prevent some errors
+
+                //  HWND parrent = GetParent(pxGUIElement->ID);
+
+                //  HWND grandParrent = GetParent(parrent);
+
+                //  UpdateWindow(pxGUIElement->ID);
+                //  UpdateWindow(parrent);
+                //  UpdateWindow(grandParrent);
+
+                //  UpdateWindow(sourceObject);
+                // FlashWindow(sourceObject, 1);
+
+#if PXLogEnable && 0
                 PXLogPrint
                 (
                     PXLoggingInfo,
                     "GUI",
                     "Visibility",
-                    "%20s (0x%p), Invalid",
+                    "Page %20s, (0x%p), Mode:%s Status:%s",
                     "",//pxGUIElement->NameData,
-                    pxGUIElement->Info.Handle.WindowID
+                    pxGUIElement->Info.Handle.WindowID,
+                    show ? "Show" : "Hide",
+                    res ? "OK" : "FAIL"
                 );
+#endif
+
+
+                // Own solution
+                {
+                    PXWindowChildListEnumerate(pxGUISystem, pxGUIElement, show);
+
+
+
+                }
+
+
+                const BOOL success = EnumChildWindows
+                (
+                    pxGUIElement->Info.Handle.WindowID,
+                    PXWindowEnumChildProc,
+                    &showID
+                );
+#endif
 
                 break;
             }
-
-            if(show)
+            case PXUIElementPropertyComboBoxAdd:
             {
-                pxGUIElement->Info.Flags |= PXResourceInfoRender;
-            }
-            else
-            {
-                pxGUIElement->Info.Flags &= ~PXResourceInfoRender;
-            }
-
-
-
-
-            // EnableWindow(pxGUIElement->ID, show);
-
-            ShowWindow(pxGUIElement->Info.Handle.WindowID, showID);
-            BOOL res = ShowWindow(pxGUIElement->Info.Handle.WindowID, showID); // Twice to prevent some errors
-
-            //  HWND parrent = GetParent(pxGUIElement->ID);
-
-            //  HWND grandParrent = GetParent(parrent);
-
-            //  UpdateWindow(pxGUIElement->ID);
-            //  UpdateWindow(parrent);
-            //  UpdateWindow(grandParrent);
-
-            //  UpdateWindow(sourceObject);
-            // FlashWindow(sourceObject, 1);
-
-#if PXLogEnable && 0
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                "GUI",
-                "Visibility",
-                "Page %20s, (0x%p), Mode:%s Status:%s",
-                "",//pxGUIElement->NameData,
-                pxGUIElement->Info.Handle.WindowID,
-                show ? "Show" : "Hide",
-                res ? "OK" : "FAIL"
-            );
-#endif
-
-
-            // Own solution
-            {
-                PXGUIElementChildListEnumerate(pxGUISystem, pxGUIElement, show);
-
-
-
-            }
-
-
-            const BOOL success = EnumChildWindows
-                                 (
-                                     pxGUIElement->Info.Handle.WindowID,
-                                     PXWindowEnumChildProc,
-                                     &showID
-                                 );
-#endif
-
-            break;
-        }
-        case PXUIElementPropertyComboBoxAdd:
-        {
-            PXUIElementComboBoxInfo* const pxUIElementComboBoxInfo = &pxGUIElementUpdateInfo->Data.ComboBox;
+                PXUIElementComboBoxInfo* const pxUIElementComboBoxInfo = &pxGUIElementUpdateInfo->Data.ComboBox;
 
 #if OSUnix
 #elif OSWindows
 
-            for(size_t i = 0; i < pxUIElementComboBoxInfo->DataListAmount; i++)
-            {
-                char* name = pxUIElementComboBoxInfo->DataList[i];
+                for(size_t i = 0; i < pxUIElementComboBoxInfo->DataListAmount; i++)
+                {
+                    char* name = pxUIElementComboBoxInfo->DataList[i];
 
-                ComboBox_AddString(pxGUIElement->Info.Handle.WindowID, name);
-            }
+                    ComboBox_AddString(pxGUIElement->Info.Handle.WindowID, name);
+                }
 
-            ComboBox_SetCurSel(pxGUIElement->Info.Handle.WindowID, 0);
+                ComboBox_SetCurSel(pxGUIElement->Info.Handle.WindowID, 0);
 #endif
 
-            break;
-        }
-        case PXUIElementPropertyItemAdd:
-        {
-            PXUIElementItemInfo* pxUIElementItemInfo = &pxGUIElementUpdateInfo->Data.TreeViewItem;
+                break;
+            }
+            case PXUIElementPropertyItemAdd:
+            {
+                PXUIElementItemInfo* pxUIElementItemInfo = &pxGUIElementUpdateInfo->Data.TreeViewItem;
 
 #if OSUnix
 #elif OSWindows
 
-            TVINSERTSTRUCT item;
-            PXClear(TVINSERTSTRUCT, &item);
+                TVINSERTSTRUCT item;
+                PXClear(TVINSERTSTRUCT, &item);
 
-            const char text[] = "[N/A]";
+                const char text[] = "[N/A]";
 
-            item.item.pszText = text;
-            item.item.cchTextMax = sizeof(text);
-            item.hInsertAfter = TVI_ROOT;
-            item.item.mask = TVIF_TEXT;
+                item.item.pszText = text;
+                item.item.cchTextMax = sizeof(text);
+                item.hInsertAfter = TVI_ROOT;
+                item.item.mask = TVIF_TEXT;
 
-            TreeView_InsertItem(pxGUIElement->Info.Handle.WindowID, &item);
+                TreeView_InsertItem(pxGUIElement->Info.Handle.WindowID, &item);
 
 #endif
 
 
-            break;
-        }
+                break;
+            }
         }
     }
 
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXGUIElementFetch(PXGUISystem* const pxGUISystem, PXGUIElementUpdateInfo* const pxGUIElementUpdateInfoList, const PXSize amount)
+PXActionResult PXAPI PXWindowFetch(PXGUISystem* const pxGUISystem, PXWindowUpdateInfo* const pxGUIElementUpdateInfoList, const PXSize amount)
 {
     for(PXSize i = 0; i < amount; ++i)
     {
-        PXGUIElementUpdateInfo* const pxGUIElementUpdateInfo = &pxGUIElementUpdateInfoList[i];
-        PXGUIElement* const pxGUIElement = pxGUIElementUpdateInfo->UIElement;
+        PXWindowUpdateInfo* const pxGUIElementUpdateInfo = &pxGUIElementUpdateInfoList[i];
+        PXWindow* const pxGUIElement = pxGUIElementUpdateInfo->UIElement;
 
         switch(pxGUIElementUpdateInfo->Property)
         {
-        case PXUIElementPropertySizeParent:
-        {
-            PXWindowSizeInfo* pxWindowSizeInfo = &pxGUIElementUpdateInfo->Data.Size;
-
-            // const PXBool hasParent = pxGUIElement ? pxGUIElement->Parent : PXFalse;
-
-            const PXBool hasParent = PXNull != pxGUIElementUpdateInfoList->WindowReference;
-
-            if(!hasParent) // Special behaviour, if ID is null, get the screensize
+            case PXUIElementPropertySizeParent:
             {
-                pxWindowSizeInfo->X = 0;
-                pxWindowSizeInfo->Y = 0;
+                PXWindowSizeInfo* pxWindowSizeInfo = &pxGUIElementUpdateInfo->Data.Size;
 
-                PXGUIScreenGetSize(&pxWindowSizeInfo->Width, &pxWindowSizeInfo->Height);
+                // const PXBool hasParent = pxGUIElement ? pxGUIElement->Parent : PXFalse;
 
-                return PXActionSuccessful;
+                const PXBool hasParent = PXNull != pxGUIElementUpdateInfoList->WindowReference;
+
+                if(!hasParent) // Special behaviour, if ID is null, get the screensize
+                {
+                    pxWindowSizeInfo->X = 0;
+                    pxWindowSizeInfo->Y = 0;
+
+                    PXGUIScreenGetSize(&pxWindowSizeInfo->Width, &pxWindowSizeInfo->Height);
+
+                    return PXActionSuccessful;
+                }
+
+                PXWindowUpdateInfo pxGUIElementUpdateInfoSub;
+                PXClear(PXWindowUpdateInfo, &pxGUIElementUpdateInfoSub);
+                pxGUIElementUpdateInfoSub.Property = PXUIElementPropertySize;
+                pxGUIElementUpdateInfoSub.UIElement = pxGUIElementUpdateInfoList->WindowReference;
+
+                PXWindowFetch(pxGUISystem, &pxGUIElementUpdateInfoSub, 1);
+
+                PXCopy(PXWindowSizeInfo, &pxGUIElementUpdateInfoSub.Data.Size, &pxGUIElementUpdateInfo->Data.Size);
+
+                break;
             }
-
-            PXGUIElementUpdateInfo pxGUIElementUpdateInfoSub;
-            PXClear(PXGUIElementUpdateInfo, &pxGUIElementUpdateInfoSub);
-            pxGUIElementUpdateInfoSub.Property = PXUIElementPropertySize;
-            pxGUIElementUpdateInfoSub.UIElement = pxGUIElementUpdateInfoList->WindowReference;
-
-            PXGUIElementFetch(pxGUISystem, &pxGUIElementUpdateInfoSub, 1);
-
-            PXCopy(PXWindowSizeInfo, &pxGUIElementUpdateInfoSub.Data.Size, &pxGUIElementUpdateInfo->Data.Size);
-
-            break;
-        }
-        case PXUIElementPropertySize:
-        {
-            PXWindowSizeInfo* pxWindowSizeInfo = &pxGUIElementUpdateInfo->Data.Size;
+            case PXUIElementPropertySize:
+            {
+                PXWindowSizeInfo* pxWindowSizeInfo = &pxGUIElementUpdateInfo->Data.Size;
 
 #if OSUnix
-            // ScreenCount();
+                // ScreenCount();
 
-            // ScreenOfDisplay();
+                // ScreenOfDisplay();
 
-            // if "display" is null, DefaultScreenOfDisplay will SEGFAULT
+                // if "display" is null, DefaultScreenOfDisplay will SEGFAULT
 
-            if(pxGUISystem->DisplayCurrent.DisplayHandle)
-            {
-                Screen* const xScreen = DefaultScreenOfDisplay(pxGUISystem->DisplayCurrent.DisplayHandle); // X11
+                if(pxGUISystem->DisplayCurrent.DisplayHandle)
+                {
+                    Screen* const xScreen = DefaultScreenOfDisplay(pxGUISystem->DisplayCurrent.DisplayHandle); // X11
 
-                pxWindowSizeInfo->X = 0;
-                pxWindowSizeInfo->Y = 0;
-                pxWindowSizeInfo->Width = WidthOfScreen(xScreen);
-                pxWindowSizeInfo->Height = HeightOfScreen(xScreen);
-            }
-            else
-            {
-                pxWindowSizeInfo->X = 0;
-                pxWindowSizeInfo->Y = 0;
-                pxWindowSizeInfo->Width = 800;
-                pxWindowSizeInfo->Height = 600;
-            }
+                    pxWindowSizeInfo->X = 0;
+                    pxWindowSizeInfo->Y = 0;
+                    pxWindowSizeInfo->Width = WidthOfScreen(xScreen);
+                    pxWindowSizeInfo->Height = HeightOfScreen(xScreen);
+                }
+                else
+                {
+                    pxWindowSizeInfo->X = 0;
+                    pxWindowSizeInfo->Y = 0;
+                    pxWindowSizeInfo->Width = 800;
+                    pxWindowSizeInfo->Height = 600;
+                }
 
 
 #elif PXOSWindowsDestop
 
-            RECT rect;
+                RECT rect;
 
-            //const PXBool result = GetWindowRect(pxGUIElement->ID, &rect); // Windows 2000, User32.dll, winuser.h
-            const PXBool result = GetClientRect(pxGUIElement->Info.Handle.WindowID, &rect); // Windows 2000, User32.dll, winuser.h
+                //const PXBool result = GetWindowRect(pxGUIElement->ID, &rect); // Windows 2000, User32.dll, winuser.h
+                const PXBool result = GetClientRect(pxGUIElement->Info.Handle.WindowID, &rect); // Windows 2000, User32.dll, winuser.h
 
-            if(!result)
-            {
-                pxWindowSizeInfo->X = 0;
-                pxWindowSizeInfo->Y = 0;
-                pxWindowSizeInfo->Width = 0;
-                pxWindowSizeInfo->Height = 0;
+                if(!result)
+                {
+                    pxWindowSizeInfo->X = 0;
+                    pxWindowSizeInfo->Y = 0;
+                    pxWindowSizeInfo->Width = 0;
+                    pxWindowSizeInfo->Height = 0;
 
-                return PXActionRefusedNotFound;
-            }
+                    return PXActionRefusedNotFound;
+                }
 
-            // Get Last Error
+                // Get Last Error
 
-            pxWindowSizeInfo->X = rect.left;
-            pxWindowSizeInfo->Y = rect.top;
-            pxWindowSizeInfo->Width = rect.right - rect.left;
-            pxWindowSizeInfo->Height = rect.bottom - rect.top;
+                pxWindowSizeInfo->X = rect.left;
+                pxWindowSizeInfo->Y = rect.top;
+                pxWindowSizeInfo->Width = rect.right - rect.left;
+                pxWindowSizeInfo->Height = rect.bottom - rect.top;
 #endif
 
-            break;
-        }
+                break;
+            }
 
-        default:
-            break;
+            default:
+                break;
         }
     }
 
@@ -5564,7 +5088,7 @@ PXActionResult PXAPI PXGUIElementFetch(PXGUISystem* const pxGUISystem, PXGUIElem
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXGUIElementRelease(PXGUIElement* const pxGUIElement)
+PXActionResult PXAPI PXWindowRelease(PXWindow* const pxGUIElement)
 {
 #if 0
 
@@ -5596,7 +5120,7 @@ PXActionResult PXAPI PXGUIElementRelease(PXGUIElement* const pxGUIElement)
 }
 
 
-void PXAPI PXGUIElementhSizeRefresAll(PXGUISystem* const pxGUISystem)
+void PXAPI PXWindowhSizeRefresAll(PXGUISystem* const pxGUISystem)
 {
     if(!(pxGUISystem))
     {
@@ -5611,24 +5135,24 @@ void PXAPI PXGUIElementhSizeRefresAll(PXGUISystem* const pxGUISystem)
     for(PXSize i = 0; i < uiElementLookup->EntryAmountCurrent; ++i)
     {
         PXDictionaryEntry pxDictionaryEntry;
-        PXGUIElement* uiElement = PXNull;
+        PXWindow* uiElement = PXNull;
 
         PXDictionaryIndex(uiElementLookup, i, &pxDictionaryEntry);
 
-        uiElement = *(PXGUIElement**)pxDictionaryEntry.Value;
+        uiElement = *(PXWindow**)pxDictionaryEntry.Value;
 
         if(uiElement->Type == PXUIElementTypeWindow)
         {
             continue;
         }
 
-        PXGUIElementUpdateInfo pxGUIElementUpdateInfo;
-        PXClear(PXGUIElementUpdateInfo, &pxGUIElementUpdateInfo);
+        PXWindowUpdateInfo pxGUIElementUpdateInfo;
+        PXClear(PXWindowUpdateInfo, &pxGUIElementUpdateInfo);
         pxGUIElementUpdateInfo.UIElement = uiElement;
         pxGUIElementUpdateInfo.WindowReference = PXNull;
         pxGUIElementUpdateInfo.Property = PXUIElementPropertySizeParent;
 
-        PXGUIElementUpdate(pxGUISystem, &pxGUIElementUpdateInfo, 1);
+        PXWindowUpdate(pxGUISystem, &pxGUIElementUpdateInfo, 1);
     }
 }
 
@@ -5649,7 +5173,7 @@ PXActionResult PXAPI PXWindowPixelSystemSet(PXWindowPixelSystemInfo* const pxWin
 
 #elif OSWindows
 
-    if (!pxWindowPixelSystemInfo->HandleDeviceContext) // If we dont have a prefered GPU
+    if(!pxWindowPixelSystemInfo->HandleDeviceContext) // If we dont have a prefered GPU
     {
         pxWindowPixelSystemInfo->HandleDeviceContext = GetDC(pxWindowPixelSystemInfo->HandleWindow); // Get the "default" device
     }
@@ -5737,7 +5261,7 @@ PXActionResult PXAPI PXWindowPixelSystemSet(PXWindowPixelSystemInfo* const pxWin
 #endif
 }
 
-void PXAPI PXWindowUpdate(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement)
+void PXAPI PXWindowEventUpdate(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement)
 {
     if(!pxGUIElement)
     {
@@ -5790,20 +5314,20 @@ void PXAPI PXWindowUpdate(PXGUISystem* const pxGUISystem, PXGUIElement* const px
 
 #elif PXOSWindowsDestop
 
-    for (;;)
+    for(;;)
     {
         MSG message;
 
         const PXBool peekResult = PeekMessage(&message, pxGUIElement->Info.Handle.WindowID, 0, 0, PM_NOREMOVE); // Windows 2000, User32.dll, winuser.h
 
-        if (!peekResult)
+        if(!peekResult)
         {
             break; // Stop, no more messages
         }
 
         const PXBool messageResult = GetMessage(&message, pxGUIElement->Info.Handle.WindowID, 0, 0); // Windows 2000, User32.dll, winuser.h
 
-        if (!messageResult)
+        if(!messageResult)
         {
             continue; // Skip, message fetch failed
         }
@@ -5815,56 +5339,38 @@ void PXAPI PXWindowUpdate(PXGUISystem* const pxGUISystem, PXGUIElement* const px
 
 }
 
-PXProcessThreadID PXAPI PXWindowThreadProcessID(const PXWindowID windowID)
+PXNativDrawWindowHandle PXAPI PXWindowFindViaTitle(const PXText* const windowTitle)
 {
-#if OSUnix
-    return -1;
-#elif PXOSWindowsDestop
-    return GetWindowThreadProcessId(windowID, PXNull);
-#else
-    return -1;
-#endif
-}
-
-PXWindowID PXAPI PXWindowFindViaTitle(const PXText* const windowTitle)
-{
-    switch (windowTitle->Format)
+    switch(windowTitle->Format)
     {
-    case TextFormatASCII:
-    case TextFormatUTF8:
-    {
+        case TextFormatASCII:
+        case TextFormatUTF8:
+        {
 #if OSUnix
-        return PXNull;
+            return PXNull;
 #elif PXOSWindowsDestop
-        return FindWindowA(0, windowTitle->TextA); // Windows 2000, User32.dll, winuser.h
+            return FindWindowA(0, windowTitle->TextA); // Windows 2000, User32.dll, winuser.h
 #else
-        return PXFalse; // Not supported by OS
+            return PXFalse; // Not supported by OS
 #endif
-    }
-    case TextFormatUNICODE:
-    {
+        }
+        case TextFormatUNICODE:
+        {
 #if OSUnix
-        return PXNull;
+            return PXNull;
 #elif PXOSWindowsDestop
-        return FindWindowW(0, windowTitle->TextW); // Windows 2000, User32.dll, winuser.h
+            return FindWindowW(0, windowTitle->TextW); // Windows 2000, User32.dll, winuser.h
 #else
-        return PXNull; // Not supported by OS
+            return PXNull; // Not supported by OS
 #endif
-    }
+        }
     }
 
     return PXNull;
 }
 
-void PXAPI PXWindowIconCorner()
-{
-}
 
-void PXAPI PXWindowIconTaskBar()
-{
-}
-
-PXActionResult PXAPI PXWindowTitleBarColorSet(const PXWindowID pxWindowID)
+PXActionResult PXAPI PXWindowTitleBarColorSet(const PXNativDrawWindowHandle pxWindowID)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -5876,7 +5382,7 @@ PXActionResult PXAPI PXWindowTitleBarColorSet(const PXWindowID pxWindowID)
     {
         const PXActionResult libOpenResult = PXLibraryOpenA(&pyLibrary, "DWMAPI.DLL");
 
-        if (PXActionSuccessful != libOpenResult)
+        if(PXActionSuccessful != libOpenResult)
         {
             return PXActionRefusedNotSupportedByOperatingSystem;
         }
@@ -5888,7 +5394,7 @@ PXActionResult PXAPI PXWindowTitleBarColorSet(const PXWindowID pxWindowID)
 
     PXBool hasFunction = PXLibraryGetSymbolA(&pyLibrary, &pxDwmSetWindowAttribute, "DwmSetWindowAttribute");
 
-    if (!hasFunction)
+    if(!hasFunction)
     {
         PXLibraryClose(&pyLibrary);
 
@@ -5900,7 +5406,7 @@ PXActionResult PXAPI PXWindowTitleBarColorSet(const PXWindowID pxWindowID)
 
     PXLibraryClose(&pyLibrary);
 
-    if (!setAttributeSuccess)
+    if(!setAttributeSuccess)
     {
         return PXActionCancelled;
     }
@@ -5914,7 +5420,7 @@ PXActionResult PXAPI PXWindowTitleBarColorSet(const PXWindowID pxWindowID)
 #endif
 }
 
-PXActionResult PXAPI PXWindowMouseMovementEnable(const PXWindowID pxWindow)
+PXActionResult PXAPI PXWindowMouseMovementEnable(const PXNativDrawWindowHandle pxWindow)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -6003,7 +5509,7 @@ PXActionResult PXAPI PXWindowSizeSet(const PXWindowID pxWindow, PXWindowSizeInfo
 }
 */
 
-PXActionResult PXAPI PXWindowPosition(const PXWindowID pxWindowID, PXInt32S* x, PXInt32S* y)
+PXActionResult PXAPI PXWindowPosition(const PXNativDrawWindowHandle pxWindowID, PXInt32S* x, PXInt32S* y)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -6035,7 +5541,7 @@ PXActionResult PXAPI PXWindowPosition(const PXWindowID pxWindowID, PXInt32S* x, 
 #endif
 }
 
-void PXAPI PXWindowCursorCaptureMode(const PXWindowID pxWindowID, const PXWindowCursorMode cursorMode)
+void PXAPI PXWindowCursorCaptureMode(const PXNativDrawWindowHandle pxWindowID, const PXWindowCursorMode cursorMode)
 {
     PXInt32S horizontal = 0;
     PXInt32S vertical = 0;
@@ -6047,113 +5553,77 @@ void PXAPI PXWindowCursorCaptureMode(const PXWindowID pxWindowID, const PXWindow
 
     switch(cursorMode)
     {
-    case PXWindowCursorShow:
-    {
-        //printf("[Cursor] Show\n");
-
-        while(ShowCursor(1) < 0);
-
-        const PXBool clipResult = ClipCursor(NULL);
-        const HCURSOR cursorSet = SetCursor(pxWindowID);
-
-        break;
-    }
-    case PXWindowCursorLock:
-    {
-        // printf("[Cursor] Lock\n");
-
-        // Capture cursor
+        case PXWindowCursorShow:
         {
-            RECT clipRect;
-            GetClientRect(pxWindowID, &clipRect);
-            ClientToScreen(pxWindowID, (POINT*)&clipRect.left);
-            ClientToScreen(pxWindowID, (POINT*)&clipRect.right);
-            ClipCursor(&clipRect);
+            //printf("[Cursor] Show\n");
+
+            while(ShowCursor(1) < 0);
+
+            const PXBool clipResult = ClipCursor(NULL);
+            const HCURSOR cursorSet = SetCursor(pxWindowID);
+
+            break;
         }
-
-        break;
-    }
-    case PXWindowCursorLockAndHide:
-    {
-        //printf("[Cursor] Lock and hide\n");
-
-        while(ShowCursor(0) >= 0);
-
+        case PXWindowCursorLock:
         {
-            RECT clipRect;
-            GetClientRect(pxWindowID, &clipRect);
-            ClientToScreen(pxWindowID, (POINT*)&clipRect.left);
-            ClientToScreen(pxWindowID, (POINT*)&clipRect.right);
+            // printf("[Cursor] Lock\n");
 
-            int xOff = (clipRect.right - clipRect.left) / 2;
-            int yoFf = (clipRect.bottom - clipRect.top) / 2;
+            // Capture cursor
+            {
+                RECT clipRect;
+                GetClientRect(pxWindowID, &clipRect);
+                ClientToScreen(pxWindowID, (POINT*)&clipRect.left);
+                ClientToScreen(pxWindowID, (POINT*)&clipRect.right);
+                ClipCursor(&clipRect);
+            }
 
-            clipRect.left += xOff;
-            clipRect.top += yoFf;
-            clipRect.right -= xOff;
-            clipRect.bottom -= yoFf;
-
-            unsigned char sucessClip = ClipCursor(&clipRect);
+            break;
         }
+        case PXWindowCursorLockAndHide:
+        {
+            //printf("[Cursor] Lock and hide\n");
+
+            while(ShowCursor(0) >= 0);
+
+            {
+                RECT clipRect;
+                GetClientRect(pxWindowID, &clipRect);
+                ClientToScreen(pxWindowID, (POINT*)&clipRect.left);
+                ClientToScreen(pxWindowID, (POINT*)&clipRect.right);
+
+                int xOff = (clipRect.right - clipRect.left) / 2;
+                int yoFf = (clipRect.bottom - clipRect.top) / 2;
+
+                clipRect.left += xOff;
+                clipRect.top += yoFf;
+                clipRect.right -= xOff;
+                clipRect.bottom -= yoFf;
+
+                unsigned char sucessClip = ClipCursor(&clipRect);
+            }
 
 
-        CURSORINFO cursorInfo;
-        cursorInfo.cbSize = sizeof(CURSORINFO);
+            CURSORINFO cursorInfo;
+            cursorInfo.cbSize = sizeof(CURSORINFO);
 
-        const unsigned char sucessfulInfoGet = GetCursorInfo(&cursorInfo);
+            const unsigned char sucessfulInfoGet = GetCursorInfo(&cursorInfo);
 
-        HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+            HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
 
-        CONSOLE_CURSOR_INFO lpCursor;
-        lpCursor.bVisible = 0;
-        lpCursor.dwSize = sizeof(CONSOLE_CURSOR_INFO);
-        unsigned char y = SetConsoleCursorInfo(console, &lpCursor);
+            CONSOLE_CURSOR_INFO lpCursor;
+            lpCursor.bVisible = 0;
+            lpCursor.dwSize = sizeof(CONSOLE_CURSOR_INFO);
+            unsigned char y = SetConsoleCursorInfo(console, &lpCursor);
 
-        break;
-    }
+            break;
+        }
     }
 
     //window->CursorModeCurrent = cursorMode;
 #endif
 }
 
-PXActionResult PXAPI PXGUIElementBufferSwap(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement)
-{
-    PXActionResult pxActionResult = PXActionInvalid;
-
-#if OSUnix
-    glXSwapBuffers(pxGUISystem->DisplayCurrent.DisplayHandle, pxGUIElement->Info.Handle.WindowID);
-    pxActionResult = PXActionSuccessful; // TODO: Do we have error checking?
-
-#elif OSWindows
-    const PXBool result = SwapBuffers(pxGUIElement->DeviceContextHandle);
-    pxActionResult = PXErrorCurrent(result);
-#else
-    pxActionResult = PXActionRefusedNotSupportedByLibrary;
-#endif
-
-    return pxActionResult;
-}
-
-PXBool PXAPI PXWindowInteractable(const PXWindowID pxWindowID)
-{
-#if 0
-    switch (window->CursorModeCurrent)
-    {
-    default:
-    case PXWindowCursorIgnore:
-    case PXWindowCursorShow:
-        return PXFalse;
-
-    case PXWindowCursorInvisible:
-    case PXWindowCursorLock:
-    case PXWindowCursorLockAndHide:
-        return PXTrue;
-    }
-#endif
-}
-
-PXBool PXAPI PXWindowCursorPositionInWindowGet(const PXWindowID pxWindowID, PXInt32S* const x, PXInt32S* const y)
+PXBool PXAPI PXWindowCursorPositionInWindowGet(const PXNativDrawWindowHandle pxWindowID, PXInt32S* const x, PXInt32S* const y)
 {
     PXInt32S xPos = 0;
     PXInt32S yPos = 0;
@@ -6184,7 +5654,7 @@ PXBool PXAPI PXWindowCursorPositionInWindowGet(const PXWindowID pxWindowID, PXIn
 #endif
 }
 
-PXBool PXAPI PXWindowCursorPositionInDestopGet(const PXWindowID pxWindowID, PXInt32S* const x, PXInt32S* const y)
+PXBool PXAPI PXWindowCursorPositionInDestopGet(const PXNativDrawWindowHandle pxWindowID, PXInt32S* const x, PXInt32S* const y)
 {
 #if OSUnix
     return PXFalse;
@@ -6198,7 +5668,7 @@ PXBool PXAPI PXWindowCursorPositionInDestopGet(const PXWindowID pxWindowID, PXIn
 
     const PXBool successful = GetPhysicalCursorPos(&point); // Windows Vista, User32.dll, winuser.h
 
-    if (successful)
+    if(successful)
     {
         *x = point.x;
         *y = point.y;
@@ -6228,7 +5698,7 @@ PXBool PXAPI PXWindowCursorPositionInDestopGet(const PXWindowID pxWindowID, PXIn
     const int numberOfPoints = GetMouseMovePointsEx(mouseMovePointSize, &mp_in, &mp_out, 64, mode); // Windows 2000, User32.dll, winuser.h
     const PXBool success = numberOfPoints > 0;
 
-    if (!success)
+    if(!success)
     {
         return PXFalse;
     }
@@ -6269,7 +5739,7 @@ PXBool PXAPI PXWindowCursorPositionInDestopGet(const PXWindowID pxWindowID, PXIn
 #endif
 }
 
-PXBool PXAPI PXWindowIsInFocus(const PXWindowID pxWindowID)
+PXBool PXAPI PXWindowIsInFocus(const PXNativDrawWindowHandle pxWindowID)
 {
 #if OSUnix
     return PXFalse;
@@ -6282,23 +5752,23 @@ PXBool PXAPI PXWindowIsInFocus(const PXWindowID pxWindowID)
 }
 
 /*
-PXActionResult PXAPI PXGUIElementDrawText(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXText* const pxText)
+PXActionResult PXAPI PXWindowDrawText(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXText* const pxText)
 {
     switch(pxText->Format)
     {
         case TextFormatASCII:
         case TextFormatUTF8:
-            return PXGUIElementDrawTextA(pxGUISystem, pxGUIElement, 0, pxText->TextA, pxText->SizeUsed);
+            return PXWindowDrawTextA(pxGUISystem, pxGUIElement, 0, pxText->TextA, pxText->SizeUsed);
 
         case TextFormatUNICODE:
-            return PXGUIElementDrawTextW(pxGUISystem, pxGUIElement, pxText->TextW, pxText->SizeUsed);
+            return PXWindowDrawTextW(pxGUISystem, pxGUIElement, pxText->TextW, pxText->SizeUsed);
 
         default:
             return TextFormatInvalid;
     }
 }*/
 
-PXActionResult PXAPI PXGUIElementDrawTextA(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const char* const text, const PXSize textSize)
+PXActionResult PXAPI PXWindowDrawTextA(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const char* const text, const PXSize textSize)
 {
 #if OSUnix
     // For ANSI and UTF-8 strings
@@ -6327,12 +5797,12 @@ PXActionResult PXAPI PXGUIElementDrawTextA(PXGUISystem* const pxGUISystem, PXGUI
 
     UINT format = DT_SINGLELINE | DT_NOCLIP;
 
-    format |= PXFlagIsSet(pxGUIElement->Info.Behaviour, PXGUIElementAllignTop) * DT_TOP;
-    format |= PXFlagIsSet(pxGUIElement->Info.Behaviour, PXGUIElementAllignLeft) * DT_LEFT;
-    format |= PXFlagIsSet(pxGUIElement->Info.Behaviour, PXGUIElementAllignRight) * DT_RIGHT;
-    format |= PXFlagIsSet(pxGUIElement->Info.Behaviour, PXGUIElementAllignBottom) * DT_BOTTOM;
+    format |= PXFlagIsSet(pxGUIElement->Info.Behaviour, PXWindowAllignTop) * DT_TOP;
+    format |= PXFlagIsSet(pxGUIElement->Info.Behaviour, PXWindowAllignLeft) * DT_LEFT;
+    format |= PXFlagIsSet(pxGUIElement->Info.Behaviour, PXWindowAllignRight) * DT_RIGHT;
+    format |= PXFlagIsSet(pxGUIElement->Info.Behaviour, PXWindowAllignBottom) * DT_BOTTOM;
 
-    if(PXFlagIsSet(pxGUIElement->Info.Behaviour, PXGUIElementAllignCenter))
+    if(PXFlagIsSet(pxGUIElement->Info.Behaviour, PXWindowAllignCenter))
     {
         format |= DT_VCENTER | DT_CENTER;
     }
@@ -6391,14 +5861,14 @@ PXActionResult PXAPI PXGUIElementDrawTextA(PXGUISystem* const pxGUISystem, PXGUI
     // const PXBool success = 0 != nextHeight;
     // const PXActionResult result = PXWindowsErrorCurrent(success);
 
-    return 0;
+    return PXActionSuccessful;
 
 #else
     return NotSupport;
 #endif
 }
 
-PXActionResult PXAPI PXGUIElementDrawTextW(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const wchar_t* const text, const PXSize textSize)
+PXActionResult PXAPI PXWindowDrawTextW(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const wchar_t* const text, const PXSize textSize)
 {
 #if OSUnix
     // For UNICODE
@@ -6420,11 +5890,11 @@ PXActionResult PXAPI PXGUIElementDrawTextW(PXGUISystem* const pxGUISystem, PXGUI
 #endif
 }
 
-PXActionResult PXAPI PXGUIElementDrawPoint(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y)
+PXActionResult PXAPI PXWindowDrawPoint(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int x, const int y)
 {
 #if OSUnix
     const int resultID = 0;//XDrawPoint(Display *display, Drawable d, GC gc, int x, int y);
-    const PXActionResult result = PXGUIElementErrorFromXSystem(resultID);
+    const PXActionResult result = PXWindowErrorFromXSystem(resultID);
     return result;
 #elif OSWindows
     return PXActionRefusedNotImplemented;
@@ -6433,11 +5903,11 @@ PXActionResult PXAPI PXGUIElementDrawPoint(PXGUISystem* const pxGUISystem, PXGUI
 #endif
 }
 
-PXActionResult PXAPI PXGUIElementDrawPoints(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y, const int width, const int height)
+PXActionResult PXAPI PXWindowDrawPoints(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int x, const int y, const int width, const int height)
 {
 #if OSUnix
     const int resultID = 0;//XDrawPoints(Display *display, Drawable d, GC gc, XPoint *points, int npoints, int mode);
-    const PXActionResult result = PXGUIElementErrorFromXSystem(resultID);
+    const PXActionResult result = PXWindowErrorFromXSystem(resultID);
     return result;
 #elif OSWindows
     return PXActionRefusedNotImplemented;
@@ -6446,11 +5916,11 @@ PXActionResult PXAPI PXGUIElementDrawPoints(PXGUISystem* const pxGUISystem, PXGU
 #endif
 }
 
-PXActionResult PXAPI PXGUIElementDrawLine(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x1, const int y1, const int x2, const int y2)
+PXActionResult PXAPI PXWindowDrawLine(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int x1, const int y1, const int x2, const int y2)
 {
 #if OSUnix
     const resultID = 0;//XDrawLine(Display *display, Drawable d, GC gc, x1, y1, x2, y2);
-    const PXActionResult result = PXGUIElementErrorFromXSystem(resultID);
+    const PXActionResult result = PXWindowErrorFromXSystem(resultID);
     return result;
 #elif OSWindows
 
@@ -6467,7 +5937,7 @@ PXActionResult PXAPI PXGUIElementDrawLine(PXGUISystem* const pxGUISystem, PXGUIE
 #endif
 }
 
-PXActionResult PXAPI PXGUIElementDrawLines(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y, const int width, const int height)
+PXActionResult PXAPI PXWindowDrawLines(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int x, const int y, const int width, const int height)
 {
 #if OSUnix
     XPoint points;
@@ -6475,29 +5945,29 @@ PXActionResult PXAPI PXGUIElementDrawLines(PXGUISystem* const pxGUISystem, PXGUI
     int mode = 0;
 
     const resultID = XDrawLines
-                     (
-                         pxGUISystem->DisplayCurrent.DisplayHandle,
-                         pxGUIElement->Info.Handle.WindowID,
-                         pxGUISystem->DisplayCurrent.GraphicContent,
-                         &points,
-                         npoints,
-                         mode
-                     );
-    const PXActionResult result = PXGUIElementErrorFromXSystem(resultID);
+    (
+        pxGUISystem->DisplayCurrent.DisplayHandle,
+        pxGUIElement->Info.Handle.WindowID,
+        pxGUISystem->DisplayCurrent.GraphicContent,
+        &points,
+        npoints,
+        mode
+    );
+    const PXActionResult result = PXWindowErrorFromXSystem(resultID);
     return result;
 #elif OSWindows
-    const BOOL success = PolylineTo(pxGUIElement->DeviceContextHandle, 0,  0);
+    const BOOL success = PolylineTo(pxGUIElement->DeviceContextHandle, 0, 0);
 #else
     return PXNotSupport;
 #endif
 }
 
-PXActionResult PXAPI PXGUIElementDrawRectangle(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y, const int width, const int height)
+PXActionResult PXAPI PXWindowDrawRectangle(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int x, const int y, const int width, const int height)
 {
     PXActionResult pxActionResult = PXActionInvalid;
 
-    PXGUIElementBrush* const brushForeground = pxGUIElement->BrushFront;
-    PXGUIElementBrush* const brushBackGround = pxGUIElement->BrushBackground;
+    PXWindowBrush* const brushForeground = pxGUIElement->BrushFront;
+    PXWindowBrush* const brushBackGround = pxGUIElement->BrushBackground;
 
 
 #if OSUnix
@@ -6513,7 +5983,7 @@ PXActionResult PXAPI PXGUIElementDrawRectangle(PXGUISystem* const pxGUISystem, P
         width,
         height
     );
-    // pxActionResultresult = PXGUIElementErrorFromXSystem(resultID);
+    // pxActionResultresult = PXWindowErrorFromXSystem(resultID);
 #elif OSWindows
     //  const BOOL bbbbb = SelectObject(pxGUIElement->DeviceContextHandle, GetStockObject(GRAY_BRUSH));
 
@@ -6575,7 +6045,7 @@ PXActionResult PXAPI PXGUIElementDrawRectangle(PXGUISystem* const pxGUISystem, P
     return pxActionResult;
 }
 
-PXActionResult PXAPI PXGUIElementDrawRectangleRounded(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y, const int width, const int height)
+PXActionResult PXAPI PXWindowDrawRectangleRounded(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int x, const int y, const int width, const int height)
 {
 #if OSUnix
 
@@ -6585,28 +6055,28 @@ PXActionResult PXAPI PXGUIElementDrawRectangleRounded(PXGUISystem* const pxGUISy
 
 
     const BOOL success = RoundRect
-                         (
-                             pxGUIElement->DeviceContextHandle,
-                             0,
-                             0,
-                             0,
-                             0,
-                             0,
-                             0
-                         );
+    (
+        pxGUIElement->DeviceContextHandle,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+    );
 #endif
 }
 
 // Note:
 // MoveWindow() is a bad function. SetWindowPos() seems to be better in avery case.
 
-PXActionResult PXAPI PXGUIElementMove(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y)
+PXActionResult PXAPI PXWindowMove(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int x, const int y)
 {
     PXActionResult pxActionResult = PXActionInvalid;
 
 #if OSUnix
     const int resultID = XMoveWindow(pxGUISystem->DisplayCurrent.DisplayHandle, pxGUIElement->Info.Handle.WindowID, x, y);
-    pxActionResult = PXGUIElementErrorFromXSystem(resultID);
+    pxActionResult = PXWindowErrorFromXSystem(resultID);
 #elif PXOSWindowsDestop
     const UINT flags = SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER;
     const PXBool success = SetWindowPos(pxGUIElement->Info.Handle.WindowID, PXNull, x, y, PXNull, PXNull, flags); // Windows 2000, User32.dll
@@ -6618,13 +6088,13 @@ PXActionResult PXAPI PXGUIElementMove(PXGUISystem* const pxGUISystem, PXGUIEleme
     return pxActionResult;
 }
 
-PXActionResult PXAPI PXGUIElementResize(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int width, const int height)
+PXActionResult PXAPI PXWindowResize(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int width, const int height)
 {
     PXActionResult pxActionResult = PXActionInvalid;
 
 #if OSUnix
     const int resultID = 0;//XResizeWindow(Display *display, Window w, width, height);
-    pxActionResult = PXGUIElementErrorFromXSystem(resultID);
+    pxActionResult = PXWindowErrorFromXSystem(resultID);
 #elif PXOSWindowsDestop
     const UINT flags = SWP_NOMOVE | SWP_NOZORDER | SWP_NOOWNERZORDER;
     const PXBool success = SetWindowPos(pxGUIElement->Info.Handle.WindowID, PXNull, PXNull, PXNull, width, height, flags); // Windows 2000, User32.dll
@@ -6636,13 +6106,13 @@ PXActionResult PXAPI PXGUIElementResize(PXGUISystem* const pxGUISystem, PXGUIEle
     return pxActionResult;
 }
 
-PXActionResult PXAPI PXGUIElementMoveAndResize(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, const int x, const int y, const int width, const int height)
+PXActionResult PXAPI PXWindowMoveAndResize(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int x, const int y, const int width, const int height)
 {
     PXActionResult pxActionResult = PXActionInvalid;
 
 #if OSUnix
     const int resultID = 0;//XMoveResizeWindow(Display *display, Window w, int x, int y, unsigned int width, unsigned int height);
-    pxActionResult = PXGUIElementErrorFromXSystem(resultID);
+    pxActionResult = PXWindowErrorFromXSystem(resultID);
 #elif PXOSWindowsDestop
     const PXBool success = MoveWindow(pxGUIElement->Info.Handle.WindowID, x, y, width, height, PXTrue); // Windows 2000, User32.dll, winuser.h
     pxActionResult = PXErrorCurrent(success);
@@ -6665,12 +6135,12 @@ PXActionResult PXAPI PXGUIFontListFetch(PXGUISystem* const pxGUISystem, PXSize* 
     int fontNameListSizeMax = 0;
     int fontNameListSizeCurrnet = 0;
     char** fontNameList = XListFonts
-                          (
-                              pxGUISystem->DisplayCurrent.DisplayHandle,
-                              PXNull,
-                              fontNameListSizeMax,
-                              &fontNameListSizeCurrnet
-                          );
+    (
+        pxGUISystem->DisplayCurrent.DisplayHandle,
+        PXNull,
+        fontNameListSizeMax,
+        &fontNameListSizeCurrnet
+    );
 
 
     // Can also have additional info
@@ -6697,220 +6167,28 @@ PXActionResult PXAPI PXGUIFontListFetch(PXGUISystem* const pxGUISystem, PXSize* 
 
 
 
-
-// "Consolas"
-PXActionResult PXAPI PXGUIFontLoad(PXGUISystem* const pxGUISystem, PXFont* const pxFont, const char* const name)
-{
 #if OSUnix
-    XFontStruct* font = XLoadQueryFont
-                        (
-                            pxGUISystem->DisplayCurrent.DisplayHandle,
-                            name
-                        ); // "9x15" <--- linux font? Sometimes not found
-#elif OSWindows
-
-
-    const DWORD antialiased = (PXFontAntialiased & pxFont->Info.Behaviour) > 0 ? ANTIALIASED_QUALITY : NONANTIALIASED_QUALITY;
-    const DWORD isItalics   = (PXFontItalics & pxFont->Info.Behaviour) > 0;
-    const DWORD isUnderline = (PXFontUnderline & pxFont->Info.Behaviour) > 0;
-    const DWORD isStrikeOut = (PXFontStrikeOut & pxFont->Info.Behaviour) > 0;
-
-    pxFont->Info.Handle.FontHandle = CreateFontA
-                                     (
-                                         pxFont->Size, 0, 0, 0,
-                                         FW_HEAVY, //  FW_HEAVY
-                                         isItalics,
-                                         isUnderline,
-                                         isStrikeOut,
-                                         DEFAULT_CHARSET,
-                                         OUT_DEFAULT_PRECIS,
-                                         CLIP_DEFAULT_PRECIS,
-                                         antialiased,
-                                         DEFAULT_PITCH | FF_DONTCARE,
-                                         name
-                                     );
-
-#endif
-
-    return PXActionRefusedNotImplemented;
-}
-
-PXActionResult PXAPI PXGUIFontRelease(PXGUISystem* const pxGUISystem, PXFont* const pxFont)
-{
-#if OSUnix
-    const int resultID = XFreeFont(pxGUISystem->DisplayCurrent.DisplayHandle, 0);
-#elif OSWindows
-
-#endif
-
-    return PXActionRefusedNotImplemented;
-}
-
-PXActionResult PXAPI PXGUIFontSet(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXFont* const pxFont)
-{
-#if OSUnix
-    const int resultID = XSetFont
-                         (
-                             pxGUISystem->DisplayCurrent.DisplayHandle,
-                             pxGUISystem->DisplayCurrent.GraphicContent,
-                             0
-                         );
-#elif OSWindows
-    //HFONT fontThatWasUsedBefore = (HFONT)SelectObject(hdc, hFont1);
-#endif
-
-    return PXActionSuccessful;
-}
-
-
-PXActionResult PXAPI PXGUIDrawClear(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement)
-{
-#if OSUnix
-    const int resultID = XClearWindow(pxGUISystem->DisplayCurrent.DisplayHandle, pxGUIElement->Info.Handle.WindowID);
-#elif OSWindows
-    // Does this exists?
-
-    //GetUpdateRect();
-#endif
-
-    return PXActionSuccessful;
-}
-
-PXActionResult PXAPI PXGUIDrawColorSetBrush(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementBrush* const pxGUIElementBrush, const char mode)
-{
-    PXColorRGBI8* colorRef = PXNull;
-
-    if(PXGUIElementBrushBehaviourColorEmbeded & pxGUIElementBrush->Info.Behaviour)
-    {
-        colorRef = &pxGUIElementBrush->ColorDate;
-    }
-    else
-    {
-        colorRef = pxGUIElementBrush->ColorReference;
-    }
-
-    return PXGUIDrawColorSetV3(pxGUISystem, pxGUIElement, colorRef, mode);
-}
-
-PXActionResult PXAPI PXGUIDrawColorSetV3(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXColorRGBI8* const pxColorRGBI8, const char mode)
-{
-    if(mode == PXGUIDrawModeFront)
-    {
-#if OSUnix
-        const PXInt32U color = PXColorI32FromBGR(pxColorRGBI8->Red, pxColorRGBI8->Green, pxColorRGBI8->Blue);
-        const int resultID = XSetForeground
-                             (
-                                 pxGUISystem->DisplayCurrent.DisplayHandle,
-                                 pxGUISystem->DisplayCurrent.GraphicContent,
-                                 color
-                             );
-#elif OSWindows
-        const COLORREF colorNew      = RGB(pxColorRGBI8->Red, pxColorRGBI8->Green, pxColorRGBI8->Blue);
-        const COLORREF colorPrevious = SetTextColor(pxGUIElement->DeviceContextHandle, colorNew);
-#endif
-    }
-    else
-    {
-        PXActionResult pxActionResult = PXActionInvalid;
-
-#if OSUnix
-        const PXInt32U color = PXColorI32FromBGR(pxColorRGBI8->Red, pxColorRGBI8->Green, pxColorRGBI8->Blue);
-        const int resultID = XSetBackground
-                             (
-                                 pxGUISystem->DisplayCurrent.DisplayHandle,
-                                 pxGUISystem->DisplayCurrent.GraphicContent,
-                                 color
-                             );
-#elif OSWindows
-
-        SetBkMode(pxGUIElement->DeviceContextHandle, TRANSPARENT);
-
-        const COLORREF colorNew      = RGB(pxColorRGBI8->Red, pxColorRGBI8->Green, pxColorRGBI8->Blue);
-        const COLORREF colorPrevious = SetBkColor(pxGUIElement->DeviceContextHandle, colorNew);
-        const PXBool successful      = CLR_INVALID != colorPrevious;
-
-        if(!successful)
-        {
-#if PXLogEnable
-            PXLogPrint
-            (
-                PXLoggingError,
-                "GUI",
-                "Color-Set",
-                "Failed set backgroundcolor"
-            );
-#endif
-
-            return PXActionRefusedArgumentInvalid;
-        }
-
-#endif
-    }
-
-    return PXActionSuccessful;
-}
-
-PXActionResult PXAPI PXGUIDrawColorSetRGB(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, char red, char green, char blue, const char mode)
-{
-    PXColorRGBI8 color = { red, green, blue };
-
-    return PXGUIDrawColorSetV3(pxGUISystem, pxGUIElement, &color, mode);
-}
-
-PXActionResult PXAPI PXGUIElementDrawBegin(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement)
-{
-#if OSUnix
-
-#elif OSWindows
-    PAINTSTRUCT ps;
-
-    HDC hdc = BeginPaint(pxGUIElement->Info.Handle.WindowID, &ps);
-#endif
-
-    return PXActionRefusedNotImplemented;
-}
-
-
-PXActionResult PXAPI PXGUIElementDrawEnd(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement)
-{
-#if OSUnix
-
-#elif OSWindows
-    PAINTSTRUCT ps;
-
-    const PXBool end = EndPaint(pxGUIElement->Info.Handle.WindowID, &ps);
-#endif
-
-    return PXActionRefusedNotImplemented;
-}
-
-
-
-
-
-
-#if OSUnix
-PXActionResult PXAPI PXGUIElementErrorFromXSystem(const int xSysstemErrorID)
+PXActionResult PXAPI PXWindowErrorFromXSystem(const int xSysstemErrorID)
 {
     switch(xSysstemErrorID)
     {
-    case BadValue:
-        return PXActionRefusedArgumentInvalid; // input is not valid
-    case BadWindow:
-        return PXActionRefusedNotFound; // object id invalid
-    case BadAlloc:
-        return PXActionFailedMemoryAllocation;
-    case BadColor:
-        return PXActionRefusedArgumentInvalid;
-    case BadCursor:
-        return PXActionRefusedArgumentInvalid;
-    case BadMatch:
-        return PXActionRefusedArgumentInvalid;
-    case BadPixmap:
-        return PXActionRefusedArgumentInvalid;
+        case BadValue:
+            return PXActionRefusedArgumentInvalid; // input is not valid
+        case BadWindow:
+            return PXActionRefusedNotFound; // object id invalid
+        case BadAlloc:
+            return PXActionFailedMemoryAllocation;
+        case BadColor:
+            return PXActionRefusedArgumentInvalid;
+        case BadCursor:
+            return PXActionRefusedArgumentInvalid;
+        case BadMatch:
+            return PXActionRefusedArgumentInvalid;
+        case BadPixmap:
+            return PXActionRefusedArgumentInvalid;
 
-    default:
-        return PXActionInvalid;
+        default:
+            return PXActionInvalid;
     }
 }
 #endif
@@ -7030,49 +6308,49 @@ void PXAPI PXGUIStartMenuEntryCreate(LPCSTR lpszPathObj, LPCSTR lpszPathLink, LP
 
 PXInt32U PXAPI PXWindowCursorIconToID(const PXCursorIcon cursorIcon)
 {
-    switch (cursorIcon)
+    switch(cursorIcon)
     {
-    default:
-    case PXCursorIconInvalid:
-        return -1;
+        default:
+        case PXCursorIconInvalid:
+            return -1;
 
-    case PXCursorIconNormal:
-        return CursorIconNormalID;
+        case PXCursorIconNormal:
+            return CursorIconNormalID;
 
-    case PXCursorIconIBeam:
-        return CursorIconIBeamID;
+        case PXCursorIconIBeam:
+            return CursorIconIBeamID;
 
-    case PXCursorIconWait:
-        return CursorIconWaitID;
+        case PXCursorIconWait:
+            return CursorIconWaitID;
 
-    case PXCursorIconCross:
-        return CursorIconCrossID;
+        case PXCursorIconCross:
+            return CursorIconCrossID;
 
-    case PXCursorIconUp:
-        return CursorIconUpID;
+        case PXCursorIconUp:
+            return CursorIconUpID;
 
-    case PXCursorIconHand:
-        return CursorIconHandID;
+        case PXCursorIconHand:
+            return CursorIconHandID;
 
-    case PXCursorIconNotAllowed:
-        return CursorIconNoAllowedID;
+        case PXCursorIconNotAllowed:
+            return CursorIconNoAllowedID;
 
-    case PXCursorIconAppStarting:
-        return CursorIconAppStartingID;
+        case PXCursorIconAppStarting:
+            return CursorIconAppStartingID;
 
-    case PXCursorIconResizeHorizontal:
-        return CursorIconResizeHorizontalID;
+        case PXCursorIconResizeHorizontal:
+            return CursorIconResizeHorizontalID;
 
-    case PXCursorIconResizeVertical:
-        return CursorIconResizeVerticalID;
+        case PXCursorIconResizeVertical:
+            return CursorIconResizeVerticalID;
 
-    case PXCursorIconResizeClockwise:
-        return CursorIconResizeClockwiseID;
+        case PXCursorIconResizeClockwise:
+            return CursorIconResizeClockwiseID;
 
-    case PXCursorIconResizeClockwiseCounter:
-        return CursorIconResizeClockwiseCounterID;
+        case PXCursorIconResizeClockwiseCounter:
+            return CursorIconResizeClockwiseCounterID;
 
-    case PXCursorIconResizeAll:
-        return CursorIconResizeAllID;
+        case PXCursorIconResizeAll:
+            return CursorIconResizeAllID;
     }
 }

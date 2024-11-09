@@ -10,7 +10,6 @@
 #include <OS/Hardware/PXController.h>
 #include <OS/DataBase/PXDataBase.h>
 
-
 typedef struct PXEngine_ PXEngine;
 
 
@@ -105,7 +104,7 @@ typedef struct PXEngine_
     PXResourceManager ResourceManager;
     PXGUISystem GUISystem;
     PXGraphic Graphic;
-    PXGUIElement* Window; // PXWindow
+    PXWindow* Window; // PXWindow
     PXModLoader ModLoader;
     PXCamera CameraDefault;
     PXAudio Audio;

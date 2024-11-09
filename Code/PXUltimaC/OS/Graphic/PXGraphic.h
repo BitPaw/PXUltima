@@ -6,9 +6,11 @@
 #include <Media/PXColor.h>
 #include <Media/PXResource.h>
 #include <OS/Async/PXLock.h>
+#include <OS/Graphic/NativDraw/PXNativDraw.h>
 #include <OS/Graphic/DirectX/PXDirectX.h>
 #include <OS/Graphic/OpenGL/PXOpenGL.h>
 #include <OS/Graphic/Vulcan/PXVulcan.h>
+
 
 #define PXShaderNotRegisterd (unsigned int)-1
 
@@ -50,7 +52,7 @@ PXGraphicInitializeMode;
 typedef struct PXGraphicInitializeInfo_
 {
     PXGraphicInitializeMode Mode;
-    PXGUIElement* WindowReference;
+    PXWindow* WindowReference;
 
 #if OSUnix
 
@@ -215,7 +217,7 @@ typedef struct PXGraphic_
     //-------------------
     // References
     //-------------------
-    PXGUIElement* WindowReference;
+    PXWindow* WindowReference;
     void* EventOwner;
     //-------------------
 
@@ -332,11 +334,11 @@ PXPublic PXActionResult PXAPI PXGraphicHotSwap(PXGraphic* const pxGraphic, const
 
 
 
-typedef void (PXAPI* PXGraphicUIElementTrigger)(void* sender, PXGUIElement* const pxGUIElement);
+typedef void (PXAPI* PXGraphicUIElementTrigger)(void* sender, PXWindow* const pxGUIElement);
 
 //-------------------------------------------------------------------------
-PXPublic void PXAPI PXUIElementColorSet4F(PXGUIElement* const pxGUIElement, const float red, const float green, const float blue, const float alpha);
-PXPublic void PXAPI PXUIElementSizeSet(PXGUIElement* const pxGUIElement, const float x, const float y, const float width, const float height, const PXInt32U pxUIElementPositionMode);
+PXPublic void PXAPI PXUIElementColorSet4F(PXWindow* const pxGUIElement, const float red, const float green, const float blue, const float alpha);
+PXPublic void PXAPI PXUIElementSizeSet(PXWindow* const pxGUIElement, const float x, const float y, const float width, const float height, const PXInt32U pxUIElementPositionMode);
 
 //-------------------------------------------------------------------------
 

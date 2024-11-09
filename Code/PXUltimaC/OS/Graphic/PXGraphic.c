@@ -56,11 +56,11 @@ void PXAPI PXTextureConstruct(PXTexture2D* const texture)
 
 /*
 
-PXActionResult PXAPI PXGraphicUIElementCreate(PXGraphic* const pxGraphic, PXGUIElement** const pxGUIElement, const PXSize amount, PXGUIElement* const pxUIElementParrent)
+PXActionResult PXAPI PXGraphicUIElementCreate(PXGraphic* const pxGraphic, PXWindow** const pxGUIElement, const PXSize amount, PXWindow* const pxUIElementParrent)
 {
 
 
-    //PXClear(PXGUIElement, *pxGUIElement);
+    //PXClear(PXWindow, *pxGUIElement);
 
 
 
@@ -85,7 +85,7 @@ PXActionResult PXAPI PXGraphicUIElementCreate(PXGraphic* const pxGraphic, PXGUIE
         if (alreadyHasAFirstBorn)
         {
             // Add as sibling for firstborn
-            PXGUIElement* targetSibling = (*pxGUIElement)->Parent->Child;
+            PXWindow* targetSibling = (*pxGUIElement)->Parent->Child;
 
             // Search for last sibling to be
             while (targetSibling->Sibling != PXNull)
@@ -105,7 +105,7 @@ PXActionResult PXAPI PXGraphicUIElementCreate(PXGraphic* const pxGraphic, PXGUIE
     {
         if (pxGraphic->UIElementBase.Child) // if Has child, everyone will be sibling from child
         {
-            PXGUIElement* insertionNode = pxGraphic->UIElementBase.Child;
+            PXWindow* insertionNode = pxGraphic->UIElementBase.Child;
 
             while (insertionNode->Sibling != PXNull)
             {
@@ -137,7 +137,7 @@ void PXAPI PXRenderableConstruct(PXRenderable* const pxRenderable)
     pxRenderable->IBO = -1;
 }
 
-void PXAPI PXUIElementColorSet4F(PXGUIElement* const pxGUIElement, const float red, const float green, const float blue, const float alpha)
+void PXAPI PXUIElementColorSet4F(PXWindow* const pxGUIElement, const float red, const float green, const float blue, const float alpha)
 {
     PXColorRGBAF* color = PXNull;
     PXNewZerod(PXColorRGBAF, &color);
@@ -150,7 +150,7 @@ void PXAPI PXUIElementColorSet4F(PXGUIElement* const pxGUIElement, const float r
     //pxGUIElement->ColorTintReference = color;
 }
 
-void PXAPI PXUIElementSizeSet(PXGUIElement* const pxGUIElement, const float x, const float y, const float width, const float height, const PXInt32U  pxUIElementPositionMode)
+void PXAPI PXUIElementSizeSet(PXWindow* const pxGUIElement, const float x, const float y, const float width, const float height, const PXInt32U  pxUIElementPositionMode)
 {
     //pxGUIElement->X = x;
     //pxGUIElement->Y = y;

@@ -96,7 +96,8 @@
       <CallingConvention>
       </CallingConvention>
       <DisableSpecificWarnings>4114</DisableSpecificWarnings>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>
+      </EnableEnhancedInstructionSet>
       <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
       <ShowIncludes>false</ShowIncludes>
       <AssemblerOutput>All</AssemblerOutput>
@@ -115,7 +116,8 @@
     <ClCompile>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <CompileAs>CompileAsC</CompileAs>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>
+      </EnableEnhancedInstructionSet>
       <CallingConvention>
       </CallingConvention>
       <DisableSpecificWarnings>4114</DisableSpecificWarnings>
@@ -148,7 +150,8 @@
       <CallingConvention>
       </CallingConvention>
       <DisableSpecificWarnings>4114</DisableSpecificWarnings>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>
+      </EnableEnhancedInstructionSet>
       <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
       <AssemblerOutput>All</AssemblerOutput>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -166,7 +169,8 @@
     <ClCompile>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <CompileAs>CompileAsC</CompileAs>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>
+      </EnableEnhancedInstructionSet>
       <CallingConvention>
       </CallingConvention>
       <DisableSpecificWarnings>4114</DisableSpecificWarnings>
@@ -319,6 +323,7 @@
     <ClCompile Include="OS\Audio\PXMultiMedia\PXMultiMedia.c" />
     <ClCompile Include="OS\Audio\PXXAudio\PXXAudio.c" />
     <ClCompile Include="OS\DataBase\PXDataBase.c" />
+    <ClCompile Include="OS\Graphic\NativDraw\PXNativDraw.c" />
     <ClCompile Include="OS\Hardware\PXController.c" />
     <ClCompile Include="OS\Hardware\PXHardware.c" />
     <ClCompile Include="OS\Hardware\PXKeyBoard.c" />
@@ -501,6 +506,7 @@
     <ClInclude Include="OS\Audio\PXMultiMedia\PXMultiMedia.h" />
     <ClInclude Include="OS\Audio\PXXAudio\PXXAudio.h" />
     <ClInclude Include="OS\DataBase\PXDataBase.h" />
+    <ClInclude Include="OS\Graphic\NativDraw\PXNativDraw.h" />
     <ClInclude Include="OS\Hardware\PXController.h" />
     <ClInclude Include="OS\Hardware\PXHardware.h" />
     <ClInclude Include="OS\Hardware\PXKeyBoard.h" />

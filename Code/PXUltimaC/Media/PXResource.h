@@ -7,6 +7,7 @@
 #include <Container/ListHierarchical/PXListHierarchical.h>
 #include <Container/Dictionary/PXDictionary.h>
 #include <OS/Memory/PXMemory.h>
+#include <OS/Hardware/PXKeyBoard.h>
 #include <Math/PXMatrix.h>
 
 #include <stdarg.h>
@@ -30,13 +31,15 @@ typedef struct PXFile_ PXFile;
 typedef struct PXText_ PXText;
 typedef struct PXCodeDocument_ PXCodeDocument;
 typedef struct PXGUISystem_ PXGUISystem;
-typedef struct PXGUIElement_ PXGUIElement;
+typedef struct PXWindow_ PXWindow;
 typedef struct PXFileTypeInfo_ PXFileTypeInfo;
 typedef struct PXCompiler_ PXCompiler;
 typedef struct PXProcessor_ PXProcessor;
 typedef struct PXHierarchicalNode_ PXHierarchicalNode;
 typedef struct PXFileEntry_ PXFileEntry;
 typedef struct PXDebug_ PXDebug;
+typedef struct PXDisplay_ PXDisplay;
+
 
 extern void _chkstk(size_t s);
 
@@ -1384,47 +1387,47 @@ PXSkyBox;
 // Ancering will stick the given edge to a side.
 // Offset will be interpretet 0=NoSpace, 1=???
 // Goal: Scale the object with screensize
-#define PXGUIElementAncerParent           0b0000000000000000000000000000000000001111
-#define PXGUIElementAncerParentLeft       0b0000000000000000000000000000000000000001
-#define PXGUIElementAncerParentTop        0b0000000000000000000000000000000000000010
-#define PXGUIElementAncerParentRight      0b0000000000000000000000000000000000000100
-#define PXGUIElementAncerParentBottom     0b0000000000000000000000000000000000001000
+#define PXWindowAncerParent           0b0000000000000000000000000000000000001111
+#define PXWindowAncerParentLeft       0b0000000000000000000000000000000000000001
+#define PXWindowAncerParentTop        0b0000000000000000000000000000000000000010
+#define PXWindowAncerParentRight      0b0000000000000000000000000000000000000100
+#define PXWindowAncerParentBottom     0b0000000000000000000000000000000000001000
 
 // Let siblings calulate their offset themself.
 // Goal: Group multible objects together that belong together
-#define PXGUIElementAncerSibling          0b0000000000000000000000000000000011110000
-#define PXGUIElementAncerSiblingLeft      0b0000000000000000000000000000000000010000
-#define PXGUIElementAncerSiblingTop       0b0000000000000000000000000000000000100000
-#define PXGUIElementAncerSiblingRight     0b0000000000000000000000000000000001000000
-#define PXGUIElementAncerSiblingBottom    0b0000000000000000000000000000000010000000
+#define PXWindowAncerSibling          0b0000000000000000000000000000000011110000
+#define PXWindowAncerSiblingLeft      0b0000000000000000000000000000000000010000
+#define PXWindowAncerSiblingTop       0b0000000000000000000000000000000000100000
+#define PXWindowAncerSiblingRight     0b0000000000000000000000000000000001000000
+#define PXWindowAncerSiblingBottom    0b0000000000000000000000000000000010000000
 
-#define PXGUIElementKeepFlags             0b0000000000000000000000000000111100000000
-#define PXGUIElementKeepPositionX         0b0000000000000000000000000000000100000000
-#define PXGUIElementKeepPositionY         0b0000000000000000000000000000001000000000
-#define PXGUIElementKeepWidth             0b0000000000000000000000000000010000000000
-#define PXGUIElementKeepHeight            0b0000000000000000000000000000100000000000
+#define PXWindowKeepFlags             0b0000000000000000000000000000111100000000
+#define PXWindowKeepPositionX         0b0000000000000000000000000000000100000000
+#define PXWindowKeepPositionY         0b0000000000000000000000000000001000000000
+#define PXWindowKeepWidth             0b0000000000000000000000000000010000000000
+#define PXWindowKeepHeight            0b0000000000000000000000000000100000000000
 
 // Allign content inside a element
-#define PXGUIElementAllignFlags           0b0000000000000000000000011111000000000000
-#define PXGUIElementAllignLeft            0b0000000000000000000000000001000000000000
-#define PXGUIElementAllignTop             0b0000000000000000000000000010000000000000
-#define PXGUIElementAllignRight           0b0000000000000000000000000100000000000000
-#define PXGUIElementAllignBottom          0b0000000000000000000000001000000000000000
-#define PXGUIElementAllignCenter          0b0000000000000000000000010000000000000000
+#define PXWindowAllignFlags           0b0000000000000000000000011111000000000000
+#define PXWindowAllignLeft            0b0000000000000000000000000001000000000000
+#define PXWindowAllignTop             0b0000000000000000000000000010000000000000
+#define PXWindowAllignRight           0b0000000000000000000000000100000000000000
+#define PXWindowAllignBottom          0b0000000000000000000000001000000000000000
+#define PXWindowAllignCenter          0b0000000000000000000000010000000000000000
 
 
-#define PXGUIElementBehaviourHoverable    0b0000000000000000000000100000000000000000
-#define PXGUIElementBehaviourSelectable   0b0000000000000000000001000000000000000000
-#define PXGUIElementBehaviourBorder       0b0000000000000000000010000000000000000000
-#define PXGUIElementBehaviourScrollBarHor 0b0000000000000000000100000000000000000000
-#define PXGUIElementBehaviourScrollBarVer 0b0000000000000000001000000000000000000000
+#define PXWindowBehaviourHoverable    0b0000000000000000000000100000000000000000
+#define PXWindowBehaviourSelectable   0b0000000000000000000001000000000000000000
+#define PXWindowBehaviourBorder       0b0000000000000000000010000000000000000000
+#define PXWindowBehaviourScrollBarHor 0b0000000000000000000100000000000000000000
+#define PXWindowBehaviourScrollBarVer 0b0000000000000000001000000000000000000000
 
 
-#define PXGUIElementBehaviourDefaultKeepAspect   PXGUIElementKeepWidth | PXGUIElementKeepHeight
-#define PXGUIElementBehaviourDefaultDecorative   PXResourceInfoOK | PXGUIElementBehaviourBorder
-#define PXGUIElementBehaviourDefaultInputNormal  PXResourceInfoOK | PXGUIElementBehaviourSelectable | PXGUIElementBehaviourHoverable
-#define PXGUIElementBehaviourDefaultText         PXResourceInfoOK | PXGUIElementAllignTop | PXGUIElementKeepHeight | PXGUIElementAllignCenter
-#define PXGUIElementBehaviourDefaultBuffer       PXGUIElementBehaviourDefaultKeepAspect
+#define PXWindowBehaviourDefaultKeepAspect   PXWindowKeepWidth | PXWindowKeepHeight
+#define PXWindowBehaviourDefaultDecorative   PXResourceInfoOK | PXWindowBehaviourBorder
+#define PXWindowBehaviourDefaultInputNormal  PXResourceInfoOK | PXWindowBehaviourSelectable | PXWindowBehaviourHoverable
+#define PXWindowBehaviourDefaultText         PXResourceInfoOK | PXWindowAllignTop | PXWindowKeepHeight | PXWindowAllignCenter
+#define PXWindowBehaviourDefaultBuffer       PXWindowBehaviourDefaultKeepAspect
 
 typedef enum PXUIHoverState_
 {
@@ -1471,6 +1474,7 @@ typedef enum PXUIElementType_
     PXUIElementTypeFontSelector,
     PXUIElementTypePageScroll,
     PXUIElementTypeTabControll,
+    PXUIElementTypeTabPage,
     PXUIElementTypeToggle,
     PXUIElementTypeCheckBox,
     PXUIElementTypeComboBox,
@@ -1570,16 +1574,6 @@ PXUIElementComboBoxInfo;
 
 
 
-
-#if OSUnix
-typedef PXInt32U PXWindowID; // XID
-#elif OSWindows
-typedef HWND PXWindowID; // HWND
-#endif
-
-
-
-
 typedef struct PXUIElementPosition_
 {
     float MarginLeft;
@@ -1622,7 +1616,7 @@ typedef struct PXRectangle_
 PXRectangle;
 
 
-typedef struct PXGUIElementDrawInfo_
+typedef struct PXWindowDrawInfo_
 {
     PXRectangle Rectangle;
 
@@ -1634,9 +1628,9 @@ typedef struct PXGUIElementDrawInfo_
     BOOL bErase;
 #endif
 }
-PXGUIElementDrawInfo;
+PXWindowDrawInfo;
 
-typedef PXActionResult (PXAPI* PXGUIElementDrawFunction)(PXGUISystem* const pxGUISystem, PXGUIElement* const pxGUIElement, PXGUIElementDrawInfo* const pxGUIElementDrawInfo);
+typedef PXActionResult (PXAPI* PXWindowDrawFunction)(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo);
 
 
 //---------------------------------------------------------
@@ -1644,10 +1638,10 @@ typedef PXActionResult (PXAPI* PXGUIElementDrawFunction)(PXGUISystem* const pxGU
 //---------------------------------------------------------
 
 // if true, color is a struct, otherwise a pointer to that struct
-#define PXGUIElementBrushBehaviourColorEmbeded  (1<<0)
+#define PXWindowBrushBehaviourColorEmbeded  (1<<0)
 
 // Color of GUI Element and tools to apply
-typedef struct PXGUIElementBrush_
+typedef struct PXWindowBrush_
 {
     PXResourceInfo Info;
 
@@ -1657,27 +1651,575 @@ typedef struct PXGUIElementBrush_
         PXColorRGBI8* ColorReference;
     };
 }
-PXGUIElementBrush;
+PXWindowBrush;
 
-PXPublic void PXAPI PXGUIElementBrushColorSet(PXGUIElementBrush* const pxGUIElementBrush, const PXByte red, const PXByte green, const PXByte blue);
+PXPublic void PXAPI PXWindowBrushColorSet(PXWindowBrush* const pxGUIElementBrush, const PXByte red, const PXByte green, const PXByte blue);
 
 //---------------------------------------------------------
 
 /*
-typedef struct PXGUIElementData_
+typedef struct PXWindowData_
 {
     union
     {
         PXDirectorySearchCache DirectorySearchCache; // Used for a treeview
     };
 }
-PXGUIElementData;
+PXWindowData;
 */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//---------------------------------------------------------
+// UI Elements - Window 
+//---------------------------------------------------------
+
+
+
+
+
+
+#define UseRawMouseData 1
+#define PXWindowTitleSizeMax 256
+#define PXWindowSizeDefault -1
+
+// The mode in which the mouse pointer will be.
+typedef enum PXWindowCursorMode_
+{
+    PXWindowCursorIgnore,     // Show the cursor but dont register any Input.
+    PXWindowCursorShow,     // Show the cursor and register Input as normal.
+    PXWindowCursorInvisible,     // Hide Cursor. You can still use it as normal. Not locked.
+    PXWindowCursorLock,
+    PXWindowCursorLockAndHide
+}
+PXWindowCursorMode;
+
+typedef enum PXMouseButton_
+{
+    PXMouseButtonInvalid,
+    PXMouseButtonLeft,
+    PXMouseButtonMiddle,
+    PXMouseButtonRight,
+    PXMouseButtonScrollUp,
+    PXMouseButtonRightDown,
+    PXMouseButtonSpecialA,
+    PXMouseButtonSpecialB,
+    PXMouseButtonSpecialC,
+    PXMouseButtonSpecialD,
+    PXMouseButtonSpecialE,
+}
+PXMouseButton;
+
+typedef enum PXMouseScrollDirection_
+{
+    PXMouseScrollDirectionInvalid,
+    PXMouseScrollDirectionUp,
+    PXMouseScrollDirectionDown,
+    PXMouseScrollDirectionLeft,
+    PXMouseScrollDirectionRight
+}
+PXMouseScrollDirection;
+
+typedef enum PXCursorIcon_
+{
+    PXCursorIconInvalid,
+    PXCursorIconNormal,
+    PXCursorIconIBeam,
+    PXCursorIconWait,
+    PXCursorIconCross,
+    PXCursorIconUp,
+    PXCursorIconHand,
+    PXCursorIconNotAllowed,
+    PXCursorIconAppStarting,
+    PXCursorIconResizeHorizontal,
+    PXCursorIconResizeVertical,
+    PXCursorIconResizeClockwise,
+    PXCursorIconResizeClockwiseCounter,
+    PXCursorIconResizeAll,
+}
+PXCursorIcon;
+
+typedef enum PXWindowEventType_
+{
+    PXWindowEventTypeInvalid,
+
+    PXWindowEventTypeElementMove,
+    PXWindowEventTypeElementResize,
+    PXWindowEventTypeElementDestroy,
+    PXWindowEventTypeElementClose,
+    PXWindowEventTypeElementCreate,
+    PXWindowEventTypeElementSelect,
+    PXWindowEventTypeElementClick,
+    PXWindowEventTypeElementFocusEnter,
+    PXWindowEventTypeElementFocusLeave,
+
+    PXWindowEventTypeInputMouseButton,
+    PXWindowEventTypeInputMouseMove,
+    PXWindowEventTypeInputKeyboard,
+
+
+    WindowEventActivate,
+    WindowEventRedrawSet,
+    WindowEventFocusSet,
+    WindowEventFocusKill,
+    WindowEventEnable,
+    WindowEventTextSet,
+    WindowEventTextGet,
+    WindowEventTextGetLength,
+    WindowEventPaint,
+    WindowEventClose,
+    WindowEventSessionQuerryEnd,
+    WindowEventSessionEnd,
+    WindowEventQuerryOpen,
+    WindowEventQuit,
+    WindowEventBackgroundErase,
+    WindowEventSystemColorChange,
+    WindowEventShowWindow,
+    WindowEventIconChange,
+    WindowEventSettingChange,
+    WindowEventDeviceModeChange,
+    WindowEventActivateApp,
+    WindowEventFontChange,
+    WindowEventTimeChange,
+    WindowEventCancelMode,
+    WindowEventCursorSet,
+    WindowEventMouseActivate,
+    WindowEventChildActivate,
+    WindowEventQueueSync,
+    WindowEventSizeChange,
+    WindowEventIconPaint,
+    WindowEventIconBackgroundErase,
+    WindowEventDialogControlNext,
+    WindowEventSPOOLERSTATUS,
+    WindowEventItemDraw,
+    WindowEventItemMeasure,
+    WindowEventItemDelete,
+    WindowEventVKEYTOITEM,
+    WindowEventCHARTOITEM,
+    WindowEventFontSet,
+    WindowEventFontGet,
+    WindowEventSETHOTKEY,
+    WindowEventGETHOTKEY,
+    WindowEventQUERYDRAGICON,
+    WindowEventCOMPAREITEM,
+    WindowEventGETOBJECT,
+    WindowEventCOMPACTING,
+    WindowEventCOMMNOTIFY,
+    WindowEventWINDOWPOSCHANGING,
+    WindowEventWINDOWPOSCHANGED,
+    WindowEventPOWER,
+    WindowEventCOPYDATA,
+    WindowEventCANCELJOURNAL,
+    WindowEventNOTIFY,
+    WindowEventINPUTLANGCHANGEREQUEST,
+    WindowEventINPUTLANGCHANGE,
+    WindowEventTCARD,
+    WindowEventHELP,
+    WindowEventUSERCHANGED,
+    WindowEventNOTIFYFORMAT,
+    WindowEventCONTEXTMENU,
+    WindowEventSTYLECHANGING,
+    WindowEventSTYLECHANGED,
+    WindowEventDISPLAYCHANGE,
+    WindowEventGETICON,
+    WindowEventSETICON,
+    WindowEventNCCREATE,
+    WindowEventNCDESTROY,
+    WindowEventNCCALCSIZE,
+    WindowEventNCHITTEST,
+    WindowEventNCPAINT,
+    WindowEventNCACTIVATE,
+    WindowEventGETDLGCODE,
+    WindowEventSYNCPAINT,
+    WindowEventNCMOUSEMOVE,
+    WindowEventNCLBUTTONDOWN,
+    WindowEventNCLBUTTONUP,
+    WindowEventNCLBUTTONDBLCLK,
+    WindowEventNCRBUTTONDOWN,
+    WindowEventNCRBUTTONUP,
+    WindowEventNCRBUTTONDBLCLK,
+    WindowEventNCMBUTTONDOWN,
+    WindowEventNCMBUTTONUP,
+    WindowEventNCMBUTTONDBLCLK,
+    WindowEventNCXBUTTONDOWN,
+    WindowEventNCXBUTTONUP,
+    WindowEventNCXBUTTONDBLCLK,
+    WindowEventINPUT_DEVICE_CHANGE,
+    WindowEventINPUT,
+    WindowEventKEYFIRST,
+    WindowEventKEYDOWN,
+    WindowEventKEYUP,
+    WindowEventCHAR,
+    WindowEventDEADCHAR,
+    WindowEventSYSKEYDOWN,
+    WindowEventSYSKEYUP,
+    WindowEventSYSCHAR,
+    WindowEventSYSDEADCHAR,
+    WindowEventUNICHAR,
+    WindowEventKEYLAST,
+    //UNICODE_NOCHAR,
+    WindowEventIME_STARTCOMPOSITION,
+    WindowEventIME_ENDCOMPOSITION,
+    WindowEventIME_COMPOSITION,
+    WindowEventIME_KEYLAST,
+    WindowEventINITDIALOG,
+    WindowEventCOMMAND,
+    WindowEventSYSCOMMAND,
+    WindowEventTIMER,
+    WindowEventHSCROLL,
+    WindowEventVSCROLL,
+    WindowEventINITMENU,
+    WindowEventINITMENUPOPUP,
+    WindowEventGESTURE,
+    WindowEventGESTURENOTIFY,
+    WindowEventMENUSELECT,
+    WindowEventMENUCHAR,
+    WindowEventENTERIDLE,
+    WindowEventMENURBUTTONUP,
+    WindowEventMENUDRAG,
+    WindowEventMENUGETOBJECT,
+    WindowEventUNINITMENUPOPUP,
+    WindowEventMENUCOMMAND,
+    WindowEventCHANGEUISTATE,
+    WindowEventUPDATEUISTATE,
+    WindowEventQUERYUISTATE,
+    WindowEventCTLCOLORMSGBOX,
+    WindowEventCTLCOLOREDIT,
+    WindowEventCTLCOLORLISTBOX,
+    WindowEventCTLCOLORBTN,
+    WindowEventCTLCOLORDLG,
+    WindowEventCTLCOLORSCROLLBAR,
+    WindowEventCTLCOLORSTATIC,
+    WindowEventGETHMENU,
+    WindowEventMOUSEFIRST,
+    WindowEventMOUSEMOVE,
+    WindowEventLBUTTONDOWN,
+    WindowEventLBUTTONUP,
+    WindowEventLBUTTONDBLCLK,
+    WindowEventRBUTTONDOWN,
+    WindowEventRBUTTONUP,
+    WindowEventRBUTTONDBLCLK,
+    WindowEventMBUTTONDOWN,
+    WindowEventMBUTTONUP,
+    WindowEventMBUTTONDBLCLK,
+    WindowEventMOUSEWHEEL,
+    WindowEventXBUTTONDOWN,
+    WindowEventXBUTTONUP,
+    WindowEventXBUTTONDBLCLK,
+    WindowEventMOUSEHWHEEL,
+    WindowEventMOUSELAST,
+    WindowEventPARENTNOTIFY,
+    WindowEventENTERMENULOOP,
+    WindowEventEXITMENULOOP,
+    WindowEventNEXTMENU,
+    WindowEventSIZING,
+    WindowEventCAPTURECHANGED,
+    WindowEventMOVING,
+    WindowEventPOWERBROADCAST,
+    WindowEventDEVICECHANGE,
+    WindowEventMDICREATE,
+    WindowEventMDIDESTROY,
+    WindowEventMDIACTIVATE,
+    WindowEventMDIRESTORE,
+    WindowEventMDINEXT,
+    WindowEventMDIMAXIMIZE,
+    WindowEventMDITILE,
+    WindowEventMDICASCADE,
+    WindowEventMDIICONARRANGE,
+    WindowEventMDIGETACTIVE,
+    WindowEventMDISETMENU,
+    WindowEventENTERSIZEMOVE,
+    WindowEventEXITSIZEMOVE,
+    WindowEventDROPFILES,
+    WindowEventMDIREFRESHMENU,
+    WindowEventPOINTERDEVICECHANGE,
+    WindowEventPOINTERDEVICEINRANGE,
+    WindowEventPOINTERDEVICEOUTOFRANGE,
+    WindowEventTOUCH,
+    WindowEventNCPOINTERUPDATE,
+    WindowEventNCPOINTERDOWN,
+    WindowEventNCPOINTERUP,
+    WindowEventPOINTERUPDATE,
+    WindowEventPOINTERDOWN,
+    WindowEventPOINTERUP,
+    WindowEventPOINTERENTER,
+    WindowEventPOINTERLEAVE,
+    WindowEventPOINTERACTIVATE,
+    WindowEventPOINTERCAPTURECHANGED,
+    WindowEventTOUCHHITTESTING,
+    WindowEventPOINTERWHEEL,
+    WindowEventPOINTERHWHEEL,
+    WindowEventPOINTERROUTEDTO,
+    WindowEventPOINTERROUTEDAWAY,
+    WindowEventPOINTERROUTEDRELEASED,
+    WindowEventIME_SETCONTEXT,
+    WindowEventIME_NOTIFY,
+    WindowEventIME_CONTROL,
+    WindowEventIME_COMPOSITIONFULL,
+    WindowEventIME_SELECT,
+    WindowEventIME_CHAR,
+    WindowEventIME_REQUEST,
+    WindowEventIME_KEYDOWN,
+    WindowEventIME_KEYUP,
+    WindowEventMOUSEHOVER,
+    WindowEventMOUSELEAVE,
+    WindowEventNCMOUSEHOVER,
+    WindowEventNCMOUSELEAVE,
+    WindowEventWTSSESSION_CHANGE,
+    WindowEventTABLET_FIRST,
+    WindowEventTABLET_LAST,
+    WindowEventDPICHANGED,
+    WindowEventDPICHANGED_BEFOREPARENT,
+    WindowEventDPICHANGED_AFTERPARENT,
+    WindowEventGETDPISCALEDSIZE,
+    WindowEventCUT,
+    WindowEventCOPY,
+    WindowEventPASTE,
+    WindowEventCLEAR,
+    WindowEventUNDO,
+    WindowEventRENDERFORMAT,
+    WindowEventRENDERALLFORMATS,
+    WindowEventDESTROYCLIPBOARD,
+    WindowEventDRAWCLIPBOARD,
+    WindowEventPAINTCLIPBOARD,
+    WindowEventVSCROLLCLIPBOARD,
+    WindowEventSIZECLIPBOARD,
+    WindowEventASKCBFORMATNAME,
+    WindowEventCHANGECBCHAIN,
+    WindowEventHSCROLLCLIPBOARD,
+    WindowEventQUERYNEWPALETTE,
+    WindowEventPALETTEISCHANGING,
+    WindowEventPALETTECHANGED,
+    WindowEventHOTKEY,
+    WindowEventPRINT,
+    WindowEventPRINTCLIENT,
+    WindowEventAPPCOMMAND,
+    WindowEventTHEMECHANGED,
+    WindowEventCLIPBOARDUPDATE,
+    WindowEventDWMCOMPOSITIONCHANGED,
+    WindowEventDWMNCRENDERINGCHANGED,
+    WindowEventDWMCOLORIZATIONCOLORCHANGED,
+    WindowEventDWMWINDOWMAXIMIZEDCHANGE,
+    WindowEventDWMSENDICONICTHUMBNAIL,
+    WindowEventDWMSENDICONICLIVEPREVIEWBITMAP,
+    WindowEventGETTITLEBARINFOEX,
+    WindowEventHANDHELDFIRST,
+    WindowEventHANDHELDLAST,
+    WindowEventAFXFIRST,
+    WindowEventAFXLAST,
+    WindowEventPENWINFIRST,
+    WindowEventPENWINLAST,
+    WindowEventAPP
+}
+PXWindowEventType;
+
+
+
+
+
+
+
+#define PXDisplayScreenMonitorLength 32
+#define PXDisplayScreenNameLength 32
+#define PXDisplayScreenDeviceLength 128
+
+// Container where windows can be created in
+typedef struct PXDisplayScreen_
+{
+    char GraphicDeviceName[PXDisplayScreenDeviceLength];
+    char NameMonitor[PXDisplayScreenMonitorLength];
+    char NameID[PXDisplayScreenNameLength];
+
+    int Width;
+    int Height;
+    int Cells;
+    int Planes;
+    int WidthMM;
+    int HeightMM;
+
+    PXBool IsConnected;
+    PXBool IsPrimary;
+}
+PXDisplayScreen;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#define PXDeviceDisplaySize 32
+#define PXDeviceNameSize 32
+#define PXDeviceIDSize 64
+#define PXDeviceKeySize 128
+
+#define PXDeviceOpenGLDriverSize 32
+#define PXDeviceOpenGLVendorSize 32
+#define PXDeviceOpenGLRendererSize 32
+#define PXDeviceOpenGLShaderSize 32
+
+#define MonitorNameLength 32
+
+typedef struct PXMonitor_
+{
+#if OSUnix
+#elif OSWindows
+    HMONITOR ID;
+#endif
+
+    char Name[MonitorNameLength];
+    char Driver[MonitorNameLength];
+    PXInt16U X;
+    PXInt16U Y;
+    PXInt16U Width;
+    PXInt16U Height;
+}
+PXMonitor;
+
+typedef struct PXGraphicDevicePhysical_
+{
+    char DeviceDisplay[PXDeviceDisplaySize]; // \\.\DISPLAY6
+    char DeviceName[PXDeviceNameSize]; // NVIDIA GeForce GTX 1080
+    char DeviceID[PXDeviceIDSize]; // Windows DeviceID, "PCI\VEN_10DE&DEV_1B80&SUBSYS_336..."
+    char DeviceKey[PXDeviceKeySize]; // Windows Regestry "\Registry\Machine\System\Current..."
+
+    char Driver[PXDeviceOpenGLDriverSize]; // xxxxx.DLL
+
+    char Vendor[PXDeviceOpenGLVendorSize];
+    char Renderer[PXDeviceOpenGLRendererSize];
+    char Shader[PXDeviceOpenGLShaderSize];
+
+    PXInt64U VideoMemoryDedicated; // dedicated video memory, total size (in kb) of the GPU memory
+    PXInt64U VideoMemoryCurrent; // total available memory, total size (in Kb) of the memory available for allocations
+    PXInt64U VideoMemoryTotal; // current available dedicated video memory (in kb), currently unused GPU memory
+
+    PXInt64U VideoMemoryEvictionCount; // How many times memory got displaced to Main-RAM
+    PXInt64U VideoMemoryEvictionSize; // size of total video memory evicted (in kb)
+
+    PXBool IsConnectedToMonitor;
+
+    PXMonitor AttachedMonitor;
+}
+PXGraphicDevicePhysical;
+
+
+
+typedef struct PXVideo_
+{
+    int __Dummy__;
+}
+PXVideo;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+typedef
+#if OSUnix
+int
+#elif OSWindows
+HWND
+#else
+void*
+#endif
+PXNativDrawWindowHandle;
+
+
+typedef struct PXDisplay_
+{
+#if OSUnix
+    Display* DisplayHandle;
+    Window WindowRootHandle;
+    GC GraphicContent;
+#elif OSWindows
+    int WindowRootHandle;
+    void* DisplayHandle;
+    int GraphicContent;
+#endif
+
+    char* Data;
+    char* Name;
+
+    int ProtocolVersion;
+    int ProtocolRevision;
+
+    char* ServerVendor;
+    int VendorRelease;
+
+    int ScreenDefaultID;
+    int ScreenListAmount;
+
+    PXSize DisplayScreenListAmount;
+    PXDisplayScreen* DisplayScreenList;
+}
+PXDisplay;
+
+
+
+
+typedef struct PXNativDraw_
+{
+    PXSize MonitorListAmount;
+    PXMonitor* MonitorList;
+
+    PXSize DisplayListAmount;
+    PXDisplay* DisplayList;
+}
+PXNativDraw;
+
+
+
 
 // Atomic UI-Element
 // Only Text can be text
 // Only image can be image
-typedef struct PXGUIElement_
+typedef struct PXWindow_
 {
     PXResourceInfo Info;
 
@@ -1688,14 +2230,14 @@ typedef struct PXGUIElement_
 
     void* InteractOwner; // Object that is the owner of given callbacks
     PXWindowEventFunction InteractCallBack; // Callback function for all events
-    PXGUIElementDrawFunction DrawFunction; // If this is set, override OS-drawing and use this function instead
+    PXWindowDrawFunction DrawFunction; // If this is set, override OS-drawing and use this function instead
 
 
     PXUIElementPosition Position;
 
     //---<State-Info>------------------------
-    PXGUIElementBrush* BrushFront;
-    PXGUIElementBrush* BrushBackground;
+    PXWindowBrush* BrushFront;
+    PXWindowBrush* BrushBackground;
     PXFont* FontForText;
 
     //PXColorRGBAF* ColorTintReference; // Point to a color to be able to share a theme. Can be null, equal to plain white.
@@ -1704,40 +2246,175 @@ typedef struct PXGUIElement_
     //---------------------------------------
 
 
+    //---[Extended data]---------------------
     PXUIElementType Type;
-
     void* ExtendedData; // Extra data that will be allocated seperatly for additional use
+    //---------------------------------------
 
-    //---<Property>--------------------------
-    //PXUIElementPositionMode PositionMode;
-
-#if 0
-    union
-    {
-        PXUIElementFrameBufferInfo FrameBufferInfo;
-        PXUIElementImageInfo ImageInfo;
-        PXUIElementTextInfo TextInfo;
-        PXUIElementProgressBarInfo ProgressBar;
-        PXUIElementButtonInfo Button;
-        PXUIElementItemInfo Item;
-        PXUIElementSceneRenderInfo SceneRender;
-    };
-#endif
-
-    struct PXGUIElement_** ListEEData;
+    struct PXWindow_** ListEEData;
     PXSize ListEESize;
-
-
-
-
-
 
     // Change this to something better
     char* NameContent;
     PXSize NameContentSize;
 }
-PXGUIElement;
+PXWindow;
+
+//typedef PXWindow PXWindow;
 //-----------------------------------------------------
+
+
+
+
+
+
+
+
+typedef struct PXKeyBoardKeyInfo_
+{
+    PXVirtualKey Key;
+    PXKeyPressState Mode;
+
+    unsigned short Repeat; // Die Wiederholungsanzahl für die aktuelle Meldung.Der Wert gibt an, wie oft die Tastatureingabe automatisch angezeigt wird, wenn der Benutzer den Schlüssel hält.Die Wiederholungsanzahl ist immer 1 für eine WM _ KEYUP - Nachricht.
+    unsigned short ScanCode;// Der Scancode.Der Wert hängt vom OEM ab.
+    unsigned short SpecialKey;// Gibt an, ob es sich bei der Taste um eine erweiterte Taste handelt, z.B.die rechte ALT - und STRG - Taste, die auf einer erweiterten Tastatur mit 101 oder 102 Tasten angezeigt werden.Der Wert ist 1, wenn es sich um einen erweiterten Schlüssel handelt.andernfalls ist es 0.
+    unsigned short KontextCode; // Der Kontextcode.Der Wert ist für eine WM _ KEYUP - Nachricht immer 0.
+    unsigned short PreState; // Der vorherige Schlüsselzustand.Der Wert ist immer 1 für eine WM _ KEYUP - Nachricht.
+    unsigned short GapState;
+
+    unsigned char KeyID;
+}
+PXKeyBoardKeyInfo;
+
+
+typedef struct PXWindowEventClose_
+{
+    PXBool CommitToClose;
+}
+PXWindowEventClose;
+
+typedef struct PXWindowEventResize_
+{
+    PXInt16S Width;
+    PXInt16S Height;
+}
+PXWindowEventResize;
+
+typedef struct PXWindowEventInputMouseButton_
+{
+    PXKeyPressState PressState;
+    PXMouseButton Button;
+}
+PXWindowEventInputMouseButton;
+
+typedef struct PXWindowEventSelect_
+{
+    PXWindow* UIElementSelected;
+}
+PXWindowEventSelect;
+
+typedef struct PXWindowEventInputMouseMove_
+{
+    PXInt32S AxisX;
+    PXInt32S AxisY;
+    PXInt32S DeltaX;
+    PXInt32S DeltaY;
+}
+PXWindowEventInputMouseMove;
+
+typedef struct PXWindowEventInputKeyboard_
+{
+    PXKeyPressState PressState;
+    PXVirtualKey VirtualKey;
+
+    PXInt16U CharacterID;
+}
+PXWindowEventInputKeyboard;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+typedef struct PXWindowEvent_
+{
+    union
+    {
+        PXWindowEventClose Close;
+        PXWindowEventResize Resize;
+        PXWindowEventInputMouseButton InputMouseButton;
+        PXWindowEventInputMouseMove InputMouseMove;
+        PXWindowEventInputKeyboard InputKeyboard;
+        PXWindowEventSelect Select;
+    };
+
+    //-----------------------------
+    // Original data
+    //-----------------------------
+#if OSUnix
+    XEvent* EventData;
+#elif OSWindows
+    HWND WindowHandle;
+    UINT EventID;
+    WPARAM ParamW;
+    LPARAM ParamL;
+#endif
+
+    //-----------------------------
+    // Translated Data
+    //-----------------------------
+    PXWindowEventType Type;
+
+    struct PXWindow_* UIElementReference;
+    struct PXWindow_* UIElementSender;
+}
+PXWindowEvent;
+
+typedef struct PXWindowPixelSystemInfo_
+{
+#if OSUnix
+
+#elif OSWindows
+    HDC HandleDeviceContext;
+    HWND HandleWindow;
+#endif
+
+
+    PXInt8U BitPerPixel; // 32=8Bit Default
+
+    PXBool OpenGL;
+    PXBool DirectX;
+    PXBool GDI;
+}
+PXWindowPixelSystemInfo;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1770,12 +2447,12 @@ PXGUIElement;
 #define PXGUIMenuItemStateMFS_UNHILITE  (1<<7)
 
 
-typedef struct PXGUIElementMenuItemInfo_
+typedef struct PXWindowMenuItemInfo_
 {
     PXInt32U Flags;
     PXInt32U State;
-    PXGUIElement* Parent;
-    struct PXGUIElementMenuItemList_* ChildList;
+    PXWindow* Parent;
+    struct PXWindowMenuItemList_* ChildList;
 
     char* TextData;
     PXSize TextSize;
@@ -1783,14 +2460,14 @@ typedef struct PXGUIElementMenuItemInfo_
 
 
 }
-PXGUIElementMenuItemInfo;
+PXWindowMenuItemInfo;
 
-typedef struct PXGUIElementMenuItemList_
+typedef struct PXWindowMenuItemList_
 {
-    PXGUIElementMenuItemInfo* MenuItemInfoListData;
+    PXWindowMenuItemInfo* MenuItemInfoListData;
     PXSize MenuItemInfoListAmount;
 }
-PXGUIElementMenuItemList;
+PXWindowMenuItemList;
 
 
 
@@ -1948,8 +2625,8 @@ typedef struct PXUIElementTreeViewItemInfo_
     char* TextDataOverride;
     PXSize TextSizeOverride;
 
-    struct PXGUIElement_* ItemParent;
-    struct PXGUIElement_* TreeView;
+    struct PXWindow_* ItemParent;
+    struct PXWindow_* TreeView;
 
     //struct PXUIElement_* ElementSource;
     void* OwningObject;
@@ -1965,7 +2642,7 @@ PXUIElementTreeViewItemInfo;
 
 typedef struct PXUIElementTabPageSingleInfo_
 {
-    PXGUIElement** UIElement;
+    PXWindow** UIElement;
     char* PageName;
     PXInt32U ImageID;
 
@@ -1981,12 +2658,12 @@ PXUIElementTabPageInfo;
 
 
 
-typedef struct PXGUIElementCreateWindowInfo_
+typedef struct PXWindowCreateWindowInfo_
 {
     //void* EventFunction;
     void* EventOwner;
 
-    PXGUIElement* UIElementReference;
+    PXWindow* UIElementReference;
 
     PXColorRGBAI8 BackGroundColor;
 
@@ -2000,7 +2677,7 @@ typedef struct PXGUIElementCreateWindowInfo_
     PXBool CreateMessageThread; // Run events in another thread
     PXBool MaximizeOnStart;
 }
-PXGUIElementCreateWindowInfo;
+PXWindowCreateWindowInfo;
 
 typedef struct PXWindowSizeInfo_
 {
@@ -2011,10 +2688,10 @@ typedef struct PXWindowSizeInfo_
 }
 PXWindowSizeInfo;
 
-typedef union PXGUIElementCreateInfoData_
+typedef union PXWindowCreateInfoData_
 {
-    PXGUIElementMenuItemList MenuItem;
-    PXGUIElementCreateWindowInfo Window;
+    PXWindowMenuItemList MenuItem;
+    PXWindowCreateWindowInfo Window;
     //  PXUIElementTextInfo Text;
     PXUIElementButtonInfo Button;
     PXUIElementTreeViewItemInfo TreeViewItem;
@@ -2025,23 +2702,52 @@ typedef union PXGUIElementCreateInfoData_
     // Fetched
     PXWindowSizeInfo Size;
 }
-PXGUIElementCreateInfoData;
+PXWindowCreateInfoData;
 
-typedef struct PXGUIElementUpdateInfo_
+typedef struct PXWindowUpdateInfo_
 {
-    PXGUIElement* UIElement;
-    PXGUIElement* WindowReference;
+    PXWindow* UIElement;
+    PXWindow* WindowReference;
     PXUIElementProperty Property;
-    PXGUIElementCreateInfoData Data;
+    PXWindowCreateInfoData Data;
 
     PXBool Show;
 }
-PXGUIElementUpdateInfo;
+PXWindowUpdateInfo;
 
-typedef struct PXGUIElementCreateInfo_
+typedef struct PXWindowCreateInfo_
 {
-    PXGUIElement* UIElementParent;
-    PXGUIElement* UIElementWindow;
+    // Handles
+    PXWindow* UIElementWindow;
+    PXNativDrawWindowHandle CurrnetID;
+
+    PXWindow* UIElementParent;
+    PXNativDrawWindowHandle ParentID;
+
+    PXDisplay DisplayCurrent;
+
+    // Positions
+    PXInt32S X;
+    PXInt32S Y;
+    PXInt32U Width;
+    PXInt32U Height;
+
+    // Style
+    PXInt32U BorderWidth;
+    PXInt32U Border;
+
+    // Setings
+    PXBool Simple;
+    PXBool AvoidCreation;
+
+
+
+
+    // CallBack on event
+    void* InteractOwner;
+    PXWindowEventFunction InteractCallBack;
+  
+ 
 
     //PXInt32U FlagList;
 
@@ -2059,6 +2765,9 @@ typedef struct PXGUIElementCreateInfo_
 
 #if OSUnix
 #elif OSWindows
+    HDC DeviceContextHandle;
+    HINSTANCE InstanceHandle;
+
     PXInt32U WindowsWindowsStyleFlagsExtended;
     PXInt32U WindowsStyleFlags;
     char* WindowsTextContent;
@@ -2066,25 +2775,24 @@ typedef struct PXGUIElementCreateInfo_
     const char* WindowsClassName;
 #endif
 
-    PXGUIElementDrawFunction DrawFunctionEngine; // default rendering of the engine
-    PXGUIElementDrawFunction DrawFunctionOverride; // user defined rendering to overruide default
+    PXWindowDrawFunction DrawFunctionEngine; // default rendering of the engine
+    PXWindowDrawFunction DrawFunctionOverride; // user defined rendering to overruide default
 
     // Additions
-    PXBool AvoidCreation;
+  
 
     char* Name;
 
-    void* InteractOwner;
-    PXWindowEventFunction InteractCallBack;
+  
 
-    PXGUIElementCreateInfoData Data;
+    PXWindowCreateInfoData Data;
 }
-PXGUIElementCreateInfo;
+PXWindowCreateInfo;
 
 
 
 
-PXPublic void PXAPI PXUIElementPositionCalculcate(PXGUIElement* const pxGUIElement, PXUIElementPositionCalulcateInfo* const pxUIElementPositionCalulcateInfo);
+PXPublic void PXAPI PXUIElementPositionCalculcate(PXWindow* const pxGUIElement, PXUIElementPositionCalulcateInfo* const pxUIElementPositionCalulcateInfo);
 
 
 
@@ -2322,64 +3030,6 @@ typedef struct PXAudioSource_
 PXAudioSource;*/
 
 
-
-
-#define PXDeviceDisplaySize 32
-#define PXDeviceNameSize 32
-#define PXDeviceIDSize 64
-#define PXDeviceKeySize 128
-
-#define PXDeviceOpenGLDriverSize 32
-#define PXDeviceOpenGLVendorSize 32
-#define PXDeviceOpenGLRendererSize 32
-#define PXDeviceOpenGLShaderSize 32
-
-#define MonitorNameLength 32
-
-typedef struct PXMonitor_
-{
-    char Name[MonitorNameLength];
-    char Driver[MonitorNameLength];
-    PXInt16U X;
-    PXInt16U Y;
-    PXInt16U Width;
-    PXInt16U Height;
-}
-PXMonitor;
-
-typedef struct PXGraphicDevicePhysical_
-{
-    char DeviceDisplay[PXDeviceDisplaySize]; // \\.\DISPLAY6
-    char DeviceName[PXDeviceNameSize]; // NVIDIA GeForce GTX 1080
-    char DeviceID[PXDeviceIDSize]; // Windows DeviceID, "PCI\VEN_10DE&DEV_1B80&SUBSYS_336..."
-    char DeviceKey[PXDeviceKeySize]; // Windows Regestry "\Registry\Machine\System\Current..."
-
-    char Driver[PXDeviceOpenGLDriverSize]; // xxxxx.DLL
-
-    char Vendor[PXDeviceOpenGLVendorSize];
-    char Renderer[PXDeviceOpenGLRendererSize];
-    char Shader[PXDeviceOpenGLShaderSize];
-
-    PXInt64U VideoMemoryDedicated; // dedicated video memory, total size (in kb) of the GPU memory
-    PXInt64U VideoMemoryCurrent; // total available memory, total size (in Kb) of the memory available for allocations
-    PXInt64U VideoMemoryTotal; // current available dedicated video memory (in kb), currently unused GPU memory
-
-    PXInt64U VideoMemoryEvictionCount; // How many times memory got displaced to Main-RAM
-    PXInt64U VideoMemoryEvictionSize; // size of total video memory evicted (in kb)
-
-    PXBool IsConnectedToMonitor;
-
-    PXMonitor AttachedMonitor;
-}
-PXGraphicDevicePhysical;
-
-
-
-typedef struct PXVideo_
-{
-    int __Dummy__;
-}
-PXVideo;
 
 
 
@@ -2894,7 +3544,7 @@ typedef struct PXResourceCreateInfo_
         PXTextureCubeCreateInfo TextureCube;
         PXTexture2DCreateInfo Texture2D;
         PXImageCreateInfo Image;
-        PXGUIElementCreateInfo UIElement;
+        PXWindowCreateInfo UIElement;
         PXModelCreateInfo Model;
         PXHitboxCreateInfo HitBox;
         PXBrushCreateInfo Brush;
@@ -2967,8 +3617,6 @@ PXPublic PXActionResult PXAPI PXResourceParse(PXResource* const pxResource, PXFi
 
 
 PXPublic PXMaterial* PXAPI PXMaterialContainerFind(PXResourceManager* const pxResourceManager, const PXMaterialContainer* const pxMaterialContainer, struct PXText_* const pxMaterialName);
-
-
 
 
 #endif
