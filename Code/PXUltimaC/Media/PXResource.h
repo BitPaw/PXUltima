@@ -1098,7 +1098,7 @@ PXPublic PXFontPageCharacter* PXAPI PXFontPageCharacterFetch(PXFontPage* const p
 
 
 #define PXFontAntialiased   (1<<0)
-#define PXFontItalics       (1<<1)
+#define PXFontItalic        (1<<1)
 #define PXFontBold          (1<<2)
 #define PXFontStrikeOut     (1<<3)
 #define PXFontUnderline     (1<<4)
@@ -1115,6 +1115,20 @@ typedef struct PXFont_
         PXFontPage PagePrime;
         PXFontPage* PageList;
     };
+
+    PXInt32S Height;
+    PXInt32S Width;
+    PXInt32S Escapement;
+    PXInt32S Orientation;
+    PXInt32S Weight;
+
+    PXInt8U CharSet;
+    PXInt8U OutPrecision;
+    PXInt8U ClipPrecision;
+    PXInt8U Quality;
+    PXInt8U PitchAndFamily;
+
+    char Name[32]; // ToDo: Remove this
 }
 PXFont;
 
@@ -1421,7 +1435,6 @@ PXSkyBox;
 #define PXWindowBehaviourBorder       0b0000000000000000000010000000000000000000
 #define PXWindowBehaviourScrollBarHor 0b0000000000000000000100000000000000000000
 #define PXWindowBehaviourScrollBarVer 0b0000000000000000001000000000000000000000
-
 
 #define PXWindowBehaviourDefaultKeepAspect   PXWindowKeepWidth | PXWindowKeepHeight
 #define PXWindowBehaviourDefaultDecorative   PXResourceInfoOK | PXWindowBehaviourBorder
@@ -2205,6 +2218,8 @@ PXDisplay;
 
 typedef struct PXNativDraw_
 {
+    PXResourceManager* ResourceManager;
+
     PXSize MonitorListAmount;
     PXMonitor* MonitorList;
 
@@ -2239,6 +2254,7 @@ typedef struct PXWindow_
     PXWindowBrush* BrushFront;
     PXWindowBrush* BrushBackground;
     PXFont* FontForText;
+    PXIcon* Icon; // Icon to be rendered
 
     //PXColorRGBAF* ColorTintReference; // Point to a color to be able to share a theme. Can be null, equal to plain white.
     PXUIHoverState Hover;
@@ -2251,16 +2267,23 @@ typedef struct PXWindow_
     void* ExtendedData; // Extra data that will be allocated seperatly for additional use
     //---------------------------------------
 
-    struct PXWindow_** ListEEData;
-    PXSize ListEESize;
-
     // Change this to something better
     char* NameContent;
     PXSize NameContentSize;
 }
 PXWindow;
 
-//typedef PXWindow PXWindow;
+
+//-----------------------------------------------------
+// PXWindowExtendedBehaviour
+//-----------------------------------------------------
+typedef struct PXWindowExtendedBehaviourTab_
+{
+    PXSize TABPageAmount;
+    PXSize TABPageIndexCurrent;
+    PXWindow* TABPageList; 
+}
+PXWindowExtendedBehaviourTab;
 //-----------------------------------------------------
 
 
@@ -2739,6 +2762,7 @@ typedef struct PXWindowCreateInfo_
     // Setings
     PXBool Simple;
     PXBool AvoidCreation;
+    PXBool Invisible;
 
 
 

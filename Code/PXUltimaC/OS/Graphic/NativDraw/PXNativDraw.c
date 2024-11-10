@@ -11,6 +11,8 @@
 #include <OS/Console/PXConsole.h>
 
 
+#if OSWindows
+
 typedef struct PXEindowsDisplayEnumInfo_
 {
     PXMonitor* MonitorList;
@@ -42,6 +44,26 @@ BOOL PXWindowsMonitorFetch(HMONITOR monitorHandle, HDC unnamedParam2, LPRECT unn
 
     return PXTrue;
 }
+
+int CALLBACK PXWindowsFontEnumCallBack(const LOGFONT* lpelfe, const TEXTMETRIC* lpntme, DWORD FontType, LPARAM lParam)
+{
+    PXFont* pxFont;
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "NativDraw",
+        "Font-Fetch",
+        "detected : %s",
+        lpelfe->lfFaceName
+    );
+#endif
+
+    return PXTrue;
+}
+
+#endif
 
 
 
@@ -516,7 +538,7 @@ PXActionResult PXAPI PXNativDrawWindowBufferSwap(PXNativDraw* const pxNativDraw,
 
 
 
-PXActionResult PXAPI PXWindowDrawBegin(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement)
+PXActionResult PXAPI PXNativDrawBegin(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement)
 {
 #if OSUnix
 
@@ -529,7 +551,7 @@ PXActionResult PXAPI PXWindowDrawBegin(PXGUISystem* const pxGUISystem, PXWindow*
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXWindowDrawEnd(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement)
+PXActionResult PXAPI PXNativDrawEnd(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement)
 {
 #if OSUnix
 
@@ -550,7 +572,7 @@ PXActionResult PXAPI PXWindowDrawEnd(PXGUISystem* const pxGUISystem, PXWindow* c
 
 
 
-PXActionResult PXAPI PXGUIDrawColorSetBrush(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowBrush* const pxGUIElementBrush, const char mode)
+PXActionResult PXAPI PXNativDrawColorSetBrush(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowBrush* const pxGUIElementBrush, const char mode)
 {
     PXColorRGBI8* colorRef = PXNull;
 
@@ -563,10 +585,10 @@ PXActionResult PXAPI PXGUIDrawColorSetBrush(PXGUISystem* const pxGUISystem, PXWi
         colorRef = pxGUIElementBrush->ColorReference;
     }
 
-    return PXGUIDrawColorSetV3(pxGUISystem, pxGUIElement, colorRef, mode);
+    return PXNativDrawSetV3(pxGUISystem, pxGUIElement, colorRef, mode);
 }
 
-PXActionResult PXAPI PXGUIDrawColorSetV3(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXColorRGBI8* const pxColorRGBI8, const char mode)
+PXActionResult PXAPI PXNativDrawSetV3(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXColorRGBI8* const pxColorRGBI8, const char mode)
 {
     if(mode == PXGUIDrawModeFront)
     {
@@ -624,16 +646,23 @@ PXActionResult PXAPI PXGUIDrawColorSetV3(PXGUISystem* const pxGUISystem, PXWindo
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXGUIDrawColorSetRGB(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, char red, char green, char blue, const char mode)
+PXActionResult PXAPI PXNativDrawSetRGB(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, char red, char green, char blue, const char mode)
 {
     PXColorRGBI8 color = { red, green, blue };
 
-    return PXGUIDrawColorSetV3(pxGUISystem, pxGUIElement, &color, mode);
+    return PXNativDrawSetV3(pxGUISystem, pxGUIElement, &color, mode);
 }
 
 PXActionResult PXAPI PXNativDrawFontListFetch(PXNativDraw* const pxNativDraw)
 {
-  
+    LOGFONT logfont = { 0 }; 
+    logfont.lfCharSet = DEFAULT_CHARSET; 
+
+    HDC defaultDeviceContext = GetDC(NULL);
+
+    EnumFontFamiliesExA(defaultDeviceContext, &logfont, PXWindowsFontEnumCallBack, 0, 0);
+
+    ReleaseDC(PXNull, defaultDeviceContext);
 }
 
 PXActionResult PXAPI PXNativDrawFontLoadA(PXNativDraw* const pxNativDraw, PXFont* const pxFont, const char* const name, const PXSize nameLength)
@@ -650,7 +679,7 @@ PXActionResult PXAPI PXNativDrawFontLoadA(PXNativDraw* const pxNativDraw, PXFont
 
 
     const DWORD antialiased = (PXFontAntialiased & pxFont->Info.Behaviour) > 0 ? ANTIALIASED_QUALITY : NONANTIALIASED_QUALITY;
-    const DWORD isItalics = (PXFontItalics & pxFont->Info.Behaviour) > 0;
+    const DWORD isItalics = (PXFontItalic & pxFont->Info.Behaviour) > 0;
     const DWORD isUnderline = (PXFontUnderline & pxFont->Info.Behaviour) > 0;
     const DWORD isStrikeOut = (PXFontStrikeOut & pxFont->Info.Behaviour) > 0;
 
@@ -713,7 +742,7 @@ PXActionResult PXAPI PXNativDrawFontSet(PXNativDraw* const pxNativDraw, PXWindow
 
 
 
-PXActionResult PXAPI PXNativeDrawClear(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement)
+PXActionResult PXAPI PXNativDrawClear(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement)
 {
 #if OSUnix
     const int resultID = XClearWindow(pxGUISystem->DisplayCurrent.DisplayHandle, pxGUIElement->Info.Handle.WindowID);

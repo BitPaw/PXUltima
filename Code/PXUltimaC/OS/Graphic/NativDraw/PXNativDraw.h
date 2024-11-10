@@ -38,18 +38,18 @@ PXPublic PXActionResult PXAPI PXWindowEmit(PXGUISystem* const pxGUISystem, PXWin
 //---------------------------------------------------------
 // Drag'n'Drop
 //---------------------------------------------------------
-PXPublic PXActionResult PXAPI PXNativeDrawClear(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement);
-PXPublic PXActionResult PXAPI PXWindowDrawBegin(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement);
-PXPublic PXActionResult PXAPI PXWindowDrawEnd(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement);
+PXPublic PXActionResult PXAPI PXNativDrawClear(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement);
+PXPublic PXActionResult PXAPI PXNativDrawBegin(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement);
+PXPublic PXActionResult PXAPI PXNativDrawEnd(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement);
 //---------------------------------------------------------
 
 
 //---------------------------------------------------------
 // Color for drawing
 //---------------------------------------------------------
-PXPublic PXActionResult PXAPI PXGUIDrawColorSetBrush(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowBrush* const pxGUIElementBrush, const char mode);
-PXPublic PXActionResult PXAPI PXGUIDrawColorSetV3(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXColorRGBI8* const pxColorRGBI8, const char mode);
-PXPublic PXActionResult PXAPI PXGUIDrawColorSetRGB(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, char red, char green, char blue, const char mode);
+PXPublic PXActionResult PXAPI PXNativDrawColorSetBrush(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowBrush* const pxGUIElementBrush, const char mode);
+PXPublic PXActionResult PXAPI PXNativDrawSetV3(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXColorRGBI8* const pxColorRGBI8, const char mode);
+PXPublic PXActionResult PXAPI PXNativDrawSetRGB(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, char red, char green, char blue, const char mode);
 //---------------------------------------------------------
 
 
@@ -71,14 +71,16 @@ PXPublic PXActionResult PXAPI PXNativDrawFontSet(PXNativDraw* const pxNativDraw,
 // Draw text into a given window
 // Example: Text for a button
 //PXPublic PXActionResult PXAPI PXWindowDrawText(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXText* const pxText);
-PXPublic PXActionResult PXAPI PXWindowDrawTextA(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const char* const text, const PXSize textSize);
-PXPublic PXActionResult PXAPI PXWindowDrawTextW(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const wchar_t* const text, const PXSize textSize);
-PXPublic PXActionResult PXAPI PXWindowDrawPoint(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int x, const int y);
-PXPublic PXActionResult PXAPI PXWindowDrawPoints(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int x, const int y, const int width, const int height);
-PXPublic PXActionResult PXAPI PXWindowDrawLine(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int x1, const int y1, const int x2, const int y2);
-PXPublic PXActionResult PXAPI PXWindowDrawLines(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int x, const int y, const int width, const int height);
-PXPublic PXActionResult PXAPI PXWindowDrawRectangle(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int x, const int y, const int width, const int height);
-PXPublic PXActionResult PXAPI PXWindowDrawRectangleRounded(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int x, const int y, const int width, const int height);
+PXPublic PXActionResult PXAPI PXNativDrawTextA(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const char* const text, const PXSize textSize);
+PXPublic PXActionResult PXAPI PXNativDrawTextW(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const wchar_t* const text, const PXSize textSize);
+PXPublic PXActionResult PXAPI PXNativDrawPoint(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int x, const int y);
+PXPublic PXActionResult PXAPI PXNativDrawPoints(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int x, const int y, const int width, const int height);
+PXPublic PXActionResult PXAPI PXNativDrawLine(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int x1, const int y1, const int x2, const int y2);
+PXPublic PXActionResult PXAPI PXNativDrawLines(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int x, const int y, const int width, const int height);
+PXPublic PXActionResult PXAPI PXNativDrawRectangle(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int x, const int y, const int width, const int height);
+PXPublic PXActionResult PXAPI PXNativDrawRectangleRounded(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int x, const int y, const int width, const int height);
+PXPublic PXActionResult PXAPI PXNativDrawLoad(PXGUISystem* const pxGUISystem, PXIcon* const pxIcon, const char* iconName);
+PXPublic PXActionResult PXAPI PXNativDrawIcon(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXIcon* const pxIcon, const int x, const int y, const int width, const int height);
 //---------------------------------------------------------
 
 

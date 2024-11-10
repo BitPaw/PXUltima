@@ -1935,84 +1935,46 @@ const char* PXAPI PXUIElementTypeToString(const PXUIElementType pxUIElementType)
 {
     switch(pxUIElementType)
     {
-        case PXUIElementTypeCustom:
-            return "Custom";
-        case PXUIElementTypeWindow:
-            return "Window";
-        case PXUIElementTypePanel:
-            return "Panel";
-        case PXUIElementTypeText:
-            return "Text";
-        case PXUIElementTypeButton:
-            return "Button";
-        case PXUIElementTypeImage:
-            return "Image";
-        case PXUIElementTypeDropDown:
-            return "DropDown";
-        case PXUIElementTypeListBox:
-            return "ListBox";
-        case PXUIElementTypeTextEdit:
-            return "TextEdit";
-        case PXUIElementTypeRichEdit:
-            return "RichText";
-        case PXUIElementTypeScrollBar:
-            return "ScrollBar";
-        case PXUIElementTypeTrackBar:
-            return "TrackBar";
-        case PXUIElementTypeStatusBar:
-            return "StatusBar";
-        case PXUIElementTypeUpDown:
-            return "UpDown";
-        case PXUIElementTypeProgressBar:
-            return "ProgressBar";
-        case PXUIElementTypeHotKey:
-            return "HotKey";
-        case PXUIElementTypeCalender:
-            return "Calender";
-        case PXUIElementTypeToolTip:
-            return "ToolTip";
-        case PXUIElementTypeAnimate:
-            return "Animate";
-        case PXUIElementTypeDatePicker:
-            return "DatePicker";
-        case PXUIElementTypeGroupBox:
-            return "GroupBox";
-        case PXUIElementTypeRadioButton:
-            return "RadioButton";
-        case PXUIElementTypeGroupRadioButton:
-            return "GroupRadioButton";
-        case PXUIElementTypeTreeView:
-            return "TreeView";
-        case PXUIElementTypeTreeViewItem:
-            return "TreeViewItem";
-        case PXUIElementTypeFileDirectyView:
-            return "FileDirectyView";
-        case PXUIElementTypeFileDirectyViewEntry:
-            return "FileDirectyViewEntry";
-        case PXUIElementTypeIPInput:
-            return "IPInput";
-        case PXUIElementTypeLink:
-            return "Link";
-        case PXUIElementTypeHeader:
-            return "Header";
-        case PXUIElementTypeFontSelector:
-            return "FontSelector";
-        case PXUIElementTypePageScroll:
-            return "PageScroll";
-        case PXUIElementTypeTabControll:
-            return "TabControll";
-        case PXUIElementTypeToggle:
-            return "Toggle";
-        case PXUIElementTypeCheckBox:
-            return "CheckBox";
-        case PXUIElementTypeComboBox:
-            return "ComboBox";
-        case PXUIElementTypeColorPicker:
-            return "ColorPicker";
-        case PXUIElementTypeSlider:
-            return "Slider";
-        case PXUIElementTypeRenderFrame:
-            return "FrameRender";
+        case PXUIElementTypeCustom:            return "Custom";
+        case PXUIElementTypeWindow:            return "Window";
+        case PXUIElementTypePanel:            return "Panel";
+        case PXUIElementTypeText:            return "Text";
+        case PXUIElementTypeButton:               return "Button";
+        case PXUIElementTypeImage:                return "Image";
+        case PXUIElementTypeDropDown:             return "DropDown";
+        case PXUIElementTypeListBox:              return "ListBox";
+        case PXUIElementTypeTextEdit:             return "TextEdit";
+        case PXUIElementTypeRichEdit:             return "RichText";
+        case PXUIElementTypeScrollBar:            return "ScrollBar";
+        case PXUIElementTypeTrackBar:             return "TrackBar";
+        case PXUIElementTypeStatusBar:            return "StatusBar";
+        case PXUIElementTypeUpDown:               return "UpDown";
+        case PXUIElementTypeProgressBar:          return "ProgressBar";
+        case PXUIElementTypeHotKey:               return "HotKey";
+        case PXUIElementTypeCalender:             return "Calender";
+        case PXUIElementTypeToolTip:              return "ToolTip";
+        case PXUIElementTypeAnimate:              return "Animate";
+        case PXUIElementTypeDatePicker:           return "DatePicker";
+        case PXUIElementTypeGroupBox:             return "GroupBox";
+        case PXUIElementTypeRadioButton:          return "RadioButton";
+        case PXUIElementTypeGroupRadioButton:     return "GroupRadioButton";
+        case PXUIElementTypeTreeView:             return "TreeView";
+        case PXUIElementTypeTreeViewItem:         return "TreeViewItem";
+        case PXUIElementTypeFileDirectyView:      return "FileDirectyView";
+        case PXUIElementTypeFileDirectyViewEntry: return "FileDirectyViewEntry";
+        case PXUIElementTypeIPInput:              return "IPInput";
+        case PXUIElementTypeLink:                 return "Link";
+        case PXUIElementTypeHeader:               return "Header";
+        case PXUIElementTypeFontSelector:         return "FontSelector";
+        case PXUIElementTypePageScroll:           return "PageScroll";
+        case PXUIElementTypeTabControll:          return "TabControll";
+        case PXUIElementTypeTabPage:              return "TAB-Page";
+        case PXUIElementTypeToggle:               return "Toggle";
+        case PXUIElementTypeCheckBox:             return "CheckBox";
+        case PXUIElementTypeComboBox:             return "ComboBox";
+        case PXUIElementTypeColorPicker:          return "ColorPicker";
+        case PXUIElementTypeSlider:               return "Slider";
+        case PXUIElementTypeRenderFrame:          return "FrameRender";
 
         default:
             return PXNull;
@@ -2029,7 +1991,8 @@ void PXAPI PXWindowBrushColorSet(PXWindowBrush* const pxGUIElementBrush, const P
 
 void PXAPI PXUIElementPositionCalculcate(PXWindow* const pxGUIElement, PXUIElementPositionCalulcateInfo* const pxUIElementPositionCalulcateInfo)
 {
-    for(
+    for
+        (
         PXWindow* pxUIElementParent = (PXWindow*)pxGUIElement->Info.Hierarchy.Parrent;
         pxUIElementParent;
         pxUIElementParent = (PXWindow*)pxUIElementParent->Info.Hierarchy.Parrent

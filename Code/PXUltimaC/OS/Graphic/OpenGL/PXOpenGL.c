@@ -1018,467 +1018,467 @@
 
 unsigned int PXAPI PXOpenGLRenderBufferAttachmentPointToID(const PXOpenGLRenderBufferAttachmentPoint renderBufferAttachmentPoint)
 {
-    switch (renderBufferAttachmentPoint)
+    switch(renderBufferAttachmentPoint)
     {
-    case PXOpenGLRenderBufferAttachmentPointColor:
-        return GL_COLOR_ATTACHMENT0;
-    case PXOpenGLRenderBufferAttachmentPointDepth:
-        return GL_DEPTH_ATTACHMENT;
-    case PXOpenGLRenderBufferAttachmentPointStencil:
-        return GL_STENCIL_ATTACHMENT;
+        case PXOpenGLRenderBufferAttachmentPointColor:
+            return GL_COLOR_ATTACHMENT0;
+        case PXOpenGLRenderBufferAttachmentPointDepth:
+            return GL_DEPTH_ATTACHMENT;
+        case PXOpenGLRenderBufferAttachmentPointStencil:
+            return GL_STENCIL_ATTACHMENT;
 
-    case PXOpenGLRenderBufferAttachmentPointInvalid:
-    default:
-        return -1;
+        case PXOpenGLRenderBufferAttachmentPointInvalid:
+        default:
+            return -1;
     }
 }
 
 GLenum PXAPI PXOpenGLPolygonRenderOrderModeToID(const PXOpenGLPolygonRenderOrderMode openGLPolygonRenderOrderMode)
 {
-    switch (openGLPolygonRenderOrderMode)
+    switch(openGLPolygonRenderOrderMode)
     {
-    case PXOpenGLPolygonRenderOrderModeClockwise:
-        return GL_CW;
-    case PXOpenGLPolygonRenderOrderModeCounterClockwise:
-        return GL_CCW;
+        case PXOpenGLPolygonRenderOrderModeClockwise:
+            return GL_CW;
+        case PXOpenGLPolygonRenderOrderModeCounterClockwise:
+            return GL_CCW;
 
-    default:
-        return -1;
+        default:
+            return -1;
     }
 }
 int PXAPI PXOpenGLRenderBufferFormatToID(const PXOpenGLRenderBufferFormat dataType)
 {
-    switch (dataType)
+    switch(dataType)
     {
-    case PXOpenGLRenderBufferFormatDepthComponent:
-        return GL_DEPTH_COMPONENT;
-    case PXOpenGLRenderBufferFormatDepth24Stencil8:
-        return GL_DEPTH24_STENCIL8;
-    case PXOpenGLRenderBufferFormatInvalid:
-    default:
-        return -1;
+        case PXOpenGLRenderBufferFormatDepthComponent:
+            return GL_DEPTH_COMPONENT;
+        case PXOpenGLRenderBufferFormatDepth24Stencil8:
+            return GL_DEPTH24_STENCIL8;
+        case PXOpenGLRenderBufferFormatInvalid:
+        default:
+            return -1;
     }
 }
 
 GLenum PXAPI PXOpenGLTextureParameterModeToID(const PXOpenGLTextureParameterMode textureParameterMode)
 {
-    switch (textureParameterMode)
+    switch(textureParameterMode)
     {
-    case PXOpenGLDEPTH_STENCIL_TextureMODE:
-        return GL_DEPTH_STENCIL_TEXTURE_MODE;
-    case PXOpenGLTextureBASE_LEVEL:
-        return  GL_TEXTURE_BASE_LEVEL;
-    case PXOpenGLTextureCOMPARE_FUNC:
-        return  GL_TEXTURE_COMPARE_FUNC;
-    case PXOpenGLTextureCOMPARE_MODE:
-        return GL_TEXTURE_COMPARE_MODE;
-    case PXOpenGLTextureLOD_BIAS:
-        return  GL_TEXTURE_LOD_BIAS;
-    case PXOpenGLTextureMIN_FILTER:
-        return  GL_TEXTURE_MIN_FILTER;
-    case PXOpenGLTextureMAG_FILTER:
-        return  GL_TEXTURE_MAG_FILTER;
-    case PXOpenGLTextureMIN_LOD:
-        return  GL_TEXTURE_MIN_LOD;
-    case PXOpenGLTextureMAX_LOD:
-        return  GL_TEXTURE_MAX_LOD;
-    case PXOpenGLTextureMAX_LEVEL:
-        return  GL_TEXTURE_MAX_LEVEL;
-    case PXOpenGLTextureSWIZZLE_R:
-        return  GL_TEXTURE_SWIZZLE_R;
-    case PXOpenGLTextureSWIZZLE_G:
-        return GL_TEXTURE_SWIZZLE_G;
-    case PXOpenGLTextureSWIZZLE_B:
-        return GL_TEXTURE_SWIZZLE_B;
-    case PXOpenGLTextureSWIZZLE_A:
-        return  GL_TEXTURE_SWIZZLE_A;
-    case PXOpenGLTextureWRAP_S:
-        return  GL_TEXTURE_WRAP_S;
-    case PXOpenGLTextureWRAP_T:
-        return  GL_TEXTURE_WRAP_T;
-    case PXOpenGLTextureWRAP_R:
-        return  GL_TEXTURE_WRAP_R;
-    case PXOpenGLTextureBORDER_COLOR:
-        return  GL_TEXTURE_BORDER_COLOR;
-    case PXOpenGLTextureSWIZZLE_RGBA:
-        return  GL_TEXTURE_SWIZZLE_RGBA;
+        case PXOpenGLDEPTH_STENCIL_TextureMODE:
+            return GL_DEPTH_STENCIL_TEXTURE_MODE;
+        case PXOpenGLTextureBASE_LEVEL:
+            return  GL_TEXTURE_BASE_LEVEL;
+        case PXOpenGLTextureCOMPARE_FUNC:
+            return  GL_TEXTURE_COMPARE_FUNC;
+        case PXOpenGLTextureCOMPARE_MODE:
+            return GL_TEXTURE_COMPARE_MODE;
+        case PXOpenGLTextureLOD_BIAS:
+            return  GL_TEXTURE_LOD_BIAS;
+        case PXOpenGLTextureMIN_FILTER:
+            return  GL_TEXTURE_MIN_FILTER;
+        case PXOpenGLTextureMAG_FILTER:
+            return  GL_TEXTURE_MAG_FILTER;
+        case PXOpenGLTextureMIN_LOD:
+            return  GL_TEXTURE_MIN_LOD;
+        case PXOpenGLTextureMAX_LOD:
+            return  GL_TEXTURE_MAX_LOD;
+        case PXOpenGLTextureMAX_LEVEL:
+            return  GL_TEXTURE_MAX_LEVEL;
+        case PXOpenGLTextureSWIZZLE_R:
+            return  GL_TEXTURE_SWIZZLE_R;
+        case PXOpenGLTextureSWIZZLE_G:
+            return GL_TEXTURE_SWIZZLE_G;
+        case PXOpenGLTextureSWIZZLE_B:
+            return GL_TEXTURE_SWIZZLE_B;
+        case PXOpenGLTextureSWIZZLE_A:
+            return  GL_TEXTURE_SWIZZLE_A;
+        case PXOpenGLTextureWRAP_S:
+            return  GL_TEXTURE_WRAP_S;
+        case PXOpenGLTextureWRAP_T:
+            return  GL_TEXTURE_WRAP_T;
+        case PXOpenGLTextureWRAP_R:
+            return  GL_TEXTURE_WRAP_R;
+        case PXOpenGLTextureBORDER_COLOR:
+            return  GL_TEXTURE_BORDER_COLOR;
+        case PXOpenGLTextureSWIZZLE_RGBA:
+            return  GL_TEXTURE_SWIZZLE_RGBA;
 
-    case PXOpenGLTextureParameterModoInvalid:
-    default:
-        return -1;
+        case PXOpenGLTextureParameterModoInvalid:
+        default:
+            return -1;
     }
 }
 
 PXInt32U PXAPI PXOpenGLRenderModeToID(const PXGraphicDrawMode pxGraphicDrawMode)
 {
-    switch (pxGraphicDrawMode)
+    switch(pxGraphicDrawMode)
     {
-    case PXGraphicDrawModePoint:
-        return GL_POINTS;
-    case PXGraphicDrawModeLine:
-        return GL_LINES;
-    case PXGraphicDrawModeLineLoop:
-        return GL_LINE_LOOP;
-    case PXGraphicDrawModeLineStrip:
-        return GL_LINE_STRIP;
-    case PXGraphicDrawModeTriangle:
-        return GL_TRIANGLES;
-    case PXGraphicDrawModeTriangleStrip:
-        return GL_TRIANGLE_STRIP;
-    case PXGraphicDrawModeTriangleFAN:
-        return GL_TRIANGLE_FAN;
-    case PXGraphicDrawModeSquare:
-        return GL_QUADS;
-    case PXGraphicDrawModeSquareStrip:
-        return GL_QUAD_STRIP;
-    case PXGraphicDrawModePatches:
-        return GL_POLYGON;
+        case PXGraphicDrawModePoint:
+            return GL_POINTS;
+        case PXGraphicDrawModeLine:
+            return GL_LINES;
+        case PXGraphicDrawModeLineLoop:
+            return GL_LINE_LOOP;
+        case PXGraphicDrawModeLineStrip:
+            return GL_LINE_STRIP;
+        case PXGraphicDrawModeTriangle:
+            return GL_TRIANGLES;
+        case PXGraphicDrawModeTriangleStrip:
+            return GL_TRIANGLE_STRIP;
+        case PXGraphicDrawModeTriangleFAN:
+            return GL_TRIANGLE_FAN;
+        case PXGraphicDrawModeSquare:
+            return GL_QUADS;
+        case PXGraphicDrawModeSquareStrip:
+            return GL_QUAD_STRIP;
+        case PXGraphicDrawModePatches:
+            return GL_POLYGON;
 
-    default:
-        return -1;
+        default:
+            return -1;
     }
 }
 
 int PXAPI PXOpenGLBufferTypeToID(const PXOpenGLBufferType openGLBufferType)
 {
-    switch (openGLBufferType)
+    switch(openGLBufferType)
     {
-    case PXOpenGLBufferArray:
-        return GL_ARRAY_BUFFER;
-    case PXOpenGLBufferAtomicCounter:
-        return GL_ATOMIC_COUNTER_BUFFER;
-    //  case PXOpenGLBufferCopyRead: return GL_COPY_READ_BUFFER;
-    // case PXOpenGLBufferCopyWrite: return GL_COPY_WRITE_BUFFER;
-    case PXOpenGLBufferDispatchIndirect:
-        return GL_DISPATCH_INDIRECT_BUFFER;
-    //  case PXOpenGLBufferDrawIndirect: return GL_DRAW_INDIRECT_BUFFER;
-    case PXOpenGLBufferElementArray:
-        return GL_ELEMENT_ARRAY_BUFFER;
-    case PXOpenGLBufferPixelPack:
-        return GL_PIXEL_PACK_BUFFER;
-    case PXOpenGLBufferPixelUnpack:
-        return GL_PIXEL_UNPACK_BUFFER;
-    //  case PXOpenGLBufferQuery: return GL_QUERY_BUFFER;
-    //case PXOpenGLBufferShaderStorage: return GL_SHADER_STORAGE_BUFFER;
-    case PXOpenGLBufferTexture:
-        return GL_TEXTURE_BUFFER;
-    case PXOpenGLBufferTransformFeedback:
-        return GL_TRANSFORM_FEEDBACK_BUFFER;
-    case PXOpenGLBufferUniform:
-        return GL_UNIFORM_BUFFER;
+        case PXOpenGLBufferArray:
+            return GL_ARRAY_BUFFER;
+        case PXOpenGLBufferAtomicCounter:
+            return GL_ATOMIC_COUNTER_BUFFER;
+            //  case PXOpenGLBufferCopyRead: return GL_COPY_READ_BUFFER;
+            // case PXOpenGLBufferCopyWrite: return GL_COPY_WRITE_BUFFER;
+        case PXOpenGLBufferDispatchIndirect:
+            return GL_DISPATCH_INDIRECT_BUFFER;
+            //  case PXOpenGLBufferDrawIndirect: return GL_DRAW_INDIRECT_BUFFER;
+        case PXOpenGLBufferElementArray:
+            return GL_ELEMENT_ARRAY_BUFFER;
+        case PXOpenGLBufferPixelPack:
+            return GL_PIXEL_PACK_BUFFER;
+        case PXOpenGLBufferPixelUnpack:
+            return GL_PIXEL_UNPACK_BUFFER;
+            //  case PXOpenGLBufferQuery: return GL_QUERY_BUFFER;
+            //case PXOpenGLBufferShaderStorage: return GL_SHADER_STORAGE_BUFFER;
+        case PXOpenGLBufferTexture:
+            return GL_TEXTURE_BUFFER;
+        case PXOpenGLBufferTransformFeedback:
+            return GL_TRANSFORM_FEEDBACK_BUFFER;
+        case PXOpenGLBufferUniform:
+            return GL_UNIFORM_BUFFER;
 
-    default:
-        return -1;
+        default:
+            return -1;
     }
 }
 
 GLint PXAPI PXOpenGLTextureParameterValueToID(const PXOpenGLTextureParameterValue openGLTextureParameterValue)
 {
-    switch (openGLTextureParameterValue)
+    switch(openGLTextureParameterValue)
     {
-    case PXOpenGLTextureParameterValueNEAREST:
-        return GL_NEAREST;
-    case PXOpenGLTextureParameterValueLINEAR:
-        return GL_LINEAR;
+        case PXOpenGLTextureParameterValueNEAREST:
+            return GL_NEAREST;
+        case PXOpenGLTextureParameterValueLINEAR:
+            return GL_LINEAR;
 
-    case PXOpenGLTextureParameterValueClampToEdge:
-        return GL_CLAMP_TO_EDGE;
-    case PXOpenGLTextureParameterValueClampToBorder:
-        return GL_CLAMP_TO_BORDER;
-    case PXOpenGLTextureParameterValueMirroredRepeat:
-        return  GL_MIRRORED_REPEAT;
-    case PXOpenGLTextureParameterValueRepeat:
-        return GL_REPEAT;
-    case PXOpenGLTextureParameterValueMirrorClampToEdge:
-        return  GL_MIRROR_CLAMP_TO_EDGE;
-    case PXOpenGLTextureParameterValueWrapS:
-        return GL_TEXTURE_WRAP_S;
-    case PXOpenGLTextureParameterValueWrapR:
-        return GL_TEXTURE_WRAP_T;
+        case PXOpenGLTextureParameterValueClampToEdge:
+            return GL_CLAMP_TO_EDGE;
+        case PXOpenGLTextureParameterValueClampToBorder:
+            return GL_CLAMP_TO_BORDER;
+        case PXOpenGLTextureParameterValueMirroredRepeat:
+            return  GL_MIRRORED_REPEAT;
+        case PXOpenGLTextureParameterValueRepeat:
+            return GL_REPEAT;
+        case PXOpenGLTextureParameterValueMirrorClampToEdge:
+            return  GL_MIRROR_CLAMP_TO_EDGE;
+        case PXOpenGLTextureParameterValueWrapS:
+            return GL_TEXTURE_WRAP_S;
+        case PXOpenGLTextureParameterValueWrapR:
+            return GL_TEXTURE_WRAP_T;
 
-    case PXOpenGLTextureParameterValueInvalid:
-    default:
-        return -1;
+        case PXOpenGLTextureParameterValueInvalid:
+        default:
+            return -1;
     }
 }
 
 int PXAPI PXOpenGLStoreModeToID(const PXOpenGLStoreMode openGLStoreMode)
 {
-    switch (openGLStoreMode)
+    switch(openGLStoreMode)
     {
-    case PXOpenGLStoreStreamDraw:
-        return GL_STREAM_DRAW;
-    case PXOpenGLStoreStreamRead:
-        return GL_STREAM_READ;
-    case PXOpenGLStoreStreamCopy:
-        return GL_STREAM_COPY;
-    case PXOpenGLStoreStaticDraw:
-        return GL_STATIC_DRAW;
-    case PXOpenGLStoreStaticREAD:
-        return GL_STATIC_READ;
-    case PXOpenGLStoreStaticCOPY:
-        return GL_STATIC_COPY;
-    case PXOpenGLStoreDynamicDraw:
-        return GL_DYNAMIC_DRAW;
-    case PXOpenGLStoreDynamicRead:
-        return GL_DYNAMIC_READ;
-    case PXOpenGLStoreDynamicCopy:
-        return GL_DYNAMIC_COPY;
+        case PXOpenGLStoreStreamDraw:
+            return GL_STREAM_DRAW;
+        case PXOpenGLStoreStreamRead:
+            return GL_STREAM_READ;
+        case PXOpenGLStoreStreamCopy:
+            return GL_STREAM_COPY;
+        case PXOpenGLStoreStaticDraw:
+            return GL_STATIC_DRAW;
+        case PXOpenGLStoreStaticREAD:
+            return GL_STATIC_READ;
+        case PXOpenGLStoreStaticCOPY:
+            return GL_STATIC_COPY;
+        case PXOpenGLStoreDynamicDraw:
+            return GL_DYNAMIC_DRAW;
+        case PXOpenGLStoreDynamicRead:
+            return GL_DYNAMIC_READ;
+        case PXOpenGLStoreDynamicCopy:
+            return GL_DYNAMIC_COPY;
 
-    default:
-        return -1;
+        default:
+            return -1;
     }
 }
 
 GLenum PXAPI PXOpenGLDrawOrderToID(const PXOpenGLDrawOrderMode openGLDrawOrderMode)
 {
-    switch (openGLDrawOrderMode)
+    switch(openGLDrawOrderMode)
     {
-    case PXOpenGLDrawOrderModeClockwise:
-        return GL_CW;
-    case PXOpenGLDrawOrderModeCounterClockwise:
-        return GL_CCW;
+        case PXOpenGLDrawOrderModeClockwise:
+            return GL_CW;
+        case PXOpenGLDrawOrderModeCounterClockwise:
+            return GL_CCW;
 
-    case PXOpenGLDrawOrderModeInvalid:
-        return -1;
+        case PXOpenGLDrawOrderModeInvalid:
+            return -1;
     }
 }
 
 int PXAPI PXOpenGLToggleToID(const PXOpenGLToggle openGLToggle)
 {
-    switch (openGLToggle)
+    switch(openGLToggle)
     {
-    case PXOpenGLToggleTextureCubeMapSeamless:
-        return GL_TEXTURE_CUBE_MAP_SEAMLESS;
+        case PXOpenGLToggleTextureCubeMapSeamless:
+            return GL_TEXTURE_CUBE_MAP_SEAMLESS;
 
-    case PXOpenGLALPHA_TEST:
-        return GL_ALPHA_TEST;
-    case PXOpenGLAUTO_NORMAL:
-        return GL_AUTO_NORMAL;
-    case PXOpenGLBLEND:
-        return GL_BLEND;
-    //case PXOpenGLCLIP_PLANEi :return GL_CLIP_PLANEi;
-    case PXOpenGLCOLOR_LOGIC_OP:
-        return GL_COLOR_LOGIC_OP;
-    case PXOpenGLCOLOR_MATERIAL:
-        return GL_COLOR_MATERIAL;
-    //case PXOpenGLCOLOR_SUM :return GL_COLOR_SUM;
-    case PXOpenGLCOLOR_TABLE:
-        return GL_COLOR_TABLE;
-    case PXOpenGLCONVOLUTION_1D:
-        return GL_CONVOLUTION_1D;
-    case PXOpenGLCONVOLUTION_2D:
-        return GL_CONVOLUTION_2D;
-    case PXOpenGLCULL_FACE:
-        return GL_CULL_FACE;
-    case PXOpenGLDEPTH_TEST:
-        return GL_DEPTH_TEST;
-    case PXOpenGLDITHER:
-        return GL_DITHER;
-    case PXOpenGLFOG:
-        return GL_FOG;
-    case PXOpenGLHISTOGRAM:
-        return GL_HISTOGRAM;
-    case PXOpenGLINDEX_LOGIC_OP:
-        return GL_INDEX_LOGIC_OP;
-    //case PXOpenGLLIGHTi :return GL_LIGHTi;
-    case PXOpenGLLIGHTING:
-        return GL_LIGHTING;
-    case PXOpenGLLINE_SMOOTH:
-        return GL_LINE_SMOOTH;
-    case PXOpenGLLINE_STIPPLE:
-        return GL_LINE_STIPPLE;
-    case PXOpenGLMAP1_COLOR_4:
-        return GL_MAP1_COLOR_4;
-    case PXOpenGLMAP1_INDEX:
-        return GL_MAP1_INDEX;
-    case PXOpenGLMAP1_NORMAL:
-        return GL_MAP1_NORMAL;
-    case PXOpenGLMAP1_TEXTURE_COORD_1:
-        return GL_MAP1_TEXTURE_COORD_1;
-    case PXOpenGLMAP1_TEXTURE_COORD_2:
-        return GL_MAP1_TEXTURE_COORD_2;
-    case PXOpenGLMAP1_TEXTURE_COORD_3:
-        return GL_MAP1_TEXTURE_COORD_3;
-    case PXOpenGLMAP1_TEXTURE_COORD_4:
-        return GL_MAP1_TEXTURE_COORD_4;
-    case PXOpenGLMAP1_VERTEX_3:
-        return GL_MAP1_VERTEX_3;
-    case PXOpenGLMAP1_VERTEX_4:
-        return GL_MAP1_VERTEX_4;
-    case PXOpenGLMAP2_COLOR_4:
-        return GL_MAP2_COLOR_4;
-    case PXOpenGLMAP2_INDEX:
-        return GL_MAP2_INDEX;
-    case PXOpenGLMAP2_NORMAL:
-        return GL_MAP2_NORMAL;
-    case PXOpenGLMAP2_TEXTURE_COORD_1:
-        return GL_MAP2_TEXTURE_COORD_1;
-    case PXOpenGLMAP2_TEXTURE_COORD_2:
-        return GL_MAP2_TEXTURE_COORD_2;
-    case PXOpenGLMAP2_TEXTURE_COORD_3:
-        return GL_MAP2_TEXTURE_COORD_3;
-    case PXOpenGLMAP2_TEXTURE_COORD_4:
-        return GL_MAP2_TEXTURE_COORD_4;
-    case PXOpenGLMAP2_VERTEX_3:
-        return GL_MAP2_VERTEX_3;
-    case PXOpenGLMAP2_VERTEX_4:
-        return GL_MAP2_VERTEX_4;
-    case PXOpenGLMINMAX:
-        return GL_MINMAX;
-    case PXOpenGLMULTISAMPLE:
-        return GL_MULTISAMPLE;
-    case PXOpenGLNORMALIZE:
-        return GL_NORMALIZE;
-    case PXOpenGLPOINT_SMOOTH:
-        return GL_POINT_SMOOTH;
-    case PXOpenGLPOINT_SPRITE:
-        return GL_POINT_SPRITE;
-    case PXOpenGLPOLYGON_OFFSET_FILL:
-        return GL_POLYGON_OFFSET_FILL;
-    case PXOpenGLPOLYGON_OFFSET_LINE:
-        return GL_POLYGON_OFFSET_LINE;
-    case PXOpenGLPOLYGON_OFFSET_POINT:
-        return GL_POLYGON_OFFSET_POINT;
-    case PXOpenGLPOLYGON_SMOOTH:
-        return GL_POLYGON_SMOOTH;
-    case PXOpenGLPOLYGON_STIPPLE:
-        return GL_POLYGON_STIPPLE;
-    case PXOpenGLPOST_COLOR_MATRIX_COLOR_TABLE:
-        return GL_POST_COLOR_MATRIX_COLOR_TABLE;
-    case PXOpenGLPOST_CONVOLUTION_COLOR_TABLE:
-        return GL_POST_CONVOLUTION_COLOR_TABLE;
-    //case PXOpenGLRESCALE_NORMAL :return GL_RESCALE_NORMAL;
-    case PXOpenGLSAMPLE_ALPHA_TO_COVERAGE:
-        return GL_SAMPLE_ALPHA_TO_COVERAGE;
-    case PXOpenGLSAMPLE_ALPHA_TO_ONE:
-        return GL_SAMPLE_ALPHA_TO_ONE;
-    case PXOpenGLSAMPLE_COVERAGE:
-        return GL_SAMPLE_COVERAGE;
-    case PXOpenGLSEPARABLE_2D:
-        return GL_SEPARABLE_2D;
-    case PXOpenGLSCISSOR_TEST:
-        return GL_SCISSOR_TEST;
-    case PXOpenGLSTENCIL_TEST:
-        return GL_STENCIL_TEST;
-    case PXOpenGLTEXTURE_1D:
-        return GL_TEXTURE_1D;
-    case PXOpenGLTEXTURE_2D:
-        return GL_TEXTURE_2D;
-    case PXOpenGLTEXTURE_3D:
-        return GL_TEXTURE_3D;
-    case PXOpenGLTEXTURE_CUBE_MAP:
-        return GL_TEXTURE_CUBE_MAP;
-    case PXOpenGLTEXTURE_GEN_Q:
-        return GL_TEXTURE_GEN_Q;
-    case PXOpenGLTEXTURE_GEN_R:
-        return GL_TEXTURE_GEN_R;
-    case PXOpenGLTEXTURE_GEN_S:
-        return GL_TEXTURE_GEN_S;
-    case PXOpenGLTEXTURE_GEN_T:
-        return GL_TEXTURE_GEN_T;
-    case PXOpenGLVERTEX_PROGRAM_POINT_SIZE:
-        return GL_VERTEX_PROGRAM_POINT_SIZE;
-    case PXOpenGLVERTEX_PROGRAM_TWO_SIDE:
-        return GL_VERTEX_PROGRAM_TWO_SIDE;
+        case PXOpenGLALPHA_TEST:
+            return GL_ALPHA_TEST;
+        case PXOpenGLAUTO_NORMAL:
+            return GL_AUTO_NORMAL;
+        case PXOpenGLBLEND:
+            return GL_BLEND;
+            //case PXOpenGLCLIP_PLANEi :return GL_CLIP_PLANEi;
+        case PXOpenGLCOLOR_LOGIC_OP:
+            return GL_COLOR_LOGIC_OP;
+        case PXOpenGLCOLOR_MATERIAL:
+            return GL_COLOR_MATERIAL;
+            //case PXOpenGLCOLOR_SUM :return GL_COLOR_SUM;
+        case PXOpenGLCOLOR_TABLE:
+            return GL_COLOR_TABLE;
+        case PXOpenGLCONVOLUTION_1D:
+            return GL_CONVOLUTION_1D;
+        case PXOpenGLCONVOLUTION_2D:
+            return GL_CONVOLUTION_2D;
+        case PXOpenGLCULL_FACE:
+            return GL_CULL_FACE;
+        case PXOpenGLDEPTH_TEST:
+            return GL_DEPTH_TEST;
+        case PXOpenGLDITHER:
+            return GL_DITHER;
+        case PXOpenGLFOG:
+            return GL_FOG;
+        case PXOpenGLHISTOGRAM:
+            return GL_HISTOGRAM;
+        case PXOpenGLINDEX_LOGIC_OP:
+            return GL_INDEX_LOGIC_OP;
+            //case PXOpenGLLIGHTi :return GL_LIGHTi;
+        case PXOpenGLLIGHTING:
+            return GL_LIGHTING;
+        case PXOpenGLLINE_SMOOTH:
+            return GL_LINE_SMOOTH;
+        case PXOpenGLLINE_STIPPLE:
+            return GL_LINE_STIPPLE;
+        case PXOpenGLMAP1_COLOR_4:
+            return GL_MAP1_COLOR_4;
+        case PXOpenGLMAP1_INDEX:
+            return GL_MAP1_INDEX;
+        case PXOpenGLMAP1_NORMAL:
+            return GL_MAP1_NORMAL;
+        case PXOpenGLMAP1_TEXTURE_COORD_1:
+            return GL_MAP1_TEXTURE_COORD_1;
+        case PXOpenGLMAP1_TEXTURE_COORD_2:
+            return GL_MAP1_TEXTURE_COORD_2;
+        case PXOpenGLMAP1_TEXTURE_COORD_3:
+            return GL_MAP1_TEXTURE_COORD_3;
+        case PXOpenGLMAP1_TEXTURE_COORD_4:
+            return GL_MAP1_TEXTURE_COORD_4;
+        case PXOpenGLMAP1_VERTEX_3:
+            return GL_MAP1_VERTEX_3;
+        case PXOpenGLMAP1_VERTEX_4:
+            return GL_MAP1_VERTEX_4;
+        case PXOpenGLMAP2_COLOR_4:
+            return GL_MAP2_COLOR_4;
+        case PXOpenGLMAP2_INDEX:
+            return GL_MAP2_INDEX;
+        case PXOpenGLMAP2_NORMAL:
+            return GL_MAP2_NORMAL;
+        case PXOpenGLMAP2_TEXTURE_COORD_1:
+            return GL_MAP2_TEXTURE_COORD_1;
+        case PXOpenGLMAP2_TEXTURE_COORD_2:
+            return GL_MAP2_TEXTURE_COORD_2;
+        case PXOpenGLMAP2_TEXTURE_COORD_3:
+            return GL_MAP2_TEXTURE_COORD_3;
+        case PXOpenGLMAP2_TEXTURE_COORD_4:
+            return GL_MAP2_TEXTURE_COORD_4;
+        case PXOpenGLMAP2_VERTEX_3:
+            return GL_MAP2_VERTEX_3;
+        case PXOpenGLMAP2_VERTEX_4:
+            return GL_MAP2_VERTEX_4;
+        case PXOpenGLMINMAX:
+            return GL_MINMAX;
+        case PXOpenGLMULTISAMPLE:
+            return GL_MULTISAMPLE;
+        case PXOpenGLNORMALIZE:
+            return GL_NORMALIZE;
+        case PXOpenGLPOINT_SMOOTH:
+            return GL_POINT_SMOOTH;
+        case PXOpenGLPOINT_SPRITE:
+            return GL_POINT_SPRITE;
+        case PXOpenGLPOLYGON_OFFSET_FILL:
+            return GL_POLYGON_OFFSET_FILL;
+        case PXOpenGLPOLYGON_OFFSET_LINE:
+            return GL_POLYGON_OFFSET_LINE;
+        case PXOpenGLPOLYGON_OFFSET_POINT:
+            return GL_POLYGON_OFFSET_POINT;
+        case PXOpenGLPOLYGON_SMOOTH:
+            return GL_POLYGON_SMOOTH;
+        case PXOpenGLPOLYGON_STIPPLE:
+            return GL_POLYGON_STIPPLE;
+        case PXOpenGLPOST_COLOR_MATRIX_COLOR_TABLE:
+            return GL_POST_COLOR_MATRIX_COLOR_TABLE;
+        case PXOpenGLPOST_CONVOLUTION_COLOR_TABLE:
+            return GL_POST_CONVOLUTION_COLOR_TABLE;
+            //case PXOpenGLRESCALE_NORMAL :return GL_RESCALE_NORMAL;
+        case PXOpenGLSAMPLE_ALPHA_TO_COVERAGE:
+            return GL_SAMPLE_ALPHA_TO_COVERAGE;
+        case PXOpenGLSAMPLE_ALPHA_TO_ONE:
+            return GL_SAMPLE_ALPHA_TO_ONE;
+        case PXOpenGLSAMPLE_COVERAGE:
+            return GL_SAMPLE_COVERAGE;
+        case PXOpenGLSEPARABLE_2D:
+            return GL_SEPARABLE_2D;
+        case PXOpenGLSCISSOR_TEST:
+            return GL_SCISSOR_TEST;
+        case PXOpenGLSTENCIL_TEST:
+            return GL_STENCIL_TEST;
+        case PXOpenGLTEXTURE_1D:
+            return GL_TEXTURE_1D;
+        case PXOpenGLTEXTURE_2D:
+            return GL_TEXTURE_2D;
+        case PXOpenGLTEXTURE_3D:
+            return GL_TEXTURE_3D;
+        case PXOpenGLTEXTURE_CUBE_MAP:
+            return GL_TEXTURE_CUBE_MAP;
+        case PXOpenGLTEXTURE_GEN_Q:
+            return GL_TEXTURE_GEN_Q;
+        case PXOpenGLTEXTURE_GEN_R:
+            return GL_TEXTURE_GEN_R;
+        case PXOpenGLTEXTURE_GEN_S:
+            return GL_TEXTURE_GEN_S;
+        case PXOpenGLTEXTURE_GEN_T:
+            return GL_TEXTURE_GEN_T;
+        case PXOpenGLVERTEX_PROGRAM_POINT_SIZE:
+            return GL_VERTEX_PROGRAM_POINT_SIZE;
+        case PXOpenGLVERTEX_PROGRAM_TWO_SIDE:
+            return GL_VERTEX_PROGRAM_TWO_SIDE;
 
-    default:
-        return -1;
+        default:
+            return -1;
     }
 }
 
 PXInt32U PXAPI PXOpenGLImageFormatToID(const PXColorFormat pxColorFormat, PXInt32U* const imageFormat, PXInt32U* const dataFormat)
 {
-    switch (pxColorFormat)
+    switch(pxColorFormat)
     {
-    //case PXOpenGLImageFormatColorIndex: return GL_COLOR_INDEX;
-    //case PXOpenGLImageFormatStencilIndex: return GL_STENCIL_INDEX;
-    //case PXOpenGLImageFormatDepthComponent: return GL_DEPTH_COMPONENT;
-    case PXColorFormatR8:
-        *imageFormat = GL_RED;
-        *dataFormat = GL_UNSIGNED_BYTE;
-        break;
-    case PXColorFormatG8:
-        *imageFormat = GL_GREEN;
-        *dataFormat = GL_UNSIGNED_BYTE;
-        break;
+        //case PXOpenGLImageFormatColorIndex: return GL_COLOR_INDEX;
+        //case PXOpenGLImageFormatStencilIndex: return GL_STENCIL_INDEX;
+        //case PXOpenGLImageFormatDepthComponent: return GL_DEPTH_COMPONENT;
+        case PXColorFormatR8:
+            *imageFormat = GL_RED;
+            *dataFormat = GL_UNSIGNED_BYTE;
+            break;
+        case PXColorFormatG8:
+            *imageFormat = GL_GREEN;
+            *dataFormat = GL_UNSIGNED_BYTE;
+            break;
 
-    case PXColorFormatB8:
-        *imageFormat = GL_BLUE;
-        *dataFormat = GL_UNSIGNED_BYTE;
-        break;
+        case PXColorFormatB8:
+            *imageFormat = GL_BLUE;
+            *dataFormat = GL_UNSIGNED_BYTE;
+            break;
 
-    case PXColorFormatA8:
-        *imageFormat = GL_ALPHA;
-        *dataFormat = GL_UNSIGNED_BYTE;
-        break;
-
-
-
-    case PXColorFormatR16:
-        *imageFormat = GL_ALPHA;
-        *dataFormat = GL_UNSIGNED_SHORT;
-        break;
-
-    case PXColorFormatG16:
-        *imageFormat = GL_GREEN;
-        *dataFormat = GL_UNSIGNED_SHORT;
-        break;
-
-    case PXColorFormatB16:
-        *imageFormat = GL_BLUE;
-        *dataFormat = GL_UNSIGNED_SHORT;
-        break;
-
-    case PXColorFormatA16:
-        *imageFormat = GL_ALPHA;
-        *dataFormat = GL_UNSIGNED_SHORT;
-        break;
-
-
-    case PXColorFormatRGBI8:
-        *imageFormat = GL_RGB;
-        *dataFormat = GL_UNSIGNED_BYTE;
-        break;
-
-
-    case PXColorFormatRGBF:
-        *imageFormat = GL_RGB;
-        *dataFormat = GL_FLOAT;
-        break;
-
-    case PXColorFormatRGBD:
-        *imageFormat = GL_RGB;
-        *dataFormat = GL_DOUBLE;
-        break;
-
-
-    case PXColorFormatRGBAI8:
-        *imageFormat = GL_RGBA;
-        *dataFormat = GL_UNSIGNED_BYTE;
-        break;
+        case PXColorFormatA8:
+            *imageFormat = GL_ALPHA;
+            *dataFormat = GL_UNSIGNED_BYTE;
+            break;
 
 
 
-    case PXColorFormatRGBAF:
-        *imageFormat = GL_RGBA;
-        *dataFormat = GL_FLOAT;
-        break;
+        case PXColorFormatR16:
+            *imageFormat = GL_ALPHA;
+            *dataFormat = GL_UNSIGNED_SHORT;
+            break;
 
-    case PXColorFormatRGBAD:
-        *imageFormat = GL_RGBA;
-        *dataFormat = GL_DOUBLE;
-        break;
+        case PXColorFormatG16:
+            *imageFormat = GL_GREEN;
+            *dataFormat = GL_UNSIGNED_SHORT;
+            break;
+
+        case PXColorFormatB16:
+            *imageFormat = GL_BLUE;
+            *dataFormat = GL_UNSIGNED_SHORT;
+            break;
+
+        case PXColorFormatA16:
+            *imageFormat = GL_ALPHA;
+            *dataFormat = GL_UNSIGNED_SHORT;
+            break;
 
 
-    //case PXOpenGLImageFormatBGR: return GL_BGR;
-    //case PXOpenGLImageFormatBGRA: return GL_BGRA;
-    // case PXOpenGLImageFormatLuminance: return GL_LUMINANCE;
-    // case PXOpenGLImageFormatLuminanceAlpha: return GL_LUMINANCE_ALPHA;
-    default:
-        *imageFormat = -1;
-        *dataFormat = -1;
-        return PXFalse;
+        case PXColorFormatRGBI8:
+            *imageFormat = GL_RGB;
+            *dataFormat = GL_UNSIGNED_BYTE;
+            break;
+
+
+        case PXColorFormatRGBF:
+            *imageFormat = GL_RGB;
+            *dataFormat = GL_FLOAT;
+            break;
+
+        case PXColorFormatRGBD:
+            *imageFormat = GL_RGB;
+            *dataFormat = GL_DOUBLE;
+            break;
+
+
+        case PXColorFormatRGBAI8:
+            *imageFormat = GL_RGBA;
+            *dataFormat = GL_UNSIGNED_BYTE;
+            break;
+
+
+
+        case PXColorFormatRGBAF:
+            *imageFormat = GL_RGBA;
+            *dataFormat = GL_FLOAT;
+            break;
+
+        case PXColorFormatRGBAD:
+            *imageFormat = GL_RGBA;
+            *dataFormat = GL_DOUBLE;
+            break;
+
+
+            //case PXOpenGLImageFormatBGR: return GL_BGR;
+            //case PXOpenGLImageFormatBGRA: return GL_BGRA;
+            // case PXOpenGLImageFormatLuminance: return GL_LUMINANCE;
+            // case PXOpenGLImageFormatLuminanceAlpha: return GL_LUMINANCE_ALPHA;
+        default:
+            *imageFormat = -1;
+            *dataFormat = -1;
+            return PXFalse;
     }
 
     return PXTrue;
@@ -1486,7 +1486,7 @@ PXInt32U PXAPI PXOpenGLImageFormatToID(const PXColorFormat pxColorFormat, PXInt3
 
 PXActionResult PXAPI PXOpenGLSwapIntervalSet(PXOpenGL* const pxOpenGL, const PXInt32U interval)
 {
-    if (!pxOpenGL->SwapIntervalSet)
+    if(!pxOpenGL->SwapIntervalSet)
     {
 #if PXLogEnable
         PXLogPrint
@@ -1526,52 +1526,52 @@ PXActionResult PXAPI PXOpenGLSwapIntervalGet(PXOpenGL* const pxOpenGL, PXInt32U*
 
 PXInt32U PXAPI PXOpenGLTextureTypeToID(const PXGraphicTextureType pxGraphicTextureType)
 {
-    switch (pxGraphicTextureType)
+    switch(pxGraphicTextureType)
     {
-    case PXGraphicTextureType1D:
-        return  GL_TEXTURE_1D;
-    case PXGraphicTextureType2D:
-        return  GL_TEXTURE_2D;
-    case PXGraphicTextureType2DProxy:
-        return  GL_PROXY_TEXTURE_2D;
-    case PXGraphicTextureType3D:
-        return   GL_TEXTURE_3D;
-    case PXGraphicTextureType1DArray:
-        return   GL_TEXTURE_1D_ARRAY;
-    case PXGraphicTextureType1DBuffer:
-        return   GL_PROXY_TEXTURE_1D_ARRAY;
-    case PXGraphicTextureType2DArray:
-        return   GL_TEXTURE_2D_ARRAY;
-    case PXGraphicTextureTypeRectangle:
-        return GL_TEXTURE_RECTANGLE;
-    case PXGraphicTextureTypeRectangleProxy:
-        return GL_PROXY_TEXTURE_RECTANGLE;
-    case PXGraphicTextureTypeCubeContainer:
-        return  GL_TEXTURE_CUBE_MAP;
-    case PXGraphicTextureTypeCubeProxy:
-        return GL_PROXY_TEXTURE_CUBE_MAP;
-    case PXGraphicTextureTypeCubeTop:
-        return GL_TEXTURE_CUBE_MAP_POSITIVE_X;
-    case PXGraphicTextureTypeCubeDown:
-        return GL_TEXTURE_CUBE_MAP_NEGATIVE_X;
-    case PXGraphicTextureTypeCubeFront:
-        return GL_TEXTURE_CUBE_MAP_POSITIVE_Y;
-    case PXGraphicTextureTypeCubeBack:
-        return GL_TEXTURE_CUBE_MAP_NEGATIVE_Y;
-    case PXGraphicTextureTypeCubeLeft:
-        return GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
-    case PXGraphicTextureTypeCubeRight:
-        return GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
-    case PXGraphicTextureTypeCubeArray:
-        return   GL_TEXTURE_CUBE_MAP_ARRAY;
-    case PXGraphicTextureTypeBuffer:
-        return   GL_TEXTURE_BUFFER;
-    case PXGraphicTextureType2DMultiSample:
-        return   GL_TEXTURE_2D_MULTISAMPLE;
-    case PXGraphicTextureType2DMultiSampleArray:
-        return   GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
-    default:
-        return -1;
+        case PXGraphicTextureType1D:
+            return  GL_TEXTURE_1D;
+        case PXGraphicTextureType2D:
+            return  GL_TEXTURE_2D;
+        case PXGraphicTextureType2DProxy:
+            return  GL_PROXY_TEXTURE_2D;
+        case PXGraphicTextureType3D:
+            return   GL_TEXTURE_3D;
+        case PXGraphicTextureType1DArray:
+            return   GL_TEXTURE_1D_ARRAY;
+        case PXGraphicTextureType1DBuffer:
+            return   GL_PROXY_TEXTURE_1D_ARRAY;
+        case PXGraphicTextureType2DArray:
+            return   GL_TEXTURE_2D_ARRAY;
+        case PXGraphicTextureTypeRectangle:
+            return GL_TEXTURE_RECTANGLE;
+        case PXGraphicTextureTypeRectangleProxy:
+            return GL_PROXY_TEXTURE_RECTANGLE;
+        case PXGraphicTextureTypeCubeContainer:
+            return  GL_TEXTURE_CUBE_MAP;
+        case PXGraphicTextureTypeCubeProxy:
+            return GL_PROXY_TEXTURE_CUBE_MAP;
+        case PXGraphicTextureTypeCubeTop:
+            return GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+        case PXGraphicTextureTypeCubeDown:
+            return GL_TEXTURE_CUBE_MAP_NEGATIVE_X;
+        case PXGraphicTextureTypeCubeFront:
+            return GL_TEXTURE_CUBE_MAP_POSITIVE_Y;
+        case PXGraphicTextureTypeCubeBack:
+            return GL_TEXTURE_CUBE_MAP_NEGATIVE_Y;
+        case PXGraphicTextureTypeCubeLeft:
+            return GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
+        case PXGraphicTextureTypeCubeRight:
+            return GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
+        case PXGraphicTextureTypeCubeArray:
+            return   GL_TEXTURE_CUBE_MAP_ARRAY;
+        case PXGraphicTextureTypeBuffer:
+            return   GL_TEXTURE_BUFFER;
+        case PXGraphicTextureType2DMultiSample:
+            return   GL_TEXTURE_2D_MULTISAMPLE;
+        case PXGraphicTextureType2DMultiSampleArray:
+            return   GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
+        default:
+            return -1;
     }
 }
 
@@ -1580,28 +1580,28 @@ void PXAPI PXOpenGLBlendingMode(PXOpenGL* const pxOpenGL, const PXBlendingMode p
     GLenum sfactor = 0;
     GLenum dfactor = 0;
 
-    switch (pxBlendingMode)
+    switch(pxBlendingMode)
     {
-    case PXBlendingModeOneToOne:
-    {
-        sfactor = GL_ONE;
-        dfactor = GL_ONE;
-        break;
-    }
-    case PXBlendingModeNone:
-    {
-        pxOpenGL->Disable(GL_BLEND);
-        return;
-    }
-    case PXBlendingModeSoureAlphaOnly:
-    {
-        sfactor = GL_SRC_ALPHA;
-        dfactor = GL_ONE_MINUS_SRC_ALPHA;
-        break;
-    }
+        case PXBlendingModeOneToOne:
+        {
+            sfactor = GL_ONE;
+            dfactor = GL_ONE;
+            break;
+        }
+        case PXBlendingModeNone:
+        {
+            pxOpenGL->Disable(GL_BLEND);
+            return;
+        }
+        case PXBlendingModeSoureAlphaOnly:
+        {
+            sfactor = GL_SRC_ALPHA;
+            dfactor = GL_ONE_MINUS_SRC_ALPHA;
+            break;
+        }
 
-    default:
-        return;
+        default:
+            return;
     }
 
     pxOpenGL->Enable(GL_BLEND);
@@ -1610,51 +1610,51 @@ void PXAPI PXOpenGLBlendingMode(PXOpenGL* const pxOpenGL, const PXBlendingMode p
 
 PXOpenGLVersion PXAPI PXOpenGLVersionParse(const PXInt32U versionID)
 {
-    switch (versionID)
+    switch(versionID)
     {
-    case PXInt24Make(1, 0, 0):
-        return PXOpenGLVersion1x0x0;
-    case PXInt24Make(1, 1, 0):
-        return PXOpenGLVersion1x1x0;
-    case PXInt24Make(1, 2, 0):
-        return PXOpenGLVersion1x2x0;
-    case PXInt24Make(1, 2, 1):
-        return PXOpenGLVersion1x2x1;
-    case PXInt24Make(1, 3, 0):
-        return PXOpenGLVersion1x3x0;
-    case PXInt24Make(1, 4, 0):
-        return PXOpenGLVersion1x4x0;
-    case PXInt24Make(1, 5, 0):
-        return PXOpenGLVersion1x5x0;
-    case PXInt24Make(2, 0, 0):
-        return PXOpenGLVersion2x0x0;
-    case PXInt24Make(2, 1, 0):
-        return PXOpenGLVersion2x1x0;
-    case PXInt24Make(3, 0, 0):
-        return PXOpenGLVersion3x0x0;
-    case PXInt24Make(3, 1, 0):
-        return PXOpenGLVersion3x1x0;
-    case PXInt24Make(3, 2, 0):
-        return PXOpenGLVersion3x2x0;
-    case PXInt24Make(3, 3, 0):
-        return PXOpenGLVersion3x3x0;
-    case PXInt24Make(4, 0, 0):
-        return PXOpenGLVersion4x0x0;
-    case PXInt24Make(4, 1, 0):
-        return PXOpenGLVersion4x1x0;
-    case PXInt24Make(4, 2, 0):
-        return PXOpenGLVersion4x2x0;
-    case PXInt24Make(4, 3, 0):
-        return PXOpenGLVersion4x3x0;
-    case PXInt24Make(4, 4, 0):
-        return PXOpenGLVersion4x4x0;
-    case PXInt24Make(4, 5, 0):
-        return PXOpenGLVersion4x5x0;
-    case PXInt24Make(4, 6, 0):
-        return PXOpenGLVersion4x6x0;
+        case PXInt24Make(1, 0, 0):
+            return PXOpenGLVersion1x0x0;
+        case PXInt24Make(1, 1, 0):
+            return PXOpenGLVersion1x1x0;
+        case PXInt24Make(1, 2, 0):
+            return PXOpenGLVersion1x2x0;
+        case PXInt24Make(1, 2, 1):
+            return PXOpenGLVersion1x2x1;
+        case PXInt24Make(1, 3, 0):
+            return PXOpenGLVersion1x3x0;
+        case PXInt24Make(1, 4, 0):
+            return PXOpenGLVersion1x4x0;
+        case PXInt24Make(1, 5, 0):
+            return PXOpenGLVersion1x5x0;
+        case PXInt24Make(2, 0, 0):
+            return PXOpenGLVersion2x0x0;
+        case PXInt24Make(2, 1, 0):
+            return PXOpenGLVersion2x1x0;
+        case PXInt24Make(3, 0, 0):
+            return PXOpenGLVersion3x0x0;
+        case PXInt24Make(3, 1, 0):
+            return PXOpenGLVersion3x1x0;
+        case PXInt24Make(3, 2, 0):
+            return PXOpenGLVersion3x2x0;
+        case PXInt24Make(3, 3, 0):
+            return PXOpenGLVersion3x3x0;
+        case PXInt24Make(4, 0, 0):
+            return PXOpenGLVersion4x0x0;
+        case PXInt24Make(4, 1, 0):
+            return PXOpenGLVersion4x1x0;
+        case PXInt24Make(4, 2, 0):
+            return PXOpenGLVersion4x2x0;
+        case PXInt24Make(4, 3, 0):
+            return PXOpenGLVersion4x3x0;
+        case PXInt24Make(4, 4, 0):
+            return PXOpenGLVersion4x4x0;
+        case PXInt24Make(4, 5, 0):
+            return PXOpenGLVersion4x5x0;
+        case PXInt24Make(4, 6, 0):
+            return PXOpenGLVersion4x6x0;
 
-    default:
-        return  PXOpenGLVersionInvalid;
+        default:
+            return  PXOpenGLVersionInvalid;
     }
 }
 
@@ -1672,31 +1672,31 @@ PXActionResult PXAPI PXOpenGLErrorCurrent(PXOpenGL* const pxOpenGL)
 {
     const GLenum openGLErrorID = pxOpenGL->GetError();
 
-    switch (openGLErrorID)
+    switch(openGLErrorID)
     {
-    case GL_NO_ERROR:
-        return PXActionSuccessful;
-    case GL_INVALID_ENUM:
-        return PXActionRefusedArgumentInvalid;
-    case GL_INVALID_VALUE:
-        return PXActionRefusedArgumentInvalid;
-    case GL_INVALID_OPERATION:
-        return PXActionRefusedInvalidOperationSpecified;
-    case GL_STACK_OVERFLOW:
-        return PXActionFailedStackOverflow;
-    case GL_STACK_UNDERFLOW:
-        return PXActionFailedStackUnderflow;
-    case GL_OUT_OF_MEMORY:
-        return PXActionFailedMemoryAllocation;
-    //case GL_INVALID_FRAMEBUFFER_OPERATION:    return 00;
+        case GL_NO_ERROR:
+            return PXActionSuccessful;
+        case GL_INVALID_ENUM:
+            return PXActionRefusedArgumentInvalid;
+        case GL_INVALID_VALUE:
+            return PXActionRefusedArgumentInvalid;
+        case GL_INVALID_OPERATION:
+            return PXActionRefusedInvalidOperationSpecified;
+        case GL_STACK_OVERFLOW:
+            return PXActionFailedStackOverflow;
+        case GL_STACK_UNDERFLOW:
+            return PXActionFailedStackUnderflow;
+        case GL_OUT_OF_MEMORY:
+            return PXActionFailedMemoryAllocation;
+            //case GL_INVALID_FRAMEBUFFER_OPERATION:    return 00;
 
-    /*
-    case GL_CONTEXT_LOST:
-    case GL_TABLE_TOO_LARGE1:
-    */
+            /*
+            case GL_CONTEXT_LOST:
+            case GL_TABLE_TOO_LARGE1:
+            */
 
-    default:
-        return PXActionInvalid;
+        default:
+            return PXActionInvalid;
     }
 }
 
@@ -1724,7 +1724,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
 
     // Safety
     {
-        if (!pxOpenGL)
+        if(!pxOpenGL)
         {
             return PXActionRefusedArgumentNull;
         }
@@ -1784,15 +1784,15 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
         char openglLibName[]
             =
 #if OSUnix
-                "opengl32.so"
+            "opengl32.so"
 #elif OSWindows
-                "opengl32.dll"
+            "opengl32.dll"
 #endif
-                ;
+            ;
 
         const PXActionResult libOpenResult = PXLibraryOpenA(&pxOpenGL->LibraryOpenGL, openglLibName);
 
-        if (PXActionSuccessful != libOpenResult)
+        if(PXActionSuccessful != libOpenResult)
         {
             return PXActionRefusedNotSupportedByOperatingSystem;
         }
@@ -2221,7 +2221,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
     {
         const PXBool successful = visualInfo != 0;
 
-        if (!successful)
+        if(!successful)
         {
             return; // no appropriate visual found
         }
@@ -2277,7 +2277,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
         {
             pxOpenGL->ContextCreateAttributes = (PXOpenGLContextCreateAttributes)pxOpenGL->FunctionPointerGet("wglCreateContextAttribsARB");
 
-            if (pxOpenGL->ContextCreateAttributes)
+            if(pxOpenGL->ContextCreateAttributes)
             {
                 const int attributeList[] =
                 {
@@ -2287,11 +2287,11 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
                 };
 
                 const HGLRC contextAttributes = pxOpenGL->ContextCreateAttributes
-                                                (
-                                                    pxGraphicInitializeInfo->HandleDeviceContext,
-                                                    pxOpenGL->ContextHandle,
-                                                    attributeList
-                                                );
+                (
+                    pxGraphicInitializeInfo->HandleDeviceContext,
+                    pxOpenGL->ContextHandle,
+                    attributeList
+                );
 
                 const PXActionResult xx = PXOpenGLErrorCurrent(pxOpenGL);
             }
@@ -2782,7 +2782,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
     //-----------------------------------------------------
     {
 #if 0
-        if (pxOpenGL->StringGetExtensions)
+        if(pxOpenGL->StringGetExtensions)
         {
             char* teeext = pxOpenGL->StringGetExtensions(pxOpenGL->AttachedWindow->HandleDeviceContext);
             PXInt32U wglExtenionAmount = 0;
@@ -2793,7 +2793,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
                 pxFile.DataSize = PXFileFindEndOfText(&pxFile);
                 pxFile.DataAllocated = pxFile.DataSize;
 
-                while (!PXFileIsAtEnd(&pxFile))
+                while(!PXFileIsAtEnd(&pxFile))
                 {
                     char wurst[256];
                     PXClear(wurst, wurst);
@@ -2840,11 +2840,11 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
 #endif
 
 #if 0
-        for (int i = 0; i < numberOfExtensions; ++i)
+        for(int i = 0; i < numberOfExtensions; ++i)
         {
             const char* ccc = (const char*)pxOpenGL->StringI(GL_EXTENSIONS, i);
 
-            printf("| %3i | %-40s |\n", i+1, ccc);
+            printf("| %3i | %-40s |\n", i + 1, ccc);
         }
 #endif
     }
@@ -2878,7 +2878,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
 
         PXOpenGLDevicePhysicalListFetch(pxOpenGL, devices, &pxGraphicDevicePhysical);
 
-        for (PXInt32U i = 0; i < devices; i++)
+        for(PXInt32U i = 0; i < devices; i++)
         {
             PXText pxTextVideoMemoryCurrent;
             PXTextConstructNamedBufferA(&pxTextVideoMemoryCurrent, pxTextVideoMemoryCurrentBuffer, 32);
@@ -2990,7 +2990,7 @@ PXInt64S PXAPI PXOpenGLIntergetGet(PXOpenGL* const pxOpenGL, const GLenum enumID
 {
     PXInt64S result = 0;
 
-    if (pxOpenGL->glGetInteger64v)
+    if(pxOpenGL->glGetInteger64v)
     {
         PXInt64S currentMemory = 0;
 
@@ -2998,7 +2998,7 @@ PXInt64S PXAPI PXOpenGLIntergetGet(PXOpenGL* const pxOpenGL, const GLenum enumID
 
         result = currentMemory;
     }
-    else if (pxOpenGL->glGetIntegerv)
+    else if(pxOpenGL->glGetIntegerv)
     {
         PXInt32S currentMemory = 0;
 
@@ -3012,17 +3012,17 @@ PXInt64S PXAPI PXOpenGLIntergetGet(PXOpenGL* const pxOpenGL, const GLenum enumID
     }
 
 
-    switch (enumID)
+    switch(enumID)
     {
-    case GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX:
-    case GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX:
-    case GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX:
-    case GPU_MEMORY_INFO_EVICTION_COUNT_NVX:
-    case GPU_MEMORY_INFO_EVICTED_MEMORY_NVX:
-    {
-        result *= 1000;
-        break;
-    }
+        case GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX:
+        case GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX:
+        case GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX:
+        case GPU_MEMORY_INFO_EVICTION_COUNT_NVX:
+        case GPU_MEMORY_INFO_EVICTED_MEMORY_NVX:
+        {
+            result *= 1000;
+            break;
+        }
     }
 
 
@@ -3031,7 +3031,7 @@ PXInt64S PXAPI PXOpenGLIntergetGet(PXOpenGL* const pxOpenGL, const GLenum enumID
 
 PXActionResult PXAPI PXOpenGLDevicePhysicalListAmount(PXOpenGL* const pxOpenGL, PXInt32U* const amount)
 {
-    if (!(pxOpenGL && amount))
+    if(!(pxOpenGL && amount))
     {
         return PXActionRefusedArgumentNull;
     }
@@ -3040,7 +3040,7 @@ PXActionResult PXAPI PXOpenGLDevicePhysicalListAmount(PXOpenGL* const pxOpenGL, 
 
 #if OSUnix
 
-    *amount = 1; // ToDo: Bad Hack, get the correct amount!
+    * amount = 1; // ToDo: Bad Hack, get the correct amount!
 
     return PXActionRefusedNotImplemented;
 
@@ -3049,12 +3049,12 @@ PXActionResult PXAPI PXOpenGLDevicePhysicalListAmount(PXOpenGL* const pxOpenGL, 
 #if 0
     HGPUNV listOfHandles[64];
 
-    if (!pxOpenGL->DevicePhysicalList)
+    if(!pxOpenGL->DevicePhysicalList)
     {
         return PXActionRefusedNotSupported;
     }
 
-    for (PXSize gpuID = 0; pxOpenGL->DevicePhysicalList(gpuID, &listOfHandles[gpuID]); ++gpuID)
+    for(PXSize gpuID = 0; pxOpenGL->DevicePhysicalList(gpuID, &listOfHandles[gpuID]); ++gpuID)
     {
         printf("[OpenGL] GPU <%i>\n", gpuID);
 
@@ -3062,7 +3062,7 @@ PXActionResult PXAPI PXOpenGLDevicePhysicalListAmount(PXOpenGL* const pxOpenGL, 
         PXClear(GPU_DEVICE, &gpuDEVICE);
         gpuDEVICE.cb = sizeof(GPU_DEVICE);
 
-        for (PXSize displayID = 0; displayID < pxOpenGL->DevicePhysicalListB(listOfHandles[gpuID], displayID, &gpuDEVICE); ++displayID)
+        for(PXSize displayID = 0; displayID < pxOpenGL->DevicePhysicalListB(listOfHandles[gpuID], displayID, &gpuDEVICE); ++displayID)
         {
             printf
             (
@@ -3080,12 +3080,12 @@ PXActionResult PXAPI PXOpenGLDevicePhysicalListAmount(PXOpenGL* const pxOpenGL, 
 
 PXActionResult PXAPI PXOpenGLDevicePhysicalListFetch(PXOpenGL* const pxOpenGL, const PXInt32U amount, PXGraphicDevicePhysical* const pxGraphicDevicePhysicalList)
 {
-    if (!(pxOpenGL && pxGraphicDevicePhysicalList))
+    if(!(pxOpenGL && pxGraphicDevicePhysicalList))
     {
         return PXActionRefusedArgumentNull;
     }
 
-    if (amount == 0)
+    if(amount == 0)
     {
         return PXActionSuccessful;
     }
@@ -3123,12 +3123,12 @@ PXActionResult PXAPI PXOpenGLDevicePhysicalListFetch(PXOpenGL* const pxOpenGL, c
 
         pxOpenGL->Version = PXOpenGLVersionInvalid;
 
-        if (offset != -1)
+        if(offset != -1)
         {
             PXTextAdvance(&pxTextVersion, offset + 1u); // dot
             offset = PXTextToInt(&pxTextVersion, &versionMinor);
 
-            if (offset != -1)
+            if(offset != -1)
             {
                 PXTextAdvance(&pxTextVersion, offset + 1u); // dot
                 PXTextToInt(&pxTextVersion, &versionPatch);
@@ -3220,7 +3220,7 @@ void PXAPI PXOpenGLSettingChange(PXOpenGL* const pxOpenGL, const PXOpenGLToggle 
 {
     const GLenum settingID = PXOpenGLToggleToID(toggle);
 
-    if (state)
+    if(state)
     {
         pxOpenGL->Enable(settingID);
     }
@@ -3239,20 +3239,20 @@ void PXAPI PXOpenGLDrawMode(PXOpenGL* const pxOpenGL, const PXGraphicDrawFillMod
 {
     GLenum fillMode;
 
-    switch (pxGraphicDrawFillMode)
+    switch(pxGraphicDrawFillMode)
     {
-    case PXGraphicDrawFillModePoints:
-        fillMode = GL_POINT;
-        break;
-    case PXGraphicDrawFillModeLines:
-        fillMode = GL_LINE;
-        break;
-    case PXGraphicDrawFillModeFill:
-        fillMode = GL_FILL;
-        break;
-    case PXGraphicDrawFillModeInvalid:
-    default:
-        return;
+        case PXGraphicDrawFillModePoints:
+            fillMode = GL_POINT;
+            break;
+        case PXGraphicDrawFillModeLines:
+            fillMode = GL_LINE;
+            break;
+        case PXGraphicDrawFillModeFill:
+            fillMode = GL_FILL;
+            break;
+        case PXGraphicDrawFillModeInvalid:
+        default:
+            return;
     }
 
     pxOpenGL->PolygonMode(GL_FRONT_AND_BACK, fillMode);
@@ -3269,7 +3269,7 @@ PXBool PXAPI PXOpenGLSceneDeploy(PXOpenGL* const pxOpenGL)
 #if 0
     PXWindow* const pxWindow = pxOpenGL->AttachedWindow;
 
-    if (pxWindow->HasSizeChanged) // Check if view has changed.
+    if(pxWindow->HasSizeChanged) // Check if view has changed.
     {
         // pxOpenGL->Viewport(0, 0, pxWindow->Width, pxWindow->Height); // Map view to full screen
         //  pxWindow->HasSizeChanged = PXFalse; // No change needed after this change
@@ -3335,7 +3335,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
     PXVertexBuffer* const pxVertexBuffer = &pxModel->Mesh.VertexBuffer;
     PXIndexBuffer* const pxIndexBuffer = &pxModel->Mesh.IndexBuffer;
 
-    if (!pxVertexBuffer->VertexData) // Has data?
+    if(!pxVertexBuffer->VertexData) // Has data?
     {
         return PXActionRefusedArgumentInvalid;
     }
@@ -3347,7 +3347,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
 
     void* indexData = 0;
 
-    if (supportVAO)
+    if(supportVAO)
     {
         pxOpenGL->VertexArrayBind(pxModel->Info.Handle.OpenGLID); // Select VAO
 
@@ -3362,7 +3362,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
     }
     else
     {
-        if (supportBuffers)
+        if(supportBuffers)
         {
             pxOpenGL->BufferBind(GL_ARRAY_BUFFER, pxVertexBuffer->Info.Handle.OpenGLID); // Select VBO
             pxOpenGL->BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->Info.Handle.OpenGLID); // Select IBO
@@ -3374,25 +3374,25 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
         else
         {
             // Setup vertex data client side
-            switch (pxVertexBuffer->Format)
+            switch(pxVertexBuffer->Format)
             {
-            case PXVertexBufferFormatT2F_XYZ:
-            {
-                //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-                //glEnableClientState(GL_VERTEX_ARRAY);
-                pxOpenGL->InterleavedArrays(GL_T2F_V3F, 0, pxVertexBuffer->VertexData);
-                break;
-            }
-            case PXVertexBufferFormatT2F_N3F_XYZ:
-            {
-                //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-                //glEnableClientState(GL_NORMAL_ARRAY);
-                //glEnableClientState(GL_VERTEX_ARRAY);
-                pxOpenGL->InterleavedArrays(GL_T2F_N3F_V3F, 0, pxVertexBuffer->VertexData);
-                break;
-            }
-            default:
-                break;
+                case PXVertexBufferFormatT2F_XYZ:
+                {
+                    //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+                    //glEnableClientState(GL_VERTEX_ARRAY);
+                    pxOpenGL->InterleavedArrays(GL_T2F_V3F, 0, pxVertexBuffer->VertexData);
+                    break;
+                }
+                case PXVertexBufferFormatT2F_N3F_XYZ:
+                {
+                    //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+                    //glEnableClientState(GL_NORMAL_ARRAY);
+                    //glEnableClientState(GL_VERTEX_ARRAY);
+                    pxOpenGL->InterleavedArrays(GL_T2F_N3F_V3F, 0, pxVertexBuffer->VertexData);
+                    break;
+                }
+                default:
+                    break;
             }
 
             // Setup index data client side
@@ -3400,10 +3400,10 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
 
             GLenum indexTypeID = 0;
 
-            switch (pxIndexBuffer->IndexDataType)
+            switch(pxIndexBuffer->IndexDataType)
             {
-            default:
-                break;
+                default:
+                    break;
             }
 
             //glIndexPointer(indexBufferTypeID, 0, pxModel->IndexBuffer.IndexData);
@@ -3421,12 +3421,12 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
     PXMatrix4x4FCopy(matrixView, &modifiedViewMatrix);
     PXMatrix4x4FCopy(matrixModel, &modifiedModelMatrix);
 
-    if (pxModel->IgnoreViewPosition)
+    if(pxModel->IgnoreViewPosition)
     {
         PXMatrix4x4FResetAxisW(&modifiedViewMatrix);
     }
 
-    if (pxModel->IgnoreViewRotation)
+    if(pxModel->IgnoreViewRotation)
     {
         PXMatrix4x4FIdentity(&modifiedViewMatrix);
 
@@ -3436,7 +3436,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
 
     // PXMatrix4x4FScaleByMargin(&modifiedModelMatrix, &pxModel->Margin);
 
-    if (canUseShader)
+    if(canUseShader)
     {
         PXOpenGLShaderProgramSelect(pxOpenGL, pxShaderProgram);
 
@@ -3519,7 +3519,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
 
     pxOpenGL->Enable(GL_DEPTH_TEST);
 
-    if (!pxModel->RenderBothSides)
+    if(!pxModel->RenderBothSides)
     {
         pxOpenGL->Enable(GL_CULL_FACE);
     }
@@ -3558,27 +3558,27 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
 
     const PXBool hasNoIndexArray = pxIndexBuffer->Info.Handle.OpenGLID == -1;
 
-    if (pxIndexBuffer->DrawModeID & PXDrawModeIDTriangle)
+    if(pxIndexBuffer->DrawModeID & PXDrawModeIDTriangle)
     {
         pxOpenGL->Color4f(1, 1, 1, 1);
 
         const PXBool renderSegmented = pxIndexBuffer->SegmentListAmount > 1;
 
-        if (renderSegmented)
+        if(renderSegmented)
         {
             PXSize renderOffset = 0;
 
-            for (size_t i = 0; i < pxIndexBuffer->SegmentListAmount; i++)
+            for(size_t i = 0; i < pxIndexBuffer->SegmentListAmount; i++)
             {
                 PXIndexSegment* const pxIndexSegment = &pxIndexBuffer->SegmentList[i];
                 PXTexture2D* pxTexture = 0;
 
-                if (pxIndexSegment->Material)
+                if(pxIndexSegment->Material)
                 {
                     pxTexture = pxIndexSegment->Material->DiffuseTexture;
                 }
 
-                if (pxTexture)
+                if(pxTexture)
                 {
                     pxOpenGL->Enable(GL_TEXTURE_2D);
                     pxOpenGL->TextureBind(GL_TEXTURE_2D, pxTexture->Info.Handle.OpenGLID);
@@ -3589,7 +3589,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
                     pxOpenGL->Disable(GL_TEXTURE_2D);
                 }
 
-                if (pxIndexBuffer->Info.Handle.OpenGLID == -1) // Does this index array exist?
+                if(pxIndexBuffer->Info.Handle.OpenGLID == -1) // Does this index array exist?
                 {
                     // Render withoút an index buffer
                     pxOpenGL->DrawArrays(GL_TRIANGLES, renderOffset, pxIndexSegment->DataRange);
@@ -3614,7 +3614,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
                 pxMaterial = pxRenderEntity->MaterialOverride;
             }
 
-            if (pxMaterial)
+            if(pxMaterial)
             {
                 PXShaderVariable pxShaderVariableList[3];
                 PXClearList(PXShaderVariable, pxShaderVariableList, 3);
@@ -3649,7 +3649,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
                     pxTexture = pxRenderEntity->Texture2DOverride;
                 }
 
-                if (pxTexture)
+                if(pxTexture)
                 {
                     pxOpenGL->Enable(GL_TEXTURE_2D);
                     pxOpenGL->TextureBind(GL_TEXTURE_2D, pxTexture->Info.Handle.OpenGLID);
@@ -3667,7 +3667,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
 
             }
 
-            if (hasNoIndexArray)
+            if(hasNoIndexArray)
             {
                 pxOpenGL->DrawArrays(GL_TRIANGLES, 0, drawElementsCount);
             }
@@ -3677,11 +3677,11 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
             }
         }
     }
-    if (pxIndexBuffer->DrawModeID & PXDrawModeIDSquare)
+    if(pxIndexBuffer->DrawModeID & PXDrawModeIDSquare)
     {
         pxOpenGL->Color4f(1, 1, 1, 1);
 
-        if (hasNoIndexArray)
+        if(hasNoIndexArray)
         {
             pxOpenGL->DrawArrays(GL_QUADS, 0, drawElementsCount);
         }
@@ -3690,11 +3690,11 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
             pxOpenGL->DrawElements(GL_QUADS, drawElementsCount, indexBufferTypeID, indexData);
         }
     }
-    if (pxIndexBuffer->DrawModeID & PXDrawModeIDLineLoop)
+    if(pxIndexBuffer->DrawModeID & PXDrawModeIDLineLoop)
     {
         pxOpenGL->Color4f(0, 1, 0, 1);
 
-        if (hasNoIndexArray)
+        if(hasNoIndexArray)
         {
             pxOpenGL->DrawArrays(GL_LINE_LOOP, 0, drawElementsCount);
         }
@@ -3716,11 +3716,11 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
             pxOpenGL->DrawElements(GL_LINES, drawElementsCount, indexBufferTypeID, indexData);
         }
     }
-    if (pxIndexBuffer->DrawModeID & PXDrawModeIDPoint)
+    if(pxIndexBuffer->DrawModeID & PXDrawModeIDPoint)
     {
         pxOpenGL->Color4f(1, 1, 0, 1);
 
-        if (hasNoIndexArray)
+        if(hasNoIndexArray)
         {
             pxOpenGL->DrawArrays(GL_POINTS, 0, drawElementsCount);
         }
@@ -3737,13 +3737,13 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
     //-----------------------------------------------------
     // Demap
     //-----------------------------------------------------
-    if (supportVAO)
+    if(supportVAO)
     {
         pxOpenGL->VertexArrayBind(0); // Deselect VAO
     }
     else
     {
-        if (supportBuffers)
+        if(supportBuffers)
         {
             pxOpenGL->BufferBind(GL_ELEMENT_ARRAY_BUFFER, 0);
             pxOpenGL->BufferBind(GL_ARRAY_BUFFER, 0);
@@ -3756,7 +3756,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
         }
     }
 
-    if (!canUseShader)
+    if(!canUseShader)
     {
         pxOpenGL->PopMatrix();
     }
@@ -3797,101 +3797,101 @@ void PXOpenGLAPI PXOpenGLErrorMessageCallback(const GLenum source, const GLenum 
     const char* sourceText = 0;
     const char* typeText = 0;
 
-    switch (source)
+    switch(source)
     {
-    case GL_DEBUG_SOURCE_API:
-        sourceText = "API";
-        break;
+        case GL_DEBUG_SOURCE_API:
+            sourceText = "API";
+            break;
 
-    case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
-        sourceText = "Window";
-        break;
+        case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
+            sourceText = "Window";
+            break;
 
-    case GL_DEBUG_SOURCE_SHADER_COMPILER:
-        sourceText = "Shader";
-        break;
+        case GL_DEBUG_SOURCE_SHADER_COMPILER:
+            sourceText = "Shader";
+            break;
 
-    case GL_DEBUG_SOURCE_THIRD_PARTY:
-        sourceText = "3rd Party";
-        break;
+        case GL_DEBUG_SOURCE_THIRD_PARTY:
+            sourceText = "3rd Party";
+            break;
 
-    case GL_DEBUG_SOURCE_APPLICATION:
-        sourceText = "Application";
-        break;
+        case GL_DEBUG_SOURCE_APPLICATION:
+            sourceText = "Application";
+            break;
 
-    case GL_DEBUG_SOURCE_OTHER:
-        sourceText = "Other";
-        break;
+        case GL_DEBUG_SOURCE_OTHER:
+            sourceText = "Other";
+            break;
 
-    default:
-        break;
+        default:
+            break;
     }
 
-    switch (type)
+    switch(type)
     {
-    case GL_DEBUG_TYPE_ERROR:
-        typeText = "Error";
-        break;
+        case GL_DEBUG_TYPE_ERROR:
+            typeText = "Error";
+            break;
 
-    case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
-        typeText = "DEPRECATED_BEHAVIOR";
-        break;
+        case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+            typeText = "DEPRECATED_BEHAVIOR";
+            break;
 
-    case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
-        typeText = "UNDEFINED_BEHAVIOR";
-        break;
+        case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+            typeText = "UNDEFINED_BEHAVIOR";
+            break;
 
-    case GL_DEBUG_TYPE_PORTABILITY:
-        typeText = "PORTABILITY";
-        break;
+        case GL_DEBUG_TYPE_PORTABILITY:
+            typeText = "PORTABILITY";
+            break;
 
-    case GL_DEBUG_TYPE_PERFORMANCE:
-        typeText = "PERFORMANCE";
-        break;
+        case GL_DEBUG_TYPE_PERFORMANCE:
+            typeText = "PERFORMANCE";
+            break;
 
-    case GL_DEBUG_TYPE_OTHER:
-        typeText = "OTHER";
-        break;
+        case GL_DEBUG_TYPE_OTHER:
+            typeText = "OTHER";
+            break;
 
-    case GL_DEBUG_TYPE_MARKER:
-        typeText = "MARKER";
-        break;
+        case GL_DEBUG_TYPE_MARKER:
+            typeText = "MARKER";
+            break;
 
-    case GL_DEBUG_TYPE_PUSH_GROUP:
-        typeText = "PUSH_GROUP";
-        break;
+        case GL_DEBUG_TYPE_PUSH_GROUP:
+            typeText = "PUSH_GROUP";
+            break;
 
-    case GL_DEBUG_TYPE_POP_GROUP:
-        typeText = "POP_GROUP";
-        break;
+        case GL_DEBUG_TYPE_POP_GROUP:
+            typeText = "POP_GROUP";
+            break;
 
-    default:
-        break;
+        default:
+            break;
     }
 
     PXLoggingType pxLoggingType;
 
-    switch (severity)
+    switch(severity)
     {
-    case GL_DEBUG_SEVERITY_HIGH:
-        pxLoggingType = PXLoggingError;
-        break;
+        case GL_DEBUG_SEVERITY_HIGH:
+            pxLoggingType = PXLoggingError;
+            break;
 
-    case GL_DEBUG_SEVERITY_MEDIUM:
-        pxLoggingType = PXLoggingWarning;
-        break;
+        case GL_DEBUG_SEVERITY_MEDIUM:
+            pxLoggingType = PXLoggingWarning;
+            break;
 
-    case GL_DEBUG_SEVERITY_LOW:
-        pxLoggingType = PXLoggingInfo;
-        break;
+        case GL_DEBUG_SEVERITY_LOW:
+            pxLoggingType = PXLoggingInfo;
+            break;
 
-    case GL_DEBUG_SEVERITY_NOTIFICATION:
-        pxLoggingType = PXLoggingInfo;
-        break;
+        case GL_DEBUG_SEVERITY_NOTIFICATION:
+            pxLoggingType = PXLoggingInfo;
+            break;
 
-    default:
-        pxLoggingType = PXLoggingTypeInvalid;
-        break;
+        default:
+            pxLoggingType = PXLoggingTypeInvalid;
+            break;
     }
 
 #if PXLogEnable
@@ -4650,7 +4650,7 @@ void BF::PXOpenGL::ShaderSetUniformVector4(int vector3UniformID, float x, float 
 
 PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram, PXShader* const shaderList, const PXSize amount)
 {
-    if (!pxOpenGL->ShaderProgramCreate)
+    if(!pxOpenGL->ShaderProgramCreate)
     {
         //PXResourceIDMarkAsUnused(&pxShaderProgram->Info);
         return PXActionRefusedNotSupportedByLibrary;
@@ -4814,7 +4814,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
     }
 
 
-    if (pxShaderProgram->Info.Flags & PXResourceInfoExist)
+    if(pxShaderProgram->Info.Flags & PXResourceInfoExist)
     {
 
         // Link shaders together
@@ -4863,18 +4863,18 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
     }
 
     // We used the Shaders above to compile, these elements are not used anymore.
-    for (PXSize i = 0; i < amount; ++i)
+    for(PXSize i = 0; i < amount; ++i)
     {
         PXShader* const shader = &shaderList[i];
         const PXBool isLoaded = shader->Info.Handle.OpenGLID != -1;
 
-        if (isLoaded)
+        if(isLoaded)
         {
             pxOpenGL->ShaderDelete(shader->Info.Handle.OpenGLID);
         }
     }
 
-    if (!(PXResourceInfoExist & pxShaderProgram->Info.Flags))
+    if(!(PXResourceInfoExist & pxShaderProgram->Info.Flags))
     {
         PXOpenGLShaderProgramDelete(pxOpenGL, pxShaderProgram);
 
@@ -4987,12 +4987,12 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
 
 PXActionResult PXAPI PXOpenGLShaderProgramSelect(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram)
 {
-    if (!pxOpenGL->ShaderProgramUse)
+    if(!pxOpenGL->ShaderProgramUse)
     {
         return PXActionRefusedNotSupportedByLibrary;
     }
 
-    if (!pxShaderProgram)
+    if(!pxShaderProgram)
     {
         pxOpenGL->ShaderProgramUse(0); // unbind shader
         return PXActionSuccessful;
@@ -5061,29 +5061,29 @@ PXActionResult PXAPI PXOpenGLShaderProgramDelete(PXOpenGL* const pxOpenGL, PXSha
 
 PXInt32U PXAPI PXOpenGLShaderTypeToID(const PXGraphicShaderType pxGraphicShaderType)
 {
-    switch (pxGraphicShaderType)
+    switch(pxGraphicShaderType)
     {
-    case PXShaderTypeVertex:
-        return GL_VERTEX_SHADER;
+        case PXShaderTypeVertex:
+            return GL_VERTEX_SHADER;
 
-    case PXShaderTypePixel:
-        return GL_FRAGMENT_SHADER;
+        case PXShaderTypePixel:
+            return GL_FRAGMENT_SHADER;
 
-    case PXShaderTypeTessellationControl:
-        return 0;// GL_TESS_CONTROL_SHADER;
+        case PXShaderTypeTessellationControl:
+            return 0;// GL_TESS_CONTROL_SHADER;
 
-    case PXShaderTypeTessellationEvaluation:
-        return 0;// GL_TESS_EVALUATION_SHADER;
+        case PXShaderTypeTessellationEvaluation:
+            return 0;// GL_TESS_EVALUATION_SHADER;
 
-    case PXShaderTypeGeometry:
-        return GL_GEOMETRY_SHADER;
+        case PXShaderTypeGeometry:
+            return GL_GEOMETRY_SHADER;
 
-    case PXShaderTypeCompute:
-        return 0;//GL_COMPUTE_SHADER;
+        case PXShaderTypeCompute:
+            return 0;//GL_COMPUTE_SHADER;
 
-    default:
-    case PXShaderTypeInvalid:
-        return -1;
+        default:
+        case PXShaderTypeInvalid:
+            return -1;
     }
 }
 
@@ -5107,13 +5107,13 @@ void PXAPI PXOpenGLDrawArraysInstanced(const PXOpenGL* const pxOpenGL, const PXG
     const PXBool isSupported = pxOpenGL->DrawArraysInstanced != PXNull;
     const GLenum renderModeID = PXOpenGLRenderModeToID(renderMode);
 
-    if (isSupported)
+    if(isSupported)
     {
         pxOpenGL->DrawArraysInstanced(renderModeID, startOffset, amount, instanceAmount);
     }
     else
     {
-        for (PXSize i = 0; i < instanceAmount; ++i)
+        for(PXSize i = 0; i < instanceAmount; ++i)
         {
             pxOpenGL->DrawArrays(renderModeID, startOffset, amount);
         }
@@ -5124,280 +5124,280 @@ PXActionResult PXAPI PXOpenGLTextureAction(PXOpenGL* const pxOpenGL, PXGraphicTe
 {
     switch(pxGraphicTexturInfo->Action)
     {
-    case PXResourceActionCreate:
-    {
-        // Batch create textures
-        PXInt32U* const openGLTextureIDListData = PXNull;
-        PXNewStackList(PXInt32U, pxGraphicTexturInfo->Amount, &openGLTextureIDListData, PXNull);
-
-        pxOpenGL->TextureCreate(pxGraphicTexturInfo->Amount, openGLTextureIDListData);
-
-        const PXActionResult createResult = PXOpenGLErrorCurrent(pxOpenGL);
-
-        if(createResult != PXActionSuccessful)
+        case PXResourceActionCreate:
         {
+            // Batch create textures
+            PXInt32U* const openGLTextureIDListData = PXNull;
+            PXNewStackList(PXInt32U, pxGraphicTexturInfo->Amount, &openGLTextureIDListData, PXNull);
+
+            pxOpenGL->TextureCreate(pxGraphicTexturInfo->Amount, openGLTextureIDListData);
+
+            const PXActionResult createResult = PXOpenGLErrorCurrent(pxOpenGL);
+
+            if(createResult != PXActionSuccessful)
+            {
+#if PXLogEnable
+                PXLogPrint
+                (
+                    PXLoggingError,
+                    "OpenGL",
+                    "Texture2D",
+                    "Batch <%i> creation failed",
+                    pxGraphicTexturInfo->Amount
+                );
+#endif
+
+                return createResult;
+            }
+
 #if PXLogEnable
             PXLogPrint
             (
-                PXLoggingError,
+                PXLoggingInfo,
                 "OpenGL",
                 "Texture2D",
-                "Batch <%i> creation failed",
+                "Batch <%i> created",
                 pxGraphicTexturInfo->Amount
             );
 #endif
 
-            return createResult;
+            for(PXSize textureIndex = 0; textureIndex < pxGraphicTexturInfo->Amount; textureIndex++)
+            {
+                const PXInt32U textureID = openGLTextureIDListData[textureIndex];
+                void* textureAdress = pxGraphicTexturInfo->TextureReference[textureIndex];
+
+                switch(pxGraphicTexturInfo->Type)
+                {
+                    case PXGraphicTextureType2D:
+                    {
+                        PXTexture2D* const pxTexture2D = (PXTexture2D*)textureAdress;
+                        pxTexture2D->Info.Handle.OpenGLID = textureID;
+
+                        // Bind resource
+                        {
+                            pxOpenGL->TextureBind(GL_TEXTURE_2D, pxTexture2D->Info.Handle.OpenGLID);
+
+                            const PXActionResult createResult = PXOpenGLErrorCurrent(pxOpenGL);
+
+                            if(PXActionSuccessful != createResult)
+                            {
+                                return createResult;
+                            }
+                        }
+
+                        // Texture Style setup
+                        {
+                            const GLint textureWrapWidth = PXOpenGLGraphicImageWrapToID(pxTexture2D->WrapWidth);
+                            const GLint textureWrapHeight = PXOpenGLGraphicImageWrapToID(pxTexture2D->WrapHeight);
+                            const GLint textueFilterNear = PXOpenGLGraphicImageLayoutToID(pxTexture2D->LayoutNear);
+                            const GLint textueFilterFar = PXOpenGLGraphicImageLayoutToID(pxTexture2D->LayoutFar);
+
+                            pxOpenGL->TextureParameterI(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, textureWrapWidth);
+                            pxOpenGL->TextureParameterI(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, textureWrapHeight);
+                            pxOpenGL->TextureParameterI(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, textueFilterNear); // Remember! This stuff is required for some reason, its not optional!
+                            pxOpenGL->TextureParameterI(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, textueFilterFar); // if not done, textures might be black.
+                            //glTexParameteri(openGLTextureTypeID, GL_GENERATE_MIPMAP, GL_FALSE);
+                        }
+
+                        //glTexParameterf(textureType, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16.0f);
+
+                        // Image upload
+                        {
+                            PXImage* pxImage = pxTexture2D->Image;
+
+                            if(!pxImage)
+                            {
+                                return PXActionSuccessful; // No image
+                            }
+
+                            if(!pxImage->PixelData)
+                            {
+                                return PXActionSuccessful; // No image data
+                            }
+
+                            // image data upload
+                            PXOpenGLTexture2DDataWrite(pxOpenGL, pxTexture2D);
+                        }
+
+                        pxOpenGL->TextureBind(GL_TEXTURE_2D, 0);
+
+                        break;
+                    }
+                    case PXGraphicTextureType3D:
+                    {
+                        PXTexture3D* const pxTexture3D = (PXTexture3D*)textureAdress;
+                        pxTexture3D->Info.Handle.OpenGLID = textureID;
+
+                        pxOpenGL->TextureBind(GL_TEXTURE_3D, textureID);
+
+                        // Do stuff
+
+                        pxOpenGL->TextureBind(GL_TEXTURE_3D, 0);
+
+                        break;
+                    }
+                    case PXGraphicTextureTypeCubeContainer:
+                    {
+                        PXTextureCube* const pxTextureCube = (PXTextureCube*)textureAdress;
+                        pxTextureCube->Info.Handle.OpenGLID = textureID;
+
+                        pxOpenGL->TextureBind(GL_TEXTURE_CUBE_MAP, textureID);
+
+                        pxOpenGL->TextureParameterI(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+                        pxOpenGL->TextureParameterI(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+                        pxOpenGL->TextureParameterI(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+                        pxOpenGL->TextureParameterI(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+                        pxOpenGL->TextureParameterI(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+                        pxOpenGL->TextureParameterI(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BASE_LEVEL, 0);
+                        pxOpenGL->TextureParameterI(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL, 0);
+
+                        pxOpenGL->Enable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+
+                        const PXInt16U openGLTextureTypeList[6] =
+                        {
+                            GL_TEXTURE_CUBE_MAP_POSITIVE_X,
+                            GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+                            GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
+                            GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+                            GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
+                            GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
+                        };
+
+                        PXImage* imageList[6] =
+                        {
+                            pxTextureCube->ImageA,
+                            pxTextureCube->ImageB,
+                            pxTextureCube->ImageC,
+                            pxTextureCube->ImageD,
+                            pxTextureCube->ImageE,
+                            pxTextureCube->ImageF,
+                        };
+
+                        for(PXSize i = 0; i < 6u; ++i)
+                        {
+                            PXImage* image = imageList[i];
+                            const PXInt16U textureTypeID = openGLTextureTypeList[i];
+                            const int levelOfDetail = 0;
+
+                            PXTexture2D pxTexture2D;
+                            pxTexture2D.Image = image;
+
+                            PXInt32U imageFormat;
+                            PXInt32U imageFormatType;
+                            PXInt32U internalFormat;
+                            PXInt32U internalType;
+
+                            const PXBool successA = PXOpenGLImageFormatToID(image->Format, &imageFormat, &imageFormatType);
+                            const PXBool successB = PXOpenGLImageFormatToID(PXColorFormatRGBAF, &internalFormat, &internalType);
+
+                            pxOpenGL->PixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+                            pxOpenGL->TextureData2D
+                            (
+                                textureTypeID,
+                                0, // detail
+                                internalFormat,
+                                image->Width,
+                                image->Height,
+                                0,
+                                imageFormat,
+                                imageFormatType,
+                                image->PixelData
+                            );
+                        }
+
+                        pxOpenGL->TextureBind(GL_TEXTURE_CUBE_MAP, 0);
+
+                        break;
+                    }
+
+                    default:
+                        break;
+                }
+            }
+
+            PXDeleteStackList(PXInt32U, pxGraphicTexturInfo->Amount, &openGLTextureIDListData, PXNull);
+
+            break;
         }
-
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            "OpenGL",
-            "Texture2D",
-            "Batch <%i> created",
-            pxGraphicTexturInfo->Amount
-        );
-#endif
-
-        for(PXSize textureIndex = 0; textureIndex < pxGraphicTexturInfo->Amount; textureIndex++)
+        case PXResourceActionDelete:
         {
-            const PXInt32U textureID = openGLTextureIDListData[textureIndex];
-            void* textureAdress = pxGraphicTexturInfo->TextureReference[textureIndex];
+            //pxOpenGL->TextureDelete(amount, textureIDList);
+
+            break;
+        }
+        case PXResourceActionUpdate:
+        {
+            break;
+        }
+        case PXResourceActionSelect:
+        {
+            PXInt32U textureType = 0;
+            PXInt32U textureID = 0;
+            PXInt32U enable = pxGraphicTexturInfo->TextureReference;
 
             switch(pxGraphicTexturInfo->Type)
             {
-            case PXGraphicTextureType2D:
-            {
-                PXTexture2D* const pxTexture2D = (PXTexture2D*)textureAdress;
-                pxTexture2D->Info.Handle.OpenGLID = textureID;
-
-                // Bind resource
+                case PXGraphicTextureType2D:
                 {
-                    pxOpenGL->TextureBind(GL_TEXTURE_2D, pxTexture2D->Info.Handle.OpenGLID);
+                    PXTexture2D* const pxTexture2D = pxGraphicTexturInfo->TextureReference;
 
-                    const PXActionResult createResult = PXOpenGLErrorCurrent(pxOpenGL);
-
-                    if(PXActionSuccessful != createResult)
+                    if(pxTexture2D)
                     {
-                        return createResult;
-                    }
-                }
-
-                // Texture Style setup
-                {
-                    const GLint textureWrapWidth = PXOpenGLGraphicImageWrapToID(pxTexture2D->WrapWidth);
-                    const GLint textureWrapHeight = PXOpenGLGraphicImageWrapToID(pxTexture2D->WrapHeight);
-                    const GLint textueFilterNear = PXOpenGLGraphicImageLayoutToID(pxTexture2D->LayoutNear);
-                    const GLint textueFilterFar = PXOpenGLGraphicImageLayoutToID(pxTexture2D->LayoutFar);
-
-                    pxOpenGL->TextureParameterI(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, textureWrapWidth);
-                    pxOpenGL->TextureParameterI(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, textureWrapHeight);
-                    pxOpenGL->TextureParameterI(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, textueFilterNear); // Remember! This stuff is required for some reason, its not optional!
-                    pxOpenGL->TextureParameterI(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, textueFilterFar); // if not done, textures might be black.
-                    //glTexParameteri(openGLTextureTypeID, GL_GENERATE_MIPMAP, GL_FALSE);
-                }
-
-                //glTexParameterf(textureType, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16.0f);
-
-                // Image upload
-                {
-                    PXImage* pxImage = pxTexture2D->Image;
-
-                    if(!pxImage)
-                    {
-                        return PXActionSuccessful; // No image
+                        textureID = pxTexture2D->Info.Handle.OpenGLID;
                     }
 
-                    if(!pxImage->PixelData)
+                    textureType = GL_TEXTURE_2D;
+
+                    break;
+                }
+                case PXGraphicTextureType3D:
+                {
+                    PXTexture3D* const pxTexture3D = pxGraphicTexturInfo->TextureReference;
+
+                    if(pxTexture3D)
                     {
-                        return PXActionSuccessful; // No image data
+                        textureID = pxTexture3D->Info.Handle.OpenGLID;
                     }
 
-                    // image data upload
-                    PXOpenGLTexture2DDataWrite(pxOpenGL, pxTexture2D);
+                    textureType = GL_TEXTURE_3D;
+
+                    break;
                 }
-
-                pxOpenGL->TextureBind(GL_TEXTURE_2D, 0);
-
-                break;
-            }
-            case PXGraphicTextureType3D:
-            {
-                PXTexture3D* const pxTexture3D = (PXTexture3D*)textureAdress;
-                pxTexture3D->Info.Handle.OpenGLID = textureID;
-
-                pxOpenGL->TextureBind(GL_TEXTURE_3D, textureID);
-
-                // Do stuff
-
-                pxOpenGL->TextureBind(GL_TEXTURE_3D, 0);
-
-                break;
-            }
-            case PXGraphicTextureTypeCubeContainer:
-            {
-                PXTextureCube* const pxTextureCube = (PXTextureCube*)textureAdress;
-                pxTextureCube->Info.Handle.OpenGLID = textureID;
-
-                pxOpenGL->TextureBind(GL_TEXTURE_CUBE_MAP, textureID);
-
-                pxOpenGL->TextureParameterI(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-                pxOpenGL->TextureParameterI(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-                pxOpenGL->TextureParameterI(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-                pxOpenGL->TextureParameterI(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-                pxOpenGL->TextureParameterI(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-                pxOpenGL->TextureParameterI(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BASE_LEVEL, 0);
-                pxOpenGL->TextureParameterI(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL, 0);
-
-                pxOpenGL->Enable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
-
-                const PXInt16U openGLTextureTypeList[6] =
+                case PXGraphicTextureTypeCubeContainer:
                 {
-                    GL_TEXTURE_CUBE_MAP_POSITIVE_X,
-                    GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
-                    GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
-                    GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
-                    GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
-                    GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
-                };
+                    PXTextureCube* const pxTextureCube = pxGraphicTexturInfo->TextureReference;
 
-                PXImage* imageList[6] =
-                {
-                    pxTextureCube->ImageA,
-                    pxTextureCube->ImageB,
-                    pxTextureCube->ImageC,
-                    pxTextureCube->ImageD,
-                    pxTextureCube->ImageE,
-                    pxTextureCube->ImageF,
-                };
+                    if(pxTextureCube)
+                    {
+                        textureID = pxTextureCube->Info.Handle.OpenGLID;
+                    }
 
-                for(PXSize i = 0; i < 6u; ++i)
-                {
-                    PXImage* image = imageList[i];
-                    const PXInt16U textureTypeID = openGLTextureTypeList[i];
-                    const int levelOfDetail = 0;
+                    textureType = GL_TEXTURE_CUBE_MAP;
 
-                    PXTexture2D pxTexture2D;
-                    pxTexture2D.Image = image;
-
-                    PXInt32U imageFormat;
-                    PXInt32U imageFormatType;
-                    PXInt32U internalFormat;
-                    PXInt32U internalType;
-
-                    const PXBool successA = PXOpenGLImageFormatToID(image->Format, &imageFormat, &imageFormatType);
-                    const PXBool successB = PXOpenGLImageFormatToID(PXColorFormatRGBAF, &internalFormat, &internalType);
-
-                    pxOpenGL->PixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-                    pxOpenGL->TextureData2D
-                    (
-                        textureTypeID,
-                        0, // detail
-                        internalFormat,
-                        image->Width,
-                        image->Height,
-                        0,
-                        imageFormat,
-                        imageFormatType,
-                        image->PixelData
-                    );
+                    break;
                 }
-
-                pxOpenGL->TextureBind(GL_TEXTURE_CUBE_MAP, 0);
-
-                break;
+                default:
+                    break;
             }
 
-            default:
-                break;
-            }
-        }
-
-        PXDeleteStackList(PXInt32U, pxGraphicTexturInfo->Amount, &openGLTextureIDListData, PXNull);
-
-        break;
-    }
-    case PXResourceActionDelete:
-    {
-        //pxOpenGL->TextureDelete(amount, textureIDList);
-
-        break;
-    }
-    case PXResourceActionUpdate:
-    {
-        break;
-    }
-    case PXResourceActionSelect:
-    {
-        PXInt32U textureType = 0;
-        PXInt32U textureID = 0;
-        PXInt32U enable = pxGraphicTexturInfo->TextureReference;
-
-        switch(pxGraphicTexturInfo->Type)
-        {
-        case PXGraphicTextureType2D:
-        {
-            PXTexture2D* const pxTexture2D = pxGraphicTexturInfo->TextureReference;
-
-            if(pxTexture2D)
+            if(enable)
             {
-                textureID = pxTexture2D->Info.Handle.OpenGLID;
+                pxOpenGL->Enable(textureType);
+                pxOpenGL->IsTexture2DEnabled = PXTrue;
+                pxOpenGL->TextureBind(textureType, textureID);
             }
-
-            textureType = GL_TEXTURE_2D;
-
-            break;
-        }
-        case PXGraphicTextureType3D:
-        {
-            PXTexture3D* const pxTexture3D = pxGraphicTexturInfo->TextureReference;
-
-            if(pxTexture3D)
+            else
             {
-                textureID = pxTexture3D->Info.Handle.OpenGLID;
+                pxOpenGL->TextureBind(textureType, 0);
+                pxOpenGL->IsTexture2DEnabled = PXFalse;
+                pxOpenGL->Disable(textureType);
             }
-
-            textureType = GL_TEXTURE_3D;
-
-            break;
-        }
-        case PXGraphicTextureTypeCubeContainer:
-        {
-            PXTextureCube* const pxTextureCube = pxGraphicTexturInfo->TextureReference;
-
-            if(pxTextureCube)
-            {
-                textureID = pxTextureCube->Info.Handle.OpenGLID;
-            }
-
-            textureType = GL_TEXTURE_CUBE_MAP;
 
             break;
         }
         default:
             break;
-        }
-
-        if(enable)
-        {
-            pxOpenGL->Enable(textureType);
-            pxOpenGL->IsTexture2DEnabled = PXTrue;
-            pxOpenGL->TextureBind(textureType, textureID);
-        }
-        else
-        {
-            pxOpenGL->TextureBind(textureType, 0);
-            pxOpenGL->IsTexture2DEnabled = PXFalse;
-            pxOpenGL->Disable(textureType);
-        }
-
-        break;
-    }
-    default:
-        break;
     }
 
     return PXActionSuccessful;
@@ -5539,7 +5539,7 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, const PXRenderEntity* co
         indexBuffer = pxIndexBuffer->IndexData;
     }
 
-    if (pxOpenGL->VertexArrayBind)
+    if(pxOpenGL->VertexArrayBind)
     {
         pxOpenGL->VertexArrayBind(pxModel->Info.Handle.OpenGLID);
     }
@@ -5547,7 +5547,7 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, const PXRenderEntity* co
 
     // pxOpenGL->PXOpenGLBindBufferCallBack(GL_ARRAY_BUFFER, pxSkyBox->Model.VertexBuffer.ResourceID.OpenGLID);
     // pxOpenGL->PXOpenGLBindBufferCallBack(GL_ELEMENT_ARRAY_BUFFER, pxSkyBox->Model.IndexBuffer.ResourceID.OpenGLID);
-    if (pxTextureCube)
+    if(pxTextureCube)
     {
         pxOpenGL->TextureBind(GL_TEXTURE_CUBE_MAP, pxTextureCube->Info.Handle.OpenGLID);
     }
@@ -5561,21 +5561,21 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, const PXRenderEntity* co
 
     const GLsizei drawElementsCount = pxIndexBuffer->IndexDataSize / (pxIndexBuffer->IndexDataType & PXDataTypeSizeMask);
 
-    if (pxIndexBuffer->DrawModeID & PXDrawModeIDPoint)
+    if(pxIndexBuffer->DrawModeID & PXDrawModeIDPoint)
     {
         pxOpenGL->DrawArrays(GL_POINTS, 0, drawElementsCount);
     }
-    if (pxIndexBuffer->DrawModeID & PXDrawModeIDLineLoop)
+    if(pxIndexBuffer->DrawModeID & PXDrawModeIDLineLoop)
     {
         pxOpenGL->DrawElements(GL_LINE_LOOP, drawElementsCount, GL_UNSIGNED_BYTE, indexBuffer);
     }
 
-    if (pxIndexBuffer->DrawModeID & PXDrawModeIDSquare)
+    if(pxIndexBuffer->DrawModeID & PXDrawModeIDSquare)
     {
         //pxOpenGL->DrawElements(GL_QUADS, 0, pxSkyBox->Model.IndexBuffer.IndexDataAmount, GL_UNSIGNED_BYTE, indexBuffer); // Not supported?
     }
 
-    if (pxIndexBuffer->DrawModeID & PXDrawModeIDTriangle)
+    if(pxIndexBuffer->DrawModeID & PXDrawModeIDTriangle)
     {
         pxOpenGL->DrawElements(GL_TRIANGLES, drawElementsCount, GL_UNSIGNED_BYTE, indexBuffer);
     }
@@ -5602,7 +5602,7 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, const PXRenderEntity* co
     // pxOpenGL->PXOpenGLBindBufferCallBack(GL_ELEMENT_ARRAY_BUFFER, 0);
     // pxOpenGL->PXOpenGLBindBufferCallBack(GL_ARRAY_BUFFER, 0);
 
-    if (pxOpenGL->VertexArrayBind)
+    if(pxOpenGL->VertexArrayBind)
     {
         pxOpenGL->VertexArrayBind(0);
     }
@@ -5642,24 +5642,24 @@ void PXAPI PXOpenGLFrameBufferBind(PXOpenGL* const pxOpenGL, const PXOpenGLFrame
 {
     unsigned int targetID = 0;
 
-    switch (target)
+    switch(target)
     {
-    default:
-    case PXOpenGLFrameBufferModeInvalid:
-        targetID = -1;
-        break;
+        default:
+        case PXOpenGLFrameBufferModeInvalid:
+            targetID = -1;
+            break;
 
-    case PXOpenGLFrameBufferModeDraw:
-        targetID = GL_DRAW_FRAMEBUFFER;
-        break;
+        case PXOpenGLFrameBufferModeDraw:
+            targetID = GL_DRAW_FRAMEBUFFER;
+            break;
 
-    case PXOpenGLFrameBufferModeRead:
-        targetID = GL_READ_FRAMEBUFFER;
-        break;
+        case PXOpenGLFrameBufferModeRead:
+            targetID = GL_READ_FRAMEBUFFER;
+            break;
 
-    case PXOpenGLFrameBufferModeDrawAndRead:
-        targetID = GL_FRAMEBUFFER;
-        break;
+        case PXOpenGLFrameBufferModeDrawAndRead:
+            targetID = GL_FRAMEBUFFER;
+            break;
     }
 
     pxOpenGL->FrameBufferBind(targetID, framebufferID); // GL_FRAMEBUFFER
@@ -5756,204 +5756,204 @@ PXActionResult PXAPI PXOpenGLShaderVariableSet(PXOpenGL* const pxOpenGL, const P
 
         switch(pxShaderVariable->DataType)
         {
-        case PXShaderVariableTypeInt32SSingle:
-        {
-            const int* const data = pxShaderVariable->Data;
-
-            if(pxShaderVariable->Amount > 1)
+            case PXShaderVariableTypeInt32SSingle:
             {
-                pxOpenGL->Uniform1iv
+                const int* const data = pxShaderVariable->Data;
+
+                if(pxShaderVariable->Amount > 1)
+                {
+                    pxOpenGL->Uniform1iv
+                    (
+                        pxShaderVariable->RegisterIndex,
+                        pxShaderVariable->Amount,
+                        pxShaderVariable->Data
+                    );
+                }
+                else
+                {
+                    pxOpenGL->Uniform1i(pxShaderVariable->RegisterIndex, data[0]);
+                }
+
+                break;
+            }
+            case PXShaderVariableTypeInt32SVector2:
+            {
+                const int* const data = pxShaderVariable->Data;
+
+                if(pxShaderVariable->Amount > 1)
+                {
+                    pxOpenGL->Uniform2iv
+                    (
+                        pxShaderVariable->RegisterIndex,
+                        pxShaderVariable->Amount,
+                        pxShaderVariable->Data
+                    );
+                }
+                else
+                {
+                    pxOpenGL->Uniform2i(pxShaderVariable->RegisterIndex, data[0], data[1]);
+                }
+
+                break;
+            }
+            case PXShaderVariableTypeInt32SVector3:
+            {
+                const int* const data = pxShaderVariable->Data;
+
+                if(pxShaderVariable->Amount > 1)
+                {
+                    pxOpenGL->Uniform3iv
+                    (
+                        pxShaderVariable->RegisterIndex,
+                        pxShaderVariable->Amount,
+                        pxShaderVariable->Data
+                    );
+                }
+                else
+                {
+                    pxOpenGL->Uniform3i(pxShaderVariable->RegisterIndex, data[0], data[1], data[2]);
+                }
+
+                break;
+            }
+            case PXShaderVariableTypeInt32SVector4:
+            {
+                const int* const data = pxShaderVariable->Data;
+
+                if(pxShaderVariable->Amount > 1)
+                {
+                    pxOpenGL->Uniform4iv
+                    (
+                        pxShaderVariable->RegisterIndex,
+                        pxShaderVariable->Amount,
+                        pxShaderVariable->Data
+                    );
+                }
+                else
+                {
+                    pxOpenGL->Uniform4i(pxShaderVariable->RegisterIndex, data[0], data[1], data[2], data[3]);
+                }
+
+                break;
+            }
+            case PXShaderVariableTypeFloatSingle:
+            {
+                const float* const data = pxShaderVariable->Data;
+
+                if(pxShaderVariable->Amount > 1)
+                {
+                    pxOpenGL->Uniform1fv
+                    (
+                        pxShaderVariable->RegisterIndex,
+                        pxShaderVariable->Amount,
+                        pxShaderVariable->Data
+                    );
+                }
+                else
+                {
+                    pxOpenGL->Uniform1f(pxShaderVariable->RegisterIndex, data[0]);
+                }
+
+                break;
+            }
+            case PXShaderVariableTypeFloatVector2:
+            {
+                const float* const data = pxShaderVariable->Data;
+
+                if(pxShaderVariable->Amount > 1)
+                {
+                    pxOpenGL->Uniform2fv
+                    (
+                        pxShaderVariable->RegisterIndex,
+                        pxShaderVariable->Amount,
+                        pxShaderVariable->Data
+                    );
+                }
+                else
+                {
+                    pxOpenGL->Uniform2f(pxShaderVariable->RegisterIndex, data[0], data[1]);
+                }
+
+                break;
+            }
+            case PXShaderVariableTypeFloatVector3:
+            {
+                const float* const data = pxShaderVariable->Data;
+
+                if(pxShaderVariable->Amount > 1)
+                {
+                    pxOpenGL->Uniform3fv
+                    (
+                        pxShaderVariable->RegisterIndex,
+                        pxShaderVariable->Amount,
+                        pxShaderVariable->Data
+                    );
+                }
+                else
+                {
+                    pxOpenGL->Uniform3f(pxShaderVariable->RegisterIndex, data[0], data[1], data[2]);
+                }
+
+                break;
+            }
+            case PXShaderVariableTypeFloatVector4:
+            {
+                const float* const data = pxShaderVariable->Data;
+
+                if(pxShaderVariable->Amount > 1)
+                {
+                    pxOpenGL->Uniform4fv
+                    (
+                        pxShaderVariable->RegisterIndex,
+                        pxShaderVariable->Amount,
+                        pxShaderVariable->Data
+                    );
+                }
+                else
+                {
+                    pxOpenGL->Uniform4f(pxShaderVariable->RegisterIndex, data[0], data[1], data[2], data[3]);
+                }
+
+                break;
+            }
+            case PXShaderVariableTypeMatrix2x2:
+            {
+                pxOpenGL->UniformMatrix2fv
                 (
                     pxShaderVariable->RegisterIndex,
                     pxShaderVariable->Amount,
+                    PXFalse,
                     pxShaderVariable->Data
                 );
-            }
-            else
-            {
-                pxOpenGL->Uniform1i(pxShaderVariable->RegisterIndex, data[0]);
-            }
 
-            break;
-        }
-        case PXShaderVariableTypeInt32SVector2:
-        {
-            const int* const data = pxShaderVariable->Data;
-
-            if(pxShaderVariable->Amount > 1)
+                break;
+            }
+            case PXShaderVariableTypeMatrix3x3:
             {
-                pxOpenGL->Uniform2iv
+                pxOpenGL->UniformMatrix3fv
                 (
                     pxShaderVariable->RegisterIndex,
                     pxShaderVariable->Amount,
+                    PXFalse,
                     pxShaderVariable->Data
                 );
-            }
-            else
-            {
-                pxOpenGL->Uniform2i(pxShaderVariable->RegisterIndex, data[0], data[1]);
-            }
 
-            break;
-        }
-        case PXShaderVariableTypeInt32SVector3:
-        {
-            const int* const data = pxShaderVariable->Data;
-
-            if(pxShaderVariable->Amount > 1)
+                break;
+            }
+            case PXShaderVariableTypeMatrix4x4:
             {
-                pxOpenGL->Uniform3iv
+                pxOpenGL->UniformMatrix4fv
                 (
                     pxShaderVariable->RegisterIndex,
                     pxShaderVariable->Amount,
+                    PXFalse,
                     pxShaderVariable->Data
                 );
+
+                break;
             }
-            else
-            {
-                pxOpenGL->Uniform3i(pxShaderVariable->RegisterIndex, data[0], data[1], data[2]);
-            }
-
-            break;
-        }
-        case PXShaderVariableTypeInt32SVector4:
-        {
-            const int* const data = pxShaderVariable->Data;
-
-            if(pxShaderVariable->Amount > 1)
-            {
-                pxOpenGL->Uniform4iv
-                (
-                    pxShaderVariable->RegisterIndex,
-                    pxShaderVariable->Amount,
-                    pxShaderVariable->Data
-                );
-            }
-            else
-            {
-                pxOpenGL->Uniform4i(pxShaderVariable->RegisterIndex, data[0], data[1], data[2], data[3]);
-            }
-
-            break;
-        }
-        case PXShaderVariableTypeFloatSingle:
-        {
-            const float* const data = pxShaderVariable->Data;
-
-            if(pxShaderVariable->Amount > 1)
-            {
-                pxOpenGL->Uniform1fv
-                (
-                    pxShaderVariable->RegisterIndex,
-                    pxShaderVariable->Amount,
-                    pxShaderVariable->Data
-                );
-            }
-            else
-            {
-                pxOpenGL->Uniform1f(pxShaderVariable->RegisterIndex, data[0]);
-            }
-
-            break;
-        }
-        case PXShaderVariableTypeFloatVector2:
-        {
-            const float* const data = pxShaderVariable->Data;
-
-            if(pxShaderVariable->Amount > 1)
-            {
-                pxOpenGL->Uniform2fv
-                (
-                    pxShaderVariable->RegisterIndex,
-                    pxShaderVariable->Amount,
-                    pxShaderVariable->Data
-                );
-            }
-            else
-            {
-                pxOpenGL->Uniform2f(pxShaderVariable->RegisterIndex, data[0], data[1]);
-            }
-
-            break;
-        }
-        case PXShaderVariableTypeFloatVector3:
-        {
-            const float* const data = pxShaderVariable->Data;
-
-            if(pxShaderVariable->Amount > 1)
-            {
-                pxOpenGL->Uniform3fv
-                (
-                    pxShaderVariable->RegisterIndex,
-                    pxShaderVariable->Amount,
-                    pxShaderVariable->Data
-                );
-            }
-            else
-            {
-                pxOpenGL->Uniform3f(pxShaderVariable->RegisterIndex, data[0], data[1], data[2]);
-            }
-
-            break;
-        }
-        case PXShaderVariableTypeFloatVector4:
-        {
-            const float* const data = pxShaderVariable->Data;
-
-            if(pxShaderVariable->Amount > 1)
-            {
-                pxOpenGL->Uniform4fv
-                (
-                    pxShaderVariable->RegisterIndex,
-                    pxShaderVariable->Amount,
-                    pxShaderVariable->Data
-                );
-            }
-            else
-            {
-                pxOpenGL->Uniform4f(pxShaderVariable->RegisterIndex, data[0], data[1], data[2], data[3]);
-            }
-
-            break;
-        }
-        case PXShaderVariableTypeMatrix2x2:
-        {
-            pxOpenGL->UniformMatrix2fv
-            (
-                pxShaderVariable->RegisterIndex,
-                pxShaderVariable->Amount,
-                PXFalse,
-                pxShaderVariable->Data
-            );
-
-            break;
-        }
-        case PXShaderVariableTypeMatrix3x3:
-        {
-            pxOpenGL->UniformMatrix3fv
-            (
-                pxShaderVariable->RegisterIndex,
-                pxShaderVariable->Amount,
-                PXFalse,
-                pxShaderVariable->Data
-            );
-
-            break;
-        }
-        case PXShaderVariableTypeMatrix4x4:
-        {
-            pxOpenGL->UniformMatrix4fv
-            (
-                pxShaderVariable->RegisterIndex,
-                pxShaderVariable->Amount,
-                PXFalse,
-                pxShaderVariable->Data
-            );
-
-            break;
-        }
-        default:
-            return PXActionRefusedArgumentInvalid;
+            default:
+                return PXActionRefusedArgumentInvalid;
         }
 
         // Fetch error
@@ -6063,42 +6063,42 @@ void PXAPI PXOpenGLTexture2DDataReadFrom(PXOpenGL* const pxOpenGL, PXTexture2D* 
 
 PXInt32U PXAPI PXOpenGLTypeToID(const PXInt32U pxDataType)
 {
-    switch (pxDataType)
+    switch(pxDataType)
     {
-    case PXDataTypeInt08S:
-        return GL_BYTE;
+        case PXDataTypeInt08S:
+            return GL_BYTE;
 
-    case PXDataTypeInt08U:
-        return GL_UNSIGNED_BYTE;
+        case PXDataTypeInt08U:
+            return GL_UNSIGNED_BYTE;
 
-    case PXDataTypeInt16SLE:
-    case PXDataTypeInt16SBE:
-    case PXDataTypeInt16S:
-        return GL_SHORT;
+        case PXDataTypeInt16SLE:
+        case PXDataTypeInt16SBE:
+        case PXDataTypeInt16S:
+            return GL_SHORT;
 
-    case PXDataTypeInt16ULE:
-    case PXDataTypeInt16UBE:
-    case PXDataTypeInt16U:
-        return GL_UNSIGNED_SHORT;
+        case PXDataTypeInt16ULE:
+        case PXDataTypeInt16UBE:
+        case PXDataTypeInt16U:
+            return GL_UNSIGNED_SHORT;
 
-    case PXDataTypeInt32SLE:
-    case PXDataTypeInt32SBE:
-    case PXDataTypeInt32S:
-        return GL_INT;
+        case PXDataTypeInt32SLE:
+        case PXDataTypeInt32SBE:
+        case PXDataTypeInt32S:
+            return GL_INT;
 
-    case PXDataTypeInt32ULE:
-    case PXDataTypeInt32UBE:
-    case PXDataTypeInt32U:
-        return GL_UNSIGNED_INT;
+        case PXDataTypeInt32ULE:
+        case PXDataTypeInt32UBE:
+        case PXDataTypeInt32U:
+            return GL_UNSIGNED_INT;
 
-    case PXDataTypeFloat:
-        return GL_FLOAT;
+        case PXDataTypeFloat:
+            return GL_FLOAT;
 
-    case PXDataTypeDouble:
-        return GL_DOUBLE;
+        case PXDataTypeDouble:
+            return GL_DOUBLE;
 
-    default:
-        return -1;
+        default:
+            return -1;
     }
 }
 
@@ -6106,21 +6106,21 @@ PXInt32U PXAPI PXOpenGLGraphicImageLayoutToID(const PXGraphicImageLayout pxGraph
 {
     switch(pxGraphicImageLayout)
     {
-    case PXGraphicImageLayoutNearest:
-        return GL_NEAREST;
-    case PXGraphicImageLayoutLinear:
-        return GL_LINEAR;
-    case PXGraphicImageLayoutMipMapNearestNearest:
-        return GL_NEAREST_MIPMAP_NEAREST;
-    case PXGraphicImageLayoutMipMapLinearNearest:
-        return GL_LINEAR_MIPMAP_NEAREST;
-    case PXGraphicImageLayoutMipMapNNearestLinear:
-        return GL_NEAREST_MIPMAP_LINEAR;
-    case PXGraphicImageLayoutMipMapLinearLinear:
-        return GL_LINEAR_MIPMAP_LINEAR;
+        case PXGraphicImageLayoutNearest:
+            return GL_NEAREST;
+        case PXGraphicImageLayoutLinear:
+            return GL_LINEAR;
+        case PXGraphicImageLayoutMipMapNearestNearest:
+            return GL_NEAREST_MIPMAP_NEAREST;
+        case PXGraphicImageLayoutMipMapLinearNearest:
+            return GL_LINEAR_MIPMAP_NEAREST;
+        case PXGraphicImageLayoutMipMapNNearestLinear:
+            return GL_NEAREST_MIPMAP_LINEAR;
+        case PXGraphicImageLayoutMipMapLinearLinear:
+            return GL_LINEAR_MIPMAP_LINEAR;
 
-    default:
-        return -1;
+        default:
+            return -1;
     }
 }
 
@@ -6128,19 +6128,19 @@ PXInt32U PXAPI PXOpenGLGraphicImageWrapToID(const PXGraphicImageWrap pxGraphicIm
 {
     switch(pxGraphicImageWrap)
     {
-    case PXGraphicImageWrapNoModification:
-        return GL_CLAMP;
-    case PXGraphicImageWrapStrechEdges:
-        return GL_CLAMP;
-    case PXGraphicImageWrapStrechEdgesAndMirror:
-        return GL_CLAMP;
-    case PXGraphicImageWrapRepeat:
-        return GL_REPEAT;
-    case PXGraphicImageWrapRepeatAndMirror:
-        return GL_REPEAT;
+        case PXGraphicImageWrapNoModification:
+            return GL_CLAMP;
+        case PXGraphicImageWrapStrechEdges:
+            return GL_CLAMP;
+        case PXGraphicImageWrapStrechEdgesAndMirror:
+            return GL_CLAMP;
+        case PXGraphicImageWrapRepeat:
+            return GL_REPEAT;
+        case PXGraphicImageWrapRepeatAndMirror:
+            return GL_REPEAT;
 
-    default:
-        return -1;
+        default:
+            return -1;
     }
 }
 
@@ -6148,89 +6148,89 @@ PXShaderVariableType PXAPI PXOpenGLShaderVariableTypeFromID(const PXInt16U openG
 {
     switch(openGLShaderVariableTypeID)
     {
-    case GL_FLOAT:
-        return PXShaderVariableTypeFloatSingle; // float
-    case GL_FLOAT_VEC2:
-        return PXShaderVariableTypeFloatVector2; //      vec2
-    case GL_FLOAT_VEC3:
-        return PXShaderVariableTypeFloatVector3; //     vec3
-    case GL_FLOAT_VEC4:
-        return PXShaderVariableTypeFloatVector4; //     vec4
-    case GL_INT:
-        return PXShaderVariableTypeInt32SSingle; //     int
-    case GL_INT_VEC2:
-        return PXShaderVariableTypeInt32SVector2; //     ivec2
-    case GL_INT_VEC3:
-        return PXShaderVariableTypeInt32SVector3; //     ivec3
-    case GL_INT_VEC4:
-        return PXShaderVariableTypeInt32SVector4; //     ivec4
-    case GL_UNSIGNED_INT:
-        return PXShaderVariableTypeInt32USingle; // unsigned int
-    case GL_UNSIGNED_INT_VEC2:
-        return PXShaderVariableTypeInt32UVector2; // uvec2
-    case GL_UNSIGNED_INT_VEC3:
-        return PXShaderVariableTypeInt32UVector3; //     uvec3
-    case GL_UNSIGNED_INT_VEC4:
-        return PXShaderVariableTypeInt32UVector4; //     uvec4
-    case GL_BOOL:
-        return PXShaderVariableTypeBoolSignle; //     bool
-    case GL_BOOL_VEC2:
-        return PXShaderVariableTypeBoolVector2; // bvec2
-    case GL_BOOL_VEC3:
-        return PXShaderVariableTypeBoolVector3; //     bvec3
-    case GL_BOOL_VEC4:
-        return PXShaderVariableTypeBoolVector4; //     bvec4
-    case GL_FLOAT_MAT2:
-        return PXShaderVariableTypeMatrix2x2; //     mat2
-    case GL_FLOAT_MAT3:
-        return PXShaderVariableTypeMatrix3x3; //     mat3
-    case GL_FLOAT_MAT4:
-        return PXShaderVariableTypeMatrix4x4; //      mat4
-    case GL_FLOAT_MAT2x3:
-        return PXShaderVariableTypeMatrix2x3; //     mat2x3
-    case GL_FLOAT_MAT2x4:
-        return PXShaderVariableTypeMatrix2x4; //     mat2x4
-    case GL_FLOAT_MAT3x2:
-        return PXShaderVariableTypeMatrix3x2; //     mat3x2
-    case GL_FLOAT_MAT3x4:
-        return PXShaderVariableTypeMatrix3x4; //     mat3x4
-    case GL_FLOAT_MAT4x2:
-        return PXShaderVariableTypeMatrix4x2; //     mat4x2
-    case GL_FLOAT_MAT4x3:
-        return PXShaderVariableTypeMatrix4x3; //     mat4x3
-    case GL_SAMPLER_2D:
-        return PXShaderVariableTypeSampler2DF; // sampler2D
-    case GL_SAMPLER_3D:
-        return PXShaderVariableTypeSampler3DF; //     sampler3D
-    case GL_SAMPLER_CUBE:
-        return PXShaderVariableTypeSamplerCubeF; //     samplerCube
-    case GL_SAMPLER_2D_SHADOW:
-        return PXShaderVariableTypeSamplerF2DShadow; //     sampler2DShadow
-    case GL_SAMPLER_2D_ARRAY:
-        return PXShaderVariableTypeSampler2DArrayF; //     sampler2DArray
-    case GL_SAMPLER_2D_ARRAY_SHADOW:
-        return PXShaderVariableTypeSamplerF2DArrayShadow; //     sampler2DArrayShadow
-    case GL_SAMPLER_CUBE_SHADOW:
-        return PXShaderVariableTypeSamplerFCubeShadow; //     samplerCubeShadow
-    case GL_INT_SAMPLER_2D:
-        return PXShaderVariableTypeSampler2DI32S; //     isampler2D
-    case GL_INT_SAMPLER_3D:
-        return PXShaderVariableTypeSampler3DI32S; //     isampler3D
-    case GL_INT_SAMPLER_CUBE:
-        return PXShaderVariableTypeSamplerCubeI32S; //     isamplerCube
-    case GL_INT_SAMPLER_2D_ARRAY:
-        return PXShaderVariableTypeSampler2DArrayI32S; //      isampler2DArray
-    case GL_UNSIGNED_INT_SAMPLER_2D:
-        return PXShaderVariableTypeSampler2DI32U; //     usampler2D
-    case GL_UNSIGNED_INT_SAMPLER_3D:
-        return PXShaderVariableTypeSampler3DI32U; //     usampler3D
-    case GL_UNSIGNED_INT_SAMPLER_CUBE:
-        return PXShaderVariableTypeSamplerCubeI32U; //     usamplerCube
-    case GL_UNSIGNED_INT_SAMPLER_2D_ARRAY:
-        return PXShaderVariableTypeSampler2DArrayI32U; // usampler2DArray
+        case GL_FLOAT:
+            return PXShaderVariableTypeFloatSingle; // float
+        case GL_FLOAT_VEC2:
+            return PXShaderVariableTypeFloatVector2; //      vec2
+        case GL_FLOAT_VEC3:
+            return PXShaderVariableTypeFloatVector3; //     vec3
+        case GL_FLOAT_VEC4:
+            return PXShaderVariableTypeFloatVector4; //     vec4
+        case GL_INT:
+            return PXShaderVariableTypeInt32SSingle; //     int
+        case GL_INT_VEC2:
+            return PXShaderVariableTypeInt32SVector2; //     ivec2
+        case GL_INT_VEC3:
+            return PXShaderVariableTypeInt32SVector3; //     ivec3
+        case GL_INT_VEC4:
+            return PXShaderVariableTypeInt32SVector4; //     ivec4
+        case GL_UNSIGNED_INT:
+            return PXShaderVariableTypeInt32USingle; // unsigned int
+        case GL_UNSIGNED_INT_VEC2:
+            return PXShaderVariableTypeInt32UVector2; // uvec2
+        case GL_UNSIGNED_INT_VEC3:
+            return PXShaderVariableTypeInt32UVector3; //     uvec3
+        case GL_UNSIGNED_INT_VEC4:
+            return PXShaderVariableTypeInt32UVector4; //     uvec4
+        case GL_BOOL:
+            return PXShaderVariableTypeBoolSignle; //     bool
+        case GL_BOOL_VEC2:
+            return PXShaderVariableTypeBoolVector2; // bvec2
+        case GL_BOOL_VEC3:
+            return PXShaderVariableTypeBoolVector3; //     bvec3
+        case GL_BOOL_VEC4:
+            return PXShaderVariableTypeBoolVector4; //     bvec4
+        case GL_FLOAT_MAT2:
+            return PXShaderVariableTypeMatrix2x2; //     mat2
+        case GL_FLOAT_MAT3:
+            return PXShaderVariableTypeMatrix3x3; //     mat3
+        case GL_FLOAT_MAT4:
+            return PXShaderVariableTypeMatrix4x4; //      mat4
+        case GL_FLOAT_MAT2x3:
+            return PXShaderVariableTypeMatrix2x3; //     mat2x3
+        case GL_FLOAT_MAT2x4:
+            return PXShaderVariableTypeMatrix2x4; //     mat2x4
+        case GL_FLOAT_MAT3x2:
+            return PXShaderVariableTypeMatrix3x2; //     mat3x2
+        case GL_FLOAT_MAT3x4:
+            return PXShaderVariableTypeMatrix3x4; //     mat3x4
+        case GL_FLOAT_MAT4x2:
+            return PXShaderVariableTypeMatrix4x2; //     mat4x2
+        case GL_FLOAT_MAT4x3:
+            return PXShaderVariableTypeMatrix4x3; //     mat4x3
+        case GL_SAMPLER_2D:
+            return PXShaderVariableTypeSampler2DF; // sampler2D
+        case GL_SAMPLER_3D:
+            return PXShaderVariableTypeSampler3DF; //     sampler3D
+        case GL_SAMPLER_CUBE:
+            return PXShaderVariableTypeSamplerCubeF; //     samplerCube
+        case GL_SAMPLER_2D_SHADOW:
+            return PXShaderVariableTypeSamplerF2DShadow; //     sampler2DShadow
+        case GL_SAMPLER_2D_ARRAY:
+            return PXShaderVariableTypeSampler2DArrayF; //     sampler2DArray
+        case GL_SAMPLER_2D_ARRAY_SHADOW:
+            return PXShaderVariableTypeSamplerF2DArrayShadow; //     sampler2DArrayShadow
+        case GL_SAMPLER_CUBE_SHADOW:
+            return PXShaderVariableTypeSamplerFCubeShadow; //     samplerCubeShadow
+        case GL_INT_SAMPLER_2D:
+            return PXShaderVariableTypeSampler2DI32S; //     isampler2D
+        case GL_INT_SAMPLER_3D:
+            return PXShaderVariableTypeSampler3DI32S; //     isampler3D
+        case GL_INT_SAMPLER_CUBE:
+            return PXShaderVariableTypeSamplerCubeI32S; //     isamplerCube
+        case GL_INT_SAMPLER_2D_ARRAY:
+            return PXShaderVariableTypeSampler2DArrayI32S; //      isampler2DArray
+        case GL_UNSIGNED_INT_SAMPLER_2D:
+            return PXShaderVariableTypeSampler2DI32U; //     usampler2D
+        case GL_UNSIGNED_INT_SAMPLER_3D:
+            return PXShaderVariableTypeSampler3DI32U; //     usampler3D
+        case GL_UNSIGNED_INT_SAMPLER_CUBE:
+            return PXShaderVariableTypeSamplerCubeI32U; //     usamplerCube
+        case GL_UNSIGNED_INT_SAMPLER_2D_ARRAY:
+            return PXShaderVariableTypeSampler2DArrayI32U; // usampler2DArray
 
-    default:
-        return PXShaderVariableTypeInvalid;
+        default:
+            return PXShaderVariableTypeInvalid;
     }
 }
 
@@ -6239,7 +6239,7 @@ PXActionResult PXAPI PXOpenGLSpriteRegister(PXOpenGL* const pxOpenGL, PXSprite* 
 #if 0
     const PXBool hasScaling = pxSprite->TextureScalePositionOffset.X != 0 || pxSprite->TextureScalePositionOffset.Y != 0;
 
-    if (!hasScaling)
+    if(!hasScaling)
     {
         const float vertexData[] =
         {
@@ -6460,7 +6460,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
     PXIndexBuffer* const pxIndexBuffer = &pxModel->Mesh.IndexBuffer;
 
 
-    if (pxOpenGL->VertexArraysGenerate)
+    if(pxOpenGL->VertexArraysGenerate)
     {
         pxOpenGL->VertexArraysGenerate(1, &(pxModel->Info.Handle.OpenGLID)); // VAO
         pxOpenGL->VertexArrayBind(pxModel->Info.Handle.OpenGLID);
@@ -6491,7 +6491,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
     }
 
 
-    if (!pxOpenGL->BufferBind) // Is it possible to have a buffer?
+    if(!pxOpenGL->BufferBind) // Is it possible to have a buffer?
     {
         // Declare IDs as unused as we can't use buffers
         //PXResourceIDMarkAsUnused(&pxModel->VertexBuffer.Info);
@@ -6531,7 +6531,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
     {
         // Create IDs
         PXSize amount = 1 + (hasIndexData * 1);
-        GLuint bufferIDs[2] = {-1, -1};
+        GLuint bufferIDs[2] = { -1, -1 };
         pxOpenGL->BufferGenerate(amount, bufferIDs);
 
         pxVertexBuffer->Info.Handle.OpenGLID = bufferIDs[0];
@@ -6600,7 +6600,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
 
     // IBO
 
-    if (hasIndexData)
+    if(hasIndexData)
     {
 #if PXLogEnable
         PXLogPrint
@@ -6639,65 +6639,65 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
         {
             const PXInt8U stride = PXVertexBufferFormatStrideSize(pxVertexBuffer->Format) * sizeof(float);
 
-            switch (pxVertexBuffer->Format)
+            switch(pxVertexBuffer->Format)
             {
-            case PXVertexBufferFormatXYZFloat:
-            {
-                PXVertexElement* pxVertexElement = &pxVertexElementList[0];
+                case PXVertexBufferFormatXYZFloat:
+                {
+                    PXVertexElement* pxVertexElement = &pxVertexElementList[0];
 
-                pxVertexElement->Type = PXDataTypeFloat;
-                pxVertexElement->Length = 3u; // X, Y, Z => 3 Elemets
-                pxVertexElement->Stride = stride; // Size of a whole vertex
-                pxVertexElement->StartAdress = 0; // No offset, we start at 0
+                    pxVertexElement->Type = PXDataTypeFloat;
+                    pxVertexElement->Length = 3u; // X, Y, Z => 3 Elemets
+                    pxVertexElement->Stride = stride; // Size of a whole vertex
+                    pxVertexElement->StartAdress = 0; // No offset, we start at 0
 
-                pxVertexElementLength = 1;
+                    pxVertexElementLength = 1;
 
-                break;
-            }
-            case PXVertexBufferFormatT2F_XYZ:
-            {
-                pxVertexElementList[0].Type = PXDataTypeFloat;
-                pxVertexElementList[0].Length = 2u; // X, Y, Z => 3 Elemets
-                pxVertexElementList[0].Stride = stride;
-                pxVertexElementList[0].StartAdress = 0; // No offset, we start at 0
+                    break;
+                }
+                case PXVertexBufferFormatT2F_XYZ:
+                {
+                    pxVertexElementList[0].Type = PXDataTypeFloat;
+                    pxVertexElementList[0].Length = 2u; // X, Y, Z => 3 Elemets
+                    pxVertexElementList[0].Stride = stride;
+                    pxVertexElementList[0].StartAdress = 0; // No offset, we start at 0
 
-                pxVertexElementList[1].Type = PXDataTypeFloat;
-                pxVertexElementList[1].Length = 3u; // X, Y, Z => 3 Elemets
-                pxVertexElementList[1].Stride = stride;
-                pxVertexElementList[1].StartAdress = 2 * sizeof(float); // No offset, we start at 0
+                    pxVertexElementList[1].Type = PXDataTypeFloat;
+                    pxVertexElementList[1].Length = 3u; // X, Y, Z => 3 Elemets
+                    pxVertexElementList[1].Stride = stride;
+                    pxVertexElementList[1].StartAdress = 2 * sizeof(float); // No offset, we start at 0
 
-                pxVertexElementLength = 2;
+                    pxVertexElementLength = 2;
 
-                break;
-            }
-            case PXVertexBufferFormatT2F_N3F_XYZ:
-            {
-                pxVertexElementList[0].Type = PXDataTypeFloat;
-                pxVertexElementList[0].Length = 2u; // X, Y, Z => 3 Elemets
-                pxVertexElementList[0].Stride = stride;
-                pxVertexElementList[0].StartAdress = 0; // No offset, we start at 0
+                    break;
+                }
+                case PXVertexBufferFormatT2F_N3F_XYZ:
+                {
+                    pxVertexElementList[0].Type = PXDataTypeFloat;
+                    pxVertexElementList[0].Length = 2u; // X, Y, Z => 3 Elemets
+                    pxVertexElementList[0].Stride = stride;
+                    pxVertexElementList[0].StartAdress = 0; // No offset, we start at 0
 
-                pxVertexElementList[1].Type = PXDataTypeFloat;
-                pxVertexElementList[1].Length = 3u; // X, Y, Z => 3 Elemets
-                pxVertexElementList[1].Stride = stride;
-                pxVertexElementList[1].StartAdress = 2*sizeof(float); // No offset, we start at 0
+                    pxVertexElementList[1].Type = PXDataTypeFloat;
+                    pxVertexElementList[1].Length = 3u; // X, Y, Z => 3 Elemets
+                    pxVertexElementList[1].Stride = stride;
+                    pxVertexElementList[1].StartAdress = 2 * sizeof(float); // No offset, we start at 0
 
-                pxVertexElementList[2].Type = PXDataTypeFloat;
-                pxVertexElementList[2].Length = 3u; // X, Y, Z => 3 Elemets
-                pxVertexElementList[2].Stride = stride;
-                pxVertexElementList[2].StartAdress = (2 +3) * sizeof(float); // No offset, we start at 0
+                    pxVertexElementList[2].Type = PXDataTypeFloat;
+                    pxVertexElementList[2].Length = 3u; // X, Y, Z => 3 Elemets
+                    pxVertexElementList[2].Stride = stride;
+                    pxVertexElementList[2].StartAdress = (2 + 3) * sizeof(float); // No offset, we start at 0
 
-                pxVertexElementLength = 3;
+                    pxVertexElementLength = 3;
 
-                break;
-            }
+                    break;
+                }
 
-            default:
-                break;
+                default:
+                    break;
             }
         }
 
-        for (PXSize i = 0; i < pxVertexElementLength; ++i)
+        for(PXSize i = 0; i < pxVertexElementLength; ++i)
         {
             const PXVertexElement* const pxVertexElementCurrent = &pxVertexElementList[i];
             const GLenum openGLType = PXOpenGLTypeToID(pxVertexElementCurrent->Type);
@@ -6727,7 +6727,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
 
     // Additional textures
     {
-        for (PXSize containerID = 0; containerID < pxModel->MaterialContaierListAmount; ++containerID)
+        for(PXSize containerID = 0; containerID < pxModel->MaterialContaierListAmount; ++containerID)
         {
             PXMaterialContainer* const pxMaterialContainer = &pxModel->MaterialContaierList[containerID];
 
@@ -6735,11 +6735,11 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
             PXTexture2D** pxTextureList = PXNull;
             PXNewStackList(PXTexture2D*, pxMaterialContainer->MaterialListAmount, &pxTextureList, PXNull);
 
-            for (PXSize materialID = 0; materialID < pxMaterialContainer->MaterialListAmount; ++materialID)
+            for(PXSize materialID = 0; materialID < pxMaterialContainer->MaterialListAmount; ++materialID)
             {
                 PXMaterial* const pxMaterial = &pxMaterialContainer->MaterialList[materialID];
 
-                if (pxMaterial->DiffuseTexture)
+                if(pxMaterial->DiffuseTexture)
                 {
                     pxTextureList[pxTextureListCounter] = pxMaterial->DiffuseTexture;
 
@@ -6772,25 +6772,25 @@ PXActionResult PXAPI PXOpenGLModelDeregister(PXOpenGL* const pxOpenGL, PXModel* 
 
 PXActionResult PXAPI PXOpenGLRectangleDraw(PXOpenGL* const pxOpenGL, const float xA, const float yA, const float xB, const float yB, const PXInt8U mode)
 {
-    switch (mode)
+    switch(mode)
     {
-    case 1:
-    {
-        pxOpenGL->Rectf(xA, yA, xB, yB);
+        case 1:
+        {
+            pxOpenGL->Rectf(xA, yA, xB, yB);
 
-        break;
-    }
-    case 2:
-    {
-        // OpenGL works in a normalizes space. Ranging from -1 to +1.
-        // [0,0] is middle of the screen, [-1,-1] lower left, [+1,+1] upper right
+            break;
+        }
+        case 2:
+        {
+            // OpenGL works in a normalizes space. Ranging from -1 to +1.
+            // [0,0] is middle of the screen, [-1,-1] lower left, [+1,+1] upper right
 
-        pxOpenGL->Rectf(-1 + xA, -1 + yA, 1 - xB, 1 - yB);
+            pxOpenGL->Rectf(-1 + xA, -1 + yA, 1 - xB, 1 - yB);
 
-        break;
-    }
-    default:
-        return PXActionRefusedNotSupportedByLibrary;
+            break;
+        }
+        default:
+            return PXActionRefusedNotSupportedByLibrary;
     }
 
     return PXActionSuccessful;
@@ -6798,37 +6798,37 @@ PXActionResult PXAPI PXOpenGLRectangleDraw(PXOpenGL* const pxOpenGL, const float
 
 PXActionResult PXAPI PXOpenGLRectangleDrawTx(PXOpenGL* const pxOpenGL, const float xA, const float yA, const float xB, const float yB, const float txA, const float tyA, const float txB, const float tyB, const PXInt8U mode)
 {
-    switch (mode)
+    switch(mode)
     {
-    case 1:
-    {
-        pxOpenGL->Begin(GL_QUADS);
-        pxOpenGL->TexCoord2f(txA, tyB);
-        pxOpenGL->Vertex2f(xA, yA);// 11
-        pxOpenGL->TexCoord2f(txB, tyB);
-        pxOpenGL->Vertex2f(xB, yA);// 10
-        pxOpenGL->TexCoord2f(txB, tyA);
-        pxOpenGL->Vertex2f(xB, yB);// 00
-        pxOpenGL->TexCoord2f(txA, tyA);
-        pxOpenGL->Vertex2f(xA, yB);// 01
-        pxOpenGL->End();
-        break;
-    }
-    case 2:
-    {
-        pxOpenGL->Begin(GL_QUADS);
-        pxOpenGL->TexCoord2f(txA, tyB);
-        pxOpenGL->Vertex2f(-1 + xA, -1 + yA);// 11
-        pxOpenGL->TexCoord2f(txB, tyB);
-        pxOpenGL->Vertex2f(+1 - xB, -1 + yA);// 10
-        pxOpenGL->TexCoord2f(txB, tyA);
-        pxOpenGL->Vertex2f(+1 - xB, +1 - yB);// 00
-        pxOpenGL->TexCoord2f(txA, tyA);
-        pxOpenGL->Vertex2f(-1 + xA, +1 - yB);// 01
-        pxOpenGL->End();
-    }
-    default:
-        return PXActionRefusedNotSupportedByLibrary;
+        case 1:
+        {
+            pxOpenGL->Begin(GL_QUADS);
+            pxOpenGL->TexCoord2f(txA, tyB);
+            pxOpenGL->Vertex2f(xA, yA);// 11
+            pxOpenGL->TexCoord2f(txB, tyB);
+            pxOpenGL->Vertex2f(xB, yA);// 10
+            pxOpenGL->TexCoord2f(txB, tyA);
+            pxOpenGL->Vertex2f(xB, yB);// 00
+            pxOpenGL->TexCoord2f(txA, tyA);
+            pxOpenGL->Vertex2f(xA, yB);// 01
+            pxOpenGL->End();
+            break;
+        }
+        case 2:
+        {
+            pxOpenGL->Begin(GL_QUADS);
+            pxOpenGL->TexCoord2f(txA, tyB);
+            pxOpenGL->Vertex2f(-1 + xA, -1 + yA);// 11
+            pxOpenGL->TexCoord2f(txB, tyB);
+            pxOpenGL->Vertex2f(+1 - xB, -1 + yA);// 10
+            pxOpenGL->TexCoord2f(txB, tyA);
+            pxOpenGL->Vertex2f(+1 - xB, +1 - yB);// 00
+            pxOpenGL->TexCoord2f(txA, tyA);
+            pxOpenGL->Vertex2f(-1 + xA, +1 - yB);// 01
+            pxOpenGL->End();
+        }
+        default:
+            return PXActionRefusedNotSupportedByLibrary;
     }
 
     return PXActionSuccessful;
