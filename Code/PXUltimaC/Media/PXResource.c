@@ -492,6 +492,33 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
 
                 break;
             }
+            case PXResourceTypeIconAtlas:
+            {
+                PXIconAtlasCreateInfo* const pxIconAtlasCreateInfo = &pxResourceCreateInfo->IconAtlas;
+                PXIconAtlas* pxIconAtlas = *(PXTextureCube**)pxResourceCreateInfo->ObjectReference;
+
+                if(!pxIconAtlas)
+                {
+                    PXNewZerod(PXIconAtlas, &pxIconAtlas);
+                    *pxResourceCreateInfo->ObjectReference = pxIconAtlas;                
+                }
+
+                pxIconAtlas->Info.ID = PXResourceManagerGenerateUniqeID(pxResourceManager);
+
+#if PXLogEnable
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    "Resource",
+                    "IconAtlas-Create",
+                    "ID:%i <%s>.",
+                    pxIconAtlas->Info.ID,
+                    pxResourceCreateInfo->FilePath
+                );
+#endif
+
+                break;
+            }
             case PXResourceTypeTextureCube:
             {
                 PXTextureCubeCreateInfo* const pxTextureCubeCreateData = &pxResourceCreateInfo->TextureCube;

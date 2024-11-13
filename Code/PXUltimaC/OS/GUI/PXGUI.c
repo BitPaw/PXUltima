@@ -1942,34 +1942,37 @@ PXActionResult PXAPI PXWindowDrawCustomTabList(PXGUISystem* const pxGUISystem, P
 
     PXNativDrawClear(pxGUISystem, pxGUIElement);
 
-    int size = 80;
-    int offset = 3;
-    int iconSize = 16;
-    int height = 35;
+    int size = 110;
+    int offsetX = 3;
+    int offsetY = 4;
+    int offsetSeperator = 6;
+    int height = 25;
+    int iconMargin = 4;
+    int iconSize = height- iconMargin;
 
     PXRectangle pxRectangle;
     pxRectangle.Left = pxGUIElement->Position.X;
     pxRectangle.Top = pxGUIElement->Position.Y;
     pxRectangle.Right = size;
-    pxRectangle.Bottom = 35;
+    pxRectangle.Bottom = height;
 
-    int left = pxRectangle.Left;
-    int right = pxRectangle.Right;
+    int left = pxRectangle.Left + offsetX;
+    int right = pxRectangle.Right + offsetY;
 
     for(PXSize i = 0; i < pxWindowExtendedBehaviourTab->TABPageAmount; ++i)
     {
         PXWindow* const pxWindowTABPage = &pxWindowExtendedBehaviourTab->TABPageList[i];
 
-       // PXNativDrawRectangle(pxGUISystem, pxGUIElement, pxRectangle.Left, pxRectangle.Top, pxRectangle.Right, pxRectangle.Bottom);
-        PXNativDrawIcon(pxGUISystem, pxGUIElement, pxWindowTABPage->Icon, left, 0, height/2, height/2);
+        PXNativDrawRectangle(pxGUISystem, pxGUIElement, left, 0, left+ size+ offsetX, height);
+        PXNativDrawIcon(pxGUISystem, pxGUIElement, pxWindowTABPage->Icon, left+ iconMargin/2, iconMargin/2, iconSize, iconSize);
 
 
         PXUIElementPosition pxUIElementPositionPrev = pxGUIElement->Position;
 
-        pxGUIElement->Position.Left = left + iconSize;
-        pxGUIElement->Position.Top = 0;
+        pxGUIElement->Position.Left = left + iconSize+ iconMargin +1;
+        pxGUIElement->Position.Top = offsetY;
         pxGUIElement->Position.Right = right;
-        pxGUIElement->Position.Bottom = 35;
+        pxGUIElement->Position.Bottom = height - offsetY;
         pxGUIElement->Info.Behaviour &= ~PXWindowAllignFlags;
         pxGUIElement->Info.Behaviour |= PXWindowAllignLeft;
 
@@ -1977,10 +1980,10 @@ PXActionResult PXAPI PXWindowDrawCustomTabList(PXGUISystem* const pxGUISystem, P
 
         pxGUIElement->Position = pxUIElementPositionPrev;
 
-        int totalWidth = (size + offset + iconSize+2) * (i + 1);
+        int totalWidth = offsetX + (size + offsetSeperator) * (i + 1);
 
         left = totalWidth;
-        right = totalWidth + size;
+        right = totalWidth + size + offsetY;
 
         pxRectangle.Left = left;
         pxRectangle.Right = right;
@@ -6165,7 +6168,7 @@ PXActionResult PXAPI PXNativDrawLoad(PXGUISystem* const pxGUISystem, PXIcon* con
     const HICON iconHandle = LoadIconA
     (
         instanceHandle,
-        IDI_WARNING
+        IDI_ERROR
     );
 
     pxIcon->Info.Handle.IconHandle = iconHandle;

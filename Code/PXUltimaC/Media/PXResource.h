@@ -313,6 +313,7 @@ typedef enum PXResourceType_
     PXResourceTypeShaderProgram     = PXInt32Make('S', 'H', 'A', 'D'),
     PXResourceTypeSkybox            = PXInt32Make('S', 'K', 'Y', 'B'),
     PXResourceTypeSprite            = PXInt32Make('S', 'P', 'R', 'I'),
+    PXResourceTypeIconAtlas         = PXInt32Make('I', 'C', 'O', 'A'),
     PXResourceTypeSpriteAnimator    = PXInt32Make('S', 'A', 'N', 'I'),
     PXResourceTypeText              = PXInt32Make('T', 'E', 'X', 'T'),
     PXResourceTypeTimer             = PXInt32Make('T', 'I', 'M', 'E'),
@@ -509,9 +510,19 @@ PXIcon;
 
 typedef struct PXIconAtlas_
 {
-    int dummy;
+    PXResourceInfo Info;
+
+    PXSize IconListAmount;
+    PXIcon* IconList;
 }
 PXIconAtlas;
+
+typedef struct PXIconAtlasCreateInfo_
+{
+    PXInt16U CellSize;
+}
+PXIconAtlasCreateInfo;
+
 
 PXPublic void PXAPI PXIconLoad(PXIcon* const pxIcon);
 
@@ -1329,6 +1340,14 @@ typedef struct PXSprite
     PXShaderProgram* ShaderProgarm;
 }
 PXSprite;
+
+
+
+
+
+
+
+
 
 
 
@@ -3393,6 +3412,13 @@ typedef struct PXBrushCreateInfo_
 PXBrushCreateInfo;
 
 
+
+typedef struct PXSpriteFrame_
+{
+    int x;
+}
+PXSpriteFrame;
+
 typedef struct PXSpriteCreateInfo_
 {
     PXTexture2D* TextureCurrent;
@@ -3405,6 +3431,9 @@ typedef struct PXSpriteCreateInfo_
 
     PXBool ViewRotationIgnore;
     PXBool ViewPositionIgnore;
+    PXBool ContainsMultible; // Sprite is not a single texture but has multible
+    PXInt16U CellSize;
+
 
 
     // If any vale is set, we will generate a hitbox
@@ -3573,6 +3602,7 @@ typedef struct PXResourceCreateInfo_
         PXHitboxCreateInfo HitBox;
         PXBrushCreateInfo Brush;
         PXTimerCreateInfo Timer;
+        PXIconAtlasCreateInfo IconAtlas;
     };
 }
 PXResourceCreateInfo;

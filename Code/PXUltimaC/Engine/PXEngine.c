@@ -2365,6 +2365,10 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
 
             break;
         }
+        case PXResourceTypeIconAtlas:
+        {
+            break;
+        }
         case PXResourceTypeTimer:
         {
             PXEngineTimer* pxEngineTimer = *(PXEngineTimer**)pxResourceCreateInfo->ObjectReference;
