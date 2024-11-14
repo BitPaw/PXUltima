@@ -313,6 +313,7 @@ typedef enum PXResourceType_
     PXResourceTypeShaderProgram     = PXInt32Make('S', 'H', 'A', 'D'),
     PXResourceTypeSkybox            = PXInt32Make('S', 'K', 'Y', 'B'),
     PXResourceTypeSprite            = PXInt32Make('S', 'P', 'R', 'I'),
+    PXResourceTypeIcon              = PXInt32Make('I', 'C', 'O', 'N'),
     PXResourceTypeIconAtlas         = PXInt32Make('I', 'C', 'O', 'A'),
     PXResourceTypeSpriteAnimator    = PXInt32Make('S', 'A', 'N', 'I'),
     PXResourceTypeText              = PXInt32Make('T', 'E', 'X', 'T'),
@@ -512,6 +513,8 @@ typedef struct PXIconAtlas_
 {
     PXResourceInfo Info;
 
+    struct PXTexture2D_* IconTexture2D;
+
     PXSize IconListAmount;
     PXIcon* IconList;
 }
@@ -520,6 +523,9 @@ PXIconAtlas;
 typedef struct PXIconAtlasCreateInfo_
 {
     PXInt16U CellSize;
+    PXInt16U CellAmountX; // Will be generated
+    PXInt16U CellAmountY; // Will be generated
+    PXInt16U CellAmountTotal; // Will be generated
 }
 PXIconAtlasCreateInfo;
 
@@ -2686,7 +2692,7 @@ typedef struct PXUIElementTabPageSingleInfo_
 {
     PXWindow** UIElement;
     char* PageName;
-    PXInt32U ImageID;
+    PXIcon* TABIcon;
 
 }
 PXUIElementTabPageSingleInfo;
@@ -3380,6 +3386,18 @@ typedef struct PXEngineFontCreateInfo_
 }
 PXEngineFontCreateInfo;
 
+typedef struct PXIconCreateInfo_
+{
+    PXImage* IconImage; // if set, generate a system icon from this
+    PXSize OffsetX;
+    PXSize OffsetY;
+    PXSize Width;
+    PXSize Height;
+    PXSize RowSize;
+    PXSize BitPerPixel;
+}
+PXIconCreateInfo;
+
 typedef struct PXSkyBoxCreateEventInfo_
 {
     PXShaderProgramCreateInfo ShaderProgramCreateInfo;
@@ -3603,6 +3621,7 @@ typedef struct PXResourceCreateInfo_
         PXBrushCreateInfo Brush;
         PXTimerCreateInfo Timer;
         PXIconAtlasCreateInfo IconAtlas;
+        PXIconCreateInfo Icon;
     };
 }
 PXResourceCreateInfo;

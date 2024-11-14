@@ -342,6 +342,41 @@ PXInt32U PXAPI PXResourceManagerGenerateUniqeID(PXResourceManager* const pxResou
     return 1000 + ++pxResourceManager->UniqeIDGeneratorCounter;
 }
 
+
+
+HBITMAP PXBitMapFromImage(int width, int height, int amountofchannels, void* data)
+{
+    BITMAPINFO bmi;
+    ZeroMemory(&bmi, sizeof(BITMAPINFO));
+    bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bmi.bmiHeader.biWidth = width;
+    bmi.bmiHeader.biHeight = -height;
+    // Top-down DIB 
+    bmi.bmiHeader.biPlanes = 1;
+    bmi.bmiHeader.biBitCount = 8* amountofchannels;
+    bmi.bmiHeader.biCompression = BI_RGB;
+    void* bitmapData;
+    HBITMAP hBitmap = CreateDIBSection(NULL, &bmi, DIB_RGB_COLORS, &bitmapData, NULL, 0);
+
+    if(!hBitmap)
+    {
+        return PXNull;
+    }
+
+    memcpy(bitmapData, data, amountofchannels * width * height);
+
+    return hBitmap;
+}
+
+HICON PXIconFromBitMap(PXImage* const pxImage)
+{
+
+}
+
+
+
+
+
 PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceManager, PXResourceCreateInfo* const pxResourceCreateInfoList, const PXSize amount)
 {
     assert(pxResourceManager);
@@ -492,15 +527,141 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
 
                 break;
             }
+            case PXResourceTypeIcon:
+            {
+                PXIconCreateInfo* const pxIconCreateInfo = &pxResourceCreateInfo->Icon;
+                PXIcon* pxIcon = *(PXIcon**)pxResourceCreateInfo->ObjectReference;
+
+                if(!pxIcon)
+                {
+                    PXNewZerod(PXIcon, &pxIcon);
+                    *pxResourceCreateInfo->ObjectReference = pxIcon;
+                }
+
+                pxIcon->Info.ID = PXResourceManagerGenerateUniqeID(pxResourceManager);
+
+
+#if PXLogEnable
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    "Resource",
+                    "Icon-Create",
+                    "ID:%i - WHXY : %i,%i,%i,%i",
+                    pxIcon->Info.ID,
+                    pxResourceCreateInfo->FilePath,
+                    pxIconCreateInfo->Width,
+                    pxIconCreateInfo->Height,
+                    pxIconCreateInfo->OffsetX,
+                    pxIconCreateInfo->OffsetY
+                );
+#endif
+                PXSize offset = pxIconCreateInfo->OffsetX + pxIconCreateInfo->OffsetY * pxIconCreateInfo->Width;
+                char* offsetData = (char*)pxIconCreateInfo->IconImage->PixelData + offset;
+                //PXSize sizeTx = pxIconCreateInfo->Width * pxIconCreateInfo->Height * 4;
+                
+
+                char wonk[16*16*3];
+
+                PXMemorySet(wonk, '0xF0', 16 * 16 * 3);
+
+                int sizeee = 16 * 16 * 3;
+
+                for(size_t i = 0; i < sizeee; i+=3)
+                {
+                    wonk[i + 0] = 0xFF * (i % 2 == 0);
+                   // wonk[i + 1] = 0xFF * (i % 4 == 0);
+                   // wonk[i + 2] = 0xFF * (i % 8 == 0);
+                }
+              
+
+                if(0)
+                {
+                    for(PXSize y = 0; y < pxIconCreateInfo->Height; y++)
+                    {
+                        for(PXSize x = 0; x < pxIconCreateInfo->Width; x++)
+                        {
+                            PXSize indexInsret = (x + y * pxIconCreateInfo->Width) * 3;
+                            PXSize indexSource = (x + y * pxIconCreateInfo->Width) * 4;
+
+                            void* insert = &wonk[indexInsret];
+                            void* source = &offsetData[indexSource];
+
+                            PXCopyList(char, 3, source, insert);
+                        }
+                    }
+                }
+         
+
+
+                HBITMAP hBitmap = PXBitMapFromImage
+                (
+                    pxIconCreateInfo->Width, 
+                    pxIconCreateInfo->Height,
+                    3,
+                    wonk
+                );
+               
+
+                PXErrorCurrent(hBitmap);
+
+
+
+                BITMAP iconBitmap;
+                iconBitmap.bmType = 0;
+                iconBitmap.bmWidth = pxIconCreateInfo->Width;
+                iconBitmap.bmHeight = pxIconCreateInfo->Height;
+                iconBitmap.bmWidthBytes = pxIconCreateInfo->RowSize;
+                iconBitmap.bmPlanes = 1;
+                iconBitmap.bmBitsPixel = pxIconCreateInfo->BitPerPixel;
+                iconBitmap.bmBits = offsetData;
+
+                const HBITMAP bitmapHandle = CreateBitmapIndirect(&iconBitmap);
+                PXErrorCurrent(bitmapHandle);
+
+                /*
+#define BUFSIZ 16 * 16 * 4
+                char buffer[BUFSIZ];
+                PXMemorySet(buffer, '0xFF', BUFSIZ);
+
+
+                BITMAP okwokee;
+                okwokee.bmType = 0;
+                okwokee.bmWidth = pxIconCreateInfo->Width;
+                okwokee.bmHeight = pxIconCreateInfo->Height;
+                okwokee.bmWidthBytes = pxIconCreateInfo->RowSize;
+                okwokee.bmPlanes = 1;
+                okwokee.bmBitsPixel = pxIconCreateInfo->BitPerPixel;
+                okwokee.bmBits = buffer;
+
+                const HBITMAP sasdasd = CreateBitmapIndirect(&okwokee);
+                PXErrorCurrent(sasdasd);*/
+
+
+
+                ICONINFO iconInfo;
+                iconInfo.fIcon = TRUE;
+                iconInfo.xHotspot = 0;
+                iconInfo.yHotspot = 0;
+                iconInfo.hbmMask = hBitmap;
+                iconInfo.hbmColor = hBitmap;
+
+                const HICON iconHandle = CreateIconIndirect(&iconInfo);
+                PXErrorCurrent(iconHandle);
+
+                pxIcon->Info.Handle.IconHandle = iconHandle;
+
+                break;
+            }
             case PXResourceTypeIconAtlas:
             {
                 PXIconAtlasCreateInfo* const pxIconAtlasCreateInfo = &pxResourceCreateInfo->IconAtlas;
-                PXIconAtlas* pxIconAtlas = *(PXTextureCube**)pxResourceCreateInfo->ObjectReference;
+                PXIconAtlas* pxIconAtlas = *(PXIconAtlas**)pxResourceCreateInfo->ObjectReference;
 
                 if(!pxIconAtlas)
                 {
                     PXNewZerod(PXIconAtlas, &pxIconAtlas);
-                    *pxResourceCreateInfo->ObjectReference = pxIconAtlas;                
+                    *pxResourceCreateInfo->ObjectReference = pxIconAtlas;
                 }
 
                 pxIconAtlas->Info.ID = PXResourceManagerGenerateUniqeID(pxResourceManager);
@@ -511,11 +672,84 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                     PXLoggingInfo,
                     "Resource",
                     "IconAtlas-Create",
-                    "ID:%i <%s>.",
+                    "ID:%i <%s> - CallSize:%i",
                     pxIconAtlas->Info.ID,
-                    pxResourceCreateInfo->FilePath
+                    pxResourceCreateInfo->FilePath,
+                    pxIconAtlasCreateInfo->CellSize
                 );
 #endif
+
+
+                // Load image
+                {
+                    PXResourceCreateInfo pxResourceCreateInfoSub;
+
+                    PXClear(PXResourceCreateInfo, &pxResourceCreateInfoSub);
+                    pxResourceCreateInfoSub.ObjectReference = &pxIconAtlas->IconTexture2D;
+                    pxResourceCreateInfoSub.ObjectAmount = 1; 
+                    pxResourceCreateInfoSub.FilePath = pxResourceCreateInfo->FilePath;
+                    pxResourceCreateInfoSub.FilePathSize = -1;  
+                    pxResourceCreateInfoSub.Type = PXResourceTypeTexture2D;
+
+                    PXResourceManagerAdd(pxResourceManager, &pxResourceCreateInfoSub, 1);
+                }
+
+                pxIconAtlasCreateInfo->CellAmountX = pxIconAtlas->IconTexture2D->Image->Width / pxIconAtlasCreateInfo->CellSize;
+                pxIconAtlasCreateInfo->CellAmountY = pxIconAtlas->IconTexture2D->Image->Height / pxIconAtlasCreateInfo->CellSize;
+                pxIconAtlasCreateInfo->CellAmountTotal = pxIconAtlasCreateInfo->CellAmountX * pxIconAtlasCreateInfo->CellAmountY;
+                       
+
+                // Preallocate icons
+                pxIconAtlas->IconListAmount = pxIconAtlasCreateInfo->CellAmountTotal;
+                pxIconAtlas->IconList = PXMemoryCallocT(PXIcon, pxIconAtlasCreateInfo->CellAmountTotal);
+
+
+#if PXLogEnable
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    "Resource",
+                    "IconAtlas-Create",
+                    "ID:%i, CellMap:<%i/%i> from Texture:<%i/%i>. Total:%i icons",
+                    pxIconAtlas->Info.ID,
+                    pxIconAtlasCreateInfo->CellAmountX,
+                    pxIconAtlasCreateInfo->CellAmountY,
+                    pxIconAtlas->IconTexture2D->Image->Width,
+                    pxIconAtlas->IconTexture2D->Image->Height,
+                    pxIconAtlasCreateInfo->CellAmountTotal
+                );
+#endif
+
+
+                // Register icons
+                for(PXSize y = 0; y < pxIconAtlasCreateInfo->CellAmountY; ++y)
+                {
+                    const PXSize pixelPositionY = y * pxIconAtlasCreateInfo->CellSize;
+
+                    for(PXSize x = 0; x < pxIconAtlasCreateInfo->CellAmountX; ++x)
+                    {
+                        const PXSize pixelPositionX = x * pxIconAtlasCreateInfo->CellSize;
+
+                        PXIcon* const pxIcon = &pxIconAtlas->IconList[x + y * pxIconAtlasCreateInfo->CellAmountX];
+
+                        PXResourceCreateInfo pxResourceCreateInfoSub;
+
+                        PXClear(PXResourceCreateInfo, &pxResourceCreateInfoSub);
+                        pxResourceCreateInfoSub.ObjectReference = &pxIcon;
+                        pxResourceCreateInfoSub.ObjectAmount = 1;
+                        pxResourceCreateInfoSub.Type = PXResourceTypeIcon;
+                        pxResourceCreateInfoSub.Icon.IconImage = pxIconAtlas->IconTexture2D->Image;
+                        pxResourceCreateInfoSub.Icon.OffsetX = pixelPositionX;
+                        pxResourceCreateInfoSub.Icon.OffsetY = pixelPositionY;
+                        pxResourceCreateInfoSub.Icon.Width = pxIconAtlasCreateInfo->CellSize;
+                        pxResourceCreateInfoSub.Icon.Height = pxIconAtlasCreateInfo->CellSize;
+                        pxResourceCreateInfoSub.Icon.RowSize = pxIconAtlasCreateInfo->CellSize * 4;
+                        pxResourceCreateInfoSub.Icon.BitPerPixel = 8 * 4;
+
+                        PXResourceManagerAdd(pxResourceManager, &pxResourceCreateInfoSub, 1);
+                    }
+                }
+
 
                 break;
             }

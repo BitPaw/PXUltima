@@ -4509,7 +4509,17 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
 
                 PXWindowCreate(pxGUISystem, &pxResourceCreateInfo, 1);
 
-                pxWindow->Icon = pxIcon;
+          
+
+                if(pxUIElementTabPageSingleInfo->TABIcon)
+                {
+                    pxWindow->Icon = pxUIElementTabPageSingleInfo->TABIcon;
+                }
+                else
+                {
+                    pxWindow->Icon = pxIcon;
+                }
+
 
                 switch(PXResourceInfoUseByMask & pxWindowCurrent->Info.Flags)
                 {
