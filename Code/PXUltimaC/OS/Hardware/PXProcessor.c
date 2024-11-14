@@ -738,6 +738,43 @@ PXActionResult PXAPI PXProcessorTemperature(PXInt32U* const cpuTemp)
         PXActionReturnOnError(initializeResult);
     }
 
+
+
+    /*
+    Access over the driver, need admin permissions. Seems overkill
+
+#define MSR_TEMPERATURE_TARGET 0x1A2  // Example MSR address for temperature
+
+
+    HANDLE hDriver;
+    DWORD bytesReturned;
+    DWORD msrValue;
+
+    // Open a handle to the driver
+    hDriver = CreateFile("\\\\.\\DriverName", GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
+    if (hDriver == INVALID_HANDLE_VALUE) {
+        printf("Failed to open driver handle.\n");
+        return 1;
+    }
+
+    // Read the MSR value
+    if (!DeviceIoControl(hDriver, IOCTL_READ_MSR, &MSR_TEMPERATURE_TARGET, sizeof(MSR_TEMPERATURE_TARGET), &msrValue, sizeof(msrValue), &bytesReturned, NULL)) {
+        printf("Failed to read MSR.\n");
+        CloseHandle(hDriver);
+        return 1;
+    }
+
+    // Calculate the temperature
+    int temperature = (msrValue >> 16) & 0xFF;  // Example calculation
+    printf("CPU Temperature: %d°C\n", temperature);
+
+    // Close the handle
+    CloseHandle(hDriver);
+}
+*/
+    
+    
+
     {
         /*
         const HRESULT initializeResultID = CoInitializeSecurity
@@ -1014,7 +1051,7 @@ PXActionResult PXAPI PXProcessorTemperature(PXInt32U* const cpuTemp)
         PXLoggingError,
         "Processor",
         "Temp",
-        "%i�C",
+        "%i°C",
         cpuTemperature
     );
 #endif
