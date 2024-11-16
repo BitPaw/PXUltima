@@ -6205,8 +6205,8 @@ PXActionResult PXAPI PXNativDrawIcon(PXGUISystem* const pxGUISystem, PXWindow* c
         x, 
         y,
         pxIcon->Info.Handle.IconHandle,
-        width, 
-        height,
+        16, // width
+        16, // height
         0,
         0,
         DI_NORMAL

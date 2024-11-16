@@ -541,6 +541,28 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                 pxIcon->Info.ID = PXResourceManagerGenerateUniqeID(pxResourceManager);
 
 
+
+                // Check if texture is present
+                if(!pxIconCreateInfo->IconImage)
+                {
+                    PXResourceCreateInfo pxResourceCreateInfoSub;
+
+                    PXClear(PXResourceCreateInfo, &pxResourceCreateInfoSub);
+                    pxResourceCreateInfoSub.ObjectReference = &pxIconCreateInfo->IconImage;
+                    pxResourceCreateInfoSub.ObjectAmount = 1;
+                    pxResourceCreateInfoSub.FilePath = pxResourceCreateInfo->FilePath;
+                    pxResourceCreateInfoSub.FilePathSize = -1;
+                    pxResourceCreateInfoSub.Type = PXResourceTypeImage;
+
+                    PXResourceManagerAdd(pxResourceManager, &pxResourceCreateInfoSub, 1);
+                }
+
+
+
+
+
+
+
 #if PXLogEnable
                 PXLogPrint
                 (
@@ -549,17 +571,13 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                     "Icon-Create",
                     "ID:%i - WHXY : %i,%i,%i,%i",
                     pxIcon->Info.ID,
-                    pxResourceCreateInfo->FilePath,
                     pxIconCreateInfo->Width,
                     pxIconCreateInfo->Height,
                     pxIconCreateInfo->OffsetX,
                     pxIconCreateInfo->OffsetY
                 );
 #endif
-                PXSize offset = pxIconCreateInfo->OffsetX + pxIconCreateInfo->OffsetY * pxIconCreateInfo->Width;
-                char* offsetData = (char*)pxIconCreateInfo->IconImage->PixelData + offset;
-                //PXSize sizeTx = pxIconCreateInfo->Width * pxIconCreateInfo->Height * 4;
-                
+                      
 
                 char wonk[16*16*3];
 
@@ -567,31 +585,99 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
 
                 int sizeee = 16 * 16 * 3;
 
+#if 0
                 for(size_t i = 0; i < sizeee; i+=3)
                 {
                     wonk[i + 0] = 0xFF * (i % 2 == 0);
                    // wonk[i + 1] = 0xFF * (i % 4 == 0);
                    // wonk[i + 2] = 0xFF * (i % 8 == 0);
                 }
-              
+#endif
 
-                if(0)
+
+
+
+
+                BITMAPINFO bitmapAlphaMaskInfo;
+                ZeroMemory(&bitmapAlphaMaskInfo, sizeof(BITMAPINFO));
+                bitmapAlphaMaskInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+                bitmapAlphaMaskInfo.bmiHeader.biWidth = pxIconCreateInfo->Width;
+                bitmapAlphaMaskInfo.bmiHeader.biHeight = -pxIconCreateInfo->Height; // Top-down DIB
+                bitmapAlphaMaskInfo.bmiHeader.biPlanes = 1;
+                bitmapAlphaMaskInfo.bmiHeader.biBitCount = 1; // Monochrome bitmap 
+                bitmapAlphaMaskInfo.bmiHeader.biCompression = BI_RGB;
+                char* maskBits;
+
+                const HBITMAP bitmapAlphaMaskHandle = CreateDIBSection(NULL, &bitmapAlphaMaskInfo, DIB_RGB_COLORS, &maskBits, NULL, 0);
+
+                memset(maskBits, 0xFF, 0x1000);
+               // memset(maskBits+0x1000/2, 0x00, 0x1000 / 2);
+
+                //char pxMaskAND[(32 * 32) / 8];
+               // char pxMaskXOR[(32 * 32) / 8];
+
+               // memset(pxMaskAND, 0x00, 128);
+               // memset(pxMaskXOR, 0xFF, 128);
+
+                char* pxMaskAND = maskBits;
+                char* pxMaskXOR = &maskBits[(pxIconCreateInfo->Width * pxIconCreateInfo->Height) / 8];
+
+                if(pxIconCreateInfo->IconImage->PixelData)
                 {
+                    const PXSize maskXOROffset = (pxIconCreateInfo->Height-1) * ((pxIconCreateInfo->Width + 7) / 8) + ((pxIconCreateInfo->Width-1) / 8)+1;
+
                     for(PXSize y = 0; y < pxIconCreateInfo->Height; y++)
                     {
                         for(PXSize x = 0; x < pxIconCreateInfo->Width; x++)
                         {
                             PXSize indexInsret = (x + y * pxIconCreateInfo->Width) * 3;
-                            PXSize indexSource = (x + y * pxIconCreateInfo->Width) * 4;
 
-                            void* insert = &wonk[indexInsret];
-                            void* source = &offsetData[indexSource];
+                            PXSize sourceX = x + pxIconCreateInfo->OffsetX;
+                            PXSize sourceY = y + pxIconCreateInfo->OffsetY;
+                            PXSize indexSource = PXImagePixelPosition(pxIconCreateInfo->IconImage, sourceX, sourceY);
+                            char* pixelDataSource = (char*)pxIconCreateInfo->IconImage->PixelData;   
 
-                            PXCopyList(char, 3, source, insert);
+                            char* insert = &wonk[indexInsret];
+                            PXColorRGBAI8* source = &pixelDataSource[indexSource];
+     
+                            insert[0] = source->Blue;
+                            insert[1] = source->Green;
+                            insert[2] = source->Red;
+                          
+                            PXSize maskIndex = y * ((pxIconCreateInfo->Width + 7) / 8) + (x / 8);
+
+                            const PXBool isTransparent =  source->Alpha == 0; // x % 2 == 0 && (((y +1) % 2) != 0);
+                            const PXBool bitData = 1 << (7 - (x % 8));
+
+                            if(isTransparent) 
+                            {
+                                maskBits[maskIndex] |= bitData;
+                                maskBits[maskIndex + maskXOROffset] |= bitData;
+
+                              //  insert[0] = 0;
+                              //  insert[1] = 0;
+                              //  insert[2] = 0xFF;
+
+                                pxMaskAND[maskIndex] |= bitData;
+                                pxMaskXOR[maskIndex] &= ~bitData;
+                            }
+                            else
+                            {
+                                maskBits[maskIndex] &= ~bitData;
+                                maskBits[maskIndex + maskXOROffset] &= ~bitData;
+
+                                pxMaskAND[maskIndex] &= ~bitData;
+                                pxMaskXOR[maskIndex] |= bitData;
+
+                               // insert[0] = 0;
+                               // insert[1] = 0xFF;
+                               // insert[2] = 0;
+                            }                        
+                           
                         }
                     }
                 }
-         
+             
 
 
                 HBITMAP hBitmap = PXBitMapFromImage
@@ -600,53 +686,136 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                     pxIconCreateInfo->Height,
                     3,
                     wonk
-                );
-               
-
+                ); 
                 PXErrorCurrent(hBitmap);
 
 
 
-                BITMAP iconBitmap;
-                iconBitmap.bmType = 0;
-                iconBitmap.bmWidth = pxIconCreateInfo->Width;
-                iconBitmap.bmHeight = pxIconCreateInfo->Height;
-                iconBitmap.bmWidthBytes = pxIconCreateInfo->RowSize;
-                iconBitmap.bmPlanes = 1;
-                iconBitmap.bmBitsPixel = pxIconCreateInfo->BitPerPixel;
-                iconBitmap.bmBits = offsetData;
 
-                const HBITMAP bitmapHandle = CreateBitmapIndirect(&iconBitmap);
-                PXErrorCurrent(bitmapHandle);
+
+
+
+                BYTE ANDmaskIcon[] = { 0xFF, 0xFF, 0xFF, 0xFF,   // line 1 
+                      0xFF, 0xFF, 0xC3, 0xFF,   // line 2 
+                      0xFF, 0xFF, 0x00, 0xFF,   // line 3 
+                      0xFF, 0xFE, 0x00, 0x7F,   // line 4 
+
+                      0xFF, 0xFC, 0x00, 0x1F,   // line 5 
+                      0xFF, 0xF8, 0x00, 0x0F,   // line 6 
+                      0xFF, 0xF8, 0x00, 0x0F,   // line 7 
+                      0xFF, 0xF0, 0x00, 0x07,   // line 8 
+
+                      0xFF, 0xF0, 0x00, 0x03,   // line 9 
+                      0xFF, 0xE0, 0x00, 0x03,   // line 10 
+                      0xFF, 0xE0, 0x00, 0x01,   // line 11 
+                      0xFF, 0xE0, 0x00, 0x01,   // line 12 
+
+                      0xFF, 0xF0, 0x00, 0x01,   // line 13 
+                      0xFF, 0xF0, 0x00, 0x00,   // line 14 
+                      0xFF, 0xF8, 0x00, 0x00,   // line 15 
+                      0xFF, 0xFC, 0x00, 0x00,   // line 16 
+
+                      0xFF, 0xFF, 0x00, 0x00,   // line 17 
+                      0xFF, 0xFF, 0x80, 0x00,   // line 18 
+                      0xFF, 0xFF, 0xE0, 0x00,   // line 19 
+                      0xFF, 0xFF, 0xE0, 0x01,   // line 20 
+
+                      0xFF, 0xFF, 0xF0, 0x01,   // line 21 
+                      0xFF, 0xFF, 0xF0, 0x01,   // line 22 
+                      0xFF, 0xFF, 0xF0, 0x03,   // line 23 
+                      0xFF, 0xFF, 0xE0, 0x03,   // line 24 
+
+                      0xFF, 0xFF, 0xE0, 0x07,   // line 25 
+                      0xFF, 0xFF, 0xC0, 0x0F,   // line 26 
+                      0xFF, 0xFF, 0xC0, 0x0F,   // line 27 
+                      0xFF, 0xFF, 0x80, 0x1F,   // line 28 
+
+                      0xFF, 0xFF, 0x00, 0x7F,   // line 29 
+                      0xFF, 0xFC, 0x00, 0xFF,   // line 30 
+                      0xFF, 0xF8, 0x03, 0xFF,   // line 31 
+                      0xFF, 0xFC, 0x3F, 0xFF };  // line 32 
+
+                // Yang icon XOR bitmask 
+
+                BYTE XORmaskIcon[] = { 0x00, 0x00, 0x00, 0x00,   // line 1 
+                                      0x00, 0x00, 0x00, 0x00,   // line 2 
+                                      0x00, 0x00, 0x00, 0x00,   // line 3 
+                                      0x00, 0x00, 0x00, 0x00,   // line 4 
+
+                                      0x00, 0x00, 0x00, 0x00,   // line 5 
+                                      0x00, 0x00, 0x00, 0x00,   // line 6 
+                                      0x00, 0x00, 0x00, 0x00,   // line 7 
+                                      0x00, 0x00, 0x38, 0x00,   // line 8 
+
+                                      0x00, 0x00, 0x7C, 0x00,   // line 9 
+                                      0x00, 0x00, 0x7C, 0x00,   // line 10 
+                                      0x00, 0x00, 0x7C, 0x00,   // line 11 
+                                      0x00, 0x00, 0x38, 0x00,   // line 12 
+
+                                      0x00, 0x00, 0x00, 0x00,   // line 13 
+                                      0x00, 0x00, 0x00, 0x00,   // line 14 
+                                      0x00, 0x00, 0x00, 0x00,   // line 15 
+                                      0x00, 0x00, 0x00, 0x00,   // line 16 
+
+                                      0x00, 0x00, 0x00, 0x00,   // line 17 
+                                      0x00, 0x00, 0x00, 0x00,   // line 18 
+                                      0x00, 0x00, 0x00, 0x00,   // line 19 
+                                      0x00, 0x00, 0x00, 0x00,   // line 20 
+
+                                      0x00, 0x00, 0x00, 0x00,   // line 21 
+                                      0x00, 0x00, 0x00, 0x00,   // line 22 
+                                      0x00, 0x00, 0x00, 0x00,   // line 23 
+                                      0x00, 0x00, 0x00, 0x00,   // line 24 
+
+                                      0x00, 0x00, 0x00, 0x00,   // line 25 
+                                      0x00, 0x00, 0x00, 0x00,   // line 26 
+                                      0x00, 0x00, 0x00, 0x00,   // line 27 
+                                      0x00, 0x00, 0x00, 0x00,   // line 28 
+
+                                      0x00, 0x00, 0x00, 0x00,   // line 29 
+                                      0x00, 0x00, 0x00, 0x00,   // line 30 
+                                      0x00, 0x00, 0x00, 0x00,   // line 31 
+                                      0x00, 0x00, 0x00, 0x00 };  // line 32 
 
                 /*
-#define BUFSIZ 16 * 16 * 4
-                char buffer[BUFSIZ];
-                PXMemorySet(buffer, '0xFF', BUFSIZ);
+                const HICON iconHandle = CreateIcon(NULL,    // application instance  
+                                    32,              // icon width 
+                                    32,              // icon height 
+                                    1,               // number of XOR planes 
+                                    1,               // number of bits per pixel 
+                                    ANDmaskIcon,     // AND bitmask  
+                                    XORmaskIcon);    // XOR bitmask 
 
 
-                BITMAP okwokee;
-                okwokee.bmType = 0;
-                okwokee.bmWidth = pxIconCreateInfo->Width;
-                okwokee.bmHeight = pxIconCreateInfo->Height;
-                okwokee.bmWidthBytes = pxIconCreateInfo->RowSize;
-                okwokee.bmPlanes = 1;
-                okwokee.bmBitsPixel = pxIconCreateInfo->BitPerPixel;
-                okwokee.bmBits = buffer;
-
-                const HBITMAP sasdasd = CreateBitmapIndirect(&okwokee);
-                PXErrorCurrent(sasdasd);*/
+*/
 
 
 
-                ICONINFO iconInfo;
-                iconInfo.fIcon = TRUE;
-                iconInfo.xHotspot = 0;
-                iconInfo.yHotspot = 0;
-                iconInfo.hbmMask = hBitmap;
-                iconInfo.hbmColor = hBitmap;
 
-                const HICON iconHandle = CreateIconIndirect(&iconInfo);
+
+
+             
+
+                HICON iconHandle = 0;
+
+                if(0) // Use binaryicon
+                {
+                    iconHandle = CreateIcon(PXNull, pxIconCreateInfo->Width, pxIconCreateInfo->Height, 1, 1, pxMaskAND, pxMaskXOR);
+                }
+                else
+                {
+                    ICONINFO iconInfo;
+                    iconInfo.fIcon = TRUE;
+                    iconInfo.xHotspot = 0;
+                    iconInfo.yHotspot = 0;
+                    iconInfo.hbmMask = bitmapAlphaMaskHandle; // mask pxMaskXOR is following
+                    iconInfo.hbmColor = hBitmap;
+
+                    iconHandle = CreateIconIndirect(&iconInfo);
+                }
+
+            
+
                 PXErrorCurrent(iconHandle);
 
                 pxIcon->Info.Handle.IconHandle = iconHandle;

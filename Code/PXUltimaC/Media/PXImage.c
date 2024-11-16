@@ -207,7 +207,7 @@ void* PXAPI PXImageDataPoint(const PXImage* const image, const PXSize x, const P
 
 PXSize PXAPI PXImagePixelPosition(const PXImage* const image, const PXSize x, const PXSize y)
 {
-    const PXSize bytesPerPixel = PXColorFormatBitsPerPixel(image->Format);
+    const PXSize bytesPerPixel = PXColorFormatBytePerPixel(image->Format);
     const PXSize index = x * bytesPerPixel + y * bytesPerPixel * image->Width;
 
     return index;
