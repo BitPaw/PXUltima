@@ -350,8 +350,7 @@ HBITMAP PXBitMapFromImage(int width, int height, int amountofchannels, void* dat
     ZeroMemory(&bmi, sizeof(BITMAPINFO));
     bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
     bmi.bmiHeader.biWidth = width;
-    bmi.bmiHeader.biHeight = -height;
-    // Top-down DIB 
+    bmi.bmiHeader.biHeight = -height; // Top-down DIB 
     bmi.bmiHeader.biPlanes = 1;
     bmi.bmiHeader.biBitCount = 8* amountofchannels;
     bmi.bmiHeader.biCompression = BI_RGB;
@@ -579,48 +578,35 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
 #endif
                       
 
-                char wonk[16*16*3];
+                void* bitmapData[2];
+                HBITMAP bitmapHandle[2];
 
-                PXMemorySet(wonk, '0xF0', 16 * 16 * 3);
+                BITMAPINFO bitmapInfo[2];
+                PXClearList(BITMAPINFO, bitmapInfo, 2);
+                bitmapInfo[0].bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+                bitmapInfo[0].bmiHeader.biWidth = pxIconCreateInfo->Width;
+                bitmapInfo[0].bmiHeader.biHeight = -pxIconCreateInfo->Height; // Top-down DIB 
+                bitmapInfo[0].bmiHeader.biPlanes = 1;
+                bitmapInfo[0].bmiHeader.biBitCount = 24;// PXColorFormatBitsPerPixel(pxIconCreateInfo->IconImage->Format);
+                bitmapInfo[0].bmiHeader.biCompression = BI_RGB;
 
-                int sizeee = 16 * 16 * 3;
+                bitmapInfo[1].bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+                bitmapInfo[1].bmiHeader.biWidth = pxIconCreateInfo->Width;
+                bitmapInfo[1].bmiHeader.biHeight = -pxIconCreateInfo->Height; // Top-down DIB
+                bitmapInfo[1].bmiHeader.biPlanes = 1;
+                bitmapInfo[1].bmiHeader.biBitCount = 1; // Monochrome bitmap 
+                bitmapInfo[1].bmiHeader.biCompression = BI_RGB;        
 
-#if 0
-                for(size_t i = 0; i < sizeee; i+=3)
+                for(PXSize i = 0; i < 2; ++i)
                 {
-                    wonk[i + 0] = 0xFF * (i % 2 == 0);
-                   // wonk[i + 1] = 0xFF * (i % 4 == 0);
-                   // wonk[i + 2] = 0xFF * (i % 8 == 0);
+                    bitmapHandle[i] = CreateDIBSection(NULL, &bitmapInfo[i], DIB_RGB_COLORS, &bitmapData[i], NULL, 0);
                 }
-#endif
 
+                char* pixelDataBGR = bitmapData[0];
+                char* pxMaskAND = bitmapData[1];
+                char* pxMaskXOR = &bitmapData[(pxIconCreateInfo->Width * pxIconCreateInfo->Height) / 8];
 
-
-
-
-                BITMAPINFO bitmapAlphaMaskInfo;
-                ZeroMemory(&bitmapAlphaMaskInfo, sizeof(BITMAPINFO));
-                bitmapAlphaMaskInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-                bitmapAlphaMaskInfo.bmiHeader.biWidth = pxIconCreateInfo->Width;
-                bitmapAlphaMaskInfo.bmiHeader.biHeight = -pxIconCreateInfo->Height; // Top-down DIB
-                bitmapAlphaMaskInfo.bmiHeader.biPlanes = 1;
-                bitmapAlphaMaskInfo.bmiHeader.biBitCount = 1; // Monochrome bitmap 
-                bitmapAlphaMaskInfo.bmiHeader.biCompression = BI_RGB;
-                char* maskBits;
-
-                const HBITMAP bitmapAlphaMaskHandle = CreateDIBSection(NULL, &bitmapAlphaMaskInfo, DIB_RGB_COLORS, &maskBits, NULL, 0);
-
-                memset(maskBits, 0xFF, 0x1000);
-               // memset(maskBits+0x1000/2, 0x00, 0x1000 / 2);
-
-                //char pxMaskAND[(32 * 32) / 8];
-               // char pxMaskXOR[(32 * 32) / 8];
-
-               // memset(pxMaskAND, 0x00, 128);
-               // memset(pxMaskXOR, 0xFF, 128);
-
-                char* pxMaskAND = maskBits;
-                char* pxMaskXOR = &maskBits[(pxIconCreateInfo->Width * pxIconCreateInfo->Height) / 8];
+         
 
                 if(pxIconCreateInfo->IconImage->PixelData)
                 {
@@ -630,170 +616,39 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                     {
                         for(PXSize x = 0; x < pxIconCreateInfo->Width; x++)
                         {
-                            PXSize indexInsret = (x + y * pxIconCreateInfo->Width) * 3;
+                            const PXSize indexInsret = (x + y * pxIconCreateInfo->Width) * 3;
 
-                            PXSize sourceX = x + pxIconCreateInfo->OffsetX;
-                            PXSize sourceY = y + pxIconCreateInfo->OffsetY;
-                            PXSize indexSource = PXImagePixelPosition(pxIconCreateInfo->IconImage, sourceX, sourceY);
+                            const PXSize sourceX = x + pxIconCreateInfo->OffsetX;
+                            const PXSize sourceY = y + pxIconCreateInfo->OffsetY;
+                            const PXSize indexSource = PXImagePixelPosition(pxIconCreateInfo->IconImage, sourceX, sourceY);
                             char* pixelDataSource = (char*)pxIconCreateInfo->IconImage->PixelData;   
+                            const PXColorRGBAI8* const source = &pixelDataSource[indexSource];
 
-                            char* insert = &wonk[indexInsret];
-                            PXColorRGBAI8* source = &pixelDataSource[indexSource];
+                            char* const insert = &pixelDataBGR[indexInsret];
+                       
      
                             insert[0] = source->Blue;
                             insert[1] = source->Green;
                             insert[2] = source->Red;
                           
-                            PXSize maskIndex = y * ((pxIconCreateInfo->Width + 7) / 8) + (x / 8);
-
-                            const PXBool isTransparent =  source->Alpha == 0; // x % 2 == 0 && (((y +1) % 2) != 0);
-                            const PXBool bitData = 1 << (7 - (x % 8));
+                            // There is a *2 because the mask index is only used every 2nd line??
+                            const PXSize maskIndex = (y * ((pxIconCreateInfo->Width + 7) / 8) * 2)+ (x / 8);
+                            const PXBool isTransparent =  source->Alpha == 0;
+                            const PXInt8U bitData = 1 << (7 - (x % 8));
 
                             if(isTransparent) 
                             {
-                                maskBits[maskIndex] |= bitData;
-                                maskBits[maskIndex + maskXOROffset] |= bitData;
-
-                              //  insert[0] = 0;
-                              //  insert[1] = 0;
-                              //  insert[2] = 0xFF;
-
-                                pxMaskAND[maskIndex] |= bitData;
-                                pxMaskXOR[maskIndex] &= ~bitData;
+                                pxMaskAND[maskIndex] &= ~bitData;
+                                pxMaskXOR[maskIndex] |= bitData;                            
                             }
                             else
                             {
-                                maskBits[maskIndex] &= ~bitData;
-                                maskBits[maskIndex + maskXOROffset] &= ~bitData;
-
-                                pxMaskAND[maskIndex] &= ~bitData;
-                                pxMaskXOR[maskIndex] |= bitData;
-
-                               // insert[0] = 0;
-                               // insert[1] = 0xFF;
-                               // insert[2] = 0;
-                            }                        
-                           
+                                pxMaskAND[maskIndex] |= bitData;
+                                pxMaskXOR[maskIndex] &= ~bitData;
+                            }
                         }
                     }
                 }
-             
-
-
-                HBITMAP hBitmap = PXBitMapFromImage
-                (
-                    pxIconCreateInfo->Width, 
-                    pxIconCreateInfo->Height,
-                    3,
-                    wonk
-                ); 
-                PXErrorCurrent(hBitmap);
-
-
-
-
-
-
-
-                BYTE ANDmaskIcon[] = { 0xFF, 0xFF, 0xFF, 0xFF,   // line 1 
-                      0xFF, 0xFF, 0xC3, 0xFF,   // line 2 
-                      0xFF, 0xFF, 0x00, 0xFF,   // line 3 
-                      0xFF, 0xFE, 0x00, 0x7F,   // line 4 
-
-                      0xFF, 0xFC, 0x00, 0x1F,   // line 5 
-                      0xFF, 0xF8, 0x00, 0x0F,   // line 6 
-                      0xFF, 0xF8, 0x00, 0x0F,   // line 7 
-                      0xFF, 0xF0, 0x00, 0x07,   // line 8 
-
-                      0xFF, 0xF0, 0x00, 0x03,   // line 9 
-                      0xFF, 0xE0, 0x00, 0x03,   // line 10 
-                      0xFF, 0xE0, 0x00, 0x01,   // line 11 
-                      0xFF, 0xE0, 0x00, 0x01,   // line 12 
-
-                      0xFF, 0xF0, 0x00, 0x01,   // line 13 
-                      0xFF, 0xF0, 0x00, 0x00,   // line 14 
-                      0xFF, 0xF8, 0x00, 0x00,   // line 15 
-                      0xFF, 0xFC, 0x00, 0x00,   // line 16 
-
-                      0xFF, 0xFF, 0x00, 0x00,   // line 17 
-                      0xFF, 0xFF, 0x80, 0x00,   // line 18 
-                      0xFF, 0xFF, 0xE0, 0x00,   // line 19 
-                      0xFF, 0xFF, 0xE0, 0x01,   // line 20 
-
-                      0xFF, 0xFF, 0xF0, 0x01,   // line 21 
-                      0xFF, 0xFF, 0xF0, 0x01,   // line 22 
-                      0xFF, 0xFF, 0xF0, 0x03,   // line 23 
-                      0xFF, 0xFF, 0xE0, 0x03,   // line 24 
-
-                      0xFF, 0xFF, 0xE0, 0x07,   // line 25 
-                      0xFF, 0xFF, 0xC0, 0x0F,   // line 26 
-                      0xFF, 0xFF, 0xC0, 0x0F,   // line 27 
-                      0xFF, 0xFF, 0x80, 0x1F,   // line 28 
-
-                      0xFF, 0xFF, 0x00, 0x7F,   // line 29 
-                      0xFF, 0xFC, 0x00, 0xFF,   // line 30 
-                      0xFF, 0xF8, 0x03, 0xFF,   // line 31 
-                      0xFF, 0xFC, 0x3F, 0xFF };  // line 32 
-
-                // Yang icon XOR bitmask 
-
-                BYTE XORmaskIcon[] = { 0x00, 0x00, 0x00, 0x00,   // line 1 
-                                      0x00, 0x00, 0x00, 0x00,   // line 2 
-                                      0x00, 0x00, 0x00, 0x00,   // line 3 
-                                      0x00, 0x00, 0x00, 0x00,   // line 4 
-
-                                      0x00, 0x00, 0x00, 0x00,   // line 5 
-                                      0x00, 0x00, 0x00, 0x00,   // line 6 
-                                      0x00, 0x00, 0x00, 0x00,   // line 7 
-                                      0x00, 0x00, 0x38, 0x00,   // line 8 
-
-                                      0x00, 0x00, 0x7C, 0x00,   // line 9 
-                                      0x00, 0x00, 0x7C, 0x00,   // line 10 
-                                      0x00, 0x00, 0x7C, 0x00,   // line 11 
-                                      0x00, 0x00, 0x38, 0x00,   // line 12 
-
-                                      0x00, 0x00, 0x00, 0x00,   // line 13 
-                                      0x00, 0x00, 0x00, 0x00,   // line 14 
-                                      0x00, 0x00, 0x00, 0x00,   // line 15 
-                                      0x00, 0x00, 0x00, 0x00,   // line 16 
-
-                                      0x00, 0x00, 0x00, 0x00,   // line 17 
-                                      0x00, 0x00, 0x00, 0x00,   // line 18 
-                                      0x00, 0x00, 0x00, 0x00,   // line 19 
-                                      0x00, 0x00, 0x00, 0x00,   // line 20 
-
-                                      0x00, 0x00, 0x00, 0x00,   // line 21 
-                                      0x00, 0x00, 0x00, 0x00,   // line 22 
-                                      0x00, 0x00, 0x00, 0x00,   // line 23 
-                                      0x00, 0x00, 0x00, 0x00,   // line 24 
-
-                                      0x00, 0x00, 0x00, 0x00,   // line 25 
-                                      0x00, 0x00, 0x00, 0x00,   // line 26 
-                                      0x00, 0x00, 0x00, 0x00,   // line 27 
-                                      0x00, 0x00, 0x00, 0x00,   // line 28 
-
-                                      0x00, 0x00, 0x00, 0x00,   // line 29 
-                                      0x00, 0x00, 0x00, 0x00,   // line 30 
-                                      0x00, 0x00, 0x00, 0x00,   // line 31 
-                                      0x00, 0x00, 0x00, 0x00 };  // line 32 
-
-                /*
-                const HICON iconHandle = CreateIcon(NULL,    // application instance  
-                                    32,              // icon width 
-                                    32,              // icon height 
-                                    1,               // number of XOR planes 
-                                    1,               // number of bits per pixel 
-                                    ANDmaskIcon,     // AND bitmask  
-                                    XORmaskIcon);    // XOR bitmask 
-
-
-*/
-
-
-
-
-
-
              
 
                 HICON iconHandle = 0;
@@ -804,14 +659,18 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                 }
                 else
                 {
+                   // memset(pxMaskAND, 0x40, 0x1000);
+
                     ICONINFO iconInfo;
                     iconInfo.fIcon = TRUE;
                     iconInfo.xHotspot = 0;
                     iconInfo.yHotspot = 0;
-                    iconInfo.hbmMask = bitmapAlphaMaskHandle; // mask pxMaskXOR is following
-                    iconInfo.hbmColor = hBitmap;
+                    iconInfo.hbmMask = bitmapHandle[1]; // mask pxMaskXOR is following
+                    iconInfo.hbmColor = bitmapHandle[0];
 
                     iconHandle = CreateIconIndirect(&iconInfo);
+
+                    // iconHandle = CreateIcon(PXNull, pxIconCreateInfo->Width, pxIconCreateInfo->Height, 1, 1, pxMaskAND, pxMaskXOR);
                 }
 
             

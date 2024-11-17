@@ -1926,6 +1926,90 @@ PXActionResult PXAPI PXWindowTextGet(PXGUISystem* const pxGUISystem, PXWindow* c
     return pxActionResult;
 }
 
+PXActionResult PXAPI PXWindowDrawCustomRectangle3D(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int x, const int y, const int width, const int height)
+{
+    PXWindowBrush* brushFront = pxGUIElement->BrushFront;
+    PXWindowBrush* brushBackground = pxGUIElement->BrushBackground;
+
+    PXNativDrawColorSetBrush
+    (
+        pxGUISystem,
+        pxGUIElement,
+        brushFront,
+        PXGUIDrawModeFront
+    );
+    PXNativDrawColorSetBrush
+    (
+        pxGUISystem,
+        pxGUIElement,
+        brushBackground,
+        PXGUIDrawModeBack
+    );
+
+    PXNativDrawRectangle
+    (
+        pxGUISystem,
+        pxGUIElement,
+        x,
+        y,
+        width,
+        height
+    );
+
+    const float highFactor = 1.35f;
+    const float lowFactor = 0.65f;
+
+    const COLORREF highColor = RGB
+    (
+        highFactor * brushBackground->ColorDate.Red,
+        highFactor * brushBackground->ColorDate.Green,
+        highFactor * brushBackground->ColorDate.Blue
+    );
+    const COLORREF lowColor = RGB
+    (
+        lowFactor * brushBackground->ColorDate.Red,
+        lowFactor * brushBackground->ColorDate.Green,
+        lowFactor * brushBackground->ColorDate.Blue
+    );
+
+    const DWORD penStyle = PS_ENDCAP_SQUARE | PS_GEOMETRIC | PS_SOLID | PS_JOIN_MITER;
+    const DWORD penSize = 2;
+    const PXInt16U borderInwardOffset = penSize - 1;
+
+    if(penSize == 0)
+    {
+        return PXActionSuccessful;
+    }
+
+    const HPEN penLight = CreatePen(penStyle, penSize, highColor);
+    const HPEN penDark = CreatePen(penStyle, penSize, lowColor);
+
+    // Bottom, right, dark line
+    MoveToEx(pxGUIElement->DeviceContextHandle, width - borderInwardOffset, y + borderInwardOffset, PXNull);
+    SelectPen(pxGUIElement->DeviceContextHandle, penDark);
+    LineTo(pxGUIElement->DeviceContextHandle, width - borderInwardOffset, height - borderInwardOffset);
+    LineTo(pxGUIElement->DeviceContextHandle, x + borderInwardOffset, height - borderInwardOffset);
+
+    SelectPen(pxGUIElement->DeviceContextHandle, penLight);
+    LineTo(pxGUIElement->DeviceContextHandle, x + borderInwardOffset, y + borderInwardOffset);
+    LineTo(pxGUIElement->DeviceContextHandle, width - borderInwardOffset, y + borderInwardOffset);
+
+    DeletePen(penLight);
+    DeletePen(penDark);
+
+    return PXActionSuccessful;
+}
+
+PXPublic PXActionResult PXAPI PXWindowDrawCustomHeader(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
+{
+    return PXPublic PXActionResult PXAPI();
+}
+
+PXPublic PXActionResult PXAPI PXWindowDrawCustomFooter(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
+{
+    return PXPublic PXActionResult PXAPI();
+}
+
 PXActionResult PXAPI PXWindowDrawCustomTabList(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
 {
     PXWindowExtendedBehaviourTab* pxWindowExtendedBehaviourTab = (PXWindowExtendedBehaviourTab*)pxGUIElement->ExtendedData;
@@ -1942,30 +2026,49 @@ PXActionResult PXAPI PXWindowDrawCustomTabList(PXGUISystem* const pxGUISystem, P
 
     PXNativDrawClear(pxGUISystem, pxGUIElement);
 
-    int size = 110;
+   // int size = 110;
     int offsetX = 3;
     int offsetY = 4;
-    int offsetSeperator = 6;
-    int height = 25;
-    int iconMargin = 4;
+    int offsetSeperator = 2;
+    int height = 25; // 25
+    int iconMargin = height - 16;
     int iconSize = height- iconMargin;
 
-    PXRectangle pxRectangle;
-    pxRectangle.Left = pxGUIElement->Position.X;
-    pxRectangle.Top = pxGUIElement->Position.Y;
-    pxRectangle.Right = size;
-    pxRectangle.Bottom = height;
-
-    int left = pxRectangle.Left + offsetX;
-    int right = pxRectangle.Right + offsetY;
+    int left = pxGUIElement->Position.X;
+    int right = offsetY;
 
     for(PXSize i = 0; i < pxWindowExtendedBehaviourTab->TABPageAmount; ++i)
     {
         PXWindow* const pxWindowTABPage = &pxWindowExtendedBehaviourTab->TABPageList[i];
 
-        PXNativDrawRectangle(pxGUISystem, pxGUIElement, left, 0, left+ size+ offsetX, height);
-        PXNativDrawIcon(pxGUISystem, pxGUIElement, pxWindowTABPage->Icon, left+ iconMargin/2, iconMargin/2, iconSize, iconSize);
+        pxWindowTABPage->NameContentSize = PXTextLengthA(pxWindowTABPage->NameContent, 260);
 
+        PXSize predictSIze = 4 + pxWindowTABPage->NameContentSize * 10 + iconSize + iconMargin;
+       
+        predictSIze = PXMathMinimumIU(predictSIze, 120); // Bad fix
+
+        PXSize width = predictSIze + offsetX;
+
+        //PXNativDrawRectangle(pxGUISystem, pxGUIElement, left, 0, left+ size+ offsetX, height);
+        PXWindowDrawCustomRectangle3D
+        (
+            pxGUISystem, 
+            pxGUIElement,
+            left, 
+            0, 
+            left + width,
+            height
+        );
+        PXNativDrawIcon
+        (
+            pxGUISystem,
+            pxGUIElement,
+            pxWindowTABPage->Icon,
+            left + iconMargin / 2,
+            iconMargin / 2,
+            iconSize,
+            iconSize
+        );
 
         PXUIElementPosition pxUIElementPositionPrev = pxGUIElement->Position;
 
@@ -1980,13 +2083,10 @@ PXActionResult PXAPI PXWindowDrawCustomTabList(PXGUISystem* const pxGUISystem, P
 
         pxGUIElement->Position = pxUIElementPositionPrev;
 
-        int totalWidth = offsetX + (size + offsetSeperator) * (i + 1);
+       // int totalWidth = offsetX + (predictSIze + offsetSeperator) * (i + 1);
 
-        left = totalWidth;
-        right = totalWidth + size + offsetY;
-
-        pxRectangle.Left = left;
-        pxRectangle.Right = right;
+        left += width + offsetSeperator;
+        right += width + offsetY;
     }
 
     return PXActionSuccessful;
@@ -2103,27 +2203,9 @@ PXActionResult PXAPI PXWindowDrawCustomButton(PXGUISystem* const pxGUISystem, PX
 
     PXNativDrawClear(pxGUISystem, pxGUIElement);
 
-    PXWindowBrush* brushFront = pxGUIElement->BrushFront;
-    PXWindowBrush* brushBackground = pxGUIElement->BrushBackground;
-
-    PXNativDrawColorSetBrush
+    PXWindowDrawCustomRectangle3D
     (
-        pxGUISystem,
-        pxGUIElement,
-        brushFront,
-        PXGUIDrawModeFront
-    );
-    PXNativDrawColorSetBrush
-    (
-        pxGUISystem,
-        pxGUIElement,
-        brushBackground,
-        PXGUIDrawModeBack
-    );
-
-    PXNativDrawRectangle
-    (
-        pxGUISystem,
+        pxGUISystem, 
         pxGUIElement,
         pxGUIElement->Position.Left,
         pxGUIElement->Position.Top,
@@ -2131,44 +2213,7 @@ PXActionResult PXAPI PXWindowDrawCustomButton(PXGUISystem* const pxGUISystem, PX
         pxGUIElement->Position.Bottom
     );
 
-    const float highFactor = 1.35f;
-    const float lowFactor = 0.65f;
-
-#if 0
-    const COLORREF highColor = RGB
-    (
-        highFactor * brushBackground->ColorDate.Red,
-        highFactor * brushBackground->ColorDate.Green,
-        highFactor * brushBackground->ColorDate.Blue
-    );
-    const COLORREF lowColor = RGB
-    (
-        lowFactor * brushBackground->ColorDate.Red,
-        lowFactor * brushBackground->ColorDate.Green,
-        lowFactor * brushBackground->ColorDate.Blue
-    );
-
-    const DWORD penStyle = PS_ENDCAP_SQUARE | PS_GEOMETRIC | PS_SOLID;
-    const DWORD penSize = 3;
-
-    const HPEN aaa = CreatePen(penStyle, penSize, highColor);
-    const HPEN bbbb = CreatePen(penStyle, penSize, lowColor);
-
-    MoveToEx(pxGUIElement->DeviceContextHandle, pxGUIElement->Position.Right, pxGUIElement->Position.Top, PXNull);
-    SelectPen(pxGUIElement->DeviceContextHandle, bbbb);
-    LineTo(pxGUIElement->DeviceContextHandle, pxGUIElement->Position.Right, pxGUIElement->Position.Bottom);
-    LineTo(pxGUIElement->DeviceContextHandle, pxGUIElement->Position.Left - 1, pxGUIElement->Position.Bottom);
-
-    SelectPen(pxGUIElement->DeviceContextHandle, aaa);
-    LineTo(pxGUIElement->DeviceContextHandle, pxGUIElement->Position.Left - 1, pxGUIElement->Position.Top - 1);
-    LineTo(pxGUIElement->DeviceContextHandle, pxGUIElement->Position.Right + 1, pxGUIElement->Position.Top - 1);
-
-    DeletePen(aaa);
-    DeletePen(bbbb);
-
-    PXWindowDrawTextA(pxGUISystem, pxGUIElement, pxGUIElement->NameContent, pxGUIElement->NameContentSize);
-#endif
-
+    PXNativDrawTextA(pxGUISystem, pxGUIElement, pxGUIElement->NameContent, pxGUIElement->NameContentSize);
 
     return PXActionSuccessful;
 }
@@ -4500,10 +4545,10 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
                 pxResourceCreateInfo.UIElement.UIElementWindow = pxGUIElementCreateInfo->UIElementWindow;
                 pxResourceCreateInfo.UIElement.UIElementParent = pxWindowCurrent;
                 pxResourceCreateInfo.UIElement.BehaviourFlags = PXWindowBehaviourDefaultDecorative | PXWindowAllignLeft;
-                pxResourceCreateInfo.UIElement.Position.MarginLeft = 0.005;
-                pxResourceCreateInfo.UIElement.Position.MarginTop = 0.1;
-                pxResourceCreateInfo.UIElement.Position.MarginRight = 0.005;
-                pxResourceCreateInfo.UIElement.Position.MarginBottom = 0.02;
+                pxResourceCreateInfo.UIElement.Position.MarginLeft = 0;
+                pxResourceCreateInfo.UIElement.Position.MarginTop = 0.08;
+                pxResourceCreateInfo.UIElement.Position.MarginRight = 0;
+                pxResourceCreateInfo.UIElement.Position.MarginBottom = 0;
               
                 PXResourceManagerAdd(pxGUISystem->ResourceManager, &pxResourceCreateInfo, 1);
 
@@ -6205,8 +6250,8 @@ PXActionResult PXAPI PXNativDrawIcon(PXGUISystem* const pxGUISystem, PXWindow* c
         x, 
         y,
         pxIcon->Info.Handle.IconHandle,
-        16, // width
-        16, // height
+        width,
+        height,
         0,
         0,
         DI_NORMAL
