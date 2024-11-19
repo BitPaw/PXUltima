@@ -9,6 +9,7 @@
 #include <Engine/PXEngine.h>
 #include <OS/File/PXDirectory.h>
 #include <OS/Graphic/NativDraw/PXNativDraw.h>
+#include <OS/Hardware/PXProcessor.h>
 
 #if OSUnix
 
@@ -2000,14 +2001,65 @@ PXActionResult PXAPI PXWindowDrawCustomRectangle3D(PXGUISystem* const pxGUISyste
     return PXActionSuccessful;
 }
 
-PXPublic PXActionResult PXAPI PXWindowDrawCustomHeader(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
+PXActionResult PXAPI PXWindowDrawCustomHeader(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
 {
-    return PXPublic PXActionResult PXAPI();
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "GUI",
+        "Draw",
+        "Header"
+    );
+#endif
+
+    PXNativDrawClear(pxGUISystem, pxGUIElement);
+
+    PXNativDrawRectangle
+    (
+        pxGUISystem,
+        pxGUIElement,
+        pxGUIElement->Position.Left,
+        pxGUIElement->Position.Top,
+        pxGUIElement->Position.Right,
+        pxGUIElement->Position.Bottom
+    );
+
+    PXNativDrawTextA(pxGUISystem, pxGUIElement, "Header", 6);
+
+    return PXActionSuccessful;
 }
 
-PXPublic PXActionResult PXAPI PXWindowDrawCustomFooter(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
+PXActionResult PXAPI PXWindowDrawCustomFooter(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
 {
-    return PXPublic PXActionResult PXAPI();
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "GUI",
+        "Draw",
+        "Footer"
+    );
+#endif
+
+    PXNativDrawClear(pxGUISystem, pxGUIElement);
+
+    PXNativDrawRectangle
+    (
+        pxGUISystem,
+        pxGUIElement,
+        pxGUIElement->Position.Left,
+        pxGUIElement->Position.Top,
+        pxGUIElement->Position.Right,
+        pxGUIElement->Position.Bottom
+    );
+
+    PXProcessor pxProcessor;
+    PXProcessorFetchInfo(&pxProcessor);
+
+    PXNativDrawTextA(pxGUISystem, pxGUIElement, pxProcessor.BrandName, pxProcessor.BrandNameSize);
+
+    return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXWindowDrawCustomTabList(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
@@ -3501,7 +3553,14 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
         case PXUIElementTypeStatusBar:
         {
             pxGUIElementCreateInfo->WindowsClassName = STATUSCLASSNAMEA;
-            pxGUIElementCreateInfo->WindowsStyleFlags |= SBARS_SIZEGRIP;
+            //pxGUIElementCreateInfo->WindowsStyleFlags |= SBARS_SIZEGRIP;
+
+
+            pxGUIElementCreateInfo->WindowsClassName = WC_STATIC;
+            pxGUIElementCreateInfo->DrawFunctionEngine = PXWindowDrawCustomFooter;
+
+            pxWindowCurrent->Info.Behaviour &= ~PXResourceInfoUseByMask;
+            pxWindowCurrent->Info.Behaviour |= PXResourceInfoUseByEngine;
 
             break;
         }
@@ -3613,6 +3672,7 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
             pxGUIElementCreateInfo->WindowsClassName = WC_STATIC;
             pxGUIElementCreateInfo->DrawFunctionEngine = PXWindowDrawCustomTabList;
 
+            pxWindowCurrent->Info.Behaviour &= ~PXResourceInfoUseByMask;
             pxWindowCurrent->Info.Behaviour |= PXResourceInfoUseByEngine;
             break;
         }
@@ -3751,6 +3811,22 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
             break;
         }
         case PXUIElementTypeMenuStrip:
+        {
+            if(1)
+            {
+                pxGUIElementCreateInfo->WindowsClassName = WC_STATIC;
+                pxGUIElementCreateInfo->CustomDrawFunction = PXWindowDrawCustomHeader;
+
+                pxWindowCurrent->Info.Behaviour &= ~PXResourceInfoUseByMask;
+                pxWindowCurrent->Info.Behaviour |= PXResourceInfoUseByEngine;
+            }
+            else
+            {
+                pxGUIElementCreateInfo->AvoidCreation = PXTrue;
+            }
+
+            break;
+        }
         case PXUIElementTypeTreeViewItem:
         {
             pxGUIElementCreateInfo->AvoidCreation = PXTrue;
@@ -3787,6 +3863,11 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
                     pxWindowCurrent->DrawFunction = PXWindowDrawCustomFailback;
                 }
 
+                break;
+            }
+            default:
+            {
+                
                 break;
             }
         }
@@ -4021,74 +4102,95 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
         {
             PXWindowMenuItemList* const pxGUIElementMenuItemList = &pxGUIElementCreateInfo->Data.MenuItem;
 
-#if OSWindows
-
-            pxWindowCurrent->Info.Handle.MenuHandle = CreateMenu(); // Windows 2000, User32.dll, winuser.h
-            const PXBool succeess = PXNull != pxWindowCurrent->Info.Handle.MenuHandle;
-            const PXActionResult res = PXErrorCurrent(succeess);
 
 
 
-            HMENU hSubMenu = CreatePopupMenu();
 
-
-            for(PXSize i = 0; i < pxGUIElementMenuItemList->MenuItemInfoListAmount; ++i)
+            switch(PXResourceInfoUseByMask & pxWindowCurrent->Info.Behaviour)
             {
-                PXWindowMenuItemInfo* const pxGUIElementMenuItemInfo = &pxGUIElementMenuItemList->MenuItemInfoListData[i];
-
-                MENUITEMINFOA menuItemInfo;
-                PXClear(MENUITEMINFOA, &menuItemInfo);
-                menuItemInfo.cbSize = sizeof(MENUITEMINFOA);
-                menuItemInfo.fMask = MIIM_STRING | MIIM_STATE | MIIM_SUBMENU;
-                menuItemInfo.fType = MFT_STRING;         // used if MIIM_TYPE (4.0) or MIIM_FTYPE (>4.0)
-                menuItemInfo.fState = MFS_DEFAULT;        // used if MIIM_STATE
-                menuItemInfo.wID = 0;           // used if MIIM_ID
-                menuItemInfo.hSubMenu = pxWindowCurrent->Info.Handle.MenuHandle;      // used if MIIM_SUBMENU
-                menuItemInfo.hbmpChecked = 0;   // used if MIIM_CHECKMARKS
-                menuItemInfo.hbmpUnchecked = 0; // used if MIIM_CHECKMARKS
-                menuItemInfo.dwItemData = 0;   // used if MIIM_DATA
-                menuItemInfo.dwTypeData = pxGUIElementMenuItemInfo->TextData;    // used if MIIM_TYPE (4.0) or MIIM_STRING (>4.0)
-                menuItemInfo.cch = pxGUIElementMenuItemInfo->TextSize;           // used if MIIM_TYPE (4.0) or MIIM_STRING (>4.0)
-                menuItemInfo.hbmpItem = 0;      // used if MIIM_BITMAP
-
-                UINT newID = i;
-
-                const PXBool itemAddResult = AppendMenuA(pxWindowCurrent->Info.Handle.MenuHandle, menuItemInfo.fState, &newID, menuItemInfo.dwTypeData);
-                // const PXBool itemAddResult = AppendMenuA(pxGUIElement->Info.Handle.MenuHandle, MF_STRING | MF_POPUP, (UINT_PTR)hSubMenu, menuItemInfo.dwTypeData);
-
-
-                const PXActionResult sdfsdfghg = PXErrorCurrent(itemAddResult);
-
-                PXWindowMenuItemList* sub = pxGUIElementMenuItemInfo->ChildList;
-
-                if(sub)
+                case PXResourceInfoUseByOS:
                 {
-                    for(size_t i = 0; i < sub->MenuItemInfoListAmount; i++)
+
+#if OSWindows
+                    pxWindowCurrent->Info.Handle.MenuHandle = CreateMenu(); // Windows 2000, User32.dll, winuser.h
+                    const PXBool succeess = PXNull != pxWindowCurrent->Info.Handle.MenuHandle;
+                    const PXActionResult res = PXErrorCurrent(succeess);
+
+
+
+                    HMENU hSubMenu = CreatePopupMenu();
+
+
+                    for(PXSize i = 0; i < pxGUIElementMenuItemList->MenuItemInfoListAmount; ++i)
                     {
-                        UINT newIEED = newID;
+                        PXWindowMenuItemInfo* const pxGUIElementMenuItemInfo = &pxGUIElementMenuItemList->MenuItemInfoListData[i];
 
-                        PXWindowMenuItemInfo* const pxGUIElementMenuItemInfo = &sub->MenuItemInfoListData[i];
+                        MENUITEMINFOA menuItemInfo;
+                        PXClear(MENUITEMINFOA, &menuItemInfo);
+                        menuItemInfo.cbSize = sizeof(MENUITEMINFOA);
+                        menuItemInfo.fMask = MIIM_STRING | MIIM_STATE | MIIM_SUBMENU;
+                        menuItemInfo.fType = MFT_STRING;         // used if MIIM_TYPE (4.0) or MIIM_FTYPE (>4.0)
+                        menuItemInfo.fState = MFS_DEFAULT;        // used if MIIM_STATE
+                        menuItemInfo.wID = 0;           // used if MIIM_ID
+                        menuItemInfo.hSubMenu = pxWindowCurrent->Info.Handle.MenuHandle;      // used if MIIM_SUBMENU
+                        menuItemInfo.hbmpChecked = 0;   // used if MIIM_CHECKMARKS
+                        menuItemInfo.hbmpUnchecked = 0; // used if MIIM_CHECKMARKS
+                        menuItemInfo.dwItemData = 0;   // used if MIIM_DATA
+                        menuItemInfo.dwTypeData = pxGUIElementMenuItemInfo->TextData;    // used if MIIM_TYPE (4.0) or MIIM_STRING (>4.0)
+                        menuItemInfo.cch = pxGUIElementMenuItemInfo->TextSize;           // used if MIIM_TYPE (4.0) or MIIM_STRING (>4.0)
+                        menuItemInfo.hbmpItem = 0;      // used if MIIM_BITMAP
 
-                        const PXBool asddassdad = AppendMenuA(hSubMenu, menuItemInfo.fState | MF_POPUP, &newIEED, pxGUIElementMenuItemInfo->TextData);
-                        const PXActionResult wewrerew = PXErrorCurrent(asddassdad);
+                        UINT newID = i;
+
+                        const PXBool itemAddResult = AppendMenuA(pxWindowCurrent->Info.Handle.MenuHandle, menuItemInfo.fState, &newID, menuItemInfo.dwTypeData);
+                        // const PXBool itemAddResult = AppendMenuA(pxGUIElement->Info.Handle.MenuHandle, MF_STRING | MF_POPUP, (UINT_PTR)hSubMenu, menuItemInfo.dwTypeData);
+
+
+                        const PXActionResult sdfsdfghg = PXErrorCurrent(itemAddResult);
+
+                        PXWindowMenuItemList* sub = pxGUIElementMenuItemInfo->ChildList;
+
+                        if(sub)
+                        {
+                            for(size_t i = 0; i < sub->MenuItemInfoListAmount; i++)
+                            {
+                                UINT newIEED = newID;
+
+                                PXWindowMenuItemInfo* const pxGUIElementMenuItemInfo = &sub->MenuItemInfoListData[i];
+
+                                const PXBool asddassdad = AppendMenuA(hSubMenu, menuItemInfo.fState | MF_POPUP, &newIEED, pxGUIElementMenuItemInfo->TextData);
+                                const PXActionResult wewrerew = PXErrorCurrent(asddassdad);
+                            }
+                        }
+
+
+
+
+                        //  const PXBool itemAddResult = InsertMenuItemA(pxGUIElement->Info.Handle.MenuHandle, 0, PXTrue, &menuItemInfo);
+                        const PXActionResult res = PXErrorCurrent(itemAddResult);
+
+                        // DrawMenuBar(pxGUIElement->Parent->Info.Handle.WindowID);
+
+                        menuItemInfo.wID += 0;
                     }
+
+                    PXWindow* parentElement = (PXWindow*)pxWindowCurrent->Info.Hierarchy.Parrent;
+                    const PXBool setResult = SetMenu(parentElement->Info.Handle.WindowID, pxWindowCurrent->Info.Handle.MenuHandle);
+#endif
+
+                    break;
+                }
+                case PXResourceInfoUseByEngine:
+                {
+
+                    // ToDo:
+
+                    break;
                 }
 
-
-
-
-                //  const PXBool itemAddResult = InsertMenuItemA(pxGUIElement->Info.Handle.MenuHandle, 0, PXTrue, &menuItemInfo);
-                const PXActionResult res = PXErrorCurrent(itemAddResult);
-
-                // DrawMenuBar(pxGUIElement->Parent->Info.Handle.WindowID);
-
-                menuItemInfo.wID += 0;
+                default:
+                    break;
             }
-
-            PXWindow* parentElement = (PXWindow*)pxWindowCurrent->Info.Hierarchy.Parrent;
-            const PXBool setResult = SetMenu(parentElement->Info.Handle.WindowID, pxWindowCurrent->Info.Handle.MenuHandle);
-
-#endif
 
             break;
         }

@@ -2264,6 +2264,9 @@ const char* PXAPI PXUIElementTypeToString(const PXUIElementType pxUIElementType)
         case PXUIElementTypeColorPicker:          return "ColorPicker";
         case PXUIElementTypeSlider:               return "Slider";
         case PXUIElementTypeRenderFrame:          return "FrameRender";
+        case PXUIElementTypeMenuStrip:            return "MenuStrip";
+        case PXUIElementTypeResourceManger:       return "ResourceManger";
+        case PXUIElementTypeResourceEntry:        return "ResourceEntry";
 
         default:
             return PXNull;

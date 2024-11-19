@@ -1523,7 +1523,9 @@ typedef enum PXUIElementType_
 
     PXUIElementTypeMenuStrip, // Topline of a window that contains a selectable list of things
 
-    PXUIElementTypeFileManager // TreeView of filesystem with utility
+    PXUIElementTypeFileManager,    // TreeView of filesystem with utility
+    PXUIElementTypeResourceManger, // TreeView of a list of resource entrys
+    PXUIElementTypeResourceEntry   // Panel with name and icons of type and propertys 
 }
 PXUIElementType;
 
