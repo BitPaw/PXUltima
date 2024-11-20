@@ -2062,6 +2062,30 @@ PXActionResult PXAPI PXWindowDrawCustomFooter(PXGUISystem* const pxGUISystem, PX
     return PXActionSuccessful;
 }
 
+PXActionResult PXAPI PXWindowDrawCustomResourceView(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
+{
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "GUI",
+        "Draw",
+        "ResourceView"
+    );
+#endif
+
+    PXNativDrawClear(pxGUISystem, pxGUIElement);
+
+
+    for(PXSize i = 0; i < length; i++)
+    {
+
+    }
+
+
+    return PXActionSuccessful;
+}
+
 PXActionResult PXAPI PXWindowDrawCustomTabList(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
 {
     PXWindowExtendedBehaviourTab* pxWindowExtendedBehaviourTab = (PXWindowExtendedBehaviourTab*)pxGUIElement->ExtendedData;
