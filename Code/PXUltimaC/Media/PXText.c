@@ -127,6 +127,30 @@ PXSize PXAPI PXTextToUpperCase(const PXText* const pxTextSource, PXText* const p
     return pxTextTarget->SizeUsed;
 }
 
+PXSize PXAPI PXTextTrimA(char* const text, const PXSize textSize)
+{
+    if(!(text && textSize))
+    {
+        return 0;
+    }
+
+    PXSize i;
+
+    for(i = textSize-1; i; --i)
+    {
+        const PXBool isEmotySpace = IsEmptyChar(text[i]);
+
+        if(!isEmotySpace)
+        {
+            break;
+        }
+
+        text[i] = '\0';
+    }
+
+    return i+1;
+}
+
 PXSize PXAPI PXTextAppend(PXText* const currentString, const PXText* const appendingString)
 {
     const PXSize freeSpace = currentString->SizeAllocated - currentString->SizeUsed;
@@ -1260,7 +1284,7 @@ PXSize PXAPI PXTextReplace(PXText* const pxText, char target, char value)
     case TextFormatASCII:
     case TextFormatUTF8:
     {
-        PXTextReplaceA(pxText->TextA, pxText->SizeUsed, target, value);
+        PXTextReplaceByte(pxText->TextA, pxText->SizeUsed, target, value);
         break;
     }
     case TextFormatUNICODE:
@@ -1277,7 +1301,39 @@ PXSize PXAPI PXTextReplace(PXText* const pxText, char target, char value)
     }
 }
 
-PXSize PXAPI PXTextReplaceA(char* const text, PXSize textSize, char target, char value)
+PXSize PXAPI PXTextReplaceA(char* const text, PXSize textSize, const char* const target, const PXSize targetSize, const char value)
+{
+    PXSize cursorSize = textSize;
+    char* cursorAdress = text;
+
+    for(;;)
+    {
+        const PXSize indexStart = PXTextFindFirstCharacterA(cursorAdress, cursorSize, target[0]);
+
+        if(indexStart == -1)
+        {
+            break;
+        }
+
+        const char* indexAdress = &text[indexStart];
+        const PXSize indexSize = PXMathMinimumIU(textSize - indexStart, targetSize);
+
+        const PXBool doesMatch = PXTextCompareA(indexAdress, indexSize, target, targetSize);
+
+        if(!doesMatch)
+        {
+            break;
+        }
+
+        PXMemorySet(indexAdress, value, indexSize);
+
+        cursorAdress = indexAdress + targetSize;
+    }
+
+    return textSize;
+}
+
+PXSize PXAPI PXTextReplaceByte(char* const text, PXSize textSize, char target, char value)
 {
     PXSize counter = 0;
 

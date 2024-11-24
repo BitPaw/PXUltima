@@ -568,7 +568,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                     PXLoggingInfo,
                     "Resource",
                     "Icon-Create",
-                    "ID:%i - WHXY : %i,%i,%i,%i",
+                    "ID:%i - WHXY : %3i,%3i,%3i,%3i",
                     pxIcon->Info.ID,
                     pxIconCreateInfo->Width,
                     pxIconCreateInfo->Height,
@@ -1970,7 +1970,7 @@ void PXAPI PXIconLoad(PXIcon* const pxIcon)
 #if OSUnix
     return PXActionRefusedNotImplemented;
 #elif OSWindows
-    pxIcon->Info.Handle.IconHandle = LoadIcon(NULL, IDI_QUESTION);
+    pxIcon->Info.Handle.IconHandle = LoadIcon(NULL, IDI_EXCLAMATION);
 #else
     return PXActionRefusedNotSupportedByOperatingSystem;
 #endif

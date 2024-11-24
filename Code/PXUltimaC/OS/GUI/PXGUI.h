@@ -77,14 +77,11 @@ PXPrivate BOOL CALLBACK PXWindowEnumChildProc(HWND hwnd, LPARAM lParam);
 //---------------------------------------------------------
 // Window utility functions
 //---------------------------------------------------------
-
 PXPublic PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCreateInfo* const pxResourceCreateInfo, const PXSize amount);
 PXPublic PXActionResult PXAPI PXWindowUpdate(PXGUISystem* const pxGUISystem, PXWindowUpdateInfo* const pxGUIElementUpdateInfoList, const PXSize amount);
 PXPublic PXActionResult PXAPI PXWindowFetch(PXGUISystem* const pxGUISystem, PXWindowUpdateInfo* const pxGUIElementUpdateInfoList, const PXSize amount);
 PXPublic PXActionResult PXAPI PXWindowRelease(PXWindow* const pxGUIElement);
 PXPublic PXActionResult PXAPI PXWindowDelete(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement);
-
-
 //---------------------------------------------------------
 
 
@@ -147,7 +144,7 @@ PXPublic PXActionResult PXAPI PXWindowDrawCustomRectangle3D(PXGUISystem* const p
 PXPublic PXActionResult PXAPI PXWindowDrawCustomHeader(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo);
 PXPublic PXActionResult PXAPI PXWindowDrawCustomFooter(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo);
 PXPublic PXActionResult PXAPI PXWindowDrawCustomResourceView(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo);
-
+PXPublic PXActionResult PXAPI PXWindowDrawCustomResourceInfo(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo);
 PXPublic PXActionResult PXAPI PXWindowDrawCustomTabList(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo);
 PXPublic PXActionResult PXAPI PXWindowDrawCustomFailback(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo);
 PXPublic PXActionResult PXAPI PXWindowDrawCustomText(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo);

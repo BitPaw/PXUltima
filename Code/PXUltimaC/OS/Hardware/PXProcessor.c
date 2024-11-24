@@ -575,12 +575,12 @@ void PXAPI PXProcessorFetchInfo(PXProcessor* const processor)
             char* text = (char*)&pxCPUInfo;
 
             processor->BrandNameSize += PXTextCopyA
-                                        (
-                                            text,
-                                            sizeof(PXCPUInfo),
-                                            processor->BrandName + processor->BrandNameSize,
-                                            64 - processor->BrandNameSize
-                                        );
+            (
+                text,
+                sizeof(PXCPUInfo),
+                processor->BrandName + processor->BrandNameSize,
+                64 - processor->BrandNameSize
+            );
             break;
         }
         case PXCPUIDCommandCacheLineInfo:
@@ -621,6 +621,16 @@ void PXAPI PXProcessorFetchInfo(PXProcessor* const processor)
         PXProcessorModelNameGet(processor->ModelNameID, processor->BrandName);
     }
 
+    // Fix processor name
+    {
+        char processorCore16[] = "16-Core";
+        char processorNameEx[] = "Processor";
+
+        PXTextReplaceA(processor->BrandName, processor->BrandNameSize, processorNameEx, sizeof(processorNameEx), ' ');
+        PXTextReplaceA(processor->BrandName, processor->BrandNameSize, processorCore16, sizeof(processorCore16), ' ');
+
+        processor->BrandNameSize = PXTextTrimA(processor->BrandName, processor->BrandNameSize);
+    }
 
 
 #if OSWindows

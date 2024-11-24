@@ -18,6 +18,7 @@
 #define IsTab(c) (c == '\t')
 #define IsEmptySpace(c) (c == ' ')
 #define IsEndOfLineCharacter(c) (c == '\r' || c == '\n')
+#define IsEmptyChar(c) (IsTab(c) || IsEndOfLineCharacter(c) || IsEmptySpace(c) || IsEndOfString(c))
 
 #define PXTextFloatIsAllowedCharacter(c)  ('0' <= c && c <= '9' || c == '-' || c == '+' || c == '.')
 
@@ -180,6 +181,8 @@ PXPublic PXSize PXAPI PXTextFromIntToBinary64UR(char* const string, const PXSize
 PXPublic PXSize PXAPI PXTextToLowerCase(const PXText* const pxTextSource, PXText* const pxTextTarget);
 PXPublic PXSize PXAPI PXTextToUpperCase(const PXText* const pxTextSource, PXText* const pxTextTarget);
 
+PXPublic PXSize PXAPI PXTextTrimA(char* const text, const PXSize textSize);
+
 PXPublic PXSize PXAPI PXTextAppend(PXText* const currentString, const PXText* const appendingString);
 PXPublic PXSize PXAPI PXTextAppendA(PXText* const currentString, const char* const appaendString, const char appaendStringSize);
 PXPublic PXSize PXAPI PXTextAppendW(wchar_t* const dataString, const PXSize dataStringSize, const wchar_t* const appaendString, const PXSize appaendStringSize);
@@ -258,6 +261,7 @@ PXPublic void PXAPI PXTextParseFindAllA(const char* string, const PXSize stringS
 PXPublic PXBool PXAPI PXTextMatchW(const wchar_t* input, const PXSize inputSize, const wchar_t* pattern, const PXSize patternSize);
 
 PXPublic PXSize PXAPI PXTextReplace(PXText* const pxText, char target, char value);
-PXPublic PXSize PXAPI PXTextReplaceA(char* const text, PXSize textSize, char target, char value);
+PXPublic PXSize PXAPI PXTextReplaceByte(char* const text, PXSize textSize, char target, char value);
+PXPublic PXSize PXAPI PXTextReplaceA(char* const text, PXSize textSize, const char* const target, const PXSize targetSize, const char value);
 
 #endif

@@ -18,7 +18,7 @@ typedef enum PXTreeBehaviourNodeType_
     PXTreeBehaviourNodeTaskSet,
     PXTreeBehaviourNodeSelector
 }
-PXTreeBehaviourNode;
+PXTreeBehaviourNodeType;
 
 typedef struct PXTreeBehaviourNode_
 {
@@ -28,7 +28,7 @@ typedef struct PXTreeBehaviourNode_
     void* CallBackOwner;
     PXTreeBehaviourNodeCallBack CallBack;
 
-    PXTreeBehaviourNode Type;
+    PXTreeBehaviourNodeType Type;
 }
 PXTreeBehaviourNode;
 

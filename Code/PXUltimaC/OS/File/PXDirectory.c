@@ -62,7 +62,7 @@ void PXAPI PXFileElementInfoCOnvertFrom(PXDirectorySearchCache* const pxDirector
     }
 
     // Replace all \ with /
-    PXTextReplaceA(pxFileElementInfo->FullPath, pxFileElementInfo->FullPathOffset, '\\', '/');
+    PXTextReplaceByte(pxFileElementInfo->FullPath, pxFileElementInfo->FullPathOffset, '\\', '/');
     */
 }
 

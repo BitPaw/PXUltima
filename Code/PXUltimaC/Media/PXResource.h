@@ -1525,7 +1525,8 @@ typedef enum PXUIElementType_
 
     PXUIElementTypeFileManager,    // TreeView of filesystem with utility
     PXUIElementTypeResourceManger, // TreeView of a list of resource entrys
-    PXUIElementTypeResourceEntry   // Panel with name and icons of type and propertys 
+    PXUIElementTypeResourceEntry,  // Panel with name and icons of type and propertys 
+    PXUIElementTypeResourceInfo    // Resource info
 }
 PXUIElementType;
 
@@ -2304,6 +2305,13 @@ PXWindow;
 //-----------------------------------------------------
 // PXWindowExtendedBehaviour
 //-----------------------------------------------------
+typedef struct PXWindowExtendedMenuItem_
+{
+    PXSize MenuItemAmount;
+    PXWindowMenuItem* MenuItemList;
+}
+PXWindowExtendedMenuItem;
+
 typedef struct PXWindowExtendedBehaviourTab_
 {
     PXSize TABPageAmount;
@@ -2311,6 +2319,23 @@ typedef struct PXWindowExtendedBehaviourTab_
     PXWindow* TABPageList; 
 }
 PXWindowExtendedBehaviourTab;
+
+typedef struct PXResourceViewEntry_
+{
+    PXWindow* EntryList;
+    PXResource* Resource;
+}
+PXResourceViewEntry;
+
+typedef struct PXWindowExtendedBehaviourResourceView_
+{
+    PXSize EntryAmount;
+    PXSize EntryIndexCurrent;
+    PXResourceViewEntry* EntryList;
+
+    PXResourceManager* ResourceManager;
+}
+PXWindowExtendedBehaviourResourceView;
 //-----------------------------------------------------
 
 
@@ -2466,9 +2491,9 @@ PXWindowPixelSystemInfo;
 
 
 
-
-
-
+//---------------------------------------------------------
+// Menu Item
+//---------------------------------------------------------
 #define PXGUIMenuItemTypeImage      (1<<0)
 #define PXGUIMenuItemTypeCheckmark  (1<<1)
 #define PXGUIMenuItemTypeDATA       (1<<2)
@@ -2497,6 +2522,13 @@ PXWindowPixelSystemInfo;
 #define PXGUIMenuItemStateMFS_UNHILITE  (1<<7)
 
 
+typedef struct PXWindowMenuItem_
+{
+    PXResourceInfo Info;
+}
+PXWindowMenuItem;
+
+
 typedef struct PXWindowMenuItemInfo_
 {
     PXInt32U Flags;
@@ -2506,9 +2538,6 @@ typedef struct PXWindowMenuItemInfo_
 
     char* TextData;
     PXSize TextSize;
-
-
-
 }
 PXWindowMenuItemInfo;
 
@@ -2518,6 +2547,7 @@ typedef struct PXWindowMenuItemList_
     PXSize MenuItemInfoListAmount;
 }
 PXWindowMenuItemList;
+//---------------------------------------------------------
 
 
 
@@ -2698,6 +2728,7 @@ typedef struct PXUIElementTabPageSingleInfo_
 
 }
 PXUIElementTabPageSingleInfo;
+
 
 typedef struct PXUIElementTabPageInfo_
 {

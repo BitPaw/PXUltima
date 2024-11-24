@@ -2003,6 +2003,8 @@ PXActionResult PXAPI PXWindowDrawCustomRectangle3D(PXGUISystem* const pxGUISyste
 
 PXActionResult PXAPI PXWindowDrawCustomHeader(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
 {
+    PXWindowExtendedMenuItem* const pxWindowExtendedMenuItem = (PXWindowExtendedMenuItem*)pxGUIElement->ExtendedData;
+
 #if PXLogEnable
     PXLogPrint
     (
@@ -2025,7 +2027,7 @@ PXActionResult PXAPI PXWindowDrawCustomHeader(PXGUISystem* const pxGUISystem, PX
         pxGUIElement->Position.Bottom
     );
 
-    PXNativDrawTextA(pxGUISystem, pxGUIElement, "Header", 6);
+    PXNativDrawTextA(pxGUISystem, pxGUIElement, "XXXXXXXXXXXXX", 13);
 
     return PXActionSuccessful;
 }
@@ -2064,6 +2066,12 @@ PXActionResult PXAPI PXWindowDrawCustomFooter(PXGUISystem* const pxGUISystem, PX
 
 PXActionResult PXAPI PXWindowDrawCustomResourceView(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
 {
+    PXWindowExtendedBehaviourResourceView* const pxWindowExtendedBehaviourResourceView = (PXWindowExtendedBehaviourResourceView*)pxGUIElement->ExtendedData;
+
+    PXResourceManager* pxResourceManagerScene = pxGUISystem->ResourceManager;
+    PXResourceManager* pxResourceManagerInGame = pxWindowExtendedBehaviourResourceView->ResourceManager;
+
+
 #if PXLogEnable
     PXLogPrint
     (
@@ -2073,15 +2081,318 @@ PXActionResult PXAPI PXWindowDrawCustomResourceView(PXGUISystem* const pxGUISyst
         "ResourceView"
     );
 #endif
+    PXIcon pxIconPlaceHolder;
+
+    PXNativDrawLoad(pxGUISystem, &pxIconPlaceHolder, PXNull);
+
+
 
     PXNativDrawClear(pxGUISystem, pxGUIElement);
 
+    int left = pxGUIElement->Position.Left;
+    int y = 0;
+    int height = 16;
 
-    for(PXSize i = 0; i < length; i++)
+    // textures
+    PXResourceManager* pxResourceManager = pxGUISystem->ResourceManager;
+    PXDictionary* textureLookup = &pxResourceManager->ImageLookUp;
+    PXDictionary* shaderLookup = &pxResourceManager->ShaderProgramLookup;
+    PXDictionary* guiLookup = &pxResourceManager->GUIElementLookup;
+
+    // Title
     {
+        PXUIElementPosition pxUIElementPositionPrev = pxGUIElement->Position;
 
+        pxGUIElement->Position.Left = left;
+        pxGUIElement->Position.Top = y;
+        pxGUIElement->Position.Right = pxGUIElement->Position.Right;
+        pxGUIElement->Position.Bottom = y + height;
+        pxGUIElement->Info.Behaviour &= ~PXWindowAllignFlags;
+        pxGUIElement->Info.Behaviour |= PXWindowAllignLeft;
+
+        PXNativDrawTextA
+        (
+            pxGUISystem,
+            pxGUIElement,
+            "Image",
+            5
+        );
+
+        pxGUIElement->Position = pxUIElementPositionPrev;
+
+        y += height + 3;
     }
 
+ 
+
+    for(PXSize i = 0; i < textureLookup->EntryAmountCurrent; ++i)
+    {
+        PXDictionaryEntry pxDictionaryEntry;
+        PXImage* pxImage = PXNull;
+
+        PXDictionaryIndex(textureLookup, i, &pxDictionaryEntry);
+
+        pxImage = *(PXImage**)pxDictionaryEntry.Value;
+
+        PXWindowDrawCustomRectangle3D
+        (
+            pxGUISystem,
+            pxGUIElement,
+            left,
+            y,
+            pxGUIElement->Position.Right,
+            y + height
+        );
+
+        PXUIElementPosition pxUIElementPositionPrev = pxGUIElement->Position;
+
+        pxGUIElement->Position.Left = left;
+        pxGUIElement->Position.Top = y;
+        pxGUIElement->Position.Right = pxGUIElement->Position.Right;
+        pxGUIElement->Position.Bottom = y + height;
+        pxGUIElement->Info.Behaviour &= ~PXWindowAllignFlags;
+        pxGUIElement->Info.Behaviour |= PXWindowAllignLeft;
+
+
+        PXNativDrawIcon
+        (
+            pxGUISystem,
+            pxGUIElement,
+            &pxIconPlaceHolder,
+            pxGUIElement->Position.Left + 2,
+            pxGUIElement->Position.Top,
+            16,
+            16
+        );
+
+        pxGUIElement->Position.Left += 16 + 4;
+
+        char buffer[260];
+        PXSize wrizze = PXTextPrintA(buffer, 260, "[%i] %ix%i", 1000, pxImage->Width, pxImage->Height);
+
+        PXNativDrawTextA
+        (
+            pxGUISystem,
+            pxGUIElement,
+            buffer,
+            wrizze
+        );
+
+        pxGUIElement->Position = pxUIElementPositionPrev;
+
+
+        y += height + 3;
+    }
+
+
+
+
+
+
+    // Title
+    {
+        PXUIElementPosition pxUIElementPositionPrev = pxGUIElement->Position;
+
+        pxGUIElement->Position.Left = left;
+        pxGUIElement->Position.Top = y;
+        pxGUIElement->Position.Right = pxGUIElement->Position.Right;
+        pxGUIElement->Position.Bottom = y + height;
+        pxGUIElement->Info.Behaviour &= ~PXWindowAllignFlags;
+        pxGUIElement->Info.Behaviour |= PXWindowAllignLeft;
+
+        PXNativDrawTextA
+        (
+            pxGUISystem,
+            pxGUIElement,
+            "GUI Elements",
+            12
+        );
+
+        pxGUIElement->Position = pxUIElementPositionPrev;
+
+        y += height + 3;
+    }
+
+
+    for(PXSize i = 0; i < 20; i+=2)
+    {
+        PXDictionaryEntry pxDictionaryEntry;
+        PXWindow* pxWindow = PXNull;
+
+        PXDictionaryIndex(guiLookup, i, &pxDictionaryEntry);
+
+        pxWindow = *(PXWindow**)pxDictionaryEntry.Value;
+
+
+
+        PXWindowDrawCustomRectangle3D
+        (
+            pxGUISystem,
+            pxGUIElement,
+            left,
+            y,
+            pxGUIElement->Position.Right,
+            y + height
+        );
+
+        PXUIElementPosition pxUIElementPositionPrev = pxGUIElement->Position;
+
+        pxGUIElement->Position.Left = left;
+        pxGUIElement->Position.Top = y;
+        pxGUIElement->Position.Right = pxGUIElement->Position.Right;
+        pxGUIElement->Position.Bottom = y + height;
+        pxGUIElement->Info.Behaviour &= ~PXWindowAllignFlags;
+        pxGUIElement->Info.Behaviour |= PXWindowAllignLeft;
+
+
+        PXNativDrawIcon
+        (
+            pxGUISystem,
+            pxGUIElement,
+            &pxIconPlaceHolder,
+            pxGUIElement->Position.Left + 2,
+            pxGUIElement->Position.Top,
+            16,
+            16
+        );
+
+
+        pxGUIElement->Position.Left += 16 + 4;
+
+        char buffer[260];
+
+        char* typeName = PXUIElementTypeToString(pxWindow->Type);
+
+        PXSize wrizze = PXTextPrintA(buffer, 260, "[%i] %s:%s", pxWindow->Info.ID, typeName, pxWindow->NameContent);
+
+        PXNativDrawTextA
+        (
+            pxGUISystem,
+            pxGUIElement,
+            buffer,
+            wrizze
+        );
+
+        pxGUIElement->Position = pxUIElementPositionPrev;
+
+
+        y += height + 3;
+    }
+
+
+    return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXWindowDrawCustomResourceInfo(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
+{
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "GUI",
+        "Draw",
+        "TabList"
+    );
+#endif
+
+    PXResourceInfo* pxResourceInfo = 0;
+
+    PXDictionaryEntry pxDictionaryEntry;
+
+
+    PXDictionaryIndex(&pxGUISystem->ResourceManager->GUIElementLookup, 0, &pxDictionaryEntry);
+
+    pxResourceInfo = &(*(PXWindow**)pxDictionaryEntry.Value)->Info;
+
+
+    PXNativDrawClear(pxGUISystem, pxGUIElement);
+
+    char nameID[32];
+
+    PXSize textSize = PXTextPrintA(nameID, 32, "ID: %i", pxResourceInfo->ID);
+
+    PXNativDrawTextA(pxGUISystem, pxGUIElement, nameID, textSize);
+
+    PXIcon pxIcon;
+
+    PXIconLoad(&pxIcon);
+
+
+    int left = pxGUIElement->Position.Left;
+    int y = 16 + 10;
+    int height = 16;
+
+
+    char* table[16] = 
+    {
+        "Exist",
+        "Active",
+        "Render",
+
+        "Drive",
+        "Cached",
+        "Memory",
+        "Device",
+
+        "Name",
+        "Source",
+
+        "OS",
+        "User",
+        "Engine",
+        "Undefined",
+
+        "READ",
+        "WRITE",
+        "EXECUTE",
+    };
+
+
+    for(size_t i = 0; i < 16; i++)
+    {
+        PXUIElementPosition pxUIElementPositionPrev = pxGUIElement->Position;
+
+        pxGUIElement->Position.Left = left;
+        pxGUIElement->Position.Top = y;
+        pxGUIElement->Position.Right = pxGUIElement->Position.Right;
+        pxGUIElement->Position.Bottom = y + height;
+        pxGUIElement->Info.Behaviour &= ~PXWindowAllignFlags;
+        pxGUIElement->Info.Behaviour |= PXWindowAllignLeft;
+
+
+        PXNativDrawIcon
+        (
+            pxGUISystem,
+            pxGUIElement,
+            &pxIcon,
+            pxGUIElement->Position.Left + 2,
+            pxGUIElement->Position.Top,
+            16,
+            16
+        );
+
+        pxGUIElement->Position.Left += 16 + 4;
+
+
+        PXSize len = PXTextLengthA(table[i], 30);
+
+        PXNativDrawTextA(pxGUISystem, pxGUIElement, table[i], len);
+
+
+
+        pxGUIElement->Position.Left += 120;
+
+        char* textxx = (pxResourceInfo->Flags & (1<<i)) != 0 ? "Yes" : "No";
+        len = PXTextLengthA(textxx, 4);
+
+        PXNativDrawTextA(pxGUISystem, pxGUIElement, textxx, len);
+
+
+        pxGUIElement->Position = pxUIElementPositionPrev;
+
+
+        y += height + 3;
+    }
 
     return PXActionSuccessful;
 }
@@ -3228,117 +3539,6 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
     PXCopy(PXUIElementPosition, &pxGUIElementCreateInfo->Position, &pxWindowCurrent->Position);
 
 
-    char nameTemp[256];
-    PXSize nameTempLength = 0;
-
-
-
-#if 0
-    const char* uielementName = PXUIElementTypeToString(pxGUIElementCreateInfo->Type);
-
-    //const char* format = PXEngineCreateTypeToString(pxEngineResourceCreateInfo->CreateType);
-    if(PXUIElementTypeTreeViewItem == pxGUIElementCreateInfo->Type)
-    {
-        // PXWindow* const uiElementSource
-
-
-
-        switch(pxGUIElementCreateInfo->Data.TreeViewItem.OwningObjectType)
-        {
-            case PXResourceTypeCustom:
-            {
-                nameTempLength = PXTextPrintA(nameTemp, 128, "<%s>", pxGUIElementCreateInfo->Name);
-                break;
-            }
-            case PXResourceTypeGUIElement:
-            {
-                PXWindow* const uiElementSource = (PXWindow*)pxGUIElementCreateInfo->Data.TreeViewItem.OwningObject;
-
-                const char* uiElementTypeName = PXUIElementTypeToString(uiElementSource->Type);
-
-                const char windowName[256];
-
-                PXWindowTextGet(pxGUISystem, uiElementSource, windowName);
-
-                if(windowName[0] == '\0')
-                {
-                    PXTextCopyA("**Unnamed**", 11, windowName, 256);
-                }
-
-                nameTempLength = PXTextPrintA(nameTemp, 128, "[%s] %s", uiElementTypeName, windowName);
-
-                break;
-            }
-            case PXResourceTypeModel:
-            {
-                PXModel* const pxModel = (PXModel*)pxGUIElementCreateInfo->Data.TreeViewItem.OwningObject;
-
-                nameTempLength = PXTextPrintA
-                (
-                    nameTemp,
-                    128,
-                    "[Model] %s ID:%i",
-                    "---",//pxModel->Info.Handle.Name,
-                    pxModel->Info.ID
-                );
-
-                break;
-            }
-            case PXResourceTypeShaderProgram:
-            {
-                PXShaderProgram* const pxShaderProgram = (PXShaderProgram*)pxGUIElementCreateInfo->Data.TreeViewItem.OwningObject;
-
-                nameTempLength = PXTextPrintA
-                (
-                    nameTemp,
-                    128,
-                    "[Shader] %s ID:%i",
-                    "---",
-                    pxShaderProgram->Info.ID
-                );
-
-                break;
-            }
-            case PXResourceTypeImage:
-            {
-                PXImage* const pxImage = (PXImage*)pxGUIElementCreateInfo->Data.TreeViewItem.OwningObject;
-
-                nameTempLength = PXTextPrintA
-                (
-                    nameTemp,
-                    128,
-                    "[Image] %ix%i",
-                    pxImage->Width,
-                    pxImage->Height
-                );
-
-                break;
-            }
-            default:
-            {
-                nameTempLength = PXTextPrintA(nameTemp, 128, "ERROR");
-
-                break;
-            }
-        }
-
-#if 0
-        pxGUIElementCreateInfo->WindowsTextContent = nameTemp;
-        pxGUIElementCreateInfo->WindowsTextSize = nameTempLength;
-#endif
-    }
-    else
-    {
-        const char* name = pxGUIElementCreateInfo->Name;
-
-        if(!name)
-        {
-            name = "**Unnamed**";
-        }
-
-        nameTempLength = PXTextPrintA(nameTemp, 128, "%s", name);
-    }
-#endif
 
 
     // Resize
@@ -3448,6 +3648,9 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
 #elif OSWindows
 
     //  pxUIElementCreateData->CreationSkip = PXFalse;
+
+
+    pxGUIElementCreateInfo->WindowsStyleFlags = WS_CLIPCHILDREN; // WS_CLIPSIBLINGS
 
     if(PXResourceInfoRender & pxGUIElementCreateInfo->BehaviourFlags && !pxGUIElementCreateInfo->Invisible)
     {
@@ -3744,6 +3947,26 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
             pxGUIElementCreateInfo->WindowsStyleFlags |= CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
             break;
         }
+        case PXUIElementTypeResourceManger:
+        {
+            pxGUIElementCreateInfo->WindowsClassName = WC_STATIC;
+            pxGUIElementCreateInfo->DrawFunctionEngine = PXWindowDrawCustomResourceView;
+
+            pxWindowCurrent->Info.Behaviour &= ~PXResourceInfoUseByMask;
+            pxWindowCurrent->Info.Behaviour |= PXResourceInfoUseByEngine;
+
+            break;
+        }
+        case PXUIElementTypeResourceInfo:
+        {
+            pxGUIElementCreateInfo->WindowsClassName = WC_STATIC;
+            pxGUIElementCreateInfo->DrawFunctionEngine = PXWindowDrawCustomResourceInfo;
+
+            pxWindowCurrent->Info.Behaviour &= ~PXResourceInfoUseByMask;
+            pxWindowCurrent->Info.Behaviour |= PXResourceInfoUseByEngine;
+
+            break;
+        }        
         case PXUIElementTypeWindow:
         {
             PXWindowCreateWindowInfo* const windowInfo = &pxGUIElementCreateInfo->Data.Window;
@@ -3839,7 +4062,7 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
             if(1)
             {
                 pxGUIElementCreateInfo->WindowsClassName = WC_STATIC;
-                pxGUIElementCreateInfo->CustomDrawFunction = PXWindowDrawCustomHeader;
+                pxGUIElementCreateInfo->DrawFunctionEngine = PXWindowDrawCustomHeader;
 
                 pxWindowCurrent->Info.Behaviour &= ~PXResourceInfoUseByMask;
                 pxWindowCurrent->Info.Behaviour |= PXResourceInfoUseByEngine;
@@ -3988,6 +4211,8 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
 
             return pxActionResult;
         }
+
+        pxWindowCurrent->Info.Flags |= PXResourceInfoExist | PXResourceInfoActive | PXResourceInfoRender | PXResourceInfoStorageDevice;
 
         // Get additional device context for rendering purpose
         pxWindowCurrent->DeviceContextHandle = GetDC(pxWindowCurrent->Info.Handle.WindowID);
@@ -4396,6 +4621,14 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
         }
         case PXUIElementTypeListBox:
         {
+
+            break;
+        }
+        case PXUIElementTypeResourceManger:
+        {
+            pxWindowCurrent->ExtendedData = PXMemoryCallocT(PXWindowExtendedBehaviourResourceView, 1);
+
+
 
             break;
         }
@@ -6349,7 +6582,7 @@ PXActionResult PXAPI PXNativDrawLoad(PXGUISystem* const pxGUISystem, PXIcon* con
     const HICON iconHandle = LoadIconA
     (
         instanceHandle,
-        IDI_ERROR
+        IDI_EXCLAMATION
     );
 
     pxIcon->Info.Handle.IconHandle = iconHandle;
