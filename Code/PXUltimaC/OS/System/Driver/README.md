@@ -23,6 +23,7 @@ Windows drivers consist of 3 types of files:
 So, a driver is a mix of a library and a program that is running in the background (service).
 
 #### Links
-[WinRing0](https://github.com/GermanAizek/WinRing0/tree/master)
+- [Windows - List all device drivers](https://learn.microsoft.com/en-us/windows/win32/psapi/enumerating-all-device-drivers-in-the-system)
+- [GitHub - WinRing0 - Access kernel functions](https://github.com/GermanAizek/WinRing0/tree/master)
 
 ---
