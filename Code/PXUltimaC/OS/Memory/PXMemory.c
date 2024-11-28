@@ -171,17 +171,15 @@ PXActionResult PXAPI PXMemorySymbolFetch(const void* const adress, PXSymbol* con
     return PXActionSuccessful;
 }
 
-// Check if two pointers overlap, if they do, we can't use a memory copy function, instaead 
-// we need to use memory move, because of optimisattion that results in copy corruption.
-PXBool PXMemoryDoAdressesOverlap(void* adressA, PXSize adressALengh, void* adressB, PXSize adressBLengh)
+PXBool PXAPI PXMemoryDoAdressesOverlap(void* const adressA, const PXSize adressALengh, void* const adressB, const PXSize adressBLengh)
 {
     // What adress is the lower one?
     // We could force the user to only use a as a lower adress but not right now
 
     PXSize adressLowerSize = PXNull;
-     void* adressLower = PXNull;
-     void* adressHigher = PXNull;
-    
+    void* adressLower = PXNull;
+    void* adressHigher = PXNull;
+
     if(adressA <= adressB)
     {
         adressHigher = adressB;
@@ -190,18 +188,17 @@ PXBool PXMemoryDoAdressesOverlap(void* adressA, PXSize adressALengh, void* adres
     }
     else
     {
-         adressHigher = adressA;
-          adressLower = adressB;
+        adressHigher = adressA;
+        adressLower = adressB;
         adressLowerSize = adressBLengh;
 
         // ToDo: Print message to user: Order of adresses swapped
     }
-    
-    PXBool overlap = (adressLower + adressLowerSize) >= adressHigher;
+
+    PXBool overlap = ((PXSize)adressLower + adressLowerSize) >= adressHigher;
 
     return overlap;
 }
-
 
 void* PXAPI PXMemoryCalloc(const PXSize amount, const PXSize objectSize)
 {

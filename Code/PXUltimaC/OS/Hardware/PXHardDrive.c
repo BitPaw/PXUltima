@@ -1,6 +1,5 @@
 #include "PXHardDrive.h"
 
-#include <OS/System/PXOSVersion.h>
 #include <OS/Memory/PXMemory.h>
 
 #if OSUnix

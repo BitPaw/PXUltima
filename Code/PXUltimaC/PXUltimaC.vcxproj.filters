@@ -120,7 +120,7 @@
     <ClCompile Include="OS\Signal\PXSignal.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="OS\System\PXRegistry.c">
+    <ClCompile Include="OS\System\Registry\PXRegistry.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="OS\Async\PXAwait.c">
@@ -150,7 +150,7 @@
     <ClCompile Include="Engine\PXMod.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="OS\System\PXOSVersion.c">
+    <ClCompile Include="OS\System\Version\PXOSVersion.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="OS\Audio\PXXAudio\PXXAudio.c">
@@ -561,6 +561,15 @@
     <ClCompile Include="OS\Graphic\NativDraw\PXNativDraw.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="OS\System\Driver\PXDriver.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="OS\System\FireWall\PXFireWall.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="OS\System\EventHistory\PXEventHistory.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm\KalmanFilter\PXKalmanFilter.h">
@@ -668,10 +677,10 @@
     <ClInclude Include="OS\Signal\PXSignal.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="OS\System\PXOSVersion.h">
+    <ClInclude Include="OS\System\Version\PXOSVersion.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="OS\System\PXRegistry.h">
+    <ClInclude Include="OS\System\Registry\PXRegistry.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="OS\Async\PXAwait.h">
@@ -1104,6 +1113,15 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="OS\Graphic\NativDraw\PXNativDraw.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="OS\System\Driver\PXDriver.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="OS\System\FireWall\PXFireWall.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="OS\System\EventHistory\PXEventHistory.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

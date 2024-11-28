@@ -1,6 +1,5 @@
 #include "PXAwait.h"
 
-#include <OS/System/PXOSVersion.h>
 #include <OS/Memory/PXMemory.h>
 #include <OS/Async/PXThread.h>
 #include <OS/Console/PXConsole.h>

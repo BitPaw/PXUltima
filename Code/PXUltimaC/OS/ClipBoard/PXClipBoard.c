@@ -1,6 +1,6 @@
 #include "PXClipBoard.h"
 
-#include <OS/System/PXOSVersion.h>
+#include <OS/System/Version/PXOSVersion.h>
 
 #if OSUnix
 #elif OSWindows

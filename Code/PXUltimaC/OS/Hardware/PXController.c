@@ -1,6 +1,5 @@
 #include "PXController.h"
 
-#include <OS/System/PXOSVersion.h>
 #include <OS/Memory/PXMemory.h>
 #include <OS/Console/PXConsole.h>
 

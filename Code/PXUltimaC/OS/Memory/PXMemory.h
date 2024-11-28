@@ -195,7 +195,9 @@ PXPublic void PXAPI PXMemorySymbolAdd(PXSymbolMemory* const pxSymbolMemory, cons
 PXPublic PXActionResult PXAPI PXMemorySymbolFetch(const void* const adress, PXSymbol* const pxSymbol);
 
 
-
+// Check if two pointers overlap, if they do, we can't use a memory copy function, instaead 
+// we need to use memory move, because of optimisattion that results in copy corruption.
+PXPublic PXBool PXAPI PXMemoryDoAdressesOverlap(void* const adressA, const PXSize adressALengh, void* const adressB, const PXSize adressBLengh);
 
 
 

@@ -1,7 +1,7 @@
 #ifndef PXCompilerSettingsINCLUDE
 #define PXCompilerSettingsINCLUDE
 
-#include <OS/System/PXOSVersion.h>
+#include <OS/System/Version/PXOSVersion.h>
 
 
 #define _PX_FILEPATH_ __FILE__

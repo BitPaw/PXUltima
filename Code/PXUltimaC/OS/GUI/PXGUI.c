@@ -2027,7 +2027,50 @@ PXActionResult PXAPI PXWindowDrawCustomHeader(PXGUISystem* const pxGUISystem, PX
         pxGUIElement->Position.Bottom
     );
 
-    PXNativDrawTextA(pxGUISystem, pxGUIElement, "XXXXXXXXXXXXX", 13);
+
+    int left = pxGUIElement->Position.Left;
+    int y = 0;
+    int height = 16;
+
+    for(PXSize i = 0; i < pxWindowExtendedMenuItem->MenuItemAmount; ++i)
+    {
+        PXWindowMenuItem* const pxWindowMenuItem = &pxWindowExtendedMenuItem->MenuItemList[i];
+
+
+        PXUIElementPosition pxUIElementPositionPrev = pxGUIElement->Position;
+
+        pxGUIElement->Position.Left = left;
+       // pxGUIElement->Position.Top = y;
+       // pxGUIElement->Position.Right = pxGUIElement->Position.Right;
+       // pxGUIElement->Position.Bottom = y + height;
+       pxGUIElement->Position.Width = pxWindowMenuItem->TextSize * 13;
+        pxGUIElement->Info.Behaviour |= PXWindowKeepWidth;
+        pxGUIElement->Info.Behaviour &= ~PXWindowAllignFlags;
+        pxGUIElement->Info.Behaviour |= PXWindowAllignLeft;
+
+ 
+#if 1
+        PXNativDrawRectangleRounded
+        (
+            pxGUISystem,
+            pxGUIElement,
+            pxGUIElement->Position.Left,
+            pxGUIElement->Position.Top,
+            pxGUIElement->Position.Right,
+            pxGUIElement->Position.Bottom
+        );
+#endif
+
+        PXNativDrawTextA(pxGUISystem, pxGUIElement, pxWindowMenuItem->TextData, pxWindowMenuItem->TextSize);
+     
+
+        if(pxWindowMenuItem->TextData)
+        {
+            left += pxGUIElement->Position.Width + 10;
+        }  
+
+        pxGUIElement->Position = pxUIElementPositionPrev;
+    }
 
     return PXActionSuccessful;
 }
@@ -4349,10 +4392,26 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
     {
         case PXUIElementTypeMenuStrip:
         {
-            PXWindowMenuItemList* const pxGUIElementMenuItemList = &pxGUIElementCreateInfo->Data.MenuItem;
+            PXWindowMenuItemList* const menuItemListInput = &pxGUIElementCreateInfo->Data.MenuItem;
 
+            PXWindowExtendedMenuItem* menuItemListOut = PXMemoryCallocT(PXWindowExtendedMenuItem, 1);
 
+            pxWindowCurrent->ExtendedData = menuItemListOut;
 
+            // setup extended data
+            {
+                menuItemListOut->MenuItemAmount = menuItemListInput->MenuItemInfoListAmount;
+                menuItemListOut->MenuItemList = PXMemoryCallocT(PXWindowExtendedMenuItem, menuItemListInput->MenuItemInfoListAmount);
+
+                for(PXSize i = 0; i < menuItemListInput->MenuItemInfoListAmount; ++i)
+                {
+                    PXWindowMenuItemInfo* const pxWindowMenuItemSource = &menuItemListInput->MenuItemInfoListData[i];
+                    PXWindowMenuItem* const pxWindowMenuItemTarget = &menuItemListOut->MenuItemList[i];
+
+                    pxWindowMenuItemTarget->TextData = pxWindowMenuItemSource->TextData;
+                    pxWindowMenuItemTarget->TextSize = pxWindowMenuItemSource->TextSize;
+                }
+            }
 
 
             switch(PXResourceInfoUseByMask & pxWindowCurrent->Info.Behaviour)
@@ -4370,9 +4429,9 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
                     HMENU hSubMenu = CreatePopupMenu();
 
 
-                    for(PXSize i = 0; i < pxGUIElementMenuItemList->MenuItemInfoListAmount; ++i)
+                    for(PXSize i = 0; i < menuItemListInput->MenuItemInfoListAmount; ++i)
                     {
-                        PXWindowMenuItemInfo* const pxGUIElementMenuItemInfo = &pxGUIElementMenuItemList->MenuItemInfoListData[i];
+                        PXWindowMenuItemInfo* const pxGUIElementMenuItemInfo = &menuItemListInput->MenuItemInfoListData[i];
 
                         MENUITEMINFOA menuItemInfo;
                         PXClear(MENUITEMINFOA, &menuItemInfo);
@@ -6262,6 +6321,11 @@ PXActionResult PXAPI PXWindowDrawText(PXGUISystem* const pxGUISystem, PXWindow* 
 
 PXActionResult PXAPI PXNativDrawTextA(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const char* const text, const PXSize textSize)
 {
+    if(!(text && textSize))
+    {
+        return PXActionRefusedArgumentNull;
+    }
+
 #if OSUnix
     // For ANSI and UTF-8 strings
     //const int resultID = XDrawString(pxGUISystem->DisplayCurrent.DisplayHandle, Drawable d, GC gc, int x, int y, char* string, int length);

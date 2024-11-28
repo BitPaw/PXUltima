@@ -2305,6 +2305,9 @@ PXWindow;
 //-----------------------------------------------------
 // PXWindowExtendedBehaviour
 //-----------------------------------------------------
+typedef struct PXWindowMenuItem_ PXWindowMenuItem;
+
+
 typedef struct PXWindowExtendedMenuItem_
 {
     PXSize MenuItemAmount;
@@ -2525,6 +2528,9 @@ PXWindowPixelSystemInfo;
 typedef struct PXWindowMenuItem_
 {
     PXResourceInfo Info;
+
+    char* TextData;
+    PXSize TextSize;
 }
 PXWindowMenuItem;
 

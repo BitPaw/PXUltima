@@ -152,10 +152,17 @@ void PXAPI Trace_FolderFiles(PXText* pxText)
 
 #include <OS/GUI/PXGUI.h>
 #include <OS/Graphic/NativDraw/PXNativDraw.h>
+#include <OS/System/Driver/PXDriver.h>
 
 int main()
 {
     PXConsoleWrite(0, "[i] Starting testing...\n");
+
+    PXSize listSize = 0;
+    PXDriver* pxDriver = PXNull;
+    PXDriverListFetch(&pxDriver, &listSize);
+
+
 
 
     PXNativDraw pxNativDraw;

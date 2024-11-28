@@ -359,8 +359,11 @@
     <ClCompile Include="OS\Network\PXDNS.c" />
     <ClCompile Include="OS\Network\PXNetwork.c" />
     <ClCompile Include="OS\Signal\PXSignal.c" />
-    <ClCompile Include="OS\System\PXOSVersion.c" />
-    <ClCompile Include="OS\System\PXRegistry.c" />
+    <ClCompile Include="OS\System\Driver\PXDriver.c" />
+    <ClCompile Include="OS\System\EventHistory\PXEventHistory.c" />
+    <ClCompile Include="OS\System\FireWall\PXFireWall.c" />
+    <ClCompile Include="OS\System\Version\PXOSVersion.c" />
+    <ClCompile Include="OS\System\Registry\PXRegistry.c" />
     <ClCompile Include="OS\Async\PXAwait.c" />
     <ClCompile Include="OS\Async\PXLock.c" />
     <ClCompile Include="OS\Async\PXThread.c" />
@@ -542,8 +545,11 @@
     <ClInclude Include="OS\Network\PXDNS.h" />
     <ClInclude Include="OS\Network\PXNetwork.h" />
     <ClInclude Include="OS\Signal\PXSignal.h" />
-    <ClInclude Include="OS\System\PXOSVersion.h" />
-    <ClInclude Include="OS\System\PXRegistry.h" />
+    <ClInclude Include="OS\System\Driver\PXDriver.h" />
+    <ClInclude Include="OS\System\EventHistory\PXEventHistory.h" />
+    <ClInclude Include="OS\System\FireWall\PXFireWall.h" />
+    <ClInclude Include="OS\System\Version\PXOSVersion.h" />
+    <ClInclude Include="OS\System\Registry\PXRegistry.h" />
     <ClInclude Include="OS\Async\PXAwait.h" />
     <ClInclude Include="OS\Async\PXLock.h" />
     <ClInclude Include="OS\Async\PXThread.h" />
