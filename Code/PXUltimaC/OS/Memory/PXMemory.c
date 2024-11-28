@@ -171,6 +171,38 @@ PXActionResult PXAPI PXMemorySymbolFetch(const void* const adress, PXSymbol* con
     return PXActionSuccessful;
 }
 
+// Check if two pointers overlap, if they do, we can't use a memory copy function, instaead 
+// we need to use memory move, because of optimisattion that results in copy corruption.
+PXBool PXMemoryDoAdressesOverlap(void* adressA, PXSize adressALengh, void* adressB, PXSize adressBLengh)
+{
+    // What adress is the lower one?
+    // We could force the user to only use a as a lower adress but not right now
+
+    PXSize adressLowerSize = PXNull;
+     void* adressLower = PXNull;
+     void* adressHigher = PXNull;
+    
+    if(adressA <= adressB)
+    {
+        adressHigher = adressB;
+        adressLower = adressA;
+        adressLowerSize = adressALengh;
+    }
+    else
+    {
+         adressHigher = adressA;
+          adressLower = adressB;
+        adressLowerSize = adressBLengh;
+
+        // ToDo: Print message to user: Order of adresses swapped
+    }
+    
+    PXBool overlap = (adressLower + adressLowerSize) >= adressHigher;
+
+    return overlap;
+}
+
+
 void* PXAPI PXMemoryCalloc(const PXSize amount, const PXSize objectSize)
 {
     void* adress = PXNull;
@@ -369,7 +401,7 @@ void* PXAPI PXMemoryRealloc(const void* const adress, const PXSize memorySize)
     {
         void* memory = PXMemoryMalloc(memorySize);
 
-        PXMemorySet(memory, '°', memorySize);
+        PXMemorySet(memory, 'Â°', memorySize);
 
         return memory;
     }
@@ -381,7 +413,7 @@ void* PXAPI PXMemoryRealloc(const void* const adress, const PXSize memorySize)
     newAdress = HeapReAlloc(heapHandle, HEAP_ZERO_MEMORY, adress, memorySize); // Windows 2000 SP4, Kernel32.dll, heapapi.h
     updatedLocation = newAdress != adress;
 
-    // PXMemorySet(newAdress, '°', memorySize - oldSize);
+    // PXMemorySet(newAdress, 'Â°', memorySize - oldSize);
 
 #if 0
     // Special logging behaviour
@@ -573,6 +605,8 @@ PXBool PXAPI PXMemoryScan(PXMemoryUsage* memoryUsage)
 void PXAPI PXMemoryClear(void* const PXRestrict bufferA, const PXSize bufferASize)
 {
     PXMemorySet(bufferA, 0u, bufferASize);
+
+    //ZeroMemory(bufferA, bufferASize);
 }
 
 void PXAPI PXMemorySetI32U(int* const PXRestrict bufferA, const int value, const PXSize amount)
@@ -600,6 +634,8 @@ void PXAPI PXMemorySet(void* const PXRestrict buffer, const PXByte value, const 
 
 #if MemoryUseSystemFunction
     memset(buffer, value, bufferSize);
+#elif OSWindows
+    FillMemory(buffer, bufferSize, value);
 #else
     for(PXSize i = 0; i < bufferSize; ++i)
     {
