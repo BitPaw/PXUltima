@@ -11,7 +11,7 @@ void PXAPI PXDictionaryConstruct(PXDictionary* const dictionary, const PXSize ke
     dictionary->ValueLocality = pxDictionaryValueLocality;
     dictionary->KeyTypeSize = keySize;
     dictionary->ValueTypeSize = valueSize;
-    dictionary->EntryAmountGrowth = 16;
+    dictionary->EntryAmountGrowth = 128;
 }
 
 void PXAPI PXDictionaryDestruct(PXDictionary* const dictionary)

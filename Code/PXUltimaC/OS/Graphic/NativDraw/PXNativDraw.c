@@ -732,7 +732,76 @@ PXActionResult PXAPI PXGUIFontSet(PXGUISystem* const pxGUISystem, PXWindow* cons
 
 PXActionResult PXAPI PXNativDrawFontSet(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow, PXFont* const pxFont)
 {
-    
+
+}
+
+
+
+
+
+
+PXActionResult PXAPI PXNativDrawTextSet(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow, const char* const text, const PXSize textLength)
+{
+    PXActionResult result = PXActionInvalid;
+
+#if OSUnix
+    // Will BadAlloc, BadWindow
+    const int resultID = XStoreName(pxGUISystem->DisplayCurrent.DisplayHandle, pxGUIElement->Info.Handle.WindowID, text);
+    result = PXWindowErrorFromXSystem(resultID);
+#elif OSWindows
+    const PXBool success = SetWindowTextA(pxWindow->Info.Handle.WindowID, text);
+    result = PXErrorCurrent(success);
+#else
+    result = PXActionRefusedNotSupportedByLibrary;
+#endif
+
+    if(PXActionSuccessful != result)
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingError,
+            "GUI",
+            "Window-Text",
+            "Failed Set: %s on (0x%p)",
+            text,
+            pxWindow
+        );
+#endif
+
+        return result;
+    }
+
+#if PXLogEnable && 0
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "GUI",
+        "Window-Text",
+        "Set: %s on (0x%p)",
+        text,
+        pxGUIElement
+    );
+#endif
+
+    return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXNativDrawTextGet(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow, const char* const text, const PXSize textLength)
+{
+    PXActionResult pxActionResult = PXActionInvalid;
+
+#if OSUnix
+    pxActionResult = PXActionRefusedNotImplemented;
+#elif OSWindows
+
+    const int size = GetWindowTextA(pxWindow->Info.Handle.WindowID, text, 255);
+
+#else
+    pxActionResult = PXActionRefusedNotSupportedByLibrary;
+#endif
+
+    return pxActionResult;
 }
 
 

@@ -1862,71 +1862,6 @@ PXActionResult PXAPI PXWindowDelete(PXGUISystem* const pxGUISystem, PXWindow* co
     return result;
 }
 
-PXActionResult PXAPI PXWindowTextSet(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, char* text)
-{
-    PXActionResult result = PXActionInvalid;
-
-#if OSUnix
-    // Will BadAlloc, BadWindow
-    const int resultID = XStoreName(pxGUISystem->DisplayCurrent.DisplayHandle, pxGUIElement->Info.Handle.WindowID, text);
-    result = PXWindowErrorFromXSystem(resultID);
-#elif OSWindows
-    const PXBool success = SetWindowTextA(pxGUIElement->Info.Handle.WindowID, text);
-    result = PXErrorCurrent(success);
-#else
-    result = PXActionRefusedNotSupportedByLibrary;
-#endif
-
-    if(PXActionSuccessful != result)
-    {
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingError,
-            "GUI",
-            "Window-Text",
-            "Failed Set: %s on (0x%p)",
-            text,
-            pxGUIElement
-        );
-#endif
-
-        return PXFalse;
-    }
-
-#if PXLogEnable && 0
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        "GUI",
-        "Window-Text",
-        "Set: %s on (0x%p)",
-        text,
-        pxGUIElement
-    );
-#endif
-
-
-    return PXTrue;
-}
-
-PXActionResult PXAPI PXWindowTextGet(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, char* text)
-{
-    PXActionResult pxActionResult = PXActionInvalid;
-
-#if OSUnix
-    pxActionResult = PXActionRefusedNotImplemented;
-#elif OSWindows
-
-    const int size = GetWindowTextA(pxGUIElement->Info.Handle.WindowID, text, 255);
-
-#else
-    pxActionResult = PXActionRefusedNotSupportedByLibrary;
-#endif
-
-    return pxActionResult;
-}
-
 PXActionResult PXAPI PXWindowDrawCustomRectangle3D(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int x, const int y, const int width, const int height)
 {
     PXWindowBrush* brushFront = pxGUIElement->BrushFront;
@@ -2013,7 +1948,7 @@ PXActionResult PXAPI PXWindowDrawCustomHeader(PXGUISystem* const pxGUISystem, PX
         "Draw",
         "Header"
     );
-#endif
+#endif   
 
     PXNativDrawClear(pxGUISystem, pxGUIElement);
 
@@ -2042,31 +1977,45 @@ PXActionResult PXAPI PXWindowDrawCustomHeader(PXGUISystem* const pxGUISystem, PX
         pxGUIElement->Position.Left = left;
        // pxGUIElement->Position.Top = y;
        // pxGUIElement->Position.Right = pxGUIElement->Position.Right;
-       // pxGUIElement->Position.Bottom = y + height;
-       pxGUIElement->Position.Width = pxWindowMenuItem->TextSize * 13;
+       //pxGUIElement->Position.Bottom -= 1;
+       pxGUIElement->Position.Width = pxWindowMenuItem->TextSize * 15;
         pxGUIElement->Info.Behaviour |= PXWindowKeepWidth;
         pxGUIElement->Info.Behaviour &= ~PXWindowAllignFlags;
-        pxGUIElement->Info.Behaviour |= PXWindowAllignLeft;
+        pxGUIElement->Info.Behaviour |= PXWindowAllignCenter;
 
+        pxGUIElement->Position.Right = pxGUIElement->Position.Left + pxGUIElement->Position.Width;
  
+        pxGUIElement->Position.Height -= 2;
+
+
 #if 1
-        PXNativDrawRectangleRounded
+        PXWindowDrawCustomRectangle3D
         (
             pxGUISystem,
             pxGUIElement,
             pxGUIElement->Position.Left,
             pxGUIElement->Position.Top,
-            pxGUIElement->Position.Right,
-            pxGUIElement->Position.Bottom
+            pxGUIElement->Position.Left + pxGUIElement->Position.Width,
+            pxGUIElement->Position.Height
         );
 #endif
 
-        PXNativDrawTextA(pxGUISystem, pxGUIElement, pxWindowMenuItem->TextData, pxWindowMenuItem->TextSize);
-     
+
+
+        // Allign with an offset for text
+        int offset = 3;
+
+        pxGUIElement->Position.Left += offset;
+        pxGUIElement->Position.Top += offset;
+       // pxGUIElement->Position.Width -= offset;
+        pxGUIElement->Position.Height -= offset;
+
+
+        PXNativDrawTextA(pxGUISystem, pxGUIElement, pxWindowMenuItem->TextData, pxWindowMenuItem->TextSize);     
 
         if(pxWindowMenuItem->TextData)
         {
-            left += pxGUIElement->Position.Width + 10;
+            left += pxGUIElement->Position.Width + 1;
         }  
 
         pxGUIElement->Position = pxUIElementPositionPrev;
@@ -4401,7 +4350,7 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
             // setup extended data
             {
                 menuItemListOut->MenuItemAmount = menuItemListInput->MenuItemInfoListAmount;
-                menuItemListOut->MenuItemList = PXMemoryCallocT(PXWindowExtendedMenuItem, menuItemListInput->MenuItemInfoListAmount);
+                menuItemListOut->MenuItemList = PXMemoryCallocT(PXWindowMenuItem, menuItemListInput->MenuItemInfoListAmount);
 
                 for(PXSize i = 0; i < menuItemListInput->MenuItemInfoListAmount; ++i)
                 {

@@ -64,6 +64,16 @@ PXPublic PXActionResult PXAPI PXNativDrawFontSet(PXNativDraw* const pxNativDraw,
 
 
 
+//---------------------------------------------------------
+// Property
+//---------------------------------------------------------
+PXPublic PXActionResult PXAPI PXNativDrawTextSet(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow, const char* const text, const PXSize textLength);
+PXPublic PXActionResult PXAPI PXNativDrawTextGet(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow, const char* const text, const PXSize textLength);
+//---------------------------------------------------------
+
+
+
+
 //PXPublic PXActionResult PXAPI PXWindowIconCorner();
 //PXPublic PXActionResult PXAPI PXWindowIconTaskBar();
 

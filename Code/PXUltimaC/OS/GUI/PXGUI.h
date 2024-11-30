@@ -94,8 +94,6 @@ PXPublic PXActionResult PXAPI PXWindowMove(PXGUISystem* const pxGUISystem, PXWin
 PXPublic PXActionResult PXAPI PXWindowResize(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int width, const int height);
 PXPublic PXActionResult PXAPI PXWindowMoveAndResize(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int x, const int y, const int width, const int height);
 
-PXPublic PXActionResult PXAPI PXWindowTextSet(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, char* text);
-PXPublic PXActionResult PXAPI PXWindowTextGet(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, char* text);
 PXPublic PXActionResult PXAPI PXWindowStyleUpdate(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement);
 PXPublic PXActionResult PXAPI PXWindowTitleBarColorSet(const PXNativDrawWindowHandle pxWindowID);
 

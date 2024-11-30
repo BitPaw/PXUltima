@@ -1275,7 +1275,13 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
 
             PXProcessorTemperature(&cpuTemp);
 
-            PXTextPrint(&pxText, "[%s] (Build:%s %s) FPS:%-3i CPU:%i°C", pxEngine->ApplicationName, date, time, pxEngine->TimeData.FramesPerSecound, cpuTemp);
+            PXTextPrint(&pxText, "[%s] (Build:%s %s) FPS:%-3i", pxEngine->ApplicationName, date, time, pxEngine->TimeData.FramesPerSecound);
+
+
+            PXNativDrawTextSet(PXNull, pxEngine->Window, pxText.TextA, pxText.SizeUsed);
+
+            /*
+
 
 
             PXWindowUpdateInfo pxGUIElementUpdateInfo;
@@ -1286,6 +1292,8 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
             // pxGUIElementUpdateInfo.Data.Text.Content = pxText.TextA;
 
             PXWindowUpdate(&pxEngine->GUISystem, &pxGUIElementUpdateInfo, 1u);
+
+            */
         }
 
         if(pxEngine->HasGraphicInterface && pxEngine->Graphic.WindowReference)
