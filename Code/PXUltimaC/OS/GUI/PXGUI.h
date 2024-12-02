@@ -11,8 +11,6 @@
 #include <OS/File/PXFile.h>
 
 
-
-
 // Manages library calls to the operating system window manager
 typedef struct PXGUISystem_
 {
@@ -30,6 +28,8 @@ typedef struct PXGUISystem_
 
     PXFont* FontTitle;
     PXFont* FontContent;
+
+    PXNativDraw NativDraw;
 }
 PXGUISystem;
 
@@ -58,15 +58,8 @@ PXPublic PXActionResult PXAPI PXWindowErrorFromXSystem(const int xSysstemErrorID
 //---------------------------------------------------------
 // Window event functions
 //---------------------------------------------------------
-PXPublic void PXAPI PXWindowEventUpdate(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement);
-
-PXPublic void PXAPI PXWindowEventConsumer(PXGUISystem* const pxGUISystem, PXWindowEvent* const pxWindowEvent);
-
 #if OSUnix
-PXPrivate void PXWindowEventHandler(PXWindow* const pxWindow, const XEvent* const xEventData);
 #elif PXOSWindowsDestop
-PXPublic LRESULT CALLBACK PXWindowEventHandler(const HWND PXWindowsID, const UINT eventID, const WPARAM wParam, const LPARAM lParam);
-
 PXPrivate void PXAPI PXWindowChildListEnumerate(PXGUISystem* const pxGUISystem, PXWindow* const parent, PXBool visible);
 PXPrivate BOOL CALLBACK PXWindowEnumChildProc(HWND hwnd, LPARAM lParam);
 #endif
@@ -78,8 +71,7 @@ PXPrivate BOOL CALLBACK PXWindowEnumChildProc(HWND hwnd, LPARAM lParam);
 // Window utility functions
 //---------------------------------------------------------
 PXPublic PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCreateInfo* const pxResourceCreateInfo, const PXSize amount);
-PXPublic PXActionResult PXAPI PXWindowUpdate(PXGUISystem* const pxGUISystem, PXWindowUpdateInfo* const pxGUIElementUpdateInfoList, const PXSize amount);
-PXPublic PXActionResult PXAPI PXWindowFetch(PXGUISystem* const pxGUISystem, PXWindowUpdateInfo* const pxGUIElementUpdateInfoList, const PXSize amount);
+PXPublic PXActionResult PXAPI PXWindowFetch(PXGUISystem* const pxGUISystem, PXWindowPropertyInfo* const pxGUIElementUpdateInfoList, const PXSize amount);
 PXPublic PXActionResult PXAPI PXWindowRelease(PXWindow* const pxGUIElement);
 PXPublic PXActionResult PXAPI PXWindowDelete(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement);
 //---------------------------------------------------------
@@ -89,11 +81,6 @@ PXPublic PXActionResult PXAPI PXWindowDelete(PXGUISystem* const pxGUISystem, PXW
 //---------------------------------------------------------
 // Window propertys - Getter / Setter
 //---------------------------------------------------------
-PXPublic PXBool PXAPI PXWindowIsEnabled(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement);
-PXPublic PXActionResult PXAPI PXWindowMove(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int x, const int y);
-PXPublic PXActionResult PXAPI PXWindowResize(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int width, const int height);
-PXPublic PXActionResult PXAPI PXWindowMoveAndResize(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int x, const int y, const int width, const int height);
-
 PXPublic PXActionResult PXAPI PXWindowStyleUpdate(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement);
 PXPublic PXActionResult PXAPI PXWindowTitleBarColorSet(const PXNativDrawWindowHandle pxWindowID);
 

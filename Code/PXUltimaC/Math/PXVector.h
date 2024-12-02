@@ -3,6 +3,21 @@
 
 #include <Media/PXType.h>
 
+typedef struct PXVector2I_
+{
+    union
+    {
+        struct
+        {
+            int X;
+            int Y;
+        };
+
+        int Data[2];
+    };
+}
+PXVector2I;
+
 typedef struct PXVector2F_
 {
     union

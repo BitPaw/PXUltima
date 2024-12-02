@@ -180,9 +180,6 @@
     <ClCompile Include="Engine\Interact\PXSign.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Algorithm\KnowlegeGraph\PXKnowlegeGraph.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="OS\Graphic\DirectX\PXDirectX9.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
@@ -570,6 +567,9 @@
     <ClCompile Include="OS\System\EventHistory\PXEventHistory.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Algorithm\KnowlegeGraph\PXKnowlegeGraph.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm\KalmanFilter\PXKalmanFilter.h">
@@ -735,9 +735,6 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Interact\PXSign.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Algorithm\KnowlegeGraph\PXKnowlegeGraph.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="OS\Graphic\DirectX\PXDirectX9.h">
@@ -1122,6 +1119,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="OS\System\EventHistory\PXEventHistory.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Algorithm\KnowlegeGraph\PXKnowlegeGraph.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

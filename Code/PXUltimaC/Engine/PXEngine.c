@@ -9,6 +9,7 @@
 #include <OS/Hardware/PXProcessor.h>
 #include <Math/PXCollision.h>
 #include <OS/Debug/PXDebug.h>
+#include <OS/Graphic/NativDraw/PXNativDraw.h>
 
 void PXCDECL PXEngineOnIllegalInstruction(const int signalID)
 {
@@ -1035,7 +1036,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
 
         if(!isRunningASYNC)
         {
-            PXWindowEventUpdate(&pxEngine->GUISystem, pxEngine->Window);
+            PXNativDrawWindowEventPoll(&pxEngine->GUISystem.NativDraw, pxEngine->Window);
 
             // if window does not exist anymore
             if(!pxEngine->Window)
@@ -1206,8 +1207,8 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
         // Extended windows resize check
         if(pxEngine->UpdateUI)
         {
-            PXWindowUpdateInfo pxGUIElementUpdateInfo;
-            PXClear(PXWindowUpdateInfo, &pxGUIElementUpdateInfo);
+            PXWindowPropertyInfo pxGUIElementUpdateInfo;
+            PXClear(PXWindowPropertyInfo, &pxGUIElementUpdateInfo);
             pxGUIElementUpdateInfo.UIElement = pxWindow;
             pxGUIElementUpdateInfo.Property = PXUIElementPropertySize;
 
@@ -1298,7 +1299,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
 
         if(pxEngine->HasGraphicInterface && pxEngine->Graphic.WindowReference)
         {
-            const PXBool isWindowEnabled = PXWindowIsEnabled(&pxEngine->GUISystem, pxEngine->Graphic.WindowReference);
+            const PXBool isWindowEnabled = PXNativDrawWindowIsEnabled(&pxEngine->GUISystem, pxEngine->Graphic.WindowReference);
 
             if(isWindowEnabled)
             {
@@ -1649,6 +1650,7 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
 
     // TODO: silly
     pxEngine->GUISystem.ResourceManager = &pxEngine->ResourceManager;
+    pxEngine->GUISystem.NativDraw.ResourceManager = &pxEngine->ResourceManager;
     PXGUISystemInitialize(&pxEngine->GUISystem);
 
 
@@ -1719,7 +1721,7 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
     //-----------------------------------------------------
     if(pxEngineStartInfo->UseMouseInput)
     {
-        PXWindowEventUpdate(&pxEngine->GUISystem, pxEngine->Window);
+        PXNativDrawWindowEventPoll(&pxEngine->GUISystem.NativDraw, pxEngine->Window);
 
         PXWindowMouseMovementEnable(pxEngine->Window->Info.Handle.WindowID);
 

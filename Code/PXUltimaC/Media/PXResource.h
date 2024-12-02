@@ -2791,16 +2791,27 @@ typedef union PXWindowCreateInfoData_
 }
 PXWindowCreateInfoData;
 
-typedef struct PXWindowUpdateInfo_
+typedef enum PXWindowPropertyUpdateType_
+{
+    PXWindowPropertyUpdateTypeInvalid,
+    PXWindowPropertyUpdateTypeRead,
+    PXWindowPropertyUpdateTypeWrite,
+    PXWindowPropertyUpdateTypeCompare
+}
+PXWindowPropertyUpdateType;
+
+// Info about a window property like position or text content
+typedef struct PXWindowPropertyInfo_
 {
     PXWindow* UIElement;
     PXWindow* WindowReference;
     PXUIElementProperty Property;
     PXWindowCreateInfoData Data;
 
-    PXBool Show;
+    PXBool Show;    
+    PXWindowPropertyUpdateType UpdateType;
 }
-PXWindowUpdateInfo;
+PXWindowPropertyInfo;
 
 typedef struct PXWindowCreateInfo_
 {

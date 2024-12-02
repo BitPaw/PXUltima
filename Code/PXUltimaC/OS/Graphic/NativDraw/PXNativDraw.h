@@ -35,6 +35,8 @@ PXPublic PXActionResult PXAPI PXWindowEmit(PXGUISystem* const pxGUISystem, PXWin
 
 
 
+PXPublic PXActionResult PXAPI PXNativDrawWindowEventPoll(PXNativDraw* const pxNativDraw, PXWindow* const pxGUIElement);
+
 //---------------------------------------------------------
 // Drag'n'Drop
 //---------------------------------------------------------
@@ -67,8 +69,15 @@ PXPublic PXActionResult PXAPI PXNativDrawFontSet(PXNativDraw* const pxNativDraw,
 //---------------------------------------------------------
 // Property
 //---------------------------------------------------------
+PXPublic PXActionResult PXAPI PXNativDrawWindowProperty(PXNativDraw* const pxNativDraw, PXWindowPropertyInfo* const pxWindowPropertyInfoList, const PXSize amount);
+
 PXPublic PXActionResult PXAPI PXNativDrawTextSet(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow, const char* const text, const PXSize textLength);
 PXPublic PXActionResult PXAPI PXNativDrawTextGet(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow, const char* const text, const PXSize textLength);
+PXPublic PXActionResult PXAPI PXNativDrawWindowIsEnabled(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow);
+PXPublic PXActionResult PXAPI PXNativDrawWindowPosition(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow, PXVector2I* const position, const PXBool doWrite);
+PXPublic PXActionResult PXAPI PXNativDrawWindowMove(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow, const int x, const int y);
+PXPublic PXActionResult PXAPI PXNativDrawWindowResize(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow, const int width, const int height);
+PXPublic PXActionResult PXAPI PXNativDrawWindowMoveAndResize(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow, const int x, const int y, const int width, const int height);
 //---------------------------------------------------------
 
 
@@ -96,9 +105,35 @@ PXPublic PXActionResult PXAPI PXNativDrawIcon(PXGUISystem* const pxGUISystem, PX
 
 
 
+//---------------------------------------------------------
+// Window event functions
+//---------------------------------------------------------
+PXNativDraw* PXGLOBAL_NativDraw = PXNull;
 
 
+// This function consumes events first before any other 
+// listener revices this. Because of this, this event handler 
+// shall only handle low-level events and not be too much in the way
+PXPublic PXActionResult PXAPI PXNativDrawEventConsumer(PXNativDraw* const pxNativDraw, PXWindowEvent* const pxWindowEvent);
 
+#if OSUnix
+PXPublic void PXNativDrawEventReceiver(PXWindow* const pxWindow, const XEvent* const xEventData);
+#elif PXOSWindowsDestop
+PXPublic LRESULT CALLBACK PXNativDrawEventReceiver(const HWND windowID, const UINT eventID, const WPARAM wParam, const LPARAM lParam);
+#endif
+//---------------------------------------------------------
+
+
+//---------------------------------------------------------
+// 
+//---------------------------------------------------------
+#if OSUnix
+//----
+#elif PXOSWindowsDestop
+PXPrivate void PXAPI PXWindowChildListEnumerate(PXGUISystem* const pxGUISystem, PXWindow* const parent, PXBool visible);
+PXPrivate BOOL CALLBACK PXWindowEnumChildProc(HWND hwnd, LPARAM lParam);
+#endif
+//---------------------------------------------------------
 
 
 
