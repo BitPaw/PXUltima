@@ -1,7 +1,7 @@
 #ifndef PXGUIINCLUDE
 #define PXGUIINCLUDE
 
-#include <Media/PXResource.h>
+#include <Media/PXType.h>
 #include <Container/Dictionary/PXDictionary.h>
 #include <OS/Graphic/PXGraphic.h>
 #include <OS/Hardware/PXMouse.h>

@@ -1,7 +1,7 @@
 #include "PXDDS.h"
 
 #include <OS/File/PXFile.h>
-#include <OS/Graphic/PXGraphic.h>
+//#include <OS/Graphic/PXGraphic.h>
 
 const char PXDDSSignature[4] = { 'D', 'D', 'S', ' ' }; // 0x20534444
 

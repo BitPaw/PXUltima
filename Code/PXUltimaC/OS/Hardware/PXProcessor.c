@@ -739,6 +739,28 @@ PXActionResult PXAPI PXProcessorTemperature(PXInt32U* const cpuTemp)
 
 #if OSUnix
 
+    // thermal_zone is a folder and might not exist
+    // in a VM this is missing
+    const char* thermalZonePath = "/sys/class/thermal/thermal_zone0/temp";
+    int temp;
+
+    FILE* fp = fopen(thermalZonePath, "r");
+
+    if(fp == NULL)
+    {
+        perror("Failed to open thermal zone file");
+        return -1;
+    }
+    fscanf(fp, "%d", &temp);
+    fclose(fp); 
+
+    // Note: The temperature is usually reported in millidegrees Celsius, so divide by 1000 to get degrees Celsius
+    // This is not the case on a Ryzen processor. Temp was 16°C
+    // Works on Intel Core i5-2350
+
+    return temp / 1000;
+
+
 #elif OSWindows
 
     {
