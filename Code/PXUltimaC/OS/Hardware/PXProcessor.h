@@ -224,7 +224,21 @@ PXPublic void PXAPI PXProcessorFetchInfo(PXProcessor* const processor);
 PXPublic unsigned int PXAPI PXProcessorFrequencyCurrent();
 PXPublic unsigned int PXAPI PXProcessorTimeReal();
 
-PXPublic PXActionResult PXAPI PXProcessorTemperature(PXInt32U* const cpuTemp);
+
+
+// Data that holds temperature data for all processors 
+// that are connected/visible to the system
+typedef struct PXProcessorTemperatureInfo_
+{
+    PXSize ListAmount;  // Amount of data values
+    PXInt32S* ListData; // List of data values
+    PXInt32S Average;   // The average temp of all temperatures
+}
+PXProcessorTemperatureInfo;
+
+
+// Fetch temperature from the processor(s) 
+PXPublic PXActionResult PXAPI PXProcessorTemperature(PXProcessorTemperatureInfo* const pxProcessorTemperatureInfo);
 
 
 //-----------------------------------------------------

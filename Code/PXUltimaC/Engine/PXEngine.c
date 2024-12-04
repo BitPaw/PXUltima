@@ -1279,7 +1279,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
             PXTextPrint(&pxText, "[%s] (Build:%s %s) FPS:%-3i", pxEngine->ApplicationName, date, time, pxEngine->TimeData.FramesPerSecound);
 
 
-            PXNativDrawTextSet(PXNull, pxEngine->Window, pxText.TextA, pxText.SizeUsed);
+            PXNativDrawTextSet(PXNativDrawInstantance(), pxEngine->Window, pxText.TextA, pxText.SizeUsed);
 
             /*
 
@@ -1314,7 +1314,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
                 pxEngine->Graphic.SceneDeploy(pxEngine->Graphic.EventOwner);
 #endif
 
-                PXNativDrawWindowBufferSwap(PXNull, pxEngine->Window);
+                PXNativDrawWindowBufferSwap(PXNativDrawInstantance(), pxEngine->Window);
 
                 //PXWindowBufferSwap(&pxEngine->GUISystem, pxEngine->Window);
             }
@@ -1545,6 +1545,8 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
 
     PXCameraConstruct(&pxEngine->CameraDefault);
 
+     PXNativDrawInstantance()->ResourceManager = &pxEngine->ResourceManager;
+
     pxEngine->CameraCurrent = &pxEngine->CameraDefault;
     pxEngine->TimeData.CounterTimeLast = 0;
     pxEngine->TimeData.CounterTimeGPU = 0;
@@ -1651,7 +1653,10 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
     // TODO: silly
     pxEngine->GUISystem.ResourceManager = &pxEngine->ResourceManager;
     pxEngine->GUISystem.NativDraw.ResourceManager = &pxEngine->ResourceManager;
+    
+
     PXGUISystemInitialize(&pxEngine->GUISystem);
+
 
 
     // Load all mods now, not fully tho, they may need very early checks before anything happens

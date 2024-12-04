@@ -34,8 +34,12 @@ PXPublic PXActionResult PXAPI PXWindowAbsorb(PXGUISystem* const pxGUISystem, PXW
 PXPublic PXActionResult PXAPI PXWindowEmit(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement);
 
 
-
+//---------------------------------------------------------
+// Main
+//---------------------------------------------------------
+PXPublic PXNativDraw* PXAPI PXNativDrawInstantance(void);
 PXPublic PXActionResult PXAPI PXNativDrawWindowEventPoll(PXNativDraw* const pxNativDraw, PXWindow* const pxGUIElement);
+
 
 //---------------------------------------------------------
 // Drag'n'Drop
@@ -108,8 +112,6 @@ PXPublic PXActionResult PXAPI PXNativDrawIcon(PXGUISystem* const pxGUISystem, PX
 //---------------------------------------------------------
 // Window event functions
 //---------------------------------------------------------
-PXNativDraw* PXGLOBAL_NativDraw = PXNull;
-
 
 // This function consumes events first before any other 
 // listener revices this. Because of this, this event handler 

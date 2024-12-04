@@ -2486,7 +2486,7 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
     //    pxNativDrawWindow.WindowsTextSize;
         pxWindowCreateInfo.WindowsClassName = pxGUIElementCreateInfo->WindowsClassName;
 
-        const PXActionResult pxActionResult = PXNativDrawWindowCreate(PXNull, pxWindowCurrent, &pxWindowCreateInfo);
+        const PXActionResult pxActionResult = PXNativDrawWindowCreate(PXNativDrawInstantance(), pxWindowCurrent, &pxWindowCreateInfo);
 
 
         if(PXActionSuccessful != pxActionResult)

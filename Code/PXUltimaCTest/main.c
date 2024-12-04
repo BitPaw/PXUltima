@@ -158,6 +158,16 @@ int main()
 {
     PXConsoleWrite(0, "[i] Starting testing...\n");
 
+
+    PXProcessorTemperatureInfo pxProcessorTemperatureInfo;
+    PXClear(PXProcessorTemperatureInfo, &pxProcessorTemperatureInfo);
+
+    for(;;)
+    {
+        PXProcessorTemperature(&pxProcessorTemperatureInfo);
+    }
+
+
     PXSize listSize = 0;
     PXDriver* pxDriver = PXNull;
     PXDriverListFetch(&pxDriver, &listSize);

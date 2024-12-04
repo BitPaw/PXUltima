@@ -1,5 +1,7 @@
 #include "PXNativDraw.h"
 
+PXNativDraw _internalNativDraw;
+
 #if OSUnix 
 #include <X11/Xlib.h> 
 #include <X11/Xutil.h>
@@ -1315,6 +1317,11 @@ PXActionResult PXAPI PXNativDrawWindowMoveAndResize(PXNativDraw* const pxNativDr
 }
 
 
+PXNativDraw* PXAPI PXNativDrawInstantance(void)
+{
+    return  &_internalNativDraw;
+}
+
 PXActionResult PXAPI PXNativDrawWindowEventPoll(PXNativDraw* const pxNativDraw, PXWindow* const pxGUIElement)
 {
     if(!pxGUIElement)
@@ -2275,9 +2282,9 @@ LRESULT CALLBACK PXNativDrawEventReceiver(const HWND windowID, const UINT eventI
     pxWindowEvent.ParamW = wParam;
     pxWindowEvent.ParamL = lParam;
 
-    if(PXGLOBAL_NativDraw)
+    if(PXNativDrawInstantance())
     {
-        pxNativDraw = PXGLOBAL_NativDraw;
+        pxNativDraw = PXNativDrawInstantance();
 
         PXDictionaryFindEntry(&pxNativDraw->ResourceManager->GUIElementLookup, &windowID, &pxWindowEvent.UIElementReference);
     }
