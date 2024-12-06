@@ -39,6 +39,31 @@ from the ICorRuntimeHost object to get the IAppDomain object
 - If you want to load .NET DLLs from network shares it is more complex, because
 you need to call UnsafeLoadFrom, which is not available in IAppDomain. But this is also possible.
 
+### Versions
+To check the version we can call [ICLRMetaHost::GetVersionFromFile](https://learn.microsoft.com/en-us/dotnet/framework/unmanaged-api/hosting/iclrmetahost-getversionfromfile-method) and compare this to the loaded runtimes.
+|CLR version|	.NET version|
+|:-|:-|
+|1.0|	1.0|
+|1.1|	1.1|
+|2.0|	2.0, 3.0, 3.5|
+|4.0|	4, 4.5, 4.6, 4.7, 4.8|
+> Note: CLR only supports DLLs up to version 4.x.<br>
+> If you try to load a DLL compiled with .NET 5.0, it will result in a "file not found" error.
+
+You can list SDKs and Runtimes in CMD
+|Desciption|Command|Path|
+|:-|:-|:-|
+|Compiler|csc file.cs| C:\Windows\Microsoft.NET\Framework\{version}\ |
+|Executable|-|C:\program files\dotnet\dotnet.exe|
+| List all SDKs|dotnet --list-sdks|C:\program files\dotnet\sdk\{version}\|
+|List all runtimes|dotnet --list-runtimes|C:\program files\dotnet\shared\{runtime-type}\{version}\|
+
+### Compile code
+Sadly, there seems not to be any API in C/C++ where you can actually compile C# files directly.<br>
+There are two other options:<br>
+- A) Using the compiler over a CMD call and compiling the files manually
+- B) Creating a wrapper in C# that accesses the API, then dynamically linking and calling it from C/C++.
+
 
 ## Alternative
 Because of the missing implementation on linux in the beginnning, a company created a whole .NET framework that is platform independed.
