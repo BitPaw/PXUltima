@@ -1322,14 +1322,14 @@ PXNativDraw* PXAPI PXNativDrawInstantance(void)
     return  &_internalNativDraw;
 }
 
-PXActionResult PXAPI PXNativDrawWindowEventPoll(PXNativDraw* const pxNativDraw, PXWindow* const pxGUIElement)
+PXActionResult PXAPI PXNativDrawWindowEventPoll(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow)
 {
-    if(!pxGUIElement)
+    if(!pxWindow)
     {
         return;
     }
 
-    if(!pxGUIElement->Info.Handle.WindowID)
+    if(!pxWindow->Info.Handle.WindowID)
     {
         return;
     }
@@ -1379,14 +1379,14 @@ PXActionResult PXAPI PXNativDrawWindowEventPoll(PXNativDraw* const pxNativDraw, 
     {
         MSG message;
 
-        const PXBool peekResult = PeekMessage(&message, pxGUIElement->Info.Handle.WindowID, 0, 0, PM_NOREMOVE); // Windows 2000, User32.dll, winuser.h
+        const PXBool peekResult = PeekMessage(&message, pxWindow->Info.Handle.WindowID, 0, 0, PM_NOREMOVE); // Windows 2000, User32.dll, winuser.h
 
         if(!peekResult)
         {
             break; // Stop, no more messages
         }
 
-        const PXBool messageResult = GetMessage(&message, pxGUIElement->Info.Handle.WindowID, 0, 0); // Windows 2000, User32.dll, winuser.h
+        const PXBool messageResult = GetMessage(&message, pxWindow->Info.Handle.WindowID, 0, 0); // Windows 2000, User32.dll, winuser.h
 
         if(!messageResult)
         {
@@ -2273,7 +2273,7 @@ void PXNativDrawEventReceiver(PXWindow* const pxWindow, const XEvent* const xEve
 #elif OSWindows
 LRESULT CALLBACK PXNativDrawEventReceiver(const HWND windowID, const UINT eventID, const WPARAM wParam, const LPARAM lParam)
 {
-    PXNativDraw* pxNativDraw = PXNull;
+    PXNativDraw* const pxNativDraw = PXNativDrawInstantance();
 
     PXWindowEvent pxWindowEvent;
     PXClear(PXWindowEvent, &pxWindowEvent);
@@ -2282,14 +2282,14 @@ LRESULT CALLBACK PXNativDrawEventReceiver(const HWND windowID, const UINT eventI
     pxWindowEvent.ParamW = wParam;
     pxWindowEvent.ParamL = lParam;
 
-    if(PXNativDrawInstantance())
+    if(pxNativDraw->ResourceManager)
     {
-        pxNativDraw = PXNativDrawInstantance();
-
         PXDictionaryFindEntry(&pxNativDraw->ResourceManager->GUIElementLookup, &windowID, &pxWindowEvent.UIElementReference);
     }
 
-#if 0
+
+
+#if 1
     PXLogPrint
     (
         PXLoggingInfo,
@@ -2520,14 +2520,19 @@ LRESULT CALLBACK PXNativDrawEventReceiver(const HWND windowID, const UINT eventI
 
             PXWindow* const pxGUIElement = PXNull;
 
-            PXDictionaryFindEntry(&pxNativDraw->ResourceManager->GUIElementLookup, &windowID, &pxGUIElement);
+            if(pxNativDraw->ResourceManager)
+            {
+                PXDictionaryFindEntry(&pxNativDraw->ResourceManager->GUIElementLookup, &windowID, &pxGUIElement);
+            }        
 
             if(!pxGUIElement)
             {
                 break; // break: not found
             }
 
-            if(pxGUIElement->DrawFunction)
+            const PXBool shallDraw = pxGUIElement->DrawFunction && (pxGUIElement->Info.Flags& PXResourceInfoRender);
+
+            if(shallDraw)
             {
                 PAINTSTRUCT paintStruct;
 
@@ -2561,16 +2566,21 @@ LRESULT CALLBACK PXNativDrawEventReceiver(const HWND windowID, const UINT eventI
 
             PXWindow* const pxGUIElement = PXNull;
 
-            PXDictionaryFindEntry(&pxNativDraw->ResourceManager->GUIElementLookup, &drawItemInfo->hwndItem, &pxGUIElement);
+            if(pxNativDraw->ResourceManager)
+            {
+                PXDictionaryFindEntry(&pxNativDraw->ResourceManager->GUIElementLookup, &drawItemInfo->hwndItem, &pxGUIElement);
+            }
+
+         
 
             if(!pxGUIElement)
             {
                 break; // break: not found
             }
 
-            // return PXTrue;
+            const PXBool shallDraw = 0;// pxGUIElement->DrawFunction && (pxGUIElement->Info.Flags& PXResourceInfoRender);
 
-            if(pxGUIElement->DrawFunction)
+            if(shallDraw)
             {
                 // RECT rc;
 
@@ -2594,7 +2604,7 @@ LRESULT CALLBACK PXNativDrawEventReceiver(const HWND windowID, const UINT eventI
                 pxGUIElement->Position.Right = drawItemInfo->rcItem.right;
                 pxGUIElement->Position.Bottom = drawItemInfo->rcItem.bottom;
 
-                pxGUIElement->DrawFunction(pxNativDraw, pxGUIElement, &pxGUIElementDrawInfo);
+                pxGUIElement->DrawFunction(pxNativDraw->GUISystem, pxGUIElement, &pxGUIElementDrawInfo);
 
                 // EndPaint(pxGUIElement->Info.Handle.WindowID, &paintStruct);
 
@@ -2609,7 +2619,12 @@ LRESULT CALLBACK PXNativDrawEventReceiver(const HWND windowID, const UINT eventI
         {
             PXWindow* const pxGUIElement = PXNull;
 
-            PXDictionaryFindEntry(&pxNativDraw->ResourceManager->GUIElementLookup, &windowID, &pxGUIElement);
+            if(pxNativDraw->ResourceManager)
+            {
+                PXDictionaryFindEntry(&pxNativDraw->ResourceManager->GUIElementLookup, &windowID, &pxGUIElement);
+            }
+
+  
 
             if(!pxGUIElement)
             {

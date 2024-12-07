@@ -1545,7 +1545,14 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
 
     PXCameraConstruct(&pxEngine->CameraDefault);
 
-     PXNativDrawInstantance()->ResourceManager = &pxEngine->ResourceManager;
+    PXNativDraw* pxNativDraw = PXNativDrawInstantance();
+
+    if(!pxNativDraw->ResourceManager)
+    {
+        pxNativDraw->ResourceManager = &pxEngine->ResourceManager;
+        pxNativDraw->GUISystem = &pxEngine->GUISystem;
+    }
+
 
     pxEngine->CameraCurrent = &pxEngine->CameraDefault;
     pxEngine->TimeData.CounterTimeLast = 0;

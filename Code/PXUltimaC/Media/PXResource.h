@@ -2253,6 +2253,8 @@ typedef struct PXNativDraw_
 
     PXSize DisplayListAmount;
     PXDisplay* DisplayList;
+
+    PXGUISystem* GUISystem;
 }
 PXNativDraw;
 

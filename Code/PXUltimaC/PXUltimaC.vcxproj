@@ -109,7 +109,7 @@
     </ClCompile>
     <Link />
     <Link>
-      <AdditionalDependencies>dxguid.lib;Comctl32.lib;Mf.lib;Wbemuuid.lib;mfreadwrite.lib;Mfplat.lib;mfuuid.lib;Shlwapi.lib;ntdll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxguid.lib;Comctl32.lib;Mf.lib;Wbemuuid.lib;mfreadwrite.lib;Mfplat.lib;mfuuid.lib;Shlwapi.lib;ntdll.lib;mscoree.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -140,7 +140,7 @@
     </ClCompile>
     <Link />
     <Link>
-      <AdditionalDependencies>dxguid.lib;Comctl32.lib;Mf.lib;Wbemuuid.lib;mfreadwrite.lib;Mfplat.lib;mfuuid.lib;Shlwapi.lib;ntdll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxguid.lib;Comctl32.lib;Mf.lib;Wbemuuid.lib;mfreadwrite.lib;Mfplat.lib;mfuuid.lib;Shlwapi.lib;ntdll.lib;mscoree.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -162,7 +162,7 @@
     </ClCompile>
     <Link />
     <Link>
-      <AdditionalDependencies>dxguid.lib;Comctl32.lib;Mf.lib;Wbemuuid.lib;mfreadwrite.lib;Mfplat.lib;mfuuid.lib;Shlwapi.lib;ntdll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxguid.lib;Comctl32.lib;Mf.lib;Wbemuuid.lib;mfreadwrite.lib;Mfplat.lib;mfuuid.lib;Shlwapi.lib;ntdll.lib;mscoree.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -193,7 +193,7 @@
     </ClCompile>
     <Link />
     <Link>
-      <AdditionalDependencies>dxguid.lib;Comctl32.lib;Mf.lib;Wbemuuid.lib;mfreadwrite.lib;Mfplat.lib;mfuuid.lib;Shlwapi.lib;ntdll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxguid.lib;Comctl32.lib;Mf.lib;Wbemuuid.lib;mfreadwrite.lib;Mfplat.lib;mfuuid.lib;Shlwapi.lib;ntdll.lib;mscoree.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -314,6 +314,7 @@
     <ClCompile Include="Media\ZLIB\PXZLIB.c" />
     <ClCompile Include="OS\AI\PXAI.c" />
     <ClCompile Include="OS\Async\PXThreadPool.c" />
+    <ClCompile Include="OS\Framework\DotNet\PXDotNet.c" />
     <ClCompile Include="OS\Graphic\DirectX\PXDirectX10.c" />
     <ClCompile Include="OS\Graphic\DirectX\PXDirectX11.c" />
     <ClCompile Include="OS\Graphic\DirectX\PXDirectX12.c" />
@@ -500,6 +501,7 @@
     <ClInclude Include="Media\ZLIB\PXZLIB.h" />
     <ClInclude Include="OS\AI\PXAI.h" />
     <ClInclude Include="OS\Async\PXThreadPool.h" />
+    <ClInclude Include="OS\Framework\DotNet\PXDotNet.h" />
     <ClInclude Include="OS\Graphic\DirectX\PXDirectX10.h" />
     <ClInclude Include="OS\Graphic\DirectX\PXDirectX11.h" />
     <ClInclude Include="OS\Graphic\DirectX\PXDirectX12.h" />

@@ -153,10 +153,26 @@ void PXAPI Trace_FolderFiles(PXText* pxText)
 #include <OS/GUI/PXGUI.h>
 #include <OS/Graphic/NativDraw/PXNativDraw.h>
 #include <OS/System/Driver/PXDriver.h>
+#include <OS/Framework/DotNet/PXDotNet.h>
 
 int main()
 {
     PXConsoleWrite(0, "[i] Starting testing...\n");
+
+
+
+    PXDotNet pxDotNet;
+
+    PXDotNetInit(&pxDotNet);
+
+
+
+
+
+
+
+
+
 
 
     PXProcessorTemperatureInfo pxProcessorTemperatureInfo;
