@@ -2399,6 +2399,8 @@ typedef struct PXWindowEventInputMouseMove_
     PXInt32S AxisY;
     PXInt32S DeltaX;
     PXInt32S DeltaY;
+    PXInt32S PositionX;
+    PXInt32S PositionY;
 }
 PXWindowEventInputMouseMove;
 

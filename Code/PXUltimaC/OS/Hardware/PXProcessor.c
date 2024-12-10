@@ -783,7 +783,7 @@ PXActionResult PXAPI PXProcessorTemperature(PXProcessorTemperatureInfo* const px
         PXActionReturnOnError(initializeResult);
     }
 
-
+    return 0;
 
     /*
     Access over the driver, need admin permissions. Seems overkill
@@ -900,7 +900,7 @@ PXActionResult PXAPI PXProcessorTemperature(PXProcessorTemperatureInfo* const px
         */
     }
 
-
+#if 0
     {
         // Get me all the classes
 
@@ -916,7 +916,7 @@ PXActionResult PXAPI PXProcessorTemperature(PXProcessorTemperatureInfo* const px
         );
 
 
-#if 0
+
         for(;;)
         {
             IWbemClassObject* clasIJA = PXNull;
@@ -933,7 +933,7 @@ PXActionResult PXAPI PXProcessorTemperature(PXProcessorTemperatureInfo* const px
             //printf("");
             PXConsoleWriteF(0, "");
         }
-#endif
+
 
         //printf("");
     }
@@ -1067,6 +1067,7 @@ PXActionResult PXAPI PXProcessorTemperature(PXProcessorTemperatureInfo* const px
 
 
     }
+#endif
 
 
     // Get value

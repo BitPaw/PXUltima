@@ -139,6 +139,9 @@ PXPrivate BOOL CALLBACK PXWindowEnumChildProc(HWND hwnd, LPARAM lParam);
 
 
 
+PXPrivate void PXAPI PXNativeDrawMouseTrack(PXWindow* const window);
+
+
 
 
 PXPublic PXActionResult PXAPI XAllPlanes(PXNativDraw* const pxNativDraw);

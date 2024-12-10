@@ -1063,10 +1063,12 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
 
 
         // Solve controller
-        PXController* const pxController = &pxEngine->ControllerSystem.DeviceListData[0];
+      
 
-        if(pxEngine->CameraCurrent)
+        if(pxEngine->CameraCurrent && pxEngine->ControllerSystem.DeviceListData)
         {
+            PXController* const pxController = &pxEngine->ControllerSystem.DeviceListData[0];
+
             pxEngine->CameraCurrent->WalkSpeed = 1;
             pxEngine->CameraCurrent->ViewSpeed = 1;
 

@@ -35,4 +35,6 @@ PXMouse;
 PXPublic void PXAPI PXMouseInputReset(PXMouse* const mouse);
 PXPublic void PXAPI PXMouseInputPrint(const PXMouse* const mouse);
 
+PXPublic void PXAPI PXMouseInputFetch(PXMouse* const mouse);
+
 #endif

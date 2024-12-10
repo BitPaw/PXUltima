@@ -36,3 +36,29 @@ void PXAPI PXMouseInputPrint(const PXMouse* const mouse)
         buttons
     );
 }
+
+void PXAPI PXMouseInputFetch(PXMouse* const mouse)
+{
+#if OSUnix
+#elif OSWindows
+    MOUSEMOVEPOINT mouseMovePoint;
+
+
+    MOUSEMOVEPOINT mouseMovePointList[64];
+    PXClearList(MOUSEMOVEPOINT, mouseMovePointList, 64);
+
+    const PXSize mouseMovePointSize = sizeof(MOUSEMOVEPOINT);
+
+    const int resID = GetMouseMovePointsEx
+    (
+        mouseMovePointSize,
+        &mouseMovePoint,
+        mouseMovePointList,
+        64,
+        GMMP_USE_DISPLAY_POINTS
+    );
+    const PXActionResult res = PXErrorCurrent(-1 != resID);
+
+
+#endif
+}

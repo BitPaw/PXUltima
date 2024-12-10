@@ -509,7 +509,7 @@ PXActionResult PXAPI PXNativDrawWindowCreate(PXNativDraw* const pxNativDraw, PXW
     }
 
     pxWindow->Info.Handle.WindowID = windowHandle;
-    pxWindow->DeviceContextHandle = GetDC(windowHandle);  
+    pxWindow->DeviceContextHandle = GetDC(windowHandle);
 
     return PXActionSuccessful;
 
@@ -1825,7 +1825,7 @@ PXActionResult PXAPI PXNativDrawEventConsumer(PXNativDraw* const pxNativDraw, PX
 
         case PXWindowEventTypeElementMove:
         {
-#if PXLogEnable && 0
+#if PXLogEnable && 1
             PXLogPrint
             (
                 PXLoggingEvent,
@@ -2287,9 +2287,7 @@ LRESULT CALLBACK PXNativDrawEventReceiver(const HWND windowID, const UINT eventI
         PXDictionaryFindEntry(&pxNativDraw->ResourceManager->GUIElementLookup, &windowID, &pxWindowEvent.UIElementReference);
     }
 
-
-
-#if 1
+#if 0
     PXLogPrint
     (
         PXLoggingInfo,
@@ -2312,6 +2310,11 @@ LRESULT CALLBACK PXNativDrawEventReceiver(const HWND windowID, const UINT eventI
         case WM_CREATE: // Gets called inside the "CreateWindow" function.
         {
             // Do nothíng here, as it's too soon to regard the window as 'created'
+
+            PXWindow pxWindow;
+            pxWindow.Info.Handle.WindowID = windowID;
+
+           // PXNativeDrawMouseTrack(&pxWindow);
 
             return DefWindowProc(windowID, eventID, wParam, lParam);
         }
@@ -2569,30 +2572,17 @@ LRESULT CALLBACK PXNativDrawEventReceiver(const HWND windowID, const UINT eventI
             if(pxNativDraw->ResourceManager)
             {
                 PXDictionaryFindEntry(&pxNativDraw->ResourceManager->GUIElementLookup, &drawItemInfo->hwndItem, &pxGUIElement);
-            }
-
-         
+            }         
 
             if(!pxGUIElement)
             {
                 break; // break: not found
             }
 
-            const PXBool shallDraw = 0;// pxGUIElement->DrawFunction && (pxGUIElement->Info.Flags& PXResourceInfoRender);
+            const PXBool shallDraw = pxGUIElement->DrawFunction && (pxGUIElement->Info.Flags& PXResourceInfoRender);
 
             if(shallDraw)
             {
-                // RECT rc;
-
-                // GetClientRect(pxGUIElement->Info.Handle.WindowID, &rc);
-
-                // PAINTSTRUCT paintStruct;
-                // BeginPaint(pxGUIElement->Info.Handle.WindowID, &paintStruct);
-
-                // auto xx = pxGUIElement->DeviceContextHandle;
-
-                //  pxGUIElement->DeviceContextHandle = paintStruct.hdc;
-
                 PXWindowDrawInfo pxGUIElementDrawInfo;
                 PXClear(PXWindowDrawInfo, &pxGUIElementDrawInfo);
                 pxGUIElementDrawInfo.hwnd = pxGUIElement->Info.Handle.WindowID;
@@ -2606,10 +2596,6 @@ LRESULT CALLBACK PXNativDrawEventReceiver(const HWND windowID, const UINT eventI
 
                 pxGUIElement->DrawFunction(pxNativDraw->GUISystem, pxGUIElement, &pxGUIElementDrawInfo);
 
-                // EndPaint(pxGUIElement->Info.Handle.WindowID, &paintStruct);
-
-                // pxGUIElement->DeviceContextHandle = xx;
-
                 return TRUE; // We did a custom draw, so return true to mark this as handled
             }
 
@@ -2622,16 +2608,12 @@ LRESULT CALLBACK PXNativDrawEventReceiver(const HWND windowID, const UINT eventI
             if(pxNativDraw->ResourceManager)
             {
                 PXDictionaryFindEntry(&pxNativDraw->ResourceManager->GUIElementLookup, &windowID, &pxGUIElement);
-            }
-
-  
+            }  
 
             if(!pxGUIElement)
             {
                 break; // break: not found
             }
-
-            //  return PXTrue;
 
             if(pxGUIElement->DrawFunction)
             {
@@ -2655,7 +2637,6 @@ LRESULT CALLBACK PXNativDrawEventReceiver(const HWND windowID, const UINT eventI
         }
 
 
-
 #if 0
         case WM_ACTIVATE:
             break;
@@ -2674,10 +2655,6 @@ LRESULT CALLBACK PXNativDrawEventReceiver(const HWND windowID, const UINT eventI
         case WM_GETTEXTLENGTH:
             break;
 
-        case WM_PAINT:
-        {
-            break;
-        }
         case WM_QUERYENDSESSION:
             break;
         case WM_ENDSESSION:
@@ -2910,10 +2887,20 @@ LRESULT CALLBACK PXNativDrawEventReceiver(const HWND windowID, const UINT eventI
             return WindowEventCTLCOLORSTATIC;
             //  case MN_GETHMENU: return WindowEventGETHMENU;
             //case WM_MOUSEFIRST: return WindowEventMOUSEFIRST;
-        case WM_MOUSEMOVE:
-            return WindowEventMOUSEMOVE;
+
 
 #endif
+        case WM_MOUSEMOVE:
+        {
+            pxWindowEvent.Type = PXWindowEventTypeInputMouseMove;
+            pxWindowEvent.InputMouseMove.PositionX = GET_X_LPARAM(lParam);
+            pxWindowEvent.InputMouseMove.PositionY = GET_Y_LPARAM(lParam);
+
+            PXNativDrawEventConsumer(pxNativDraw, &pxWindowEvent);
+
+            break;
+        }
+
 
             // case WM_PAINT:
         case WM_CTLCOLORMSGBOX:
@@ -2955,19 +2942,16 @@ LRESULT CALLBACK PXNativDrawEventReceiver(const HWND windowID, const UINT eventI
 #endif
 
             return brush;
-
-
-            // break;
-
         }
         case WM_INPUT:
         {
-#if 0
+#if 1
+
             PXLogPrint
             (
                 PXLoggingInfo,
                 "Windows",
-                "Event",
+                "Event-Input",
                 "ID:%4i, Parent (0x%p), Sender (0x%p)",
                 eventID,
                 windowID,
@@ -3282,6 +3266,106 @@ LRESULT CALLBACK PXNativDrawEventReceiver(const HWND windowID, const UINT eventI
             break;
         }
 
+
+
+        case WM_DEVICECHANGE:
+        {
+#if 1
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "Windows",
+                "Event",
+                "DEVICECHANGE"
+            );
+#endif
+
+            break;
+        }
+
+        // Track non client area
+        case WM_NCMOUSEMOVE:
+        {
+            const int xPos = GET_X_LPARAM(lParam);
+            const int yPos = GET_Y_LPARAM(lParam);
+
+#if 1
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "Windows",
+                "Event",
+                "MouseMove <%ix%i>",
+                xPos,
+                yPos
+            );
+#endif
+
+         //   PXNativeDrawMouseTrack(pxWindowEvent.UIElementReference);
+
+            break;
+        }
+
+        case WM_MOUSEHOVER: // Never trigger?
+        {
+#if 1
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "Windows",
+                "Event",
+                "WM_MOUSEHOVER"
+            );
+#endif
+          //  PXNativeDrawMouseTrack(pxWindowEvent.UIElementReference);
+
+            break;
+        }
+        case WM_MOUSELEAVE:  // Never trigger?
+        {
+#if 1
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "Windows",
+                "Event",
+                "WM_MOUSELEAVE"
+            );
+#endif
+
+           // PXNativeDrawMouseTrack(pxWindowEvent.UIElementReference);
+
+            break;
+        }
+
+        case WM_NCHITTEST:
+        {
+            int xPos = GET_X_LPARAM(lParam);
+            int yPos = GET_Y_LPARAM(lParam);
+
+            int res = DefWindowProc(windowID, eventID, wParam, lParam);
+
+
+#if 1
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "Windows",
+                "Event",
+                "NCHITTEST : %s",
+                pxWindowEvent.UIElementReference->NameContent
+            );
+#endif
+
+            // TODO: update window pos data
+
+
+            //pxWindowEvent.UIElementReference.
+
+            return res;
+        }
+
+
         /*
 
         case WM_XBUTTONDBLCLK: return WindowEventXBUTTONDBLCLK;
@@ -3295,7 +3379,7 @@ LRESULT CALLBACK PXNativDrawEventReceiver(const HWND windowID, const UINT eventI
         case WM_CAPTURECHANGED: return WindowEventCAPTURECHANGED;
         case WM_MOVING: return WindowEventMOVING;
         case WM_POWERBROADCAST: return WindowEventPOWERBROADCAST;
-        case WM_DEVICECHANGE: return WindowEventDEVICECHANGE;
+
         case WM_MDICREATE: return WindowEventMDICREATE;
         case WM_MDIDESTROY: return WindowEventMDIDESTROY;
         case WM_MDIACTIVATE: return WindowEventMDIACTIVATE;
@@ -3341,10 +3425,8 @@ LRESULT CALLBACK PXNativDrawEventReceiver(const HWND windowID, const UINT eventI
         case WM_IME_REQUEST: return WindowEventIME_REQUEST;
         case WM_IME_KEYDOWN: return WindowEventIME_KEYDOWN;
         case WM_IME_KEYUP: return WindowEventIME_KEYUP;
-        case WM_MOUSEHOVER: return WindowEventMOUSEHOVER;
-        case WM_MOUSELEAVE: return WindowEventMOUSELEAVE;
-        case WM_NCMOUSEHOVER: return WindowEventNCMOUSEHOVER;
-        case WM_NCMOUSELEAVE: return WindowEventNCMOUSELEAVE;
+ 
+
             //  case WM_WTSSESSION_CHANGE: return WindowEventWTSSESSION_CHANGE;
             //  case WM_TABLET_FIRST: return WindowEventTABLET_FIRST;
             //  case WM_TABLET_LAST: return WindowEventTABLET_LAST;
@@ -3499,6 +3581,20 @@ BOOL CALLBACK PXWindowEnumChildProc(HWND hwnd, LPARAM lParam)
     ShowWindow(hwnd, mode);
 }
 #endif
+
+void PXAPI PXNativeDrawMouseTrack(PXWindow* const window)
+{
+#if OSUnix
+#elif OSWindows
+    TRACKMOUSEEVENT trackMouseEvent;
+    trackMouseEvent.cbSize = sizeof(TRACKMOUSEEVENT);
+    trackMouseEvent.dwFlags = TME_HOVER | TME_LEAVE;
+    trackMouseEvent.hwndTrack = window->Info.Handle.WindowID;
+    trackMouseEvent.dwHoverTime = HOVER_DEFAULT;
+
+    const PXBool rs = TrackMouseEvent(&trackMouseEvent);
+#endif
+}
 
 
 /*

@@ -1952,7 +1952,7 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
     //  pxUIElementCreateData->CreationSkip = PXFalse;
 
 
-    pxGUIElementCreateInfo->WindowsStyleFlags = WS_CLIPCHILDREN; // WS_CLIPSIBLINGS
+    pxGUIElementCreateInfo->WindowsStyleFlags = WS_CLIPCHILDREN | SS_NOTIFY; // WS_CLIPSIBLINGS
 
     if(PXResourceInfoRender & pxGUIElementCreateInfo->BehaviourFlags && !pxGUIElementCreateInfo->Invisible)
     {
@@ -2545,6 +2545,9 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
             pxGUIElementCreateInfo->WindowsTextContent
         );
 #endif
+
+
+      
 
 
 #if 0
@@ -3348,7 +3351,12 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
             // ShowWindow(pxWindow->ID, SW_NORMAL)
 
 
+            BOOL aaxx = EnableWindow(
+                pxWindowCurrent->Info.Handle.WindowID,
+                PXTrue
+            );
 
+          //  HWND qssa = SetCapture(pxWindowCurrent->Info.Handle.WindowID);
 
 #if 0
 #if OSUnix
