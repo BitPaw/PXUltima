@@ -1398,14 +1398,14 @@ PXActionResult PXAPI PXDebugHeapMemoryList(PXDebug* const pxDebug)
             ULONG ObjectInformationLength = 260;
             ULONG ReturnLength = 0;
 
-            NTSTATUS oikasdo = NtQueryObject
-                               (
-                                   processHeapEntry.Block.hMem,
-                                   ObjectBasicInformation,
-                                   ObjectInformation,
-                                   ObjectInformationLength,
-                                   &ReturnLength
-                               );
+            const NTSTATUS oikasdo = NtQueryObject
+            (
+                processHeapEntry.Block.hMem,
+                ObjectBasicInformation,
+                ObjectInformation,
+                ObjectInformationLength,
+                &ReturnLength
+            );
 
             target = (char*)processHeapEntry.lpData;// +(int)processHeapEntry.cbOverhead;
 

@@ -1131,23 +1131,4 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="OS\Graphic\Vulcan\README.md" />
-    <None Include="Algorithm\KnowlegeGraph\README.md" />
-    <None Include="OS\Graphic\SoftwareRender\README.md" />
-    <None Include="OS\Graphic\OpenGL\README.md" />
-    <None Include="OS\Graphic\DirectX\README.md" />
-    <None Include="OS\Audio\PXALSA\README.md" />
-    <None Include="OS\Audio\README.md" />
-    <None Include="Graph\Timeline\README.md" />
-    <None Include="Graph\BoxPlot\README.md" />
-    <None Include="OS\Debug\README.md" />
-    <None Include="OS\Library\README.md" />
-    <None Include="OS\GUI\README.md" />
-    <None Include="OS\File\README.md" />
-    <None Include="OS\Memory\README.md" />
-    <None Include="Media\HLSL\README.md" />
-    <None Include="Media\HEIF\README.md" />
-    <None Include="Media\GLSL\README.md" />
-  </ItemGroup>
 </Project>

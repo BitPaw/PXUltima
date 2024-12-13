@@ -91,109 +91,60 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-      <CompileAs>CompileAsC</CompileAs>
-      <CallingConvention>
-      </CallingConvention>
-      <DisableSpecificWarnings>4114</DisableSpecificWarnings>
-      <EnableEnhancedInstructionSet>
-      </EnableEnhancedInstructionSet>
-      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
-      <ShowIncludes>false</ShowIncludes>
-      <AssemblerOutput>All</AssemblerOutput>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Optimization>MaxSpeed</Optimization>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <AssemblerOutput>All</AssemblerOutput>
+      <CompileAs>CompileAsC</CompileAs>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
-    <Link />
     <Link>
-      <AdditionalDependencies>dxguid.lib;Comctl32.lib;Mf.lib;Wbemuuid.lib;mfreadwrite.lib;Mfplat.lib;mfuuid.lib;Shlwapi.lib;ntdll.lib;mscoree.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ntdll.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-      <CompileAs>CompileAsC</CompileAs>
-      <EnableEnhancedInstructionSet>
-      </EnableEnhancedInstructionSet>
-      <CallingConvention>
-      </CallingConvention>
-      <DisableSpecificWarnings>4114</DisableSpecificWarnings>
-      <BuildStlModules>false</BuildStlModules>
-      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
-      <ShowIncludes>false</ShowIncludes>
-      <AdditionalOptions>/Gs999999 %(AdditionalOptions)</AdditionalOptions>
-      <AssemblerOutput>All</AssemblerOutput>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Optimization>MinSpace</Optimization>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <DebugInformationFormat>None</DebugInformationFormat>
-      <SDLCheck>false</SDLCheck>
+      <AssemblerOutput>All</AssemblerOutput>
+      <CompileAs>CompileAsC</CompileAs>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <BufferSecurityCheck>false</BufferSecurityCheck>
+      <ExceptionHandling>false</ExceptionHandling>
+      <Optimization>MinSpace</Optimization>
+      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
-    <Link />
     <Link>
-      <AdditionalDependencies>dxguid.lib;Comctl32.lib;Mf.lib;Wbemuuid.lib;mfreadwrite.lib;Mfplat.lib;mfuuid.lib;Shlwapi.lib;ntdll.lib;mscoree.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ntdll.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-      <CompileAs>CompileAsC</CompileAs>
-      <CallingConvention>
-      </CallingConvention>
-      <DisableSpecificWarnings>4114</DisableSpecificWarnings>
-      <EnableEnhancedInstructionSet>
-      </EnableEnhancedInstructionSet>
-      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
-      <AssemblerOutput>All</AssemblerOutput>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Optimization>MaxSpeed</Optimization>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <AssemblerOutput>All</AssemblerOutput>
+      <CompileAs>CompileAsC</CompileAs>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
-    <Link />
     <Link>
-      <AdditionalDependencies>dxguid.lib;Comctl32.lib;Mf.lib;Wbemuuid.lib;mfreadwrite.lib;Mfplat.lib;mfuuid.lib;Shlwapi.lib;ntdll.lib;mscoree.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ntdll.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-      <CompileAs>CompileAsC</CompileAs>
-      <EnableEnhancedInstructionSet>
-      </EnableEnhancedInstructionSet>
-      <CallingConvention>
-      </CallingConvention>
-      <DisableSpecificWarnings>4114</DisableSpecificWarnings>
-      <BuildStlModules>false</BuildStlModules>
-      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
-      <ShowIncludes>false</ShowIncludes>
-      <AdditionalOptions>/Gs999999 %(AdditionalOptions)</AdditionalOptions>
-      <AssemblerOutput>All</AssemblerOutput>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PreprocessorDefinitions>_WINSOCKAPI_;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Optimization>MinSpace</Optimization>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <DebugInformationFormat>None</DebugInformationFormat>
-      <SDLCheck>false</SDLCheck>
+      <AssemblerOutput>All</AssemblerOutput>
+      <CompileAs>CompileAsC</CompileAs>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <BufferSecurityCheck>false</BufferSecurityCheck>
+      <ExceptionHandling>false</ExceptionHandling>
+      <Optimization>MinSpace</Optimization>
+      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
-    <Link />
     <Link>
-      <AdditionalDependencies>dxguid.lib;Comctl32.lib;Mf.lib;Wbemuuid.lib;mfreadwrite.lib;Mfplat.lib;mfuuid.lib;Shlwapi.lib;ntdll.lib;mscoree.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ntdll.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -570,25 +521,6 @@
     <ClInclude Include="OS\Graphic\DirectX\PXDirectX10x1.h" />
     <ClInclude Include="OS\System\PXWindows.h" />
     <ClInclude Include="Service\LDAP\PXLDAPClient.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Algorithm\KnowlegeGraph\README.md" />
-    <None Include="Graph\BoxPlot\README.md" />
-    <None Include="Graph\Timeline\README.md" />
-    <None Include="Media\GLSL\README.md" />
-    <None Include="Media\HEIF\README.md" />
-    <None Include="Media\HLSL\README.md" />
-    <None Include="OS\Audio\PXALSA\README.md" />
-    <None Include="OS\Audio\README.md" />
-    <None Include="OS\Debug\README.md" />
-    <None Include="OS\File\README.md" />
-    <None Include="OS\Graphic\DirectX\README.md" />
-    <None Include="OS\Graphic\OpenGL\README.md" />
-    <None Include="OS\Graphic\SoftwareRender\README.md" />
-    <None Include="OS\Graphic\Vulcan\README.md" />
-    <None Include="OS\GUI\README.md" />
-    <None Include="OS\Library\README.md" />
-    <None Include="OS\Memory\README.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

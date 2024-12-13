@@ -127,7 +127,7 @@ PXActionResult PXAPI PXNativDrawDisplayListFetch(PXNativDraw* const pxNativDraw)
 
         pxNativDraw->MonitorListAmount = 0;
 
-        const BOOL success = EnumDisplayMonitors(NULL, NULL, PXWindowsMonitorFetch, &pxEindowsDisplayEnumInfo);
+        const BOOL success = EnumDisplayMonitors(NULL, NULL, (MONITORENUMPROC)PXWindowsMonitorFetch, &pxEindowsDisplayEnumInfo);
 
         pxNativDraw->MonitorListAmount = pxEindowsDisplayEnumInfo.OffsetMaxmimal;
         pxNativDraw->MonitorList = PXMemoryReallocT(PXMonitor, PXNull, pxNativDraw->MonitorListAmount);
@@ -135,7 +135,7 @@ PXActionResult PXAPI PXNativDrawDisplayListFetch(PXNativDraw* const pxNativDraw)
         pxEindowsDisplayEnumInfo.MonitorList = pxNativDraw->MonitorList;
         pxEindowsDisplayEnumInfo.CheckMode = 0;
 
-        EnumDisplayMonitors(NULL, NULL, PXWindowsMonitorFetch, &pxEindowsDisplayEnumInfo);
+        EnumDisplayMonitors(NULL, NULL, (MONITORENUMPROC)PXWindowsMonitorFetch, &pxEindowsDisplayEnumInfo);
     }
 
 
