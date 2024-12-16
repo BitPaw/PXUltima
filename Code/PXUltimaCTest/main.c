@@ -154,10 +154,25 @@ void PXAPI Trace_FolderFiles(PXText* pxText)
 #include <OS/Graphic/NativDraw/PXNativDraw.h>
 #include <OS/System/Driver/PXDriver.h>
 #include <OS/Framework/DotNet/PXDotNet.h>
+#include <Algorithm/CollatzConjecture/PXCollatzConjecture.h>
 
 int main()
 {
     PXConsoleWrite(0, "[i] Starting testing...\n");
+
+
+
+#if 0 
+    PXInt16U data[200];
+
+    PXSize fgdgfdgfd = PXCollatzConjectureGenerate16(data, 200, 12);
+
+    for(size_t i = 0; i < fgdgfdgfd; i++)
+    {
+        PXConsoleWriteF(0, "%3i\n", data[i]);
+    }
+#endif
+
 
 
 

@@ -130,12 +130,12 @@ void PXAPI PXVector3FMultiplyS(PXVector3F* const vector, const float scalar)
     vector->Z *= scalar;
 }
 
-void PXAPI PXVector4FMultiplyXYZW(const PXVector4F* const vector, const float x, const float y, const float z, const float w, PXVector4F* const vectorResult)
+void PXAPI PXVector4FMultiplyXYZW(PXVector4F* const pxVector4F, const float x, const float y, const float z, const float w)
 {
-    vectorResult->X = vector->X * x;
-    vectorResult->Y = vector->Y * y;
-    vectorResult->Z = vector->Z * z;
-    vectorResult->W = vector->W * w;
+    pxVector4F->X *= x;
+    pxVector4F->Y *= y;
+    pxVector4F->Z *= z;
+    pxVector4F->W *= w;
 }
 
 void PXAPI PXVector3FDivide(PXVector3F* const pxVector3F, const PXVector3F* const vectorB)

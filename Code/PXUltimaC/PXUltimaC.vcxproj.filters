@@ -573,6 +573,9 @@
     <ClCompile Include="OS\Framework\DotNet\PXDotNet.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Algorithm\CollatzConjecture\PXCollatzConjecture.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm\KalmanFilter\PXKalmanFilter.h">
@@ -1128,6 +1131,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="OS\Framework\DotNet\PXDotNet.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Algorithm\CollatzConjecture\PXCollatzConjecture.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

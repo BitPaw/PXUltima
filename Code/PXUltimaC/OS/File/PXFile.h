@@ -263,6 +263,17 @@ PXPublic PXSize PXAPI PXFileReadFV(PXFile* const pxFile, float* const valueList,
 PXPublic PXSize PXAPI PXFileReadD(PXFile* const pxFile, double* const value);
 PXPublic PXSize PXAPI PXFileReadDV(PXFile* const pxFile, double* const valueList, const PXSize valueListSize);
 
+
+
+#define PXFileBindingRead  0x00
+#define PXFileBindingWrite 0x01
+
+// Read or write a defined binding.
+// Requires a list of types and a struct of the data that is to be used.
+// The data list and struct have to be the same!
+PXPublic PXSize PXAPI PXFileBinding(PXFile* const pxFile, void* const dataStruct, const PXInt32U* listOfTypes, const PXSize listOfTypesAmount, const PXBool isWrite);
+
+// Read a batch of values. Improved fetch speed
 PXPublic PXSize PXAPI PXFileReadMultible(PXFile* const pxFile, const PXFileDataElementType* const pxFileElementList, const PXSize pxFileElementListFullSize);
 
 typedef PXSize(PXAPI* PXFileIOMultibleFunction)(PXFile* const pxFile, void* const value, const PXSize length);

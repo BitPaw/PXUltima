@@ -30,18 +30,7 @@ typedef enum PXBitmapInfoHeaderType_
 }
 PXBitmapInfoHeaderType;
 
-typedef struct PXBitMapInfoHeader_
-{
-    PXInt32U CompressionMethod; // [4-Bytes] compression method being used.See the next table for a list of possible values
-    PXInt32U ImageSize; // [4-Bytes] image size.This is the size of the raw bitmap data; a dummy 0 can be given for BI_RGB bitmaps.
 
-    PXInt32S HorizontalResolution;     // [4-Bytes] horizontal resolution of the image. (pixel per metre, signed integer)
-    PXInt32S VerticalResolution; // [4-Bytes] vertical resolution of the image. (pixel per metre, signed integer)
-
-    PXInt32U NumberOfColorsInTheColorPalette; // [4-Bytes] number of colors in the color palette, or 0 to default to 2n
-    PXInt32U NumberOfImportantColorsUsed;     // [4-Bytes] number of important colors used, or 0 when every color is important; generally ignored
-}
-PXBitMapInfoHeader;
 
 typedef struct PXOS22XBitMapHeader_
 {
@@ -57,8 +46,6 @@ PXOS22XBitMapHeader;
 
 typedef struct PXBitmapHeaderV5_
 {
-    PXBitMapInfoHeader Header;
-
     PXInt32U ClrUsed;
     PXInt32U ClrImportant;
     PXInt32U RedMask;
@@ -88,40 +75,71 @@ typedef struct PXBitmapHeaderV5_
 }
 PXBitmapHeaderV5;
 
+typedef struct PXBitMapHeaderData_
+{
+    char Type[2];
+    PXInt32U SizeOfFile;
+    PXInt32U ReservedBlock;
+    PXInt32U DataOffset;
+    PXInt32U HeaderSize;
+}
+PXBitMapHeaderData;
+
+
 typedef struct PXBitmapInfoHeader_
 {
-    //---<Shared>---
-    PXInt32U HeaderSize; // Size of this header, in bytes(40)
-
-    PXInt16U NumberOfBitsPerPixel; // [2-Bytes] number of bits per pixel, which is the color depth of the image.Typical values are 1, 4, 8, 16, 24 and 32.
-    PXInt16U NumberOfColorPlanes; // [2-Bytes] number of color planes(must be 1)
-
     PXInt32S Width; // [4-Bytes] bitmap width in pixels(signed integer)
     PXInt32S Height; // [4-Bytes] bitmap height in pixels(signed integer)
+    PXInt16U NumberOfBitsPerPixel; // [2-Bytes] number of bits per pixel, which is the color depth of the image.Typical values are 1, 4, 8, 16, 24 and 32.
+    PXInt16U NumberOfColorPlanes; // [2-Bytes] number of color planes(must be 1)  
+    PXInt32U CompressionMethod; // [4-Bytes] compression method being used.See the next table for a list of possible values
+    PXInt32U ImageSize; // [4-Bytes] image size.This is the size of the raw bitmap data; a dummy 0 can be given for BI_RGB bitmaps.
+    PXInt32S HorizontalResolution;     // [4-Bytes] horizontal resolution of the image. (pixel per metre, signed integer)
+    PXInt32S VerticalResolution; // [4-Bytes] vertical resolution of the image. (pixel per metre, signed integer)
+    PXInt32U NumberOfColorsInTheColorPalette; // [4-Bytes] number of colors in the color palette, or 0 to default to 2n
+    PXInt32U NumberOfImportantColorsUsed;     // [4-Bytes] number of important colors used, or 0 when every color is important; generally ignored
+}
+PXBitmapInfoHeader;
+
+/*
+
     //------------
 
     union
     {
-        PXBitMapInfoHeader BitMapInfo;
         PXOS22XBitMapHeader OS22XBitMap;
         PXBitmapHeaderV5 HeaderV5;
     };
+*/
+
+typedef struct PXBitMapOS21XBitMapHeader_
+{
+    PXInt16U Height;
+    PXInt16U Width;
+    PXInt16U NumberOfColorPlanes;
+    PXInt16U NumberOfBitsPerPixel;
 }
-PXBitmapInfoHeader;
+PXBitMapOS21XBitMapHeader;
 
 typedef struct PXBitmap_
 {
     PXBitmapType Type;
 
     PXBitmapInfoHeaderType InfoHeaderType;
-    PXBitmapInfoHeader InfoHeader;
 
     PXSize PixelDataSize;
     void* PixelData;
 
-    PXInt32U SizeOfFile;
-    PXInt32U ReservedBlock;
-    PXInt32U DataOffset;
+    // Data
+    PXBitMapHeaderData HeaderData;
+    PXBitmapInfoHeader InfoHeader;
+
+    union
+    {
+        PXBitmapHeaderV5 HeaderV5;
+        PXBitMapOS21XBitMapHeader HeaderOS21X;
+        PXOS22XBitMapHeader HeaderOS22X;
+    };
 }
 PXBitmap;
 
@@ -136,9 +154,6 @@ typedef struct PXBitmapImageDataLayout_
 PXBitmapImageDataLayout;
 
 //---<Private Functions>------------------------------------------------------
-PXPrivate inline PXBitmapType PXBitmapTypeFromID(const PXInt16U bmpTypeID);
-PXPrivate inline PXInt16U PXBitmapTypeToID(const PXBitmapType headerType);
-
 PXPrivate inline PXBitmapInfoHeaderType PXBitmapInfoHeaderTypeFromID(const PXInt8U infoHeaderType);
 PXPrivate inline PXInt8U PXBitmapInfoHeaderTypeToID(const PXBitmapInfoHeaderType infoHeaderType);
 //----------------------------------------------------------------------------

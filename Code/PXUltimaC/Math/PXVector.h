@@ -66,11 +66,11 @@ typedef struct PXVector4F_
 }
 PXVector4F;
 
-PXPublic void PXAPI PXVector2FSet(PXVector2F* const vector, const PXVector2F* const vectorSet);
-PXPublic void PXAPI PXVector2FSetXY(PXVector2F* const vector, const float x, const float y);
+PXPublic void PXAPI PXVector2FSet(PXVector2F* const pxVector2F, const PXVector2F* const vectorSet);
+PXPublic void PXAPI PXVector2FSetXY(PXVector2F* const pxVector2F, const float x, const float y);
 PXPublic void PXAPI PXVector3FSet(PXVector3F* const pxVector3F, const PXVector3F* const pxVector3FSource);
 PXPublic void PXAPI PXVector3FSetXYZ(PXVector3F* const pxVector3F, const float x, const float y, const float z);
-PXPublic void PXAPI PXVector4FSetXYZW(PXVector4F* const vector, const float x, const float y, const float z, const float w);
+PXPublic void PXAPI PXVector4FSetXYZW(PXVector4F* const pxVector4F, const float x, const float y, const float z, const float w);
 
 PXPublic void PXAPI PXVector2FAdd(PXVector2F* const vector, const PXVector2F* const pxVectorData);
 PXPublic void PXAPI PXVector2FAddXY(PXVector2F* const vector, const float x, const float y);
@@ -85,7 +85,7 @@ PXPublic void PXAPI PXVector2FMultiplyXY(PXVector2F* const vector, const float x
 PXPublic void PXAPI PXVector3FMultiply(PXVector3F* const pxVector3F, PXVector3F* const vectorResult);
 PXPublic void PXAPI PXVector3FMultiplyXYZ(PXVector3F* const pxVector3F, const float x, const float y, const float z);
 PXPublic void PXAPI PXVector3FMultiplyS(PXVector3F* const pxVector3F, const float scalar);
-PXPublic void PXAPI PXVector4FMultiplyXYZW(const PXVector4F* const vector, const float x, const float y, const float z, const float w, PXVector4F* const vectorResult);
+PXPublic void PXAPI PXVector4FMultiplyXYZW(PXVector4F* const pxVector4F, const float x, const float y, const float z, const float w);
 
 PXPublic void PXAPI PXVector3FDivide(PXVector3F* const pxVector3F, const PXVector3F* const vectorB);
 PXPublic void PXAPI PXVector3FDivideS(PXVector3F* const pxVector3F, const float scalar);
