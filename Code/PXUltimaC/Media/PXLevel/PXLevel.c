@@ -24,7 +24,7 @@ PXActionResult PXAPI PXLevelSaveToFile(PXResourceTransphereInfo* const pxResourc
 
     // Write Header
     {
-        PXFileDataElementType pxFileDataElementList[] =
+        PXDataTypeEntry pxFileDataElementList[] =
         {
             {PXLevelSignature, PXDataTypeDatax4},
             {&pxLevel.Version, PXDataTypeInt16U},
@@ -42,7 +42,7 @@ PXActionResult PXAPI PXLevelSaveToFile(PXResourceTransphereInfo* const pxResourc
 
         while(!PXFileIsAtEnd(pxResourceSaveInfo->FileReference))
         {
-            PXFileDataElementType pxFileDataElementList[] =
+            PXDataTypeEntry pxFileDataElementList[] =
             {
                 {&pxLevelEntry.ResourceType, PXDataTypeDatax4},
                 {&pxLevelEntry.DataSize, PXDataTypeInt64U}

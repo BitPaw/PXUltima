@@ -95,7 +95,7 @@ PXActionResult PXAPI PXDirectX9Initialize(PXDirectX9* const pxDirectX9, PXGraphi
     {
         PXDirect3DCreate9 pxDirect3DCreate;
 
-        const PXActionResult pxActionResult = PXLibraryGetSymbolA(&pxDirectX9->LibraryDirect3D, &pxDirect3DCreate, "Direct3DCreate9");
+        const PXActionResult pxActionResult = PXLibraryGetSymbolA(&pxDirectX9->LibraryDirect3D, &pxDirect3DCreate, "Direct3DCreate9", PXTrue);
 
         if(PXActionSuccessful != pxActionResult)
         {
@@ -138,12 +138,12 @@ PXActionResult PXAPI PXDirectX9Initialize(PXDirectX9* const pxDirectX9, PXGraphi
     {
         const PXActionResult libraryCompilerLoad = PXLibraryOpenA(&pxDirectX9->LibraryDirectShaderCompiler, "D3DCOMPILER_43.DLL");
 
-        PXLibraryGetSymbolA(&pxDirectX9->LibraryDirectShaderCompiler, &pxDirectX9->ShaderCompile, "D3DCompile");
+        PXLibraryGetSymbolA(&pxDirectX9->LibraryDirectShaderCompiler, &pxDirectX9->ShaderCompile, "D3DCompile", PXTrue);
 
         const PXActionResult libraryExtensionLoad = PXLibraryOpenA(&pxDirectX9->LibraryDirect3DExtension, "D3DX9_43.DLL");
 
-        PXLibraryGetSymbolA(&pxDirectX9->LibraryDirect3DExtension, &pxDirectX9->ShaderConstantTableGet, "D3DXGetShaderConstantTable");
-        PXLibraryGetSymbolA(&pxDirectX9->LibraryDirect3DExtension, &pxDirectX9->ShaderConstantTableGetEx, "D3DXGetShaderConstantTableEx");
+        PXLibraryGetSymbolA(&pxDirectX9->LibraryDirect3DExtension, &pxDirectX9->ShaderConstantTableGet, "D3DXGetShaderConstantTable", PXTrue);
+        PXLibraryGetSymbolA(&pxDirectX9->LibraryDirect3DExtension, &pxDirectX9->ShaderConstantTableGetEx, "D3DXGetShaderConstantTableEx", PXTrue);
     }
 
     // Merge all functions

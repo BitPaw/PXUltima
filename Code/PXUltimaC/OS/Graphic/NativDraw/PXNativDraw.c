@@ -1316,6 +1316,114 @@ PXActionResult PXAPI PXNativDrawWindowMoveAndResize(PXNativDraw* const pxNativDr
     return pxActionResult;
 }
 
+#include <Math/PXCollision.h>
+
+PXActionResult PXAPI PXNativDrawCursorPosition(PXNativDraw* const pxNativDraw, PXVector2I* const position, const PXBool isWrite)
+{
+#if OXUnix
+    return PXActionRefusedNotImplemented;
+#elif OSWindows
+
+    BOOL success = 0;
+
+    if(!isWrite)
+    {
+        POINT point;
+
+        success = GetCursorPos(&point); // Windows 2000, user32.dll, winuser.h 
+
+        position->X = point.x;
+        position->Y = point.y;
+    }
+    else
+    {
+        success = SetCursorPos(position->X, position->Y); // Windows 2000, user32.dll, winuser.h 
+    }
+   
+    const PXActionResult result = PXErrorCurrent(success);
+
+    return result;
+
+#else
+    return PXActionRefusedTypeNotSupported;
+#endif
+}
+
+PXActionResult PXAPI PXNativDrawCursorCollisionCheck(PXNativDraw* const pxNativDraw)
+{
+    const int cursorSize = 16;
+    PXVector2I cursorPosition;
+
+    PXNativDrawCursorPosition(pxNativDraw, &cursorPosition, 0);
+
+    PXDictionary* const pxDictionaryUI = &pxNativDraw->ResourceManager->GUIElementLookup;
+
+    for(size_t i = 0; i < pxDictionaryUI->EntryAmountCurrent; i++)
+    {
+        PXVector2I windowPosition;
+
+        PXDictionaryEntry pxDictionaryEntry;
+
+        PXDictionaryIndex(pxDictionaryUI, i, &pxDictionaryEntry);
+
+        PXWindow* const pxWindow = *(PXWindow**)pxDictionaryEntry.Value;
+
+        RECT winRec;
+
+        GetWindowRect(pxWindow->Info.Handle.WindowID, &winRec);
+       // PXNativDrawWindowPosition(pxNativDraw, pxWindow, &windowPosition, 0);
+
+        const PXBool isColliding = PXCollisionAABB
+        (
+            winRec.left,
+            winRec.top,
+            winRec.right,// - winRec.left,
+            winRec.bottom,// - winRec.top,
+            cursorPosition.X - cursorSize,
+            cursorPosition.Y - cursorSize,
+            cursorPosition.X + cursorSize,
+            cursorPosition.Y + cursorSize
+        );
+
+        const PXBool shallDetect = (pxWindow->Info.Behaviour & PXWindowBehaviourHoverable);        
+        const PXInt32U valueBefore = pxWindow->Info.Behaviour;
+
+        if(!shallDetect)
+        {
+          //  continue;
+        }
+
+        if(isColliding)
+        {
+            pxWindow->Info.Behaviour |= PXWindowBehaviourIsBeingHovered;
+        }
+        else
+        {
+            pxWindow->Info.Behaviour &= ~PXWindowBehaviourIsBeingHovered;
+        }
+
+        const PXBool valueChanged = valueBefore != pxWindow->Info.Behaviour;
+
+        if(valueChanged)
+        {
+            BOOL xx = RedrawWindow(pxWindow->Info.Handle.WindowID, PXNull, PXNull, RDW_INVALIDATE);
+
+            PXBool hovernow = (pxWindow->Info.Behaviour & PXWindowBehaviourIsBeingHovered) > 0;
+
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "UI-Event", 
+                "Hover",
+                "ID:%i - %s",
+                pxWindow->Info.ID,
+                hovernow ? "Yes" : "No"
+            );
+        }
+    }
+
+    return PXActionSuccessful;
+}
 
 PXNativDraw* PXAPI PXNativDrawInstantance(void)
 {
@@ -1616,6 +1724,8 @@ PXActionResult PXAPI PXNativDrawLines(PXGUISystem* const pxGUISystem, PXWindow* 
 
 PXActionResult PXAPI PXNativDrawRectangle(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int x, const int y, const int width, const int height)
 {
+    const PXBool isHovered = (PXWindowBehaviourIsBeingHovered & pxGUIElement->Info.Behaviour) > 0;
+
     PXActionResult pxActionResult = PXActionInvalid;
 
     PXWindowBrush* const brushForeground = pxGUIElement->BrushFront;
@@ -1650,7 +1760,16 @@ PXActionResult PXAPI PXNativDrawRectangle(PXGUISystem* const pxGUISystem, PXWind
     // const COLORREF color = RGB(255, 0, 200);
     // const HBRUSH brushAA = CreateSolidBrush(color);
 
-    const BOOL aaaaaa = FillRect(pxGUIElement->DeviceContextHandle, &rect, brushBackGround->Info.Handle.BrushHandle);
+    if(isHovered)
+    {
+        const BOOL aaaaaa = FillRect(pxGUIElement->DeviceContextHandle, &rect, brushForeground->Info.Handle.BrushHandle);
+    }
+    else
+    {
+        const BOOL aaaaaa = FillRect(pxGUIElement->DeviceContextHandle, &rect, brushBackGround->Info.Handle.BrushHandle);
+    }
+
+
 
     // DeleteObject();
 
@@ -2945,7 +3064,7 @@ LRESULT CALLBACK PXNativDrawEventReceiver(const HWND windowID, const UINT eventI
         }
         case WM_INPUT:
         {
-#if 1
+#if 0
 
             PXLogPrint
             (

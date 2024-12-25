@@ -226,7 +226,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicIniti
         );
 #endif
 
-        PXLibraryGetSymbolA(&pxVulcan->LibraryID, (void**)&pxVulcan->InstanceProcAddrGetCallBack, "vkGetInstanceProcAddr");
+        PXLibraryGetSymbolA(&pxVulcan->LibraryID, (void**)&pxVulcan->InstanceProcAddrGetCallBack, "vkGetInstanceProcAddr", PXTrue);
 
         pxVulcan->InstanceCreate = (PXVulkanInstanceCreate)pxVulcan->InstanceProcAddrGetCallBack(PXNull, "vkCreateInstance");
 

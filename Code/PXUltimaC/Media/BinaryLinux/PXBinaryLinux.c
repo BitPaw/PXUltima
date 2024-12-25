@@ -387,7 +387,7 @@ PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceTransphereInfo* const p
             PXInt8U versionID; // Expect to be = 1
             PXInt8U osAPIID;
 
-            const PXFileDataElementType pxDataStreamElementList[] =
+            const PXDataTypeEntry pxDataStreamElementList[] =
             {
                 {signature.Data, PXDataTypeDatax4},
                 {&classID,PXDataTypeInt08U},
@@ -395,7 +395,7 @@ PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceTransphereInfo* const p
                 {&versionID,PXDataTypeInt08U},
                 {&osAPIID,PXDataTypeInt08U},
                 {&pxBinaryLinux->Header.TargetOSAPIVersion,PXDataTypeInt08U},
-                {PXNull, PXDataTypePadding(7u})
+                {PXNull, PXDataTypePadding(7u)}
             };
 
             PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -426,7 +426,7 @@ PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceTransphereInfo* const p
             PXInt16U sizeOfThisHeader;
             PXInt16U shstrndx;
 
-            const PXFileDataElementType pxDataStreamElementList[] =
+            const PXDataTypeEntry pxDataStreamElementList[] =
             {
                 {&typeID, PXDataTypeInt16U},
                 {&machineID, PXDataTypeInt16U},
@@ -463,7 +463,7 @@ PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceTransphereInfo* const p
             PXInt32U typeID;
             PXInt32U flagsID;
 
-            const PXFileDataElementType pxDataStreamElementList[] =
+            const PXDataTypeEntry pxDataStreamElementList[] =
             {
                 {&typeID,PXDataTypeInt32U},
                 {&flagsID, PXDataTypeInt32ULEOnlyIf64B},
@@ -508,7 +508,7 @@ PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceTransphereInfo* const p
         {
             PXSectionHeader pxSectionHeader;
 
-            const PXFileDataElementType pxDataStreamElementList[] =
+            const PXDataTypeEntry pxDataStreamElementList[] =
             {
                 {&pxSectionHeader.sh_nameOffset,PXDataTypeInt32U},
                 {&pxSectionHeader.sh_type,PXDataTypeInt32U},

@@ -23,7 +23,7 @@ PXActionResult PXAPI PXMIDILoadFromFile(PXResourceTransphereInfo* const pxResour
             }
         }
 
-        const PXFileDataElementType pxDataStreamElementList[] =
+        const PXDataTypeEntry pxDataStreamElementList[] =
         {
             {&chunkLength,PXDataTypeInt16UBE},
             {&pxMIDI->Format,PXDataTypeInt16UBE},
@@ -73,7 +73,7 @@ PXActionResult PXAPI PXMIDISaveToFile(PXResourceTransphereInfo* const pxResource
 
     {
         const PXInt16U chunkLength = 6;
-        const PXFileDataElementType pxDataStreamElementList[] =
+        const PXDataTypeEntry pxDataStreamElementList[] =
         {
             {PXMIDITrackHeaderID,PXDataTypeDatax4},
             {&chunkLength,PXDataTypeInt16UBE},

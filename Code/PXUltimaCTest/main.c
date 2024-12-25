@@ -157,7 +157,7 @@ void PXAPI Trace_FolderFiles(PXText* pxText)
 #include <Algorithm/CollatzConjecture/PXCollatzConjecture.h>
 
 int main()
-{
+{ 
     PXConsoleWrite(0, "[i] Starting testing...\n");
 
 

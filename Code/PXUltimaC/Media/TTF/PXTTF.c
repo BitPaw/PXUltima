@@ -265,7 +265,7 @@ PXActionResult PXAPI PXTTFLoadFromFile(PXResourceTransphereInfo* const pxResourc
 
     // Ferch header
     {
-        const PXFileDataElementType pxDataStreamElementList[] =
+        const PXDataTypeEntry pxDataStreamElementList[] =
         {
             {&offsetTable.Version.Major,    PXDataTypeInt16UBE},
             {&offsetTable.Version.Minor,    PXDataTypeInt16UBE},
@@ -285,7 +285,7 @@ PXActionResult PXAPI PXTTFLoadFromFile(PXResourceTransphereInfo* const pxResourc
 
         // Parse entry
         {
-            const PXFileDataElementType pxDataStreamElementList[] =
+            const PXDataTypeEntry pxDataStreamElementList[] =
             {
                 {&tableEntry.TypeID,    PXDataTypeInt32UBE},
                 {&tableEntry.CheckSum,    PXDataTypeInt32UBE},
@@ -320,7 +320,7 @@ PXActionResult PXAPI PXTTFLoadFromFile(PXResourceTransphereInfo* const pxResourc
         //---<Essential>---------------------------------------------------
         case PXTTFTableEntryFontHeader:
         {
-            const PXFileDataElementType pxDataStreamElementList[] =
+            const PXDataTypeEntry pxDataStreamElementList[] =
             {
                 {&ttf->Header.Version.Major,    PXDataTypeInt16UBE},
                 {&ttf->Header.Version.Minor,    PXDataTypeInt16ULE},
@@ -349,7 +349,7 @@ PXActionResult PXAPI PXTTFLoadFromFile(PXResourceTransphereInfo* const pxResourc
         }
         case PXTTFTableEntryHorizontalHeader:
         {
-            const PXFileDataElementType pxDataStreamElementList[] =
+            const PXDataTypeEntry pxDataStreamElementList[] =
             {
                 { &ttf->HorizontalHeader.Version.Major, PXDataTypeInt16UBE },
                 { &ttf->HorizontalHeader.Version.Minor, PXDataTypeInt16ULE },
@@ -611,7 +611,7 @@ PXActionResult PXAPI PXTTFLoadFromFile(PXResourceTransphereInfo* const pxResourc
             PXTableEntryGlyphOutlineEntry tableEntryGlyphOutlineEntry;
             PXClear(PXTableEntryGlyphOutlineEntry, &tableEntryGlyphOutlineEntry);
 
-            const PXFileDataElementType pxDataStreamElementList[] =
+            const PXDataTypeEntry pxDataStreamElementList[] =
             {
                 { &tableEntryGlyphOutlineEntry.ContourListSize, PXDataTypeInt16SBE },
                 { &tableEntryGlyphOutlineEntry.Minimum[0], PXDataTypeInt16UBE },
@@ -665,7 +665,7 @@ PXActionResult PXAPI PXTTFLoadFromFile(PXResourceTransphereInfo* const pxResourc
             PXTTFNameTableFormat;
 
 #if 0
-            const PXFileDataElementType pxDataStreamElementList[] =
+            const PXDataTypeEntry pxDataStreamElementList[] =
             {
                 {&ttf->Header.Version.Major,    PXDataTypeInt16UBE},
                 {&ttf->Header.Version.Minor,    PXDataTypeInt16ULE},

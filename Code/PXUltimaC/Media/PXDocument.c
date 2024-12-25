@@ -568,7 +568,7 @@ PXSize PXAPI PXDocumentElementIO(PXCodeDocument* const pxDocument, PXCodeDocumen
     const PXInt8U symbolID = pxDocumentElement->Type;
     PXInt32U amount = 0;
 
-    PXFileDataElementType pxFileDataElementTypeList[] =
+    PXDataTypeEntry pxFileDataElementTypeList[] =
     {
         //&pxDocumentElement->ID, PXDataTypeSize,
         &pxDocumentElement->Depth, PXDataTypeSize,

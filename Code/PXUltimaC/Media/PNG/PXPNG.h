@@ -8,12 +8,12 @@
 // 0x0100 = alpha channel used
 typedef enum PXPNGColorType_
 {
-    PXPNGColorInvalid,
-    PXPNGColorGrayscale, // ColorType = 0
-    PXPNGColorRGB,  // ColorType = 2
-    PXPNGColorPalette,  // ColorType = 3
-    PXPNGColorGrayscaleAlpha,  // ColorType = 4
-    PXPNGColorRGBA  // ColorType = 6
+    PXPNGColorInvalid           = 0xFF,
+    PXPNGColorGrayscale         = 0, // ColorType = 0
+    PXPNGColorRGB               = 2, // ColorType = 2
+    PXPNGColorPalette           = 3, // ColorType = 3
+    PXPNGColorGrayscaleAlpha    = 4, // ColorType = 4
+    PXPNGColorRGBA              = 6  // ColorType = 6
 }
 PXPNGColorType;
 
@@ -140,15 +140,23 @@ typedef enum PXPNGChunkType_
 }
 PXPNGChunkType;
 
-typedef    struct PXPNGChunk_
+// Start of the chunk header
+typedef struct PXPNGChunkHeader_
 {
+    PXInt32U Size;
+    char ID[4];
+}
+PXPNGChunkHeader;
+
+typedef struct PXPNGChunk_
+{
+    PXPNGChunkHeader Header;
+
     // The data bytes appropriate to the chunk type, if any. This field can be of zero length.
     //void* ChunkData;
 
     // [4-byte] Giving the number of bytes in the chunk's data field. The length counts only the data field, not itself, the chunk type code, or the CRC. Zero is a valid length. Although encoders and decoders should treat the length as unsigned, its value must not exceed 231 bytes.
-    PXInt32U Lengh;
-
-    PXInt32UCluster ChunkID;
+   // PXInt32U Lengh;
 
     PXBool IsEssential; // Ancillary Bit - Is this chunk not replaceable?.
     PXBool IsRegisteredStandard; // Private Bit - Is this chunk in the offically registered in any way?
@@ -169,17 +177,19 @@ typedef struct PXPNGImageHeader_
     PXInt32U Width;
     PXInt32U Height;
 
+    // Bit depth is a single-byte integer giving the number of bits per sample or per palette index (not per pixel).
+    // Valid values are 1, 2, 4, 8, and 16, although not all values are allowed for all color types.
+    PXInt8U BitDepth;
+    PXInt8U ColorTypeID;
+    PXInt8U CompressionMethod;
+    PXInt8U FilterMethod;
+    PXInt8U InterlaceMethodID;
+
     // Color type is a single-byte integer that describes the interpretation of the image data.
     // Color type codes represent sums of the following values: 1 (palette used), 2 (color used),
     // and 4 (alpha channel used). Valid values are 0, 2, 3, 4, and 6.
     PXPNGColorType ColorType;
     PXPNGInterlaceMethod InterlaceMethod;
-
-    // Bit depth is a single-byte integer giving the number of bits per sample or per palette index (not per pixel).
-    // Valid values are 1, 2, 4, 8, and 16, although not all values are allowed for all color types.
-    PXInt8U BitDepth;
-    PXInt8U CompressionMethod;
-    PXInt8U FilterMethod;
 }
 PXPNGImageHeader;
 

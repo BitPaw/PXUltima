@@ -85,6 +85,14 @@ PXPublic PXActionResult PXAPI PXNativDrawWindowMoveAndResize(PXNativDraw* const 
 //---------------------------------------------------------
 
 
+//---------------------------------------------------------
+// Cursor
+//---------------------------------------------------------
+PXPublic PXActionResult PXAPI PXNativDrawCursorPosition(PXNativDraw* const pxNativDraw, PXVector2I* const position, const PXBool isWrite);
+
+// Collsison
+PXPublic PXActionResult PXAPI PXNativDrawCursorCollisionCheck(PXNativDraw* const pxNativDraw);
+
 
 
 //PXPublic PXActionResult PXAPI PXWindowIconCorner();

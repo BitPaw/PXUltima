@@ -127,7 +127,7 @@ PXActionResult PXAPI PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const p
         {
             PXInt8U encodingMethodValue = 0;
 
-            const PXFileDataElementType pxDataStreamElementList[] =
+            const PXDataTypeEntry pxDataStreamElementList[] =
             {
                 {&deflateBlock.IsLastBlock, PXDataTypeBit08U(1)},
                 {&encodingMethodValue, PXDataTypeBit08U(2)}
@@ -155,7 +155,7 @@ PXActionResult PXAPI PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const p
 
                 PXFileSkipBitsToNextByte(pxInputStream); // Skip remaining Bytes
 
-                const PXFileDataElementType pxDataStreamElementList[] =
+                const PXDataTypeEntry pxDataStreamElementList[] =
                 {
                     {&length, PXDataTypeInt16U},
                     {&lengthInverse, PXDataTypeInt16U}

@@ -98,20 +98,14 @@ typedef struct PXFileOpenInfo_
 PXFileOpenInfo;
 
 
-typedef struct PXFileDataElementType_
-{
-    void* Adress;
-    PXInt32U Type;
-}
-PXFileDataElementType;
 
 
 
 PXPublic PXFileFormat PXAPI PXFilePathExtensionDetectTry(const PXText* const filePath);
 
-PXPublic void PXAPI PXFileDataElementTypeInfo
+PXPublic void PXAPI PXDataTypeEntryInfo
 (
-    PXFileDataElementType* const pxFileDataElementType,
+    PXDataTypeEntry* const pxFileDataElementType,
     PXText* const dataType,
     PXText* const dataContent
 );
@@ -273,12 +267,14 @@ PXPublic PXSize PXAPI PXFileReadDV(PXFile* const pxFile, double* const valueList
 // The data list and struct have to be the same!
 PXPublic PXSize PXAPI PXFileBinding(PXFile* const pxFile, void* const dataStruct, const PXInt32U* listOfTypes, const PXSize listOfTypesAmount, const PXBool isWrite);
 
+PXPublic PXSize PXAPI PXFileDataWidthCalculate(PXFile* const pxFile, const PXInt32U type);
+
 // Read a batch of values. Improved fetch speed
-PXPublic PXSize PXAPI PXFileReadMultible(PXFile* const pxFile, const PXFileDataElementType* const pxFileElementList, const PXSize pxFileElementListFullSize);
+PXPublic PXSize PXAPI PXFileReadMultible(PXFile* const pxFile, const PXDataTypeEntry* const pxFileElementList, const PXSize pxFileElementListFullSize);
 
 typedef PXSize(PXAPI* PXFileIOMultibleFunction)(PXFile* const pxFile, void* const value, const PXSize length);
 
-PXPublic PXSize PXAPI PXFileIOMultible(PXFile* const pxFile, const PXFileDataElementType* const pxFileElementList, const PXSize pxFileElementListFullSize, PXFileIOMultibleFunction pxFileIOMultibleFunction);
+PXPublic PXSize PXAPI PXFileIOMultible(PXFile* const pxFile, const PXDataTypeEntry* const pxFileElementList, const PXSize pxFileElementListFullSize, PXFileIOMultibleFunction pxFileIOMultibleFunction);
 
 // Read x amounts of bytes and write into a buffer.
 // If there is no output buffer given, the cursor will just skip forward.
@@ -358,7 +354,7 @@ PXPublic PXSize PXAPI PXFileWriteDV(PXFile* const pxFile, const double* const va
 PXPublic PXSize PXAPI PXFileWriteB(PXFile* const pxFile, const void* const value, const PXSize length);
 PXPublic PXSize PXAPI PXFileWriteAtB(PXFile* const pxFile, const void* const data, const PXSize dataSize, const PXSize index);
 
-PXPublic PXSize PXAPI PXFileWriteMultible(PXFile* const pxFile, const PXFileDataElementType* const pxFileDataElementTypeList, const PXSize pxFileElementListFullSize);
+PXPublic PXSize PXAPI PXFileWriteMultible(PXFile* const pxFile, const PXDataTypeEntry* const pxFileDataElementTypeList, const PXSize pxFileElementListFullSize);
 
 PXPublic PXSize PXAPI PXFileWriteFill(PXFile* const pxFile, const PXByte value, const PXSize length);
 

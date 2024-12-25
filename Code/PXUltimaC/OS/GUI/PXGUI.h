@@ -167,7 +167,6 @@ PXPublic PXNativDrawWindowHandle PXAPI PXWindowFindViaTitle(const PXText* const 
 
 PXPublic PXActionResult PXAPI PXWindowMouseMovementEnable(const PXNativDrawWindowHandle pxWindow);
 
-PXPublic PXActionResult PXAPI PXWindowPosition(const PXNativDrawWindowHandle pxWindowID, PXInt32S* x, PXInt32S* y);
 
 
 PXPublic void PXAPI PXWindowCursorCaptureMode(const PXNativDrawWindowHandle pxWindowID, const PXWindowCursorMode cursorMode);

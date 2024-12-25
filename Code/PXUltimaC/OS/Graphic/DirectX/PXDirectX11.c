@@ -83,7 +83,7 @@ PXActionResult PXAPI PXDirectX11Initialize(PXDirectX11* const pxDirectX11, PXGra
 
         // Link functions
         {
-            PXLibraryGetSymbolA(&pxDirectX11->DirectX11Library, &createDeviceAndSwapChain, "D3D11CreateDeviceAndSwapChain");
+            PXLibraryGetSymbolA(&pxDirectX11->DirectX11Library, &createDeviceAndSwapChain, "D3D11CreateDeviceAndSwapChain", PXTrue);
         }
     }
 

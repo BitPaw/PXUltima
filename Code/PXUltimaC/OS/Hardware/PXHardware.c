@@ -127,6 +127,66 @@ PXBool PXAPI PXWindowsWMIClassOpen(PXHardwareInfo* const pxHardwareInfo, const c
 }
 #endif
 
+#include <OS/File/PXDirectory.h>
+
+
+PXActionResult PXAPI PXHardwareBatteryFetch(PXBattery* const pxBattery)
+{
+    PXClear(PXBattery, pxBattery);
+
+    // Check is we have a battery
+    {
+        char path[] = "/sys/class/power_supply/BAT1/uevent";
+
+       // Open file
+
+
+        PXDataTypeEntry list[] ={
+        {"NAME", xxxxxx }, // =BAT1
+        {"STATUS", xxxxxx }, // =Charging
+        {"PRESENT", xxxxxx }, // =1
+        {"TECHNOLOGY", xxxxxx }, // =Li-ion
+        {"CYCLE_COUNT", xxxxxx }, // =81
+        {"VOLTAGE_MIN_DESIGN", xxxxxx }, // =11100000
+        {"VOLTAGE_NOW", xxxxxx }, // =12276000
+        {"CURRENT_NOW", xxxxxx }, // =2889000
+        {"CHARGE_FULL", xxxxxx }, // _DESIGN=4400000
+        {"CHARGE_FULL", xxxxxx }, // =2506000
+        {"CHARGE_NOW", xxxxxx }, // =1503000
+        {"CAPACITY", xxxxxx }, // =59
+        {"CAPACITY_LEVEL", xxxxxx }, // =Normal
+        {"MODEL_NAME", xxxxxx }, // =PABAS0241231
+        {"MANUFACTURER", xxxxxx }, // =COMPAL
+        {"SERIAL_NUMBER", xxxxxx }
+        }; // 41167;
+        const PXSize amount = sizeof(list) / sizeof(PXDataTypeEntry);
+
+        /*
+
+
+        
+        */
+
+        for(size_t i = 0; i < length; i++)
+        {
+            char buffer[64];
+
+            PXTextPrintA(buffer, 64, "POWER_SUPPLY_%s");
+
+
+
+        }
+
+
+    }
+
+
+
+
+
+    return PXActionSuccessful;
+}
+
 PXActionResult PXAPI PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, const PXInt32U fetchFlags)
 {
 #if OSUnix

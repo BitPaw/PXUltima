@@ -20,7 +20,7 @@ PXActionResult PXAPI PXZIPLoadFromFile(PXResourceTransphereInfo* const pxResourc
         return PXActionRefusedInvalidHeaderSignature;
     }
 
-    const PXFileDataElementType pxDataStreamElementList[] =
+    const PXDataTypeEntry pxDataStreamElementList[] =
     {
         {&pxZIP->VersionMinimum, PXDataTypeInt16ULE},
         {&pxZIP->GeneralPurposeBitFlag, PXDataTypeInt16ULE},

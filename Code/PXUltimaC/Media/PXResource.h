@@ -1455,11 +1455,13 @@ PXSkyBox;
 #define PXWindowAllignCenter          0b0000000000000000000000010000000000000000
 
 
-#define PXWindowBehaviourHoverable    0b0000000000000000000000100000000000000000
-#define PXWindowBehaviourSelectable   0b0000000000000000000001000000000000000000
-#define PXWindowBehaviourBorder       0b0000000000000000000010000000000000000000
-#define PXWindowBehaviourScrollBarHor 0b0000000000000000000100000000000000000000
-#define PXWindowBehaviourScrollBarVer 0b0000000000000000001000000000000000000000
+#define PXWindowBehaviourHoverable          0b0000000000000000000000100000000000000000
+#define PXWindowBehaviourIsBeingHovered     0b0000000000000000000001000000000000000000
+#define PXWindowBehaviourSelectable         0b0000000000000000000010000000000000000000
+#define PXWindowBehaviourIsBeeingSelected   0b0000000000000000000100000000000000000000
+#define PXWindowBehaviourBorder             0b0000000000000000001000000000000000000000
+#define PXWindowBehaviourScrollBarHor       0b0000000000000000010000000000000000000000
+#define PXWindowBehaviourScrollBarVer       0b0000000000000000100000000000000000000000
 
 #define PXWindowBehaviourDefaultKeepAspect   PXWindowKeepWidth | PXWindowKeepHeight
 #define PXWindowBehaviourDefaultDecorative   PXResourceInfoOK | PXWindowBehaviourBorder

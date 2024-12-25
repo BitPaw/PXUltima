@@ -554,17 +554,24 @@ PXFileFormat PXAPI PXFilePathExtensionDetectTry(const PXText* const filePath)
     return PXFileFormatUnkown;
 }
 
-void PXAPI PXFileDataElementTypeInfo(PXFileDataElementType* const pxFileDataElementType, PXText* const dataType, PXText* const dataContent)
+void PXAPI PXDataTypeEntryInfo(PXDataTypeEntry* const pxFileDataElementType, PXText* const dataType, PXText* const dataContent)
 {
     PXTextPrint(dataType, "???");
     PXTextPrint(dataContent, "???");
 
-    switch(pxFileDataElementType->Type & PXDataTypeTypeMask)
+    const PXSize size = PXDataTypeSizeMask & pxFileDataElementType->Type;
+
+    switch(PXDataTypeTypeMask & pxFileDataElementType->Type)
     {
+        case PXDataTypeBaseText:
+        {
+            PXTextPrint(dataType, "Text%i", size);
+            PXTextPrint(dataContent, "%s", pxFileDataElementType->Adress);
+            break;
+        }
         case PXDataTypeBaseNumeric:
         {
-
-            switch(pxFileDataElementType->Type & PXDataTypeSizeMask)
+            switch(size)
             {
                 case 1:
                 {
@@ -626,7 +633,7 @@ void PXAPI PXFileDataElementTypeInfo(PXFileDataElementType* const pxFileDataElem
         }
         case PXDataTypeBaseDecimal:
         {
-            switch(pxFileDataElementType->Type & PXDataTypeSizeMask)
+            switch(size)
             {
                 case 4:
                 {
@@ -652,7 +659,7 @@ void PXAPI PXFileDataElementTypeInfo(PXFileDataElementType* const pxFileDataElem
         }
         default: // Probably raw data
         {
-            PXSize sizeOfType = pxFileDataElementType->Type & PXDataTypeSizeMask;
+            PXSize sizeOfType = size;
 
             char* textAdress = *((char**)pxFileDataElementType->Adress);
 
@@ -2025,16 +2032,27 @@ PXActionResult PXAPI PXFileUnmapFromMemory(PXFile* const pxFile)
     // undo filemapping
     {
 #if PXLogEnable
-        PXLoggingEventData pxLoggingEventData;
-        PXClear(PXLoggingEventData, &pxLoggingEventData);
-        pxLoggingEventData.FileReference = pxFile;
-        pxLoggingEventData.ModuleSource = "File";
-        pxLoggingEventData.ModuleAction = "MMAP-Destroy";
-        pxLoggingEventData.PrintFormat = "";
-        pxLoggingEventData.Type = PXLoggingDeallocation;
-        pxLoggingEventData.Target = PXLoggingTypeTargetFile;
 
-        PXLogPrintInvoke(&pxLoggingEventData);
+        PXText pxTextFilePath;
+        PXTextConstructNamedBufferA(&pxTextFilePath, pxTextFilePathBuffer, PXPathSizeMax);
+
+        PXFilePathGet(pxFile, &pxTextFilePath);
+
+        PXText pxText;
+        PXTextConstructNamedBufferA(&pxText, pxTextBuffer, 32);
+
+        PXTextFormatSize(&pxText, pxFile->DataAllocated);
+
+        PXLogPrint
+        (
+            PXLoggingDeallocation,
+            "File",
+            "MMAP-Destroy",
+            "%8s  ID:%i <%s>",
+            pxText.TextA,
+            (int)pxFile->ID,
+            pxTextFilePath.TextA
+        );
 #endif
 
         // Write pending data
@@ -2616,37 +2634,161 @@ PXSize PXAPI PXFileReadDV(PXFile* const pxFile, double* const valueList, const P
 
 PXSize PXAPI PXFileBinding(PXFile* const pxFile, void* const dataStruct, const PXInt32U* listOfTypes, const PXSize listOfTypesAmount, const PXBool isWrite)
 {
+    PXFile* pxFileRedirect = pxFile;
+    PXSize totalReadBytes = 0;
+    PXSize totalSizeToRead = 0;
+    PXFileIOMultibleFunction pxFileIOMultibleFunction = isWrite ? PXFileWriteB : PXFileReadB;
+
+
     // Pre allocate/Cache if needed
 
 
     // read/write actual data
+    char* insertionPoint = dataStruct;
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "File",
+        "I/O-Bind",
+        "Data: x%i - %s",
+        listOfTypesAmount,
+        isWrite ? "Write" : "Read"
+    );
+#endif
 
     for(PXSize i = 0; i < listOfTypesAmount; ++i)
     {
+        const PXInt32U type = listOfTypes[i];
+        const PXSize sizeOfType = PXFileDataWidthCalculate(pxFile, type);
 
-        // adjust offset 
-        //dataStruct
+        if(PXDataTypeBaseEmpty == (PXDataTypeTypeMask & type))
+        {
+            insertionPoint += sizeOfType;
+           // PXFileCursorAdvance(pxFile, sizeOfType);
+            continue;
+        }
+
+        switch(PXDataTypeModeMask & type)
+        {
+            case PXDataTypeModeByte:
+            {
+                if(PXAccessModeWriteOnly == pxFile->AccessMode) // Pre I/O Swap
+                {
+                    switch(PXDataTypeEndianMask & type)
+                    {
+                        case PXDataTypeEndianBig:
+                        {
+                            PXEndianSwap(insertionPoint, sizeOfType, PXEndianBig, EndianCurrentSystem);
+                            break;
+                        }
+                        case PXDataTypeEndianLittle:
+                        {
+                            PXEndianSwap(insertionPoint, sizeOfType, PXEndianLittle, EndianCurrentSystem);
+                            break;
+                        }
+                    }
+                }
+
+                totalReadBytes += pxFileIOMultibleFunction(pxFileRedirect, insertionPoint, sizeOfType); // Get data directly
+
+                if(PXAccessModeReadOnly == pxFile->AccessMode || PXAccessModeReadAndWrite == pxFile->AccessMode) // POSR I/O Swap
+                {
+                    switch(PXDataTypeEndianMask & type)
+                    {
+                        case PXDataTypeEndianBig:
+                        {
+                            PXEndianSwap(insertionPoint, sizeOfType, PXEndianBig, EndianCurrentSystem);
+                            break;
+                        }
+                        case PXDataTypeEndianLittle:
+                        {
+                            PXEndianSwap(insertionPoint, sizeOfType, PXEndianLittle, EndianCurrentSystem);
+                            break;
+                        }
+                    }
+                }
+
+                break;
+            }
+            case PXDataTypeModeBit:
+            {
+                const PXSize bitFieldValue = PXFileReadBits(pxFile, sizeOfType);
+
+                if(insertionPoint)
+                {
+                    switch(PXDataTypeBitFieldHolderMask & type)
+                    {
+                        case PXDataTypeBitFieldHolder08U:
+                            *((PXInt8U*)insertionPoint) = bitFieldValue;
+                            break;
+                        case PXDataTypeBitFieldHolder16U:
+                            *((PXInt16U*)insertionPoint) = bitFieldValue;
+                            break;
+                        case PXDataTypeBitFieldHolder32U:
+                            *((PXInt32U*)insertionPoint) = bitFieldValue;
+                            break;
+                        case PXDataTypeBitFieldHolder64U:
+                            *((PXInt64U*)insertionPoint) = bitFieldValue;
+                            break;
+                    }
+                }
+
+                break;
+            }
+        }
+
+#if PXLogEnable
+
+        PXText dataType;
+        PXTextConstructNamedBufferA(&dataType, dataTypeBuffer, 64);
+
+        PXText dataContent;
+        PXTextConstructNamedBufferA(&dataContent, dataContentBuffer, 64);
+
+        PXDataTypeEntry pxFileDataElementType;
+        pxFileDataElementType.Adress = insertionPoint;
+        pxFileDataElementType.Type = type;
+
+        PXDataTypeEntryInfo(&pxFileDataElementType, &dataType, &dataContent);
+
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "File",
+            "I/O-Bind",
+            "| %2i | %3i / %-3i | %2i B | %-7s | %-33s |",
+            i + 1,
+            pxFileRedirect->DataCursor - sizeOfType,
+            pxFileRedirect->DataAllocated,
+            sizeOfType,
+            dataType.TextA,
+            dataContent.TextA
+        );
+#endif
+
+        insertionPoint += sizeOfType;
     }
 
-
-    return PXActionSuccessful;
+    return totalReadBytes;
 }
 
-PXSize PXAPI PXFileReadMultible(PXFile* const pxFile, const PXFileDataElementType* const pxFileElementList, const PXSize pxFileElementListFullSize)
+PXSize PXAPI PXFileReadMultible(PXFile* const pxFile, const PXDataTypeEntry* const pxFileElementList, const PXSize pxFileElementListFullSize)
 {
     return PXFileIOMultible(pxFile, pxFileElementList, pxFileElementListFullSize, PXFileReadB);
 }
 
-PXSize PXAPI PXFileDataWidthCalculate(PXFile* const pxFile, const PXFileDataElementType* const pxFileDataElementType)
+PXSize PXAPI PXFileDataWidthCalculate(PXFile* const pxFile, const PXInt32U type)
 {
     // If value is ignored
     {
         const PXBool ignoreIn32Bitif32Bit =
-            ((pxFileDataElementType->Type & PXDataTypeIgnoreIFMask) == PXDataTypeIgnoreIn32B) &&
+            ((type & PXDataTypeIgnoreIFMask) == PXDataTypeIgnoreIn32B) &&
             (pxFile->BitFormatOfData != PXBitFormat32);
 
         const PXBool ignoreIn64Bitif64Bit =
-            ((pxFileDataElementType->Type & PXDataTypeIgnoreIFMask) == PXDataTypeIgnoreIn64B) &&
+            ((type & PXDataTypeIgnoreIFMask) == PXDataTypeIgnoreIn64B) &&
             (pxFile->BitFormatOfData != PXBitFormat64);
 
         const PXBool ignore = ignoreIn32Bitif32Bit || ignoreIn64Bitif64Bit;
@@ -2659,7 +2801,7 @@ PXSize PXAPI PXFileDataWidthCalculate(PXFile* const pxFile, const PXFileDataElem
 
     // Adress
     {
-        const PXSize isAdress = pxFileDataElementType->Type & PXDataTypeAdressMask;
+        const PXSize isAdress = type & PXDataTypeAdressMask;
 
         if(isAdress)
         {
@@ -2676,15 +2818,15 @@ PXSize PXAPI PXFileDataWidthCalculate(PXFile* const pxFile, const PXFileDataElem
 
     // If nothing applys, use raw size
     {
-        const PXSize rawSize = pxFileDataElementType->Type & PXDataTypeSizeMask;
+        const PXSize rawSize = type & PXDataTypeSizeMask;
 
         return rawSize;
     }
 }
 
-PXSize PXAPI PXFileIOMultible(PXFile* const pxFile, const PXFileDataElementType* const pxFileElementList, const PXSize pxFileElementListFullSize, PXFileIOMultibleFunction pxFileIOMultibleFunction)
+PXSize PXAPI PXFileIOMultible(PXFile* const pxFile, const PXDataTypeEntry* const pxFileElementList, const PXSize pxFileElementListFullSize, PXFileIOMultibleFunction pxFileIOMultibleFunction)
 {
-    const PXSize pxDataStreamElementListSize = pxFileElementListFullSize / sizeof(PXFileDataElementType);
+    const PXSize pxDataStreamElementListSize = pxFileElementListFullSize / sizeof(PXDataTypeEntry);
 
     const PXBool needIntermediateCache = !PXFileCanDirectAccess(pxFile);
 
@@ -2698,7 +2840,7 @@ PXSize PXAPI PXFileIOMultible(PXFile* const pxFile, const PXFileDataElementType*
     {
         for(PXSize i = 0; i < pxDataStreamElementListSize; ++i)
         {
-            const PXFileDataElementType* const pxFileDataElementType = &pxFileElementList[i];
+            const PXDataTypeEntry* const pxFileDataElementType = &pxFileElementList[i];
             const PXSize sizeOfType =
                 (!(pxFileDataElementType->Type & PXDataTypeAdressMask) * (pxFileDataElementType->Type & PXDataTypeSizeMask)) +
                 (((pxFileDataElementType->Type & PXDataTypeAdressMask) && !(pxFileDataElementType->Type & PXDataTypeIgnoreIn32B) && (pxFile->BitFormatOfData == PXBitFormat32)) * 4u) +
@@ -2755,8 +2897,8 @@ PXSize PXAPI PXFileIOMultible(PXFile* const pxFile, const PXFileDataElementType*
 
     for(PXSize i = 0; i < pxDataStreamElementListSize; ++i)
     {
-        const PXFileDataElementType* const pxFileDataElementType = &pxFileElementList[i];
-        const PXSize sizeOfType = PXFileDataWidthCalculate(pxFile, pxFileDataElementType);
+        const PXDataTypeEntry* const pxFileDataElementType = &pxFileElementList[i];
+        const PXSize sizeOfType = PXFileDataWidthCalculate(pxFile, pxFileDataElementType->Type);
 
         switch(pxFileDataElementType->Type & PXDataTypeModeMask)
         {
@@ -2835,7 +2977,7 @@ PXSize PXAPI PXFileIOMultible(PXFile* const pxFile, const PXFileDataElementType*
         PXText dataContent;
         PXTextConstructNamedBufferA(&dataContent, dataContentBuffer, 64);
 
-        PXFileDataElementTypeInfo(pxFileDataElementType, &dataType, &dataContent);
+        PXDataTypeEntryInfo(pxFileDataElementType, &dataType, &dataContent);
 
         PXLogPrint
         (
@@ -3403,7 +3545,7 @@ PXSize PXAPI PXFileWriteAtB(PXFile* const pxFile, const void* const data, const 
     return writtenBytes;
 }
 
-PXSize PXAPI PXFileWriteMultible(PXFile* const pxFile, const PXFileDataElementType* const pxFileDataElementTypeList, const PXSize pxFileElementListFullSize)
+PXSize PXAPI PXFileWriteMultible(PXFile* const pxFile, const PXDataTypeEntry* const pxFileDataElementTypeList, const PXSize pxFileElementListFullSize)
 {
     return PXFileIOMultible(pxFile, pxFileDataElementTypeList, pxFileElementListFullSize, PXFileWriteB);
 }

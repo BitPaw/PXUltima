@@ -6,14 +6,15 @@
 typedef enum PXBitmapType_
 {
     PXBitmapInvalid,
-    PXBitmapWindows,                // [BM] Windows 3.1x, 95, NT, ... etc.
-    PXBitmapOS2StructBitmapArray,    // [BA] OS/2 struct bitmap array
-    PXBitmapOS2StructColorIcon,        // [CI] OS/2 struct color icon
-    PXBitmapOS2ConstColorPointer,    // [CP] OS/2 const color pointer
-    PXBitmapOS2StructIcon,            // [IC] OS/2 struct icon
-    PXBitmapOS2Pointer                // [PT] OS/2 pointer
+    PXBitmapWindows              = PXInt16Make('B', 'M'), // [BM] Windows 3.1x, 95, NT, ... etc.
+    PXBitmapOS2StructBitmapArray = PXInt16Make('B', 'A'), // [BA] OS/2 struct bitmap array
+    PXBitmapOS2StructColorIcon   = PXInt16Make('C', 'I'), // [CI] OS/2 struct color icon
+    PXBitmapOS2ConstColorPointer = PXInt16Make('C', 'P'), // [CP] OS/2 const color pointer
+    PXBitmapOS2StructIcon        = PXInt16Make('I', 'C'), // [IC] OS/2 struct icon
+    PXBitmapOS2Pointer           = PXInt16Make('P', 'T')  // [PT] OS/2 pointer
 }
 PXBitmapType;
+
 
 // DIB header (bitmap information header) - Type / Version
 typedef enum PXBitmapInfoHeaderType_
@@ -75,6 +76,7 @@ typedef struct PXBitmapHeaderV5_
 }
 PXBitmapHeaderV5;
 
+#pragma pack(push,1)
 typedef struct PXBitMapHeaderData_
 {
     char Type[2];
@@ -84,18 +86,18 @@ typedef struct PXBitMapHeaderData_
     PXInt32U HeaderSize;
 }
 PXBitMapHeaderData;
-
+#pragma pack(pop)
 
 typedef struct PXBitmapInfoHeader_
 {
     PXInt32S Width; // [4-Bytes] bitmap width in pixels(signed integer)
     PXInt32S Height; // [4-Bytes] bitmap height in pixels(signed integer)
-    PXInt16U NumberOfBitsPerPixel; // [2-Bytes] number of bits per pixel, which is the color depth of the image.Typical values are 1, 4, 8, 16, 24 and 32.
     PXInt16U NumberOfColorPlanes; // [2-Bytes] number of color planes(must be 1)  
+    PXInt16U NumberOfBitsPerPixel; // [2-Bytes] number of bits per pixel, which is the color depth of the image.Typical values are 1, 4, 8, 16, 24 and 32.   
     PXInt32U CompressionMethod; // [4-Bytes] compression method being used.See the next table for a list of possible values
     PXInt32U ImageSize; // [4-Bytes] image size.This is the size of the raw bitmap data; a dummy 0 can be given for BI_RGB bitmaps.
-    PXInt32S HorizontalResolution;     // [4-Bytes] horizontal resolution of the image. (pixel per metre, signed integer)
-    PXInt32S VerticalResolution; // [4-Bytes] vertical resolution of the image. (pixel per metre, signed integer)
+    PXInt32S PixelPerMeterX;     // [4-Bytes] horizontal resolution of the image. (pixel per metre, signed integer)
+    PXInt32S PixelPerMeterY; // [4-Bytes] vertical resolution of the image. (pixel per metre, signed integer)
     PXInt32U NumberOfColorsInTheColorPalette; // [4-Bytes] number of colors in the color palette, or 0 to default to 2n
     PXInt32U NumberOfImportantColorsUsed;     // [4-Bytes] number of important colors used, or 0 when every color is important; generally ignored
 }
@@ -123,6 +125,9 @@ PXBitMapOS21XBitMapHeader;
 
 typedef struct PXBitmap_
 {
+    PXBitMapHeaderData HeaderData;
+    PXBitmapInfoHeader InfoHeader;
+
     PXBitmapType Type;
 
     PXBitmapInfoHeaderType InfoHeaderType;
@@ -131,8 +136,7 @@ typedef struct PXBitmap_
     void* PixelData;
 
     // Data
-    PXBitMapHeaderData HeaderData;
-    PXBitmapInfoHeader InfoHeader;
+
 
     union
     {

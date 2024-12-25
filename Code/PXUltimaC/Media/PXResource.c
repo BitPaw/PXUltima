@@ -2891,7 +2891,7 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
             PXLoggingInfo,
             "Resource",
             "Load-Peek",
-            "Start"
+            "Start..."
         );
 #endif
 
@@ -2922,7 +2922,7 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
             PXLoggingInfo,
             "Resource",
             "Load-Peek",
-            "Took:%6.3fs",
+            "Done! Took:%6.3fs",
             pxResourceLoadInfo->TimePeek
         );
 #endif
@@ -2936,7 +2936,7 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
         (
             PXLoggingInfo,
             "Resource",
-            "Load",
+            "Load-PreAlloc",
             "Preallocate resource on device"
         );
 #endif
@@ -2954,7 +2954,7 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
         (
             PXLoggingInfo,
             "Resource",
-            "Load",
+            "Load-PreAlloc",
             "Preallocate took:<%6.3f>",
             pxResourceLoadInfo->TimeDeviceDataRegister
         );
@@ -2964,6 +2964,16 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
     // Try to load assumed format
     if(pxResourceLoadInfo->ResourceLoad)
     {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "File",
+            "Load-Extract",
+            "Start..."
+        );
+#endif
+
         pxResourceLoadInfo->FileReference = &pxFile;
 
         const PXInt64U timeStampA = PXTimeCounterStampGet();
@@ -2984,8 +2994,8 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
             PXLogPrint
             (
                 PXLoggingError,
-                "Resource",
-                "Load",
+                "File",
+                "Load-Extract",
                 "Failed. Took:%6.3f  ROPs:%-7i <%s>",
                 pxResourceLoadInfo->TimeTransphere,
                 pxFile.CounterOperationsRead,
@@ -3000,9 +3010,9 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
         PXLogPrint
         (
             PXLoggingInfo,
-            "Resource",
-            "Load",
-            "Success. Took:%6.3f  ROPs:%-7i <%s>",
+            "File",
+            "Load-Extract",
+            "Done! Took:%6.3f  ROPs:%-7i <%s>",
             pxResourceLoadInfo->TimeTransphere,
             pxFile.CounterOperationsRead,
             filePath->TextA

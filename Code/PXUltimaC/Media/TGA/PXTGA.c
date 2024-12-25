@@ -154,7 +154,7 @@ PXActionResult PXAPI PXTGALoadFromFile(PXResourceTransphereInfo* const pxResourc
         PXInt8U pixelDepth = 0;
         PXInt8U imageTypeValue = 0;
 
-        const PXFileDataElementType pxDataStreamElementList[] =
+        const PXDataTypeEntry pxDataStreamElementList[] =
         {
             {&imageIDLengh, PXDataTypeInt08U},
             {&tga->ColorPaletteType, PXDataTypeInt08U},
@@ -271,7 +271,7 @@ PXActionResult PXAPI PXTGALoadFromFile(PXResourceTransphereInfo* const pxResourc
             return PXActionFailedFormatNotAsExpected;
         }
 
-        const PXFileDataElementType pxDataStreamElementList[] =
+        const PXDataTypeEntry pxDataStreamElementList[] =
         {
             {tga->AuthorName, 41u},
             {tga->AuthorComment, 324u},

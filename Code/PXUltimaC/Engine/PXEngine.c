@@ -1038,6 +1038,9 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
         {
             PXNativDrawWindowEventPoll(&pxEngine->GUISystem.NativDraw, pxEngine->Window);
 
+            // After we updated, lets do manual updates that might not have been fetched
+            PXNativDrawCursorCollisionCheck(&pxEngine->GUISystem.NativDraw);
+
             // if window does not exist anymore
             if(!pxEngine->Window)
             {

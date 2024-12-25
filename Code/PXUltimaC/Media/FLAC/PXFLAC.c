@@ -45,7 +45,7 @@ PXActionResult PXAPI PXFLACLoadFromFile(PXResourceTransphereInfo* const pxResour
     }
 
     {
-        const PXFileDataElementType pxDataStreamElementList[] =
+        const PXDataTypeEntry pxDataStreamElementList[] =
         {
             {&pxFLACSteamInfo.SampleSizeMinimum, PXDataTypeInt16ULE},
             {&pxFLACSteamInfo.SampleSizeMaximum, PXDataTypeInt16ULE},
@@ -80,7 +80,7 @@ PXActionResult PXAPI PXFLACLoadFromFile(PXResourceTransphereInfo* const pxResour
         PXFLACBlock pxFLACBlock;
         PXInt8U typeID;
 
-        const PXFileDataElementType pxDataStreamElementList[] =
+        const PXDataTypeEntry pxDataStreamElementList[] =
         {
             {&pxFLACBlock.IsLastMetaDataBlock, PXDataTypeBit32U(1u)},
             {&typeID, PXDataTypeBit32U(7u)},
@@ -109,7 +109,7 @@ PXActionResult PXAPI PXFLACSaveToFile(PXResourceTransphereInfo* const pxResource
     PXFLACSteamInfo pxFLACSteamInfo;
 
     {
-        const PXFileDataElementType pxDataStreamElementList[] =
+        const PXDataTypeEntry pxDataStreamElementList[] =
         {
             {PXFLACSignature, sizeof(PXFLACSignature)},
             {&pxFLACSteamInfo.SampleSizeMinimum, PXDataTypeInt16ULE},

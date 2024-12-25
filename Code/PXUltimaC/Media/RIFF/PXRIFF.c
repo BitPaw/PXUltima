@@ -98,7 +98,7 @@ PXActionResult PXAPI PXRIFFLoadFromFile(PXRIFF* const riff, PXFile* const pxFile
     PXInt32UCluster chunkID;
     PXInt32UCluster formatID;
 
-    const PXFileDataElementType pxDataStreamElementList[] =
+    const PXDataTypeEntry pxDataStreamElementList[] =
     {
         {chunkID.Data, PXDataTypeDatax4},
         {&riff->ChunkSize, PXDataTypeInt32ULE},
@@ -119,7 +119,7 @@ PXActionResult PXAPI PXRIFFSaveToFile(const PXRIFF* const riff, PXFile* const px
     const PXInt32U riffSignature = PXRIFFEndianToID(riff->EndianFormat);
     const PXInt32U riffType = PXRIFFFormatToID(riff->Format);
 
-    const PXFileDataElementType pxDataStreamElementList[] =
+    const PXDataTypeEntry pxDataStreamElementList[] =
     {
         {&riffSignature, PXDataTypeInt32ULE},
         {&riff->ChunkSize, PXDataTypeInt32ULE},

@@ -227,6 +227,31 @@ PXActionResult PXAPI PXLibraryClose(PXLibrary* const pxLibrary)
     return PXActionSuccessful;
 }
 
+PXBool PXAPI PXLibraryGetSymbolBinding(PXLibrary* const pxLibrary, void** const bindingObject, const char* const symbolList, const PXSize amount, const PXBool areAllImportant)
+{
+    PXSize position = 0;
+
+    for(PXSize i = 0 ; ; ++i)
+    {
+        const char* const cursor = &symbolList[position];
+        const PXSize length = PXTextLengthA(cursor, PXTextUnkownLength);
+        void** function = &bindingObject[i];
+
+        const PXBool invalidToProceed = !cursor || (i >= amount) || length == 0;
+
+        if(invalidToProceed)
+        {
+            break;
+        }
+
+        position += length + 1;
+
+        PXLibraryGetSymbolA(pxLibrary, function, cursor, areAllImportant);
+    }
+
+    return PXTrue;
+}
+
 PXBool PXAPI PXLibraryGetSymbolListA(PXLibrary* const pxLibrary, PXLibraryFuntionEntry* const pxLibraryFuntionEntryList, const PXSize amount)
 {
 #if PXLogEnable
@@ -244,13 +269,13 @@ PXBool PXAPI PXLibraryGetSymbolListA(PXLibrary* const pxLibrary, PXLibraryFuntio
     {
         PXLibraryFuntionEntry* pxLibraryFuntionEntry = &pxLibraryFuntionEntryList[i];
 
-        PXLibraryGetSymbolA(pxLibrary, pxLibraryFuntionEntry->Function, pxLibraryFuntionEntry->FuntionName);
+        PXLibraryGetSymbolA(pxLibrary, pxLibraryFuntionEntry->Function, pxLibraryFuntionEntry->FuntionName, PXTrue);
     }
 
     return PXTrue;
 }
 
-PXBool PXAPI PXLibraryGetSymbolA(PXLibrary* const pxLibrary, void** const libraryFunction, const char* const symbolName)
+PXBool PXAPI PXLibraryGetSymbolA(PXLibrary* const pxLibrary, void** const libraryFunction, const char* const symbolName, const PXBool isImportant)
 {
     void* functionAdress = PXNull;
 
@@ -270,6 +295,16 @@ PXBool PXAPI PXLibraryGetSymbolA(PXLibrary* const pxLibrary, void** const librar
     const char* errorString = dlerror();
 #elif OSWindows
     functionAdress = (void*)GetProcAddress(pxLibrary->ID, symbolName); // Windows XP, Kernel32.dll, libloaderapi.h
+
+    // If the fetch is not important, we dont want to trigger a failure.
+    {
+        if(!functionAdress && !isImportant)
+        {
+            *libraryFunction = PXNull;
+            return PXFalse;
+        }       
+    }
+
     const PXActionResult pxActionResult = PXErrorCurrent(PXNull != functionAdress);
 
     if(PXActionSuccessful != pxActionResult)
@@ -299,7 +334,7 @@ PXBool PXAPI PXLibraryGetSymbolA(PXLibrary* const pxLibrary, void** const librar
 
 PXBool PXAPI PXLibraryGetSymbol(PXLibrary* const pxLibrary, void** const libraryFunction, const PXText* symbolName)
 {
-    return PXLibraryGetSymbolA(pxLibrary, libraryFunction, symbolName->TextA);
+    return PXLibraryGetSymbolA(pxLibrary, libraryFunction, symbolName->TextA, PXTrue);
 }
 
 PXActionResult PXAPI PXLibraryName(PXLibrary* const pxLibrary, PXText* const libraryName)

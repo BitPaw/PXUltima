@@ -25,7 +25,7 @@ PXActionResult PXAPI PXOGGLoadFromFile(PXResourceTransphereInfo* const pxResourc
 
         PXInt32UCluster signature;
 
-        const PXFileDataElementType pxDataStreamElementList[] =
+        const PXDataTypeEntry pxDataStreamElementList[] =
         {
             {signature.Data, PXDataTypeDatax4},
             {&page.Version, PXDataTypeInt08U},

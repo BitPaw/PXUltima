@@ -13,84 +13,133 @@
 #define PNGDebugInfo 0
 
 const char PXPNGHeaderSequenz[8] = { 0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n' };
+const PXInt32U PXPNGChunkHeaderList[] =
+{
+    PXDataTypeInt32UBE,
+    PXDataTypeText(4)
+};
+const PXInt8U PXPNGChunkHeaderListSize = sizeof(PXPNGChunkHeaderList) / sizeof(PXInt32U);
+
+
+const PXInt32U PXPNGInfoHeaderList[] =
+{
+    PXDataTypeInt32UBE,
+    PXDataTypeInt32UBE,
+    PXDataTypeInt08U,
+    PXDataTypeInt08U,
+    PXDataTypeInt08U,
+    PXDataTypeInt08U,
+    PXDataTypeInt08U
+};
+const PXInt8U PXPNGInfoHeaderListSize = sizeof(PXPNGInfoHeaderList) / sizeof(PXInt32U);
+
+
+const PXInt32U PXPNGPrimaryChromaticsList[] =
+{
+     PXDataTypeInt32UBE,
+     PXDataTypeInt32UBE,
+     PXDataTypeInt32UBE,
+     PXDataTypeInt32UBE,
+     PXDataTypeInt32UBE,
+     PXDataTypeInt32UBE,
+     PXDataTypeInt32UBE,
+     PXDataTypeInt32UBE
+};
+const PXInt8U PXPNGPrimaryChromaticsListSize = sizeof(PXPNGPrimaryChromaticsList) / sizeof(PXInt32U);
+
+
+
+const PXInt32U PXPNGLastModificationTimeList[] =
+{
+    PXDataTypeInt16UBE,
+    PXDataTypeInt08U,
+    PXDataTypeInt08U,
+    PXDataTypeInt08U,
+    PXDataTypeInt08U,
+    PXDataTypeInt08U
+};
+const PXInt8U PXPNGLastModificationTimeListSize = sizeof(PXPNGLastModificationTimeList) / sizeof(PXInt32U);
+
+
+
 
 PXPNGColorType PXAPI PXPNGColorTypeFromID(const PXInt8U colorType)
 {
-    switch (colorType)
+    switch(colorType)
     {
-    case 0u:
-        return PXPNGColorGrayscale;
+        case 0u:
+            return PXPNGColorGrayscale;
 
-    case 2u:
-        return PXPNGColorRGB;
+        case 2u:
+            return PXPNGColorRGB;
 
-    case 3u:
-        return PXPNGColorPalette;
+        case 3u:
+            return PXPNGColorPalette;
 
-    case 4u:
-        return PXPNGColorGrayscaleAlpha;
+        case 4u:
+            return PXPNGColorGrayscaleAlpha;
 
-    case 6u:
-        return PXPNGColorRGBA;
+        case 6u:
+            return PXPNGColorRGBA;
 
-    default:
-        return PXPNGColorInvalid;
+        default:
+            return PXPNGColorInvalid;
     }
 }
 
 PXInt8U PXAPI PXPNGColorTypeToID(const PXPNGColorType colorType)
 {
-    switch (colorType)
+    switch(colorType)
     {
-    default:
-    case PXPNGColorInvalid:
-        return -1;
+        default:
+        case PXPNGColorInvalid:
+            return -1;
 
-    case PXPNGColorGrayscale:
-        return 0u;
+        case PXPNGColorGrayscale:
+            return 0u;
 
-    case PXPNGColorRGB:
-        return 2u;
+        case PXPNGColorRGB:
+            return 2u;
 
-    case PXPNGColorPalette:
-        return 3u;
+        case PXPNGColorPalette:
+            return 3u;
 
-    case PXPNGColorGrayscaleAlpha:
-        return 4u;
+        case PXPNGColorGrayscaleAlpha:
+            return 4u;
 
-    case PXPNGColorRGBA:
-        return 6u;
+        case PXPNGColorRGBA:
+            return 6u;
     }
 }
 
 PXPNGInterlaceMethod PXAPI PXPNGInterlaceMethodFromID(const PXInt8U interlaceMethod)
 {
-    switch (interlaceMethod)
+    switch(interlaceMethod)
     {
-    case 0u:
-        return PXPNGInterlaceNone;
+        case 0u:
+            return PXPNGInterlaceNone;
 
-    case 1u:
-        return PXPNGInterlaceADAM7;
+        case 1u:
+            return PXPNGInterlaceADAM7;
 
-    default:
-        return PXPNGInterlaceInvalid;
+        default:
+            return PXPNGInterlaceInvalid;
     }
 }
 
 PXInt8U PXAPI PXPNGInterlaceMethodToID(const PXPNGInterlaceMethod interlaceMethod)
 {
-    switch (interlaceMethod)
+    switch(interlaceMethod)
     {
-    default:
-    case PXPNGInterlaceInvalid:
-        return (PXInt8U)-1;
+        default:
+        case PXPNGInterlaceInvalid:
+            return (PXInt8U)-1;
 
-    case PXPNGInterlaceNone:
-        return 0u;
+        case PXPNGInterlaceNone:
+            return 0u;
 
-    case PXPNGInterlaceADAM7:
-        return 1u;
+        case PXPNGInterlaceADAM7:
+            return 1u;
     }
 }
 
@@ -104,24 +153,24 @@ void PXAPI PXPNGDestruct(PXPNG* const png)
 
 PXInt8U PXAPI PXPNGColorTypeNumberOfChannels(const PXPNGColorType pngColorType)
 {
-    switch (pngColorType)
+    switch(pngColorType)
     {
-    default:
-    case PXPNGColorInvalid:
-        return (PXInt8U)-1;
+        default:
+        case PXPNGColorInvalid:
+            return (PXInt8U)-1;
 
-    case PXPNGColorPalette:
-    case PXPNGColorGrayscale:
-        return 1u;
+        case PXPNGColorPalette:
+        case PXPNGColorGrayscale:
+            return 1u;
 
-    case PXPNGColorGrayscaleAlpha:
-        return 2u;
+        case PXPNGColorGrayscaleAlpha:
+            return 2u;
 
-    case PXPNGColorRGB:
-        return 3u;
+        case PXPNGColorRGB:
+            return 3u;
 
-    case PXPNGColorRGBA:
-        return 4u;
+        case PXPNGColorRGBA:
+            return 4u;
     }
 }
 
@@ -176,8 +225,6 @@ PXActionResult PXAPI PXPNGPeekFromFile(PXResourceTransphereInfo* const pxResourc
         // Allocate resource
         png = PXMemoryCallocT(PXPNG, 1);
         pxResourceTransphereInfo->ResourceSource = png;
-
-
         //---------------------------------------------------------------------
 
 #if PNGDebugInfo
@@ -195,34 +242,32 @@ PXActionResult PXAPI PXPNGPeekFromFile(PXResourceTransphereInfo* const pxResourc
             PXPNGChunk chunk;
             PXSize predictedOffset = 0;
 
-            // Fetch data
-            {
-                const PXFileDataElementType pxDataStreamElementList[] =
-                {
-                    {&chunk.Lengh, PXDataTypeInt32UBE},
-                    {chunk.ChunkID.Data, PXDataTypeDatax4}
-                };
-
-                PXFileReadMultible(pxResourceTransphereInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
-            }
+            PXFileBinding
+            (
+                pxResourceTransphereInfo->FileReference,
+                &chunk.Header,
+                PXPNGChunkHeaderList,
+                PXPNGChunkHeaderListSize,
+                PXFileBindingRead
+            );
 
             // Check
             {
-                chunk.ChunkType = (PXPNGChunkType)chunk.ChunkID.Value;
+                chunk.ChunkType = PXInt32FromAdress(chunk.Header.ID);
 
                 // Ancillary bit : bit 5 of first byte
                 // 0 (uppercase) = critical, 1 (lowercase) = ancillary.
-                chunk.IsEssential = PXTextIsLetterCaseUpper(chunk.ChunkID.Data[0]);
+                chunk.IsEssential = PXTextIsLetterCaseUpper(chunk.Header.ID[0]);
 
                 // Private bit: bit 5 of second byte
                 // Must be 0 (uppercase)in files conforming to this version of PNG.
-                chunk.IsRegisteredStandard = PXTextIsLetterCaseUpper(chunk.ChunkID.Data[1]);
+                chunk.IsRegisteredStandard = PXTextIsLetterCaseUpper(chunk.Header.ID[1]);
 
                 // Safe-to-copy bit: bit 5 of fourth byte
                 // 0 (uppercase) = unsafe to copy, 1 (lowercase) = safe to copy.
-                chunk.IsSafeToCopy = PXTextIsLetterCaseUpper(chunk.ChunkID.Data[3]);
+                chunk.IsSafeToCopy = PXTextIsLetterCaseUpper(chunk.Header.ID[3]);
 
-                predictedOffset = pxResourceTransphereInfo->FileReference->DataCursor + chunk.Lengh;
+                predictedOffset = pxResourceTransphereInfo->FileReference->DataCursor + chunk.Header.Size;
             }
 
 #if PNGDebugInfo
@@ -244,322 +289,307 @@ PXActionResult PXAPI PXPNGPeekFromFile(PXResourceTransphereInfo* const pxResourc
             //---Get Chunk Data------------------------------------------
             switch(chunk.ChunkType)
             {
-            case PXPNGChunkImageHeader:
-            {
-                PXInt8U colorTypeRaw = 0;
-                PXInt8U interlaceMethodRaw = 0;
-
-                const PXFileDataElementType pxDataStreamElementList[] =
+                case PXPNGChunkImageHeader:
                 {
-                    {&png->ImageHeader.Width, PXDataTypeInt32UBE},
-                    {&png->ImageHeader.Height, PXDataTypeInt32UBE},
-                    {&png->ImageHeader.BitDepth, PXDataTypeInt08U},
-                    {&colorTypeRaw, PXDataTypeInt08U},
-                    {&png->ImageHeader.CompressionMethod, PXDataTypeInt08U},
-                    {&png->ImageHeader.FilterMethod, PXDataTypeInt08U},
-                    {&interlaceMethodRaw, PXDataTypeInt08U}
-                };
+                    PXFileBinding
+                    (
+                        pxResourceTransphereInfo->FileReference,
+                        &png->ImageHeader,
+                        PXPNGInfoHeaderList,
+                        PXPNGInfoHeaderListSize,
+                        PXFileBindingRead
+                    );
 
-                PXFileReadMultible(pxResourceTransphereInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
-
-                png->ImageHeader.ColorType = PXPNGColorTypeFromID(colorTypeRaw);
-                png->ImageHeader.InterlaceMethod = PXPNGInterlaceMethodFromID(interlaceMethodRaw);
-
-                break;
-            }
-            case PXPNGChunkPalette:
-            {
-                const PXSize palettSize = chunk.Lengh / 3u;
-                const PXBool validSize = palettSize != 0 && palettSize <= 256;
-
-                if(!validSize)
-                    return PXActionFailedFormatNotAsExpected; // palette too small or big
-
-                png->PaletteSize = palettSize;
-
-                for(PXSize i = 0; i < palettSize; ++i)
-                {
-                    PXInt8U* paletteInsertion = png->Palette + i * 4;
-
-                    PXFileReadB(pxResourceTransphereInfo->FileReference, paletteInsertion, 3u); // Read RGB value
-
-                    paletteInsertion[3] = 0xFF; // Add alpha
-                }
-
-                break;
-            }
-            case PXPNGChunkImageData:
-            {
-                ++png->DataBlockListAmount;
-
-                png->DataBlockList = PXMemoryReallocT(PXPNGDataBlock, png->DataBlockList, png->DataBlockListAmount);
-                png->DataBlockTotalSize += chunk.Lengh;
-
-                PXPNGDataBlock* pxPNGDataBlock = &png->DataBlockList[png->DataBlockListAmount - 1];
-                pxPNGDataBlock->FileOffset = pxResourceTransphereInfo->FileReference->DataCursor;
-                pxPNGDataBlock->DataSize = chunk.Lengh;
-
-                break;
-            }
-            case PXPNGChunkImageEnd:
-            {
-                parseFinished = 1;
-                break;
-            }
-            case PXPNGChunkTransparency:
-            {
-                switch(png->ImageHeader.ColorType)
-                {
-                case PXPNGColorGrayscale:
-                {
-                    /*error: this chunk must be 2 bytes for grayscale image*/
-                    if(chunk.Lengh != 2)
-                        return PXActionInvalid;
-
-                    unsigned short value;
-
-                    PXFileReadI16UE(pxResourceTransphereInfo->FileReference, &value, PXEndianBig);
-
-                    // color->key_defined = 1;
-                    //color->key_r = color->key_g = color->key_b = 256u * data[0] + data[1];
+                    png->ImageHeader.ColorType = PXPNGColorTypeFromID(png->ImageHeader.ColorTypeID);
+                    png->ImageHeader.InterlaceMethod = PXPNGInterlaceMethodFromID(png->ImageHeader.InterlaceMethodID);
 
                     break;
                 }
-                case PXPNGColorRGB:
+                case PXPNGChunkPalette:
                 {
-                    /*error: this chunk must be 6 bytes for RGB image*/
-                    if(chunk.Lengh != 6)
-                        return PXActionInvalid;
+                    const PXSize palettSize = chunk.Header.Size / 3u;
+                    const PXBool validSize = palettSize != 0 && palettSize <= 256;
 
-                    unsigned short red;
-                    unsigned short green;
-                    unsigned short blue;
+                    if(!validSize)
+                        return PXActionFailedFormatNotAsExpected; // palette too small or big
 
-                    PXFileReadI16UE(pxResourceTransphereInfo->FileReference, &red, PXEndianBig);
-                    PXFileReadI16UE(pxResourceTransphereInfo->FileReference, &green, PXEndianBig);
-                    PXFileReadI16UE(pxResourceTransphereInfo->FileReference, &blue, PXEndianBig);
+                    png->PaletteSize = palettSize;
 
-                    //color->key_defined = 1;
-                    //color->key_r = 256u * data[0] + data[1];
-                    //color->key_g = 256u * data[2] + data[3];
-                    //color->key_b = 256u * data[4] + data[5];
-
-                    break;
-                }
-                case PXPNGColorPalette:
-                {
-                    /*error: more alpha values given than there are palette entries*/
-                    //if(chunkLength > color->palettesize) return 39;
-
-                    //for(PXSize i = 0; i != chunkLength; ++i) color->palette[4 * i + 3] = data[i];
-
-                    for(PXSize i = 0; i < chunk.Lengh; ++i)
+                    for(PXSize i = 0; i < palettSize; ++i)
                     {
-                        unsigned char value = 0;
+                        PXInt8U* paletteInsertion = png->Palette + i * 4;
 
-                        PXFileReadI8U(pxResourceTransphereInfo->FileReference, &value);
+                        PXFileReadB(pxResourceTransphereInfo->FileReference, paletteInsertion, 3u); // Read RGB value
 
-                        png->Palette[i * 4 + 3] = value;
+                        paletteInsertion[3] = 0xFF; // Add alpha
                     }
 
                     break;
                 }
-                case PXPNGColorGrayscaleAlpha:
-                case PXPNGColorRGBA:
-                case PXPNGColorInvalid:
+                case PXPNGChunkImageData:
+                {
+                    ++png->DataBlockListAmount;
+
+                    png->DataBlockList = PXMemoryReallocT(PXPNGDataBlock, png->DataBlockList, png->DataBlockListAmount);
+                    png->DataBlockTotalSize += chunk.Header.Size;
+
+                    PXPNGDataBlock* pxPNGDataBlock = &png->DataBlockList[png->DataBlockListAmount - 1];
+                    pxPNGDataBlock->FileOffset = pxResourceTransphereInfo->FileReference->DataCursor;
+                    pxPNGDataBlock->DataSize = chunk.Header.Size;
+
+                    break;
+                }
+                case PXPNGChunkImageEnd:
+                {
+                    parseFinished = 1;
+                    break;
+                }
+                case PXPNGChunkTransparency:
+                {
+                    switch(png->ImageHeader.ColorType)
+                    {
+                        case PXPNGColorGrayscale:
+                        {
+                            /*error: this chunk must be 2 bytes for grayscale image*/
+                            if(chunk.Header.Size != 2)
+                                return PXActionInvalid;
+
+                            unsigned short value;
+
+                            PXFileReadI16UE(pxResourceTransphereInfo->FileReference, &value, PXEndianBig);
+
+                            // color->key_defined = 1;
+                            //color->key_r = color->key_g = color->key_b = 256u * data[0] + data[1];
+
+                            break;
+                        }
+                        case PXPNGColorRGB:
+                        {
+                            /*error: this chunk must be 6 bytes for RGB image*/
+                            if(chunk.Header.Size != 6)
+                                return PXActionInvalid;
+
+                            unsigned short red;
+                            unsigned short green;
+                            unsigned short blue;
+
+                            PXFileReadI16UE(pxResourceTransphereInfo->FileReference, &red, PXEndianBig);
+                            PXFileReadI16UE(pxResourceTransphereInfo->FileReference, &green, PXEndianBig);
+                            PXFileReadI16UE(pxResourceTransphereInfo->FileReference, &blue, PXEndianBig);
+
+                            //color->key_defined = 1;
+                            //color->key_r = 256u * data[0] + data[1];
+                            //color->key_g = 256u * data[2] + data[3];
+                            //color->key_b = 256u * data[4] + data[5];
+
+                            break;
+                        }
+                        case PXPNGColorPalette:
+                        {
+                            /*error: more alpha values given than there are palette entries*/
+                            //if(chunkLength > color->palettesize) return 39;
+
+                            //for(PXSize i = 0; i != chunkLength; ++i) color->palette[4 * i + 3] = data[i];
+
+                            for(PXSize i = 0; i < chunk.Header.Size; ++i)
+                            {
+                                unsigned char value = 0;
+
+                                PXFileReadI8U(pxResourceTransphereInfo->FileReference, &value);
+
+                                png->Palette[i * 4 + 3] = value;
+                            }
+
+                            break;
+                        }
+                        case PXPNGColorGrayscaleAlpha:
+                        case PXPNGColorRGBA:
+                        case PXPNGColorInvalid:
+                        default:
+                            return PXActionFailedFormatNotAsExpected; // tRNS chunk not allowed for other color models
+                    }
+
+                    break;
+                }
+                case PXPNGChunkImageGamma:
+                {
+                    PXFileReadI32UE(pxResourceTransphereInfo->FileReference, &png->Gamma, PXEndianBig);
+
+                    break;
+                }
+                case PXPNGChunkPrimaryChromaticities:
+                {
+                    PXFileBinding
+                    (
+                        pxResourceTransphereInfo->FileReference,
+                        &png->PrimaryChromatics,
+                        PXPNGPrimaryChromaticsList,
+                        PXPNGPrimaryChromaticsListSize,
+                        PXFileBindingRead
+                    );
+
+                    break;
+                }
+                case PXPNGChunkStandardRGBColorSpace:
+                {
+                    // pxFile.Read(RenderingIntent);
+
+                    // COpy array
+
+                    break;
+                }
+                case PXPNGChunkEmbeddedICCProfile:
+                {
+                    //  pxFile.DataCursor += chunk.Lengh;
+
+                    break;
+                }
+                case PXPNGChunkTextualData:
+                {
+                    //  pxFile.DataCursor += chunk.Lengh;
+
+
+                    break;
+                }
+                case PXPNGChunkCompressedTextualData:
+                {
+                    // Keyword                         1 - 79 bytes(character string)
+                    // Null separator                 1 byte(null character)
+                    // Compression method             1 byte
+                    // Compressed text datastream     n bytes
+
+                    //  pxFile.DataCursor += chunk.Lengh;
+
+                    break;
+                }
+                case PXPNGChunkBackgroundColor:
+                {
+                    switch(png->ImageHeader.ColorType)
+                    {
+                        default:
+                        case PXPNGColorInvalid:
+                            break; // ERROR
+
+                        case PXPNGColorGrayscale:
+                        case PXPNGColorGrayscaleAlpha:
+                        {
+                            //  pxFile.Read(png.BackgroundColor.GreyScale, PXEndianBig);
+                            break;
+                        }
+                        case PXPNGColorRGB:
+                        case PXPNGColorRGBA:
+                        {
+                            // pxFile.Read(png.BackgroundColor.Red, PXEndianBig);
+                            // pxFile.Read(png.BackgroundColor.Green, PXEndianBig);
+                            // pxFile.Read(png.BackgroundColor.Blue, PXEndianBig);
+                            break;
+                        }
+                        case PXPNGColorPalette:
+                        {
+                            //pxFile.Read(png.BackgroundColor.PaletteIndex);
+                            break;
+                        }
+                    }
+
+                    break;
+                }
+                case PXPNGChunkPhysicalPixelDimensions:
+                {
+                    unsigned char unitSpecifier = 0;
+
+                    PXFileReadI32UE(pxResourceTransphereInfo->FileReference, &png->PhysicalPixelDimension.PixelsPerUnit[0], PXEndianBig);
+                    PXFileReadI32UE(pxResourceTransphereInfo->FileReference, &png->PhysicalPixelDimension.PixelsPerUnit[1], PXEndianBig);
+                    PXFileReadI8U(pxResourceTransphereInfo->FileReference, &unitSpecifier);
+
+                    switch(unitSpecifier)
+                    {
+                        case 0:
+                            png->PhysicalPixelDimension.UnitSpecifier = PXPNGUnitSpecifierUnkown;
+                            break;
+
+                        case 1:
+                            png->PhysicalPixelDimension.UnitSpecifier = PXPNGUnitSpecifierMeter;
+                            break;
+
+                        default:
+                            png->PhysicalPixelDimension.UnitSpecifier = PXPNGUnitSpecifierInvalid;
+                            break;
+                    }
+
+                    break;
+                }
+                case PXPNGChunkSignificantBits:
+                {
+                    /*
+                    unsigned int byteLength = 0;
+                    unsigned int result = 0;
+
+                    switch (ColorType)
+                    {
+                        case PNGColorGrayscale: // single byte,
+                            byteLength = 1;
+                            break;
+
+                        case PNGColorTruecolor: // three bytes,
+                        case PNGColorIndexedColor:
+                            byteLength = 3;
+                            break;
+
+                        case PNGColorGrayscaleWithAlphaChannel: // two bytes
+                            byteLength = 2;
+                            break;
+
+                        case PNGColorTruecolorWithAlphaChannel: //  four bytes,
+                            byteLength = 4;
+                            break;
+                    }
+
+                    for (unsigned int i = 0; i < byteLength; i++)
+                    {
+                        char calcbyte;
+
+                        pxFile.Read(calcbyte);
+
+                        result = (result << (i * 8)) | calcbyte;
+                    }
+
+                    SignificantBits = result;*/
+
+                    break;
+                }
+                case PXPNGChunkSuggestedPalette:
+                {
+                    break;
+                }
+                case PXPNGChunkPaletteHistogram:
+                {
+                    const PXInt32U listSize = chunk.Header.Size / 2;
+
+                    PXNewList(PXInt16U, listSize, &png->PaletteHistogram.ColorFrequencyList, &png->PaletteHistogram.ColorFrequencyListSize);
+
+                    PXFileReadI16UVE(pxResourceTransphereInfo->FileReference, &png->PaletteHistogram.ColorFrequencyList, listSize, PXEndianBig);
+
+                    break;
+                }
+                case PXPNGChunkLastModificationTime:
+                {
+                    PXFileBinding
+                    (
+                        pxResourceTransphereInfo->FileReference,
+                        &png->LastModificationTime,
+                        PXPNGLastModificationTimeList,
+                        PXPNGLastModificationTimeListSize,
+                        PXFileBindingRead
+                    );
+
+                    break;
+                }
+                case PXPNGChunkCustom:
                 default:
-                    return PXActionFailedFormatNotAsExpected; // tRNS chunk not allowed for other color models
-                }
-
-                break;
-            }
-            case PXPNGChunkImageGamma:
-            {
-                PXFileReadI32UE(pxResourceTransphereInfo->FileReference, &png->Gamma, PXEndianBig);
-
-                break;
-            }
-            case PXPNGChunkPrimaryChromaticities:
-            {
-                const PXFileDataElementType pxDataStreamElementList[] =
                 {
-                    {&png->PrimaryChromatics.WhiteX, PXDataTypeInt32UBE},
-                    {&png->PrimaryChromatics.WhiteY, PXDataTypeInt32UBE},
-                    {&png->PrimaryChromatics.RedX, PXDataTypeInt32UBE},
-                    {&png->PrimaryChromatics.RedY, PXDataTypeInt32UBE},
-                    {&png->PrimaryChromatics.GreenX, PXDataTypeInt32UBE},
-                    {&png->PrimaryChromatics.GreenY, PXDataTypeInt32UBE},
-                    {&png->PrimaryChromatics.BlueX, PXDataTypeInt32UBE},
-                    {&png->PrimaryChromatics.BlueY, PXDataTypeInt32UBE}
-                };
-
-                PXFileReadMultible(pxResourceTransphereInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
-
-                break;
-            }
-            case PXPNGChunkStandardRGBColorSpace:
-            {
-                // pxFile.Read(RenderingIntent);
-
-                // COpy array
-
-                break;
-            }
-            case PXPNGChunkEmbeddedICCProfile:
-            {
-                //  pxFile.DataCursor += chunk.Lengh;
-
-                break;
-            }
-            case PXPNGChunkTextualData:
-            {
-                //  pxFile.DataCursor += chunk.Lengh;
-
-
-                break;
-            }
-            case PXPNGChunkCompressedTextualData:
-            {
-                // Keyword                         1 - 79 bytes(character string)
-                // Null separator                 1 byte(null character)
-                // Compression method             1 byte
-                // Compressed text datastream     n bytes
-
-                //  pxFile.DataCursor += chunk.Lengh;
-
-                break;
-            }
-            case PXPNGChunkBackgroundColor:
-            {
-                switch(png->ImageHeader.ColorType)
-                {
-                default:
-                case PXPNGColorInvalid:
-                    break; // ERROR
-
-                case PXPNGColorGrayscale:
-                case PXPNGColorGrayscaleAlpha:
-                {
-                    //  pxFile.Read(png.BackgroundColor.GreyScale, PXEndianBig);
+                    PXFileCursorAdvance(pxResourceTransphereInfo->FileReference, chunk.Header.Size);
                     break;
                 }
-                case PXPNGColorRGB:
-                case PXPNGColorRGBA:
-                {
-                    // pxFile.Read(png.BackgroundColor.Red, PXEndianBig);
-                    // pxFile.Read(png.BackgroundColor.Green, PXEndianBig);
-                    // pxFile.Read(png.BackgroundColor.Blue, PXEndianBig);
-                    break;
-                }
-                case PXPNGColorPalette:
-                {
-                    //pxFile.Read(png.BackgroundColor.PaletteIndex);
-                    break;
-                }
-                }
-
-                break;
-            }
-            case PXPNGChunkPhysicalPixelDimensions:
-            {
-                unsigned char unitSpecifier = 0;
-
-                PXFileReadI32UE(pxResourceTransphereInfo->FileReference, &png->PhysicalPixelDimension.PixelsPerUnit[0], PXEndianBig);
-                PXFileReadI32UE(pxResourceTransphereInfo->FileReference, &png->PhysicalPixelDimension.PixelsPerUnit[1], PXEndianBig);
-                PXFileReadI8U(pxResourceTransphereInfo->FileReference, &unitSpecifier);
-
-                switch(unitSpecifier)
-                {
-                case 0:
-                    png->PhysicalPixelDimension.UnitSpecifier = PXPNGUnitSpecifierUnkown;
-                    break;
-
-                case 1:
-                    png->PhysicalPixelDimension.UnitSpecifier = PXPNGUnitSpecifierMeter;
-                    break;
-
-                default:
-                    png->PhysicalPixelDimension.UnitSpecifier = PXPNGUnitSpecifierInvalid;
-                    break;
-                }
-
-                break;
-            }
-            case PXPNGChunkSignificantBits:
-            {
-                /*
-                unsigned int byteLength = 0;
-                unsigned int result = 0;
-
-                switch (ColorType)
-                {
-                    case PNGColorGrayscale: // single byte,
-                        byteLength = 1;
-                        break;
-
-                    case PNGColorTruecolor: // three bytes,
-                    case PNGColorIndexedColor:
-                        byteLength = 3;
-                        break;
-
-                    case PNGColorGrayscaleWithAlphaChannel: // two bytes
-                        byteLength = 2;
-                        break;
-
-                    case PNGColorTruecolorWithAlphaChannel: //  four bytes,
-                        byteLength = 4;
-                        break;
-                }
-
-                for (unsigned int i = 0; i < byteLength; i++)
-                {
-                    char calcbyte;
-
-                    pxFile.Read(calcbyte);
-
-                    result = (result << (i * 8)) | calcbyte;
-                }
-
-                SignificantBits = result;*/
-
-                break;
-            }
-            case PXPNGChunkSuggestedPalette:
-            {
-                break;
-            }
-            case PXPNGChunkPaletteHistogram:
-            {
-                const PXInt32U listSize = chunk.Lengh / 2;
-
-                PXNewList(PXInt16U, listSize, &png->PaletteHistogram.ColorFrequencyList, &png->PaletteHistogram.ColorFrequencyListSize);
-
-                PXFileReadI16UVE(pxResourceTransphereInfo->FileReference, &png->PaletteHistogram.ColorFrequencyList, listSize, PXEndianBig);
-
-                break;
-            }
-            case PXPNGChunkLastModificationTime:
-            {
-                const PXFileDataElementType pxDataStreamElementList[] =
-                {
-                    {&png->LastModificationTime.Year,PXDataTypeInt16UBE},
-                    {&png->LastModificationTime.Month,PXDataTypeInt08U},
-                    {&png->LastModificationTime.Day,PXDataTypeInt08U},
-                    {&png->LastModificationTime.Hour,PXDataTypeInt08U},
-                    {&png->LastModificationTime.Minute,PXDataTypeInt08U},
-                    {&png->LastModificationTime.Second,PXDataTypeInt08U}
-                };
-
-                PXFileReadMultible(pxResourceTransphereInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
-
-                break;
-            }
-            case PXPNGChunkCustom:
-            default:
-            {
-                PXFileCursorAdvance(pxResourceTransphereInfo->FileReference, chunk.Lengh);
-                break;
-            }
             }
             //---------------------------------------------------------------
 
@@ -593,27 +623,27 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceTransphereInfo* const pxResourc
 
         switch(png->ImageHeader.ColorType)
         {
-        case PXPNGColorGrayscale:
-            imageDataFormat = PXColorFormatInvalid;
-            break;
+            case PXPNGColorGrayscale:
+                imageDataFormat = PXColorFormatInvalid;
+                break;
 
-        case PXPNGColorRGB:
-            imageDataFormat = PXColorFormatRGBI8;
-            break;
+            case PXPNGColorRGB:
+                imageDataFormat = PXColorFormatRGBI8;
+                break;
 
-        case PXPNGColorInvalid:
-        case PXPNGColorGrayscaleAlpha:
-            imageDataFormat = PXColorFormatInvalid;
-            break;
+            case PXPNGColorInvalid:
+            case PXPNGColorGrayscaleAlpha:
+                imageDataFormat = PXColorFormatInvalid;
+                break;
 
-        case PXPNGColorPalette:
-        case PXPNGColorRGBA:
-            imageDataFormat = PXColorFormatRGBAI8;
-            break;
+            case PXPNGColorPalette:
+            case PXPNGColorRGBA:
+                imageDataFormat = PXColorFormatRGBAI8;
+                break;
 
-        default:
-            imageDataFormat = PXColorFormatInvalid;
-            break;
+            default:
+                imageDataFormat = PXColorFormatInvalid;
+                break;
         }
 
         const PXBool allocateResult = PXImageResize(pxImage, imageDataFormat, png->ImageHeader.Width, png->ImageHeader.Height);
@@ -690,7 +720,7 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceTransphereInfo* const pxResourc
         const PXActionResult actionResult = PXZLIBDecompress(&pxZLIBStream, &pxZLIBResultStream);
         const PXBool success = PXActionSuccessful == actionResult;
 
-        if (!success)
+        if(!success)
         {
             return actionResult;
         }
@@ -725,13 +755,13 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceTransphereInfo* const pxResourc
         // Color Comprerss
         //---------------------------------------------------------------------
         const PXActionResult decompress = PXPNGImageDataDecompress
-                                          (
-                                              png,
-                                              pxADAM7.DataOutput,
-                                              pxImage->PixelData,
-                                              png->ImageHeader.BitDepth,
-                                              png->ImageHeader.ColorType
-                                          );
+        (
+            png,
+            pxADAM7.DataOutput,
+            pxImage->PixelData,
+            png->ImageHeader.BitDepth,
+            png->ImageHeader.ColorType
+        );
 
         PXMemoryFree(pxADAM7.DataOutput);
         pxADAM7.DataOutput = 0;
@@ -791,27 +821,27 @@ typedef enum LodePNGFilterStrategy
 static PXSize ilog2(PXSize i)
 {
     PXSize result = 0;
-    if (i >= 65536)
+    if(i >= 65536)
     {
         result += 16;
         i >>= 16;
     }
-    if (i >= 256)
+    if(i >= 256)
     {
         result += 8;
         i >>= 8;
     }
-    if (i >= 16)
+    if(i >= 16)
     {
         result += 4;
         i >>= 4;
     }
-    if (i >= 4)
+    if(i >= 4)
     {
         result += 2;
         i >>= 2;
     }
-    if (i >= 2)
+    if(i >= 2)
     {
         result += 1; /*i >>= 1;*/
     }
@@ -822,7 +852,7 @@ static PXSize ilog2(PXSize i)
 static PXSize ilog2i(PXSize i)
 {
     PXSize l;
-    if (i == 0) return 0;
+    if(i == 0) return 0;
     l = ilog2(i);
     /* approximate i*log2(i): l is integer logarithm, ((i - (1u << l)) << 1u)
     linearly approximates the missing fractional part multiplied by i */
@@ -832,56 +862,56 @@ static PXSize ilog2i(PXSize i)
 void filterScanline(unsigned char* out, const unsigned char* scanline, const unsigned char* prevline, PXSize length, PXSize bytewidth, unsigned char filterType)
 {
     PXSize i;
-    switch (filterType)
+    switch(filterType)
     {
-    case 0: /*None*/
-        for (i = 0; i != length; ++i) out[i] = scanline[i];
-        break;
-    case 1: /*Sub*/
-        for (i = 0; i != bytewidth; ++i) out[i] = scanline[i];
-        for (i = bytewidth; i < length; ++i) out[i] = scanline[i] - scanline[i - bytewidth];
-        break;
-    case 2: /*Up*/
-        if (prevline)
-        {
-            for (i = 0; i != length; ++i) out[i] = scanline[i] - prevline[i];
-        }
-        else
-        {
-            for (i = 0; i != length; ++i) out[i] = scanline[i];
-        }
-        break;
-    case 3: /*Average*/
-        if (prevline)
-        {
-            for (i = 0; i != bytewidth; ++i) out[i] = scanline[i] - (prevline[i] >> 1);
-            for (i = bytewidth; i < length; ++i) out[i] = scanline[i] - ((scanline[i - bytewidth] + prevline[i]) >> 1);
-        }
-        else
-        {
-            for (i = 0; i != bytewidth; ++i) out[i] = scanline[i];
-            for (i = bytewidth; i < length; ++i) out[i] = scanline[i] - (scanline[i - bytewidth] >> 1);
-        }
-        break;
-    case 4: /*Paeth*/
-        if (prevline)
-        {
-            /*paethPredictor(0, prevline[i], 0) is always prevline[i]*/
-            for (i = 0; i != bytewidth; ++i) out[i] = (scanline[i] - prevline[i]);
-            for (i = bytewidth; i < length; ++i)
+        case 0: /*None*/
+            for(i = 0; i != length; ++i) out[i] = scanline[i];
+            break;
+        case 1: /*Sub*/
+            for(i = 0; i != bytewidth; ++i) out[i] = scanline[i];
+            for(i = bytewidth; i < length; ++i) out[i] = scanline[i] - scanline[i - bytewidth];
+            break;
+        case 2: /*Up*/
+            if(prevline)
             {
-                out[i] = (scanline[i] - PXADAM7paethPredictor(scanline[i - bytewidth], prevline[i], prevline[i - bytewidth]));
+                for(i = 0; i != length; ++i) out[i] = scanline[i] - prevline[i];
             }
-        }
-        else
-        {
-            for (i = 0; i != bytewidth; ++i) out[i] = scanline[i];
-            /*paethPredictor(scanline[i - bytewidth], 0, 0) is always scanline[i - bytewidth]*/
-            for (i = bytewidth; i < length; ++i) out[i] = (scanline[i] - scanline[i - bytewidth]);
-        }
-        break;
-    default:
-        return; /*invalid filter type given*/
+            else
+            {
+                for(i = 0; i != length; ++i) out[i] = scanline[i];
+            }
+            break;
+        case 3: /*Average*/
+            if(prevline)
+            {
+                for(i = 0; i != bytewidth; ++i) out[i] = scanline[i] - (prevline[i] >> 1);
+                for(i = bytewidth; i < length; ++i) out[i] = scanline[i] - ((scanline[i - bytewidth] + prevline[i]) >> 1);
+            }
+            else
+            {
+                for(i = 0; i != bytewidth; ++i) out[i] = scanline[i];
+                for(i = bytewidth; i < length; ++i) out[i] = scanline[i] - (scanline[i - bytewidth] >> 1);
+            }
+            break;
+        case 4: /*Paeth*/
+            if(prevline)
+            {
+                /*paethPredictor(0, prevline[i], 0) is always prevline[i]*/
+                for(i = 0; i != bytewidth; ++i) out[i] = (scanline[i] - prevline[i]);
+                for(i = bytewidth; i < length; ++i)
+                {
+                    out[i] = (scanline[i] - PXADAM7paethPredictor(scanline[i - bytewidth], prevline[i], prevline[i - bytewidth]));
+                }
+            }
+            else
+            {
+                for(i = 0; i != bytewidth; ++i) out[i] = scanline[i];
+                /*paethPredictor(scanline[i - bytewidth], 0, 0) is always scanline[i - bytewidth]*/
+                for(i = bytewidth; i < length; ++i) out[i] = (scanline[i] - scanline[i - bytewidth]);
+            }
+            break;
+        default:
+            return; /*invalid filter type given*/
     }
 }
 
@@ -980,8 +1010,8 @@ static unsigned filter
     the scanlines with 1 extra byte per scanline
     */
 
-//                   unsigned bpp = lodepng_get_bpp(color);
-    /*the width of a scanline in bytes, not including the filter type*/
+    //                   unsigned bpp = lodepng_get_bpp(color);
+        /*the width of a scanline in bytes, not including the filter type*/
     PXSize linebytes = lodepng_get_raw_size_idat(width, 1, bpp) - 1u;
 
     /*bytewidth is used for filtering, is 1 when bpp < 8, number of bytes per pixel otherwise*/
@@ -1013,12 +1043,12 @@ static unsigned filter
 
 
 
-    if (bpp == 0) return 31; /*error: invalid color type*/
+    if(bpp == 0) return 31; /*error: invalid color type*/
 
-    if (strategy >= LFS_ZERO && strategy <= LFS_FOUR)
+    if(strategy >= LFS_ZERO && strategy <= LFS_FOUR)
     {
         unsigned char type = (unsigned char)strategy;
-        for (PXSize y = 0; y != height; ++y)
+        for(PXSize y = 0; y != height; ++y)
         {
             PXSize outindex = (1 + linebytes) * y; /*the extra filterbyte added to each row*/
             PXSize inindex = linebytes * y;
@@ -1027,40 +1057,40 @@ static unsigned filter
             prevline = &in[inindex];
         }
     }
-    else if (strategy == LFS_MINSUM)
+    else if(strategy == LFS_MINSUM)
     {
         /*adaptive filtering*/
         unsigned char* attempt[5]; /*five filtering attempts, one for each filter type*/
         PXSize smallest = 0;
         unsigned char type, bestType = 0;
 
-        for (type = 0; type != 5; ++type)
+        for(type = 0; type != 5; ++type)
         {
             PXNewList(PXByte, linebytes, &attempt[type], PXNull);
 
-            if (!attempt[type])
+            if(!attempt[type])
                 error = 83; /*alloc fail*/
         }
 
-        if (!error)
+        if(!error)
         {
-            for (PXSize y = 0; y != height; ++y)
+            for(PXSize y = 0; y != height; ++y)
             {
                 /*try the 5 filter types*/
-                for (type = 0; type != 5; ++type)
+                for(type = 0; type != 5; ++type)
                 {
                     PXSize sum = 0;
                     filterScanline(attempt[type], &in[y * linebytes], prevline, linebytes, bytewidth, type);
 
                     /*calculate the sum of the result*/
-                    if (type == 0)
+                    if(type == 0)
                     {
-                        for (PXSize x = 0; x != linebytes; ++x)
+                        for(PXSize x = 0; x != linebytes; ++x)
                             sum += (unsigned char)(attempt[type][x]);
                     }
                     else
                     {
-                        for (PXSize x = 0; x != linebytes; ++x)
+                        for(PXSize x = 0; x != linebytes; ++x)
                         {
                             /*For differences, each byte should be treated as signed, values above 127 are negative
                             (converted to signed char). Filtertype 0 isn't a difference though, so use unsigned there.
@@ -1071,7 +1101,7 @@ static unsigned filter
                     }
 
                     /*check if this is smallest sum (or if type == 0 it's the first case so always store the values)*/
-                    if (type == 0 || sum < smallest)
+                    if(type == 0 || sum < smallest)
                     {
                         bestType = type;
                         smallest = sum;
@@ -1083,51 +1113,51 @@ static unsigned filter
                 /*now fill the out values*/
                 out[y * (linebytes + 1)] = bestType; /*the first byte of a scanline will be the filter type*/
 
-                for (PXSize x = 0; x != linebytes; ++x)
+                for(PXSize x = 0; x != linebytes; ++x)
                     out[y * (linebytes + 1) + 1 + x] = attempt[bestType][x];
             }
         }
 
         //for (type = 0; type != 5; ++type) PXResizeList(PXByte, attempt[type], -1);
     }
-    else if (strategy == LFS_ENTROPY)
+    else if(strategy == LFS_ENTROPY)
     {
         unsigned char* attempt[5]; /*five filtering attempts, one for each filter type*/
         PXSize bestSum = 0;
         unsigned type, bestType = 0;
         unsigned count[256];
 
-        for (type = 0; type != 5; ++type)
+        for(type = 0; type != 5; ++type)
         {
             PXNewList(PXByte, linebytes, &attempt[type], PXNull);
 
-            if (!attempt[type])
+            if(!attempt[type])
                 error = 83; /*alloc fail*/
         }
 
-        if (!error)
+        if(!error)
         {
-            for (PXSize y = 0; y != height; ++y)
+            for(PXSize y = 0; y != height; ++y)
             {
                 /*try the 5 filter types*/
-                for (type = 0; type != 5; ++type)
+                for(type = 0; type != 5; ++type)
                 {
                     PXSize sum = 0;
                     filterScanline(attempt[type], &in[y * linebytes], prevline, linebytes, bytewidth, type);
                     PXMemoryClear(count, 256 * sizeof(*count));
 
-                    for (PXSize x = 0; x != linebytes; ++x)
+                    for(PXSize x = 0; x != linebytes; ++x)
                         ++count[attempt[type][x]];
 
                     ++count[type]; /*the filter type itself is part of the scanline*/
 
-                    for (PXSize x = 0; x != 256; ++x)
+                    for(PXSize x = 0; x != 256; ++x)
                     {
                         sum += ilog2i(count[x]);
                     }
 
                     /*check if this is smallest sum (or if type == 0 it's the first case so always store the values)*/
-                    if (type == 0 || sum > bestSum)
+                    if(type == 0 || sum > bestSum)
                     {
                         bestType = type;
                         bestSum = sum;
@@ -1138,16 +1168,16 @@ static unsigned filter
 
                 /*now fill the out values*/
                 out[y * (linebytes + 1)] = bestType; /*the first byte of a scanline will be the filter type*/
-                for (PXSize x = 0; x != linebytes; ++x) out[y * (linebytes + 1) + 1 + x] = attempt[bestType][x];
+                for(PXSize x = 0; x != linebytes; ++x) out[y * (linebytes + 1) + 1 + x] = attempt[bestType][x];
             }
         }
 
-        for (type = 0; type != 5; ++type)
+        for(type = 0; type != 5; ++type)
             PXDeleteList(PXByte, PXNull, &attempt[type], PXNull);
     }
-    else if (strategy == LFS_PREDEFINED)
+    else if(strategy == LFS_PREDEFINED)
     {
-        for (PXSize y = 0; y != height; ++y)
+        for(PXSize y = 0; y != height; ++y)
         {
             PXSize outindex = (1 + linebytes) * y; /*the extra filterbyte added to each row*/
             PXSize inindex = linebytes * y;
@@ -1157,7 +1187,7 @@ static unsigned filter
             prevline = &in[inindex];
         }
     }
-    else if (strategy == LFS_BRUTE_FORCE)
+    else if(strategy == LFS_BRUTE_FORCE)
     {
         /*brute force filter chooser.
         deflate the scanline after every filter attempt to see which one deflates best.
@@ -1179,19 +1209,19 @@ static unsigned filter
         PXZLIBsettings.custom_PXZLIB = 0;
         PXZLIBsettings.custom_deflate = 0;
 
-        for (type = 0; type != 5; ++type)
+        for(type = 0; type != 5; ++type)
         {
             PXNewList(PXByte, linebytes, &attempt[type], PXNull);
 
-            if (!attempt[type])
+            if(!attempt[type])
                 error = 83; /*alloc fail*/
         }
 
-        if (!error)
+        if(!error)
         {
-            for (PXSize y = 0; y != height; ++y) /*try the 5 filter types*/
+            for(PXSize y = 0; y != height; ++y) /*try the 5 filter types*/
             {
-                for (type = 0; type != 5; ++type)
+                for(type = 0; type != 5; ++type)
                 {
                     unsigned testsize = (unsigned)linebytes;
                     /*if(testsize > 8) testsize /= 8;*/ /*it already works good enough by testing a part of the row*/
@@ -1210,7 +1240,7 @@ static unsigned filter
 
                     PXDeleteList(PXByte, sizeAA, dummy, PXNull);
                     /*check if this is smallest size (or if type == 0 it's the first case so always store the values)*/
-                    if (type == 0 || size[type] < smallest)
+                    if(type == 0 || size[type] < smallest)
                     {
                         bestType = type;
                         smallest = size[type];
@@ -1218,10 +1248,10 @@ static unsigned filter
                 }
                 prevline = &in[y * linebytes];
                 out[y * (linebytes + 1)] = bestType; /*the first byte of a scanline will be the filter type*/
-                for (PXSize x = 0; x != linebytes; ++x) out[y * (linebytes + 1) + 1 + x] = attempt[bestType][x];
+                for(PXSize x = 0; x != linebytes; ++x) out[y * (linebytes + 1) + 1 + x] = attempt[bestType][x];
             }
         }
-        for (type = 0; type != 5; ++type)
+        for(type = 0; type != 5; ++type)
             PXDeleteList(PXByte, 0, attempt[type], 0);
     }
     else
@@ -1233,7 +1263,7 @@ static unsigned filter
 void setBitOfReversedStream(PXSize* bitpointer, unsigned char* bitstream, unsigned char bit)
 {
     // the current bit in bitstream may be 0 or 1 for this to work
-    if (bit == 0) bitstream[(*bitpointer) >> 3u] &= (unsigned char)(~(1u << (7u - ((*bitpointer) & 7u))));
+    if(bit == 0) bitstream[(*bitpointer) >> 3u] &= (unsigned char)(~(1u << (7u - ((*bitpointer) & 7u))));
     else         bitstream[(*bitpointer) >> 3u] |= (1u << (7u - ((*bitpointer) & 7u)));
     ++(*bitpointer);
 }
@@ -1247,9 +1277,9 @@ void addPaddingBits(unsigned char* out, const unsigned char* in, PXSize olinebit
     PXSize diff = olinebits - ilinebits;
     PXSize obp = 0, ibp = 0; // bit pointers
 
-    for (PXSize y = 0; y != h; ++y)
+    for(PXSize y = 0; y != h; ++y)
     {
-        for (PXSize x = 0; x < ilinebits; ++x)
+        for(PXSize x = 0; x < ilinebits; ++x)
         {
             unsigned char bit = readBitFromReversedStream(&ibp, in);
             setBitOfReversedStream(&obp, out, bit);
@@ -1288,98 +1318,98 @@ PXSize preProcessScanlines
     */
     unsigned error = 0;
 
-    switch (interlaceMethod)
+    switch(interlaceMethod)
     {
-    case PXPNGInterlaceNone:
-    {
-        const PXSize outsize = height + (height * ((width * bpp + 7u) / 8u)); /*image size plus an extra byte per scanline + possible padding bits*/
-        const PXActionResult allocationResult = PXFileMapToMemory(pxScanlineStream, outsize, PXAccessModeReadAndWrite);
-
-        PXActionReturnOnError(allocationResult);
-
-        // non multiple of 8 bits per scanline, padding bits needed per scanline
-        const PXBool paddingBitsNeeded = bpp < 8 && width * bpp != ((width * bpp + 7u) / 8u) * 8u;
-
-        if (paddingBitsNeeded)
+        case PXPNGInterlaceNone:
         {
-            PXByte* padded;
+            const PXSize outsize = height + (height * ((width * bpp + 7u) / 8u)); /*image size plus an extra byte per scanline + possible padding bits*/
+            const PXActionResult allocationResult = PXFileMapToMemory(pxScanlineStream, outsize, PXAccessModeReadAndWrite);
 
-            const PXSize size = height * ((width * bpp + 7u) / 8u);
-            PXNewList(PXByte, size, &padded, 0);
+            PXActionReturnOnError(allocationResult);
 
-            if (!padded)
-                error = 83; /*alloc fail*/
+            // non multiple of 8 bits per scanline, padding bits needed per scanline
+            const PXBool paddingBitsNeeded = bpp < 8 && width * bpp != ((width * bpp + 7u) / 8u) * 8u;
 
-            if (!error)
+            if(paddingBitsNeeded)
             {
-                addPaddingBits(padded, in, ((width * bpp + 7u) / 8u) * 8u, width * bpp, height);
-                error = filter(pxScanlineStream->Data, padded, width, height, bpp, LFS_MINSUM);
-            }
+                PXByte* padded;
 
-            PXDeleteList(PXByte, size, padded, PXNull);
-        }
-        else
-        {
-            // we can immediately filter into the out buffer, no other steps needed
-            error = filter(pxScanlineStream->Data, in, width, height, bpp, LFS_MINSUM);
-        }
+                const PXSize size = height * ((width * bpp + 7u) / 8u);
+                PXNewList(PXByte, size, &padded, 0);
 
-        break;
-    }
-    case PXPNGInterlaceADAM7:
-    {
-        unsigned passw[7], passh[7];
-        PXSize filter_passstart[8], padded_passstart[8], passstart[8];
+                if(!padded)
+                    error = 83; /*alloc fail*/
 
-        PXADAM7_getpassvalues(passw, passh, filter_passstart, padded_passstart, passstart, width, height, bpp);
-
-        const PXSize outsize = filter_passstart[7]; // image size plus an extra byte per scanline + possible padding bits
-        const PXActionResult allocationResult = PXFileMapToMemory(pxScanlineStream, outsize, PXAccessModeReadAndWrite);
-
-        PXActionReturnOnError(allocationResult);
-
-        PXByte* adam7 = PXNull;
-
-        PXNewList(PXByte, passstart[7], &adam7, PXNull);
-
-        if (!adam7 && passstart[7])
-            error = 83; //alloc fail
-
-        if (!error)
-        {
-            //Adam7_interlace(adam7, in, png->ImageHeader.Width, png->ImageHeader.Height, bpp);
-            for (PXInt8U i = 0; i != 7u; ++i)
-            {
-                if (bpp < 8)
+                if(!error)
                 {
-                    PXByte* padded = PXNull;
-                    const PXSize newSize = padded_passstart[i + 1] - padded_passstart[i];
-                    PXNewList(PXByte, newSize, &padded, PXNull);
-                    //  if(!padded) ERROR_BREAK(83); //alloc fail
-                    addPaddingBits(padded, &adam7[passstart[i]], ((passw[i] * bpp + 7u) / 8u) * 8u, passw[i] * bpp, passh[i]);
-                    //  error = filter(&(*out)[filter_passstart[i]], padded, passw[i], passh[i], &info_png->color, settings);
-
-                    PXDeleteList(PXByte, newSize, padded, PXNull);
-                }
-                else
-                {
-                    //error = filter(&(*out)[filter_passstart[i]], &adam7[padded_passstart[i]], passw[i], passh[i], &info_png->color, settings);
+                    addPaddingBits(padded, in, ((width * bpp + 7u) / 8u) * 8u, width * bpp, height);
+                    error = filter(pxScanlineStream->Data, padded, width, height, bpp, LFS_MINSUM);
                 }
 
-                if (error)
-                    break;
+                PXDeleteList(PXByte, size, padded, PXNull);
             }
+            else
+            {
+                // we can immediately filter into the out buffer, no other steps needed
+                error = filter(pxScanlineStream->Data, in, width, height, bpp, LFS_MINSUM);
+            }
+
+            break;
         }
+        case PXPNGInterlaceADAM7:
+        {
+            unsigned passw[7], passh[7];
+            PXSize filter_passstart[8], padded_passstart[8], passstart[8];
 
-        PXDeleteList(PXByte, adam7, passstart[7], PXNull);
+            PXADAM7_getpassvalues(passw, passh, filter_passstart, padded_passstart, passstart, width, height, bpp);
 
-        break;
-    }
-    default:
-    case PXPNGInterlaceInvalid:
-    {
-        break;
-    }
+            const PXSize outsize = filter_passstart[7]; // image size plus an extra byte per scanline + possible padding bits
+            const PXActionResult allocationResult = PXFileMapToMemory(pxScanlineStream, outsize, PXAccessModeReadAndWrite);
+
+            PXActionReturnOnError(allocationResult);
+
+            PXByte* adam7 = PXNull;
+
+            PXNewList(PXByte, passstart[7], &adam7, PXNull);
+
+            if(!adam7 && passstart[7])
+                error = 83; //alloc fail
+
+            if(!error)
+            {
+                //Adam7_interlace(adam7, in, png->ImageHeader.Width, png->ImageHeader.Height, bpp);
+                for(PXInt8U i = 0; i != 7u; ++i)
+                {
+                    if(bpp < 8)
+                    {
+                        PXByte* padded = PXNull;
+                        const PXSize newSize = padded_passstart[i + 1] - padded_passstart[i];
+                        PXNewList(PXByte, newSize, &padded, PXNull);
+                        //  if(!padded) ERROR_BREAK(83); //alloc fail
+                        addPaddingBits(padded, &adam7[passstart[i]], ((passw[i] * bpp + 7u) / 8u) * 8u, passw[i] * bpp, passh[i]);
+                        //  error = filter(&(*out)[filter_passstart[i]], padded, passw[i], passh[i], &info_png->color, settings);
+
+                        PXDeleteList(PXByte, newSize, padded, PXNull);
+                    }
+                    else
+                    {
+                        //error = filter(&(*out)[filter_passstart[i]], &adam7[padded_passstart[i]], passw[i], passh[i], &info_png->color, settings);
+                    }
+
+                    if(error)
+                        break;
+                }
+            }
+
+            PXDeleteList(PXByte, adam7, passstart[7], PXNull);
+
+            break;
+        }
+        default:
+        case PXPNGInterlaceInvalid:
+        {
+            break;
+        }
     }
 
     return error;
@@ -1405,24 +1435,24 @@ PXActionResult PXAPI PXPNGSaveToFile(PXResourceTransphereInfo* const pxResourceT
         const unsigned char compressionMethod = 0;
         const unsigned char filterMethod = 0;
 
-        switch (pxImage->Format)
+        switch(pxImage->Format)
         {
-        case PXColorFormatInvalid:
-            return PXActionRefuedFormatIllegal;
+            case PXColorFormatInvalid:
+                return PXActionRefuedFormatIllegal;
 
-        case PXColorFormatA8:
-            colorType = PXPNGColorGrayscaleAlpha;
-            break;
+            case PXColorFormatA8:
+                colorType = PXPNGColorGrayscaleAlpha;
+                break;
 
-        case PXColorFormatBGRI8:
-        case PXColorFormatRGBI8:
-            colorType = PXPNGColorRGB;
-            break;
+            case PXColorFormatBGRI8:
+            case PXColorFormatRGBI8:
+                colorType = PXPNGColorRGB;
+                break;
 
-        case PXColorFormatRGBAI8:
-        case PXColorFormatBGRAI8:
-            colorType = PXPNGColorRGBA;
-            break;
+            case PXColorFormatRGBAI8:
+            case PXColorFormatBGRAI8:
+                colorType = PXPNGColorRGBA;
+                break;
         }
         const unsigned int chunkLength = 13u;
 
@@ -1460,25 +1490,25 @@ PXActionResult PXAPI PXPNGSaveToFile(PXResourceTransphereInfo* const pxResourceT
         // 2 = definitly
         unsigned char shouldPrint = 0;
 
-        switch (colorType)
+        switch(colorType)
         {
-        default:
-        case PXPNGColorInvalid:
-            return PXActionInvalid;
+            default:
+            case PXPNGColorInvalid:
+                return PXActionInvalid;
 
-        case PXPNGColorGrayscale: // ColorType = 0
-        case PXPNGColorGrayscaleAlpha:  // ColorType = 4
-            shouldPrint = 0;
-            break;
+            case PXPNGColorGrayscale: // ColorType = 0
+            case PXPNGColorGrayscaleAlpha:  // ColorType = 4
+                shouldPrint = 0;
+                break;
 
-        case PXPNGColorRGB:  // ColorType = 2
-        case PXPNGColorRGBA:  // ColorType = 6
-            shouldPrint = 1;
-            break;
+            case PXPNGColorRGB:  // ColorType = 2
+            case PXPNGColorRGBA:  // ColorType = 6
+                shouldPrint = 1;
+                break;
 
-        case PXPNGColorPalette:  // ColorType = 3;
-            shouldPrint = 2;
-            break;
+            case PXPNGColorPalette:  // ColorType = 3;
+                shouldPrint = 2;
+                break;
         }
     }
 
@@ -1564,7 +1594,7 @@ PXActionResult PXAPI PXPNGSaveToFile(PXResourceTransphereInfo* const pxResourceT
         const unsigned char* chunkStart = PXFileCursorPosition(pxResourceTransphereInfo->FileReference);
         const PXSize chunkLength = 7u;
 
-        const PXFileDataElementType pxFileDataElementType[] =
+        const PXDataTypeEntry pxFileDataElementType[] =
         {
             {&chunkLength, PXDataTypeInt32UBE},
             {"tIME", PXDataTypeDatax4},
@@ -1603,7 +1633,7 @@ PXActionResult PXAPI PXPNGSaveToFile(PXResourceTransphereInfo* const pxResourceT
         // Preprocess scanlines
         {
             // check if colormodes are equal
-            if (0)
+            if(0)
             {
 
             }
@@ -1645,9 +1675,9 @@ PXActionResult PXAPI PXPNGSaveToFile(PXResourceTransphereInfo* const pxResourceT
 
     //---<IEND>---------------------------------------------------------------- 12 Bytes
     {
-        const PXInt8U imageEndChunk[8] = {'I','E','N','D','\xAE','\x42','\x60','\x82'}; // Combined write, as this is constand
+        const PXInt8U imageEndChunk[8] = { 'I','E','N','D','\xAE','\x42','\x60','\x82' }; // Combined write, as this is constand
 
-        const PXFileDataElementType pxFileDataElementType[] =
+        const PXDataTypeEntry pxFileDataElementType[] =
         {
             {PXNull, PXDataTypePadding(4)},
             {(void*)imageEndChunk, sizeof(imageEndChunk)}
@@ -1757,32 +1787,32 @@ PXActionResult PXAPI PXPNGImageDataDecompress(const PXPNG* const png, const void
 
     switch(colorType)
     {
-    default:
-    case PXPNGColorInvalid:
-        return PXActionRefusedArgumentInvalid;
+        default:
+        case PXPNGColorInvalid:
+            return PXActionRefusedArgumentInvalid;
 
-    case PXPNGColorGrayscale:
-        colorModeIn.colortype = LCT_GREY;
-        break;
+        case PXPNGColorGrayscale:
+            colorModeIn.colortype = LCT_GREY;
+            break;
 
-    case PXPNGColorRGB:
-        colorModeIn.colortype = LCT_RGB;
-        colorModeOut.colortype = LCT_RGB;
-        break;
+        case PXPNGColorRGB:
+            colorModeIn.colortype = LCT_RGB;
+            colorModeOut.colortype = LCT_RGB;
+            break;
 
-    case PXPNGColorPalette:
-        colorModeIn.colortype = LCT_PALETTE;
-        colorModeOut.colortype = LCT_RGBA;
-        break;
+        case PXPNGColorPalette:
+            colorModeIn.colortype = LCT_PALETTE;
+            colorModeOut.colortype = LCT_RGBA;
+            break;
 
-    case PXPNGColorGrayscaleAlpha:
-        colorModeIn.colortype = LCT_GREY_ALPHA;
-        break;
+        case PXPNGColorGrayscaleAlpha:
+            colorModeIn.colortype = LCT_GREY_ALPHA;
+            break;
 
-    case PXPNGColorRGBA:
-        colorModeIn.colortype = LCT_RGBA;
-        colorModeOut.colortype = LCT_RGBA;
-        break;
+        case PXPNGColorRGBA:
+            colorModeIn.colortype = LCT_RGBA;
+            colorModeOut.colortype = LCT_RGBA;
+            break;
     }
 
     //colorModeOut.bitdepth = colorModeIn.bitdepth;
@@ -1893,20 +1923,20 @@ unsigned getNumColorChannels(LodePNGColorType colortype)
 {
     switch(colortype)
     {
-    case LCT_GREY:
-        return 1;
-    case LCT_RGB:
-        return 3;
-    case LCT_PALETTE:
-        return 1;
-    case LCT_GREY_ALPHA:
-        return 2;
-    case LCT_RGBA:
-        return 4;
-    case LCT_MAX_OCTET_VALUE:
-        return 0; /* invalid color type */
-    default:
-        return 0; /*invalid color type*/
+        case LCT_GREY:
+            return 1;
+        case LCT_RGB:
+            return 3;
+        case LCT_PALETTE:
+            return 1;
+        case LCT_GREY_ALPHA:
+            return 2;
+        case LCT_RGBA:
+            return 4;
+        case LCT_MAX_OCTET_VALUE:
+            return 0; /* invalid color type */
+        default:
+            return 0; /*invalid color type*/
     }
 }
 
@@ -1950,9 +1980,9 @@ void getPixelColorRGBA16(unsigned short* r, unsigned short* g, unsigned short* b
         *g = 256u * in[i * 6 + 2] + in[i * 6 + 3];
         *b = 256u * in[i * 6 + 4] + in[i * 6 + 5];
         if(mode->key_defined
-                && 256u * in[i * 6 + 0] + in[i * 6 + 1] == mode->key_r
-                && 256u * in[i * 6 + 2] + in[i * 6 + 3] == mode->key_g
-                && 256u * in[i * 6 + 4] + in[i * 6 + 5] == mode->key_b) *a = 0;
+           && 256u * in[i * 6 + 0] + in[i * 6 + 1] == mode->key_r
+           && 256u * in[i * 6 + 2] + in[i * 6 + 3] == mode->key_g
+           && 256u * in[i * 6 + 4] + in[i * 6 + 5] == mode->key_b) *a = 0;
         else *a = 65535;
     }
     else if(mode->colortype == LCT_GREY_ALPHA)
@@ -2075,9 +2105,9 @@ void getPixelColorsRGBA8(unsigned char* buffer, PXSize numpixels, const unsigned
                 buffer[1] = in[i * 6 + 2];
                 buffer[2] = in[i * 6 + 4];
                 buffer[3] = mode->key_defined
-                            && 256U * in[i * 6 + 0] + in[i * 6 + 1] == mode->key_r
-                            && 256U * in[i * 6 + 2] + in[i * 6 + 3] == mode->key_g
-                            && 256U * in[i * 6 + 4] + in[i * 6 + 5] == mode->key_b ? 0 : 255;
+                    && 256U * in[i * 6 + 0] + in[i * 6 + 1] == mode->key_r
+                    && 256U * in[i * 6 + 2] + in[i * 6 + 3] == mode->key_g
+                    && 256U * in[i * 6 + 4] + in[i * 6 + 5] == mode->key_b ? 0 : 255;
             }
         }
     }
@@ -2321,8 +2351,8 @@ void getPixelColorRGBA8(PXColorRGBAI8* const color, const unsigned char* in, PXS
             color->Blue = in[i * 6 + 4];
 
             if(mode->key_defined && 256U * in[i * 6 + 0] + in[i * 6 + 1] == mode->key_r
-                    && 256U * in[i * 6 + 2] + in[i * 6 + 3] == mode->key_g
-                    && 256U * in[i * 6 + 4] + in[i * 6 + 5] == mode->key_b)
+               && 256U * in[i * 6 + 2] + in[i * 6 + 3] == mode->key_g
+               && 256U * in[i * 6 + 4] + in[i * 6 + 5] == mode->key_b)
                 color->Alpha = 0;
 
             else
@@ -2394,85 +2424,85 @@ PXActionResult PXAPI rgba8ToPixel
 {
     switch(mode->colortype)
     {
-    case LCT_GREY:
-    {
-        unsigned char gray = color->Red; /*((unsigned short)r + g + b) / 3u;*/
-        if(mode->bitdepth == 8) out[i] = gray;
-        else if(mode->bitdepth == 16) out[i * 2 + 0] = out[i * 2 + 1] = gray;
-        else
+        case LCT_GREY:
         {
-            /*take the most significant bits of gray*/
-            gray = ((unsigned)gray >> (8u - mode->bitdepth)) & ((1u << mode->bitdepth) - 1u);
-            addColorBits(out, i, mode->bitdepth, gray);
+            unsigned char gray = color->Red; /*((unsigned short)r + g + b) / 3u;*/
+            if(mode->bitdepth == 8) out[i] = gray;
+            else if(mode->bitdepth == 16) out[i * 2 + 0] = out[i * 2 + 1] = gray;
+            else
+            {
+                /*take the most significant bits of gray*/
+                gray = ((unsigned)gray >> (8u - mode->bitdepth)) & ((1u << mode->bitdepth) - 1u);
+                addColorBits(out, i, mode->bitdepth, gray);
+            }
+            break;
         }
-        break;
-    }
-    case LCT_RGB:
-    {
-        if(mode->bitdepth == 8)
+        case LCT_RGB:
         {
-            out[i * 3 + 0] = color->Red;
-            out[i * 3 + 1] = color->Green;
-            out[i * 3 + 2] = color->Blue;
+            if(mode->bitdepth == 8)
+            {
+                out[i * 3 + 0] = color->Red;
+                out[i * 3 + 1] = color->Green;
+                out[i * 3 + 2] = color->Blue;
+            }
+            else
+            {
+                out[i * 6 + 0] = out[i * 6 + 1] = color->Red;
+                out[i * 6 + 2] = out[i * 6 + 3] = color->Green;
+                out[i * 6 + 4] = out[i * 6 + 5] = color->Blue;
+            }
+            break;
         }
-        else
+        case LCT_PALETTE:
         {
-            out[i * 6 + 0] = out[i * 6 + 1] = color->Red;
-            out[i * 6 + 2] = out[i * 6 + 3] = color->Green;
-            out[i * 6 + 4] = out[i * 6 + 5] = color->Blue;
-        }
-        break;
-    }
-    case LCT_PALETTE:
-    {
-        int index = color_tree_get(tree, color);
+            int index = color_tree_get(tree, color);
 
-        if(index < 0)
-            return PXActionInvalid; // color not in palette
+            if(index < 0)
+                return PXActionInvalid; // color not in palette
 
-        if(mode->bitdepth == 8)
-            out[i] = index;
-        else
-            addColorBits(out, i, mode->bitdepth, (unsigned)index);
+            if(mode->bitdepth == 8)
+                out[i] = index;
+            else
+                addColorBits(out, i, mode->bitdepth, (unsigned)index);
 
-        break;
-    }
-    case LCT_GREY_ALPHA:
-    {
-        unsigned char gray = color->Red; /*((unsigned short)r + g + b) / 3u;*/
-        if(mode->bitdepth == 8)
-        {
-            out[i * 2 + 0] = gray;
-            out[i * 2 + 1] = color->Alpha;
+            break;
         }
-        else if(mode->bitdepth == 16)
+        case LCT_GREY_ALPHA:
         {
-            out[i * 4 + 0] = out[i * 4 + 1] = gray;
-            out[i * 4 + 2] = out[i * 4 + 3] = color->Alpha;
+            unsigned char gray = color->Red; /*((unsigned short)r + g + b) / 3u;*/
+            if(mode->bitdepth == 8)
+            {
+                out[i * 2 + 0] = gray;
+                out[i * 2 + 1] = color->Alpha;
+            }
+            else if(mode->bitdepth == 16)
+            {
+                out[i * 4 + 0] = out[i * 4 + 1] = gray;
+                out[i * 4 + 2] = out[i * 4 + 3] = color->Alpha;
+            }
+            break;
         }
-        break;
-    }
-    case LCT_RGBA:
-    {
-        if(mode->bitdepth == 8)
+        case LCT_RGBA:
         {
-            out[i * 4 + 0] = color->Red;
-            out[i * 4 + 1] = color->Green;
-            out[i * 4 + 2] = color->Blue;
-            out[i * 4 + 3] = color->Alpha;
+            if(mode->bitdepth == 8)
+            {
+                out[i * 4 + 0] = color->Red;
+                out[i * 4 + 1] = color->Green;
+                out[i * 4 + 2] = color->Blue;
+                out[i * 4 + 3] = color->Alpha;
+            }
+            else
+            {
+                out[i * 8 + 0] = out[i * 8 + 1] = color->Red;
+                out[i * 8 + 2] = out[i * 8 + 3] = color->Green;
+                out[i * 8 + 4] = out[i * 8 + 5] = color->Blue;
+                out[i * 8 + 6] = out[i * 8 + 7] = color->Alpha;
+            }
+            break;
         }
-        else
-        {
-            out[i * 8 + 0] = out[i * 8 + 1] = color->Red;
-            out[i * 8 + 2] = out[i * 8 + 3] = color->Green;
-            out[i * 8 + 4] = out[i * 8 + 5] = color->Blue;
-            out[i * 8 + 6] = out[i * 8 + 7] = color->Alpha;
-        }
-        break;
-    }
 
-    default:
-        return PXActionRefusedArgumentInvalid;
+        default:
+            return PXActionRefusedArgumentInvalid;
     }
 
     return PXActionSuccessful;

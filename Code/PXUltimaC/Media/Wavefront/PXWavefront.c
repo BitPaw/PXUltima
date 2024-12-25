@@ -602,6 +602,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
             {
                 PXMaterialContainer* const pxMaterialContaier = &pxModel->MaterialContaierList[materialInlcudeIndex++];
                 PXFile materialFile;
+                PXClear(PXFile, &materialFile);
 
                 // Open and load
                 {

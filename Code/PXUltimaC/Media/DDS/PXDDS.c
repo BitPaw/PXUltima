@@ -464,7 +464,7 @@ PXActionResult PXAPI PXDDSLoadFromFile(PXResourceTransphereInfo* const pxResourc
 
     // Read Header
     {
-        const PXFileDataElementType pxDataStreamElementList[] =
+        const PXDataTypeEntry pxDataStreamElementList[] =
         {
             {&pxDirectDrawTexture.Size,PXDataTypeInt32ULE},
             {&pxDirectDrawTexture.Flags,PXDataTypeInt32ULE},
@@ -500,7 +500,7 @@ PXActionResult PXAPI PXDDSLoadFromFile(PXResourceTransphereInfo* const pxResourc
     // Parse extended header
     if(pxDirectDrawTexture.IsDX10)
     {
-        const PXFileDataElementType pxDataStreamElementList[] =
+        const PXDataTypeEntry pxDataStreamElementList[] =
         {
             {&pxDirectDrawTexture.GIFormatID,PXDataTypeInt32ULE},
             {&pxDirectDrawTexture.resourceDimension,PXDataTypeInt32ULE},

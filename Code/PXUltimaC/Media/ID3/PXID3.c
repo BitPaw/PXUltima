@@ -247,7 +247,7 @@ PXActionResult PXAPI PXID3LoadFromFile(PXID3* const id3, PXFile* const PXFile)
         {
             const PXBool hasTrackID = PXID3Versionv1x1 == version;
 
-            const PXFileDataElementType pxFileDataElementType[] =
+            const PXDataTypeEntry pxFileDataElementType[] =
             {
                 {id3->Title, PXID3TitleSize},
                 {id3->Artist, PXID3ArtistSize},

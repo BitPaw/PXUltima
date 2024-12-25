@@ -452,7 +452,7 @@ PXActionResult PXAPI PXJPEGLoadFromFile(PXResourceTransphereInfo* const pxResour
 
             // Read frame
             {
-                const PXFileDataElementType pxDataStreamElementList[] =
+                const PXDataTypeEntry pxDataStreamElementList[] =
                 {
                     {&frame.Precision,PXDataTypeInt08U},
                     {&frame.Height,PXDataTypeInt16UBE},
@@ -468,7 +468,7 @@ PXActionResult PXAPI PXJPEGLoadFromFile(PXResourceTransphereInfo* const pxResour
                 PXJPEGFrameComponent* frameComponent = &frame.ComponentList[i];
                 unsigned char samplingFactor = 0;
 
-                const PXFileDataElementType pxDataStreamElementList[] =
+                const PXDataTypeEntry pxDataStreamElementList[] =
                 {
                     {&frameComponent->ID,PXDataTypeInt08U},
                     {&samplingFactor,PXDataTypeInt08U},
@@ -672,7 +672,7 @@ PXActionResult PXAPI PXJPEGLoadFromFile(PXResourceTransphereInfo* const pxResour
             PXFileReadB(pxResourceLoadInfo->FileReference, identifier, 5u);
 
             {
-                const PXFileDataElementType pxDataStreamElementList[] =
+                const PXDataTypeEntry pxDataStreamElementList[] =
                 {
                     {&jpeg->FileInfo.VersionMajor, PXDataTypeInt08U},
                     {&jpeg->FileInfo.VersionMinor, PXDataTypeInt08U},
@@ -1094,7 +1094,7 @@ PXActionResult PXAPI PXJPEGSaveToFile(PXResourceTransphereInfo* const pxResource
 
         const PXInt16U segmentID = PXJPEGMarkerApplicationSegment00ID;
         const PXInt16U val = 16u;
-        const PXFileDataElementType pxDataStreamElementList[] =
+        const PXDataTypeEntry pxDataStreamElementList[] =
         {
             {(void*)&segmentID, PXDataTypeInt16UBE},
             {(void*)&val, PXDataTypeInt16UBE},

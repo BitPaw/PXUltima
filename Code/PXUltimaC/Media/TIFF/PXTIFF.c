@@ -234,7 +234,7 @@ PXActionResult PXAPI PXTIFFLoadFromFile(PXResourceTransphereInfo* const pxResour
         }
 
         {
-            const PXFileDataElementType pxDataStreamElementList[] =
+            const PXDataTypeEntry pxDataStreamElementList[] =
             {
                 {&tiff->Version, PXDataTypeInt16U},// Version, expect this to be "42"
                 {&tiff->OffsetToIFD, PXDataTypeInt32U}
@@ -264,7 +264,7 @@ PXActionResult PXAPI PXTIFFLoadFromFile(PXResourceTransphereInfo* const pxResour
                 PXTIFFTag tiffTag;
 
                 {
-                    const PXFileDataElementType pxDataStreamElementList[] =
+                    const PXDataTypeEntry pxDataStreamElementList[] =
                     {
                         {&tiffTag.TypeID, PXDataTypeInt16U},// Version, expect this to be "42"
                         {&tiffTag.DataTypeID, PXDataTypeInt16U},

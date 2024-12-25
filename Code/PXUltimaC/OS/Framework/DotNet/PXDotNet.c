@@ -40,7 +40,7 @@ PXActionResult PXAPI PXDotNetInit(PXDotNet* const pxDotNet)
             return pxActionResult;
         }
 
-        PXLibraryGetSymbolA(&pxDotNet->Library, &createInterface, "CreateInterface");
+        PXLibraryGetSymbolA(&pxDotNet->Library, &createInterface, "CreateInterface", PXTrue);
     }
 
 

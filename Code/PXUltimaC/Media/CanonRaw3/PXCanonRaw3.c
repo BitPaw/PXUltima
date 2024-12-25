@@ -85,7 +85,7 @@ PXCanonRaw3Chunk;
 
 PXActionResult PXAPI PXCanonRaw3BlockRead(PXCanonRaw3Chunk* const pxCanonRaw3Chunk, PXFile* const pxFile)
 {
-    const PXFileDataElementType pxDataStreamElementList[] =
+    const PXDataTypeEntry pxDataStreamElementList[] =
     {
         {&pxCanonRaw3Chunk->SizeTotal, PXDataTypeInt32UBE},
         {pxCanonRaw3Chunk->ID.Data, PXDataTypeDatax4}
@@ -120,7 +120,7 @@ PXActionResult PXAPI PXCanonRaw3BlockRead(PXCanonRaw3Chunk* const pxCanonRaw3Chu
     {
     case PXCanonRaw3FTYPID:
     {
-        const PXFileDataElementType pxDataStreamElementList[] =
+        const PXDataTypeEntry pxDataStreamElementList[] =
         {
             {pxCanonRaw3Chunk->ChunkFTYP.TypeBrandMajor.Data, PXDataTypeDatax4},
             {&pxCanonRaw3Chunk->ChunkFTYP.TypeVersionMinor, PXDataTypeInt32UBE},

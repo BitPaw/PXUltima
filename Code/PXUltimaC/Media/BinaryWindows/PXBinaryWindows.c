@@ -31,7 +31,7 @@ PXActionResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceTransphereInfo* const
     {
         PXDOSHeader* const pxDOSHeader = &pxBinaryWindows->Header;
 
-        const PXFileDataElementType pxDataStreamElementList[] =
+        const PXDataTypeEntry pxDataStreamElementList[] =
         {
             {pxDOSHeader->Magic.Data,PXDataTypeDatax2 },
             {&pxDOSHeader->LastPageSize, PXDataTypeInt16ULE},
@@ -95,7 +95,7 @@ PXActionResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceTransphereInfo* const
         if(isValidFile)
         {
 
-            const PXFileDataElementType pxDataStreamElementList[] =
+            const PXDataTypeEntry pxDataStreamElementList[] =
             {
                 {&pxNEHeader->LinkerVersionMajor, PXDataTypeInt08U},
                 {&pxNEHeader->LinkerVersionMinor, PXDataTypeInt08U},
@@ -137,7 +137,7 @@ PXActionResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceTransphereInfo* const
             {
                 PXNEHeaderSegmentEntry pxNEHeaderSegmentEntry;
 
-                const PXFileDataElementType pxDataStreamElementList[] =
+                const PXDataTypeEntry pxDataStreamElementList[] =
                 {
                     {&pxNEHeaderSegmentEntry.LogicalSectorOffset, PXDataTypeInt16ULE},
                     {&pxNEHeaderSegmentEntry.LengthoftheSegment, PXDataTypeInt16ULE},

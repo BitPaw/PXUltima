@@ -273,7 +273,7 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
     {
         if (!EnumDisplayDevicesA(NULL, idx, &dd, 0))
             return; // not found!
-        if (strstr(dd.DeviceID, vendor_pxOpenGL->AttachedWindowid))
+        if (strstr(dd.DeviceID, vendor_pxOpenGL->Binding.AttachedWindowid))
             break; // there we go
         idx += 1;
     }

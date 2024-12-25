@@ -21,7 +21,7 @@ PXActionResult PXAPI PXFMTLoadFromFile(PXFMT* const fmt, PXFile* const pxFile, c
     const PXInt32U x16 = endian == PXEndianLittle ? PXDataTypeInt16ULE : PXDataTypeInt16UBE;
     const PXInt32U x32 = endian == PXEndianLittle ? PXDataTypeInt32ULE : PXDataTypeInt32UBE;
 
-    const PXFileDataElementType pxDataStreamElementList[] =
+    const PXDataTypeEntry pxDataStreamElementList[] =
     {
         {&fmt->ChunkSize,x32},
         {&fmt->AudioFormat,x16},
@@ -42,7 +42,7 @@ PXActionResult PXAPI PXFMTSaveToFile(const PXFMT* const fmt, PXFile* const pxFil
     const PXInt32U x16 = endian == PXEndianLittle ? PXDataTypeInt16ULE : PXDataTypeInt16UBE;
     const PXInt32U x32 = endian == PXEndianLittle ? PXDataTypeInt32ULE : PXDataTypeInt32UBE;
 
-    const PXFileDataElementType pxDataStreamElementList[] =
+    const PXDataTypeEntry pxDataStreamElementList[] =
     {
         {FMTSignature, PXDataTypeDatax4},
         {&fmt->ChunkSize,x32},

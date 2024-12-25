@@ -119,7 +119,7 @@ void PXAPI PXCompilerSymbolEntryAdd(PXCompiler* const pxCompiler, const PXCompil
 {
     const PXInt8U symbolID = compilerSymbolEntry->ID;
 
-    const PXFileDataElementType pxFileDataElementType[] =
+    const PXDataTypeEntry pxFileDataElementType[] =
     {
         &symbolID, PXDataTypeInt08U,
         &compilerSymbolEntry->Coloum, PXDataTypeInt32U,
@@ -232,7 +232,7 @@ PXSize PXAPI PXCompilerSymbolEntryMergeCurrentWithNext(PXCompiler* const pxCompi
     {
         const PXInt8U symbolID = compilerSymbolEntry->ID;
         const PXInt32U size = oldCopy.Size + ((mergCopy.Coloum + mergCopy.Size) - (oldCopy.Coloum + oldCopy.Size));
-        const PXFileDataElementType pxFileDataElementType[] =
+        const PXDataTypeEntry pxFileDataElementType[] =
         {
             &oldCopy.ID, PXDataTypeInt08U,
             &oldCopy.Coloum, PXDataTypeInt32U,
@@ -252,7 +252,7 @@ PXSize PXAPI PXCompilerSymbolEntryMergeCurrentWithNext(PXCompiler* const pxCompi
         const PXInt8U symbolID = PXCompilerSymbolLexerInvalid;
         const PXInt32U emptyValue = 0;
         const void* emptyAdress = 0;
-        const PXFileDataElementType pxFileDataElementType[] =
+        const PXDataTypeEntry pxFileDataElementType[] =
         {
             &symbolID, PXDataTypeInt08U,
             &mergCopy.Coloum, PXDataTypeInt32U,
@@ -333,7 +333,7 @@ PXSize PXAPI PXCompilerSymbolEntryExtract(PXCompiler* const pxCompiler)
     {
         PXInt8U symbolID = 0;
 
-        const PXFileDataElementType pxFileDataElementType[] =
+        const PXDataTypeEntry pxFileDataElementType[] =
         {
             &symbolID, PXDataTypeInt08U,
             &pxCompilerSymbolEntry->Coloum, PXDataTypeInt32U,

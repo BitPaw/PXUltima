@@ -127,7 +127,7 @@ PXActionResult PXAPI PXN64LoadFromFile(PXResourceTransphereInfo* const pxResourc
     {
         // 0x0000000-ram:b07fffff 
 
-        PXFileDataElementType pxFileDataElementType[] =
+        PXDataTypeEntry pxFileDataElementType[] =
         {
             {&n64.EndiannessID, PXDataTypeNibble}, // 0x00
             {PXNull, PXDataTypeNibble}, // 0x00

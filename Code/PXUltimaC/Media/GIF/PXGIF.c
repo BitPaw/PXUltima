@@ -49,7 +49,7 @@ PXActionResult PXAPI PXGIFLoadFromFile(PXResourceTransphereInfo* const pxResourc
         {
             PXInt8U packedFields = 0;
 
-            const PXFileDataElementType pxDataStreamElementList[] =
+            const PXDataTypeEntry pxDataStreamElementList[] =
             {
                 {&gif.Width,PXDataTypeInt16ULE},
                 {&gif.Height,PXDataTypeInt16ULE},
@@ -78,7 +78,7 @@ PXActionResult PXAPI PXGIFLoadFromFile(PXResourceTransphereInfo* const pxResourc
             {
                 PXInt8U packedFields = 0;
 
-                const PXFileDataElementType pxDataStreamElementList[] =
+                const PXDataTypeEntry pxDataStreamElementList[] =
                 {
                     {&imageDescriptor.Separator,PXDataTypeInt08U},
                     {&imageDescriptor.LeftPosition,PXDataTypeInt16ULE},

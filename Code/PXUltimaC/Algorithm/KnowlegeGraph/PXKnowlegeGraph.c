@@ -13,14 +13,14 @@ PXActionResult PXAPI PXKnowlegeGraphNodeInsert(PXKnowlegeGraph* const pxKnowlege
 
 void PXDrawTriangle(PXOpenGL* pxOpenGL)
 {
-    pxOpenGL->Begin(GL_TRIANGLES);
-    pxOpenGL->Color3f(1, 0, 0);
-    pxOpenGL->Vertex2f(-0.5f, -0.5f);
-    pxOpenGL->Color3f(0, 1, 0);
-    pxOpenGL->Vertex2f(0.5f, -0.5f);
-    pxOpenGL->Color3f(0, 0, 1);
-    pxOpenGL->Vertex2f(0, 0.5f);
-    pxOpenGL->End();
+    pxOpenGL->Binding.Begin(GL_TRIANGLES);
+    pxOpenGL->Binding.Color3f(1, 0, 0);
+    pxOpenGL->Binding.Vertex2f(-0.5f, -0.5f);
+    pxOpenGL->Binding.Color3f(0, 1, 0);
+    pxOpenGL->Binding.Vertex2f(0.5f, -0.5f);
+    pxOpenGL->Binding.Color3f(0, 0, 1);
+    pxOpenGL->Binding.Vertex2f(0, 0.5f);
+    pxOpenGL->Binding.End();
 }
 
 typedef struct PXLine_
@@ -57,17 +57,17 @@ void PXDrawLine(PXOpenGL* const pxOpenGL, PXLine* const pxLine)
         {
             const PXColorRGBAF* const color = colorList[i];
 
-            pxOpenGL->LineWidth(lineSize[i]);
-            pxOpenGL->PointSize(lineSize[i]);
+            pxOpenGL->Binding.LineWidth(lineSize[i]);
+            pxOpenGL->Binding.PointSize(lineSize[i]);
 
-            pxOpenGL->Begin(drawMode[j]);
+            pxOpenGL->Binding.Begin(drawMode[j]);
 
-            pxOpenGL->Color4f(color->Red, color->Green, color->Blue, color->Alpha);
+            pxOpenGL->Binding.Color4f(color->Red, color->Green, color->Blue, color->Alpha);
 
-            pxOpenGL->Vertex2f(pxLine->Positon[0], pxLine->Positon[1]);
-            pxOpenGL->Vertex2f(pxLine->Positon[2], pxLine->Positon[3]);
+            pxOpenGL->Binding.Vertex2f(pxLine->Positon[0], pxLine->Positon[1]);
+            pxOpenGL->Binding.Vertex2f(pxLine->Positon[2], pxLine->Positon[3]);
 
-            pxOpenGL->End();
+            pxOpenGL->Binding.End();
         }
     }
 
@@ -81,25 +81,25 @@ void PXDrawCircle(PXOpenGL* const pxOpenGL, PXCircle* const pxCircle)
     PXColorRGBAF* colorList[2] = { pxCircle->ColorFill, pxCircle->ColorBorder };
     int modeList[2] = { GL_POLYGON, GL_LINE_LOOP };
 
-    pxOpenGL->LineWidth(3);
+    pxOpenGL->Binding.LineWidth(3);
 
     for (PXSize i = 0; i < 2; ++i)
     {
         PXColorRGBAF* color = colorList[i];
 
-        pxOpenGL->Begin(modeList[i]);
+        pxOpenGL->Binding.Begin(modeList[i]);
 
-        pxOpenGL->Color4f(color->Red, color->Green, color->Blue, color->Alpha);
+        pxOpenGL->Binding.Color4f(color->Red, color->Green, color->Blue, color->Alpha);
 
         for (PXSize j = 0; j < pxCircle->LevelOfDetail; ++j)
         {
             const float angle = piX2 * j / pxCircle->LevelOfDetail;
             const float x = pxCircle->Positon[0] + PXMathCosinus(angle) * pxCircle->Scale[0];
             const float y = pxCircle->Positon[1] + PXMathSinus(angle) * pxCircle->Scale[1];
-            pxOpenGL->Vertex2f(x, y);
+            pxOpenGL->Binding.Vertex2f(x, y);
         }
 
-        pxOpenGL->End();
+        pxOpenGL->Binding.End();
     }
 }
 
@@ -173,7 +173,7 @@ PXActionResult PXAPI PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph* const pxKnowle
         PXGraphicInstantiate(&pxGraphic, &pxGraphicInitializeInfo);
     }
 
-    pxGraphic.OpenGLInstance.Viewport(0,0, imageWidth, imageHeight);
+    pxGraphic.OpenGLInstance.Binding.Viewport(0,0, imageWidth, imageHeight);
 
     // Render image
     {

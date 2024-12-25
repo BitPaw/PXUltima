@@ -27,7 +27,7 @@ PXActionResult PXAPI PXLAMELoadFromFile(PXLAME* const lame, PXFile* const pxFile
     }
 
     {
-        const PXFileDataElementType pxDataStreamElementList[] =
+        const PXDataTypeEntry pxDataStreamElementList[] =
         {
             {&lame->Revision,PXDataTypeInt08U},
             {&lame->VBRType,PXDataTypeInt08U},
@@ -87,7 +87,7 @@ PXActionResult PXAPI PXLAMELoadFromFile(PXLAME* const lame, PXFile* const pxFile
     }
 
     {
-        const PXFileDataElementType pxDataStreamElementList[] =
+        const PXDataTypeEntry pxDataStreamElementList[] =
         {
             {&lame->Unused,PXDataTypeInt08U},
             {&lame->Preset,PXDataTypeInt16UBE},

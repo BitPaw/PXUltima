@@ -174,6 +174,8 @@ PXActionResult PXAPI PXWindowDelete(PXGUISystem* const pxGUISystem, PXWindow* co
 
 PXActionResult PXAPI PXWindowDrawCustomRectangle3D(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int x, const int y, const int width, const int height)
 {
+    const PXBool isHovered = (PXWindowBehaviourIsBeingHovered & pxGUIElement->Info.Behaviour) > 0;
+
     PXWindowBrush* brushFront = pxGUIElement->BrushFront;
     PXWindowBrush* brushBackground = pxGUIElement->BrushBackground;
 
@@ -184,13 +186,27 @@ PXActionResult PXAPI PXWindowDrawCustomRectangle3D(PXGUISystem* const pxGUISyste
         brushFront,
         PXGUIDrawModeFront
     );
-    PXNativDrawColorSetBrush
-    (
-        pxGUISystem,
-        pxGUIElement,
-        brushBackground,
-        PXGUIDrawModeBack
-    );
+
+    if(isHovered)
+    {
+        PXNativDrawColorSetBrush
+        (
+            pxGUISystem,
+            pxGUIElement,
+            brushFront,
+            PXGUIDrawModeBack
+        );
+    }
+    else
+    {
+        PXNativDrawColorSetBrush
+        (
+            pxGUISystem,
+            pxGUIElement,
+            brushBackground,
+            PXGUIDrawModeBack
+        );
+    }
 
     PXNativDrawRectangle
     (
@@ -202,20 +218,21 @@ PXActionResult PXAPI PXWindowDrawCustomRectangle3D(PXGUISystem* const pxGUISyste
         height
     );
 
+    const float colorTint = isHovered * 0.4f;
     const float highFactor = 1.35f;
     const float lowFactor = 0.65f;
 
     const COLORREF highColor = RGB
     (
-        highFactor * brushBackground->ColorDate.Red,
-        highFactor * brushBackground->ColorDate.Green,
-        highFactor * brushBackground->ColorDate.Blue
+        colorTint + highFactor * brushBackground->ColorDate.Red,
+        colorTint + highFactor * brushBackground->ColorDate.Green,
+        colorTint + highFactor * brushBackground->ColorDate.Blue
     );
     const COLORREF lowColor = RGB
     (
-        lowFactor * brushBackground->ColorDate.Red,
-        lowFactor * brushBackground->ColorDate.Green,
-        lowFactor * brushBackground->ColorDate.Blue
+        colorTint + lowFactor * brushBackground->ColorDate.Red,
+        colorTint + lowFactor * brushBackground->ColorDate.Green,
+        colorTint + lowFactor * brushBackground->ColorDate.Blue
     );
 
     const DWORD penStyle = PS_ENDCAP_SQUARE | PS_GEOMETRIC | PS_SOLID | PS_JOIN_MITER;
@@ -248,6 +265,8 @@ PXActionResult PXAPI PXWindowDrawCustomRectangle3D(PXGUISystem* const pxGUISyste
 
 PXActionResult PXAPI PXWindowDrawCustomHeader(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
 {
+    const PXBool isHovered = (PXWindowBehaviourIsBeingHovered & pxGUIElement->Info.Behaviour) > 0;
+
     PXWindowExtendedMenuItem* const pxWindowExtendedMenuItem = (PXWindowExtendedMenuItem*)pxGUIElement->ExtendedData;
 
 #if PXLogEnable
@@ -3753,7 +3772,7 @@ PXActionResult PXAPI PXWindowTitleBarColorSet(const PXNativDrawWindowHandle pxWi
 
     PXDwmSetWindowAttribute pxDwmSetWindowAttribute;
 
-    PXBool hasFunction = PXLibraryGetSymbolA(&pyLibrary, &pxDwmSetWindowAttribute, "DwmSetWindowAttribute");
+    PXBool hasFunction = PXLibraryGetSymbolA(&pyLibrary, &pxDwmSetWindowAttribute, "DwmSetWindowAttribute", PXTrue);
 
     if(!hasFunction)
     {

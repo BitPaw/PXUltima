@@ -137,7 +137,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
     {
         PXInt16U machineTypeID = 0;
 
-        const PXFileDataElementType pxDataStreamElementList[] =
+        const PXDataTypeEntry pxDataStreamElementList[] =
         {
             {&machineTypeID, PXDataTypeInt16ULE},
             {&pxCOFF->Header.NumberOfSections,PXDataTypeInt16ULE},
@@ -184,7 +184,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
             {
                 PXInt16U magicNumber = 0;
 
-                const PXFileDataElementType pxDataStreamElementList[] =
+                const PXDataTypeEntry pxDataStreamElementList[] =
                 {
                     {&magicNumber, PXDataTypeInt16ULE},
                     {&pxCOFF->OptionalHeader.StandardFields.MajorLinkerVersion, PXDataTypeInt08U},
@@ -217,7 +217,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
             {
                 // B
                 {
-                    const PXFileDataElementType pxDataStreamElementList[] =
+                    const PXDataTypeEntry pxDataStreamElementList[] =
                     {
                         {&pxCOFF->OptionalHeader.WindowsNT.ImageBase, PXDataTypeAdressFlex},
                         {&pxCOFF->OptionalHeader.WindowsNT.SectionAlignment,PXDataTypeInt32ULE},
@@ -356,7 +356,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
             {
                 PXCOFFOptionalHeaderDataDirectories* const pxCOFFOptionalHeaderDataDirectories = &pxCOFF->OptionalHeader.DataDirectories;
 
-                const PXFileDataElementType pxDataStreamElementList[] =
+                const PXDataTypeEntry pxDataStreamElementList[] =
                 {
                     { &pxCOFFOptionalHeaderDataDirectories->ExportTable.RelativeVirtualAddress, PXDataTypeInt32ULE },
                     { &pxCOFFOptionalHeaderDataDirectories->ExportTable.Size,PXDataTypeInt32ULE },
@@ -427,7 +427,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
         PXSectionTable* const pxSectionTableCurrent = &pxCOFF->SectionTableList[sectionID];
 
         {
-            const PXFileDataElementType pxDataStreamElementList[] =
+            const PXDataTypeEntry pxDataStreamElementList[] =
             {
                 {pxSectionTableCurrent->Name.Data, PXDataTypeDatax8},
                 {&pxSectionTableCurrent->VirtualSize,PXDataTypeInt32ULE},
@@ -475,7 +475,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
             {
                 while (1)
                 {
-                    const PXFileDataElementType pxDataStreamElementList[] =
+                    const PXDataTypeEntry pxDataStreamElementList[] =
                     {
                         {&pxCOFF->ImportDirectoryTable.ImportLookupTableOffset, PXDataTypeInt32ULE},
                         {&pxCOFF->ImportDirectoryTable.TimeDateStamp,PXDataTypeInt32ULE},
@@ -596,7 +596,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
             {
                 // Export Directory Table
                 {
-                    const PXFileDataElementType pxDataStreamElementList[] =
+                    const PXDataTypeEntry pxDataStreamElementList[] =
                     {
                         {&pxCOFF->ExportDirectoryTable.ExportFlags, PXDataTypeInt32ULE},
                         {&pxCOFF->ExportDirectoryTable.TimeDateStamp,PXDataTypeInt32ULE},
@@ -623,7 +623,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 
                     PXFileCursorMoveTo(pxFile, totalOffset);
 
-                    const PXFileDataElementType pxDataStreamElementList[] =
+                    const PXDataTypeEntry pxDataStreamElementList[] =
                     {
                         {&pxCOFFExportAddressTableEntry->ExportSymbolOffset, PXDataTypeInt32ULE}
                     };
@@ -650,7 +650,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
             {
                 PXRelocationInformation pxRelocationInformation;
 
-                const PXFileDataElementType pxDataStreamElementList[] =
+                const PXDataTypeEntry pxDataStreamElementList[] =
                 {
                     {&pxRelocationInformation.VirtualAddressOfReference, PXDataTypeInt32ULE},
                     {&pxRelocationInformation.SymbolTableIndex,PXDataTypeInt32ULE},
@@ -685,7 +685,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
             {
                 PXLineNumberEntry* pxLineNumberEntry = &pxLineNumberEntryXX;
 
-                const PXFileDataElementType pxDataStreamElementList[] =
+                const PXDataTypeEntry pxDataStreamElementList[] =
                 {
                     {&pxLineNumberEntry->SymbolIndex, PXDataTypeInt32ULE},
                     {&pxLineNumberEntry->LineNumber,PXDataTypeInt16ULE}
@@ -736,7 +736,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
             {
                 PXCOFFSymbolTableEntry* pxCOFFSymbolTableEntry = &pxCOFFSymbolTableEntryXX;
 
-                const PXFileDataElementType pxDataStreamElementList[] =
+                const PXDataTypeEntry pxDataStreamElementList[] =
                 {
                     {pxCOFFSymbolTableEntry->Name, PXDataTypeDatax8},
                     {&pxCOFFSymbolTableEntry->ValueOfSymbol,PXDataTypeInt32ULE},

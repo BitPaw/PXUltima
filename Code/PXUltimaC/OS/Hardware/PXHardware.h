@@ -394,6 +394,34 @@ typedef struct PXProcessorWS
 }
 PXProcessorWS;
 
+
+
+
+#define PXBatteryIsPresent
+#define PXBatteryModeCharging
+#define PXBatteryModeDischarge
+#define PXBatteryType
+#define PXBatteryTypeLIthiumIon
+
+typedef struct PXBattery_
+{
+    PXInt32U ChargeCurrent; // µAh
+    PXInt32U ChargeMaximal; // µAh
+    char Manufacturer[32];
+    char ModelName[32];
+    PXBool IsPresent;
+    // State
+    
+}
+PXBattery;
+
+
+
+PXPublic PXActionResult PXAPI PXHardwareBatteryFetch(PXBattery* const pxBattery);
+
+
+
+
 //
 typedef struct PXHardwareInfo_
 {

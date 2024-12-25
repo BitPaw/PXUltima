@@ -86,7 +86,7 @@ PXPublic void PXAPI PXVector3FMultiply(PXVector3F* const pxVector3F, PXVector3F*
 PXPublic void PXAPI PXVector3FMultiplyXYZ(PXVector3F* const pxVector3F, const float x, const float y, const float z);
 PXPublic void PXAPI PXVector3FMultiplyS(PXVector3F* const pxVector3F, const float scalar);
 PXPublic void PXAPI PXVector4FMultiplyXYZW(PXVector4F* const pxVector4F, const float x, const float y, const float z, const float w);
-
+ 
 PXPublic void PXAPI PXVector3FDivide(PXVector3F* const pxVector3F, const PXVector3F* const vectorB);
 PXPublic void PXAPI PXVector3FDivideS(PXVector3F* const pxVector3F, const float scalar);
 

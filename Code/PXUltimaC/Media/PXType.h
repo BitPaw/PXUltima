@@ -179,16 +179,18 @@
 #define PXFlagRemove(target, value, flagID)  target &= ~flagID
 
 
-#define PXDataTypeReadOnlyMask            0b10000000000000000000000000000000
+#define PXDataTypeReadOnlyMask          0b10000000000000000000000000000000
 #define PXDataTypeAdressMask            0b01000000000000000000000000000000 // Used if the type is
 #define PXDataTypeEndianMask            0b00110000000000000000000000000000 // Little or big endian. If No endian is spesified, we can just copy 1:1
-#define PXDataTypeUseFileModeMask        0b00000000000000000000000000000000
+#define PXDataTypeUseFileModeMask       0b00000000000000000000000000000000
 #define PXDataTypeSignedMask            0b00001000000000000000000000000000 // Only useful in numeric values
-#define PXDataTypeIgnoreIFMask            0b00000110000000000000000000000000
-#define PXDataTypeShallDoIO                0b00000001000000000000000000000000 // Set if you want to read or write (To support Padding)
-#define PXDataTypeTypeMask                0b00000000110000000000000000000000
-#define PXDataTypeBaseNumeric            0b00000000100000000000000000000000
-#define PXDataTypeBaseDecimal            0b00000000010000000000000000000000
+#define PXDataTypeIgnoreIFMask          0b00000110000000000000000000000000
+#define PXDataTypeShallDoIO             0b00000001000000000000000000000000 // Set if you want to read or write (To support Padding)
+#define PXDataTypeTypeMask              0b00000000110000000000000000000000
+#define PXDataTypeBaseEmpty             0b00000000000000000000000000000000
+#define PXDataTypeBaseNumeric           0b00000000100000000000000000000000
+#define PXDataTypeBaseDecimal           0b00000000010000000000000000000000
+#define PXDataTypeBaseText              0b00000000110000000000000000000000
 
 #define PXDataTypeBitFieldHolderMask    0b00000000000001100000000000000000
 #define PXDataTypeBitFieldHolder08U        0b00000000000000000000000000000000 // 1 Bytes
@@ -220,7 +222,7 @@
 #define PXDataTypeSize64        8
 #define PXDataTypeSize128        16
 
-#define PXDataTypeText(size) size
+#define PXDataTypeText(size) size | PXDataTypeBaseText
 
 #define PXDataTypeReadOnly PXDataTypeReadOnlyMask
 
@@ -246,7 +248,7 @@
 //-------------------------------------------------
 // Emoty space
 //-------------------------------------------------
-#define PXDataTypePadding(size) size
+#define PXDataTypePadding(size) size | PXDataTypeBaseEmpty
 
 //-------------------------------------------------
 // Int - Normal
@@ -351,6 +353,15 @@ typedef wchar_t* const PXTextUNICODE;
 
 
 
+
+
+
+typedef struct PXDataTypeEntry_
+{
+    void* Adress;
+    PXInt32U Type;
+}
+PXDataTypeEntry;
 
 
 

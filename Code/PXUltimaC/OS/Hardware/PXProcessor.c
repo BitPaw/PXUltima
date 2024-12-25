@@ -776,6 +776,8 @@ PXActionResult PXAPI PXProcessorTemperature(PXProcessorTemperatureInfo* const px
 
 #elif OSWindows
 
+    return 0;
+
     {
         const HRESULT initializeResultID = CoInitialize(NULL);
         const PXActionResult initializeResult = PXWindowsHandleErrorFromID(initializeResultID);
@@ -783,7 +785,7 @@ PXActionResult PXAPI PXProcessorTemperature(PXProcessorTemperatureInfo* const px
         PXActionReturnOnError(initializeResult);
     }
 
-    return 0;
+
 
     /*
     Access over the driver, need admin permissions. Seems overkill

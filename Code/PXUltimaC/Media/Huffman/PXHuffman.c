@@ -266,7 +266,7 @@ PXActionResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(struct PXFile_* const 
 
     // Read huffmancodes
     {
-        const PXFileDataElementType pxDataStreamElementList[] =
+        const PXDataTypeEntry pxDataStreamElementList[] =
         {
             {&huffmanNumberCode.NumberOfLiteralCodes, PXDataTypeBit16U(5u)},
             {&huffmanNumberCode.NumberOfDistanceCodes, PXDataTypeBit16U(5u)},
