@@ -193,14 +193,14 @@
 #define PXDataTypeBaseText              0b00000000110000000000000000000000
 
 #define PXDataTypeBitFieldHolderMask    0b00000000000001100000000000000000
-#define PXDataTypeBitFieldHolder08U        0b00000000000000000000000000000000 // 1 Bytes
-#define PXDataTypeBitFieldHolder16U        0b00000000000000100000000000000000 // 2 Bytes
-#define PXDataTypeBitFieldHolder32U        0b00000000000001000000000000000000 // 4 Bytes
-#define PXDataTypeBitFieldHolder64U        0b00000000000001100000000000000000 // 8 Bytes
+#define PXDataTypeBitFieldHolder08U     0b00000000000000000000000000000000 // 1 Bytes
+#define PXDataTypeBitFieldHolder16U     0b00000000000000100000000000000000 // 2 Bytes
+#define PXDataTypeBitFieldHolder32U     0b00000000000001000000000000000000 // 4 Bytes
+#define PXDataTypeBitFieldHolder64U     0b00000000000001100000000000000000 // 8 Bytes
 
-#define PXDataTypeModeMask                0b00000000000000010000000000000000
-#define PXDataTypeModeByte                0b00000000000000000000000000000000
-#define PXDataTypeModeBit                0b00000000000000010000000000000000
+#define PXDataTypeModeMask              0b00000000000000010000000000000000
+#define PXDataTypeModeByte              0b00000000000000000000000000000000
+#define PXDataTypeModeBit               0b00000000000000010000000000000000
 
 #define PXDataTypeSizeMask                0b00000000000000001111111111111111 // Size in bytes of target data 0x0000FFFF
 
@@ -246,9 +246,10 @@
 #define PXDataTypeDatax16 PXDataTypeSize128
 
 //-------------------------------------------------
-// Emoty space
+// Empty space
 //-------------------------------------------------
 #define PXDataTypePadding(size) size | PXDataTypeBaseEmpty
+
 
 //-------------------------------------------------
 // Int - Normal
@@ -260,6 +261,8 @@
 #define PXDataTypeInt08U PXDataTypeSize08 | PXDataTypeIntU
 
 #define PXDataTypeBool PXDataTypeInt08U
+
+#define PXDataTypeBoolAsText 
 
 #define PXDataTypeInt16S PXDataTypeSize16 | PXDataTypeIntS
 #define PXDataTypeInt16SLE PXDataTypeSize16 | PXDataTypeIntS | PXDataTypeEndianLittle
@@ -362,6 +365,18 @@ typedef struct PXDataTypeEntry_
     PXInt32U Type;
 }
 PXDataTypeEntry;
+
+
+// Object to bind a runtime member adress of a struct with a name with the type
+typedef struct PXTypeBinding_
+{
+    void* Adress;
+    const char* Name;
+    PXInt32U Type;
+}
+PXTypeBinding;
+
+
 
 
 

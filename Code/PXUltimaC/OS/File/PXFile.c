@@ -1182,6 +1182,11 @@ PXBool PXAPI PXFileCanDirectAccess(const PXFile* const pxFile)
     return pxFile->MappingID != PXHandleNotSet;
 }
 
+PXBool PXAPI PXFileKeyValueFetch(PXFile* const pxFile, PXTypeBinding* const pxTypeBinding)
+{
+    return PXActionSuccessful;
+}
+
 PXInt32U PXAPI PXFileMemoryCachingModeConvertToID(const PXMemoryCachingMode pxMemoryCachingMode)
 {
     switch(pxMemoryCachingMode)

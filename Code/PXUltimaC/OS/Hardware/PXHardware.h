@@ -405,13 +405,31 @@ PXProcessorWS;
 
 typedef struct PXBattery_
 {
+    // Info
+    char Name[16];
+    char MaterialTechnology[16];
+    char CAPACITY_LEVEL[16];
+    char MODEL_NAME[16];
+    char MANUFACTURER[16];
+    PXBool PRESENT;
+    PXInt8U SERIAL_NUMBER;
+
+    // Status
+    char Status[16];
+    PXInt8U CAPACITY;
+    PXInt32U CYCLE_COUNT;
+
+    // A _ Ampere
+    PXInt32U CURRENT_NOW;
+
+    // V - Voltage
+    PXInt32U VOLTAGE_MIN_DESIGN;
+    PXInt32U VOLTAGE_NOW;
+
+    // C - Capacity
     PXInt32U ChargeCurrent; // µAh
-    PXInt32U ChargeMaximal; // µAh
-    char Manufacturer[32];
-    char ModelName[32];
-    PXBool IsPresent;
-    // State
-    
+    PXInt32U ChargeMaximumPractical; // µAh
+    PXInt32U ChargeMaximalTheroetical; // µAh    
 }
 PXBattery;
 

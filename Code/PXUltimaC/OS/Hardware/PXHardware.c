@@ -136,48 +136,58 @@ PXActionResult PXAPI PXHardwareBatteryFetch(PXBattery* const pxBattery)
 
     // Check is we have a battery
     {
-        char path[] = "/sys/class/power_supply/BAT1/uevent";
+        const char path[] = "/sys/class/power_supply/BAT1/uevent";
+        const PXSize size = sizeof(path);
 
        // Open file
 
-
-        PXDataTypeEntry list[] ={
-        {"NAME", xxxxxx }, // =BAT1
-        {"STATUS", xxxxxx }, // =Charging
-        {"PRESENT", xxxxxx }, // =1
-        {"TECHNOLOGY", xxxxxx }, // =Li-ion
-        {"CYCLE_COUNT", xxxxxx }, // =81
-        {"VOLTAGE_MIN_DESIGN", xxxxxx }, // =11100000
-        {"VOLTAGE_NOW", xxxxxx }, // =12276000
-        {"CURRENT_NOW", xxxxxx }, // =2889000
-        {"CHARGE_FULL", xxxxxx }, // _DESIGN=4400000
-        {"CHARGE_FULL", xxxxxx }, // =2506000
-        {"CHARGE_NOW", xxxxxx }, // =1503000
-        {"CAPACITY", xxxxxx }, // =59
-        {"CAPACITY_LEVEL", xxxxxx }, // =Normal
-        {"MODEL_NAME", xxxxxx }, // =PABAS0241231
-        {"MANUFACTURER", xxxxxx }, // =COMPAL
-        {"SERIAL_NUMBER", xxxxxx }
-        }; // 41167;
-        const PXSize amount = sizeof(list) / sizeof(PXDataTypeEntry);
-
-        /*
-
-
-        
-        */
-
-        for(size_t i = 0; i < length; i++)
+        PXTypeBinding list[] =
         {
+        {pxBattery->Name, "NAME", PXDataTypeText(32)}, // BAT1
+        {pxBattery->Status, "STATUS", PXDataTypeText(32) }, // Charging
+        {&pxBattery->PRESENT, "PRESENT", PXDataTypeBoolAsText }, // 1
+        {pxBattery->MaterialTechnology, "TECHNOLOGY", PXDataTypeText(32) }, // Li-ion
+        {&pxBattery->CYCLE_COUNT, "CYCLE_COUNT", PXDataTypeInt08U }, // 81
+        {&pxBattery->VOLTAGE_MIN_DESIGN, "VOLTAGE_MIN_DESIGN", PXDataTypeInt32U }, // 11100000
+        {&pxBattery->VOLTAGE_NOW, "VOLTAGE_NOW", PXDataTypeInt32U }, // 12276000
+        {&pxBattery->CURRENT_NOW, "CURRENT_NOW", PXDataTypeInt32U }, // 2889000
+        {&pxBattery->ChargeMaximalTheroetical, "CHARGE_FULL_DESIGN", PXDataTypeInt32U }, // 4400000
+        {&pxBattery->ChargeMaximumPractical, "CHARGE_FULL", PXDataTypeInt32U }, // 2506000
+        {&pxBattery->ChargeCurrent, "CHARGE_NOW", PXDataTypeInt32U }, // 1503000
+        {&pxBattery->CAPACITY, "CAPACITY", PXDataTypeInt08U }, // 59
+        {pxBattery->CAPACITY_LEVEL, "CAPACITY_LEVEL", PXDataTypeText(32) }, // Normal
+        {pxBattery->MODEL_NAME, "MODEL_NAME", PXDataTypeText(32) }, // PABAS0241231
+        {pxBattery->MANUFACTURER, "MANUFACTURER", PXDataTypeText(32) }, // COMPAL
+        {&pxBattery->SERIAL_NUMBER, "SERIAL_NUMBER", PXDataTypeInt08U } // 41167
+        };
+        const PXInt8U amount = sizeof(list) / sizeof(PXTypeBinding);
+
+        PXFile pxFile;
+
+        PXFileOpenInfo pxFileOpenInfo;
+        PXClear(PXFileOpenInfo, &pxFileOpenInfo);
+        pxFileOpenInfo.FilePathAdress = path;
+        pxFileOpenInfo.FilePathSize = size;
+        pxFileOpenInfo.AccessMode = PXAccessModeReadOnly;
+        pxFileOpenInfo.MemoryCachingMode = PXMemoryCachingModeUseOnce;
+        pxFileOpenInfo.FlagList = PXFileIOInfoFilePhysical;
+
+        PXFileOpen(&pxFile, &pxFileOpenInfo);
+
+        for(PXInt8U i = 0; i < amount; ++i)
+        {
+            PXTypeBinding* pxTypeBindingEntry = &list[i];
+
             char buffer[64];
 
-            PXTextPrintA(buffer, 64, "POWER_SUPPLY_%s");
+            PXTextPrintA(buffer, 64, "POWER_SUPPLY_%s", pxTypeBindingEntry->Name);
 
+            pxTypeBindingEntry->Name = buffer;
 
-
+            PXFileKeyValueFetch(&pxFile, pxTypeBindingEntry);
         }
 
-
+        PXFileClose(&pxFile);
     }
 
 

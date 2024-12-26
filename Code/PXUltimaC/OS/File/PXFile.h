@@ -158,6 +158,12 @@ PXPublic PXSize PXAPI PXFilePathExtensionGet(const PXText* const filePath, PXTex
 
 PXPublic PXBool PXAPI PXFileCanDirectAccess(const PXFile* const pxFile);
 
+//---<Binding>---------------------------------------------------------
+// Searches and tryes to read a binding eqiviland to the key. 
+// Expected format is "Key=Value".
+// Given type will be parsed, converted and written into given adress.
+PXPublic PXBool PXAPI PXFileKeyValueFetch(PXFile* const pxFile, PXTypeBinding* const pxTypeBinding);
+//---------------------------------------------------------------------
 
 //---<Convert>---------------------------------------------------------
 PXPrivate PXInt32U PXAPI PXFileMemoryCachingModeConvertToID(const PXMemoryCachingMode pxMemoryCachingMode);
