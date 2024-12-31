@@ -47,6 +47,7 @@ typedef enum PXAccessMode_
 PXAccessMode;
 //----------------------------------------------------------
 
+PXPublic void PXAPI PXAccessModeToStringA(char* text, const const PXAccessMode pxAccessMode);
 
 
 

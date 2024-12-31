@@ -525,21 +525,21 @@ void PXAPI PXCSharpDefinitionWrite(PXCompiler* const pxCompiler)
     // type
     if(symbol->DataTypeIsBuildIn)
     {
-        switch(symbol->DataType & PXDataTypeSizeMask)
+        switch(symbol->DataType & PXTypeSizeMask)
         {
-        case PXDataTypeSize08:
+        case PXTypeSize08:
             //PXFileWriteA(pxFile, PXJavaKeyWordByte, 4);
             break;
 
-        case PXDataTypeSize16:
+        case PXTypeSize16:
             //PXFileWriteA(pxFile, PXJavaKeyWordShort, 5);
             break;
 
-        case PXDataTypeSize32:
+        case PXTypeSize32:
             //    PXFileWriteA(pxFile, PXJavaKeyWordInt, 3);
             break;
 
-        case PXDataTypeSize64:
+        case PXTypeSize64:
             //PXFileWriteA(pxFile, PXJavaKeyWordLong, 4);
             break;
 

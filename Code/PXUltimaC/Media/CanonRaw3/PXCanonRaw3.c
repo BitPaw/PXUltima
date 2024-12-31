@@ -85,10 +85,10 @@ PXCanonRaw3Chunk;
 
 PXActionResult PXAPI PXCanonRaw3BlockRead(PXCanonRaw3Chunk* const pxCanonRaw3Chunk, PXFile* const pxFile)
 {
-    const PXDataTypeEntry pxDataStreamElementList[] =
+    const PXTypeEntry pxDataStreamElementList[] =
     {
-        {&pxCanonRaw3Chunk->SizeTotal, PXDataTypeInt32UBE},
-        {pxCanonRaw3Chunk->ID.Data, PXDataTypeDatax4}
+        {&pxCanonRaw3Chunk->SizeTotal, PXTypeInt32UBE},
+        {pxCanonRaw3Chunk->ID.Data, PXTypeDatax4}
     };
 
     const PXSize readBytes = PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -120,11 +120,11 @@ PXActionResult PXAPI PXCanonRaw3BlockRead(PXCanonRaw3Chunk* const pxCanonRaw3Chu
     {
     case PXCanonRaw3FTYPID:
     {
-        const PXDataTypeEntry pxDataStreamElementList[] =
+        const PXTypeEntry pxDataStreamElementList[] =
         {
-            {pxCanonRaw3Chunk->ChunkFTYP.TypeBrandMajor.Data, PXDataTypeDatax4},
-            {&pxCanonRaw3Chunk->ChunkFTYP.TypeVersionMinor, PXDataTypeInt32UBE},
-            {pxCanonRaw3Chunk->ChunkFTYP.TypeCompatibleBrands.Data, PXDataTypeDatax4}
+            {pxCanonRaw3Chunk->ChunkFTYP.TypeBrandMajor.Data, PXTypeDatax4},
+            {&pxCanonRaw3Chunk->ChunkFTYP.TypeVersionMinor, PXTypeInt32UBE},
+            {pxCanonRaw3Chunk->ChunkFTYP.TypeCompatibleBrands.Data, PXTypeDatax4}
         };
 
         PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));

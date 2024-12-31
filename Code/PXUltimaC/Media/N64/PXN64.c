@@ -127,26 +127,26 @@ PXActionResult PXAPI PXN64LoadFromFile(PXResourceTransphereInfo* const pxResourc
     {
         // 0x0000000-ram:b07fffff 
 
-        PXDataTypeEntry pxFileDataElementType[] =
+        PXTypeEntry pxFileDataElementType[] =
         {
-            {&n64.EndiannessID, PXDataTypeNibble}, // 0x00
-            {PXNull, PXDataTypeNibble}, // 0x00
-            {&n64.initialPI_BSB_DOM1_LAT_REG, PXDataTypeNibble}, // 0x01
-            {&n64.initialPI_BSD_DOM1_PGS_REG, PXDataTypeNibble}, // 0x01
-            {&n64.initialPI_BSD_DOM1_PWD_REG, PXDataTypeInt08U}, // 0x02
-            {&n64.initialPI_BSB_DOM1_PGS_REG, PXDataTypeInt08U}, // 0x03
-            {&n64.ClockRateOverride, PXDataTypeInt32UBE}, // 0x04
-            {&n64.RAMEntryPointOffset, PXDataTypeInt32ULE}, // 0x08
-            {&n64.ReleaseAddress, PXDataTypeInt32UBE}, // 0x0C
-            {&n64.CRC1Checksum, PXDataTypeInt32UBE}, // 0x10
-            {&n64.CRC2, PXDataTypeInt32UBE}, // 0x14
-            {&n64.UnknownA, PXDataTypeInt64U}, // 0x18
-            {n64.ImageName, PXDataTypeText(20)}, // 0x20
-            {&n64.UnknownB, PXDataTypeInt32UBE}, // 0x34
-            {n64.MediaFormatID, PXDataTypeDatax4}, // 0x38
-            {n64.CartridgeID, PXDataTypeDatax2}, // 0x3C
-            {&n64.CountryCodeID, PXDataTypeInt08U}, // 0x3E
-            {&n64.Version, PXDataTypeInt08U} // 0x3F
+            {&n64.EndiannessID, PXTypeNibble}, // 0x00
+            {PXNull, PXTypeNibble}, // 0x00
+            {&n64.initialPI_BSB_DOM1_LAT_REG, PXTypeNibble}, // 0x01
+            {&n64.initialPI_BSD_DOM1_PGS_REG, PXTypeNibble}, // 0x01
+            {&n64.initialPI_BSD_DOM1_PWD_REG, PXTypeInt08U}, // 0x02
+            {&n64.initialPI_BSB_DOM1_PGS_REG, PXTypeInt08U}, // 0x03
+            {&n64.ClockRateOverride, PXTypeInt32UBE}, // 0x04
+            {&n64.RAMEntryPointOffset, PXTypeInt32ULE}, // 0x08
+            {&n64.ReleaseAddress, PXTypeInt32UBE}, // 0x0C
+            {&n64.CRC1Checksum, PXTypeInt32UBE}, // 0x10
+            {&n64.CRC2, PXTypeInt32UBE}, // 0x14
+            {&n64.UnknownA, PXTypeInt64U}, // 0x18
+            {n64.ImageName, PXTypeText(20)}, // 0x20
+            {&n64.UnknownB, PXTypeInt32UBE}, // 0x34
+            {n64.MediaFormatID, PXTypeDatax4}, // 0x38
+            {n64.CartridgeID, PXTypeDatax2}, // 0x3C
+            {&n64.CountryCodeID, PXTypeInt08U}, // 0x3E
+            {&n64.Version, PXTypeInt08U} // 0x3F
         };
         const PXSize pxFileDataElementTypeSize = sizeof(pxFileDataElementType);
 

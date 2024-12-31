@@ -15,35 +15,35 @@
 const char PXPNGHeaderSequenz[8] = { 0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n' };
 const PXInt32U PXPNGChunkHeaderList[] =
 {
-    PXDataTypeInt32UBE,
-    PXDataTypeText(4)
+    PXTypeInt32UBE,
+    PXTypeText(4)
 };
 const PXInt8U PXPNGChunkHeaderListSize = sizeof(PXPNGChunkHeaderList) / sizeof(PXInt32U);
 
 
 const PXInt32U PXPNGInfoHeaderList[] =
 {
-    PXDataTypeInt32UBE,
-    PXDataTypeInt32UBE,
-    PXDataTypeInt08U,
-    PXDataTypeInt08U,
-    PXDataTypeInt08U,
-    PXDataTypeInt08U,
-    PXDataTypeInt08U
+    PXTypeInt32UBE,
+    PXTypeInt32UBE,
+    PXTypeInt08U,
+    PXTypeInt08U,
+    PXTypeInt08U,
+    PXTypeInt08U,
+    PXTypeInt08U
 };
 const PXInt8U PXPNGInfoHeaderListSize = sizeof(PXPNGInfoHeaderList) / sizeof(PXInt32U);
 
 
 const PXInt32U PXPNGPrimaryChromaticsList[] =
 {
-     PXDataTypeInt32UBE,
-     PXDataTypeInt32UBE,
-     PXDataTypeInt32UBE,
-     PXDataTypeInt32UBE,
-     PXDataTypeInt32UBE,
-     PXDataTypeInt32UBE,
-     PXDataTypeInt32UBE,
-     PXDataTypeInt32UBE
+     PXTypeInt32UBE,
+     PXTypeInt32UBE,
+     PXTypeInt32UBE,
+     PXTypeInt32UBE,
+     PXTypeInt32UBE,
+     PXTypeInt32UBE,
+     PXTypeInt32UBE,
+     PXTypeInt32UBE
 };
 const PXInt8U PXPNGPrimaryChromaticsListSize = sizeof(PXPNGPrimaryChromaticsList) / sizeof(PXInt32U);
 
@@ -51,12 +51,12 @@ const PXInt8U PXPNGPrimaryChromaticsListSize = sizeof(PXPNGPrimaryChromaticsList
 
 const PXInt32U PXPNGLastModificationTimeList[] =
 {
-    PXDataTypeInt16UBE,
-    PXDataTypeInt08U,
-    PXDataTypeInt08U,
-    PXDataTypeInt08U,
-    PXDataTypeInt08U,
-    PXDataTypeInt08U
+    PXTypeInt16UBE,
+    PXTypeInt08U,
+    PXTypeInt08U,
+    PXTypeInt08U,
+    PXTypeInt08U,
+    PXTypeInt08U
 };
 const PXInt8U PXPNGLastModificationTimeListSize = sizeof(PXPNGLastModificationTimeList) / sizeof(PXInt32U);
 
@@ -1594,16 +1594,16 @@ PXActionResult PXAPI PXPNGSaveToFile(PXResourceTransphereInfo* const pxResourceT
         const unsigned char* chunkStart = PXFileCursorPosition(pxResourceTransphereInfo->FileReference);
         const PXSize chunkLength = 7u;
 
-        const PXDataTypeEntry pxFileDataElementType[] =
+        const PXTypeEntry pxFileDataElementType[] =
         {
-            {&chunkLength, PXDataTypeInt32UBE},
-            {"tIME", PXDataTypeDatax4},
-            {&pngLastModificationTime.Year, PXDataTypeInt16UBE},
-            {&pngLastModificationTime.Month, PXDataTypeInt08U},
-            {&pngLastModificationTime.Day, PXDataTypeInt08U},
-            {&pngLastModificationTime.Hour, PXDataTypeInt08U},
-            {&pngLastModificationTime.Minute, PXDataTypeInt08U},
-            {&pngLastModificationTime.Second, PXDataTypeInt08U},
+            {&chunkLength, PXTypeInt32UBE},
+            {"tIME", PXTypeDatax4},
+            {&pngLastModificationTime.Year, PXTypeInt16UBE},
+            {&pngLastModificationTime.Month, PXTypeInt08U},
+            {&pngLastModificationTime.Day, PXTypeInt08U},
+            {&pngLastModificationTime.Hour, PXTypeInt08U},
+            {&pngLastModificationTime.Minute, PXTypeInt08U},
+            {&pngLastModificationTime.Second, PXTypeInt08U},
         };
 
         PXFileWriteMultible(pxResourceTransphereInfo->FileReference, pxFileDataElementType, sizeof(pxFileDataElementType));
@@ -1677,9 +1677,9 @@ PXActionResult PXAPI PXPNGSaveToFile(PXResourceTransphereInfo* const pxResourceT
     {
         const PXInt8U imageEndChunk[8] = { 'I','E','N','D','\xAE','\x42','\x60','\x82' }; // Combined write, as this is constand
 
-        const PXDataTypeEntry pxFileDataElementType[] =
+        const PXTypeEntry pxFileDataElementType[] =
         {
-            {PXNull, PXDataTypePadding(4)},
+            {PXNull, PXTypePadding(4)},
             {(void*)imageEndChunk, sizeof(imageEndChunk)}
         };
 

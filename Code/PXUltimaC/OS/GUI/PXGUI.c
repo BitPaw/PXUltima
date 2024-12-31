@@ -222,6 +222,9 @@ PXActionResult PXAPI PXWindowDrawCustomRectangle3D(PXGUISystem* const pxGUISyste
     const float highFactor = 1.35f;
     const float lowFactor = 0.65f;
 
+
+#if OSWindows
+
     const COLORREF highColor = RGB
     (
         colorTint + highFactor * brushBackground->ColorDate.Red,
@@ -259,6 +262,7 @@ PXActionResult PXAPI PXWindowDrawCustomRectangle3D(PXGUISystem* const pxGUISyste
 
     DeletePen(penLight);
     DeletePen(penDark);
+#endif
 
     return PXActionSuccessful;
 }
@@ -277,7 +281,7 @@ PXActionResult PXAPI PXWindowDrawCustomHeader(PXGUISystem* const pxGUISystem, PX
         "Draw",
         "Header"
     );
-#endif   
+#endif
 
     PXNativDrawClear(pxGUISystem, pxGUIElement);
 
@@ -313,7 +317,7 @@ PXActionResult PXAPI PXWindowDrawCustomHeader(PXGUISystem* const pxGUISystem, PX
         pxGUIElement->Info.Behaviour |= PXWindowAllignCenter;
 
         pxGUIElement->Position.Right = pxGUIElement->Position.Left + pxGUIElement->Position.Width;
- 
+
         pxGUIElement->Position.Height -= 2;
 
 
@@ -340,12 +344,12 @@ PXActionResult PXAPI PXWindowDrawCustomHeader(PXGUISystem* const pxGUISystem, PX
         pxGUIElement->Position.Height -= offset;
 
 
-        PXNativDrawTextA(pxGUISystem, pxGUIElement, pxWindowMenuItem->TextData, pxWindowMenuItem->TextSize);     
+        PXNativDrawTextA(pxGUISystem, pxGUIElement, pxWindowMenuItem->TextData, pxWindowMenuItem->TextSize);
 
         if(pxWindowMenuItem->TextData)
         {
             left += pxGUIElement->Position.Width + 1;
-        }  
+        }
 
         pxGUIElement->Position = pxUIElementPositionPrev;
     }
@@ -444,7 +448,7 @@ PXActionResult PXAPI PXWindowDrawCustomResourceView(PXGUISystem* const pxGUISyst
         y += height + 3;
     }
 
- 
+
 
     for(PXSize i = 0; i < textureLookup->EntryAmountCurrent; ++i)
     {
@@ -644,7 +648,7 @@ PXActionResult PXAPI PXWindowDrawCustomResourceInfo(PXGUISystem* const pxGUISyst
     int height = 16;
 
 
-    char* table[16] = 
+    char* table[16] =
     {
         "Exist",
         "Active",
@@ -752,7 +756,7 @@ PXActionResult PXAPI PXWindowDrawCustomTabList(PXGUISystem* const pxGUISystem, P
         pxWindowTABPage->NameContentSize = PXTextLengthA(pxWindowTABPage->NameContent, 260);
 
         PXSize predictSIze = 4 + pxWindowTABPage->NameContentSize * 10 + iconSize + iconMargin;
-       
+
         predictSIze = PXMathMinimumIU(predictSIze, 120); // Bad fix
 
         PXSize width = predictSIze + offsetX;
@@ -760,10 +764,10 @@ PXActionResult PXAPI PXWindowDrawCustomTabList(PXGUISystem* const pxGUISystem, P
         //PXNativDrawRectangle(pxGUISystem, pxGUIElement, left, 0, left+ size+ offsetX, height);
         PXWindowDrawCustomRectangle3D
         (
-            pxGUISystem, 
+            pxGUISystem,
             pxGUIElement,
-            left, 
-            0, 
+            left,
+            0,
             left + width,
             height
         );
@@ -913,7 +917,7 @@ PXActionResult PXAPI PXWindowDrawCustomButton(PXGUISystem* const pxGUISystem, PX
 
     PXWindowDrawCustomRectangle3D
     (
-        pxGUISystem, 
+        pxGUISystem,
         pxGUIElement,
         pxGUIElement->Position.Left,
         pxGUIElement->Position.Top,
@@ -1618,143 +1622,26 @@ PXActionResult PXAPI PXGUISystemInitialize(PXGUISystem* const pxGUISystem)
 
     PXGUISystemGlobalReference = pxGUISystem;
 
-#if OSUnix
-
-    // Make this thread safe
+    // Enable multithreading
     {
+#if OSUnix
         // This is only needed if we access the X-System with different threads
         // reason is timing collisions where zwo X-Calls are handled at the same time
         // This will leed to problems.
         // On systems where threads are not supported, this will always return NULL
         const int result = XInitThreads();
-    }
-
-    // Connect to X-System display server
-    {
-        PXDisplay* const pxDisplay = &pxGUISystem->DisplayCurrent;
-
-
-        /*
-         struct wl_display *display = wl_display_connect(NULL);
-
-        */
-
-        // open a connection to the x-server. NULL here uses the default display.
-        pxDisplay->DisplayHandle = XOpenDisplay(PXNull);   // X11/Xlib.h,  Create Window
-        const PXBool successful = PXNull != pxDisplay->DisplayHandle;
-
-        if(!successful)
-        {
-#if PXLogEnable
-            PXLogPrint
-            (
-                PXLoggingError,
-                "GUI",
-                "X-System",
-                "Failed to open X-server. XOpenDisplay() failed."
-            );
-#endif
-
-            return PXActionFailedInitialization;
-        }
-
-
-        pxDisplay->Data = XDisplayString(pxDisplay->DisplayHandle);
-        pxDisplay->Name = XDisplayName(pxDisplay->DisplayHandle); // if NULL, this is the atempted name what XOpen would use
-
-        pxDisplay->ProtocolVersion = XProtocolVersion(pxDisplay->DisplayHandle); // for X11, it is 11
-        pxDisplay->ProtocolRevision = XProtocolRevision(pxDisplay->DisplayHandle);
-
-        pxDisplay->ServerVendor = XServerVendor(pxDisplay->DisplayHandle);
-        pxDisplay->VendorRelease = XVendorRelease(pxDisplay->DisplayHandle);
-
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            "GUI",
-            "X-System",
-            "display open Successful (0x%p)\n"
-            "%10s: %s, Data: %s\n"
-            "%10s: %i.%i\n"
-            "%10s: %s (Relase %i)",
-            pxDisplay->DisplayHandle,
-            "Name", pxDisplay->Name, pxDisplay->Data,
-            "Protocol", pxDisplay->ProtocolVersion, pxDisplay->ProtocolRevision,
-            "Server", pxDisplay->ServerVendor, pxDisplay->VendorRelease
-        );
-#endif
-
-        // Get default values
-
-
-
-        pxDisplay->WindowRootHandle = XDefaultRootWindow(pxDisplay->DisplayHandle); // Make windows root
-        pxDisplay->GraphicContent = XCreateGC(pxDisplay->DisplayHandle, pxDisplay->WindowRootHandle, 0, 0);
-    }
-
-
-
-
-
-
-
-
-
-    // Get amount of screens
-
-
-
-
-
-    // Fetch additional data of your display
-
-    /*
-
-
-            // Default values
-            Colormap XDefaultColormap(Display *display, int screen_number);
-            int XDefaultDepth(Display *display, int screen_number);
-            int *XListDepths(Display *display, int screen_number, int *count_return);
-            GC XDefaultGC(Display *display, int screen_number);
-            Visual *XDefaultVisual(Display *display, int screen_number);
-
-
-
-
-
-            // UI Element needs function to override drawing by OS
-            // Linux does not even have drawing
-            PXWindowDrawFunction(GUISystem, PXWindow);
-
-
-            PXWindowDrawRectangleFill();
-
-
-
-            // Drawing routines?
-
-
-            #if OSUnix
-                const int resultID = XFillRectangles(Display *display, Drawable d, GC gc, XRectangle *rectangles, int nrectangles);
-            #elif OSWindows
-                const int resultID = FillRect();
-            #endif
-
-
-    Window XCreateSimpleWindow(Display *display, Window parent, int x, int y, unsigned int width, unsigned int height, unsigned int border_width, unsigned long border, unsigned long background);
-
-
-            XGetErrorText();
-            XGetErrorDatabaseText();
-
-            XSetIOErrorHandler():
-            int(int(*handler)(Display *));
-
-
-                   */
 
 #elif OSWindows
+        // Windows UI is not threadsafe
+#endif
+    }
+
+    // Connect to display service
+    PXNativDrawDisplayOpen(&pxGUISystem->NativDraw, &pxGUISystem->DisplayCurrent, PXNull);
+
+       
+
+#if OSWindows
 
     // Ensures that the common control DLL (Comctl32.dll) is loaded
     INITCOMMONCONTROLSEX initCommonControls;
@@ -1889,6 +1776,16 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
 
 #if OSUnix
 
+    pxGUIElementCreateInfo->Simple = PXFalse;
+    pxGUIElementCreateInfo->X = 10;
+    pxGUIElementCreateInfo->Y = 10;
+    pxGUIElementCreateInfo->Width = pxUIElementPositionCalulcateInfo.Width / 2;
+    pxGUIElementCreateInfo->Height = pxUIElementPositionCalulcateInfo.Height / 2;
+    pxGUIElementCreateInfo->BorderWidth = 1;
+    pxGUIElementCreateInfo->Border = 1;
+
+    PXNativDrawWindowCreate(PXNativDrawInstantance(), pxWindowCurrent, pxGUIElementCreateInfo);
+
 
 #if 0 // Grab means literally Drag%Drop grab. This is not mouse motion
     //bool   ret    = false;
@@ -1918,11 +1815,9 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
     char mask[maskLength];
 
     PXClearList(char, mask, maskLength);
-
-
     XISetMask(mask, XI_RawMotion);
-    //XISetMask(mask, XI_RawButtonPress);
-    //XISetMask(mask, XI_RawKeyPress);
+    XISetMask(mask, XI_RawButtonPress);
+    XISetMask(mask, XI_RawKeyPress);
 
     eventmask.deviceid = XIAllMasterDevices;
     eventmask.mask_len = maskLength;
@@ -1940,8 +1835,10 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
             PXLoggingError,
             "X-System",
             "Event-Select",
-            "ID:%i Failed",
-            pxGUIElement->Info.Handle.WindowID
+            "Failed: Display:<%p>, Root:<%i>, Mask:%8x",
+            pxGUISystem->DisplayCurrent.DisplayHandle,
+            pxGUISystem->DisplayCurrent.WindowRootHandle,
+            mask
         );
 #endif
     }
@@ -1954,14 +1851,16 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
             "X-System",
             "Event-Select",
             "ID:%i OK",
-            pxGUIElement->Info.Handle.WindowID
+            pxWindowCurrent->Info.Handle.WindowID
         );
 #endif
     }
 
 
 
-    const int flushResultID = XFlush(pxGUISystem->DisplayCurrent.DisplayHandle);
+
+
+  
 
 
 
@@ -2287,7 +2186,7 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
             pxWindowCurrent->Info.Behaviour |= PXResourceInfoUseByEngine;
 
             break;
-        }        
+        }
         case PXUIElementTypeWindow:
         {
             PXWindowCreateWindowInfo* const windowInfo = &pxGUIElementCreateInfo->Data.Window;
@@ -2299,7 +2198,7 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
                 CS_OWNDC |
                 CS_HREDRAW |
                 CS_VREDRAW;
-                        
+
             PXNativDrawWindowHandle windowID = 0;
 
             DWORD dwStyle = 0;
@@ -2435,7 +2334,7 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
             }
             default:
             {
-                
+
                 break;
             }
         }
@@ -2566,7 +2465,7 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
 #endif
 
 
-      
+
 
 
 #if 0
@@ -3093,7 +2992,7 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
 
             if(0)
             {
-               
+
 
 
             }
@@ -3249,12 +3148,12 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
                 pxResourceCreateInfo.UIElement.Position.MarginTop = 0.08;
                 pxResourceCreateInfo.UIElement.Position.MarginRight = 0;
                 pxResourceCreateInfo.UIElement.Position.MarginBottom = 0;
-              
+
                 PXResourceManagerAdd(pxGUISystem->ResourceManager, &pxResourceCreateInfo, 1);
 
                 PXWindowCreate(pxGUISystem, &pxResourceCreateInfo, 1);
 
-          
+
 
                 if(pxUIElementTabPageSingleInfo->TABIcon)
                 {
@@ -3291,7 +3190,7 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
 
                     default:
                         break;
-                }         
+                }
 
                 PXLogPrint
                 (
@@ -3369,11 +3268,9 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
 
             // ShowWindow(pxWindow->ID, SW_NORMAL)
 
-
-            BOOL aaxx = EnableWindow(
-                pxWindowCurrent->Info.Handle.WindowID,
-                PXTrue
-            );
+#if OSWindows
+            BOOL aaxx = EnableWindow(pxWindowCurrent->Info.Handle.WindowID, PXTrue);
+#endif
 
           //  HWND qssa = SetCapture(pxWindowCurrent->Info.Handle.WindowID);
 

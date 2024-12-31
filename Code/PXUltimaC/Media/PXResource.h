@@ -9,6 +9,7 @@
 #include <OS/Memory/PXMemory.h>
 #include <OS/Hardware/PXKeyBoard.h>
 #include <Math/PXMatrix.h>
+#include <OS/Time/PXTime.h>
 
 #include <stdarg.h>
 
@@ -28,6 +29,7 @@ typedef enum PXFileFormat_ PXFileFormat;
 
 typedef struct PXCodeDocumentElement_ PXCodeDocumentElement;
 typedef struct PXFile_ PXFile;
+typedef struct PXTime_ PXTime;
 typedef struct PXText_ PXText;
 typedef struct PXCodeDocument_ PXCodeDocument;
 typedef struct PXGUISystem_ PXGUISystem;
@@ -3355,14 +3357,25 @@ typedef struct PXFile_
     PXMemoryCachingMode CachingMode;
     PXFileLocationMode LocationMode;
 
+
+    //-----------------------------------------------------
+    // OS-Register
+    //-----------------------------------------------------
 #if OSUnix || OSForcePOSIXForWindows || PXOSWindowsUseUWP
-    FILE* ID;
-    int MappingID;
+    int MappingHandle;
 #elif OSWindows
-    HANDLE ID;
-    HANDLE MappingID;
-    //FILE* IDPOSIX;
+    HANDLE MappingHandle;
 #endif
+
+#if OSWindows
+    HANDLE FileHandle;
+#endif
+
+    FILE* FileID;
+    int FileDescriptorID;
+    //-----------------------------------------------------
+
+
 
     PXBitFormat BitFormatOfData;
     PXEndian EndiannessOfData;
@@ -3370,11 +3383,11 @@ typedef struct PXFile_
     // The file path can't always be fetched from the OS.
     // for this we store the name here at creation time.
     char* FilePathData;
-    PXSize FilePathSize;
+    PXSize FilePathSize; 
 
-    //FILETIME creationTime;
-    //FILETIME lastAccessTime;
-    //FILETIME lastWriteTime;
+    PXTime TimeCreation;  // FILETIME
+    PXTime TimeAccessLast;
+    PXTime TimeWriteLast;
 
     // Statistic
     PXSize CounterOperationsRead;
@@ -3383,8 +3396,9 @@ typedef struct PXFile_
 PXFile;
 //---------------------------------------------------------
 
-
-
+// Check is there is data to be read. 
+// Use when we check if a file is loaded and not at the end
+PXPublic PXBool PXAPI PXFileDataAvailable(const PXFile* const pxFile);
 
 
 

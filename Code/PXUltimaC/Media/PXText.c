@@ -1707,6 +1707,24 @@ PXSize PXAPI PXTextToFloat(const PXText* const pxText, float* const number)
 #define PXSizePB 1000000000000000
 #define PXSizeEB 1000000000000000000
 
+#include <OS/Time/PXTime.h>
+
+PXSize PXAPI PXTextFormatDateTime(PXText* const pxText, const PXTime* const pxTime)
+{
+    // YYYY.MM.DD - HH.MM.SS
+    return  PXTextPrint
+    (
+        pxText, 
+        "%4.4i.%2.2i.%2.2i - %2.2i:%2.2i:%2.2i", 
+        pxTime->Year,
+        pxTime->Month,
+        pxTime->Day,
+        pxTime->Hour,
+        pxTime->Minute,
+        pxTime->Second
+    );
+}
+
 PXSize PXAPI PXTextFormatTime(PXText* const pxText, const PXSize pxTime)
 {
     if (pxTime < 1000)

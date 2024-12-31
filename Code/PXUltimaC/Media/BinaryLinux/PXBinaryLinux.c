@@ -387,15 +387,15 @@ PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceTransphereInfo* const p
             PXInt8U versionID; // Expect to be = 1
             PXInt8U osAPIID;
 
-            const PXDataTypeEntry pxDataStreamElementList[] =
+            const PXTypeEntry pxDataStreamElementList[] =
             {
-                {signature.Data, PXDataTypeDatax4},
-                {&classID,PXDataTypeInt08U},
-                {&dataID,PXDataTypeInt08U},
-                {&versionID,PXDataTypeInt08U},
-                {&osAPIID,PXDataTypeInt08U},
-                {&pxBinaryLinux->Header.TargetOSAPIVersion,PXDataTypeInt08U},
-                {PXNull, PXDataTypePadding(7u)}
+                {signature.Data, PXTypeDatax4},
+                {&classID,PXTypeInt08U},
+                {&dataID,PXTypeInt08U},
+                {&versionID,PXTypeInt08U},
+                {&osAPIID,PXTypeInt08U},
+                {&pxBinaryLinux->Header.TargetOSAPIVersion,PXTypeInt08U},
+                {PXNull, PXTypePadding(7u)}
             };
 
             PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -426,21 +426,21 @@ PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceTransphereInfo* const p
             PXInt16U sizeOfThisHeader;
             PXInt16U shstrndx;
 
-            const PXDataTypeEntry pxDataStreamElementList[] =
+            const PXTypeEntry pxDataStreamElementList[] =
             {
-                {&typeID, PXDataTypeInt16U},
-                {&machineID, PXDataTypeInt16U},
-                {&versionID,PXDataTypeInt32U},
-                {&pxBinaryLinux->Header.EntryPointOfCode,PXDataTypeAdressFlex},
-                {&pxBinaryLinux->Header.ProgrammHeaderOffset,PXDataTypeAdressFlex},
-                {&pxBinaryLinux->Header.SectionHeaderOffset,PXDataTypeAdressFlex},
-                {&e_flags,PXDataTypeInt32U},
-                {&sizeOfThisHeader, PXDataTypeInt16U},
-                {&pxBinaryLinux->Header.ProgrammHeaderSize, PXDataTypeInt16U},
-                {&pxBinaryLinux->Header.ProgrammHeaderAmount, PXDataTypeInt16U},
-                {&pxBinaryLinux->Header.SectionHeaderSize, PXDataTypeInt16U},
-                {&pxBinaryLinux->Header.SectionHeaderAmount, PXDataTypeInt16U},
-                {&shstrndx, PXDataTypeInt16U}
+                {&typeID, PXTypeInt16U},
+                {&machineID, PXTypeInt16U},
+                {&versionID,PXTypeInt32U},
+                {&pxBinaryLinux->Header.EntryPointOfCode,PXTypeAdressFlex},
+                {&pxBinaryLinux->Header.ProgrammHeaderOffset,PXTypeAdressFlex},
+                {&pxBinaryLinux->Header.SectionHeaderOffset,PXTypeAdressFlex},
+                {&e_flags,PXTypeInt32U},
+                {&sizeOfThisHeader, PXTypeInt16U},
+                {&pxBinaryLinux->Header.ProgrammHeaderSize, PXTypeInt16U},
+                {&pxBinaryLinux->Header.ProgrammHeaderAmount, PXTypeInt16U},
+                {&pxBinaryLinux->Header.SectionHeaderSize, PXTypeInt16U},
+                {&pxBinaryLinux->Header.SectionHeaderAmount, PXTypeInt16U},
+                {&shstrndx, PXTypeInt16U}
             };
 
             PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -463,17 +463,17 @@ PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceTransphereInfo* const p
             PXInt32U typeID;
             PXInt32U flagsID;
 
-            const PXDataTypeEntry pxDataStreamElementList[] =
+            const PXTypeEntry pxDataStreamElementList[] =
             {
-                {&typeID,PXDataTypeInt32U},
-                {&flagsID, PXDataTypeInt32ULEOnlyIf64B},
-                {&pxELFProgramHeader.AdressOffsetRead,PXDataTypeAdressFlex},
-                {&pxELFProgramHeader.AdressTargetVirtual,PXDataTypeAdressFlex},
-                {&pxELFProgramHeader.AdressTargetPhysical,PXDataTypeAdressFlex},
-                {&pxELFProgramHeader.SizeOnFile,PXDataTypeAdressFlex},
-                {&pxELFProgramHeader.SizeInMemory,PXDataTypeAdressFlex},
-                {&flagsID, PXDataTypeInt32ULEOnlyIf32B},
-                {&pxELFProgramHeader.p_align,PXDataTypeAdressFlex}
+                {&typeID,PXTypeInt32U},
+                {&flagsID, PXTypeInt32ULEOnlyIf64B},
+                {&pxELFProgramHeader.AdressOffsetRead,PXTypeAdressFlex},
+                {&pxELFProgramHeader.AdressTargetVirtual,PXTypeAdressFlex},
+                {&pxELFProgramHeader.AdressTargetPhysical,PXTypeAdressFlex},
+                {&pxELFProgramHeader.SizeOnFile,PXTypeAdressFlex},
+                {&pxELFProgramHeader.SizeInMemory,PXTypeAdressFlex},
+                {&flagsID, PXTypeInt32ULEOnlyIf32B},
+                {&pxELFProgramHeader.p_align,PXTypeAdressFlex}
             };
 
             PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -508,18 +508,18 @@ PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceTransphereInfo* const p
         {
             PXSectionHeader pxSectionHeader;
 
-            const PXDataTypeEntry pxDataStreamElementList[] =
+            const PXTypeEntry pxDataStreamElementList[] =
             {
-                {&pxSectionHeader.sh_nameOffset,PXDataTypeInt32U},
-                {&pxSectionHeader.sh_type,PXDataTypeInt32U},
-                {&pxSectionHeader.sh_flags,PXDataTypeAdressFlex},
-                {&pxSectionHeader.sh_addr,PXDataTypeAdressFlex},
-                {&pxSectionHeader.FileImageOffset,PXDataTypeAdressFlex},
-                {&pxSectionHeader.FileImageSize,PXDataTypeAdressFlex},
-                {&pxSectionHeader.sh_link,PXDataTypeInt32U},
-                {&pxSectionHeader.sh_info,PXDataTypeInt32U},
-                {&pxSectionHeader.sh_addralign,PXDataTypeAdressFlex},
-                {&pxSectionHeader.sh_entsize,PXDataTypeAdressFlex}
+                {&pxSectionHeader.sh_nameOffset,PXTypeInt32U},
+                {&pxSectionHeader.sh_type,PXTypeInt32U},
+                {&pxSectionHeader.sh_flags,PXTypeAdressFlex},
+                {&pxSectionHeader.sh_addr,PXTypeAdressFlex},
+                {&pxSectionHeader.FileImageOffset,PXTypeAdressFlex},
+                {&pxSectionHeader.FileImageSize,PXTypeAdressFlex},
+                {&pxSectionHeader.sh_link,PXTypeInt32U},
+                {&pxSectionHeader.sh_info,PXTypeInt32U},
+                {&pxSectionHeader.sh_addralign,PXTypeAdressFlex},
+                {&pxSectionHeader.sh_entsize,PXTypeAdressFlex}
             };
 
             PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));

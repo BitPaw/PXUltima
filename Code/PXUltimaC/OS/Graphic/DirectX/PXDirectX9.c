@@ -1688,18 +1688,18 @@ PXActionResult PXAPI PXDirectX9IndexBufferCreate(PXDirectX9* const pxDirectX9, P
     {
         switch(pxIndexBuffer->IndexDataType)
         {
-            case PXDataTypeInt16SLE:
-            case PXDataTypeInt16ULE:
-            case PXDataTypeInt16SBE:
-            case PXDataTypeInt16UBE:
+            case PXTypeInt16SLE:
+            case PXTypeInt16ULE:
+            case PXTypeInt16SBE:
+            case PXTypeInt16UBE:
             {
                 dataFormat = D3DFMT_INDEX16;
                 break;
             }
-            case PXDataTypeInt32SLE:
-            case PXDataTypeInt32ULE:
-            case PXDataTypeInt32SBE:
-            case PXDataTypeInt32UBE:
+            case PXTypeInt32SLE:
+            case PXTypeInt32ULE:
+            case PXTypeInt32SBE:
+            case PXTypeInt32UBE:
             {
                 dataFormat = D3DFMT_INDEX32;
                 break;

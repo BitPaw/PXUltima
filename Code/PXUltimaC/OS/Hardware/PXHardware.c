@@ -7,6 +7,8 @@
 #include <WbemCli.h>
 #endif
 
+#include <OS/File/PXDirectory.h>
+
 #if OSWindows
 typedef struct PXWindowsWMIEntry_
 {
@@ -127,8 +129,6 @@ PXBool PXAPI PXWindowsWMIClassOpen(PXHardwareInfo* const pxHardwareInfo, const c
 }
 #endif
 
-#include <OS/File/PXDirectory.h>
-
 
 PXActionResult PXAPI PXHardwareBatteryFetch(PXBattery* const pxBattery)
 {
@@ -143,22 +143,22 @@ PXActionResult PXAPI PXHardwareBatteryFetch(PXBattery* const pxBattery)
 
         PXTypeBinding list[] =
         {
-        {pxBattery->Name, "NAME", PXDataTypeText(32)}, // BAT1
-        {pxBattery->Status, "STATUS", PXDataTypeText(32) }, // Charging
-        {&pxBattery->PRESENT, "PRESENT", PXDataTypeBoolAsText }, // 1
-        {pxBattery->MaterialTechnology, "TECHNOLOGY", PXDataTypeText(32) }, // Li-ion
-        {&pxBattery->CYCLE_COUNT, "CYCLE_COUNT", PXDataTypeInt08U }, // 81
-        {&pxBattery->VOLTAGE_MIN_DESIGN, "VOLTAGE_MIN_DESIGN", PXDataTypeInt32U }, // 11100000
-        {&pxBattery->VOLTAGE_NOW, "VOLTAGE_NOW", PXDataTypeInt32U }, // 12276000
-        {&pxBattery->CURRENT_NOW, "CURRENT_NOW", PXDataTypeInt32U }, // 2889000
-        {&pxBattery->ChargeMaximalTheroetical, "CHARGE_FULL_DESIGN", PXDataTypeInt32U }, // 4400000
-        {&pxBattery->ChargeMaximumPractical, "CHARGE_FULL", PXDataTypeInt32U }, // 2506000
-        {&pxBattery->ChargeCurrent, "CHARGE_NOW", PXDataTypeInt32U }, // 1503000
-        {&pxBattery->CAPACITY, "CAPACITY", PXDataTypeInt08U }, // 59
-        {pxBattery->CAPACITY_LEVEL, "CAPACITY_LEVEL", PXDataTypeText(32) }, // Normal
-        {pxBattery->MODEL_NAME, "MODEL_NAME", PXDataTypeText(32) }, // PABAS0241231
-        {pxBattery->MANUFACTURER, "MANUFACTURER", PXDataTypeText(32) }, // COMPAL
-        {&pxBattery->SERIAL_NUMBER, "SERIAL_NUMBER", PXDataTypeInt08U } // 41167
+        {pxBattery->Name, "NAME", PXTypeText(32)}, // BAT1
+        {pxBattery->ChargeStatus, "STATUS", PXTypeText(32) }, // Charging
+        {&pxBattery->PRESENT, "PRESENT", PXTypeBoolAsText }, // 1
+        {pxBattery->MaterialTechnology, "TECHNOLOGY", PXTypeText(32) }, // Li-ion
+        {&pxBattery->CYCLE_COUNT, "CYCLE_COUNT", PXTypeInt08U }, // 81
+        {&pxBattery->VOLTAGE_MIN_DESIGN, "VOLTAGE_MIN_DESIGN", PXTypeInt32U }, // 11100000
+        {&pxBattery->VOLTAGE_NOW, "VOLTAGE_NOW", PXTypeInt32U }, // 12276000
+        {&pxBattery->CURRENT_NOW, "CURRENT_NOW", PXTypeInt32U }, // 2889000
+        {&pxBattery->ChargeMaximalTheroetical, "CHARGE_FULL_DESIGN", PXTypeInt32U }, // 4400000
+        {&pxBattery->ChargeMaximumPractical, "CHARGE_FULL", PXTypeInt32U }, // 2506000
+        {&pxBattery->ChargeCurrent, "CHARGE_NOW", PXTypeInt32U }, // 1503000
+        {&pxBattery->CAPACITY, "CAPACITY", PXTypeInt08U }, // 59
+        {pxBattery->CAPACITY_LEVEL, "CAPACITY_LEVEL", PXTypeText(32) }, // Normal
+        {pxBattery->MODEL_NAME, "MODEL_NAME", PXTypeText(32) }, // PABAS0241231
+        {pxBattery->MANUFACTURER, "MANUFACTURER", PXTypeText(32) }, // COMPAL
+        {&pxBattery->SERIAL_NUMBER, "SERIAL_NUMBER", PXTypeInt08U } // 41167
         };
         const PXInt8U amount = sizeof(list) / sizeof(PXTypeBinding);
 

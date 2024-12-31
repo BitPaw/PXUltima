@@ -4,6 +4,7 @@
 
 #include <signal.h> // [POSIX] Exists on Linux and Windows
 
+
 #if OSUnix
 typedef __sighandler_t PXSignalHandle;
 #elif OSWindows
@@ -59,4 +60,21 @@ PXActionResult PXAPI PXSignalCallBackRegister(const PXSignalToken pxSignalToken,
 #else
     return PXActionNotSupportedByOperatingSystem;
 #endif
+}
+
+PXActionResult PXAPI PXRecoveryPointSet(PXRecoveryPoint* const pxRecoveryPoint)
+{
+    const int resultID = setjmp(pxRecoveryPoint->Enviroment); 
+    const PXBool success = 0 == resultID;
+
+    return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXRecoveryPointRestore(PXRecoveryPoint* const pxRecoveryPoint)
+{
+    int returnValue = 1;
+
+    longjmp(pxRecoveryPoint->Enviroment, returnValue); // Jump to the saved state
+
+    return PXActionSuccessful;
 }

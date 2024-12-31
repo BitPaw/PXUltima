@@ -489,7 +489,7 @@ void PXAPI PXCodeDocumentElementPrintSingle(PXCodeDocument* const pxDocument, PX
     {
         char buffer[64];
 
-        PXDataTypeToString(pxDocumentElement->DataType, buffer);
+        PXTypeToString(pxDocumentElement->DataType, buffer);
 
         PXLogPrint
         (
@@ -568,19 +568,19 @@ PXSize PXAPI PXDocumentElementIO(PXCodeDocument* const pxDocument, PXCodeDocumen
     const PXInt8U symbolID = pxDocumentElement->Type;
     PXInt32U amount = 0;
 
-    PXDataTypeEntry pxFileDataElementTypeList[] =
+    PXTypeEntry pxFileDataElementTypeList[] =
     {
-        //&pxDocumentElement->ID, PXDataTypeSize,
-        &pxDocumentElement->Depth, PXDataTypeSize,
-        &pxDocumentElement->NameSize, PXDataTypeSize,
-        &pxDocumentElement->NameAdress, PXDataTypeAdress,
-        &pxDocumentElement->AttribtesAmount, PXDataTypeSize,
-        &pxDocumentElement->MemberAmount, PXDataTypeSize,
-        &pxDocumentElement->ElementChildrenAmount, PXDataTypeSize,
-        &pxDocumentElement->ElementSiblingsAmount, PXDataTypeSize,
-        &pxDocumentElement->ParaentDataPosition, PXDataTypeSize,
-        &symbolID, PXDataTypeInt08U,
-        &amount, PXDataTypeInt32U
+        //&pxDocumentElement->ID, PXTypeSize,
+        &pxDocumentElement->Depth, PXTypeSize,
+        &pxDocumentElement->NameSize, PXTypeSize,
+        &pxDocumentElement->NameAdress, PXTypeAdress,
+        &pxDocumentElement->AttribtesAmount, PXTypeSize,
+        &pxDocumentElement->MemberAmount, PXTypeSize,
+        &pxDocumentElement->ElementChildrenAmount, PXTypeSize,
+        &pxDocumentElement->ElementSiblingsAmount, PXTypeSize,
+        &pxDocumentElement->ParaentDataPosition, PXTypeSize,
+        &symbolID, PXTypeInt08U,
+        &amount, PXTypeInt32U
     };
 
     const PXSize bytesTransphered = pxFileIOMultibleFunction(&pxDocument->Data, pxFileDataElementTypeList, sizeof(pxFileDataElementTypeList));
@@ -727,7 +727,7 @@ PXActionResult PXAPI PXDocumentPrintNode(PXCodeDocumentElement* const pxDocument
 
     switch (pxDocumentElement->ElementMember.ValueType)
     {
-    case PXDataTypeBool:
+    case PXTypeBool:
     {
         PXBool value;
         PXCopy(PXBool, &pxDocumentElement->ElementMember.ValueAdress, &value);
@@ -736,7 +736,7 @@ PXActionResult PXAPI PXDocumentPrintNode(PXCodeDocumentElement* const pxDocument
         PXTextPrintA(valueBuffer, 64, "%s", value ? "true" : "false");
         break;
     }
-    case PXDataTypeFloat:
+    case PXTypeFloat:
     {
         float value;
         PXCopy(float, &pxDocumentElement->ElementMember.ValueAdress, &value);
@@ -745,7 +745,7 @@ PXActionResult PXAPI PXDocumentPrintNode(PXCodeDocumentElement* const pxDocument
         PXTextPrintA(valueBuffer, 64, "%-5.2f", value);
         break;
     }
-    case PXDataTypeIntS:
+    case PXTypeIntS:
     {
         int value;
         PXCopy(int, &pxDocumentElement->ElementMember.ValueAdress, &value);
@@ -754,7 +754,7 @@ PXActionResult PXAPI PXDocumentPrintNode(PXCodeDocumentElement* const pxDocument
         PXTextPrintA(valueBuffer, 64, "%i", value);
         break;
     }
-    case PXDataTypeString:
+    case PXTypeString:
     {
         PXTextPrintA(typeBuffer, 64, "string");
         PXTextCopyA(pxDocumentElement->ElementMember.ValueAdress, pxDocumentElement->ElementMember.ValueSize, valueBuffer, 63);

@@ -3,15 +3,14 @@
 #include <OS/Memory/PXMemory.h>
 #include <Media/PXText.h>
 
-
 #define PX_X86_BSWAP_ALLOW OS32B
 
-#define PXDataTypeInt08ULimit 255 // 0xFF
-#define PXDataTypeInt16ULimit 65535 // 0xFFFF
-#define PXDataTypeInt32ULimit 4294967295 // 0xFFFFFFFF
-#define PXDataTypeInt64ULimit 0xFFFFFFFFFFFFFFFF // 0xFFFFFFFFFFFFFFFF
+#define PXTypeInt08ULimit 255 // 0xFF
+#define PXTypeInt16ULimit 65535 // 0xFFFF
+#define PXTypeInt32ULimit 4294967295 // 0xFFFFFFFF
+#define PXTypeInt64ULimit 0xFFFFFFFFFFFFFFFF // 0xFFFFFFFFFFFFFFFF
 
-void PXDataTypeToString(const PXInt32U dataType, char* buffer)
+void PXAPI PXTypeToString(const PXInt32U dataType, char* buffer)
 {
 //    PXText pxText;
     //PXTextConstructBufferA(&pxText, 256);
@@ -31,39 +30,39 @@ void PXDataTypeToString(const PXInt32U dataType, char* buffer)
 #endif
 }
 
-PXInt32U PXDataTypeIntFitting(const PXSize expectedSize)
+PXInt32U PXAPI PXTypeIntFitting(const PXSize expectedSize)
 {
     {
-        const PXBool fitIn08Bit = expectedSize <= (PXSize)PXDataTypeInt08ULimit;
+        const PXBool fitIn08Bit = expectedSize <= (PXSize)PXTypeInt08ULimit;
 
         if (fitIn08Bit)
         {
-            return PXDataTypeInt08U;
+            return PXTypeInt08U;
         }
     }
 
     {
-        const PXBool fitIn16Bit = expectedSize <= (PXSize)PXDataTypeInt16ULimit;
+        const PXBool fitIn16Bit = expectedSize <= (PXSize)PXTypeInt16ULimit;
 
         if (fitIn16Bit)
         {
-            return PXDataTypeInt16U;
+            return PXTypeInt16U;
         }
     }
 
     {
-        const PXBool fitIn32Bit = expectedSize <= (PXSize)PXDataTypeInt32ULimit;
+        const PXBool fitIn32Bit = expectedSize <= (PXSize)PXTypeInt32ULimit;
 
         if (fitIn32Bit)
         {
-            return PXDataTypeInt32U;
+            return PXTypeInt32U;
         }
     }
 
-    return PXDataTypeInt64U;
+    return PXTypeInt64U;
 }
 
-void PXEndianSwapI32U(PXInt32U* const value)
+void PXAPI PXEndianSwapI32U(PXInt32U* const value)
 {
 
 
@@ -91,7 +90,7 @@ void PXEndianSwapI32U(PXInt32U* const value)
 #endif // 0
 }
 
-void PXEndianSwapI16U(PXInt16U* const value)
+void PXAPI PXEndianSwapI16U(PXInt16U* const value)
 {
 
 #if PX_X86_BSWAP_ALLOW
@@ -112,7 +111,7 @@ void PXEndianSwapI16U(PXInt16U* const value)
 
 }
 
-void PXEndianSwap(void* const data, const PXSize dataSize, const PXEndian endianFrom, const PXEndian endianTo)
+void PXAPI PXEndianSwap(void* const data, const PXSize dataSize, const PXEndian endianFrom, const PXEndian endianTo)
 {
     {
         const PXBool inoutIsOutput = endianFrom == endianTo;
@@ -136,7 +135,7 @@ void PXEndianSwap(void* const data, const PXSize dataSize, const PXEndian endian
     }
 }
 
-void PXEndianSwapV(void** const data, const PXSize dataSize, const PXSize elementSize, const PXEndian endianFrom, const PXEndian endianTo)
+void PXAPI PXEndianSwapV(void** const data, const PXSize dataSize, const PXSize elementSize, const PXEndian endianFrom, const PXEndian endianTo)
 {
     const PXSize amount = dataSize / elementSize;
 

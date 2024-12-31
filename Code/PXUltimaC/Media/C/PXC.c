@@ -695,7 +695,7 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler
             {
                 PXCompilerSymbolEntryExtract(pxCompiler); // consume "char"
 
-                pxCodeDocumentElement->DataType |= PXDataTypeInt08U;
+                pxCodeDocumentElement->DataType |= PXTypeInt08U;
 
                 pxCodeDocumentElement->DataTypeIsBuildIn = PXTrue;
 
@@ -707,7 +707,7 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler
             {
                 PXCompilerSymbolEntryExtract(pxCompiler); // consume "short"
 
-                pxCodeDocumentElement->DataType |= PXDataTypeInt16U;
+                pxCodeDocumentElement->DataType |= PXTypeInt16U;
 
                 pxCodeDocumentElement->DataTypeIsBuildIn = PXTrue;
 
@@ -719,7 +719,7 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler
             {
                 PXCompilerSymbolEntryExtract(pxCompiler); // consume "const"
 
-                pxCodeDocumentElement->DataType |= PXDataTypeInt32U;
+                pxCodeDocumentElement->DataType |= PXTypeInt32U;
 
                 pxCodeDocumentElement->DataTypeIsBuildIn = PXTrue;
 
@@ -734,7 +734,7 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler
                 pxCodeDocumentElement->DataTypeIsBuildIn = PXTrue;
 
                 // pxCo
-                // deDocumentElement->DataType |= PXDataTypeFloat;
+                // deDocumentElement->DataType |= PXTypeFloat;
 
                 done = 1;
 
@@ -744,7 +744,7 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler
             {
                 PXCompilerSymbolEntryExtract(pxCompiler); // consume "const"
 
-                pxCodeDocumentElement->DataType |= PXDataTypeFloat;
+                pxCodeDocumentElement->DataType |= PXTypeFloat;
 
                 pxCodeDocumentElement->DataTypeIsBuildIn = PXTrue;
 
@@ -756,7 +756,7 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler
             {
                 PXCompilerSymbolEntryExtract(pxCompiler); // consume "const"
 
-                pxCodeDocumentElement->DataType |= PXDataTypeDouble;
+                pxCodeDocumentElement->DataType |= PXTypeDouble;
 
                 pxCodeDocumentElement->DataTypeIsBuildIn = PXTrue;
 
@@ -770,7 +770,7 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler
 
                 pxCodeDocumentElement->DataTypeIsBuildIn = PXTrue;
 
-                pxCodeDocumentElement->DataType |= PXDataTypeInt08U;
+                pxCodeDocumentElement->DataType |= PXTypeInt08U;
 
                 done = 1;
 
@@ -781,7 +781,7 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler
             {
                 PXCompilerSymbolEntryExtract(pxCompiler); // consume "const"
 
-                pxCodeDocumentElement->DataType |= PXDataTypeReadOnly;
+                pxCodeDocumentElement->DataType |= PXTypeReadOnly;
 
                 break;
             }
@@ -789,7 +789,7 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler
             {
                 PXCompilerSymbolEntryExtract(pxCompiler); // consume "unsigned"
 
-                pxCodeDocumentElement->DataType |= PXDataTypeUnsigned;
+                pxCodeDocumentElement->DataType |= PXTypeUnsigned;
 
                 break;
             }
@@ -819,7 +819,7 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler
             // {
             //    PXCompilerSymbolEntryExtract(pxCompiler);
 
-            //     pxCodeDocumentElement->DataType |= PXDataTypeAdressMask;
+            //     pxCodeDocumentElement->DataType |= PXTypeAdressMask;
 //
             //     break;
             //  }
@@ -848,7 +848,7 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler
 
     if (isPointer)
     {
-        pxCodeDocumentElement->DataType |= PXDataTypeAdressMask;
+        pxCodeDocumentElement->DataType |= PXTypeAdressMask;
 
         // Throw away '*'
         PXCompilerSymbolEntryExtract(pxCompiler);

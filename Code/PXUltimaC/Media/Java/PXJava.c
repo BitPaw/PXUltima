@@ -165,7 +165,7 @@ void PXAPI PXJavaDefinitionWrite(PXCompiler* const pxCompiler)
     //PXFileWriteFill(pxFile, ' ', PXJavaTABSize * pxCodeDocumentElement->Depth);
 
     // readonly
-    if(entry->DataType & PXDataTypeReadOnly)
+    if(entry->DataType & PXTypeReadOnly)
     {
         PXFileWriteA(pxFile, PXJavaKeyWordReadOnly, 5);
         PXFileWriteC(pxFile, ' ');
@@ -174,21 +174,21 @@ void PXAPI PXJavaDefinitionWrite(PXCompiler* const pxCompiler)
     // type
     if(entry->DataTypeIsBuildIn)
     {
-        switch(entry->DataType & PXDataTypeSizeMask)
+        switch(entry->DataType & PXTypeSizeMask)
         {
-        case PXDataTypeSize08:
+        case PXTypeSize08:
             PXFileWriteA(pxFile, PXJavaKeyWordByte, 4);
             break;
 
-        case PXDataTypeSize16:
+        case PXTypeSize16:
             PXFileWriteA(pxFile, PXJavaKeyWordShort, 5);
             break;
 
-        case PXDataTypeSize32:
+        case PXTypeSize32:
             PXFileWriteA(pxFile, PXJavaKeyWordInt, 3);
             break;
 
-        case PXDataTypeSize64:
+        case PXTypeSize64:
             PXFileWriteA(pxFile, PXJavaKeyWordLong, 4);
             break;
 

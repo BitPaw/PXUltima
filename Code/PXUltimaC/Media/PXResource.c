@@ -262,6 +262,28 @@ PXInt8U PXAPI PXVertexBufferFormatStrideSize(const PXVertexBufferFormat pxVertex
     }
 }
 
+PXBool PXAPI PXFileDataAvailable(const PXFile* const pxFile)
+{
+    switch(pxFile->LocationMode)
+    {
+        case PXFileLocationModeInternal:
+        case PXFileLocationModeExternal:
+        case PXFileLocationModeMappedVirtual:
+        case PXFileLocationModeMappedFromDisk:
+        {
+            return pxFile->Data && (pxFile->DataCursor <= pxFile->DataUsed);
+        }   
+        case PXFileLocationModeDirectCached:
+        case PXFileLocationModeDirectUncached:
+            break;
+
+        default:
+            return PXFalse;
+    }
+
+    return PXTrue;
+}
+
 const char* PXAPI PXResourceTypeToString(const PXResourceType pxResourceType)
 {
     switch(pxResourceType)
@@ -343,8 +365,8 @@ PXInt32U PXAPI PXResourceManagerGenerateUniqeID(PXResourceManager* const pxResou
 }
 
 
-
-HBITMAP PXBitMapFromImage(int width, int height, int amountofchannels, void* data)
+#if OSWindows
+HBITMAP PXAPI PXBitMapFromImage(int width, int height, int amountofchannels, void* data)
 {
     BITMAPINFO bmi;
     ZeroMemory(&bmi, sizeof(BITMAPINFO));
@@ -367,10 +389,11 @@ HBITMAP PXBitMapFromImage(int width, int height, int amountofchannels, void* dat
     return hBitmap;
 }
 
-HICON PXIconFromBitMap(PXImage* const pxImage)
+HICON PXAPI PXIconFromBitMap(PXImage* const pxImage)
 {
 
 }
+#endif
 
 
 
@@ -577,7 +600,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                 );
 #endif
                       
-
+#if OSWindows
                 void* bitmapData[2];
                 HBITMAP bitmapHandle[2];
 
@@ -678,6 +701,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                 PXErrorCurrent(iconHandle);
 
                 pxIcon->Info.Handle.IconHandle = iconHandle;
+#endif
 
                 break;
             }
@@ -966,7 +990,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                             pxVertexBuffer->VertexData = (void*)PXVertexDataTriangle;
                             pxVertexBuffer->VertexDataSize = sizeof(PXVertexDataTriangle);
 
-                            pxIndexBuffer->IndexDataType = PXDataTypeInt08U;
+                            pxIndexBuffer->IndexDataType = PXTypeInt08U;
                             pxIndexBuffer->DrawModeID = PXDrawModeIDTriangle;
                             pxIndexBuffer->IndexData = (void*)PXIndexDataTriangle;
                             pxIndexBuffer->IndexDataSize = sizeof(PXIndexDataTriangle);
@@ -991,7 +1015,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                             pxVertexBuffer->VertexData = (void*)PXVertexDataRectangle;
                             pxVertexBuffer->VertexDataSize = sizeof(PXVertexDataRectangle);
 
-                            pxIndexBuffer->IndexDataType = PXDataTypeInt08U;
+                            pxIndexBuffer->IndexDataType = PXTypeInt08U;
                             pxIndexBuffer->DrawModeID = PXDrawModeIDTriangle;// PXDrawModeIDPoint | PXDrawModeIDLineLoop;
                             pxIndexBuffer->IndexData = (void*)PXIndexDataRectangle;
                             pxIndexBuffer->IndexDataSize = sizeof(PXIndexDataRectangle);
@@ -1047,7 +1071,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                             pxVertexBuffer->VertexData = (void*)PXVertexDataCube;
                             pxVertexBuffer->VertexDataSize = sizeof(PXVertexDataCube);
 
-                            pxIndexBuffer->IndexDataType = PXDataTypeInt08U;
+                            pxIndexBuffer->IndexDataType = PXTypeInt08U;
                             pxIndexBuffer->DrawModeID = PXDrawModeIDTriangle;
                             pxIndexBuffer->IndexData = (void*)PXIndexDataCube;
                             pxIndexBuffer->IndexDataSize = sizeof(PXIndexDataCube);
@@ -2825,6 +2849,17 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
         }
     }
 
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "File",
+        "Load",
+        "Begin for <%s>",
+        filePath->TextA
+    );
+#endif
+
     // try to detect format over file extension
     PXFileTypeInfoProbe(pxResourceLoadInfo, filePath);
 
@@ -2889,7 +2924,7 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
         PXLogPrint
         (
             PXLoggingInfo,
-            "Resource",
+            "File",
             "Load-Peek",
             "Start..."
         );
@@ -2905,7 +2940,7 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
             PXLogPrint
             (
                 PXLoggingError,
-                "Resource",
+                "File",
                 "File-Peek",
                 "Failed"
             );
@@ -2920,10 +2955,22 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
         PXLogPrint
         (
             PXLoggingInfo,
-            "Resource",
+            "File",
             "Load-Peek",
             "Done! Took:%6.3fs",
             pxResourceLoadInfo->TimePeek
+        );
+#endif
+    }
+    else
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "File",
+            "Load-Peek",
+            "No peek function implemented. procceed.."
         );
 #endif
     }
@@ -2935,7 +2982,7 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
         PXLogPrint
         (
             PXLoggingInfo,
-            "Resource",
+            "File",
             "Load-PreAlloc",
             "Preallocate resource on device"
         );
@@ -2953,7 +3000,7 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
         PXLogPrint
         (
             PXLoggingInfo,
-            "Resource",
+            "File",
             "Load-PreAlloc",
             "Preallocate took:<%6.3f>",
             pxResourceLoadInfo->TimeDeviceDataRegister
@@ -3018,7 +3065,6 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
             filePath->TextA
         );
 #endif
-
 
         return fileParsingResult; // TEMP-FIX: if the file extension is wrong, how can we still load?
 

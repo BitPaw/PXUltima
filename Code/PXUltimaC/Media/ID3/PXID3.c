@@ -247,14 +247,14 @@ PXActionResult PXAPI PXID3LoadFromFile(PXID3* const id3, PXFile* const PXFile)
         {
             const PXBool hasTrackID = PXID3Versionv1x1 == version;
 
-            const PXDataTypeEntry pxFileDataElementType[] =
+            const PXTypeEntry pxFileDataElementType[] =
             {
                 {id3->Title, PXID3TitleSize},
                 {id3->Artist, PXID3ArtistSize},
                 {id3->Album, PXID3AlbumSize},
                 {id3->Year, PXID3YearSize},
                 {id3->Comment, PXID3CommentSize},
-                {&id3->Genre, PXDataTypeInt08U}
+                {&id3->Genre, PXTypeInt08U}
             };
 
             PXFileWriteMultible(PXFile, pxFileDataElementType, sizeof(pxFileDataElementType));

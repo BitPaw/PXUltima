@@ -179,134 +179,134 @@
 #define PXFlagRemove(target, value, flagID)  target &= ~flagID
 
 
-#define PXDataTypeReadOnlyMask          0b10000000000000000000000000000000
-#define PXDataTypeAdressMask            0b01000000000000000000000000000000 // Used if the type is
-#define PXDataTypeEndianMask            0b00110000000000000000000000000000 // Little or big endian. If No endian is spesified, we can just copy 1:1
-#define PXDataTypeUseFileModeMask       0b00000000000000000000000000000000
-#define PXDataTypeSignedMask            0b00001000000000000000000000000000 // Only useful in numeric values
-#define PXDataTypeIgnoreIFMask          0b00000110000000000000000000000000
-#define PXDataTypeShallDoIO             0b00000001000000000000000000000000 // Set if you want to read or write (To support Padding)
-#define PXDataTypeTypeMask              0b00000000110000000000000000000000
-#define PXDataTypeBaseEmpty             0b00000000000000000000000000000000
-#define PXDataTypeBaseNumeric           0b00000000100000000000000000000000
-#define PXDataTypeBaseDecimal           0b00000000010000000000000000000000
-#define PXDataTypeBaseText              0b00000000110000000000000000000000
+#define PXTypeReadOnlyMask          0b10000000000000000000000000000000
+#define PXTypeAdressMask            0b01000000000000000000000000000000 // Used if the type is
+#define PXTypeEndianMask            0b00110000000000000000000000000000 // Little or big endian. If No endian is spesified, we can just copy 1:1
+#define PXTypeUseFileModeMask       0b00000000000000000000000000000000
+#define PXTypeSignedMask            0b00001000000000000000000000000000 // Only useful in numeric values
+#define PXTypeIgnoreIFMask          0b00000110000000000000000000000000
+#define PXTypeShallDoIO             0b00000001000000000000000000000000 // Set if you want to read or write (To support Padding)
+#define PXTypeTypeMask              0b00000000110000000000000000000000
+#define PXTypeBaseEmpty             0b00000000000000000000000000000000
+#define PXTypeBaseNumeric           0b00000000100000000000000000000000
+#define PXTypeBaseDecimal           0b00000000010000000000000000000000
+#define PXTypeBaseText              0b00000000110000000000000000000000
 
-#define PXDataTypeBitFieldHolderMask    0b00000000000001100000000000000000
-#define PXDataTypeBitFieldHolder08U     0b00000000000000000000000000000000 // 1 Bytes
-#define PXDataTypeBitFieldHolder16U     0b00000000000000100000000000000000 // 2 Bytes
-#define PXDataTypeBitFieldHolder32U     0b00000000000001000000000000000000 // 4 Bytes
-#define PXDataTypeBitFieldHolder64U     0b00000000000001100000000000000000 // 8 Bytes
+#define PXTypeBitFieldHolderMask    0b00000000000001100000000000000000
+#define PXTypeBitFieldHolder08U     0b00000000000000000000000000000000 // 1 Bytes
+#define PXTypeBitFieldHolder16U     0b00000000000000100000000000000000 // 2 Bytes
+#define PXTypeBitFieldHolder32U     0b00000000000001000000000000000000 // 4 Bytes
+#define PXTypeBitFieldHolder64U     0b00000000000001100000000000000000 // 8 Bytes
 
-#define PXDataTypeModeMask              0b00000000000000010000000000000000
-#define PXDataTypeModeByte              0b00000000000000000000000000000000
-#define PXDataTypeModeBit               0b00000000000000010000000000000000
+#define PXTypeModeMask              0b00000000000000010000000000000000
+#define PXTypeModeByte              0b00000000000000000000000000000000
+#define PXTypeModeBit               0b00000000000000010000000000000000
 
-#define PXDataTypeSizeMask                0b00000000000000001111111111111111 // Size in bytes of target data 0x0000FFFF
+#define PXTypeSizeMask                0b00000000000000001111111111111111 // Size in bytes of target data 0x0000FFFF
 
 
-#define PXDataTypeIgnoreIn32B 0b00000010000000000000000000000000
-#define PXDataTypeIgnoreIn64B 0b00000100000000000000000000000000
+#define PXTypeIgnoreIn32B 0b00000010000000000000000000000000
+#define PXTypeIgnoreIn64B 0b00000100000000000000000000000000
 
-#define PXDataTypeDirect        (0b00 << 28)
-#define PXDataTypeEndianBig        (0b01 << 28)
-#define PXDataTypeEndianLittle    (0b10 << 28)
+#define PXTypeDirect        (0b00 << 28)
+#define PXTypeEndianBig        (0b01 << 28)
+#define PXTypeEndianLittle    (0b10 << 28)
 
-#define PXDataTypeSigned PXDataTypeSignedMask
-#define PXDataTypeUnsigned 0
+#define PXTypeSigned PXTypeSignedMask
+#define PXTypeUnsigned 0
 
-#define PXDataTypeSize00        0
-#define PXDataTypeSize08        1
-#define PXDataTypeSize16        2
-#define PXDataTypeSize32        4
-#define PXDataTypeSize64        8
-#define PXDataTypeSize128        16
+#define PXTypeSize00        0
+#define PXTypeSize08        1
+#define PXTypeSize16        2
+#define PXTypeSize32        4
+#define PXTypeSize64        8
+#define PXTypeSize128        16
 
-#define PXDataTypeText(size) size | PXDataTypeBaseText
+#define PXTypeText(size) size | PXTypeBaseText
 
-#define PXDataTypeReadOnly PXDataTypeReadOnlyMask
+#define PXTypeReadOnly PXTypeReadOnlyMask
 
 //-------------------------------------------------
 // Adress, read as spesified but store it as (void*)
 //-------------------------------------------------
-#define PXDataTypeAdress08 PXDataTypeAdressMask | PXDataTypeSize08
-#define PXDataTypeAdress16 PXDataTypeAdressMask | PXDataTypeSize16
-#define PXDataTypeAdress32 PXDataTypeAdressMask | PXDataTypeSize32
-#define PXDataTypeAdress64 PXDataTypeAdressMask | PXDataTypeSize64
-#define PXDataTypeAdressFlex PXDataTypeAdressMask
-#define PXDataTypeAdress PXDataTypeAdressMask | sizeof(void*)
-#define PXDataTypeString PXDataTypeAdress
+#define PXTypeAdress08 PXTypeAdressMask | PXTypeSize08
+#define PXTypeAdress16 PXTypeAdressMask | PXTypeSize16
+#define PXTypeAdress32 PXTypeAdressMask | PXTypeSize32
+#define PXTypeAdress64 PXTypeAdressMask | PXTypeSize64
+#define PXTypeAdressFlex PXTypeAdressMask
+#define PXTypeAdress PXTypeAdressMask | sizeof(void*)
+#define PXTypeString PXTypeAdress
 
 //-------------------------------------------------
 // Text - used to parse singatures
 //-------------------------------------------------
-#define PXDataTypeDatax2 PXDataTypeSize16
-#define PXDataTypeDatax4 PXDataTypeSize32
-#define PXDataTypeDatax8 PXDataTypeSize64
-#define PXDataTypeDatax16 PXDataTypeSize128
+#define PXTypeDatax2 PXTypeSize16
+#define PXTypeDatax4 PXTypeSize32
+#define PXTypeDatax8 PXTypeSize64
+#define PXTypeDatax16 PXTypeSize128
 
 //-------------------------------------------------
 // Empty space
 //-------------------------------------------------
-#define PXDataTypePadding(size) size | PXDataTypeBaseEmpty
+#define PXTypePadding(size) size | PXTypeBaseEmpty
 
 
 //-------------------------------------------------
 // Int - Normal
 //-------------------------------------------------
-#define PXDataTypeIntS PXDataTypeBaseNumeric | PXDataTypeSigned
-#define PXDataTypeIntU PXDataTypeBaseNumeric | PXDataTypeUnsigned
+#define PXTypeIntS PXTypeBaseNumeric | PXTypeSigned
+#define PXTypeIntU PXTypeBaseNumeric | PXTypeUnsigned
 
-#define PXDataTypeInt08S PXDataTypeSize08 | PXDataTypeIntS
-#define PXDataTypeInt08U PXDataTypeSize08 | PXDataTypeIntU
+#define PXTypeInt08S PXTypeSize08 | PXTypeIntS
+#define PXTypeInt08U PXTypeSize08 | PXTypeIntU
 
-#define PXDataTypeBool PXDataTypeInt08U
+#define PXTypeBool PXTypeInt08U
 
-#define PXDataTypeBoolAsText 
+#define PXTypeBoolAsText 
 
-#define PXDataTypeInt16S PXDataTypeSize16 | PXDataTypeIntS
-#define PXDataTypeInt16SLE PXDataTypeSize16 | PXDataTypeIntS | PXDataTypeEndianLittle
-#define PXDataTypeInt16SBE PXDataTypeSize16 | PXDataTypeIntS | PXDataTypeEndianBig
-#define PXDataTypeInt16U PXDataTypeSize16 | PXDataTypeIntU
-#define PXDataTypeInt16ULE PXDataTypeSize16 | PXDataTypeIntU | PXDataTypeEndianLittle
-#define PXDataTypeInt16UBE PXDataTypeSize16 | PXDataTypeIntU | PXDataTypeEndianBig
+#define PXTypeInt16S PXTypeSize16 | PXTypeIntS
+#define PXTypeInt16SLE PXTypeSize16 | PXTypeIntS | PXTypeEndianLittle
+#define PXTypeInt16SBE PXTypeSize16 | PXTypeIntS | PXTypeEndianBig
+#define PXTypeInt16U PXTypeSize16 | PXTypeIntU
+#define PXTypeInt16ULE PXTypeSize16 | PXTypeIntU | PXTypeEndianLittle
+#define PXTypeInt16UBE PXTypeSize16 | PXTypeIntU | PXTypeEndianBig
 
-#define PXDataTypeInt32S PXDataTypeSize32 | PXDataTypeIntS
-#define PXDataTypeInt32SLE PXDataTypeSize32 | PXDataTypeIntS | PXDataTypeEndianLittle
-#define PXDataTypeInt32SBE PXDataTypeSize32 | PXDataTypeIntS | PXDataTypeEndianBig
-#define PXDataTypeInt32U PXDataTypeSize32 | PXDataTypeIntU
-#define PXDataTypeInt32ULE PXDataTypeSize32 | PXDataTypeIntU | PXDataTypeEndianLittle
-#define PXDataTypeInt32UBE PXDataTypeSize32 | PXDataTypeIntU | PXDataTypeEndianBig
+#define PXTypeInt32S PXTypeSize32 | PXTypeIntS
+#define PXTypeInt32SLE PXTypeSize32 | PXTypeIntS | PXTypeEndianLittle
+#define PXTypeInt32SBE PXTypeSize32 | PXTypeIntS | PXTypeEndianBig
+#define PXTypeInt32U PXTypeSize32 | PXTypeIntU
+#define PXTypeInt32ULE PXTypeSize32 | PXTypeIntU | PXTypeEndianLittle
+#define PXTypeInt32UBE PXTypeSize32 | PXTypeIntU | PXTypeEndianBig
 
-#define PXDataTypeInt64U PXDataTypeSize64
-#define PXDataTypeInt64ULE PXDataTypeSize64 | PXDataTypeIntU | PXDataTypeEndianLittle
-#define PXDataTypeInt64UBE PXDataTypeSize64 | PXDataTypeIntU | PXDataTypeEndianBig
-#define PXDataTypeInt64S PXDataTypeSize64
-#define PXDataTypeInt64SLE PXDataTypeSize64 | PXDataTypeIntS | PXDataTypeEndianLittle
-#define PXDataTypeInt64SBE PXDataTypeSize64 | PXDataTypeIntS | PXDataTypeEndianBig
+#define PXTypeInt64U PXTypeSize64
+#define PXTypeInt64ULE PXTypeSize64 | PXTypeIntU | PXTypeEndianLittle
+#define PXTypeInt64UBE PXTypeSize64 | PXTypeIntU | PXTypeEndianBig
+#define PXTypeInt64S PXTypeSize64
+#define PXTypeInt64SLE PXTypeSize64 | PXTypeIntS | PXTypeEndianLittle
+#define PXTypeInt64SBE PXTypeSize64 | PXTypeIntS | PXTypeEndianBig
 
-#define PXDataTypeInt32ULEOnlyIf32B PXDataTypeInt32ULE | PXDataTypeIgnoreIn32B
-#define PXDataTypeInt32ULEOnlyIf64B PXDataTypeInt32ULE | PXDataTypeIgnoreIn64B
+#define PXTypeInt32ULEOnlyIf32B PXTypeInt32ULE | PXTypeIgnoreIn32B
+#define PXTypeInt32ULEOnlyIf64B PXTypeInt32ULE | PXTypeIgnoreIn64B
 
-#define PXDataTypeSize PXDataTypeInt64U
+#define PXTypeSize PXTypeInt64U
 
-#define PXDataTypeIntFlexLE | PXDataTypeBaseNumeric | PXDataTypeEndianLittle
-#define PXDataTypeIntFlexBE | PXDataTypeBaseNumeric | PXDataTypeEndianBig
+#define PXTypeIntFlexLE | PXTypeBaseNumeric | PXTypeEndianLittle
+#define PXTypeIntFlexBE | PXTypeBaseNumeric | PXTypeEndianBig
 
-#define PXDataTypeFloat PXDataTypeSize32 | PXDataTypeBaseDecimal
-#define PXDataTypeDouble PXDataTypeSize64 | PXDataTypeBaseDecimal
+#define PXTypeFloat PXTypeSize32 | PXTypeBaseDecimal
+#define PXTypeDouble PXTypeSize64 | PXTypeBaseDecimal
 
 
 //-------------------------------------------------
 // Int - BitMode
 //-------------------------------------------------
-#define PXDataTypeIntUFlexBit PXDataTypeIntU | PXDataTypeModeBit
-#define PXDataTypeBit08U(bitSize) PXDataTypeBitFieldHolder08U | PXDataTypeIntUFlexBit | bitSize
-#define PXDataTypeBit16U(bitSize) PXDataTypeBitFieldHolder16U | PXDataTypeIntUFlexBit | bitSize
-#define PXDataTypeBit32U(bitSize) PXDataTypeBitFieldHolder32U | PXDataTypeIntUFlexBit | bitSize
-#define PXDataTypeBit64U(bitSize) PXDataTypeBitFieldHolder64U | PXDataTypeIntUFlexBit | bitSize
+#define PXTypeIntUFlexBit PXTypeIntU | PXTypeModeBit
+#define PXTypeBit08U(bitSize) PXTypeBitFieldHolder08U | PXTypeIntUFlexBit | bitSize
+#define PXTypeBit16U(bitSize) PXTypeBitFieldHolder16U | PXTypeIntUFlexBit | bitSize
+#define PXTypeBit32U(bitSize) PXTypeBitFieldHolder32U | PXTypeIntUFlexBit | bitSize
+#define PXTypeBit64U(bitSize) PXTypeBitFieldHolder64U | PXTypeIntUFlexBit | bitSize
 
-#define PXDataTypeNibble PXDataTypeBit08U(4)
+#define PXTypeNibble PXTypeBit08U(4)
 
 typedef unsigned char PXByte;
 typedef unsigned char PXBool;
@@ -359,12 +359,12 @@ typedef wchar_t* const PXTextUNICODE;
 
 
 
-typedef struct PXDataTypeEntry_
+typedef struct PXTypeEntry_
 {
     void* Adress;
     PXInt32U Type;
 }
-PXDataTypeEntry;
+PXTypeEntry;
 
 
 // Object to bind a runtime member adress of a struct with a name with the type
@@ -769,19 +769,19 @@ PXEndian;
 #define EndianCurrentSystem PXEndianBig
 #endif
 
-//typedef PXInt32U PXDataType;
+//typedef PXInt32U PXType;
 
-PXPublic void PXDataTypeToString(const PXInt32U dataType, char* buffer);
+PXPublic void PXAPI PXTypeToString(const PXInt32U dataType, char* buffer);
 
-PXPublic PXInt32U PXDataTypeIntFitting(const PXSize expectedSize);
+PXPublic PXInt32U PXAPI PXTypeIntFitting(const PXSize expectedSize);
 
-PXPublic void PXEndianSwapI32U(PXInt32U* const value);
-PXPublic void PXEndianSwapI16U(PXInt16U* const value);
+PXPublic void PXAPI PXEndianSwapI32U(PXInt32U* const value);
+PXPublic void PXAPI PXEndianSwapI16U(PXInt16U* const value);
 
 
-PXPublic void PXEndianSwap(void* const data, const PXSize dataSize, const PXEndian endianFrom, const PXEndian endianTo);
+PXPublic void PXAPI PXEndianSwap(void* const data, const PXSize dataSize, const PXEndian endianFrom, const PXEndian endianTo);
 
-PXPublic void PXEndianSwapV(void** const data, const PXSize dataSize, const PXSize elementSize, const PXEndian endianFrom, const PXEndian endianTo);
+PXPublic void PXAPI PXEndianSwapV(void** const data, const PXSize dataSize, const PXSize elementSize, const PXEndian endianFrom, const PXEndian endianTo);
 
 //-----------------------------------------------------------------------------
 

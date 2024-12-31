@@ -95,6 +95,9 @@ PXActionResult PXAPI PXErrorCodeFromID(const int errorCode)
 {
     switch(errorCode)
     {
+        case 0:
+            return PXActionSuccessful;
+
     case EOTHER:
         return PXActionFailedUnkownError;
 

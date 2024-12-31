@@ -29,6 +29,7 @@ PXActionResult PXAPI PXDotNetInit(PXDotNet* const pxDotNet)
 
     PXClear(PXDotNet, pxDotNet);
 
+#if OSWindows
     CreateInterfaceFnPtr createInterface;
 
     // open
@@ -244,7 +245,9 @@ PXActionResult PXAPI PXDotNetInit(PXDotNet* const pxDotNet)
 
 
     */
-
-    
     return PXActionSuccessful;
+
+#else
+return PXActionRefusedTypeNotSupported;
+#endif
 }

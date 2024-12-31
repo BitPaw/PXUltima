@@ -116,7 +116,7 @@ void PXAPI PXXMLBlockParse(PXCodeDocument* const pxDocument, PXCompiler* const p
                             PXCompilerSymbolEntryExtract(pxCompiler);
                             PXCompilerSymbolEntryExtract(pxCompiler);
 
-                            pxDocumentElement.ElementMember.ValueType = PXDataTypeString;
+                            pxDocumentElement.ElementMember.ValueType = PXTypeString;
                             pxDocumentElement.ElementMember.ValueAdress =  pxCompiler->ReadInfo.SymbolEntryCurrent.Source;
                             pxDocumentElement.ElementMember.ValueSize =  pxCompiler->ReadInfo.SymbolEntryCurrent.Size;
                         }
@@ -174,20 +174,20 @@ void PXAPI PXXMLBlockParse(PXCodeDocument* const pxDocument, PXCompiler* const p
                     switch ( pxCompiler->ReadInfo.SymbolEntryCurrent.ID)
                     {
                     case PXCompilerSymbolLexerBool:
-                        pxDocumentElement.ElementMember.ValueType = PXDataTypeInt08S;
+                        pxDocumentElement.ElementMember.ValueType = PXTypeInt08S;
                         break;
 
                     case PXCompilerSymbolLexerFloat:
-                        pxDocumentElement.ElementMember.ValueType = PXDataTypeFloat;
+                        pxDocumentElement.ElementMember.ValueType = PXTypeFloat;
                         break;
 
                     case PXCompilerSymbolLexerInteger:
-                        pxDocumentElement.ElementMember.ValueType = PXDataTypeIntS;
+                        pxDocumentElement.ElementMember.ValueType = PXTypeIntS;
                         break;
 
                     default:
                     case PXCompilerSymbolLexerString:
-                        pxDocumentElement.ElementMember.ValueType = PXDataTypeString;
+                        pxDocumentElement.ElementMember.ValueType = PXTypeString;
                         break;
                     }
 

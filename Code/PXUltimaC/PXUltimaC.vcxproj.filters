@@ -576,6 +576,9 @@
     <ClCompile Include="Algorithm\CollatzConjecture\PXCollatzConjecture.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="OS\User\PXUser.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm\KalmanFilter\PXKalmanFilter.h">
@@ -1134,6 +1137,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Algorithm\CollatzConjecture\PXCollatzConjecture.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="OS\User\PXUser.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

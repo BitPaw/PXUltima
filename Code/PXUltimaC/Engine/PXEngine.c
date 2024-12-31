@@ -17,8 +17,8 @@ void PXCDECL PXEngineOnIllegalInstruction(const int signalID)
     PXLogPrint
     (
         PXLoggingFailure,
-        "PX",
-        "Signal",
+        "Kernel",
+        "Signal-SIGILL",
         "CPU tryed to exectue illegal instruction!"
     );
 #endif
@@ -30,9 +30,9 @@ void PXCDECL PXEngineOnMemoryViolation(const int signalID)
     PXLogPrint
     (
         PXLoggingFailure,
-        "PX",
-        "Signal",
-        "CPU accessed memory illegally!"
+        "Kernel",
+        "Signal-SIGSEGV",
+        "Illegal memory access by CPU!"
     );
 #endif
 }
@@ -1546,6 +1546,35 @@ PXBool PXAPI PXEngineIsRunning(const PXEngine* const pxEngine)
 
 PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* const pxEngineStartInfo)
 {
+    if(!(pxEngine && pxEngineStartInfo))
+    {
+        return PXActionRefusedArgumentNull;
+    }
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "PX-Engine",
+        "Start",
+        "Initialize..."
+    );
+#endif
+
+    // Name the current thread to the engine
+    {
+        PXText pxText;
+        PXTextMakeFixedA(&pxText, "PXEngineMain");
+
+        PXThreadNameSet(PXNull, &pxText);
+    }
+
+    // register failure callbacks
+    PXSignalCallBackRegister(PXSignalTokenIllegalInstruction, PXEngineOnIllegalInstruction);
+    PXSignalCallBackRegister(PXSignalTokenMemoryViolation, PXEngineOnMemoryViolation);
+
+
+
     PXClear(PXEngine, pxEngine);
 
     PXCameraConstruct(&pxEngine->CameraDefault);
@@ -1638,25 +1667,8 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
     }
 #endif
 
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        "PX",
-        "Instantiate",
-        "Starting..."
-    );
-#endif
 
-    PXSignalCallBackRegister(PXSignalTokenIllegalInstruction, PXEngineOnIllegalInstruction);
-    PXSignalCallBackRegister(PXSignalTokenMemoryViolation, PXEngineOnMemoryViolation);
 
-    {
-        PXText pxText;
-        PXTextMakeFixedA(&pxText, "PXEngineMain");
-
-        PXThreadNameSet(PXNull, &pxText);
-    }
 
     PXResourceManagerInit(&pxEngine->ResourceManager);
 
@@ -1674,16 +1686,49 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
     // Load all mods now, not fully tho, they may need very early checks before anything happens
     if(pxEngineStartInfo->UseMods)
     {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "PX-Engine",
+            "Start",
+            "Mods..."
+        );
+#endif
+
         PXText pxText;
         PXTextMakeFixedA(&pxText, "Mod\\");
 
         PXModLoaderScan(&pxEngine->ModLoader, &pxText);
+    }
+    else
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingWarning,
+            "PX-Engine",
+            "Start",
+            "Mod loading is not enabled."
+        );
+#endif
     }
 
     //-----------------------------------------------------
     // Create window
     //-----------------------------------------------------
     {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "PX-Engine",
+            "Start",
+            "Window..."
+        );
+#endif
+
+
         PXResourceCreateInfo pxResourceCreateInfo;
         PXClear(PXResourceCreateInfo, &pxResourceCreateInfo);
         pxResourceCreateInfo.ObjectReference = &pxEngine->Window;
@@ -1754,6 +1799,16 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
     //-----------------------------------------------------
     if(pxEngineStartInfo->Mode != PXGraphicInitializeModeOSGUI) // if we have GDI, we init this later
     {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "PX-Engine",
+            "Start",
+            "Graphics..."
+        );
+#endif
+
         PXGraphicInitializeInfo pxGraphicInitializeInfo;
         PXClear(PXGraphicInitializeInfo, &pxGraphicInitializeInfo);
         pxGraphicInitializeInfo.Mode = pxEngineStartInfo->Mode;
@@ -1772,7 +1827,7 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
             PXLogPrint
             (
                 PXLoggingError,
-                "PX",
+                "PX-Engine",
                 "Instantiate",
                 "failed to create graphical instance!\n"
                 "Graphics card driver is not able to provide a rendering context."
@@ -1793,9 +1848,9 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
         PXLogPrint
         (
             PXLoggingInfo,
-            "PX",
-            "Instantiate",
-            "Created graphical instance"
+            "PX-Engine",
+            "Start",
+            "OK, Created graphical instance"
         );
 #endif
 
@@ -1807,10 +1862,10 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
 #if PXLogEnable
         PXLogPrint
         (
-            PXLoggingInfo,
-            "PX",
-            "Instantiate",
-            "Creation of graphical skipped for now"
+            PXLoggingWarning,
+            "PX-Engine",
+            "Start",
+            "Creation of graphical not enabled!"
         );
 #endif
     }
@@ -1826,9 +1881,9 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
         PXLogPrint
         (
             PXLoggingInfo,
-            "PX",
-            "Instantiate",
-            "Creating audio instance..."
+            "PX-Engine",
+            "Start",
+            "Audio..."
         );
 #endif
 
@@ -1883,8 +1938,8 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
         PXLogPrint
         (
             PXLoggingInfo,
-            "PX",
-            "Instantiate",
+            "PX-Engine",
+            "Start",
             "Engine is up and running. Invoking callback for extended load."
         );
 #endif
@@ -3202,7 +3257,7 @@ void PXAPI PXEngineResourceDefaultElements(PXEngine* const pxEngine)
 
         pxResourceCreateInfo.Model.IndexBuffer.IndexData = indexList;
         pxResourceCreateInfo.Model.IndexBuffer.IndexDataSize = sizeof(indexList);
-        pxResourceCreateInfo.Model.IndexBuffer.IndexDataType = PXDataTypeInt08U;
+        pxResourceCreateInfo.Model.IndexBuffer.IndexDataType = PXTypeInt08U;
         pxResourceCreateInfo.Model.IndexBuffer.DrawModeID = PXDrawModeIDTriangle;
 
         pxResourceCreateInfo.Model.ShaderProgramReference = pxEngine->ResourceManager.ShaderFailback;

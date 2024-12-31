@@ -41,14 +41,14 @@ PXActionResult PXAPI PXConsoleTextColorSet(const PXConsoleTextColor pxConsoleTex
 #define PXUnixConsoleColorreverse 7
 #define PXUnixConsoleColorhidden 8
 
-#define PXUnixConsoleColorBlack 30
-#define PXUnixConsoleColorred 31
-#define PXUnixConsoleColorgreen 32
-#define PXUnixConsoleColoryellow 33
-#define PXUnixConsoleColorblue 34
-#define PXUnixConsoleColormagenta 35
-#define PXUnixConsoleColorcyan 36
-#define PXUnixConsoleColorwhite 37
+#define PXUnixConsoleColorBlack     8
+#define PXUnixConsoleColorred       9
+#define PXUnixConsoleColorgreen     10
+#define PXUnixConsoleColoryellow    11
+#define PXUnixConsoleColorblue      12
+#define PXUnixConsoleColormagenta   13
+#define PXUnixConsoleColorcyan      14
+#define PXUnixConsoleColorwhite     15
 
 #define PXUnixConsoleColorBGblack 40
 #define PXUnixConsoleColorBGred 41
@@ -173,8 +173,13 @@ PXActionResult PXAPI PXConsoleTextColorSet(const PXConsoleTextColor pxConsoleTex
 
     //printf("\x1b[%im", colorID);
 
-    printf("\x1b[38;5;%im", colorID);
-    //
+    // Works?
+   // printf("\x1b[38;5;%im", colorID);
+
+    printf("\033[38;5;%dm", colorID, colorID);
+
+    // %3d\033[m,   this is the reset code?
+
     //printf("\x1b[38;5;%im\x1b[%im", brightness, colorID);
 
 
@@ -517,7 +522,7 @@ void PXAPI PXLogPrintInvoke(PXLoggingEventData* const pxLoggingEventData, ...)
             &textExtra,
             "%8s  ID:%i <%s>",
             pxText.TextA,
-            (int)pxFile->ID,
+            (int)pxFile->FileID,
             pxTextFilePath.TextA
         );
 #endif

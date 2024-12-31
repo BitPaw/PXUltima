@@ -4,8 +4,6 @@
 #include <Media/PXText.h>
 #include <OS/Error/PXActionResult.h>
 
-PXPublic PXActionResult PXAPI PXUserNameGet(PXText* const name);
-
 typedef enum PXUserEnviromentFolderID_
 {
     PXUserEnviromentFolderIDInvalid,
@@ -22,6 +20,7 @@ typedef enum PXUserEnviromentFolderID_
 }
 PXUserEnviromentFolderID;
 
+PXPublic PXActionResult PXAPI PXUserNameGet(PXText* const name);
 PXPublic PXBool PXAPI PXUserEnviromentFolderGet(PXText* const name, const PXUserEnviromentFolderID pxUserEnviromentFolderID);
 
 #endif

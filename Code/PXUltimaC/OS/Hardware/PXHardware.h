@@ -415,7 +415,7 @@ typedef struct PXBattery_
     PXInt8U SERIAL_NUMBER;
 
     // Status
-    char Status[16];
+    char ChargeStatus[16];
     PXInt8U CAPACITY;
     PXInt32U CYCLE_COUNT;
 
@@ -429,7 +429,7 @@ typedef struct PXBattery_
     // C - Capacity
     PXInt32U ChargeCurrent; // µAh
     PXInt32U ChargeMaximumPractical; // µAh
-    PXInt32U ChargeMaximalTheroetical; // µAh    
+    PXInt32U ChargeMaximalTheroetical; // µAh
 }
 PXBattery;
 

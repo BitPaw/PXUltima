@@ -1,8 +1,9 @@
 #ifndef PXTextINLCUDE
 #define PXTextINLCUDE
 
-#include <Media/PXType.h>
+//#include <Media/PXType.h>
 #include <stdarg.h>
+#include <Media/PXResource.h>
 
 //---<Makros>------------------------------------------------------------------
 
@@ -168,6 +169,7 @@ PXPublic PXSize PXAPI PXTextToIntA(const char* const text, const PXSize textSize
 PXPublic PXSize PXAPI PXTextToBool(const PXText* const pxText, PXBool* const number);
 PXPublic PXSize PXAPI PXTextToFloat(const PXText* const pxText, float* const number);
 
+PXPublic PXSize PXAPI PXTextFormatDateTime(PXText* const pxText, const PXTime* const pxTime);
 PXPublic PXSize PXAPI PXTextFormatTime(PXText* const pxText, const PXSize pxTime);
 PXPublic PXSize PXAPI PXTextFormatSize(PXText* const pxText, const PXSize pxSize);
 PXPublic PXSize PXAPI PXTextFormatData(PXText* const pxText, const void* data, const PXSize dataSize);

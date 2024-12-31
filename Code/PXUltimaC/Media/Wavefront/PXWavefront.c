@@ -522,8 +522,8 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
         // Setup index array
 #if 0
         pxModel->IndexBuffer.DrawModeID = PXDrawModeIDTriangle; // PXDrawModeIDPoint | PXDrawModeIDLineLoop;
-        pxModel->IndexBuffer.DataType = PXDataTypeIntFitting(counterVertexMaxID);
-        pxModel->IndexBuffer.IndexTypeSize = pxModel->IndexBuffer.DataType & PXDataTypeSizeMask;
+        pxModel->IndexBuffer.DataType = PXTypeIntFitting(counterVertexMaxID);
+        pxModel->IndexBuffer.IndexTypeSize = pxModel->IndexBuffer.DataType & PXTypeSizeMask;
         pxModel->IndexBuffer.IndexDataAmount = counterIndex;
         pxModel->IndexBuffer.IndexData = PXMemoryHeapAllocateCleared(pxModel->IndexBuffer.IndexTypeSize, counterIndex);
         pxModel->IndexBuffer.IndexDataSize = pxModel->IndexBuffer.IndexTypeSize * counterIndex;

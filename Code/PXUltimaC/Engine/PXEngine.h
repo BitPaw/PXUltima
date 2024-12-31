@@ -175,8 +175,10 @@ typedef struct PXEngineStartInfo_
 }
 PXEngineStartInfo;
 
+// Signal/Event
 PXPrivate void PXCDECL PXEngineOnIllegalInstruction(const int signalID);
 PXPrivate void PXCDECL PXEngineOnMemoryViolation(const int signalID);
+
 PXPrivate void PXAPI PXEngineWindowEvent(PXEngine* const pxEngine, PXWindowEvent* const pxWindowEvent);
 
 // Generate a random number with a maximum of the "limiter"

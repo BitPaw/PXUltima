@@ -266,11 +266,11 @@ PXActionResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(struct PXFile_* const 
 
     // Read huffmancodes
     {
-        const PXDataTypeEntry pxDataStreamElementList[] =
+        const PXTypeEntry pxDataStreamElementList[] =
         {
-            {&huffmanNumberCode.NumberOfLiteralCodes, PXDataTypeBit16U(5u)},
-            {&huffmanNumberCode.NumberOfDistanceCodes, PXDataTypeBit16U(5u)},
-            {&huffmanNumberCode.NumberOfLengthCodes, PXDataTypeBit16U(4u)}
+            {&huffmanNumberCode.NumberOfLiteralCodes, PXTypeBit16U(5u)},
+            {&huffmanNumberCode.NumberOfDistanceCodes, PXTypeBit16U(5u)},
+            {&huffmanNumberCode.NumberOfLengthCodes, PXTypeBit16U(4u)}
         };
 
         const PXSize bitsRead = PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));

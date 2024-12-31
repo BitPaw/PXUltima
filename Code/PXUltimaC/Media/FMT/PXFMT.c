@@ -18,10 +18,10 @@ PXActionResult PXAPI PXFMTLoadFromFile(PXFMT* const fmt, PXFile* const pxFile, c
         }
     }
 
-    const PXInt32U x16 = endian == PXEndianLittle ? PXDataTypeInt16ULE : PXDataTypeInt16UBE;
-    const PXInt32U x32 = endian == PXEndianLittle ? PXDataTypeInt32ULE : PXDataTypeInt32UBE;
+    const PXInt32U x16 = endian == PXEndianLittle ? PXTypeInt16ULE : PXTypeInt16UBE;
+    const PXInt32U x32 = endian == PXEndianLittle ? PXTypeInt32ULE : PXTypeInt32UBE;
 
-    const PXDataTypeEntry pxDataStreamElementList[] =
+    const PXTypeEntry pxDataStreamElementList[] =
     {
         {&fmt->ChunkSize,x32},
         {&fmt->AudioFormat,x16},
@@ -39,12 +39,12 @@ PXActionResult PXAPI PXFMTLoadFromFile(PXFMT* const fmt, PXFile* const pxFile, c
 
 PXActionResult PXAPI PXFMTSaveToFile(const PXFMT* const fmt, PXFile* const pxFile, const PXEndian endian)
 {
-    const PXInt32U x16 = endian == PXEndianLittle ? PXDataTypeInt16ULE : PXDataTypeInt16UBE;
-    const PXInt32U x32 = endian == PXEndianLittle ? PXDataTypeInt32ULE : PXDataTypeInt32UBE;
+    const PXInt32U x16 = endian == PXEndianLittle ? PXTypeInt16ULE : PXTypeInt16UBE;
+    const PXInt32U x32 = endian == PXEndianLittle ? PXTypeInt32ULE : PXTypeInt32UBE;
 
-    const PXDataTypeEntry pxDataStreamElementList[] =
+    const PXTypeEntry pxDataStreamElementList[] =
     {
-        {FMTSignature, PXDataTypeDatax4},
+        {FMTSignature, PXTypeDatax4},
         {&fmt->ChunkSize,x32},
         {&fmt->AudioFormat,x16},
         {&fmt->NumerOfChannels,x16},

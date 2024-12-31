@@ -137,15 +137,15 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
     {
         PXInt16U machineTypeID = 0;
 
-        const PXDataTypeEntry pxDataStreamElementList[] =
+        const PXTypeEntry pxDataStreamElementList[] =
         {
-            {&machineTypeID, PXDataTypeInt16ULE},
-            {&pxCOFF->Header.NumberOfSections,PXDataTypeInt16ULE},
-            {&pxCOFF->Header.TimeDateStamp,PXDataTypeInt32ULE},
-            {&pxCOFF->Header.PointerToSymbolTable,PXDataTypeInt32ULE},
-            {&pxCOFF->Header.NumberOfSymbols,PXDataTypeInt32ULE},
-            {&pxCOFF->Header.SizeOfOptionalHeader, PXDataTypeInt16ULE},
-            {&pxCOFF->Header.CharacteristicsFlagList, PXDataTypeInt16ULE}
+            {&machineTypeID, PXTypeInt16ULE},
+            {&pxCOFF->Header.NumberOfSections,PXTypeInt16ULE},
+            {&pxCOFF->Header.TimeDateStamp,PXTypeInt32ULE},
+            {&pxCOFF->Header.PointerToSymbolTable,PXTypeInt32ULE},
+            {&pxCOFF->Header.NumberOfSymbols,PXTypeInt32ULE},
+            {&pxCOFF->Header.SizeOfOptionalHeader, PXTypeInt16ULE},
+            {&pxCOFF->Header.CharacteristicsFlagList, PXTypeInt16ULE}
         };
 
         PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -184,17 +184,17 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
             {
                 PXInt16U magicNumber = 0;
 
-                const PXDataTypeEntry pxDataStreamElementList[] =
+                const PXTypeEntry pxDataStreamElementList[] =
                 {
-                    {&magicNumber, PXDataTypeInt16ULE},
-                    {&pxCOFF->OptionalHeader.StandardFields.MajorLinkerVersion, PXDataTypeInt08U},
-                    {&pxCOFF->OptionalHeader.StandardFields.MinorLinkerVersion, PXDataTypeInt08U},
-                    {&pxCOFF->OptionalHeader.StandardFields.SizeOfCode, PXDataTypeInt32ULE},
-                    {&pxCOFF->OptionalHeader.StandardFields.SizeOfInitializedData, PXDataTypeInt32ULE},
-                    {&pxCOFF->OptionalHeader.StandardFields.SizeOfUninitializedData, PXDataTypeInt32ULE},
-                    {&pxCOFF->OptionalHeader.StandardFields.AddressOfEntryPoint, PXDataTypeInt32ULE},
-                    {&pxCOFF->OptionalHeader.StandardFields.BaseOfCode, PXDataTypeInt32ULE},
-                    {&pxCOFF->OptionalHeader.StandardFields.BaseOfData, PXDataTypeInt32ULEOnlyIf32B}
+                    {&magicNumber, PXTypeInt16ULE},
+                    {&pxCOFF->OptionalHeader.StandardFields.MajorLinkerVersion, PXTypeInt08U},
+                    {&pxCOFF->OptionalHeader.StandardFields.MinorLinkerVersion, PXTypeInt08U},
+                    {&pxCOFF->OptionalHeader.StandardFields.SizeOfCode, PXTypeInt32ULE},
+                    {&pxCOFF->OptionalHeader.StandardFields.SizeOfInitializedData, PXTypeInt32ULE},
+                    {&pxCOFF->OptionalHeader.StandardFields.SizeOfUninitializedData, PXTypeInt32ULE},
+                    {&pxCOFF->OptionalHeader.StandardFields.AddressOfEntryPoint, PXTypeInt32ULE},
+                    {&pxCOFF->OptionalHeader.StandardFields.BaseOfCode, PXTypeInt32ULE},
+                    {&pxCOFF->OptionalHeader.StandardFields.BaseOfData, PXTypeInt32ULEOnlyIf32B}
                 };
 
                 const PXSize batchSize = PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -217,29 +217,29 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
             {
                 // B
                 {
-                    const PXDataTypeEntry pxDataStreamElementList[] =
+                    const PXTypeEntry pxDataStreamElementList[] =
                     {
-                        {&pxCOFF->OptionalHeader.WindowsNT.ImageBase, PXDataTypeAdressFlex},
-                        {&pxCOFF->OptionalHeader.WindowsNT.SectionAlignment,PXDataTypeInt32ULE},
-                        {&pxCOFF->OptionalHeader.WindowsNT.FileAlignment,PXDataTypeInt32ULE},
-                        {&pxCOFF->OptionalHeader.WindowsNT.MajorOperatingSystemVersion,PXDataTypeInt16ULE},
-                        {&pxCOFF->OptionalHeader.WindowsNT.MinorOperatingSystemVersion,PXDataTypeInt16ULE},
-                        {&pxCOFF->OptionalHeader.WindowsNT.MajorImageVersion,PXDataTypeInt16ULE},
-                        {&pxCOFF->OptionalHeader.WindowsNT.MinorImageVersion,PXDataTypeInt16ULE},
-                        {&pxCOFF->OptionalHeader.WindowsNT.MajorSubsystemVersion,PXDataTypeInt16ULE},
-                        {&pxCOFF->OptionalHeader.WindowsNT.MinorSubsystemVersion,PXDataTypeInt16ULE},
-                        {0, PXDataTypePadding(4)},
-                        {&pxCOFF->OptionalHeader.WindowsNT.SizeOfImage,PXDataTypeInt32ULE},
-                        {&pxCOFF->OptionalHeader.WindowsNT.SizeOfHeaders,PXDataTypeInt32ULE},
-                        {&pxCOFF->OptionalHeader.WindowsNT.CheckSum,PXDataTypeInt32ULE},
-                        {&pxCOFF->OptionalHeader.WindowsNT.Subsystem,PXDataTypeInt16ULE},
-                        {&pxCOFF->OptionalHeader.WindowsNT.DLLCharacteristics,PXDataTypeInt16ULE},
-                        {&pxCOFF->OptionalHeader.WindowsNT.SizeOfStackReserve,PXDataTypeAdressFlex},
-                        {&pxCOFF->OptionalHeader.WindowsNT.SizeOfStackCommit,PXDataTypeAdressFlex},
-                        {&pxCOFF->OptionalHeader.WindowsNT.SizeOfHeapReserve,PXDataTypeAdressFlex},
-                        {&pxCOFF->OptionalHeader.WindowsNT.SizeOfHeapCommit,PXDataTypeAdressFlex},
-                        {&pxCOFF->OptionalHeader.WindowsNT.LoaderFlags,PXDataTypeInt32ULE},
-                        {&pxCOFF->OptionalHeader.WindowsNT.NumberOfRvaAndSizes,PXDataTypeInt32ULE}
+                        {&pxCOFF->OptionalHeader.WindowsNT.ImageBase, PXTypeAdressFlex},
+                        {&pxCOFF->OptionalHeader.WindowsNT.SectionAlignment,PXTypeInt32ULE},
+                        {&pxCOFF->OptionalHeader.WindowsNT.FileAlignment,PXTypeInt32ULE},
+                        {&pxCOFF->OptionalHeader.WindowsNT.MajorOperatingSystemVersion,PXTypeInt16ULE},
+                        {&pxCOFF->OptionalHeader.WindowsNT.MinorOperatingSystemVersion,PXTypeInt16ULE},
+                        {&pxCOFF->OptionalHeader.WindowsNT.MajorImageVersion,PXTypeInt16ULE},
+                        {&pxCOFF->OptionalHeader.WindowsNT.MinorImageVersion,PXTypeInt16ULE},
+                        {&pxCOFF->OptionalHeader.WindowsNT.MajorSubsystemVersion,PXTypeInt16ULE},
+                        {&pxCOFF->OptionalHeader.WindowsNT.MinorSubsystemVersion,PXTypeInt16ULE},
+                        {0, PXTypePadding(4)},
+                        {&pxCOFF->OptionalHeader.WindowsNT.SizeOfImage,PXTypeInt32ULE},
+                        {&pxCOFF->OptionalHeader.WindowsNT.SizeOfHeaders,PXTypeInt32ULE},
+                        {&pxCOFF->OptionalHeader.WindowsNT.CheckSum,PXTypeInt32ULE},
+                        {&pxCOFF->OptionalHeader.WindowsNT.Subsystem,PXTypeInt16ULE},
+                        {&pxCOFF->OptionalHeader.WindowsNT.DLLCharacteristics,PXTypeInt16ULE},
+                        {&pxCOFF->OptionalHeader.WindowsNT.SizeOfStackReserve,PXTypeAdressFlex},
+                        {&pxCOFF->OptionalHeader.WindowsNT.SizeOfStackCommit,PXTypeAdressFlex},
+                        {&pxCOFF->OptionalHeader.WindowsNT.SizeOfHeapReserve,PXTypeAdressFlex},
+                        {&pxCOFF->OptionalHeader.WindowsNT.SizeOfHeapCommit,PXTypeAdressFlex},
+                        {&pxCOFF->OptionalHeader.WindowsNT.LoaderFlags,PXTypeInt32ULE},
+                        {&pxCOFF->OptionalHeader.WindowsNT.NumberOfRvaAndSizes,PXTypeInt32ULE}
                     };
 
                     const PXSize batchSize = PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -356,54 +356,54 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
             {
                 PXCOFFOptionalHeaderDataDirectories* const pxCOFFOptionalHeaderDataDirectories = &pxCOFF->OptionalHeader.DataDirectories;
 
-                const PXDataTypeEntry pxDataStreamElementList[] =
+                const PXTypeEntry pxDataStreamElementList[] =
                 {
-                    { &pxCOFFOptionalHeaderDataDirectories->ExportTable.RelativeVirtualAddress, PXDataTypeInt32ULE },
-                    { &pxCOFFOptionalHeaderDataDirectories->ExportTable.Size,PXDataTypeInt32ULE },
+                    { &pxCOFFOptionalHeaderDataDirectories->ExportTable.RelativeVirtualAddress, PXTypeInt32ULE },
+                    { &pxCOFFOptionalHeaderDataDirectories->ExportTable.Size,PXTypeInt32ULE },
 
-                    { &pxCOFFOptionalHeaderDataDirectories->ImportTable.RelativeVirtualAddress, PXDataTypeInt32ULE},
-                    { &pxCOFFOptionalHeaderDataDirectories->ImportTable.Size,PXDataTypeInt32ULE },
+                    { &pxCOFFOptionalHeaderDataDirectories->ImportTable.RelativeVirtualAddress, PXTypeInt32ULE},
+                    { &pxCOFFOptionalHeaderDataDirectories->ImportTable.Size,PXTypeInt32ULE },
 
-                    { &pxCOFFOptionalHeaderDataDirectories->ResourceTable.RelativeVirtualAddress, PXDataTypeInt32ULE },
-                    { &pxCOFFOptionalHeaderDataDirectories->ResourceTable.Size,PXDataTypeInt32ULE },
+                    { &pxCOFFOptionalHeaderDataDirectories->ResourceTable.RelativeVirtualAddress, PXTypeInt32ULE },
+                    { &pxCOFFOptionalHeaderDataDirectories->ResourceTable.Size,PXTypeInt32ULE },
 
-                    { &pxCOFFOptionalHeaderDataDirectories->ExceptionTable.RelativeVirtualAddress, PXDataTypeInt32ULE },
-                    { &pxCOFFOptionalHeaderDataDirectories->ExceptionTable.Size,PXDataTypeInt32ULE },
+                    { &pxCOFFOptionalHeaderDataDirectories->ExceptionTable.RelativeVirtualAddress, PXTypeInt32ULE },
+                    { &pxCOFFOptionalHeaderDataDirectories->ExceptionTable.Size,PXTypeInt32ULE },
 
-                    { &pxCOFFOptionalHeaderDataDirectories->CertificateTable.RelativeVirtualAddress, PXDataTypeInt32ULE },
-                    { &pxCOFFOptionalHeaderDataDirectories->CertificateTable.Size,PXDataTypeInt32ULE },
+                    { &pxCOFFOptionalHeaderDataDirectories->CertificateTable.RelativeVirtualAddress, PXTypeInt32ULE },
+                    { &pxCOFFOptionalHeaderDataDirectories->CertificateTable.Size,PXTypeInt32ULE },
 
-                    { &pxCOFFOptionalHeaderDataDirectories->BaseRelocationTable.RelativeVirtualAddress, PXDataTypeInt32ULE },
-                    { &pxCOFFOptionalHeaderDataDirectories->BaseRelocationTable.Size,PXDataTypeInt32ULE },
+                    { &pxCOFFOptionalHeaderDataDirectories->BaseRelocationTable.RelativeVirtualAddress, PXTypeInt32ULE },
+                    { &pxCOFFOptionalHeaderDataDirectories->BaseRelocationTable.Size,PXTypeInt32ULE },
 
-                    { &pxCOFFOptionalHeaderDataDirectories->Debug.RelativeVirtualAddress, PXDataTypeInt32ULE },
-                    { &pxCOFFOptionalHeaderDataDirectories->Debug.Size,PXDataTypeInt32ULE },
+                    { &pxCOFFOptionalHeaderDataDirectories->Debug.RelativeVirtualAddress, PXTypeInt32ULE },
+                    { &pxCOFFOptionalHeaderDataDirectories->Debug.Size,PXTypeInt32ULE },
 
-                    { &pxCOFFOptionalHeaderDataDirectories->Architecture.RelativeVirtualAddress, PXDataTypeInt32ULE },
-                    { &pxCOFFOptionalHeaderDataDirectories->Architecture.Size, PXDataTypeInt32ULE },
+                    { &pxCOFFOptionalHeaderDataDirectories->Architecture.RelativeVirtualAddress, PXTypeInt32ULE },
+                    { &pxCOFFOptionalHeaderDataDirectories->Architecture.Size, PXTypeInt32ULE },
 
-                    { &pxCOFFOptionalHeaderDataDirectories->GlobalPtr.RelativeVirtualAddress, PXDataTypeInt32ULE },
-                    { &pxCOFFOptionalHeaderDataDirectories->GlobalPtr.Size,PXDataTypeInt32ULE },
+                    { &pxCOFFOptionalHeaderDataDirectories->GlobalPtr.RelativeVirtualAddress, PXTypeInt32ULE },
+                    { &pxCOFFOptionalHeaderDataDirectories->GlobalPtr.Size,PXTypeInt32ULE },
 
-                    { &pxCOFFOptionalHeaderDataDirectories->ThreadLocalStorageTable.RelativeVirtualAddress, PXDataTypeInt32ULE },
-                    { &pxCOFFOptionalHeaderDataDirectories->ThreadLocalStorageTable.Size,PXDataTypeInt32ULE },
+                    { &pxCOFFOptionalHeaderDataDirectories->ThreadLocalStorageTable.RelativeVirtualAddress, PXTypeInt32ULE },
+                    { &pxCOFFOptionalHeaderDataDirectories->ThreadLocalStorageTable.Size,PXTypeInt32ULE },
 
-                    { &pxCOFFOptionalHeaderDataDirectories->LoadConfigTable.RelativeVirtualAddress, PXDataTypeInt32ULE },
-                    { &pxCOFFOptionalHeaderDataDirectories->LoadConfigTable.Size,PXDataTypeInt32ULE },
+                    { &pxCOFFOptionalHeaderDataDirectories->LoadConfigTable.RelativeVirtualAddress, PXTypeInt32ULE },
+                    { &pxCOFFOptionalHeaderDataDirectories->LoadConfigTable.Size,PXTypeInt32ULE },
 
-                    { &pxCOFFOptionalHeaderDataDirectories->BoundImport.RelativeVirtualAddress, PXDataTypeInt32ULE },
-                    { &pxCOFFOptionalHeaderDataDirectories->BoundImport.Size,PXDataTypeInt32ULE },
+                    { &pxCOFFOptionalHeaderDataDirectories->BoundImport.RelativeVirtualAddress, PXTypeInt32ULE },
+                    { &pxCOFFOptionalHeaderDataDirectories->BoundImport.Size,PXTypeInt32ULE },
 
-                    { &pxCOFFOptionalHeaderDataDirectories->ImportAddressTable.RelativeVirtualAddress, PXDataTypeInt32ULE },
-                    { &pxCOFFOptionalHeaderDataDirectories->ImportAddressTable.Size,PXDataTypeInt32ULE },
+                    { &pxCOFFOptionalHeaderDataDirectories->ImportAddressTable.RelativeVirtualAddress, PXTypeInt32ULE },
+                    { &pxCOFFOptionalHeaderDataDirectories->ImportAddressTable.Size,PXTypeInt32ULE },
 
-                    { &pxCOFFOptionalHeaderDataDirectories->DelayImportDescriptor.RelativeVirtualAddress, PXDataTypeInt32ULE },
-                    { &pxCOFFOptionalHeaderDataDirectories->DelayImportDescriptor.Size,PXDataTypeInt32ULE },
+                    { &pxCOFFOptionalHeaderDataDirectories->DelayImportDescriptor.RelativeVirtualAddress, PXTypeInt32ULE },
+                    { &pxCOFFOptionalHeaderDataDirectories->DelayImportDescriptor.Size,PXTypeInt32ULE },
 
-                    { &pxCOFFOptionalHeaderDataDirectories->COMPlusRuntimeHeader.RelativeVirtualAddress, PXDataTypeInt32ULE },
-                    { &pxCOFFOptionalHeaderDataDirectories->COMPlusRuntimeHeader.Size,PXDataTypeInt32ULE },
+                    { &pxCOFFOptionalHeaderDataDirectories->COMPlusRuntimeHeader.RelativeVirtualAddress, PXTypeInt32ULE },
+                    { &pxCOFFOptionalHeaderDataDirectories->COMPlusRuntimeHeader.Size,PXTypeInt32ULE },
 
-                    { 0, PXDataTypePadding(8)}
+                    { 0, PXTypePadding(8)}
                 };
 
                 const PXSize batchSize = PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -427,18 +427,18 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
         PXSectionTable* const pxSectionTableCurrent = &pxCOFF->SectionTableList[sectionID];
 
         {
-            const PXDataTypeEntry pxDataStreamElementList[] =
+            const PXTypeEntry pxDataStreamElementList[] =
             {
-                {pxSectionTableCurrent->Name.Data, PXDataTypeDatax8},
-                {&pxSectionTableCurrent->VirtualSize,PXDataTypeInt32ULE},
-                {&pxSectionTableCurrent->VirtualAddress,PXDataTypeInt32ULE},
-                {&pxSectionTableCurrent->SectionRawDataSize,PXDataTypeInt32ULE},
-                {&pxSectionTableCurrent->SectionRawDataAdress,PXDataTypeInt32ULE},
-                {&pxSectionTableCurrent->PointerToRelocations,PXDataTypeInt32ULE},
-                {&pxSectionTableCurrent->PointerToLinenumbers,PXDataTypeInt32ULE},
-                {&pxSectionTableCurrent->NumberOfRelocations,PXDataTypeInt16ULE},
-                {&pxSectionTableCurrent->NumberOfLinenumbers,PXDataTypeInt16ULE},
-                {&pxSectionTableCurrent->CharacteristicFlags, PXDataTypeInt32ULE},
+                {pxSectionTableCurrent->Name.Data, PXTypeDatax8},
+                {&pxSectionTableCurrent->VirtualSize,PXTypeInt32ULE},
+                {&pxSectionTableCurrent->VirtualAddress,PXTypeInt32ULE},
+                {&pxSectionTableCurrent->SectionRawDataSize,PXTypeInt32ULE},
+                {&pxSectionTableCurrent->SectionRawDataAdress,PXTypeInt32ULE},
+                {&pxSectionTableCurrent->PointerToRelocations,PXTypeInt32ULE},
+                {&pxSectionTableCurrent->PointerToLinenumbers,PXTypeInt32ULE},
+                {&pxSectionTableCurrent->NumberOfRelocations,PXTypeInt16ULE},
+                {&pxSectionTableCurrent->NumberOfLinenumbers,PXTypeInt16ULE},
+                {&pxSectionTableCurrent->CharacteristicFlags, PXTypeInt32ULE},
             };
 
             const PXSize readBytes = PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -475,13 +475,13 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
             {
                 while (1)
                 {
-                    const PXDataTypeEntry pxDataStreamElementList[] =
+                    const PXTypeEntry pxDataStreamElementList[] =
                     {
-                        {&pxCOFF->ImportDirectoryTable.ImportLookupTableOffset, PXDataTypeInt32ULE},
-                        {&pxCOFF->ImportDirectoryTable.TimeDateStamp,PXDataTypeInt32ULE},
-                        {&pxCOFF->ImportDirectoryTable.FowarderChainOffset,PXDataTypeInt32ULE},
-                        {&pxCOFF->ImportDirectoryTable.NameOffset,PXDataTypeInt32ULE},
-                        {&pxCOFF->ImportDirectoryTable.ImportAddressTableOffset,PXDataTypeInt32ULE}
+                        {&pxCOFF->ImportDirectoryTable.ImportLookupTableOffset, PXTypeInt32ULE},
+                        {&pxCOFF->ImportDirectoryTable.TimeDateStamp,PXTypeInt32ULE},
+                        {&pxCOFF->ImportDirectoryTable.FowarderChainOffset,PXTypeInt32ULE},
+                        {&pxCOFF->ImportDirectoryTable.NameOffset,PXTypeInt32ULE},
+                        {&pxCOFF->ImportDirectoryTable.ImportAddressTableOffset,PXTypeInt32ULE}
                     };
 
                     const PXSize readBytes = PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -596,19 +596,19 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
             {
                 // Export Directory Table
                 {
-                    const PXDataTypeEntry pxDataStreamElementList[] =
+                    const PXTypeEntry pxDataStreamElementList[] =
                     {
-                        {&pxCOFF->ExportDirectoryTable.ExportFlags, PXDataTypeInt32ULE},
-                        {&pxCOFF->ExportDirectoryTable.TimeDateStamp,PXDataTypeInt32ULE},
-                        {&pxCOFF->ExportDirectoryTable.MajorVersion,PXDataTypeInt16ULE},
-                        {&pxCOFF->ExportDirectoryTable.MinorVersion,PXDataTypeInt16ULE},
-                        {&pxCOFF->ExportDirectoryTable.NameRVA,PXDataTypeInt32ULE},
-                        {&pxCOFF->ExportDirectoryTable.OrdinalBase,PXDataTypeInt32ULE},
-                        {&pxCOFF->ExportDirectoryTable.AddressTableEntries,PXDataTypeInt32ULE},
-                        {&pxCOFF->ExportDirectoryTable.NumberOfNamePointers,PXDataTypeInt32ULE},
-                        {&pxCOFF->ExportDirectoryTable.ExportAddressTableRVA,PXDataTypeInt32ULE},
-                        {&pxCOFF->ExportDirectoryTable.NamePointerRVA, PXDataTypeInt32ULE},
-                        {&pxCOFF->ExportDirectoryTable.OrdinalTableRVA, PXDataTypeInt32ULE}
+                        {&pxCOFF->ExportDirectoryTable.ExportFlags, PXTypeInt32ULE},
+                        {&pxCOFF->ExportDirectoryTable.TimeDateStamp,PXTypeInt32ULE},
+                        {&pxCOFF->ExportDirectoryTable.MajorVersion,PXTypeInt16ULE},
+                        {&pxCOFF->ExportDirectoryTable.MinorVersion,PXTypeInt16ULE},
+                        {&pxCOFF->ExportDirectoryTable.NameRVA,PXTypeInt32ULE},
+                        {&pxCOFF->ExportDirectoryTable.OrdinalBase,PXTypeInt32ULE},
+                        {&pxCOFF->ExportDirectoryTable.AddressTableEntries,PXTypeInt32ULE},
+                        {&pxCOFF->ExportDirectoryTable.NumberOfNamePointers,PXTypeInt32ULE},
+                        {&pxCOFF->ExportDirectoryTable.ExportAddressTableRVA,PXTypeInt32ULE},
+                        {&pxCOFF->ExportDirectoryTable.NamePointerRVA, PXTypeInt32ULE},
+                        {&pxCOFF->ExportDirectoryTable.OrdinalTableRVA, PXTypeInt32ULE}
                     };
 
                     const PXSize readBytes = PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -623,9 +623,9 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 
                     PXFileCursorMoveTo(pxFile, totalOffset);
 
-                    const PXDataTypeEntry pxDataStreamElementList[] =
+                    const PXTypeEntry pxDataStreamElementList[] =
                     {
-                        {&pxCOFFExportAddressTableEntry->ExportSymbolOffset, PXDataTypeInt32ULE}
+                        {&pxCOFFExportAddressTableEntry->ExportSymbolOffset, PXTypeInt32ULE}
                     };
 
                     const PXSize readBytes = PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -650,11 +650,11 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
             {
                 PXRelocationInformation pxRelocationInformation;
 
-                const PXDataTypeEntry pxDataStreamElementList[] =
+                const PXTypeEntry pxDataStreamElementList[] =
                 {
-                    {&pxRelocationInformation.VirtualAddressOfReference, PXDataTypeInt32ULE},
-                    {&pxRelocationInformation.SymbolTableIndex,PXDataTypeInt32ULE},
-                    {&pxRelocationInformation.RelocationType,PXDataTypeInt16ULE}
+                    {&pxRelocationInformation.VirtualAddressOfReference, PXTypeInt32ULE},
+                    {&pxRelocationInformation.SymbolTableIndex,PXTypeInt32ULE},
+                    {&pxRelocationInformation.RelocationType,PXTypeInt16ULE}
                 };
 
                 PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -685,10 +685,10 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
             {
                 PXLineNumberEntry* pxLineNumberEntry = &pxLineNumberEntryXX;
 
-                const PXDataTypeEntry pxDataStreamElementList[] =
+                const PXTypeEntry pxDataStreamElementList[] =
                 {
-                    {&pxLineNumberEntry->SymbolIndex, PXDataTypeInt32ULE},
-                    {&pxLineNumberEntry->LineNumber,PXDataTypeInt16ULE}
+                    {&pxLineNumberEntry->SymbolIndex, PXTypeInt32ULE},
+                    {&pxLineNumberEntry->LineNumber,PXTypeInt16ULE}
                 };
 
                 PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -736,14 +736,14 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
             {
                 PXCOFFSymbolTableEntry* pxCOFFSymbolTableEntry = &pxCOFFSymbolTableEntryXX;
 
-                const PXDataTypeEntry pxDataStreamElementList[] =
+                const PXTypeEntry pxDataStreamElementList[] =
                 {
-                    {pxCOFFSymbolTableEntry->Name, PXDataTypeDatax8},
-                    {&pxCOFFSymbolTableEntry->ValueOfSymbol,PXDataTypeInt32ULE},
-                    {&pxCOFFSymbolTableEntry->SectionNumber,PXDataTypeInt16ULE},
-                    {&pxCOFFSymbolTableEntry->TypeAndDerived,PXDataTypeInt16ULE},
-                    {&pxCOFFSymbolTableEntry->StorageClass,PXDataTypeInt08U},
-                    {&pxCOFFSymbolTableEntry->NumberOfAuxiliaryEntries,PXDataTypeInt08U}
+                    {pxCOFFSymbolTableEntry->Name, PXTypeDatax8},
+                    {&pxCOFFSymbolTableEntry->ValueOfSymbol,PXTypeInt32ULE},
+                    {&pxCOFFSymbolTableEntry->SectionNumber,PXTypeInt16ULE},
+                    {&pxCOFFSymbolTableEntry->TypeAndDerived,PXTypeInt16ULE},
+                    {&pxCOFFSymbolTableEntry->StorageClass,PXTypeInt08U},
+                    {&pxCOFFSymbolTableEntry->NumberOfAuxiliaryEntries,PXTypeInt08U}
                 };
 
                 const PXSize readBytes = PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));

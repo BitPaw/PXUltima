@@ -334,6 +334,7 @@
     <ClCompile Include="OS\Graphic\DirectX\PXDirectX9.c" />
     <ClCompile Include="OS\Graphic\DirectX\PXDirectX10x1.c" />
     <ClCompile Include="OS\System\PXWindows.c" />
+    <ClCompile Include="OS\User\PXUser.c" />
     <ClCompile Include="Service\LDAP\PXLDAPClient.c" />
   </ItemGroup>
   <ItemGroup>
@@ -522,6 +523,7 @@
     <ClInclude Include="OS\Graphic\DirectX\PXDirectX9.h" />
     <ClInclude Include="OS\Graphic\DirectX\PXDirectX10x1.h" />
     <ClInclude Include="OS\System\PXWindows.h" />
+    <ClInclude Include="OS\User\PXUser.h" />
     <ClInclude Include="Service\LDAP\PXLDAPClient.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

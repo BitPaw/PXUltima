@@ -1,7 +1,5 @@
 #include "PXUser.h"
 
-#include <OS/System/PXOSVersion.h>
-
 #if OSUnix
 #include <unistd.h>
 #elif OSWindows
@@ -16,53 +14,51 @@
 
 PXActionResult PXAPI PXUserNameGet(PXText* const name)
 {
-    switch (name->Format)
+    switch(name->Format)
     {
-    case TextFormatUTF8:
-    case TextFormatASCII:
-    {
+        case TextFormatUTF8:
+        case TextFormatASCII:
+        {
 #if OSUnix
-        name->SizeUsed  = getlogin_r(name->TextA, name->SizeAllocated); // unistd.h
+            name->SizeUsed = getlogin_r(name->TextA, name->SizeAllocated); // unistd.h
 
-        const PXBool success = name->SizeUsed > 0;
+            const PXBool success = name->SizeUsed > 0;
 
-        return success;
+            return success;
 
 #elif OSWindows
-        DWORD size = name->SizeAllocated;
+            DWORD size = name->SizeAllocated;
 
-        const PXBool sucessful = GetComputerNameA(name->TextA, &size); // Windows 2000 (+UWP), Kernel32.dll, winbase.h
+            const PXBool successful = GetComputerNameA(name->TextA, &size); // Windows 2000 (+UWP), Kernel32.dll, winbase.h
+            const PXActionResult result = PXErrorCurrent(successful);
 
-        PXActionOnErrorFetchAndReturn(!sucessful);
+            name->SizeUsed = (PXSize)successful * (PXSize)size;
 
-        name->SizeUsed = (PXSize)sucessful * (PXSize)size;
-
-        return PXActionSuccessful;
+            return result;
 #endif
 
-        break;
-    }
-    case TextFormatUNICODE:
-    {
+            break;
+        }
+        case TextFormatUNICODE:
+        {
 #if OSUnix
 
-        return 0;
+            return 0;
 
 #elif OSWindows
-        DWORD size = name->SizeAllocated;
+            DWORD size = name->SizeAllocated;
 
-        const PXBool sucessful = GetComputerNameW(name->TextW, &size); // Windows 2000 (+UWP), Kernel32.dll, winbase.h
+            const PXBool successful = GetComputerNameW(name->TextW, &size); // Windows 2000 (+UWP), Kernel32.dll, winbase.h
+            const PXActionResult result = PXErrorCurrent(successful);
 
-        PXActionOnErrorFetchAndReturn(!sucessful);
+            name->NumberOfCharacters = (PXSize)successful * (PXSize)size;
+            name->SizeUsed = name->NumberOfCharacters * sizeof(wchar_t);
 
-        name->NumberOfCharacters = (PXSize)sucessful * (PXSize)size;
-        name->SizeUsed = name->NumberOfCharacters * sizeof(wchar_t);
-
-        return PXActionSuccessful;
+            return result;
 #endif
 
-        break;
-    }
+            break;
+        }
     }
 
     return PXActionRefusedFormatNotSupported;
@@ -80,46 +76,46 @@ PXBool PXAPI PXUserEnviromentFolderGet(PXText* const name, const PXUserEnviromen
 
     const GUID* pathID = 0;
 
-    switch (pxUserEnviromentFolderID)
+    switch(pxUserEnviromentFolderID)
     {
-    case PXUserEnviromentFolderIDAppData:
-        pathID = &FOLDERID_RoamingAppData;
-        break;
+        case PXUserEnviromentFolderIDAppData:
+            pathID = &FOLDERID_RoamingAppData;
+            break;
 
-    case PXUserEnviromentFolderIDDownload:
-        pathID = &FOLDERID_Downloads;
-        break;
+        case PXUserEnviromentFolderIDDownload:
+            pathID = &FOLDERID_Downloads;
+            break;
 
-    case PXUserEnviromentFolderIDDocuments:
-        pathID = &FOLDERID_Documents;
-        break;
+        case PXUserEnviromentFolderIDDocuments:
+            pathID = &FOLDERID_Documents;
+            break;
 
-    case PXUserEnviromentFolderIDPictures:
-        pathID = &FOLDERID_Pictures;
-        break;
+        case PXUserEnviromentFolderIDPictures:
+            pathID = &FOLDERID_Pictures;
+            break;
 
-    case PXUserEnviromentFolderIDScreenshots:
-        pathID = &FOLDERID_Screenshots;
-        break;
+        case PXUserEnviromentFolderIDScreenshots:
+            pathID = &FOLDERID_Screenshots;
+            break;
 
-    case PXUserEnviromentFolderIDVideo:
-        pathID = &FOLDERID_Videos;
-        break;
+        case PXUserEnviromentFolderIDVideo:
+            pathID = &FOLDERID_Videos;
+            break;
 
-    case PXUserEnviromentFolderIDDestop:
-        pathID = &FOLDERID_Desktop;
-        break;
+        case PXUserEnviromentFolderIDDestop:
+            pathID = &FOLDERID_Desktop;
+            break;
 
-    case PXUserEnviromentFolderIDFonts:
-        pathID = &FOLDERID_Fonts;
-        break;
+        case PXUserEnviromentFolderIDFonts:
+            pathID = &FOLDERID_Fonts;
+            break;
 
-    case PXUserEnviromentFolderIDMusic:
-        pathID = &FOLDERID_Music;
-        break;
+        case PXUserEnviromentFolderIDMusic:
+            pathID = &FOLDERID_Music;
+            break;
 
-    default:
-        return PXFalse;
+        default:
+            return PXFalse;
     }
 
     PXText temporalCache;
@@ -139,21 +135,12 @@ PXBool PXAPI PXUserEnviromentFolderGet(PXText* const name, const PXUserEnviromen
 #endif
 }
 
-
-
-
-
-
-
-
-
-
-void PXAPI PXUserCreate(const char *username, const char *password)
+void PXAPI PXUserCreate(const char* username, const char* password)
 {
 #if OSUnix && 0
     struct passwd pwd;
     struct spwd spwd;
-    char *encrypted_password;
+    char* encrypted_password;
 
     // Encrypt the password
     encrypted_password = crypt(password, "salt");
@@ -170,21 +157,21 @@ void PXAPI PXUserCreate(const char *username, const char *password)
     // Set up the shadow password structure
     spwd.sp_namp = username;
     spwd.sp_pwdp = encrypted_password;
-    spwd.sp_lstchg = (long) time(NULL) / (60 * 60 * 24);
+    spwd.sp_lstchg = (long)time(NULL) / (60 * 60 * 24);
     spwd.sp_min = 0;
     spwd.sp_max = 99999;
     spwd.sp_warn = 7;
 
     // Add the user to the system
-    FILE *passwd_file = fopen("/etc/passwd", "a");
-    if (passwd_file)
+    FILE* passwd_file = fopen("/etc/passwd", "a");
+    if(passwd_file)
     {
         fprintf(passwd_file, "%s:x:%d:%d:%s:%s:%s\n", pwd.pw_name, pwd.pw_uid, pwd.pw_gid, pwd.pw_gecos, pwd.pw_dir, pwd.pw_shell);
         fclose(passwd_file);
     }
 
-    FILE *shadow_file = fopen("/etc/shadow", "a");
-    if (shadow_file)
+    FILE* shadow_file = fopen("/etc/shadow", "a");
+    if(shadow_file)
     {
         fprintf(shadow_file, "%s:%s:%ld:%d:%d:%d:%d:%d:%d\n", spwd.sp_namp, spwd.sp_pwdp, spwd.sp_lstchg, spwd.sp_min, spwd.sp_max, spwd.sp_warn, -1, -1, -1);
         fclose(shadow_file);
@@ -198,25 +185,7 @@ void PXAPI PXUserCreate(const char *username, const char *password)
 
     // ...
 
-
-
 #else
 
 #endif
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

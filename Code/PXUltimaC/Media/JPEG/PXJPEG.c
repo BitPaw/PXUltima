@@ -452,12 +452,12 @@ PXActionResult PXAPI PXJPEGLoadFromFile(PXResourceTransphereInfo* const pxResour
 
             // Read frame
             {
-                const PXDataTypeEntry pxDataStreamElementList[] =
+                const PXTypeEntry pxDataStreamElementList[] =
                 {
-                    {&frame.Precision,PXDataTypeInt08U},
-                    {&frame.Height,PXDataTypeInt16UBE},
-                    {&frame.Width,PXDataTypeInt16UBE},
-                    {&frame.ComponentListSize,PXDataTypeInt08U}
+                    {&frame.Precision,PXTypeInt08U},
+                    {&frame.Height,PXTypeInt16UBE},
+                    {&frame.Width,PXTypeInt16UBE},
+                    {&frame.ComponentListSize,PXTypeInt08U}
                 };
 
                 PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -468,11 +468,11 @@ PXActionResult PXAPI PXJPEGLoadFromFile(PXResourceTransphereInfo* const pxResour
                 PXJPEGFrameComponent* frameComponent = &frame.ComponentList[i];
                 unsigned char samplingFactor = 0;
 
-                const PXDataTypeEntry pxDataStreamElementList[] =
+                const PXTypeEntry pxDataStreamElementList[] =
                 {
-                    {&frameComponent->ID,PXDataTypeInt08U},
-                    {&samplingFactor,PXDataTypeInt08U},
-                    {&frameComponent->QuantizationTableID,PXDataTypeInt08U}
+                    {&frameComponent->ID,PXTypeInt08U},
+                    {&samplingFactor,PXTypeInt08U},
+                    {&frameComponent->QuantizationTableID,PXTypeInt08U}
                 };
 
                 PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -672,15 +672,15 @@ PXActionResult PXAPI PXJPEGLoadFromFile(PXResourceTransphereInfo* const pxResour
             PXFileReadB(pxResourceLoadInfo->FileReference, identifier, 5u);
 
             {
-                const PXDataTypeEntry pxDataStreamElementList[] =
+                const PXTypeEntry pxDataStreamElementList[] =
                 {
-                    {&jpeg->FileInfo.VersionMajor, PXDataTypeInt08U},
-                    {&jpeg->FileInfo.VersionMinor, PXDataTypeInt08U},
-                    {&jpeg->FileInfo.DensityUnits, PXDataTypeInt08U},
-                    {&jpeg->FileInfo.DensityX,PXDataTypeInt16UBE},
-                    {&jpeg->FileInfo.DensityY,PXDataTypeInt16UBE},
-                    {&jpeg->FileInfo.ThumbnailX, PXDataTypeInt08U},
-                    {&jpeg->FileInfo.ThumbnailY, PXDataTypeInt08U},
+                    {&jpeg->FileInfo.VersionMajor, PXTypeInt08U},
+                    {&jpeg->FileInfo.VersionMinor, PXTypeInt08U},
+                    {&jpeg->FileInfo.DensityUnits, PXTypeInt08U},
+                    {&jpeg->FileInfo.DensityX,PXTypeInt16UBE},
+                    {&jpeg->FileInfo.DensityY,PXTypeInt16UBE},
+                    {&jpeg->FileInfo.ThumbnailX, PXTypeInt08U},
+                    {&jpeg->FileInfo.ThumbnailY, PXTypeInt08U},
                 };
 
                 PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -1094,19 +1094,19 @@ PXActionResult PXAPI PXJPEGSaveToFile(PXResourceTransphereInfo* const pxResource
 
         const PXInt16U segmentID = PXJPEGMarkerApplicationSegment00ID;
         const PXInt16U val = 16u;
-        const PXDataTypeEntry pxDataStreamElementList[] =
+        const PXTypeEntry pxDataStreamElementList[] =
         {
-            {(void*)&segmentID, PXDataTypeInt16UBE},
-            {(void*)&val, PXDataTypeInt16UBE},
-            {(void*)PXJPEGApp0, PXDataTypeDatax4},
-            {PXNull, PXDataTypePadding(1)},
-            {&jpegFileInfo.VersionMajor, PXDataTypeInt08U},
-            {&jpegFileInfo.VersionMinor, PXDataTypeInt08U},
-            {&jpegFileInfo.DensityUnits, PXDataTypeInt08U},
-            {&jpegFileInfo.DensityX, PXDataTypeInt16UBE},
-            {&jpegFileInfo.DensityY, PXDataTypeInt16UBE},
-            {&jpegFileInfo.ThumbnailX, PXDataTypeInt08U},
-            {&jpegFileInfo.ThumbnailY, PXDataTypeInt08U}
+            {(void*)&segmentID, PXTypeInt16UBE},
+            {(void*)&val, PXTypeInt16UBE},
+            {(void*)PXJPEGApp0, PXTypeDatax4},
+            {PXNull, PXTypePadding(1)},
+            {&jpegFileInfo.VersionMajor, PXTypeInt08U},
+            {&jpegFileInfo.VersionMinor, PXTypeInt08U},
+            {&jpegFileInfo.DensityUnits, PXTypeInt08U},
+            {&jpegFileInfo.DensityX, PXTypeInt16UBE},
+            {&jpegFileInfo.DensityY, PXTypeInt16UBE},
+            {&jpegFileInfo.ThumbnailX, PXTypeInt08U},
+            {&jpegFileInfo.ThumbnailY, PXTypeInt08U}
         };
 
         PXFileReadMultible(pxResourceSaveInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));

@@ -20,18 +20,18 @@ PXActionResult PXAPI PXZIPLoadFromFile(PXResourceTransphereInfo* const pxResourc
         return PXActionRefusedInvalidHeaderSignature;
     }
 
-    const PXDataTypeEntry pxDataStreamElementList[] =
+    const PXTypeEntry pxDataStreamElementList[] =
     {
-        {&pxZIP->VersionMinimum, PXDataTypeInt16ULE},
-        {&pxZIP->GeneralPurposeBitFlag, PXDataTypeInt16ULE},
-        {&pxZIP->CompressionMethod, PXDataTypeInt16ULE},
-        {&pxZIP->FileLastmodificationtime, PXDataTypeInt16ULE},
-        {&pxZIP->FileLastmodificationdate, PXDataTypeInt16ULE},
-        {&pxZIP->CRC32ofuncompressedData, PXDataTypeInt32ULE},
-        {&pxZIP->CompressedSize, PXDataTypeInt32ULE},
-        {&pxZIP->UncompressedSize, PXDataTypeInt32ULE},
-        {&pxZIP->Filenamelength, PXDataTypeInt16ULE},
-        {&pxZIP->Extrafieldlength, PXDataTypeInt16ULE}
+        {&pxZIP->VersionMinimum, PXTypeInt16ULE},
+        {&pxZIP->GeneralPurposeBitFlag, PXTypeInt16ULE},
+        {&pxZIP->CompressionMethod, PXTypeInt16ULE},
+        {&pxZIP->FileLastmodificationtime, PXTypeInt16ULE},
+        {&pxZIP->FileLastmodificationdate, PXTypeInt16ULE},
+        {&pxZIP->CRC32ofuncompressedData, PXTypeInt32ULE},
+        {&pxZIP->CompressedSize, PXTypeInt32ULE},
+        {&pxZIP->UncompressedSize, PXTypeInt32ULE},
+        {&pxZIP->Filenamelength, PXTypeInt16ULE},
+        {&pxZIP->Extrafieldlength, PXTypeInt16ULE}
     };
 
     const PXSize amount = PXFileReadMultible(pxResourceTransphereInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));

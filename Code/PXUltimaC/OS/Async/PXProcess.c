@@ -393,7 +393,7 @@ PXActionResult PXAPI PXProcessHandleListAll(PXDebug* const pxDebug, PXProcess* p
         case PXHandleTypeFile:
         {
             PXFile pxFile;
-            pxFile.ID = handleCurrent;
+            pxFile.FileHandle = handleCurrent;
 
             PXText buffer;
             PXTextConstructNamedBufferA(&buffer, bufferAA, 256);

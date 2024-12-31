@@ -24,11 +24,11 @@ PXActionResult PXAPI PXLevelSaveToFile(PXResourceTransphereInfo* const pxResourc
 
     // Write Header
     {
-        PXDataTypeEntry pxFileDataElementList[] =
+        PXTypeEntry pxFileDataElementList[] =
         {
-            {PXLevelSignature, PXDataTypeDatax4},
-            {&pxLevel.Version, PXDataTypeInt16U},
-            {&pxLevel.EntryAmount, PXDataTypeInt32U},
+            {PXLevelSignature, PXTypeDatax4},
+            {&pxLevel.Version, PXTypeInt16U},
+            {&pxLevel.EntryAmount, PXTypeInt32U},
         };
         const PXSize pxFileDataElementListSize = sizeof(pxFileDataElementList);
 
@@ -42,10 +42,10 @@ PXActionResult PXAPI PXLevelSaveToFile(PXResourceTransphereInfo* const pxResourc
 
         while(!PXFileIsAtEnd(pxResourceSaveInfo->FileReference))
         {
-            PXDataTypeEntry pxFileDataElementList[] =
+            PXTypeEntry pxFileDataElementList[] =
             {
-                {&pxLevelEntry.ResourceType, PXDataTypeDatax4},
-                {&pxLevelEntry.DataSize, PXDataTypeInt64U}
+                {&pxLevelEntry.ResourceType, PXTypeDatax4},
+                {&pxLevelEntry.DataSize, PXTypeInt64U}
             };
             const PXSize pxFileDataElementListSize = sizeof(pxFileDataElementList);
 

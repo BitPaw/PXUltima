@@ -57,6 +57,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Algorithm/BubbleSort/PXBubbleSort.h" />
+		<Unit filename="Algorithm/CollatzConjecture/PXCollatzConjecture.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Algorithm/CollatzConjecture/PXCollatzConjecture.h" />
 		<Unit filename="Algorithm/Dijkstra/PXDijkstra.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -568,6 +572,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Media/ZLIB/PXZLIB.h" />
+		<Unit filename="OS/AI/PXAI.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="OS/AI/PXAI.h" />
 		<Unit filename="OS/Async/PXAwait.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -656,6 +664,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="OS/File/PXFile.h" />
+		<Unit filename="OS/Framework/DotNet/PXDotNet.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="OS/Framework/DotNet/PXDotNet.h" />
 		<Unit filename="OS/GUI/PXGUI.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -684,6 +696,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="OS/Graphic/DirectX/PXDirectX9.h" />
+		<Unit filename="OS/Graphic/NativDraw/PXNativDraw.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="OS/Graphic/NativDraw/PXNativDraw.h" />
 		<Unit filename="OS/Graphic/OpenGL/PXOpenGL.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -760,18 +776,30 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="OS/Signal/PXSignal.h" />
-		<Unit filename="OS/System/PXOSVersion.c">
+		<Unit filename="OS/System/Driver/PXDriver.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="OS/System/PXOSVersion.h" />
-		<Unit filename="OS/System/PXRegistry.c">
+		<Unit filename="OS/System/Driver/PXDriver.h" />
+		<Unit filename="OS/System/EventHistory/PXEventHistory.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="OS/System/PXRegistry.h" />
+		<Unit filename="OS/System/EventHistory/PXEventHistory.h" />
+		<Unit filename="OS/System/FireWall/PXFireWall.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="OS/System/FireWall/PXFireWall.h" />
 		<Unit filename="OS/System/PXWindows.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="OS/System/PXWindows.h" />
+		<Unit filename="OS/System/Registry/PXRegistry.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="OS/System/Registry/PXRegistry.h" />
+		<Unit filename="OS/System/Version/PXOSVersion.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="OS/System/Version/PXOSVersion.h" />
 		<Unit filename="OS/Time/PXStopWatch.c">
 			<Option compilerVar="CC" />
 		</Unit>

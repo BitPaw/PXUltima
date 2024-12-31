@@ -70,7 +70,11 @@ PXPublic float PXAPI PXTimeCounterStampToSecoundsF(const PXInt64U timestamp);
 PXPublic PXInt64U PXAPI PXTimeCounterStampGet();
 PXPublic PXInt64U PXAPI PXTimeCounterFrequencyGet();
 
+
+PXPublic void PXAPI PXTimeFromOSCTime(PXTime* const pxTime, const time_t timeValue);
+
 #if OSWindows
+PXPublic void PXAPI PXTimeFromOSFileTime(PXTime* const pxTime, FILETIME* const fileTime);
 PXPublic void PXAPI PXTimeConvertFromOS(PXTime* const time, const SYSTEMTIME* const systemTime);
 #endif
 

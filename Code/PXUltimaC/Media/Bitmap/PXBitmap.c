@@ -77,11 +77,11 @@ PXInt8U PXBitmapInfoHeaderTypeToID(const PXBitmapInfoHeaderType infoHeaderType)
 //-------------------------------------
 const PXInt32U PXBitMapHeader[] =
 {
-    PXDataTypeText(2),
-    PXDataTypeInt32ULE,
-    PXDataTypeInt32ULE,
-    PXDataTypeInt32ULE,
-    PXDataTypeInt32ULE
+    PXTypeText(2),
+    PXTypeInt32ULE,
+    PXTypeInt32ULE,
+    PXTypeInt32ULE,
+    PXTypeInt32ULE
 };
 const PXInt8U PXBitMapHeaderSize = sizeof(PXBitMapHeader) / sizeof(PXInt32U);
 
@@ -91,45 +91,45 @@ const PXInt8U PXBitMapHeaderSize = sizeof(PXBitMapHeader) / sizeof(PXInt32U);
 
 const PXInt32U PXBitMapInfoHeaderTypeList[] =
 {
-    PXDataTypeInt32SLE,
-    PXDataTypeInt32SLE,
-    PXDataTypeInt16ULE,
-    PXDataTypeInt16ULE,
-    PXDataTypeInt32ULE,
-    PXDataTypeInt32ULE,
-    PXDataTypeInt32SLE,
-    PXDataTypeInt32SLE,
-    PXDataTypeInt32ULE,
-    PXDataTypeInt32ULE
+    PXTypeInt32SLE,
+    PXTypeInt32SLE,
+    PXTypeInt16ULE,
+    PXTypeInt16ULE,
+    PXTypeInt32ULE,
+    PXTypeInt32ULE,
+    PXTypeInt32SLE,
+    PXTypeInt32SLE,
+    PXTypeInt32ULE,
+    PXTypeInt32ULE
 };
 const PXInt8U PXBitMapInfoHeaderTypeListSize = sizeof(PXBitMapInfoHeaderTypeList) / sizeof(PXInt32U);
 
 
 const PXInt32U PXBitMapV5HeaderTypeList[] =
 {
-    PXDataTypeInt32ULE,
-    PXDataTypeInt32ULE,
-    PXDataTypeInt32ULE,
-    PXDataTypeInt32ULE,
-    PXDataTypeInt32ULE,
-    PXDataTypeInt32ULE,
-    PXDataTypeInt32ULE,
-    PXDataTypeInt32ULE,
-    PXDataTypeInt32ULE,
-    PXDataTypeInt32ULE,
-    PXDataTypeInt32ULE,
-    PXDataTypeInt32ULE,
-    PXDataTypeInt32ULE,
-    PXDataTypeInt32ULE,
-    PXDataTypeInt32ULE,
-    PXDataTypeInt32ULE,
-    PXDataTypeInt32ULE,
-    PXDataTypeInt32ULE,
-    PXDataTypeInt32ULE,
-    PXDataTypeInt32ULE,
-    PXDataTypeInt32ULE,
-    PXDataTypeInt32ULE,
-    PXDataTypePadding(4)
+    PXTypeInt32ULE,
+    PXTypeInt32ULE,
+    PXTypeInt32ULE,
+    PXTypeInt32ULE,
+    PXTypeInt32ULE,
+    PXTypeInt32ULE,
+    PXTypeInt32ULE,
+    PXTypeInt32ULE,
+    PXTypeInt32ULE,
+    PXTypeInt32ULE,
+    PXTypeInt32ULE,
+    PXTypeInt32ULE,
+    PXTypeInt32ULE,
+    PXTypeInt32ULE,
+    PXTypeInt32ULE,
+    PXTypeInt32ULE,
+    PXTypeInt32ULE,
+    PXTypeInt32ULE,
+    PXTypeInt32ULE,
+    PXTypeInt32ULE,
+    PXTypeInt32ULE,
+    PXTypeInt32ULE,
+    PXTypePadding(4)
 };
 const PXInt8U PXBitMapV5HeaderTypeListSize = sizeof(PXBitMapV5HeaderTypeList) / sizeof(PXInt32U);
 
@@ -138,24 +138,24 @@ const PXInt8U PXBitMapV5HeaderTypeListSize = sizeof(PXBitMapV5HeaderTypeList) / 
 
 const PXInt32U PXBitmapHeaderOS21XBitMapHeaderTypeList[] =
 {
-    PXDataTypeInt16ULE,
-    PXDataTypeInt16ULE,
-    PXDataTypeInt16ULE,
-    PXDataTypeInt16ULE
+    PXTypeInt16ULE,
+    PXTypeInt16ULE,
+    PXTypeInt16ULE,
+    PXTypeInt16ULE
 };
 const PXInt8U PXBitmapHeaderOS21XBitMapHeaderTypeListSize = sizeof(PXBitmapHeaderOS21XBitMapHeaderTypeList) / sizeof(PXInt32U);
 
 
 const PXInt32U PXBitmapHeaderOS22XList[] =
 {
-    PXDataTypeInt16ULE,
-    PXDataTypePadding(2),
-    PXDataTypeInt16ULE,
-    PXDataTypeInt16ULE,
-    PXDataTypeInt32ULE,
-    PXDataTypeInt32ULE,
-    PXDataTypeInt32ULE,
-    PXDataTypeInt32ULE
+    PXTypeInt16ULE,
+    PXTypePadding(2),
+    PXTypeInt16ULE,
+    PXTypeInt16ULE,
+    PXTypeInt32ULE,
+    PXTypeInt32ULE,
+    PXTypeInt32ULE,
+    PXTypeInt32ULE
 };
 const PXInt8U PXBitmapHeaderOS22XListSize = sizeof(PXBitmapHeaderOS22XList) / sizeof(PXInt32U);
 

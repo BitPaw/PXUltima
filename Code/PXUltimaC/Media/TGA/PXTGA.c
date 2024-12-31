@@ -154,20 +154,20 @@ PXActionResult PXAPI PXTGALoadFromFile(PXResourceTransphereInfo* const pxResourc
         PXInt8U pixelDepth = 0;
         PXInt8U imageTypeValue = 0;
 
-        const PXDataTypeEntry pxDataStreamElementList[] =
+        const PXTypeEntry pxDataStreamElementList[] =
         {
-            {&imageIDLengh, PXDataTypeInt08U},
-            {&tga->ColorPaletteType, PXDataTypeInt08U},
-            {&imageTypeValue, PXDataTypeInt08U},
-            {&colorPaletteChunkEntryIndex, PXDataTypeInt16ULE},
-            {&colorPaletteChunkSize, PXDataTypeInt16ULE},
-            {&colorPaletteEntrySizeInBits, PXDataTypeInt08U},
-            {&tga->OriginX, PXDataTypeInt16ULE},
-            {&tga->OriginY, PXDataTypeInt16ULE},
-            {&tga->Width, PXDataTypeInt16ULE},
-            {&tga->Height, PXDataTypeInt16ULE},
-            {&pixelDepth, PXDataTypeInt08U},
-            {&tga->ImageDescriptor, PXDataTypeInt08U}
+            {&imageIDLengh, PXTypeInt08U},
+            {&tga->ColorPaletteType, PXTypeInt08U},
+            {&imageTypeValue, PXTypeInt08U},
+            {&colorPaletteChunkEntryIndex, PXTypeInt16ULE},
+            {&colorPaletteChunkSize, PXTypeInt16ULE},
+            {&colorPaletteEntrySizeInBits, PXTypeInt08U},
+            {&tga->OriginX, PXTypeInt16ULE},
+            {&tga->OriginY, PXTypeInt16ULE},
+            {&tga->Width, PXTypeInt16ULE},
+            {&tga->Height, PXTypeInt16ULE},
+            {&pixelDepth, PXTypeInt08U},
+            {&tga->ImageDescriptor, PXTypeInt08U}
         };
 
         PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -271,40 +271,40 @@ PXActionResult PXAPI PXTGALoadFromFile(PXResourceTransphereInfo* const pxResourc
             return PXActionFailedFormatNotAsExpected;
         }
 
-        const PXDataTypeEntry pxDataStreamElementList[] =
+        const PXTypeEntry pxDataStreamElementList[] =
         {
             {tga->AuthorName, 41u},
             {tga->AuthorComment, 324u},
 
             // 12 Bytes
-            {&tga->DateTimeMonth, PXDataTypeInt16ULE},
-            {&tga->JobTimeDay, PXDataTypeInt16ULE},
-            {&tga->JobTimeYear, PXDataTypeInt16ULE},
-            {&tga->JobTimeHour, PXDataTypeInt16ULE},
-            {&tga->JobTimeMinute, PXDataTypeInt16ULE},
-            {&tga->JobTimeSecond, PXDataTypeInt16ULE},
+            {&tga->DateTimeMonth, PXTypeInt16ULE},
+            {&tga->JobTimeDay, PXTypeInt16ULE},
+            {&tga->JobTimeYear, PXTypeInt16ULE},
+            {&tga->JobTimeHour, PXTypeInt16ULE},
+            {&tga->JobTimeMinute, PXTypeInt16ULE},
+            {&tga->JobTimeSecond, PXTypeInt16ULE},
             {tga->JobID, 41u},
 
             // 6 Bytes
-            {&tga->JobTimeHours, PXDataTypeInt16ULE},
-            {&tga->JobTimeMinutes, PXDataTypeInt16ULE},
-            {&tga->JobTimeSeconds, PXDataTypeInt16ULE},
+            {&tga->JobTimeHours, PXTypeInt16ULE},
+            {&tga->JobTimeMinutes, PXTypeInt16ULE},
+            {&tga->JobTimeSeconds, PXTypeInt16ULE},
 
-            {PXNull, PXDataTypePadding(12u)},
+            {PXNull, PXTypePadding(12u)},
 
             {tga->SoftwareName, 41u},
-            {&tga->VersionNumber, PXDataTypeInt16ULE},
-            {&tga->SoftwareVersion, PXDataTypeInt08U},
+            {&tga->VersionNumber, PXTypeInt16ULE},
+            {&tga->SoftwareVersion, PXTypeInt08U},
 
-            {&tga->BackGroundColor, PXDataTypeInt32ULE},
-            {&tga->PixelAspectRatioCounter, PXDataTypeInt16ULE},
-            {&tga->PixelAspectRatioDenominator, PXDataTypeInt16ULE},
-            {&tga->GammaCounter, PXDataTypeInt16ULE},
-            {&tga->GammaDenominator, PXDataTypeInt16ULE},
-            {&tga->ColorCorrectionOffset, PXDataTypeInt32ULE},
-            {&tga->PostagestampOffset, PXDataTypeInt32ULE},
-            {&tga->ScanlineOffset, PXDataTypeInt32ULE},
-            {&tga->AttributesType, PXDataTypeInt08U},
+            {&tga->BackGroundColor, PXTypeInt32ULE},
+            {&tga->PixelAspectRatioCounter, PXTypeInt16ULE},
+            {&tga->PixelAspectRatioDenominator, PXTypeInt16ULE},
+            {&tga->GammaCounter, PXTypeInt16ULE},
+            {&tga->GammaDenominator, PXTypeInt16ULE},
+            {&tga->ColorCorrectionOffset, PXTypeInt32ULE},
+            {&tga->PostagestampOffset, PXTypeInt32ULE},
+            {&tga->ScanlineOffset, PXTypeInt32ULE},
+            {&tga->AttributesType, PXTypeInt08U},
         };
 
         PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));

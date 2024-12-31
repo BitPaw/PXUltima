@@ -25,16 +25,16 @@ PXActionResult PXAPI PXOGGLoadFromFile(PXResourceTransphereInfo* const pxResourc
 
         PXInt32UCluster signature;
 
-        const PXDataTypeEntry pxDataStreamElementList[] =
+        const PXTypeEntry pxDataStreamElementList[] =
         {
-            {signature.Data, PXDataTypeDatax4},
-            {&page.Version, PXDataTypeInt08U},
-            {&page.HeaderType, PXDataTypeInt08U},
-            {&page.GranulePosition, PXDataTypeInt32UBE},
-            {&page.SerialNumber, PXDataTypeInt32UBE},
-            {&page.SequenceNumber, PXDataTypeInt32UBE},
-            {&page.CRC32CheckSum, PXDataTypeInt32UBE},
-            {&page.PageSegments, PXDataTypeInt08U}
+            {signature.Data, PXTypeDatax4},
+            {&page.Version, PXTypeInt08U},
+            {&page.HeaderType, PXTypeInt08U},
+            {&page.GranulePosition, PXTypeInt32UBE},
+            {&page.SerialNumber, PXTypeInt32UBE},
+            {&page.SequenceNumber, PXTypeInt32UBE},
+            {&page.CRC32CheckSum, PXTypeInt32UBE},
+            {&page.PageSegments, PXTypeInt08U}
         };
 
         PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));

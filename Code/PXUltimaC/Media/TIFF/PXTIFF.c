@@ -234,10 +234,10 @@ PXActionResult PXAPI PXTIFFLoadFromFile(PXResourceTransphereInfo* const pxResour
         }
 
         {
-            const PXDataTypeEntry pxDataStreamElementList[] =
+            const PXTypeEntry pxDataStreamElementList[] =
             {
-                {&tiff->Version, PXDataTypeInt16U},// Version, expect this to be "42"
-                {&tiff->OffsetToIFD, PXDataTypeInt32U}
+                {&tiff->Version, PXTypeInt16U},// Version, expect this to be "42"
+                {&tiff->OffsetToIFD, PXTypeInt32U}
             };
 
             PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -264,12 +264,12 @@ PXActionResult PXAPI PXTIFFLoadFromFile(PXResourceTransphereInfo* const pxResour
                 PXTIFFTag tiffTag;
 
                 {
-                    const PXDataTypeEntry pxDataStreamElementList[] =
+                    const PXTypeEntry pxDataStreamElementList[] =
                     {
-                        {&tiffTag.TypeID, PXDataTypeInt16U},// Version, expect this to be "42"
-                        {&tiffTag.DataTypeID, PXDataTypeInt16U},
-                        {&tiffTag.NumberOfValues, PXDataTypeInt32U},
-                        {&tiffTag.ImageFileDataOffset, PXDataTypeInt32U},
+                        {&tiffTag.TypeID, PXTypeInt16U},// Version, expect this to be "42"
+                        {&tiffTag.DataTypeID, PXTypeInt16U},
+                        {&tiffTag.NumberOfValues, PXTypeInt32U},
+                        {&tiffTag.ImageFileDataOffset, PXTypeInt32U},
                     };
 
                     PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));

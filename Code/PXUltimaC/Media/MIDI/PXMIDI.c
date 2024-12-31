@@ -23,12 +23,12 @@ PXActionResult PXAPI PXMIDILoadFromFile(PXResourceTransphereInfo* const pxResour
             }
         }
 
-        const PXDataTypeEntry pxDataStreamElementList[] =
+        const PXTypeEntry pxDataStreamElementList[] =
         {
-            {&chunkLength,PXDataTypeInt16UBE},
-            {&pxMIDI->Format,PXDataTypeInt16UBE},
-            {&pxMIDI->TrackListAmount,PXDataTypeInt16UBE},
-            {&pxMIDI->MusicSpeed,PXDataTypeInt16UBE}
+            {&chunkLength,PXTypeInt16UBE},
+            {&pxMIDI->Format,PXTypeInt16UBE},
+            {&pxMIDI->TrackListAmount,PXTypeInt16UBE},
+            {&pxMIDI->MusicSpeed,PXTypeInt16UBE}
         };
 
         PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -73,13 +73,13 @@ PXActionResult PXAPI PXMIDISaveToFile(PXResourceTransphereInfo* const pxResource
 
     {
         const PXInt16U chunkLength = 6;
-        const PXDataTypeEntry pxDataStreamElementList[] =
+        const PXTypeEntry pxDataStreamElementList[] =
         {
-            {PXMIDITrackHeaderID,PXDataTypeDatax4},
-            {&chunkLength,PXDataTypeInt16UBE},
-            {&pxMIDI->Format,PXDataTypeInt16UBE},
-            {&pxMIDI->TrackListSize,PXDataTypeInt16UBE},
-            {&pxMIDI->MusicSpeed,PXDataTypeInt16UBE}
+            {PXMIDITrackHeaderID,PXTypeDatax4},
+            {&chunkLength,PXTypeInt16UBE},
+            {&pxMIDI->Format,PXTypeInt16UBE},
+            {&pxMIDI->TrackListSize,PXTypeInt16UBE},
+            {&pxMIDI->MusicSpeed,PXTypeInt16UBE}
         };
 
         PXFileWriteMultible(pxResourceSaveInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));

@@ -1,7 +1,5 @@
 #include "PXGIF.h"
 
-#include <OS/File/PXFile.h>
-#include <OS/Memory/PXMemory.h>
 #include <Math/PXMath.h>
 
 const char PXGIFHeader[3] = { 'G','I','F' };
@@ -49,13 +47,13 @@ PXActionResult PXAPI PXGIFLoadFromFile(PXResourceTransphereInfo* const pxResourc
         {
             PXInt8U packedFields = 0;
 
-            const PXDataTypeEntry pxDataStreamElementList[] =
+            const PXTypeEntry pxDataStreamElementList[] =
             {
-                {&gif.Width,PXDataTypeInt16ULE},
-                {&gif.Height,PXDataTypeInt16ULE},
-                {&packedFields,PXDataTypeInt08U},
-                {&gif.BackgroundColorIndex, PXDataTypeInt08U},
-                {&gif.PixelAspectRatio, PXDataTypeInt08U}
+                {&gif.Width,PXTypeInt16ULE},
+                {&gif.Height,PXTypeInt16ULE},
+                {&packedFields,PXTypeInt08U},
+                {&gif.BackgroundColorIndex, PXTypeInt08U},
+                {&gif.PixelAspectRatio, PXTypeInt08U}
             };
 
             PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -78,14 +76,14 @@ PXActionResult PXAPI PXGIFLoadFromFile(PXResourceTransphereInfo* const pxResourc
             {
                 PXInt8U packedFields = 0;
 
-                const PXDataTypeEntry pxDataStreamElementList[] =
+                const PXTypeEntry pxDataStreamElementList[] =
                 {
-                    {&imageDescriptor.Separator,PXDataTypeInt08U},
-                    {&imageDescriptor.LeftPosition,PXDataTypeInt16ULE},
-                    {&imageDescriptor.TopPosition,PXDataTypeInt16ULE},
-                    {&imageDescriptor.Width,PXDataTypeInt16ULE},
-                    {&imageDescriptor.Height,PXDataTypeInt16ULE},
-                    {&packedFields,PXDataTypeInt08U}
+                    {&imageDescriptor.Separator,PXTypeInt08U},
+                    {&imageDescriptor.LeftPosition,PXTypeInt16ULE},
+                    {&imageDescriptor.TopPosition,PXTypeInt16ULE},
+                    {&imageDescriptor.Width,PXTypeInt16ULE},
+                    {&imageDescriptor.Height,PXTypeInt16ULE},
+                    {&packedFields,PXTypeInt08U}
                 };
 
                 PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));

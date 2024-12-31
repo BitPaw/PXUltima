@@ -231,7 +231,57 @@ PXInt64U PXAPI PXTimeCounterFrequencyGet()
 #endif
 }
 
+
+void PXAPI PXTimeFromOSCTime(PXTime* const pxTime, const time_t timeValue)
+{
+#if OSUnix || OSForcePOSIXForWindows
+
+    struct tm* timeinfo = localtime(&timeValue);
+
+    pxTime->Year = 1900 + timeinfo->tm_year; // years since 1900
+    pxTime->Milliseconds = 0;
+    pxTime->Second = timeinfo->tm_sec; // seconds after the minute - [0, 60] including leap second
+    pxTime->Minute = timeinfo->tm_min;   // minutes after the hour - [0, 59]
+    pxTime->Hour = timeinfo->tm_hour;  // hours since midnight - [0, 23]
+    pxTime->Day = timeinfo->tm_mday;  // day of the month - [1, 31]
+    pxTime->DayOfWeek = 1 + timeinfo->tm_wday; // days since Sunday - [0, 6]
+    pxTime->Month = 1 + timeinfo->tm_mon;  // months since January - [0, 11]
+
+#elif OSWindows
+
+    FILETIME fileTime;
+
+#if 1
+    ULARGE_INTEGER time_value;
+    time_value.QuadPart = (timeValue * 10000000LL) + 116444736000000000LL;
+    fileTime.dwLowDateTime = time_value.LowPart;
+    fileTime.dwHighDateTime = time_value.HighPart;
+#elif
+    //  LEGACY
+    LONGLONG time_value = Int32x32To64(t, 10000000) + 116444736000000000;
+    pft->dwLowDateTime = (DWORD)time_value;
+    pft->dwHighDateTime = time_value >> 32;
+#endif
+
+    PXTimeFromOSFileTime(pxTime, &fileTime);
+
+#endif
+
+}
+
 #if OSWindows
+void PXAPI PXTimeFromOSFileTime(PXTime* const pxTime, FILETIME* const fileTime)
+{
+#if OSUnix
+#elif OSWindows
+    SYSTEMTIME systemTime;
+
+    const BOOL result = FileTimeToSystemTime(fileTime, &systemTime);
+
+    PXTimeConvertFromOS(pxTime, &systemTime);
+#endif
+}
+
 void PXAPI PXTimeConvertFromOS(PXTime* const time, const SYSTEMTIME* const systemTime)
 {
     time->Year = systemTime->wYear;

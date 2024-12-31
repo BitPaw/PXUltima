@@ -885,7 +885,7 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
         PXTextConstructNamedBufferA(&pxText, fileNameBuffer, 256);
 
         PXFile file;
-        file.ID = createProcessDebugInfo->hFile;
+        file.FileHandle = createProcessDebugInfo->hFile;
 
         const PXActionResult res = PXFileName(&file, &pxText);
 
@@ -946,7 +946,7 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
         PXTextConstructNamedBufferA(&pxText, fileNameBuffer, 256);
 
         PXFile file;
-        file.ID = loadDLLDebugInfo->hFile;
+        file.FileHandle = loadDLLDebugInfo->hFile;
 
         const PXActionResult res = PXFileName(&file, &pxText);
 

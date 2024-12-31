@@ -464,22 +464,22 @@ PXActionResult PXAPI PXDDSLoadFromFile(PXResourceTransphereInfo* const pxResourc
 
     // Read Header
     {
-        const PXDataTypeEntry pxDataStreamElementList[] =
+        const PXTypeEntry pxDataStreamElementList[] =
         {
-            {&pxDirectDrawTexture.Size,PXDataTypeInt32ULE},
-            {&pxDirectDrawTexture.Flags,PXDataTypeInt32ULE},
-            {&pxDirectDrawTexture.Height,PXDataTypeInt32ULE},
-            {&pxDirectDrawTexture.Width,PXDataTypeInt32ULE},
-            {&pxDirectDrawTexture.pitchOrLinearSize,PXDataTypeInt32ULE},
-            {&pxDirectDrawTexture.Depth,PXDataTypeInt32ULE},
-            {&pxDirectDrawTexture.MipMapCount,PXDataTypeInt32ULE},
-            {PXNull, PXDataTypePadding(sizeof(PXInt32U) * 11u)},
-            {&pxDirectDrawTexture.ddspf,PXDataTypeInt32ULE},
-            {&pxDirectDrawTexture.caps,PXDataTypeInt32ULE},
-            {&pxDirectDrawTexture.caps2,PXDataTypeInt32ULE},
-            {&pxDirectDrawTexture.caps3,PXDataTypeInt32ULE},
-            {&pxDirectDrawTexture.caps4,PXDataTypeInt32ULE},
-            {PXNull, PXDataTypePadding(sizeof(PXInt32U) * 2u)}
+            {&pxDirectDrawTexture.Size,PXTypeInt32ULE},
+            {&pxDirectDrawTexture.Flags,PXTypeInt32ULE},
+            {&pxDirectDrawTexture.Height,PXTypeInt32ULE},
+            {&pxDirectDrawTexture.Width,PXTypeInt32ULE},
+            {&pxDirectDrawTexture.pitchOrLinearSize,PXTypeInt32ULE},
+            {&pxDirectDrawTexture.Depth,PXTypeInt32ULE},
+            {&pxDirectDrawTexture.MipMapCount,PXTypeInt32ULE},
+            {PXNull, PXTypePadding(sizeof(PXInt32U) * 11u)},
+            {&pxDirectDrawTexture.ddspf,PXTypeInt32ULE},
+            {&pxDirectDrawTexture.caps,PXTypeInt32ULE},
+            {&pxDirectDrawTexture.caps2,PXTypeInt32ULE},
+            {&pxDirectDrawTexture.caps3,PXTypeInt32ULE},
+            {&pxDirectDrawTexture.caps4,PXTypeInt32ULE},
+            {PXNull, PXTypePadding(sizeof(PXInt32U) * 2u)}
         };
 
         PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -500,13 +500,13 @@ PXActionResult PXAPI PXDDSLoadFromFile(PXResourceTransphereInfo* const pxResourc
     // Parse extended header
     if(pxDirectDrawTexture.IsDX10)
     {
-        const PXDataTypeEntry pxDataStreamElementList[] =
+        const PXTypeEntry pxDataStreamElementList[] =
         {
-            {&pxDirectDrawTexture.GIFormatID,PXDataTypeInt32ULE},
-            {&pxDirectDrawTexture.resourceDimension,PXDataTypeInt32ULE},
-            {&pxDirectDrawTexture.miscFlag,PXDataTypeInt32ULE},
-            {&pxDirectDrawTexture.arraySize,PXDataTypeInt32ULE},
-            {PXNull, PXDataTypePadding(sizeof(PXInt32U))}
+            {&pxDirectDrawTexture.GIFormatID,PXTypeInt32ULE},
+            {&pxDirectDrawTexture.resourceDimension,PXTypeInt32ULE},
+            {&pxDirectDrawTexture.miscFlag,PXTypeInt32ULE},
+            {&pxDirectDrawTexture.arraySize,PXTypeInt32ULE},
+            {PXNull, PXTypePadding(sizeof(PXInt32U))}
         };
 
         PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));

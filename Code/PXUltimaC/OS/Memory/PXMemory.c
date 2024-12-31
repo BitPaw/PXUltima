@@ -101,6 +101,14 @@ static PXMemorySymbolLookup _PXGLOBLALMemorySymbolLookup;
 static PXBool _PXGLOBLALMemorySymbolLookupENABLED = PXFalse;
 
 
+void PXAPI PXAccessModeToStringA(char* text, const const PXAccessMode pxAccessMode)
+{
+    text[0] = (PXAccessREAD     & pxAccessMode) > 0 ? 'R' : '-';
+    text[1] = (PXAccessWRITE    & pxAccessMode) > 0 ? 'W' : '-';
+    text[2] = (PXAccessEXECUTE  & pxAccessMode) > 0 ? 'X' : '-';
+    text[3] = 0;
+}
+
 PXMemorySymbolLookup* const PXAPI PXMemorySymbolLookupInstanceGet(void)
 {
     if(!_PXGLOBLALMemorySymbolLookupENABLED)
@@ -1309,17 +1317,19 @@ void PXAPI PXMemoryVirtualPrefetch(const void* adress, const PXSize size)
     //const bool prefetchResult = PrefetchVirtualMemory(process, numberOfEntries, &memoryRangeEntry, flags); // Windows 8, Kernel32.dll, memoryapi.h
 
 #if PXLogEnable
-    PXLoggingEventData pxLoggingEventData;
-    PXClear(PXLoggingEventData, &pxLoggingEventData);
-    pxLoggingEventData.MemoryData.TypeSize = size;
-    pxLoggingEventData.MemoryData.Amount = 1;
-    pxLoggingEventData.ModuleSource = "Memory";
-    pxLoggingEventData.ModuleAction = "Pre-Fetch";
-    pxLoggingEventData.PrintFormat = "  0x%p";
-    pxLoggingEventData.Type = PXLoggingInfo;
-    pxLoggingEventData.Target = PXLoggingTypeTargetMemory;
+    PXText pxTextSize;
+    PXTextConstructNamedBufferA(&pxTextSize, pxTextBuffer, 32);
+    PXTextFormatSize(&pxTextSize, size);
 
-    PXLogPrintInvoke(&pxLoggingEventData, adress);
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "Memory",
+        "Prefetch",
+        "<%p> %s",
+        adress,
+        pxTextSize.TextA
+    );
 #endif
 
 #else

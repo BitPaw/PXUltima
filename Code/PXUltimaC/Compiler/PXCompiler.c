@@ -119,13 +119,13 @@ void PXAPI PXCompilerSymbolEntryAdd(PXCompiler* const pxCompiler, const PXCompil
 {
     const PXInt8U symbolID = compilerSymbolEntry->ID;
 
-    const PXDataTypeEntry pxFileDataElementType[] =
+    const PXTypeEntry pxFileDataElementType[] =
     {
-        &symbolID, PXDataTypeInt08U,
-        &compilerSymbolEntry->Coloum, PXDataTypeInt32U,
-        &compilerSymbolEntry->Line, PXDataTypeInt32U,
-        &compilerSymbolEntry->Size, PXDataTypeInt32U,
-        &compilerSymbolEntry->Source, PXDataTypeAdress
+        &symbolID, PXTypeInt08U,
+        &compilerSymbolEntry->Coloum, PXTypeInt32U,
+        &compilerSymbolEntry->Line, PXTypeInt32U,
+        &compilerSymbolEntry->Size, PXTypeInt32U,
+        &compilerSymbolEntry->Source, PXTypeAdress
     };
 
     const PXSize written = PXFileWriteMultible(pxCompiler->ReadInfo.FileCache, pxFileDataElementType, sizeof(pxFileDataElementType));
@@ -232,13 +232,13 @@ PXSize PXAPI PXCompilerSymbolEntryMergeCurrentWithNext(PXCompiler* const pxCompi
     {
         const PXInt8U symbolID = compilerSymbolEntry->ID;
         const PXInt32U size = oldCopy.Size + ((mergCopy.Coloum + mergCopy.Size) - (oldCopy.Coloum + oldCopy.Size));
-        const PXDataTypeEntry pxFileDataElementType[] =
+        const PXTypeEntry pxFileDataElementType[] =
         {
-            &oldCopy.ID, PXDataTypeInt08U,
-            &oldCopy.Coloum, PXDataTypeInt32U,
-            &oldCopy.Line, PXDataTypeInt32U,
-            &size, PXDataTypeInt32U,
-            &oldCopy.Source, PXDataTypeAdress
+            &oldCopy.ID, PXTypeInt08U,
+            &oldCopy.Coloum, PXTypeInt32U,
+            &oldCopy.Line, PXTypeInt32U,
+            &size, PXTypeInt32U,
+            &oldCopy.Source, PXTypeAdress
         };
 
         const PXSize written = PXFileWriteMultible(pxCompiler->ReadInfo.FileCache, pxFileDataElementType, sizeof(pxFileDataElementType));
@@ -252,13 +252,13 @@ PXSize PXAPI PXCompilerSymbolEntryMergeCurrentWithNext(PXCompiler* const pxCompi
         const PXInt8U symbolID = PXCompilerSymbolLexerInvalid;
         const PXInt32U emptyValue = 0;
         const void* emptyAdress = 0;
-        const PXDataTypeEntry pxFileDataElementType[] =
+        const PXTypeEntry pxFileDataElementType[] =
         {
-            &symbolID, PXDataTypeInt08U,
-            &mergCopy.Coloum, PXDataTypeInt32U,
-            &mergCopy.Line, PXDataTypeInt32U,
-            &emptyValue, PXDataTypeInt32U,
-            &emptyAdress, PXDataTypeAdress
+            &symbolID, PXTypeInt08U,
+            &mergCopy.Coloum, PXTypeInt32U,
+            &mergCopy.Line, PXTypeInt32U,
+            &emptyValue, PXTypeInt32U,
+            &emptyAdress, PXTypeAdress
         };
 
         const PXSize written = PXFileWriteMultible(pxCompiler->ReadInfo.FileCache, pxFileDataElementType, sizeof(pxFileDataElementType));
@@ -333,13 +333,13 @@ PXSize PXAPI PXCompilerSymbolEntryExtract(PXCompiler* const pxCompiler)
     {
         PXInt8U symbolID = 0;
 
-        const PXDataTypeEntry pxFileDataElementType[] =
+        const PXTypeEntry pxFileDataElementType[] =
         {
-            &symbolID, PXDataTypeInt08U,
-            &pxCompilerSymbolEntry->Coloum, PXDataTypeInt32U,
-            &pxCompilerSymbolEntry->Line, PXDataTypeInt32U,
-            &pxCompilerSymbolEntry->Size, PXDataTypeInt32U,
-            &pxCompilerSymbolEntry->Source, PXDataTypeAdress
+            &symbolID, PXTypeInt08U,
+            &pxCompilerSymbolEntry->Coloum, PXTypeInt32U,
+            &pxCompilerSymbolEntry->Line, PXTypeInt32U,
+            &pxCompilerSymbolEntry->Size, PXTypeInt32U,
+            &pxCompilerSymbolEntry->Source, PXTypeAdress
         };
         readBytes += PXFileReadMultible(pxCompiler->ReadInfo.FileCache, pxFileDataElementType, sizeof(pxFileDataElementType));
 
@@ -924,17 +924,42 @@ PXCompilerSymbolLexer PXAPI PXCompilerTryAnalyseType(PXFile* const tokenStream, 
 
 PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler)
 {
+    if(!pxCompiler)
+    {
+        return PXActionRefusedArgumentNull;
+    }
+
     PXFile* const pxFileInput = pxCompiler->ReadInfo.FileInput;
 
-    PXInt64U timeCounter = PXTimeCounterStampGet();
+    if(!PXFileDataAvailable(pxFileInput))
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingError,
+            "Compiler",
+            "Lexer",
+            "No data to analyse!"
+        );
+#endif
+
+        return PXActionRefusedArgumentInvalid;
+    }
+
+    const PXInt64U timeCounter = PXTimeCounterStampGet();
 
 #if PXLogEnable
+    PXText pxTextSize;
+    PXTextConstructNamedBufferA(&pxTextSize, pxTextBuffer, 32);
+    PXTextFormatSize(&pxTextSize, pxFileInput->DataUsed);
+
     PXLogPrint
     (
         PXLoggingInfo,
         "Compiler",
         "Lexer",
-        "Starting analisis..."
+        "Starting analisis for <%s>",
+        pxTextSize.TextA
     );
 #endif
 

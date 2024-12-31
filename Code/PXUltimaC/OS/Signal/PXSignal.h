@@ -3,10 +3,8 @@
 
 #include <Media/PXResource.h>
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+#include <setjmp.h>
+//#include <csetjmp> C++ lib
 
 /*
 
@@ -32,8 +30,15 @@ typedef void (PXCDECL* PXSignalCallBack)(const int signalID);
 
 PXPublic PXActionResult PXAPI PXSignalCallBackRegister(const PXSignalToken pxSignalToken, PXSignalCallBack pxSignalCallBack);
 
-#ifdef __cplusplus
+// Current state of the processor.
+// Is used to restore a point in execution
+typedef struct PXRecoveryPoint_
+{
+    jmp_buf Enviroment;
 }
-#endif
+PXRecoveryPoint;
+
+PXPublic PXActionResult PXAPI PXRecoveryPointSet(PXRecoveryPoint* const pxRecoveryPoint);
+PXPublic PXActionResult PXAPI PXRecoveryPointRestore(PXRecoveryPoint* const pxRecoveryPoint);
 
 #endif
