@@ -2015,7 +2015,7 @@ PXActionResult PXAPI PXOpenGLSwapIntervalSet(PXOpenGL* const pxOpenGL, const PXI
 #elif OSWindows
     pxOpenGL->Binding.SwapIntervalSet(interval);
 #endif
-    const PXActionResult swapSetResult = PXOpenGLErrorCurrent(pxOpenGL);
+    const PXActionResult swapSetResult = PXOpenGLErrorCurrent(pxOpenGL, 0);
 
     return swapSetResult;
 }
@@ -2024,7 +2024,7 @@ PXActionResult PXAPI PXOpenGLSwapIntervalGet(PXOpenGL* const pxOpenGL, PXInt32U*
 {
     *interval = pxOpenGL->Binding.SwapIntervalGet();
 
-    return PXOpenGLErrorCurrent(pxOpenGL);
+    return PXOpenGLErrorCurrent(pxOpenGL, 0);
 }
 
 PXInt32U PXAPI PXOpenGLTextureTypeToID(const PXGraphicTextureType pxGraphicTextureType)
@@ -2171,36 +2171,90 @@ void PXAPI PXOpenGLDestruct(PXOpenGL* const pxOpenGL)
 
 }
 
-PXActionResult PXAPI PXOpenGLErrorCurrent(PXOpenGL* const pxOpenGL)
+PXActionResult PXAPI PXOpenGLErrorCurrent(PXOpenGL* const pxOpenGL, PXBool wasSuccessultCall)
 {
-    const GLenum openGLErrorID = pxOpenGL->Binding.ErrorGet();
-
-    switch(openGLErrorID)
+    for(;;)
     {
-        case GL_NO_ERROR:
-            return PXActionSuccessful;
-        case GL_INVALID_ENUM:
-            return PXActionRefusedArgumentInvalid;
-        case GL_INVALID_VALUE:
-            return PXActionRefusedArgumentInvalid;
-        case GL_INVALID_OPERATION:
-            return PXActionRefusedInvalidOperationSpecified;
-        case GL_STACK_OVERFLOW:
-            return PXActionFailedStackOverflow;
-        case GL_STACK_UNDERFLOW:
-            return PXActionFailedStackUnderflow;
-        case GL_OUT_OF_MEMORY:
-            return PXActionFailedMemoryAllocation;
-            //case GL_INVALID_FRAMEBUFFER_OPERATION:    return 00;
+        const GLenum openGLErrorID = pxOpenGL->Binding.ErrorGet();
+        PXActionResult openGLError = PXActionSuccessful;
+        const char* errorText = 0;
 
-            /*
-            case GL_CONTEXT_LOST:
-            case GL_TABLE_TOO_LARGE1:
-            */
+        // Translate
+        {
+            switch(openGLErrorID)
+            {
+                case GL_NO_ERROR:
+                    return openGLError;
 
-        default:
-            return PXActionInvalid;
-    }
+                case GL_INVALID_ENUM:
+                    openGLError = PXActionRefusedArgumentInvalid;
+                    errorText = "GL_INVALID_ENUM";
+                    break;
+
+                case GL_INVALID_VALUE:
+                    openGLError = PXActionRefusedArgumentInvalid;
+                    errorText = "GL_INVALID_VALUE";
+                    break;
+
+                case GL_INVALID_OPERATION:
+                    openGLError = PXActionRefusedInvalidOperationSpecified;
+                    errorText = "GL_INVALID_OPERATION";
+                    break;
+
+                case GL_STACK_OVERFLOW:
+                    openGLError = PXActionFailedStackOverflow;
+                    errorText = "GL_STACK_OVERFLOW";
+                    break;
+
+                case GL_STACK_UNDERFLOW:
+                    openGLError = PXActionFailedStackUnderflow;
+                    errorText = "GL_STACK_UNDERFLOW";
+                    break;
+
+                case GL_OUT_OF_MEMORY:
+                    openGLError = PXActionFailedMemoryAllocation;
+                    errorText = "GL_OUT_OF_MEMORY";
+                    break;
+                    //case GL_INVALID_FRAMEBUFFER_OPERATION:    return 00;
+
+                    /*
+                    case GL_CONTEXT_LOST:
+                    case GL_TABLE_TOO_LARGE1:
+                    */
+
+                default:
+                    openGLError = PXActionInvalid;
+                    errorText = "Invalid/Unkown";
+                    break;
+            }
+        }
+
+        if(wasSuccessultCall)
+        {
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingWarning,
+                "OpenGL",
+                "Error",
+                "Uncaught error detected! Please check previous calls and add checks."
+            );
+#endif
+
+            wasSuccessultCall = PXFalse;
+        }
+
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingError,
+            "OpenGL",
+            "Error",
+            "%s",
+            errorText
+        );
+#endif
+    }  
 }
 
 void PXAPI PXOpenGLSet(PXOpenGL* const pxOpenGL, const PXOpenGL* const pxOpenGLSoure)
@@ -2364,9 +2418,9 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
         pxOpenGL->ContextHandle = pxOpenGL->Binding.ContextCreate(pxGraphicInitializeInfo->HandleDeviceContext);
 #endif
 
-        const PXActionResult pxActionResult = PXOpenGLErrorCurrent(pxOpenGL);
+        // glError invalid here;
 
-        if(PXActionSuccessful != pxActionResult) // Failed context create
+        if(!pxOpenGL->ContextHandle) // Failed context create
         {
 #if PXLogEnable
             PXLogPrint
@@ -2378,7 +2432,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
             );
 #endif
 
-            return pxActionResult;
+            return PXActionFailedInitialization;
         }
 
 #if PXLogEnable
@@ -2446,7 +2500,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
                     attributeList
                 );
 
-                const PXActionResult xx = PXOpenGLErrorCurrent(pxOpenGL);
+                const PXActionResult xx = PXOpenGLErrorCurrent(pxOpenGL, contextAttributes);
             }
         }
 #endif
@@ -2640,8 +2694,8 @@ PXActionResult PXAPI PXOpenGLSelect(PXOpenGL* const pxOpenGL)
     (
         PXLoggingInfo,
         "OpenGL",
-        "Select",
-        "Session"
+        "Context",
+        "Bind to current thread"
     );
 #endif
 
@@ -2656,9 +2710,22 @@ PXActionResult PXAPI PXOpenGLSelect(PXOpenGL* const pxOpenGL)
     const BOOL result = pxOpenGL->Binding.MakeCurrent(pxOpenGL->WindowDeviceContextHandle, pxOpenGL->ContextHandle);
 #endif
 
-    const PXActionResult makeError = PXOpenGLErrorCurrent(result);
+    if(!result)
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingError,
+            "OpenGL",
+            "Context",
+            "Failed binding to current thread"
+        );
+#endif
 
-    return makeError;
+        return PXActionFailedContextBinding;
+    }    
+
+    return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXOpenGLDeselect(PXOpenGL* const pxOpenGL)
@@ -2668,8 +2735,8 @@ PXActionResult PXAPI PXOpenGLDeselect(PXOpenGL* const pxOpenGL)
     (
         PXLoggingInfo,
         "OpenGL",
-        "Deselect",
-        "Session"
+        "Context",
+        "Unbind from thread"
     );
 #endif
 
@@ -2684,9 +2751,14 @@ PXActionResult PXAPI PXOpenGLDeselect(PXOpenGL* const pxOpenGL)
 #elif OSWindows
         pxOpenGL->Binding.MakeCurrent(0, 0);
 #endif
-    const PXActionResult makeError = PXOpenGLErrorCurrent(successful);
+  
+    // glError invalid here- no context anymore
+    if(!successful)
+    {
+        return PXActionFailedContextRelease;
+    }
 
-    return makeError;
+    return PXActionSuccessful;
 }
 
 PXInt64S PXAPI PXOpenGLIntergetGet(PXOpenGL* const pxOpenGL, const GLenum enumID)
@@ -2866,7 +2938,7 @@ PXActionResult PXAPI PXOpenGLScreenBufferRead(PXOpenGL* const pxOpenGL, PXImage*
 
     pxOpenGL->Binding.ReadPixels(0, 0, pxImage->Width, pxImage->Height, formatStructure, formatData, pxImage->PixelData);
 
-    const PXActionResult pxActionResult = PXOpenGLErrorCurrent(pxOpenGL);
+    const PXActionResult pxActionResult = PXOpenGLErrorCurrent(pxOpenGL, 0);
 
     return pxActionResult;
 }
@@ -2889,7 +2961,7 @@ PXActionResult PXAPI PXOpenGLRelease(PXOpenGL* const pxOpenGL)
 
 #if OSUnix || OSWindows
 
-    const PXActionResult result = PXOpenGLErrorCurrent(resultID);
+    const PXActionResult result = PXOpenGLErrorCurrent(pxOpenGL, resultID);
 
     if(PXActionSuccessful != result)
     {
@@ -4424,7 +4496,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
 
         if(!shaderProgrammCreateSuccessful)
         {
-            const PXActionResult createResult = PXOpenGLErrorCurrent(pxOpenGL);
+            const PXActionResult createResult = PXOpenGLErrorCurrent(pxOpenGL, shaderProgrammCreateSuccessful);
 
 #if PXLogEnable
             PXLogPrint
@@ -4761,7 +4833,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramSelect(PXOpenGL* const pxOpenGL, PXSha
 
     pxOpenGL->Binding.ShaderProgramUse(pxShaderProgram->Info.Handle.OpenGLID);
 
-    const PXActionResult createResult = PXOpenGLErrorCurrent(pxOpenGL);
+    const PXActionResult createResult = PXOpenGLErrorCurrent(pxOpenGL, 0);
 
     if(PXActionSuccessful != createResult)
     {
@@ -4784,7 +4856,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramDelete(PXOpenGL* const pxOpenGL, PXSha
 {
     pxOpenGL->Binding.ShaderProgramDelete(pxShaderProgram->Info.Handle.OpenGLID);
 
-    const PXActionResult createResult = PXOpenGLErrorCurrent(pxOpenGL);
+    const PXActionResult createResult = PXOpenGLErrorCurrent(pxOpenGL, 0);
 
     if(PXActionSuccessful == createResult)
     {
@@ -4879,7 +4951,7 @@ PXActionResult PXAPI PXOpenGLTextureAction(PXOpenGL* const pxOpenGL, PXGraphicTe
 
             pxOpenGL->Binding.TextureCreate(pxGraphicTexturInfo->Amount, openGLTextureIDListData);
 
-            const PXActionResult createResult = PXOpenGLErrorCurrent(pxOpenGL);
+            const PXActionResult createResult = PXOpenGLErrorCurrent(pxOpenGL, 0);
 
             if(createResult != PXActionSuccessful)
             {
@@ -4924,7 +4996,7 @@ PXActionResult PXAPI PXOpenGLTextureAction(PXOpenGL* const pxOpenGL, PXGraphicTe
                         {
                             pxOpenGL->Binding.TextureBind(GL_TEXTURE_2D, pxTexture2D->Info.Handle.OpenGLID);
 
-                            const PXActionResult createResult = PXOpenGLErrorCurrent(pxOpenGL);
+                            const PXActionResult createResult = PXOpenGLErrorCurrent(pxOpenGL, 0);
 
                             if(PXActionSuccessful != createResult)
                             {
@@ -5486,7 +5558,7 @@ PXActionResult PXAPI PXOpenGLShaderVariableSet(PXOpenGL* const pxOpenGL, const P
 
                 if(!fetchSuccessful)
                 {
-                    const PXActionResult createResult = PXOpenGLErrorCurrent(pxOpenGL);
+                    const PXActionResult createResult = PXOpenGLErrorCurrent(pxOpenGL, fetchSuccessful);
 
                     //return createResult;
 
@@ -5705,7 +5777,7 @@ PXActionResult PXAPI PXOpenGLShaderVariableSet(PXOpenGL* const pxOpenGL, const P
 
         // Fetch error
         {
-            const PXActionResult uniformResult = PXOpenGLErrorCurrent(pxOpenGL);
+            const PXActionResult uniformResult = PXOpenGLErrorCurrent(pxOpenGL, 0);
 
             //return uniformResult;
         }
@@ -6343,7 +6415,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
     // pxOpenGL->Binding.PXOpenGLBindBufferCallBack(GL_ARRAY_BUFFER, 0);
 
 
-    PXActionResult vertexDataUpload = PXOpenGLErrorCurrent(pxOpenGL);
+    PXActionResult vertexDataUpload = PXOpenGLErrorCurrent(pxOpenGL, 0);
 
     // IBO
 
@@ -6372,7 +6444,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
         pxOpenGL->Binding.BufferData(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->IndexDataSize, pxIndexBuffer->IndexData, GL_STATIC_DRAW);
         //pxOpenGL->Binding.PXOpenGLBindBufferCallBack(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-        PXActionResult indexDataUpload = PXOpenGLErrorCurrent(pxOpenGL);
+        PXActionResult indexDataUpload = PXOpenGLErrorCurrent(pxOpenGL, 0);
 
         indexDataUpload = PXActionInvalid; // TODO: TEST
     }

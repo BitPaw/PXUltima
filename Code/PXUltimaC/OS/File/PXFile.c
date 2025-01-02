@@ -11,7 +11,25 @@
 #include <fcntl.h>
 #include <assert.h>
 
+
+
 #if OSUnix
+#include <sys/mman.h>
+
+// Those makros seem to be inside the
+// file "<linux/hugetlb.h>" but not accessable?
+#ifndef MAP_HUGE_SHIFT
+#define MAP_HUGE_SHIFT 21 // Why is it 21?
+#endif
+
+#ifndef MAP_HUGE_2MB
+#define MAP_HUGE_2MB (21 << MAP_HUGE_SHIFT)
+#endif
+
+#ifndef MAP_HUGE_1GB
+#define MAP_HUGE_1GB (30 << MAP_HUGE_SHIFT)
+#endif
+
 //#define PXPrintfvs vsnprintf
 #elif OSWindows
 // _O_RDONLY, _O_RDWR, _O_RDWR
@@ -1240,14 +1258,26 @@ PXInt32U PXAPI PXFileMemoryCachingModeConvertToID(const PXMemoryCachingMode pxMe
 // Page file size, zero if not supported
 typedef struct PXFilePageFileInfo_
 {
-    PXSize Normal;
-    PXSize Large;
-    PXSize Huge;
+    PXSize PageSizeNormal;
+    PXSize PageSizeLarge;
+    PXSize PageSizeHuge;
+
+    PXSize PageAmountNormal;
+    PXSize PageAmountLarge;
+    PXSize PageAmountHuge;
+
+    PXInt8U PageUtilizationNormal;
+    PXInt8U PageUtilizationLarge;
+    PXInt8U PageUtilizationHuge;
 }
 PXFilePageFileInfo;
 
-void PXAPI PXFilePageFileSize(PXFilePageFileInfo* const pxFilePageFileInfo)
+
+
+void PXAPI PXFilePageFileSize(PXFilePageFileInfo* const pxFilePageFileInfo, const PXSize objectSize)
 {
+    PXClear(PXFilePageFileInfo, pxFilePageFileInfo);
+
 #if OSUnix
 
     // Might need : "sudo apt-get install libhugetlbfs-dev"
@@ -1257,9 +1287,9 @@ void PXAPI PXFilePageFileSize(PXFilePageFileInfo* const pxFilePageFileInfo)
     // getconf LARGE_PAGESIZE
     // getconf HUGE_PAGESIZE
 
-    pxFilePageFileInfo->Normal = getpagesize(); //  also works, sysconf(PAGESIZE );
-    pxFilePageFileInfo->Large = 0;//sysconf(_SC_LARGE_PAGESIZE);
-    pxFilePageFileInfo->Huge = 0;//sysconf(_SC_HUGE_PAGESIZE);
+    pxFilePageFileInfo->PageSizeNormal = getpagesize(); //  also works, sysconf(PAGESIZE );
+    pxFilePageFileInfo->PageSizeLarge = 1<<21;//sysconf(_SC_LARGE_PAGESIZE); MAP_HUGE_2MB
+    pxFilePageFileInfo->PageSizeHuge = 1<<30;//sysconf(_SC_HUGE_PAGESIZE); MAP_HUGE_1GB
 
 #elif OSWindows
     PERFORMANCE_INFORMATION perfInfo;
@@ -1272,13 +1302,30 @@ void PXAPI PXFilePageFileSize(PXFilePageFileInfo* const pxFilePageFileInfo)
         return;
     }
 
-    pxFilePageFileInfo->Normal = perfInfo.PageSize;
-    pxFilePageFileInfo->Large = GetLargePageMinimum(); // Windows Vista, Kernel32.dll, memoryapi.h
-    pxFilePageFileInfo->Huge = 0; // Does this even exist?
+    pxFilePageFileInfo->PageSizeNormal = perfInfo.PageSize;
+    pxFilePageFileInfo->PageSizeLarge = GetLargePageMinimum(); // Windows Vista, Kernel32.dll, memoryapi.h
+   // pxFilePageFileInfo->PageSizeHuge = 0; // Does this even exist?
 
 #else
 
 #endif
+
+    // Calc the size
+    pxFilePageFileInfo->PageAmountNormal = (objectSize / pxFilePageFileInfo->PageSizeNormal + 1);
+
+    pxFilePageFileInfo->PageUtilizationNormal = (objectSize * 100) / (pxFilePageFileInfo->PageSizeNormal * pxFilePageFileInfo->PageAmountNormal);
+
+    if(pxFilePageFileInfo->PageSizeLarge > 0)
+    {
+        pxFilePageFileInfo->PageAmountLarge = objectSize / pxFilePageFileInfo->PageSizeLarge + 1;
+        pxFilePageFileInfo->PageUtilizationLarge = (objectSize * 100) / (pxFilePageFileInfo->PageSizeLarge * pxFilePageFileInfo->PageAmountLarge);
+    }
+
+    if(pxFilePageFileInfo->PageSizeHuge > 0)
+    {
+        pxFilePageFileInfo->PageAmountHuge = objectSize / pxFilePageFileInfo->PageSizeHuge + 1;
+        pxFilePageFileInfo->PageUtilizationHuge = (objectSize * 100) / (pxFilePageFileInfo->PageSizeHuge * pxFilePageFileInfo->PageAmountHuge);
+    }
 }
 
 
@@ -1296,7 +1343,6 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, const PXFileOpenInfo* cons
     pxFile->BitFormatOfData = PXBitFormat64;
     pxFile->AccessMode = pxFileIOInfo->AccessMode;
     pxFile->CachingMode = pxFileIOInfo->MemoryCachingMode;
-
 
     // Update stuff that might be invalid
     {
@@ -1370,6 +1416,8 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, const PXFileOpenInfo* cons
 
                 return openResult;
             }
+
+            pxFile->LocationMode = PXFileLocationModeDirectUncached;
 
             // Get data from a file
             struct stat fileInfo;
@@ -1677,7 +1725,7 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, const PXFileOpenInfo* cons
                 return PXActionFailedFileMapping;
             }
 
-            pxFile->LocationMode = PXFileLocationModeMappedVirtual;
+            pxFile->LocationMode = PXFileLocationModeMappedFromDisk;
 
             // We are allowed to close the file discriptor?
             const int closeResultID = close(pxFile->FileDescriptorID);
@@ -1879,53 +1927,144 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, const PXFileOpenInfo* cons
         {
             PXFilePageFileInfo pxFilePageFileInfo;
 
-            PXFilePageFileSize(&pxFilePageFileInfo);
+            PXFilePageFileSize(&pxFilePageFileInfo, pxFileIOInfo->FileSizeRequest);
 
-            PXSize normalWaste = 0;
-            PXSize largeWaste = 0;
-            PXSize hugeWaste = 0;
-            PXSize normalCount = (pxFileIOInfo->FileSizeRequest / pxFilePageFileInfo.Normal + 1);
-            PXSize largeCount = 1;
-            PXSize hugeCount = 1;
-
-            normalWaste = (pxFileIOInfo->FileSizeRequest * 100) / (pxFilePageFileInfo.Normal * normalCount);
-
-            if(pxFilePageFileInfo.Large > 0)
-            {
-                largeCount = pxFileIOInfo->FileSizeRequest / pxFilePageFileInfo.Large+1;
-                largeWaste = (pxFileIOInfo->FileSizeRequest * 100) / (pxFilePageFileInfo.Large * largeCount);
-            }
-
-            if(pxFilePageFileInfo.Huge > 0)
-            {
-                hugeCount = pxFileIOInfo->FileSizeRequest / pxFilePageFileInfo.Huge+1;
-                hugeWaste = (pxFileIOInfo->FileSizeRequest * 100) / (pxFilePageFileInfo.Huge * hugeCount);
-            }
-
+            // Calculate if large pages shall be used
+            const PXBool usePagesLarge = pxFilePageFileInfo.PageAmountLarge > 1;
+            const PXBool usePagesHuge = pxFilePageFileInfo.PageAmountHuge > 1;
 
 #if PXLogEnable
+            const char* text = "Normal";
+
+            if(usePagesLarge)
+            {
+                text = "Large";
+            }
+
+            if(usePagesHuge)
+            {
+                text = "Huge";
+            }
+
+
+            PXText pxTextPageSizeNormal;
+            PXText pxTextPageSizeLarge;
+            PXText pxTextPageSizeHuge;
+
+            PXTextConstructNamedBufferA(&pxTextPageSizeNormal, pxTextPageSizeNormalBuffer, 32);
+            PXTextConstructNamedBufferA(&pxTextPageSizeLarge, pxTextPageSizeLargeBuffer, 32);
+            PXTextConstructNamedBufferA(&pxTextPageSizeHuge, pxTextPageSizeHugeBuffer, 32);
+
+            PXTextFormatSize(&pxTextPageSizeNormal, pxFilePageFileInfo.PageSizeNormal);
+            PXTextFormatSize(&pxTextPageSizeLarge, pxFilePageFileInfo.PageSizeLarge);
+            PXTextFormatSize(&pxTextPageSizeHuge, pxFilePageFileInfo.PageSizeHuge);
+
             PXLogPrint
             (
                 PXLoggingInfo,
                 "File",
                 "Open-Virtual",
                 "Allocating space for %i...\n"
-                "%17s : %7i B -> %3ix %3i%%\n"
-                "%17s : %7i B -> %3ix %3i%%\n"
-                "%17s : %7i B -> %3ix %3i%%\n",
+                "%17s : %6s -> %3ix %3i%%\n"
+                "%17s : %6s -> %3ix %3i%%\n"
+                "%17s : %6s -> %3ix %3i%%\n"
+                "%17s : %s",
                 pxFileIOInfo->FileSizeRequest,
-                "Normal-PageSize", pxFilePageFileInfo.Normal, normalCount, normalWaste,
-                "Large-PageSize", pxFilePageFileInfo.Large, largeCount, largeWaste,
-                "Huge-PageSize", pxFilePageFileInfo.Huge, hugeCount, hugeWaste
+                "Normal-PageSize", pxTextPageSizeNormal.TextA,  pxFilePageFileInfo.PageAmountNormal, (int)pxFilePageFileInfo.PageUtilizationNormal,
+                "Large-PageSize", pxTextPageSizeLarge.TextA,   pxFilePageFileInfo.PageAmountLarge,  (int)pxFilePageFileInfo.PageUtilizationLarge,
+                "Huge-PageSize", pxTextPageSizeHuge.TextA,    pxFilePageFileInfo.PageAmountHuge,   (int)pxFilePageFileInfo.PageUtilizationHuge,
+                "Targeted type",    text
             );
 #endif
 
             pxFile->DataUsed = pxFileIOInfo->FileSizeRequest;
+            pxFile->DataAllocated = pxFileIOInfo->FileSizeRequest;
+            pxFile->LocationMode = PXFileLocationModeMappedVirtual;
 
 #if OSUnix
-            pxFile->Data = mmap(NULL, pxFileIOInfo->FileSizeRequest, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+            // PROT_READ, PROT_WRITE = read&write permission
+            // MAP_PRIVATE           = only for this process
+            // MAP_ANONYMOUS         = no attached file, aka. "in memory"
+            // MAP_POPULATE          = Preallocate, if not, we could get a SEGVAULT later if memory is suddenly not avalible
+            int permission = PROT_READ | PROT_WRITE;
+            int mode =
+                MAP_PRIVATE |
+                MAP_ANONYMOUS |
+                MAP_POPULATE; // Will be ignored if not spesifcally enabled
+
+#if 0 // MAP_UNINITIALIZED not public??
+            if(0) // Dont clear memory, can improve performance but will be ignored if not directly enabled. Safty reasons.
+            {
+                mode |= MAP_UNINITIALIZED;
+            }
+#endif
+
+            if(usePagesLarge && !usePagesHuge) // Create large page
+            {
+                mode |= MAP_HUGETLB | MAP_HUGE_2MB;
+            }
+
+            if(usePagesHuge) // Create huge page
+            {
+                mode |= MAP_HUGETLB | MAP_HUGE_1GB;
+            }
+
+            pxFile->Data = mmap(NULL, pxFileIOInfo->FileSizeRequest, permission, mode, -1, 0);
+            const PXActionResult allocResult = PXErrorCurrent(MAP_FAILED != pxFile->Data);
+
+            if(PXActionSuccessful != allocResult)
+            {
+#if PXLogEnable
+                PXLogPrint
+                (
+                    PXLoggingError,
+                    "File",
+                    "Open-Virtual",
+                    "Allocation failed! -> mmap()"
+                );
+#endif
+                pxFile->Data = PXNull;
+                pxFile->DataUsed = 0;
+                pxFile->DataAllocated = 0;
+
+                return allocResult;
+            }
+
 #elif OSWindows
-            pxFile->Data = VirtualAlloc(PXNull, pxFileIOInfo->FileSizeRequest, MEM_COMMIT, PAGE_READWRITE);
+
+            DWORD permissions = PAGE_READWRITE;
+            DWORD mode =
+                MEM_RESERVE |
+                MEM_COMMIT;
+
+            if(usePagesLarge)
+            {
+                mode |= MEM_LARGE_PAGES;
+            }
+
+            // TODO: huge pages do not exist? We cant do them then.
+
+            pxFile->Data = VirtualAlloc(PXNull, pxFileIOInfo->FileSizeRequest, mode, permissions);
+            const PXActionResult allocResult = PXErrorCurrent(PXNull != pxFile->Data);
+
+            if(PXActionSuccessful != allocResult)
+            {
+#if PXLogEnable
+                PXLogPrint
+                (
+                    PXLoggingError,
+                    "File",
+                    "Open-Virtual",
+                    "Allocation failed! -> VirtualAlloc()"
+                );
+#endif
+                pxFile->Data = PXNull;
+                pxFile->DataUsed = 0;
+                pxFile->DataAllocated = 0;
+
+                return allocResult;
+            }
+
 
             MEMORY_BASIC_INFORMATION memoryInfo;
 
@@ -1933,6 +2072,7 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, const PXFileOpenInfo* cons
 
             pxFile->DataAllocated = memoryInfo.RegionSize;
 #endif
+
 
 
 #if PXLogEnable
@@ -2039,12 +2179,15 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, const PXFileOpenInfo* cons
 PXActionResult PXAPI PXFileClose(PXFile* const pxFile)
 {
 #if PXLogEnable
+    const char* type = PXFileLocationModeToString(pxFile->LocationMode);
+
     PXLogPrint
     (
         PXLoggingInfo,
         "File",
         "Close",
-        "Closing file..."
+        "Closing file <%s>...",
+        type
     );
 #endif
 
@@ -2059,7 +2202,7 @@ PXActionResult PXAPI PXFileClose(PXFile* const pxFile)
             break;
 
         case PXFileLocationModeMappedVirtual:
-            PXMemoryVirtualRelease(pxFile->Data, pxFile->DataUsed);
+            PXMemoryVirtualRelease(pxFile->Data, pxFile->DataAllocated);
             break;
 
         case PXFileLocationModeDirectCached:
@@ -2070,72 +2213,18 @@ PXActionResult PXAPI PXFileClose(PXFile* const pxFile)
             break;
     }
 
-
-
-
-
-#if OSUnix
-    const int closeResult = fclose(pxFile->FileID);
-
-    switch(closeResult)
-    {
-        case 0:
-            pxFile->FileID = 0;
-            return PXActionSuccessful;
-
-        default:
-            return PXActionFailedClose;
-    }
-#elif OSWindows
-
-#if 0
-    if(pxFile->FileHandleCStyle)
-    {
-        _fclose_nolock(pxFile->FileHandleCStyle);
-
-        pxFile->FileHandleCStyle = PXNull;
-        pxFile->FileHandle = PXNull;
-    }
-#endif
-
-#if PXLogEnable && 0
-    PXLoggingEventData pxLoggingEventData;
-    PXClear(PXLoggingEventData, &pxLoggingEventData);
-    pxLoggingEventData.FileReference = pxFile;
-    pxLoggingEventData.ModuleSource = "File";
-    pxLoggingEventData.ModuleAction = "Close";
-    pxLoggingEventData.PrintFormat = "";
-    pxLoggingEventData.Type = PXLoggingDeallocation;
-    pxLoggingEventData.Target = PXLoggingTypeTargetFile;
-
-    PXLogPrintInvoke(&pxLoggingEventData);
-#endif
-
-    if(pxFile->FileID != PXHandleNotSet)
-    {
-        const PXBool successful = CloseHandle(pxFile->FileID); // Windows 2000 (+UWP), Kernel32.dll, handleapi.h
-
-        if(!successful)
-        {
-            return PXActionFailedClose;
-        }
-
-        pxFile->FileID = PXHandleNotSet;
-    }
-
-
 #if PXLogEnable
     PXLogPrint
     (
         PXLoggingDeallocation,
         "File",
         "Close",
-        "Closed!"
+        "Closed <%s>!",
+        type
     );
 #endif
 
     return PXActionSuccessful;
-#endif
 }
 
 PXActionResult PXAPI PXFileMapToMemory(PXFile* const pxFile, const PXSize size, const PXAccessMode protectionMode)
@@ -2175,21 +2264,33 @@ PXActionResult PXAPI PXFileUnmapFromMemory(PXFile* const pxFile)
             break;
     }
 
-#if OSUnix
-    const int unmapResultID = munmap(pxFile->Data, pxFile->DataCursor);
-    const PXActionResult unmapResult = PXErrorCurrent(0 == unmapResultID);
 
-    if(PXActionSuccessful != unmapResult)
+#if OSUnix
+
+    // Unmap
     {
-        return unmapResult;
+        const int unmapResultID = munmap(pxFile->Data, pxFile->DataCursor);
+        const PXActionResult unmapResult = PXErrorCurrent(0 == unmapResultID);
+
+        if(PXActionSuccessful != unmapResult)
+        {
+            return unmapResult;
+        }
+
+        pxFile->Data = PXNull;
+        pxFile->DataCursor = 0;
+        pxFile->DataUsed = 0;
+        pxFile->DataAllocated = 0;
     }
 
-    pxFile->Data = PXNull;
-    pxFile->DataCursor = 0;
-    pxFile->DataUsed = 0;
-    pxFile->DataAllocated = 0;
+    // Release
+    {
+        const int closeResultID = fclose(pxFile->FileID);
+        const PXActionResult closeResult = PXErrorCurrent(0 == closeResultID);
 
-    return PXActionSuccessful;
+
+        return closeResult;
+    }
 
 #elif OSWindows
 
@@ -2211,11 +2312,16 @@ PXActionResult PXAPI PXFileUnmapFromMemory(PXFile* const pxFile)
         (
             PXLoggingDeallocation,
             "File",
-            "MMAP-Destroy",
-            "%8s  ID:%i <%s>",
-            pxText.TextA,
-            (int)pxFile->FileID,
-            pxTextFilePath.TextA
+            "MMAP-Release",
+            "\n"
+            "%10s : %i\n"
+            "%10s : %s\n"
+            "%10s : <%p> %i/%i\n"
+            "%10s : <%s>",
+            "Mapping-ID", (int)pxFile->MappingHandle,
+            "Size", pxText.TextA,
+            "Data", pxFile->Data, pxFile->DataCursor, pxFile->DataUsed,
+            "Path", pxTextFilePath.TextA
         );
 #endif
 
@@ -2258,7 +2364,7 @@ PXActionResult PXAPI PXFileUnmapFromMemory(PXFile* const pxFile)
         }
     }
 
-    // Close file itself
+    // Mark end of file
     {
         if(isWriteMapped)
         {
@@ -2268,16 +2374,28 @@ PXActionResult PXAPI PXFileUnmapFromMemory(PXFile* const pxFile)
 
             largeInteger.QuadPart = pxFile->DataCursor;
 
-            const BOOL setSuccessful = SetFilePointerEx(pxFile->FileID, largeInteger, 0, FILE_BEGIN);
-            const BOOL endSuccessful = SetEndOfFile(pxFile->FileID);
+            const BOOL setSuccessful = SetFilePointerEx(pxFile->FileHandle, largeInteger, 0, FILE_BEGIN);
+            const BOOL endSuccessful = SetEndOfFile(pxFile->FileHandle);
         }
+    }
 
-        const PXActionResult closeFile = PXFileClose(pxFile);
+    // Close file
+    {
+        //      _fclose_nolock(pxFile->FileHandleCStyle);
 
-        PXActionReturnOnError(closeFile);
+        const PXBool successful = CloseHandle(pxFile->FileHandle); // Windows 2000 (+UWP), Kernel32.dll, handleapi.h
+        const PXActionResult closeResult = PXErrorCurrent(successful);
+
+        if(PXActionSuccessful != closeResult)
+        {
+            return closeResult;
+        }
 
         pxFile->FileID = PXHandleNotSet;
     }
+
+    // CLEAR ALL
+    //PXClear(PXFile, pxFile);
 
     return PXActionSuccessful;
 #endif

@@ -6,7 +6,7 @@
 #include <OS/Console/PXConsole.h>
 #include <Media/PXDocument.h>
 
-#define PXCompilerDebug 1
+#define PXCompilerDebug 0
 #define PXCompilerSanitise 1
 
 #if PXCompilerDebug
@@ -129,6 +129,8 @@ void PXAPI PXCompilerSymbolEntryAdd(PXCompiler* const pxCompiler, const PXCompil
     };
 
     const PXSize written = PXFileWriteMultible(pxCompiler->ReadInfo.FileCache, pxFileDataElementType, sizeof(pxFileDataElementType));
+
+    ++pxCompiler->SymbolsRead;
 
 #if PXCompilerDebug && PXCompilerDEBUG
     const char* typeName = PXCompilerCompilerSymbolLexerToString(compilerSymbolEntry->ID);
@@ -1193,8 +1195,7 @@ PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler)
     }
 
     // Mark end of output Stream
-    pxCompiler->ReadInfo.FileCache->DataUsed = pxCompiler->ReadInfo.FileCache->DataCursor;
-    PXFileCursorToBeginning(pxCompiler->ReadInfo.FileCache);
+    pxCompiler->ReadInfo.FileCache->DataUsed = pxCompiler->ReadInfo.FileCache->DataCursor;  
 
     PXInt64U timeCounterB = PXTimeCounterStampGet() - timeCounter;
     float delta = PXTimeCounterStampToSecoundsF(timeCounterB);
@@ -1213,13 +1214,17 @@ PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler)
         PXLoggingInfo,
         "Compiler",
         "Lexer",
-        "Finished analisis. Took %6.3fs. Buffer:%i/%i (%i%%)",
-        delta,
-        pxCompiler->ReadInfo.FileCache->DataCursor,
-        pxCompiler->ReadInfo.FileCache->DataAllocated,
-        percentage
+        "Finished analisis.\n"
+        "%10s : %i\n"
+        "%10s : %-6.3fs\n"
+        "%10s : %i/%i (%i%%)",
+        "Entrys", pxCompiler->SymbolsRead,
+        "Time", delta,
+        "Buffer", pxCompiler->ReadInfo.FileCache->DataCursor, pxCompiler->ReadInfo.FileCache->DataAllocated, percentage
     );
 #endif
+
+    PXFileCursorToBeginning(pxCompiler->ReadInfo.FileCache);
 
     return PXActionSuccessful;
 }

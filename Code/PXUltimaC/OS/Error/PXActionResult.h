@@ -74,6 +74,8 @@ typedef enum PXActionResult_
     //-------------------------------------------------------
     PXActionRefusedNotInitialized, // Object can't be used before it has been initialized
     PXActionFailedInitialization, // Initialization of this object was tyred but failed while doing so
+    PXActionFailedContextBinding, // Initialization was ok, binding the data to the thread failed
+    PXActionFailedContextRelease,
     PXActionRefusedAlreadyInizialized, // Object has already been initialized
     PXActionRefusedAlreadyExists, // [EXIST] Object can't be created, as it alteady exists
     PXActionRefusedTypeInvalid,

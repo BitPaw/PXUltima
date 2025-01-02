@@ -261,7 +261,7 @@ PXPublic PXBool PXAPI PXMemoryHeapReallocate(PXMemoryHeapReallocateEventData* co
 // Only use for bigger datablocks as thic has very hi overhead.
 PXPublic void* PXAPI PXMemoryVirtualAllocate(const PXSize size, const PXAccessMode pxAccessMode);
 PXPublic void PXAPI PXMemoryVirtualPrefetch(const void* adress, const PXSize size);
-PXPublic void PXAPI PXMemoryVirtualRelease(const void* adress, const PXSize size);
+PXPublic PXActionResult PXAPI PXMemoryVirtualRelease(const void* adress, const PXSize size);
 PXPublic void* PXAPI PXMemoryVirtualReallocate(const void* adress, const PXSize size);
 
 

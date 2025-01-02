@@ -262,6 +262,20 @@ PXInt8U PXAPI PXVertexBufferFormatStrideSize(const PXVertexBufferFormat pxVertex
     }
 }
 
+const char* PXFileLocationModeToString(const PXFileLocationMode pxFileLocationMode)
+{
+    switch(pxFileLocationMode)
+    {
+        case PXFileLocationModeInternal:        return "Internal";
+        case PXFileLocationModeExternal:        return "External";
+        case PXFileLocationModeMappedVirtual:   return "MappedVirtual";
+        case PXFileLocationModeMappedFromDisk:  return "MappedFromDisk";
+        case PXFileLocationModeDirectCached:    return "DirectCached";
+        case PXFileLocationModeDirectUncached:  return "DirectUncached";
+        default:                                return "Invalid";
+    }
+}
+
 PXBool PXAPI PXFileDataAvailable(const PXFile* const pxFile)
 {
     switch(pxFile->LocationMode)

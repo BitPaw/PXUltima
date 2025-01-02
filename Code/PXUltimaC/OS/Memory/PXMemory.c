@@ -1343,31 +1343,40 @@ void PXAPI PXMemoryVirtualPrefetch(const void* adress, const PXSize size)
 #endif
 }
 
-void PXAPI PXMemoryVirtualRelease(const void* adress, const PXSize size)
+PXActionResult PXAPI PXMemoryVirtualRelease(const void* adress, const PXSize size)
 {
+    if(!(adress && size))
+    {
+        return PXActionRefusedArgumentNull;
+    }
+
+#if PXLogEnable && PXMemoryDebug
+    PXLogPrint
+    (
+        PXLoggingDeallocation,
+        "Memory",
+        "Virtual-Free",
+        "<%p> Size:%i",
+        adress,
+        size
+    );
+#endif
+
 #if OSUnix
-    const unsigned char result = 1u;
+    const int resultID = munmap(adress, size); // sys/mman.h
+    const PXActionResult unmapResult = PXErrorCurrent(0 == resultID);
+
+    return unmapResult;
 
 #elif OSWindows
     DWORD freeType = MEM_RELEASE;
-    const PXBool result = VirtualFree((void*)adress, 0, freeType); // Windows XP (+UWP), Kernel32.dll, memoryapi.h
+    const PXBool freeResultID = VirtualFree((void*)adress, 0, freeType); // Windows XP (+UWP), Kernel32.dll, memoryapi.h
+    const PXActionResult freeResult = PXErrorCurrent(freeResultID);
+
+    return freeResult;
+#else
+    return PXActionRefusedNotSupportedByLibrary;
 #endif
-
-#if PXLogEnable && PXMemoryDebug
-    PXLoggingEventData pxLoggingEventData;
-    PXClear(PXLoggingEventData, &pxLoggingEventData);
-    pxLoggingEventData.MemoryData.TypeSize = size;
-    pxLoggingEventData.MemoryData.Amount = 1;
-    pxLoggingEventData.ModuleSource = "Memory";
-    pxLoggingEventData.ModuleAction = "Virtual-free";
-    pxLoggingEventData.PrintFormat = "  0x%p";
-    pxLoggingEventData.Type = PXLoggingDeallocation;
-    pxLoggingEventData.Target = PXLoggingTypeTargetMemory;
-
-    PXLogPrintInvoke(&pxLoggingEventData, adress);
-#endif
-
-    //return result; // We dont return info
 }
 
 void* PXAPI PXMemoryVirtualReallocate(const void* adress, const PXSize size)

@@ -3,7 +3,7 @@
 
 #include <Media/PXResource.h>
 
-#define PXCompilerDEBUG 0
+#define PXCompilerDEBUG 1
 
 #define PXFlagIsSet(value, flag)  ((value & flag) && 1u)
 
@@ -188,6 +188,7 @@ typedef struct PXCompiler_
 
     PXInt32U Flags;
 
+    PXSize SymbolsRead;
 
     //PXBool IntrepredNewLineAsWhiteSpace;
     //PXBool IntrepredTabsAsWhiteSpace;

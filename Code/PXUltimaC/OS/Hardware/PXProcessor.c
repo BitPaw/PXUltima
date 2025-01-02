@@ -19,6 +19,30 @@
 #include <OS/Memory/PXMemory.h>
 #include <OS/Console/PXConsole.h>
 
+
+// 32-Bit Registers EAX, EBX, ECX, EDX
+typedef struct PXCPUInfo_
+{
+    PXInt32U EAX;
+    PXInt32U EBX;
+    PXInt32U ECX;
+    PXInt32U EDX;
+}
+PXCPUInfo;
+
+
+#if OSUnix
+void cpuid(PXCPUInfo* pxCPUInfo, int code)
+{
+    asm volatile("cpuid" : "=a" (pxCPUInfo->EAX), "=b" (pxCPUInfo->EBX), "=c" (pxCPUInfo->ECX), "=d" (pxCPUInfo->EDX) : "a" (code));
+}
+#define PXIntrinsicCPUID cpuid
+#elif OSWindows
+#define PXIntrinsicCPUID __cpuid
+#endif
+
+
+
 void PXAPI PXProcessorModelNameGet(const PXProcessorModelName processorModelName, char* const name)
 {
     const char* processorName = 0;
@@ -429,15 +453,6 @@ void PXAPI PXProcessorFetchInfo(PXProcessor* const processor)
 
     PXClear(PXProcessor, processor);
 
-    typedef struct PXCPUInfo_
-    {
-        PXInt32U EAX;
-        PXInt32U EBX;
-        PXInt32U ECX;
-        PXInt32U EDX;
-    }
-    PXCPUInfo;
-
     typedef enum PXCPUIDCommand_
     {
         PXCPUIDCommandBasicInformation = 0x00,
@@ -478,22 +493,9 @@ void PXAPI PXProcessorFetchInfo(PXProcessor* const processor)
     {
         const PXCPUIDCommand command = cpuIDCommandList[i];
 
-        // 32-Bit Registers EAX, EBX, ECX, EDX
-        typedef struct PXCPUInfo_
-        {
-            PXInt32U EAX;
-            PXInt32U EBX;
-            PXInt32U ECX;
-            PXInt32U EDX;
-        }
-        PXCPUInfo;
-
         PXCPUInfo pxCPUInfo;
-
-#if OSUnix
-#elif OSWindows
-        __cpuid(&pxCPUInfo, command);
-#endif
+         
+        PXIntrinsicCPUID(&pxCPUInfo, command);
 
         switch(command)
         {

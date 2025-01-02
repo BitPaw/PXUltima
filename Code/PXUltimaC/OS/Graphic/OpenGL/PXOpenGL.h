@@ -1425,7 +1425,7 @@ PXPrivate PXInt32U PXAPI PXOpenGLGraphicImageWrapToID(const PXGraphicImageWrap p
 
 PXPrivate PXShaderVariableType PXAPI PXOpenGLShaderVariableTypeFromID(const PXInt16U openGLShaderVariableTypeID);
 
-PXPrivate PXActionResult PXAPI PXOpenGLErrorCurrent(PXOpenGL* const pxOpenGL);
+PXPrivate PXActionResult PXAPI PXOpenGLErrorCurrent(PXOpenGL* const pxOpenGL, PXBool wasSuccessultCall);
 PXPrivate PXOpenGLVersion PXAPI PXOpenGLVersionParse(const PXInt32U versionID);
 //--------------------------------------------------------
 

@@ -3237,6 +3237,8 @@ typedef enum PXFileLocationMode_
 }
 PXFileLocationMode;
 
+PXPublic const char* PXFileLocationModeToString(const PXFileLocationMode pxFileLocationMode);
+
 
 
 

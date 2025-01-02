@@ -1854,8 +1854,8 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
         );
 #endif
 
-        PXFunctionInvoke(pxEngine->Graphic.SwapIntervalSet, pxEngine->Graphic.EventOwner, 1);
         PXFunctionInvoke(pxEngine->Graphic.Select, pxEngine->Graphic.EventOwner);
+        PXFunctionInvoke(pxEngine->Graphic.SwapIntervalSet, pxEngine->Graphic.EventOwner, 1);    
     }
     else
     {
