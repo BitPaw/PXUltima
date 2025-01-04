@@ -367,19 +367,50 @@ PXActionResult PXAPI PXDebugDetach(PXDebug* const pxDebug)
 
 void PXAPI PXDebugStackTrace(PXDebug* const pxDebug, PXSymbol* const pxSymbolList, const PXSize pxSymbolListAmount, const PXSize start, const PXSize depth)
 {
-#if OSUnix
+#if OSUnix 
     void *array[10];
     size_t size;
     char **strings;
-    size_t i;
 
     size = backtrace(array, 10);
     strings = backtrace_symbols(array, size);
 
-    printf("Obtained %zd stack frames.\n", size);
+    //printf("Obtained %zd stack frames.\n", size);
 
-    for (i = 0; i < size; i++)
-        printf("%s\n", strings[i]);
+    // Example "../../PXUltima/Code/[Export]/PXUltimaC/64B-Linux-Debug/PXUltima.so(PXMemoryMalloc+0xb8) [0x7fce66aa763a]"
+
+    PXSize symbolOffset = 0;
+
+
+    for(PXSize i = start; i < start + depth; ++i)
+    {
+        PXSymbol* const pxSymbol = &pxSymbolList[symbolOffset];
+        const char* traceEntry = strings[i];
+
+       // printf("%s\n", traceEntry);
+
+        const PXSize lastSlash = PXTextFindLastCharacterA(traceEntry, PXTextUnkownLength, '/');
+
+        if(lastSlash != -1)
+        {
+            // Get module name
+            char* moduleName = &traceEntry[lastSlash+1];
+
+            const PXSize moduleNameSize = PXTextFindLastCharacterA(moduleName, PXTextUnkownLength, '(');
+          
+
+            char* moduleFunction = &moduleName[moduleNameSize+1];
+            const PXSize moduleFunctionSize = PXTextFindLastCharacterA(moduleFunction, PXTextUnkownLength, '+');
+
+            PXTextCopyA(moduleName, moduleNameSize, pxSymbol->NameModule, 64);
+            PXTextCopyA(moduleFunction, moduleFunctionSize, pxSymbol->NameSymbol, 64);
+            PXTextCopyA("???", 3, pxSymbol->NameFile, 64);
+            pxSymbol->LineNumber = -1;
+
+         //   printf("    - %s::%s\n", pxSymbol->NameModule, pxSymbol->NameSymbol);
+        }
+    }
+
 
     free(strings);
 
@@ -474,17 +505,17 @@ void PXAPI PXDebugStackTrace(PXDebug* const pxDebug, PXSymbol* const pxSymbolLis
         PXSymbol* pxSymbol = &pxSymbolList[symbolIndex];
 
         const BOOL result = pxStackWalk64
-                            (
-                                machineType,
-                                processHandle,
-                                hThread,
-                                &stackFrame,
-                                &contextRecord,
-                                NULL,
-                                pxDebug->SymbolFunctionTableAccess,
-                                pxDebug->SymbolGetModuleBase,
-                                NULL
-                            );
+        (
+            machineType,
+            processHandle,
+            hThread,
+            &stackFrame,
+            &contextRecord,
+            NULL,
+            pxDebug->SymbolFunctionTableAccess,
+            pxDebug->SymbolGetModuleBase,
+            NULL
+        );
         const PXBool sucessfull = result != 0;
 
         if (!sucessfull)
@@ -502,6 +533,7 @@ void PXAPI PXDebugStackTrace(PXDebug* const pxDebug, PXSymbol* const pxSymbolLis
 
 
         PXDebugSymbolReadFromAdress(pxDebug, pxSymbol, symbolAdress);
+        PXDebugModuleHandleToName(pxSymbol->ModuleAdress, pxSymbol->NameModule);
 
         ++symbolIndex;
 
@@ -1808,7 +1840,12 @@ PXActionResult PXAPI PXDebugModuleHandleFromAdress(PXHandleModule* const pxHandl
 PXActionResult PXAPI PXDebugModuleHandleToName(const PXHandleModule pxHandleModule, char* moduleName)
 {
 #if OSUnix
-    return PXActionRefusedNotImplemented;
+
+    PXSize size;
+
+    PXDebugMolduleFileNameGet(pxHandleModule, moduleName, 260, &size);
+
+    return PXActionSuccessful;
 #elif OSWindows
     // net to get moduleinto, but we have those
     // IMAGEHLP_MODULE64 mMAGEHLP_MODULE64;
@@ -1818,16 +1855,17 @@ PXActionResult PXAPI PXDebugModuleHandleToName(const PXHandleModule pxHandleModu
 
     // Extract names
     {
-        char moduleName[MAX_PATH];
-        PXClearList(char, moduleName, MAX_PATH);
-        const DWORD moduleNameLength = GetModuleFileNameA(pxHandleModule, moduleName, sizeof(moduleName));
+        char moduleNameBuffer[MAX_PATH];
+        PXClearList(char, moduleNameBuffer, MAX_PATH);
+        PXSize moduleNameLength = 0;
+        const PXActionResult moduleNameResult = PXDebugMolduleFileNameGet(pxHandleModule, moduleNameBuffer, sizeof(moduleNameBuffer), &moduleNameLength);
 
-        char* molduleNamefixed = moduleName;
+        char* molduleNamefixed = moduleNameBuffer;
         PXSize actualSize = moduleNameLength;
 
         const char systemPath[] = "C:\\WINDOWS\\SYSTEM32\\";
         const PXSize systemPathSize = sizeof(systemPath);
-        const PXBool isSystem = PXTextCompareIgnoreCaseA(systemPath, systemPathSize, moduleName, systemPathSize);
+        const PXBool isSystem = PXTextCompareIgnoreCaseA(systemPath, systemPathSize, moduleNameBuffer, systemPathSize);
 
         if(isSystem)
         {
@@ -1860,8 +1898,8 @@ PXActionResult PXAPI PXDebugModuleHandleToName(const PXHandleModule pxHandleModu
 
 
             PXSize lastSlashA = PXTextFindLastCharacterA(currentWorkPath, currentWorkPathSize, '\\');
-            PXSize lastSlashB = PXTextFindLastCharacterA(moduleName, currentWorkPathSize, '\\');
-            PXBool isRelativePath = PXTextCompareA(currentWorkPath, lastSlashA, moduleName, lastSlashB);
+            PXSize lastSlashB = PXTextFindLastCharacterA(moduleNameBuffer, currentWorkPathSize, '\\');
+            PXBool isRelativePath = PXTextCompareA(currentWorkPath, lastSlashA, moduleNameBuffer, lastSlashB);
 
             if(isRelativePath)
             {
@@ -1876,5 +1914,72 @@ PXActionResult PXAPI PXDebugModuleHandleToName(const PXHandleModule pxHandleModu
     return PXActionSuccessful;
 #else
     return PXActionRefusedNotSupportedByOperatingSystem;
+#endif
+}
+
+PXActionResult PXAPI PXDebugMolduleFileNameGet(const PXHandleModule pxHandleModule, char* moduleName, const PXSize moduleNameSize, PXSize* const sizeWritten)
+{
+#if OSUnix
+
+    if(pxHandleModule)
+    {
+        /*
+        Dl_info info;
+
+        const int resultID = dladdr(current_module, &info);
+        const PXActionResult moduleFetchResult = PXErrorCurrent((0 != resultID));
+
+        if(info.dli_fname)
+        {
+            printf("Current shared object: %s\n", info.dli_fname);
+        }
+        else {
+            printf("Could not determine the current shared object.\n");
+            */
+    }
+    else
+    {
+        // The HANDLE is NULL. So we want the path of the current executable
+
+        const ssize_t count = readlink("/proc/self/exe", moduleName, PATH_MAX); // unistd.h
+        const PXActionResult moduleFetchResult = PXErrorCurrent(-1 != count);
+
+        if(PXActionSuccessful != moduleFetchResult)
+        {
+            moduleName[0] = '?';
+            moduleName[1] = '?';
+            moduleName[2] = '?';
+            moduleName[3] = '\0';
+            *sizeWritten = 3;
+
+            return moduleFetchResult;
+        }
+
+        moduleName[count] = '\0';
+        *sizeWritten = count;
+
+        // Truncate
+        const PXSize lastSlashPosition = PXTextFindLastCharacterA(moduleName, count, '/');
+
+        if(lastSlashPosition != -1)
+        {
+            PXSize sourceSize = count - lastSlashPosition;
+            char* source = &moduleName[lastSlashPosition];
+
+            *sizeWritten = PXMemoryMove(source, sourceSize, moduleName, moduleNameSize);
+        }
+    }
+
+    return PXActionSuccessful;
+
+#elif OSWindows
+    const DWORD moduleNameLength = GetModuleFileNameA(pxHandleModule, moduleName, moduleNameSize);
+    const PXActionResult moduleFetchResult = PXErrorCurrent(0 != moduleNameLength);
+
+    *sizeWritten = moduleNameLength;
+
+    return moduleFetchResult;
+#else
+    return PXActionRefusedNotSupportedByLibrary;
 #endif
 }

@@ -584,7 +584,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                     PXResourceCreateInfo pxResourceCreateInfoSub;
 
                     PXClear(PXResourceCreateInfo, &pxResourceCreateInfoSub);
-                    pxResourceCreateInfoSub.ObjectReference = &pxIconCreateInfo->IconImage;
+                    pxResourceCreateInfoSub.ObjectReference = (void**)&pxIconCreateInfo->IconImage;
                     pxResourceCreateInfoSub.ObjectAmount = 1;
                     pxResourceCreateInfoSub.FilePath = pxResourceCreateInfo->FilePath;
                     pxResourceCreateInfoSub.FilePathSize = -1;
@@ -639,8 +639,8 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                     bitmapHandle[i] = CreateDIBSection(NULL, &bitmapInfo[i], DIB_RGB_COLORS, &bitmapData[i], NULL, 0);
                 }
 
-                char* pixelDataBGR = bitmapData[0];
-                char* pxMaskAND = bitmapData[1];
+                char* pixelDataBGR = (char*)bitmapData[0];
+                char* pxMaskAND = (char*)bitmapData[1];
                 char* pxMaskXOR = &bitmapData[(pxIconCreateInfo->Width * pxIconCreateInfo->Height) / 8];
 
          
@@ -659,7 +659,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                             const PXSize sourceY = y + pxIconCreateInfo->OffsetY;
                             const PXSize indexSource = PXImagePixelPosition(pxIconCreateInfo->IconImage, sourceX, sourceY);
                             char* pixelDataSource = (char*)pxIconCreateInfo->IconImage->PixelData;   
-                            const PXColorRGBAI8* const source = &pixelDataSource[indexSource];
+                            const PXColorRGBAI8* const source = (PXColorRGBAI8*)&pixelDataSource[indexSource];
 
                             char* const insert = &pixelDataBGR[indexInsret];
                        
@@ -709,10 +709,6 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
 
                     // iconHandle = CreateIcon(PXNull, pxIconCreateInfo->Width, pxIconCreateInfo->Height, 1, 1, pxMaskAND, pxMaskXOR);
                 }
-
-            
-
-                PXErrorCurrent(iconHandle);
 
                 pxIcon->Info.Handle.IconHandle = iconHandle;
 #endif
@@ -883,8 +879,8 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                 // Register
                 pxModel->Info.ID = PXResourceManagerGenerateUniqeID(pxResourceManager);
                 PXDictionaryAdd(&pxResourceManager->ModelLookUp, &pxModel->Info.ID, pxModel);
-
-                // Add scaling
+                               
+                PXMatrix4x4FIdentity(&pxModel->ModelMatrix);
                 PXMatrix4x4FScaleBy(&pxModel->ModelMatrix, pxModelCreateInfo->Scale);
 
 
@@ -904,7 +900,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                     );
 #endif
 
-                    PXResourceStorePath(&pxResourceManager->SourcePathCache, &pxModel->Info, pxResourceCreateInfo->FilePath, pxResourceCreateInfo->FilePathSize);
+                    PXResourceStorePath(pxResourceManager, &pxModel->Info, pxResourceCreateInfo->FilePath, pxResourceCreateInfo->FilePathSize);
 
                     // Load model
                     {

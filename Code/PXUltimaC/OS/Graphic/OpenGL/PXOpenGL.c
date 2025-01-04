@@ -5519,6 +5519,8 @@ GLuint PXAPI PXOpenGLFrameBufferLinkRenderBuffer(PXOpenGL* const pxOpenGL, const
     return pxOpenGL->Binding.FrameBufferLinkRenderBuffer(GL_FRAMEBUFFER, attachmentID, GL_RENDERBUFFER, renderbuffer);
 }
 
+#define PXOpenGLShaderVariableSetDebug 0
+
 PXActionResult PXAPI PXOpenGLShaderVariableSet(PXOpenGL* const pxOpenGL, const PXShaderProgram* const pxShaderProgram, PXShaderVariable* const pxShaderVariableList, const PXSize amount)
 {
     if(!(pxOpenGL && pxShaderProgram && pxShaderVariableList))
@@ -5535,9 +5537,12 @@ PXActionResult PXAPI PXOpenGLShaderVariableSet(PXOpenGL* const pxOpenGL, const P
     {
         PXShaderVariable* const pxShaderVariable = &pxShaderVariableList[i];
 
-        if(pxShaderVariable->Amount == 0)
+        const PXBool skip =
+            (0 == pxShaderVariable->Amount) ||
+            (PXShaderVariableBehaviourFailedFetch & pxShaderVariable->Info.Behaviour);
+
+        if(skip)
         {
-            // return PXActionRefusedArgumentInvalid;
             continue;
         }
 
@@ -5560,7 +5565,20 @@ PXActionResult PXAPI PXOpenGLShaderVariableSet(PXOpenGL* const pxOpenGL, const P
                 {
                     const PXActionResult createResult = PXOpenGLErrorCurrent(pxOpenGL, fetchSuccessful);
 
-                    //return createResult;
+#if PXLogEnable && PXOpenGLShaderVariableSetDebug
+                    PXLogPrint
+                    (
+                        PXLoggingError,
+                        "OpenGL",
+                        "Shader-Uniform",
+                        "Failed name resolve to ID! <%s>, PXID:%i, OpenGLID:%i",
+                        pxShaderVariable->Name,
+                        pxShaderProgram->Info.ID,
+                        pxShaderProgram->Info.Handle.OpenGLID
+                    );
+#endif
+
+                    pxShaderVariable->Info.Behaviour |= PXShaderVariableBehaviourFailedFetch;
 
                     continue;
                 }
@@ -5572,6 +5590,25 @@ PXActionResult PXAPI PXOpenGLShaderVariableSet(PXOpenGL* const pxOpenGL, const P
             //return PXActionSuccessful;
             continue;
         }
+
+
+#if PXLogEnable && PXOpenGLShaderVariableSetDebug
+        char nameBuffer[128];
+        PXTextPrintA
+        (
+            nameBuffer,
+            128, 
+            "%20s : ID:%i, <%s>"
+            "%20s : PX-ID:%i, GL-ID:%i",
+           // "%20s : PX-ID:%i, GL-ID:%i",
+           // "%20s : PX-ID:%i, GL-ID:%i",
+            "Uniform", pxShaderVariable->RegisterIndex, pxShaderVariable->Name,
+            "Shader-Program", pxShaderProgram->Info.ID, pxShaderProgram->Info.Handle.OpenGLID
+           // "Shader-Vertex", pxShaderProgram->Info.ID, pxShaderProgram->Info.Handle.OpenGLID,
+            //"Shader-Pixel", pxShaderProgram->Info.ID, pxShaderProgram->Info.Handle.OpenGLID
+        );
+#endif
+
 
         switch(pxShaderVariable->DataType)
         {
@@ -5711,6 +5748,23 @@ PXActionResult PXAPI PXOpenGLShaderVariableSet(PXOpenGL* const pxOpenGL, const P
                 else
                 {
                     pxOpenGL->Binding.Uniform3f(pxShaderVariable->RegisterIndex, data[0], data[1], data[2]);
+
+#if PXLogEnable && PXOpenGLShaderVariableSetDebug
+                    const float* const matrixData = (float*)pxShaderVariable->Data;
+
+                    PXLogPrint
+                    (
+                        PXLoggingInfo,
+                        "OpenGL",
+                        "Shader-Uniform",
+                        "Upload Vector3 -> %s\n"
+                        "| %8.2f | %8.2f | %8.2f |",
+                        nameBuffer,
+                        matrixData[0],
+                        matrixData[1],
+                        matrixData[2]
+                    );
+#endif
                 }
 
                 break;
@@ -5731,6 +5785,24 @@ PXActionResult PXAPI PXOpenGLShaderVariableSet(PXOpenGL* const pxOpenGL, const P
                 else
                 {
                     pxOpenGL->Binding.Uniform4f(pxShaderVariable->RegisterIndex, data[0], data[1], data[2], data[3]);
+
+#if PXLogEnable && PXOpenGLShaderVariableSetDebug
+                    const float* const matrixData = (float*)pxShaderVariable->Data;
+
+                    PXLogPrint
+                    (
+                        PXLoggingInfo,
+                        "OpenGL",
+                        "Shader-Uniform",
+                        "Upload Vector4 -> %s\n"
+                        "| %8.2f | %8.2f | %8.2f | %8.2f |",
+                        nameBuffer,
+                        matrixData[0],
+                        matrixData[1],
+                        matrixData[2],
+                        matrixData[3]
+                    );
+#endif
                 }
 
                 break;
@@ -5768,6 +5840,40 @@ PXActionResult PXAPI PXOpenGLShaderVariableSet(PXOpenGL* const pxOpenGL, const P
                     PXFalse,
                     pxShaderVariable->Data
                 );
+
+#if PXLogEnable && PXOpenGLShaderVariableSetDebug
+                const float* const matrixData = (float*)pxShaderVariable->Data;
+
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    "OpenGL",
+                    "Shader-Uniform",
+                    "Upload Matrix4x4 -> %s\n"
+                    "| %8.2f | %8.2f | %8.2f | %8.2f |\n"
+                    "| %8.2f | %8.2f | %8.2f | %8.2f |\n"
+                    "| %8.2f | %8.2f | %8.2f | %8.2f |\n"
+                    "| %8.2f | %8.2f | %8.2f | %8.2f |",
+                    nameBuffer,
+                    matrixData[0],
+                    matrixData[1],
+                    matrixData[2],
+                    matrixData[3],
+                    matrixData[4],
+                    matrixData[5],
+                    matrixData[6],
+                    matrixData[7],
+                    matrixData[8],
+                    matrixData[9],
+                    matrixData[10],
+                    matrixData[11],
+                    matrixData[12],
+                    matrixData[13],
+                    matrixData[14],
+                    matrixData[15]
+                );
+#endif
+
 
                 break;
             }

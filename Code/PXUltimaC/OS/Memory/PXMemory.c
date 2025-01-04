@@ -246,14 +246,12 @@ void* PXAPI PXMemoryCalloc(const PXSize amount, const PXSize objectSize)
         pxSymbolMemory.ModuleAdress = pxSymbol.ModuleAdress;
         PXTextCopyA(pxSymbol.NameFile, 64, pxSymbolMemory.FileAdress, 64);
         PXTextCopyA(pxSymbol.NameSymbol, 64, pxSymbolMemory.FunctionAdress, 64);
-        pxSymbolMemory.LineNumber = -1;
+        pxSymbolMemory.LineNumber = pxSymbol.LineNumber;
 
         PXMemorySymbolAdd(&pxSymbolMemory, PXMemorySymbolInfoModeAdd);
 
 
 #if PXLogEnable
-        PXDebugModuleHandleToName(pxSymbolMemory.ModuleAdress, pxSymbol.NameModule);
-
         PXLogPrint
         (
             PXLoggingAllocation,
@@ -307,20 +305,18 @@ void* PXAPI PXMemoryMalloc(const PXSize memorySize)
         pxSymbolMemory.ModuleAdress = pxSymbol.ModuleAdress;
         PXTextCopyA(pxSymbol.NameFile, 64, pxSymbolMemory.FileAdress, 64);
         PXTextCopyA(pxSymbol.NameSymbol, 64, pxSymbolMemory.FunctionAdress, 64);
-        pxSymbolMemory.LineNumber = -1;
+        pxSymbolMemory.LineNumber = pxSymbolMemory.LineNumber;
 
         PXMemorySymbolAdd(&pxSymbolMemory, PXMemorySymbolInfoModeAdd);
 
 
 #if PXLogEnable
-        PXDebugModuleHandleToName(pxSymbolMemory.ModuleAdress, pxSymbol.NameModule);
-
         PXLogPrint
         (
             PXLoggingAllocation,
             "PX",
             "Memory-Alloc",
-            "%s::%s::%s::%i, %ix %i B",
+            "%s::%s::%s::%i, %7ix %i B",
             pxSymbol.NameModule,
             pxSymbol.NameFile,
             pxSymbol.NameSymbol,

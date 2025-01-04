@@ -70,9 +70,9 @@ typedef struct PXSymbol_
     PXSize ObjectSize;
 
     char NameUndecorated[64];
-    char NameSymbol[64];
-    char NameFile[64];
-    char NameModule[64];
+    char NameSymbol[64];        // MyFunction()
+    char NameFile[64];          // MyCode.c
+    char NameModule[64];        // MyLibrary.dll / MyLibrary.so
 }
 PXSymbol;
 
@@ -191,5 +191,12 @@ PXPublic PXActionResult PXAPI PXDebugModuleHandleFromAdress(PXHandleModule* cons
 
 // HANDLE to name
 PXPublic PXActionResult PXAPI PXDebugModuleHandleToName(const PXHandleModule pxHandleModule, char* moduleName);
+
+
+
+
+// Helper-wrapper funcitons
+PXPublic PXActionResult PXAPI PXDebugMolduleFileNameGet(const PXHandleModule pxHandleModule, char* moduleName, const PXSize moduleNameSize, PXSize* const sizeWritten);
+
 
 #endif

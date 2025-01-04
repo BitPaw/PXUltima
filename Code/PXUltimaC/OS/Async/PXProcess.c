@@ -321,16 +321,16 @@ PXActionResult PXAPI PXProcessHandleListAll(PXDebug* const pxDebug, PXProcess* p
 
 
     char buffer[200];
-    PUBLIC_OBJECT_TYPE_INFORMATION* objectTypeInfo = buffer;
+    PUBLIC_OBJECT_TYPE_INFORMATION* objectTypeInfo = (PUBLIC_OBJECT_TYPE_INFORMATION*)buffer;
 
     PXInt32U amountHandleTotalSystem = memory->NumberOfHandles;
     PXInt32U amountHandleTotalProgram = 0;
 
-    for (size_t i = 0; i < memory->NumberOfHandles; i++)
+    for (ULONG i = 0; i < memory->NumberOfHandles; i++)
     {
         SYSTEM_HANDLE_TABLE_ENTRY_INFO* sysHandle = &memory->Handles[i];
 
-        HANDLE handleCurrent = sysHandle->HandleValue;
+        HANDLE handleCurrent = (HANDLE)sysHandle->HandleValue;
         const PXBool isSameProcess = pxProcess->ProcessID == sysHandle->UniqueProcessId;
 
         // We only want our own handles, if we would want the others aswell

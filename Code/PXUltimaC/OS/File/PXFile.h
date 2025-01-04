@@ -126,7 +126,7 @@ PXPublic PXActionResult PXAPI PXFileCopy(const PXText* const sourceFilePath, con
 PXPublic void PXAPI PXFilePathRelativeFromFile(const PXFile* const pxFile, const PXText* const targetPath, PXText* const resultPath);
 
 
-PXPublic void PXAPI PXFilePathSwapFileName(const PXText* const inputPath, PXText* const exportPath, const PXText* const fileName);
+PXPublic PXActionResult PXAPI PXFilePathSwapFileName(const PXText* const inputPath, PXText* const exportPath, const PXText* const fileName);
 PXPublic void PXAPI PXFilePathSwapExtension(const PXText* const inputPath, PXText* const exportPath);
 
 //---------------------------------------------------------------------
@@ -146,7 +146,7 @@ typedef struct PXFilePathStructure_
 PXFilePathStructure;
 
 PXPublic PXActionResult PXAPI PXFilePathSplitt(const PXText* const fullPath, PXFilePathStructure* const pxFilePathStructure);
-PXPublic PXActionResult PXAPI PXFilePathCombine(const PXText* const fullPath, PXFilePathStructure* const pxFilePathStructure);
+PXPublic PXActionResult PXAPI PXFilePathCombine(PXText* const fullPath, PXFilePathStructure* const pxFilePathStructure);
 
 
 
@@ -170,7 +170,7 @@ PXPrivate PXInt32U PXAPI PXFileMemoryCachingModeConvertToID(const PXMemoryCachin
 //---------------------------------------------------------------------
 
 //---<I/O>-------------------------------------------------------------
-PXPublic PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, const PXFileOpenInfo* const pxFileIOInfo);
+PXPublic PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, PXFileOpenInfo* const pxFileIOInfo);
 PXPublic PXActionResult PXAPI PXFileClose(PXFile* const pxFile);
 //---------------------------------------------------------------------
 

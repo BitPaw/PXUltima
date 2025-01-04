@@ -171,7 +171,7 @@ typedef struct PXEngineStartInfo_
     PXBool UseMods;
     PXBool UseMouseInput;
 
-    struct PXUIElement_* UIElement;
+    PXWindow* UIElement;
 }
 PXEngineStartInfo;
 

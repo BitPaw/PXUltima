@@ -177,11 +177,11 @@ PXActionResult PXAPI PXFilePathSplitt(const PXText* const fullPath, PXFilePathSt
                     PXLoggingInfo,
                     "File",
                     "Path-Split",
-                    "%10s : x%-2i %s\n"
-                    "%10s : x%-2i %s\n"
-                    "%10s : x%-2i %s\n"
-                    "%10s : x%-2i %s\n"
-                    "%10s : x%-2i %s\n",
+                    "%15s : x%-2i %s\n"
+                    "%15s : x%-2i %s\n"
+                    "%15s : x%-2i %s\n"
+                    "%15s : x%-2i %s\n"
+                    "%15s : x%-2i %s",
                     "Path", fullPath->SizeUsed, bufferFullPath,
                     "Drive", pxFilePathStructure->Drive.SizeUsed, bufferDrive,
                     "Folder", pxFilePathStructure->Directory.SizeUsed, bufferFolder,
@@ -330,7 +330,7 @@ PXActionResult PXAPI PXFilePathSplitt(const PXText* const fullPath, PXFilePathSt
     }
 }
 
-PXActionResult PXAPI PXFilePathCombine(const PXText* const fullPath, PXFilePathStructure* const pxFilePathStructure)
+PXActionResult PXAPI PXFilePathCombine(PXText* const fullPath, PXFilePathStructure* const pxFilePathStructure)
 {
     PXTextAppend(fullPath, &pxFilePathStructure->Drive);
     PXTextAppend(fullPath, &pxFilePathStructure->Directory);
@@ -682,7 +682,7 @@ void PXAPI PXTypeEntryInfo(PXTypeEntry* const pxFileDataElementType, PXText* con
 
             char* textAdress = *((char**)pxFileDataElementType->Adress);
 
-            const PXBool isNormalAdress = textAdress > 0x0000FF00000000;
+            const PXBool isNormalAdress = (PXSize)textAdress > (PXSize)0x0000FF00000000;
 
             if(isNormalAdress)
             {
@@ -1034,7 +1034,7 @@ void PXAPI PXFilePathRelativeFromFile(const PXFile* const pxFile, const PXText* 
     PXFilePathSwapFileName(&currentObjectFilePath, resultPath, targetPath);
 }
 
-void PXAPI PXFilePathSwapFileName(const PXText* const inputPath, PXText* const exportPath, const PXText* const fileName)
+PXActionResult PXAPI PXFilePathSwapFileName(const PXText* const inputPath, PXText* const exportPath, const PXText* const fileName)
 {
     PXFilePathStructure pxFilePathStructureBefore;
     PXFilePathStructure pxFilePathStructureAfter;
@@ -1067,6 +1067,8 @@ void PXAPI PXFilePathSwapFileName(const PXText* const inputPath, PXText* const e
     }
 
     PXFilePathCombine(exportPath, &pxFilePathStructureBefore);
+
+    return PXActionSuccessful;
 }
 
 void PXAPI PXFilePathSwapExtension(const PXText* const inputPath, PXText* const exportPath)
@@ -1118,7 +1120,7 @@ PXActionResult PXAPI PXFileName(const PXFile* const pxFile, PXText* const fileNa
 
     const DWORD flags = FILE_NAME_NORMALIZED | VOLUME_NAME_DOS; // FILE_NAME_NORMALIZED
 
-    const DWORD result = GetFinalPathNameByHandleA(pxFile->FileID, fileName->TextA, fileName->SizeAllocated, flags);
+    const DWORD result = GetFinalPathNameByHandleA(pxFile->FileHandle, fileName->TextA, fileName->SizeAllocated, flags);
 
     const char dosDriveTag[] = "\\\\?\\";
 
@@ -1328,8 +1330,146 @@ void PXAPI PXFilePageFileSize(PXFilePageFileInfo* const pxFilePageFileInfo, cons
     }
 }
 
+#include <ntstatus.h>
+#include <windows.h>
+#include <ntsecapi.h>
+#include <Sddl.h>
 
-PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, const PXFileOpenInfo* const pxFileIOInfo)
+/*
+std::string GetErrorAsString(DWORD errorMessageID)
+{
+    LPSTR messageBuffer = nullptr;
+    size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                                 NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&messageBuffer, 0, NULL);
+
+    std::string message(messageBuffer, size);
+
+    //Free the buffer.
+    LocalFree(messageBuffer);
+
+    return message;
+}
+*/
+
+LSA_HANDLE GetPolicyHandle(WCHAR* SystemName)
+{
+    LSA_OBJECT_ATTRIBUTES ObjectAttributes;
+
+    LSA_UNICODE_STRING lusSystemName;
+    NTSTATUS ntsResult;
+    LSA_HANDLE lsahPolicyHandle;
+
+    // Object attributes are reserved, so initialize to zeros.
+    ZeroMemory(&ObjectAttributes, sizeof(ObjectAttributes));
+
+
+    USHORT SystemNameLength = 0;
+    LSA_UNICODE_STRING* systemNameRef = PXNull;
+
+
+    if(SystemName)
+    {
+        systemNameRef = &lusSystemName;
+
+        //Initialize an LSA_UNICODE_STRING to the server name.
+        SystemNameLength = wcslen(SystemName);
+        lusSystemName.Buffer = SystemName;
+        lusSystemName.Length = SystemNameLength * sizeof(WCHAR);
+        lusSystemName.MaximumLength = (SystemNameLength + 1) * sizeof(WCHAR);
+    }
+
+    // Get a handle to the Policy object.
+    ntsResult = LsaOpenPolicy
+    (
+        systemNameRef,    //Name of the target system.
+        &ObjectAttributes, //Object attributes.
+        POLICY_ALL_ACCESS, //Desired access permissions.
+        &lsahPolicyHandle  //Receives the policy handle.
+    );
+
+    if(ntsResult != STATUS_SUCCESS)
+    {
+        // An error occurred. Display it as a win32 error code.
+        auto winError = LsaNtStatusToWinError(ntsResult);
+        wprintf(L"OpenPolicy returned %lu\n", winError);
+       // std::cout << "Error message: " << GetErrorAsString(winError) << std::endl;
+        return NULL;
+    }
+    return lsahPolicyHandle;
+}
+
+PXBool InitLsaString(PLSA_UNICODE_STRING pLsaString, LPCWSTR pwszString)
+{
+    DWORD dwLen = 0;
+
+    if(NULL == pLsaString)
+        return FALSE;
+
+    if(NULL != pwszString)
+    {
+        dwLen = wcslen(pwszString);
+        if(dwLen > 0x7ffe)   // String is too large
+            return FALSE;
+    }
+
+    // Store the string.
+    pLsaString->Buffer = (WCHAR*)pwszString;
+    pLsaString->Length = (USHORT)dwLen * sizeof(WCHAR);
+    pLsaString->MaximumLength = (USHORT)(dwLen + 1) * sizeof(WCHAR);
+
+    return TRUE;
+}
+
+
+void AddPrivileges()
+{
+    const LSA_HANDLE policyHandle = GetPolicyHandle(PXNull);
+    const LPCSTR strSid = "S-1-5-21-2554383953-2022197192-2242278139-1010";
+    PSID accountSID = 0;
+    // WCHAR SystemName[] = L"DESKTOP-AVV4L7N";
+
+    const BOOL convertResultID = ConvertStringSidToSidA(strSid, &accountSID);
+
+
+
+
+    LSA_UNICODE_STRING lucPrivilege;
+   
+
+    // Create an LSA_UNICODE_STRING for the privilege names.
+    const BOOL initSuccess = InitLsaString(&lucPrivilege, L"SeLockMemoryPrivilege");
+    const PXActionResult openTokenResult = PXErrorCurrent(initSuccess);
+
+
+    if(!initSuccess)
+    {
+        wprintf(L"Failed InitLsaString\n");
+        return;
+    }
+
+    const NTSTATUS ntsResultID = LsaAddAccountRights
+    (
+        policyHandle,  // An open policy handle.
+        accountSID,    // The target SID.
+        &lucPrivilege, // The privileges.
+        1              // Number of privileges.
+    );
+    const PXActionResult ntsResult = PXErrorCurrent(STATUS_SUCCESS == ntsResultID);
+
+
+    if(ntsResultID == STATUS_SUCCESS)
+    {
+        wprintf(L"Privilege added.\n");
+    }
+    else
+    {
+        wprintf(L"Privilege was not added - %lu \n", LsaNtStatusToWinError(ntsResultID));
+       // std::cout << "Error message: " << GetErrorAsString(LsaNtStatusToWinError(ntsResult)) << std::endl;
+    }
+}
+
+
+PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, PXFileOpenInfo* const pxFileIOInfo)
 {
     if(!(pxFile && pxFileIOInfo))
     {
@@ -1338,7 +1478,6 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, const PXFileOpenInfo* cons
 
     PXClear(PXFile, pxFile);
 
-    pxFile->FileID = PXHandleNotSet;
     pxFile->EndiannessOfData = EndianCurrentSystem;
     pxFile->BitFormatOfData = PXBitFormat64;
     pxFile->AccessMode = pxFileIOInfo->AccessMode;
@@ -2040,6 +2179,54 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, const PXFileOpenInfo* cons
             if(usePagesLarge)
             {
                 mode |= MEM_LARGE_PAGES;
+
+                // A call to VirtualAlloc() with MEM_LARGE_PAGES 
+                // WILL normally fail, because we dont have permissions..?
+                // We have permissions, it is only disabled by default. 
+
+ 
+             
+               // AddPrivileges();
+
+
+     
+
+                TOKEN_PRIVILEGES privileges;
+                HANDLE hToken; 
+                LUID luid;
+           
+
+
+                // Open the process token
+                const BOOL openTokenID = OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken);
+                const PXActionResult openTokenResult = PXErrorCurrent(openTokenID);
+
+
+                const BOOL lookupSuccess = LookupPrivilegeValue(NULL, SE_LOCK_MEMORY_NAME, &luid); // SeLockMemoryPrivilege
+                const PXActionResult lookupSuccessResult = PXErrorCurrent(lookupSuccess);
+
+                privileges.PrivilegeCount = 1;
+                privileges.Privileges[0].Luid = luid;
+                privileges.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
+            
+                const BOOL privilgeResultID = AdjustTokenPrivileges
+                (
+                    hToken,
+                    FALSE,
+                    &privileges,
+                    sizeof(TOKEN_PRIVILEGES),
+                    PXNull,
+                    PXNull
+                );
+                const PXActionResult privilgeResult = PXErrorCurrent(privilgeResultID);
+
+                CloseHandle(hToken);
+
+            
+                // Adjust allocation size to be EXACTLY a multible of the page size
+                // The documentation states it will be rounded up, this is true.
+                // Except if we add the MEM_LARGE_PAGES flag, because microsoft.
+                pxFileIOInfo->FileSizeRequest = pxFilePageFileInfo.PageSizeLarge * pxFilePageFileInfo.PageAmountLarge;
             }
 
             // TODO: huge pages do not exist? We cant do them then.
@@ -2123,7 +2310,7 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, const PXFileOpenInfo* cons
                 const PXBool successfulTempPathCreate = tempFileFullPath.SizeUsed > 0;
             }
 
-            pxFile->FileID = CreateFileW  // Windows XP, Kernel32.dll, fileapi.h
+            pxFile->FileHandle = CreateFileW  // Windows XP, Kernel32.dll, fileapi.h
             (
                 tempFileFullPath.TextW, // file name
                 GENERIC_ALL,            // open for write
@@ -2150,18 +2337,43 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, const PXFileOpenInfo* cons
         {
             const PXBool hasSource = pxFileIOInfo->BufferData > 0;
 
-            pxFile->AccessMode = pxFileIOInfo->AccessMode;
-            pxFile->LocationMode = PXFileLocationModeInternal;
+            pxFile->AccessMode = pxFileIOInfo->AccessMode;          
 
             if(hasSource)
             {
                 pxFile->Data = pxFileIOInfo->BufferData;
                 pxFile->DataAllocated = pxFileIOInfo->BufferSize;
+                pxFile->LocationMode = PXFileLocationModeExternal;
+
+#if PXLogEnable
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    "File",
+                    "Open",
+                    "Binding external memory <%p> %i B",
+                    pxFile->Data,
+                    pxFile->DataAllocated
+                );
+#endif
             }
             else
             {
                 pxFile->Data = PXMemoryCallocT(PXByte, pxFileIOInfo->FileSizeRequest);
                 pxFile->DataAllocated = pxFileIOInfo->FileSizeRequest;
+                pxFile->LocationMode = PXFileLocationModeInternal;
+
+#if PXLogEnable
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    "File",
+                    "Open",
+                    "Created intermal memory <%p> %i B",
+                    pxFile->Data,
+                    pxFile->DataAllocated
+                );
+#endif
             }
 
             pxFile->DataUsed = pxFile->DataAllocated;
@@ -2209,6 +2421,20 @@ PXActionResult PXAPI PXFileClose(PXFile* const pxFile)
             PXDeleteList(PXByte, pxFile->DataUsed, &pxFile->Data, &pxFile->DataUsed);
             break;
 
+        case PXFileLocationModeExternal:
+        {
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "File",
+                "Close",
+                "External memory is handled by parrent..",
+                type
+            );
+#endif
+            break;
+        }
         case PXFileLocationModeDirectUncached:
             break;
     }
@@ -2391,7 +2617,7 @@ PXActionResult PXAPI PXFileUnmapFromMemory(PXFile* const pxFile)
             return closeResult;
         }
 
-        pxFile->FileID = PXHandleNotSet;
+        pxFile->FileHandle = PXNull;
     }
 
     // CLEAR ALL
@@ -2446,7 +2672,7 @@ void* PXAPI PXFileCursorPosition(PXFile* const pxFile)
             const LARGE_INTEGER distanceToMove = { 0,0 }; // We do not move
             LARGE_INTEGER newFilePointer;
 
-            const PXBool result = SetFilePointerEx(pxFile->FileID, distanceToMove, &newFilePointer, FILE_CURRENT); // Windows XP (+UWP), Kernel32.dll, fileapi.h
+            const PXBool result = SetFilePointerEx(pxFile->FileHandle, distanceToMove, &newFilePointer, FILE_CURRENT); // Windows XP (+UWP), Kernel32.dll, fileapi.h
 
             if(result)
             {
@@ -2491,7 +2717,7 @@ void PXAPI PXFileCursorMoveTo(PXFile* const pxFile, const PXSize position)
             LONG sizeHigh = (position & 0xFFFFFFFF00000000) >> 32;
 #endif
 
-            pxFile->DataCursor = SetFilePointer(pxFile->FileID, sizeLow, &sizeHigh, FILE_BEGIN); // Windows XP, Kernel32.dll, fileapi.h
+            pxFile->DataCursor = SetFilePointer(pxFile->FileHandle, sizeLow, &sizeHigh, FILE_BEGIN); // Windows XP, Kernel32.dll, fileapi.h
 
 #endif
             break;
@@ -2503,7 +2729,7 @@ void PXAPI PXFileCursorToBeginning(PXFile* const pxFile)
 {
 #if OSUnix
 #elif OSWindows
-    const BOOL flushSuccessful = FlushFileBuffers(pxFile->FileID); // Windows XP (+UWP), Kernel32.dll, fileapi.h
+    const BOOL flushSuccessful = FlushFileBuffers(pxFile->FileHandle); // Windows XP (+UWP), Kernel32.dll, fileapi.h
 #endif
 
     PXFileCursorMoveTo(pxFile, 0);
@@ -2700,7 +2926,7 @@ PXSize PXAPI PXFileDataCopy(PXFile* const pxInputStream, PXFile* const pxOutputS
 
 PXSize PXAPI PXFileReadTextIU8(PXFile* const pxFile, PXInt8U* const number)
 {
-    unsigned int value = 0;
+    int value = 0;
     const PXSize size = PXFileReadTextI(pxFile, &value);
 
     *number = value;
@@ -2926,7 +3152,7 @@ PXSize PXAPI PXFileBinding(PXFile* const pxFile, void* const dataStruct, const P
 
 
     // read/write actual data
-    char* insertionPoint = dataStruct;
+    char* insertionPoint = (char*)dataStruct;
 
 #if PXLogEnable
     PXLogPrint
@@ -3040,7 +3266,7 @@ PXSize PXAPI PXFileBinding(PXFile* const pxFile, void* const dataStruct, const P
             PXLoggingInfo,
             "File",
             "I/O-Bind",
-            "| %2i | %3i / %-3i | %2i B | %-7s | %-33s |",
+            "| %2i | %3i / %-3i | %2i B | %-7s | %s",
             i + 1,
             pxFileRedirect->DataCursor - sizeOfType,
             pxFileRedirect->DataAllocated,
@@ -3323,7 +3549,7 @@ PXSize PXAPI PXFileReadB(PXFile* const pxFile, void* const value, const PXSize l
                 return 0;
             }
 
-            const PXBool success = ReadFile(pxFile->FileID, value, length, &writtenBytes, PXNull);
+            const PXBool success = ReadFile(pxFile->FileHandle, value, length, &writtenBytes, PXNull);
             const PXActionResult pxActionResult = PXErrorCurrent(success);
 
             if(PXActionSuccessful != pxActionResult)
@@ -3408,7 +3634,7 @@ PXSize PXAPI PXFileByteSwap(PXFile* const pxFileTarget, PXFile* const pxFileSour
 {
     pxFileTarget->DataUsed = PXFileReadB(pxFileSource, pxFileTarget->Data, pxFileSource->DataAllocated);
 
-    for(size_t i = 0; i < pxFileTarget->DataUsed; i += 2)
+    for(PXSize i = 0; i < pxFileTarget->DataUsed; i += 2)
     {
         PXInt8U* cursor = &((PXInt8U*)pxFileTarget->Data)[i];
         PXInt8U* cursorA = &cursor[0];
@@ -3793,7 +4019,7 @@ PXSize PXAPI PXFileWriteB(PXFile* const pxFile, const void* const value, const P
 #elif OSWindows
             DWORD writtenBytes = 0;
 
-            const PXBool result = WriteFile(pxFile->FileID, value, length, &writtenBytes, PXNull); // Windows XP (+UWP), Kernel32.dll, fileapi.h
+            const PXBool result = WriteFile(pxFile->FileHandle, value, length, &writtenBytes, PXNull); // Windows XP (+UWP), Kernel32.dll, fileapi.h
 
             if(!result)
             {
@@ -4086,7 +4312,7 @@ PXActionResult PXAPI PXFileTimeGet
     {
         const BOOL result = GetFileTime // Windows XP (+UWP), Kernel32.dll, fileapi.h
         (
-            pxFile->FileID,
+            pxFile->FileHandle,
             &fileTimeList[0],
             &fileTimeList[1],
             &fileTimeList[2]
@@ -4179,7 +4405,7 @@ PXActionResult PXAPI PXFilePathGet(const PXFile* const pxFile, PXText* const fil
 
     const PXSize length = GetFinalPathNameByHandleA
     (
-        pxFile->FileID,
+        pxFile->FileHandle,
         filePath->TextA,
         filePath->SizeAllocated,
         FILE_NAME_OPENED | VOLUME_NAME_DOS

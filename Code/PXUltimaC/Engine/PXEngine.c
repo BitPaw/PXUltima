@@ -1277,9 +1277,6 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
             const char* date = __DATE__;
             const char* time = __TIME__;
 
-            PXInt32U cpuTemp = 0;
-
-            PXProcessorTemperature(&cpuTemp);
 
             PXTextPrint(&pxText, "[%s] (Build:%s %s) FPS:%-3i", pxEngine->ApplicationName, date, time, pxEngine->TimeData.FramesPerSecound);
 
@@ -1304,7 +1301,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
 
         if(pxEngine->HasGraphicInterface && pxEngine->Graphic.WindowReference)
         {
-            const PXBool isWindowEnabled = PXNativDrawWindowIsEnabled(&pxEngine->GUISystem, pxEngine->Graphic.WindowReference);
+            const PXBool isWindowEnabled = PXNativDrawWindowIsEnabled(&pxEngine->GUISystem.NativDraw, pxEngine->Graphic.WindowReference);
 
             if(isWindowEnabled)
             {
@@ -1816,7 +1813,7 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
         pxGraphicInitializeInfo.WindowReference = pxEngine->Window;
         pxGraphicInitializeInfo.Width = -1;
         pxGraphicInitializeInfo.Height = -1;
-        pxGraphicInitializeInfo.DirectXVersion = PXGraphicSystemOpenGL;
+        pxGraphicInitializeInfo.DirectXVersion = PXDirectXVersionNewest;
         pxGraphicInitializeInfo.DirectXDriverType = PXDirectXDriverTypeHardwareDevice;
 
         const PXActionResult graphicInit = PXGraphicInstantiate(&pxEngine->Graphic, &pxGraphicInitializeInfo);
@@ -2030,7 +2027,7 @@ void PXAPI PXEngineStop(PXEngine* const pxEngine)
         PXThread* pxThreadListRef = pxThreadList;
         PXThread** pxThreadListRefRef = &pxThreadListRef;
 
-        PXProcessThreadsListAll(&pxDebug, pxThreadListRefRef, amountResultInput, &amountResultOutput);
+        PXProcessThreadsListAll(PXNull, pxThreadListRefRef, amountResultInput, &amountResultOutput);
 
         for(PXSize i = 0; i < amountResultOutput; ++i)
         {
@@ -3675,14 +3672,12 @@ void PXAPI PXEngineSpriteAnimatorUpdate(PXEngine* const pxEngine)
         // if time is big enough, update. Else, do nothing
         const PXBool shalUpdate = deltaTargetms >= tergetedDelta; // pxSpriteAnimator->RateUpdate
 
-
-
         if(!shalUpdate)
         {
             continue;
         }
 
-
+#if PXLogEnable
         PXLogPrint
         (
             PXLoggingInfo,
@@ -3692,7 +3687,7 @@ void PXAPI PXEngineSpriteAnimatorUpdate(PXEngine* const pxEngine)
             deltaTargetms,
             tergetedDelta
         );
-
+#endif
 
         pxSpriteAnimator->LastUpdate = pxEngine->TimeData.CounterTimeLast;
 

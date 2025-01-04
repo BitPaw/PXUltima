@@ -300,19 +300,19 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
     case PXGraphicSystemOpenGL:
     {
         pxGraphic->EventOwner = &pxGraphic->OpenGLInstance;
-        pxGraphic->Initialize = PXOpenGLInitialize;
+        pxGraphic->Initialize = (PXGraphicInitializeFunction)PXOpenGLInitialize;
         break;
     }
     case PXGraphicSystemDirectX:
     {
         pxGraphic->EventOwner = &pxGraphic->DirectXInstance;
-        pxGraphic->Initialize = PXDirectXInitialize;
+        pxGraphic->Initialize = (PXGraphicInitializeFunction)PXDirectXInitialize;
         break;
     }
     case PXGraphicSystemVulcan:
     {
         pxGraphic->EventOwner = &pxGraphic->VulcanInstance;
-        pxGraphic->Initialize = PXVulcanInitialize;
+        pxGraphic->Initialize = (PXGraphicInitializeFunction)PXVulcanInitialize;
         break;
     }
 
@@ -350,7 +350,7 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
 
             pxGraphic->GraphicSystem = PXGraphicSystemDirectX;
             pxGraphic->EventOwner = &pxGraphic->DirectXInstance;
-            pxGraphic->Initialize = PXDirectXInitialize;
+            pxGraphic->Initialize = (PXGraphicInitializeFunction)PXDirectXInitialize;
 
             pxGraphicInitializeInfo->GraphicSystem = PXGraphicSystemDirectX;
             pxGraphicInitializeInfo->DirectXVersion = PXDirectXVersionNewest;
@@ -477,7 +477,7 @@ PXActionResult PXAPI PXGraphicSpriteConstruct(PXGraphic* const pxGraphic, PXSpri
 {
     PXClear(PXSprite, pxSprite);
 
-    PXModelConstruct(&pxSprite->Model);
+    PXModelConstruct(pxSprite->Model);
 
 
     //PXMatrix4x4FIdentity(&pxSprite->ModelMatrix);

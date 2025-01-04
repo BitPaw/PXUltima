@@ -760,8 +760,12 @@ PXShaderVariableLocallity;
 
 #define PXShaderVariableNameSize 32
 
+#define PXShaderVariableBehaviourFailedFetch (1<<0) // A resolusion to the shader failed
+
 typedef struct PXShaderVariable_
 {
+    PXResourceInfo Info;
+
     char Name[PXShaderVariableNameSize]; // Shader variable name, used only for and ID fetch as it is very slow!
     PXSize NameSize;
     PXShaderVariableType DataType;
@@ -927,8 +931,8 @@ typedef struct PXModel_
     PXMesh Mesh;
 
     //-----------------------------
-// Render info
-//-----------------------------
+    // Render info
+    //-----------------------------
     PXMatrix4x4F ModelMatrix;
     PXShaderProgram* ShaderProgramReference;
     //-----------------------------

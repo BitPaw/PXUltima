@@ -931,10 +931,10 @@ typedef struct PXOpenGLBinding_
     PXOpenGLBufferDataFunction    BufferData;
     PXOpenGLCallListFunction    CallList;
     PXOpenGLCallListsFunction    CallLists;
+    PXOpenGLClearFunction    Clear;
     PXOpenGLClearAccumFunction    ClearAccum;
     PXOpenGLClearColorFunction    ClearColor;
-    PXOpenGLClearDepthFunction    ClearDepth;
-    PXOpenGLClearFunction    Clear;
+    PXOpenGLClearDepthFunction    ClearDepth; 
     PXOpenGLClearIndexFunction    ClearIndex;
     PXOpenGLClearStencilFunction    ClearStencil;
     PXOpenGLClipPlaneFunction    ClipPlane;

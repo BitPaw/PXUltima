@@ -586,7 +586,7 @@ PXActionResult PXAPI PXWindowDrawCustomResourceView(PXGUISystem* const pxGUISyst
 
         char buffer[260];
 
-        char* typeName = PXUIElementTypeToString(pxWindow->Type);
+        const char* typeName = PXUIElementTypeToString(pxWindow->Type);
 
         PXSize wrizze = PXTextPrintA(buffer, 260, "[%i] %s:%s", pxWindow->Info.ID, typeName, pxWindow->NameContent);
 

@@ -9,6 +9,7 @@
 #include <OS/File/PXFile.h>
 #include <OS/Memory/PXMemory.h>
 #include <OS/Time/PXTime.h>
+#include <OS/Console/PXConsole.h>
 
 #define PNGDebugInfo 0
 
@@ -302,6 +303,33 @@ PXActionResult PXAPI PXPNGPeekFromFile(PXResourceTransphereInfo* const pxResourc
 
                     png->ImageHeader.ColorType = PXPNGColorTypeFromID(png->ImageHeader.ColorTypeID);
                     png->ImageHeader.InterlaceMethod = PXPNGInterlaceMethodFromID(png->ImageHeader.InterlaceMethodID);
+
+#if PXLogEnable
+                    PXLogPrint
+                    (
+                        PXLoggingInfo,
+                        "PNG",
+                        "Load",
+                        "Header..\n"
+                        "%20s : %i\n"
+                        "%20s : %i\n"
+                        "%20s : %i\n"
+                        "%20s : %i\n"
+                        "%20s : %i\n"
+                        "%20s : %i\n"
+                        "%20s : %i\n"
+                        "%20s : %i",
+                        "Width", png->ImageHeader.Width,
+                        "Height", png->ImageHeader.Height,
+                        "BitDepth", png->ImageHeader.BitDepth,
+                        "ColorTypeID", png->ImageHeader.ColorTypeID,
+                        "CompressionMethod", png->ImageHeader.CompressionMethod,
+                        "FilterMethod", png->ImageHeader.FilterMethod,
+                        "InterlaceMethodID", png->ImageHeader.InterlaceMethodID,
+                        "ColorType", png->ImageHeader.ColorType,
+                        "InterlaceMethod", png->ImageHeader.InterlaceMethod
+                    );
+#endif
 
                     break;
                 }
@@ -656,27 +684,40 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceTransphereInfo* const pxResourc
     //-------------------------------------------------------------------------
 
 
-    PXByte* data = PXNull;
-    PXSize dataSize = 0;
+    PXFile pxZLIBStream;
+
+
+    PXFileOpenInfo pxFileOpenInfo;
+    PXClear(PXFileOpenInfo, &pxFileOpenInfo);
+    pxFileOpenInfo.AccessMode = PXAccessModeReadOnly;
+    pxFileOpenInfo.MemoryCachingMode = PXMemoryCachingModeUseOnce;
 
     if(png->DataBlockListAmount == 1) // Special behaviour if we only have one chunk
     {
         const PXPNGDataBlock* const pxPNGDataBlock = &png->DataBlockList[0];
 
-        data = (PXByte*)pxResourceLoadInfo->FileReference->Data + pxPNGDataBlock->FileOffset;
-        dataSize = pxPNGDataBlock->DataSize;
+        pxFileOpenInfo.BufferData = (PXByte*)pxResourceLoadInfo->FileReference->Data + pxPNGDataBlock->FileOffset;
+        pxFileOpenInfo.BufferSize = pxPNGDataBlock->DataSize;
+        pxFileOpenInfo.FlagList |= PXFileIOInfoFileMemory;
+
+        PXFileOpen(&pxZLIBStream, &pxFileOpenInfo);
     }
     else
     {
-        data = PXMemoryMallocT(PXByte, png->DataBlockTotalSize);
+        pxFileOpenInfo.FileSizeRequest = png->DataBlockTotalSize;
+        pxFileOpenInfo.FlagList |= PXFileIOInfoFileVirtual;
+
+        PXFileOpen(&pxZLIBStream, &pxFileOpenInfo);
 
         for(PXSize i = 0; i < png->DataBlockListAmount; i++)
         {
             const PXPNGDataBlock* const pxPNGDataBlock = &png->DataBlockList[i];
 
             PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, pxPNGDataBlock->FileOffset);
-            dataSize += PXFileReadB(pxResourceLoadInfo->FileReference, data + dataSize, pxPNGDataBlock->DataSize);
+            PXFileDataCopy(pxResourceLoadInfo->FileReference, &pxZLIBStream, pxPNGDataBlock->DataSize);
         }
+
+        pxZLIBStream.DataCursor = 0;
     }
 
 
@@ -691,19 +732,7 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceTransphereInfo* const pxResourc
         //---------------------------------------------------------------------
 
 
-        PXFile pxZLIBStream;
         PXFile pxZLIBResultStream;
-
-        {
-            PXFileOpenInfo pxFileOpenInfo;
-            PXClear(PXFileOpenInfo, &pxFileOpenInfo);
-            pxFileOpenInfo.AccessMode = PXAccessModeReadAndWrite;
-            pxFileOpenInfo.FlagList = PXFileIOInfoFileMemory;
-            pxFileOpenInfo.BufferData = data;
-            pxFileOpenInfo.BufferSize = dataSize;
-
-            const PXActionResult pxOpenResult = PXFileOpen(&pxZLIBStream, &pxFileOpenInfo);
-        }
 
         {
             const PXSize expectedPXZLIBCacheSize = PXZLIBCalculateExpectedSize(png->ImageHeader.Width, png->ImageHeader.Height, bitsPerPixel, png->ImageHeader.InterlaceMethod);
@@ -711,7 +740,7 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceTransphereInfo* const pxResourc
             PXFileOpenInfo pxFileOpenInfo;
             PXClear(PXFileOpenInfo, &pxFileOpenInfo);
             pxFileOpenInfo.AccessMode = PXAccessModeReadAndWrite;
-            pxFileOpenInfo.FlagList = PXFileIOInfoFileMemory;
+            pxFileOpenInfo.FlagList = PXFileIOInfoFileVirtual;
             pxFileOpenInfo.FileSizeRequest = expectedPXZLIBCacheSize;
 
             const PXActionResult pxOpenResult = PXFileOpen(&pxZLIBResultStream, &pxFileOpenInfo);
@@ -731,6 +760,8 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceTransphereInfo* const pxResourc
         //---------------------------------------------------------------------
         // ADAM7
         //---------------------------------------------------------------------
+        PXFile pxADAM7CacheOutput;
+
         PXADAM7 pxADAM7;
         PXClear(PXADAM7, &pxADAM7);
         pxADAM7.DataInput = (char*)pxZLIBResultStream.Data;
@@ -744,8 +775,20 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceTransphereInfo* const pxResourc
 
         const PXSize expectedadam7CacheSize = PXADAM7CaluclateExpectedSize(&pxADAM7);
 
-        pxADAM7.DataOutput = PXMemoryMallocT(PXByte, expectedadam7CacheSize);
-        pxADAM7.OutputSize = expectedadam7CacheSize;
+        {
+            PXFileOpenInfo pxFileOpenInfo;
+            PXClear(PXFileOpenInfo, &pxFileOpenInfo);
+            pxFileOpenInfo.AccessMode = PXAccessModeReadAndWrite;
+            pxFileOpenInfo.MemoryCachingMode = PXMemoryCachingModeUseOnce;
+            pxFileOpenInfo.FileSizeRequest = expectedadam7CacheSize;
+            pxFileOpenInfo.FlagList = PXFileIOInfoFileVirtual;
+
+            PXFileOpen(&pxADAM7CacheOutput, &pxFileOpenInfo);
+        }
+
+
+        pxADAM7.DataOutput = pxADAM7CacheOutput.Data;
+        pxADAM7.OutputSize = pxADAM7CacheOutput.DataAllocated;
 
         const PXActionResult scanDecodeResult = PXADAM7ScanlinesDecode(&pxADAM7);
 
@@ -762,14 +805,12 @@ PXActionResult PXAPI PXPNGLoadFromFile(PXResourceTransphereInfo* const pxResourc
             png->ImageHeader.BitDepth,
             png->ImageHeader.ColorType
         );
-
-        PXMemoryFree(pxADAM7.DataOutput);
-        pxADAM7.DataOutput = 0;
-        pxADAM7.OutputSize = 0;
         //---------------------------------------------------------------------
 
 
+        PXFileClose(&pxZLIBStream);
         PXFileClose(&pxZLIBResultStream);
+        PXFileClose(&pxADAM7CacheOutput);
     }
 
     //-------------------------------------------------------------------------

@@ -93,7 +93,7 @@ void PXAPI PXMatrix4x4FRotationSet(PXMatrix4x4F* const matrix4x4F, const PXVecto
     }
 }
 
-void PXAPI PXMatrix4x4FRotationMatrixGenerate(PXMatrix4x4F* const matrix4x4F, PXVector3F* const position)
+void PXAPI PXMatrix4x4FRotationMatrixGenerate(PXMatrix4x4F* const matrix4x4F, const PXVector3F* const position)
 {
     PXMatrix4x4F xRotation;
     PXMatrix4x4F yRotation;
