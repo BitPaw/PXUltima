@@ -410,9 +410,6 @@ HICON PXAPI PXIconFromBitMap(PXImage* const pxImage)
 #endif
 
 
-
-
-
 PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceManager, PXResourceCreateInfo* const pxResourceCreateInfoList, const PXSize amount)
 {
     assert(pxResourceManager);

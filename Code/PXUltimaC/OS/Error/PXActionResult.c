@@ -2,6 +2,7 @@
 
 #include <OS/System/Version/PXOSVersion.h>
 #include <OS/Console/PXConsole.h>
+#include <Media/PXText.h>
 
 #include <errno.h> // POSIX
 
@@ -17,6 +18,48 @@
 #include <dsound.h> // Windows XP, Only used for error codes
 #include <WbemCli.h> // Windows Vista
 #endif
+
+// TODO: as "strerror()" does not work, we have this bad solution
+const char* PXERRNOList[][2] =
+{
+    {"EPERM","Not owner, no permission"},//	1
+    { "ENOENT", "No such file or directory" }, // 2
+{"ESRCH", "No such process" }, // 3
+{"EINTR", "Interrupted system call" }, // 4
+{"EIO", "I/O error" }, // 5
+{"ENXIO", "No such device or address" }, // 6
+{"E2BIG", "Arg list too long" }, // 7
+{"ENOEXEC", "Exec format error" }, // 8
+{"EBADF", "Bad file number" }, // 9
+{"ECHILD", "No children" }, // 10
+{"EAGAIN", "No more processes" }, // 11
+{"ENOMEM", "Not enough space" }, // 12
+{"EACCES", "Permission denied " }, // 13
+{"EFAULT", "Bad address " }, // 14
+{"ENOTBLK", "Block device required " }, // 15
+{"EBUSY", "Device or resource busy" }, // 16
+{"EEXIST", "File exists" }, // 17
+{"EXDEV", "Cross-device link" }, // 18
+{"ENODEV", "No such device" }, // 19
+{"ENOTDIR", "Not a directory" }, // 20
+{"EISDIR", "Is a directory" }, // 21
+{"EINVAL", "Invalid argument" }, // 22
+{"ENFILE", "Too many open files in system" }, // 23
+{"EMFILE", "???" }, // 24
+{"ENOTTY", "Not a character device" }, // 25
+{"ETXTBSY", "Text file busy" },//  26
+{"EFBIG", "File too large" }, // 27
+{"ENOSPC", "No space left on device" },//  28
+{"ESPIPE", "Illegal seek" }, // 29
+{"EROFS", "Read-only file system" }, // 30
+{"EMLINK", "Too many links" },//  31
+{"EPIPE", "Broken pipe" }, // 32
+{"EDOM", "Math argument" }, // 33
+{"ERANGE", "Result too large" } // 34
+};
+
+const PXInt16U PXERRNOListMax = (sizeof(PXERRNOList) / sizeof(char*)) / 2;
+
 
 PXActionResult PXAPI PXErrorCurrent(const PXBool wasSuccessful)
 {
@@ -41,10 +84,23 @@ PXActionResult PXAPI PXErrorCurrent(const PXBool wasSuccessful)
 
     // get text string from system
 #if OSUnix
-    #define PXErrorMessageBufferSize 256
+    #define PXErrorMessageBufferSize 64
     char errorMessageBuffer[PXErrorMessageBufferSize];
 
-    strerror_r(errorID, errorMessageBuffer, PXErrorMessageBufferSize);
+    //char* text = strerror_l(errorID, 0);
+   // const int text = strerror_r(errorID, errorMessageBuffer, PXErrorMessageBufferSize);
+   // const char* errorNameText = strerrorname_np(errorID); // input: errno:0, output:EPERM 
+   // const char* errorDescText = strerrordesc_np(errorID); 
+
+    if((errorID - 1) <= PXERRNOListMax)
+    {
+        PXTextPrintA(errorMessageBuffer, PXErrorMessageBufferSize, "%s : %s", PXERRNOList[errorID-1][0], PXERRNOList[errorID-1][1]);
+    }
+    else
+    {
+        PXTextPrintA(errorMessageBuffer, PXErrorMessageBufferSize, "???");
+    }
+
 #elif OSWindows
     char* errorMessageBuffer = 0;
 
@@ -75,8 +131,9 @@ PXActionResult PXAPI PXErrorCurrent(const PXBool wasSuccessful)
         PXLoggingError,
         "OS-Kernel",
         "Error",
-        "%s [0x%8.8X]",
+        "%s [HEX:0x%8.8X, DEZ:%i]",
         errorMessageBuffer,
+        errorID,
         errorID
     );
 #endif

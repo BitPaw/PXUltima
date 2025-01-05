@@ -400,7 +400,7 @@ PXPublic PXActionResult PXAPI PXFileTimeGet
 );
 
 PXPublic PXActionResult PXAPI PXFilePathSet(PXFile* const pxFile, const PXText* const filePath);
-PXPublic PXActionResult PXAPI PXFilePathGet(const PXFile* const pxFile, PXText* const filePath);
+PXPublic PXActionResult PXAPI PXFilePathGet(PXFile* const pxFile, PXText* const filePath);
 PXPublic PXActionResult PXAPI PXFIlePathGetLong(PXText* const pxTextInput, PXText* const pxTextOutput);
 
 #endif

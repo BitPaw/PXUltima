@@ -34,6 +34,12 @@
 #elif OSWindows
 // _O_RDONLY, _O_RDWR, _O_RDWR
 //#define PXPrintfvs vsprintf_s
+
+#include <windows.h>
+#include <ntstatus.h>
+#include <ntsecapi.h>
+#include <Sddl.h>
+
 #endif
 
 
@@ -1330,10 +1336,7 @@ void PXAPI PXFilePageFileSize(PXFilePageFileInfo* const pxFilePageFileInfo, cons
     }
 }
 
-#include <ntstatus.h>
-#include <windows.h>
-#include <ntsecapi.h>
-#include <Sddl.h>
+
 
 /*
 std::string GetErrorAsString(DWORD errorMessageID)
@@ -1350,6 +1353,11 @@ std::string GetErrorAsString(DWORD errorMessageID)
     return message;
 }
 */
+
+#if OSWindows
+//------------------------------
+// TODO: remove or change!!
+//------------------------------
 
 LSA_HANDLE GetPolicyHandle(WCHAR* SystemName)
 {
@@ -1434,7 +1442,7 @@ void AddPrivileges()
 
 
     LSA_UNICODE_STRING lucPrivilege;
-   
+
 
     // Create an LSA_UNICODE_STRING for the privilege names.
     const BOOL initSuccess = InitLsaString(&lucPrivilege, L"SeLockMemoryPrivilege");
@@ -1467,7 +1475,7 @@ void AddPrivileges()
        // std::cout << "Error message: " << GetErrorAsString(LsaNtStatusToWinError(ntsResult)) << std::endl;
     }
 }
-
+#endif
 
 PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, PXFileOpenInfo* const pxFileIOInfo)
 {
@@ -1535,7 +1543,7 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, PXFileOpenInfo* const pxFi
             const errno_t openResultID = fopen_s(&pxFile->FileID, pxText.TextA, readMode);
             const PXActionResult openResult = PXErrorCodeFromID(openResultID);
 #else
-            open64();
+            //open64();
             pxFile->FileID = fopen(pxText.TextA, readMode);
             const PXActionResult openResult = PXErrorCurrent(PXNull != pxFile->FileID);
 #endif
@@ -1786,17 +1794,34 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, PXFileOpenInfo* const pxFi
             PXTextConstructNamedBufferA(&pxTextTimeC, pxTextTimeCBuffer, 32);
             PXTextFormatDateTime(&pxTextTimeC, &pxFile->TimeWriteLast);
 
+
             PXLogPrint
             (
                 PXLoggingInfo,
                 "File",
                 "Open",
                 "OK\n"
-                "%13s : %s\n"
-                "%13s : %s\n"
-                "%13s : %s\n"
-                "%13s : %s\n"
-                "%13s : %s",
+
+                "%20s : %p\n"
+                "%20s : %i\n"
+#if OSUnix // Mapping
+                "%20s : %i\n"
+#elif OSWindows
+                "%20s : %p\n"
+                "%20s : %p\n"
+#endif
+                "%20s : %s\n"
+                "%20s : %s\n"
+                "%20s : %s\n"
+                "%20s : %s\n"
+                "%20s : %s",
+
+                "FILE*", pxFile->FileID,
+                "Descriptor", pxFile->FileDescriptorID,
+#if OSWindows
+                "HANDLE-File", pxFile->FileHandle,
+#endif
+                "HANDLE-Mapping", pxFile->MappingHandle,
                 "Size", pxTextSize.TextA,
                 "Path", pxFileIOInfo->FilePathAdress,
                 "Creation", pxTextTimeA.TextA,
@@ -1817,7 +1842,7 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, PXFileOpenInfo* const pxFi
             // Attempt memory mapping...
 
 #if OSUnix
-            const int flags = MAP_PRIVATE;// | MAP_POPULATE;
+            const int flags = MAP_SHARED;// MAP_PRIVATE;// | MAP_POPULATE;
             int accessType = 0;
 
             if(pxFileIOInfo->AccessMode & PXAccessREAD)
@@ -1834,6 +1859,19 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, PXFileOpenInfo* const pxFi
             {
                 accessType |= PROT_EXEC;
             }
+
+
+            int x = getpid();
+
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "File",
+                "Open",
+                "EEEEEEEEEEEEE\n"
+                "%i",
+                x
+            );
 
 
             // Map data into virtual memory space
@@ -1866,8 +1904,10 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, PXFileOpenInfo* const pxFi
 
             pxFile->LocationMode = PXFileLocationModeMappedFromDisk;
 
-            // We are allowed to close the file discriptor?
-            const int closeResultID = close(pxFile->FileDescriptorID);
+            // We are allowed to close the file handle and/or descriptor? 
+            // YES! but better not close the descriptor, 
+            // Access works in any case but you loose the file reference 
+            const int closeResultID = close(pxFile->FileID);
 
             pxFile->FileDescriptorID = 0;
 
@@ -2180,21 +2220,22 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, PXFileOpenInfo* const pxFi
             {
                 mode |= MEM_LARGE_PAGES;
 
-                // A call to VirtualAlloc() with MEM_LARGE_PAGES 
+#if OSWindows
+                // A call to VirtualAlloc() with MEM_LARGE_PAGES
                 // WILL normally fail, because we dont have permissions..?
-                // We have permissions, it is only disabled by default. 
+                // We have permissions, it is only disabled by default.
 
- 
-             
+
+
                // AddPrivileges();
 
 
-     
+
 
                 TOKEN_PRIVILEGES privileges;
-                HANDLE hToken; 
+                HANDLE hToken;
                 LUID luid;
-           
+
 
 
                 // Open the process token
@@ -2208,7 +2249,7 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, PXFileOpenInfo* const pxFi
                 privileges.PrivilegeCount = 1;
                 privileges.Privileges[0].Luid = luid;
                 privileges.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
-            
+
                 const BOOL privilgeResultID = AdjustTokenPrivileges
                 (
                     hToken,
@@ -2221,8 +2262,9 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, PXFileOpenInfo* const pxFi
                 const PXActionResult privilgeResult = PXErrorCurrent(privilgeResultID);
 
                 CloseHandle(hToken);
+#endif
 
-            
+
                 // Adjust allocation size to be EXACTLY a multible of the page size
                 // The documentation states it will be rounded up, this is true.
                 // Except if we add the MEM_LARGE_PAGES flag, because microsoft.
@@ -2337,7 +2379,7 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, PXFileOpenInfo* const pxFi
         {
             const PXBool hasSource = pxFileIOInfo->BufferData > 0;
 
-            pxFile->AccessMode = pxFileIOInfo->AccessMode;          
+            pxFile->AccessMode = pxFileIOInfo->AccessMode;
 
             if(hasSource)
             {
@@ -4368,34 +4410,82 @@ PXActionResult PXAPI PXFilePathSet(PXFile* const pxFile, const PXText* const fil
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXFilePathGet(const PXFile* const pxFile, PXText* const filePath)
+PXActionResult PXAPI PXFilePathGet(PXFile* const pxFile, PXText* const filePath)
 {
 #if OSUnix
-    char namePathBuffer[64];
-    const PXSize namePathBufferSIze = sizeof(namePathBuffer);
-    const int numberDescriptor = fileno(pxFile->FileID); // stdio.h
 
-    PXTextPrintA(namePathBuffer, namePathBufferSIze, "/proc/self/fd/%d", numberDescriptor); // "/prof/self/fd/0123456789"
-
-    const PXSize writtenBytes = readlink(namePathBuffer, filePath->TextA, filePath->SizeAllocated); // [POSIX.1 - 2008]
-    const PXBool success = -1 != writtenBytes;
-
-    if(!success)
+    // if the filedescriptor is 0, assume we forgot to set it
+    if(0 == pxFile->FileDescriptorID)
     {
-        // errno
-        return PXActionInvalid;
+        pxFile->FileDescriptorID = fileno(pxFile->FileID);
     }
 
+    const PXBool isValidFileDescriptor = 3 <= pxFile->FileDescriptorID;
 
-    //    realpath();
+    if(!isValidFileDescriptor)
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingError,
+            "OS-Kernel",
+            "File",
+            "Standard input, output and error stream are not files! ID:<%i> FILE*:%p",
+            pxFile->FileDescriptorID,
+            pxFile->FileID
+        );
+#endif
 
-        //readlink();
+        return PXActionRefusedArgumentInvalid;
+    }
 
-        // Only for Apple-OSX
-        //const int resultID = fcntl(pxFile->FileID, F_GETPATH, filePath->TextA); // [POSIX]
+    char namePathBuffer[64];
+    const PXSize namePathBufferSIze = sizeof(namePathBuffer);
+
+    PXTextPrintA(namePathBuffer, namePathBufferSIze, "/proc/self/fd/%d", pxFile->FileDescriptorID); // "/prof/self/fd/0123456789"
+
+    const PXSize writtenBytes = readlink(namePathBuffer, filePath->TextA, filePath->SizeAllocated); // [POSIX.1 - 2008]
+    const PXActionResult readResult = PXErrorCurrent(-1 != writtenBytes);
+
+    if(PXActionSuccessful != readResult)
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingError,
+            "OS-Kernel",
+            "File",
+            "Translate file descriptor <%i> failed! <%s>, FILE*:%p",
+            pxFile->FileDescriptorID,
+            namePathBuffer,
+            pxFile->FileID
+        );
+#endif
+
+        return readResult;
+    }
+
+    filePath->SizeUsed = writtenBytes;
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "OS-Kernel",
+        "File",
+        "Translate file descriptor <%i> to <%s>",
+        pxFile->FileDescriptorID,
+        filePath->TextA
+    );
+#endif
 
 
-    return PXActionRefusedNotImplemented; // TODO
+    // realpath();
+    //
+    // Only for Apple-OSX
+    //const int resultID = fcntl(pxFile->FileID, F_GETPATH, filePath->TextA); // [POSIX]
+
+    return PXActionSuccessful;
 
 #elif OSWindows
 
@@ -4410,7 +4500,7 @@ PXActionResult PXAPI PXFilePathGet(const PXFile* const pxFile, PXText* const fil
         filePath->SizeAllocated,
         FILE_NAME_OPENED | VOLUME_NAME_DOS
     ); // Windows Vista, Kernel32.dll, Windows.h
-    const PXBool successful = 0u != length;
+    const PXActionResult readResult = PXErrorCurrent(0 != length);
 
 
     // GetShortPathNameA() makes a path to something like "\\?\C:\Data\WORKSP~1\_GIT_~1\BITFIR~1\GAMECL~1\Shader\SKYBOX~2.GLS"
@@ -4418,11 +4508,36 @@ PXActionResult PXAPI PXFilePathGet(const PXFile* const pxFile, PXText* const fil
 
     // _fullpath(filePath->TextA, buffer, PXPathSizeMax); also, does not what we need it to do
 
-
-    if(!successful)
+    if(PXActionSuccessful != readResult)
     {
-        return PXActionRefusedArgumentInvalid;
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingError,
+            "OS-Kernel",
+            "File",
+            "Translate file handle <%p> failed!",
+            pxFile->FileHandle,
+            filePath->TextA
+        );
+#endif
+
+        return readResult;
     }
+
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "OS-Kernel",
+        "File",
+        "Translate file handle <%p> to <%s>",
+        pxFile->FileHandle,
+        filePath->TextA
+    );
+#endif
+
 
     filePath->SizeUsed = length - 4u;
     filePath->TextA += 4u;
