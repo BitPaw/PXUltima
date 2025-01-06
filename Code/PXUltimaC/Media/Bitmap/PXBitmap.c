@@ -3,6 +3,7 @@
 #include <Math/PXMath.h>
 #include <OS/File/PXFile.h>
 #include <OS/Memory/PXMemory.h>
+#include <OS/Console/PXConsole.h>
 
 #define PXQuickSwap(a, b) \
 a = a + b; \
@@ -306,6 +307,14 @@ PXActionResult PXAPI PXBitmapLoadFromFile(PXResourceTransphereInfo* const pxReso
 
     PXBitmapImageDataLayoutCalculate(&imageDataLayout, bmp->InfoHeader.Width, bmp->InfoHeader.Height, bmp->InfoHeader.NumberOfBitsPerPixel);
 
+    // Can we do it in one go?
+#if 0
+    if(0 == imageDataLayout.RowPaddingSize) // if we don't have any padding
+    {
+        PXFileReadB(pxResourceTransphereInfo->FileReference, pxImage->PixelData, imageDataLayout.RowImageDataSize * imageDataLayout.RowAmount);
+    }
+#endif
+
     while(imageDataLayout.RowAmount--) // loop through each image row
     {
         PXByte* const data = (PXByte* const)pxImage->PixelData + (imageDataLayout.RowImageDataSize * imageDataLayout.RowAmount); // Get the starting point of each row
@@ -430,6 +439,26 @@ void PXBitmapImageDataLayoutCalculate(PXBitmapImageDataLayout* const bmpImageDat
     const int paddingSUM = (int)bmpImageDataLayout->RowFullSize - (int)bmpImageDataLayout->RowImageDataSize;
     bmpImageDataLayout->RowPaddingSize = PXMathAbsoluteI32(paddingSUM);
     bmpImageDataLayout->RowAmount = PXMathCeilingF(bmpImageDataLayout->ImageSize / (float)bmpImageDataLayout->RowFullSize);
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "BMP",
+        "Calculate",
+        "Layout\n"
+        "%15s : %i\n"
+        "%15s : %i\n"
+        "%15s : %i\n"
+        "%15s : %i\n"
+        "%15s : %i",
+        "ImageSize", bmpImageDataLayout->ImageSize,
+        "RowImageDataSize", bmpImageDataLayout->RowImageDataSize,
+        "RowPaddingSize", bmpImageDataLayout->RowPaddingSize,
+        "RowFullSize", bmpImageDataLayout->RowFullSize,
+        "RowAmount", bmpImageDataLayout->RowAmount
+    );
+#endif
 }
 
 PXSize PXAPI PXBitmapFilePredictSize(const PXSize width, const PXSize height, const PXSize bitsPerPixel)

@@ -182,7 +182,7 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
         PXLoggingInfo,
         "Graphic",
         "Instantiate",
-        "Creating context on <%x>",
+        "Creating context on window:<0x%8.8x>",
         pxGraphicInitializeInfo->WindowReference->Info.Handle.WindowID
     );
 #endif
@@ -193,6 +193,7 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
     pxGraphicInitializeInfo->Graphic = pxGraphic;
 
 #if OSUnix
+    pxGraphic->DisplayConnection = pxGraphicInitializeInfo->DisplayConnection;
 #elif OSWindows
     // Get Device context if not already done
     if(!pxGraphicInitializeInfo->HandleDeviceContext)
@@ -295,29 +296,29 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
     //-------------------------------------------------------------------------
     // Setup references
     //-------------------------------------------------------------------------
-    switch (pxGraphic->GraphicSystem)
+    switch(pxGraphic->GraphicSystem)
     {
-    case PXGraphicSystemOpenGL:
-    {
-        pxGraphic->EventOwner = &pxGraphic->OpenGLInstance;
-        pxGraphic->Initialize = (PXGraphicInitializeFunction)PXOpenGLInitialize;
-        break;
-    }
-    case PXGraphicSystemDirectX:
-    {
-        pxGraphic->EventOwner = &pxGraphic->DirectXInstance;
-        pxGraphic->Initialize = (PXGraphicInitializeFunction)PXDirectXInitialize;
-        break;
-    }
-    case PXGraphicSystemVulcan:
-    {
-        pxGraphic->EventOwner = &pxGraphic->VulcanInstance;
-        pxGraphic->Initialize = (PXGraphicInitializeFunction)PXVulcanInitialize;
-        break;
-    }
+        case PXGraphicSystemOpenGL:
+        {
+            pxGraphic->EventOwner = &pxGraphic->OpenGLInstance;
+            pxGraphic->Initialize = (PXGraphicInitializeFunction)PXOpenGLInitialize;
+            break;
+        }
+        case PXGraphicSystemDirectX:
+        {
+            pxGraphic->EventOwner = &pxGraphic->DirectXInstance;
+            pxGraphic->Initialize = (PXGraphicInitializeFunction)PXDirectXInitialize;
+            break;
+        }
+        case PXGraphicSystemVulcan:
+        {
+            pxGraphic->EventOwner = &pxGraphic->VulcanInstance;
+            pxGraphic->Initialize = (PXGraphicInitializeFunction)PXVulcanInitialize;
+            break;
+        }
 
-    default:
-        return PXActionRefusedArgumentInvalid;
+        default:
+            return PXActionRefusedArgumentInvalid;
     }
 
     // Graphic initialize

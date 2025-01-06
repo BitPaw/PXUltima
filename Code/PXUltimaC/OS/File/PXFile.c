@@ -1585,7 +1585,8 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, PXFileOpenInfo* const pxFi
             pxFile->DataUsed = fileInfo.st_size;
 
 #if OSUnix
-            pxFile->DataAllocated = fileInfo.st_blksize * fileInfo.st_blocks;
+           // pxFile->DataAllocated = fileInfo.st_blksize * fileInfo.st_blocks; // Might be wrong
+            pxFile->DataAllocated = pxFile->DataUsed;
 #elif OSWindows
             // Size on harddrive not contained under windows?
             pxFile->DataAllocated = fileInfo.st_size;
@@ -1860,20 +1861,6 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, PXFileOpenInfo* const pxFi
                 accessType |= PROT_EXEC;
             }
 
-
-            int x = getpid();
-
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                "File",
-                "Open",
-                "EEEEEEEEEEEEE\n"
-                "%i",
-                x
-            );
-
-
             // Map data into virtual memory space
             pxFile->Data = mmap
             (
@@ -1907,10 +1894,9 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, PXFileOpenInfo* const pxFi
             // We are allowed to close the file handle and/or descriptor? 
             // YES! but better not close the descriptor, 
             // Access works in any case but you loose the file reference 
-            const int closeResultID = close(pxFile->FileID);
-
-            pxFile->FileDescriptorID = 0;
-
+            // 
+            // const int closeResultID = fclose(pxFile->FileID);
+            // pxFile->FileID = PXNull;
 
 #elif OSWindows
 
@@ -3571,26 +3557,41 @@ PXSize PXAPI PXFileReadB(PXFile* const pxFile, void* const value, const PXSize l
 
             PXMemoryCopy(currentPosition, moveSize, value, moveSize);
 
-            ++(pxFile->CounterOperationsRead);
-
             return moveSize;
         }
         case PXFileLocationModeDirectCached:
         case PXFileLocationModeDirectUncached:
         {
+            if(pxFile->DataCursor >= pxFile->DataUsed)
+            {
+                return 0; // PXActionRefusedIndexOutOfBounce;
+            }
+
 #if OSUnix
-            const PXSize writtenBytes = fread(value, sizeof(PXByte), length, pxFile->FileID);
+            const PXSize writtenBytes = fread(value, sizeof(PXByte), length, pxFile->FileID); 
+            const PXBool readSuccess = 0 != writtenBytes; // fread does not set errno! 0 equals EOF or read-error.
+
+            if(!readSuccess)
+            {
+                const PXBool isAtEnd = feof(pxFile->FileID);
+
+                if(isAtEnd)
+                {
+                    return 0; // PXActionSuccessful;
+                }
+
+                // Read error
+                const int hasError = ferror(pxFile->FileID);
+
+                return 0; // PXActionFailedRead;
+            }
+
+            pxFile->DataCursor += writtenBytes;
 
             return writtenBytes;
 
 #elif OSWindows
             DWORD writtenBytes = 0;
-
-            if(pxFile->DataCursor >= pxFile->DataUsed)
-            {
-                return 0;
-            }
-
             const PXBool success = ReadFile(pxFile->FileHandle, value, length, &writtenBytes, PXNull);
             const PXActionResult pxActionResult = PXErrorCurrent(success);
 

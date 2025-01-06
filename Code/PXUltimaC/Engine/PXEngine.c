@@ -1674,7 +1674,7 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
     // TODO: silly
     pxEngine->GUISystem.ResourceManager = &pxEngine->ResourceManager;
     pxEngine->GUISystem.NativDraw.ResourceManager = &pxEngine->ResourceManager;
-    
+    pxEngine->GUISystem.NativDraw.GUISystem = &pxEngine->GUISystem;
 
     PXGUISystemInitialize(&pxEngine->GUISystem);
 
@@ -1815,6 +1815,11 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
         pxGraphicInitializeInfo.Height = -1;
         pxGraphicInitializeInfo.DirectXVersion = PXDirectXVersionNewest;
         pxGraphicInitializeInfo.DirectXDriverType = PXDirectXDriverTypeHardwareDevice;
+            
+
+#if OSUnix
+        pxGraphicInitializeInfo.DisplayConnection = pxEngine->GUISystem.DisplayCurrent.DisplayHandle;
+#endif
 
         const PXActionResult graphicInit = PXGraphicInstantiate(&pxEngine->Graphic, &pxGraphicInitializeInfo);
 
@@ -1826,9 +1831,9 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
                 PXLoggingError,
                 "PX-Engine",
                 "Instantiate",
-                "failed to create graphical instance!\n"
-                "Graphics card driver is not able to provide a rendering context."
-                "Either the card itself is not capable or a driver is missing and needs to be installed."
+                "Failed to create graphical instance!\n"
+                "Graphics card driver is not able to provide a rendering context.\n "
+                "Either the card itself is not capable or a driver is missing and needs to be installed.\n"
             );
 #endif
 

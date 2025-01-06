@@ -17,7 +17,7 @@
 #endif
 
 #if OSUnix
-#pragma comment(lib, "opengl32.so")
+#pragma comment(lib, "libGL.o") // ToDo: Is this valid?
 #elif OSWindows
 #pragma comment(lib, "opengl32.lib")
 #endif
@@ -30,7 +30,7 @@
 const char PXOpenglLibraryName[]
 =
 #if OSUnix
-"opengl32.so"
+"libGL.so"
 #elif OSWindows
 "opengl32.dll"
 #endif
@@ -2011,7 +2011,7 @@ PXActionResult PXAPI PXOpenGLSwapIntervalSet(PXOpenGL* const pxOpenGL, const PXI
 #endif
 
 #if OSUnix
-    pxOpenGL->Binding.SwapIntervalSet(pxOpenGL->DisplayHandle, pxOpenGL->DrawableHandle, interval);
+    pxOpenGL->Binding.SwapIntervalSet(pxOpenGL->DisplayHandle, pxOpenGL->WindowHandle, interval);
 #elif OSWindows
     pxOpenGL->Binding.SwapIntervalSet(interval);
 #endif
@@ -2254,7 +2254,7 @@ PXActionResult PXAPI PXOpenGLErrorCurrent(PXOpenGL* const pxOpenGL, PXBool wasSu
             errorText
         );
 #endif
-    }  
+    }
 }
 
 void PXAPI PXOpenGLSet(PXOpenGL* const pxOpenGL, const PXOpenGL* const pxOpenGLSoure)
@@ -2287,9 +2287,10 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
         }
     }
 
-#if OSUnix
-#elif OSWindows
     pxOpenGL->WindowHandle = pxGraphicInitializeInfo->WindowReference->Info.Handle.WindowID;
+#if OSUnix
+    pxOpenGL->DisplayHandle = pxGraphicInitializeInfo->DisplayConnection;
+#elif OSWindows
     pxOpenGL->WindowDeviceContextHandle = pxGraphicInitializeInfo->HandleDeviceContext;
 #endif
 
@@ -2386,6 +2387,16 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
         pxGraphic->LightEnableGet = PXNull;
     }
 
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "OpenGL",
+        "Initialize",
+        "Context create try.."
+    );
+#endif
+
 
     // OpenGL - Context Create
     {
@@ -2400,8 +2411,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
             GLX_DOUBLEBUFFER,
             None
         };
-        Display* display = 0;// pxOpenGL->Binding.;
-        const XVisualInfo* const visualInfo = glXChooseVisual(display, 0, attributeList);
+        const XVisualInfo* const visualInfo = glXChooseVisual(pxOpenGL->DisplayHandle, 0, attributeList);
 
         {
             const PXBool successful = visualInfo != 0;
@@ -2412,7 +2422,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
             }
         }
 
-        pxOpenGL->ContextHandle = glXCreateContext(display, visualInfo, NULL, GL_TRUE);
+        pxOpenGL->ContextHandle = glXCreateContext(pxOpenGL->DisplayHandle, visualInfo, NULL, GL_TRUE);
 
 #elif OSWindows
         pxOpenGL->ContextHandle = pxOpenGL->Binding.ContextCreate(pxGraphicInitializeInfo->HandleDeviceContext);
@@ -2450,7 +2460,20 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
 
     PXOpenGLSelect(pxOpenGL);
 
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "OpenGL",
+        "Initialize",
+        "Fetching newer function adresses with <%p>",
+        pxOpenGL->Binding.FunctionFetch
+    );
+#endif
+
     // Fetch extended functions and override functions if newer ones exist
+    if(pxOpenGL->Binding.FunctionFetch)
     {
         PXSize position = 0;
 
@@ -2477,6 +2500,9 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
             }
         }
     }
+
+
+
 
     // Fetch functions
     {
@@ -2567,6 +2593,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
     //-----------------------------------------------------
     // General GL-Extensions
     //-----------------------------------------------------
+    if(pxOpenGL->Binding.GetIntegerv)
     {
         // extensions
         int numberOfExtensions = 0;
@@ -2594,8 +2621,21 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
     }
 #endif
 
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "OpenGL",
+        "Initialize",
+        "Enable error callback"
+    );
+#endif
 
-    pxOpenGL->Binding.Enable(GL_MULTISAMPLE);
+
+    if(pxOpenGL->Binding.Enable)
+    {
+        pxOpenGL->Binding.Enable(GL_MULTISAMPLE);
+    }
 
     PXFunctionInvoke(pxOpenGL->Binding.DebugMessage, PXOpenGLErrorMessageCallback, 0);
     PXFunctionInvoke(pxOpenGL->Binding.Enable, GL_DEBUG_OUTPUT);
@@ -2610,6 +2650,17 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
 
         //pxOpenGL->Binding.Viewport(0, 0, pxWindowSizeInfo.Width, pxWindowSizeInfo.Height);
     }
+
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "OpenGL",
+        "Initialize",
+        "List devices"
+    );
+#endif
 
     // List devices
     {
@@ -2695,7 +2746,20 @@ PXActionResult PXAPI PXOpenGLSelect(PXOpenGL* const pxOpenGL)
         PXLoggingInfo,
         "OpenGL",
         "Context",
-        "Bind to current thread"
+        "Bind to current thread\n"
+#if OSUnix
+        "%10s %30s <%p>\n"
+        "%10s %30s <%p>\n"
+        "%10s %30s <%p>",
+        "Display*", "DisplayHandle", pxOpenGL->DisplayHandle,
+        "Window", "WindowRootHandle", pxOpenGL->WindowHandle,
+        "GC", "GraphicContent", pxOpenGL->ContextHandle
+#elif OSWindows
+        "%10s %30s <%p>\n"
+        "%10s %30s <%p>",
+        "HDC", "WindowDeviceContextHandle", pxOpenGL->WindowDeviceContextHandle,
+        "HGLRC", "ContextHandle", pxOpenGL->ContextHandle
+#endif
     );
 #endif
 
@@ -2705,7 +2769,7 @@ PXActionResult PXAPI PXOpenGLSelect(PXOpenGL* const pxOpenGL)
     }
 
 #if OSUnix
-    const int result = glXMakeCurrent(pxOpenGL->DisplayHandle, pxOpenGL->DrawableHandle, pxOpenGL->ContextHandle);
+    const int result = glXMakeCurrent(pxOpenGL->DisplayHandle, pxOpenGL->WindowHandle, pxOpenGL->ContextHandle);
 #elif OSWindows
     const BOOL result = pxOpenGL->Binding.MakeCurrent(pxOpenGL->WindowDeviceContextHandle, pxOpenGL->ContextHandle);
 #endif
@@ -2723,7 +2787,17 @@ PXActionResult PXAPI PXOpenGLSelect(PXOpenGL* const pxOpenGL)
 #endif
 
         return PXActionFailedContextBinding;
-    }    
+    }
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "OpenGL",
+        "Context",
+        "OK"
+    );
+#endif
 
     return PXActionSuccessful;
 }
@@ -2747,11 +2821,11 @@ PXActionResult PXAPI PXOpenGLDeselect(PXOpenGL* const pxOpenGL)
 
     const PXBool successful =
 #if OSUnix
-        glXMakeCurrent(PXNull, pxOpenGL->DrawableHandle, pxOpenGL->ContextHandle);
+        glXMakeCurrent(PXNull, pxOpenGL->WindowHandle, pxOpenGL->ContextHandle);
 #elif OSWindows
         pxOpenGL->Binding.MakeCurrent(0, 0);
 #endif
-  
+
     // glError invalid here- no context anymore
     if(!successful)
     {
@@ -2863,6 +2937,27 @@ PXActionResult PXAPI PXOpenGLDevicePhysicalListFetch(PXOpenGL* const pxOpenGL, c
     if(amount == 0)
     {
         return PXActionSuccessful;
+    }
+
+    PXClearList(PXGraphicDevicePhysical, pxGraphicDevicePhysicalList, amount);
+
+    if(!pxOpenGL->Binding.GetString)
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "OpenGL",
+            "Initialize",
+            "GetString missing, cant resolve names"
+        );
+#endif
+
+        PXTextCopyA("???", 3, pxGraphicDevicePhysicalList->Vendor, PXDeviceOpenGLVendorSize);
+        PXTextCopyA("???", 3, pxGraphicDevicePhysicalList->Renderer, PXDeviceOpenGLRendererSize);
+        PXTextCopyA("???", 3, pxGraphicDevicePhysicalList->Shader, PXDeviceOpenGLShaderSize);
+
+        return PXActionInvalid;
     }
 
     // Returns the company responsible for this GL implementation.
@@ -5597,7 +5692,7 @@ PXActionResult PXAPI PXOpenGLShaderVariableSet(PXOpenGL* const pxOpenGL, const P
         PXTextPrintA
         (
             nameBuffer,
-            128, 
+            128,
             "%20s : ID:%i, <%s>"
             "%20s : PX-ID:%i, GL-ID:%i",
            // "%20s : PX-ID:%i, GL-ID:%i",

@@ -31,6 +31,7 @@ PXNativDraw _internalNativDraw;
 #include <Media/PXText.h>
 #include <OS/Console/PXConsole.h>
 #include <Engine/PXEngine.h>
+#include "assert.h"
 
 
 #if OSWindows
@@ -1641,20 +1642,23 @@ PXNativDraw* PXAPI PXNativDrawInstantance(void)
 
 PXActionResult PXAPI PXNativDrawWindowEventPoll(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow)
 {
-    if(!pxWindow)
+    if(!(pxNativDraw && pxWindow))
     {
-        return;
+        return PXActionRefusedArgumentNull;
     }
 
     if(!pxWindow->Info.Handle.WindowID)
     {
-        return;
+        return PXActionRefusedArgumentInvalid;
     }
 
     // pxWindow->MouseCurrentInput.ButtonsDelta = 0; // Reset mouse data
 
 #if OSUnix
     XEvent windowEvent;
+
+    assert(pxNativDraw->GUISystem);
+    assert(pxNativDraw->GUISystem->DisplayCurrent.DisplayHandle);
 
     Display* displayHandle = pxNativDraw->GUISystem->DisplayCurrent.DisplayHandle;
 
@@ -1684,7 +1688,7 @@ PXActionResult PXAPI PXNativDrawWindowEventPoll(PXNativDraw* const pxNativDraw, 
 
 
     // Multithread lock
-    XLockDisplay(pxNativDraw->GUISystem->DisplayCurrent.DisplayHandle);
+    XLockDisplay(displayHandle);
 
     // poll all events
     for(;;)
@@ -1712,19 +1716,20 @@ PXActionResult PXAPI PXNativDrawWindowEventPoll(PXNativDraw* const pxNativDraw, 
     XUnlockDisplay(displayHandle);
 
 #elif PXOSWindowsDestop
+    const HWND windowHandle = pxWindow->Info.Handle.WindowID;
 
     for(;;)
     {
         MSG message;
 
-        const PXBool peekResult = PeekMessage(&message, pxWindow->Info.Handle.WindowID, 0, 0, PM_NOREMOVE); // Windows 2000, User32.dll, winuser.h
+        const PXBool peekResult = PeekMessage(&message, windowHandle, 0, 0, PM_NOREMOVE); // Windows 2000, User32.dll, winuser.h
 
         if(!peekResult)
         {
             break; // Stop, no more messages
         }
 
-        const PXBool messageResult = GetMessage(&message, pxWindow->Info.Handle.WindowID, 0, 0); // Windows 2000, User32.dll, winuser.h
+        const PXBool messageResult = GetMessage(&message, windowHandle, 0, 0); // Windows 2000, User32.dll, winuser.h
 
         if(!messageResult)
         {

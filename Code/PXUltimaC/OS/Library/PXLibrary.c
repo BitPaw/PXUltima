@@ -106,47 +106,47 @@ PXActionResult PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* con
     (
         PXLoggingAllocation,
         "Library",
-        "Load",
-        "Open <%s>",
+        "Open",
+        "<%s>",
         filePath->TextA
     );
 #endif
 
-    switch (filePath->Format)
+    switch(filePath->Format)
     {
-    case TextFormatUTF8:
-    case TextFormatASCII:
-    {
+        case TextFormatUTF8:
+        case TextFormatASCII:
+        {
 #if OSUnix
-        dlerror(); // Clear any existing error
+            dlerror(); // Clear any existing error
 
-        const int mode = RTLD_NOW;
-        pxLibrary->ID = dlopen(filePath->TextA, mode); // dlfcn.h   
+            const int mode = RTLD_NOW;
+            pxLibrary->ID = dlopen(filePath->TextA, mode); // dlfcn.h   
 
 #elif PXOSWindowsDestop
-        SetLastError(0);
+            SetLastError(0);
 
-        pxLibrary->ID = LoadLibraryA(filePath->TextA); // Windows XP, Kernel32.dll, libloaderapi.h
+            pxLibrary->ID = LoadLibraryA(filePath->TextA); // Windows XP, Kernel32.dll, libloaderapi.h
 #else
-        return PXActionRefusedNotSupported;
+            return PXActionRefusedNotSupported;
 #endif
-        break;
-    }
+            break;
+        }
 
-    case TextFormatUNICODE:
-    {
+        case TextFormatUNICODE:
+        {
 #if OSUnix
-        return 0;
+            return 0;
 
 #elif PXOSWindowsDestop
-        SetLastError(0);
+            SetLastError(0);
 
-        pxLibrary->ID = LoadLibraryW(filePath->TextW); // Windows XP, Kernel32.dll, libloaderapi.h
+            pxLibrary->ID = LoadLibraryW(filePath->TextW); // Windows XP, Kernel32.dll, libloaderapi.h
 #else
-        return PXActionRefusedNotSupported;
+            return PXActionRefusedNotSupported;
 #endif
-        break;
-    }
+            break;
+        }
     }
 
     const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxLibrary->ID);
@@ -160,8 +160,8 @@ PXActionResult PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* con
         (
             PXLoggingError,
             "Library",
-            "Load",
-            "Can't be loaded <%s>",
+            "Open",
+            "Can't be opened <%s>",
             filePath->TextA
         );
 #endif
@@ -174,8 +174,9 @@ PXActionResult PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* con
     (
         PXLoggingInfo,
         "Library",
-        "Load",
-        "Successful <0x%p>",
+        "Open",
+        "Successful <%s> -> <0x%p>",
+        filePath->TextA,
         pxLibrary->ID
     );
 #endif
@@ -229,9 +230,20 @@ PXActionResult PXAPI PXLibraryClose(PXLibrary* const pxLibrary)
 
 PXBool PXAPI PXLibraryGetSymbolBinding(PXLibrary* const pxLibrary, void** const bindingObject, const char* const symbolList, const PXSize amount, const PXBool areAllImportant)
 {
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "Library",
+        "Biding",
+        "Load for <%p>...",
+        pxLibrary->ID
+    );
+#endif
+
     PXSize position = 0;
 
-    for(PXSize i = 0 ; ; ++i)
+    for(PXSize i = 0; ; ++i)
     {
         const char* const cursor = &symbolList[position];
         const PXSize length = PXTextLengthA(cursor, PXTextUnkownLength);
@@ -249,6 +261,17 @@ PXBool PXAPI PXLibraryGetSymbolBinding(PXLibrary* const pxLibrary, void** const 
         PXLibraryGetSymbolA(pxLibrary, function, cursor, areAllImportant);
     }
 
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "Library",
+        "Biding",
+        "Done for <%p>...",
+        pxLibrary->ID
+    );
+#endif
+
     return PXTrue;
 }
 
@@ -265,7 +288,7 @@ PXBool PXAPI PXLibraryGetSymbolListA(PXLibrary* const pxLibrary, PXLibraryFuntio
     );
 #endif
 
-    for (PXSize i = 0; i < amount; ++i)
+    for(PXSize i = 0; i < amount; ++i)
     {
         PXLibraryFuntionEntry* pxLibraryFuntionEntry = &pxLibraryFuntionEntryList[i];
 
@@ -279,20 +302,21 @@ PXBool PXAPI PXLibraryGetSymbolA(PXLibrary* const pxLibrary, void** const librar
 {
     void* functionAdress = PXNull;
 
-#if PXLogEnable && 0
+#if PXLogEnable && 1
     PXLogPrint
     (
-        PXLoggingAllocation,
+        PXLoggingInfo,
         "Library",
-        "Load",
-        "Symbol <%s>",
+        "Symbol-Fetch",
+        "<%p>:<%s>",
+        pxLibrary->ID,
         symbolName
     );
 #endif
 
 #if OSUnix
     functionAdress = (void*)dlsym(pxLibrary->ID, symbolName);
-    const char* errorString = dlerror();
+    //const char* errorString = dlerror();
 #elif OSWindows
     functionAdress = (void*)GetProcAddress(pxLibrary->ID, symbolName); // Windows XP, Kernel32.dll, libloaderapi.h
 
@@ -302,7 +326,7 @@ PXBool PXAPI PXLibraryGetSymbolA(PXLibrary* const pxLibrary, void** const librar
         {
             *libraryFunction = PXNull;
             return PXFalse;
-        }       
+        }
     }
 
     const PXActionResult pxActionResult = PXErrorCurrent(PXNull != functionAdress);
@@ -316,7 +340,7 @@ PXBool PXAPI PXLibraryGetSymbolA(PXLibrary* const pxLibrary, void** const librar
         (
             PXLoggingWarning,
             "Library",
-            "Symbol-Get",
+            "Symbol-Fetch",
             "Missing <%s>",
             symbolName
         );
@@ -341,55 +365,55 @@ PXActionResult PXAPI PXLibraryName(PXLibrary* const pxLibrary, PXText* const lib
 {
     PXMemoryClear(libraryName->TextA, libraryName->SizeAllocated);
 
-    switch (libraryName->Format)
+    switch(libraryName->Format)
     {
-    case TextFormatUTF8:
-    case TextFormatASCII:
-    {
+        case TextFormatUTF8:
+        case TextFormatASCII:
+        {
 #if OSUnix
-        return PXActionRefusedNotImplemented;
+            return PXActionRefusedNotImplemented;
 
 #elif OSWindows
-        libraryName->SizeUsed = GetModuleFileNameExA // Windows XP, Kernel32.dll, psapi.h
-                                (
-                                    pxLibrary->ProcessHandle,
-                                    pxLibrary->ID,
-                                    libraryName->TextA,
-                                    libraryName->SizeAllocated
-                                );
-        const PXActionResult pxActionResult = PXErrorCurrent(0 == libraryName->SizeUsed);
+            libraryName->SizeUsed = GetModuleFileNameExA // Windows XP, Kernel32.dll, psapi.h
+            (
+                pxLibrary->ProcessHandle,
+                pxLibrary->ID,
+                libraryName->TextA,
+                libraryName->SizeAllocated
+            );
+            const PXActionResult pxActionResult = PXErrorCurrent(0 == libraryName->SizeUsed);
 
-        if(PXActionSuccessful != pxActionResult)
-        {
-            return pxActionResult;
-        }
+            if(PXActionSuccessful != pxActionResult)
+            {
+                return pxActionResult;
+            }
 #endif
 
-        break;
-    }
+            break;
+        }
 
-    case TextFormatUNICODE:
-    {
+        case TextFormatUNICODE:
+        {
 #if OSUnix
-        return PXActionRefusedNotImplemented;
+            return PXActionRefusedNotImplemented;
 
 #elif OSWindows
-        libraryName->SizeUsed = GetModuleFileNameExW // Windows XP, Kernel32.dll, psapi.h
-                                (
-                                    pxLibrary->ProcessHandle,
-                                    pxLibrary->ID,
-                                    libraryName->TextW,
-                                    libraryName->SizeAllocated
-                                );
-        const PXActionResult pxActionResult = PXErrorCurrent(0 == libraryName->SizeUsed);
+            libraryName->SizeUsed = GetModuleFileNameExW // Windows XP, Kernel32.dll, psapi.h
+            (
+                pxLibrary->ProcessHandle,
+                pxLibrary->ID,
+                libraryName->TextW,
+                libraryName->SizeAllocated
+            );
+            const PXActionResult pxActionResult = PXErrorCurrent(0 == libraryName->SizeUsed);
 
-        if(PXActionSuccessful != pxActionResult)
-        {
-            return pxActionResult;
-        }
+            if(PXActionSuccessful != pxActionResult)
+            {
+                return pxActionResult;
+            }
 #endif
-        break;
-    }
+            break;
+        }
     }
 
     return PXActionSuccessful;

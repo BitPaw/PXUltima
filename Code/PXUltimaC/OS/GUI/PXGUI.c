@@ -1615,12 +1615,10 @@ void PXAPI PXGUIScreenGetSize(PXInt32S* const width, PXInt32S* const height)
 
 PXActionResult PXAPI PXGUISystemInitialize(PXGUISystem* const pxGUISystem)
 {
-    if(PXGUISystemGlobalReference)
+    if(!PXGUISystemGlobalReference)
     {
-        return PXActionRefusedAlreadyInizialized;
+        PXGUISystemGlobalReference = pxGUISystem;
     }
-
-    PXGUISystemGlobalReference = pxGUISystem;
 
     // Enable multithreading
     {
@@ -3516,14 +3514,16 @@ PXActionResult PXAPI PXWindowPixelSystemSet(PXWindowPixelSystemInfo* const pxWin
     PXLogPrint
     (
         PXLoggingInfo,
-        "Window",
-        "PixelSystem",
+        "GUI",
+        "Window-PixelSystem",
         "Setting info"
     );
 #endif
 
 #if OSUnix
-    return PXActionRefusedNotImplemented;
+    // TODO: implement?
+
+    return PXActionSuccessful;
 
 #elif OSWindows
 

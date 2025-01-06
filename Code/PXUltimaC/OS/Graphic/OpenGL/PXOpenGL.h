@@ -1400,7 +1400,7 @@ typedef struct PXOpenGL_
 
 #if OSUnix
     Display* DisplayHandle;
-    GLXDrawable DrawableHandle;
+    Window WindowHandle; // or GLXDrawable eqivilant
 #elif OSWindows
     HWND WindowHandle;
     HDC WindowDeviceContextHandle;

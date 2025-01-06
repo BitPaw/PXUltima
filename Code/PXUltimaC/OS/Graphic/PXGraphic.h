@@ -55,7 +55,7 @@ typedef struct PXGraphicInitializeInfo_
     PXWindow* WindowReference;
 
 #if OSUnix
-
+    Display* DisplayConnection;
 #elif OSWindows
     HDC HandleDeviceContext;
 #endif
@@ -320,6 +320,10 @@ typedef struct PXGraphic_
 
     PXSize DevicePhysicalListSize;
     PXGraphicDevicePhysical* DevicePhysicalList;
+
+#if OSUnix
+    Display* DisplayConnection;
+#endif
 }
 PXGraphic;
 

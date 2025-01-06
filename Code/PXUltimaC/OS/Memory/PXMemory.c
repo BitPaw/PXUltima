@@ -257,13 +257,14 @@ void* PXAPI PXMemoryCalloc(const PXSize amount, const PXSize objectSize)
             PXLoggingAllocation,
             "PX",
             "Memory-Calloc",
-            "%s::%s::%s::%i, %ix %i B",
+            "%s::%s::%s::%i, %ix %i B @ <&p>",
             pxSymbol.NameModule,
             pxSymbol.NameFile,
             pxSymbol.NameSymbol,
             pxSymbolMemory.LineNumber,
             pxSymbolMemory.Amount,
-            pxSymbolMemory.ObjectSize
+            pxSymbolMemory.ObjectSize,
+            adress
         );
 #endif
     }
@@ -281,7 +282,7 @@ void* PXAPI PXMemoryMalloc(const PXSize memorySize)
     }
 
 #if OSUnix || MemoryUseSystemFunction || OSForcePOSIXForWindows
-    adress = malloc(adress);
+    adress = malloc(memorySize);
 #elif OSWindows
     const HANDLE heapHandle = GetProcessHeap(); // Windows 2000 SP4, Kernel32.dll, heapapi.h
     adress = HeapAlloc(heapHandle, 0, memorySize); // Windows 2000 SP4, Kernel32.dll, heapapi.h
@@ -316,13 +317,14 @@ void* PXAPI PXMemoryMalloc(const PXSize memorySize)
             PXLoggingAllocation,
             "PX",
             "Memory-Alloc",
-            "%s::%s::%s::%i, %7ix %i B",
+            "%s::%s::%s::%i, %7ix %i B @ <%p>",
             pxSymbol.NameModule,
             pxSymbol.NameFile,
             pxSymbol.NameSymbol,
             pxSymbolMemory.LineNumber,
             pxSymbolMemory.Amount,
-            pxSymbolMemory.ObjectSize
+            pxSymbolMemory.ObjectSize,
+            adress
         );
 #endif
     }

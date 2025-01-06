@@ -1,6 +1,7 @@
 #include "PXImage.h"
 
 #include <OS/Memory/PXMemory.h>
+#include <OS/Console/PXConsole.h>
 #include <Media/PXText.h>
 #include <Math/PXMath.h>
 
