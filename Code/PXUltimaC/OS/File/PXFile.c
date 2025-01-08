@@ -2157,6 +2157,8 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, PXFileOpenInfo* const pxFi
                 MAP_ANONYMOUS |
                 MAP_POPULATE; // Will be ignored if not spesifcally enabled
 
+            PXBool useLargePage = usePagesLarge && !usePagesHuge;
+
 #if 0 // MAP_UNINITIALIZED not public??
             if(0) // Dont clear memory, can improve performance but will be ignored if not directly enabled. Safty reasons.
             {
@@ -2164,7 +2166,7 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, PXFileOpenInfo* const pxFi
             }
 #endif
 
-            if(usePagesLarge && !usePagesHuge) // Create large page
+            if(useLargePage) // Create large page
             {
                 mode |= MAP_HUGETLB | MAP_HUGE_2MB;
             }
@@ -2174,26 +2176,63 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, PXFileOpenInfo* const pxFi
                 mode |= MAP_HUGETLB | MAP_HUGE_1GB;
             }
 
-            pxFile->Data = mmap(NULL, pxFileIOInfo->FileSizeRequest, permission, mode, -1, 0);
-            const PXActionResult allocResult = PXErrorCurrent(MAP_FAILED != pxFile->Data);
-
-            if(PXActionSuccessful != allocResult)
+            for(;;)
             {
+                pxFile->Data = mmap(NULL, pxFileIOInfo->FileSizeRequest, permission, mode, -1, 0);
+                const PXActionResult allocResult = PXErrorCurrent(MAP_FAILED != pxFile->Data);
+
+                if(PXActionSuccessful == allocResult)
+                {
+                    break;
+                }
+
+                // Did we do a normal allocation?
+                if(!useLargePage && !usePagesHuge)
+                {
+#if PXLogEnable
+                    PXLogPrint
+                    (
+                        PXLoggingError,
+                        "File",
+                        "Open-Virtual",
+                        "Allocation failed! -> mmap()"
+                    );
+#endif
+
+                    pxFile->Data = PXNull;
+                    pxFile->DataUsed = 0;
+                    pxFile->DataAllocated = 0;
+
+
+                    break;
+                }
+
+
+                // Try to recover to a normal page
 #if PXLogEnable
                 PXLogPrint
                 (
-                    PXLoggingError,
+                    PXLoggingWarning,
                     "File",
                     "Open-Virtual",
-                    "Allocation failed! -> mmap()"
+                    "Allocation failed! We try again..."
                 );
 #endif
-                pxFile->Data = PXNull;
-                pxFile->DataUsed = 0;
-                pxFile->DataAllocated = 0;
 
-                return allocResult;
+
+                if(useLargePage)
+                {
+                    mode &= ~(MAP_HUGETLB | MAP_HUGE_2MB);
+                    useLargePage = PXFalse;
+                }
+                if(usePagesHuge)
+                {
+                    mode &= ~(MAP_HUGETLB | MAP_HUGE_1GB);
+                    useLargePage = PXTrue;
+                }
             }
+
+
 
 #elif OSWindows
 

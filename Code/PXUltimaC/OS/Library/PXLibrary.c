@@ -300,57 +300,47 @@ PXBool PXAPI PXLibraryGetSymbolListA(PXLibrary* const pxLibrary, PXLibraryFuntio
 
 PXBool PXAPI PXLibraryGetSymbolA(PXLibrary* const pxLibrary, void** const libraryFunction, const char* const symbolName, const PXBool isImportant)
 {
-    void* functionAdress = PXNull;
+#if OSUnix
+    *libraryFunction = (void*)dlsym(pxLibrary->ID, symbolName);
+    //const char* errorString = dlerror();
+#elif OSWindows
+    *libraryFunction = (void*)GetProcAddress(pxLibrary->ID, symbolName); // Windows XP, Kernel32.dll, libloaderapi.h
+#endif
+    const PXActionResult pxActionResult = PXErrorCurrent(PXNull != *libraryFunction);
 
-#if PXLogEnable && 1
+    // If the fetch is not important, we dont want to trigger a failure.
+    {
+        if(PXActionSuccessful != pxActionResult)
+        {
+            if(isImportant) // If it is not importendt, aka not an important/optional function/feature, we we dont send an error
+            {
+#if PXLogEnable
+                PXLogPrint
+                (
+                    PXLoggingWarning,
+                    "Library",
+                    "Symbol-Fetch",
+                    "Missing <%s>",
+                    symbolName
+                );
+#endif
+            }
+
+            return PXFalse;
+        } 
+    }
+
+#if PXLogEnable
     PXLogPrint
     (
         PXLoggingInfo,
         "Library",
         "Symbol-Fetch",
-        "<%p>:<%s>",
+        "<%p>::<%s>::<%p>",
         pxLibrary->ID,
-        symbolName
+        symbolName,
+        *libraryFunction
     );
-#endif
-
-#if OSUnix
-    functionAdress = (void*)dlsym(pxLibrary->ID, symbolName);
-    //const char* errorString = dlerror();
-#elif OSWindows
-    functionAdress = (void*)GetProcAddress(pxLibrary->ID, symbolName); // Windows XP, Kernel32.dll, libloaderapi.h
-
-    // If the fetch is not important, we dont want to trigger a failure.
-    {
-        if(!functionAdress && !isImportant)
-        {
-            *libraryFunction = PXNull;
-            return PXFalse;
-        }
-    }
-
-    const PXActionResult pxActionResult = PXErrorCurrent(PXNull != functionAdress);
-
-    if(PXActionSuccessful != pxActionResult)
-    {
-        *libraryFunction = PXNull;
-
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingWarning,
-            "Library",
-            "Symbol-Fetch",
-            "Missing <%s>",
-            symbolName
-        );
-#endif
-
-        return pxActionResult;
-    }
-
-    *libraryFunction = functionAdress;
-
 #endif
 
     return PXTrue;

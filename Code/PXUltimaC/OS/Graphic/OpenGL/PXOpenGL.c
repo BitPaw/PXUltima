@@ -2704,18 +2704,21 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
                 PXLoggingInfo,
                 "OpenGL",
                 "Initialize",
-                "%s\n"
-                "%s\n"
-                "Memory  : %s / %s %i%% from (%s)\n"
-                "Evicted : %i / %s",
-                pxGraphicDevicePhysical.Vendor,
-                pxGraphicDevicePhysical.Renderer,
+                "Device\n"
+                "%12s : %s\n"
+                "%12s : %s\n"
+                "%12s : %s / %s %i%% from (%s)\n"
+                "%12s : %i / %s",
+                "Vendor", pxGraphicDevicePhysical.Vendor,
+                "Renderer", pxGraphicDevicePhysical.Renderer,
 
+                "Memory",
                 pxTextVideoMemoryCurrent.TextA,
                 pxTextVideoMemoryTotal.TextA,
                 percent,
                 pxTextVideoMemoryDedicated.TextA,
 
+                "Evicted",
                 pxGraphicDevicePhysical.VideoMemoryEvictionCount,
                 pxTextVideoMemorySize.TextA
             );

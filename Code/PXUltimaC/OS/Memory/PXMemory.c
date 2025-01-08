@@ -257,7 +257,7 @@ void* PXAPI PXMemoryCalloc(const PXSize amount, const PXSize objectSize)
             PXLoggingAllocation,
             "PX",
             "Memory-Calloc",
-            "%s::%s::%s::%i, %ix %i B @ <&p>",
+            "%s::%s::%s::%i, %ix %i B @ <%p>",
             pxSymbol.NameModule,
             pxSymbol.NameFile,
             pxSymbol.NameSymbol,
