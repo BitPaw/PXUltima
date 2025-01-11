@@ -76,6 +76,7 @@ typedef enum PXActionResult_
     PXActionFailedInitialization, // Initialization of this object was tyred but failed while doing so
     PXActionFailedContextBinding, // Initialization was ok, binding the data to the thread failed
     PXActionFailedContextRelease,
+    PXActionRefusedContextNotBound, // API is not bound to session
     PXActionRefusedAlreadyInizialized, // Object has already been initialized
     PXActionRefusedAlreadyExists, // [EXIST] Object can't be created, as it alteady exists
     PXActionRefusedTypeInvalid,

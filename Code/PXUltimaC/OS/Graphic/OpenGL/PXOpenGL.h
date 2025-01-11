@@ -1388,6 +1388,10 @@ typedef struct PXOpenGLBinding_
 }
 PXOpenGLBinding;
 
+
+#define PXOpenGLStateIsBoundToThread (1<<0)
+#define PXOpenGLStateIsTexture2DEnabled (1<<1)
+
 typedef struct PXOpenGL_
 {
     PXOpenGLBinding Binding;
@@ -1406,7 +1410,7 @@ typedef struct PXOpenGL_
     HDC WindowDeviceContextHandle;
 #endif
 
-    PXBool IsTexture2DEnabled;
+    PXInt32U Flags;
 }
 PXOpenGL;
 

@@ -1655,22 +1655,34 @@ PXUIElementPosition;
 typedef void (PXAPI* PXWindowEventFunction)(void* const owner, struct PXWindowEvent_* const pxWindowEvent);
 
 
-typedef struct PXRectangle_
+typedef struct PXRectangleXYWH_
+{
+    int X;
+    int Y;
+    int Width;
+    int Height;
+}
+PXRectangleXYWH;
+
+typedef struct PXRectangleLTRB_
 {
     int Left;
     int Top;
     int Right;
     int Bottom;
 }
-PXRectangle;
+PXRectangleLTRB;
 
 
 typedef struct PXWindowDrawInfo_
 {
-    PXRectangle Rectangle;
+    PXRectangleXYWH RectangleXYWH;
 
 #if OSUnix
-    int dummy;
+    int ScreenIDHandle;
+    Display* DisplayHandle;
+    Drawable WindowIDHandle;
+    GC GraphicContntainerHandle;
 #elif OSWindows
     HWND hwnd;
     HDC hDC;
@@ -2463,8 +2475,8 @@ typedef struct PXWindowEvent_
     //-----------------------------
     PXWindowEventType Type;
 
-    struct PXWindow_* UIElementReference;
-    struct PXWindow_* UIElementSender;
+    PXWindow* UIElementReference;
+    PXWindow* UIElementSender;
 }
 PXWindowEvent;
 
@@ -2778,15 +2790,6 @@ typedef struct PXWindowCreateWindowInfo_
 }
 PXWindowCreateWindowInfo;
 
-typedef struct PXWindowSizeInfo_
-{
-    PXInt32S X;
-    PXInt32S Y;
-    PXInt32S Width;
-    PXInt32S Height;
-}
-PXWindowSizeInfo;
-
 typedef union PXWindowCreateInfoData_
 {
     PXWindowMenuItemList MenuItem;
@@ -2799,7 +2802,7 @@ typedef union PXWindowCreateInfoData_
     PXUIElementComboBoxInfo ComboBox;
 
     // Fetched
-    PXWindowSizeInfo Size;
+    PXRectangleXYWH Size;
 }
 PXWindowCreateInfoData;
 
@@ -2815,7 +2818,7 @@ PXWindowPropertyUpdateType;
 // Info about a window property like position or text content
 typedef struct PXWindowPropertyInfo_
 {
-    PXWindow* UIElement;
+    PXWindow* WindowCurrent;
     PXWindow* WindowReference;
     PXUIElementProperty Property;
     PXWindowCreateInfoData Data;
@@ -2828,10 +2831,10 @@ PXWindowPropertyInfo;
 typedef struct PXWindowCreateInfo_
 {
     // Handles
-    PXWindow* UIElementWindow;
+    PXWindow* WindowCurrent;
     PXNativDrawWindowHandle CurrnetID;
 
-    PXWindow* UIElementParent;
+    PXWindow* WindowParent;
     PXNativDrawWindowHandle ParentID;
 
     PXDisplay DisplayCurrent;

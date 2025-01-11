@@ -2403,6 +2403,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
 
 
 #if OSUnix
+        int screen = DefaultScreen(pxOpenGL->DisplayHandle);
         const int attributeList[] =
         {
             GLX_RGBA,
@@ -2411,7 +2412,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
             GLX_DOUBLEBUFFER,
             None
         };
-        const XVisualInfo* const visualInfo = glXChooseVisual(pxOpenGL->DisplayHandle, 0, attributeList);
+        const XVisualInfo* const visualInfo = glXChooseVisual(pxOpenGL->DisplayHandle, screen, attributeList);
 
         {
             const PXBool successful = visualInfo != 0;
@@ -2671,7 +2672,12 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
 
         PXOpenGLDevicePhysicalListAmount(pxOpenGL, &devices);
 
-        PXOpenGLDevicePhysicalListFetch(pxOpenGL, devices, &pxGraphicDevicePhysical);
+        PXActionResult fetchResult = PXOpenGLDevicePhysicalListFetch(pxOpenGL, devices, &pxGraphicDevicePhysical);
+
+        if(PXActionSuccessful != fetchResult)
+        {
+            devices = 0;
+        }
 
         for(PXInt32U i = 0; i < devices; i++)
         {
@@ -2748,7 +2754,7 @@ PXActionResult PXAPI PXOpenGLSelect(PXOpenGL* const pxOpenGL)
     (
         PXLoggingInfo,
         "OpenGL",
-        "Context",
+        "Context-Select",
         "Bind to current thread\n"
 #if OSUnix
         "%10s %30s <%p>\n"
@@ -2789,8 +2795,12 @@ PXActionResult PXAPI PXOpenGLSelect(PXOpenGL* const pxOpenGL)
         );
 #endif
 
+        pxOpenGL->Flags &= ~PXOpenGLStateIsBoundToThread;
+
         return PXActionFailedContextBinding;
     }
+
+    pxOpenGL->Flags |= PXOpenGLStateIsBoundToThread;
 
 #if PXLogEnable
     PXLogPrint
@@ -2834,6 +2844,8 @@ PXActionResult PXAPI PXOpenGLDeselect(PXOpenGL* const pxOpenGL)
     {
         return PXActionFailedContextRelease;
     }
+
+    pxOpenGL->Flags &= ~PXOpenGLStateIsBoundToThread;
 
     return PXActionSuccessful;
 }
@@ -2942,6 +2954,21 @@ PXActionResult PXAPI PXOpenGLDevicePhysicalListFetch(PXOpenGL* const pxOpenGL, c
         return PXActionSuccessful;
     }
 
+    if(!(PXOpenGLStateIsBoundToThread & pxOpenGL->Flags))
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingError,
+            "OpenGL",
+            "Device-Fetch",
+            "Context not bound to thread!"
+        );
+#endif
+
+        return PXActionRefusedContextNotBound;
+    }
+
     PXClearList(PXGraphicDevicePhysical, pxGraphicDevicePhysicalList, amount);
 
     if(!pxOpenGL->Binding.GetString)
@@ -2951,7 +2978,7 @@ PXActionResult PXAPI PXOpenGLDevicePhysicalListFetch(PXOpenGL* const pxOpenGL, c
         (
             PXLoggingInfo,
             "OpenGL",
-            "Initialize",
+            "Device-Fetch",
             "GetString missing, cant resolve names"
         );
 #endif
@@ -5301,13 +5328,13 @@ PXActionResult PXAPI PXOpenGLTextureAction(PXOpenGL* const pxOpenGL, PXGraphicTe
             if(enable)
             {
                 pxOpenGL->Binding.Enable(textureType);
-                pxOpenGL->IsTexture2DEnabled = PXTrue;
+                pxOpenGL->Flags |= PXOpenGLStateIsTexture2DEnabled;
                 pxOpenGL->Binding.TextureBind(textureType, textureID);
             }
             else
             {
                 pxOpenGL->Binding.TextureBind(textureType, 0);
-                pxOpenGL->IsTexture2DEnabled = PXFalse;
+                pxOpenGL->Flags &= ~PXOpenGLStateIsTexture2DEnabled;
                 pxOpenGL->Binding.Disable(textureType);
             }
 

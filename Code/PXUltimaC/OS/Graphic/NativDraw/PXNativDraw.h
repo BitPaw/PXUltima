@@ -48,6 +48,8 @@ PXPublic PXActionResult PXAPI PXNativDrawWindowIDValid(PXNativDraw* const pxNati
 PXPublic PXActionResult PXAPI PXNativDrawWindowFetch(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow, const PXNativDrawWindowHandle pxNativDrawWindowHandle);
 
 
+PXPublic void PXAPI PXNativDrawScreenSizeGet(PXRectangleXYWH* const pxRectangleXYWH);
+
 //---------------------------------------------------------
 // Drag'n'Drop
 //---------------------------------------------------------
@@ -134,9 +136,9 @@ PXPublic PXActionResult PXAPI PXNativDrawIcon(PXGUISystem* const pxGUISystem, PX
 PXPublic PXActionResult PXAPI PXNativDrawEventConsumer(PXNativDraw* const pxNativDraw, PXWindowEvent* const pxWindowEvent);
 
 #if OSUnix
-PXPublic void PXNativDrawEventReceiver(PXWindow* const pxWindow, const XEvent* const xEventData);
+PXPublic void PXNativDrawEventTranslator(PXNativDraw* const pxNativDraw, const XEvent* const xEventData);
 #elif PXOSWindowsDestop
-PXPublic LRESULT CALLBACK PXNativDrawEventReceiver(const HWND windowID, const UINT eventID, const WPARAM wParam, const LPARAM lParam);
+PXPublic LRESULT CALLBACK PXNativDrawEventTranslator(const HWND windowID, const UINT eventID, const WPARAM wParam, const LPARAM lParam);
 #endif
 //---------------------------------------------------------
 

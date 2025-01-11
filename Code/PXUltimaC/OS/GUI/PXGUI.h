@@ -98,7 +98,7 @@ PXPublic PXBool PXAPI PXWindowValueFetch
 
 
 
-PXPublic void PXAPI PXGUIScreenGetSize(PXInt32S* const width, PXInt32S* const height);
+
 
 // QueryDisplayConfig
 

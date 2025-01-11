@@ -1214,7 +1214,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
         {
             PXWindowPropertyInfo pxGUIElementUpdateInfo;
             PXClear(PXWindowPropertyInfo, &pxGUIElementUpdateInfo);
-            pxGUIElementUpdateInfo.UIElement = pxWindow;
+            pxGUIElementUpdateInfo.WindowCurrent = pxWindow;
             pxGUIElementUpdateInfo.Property = PXUIElementPropertySize;
 
             PXWindowFetch(&pxEngine->GUISystem, &pxGUIElementUpdateInfo, 1);
@@ -1969,7 +1969,7 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
 
 
     // Post rendering fixup, camera needs to be ajusted and also the window itself
-    PXWindowSizeInfo pxWindowSizeInfo;
+   // PXWindowSizeInfo pxWindowSizeInfo;
 
     //PXWindowSizeGet(pxEngine->Window->ID, &pxWindowSizeInfo);
 
@@ -2516,7 +2516,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
 
             //pxUIElementCreateData.UIElement.Data.SceneRender.StartInfo->UseMouseInput
             pxGUIElementCreateInfo->Name = pxResourceCreateInfo->Name;
-            pxGUIElementCreateInfo->UIElementWindow = pxEngine->Window;
+            pxGUIElementCreateInfo->WindowCurrent = pxEngine->Window;
 
             PXWindowCreate(&pxEngine->GUISystem, pxResourceCreateInfo, 1);
 
