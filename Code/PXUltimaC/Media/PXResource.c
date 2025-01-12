@@ -437,6 +437,8 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
 
 
 #if OSUnix
+                // X11 does not have a brush, right?
+
 #elif OSWindows
 
 
@@ -444,17 +446,34 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                 COLORREF brushColor = RGB(pxBrushCreateInfo->Color.Red, pxBrushCreateInfo->Color.Green, pxBrushCreateInfo->Color.Blue);
                 HBRUSH brushHandle = CreateSolidBrush(brushColor);
 
-
                 pxGUIElementBrush->Info.Handle.BrushHandle = brushHandle;
-                PXWindowBrushColorSet(pxGUIElementBrush, pxBrushCreateInfo->Color.Red, pxBrushCreateInfo->Color.Green, pxBrushCreateInfo->Color.Blue);
 
                 // Color xx = Color(255, 0, 0, 255);
                 // SolidBrush ww = opaqueBrush();
-
-
 #endif
 
+                PXWindowBrushColorSet(pxGUIElementBrush, pxBrushCreateInfo->Color.Red, pxBrushCreateInfo->Color.Green, pxBrushCreateInfo->Color.Blue);
+
+
                 PXDictionaryAdd(&pxResourceManager->BrushLookUp, &pxGUIElementBrush->Info.ID, pxGUIElementBrush);
+
+#if PXLogEnable
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    "Resource",
+                    "Brush",
+                    "ID:%i, Color-RGB:%2.2x%2.2x%2.2x, <%s>",
+                    pxGUIElementBrush->Info.ID,
+                    pxBrushCreateInfo->Color.Red,
+                    pxBrushCreateInfo->Color.Green, 
+                    pxBrushCreateInfo->Color.Blue,
+                    pxResourceCreateInfo->Name
+                );
+#endif
+
+                pxGUIElementBrush->Info.Flags |= PXResourceInfoExist;
+
 
                 break;
             }

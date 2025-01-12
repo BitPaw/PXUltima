@@ -873,6 +873,7 @@ PXActionResult PXAPI PXNativDrawSetV3(PXGUISystem* const pxGUISystem, PXWindow* 
     }
 
     // if no color is provided, use the "no-texture-pink"
+    if(!pxColorRGBI8)
     {
         pxColorRGBI8 = &noTexturePink;
     }
@@ -1959,6 +1960,17 @@ void PXAPI PXNativDrawScreenSizeGet(PXRectangleXYWH* const pxRectangleXYWH)
 
 PXActionResult PXAPI PXNativDrawClear(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement)
 {
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "NativeDraw",
+        "Clear",
+        "PXID:%i",
+        pxGUIElement->Info.ID
+    );
+#endif
+
 #if OSUnix
     const int resultID = XClearWindow(pxGUISystem->DisplayCurrent.DisplayHandle, pxGUIElement->Info.Handle.WindowID);
 #elif OSWindows

@@ -738,6 +738,21 @@ PXActionResult PXAPI PXWindowDrawCustomTabList(PXGUISystem* const pxGUISystem, P
 
     PXNativDrawClear(pxGUISystem, pxGUIElement);
 
+    if(!pxWindowExtendedBehaviourTab)
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingError,
+            "GUI",
+            "Draw",
+            "TabList. Extended data is missing! Canceling draw!"
+        );
+#endif
+
+        return PXActionRefusedArgumentInvalid;
+    }
+
    // int size = 110;
     int offsetX = 3;
     int offsetY = 4;
@@ -839,6 +854,17 @@ PXActionResult PXAPI PXWindowDrawCustomFailback(PXGUISystem* const pxGUISystem, 
         PXGUIDrawModeBack
     );
 
+#if OSUnix
+    PXNativDrawRectangle
+    (
+        pxGUISystem,
+        pxGUIElement,
+        pxGUIElementDrawInfo->RectangleXYWH.X,
+        pxGUIElementDrawInfo->RectangleXYWH.Y,
+        pxGUIElementDrawInfo->RectangleXYWH.Width,
+        pxGUIElementDrawInfo->RectangleXYWH.Height
+    );
+#elif OSWindows
     PXNativDrawRectangle
     (
         pxGUISystem,
@@ -848,6 +874,9 @@ PXActionResult PXAPI PXWindowDrawCustomFailback(PXGUISystem* const pxGUISystem, 
         pxGUIElement->Position.Right,
         pxGUIElement->Position.Bottom
     );
+#endif
+
+
 
     PXNativDrawTextA(pxGUISystem, pxGUIElement, pxGUIElement->NameContent, pxGUIElement->NameContentSize);
 
@@ -3164,9 +3193,6 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
         }
         case PXUIElementTypeTabControll:
         {
-#if OSUnix
-#elif OSWindows
-
             PXUIElementTabPageInfo* const pxUIElementTabPageInfo = &pxGUIElementCreateInfo->Data.TabPage;
 
 
@@ -3271,7 +3297,7 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
             SendMessage(pxGUIElement->Info.Handle.WindowID, TCM_SETCURFOCUS, 0, 0);
 #endif
 
-#endif
+
 
             break;
         }
