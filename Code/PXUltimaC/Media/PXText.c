@@ -557,7 +557,7 @@ void PXAPI PXTextToUTFConvert(const PXSize symbol, PXByte* dataBuffer, PXSize* d
     *dataBufferSize = utfTrailBytesAmount + 1u;
 }
 
-PXSize PXAPI PXTextCopyAU(const PXTextASCII source, const PXSize sourceLength, PXTextUTF8 destination, const PXSize destinationLength)
+PXSize PXAPI PXTextCopyAU(const char* const source, const PXSize sourceLength, char* const destination, const PXSize destinationLength)
 {
     const PXSize minimalSize = PXMathMinimumIU(sourceLength, destinationLength);
     PXSize destinationIndex = 0;
@@ -585,7 +585,7 @@ PXSize PXAPI PXTextCopyAU(const PXTextASCII source, const PXSize sourceLength, P
 
 
 
-PXSize PXAPI PXTextCopyWU(const PXTextUNICODE source, const PXSize sourceLength, PXTextUTF8 destination, const PXSize destinationLength)
+PXSize PXAPI PXTextCopyWU(const wchar_t* const source, const PXSize sourceLength, char* const destination, const PXSize destinationLength)
 {
 #if 1
     const PXSize minimalSize = PXMathMinimumIU(sourceLength, destinationLength);

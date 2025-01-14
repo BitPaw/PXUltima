@@ -5,8 +5,6 @@
 
 #define PXCompilerDEBUG 1
 
-#define PXFlagIsSet(value, flag)  ((value & flag) && 1u)
-
 typedef enum PXCompilerSymbolLexer_
 {
     PXCompilerSymbolLexerInvalid,

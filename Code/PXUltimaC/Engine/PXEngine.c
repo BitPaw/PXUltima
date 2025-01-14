@@ -2525,7 +2525,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
             PXWindow* pxGUIElement = *(PXWindow**)pxResourceCreateInfo->ObjectReference;
 
             pxGUIElement->NameContent = pxResourceCreateInfo->Name;
-            pxGUIElement->NameContentSize = -1;
+            pxGUIElement->NameContentSize = PXTextLengthA(pxResourceCreateInfo->Name, 128);
 
             break;
         }

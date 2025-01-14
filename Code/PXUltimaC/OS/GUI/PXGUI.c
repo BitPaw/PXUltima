@@ -174,6 +174,21 @@ PXActionResult PXAPI PXWindowDelete(PXGUISystem* const pxGUISystem, PXWindow* co
 
 PXActionResult PXAPI PXWindowDrawCustomRectangle3D(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int x, const int y, const int width, const int height)
 {
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "GUI-Draw",
+        "Rectangle3D",
+        "PXID:%-4i X:%-4i Y:%-4i W:%-4i H:%-4i",
+        pxGUIElement->Info.ID,
+        x,
+        y,
+        width,
+        height
+    );
+#endif
+
     const PXBool isHovered = (PXWindowBehaviourIsBeingHovered & pxGUIElement->Info.Behaviour) > 0;
 
     PXWindowBrush* brushFront = pxGUIElement->BrushFront;
@@ -277,26 +292,26 @@ PXActionResult PXAPI PXWindowDrawCustomHeader(PXGUISystem* const pxGUISystem, PX
     PXLogPrint
     (
         PXLoggingInfo,
-        "GUI",
-        "Draw",
+        "GUI-Draw",
+        "Header",
         "Header"
     );
 #endif
 
-    PXNativDrawClear(pxGUISystem, pxGUIElement);
+    PXNativDrawClear(&pxGUISystem->NativDraw, pxGUIElement);
 
     PXNativDrawRectangle
     (
-        pxGUISystem,
+        &pxGUISystem->NativDraw,
         pxGUIElement,
-        pxGUIElement->Position.Left,
-        pxGUIElement->Position.Top,
-        pxGUIElement->Position.Right,
-        pxGUIElement->Position.Bottom
+        pxGUIElement->Position.Form.X,
+        pxGUIElement->Position.Form.Y,
+        pxGUIElement->Position.Form.Width,
+        pxGUIElement->Position.Form.Height
     );
 
 
-    int left = pxGUIElement->Position.Left;
+    int left = pxGUIElement->Position.Form.X;
     int y = 0;
     int height = 16;
 
@@ -307,18 +322,18 @@ PXActionResult PXAPI PXWindowDrawCustomHeader(PXGUISystem* const pxGUISystem, PX
 
         PXUIElementPosition pxUIElementPositionPrev = pxGUIElement->Position;
 
-        pxGUIElement->Position.Left = left;
+        pxGUIElement->Position.Form.X = left;
        // pxGUIElement->Position.Top = y;
        // pxGUIElement->Position.Right = pxGUIElement->Position.Right;
        //pxGUIElement->Position.Bottom -= 1;
-       pxGUIElement->Position.Width = pxWindowMenuItem->TextSize * 15;
+        pxGUIElement->Position.Form.Width = pxWindowMenuItem->TextSize * 15;
         pxGUIElement->Info.Behaviour |= PXWindowKeepWidth;
         pxGUIElement->Info.Behaviour &= ~PXWindowAllignFlags;
         pxGUIElement->Info.Behaviour |= PXWindowAllignCenter;
 
-        pxGUIElement->Position.Right = pxGUIElement->Position.Left + pxGUIElement->Position.Width;
+     //   pxGUIElement->Position.Form.Right = pxGUIElement->Position.Left + pxGUIElement->Position.Width;
 
-        pxGUIElement->Position.Height -= 2;
+        pxGUIElement->Position.Form.Height -= 2;
 
 
 #if 1
@@ -326,10 +341,10 @@ PXActionResult PXAPI PXWindowDrawCustomHeader(PXGUISystem* const pxGUISystem, PX
         (
             pxGUISystem,
             pxGUIElement,
-            pxGUIElement->Position.Left,
-            pxGUIElement->Position.Top,
-            pxGUIElement->Position.Left + pxGUIElement->Position.Width,
-            pxGUIElement->Position.Height
+            pxGUIElement->Position.Form.X,
+            pxGUIElement->Position.Form.Y,
+            pxGUIElement->Position.Form.Width,
+            pxGUIElement->Position.Form.Height
         );
 #endif
 
@@ -338,17 +353,21 @@ PXActionResult PXAPI PXWindowDrawCustomHeader(PXGUISystem* const pxGUISystem, PX
         // Allign with an offset for text
         int offset = 3;
 
-        pxGUIElement->Position.Left += offset;
-        pxGUIElement->Position.Top += offset;
-       // pxGUIElement->Position.Width -= offset;
-        pxGUIElement->Position.Height -= offset;
-
-
-        PXNativDrawTextA(pxGUISystem, pxGUIElement, pxWindowMenuItem->TextData, pxWindowMenuItem->TextSize);
+        PXNativDrawTextA
+        (
+            &pxGUISystem->NativDraw,
+            pxGUIElement, 
+            pxGUIElement->Position.Form.X + offset,
+            pxGUIElement->Position.Form.Y + offset,
+            pxGUIElement->Position.Form.Width,
+            pxGUIElement->Position.Form.Height - offset,
+            pxWindowMenuItem->TextData,
+            pxWindowMenuItem->TextSize
+        );
 
         if(pxWindowMenuItem->TextData)
         {
-            left += pxGUIElement->Position.Width + 1;
+            left += pxGUIElement->Position.Form.Width + 1;
         }
 
         pxGUIElement->Position = pxUIElementPositionPrev;
@@ -369,29 +388,39 @@ PXActionResult PXAPI PXWindowDrawCustomFooter(PXGUISystem* const pxGUISystem, PX
     );
 #endif
 
-    PXNativDrawClear(pxGUISystem, pxGUIElement);
+    PXNativDrawClear(&pxGUISystem->NativDraw, pxGUIElement);
 
     PXNativDrawRectangle
     (
-        pxGUISystem,
+        &pxGUISystem->NativDraw,
         pxGUIElement,
-        pxGUIElement->Position.Left,
-        pxGUIElement->Position.Top,
-        pxGUIElement->Position.Right,
-        pxGUIElement->Position.Bottom
+        pxGUIElement->Position.Form.X,
+        pxGUIElement->Position.Form.Y,
+        pxGUIElement->Position.Form.Width,
+        pxGUIElement->Position.Form.Height
     );
 
     PXProcessor pxProcessor;
     PXProcessorFetchInfo(&pxProcessor);
 
-    PXNativDrawTextA(pxGUISystem, pxGUIElement, pxProcessor.BrandName, pxProcessor.BrandNameSize);
+    PXNativDrawTextA
+    (
+        &pxGUISystem->NativDraw, 
+        pxGUIElement,
+        pxGUIElement->Position.Form.X,
+        pxGUIElement->Position.Form.Y,
+        pxGUIElement->Position.Form.Width,
+        pxGUIElement->Position.Form.Height,
+        pxProcessor.BrandName,
+        pxProcessor.BrandNameSize
+    );
 
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXWindowDrawCustomResourceView(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
+PXActionResult PXAPI PXWindowDrawCustomResourceView(PXGUISystem* const pxGUISystem, PXWindow* const pxWindow, PXWindowDrawInfo* const pxGUIElementDrawInfo)
 {
-    PXWindowExtendedBehaviourResourceView* const pxWindowExtendedBehaviourResourceView = (PXWindowExtendedBehaviourResourceView*)pxGUIElement->ExtendedData;
+    PXWindowExtendedBehaviourResourceView* const pxWindowExtendedBehaviourResourceView = (PXWindowExtendedBehaviourResourceView*)pxWindow->ExtendedData;
 
     PXResourceManager* pxResourceManagerScene = pxGUISystem->ResourceManager;
     PXResourceManager* pxResourceManagerInGame = pxWindowExtendedBehaviourResourceView->ResourceManager;
@@ -408,13 +437,11 @@ PXActionResult PXAPI PXWindowDrawCustomResourceView(PXGUISystem* const pxGUISyst
 #endif
     PXIcon pxIconPlaceHolder;
 
-    PXNativDrawLoad(pxGUISystem, &pxIconPlaceHolder, PXNull);
+    PXNativDrawIconLoad(&pxGUISystem->NativDraw, &pxIconPlaceHolder, PXNull);
 
+    PXNativDrawClear(&pxGUISystem->NativDraw, pxWindow);
 
-
-    PXNativDrawClear(pxGUISystem, pxGUIElement);
-
-    int left = pxGUIElement->Position.Left;
+    int left = pxWindow->Position.Form.X;
     int y = 0;
     int height = 16;
 
@@ -426,24 +453,28 @@ PXActionResult PXAPI PXWindowDrawCustomResourceView(PXGUISystem* const pxGUISyst
 
     // Title
     {
-        PXUIElementPosition pxUIElementPositionPrev = pxGUIElement->Position;
+        PXUIElementPosition pxUIElementPositionPrev = pxWindow->Position;
 
-        pxGUIElement->Position.Left = left;
-        pxGUIElement->Position.Top = y;
-        pxGUIElement->Position.Right = pxGUIElement->Position.Right;
-        pxGUIElement->Position.Bottom = y + height;
-        pxGUIElement->Info.Behaviour &= ~PXWindowAllignFlags;
-        pxGUIElement->Info.Behaviour |= PXWindowAllignLeft;
+        pxWindow->Position.Form.X = left;
+        pxWindow->Position.Form.Y = y;
+       // pxGUIElement->Position.Form.Width = pxGUIElement->Position.Right;
+        pxWindow->Position.Form.Height = y + height;
+        pxWindow->Info.Behaviour &= ~PXWindowAllignFlags;
+        pxWindow->Info.Behaviour |= PXWindowAllignLeft;
 
         PXNativDrawTextA
         (
-            pxGUISystem,
-            pxGUIElement,
+            &pxGUISystem->NativDraw,
+            pxWindow,
+            pxWindow->Position.Form.X,
+            pxWindow->Position.Form.Y,
+            pxWindow->Position.Form.Width,
+            pxWindow->Position.Form.Height,
             "Image",
             5
         );
 
-        pxGUIElement->Position = pxUIElementPositionPrev;
+        pxWindow->Position = pxUIElementPositionPrev;
 
         y += height + 3;
     }
@@ -462,78 +493,82 @@ PXActionResult PXAPI PXWindowDrawCustomResourceView(PXGUISystem* const pxGUISyst
         PXWindowDrawCustomRectangle3D
         (
             pxGUISystem,
-            pxGUIElement,
+            pxWindow,
             left,
             y,
-            pxGUIElement->Position.Right,
+            pxWindow->Position.Form.Width,
             y + height
         );
 
-        PXUIElementPosition pxUIElementPositionPrev = pxGUIElement->Position;
+        PXUIElementPosition pxUIElementPositionPrev = pxWindow->Position;
 
-        pxGUIElement->Position.Left = left;
-        pxGUIElement->Position.Top = y;
-        pxGUIElement->Position.Right = pxGUIElement->Position.Right;
-        pxGUIElement->Position.Bottom = y + height;
-        pxGUIElement->Info.Behaviour &= ~PXWindowAllignFlags;
-        pxGUIElement->Info.Behaviour |= PXWindowAllignLeft;
+        pxWindow->Position.Form.X = left;
+        pxWindow->Position.Form.Y = y;
+        //pxGUIElement->Position.Form.Width = pxGUIElement->Position.Right;
+        pxWindow->Position.Form.Height = y + height;
+        pxWindow->Info.Behaviour &= ~PXWindowAllignFlags;
+        pxWindow->Info.Behaviour |= PXWindowAllignLeft;
 
 
-        PXNativDrawIcon
+        PXNativDrawIconDraw
         (
             pxGUISystem,
-            pxGUIElement,
+            pxWindow,
             &pxIconPlaceHolder,
-            pxGUIElement->Position.Left + 2,
-            pxGUIElement->Position.Top,
+            pxWindow->Position.Form.X + 2,
+            pxWindow->Position.Form.Y,
             16,
             16
         );
 
-        pxGUIElement->Position.Left += 16 + 4;
+        pxWindow->Position.Form.X += 16 + 4;
 
         char buffer[260];
         PXSize wrizze = PXTextPrintA(buffer, 260, "[%i] %ix%i", 1000, pxImage->Width, pxImage->Height);
 
         PXNativDrawTextA
         (
-            pxGUISystem,
-            pxGUIElement,
+            &pxGUISystem->NativDraw,
+            pxWindow,
+            pxWindow->Position.Form.X,
+            pxWindow->Position.Form.Y,
+            pxWindow->Position.Form.Width,
+            pxWindow->Position.Form.Height,
             buffer,
             wrizze
         );
 
-        pxGUIElement->Position = pxUIElementPositionPrev;
+        pxWindow->Position = pxUIElementPositionPrev;
 
 
         y += height + 3;
     }
 
 
-
-
-
-
     // Title
     {
-        PXUIElementPosition pxUIElementPositionPrev = pxGUIElement->Position;
+        PXUIElementPosition pxUIElementPositionPrev = pxWindow->Position;
 
-        pxGUIElement->Position.Left = left;
-        pxGUIElement->Position.Top = y;
-        pxGUIElement->Position.Right = pxGUIElement->Position.Right;
-        pxGUIElement->Position.Bottom = y + height;
-        pxGUIElement->Info.Behaviour &= ~PXWindowAllignFlags;
-        pxGUIElement->Info.Behaviour |= PXWindowAllignLeft;
+        pxWindow->Position.Form.X = left;
+        pxWindow->Position.Form.Y = y;
+        pxWindow->Position.Form.Width = pxWindow->Position.Form.Width;
+        pxWindow->Position.Form.Height = y + height;
+        pxWindow->Info.Behaviour &= ~PXWindowAllignFlags;
+        pxWindow->Info.Behaviour |= PXWindowAllignLeft;
 
         PXNativDrawTextA
         (
-            pxGUISystem,
-            pxGUIElement,
+            &pxGUISystem->NativDraw,
+            pxWindow,
+            pxWindow->Position.Form.X,
+            pxWindow->Position.Form.Y,
+            pxWindow->Position.Form.Width,
+            pxWindow->Position.Form.Height,
             "GUI Elements",
             12
         );
 
-        pxGUIElement->Position = pxUIElementPositionPrev;
+        pxWindow->Position = pxUIElementPositionPrev;
 
         y += height + 3;
     }
@@ -553,36 +588,36 @@ PXActionResult PXAPI PXWindowDrawCustomResourceView(PXGUISystem* const pxGUISyst
         PXWindowDrawCustomRectangle3D
         (
             pxGUISystem,
-            pxGUIElement,
+            pxWindow,
             left,
             y,
-            pxGUIElement->Position.Right,
+            pxWindow->Position.Form.Width,
             y + height
         );
 
-        PXUIElementPosition pxUIElementPositionPrev = pxGUIElement->Position;
+        PXUIElementPosition pxUIElementPositionPrev = pxWindow->Position;
 
-        pxGUIElement->Position.Left = left;
-        pxGUIElement->Position.Top = y;
-        pxGUIElement->Position.Right = pxGUIElement->Position.Right;
-        pxGUIElement->Position.Bottom = y + height;
-        pxGUIElement->Info.Behaviour &= ~PXWindowAllignFlags;
-        pxGUIElement->Info.Behaviour |= PXWindowAllignLeft;
+        pxWindow->Position.Form.X = left;
+        pxWindow->Position.Form.Y = y;
+       // pxGUIElement->Position.Form.Width = pxGUIElement->Position.Right;
+        pxWindow->Position.Form.Height = y + height;
+        pxWindow->Info.Behaviour &= ~PXWindowAllignFlags;
+        pxWindow->Info.Behaviour |= PXWindowAllignLeft;
 
 
-        PXNativDrawIcon
+        PXNativDrawIconDraw
         (
-            pxGUISystem,
-            pxGUIElement,
+            &pxGUISystem->NativDraw,
+            pxWindow,
             &pxIconPlaceHolder,
-            pxGUIElement->Position.Left + 2,
-            pxGUIElement->Position.Top,
+            pxWindow->Position.Form.X + 2,
+            pxWindow->Position.Form.Y,
             16,
             16
         );
 
 
-        pxGUIElement->Position.Left += 16 + 4;
+        pxWindow->Position.Form.X += 16 + 4;
 
         char buffer[260];
 
@@ -592,14 +627,17 @@ PXActionResult PXAPI PXWindowDrawCustomResourceView(PXGUISystem* const pxGUISyst
 
         PXNativDrawTextA
         (
-            pxGUISystem,
-            pxGUIElement,
+            &pxGUISystem->NativDraw,
+            pxWindow,
+            pxWindow->Position.Form.X,
+            pxWindow->Position.Form.Y,
+            pxWindow->Position.Form.Width,
+            pxWindow->Position.Form.Height,
             buffer,
             wrizze
         );
 
-        pxGUIElement->Position = pxUIElementPositionPrev;
-
+        pxWindow->Position = pxUIElementPositionPrev;
 
         y += height + 3;
     }
@@ -608,7 +646,7 @@ PXActionResult PXAPI PXWindowDrawCustomResourceView(PXGUISystem* const pxGUISyst
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXWindowDrawCustomResourceInfo(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
+PXActionResult PXAPI PXWindowDrawCustomResourceInfo(PXGUISystem* const pxGUISystem, PXWindow* const pxWindow, PXWindowDrawInfo* const pxGUIElementDrawInfo)
 {
 #if PXLogEnable
     PXLogPrint
@@ -630,20 +668,30 @@ PXActionResult PXAPI PXWindowDrawCustomResourceInfo(PXGUISystem* const pxGUISyst
     pxResourceInfo = &(*(PXWindow**)pxDictionaryEntry.Value)->Info;
 
 
-    PXNativDrawClear(pxGUISystem, pxGUIElement);
+    PXNativDrawClear(&pxGUISystem->NativDraw, pxWindow);
 
     char nameID[32];
 
     PXSize textSize = PXTextPrintA(nameID, 32, "ID: %i", pxResourceInfo->ID);
 
-    PXNativDrawTextA(pxGUISystem, pxGUIElement, nameID, textSize);
+    PXNativDrawTextA
+    (
+        &pxGUISystem->NativDraw,
+        pxWindow,
+        pxWindow->Position.Form.X,
+        pxWindow->Position.Form.Y,
+        pxWindow->Position.Form.Width,
+        pxWindow->Position.Form.Height,
+        nameID, 
+        textSize
+    );
 
     PXIcon pxIcon;
 
     PXIconLoad(&pxIcon);
 
 
-    int left = pxGUIElement->Position.Left;
+    int left = pxWindow->Position.Form.X;
     int y = 16 + 10;
     int height = 16;
 
@@ -675,45 +723,65 @@ PXActionResult PXAPI PXWindowDrawCustomResourceInfo(PXGUISystem* const pxGUISyst
 
     for(size_t i = 0; i < 16; i++)
     {
-        PXUIElementPosition pxUIElementPositionPrev = pxGUIElement->Position;
+        PXUIElementPosition pxUIElementPositionPrev = pxWindow->Position;
 
-        pxGUIElement->Position.Left = left;
-        pxGUIElement->Position.Top = y;
-        pxGUIElement->Position.Right = pxGUIElement->Position.Right;
-        pxGUIElement->Position.Bottom = y + height;
-        pxGUIElement->Info.Behaviour &= ~PXWindowAllignFlags;
-        pxGUIElement->Info.Behaviour |= PXWindowAllignLeft;
+        pxWindow->Position.Form.X = left;
+        pxWindow->Position.Form.Y = y;
+       // pxGUIElement->Position.Right = pxGUIElement->Position.Right;
+        pxWindow->Position.Form.Height = y + height;
+        pxWindow->Info.Behaviour &= ~PXWindowAllignFlags;
+        pxWindow->Info.Behaviour |= PXWindowAllignLeft;
 
 
-        PXNativDrawIcon
+        PXNativDrawIconDraw
         (
-            pxGUISystem,
-            pxGUIElement,
+            &pxGUISystem->NativDraw,
+            pxWindow,
             &pxIcon,
-            pxGUIElement->Position.Left + 2,
-            pxGUIElement->Position.Top,
+            pxWindow->Position.Form.X + 2,
+            pxWindow->Position.Form.Y,
             16,
             16
         );
 
-        pxGUIElement->Position.Left += 16 + 4;
+        pxWindow->Position.Form.X += 16 + 4;
 
 
         PXSize len = PXTextLengthA(table[i], 30);
 
-        PXNativDrawTextA(pxGUISystem, pxGUIElement, table[i], len);
+        PXNativDrawTextA
+        (
+            &pxGUISystem->NativDraw, 
+            pxWindow,
+            pxWindow->Position.Form.X,
+            pxWindow->Position.Form.Y,
+            pxWindow->Position.Form.Width,
+            pxWindow->Position.Form.Height,
+            table[i],
+            len
+        );
 
 
 
-        pxGUIElement->Position.Left += 120;
+        pxWindow->Position.Form.X += 120;
 
         char* textxx = (pxResourceInfo->Flags & (1<<i)) != 0 ? "Yes" : "No";
         len = PXTextLengthA(textxx, 4);
 
-        PXNativDrawTextA(pxGUISystem, pxGUIElement, textxx, len);
+        PXNativDrawTextA
+        (
+            &pxGUISystem->NativDraw,
+            pxWindow,
+            pxWindow->Position.Form.X,
+            pxWindow->Position.Form.Y,
+            pxWindow->Position.Form.Width,
+            pxWindow->Position.Form.Height,
+            textxx,
+            len
+        );
 
 
-        pxGUIElement->Position = pxUIElementPositionPrev;
+        pxWindow->Position = pxUIElementPositionPrev;
 
 
         y += height + 3;
@@ -722,9 +790,9 @@ PXActionResult PXAPI PXWindowDrawCustomResourceInfo(PXGUISystem* const pxGUISyst
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXWindowDrawCustomTabList(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
+PXActionResult PXAPI PXWindowDrawCustomTabList(PXGUISystem* const pxGUISystem, PXWindow* const pxWindow, PXWindowDrawInfo* const pxGUIElementDrawInfo)
 {
-    PXWindowExtendedBehaviourTab* pxWindowExtendedBehaviourTab = (PXWindowExtendedBehaviourTab*)pxGUIElement->ExtendedData;
+    PXWindowExtendedBehaviourTab* pxWindowExtendedBehaviourTab = (PXWindowExtendedBehaviourTab*)pxWindow->ExtendedData;
 
 #if PXLogEnable
     PXLogPrint
@@ -736,7 +804,7 @@ PXActionResult PXAPI PXWindowDrawCustomTabList(PXGUISystem* const pxGUISystem, P
     );
 #endif
 
-    PXNativDrawClear(pxGUISystem, pxGUIElement);
+    PXNativDrawClear(pxGUISystem, pxWindow);
 
     if(!pxWindowExtendedBehaviourTab)
     {
@@ -761,7 +829,7 @@ PXActionResult PXAPI PXWindowDrawCustomTabList(PXGUISystem* const pxGUISystem, P
     int iconMargin = height - 16;
     int iconSize = height- iconMargin;
 
-    int left = pxGUIElement->Position.X;
+    int left = pxWindow->Position.Form.X;
     int right = offsetY;
 
     for(PXSize i = 0; i < pxWindowExtendedBehaviourTab->TABPageAmount; ++i)
@@ -780,16 +848,16 @@ PXActionResult PXAPI PXWindowDrawCustomTabList(PXGUISystem* const pxGUISystem, P
         PXWindowDrawCustomRectangle3D
         (
             pxGUISystem,
-            pxGUIElement,
+            pxWindow,
             left,
             0,
             left + width,
             height
         );
-        PXNativDrawIcon
+        PXNativDrawIconDraw
         (
-            pxGUISystem,
-            pxGUIElement,
+            &pxGUISystem->NativDraw,
+            pxWindow,
             pxWindowTABPage->Icon,
             left + iconMargin / 2,
             iconMargin / 2,
@@ -797,18 +865,28 @@ PXActionResult PXAPI PXWindowDrawCustomTabList(PXGUISystem* const pxGUISystem, P
             iconSize
         );
 
-        PXUIElementPosition pxUIElementPositionPrev = pxGUIElement->Position;
+        PXUIElementPosition pxUIElementPositionPrev = pxWindow->Position;
 
-        pxGUIElement->Position.Left = left + iconSize+ iconMargin +1;
-        pxGUIElement->Position.Top = offsetY;
-        pxGUIElement->Position.Right = right;
-        pxGUIElement->Position.Bottom = height - offsetY;
-        pxGUIElement->Info.Behaviour &= ~PXWindowAllignFlags;
-        pxGUIElement->Info.Behaviour |= PXWindowAllignLeft;
+        pxWindow->Position.Form.X = left + iconSize+ iconMargin +1;
+        pxWindow->Position.Form.Y = offsetY;
+        pxWindow->Position.Form.Width = right;
+        pxWindow->Position.Form.Height = height - offsetY;
+        pxWindow->Info.Behaviour &= ~PXWindowAllignFlags;
+        pxWindow->Info.Behaviour |= PXWindowAllignLeft;
 
-        PXNativDrawTextA(pxGUISystem, pxGUIElement, pxWindowTABPage->NameContent, pxWindowTABPage->NameContentSize);
+        PXNativDrawTextA
+        (
+            &pxGUISystem->NativDraw,
+            pxWindow, 
+            pxWindow->Position.Form.X,
+            pxWindow->Position.Form.Y,
+            pxWindow->Position.Form.Width,
+            pxWindow->Position.Form.Height,
+            pxWindowTABPage->NameContent, 
+            pxWindowTABPage->NameContentSize
+        );
 
-        pxGUIElement->Position = pxUIElementPositionPrev;
+        pxWindow->Position = pxUIElementPositionPrev;
 
        // int totalWidth = offsetX + (predictSIze + offsetSeperator) * (i + 1);
 
@@ -819,19 +897,19 @@ PXActionResult PXAPI PXWindowDrawCustomTabList(PXGUISystem* const pxGUISystem, P
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXWindowDrawCustomFailback(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
+PXActionResult PXAPI PXWindowDrawCustomFailback(PXGUISystem* const pxGUISystem, PXWindow* const pxWindow, PXWindowDrawInfo* const pxGUIElementDrawInfo)
 {
 #if PXLogEnable
     PXLogPrint
     (
-        PXLoggingInfo,
-        "GUI",
-        "Draw",
-        "FailBack"
+        PXLoggingWarning,
+        "GUI-Draw",
+        "FailBack",
+        "No function to draw element."
     );
 #endif
 
-    PXNativDrawClear(pxGUISystem, pxGUIElement);
+    PXNativDrawClear(pxGUISystem, pxWindow);
 
     PXWindowBrush brushRed;
     PXWindowBrushColorSet(&brushRed, 0xFF, 0x00, 0x00);
@@ -840,51 +918,49 @@ PXActionResult PXAPI PXWindowDrawCustomFailback(PXGUISystem* const pxGUISystem, 
 
     PXNativDrawColorSetBrush
     (
-        pxGUISystem,
-        pxGUIElement,
+        &pxGUISystem->NativDraw,
+        pxWindow,
         &brushRed,
         PXGUIDrawModeFront
     );
 
     PXNativDrawColorSetBrush
     (
-        pxGUISystem,
-        pxGUIElement,
+        &pxGUISystem->NativDraw,
+        pxWindow,
         &brushFont,
         PXGUIDrawModeBack
     );
 
-#if OSUnix
     PXNativDrawRectangle
     (
-        pxGUISystem,
-        pxGUIElement,
-        pxGUIElementDrawInfo->RectangleXYWH.X,
-        pxGUIElementDrawInfo->RectangleXYWH.Y,
-        pxGUIElementDrawInfo->RectangleXYWH.Width,
-        pxGUIElementDrawInfo->RectangleXYWH.Height
+        &pxGUISystem->NativDraw,
+        pxWindow,
+        pxWindow->Position.Form.X,
+        pxWindow->Position.Form.Y,
+        pxWindow->Position.Form.Width,
+        pxWindow->Position.Form.Height
     );
-#elif OSWindows
-    PXNativDrawRectangle
+
+    PXNativDrawTextA
     (
-        pxGUISystem,
-        pxGUIElement,
-        pxGUIElement->Position.Left,
-        pxGUIElement->Position.Top,
-        pxGUIElement->Position.Right,
-        pxGUIElement->Position.Bottom
+        &pxGUISystem->NativDraw,
+        pxWindow,
+        pxWindow->Position.Form.X,
+        pxWindow->Position.Form.Y,
+        pxWindow->Position.Form.Width,
+        pxWindow->Position.Form.Height,
+        pxWindow->NameContent,
+        pxWindow->NameContentSize
     );
-#endif
-
-
-
-    PXNativDrawTextA(pxGUISystem, pxGUIElement, pxGUIElement->NameContent, pxGUIElement->NameContentSize);
 
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXWindowDrawCustomText(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
+PXActionResult PXAPI PXWindowDrawCustomText(PXGUISystem* const pxGUISystem, PXWindow* const pxWindow, PXWindowDrawInfo* const pxGUIElementDrawInfo)
 {
+    const int shadowOffset = 2;
+
 #if PXLogEnable
     PXLogPrint
     (
@@ -892,45 +968,128 @@ PXActionResult PXAPI PXWindowDrawCustomText(PXGUISystem* const pxGUISystem, PXWi
         "GUI",
         "Draw",
         "Text: %s",
-        pxGUIElement->NameContent
+        pxWindow->NameContent
     );
 #endif
 
-    PXNativDrawClear(pxGUISystem, pxGUIElement);
+    PXNativDrawClear(pxGUISystem, pxWindow);
 
-    PXNativDrawColorSetBrush
+
+    // Draw background
+    {
+        PXNativDrawColorSetBrush
+        (
+            &pxGUISystem->NativDraw,
+            pxWindow,
+            pxWindow->BrushFront,
+            PXGUIDrawModeFront
+        );
+
+        PXNativDrawColorSetBrush
+        (
+            &pxGUISystem->NativDraw,
+            pxWindow,
+            pxWindow->BrushBackground,
+            PXGUIDrawModeBack
+        );
+
+        PXNativDrawRectangle
+        (
+            &pxGUISystem->NativDraw,
+            pxWindow,
+            pxWindow->Position.Form.X,
+            pxWindow->Position.Form.Y,
+            pxWindow->Position.Form.Width,
+            pxWindow->Position.Form.Height
+        );
+    }
+
+    // Load font
+    {
+        const char fontName[] =
+#if OSUnix
+            "fixed"
+#elif OSWindows
+        // "Eras Medium ITC"; // Bradley Hand ITC, UniSpace,OCR A, Cascadia Mono
+   
+            "UniSpace";
+#endif
+        const PXSize fontNameLength = sizeof(fontName);
+
+        PXFont pxFont;// = pxGUIElement->FontForText;
+        PXClear(PXFont, &pxFont);
+        pxFont.Size = pxWindow->Position.Form.Height;
+
+
+        PXNativDrawFontLoadA(&pxGUISystem->NativDraw, &pxFont, fontName, fontNameLength);
+
+        PXNativDrawFontSelect(&pxGUISystem->NativDraw, pxWindow, &pxFont);
+    }
+
+
+    // Text-Shadow
+    {
+        PXNativDrawSetRGB
+        (
+            &pxGUISystem->NativDraw,
+            pxWindow,
+            pxWindow->BrushFront->ColorDate.Red * 0.25f,
+            pxWindow->BrushFront->ColorDate.Green * 0.25f,
+            pxWindow->BrushFront->ColorDate.Blue * 0.25f,
+            PXGUIDrawModeFront
+        );
+
+        PXNativDrawTextA
+        (
+            &pxGUISystem->NativDraw,
+            pxWindow,
+            pxWindow->Position.Form.X - shadowOffset,
+            pxWindow->Position.Form.Y + shadowOffset,
+            pxWindow->Position.Form.Width - shadowOffset,
+            pxWindow->Position.Form.Height + shadowOffset,
+            pxWindow->NameContent,
+            pxWindow->NameContentSize
+        );
+    }
+
+    // Text-Content
+    {
+        PXNativDrawColorSetBrush(pxGUISystem, pxWindow, pxWindow->BrushFront, PXGUIDrawModeFront);
+
+        PXNativDrawTextA
+        (
+            &pxGUISystem->NativDraw,
+            pxWindow, 
+            pxWindow->Position.Form.X,
+            pxWindow->Position.Form.Y,
+            pxWindow->Position.Form.Width,
+            pxWindow->Position.Form.Height,
+            pxWindow->NameContent,
+            pxWindow->NameContentSize
+        );
+    }
+
+
+
+
+
+#if OSUnix
+
+
+    XSetFont
     (
-        pxGUISystem,
-        pxGUIElement,
-        pxGUIElement->BrushFront,
-        PXGUIDrawModeFront
+        pxGUISystem->DisplayCurrent.DisplayHandle,
+        pxGUISystem->DisplayCurrent.GraphicContent,
+        font->fid
     );
-    PXNativDrawColorSetBrush
-    (
-        pxGUISystem,
-        pxGUIElement,
-        pxGUIElement->BrushBackground,
-        PXGUIDrawModeBack
-    );
+#endif
 
-    // PXWindowDrawBegin(pxGUISystem, pxGUIElement);
 
-    PXNativDrawRectangle
-    (
-        pxGUISystem,
-        pxGUIElement,
-        pxGUIElement->Position.Left,
-        pxGUIElement->Position.Top,
-        pxGUIElement->Position.Right,
-        pxGUIElement->Position.Bottom
-    );
-
-    PXNativDrawTextA(pxGUISystem, pxGUIElement, pxGUIElement->NameContent, pxGUIElement->NameContentSize);
 
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXWindowDrawCustomButton(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
+PXActionResult PXAPI PXWindowDrawCustomButton(PXGUISystem* const pxGUISystem, PXWindow* const pxWindow, PXWindowDrawInfo* const pxGUIElementDrawInfo)
 {
 #if PXLogEnable
     PXLogPrint
@@ -942,19 +1101,29 @@ PXActionResult PXAPI PXWindowDrawCustomButton(PXGUISystem* const pxGUISystem, PX
     );
 #endif
 
-    PXNativDrawClear(pxGUISystem, pxGUIElement);
+    PXNativDrawClear(&pxGUISystem->NativDraw, pxWindow);
 
     PXWindowDrawCustomRectangle3D
     (
-        pxGUISystem,
-        pxGUIElement,
-        pxGUIElement->Position.Left,
-        pxGUIElement->Position.Top,
-        pxGUIElement->Position.Right,
-        pxGUIElement->Position.Bottom
+        &pxGUISystem->NativDraw,
+        pxWindow,
+        pxWindow->Position.Form.X,
+        pxWindow->Position.Form.Y,
+        pxWindow->Position.Form.Width,
+        pxWindow->Position.Form.Height
     );
 
-    PXNativDrawTextA(pxGUISystem, pxGUIElement, pxGUIElement->NameContent, pxGUIElement->NameContentSize);
+    PXNativDrawTextA
+    (
+        &pxGUISystem->NativDraw,
+        pxWindow,
+        pxWindow->Position.Form.X,
+        pxWindow->Position.Form.Y,
+        pxWindow->Position.Form.Width,
+        pxWindow->Position.Form.Height,
+        pxWindow->NameContent,
+        pxWindow->NameContentSize
+    );
 
     return PXActionSuccessful;
 }
@@ -1064,18 +1233,18 @@ PXActionResult PXAPI PXWindowDrawCustomColorPicker(PXGUISystem* const pxGUISyste
     (
         pxGUISystem,
         pxGUIElement,
-        pxGUIElement->Position.Left,
-        pxGUIElement->Position.Top,
-        pxGUIElement->Position.Right,
-        pxGUIElement->Position.Bottom
+        pxGUIElement->Position.Form.X,
+        pxGUIElement->Position.Form.Y,
+        pxGUIElement->Position.Form.Width,
+        pxGUIElement->Position.Form.Height
     );
 
 
     float scaling = 0.80f;
-    int width = (pxGUIElement->Position.Right - pxGUIElement->Position.Left) / 2;
-    int height = (pxGUIElement->Position.Bottom - pxGUIElement->Position.Top) / 2;
-    int widthS = (pxGUIElement->Position.Right * scaling - pxGUIElement->Position.Left * scaling) / 2;
-    int heightS = (pxGUIElement->Position.Bottom * scaling - pxGUIElement->Position.Top * scaling) / 2;
+    int width = (pxGUIElement->Position.Form.Width - pxGUIElement->Position.Form.X) / 2;
+    int height = (pxGUIElement->Position.Form.Height - pxGUIElement->Position.Form.Y) / 2;
+    int widthS = (pxGUIElement->Position.Form.Width * scaling - pxGUIElement->Position.Form.X * scaling) / 2;
+    int heightS = (pxGUIElement->Position.Form.Height * scaling - pxGUIElement->Position.Form.Y * scaling) / 2;
 
     int precision = 8;
 
@@ -1269,9 +1438,9 @@ PXActionResult PXAPI PXWindowDrawCustomHexView(PXGUISystem* const pxGUISystem, P
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXWindowDrawFileDirectoryView(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
+PXActionResult PXAPI PXWindowDrawFileDirectoryView(PXGUISystem* const pxGUISystem, PXWindow* const pxWindow, PXWindowDrawInfo* const pxGUIElementDrawInfo)
 {
-    PXDirectorySearchCache* const pxDirectorySearchCache = (PXDirectorySearchCache*)pxGUIElement->ExtendedData;
+    PXDirectorySearchCache* const pxDirectorySearchCache = (PXDirectorySearchCache*)pxWindow->ExtendedData;
 
 #if PXLogEnable
     PXLogPrint
@@ -1283,7 +1452,7 @@ PXActionResult PXAPI PXWindowDrawFileDirectoryView(PXGUISystem* const pxGUISyste
     );
 #endif
 
-    PXNativDrawClear(pxGUISystem, pxGUIElement);
+    PXNativDrawClear(pxGUISystem, pxWindow);
 
     PXText pxTExt;
     PXTextMakeFixedA(&pxTExt, "./");
@@ -1291,10 +1460,10 @@ PXActionResult PXAPI PXWindowDrawFileDirectoryView(PXGUISystem* const pxGUISyste
     PXDirectorySearch(pxDirectorySearchCache, &pxTExt);
 
     PXWindow pxGUIElementSub;
-    PXCopy(PXWindow, pxGUIElement, &pxGUIElementSub);
+    PXCopy(PXWindow, pxWindow, &pxGUIElementSub);
     pxGUIElementSub.Info.Behaviour = PXResourceInfoOK | PXWindowAllignTop | PXWindowKeepHeight | PXWindowAllignLeft;
-    pxGUIElementSub.Position.Height = 20;
-    pxGUIElementSub.Position.Left = 20;
+    pxGUIElementSub.Position.Form.Height = 20;
+    pxGUIElementSub.Position.Form.X = 20;
 
     for(PXSize i = 0; i < pxDirectorySearchCache->EntryList.AmountUsed; ++i)
     {
@@ -1362,8 +1531,8 @@ PXActionResult PXAPI PXWindowDrawFileDirectoryView(PXGUISystem* const pxGUISyste
         DrawIconEx
         (
             pxGUIElementSub.DeviceContextHandle,
-            pxGUIElementSub.Position.Left - (pxGUIElementSub.Position.Width + 19),
-            pxGUIElementSub.Position.Top + 2,
+            pxGUIElementSub.Position.Form.X - (pxGUIElementSub.Position.Form.Width + 19),
+            pxGUIElementSub.Position.Form.Y + 2,
             icon,
             16, // Width same as height
             16,
@@ -1373,9 +1542,19 @@ PXActionResult PXAPI PXWindowDrawFileDirectoryView(PXGUISystem* const pxGUISyste
         );
 #endif
 
-        PXNativDrawTextA(pxGUISystem, &pxGUIElementSub, pxFileEntry->FilePathData, pxFileEntry->FilePathSize);
+        PXNativDrawTextA
+        (
+            &pxGUISystem->NativDraw,
+            &pxGUIElementSub, 
+            pxWindow->Position.Form.X,
+            pxWindow->Position.Form.Y,
+            pxWindow->Position.Form.Width,
+            pxWindow->Position.Form.Height,
+            pxFileEntry->FilePathData, 
+            pxFileEntry->FilePathSize
+        );
 
-        pxGUIElementSub.Position.Top += 1 * pxGUIElementSub.Position.Height;
+        pxGUIElementSub.Position.Form.Y += 1 * pxGUIElementSub.Position.Form.Height;
     }
 
 
@@ -1781,10 +1960,10 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
             pxWindowCurrent->NameContent,
             "Parent",
             pxWindowParent->Info.ID,
-            (int)pxWindowParent->Position.X,
-            (int)pxWindowParent->Position.Y,
-            (int)pxWindowParent->Position.Width,
-            (int)pxWindowParent->Position.Height,
+            pxWindowParent->Position.Form.X,
+            pxWindowParent->Position.Form.Y,
+            pxWindowParent->Position.Form.Width,
+            pxWindowParent->Position.Form.Height,
             pxWindowParent->NameContent,
             validResult ? "OK" : "INVALID"
         );
@@ -1798,7 +1977,7 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
 
             if(isDefaultSize)
             {
-                PXRectangleXYWH pxRectangleXYWH;
+                PXRectangleXYWHI32 pxRectangleXYWH;
 
                 PXNativDrawScreenSizeGet(&pxRectangleXYWH);
 
@@ -3208,7 +3387,7 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
 
             PXIcon* pxIcon = PXMemoryCallocT(PXIcon, 1);
 
-            PXNativDrawLoad(pxGUISystem, pxIcon, 0);
+            PXNativDrawIconLoad(pxGUISystem, pxIcon, 0);
 
             for(PXSize i = 0; i < pxUIElementTabPageInfo->TabPageSingleInfoAmount; ++i)
             {
@@ -3234,10 +3413,10 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
                 pxResourceCreateInfo.UIElement.WindowCurrent = pxGUIElementCreateInfo->WindowCurrent;
                 pxResourceCreateInfo.UIElement.WindowParent = pxWindowCurrent;
                 pxResourceCreateInfo.UIElement.BehaviourFlags = PXWindowBehaviourDefaultDecorative | PXWindowAllignLeft;
-                pxResourceCreateInfo.UIElement.Position.MarginLeft = 0;
-                pxResourceCreateInfo.UIElement.Position.MarginTop = 0.08;
-                pxResourceCreateInfo.UIElement.Position.MarginRight = 0;
-                pxResourceCreateInfo.UIElement.Position.MarginBottom = 0;
+                pxResourceCreateInfo.UIElement.Position.Margin.Left = 0;
+                pxResourceCreateInfo.UIElement.Position.Margin.Top = 0.08;
+                pxResourceCreateInfo.UIElement.Position.Margin.Right = 0;
+                pxResourceCreateInfo.UIElement.Position.Margin.Bottom = 0;
 
                 PXResourceManagerAdd(pxGUISystem->ResourceManager, &pxResourceCreateInfo, 1);
 
@@ -3335,8 +3514,8 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
             PXEngineStartInfo* const pxEngineStartInfo = pxUIElementSceneRenderInfo->StartInfo;
 
             pxEngineStartInfo->Mode = PXGraphicInitializeModeOSGUIElement;
-            pxEngineStartInfo->Width = pxWindowCurrent->Position.Width;
-            pxEngineStartInfo->Height = pxWindowCurrent->Position.Height;
+            pxEngineStartInfo->Width = pxWindowCurrent->Position.Form.Width;
+            pxEngineStartInfo->Height = pxWindowCurrent->Position.Form.Height;
             pxEngineStartInfo->UIElement = pxWindowCurrent;
             pxEngineStartInfo->Name = "UIElement-RenderFrame";
             pxEngineStartInfo->UseMouseInput = 1;
@@ -3438,7 +3617,7 @@ PXActionResult PXAPI PXWindowFetch(PXGUISystem* const pxGUISystem, PXWindowPrope
         {
             case PXUIElementPropertySizeParent:
             {
-                PXRectangleXYWH* pxRectangleXYWH = &pxGUIElementUpdateInfo->Data.Size;
+                PXRectangleXYWHI32* pxRectangleXYWH = &pxGUIElementUpdateInfo->Data.Size;
 
                 // const PXBool hasParent = pxGUIElement ? pxGUIElement->Parent : PXFalse;
 
@@ -3458,13 +3637,13 @@ PXActionResult PXAPI PXWindowFetch(PXGUISystem* const pxGUISystem, PXWindowPrope
 
                 PXWindowFetch(pxGUISystem, &pxGUIElementUpdateInfoSub, 1);
 
-                PXCopy(PXRectangleXYWH, &pxGUIElementUpdateInfoSub.Data.Size, &pxGUIElementUpdateInfo->Data.Size);
+                PXCopy(PXRectangleXYWHI32, &pxGUIElementUpdateInfoSub.Data.Size, &pxGUIElementUpdateInfo->Data.Size);
 
                 break;
             }
             case PXUIElementPropertySize:
             {
-                PXRectangleXYWH* pxRectangleXYWH = &pxGUIElementUpdateInfo->Data.Size;
+                PXRectangleXYWHI32* pxRectangleXYWH = &pxGUIElementUpdateInfo->Data.Size;
 
 #if OSUnix
                 XWindowAttributes attributes;

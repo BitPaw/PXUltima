@@ -27,6 +27,7 @@
 typedef enum PXActionResult_ PXActionResult;
 typedef enum PXFileFormat_ PXFileFormat;
 
+typedef struct PXImage_ PXImage;
 typedef struct PXCodeDocumentElement_ PXCodeDocumentElement;
 typedef struct PXFile_ PXFile;
 typedef struct PXTime_ PXTime;
@@ -382,6 +383,7 @@ typedef union PXOSHandle_
     void* DirectXInterface; // DirectX uses interfaces to communicate to a element.
 #if OSUnix
     Window WindowID; // Linux X11 System
+    XFontStruct* FontHandle;
 #elif OSWindows
     HWND WindowID; // Windows only, used for GUI elements
     HBRUSH BrushHandle;
@@ -543,28 +545,41 @@ PXPublic void PXAPI PXIconLoad(PXIcon* const pxIcon);
 
 
 
+//---------------------------------------------------------
+// GUI-Element 
+//---------------------------------------------------------
+typedef struct PXRectangleXYWHI32_
+{
+    int X;
+    int Y;
+    int Width;
+    int Height;
+}
+PXRectangleXYWHI32;
 
-
+typedef struct PXRectangleLTRBI32_
+{
+    int Left;
+    int Top;
+    int Right;
+    int Bottom;
+}
+PXRectangleLTRBI32;
 
 // PXPadding;: Offset the space as the child container (Make object take more space)
 // PXMargin;  Offset the whole child-Container (Make empty space)
-typedef struct PXRectangleOffset_
+typedef struct PXRectangleLTRBF32_
 {
     float Left;
     float Top;
     float Right;
     float Bottom;
 }
-PXRectangleOffset;
+PXRectangleLTRBF32;
 
-PXPublic inline void PXAPI PXRectangleOffsetSet
-(
-    PXRectangleOffset* const pxRectangleOffset,
-    float left,
-    float top,
-    float right,
-    float bottom
-);
+PXPublic void PXAPI PXRectangleLTRBI32ToXYWHI32(const PXRectangleLTRBI32* const pxRectangleLTRBI32, PXRectangleXYWHI32* const pxRectangleXYWHI32);
+PXPublic void PXAPI PXRectangleXYWHI32ToLTRBI32(const PXRectangleXYWHI32* const pxRectangleXYWHI32, PXRectangleLTRBI32* const pxRectangleLTRBI32);
+//---------------------------------------------------------
 
 
 
@@ -580,7 +595,7 @@ typedef struct PXTexture1D_
     PXGraphicImageWrap WrapHeight;
     PXGraphicImageWrap WrapWidth;
 
-    struct PXImage_* Image;
+    PXImage* Image;
 }
 PXTexture1D;
 
@@ -594,7 +609,7 @@ typedef struct PXTexture2D_
     PXGraphicImageWrap WrapHeight;
     PXGraphicImageWrap WrapWidth;
 
-    struct PXImage_* Image;
+    PXImage* Image;
 }
 PXTexture2D;
 
@@ -602,7 +617,7 @@ typedef struct PXTexture3D_
 {
     PXResourceInfo Info;
 
-    struct PXImage_* Image;
+    PXImage* Image;
 }
 PXTexture3D;
 
@@ -613,12 +628,12 @@ typedef struct PXTextureCube_
 
     PXColorFormat Format;
 
-    struct PXImage_* ImageA;
-    struct PXImage_* ImageB;
-    struct PXImage_* ImageC;
-    struct PXImage_* ImageD;
-    struct PXImage_* ImageE;
-    struct PXImage_* ImageF;
+    PXImage* ImageA;
+    PXImage* ImageB;
+    PXImage* ImageC;
+    PXImage* ImageD;
+    PXImage* ImageE;
+    PXImage* ImageF;
 }
 PXTextureCube;
 
@@ -672,7 +687,7 @@ typedef struct PXMaterial_
     float Dissolved;
     float Density; // range from 0.001 to 10. A value of 1.0 means that light does not bend as it passes through an object.
 
-    struct PXTexture2D_* DiffuseTexture;
+    PXTexture2D* DiffuseTexture;
 
     PXMaterialIlluminationMode IlluminationMode;
 }
@@ -691,6 +706,10 @@ PXMaterialContainer;
 
 
 
+
+//---------------------------------------------------------
+// Shader
+//---------------------------------------------------------
 typedef enum PXShaderVariableType_
 {
     PXShaderVariableTypeInvalid,
@@ -813,6 +832,12 @@ typedef struct PXShaderProgram_
     PXShaderVariable* VariableListData;
 }
 PXShaderProgram;
+//---------------------------------------------------------
+
+
+
+
+
 
 
 typedef enum PXDrawScriptType_
@@ -953,7 +978,7 @@ typedef struct PXModel_
     PXBool IgnoreViewPosition; // Removes positiondata from the view matrix
     PXBool IgnoreViewRotation; // remove rotationdata from the view matrix
     PXBool RenderBothSides;
-    PXRectangleOffset Margin;
+    //  Margin ??
     //-----------------------------
 }
 PXModel;
@@ -1625,25 +1650,14 @@ PXUIElementComboBoxInfo;
 
 typedef struct PXUIElementPosition_
 {
-    float MarginLeft;
-    float MarginTop;
-    float MarginRight;
-    float MarginBottom;
+    PXRectangleLTRBF32 Margin;
+    PXRectangleLTRBF32 Padding;
+    PXRectangleXYWHI32 Form;
 
-    float PaddingLeft;
-    float PaddingTop;
-    float PaddingRight;
-    float PaddingBottom;
-
-    float X;
-    float Y;
-    float Width;
-    float Height;
-
-    float Left;
-    float Top;
-    float Right;
-    float Bottom;
+   // float Left;
+   // float Top;
+   // float Right;
+   // float Bottom;
 
     // PXInt16U FlagListFormat; // Unused
 //   PXInt8U FlagListAncer;
@@ -1655,28 +1669,12 @@ PXUIElementPosition;
 typedef void (PXAPI* PXWindowEventFunction)(void* const owner, struct PXWindowEvent_* const pxWindowEvent);
 
 
-typedef struct PXRectangleXYWH_
-{
-    int X;
-    int Y;
-    int Width;
-    int Height;
-}
-PXRectangleXYWH;
 
-typedef struct PXRectangleLTRB_
-{
-    int Left;
-    int Top;
-    int Right;
-    int Bottom;
-}
-PXRectangleLTRB;
 
 
 typedef struct PXWindowDrawInfo_
 {
-    PXRectangleXYWH RectangleXYWH;
+    PXRectangleXYWHI32 RectangleXYWH;
 
 #if OSUnix
     int ScreenIDHandle;
@@ -2802,7 +2800,7 @@ typedef union PXWindowCreateInfoData_
     PXUIElementComboBoxInfo ComboBox;
 
     // Fetched
-    PXRectangleXYWH Size;
+    PXRectangleXYWHI32 Size;
 }
 PXWindowCreateInfoData;
 

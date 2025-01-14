@@ -260,6 +260,7 @@ void PXAPI PXMatrix4x4FScaleBy(PXMatrix4x4F* const pxMatrix4x4F, const float sca
     pxMatrix4x4F->Data[ScaleZ] *= scalar;
 }
 
+/*
 void PXAPI PXMatrix4x4FScaleByMargin(PXMatrix4x4F* const pxMatrix4x4F, const PXRectangleOffset* const pxMargin)
 {
 #if 1
@@ -304,6 +305,7 @@ void PXAPI PXMatrix4x4FScaleByMargin(PXMatrix4x4F* const pxMatrix4x4F, const PXR
 
 
 }
+*/
 
 void PXAPI PXMatrix4x4FScaleByXY(PXMatrix4x4F* const pxMatrix4x4F, const float x, const float y)
 {

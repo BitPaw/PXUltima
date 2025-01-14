@@ -34,8 +34,6 @@
 #define TransformZ 14
 #define TransformW 15
 
-typedef struct PXRectangleOffset_ PXRectangleOffset;
-
 /*
     +----+----+----+----+
     | XA | YA | ZA | Or |
@@ -99,7 +97,7 @@ PXPublic void PXAPI PXMatrix4x4FMoveXYZ(PXMatrix4x4F* const matrixData, const fl
 
 PXPublic void PXAPI PXMatrix4x4FScaleBy(PXMatrix4x4F* const matrixA, const float scalar);
 
-PXPublic void PXAPI PXMatrix4x4FScaleByMargin(PXMatrix4x4F* const pxMatrix4x4F, const PXRectangleOffset* const pxMargin);
+//PXPublic void PXAPI PXMatrix4x4FScaleByMargin(PXMatrix4x4F* const pxMatrix4x4F, const PXRectangleOffset* const pxMargin);
 PXPublic void PXAPI PXMatrix4x4FScaleByXY(PXMatrix4x4F* const pxMatrix4x4F, const float x, const float y);
 
 PXPublic void PXAPI PXMatrix4x4FScaleSet(PXMatrix4x4F* const pxMatrix4x4F, const PXVector3F* const pxVector3F);

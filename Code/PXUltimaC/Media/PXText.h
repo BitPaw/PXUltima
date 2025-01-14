@@ -212,8 +212,8 @@ PXPublic PXSize PXAPI PXTextCopyAW(const char* source, const PXSize sourceLength
 PXPublic PXSize PXAPI PXTextCopyWA(const wchar_t* source, const PXSize sourceLength, char* destination, const PXSize destinationLength);
 PXPublic PXSize PXAPI PXTextCopyW(const wchar_t* source, const PXSize sourceLength, wchar_t* destination, const PXSize destinationLength);
 
-PXPublic PXSize PXAPI PXTextCopyAU(const PXTextASCII source, const PXSize sourceLength, PXTextUTF8 destination, const PXSize destinationLength);
-PXPublic PXSize PXAPI PXTextCopyWU(const PXTextUNICODE source, const PXSize sourceLength, PXTextUTF8 destination, const PXSize destinationLength);
+PXPublic PXSize PXAPI PXTextCopyAU(const char* const source, const PXSize sourceLength, char* const destination, const PXSize destinationLength);
+PXPublic PXSize PXAPI PXTextCopyWU(const wchar_t* const source, const PXSize sourceLength, char* const destination, const PXSize destinationLength);
 
 PXPublic PXSize PXAPI PXTextCountA(const char* PXText, const PXSize PXTextSize, const char target);
 PXPublic PXSize PXAPI PXTextCountW(const wchar_t* PXText, const PXSize PXTextSize, const wchar_t target);

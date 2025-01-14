@@ -2026,12 +2026,20 @@ void PXAPI PXIconLoad(PXIcon* const pxIcon)
 #endif
 }
 
-void PXAPI PXRectangleOffsetSet(PXRectangleOffset* const pxRectangleOffset, float left, float top, float right, float bottom)
+void PXAPI PXRectangleLTRBI32ToXYWHI32(const PXRectangleLTRBI32* const pxRectangleLTRBI32, PXRectangleXYWHI32* const pxRectangleXYWHI32)
 {
-    pxRectangleOffset->Left = left;
-    pxRectangleOffset->Top = top;
-    pxRectangleOffset->Right = right;
-    pxRectangleOffset->Bottom = bottom;
+    pxRectangleXYWHI32->X      = pxRectangleLTRBI32->Left;
+    pxRectangleXYWHI32->Y      = pxRectangleLTRBI32->Top;
+    pxRectangleXYWHI32->Width  = pxRectangleXYWHI32->Width - pxRectangleLTRBI32->Left;
+    pxRectangleXYWHI32->Height = pxRectangleXYWHI32->Height - pxRectangleLTRBI32->Top;
+}
+
+void PXAPI PXRectangleXYWHI32ToLTRBI32(const PXRectangleXYWHI32* const pxRectangleXYWHI32, PXRectangleLTRBI32* const pxRectangleLTRBI32)
+{
+    pxRectangleLTRBI32->Left    = pxRectangleXYWHI32->X;
+    pxRectangleLTRBI32->Top     = pxRectangleXYWHI32->Y;
+    pxRectangleLTRBI32->Right   = pxRectangleXYWHI32->X + pxRectangleXYWHI32->Width;
+    pxRectangleLTRBI32->Bottom  = pxRectangleXYWHI32->Y + pxRectangleXYWHI32->Height;
 }
 
 PXMaterial* PXAPI PXMaterialContainerFind(PXResourceManager* const pxResourceManager, const PXMaterialContainer* const pxMaterialContainer, struct PXText_* const pxMaterialName)
@@ -2140,7 +2148,7 @@ void PXAPI PXModelConstruct(PXModel* const pxModel)
 
     PXMatrix4x4FIdentity(&pxModel->ModelMatrix);
 
-    PXRectangleOffsetSet(&pxModel->Margin, 1, 1, 1, 1);
+   // PXRectangleOffsetSet(&pxModel->Margin, 1, 1, 1, 1);
 }
 
 void PXAPI PXModelDestruct(PXModel* const pxModel)
@@ -2340,16 +2348,16 @@ void PXAPI PXUIElementPositionCalculcate(PXWindow* const pxGUIElement, PXUIEleme
         pxUIElementParent = (PXWindow*)pxUIElementParent->Info.Hierarchy.Parrent
         )
     {
-        pxUIElementPositionCalulcateInfo->MarginLeft += pxUIElementParent->Position.MarginLeft;
-        pxUIElementPositionCalulcateInfo->MarginTop += pxUIElementParent->Position.MarginTop;
-        pxUIElementPositionCalulcateInfo->MarginRight += pxUIElementParent->Position.MarginRight;
-        pxUIElementPositionCalulcateInfo->MarginBottom += pxUIElementParent->Position.MarginBottom;
+        pxUIElementPositionCalulcateInfo->MarginLeft += pxUIElementParent->Position.Margin.Left;
+        pxUIElementPositionCalulcateInfo->MarginTop += pxUIElementParent->Position.Margin.Top;
+        pxUIElementPositionCalulcateInfo->MarginRight += pxUIElementParent->Position.Margin.Right;
+        pxUIElementPositionCalulcateInfo->MarginBottom += pxUIElementParent->Position.Margin.Bottom;
     }
 
-    pxUIElementPositionCalulcateInfo->MarginLeft += pxGUIElement->Position.MarginLeft;
-    pxUIElementPositionCalulcateInfo->MarginTop += pxGUIElement->Position.MarginTop;
-    pxUIElementPositionCalulcateInfo->MarginRight += pxGUIElement->Position.MarginRight;
-    pxUIElementPositionCalulcateInfo->MarginBottom += pxGUIElement->Position.MarginBottom;
+    pxUIElementPositionCalulcateInfo->MarginLeft += pxGUIElement->Position.Margin.Left;
+    pxUIElementPositionCalulcateInfo->MarginTop += pxGUIElement->Position.Margin.Top;
+    pxUIElementPositionCalulcateInfo->MarginRight += pxGUIElement->Position.Margin.Right;
+    pxUIElementPositionCalulcateInfo->MarginBottom += pxGUIElement->Position.Margin.Bottom;
 
     // Normalizied space for OpenGL
     pxUIElementPositionCalulcateInfo->AA = -1 + pxUIElementPositionCalulcateInfo->MarginLeft;
@@ -2394,7 +2402,7 @@ void PXAPI PXUIElementPositionCalculcate(PXWindow* const pxGUIElement, PXUIEleme
 
     if(PXWindowKeepWidth & pxGUIElement->Info.Behaviour)
     {
-        pxUIElementPositionCalulcateInfo->Width = pxGUIElement->Position.Width;
+        pxUIElementPositionCalulcateInfo->Width = pxGUIElement->Position.Form.Width;
     }
     else
     {
@@ -2403,7 +2411,7 @@ void PXAPI PXUIElementPositionCalculcate(PXWindow* const pxGUIElement, PXUIEleme
 
     if(PXWindowKeepHeight & pxGUIElement->Info.Behaviour)
     {
-        pxUIElementPositionCalulcateInfo->Height = pxGUIElement->Position.Height;
+        pxUIElementPositionCalulcateInfo->Height = pxGUIElement->Position.Form.Height;
     }
     else
     {

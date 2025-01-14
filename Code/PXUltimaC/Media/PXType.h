@@ -150,25 +150,12 @@
 #endif
 
 
-#ifndef PXYes
+
 #define PXYes 1u
-#endif
-
-#ifndef PXNo
 #define PXNo 0u
-#endif
-
-#ifndef PXTrue
 #define PXTrue 1u
-#endif
-
-#ifndef PXFalse
 #define PXFalse 0u
-#endif
-
-#ifndef PXNull
 #define PXNull 0u
-#endif
 
 
 //---------------------------------------------------------
@@ -177,6 +164,8 @@
 #define PXFlagIsSet(value, flagID) (1u && (value & flagID))
 #define PXFlagAdd(target, value, flagID) target |= flagID
 #define PXFlagRemove(target, value, flagID)  target &= ~flagID
+
+
 
 
 #define PXTypeReadOnlyMask          0b10000000000000000000000000000000

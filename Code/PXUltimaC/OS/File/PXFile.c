@@ -1891,10 +1891,10 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, PXFileOpenInfo* const pxFi
 
             pxFile->LocationMode = PXFileLocationModeMappedFromDisk;
 
-            // We are allowed to close the file handle and/or descriptor? 
-            // YES! but better not close the descriptor, 
-            // Access works in any case but you loose the file reference 
-            // 
+            // We are allowed to close the file handle and/or descriptor?
+            // YES! but better not close the descriptor,
+            // Access works in any case but you loose the file reference
+            //
             // const int closeResultID = fclose(pxFile->FileID);
             // pxFile->FileID = PXNull;
 
@@ -3607,7 +3607,7 @@ PXSize PXAPI PXFileReadB(PXFile* const pxFile, void* const value, const PXSize l
             }
 
 #if OSUnix
-            const PXSize writtenBytes = fread(value, sizeof(PXByte), length, pxFile->FileID); 
+            const PXSize writtenBytes = fread(value, sizeof(PXByte), length, pxFile->FileID);
             const PXBool readSuccess = 0 != writtenBytes; // fread does not set errno! 0 equals EOF or read-error.
 
             if(!readSuccess)
@@ -4172,7 +4172,7 @@ PXSize PXAPI PXFileWriteC(PXFile* const pxFile, const char character)
     return PXFileWriteB(pxFile, &character, 1);
 }
 
-PXSize PXAPI PXFileWriteA(PXFile* const pxFile, const PXTextASCII text, PXSize textSize)
+PXSize PXAPI PXFileWriteA(PXFile* const pxFile, const char* const text, const PXSize textSize)
 {
 #if 1
     return PXFileWriteB(pxFile, text, textSize);
@@ -4188,7 +4188,7 @@ PXSize PXAPI PXFileWriteA(PXFile* const pxFile, const PXTextASCII text, PXSize t
 #endif
 }
 
-PXSize PXAPI PXFileWriteW(PXFile* const pxFile, const PXTextUNICODE const text, PXSize textSize)
+PXSize PXAPI PXFileWriteW(PXFile* const pxFile, const wchar_t* const text, const PXSize textSize)
 {
     const PXSize writableSize = PXFileRemainingSize(pxFile);
     wchar_t* const currentPosition = (wchar_t* const)PXFileCursorPosition(pxFile);
@@ -4200,7 +4200,7 @@ PXSize PXAPI PXFileWriteW(PXFile* const pxFile, const PXTextUNICODE const text, 
     return writtenBytes;
 }
 
-PXSize PXAPI PXFileWriteAF(PXFile* const pxFile, const PXTextASCII format, ...)
+PXSize PXAPI PXFileWriteAF(PXFile* const pxFile, const char* const format, ...)
 {
     PXSize writtenBytes = 0;
 
@@ -4260,7 +4260,7 @@ PXSize PXAPI PXFileWriteAF(PXFile* const pxFile, const PXTextASCII format, ...)
     return writtenBytes;
 }
 
-PXSize PXAPI PXFileWriteWF(PXFile* const pxFile, const PXTextUNICODE format, ...)
+PXSize PXAPI PXFileWriteWF(PXFile* const pxFile, const wchar_t* const format, ...)
 {
     return  0;
 }

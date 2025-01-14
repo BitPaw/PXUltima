@@ -29,8 +29,9 @@ PXNativDraw _internalNativDraw;
 #endif
 
 #include <Media/PXText.h>
-#include <OS/Console/PXConsole.h>
 #include <Engine/PXEngine.h>
+#include <Math/PXCollision.h>
+#include <OS/Console/PXConsole.h>
 #include "assert.h"
 
 
@@ -162,7 +163,13 @@ PXActionResult PXAPI PXNativDrawDisplayListFetch(PXNativDraw* const pxNativDraw)
 
         pxNativDraw->MonitorListAmount = 0;
 
-        const BOOL success = EnumDisplayMonitors(NULL, NULL, (MONITORENUMPROC)PXWindowsMonitorFetch, &pxEindowsDisplayEnumInfo);
+        const BOOL success = EnumDisplayMonitors
+        (
+            NULL,
+            NULL,
+            (MONITORENUMPROC)PXWindowsMonitorFetch,
+            (LPARAM)&pxEindowsDisplayEnumInfo
+        );
 
         pxNativDraw->MonitorListAmount = pxEindowsDisplayEnumInfo.OffsetMaxmimal;
         pxNativDraw->MonitorList = PXMemoryReallocT(PXMonitor, PXNull, pxNativDraw->MonitorListAmount);
@@ -170,7 +177,13 @@ PXActionResult PXAPI PXNativDrawDisplayListFetch(PXNativDraw* const pxNativDraw)
         pxEindowsDisplayEnumInfo.MonitorList = pxNativDraw->MonitorList;
         pxEindowsDisplayEnumInfo.CheckMode = 0;
 
-        EnumDisplayMonitors(NULL, NULL, (MONITORENUMPROC)PXWindowsMonitorFetch, &pxEindowsDisplayEnumInfo);
+        EnumDisplayMonitors
+        (
+            NULL,
+            NULL,
+            (MONITORENUMPROC)PXWindowsMonitorFetch, 
+            (LPARAM)&pxEindowsDisplayEnumInfo
+        );
     }
 
 
@@ -294,7 +307,7 @@ PXActionResult PXAPI PXNativDrawDisplayListFetch(PXNativDraw* const pxNativDraw)
 
     for(PXSize i = 0; i < pxNativDraw->DisplayListAmount; ++i)
     {
-        PXDisplayScreen* const pxDisplayScreen = &pxNativDraw->DisplayList[i];
+        PXDisplay* const pxDisplay = &pxNativDraw->DisplayList[i];
 
         PXLogPrint
         (
@@ -306,10 +319,10 @@ PXActionResult PXAPI PXNativDrawDisplayListFetch(PXNativDraw* const pxNativDraw)
             "| DeviceName     : %-27s %-4ix%4i |\n"
             "| DeviceString   : %-37.37s |\n"
             "+--------------------------------------------------------+\n",
-            pxDisplayScreen->NameMonitor,
-            pxDisplayScreen->Width,
-            pxDisplayScreen->Height,
-            pxDisplayScreen->NameID
+            pxDisplay->NameMonitor,
+            pxDisplay->Width,
+            pxDisplay->Height,
+            pxDisplay->NameID
         );
     }
 #endif
@@ -797,7 +810,7 @@ PXActionResult PXAPI PXNativDrawWindowBufferSwap(PXNativDraw* const pxNativDraw,
     pxActionResult = PXActionRefusedNotSupportedByLibrary;
 #endif
 
-#if PXLogEnable
+#if PXLogEnable && 0
     PXLogPrint
     (
         PXLoggingInfo,
@@ -813,41 +826,35 @@ PXActionResult PXAPI PXNativDrawWindowBufferSwap(PXNativDraw* const pxNativDraw,
 
 
 
-PXActionResult PXAPI PXNativDrawBegin(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement)
+PXActionResult PXAPI PXNativDrawBegin(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow)
 {
 #if OSUnix
 
 #elif OSWindows
-    PAINTSTRUCT ps;
+    PAINTSTRUCT paintSturct;
+    PXClear(PAINTSTRUCT, &paintSturct);
 
-    HDC hdc = BeginPaint(pxGUIElement->Info.Handle.WindowID, &ps);
+    const HDC hdc = BeginPaint(pxWindow->Info.Handle.WindowID, &paintSturct);
 #endif
 
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXNativDrawEnd(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement)
+PXActionResult PXAPI PXNativDrawEnd(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow)
 {
 #if OSUnix
 
 #elif OSWindows
-    PAINTSTRUCT ps;
+    PAINTSTRUCT paintSturct;
+    PXClear(PAINTSTRUCT, &paintSturct);
 
-    const PXBool end = EndPaint(pxGUIElement->Info.Handle.WindowID, &ps);
+    const PXBool end = EndPaint(pxWindow->Info.Handle.WindowID, &paintSturct);
 #endif
 
     return PXActionRefusedNotImplemented;
 }
 
-
-
-
-
-
-
-
-
-PXActionResult PXAPI PXNativDrawColorSetBrush(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowBrush* const pxGUIElementBrush, const char mode)
+PXActionResult PXAPI PXNativDrawColorSetBrush(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow, PXWindowBrush* const pxGUIElementBrush, const char mode)
 {
     PXColorRGBI8* colorRef = PXNull;
 
@@ -860,14 +867,14 @@ PXActionResult PXAPI PXNativDrawColorSetBrush(PXGUISystem* const pxGUISystem, PX
         colorRef = pxGUIElementBrush->ColorReference;
     }
 
-    return PXNativDrawSetV3(pxGUISystem, pxGUIElement, colorRef, mode);
+    return PXNativDrawSetV3(pxNativDraw, pxWindow, colorRef, mode);
 }
 
-PXActionResult PXAPI PXNativDrawSetV3(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXColorRGBI8* pxColorRGBI8, const char mode)
+PXActionResult PXAPI PXNativDrawSetV3(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow, PXColorRGBI8* pxColorRGBI8, const char mode)
 {
     PXColorRGBI8 noTexturePink = { 0xFF, 0, 0xFF };
 
-    if(!(pxGUISystem && pxGUIElement))
+    if(!(pxNativDraw && pxWindow))
     {
         return PXActionRefusedArgumentInvalid;
     }
@@ -890,7 +897,7 @@ PXActionResult PXAPI PXNativDrawSetV3(PXGUISystem* const pxGUISystem, PXWindow* 
         );
 #elif OSWindows
         const COLORREF colorNew = RGB(pxColorRGBI8->Red, pxColorRGBI8->Green, pxColorRGBI8->Blue);
-        const COLORREF colorPrevious = SetTextColor(pxGUIElement->DeviceContextHandle, colorNew);
+        const COLORREF colorPrevious = SetTextColor(pxWindow->DeviceContextHandle, colorNew);
 #endif
     }
     else
@@ -907,10 +914,10 @@ PXActionResult PXAPI PXNativDrawSetV3(PXGUISystem* const pxGUISystem, PXWindow* 
         );
 #elif OSWindows
 
-        SetBkMode(pxGUIElement->DeviceContextHandle, TRANSPARENT);
+        SetBkMode(pxWindow->DeviceContextHandle, TRANSPARENT);
 
         const COLORREF colorNew = RGB(pxColorRGBI8->Red, pxColorRGBI8->Green, pxColorRGBI8->Blue);
-        const COLORREF colorPrevious = SetBkColor(pxGUIElement->DeviceContextHandle, colorNew);
+        const COLORREF colorPrevious = SetBkColor(pxWindow->DeviceContextHandle, colorNew);
         const PXBool successful = CLR_INVALID != colorPrevious;
 
         if(!successful)
@@ -934,11 +941,11 @@ PXActionResult PXAPI PXNativDrawSetV3(PXGUISystem* const pxGUISystem, PXWindow* 
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXNativDrawSetRGB(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, char red, char green, char blue, const char mode)
+PXActionResult PXAPI PXNativDrawSetRGB(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow, char red, char green, char blue, const char mode)
 {
     PXColorRGBI8 color = { red, green, blue };
 
-    return PXNativDrawSetV3(pxGUISystem, pxGUIElement, &color, mode);
+    return PXNativDrawSetV3(pxNativDraw, pxWindow, &color, mode);
 }
 
 PXActionResult PXAPI PXNativDrawFontListFetch(PXNativDraw* const pxNativDraw)
@@ -971,17 +978,17 @@ PXActionResult PXAPI PXNativDrawFontListFetch(PXNativDraw* const pxNativDraw)
 
 PXActionResult PXAPI PXNativDrawFontLoadA(PXNativDraw* const pxNativDraw, PXFont* const pxFont, const char* const name, const PXSize nameLength)
 {
-    // "Consolas"
-
 #if OSUnix
-    XFontStruct* font = XLoadQueryFont
+     // "9x15" <--- linux font? Sometimes not found
+    pxFont->Info.Handle.FontHandle = XLoadQueryFont //  XFontStruct*
     (
         pxNativDraw->GUISystem->DisplayCurrent.DisplayHandle,
         name
-    ); // "9x15" <--- linux font? Sometimes not found
+    );
+
 #elif OSWindows
 
-
+    // "Consolas"
     const DWORD antialiased = (PXFontAntialiased & pxFont->Info.Behaviour) > 0 ? ANTIALIASED_QUALITY : NONANTIALIASED_QUALITY;
     const DWORD isItalics = (PXFontItalic & pxFont->Info.Behaviour) > 0;
     const DWORD isUnderline = (PXFontUnderline & pxFont->Info.Behaviour) > 0;
@@ -1004,6 +1011,18 @@ PXActionResult PXAPI PXNativDrawFontLoadA(PXNativDraw* const pxNativDraw, PXFont
 
 #endif
 
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "NativDraw",
+        "Font-Load",
+        "%s, %p",
+        name,
+        pxFont->Info.Handle.FontHandle
+    );
+#endif
+
     return PXActionRefusedNotImplemented;
 }
 
@@ -1018,7 +1037,7 @@ PXActionResult PXAPI PXNativDrawFontRelease(PXNativDraw* const pxNativDraw, PXFo
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXGUIFontSet(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXFont* const pxFont)
+PXActionResult PXAPI PXNativDrawFontSelect(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow, PXFont* const pxFont)
 {
 #if OSUnix
     const int resultID = XSetFont
@@ -1028,15 +1047,23 @@ PXActionResult PXAPI PXGUIFontSet(PXGUISystem* const pxGUISystem, PXWindow* cons
         0
     );
 #elif OSWindows
-    //HFONT fontThatWasUsedBefore = (HFONT)SelectObject(hdc, hFont1);
+    const HFONT fontHandleOld = (HFONT)SelectObject(pxWindow->DeviceContextHandle, pxFont->Info.Handle.FontHandle);
+#endif
+
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "NativDraw",
+        "Font-Load",
+        "%s, %p",
+        "---",
+        pxFont->Info.Handle.FontHandle
+    );
 #endif
 
     return PXActionSuccessful;
-}
-
-PXActionResult PXAPI PXNativDrawFontSet(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow, PXFont* const pxFont)
-{
-
 }
 
 
@@ -1605,8 +1632,6 @@ PXActionResult PXAPI PXNativDrawWindowMoveAndResize(PXNativDraw* const pxNativDr
     return pxActionResult;
 }
 
-#include <Math/PXCollision.h>
-
 PXActionResult PXAPI PXNativDrawCursorPosition(PXNativDraw* const pxNativDraw, PXVector2I* const position, const PXBool isWrite)
 {
 #if OXUnix
@@ -1700,7 +1725,7 @@ PXActionResult PXAPI PXNativDrawCursorCollisionCheck(PXNativDraw* const pxNativD
 
         if(valueChanged)
         {
-            BOOL xx = RedrawWindow(pxWindow->Info.Handle.WindowID, PXNull, PXNull, RDW_INVALIDATE);
+            const BOOL xx = RedrawWindow(pxWindow->Info.Handle.WindowID, PXNull, PXNull, RDW_INVALIDATE);
 
             PXBool hovernow = (pxWindow->Info.Behaviour & PXWindowBehaviourIsBeingHovered) > 0;
 
@@ -1890,7 +1915,7 @@ PXActionResult PXAPI PXNativDrawWindowFetch(PXNativDraw* const pxNativDraw, PXWi
 #endif
 }
 
-void PXAPI PXNativDrawScreenSizeGet(PXRectangleXYWH* const pxRectangleXYWH)
+void PXAPI PXNativDrawScreenSizeGet(PXRectangleXYWHI32* const pxRectangleXYWH)
 {
 #if OSUnix
 
@@ -1958,7 +1983,7 @@ void PXAPI PXNativDrawScreenSizeGet(PXRectangleXYWH* const pxRectangleXYWH)
 #endif
 }
 
-PXActionResult PXAPI PXNativDrawClear(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement)
+PXActionResult PXAPI PXNativDrawClear(PXNativDraw* const pxNativDraw, PXWindow* const pxGUIElement)
 {
 #if PXLogEnable
     PXLogPrint
@@ -1982,8 +2007,33 @@ PXActionResult PXAPI PXNativDrawClear(PXGUISystem* const pxGUISystem, PXWindow* 
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXNativDrawTextA(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const char* const text, const PXSize textSize)
+PXActionResult PXAPI PXNativDrawTextA
+(
+    PXNativDraw* const pxNativDraw,
+    PXWindow* const pxWindow,
+    int x,
+    int y,
+    int width,
+    int height,
+    const char* const text,
+    const PXSize textSize
+)
 {
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "NativeDraw",
+        "Text",
+        "PXID:%-4i X:%-4i Y:%-4i %2i %s",
+        pxWindow->Info.ID,
+        pxWindow->Position.Form.X,
+        pxWindow->Position.Form.Y,
+        textSize,
+        text
+    );
+#endif
+
     if(!(text && textSize))
     {
         return PXActionRefusedArgumentNull;
@@ -1991,104 +2041,47 @@ PXActionResult PXAPI PXNativDrawTextA(PXGUISystem* const pxGUISystem, PXWindow* 
 
 #if OSUnix
     // For ANSI and UTF-8 strings
-    //const int resultID = XDrawString(pxGUISystem->DisplayCurrent.DisplayHandle, Drawable d, GC gc, int x, int y, char* string, int length);
-
+    const int resultID = XDrawString
+    (
+        pxGUISystem->DisplayCurrent.DisplayHandle,
+        pxGUIElement->Info.Handle.WindowID,
+        pxGUISystem->DisplayCurrent.GraphicContent,
+        x,
+        y,
+        text,
+        textSize
+    );
 #elif OSWindows
 
-
-    PXNativDrawColorSetBrush
-    (
-        pxGUISystem,
-        pxGUIElement,
-        pxGUIElement->BrushBackground,
-        PXGUIDrawModeBack
-    );
-
-
-    //const char* fontName = "Eras Medium ITC"; // Bradley Hand ITC, UniSpace,OCR A, Cascadia Mono
-    const char fontName[] = "UniSpace";
-    const PXSize fontNameLength = sizeof(fontName);
+    const PXRectangleXYWHI32 pxRectangleXYWHI32 = {x, y, width, height};
 
     RECT rectangle;
-    rectangle.left = pxGUIElement->Position.Left;
-    rectangle.top = pxGUIElement->Position.Top;
-    rectangle.right = pxGUIElement->Position.Right;
-    rectangle.bottom = pxGUIElement->Position.Bottom;
+    PXRectangleXYWHI32ToLTRBI32(&pxRectangleXYWHI32, (PXRectangleLTRBI32*)&rectangle);
 
     UINT format = DT_SINGLELINE | DT_NOCLIP;
+    format |= PXFlagIsSet(pxWindow->Info.Behaviour, PXWindowAllignTop) * DT_TOP;
+    format |= PXFlagIsSet(pxWindow->Info.Behaviour, PXWindowAllignLeft) * DT_LEFT;
+    format |= PXFlagIsSet(pxWindow->Info.Behaviour, PXWindowAllignRight) * DT_RIGHT;
+    format |= PXFlagIsSet(pxWindow->Info.Behaviour, PXWindowAllignBottom) * DT_BOTTOM;
 
-    format |= PXFlagIsSet(pxGUIElement->Info.Behaviour, PXWindowAllignTop) * DT_TOP;
-    format |= PXFlagIsSet(pxGUIElement->Info.Behaviour, PXWindowAllignLeft) * DT_LEFT;
-    format |= PXFlagIsSet(pxGUIElement->Info.Behaviour, PXWindowAllignRight) * DT_RIGHT;
-    format |= PXFlagIsSet(pxGUIElement->Info.Behaviour, PXWindowAllignBottom) * DT_BOTTOM;
-
-    if(PXFlagIsSet(pxGUIElement->Info.Behaviour, PXWindowAllignCenter))
+    if(PXFlagIsSet(pxWindow->Info.Behaviour, PXWindowAllignCenter))
     {
         format |= DT_VCENTER | DT_CENTER;
     }
 
-    DRAWTEXTPARAMS drawinfo;
-    PXClear(DRAWTEXTPARAMS, &drawinfo);
-    drawinfo.cbSize = sizeof(DRAWTEXTPARAMS);
-
-    // GetTextExtentPoint32
-
-    // TEXTMETRICA textMetricA;
-    // GetTextMetrics(pxGUIElement->DeviceContextHandle, &textMetricA);
-    // textMetricA.tmHeight = pxGUIElement->Position.Height * 60;
-    // BOOL xxyx = GetTextMetricsA(pxGUIElement->DeviceContextHandle, &textMetricA);
-
-
-    PXFont pxFont;// = pxGUIElement->FontForText;
-    PXClear(PXFont, &pxFont);
-
-    pxFont.Size = pxGUIElement->Position.Height;
-
-
-    PXNativDrawFontLoadA(pxGUISystem, &pxFont, fontName, fontNameLength);
-
-
-    // Draw shadow
-    {
-        int offset = 2;
-        RECT rectangleShadow = rectangle;
-        rectangleShadow.left -= offset;
-        rectangleShadow.top += offset;
-        rectangleShadow.right -= offset;
-        rectangleShadow.bottom += offset;
-
-        PXNativDrawSetRGB
-        (
-            pxGUISystem,
-            pxGUIElement,
-            pxGUIElement->BrushFront->ColorDate.Red * 0.25f,
-            pxGUIElement->BrushFront->ColorDate.Green * 0.25f,
-            pxGUIElement->BrushFront->ColorDate.Blue * 0.25f,
-            PXGUIDrawModeFront
-        );
-
-        const HFONT fontHandleOld = (HFONT)SelectObject(pxGUIElement->DeviceContextHandle, pxFont.Info.Handle.FontHandle);
-
-        const int nextHeightAAA = DrawTextExA(pxGUIElement->DeviceContextHandle, text, textSize, &rectangleShadow, format, PXNull); // Windows 2000, User32.dll, winuser.h
-    }
-
-
-    PXNativDrawColorSetBrush(pxGUISystem, pxGUIElement, pxGUIElement->BrushFront, PXGUIDrawModeFront);
-
-    HFONT hOldFontBBB = (HFONT)SelectObject(pxGUIElement->DeviceContextHandle, pxFont.Info.Handle.FontHandle);
-
-    const int nextHeightBBB = DrawTextExA(pxGUIElement->DeviceContextHandle, text, textSize, &rectangle, format, PXNull); // Windows 2000, User32.dll, winuser.h
-    // const PXBool success = 0 != nextHeight;
-    // const PXActionResult result = PXWindowsErrorCurrent(success);
-
-    return PXActionSuccessful;
-
-#else
-    return NotSupport;
+    const int nextHeightBBB = DrawTextExA
+    (
+        pxWindow->DeviceContextHandle,
+        text,
+        textSize,
+        &rectangle,
+        format,
+        PXNull
+    ); // Windows 2000, User32.dll, winuser.h
 #endif
-    }
+}
 
-PXActionResult PXAPI PXNativDrawTextW(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const wchar_t* const text, const PXSize textSize)
+PXActionResult PXAPI PXNativDrawTextW(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow, const wchar_t* const text, const PXSize textSize)
 {
 #if OSUnix
     // For UNICODE
@@ -2099,7 +2092,7 @@ PXActionResult PXAPI PXNativDrawTextW(PXGUISystem* const pxGUISystem, PXWindow* 
     RECT rectangle;
     UINT format;
 
-    const int nextHeight = DrawTextW(pxGUIElement->DeviceContextHandle, text, textSize, &rectangle, format); // Windows 2000, User32.dll, winuser.h
+    const int nextHeight = DrawTextW(pxWindow->DeviceContextHandle, text, textSize, &rectangle, format); // Windows 2000, User32.dll, winuser.h
     const PXBool success = 0 != nextHeight;
     const PXActionResult result = PXErrorCurrent(success);
 
@@ -2110,7 +2103,7 @@ PXActionResult PXAPI PXNativDrawTextW(PXGUISystem* const pxGUISystem, PXWindow* 
 #endif
 }
 
-PXActionResult PXAPI PXNativDrawPoint(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int x, const int y)
+PXActionResult PXAPI PXNativDrawPoint(PXNativDraw* const pxNativDraw, PXWindow* const pxGUIElement, const int x, const int y)
 {
 #if OSUnix
     const int resultID = 0;//XDrawPoint(Display *display, Drawable d, GC gc, int x, int y);
@@ -2123,7 +2116,7 @@ PXActionResult PXAPI PXNativDrawPoint(PXGUISystem* const pxGUISystem, PXWindow* 
 #endif
 }
 
-PXActionResult PXAPI PXNativDrawPoints(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int x, const int y, const int width, const int height)
+PXActionResult PXAPI PXNativDrawPoints(PXNativDraw* const pxNativDraw, PXWindow* const pxGUIElement, const int x, const int y, const int width, const int height)
 {
 #if OSUnix
     const int resultID = 0;//XDrawPoints(Display *display, Drawable d, GC gc, XPoint *points, int npoints, int mode);
@@ -2136,7 +2129,7 @@ PXActionResult PXAPI PXNativDrawPoints(PXGUISystem* const pxGUISystem, PXWindow*
 #endif
 }
 
-PXActionResult PXAPI PXNativDrawLine(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int x1, const int y1, const int x2, const int y2)
+PXActionResult PXAPI PXNativDrawLine(PXNativDraw* const pxNativDraw, PXWindow* const pxGUIElement, const int x1, const int y1, const int x2, const int y2)
 {
 #if OSUnix
     const resultID = 0;//XDrawLine(Display *display, Drawable d, GC gc, x1, y1, x2, y2);
@@ -2157,7 +2150,7 @@ PXActionResult PXAPI PXNativDrawLine(PXGUISystem* const pxGUISystem, PXWindow* c
 #endif
 }
 
-PXActionResult PXAPI PXNativDrawLines(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int x, const int y, const int width, const int height)
+PXActionResult PXAPI PXNativDrawLines(PXNativDraw* const pxNativDraw, PXWindow* const pxGUIElement, const int x, const int y, const int width, const int height)
 {
 #if OSUnix
     XPoint points;
@@ -2182,8 +2175,23 @@ PXActionResult PXAPI PXNativDrawLines(PXGUISystem* const pxGUISystem, PXWindow* 
 #endif
 }
 
-PXActionResult PXAPI PXNativDrawRectangle(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int x, const int y, const int width, const int height)
+PXActionResult PXAPI PXNativDrawRectangle(PXNativDraw* const pxNativDraw, PXWindow* const pxGUIElement, const int x, const int y, const int width, const int height)
 {
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "NativeDraw",
+        "Draw-Rectangle",
+        "PXID:%-4i X:%-4i Y:%-4i W:%-4i H:%-4i",
+        pxGUIElement->Info.ID,
+        x,
+        y,
+        width,
+        height
+    );
+#endif
+
     const PXBool isHovered = (PXWindowBehaviourIsBeingHovered & pxGUIElement->Info.Behaviour) > 0;
 
     PXActionResult pxActionResult = PXActionInvalid;
@@ -2211,10 +2219,8 @@ PXActionResult PXAPI PXNativDrawRectangle(PXGUISystem* const pxGUISystem, PXWind
 
 
     RECT rect;
-    rect.left = x;
-    rect.top = y;
-    rect.right = width;
-    rect.bottom = height;
+    PXRectangleXYWHI32 pxRectangleXYWHI32 = {x, y, width, height};
+    PXRectangleXYWHI32ToLTRBI32(&pxRectangleXYWHI32, &rect);
 
     // const COLORREF color = RGB(255, 0, 200);
     // const HBRUSH brushAA = CreateSolidBrush(color);
@@ -2275,9 +2281,7 @@ PXActionResult PXAPI PXNativDrawRectangle(PXGUISystem* const pxGUISystem, PXWind
     return pxActionResult;
 }
 
-
-
-PXActionResult PXAPI PXNativDrawRectangleRounded(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int x, const int y, const int width, const int height)
+PXActionResult PXAPI PXNativDrawRectangleRounded(PXNativDraw* const pxNativDraw, PXWindow* const pxGUIElement, const int x, const int y, const int width, const int height)
 {
 #if OSUnix
 
@@ -2299,9 +2303,7 @@ PXActionResult PXAPI PXNativDrawRectangleRounded(PXGUISystem* const pxGUISystem,
 #endif
 }
 
-
-
-PXActionResult PXAPI PXNativDrawLoad(PXGUISystem* const pxGUISystem, PXIcon* const pxIcon, const char* iconName)
+PXActionResult PXAPI PXNativDrawIconLoad(PXNativDraw* const pxGUISystem, PXIcon* const pxIcon, const char* iconName)
 {
 #if PXLogEnable
     PXLogPrint
@@ -2334,7 +2336,7 @@ PXActionResult PXAPI PXNativDrawLoad(PXGUISystem* const pxGUISystem, PXIcon* con
 #endif
 }
 
-PXActionResult PXAPI PXNativDrawIcon(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXIcon* const pxIcon, const int x, const int y, const int width, const int height)
+PXActionResult PXAPI PXNativDrawIconDraw(PXNativDraw* const pxGUISystem, PXWindow* const pxGUIElement, PXIcon* const pxIcon, const int x, const int y, const int width, const int height)
 {
     if(!(pxGUISystem && pxGUIElement && pxIcon))
     {
@@ -2646,6 +2648,13 @@ void PXNativDrawEventTranslator(PXNativDraw* const pxNativDraw, const XEvent* co
                 pxWindowDrawInfo.WindowIDHandle = xExposeEventData->window;
                 pxWindowDrawInfo.GraphicContntainerHandle = DefaultGC(pxNativDraw->GUISystem->DisplayCurrent.DisplayHandle, pxWindowDrawInfo.ScreenIDHandle);
 
+                // Sync current pos with element
+                windowCurrent->Position.Form.X = xExposeEventData->x;
+                windowCurrent->Position.Form.Y = xExposeEventData->y;
+                windowCurrent->Position.Form.Width = xExposeEventData->width;
+                windowCurrent->Position.Form.Height = xExposeEventData->height;
+
+
                 if(windowCurrent->DrawFunction)
                 {
                     printf("[Event] Expose <%8.8x>. Custom draw for PXID:%i\n", windowCurrent->Info.ID);
@@ -2655,7 +2664,7 @@ void PXNativDrawEventTranslator(PXNativDraw* const pxNativDraw, const XEvent* co
                 {
                     printf("[Event] Expose <%8.8x>. No custom draw for PXID:%i\n", windowCurrent->Info.ID);
                 }
-             
+
             }
             else
             {
@@ -3145,10 +3154,7 @@ LRESULT CALLBACK PXNativDrawEventTranslator(const HWND windowID, const UINT even
                 pxGUIElementDrawInfo.hDC = windowHandle;
                 // pxGUIElementDrawInfo.bErase = paintStruct.fErase;
 
-                pxGUIElement->Position.Left = paintStruct.rcPaint.left;
-                pxGUIElement->Position.Top = paintStruct.rcPaint.top;
-                pxGUIElement->Position.Right = paintStruct.rcPaint.right;
-                pxGUIElement->Position.Bottom = paintStruct.rcPaint.bottom;
+                PXRectangleLTRBI32ToXYWHI32(&paintStruct.rcPaint, &pxGUIElement->Position.Form);
 
                 pxGUIElement->DrawFunction(pxNativDraw, pxGUIElement, &pxGUIElementDrawInfo);
 
@@ -3186,10 +3192,7 @@ LRESULT CALLBACK PXNativDrawEventTranslator(const HWND windowID, const UINT even
                 pxGUIElementDrawInfo.hDC = drawItemInfo->hDC;
                 // pxGUIElementDrawInfo.bErase = paintStruct.fErase;
 
-                pxGUIElement->Position.Left = drawItemInfo->rcItem.left;
-                pxGUIElement->Position.Top = drawItemInfo->rcItem.top;
-                pxGUIElement->Position.Right = drawItemInfo->rcItem.right;
-                pxGUIElement->Position.Bottom = drawItemInfo->rcItem.bottom;
+                PXRectangleLTRBI32ToXYWHI32(&drawItemInfo->rcItem, &pxGUIElement->Position.Form);
 
                 pxGUIElement->DrawFunction(pxNativDraw->GUISystem, pxGUIElement, &pxGUIElementDrawInfo);
 

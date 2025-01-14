@@ -369,13 +369,13 @@ PXPublic PXSize PXAPI PXFileWriteNewLine(PXFile* const pxFile);
 PXPublic PXSize PXAPI PXFileWriteC(PXFile* const pxFile, const char character);
 
 // Write ASCII string \0 terminated.
-PXPublic PXSize PXAPI PXFileWriteA(PXFile* const pxFile, const PXTextASCII text, PXSize textSize);
+PXPublic PXSize PXAPI PXFileWriteA(PXFile* const pxFile, const char* const text, const PXSize textSize);
 
 // Write UNICODE string \0 terminated
-PXPublic PXSize PXAPI PXFileWriteW(PXFile* const pxFile, const PXTextUNICODE text, PXSize textSize);
+PXPublic PXSize PXAPI PXFileWriteW(PXFile* const pxFile, const wchar_t* const text, const PXSize textSize);
 
-PXPublic PXSize PXAPI PXFileWriteAF(PXFile* const pxFile, const PXTextASCII format, ...);
-PXPublic PXSize PXAPI PXFileWriteWF(PXFile* const pxFile, const PXTextUNICODE format, ...);
+PXPublic PXSize PXAPI PXFileWriteAF(PXFile* const pxFile, const char* const format, ...);
+PXPublic PXSize PXAPI PXFileWriteWF(PXFile* const pxFile, const wchar_t* const format, ...);
 //-------------------------------------------------------------------------
 
 
