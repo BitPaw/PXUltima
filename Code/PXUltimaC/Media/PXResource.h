@@ -42,6 +42,7 @@ typedef struct PXHierarchicalNode_ PXHierarchicalNode;
 typedef struct PXFileEntry_ PXFileEntry;
 typedef struct PXDebug_ PXDebug;
 typedef struct PXDisplay_ PXDisplay;
+typedef struct PXNativDraw_ PXNativDraw;
 
 
 extern void _chkstk(size_t s);
@@ -1689,7 +1690,7 @@ typedef struct PXWindowDrawInfo_
 }
 PXWindowDrawInfo;
 
-typedef PXActionResult (PXAPI* PXWindowDrawFunction)(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo);
+typedef PXActionResult (PXAPI* PXWindowDrawFunction)(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow, PXWindowDrawInfo* const pxWindowDrawInfo);
 
 
 //---------------------------------------------------------
@@ -1715,7 +1716,7 @@ PXWindowBrush;
 PXPublic void PXAPI PXWindowBrushColorSet(PXWindowBrush* const pxGUIElementBrush, const PXByte red, const PXByte green, const PXByte blue);
 
 //---------------------------------------------------------
-
+3 buissnes days later
 /*
 typedef struct PXWindowData_
 {
@@ -2111,8 +2112,7 @@ typedef struct PXDisplayScreen_
     int WidthMM;
     int HeightMM;
 
-    PXBool IsConnected;
-    PXBool IsPrimary;
+
 }
 PXDisplayScreen;
 
@@ -2256,6 +2256,9 @@ typedef struct PXDisplay_
 
     PXSize DisplayScreenListAmount;
     PXDisplayScreen* DisplayScreenList;
+
+    PXBool IsConnected;
+    PXBool IsPrimary;
 }
 PXDisplay;
 

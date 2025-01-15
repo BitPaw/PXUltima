@@ -407,7 +407,7 @@ PXPublic void PXAPI PXPNGDestruct(PXPNG* const png);
 
 PXPublic PXInt8U PXAPI PXPNGBitsPerPixel(const PXPNG* const png);
 
-PXPublic PXActionResult PXAPI PXPNGFilePredictSize(PXImage* const pxImage, PXSize* const fileSize);
+PXPublic PXSize PXAPI PXPNGFilePredictSize(PXImage* const pxImage, PXSize* const fileSize);
 PXPublic PXActionResult PXAPI PXPNGPeekFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
 PXPublic PXActionResult PXAPI PXPNGLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
 PXPublic PXActionResult PXAPI PXPNGSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);

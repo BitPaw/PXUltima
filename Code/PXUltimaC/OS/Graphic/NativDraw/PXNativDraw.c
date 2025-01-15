@@ -126,7 +126,7 @@ PXActionResult PXAPI PXNativeDrawErrorFetch(const PXBool condition)
 
 PXActionResult PXAPI PXNativDrawDisplayListFetch(PXNativDraw* const pxNativDraw)
 {
-#if OSUnix
+#if OSUnix && 0
 
     Display* xDisplay = &pxNativDraw->GUISystem->DisplayCurrent;
 
@@ -148,7 +148,7 @@ PXActionResult PXAPI PXNativDrawDisplayListFetch(PXNativDraw* const pxNativDraw)
         pxDisplayScreen->IsPrimary = screenID == pxNativDraw->GUISystem->DisplayCurrent.ScreenDefaultID;
     }
 
-#elif OSWindows
+#elif OSWindows && 0
 
 
 
@@ -244,15 +244,14 @@ PXActionResult PXAPI PXNativDrawDisplayListFetch(PXNativDraw* const pxNativDraw)
         pxNativDraw->DisplayList = pxDisplayList;
         pxNativDraw->DisplayListAmount = amount;
 
-
         for(PXSize deviceID = 0; EnumDisplayDevicesA(NULL, deviceID, &displayDevice, dwFlags); deviceID++)
         {
-            PXDisplayScreen* const pxDisplayScreen = &pxDisplayList[deviceID];
-            pxDisplayScreen->IsConnected = PXFlagIsSet(displayDevice.StateFlags, DISPLAY_DEVICE_ATTACHED_TO_DESKTOP);
-            pxDisplayScreen->IsPrimary = PXFlagIsSet(displayDevice.StateFlags, DISPLAY_DEVICE_PRIMARY_DEVICE);
+            PXDisplay* const pxDisplay = &pxDisplayList[deviceID];
+            pxDisplay->IsConnected = PXFlagIsSet(displayDevice.StateFlags, DISPLAY_DEVICE_ATTACHED_TO_DESKTOP);
+            pxDisplay->IsPrimary = PXFlagIsSet(displayDevice.StateFlags, DISPLAY_DEVICE_PRIMARY_DEVICE);
 
-            PXTextCopyA(displayDevice.DeviceName, 32, pxDisplayScreen->NameID, PXDisplayScreenNameLength);
-            PXTextCopyA(displayDevice.DeviceString, 128, pxDisplayScreen->GraphicDeviceName, PXDisplayScreenDeviceLength);
+            PXTextCopyA(displayDevice.DeviceName, 32, pxDisplay->NameID, PXDisplayScreenNameLength);
+            PXTextCopyA(displayDevice.DeviceString, 128, pxDisplay->GraphicDeviceName, PXDisplayScreenDeviceLength);
             // PXTextCopyA(displayDevice.DeviceID, 128, pxDisplayScreen->DeviceID, PXDeviceIDSize);
             //PXTextCopyA(displayDevice.DeviceKey, 128, pxDisplayScreen->DeviceKey, PXDeviceKeySize);
 
@@ -282,20 +281,20 @@ PXActionResult PXAPI PXNativDrawDisplayListFetch(PXNativDraw* const pxNativDraw)
                 dwFlags
             );
 
-            if(!pxDisplayScreen->IsConnected)
+            if(!pxDisplay->IsConnected)
             {
                 continue;
             }
 
-            pxDisplayScreen->Width = devMode.dmPelsWidth;
-            pxDisplayScreen->Height = devMode.dmPelsHeight;
+            pxDisplay->Width = devMode.dmPelsWidth;
+            pxDisplay->Height = devMode.dmPelsHeight;
         }
     }
 
 #endif
 
 
-#if PXLogEnable
+#if PXLogEnable && 0 
     PXLogPrint
     (
         PXLoggingInfo,
@@ -309,6 +308,22 @@ PXActionResult PXAPI PXNativDrawDisplayListFetch(PXNativDraw* const pxNativDraw)
     {
         PXDisplay* const pxDisplay = &pxNativDraw->DisplayList[i];
 
+        char* Data;
+        char* Name;
+
+        int ProtocolVersion;
+        int ProtocolRevision;
+
+        char* ServerVendor;
+        int VendorRelease;
+
+        int ScreenDefaultID;
+        int ScreenListAmount;
+
+        PXSize DisplayScreenListAmount;
+        PXDisplayScreen* DisplayScreenList;
+
+
         PXLogPrint
         (
             PXLoggingInfo,
@@ -319,7 +334,7 @@ PXActionResult PXAPI PXNativDrawDisplayListFetch(PXNativDraw* const pxNativDraw)
             "| DeviceName     : %-27s %-4ix%4i |\n"
             "| DeviceString   : %-37.37s |\n"
             "+--------------------------------------------------------+\n",
-            pxDisplay->NameMonitor,
+            pxDisplay->Name,
             pxDisplay->Width,
             pxDisplay->Height,
             pxDisplay->NameID
@@ -1425,7 +1440,7 @@ PXActionResult PXAPI PXNativDrawWindowProperty(PXNativDraw* const pxNativDraw, P
             }
             case PXUIElementPropertyItemAdd:
             {
-                PXUIElementItemInfo* pxUIElementItemInfo = &pxWindowPropertyInfo->Data.TreeViewItem;
+                PXUIElementTreeViewItemInfo* const pxUIElementTreeViewItemInfo = &pxWindowPropertyInfo->Data.TreeViewItem;
 
 #if OSUnix
 #elif OSWindows
@@ -1514,7 +1529,12 @@ PXActionResult PXAPI PXNativDrawTextGet(PXNativDraw* const pxNativDraw, PXWindow
     pxActionResult = PXActionRefusedNotImplemented;
 #elif OSWindows
 
-    const int size = GetWindowTextA(pxWindow->Info.Handle.WindowID, text, 255);
+    const int size = GetWindowTextA
+    (
+        pxWindow->Info.Handle.WindowID,
+        (LPSTR)text,
+        textLength
+    );
 
 #else
     pxActionResult = PXActionRefusedNotSupportedByLibrary;
@@ -2220,7 +2240,7 @@ PXActionResult PXAPI PXNativDrawRectangle(PXNativDraw* const pxNativDraw, PXWind
 
     RECT rect;
     PXRectangleXYWHI32 pxRectangleXYWHI32 = {x, y, width, height};
-    PXRectangleXYWHI32ToLTRBI32(&pxRectangleXYWHI32, &rect);
+    PXRectangleXYWHI32ToLTRBI32(&pxRectangleXYWHI32, (PXRectangleLTRBI32*)&rect);
 
     // const COLORREF color = RGB(255, 0, 200);
     // const HBRUSH brushAA = CreateSolidBrush(color);
@@ -3014,7 +3034,8 @@ LRESULT CALLBACK PXNativDrawEventTranslator(const HWND windowID, const UINT even
 
                     if(pxNativDraw)
                     {
-                        const HWND itemHandle = TreeView_GetSelection(sourceObject); // Event does not give us the handle, fetch manually.
+                        const HTREEITEM treeItemHandle = TreeView_GetSelection(sourceObject); // Event does not give us the handle, fetch manually.
+                        const HWND itemHandle = (HWND)treeItemHandle;
 
                         // Fetch treeview object
                         PXDictionaryFindEntry(&pxNativDraw->ResourceManager->GUIElementLookup, &sourceObject, &pxTreeViewContainer);
@@ -3046,7 +3067,7 @@ LRESULT CALLBACK PXNativDrawEventTranslator(const HWND windowID, const UINT even
 
                     PXDictionaryFindEntry(&pxNativDraw->ResourceManager->GUIElementLookup, &sourceObject, &pxGUIElement);
 
-                    PXWindowExtendedBehaviourTab* pxWindowExtendedBehaviourTab = pxGUIElement->ExtendedData;
+                    PXWindowExtendedBehaviourTab* const pxWindowExtendedBehaviourTab = (PXWindowExtendedBehaviourTab*)pxGUIElement->ExtendedData;
 
                     // Hide current page
                     const PXBool isValidIndex = pxWindowExtendedBehaviourTab->TABPageAmount >= (pageID + 1);
@@ -3151,10 +3172,10 @@ LRESULT CALLBACK PXNativDrawEventTranslator(const HWND windowID, const UINT even
                 PXWindowDrawInfo pxGUIElementDrawInfo;
                 PXClear(PXWindowDrawInfo, &pxGUIElementDrawInfo);
                 pxGUIElementDrawInfo.hwnd = pxGUIElement->Info.Handle.WindowID;
-                pxGUIElementDrawInfo.hDC = windowHandle;
+                pxGUIElementDrawInfo.hDC = hdc;
                 // pxGUIElementDrawInfo.bErase = paintStruct.fErase;
 
-                PXRectangleLTRBI32ToXYWHI32(&paintStruct.rcPaint, &pxGUIElement->Position.Form);
+                PXRectangleLTRBI32ToXYWHI32((PXRectangleLTRBI32*)&paintStruct.rcPaint, &pxGUIElement->Position.Form);
 
                 pxGUIElement->DrawFunction(pxNativDraw, pxGUIElement, &pxGUIElementDrawInfo);
 
@@ -4158,7 +4179,7 @@ void PXAPI PXWindowChildListEnumerate(PXGUISystem* const pxGUISystem, PXWindow* 
                 pxGUIElementUpdateInfo.Show = visible;
                 pxGUIElementUpdateInfo.Property = PXUIElementPropertyVisibility;
 
-                PXWindowUpdate(pxGUISystem, &pxGUIElementUpdateInfo, 1);
+               // PXWindowUpdate(pxGUISystem, &pxGUIElementUpdateInfo, 1);
             }
         }
     }

@@ -182,7 +182,7 @@ PXInt8U PXAPI PXPNGBitsPerPixel(const PXPNG* const png)
     return png->ImageHeader.BitDepth * numberOfColorChannels;
 }
 
-PXActionResult PXAPI PXPNGFilePredictSize(PXImage* const pxImage, PXSize* const fileSize)
+PXSize PXAPI PXPNGFilePredictSize(PXImage* const pxImage, PXSize* const fileSize)
 {
     const PXSize signature = 8;
     const PXSize header = 25;
