@@ -1485,6 +1485,16 @@ PXActionResult PXAPI PXMemoryStackDeallocate(PXMemoryInfo* const pxMemoryInfo)
 
 }
 
+/*
+
+// Bool is we have ECC memory?
+GetMemoryErrorHandlingCapabilities(); // Windows 8, Kernel32.dll, memoryapi.h
+
+// out-cached pages?
+GetSystemFileCacheSize(); // Windows XP 64Bit, Kernel32.dll, memoryapi.h
+SetSystemFileCacheSize(); // Windows XP 64Bit, Kernel32.dll, memoryapi.h
+
+*/
 
 
 /*
