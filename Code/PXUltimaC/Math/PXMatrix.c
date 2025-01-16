@@ -48,7 +48,7 @@ void PXAPI PXMatrix4x4FPositionSet(PXMatrix4x4F* const matrix4x4F, const PXVecto
 void PXAPI PXMatrix4x4FRotationGet(const PXMatrix4x4F* const matrix, PXVector3F* const position)
 {
     // Pitch
-    position->Y = -PXMathSinusA(matrix->Data[ZAxisX]); // 31
+    position->Y = -PXMathArcusSinus(matrix->Data[ZAxisX]); // 31
 
     if(matrix->Data[ZAxisX] == 1.0f)
     {
@@ -56,7 +56,7 @@ void PXAPI PXMatrix4x4FRotationGet(const PXMatrix4x4F* const matrix, PXVector3F*
         position->X = 0;
 
         // Roll
-        position->Z = PXMathTangensArc2(-matrix->Data[XAxisY], -matrix->Data[XAxisZ]); // -12 -13
+        position->Z = PXMathArcusTangens2(-matrix->Data[XAxisY], -matrix->Data[XAxisZ]); // -12 -13
     }
     else if(matrix->Data[ZAxisX] == -1.0f)
     {
@@ -64,15 +64,15 @@ void PXAPI PXMatrix4x4FRotationGet(const PXMatrix4x4F* const matrix, PXVector3F*
         position->X = 0;
 
         // Roll
-        position->Z = PXMathTangensArc2(matrix->Data[YAxisX], matrix->Data[XAxisX]); // 12 13
+        position->Z = PXMathArcusTangens2(matrix->Data[YAxisX], matrix->Data[XAxisX]); // 12 13
     }
     else
     {
         // Yaw
-        position->X = PXMathTangensArc2(matrix->Data[YAxisX], matrix->Data[XAxisX]); // 21 11
+        position->X = PXMathArcusTangens2(matrix->Data[YAxisX], matrix->Data[XAxisX]); // 21 11
 
         // Roll
-        position->Z = PXMathTangensArc2(matrix->Data[ZAxisY], matrix->Data[ZAxisZ]); // 32 33
+        position->Z = PXMathArcusTangens2(matrix->Data[ZAxisY], matrix->Data[ZAxisZ]); // 32 33
     }
 }
 
@@ -105,8 +105,8 @@ void PXAPI PXMatrix4x4FRotationMatrixGenerate(PXMatrix4x4F* const matrix4x4F, co
 
     //-----<X ROT>-----
     {
-        const float cosResult = PXMathCosinus(position->X);
-        const float sinResult = PXMathSinus(position->X);
+        const float cosResult = PXMathCosinusF(position->X);
+        const float sinResult = PXMathSinusF(position->X);
 
         xRotation.Data[5] = cosResult;
         xRotation.Data[6] = sinResult;
@@ -116,8 +116,8 @@ void PXAPI PXMatrix4x4FRotationMatrixGenerate(PXMatrix4x4F* const matrix4x4F, co
 
     //-----<X ROT>-----
     {
-        const float cosResult = PXMathCosinus(-position->Y);
-        const float sinResult = PXMathSinus(-position->Y);
+        const float cosResult = PXMathCosinusF(-position->Y);
+        const float sinResult = PXMathSinusF(-position->Y);
 
         yRotation.Data[0] = cosResult;
         yRotation.Data[2] = -sinResult;
@@ -127,8 +127,8 @@ void PXAPI PXMatrix4x4FRotationMatrixGenerate(PXMatrix4x4F* const matrix4x4F, co
 
     //-----<X ROT>-----
     {
-        const float cosResult = PXMathCosinus(position->Z);
-        const float sinResult = PXMathSinus(position->Z);
+        const float cosResult = PXMathCosinusF(position->Z);
+        const float sinResult = PXMathSinusF(position->Z);
 
         zRotation.Data[0] = cosResult;
         zRotation.Data[1] = -sinResult;
@@ -363,7 +363,7 @@ void PXAPI PXMatrix4x4FPerspective(PXMatrix4x4F* const matrix4x4F, const float f
 {
     const float difference = farPlane - nearPlane;
     const float fielfOfViewRadians = PXMathDegreeToRadians(fielfOfView);
-    const float tanHalfFovy = PXMathTangens(fielfOfViewRadians / 2.0f);
+    const float tanHalfFovy = PXMathTangensF(fielfOfViewRadians / 2.0f);
 
     PXMatrix4x4FIdentity(matrix4x4F);
 

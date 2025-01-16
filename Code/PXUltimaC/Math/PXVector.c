@@ -5,13 +5,13 @@
 float PXAPI PXVector2FDistanceTo(PXVector2F* const vectorA, PXVector2F* const vectorB)
 {
     // d = Root((x2?x1)^2 + (y2?y1)^2)
-    return PXMathSquareRoot(PXMathPowerOfTwo(vectorB->X - vectorA->X) + PXMathPowerOfTwo(vectorB->Y - vectorA->X));
+    return PXMathRootSquare(PXMathPowerOfTwo(vectorB->X - vectorA->X) + PXMathPowerOfTwo(vectorB->Y - vectorA->X));
 }
 
 float PXAPI PXVector3FLength(const PXVector3F* const vector)
 {
     const float sum = vector->X * vector->X + vector->Y * vector->Y + vector->Z * vector->Z; // sum = x * x + y * y + z * z
-    const float sqroot = PXMathSquareRoot(sum);
+    const float sqroot = PXMathRootSquare(sum);
 
     return sqroot;
 }

@@ -1716,7 +1716,7 @@ PXWindowBrush;
 PXPublic void PXAPI PXWindowBrushColorSet(PXWindowBrush* const pxGUIElementBrush, const PXByte red, const PXByte green, const PXByte blue);
 
 //---------------------------------------------------------
-3 buissnes days later
+
 /*
 typedef struct PXWindowData_
 {

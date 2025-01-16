@@ -11,6 +11,8 @@
 #include <intrin.h>
 #endif
 
+#define PXUseStandardLibraryMath 1
+
 int PXAPI PXMathMinimumI(const int a, const int b)
 {
     return PXMathMinimum(a, b);
@@ -130,24 +132,24 @@ double PXAPI PXMathRoot(unsigned int rootNr, double value)
 {
     switch(rootNr)
     {
-    case 0:
-        return 0;
+        case 0:
+            return 0;
 
-    case 1:
-        return 0;
+        case 1:
+            return 0;
 
-    case 2:
-        return PXMathSquareRoot(value);
+        case 2:
+            return PXMathRootSquare(value);
 
-    case 3:
-        return PXMathCubicRoot(value);
+        case 3:
+            return PXMathRootCubic(value);
 
-    default:
-        return 0;
+        default:
+            return 0;
     }
 }
 
-double PXAPI PXMathSquareRoot(double value)
+double PXAPI PXMathRootSquare(double value)
 {
 #if PXStandardLibraryMathUse        
         return sqrt(value);  // TODO: Dependeny problem
@@ -169,7 +171,7 @@ double PXAPI PXMathSquareRoot(double value)
 #endif
 }
 
-double PXAPI PXMathCubicRoot(double value)
+double PXAPI PXMathRootCubic(double value)
 {
 #if PXStandardLibraryMathUse   
     return cbrt(value);
@@ -187,30 +189,17 @@ double PXAPI PXMathCubicRoot(double value)
 }
 
 // Newton-Raphson method
-double PXAPI PXMathRootN(double value, int amount)
+double PXAPI PXMathRootN(double x, int amount)
 {
-    double guess = x / n;
+    double guess = x / amount;
     double epsilon = 0.00001; // Precision level
 
-    while (PXMathAbsoluteD(PXMathPower(guess, n) - x) > epsilon) 
+    while (PXMathAbsoluteD(PXMathPower(guess, amount) - x) > epsilon)
     {
-        guess = ((n - 1) * guess + x / PXMathPower(guess, n - 1)) / n;
+        guess = ((amount - 1) * guess + x / PXMathPower(guess, amount - 1)) / amount;
     }
 
     return guess;
-}
-
-float PXAPI PXMathRootSquareF(const float value)
-{
-    float x = value;
-
-#if 0
-    PXIntrinsicFSQRT(&x); // sin(value); // TODO: Dependeny problem
-#else
-    x = sqrt(value);
-#endif
-
-    return x;
 }
 
 double PXAPI PXMathPythagoras(double a, double b)
@@ -227,7 +216,7 @@ double PXAPI PXMathPythagorasReverse(double c, double a)
     return 0.0;
 }
 
-double PXAPI PXMathLogarithmus(int base, double exponent)
+double PXAPI PXMathLogarithmus(int x, double exponent)
 {
 #if OSUnix
     return 0; // TODO: not implemented?
@@ -236,7 +225,7 @@ double PXAPI PXMathLogarithmus(int base, double exponent)
 #endif
 
     // Taylor series expansion    
-    if (x <= 0) 
+    if (x <= 0)
     {
         return -1; // Error: log is undefined for non-positive values
     }
@@ -326,10 +315,10 @@ PXInt32U PXAPI PXMathRandomeNumber(PXMathRandomGeneratorSeed* const pxMathRandom
 //extern _cdecl PXIntrinsicFSIN(float* val);
 //extern _cdecl PXIntrinsicFSQRT(float* val);
 
-float PXAPI PXMathSinusF(const float value)
+float PXAPI PXMathSinusF(const float x)
 {
 #if PXUseStandardLibraryMath
-      return sin(value);   
+      return sin(x);   
     
 #elif PXIntrinsicUse
 
@@ -357,13 +346,17 @@ float PXAPI PXMathSinusF(const float value)
 #endif
 }
 
-
-double PXAPI PXMathSinusD(double value)
+double PXAPI PXMathSinusD(const double value)
 {
     return PXMathSinusF(value); // TODO: precision loss!
 }
 
-double PXAPI PXMathTangens(double x)
+double PXAPI PXMathTangensF(const float x)
+{
+    return PXMathTangensD(x);
+}
+
+double PXAPI PXMathTangensD(const double x)
 {
 #if PXUseStandardLibraryMath
     return tan(x);
@@ -372,10 +365,15 @@ double PXAPI PXMathTangens(double x)
 #endif
 }
 
-double PXAPI PXMathCosinusD(double value)
+float PXAPI PXMathCosinusF(const float x)
+{
+    return PXMathCosinusD(x);
+}
+
+double PXAPI PXMathCosinusD(const double x)
 {
 #if PXUseStandardLibraryMath
-    return cos(value); // TODO: Dependeny problem
+    return cos(x); // TODO: Dependeny problem
 #else
     double term = 1.0;
     double sum = 1.0;
@@ -393,8 +391,7 @@ double PXAPI PXMathCosinusD(double value)
 #endif
 }
 
-// hyperbolic sine 
-double PXAPI PXMathHyperbolicSinus(double x)
+double PXAPI PXMathHyperbolicSinus(const double x)
 {
 #if PXUseStandardLibraryMath
     return sinh(x);
@@ -406,10 +403,10 @@ double PXAPI PXMathHyperbolicSinus(double x)
 }
 
 // arcsine 
-double PXAPI PXMathArcusSinus(double value)
+double PXAPI PXMathArcusSinus(const double x)
 {
 #if 1 // Support asin()
-    return asin(value);
+    return asin(x);
 #else
   if (x < -1.0 || x > 1.0) {
         return -1; // Error: asin is undefined for values outside [-1, 1]
@@ -428,13 +425,12 @@ double PXAPI PXMathArcusSinus(double value)
 
     return result;
 #endif
-
 }
 
-double PXAPI PXMathHyperbolicCosinus(double value)
+double PXAPI PXMathHyperbolicCosinus(const double x)
 {
 #if PXUseStandardLibraryMath  
-    return cosh(value);
+    return cosh(x);
 #else
     double ex = PXExponential(x);
     double e_minus_x = PXExponential(-x);
@@ -442,12 +438,10 @@ double PXAPI PXMathHyperbolicCosinus(double value)
 #endif 
 }
 
-// hyperbolic tangent
-// tanh(x)= (e^x + e^(−x)) / (e^x − e^(−x))
-double PXAPI PXMathHyperbolicTangens(double value)
+double PXAPI PXMathHyperbolicTangens(const double x)
 {
 #if PXUseStandardLibraryMath     
-    return tanh(value);
+    return tanh(x);
 #else
     double ex = PXExponential(x);
     double e_minus_x = PXExponential(-x);
@@ -455,11 +449,7 @@ double PXAPI PXMathHyperbolicTangens(double value)
 #endif
 }
 
-
-
-
-
-double PXAPI PXMathArcusTangens(double x, double y)
+double PXAPI PXMathArcusTangens(const double x)
 {
 #if PXUseStandardLibraryMath  
     return atan(x);
@@ -513,8 +503,7 @@ double PXAPI PXMathArcusTangens2(double x, double y)
 #endif    
 }
 
-// exp()
-double PXAPI PXExponential(double x) 
+double PXAPI PXExponential(const double x) 
 {
     // Taylor series    
     double result = 1.0; // Initialize result to 1 (the first term of the series)
@@ -534,7 +523,7 @@ double PXAPI PXExponential(double x)
 
 unsigned long PXAPI PXMathFibonacci(unsigned long step)
 {
-    double rootOfFive = PXMathSquareRoot(5);
+    double rootOfFive = PXMathRootSquare(5);
 
     if(step < 2)
     {
@@ -595,7 +584,7 @@ void PXAPI PXMathFormulaQuadratic(const float a, const float b, const float c, f
     const float bNegativ = -b;
     const float dividor = 2.0f * a;
     const float rootData = b * b - 4.0f * a * c;
-    const float rootResult = PXMathSquareRoot(rootData);
+    const float rootResult = PXMathRootSquare(rootData);
 
     *resultA = (bNegativ + rootResult) / dividor;
     *resultB = (bNegativ - rootResult) / dividor;
@@ -606,7 +595,7 @@ void PXAPI PXMathFormulaPQ(const float p, const float q, float* const resultA, f
     const float pHalf = p / 2.0f;
     const float pHalfNeg = -pHalf;
     const float rootData = pHalf * pHalf - q;
-    const float rootResult = PXMathSquareRoot(rootData);
+    const float rootResult = PXMathRootSquare(rootData);
 
     *resultA = pHalfNeg + rootResult;
     *resultB = pHalfNeg - rootResult;
@@ -617,19 +606,19 @@ void PXAPI PXMathFormulaPQ(const float p, const float q, float* const resultA, f
 // double coefficientList[] = {2, -6, 2, -1}; // Each element is a a*x^b
 // int degree = 3; // The size of the list -1. 
 // double x = 3.0; // The value for x in the term
-double PXMathHornerD(double* const coefficientList, const PXInt32U degree, const double x) 
+double PXAPI PXMathHornerD(double* const coefficientList, const PXInt32U degree, const double x)
 {
-    double result = coefficients[0];
+    double result = coefficientList[0];
     
     for (int i = 1; i <= degree; ++i) 
     {
-        result = result * x + coefficients[i];
+        result = result * x + coefficientList[i];
     }
     
     return result;
 }
 
-void PXFastFourierTransform()
+void PXAPI PXFastFourierTransform()
 {
     // TODO: implement
 }

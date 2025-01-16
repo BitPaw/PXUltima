@@ -1072,8 +1072,8 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                             for(PXSize i = 0; i < segmentAmount; ++i)
                             {
                                 const float theta = 2.0f * 3.14f * i / (float)segmentAmount;//get the current angle
-                                const float x = radius * PXMathCosinus(theta);//calculate the x component
-                                const float y = radius * PXMathSinus(theta);//calculate the y component
+                                const float x = radius * PXMathCosinusF(theta);//calculate the x component
+                                const float y = radius * PXMathSinusF(theta);//calculate the y component
 
                                 vertexData[i++] = x + cx;
                                 vertexData[i++] = x + cy; //output vertex

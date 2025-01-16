@@ -596,9 +596,9 @@ void PXAPI PXCameraRotate(PXCamera* const camera, const PXVector3F* const vector
 
     const float pitchRAD = PXMathDegreeToRadians(camera->CurrentRotation.Y);
     const float yawRAD = PXMathDegreeToRadians(camera->CurrentRotation.X);
-    const float rx = PXMathCosinus(pitchRAD) * PXMathCosinus(yawRAD);
-    const float ry = PXMathSinus(pitchRAD);
-    const float rz = PXMathCosinus(pitchRAD) * PXMathSinus(yawRAD);
+    const float rx = PXMathCosinusF(pitchRAD) * PXMathCosinusF(yawRAD);
+    const float ry = PXMathSinusF(pitchRAD);
+    const float rz = PXMathCosinusF(pitchRAD) * PXMathSinusF(yawRAD);
 
     PXVector3FSetXYZ(&camera->LookAtPosition, rx, ry, rz);
     PXVector3FNormalize(&camera->LookAtPosition);

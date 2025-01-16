@@ -94,8 +94,8 @@ void PXDrawCircle(PXOpenGL* const pxOpenGL, PXCircle* const pxCircle)
         for (PXSize j = 0; j < pxCircle->LevelOfDetail; ++j)
         {
             const float angle = piX2 * j / pxCircle->LevelOfDetail;
-            const float x = pxCircle->Positon[0] + PXMathCosinus(angle) * pxCircle->Scale[0];
-            const float y = pxCircle->Positon[1] + PXMathSinus(angle) * pxCircle->Scale[1];
+            const float x = pxCircle->Positon[0] + PXMathCosinusF(angle) * pxCircle->Scale[0];
+            const float y = pxCircle->Positon[1] + PXMathSinusF(angle) * pxCircle->Scale[1];
             pxOpenGL->Binding.Vertex2f(x, y);
         }
 
@@ -203,8 +203,8 @@ PXActionResult PXAPI PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph* const pxKnowle
 
                 pxCircle->ColorBorder = &borderColor;
                 pxCircle->ColorFill = &fillColor;
-                pxCircle->Positon[0] = PXMathCosinus(i*0.85) * 0.5;
-                pxCircle->Positon[1] = PXMathSinus(i * 0.85) * 0.5;
+                pxCircle->Positon[0] = PXMathCosinusF(i*0.85) * 0.5;
+                pxCircle->Positon[1] = PXMathSinusF(i * 0.85) * 0.5;
                 pxCircle->Scale[0] = 0.1;
                 pxCircle->Scale[1] = 0.1;
                 pxCircle->LevelOfDetail = 64;

@@ -860,7 +860,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
 
         if(normalFactor != 0.0)
         {
-            normalFactor = 1.0f / PXMathSquareRoot(normalFactor);
+            normalFactor = 1.0f / PXMathRootSquare(normalFactor);
         }
         else
         {

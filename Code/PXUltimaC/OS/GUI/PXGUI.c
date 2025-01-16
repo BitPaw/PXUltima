@@ -1177,8 +1177,8 @@ void PXMathCircle(PXColorCircle* const pxColorCircle)
         const float degree = (steps * (i + 0));
         const float rad = degree * (3.14f / 180.f);
 
-        vertex->X = pxColorCircle->StartX + pxColorCircle->Size * PXMathCosinus(rad);
-        vertex->Y = pxColorCircle->StartY + pxColorCircle->Size * PXMathSinus(rad);
+        vertex->X = pxColorCircle->StartX + pxColorCircle->Size * PXMathCosinusF(rad);
+        vertex->Y = pxColorCircle->StartY + pxColorCircle->Size * PXMathSinusF(rad);
 
 
         PXColorHSV hsv;
@@ -1204,8 +1204,8 @@ void PXMathCircle(PXColorCircle* const pxColorCircle)
         const float degree = (int)((steps * (i + 0)) + pxColorCircle->ColorSelected.Hue) % 360;
         const float rad = degree * (3.14f / 180.f);
 
-        vertex->X = pxColorCircle->StartX + pxColorCircle->Size * 0.85f * PXMathCosinus(rad);
-        vertex->Y = pxColorCircle->StartY + pxColorCircle->Size * 0.85f * PXMathSinus(rad);
+        vertex->X = pxColorCircle->StartX + pxColorCircle->Size * 0.85f * PXMathCosinusF(rad);
+        vertex->Y = pxColorCircle->StartY + pxColorCircle->Size * 0.85f * PXMathSinusF(rad);
     }
 
 
@@ -1267,8 +1267,8 @@ PXActionResult PXAPI PXWindowDrawCustomColorPicker(PXGUISystem* const pxGUISyste
             const float steps = 360.f / (float)precision;
             float degree = (steps * (i + 1)) * (3.14f / 180.f);
 
-            float x = PXMathCosinus(degree);
-            float y = PXMathSinus(degree);
+            float x = PXMathCosinusF(degree);
+            float y = PXMathSinusF(degree);
 
             vertex->x = r * x + width;
             vertex->y = r * y + height;
