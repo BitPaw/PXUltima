@@ -11,7 +11,7 @@ typedef struct PXSymbol_ PXSymbol;
 
 //---<Settings>---
 #define MemorySizeUnkown -1
-#define MemoryAssertEnable 1
+#define MemoryAssertEnable 0
 #define PXMemoryDebug 1
 #define MemoryDebugLeakDetection 0
 #define MemoryUseSystemFunction 0

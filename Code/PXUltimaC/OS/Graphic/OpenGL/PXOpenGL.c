@@ -3294,7 +3294,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
             pxOpenGL->Binding.BufferBind(GL_ARRAY_BUFFER, pxVertexBuffer->Info.Handle.OpenGLID); // Select VBO
             pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->Info.Handle.OpenGLID); // Select IBO
 
-            assert(indexBufferTypeID != -1);
+           // assert(indexBufferTypeID != -1);
 
             indexData = 0;
         }
@@ -5424,8 +5424,8 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, const PXRenderEntity* co
     PXModel* const pxModel = pxSkyBox->Model;
     PXTextureCube* const pxTextureCube = pxSkyBox->TextureCube;
 
-    assert(pxModel);
-    assert(pxTextureCube);
+    //assert(pxModel);
+    //assert(pxTextureCube);
 
     void* indexBuffer = 0;
 

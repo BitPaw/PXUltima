@@ -1,6 +1,7 @@
 #include "PXGIF.h"
 
 #include <Math/PXMath.h>
+#include <OS/File/PXFile.h>
 
 const char PXGIFHeader[3] = { 'G','I','F' };
 const char PXGIFVersionA[3] = {'8','7','a' };

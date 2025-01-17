@@ -1368,7 +1368,7 @@ LSA_HANDLE GetPolicyHandle(WCHAR* SystemName)
     LSA_HANDLE lsahPolicyHandle;
 
     // Object attributes are reserved, so initialize to zeros.
-    ZeroMemory(&ObjectAttributes, sizeof(ObjectAttributes));
+    PXMemoryClear(&ObjectAttributes, sizeof(ObjectAttributes));
 
 
     USHORT SystemNameLength = 0;
@@ -1380,7 +1380,7 @@ LSA_HANDLE GetPolicyHandle(WCHAR* SystemName)
         systemNameRef = &lusSystemName;
 
         //Initialize an LSA_UNICODE_STRING to the server name.
-        SystemNameLength = wcslen(SystemName);
+        SystemNameLength = PXTextLengthW(SystemName, -1);
         lusSystemName.Buffer = SystemName;
         lusSystemName.Length = SystemNameLength * sizeof(WCHAR);
         lusSystemName.MaximumLength = (SystemNameLength + 1) * sizeof(WCHAR);
@@ -1399,7 +1399,7 @@ LSA_HANDLE GetPolicyHandle(WCHAR* SystemName)
     {
         // An error occurred. Display it as a win32 error code.
         auto winError = LsaNtStatusToWinError(ntsResult);
-        wprintf(L"OpenPolicy returned %lu\n", winError);
+       // wprintf(L"OpenPolicy returned %lu\n", winError);
        // std::cout << "Error message: " << GetErrorAsString(winError) << std::endl;
         return NULL;
     }
@@ -1415,7 +1415,7 @@ PXBool InitLsaString(PLSA_UNICODE_STRING pLsaString, LPCWSTR pwszString)
 
     if(NULL != pwszString)
     {
-        dwLen = wcslen(pwszString);
+        dwLen = PXTextLengthW(pwszString, -1);
         if(dwLen > 0x7ffe)   // String is too large
             return FALSE;
     }
@@ -1451,7 +1451,7 @@ void AddPrivileges()
 
     if(!initSuccess)
     {
-        wprintf(L"Failed InitLsaString\n");
+        //wprintf(L"Failed InitLsaString\n");
         return;
     }
 
@@ -1467,11 +1467,11 @@ void AddPrivileges()
 
     if(ntsResultID == STATUS_SUCCESS)
     {
-        wprintf(L"Privilege added.\n");
+       // wprintf(L"Privilege added.\n");
     }
     else
     {
-        wprintf(L"Privilege was not added - %lu \n", LsaNtStatusToWinError(ntsResultID));
+       // wprintf(L"Privilege was not added - %lu \n", LsaNtStatusToWinError(ntsResultID));
        // std::cout << "Error message: " << GetErrorAsString(LsaNtStatusToWinError(ntsResult)) << std::endl;
     }
 }
@@ -2817,7 +2817,7 @@ PXSize PXAPI PXFileCursorAdvance(PXFile* const pxFile, const PXSize steps)
     PXFileCursorMoveTo(pxFile, pxFile->DataCursor + steps);
     const PXSize delta = pxFile->DataCursor - before;
 
-    assert(delta != (PXSize)-1);
+    //assert(delta != (PXSize)-1);
 
     return delta;
 }
@@ -3423,7 +3423,7 @@ PXSize PXAPI PXFileIOMultible(PXFile* const pxFile, const PXTypeEntry* const pxF
 
             PXMemoryClear(pxFileDataElementType->Adress, sizeOfType);
 
-            assert(sizeOfType > 0);
+            //assert(sizeOfType > 0);
 
             totalSizeToRead += sizeOfType;
         }

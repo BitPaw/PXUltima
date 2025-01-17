@@ -11,7 +11,10 @@
 #include <intrin.h>
 #endif
 
-#define PXUseStandardLibraryMath 1
+#define PXStandardLibraryMathUse 0
+
+const float PXMathConstantPIF = PXMathConstantPI;
+const double PXMathConstantPID = PXMathConstantPI;
 
 int PXAPI PXMathMinimumI(const int a, const int b)
 {
@@ -94,8 +97,6 @@ float PXAPI PXMathFastInverseSqaureRoot(float number)
     return y;
 }
 
-#define PXStandardLibraryMathUse 1
-
 double PXAPI PXMathPower(double base, double exponent)
 {
 #if PXStandardLibraryMathUse
@@ -171,10 +172,10 @@ double PXAPI PXMathRootSquare(double value)
 #endif
 }
 
-double PXAPI PXMathRootCubic(double value)
+double PXAPI PXMathRootCubic(const double x)
 {
 #if PXStandardLibraryMathUse   
-    return cbrt(value);
+    return cbrt(x);
 #else
     double guess = x / 3.0;
     double epsilon = 0.00001; // Precision level
@@ -204,10 +205,10 @@ double PXAPI PXMathRootN(double x, int amount)
 
 double PXAPI PXMathPythagoras(double a, double b)
 {
-#if PXUseStandardLibraryMath
+#if PXStandardLibraryMathUse
     return hypot(a, b);
 #else 
-    return PXMathSquareRoot(PXMathPowerOfTwo(a) + PXMathPowerOfTwo(b));
+    return PXMathRootSquare(PXMathPowerOfTwo(a) + PXMathPowerOfTwo(b));
 #endif
 }
 
@@ -248,12 +249,20 @@ double PXAPI PXMathLogarithmus(int x, double exponent)
 
 double PXAPI PXMathLogarithmusBase2(double exponent)
 {
-    return 0;// log2(exponent); // TODO: !!!
+#if PXStandardLibraryMathUse
+    return log2(exponent);
+#else
+    return 0;
+#endif
 }
 
 double PXAPI PXMathLogarithmusBase10(double exponent)
 {
+#if PXStandardLibraryMathUse
     return log10(exponent);  // TODO: Dependeny problem
+#else
+    return 0;
+#endif
 }
 
 double PXAPI PXMathNewtonGravitation(double massA, double massB, double distance)
@@ -317,7 +326,7 @@ PXInt32U PXAPI PXMathRandomeNumber(PXMathRandomGeneratorSeed* const pxMathRandom
 
 float PXAPI PXMathSinusF(const float x)
 {
-#if PXUseStandardLibraryMath
+#if PXStandardLibraryMathUse
       return sin(x);   
     
 #elif PXIntrinsicUse
@@ -358,7 +367,7 @@ double PXAPI PXMathTangensF(const float x)
 
 double PXAPI PXMathTangensD(const double x)
 {
-#if PXUseStandardLibraryMath
+#if PXStandardLibraryMathUse
     return tan(x);
 #else
     return PXMathSinusD(x) / PXMathCosinusD(x); 
@@ -372,8 +381,8 @@ float PXAPI PXMathCosinusF(const float x)
 
 double PXAPI PXMathCosinusD(const double x)
 {
-#if PXUseStandardLibraryMath
-    return cos(x); // TODO: Dependeny problem
+#if PXStandardLibraryMathUse
+    return cos(x);
 #else
     double term = 1.0;
     double sum = 1.0;
@@ -393,7 +402,7 @@ double PXAPI PXMathCosinusD(const double x)
 
 double PXAPI PXMathHyperbolicSinus(const double x)
 {
-#if PXUseStandardLibraryMath
+#if PXStandardLibraryMathUse
     return sinh(x);
 #else
      double ex = PXExponential(x);
@@ -402,13 +411,13 @@ double PXAPI PXMathHyperbolicSinus(const double x)
 #endif
 }
 
-// arcsine 
 double PXAPI PXMathArcusSinus(const double x)
 {
-#if 1 // Support asin()
+#if PXStandardLibraryMathUse
     return asin(x);
 #else
-  if (x < -1.0 || x > 1.0) {
+    if (x < -1.0 || x > 1.0) 
+    {
         return -1; // Error: asin is undefined for values outside [-1, 1]
     }
 
@@ -417,7 +426,8 @@ double PXAPI PXMathArcusSinus(const double x)
     double x_squared = x * x;
     int n = 1;
 
-    while (term > 0.00001 || term < -0.00001) {
+    while (term > 0.00001 || term < -0.00001) 
+    {
         term *= x_squared * (2 * n - 1) / (2 * n + 1);
         result += term / (2 * n + 1);
         n++;
@@ -429,7 +439,7 @@ double PXAPI PXMathArcusSinus(const double x)
 
 double PXAPI PXMathHyperbolicCosinus(const double x)
 {
-#if PXUseStandardLibraryMath  
+#if PXStandardLibraryMathUse 
     return cosh(x);
 #else
     double ex = PXExponential(x);
@@ -440,7 +450,7 @@ double PXAPI PXMathHyperbolicCosinus(const double x)
 
 double PXAPI PXMathHyperbolicTangens(const double x)
 {
-#if PXUseStandardLibraryMath     
+#if PXStandardLibraryMathUse  
     return tanh(x);
 #else
     double ex = PXExponential(x);
@@ -451,7 +461,7 @@ double PXAPI PXMathHyperbolicTangens(const double x)
 
 double PXAPI PXMathArcusTangens(const double x)
 {
-#if PXUseStandardLibraryMath  
+#if PXStandardLibraryMathUse
     return atan(x);
 #else
     double result = 0.0;
@@ -473,31 +483,31 @@ double PXAPI PXMathArcusTangens(const double x)
 // Arctangent Function
 double PXAPI PXMathArcusTangens2(double x, double y)
 {
-#if PXUseStandardLibraryMath  
+#if PXStandardLibraryMathUse
     return atan2(y, x);
 #else
-     if (x > 0) 
-     {
-        return PXMathTangensArc(y / x);
-    } 
-     else if (x < 0 && y >= 0) 
-     {
-        return PXMathTangensArc(y / x) + M_PI;
-    } 
-     else if (x < 0 && y < 0) 
-     {
-        return PXMathTangensArc(y / x) - M_PI;
-    } 
-     else if (x == 0 && y > 0) 
-     {
-        return M_PI / 2;
-    } 
-     else if (x == 0 && y < 0) 
-     {
-        return -M_PI / 2;
-    } 
-     else 
-     {
+    if(x > 0)
+    {
+        return PXMathArcusTangens(y / x);
+    }
+    else if(x < 0 && y >= 0)
+    {
+        return PXMathArcusTangens(y / x) + PXMathConstantPID;
+    }
+    else if(x < 0 && y < 0)
+    {
+        return PXMathArcusTangens(y / x) - PXMathConstantPID;
+    }
+    else if(x == 0 && y > 0)
+    {
+        return PXMathConstantPID / 2.0f;
+    }
+    else if(x == 0 && y < 0)
+    {
+        return -PXMathConstantPID / 2.0f;
+    }
+    else
+    {
         return 0; // Undefined for (0, 0)
     }
 #endif    

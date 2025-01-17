@@ -7,6 +7,14 @@
 
 #include <wchar.h>
 
+//-----------------------------------------------------------------------------
+#define PXDefaultLibraryEnable 1
+//-----------------------------------------------------------------------------
+
+
+
+
+
 #ifdef __cplusplus
 #define PXLanguageC 0
 #define PXLanguageCPP 1

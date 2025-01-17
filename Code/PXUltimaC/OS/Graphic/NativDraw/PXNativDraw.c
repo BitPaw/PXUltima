@@ -60,7 +60,7 @@ BOOL PXWindowsMonitorFetch(HMONITOR monitorHandle, HDC unnamedParam2, LPRECT unn
     MONITORINFOEX  monitorInfo;
     monitorInfo.cbSize = sizeof(MONITORINFOEX);
 
-    GetMonitorInfoA(monitorHandle, &monitorInfo);
+    const BOOL result = GetMonitorInfoA(monitorHandle, (LPMONITORINFO)&monitorInfo);
 
     PXTextCopyA(monitorInfo.szDevice, CCHDEVICENAME, pxMonitor->Name, 32);
 
@@ -181,7 +181,7 @@ PXActionResult PXAPI PXNativDrawDisplayListFetch(PXNativDraw* const pxNativDraw)
         (
             NULL,
             NULL,
-            (MONITORENUMPROC)PXWindowsMonitorFetch, 
+            (MONITORENUMPROC)PXWindowsMonitorFetch,
             (LPARAM)&pxEindowsDisplayEnumInfo
         );
     }
@@ -294,7 +294,7 @@ PXActionResult PXAPI PXNativDrawDisplayListFetch(PXNativDraw* const pxNativDraw)
 #endif
 
 
-#if PXLogEnable && 0 
+#if PXLogEnable && 0
     PXLogPrint
     (
         PXLoggingInfo,
@@ -906,8 +906,8 @@ PXActionResult PXAPI PXNativDrawSetV3(PXNativDraw* const pxNativDraw, PXWindow* 
         const PXInt32U color = PXColorI32FromBGR(pxColorRGBI8->Red, pxColorRGBI8->Green, pxColorRGBI8->Blue);
         const int resultID = XSetForeground
         (
-            pxGUISystem->DisplayCurrent.DisplayHandle,
-            pxGUISystem->DisplayCurrent.GraphicContent,
+            pxNativDraw->GUISystem->DisplayCurrent.DisplayHandle,
+            pxNativDraw->GUISystem->DisplayCurrent.GraphicContent,
             color
         );
 #elif OSWindows
@@ -923,8 +923,8 @@ PXActionResult PXAPI PXNativDrawSetV3(PXNativDraw* const pxNativDraw, PXWindow* 
         const PXInt32U color = PXColorI32FromBGR(pxColorRGBI8->Red, pxColorRGBI8->Green, pxColorRGBI8->Blue);
         const int resultID = XSetBackground
         (
-            pxGUISystem->DisplayCurrent.DisplayHandle,
-            pxGUISystem->DisplayCurrent.GraphicContent,
+            pxNativDraw->GUISystem->DisplayCurrent.DisplayHandle,
+            pxNativDraw->GUISystem->DisplayCurrent.GraphicContent,
             color
         );
 #elif OSWindows
@@ -1057,8 +1057,8 @@ PXActionResult PXAPI PXNativDrawFontSelect(PXNativDraw* const pxNativDraw, PXWin
 #if OSUnix
     const int resultID = XSetFont
     (
-        pxGUISystem->DisplayCurrent.DisplayHandle,
-        pxGUISystem->DisplayCurrent.GraphicContent,
+        pxNativDraw->GUISystem->DisplayCurrent.DisplayHandle,
+        pxNativDraw->GUISystem->DisplayCurrent.GraphicContent,
         0
     );
 #elif OSWindows
@@ -2017,7 +2017,7 @@ PXActionResult PXAPI PXNativDrawClear(PXNativDraw* const pxNativDraw, PXWindow* 
 #endif
 
 #if OSUnix
-    const int resultID = XClearWindow(pxGUISystem->DisplayCurrent.DisplayHandle, pxGUIElement->Info.Handle.WindowID);
+    const int resultID = XClearWindow(pxNativDraw->GUISystem->DisplayCurrent.DisplayHandle, pxGUIElement->Info.Handle.WindowID);
 #elif OSWindows
     // Does this exists?
 
@@ -2063,9 +2063,9 @@ PXActionResult PXAPI PXNativDrawTextA
     // For ANSI and UTF-8 strings
     const int resultID = XDrawString
     (
-        pxGUISystem->DisplayCurrent.DisplayHandle,
-        pxGUIElement->Info.Handle.WindowID,
-        pxGUISystem->DisplayCurrent.GraphicContent,
+        pxNativDraw->GUISystem->DisplayCurrent.DisplayHandle,
+        pxWindow->Info.Handle.WindowID,
+        pxNativDraw->GUISystem->DisplayCurrent.GraphicContent,
         x,
         y,
         text,
@@ -2179,9 +2179,9 @@ PXActionResult PXAPI PXNativDrawLines(PXNativDraw* const pxNativDraw, PXWindow* 
 
     const resultID = XDrawLines
     (
-        pxGUISystem->DisplayCurrent.DisplayHandle,
+        pxNativDraw->GUISystem->DisplayCurrent.DisplayHandle,
         pxGUIElement->Info.Handle.WindowID,
-        pxGUISystem->DisplayCurrent.GraphicContent,
+        pxNativDraw->GUISystem->DisplayCurrent.GraphicContent,
         &points,
         npoints,
         mode
@@ -2220,13 +2220,13 @@ PXActionResult PXAPI PXNativDrawRectangle(PXNativDraw* const pxNativDraw, PXWind
     PXWindowBrush* const brushBackGround = pxGUIElement->BrushBackground;
 
 #if OSUnix
-    PXNativDrawColorSetBrush(pxGUISystem, pxGUIElement, brushBackGround, PXGUIDrawModeBack);
+    PXNativDrawColorSetBrush(pxNativDraw->GUISystem, pxGUIElement, brushBackGround, PXGUIDrawModeBack);
 
     const resultID = XFillRectangle
     (
-        pxGUISystem->DisplayCurrent.DisplayHandle,
+        pxNativDraw->GUISystem->DisplayCurrent.DisplayHandle,
         pxGUIElement->Info.Handle.WindowID,
-        pxGUISystem->DisplayCurrent.GraphicContent,
+        pxNativDraw->GUISystem->DisplayCurrent.GraphicContent,
         x,
         y,
         width,
@@ -3213,7 +3213,7 @@ LRESULT CALLBACK PXNativDrawEventTranslator(const HWND windowID, const UINT even
                 pxGUIElementDrawInfo.hDC = drawItemInfo->hDC;
                 // pxGUIElementDrawInfo.bErase = paintStruct.fErase;
 
-                PXRectangleLTRBI32ToXYWHI32(&drawItemInfo->rcItem, &pxGUIElement->Position.Form);
+                PXRectangleLTRBI32ToXYWHI32((PXRectangleLTRBI32*)&drawItemInfo->rcItem, &pxGUIElement->Position.Form);
 
                 pxGUIElement->DrawFunction(pxNativDraw->GUISystem, pxGUIElement, &pxGUIElementDrawInfo);
 
@@ -3249,7 +3249,7 @@ LRESULT CALLBACK PXNativDrawEventTranslator(const HWND windowID, const UINT even
                 //  pxGUIElementDrawInfo.rcDirty = &rc;
                 pxGUIElementDrawInfo.bErase = TRUE;
 
-                pxGUIElement->DrawFunction(pxNativDraw, pxGUIElement, &pxGUIElementDrawInfo);
+                pxGUIElement->DrawFunction(pxNativDraw->GUISystem, pxGUIElement, &pxGUIElementDrawInfo);
 
                 return 0; // We custom draw, handled
             }

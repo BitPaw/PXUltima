@@ -4,7 +4,7 @@
 #include <OS/Console/PXConsole.h>
 #include <OS/File/PXFile.h>
 
-#include <assert.h>
+//#include <assert.h>
 
 #define PXCOFFDebug 1
 
@@ -201,15 +201,15 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 
                 remainingOptionalHeaderOffset -= batchSize;
 
-                switch (pxCOFF->OptionalHeader.Format)
+                switch(pxCOFF->OptionalHeader.Format)
                 {
-                case PXCOFFFormatPE32:
-                    assert(batchSize == 28);
-                    break;
+                    case PXCOFFFormatPE32:
+                        //assert(batchSize == 28);
+                        break;
 
-                case PXCOFFFormatPE32Plus:
-                    assert(batchSize == 24);
-                    break;
+                    case PXCOFFFormatPE32Plus:
+                        //assert(batchSize == 24);
+                        break;
                 }
             }
 
@@ -249,11 +249,11 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
                     switch (pxCOFF->OptionalHeader.Format)
                     {
                     case PXCOFFFormatPE32:
-                        assert(batchSize == 68u);
+                        //assert(batchSize == 68u);
                         break;
 
                     case PXCOFFFormatPE32Plus:
-                        assert(batchSize == 88u);
+                        //assert(batchSize == 88u);
                         break;
                     }
 
@@ -410,7 +410,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 
                 remainingOptionalHeaderOffset -= batchSize;
 
-                assert(batchSize == 128u);
+                //assert(batchSize == 128u);
             }
 
             pxFile->DataCursor = syncPosition;
@@ -443,7 +443,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 
             const PXSize readBytes = PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
-            assert(readBytes == 40u);
+            //assert(readBytes == 40u);
 
 
             pxSectionTableCurrent->Type = PXSectionTypeFromID(pxSectionTableCurrent->Name.Value);
@@ -486,7 +486,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 
                     const PXSize readBytes = PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
-                    assert(readBytes == 20u);
+                    //assert(readBytes == 20u);
 
                     const PXBool isLastEntry =
                         !
@@ -748,7 +748,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 
                 const PXSize readBytes = PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
-                assert(readBytes == 18u);
+                //assert(readBytes == 18u);
 
 
                 if (pxCOFFSymbolTableEntry->DoesNotUseExternalString && pxCOFFSymbolTableEntry->DoesNotUseExternalString != 0xCCCCCCCC)

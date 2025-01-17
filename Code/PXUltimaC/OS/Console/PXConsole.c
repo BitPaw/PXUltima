@@ -311,7 +311,7 @@ void PXAPI PXConsoleGoToXY(const PXInt32U x, const PXInt32U y)
 
 void PXAPI PXConsoleWriteF(const PXSize length, const char* const source, ...)
 {
-#if 1
+#if PXDefaultLibraryEnable
     va_list args;
     va_start(args, source);
 
@@ -347,8 +347,8 @@ void PXAPI PXConsoleWrite(const PXSize length, const char* const source)
 
 void PXAPI PXConsoleWriteFV(const PXSize length, const char* const source, va_list va_list)
 {
-#if 1
-    PXSize xx = vprintf(source, va_list);
+#if PXDefaultLibraryEnable
+    const PXSize xx = vprintf(source, va_list);
 #endif
 }
 
@@ -573,31 +573,25 @@ void PXAPI PXLogPrintInvoke(PXLoggingEventData* const pxLoggingEventData, ...)
     PXTime pxTime;
     PXTimeNow(&pxTime);
 
-    // sprintf_s
     textPreFormatted.SizeUsed = PXTextPrintA
-                                (
-                                    textPreFormatted.TextA,
-                                    textPreFormatted.SizeAllocated,
-                                    "[%2.2i:%2.2i:%2.2i] §3%11s §%i%c %-14s §%i%s%s\n",
-                                    pxTime.Hour,
-                                    pxTime.Minute,
-                                    pxTime.Second,
-                                    //(int)pxThread.ThreadID,
-                                    pxLoggingEventData->ModuleSource,
-                                    symbolColor,
-                                    loggingTypeSymbol,
-                                    pxLoggingEventData->ModuleAction,
-                                    nameColor,
-                                    textExtra.TextA,
-                                    pxLoggingEventData->PrintFormat
-                                );
-
-
-
-
+    (
+        textPreFormatted.TextA,
+        textPreFormatted.SizeAllocated,
+        "[%2.2i:%2.2i:%2.2i] §3%11s §%i%c %-14s §%i%s%s\n",
+        pxTime.Hour,
+        pxTime.Minute,
+        pxTime.Second,
+        //(int)pxThread.ThreadID,
+        pxLoggingEventData->ModuleSource,
+        symbolColor,
+        loggingTypeSymbol,
+        pxLoggingEventData->ModuleAction,
+        nameColor,
+        textExtra.TextA,
+        pxLoggingEventData->PrintFormat
+    );
 
     PXConsoleWriteWithColorCodes(&textPreFormatted);
-
 
 
     va_list args;

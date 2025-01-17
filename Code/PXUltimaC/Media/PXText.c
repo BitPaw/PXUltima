@@ -171,12 +171,12 @@ PXSize PXAPI PXTextAppend(PXText* const currentString, const PXText* const appen
 PXSize PXAPI PXTextAppendA(PXText* const currentString, const char* const appaendString, const char appaendStringSize)
 {
     currentString->SizeUsed += PXTextCopyA
-                               (
-                                   appaendString,
-                                   appaendStringSize,
-                                   &currentString->TextA[currentString->SizeUsed],
-                                   currentString->SizeAllocated - currentString->SizeUsed
-                               );
+    (
+        appaendString,
+        appaendStringSize,
+        &currentString->TextA[currentString->SizeUsed],
+        currentString->SizeAllocated - currentString->SizeUsed
+    );
 
     return currentString->SizeUsed;
 }
@@ -198,13 +198,7 @@ PXSize PXAPI PXTextAppendF(PXText* const pxText, const char* const format, ...)
     va_list args;
     va_start(args, format);
 
-    PXSize added =
-#if OSUnix
-        vsnprintf
-#elif OSWindows
-        vsprintf_s
-#endif
-        (beginning, sizeLeft, format, args);
+    const PXSize added = PXTextPrintAV(beginning, sizeLeft, format, args);
 
     pxText->SizeUsed += added;
 
@@ -244,8 +238,19 @@ PXSize PXAPI PXTextPrintAV(char* const text, const PXSize size, const char* styl
 {
 #if OSUnix
     return vsnprintf(text, size, style, parameter);
-#elif OSWindows
+#elif OSWindows && PXDefaultLibraryEnable
     return vsprintf_s(text, size, style, parameter);
+#endif
+}
+
+PXSize PXAPI PXTextPrintWV(wchar_t* const text, const PXSize size, const char* style, va_list parameter)
+{
+#if OSUnix
+    return 0;// vsnwprintf(text, size, style, parameter);
+#elif OSWindows && PXDefaultLibraryEnable
+    return vswprintf_s(text, size, (wchar_t*)style, parameter);
+#else
+    return 0;
 #endif
 }
 
@@ -261,11 +266,7 @@ PXSize PXAPI PXTextPrintV(PXText* const pxText, const char* style, va_list param
     }
     case TextFormatUNICODE:
     {
-#if OSUnix
-        //pxText->SizeUsed = vsnwprintf(pxText->TextW, pxText->SizeAllocated / 2, style, args);
-#elif OSWindows
-        pxText->SizeUsed = vswprintf_s(pxText->TextW, pxText->SizeAllocated / 2, (wchar_t*)style, parameter);
-#endif
+        pxText->SizeUsed = PXTextPrintWV(pxText->TextW, pxText->SizeAllocated, style, parameter);
         break;
     }
 
@@ -318,11 +319,15 @@ PXSize PXAPI PXTextLengthW(const wchar_t* string, const PXSize stringSize)
         return 0;
     }
 
+#if PXDefaultLibraryEnable
+    return wcslen(string);
+#else
     PXSize index = 0;
 
-    for (; (string[index] != L'\0') && (index < stringSize); ++index);
+    for(; (string[index] != L'\0') && (index < stringSize); ++index);
 
     return index;
+#endif
 }
 
 PXSize PXAPI PXTextLengthUntilA(const char* string, const PXSize stringSize, const char character)
@@ -1714,8 +1719,8 @@ PXSize PXAPI PXTextFormatDateTime(PXText* const pxText, const PXTime* const pxTi
     // YYYY.MM.DD - HH.MM.SS
     return  PXTextPrint
     (
-        pxText, 
-        "%4.4i.%2.2i.%2.2i - %2.2i:%2.2i:%2.2i", 
+        pxText,
+        "%4.4i.%2.2i.%2.2i - %2.2i:%2.2i:%2.2i",
         pxTime->Year,
         pxTime->Month,
         pxTime->Day,

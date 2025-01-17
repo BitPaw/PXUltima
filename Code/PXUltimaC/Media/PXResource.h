@@ -1690,7 +1690,7 @@ typedef struct PXWindowDrawInfo_
 }
 PXWindowDrawInfo;
 
-typedef PXActionResult (PXAPI* PXWindowDrawFunction)(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow, PXWindowDrawInfo* const pxWindowDrawInfo);
+typedef PXActionResult (PXAPI* PXWindowDrawFunction)(PXGUISystem* const pxGUISystem, PXWindow* const pxWindow, PXWindowDrawInfo* const pxWindowDrawInfo);
 
 
 //---------------------------------------------------------

@@ -19,7 +19,7 @@ static PXBool _PXGLOBALDebugEnable = 0;
 #include <psapi.h>
 #include <TlHelp32.h>
 
-//#pragma comment(lib, "DbgHelp.lib")
+#pragma comment(lib, "DbgHelp.lib")
 
 #endif
 

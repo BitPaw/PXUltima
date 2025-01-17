@@ -66,12 +66,8 @@
 #include "GLSL/PXGLSL.h"
 #include "HLSL/PXHLSL.h"
 
-#include <assert.h>
-
-extern void _chkstk(size_t s) {};
+//void _chkstk(size_t s) {};
 extern int _fltused = 0;
-
-
 
 const float PXVertexDataTriangle[] =
 {
@@ -99,7 +95,6 @@ const PXInt8U PXIndexDataRectangle[] =
     0,1,2,
     2,3,0
 };
-
 
 const PXInt8S PXVertexDataCube[] =
 {
@@ -342,7 +337,7 @@ const char* PXAPI PXResourceTypeToString(const PXResourceType pxResourceType)
 
 void PXAPI PXResourceManagerInit(PXResourceManager* const pxResourceManager)
 {
-    assert(pxResourceManager);
+   // assert(pxResourceManager);
 
     PXClear(PXResourceManager, pxResourceManager);
 
@@ -368,12 +363,12 @@ void PXAPI PXResourceManagerInit(PXResourceManager* const pxResourceManager)
 
 void PXAPI PXResourceManagerRelease(PXResourceManager* const pxResourceManager)
 {
-    assert(pxResourceManager);
+   // assert(pxResourceManager);
 }
 
 PXInt32U PXAPI PXResourceManagerGenerateUniqeID(PXResourceManager* const pxResourceManager)
 {
-    assert(pxResourceManager);
+   // assert(pxResourceManager);
 
     return 1000 + ++pxResourceManager->UniqeIDGeneratorCounter;
 }
@@ -383,7 +378,7 @@ PXInt32U PXAPI PXResourceManagerGenerateUniqeID(PXResourceManager* const pxResou
 HBITMAP PXAPI PXBitMapFromImage(int width, int height, int amountofchannels, void* data)
 {
     BITMAPINFO bmi;
-    ZeroMemory(&bmi, sizeof(BITMAPINFO));
+    PXMemoryClear(&bmi, sizeof(BITMAPINFO));
     bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
     bmi.bmiHeader.biWidth = width;
     bmi.bmiHeader.biHeight = -height; // Top-down DIB 
@@ -398,7 +393,11 @@ HBITMAP PXAPI PXBitMapFromImage(int width, int height, int amountofchannels, voi
         return PXNull;
     }
 
-    memcpy(bitmapData, data, amountofchannels * width * height);
+    PXSize size = amountofchannels * width * height;
+
+    
+
+    PXMemoryCopy(data, size, bitmapData, size);
 
     return hBitmap;
 }
@@ -412,9 +411,9 @@ HICON PXAPI PXIconFromBitMap(PXImage* const pxImage)
 
 PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceManager, PXResourceCreateInfo* const pxResourceCreateInfoList, const PXSize amount)
 {
-    assert(pxResourceManager);
-    assert(pxResourceCreateInfoList);
-    assert(0 <= amount);
+    //assert(pxResourceManager);
+   // assert(pxResourceCreateInfoList);
+    //assert(0 <= amount);
 
     for(PXSize i = 0; i < amount; ++i)
     {

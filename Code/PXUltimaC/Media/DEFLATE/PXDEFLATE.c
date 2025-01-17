@@ -874,7 +874,13 @@ void bpmnode_sort(BPMNode* leaves, PXSize num)
         }
         counter++;
     }
-    if(counter & 1) memcpy(leaves, mem, sizeof(*leaves) * num);
+    if(counter & 1)
+    {
+        const PXSize size = sizeof(*leaves) * num;
+
+        PXMemoryCopy(mem, size, leaves, size);
+    }
+
 
     PXDeleteStackList(BPMNode, num, &mem, PXNull);
 }
@@ -1114,7 +1120,7 @@ unsigned lodepng_huffman_code_lengths(unsigned* lengths, const unsigned* frequen
         }
     }
 
-    memset(lengths, 0, numcodes * sizeof(*lengths));
+    PXMemoryClear(lengths, numcodes * sizeof(*lengths));
 
     /*ensure at least two present symbols. There should be at least one symbol
     according to RFC 1951 section 3.2.7. Some decoders incorrectly require two. To

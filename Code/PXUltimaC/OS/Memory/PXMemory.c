@@ -637,7 +637,7 @@ void PXAPI PXMemorySet(void* const PXRestrict buffer, const PXByte value, const 
 
 #if MemoryUseSystemFunction
     memset(buffer, value, bufferSize);
-#elif OSWindows
+#elif OSWindows && PXDefaultLibraryEnable
     FillMemory(buffer, bufferSize, value);
 #else
     for(PXSize i = 0; i < bufferSize; ++i)

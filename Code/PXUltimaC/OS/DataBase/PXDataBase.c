@@ -9,8 +9,7 @@
 #include <sqlext.h>
 #include <sqltypes.h>
 
-
-
+extern void __chkstk(size_t s) {};
 
 typedef SQLRETURN(SQL_API* PXSQLAllocConnect)(SQLHENV EnvironmentHandle, __out SQLHDBC* ConnectionHandle);
 typedef SQLRETURN(SQL_API* PXSQLAllocEnv)(__out SQLHENV* EnvironmentHandle);
@@ -513,16 +512,16 @@ PXActionResult PXAPI PXDataBaseConnect
             SQLSMALLINT writtenSize = 0;
 
             resultDriverConnect = pxSQLDriverConnectA
-                                  (
-                                      pxDataBase->ConnectionID,
-                                      NULL,
-                                      (SQLCHAR*)pxTextSQLConnectionString.TextA,
-                                      pxTextSQLConnectionString.SizeUsed,
-                                      (SQLCHAR*)pxTextSQLConnectionStringResult.TextA,
-                                      pxTextSQLConnectionStringResult.SizeAllocated,
-                                      &writtenSize,
-                                      SQL_DRIVER_NOPROMPT
-                                  );
+            (
+                pxDataBase->ConnectionID,
+                NULL,
+                (SQLCHAR*)pxTextSQLConnectionString.TextA,
+                pxTextSQLConnectionString.SizeUsed,
+                (SQLCHAR*)pxTextSQLConnectionStringResult.TextA,
+                pxTextSQLConnectionStringResult.SizeAllocated,
+                &writtenSize,
+                SQL_DRIVER_NOPROMPT
+            );
 
             pxTextSQLConnectionStringResult.SizeUsed = writtenSize;
 
@@ -535,29 +534,29 @@ PXActionResult PXAPI PXDataBaseConnect
             const wchar_t driver[] = L"MySQL ODBC 8.0 Unicode Driver";
 
             pxTextSQLConnectionString.SizeUsed = wsprintfW
-                                                 (
-                                                         pxTextSQLConnectionString.TextW,
-                                                         L"Driver={%ls};Server=%ls;Database=%ls;UID=%ls;PWD=%ls;",
-                                                         driver,
-                                                         source->TextW,
-                                                         database->TextW,
-                                                         user->TextW,
-                                                         password->TextW
-                                                 );
+            (
+                pxTextSQLConnectionString.TextW,
+                L"Driver={%ls};Server=%ls;Database=%ls;UID=%ls;PWD=%ls;",
+                driver,
+                source->TextW,
+                database->TextW,
+                user->TextW,
+                password->TextW
+            );
 
             SQLSMALLINT writtenSize = 0;
 
             resultDriverConnect = pxSQLDriverConnectW
-                                  (
-                                      pxDataBase->ConnectionID,
-                                      NULL,
-                                      pxTextSQLConnectionString.TextW,
-                                      pxTextSQLConnectionString.SizeUsed,
-                                      pxTextSQLConnectionStringResult.TextW,
-                                      pxTextSQLConnectionStringResult.SizeAllocated,
-                                      &writtenSize,
-                                      SQL_DRIVER_NOPROMPT
-                                  );
+            (
+                pxDataBase->ConnectionID,
+                NULL,
+                pxTextSQLConnectionString.TextW,
+                pxTextSQLConnectionString.SizeUsed,
+                pxTextSQLConnectionStringResult.TextW,
+                pxTextSQLConnectionStringResult.SizeAllocated,
+                &writtenSize,
+                SQL_DRIVER_NOPROMPT
+            );
 
             pxTextSQLConnectionStringResult.SizeUsed = writtenSize;
 
@@ -692,16 +691,16 @@ void PXAPI PXDataBaseScanForDrivers(PXDataBase* const pxDataBase)
     for(;;)
     {
         const SQLRETURN resultDriver = pxSQLDriversA
-                                       (
-                                           pxDataBase->EnvironmentID,
-                                           direction,
-                                           driverDescription,
-                                           driverDescriptionSize,
-                                           &driverDescriptionSizeWritten,
-                                           driverAttributes,
-                                           driverAttributesSize,
-                                           &driverAttributesSizeWritten
-                                       );
+        (
+            pxDataBase->EnvironmentID,
+            direction,
+            driverDescription,
+            driverDescriptionSize,
+            &driverDescriptionSizeWritten,
+            driverAttributes,
+            driverAttributesSize,
+            &driverAttributesSizeWritten
+        );
 
         totalAmountOfData += driverDescriptionSizeWritten;
         totalAmountOfDataB += driverAttributesSizeWritten;
@@ -724,16 +723,16 @@ void PXAPI PXDataBaseScanForDrivers(PXDataBase* const pxDataBase)
     while(!finished)
     {
         const SQLRETURN resultDriver = pxSQLDriversA
-                                       (
-                                           pxDataBase->EnvironmentID,
-                                           direction,
-                                           driverDescription,
-                                           driverDescriptionSize,
-                                           &driverDescriptionSizeWritten,
-                                           driverAttributes,
-                                           driverAttributesSize,
-                                           &driverAttributesSizeWritten
-                                       );
+        (
+            pxDataBase->EnvironmentID,
+            direction,
+            driverDescription,
+            driverDescriptionSize,
+            &driverDescriptionSizeWritten,
+            driverAttributes,
+            driverAttributesSize,
+            &driverAttributesSizeWritten
+        );
 
         switch(resultDriver)
         {

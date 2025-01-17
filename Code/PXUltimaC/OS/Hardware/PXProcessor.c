@@ -1120,7 +1120,7 @@ PXActionResult PXAPI PXProcessorTemperature(PXProcessorTemperatureInfo* const px
 void PXAPI PXProcessorNoOperation()
 {
 #if OSUnix
-#elif OSWindows
+#elif OSWindows && PXDefaultLibraryEnable
     __nop();
 #endif
 }
@@ -1128,7 +1128,7 @@ void PXAPI PXProcessorNoOperation()
 void PXAPI PXProcessorRandomNumber()
 {
 #if OSUnix
-#elif OSWindows
+#elif OSWindows && PXDefaultLibraryEnable
     _rdrand32_step(0);
 #endif
 }
@@ -1136,15 +1136,15 @@ void PXAPI PXProcessorRandomNumber()
 void PXAPI PXProcessorSwapByteOrderI16U(PXInt16U* const value)
 {
 #if OSUnix
-#elif OSWindows
+#elif OSWindows && PXDefaultLibraryEnable
     * value = _byteswap_ushort(*value);
 #endif
 }
 
 void PXAPI PXProcessorSwapByteOrderI32U(PXInt32U* const value)
 {
-#if OSUnix
-#elif OSWindows
+#if OSUnix 
+#elif OSWindows && PXDefaultLibraryEnable
     * value = _byteswap_ulong(*value);
 #endif
 }
@@ -1152,7 +1152,7 @@ void PXAPI PXProcessorSwapByteOrderI32U(PXInt32U* const value)
 void PXAPI PXProcessorSwapByteOrderI64U(PXInt64U* const value)
 {
 #if OSUnix
-#elif OSWindows
+#elif OSWindows && PXDefaultLibraryEnable
     * value = _byteswap_uint64(*value);
 #endif
 }

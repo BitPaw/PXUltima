@@ -64,17 +64,23 @@ PXActionResult PXAPI PXSignalCallBackRegister(const PXSignalToken pxSignalToken,
 
 PXActionResult PXAPI PXRecoveryPointSet(PXRecoveryPoint* const pxRecoveryPoint)
 {
+#if PXDefaultLibraryEnable
     const int resultID = setjmp(pxRecoveryPoint->Enviroment); 
     const PXBool success = 0 == resultID;
 
     return PXActionSuccessful;
+#endif
 }
 
 PXActionResult PXAPI PXRecoveryPointRestore(PXRecoveryPoint* const pxRecoveryPoint)
 {
+#if PXDefaultLibraryEnable
     int returnValue = 1;
 
     longjmp(pxRecoveryPoint->Enviroment, returnValue); // Jump to the saved state
 
     return PXActionSuccessful;
+#else
+    return PXActionRefusedNotSupportedByLibrary;
+#endif
 }

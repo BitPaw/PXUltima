@@ -128,7 +128,7 @@ PXActionResult PXAPI PXDotNetInit(PXDotNet* const pxDotNet)
     // Done..?
     WCHAR filePath[] = L"C:\\Data\\WorkSpace\\PXLibTest.dll";
 
-    FILE* ff = _wfopen(filePath, L"r");
+  //  FILE* ff = _wfopen(filePath, L"r");
    
 
     HRESULT appReturn = 0;
