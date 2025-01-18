@@ -400,6 +400,8 @@ PXActionResult PXAPI PXWindowDrawCustomFooter(PXGUISystem* const pxGUISystem, PX
         pxGUIElement->Position.Form.Height
     );
 
+    PXNativDrawFontSelect(&pxGUISystem->NativDraw, pxGUIElement, pxGUISystem->FontContent);
+
     PXProcessor pxProcessor;
     PXProcessorFetchInfo(&pxProcessor);
 
@@ -1005,26 +1007,7 @@ PXActionResult PXAPI PXWindowDrawCustomText(PXGUISystem* const pxGUISystem, PXWi
     }
 
     // Load font
-    {
-        const char fontName[] =
-#if OSUnix
-            "fixed";
-#elif OSWindows
-        // "Eras Medium ITC"; // Bradley Hand ITC, UniSpace,OCR A, Cascadia Mono
-
-            "UniSpace";
-#endif
-        const PXSize fontNameLength = sizeof(fontName);
-
-        PXFont pxFont;// = pxGUIElement->FontForText;
-        PXClear(PXFont, &pxFont);
-        pxFont.Size = pxWindow->Position.Form.Height;
-
-
-        PXNativDrawFontLoadA(&pxGUISystem->NativDraw, &pxFont, fontName, fontNameLength);
-
-        PXNativDrawFontSelect(&pxGUISystem->NativDraw, pxWindow, &pxFont);
-    }
+    PXNativDrawFontSelect(&pxGUISystem->NativDraw, pxWindow, pxGUISystem->FontContent);
 
 
     // Text-Shadow
@@ -1095,6 +1078,8 @@ PXActionResult PXAPI PXWindowDrawCustomButton(PXGUISystem* const pxGUISystem, PX
         pxWindow->Position.Form.Width,
         pxWindow->Position.Form.Height
     );
+
+    PXNativDrawFontSelect(&pxGUISystem->NativDraw, pxWindow, pxGUISystem->FontContent);
 
     PXNativDrawTextA
     (
@@ -1823,12 +1808,21 @@ PXActionResult PXAPI PXGUISystemInitialize(PXGUISystem* const pxGUISystem)
     pxResourceCreateInfoList[2].ObjectReference = &pxGUISystem->FontTitle;
     pxResourceCreateInfoList[2].Name = "FontTitle";
     pxResourceCreateInfoList[2].Type = PXResourceTypeFont;
-    pxResourceCreateInfoList[3].Font.RegisteredName = "UniSpace";
+   
+#if OSUnix
+    pxResourceCreateInfoList[2].Font.RegisteredName = "fixed";
+#elif OSWindows
+    pxResourceCreateInfoList[2].Font.RegisteredName = "UniSpace";
+#endif
 
     pxResourceCreateInfoList[3].ObjectReference = &pxGUISystem->FontContent;
     pxResourceCreateInfoList[3].Name = "FontContent";
     pxResourceCreateInfoList[3].Type = PXResourceTypeFont;
-    pxResourceCreateInfoList[3].Font.RegisteredName = "Eras Medium ITC";
+#if OSUnix
+    pxResourceCreateInfoList[3].Font.RegisteredName = "fixed";   
+#elif OSWindows
+    pxResourceCreateInfoList[3].Font.RegisteredName = "Eras Medium ITC";  // "Eras Medium ITC"; // Bradley Hand ITC, UniSpace,OCR A, Cascadia Mono,         "UniSpace";
+#endif
 
     PXResourceManagerAdd(pxGUISystem->ResourceManager, pxResourceCreateInfoList, 4);
 

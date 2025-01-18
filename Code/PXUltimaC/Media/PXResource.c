@@ -66,6 +66,8 @@
 #include "GLSL/PXGLSL.h"
 #include "HLSL/PXHLSL.h"
 
+#include <OS/Graphic/NativDraw/PXNativDraw.h>
+
 //void _chkstk(size_t s) {};
 extern int _fltused = 0;
 
@@ -1270,32 +1272,64 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
 
                 pxFont->Info.ID = PXResourceManagerGenerateUniqeID(pxResourceManager);
                 PXDictionaryAdd(&pxResourceManager->FontLookUp, &pxFont->Info.ID, pxFont);
+                
+                // if this is a system font, we dont load it from disk but from the system, duh.
+                if(pxEngineFontCreateData->RegisteredName)
+                {
+                    PXNativDrawFontLoadA
+                    (
+                        PXNativDrawInstantance(),
+                        &pxFont, 
+                        pxEngineFontCreateData->RegisteredName,
+                        pxEngineFontCreateData->RegisteredNameLength
+                    );
 
 #if PXLogEnable
-                PXLogPrint
-                (
-                    PXLoggingInfo,
-                    "Resource",
-                    "Font-Create",
-                    "ID:%i <%s>",
-                    pxFont->Info.ID,
-                    pxResourceCreateInfo->FilePath
+                    PXLogPrint
+                    (
+                        PXLoggingInfo,
+                        "Resource",
+                        "Font-Load",
+                        "ID:%4i <%s>, Name:<%s>, load from OS",
+                        pxFont->Info.ID,
+                        pxResourceCreateInfo->Name,
+                        pxEngineFontCreateData->RegisteredName
 
-                );
+                    );
+#endif
+                }
+                else
+                {
+                    // We want to load by file
+
+#if PXLogEnable
+                    PXLogPrint
+                    (
+                        PXLoggingInfo,
+                        "Resource",
+                        "Font-Load",
+                        "ID:%4i <%s>, Path:<%s>, from file",
+                        pxFont->Info.ID,
+                        pxResourceCreateInfo->Name,
+                        pxResourceCreateInfo->FilePath
+
+                    );
 #endif
 
-                // Load font
-                {
-                    PXResourceTransphereInfo pxResourceLoadInfo;
-                    PXClear(PXResourceTransphereInfo, &pxResourceLoadInfo);
-                    pxResourceLoadInfo.ResourceTarget = pxFont;
-                    pxResourceLoadInfo.ResourceType = PXResourceTypeFont;
-                    pxResourceLoadInfo.Manager = pxResourceManager;
+                    // Load font
+                    {
+                        PXResourceTransphereInfo pxResourceLoadInfo;
+                        PXClear(PXResourceTransphereInfo, &pxResourceLoadInfo);
+                        pxResourceLoadInfo.ResourceTarget = pxFont;
+                        pxResourceLoadInfo.ResourceType = PXResourceTypeFont;
+                        pxResourceLoadInfo.Manager = pxResourceManager;
 
-                    const PXActionResult loadResult = PXResourceLoadA(&pxResourceLoadInfo, pxResourceCreateInfo->FilePath);
+                        const PXActionResult loadResult = PXResourceLoadA(&pxResourceLoadInfo, pxResourceCreateInfo->FilePath);
 
-                    PXActionReturnOnError(loadResult);
+                        PXActionReturnOnError(loadResult);
+                    }
                 }
+   
 
                 break;
             }

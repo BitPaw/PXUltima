@@ -3462,6 +3462,7 @@ typedef struct PXEngineFontCreateInfo_
 {
     PXShaderProgram* ShaderProgramCurrent;
 
+    PXSize RegisteredNameLength;
     char* RegisteredName; // Name of the font, registered by the OS
 }
 PXEngineFontCreateInfo;
