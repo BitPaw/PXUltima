@@ -1687,6 +1687,9 @@ typedef struct PXWindowDrawInfo_
     HDC hDC;
     BOOL bErase;
 #endif
+
+    char* Content;
+    PXSize ContentSize;
 }
 PXWindowDrawInfo;
 

@@ -1073,7 +1073,7 @@ PXActionResult PXAPI PXNativDrawFontSelect(PXNativDraw* const pxNativDraw, PXWin
         "NativDraw",
         "Font-Load",
         "%s, %p",
-        "---",
+        pxFont->Name,
         pxFont->Info.Handle.FontHandle
     );
 #endif
@@ -1650,6 +1650,27 @@ PXActionResult PXAPI PXNativDrawWindowMoveAndResize(PXNativDraw* const pxNativDr
 #endif
 
     return pxActionResult;
+}
+
+PXActionResult PXAPI PXNativDrawIcon(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow, PXIcon* const pxIcon, const int x, const int y, const int size)
+{
+#if OSUnix
+#elif OSWindows
+    const BOOL success = DrawIconEx
+    (
+        pxWindow->DeviceContextHandle,
+        x,
+        y,
+        pxIcon->Info.Handle.IconHandle,
+        size, // Width same as height
+        size,
+        0,
+        0,
+        DI_NORMAL
+    );
+#endif
+
+    return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXNativDrawCursorPosition(PXNativDraw* const pxNativDraw, PXVector2I* const position, const PXBool isWrite)

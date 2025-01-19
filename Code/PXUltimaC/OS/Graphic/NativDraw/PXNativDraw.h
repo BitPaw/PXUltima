@@ -93,6 +93,10 @@ PXPublic PXActionResult PXAPI PXNativDrawWindowResize(PXNativDraw* const pxNativ
 PXPublic PXActionResult PXAPI PXNativDrawWindowMoveAndResize(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow, const int x, const int y, const int width, const int height);
 //---------------------------------------------------------
 
+//---------------------------------------------------------
+// Icon
+//---------------------------------------------------------
+PXPublic PXActionResult PXAPI PXNativDrawIcon(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow, PXIcon* const pxIcon, const int x, const int y, const int size);
 
 //---------------------------------------------------------
 // Cursor
