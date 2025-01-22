@@ -54,6 +54,9 @@ PXActionResult PXAPI PXSignalCallBackRegister(const PXSignalToken pxSignalToken,
         return PXActionRefusedArgumentInvalid;
     }
 
+    // SetUnhandledExceptionFilter();
+    
+
     return PXActionSuccessful;
 #elif OSWindows
     return PXActionRefusedNotImplemented;
