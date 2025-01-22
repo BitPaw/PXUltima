@@ -44,3 +44,10 @@ char* PathIconGet(const char *mimeType)
 
 ## Windows
 The system can use the POSIX functions but prefers that programmers use the standard HANDLE as a fileID.
+
+## Physical location on disk
+Maybe we want to map out how the file looks in a graph of the whole disk?<br>
+1. CreateFile to get a HANDLE to a file or I/O device.
+2. DeviceIoControl with FSCTL_GET_RETRIEVAL_POINTERS
+3. (optional) GetFileInformationByHandle, for more details.
+4. CloseHandle, don't forget 
