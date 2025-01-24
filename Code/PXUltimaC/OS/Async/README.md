@@ -17,8 +17,20 @@ When a thread enters a section, every other thread that tryes to enter this sect
 Then, the secound thread will proceed, one at a time. 
 This way of waiting is also called a spinlock. An obvious downside is the time we wait, in this time we 
 can't do anything and just IDLE: Because of this, locks should always used spareingly and with care about this aspect.
+The difference in locks
+|Name|Overhead|When to use..|
+|:-|:-|:-|
+|Semaphore|Higher| Can be called at any time from any place. Bigger overhead.|
+|Mutex|Moderate|Can only be used on the thread it was created from (Managed locking).<br>Use when multible processes are involved.|
+|CriticalSection|Lower|Can only be used inside a procees not across processes, faster because of it.|
 
 ## Threadpools
-Threadspools are just a "pool", a fixed amount of Threads, that are created beforehand and can 
-be used directly for a task. After executing the thread is not destroyed but marked as free to be used for another task.
-The advantage is in recyceling the objects instead of creating and destroying them repeatetly.
+A Threadspool can be seen as an array of threads, a fixed amount of Threads, that are created once and can 
+be used for a task. After executing, the thread is not destroyed but marked as "free" to be used for another task.
+The advantage is in recyceling the objects, instead of creating and destroying them repeatetly.
+### Design
+- An array of threads. The initial size is the amount of processor cores.
+- Tasks need to have a binding to a spesific thread. Only that thread may execute that task. Some APIs enforce this behaviour.
+- Tasks can be compleated but also a repeating task. The tasks stays in queue as long as desired.
+- The mein thread needs to be part of this pool, jet shall not count to the amount. As some tasks might be only callable from the main thread.
+- If workload is low, threads shall be suspended to not waste CPU cycles.
