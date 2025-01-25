@@ -21,6 +21,8 @@ PXPublic PXActionResult PXAPI PXNativDrawDisplayOpen(PXNativDraw* const pxNativD
 PXPublic PXActionResult PXAPI PXNativDrawWindowCreate(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow, PXWindowCreateInfo* const pxWindowCreateInfo);
 
 
+PXPublic PXActionResult PXAPI PXNativDrawRectangleParent(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow, PXRectangleXYWHI32* const pxRectangleXYWHI32);
+
 
 // Events
 PXPublic PXActionResult PXAPI PXNativDrawWindowEventPendingAmount(PXNativDraw* const pxNativDraw, PXSize* const amount);

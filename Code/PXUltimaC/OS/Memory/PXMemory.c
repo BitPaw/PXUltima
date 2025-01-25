@@ -109,7 +109,7 @@ void PXAPI PXAccessModeToStringA(char* text, const const PXAccessMode pxAccessMo
     text[3] = 0;
 }
 
-PXMemorySymbolLookup* const PXAPI PXMemorySymbolLookupInstanceGet(void)
+PXMemorySymbolLookup* PXAPI PXMemorySymbolLookupInstanceGet(void)
 {
     if(!_PXGLOBLALMemorySymbolLookupENABLED)
     {

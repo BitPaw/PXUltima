@@ -1,15 +1,20 @@
 #include "PXThreadPool.h"
 
 #include <OS/Error/PXActionResult.h>
-
-#include "PXThread.h"
+#include <OS/Hardware/PXProcessor.h>
+#include <OS/Async/PXThread.h>
 
 
 // Linux does not have native support for threadpools.
 // To solve this, you need to create a class yourself with pthreads
 
 
-void PXAPI PXThreadPoolClose(PXThreadPool* const pxThreadPool)
+PXThreadResult __stdcall PXThreadPoolCallBack(PXThreadPool* const pxThreadPool)
+{
+    return 0;
+}
+
+PXActionResult PXAPI PXThreadPoolClose(PXThreadPool* const pxThreadPool)
 {
 #if (OSUnix || (OSWindows && !WindowsAtleastVista))
 #elif OSWindows
@@ -19,9 +24,25 @@ void PXAPI PXThreadPoolClose(PXThreadPool* const pxThreadPool)
 #endif
 }
 
-void PXAPI PXThreadPoolCreate(PXThreadPool* const pxThreadPool)
+PXActionResult PXAPI PXThreadPoolCreate(PXThreadPool* const pxThreadPool)
 {
-#if (OSUnix || (OSWindows && !WindowsAtleastVista))
+    // Lookup how many cores we have.
+    pxThreadPool->ThreadListSize = 32;
+    pxThreadPool->ThreadList = PXMemoryCallocT(PXThread, pxThreadPool->ThreadListSize);
+
+
+#if (OSUnix || (OSWindows && !WindowsAtleastVista)) | 1
+
+    for(PXSize i = 0; i < pxThreadPool->ThreadListSize; ++i)
+    {
+        PXThread* const pxThread = &pxThreadPool->ThreadList[i];
+
+        char nameBuffer[32];
+        PXTextPrintA(nameBuffer, 32, "PX-ThreadPool-%3.3i", i);
+
+        PXThreadCreate(pxThread, nameBuffer, PXNull, PXThreadPoolCallBack, pxThreadPool, PXThreadBehaviourCreateSuspended);
+    }
+
 #elif OSWindows
     pxThreadPool->Pool = CreateThreadpool(PXNull);
 
@@ -45,7 +66,7 @@ void PXAPI PXThreadPoolCreate(PXThreadPool* const pxThreadPool)
 #endif
 }
 
-void PXAPI PXThreadPoolThreadMaximumSet(PXThreadPool* const pxThreadPool, const PXInt32U amount)
+PXActionResult PXAPI PXThreadPoolThreadMaximumSet(PXThreadPool* const pxThreadPool, const PXInt32U amount)
 {
 #if (OSUnix || (OSWindows && !WindowsAtleastVista))
 #elif OSWindows
@@ -53,7 +74,7 @@ void PXAPI PXThreadPoolThreadMaximumSet(PXThreadPool* const pxThreadPool, const 
 #endif
 }
 
-void PXAPI PXThreadPoolThreadMinimumSet(PXThreadPool* const pxThreadPool, const PXInt32U amount)
+PXActionResult PXAPI PXThreadPoolThreadMinimumSet(PXThreadPool* const pxThreadPool, const PXInt32U amount)
 {
 #if (OSUnix || (OSWindows && !WindowsAtleastVista))
 #elif OSWindows
@@ -114,4 +135,9 @@ PXActionResult PXAPI PXThreadPoolQueueWork(PXThreadPool* const pxThreadPool, voi
 
 
 
+}
+
+PXActionResult PXAPI PXThreadPoolQueueTask(PXThreadPool* const pxThreadPool, PXTask* const pxTask)
+{
+    return PXActionSuccessful;
 }

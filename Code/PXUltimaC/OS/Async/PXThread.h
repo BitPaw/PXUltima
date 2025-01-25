@@ -2,6 +2,7 @@
 #define PXThreadInclude
 
 #include <Media/PXResource.h>
+#include "PXProcess.h"
 
 // Return IDs
 
@@ -13,7 +14,7 @@ typedef void* PXThreadResult;
 #define PXThreadIDUnused 0  // Adress
 #elif OSWindows
 #include <windows.h>
-typedef unsigned long PXThreadResult;
+typedef DWORD PXThreadResult;
 //typedef HANDLE PXThreadIDType;
 #define PXThreadIDUnused nullptr
 #if OSWindowsXP
@@ -26,6 +27,32 @@ typedef struct IUnknown IUnknown;
 
 typedef PXThreadResult(PXOSAPI* ThreadFunction)(void* const data);
 
+
+
+#define PXTaskBehaviourRepeat (0b00010000) // Shall this task repeat itself after executing successful?
+
+
+#define PXTaskBehaviourStateMask (0b00001111)
+#define PXTaskBehaviourStateInvalid     0 // Resource does not exist. Not created or deleted
+#define PXTaskBehaviourStateRunning     1 // Resource is 
+#define PXTaskBehaviourStateWaiting     2 // Resource waits for another resource
+#define PXTaskBehaviourStateSuspended   3 // Resource 
+#define PXTaskBehaviourStateFailed      4
+#define PXTaskBehaviourStateFinished    5 // Resource is done
+
+
+typedef enum PXTaskState_
+{
+    PXTaskStateInvalid      = PXTaskBehaviourStateInvalid,
+    PXTaskStateRunning      = PXTaskBehaviourStateRunning,
+    PXTaskStateWaiting      = PXTaskBehaviourStateWaiting,
+    PXTaskStateSuspended    = PXTaskBehaviourStateSuspended,
+    PXTaskStateFinished     = PXTaskBehaviourStateFinished,
+    PXTaskStateFailed       = PXTaskBehaviourStateFailed,
+}
+PXTaskState;
+
+
 typedef enum PXThreadMode_
 {
     PXThreadModeInvalid,
@@ -36,50 +63,6 @@ typedef enum PXThreadMode_
     PXThreadModeFinished,
 }
 PXThreadMode;
-
-typedef struct PXThread_
-{
-#if OSUnix
-    void* ReturnResult;
-
-    pthread_t ThreadHandle;
-#elif OSWindows
-    HANDLE ThreadHandle;
-    PXInt32U ThreadID;
-    PXInt32U ReturnResult;
-#endif
-
-    PXThreadMode Mode;
-}
-PXThread;
-
-PXPublic void PXAPI PXThreadConstruct(PXThread* const pxThread);
-PXPublic void PXAPI PXThreadDestruct(PXThread* const pxThread);
-
-#if OSWindows
-PXPublic void PXAPI PXThreadConstructFromHandle(PXThread* const pxThread, HANDLE threadHandle);
-#endif
-
-
-// This function create a handle for the thread.
-// The thread will clean itself up, yet you need to release the handle as a final step.
-// "threadName" can be NULL
-PXPublic PXActionResult PXAPI PXThreadRun(PXThread* const pxThread, const char* const threadName, const ThreadFunction threadFunction, const void* parameter);
-
-PXPublic PXActionResult PXAPI PXThreadRunInOtherProcess(PXThread* const pxThread, const void* processHandle, const ThreadFunction threadFunction, const void* parameter);
-
-// Dont call this function if you dont have to.
-// In C++ this can cause memory leaks as destructors might not be called.
-PXPublic PXActionResult PXAPI PXThreadExitCurrent(const PXInt32U exitCode);
-
-// Causes the calling thread to yield execution to another
-// thread that is ready to run on the current processor.
-// The operating system selects the next thread to be executed.
-// The function returns true if a yield was caused, otherwise the
-// current thread proceeds execution and false is returned.
-PXPublic PXActionResult PXAPI PXThreadYieldToOtherThreads();
-
-PXPublic PXActionResult PXAPI PXThreadOpen(PXThread* const pxThread);
 
 
 // Windows : priority
@@ -137,6 +120,71 @@ typedef enum PXThreadPriorityMode_
     PXThreadPriorityModeHighest
 }
 PXThreadPriorityMode;
+
+
+
+
+typedef struct PXTask_
+{
+    PXResourceInfo Info;
+
+    void* FunctionAdress;
+}
+PXTask;
+
+
+#define PXThreadBehaviourDefault            0
+#define PXThreadBehaviourCreateSuspended    (1<<0)
+
+typedef struct PXThread_
+{
+    PXResourceInfo Info;
+
+    PXThreadResult ReturnResultCode;
+
+#if OSUnix
+#elif OSWindows
+    DWORD ThreadID;
+#endif
+}
+PXThread;
+
+PXPublic void PXAPI PXThreadDestruct(PXThread* const pxThread);
+
+#if OSWindows
+PXPublic void PXAPI PXThreadConstructFromHandle(PXThread* const pxThread, HANDLE threadHandle);
+#endif
+
+
+// Create thread and start it if defined.
+// The thread will clean itself up, yet you need to release the handle as a final step.
+// "targetProcessHandle" can be NULL, will target own process
+// "threadName" can be NULL, it helps for debugging
+PXPublic PXActionResult PXAPI PXThreadCreate
+(
+    PXThread* const pxThread,
+    const char* const threadName,
+    const PXProcessHandle targetProcessHandle,
+    ThreadFunction threadFunction,
+    void* parameter, 
+    const PXInt32U behaviour
+);
+
+// Dont call this function if you dont have to.
+// In C++ this can cause memory leaks as destructors might not be called.
+PXPublic PXActionResult PXAPI PXThreadExitCurrent(const PXInt32U exitCode);
+
+// Causes the calling thread to yield execution to another
+// thread that is ready to run on the current processor.
+// The operating system selects the next thread to be executed.
+// The function returns true if a yield was caused, otherwise the
+// current thread proceeds execution and false is returned.
+PXPublic PXActionResult PXAPI PXThreadYieldToOtherThreads();
+
+PXPublic PXActionResult PXAPI PXThreadOpen(PXThread* const pxThread);
+
+
+
 
 
 

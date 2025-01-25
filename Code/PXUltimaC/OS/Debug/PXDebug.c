@@ -232,10 +232,19 @@ PXActionResult PXAPI PXDebugStartProcess(PXDebug* const pxDebug, const PXText* c
 
     // Start Thread that will listen to given process.
     {
-        const PXActionResult result = PXThreadRun(&pxDebug->EventListenLoop, "PXDebugLoop", (ThreadFunction)PXDebugLoop, pxDebug);
+        const PXActionResult result = PXThreadCreate
+        (
+            &pxDebug->EventListenLoop,
+            "PXDebugLoop",
+            PXNull,
+            (ThreadFunction)PXDebugLoop,
+            pxDebug,
+            PXThreadBehaviourDefault
+        );
 
         // If thread cannot be started, stop.
-        PXActionReturnOnError(result);
+        if(PXActionSuccessful != result) 
+            return result;
     }
 
     // Start process
@@ -897,7 +906,8 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
 #endif
 
         PXThread pxThread;
-        pxThread.ThreadHandle = pxDebug->Process.ThreadHandle;
+        PXThreadConstructFromHandle(&pxThread, pxDebug->Process.ThreadHandle);
+        //pxThread.ThreadHandle = pxDebug->Process.ThreadHandle;
 
         PXThreadResume(&pxThread);
 
@@ -1580,7 +1590,7 @@ PXActionResult PXAPI PXDebugFetchSymbolThread(PXDebug* const pxDebug, PXSymbol* 
 #elif OSWindows
 
     // if we dont have a handle or even an ID, we cant proceed
-    const PXBool hasAtlestOne = pxThread->ThreadID || pxThread->ThreadHandle;
+    const PXBool hasAtlestOne = pxThread->ThreadID || pxThread->Info.Handle.ThreadHandle;
 
     if(!hasAtlestOne)
     {
@@ -1591,19 +1601,19 @@ PXActionResult PXAPI PXDebugFetchSymbolThread(PXDebug* const pxDebug, PXSymbol* 
     void* adress = 0;
 
     // create thread handle if not exists
-    if(!pxThread->ThreadHandle)
+    if(!pxThread->Info.Handle.ThreadHandle)
     {
-        pxThread->ThreadHandle = OpenThread(THREAD_ALL_ACCESS, PXFalse, pxThread->ThreadID);
+        pxThread->Info.Handle.ThreadHandle = OpenThread(THREAD_ALL_ACCESS, PXFalse, pxThread->ThreadID);
     }
 
-    const NTSTATUS fdgx = NtQueryInformationThread
-                          (
-                              pxThread->ThreadHandle,
-                              9, // ThreadQuerySetWin32StartAddress // undocumented magic number?
-                              &adress,
-                              sizeof(void*),
-                              PXNull
-                          );
+    const NTSTATUS querryResult = NtQueryInformationThread
+    (
+        pxThread->Info.Handle.ThreadHandle,
+        9, // ThreadQuerySetWin32StartAddress // undocumented magic number?
+        &adress,
+        sizeof(void*),
+        PXNull
+    ); // KERNEL
 
     const PXActionResult symbolResult = PXDebugFetchSymbolFromRougeAdress(pxDebug, pxSymbol, adress);
 

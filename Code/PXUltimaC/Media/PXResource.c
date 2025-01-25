@@ -1279,7 +1279,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                     PXNativDrawFontLoadA
                     (
                         PXNativDrawInstantance(),
-                        &pxFont, 
+                        pxFont, 
                         pxEngineFontCreateData->RegisteredName,
                         pxEngineFontCreateData->RegisteredNameLength
                     );
@@ -1290,7 +1290,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceMan
                         PXLoggingInfo,
                         "Resource",
                         "Font-Load",
-                        "ID:%4i <%s>, Name:<%s>, load from OS",
+                        "ID:%-4i <%s>, Name:<%s>, load from OS",
                         pxFont->Info.ID,
                         pxResourceCreateInfo->Name,
                         pxEngineFontCreateData->RegisteredName
@@ -2063,8 +2063,8 @@ void PXAPI PXRectangleLTRBI32ToXYWHI32(const PXRectangleLTRBI32* const pxRectang
 {
     pxRectangleXYWHI32->X      = pxRectangleLTRBI32->Left;
     pxRectangleXYWHI32->Y      = pxRectangleLTRBI32->Top;
-    pxRectangleXYWHI32->Width  = pxRectangleXYWHI32->Width - pxRectangleLTRBI32->Left;
-    pxRectangleXYWHI32->Height = pxRectangleXYWHI32->Height - pxRectangleLTRBI32->Top;
+    pxRectangleXYWHI32->Width  = pxRectangleLTRBI32->Right - pxRectangleLTRBI32->Left;
+    pxRectangleXYWHI32->Height = pxRectangleLTRBI32->Bottom - pxRectangleLTRBI32->Top;
 }
 
 void PXAPI PXRectangleXYWHI32ToLTRBI32(const PXRectangleXYWHI32* const pxRectangleXYWHI32, PXRectangleLTRBI32* const pxRectangleLTRBI32)

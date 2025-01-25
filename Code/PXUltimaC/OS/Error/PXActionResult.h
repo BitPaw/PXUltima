@@ -90,9 +90,9 @@ typedef enum PXActionResult_
     PXActionRefuedObjectInterfaceNotAvailable,
 
 
-
-    PXActionRefusedObjectIDInvalid, // PX-IDINVAL
-    PXActionRefusedObjectNameInvalid, // PX-NAMEINVAL
+    PXActionRefusedObjectNotCreated,    // PX-OBJ-NOID
+    PXActionRefusedObjectIDInvalid,     // PX-OBJ-IDINVAL
+    PXActionRefusedObjectNameInvalid,   // PX-NAMEINVAL
     PXActionRefusedWindowsClassNameInvalid, 
     PXActionRefusedNameSpaceInvalid,
     PXActionRefusedObjectParentInvalid,

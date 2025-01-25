@@ -2,7 +2,7 @@
 
 #include <OS/Memory/PXMemory.h>
 
-void* PXAPI PXListDynamicAdd(PXListDynamic* const pxListDynamic, const char* const key, const char* const data, const PXSize dataSize)
+void* PXAPI PXListDynamicAdd(PXListDynamic* const pxListDynamic, const void* const key, const char* const data, const PXSize dataSize)
 {
     const PXSize rowSizeNew = pxListDynamic->KeySize + pxListDynamic->SizeInBytes + dataSize + pxListDynamic->DoNullTerminate; //Key + datasize + data
     const PXSize requiredSize = pxListDynamic->DataSizeUsed + rowSizeNew;
@@ -82,7 +82,7 @@ void* PXAPI PXListDynamicAdd(PXListDynamic* const pxListDynamic, const char* con
     return insertionBase;
 }
 
-void PXAPI PXListDynamicGet(PXListDynamic* const pxListDynamic, const char* const key, char** data, PXSize* dataSize)
+void PXAPI PXListDynamicGet(PXListDynamic* const pxListDynamic, const void* const key, char** data, PXSize* dataSize)
 {
     char* dataCursor = pxListDynamic->DataAdress;
 

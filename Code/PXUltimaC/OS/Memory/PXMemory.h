@@ -191,7 +191,7 @@ PXMemorySymbolInfoMode;
 // need to have this global reference to compare to
 
 // Singleton of a global memory table, all PXMemory allocations are regsieterd here
-PXPrivate PXMemorySymbolLookup* const PXAPI PXMemorySymbolLookupInstanceGet(void);
+PXPrivate PXMemorySymbolLookup* PXAPI PXMemorySymbolLookupInstanceGet(void);
 PXPublic void PXAPI PXMemorySymbolAdd(PXSymbolMemory* const pxSymbolMemory, const PXMemorySymbolInfoMode pxMemorySymbolInfoMode);
 PXPublic PXActionResult PXAPI PXMemorySymbolFetch(const void* const adress, PXSymbol* const pxSymbol);
 

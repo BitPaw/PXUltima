@@ -85,10 +85,17 @@ PXActionResult PXAPI PXProgramExecute(PXProgram* const program)
 {
     if (program->PXProgramExecutedCallBack)
     {
-        const PXActionResult actionResult = PXThreadRun(&program->WorkingThread, "PXProgramExecute", PXProgramExecuteThreadFunction, program);
-        const PXBool sucessful = PXActionSuccessful == actionResult;
+        const PXActionResult actionResult = PXThreadCreate
+        (
+            &program->WorkingThread, 
+            "PXProgramExecute", 
+            PXNull,
+            PXProgramExecuteThreadFunction, 
+            program,
+            PXThreadBehaviourDefault
+        );
 
-        if (!sucessful)
+        if (PXActionSuccessful == actionResult)
         {
             return actionResult;
         }

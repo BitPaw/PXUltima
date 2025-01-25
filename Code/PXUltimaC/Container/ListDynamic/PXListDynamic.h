@@ -32,7 +32,7 @@ PXPublic void PXAPI PXListDynamicInit(PXListDynamic* const pxListDynamic, const 
 
 // Adds an entry, data is copyed given the range.
 // a direct adress to the object is returned
-PXPublic void* PXAPI PXListDynamicAdd(PXListDynamic* const pxListDynamic, const char* const key,  const char* const data, const PXSize dataSize);
-PXPublic void PXAPI PXListDynamicGet(PXListDynamic* const pxListDynamic, const char* const key, char** data, PXSize* dataSize);
+PXPublic void* PXAPI PXListDynamicAdd(PXListDynamic* const pxListDynamic, const void* const key,  const char* const data, const PXSize dataSize);
+PXPublic void PXAPI PXListDynamicGet(PXListDynamic* const pxListDynamic, const void* const key, char** data, PXSize* dataSize);
 
 #endif

@@ -43,7 +43,9 @@ typedef struct PXFileEntry_ PXFileEntry;
 typedef struct PXDebug_ PXDebug;
 typedef struct PXDisplay_ PXDisplay;
 typedef struct PXNativDraw_ PXNativDraw;
-
+typedef struct PXTask_ PXTask;
+typedef struct PXThread_ PXThread;
+typedef struct PXDebug_ PXDebug;
 
 extern void _chkstk(size_t s);
 
@@ -371,7 +373,7 @@ PXResourceType;
 #define PXResourceInfoConstData PXResourceInfoPermissionREAD | PXResourceInfoStorageMemory | PXResourceInfoExist | PXResourceInfoActive | PXResourceInfoRender
 
 #define PXResourceInfoOK              PXResourceInfoExist | PXResourceInfoActive | PXResourceInfoRender
-
+#define PXResourceInfoNoRender              PXResourceInfoExist | PXResourceInfoActive
 
 
 
@@ -385,12 +387,14 @@ typedef union PXOSHandle_
 #if OSUnix
     Window WindowID; // Linux X11 System
     XFontStruct* FontHandle;
+    pthread_t ThreadHandle;
 #elif OSWindows
     HWND WindowID; // Windows only, used for GUI elements
     HBRUSH BrushHandle;
     HFONT FontHandle;
     HMENU MenuHandle;
     HICON IconHandle;
+    HANDLE ThreadHandle;
 #endif
 }
 PXOSHandle;
@@ -1498,7 +1502,7 @@ PXSkyBox;
 #define PXWindowBehaviourDefaultKeepAspect   PXWindowKeepWidth | PXWindowKeepHeight
 #define PXWindowBehaviourDefaultDecorative   PXResourceInfoOK | PXWindowBehaviourBorder
 #define PXWindowBehaviourDefaultInputNormal  PXResourceInfoOK | PXWindowBehaviourSelectable | PXWindowBehaviourHoverable
-#define PXWindowBehaviourDefaultText         PXResourceInfoOK | PXWindowAllignTop | PXWindowKeepHeight | PXWindowAllignCenter
+#define PXWindowBehaviourDefaultText         PXResourceInfoOK | PXWindowKeepHeight | PXWindowAllignCenter
 #define PXWindowBehaviourDefaultBuffer       PXWindowBehaviourDefaultKeepAspect
 
 typedef enum PXUIHoverState_
@@ -2523,8 +2527,10 @@ PXWindowPixelSystemInfo;
 
 
 //---------------------------------------------------------
-// Menu Item
+// Menu Item - Behaviour
 //---------------------------------------------------------
+#define PXWindowMenuItemText
+#define PXWindowMenuItemIcon
 #define PXGUIMenuItemTypeImage      (1<<0)
 #define PXGUIMenuItemTypeCheckmark  (1<<1)
 #define PXGUIMenuItemTypeDATA       (1<<2)
@@ -2556,6 +2562,8 @@ PXWindowPixelSystemInfo;
 typedef struct PXWindowMenuItem_
 {
     PXResourceInfo Info;
+
+    PXIcon* Icon;
 
     char* TextData;
     PXSize TextSize;
