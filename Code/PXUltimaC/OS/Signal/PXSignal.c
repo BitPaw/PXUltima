@@ -9,6 +9,13 @@
 typedef __sighandler_t PXSignalHandle;
 #elif OSWindows
 typedef _crt_signal_t PXSignalHandle;
+
+LONG WINAPI PXSignalFilter(EXCEPTION_POINTERS* exceptionInfo) 
+{
+    printf("Unhandled exception occurred!\n");
+    return EXCEPTION_EXECUTE_HANDLER;
+}
+
 #endif
 
 PXActionResult PXAPI PXSignalCallBackRegister(const PXSignalToken pxSignalToken, PXSignalCallBack pxSignalCallBack)
@@ -52,13 +59,13 @@ PXActionResult PXAPI PXSignalCallBackRegister(const PXSignalToken pxSignalToken,
     if (!validLinkage)
     {
         return PXActionRefusedArgumentInvalid;
-    }
-
-    // SetUnhandledExceptionFilter();
-    
+    }    
 
     return PXActionSuccessful;
 #elif OSWindows
+
+    SetUnhandledExceptionFilter(PXSignalFilter);
+
     return PXActionRefusedNotImplemented;
 #else
     return PXActionNotSupportedByOperatingSystem;

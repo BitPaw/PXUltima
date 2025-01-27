@@ -11,7 +11,7 @@
 #include <intrin.h>
 #endif
 
-#define PXStandardLibraryMathUse 0
+#define PXStandardLibraryMathUse 1
 
 const float PXMathConstantPIF = PXMathConstantPI;
 const double PXMathConstantPID = PXMathConstantPI;
