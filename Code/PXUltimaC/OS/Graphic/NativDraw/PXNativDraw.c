@@ -1131,7 +1131,10 @@ PXActionResult PXAPI PXNativDrawFontLoadA(PXNativDraw* const pxNativDraw, PXFont
 
     pxFont->Info.Handle.FontHandle = CreateFontA
     (
-        pxFont->Size, 0, 0, 0,
+        0, 
+        0,
+        0,
+        0,
         FW_HEAVY, //  FW_HEAVY
         isItalics,
         isUnderline,
@@ -2176,7 +2179,8 @@ PXActionResult PXAPI PXNativDrawTextA
     int width,
     int height,
     const char* const text,
-    const PXSize textSize
+    const PXSize textSize,
+    const PXInt32U behaviour
 )
 {
 #if PXLogEnable
@@ -2255,12 +2259,12 @@ PXActionResult PXAPI PXNativDrawTextA
     PXRectangleXYWHI32ToLTRBI32(&pxRectangleXYWHI32, (PXRectangleLTRBI32*)&rectangle);
 
     UINT format = DT_SINGLELINE | DT_NOCLIP;
-    format |= PXFlagIsSet(pxWindow->Info.Behaviour, PXWindowAllignTop) * DT_TOP;
-    format |= PXFlagIsSet(pxWindow->Info.Behaviour, PXWindowAllignLeft) * DT_LEFT;
-    format |= PXFlagIsSet(pxWindow->Info.Behaviour, PXWindowAllignRight) * DT_RIGHT;
-    format |= PXFlagIsSet(pxWindow->Info.Behaviour, PXWindowAllignBottom) * DT_BOTTOM;
+    format |= PXFlagIsSet(behaviour, PXWindowAllignTop) * DT_TOP;
+    format |= PXFlagIsSet(behaviour, PXWindowAllignLeft) * DT_LEFT;
+    format |= PXFlagIsSet(behaviour, PXWindowAllignRight) * DT_RIGHT;
+    format |= PXFlagIsSet(behaviour, PXWindowAllignBottom) * DT_BOTTOM;
 
-    if(PXFlagIsSet(pxWindow->Info.Behaviour, PXWindowAllignCenter))
+    if(PXFlagIsSet(behaviour, PXWindowAllignCenter))
     {
         format |= DT_VCENTER | DT_CENTER;
     }

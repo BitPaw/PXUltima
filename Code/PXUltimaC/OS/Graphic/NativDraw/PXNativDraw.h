@@ -126,7 +126,8 @@ PXPublic PXActionResult PXAPI PXNativDrawTextA
     int width,
     int height,
     const char* const text,
-    const PXSize textSize
+    const PXSize textSize,
+    const PXInt32U behaviour
 );
 PXPublic PXActionResult PXAPI PXNativDrawTextW(PXNativDraw* const pxNativDraw, PXWindow* const pxGUIElement, const wchar_t* const text, const PXSize textSize);
 PXPublic PXActionResult PXAPI PXNativDrawPoint(PXNativDraw* const pxNativDraw, PXWindow* const pxGUIElement, const int x, const int y);

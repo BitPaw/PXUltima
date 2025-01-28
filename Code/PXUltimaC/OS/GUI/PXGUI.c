@@ -440,7 +440,8 @@ PXActionResult PXAPI PXWindowDrawCustomHeader(PXGUISystem* const pxGUISystem, PX
             block.Width - offset,
             block.Height - offset,
             pxWindowMenuItem->TextData,
-            pxWindowMenuItem->TextSize
+            pxWindowMenuItem->TextSize,
+            PXWindowAllignCenter
         );
 
         if(pxWindowMenuItem->TextData)
@@ -542,22 +543,16 @@ PXActionResult PXAPI PXWindowDrawCustomResourceView(PXGUISystem* const pxGUISyst
     PXDictionary* shaderLookup = &pxResourceManager->ShaderProgramLookup;
     PXDictionary* guiLookup = &pxResourceManager->GUIElementLookup;
 
-    // Title
-    {
-        PXNativDrawTextA
-        (
-            &pxGUISystem->NativDraw,
-            pxWindow,
-            pxRectangleXYWH.X,
-            pxRectangleXYWH.Y,
-            pxRectangleXYWH.Width,
-            pxRectangleXYWH.Height,
-            "Icon",
-            5
-        );
-
-        pxRectangleXYWH.Y += pxRectangleXYWH.Height + 3;
-    }
+    // Title    
+    PXWindowDrawCustomResourceViewTitle
+    (
+        pxGUISystem,
+        pxWindow,
+        &pxIconPlaceHolder,
+        &pxRectangleXYWH,
+        "[Icon]",
+        6
+    );    
 
     int iconMax = iconLookup->EntryAmountCurrent > 4 ? 4 : iconLookup->EntryAmountCurrent;
 
@@ -569,27 +564,6 @@ PXActionResult PXAPI PXWindowDrawCustomResourceView(PXGUISystem* const pxGUISyst
         PXDictionaryIndex(iconLookup, i, &pxDictionaryEntry);
 
         pxIcon = *(PXIcon**)pxDictionaryEntry.Value;
-
-        PXWindowDrawCustomRectangle3D
-        (
-            pxGUISystem,
-            pxWindow,
-            pxRectangleXYWH.X,
-            pxRectangleXYWH.Y,
-            pxRectangleXYWH.Width,
-            pxRectangleXYWH.Height
-        );
-
-        PXNativDrawIconDraw
-        (
-            &pxGUISystem->NativDraw,
-            pxWindow,
-            &pxIconPlaceHolder,
-            pxRectangleXYWH.X+2,
-            pxRectangleXYWH.Y,
-            pxRectangleXYWH.Height,
-            pxRectangleXYWH.Height
-        );
 
         char* name = 0;
         PXSize nameSize = 0;
@@ -606,56 +580,28 @@ PXActionResult PXAPI PXWindowDrawCustomResourceView(PXGUISystem* const pxGUISyst
             name
         );
 
-
-        PXNativDrawFontSelect(&pxGUISystem->NativDraw, pxWindow, pxGUISystem->FontContent);
-        PXNativDrawColorSetBrush
+        PXWindowDrawCustomResourceViewEntry
         (
-            &pxGUISystem->NativDraw,
+            pxGUISystem,
             pxWindow,
-            pxGUISystem->BrushBackgroundDark,
-            PXGUIDrawModeBack
-        );
-        PXNativDrawColorSetBrush
-        (
-            &pxGUISystem->NativDraw,
-            pxWindow,
-            pxGUISystem->BrushTextWhite,
-            PXGUIDrawModeFront
-        );
-
-        PXNativDrawTextA
-        (
-            &pxGUISystem->NativDraw,
-            pxWindow,
-            pxRectangleXYWH.X + pxRectangleXYWH.Height + 4,
-            pxRectangleXYWH.Y,
-            pxRectangleXYWH.Width,
-            pxRectangleXYWH.Height,
+            &pxIconPlaceHolder,
+            &pxRectangleXYWH,
             buffer,
             wrizze
         );
-
-
-        pxRectangleXYWH.Y += pxRectangleXYWH.Height + 3;
     }
 
 
     // GUI elemenst
-    {
-        PXNativDrawTextA
-        (
-            &pxGUISystem->NativDraw,
-            pxWindow,
-            pxRectangleXYWH.X,
-            pxRectangleXYWH.Y,
-            pxRectangleXYWH.Width,
-            pxRectangleXYWH.Height,
-            "GUI Elements",
-            12
-        );
-
-        pxRectangleXYWH.Y += pxRectangleXYWH.Height + 3;
-    }
+    PXWindowDrawCustomResourceViewTitle
+    (
+        pxGUISystem,
+        pxWindow,
+        &pxIconPlaceHolder,
+        &pxRectangleXYWH,
+        "[GUI Elements]",
+        14
+    );
 
 
     for(PXSize i = 0; i < 10; i+=2)
@@ -669,50 +615,8 @@ PXActionResult PXAPI PXWindowDrawCustomResourceView(PXGUISystem* const pxGUISyst
 
 
 
-        PXWindowDrawCustomRectangle3D
-        (
-            pxGUISystem,
-            pxWindow,
-            pxRectangleXYWH.X,
-            pxRectangleXYWH.Y,
-            pxRectangleXYWH.Width,
-            pxRectangleXYWH.Height
-        );
-
-        PXNativDrawIconDraw
-        (
-            &pxGUISystem->NativDraw,
-            pxWindow,
-            &pxIconPlaceHolder,
-            pxRectangleXYWH.X+2,
-            pxRectangleXYWH.Y,
-            pxRectangleXYWH.Height,
-            pxRectangleXYWH.Height
-        );
-
-
-
-        PXNativDrawFontSelect(&pxGUISystem->NativDraw, pxWindow, pxGUISystem->FontContent);
-        PXNativDrawColorSetBrush
-        (
-            &pxGUISystem->NativDraw,
-            pxWindow,
-            pxGUISystem->BrushBackgroundDark,
-            PXGUIDrawModeBack
-        );
-        PXNativDrawColorSetBrush
-        (
-            &pxGUISystem->NativDraw,
-            pxWindow,
-            pxGUISystem->BrushTextWhite,
-            PXGUIDrawModeFront
-        );
-
-
 
         char buffer[260];
-
-
 
         const char* typeName = PXUIElementTypeToString(pxWindowUI->Type);
         char* name = 0;
@@ -724,47 +628,38 @@ PXActionResult PXAPI PXWindowDrawCustomResourceView(PXGUISystem* const pxGUISyst
         PXSize wrizze = PXTextPrintA
         (
             buffer,
-            260, 
+            260,
             "[%i] %s:%s",
             pxWindowUI->Info.ID,
             typeName,
             pxWindowUI->NameContent
         );
 
-        PXNativDrawTextA
+
+        PXWindowDrawCustomResourceViewEntry
         (
-            &pxGUISystem->NativDraw,
+            pxGUISystem,
             pxWindow,
-            pxRectangleXYWH.X + pxRectangleXYWH.Height + 4,
-            pxRectangleXYWH.Y,
-            pxRectangleXYWH.Width,
-            pxRectangleXYWH.Height,
+            &pxIconPlaceHolder,
+            &pxRectangleXYWH,
             buffer,
             wrizze
-        );
-
-        pxRectangleXYWH.Y += pxRectangleXYWH.Height + 3;
+        );     
     }
 
 
 
 
-    // GUI elemenst
-    {
-        PXNativDrawTextA
-        (
-            &pxGUISystem->NativDraw,
-            pxWindow,
-            pxRectangleXYWH.X,
-            pxRectangleXYWH.Y,
-            pxRectangleXYWH.Width,
-            pxRectangleXYWH.Height,
-            "Shader",
-            12
-        );
-
-        pxRectangleXYWH.Y += pxRectangleXYWH.Height + 3;
-    }
+    // GUI elemenst    
+    PXWindowDrawCustomResourceViewTitle
+    (
+        pxGUISystem,
+        pxWindow,
+        &pxIconPlaceHolder,
+        &pxRectangleXYWH,
+        "[Shader]",
+        8
+    );   
 
 
     for(PXSize i = 0; i < shaderLookup->EntryAmountCurrent; ++i)
@@ -849,11 +744,177 @@ PXActionResult PXAPI PXWindowDrawCustomResourceView(PXGUISystem* const pxGUISyst
             pxRectangleXYWH.Width,
             pxRectangleXYWH.Height,
             buffer,
-            wrizze
+            wrizze,
+            PXWindowAllignLeft
         );
 
         pxRectangleXYWH.Y += pxRectangleXYWH.Height + 3;
     }
+
+    return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXWindowDrawCustomResourceViewTitle(PXGUISystem* const pxGUISystem, PXWindow* const pxWindow, PXIcon* const pxIcon, PXRectangleXYWHI32* const pxRectangleXYWHI32, const char* const title, const PXSize titleSize)
+{
+    const int offset = 2;
+    const int iconStart = pxRectangleXYWHI32->X + pxRectangleXYWHI32->Height + offset;
+    const int xFull = pxRectangleXYWHI32->X + pxRectangleXYWHI32->Width;
+    const int xReduced = xFull - (iconStart + offset);
+    const int halfX = xReduced / 2;
+    const int halfY = pxRectangleXYWHI32->Y + pxRectangleXYWHI32->Height / 2;  
+    const int charSize = 6;
+    const float offsetFullX = (titleSize * charSize);
+    const float offsetX = offsetFullX / 2.0f;
+
+    int xREA = (halfX - offsetX) - charSize;
+    int xREB = halfX + offsetFullX + charSize * 3;
+
+    if((titleSize % 2) != 0)
+    {
+        xREA += offsetFullX / 2;
+        xREB -= offsetFullX / 2;
+    }
+
+    PXNativDrawIconDraw
+    (
+        &pxGUISystem->NativDraw,
+        pxWindow,
+        pxIcon,
+        pxRectangleXYWHI32->X + offset,
+        pxRectangleXYWHI32->Y,
+        pxRectangleXYWHI32->Height,
+        pxRectangleXYWHI32->Height
+    );
+
+
+
+
+    const COLORREF highColor = RGB
+    (
+        pxGUISystem->BrushTextWhite->ColorDate.Red,
+        pxGUISystem->BrushTextWhite->ColorDate.Green,
+        pxGUISystem->BrushTextWhite->ColorDate.Blue
+    );
+
+    const DWORD penStyle = PS_ENDCAP_SQUARE | PS_GEOMETRIC | PS_SOLID | PS_JOIN_MITER;
+    const DWORD penSize = 2;
+    const PXInt16U borderInwardOffset = penSize - 1;
+
+    if(penSize == 0)
+    {
+        return PXActionSuccessful;
+    }
+
+    const HPEN penLight = CreatePen(penStyle, penSize, highColor);
+
+
+    SelectPen(pxWindow->DeviceContextHandle, penLight);
+    MoveToEx
+    (
+        pxWindow->DeviceContextHandle,
+        iconStart,
+        halfY,
+        PXNull
+    );
+    LineTo
+    (
+        pxWindow->DeviceContextHandle, 
+        xREA,
+        halfY
+    );
+    MoveToEx
+    (
+        pxWindow->DeviceContextHandle,
+        xREB,
+        halfY,
+        PXNull
+    );
+    LineTo
+    (
+        pxWindow->DeviceContextHandle,
+        xFull,
+        halfY
+    );
+
+    DeletePen(penLight);
+
+
+
+  //  SetBkMode(pxWindow->DeviceContextHandle, OPAQUE);
+
+    PXNativDrawTextA
+    (
+        &pxGUISystem->NativDraw,
+        pxWindow,
+        iconStart,
+        pxRectangleXYWHI32->Y,
+        xReduced,
+        pxRectangleXYWHI32->Height,
+        title,
+        titleSize,
+        PXWindowAllignCenter
+    );
+
+   // SetBkMode(pxWindow->DeviceContextHandle, TRANSPARENT);
+
+    pxRectangleXYWHI32->Y += pxRectangleXYWHI32->Height + 3;
+
+    return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXWindowDrawCustomResourceViewEntry(PXGUISystem* const pxGUISystem, PXWindow* const pxWindow, PXIcon* const pxIcon, PXRectangleXYWHI32* const pxRectangleXYWHI32, const char* const title, const PXSize titleSize)
+{
+    PXWindowDrawCustomRectangle3D
+    (
+        pxGUISystem,
+        pxWindow,
+        pxRectangleXYWHI32->X,
+        pxRectangleXYWHI32->Y,
+        pxRectangleXYWHI32->Width,
+        pxRectangleXYWHI32->Height
+    );
+
+    PXNativDrawIconDraw
+    (
+        &pxGUISystem->NativDraw,
+        pxWindow,
+        pxIcon,
+        pxRectangleXYWHI32->X + 2,
+        pxRectangleXYWHI32->Y,
+        pxRectangleXYWHI32->Height,
+        pxRectangleXYWHI32->Height
+    );
+
+    PXNativDrawFontSelect(&pxGUISystem->NativDraw, pxWindow, pxGUISystem->FontContent);
+    PXNativDrawColorSetBrush
+    (
+        &pxGUISystem->NativDraw,
+        pxWindow,
+        pxGUISystem->BrushBackgroundDark,
+        PXGUIDrawModeBack
+    );
+    PXNativDrawColorSetBrush
+    (
+        &pxGUISystem->NativDraw,
+        pxWindow,
+        pxGUISystem->BrushTextWhite,
+        PXGUIDrawModeFront
+    );
+
+    PXNativDrawTextA
+    (
+        &pxGUISystem->NativDraw,
+        pxWindow,
+        pxRectangleXYWHI32->X + pxRectangleXYWHI32->Height + 4,
+        pxRectangleXYWHI32->Y,
+        pxRectangleXYWHI32->Width,
+        pxRectangleXYWHI32->Height-4,
+        title,
+        titleSize,
+        PXWindowAllignLeft
+    );
+
+    pxRectangleXYWHI32->Y += pxRectangleXYWHI32->Height + 3;
 
     return PXActionSuccessful;
 }
@@ -909,7 +970,8 @@ PXActionResult PXAPI PXWindowDrawCustomResourceInfo(PXGUISystem* const pxGUISyst
         pxWindow->Position.Form.Width,
         pxWindow->Position.Form.Height,
         nameID,
-        textSize
+        textSize,
+        PXWindowAllignLeft
     );
 
     PXIcon pxIcon;
@@ -984,7 +1046,8 @@ PXActionResult PXAPI PXWindowDrawCustomResourceInfo(PXGUISystem* const pxGUISyst
             pxWindow->Position.Form.Width,
             pxWindow->Position.Form.Height,
             table[i],
-            len
+            len,
+            PXWindowAllignLeft
         );
 
 
@@ -1003,7 +1066,8 @@ PXActionResult PXAPI PXWindowDrawCustomResourceInfo(PXGUISystem* const pxGUISyst
             pxWindow->Position.Form.Width,
             pxWindow->Position.Form.Height,
             textxx,
-            len
+            len,
+            PXWindowAllignLeft
         );
 
 
@@ -1125,7 +1189,8 @@ PXActionResult PXAPI PXWindowDrawCustomTabList(PXGUISystem* const pxGUISystem, P
             pxWindow->Position.Form.Width,
             pxWindow->Position.Form.Height,
             pxWindowTABPage->NameContent,
-            pxWindowTABPage->NameContentSize
+            pxWindowTABPage->NameContentSize,
+            PXWindowAllignLeft
         );
 
         pxWindow->Position = pxUIElementPositionPrev;
@@ -1209,7 +1274,8 @@ PXActionResult PXAPI PXWindowDrawCustomFailback(PXGUISystem* const pxGUISystem, 
         pxWindow->Position.Form.Width,
         pxWindow->Position.Form.Height,
         buffer,
-        bufferWritten
+        bufferWritten,
+        PXWindowAllignLeft
     );
 
     return PXActionSuccessful;
@@ -1293,7 +1359,8 @@ PXActionResult PXAPI PXWindowDrawCustomText(PXGUISystem* const pxGUISystem, PXWi
             pxWindow->Position.Form.Width - shadowOffset,
             pxWindow->Position.Form.Height + shadowOffset,
             text,
-            textSize
+            textSize,
+            PXWindowAllignLeft
         );
     }
 
@@ -1316,7 +1383,8 @@ PXActionResult PXAPI PXWindowDrawCustomText(PXGUISystem* const pxGUISystem, PXWi
             pxWindow->Position.Form.Width,
             pxWindow->Position.Form.Height,
             text,
-            textSize
+            textSize,
+            PXWindowAllignLeft
         );
     }
 
@@ -1356,7 +1424,8 @@ PXActionResult PXAPI PXWindowDrawCustomButton(PXGUISystem* const pxGUISystem, PX
         pxWindow->Position.Form.Width,
         pxWindow->Position.Form.Height,
         pxWindow->NameContent,
-        pxWindow->NameContentSize
+        pxWindow->NameContentSize,
+        PXWindowAllignLeft
     );
 
     return PXActionSuccessful;
@@ -1724,7 +1793,8 @@ PXActionResult PXAPI PXWindowDrawFileDirectoryView(PXGUISystem* const pxGUISyste
             pxWindow->Position.Form.Width,
             pxWindow->Position.Form.Height,
             buffer,
-            bufferSize
+            bufferSize,
+            PXWindowAllignLeft
         );
     }
 
@@ -1802,7 +1872,8 @@ PXActionResult PXAPI PXWindowDrawFileDirectoryView(PXGUISystem* const pxGUISyste
             pxWindow->Position.Form.Width,
             pxWindow->Position.Form.Height,
             pxFileEntry->FilePathData,
-            pxFileEntry->FilePathSize
+            pxFileEntry->FilePathSize,
+            PXWindowAllignLeft
         );
     }
 
