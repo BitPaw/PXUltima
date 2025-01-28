@@ -101,7 +101,7 @@ PXEngineTimeData;
 
 typedef struct PXEngine_
 {
-    PXResourceManager ResourceManager;
+    PXResourceManager* ResourceManager;
     PXGUISystem GUISystem;
     PXGraphic Graphic;
     PXWindow* Window; // PXWindow

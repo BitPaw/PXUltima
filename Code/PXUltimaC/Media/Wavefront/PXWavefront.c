@@ -632,7 +632,6 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
 
                         pxIndexSegmentCurrent->Material = PXMaterialContainerFind
                         (
-                            pxResourceLoadInfo->Manager,
                             pxModel->MaterialContaierList,
                             &materialFileName
                         );

@@ -2392,8 +2392,8 @@ PXActionResult PXAPI PXNativDrawRectangle(PXNativDraw* const pxNativDraw, PXWind
 
     PXActionResult pxActionResult = PXActionInvalid;
 
-    PXWindowBrush* const brushForeground = pxWindow->BrushFront;
-    PXWindowBrush* const brushBackGround = pxWindow->BrushBackground;
+    PXWindowBrush* const brushForeground = pxNativDraw->GUISystem->BrushTextWhite;
+    PXWindowBrush* const brushBackGround = pxNativDraw->GUISystem->BrushBackgroundDark;
 
 #if OSUnix
     PXNativDrawColorSetBrush(pxNativDraw, pxWindow, brushBackGround, PXGUIDrawModeBack);

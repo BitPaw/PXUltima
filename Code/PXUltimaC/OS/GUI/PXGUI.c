@@ -172,7 +172,7 @@ PXActionResult PXAPI PXWindowDelete(PXGUISystem* const pxGUISystem, PXWindow* co
     return result;
 }
 
-PXActionResult PXAPI PXWindowDrawCustomRectangle3D(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, const int x, const int y, const int width, const int height)
+PXActionResult PXAPI PXWindowDrawCustomRectangle3D(PXGUISystem* const pxGUISystem, PXWindow* const pxWindow, const int x, const int y, const int width, const int height)
 {
 #if PXLogEnable
     PXLogPrint
@@ -181,7 +181,7 @@ PXActionResult PXAPI PXWindowDrawCustomRectangle3D(PXGUISystem* const pxGUISyste
         "GUI-Draw",
         "Rectangle3D",
         "PXID:%-4i X:%-4i Y:%-4i W:%-4i H:%-4i",
-        pxGUIElement->Info.ID,
+        pxWindow->Info.ID,
         x,
         y,
         width,
@@ -189,15 +189,15 @@ PXActionResult PXAPI PXWindowDrawCustomRectangle3D(PXGUISystem* const pxGUISyste
     );
 #endif
 
-    const PXBool isHovered = (PXWindowBehaviourIsBeingHovered & pxGUIElement->Info.Behaviour) > 0;
+    const PXBool isHovered = (PXWindowBehaviourIsBeingHovered & pxWindow->Info.Behaviour) > 0;
 
-    PXWindowBrush* brushFront = pxGUIElement->BrushFront;
-    PXWindowBrush* brushBackground = pxGUIElement->BrushBackground;
+    PXWindowBrush* brushFront = pxGUISystem->BrushTextWhite;
+    PXWindowBrush* brushBackground = pxGUISystem->BrushBackgroundDark;
 
     PXNativDrawColorSetBrush
     (
         &pxGUISystem->NativDraw,
-        pxGUIElement,
+        pxWindow,
         brushFront,
         PXGUIDrawModeFront
     );
@@ -207,14 +207,14 @@ PXActionResult PXAPI PXWindowDrawCustomRectangle3D(PXGUISystem* const pxGUISyste
         PXNativDrawColorSetBrush
         (
             &pxGUISystem->NativDraw,
-            pxGUIElement,
+            pxWindow,
             brushFront,
             PXGUIDrawModeBack
         );
         PXNativDrawColorSetBrush
         (
             &pxGUISystem->NativDraw,
-            pxGUIElement,
+            pxWindow,
             brushFront,
             PXGUIDrawModeFront
         );
@@ -224,14 +224,14 @@ PXActionResult PXAPI PXWindowDrawCustomRectangle3D(PXGUISystem* const pxGUISyste
         PXNativDrawColorSetBrush
         (
             &pxGUISystem->NativDraw,
-            pxGUIElement,
+            pxWindow,
             brushBackground,
             PXGUIDrawModeBack
         );
         PXNativDrawColorSetBrush
         (
             &pxGUISystem->NativDraw,
-            pxGUIElement,
+            pxWindow,
             brushBackground,
             PXGUIDrawModeFront
         );
@@ -240,7 +240,7 @@ PXActionResult PXAPI PXWindowDrawCustomRectangle3D(PXGUISystem* const pxGUISyste
     PXNativDrawRectangle
     (
         &pxGUISystem->NativDraw,
-        pxGUIElement,
+        pxWindow,
         x,
         y,
         width,
@@ -280,14 +280,14 @@ PXActionResult PXAPI PXWindowDrawCustomRectangle3D(PXGUISystem* const pxGUISyste
     const HPEN penDark = CreatePen(penStyle, penSize, lowColor);
 
     // Bottom, right, dark line
-    MoveToEx(pxGUIElement->DeviceContextHandle, width - borderInwardOffset, y + borderInwardOffset, PXNull);
-    SelectPen(pxGUIElement->DeviceContextHandle, penDark);
-    LineTo(pxGUIElement->DeviceContextHandle, width - borderInwardOffset, height - borderInwardOffset);
-    LineTo(pxGUIElement->DeviceContextHandle, x + borderInwardOffset, height - borderInwardOffset);
+    MoveToEx(pxWindow->DeviceContextHandle, width - borderInwardOffset, y + borderInwardOffset, PXNull);
+    SelectPen(pxWindow->DeviceContextHandle, penDark);
+    LineTo(pxWindow->DeviceContextHandle, width - borderInwardOffset, height - borderInwardOffset);
+    LineTo(pxWindow->DeviceContextHandle, x + borderInwardOffset, height - borderInwardOffset);
 
-    SelectPen(pxGUIElement->DeviceContextHandle, penLight);
-    LineTo(pxGUIElement->DeviceContextHandle, x + borderInwardOffset, y + borderInwardOffset);
-    LineTo(pxGUIElement->DeviceContextHandle, width - borderInwardOffset, y + borderInwardOffset);
+    SelectPen(pxWindow->DeviceContextHandle, penLight);
+    LineTo(pxWindow->DeviceContextHandle, x + borderInwardOffset, y + borderInwardOffset);
+    LineTo(pxWindow->DeviceContextHandle, width - borderInwardOffset, y + borderInwardOffset);
 
     DeletePen(penLight);
     DeletePen(penDark);
@@ -324,7 +324,7 @@ PXActionResult PXAPI PXWindowDrawCustomHeader(PXGUISystem* const pxGUISystem, PX
     );
     */
 
-    PXNativDrawFontSelect(&pxGUISystem->NativDraw, pxWindow, pxGUISystem->FontContent);
+   
 
 
     int y = 0;
@@ -337,17 +337,17 @@ PXActionResult PXAPI PXWindowDrawCustomHeader(PXGUISystem* const pxGUISystem, PX
         PXWindowMenuItem* const pxWindowMenuItem = &pxWindowExtendedMenuItem->MenuItemList[i];
 
 
-        PXUIElementPosition pxUIElementPositionPrev = pxWindow->Position;
+    //    PXUIElementPosition pxUIElementPositionPrev = pxWindow->Position;
 
        // pxGUIElement->Position.Top = y;
        // pxGUIElement->Position.Right = pxGUIElement->Position.Right;
        //pxGUIElement->Position.Bottom -= 1;
 
-        int behavipur = pxWindow->Info.Behaviour;
+    //    int behavipur = pxWindow->Info.Behaviour;
 
-        pxWindow->Info.Behaviour |= PXWindowKeepWidth;
-        pxWindow->Info.Behaviour &= ~PXWindowAllignFlags;
-        pxWindow->Info.Behaviour |= PXWindowAllignCenter;
+      //  pxWindow->Info.Behaviour |= PXWindowKeepWidth;
+      //  pxWindow->Info.Behaviour &= ~PXWindowAllignFlags;
+      //  pxWindow->Info.Behaviour |= PXWindowAllignCenter;
 
      //   pxGUIElement->Position.Form.Right = pxGUIElement->Position.Left + pxGUIElement->Position.Width;
 
@@ -416,6 +416,21 @@ PXActionResult PXAPI PXWindowDrawCustomHeader(PXGUISystem* const pxGUISystem, PX
         // Allign with an offset for text
         int offset = 3;
 
+        PXNativDrawFontSelect(&pxGUISystem->NativDraw, pxWindow, pxGUISystem->FontContent);
+        PXNativDrawColorSetBrush
+        (
+            &pxGUISystem->NativDraw,
+            pxWindow,
+            pxGUISystem->BrushBackgroundDark,
+            PXGUIDrawModeBack
+        );
+        PXNativDrawColorSetBrush
+        (
+            &pxGUISystem->NativDraw,
+            pxWindow,
+            pxGUISystem->BrushTextWhite,
+            PXGUIDrawModeFront
+        );
         PXNativDrawTextA
         (
             &pxGUISystem->NativDraw,
@@ -432,11 +447,6 @@ PXActionResult PXAPI PXWindowDrawCustomHeader(PXGUISystem* const pxGUISystem, PX
         {
             block.X += block.Width + 1;
         }
-
-        pxWindow->Position = pxUIElementPositionPrev;
-
-
-        pxWindow->Info.Behaviour = behavipur;
     }
 
     return PXActionSuccessful;
@@ -490,8 +500,7 @@ PXActionResult PXAPI PXWindowDrawCustomResourceView(PXGUISystem* const pxGUISyst
 {
     PXWindowExtendedBehaviourResourceView* const pxWindowExtendedBehaviourResourceView = (PXWindowExtendedBehaviourResourceView*)pxWindow->ExtendedData;
 
-    PXResourceManager* pxResourceManagerScene = pxGUISystem->ResourceManager;
-    PXResourceManager* pxResourceManagerInGame = pxWindowExtendedBehaviourResourceView->ResourceManager;
+    PXResourceManager* pxResourceManager = pxGUISystem->ResourceManager;
 
 
 #if PXLogEnable
@@ -529,18 +538,12 @@ PXActionResult PXAPI PXWindowDrawCustomResourceView(PXGUISystem* const pxGUISyst
     pxRectangleXYWH.Height = 16;
 
     // textures
-    PXResourceManager* pxResourceManager = pxGUISystem->ResourceManager;
-    PXDictionary* textureLookup = &pxResourceManager->ImageLookUp;
+    PXDictionary* iconLookup = &pxResourceManager->IconLookUp;
     PXDictionary* shaderLookup = &pxResourceManager->ShaderProgramLookup;
     PXDictionary* guiLookup = &pxResourceManager->GUIElementLookup;
 
     // Title
     {
-        PXUIElementPosition pxUIElementPositionPrev = pxWindow->Position;
-
-        //pxWindow->Info.Behaviour &= ~PXWindowAllignFlags;
-       // pxWindow->Info.Behaviour |= PXWindowAllignLeft;
-
         PXNativDrawTextA
         (
             &pxGUISystem->NativDraw,
@@ -549,25 +552,23 @@ PXActionResult PXAPI PXWindowDrawCustomResourceView(PXGUISystem* const pxGUISyst
             pxRectangleXYWH.Y,
             pxRectangleXYWH.Width,
             pxRectangleXYWH.Height,
-            "Image",
+            "Icon",
             5
         );
-
-       // pxWindow->Position = pxUIElementPositionPrev;
 
         pxRectangleXYWH.Y += pxRectangleXYWH.Height + 3;
     }
 
+    int iconMax = iconLookup->EntryAmountCurrent > 4 ? 4 : iconLookup->EntryAmountCurrent;
 
-
-    for(PXSize i = 0; i < textureLookup->EntryAmountCurrent; ++i)
+    for(PXSize i = 0; i < iconMax; ++i)
     {
         PXDictionaryEntry pxDictionaryEntry;
-        PXImage* pxImage = PXNull;
+        PXIcon* pxIcon = PXNull;
 
-        PXDictionaryIndex(textureLookup, i, &pxDictionaryEntry);
+        PXDictionaryIndex(iconLookup, i, &pxDictionaryEntry);
 
-        pxImage = *(PXImage**)pxDictionaryEntry.Value;
+        pxIcon = *(PXIcon**)pxDictionaryEntry.Value;
 
         PXWindowDrawCustomRectangle3D
         (
@@ -578,10 +579,6 @@ PXActionResult PXAPI PXWindowDrawCustomResourceView(PXGUISystem* const pxGUISyst
             pxRectangleXYWH.Width,
             pxRectangleXYWH.Height
         );
-
-      //  pxWindow->Info.Behaviour &= ~PXWindowAllignFlags;
-       // pxWindow->Info.Behaviour |= PXWindowAllignLeft;
-
 
         PXNativDrawIconDraw
         (
@@ -594,10 +591,20 @@ PXActionResult PXAPI PXWindowDrawCustomResourceView(PXGUISystem* const pxGUISyst
             pxRectangleXYWH.Height
         );
 
+        char* name = 0;
+        PXSize nameSize = 0;
+
+        PXResourceFetchName(&pxIcon->Info, &name, &nameSize);
+
         char buffer[260];
-        PXSize wrizze = PXTextPrintA(buffer, 260, "[%i] %ix%i", 1000, pxImage->Width, pxImage->Height);
-
-
+        PXSize wrizze = PXTextPrintA
+        (
+            buffer,
+            260, 
+            "[%i] %s",
+            pxIcon->Info.ID,
+            name
+        );
 
 
         PXNativDrawFontSelect(&pxGUISystem->NativDraw, pxWindow, pxGUISystem->FontContent);
@@ -635,9 +642,6 @@ PXActionResult PXAPI PXWindowDrawCustomResourceView(PXGUISystem* const pxGUISyst
 
     // GUI elemenst
     {
-      //  pxWindow->Info.Behaviour &= ~PXWindowAllignFlags;
-      //  pxWindow->Info.Behaviour |= PXWindowAllignLeft;
-
         PXNativDrawTextA
         (
             &pxGUISystem->NativDraw,
@@ -654,14 +658,14 @@ PXActionResult PXAPI PXWindowDrawCustomResourceView(PXGUISystem* const pxGUISyst
     }
 
 
-    for(PXSize i = 0; i < 20; i+=2)
+    for(PXSize i = 0; i < 10; i+=2)
     {
         PXDictionaryEntry pxDictionaryEntry;
-        PXWindow* pxWindow = PXNull;
+        PXWindow* pxWindowUI = PXNull;
 
         PXDictionaryIndex(guiLookup, i, &pxDictionaryEntry);
 
-        pxWindow = *(PXWindow**)pxDictionaryEntry.Value;
+        pxWindowUI = *(PXWindow**)pxDictionaryEntry.Value;
 
 
 
@@ -675,11 +679,6 @@ PXActionResult PXAPI PXWindowDrawCustomResourceView(PXGUISystem* const pxGUISyst
             pxRectangleXYWH.Height
         );
 
-
-       // pxWindow->Info.Behaviour &= ~PXWindowAllignFlags;
-       // pxWindow->Info.Behaviour |= PXWindowAllignLeft;
-
-
         PXNativDrawIconDraw
         (
             &pxGUISystem->NativDraw,
@@ -691,11 +690,46 @@ PXActionResult PXAPI PXWindowDrawCustomResourceView(PXGUISystem* const pxGUISyst
             pxRectangleXYWH.Height
         );
 
+
+
+        PXNativDrawFontSelect(&pxGUISystem->NativDraw, pxWindow, pxGUISystem->FontContent);
+        PXNativDrawColorSetBrush
+        (
+            &pxGUISystem->NativDraw,
+            pxWindow,
+            pxGUISystem->BrushBackgroundDark,
+            PXGUIDrawModeBack
+        );
+        PXNativDrawColorSetBrush
+        (
+            &pxGUISystem->NativDraw,
+            pxWindow,
+            pxGUISystem->BrushTextWhite,
+            PXGUIDrawModeFront
+        );
+
+
+
         char buffer[260];
 
-        const char* typeName = PXUIElementTypeToString(pxWindow->Type);
 
-        PXSize wrizze = PXTextPrintA(buffer, 260, "[%i] %s:%s", pxWindow->Info.ID, typeName, pxWindow->NameContent);
+
+        const char* typeName = PXUIElementTypeToString(pxWindowUI->Type);
+        char* name = 0;
+        PXSize nameSize = 0;
+
+        PXResourceFetchName(&pxWindowUI->Info, &name, &nameSize);
+
+
+        PXSize wrizze = PXTextPrintA
+        (
+            buffer,
+            260, 
+            "[%i] %s:%s",
+            pxWindowUI->Info.ID,
+            typeName,
+            pxWindowUI->NameContent
+        );
 
         PXNativDrawTextA
         (
@@ -712,6 +746,114 @@ PXActionResult PXAPI PXWindowDrawCustomResourceView(PXGUISystem* const pxGUISyst
         pxRectangleXYWH.Y += pxRectangleXYWH.Height + 3;
     }
 
+
+
+
+    // GUI elemenst
+    {
+        PXNativDrawTextA
+        (
+            &pxGUISystem->NativDraw,
+            pxWindow,
+            pxRectangleXYWH.X,
+            pxRectangleXYWH.Y,
+            pxRectangleXYWH.Width,
+            pxRectangleXYWH.Height,
+            "Shader",
+            12
+        );
+
+        pxRectangleXYWH.Y += pxRectangleXYWH.Height + 3;
+    }
+
+
+    for(PXSize i = 0; i < shaderLookup->EntryAmountCurrent; ++i)
+    {
+        PXDictionaryEntry pxDictionaryEntry;
+        PXShaderProgram* pxShaderProgram = PXNull;
+
+        PXDictionaryIndex(shaderLookup, i, &pxDictionaryEntry);
+
+        pxShaderProgram = *(PXShaderProgram**)pxDictionaryEntry.Value;
+
+
+
+        PXWindowDrawCustomRectangle3D
+        (
+            pxGUISystem,
+            pxWindow,
+            pxRectangleXYWH.X,
+            pxRectangleXYWH.Y,
+            pxRectangleXYWH.Width,
+            pxRectangleXYWH.Height
+        );
+
+        PXNativDrawIconDraw
+        (
+            &pxGUISystem->NativDraw,
+            pxWindow,
+            &pxIconPlaceHolder,
+            pxRectangleXYWH.X + 2,
+            pxRectangleXYWH.Y,
+            pxRectangleXYWH.Height,
+            pxRectangleXYWH.Height
+        );
+
+
+
+        PXNativDrawFontSelect(&pxGUISystem->NativDraw, pxWindow, pxGUISystem->FontContent);
+        PXNativDrawColorSetBrush
+        (
+            &pxGUISystem->NativDraw,
+            pxWindow,
+            pxGUISystem->BrushBackgroundDark,
+            PXGUIDrawModeBack
+        );
+        PXNativDrawColorSetBrush
+        (
+            &pxGUISystem->NativDraw,
+            pxWindow,
+            pxGUISystem->BrushTextWhite,
+            PXGUIDrawModeFront
+        );
+
+
+
+        char buffer[260];
+
+        char* name = 0;
+        PXSize nameSize = 0;
+        char* path = 0;
+        PXSize pathSize = 0;
+
+        PXResourceFetchName(&pxShaderProgram->Info, &name, &nameSize);
+        PXResourceFetchPath(&pxShaderProgram->Info, &path, &pathSize);
+       // const char* stringName = PXGraphicShaderTypeToString(pxShaderProgram->);
+
+        PXSize wrizze = PXTextPrintA
+        (
+            buffer,
+            260,
+            "[%i] %s:%s",
+            pxShaderProgram->Info.ID,
+            name,
+            path
+        );
+
+        PXNativDrawTextA
+        (
+            &pxGUISystem->NativDraw,
+            pxWindow,
+            pxRectangleXYWH.X + pxRectangleXYWH.Height + 4,
+            pxRectangleXYWH.Y,
+            pxRectangleXYWH.Width,
+            pxRectangleXYWH.Height,
+            buffer,
+            wrizze
+        );
+
+        pxRectangleXYWH.Y += pxRectangleXYWH.Height + 3;
+    }
 
     return PXActionSuccessful;
 }
@@ -742,14 +884,14 @@ PXActionResult PXAPI PXWindowDrawCustomResourceInfo(PXGUISystem* const pxGUISyst
     (
         &pxGUISystem->NativDraw,
         pxWindow,
-        pxWindow->BrushFront,
+        pxGUISystem->BrushTextWhite,
         PXGUIDrawModeFront
     );
     PXNativDrawColorSetBrush
     (
         &pxGUISystem->NativDraw,
         pxWindow,
-        pxWindow->BrushBackground,
+        pxGUISystem->BrushBackgroundDark,
         PXGUIDrawModeBack
     );
 
@@ -1103,7 +1245,7 @@ PXActionResult PXAPI PXWindowDrawCustomText(PXGUISystem* const pxGUISystem, PXWi
         (
             &pxGUISystem->NativDraw,
             pxWindow,
-            pxWindow->BrushFront,
+            pxGUISystem->BrushTextWhite,
             PXGUIDrawModeFront
         );
 
@@ -1111,7 +1253,7 @@ PXActionResult PXAPI PXWindowDrawCustomText(PXGUISystem* const pxGUISystem, PXWi
         (
             &pxGUISystem->NativDraw,
             pxWindow,
-            pxWindow->BrushBackground,
+            pxGUISystem->BrushBackgroundDark,
             PXGUIDrawModeBack
         );
 
@@ -1136,9 +1278,9 @@ PXActionResult PXAPI PXWindowDrawCustomText(PXGUISystem* const pxGUISystem, PXWi
         (
             &pxGUISystem->NativDraw,
             pxWindow,
-            pxWindow->BrushFront->ColorDate.Red * 0.25f,
-            pxWindow->BrushFront->ColorDate.Green * 0.25f,
-            pxWindow->BrushFront->ColorDate.Blue * 0.25f,
+            pxGUISystem->BrushTextWhite->ColorDate.Red * 0.25f,
+            pxGUISystem->BrushTextWhite->ColorDate.Green * 0.25f,
+            pxGUISystem->BrushTextWhite->ColorDate.Blue * 0.25f,
             PXGUIDrawModeFront
         );
 
@@ -1157,7 +1299,13 @@ PXActionResult PXAPI PXWindowDrawCustomText(PXGUISystem* const pxGUISystem, PXWi
 
     // Text-Content
     {
-        PXNativDrawColorSetBrush(&pxGUISystem->NativDraw, pxWindow, pxWindow->BrushFront, PXGUIDrawModeFront);
+        PXNativDrawColorSetBrush
+        (
+            &pxGUISystem->NativDraw, 
+            pxWindow,
+            pxGUISystem->BrushTextWhite,
+            PXGUIDrawModeFront
+        );
 
         PXNativDrawTextA
         (
@@ -1549,14 +1697,14 @@ PXActionResult PXAPI PXWindowDrawFileDirectoryView(PXGUISystem* const pxGUISyste
     (
         &pxGUISystem->NativDraw,
         pxWindow,
-        pxWindow->BrushBackground,
+        pxGUISystem->BrushBackgroundDark,
         PXGUIDrawModeBack
     );
     PXNativDrawColorSetBrush
     (
         &pxGUISystem->NativDraw,
         pxWindow,
-        pxWindow->BrushFront,
+        pxGUISystem->BrushTextWhite,
         PXGUIDrawModeFront
     );
 
@@ -1940,7 +2088,7 @@ PXActionResult PXAPI PXGUISystemInitialize(PXGUISystem* const pxGUISystem)
     pxResourceCreateInfoList[1].Brush.Color.Blue = 200;
 
 
-#if 1
+#if 0
     pxResourceCreateInfoList[0].Brush.Color.Red = 0xFF; 
     pxResourceCreateInfoList[0].Brush.Color.Green = 0x00;
     pxResourceCreateInfoList[0].Brush.Color.Blue = 0xFF;
@@ -1969,7 +2117,7 @@ PXActionResult PXAPI PXGUISystemInitialize(PXGUISystem* const pxGUISystem)
     pxResourceCreateInfoList[3].Font.RegisteredName = "Eras Medium ITC";  // "Eras Medium ITC"; // Bradley Hand ITC, UniSpace,OCR A, Cascadia Mono,         "UniSpace";
 #endif
 
-    PXResourceManagerAdd(pxGUISystem->ResourceManager, pxResourceCreateInfoList, 4);
+    PXResourceManagerAdd(pxResourceCreateInfoList, 4);
 
     return PXActionSuccessful;
 }
@@ -2001,7 +2149,16 @@ PXActionResult PXAPI PXWindowStyleUpdate(PXGUISystem* const pxGUISystem, PXWindo
     result = PXActionRefusedNotImplemented;
 #elif OSWindows
     SetWindowLongPtr(pxGUIElement->Info.Handle.WindowID, GWL_STYLE, WS_SYSMENU); //3d argument=style
-    const PXBool setSuccess = SetWindowPos(pxGUIElement->Info.Handle.WindowID, HWND_TOPMOST, 100, 100, 100, 100, SWP_SHOWWINDOW);
+    const PXBool setSuccess = SetWindowPos
+    (
+        pxGUIElement->Info.Handle.WindowID, 
+        HWND_TOPMOST, 
+        100,
+        100,
+        100,
+        100,
+        SWP_SHOWWINDOW
+    );
 #else
     result = PXActionRefusedNotSupportedByLibrary;
 #endif
@@ -2025,8 +2182,8 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
     pxWindowCurrent->InteractOwner = pxGUIElementCreateInfo->InteractOwner;
     pxWindowCurrent->Info.Hierarchy.Parrent = pxWindowParent;
     pxWindowCurrent->Info.Behaviour = pxGUIElementCreateInfo->BehaviourFlags;
-    pxWindowCurrent->BrushFront = pxGUISystem->BrushTextWhite;
-    pxWindowCurrent->BrushBackground = pxGUISystem->BrushBackgroundDark;
+    //pxWindowCurrent->BrushFront = pxGUISystem->BrushTextWhite;
+    //pxWindowCurrent->BrushBackground = pxGUISystem->BrushBackgroundDark;
     //pxWindowCurrent->NameContent = pxResourceCreateInfo->Name; // This breaks current names!
 
     PXCopy(PXUIElementPosition, &pxGUIElementCreateInfo->Position, &pxWindowCurrent->Position);
@@ -2647,7 +2804,7 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
             case PXResourceInfoUseByUser:
             {
                 pxWindowCurrent->DrawFunction = pxGUIElementCreateInfo->DrawFunctionEngine;
-                pxWindowCurrent->BrushBackground = pxGUISystem->BrushBackgroundDark;
+              //  pxWindowCurrent->BrushBackground = pxGUISystem->BrushBackgroundDark;
                 break;
             }
             case PXResourceInfoUseByEngine:
@@ -3544,7 +3701,7 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
                 pxResourceCreateInfo.UIElement.Position.Margin.Right = 0;
                 pxResourceCreateInfo.UIElement.Position.Margin.Bottom = 0;
 
-                PXResourceManagerAdd(pxGUISystem->ResourceManager, &pxResourceCreateInfo, 1);
+                PXResourceManagerAdd(&pxResourceCreateInfo, 1);
 
                 PXWindowCreate(pxGUISystem, &pxResourceCreateInfo, 1);
 

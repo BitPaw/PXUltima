@@ -183,7 +183,7 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceTransphereInfo* const pxResourc
         pxResourceCreateInfo.ObjectReference = &pxMaterialList->MaterialList;
         pxResourceCreateInfo.ObjectAmount = materialAmount;
 
-        PXResourceManagerAdd(pxResourceLoadInfo->Manager, &pxResourceCreateInfo, 1);
+        PXResourceManagerAdd(&pxResourceCreateInfo, 1);
 
         pxMaterialList->MaterialListAmount = materialAmount;
         materialAmount = 0;
@@ -224,7 +224,7 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceTransphereInfo* const pxResourc
                 break; // Error
             }
 
-            PXResourceStoreName(pxResourceLoadInfo->Manager, &pxMaterialCurrent->Info, cache, pxText.SizeUsed);
+            PXResourceStoreName(&pxMaterialCurrent->Info, cache, pxText.SizeUsed);
 
             break;
         }
@@ -259,7 +259,7 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceTransphereInfo* const pxResourc
             pxResourceCreateInfo.FilePath = fullTexturePath.TextA;
             pxResourceCreateInfo.FilePathSize = fullTexturePath.SizeUsed;
 
-            PXResourceManagerAdd(pxResourceLoadInfo->Manager, &pxResourceCreateInfo, 1);
+            PXResourceManagerAdd(&pxResourceCreateInfo, 1);
 
             //PXTextCopyA(fullTexturePath.TextA, fullTexturePath.SizeUsed, pxMaterialCurrent->DiffuseTextureFilePath, 260);
 

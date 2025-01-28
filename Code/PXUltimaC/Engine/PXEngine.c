@@ -1578,9 +1578,12 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
 
     PXNativDraw* pxNativDraw = PXNativDrawInstantance();
 
+
+    pxEngine->ResourceManager = PXResourceManagerInstanceFetch();
+
     if(!pxNativDraw->ResourceManager)
     {
-        pxNativDraw->ResourceManager = &pxEngine->ResourceManager;
+        pxNativDraw->ResourceManager = pxEngine->ResourceManager;
         pxNativDraw->GUISystem = &pxEngine->GUISystem;
     }
 
@@ -1667,13 +1670,13 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
 
 
 
-    PXResourceManagerInit(&pxEngine->ResourceManager);
+
 
     PXMathRandomeSeed(&pxEngine->RandomGeneratorSeed);
 
     // TODO: silly
-    pxEngine->GUISystem.ResourceManager = &pxEngine->ResourceManager;
-    pxEngine->GUISystem.NativDraw.ResourceManager = &pxEngine->ResourceManager;
+    pxEngine->GUISystem.ResourceManager = pxEngine->ResourceManager;
+    pxEngine->GUISystem.NativDraw.ResourceManager = pxEngine->ResourceManager;
     pxEngine->GUISystem.NativDraw.GUISystem = &pxEngine->GUISystem;
 
     PXGUISystemInitialize(&pxEngine->GUISystem);
@@ -2153,7 +2156,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
 
     // Primary load
     {
-        const PXActionResult resourceAddResult = PXResourceManagerAdd(&pxEngine->ResourceManager, pxResourceCreateInfo, 1);
+        const PXActionResult resourceAddResult = PXResourceManagerAdd(pxResourceCreateInfo, 1);
         const PXBool success = PXActionSuccessful == resourceAddResult;
 
         if(!success)
@@ -3089,7 +3092,7 @@ void PXAPI PXEngineResourceDefaultElements(PXEngine* const pxEngine)
 
         PXClear(PXResourceCreateInfo, &pxResourceCreateInfo);
         pxResourceCreateInfo.Type = PXResourceTypeShaderProgram;
-        pxResourceCreateInfo.ObjectReference = &pxEngine->ResourceManager.ShaderFailback;
+        pxResourceCreateInfo.ObjectReference = &pxEngine->ResourceManager->ShaderFailback;
         pxResourceCreateInfo.ShaderProgram.ShaderVertexText = vertexShaderData;
         pxResourceCreateInfo.ShaderProgram.ShaderVertexTextSize = sizeof(vertexShaderData) - 1;
         pxResourceCreateInfo.ShaderProgram.ShaderPixelText = pixelShaderData;
@@ -3250,7 +3253,7 @@ void PXAPI PXEngineResourceDefaultElements(PXEngine* const pxEngine)
 
         PXClear(PXResourceCreateInfo, &pxResourceCreateInfo);
         pxResourceCreateInfo.Type = PXResourceTypeModel;
-        pxResourceCreateInfo.ObjectReference = &pxEngine->ResourceManager.ModelFailback;
+        pxResourceCreateInfo.ObjectReference = &pxEngine->ResourceManager->ModelFailback;
 
         pxResourceCreateInfo.Model.Form = PXModelFormCustom;
         pxResourceCreateInfo.Model.VertexBuffer.VertexData = vertexData;
@@ -3262,11 +3265,11 @@ void PXAPI PXEngineResourceDefaultElements(PXEngine* const pxEngine)
         pxResourceCreateInfo.Model.IndexBuffer.IndexDataType = PXTypeInt08U;
         pxResourceCreateInfo.Model.IndexBuffer.DrawModeID = PXDrawModeIDTriangle;
 
-        pxResourceCreateInfo.Model.ShaderProgramReference = pxEngine->ResourceManager.ShaderFailback;
+        pxResourceCreateInfo.Model.ShaderProgramReference = pxEngine->ResourceManager->ShaderFailback;
 
         PXEngineResourceCreate(pxEngine, &pxResourceCreateInfo);
 
-        PXMatrix4x4FScaleBy(&pxEngine->ResourceManager.ModelFailback->ModelMatrix, 20);
+        PXMatrix4x4FScaleBy(&pxEngine->ResourceManager->ModelFailback->ModelMatrix, 20);
     }
 
     // Create missing texture
@@ -3286,7 +3289,7 @@ void PXAPI PXEngineResourceDefaultElements(PXEngine* const pxEngine)
 
         PXClear(PXResourceCreateInfo, &pxResourceCreateInfo);
         pxResourceCreateInfo.Type = PXResourceTypeTexture2D;
-        pxResourceCreateInfo.ObjectReference = (void**)&pxEngine->ResourceManager.Texture2DFailBack;
+        pxResourceCreateInfo.ObjectReference = (void**)&pxEngine->ResourceManager->Texture2DFailBack;
         pxResourceCreateInfo.Texture2D.Image.Image.PixelData = (void*)colorData;
         pxResourceCreateInfo.Texture2D.Image.Image.PixelDataSize = sizeof(colorData);
         pxResourceCreateInfo.Texture2D.Image.Image.Width = 2;
@@ -3301,8 +3304,8 @@ void PXAPI PXEngineResourceDefaultElements(PXEngine* const pxEngine)
 
     PXNew(PXMaterial, &material);
 
-    pxEngine->ResourceManager.ModelFailback->Mesh.IndexBuffer.SegmentPrime.Material = material;
-    material->DiffuseTexture = pxEngine->ResourceManager.Texture2DFailBack;
+    pxEngine->ResourceManager->ModelFailback->Mesh.IndexBuffer.SegmentPrime.Material = material;
+    material->DiffuseTexture = pxEngine->ResourceManager->Texture2DFailBack;
 }
 
 PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
@@ -3317,7 +3320,7 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
 
         PXDictionaryEntry pxDictionaryEntry;
 
-        PXDictionaryIndex(&pxEngine->ResourceManager.SkyBoxLookUp, 0, &pxDictionaryEntry);
+        PXDictionaryIndex(&pxEngine->ResourceManager->SkyBoxLookUp, 0, &pxDictionaryEntry);
 
         PXSkyBox* const pxSkyBox = *(PXSkyBox**)pxDictionaryEntry.Value;
 
@@ -3330,7 +3333,7 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
 
     // Model
     {
-        PXDictionary* const modelLookup = &pxEngine->ResourceManager.ModelLookUp;
+        PXDictionary* const modelLookup = &pxEngine->ResourceManager->ModelLookUp;
 
         PXShaderProgram* qqq = 0;
 
@@ -3385,7 +3388,7 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
 
     // Sprite
     {
-        PXDictionary* const spirteList = &pxEngine->ResourceManager.SpritelLookUp;
+        PXDictionary* const spirteList = &pxEngine->ResourceManager->SpritelLookUp;
 
         for(PXSize i = 0; i < spirteList->EntryAmountCurrent; ++i)
         {
@@ -3449,7 +3452,7 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
 
     // Text
     {
-        PXDictionary* const textList = &pxEngine->ResourceManager.TextLookUp;
+        PXDictionary* const textList = &pxEngine->ResourceManager->TextLookUp;
 
         for(PXSize i = 0; i < textList->EntryAmountCurrent; ++i)
         {
@@ -3477,7 +3480,7 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
 
     // HitBoxes
     {
-        PXDictionary* const hitBoxList = &pxEngine->ResourceManager.HitBoxLookUp;
+        PXDictionary* const hitBoxList = &pxEngine->ResourceManager->HitBoxLookUp;
 
         for(PXSize i = 0; i < hitBoxList->EntryAmountCurrent; ++i)
         {
@@ -3504,7 +3507,7 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
 
 void PXAPI PXEngineCollsisionSolve(PXEngine* const pxEngine)
 {
-    PXDictionary* const hitBoxLookUp = &pxEngine->ResourceManager.HitBoxLookUp;
+    PXDictionary* const hitBoxLookUp = &pxEngine->ResourceManager->HitBoxLookUp;
 
     for(PXSize indexA = 0; indexA < hitBoxLookUp->EntryAmountCurrent; ++indexA)
     {
@@ -3578,7 +3581,7 @@ PXActionResult PXAPI PXEngineSpriteTextureSet(PXEngine* const pxEngine, PXSprite
 
 void PXAPI PXEngineTimerUpdate(PXEngine* const pxEngine)
 {
-    PXDictionary* const timerList = &pxEngine->ResourceManager.TimerLookUp;
+    PXDictionary* const timerList = &pxEngine->ResourceManager->TimerLookUp;
 
     for(PXSize timerIndex = 0; timerIndex < timerList->EntryAmountCurrent; ++timerIndex)
     {
@@ -3640,7 +3643,7 @@ void PXAPI PXEngineTimerUpdate(PXEngine* const pxEngine)
 
 void PXAPI PXEngineSpriteAnimatorUpdate(PXEngine* const pxEngine)
 {
-    PXDictionary* const spriteAnimatorList = &pxEngine->ResourceManager.SpriteAnimator;
+    PXDictionary* const spriteAnimatorList = &pxEngine->ResourceManager->SpriteAnimator;
 
     for(PXSize index = 0; index < spriteAnimatorList->EntryAmountCurrent; ++index)
     {
@@ -3822,7 +3825,7 @@ void PXAPI PXEngineHitBoxHandle(PXEngine* const pxEngine)
     );
 #endif
 
-    PXDictionary* const hitboxLookup = &pxEngine->ResourceManager.HitBoxLookUp;
+    PXDictionary* const hitboxLookup = &pxEngine->ResourceManager->HitBoxLookUp;
 
 
     // Clear

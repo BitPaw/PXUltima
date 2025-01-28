@@ -322,7 +322,7 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXResourceTransphereInfo* const px
                                 pxResourceCreateInfoList.FilePath = resultFullPath.TextA;
                                 pxResourceCreateInfoList.FilePathSize = resultFullPath.SizeUsed;
 
-                                PXResourceManagerAdd(pxResourceLoadInfo->Manager, &pxResourceCreateInfoList, 1);
+                                PXResourceManagerAdd(&pxResourceCreateInfoList, 1);
                             }
                         }
                         break;

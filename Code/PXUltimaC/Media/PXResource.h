@@ -457,6 +457,8 @@ PXResource;
 
 
 
+#define PXResourceManagerInit (1<<0)
+
 // Container to manage resources by loading or saving
 typedef struct PXResourceManager_
 {
@@ -481,10 +483,13 @@ typedef struct PXResourceManager_
     PXDictionary ShaderProgramLookup;
     PXDictionary GUIElementLookup;
     PXDictionary SpriteAnimator;
+    PXDictionary IconLookUp;
 
     struct PXShaderProgram_* ShaderFailback;
     struct PXModel_* ModelFailback;
     struct PXTexture2D_* Texture2DFailBack;
+
+    PXInt32U Flags;
 }
 PXResourceManager;
 //=========================================================
@@ -2309,8 +2314,8 @@ typedef struct PXWindow_
     PXUIElementPosition Position;
 
     //---<State-Info>------------------------
-    PXWindowBrush* BrushFront;
-    PXWindowBrush* BrushBackground;
+   // PXWindowBrush* BrushFront;
+   // PXWindowBrush* BrushBackground;
     PXFont* FontForText;
     PXIcon* Icon; // Icon to be rendered
 
@@ -3735,11 +3740,17 @@ PXResourceCreateInfo;
 PXPublic const char* PXAPI PXResourceTypeToString(const PXResourceType pxResourceType);
 
 
-PXPublic void PXAPI PXResourceManagerInit(PXResourceManager* const pxResourceManager);
+
+
+
+// Returns the global resouremanager. 
+// If not yet init, do so.
+PXPublic PXResourceManager* PXAPI PXResourceManagerInstanceFetch(void);
 PXPublic void PXAPI PXResourceManagerRelease(PXResourceManager* const pxResourceManager);
 
 
-PXPrivate PXInt32U PXAPI PXResourceManagerGenerateUniqeID(PXResourceManager* const pxResourceManager);
+
+PXPrivate PXInt32U PXAPI PXResourceManagerGenerateUniqeID();
 
 
 
@@ -3752,21 +3763,21 @@ PXPrivate PXInt32U PXAPI PXResourceManagerGenerateUniqeID(PXResourceManager* con
 
 
 // Generate and store new resource. Load if possible
-PXPublic PXActionResult PXAPI PXResourceManagerAdd(PXResourceManager* const pxResourceManager, PXResourceCreateInfo* const pxResourceCreateInfoList, const PXSize amount);
+PXPublic PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResourceCreateInfoList, const PXSize amount);
 
 
 
-PXPublic PXActionResult PXAPI PXResourceStoreName(PXResourceManager* const pxResourceManager, PXResourceInfo* const pxResourceInfo, const char* const name, const PXSize nameSize);
-PXPublic PXActionResult PXAPI PXResourceStorePath(PXResourceManager* const pxResourceManager, PXResourceInfo* const pxResourceInfo, const char* const name, const PXSize nameSize);
-PXPublic PXActionResult PXAPI PXResourceFetchName(PXResourceManager* const pxResourceManager, PXResourceInfo* const pxResourceInfo, char** name, PXSize* nameSize);
-PXPublic PXActionResult PXAPI PXResourceFetchPath(PXResourceManager* const pxResourceManager, PXResourceInfo* const pxResourceInfo, char** name, PXSize* nameSize);
+PXPublic PXActionResult PXAPI PXResourceStoreName(PXResourceInfo* const pxResourceInfo, const char* const name, const PXSize nameSize);
+PXPublic PXActionResult PXAPI PXResourceStorePath(PXResourceInfo* const pxResourceInfo, const char* const name, const PXSize nameSize);
+PXPublic PXActionResult PXAPI PXResourceFetchName(PXResourceInfo* const pxResourceInfo, char** name, PXSize* nameSize);
+PXPublic PXActionResult PXAPI PXResourceFetchPath(PXResourceInfo* const pxResourceInfo, char** name, PXSize* nameSize);
 
 
 
 
 PXPublic PXActionResult PXAPI PXFileTypeInfoProbe(PXResourceTransphereInfo* const pxFileTypeInfo, const PXText* const pxText);
 
-PXPublic PXActionResult PXAPI PXResourceManagerReferenceValidate(PXResourceManager* const pxResourceManager, PXResourceReference* const pxResourceReference);
+PXPublic PXActionResult PXAPI PXResourceManagerReferenceValidate(PXResourceReference* const pxResourceReference);
 
 PXPublic PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLoadInfo, const PXText* const filePath);
 PXPublic PXActionResult PXAPI PXResourceLoadA(PXResourceTransphereInfo* const pxResourceLoadInfo, const char* const filePath);
@@ -3781,7 +3792,7 @@ PXPublic PXActionResult PXAPI PXResourceParse(PXResource* const pxResource, PXFi
 
 
 
-PXPublic PXMaterial* PXAPI PXMaterialContainerFind(PXResourceManager* const pxResourceManager, const PXMaterialContainer* const pxMaterialContainer, struct PXText_* const pxMaterialName);
+PXPublic PXMaterial* PXAPI PXMaterialContainerFind(const PXMaterialContainer* const pxMaterialContainer, struct PXText_* const pxMaterialName);
 
 
 #endif
