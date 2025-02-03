@@ -1208,6 +1208,13 @@ PXActionResult PXAPI PXNativDrawFontSelect(PXNativDraw* const pxNativDraw, PXWin
     return PXActionSuccessful;
 }
 
+PXActionResult PXAPI PXNativDrawIconFromImage(PXNativDraw* const pxNativDraw, PXIcon* const pxIcon, PXImage* const pxImage)
+{
+
+
+    return PXActionSuccessful;
+}
+
 PXActionResult PXAPI PXNativDrawWindowProperty(PXNativDraw* const pxNativDraw, PXWindowPropertyInfo* const pxWindowPropertyInfoList, const PXSize amount)
 {
     for(PXSize i = 0; i < amount; ++i)

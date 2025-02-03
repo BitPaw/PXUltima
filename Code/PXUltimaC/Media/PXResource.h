@@ -438,7 +438,7 @@ PXResourceReference;
 
 
 
-
+#include <OS/Async/PXLock.h>
 
 
 
@@ -462,6 +462,8 @@ PXResource;
 // Container to manage resources by loading or saving
 typedef struct PXResourceManager_
 {
+    PXLock CreateLock;
+
     PXListDynamic NameCache;
     PXListDynamic SourcePathCache;
 
@@ -3685,12 +3687,19 @@ PXSpriteAnimatorInfo;
 
 
 
+#define PXResourceCreateBehaviourSpawnInScene   (1<<0)
+#define PXResourceCreateBehaviourLoadASYNC      (1<<1)
+
+
+#define PXResourceCreateBehaviourIsASYNCCall      (1<<8)
 
 
 typedef struct PXResourceCreateInfo_
 {
     void** ObjectReference; // Reference to an adress to be filled with an object
     PXSize ObjectAmount; // If set to more than one, "ObjectReference" will contain a list of values
+
+    void* Parent;
 
     char* FilePath;
     PXSize FilePathSize;
@@ -3699,7 +3708,7 @@ typedef struct PXResourceCreateInfo_
 
     PXResourceType Type;
 
-    PXBool SpawnEnabled;
+    PXInt32U Flags;
 
     union
     {
@@ -3763,7 +3772,8 @@ PXPrivate PXInt32U PXAPI PXResourceManagerGenerateUniqeID();
 
 
 // Generate and store new resource. Load if possible
-PXPublic PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResourceCreateInfoList, const PXSize amount);
+PXPublic PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResourceCreateInfo);
+PXPublic PXActionResult PXAPI PXResourceManagerAddV(PXResourceCreateInfo* const pxResourceCreateInfoList, const PXSize amount);
 
 
 

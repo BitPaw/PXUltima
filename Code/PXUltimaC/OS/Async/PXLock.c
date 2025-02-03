@@ -2,13 +2,11 @@
 
 #include <OS/Memory/PXMemory.h>
 
-void PXAPI PXLockClear(PXLock* const lock)
-{
-    PXMemoryClear(lock, sizeof(PXLock));
-}
-
 PXActionResult PXAPI PXLockCreate(PXLock* const lock, const PXLockType type)
 {
+    PXClear(PXLock, lock);
+    lock->Type = type;
+
 #if OSUnix
     int sharedPointer = 0;
     unsigned int value = 1;
@@ -20,41 +18,39 @@ PXActionResult PXAPI PXLockCreate(PXLock* const lock, const PXLockType type)
 
 #elif OSWindows
 
-    switch (type)
+    switch(type)
     {
-    case PXLockTypeGlobal:
-    {
-        LPSECURITY_ATTRIBUTES lpSemaphoreAttributes = 0;
-        LONG lInitialCount = 10;
-        LONG lMaximumCount = 10;
-        LPCWSTR lpName = L"BFE_ASYNC_LOCK";
-
-        const HANDLE handle = CreateSemaphoreW(lpSemaphoreAttributes, lInitialCount, lMaximumCount, lpName);
-        const PXActionResult pxActionResult = PXErrorCurrent(handle != PXNull);
-
-        if(PXActionSuccessful != pxActionResult)
+        case PXLockTypeGlobal:
         {
-            PXLockClear(lock);
-            return pxActionResult;
+            LPSECURITY_ATTRIBUTES lpSemaphoreAttributes = 0;
+            LONG lInitialCount = 1;
+            LONG lMaximumCount = 1;
+            LPCSTR lpName = "BFE_ASYNC_LOCK";
+
+            lock->SemaphoreHandle = CreateSemaphoreA(lpSemaphoreAttributes, lInitialCount, lMaximumCount, PXNull);
+            const PXActionResult pxActionResult = PXErrorCurrent(lock->SemaphoreHandle != PXNull);
+
+            if(PXActionSuccessful != pxActionResult)
+            {
+        
+                return pxActionResult;
+            }
+
+            lock->Type = PXLockTypeGlobal;
+
+            break;
         }
-
-        lock->ID = handle;
-        lock->Type = PXLockTypeGlobal;
-
-        break;
-    }
-    case PXLockTypeProcessOnly:
-    {
+        case PXLockTypeProcessOnly:
+        {
 #if OSUnix
 
-#elif OSWindows
-        InitializeCriticalSection(&lock->LockCriticalSection);
-
-        lock->Type = PXLockTypeProcessOnly;
-#endif
-    }
-    default:
-        return PXActionRefusedArgumentInvalid;
+#elif OSWindows     
+            InitializeCriticalSection(&lock->SectionHandle);
+            break;     
+#endif       
+        }
+        default:
+            return PXActionRefusedArgumentInvalid;
     }
 
 #endif
@@ -64,95 +60,116 @@ PXActionResult PXAPI PXLockCreate(PXLock* const lock, const PXLockType type)
 
 PXActionResult PXAPI PXLockDelete(PXLock* const lock)
 {
-    switch (lock->Type)
+    switch(lock->Type)
     {
-    case PXLockTypeGlobal:
-    {
-        int closingResult = -1;
+        case PXLockTypeGlobal:
+        {
+            int closingResult = -1;
 
 #if OSUnix
-        closingResult = sem_destroy(&lock->ID);
+            closingResult = sem_destroy(&lock->ID);
 #elif OSWindows
-        closingResult = CloseHandle(lock->ID);
+            closingResult = CloseHandle(lock->SemaphoreHandle);
 #endif
 
-        break;
-    }
-    case PXLockTypeProcessOnly:
-    {
+            break;
+        }
+        case PXLockTypeProcessOnly:
+        {
 #if OSUnix
 
 #elif OSWindows
-        DeleteCriticalSection(&lock->LockCriticalSection);
+            DeleteCriticalSection(&lock->SectionHandle);
 #endif
+        }
+        default:
+            return PXActionInvalidStateImpossible;
     }
-    default:
-        return PXActionInvalidStateImpossible;
-    }
-
-    PXLockClear(lock);
 
     return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXLockEngage(PXLock* const lock)
 {
-    switch (lock->Type)
-    {
-    case PXLockTypeGlobal:
-    {
-        int lockResult = -1;
+    ++lock->LockCounter;
 
+    switch(lock->Type)
+    {
+        case PXLockTypeGlobal:
+        {
 #if OSUnix
-        lockResult = sem_wait(&lock->ID);
+            const int waitResultID = sem_wait(&lock->SemaphoreHandle);
+            const PXActionResult waitResult = PXErrorCurrent(0 == waitResultID);
 #elif OSWindows
-        lockResult = WaitForSingleObject(lock->ID, INFINITE);
+            const DWORD result = WaitForSingleObject(lock->SemaphoreHandle, INFINITE);
+            PXActionResult waitResult;
+
+            switch(result)
+            {
+                case WAIT_ABANDONED:
+                    waitResult = PXActionRefusedStateInvalid;
+                    break;
+
+                case WAIT_OBJECT_0:
+                    waitResult = PXActionSuccessful;
+                    break;
+
+                case WAIT_TIMEOUT:
+                    waitResult = PXActionRefusedNotReady;
+                    break;
+
+                case WAIT_FAILED:
+                    waitResult = PXErrorCurrent(0);
+                    break;
+
+                default:
+                    waitResult = PXActionInvalid;
+                    break;
+            }  
 #endif
-        break;
-    }
-    case PXLockTypeProcessOnly:
-    {
+
+            return waitResult;      
+        }
+        case PXLockTypeProcessOnly:
+        {
 #if OSUnix
 
 #elif OSWindows
-        EnterCriticalSection(&lock->LockCriticalSection);
+            EnterCriticalSection(&lock->SectionHandle);
 #endif
+        }
+        default:
+            return PXActionInvalidStateImpossible;
     }
-    default:
-        return PXActionInvalidStateImpossible;
-    }
-
-    ++(lock->LockCounter);
 
     return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXLockRelease(PXLock* const lock)
 {
-    switch (lock->Type)
+    switch(lock->Type)
     {
-    case PXLockTypeGlobal:
-    {
-        int releaseResult = -1;
-
+        case PXLockTypeGlobal:
+        {
 #if OSUnix
-        releaseResult = sem_post(&lock->ID);
+            const int releaseResultID = sem_post(&lock->ID);
+            const PXActionResult releaseResult = PXErrorCurrent(0 == releaseResultID);
 #elif OSWindows
-        releaseResult = ReleaseSemaphore(lock->ID, 1, 0);
+            const BOOL releaseResultID = ReleaseSemaphore(lock->SemaphoreHandle, 1, PXNull);
+            const PXActionResult releaseResult = PXErrorCurrent(releaseResultID);   
 #endif
-
-        break;
-    }
-    case PXLockTypeProcessOnly:
-    {
+            return releaseResult; 
+        }
+        case PXLockTypeProcessOnly:
+        {
 #if OSUnix
 
 #elif OSWindows
-        LeaveCriticalSection(&lock->LockCriticalSection);
+            LeaveCriticalSection(&lock->SectionHandle);
 #endif
-    }
-    default:
-        return PXActionInvalidStateImpossible;
+        }
+        default:
+            return PXActionInvalidStateImpossible;
     }
 
     --(lock->LockCounter);

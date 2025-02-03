@@ -23,18 +23,19 @@ PXLockType;
 
 typedef struct PXLock_
 {
-    PXLockIDType ID;
     PXLockType Type;
-    PXInt8U LockCounter;
+    PXInt32U LockCounter;
+
+    union
+    {
+        PXLockIDType SemaphoreHandle;
 
 #if OSWindows
-    CRITICAL_SECTION LockCriticalSection;
+        CRITICAL_SECTION SectionHandle;
 #endif
+    };
 }
 PXLock;
-
-// Clear value of lock, sets CPrivate data to 0.
-PXPublic void PXAPI PXLockClear(PXLock* const lock);
 
 PXPublic PXActionResult PXAPI PXLockCreate(PXLock* const lock, const PXLockType type);
 PXPublic PXActionResult PXAPI PXLockDelete(PXLock* const lock);

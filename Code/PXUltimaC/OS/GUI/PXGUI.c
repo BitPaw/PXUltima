@@ -2188,7 +2188,7 @@ PXActionResult PXAPI PXGUISystemInitialize(PXGUISystem* const pxGUISystem)
     pxResourceCreateInfoList[3].Font.RegisteredName = "Eras Medium ITC";  // "Eras Medium ITC"; // Bradley Hand ITC, UniSpace,OCR A, Cascadia Mono,         "UniSpace";
 #endif
 
-    PXResourceManagerAdd(pxResourceCreateInfoList, 4);
+    PXResourceManagerAddV(pxResourceCreateInfoList, 4);
 
     return PXActionSuccessful;
 }
@@ -3772,7 +3772,7 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
                 pxResourceCreateInfo.UIElement.Position.Margin.Right = 0;
                 pxResourceCreateInfo.UIElement.Position.Margin.Bottom = 0;
 
-                PXResourceManagerAdd(&pxResourceCreateInfo, 1);
+                PXResourceManagerAddV(&pxResourceCreateInfo, 1);
 
                 PXWindowCreate(pxGUISystem, &pxResourceCreateInfo, 1);
 

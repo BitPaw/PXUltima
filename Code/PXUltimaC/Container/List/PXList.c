@@ -52,9 +52,9 @@ PXBool PXAPI PXListReserve(PXList* const pxList, const PXSize sizeToReserve)
     return PXTrue;
 }
 
-PXBool PXAPI PXListAdd(PXList* const pxList, void* const dataElement)
+void* PXAPI PXListAdd(PXList* const pxList, void* const dataElement)
 {
-    PXListReserve(pxList, pxList->AmountUsed + 1);
+    PXListReserve(pxList, pxList->AmountUsed + pxList->GrouthOnAlloc);
 
     void* target = (char*)pxList->Data + (pxList->DataTypeSize * pxList->AmountUsed);
 
@@ -62,10 +62,10 @@ PXBool PXAPI PXListAdd(PXList* const pxList, void* const dataElement)
 
     ++pxList->AmountUsed;
 
-    return PXYes;
+    return target;
 }
 
-void* PXAPI PXListEntyrGet(PXList* const pxList, const PXSize index)
+void* PXAPI PXListItemAtIndexGet(PXList* const pxList, const PXSize index)
 {
 #if 0 // Additional safety
     const PXBool isInBounce = pxList->AmountUsed >= index;
@@ -79,4 +79,9 @@ void* PXAPI PXListEntyrGet(PXList* const pxList, const PXSize index)
     void* const adress = (char*)pxList->Data + pxList->DataTypeSize * index;
 
     return adress;
+}
+
+PXBool PXAPI PXListItemFromStartGet(PXList* const queue, void* const dataElement)
+{
+    return PXActionSuccessful;
 }

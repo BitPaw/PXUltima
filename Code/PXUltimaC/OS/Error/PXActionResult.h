@@ -17,6 +17,8 @@ typedef enum PXActionResult_
     PXActionFailedUnkownError, // [OTHER] Undefined error
     //-----------------------------------
 
+    PXActionWaitOnResult, // The result is yet to be recieved
+
     PXActionRefusedKeyNotFound, // Key-Value, key not found
     PXActionRefusedValueNotFound, // Key-value, value not found
     PXActionFailedRead, // Value couln't be read

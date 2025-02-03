@@ -113,6 +113,7 @@ PXPublic void PXAPI PXConsoleWriteWithColorCodes(PXText* const bufferInput);
 
 PXPublic void PXAPI PXLogPrintInvoke(PXLoggingEventData* const pxLoggingEventData, ...);
 
+PXPublic void PXAPI PXLogEnableASYNC();
 PXPublic void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source, const char* const action, const char* const format, ...);
 
 #endif

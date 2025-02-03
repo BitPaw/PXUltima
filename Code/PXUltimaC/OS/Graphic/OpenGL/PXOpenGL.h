@@ -812,6 +812,14 @@ typedef struct PXGraphicDevicePhysical_    PXGraphicDevicePhysical;
 //----------------------------------------------
 // WGL_ARB_create_context
 //----------------------------------------------
+#define WGL_CONTEXT_MAJOR_VERSION_ARB     0x2091
+#define WGL_CONTEXT_MINOR_VERSION_ARB     0x2092
+#define WGL_CONTEXT_FLAGS_ARB             0x2094
+#define WGL_CONTEXT_CORE_PROFILE_BIT_ARB  0x00000001
+#define WGL_CONTEXT_PROFILE_MASK_ARB      0x9126
+#define WGL_CONTEXT_DEBUG_BIT_ARB               0x0001
+#define WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB  0x0002
+
 typedef HGLRC(PXOpenGLAPI* PXOpenGLContextCreateAttributes)(HDC hDC, HGLRC hshareContext, const int* attribList); // wglCreateContextAttribsARB
 
 //----------------------------------------------
@@ -839,6 +847,9 @@ typedef struct _GPU_DEVICE
     RECT   rcVirtualScreen;
 }
 GPU_DEVICE, * PGPU_DEVICE;
+
+
+
 #endif
 
 
@@ -908,6 +919,28 @@ typedef BOOL        (PXOpenGLAPI* PXOpenGLFontBitmapsUseA                  )(HDC
 typedef BOOL        (PXOpenGLAPI* PXOpenGLFontBitmapsUseW                  )(HDC, DWORD, DWORD, DWORD); // wglUseFontBitmapsW
 typedef BOOL        (PXOpenGLAPI* PXOpenGLFontOutlinesUseA                 )(HDC unnamedParam1, DWORD unnamedParam2, DWORD unnamedParam3, DWORD unnamedParam4, float unnamedParam5, float unnamedParam6, int unnamedParam7, LPGLYPHMETRICSFLOAT unnamedParam8); // wglUseFontOutlinesA
 typedef BOOL        (PXOpenGLAPI* PXOpenGLFontOutlinesUseW                 )(HDC unnamedParam1, DWORD unnamedParam2, DWORD unnamedParam3, DWORD unnamedParam4, float unnamedParam5, float unnamedParam6, int unnamedParam7, LPGLYPHMETRICSFLOAT unnamedParam8); // wglUseFontOutlinesW
+
+
+typedef BOOL(PXOpenGLAPI* PXOpenGLPixelFormatAttribivGet)(HDC hdc,
+                                  int iPixelFormat,
+                                  int iLayerPlane,
+                                  UINT nAttributes,
+                                  const int* piAttributes,
+                                  int* piValues); // wglGetPixelFormatAttribivARB
+
+typedef BOOL(PXOpenGLAPI* PXOpenGLPixelFormatAttribfvGet)(HDC hdc,
+                                  int iPixelFormat,
+                                  int iLayerPlane,
+                                  UINT nAttributes,
+                                  const int* piAttributes,
+                                  FLOAT* pfValues); // wglGetPixelFormatAttribfvARB
+
+typedef BOOL(PXOpenGLAPI* PXOpenGLPixelFormatChooseARB)(HDC hdc,
+                             const int* piAttribIList,
+                             const FLOAT* pfAttribFList,
+                             UINT nMaxFormats,
+                             int* piFormats,
+                             UINT* nNumFormats); // wglChoosePixelFormatARB
 
 #endif
 
@@ -1349,6 +1382,9 @@ typedef struct PXOpenGLBinding_
 
 #elif OSWindows
 
+    PXOpenGLPixelFormatAttribivGet  PixelFormatAttribivGet;
+    PXOpenGLPixelFormatAttribfvGet  PixelFormatAttribfvGet;
+    PXOpenGLPixelFormatChooseARB    PixelFormatChooseARB;
     PXOpenGLPixelFormatChoose       PixelFormatChoose;
     PXOpenGLContextCopy             ContextCopy;
     PXOpenGLDeviceAffinityCreate    DeviceAffinityCreate;

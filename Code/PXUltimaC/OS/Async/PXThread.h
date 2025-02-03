@@ -29,40 +29,17 @@ typedef PXThreadResult(PXOSAPI* ThreadFunction)(void* const data);
 
 
 
-#define PXTaskBehaviourRepeat (0b00010000) // Shall this task repeat itself after executing successful?
-
-
-#define PXTaskBehaviourStateMask (0b00001111)
-#define PXTaskBehaviourStateInvalid     0 // Resource does not exist. Not created or deleted
-#define PXTaskBehaviourStateRunning     1 // Resource is 
-#define PXTaskBehaviourStateWaiting     2 // Resource waits for another resource
-#define PXTaskBehaviourStateSuspended   3 // Resource 
-#define PXTaskBehaviourStateFailed      4
-#define PXTaskBehaviourStateFinished    5 // Resource is done
-
-
-typedef enum PXTaskState_
-{
-    PXTaskStateInvalid      = PXTaskBehaviourStateInvalid,
-    PXTaskStateRunning      = PXTaskBehaviourStateRunning,
-    PXTaskStateWaiting      = PXTaskBehaviourStateWaiting,
-    PXTaskStateSuspended    = PXTaskBehaviourStateSuspended,
-    PXTaskStateFinished     = PXTaskBehaviourStateFinished,
-    PXTaskStateFailed       = PXTaskBehaviourStateFailed,
-}
-PXTaskState;
-
-
-typedef enum PXThreadMode_
-{
-    PXThreadModeInvalid,
-    PXThreadModeInitializing,
-    PXThreadModeRunning,
-    PXThreadModeStopping,
-    PXThreadModeSuspended,
-    PXThreadModeFinished,
-}
-PXThreadMode;
+#define PXExecuteStateMask (0b00001111)
+#define PXExecuteStateInvalid     0 // Resource does not exist. Not created or deleted
+#define PXExecuteStateIDLE        1 // Resource is not doing anything, ready to be used
+#define PXExecuteStateInit        2 // Resource is inizialized and ready to be executed
+#define PXExecuteStateDibs        3 // Resource is taken by a handler and will be executed
+#define PXExecuteStateRunning     4 // Resource is currently running
+#define PXExecuteStateWaiting     5 // Resource waits for another resource
+#define PXExecuteStateSuspended   6 // Resource 
+#define PXExecuteStateFailed      7
+#define PXExecuteStateFinished    8 // Resource is done
+#define PXExecuteStateStale       9 // Resource is done
 
 
 // Windows : priority
@@ -123,18 +100,48 @@ PXThreadPriorityMode;
 
 
 
+#define PXTaskExecuteSYNC      (1<<0)
+#define PXTaskExecuteASYNC     (1<<1)
+#define PXTaskExecuteLoop      (1<<2) // Shall this task repeat itself after executing successful?
+#define PXTaskParameterRelease (1<<3)
+#define PXTaskDepended         (1<<4)
+
+typedef PXActionResult (PXAPI* PXThreadX1CallFunction)(void* objectAdress);
+typedef PXActionResult (PXAPI* PXThreadX2CallFunction)(void* objectAdressA, void* objectAdressB);
 
 typedef struct PXTask_
 {
     PXResourceInfo Info;
 
-    void* FunctionAdress;
+    union
+    {
+        // Task function that is to be executed
+        PXThreadX1CallFunction FunctionX1Adress;
+        PXThreadX2CallFunction FunctionX2Adress;
+    };
+
+    void* ArgumentObject1; // Parameter that is given into the function
+    void* ArgumentObject2;
+
+    PXActionResult FunctionReturnCode; // As this is a PX function call, we dont get a number back but this enum
 }
 PXTask;
 
 
+void PXAPI PXTaskStateChange(PXTask* const pxTask, const PXInt32U newState);
+
+
+
+
 #define PXThreadBehaviourDefault            0
-#define PXThreadBehaviourCreateSuspended    (1<<0)
+#define PXThreadBehaviourCreateSuspended    (1<<8)
+#define PXThreadStartOnAdd                  (1<<10)
+
+#if OSUnix
+typedef PXInt32U PXThreadHandleID;
+#elif OSWindows
+typedef DWORD PXThreadHandleID;
+#endif 
 
 typedef struct PXThread_
 {
@@ -142,10 +149,7 @@ typedef struct PXThread_
 
     PXThreadResult ReturnResultCode;
 
-#if OSUnix
-#elif OSWindows
-    DWORD ThreadID;
-#endif
+    PXThreadHandleID HandleID;
 }
 PXThread;
 
@@ -201,8 +205,8 @@ PXPublic PXActionResult PXAPI PXThreadCurrentProcessorID(PXInt32U* const process
 PXPublic PXActionResult PXAPI PXThreadNameSet(PXThread* pxThread, PXText* const threadName);
 PXPublic PXActionResult PXAPI PXThreadNameGet(struct PXDebug_* const pxDebug, PXThread* const pxThread, PXText* const threadName);
 
-PXPublic PXSize PXAPI PXThreadCurrentID();
-PXPublic void PXAPI PXThreadCurrentGet(PXThread* const pxThread);
+PXPublic PXThreadHandleID PXAPI PXThreadCurrentID();
+PXPublic PXProcessThreadHandle PXAPI PXThreadCurrentGet();
 
 PXPublic PXActionResult PXAPI PXThreadWaitForFinish(PXThread* const pxThread);
 

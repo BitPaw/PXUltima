@@ -243,9 +243,6 @@
     <ClCompile Include="Container\ListLinked\PXListLinked.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Container\ListQueue\PXListQueue.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="Container\TreeB\PXTreeB.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
@@ -256,9 +253,6 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Container\TreeQuad\PXTreeQuad.c">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="Container\ListRing\PXListRing.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Media\AAC\PXAAC.c">
@@ -809,9 +803,6 @@
     <ClInclude Include="Container\ListLinked\PXListLinked.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Container\ListQueue\PXListQueue.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="Container\TreeB\PXTreeB.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -822,9 +813,6 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Container\TreeQuad\PXTreeQuad.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="Container\ListRing\PXListRing.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Media\AAC\PXAAC.h">

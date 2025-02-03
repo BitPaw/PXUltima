@@ -172,8 +172,6 @@
     <ClCompile Include="Container\ListDynamic\PXListDynamic.c" />
     <ClCompile Include="Container\ListHierarchical\PXListHierarchical.c" />
     <ClCompile Include="Container\ListLinked\PXListLinked.c" />
-    <ClCompile Include="Container\ListQueue\PXListQueue.c" />
-    <ClCompile Include="Container\ListRing\PXListRing.c" />
     <ClCompile Include="Container\List\PXList.c" />
     <ClCompile Include="Container\TreeBehaviour\PXTreeBehaviour.c" />
     <ClCompile Include="Container\TreeBinary\PXTreeBinary.c" />
@@ -362,8 +360,6 @@
     <ClInclude Include="Container\ListDynamic\PXListDynamic.h" />
     <ClInclude Include="Container\ListHierarchical\PXListHierarchical.h" />
     <ClInclude Include="Container\ListLinked\PXListLinked.h" />
-    <ClInclude Include="Container\ListQueue\PXListQueue.h" />
-    <ClInclude Include="Container\ListRing\PXListRing.h" />
     <ClInclude Include="Container\List\PXList.h" />
     <ClInclude Include="Container\TreeBehaviour\PXTreeBehaviour.h" />
     <ClInclude Include="Container\TreeBinary\PXTreeBinary.h" />

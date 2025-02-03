@@ -10,6 +10,7 @@
 #include <Math/PXCollision.h>
 #include <OS/Debug/PXDebug.h>
 #include <OS/Graphic/NativDraw/PXNativDraw.h>
+#include <OS/Async/PXThreadPool.h>
 
 void PXCDECL PXEngineOnIllegalInstruction(const int signalID)
 {
@@ -1326,6 +1327,9 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
     }
 
 
+    PXThreadPool
+
+
     ++(pxEngine->TimeData.CounterTimeWindow);
     ++(pxEngine->TimeData.CounterTimeUser);
     ++(pxEngine->TimeData.CounterTimeNetwork);
@@ -1547,6 +1551,8 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
     {
         return PXActionRefusedArgumentNull;
     }
+
+    PXLogEnableASYNC();
 
 #if PXLogEnable
     PXLogPrint
@@ -1926,7 +1932,7 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
 
     if(PXGraphicInitializeModeOSGUI != pxEngineStartInfo->Mode)
     {
-        PXEngineResourceDefaultElements(pxEngine);
+        //PXEngineResourceDefaultElements(pxEngine);
     }
 
 
@@ -2156,7 +2162,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
 
     // Primary load
     {
-        const PXActionResult resourceAddResult = PXResourceManagerAdd(pxResourceCreateInfo, 1);
+        const PXActionResult resourceAddResult = PXResourceManagerAdd(pxResourceCreateInfo);
         const PXBool success = PXActionSuccessful == resourceAddResult;
 
         if(!success)
@@ -2233,10 +2239,32 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
                 pxModel
             );
 #endif
+            PXBool hasASYNCChildren = PXFalse;
+
+            if(!hasASYNCChildren)
+            {
+                pxEngine->Graphic.ModelRegister(pxEngine->Graphic.EventOwner, pxModel);
+            }
+            else
+            {
+                PXThreadPoolQueueWork
+                (
+                    PXNull,
+                    pxEngine->Graphic.ModelRegister,
+                    pxEngine->Graphic.EventOwner,
+                    pxModel,
+                    PXTaskExecuteSYNC | PXTaskDepended
+                );
+            }
 
 
-            // Register
-            pxEngine->Graphic.ModelRegister(pxEngine->Graphic.EventOwner, pxModel);
+   
+     
+
+
+       
+
+
 
             break;
         }
@@ -2331,16 +2359,6 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
             }
 
 
-            // Regsieter texture
-            {
-                PXGraphicTexturInfo pxGraphicTexturInfo;
-                pxGraphicTexturInfo.TextureReference = &pxSkyBox->TextureCube;
-                pxGraphicTexturInfo.Amount = 1u;
-                pxGraphicTexturInfo.Type = PXGraphicTextureTypeCubeContainer;
-                pxGraphicTexturInfo.Action = PXResourceActionCreate;
-
-                pxEngine->Graphic.TextureAction(pxEngine->Graphic.EventOwner, &pxGraphicTexturInfo);
-            }
 
             // Model create
             {
@@ -2371,6 +2389,24 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
                     2
                 );
             }
+
+            // Regsieter texture
+            {
+                PXGraphicTexturInfo* pxGraphicTexturInfo = PXMemoryCallocT(PXGraphicTexturInfo, 1);
+                pxGraphicTexturInfo->TextureReference = &pxSkyBox->TextureCube;
+                pxGraphicTexturInfo->Amount = 1u;
+                pxGraphicTexturInfo->Type = PXGraphicTextureTypeCubeContainer;
+                pxGraphicTexturInfo->Action = PXResourceActionCreate;
+
+                PXThreadPoolQueueWork
+                (
+                    PXNull,
+                    pxEngine->Graphic.TextureAction,
+                    pxEngine->Graphic.EventOwner,
+                    pxGraphicTexturInfo,
+                    PXTaskExecuteSYNC | PXTaskParameterRelease | PXTaskDepended
+                );           
+            }        
 
             pxSkyBox->Info.Flags |= PXResourceInfoRender;
 

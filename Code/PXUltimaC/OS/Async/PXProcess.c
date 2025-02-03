@@ -713,7 +713,7 @@ PXActionResult PXAPI PXProcessThreadsListAll(PXProcess* const pxProcess, PXThrea
                 PXText text;
                 PXTextConstructBufferA(&text, 128);
 
-                pxThread->ThreadID = threadEntry.th32ThreadID;
+                pxThread->HandleID = threadEntry.th32ThreadID;
 
                 PXThreadNameGet(pxDebug, pxThread, &text);
 

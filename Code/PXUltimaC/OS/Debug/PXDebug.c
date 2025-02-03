@@ -1590,7 +1590,7 @@ PXActionResult PXAPI PXDebugFetchSymbolThread(PXDebug* const pxDebug, PXSymbol* 
 #elif OSWindows
 
     // if we dont have a handle or even an ID, we cant proceed
-    const PXBool hasAtlestOne = pxThread->ThreadID || pxThread->Info.Handle.ThreadHandle;
+    const PXBool hasAtlestOne = pxThread->HandleID || pxThread->Info.Handle.ThreadHandle;
 
     if(!hasAtlestOne)
     {
@@ -1603,7 +1603,7 @@ PXActionResult PXAPI PXDebugFetchSymbolThread(PXDebug* const pxDebug, PXSymbol* 
     // create thread handle if not exists
     if(!pxThread->Info.Handle.ThreadHandle)
     {
-        pxThread->Info.Handle.ThreadHandle = OpenThread(THREAD_ALL_ACCESS, PXFalse, pxThread->ThreadID);
+        pxThread->Info.Handle.ThreadHandle = OpenThread(THREAD_ALL_ACCESS, PXFalse, pxThread->HandleID);
     }
 
     const NTSTATUS querryResult = NtQueryInformationThread

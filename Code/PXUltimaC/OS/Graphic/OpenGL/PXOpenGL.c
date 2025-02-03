@@ -474,6 +474,9 @@ const char PXOpenGLBindingList[] =
 
 
 #elif OSWindows // Windows
+"wglGetPixelFormatAttribivARB\0"
+"wglGetPixelFormatAttribfvARB\0"
+"wglChoosePixelFormatARB\0"
 "wglChoosePixelFormat\0"
 "wglCopyContext\0"
 "wglCreateAffinityDCNV\0"
@@ -1514,6 +1517,68 @@ const char PXOpenGLBindingList[] =
 //---------------------------------------------------------
 
 
+
+
+
+#define WGL_NUMBER_PIXEL_FORMATS_ARB            0x2000
+#define WGL_DRAW_TO_WINDOW_ARB                  0x2001
+#define WGL_DRAW_TO_BITMAP_ARB                  0x2002
+#define WGL_ACCELERATION_ARB                    0x2003
+#define WGL_NEED_PALETTE_ARB                    0x2004
+#define WGL_NEED_SYSTEM_PALETTE_ARB             0x2005
+#define WGL_SWAP_LAYER_BUFFERS_ARB              0x2006
+#define WGL_SWAP_METHOD_ARB                     0x2007
+#define WGL_NUMBER_OVERLAYS_ARB                 0x2008
+#define WGL_NUMBER_UNDERLAYS_ARB                0x2009
+#define WGL_TRANSPARENT_ARB                     0x200A
+#define WGL_TRANSPARENT_RED_VALUE_ARB           0x2037
+#define WGL_TRANSPARENT_GREEN_VALUE_ARB         0x2038
+#define WGL_TRANSPARENT_BLUE_VALUE_ARB          0x2039
+#define WGL_TRANSPARENT_ALPHA_VALUE_ARB         0x203A
+#define WGL_TRANSPARENT_INDEX_VALUE_ARB         0x203B
+#define WGL_SHARE_DEPTH_ARB                     0x200C
+#define WGL_SHARE_STENCIL_ARB                   0x200D
+#define WGL_SHARE_ACCUM_ARB                     0x200E
+#define WGL_SUPPORT_GDI_ARB                     0x200F
+#define WGL_SUPPORT_OPENGL_ARB                  0x2010
+#define WGL_DOUBLE_BUFFER_ARB                   0x2011
+#define WGL_STEREO_ARB                          0x2012
+#define WGL_PIXEL_TYPE_ARB                      0x2013
+#define WGL_COLOR_BITS_ARB                      0x2014
+#define WGL_RED_BITS_ARB                        0x2015
+#define WGL_RED_SHIFT_ARB                       0x2016
+#define WGL_GREEN_BITS_ARB                      0x2017
+#define WGL_GREEN_SHIFT_ARB                     0x2018
+#define WGL_BLUE_BITS_ARB                       0x2019
+#define WGL_BLUE_SHIFT_ARB                      0x201A
+#define WGL_ALPHA_BITS_ARB                      0x201B
+#define WGL_ALPHA_SHIFT_ARB                     0x201C
+#define WGL_ACCUM_BITS_ARB                      0x201D
+#define WGL_ACCUM_RED_BITS_ARB                  0x201E
+#define WGL_ACCUM_GREEN_BITS_ARB                0x201F
+#define WGL_ACCUM_BLUE_BITS_ARB                 0x2020
+#define WGL_ACCUM_ALPHA_BITS_ARB                0x2021
+#define WGL_DEPTH_BITS_ARB                      0x2022
+#define WGL_STENCIL_BITS_ARB                    0x2023
+#define WGL_AUX_BUFFERS_ARB                     0x2024
+
+#define WGL_NO_ACCELERATION_ARB                 0x2025
+#define WGL_GENERIC_ACCELERATION_ARB            0x2026
+#define WGL_FULL_ACCELERATION_ARB               0x2027
+
+#define WGL_SWAP_EXCHANGE_ARB                   0x2028
+#define WGL_SWAP_COPY_ARB                       0x2029
+#define WGL_SWAP_UNDEFINED_ARB                  0x202A
+
+#define WGL_TYPE_RGBA_ARB                       0x202B
+#define WGL_TYPE_COLORINDEX_ARB                 0x202C
+
+
+
+
+
+
+
 unsigned int PXAPI PXOpenGLRenderBufferAttachmentPointToID(const PXOpenGLRenderBufferAttachmentPoint renderBufferAttachmentPoint)
 {
     switch(renderBufferAttachmentPoint)
@@ -2267,6 +2332,92 @@ void PXAPI PXOpenGLCopy(PXOpenGL* const pxOpenGL, const PXOpenGL* const pxOpenGL
 
 }
 
+#if OSWindows 
+
+
+// Function to create an OpenGL context on a specific GPU
+HGLRC CreateOpenGLContextOnGPUNV(PXOpenGL* const pxOpenGL, HWND hwnd, int gpuIndex)
+{
+    HGPUNV gpu;
+    HGPUNV gpuList[8] = { NULL, NULL };
+
+    pxOpenGL->Binding.DevicePhysicalList(gpuIndex, &gpu);
+
+    gpuList[0] = gpu;
+    HDC affinityDC = pxOpenGL->Binding.DeviceAffinityCreate(gpuList);
+   
+
+    HDC hdc = GetDC(hwnd);
+
+    int pixelFormat = 0;
+    UINT numFormats = 0;
+    const int pixelFormatAttribs[] = 
+    {
+        WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
+        WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
+        WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
+        WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
+        WGL_COLOR_BITS_ARB, 32,
+        WGL_DEPTH_BITS_ARB, 24,
+        0
+    };
+
+    pxOpenGL->Binding.PixelFormatChooseARB(affinityDC, pixelFormatAttribs, NULL, 1, &pixelFormat, &numFormats);
+    //CHECK_WGL_ERROR(numFormats > 0);
+    SetPixelFormat(hdc, pixelFormat, NULL);
+
+    const int contextAttribs[] = {
+        WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
+        WGL_CONTEXT_MINOR_VERSION_ARB, 5,
+        WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
+        0
+    };
+
+    HGLRC hglrc = pxOpenGL->Binding.ContextCreateAttributes(affinityDC, NULL, contextAttribs);
+   // CHECK_WGL_ERROR(hglrc != NULL);
+
+    //ReleaseDC(hwnd, hdc);
+
+    return hglrc;
+}
+
+
+// Function to create an OpenGL context on a specific GPU
+HGLRC CreateOpenGLContextOnGPU(PXOpenGL* const pxOpenGL, HDC hdc, int gpuIndex)
+{
+    int pixelFormat = 0;
+    UINT numFormats = 0;
+    const int pixelFormatAttribs[] = 
+    {
+        WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
+        WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
+        WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
+        WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
+        WGL_COLOR_BITS_ARB, 32,
+        WGL_DEPTH_BITS_ARB, 24,
+        0
+    };
+
+    pxOpenGL->Binding.PixelFormatChooseARB(hdc, pixelFormatAttribs, NULL, 1, &pixelFormat, &numFormats);
+
+    SetPixelFormat(hdc, pixelFormat, NULL);
+
+    const int contextAttribs[] = 
+    {
+        WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
+        WGL_CONTEXT_MINOR_VERSION_ARB, 5,
+        WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
+      //  WGL_GPU_ARB, gpuIndex, // Does not exist???
+        0
+    };
+
+    HGLRC hglrc = pxOpenGL->Binding.ContextCreateAttributes(hdc, NULL, contextAttribs);
+
+    return hglrc;
+}
+#endif
+
+
 PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicInitializeInfo* const pxGraphicInitializeInfo)
 {
 #if PXLogEnable
@@ -2552,41 +2703,55 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
     // WGL-Extensions (Wiggle OpenGL)
     //-----------------------------------------------------
     {
-#if 0
-        if(pxOpenGL->Binding.StringGetExtensions)
+#if 1
+        if(pxOpenGL->Binding.ExtensionStringGet)
         {
-            char* teeext = pxOpenGL->Binding.StringGetExtensions(pxOpenGL->Binding.AttachedWindow->HandleDeviceContext);
+          
+            char* extensionString = pxOpenGL->Binding.ExtensionStringGet(pxOpenGL->WindowDeviceContextHandle);
+            char* cursor = extensionString;
             PXInt32U wglExtenionAmount = 0;
-
+            
+            for(;;)
             {
-                PXFile pxFile;
-                PXFileBufferExternal(&pxFile, teeext, (PXSize)-1);
-                pxFile.DataSize = PXFileFindEndOfText(&pxFile);
-                pxFile.DataAllocated = pxFile.DataSize;
+                PXSize length = PXTextLengthUntilA(cursor, -1, ' ');
 
-                while(!PXFileIsAtEnd(&pxFile))
+                if(0 == length)
                 {
-                    char wurst[256];
-                    PXClear(wurst, wurst);
-
-                    char* adres = PXFileCursorPosition(&pxFile);
-                    PXSize x = PXFileSkipBlock(&pxFile);
-                    PXSize  textSize = x + 1;
-
-                    PXFileCursorRewind(&pxFile, x);
-
-                    PXFileReadB(&pxFile, wurst, textSize - 1);
-                    PXFileCursorAdvance(&pxFile, 1);
-
-                    ++wglExtenionAmount;
-
-                    printf("| %3i | %-40s |\n", wglExtenionAmount, wurst);
+                    break;
                 }
+
+                ++wglExtenionAmount;
+
+#if PXLogEnable
+                char buffer[128];
+
+                PXTextCopyA(cursor, length, buffer, 128);
+
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    "OpenGL",
+                    "Extension",
+                    "%4i - %s",
+                    wglExtenionAmount,
+                    buffer
+                );
+#endif
+
+                cursor = &cursor[length+1];
             }
         }
         else
         {
-            printf("[OpenGL] wglGetExtensionsStringARB not deteced..\n");
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingWarning,
+                "OpenGL",
+                "Extension",
+                "wglGetExtensionsStringARB not deteced.."                
+            );
+#endif
         }
 #endif
     }
@@ -2611,12 +2776,22 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
         );
 #endif
 
-#if 0
+#if 1
         for(int i = 0; i < numberOfExtensions; ++i)
         {
-            const char* ccc = (const char*)pxOpenGL->Binding.StringI(GL_EXTENSIONS, i);
+            const char* extension = (const char*)pxOpenGL->Binding.StringI(GL_EXTENSIONS, i);
 
-            printf("| %3i | %-40s |\n", i + 1, ccc);
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "OpenGL",
+                "Extension",
+                "%4i - %s",
+                i + 1,
+                extension
+            );
+#endif
         }
 #endif
     }
@@ -2665,14 +2840,14 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
 
     // List devices
     {
-        PXGraphicDevicePhysical pxGraphicDevicePhysical;
-        PXClear(PXGraphicDevicePhysical, &pxGraphicDevicePhysical);
+        PXGraphicDevicePhysical pxGraphicDevicePhysical[4];
+        PXClearList(PXGraphicDevicePhysical, &pxGraphicDevicePhysical, 4);
 
-        PXInt32U devices = 0;
+        PXInt32U devices = 2;
 
-        PXOpenGLDevicePhysicalListAmount(pxOpenGL, &devices);
+       // PXOpenGLDevicePhysicalListAmount(pxOpenGL, &devices);
 
-        PXActionResult fetchResult = PXOpenGLDevicePhysicalListFetch(pxOpenGL, devices, &pxGraphicDevicePhysical);
+        PXActionResult fetchResult = PXOpenGLDevicePhysicalListFetch(pxOpenGL, devices, pxGraphicDevicePhysical);
 
         if(PXActionSuccessful != fetchResult)
         {
@@ -2683,25 +2858,25 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
         {
             PXText pxTextVideoMemoryCurrent;
             PXTextConstructNamedBufferA(&pxTextVideoMemoryCurrent, pxTextVideoMemoryCurrentBuffer, 32);
-            PXTextFormatSize(&pxTextVideoMemoryCurrent, pxGraphicDevicePhysical.VideoMemoryCurrent);
+            PXTextFormatSize(&pxTextVideoMemoryCurrent, pxGraphicDevicePhysical[i].VideoMemoryCurrent);
 
             PXText pxTextVideoMemoryTotal;
             PXTextConstructNamedBufferA(&pxTextVideoMemoryTotal, pxTextVideoMemoryTotalBuffer, 32);
-            PXTextFormatSize(&pxTextVideoMemoryTotal, pxGraphicDevicePhysical.VideoMemoryTotal);
+            PXTextFormatSize(&pxTextVideoMemoryTotal, pxGraphicDevicePhysical[i].VideoMemoryTotal);
 
             PXText pxTextVideoMemoryDedicated;
             PXTextConstructNamedBufferA(&pxTextVideoMemoryDedicated, pxTextVideoMemoryDedicatedBuffer, 32);
-            PXTextFormatSize(&pxTextVideoMemoryDedicated, pxGraphicDevicePhysical.VideoMemoryDedicated);
+            PXTextFormatSize(&pxTextVideoMemoryDedicated, pxGraphicDevicePhysical[i].VideoMemoryDedicated);
 
             PXText pxTextVideoMemorySize;
             PXTextConstructNamedBufferA(&pxTextVideoMemorySize, pxTextVideoMemorySizeBuffer, 32);
-            PXTextFormatSize(&pxTextVideoMemorySize, pxGraphicDevicePhysical.VideoMemoryEvictionSize);
+            PXTextFormatSize(&pxTextVideoMemorySize, pxGraphicDevicePhysical[i].VideoMemoryEvictionSize);
 
             int percent = 0;
 
-            if(0 != pxGraphicDevicePhysical.VideoMemoryTotal)
+            if(0 != pxGraphicDevicePhysical[i].VideoMemoryTotal)
             {
-                percent = (pxGraphicDevicePhysical.VideoMemoryCurrent * 100) / pxGraphicDevicePhysical.VideoMemoryTotal;
+                percent = (pxGraphicDevicePhysical[i].VideoMemoryCurrent * 100) / pxGraphicDevicePhysical[i].VideoMemoryTotal;
             }
 
 #if PXLogEnable
@@ -2715,8 +2890,8 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
                 "%12s : %s\n"
                 "%12s : %s / %s %i%% from (%s)\n"
                 "%12s : %i / %s",
-                "Vendor", pxGraphicDevicePhysical.Vendor,
-                "Renderer", pxGraphicDevicePhysical.Renderer,
+                "Vendor", pxGraphicDevicePhysical[i].Vendor,
+                "Renderer", pxGraphicDevicePhysical[i].Renderer,
 
                 "Memory",
                 pxTextVideoMemoryCurrent.TextA,
@@ -2725,7 +2900,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
                 pxTextVideoMemoryDedicated.TextA,
 
                 "Evicted",
-                pxGraphicDevicePhysical.VideoMemoryEvictionCount,
+                pxGraphicDevicePhysical[i].VideoMemoryEvictionCount,
                 pxTextVideoMemorySize.TextA
             );
 #endif
@@ -2904,23 +3079,31 @@ PXActionResult PXAPI PXOpenGLDevicePhysicalListAmount(PXOpenGL* const pxOpenGL, 
 
 #if OSUnix
 
-    * amount = 1; // ToDo: Bad Hack, get the correct amount!
+    *amount = 1; // ToDo: Bad Hack, get the correct amount!
 
     return PXActionRefusedNotImplemented;
 
 #elif OSWindows
 
-#if 0
     HGPUNV listOfHandles[64];
 
     if(!pxOpenGL->Binding.DevicePhysicalList)
     {
-        return PXActionRefusedNotSupported;
+        return PXActionRefusedNotSupportedByLibrary;
     }
 
     for(PXSize gpuID = 0; pxOpenGL->Binding.DevicePhysicalList(gpuID, &listOfHandles[gpuID]); ++gpuID)
     {
-        printf("[OpenGL] GPU <%i>\n", gpuID);
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "OpenGL",
+            "Device",
+            "Detected <%i>",
+            gpuID
+        );
+#endif
 
         GPU_DEVICE gpuDEVICE;
         PXClear(GPU_DEVICE, &gpuDEVICE);
@@ -2928,15 +3111,22 @@ PXActionResult PXAPI PXOpenGLDevicePhysicalListAmount(PXOpenGL* const pxOpenGL, 
 
         for(PXSize displayID = 0; displayID < pxOpenGL->Binding.DevicePhysicalListB(listOfHandles[gpuID], displayID, &gpuDEVICE); ++displayID)
         {
-            printf
+#if PXLogEnable
+            PXLogPrint
             (
-                "[OpenGL] DeviceName : %s, %s (%i, %i)\n", gpuDEVICE.DeviceName, gpuDEVICE.DeviceString, gpuDEVICE.rcVirtualScreen.left, gpuDEVICE.rcVirtualScreen.bottom
+                PXLoggingInfo,
+                "OpenGL",
+                "Device",
+                "DeviceName : %s, %s (%i, %i)",
+                gpuDEVICE.DeviceName,
+                gpuDEVICE.DeviceString,
+                gpuDEVICE.rcVirtualScreen.left,
+                gpuDEVICE.rcVirtualScreen.bottom
             );
+#endif
+            *amount = displayID + 1;
         }
     }
-#endif
-
-    * amount = 1;
 
     return PXActionSuccessful;
 #endif
@@ -2949,10 +3139,10 @@ PXActionResult PXAPI PXOpenGLDevicePhysicalListFetch(PXOpenGL* const pxOpenGL, c
         return PXActionRefusedArgumentNull;
     }
 
-    if(amount == 0)
-    {
-        return PXActionSuccessful;
-    }
+    //if(amount == 0)
+   // {
+    //    return PXActionSuccessful;
+   // }
 
     if(!(PXOpenGLStateIsBoundToThread & pxOpenGL->Flags))
     {

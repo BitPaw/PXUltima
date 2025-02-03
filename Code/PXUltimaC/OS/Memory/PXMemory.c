@@ -862,7 +862,7 @@ PXSize PXAPI PXMemoryCopy(const void* PXRestrict inputBuffer, const PXSize input
 {
     const PXSize bufferSize = PXMathMinimumIU(inputBufferSize, outputBufferSize);
 
-    if(bufferSize == 0)
+    if(!(inputBuffer && outputBuffer && bufferSize > 0))
     {
         return 0;
     }

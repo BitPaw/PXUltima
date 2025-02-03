@@ -82,6 +82,16 @@ PXPublic PXActionResult PXAPI PXNativDrawFontSelect(PXNativDraw* const pxNativDr
 
 
 //---------------------------------------------------------
+// Icons
+//---------------------------------------------------------
+PXPublic PXActionResult PXAPI PXNativDrawIconFromImage(PXNativDraw* const pxNativDraw, PXIcon* const pxIcon, PXImage* const pxImage);
+PXPublic PXActionResult PXAPI PXNativDrawIconFromAtlas(PXNativDraw* const pxNativDraw, PXIcon* const pxIcon, PXImage* const pxImage);
+//---------------------------------------------------------
+
+
+
+
+//---------------------------------------------------------
 // Property
 //---------------------------------------------------------
 PXPublic PXActionResult PXAPI PXNativDrawWindowProperty(PXNativDraw* const pxNativDraw, PXWindowPropertyInfo* const pxWindowPropertyInfoList, const PXSize amount);
