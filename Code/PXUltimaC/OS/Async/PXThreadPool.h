@@ -32,7 +32,10 @@ PXThreadPool;
 PXPrivate PXTask* PXAPI PXThreadPoolTaskNextWorkGet(PXThreadPool* pxThreadPool);
 PXPrivate PXTask* PXAPI PXThreadPoolTaskNextFreeGet(PXThreadPool* pxThreadPool, void* function, void* parameter1, void* parameter2, const PXInt32U behaviour);
 
-PXPrivate PXThreadResult __stdcall PXThreadPoolCallBack(PXThreadPool* const pxThreadPool);
+PXPrivate PXThread* PXAPI PXThreadPoolThreadSelf(PXThreadPool* const pxThreadPool);
+PXPrivate PXActionResult PXAPI PXThreadPoolTaskInvoke(PXTask* const pxTask);
+
+
 
 PXPublic PXActionResult PXAPI PXThreadPoolClose(PXThreadPool* pxThreadPool);
 PXPublic PXActionResult PXAPI PXThreadPoolCreate(PXThreadPool* pxThreadPool);
@@ -45,5 +48,11 @@ PXPublic PXActionResult PXAPI PXThreadPoolThreadMinimumSet(PXThreadPool* const p
 PXPublic PXActionResult PXAPI PXThreadPoolQueueWork(PXThreadPool* const pxThreadPool, void* function, void* parameter1, void* parameter2, const PXInt32U behaviour);
 PXPublic PXActionResult PXAPI PXThreadPoolQueueTask(PXThreadPool* const pxThreadPool, PXTask* const pxTask);
 PXPublic PXActionResult PXAPI PXThreadPoolWaitForAll(PXThreadPool* const pxThreadPool, const PXBool cancelRunning);
+
+
+// Call this function in the main thread for syncronous functions
+PXPublic PXActionResult PXAPI PXThreadPoolProcessSYNC(PXThreadPool* const pxThreadPool);
+// Internal function to process async calls
+PXPrivate PXThreadResult PXOSAPI PXThreadPoolProcessASYNC(PXThreadPool* const pxThreadPool);
 
 #endif

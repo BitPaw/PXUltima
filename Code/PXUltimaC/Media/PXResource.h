@@ -3710,6 +3710,9 @@ typedef struct PXResourceCreateInfo_
 
     PXInt32U Flags;
 
+    PXDictionary* Lookup;
+    PXSize ObjectSize;
+
     union
     {
         PXEngineFontCreateInfo Font;

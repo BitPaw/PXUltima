@@ -63,6 +63,11 @@ void PXAPI PXDictionaryResize(PXDictionary* const dictionary, const PXSize entry
 
 PXBool PXAPI PXDictionaryAdd(PXDictionary* const dictionary, const void* key, const void* value)
 {
+    if(!(dictionary && key && value))
+    {
+        return PXFalse;
+    }
+
     const PXBool hasEnoughSpace = (dictionary->EntryAmountCurrent + 1) < dictionary->EntryAmountMaximal;
 
     if (!hasEnoughSpace)

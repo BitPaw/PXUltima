@@ -425,14 +425,153 @@ HICON PXAPI PXIconFromBitMap(PXImage* const pxImage)
 }
 #endif
 
-void PXAPI PXResourceManagerRegister(PXDictionary* const dictionary, PXResourceInfo* const pxResourceInfo, void* objectAdress)
+#include <OS/Async/PXThreadPool.h>
+
+PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResourceCreateInfo)
 {
+    if(!pxResourceCreateInfo)
+    {
+        return PXActionRefusedArgumentNull;
+    }
+
+
+    //-----------------------------------------------------
+    // Pre-create Object
+    //-----------------------------------------------------
+    switch(pxResourceCreateInfo->Type)
+    {
+        case PXResourceTypeBrush:
+        {
+            pxResourceCreateInfo->Lookup = &_GLOBALResourceManager.BrushLookUp;
+            pxResourceCreateInfo->ObjectSize = sizeof(PXWindowBrush);
+            break;
+        }
+        case PXResourceTypeImage:
+        {
+            pxResourceCreateInfo->Lookup = &_GLOBALResourceManager.ImageLookUp;
+            pxResourceCreateInfo->ObjectSize = sizeof(PXImage);
+            break;
+        }
+        case PXResourceTypeIcon:
+        {
+            pxResourceCreateInfo->Lookup = &_GLOBALResourceManager.IconLookUp;
+            pxResourceCreateInfo->ObjectSize = sizeof(PXIcon);
+            break;
+        }
+        case PXResourceTypeIconAtlas:
+        {
+            //pxResourceCreateInfo->Lookup = &_GLOBALResourceManager.IconLookUp;
+            pxResourceCreateInfo->ObjectSize = sizeof(PXIconAtlas);
+            break;
+        }
+        case PXResourceTypeTextureCube:
+        {
+            //pxResourceCreateInfo->Lookup = &_GLOBALResourceManager.IconLookUp;
+            pxResourceCreateInfo->ObjectSize = sizeof(PXTextureCube);
+            break;
+        }
+        case PXResourceTypeModel:
+        {
+            pxResourceCreateInfo->Lookup = &_GLOBALResourceManager.ModelLookUp;
+            pxResourceCreateInfo->ObjectSize = sizeof(PXModel);
+            break;
+        }
+        case PXResourceTypeMaterial:
+        {
+            pxResourceCreateInfo->Lookup = &_GLOBALResourceManager.MaterialLookUp;
+            pxResourceCreateInfo->ObjectSize = sizeof(PXMaterial);
+            break;
+        }
+        case PXResourceTypeTexture2D:
+        {
+            pxResourceCreateInfo->Lookup = &_GLOBALResourceManager.TextureLookUp;
+            pxResourceCreateInfo->ObjectSize = sizeof(PXTexture2D);
+            break;
+        }
+        case PXResourceTypeFont:
+        {
+            pxResourceCreateInfo->Lookup = &_GLOBALResourceManager.FontLookUp;
+            pxResourceCreateInfo->ObjectSize = sizeof(PXFont);
+            break;
+        }
+        case PXResourceTypeSkybox:
+        {
+            pxResourceCreateInfo->Lookup = &_GLOBALResourceManager.SkyBoxLookUp;
+            pxResourceCreateInfo->ObjectSize = sizeof(PXSkyBox);
+            break;
+        }
+        case PXResourceTypeSprite:
+        {
+            pxResourceCreateInfo->Lookup = &_GLOBALResourceManager.SpritelLookUp;
+            pxResourceCreateInfo->ObjectSize = sizeof(PXSprite);
+            break;
+        }
+        case PXResourceTypeText:
+        {
+            pxResourceCreateInfo->Lookup = &_GLOBALResourceManager.TextLookUp;
+            pxResourceCreateInfo->ObjectSize = sizeof(PXEngineText);
+            break;
+        }
+        case PXResourceTypeTimer:
+        {
+            pxResourceCreateInfo->Lookup = &_GLOBALResourceManager.TimerLookUp;
+            pxResourceCreateInfo->ObjectSize = sizeof(PXEngineTimer);
+            break;
+        }
+        case PXResourceTypeSound:
+        {
+            pxResourceCreateInfo->Lookup = &_GLOBALResourceManager.SoundLookUp;
+            pxResourceCreateInfo->ObjectSize = sizeof(PXSound);
+            break;
+        }
+        case PXResourceTypeEngineSound:
+        {
+           // pxResourceCreateInfo->Lookup = &_GLOBALResourceManager.SoundLookUp;
+            pxResourceCreateInfo->ObjectSize = sizeof(PXEngineSound);
+            break;
+        }
+        case PXResourceTypeShaderProgram:
+        {
+            pxResourceCreateInfo->Lookup = &_GLOBALResourceManager.ShaderProgramLookup;
+            pxResourceCreateInfo->ObjectSize = sizeof(PXShaderProgram);
+            break;
+        }
+        case PXResourceTypeHitBox:
+        {
+            pxResourceCreateInfo->Lookup = &_GLOBALResourceManager.HitBoxLookUp;
+            pxResourceCreateInfo->ObjectSize = sizeof(PXHitBox);
+            break;
+        }
+        case PXResourceTypeGUIElement:
+        {
+            pxResourceCreateInfo->Lookup = &_GLOBALResourceManager.GUIElementLookup;
+            pxResourceCreateInfo->ObjectSize = sizeof(PXWindow);
+            break;
+        }
+        case PXResourceTypeSpriteAnimator:
+        {
+          //  pxResourceCreateInfo->Lookup = &_GLOBALResourceManager.looku;
+            pxResourceCreateInfo->ObjectSize = sizeof(PXSpriteAnimator);
+            break;
+        }
+        default:
+        {
+            pxResourceCreateInfo->Lookup = PXNull;
+            pxResourceCreateInfo->ObjectSize = PXNull;
+            break;
+        }
+    }
+
+
+
     PXLockEngage(&_GLOBALResourceManager.CreateLock);
 
-    pxResourceInfo->ID = PXResourceManagerGenerateUniqeID();
-    pxResourceInfo->Flags |= PXResourceInfoExist;
+    PXInt32U resourceID = PXResourceManagerGenerateUniqeID();
+  //  pxResourceInfo->Flags |= PXResourceInfoExist;
 
-    PXDictionaryAdd(dictionary, &pxResourceInfo->ID, objectAdress);
+    *pxResourceCreateInfo->ObjectReference = PXMemoryCalloc(pxResourceCreateInfo->ObjectSize, 1);
+
+    PXDictionaryAdd(pxResourceCreateInfo->Lookup, &resourceID, *pxResourceCreateInfo->ObjectReference);
 
     PXLockRelease(&_GLOBALResourceManager.CreateLock);
 
@@ -443,18 +582,17 @@ void PXAPI PXResourceManagerRegister(PXDictionary* const dictionary, PXResourceI
         "Resource",
         "Register",
         "ID:%-4i",
-        pxResourceInfo->ID
+        resourceID
     );
 #endif
-}
 
-#include <OS/Async/PXThreadPool.h>
 
-PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResourceCreateInfo)
-{
-    //assert(pxResourceCreateInfo);
 
-    PXBool createSubCall =
+
+    //-----------------------------------------------------
+    // Create ASYNC pathway
+    //-----------------------------------------------------
+    const PXBool createSubCall =
          (PXResourceCreateBehaviourLoadASYNC   & pxResourceCreateInfo->Flags) &&
         !(PXResourceCreateBehaviourIsASYNCCall & pxResourceCreateInfo->Flags);
 
@@ -467,10 +605,21 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
         PXCopy(PXResourceCreateInfo, pxResourceCreateInfo, pxResourceCreateInfoASYNC);
         pxResourceCreateInfoASYNC->Flags |= PXResourceCreateBehaviourIsASYNCCall;
 
-        PXThreadPoolQueueWork(PXNull, PXResourceManagerAdd, pxResourceCreateInfoASYNC, PXNull, PXTaskParameterReleaseOnFinish);
+        PXThreadPoolQueueWork
+        (
+            PXNull,
+            PXResourceManagerAdd,
+            pxResourceCreateInfoASYNC,
+            PXNull, 
+            PXTaskParameterRelease | PXTaskExecuteASYNC
+        );
 
         return PXActionSuccessful;
     }
+    //-----------------------------------------------------
+
+
+
 
     switch(pxResourceCreateInfo->Type)
     {
@@ -479,26 +628,10 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
             PXBrushCreateInfo* const pxBrushCreateInfo = &pxResourceCreateInfo->Brush;
             PXWindowBrush* pxWindowBrush = *(PXWindowBrush**)pxResourceCreateInfo->ObjectReference;
 
-            if(!pxWindowBrush)
-            {
-                PXNewZerod(PXWindowBrush, &pxWindowBrush);
-                *pxResourceCreateInfo->ObjectReference = pxWindowBrush;
-            }
-
-            PXResourceManagerRegister
-            (
-                &_GLOBALResourceManager.BrushLookUp,
-                &pxWindowBrush->Info,
-                pxWindowBrush
-            );
-
-
 #if OSUnix
             // X11 does not have a brush, right?
 
 #elif OSWindows
-
-
 
             COLORREF brushColor = RGB(pxBrushCreateInfo->Color.Red, pxBrushCreateInfo->Color.Green, pxBrushCreateInfo->Color.Blue);
             HBRUSH brushHandle = CreateSolidBrush(brushColor);
@@ -638,21 +771,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
             PXIconCreateInfo* const pxIconCreateInfo = &pxResourceCreateInfo->Icon;
             PXIcon* pxIcon = *(PXIcon**)pxResourceCreateInfo->ObjectReference;
 
-            if(!pxIcon)
-            {
-                PXNewZerod(PXIcon, &pxIcon);
-                *pxResourceCreateInfo->ObjectReference = pxIcon;
-            }
-
-            PXResourceManagerRegister
-            (
-                &_GLOBALResourceManager.ModelLookUp,
-                &pxIcon->Info,
-                pxIcon
-            );
-
             PXResourceStoreName(&pxIcon->Info, pxResourceCreateInfo->Name, -1);
-
 
 
             // Check if texture is present
@@ -792,23 +911,12 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
             pxIcon->Info.Handle.IconHandle = iconHandle;
 #endif
 
-
-            PXDictionaryAdd(&_GLOBALResourceManager.IconLookUp, &pxIcon->Info.ID, pxIcon);
-
             break;
         }
         case PXResourceTypeIconAtlas:
         {
             PXIconAtlasCreateInfo* const pxIconAtlasCreateInfo = &pxResourceCreateInfo->IconAtlas;
             PXIconAtlas* pxIconAtlas = *(PXIconAtlas**)pxResourceCreateInfo->ObjectReference;
-
-            if(!pxIconAtlas)
-            {
-                PXNewZerod(PXIconAtlas, &pxIconAtlas);
-                *pxResourceCreateInfo->ObjectReference = pxIconAtlas;
-            }
-
-            pxIconAtlas->Info.ID = PXResourceManagerGenerateUniqeID();
 
 #if PXLogEnable
             PXLogPrint
@@ -902,12 +1010,6 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
             PXTextureCubeCreateInfo* const pxTextureCubeCreateData = &pxResourceCreateInfo->TextureCube;
             PXTextureCube* pxTextureCube = *(PXTextureCube**)pxResourceCreateInfo->ObjectReference;
 
-            if(!pxTextureCube)
-            {
-                PXNewZerod(PXTextureCube, &pxTextureCube);
-                *pxResourceCreateInfo->ObjectReference = pxTextureCube;
-            }
-
             pxTextureCube->Format = PXColorFormatRGBI8;
 
             PXResourceCreateInfo pxResourceCreateInfoList[6];
@@ -946,25 +1048,11 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
             PXModelCreateInfo* const pxModelCreateInfo = &pxResourceCreateInfo->Model;
             PXModel* pxModel = *(PXModel**)pxResourceCreateInfo->ObjectReference;
 
-            if(!pxModel)
-            {
-                PXNewZerod(PXModel, &pxModel);
-                *pxResourceCreateInfo->ObjectReference = pxModel;
-
-                PXModelConstruct(pxModel);
-            }
+            PXModelConstruct(pxModel);
 
             PXMesh* const pxMesh = &pxModel->Mesh;
             PXVertexBuffer* const pxVertexBuffer = &pxMesh->VertexBuffer;
             PXIndexBuffer* const pxIndexBuffer = &pxMesh->IndexBuffer;
-
-            // Register
-            PXResourceManagerRegister
-            (
-                &_GLOBALResourceManager.ModelLookUp,
-                &pxModel->Info,
-                pxModel
-            );
 
             PXMatrix4x4FIdentity(&pxModel->ModelMatrix);
             PXMatrix4x4FScaleBy(&pxModel->ModelMatrix, pxModelCreateInfo->Scale);
@@ -1237,26 +1325,17 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
             );
 #endif
 
-            if(!pxMaterial)
-            {
-                PXNewListZerod(PXMaterial, pxResourceCreateInfo->ObjectAmount, &pxMaterial, PXNull);
-                *pxResourceCreateInfo->ObjectReference = pxMaterial;
-            }
-
             void* keyList[64];
 
             for(PXSize materialIndex = 0; materialIndex < pxResourceCreateInfo->ObjectAmount; ++materialIndex)
             {
                 PXMaterial* const pxMaterialCurrent = &pxMaterial[materialIndex];
 
-
                 pxMaterialCurrent->Info.ID = PXResourceManagerGenerateUniqeID();
                 pxMaterialCurrent->Info.Flags |= PXResourceInfoRender;
 
                 keyList[materialIndex] = &pxMaterialCurrent->Info.ID;
             }
-
-            PXDictionaryAddMultible(&_GLOBALResourceManager.MaterialLookUp, keyList, pxMaterial, pxResourceCreateInfo->ObjectAmount);
 
             break;
         }
@@ -1284,20 +1363,6 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
                     }
                 }
             }
-
-            // We have a texture to load, but we need a new one
-            if(!pxTexture2D)
-            {
-                PXNewZerod(PXTexture2D, &pxTexture2D);
-                *pxResourceCreateInfo->ObjectReference = pxTexture2D;
-            }
-
-            PXResourceManagerRegister
-            (
-                &_GLOBALResourceManager.TextureLookUp,
-                &pxTexture2D->Info,
-                pxTexture2D
-            );
 
             pxTexture2D->Filter = PXGraphicRenderFilterNoFilter;
             pxTexture2D->LayoutNear = PXGraphicImageLayoutNearest;
@@ -1335,21 +1400,6 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
         {
             PXEngineFontCreateInfo* const pxEngineFontCreateData = &pxResourceCreateInfo->Font;
             PXFont* pxFont = *(PXFont**)pxResourceCreateInfo->ObjectReference;
-
-            // create if not exist
-            if(!pxFont)
-            {
-                PXNewZerod(PXFont, &pxFont);
-                *pxResourceCreateInfo->ObjectReference = pxFont;
-            }
-
-            PXResourceManagerRegister
-            (
-                &_GLOBALResourceManager.FontLookUp,
-                &pxFont->Info,
-                pxFont
-            );
-
 
             // if this is a system font, we dont load it from disk but from the system, duh.
             if(pxEngineFontCreateData->RegisteredName)
@@ -1416,19 +1466,6 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
             PXSkyBoxCreateEventInfo* const pxSkyBoxCreateEventData = &pxResourceCreateInfo->SkyBox;
             PXSkyBox* pxSkyBox = *(PXSkyBox**)pxResourceCreateInfo->ObjectReference;
 
-            if(!pxSkyBox)
-            {
-                PXNewZerod(PXSkyBox, &pxSkyBox);
-                *pxResourceCreateInfo->ObjectReference = pxSkyBox;
-            }
-
-            PXResourceManagerRegister
-            (
-                &_GLOBALResourceManager.SkyBoxLookUp,
-                &pxSkyBox->Info,
-                pxSkyBox
-            );
-
 #if PXLogEnable
             PXLogPrint
             (
@@ -1493,22 +1530,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
             PXSpriteCreateInfo* const pxSpriteCreateEventData = &pxResourceCreateInfo->Sprite;
             PXSprite* pxSprite = *(PXSprite**)pxResourceCreateInfo->ObjectReference;
 
-            if(!pxSprite)
-            {
-                PXNewZerod(PXSprite, &pxSprite);
-                *pxResourceCreateInfo->ObjectReference = pxSprite;
-            }
-
-            PXResourceManagerRegister
-            (
-                &_GLOBALResourceManager.SpritelLookUp,
-                &pxSprite->Info,
-                pxSprite
-            );
-
             pxSprite->Info.Flags |= PXResourceInfoRender;
-
-
 
 
 #if PXLogEnable
@@ -1684,19 +1706,6 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
             //PXEngineTextCreateData* const pxEngineTextCreateData = &pxEngineResourceCreateInfo->Text;
             PXEngineText* pxEngineText = *(PXEngineText**)pxResourceCreateInfo->ObjectReference;
 
-            if(!pxEngineText)
-            {
-                PXNewZerod(PXEngineText, &pxEngineText);
-                *pxResourceCreateInfo->ObjectReference = pxEngineText;
-            }
-
-            PXResourceManagerRegister
-            (
-                &_GLOBALResourceManager.TextLookUp,
-                &pxEngineText->Info,
-                pxEngineText
-            );
-
 
 #if PXLogEnable
             PXLogPrint
@@ -1733,19 +1742,6 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
         case PXResourceTypeTimer:
         {
             PXEngineTimer* pxEngineTimer = *(PXEngineTimer**)pxResourceCreateInfo->ObjectReference;
-
-            if(!pxEngineTimer)
-            {
-                PXNewZerod(PXEngineTimer, &pxEngineTimer);
-                *pxResourceCreateInfo->ObjectReference = pxEngineTimer;
-            }
-
-            PXResourceManagerRegister
-            (
-                &_GLOBALResourceManager.TimerLookUp,
-                &pxEngineTimer->Info,
-                pxEngineTimer
-            );
 
             pxEngineTimer->Owner = pxEngineTimer->Owner;
             pxEngineTimer->CallBack = pxEngineTimer->CallBack;
@@ -1790,19 +1786,6 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
         case PXResourceTypeSound:
         {
             PXSound* pxSound = *(PXSound**)pxResourceCreateInfo->ObjectReference;
-
-            if(!pxSound)
-            {
-                PXNewZerod(PXSound, &pxSound);
-                *pxResourceCreateInfo->ObjectReference = pxSound;
-            }
-
-            PXResourceManagerRegister
-            (
-                &_GLOBALResourceManager.SoundLookUp,
-                &pxSound->Info,
-                pxSound
-            );
 
 #if PXLogEnable
             PXLogPrint
@@ -1857,13 +1840,6 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
             PXEngineSoundCreateInfo* const pxEngineSoundCreateInfo = &pxResourceCreateInfo->Sound;
             PXEngineSound* pxEngineSound = *(PXEngineSound**)pxResourceCreateInfo->ObjectReference;
 
-            // Create if not exists
-            if(!pxEngineSound)
-            {
-                PXNewZerod(PXEngineSound, &pxEngineSound);
-                *pxResourceCreateInfo->ObjectReference = pxEngineSound;
-            }
-
             //  pxEngineSound->Info.Handle.ID = PXResourceManagerGenerateUniqeID(pxResourceManager);
             // PXDictionaryAdd(&pxResourceManager->SoundLookUp, &pxEngineSound->Info.Handle.ID, pxSound);
 
@@ -1906,21 +1882,6 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
             PXShaderProgramCreateInfo* const pxShaderProgramCreateData = &pxResourceCreateInfo->ShaderProgram;
             PXShaderProgram* pxShaderProgram = *(PXShaderProgram**)pxResourceCreateInfo->ObjectReference;
 
-            // Make sure object exists
-            {
-                if(!pxShaderProgram)
-                {
-                    PXNewZerod(PXShaderProgram, &pxShaderProgram);
-                    *pxResourceCreateInfo->ObjectReference = pxShaderProgram;
-                }
-            }
-
-            PXResourceManagerRegister
-            (
-                &_GLOBALResourceManager.ShaderProgramLookup,
-                &pxShaderProgram->Info,
-                pxShaderProgram
-            );
 
 #if PXLogEnable
             PXLogPrint
@@ -1990,19 +1951,6 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
         {
             PXHitBox* pxHitBox = *(PXHitBox**)pxResourceCreateInfo->ObjectReference;
 
-            if(!pxHitBox)
-            {
-                PXNewZerod(PXHitBox, &pxHitBox);
-                *pxResourceCreateInfo->ObjectReference = pxHitBox;
-            }
-
-            PXResourceManagerRegister
-            (
-                &_GLOBALResourceManager.HitBoxLookUp,
-                &pxHitBox->Info,
-                pxHitBox
-            );
-
             pxHitBox->Info.Flags |= PXResourceInfoActive;
             pxHitBox->Info.Behaviour = pxResourceCreateInfo->HitBox.Behaviour;
             pxHitBox->Model = pxResourceCreateInfo->HitBox.Model;
@@ -2025,19 +1973,6 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
             PXWindowCreateInfo* const pxGUIElementCreateInfo = &pxResourceCreateInfo->UIElement;
             PXWindow* pxGUIElement = *(PXWindow**)pxResourceCreateInfo->ObjectReference;
 
-            if(!pxGUIElement)
-            {
-                PXNewZerod(PXWindow, &pxGUIElement);
-                *pxResourceCreateInfo->ObjectReference = pxGUIElement;
-            }
-
-            PXResourceManagerRegister
-            (
-                &_GLOBALResourceManager.GUIElementLookup,
-                &pxGUIElement->Info,
-                pxGUIElement
-            );
-
             pxGUIElement->Info.Flags |= PXResourceInfoActive;
 
             break;
@@ -2046,19 +1981,6 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
         {
             PXSpriteAnimatorInfo* const pxSpriteAnimatorInfo = &pxResourceCreateInfo->SpriteAnimator;
             PXSpriteAnimator* pxSpriteAnimator = *(PXSpriteAnimator**)pxResourceCreateInfo->ObjectReference;
-
-            if(!pxSpriteAnimator)
-            {
-                PXNewZerod(PXSpriteAnimator, &pxSpriteAnimator);
-                *pxResourceCreateInfo->ObjectReference = pxSpriteAnimator;
-            }
-
-            PXResourceManagerRegister
-            (
-                &_GLOBALResourceManager.SpriteAnimator,
-                &pxSpriteAnimator->Info,
-                pxSpriteAnimator
-            );
 
             pxSpriteAnimator->Info.Flags |= PXResourceInfoActive;
 

@@ -41,6 +41,17 @@ typedef PXThreadResult(PXOSAPI* ThreadFunction)(void* const data);
 #define PXExecuteStateFinished    8 // Resource is done
 #define PXExecuteStateStale       9 // Resource is done
 
+typedef enum PXThreadState_
+{
+    PXThreadStateInvalid   = PXExecuteStateInvalid,
+    PXThreadStateSleeping  = PXExecuteStateIDLE,
+    PXThreadStateInit      = PXExecuteStateInit,
+    PXThreadStateRunning   = PXExecuteStateRunning,
+    PXThreadStateWaiting   = PXExecuteStateWaiting,
+    PXThreadStateSuspended = PXExecuteStateSuspended
+}
+PXThreadState;
+
 
 // Windows : priority
 // Linux : nice value
@@ -100,11 +111,11 @@ PXThreadPriorityMode;
 
 
 
-#define PXTaskExecuteSYNC      (1<<0)
-#define PXTaskExecuteASYNC     (1<<1)
-#define PXTaskExecuteLoop      (1<<2) // Shall this task repeat itself after executing successful?
-#define PXTaskParameterRelease (1<<3)
-#define PXTaskDepended         (1<<4)
+#define PXTaskExecuteSYNC      (1<<4)
+#define PXTaskExecuteASYNC     (1<<5)
+#define PXTaskExecuteLoop      (1<<6) // Shall this task repeat itself after executing successful?
+#define PXTaskParameterRelease (1<<7)
+#define PXTaskDepended         (1<<8)
 
 typedef PXActionResult (PXAPI* PXThreadX1CallFunction)(void* objectAdress);
 typedef PXActionResult (PXAPI* PXThreadX2CallFunction)(void* objectAdressA, void* objectAdressB);
@@ -195,9 +206,9 @@ PXPublic PXActionResult PXAPI PXThreadOpen(PXThread* const pxThread);
 PXPublic PXActionResult PXAPI PXThreadPrioritySet(PXThread* pxThread, const PXThreadPriorityMode pxThreadPriorityMode);
 PXPublic PXActionResult PXAPI PXThreadPriorityGet(PXThread* pxThread, PXThreadPriorityMode* const pxThreadPriorityMode);
 
+// Change the current thread state to the wanted state if possible.
+PXPublic PXActionResult PXAPI PXThreadStateChange(PXThread* const pxThread, const PXThreadState pxThreadState);
 
-PXPublic PXActionResult PXAPI PXThreadSuspend(PXThread* const pxThread);
-PXPublic PXActionResult PXAPI PXThreadResume(PXThread* const pxThread);
 PXPublic PXActionResult PXAPI PXThreadSleep(PXThread* const pxThread, const PXSize sleepTime);
 
 PXPublic PXActionResult PXAPI PXThreadCurrentProcessorID(PXInt32U* const processorID);
@@ -207,7 +218,5 @@ PXPublic PXActionResult PXAPI PXThreadNameGet(struct PXDebug_* const pxDebug, PX
 
 PXPublic PXThreadHandleID PXAPI PXThreadCurrentID();
 PXPublic PXProcessThreadHandle PXAPI PXThreadCurrentGet();
-
-PXPublic PXActionResult PXAPI PXThreadWaitForFinish(PXThread* const pxThread);
 
 #endif

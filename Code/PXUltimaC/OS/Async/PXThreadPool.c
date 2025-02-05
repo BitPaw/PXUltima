@@ -36,8 +36,73 @@ PXThread* PXAPI PXThreadPoolThreadSelf(PXThreadPool* const pxThreadPool)
     return PXNull;
 }
 
+PXActionResult PXAPI PXThreadPoolTaskInvoke(PXTask* const pxTask)
+{
+    if(!pxTask->FunctionX1Adress)
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingWarning,
+            "ThreadPool",
+            "Invoke",
+            "Task no callback! Task:<%i>",
+            pxTask->Info.ID
+        );
+#endif
 
-PXThreadResult __stdcall PXThreadPoolCallBack(PXThreadPool* const pxThreadPool)
+        PXTaskStateChange(pxTask, PXExecuteStateFailed);
+
+        return PXActionRefusedMissingCallBack;
+    }
+
+    if(pxTask->ArgumentObject2)
+    {
+        pxTask->FunctionReturnCode = pxTask->FunctionX2Adress(pxTask->ArgumentObject1, pxTask->ArgumentObject2);
+    }
+    else
+    {
+        pxTask->FunctionReturnCode = pxTask->FunctionX1Adress(pxTask->ArgumentObject1);
+    }
+
+
+    if(PXActionSuccessful != pxTask->FunctionReturnCode)
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingWarning,
+            "ThreadPool",
+            "Invoke",
+            "Task Failed! Task:<%i>, Thread returned <%i>",
+            pxTask->Info.ID,
+            pxTask->FunctionReturnCode
+        );
+#endif
+
+        PXTaskStateChange(pxTask, PXExecuteStateFailed);
+
+        return pxTask->FunctionReturnCode;
+    }
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "ThreadPool",
+        "Invoke",
+        "Task DONE! Task:<%i>, Thread:<%i>",
+        pxTask->Info.ID,
+        pxTask
+    );
+#endif
+
+    PXTaskStateChange(pxTask, PXExecuteStateFinished);
+
+    return PXActionSuccessful;
+}
+
+PXThreadResult PXOSAPI PXThreadPoolProcessASYNC(PXThreadPool* const pxThreadPool)
 {
     PXThread* const pxThread = PXThreadPoolThreadSelf(pxThreadPool);
 
@@ -50,7 +115,6 @@ PXThreadResult __stdcall PXThreadPoolCallBack(PXThreadPool* const pxThreadPool)
         "Starting job..."
     );
 #endif
-
 
     for(;;)
     {
@@ -67,71 +131,12 @@ PXThreadResult __stdcall PXThreadPoolCallBack(PXThreadPool* const pxThreadPool)
                 "No current jobs in queue. Suspensing self..."
             );
 #endif
-
-            PXThreadSuspend(pxThread);
-
-            continue;
-        }
-
-        if(!pxTask->FunctionX1Adress)
-        {
-#if PXLogEnable
-            PXLogPrint
-            (
-                PXLoggingWarning,
-                "ThreadPool",
-                "ASYNC-Worker",
-                "Task no callback! Task:<%i>",
-                pxTask->Info.ID
-            );
-#endif
-
-            PXTaskStateChange(pxTask, PXExecuteStateFailed);
-            continue;
-        }
-
-        if(pxTask->ArgumentObject2)
-        {
-            pxTask->FunctionReturnCode = pxTask->FunctionX2Adress(pxTask->ArgumentObject1, pxTask->ArgumentObject2);
-        }
-        else
-        {
-            pxTask->FunctionReturnCode = pxTask->FunctionX1Adress(pxTask->ArgumentObject1);
-        }
-
-
-        if(PXActionSuccessful != pxTask->FunctionReturnCode)
-        {
-#if PXLogEnable
-            PXLogPrint
-            (
-                PXLoggingWarning,
-                "ThreadPool",
-                "ASYNC-Worker",
-                "Task Failed! Task:<%i>, Thread returned <%i>",
-                pxTask->Info.ID,
-                pxTask->FunctionReturnCode
-            );
-#endif
-
-            PXTaskStateChange(pxTask, PXExecuteStateFailed);
+            PXThreadStateChange(pxThread, PXThreadStateSuspended);
 
             continue;
         }
 
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            "ThreadPool",
-            "ASYNC-Worker",
-            "Task DONE! Task:<%i>, Thread:<%i>",
-            pxTask->Info.ID,
-            pxTask
-        );
-#endif
-
-        PXTaskStateChange(pxTask, PXExecuteStateFinished);
+        PXThreadPoolTaskInvoke(pxTask);
     }
 
     return 0;
@@ -196,7 +201,7 @@ PXActionResult PXAPI PXThreadPoolCreate(PXThreadPool* pxThreadPool)
         char nameBuffer[32];
         PXTextPrintA(nameBuffer, 32, "PX-ThreadPool-%3.3i", i);
 
-        PXThreadCreate(pxThread, nameBuffer, PXNull, PXThreadPoolCallBack, pxThreadPool, PXThreadBehaviourCreateSuspended);
+        PXThreadCreate(pxThread, nameBuffer, PXNull, PXThreadPoolProcessASYNC, pxThreadPool, PXThreadBehaviourCreateSuspended);
     }
 
 
@@ -254,6 +259,25 @@ PXActionResult PXAPI PXThreadPoolWaitForAll(PXThreadPool* const pxThreadPool, co
     CloseThreadpool(pxThreadPool->Pool);
 
 #endif
+}
+
+PXActionResult PXAPI PXThreadPoolProcessSYNC(PXThreadPool* const pxThreadPool)
+{
+    for(PXSize i = 0; i < pxThreadPool->TaskQueue.AmountAllocated; ++i)
+    {
+        PXTask* const pxTask = PXListEntyrGetT(PXTask, &pxThreadPool->TaskQueue, i);
+
+        const PXBool doDoWork = PXTaskExecuteSYNC & pxTask->Info.Behaviour;
+
+        if(!doDoWork)
+        {
+            continue;
+        }
+
+        PXThreadPoolTaskInvoke(pxTask);
+    }
+
+    return PXActionSuccessful;
 }
 
 #if OSWindows && !PXThreadPoolUsePXIMPL
@@ -352,7 +376,7 @@ void PXAPI PXThreadPoolWaking(PXThreadPool* pxThreadPool)
 
         if(!isRunning)
         {
-            PXThreadResume(pxThread);
+            PXThreadStateChange(pxThread, PXThreadStateRunning);
             break;
         }
     }

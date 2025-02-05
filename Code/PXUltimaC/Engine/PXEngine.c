@@ -1327,7 +1327,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
     }
 
 
-    PXThreadPool
+    PXThreadPool;
 
 
     ++(pxEngine->TimeData.CounterTimeWindow);
