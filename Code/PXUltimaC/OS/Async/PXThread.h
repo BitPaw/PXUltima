@@ -111,11 +111,13 @@ PXThreadPriorityMode;
 
 
 
-#define PXTaskExecuteSYNC      (1<<4)
-#define PXTaskExecuteASYNC     (1<<5)
-#define PXTaskExecuteLoop      (1<<6) // Shall this task repeat itself after executing successful?
-#define PXTaskParameterRelease (1<<7)
-#define PXTaskDepended         (1<<8)
+#define PXTaskExecuteDirect    (1 <<  4) // Do not cache this task, execute it directly as is
+#define PXTaskExecuteSYNC      (1 <<  5) // Cache task and execute it from the main thread 
+#define PXTaskExecuteASYNC     (1 <<  6) // Cache task and execute it in another thread
+#define PXTaskExecuteLoop      (1 <<  7) // Shall this task repeat itself after executing successful?
+#define PXTaskParameterRelease (1 <<  8) // Delete the parameter after the task finished, to remove transphere objects
+#define PXTaskDepended         (1 <<  9) // Task depends on other resources, wait for them to finish
+#define PXTaskTimeDecay        (1 << 10) // Is a given Task can't be executed until a spesific time, mark it s failed and dont try again.
 
 typedef PXActionResult (PXAPI* PXThreadX1CallFunction)(void* objectAdress);
 typedef PXActionResult (PXAPI* PXThreadX2CallFunction)(void* objectAdressA, void* objectAdressB);
@@ -133,6 +135,9 @@ typedef struct PXTask_
 
     void* ArgumentObject1; // Parameter that is given into the function
     void* ArgumentObject2;
+
+    int TimeStart; // Start time of the task. To know how much time has passed.
+    int TimeDeadline;  // The targeted end time of the task. Can be a higher priority the less time is present
 
     PXActionResult FunctionReturnCode; // As this is a PX function call, we dont get a number back but this enum
 }
