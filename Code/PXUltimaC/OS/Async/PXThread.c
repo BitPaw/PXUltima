@@ -1137,3 +1137,175 @@ PXProcessThreadHandle PXAPI PXThreadCurrentGet()
     return -1;
 #endif
 }
+
+
+#define PXThreadContextUse (1<<0)
+
+typedef struct PXThreadContext32_
+{
+    int x;
+}
+PXThreadContext32;
+
+typedef struct PXThreadContext64_
+{
+ PXInt32U Flags;
+
+    // Parameter adress for integers. What are they for`?
+     DWORD64 P1Home;
+  DWORD64 P2Home;
+  DWORD64 P3Home;
+  DWORD64 P4Home;
+  DWORD64 P5Home;
+  DWORD64 P6Home;
+
+  DWORD   MxCsr; // SSE - float unit flags
+
+
+    // Code Segment registers.
+    WORD  SegCs;
+    WORD  SegDs;
+    WORD  SegEs;
+    WORD  SegFs;
+    WORD  SegGs;
+    WORD  SegSs; // Stack segment register.
+
+
+ // General flags
+  DWORD   EFlags;
+
+  // Debug register, Used for hardware breakpoints.
+  DWORD64 Dr0;
+  DWORD64 Dr1;
+  DWORD64 Dr2;
+  DWORD64 Dr3;
+  // Debug status and control registers.
+  DWORD64 Dr6;
+  DWORD64 Dr7;
+
+  // General-purpose registers.
+  DWORD64 RAX; // Accumulator
+  DWORD64 RBX; // Base register
+  DWORD64 RCX; // Counter register
+  DWORD64 RDX; // Data register 
+
+  DWORD64 RSI; // Source index register
+  DWORD64 RDI; // Destination index register
+
+  DWORD64 RBP; // Base pointer register.
+  DWORD64 RSP; // Stack pointer register.
+
+  // Extended 64-Bit registers
+  DWORD64 R8;
+  DWORD64 R9;
+  DWORD64 R10;
+  DWORD64 R11;
+  DWORD64 R12;
+  DWORD64 R13;
+  DWORD64 R14;
+  DWORD64 R15;
+
+  DWORD64 RIP; // Instruction pointer register.
+    
+union 
+{
+    XMM_SAVE_AREA32 FltSave;
+    NEON128         Q[16];
+    ULONGLONG       D[32];
+    struct 
+    {
+      M128A Header[2];
+      M128A Legacy[8];
+      M128A Xmm0;
+      M128A Xmm1;
+      M128A Xmm2;
+      M128A Xmm3;
+      M128A Xmm4;
+      M128A Xmm5;
+      M128A Xmm6;
+      M128A Xmm7;
+      M128A Xmm8;
+      M128A Xmm9;
+      M128A Xmm10;
+      M128A Xmm11;
+      M128A Xmm12;
+      M128A Xmm13;
+      M128A Xmm14;
+      M128A Xmm15;
+    };
+    DWORD           S[32];
+  };
+  M128A   VectorRegister[26];
+  DWORD64 VectorControl;
+  DWORD64 DebugControl;
+  DWORD64 LastBranchToRip;
+  DWORD64 LastBranchFromRip;
+  DWORD64 LastExceptionToRip;
+  DWORD64 LastExceptionFromRip;
+}
+PXThreadContext64;
+
+
+// https://learn.microsoft.com/en-us/windows-hardware/drivers/debugger/x86-architecture
+typedef struct PXThreadContext_
+{
+    union
+    {
+        PXThreadContext64 X64;
+        PXThreadContext32 X86;
+    }
+}
+PXThreadContext;
+
+#if OSUnix
+#include <sys/user.h>
+#elif OSWindows
+#endif
+
+
+PXActionResult PXAPI PXThreadContextGet(PXThreadContext* const pxThreadContext, PXThreadHandle pxThreadHandle)
+{
+#if OSUnix
+    // getcontext(); // ucontext.h // Introduced with POSIX:2001, removed in POSIX:2008
+
+    // Data can be found here:
+    // /proc/[pid]/task/[tid]/status
+    
+    struct user_regs_struct regs;
+
+    const long attachResultID = ptrace(PTRACE_ATTACH, tid, NULL, NULL);
+    const PXBool attachSuccess = attachResultID == -1;
+    
+    if (!attachSuccess) 
+    {
+        perror("ptrace attach");
+        return;
+    }
+    
+    waitpid(tid, NULL, 0);
+
+    const long getRegisterID = ptrace(PTRACE_GETREGS, tid, NULL, &regs);
+    const PXBool getRegisterSuccess = getRegisterID == -1;
+    
+    if (!getRegisterSuccess) 
+    {
+        perror("ptrace getregs");
+        ptrace(PTRACE_DETACH, tid, NULL, NULL);
+        return;
+    }
+    printf("RIP: %llx\n", regs.rip);
+    // Print other registers as needed
+    ptrace(PTRACE_DETACH, tid, NULL, NULL);
+    
+#elif OSWindows
+    CONTEXT context;
+    
+    const BOOL getResultID = GetThreadContext(pxThreadHandle, &context); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h    
+    const PXActionResult getResult = PXErrorCurrent(getResultID);
+
+    return getResult;
+#else
+    return PXNotimplemented;
+#endif    
+}
+
