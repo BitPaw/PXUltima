@@ -259,7 +259,7 @@ const PXInt8U PXX86InstructionListRoot[0xFF] =
 {PXNULL, "IN"}, // 0xE5
 {PXNULL, "OUT"}, // 0xE6
 {PXNULL, "OUT"}, // 0xE7
-{PXNULL, "CALL-NEAR"}, // 0xE8
+{PXNULL, PXInt32SLE, "CALL-NEAR"}, // 0xE8, Data: 32-Bit offset, IP_next = IP_now + opsize + offset   
 {PXNULL, "JMP-NEAR"}, // 0xE9
 {PXNULL, "JMP-FAR"}, // 0xEA
 {PXNULL, "JMP-SHORT"}, // 0xEB
