@@ -64,6 +64,13 @@ PXPublic PXActionResult PXAPI PXNativDrawEnd(PXNativDraw* const pxNativDraw, PXW
 //---------------------------------------------------------
 // Color for drawing
 //---------------------------------------------------------
+PXPublic PXActionResult PXAPI PXNativDrawBrushCreate(PXNativDraw* const pxNativDraw, PXWindowBrush* const pxWindowBrush, PXColorRGBI8* const pxColorRGBI8);
+//---------------------------------------------------------
+
+
+//---------------------------------------------------------
+// Color for drawing
+//---------------------------------------------------------
 PXPublic PXActionResult PXAPI PXNativDrawColorSetBrush(PXNativDraw* const pxNativDraw, PXWindow* const pxGUIElement, PXWindowBrush* const pxGUIElementBrush, const char mode);
 PXPublic PXActionResult PXAPI PXNativDrawSetV3(PXNativDraw* const pxNativDraw, PXWindow* const pxGUIElement, PXColorRGBI8* const pxColorRGBI8, const char mode);
 PXPublic PXActionResult PXAPI PXNativDrawSetRGB(PXNativDraw* const pxNativDraw, PXWindow* const pxGUIElement, char red, char green, char blue, const char mode);

@@ -96,6 +96,7 @@ PXActionResult PXAPI PXThreadCreate(PXThread* const pxThread, const char* const 
     if(PXThreadBehaviourCreateSuspended & pxThread->Info.Behaviour)
     {
         dwCreationFlags |= CREATE_SUSPENDED;
+        pxThread->Info.Behaviour |= PXExecuteStateSuspended;
     }
 
     if(!targetProcessHandle) //  Target own process
@@ -151,14 +152,17 @@ PXActionResult PXAPI PXThreadCreate(PXThread* const pxThread, const char* const 
         PXLoggingInfo,
         "Thread",
         "Create",
-        "OK. HANDLE:<%p>, ID:<%i> Name:<%s>",
+        "OK. HANDLE:<%p>, ID:<%5.5i>, Name:<%s>",
         pxThread->Info.Handle.ThreadHandle,
         pxThread->HandleID,
         threadName
     );
 #endif
 
-    pxThread->Info.Behaviour = PXExecuteStateRunning;
+    if(!(PXThreadBehaviourCreateSuspended & pxThread->Info.Behaviour))
+    {
+        pxThread->Info.Behaviour |= PXExecuteStateRunning;
+    }
 
     // Name thread if possible
     {
@@ -701,7 +705,7 @@ PXActionResult PXAPI PXThreadPrioritySet(PXThread* pxThread, const PXThreadPrior
 
     if(!pxThread)
     {
-        PXThreadCurrentGet(&dummyThread);
+        PXThreadCurrent(&dummyThread);
         pxThread = &dummyThread;
     }
 
@@ -741,7 +745,7 @@ PXActionResult PXAPI PXThreadPriorityGet(PXThread* pxThread, PXThreadPriorityMod
 
     if(!pxThread)
     {
-        PXThreadCurrentGet(&dummyThread);
+        PXThreadCurrent(&dummyThread);
         pxThread = &dummyThread;
     }
 
@@ -826,6 +830,9 @@ PXActionResult PXAPI PXThreadStateChange(PXThread* const pxThread, const PXThrea
             }
 #endif
 
+            pxThread->Info.Behaviour &= ~PXExecuteStateMask;
+            pxThread->Info.Behaviour |= PXExecuteStateRunning;
+
 #if PXLogEnable
             PXLogPrint
             (
@@ -846,6 +853,9 @@ PXActionResult PXAPI PXThreadStateChange(PXThread* const pxThread, const PXThrea
         }
         case PXThreadStateSuspended:
         {
+            pxThread->Info.Behaviour &= ~PXExecuteStateMask;
+            pxThread->Info.Behaviour |= PXExecuteStateSuspended;
+
 #if OSUnix
             return PXActionRefusedNotImplemented;
 
@@ -877,9 +887,6 @@ PXActionResult PXAPI PXThreadStateChange(PXThread* const pxThread, const PXThrea
         default:
             return PXActionRefusedArgumentInvalid;
     }
-
-    pxThread->Info.Behaviour &= ~PXExecuteStateMask;
-    pxThread->Info.Behaviour |= pxThreadState;
 
     return PXActionSuccessful;
 }
@@ -943,7 +950,7 @@ PXActionResult PXAPI PXThreadNameSet(PXThread* pxThread, PXText* const threadNam
     if (!pxThread)
     {
         pxThread = &pxThreadOverride;
-        PXThreadCurrentGet(pxThread);
+        PXThreadCurrent(pxThread);
     }
 
 #if OSUnix
@@ -1115,103 +1122,127 @@ PXActionResult PXAPI PXThreadNameGet(PXDebug* const pxDebug,PXThread* const pxTh
 #endif
 }
 
-PXThreadHandleID PXAPI PXThreadCurrentID()
+PXActionResult PXAPI PXThreadCurrent(PXThread* const pxThread)
 {
-#if OSUnix
-    return getpid();
-#elif OSWindows
-    return GetCurrentThreadId(); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
-#else
-    return -1;
-#endif
-}
+    PXClear(PXThread, pxThread);
 
-PXProcessThreadHandle PXAPI PXThreadCurrentGet()
-{
 #if OSUnix
-    return pthread_self();
+
+    pxThread->Info.Handle.ThreadHandle = pthread_self();
+    pxThread->HandleID = getpid();
+
+    return PXActionSuccessful;
+
 #elif OSWindows
+
     // Getting the thread handle yields a pseudo handle that is not useful
-    return GetCurrentThread(); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
+    pxThread->Info.Handle.ThreadHandle = GetCurrentThread(); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
+    pxThread->HandleID = GetCurrentThreadId(); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
+  
+    return PXActionSuccessful;
 #else
-    return -1;
+    return PXActionRefusedNotSupportedByLibrary;
 #endif
 }
-
 
 #define PXThreadContextUse (1<<0)
 
 typedef struct PXThreadContext32_
 {
-    int x;
+    PXByte ExtendedRegisters[512];
+    //FLOATING_SAVE_AREA FloatSave;
+
+    PXInt32U Dr0;
+    PXInt32U Dr1;
+    PXInt32U Dr2;
+    PXInt32U Dr3;
+    PXInt32U Dr6;
+    PXInt32U Dr7;
+
+    PXInt32U SegGs;
+    PXInt32U SegFs;
+    PXInt32U SegEs;
+    PXInt32U SegDs;
+
+    PXInt32U EDI;
+    PXInt32U ESI;
+    PXInt32U EBX;
+    PXInt32U EDX;
+    PXInt32U ECX;
+    PXInt32U EAX;
+
+    PXInt32U EBP;
+    PXInt32U EIP;
+    PXInt32U SegCs;
+    PXInt32U EFlags;
+    PXInt32U ESP;
+    PXInt32U SegSs;
 }
 PXThreadContext32;
 
 typedef struct PXThreadContext64_
 {
- PXInt32U Flags;
-
     // Parameter adress for integers. What are they for`?
-     DWORD64 P1Home;
-  DWORD64 P2Home;
-  DWORD64 P3Home;
-  DWORD64 P4Home;
-  DWORD64 P5Home;
-  DWORD64 P6Home;
+     PXInt64U P1Home;
+     PXInt64U P2Home;
+  PXInt64U P3Home;
+  PXInt64U P4Home;
+  PXInt64U P5Home;
+  PXInt64U P6Home;
 
-  DWORD   MxCsr; // SSE - float unit flags
+  PXInt32U   MxCsr; // SSE - float unit flags
 
 
     // Code Segment registers.
-    WORD  SegCs;
-    WORD  SegDs;
-    WORD  SegEs;
-    WORD  SegFs;
-    WORD  SegGs;
-    WORD  SegSs; // Stack segment register.
+  PXInt16U  SegCs;
+    PXInt16U  SegDs;
+    PXInt16U  SegEs;
+    PXInt16U  SegFs;
+    PXInt16U  SegGs;
+    PXInt16U  SegSs; // Stack segment register.
 
 
  // General flags
-  DWORD   EFlags;
+    PXInt32U   EFlags;
 
   // Debug register, Used for hardware breakpoints.
-  DWORD64 Dr0;
-  DWORD64 Dr1;
-  DWORD64 Dr2;
-  DWORD64 Dr3;
+  PXInt64U Dr0;
+  PXInt64U Dr1;
+  PXInt64U Dr2;
+  PXInt64U Dr3;
   // Debug status and control registers.
-  DWORD64 Dr6;
-  DWORD64 Dr7;
+  PXInt64U Dr6;
+  PXInt64U Dr7;
 
   // General-purpose registers.
-  DWORD64 RAX; // Accumulator
-  DWORD64 RBX; // Base register
-  DWORD64 RCX; // Counter register
-  DWORD64 RDX; // Data register 
+  PXInt64U RAX; // Accumulator
+  PXInt64U RBX; // Base register
+  PXInt64U RCX; // Counter register
+  PXInt64U RDX; // Data register 
 
-  DWORD64 RSI; // Source index register
-  DWORD64 RDI; // Destination index register
+  PXInt64U RSI; // Source index register
+  PXInt64U RDI; // Destination index register
 
-  DWORD64 RBP; // Base pointer register.
-  DWORD64 RSP; // Stack pointer register.
+  PXInt64U RBP; // Base pointer register.
+  PXInt64U RSP; // Stack pointer register.
 
   // Extended 64-Bit registers
-  DWORD64 R8;
-  DWORD64 R9;
-  DWORD64 R10;
-  DWORD64 R11;
-  DWORD64 R12;
-  DWORD64 R13;
-  DWORD64 R14;
-  DWORD64 R15;
+  PXInt64U R8;
+  PXInt64U R9;
+  PXInt64U R10;
+  PXInt64U R11;
+  PXInt64U R12;
+  PXInt64U R13;
+  PXInt64U R14;
+  PXInt64U R15;
 
-  DWORD64 RIP; // Instruction pointer register.
+  PXInt64U RIP; // Instruction pointer register.
     
 union 
 {
-    XMM_SAVE_AREA32 FltSave;
-    NEON128         Q[16];
-    ULONGLONG       D[32];
+   // XMM_SAVE_AREA32 FltSave;
+    //NEON128         Q[16];
+    PXInt64U       D[32];
     struct 
     {
       M128A Header[2];
@@ -1236,12 +1267,12 @@ union
     DWORD           S[32];
   };
   M128A   VectorRegister[26];
-  DWORD64 VectorControl;
-  DWORD64 DebugControl;
-  DWORD64 LastBranchToRip;
-  DWORD64 LastBranchFromRip;
-  DWORD64 LastExceptionToRip;
-  DWORD64 LastExceptionFromRip;
+  PXInt64U VectorControl;
+  PXInt64U DebugControl;
+  PXInt64U LastBranchToRip;
+  PXInt64U LastBranchFromRip;
+  PXInt64U LastExceptionToRip;
+  PXInt64U LastExceptionFromRip;
 }
 PXThreadContext64;
 
@@ -1253,7 +1284,7 @@ typedef struct PXThreadContext_
     {
         PXThreadContext64 X64;
         PXThreadContext32 X86;
-    }
+    };
 }
 PXThreadContext;
 
@@ -1263,7 +1294,7 @@ PXThreadContext;
 #endif
 
 
-PXActionResult PXAPI PXThreadContextGet(PXThreadContext* const pxThreadContext, PXThreadHandle pxThreadHandle)
+PXActionResult PXAPI PXThreadContextGet(PXThreadContext* const pxThreadContext, const PXProcessThreadHandle pxThreadHandle)
 {
 #if OSUnix
     // getcontext(); // ucontext.h // Introduced with POSIX:2001, removed in POSIX:2008
@@ -1299,9 +1330,52 @@ PXActionResult PXAPI PXThreadContextGet(PXThreadContext* const pxThreadContext, 
     
 #elif OSWindows
     CONTEXT context;
+    PXClear(CONTEXT, &context);
+    context.ContextFlags = CONTEXT_ALL;
     
     const BOOL getResultID = GetThreadContext(pxThreadHandle, &context); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h    
     const PXActionResult getResult = PXErrorCurrent(getResultID);
+
+    if(PXActionSuccessful != getResult)
+    {
+        return getResult;
+    }
+
+#if OS32B
+
+    pxThreadContext->X86.Dr0 = context.Dr0;
+    pxThreadContext->X86.Dr1 = context.Dr1;
+    pxThreadContext->X86.Dr2 = context.Dr2;
+    pxThreadContext->X86.Dr3 = context.Dr3;
+    pxThreadContext->X86.Dr6 = context.Dr6;
+    pxThreadContext->X86.Dr7 = context.Dr7;
+
+    pxThreadContext->X86.SegGs = context.SegGs;
+    pxThreadContext->X86.SegFs = context.SegFs;
+    pxThreadContext->X86.SegEs = context.SegEs;
+    pxThreadContext->X86.SegDs = context.SegDs;
+
+    pxThreadContext->X86.EDI = context.Edi;
+    pxThreadContext->X86.ESI = context.Esi;
+    pxThreadContext->X86.EBX = context.Ebx;
+    pxThreadContext->X86.EDX = context.Edx;
+    pxThreadContext->X86.ECX = context.Ecx;
+    pxThreadContext->X86.EAX = context.Eax;
+
+    pxThreadContext->X86.EBP = context.Ebp;
+    pxThreadContext->X86.EIP = context.Eip;
+    pxThreadContext->X86.SegCs = context.SegCs;
+    pxThreadContext->X86.EFlags = context.EFlags;
+    pxThreadContext->X86.ESP = context.Esp;
+    pxThreadContext->X86.SegSs = context.SegSs;
+
+    pxThreadContext->X86.FloatSave = context.FloatSave;
+    PXCopyList(BYTE, MAXIMUM_SUPPORTED_EXTENSION, context.ExtendedRegisters, pxThreadContext->X86.ExtendedRegisters);
+ 
+#elif OS64B
+#endif
+
+
 
     return getResult;
 #else

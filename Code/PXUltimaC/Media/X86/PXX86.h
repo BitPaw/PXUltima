@@ -1,4 +1,7 @@
+#ifndef PXX86INCLUDE
+#define PXX86INCLUDE
 
+#include <Media/PXResource.h>
 
 //---------------------------------------------------------
 // EFLAG - Register
@@ -37,7 +40,7 @@
 //---------------------------------------------------------
 
 
-struct enum PXX86OPCode
+typedef enum PXX86OPCode
 {
   PXX86OPCodeInvalid,
 
@@ -45,13 +48,39 @@ struct enum PXX86OPCode
 }
 PXX86OPCode;
 
+typedef struct PXAssemblyInstruction
+{
+    char* Name;
+    char* Description;
+}
+PXAssemblyInstruction;
 
 
+typedef struct PXX86Iterator_ PXX86Iterator;
 
+typedef void (PXAPI* PXX86InstructionFunction)(PXX86Iterator* const pxX86Iterator);
 
+typedef struct PXX86Instruction
+{
+    PXX86InstructionFunction HandlerFunction;
+    char* Name;
+    char* Description;
+    PXInt32U Type;
+}
+PXX86Instruction;
 
+typedef struct PXX86Iterator_
+{
+    PXX86Instruction* InstructionCurrent;
+    PXFile* Data;
+    void* VirtualAdress;
 
+    PXInt8U OperationCode; // opcode
+}
+PXX86Iterator;
 
+PXPublic PXActionResult PXAPI PXX86InstructionNext(PXX86Iterator* const pxX86Iterator);
 
+PXPublic PXActionResult PXAPI PXX86InstructionDisassemble(PXX86Iterator* const pxX86Iterator);
 
-
+#endif

@@ -974,6 +974,31 @@ PXActionResult PXAPI PXNativDrawEnd(PXNativDraw* const pxNativDraw, PXWindow* co
     return PXActionRefusedNotImplemented;
 }
 
+PXActionResult PXAPI PXNativDrawBrushCreate(PXNativDraw* const pxNativDraw, PXWindowBrush* const pxWindowBrush, PXColorRGBI8* const pxColorRGBI8)
+{
+#if OSUnix
+    // X11 does not have a brush, right?
+
+#elif OSWindows
+
+    COLORREF brushColor = RGB(pxColorRGBI8->Red, pxColorRGBI8->Green, pxColorRGBI8->Blue);
+    HBRUSH brushHandle = CreateSolidBrush(brushColor);
+
+
+
+
+    pxWindowBrush->Info.Handle.BrushHandle = brushHandle;
+
+    // Color xx = Color(255, 0, 0, 255);
+    // SolidBrush ww = opaqueBrush();
+#endif
+
+
+    PXWindowBrushColorSet(pxWindowBrush, pxColorRGBI8->Red, pxColorRGBI8->Green, pxColorRGBI8->Blue);
+
+    return PXActionSuccessful;
+}
+
 PXActionResult PXAPI PXNativDrawColorSetBrush(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow, PXWindowBrush* const pxGUIElementBrush, const char mode)
 {
     PXColorRGBI8* colorRef = PXNull;
@@ -1210,7 +1235,106 @@ PXActionResult PXAPI PXNativDrawFontSelect(PXNativDraw* const pxNativDraw, PXWin
 
 PXActionResult PXAPI PXNativDrawIconFromImage(PXNativDraw* const pxNativDraw, PXIcon* const pxIcon, PXImage* const pxImage)
 {
+    if(!(pxNativDraw && pxIcon && pxImage))
+    {
+        return PXActionRefusedArgumentNull;
+    }
 
+    if(!pxImage->PixelData)
+    {
+        return PXActionRefusedObjectInternalDataMissing;
+    }
+
+#if OSUnix
+
+#elif OSWindows
+    void* bitmapData[2];
+    HBITMAP bitmapHandle[2];
+
+    BITMAPINFO bitmapInfo[2];
+    PXClearList(BITMAPINFO, bitmapInfo, 2);
+    bitmapInfo[0].bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bitmapInfo[0].bmiHeader.biWidth = pxImage->Width;
+    bitmapInfo[0].bmiHeader.biHeight = -pxImage->Height; // Top-down DIB 
+    bitmapInfo[0].bmiHeader.biPlanes = 1;
+    bitmapInfo[0].bmiHeader.biBitCount = 24;// PXColorFormatBitsPerPixel(pxIconCreateInfo->IconImage->Format);
+    bitmapInfo[0].bmiHeader.biCompression = BI_RGB;
+
+    bitmapInfo[1].bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bitmapInfo[1].bmiHeader.biWidth = pxImage->Width;
+    bitmapInfo[1].bmiHeader.biHeight = -pxImage->Height; // Top-down DIB
+    bitmapInfo[1].bmiHeader.biPlanes = 1;
+    bitmapInfo[1].bmiHeader.biBitCount = 1; // Monochrome bitmap 
+    bitmapInfo[1].bmiHeader.biCompression = BI_RGB;
+
+    for(PXSize i = 0; i < 2; ++i)
+    {
+        bitmapHandle[i] = CreateDIBSection(NULL, &bitmapInfo[i], DIB_RGB_COLORS, &bitmapData[i], NULL, 0);
+    }
+
+    char* pixelDataBGR = (char*)bitmapData[0];
+    char* pxMaskAND = (char*)bitmapData[1];
+    char* pxMaskXOR = &bitmapData[(pxImage->Width * pxImage->Height) / 8];
+  
+    const PXSize maskXOROffset = (pxImage->Height - 1) * ((pxImage->Width + 7) / 8) + ((pxImage->Width - 1) / 8) + 1;
+
+    for(PXSize y = 0; y < pxImage->Height; y++)
+    {
+        for(PXSize x = 0; x < pxImage->Width; x++)
+        {
+            const PXSize indexInsret = (x + y * pxImage->Width) * 3;
+
+            const PXSize sourceX = x;// +pxIconCreateInfo->OffsetX;
+            const PXSize sourceY = y;// + pxIconCreateInfo->OffsetY;
+            const PXSize indexSource = PXImagePixelPosition(pxImage, sourceX, sourceY);
+            char* pixelDataSource = (char*)pxImage->PixelData;
+            const PXColorRGBAI8* const source = (PXColorRGBAI8*)&pixelDataSource[indexSource];
+
+            char* const insert = &pixelDataBGR[indexInsret];
+
+
+            insert[0] = source->Blue;
+            insert[1] = source->Green;
+            insert[2] = source->Red;
+            // There is a *2 because the mask index is only used every 2nd line??
+            const PXSize maskIndex = (y * ((pxImage->Width + 7) / 8) * 2) + (x / 8);
+            const PXBool isTransparent = source->Alpha == 0;
+            const PXInt8U bitData = 1 << (7 - (x % 8));
+
+            if(isTransparent)
+            {
+                pxMaskAND[maskIndex] &= ~bitData;
+                pxMaskXOR[maskIndex] |= bitData;
+            }
+            else
+            {
+                pxMaskAND[maskIndex] |= bitData;
+                pxMaskXOR[maskIndex] &= ~bitData;
+            }
+        }
+    }
+    
+
+    if(0) // Use binaryicon
+    {
+        pxIcon->Info.Handle.IconHandle = CreateIcon(PXNull, pxImage->Width, pxImage->Height, 1, 1, pxMaskAND, pxMaskXOR);
+    }
+    else
+    {
+        // memset(pxMaskAND, 0x40, 0x1000);
+
+        ICONINFO iconInfo;
+        iconInfo.fIcon = TRUE;
+        iconInfo.xHotspot = 0;
+        iconInfo.yHotspot = 0;
+        iconInfo.hbmMask = bitmapHandle[1]; // mask pxMaskXOR is following
+        iconInfo.hbmColor = bitmapHandle[0];
+
+        pxIcon->Info.Handle.IconHandle = CreateIconIndirect(&iconInfo);
+
+        // iconHandle = CreateIcon(PXNull, pxIconCreateInfo->Width, pxIconCreateInfo->Height, 1, 1, pxMaskAND, pxMaskXOR);
+    }
+#endif
 
     return PXActionSuccessful;
 }

@@ -221,7 +221,6 @@ PXPublic PXActionResult PXAPI PXThreadCurrentProcessorID(PXInt32U* const process
 PXPublic PXActionResult PXAPI PXThreadNameSet(PXThread* pxThread, PXText* const threadName);
 PXPublic PXActionResult PXAPI PXThreadNameGet(struct PXDebug_* const pxDebug, PXThread* const pxThread, PXText* const threadName);
 
-PXPublic PXThreadHandleID PXAPI PXThreadCurrentID();
-PXPublic PXProcessThreadHandle PXAPI PXThreadCurrentGet();
+PXPublic PXActionResult PXAPI PXThreadCurrent(PXThread* const pxThread);
 
 #endif

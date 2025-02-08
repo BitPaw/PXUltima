@@ -3,6 +3,7 @@
 #include <Math/PXMath.h>
 #include <OS/Console/PXConsole.h>
 #include <OS/File/PXFile.h>
+#include <Media/X86/PXX86.h>
 
 //#include <assert.h>
 
@@ -454,11 +455,30 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
                 PXLoggingInfo,
                 "COFF",
                 "Parsing",
-                "Section deteced %2i/%-2i - %-8s %6i Bytes",
+                "Section deteced <%-8s> (%2i/%-2i)\n"
+                "%25s : %i\n"
+                "%25s : 0x%8.8X\n"
+                "%25s : %i\n"
+                "%25s : 0x%8.8X\n"
+                "%25s : 0x%8.8X\n"
+                "%25s : 0x%8.8X\n"
+                "%25s : %i\n"
+                "%25s : %i\n"
+                "%25s : %i\n",
+
+                pxSectionTableCurrent->Name.Data,
                 sectionID + 1,
                 pxCOFF->Header.NumberOfSections,
-                pxSectionTableCurrent->Name.Data,
-                pxSectionTableCurrent->SectionRawDataSize
+
+                "VirtualSize", pxSectionTableCurrent->VirtualSize,
+                "VirtualAddress", pxSectionTableCurrent->VirtualAddress,
+                "SectionRawDataSize", pxSectionTableCurrent->SectionRawDataSize,
+                "SectionRawDataAdress", pxSectionTableCurrent->SectionRawDataAdress,
+                "PointerToRelocations", pxSectionTableCurrent->PointerToRelocations,
+                "PointerToLinenumbers", pxSectionTableCurrent->PointerToLinenumbers,
+                "NumberOfRelocations", pxSectionTableCurrent->NumberOfRelocations,
+                "NumberOfLinenumbers", pxSectionTableCurrent->NumberOfLinenumbers,
+                "CharacteristicFlags", pxSectionTableCurrent->CharacteristicFlags
             );
 #endif
         }
@@ -471,6 +491,35 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 
             switch (pxSectionTableCurrent->Type)
             {
+                case PXSectionTypeExecutableCode:
+                {
+                    // Move to actual data
+                  //  PXSize oldPosition;
+                  //  PXFileCursorMoveTo(pxFile, pxSectionTableCurrent->SectionRawDataAdress);
+
+                  
+                    PXSize old = pxFile->DataCursor;
+                    PXX86Iterator pxX86Iterator;
+                    pxX86Iterator.InstructionCurrent = 0;
+                    pxX86Iterator.Data = pxFile;
+
+                    for(PXSize i = 0; i < pxSectionTableCurrent->SectionRawDataSize; ++i)
+                    {
+                        PXX86Instruction pxX86Instruction;
+
+                        pxX86Iterator.VirtualAdress = pxSectionTableCurrent->VirtualAddress + (pxFile->DataCursor - old);
+
+                        PXX86InstructionDisassemble(&pxX86Iterator);
+                
+                    }
+
+                  
+
+                    // Jump back
+
+                    break;
+                }
+
             case PXSectionTypeImportTables:
             {
                 while (1)

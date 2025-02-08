@@ -5,6 +5,9 @@
 #include <OS/Async/PXThread.h>
 #include <Container/List/PXList.h>
 
+#define PXThreadPoolEnableASYNC (1<<0)
+#define PXThreadPoolCreated     (1<<1)
+
 typedef struct PXThreadPool_
 {
     PXSize ThreadListSize;
@@ -26,6 +29,8 @@ typedef struct PXThreadPool_
 
     PXInt16U ThreadsMinimum;
     PXInt16U ThreadsMaximum;
+
+    PXInt32U Flags;
 }
 PXThreadPool;
 
@@ -41,6 +46,8 @@ PXPublic PXActionResult PXAPI PXThreadPoolClose(PXThreadPool* pxThreadPool);
 PXPublic PXActionResult PXAPI PXThreadPoolCreate(PXThreadPool* pxThreadPool);
 PXPublic PXActionResult PXAPI PXThreadPoolThreadMaximumSet(PXThreadPool* const pxThreadPool, const PXInt32U amount);
 PXPublic PXActionResult PXAPI PXThreadPoolThreadMinimumSet(PXThreadPool* const pxThreadPool, const PXInt32U amount);
+
+PXPublic void PXAPI PXThreadPoolWaking(PXThreadPool* pxThreadPool);
 
 // Task will be added to the task queue. 
 // Inserted to any task that is avalibe. 

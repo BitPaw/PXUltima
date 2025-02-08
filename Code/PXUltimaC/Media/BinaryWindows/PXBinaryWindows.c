@@ -5,14 +5,45 @@
 
 const char PXDOSHeaderSignatore[2] = { 'M', 'Z' };
 const char PXNEHeaderSignatore[2] = { 'N', 'E' };
-
 const char PXPEHeaderSignatore[4] = { 'P', 'E', '\0', '\0' };
+
+
+
+const PXInt32U PXDOSHeaderLayout[] =
+{
+    PXTypeDatax2,
+    PXTypeInt16ULE,
+    PXTypeInt16ULE,
+    PXTypeInt16ULE,
+    PXTypeInt16ULE,
+    PXTypeInt16ULE,
+    PXTypeInt16ULE,
+    PXTypeInt16ULE,
+    PXTypeInt16ULE,
+    PXTypeInt16ULE,
+    PXTypeInt16ULE,
+    PXTypeInt16ULE,
+    PXTypeInt16ULE,
+    PXTypeInt16ULE,
+    PXTypePadding(8),
+    PXTypeInt16ULE,
+    PXTypeInt16ULE,
+    PXTypePadding(20),
+    PXTypeInt32ULE
+};
+const PXSize PXDOSHeaderLayoutSize = sizeof(PXDOSHeaderLayout) / sizeof(PXInt32U);
+
 
 #define PXBinaryWindowsDebug 1
 
 PXActionResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     PXBinaryWindows* const pxBinaryWindows = (PXBinaryWindows*)pxResourceLoadInfo->ResourceTarget;
+
+    if(!pxBinaryWindows)
+    {
+        return PXActionRefusedArgumentNull;
+    }
 
 #if PXBinaryWindowsDebug
     PXLogPrint
@@ -30,10 +61,13 @@ PXActionResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceTransphereInfo* const
     // Read header
     {
         PXDOSHeader* const pxDOSHeader = &pxBinaryWindows->Header;
+#if 0
+        PXFileBinding(pxResourceLoadInfo->FileReference, &pxBinaryWindows->Header, PXDOSHeaderLayout, PXDOSHeaderLayoutSize, PXFalse);
 
+#else
         const PXTypeEntry pxDataStreamElementList[] =
         {
-            {pxDOSHeader->Magic.Data,PXTypeDatax2 },
+            {pxDOSHeader->Magic,PXTypeDatax2 },
             {&pxDOSHeader->LastPageSize, PXTypeInt16ULE},
             {&pxDOSHeader->TotalPagesInFile, PXTypeInt16ULE},
             {&pxDOSHeader->ReallocationItems, PXTypeInt16ULE},
@@ -56,19 +90,20 @@ PXActionResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceTransphereInfo* const
 
         const PXSize amount = PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
         const PXBool validSize = amount >= 0;
+#endif
 
         // if this is not a DOS file, yeet
-        const PXBool isValidFile = PXMemoryCompare(pxDOSHeader->Magic.Data, sizeof(PXDOSHeaderSignatore), PXDOSHeaderSignatore, sizeof(PXDOSHeaderSignatore));
+        const PXBool isValidFile = PXMemoryCompare(pxDOSHeader->Magic, sizeof(PXDOSHeaderSignatore), PXDOSHeaderSignatore, sizeof(PXDOSHeaderSignatore));
 
         if (!isValidFile)
         {
             return PXActionRefusedInvalidHeaderSignature;
         }
 
-        if(!validSize)
-        {
-            return PXActionInvalid;
-        }
+      //  if(!validSize)
+      //  {
+      //      return PXActionInvalid;
+     //   }
 
 
         pxDOSHeader->ActualSize = pxDOSHeader->TotalPagesInFile * 512u;

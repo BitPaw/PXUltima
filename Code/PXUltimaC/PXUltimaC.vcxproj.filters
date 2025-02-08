@@ -1130,5 +1130,8 @@
     <ClInclude Include="OS\User\PXUser.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Media\X86\PXX86.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

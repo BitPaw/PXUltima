@@ -13,16 +13,9 @@
 #include <Media/TIFF/PXTIFF.h>
 #include <Media/SpriteFont/PXSpriteFont.h>
 
-void PXAPI PXImageConstruct(PXImage* const image)
-{
-    PXClear(PXImage, image);
-}
-
 void PXAPI PXImageDestruct(PXImage* const image)
 {
     PXDeleteList(PXByte, image->PixelDataSize, &image->PixelData, &image->PixelDataSize);
-
-    PXImageConstruct(image);
 }
 
 void PXAPI PXImageCopyAsIs(PXImage* const pxImageTarget, const PXImage* const pxImageSource)

@@ -173,6 +173,17 @@ int main()
     }
 #endif
 
+    PXBinaryWindows pxBinaryWindows;
+    PXClear(PXBinaryWindows, &pxBinaryWindows);
+
+
+    PXResourceTransphereInfo pxResourceTransphereInfo;
+    PXClear(PXResourceTransphereInfo, &pxResourceTransphereInfo);
+    pxResourceTransphereInfo.ResourceTarget = &pxBinaryWindows;
+
+    PXResourceLoadA(&pxResourceTransphereInfo, "C:\\Data\\WorkSpace\\[GIT]\\BitFireEngine\\[Export]\\BitFireEngineIDE\\64B-Windows-Debug\\BitFireEngineIDE.exe");
+
+
 
 
 

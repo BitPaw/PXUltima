@@ -98,6 +98,7 @@ typedef enum PXActionResult_
     PXActionRefusedWindowsClassNameInvalid, 
     PXActionRefusedNameSpaceInvalid,
     PXActionRefusedObjectParentInvalid,
+    PXActionRefusedObjectInternalDataMissing,
 
     //-------------------------------------------------------
     // Permission

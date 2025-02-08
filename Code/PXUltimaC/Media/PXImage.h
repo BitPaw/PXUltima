@@ -16,7 +16,6 @@ typedef struct PXImage_
 }
 PXImage;
 
-PXPublic void PXAPI PXImageConstruct(PXImage* const image);
 PXPublic void PXAPI PXImageDestruct(PXImage* const image);
 
 PXPublic void PXAPI PXImageCopyAsIs(PXImage* const pxImageTarget, const PXImage* const pxImageSource);

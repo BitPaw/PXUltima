@@ -150,6 +150,8 @@
 #define PXDLLExportUnMangled extern "C" PXDLLExport
 #endif
 
+
+
 //-----------------------------------------------------------------------------
 // Restrict keyword
 //-----------------------------------------------------------------------------
@@ -157,13 +159,12 @@
 #define PXRestrict __restrict
 #endif
 
-
-
 #define PXYes 1u
 #define PXNo 0u
 #define PXTrue 1u
 #define PXFalse 0u
 #define PXNull 0u
+
 
 
 //---------------------------------------------------------

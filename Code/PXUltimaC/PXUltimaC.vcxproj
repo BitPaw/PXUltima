@@ -458,6 +458,7 @@
     <ClInclude Include="Media\WEBM\PXWEBM.h" />
     <ClInclude Include="Media\WEBP\PXWEBP.h" />
     <ClInclude Include="Media\WMA\PXWMA.h" />
+    <ClInclude Include="Media\X86\PXX86.h" />
     <ClInclude Include="Media\XingInfo\PXXingInfo.h" />
     <ClInclude Include="Media\XML\PXXML.h" />
     <ClInclude Include="Media\YAML\PXYAML.h" />

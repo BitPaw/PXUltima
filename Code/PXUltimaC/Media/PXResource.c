@@ -628,21 +628,15 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
             PXBrushCreateInfo* const pxBrushCreateInfo = &pxResourceCreateInfo->Brush;
             PXWindowBrush* pxWindowBrush = *(PXWindowBrush**)pxResourceCreateInfo->ObjectReference;
 
-#if OSUnix
-            // X11 does not have a brush, right?
+            pxWindowBrush->Info.ID = resourceID;
 
-#elif OSWindows
-
-            COLORREF brushColor = RGB(pxBrushCreateInfo->Color.Red, pxBrushCreateInfo->Color.Green, pxBrushCreateInfo->Color.Blue);
-            HBRUSH brushHandle = CreateSolidBrush(brushColor);
-
-            pxWindowBrush->Info.Handle.BrushHandle = brushHandle;
-
-            // Color xx = Color(255, 0, 0, 255);
-            // SolidBrush ww = opaqueBrush();
-#endif
-
-            PXWindowBrushColorSet(pxWindowBrush, pxBrushCreateInfo->Color.Red, pxBrushCreateInfo->Color.Green, pxBrushCreateInfo->Color.Blue);
+            PXNativDrawBrushCreate
+            (
+                PXNativDrawInstantance(),
+                pxWindowBrush,
+                &pxBrushCreateInfo->Color
+            );
+            
 
 #if PXLogEnable
             PXLogPrint
@@ -668,6 +662,8 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
         {
             PXImageCreateInfo* const pxImageCreateInfo = &pxResourceCreateInfo->Image;
             PXImage* pxImage = *(PXImage**)pxResourceCreateInfo->ObjectReference;
+
+          //  pxImage->Info.ID = resourceID;
 
             PXText pxText;
             PXTextConstructFromAdressA(&pxText, pxResourceCreateInfo->FilePath, PXTextLengthUnkown, PXTextLengthUnkown);
@@ -705,14 +701,6 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
                     }
                 }
             }
-
-            if(!pxImage)
-            {
-                PXNewZerod(PXImage, &pxImage);
-                *pxResourceCreateInfo->ObjectReference = pxImage;
-            }
-
-            PXImageConstruct(pxImage);
 
             // Load texture
             if(hasFilePath)
@@ -752,16 +740,12 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
                     pxText.TextA
                 );
 #endif
-
-                PXDictionaryAdd(&_GLOBALResourceManager.ImageLookUp, &checkSum, pxImage);
             }
             else
             {
                 PXImageCopyAsNew(pxImage, &pxImageCreateInfo->Image);
 
                 checkSum = 0;
-
-                PXDictionaryAdd(&_GLOBALResourceManager.ImageLookUp, &checkSum, pxImage);
             }
 
             break;
@@ -770,6 +754,8 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
         {
             PXIconCreateInfo* const pxIconCreateInfo = &pxResourceCreateInfo->Icon;
             PXIcon* pxIcon = *(PXIcon**)pxResourceCreateInfo->ObjectReference;
+
+            pxIcon->Info.ID = resourceID;
 
             PXResourceStoreName(&pxIcon->Info, pxResourceCreateInfo->Name, -1);
 
@@ -789,12 +775,6 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
                 PXResourceManagerAdd(&pxResourceCreateInfoSub);
             }
 
-
-
-
-
-
-
 #if PXLogEnable
             PXLogPrint
             (
@@ -810,106 +790,8 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
             );
 #endif
 
-           // PXNativDrawIconFromImage(PXNativeDraw);
+            PXNativDrawIconFromImage(PXNativDrawInstantance(), pxIcon, pxIconCreateInfo->IconImage);
 
-#if OSWindows
-            void* bitmapData[2];
-            HBITMAP bitmapHandle[2];
-
-            BITMAPINFO bitmapInfo[2];
-            PXClearList(BITMAPINFO, bitmapInfo, 2);
-            bitmapInfo[0].bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-            bitmapInfo[0].bmiHeader.biWidth = pxIconCreateInfo->Width;
-            bitmapInfo[0].bmiHeader.biHeight = -pxIconCreateInfo->Height; // Top-down DIB 
-            bitmapInfo[0].bmiHeader.biPlanes = 1;
-            bitmapInfo[0].bmiHeader.biBitCount = 24;// PXColorFormatBitsPerPixel(pxIconCreateInfo->IconImage->Format);
-            bitmapInfo[0].bmiHeader.biCompression = BI_RGB;
-
-            bitmapInfo[1].bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-            bitmapInfo[1].bmiHeader.biWidth = pxIconCreateInfo->Width;
-            bitmapInfo[1].bmiHeader.biHeight = -pxIconCreateInfo->Height; // Top-down DIB
-            bitmapInfo[1].bmiHeader.biPlanes = 1;
-            bitmapInfo[1].bmiHeader.biBitCount = 1; // Monochrome bitmap 
-            bitmapInfo[1].bmiHeader.biCompression = BI_RGB;
-
-            for(PXSize i = 0; i < 2; ++i)
-            {
-                bitmapHandle[i] = CreateDIBSection(NULL, &bitmapInfo[i], DIB_RGB_COLORS, &bitmapData[i], NULL, 0);
-            }
-
-            char* pixelDataBGR = (char*)bitmapData[0];
-            char* pxMaskAND = (char*)bitmapData[1];
-            char* pxMaskXOR = &bitmapData[(pxIconCreateInfo->Width * pxIconCreateInfo->Height) / 8];
-
-
-
-            if(pxIconCreateInfo->IconImage->PixelData)
-            {
-                const PXSize maskXOROffset = (pxIconCreateInfo->Height - 1) * ((pxIconCreateInfo->Width + 7) / 8) + ((pxIconCreateInfo->Width - 1) / 8) + 1;
-
-                for(PXSize y = 0; y < pxIconCreateInfo->Height; y++)
-                {
-                    for(PXSize x = 0; x < pxIconCreateInfo->Width; x++)
-                    {
-                        const PXSize indexInsret = (x + y * pxIconCreateInfo->Width) * 3;
-
-                        const PXSize sourceX = x + pxIconCreateInfo->OffsetX;
-                        const PXSize sourceY = y + pxIconCreateInfo->OffsetY;
-                        const PXSize indexSource = PXImagePixelPosition(pxIconCreateInfo->IconImage, sourceX, sourceY);
-                        char* pixelDataSource = (char*)pxIconCreateInfo->IconImage->PixelData;
-                        const PXColorRGBAI8* const source = (PXColorRGBAI8*)&pixelDataSource[indexSource];
-
-                        char* const insert = &pixelDataBGR[indexInsret];
-
-
-                        insert[0] = source->Blue;
-                        insert[1] = source->Green;
-                        insert[2] = source->Red;
-
-                        // There is a *2 because the mask index is only used every 2nd line??
-                        const PXSize maskIndex = (y * ((pxIconCreateInfo->Width + 7) / 8) * 2) + (x / 8);
-                        const PXBool isTransparent = source->Alpha == 0;
-                        const PXInt8U bitData = 1 << (7 - (x % 8));
-
-                        if(isTransparent)
-                        {
-                            pxMaskAND[maskIndex] &= ~bitData;
-                            pxMaskXOR[maskIndex] |= bitData;
-                        }
-                        else
-                        {
-                            pxMaskAND[maskIndex] |= bitData;
-                            pxMaskXOR[maskIndex] &= ~bitData;
-                        }
-                    }
-                }
-            }
-
-
-            HICON iconHandle = 0;
-
-            if(0) // Use binaryicon
-            {
-                iconHandle = CreateIcon(PXNull, pxIconCreateInfo->Width, pxIconCreateInfo->Height, 1, 1, pxMaskAND, pxMaskXOR);
-            }
-            else
-            {
-                // memset(pxMaskAND, 0x40, 0x1000);
-
-                ICONINFO iconInfo;
-                iconInfo.fIcon = TRUE;
-                iconInfo.xHotspot = 0;
-                iconInfo.yHotspot = 0;
-                iconInfo.hbmMask = bitmapHandle[1]; // mask pxMaskXOR is following
-                iconInfo.hbmColor = bitmapHandle[0];
-
-                iconHandle = CreateIconIndirect(&iconInfo);
-
-                // iconHandle = CreateIcon(PXNull, pxIconCreateInfo->Width, pxIconCreateInfo->Height, 1, 1, pxMaskAND, pxMaskXOR);
-            }
-
-            pxIcon->Info.Handle.IconHandle = iconHandle;
-#endif
 
             break;
         }
@@ -917,6 +799,8 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
         {
             PXIconAtlasCreateInfo* const pxIconAtlasCreateInfo = &pxResourceCreateInfo->IconAtlas;
             PXIconAtlas* pxIconAtlas = *(PXIconAtlas**)pxResourceCreateInfo->ObjectReference;
+
+            pxIconAtlas->Info.ID = resourceID;
 
 #if PXLogEnable
             PXLogPrint
@@ -1010,6 +894,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
             PXTextureCubeCreateInfo* const pxTextureCubeCreateData = &pxResourceCreateInfo->TextureCube;
             PXTextureCube* pxTextureCube = *(PXTextureCube**)pxResourceCreateInfo->ObjectReference;
 
+            pxTextureCube->Info.ID = resourceID;
             pxTextureCube->Format = PXColorFormatRGBI8;
 
             PXResourceCreateInfo pxResourceCreateInfoList[6];
@@ -1057,6 +942,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
             PXMatrix4x4FIdentity(&pxModel->ModelMatrix);
             PXMatrix4x4FScaleBy(&pxModel->ModelMatrix, pxModelCreateInfo->Scale);
 
+            pxModel->Info.ID = resourceID;
 
             const PXBool hasFilePath = PXNull != pxResourceCreateInfo->FilePath;
 
@@ -1314,6 +1200,8 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
         {
             PXMaterial* pxMaterial = *(PXMaterial**)pxResourceCreateInfo->ObjectReference;
 
+            pxMaterial->Info.ID = resourceID;
+
 #if PXLogEnable
             PXLogPrint
             (
@@ -1401,6 +1289,8 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
             PXEngineFontCreateInfo* const pxEngineFontCreateData = &pxResourceCreateInfo->Font;
             PXFont* pxFont = *(PXFont**)pxResourceCreateInfo->ObjectReference;
 
+            pxFont->Info.ID = resourceID;
+
             // if this is a system font, we dont load it from disk but from the system, duh.
             if(pxEngineFontCreateData->RegisteredName)
             {
@@ -1466,6 +1356,8 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
             PXSkyBoxCreateEventInfo* const pxSkyBoxCreateEventData = &pxResourceCreateInfo->SkyBox;
             PXSkyBox* pxSkyBox = *(PXSkyBox**)pxResourceCreateInfo->ObjectReference;
 
+            pxSkyBox->Info.ID = resourceID;
+
 #if PXLogEnable
             PXLogPrint
             (
@@ -1530,6 +1422,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
             PXSpriteCreateInfo* const pxSpriteCreateEventData = &pxResourceCreateInfo->Sprite;
             PXSprite* pxSprite = *(PXSprite**)pxResourceCreateInfo->ObjectReference;
 
+            pxSprite->Info.ID = resourceID;
             pxSprite->Info.Flags |= PXResourceInfoRender;
 
 
@@ -1743,6 +1636,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
         {
             PXEngineTimer* pxEngineTimer = *(PXEngineTimer**)pxResourceCreateInfo->ObjectReference;
 
+            pxEngineTimer->Info.ID = resourceID;
             pxEngineTimer->Owner = pxEngineTimer->Owner;
             pxEngineTimer->CallBack = pxEngineTimer->CallBack;
             pxEngineTimer->TimeDeltaTarget = pxEngineTimer->TimeDeltaTarget;
@@ -1786,6 +1680,8 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
         case PXResourceTypeSound:
         {
             PXSound* pxSound = *(PXSound**)pxResourceCreateInfo->ObjectReference;
+
+            pxSound->Info.ID = resourceID;
 
 #if PXLogEnable
             PXLogPrint
@@ -1839,6 +1735,8 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
         {
             PXEngineSoundCreateInfo* const pxEngineSoundCreateInfo = &pxResourceCreateInfo->Sound;
             PXEngineSound* pxEngineSound = *(PXEngineSound**)pxResourceCreateInfo->ObjectReference;
+
+  
 
             //  pxEngineSound->Info.Handle.ID = PXResourceManagerGenerateUniqeID(pxResourceManager);
             // PXDictionaryAdd(&pxResourceManager->SoundLookUp, &pxEngineSound->Info.Handle.ID, pxSound);
@@ -1951,6 +1849,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
         {
             PXHitBox* pxHitBox = *(PXHitBox**)pxResourceCreateInfo->ObjectReference;
 
+            pxHitBox->Info.ID = resourceID;
             pxHitBox->Info.Flags |= PXResourceInfoActive;
             pxHitBox->Info.Behaviour = pxResourceCreateInfo->HitBox.Behaviour;
             pxHitBox->Model = pxResourceCreateInfo->HitBox.Model;
@@ -1971,9 +1870,10 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
         case PXResourceTypeGUIElement:
         {
             PXWindowCreateInfo* const pxGUIElementCreateInfo = &pxResourceCreateInfo->UIElement;
-            PXWindow* pxGUIElement = *(PXWindow**)pxResourceCreateInfo->ObjectReference;
+            PXWindow* pxWindow = *(PXWindow**)pxResourceCreateInfo->ObjectReference;
 
-            pxGUIElement->Info.Flags |= PXResourceInfoActive;
+            pxWindow->Info.ID = resourceID;
+            pxWindow->Info.Flags |= PXResourceInfoActive;
 
             break;
         }
@@ -1982,6 +1882,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
             PXSpriteAnimatorInfo* const pxSpriteAnimatorInfo = &pxResourceCreateInfo->SpriteAnimator;
             PXSpriteAnimator* pxSpriteAnimator = *(PXSpriteAnimator**)pxResourceCreateInfo->ObjectReference;
 
+            pxSpriteAnimator->Info.ID = resourceID;
             pxSpriteAnimator->Info.Flags |= PXResourceInfoActive;
 
             pxSpriteAnimator->Info.Behaviour = pxSpriteAnimatorInfo->Behaviour;

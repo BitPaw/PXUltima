@@ -9,6 +9,7 @@
 #include <OS/Async/PXLock.h>
 
 PXLock _GLOBALCosolePrintLock;
+PXThread _GLOBALSourceThread;
 
 #define PXConsoleColorEnable 1
 
@@ -577,7 +578,7 @@ void PXAPI PXLogPrintInvoke(PXLoggingEventData* const pxLoggingEventData, ...)
     }
 
     PXThread pxThread;
-    PXThreadCurrentGet(&pxThread);
+    PXThreadCurrent(&pxThread);
 
     PXTime pxTime;
     PXTimeNow(&pxTime);
@@ -616,6 +617,8 @@ void PXAPI PXLogPrintInvoke(PXLoggingEventData* const pxLoggingEventData, ...)
 void PXAPI PXLogEnableASYNC()
 {
     PXLockCreate(&_GLOBALCosolePrintLock, PXLockTypeGlobal);
+
+    PXThreadCurrent(&_GLOBALSourceThread);
 }
 
 void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source, const char* const action, const char* const format, ...)
@@ -682,10 +685,10 @@ void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source,
 
 
     PXText formattedText;
-    PXTextConstructNamedBufferA(&formattedText, formattedTextBuffer, 512);
+    PXTextConstructNamedBufferA(&formattedText, formattedTextBuffer, 712);
 
     PXText exportText;
-    PXTextConstructNamedBufferA(&exportText, bufferColorBuffer, 512);
+    PXTextConstructNamedBufferA(&exportText, bufferColorBuffer, 712);
 
     PXTime pxTime;
     PXTimeNow(&pxTime);
@@ -693,16 +696,26 @@ void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source,
 
   
 
-    DWORD threadID = GetCurrentThreadId();
+    const DWORD threadID = GetCurrentThreadId();
+    char threadIDName[16];
+
+    if(_GLOBALSourceThread.HandleID == threadID)
+    {
+        PXTextPrintA(threadIDName, 64, "§6#Main");
+    }
+    else
+    {
+        PXTextPrintA(threadIDName, 64, "§9%5.5i", threadID);
+    }
 
     // Pre formatting
     formattedText.SizeUsed = PXTextPrintA
     (
         formattedText.TextA,
         formattedText.SizeAllocated,
-        "§8[§6%5.5i§8]§8[§9%2.2i§8:§9%2.2i§8:§9%2.2i§8] §6%12s §%c%c %-14s §%c%s§f\n", //
+        "§8[%s§8]§8[§9%2.2i§8:§9%2.2i§8:§9%2.2i§8] §6%12s §%c%c %-14s §%c%s§f\n", //
         //"§0# §1# §2# §3# §4# §5# §6# §7# §8# §9# §a# §b# §c# §d# §e# §f#\n",
-        threadID,
+        threadIDName,
         pxTime.Hour,
         pxTime.Minute,
         pxTime.Second,
