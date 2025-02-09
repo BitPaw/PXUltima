@@ -79,6 +79,22 @@ typedef struct PXX86Iterator_
 }
 PXX86Iterator;
 
+typedef struct PXX86ModRM
+{
+    PXInt8U Mod;
+    PXInt8U RegisterIndex;
+    PXInt8U RM;
+
+    char* Name;
+}
+PXX86ModRM;
+
+PXPrivate void PXAPI PXX86InstructionSUBImidate(PXX86Iterator* const pxX86Iterator);
+PXPrivate void PXAPI PXX86InstructionInvoke(PXX86Iterator* const pxX86Iterator);
+PXPrivate void PXAPI PXX86InstructionFunctionMODRMRead(PXX86Iterator* const pxX86Iterator, PXX86ModRM* const pxX86ModRM);
+PXPrivate void PXAPI PXX86InstructionFunctionMOVx3(PXX86Iterator* const pxX86Iterator);
+PXPrivate void PXAPI PXX86InstructionFunctionREXMOV(PXX86Iterator* const pxX86Iterator);
+
 PXPublic PXActionResult PXAPI PXX86InstructionNext(PXX86Iterator* const pxX86Iterator);
 
 PXPublic PXActionResult PXAPI PXX86InstructionDisassemble(PXX86Iterator* const pxX86Iterator);

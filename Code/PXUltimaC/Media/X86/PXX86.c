@@ -17,6 +17,26 @@ const char* RegisterNameList[] =
 };
 
 
+
+void PXAPI PXX86InstructionSUBImidate(PXX86Iterator* const pxX86Iterator)
+{
+    PXInt32U amount = 0; 
+
+    PXFileReadI32U(pxX86Iterator->Data, &amount);
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "X86",
+        "Disassemble",
+        "SUB-Imidate : HEX:<%8.8X>, DEZ:<%i>",
+        amount,
+        amount
+    );
+#endif
+}
+
 void PXAPI PXX86InstructionInvoke(PXX86Iterator* const pxX86Iterator)
 {
     const PXSize size = PXTypeSizeMask & pxX86Iterator->InstructionCurrent->Type;
@@ -32,27 +52,40 @@ void PXAPI PXX86InstructionInvoke(PXX86Iterator* const pxX86Iterator)
 }
 
 
-void PXAPI PXX86InstructionFunctionMOVx3(PXX86Iterator* const pxX86Iterator)
+
+void PXAPI PXX86InstructionFunctionMODRMRead(PXX86Iterator* const pxX86Iterator, PXX86ModRM* const pxX86ModRM)
 {
     PXInt8U modRM = 0;
+
+    PXFileReadI8U(pxX86Iterator->Data, &modRM);
+
+    pxX86ModRM->Mod = (0b11000000 & modRM) >> 5;
+    pxX86ModRM->RegisterIndex = (0b00111000 & modRM) >> 3;
+    pxX86ModRM->RM = (0b00000111 & modRM) >> 0;
+
+    pxX86ModRM->Name = RegisterNameList[pxX86ModRM->RegisterIndex];
+}
+
+
+void PXAPI PXX86InstructionFunctionMOVx3(PXX86Iterator* const pxX86Iterator)
+{
+    PXX86ModRM pxX86ModRM;
+
     PXInt8U SIB = 0;
     PXInt8U offset = 0;
 
+
+    PXX86InstructionFunctionMODRMRead(pxX86Iterator, &pxX86ModRM);
+
     // Read 3 bytes
-    PXFileReadI8U(pxX86Iterator->Data, &modRM);
     PXFileReadI8U(pxX86Iterator->Data, &SIB);
     PXFileReadI8U(pxX86Iterator->Data, &offset);
 
 
-    PXInt8U mod = (0b11000000 & modRM) >> 5;
-    PXInt8U registerIndex = (0b00111000 & modRM) >> 3;
-    PXInt8U rm  = (0b00000111 & modRM) >> 0;
-
     PXInt8U scale = (0b11000000 & SIB) >> 5;
     PXInt8U index = (0b00111000 & SIB) >> 3;
-    PXInt8U base = (0b00000111 & SIB) >> 0;
+    PXInt8U base  = (0b00000111 & SIB) >> 0;
 
-    char* name = RegisterNameList[registerIndex];
 
 
 #if PXLogEnable
@@ -62,14 +95,13 @@ void PXAPI PXX86InstructionFunctionMOVx3(PXX86Iterator* const pxX86Iterator)
         "X86",
         "Disassemble",
         "MOV : %s -> %s",
-        name,
+        pxX86ModRM.Name,
         "***"
     );
 #endif
 
     /*
-
-    54: Specifies the source and destination registers.
+        54: Specifies the source and destination registers.
 
         The ModR / M byte can be broken down into fields : MOD, REG, and RM.
 
@@ -82,8 +114,7 @@ void PXAPI PXX86InstructionFunctionMOVx3(PXX86Iterator* const pxX86Iterator)
         24: SIB byte indicating[RSP] as the base register and no index register.
 
         10 : 8 - bit displacement(16 bytes).
-
-        */
+    */
 
 }
 
@@ -216,24 +247,24 @@ const PXX86Instruction PXX86InstructionListRoot[] = // 0xFF
 {PXNull, "INC", PXNull, 0}, // 0x45
 {PXNull, "INC", PXNull, 0}, // 0x46
 {PXNull, "INC", PXNull, 0}, // 0x47
-{PXX86InstructionFunctionREXMOV, "MOV", "REX.W eAX", 4}, // 0x48
-{PXX86InstructionFunctionREXMOV, "MOV", "REX.WB eCX", 4}, // 0x49
-{PXX86InstructionFunctionREXMOV, "MOV", "REX.WX eDX", 4}, // 0x4A
-{PXX86InstructionFunctionREXMOV, "MOV", "REX.WXB eBX", 4}, // 0x4B
-{PXX86InstructionFunctionREXMOV, "MOV", "REX.WR eSP", 4}, // 0x4C
-{PXX86InstructionFunctionREXMOV, "MOV", "REX.WRB eBP", 4}, // 0x4D
-{PXX86InstructionFunctionREXMOV, "DEC", "REX.WRX eSI", 4}, // 0x4E
-{PXX86InstructionFunctionREXMOV, "DEC", "REX.RXB eDI", 4}, // 0x4F
+{PXX86InstructionFunctionREXMOV, "MOV", "REX.W eAX", 1}, // 0x48
+{PXX86InstructionFunctionREXMOV, "MOV", "REX.WB eCX", 1}, // 0x49
+{PXX86InstructionFunctionREXMOV, "MOV", "REX.WX eDX", 1}, // 0x4A
+{PXX86InstructionFunctionREXMOV, "MOV", "REX.WXB eBX", 1}, // 0x4B
+{PXX86InstructionFunctionREXMOV, "MOV", "REX.WR eSP", 1}, // 0x4C
+{PXX86InstructionFunctionREXMOV, "MOV", "REX.WRB eBP", 1}, // 0x4D
+{PXX86InstructionFunctionREXMOV, "DEC", "REX.WRX eSI", 1}, // 0x4E
+{PXX86InstructionFunctionREXMOV, "DEC", "REX.RXB eDI", 1}, // 0x4F
 
 // 0x0?
-{PXNull, "PUSH", PXNull, 0}, // 0x50
-{PXNull, "PUSH", PXNull, 0}, // 0x51
-{PXNull, "PUSH", PXNull, 0}, // 0x52
-{PXNull, "PUSH", PXNull, 0}, // 0x53
-{PXNull, "PUSH", PXNull, 0}, // 0x54
-{PXNull, "PUSH", PXNull, 0}, // 0x55
-{PXNull, "PUSH", PXNull, 0}, // 0x56
-{PXNull, "PUSH", PXNull, 0}, // 0x57
+{PXNull, "PUSH", "rAX", 0}, // 0x50
+{PXNull, "PUSH", "rCX", 0}, // 0x51
+{PXNull, "PUSH", "rDX", 0}, // 0x52
+{PXNull, "PUSH", "rBX", 0}, // 0x53
+{PXNull, "PUSH", "rSP", 0}, // 0x54
+{PXNull, "PUSH", "rBP", 0}, // 0x55
+{PXNull, "PUSH", "rSI", 0}, // 0x56
+{PXNull, "PUSH", "rDI", 0}, // 0x57
 {PXNull, "POP", PXNull, 0}, // 0x58
 {PXNull, "POP", PXNull, 0}, // 0x59
 {PXNull, "POP", PXNull, 0}, // 0x5A
@@ -277,10 +308,10 @@ const PXX86Instruction PXX86InstructionListRoot[] = // 0xFF
 {PXNull, "JMP-OnCondition", PXNull, 0}, // 0x7E
 {PXNull, "JMP-OnCondition", PXNull, 0}, // 0x7F
 // 0x0?
-{PXNull, "Immeditate", PXNull, 0}, // 0x80
-{PXNull, "Immeditate", PXNull, 0}, // 0x81
-{PXNull, "Immeditate", PXNull, 0}, // 0x82
-{PXNull, "Immeditate", PXNull, 0}, // 0x83
+{ PXX86InstructionSUBImidate, "SUB", "Immeditate", 4 }, // 0x80
+{ PXX86InstructionSUBImidate, "SUB", "Immeditate", 4}, // 0x81
+{ PXX86InstructionSUBImidate, "SUB", "Immeditate", 4}, // 0x82
+{ PXX86InstructionSUBImidate, "SUB", "Immeditate", 4}, // 0x83
 {PXNull, "TEST", PXNull, 0}, // 0x84
 {PXNull, "TEST", PXNull, 0}, // 0x85
 {PXNull, "XCHG", PXNull, 0}, // 0x86
