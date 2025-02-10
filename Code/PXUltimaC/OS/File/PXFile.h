@@ -222,6 +222,8 @@ PXPublic PXSize PXAPI PXFileDataCopy(PXFile* const pxInputStream, PXFile* const 
 PXPublic PXSize PXAPI PXFileReadTextIU8(PXFile* const pxFile, PXInt8U* const number);
 PXPublic PXSize PXAPI PXFileReadTextI(PXFile* const pxFile, int* const number);
 
+PXPublic PXSize PXAPI PXFileReadType(PXFile* const pxFile, void* const valueAdress, const PXInt32U type);
+
 PXPublic PXSize PXAPI PXFileReadIXXE(PXFile* const pxFile, void* const valueAdress, const PXSize valueSize, const PXEndian pxEndian);
 PXPublic PXSize PXAPI PXFileReadIXXVE(PXFile* const pxFile, void** const valueList, const PXSize valueListSize, const PXSize valueSizeSingle, const PXEndian pxEndian);
 

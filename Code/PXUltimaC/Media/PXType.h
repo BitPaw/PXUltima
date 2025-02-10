@@ -190,35 +190,39 @@
 #define PXTypeBaseDecimal           0b00000000010000000000000000000000
 #define PXTypeBaseText              0b00000000110000000000000000000000
 
-#define PXTypeBitFieldHolderMask    0b00000000000001100000000000000000
-#define PXTypeBitFieldHolder08U     0b00000000000000000000000000000000 // 1 Bytes
-#define PXTypeBitFieldHolder16U     0b00000000000000100000000000000000 // 2 Bytes
-#define PXTypeBitFieldHolder32U     0b00000000000001000000000000000000 // 4 Bytes
-#define PXTypeBitFieldHolder64U     0b00000000000001100000000000000000 // 8 Bytes
+// The size of the recieving data
+// This needs to be known if you want to load 5 Bytes into a 64Bit Integer
+#define PXTypeReciverSizeMask       0b00000000000001100000000000000000
+#define PXTypeReciverSize08U        0b00000000000000000000000000000000 // 1 Bytes
+#define PXTypeReciverSize16U        0b00000000000000100000000000000000 // 2 Bytes
+#define PXTypeReciverSize32U        0b00000000000001000000000000000000 // 4 Bytes
+#define PXTypeReciverSize64U        0b00000000000001100000000000000000 // 8 Bytes
+#define PXTypeReciverSizeGet(x)     ((PXTypeReciverSizeMask & x) >> 16)
 
 #define PXTypeModeMask              0b00000000000000010000000000000000
 #define PXTypeModeByte              0b00000000000000000000000000000000
 #define PXTypeModeBit               0b00000000000000010000000000000000
 
-#define PXTypeSizeMask                0b00000000000000001111111111111111 // Size in bytes of target data 0x0000FFFF
+#define PXTypeSizeMask              0b00000000000000001111111111111111 // Size in bytes of target data 0x0000FFFF
+#define PXTypeSizeGet(x)            (PXTypeSizeMask & x) 
 
+#define PXTypeIgnoreIn32B           0b00000010000000000000000000000000
+#define PXTypeIgnoreIn64B           0b00000100000000000000000000000000
 
-#define PXTypeIgnoreIn32B 0b00000010000000000000000000000000
-#define PXTypeIgnoreIn64B 0b00000100000000000000000000000000
+#define PXTypeDirect                0b00000000000000000000000000000000
+#define PXTypeEndianBig             0b00010000000000000000000000000000
+#define PXTypeEndianLittle          0b00100000000000000000000000000000
+#define PXTypeEndianGet(x)          ((PXTypeEndianMask & x) >> 28) 
 
-#define PXTypeDirect        (0b00 << 28)
-#define PXTypeEndianBig        (0b01 << 28)
-#define PXTypeEndianLittle    (0b10 << 28)
+#define PXTypeSigned    PXTypeSignedMask
+#define PXTypeUnsigned  0
 
-#define PXTypeSigned PXTypeSignedMask
-#define PXTypeUnsigned 0
-
-#define PXTypeSize00        0
-#define PXTypeSize08        1
-#define PXTypeSize16        2
-#define PXTypeSize32        4
-#define PXTypeSize64        8
-#define PXTypeSize128        16
+#define PXTypeSize00    0
+#define PXTypeSize08    1
+#define PXTypeSize16    2
+#define PXTypeSize32    4
+#define PXTypeSize64    8
+#define PXTypeSize128   16
 
 #define PXTypeText(size) size | PXTypeBaseText
 
@@ -227,13 +231,13 @@
 //-------------------------------------------------
 // Adress, read as spesified but store it as (void*)
 //-------------------------------------------------
-#define PXTypeAdress08 PXTypeAdressMask | PXTypeSize08
-#define PXTypeAdress16 PXTypeAdressMask | PXTypeSize16
-#define PXTypeAdress32 PXTypeAdressMask | PXTypeSize32
-#define PXTypeAdress64 PXTypeAdressMask | PXTypeSize64
-#define PXTypeAdressFlex PXTypeAdressMask
-#define PXTypeAdress PXTypeAdressMask | sizeof(void*)
-#define PXTypeString PXTypeAdress
+#define PXTypeAdress08      PXTypeAdressMask | PXTypeSize08
+#define PXTypeAdress16      PXTypeAdressMask | PXTypeSize16
+#define PXTypeAdress32      PXTypeAdressMask | PXTypeSize32
+#define PXTypeAdress64      PXTypeAdressMask | PXTypeSize64
+#define PXTypeAdressFlex    PXTypeAdressMask
+#define PXTypeAdress        PXTypeAdressMask | sizeof(void*)
+#define PXTypeString        PXTypeAdress
 
 //-------------------------------------------------
 // Text - used to parse singatures
@@ -252,57 +256,82 @@
 //-------------------------------------------------
 // Int - Normal
 //-------------------------------------------------
-#define PXTypeIntS PXTypeBaseNumeric | PXTypeSigned
-#define PXTypeIntU PXTypeBaseNumeric | PXTypeUnsigned
+#define PXTypeIntS      PXTypeBaseNumeric | PXTypeSigned
+#define PXTypeIntU      PXTypeBaseNumeric | PXTypeUnsigned
 
-#define PXTypeInt08S PXTypeSize08 | PXTypeIntS
-#define PXTypeInt08U PXTypeSize08 | PXTypeIntU
+#define PXTypeIntSLE    PXTypeIntS | PXTypeEndianLittle
+#define PXTypeIntSBE    PXTypeIntS | PXTypeEndianBig
 
-#define PXTypeBool PXTypeInt08U
+#define PXTypeIntULE    PXTypeIntU | PXTypeEndianLittle
+#define PXTypeIntUBE    PXTypeIntU | PXTypeEndianBig
 
 #define PXTypeBoolAsText 
 
-#define PXTypeInt16S PXTypeSize16 | PXTypeIntS
-#define PXTypeInt16SLE PXTypeSize16 | PXTypeIntS | PXTypeEndianLittle
-#define PXTypeInt16SBE PXTypeSize16 | PXTypeIntS | PXTypeEndianBig
-#define PXTypeInt16U PXTypeSize16 | PXTypeIntU
-#define PXTypeInt16ULE PXTypeSize16 | PXTypeIntU | PXTypeEndianLittle
-#define PXTypeInt16UBE PXTypeSize16 | PXTypeIntU | PXTypeEndianBig
+// Integer 8-Bit
+#define PXTypeInt08S    PXTypeSize08 | PXTypeIntS
+#define PXTypeInt08U    PXTypeSize08 | PXTypeIntU
+#define PXTypeBool PXTypeInt08U
 
-#define PXTypeInt32S PXTypeSize32 | PXTypeIntS
-#define PXTypeInt32SLE PXTypeSize32 | PXTypeIntS | PXTypeEndianLittle
-#define PXTypeInt32SBE PXTypeSize32 | PXTypeIntS | PXTypeEndianBig
-#define PXTypeInt32U PXTypeSize32 | PXTypeIntU
-#define PXTypeInt32ULE PXTypeSize32 | PXTypeIntU | PXTypeEndianLittle
-#define PXTypeInt32UBE PXTypeSize32 | PXTypeIntU | PXTypeEndianBig
+// Integer 16-Bit
+#define PXTypeInt16S    PXTypeSize16 | PXTypeIntS
+#define PXTypeInt16SLE  PXTypeSize16 | PXTypeIntSLE
+#define PXTypeInt16SBE  PXTypeSize16 | PXTypeIntSBE
+#define PXTypeInt16U    PXTypeSize16 | PXTypeIntU
+#define PXTypeInt16ULE  PXTypeSize16 | PXTypeIntULE
+#define PXTypeInt16UBE  PXTypeSize16 | PXTypeIntUBE
 
-#define PXTypeInt64U PXTypeSize64
-#define PXTypeInt64ULE PXTypeSize64 | PXTypeIntU | PXTypeEndianLittle
-#define PXTypeInt64UBE PXTypeSize64 | PXTypeIntU | PXTypeEndianBig
-#define PXTypeInt64S PXTypeSize64
-#define PXTypeInt64SLE PXTypeSize64 | PXTypeIntS | PXTypeEndianLittle
-#define PXTypeInt64SBE PXTypeSize64 | PXTypeIntS | PXTypeEndianBig
+// Integer 32-Bit
+#define PXTypeInt32S    PXTypeSize32 | PXTypeIntS
+#define PXTypeInt32SLE  PXTypeSize32 | PXTypeIntSLE
+#define PXTypeInt32SBE  PXTypeSize32 | PXTypeIntSBE
+#define PXTypeInt32U    PXTypeSize32 | PXTypeIntU
+#define PXTypeInt32ULE  PXTypeSize32 | PXTypeIntULE
+#define PXTypeInt32UBE  PXTypeSize32 | PXTypeIntUBE
 
+// Integer 64-Bit
+#define PXTypeInt64U    PXTypeSize64 | PXTypeIntS
+#define PXTypeInt64ULE  PXTypeSize64 | PXTypeIntULE
+#define PXTypeInt64UBE  PXTypeSize64 | PXTypeIntUBE
+#define PXTypeInt64S    PXTypeSize64 | PXTypeIntU
+#define PXTypeInt64SLE  PXTypeSize64 | PXTypeIntULE
+#define PXTypeInt64SBE  PXTypeSize64 | PXTypeIntUBE
+
+// Integer 128-Bit
+#define PXTypeInt128U    PXTypeSize128 | PXTypeIntS
+#define PXTypeInt128ULE  PXTypeSize128 | PXTypeIntULE
+#define PXTypeInt128UBE  PXTypeSize128 | PXTypeIntUBE
+#define PXTypeInt128S    PXTypeSize128 | PXTypeIntU
+#define PXTypeInt128SLE  PXTypeSize128 | PXTypeIntULE
+#define PXTypeInt128SBE  PXTypeSize128 | PXTypeIntUBE
+
+// float 32-Bit
+#define PXTypeFloat PXTypeSize32 | PXTypeBaseDecimal
+
+// float 64-Bit
+#define PXTypeDouble PXTypeSize64 | PXTypeBaseDecimal
+
+// System depended
+#define PXTypeSize PXTypeInt64U
+
+// Conditional
 #define PXTypeInt32ULEOnlyIf32B PXTypeInt32ULE | PXTypeIgnoreIn32B
 #define PXTypeInt32ULEOnlyIf64B PXTypeInt32ULE | PXTypeIgnoreIn64B
-
-#define PXTypeSize PXTypeInt64U
 
 #define PXTypeIntFlexLE | PXTypeBaseNumeric | PXTypeEndianLittle
 #define PXTypeIntFlexBE | PXTypeBaseNumeric | PXTypeEndianBig
 
-#define PXTypeFloat PXTypeSize32 | PXTypeBaseDecimal
-#define PXTypeDouble PXTypeSize64 | PXTypeBaseDecimal
+
+
 
 
 //-------------------------------------------------
 // Int - BitMode
 //-------------------------------------------------
 #define PXTypeIntUFlexBit PXTypeIntU | PXTypeModeBit
-#define PXTypeBit08U(bitSize) PXTypeBitFieldHolder08U | PXTypeIntUFlexBit | bitSize
-#define PXTypeBit16U(bitSize) PXTypeBitFieldHolder16U | PXTypeIntUFlexBit | bitSize
-#define PXTypeBit32U(bitSize) PXTypeBitFieldHolder32U | PXTypeIntUFlexBit | bitSize
-#define PXTypeBit64U(bitSize) PXTypeBitFieldHolder64U | PXTypeIntUFlexBit | bitSize
+#define PXTypeBit08U(bitSize) PXTypeReciverSize08U | PXTypeIntUFlexBit | bitSize
+#define PXTypeBit16U(bitSize) PXTypeReciverSize16U | PXTypeIntUFlexBit | bitSize
+#define PXTypeBit32U(bitSize) PXTypeReciverSize32U | PXTypeIntUFlexBit | bitSize
+#define PXTypeBit64U(bitSize) PXTypeReciverSize64U | PXTypeIntUFlexBit | bitSize
 
 #define PXTypeNibble PXTypeBit08U(4)
 

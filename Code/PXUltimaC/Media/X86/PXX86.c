@@ -16,11 +16,17 @@ const char* RegisterNameList[] =
     "RDI"
 };
 
+const char PXX86Name[] = "X86-X64";
+const char PXX86Iitile[] = "Disassemble";
 
 
 void PXAPI PXX86InstructionSUBImidate(PXX86Iterator* const pxX86Iterator)
 {
+    PXX86ModRM pxX86ModRM;
+
     PXInt32U amount = 0; 
+
+    PXX86InstructionFunctionMODRMRead(pxX86Iterator, &pxX86ModRM);
 
     PXFileReadI32U(pxX86Iterator->Data, &amount);
 
@@ -28,8 +34,8 @@ void PXAPI PXX86InstructionSUBImidate(PXX86Iterator* const pxX86Iterator)
     PXLogPrint
     (
         PXLoggingInfo,
-        "X86",
-        "Disassemble",
+        PXX86Name,
+        PXX86Iitile,
         "SUB-Imidate : HEX:<%8.8X>, DEZ:<%i>",
         amount,
         amount
@@ -92,8 +98,8 @@ void PXAPI PXX86InstructionFunctionMOVx3(PXX86Iterator* const pxX86Iterator)
     PXLogPrint
     (
         PXLoggingInfo,
-        "X86",
-        "Disassemble",
+        PXX86Name,
+        PXX86Iitile,
         "MOV : %s -> %s",
         pxX86ModRM.Name,
         "***"
@@ -124,7 +130,61 @@ void PXAPI PXX86InstructionFunctionREXMOV(PXX86Iterator* const pxX86Iterator)
 
     PXX86InstructionNext(pxX86Iterator);
 
-    PXX86InstructionInvoke(pxX86Iterator);    
+    PXX86InstructionInvoke(pxX86Iterator);
+}
+
+void PXAPI PXX86InstructionRET(PXX86Iterator* const pxX86Iterator)
+{
+    PXInt16U stackValue = 0;
+
+    PXFileReadI16SE(pxX86Iterator->Data, &stackValue, PXEndianLittle);
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXX86Name,
+        PXX86Iitile,
+        "Reduce stack by <%i> Bytes and return to <%p>",
+        stackValue,
+        0
+    );
+#endif
+}
+
+void PXAPI PXX86InstructionFunctionCall(PXX86Iterator* const pxX86Iterator)
+{
+    // read 5 Bytes
+   // const PXInt32U type = PXTypeReciverSize64U | PXTypeIntSLE | 5;
+    PXInt32S offset = 0;
+
+    //PXFileReadType(pxX86Iterator->Data, &number, type);
+    PXFileReadI32SE(pxX86Iterator->Data, &offset, PXEndianLittle);
+
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXX86Name,
+        PXX86Iitile,
+        "CALL offset : HEX:<%8.8X> DEZ:<%i>",
+        offset,
+        offset
+    );
+#endif
+
+    if(offset > 0)
+    {
+        PXFileCursorAdvance(pxX86Iterator->Data, offset);
+    }
+    else
+    {
+        offset *= -1;
+
+        PXFileCursorRewind(pxX86Iterator->Data, offset);
+    }
+
 }
 
 void PXAPI PXX86InstructionFunctionJMPNEAR(PXX86Iterator* const pxX86Iterator)
@@ -137,8 +197,8 @@ void PXAPI PXX86InstructionFunctionJMPNEAR(PXX86Iterator* const pxX86Iterator)
     PXLogPrint
     (
         PXLoggingInfo,
-        "X86",
-        "Disassemble",
+        PXX86Name,
+        PXX86Iitile,
         "Jump offset : HEX:<%8.8X> DEZ:<%i>",
         offset,
         offset
@@ -378,7 +438,7 @@ const PXX86Instruction PXX86InstructionListRoot[] = // 0xFF
 // 0x0?
 {PXNull, "SHIFT", PXNull, 0 }, // 0xC0
 {PXNull, "SHIFT", PXNull, 0 }, // 0xC1
-{PXNull, "RET-NEAR", PXNull, 0 }, // 0xC2
+{ PXX86InstructionRET, "RET-NEAR", PXNull, 2 }, // 0xC2
 {PXNull, "RET-NEAR", PXNull, 0 }, // 0xC3
 {PXNull, "LES", PXNull, 0 }, // 0xC4
 {PXNull, "LDS", PXNull, 0 }, // 0xC5
@@ -418,7 +478,7 @@ const PXX86Instruction PXX86InstructionListRoot[] = // 0xFF
 {PXNull, "IN", PXNull, 0 }, // 0xE5
 {PXNull, "OUT", PXNull, 0 }, // 0xE6
 {PXNull, "OUT", PXNull, 0 }, // 0xE7
-{PXNull, "CALL-NEAR", "", PXTypeInt32SLE }, // 0xE8, Data: 32-Bit offset, IP_next = IP_now + opsize + offset   
+{ PXX86InstructionFunctionCall, "CALL-NEAR", "", PXTypeInt32SLE }, // 0xE8, Data: 32-Bit offset, IP_next = IP_now + opsize + offset   
 { PXX86InstructionFunctionJMPNEAR, "JMP-NEAR", PXNull, PXTypeInt32SLE }, // 0xE9
 {PXNull, "JMP-FAR", PXNull, 0 }, // 0xEA
 {PXNull, "JMP-SHORT", PXNull, 0 }, // 0xEB
@@ -484,7 +544,7 @@ PXActionResult PXAPI PXX86InstructionDisassemble(PXX86Iterator* const pxX86Itera
 {
     PXX86InstructionNext(pxX86Iterator);
 
-    const PXSize size = PXTypeSizeMask & pxX86Iterator->InstructionCurrent->Type;
+    const PXSize size = PXTypeSizeGet(pxX86Iterator->InstructionCurrent->Type);
 
 #if PXLogEnable
 
@@ -573,6 +633,23 @@ PXActionResult PXAPI PXX86InstructionDisassemble(PXX86Iterator* const pxX86Itera
      }
 
      */
+
+
+
+    return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXX86InstructionWalk(PXSectionTable* const pxSectionTable, PXX86Iterator* const pxX86Iterator)
+{
+    for(PXSize i = 0; i < pxSectionTable->SectionRawDataSize; ++i)
+    {
+        PXX86Instruction pxX86Instruction;
+
+        pxX86Iterator->VirtualAdress = pxSectionTable->Data.VirtualAddress + (pxFile->DataCursor - old);
+
+        PXX86InstructionDisassemble(&pxX86Iterator);
+
+    }
 
 
 

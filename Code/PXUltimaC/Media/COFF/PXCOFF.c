@@ -503,16 +503,9 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
                     pxX86Iterator.InstructionCurrent = 0;
                     pxX86Iterator.Data = pxFile;
 
-                    for(PXSize i = 0; i < pxSectionTableCurrent->SectionRawDataSize; ++i)
-                    {
-                        PXX86Instruction pxX86Instruction;
+                    PXX86InstructionWalk(&pxX86Iterator);
 
-                        pxX86Iterator.VirtualAdress = pxSectionTableCurrent->VirtualAddress + (pxFile->DataCursor - old);
-
-                        PXX86InstructionDisassemble(&pxX86Iterator);
-                
-                    }
-
+              
                   
 
                     // Jump back

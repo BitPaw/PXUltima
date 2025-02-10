@@ -99,4 +99,9 @@ PXPublic PXActionResult PXAPI PXX86InstructionNext(PXX86Iterator* const pxX86Ite
 
 PXPublic PXActionResult PXAPI PXX86InstructionDisassemble(PXX86Iterator* const pxX86Iterator);
 
+
+typedef struct PXSectionTable_ PXSectionTable;
+
+PXPublic PXActionResult PXAPI PXX86InstructionWalk(PXSectionTable* const pxSectionTable, PXX86Iterator* const pxX86Iterator);
+
 #endif

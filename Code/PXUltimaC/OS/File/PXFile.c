@@ -3017,6 +3017,21 @@ PXSize PXAPI PXFileReadTextI(PXFile* const pxFile, int* const number)
     return pxText.SizeUsed;
 }
 
+PXSize PXAPI PXFileReadType(PXFile* const pxFile, void* const valueAdress, const PXInt32U type)
+{
+    char buffer[32];
+
+    const PXSize amount = PXFileReadIXXE
+    (
+        pxFile, 
+        buffer,
+        PXTypeSizeGet(type),
+        PXTypeEndianGet(type)
+    );
+
+    PXMemoryCopy(buffer, PXTypeSizeGet(type), valueAdress, PXTypeReciverSizeGet(type));
+}
+
 PXSize PXAPI PXFileReadIXXE(PXFile* const pxFile, void* const valueAdress, const PXSize valueSize, const PXEndian pxEndian)
 {
     const PXSize writtenBytes = PXFileReadB(pxFile, valueAdress, valueSize);
@@ -3293,18 +3308,18 @@ PXSize PXAPI PXFileBinding(PXFile* const pxFile, void* const dataStruct, const P
 
                 if(insertionPoint)
                 {
-                    switch(PXTypeBitFieldHolderMask & type)
+                    switch(PXTypeReciverSizeMask & type)
                     {
-                        case PXTypeBitFieldHolder08U:
+                        case PXTypeReciverSize08U:
                             *((PXInt8U*)insertionPoint) = bitFieldValue;
                             break;
-                        case PXTypeBitFieldHolder16U:
+                        case PXTypeReciverSize16U:
                             *((PXInt16U*)insertionPoint) = bitFieldValue;
                             break;
-                        case PXTypeBitFieldHolder32U:
+                        case PXTypeReciverSize32U:
                             *((PXInt32U*)insertionPoint) = bitFieldValue;
                             break;
-                        case PXTypeBitFieldHolder64U:
+                        case PXTypeReciverSize64U:
                             *((PXInt64U*)insertionPoint) = bitFieldValue;
                             break;
                     }
@@ -3523,18 +3538,18 @@ PXSize PXAPI PXFileIOMultible(PXFile* const pxFile, const PXTypeEntry* const pxF
 
                 if(pxFileDataElementType->Adress)
                 {
-                    switch(pxFileDataElementType->Type & PXTypeBitFieldHolderMask)
+                    switch(pxFileDataElementType->Type & PXTypeReciverSizeMask)
                     {
-                        case PXTypeBitFieldHolder08U:
+                        case PXTypeReciverSize08U:
                             *((PXInt8U*)pxFileDataElementType->Adress) = bitFieldValue;
                             break;
-                        case PXTypeBitFieldHolder16U:
+                        case PXTypeReciverSize16U:
                             *((PXInt16U*)pxFileDataElementType->Adress) = bitFieldValue;
                             break;
-                        case PXTypeBitFieldHolder32U:
+                        case PXTypeReciverSize32U:
                             *((PXInt32U*)pxFileDataElementType->Adress) = bitFieldValue;
                             break;
-                        case PXTypeBitFieldHolder64U:
+                        case PXTypeReciverSize64U:
                             *((PXInt64U*)pxFileDataElementType->Adress) = bitFieldValue;
                             break;
                     }
