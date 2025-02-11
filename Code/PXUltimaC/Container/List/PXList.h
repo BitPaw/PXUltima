@@ -47,4 +47,16 @@ PXPublic void* PXAPI PXListItemAtIndexGet(PXList* const pxList, const PXSize ind
 PXPublic PXBool PXAPI PXListItemFromStartGet(PXList* const queue, void* const dataElement);
 //---------------------------------------------------------
 
+
+//---------------------------------------------------------
+// Stack
+//---------------------------------------------------------
+ 
+
+PXPublic PXBool PXAPI PXListAppend(PXList* const pxList, void* const buffer, const PXSize bufferSize);
+// IF the list is a stack, we can reduce the stack by a 
+// given amount and extract the data on it if a buffer
+// is defined.
+PXPublic PXBool PXAPI PXListExtractAndReduce(PXList* const pxList, void* const buffer, const PXSize bufferSize);
+
 #endif

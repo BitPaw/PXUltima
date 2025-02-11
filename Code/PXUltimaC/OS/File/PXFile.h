@@ -194,6 +194,7 @@ PXPublic void PXAPI PXFileCursorToBeginning(PXFile* const pxFile);
 PXPublic PXSize PXAPI PXFileCursorPeek(PXFile* const pxFile, void* const data, const PXSize steps);
 PXPublic PXSize PXAPI PXFileCursorAdvance(PXFile* const pxFile, const PXSize steps);
 PXPublic void PXAPI PXFileCursorRewind(PXFile* const pxFile, const PXSize steps);
+PXPublic PXSize PXAPI PXFileCursorOffset(PXFile* const pxFile, const PXInt32S offset);
 PXPublic void PXAPI PXFileCursorToEnd(PXFile* const pxFile);
 //-------------------------------------------------------------------------
 

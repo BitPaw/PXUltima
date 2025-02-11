@@ -56,7 +56,7 @@ void* PXAPI PXListAdd(PXList* const pxList, void* const dataElement)
 {
     PXListReserve(pxList, pxList->AmountUsed + pxList->GrouthOnAlloc);
 
-    void* target = (char*)pxList->Data + (pxList->DataTypeSize * pxList->AmountUsed);
+    void* target = PXListItemAtIndexGet(pxList, pxList->AmountUsed);
 
     PXMemoryCopy(dataElement, pxList->DataTypeSize, target, pxList->DataTypeSize);
 
@@ -84,4 +84,28 @@ void* PXAPI PXListItemAtIndexGet(PXList* const pxList, const PXSize index)
 PXBool PXAPI PXListItemFromStartGet(PXList* const queue, void* const dataElement)
 {
     return PXActionSuccessful;
+}
+
+PXBool PXAPI PXListAppend(PXList* const pxList, void* const buffer, const PXSize bufferSize)
+{
+    PXListReserve(pxList, pxList->AmountUsed + pxList->GrouthOnAlloc);
+
+    void* target = PXListItemAtIndexGet(pxList, pxList->AmountUsed);
+
+    PXMemoryCopy(buffer, bufferSize, target, bufferSize);
+
+    pxList->AmountUsed += bufferSize;
+
+    return PXTrue;
+}
+
+PXBool PXAPI PXListExtractAndReduce(PXList* const pxList, void* const buffer, const PXSize bufferSize)
+{
+    char* dataExtractionAdress = (char*)PXListItemAtIndexGet(pxList, pxList->AmountUsed);
+
+    PXMemoryCopy(dataExtractionAdress - bufferSize, bufferSize, buffer, bufferSize);
+
+    pxList->AmountUsed -= bufferSize;
+
+    return PXTrue;
 }

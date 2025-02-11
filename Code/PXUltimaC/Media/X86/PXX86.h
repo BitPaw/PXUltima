@@ -2,6 +2,7 @@
 #define PXX86INCLUDE
 
 #include <Media/PXResource.h>
+#include <Container/List/PXList.h>
 
 //---------------------------------------------------------
 // EFLAG - Register
@@ -76,6 +77,8 @@ typedef struct PXX86Iterator_
     void* VirtualAdress;
 
     PXInt8U OperationCode; // opcode
+
+    PXList Stack;
 }
 PXX86Iterator;
 
@@ -88,6 +91,8 @@ typedef struct PXX86ModRM
     char* Name;
 }
 PXX86ModRM;
+
+
 
 PXPrivate void PXAPI PXX86InstructionSUBImidate(PXX86Iterator* const pxX86Iterator);
 PXPrivate void PXAPI PXX86InstructionInvoke(PXX86Iterator* const pxX86Iterator);
@@ -102,6 +107,6 @@ PXPublic PXActionResult PXAPI PXX86InstructionDisassemble(PXX86Iterator* const p
 
 typedef struct PXSectionTable_ PXSectionTable;
 
-PXPublic PXActionResult PXAPI PXX86InstructionWalk(PXSectionTable* const pxSectionTable, PXX86Iterator* const pxX86Iterator);
+PXPublic PXActionResult PXAPI PXX86InstructionWalk(PXFile* const pxFile, PXSectionTable* const pxSectionTable);
 
 #endif

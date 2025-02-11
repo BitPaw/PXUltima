@@ -2833,6 +2833,20 @@ void PXAPI PXFileCursorRewind(PXFile* const pxFile, const PXSize steps)
     PXFileCursorMoveTo(pxFile, pxFile->DataCursor - steps); // Check underflow
 }
 
+PXSize PXAPI PXFileCursorOffset(PXFile* const pxFile, const PXInt32S offset)
+{
+    if(offset > 0)
+    {
+        return PXFileCursorAdvance(pxFile, offset);
+    }
+    else
+    {
+        PXFileCursorRewind(pxFile, offset * -1);
+
+        return 0; // TODO:
+    }
+}
+
 void PXAPI PXFileCursorToEnd(PXFile* const pxFile)
 {
     PXFileCursorMoveTo(pxFile, pxFile->DataCursor);

@@ -496,19 +496,10 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
                     // Move to actual data
                   //  PXSize oldPosition;
                   //  PXFileCursorMoveTo(pxFile, pxSectionTableCurrent->SectionRawDataAdress);
+          
 
-                  
-                    PXSize old = pxFile->DataCursor;
-                    PXX86Iterator pxX86Iterator;
-                    pxX86Iterator.InstructionCurrent = 0;
-                    pxX86Iterator.Data = pxFile;
+                    PXX86InstructionWalk(pxFile, pxSectionTableCurrent);
 
-                    PXX86InstructionWalk(&pxX86Iterator);
-
-              
-                  
-
-                    // Jump back
 
                     break;
                 }

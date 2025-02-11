@@ -2,6 +2,7 @@
 
 #include <OS/Console/PXConsole.h>
 #include <OS/File/PXFile.h>
+#include <Media/COFF/PXCOFF.h>
 
 
 const char* RegisterNameList[] =
@@ -135,9 +136,17 @@ void PXAPI PXX86InstructionFunctionREXMOV(PXX86Iterator* const pxX86Iterator)
 
 void PXAPI PXX86InstructionRET(PXX86Iterator* const pxX86Iterator)
 {
+    PXSize returnAdress = 0;
     PXInt16U stackValue = 0;
 
     PXFileReadI16SE(pxX86Iterator->Data, &stackValue, PXEndianLittle);
+
+    // Reduce stack by amount and discard 
+    PXListExtractAndReduce(&pxX86Iterator->Stack, PXNull, stackValue);
+
+    // Fetch the adress of the stack
+    PXListExtractAndReduce(&pxX86Iterator->Stack, &returnAdress, sizeof(PXSize));
+
 
 #if PXLogEnable
     PXLogPrint
@@ -147,12 +156,14 @@ void PXAPI PXX86InstructionRET(PXX86Iterator* const pxX86Iterator)
         PXX86Iitile,
         "Reduce stack by <%i> Bytes and return to <%p>",
         stackValue,
-        0
+        returnAdress
     );
 #endif
+
+    PXFileCursorMoveTo(pxX86Iterator->Data, returnAdress);
 }
 
-void PXAPI PXX86InstructionFunctionCall(PXX86Iterator* const pxX86Iterator)
+void PXAPI PXX86InstructionCall(PXX86Iterator* const pxX86Iterator)
 {
     // read 5 Bytes
    // const PXInt32U type = PXTypeReciverSize64U | PXTypeIntSLE | 5;
@@ -174,17 +185,10 @@ void PXAPI PXX86InstructionFunctionCall(PXX86Iterator* const pxX86Iterator)
     );
 #endif
 
-    if(offset > 0)
-    {
-        PXFileCursorAdvance(pxX86Iterator->Data, offset);
-    }
-    else
-    {
-        offset *= -1;
+    // Store the call to be able to return to 
+    PXListAppend(&pxX86Iterator->Stack, &pxX86Iterator->Data->DataCursor, sizeof(PXSize));
 
-        PXFileCursorRewind(pxX86Iterator->Data, offset);
-    }
-
+    PXFileCursorOffset(pxX86Iterator->Data, offset);
 }
 
 void PXAPI PXX86InstructionFunctionJMPNEAR(PXX86Iterator* const pxX86Iterator)
@@ -205,16 +209,7 @@ void PXAPI PXX86InstructionFunctionJMPNEAR(PXX86Iterator* const pxX86Iterator)
     );
 #endif
 
-    if(offset > 0)
-    {
-        PXFileCursorAdvance(pxX86Iterator->Data, offset);
-    }
-    else
-    {
-        offset *= -1;
-
-        PXFileCursorRewind(pxX86Iterator->Data, offset);
-    }
+    PXFileCursorOffset(pxX86Iterator->Data, offset);
 }
 
 // Read first Bits/byte
@@ -478,7 +473,7 @@ const PXX86Instruction PXX86InstructionListRoot[] = // 0xFF
 {PXNull, "IN", PXNull, 0 }, // 0xE5
 {PXNull, "OUT", PXNull, 0 }, // 0xE6
 {PXNull, "OUT", PXNull, 0 }, // 0xE7
-{ PXX86InstructionFunctionCall, "CALL-NEAR", "", PXTypeInt32SLE }, // 0xE8, Data: 32-Bit offset, IP_next = IP_now + opsize + offset   
+{ PXX86InstructionCall, "CALL-NEAR", "", PXTypeInt32SLE }, // 0xE8, Data: 32-Bit offset, IP_next = IP_now + opsize + offset   
 { PXX86InstructionFunctionJMPNEAR, "JMP-NEAR", PXNull, PXTypeInt32SLE }, // 0xE9
 {PXNull, "JMP-FAR", PXNull, 0 }, // 0xEA
 {PXNull, "JMP-SHORT", PXNull, 0 }, // 0xEB
@@ -639,13 +634,25 @@ PXActionResult PXAPI PXX86InstructionDisassemble(PXX86Iterator* const pxX86Itera
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXX86InstructionWalk(PXSectionTable* const pxSectionTable, PXX86Iterator* const pxX86Iterator)
-{
-    for(PXSize i = 0; i < pxSectionTable->SectionRawDataSize; ++i)
-    {
-        PXX86Instruction pxX86Instruction;
 
-        pxX86Iterator->VirtualAdress = pxSectionTable->Data.VirtualAddress + (pxFile->DataCursor - old);
+PXActionResult PXAPI PXX86InstructionWalk(PXFile* const pxFile, PXSectionTable* const pxSectionTable)
+{
+
+
+    PXX86Instruction pxX86Instruction;
+
+    PXSize old = pxFile->DataCursor;
+    PXX86Iterator pxX86Iterator;
+    PXClear(PXX86Iterator, &pxX86Iterator);
+    pxX86Iterator.InstructionCurrent = 0;
+    pxX86Iterator.Data = pxFile;
+
+    PXListInitialize(&pxX86Iterator.Stack, sizeof(PXByte), 1024);
+
+    for(PXSize i = 0; i < pxSectionTable->SectionRawDataSize; ++i)
+    { 
+
+        pxX86Iterator.VirtualAdress = pxSectionTable->VirtualAddress + (pxFile->DataCursor - old);
 
         PXX86InstructionDisassemble(&pxX86Iterator);
 
