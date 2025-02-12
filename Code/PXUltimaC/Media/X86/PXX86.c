@@ -137,12 +137,9 @@ void PXAPI PXX86InstructionFunctionREXMOV(PXX86Iterator* const pxX86Iterator)
 void PXAPI PXX86InstructionRET(PXX86Iterator* const pxX86Iterator)
 {
     PXSize returnAdress = 0;
-    PXInt16U stackValue = 0;
-
-    PXFileReadI16SE(pxX86Iterator->Data, &stackValue, PXEndianLittle);
 
     // Reduce stack by amount and discard 
-    PXListExtractAndReduce(&pxX86Iterator->Stack, PXNull, stackValue);
+    PXListExtractAndReduce(&pxX86Iterator->Stack, PXNull, pxX86Iterator->Immediate.I32S);
 
     // Fetch the adress of the stack
     PXListExtractAndReduce(&pxX86Iterator->Stack, &returnAdress, sizeof(PXSize));
@@ -155,7 +152,7 @@ void PXAPI PXX86InstructionRET(PXX86Iterator* const pxX86Iterator)
         PXX86Name,
         PXX86Iitile,
         "Reduce stack by <%i> Bytes and return to <%p>",
-        stackValue,
+        pxX86Iterator->Immediate.I32S,
         returnAdress
     );
 #endif
@@ -165,14 +162,6 @@ void PXAPI PXX86InstructionRET(PXX86Iterator* const pxX86Iterator)
 
 void PXAPI PXX86InstructionCall(PXX86Iterator* const pxX86Iterator)
 {
-    // read 5 Bytes
-   // const PXInt32U type = PXTypeReciverSize64U | PXTypeIntSLE | 5;
-    PXInt32S offset = 0;
-
-    //PXFileReadType(pxX86Iterator->Data, &number, type);
-    PXFileReadI32SE(pxX86Iterator->Data, &offset, PXEndianLittle);
-
-
 #if PXLogEnable
     PXLogPrint
     (
@@ -180,23 +169,19 @@ void PXAPI PXX86InstructionCall(PXX86Iterator* const pxX86Iterator)
         PXX86Name,
         PXX86Iitile,
         "CALL offset : HEX:<%8.8X> DEZ:<%i>",
-        offset,
-        offset
+        pxX86Iterator->Immediate.I32S,
+        pxX86Iterator->Immediate.I32S
     );
 #endif
 
     // Store the call to be able to return to 
     PXListAppend(&pxX86Iterator->Stack, &pxX86Iterator->Data->DataCursor, sizeof(PXSize));
 
-    PXFileCursorOffset(pxX86Iterator->Data, offset);
+    PXFileCursorOffset(pxX86Iterator->Data, pxX86Iterator->Immediate.I32S);
 }
 
-void PXAPI PXX86InstructionFunctionJMPNEAR(PXX86Iterator* const pxX86Iterator)
+void PXAPI PXX86InstructionJMPNEAR(PXX86Iterator* const pxX86Iterator)
 {
-    PXInt32S offset = 0;
-
-    PXFileReadIXXE(pxX86Iterator->Data, &offset, sizeof(PXInt32S), PXEndianLittle);
-
 #if PXLogEnable
     PXLogPrint
     (
@@ -204,12 +189,12 @@ void PXAPI PXX86InstructionFunctionJMPNEAR(PXX86Iterator* const pxX86Iterator)
         PXX86Name,
         PXX86Iitile,
         "Jump offset : HEX:<%8.8X> DEZ:<%i>",
-        offset,
-        offset
+        pxX86Iterator->Immediate.I32S,
+        pxX86Iterator->Immediate.I32S
     );
 #endif
 
-    PXFileCursorOffset(pxX86Iterator->Data, offset);
+    PXFileCursorOffset(pxX86Iterator->Data, pxX86Iterator->Immediate.I32S);
 }
 
 // Read first Bits/byte
@@ -433,7 +418,7 @@ const PXX86Instruction PXX86InstructionListRoot[] = // 0xFF
 // 0x0?
 {PXNull, "SHIFT", PXNull, 0 }, // 0xC0
 {PXNull, "SHIFT", PXNull, 0 }, // 0xC1
-{ PXX86InstructionRET, "RET-NEAR", PXNull, 2 }, // 0xC2
+{ PXX86InstructionRET, "RET-NEAR", PXNull, PXX86InstructionImmediate4 }, // 0xC2
 {PXNull, "RET-NEAR", PXNull, 0 }, // 0xC3
 {PXNull, "LES", PXNull, 0 }, // 0xC4
 {PXNull, "LDS", PXNull, 0 }, // 0xC5
@@ -474,7 +459,7 @@ const PXX86Instruction PXX86InstructionListRoot[] = // 0xFF
 {PXNull, "OUT", PXNull, 0 }, // 0xE6
 {PXNull, "OUT", PXNull, 0 }, // 0xE7
 { PXX86InstructionCall, "CALL-NEAR", "", PXTypeInt32SLE }, // 0xE8, Data: 32-Bit offset, IP_next = IP_now + opsize + offset   
-{ PXX86InstructionFunctionJMPNEAR, "JMP-NEAR", PXNull, PXTypeInt32SLE }, // 0xE9
+{ PXX86InstructionJMPNEAR, "JMP-NEAR", PXNull, PXTypeInt32SLE }, // 0xE9
 {PXNull, "JMP-FAR", PXNull, 0 }, // 0xEA
 {PXNull, "JMP-SHORT", PXNull, 0 }, // 0xEB
 {PXNull, "IN", PXNull, 0 }, // 0xEC
@@ -533,6 +518,39 @@ PXActionResult PXAPI PXX86InstructionNext(PXX86Iterator* const pxX86Iterator)
     PXFileReadI8U(pxX86Iterator->Data, &pxX86Iterator->OperationCode);
 
     pxX86Iterator->InstructionCurrent = &PXX86InstructionListRoot[pxX86Iterator->OperationCode];
+    
+    // if RAX, parse
+    if(PXX86InstructionREX & pxX86Iterator->InstructionCurrent->Type)
+    {
+        // Do sup call
+
+    }
+
+    switch(PXX86InstructionDisplacementMask & pxX86Iterator->InstructionCurrent->Type)
+    {
+        case PXX86InstructionDisplacement1:
+            PXFileReadI8S(pxX86Iterator->Data, &pxX86Iterator->Displacement.I8S);
+            break;
+        case PXX86InstructionDisplacement2:
+            PXFileReadI16SE(pxX86Iterator->Data, &pxX86Iterator->Displacement.I32S, PXEndianLittle);
+            break;
+        case PXX86InstructionDisplacement4:
+            PXFileReadI32SE(pxX86Iterator->Data, &pxX86Iterator->Displacement.I32S, PXEndianLittle);
+            break;
+    }
+
+    switch(PXX86InstructionImmediateMask & pxX86Iterator->InstructionCurrent->Type)
+    {
+        case PXX86InstructionImmediate1:      
+            PXFileReadI8S(pxX86Iterator->Data, &pxX86Iterator->Immediate.I8S);
+            break;
+        case PXX86InstructionImmediate2:
+            PXFileReadI16SE(pxX86Iterator->Data, &pxX86Iterator->Immediate.I16S, PXEndianLittle);
+            break;
+        case PXX86InstructionImmediate4:
+            PXFileReadI32SE(pxX86Iterator->Data, &pxX86Iterator->Immediate.I32S, PXEndianLittle);
+            break;
+    }
 }
 
 PXActionResult PXAPI PXX86InstructionDisassemble(PXX86Iterator* const pxX86Iterator)
@@ -637,10 +655,6 @@ PXActionResult PXAPI PXX86InstructionDisassemble(PXX86Iterator* const pxX86Itera
 
 PXActionResult PXAPI PXX86InstructionWalk(PXFile* const pxFile, PXSectionTable* const pxSectionTable)
 {
-
-
-    PXX86Instruction pxX86Instruction;
-
     PXSize old = pxFile->DataCursor;
     PXX86Iterator pxX86Iterator;
     PXClear(PXX86Iterator, &pxX86Iterator);

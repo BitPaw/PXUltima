@@ -26,97 +26,97 @@
 
 PXCOFFMachineType PXAPI PXCOFFMachineFromID(const PXInt16U valueID)
 {
-    switch (valueID)
+    switch(valueID)
     {
-    case 0x000:
-        return PXCOFFMachineTypeUnkown;
-    case 0x184:
-        return PXCOFFMachineTypeAlpha;
-    case 0x1c0:
-        return PXCOFFMachineTypeARM;
-    case 0x284:
-        return PXCOFFMachineTypeALPHA64;
-    case 0x14c:
-        return PXCOFFMachineTypeI386;
-    case 0x200:
-        return PXCOFFMachineTypeIA64;
-    case 0x268:
-        return PXCOFFMachineTypeM68K;
-    case 0x266:
-        return PXCOFFMachineTypeMIPS16;
-    case 0x366:
-        return PXCOFFMachineTypeMIPSFPU;
-    case 0x466:
-        return PXCOFFMachineTypeMIPSFPU16;
-    case 0x1f0:
-        return PXCOFFMachineTypePOWERPC;
-    case 0x162:
-        return PXCOFFMachineTypeR3000;
-    case 0x166:
-        return PXCOFFMachineTypeR4000;
-    case 0x168:
-        return PXCOFFMachineTypeR10000;
-    case 0x1a2:
-        return PXCOFFMachineTypeSH3;
-    case 0x1a6:
-        return PXCOFFMachineTypeSH4;
-    case 0x1c2:
-        return PXCOFFMachineTypeTHUMB;
+        case 0x000:
+            return PXCOFFMachineTypeUnkown;
+        case 0x184:
+            return PXCOFFMachineTypeAlpha;
+        case 0x1c0:
+            return PXCOFFMachineTypeARM;
+        case 0x284:
+            return PXCOFFMachineTypeALPHA64;
+        case 0x14c:
+            return PXCOFFMachineTypeI386;
+        case 0x200:
+            return PXCOFFMachineTypeIA64;
+        case 0x268:
+            return PXCOFFMachineTypeM68K;
+        case 0x266:
+            return PXCOFFMachineTypeMIPS16;
+        case 0x366:
+            return PXCOFFMachineTypeMIPSFPU;
+        case 0x466:
+            return PXCOFFMachineTypeMIPSFPU16;
+        case 0x1f0:
+            return PXCOFFMachineTypePOWERPC;
+        case 0x162:
+            return PXCOFFMachineTypeR3000;
+        case 0x166:
+            return PXCOFFMachineTypeR4000;
+        case 0x168:
+            return PXCOFFMachineTypeR10000;
+        case 0x1a2:
+            return PXCOFFMachineTypeSH3;
+        case 0x1a6:
+            return PXCOFFMachineTypeSH4;
+        case 0x1c2:
+            return PXCOFFMachineTypeTHUMB;
 
-    default:
-        return PXCOFFMachineTypeInvalid;
+        default:
+            return PXCOFFMachineTypeInvalid;
     }
 }
 
 PXCOFFFormat PXAPI PXCOFFFormatFromID(const PXInt16U valueID)
 {
-    switch (valueID)
+    switch(valueID)
     {
-    case 0x010b:
-        return PXCOFFFormatPE32;
-    case 0x020b:
-        return PXCOFFFormatPE32Plus;
+        case 0x010b:
+            return PXCOFFFormatPE32;
+        case 0x020b:
+            return PXCOFFFormatPE32Plus;
 
-    default:
-        return PXCOFFFormatInvalid;
+        default:
+            return PXCOFFFormatInvalid;
     }
 }
 
 PXSectionType PXAPI PXSectionTypeFromID(const PXInt64U valueID)
 {
-    switch (valueID)
+    switch(valueID)
     {
-    case PXInt40Make('.', 'a', 'r', 'c', 'h'):
-        return PXSectionTypeAlphaArchitectureInformation;
-    case PXInt32Make('.', 'b', 's', 's'):
-        return PXSectionTypeUninitializedData;
-    case PXInt40Make('.', 'd', 'a', 't', 'a'):
-        return PXSectionTypeInitializedData;
-    case PXInt48Make('.', 'e', 'd', 'a', 't', 'a'):
-        return PXSectionTypeExportTables;
-    case PXInt48Make('.', 'i', 'd', 'a', 't', 'a'):
-        return PXSectionTypeImportTables;
-    case PXInt48Make('.', 'p', 'd', 'a', 't', 'a'):
-        return PXSectionTypeExceptionInformationA;
-    case PXInt48Make('.', 'r', 'd', 'a', 't', 'a'):
-        return PXSectionTypeReadOnlyInitializedData;
-    case PXInt48Make('.', 'r', 'e', 'l', 'o', 'c'):
-        return PXSectionTypeImageRelocations;
-    case PXInt40Make('.', 'r', 's', 'r', 'c'):
-        return PXSectionTypeResourceDirectory;
-    case PXInt40Make('.', 't', 'e', 'x', 't'):
-        return PXSectionTypeExecutableCode;
-    case PXInt32Make('.', 't', 'l', 's'):
-        return PXSectionTypeThreadLocalstorage;
-    case PXInt48Make('.', 'x', 'd', 'a', 't', 'a'):
-        return PXSectionTypeExceptionInformationB;
-    case PXInt48Make('.', 'd', 'e', 'b', 'u', 'g'):
-        return PXSectionTypeDebug;
-    case PXInt64Make('.', 'd', 'r', 'e', 'c', 't', 'v', 'e'):
-        return PXSectionTypeDirective;
+        case PXInt40Make('.', 'a', 'r', 'c', 'h'):
+            return PXSectionTypeAlphaArchitectureInformation;
+        case PXInt32Make('.', 'b', 's', 's'):
+            return PXSectionTypeUninitializedData;
+        case PXInt40Make('.', 'd', 'a', 't', 'a'):
+            return PXSectionTypeInitializedData;
+        case PXInt48Make('.', 'e', 'd', 'a', 't', 'a'):
+            return PXSectionTypeExportTables;
+        case PXInt48Make('.', 'i', 'd', 'a', 't', 'a'):
+            return PXSectionTypeImportTables;
+        case PXInt48Make('.', 'p', 'd', 'a', 't', 'a'):
+            return PXSectionTypeExceptionInformationA;
+        case PXInt48Make('.', 'r', 'd', 'a', 't', 'a'):
+            return PXSectionTypeReadOnlyInitializedData;
+        case PXInt48Make('.', 'r', 'e', 'l', 'o', 'c'):
+            return PXSectionTypeImageRelocations;
+        case PXInt40Make('.', 'r', 's', 'r', 'c'):
+            return PXSectionTypeResourceDirectory;
+        case PXInt40Make('.', 't', 'e', 'x', 't'):
+            return PXSectionTypeExecutableCode;
+        case PXInt32Make('.', 't', 'l', 's'):
+            return PXSectionTypeThreadLocalstorage;
+        case PXInt48Make('.', 'x', 'd', 'a', 't', 'a'):
+            return PXSectionTypeExceptionInformationB;
+        case PXInt48Make('.', 'd', 'e', 'b', 'u', 'g'):
+            return PXSectionTypeDebug;
+        case PXInt64Make('.', 'd', 'r', 'e', 'c', 't', 'v', 'e'):
+            return PXSectionTypeDirective;
 
-    default:
-        return PXSectionTypeInvalid;
+        default:
+            return PXSectionTypeInvalid;
     }
 }
 
@@ -160,7 +160,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
         PXSize remainingOptionalHeaderOffset = pxCOFF->Header.SizeOfOptionalHeader;
         const PXSize syncPosition = pxFile->DataCursor + pxCOFF->Header.SizeOfOptionalHeader;
 
-        if (hasOptionalHeader)
+        if(hasOptionalHeader)
         {
             {
                 PXInt16U magicNumber = 0;
@@ -169,15 +169,15 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 
                 pxCOFF->OptionalHeader.Format = PXCOFFFormatFromID(magicNumber);
 
-                switch (pxCOFF->OptionalHeader.Format)
+                switch(pxCOFF->OptionalHeader.Format)
                 {
-                case PXCOFFFormatPE32:
-                    pxFile->BitFormatOfData = PXBitFormat32;
-                    break;
+                    case PXCOFFFormatPE32:
+                        pxFile->BitFormatOfData = PXBitFormat32;
+                        break;
 
-                case PXCOFFFormatPE32Plus:
-                    pxFile->BitFormatOfData = PXBitFormat64;
-                    break;
+                    case PXCOFFFormatPE32Plus:
+                        pxFile->BitFormatOfData = PXBitFormat64;
+                        break;
                 }
             }
 
@@ -247,66 +247,66 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 
                     remainingOptionalHeaderOffset -= batchSize;
 
-                    switch (pxCOFF->OptionalHeader.Format)
+                    switch(pxCOFF->OptionalHeader.Format)
                     {
-                    case PXCOFFFormatPE32:
-                        //assert(batchSize == 68u);
-                        break;
+                        case PXCOFFFormatPE32:
+                            //assert(batchSize == 68u);
+                            break;
 
-                    case PXCOFFFormatPE32Plus:
-                        //assert(batchSize == 88u);
-                        break;
+                        case PXCOFFFormatPE32Plus:
+                            //assert(batchSize == 88u);
+                            break;
                     }
 
                     // Parse version
                     {
                         switch(pxCOFF->OptionalHeader.WindowsNT.MinorImageVersion)
                         {
-                        case 4:
-                        {
-                            pxCOFF->OptionalHeader.WindowsNT.WindowsVersion = PXWindowsVersionNT;
-                            break;
-                        }
-                        case 5:
-                        {
-                            switch(pxCOFF->OptionalHeader.WindowsNT.MajorSubsystemVersion)
+                            case 4:
                             {
-                            case 0:
-                                pxCOFF->OptionalHeader.WindowsNT.WindowsVersion = PXWindowsVersion2000;
-                                break;
-                            case 1:
-                                pxCOFF->OptionalHeader.WindowsNT.WindowsVersion = PXWindowsVersionXP;
-                                break;
-                            case 2:
-                                pxCOFF->OptionalHeader.WindowsNT.WindowsVersion = PXWindowsVersionServer2003;
+                                pxCOFF->OptionalHeader.WindowsNT.WindowsVersion = PXWindowsVersionNT;
                                 break;
                             }
-
-                            break;
-                        }
-                        case 6:
-                        {
-                            switch(pxCOFF->OptionalHeader.WindowsNT.MajorSubsystemVersion)
+                            case 5:
                             {
-                            case 0:
-                                pxCOFF->OptionalHeader.WindowsNT.WindowsVersion = PXWindowsVersionVista;
-                                break;
-                            case 1:
-                                pxCOFF->OptionalHeader.WindowsNT.WindowsVersion = PXWindowsVersion7;
-                                break;
-                            case 2:
-                                pxCOFF->OptionalHeader.WindowsNT.WindowsVersion = PXWindowsVersion8;
-                                break;
-                            case 3:
-                                pxCOFF->OptionalHeader.WindowsNT.WindowsVersion = PXWindowsVersion8x1;
+                                switch(pxCOFF->OptionalHeader.WindowsNT.MajorSubsystemVersion)
+                                {
+                                    case 0:
+                                        pxCOFF->OptionalHeader.WindowsNT.WindowsVersion = PXWindowsVersion2000;
+                                        break;
+                                    case 1:
+                                        pxCOFF->OptionalHeader.WindowsNT.WindowsVersion = PXWindowsVersionXP;
+                                        break;
+                                    case 2:
+                                        pxCOFF->OptionalHeader.WindowsNT.WindowsVersion = PXWindowsVersionServer2003;
+                                        break;
+                                }
+
                                 break;
                             }
+                            case 6:
+                            {
+                                switch(pxCOFF->OptionalHeader.WindowsNT.MajorSubsystemVersion)
+                                {
+                                    case 0:
+                                        pxCOFF->OptionalHeader.WindowsNT.WindowsVersion = PXWindowsVersionVista;
+                                        break;
+                                    case 1:
+                                        pxCOFF->OptionalHeader.WindowsNT.WindowsVersion = PXWindowsVersion7;
+                                        break;
+                                    case 2:
+                                        pxCOFF->OptionalHeader.WindowsNT.WindowsVersion = PXWindowsVersion8;
+                                        break;
+                                    case 3:
+                                        pxCOFF->OptionalHeader.WindowsNT.WindowsVersion = PXWindowsVersion8x1;
+                                        break;
+                                }
 
-                            break;
-                        }
-                        case 0xA:
-                            pxCOFF->OptionalHeader.WindowsNT.WindowsVersion = PXWindowsVersion10;
-                            break;
+                                break;
+                            }
+                            case 0xA:
+                                pxCOFF->OptionalHeader.WindowsNT.WindowsVersion = PXWindowsVersion10;
+                                break;
                         }
                     }
 
@@ -314,7 +314,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
                     {
 
 
-                        if (pxCOFF->OptionalHeader.WindowsNT.NumberOfRvaAndSizes > 0 && 0)
+                        if(pxCOFF->OptionalHeader.WindowsNT.NumberOfRvaAndSizes > 0 && 0)
                         {
                             PXInt32U virtualAddress = 0;
                             PXInt32U size = 0;
@@ -331,7 +331,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
                             );
 #endif
 
-                            for (PXInt32U i = 0; i < pxCOFF->OptionalHeader.WindowsNT.NumberOfRvaAndSizes; ++i)
+                            for(PXInt32U i = 0; i < pxCOFF->OptionalHeader.WindowsNT.NumberOfRvaAndSizes; ++i)
                             {
                                 PXFileReadI32U(pxFile, &virtualAddress);
                                 PXFileReadI32U(pxFile, &size);
@@ -423,7 +423,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 
     PXNewList(PXSectionTable, pxCOFF->Header.NumberOfSections, &pxCOFF->SectionTableList, &pxCOFF->SectionTableListSize);
 
-    for (PXInt16U sectionID = 0; sectionID < pxCOFF->Header.NumberOfSections; ++sectionID)
+    for(PXInt16U sectionID = 0; sectionID < pxCOFF->Header.NumberOfSections; ++sectionID)
     {
         PXSectionTable* const pxSectionTableCurrent = &pxCOFF->SectionTableList[sectionID];
 
@@ -485,18 +485,18 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 
         const PXSize oldPosition = pxFile->DataCursor;
 
-        if (pxSectionTableCurrent->SectionRawDataSize > 0)
+        if(pxSectionTableCurrent->SectionRawDataSize > 0)
         {
             PXFileCursorMoveTo(pxFile, pxSectionTableCurrent->SectionRawDataAdress);
 
-            switch (pxSectionTableCurrent->Type)
+            switch(pxSectionTableCurrent->Type)
             {
                 case PXSectionTypeExecutableCode:
                 {
                     // Move to actual data
                   //  PXSize oldPosition;
                   //  PXFileCursorMoveTo(pxFile, pxSectionTableCurrent->SectionRawDataAdress);
-          
+
 
                     PXX86InstructionWalk(pxFile, pxSectionTableCurrent);
 
@@ -504,60 +504,60 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
                     break;
                 }
 
-            case PXSectionTypeImportTables:
-            {
-                while (1)
+                case PXSectionTypeImportTables:
                 {
-                    const PXTypeEntry pxDataStreamElementList[] =
+                    while(1)
                     {
-                        {&pxCOFF->ImportDirectoryTable.ImportLookupTableOffset, PXTypeInt32ULE},
-                        {&pxCOFF->ImportDirectoryTable.TimeDateStamp,PXTypeInt32ULE},
-                        {&pxCOFF->ImportDirectoryTable.FowarderChainOffset,PXTypeInt32ULE},
-                        {&pxCOFF->ImportDirectoryTable.NameOffset,PXTypeInt32ULE},
-                        {&pxCOFF->ImportDirectoryTable.ImportAddressTableOffset,PXTypeInt32ULE}
-                    };
+                        const PXTypeEntry pxDataStreamElementList[] =
+                        {
+                            {&pxCOFF->ImportDirectoryTable.ImportLookupTableOffset, PXTypeInt32ULE},
+                            {&pxCOFF->ImportDirectoryTable.TimeDateStamp,PXTypeInt32ULE},
+                            {&pxCOFF->ImportDirectoryTable.FowarderChainOffset,PXTypeInt32ULE},
+                            {&pxCOFF->ImportDirectoryTable.NameOffset,PXTypeInt32ULE},
+                            {&pxCOFF->ImportDirectoryTable.ImportAddressTableOffset,PXTypeInt32ULE}
+                        };
 
-                    const PXSize readBytes = PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+                        const PXSize readBytes = PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
-                    //assert(readBytes == 20u);
+                        //assert(readBytes == 20u);
 
-                    const PXBool isLastEntry =
-                        !
-                        (
+                        const PXBool isLastEntry =
+                            !
+                            (
                             pxCOFF->ImportDirectoryTable.ImportLookupTableOffset ||
                             pxCOFF->ImportDirectoryTable.TimeDateStamp ||
                             pxCOFF->ImportDirectoryTable.FowarderChainOffset ||
                             pxCOFF->ImportDirectoryTable.NameOffset ||
                             pxCOFF->ImportDirectoryTable.ImportAddressTableOffset
-                        );
+                            );
 
-                    if (isLastEntry)
-                    {
+                        if(isLastEntry)
+                        {
+#if PXLogEnable
+                            PXLogPrint
+                            (
+                                PXLoggingInfo,
+                                "COFF",
+                                "Parsing",
+                                "[.idata][ImportDirectoryTable] Last entry deteced."
+                            );
+#endif
+
+                            break;
+                        }
+
+                        PXSize namePosition = ((PXInt32S)pxCOFF->ImportDirectoryTable.NameOffset - (PXInt32S)pxSectionTableCurrent->SectionRawDataAdress);
+
+                        //PXFileCursorRewind(pxFile, namePosition);
+
 #if PXLogEnable
                         PXLogPrint
                         (
                             PXLoggingInfo,
                             "COFF",
                             "Parsing",
-                            "[.idata][ImportDirectoryTable] Last entry deteced."
+                            "[.idata][ImportDirectoryTable] entry deteced."
                         );
-#endif
-
-                        break;
-                    }
-
-                    PXSize namePosition = ((PXInt32S)pxCOFF->ImportDirectoryTable.NameOffset - (PXInt32S)pxSectionTableCurrent->SectionRawDataAdress);
-
-                    //PXFileCursorRewind(pxFile, namePosition);
-
-#if PXLogEnable
-                    PXLogPrint
-                    (
-                        PXLoggingInfo,
-                        "COFF",
-                        "Parsing",
-                        "[.idata][ImportDirectoryTable] entry deteced."
-                    );
 #endif
 
 
@@ -565,121 +565,121 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 
 
 
-                    PXCOFFImportLookupTable pxCOFFImportLookupTable;
-                    PXSize importLookupTableOffsetReal = pxCOFF->ImportDirectoryTable.ImportLookupTableOffset;
+                        PXCOFFImportLookupTable pxCOFFImportLookupTable;
+                        PXSize importLookupTableOffsetReal = pxCOFF->ImportDirectoryTable.ImportLookupTableOffset;
 
-                    PXFileCursorMoveTo(pxFile, importLookupTableOffsetReal);
+                        PXFileCursorMoveTo(pxFile, importLookupTableOffsetReal);
 
-                    for (PXBool isDone = PXFalse; isDone; )
-                    {
-                        switch (pxCOFF->Format)
+                        for(PXBool isDone = PXFalse; isDone; )
                         {
-                        case PXCOFFFormatPE32:
-                        {
-                            PXFileReadI32UE(pxFile, &pxCOFFImportLookupTable.OrdinalNumber32, PXEndianLittle);
-
-                            isDone = pxCOFFImportLookupTable.OrdinalNumber32 == 0;
-
-                            pxCOFFImportLookupTable.IsOrdinal = pxCOFFImportLookupTable.OrdinalNumber64 & 0x80000000;
-                            pxCOFFImportLookupTable.OrdinalNumber64 &= ~0x80000000;
-
-                            if (pxCOFFImportLookupTable.IsOrdinal)
+                            switch(pxCOFF->Format)
                             {
-                                printf("Ordinal\n");
-                            }
-                            else
-                            {
+                                case PXCOFFFormatPE32:
+                                {
+                                    PXFileReadI32UE(pxFile, &pxCOFFImportLookupTable.OrdinalNumber32, PXEndianLittle);
 
-                                printf("Name\n");
-                            }
+                                    isDone = pxCOFFImportLookupTable.OrdinalNumber32 == 0;
 
-                            break;
+                                    pxCOFFImportLookupTable.IsOrdinal = pxCOFFImportLookupTable.OrdinalNumber64 & 0x80000000;
+                                    pxCOFFImportLookupTable.OrdinalNumber64 &= ~0x80000000;
+
+                                    if(pxCOFFImportLookupTable.IsOrdinal)
+                                    {
+                                        printf("Ordinal\n");
+                                    }
+                                    else
+                                    {
+
+                                        printf("Name\n");
+                                    }
+
+                                    break;
+                                }
+                                case PXCOFFFormatPE32Plus:
+                                {
+                                    PXFileReadI64UE(pxFile, &pxCOFFImportLookupTable.OrdinalNumber64, PXEndianLittle);
+
+                                    isDone = pxCOFFImportLookupTable.OrdinalNumber64 == 0;
+
+                                    pxCOFFImportLookupTable.IsOrdinal = pxCOFFImportLookupTable.OrdinalNumber64 & 0x8000000000000000;
+                                    pxCOFFImportLookupTable.OrdinalNumber64 &= ~0x8000000000000000;
+
+                                    if(pxCOFFImportLookupTable.IsOrdinal)
+                                    {
+                                        printf("Ordinal\n");
+                                    }
+                                    else
+                                    {
+
+                                        printf("Name\n");
+                                    }
+
+                                    break;
+                                }
+                            }
                         }
-                        case PXCOFFFormatPE32Plus:
-                        {
-                            PXFileReadI64UE(pxFile, &pxCOFFImportLookupTable.OrdinalNumber64, PXEndianLittle);
-
-                            isDone = pxCOFFImportLookupTable.OrdinalNumber64 == 0;
-
-                            pxCOFFImportLookupTable.IsOrdinal = pxCOFFImportLookupTable.OrdinalNumber64 & 0x8000000000000000;
-                            pxCOFFImportLookupTable.OrdinalNumber64 &= ~0x8000000000000000;
-
-                            if (pxCOFFImportLookupTable.IsOrdinal)
-                            {
-                                printf("Ordinal\n");
-                            }
-                            else
-                            {
-
-                                printf("Name\n");
-                            }
-
-                            break;
-                        }
-                        }
-                    }
 #endif // 0
 
+                    }
+
+
+                    break;
                 }
-
-
-                break;
-            }
-            case PXSectionTypeExportTables:
-            {
-                // Export Directory Table
+                case PXSectionTypeExportTables:
                 {
-                    const PXTypeEntry pxDataStreamElementList[] =
+                    // Export Directory Table
                     {
-                        {&pxCOFF->ExportDirectoryTable.ExportFlags, PXTypeInt32ULE},
-                        {&pxCOFF->ExportDirectoryTable.TimeDateStamp,PXTypeInt32ULE},
-                        {&pxCOFF->ExportDirectoryTable.MajorVersion,PXTypeInt16ULE},
-                        {&pxCOFF->ExportDirectoryTable.MinorVersion,PXTypeInt16ULE},
-                        {&pxCOFF->ExportDirectoryTable.NameRVA,PXTypeInt32ULE},
-                        {&pxCOFF->ExportDirectoryTable.OrdinalBase,PXTypeInt32ULE},
-                        {&pxCOFF->ExportDirectoryTable.AddressTableEntries,PXTypeInt32ULE},
-                        {&pxCOFF->ExportDirectoryTable.NumberOfNamePointers,PXTypeInt32ULE},
-                        {&pxCOFF->ExportDirectoryTable.ExportAddressTableRVA,PXTypeInt32ULE},
-                        {&pxCOFF->ExportDirectoryTable.NamePointerRVA, PXTypeInt32ULE},
-                        {&pxCOFF->ExportDirectoryTable.OrdinalTableRVA, PXTypeInt32ULE}
-                    };
+                        const PXTypeEntry pxDataStreamElementList[] =
+                        {
+                            {&pxCOFF->ExportDirectoryTable.ExportFlags, PXTypeInt32ULE},
+                            {&pxCOFF->ExportDirectoryTable.TimeDateStamp,PXTypeInt32ULE},
+                            {&pxCOFF->ExportDirectoryTable.MajorVersion,PXTypeInt16ULE},
+                            {&pxCOFF->ExportDirectoryTable.MinorVersion,PXTypeInt16ULE},
+                            {&pxCOFF->ExportDirectoryTable.NameRVA,PXTypeInt32ULE},
+                            {&pxCOFF->ExportDirectoryTable.OrdinalBase,PXTypeInt32ULE},
+                            {&pxCOFF->ExportDirectoryTable.AddressTableEntries,PXTypeInt32ULE},
+                            {&pxCOFF->ExportDirectoryTable.NumberOfNamePointers,PXTypeInt32ULE},
+                            {&pxCOFF->ExportDirectoryTable.ExportAddressTableRVA,PXTypeInt32ULE},
+                            {&pxCOFF->ExportDirectoryTable.NamePointerRVA, PXTypeInt32ULE},
+                            {&pxCOFF->ExportDirectoryTable.OrdinalTableRVA, PXTypeInt32ULE}
+                        };
 
-                    const PXSize readBytes = PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+                        const PXSize readBytes = PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+                    }
+
+                    // Parse Export Address Table
+                    {
+                        PXCOFFExportAddressTableEntry pxCOFFExportAddressTableEntryxxx;
+                        PXCOFFExportAddressTableEntry* pxCOFFExportAddressTableEntry = &pxCOFFExportAddressTableEntryxxx;
+
+                        const PXSize totalOffset = 0;// pxCOFF->OptionalHeader.StandardFields.ImageBase + pxCOFF->ExportDirectoryTable.ExportAddressTableRVA;
+
+                        PXFileCursorMoveTo(pxFile, totalOffset);
+
+                        const PXTypeEntry pxDataStreamElementList[] =
+                        {
+                            {&pxCOFFExportAddressTableEntry->ExportSymbolOffset, PXTypeInt32ULE}
+                        };
+
+                        const PXSize readBytes = PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+                    }
+
+
+                    break;
                 }
 
-                // Parse Export Address Table
-                {
-                    PXCOFFExportAddressTableEntry pxCOFFExportAddressTableEntryxxx;
-                    PXCOFFExportAddressTableEntry* pxCOFFExportAddressTableEntry = &pxCOFFExportAddressTableEntryxxx;
 
-                    const PXSize totalOffset = 0;// pxCOFF->OptionalHeader.StandardFields.ImageBase + pxCOFF->ExportDirectoryTable.ExportAddressTableRVA;
-
-                    PXFileCursorMoveTo(pxFile, totalOffset);
-
-                    const PXTypeEntry pxDataStreamElementList[] =
-                    {
-                        {&pxCOFFExportAddressTableEntry->ExportSymbolOffset, PXTypeInt32ULE}
-                    };
-
-                    const PXSize readBytes = PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
-                }
-
-
-                break;
-            }
-
-
-            default:
-                break;
+                default:
+                    break;
             }
         }
 
         // Reallocations
-        if (pxSectionTableCurrent->NumberOfRelocations > 0)
+        if(pxSectionTableCurrent->NumberOfRelocations > 0)
         {
             PXFileCursorMoveTo(pxFile, pxSectionTableCurrent->PointerToRelocations);
 
-            for (PXInt16U i = 0; i < pxSectionTableCurrent->NumberOfRelocations; ++i)
+            for(PXInt16U i = 0; i < pxSectionTableCurrent->NumberOfRelocations; ++i)
             {
                 PXRelocationInformation pxRelocationInformation;
 
@@ -708,13 +708,13 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
         }
 
         // Lines
-        if (pxSectionTableCurrent->NumberOfLinenumbers > 0)
+        if(pxSectionTableCurrent->NumberOfLinenumbers > 0)
         {
             PXLineNumberEntry pxLineNumberEntryXX;
 
             PXFileCursorMoveTo(pxFile, pxSectionTableCurrent->PointerToLinenumbers);
 
-            for (PXInt16U i = 0; i < pxSectionTableCurrent->NumberOfLinenumbers; ++i)
+            for(PXInt16U i = 0; i < pxSectionTableCurrent->NumberOfLinenumbers; ++i)
             {
                 PXLineNumberEntry* pxLineNumberEntry = &pxLineNumberEntryXX;
 
@@ -748,7 +748,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 
     // Parse actual symbols
     {
-        if (pxCOFF->Header.NumberOfSymbols > 0)
+        if(pxCOFF->Header.NumberOfSymbols > 0)
         {
             PXFileCursorMoveTo(pxFile, pxCOFF->Header.PointerToSymbolTable);
 
@@ -765,7 +765,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
             );
 #endif
 
-            for (PXInt32U i = 0; i < pxCOFF->Header.NumberOfSymbols; i++)
+            for(PXInt32U i = 0; i < pxCOFF->Header.NumberOfSymbols; i++)
             {
                 PXCOFFSymbolTableEntry* pxCOFFSymbolTableEntry = &pxCOFFSymbolTableEntryXX;
 
@@ -784,7 +784,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
                 //assert(readBytes == 18u);
 
 
-                if (pxCOFFSymbolTableEntry->DoesNotUseExternalString && pxCOFFSymbolTableEntry->DoesNotUseExternalString != 0xCCCCCCCC)
+                if(pxCOFFSymbolTableEntry->DoesNotUseExternalString && pxCOFFSymbolTableEntry->DoesNotUseExternalString != 0xCCCCCCCC)
                 {
 #if PXLogEnable && PXCOFFDebug
                     PXLogPrint

@@ -41,14 +41,6 @@
 //---------------------------------------------------------
 
 
-typedef enum PXX86OPCode
-{
-  PXX86OPCodeInvalid,
-
-  
-}
-PXX86OPCode;
-
 typedef struct PXAssemblyInstruction
 {
     char* Name;
@@ -60,6 +52,22 @@ PXAssemblyInstruction;
 typedef struct PXX86Iterator_ PXX86Iterator;
 
 typedef void (PXAPI* PXX86InstructionFunction)(PXX86Iterator* const pxX86Iterator);
+
+
+#define PXX86InstructionREX                 (0b00000001)
+#define PXX86InstructionModRM               (0b00000010)
+
+#define PXX86InstructionDisplacementMask    (0b00110000)
+#define PXX86InstructionDisplacement0       (0b00000000)
+#define PXX86InstructionDisplacement1       (0b00010000)
+#define PXX86InstructionDisplacement2       (0b00100000)
+#define PXX86InstructionDisplacement4       (0b00110000)
+
+#define PXX86InstructionImmediateMask       (0b11000000)
+#define PXX86InstructionImmediate0          (0b00000000)
+#define PXX86InstructionImmediate1          (0b01000000)
+#define PXX86InstructionImmediate2          (0b10000000)
+#define PXX86InstructionImmediate4          (0b11000000)
 
 typedef struct PXX86Instruction
 {
@@ -77,6 +85,26 @@ typedef struct PXX86Iterator_
     void* VirtualAdress;
 
     PXInt8U OperationCode; // opcode
+    PXInt8U REX;
+    PXInt8U ModRM;
+
+    union
+    {
+        PXInt8S I8S;
+        PXInt16S I16S;
+        PXInt32S I32S;
+        PXInt64S I64S;
+    }
+    Displacement;
+
+    union
+    {
+        PXInt8S I8S;
+        PXInt16S I16S;
+        PXInt32S I32S;
+        PXInt64S I64S;
+    }
+    Immediate;
 
     PXList Stack;
 }
@@ -99,6 +127,10 @@ PXPrivate void PXAPI PXX86InstructionInvoke(PXX86Iterator* const pxX86Iterator);
 PXPrivate void PXAPI PXX86InstructionFunctionMODRMRead(PXX86Iterator* const pxX86Iterator, PXX86ModRM* const pxX86ModRM);
 PXPrivate void PXAPI PXX86InstructionFunctionMOVx3(PXX86Iterator* const pxX86Iterator);
 PXPrivate void PXAPI PXX86InstructionFunctionREXMOV(PXX86Iterator* const pxX86Iterator);
+
+PXPrivate void PXAPI PXX86InstructionRET(PXX86Iterator* const pxX86Iterator);
+PXPrivate void PXAPI PXX86InstructionJMPNEAR(PXX86Iterator* const pxX86Iterator);
+PXPrivate void PXAPI PXX86InstructionCall(PXX86Iterator* const pxX86Iterator);
 
 PXPublic PXActionResult PXAPI PXX86InstructionNext(PXX86Iterator* const pxX86Iterator);
 
