@@ -565,36 +565,46 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
 
 
     PXLockEngage(&_GLOBALResourceManager.CreateLock);
-
-    PXInt32U resourceID = PXResourceManagerGenerateUniqeID();
+   
   //  pxResourceInfo->Flags |= PXResourceInfoExist;
 
-    *pxResourceCreateInfo->ObjectReference = PXMemoryCalloc(pxResourceCreateInfo->ObjectSize, 1);
+    void* objectList = PXMemoryCalloc(pxResourceCreateInfo->ObjectSize, pxResourceCreateInfo->ObjectAmount);
+     
+    *pxResourceCreateInfo->ObjectReference = objectList;
 
-    PXDictionaryAdd(pxResourceCreateInfo->Lookup, &resourceID, *pxResourceCreateInfo->ObjectReference);
+    for(PXSize i = 0; i < pxResourceCreateInfo->ObjectAmount; ++i)
+    {
+        const PXInt32U resourceID = PXResourceManagerGenerateUniqeID();
 
-    PXLockRelease(&_GLOBALResourceManager.CreateLock);
+        void* object = (char*)objectList + (pxResourceCreateInfo->ObjectSize * i);
+
+        PXDictionaryAdd(pxResourceCreateInfo->Lookup, &resourceID, *pxResourceCreateInfo->ObjectReference);
 
 #if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        "Resource",
-        "Register",
-        "ID:%-4i",
-        resourceID
-    );
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "Resource",
+            "Register",
+            "ID:%-4i",
+            resourceID
+        );
 #endif
+    }
 
+    PXLockRelease(&_GLOBALResourceManager.CreateLock);
 
 
 
     //-----------------------------------------------------
     // Create ASYNC pathway
     //-----------------------------------------------------
-    const PXBool createSubCall =
-         (PXResourceCreateBehaviourLoadASYNC   & pxResourceCreateInfo->Flags) &&
+    const PXBool targetASYNC = 
+        (PXResourceCreateBehaviourLoadASYNC & pxResourceCreateInfo->Flags) &&
         !(PXResourceCreateBehaviourIsASYNCCall & pxResourceCreateInfo->Flags);
+
+    const PXBool createSubCall = targetASYNC || (pxResourceCreateInfo->ObjectAmount>1);
+      
 
     if(createSubCall)
     {

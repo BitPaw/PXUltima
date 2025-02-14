@@ -2607,10 +2607,10 @@ PXActionResult PXAPI PXFileUnmapFromMemory(PXFile* const pxFile)
             "File",
             "MMAP-Release",
             "\n"
-            "%10s : %i\n"
-            "%10s : %s\n"
-            "%10s : <%p> %i/%i\n"
-            "%10s : <%s>",
+            "%20s : %i\n"
+            "%20s : %s\n"
+            "%20s : <%p> %i/%i\n"
+            "%20s : <%s>",
             "Mapping-ID", (int)pxFile->MappingHandle,
             "Size", pxText.TextA,
             "Data", pxFile->Data, pxFile->DataCursor, pxFile->DataUsed,

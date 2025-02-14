@@ -450,7 +450,7 @@ PXActionResult PXAPI PXThreadPoolQueueWork(PXThreadPool* pxThreadPool, void* fun
         pxThreadPool = &_GLOBALThreadPool;
     }
 
-    if((PXThreadPoolEnableASYNC & pxThreadPool->Flags) && 0)
+    if((PXThreadPoolEnableASYNC & pxThreadPool->Flags) || 1)
     {
         PXTask pxTask;
         PXClear(PXTask, &pxTask);

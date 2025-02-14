@@ -3,25 +3,17 @@
 
 #include "../PXResource.h"
 
-typedef enum PXDeflateEncodingMethod_
-{
-    PXDeflateEncodingInvalid,
-    PXDeflateEncodingLiteralRaw,
-    PXDeflateEncodingHuffmanStatic,
-    PXDeflateEncodingHuffmanDynamic,
-    PXDeflateEncodingReserverd
-}
-PXDeflateEncodingMethod;
+#define PXDeflateEncodingLiteralRaw     0b00
+#define PXDeflateEncodingHuffmanStatic  0b01
+#define PXDeflateEncodingHuffmanDynamic 0b10
+#define PXDeflateEncodingReserverd      0b11
 
 typedef struct PXDeflateBlock_
 {
-    PXDeflateEncodingMethod EncodingMethod;
-    PXBool IsLastBlock;
+    PXInt8U IsLastBlock;
+    PXInt8U EncodingMethod;
 }
 PXDeflateBlock;
-
-PXPublic PXDeflateEncodingMethod PXAPI PXDeflateEncodingMethodFromID(const PXInt8U deflateEncodingMethod);
-PXPublic PXInt8U PXAPI PXDeflateEncodingMethodToID(const PXDeflateEncodingMethod deflateEncodingMethod);
 
 PXPublic PXActionResult PXAPI PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const pxOutputStream);
 PXPublic PXActionResult PXAPI PXDEFLATESerialize(PXFile* const pxInputStream, PXFile* const pxOutputStream);

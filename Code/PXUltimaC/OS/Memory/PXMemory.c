@@ -27,6 +27,8 @@
 #define ProtectionIDWrite PAGE_READWRITE
 #define ProtectionIDReadWrite PAGE_READWRITE
 
+const char PXMemoryLogPrintTitle[] = "OS-Kernel";
+
 /*
 PXActionResult PXAPI WindowsProcessPrivilege(const char* pszPrivilege, BOOL bEnable)
 {
@@ -251,11 +253,11 @@ void* PXAPI PXMemoryCalloc(const PXSize amount, const PXSize objectSize)
         PXMemorySymbolAdd(&pxSymbolMemory, PXMemorySymbolInfoModeAdd);
 
 
-#if PXLogEnable
+#if PXLogEnable 
         PXLogPrint
         (
             PXLoggingAllocation,
-            "PX",
+            PXMemoryLogPrintTitle,
             "Memory-Calloc",
             "%s::%s::%s::%i, %ix %i B @ <%p>",
             pxSymbol.NameModule,
@@ -315,7 +317,7 @@ void* PXAPI PXMemoryMalloc(const PXSize memorySize)
         PXLogPrint
         (
             PXLoggingAllocation,
-            "PX",
+            PXMemoryLogPrintTitle,
             "Memory-Alloc",
             "%s::%s::%s::%i, %7ix %i B @ <%p>",
             pxSymbol.NameModule,
@@ -371,7 +373,7 @@ PXBool PXAPI PXMemoryFree(const void* const adress)
         PXLogPrint
         (
             PXLoggingAllocation,
-            "PX",
+            PXMemoryLogPrintTitle,
             "Memory-Free",
             "%s::%s::%s::%i, %i B",
             pxSymbol.NameModule,

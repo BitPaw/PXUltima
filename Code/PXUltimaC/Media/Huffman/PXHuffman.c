@@ -17,6 +17,8 @@
 // maxbitlen = 15
 PXActionResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, const PXInt32U* const bitlen, const PXSize numcodes, const PXSize maxbitlen)
 {
+    PXClear(PXHuffmanTree, huffmanTree);
+
     // HuffmanTree_makeFromLengths()
     PXNewList(PXInt32U, numcodes, &huffmanTree->LengthsList, PXNull);
     huffmanTree->NumberOfSymbols = NUM_DEFLATE_CODE_SYMBOLS;
@@ -238,6 +240,8 @@ PXActionResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, con
 
 PXActionResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(struct PXFile_* const pxFile, PXHuffmanTree* treeLength, PXHuffmanTree* treeDistance)
 {
+    PXClear(PXHuffmanTree, treeLength);
+
     // the order in which "code length alphabet code lengths" are stored as specified by deflate, out of this the huffman
     // tree of the dynamic huffman tree lengths is generated
     const PXInt8U codeLengthIndex[NUM_CODE_LENGTH_CODES] = { 16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15 };

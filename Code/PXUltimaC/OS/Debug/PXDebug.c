@@ -475,7 +475,7 @@ void PXAPI PXDebugStackTrace(PXDebug* const pxDebug, PXSymbol* const pxSymbolLis
     const HANDLE hThread = GetCurrentThread();
     const BOOL symbolServerInitialize = SymInitialize(processHandle, PXNull, PXTrue);
 
-    SymSetOptions(SYMOPT_DEBUG | SYMOPT_LOAD_ANYTHING | SYMOPT_LOAD_LINES);
+    const DWORD symbolSetResult = SymSetOptions(SYMOPT_DEBUG | SYMOPT_LOAD_ANYTHING | SYMOPT_LOAD_LINES);
     // SymLoadModuleEx(,);
 
     DWORD                          machineType = IMAGE_FILE_MACHINE_AMD64; // IMAGE_FILE_MACHINE_I386
@@ -509,6 +509,8 @@ void PXAPI PXDebugStackTrace(PXDebug* const pxDebug, PXSymbol* const pxSymbolLis
     PXSize frame;
     PXSize symbolIndex = 0;
 
+    PXClear(PXSymbol, pxSymbolList);
+
     for(frame = 0; frame < (start + depth); ++frame)
     {
         PXSymbol* pxSymbol = &pxSymbolList[symbolIndex];
@@ -527,12 +529,7 @@ void PXAPI PXDebugStackTrace(PXDebug* const pxDebug, PXSymbol* const pxSymbolLis
         );
         const PXBool sucessfull = result != 0;
 
-        if(!sucessfull)
-        {
-            break;
-        }
-
-        if(frame < start)
+        if(!sucessfull || (frame < start))
         {
             continue;
         }
@@ -1228,6 +1225,8 @@ void PXAPI PXDebugLogMessage(PXText* const pxText)
 
 PXActionResult PXAPI PXDebugSymbolReadFromAdress(PXDebug* const pxDebug, struct PXSymbol_* const pxSymbol, void* adress)
 {
+    return;
+
 #if OSUnix
     return PXActionRefusedNotImplemented;
 

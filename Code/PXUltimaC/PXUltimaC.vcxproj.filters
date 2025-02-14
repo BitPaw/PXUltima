@@ -573,6 +573,9 @@
     <ClCompile Include="OS\User\PXUser.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Media\PowerPC\PXPowerPC.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm\KalmanFilter\PXKalmanFilter.h">
@@ -1131,6 +1134,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Media\X86\PXX86.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Media\PowerPC\PXPowerPC.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

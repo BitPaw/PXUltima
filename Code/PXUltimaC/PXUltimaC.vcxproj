@@ -238,6 +238,7 @@
     <ClCompile Include="Media\PHP\PXPHP.c" />
     <ClCompile Include="Media\PLY\PXPLY.c" />
     <ClCompile Include="Media\PNG\PXPNG.c" />
+    <ClCompile Include="Media\PowerPC\PXPowerPC.c" />
     <ClCompile Include="Media\PXColor.c" />
     <ClCompile Include="Media\PXDocument.c" />
     <ClCompile Include="Media\PXImage.c" />
@@ -426,6 +427,7 @@
     <ClInclude Include="Media\PHP\PXPHP.h" />
     <ClInclude Include="Media\PLY\PXPLY.h" />
     <ClInclude Include="Media\PNG\PXPNG.h" />
+    <ClInclude Include="Media\PowerPC\PXPowerPC.h" />
     <ClInclude Include="Media\PXColor.h" />
     <ClInclude Include="Media\PXDocument.h" />
     <ClInclude Include="Media\PXImage.h" />
