@@ -5,772 +5,31 @@
 #include <OS/File/PXFile.h>
 #include <OS/Memory/PXMemory.h>
 
-#define JPGDebug 0
+const char PXJPEGApp0[4] = { 'J', 'F', 'I', 'F' };
 
-#if JPGDebug
-#include <stdio.h>
-#endif
-
-#define PXJPEGMarkerInvalidID                                             PXInt16Make(0xFF, 0xFF)
-#define PXJPEGMarkerStartOfFrameHuffmanBaselineDCTID                      PXInt16Make(0xFF, 0xC0)
-#define PXJPEGMarkerStartOfFrameHuffmanSequentialExtendedDCTID            PXInt16Make(0xFF, 0xC1)
-#define PXJPEGMarkerStartOfFrameHuffmanProgressiveDCTID                   PXInt16Make(0xFF, 0xC2)
-#define PXJPEGMarkerStartOfFrameHuffmanSequentialLosslessID               PXInt16Make(0xFF, 0xC3)
-#define PXJPEGMarkerDefineHuffmanTableListID                              PXInt16Make(0xFF, 0xC4)
-#define PXJPEGMarkerStartOfFrameHuffmanDifferentialSequentialID           PXInt16Make(0xFF, 0xC5)
-#define PXJPEGMarkerStartOfFrameHuffmanDifferentialProgressiveDCTID       PXInt16Make(0xFF, 0xC6)
-#define PXJPEGMarkerStartOfFrameHuffmanDifferentialLosslessSequentialID   PXInt16Make(0xFF, 0xC7)
-#define PXJPEGMarkerStartOfFrameArithmeticPXJPEGExtensionID                 PXInt16Make(0xFF, 0xC8)
-#define PXJPEGMarkerStartOfFrameArithmeticExtendedSequentialDCTID         PXInt16Make(0xFF, 0xC9)
-#define PXJPEGMarkerStartOfFrameArithmeticProgressiveDCTID                  PXInt16Make(0xFF, 0xCA)
-#define PXJPEGMarkerStartOfFrameArithmeticLosslessSequentialID              PXInt16Make(0xFF, 0xCB)
-#define PXJPEGMarkerDefineArithmeticCodingID                                PXInt16Make(0xFF, 0xCC)
-#define PXJPEGMarkerStartOfFrameArithmeticDifferentialSequentialDCTID       PXInt16Make(0xFF, 0xCD)
-#define PXJPEGMarkerStartOfFrameArithmeticDifferentialProgressiveDCTID      PXInt16Make(0xFF, 0xCE)
-#define PXJPEGMarkerStartOfFrameArithmeticDifferentialLosslessSequentialID  PXInt16Make(0xFF, 0xCF)
-#define PXJPEGMarkerIntervalTerminationRestart0ID PXInt16Make(0xFF, 0xD0)
-#define PXJPEGMarkerIntervalTerminationRestart1ID PXInt16Make(0xFF, 0xD1)
-#define PXJPEGMarkerIntervalTerminationRestart2ID PXInt16Make(0xFF, 0xD2)
-#define PXJPEGMarkerIntervalTerminationRestart3ID PXInt16Make(0xFF, 0xD3)
-#define PXJPEGMarkerIntervalTerminationRestart4ID PXInt16Make(0xFF, 0xD4)
-#define PXJPEGMarkerIntervalTerminationRestart5ID PXInt16Make(0xFF, 0xD5)
-#define PXJPEGMarkerIntervalTerminationRestart6ID PXInt16Make(0xFF, 0xD6)
-#define PXJPEGMarkerIntervalTerminationRestart7ID PXInt16Make(0xFF, 0xD7)
-#define PXJPEGMarkerStartOfImageID              PXInt16Make(0xFF, 0xD8)
-#define PXJPEGMarkerEndOfImageID            PXInt16Make(0xFF, 0xD9)
-#define PXJPEGMarkerStartOfScanID           PXInt16Make(0xFF, 0xDA)
-#define PXJPEGMarkerDefineQuantizationTableListID PXInt16Make(0xFF, 0xDB)
-#define PXJPEGMarkerDefineNumberOfLinesID PXInt16Make(0xFF, 0xDC)
-#define PXJPEGMarkerDefineRestartIntervalID             PXInt16Make(0xFF, 0xDD)
-#define PXJPEGMarkerDefineHierarchicalProgressionID     PXInt16Make(0xFF, 0xDE)
-#define PXJPEGMarkerExpandReferenceComponentListID      PXInt16Make(0xFF, 0xDF)
-#define PXJPEGMarkerApplicationSegment00ID PXInt16Make(0xFF, 0xE0)
-#define PXJPEGMarkerApplicationSegment01ID PXInt16Make(0xFF, 0xE1)
-#define PXJPEGMarkerApplicationSegment02ID PXInt16Make(0xFF, 0xE2)
-#define PXJPEGMarkerApplicationSegment03ID PXInt16Make(0xFF, 0xE3)
-#define PXJPEGMarkerApplicationSegment04ID PXInt16Make(0xFF, 0xE4)
-#define PXJPEGMarkerApplicationSegment05ID PXInt16Make(0xFF, 0xE5)
-#define PXJPEGMarkerApplicationSegment06ID PXInt16Make(0xFF, 0xE6)
-#define PXJPEGMarkerApplicationSegment07ID PXInt16Make(0xFF, 0xE7)
-#define PXJPEGMarkerApplicationSegment08ID PXInt16Make(0xFF, 0xE8)
-#define PXJPEGMarkerApplicationSegment09ID PXInt16Make(0xFF, 0xE9)
-#define PXJPEGMarkerApplicationSegment10ID PXInt16Make(0xFF, 0xEA)
-#define PXJPEGMarkerApplicationSegment11ID PXInt16Make(0xFF, 0xEB)
-#define PXJPEGMarkerApplicationSegment12ID PXInt16Make(0xFF, 0xEC)
-#define PXJPEGMarkerApplicationSegment13ID PXInt16Make(0xFF, 0xED)
-#define PXJPEGMarkerApplicationSegment14ID PXInt16Make(0xFF, 0xEE)
-#define PXJPEGMarkerApplicationSegment15ID PXInt16Make(0xFF, 0xEF)
-#define PXJPEGMarkerPXJPEGExtension00ID PXInt16Make(0xFF, 0xF0)
-#define PXJPEGMarkerPXJPEGExtension01ID PXInt16Make(0xFF, 0xF1)
-#define PXJPEGMarkerPXJPEGExtension02ID PXInt16Make(0xFF, 0xF2)
-#define PXJPEGMarkerPXJPEGExtension03ID PXInt16Make(0xFF, 0xF3)
-#define PXJPEGMarkerPXJPEGExtension04ID PXInt16Make(0xFF, 0xF4)
-#define PXJPEGMarkerPXJPEGExtension05ID PXInt16Make(0xFF, 0xF5)
-#define PXJPEGMarkerPXJPEGExtension06ID PXInt16Make(0xFF, 0xF6)
-#define PXJPEGMarkerPXJPEGExtension07ID PXInt16Make(0xFF, 0xF7)
-#define PXJPEGMarkerPXJPEGExtension08ID PXInt16Make(0xFF, 0xF8)
-#define PXJPEGMarkerPXJPEGExtension09ID PXInt16Make(0xFF, 0xF9)
-#define PXJPEGMarkerPXJPEGExtension10ID PXInt16Make(0xFF, 0xFA)
-#define PXJPEGMarkerPXJPEGExtension11ID PXInt16Make(0xFF, 0xFB)
-#define PXJPEGMarkerPXJPEGExtension12ID PXInt16Make(0xFF, 0xFC)
-#define PXJPEGMarkerPXJPEGExtension13ID PXInt16Make(0xFF, 0xFD)
-#define PXJPEGMarkerCommentID PXInt16Make(0xFF, 0xFE)
-#define PXJPEGMarkerTemporaryID PXInt16Make(0xFF, 0x01)
-#define PXJPEGMarkerReservedID PXInt16Make(0xFF, 0x02)
-
-PXJPEGMarker PXAPI PXJPEGMarkerFromID(const PXInt16U jpegMarker)
+typedef struct PXJPEGChunkHeaderBindingData_
 {
-    switch(jpegMarker)
-    {
-    case  PXJPEGMarkerStartOfFrameHuffmanBaselineDCTID:
-        return PXJPEGMarkerStartOfFrameHuffmanBaselineDCT;
-    case  PXJPEGMarkerStartOfFrameHuffmanSequentialExtendedDCTID:
-        return PXJPEGMarkerStartOfFrameHuffmanSequentialExtendedDCT;
-    case  PXJPEGMarkerStartOfFrameHuffmanProgressiveDCTID:
-        return PXJPEGMarkerStartOfFrameHuffmanProgressiveDCT;
-    case  PXJPEGMarkerStartOfFrameHuffmanSequentialLosslessID:
-        return PXJPEGMarkerStartOfFrameHuffmanSequentialLossless;
-    case  PXJPEGMarkerDefineHuffmanTableListID:
-        return PXJPEGMarkerDefineHuffmanTableList;
-    case  PXJPEGMarkerStartOfFrameHuffmanDifferentialSequentialID:
-        return PXJPEGMarkerStartOfFrameHuffmanDifferentialSequential;
-    case  PXJPEGMarkerStartOfFrameHuffmanDifferentialProgressiveDCTID:
-        return PXJPEGMarkerStartOfFrameHuffmanDifferentialProgressiveDCT;
-    case  PXJPEGMarkerStartOfFrameHuffmanDifferentialLosslessSequentialID:
-        return PXJPEGMarkerStartOfFrameHuffmanDifferentialLosslessSequential;
-    case  PXJPEGMarkerStartOfFrameArithmeticPXJPEGExtensionID:
-        return PXJPEGMarkerStartOfFrameArithmeticPXJPEGExtension;
-    case  PXJPEGMarkerStartOfFrameArithmeticExtendedSequentialDCTID:
-        return PXJPEGMarkerStartOfFrameArithmeticExtendedSequentialDCT;
-    case  PXJPEGMarkerStartOfFrameArithmeticProgressiveDCTID:
-        return PXJPEGMarkerStartOfFrameArithmeticProgressiveDCT;
-    case  PXJPEGMarkerStartOfFrameArithmeticLosslessSequentialID:
-        return PXJPEGMarkerStartOfFrameArithmeticLosslessSequential;
-    case  PXJPEGMarkerDefineArithmeticCodingID:
-        return PXJPEGMarkerDefineArithmeticCoding;
-    case  PXJPEGMarkerStartOfFrameArithmeticDifferentialSequentialDCTID:
-        return PXJPEGMarkerStartOfFrameArithmeticDifferentialSequentialDCT;
-    case  PXJPEGMarkerStartOfFrameArithmeticDifferentialProgressiveDCTID:
-        return PXJPEGMarkerStartOfFrameArithmeticDifferentialProgressiveDCT;
-    case  PXJPEGMarkerStartOfFrameArithmeticDifferentialLosslessSequentialID:
-        return PXJPEGMarkerStartOfFrameArithmeticDifferentialLosslessSequential;
-    case  PXJPEGMarkerIntervalTerminationRestart0ID:
-        return PXJPEGMarkerIntervalTerminationRestart0;
-    case  PXJPEGMarkerIntervalTerminationRestart1ID:
-        return PXJPEGMarkerIntervalTerminationRestart1;
-    case  PXJPEGMarkerIntervalTerminationRestart2ID:
-        return PXJPEGMarkerIntervalTerminationRestart2;
-    case  PXJPEGMarkerIntervalTerminationRestart3ID:
-        return PXJPEGMarkerIntervalTerminationRestart3;
-    case  PXJPEGMarkerIntervalTerminationRestart4ID:
-        return PXJPEGMarkerIntervalTerminationRestart4;
-    case  PXJPEGMarkerIntervalTerminationRestart5ID:
-        return PXJPEGMarkerIntervalTerminationRestart5;
-    case  PXJPEGMarkerIntervalTerminationRestart6ID:
-        return PXJPEGMarkerIntervalTerminationRestart6;
-    case  PXJPEGMarkerIntervalTerminationRestart7ID:
-        return PXJPEGMarkerIntervalTerminationRestart7;
-    case  PXJPEGMarkerStartOfImageID:
-        return PXJPEGMarkerStartOfImage;
-    case  PXJPEGMarkerEndOfImageID:
-        return PXJPEGMarkerEndOfImage;
-    case  PXJPEGMarkerStartOfScanID:
-        return PXJPEGMarkerStartOfScan;
-    case  PXJPEGMarkerDefineQuantizationTableListID:
-        return PXJPEGMarkerDefineQuantizationTableList;
-    case  PXJPEGMarkerDefineNumberOfLinesID:
-        return PXJPEGMarkerDefineNumberOfLines;
-    case  PXJPEGMarkerDefineRestartIntervalID:
-        return PXJPEGMarkerDefineRestartInterval;
-    case  PXJPEGMarkerDefineHierarchicalProgressionID:
-        return PXJPEGMarkerDefineHierarchicalProgression;
-    case  PXJPEGMarkerExpandReferenceComponentListID:
-        return PXJPEGMarkerExpandReferenceComponentList;
-    case  PXJPEGMarkerApplicationSegment00ID:
-        return PXJPEGMarkerApplicationSegment00;
-    case  PXJPEGMarkerApplicationSegment01ID:
-        return PXJPEGMarkerApplicationSegment01;
-    case  PXJPEGMarkerApplicationSegment02ID:
-        return PXJPEGMarkerApplicationSegment02;
-    case  PXJPEGMarkerApplicationSegment03ID:
-        return PXJPEGMarkerApplicationSegment03;
-    case  PXJPEGMarkerApplicationSegment04ID:
-        return PXJPEGMarkerApplicationSegment04;
-    case  PXJPEGMarkerApplicationSegment05ID:
-        return PXJPEGMarkerApplicationSegment05;
-    case  PXJPEGMarkerApplicationSegment06ID:
-        return PXJPEGMarkerApplicationSegment06;
-    case  PXJPEGMarkerApplicationSegment07ID:
-        return PXJPEGMarkerApplicationSegment07;
-    case  PXJPEGMarkerApplicationSegment08ID:
-        return PXJPEGMarkerApplicationSegment08;
-    case  PXJPEGMarkerApplicationSegment09ID:
-        return PXJPEGMarkerApplicationSegment09;
-    case  PXJPEGMarkerApplicationSegment10ID:
-        return PXJPEGMarkerApplicationSegment10;
-    case  PXJPEGMarkerApplicationSegment11ID:
-        return PXJPEGMarkerApplicationSegment11;
-    case  PXJPEGMarkerApplicationSegment12ID:
-        return PXJPEGMarkerApplicationSegment12;
-    case  PXJPEGMarkerApplicationSegment13ID:
-        return PXJPEGMarkerApplicationSegment13;
-    case  PXJPEGMarkerApplicationSegment14ID:
-        return PXJPEGMarkerApplicationSegment14;
-    case  PXJPEGMarkerApplicationSegment15ID:
-        return PXJPEGMarkerApplicationSegment15;
-    case  PXJPEGMarkerPXJPEGExtension00ID:
-        return PXJPEGMarkerPXJPEGExtension00;
-    case  PXJPEGMarkerPXJPEGExtension01ID:
-        return PXJPEGMarkerPXJPEGExtension01;
-    case  PXJPEGMarkerPXJPEGExtension02ID:
-        return PXJPEGMarkerPXJPEGExtension02;
-    case  PXJPEGMarkerPXJPEGExtension03ID:
-        return PXJPEGMarkerPXJPEGExtension03;
-    case  PXJPEGMarkerPXJPEGExtension04ID:
-        return PXJPEGMarkerPXJPEGExtension04;
-    case  PXJPEGMarkerPXJPEGExtension05ID:
-        return PXJPEGMarkerPXJPEGExtension05;
-    case  PXJPEGMarkerPXJPEGExtension06ID:
-        return PXJPEGMarkerPXJPEGExtension06;
-    case  PXJPEGMarkerPXJPEGExtension07ID:
-        return PXJPEGMarkerPXJPEGExtension07;
-    case  PXJPEGMarkerPXJPEGExtension08ID:
-        return PXJPEGMarkerPXJPEGExtension08;
-    case  PXJPEGMarkerPXJPEGExtension09ID:
-        return PXJPEGMarkerPXJPEGExtension09;
-    case  PXJPEGMarkerPXJPEGExtension10ID:
-        return PXJPEGMarkerPXJPEGExtension10;
-    case  PXJPEGMarkerPXJPEGExtension11ID:
-        return PXJPEGMarkerPXJPEGExtension11;
-    case  PXJPEGMarkerPXJPEGExtension12ID:
-        return PXJPEGMarkerPXJPEGExtension12;
-    case  PXJPEGMarkerPXJPEGExtension13ID:
-        return PXJPEGMarkerPXJPEGExtension13;
-    case  PXJPEGMarkerCommentID:
-        return PXJPEGMarkerComment;
-    case  PXJPEGMarkerTemporaryID:
-        return PXJPEGMarkerTemporary;
-    case  PXJPEGMarkerReservedID:
-        return PXJPEGMarkerReserved;
-
-    default:
-        return PXJPEGMarkerInvalid;
-    }
+    PXInt8U SignatureKey;
+    PXInt8U CommandID;
+    PXInt16U ChunkSize;
 }
+PXJPEGChunkHeaderBindingData;
 
-PXInt16U PXAPI PXJPEGMarkerToID(const PXJPEGMarker jpegMarker)
+const PXInt32U PXJPEGChunkHeaderBinding[] =
 {
-    switch(jpegMarker)
-    {
-    case  PXJPEGMarkerStartOfFrameHuffmanBaselineDCT:
-        return PXJPEGMarkerStartOfFrameHuffmanBaselineDCTID;
-    case  PXJPEGMarkerStartOfFrameHuffmanSequentialExtendedDCT:
-        return PXJPEGMarkerStartOfFrameHuffmanSequentialExtendedDCTID;
-    case  PXJPEGMarkerStartOfFrameHuffmanProgressiveDCT:
-        return PXJPEGMarkerStartOfFrameHuffmanProgressiveDCTID;
-    case  PXJPEGMarkerStartOfFrameHuffmanSequentialLossless:
-        return PXJPEGMarkerStartOfFrameHuffmanSequentialLosslessID;
-    case  PXJPEGMarkerDefineHuffmanTableList:
-        return PXJPEGMarkerDefineHuffmanTableListID;
-    case  PXJPEGMarkerStartOfFrameHuffmanDifferentialSequential:
-        return PXJPEGMarkerStartOfFrameHuffmanDifferentialSequentialID;
-    case  PXJPEGMarkerStartOfFrameHuffmanDifferentialProgressiveDCT:
-        return PXJPEGMarkerStartOfFrameHuffmanDifferentialProgressiveDCTID;
-    case  PXJPEGMarkerStartOfFrameHuffmanDifferentialLosslessSequential:
-        return PXJPEGMarkerStartOfFrameHuffmanDifferentialLosslessSequentialID;
-    case  PXJPEGMarkerStartOfFrameArithmeticPXJPEGExtension:
-        return PXJPEGMarkerStartOfFrameArithmeticPXJPEGExtensionID;
-    case  PXJPEGMarkerStartOfFrameArithmeticExtendedSequentialDCT:
-        return PXJPEGMarkerStartOfFrameArithmeticExtendedSequentialDCTID;
-    case  PXJPEGMarkerStartOfFrameArithmeticProgressiveDCT:
-        return PXJPEGMarkerStartOfFrameArithmeticProgressiveDCTID;
-    case  PXJPEGMarkerStartOfFrameArithmeticLosslessSequential:
-        return PXJPEGMarkerStartOfFrameArithmeticLosslessSequentialID;
-    case  PXJPEGMarkerDefineArithmeticCoding:
-        return PXJPEGMarkerDefineArithmeticCodingID;
-    case  PXJPEGMarkerStartOfFrameArithmeticDifferentialSequentialDCT:
-        return PXJPEGMarkerStartOfFrameArithmeticDifferentialSequentialDCTID;
-    case  PXJPEGMarkerStartOfFrameArithmeticDifferentialProgressiveDCT:
-        return PXJPEGMarkerStartOfFrameArithmeticDifferentialProgressiveDCTID;
-    case  PXJPEGMarkerStartOfFrameArithmeticDifferentialLosslessSequential:
-        return PXJPEGMarkerStartOfFrameArithmeticDifferentialLosslessSequentialID;
-    case  PXJPEGMarkerIntervalTerminationRestart0:
-        return PXJPEGMarkerIntervalTerminationRestart0ID;
-    case  PXJPEGMarkerIntervalTerminationRestart1:
-        return PXJPEGMarkerIntervalTerminationRestart1ID;
-    case  PXJPEGMarkerIntervalTerminationRestart2:
-        return PXJPEGMarkerIntervalTerminationRestart2ID;
-    case  PXJPEGMarkerIntervalTerminationRestart3:
-        return PXJPEGMarkerIntervalTerminationRestart3ID;
-    case  PXJPEGMarkerIntervalTerminationRestart4:
-        return PXJPEGMarkerIntervalTerminationRestart4ID;
-    case  PXJPEGMarkerIntervalTerminationRestart5:
-        return PXJPEGMarkerIntervalTerminationRestart5ID;
-    case  PXJPEGMarkerIntervalTerminationRestart6:
-        return PXJPEGMarkerIntervalTerminationRestart6ID;
-    case  PXJPEGMarkerIntervalTerminationRestart7:
-        return PXJPEGMarkerIntervalTerminationRestart7ID;
-    case  PXJPEGMarkerStartOfImage:
-        return PXJPEGMarkerStartOfImageID;
-    case  PXJPEGMarkerEndOfImage:
-        return PXJPEGMarkerEndOfImageID;
-    case  PXJPEGMarkerStartOfScan:
-        return PXJPEGMarkerStartOfScanID;
-    case  PXJPEGMarkerDefineQuantizationTableList:
-        return PXJPEGMarkerDefineQuantizationTableListID;
-    case  PXJPEGMarkerDefineNumberOfLines:
-        return PXJPEGMarkerDefineNumberOfLinesID;
-    case  PXJPEGMarkerDefineRestartInterval:
-        return PXJPEGMarkerDefineRestartIntervalID;
-    case  PXJPEGMarkerDefineHierarchicalProgression:
-        return PXJPEGMarkerDefineHierarchicalProgressionID;
-    case  PXJPEGMarkerExpandReferenceComponentList:
-        return PXJPEGMarkerExpandReferenceComponentListID;
-    case  PXJPEGMarkerApplicationSegment00:
-        return PXJPEGMarkerApplicationSegment00ID;
-    case  PXJPEGMarkerApplicationSegment01:
-        return PXJPEGMarkerApplicationSegment01ID;
-    case  PXJPEGMarkerApplicationSegment02:
-        return PXJPEGMarkerApplicationSegment02ID;
-    case  PXJPEGMarkerApplicationSegment03:
-        return PXJPEGMarkerApplicationSegment03ID;
-    case  PXJPEGMarkerApplicationSegment04:
-        return PXJPEGMarkerApplicationSegment04ID;
-    case  PXJPEGMarkerApplicationSegment05:
-        return PXJPEGMarkerApplicationSegment05ID;
-    case  PXJPEGMarkerApplicationSegment06:
-        return PXJPEGMarkerApplicationSegment06ID;
-    case  PXJPEGMarkerApplicationSegment07:
-        return PXJPEGMarkerApplicationSegment07ID;
-    case  PXJPEGMarkerApplicationSegment08:
-        return PXJPEGMarkerApplicationSegment08ID;
-    case  PXJPEGMarkerApplicationSegment09:
-        return PXJPEGMarkerApplicationSegment09ID;
-    case  PXJPEGMarkerApplicationSegment10:
-        return PXJPEGMarkerApplicationSegment10ID;
-    case  PXJPEGMarkerApplicationSegment11:
-        return PXJPEGMarkerApplicationSegment11ID;
-    case  PXJPEGMarkerApplicationSegment12:
-        return PXJPEGMarkerApplicationSegment12ID;
-    case  PXJPEGMarkerApplicationSegment13:
-        return PXJPEGMarkerApplicationSegment13ID;
-    case  PXJPEGMarkerApplicationSegment14:
-        return PXJPEGMarkerApplicationSegment14ID;
-    case  PXJPEGMarkerApplicationSegment15:
-        return PXJPEGMarkerApplicationSegment15ID;
-    case  PXJPEGMarkerPXJPEGExtension00:
-        return PXJPEGMarkerPXJPEGExtension00ID;
-    case  PXJPEGMarkerPXJPEGExtension01:
-        return PXJPEGMarkerPXJPEGExtension01ID;
-    case  PXJPEGMarkerPXJPEGExtension02:
-        return PXJPEGMarkerPXJPEGExtension02ID;
-    case  PXJPEGMarkerPXJPEGExtension03:
-        return PXJPEGMarkerPXJPEGExtension03ID;
-    case  PXJPEGMarkerPXJPEGExtension04:
-        return PXJPEGMarkerPXJPEGExtension04ID;
-    case  PXJPEGMarkerPXJPEGExtension05:
-        return PXJPEGMarkerPXJPEGExtension05ID;
-    case  PXJPEGMarkerPXJPEGExtension06:
-        return PXJPEGMarkerPXJPEGExtension06ID;
-    case  PXJPEGMarkerPXJPEGExtension07:
-        return PXJPEGMarkerPXJPEGExtension07ID;
-    case  PXJPEGMarkerPXJPEGExtension08:
-        return PXJPEGMarkerPXJPEGExtension08ID;
-    case  PXJPEGMarkerPXJPEGExtension09:
-        return PXJPEGMarkerPXJPEGExtension09ID;
-    case  PXJPEGMarkerPXJPEGExtension10:
-        return PXJPEGMarkerPXJPEGExtension10ID;
-    case  PXJPEGMarkerPXJPEGExtension11:
-        return PXJPEGMarkerPXJPEGExtension11ID;
-    case  PXJPEGMarkerPXJPEGExtension12:
-        return PXJPEGMarkerPXJPEGExtension12ID;
-    case  PXJPEGMarkerPXJPEGExtension13:
-        return PXJPEGMarkerPXJPEGExtension13ID;
-    case  PXJPEGMarkerComment:
-        return PXJPEGMarkerCommentID;
-    case  PXJPEGMarkerTemporary:
-        return PXJPEGMarkerTemporaryID;
-    case  PXJPEGMarkerReserved:
-        return PXJPEGMarkerReservedID;
+    PXTypeInt08U | PXTypeSignatureCheck,
+    PXTypeInt08U,
+    PXTypeInt16UBE,
+};
+const PXInt8U PXJPEGChunkHeaderBindingSize = sizeof(PXJPEGChunkHeaderBinding) / sizeof(PXInt32U);
 
-    case PXJPEGMarkerInvalid:
-    default:
-        return PXJPEGMarkerInvalidID;
-    }
-}
 
-PXSize PXAPI PXJPEGFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp)
-{
-    const PXSize beginning = 2;
-    const PXSize end = 2;
-    const PXSize app0 = 20;
 
-    const PXSize sum = beginning + end + app0 + (height * width * 3u) + 0xFFFF * 2;
-
-    return sum;
-}
-
-void PXAPI PXJPEGDestruct(PXJPEG* const jpeg)
-{
-
-}
-
-PXActionResult PXAPI PXJPEGLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
-{
-    PXJPEG jpeXg;
-    PXJPEG* jpeg = &jpeXg;
-
-    PXClear(PXJPEG, &jpeg);
-
-    // Check Start of Image
-    {
-        PXInt16UCluster startBlock;
-
-        PXFileReadB(pxResourceLoadInfo->FileReference, startBlock.Data, 2u);
-
-        const PXJPEGMarker marker = PXJPEGMarkerFromID(startBlock.Value);
-        const PXBool validStart = PXJPEGMarkerStartOfImage == marker;
-
-        if(!validStart)
-        {
-            return PXActionRefusedInvalidHeaderSignature;
-        }
-
-#if JPGDebug
-        printf("[i][JPG] Start of Image\n");
-#endif
-    }
-
-    while(!PXFileIsAtEnd(pxResourceLoadInfo->FileReference))
-    {
-        PXJPEGMarker chunkMarker = PXJPEGMarkerInvalid;
-        PXInt16U chunkLength = -1;
-        PXSize expectedOffset = -1;
-
-        // Parse info
-        {
-            PXInt16UCluster markerData;
-
-            PXFileReadB(pxResourceLoadInfo->FileReference, markerData.Data, 2u);
-
-            chunkMarker = PXJPEGMarkerFromID(markerData.Value);
-
-            if(chunkMarker == PXJPEGMarkerEndOfImage)
-            {
-#if JPGDebug
-                printf("[i][JPG] End of Image\n");
-#endif
-
-                return PXActionSuccessful;
-            }
-
-            PXFileReadI16UE(pxResourceLoadInfo->FileReference, &chunkLength, PXEndianBig);
-
-            chunkLength -= 2u; // dont count header
-
-            expectedOffset = pxResourceLoadInfo->FileReference->DataCursor + chunkLength;
-
-#if JPGDebug
-
-            unsigned int percentage = (pxFile->DataCursor / (float)pxFile->DataSize) * 100;
-
-            printf("\n[i][JPG] Chunk <%2x%2x> deteced. Size:%i Bytes (Parsed : %i%%)\n", markerData.A, markerData.B, chunkLength, percentage);
-#endif
-        }
-
-        switch(chunkMarker)
-        {
-        case PXJPEGMarkerStartOfImage:
-        {
-            // We read the start tag already. Reading it again is not valid.
-            return PXActionFailedFormatNotAsExpected;
-        }
-
-        case PXJPEGMarkerStartOfFrameHuffmanBaselineDCT:
-        {
-            PXJPEGFrame frame;
-
-            // Read frame
-            {
-                const PXTypeEntry pxDataStreamElementList[] =
-                {
-                    {&frame.Precision,PXTypeInt08U},
-                    {&frame.Height,PXTypeInt16UBE},
-                    {&frame.Width,PXTypeInt16UBE},
-                    {&frame.ComponentListSize,PXTypeInt08U}
-                };
-
-                PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
-            }
-
-            for(PXSize i = 0; i < frame.ComponentListSize; ++i)
-            {
-                PXJPEGFrameComponent* frameComponent = &frame.ComponentList[i];
-                unsigned char samplingFactor = 0;
-
-                const PXTypeEntry pxDataStreamElementList[] =
-                {
-                    {&frameComponent->ID,PXTypeInt08U},
-                    {&samplingFactor,PXTypeInt08U},
-                    {&frameComponent->QuantizationTableID,PXTypeInt08U}
-                };
-
-                PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
-
-                frameComponent->SamplingFactorHorizonal = ((samplingFactor & 0b11110000) >> 4u);
-                frameComponent->SamplingFactorVertical = (samplingFactor & 0b00001111);
-            }
-
-#if JPGDebug
-            printf
-            (
-                "[i][JPG] Start of Frame (DCT Baseline)\n"
-                " | Precision  : %3i |\n"
-                " | Size       : %i, %i |\n"
-                " | Components : %3i |\n",
-                frame.Precision,
-                frame.Width,
-                frame.Height,
-                frame.ComponentListSize
-            );
-#endif
-
-            break;
-        }
-        case PXJPEGMarkerDefineQuantizationTableList:
-        {
-            PXSize remainingBytes = chunkLength;
-
-            while(remainingBytes)
-            {
-                PXInt8U precision = 0;
-                PXInt8U matixID = 0;
-
-                {
-                    PXInt8U cluster = 0;
-
-                    remainingBytes -= PXFileReadI8U(pxResourceLoadInfo->FileReference, &cluster);
-
-                    precision = (cluster & 0b11110000) >> 4;
-                    matixID = (cluster & 0b00001111);
-                }
-
-                PXInt8U* const matrixAdress = (PXInt8U*)&jpeg->QuantizationTable[matixID];
-
-                remainingBytes -= PXFileReadB(pxResourceLoadInfo->FileReference, matrixAdress, sizeof(PXInt8U) * 64u);
-
-#if JPGDebug
-                printf("[i][JPG] Define Quantization Table <%i>\n", matixID);
-
-
-
-                for(PXSize y = 0; y < 8u; ++y)
-                {
-                    printf("|");
-
-                    for(PXSize x = 0; x < 8u; ++x)
-                    {
-                        printf("%3i |", matrixAdress[y * 8u + x]);
-                    }
-
-                    printf("\n");
-                }
-#endif
-            }
-
-            break;
-        }
-        case PXJPEGMarkerDefineHuffmanTableList:
-        {
-            PXSize remainingBytes = chunkLength;
-
-            while(remainingBytes)
-            {
-                PXJPEGHuffmanTable jpegHuffmanTable;
-
-                {
-                    PXInt8U huffmanTableInfo;
-
-                    remainingBytes -= PXFileReadI8U(pxResourceLoadInfo->FileReference, &huffmanTableInfo);
-
-                    jpegHuffmanTable.ID = (huffmanTableInfo & 0b00001111);
-                    jpegHuffmanTable.Type = (huffmanTableInfo & 0b00010000) >> 4u;
-                    // unused 0b11100000
-                }
-#if JPGDebug
-                printf
-                (
-                    "[i][JPG] Define Huffman table\n"
-                    " | ID   : %2i \n"
-                    " | Type : %2i \n",
-                    jpegHuffmanTable.ID,
-                    jpegHuffmanTable.Type
-                );
-#endif
-
-                PXInt16U symbolSum = 0;
-
-                // 16 Bytes symbopls
-                for(PXInt8U i = 0; i < 16u; ++i)
-                {
-                    PXInt8U symbol = 0;
-
-                    remainingBytes -= PXFileReadI8U(pxResourceLoadInfo->FileReference, &symbol);
-
-#if JPGDebug
-                    printf
-                    (
-                        " | Symbol length <%zi>\n",
-                        symbol
-                    );
-#endif
-
-                    symbolSum += symbol;
-                }
-
-#if JPGDebug
-                printf
-                (
-                    " | Symbol sum <%zi>\n",
-                    symbolSum
-                );
-#endif
-
-
-                // n bytes from that data
-                for(PXInt16U i = 0; i < symbolSum; ++i)
-                {
-                    PXInt8U symbol = 0;
-
-                    remainingBytes -= PXFileReadI8U(pxResourceLoadInfo->FileReference, &symbol);
-
-#if JPGDebug
-                    printf
-                    (
-                        " | Symbol <%i>\n",
-                        symbol
-                    );
-#endif
-
-                    // Save?
-                }
-
-            }
-            break;
-        }
-        case PXJPEGMarkerStartOfScan:
-        {
-            PXFileReadI8U(pxResourceLoadInfo->FileReference, &jpeg->ScanStart.ScanSelectorSize);
-
-            for(PXInt8U i = 0; i < jpeg->ScanStart.ScanSelectorSize; ++i)
-            {
-                PXJPEGScanSelector* scanSelector = &jpeg->ScanStart.ScanSelector[i];
-                PXInt8U huffmanTableUsed = 0;
-
-                PXFileReadI8U(pxResourceLoadInfo->FileReference, &scanSelector->ID);
-                PXFileReadI8U(pxResourceLoadInfo->FileReference, &huffmanTableUsed);
-
-                scanSelector->DC = ((huffmanTableUsed & 0b11110000) >> 4u);
-                scanSelector->ACTable = (huffmanTableUsed & 0b00001111);
-            }
-
-            PXFileCursorAdvance(pxResourceLoadInfo->FileReference, 3u); // mandatorily to skip these, why?
-
-            // Compressed image data starts here --------------------------------
-
-            //PXFileReadI8U(&PXFile, &jpeg->ScanStart.SpectralSelectFrom);
-            //PXFileReadI8U(&PXFile, &jpeg->ScanStart.SpectralSelectTo);
-            //PXFileReadI8U(&PXFile, &jpeg->ScanStart.SuccessiveAproximation);
-
-            //jpeg->CompressedImageDataSize = PXFileRemainingSize(&PXFile) - 2u;
-            //jpeg->CompressedImageData = MemoryAllocate(sizeof(unsigned char) * jpeg->CompressedImageDataSize);
-
-            //PXFileReadB(&PXFile, jpeg->CompressedImageData, jpeg->CompressedImageDataSize);
-
-            const PXSize imageDataSize = PXFileRemainingSize(pxResourceLoadInfo->FileReference) - 2u;
-
-            // Correct expected offset, as the "chunk length" seems to be only considering the data iself and not the whole chunk.
-
-            expectedOffset += imageDataSize;
-
-#if JPGDebug
-            printf
-            (
-                "[i][JPG] Start of Scan...\n"
-                " - Image Data <%i> Bytes\n",
-                imageDataSize
-            );
-#endif
-            PXFileCursorAdvance(pxResourceLoadInfo->FileReference, imageDataSize);
-
-            break;
-        }
-        case PXJPEGMarkerApplicationSegment00:
-        {
-            char identifier[5];
-
-            PXFileReadB(pxResourceLoadInfo->FileReference, identifier, 5u);
-
-            {
-                const PXTypeEntry pxDataStreamElementList[] =
-                {
-                    {&jpeg->FileInfo.VersionMajor, PXTypeInt08U},
-                    {&jpeg->FileInfo.VersionMinor, PXTypeInt08U},
-                    {&jpeg->FileInfo.DensityUnits, PXTypeInt08U},
-                    {&jpeg->FileInfo.DensityX,PXTypeInt16UBE},
-                    {&jpeg->FileInfo.DensityY,PXTypeInt16UBE},
-                    {&jpeg->FileInfo.ThumbnailX, PXTypeInt08U},
-                    {&jpeg->FileInfo.ThumbnailY, PXTypeInt08U},
-                };
-
-                PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
-            }
-
-#if JPGDebug
-            printf
-            (
-                "[i][JPG] Header Info\n"
-                " | Identifier   : %8s |\n"
-                " | Version      : %3i, %3i |\n"
-                " | Density Unit : %8i |\n"
-                " | Density      : %3i, %3i |\n"
-                " | Thumbnail    : %3i, %3i |\n",
-                identifier,
-                jpeg->FileInfo.VersionMajor,
-                jpeg->FileInfo.VersionMinor,
-                jpeg->FileInfo.DensityUnits,
-                jpeg->FileInfo.DensityX,
-                jpeg->FileInfo.DensityY,
-                jpeg->FileInfo.ThumbnailX,
-                jpeg->FileInfo.ThumbnailY
-            );
-#endif
-
-            // Load Thumbnail
-            {
-                const PXBool hasThumbnail = jpeg->FileInfo.ThumbnailX > 0 && jpeg->FileInfo.ThumbnailY > 0;
-
-                if(hasThumbnail)
-                {
-                    const PXSize size = jpeg->FileInfo.ThumbnailX * jpeg->FileInfo.ThumbnailY * 3u;
-
-                    PXNewList(PXByte, size, &jpeg->FileInfo.ThumbnailData, &jpeg->FileInfo.ThumbnailDataSize);
-
-                    PXFileReadB(pxResourceLoadInfo->FileReference, jpeg->FileInfo.ThumbnailData, jpeg->FileInfo.ThumbnailDataSize);
-                }
-            }
-
-            break;
-        }
-        case PXJPEGMarkerComment:
-        {
-            PXNewList(char, chunkLength, &jpeg->Comment, &jpeg->CommentSize);
-
-            PXFileReadB(pxResourceLoadInfo->FileReference, jpeg->Comment, chunkLength);
-
-            break;
-        }
-        }
-
-#if JPGDebug
-        if(pxFile->DataCursor != expectedOffset)
-        {
-            printf("[!][JPG] Chunk has unhandled data! Skipping <%zi> Bytes\n", expectedOffset - pxFile->DataCursor);
-        }
-#endif
-        //--<Allign>----
-        pxResourceLoadInfo->FileReference->DataCursor = expectedOffset;
-        //--------------
-    }
-
-    return PXActionSuccessful;
-}
-
-
-// represent a few bits, typically a Huffman code
-typedef struct BitCode_
-{
-    // BitCode() {}       // undefined state, must be initialized at a later time
-    // BitCode(PXInt16U code_, PXInt8U numBits_) : code(code_), numBits(numBits_) {}
-    PXInt16U code;     // PXJPEG's Huffman codes are limited to 16 bits
-    PXInt8U  numBits;  // actual number of bits
-}
-BitCode;
-
-// store the most recently encoded bits that are not written yet
-typedef struct BitBuffer_
-{
-    // BitBuffer()        // actually, there will be only one instance of this object
-    //    : bits(0), numBits(0) {}
-    PXInt32S bits;      // actually only at most 24 bits are used
-    PXInt8U numBits;   // number of valid bits (the right-most bits)
-}
-BitBuffer;
 
 // quantization tables from PXJPEG Standard, Annex K
 // there are a few experts proposing slightly more efficient values, e.g. https://www.imagemagick.org/discourse-server/viewtopic.php?t=20333
 // btw: Google's Guetzli project optimizes the quantization tables per image
-const unsigned char DefaultQuantLuminance[8 * 8] =
+const PXInt8U DefaultQuantLuminance[8 * 8] =
 {
     16, 11, 10, 16, 24, 40, 51, 61,
     12, 12, 14, 19, 26, 58, 60, 55,
@@ -781,7 +40,7 @@ const unsigned char DefaultQuantLuminance[8 * 8] =
     49, 64, 78, 87,103,121,120,101,
     72, 92, 95, 98,112,100,103, 99
 };
-const unsigned char DefaultQuantChrominance[8 * 8] =
+const PXInt8U DefaultQuantChrominance[8 * 8] =
 {
     17, 18, 24, 47, 99, 99, 99, 99,
     18, 21, 26, 66, 99, 99, 99, 99,
@@ -852,12 +111,409 @@ const PXInt8U AcChrominanceValues[162] =                                        
     0xE2,0xE3,0xE4,0xE5,0xE6,0xE7,0xE8,0xE9,0xEA,0xF2,0xF3,0xF4,0xF5,0xF6,0xF7,0xF8,0xF9,0xFA
 };
 
+
+
+PXSize PXAPI PXJPEGFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp)
+{
+    const PXSize beginning = 2;
+    const PXSize end = 2;
+    const PXSize app0 = 20;
+
+    const PXSize sum = beginning + end + app0 + (height * width * 3u) + 0xFFFF * 2;
+
+    return sum;
+}
+
+void PXAPI PXJPEGDestruct(PXJPEG* const jpeg)
+{
+
+}
+
+PXActionResult PXAPI PXJPEGLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+{
+    PXJPEG jpeXg;
+    PXJPEG* jpeg = &jpeXg;
+
+    PXClear(PXJPEG, &jpeg);
+
+    PXJPEGChunkHeaderBindingData pxJPEGChunkHeaderBindingData;
+
+    // Check Start of Image
+    {
+        const PXSize readAbount = PXFileBinding(pxResourceLoadInfo->FileReference, &pxJPEGChunkHeaderBindingData, PXJPEGChunkHeaderBinding, PXJPEGChunkHeaderBindingSize - 1, PXFalse);
+        const PXBool validStart = PXJPEGChunckStartOfImage == pxJPEGChunkHeaderBindingData.CommandID;
+
+        if(!validStart)
+        {
+            return PXActionRefusedInvalidHeaderSignature;
+        }
+    }
+
+    while(!PXFileIsAtEnd(pxResourceLoadInfo->FileReference))
+    {
+        PXSize expectedOffset;
+
+        // Parse info
+        {
+            const PXSize readAbount = PXFileBinding
+            (
+                pxResourceLoadInfo->FileReference,
+                &pxJPEGChunkHeaderBindingData,
+                PXJPEGChunkHeaderBinding,
+                PXJPEGChunkHeaderBindingSize,
+                PXFalse
+            );
+
+            pxJPEGChunkHeaderBindingData.ChunkSize -= 2u; // dont count header
+            expectedOffset = pxResourceLoadInfo->FileReference->DataCursor + pxJPEGChunkHeaderBindingData.ChunkSize;
+
+#if JPGDebug
+
+            unsigned int percentage = (pxFile->DataCursor / (float)pxFile->DataSize) * 100;
+
+            printf("\n[i][JPG] Chunk <%2x%2x> deteced. Size:%i Bytes (Parsed : %i%%)\n", markerData.A, markerData.B, chunkLength, percentage);
+#endif
+        }
+
+        switch(pxJPEGChunkHeaderBindingData.CommandID)
+        {
+            case PXJPEGChunckEndOfImage:
+                return PXActionSuccessful;
+
+            case PXJPEGChunckStartOfImage:
+            {
+                // We read the start tag already. Reading it again is not valid.
+                return PXActionFailedFormatNotAsExpected;
+            }
+            case PXJPEGChunckStartOfFrameHuffmanBaselineDCT:
+            {
+                PXJPEGFrame frame;
+
+                // Read frame
+                {
+                    const PXTypeEntry pxDataStreamElementList[] =
+                    {
+                        {&frame.Precision,PXTypeInt08U},
+                        {&frame.Height,PXTypeInt16UBE},
+                        {&frame.Width,PXTypeInt16UBE},
+                        {&frame.ComponentListSize,PXTypeInt08U}
+                    };
+
+                    PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+                }
+
+                for(PXSize i = 0; i < frame.ComponentListSize; ++i)
+                {
+                    PXJPEGFrameComponent* frameComponent = &frame.ComponentList[i];
+                    unsigned char samplingFactor = 0;
+
+                    const PXTypeEntry pxDataStreamElementList[] =
+                    {
+                        {&frameComponent->ID,PXTypeInt08U},
+                        {&samplingFactor,PXTypeInt08U},
+                        {&frameComponent->QuantizationTableID,PXTypeInt08U}
+                    };
+
+                    PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+
+                    frameComponent->SamplingFactorHorizonal = ((samplingFactor & 0b11110000) >> 4u);
+                    frameComponent->SamplingFactorVertical = (samplingFactor & 0b00001111);
+                }
+
+#if JPGDebug
+                printf
+                (
+                    "[i][JPG] Start of Frame (DCT Baseline)\n"
+                    " | Precision  : %3i |\n"
+                    " | Size       : %i, %i |\n"
+                    " | Components : %3i |\n",
+                    frame.Precision,
+                    frame.Width,
+                    frame.Height,
+                    frame.ComponentListSize
+                );
+#endif
+
+                break;
+            }
+            case PXJPEGChunckDefineQuantizationTableList:
+            {
+                PXSize remainingBytes = pxJPEGChunkHeaderBindingData.ChunkSize;
+
+                while(remainingBytes)
+                {
+                    PXInt8U precision = 0;
+                    PXInt8U matixID = 0;
+
+                    {
+                        PXInt8U cluster = 0;
+
+                        remainingBytes -= PXFileReadI8U(pxResourceLoadInfo->FileReference, &cluster);
+
+                        precision = (cluster & 0b11110000) >> 4;
+                        matixID   = (cluster & 0b00001111);
+                    }
+
+                    PXInt8U* const matrixAdress = (PXInt8U*)&jpeg->QuantizationTable[matixID];
+
+                    remainingBytes -= PXFileReadB(pxResourceLoadInfo->FileReference, matrixAdress, sizeof(PXInt8U) * 64u);
+
+#if JPGDebug
+                    printf("[i][JPG] Define Quantization Table <%i>\n", matixID);
+
+
+
+                    for(PXSize y = 0; y < 8u; ++y)
+                    {
+                        printf("|");
+
+                        for(PXSize x = 0; x < 8u; ++x)
+                        {
+                            printf("%3i |", matrixAdress[y * 8u + x]);
+                        }
+
+                        printf("\n");
+                    }
+#endif
+                }
+
+                break;
+            }
+            case PXJPEGChunckDefineHuffmanTableList:
+            {
+                PXSize remainingBytes = pxJPEGChunkHeaderBindingData.ChunkSize;
+
+                while(remainingBytes)
+                {
+                    PXJPEGHuffmanTable jpegHuffmanTable;
+
+                    {
+                        PXInt8U huffmanTableInfo;
+
+                        remainingBytes -= PXFileReadI8U(pxResourceLoadInfo->FileReference, &huffmanTableInfo);
+
+                        jpegHuffmanTable.ID = (huffmanTableInfo & 0b00001111);
+                        jpegHuffmanTable.Type = (huffmanTableInfo & 0b00010000) >> 4u;
+                        // unused 0b11100000
+                    }
+#if JPGDebug
+                    printf
+                    (
+                        "[i][JPG] Define Huffman table\n"
+                        " | ID   : %2i \n"
+                        " | Type : %2i \n",
+                        jpegHuffmanTable.ID,
+                        jpegHuffmanTable.Type
+                    );
+#endif
+
+                    PXInt16U symbolSum = 0;
+
+                    // 16 Bytes symbopls
+                    for(PXInt8U i = 0; i < 16u; ++i)
+                    {
+                        PXInt8U symbol = 0;
+
+                        remainingBytes -= PXFileReadI8U(pxResourceLoadInfo->FileReference, &symbol);
+
+#if JPGDebug
+                        printf
+                        (
+                            " | Symbol length <%zi>\n",
+                            symbol
+                        );
+#endif
+
+                        symbolSum += symbol;
+                    }
+
+#if JPGDebug
+                    printf
+                    (
+                        " | Symbol sum <%zi>\n",
+                        symbolSum
+                    );
+#endif
+
+
+                    // n bytes from that data
+                    for(PXInt16U i = 0; i < symbolSum; ++i)
+                    {
+                        PXInt8U symbol = 0;
+
+                        remainingBytes -= PXFileReadI8U(pxResourceLoadInfo->FileReference, &symbol);
+
+#if JPGDebug
+                        printf
+                        (
+                            " | Symbol <%i>\n",
+                            symbol
+                        );
+#endif
+
+                        // Save?
+                    }
+
+                }
+                break;
+            }
+            case PXJPEGChunckStartOfScan:
+            {
+                PXFileReadI8U(pxResourceLoadInfo->FileReference, &jpeg->ScanStart.ScanSelectorSize);
+
+                for(PXInt8U i = 0; i < jpeg->ScanStart.ScanSelectorSize; ++i)
+                {
+                    PXJPEGScanSelector* scanSelector = &jpeg->ScanStart.ScanSelector[i];
+                    PXInt8U huffmanTableUsed = 0;
+
+                    PXFileReadI8U(pxResourceLoadInfo->FileReference, &scanSelector->ID);
+                    PXFileReadI8U(pxResourceLoadInfo->FileReference, &huffmanTableUsed);
+
+                    scanSelector->DC = ((huffmanTableUsed & 0b11110000) >> 4u);
+                    scanSelector->ACTable = (huffmanTableUsed & 0b00001111);
+                }
+
+                PXFileCursorAdvance(pxResourceLoadInfo->FileReference, 3u); // mandatorily to skip these, why?
+
+                // Compressed image data starts here --------------------------------
+
+                //PXFileReadI8U(&PXFile, &jpeg->ScanStart.SpectralSelectFrom);
+                //PXFileReadI8U(&PXFile, &jpeg->ScanStart.SpectralSelectTo);
+                //PXFileReadI8U(&PXFile, &jpeg->ScanStart.SuccessiveAproximation);
+
+                //jpeg->CompressedImageDataSize = PXFileRemainingSize(&PXFile) - 2u;
+                //jpeg->CompressedImageData = MemoryAllocate(sizeof(unsigned char) * jpeg->CompressedImageDataSize);
+
+                //PXFileReadB(&PXFile, jpeg->CompressedImageData, jpeg->CompressedImageDataSize);
+
+                const PXSize imageDataSize = PXFileRemainingSize(pxResourceLoadInfo->FileReference) - 2u;
+
+                // Correct expected offset, as the "chunk length" seems to be only considering the data iself and not the whole chunk.
+
+                expectedOffset += imageDataSize;
+
+#if JPGDebug
+                printf
+                (
+                    "[i][JPG] Start of Scan...\n"
+                    " - Image Data <%i> Bytes\n",
+                    imageDataSize
+                );
+#endif
+                PXFileCursorAdvance(pxResourceLoadInfo->FileReference, imageDataSize);
+
+                break;
+            }
+            case PXJPEGChunckApplicationSegment00:
+            {
+                char identifier[5];
+
+                PXFileReadB(pxResourceLoadInfo->FileReference, identifier, 5u);
+
+                {
+                    const PXTypeEntry pxDataStreamElementList[] =
+                    {
+                        {&jpeg->FileInfo.VersionMajor, PXTypeInt08U},
+                        {&jpeg->FileInfo.VersionMinor, PXTypeInt08U},
+                        {&jpeg->FileInfo.DensityUnits, PXTypeInt08U},
+                        {&jpeg->FileInfo.DensityX,PXTypeInt16UBE},
+                        {&jpeg->FileInfo.DensityY,PXTypeInt16UBE},
+                        {&jpeg->FileInfo.ThumbnailX, PXTypeInt08U},
+                        {&jpeg->FileInfo.ThumbnailY, PXTypeInt08U},
+                    };
+
+                    PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+                }
+
+#if JPGDebug
+                printf
+                (
+                    "[i][JPG] Header Info\n"
+                    " | Identifier   : %8s |\n"
+                    " | Version      : %3i, %3i |\n"
+                    " | Density Unit : %8i |\n"
+                    " | Density      : %3i, %3i |\n"
+                    " | Thumbnail    : %3i, %3i |\n",
+                    identifier,
+                    jpeg->FileInfo.VersionMajor,
+                    jpeg->FileInfo.VersionMinor,
+                    jpeg->FileInfo.DensityUnits,
+                    jpeg->FileInfo.DensityX,
+                    jpeg->FileInfo.DensityY,
+                    jpeg->FileInfo.ThumbnailX,
+                    jpeg->FileInfo.ThumbnailY
+                );
+#endif
+
+                // Load Thumbnail
+                {
+                    const PXBool hasThumbnail = jpeg->FileInfo.ThumbnailX > 0 && jpeg->FileInfo.ThumbnailY > 0;
+
+                    if(hasThumbnail)
+                    {
+                        const PXSize size = jpeg->FileInfo.ThumbnailX * jpeg->FileInfo.ThumbnailY * 3u;
+
+                        PXNewList(PXByte, size, &jpeg->FileInfo.ThumbnailData, &jpeg->FileInfo.ThumbnailDataSize);
+
+                        PXFileReadB(pxResourceLoadInfo->FileReference, jpeg->FileInfo.ThumbnailData, jpeg->FileInfo.ThumbnailDataSize);
+                    }
+                }
+
+                break;
+            }
+            case PXJPEGChunckComment:
+            {
+                PXNewList(char, pxJPEGChunkHeaderBindingData.ChunkSize, &jpeg->Comment, &jpeg->CommentSize);
+
+                PXFileReadB(pxResourceLoadInfo->FileReference, jpeg->Comment, pxJPEGChunkHeaderBindingData.ChunkSize);
+
+                break;
+            }
+        }
+
+#if JPGDebug
+        if(pxFile->DataCursor != expectedOffset)
+        {
+            printf("[!][JPG] Chunk has unhandled data! Skipping <%zi> Bytes\n", expectedOffset - pxFile->DataCursor);
+        }
+#endif
+        //--<Allign>----
+        pxResourceLoadInfo->FileReference->DataCursor = expectedOffset;
+        //--------------
+    }
+
+    return PXActionSuccessful;
+}
+
+
+// represent a few bits, typically a Huffman code
+typedef struct BitCode_
+{
+    // BitCode() {}       // undefined state, must be initialized at a later time
+    // BitCode(PXInt16U code_, PXInt8U numBits_) : code(code_), numBits(numBits_) {}
+    PXInt16U code;     // PXJPEG's Huffman codes are limited to 16 bits
+    PXInt8U  numBits;  // actual number of bits
+}
+BitCode;
+
+// store the most recently encoded bits that are not written yet
+typedef struct BitBuffer_
+{
+    // BitBuffer()        // actually, there will be only one instance of this object
+    //    : bits(0), numBits(0) {}
+    PXInt32S bits;      // actually only at most 24 bits are used
+    PXInt8U numBits;   // number of valid bits (the right-most bits)
+}
+BitBuffer;
+
+
+
 // ////////////////////////////////////////
 // helper functions / templates
 
 
 // write bits stored in BitCode, keep excess bits in BitBuffer
-void writeBits(PXFile* PXFile, BitBuffer* buffer, BitCode data)
+void PXAPI writeBits(PXFile* PXFile, BitBuffer* buffer, BitCode data)
 {
     // append the new bits to those bits leftover from previous call(s)
     buffer->numBits += data.numBits;
@@ -882,7 +538,7 @@ void writeBits(PXFile* PXFile, BitBuffer* buffer, BitCode data)
 }
 
 // convert to a PXJPEG codeword
-void convertCode(BitCode* bitCode, int value)
+void PXAPI convertCode(BitCode* bitCode, int value)
 {
     // positive value: code = value,     numBits = position of highest set bit
     // negative value: ignore sign, then numBits = position of highest set bit, and code = (2^numBits) - 1 + value
@@ -903,7 +559,7 @@ void convertCode(BitCode* bitCode, int value)
 
 // forward DCT computation "in one dimension" (fast AAN algorithm: Arai, Agui and Nakajima: "A fast DCT-SQ scheme for images")
 // stride must be 1 (=horizontal) or 8 (=vertical)
-void DCT(int stride, float block[8 * 8])
+void PXAPI DCT(int stride, float block[8 * 8])
 {
     // modify in-place
     float* block0 = &block[0 * stride];
@@ -954,7 +610,7 @@ void DCT(int stride, float block[8 * 8])
 }
 
 // run DCT, quantize and write Huffman bit codes
-short PXJPEGEncodeBlock
+short PXAPI PXJPEGEncodeBlock
 (
     PXFile* PXFile,
     BitBuffer* buffer,
@@ -1041,7 +697,7 @@ short PXJPEGEncodeBlock
 
 // Jon's code includes the pre-generated Huffman codes
 // I don't like these "magic constants" and compute them on my own :-)
-void generateHuffmanTable(const PXInt8U numCodes[16], const PXInt8U* values, BitCode result[256])
+void PXAPI generateHuffmanTable(const PXInt8U numCodes[16], const PXInt8U* values, BitCode result[256])
 {
     PXInt16U huffmanCode = 0; // no PXJPEG Huffman code exceeds 16 bits
     // process all bitsizes 1 thru 16
@@ -1074,7 +730,7 @@ PXActionResult PXAPI PXJPEGSaveToFile(PXResourceTransphereInfo* const pxResource
 
     // Header Signature
     {
-        PXFileWriteI16UE(pxResourceSaveInfo->FileReference, PXJPEGMarkerStartOfImageID, EndianCurrentSystem);
+        PXFileWriteI16UE(pxResourceSaveInfo->FileReference, PXJPEGChunckStartOfImage, EndianCurrentSystem);
     }
 
     // APP0
@@ -1090,9 +746,9 @@ PXActionResult PXAPI PXJPEGSaveToFile(PXResourceTransphereInfo* const pxResource
         jpegFileInfo.ThumbnailDataSize = 0;
         jpegFileInfo.ThumbnailData = 0;
 
-        const char PXJPEGApp0[4] = { 'J', 'F', 'I', 'F' };
 
-        const PXInt16U segmentID = PXJPEGMarkerApplicationSegment00ID;
+
+        const PXInt16U segmentID = PXJPEGChunckApplicationSegment00;
         const PXInt16U val = 16u;
         const PXTypeEntry pxDataStreamElementList[] =
         {
@@ -1128,7 +784,7 @@ PXActionResult PXAPI PXJPEGSaveToFile(PXResourceTransphereInfo* const pxResource
     }
 
     // write quantization tables
-    PXFileWriteI16UE(pxResourceSaveInfo->FileReference, PXJPEGMarkerDefineQuantizationTableListID, EndianCurrentSystem);
+    PXFileWriteI16UE(pxResourceSaveInfo->FileReference, PXJPEGChunckDefineQuantizationTableList, EndianCurrentSystem);
     PXFileWriteI16UE(pxResourceSaveInfo->FileReference, 2 + (isRGB ? 2 : 1) * (1 + 8 * 8), PXEndianBig);  // length: 65 bytes per table + 2 bytes for this length field
 
     // each table has 64 entries and is preceded by an ID byte
@@ -1146,7 +802,7 @@ PXActionResult PXAPI PXJPEGSaveToFile(PXResourceTransphereInfo* const pxResource
     // length: 6 bytes general info + 3 per channel + 2 bytes for this length field
     const PXInt8U numComponents = isRGB ? 3 : 1;
 
-    PXFileWriteI16UE(pxResourceSaveInfo->FileReference, PXJPEGMarkerStartOfFrameHuffmanBaselineDCTID, EndianCurrentSystem);
+    PXFileWriteI16UE(pxResourceSaveInfo->FileReference, PXJPEGChunckStartOfFrameHuffmanBaselineDCT, EndianCurrentSystem);
     PXFileWriteI16UE(pxResourceSaveInfo->FileReference, 2 + 6 + 3 * numComponents, PXEndianBig);
 
 
@@ -1172,7 +828,7 @@ PXActionResult PXAPI PXJPEGSaveToFile(PXResourceTransphereInfo* const pxResource
     // ////////////////////////////////////////
     // Huffman tables
     // DHT marker - define Huffman tables
-    PXFileWriteI16UE(pxResourceSaveInfo->FileReference, PXJPEGMarkerDefineHuffmanTableListID, EndianCurrentSystem);
+    PXFileWriteI16UE(pxResourceSaveInfo->FileReference, PXJPEGChunckDefineHuffmanTableList, EndianCurrentSystem);
     PXFileWriteI16UE(pxResourceSaveInfo->FileReference, isRGB ? (2 + 208 + 208) : (2 + 208), PXEndianBig);
 
 
@@ -1227,7 +883,7 @@ PXActionResult PXAPI PXJPEGSaveToFile(PXResourceTransphereInfo* const pxResource
 
     // ////////////////////////////////////////
     // start of scan (there is only a single scan for baseline PXJPEGs)
-    PXFileWriteI16UE(pxResourceSaveInfo->FileReference, PXJPEGMarkerStartOfScanID, EndianCurrentSystem);
+    PXFileWriteI16UE(pxResourceSaveInfo->FileReference, PXJPEGChunckStartOfScan, EndianCurrentSystem);
     PXFileWriteI16UE(pxResourceSaveInfo->FileReference, 2 + 1 + 2 * numComponents + 3, PXEndianBig);
 
 
@@ -1396,7 +1052,7 @@ PXActionResult PXAPI PXJPEGSaveToFile(PXResourceTransphereInfo* const pxResource
 
     // End Tag
     {
-        PXFileWriteI16UE(pxResourceSaveInfo->FileReference, PXJPEGMarkerEndOfImageID, PXEndianLittle);
+        PXFileWriteI16UE(pxResourceSaveInfo->FileReference, PXJPEGChunckEndOfImage, PXEndianLittle);
     }
 
     return PXActionSuccessful;

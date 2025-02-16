@@ -438,6 +438,9 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
     //-----------------------------------------------------
     // Pre-create Object
     //-----------------------------------------------------
+    if(!(*pxResourceCreateInfo->ObjectReference))
+    {
+
     switch(pxResourceCreateInfo->Type)
     {
         case PXResourceTypeBrush:
@@ -562,11 +565,23 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
         }
     }
 
+  
 
+ 
 
     PXLockEngage(&_GLOBALResourceManager.CreateLock);
    
   //  pxResourceInfo->Flags |= PXResourceInfoExist;
+
+    // Special behaviour if we have an object size of 0.
+    // Creating 0 objects does not make sense but if we dont set this, it will yield problems
+    // To reduce useless definition of "1 object size", we assume 0 means we want one item
+
+    if(pxResourceCreateInfo->ObjectAmount == 0)
+    {
+        ++pxResourceCreateInfo->ObjectAmount; // Asumme we want one item it we didnt set it to it,
+    }
+
 
     void* objectList = PXMemoryCalloc(pxResourceCreateInfo->ObjectSize, pxResourceCreateInfo->ObjectAmount);
      
@@ -576,7 +591,13 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
     {
         const PXInt32U resourceID = PXResourceManagerGenerateUniqeID();
 
+        // Get currect objects is we have multible
         void* object = (char*)objectList + (pxResourceCreateInfo->ObjectSize * i);
+
+        // UNSTANBLE CAST!
+        PXResourceInfo* const pxResourceInfo = (PXResourceInfo*)object;
+        pxResourceInfo->ID = resourceID;
+        pxResourceInfo->Flags |= PXResourceInfoExist;
 
         PXDictionaryAdd(pxResourceCreateInfo->Lookup, &resourceID, *pxResourceCreateInfo->ObjectReference);
 
@@ -599,12 +620,9 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
     //-----------------------------------------------------
     // Create ASYNC pathway
     //-----------------------------------------------------
-    const PXBool targetASYNC = 
+    const PXBool createSubCall =
         (PXResourceCreateBehaviourLoadASYNC & pxResourceCreateInfo->Flags) &&
         !(PXResourceCreateBehaviourIsASYNCCall & pxResourceCreateInfo->Flags);
-
-    const PXBool createSubCall = targetASYNC || (pxResourceCreateInfo->ObjectAmount>1);
-      
 
     if(createSubCall)
     {
@@ -626,6 +644,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
 
         return PXActionSuccessful;
     }
+    }
     //-----------------------------------------------------
 
 
@@ -637,8 +656,6 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
         {
             PXBrushCreateInfo* const pxBrushCreateInfo = &pxResourceCreateInfo->Brush;
             PXWindowBrush* pxWindowBrush = *(PXWindowBrush**)pxResourceCreateInfo->ObjectReference;
-
-            pxWindowBrush->Info.ID = resourceID;
 
             PXNativDrawBrushCreate
             (
@@ -680,37 +697,6 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
             const PXBool hasFilePath = PXNull != pxResourceCreateInfo->FilePath;
             PXInt32U checkSum = 0;
 
-            if(hasFilePath)
-            {
-                // Create checksum
-                const PXInt32U checkSum = PXAdler32Create(1, pxText.TextA, pxText.SizeUsed);
-
-                // Check if already loaded
-                {
-                    PXImage* pxImageFoundEntry = PXNull;
-
-                    const PXBool foundEntry = PXDictionaryFindEntry(&_GLOBALResourceManager.ImageLookUp, &checkSum, (void**)&pxImageFoundEntry);
-
-                    if(foundEntry) // image is already loaded
-                    {
-                        pxImage = pxImageFoundEntry;
-                        *pxResourceCreateInfo->ObjectReference = pxImage;
-
-#if PXLogEnable
-                        PXLogPrint
-                        (
-                            PXLoggingWarning,
-                            "Resource",
-                            "Image-Create",
-                            "Skipped <%s> (Redundant)",
-                            pxText.TextA
-                        );
-#endif
-
-                        return PXActionSuccessful; // Rendundand load, skipt to next
-                    }
-                }
-            }
 
             // Load texture
             if(hasFilePath)
@@ -765,10 +751,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
             PXIconCreateInfo* const pxIconCreateInfo = &pxResourceCreateInfo->Icon;
             PXIcon* pxIcon = *(PXIcon**)pxResourceCreateInfo->ObjectReference;
 
-            pxIcon->Info.ID = resourceID;
-
             PXResourceStoreName(&pxIcon->Info, pxResourceCreateInfo->Name, -1);
-
 
             // Check if texture is present
             if(!pxIconCreateInfo->IconImage)
@@ -809,8 +792,6 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
         {
             PXIconAtlasCreateInfo* const pxIconAtlasCreateInfo = &pxResourceCreateInfo->IconAtlas;
             PXIconAtlas* pxIconAtlas = *(PXIconAtlas**)pxResourceCreateInfo->ObjectReference;
-
-            pxIconAtlas->Info.ID = resourceID;
 
 #if PXLogEnable
             PXLogPrint
@@ -904,7 +885,6 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
             PXTextureCubeCreateInfo* const pxTextureCubeCreateData = &pxResourceCreateInfo->TextureCube;
             PXTextureCube* pxTextureCube = *(PXTextureCube**)pxResourceCreateInfo->ObjectReference;
 
-            pxTextureCube->Info.ID = resourceID;
             pxTextureCube->Format = PXColorFormatRGBI8;
 
             PXResourceCreateInfo pxResourceCreateInfoList[6];
@@ -951,8 +931,6 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
 
             PXMatrix4x4FIdentity(&pxModel->ModelMatrix);
             PXMatrix4x4FScaleBy(&pxModel->ModelMatrix, pxModelCreateInfo->Scale);
-
-            pxModel->Info.ID = resourceID;
 
             const PXBool hasFilePath = PXNull != pxResourceCreateInfo->FilePath;
 
@@ -1210,8 +1188,6 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
         {
             PXMaterial* pxMaterial = *(PXMaterial**)pxResourceCreateInfo->ObjectReference;
 
-            pxMaterial->Info.ID = resourceID;
-
 #if PXLogEnable
             PXLogPrint
             (
@@ -1299,8 +1275,6 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
             PXEngineFontCreateInfo* const pxEngineFontCreateData = &pxResourceCreateInfo->Font;
             PXFont* pxFont = *(PXFont**)pxResourceCreateInfo->ObjectReference;
 
-            pxFont->Info.ID = resourceID;
-
             // if this is a system font, we dont load it from disk but from the system, duh.
             if(pxEngineFontCreateData->RegisteredName)
             {
@@ -1366,8 +1340,6 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
             PXSkyBoxCreateEventInfo* const pxSkyBoxCreateEventData = &pxResourceCreateInfo->SkyBox;
             PXSkyBox* pxSkyBox = *(PXSkyBox**)pxResourceCreateInfo->ObjectReference;
 
-            pxSkyBox->Info.ID = resourceID;
-
 #if PXLogEnable
             PXLogPrint
             (
@@ -1432,9 +1404,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
             PXSpriteCreateInfo* const pxSpriteCreateEventData = &pxResourceCreateInfo->Sprite;
             PXSprite* pxSprite = *(PXSprite**)pxResourceCreateInfo->ObjectReference;
 
-            pxSprite->Info.ID = resourceID;
             pxSprite->Info.Flags |= PXResourceInfoRender;
-
 
 #if PXLogEnable
             PXLogPrint
@@ -1646,7 +1616,6 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
         {
             PXEngineTimer* pxEngineTimer = *(PXEngineTimer**)pxResourceCreateInfo->ObjectReference;
 
-            pxEngineTimer->Info.ID = resourceID;
             pxEngineTimer->Owner = pxEngineTimer->Owner;
             pxEngineTimer->CallBack = pxEngineTimer->CallBack;
             pxEngineTimer->TimeDeltaTarget = pxEngineTimer->TimeDeltaTarget;
@@ -1690,8 +1659,6 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
         case PXResourceTypeSound:
         {
             PXSound* pxSound = *(PXSound**)pxResourceCreateInfo->ObjectReference;
-
-            pxSound->Info.ID = resourceID;
 
 #if PXLogEnable
             PXLogPrint
@@ -1859,7 +1826,6 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
         {
             PXHitBox* pxHitBox = *(PXHitBox**)pxResourceCreateInfo->ObjectReference;
 
-            pxHitBox->Info.ID = resourceID;
             pxHitBox->Info.Flags |= PXResourceInfoActive;
             pxHitBox->Info.Behaviour = pxResourceCreateInfo->HitBox.Behaviour;
             pxHitBox->Model = pxResourceCreateInfo->HitBox.Model;
@@ -1882,7 +1848,6 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
             PXWindowCreateInfo* const pxGUIElementCreateInfo = &pxResourceCreateInfo->UIElement;
             PXWindow* pxWindow = *(PXWindow**)pxResourceCreateInfo->ObjectReference;
 
-            pxWindow->Info.ID = resourceID;
             pxWindow->Info.Flags |= PXResourceInfoActive;
 
             break;
@@ -1892,7 +1857,6 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
             PXSpriteAnimatorInfo* const pxSpriteAnimatorInfo = &pxResourceCreateInfo->SpriteAnimator;
             PXSpriteAnimator* pxSpriteAnimator = *(PXSpriteAnimator**)pxResourceCreateInfo->ObjectReference;
 
-            pxSpriteAnimator->Info.ID = resourceID;
             pxSpriteAnimator->Info.Flags |= PXResourceInfoActive;
 
             pxSpriteAnimator->Info.Behaviour = pxSpriteAnimatorInfo->Behaviour;

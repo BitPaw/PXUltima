@@ -183,12 +183,21 @@
 #define PXTypeUseFileModeMask       0b00000000000000000000000000000000
 #define PXTypeSignedMask            0b00001000000000000000000000000000 // Only useful in numeric values
 #define PXTypeIgnoreIFMask          0b00000110000000000000000000000000
-#define PXTypeShallDoIO             0b00000001000000000000000000000000 // Set if you want to read or write (To support Padding)
-#define PXTypeTypeMask              0b00000000110000000000000000000000
-#define PXTypeBaseEmpty             0b00000000000000000000000000000000
-#define PXTypeBaseNumeric           0b00000000100000000000000000000000
-#define PXTypeBaseDecimal           0b00000000010000000000000000000000
-#define PXTypeBaseText              0b00000000110000000000000000000000
+#define PXTypeAvoidTransphere       0b00000001000000000000000000000000 // Set if you want to read or write (To support Padding)
+
+#define PXTypeTypeMask              0b00000000110000000000000000000000 // Define type
+#define PXTypeBaseText              0b00000000000000000000000000000000 // Bytes are "as is"
+#define PXTypeBaseNumeric           0b00000000010000000000000000000000 // int
+#define PXTypeBaseDecimal           0b00000000100000000000000000000000 // float or double
+#define PXTypeBaseBit               0b00000000110000000000000000000000 // Bits are used instead of bytes
+
+
+#define PXTypeVarriantMask          0b00000000000010000000000000000000
+
+// When we want to parse, we often need to check against a fixed symbol 
+// like a signature, so we dnt actually care about reading it, just 
+// check and store it as an 1-Byte bool
+#define PXTypeSignatureCheck        0b00000000000010000000000000000000
 
 // The size of the recieving data
 // This needs to be known if you want to load 5 Bytes into a 64Bit Integer
@@ -198,10 +207,6 @@
 #define PXTypeReciverSize32U        0b00000000000001000000000000000000 // 4 Bytes
 #define PXTypeReciverSize64U        0b00000000000001100000000000000000 // 8 Bytes
 #define PXTypeReciverSizeGet(x)     ((PXTypeReciverSizeMask & x) >> 16)
-
-#define PXTypeModeMask              0b00000000000000010000000000000000
-#define PXTypeModeByte              0b00000000000000000000000000000000
-#define PXTypeModeBit               0b00000000000000010000000000000000
 
 #define PXTypeSizeMask              0b00000000000000001111111111111111 // Size in bytes of target data 0x0000FFFF
 #define PXTypeSizeGet(x)            (PXTypeSizeMask & x) 
@@ -250,7 +255,7 @@
 //-------------------------------------------------
 // Empty space
 //-------------------------------------------------
-#define PXTypePadding(size) size | PXTypeBaseEmpty
+#define PXTypePadding(size) size | PXTypeAvoidTransphere
 
 
 //-------------------------------------------------
@@ -327,13 +332,13 @@
 //-------------------------------------------------
 // Int - BitMode
 //-------------------------------------------------
-#define PXTypeIntUFlexBit PXTypeIntU | PXTypeModeBit
-#define PXTypeBit08U(bitSize) PXTypeReciverSize08U | PXTypeIntUFlexBit | bitSize
-#define PXTypeBit16U(bitSize) PXTypeReciverSize16U | PXTypeIntUFlexBit | bitSize
-#define PXTypeBit32U(bitSize) PXTypeReciverSize32U | PXTypeIntUFlexBit | bitSize
-#define PXTypeBit64U(bitSize) PXTypeReciverSize64U | PXTypeIntUFlexBit | bitSize
+#define PXTypeBit08U(bitSize) PXTypeReciverSize08U | PXTypeBaseBit | bitSize
+#define PXTypeBit16U(bitSize) PXTypeReciverSize16U | PXTypeBaseBit | bitSize
+#define PXTypeBit32U(bitSize) PXTypeReciverSize32U | PXTypeBaseBit | bitSize
+#define PXTypeBit64U(bitSize) PXTypeReciverSize64U | PXTypeBaseBit | bitSize
 
 #define PXTypeNibble PXTypeBit08U(4)
+
 
 typedef unsigned char PXByte;
 typedef unsigned char PXBool;

@@ -19,9 +19,9 @@ PXHuffmanCodeType;
 
 typedef struct PXHuffmanNumberCode_
 {
-    PXInt16U NumberOfLiteralCodes;
-    PXInt16U NumberOfDistanceCodes;
-    PXInt16U NumberOfLengthCodes;
+    PXInt16U NumberOfLiteralCodes; // 9-Bit
+    PXInt16U NumberOfDistanceCodes; // 5-Bit
+    PXInt16U NumberOfLengthCodes; // 4-Bit
 }
 PXHuffmanNumberCode;
 
@@ -54,10 +54,8 @@ PXPublic void PXAPI PXHuffmanTreeDestruct(PXHuffmanTree* const huffmanTree);
 // Invalid : x > 285
 PXPublic PXHuffmanCodeType PXAPI PXHuffmanCodeTypeFromCode(const PXInt16U code);
 
-PXPublic PXActionResult PXAPI PXHuffmanDistanceTreeGenerateFixedLiteralLengthTree(PXHuffmanTree* const huffmanTree);
-PXPublic PXActionResult PXAPI PXHuffmanDistanceTreeGenerateFixed(PXHuffmanTree* const huffmanTree);
-
-PXPublic PXActionResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(struct PXFile_* const pxFile, PXHuffmanTree* treeLength, PXHuffmanTree* treeDistance);
+PXPublic PXActionResult PXAPI PXHuffmanDistanceTreeGenerateFixed(PXHuffmanTree* const treeLength, PXHuffmanTree* const treeDistance);
+PXPublic PXActionResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(PXFile* const pxFile, PXHuffmanTree* const treeLength, PXHuffmanTree* const treeDistance);
 
 PXPublic PXActionResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, const PXInt32U* const bitlen, const PXSize numcodes, const PXSize maxbitlen);
 

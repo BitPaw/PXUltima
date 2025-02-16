@@ -24,7 +24,7 @@
 #define PXTextFloatIsAllowedCharacter(c)  ('0' <= c && c <= '9' || c == '-' || c == '+' || c == '.')
 
 #define IsPrintable(c) (0x20 <= c && c <= 0x7E)
-#define MakePrintable(c) ((0x20 <= c && c <= 0x7E) ? + c : '.')
+#define PXCharMakePrintable(c) ((0x20 <= c && c <= 0x7E) ? c : '.')
 //-----------------------------------------------------------------------------
 
 #define PXTextUnkownLength -1
@@ -174,11 +174,16 @@ PXPublic PXSize PXAPI PXTextFormatTime(PXText* const pxText, const PXSize pxTime
 PXPublic PXSize PXAPI PXTextFormatSize(PXText* const pxText, const PXSize pxSize);
 PXPublic PXSize PXAPI PXTextFormatData(PXText* const pxText, const void* data, const PXSize dataSize);
 
+// Print a string from a non terminated string into a buffer
+// Also converts unprintable characters into printable ones
+PXPublic PXSize PXAPI PXTextFromNonTerminated(char* const stringOutput, const PXSize dataSize, const char* const stringInput);
 PXPublic PXSize PXAPI PXTextFromIntToBinary8U(char* const string, const PXSize dataSize, const PXInt8U number);
 PXPublic PXSize PXAPI PXTextFromIntToBinary16U(char* const string, const PXSize dataSize, const PXInt16U number);
 PXPublic PXSize PXAPI PXTextFromIntToBinary32U(char* const string, const PXSize dataSize, const PXInt32U number);
 PXPublic PXSize PXAPI PXTextFromIntToBinary64U(char* const string, const PXSize dataSize, const PXInt64U number);
 PXPublic PXSize PXAPI PXTextFromIntToBinary64UR(char* const string, const PXSize dataSize, const PXInt64U number, const unsigned char numberOfDigits);
+
+PXPublic PXSize PXAPI PXTextFromIntToBinary(char* const string, const PXSize dataSize, const void* const data, const unsigned char numberOfDigits);
 
 PXPublic PXSize PXAPI PXTextToLowerCase(const PXText* const pxTextSource, PXText* const pxTextTarget);
 PXPublic PXSize PXAPI PXTextToUpperCase(const PXText* const pxTextSource, PXText* const pxTextTarget);

@@ -3,91 +3,80 @@
 
 #include "../PXResource.h"
 
-#define PXJPEGQuantizationTableLuminanceIndex 0
+#define PXJPEGQuantizationTableLuminanceIndex   0
 #define PXJPEGQuantizationTableChrominanceIndex 1
 
-typedef enum PXJPEGMarker_
-{
-    PXJPEGMarkerInvalid,
 
-    PXJPEGMarkerStartOfFrameHuffmanBaselineDCT, // [0xFFC0] SOF0
-    PXJPEGMarkerStartOfFrameHuffmanSequentialExtendedDCT, // [0xFFC1] SOF1
-    PXJPEGMarkerStartOfFrameHuffmanProgressiveDCT, // [0xFFC2] SOF2
-    PXJPEGMarkerStartOfFrameHuffmanSequentialLossless,// [0xFFC3] SOF3
 
-    PXJPEGMarkerDefineHuffmanTableList, // [0xFFC4] DHT
 
-    PXJPEGMarkerStartOfFrameHuffmanDifferentialSequential,// [0xFFC5] SOF5
-    PXJPEGMarkerStartOfFrameHuffmanDifferentialProgressiveDCT,// [0xFFC6] SOF6
-    PXJPEGMarkerStartOfFrameHuffmanDifferentialLosslessSequential,// [0xFFC7] SOF7
+#define PXJPEGChunckStartOfFrameHuffmanBaselineDCT                      0xC0 // [0xFFC0] SOF0
+#define PXJPEGChunckStartOfFrameHuffmanSequentialExtendedDCT            0xC1 // [0xFFC1] SOF1
+#define PXJPEGChunckStartOfFrameHuffmanProgressiveDCT                   0xC2 // [0xFFC2] SOF2
+#define PXJPEGChunckStartOfFrameHuffmanSequentialLossless               0xC3 // [0xFFC3] SOF3
+#define PXJPEGChunckDefineHuffmanTableList                              0xC4 // [0xFFC4] DHT
+#define PXJPEGChunckStartOfFrameHuffmanDifferentialSequential           0xC5 // [0xFFC5] SOF5
+#define PXJPEGChunckStartOfFrameHuffmanDifferentialProgressiveDCT       0xC6 // [0xFFC6] SOF6
+#define PXJPEGChunckStartOfFrameHuffmanDifferentialLosslessSequential   0xC7 // [0xFFC7] SOF7
+#define PXJPEGChunckStartOfFrameArithmeticPXJPEGExtension               0xC8 // [0xFFC8] JPG
+#define PXJPEGChunckStartOfFrameArithmeticExtendedSequentialDCT         0xC9 // [0xFFC9] SOF09
+#define PXJPEGChunckStartOfFrameArithmeticProgressiveDCT                0xC4 // [0xFFCA] SOF10
+#define PXJPEGChunckStartOfFrameArithmeticLosslessSequential            0xCB // [0xFFCB] SOF11
+#define PXJPEGChunckDefineArithmeticCoding                              0xCC // [0xFFCC] DAC
+#define PXJPEGChunckStartOfFrameArithmeticDifferentialSequentialDCT     0xCD, // [0xFFCD] SOF13
+#define PXJPEGChunckStartOfFrameArithmeticDifferentialProgressiveDCT    0xCE, // [0xFFCE] SOF14
+#define PXJPEGChunckStartOfFrameArithmeticDifferentialLosslessSequential 0xCF, // [0xFFCF] SOF15
 
-    PXJPEGMarkerStartOfFrameArithmeticPXJPEGExtension, // [0xFFC8] JPG
-    PXJPEGMarkerStartOfFrameArithmeticExtendedSequentialDCT, // [0xFFC9] SOF09
-    PXJPEGMarkerStartOfFrameArithmeticProgressiveDCT, // [0xFFCA] SOF10
-    PXJPEGMarkerStartOfFrameArithmeticLosslessSequential, // [0xFFCB] SOF11
+#define PXJPEGChunckIntervalTerminationRestart0     0xD0 // [0xFFD0] RST0
+#define PXJPEGChunckIntervalTerminationRestart1     0xD1 // [0xFFD1] RST1
+#define PXJPEGChunckIntervalTerminationRestart2     0xD2 // [0xFFD2] RST2
+#define PXJPEGChunckIntervalTerminationRestart3     0xD3 // [0xFFD3] RST3
+#define PXJPEGChunckIntervalTerminationRestart4     0xD4 // [0xFFD4] RST4
+#define PXJPEGChunckIntervalTerminationRestart5     0xD5 // [0xFFD5] RST5
+#define PXJPEGChunckIntervalTerminationRestart6     0xD6 // [0xFFD6] RST6
+#define PXJPEGChunckIntervalTerminationRestart7     0xD7 // [0xFFD7] RST7
+#define PXJPEGChunckStartOfImage                    0xD8 // [0xFFD8] SOI
+#define PXJPEGChunckEndOfImage                      0xD9 // [0xFFD9] EOI
+#define PXJPEGChunckStartOfScan                     0xDA // [0xFFDA] SOS
+#define PXJPEGChunckDefineQuantizationTableList     0xDB // [0xFFDB] DQT
+#define PXJPEGChunckDefineNumberOfLines             0xDC // [0xFFDC] DNL
+#define PXJPEGChunckDefineRestartInterval           0xDD // [0xFFDD] DRI
+#define PXJPEGChunckDefineHierarchicalProgression   0xDE // [0xFFDE] DHP
+#define PXJPEGChunckExpandReferenceComponentList    0xDF // [0xFFDF] EXP
+#define PXJPEGChunckApplicationSegment00            0xE0 // [0xFFE0] APP0
+#define PXJPEGChunckApplicationSegment01            0xE1 // [0xFFE1] APP1
+#define PXJPEGChunckApplicationSegment02            0xE2 // [0xFFE2] APP2
+#define PXJPEGChunckApplicationSegment03            0xE3 // [0xFFE3] APP3
+#define PXJPEGChunckApplicationSegment04            0xE4 // [0xFFE4] APP4
+#define PXJPEGChunckApplicationSegment05            0xE5 // [0xFFE5] APP5
+#define PXJPEGChunckApplicationSegment06            0xE6 // [0xFFE6] APP6
+#define PXJPEGChunckApplicationSegment07            0xE7 // [0xFFE7] APP7
+#define PXJPEGChunckApplicationSegment08            0xE8 // [0xFFE8] APP8
+#define PXJPEGChunckApplicationSegment09            0xE9 // [0xFFE9] APP9
+#define PXJPEGChunckApplicationSegment10            0xEA // [0xFFEA] APP10
+#define PXJPEGChunckApplicationSegment11            0xEB // [0xFFEB] APP11
+#define PXJPEGChunckApplicationSegment12            0xEC // [0xFFEC] APP12
+#define PXJPEGChunckApplicationSegment13            0xED // [0xFFED] APP13
+#define PXJPEGChunckApplicationSegment14            0xEE // [0xFFEE] APP14
+#define PXJPEGChunckApplicationSegment15            0xEF // [0xFFEF] APP15
+#define PXJPEGChunckExtension00                     0xF0 // [0xFFF0] JPG0
+#define PXJPEGChunckExtension01                     0xF1 // [0xFFF1] JPG1
+#define PXJPEGChunckExtension02                     0xF2 // [0xFFF2] JPG2
+#define PXJPEGChunckExtension03                     0xF3 // [0xFFF3] JPG3
+#define PXJPEGChunckExtension04                     0xF4 // [0xFFF4] JPG4
+#define PXJPEGChunckExtension05                     0xF5 // [0xFFF5] JPG5
+#define PXJPEGChunckExtension06                     0xF6 // [0xFFF6] JPG6
+#define PXJPEGChunckExtension07                     0xF7 // [0xFFF7] JPG7
+#define PXJPEGChunckExtension08                     0xF8 // [0xFFF8] JPG8
+#define PXJPEGChunckExtension09                     0xF9 // [0xFFF9] JPG9
+#define PXJPEGChunckExtension10                     0xFA // [0xFFFA] JPG10
+#define PXJPEGChunckExtension11                     0xFB // [0xFFFB] JPG11
+#define PXJPEGChunckExtension12                     0xFC // [0xFFFC] JPG12
+#define PXJPEGChunckExtension13                     0xFD // [0xFFFD] JPG13
+#define PXJPEGChunckComment                         0xFE // [0xFFFE] COM
 
-    PXJPEGMarkerDefineArithmeticCoding, // [0xFFCC] DAC
-
-    PXJPEGMarkerStartOfFrameArithmeticDifferentialSequentialDCT, // [0xFFCD] SOF13
-    PXJPEGMarkerStartOfFrameArithmeticDifferentialProgressiveDCT, // [0xFFCE] SOF14
-    PXJPEGMarkerStartOfFrameArithmeticDifferentialLosslessSequential, // [0xFFCF] SOF15
-
-    PXJPEGMarkerIntervalTerminationRestart0, // [0xFFD0] RST0
-    PXJPEGMarkerIntervalTerminationRestart1, // [0xFFD1] RST1
-    PXJPEGMarkerIntervalTerminationRestart2, // [0xFFD2] RST2
-    PXJPEGMarkerIntervalTerminationRestart3, // [0xFFD3] RST3
-    PXJPEGMarkerIntervalTerminationRestart4, // [0xFFD4] RST4
-    PXJPEGMarkerIntervalTerminationRestart5, // [0xFFD5] RST5
-    PXJPEGMarkerIntervalTerminationRestart6, // [0xFFD6] RST6
-    PXJPEGMarkerIntervalTerminationRestart7, // [0xFFD7] RST7
-
-    PXJPEGMarkerStartOfImage, // [0xFFD8] SOI
-    PXJPEGMarkerEndOfImage, // [0xFFD9] EOI
-    PXJPEGMarkerStartOfScan, // [0xFFDA] SOS
-    PXJPEGMarkerDefineQuantizationTableList, // [0xFFDB] DQT
-    PXJPEGMarkerDefineNumberOfLines, // [0xFFDC] DNL
-    PXJPEGMarkerDefineRestartInterval, // [0xFFDD] DRI
-    PXJPEGMarkerDefineHierarchicalProgression, // [0xFFDE] DHP
-    PXJPEGMarkerExpandReferenceComponentList, // [0xFFDF] EXP
-
-    PXJPEGMarkerApplicationSegment00, // [0xFFE0] APP0
-    PXJPEGMarkerApplicationSegment01, // [0xFFE1] APP1
-    PXJPEGMarkerApplicationSegment02, // [0xFFE2] APP2
-    PXJPEGMarkerApplicationSegment03, // [0xFFE3] APP3
-    PXJPEGMarkerApplicationSegment04, // [0xFFE4] APP4
-    PXJPEGMarkerApplicationSegment05, // [0xFFE5] APP5
-    PXJPEGMarkerApplicationSegment06, // [0xFFE6] APP6
-    PXJPEGMarkerApplicationSegment07, // [0xFFE7] APP7
-    PXJPEGMarkerApplicationSegment08, // [0xFFE8] APP8
-    PXJPEGMarkerApplicationSegment09, // [0xFFE9] APP9
-    PXJPEGMarkerApplicationSegment10, // [0xFFEA] APP10
-    PXJPEGMarkerApplicationSegment11, // [0xFFEB] APP11
-    PXJPEGMarkerApplicationSegment12, // [0xFFEC] APP12
-    PXJPEGMarkerApplicationSegment13, // [0xFFED] APP13
-    PXJPEGMarkerApplicationSegment14, // [0xFFEE] APP14
-    PXJPEGMarkerApplicationSegment15, // [0xFFEF] APP15
-
-    PXJPEGMarkerPXJPEGExtension00, // [0xFFF0] JPG0
-    PXJPEGMarkerPXJPEGExtension01, // [0xFFF1] JPG1
-    PXJPEGMarkerPXJPEGExtension02, // [0xFFF2] JPG2
-    PXJPEGMarkerPXJPEGExtension03, // [0xFFF3] JPG3
-    PXJPEGMarkerPXJPEGExtension04, // [0xFFF4] JPG4
-    PXJPEGMarkerPXJPEGExtension05, // [0xFFF5] JPG5
-    PXJPEGMarkerPXJPEGExtension06, // [0xFFF6] JPG6
-    PXJPEGMarkerPXJPEGExtension07, // [0xFFF7] JPG7
-    PXJPEGMarkerPXJPEGExtension08, // [0xFFF8] JPG8
-    PXJPEGMarkerPXJPEGExtension09, // [0xFFF9] JPG9
-    PXJPEGMarkerPXJPEGExtension10, // [0xFFFA] JPG10
-    PXJPEGMarkerPXJPEGExtension11, // [0xFFFB] JPG11
-    PXJPEGMarkerPXJPEGExtension12, // [0xFFFC] JPG12
-    PXJPEGMarkerPXJPEGExtension13, // [0xFFFD] JPG13
-
-    PXJPEGMarkerComment, // [0xFFFE] COM
-
-    PXJPEGMarkerTemporary, // [0xFF01] TEM
-    PXJPEGMarkerReserved, // [0xFF02] to [0xFFBF] RES
-}
-PXJPEGMarker;
+#define PXJPEGChunckTemporary           0x01 // [0xFF01] TEM
+#define PXJPEGChunckReservedUpper       0x02 // [0xFF02] to [0xFFBF] RES
+#define PXJPEGChunckReservedLower       0xBF // [0xFF02] to [0xFFBF] RES
 
 typedef struct PXJPEGFrameComponent_
 {
@@ -164,10 +153,6 @@ typedef struct PXJPEG_
     char* Comment;
 }
 PXJPEG;
-
-
-PXPrivate inline PXJPEGMarker PXAPI PXJPEGMarkerFromID(const PXInt16U jpegMarker);
-PXPrivate inline PXInt16U PXAPI PXJPEGMarkerToID(const PXJPEGMarker jpegMarker);
 
 PXPublic void PXAPI PXJPEGDestruct(PXJPEG* const jpeg);
 

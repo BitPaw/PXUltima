@@ -14,6 +14,20 @@
 #include <assert.h>
 #endif
 
+PXSize PXAPI PXTextFromNonTerminated(char* const stringOutput, const PXSize dataSize, const char* const stringInput)
+{
+    PXSize i = 0;
+
+    for(; i < dataSize; ++i)
+    {
+        stringOutput[i] = PXCharMakePrintable(stringInput[i]);
+    }
+
+    stringOutput[i] = '\0';
+
+    return i;
+}
+
 PXSize PXAPI PXTextFromIntToBinary8U(char* const string, const PXSize dataSize, const PXInt8U number)
 {
     const PXSize numberOfDigits = sizeof(PXInt8U) * 8u;
@@ -56,6 +70,32 @@ PXSize PXAPI PXTextFromIntToBinary64UR(char* const string, const PXSize dataSize
     for (int i = numberOfDigits - 1u; i >= 0; --i)
     {
         string[offset++] = '0' + ((number & (1LLU << i)) >> i);
+    }
+
+    string[offset] = '\0';
+
+    return offset;
+}
+
+PXSize PXAPI PXTextFromIntToBinary(char* const string, const PXSize dataSize, const void* const data, const unsigned char numberOfDigits)
+{
+    PXSize offset = 0;
+
+    string[offset++] = '0';
+    string[offset++] = 'b';
+
+    PXSize trips = (numberOfDigits +1/ 8)+1;
+
+    for(PXSize y = 0; y < trips; ++y)
+    {
+        const PXByte target = ((char*)data)[y];
+
+        PXInt8U left = (numberOfDigits - (y * 8)) % 8;
+
+        for(PXInt8U x = 0; x < left; ++x)
+        {
+            string[offset++] = '0' + ((target & (1 << x)) >> x);
+        }
     }
 
     string[offset] = '\0';
@@ -1803,7 +1843,7 @@ PXSize PXAPI PXTextFormatData(PXText* const pxText, const void* data, const PXSi
 {
     for(PXSize i = 0; i < dataSize; i++)
     {
-        const char dataChar = MakePrintable(((char*)data)[i]);
+        const char dataChar = PXCharMakePrintable(((char*)data)[i]);
 
         pxText->TextA[pxText->SizeUsed] = dataChar;
         pxText->SizeUsed += 1;

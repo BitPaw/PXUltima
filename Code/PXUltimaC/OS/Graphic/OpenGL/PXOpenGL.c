@@ -5300,6 +5300,8 @@ PXActionResult PXAPI PXOpenGLTextureAction(PXOpenGL* const pxOpenGL, PXGraphicTe
                 const PXInt32U textureID = openGLTextureIDListData[textureIndex];
                 void* textureAdress = pxGraphicTexturInfo->TextureReference[textureIndex];
 
+                assert(textureAdress);
+
                 switch(pxGraphicTexturInfo->Type)
                 {
                     case PXGraphicTextureType2D:

@@ -267,14 +267,16 @@ PXPublic PXSize PXAPI PXFileReadD(PXFile* const pxFile, double* const value);
 PXPublic PXSize PXAPI PXFileReadDV(PXFile* const pxFile, double* const valueList, const PXSize valueListSize);
 
 
+#define PXFileBindingIOMask 0b0011
+#define PXFileBindingRead   0b0000
+#define PXFileBindingWrite  0b0001
 
-#define PXFileBindingRead  0x00
-#define PXFileBindingWrite 0x01
+#define PXFileBindingAllignToByte  0b0100
 
 // Read or write a defined binding.
 // Requires a list of types and a struct of the data that is to be used.
 // The data list and struct have to be the same!
-PXPublic PXSize PXAPI PXFileBinding(PXFile* const pxFile, void* const dataStruct, const PXInt32U* listOfTypes, const PXSize listOfTypesAmount, const PXBool isWrite);
+PXPublic PXSize PXAPI PXFileBinding(PXFile* const pxFile, void* const dataStruct, const PXInt32U* listOfTypes, const PXSize listOfTypesAmount, const PXInt8U flags);
 
 PXPublic PXSize PXAPI PXFileDataWidthCalculate(PXFile* const pxFile, const PXInt32U type);
 

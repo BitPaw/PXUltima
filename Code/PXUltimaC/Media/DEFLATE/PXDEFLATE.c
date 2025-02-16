@@ -23,30 +23,34 @@
 #define ERROR_BREAK(code) CERROR_BREAK(error, code)
 
 
-// base backwards distances (the bits of distance codes appear after length codes and use their own huffman tree)
-static const PXInt16U PXHuffmanDistanceBase[30] =
-{
-       1,  2,       3,     4,     5,    7,    9,   13,    17, 25,
-      33, 49,      65,    97,   129,  193,  257,  385,   513,
-     769, 1025,  1537,  2049,  3073, 4097, 6145, 8193, 12289, 16385, 24577
-};
+
+
 
 // base lengths represented by codes 257-285
+// WARNING! You need to add +3. 
+// This list is reduced by 3 to fit into 8-Bit
 static const PXInt8U PXHuffmanLengthBase[29] =
 {
     0,1,2,3,4,5,6,7,8,10,12,14,16,20,
     24,28,32,40,48,56,64,80,96,112,
     128,160,192,224,255
 };
-#define PXHuffmanLengthBaseGet(index) ((PXInt16U)PXHuffmanLengthBase[index] + 3u)
-
+#define PXHuffmanLengthBaseGet(index) (((PXInt16U)PXHuffmanLengthBase[index]) + 3u)
 
 // extra bits used by codes 257-285 (added to base length)
 static const PXInt8U PXHuffmanLengthExtra[29] =
 {
-    0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 
+    0, 0, 0, 0, 0, 0, 0, 0, 1, 1,
     1, 1, 2, 2, 2, 2, 3, 3, 3, 3,
     4, 4, 4, 4, 5, 5, 5, 5, 0
+};
+
+// base backwards distances (the bits of distance codes appear after length codes and use their own huffman tree)
+static const PXInt16U PXHuffmanDistanceBase[30] =
+{
+       1,  2,       3,     4,     5,    7,    9,   13,    17, 25,
+      33, 49,      65,    97,   129,  193,  257,  385,   513,
+     769, 1025,  1537,  2049,  3073, 4097, 6145, 8193, 12289, 16385, 24577
 };
 
 // extra bits of backwards distances (added to base)
@@ -58,11 +62,10 @@ static const PXInt8U PXHuffmanDistanceExtra[30] =
 };
 
 
-
 // the order in which "code length alphabet code lengths" 
 // are stored as specified by deflate, out of this the huffman 
 // tree of the dynamic huffman tree lengths is generated
-const PXInt8U CLCL_ORDER[NUM_CODE_LENGTH_CODES] =
+const PXInt8U PXHuffmanCLCL_ORDER[NUM_CODE_LENGTH_CODES] =
 { 
     16, 17, 18,  0,  8, 
      7,  9,  6, 10,  5, 
@@ -114,8 +117,8 @@ const PXInt8U PXDEFLATEHeaderSize = sizeof(PXDEFLATEHeader) / sizeof(PXInt32U);
 
 const PXInt32U PXDEFLATELiteralRawDataList[] =
 {
-    PXTypeInt16U,
-    PXTypeInt16U
+    PXTypeInt16ULE,
+    PXTypeInt16ULE
 };
 const PXInt8U PXDEFLATELiteralRawDataListSize = sizeof(PXDEFLATELiteralRawDataList) / sizeof(PXInt32U);
 
@@ -137,7 +140,14 @@ PXActionResult PXAPI PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const p
 
     do
     {
-        const PXSize readBytes = PXFileBinding(pxInputStream, &pxDeflateBlock, PXDEFLATEHeader, PXDEFLATEHeaderSize, PXFalse);
+        const PXSize readBytes = PXFileBinding
+        (
+            pxInputStream,
+            &pxDeflateBlock, 
+            PXDEFLATEHeader, 
+            PXDEFLATEHeaderSize,
+            PXFileBindingRead
+        );
 
         if(!readBytes)
         {
@@ -157,8 +167,15 @@ PXActionResult PXAPI PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const p
 
                 PXFileSkipBitsToNextByte(pxInputStream); // Skip remaining Bytes
 
-                const PXSize readBytes = PXFileBinding(pxInputStream, &pxDEFLATELiteralRawData, PXDEFLATELiteralRawDataList, PXDEFLATELiteralRawDataListSize, PXFalse);
-                const PXBool validLength = 65535u == (pxDEFLATELiteralRawData.LengthActual + pxDEFLATELiteralRawData.LengthRemainder);
+                const PXSize readBytes = PXFileBinding
+                (
+                    pxInputStream,
+                    &pxDEFLATELiteralRawData, 
+                    PXDEFLATELiteralRawDataList,
+                    PXDEFLATELiteralRawDataListSize,
+                    PXFileBindingRead
+                );
+                const PXBool validLength = 0xFFFFu == (pxDEFLATELiteralRawData.LengthActual + pxDEFLATELiteralRawData.LengthRemainder);
 
                 if(!validLength)
                 {
@@ -181,8 +198,7 @@ PXActionResult PXAPI PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const p
             }
             case PXDeflateEncodingHuffmanStatic:
             {
-                PXHuffmanDistanceTreeGenerateFixedLiteralLengthTree(&literalAndLengthCodes);
-                PXHuffmanDistanceTreeGenerateFixed(&distanceCodes);
+                PXHuffmanDistanceTreeGenerateFixed(&literalAndLengthCodes, &distanceCodes);
                 break;
             }
 
@@ -290,10 +306,9 @@ PXActionResult PXAPI PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const p
                     }
                 }
             }
-
-
         }
-    } while(!pxDeflateBlock.IsLastBlock);
+    } 
+    while(!pxDeflateBlock.IsLastBlock);
 
     //(PXAdress)pxOutputStream->Data -= 2;
 
@@ -615,16 +630,12 @@ unsigned deflateFixed
     //--------------------------
 
 
+    PXSize error = 0;
+
     PXHuffmanTree tree_ll; /*tree for literal values and length codes*/
     PXHuffmanTree tree_d; /*tree for distance codes*/
 
-    PXSize error = 0;
-
-    PXClear(PXHuffmanTree, &tree_ll);
-    PXClear(PXHuffmanTree, &tree_d);
-
-    PXHuffmanDistanceTreeGenerateFixedLiteralLengthTree(&tree_ll);
-    PXHuffmanDistanceTreeGenerateFixed(&tree_d);
+    PXHuffmanDistanceTreeGenerateFixed(&tree_ll, &tree_d);
 
     if(!error)
     {
@@ -705,7 +716,9 @@ PXInt32U PXAPI searchCodeIndexI8(const PXInt8U* array, PXSize array_size, PXSize
     {
         PXSize mid = (left + right) >> 1;
 
-        if((array[mid]+3) >= value)
+        PXInt16U vvvvak = ((PXInt16U)array[mid]) + 3;
+
+        if(vvvvak >= value)
         {
             right = mid - 1;
         }
@@ -715,7 +728,9 @@ PXInt32U PXAPI searchCodeIndexI8(const PXInt8U* array, PXSize array_size, PXSize
         }
     }
 
-    if(left >= array_size || (array[left]+3) > value)
+    PXInt16U wwww = ((PXInt16U)array[left]) + 3;
+
+    if(left >= array_size || wwww > value)
         left--;
 
     return left;
@@ -1417,7 +1432,7 @@ unsigned deflateDynamic
         /*compute amount of code-length-code-lengths to output*/
         numcodes_cl = NUM_CODE_LENGTH_CODES;
         /*trim zeros at the end (using CLCL_ORDER), but minimum size must be 4 (see HCLEN below)*/
-        while(numcodes_cl > 4u && tree_cl.LengthsList[CLCL_ORDER[numcodes_cl - 1u]] == 0)
+        while(numcodes_cl > 4u && tree_cl.LengthsList[PXHuffmanCLCL_ORDER[numcodes_cl - 1u]] == 0)
         {
             numcodes_cl--;
         }
@@ -1452,7 +1467,7 @@ unsigned deflateDynamic
         PNGwriteBits(writer, HCLEN, 4);
 
         /*write the code lengths of the code length alphabet ("bitlen_cl")*/
-        for(i = 0; i != numcodes_cl; ++i) PNGwriteBits(writer, tree_cl.LengthsList[CLCL_ORDER[i]], 3);
+        for(i = 0; i != numcodes_cl; ++i) PNGwriteBits(writer, tree_cl.LengthsList[PXHuffmanCLCL_ORDER[i]], 3);
 
         /*write the lengths of the lit/len AND the dist alphabet*/
         for(i = 0; i != numcodes_lld_e; ++i)
