@@ -2152,6 +2152,9 @@ PXActionResult PXAPI PXGraphicLoadImage(PXGraphic* const pxGraphic, PXImage* con
 
 */
 
+#include <assert.h>
+
+
 
 PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResourceCreateInfo* const pxResourceCreateInfo)
 {
@@ -2171,6 +2174,9 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
         }
     }
 
+    assert(pxResourceCreateInfo->ObjectReference);
+    assert(*pxResourceCreateInfo->ObjectReference);
+
     switch(pxResourceCreateInfo->Type)
     {
         case PXResourceTypeImage:
@@ -2182,6 +2188,8 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
         {
             PXTextureCubeCreateInfo* const pxTextureCubeCreateData = &pxResourceCreateInfo->TextureCube;
             PXTextureCube* pxTextureCube = *(PXTextureCube**)pxResourceCreateInfo->ObjectReference;
+
+            assert(pxTextureCube);
 
             if(!pxEngine->Graphic.TextureAction)
             {
@@ -2212,6 +2220,8 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
         {
             PXModelCreateInfo* const pxModelCreateInfo = &pxResourceCreateInfo->Model;
             PXModel* pxModel = *(PXModel**)pxResourceCreateInfo->ObjectReference;
+
+            assert(pxModel);
 
             if(!pxEngine->Graphic.ModelRegister)
             {
@@ -2272,6 +2282,8 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
         {
             //PXEngineTexture2DCreateData* const pxEngineTexture2DCreateData = &pxEngineResourceCreateInfo->Texture2D;
             PXTexture2D* pxTexture2D = *(PXTexture2D**)pxResourceCreateInfo->ObjectReference;
+
+            assert(pxTexture2D);
 
             if(!pxEngine->Graphic.TextureAction)
             {

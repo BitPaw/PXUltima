@@ -4791,9 +4791,13 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
                     PXLoggingError,
                     "OpenGL",
                     "Shader-Error",
-                    "%s [%i] has no data attached!",
-                    shaderTypeName,
-                    shader->Info.ID
+                    "No data attached!\n"
+                    "%25s : [PX:%4i] %i\n"
+                    "%25s : [PX:%4i] %i (%s) \n"
+                    "%25s : %p, Size:%i",
+                    "ProgramID OpenGL", pxShaderProgram->Info.ID, pxShaderProgram->Info.Handle.OpenGLID,
+                    "ShaderID OpenGL", shader->Info.ID,shader->Info.Handle.OpenGLID, shaderTypeName,
+                    "Shader Data", shader->ShaderFile->Data, shader->ShaderFile->DataUsed
                 );
 #endif
 

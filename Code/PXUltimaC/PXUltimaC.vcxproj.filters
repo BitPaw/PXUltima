@@ -576,6 +576,9 @@
     <ClCompile Include="Media\PowerPC\PXPowerPC.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Algorithm\Fractal\PXFractal.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm\KalmanFilter\PXKalmanFilter.h">
@@ -1137,6 +1140,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Media\PowerPC\PXPowerPC.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Algorithm\Fractal\PXFractal.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

@@ -140,6 +140,8 @@ PXActionResult PXAPI PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const p
 
     do
     {
+        foundEndOFBlock = PXFalse;
+
         const PXSize readBytes = PXFileBinding
         (
             pxInputStream,
@@ -170,7 +172,7 @@ PXActionResult PXAPI PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const p
                 const PXSize readBytes = PXFileBinding
                 (
                     pxInputStream,
-                    &pxDEFLATELiteralRawData, 
+                    &pxDEFLATELiteralRawData,
                     PXDEFLATELiteralRawDataList,
                     PXDEFLATELiteralRawDataListSize,
                     PXFileBindingRead
@@ -184,7 +186,7 @@ PXActionResult PXAPI PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const p
 
                 const PXSize dataRead = PXFileDataCopy(pxInputStream, pxOutputStream, pxDEFLATELiteralRawData.LengthActual);
 
-                break;
+                continue;
             }
             case PXDeflateEncodingHuffmanDynamic:
             {
@@ -201,112 +203,113 @@ PXActionResult PXAPI PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const p
                 PXHuffmanDistanceTreeGenerateFixed(&literalAndLengthCodes, &distanceCodes);
                 break;
             }
+        }
 
-            // Start to decode huffman symbols and trees
-            while(!foundEndOFBlock)
+        // Start to decode huffman symbols and trees
+        while(!foundEndOFBlock)
+        {
+            const PXInt16U resultLengthCode = PXHuffmanSymbolDecode(pxInputStream, &literalAndLengthCodes);
+            const PXHuffmanCodeType huffmanCodeType = PXHuffmanCodeTypeFromCode(resultLengthCode);
+
+            switch(huffmanCodeType)
             {
-                const PXInt16U resultLengthCode = PXHuffmanSymbolDecode(pxInputStream, &literalAndLengthCodes);
-                const PXHuffmanCodeType huffmanCodeType = PXHuffmanCodeTypeFromCode(resultLengthCode);
-
-                switch(huffmanCodeType)
+                case PXHuffmanCodeInvalid:
                 {
-                    case PXHuffmanCodeInvalid:
+                    // printf("[Symbol] Error: Invalid\n");
+                    break; // ERROR
+                }
+                case PXHuffmanCodeLiteral:
+                {
+                    // printf("[Symbol] <%2x>(%3i) Literal.\n", resultLengthCode, resultLengthCode);
+                    PXFileWriteI8U(pxOutputStream, resultLengthCode);
+                    break;
+                }
+                case PXHuffmanCodeLength:
+                {
+                    // printf("[Symbol] <%2x>(%3i) Length.\n", resultLengthCode, resultLengthCode);
+
+       
+
+                    // part 1: get length base
+                    PXInt16U length = PXHuffmanLengthBaseGet(resultLengthCode - FIRST_LENGTH_CODE_INDEX);
+
+                    // part 2: get extra bits and add the value of that to length
+                    const PXInt8U numextrabits_l = PXHuffmanLengthExtra[resultLengthCode - FIRST_LENGTH_CODE_INDEX];
+
+
+                    if(numextrabits_l != 0)
                     {
-                        // printf("[Symbol] Error: Invalid\n");
-                        break; // ERROR
+                        /* bits already ensured above */
+                        length += PXFileReadBits(pxInputStream, numextrabits_l);
                     }
-                    case PXHuffmanCodeLiteral:
+
+                    /*part 3: get distance code*/
+                    //ensureBits32(reader, 28); /* up to 15 for the huffman symbol, up to 13 for the extra bits */
+                    const PXInt16U resultDistanceCode = PXHuffmanSymbolDecode(pxInputStream, &distanceCodes);
+                    PXBool isUnsupportedCode = resultDistanceCode > 29u;
+                    PXBool isIllegalCode = resultDistanceCode > 31u;
+
+                    if(isUnsupportedCode)
                     {
-                        // printf("[Symbol] <%2x>(%3i) Literal.\n", resultLengthCode, resultLengthCode);
-                        PXFileWriteI8U(pxOutputStream, resultLengthCode);
-                        break;
-                    }
-                    case PXHuffmanCodeLength:
-                    {
-                        // printf("[Symbol] <%2x>(%3i) Length.\n", resultLengthCode, resultLengthCode);
-
-                        PXInt16U distance = 0;
-                        PXInt8U numextrabits_d = 0; /*extra bits for length and distance*/
-                       
-                        // part 1: get length base
-                        PXInt16U length = PXHuffmanLengthBaseGet(PXHuffmanLengthBase[resultLengthCode - FIRST_LENGTH_CODE_INDEX]);
-                       
-                        // part 2: get extra bits and add the value of that to length
-                        const PXInt8U numextrabits_l = PXHuffmanLengthExtra[resultLengthCode - FIRST_LENGTH_CODE_INDEX];
-                      
-
-                        if(numextrabits_l != 0)
+                        if(isIllegalCode)  /* if(code_d == INVALIDSYMBOL) */
                         {
-                            /* bits already ensured above */
-                            length += PXFileReadBits(pxInputStream, numextrabits_l);
-                        }
-
-                        /*part 3: get distance code*/
-                        //ensureBits32(reader, 28); /* up to 15 for the huffman symbol, up to 13 for the extra bits */
-                        const PXInt16U resultDistanceCode = PXHuffmanSymbolDecode(pxInputStream, &distanceCodes);
-                        PXBool isUnsupportedCode = resultDistanceCode > 29u;
-                        PXBool isIllegalCode = resultDistanceCode > 31u;
-
-                        if(isUnsupportedCode)
-                        {
-                            if(isIllegalCode)  /* if(code_d == INVALIDSYMBOL) */
-                            {
-                                return PXActionRefusedParserSymbolNotAsExpected; // error: tried to read disallowed huffman symbol
-                            }
-                            else
-                            {
-                                return PXActionRefusedParserSymbolNotAsExpected; // error: invalid distance code (30-31 are never used)
-                            }
-                        }
-
-                        distance = PXHuffmanDistanceBase[resultDistanceCode];
-
-                        /*part 4: get extra bits from distance*/
-                        numextrabits_d = PXHuffmanDistanceExtra[resultDistanceCode];
-                        if(numextrabits_d != 0)
-                        {
-                            /* bits already ensured above */
-                            distance += PXFileReadBits(pxInputStream, numextrabits_d);
-                        }
-
-                        /*part 5: fill in all the out[n] values based on the length and dist*/
-                        PXSize start = pxOutputStream->DataCursor;//(*outputBufferSizeRead);
-
-                        if(distance > start)
-                            return PXActionRefusedParserSymbolNotAsExpected; /*too long backward distance*/
-
-                        PXSize backward = start - distance;
-
-                        /*(*outputBufferSizeRead)*/ pxOutputStream->DataCursor += length;
-
-                        // if (!ucvector_resize(out, out->size + length)) ERROR_BREAK(83 /*alloc fail*/);
-
-
-                        if(distance < length)
-                        {
-                            start += PXMemoryCopy((PXAdress)pxOutputStream->Data + backward, distance, (PXAdress)pxOutputStream->Data + start, distance);
-
-                            for(PXSize forward = distance; forward < length; ++forward)
-                            {
-                                ((PXAdress)pxOutputStream->Data)[start++] = ((PXAdress)pxOutputStream->Data)[backward++];
-                            }
+                            return PXActionRefusedParserSymbolNotAsExpected; // error: tried to read disallowed huffman symbol
                         }
                         else
                         {
-                            PXMemoryCopy((PXAdress)pxOutputStream->Data + backward, length, (PXAdress)pxOutputStream->Data + start, length);
+                            return PXActionRefusedParserSymbolNotAsExpected; // error: invalid distance code (30-31 are never used)
                         }
-                        break;
                     }
-                    case PXHuffmanCodeEndOfBlock:
-                    {
-                        //printf("[Symbol] <%2x>(%3i) End of Block.\n", resultLengthCode, resultLengthCode);
-                        foundEndOFBlock = PXTrue;
 
-                        break; // FINISHED!
+                    PXSize distance = PXHuffmanDistanceBase[resultDistanceCode];
+
+                    // part 4: get extra bits from distance
+                    PXInt8U numextrabits_d = PXHuffmanDistanceExtra[resultDistanceCode]; // extra bits for length and distance
+                 
+                    if(numextrabits_d != 0)
+                    {
+                        // bits already ensured above
+                        distance += PXFileReadBits(pxInputStream, numextrabits_d);
                     }
+
+                    /*part 5: fill in all the out[n] values based on the length and dist*/
+                    PXSize start = pxOutputStream->DataCursor;//(*outputBufferSizeRead);
+
+                    if(distance > start)
+                        return PXActionRefusedParserSymbolNotAsExpected; /*too long backward distance*/
+
+                    PXSize backward = start - distance;
+
+                    /*(*outputBufferSizeRead)*/ pxOutputStream->DataCursor += length;
+
+                    // if (!ucvector_resize(out, out->size + length)) ERROR_BREAK(83 /*alloc fail*/);
+
+
+                    if(distance < length)
+                    {
+                        start += PXMemoryCopy((PXAdress)pxOutputStream->Data + backward, distance, (PXAdress)pxOutputStream->Data + start, distance);
+
+                        for(PXSize forward = distance; forward < length; ++forward)
+                        {
+                            ((PXAdress)pxOutputStream->Data)[start++] = ((PXAdress)pxOutputStream->Data)[backward++];
+                        }
+                    }
+                    else
+                    {
+                        PXMemoryCopy((PXAdress)pxOutputStream->Data + backward, length, (PXAdress)pxOutputStream->Data + start, length);
+                    }
+                    break;
+                }
+                case PXHuffmanCodeEndOfBlock:
+                {
+                    //printf("[Symbol] <%2x>(%3i) End of Block.\n", resultLengthCode, resultLengthCode);
+                    foundEndOFBlock = PXTrue;
+
+                    break; // FINISHED!
                 }
             }
         }
+        
     } 
     while(!pxDeflateBlock.IsLastBlock);
 
@@ -768,7 +771,7 @@ void PXAPI addLengthDistance(uivector* values, const PXSize length, const PXSize
     286-287: invalid*/
 
     PXInt32U length_code = searchCodeIndexI8(PXHuffmanLengthBase, 29, length);
-    PXInt32U extra_length = (length - PXHuffmanLengthBaseGet(PXHuffmanLengthBase[length_code]));
+    PXInt32U extra_length = (length - PXHuffmanLengthBaseGet(length_code));
     PXInt32U dist_code = searchCodeIndexI16(PXHuffmanDistanceBase, 30, distance);
     PXInt32U extra_distance = (distance - PXHuffmanDistanceBase[dist_code]);
 

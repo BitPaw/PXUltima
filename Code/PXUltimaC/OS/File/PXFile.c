@@ -2105,10 +2105,10 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, PXFileOpenInfo* const pxFi
                 "File",
                 "Open-Virtual",
                 "Allocating space for %i...\n"
-                "%17s : %6s -> %3ix %3i%%\n"
-                "%17s : %6s -> %3ix %3i%%\n"
-                "%17s : %6s -> %3ix %3i%%\n"
-                "%17s : %s",
+                "%25s : %6s -> %3ix %3i%%\n"
+                "%25s : %6s -> %3ix %3i%%\n"
+                "%25s : %6s -> %3ix %3i%%\n"
+                "%25s : %s",
                 pxFileIOInfo->FileSizeRequest,
                 "Normal-PageSize", pxTextPageSizeNormal.TextA,  pxFilePageFileInfo.PageAmountNormal, (int)pxFilePageFileInfo.PageUtilizationNormal,
                 "Large-PageSize", pxTextPageSizeLarge.TextA,   pxFilePageFileInfo.PageAmountLarge,  (int)pxFilePageFileInfo.PageUtilizationLarge,

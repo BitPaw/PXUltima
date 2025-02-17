@@ -3715,6 +3715,7 @@ typedef struct PXResourceCreateInfo_
 
     union
     {
+        char Data[1]; // Dummy value to access data without cast
         PXEngineFontCreateInfo Font;
         PXSkyBoxCreateEventInfo SkyBox;
         PXSpriteCreateInfo Sprite;
@@ -3769,8 +3770,10 @@ PXPrivate PXInt32U PXAPI PXResourceManagerGenerateUniqeID();
 
 
 
-
-
+PXPrivate PXActionResult PXAPI PXResourceCreateSkybox(PXResourceCreateInfo* const pxResourceCreateInfo, PXSkyBox* const pxSkyBox);
+PXPrivate PXActionResult PXAPI PXResourceCreateBrush(PXResourceCreateInfo* const pxResourceCreateInfo, PXWindowBrush* const pxWindowBrush);
+PXPrivate PXActionResult PXAPI PXResourceCreateImage(PXResourceCreateInfo* const pxResourceCreateInfo, PXImage* const pxImage);
+PXPrivate PXActionResult PXAPI PXResourceCreateShaderProgram(PXResourceCreateInfo* const pxResourceCreateInfo, PXShaderProgram* const pxShaderProgram);
 
 
 
