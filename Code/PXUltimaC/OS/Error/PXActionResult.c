@@ -118,9 +118,18 @@ PXActionResult PXAPI PXErrorCurrent(const PXBool wasSuccessful)
         0,
         NULL
     );
+    const PXBool success = errorMessageLength > 0;
 
-    // There is a new line added automatically, we dont want that "\r\n"
-    errorMessageBuffer[errorMessageLength - 2] = '\0';
+    if(success)
+    {
+        // There is a new line added automatically, we dont want that "\r\n"
+        errorMessageBuffer[errorMessageLength - 2] = '\0';
+    }
+    else
+    {
+        errorMessageBuffer = "**No text**";
+    }
+
 #else
 
 #endif
@@ -141,12 +150,14 @@ PXActionResult PXAPI PXErrorCurrent(const PXBool wasSuccessful)
 
 #if OSUnix
 #elif OSWindows
-    LocalFree(errorMessageBuffer);  // Free the Win32's string's buffer.
+    if(success)
+    {
+        LocalFree(errorMessageBuffer);  // Free the Win32's string's buffer.
+    }
 #endif
 
     return actionResult;
 }
-
 
 PXActionResult PXAPI PXErrorCodeFromID(const int errorCode)
 {

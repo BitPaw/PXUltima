@@ -91,6 +91,8 @@ typedef enum PXActionResult_
     PXActionRefusedStateDoesNotAllowAction, // Action can't be used in this current state
     PXActionRefuedObjectInterfaceNotAvailable,
 
+    PXActionRefusedObjectCreateCallbackMissing, // PX-OBJ-CREATE-FUN-MISSING
+
 
     PXActionRefusedObjectNotCreated,    // PX-OBJ-NOID
     PXActionRefusedObjectIDInvalid,     // PX-OBJ-IDINVAL

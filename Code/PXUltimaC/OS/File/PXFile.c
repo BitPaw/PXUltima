@@ -3228,7 +3228,7 @@ PXSize PXAPI PXFileBinding(PXFile* const pxFile, void* const dataStruct, const P
     // read/write actual data
     char* insertionPoint = (char*)dataStruct;
 
-#if PXLogEnable
+#if PXLogEnable && 0
     PXLogPrint
     (
         PXLoggingInfo,
@@ -3339,7 +3339,7 @@ PXSize PXAPI PXFileBinding(PXFile* const pxFile, void* const dataStruct, const P
             }
         }
 
-#if PXLogEnable
+#if PXLogEnable && 0
 
         PXText dataType;
         PXTextConstructNamedBufferA(&dataType, dataTypeBuffer, 64);

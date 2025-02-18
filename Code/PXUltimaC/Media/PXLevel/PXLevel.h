@@ -19,7 +19,7 @@ typedef struct PXLevelEntry_
     PXSize DataSize; // Can also be 0 is size if not known
 
     PXInt32U Flags;
-    PXResourceType ResourceType; // Expected type
+    PXInt32U ResourceType; // Expected type
 }
 PXLevelEntry;
 

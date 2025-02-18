@@ -286,60 +286,53 @@ PXPublic PXInt8U PXAPI PXVertexBufferFormatStrideSize(const PXVertexBufferFormat
 //---------------------------------------------------------
 
 // Describes the exact type of a resource
-typedef enum PXResourceType_
-{
-    PXResourceTypeInvalid, // Invalid, don't use- only for internal
+#define PXResourceTypeInvalid 0 // Resource invalid, don't use.
 
-    PXResourceTypeCustom            = PXInt32Make('C', 'U', 'S', 'T'), // Undetected but valid format. Needs to be handled by the caller
+#define    PXResourceTypeCustom   1 // Undetected but valid format. Needs to be handled by the caller
 
     //-----------------------------------------------------
-    // Resource Level 0 - Internal OS Resources
+    // Resource Level A - Indepepended
     //-----------------------------------------------------
-    PXResourceTypeBrush             = PXInt32Make('B', 'R', 'S', 'H'),
-    //-----------------------------------------------------
-
-
-    //-----------------------------------------------------
-    // Resource Level 1 - Indepepended
-    //-----------------------------------------------------
-    PXResourceTypeImage             = PXInt32Make('I', 'M', 'A', 'G'), // Image for pixeldata
-    PXResourceTypeSound             = PXInt32Make('S', 'O', 'U', 'D'),
-    PXResourceTypeVideo             = PXInt32Make('V', 'I', 'D', 'E'),
-    PXResourceTypeModel             = PXInt32Make('M', 'O', 'D', 'L'), // 3D model, collection of vertex data
-    PXResourceTypeFont              = PXInt32Make('F', 'O', 'N', 'T'), // Collection of spites or points to render text
-    PXResourceTypeMaterial          = PXInt32Make('M', 'T', 'R', 'L'),
+#define PXResourceTypeImage       2       // Image for pixeldata
+#define PXResourceTypeSound       3      
+#define PXResourceTypeVideo       4      
+#define PXResourceTypeModel       5       // 3D model, collection of vertex data
+#define PXResourceTypeFont        6       // Collection of spites or points to render text
+#define PXResourceTypeMaterial    7      
     //-----------------------------------------------------
 
 
     //-----------------------------------------------------
-    // Resource Level 2 - Context spesific
+    // Resource Level B - Context spesific/Internal OS Resources
     //-----------------------------------------------------
-    PXResourceTypeTexture2D         = PXInt32Make('T', 'X', '2', 'D'), // Texture to render on a surface
-    PXResourceTypeTextureCube       = PXInt32Make('T', 'X', 'C', 'U'),
-    PXResourceTypeShaderProgram     = PXInt32Make('S', 'H', 'A', 'D'),
-    PXResourceTypeSkybox            = PXInt32Make('S', 'K', 'Y', 'B'),
-    PXResourceTypeSprite            = PXInt32Make('S', 'P', 'R', 'I'),
-    PXResourceTypeIcon              = PXInt32Make('I', 'C', 'O', 'N'),
-    PXResourceTypeIconAtlas         = PXInt32Make('I', 'C', 'O', 'A'),
-    PXResourceTypeSpriteAnimator    = PXInt32Make('S', 'A', 'N', 'I'),
-    PXResourceTypeText              = PXInt32Make('T', 'E', 'X', 'T'),
-    PXResourceTypeTimer             = PXInt32Make('T', 'I', 'M', 'E'),
-    PXResourceTypeEngineSound       = PXInt32Make('E', 'S', 'N', 'D'),
-    PXResourceTypeGUIElement        = PXInt32Make('G', 'U', 'I', 'E'),
-    PXResourceTypeHitBox            = PXInt32Make('H', 'B', 'O', 'X'),
-    PXResourceTypeMaterialList      = PXInt32Make('M', 'L', 'I', 'S'),
-    PXResourceTypeCodeDocument      = PXInt32Make('C', 'O', 'D', 'E'),
-    PXResourceTypeDocument          = PXInt32Make('D', 'O', 'C', 'U'),
-    PXResourceTypeBinary            = PXInt32Make('B', 'I', 'N', 'A'),
-    PXResourceTypeStructuredText    = PXInt32Make('D', 'O', 'C', 'U'),
-    PXResourceTypeInstaller         = PXInt32Make('I', 'N', 'S', 'T'), // compressed executable
-    PXResourceTypeArchiv            = PXInt32Make('A', 'R', 'C', 'H'), // Compressed object
-    //-----------------------------------------------------
+#define PXResourceTypeBrush         8
+#define PXResourceTypeTexture2D      9    // Texture to render on a surface
+#define PXResourceTypeTextureCube    10   
+#define PXResourceTypeShaderProgram  11  
+#define PXResourceTypeSkybox         12   
+#define PXResourceTypeSprite         13 
+#define PXResourceTypeIcon            14
+#define PXResourceTypeIconAtlas       15 
+#define PXResourceTypeSpriteAnimator  16 
+#define PXResourceTypeText            17
+#define PXResourceTypeTimer           18
+#define PXResourceTypeEngineSound     19
+#define PXResourceTypeGUIElement      20
+#define PXResourceTypeHitBox           21
+#define PXResourceTypeMaterialList    22
+#define PXResourceTypeCodeDocument    23
+#define PXResourceTypeDocument         24
+#define PXResourceTypeBinary          25
+#define PXResourceTypeStructuredText   26
+#define PXResourceTypeInstaller        27  // compressed executable
+#define PXResourceTypeArchiv           28  // Compressed object
+//-----------------------------------------------------
 
-    // Extended basic components
-    PXResourceTypeDialogBox
-}
-PXResourceType;
+// Extended basic components
+#define PXResourceTypeDialogBox     29
+//-----------------------------------------------------
+
+
 
 #define ResourceIDNameLength 64
 
@@ -450,7 +443,7 @@ PXResourceReference;
 
 typedef struct PXResource_
 {
-    PXResourceType Type;
+    PXInt32U Type;
     void* ResourceAdress;
 }
 PXResource;
@@ -1005,7 +998,7 @@ typedef struct PXRenderEntity_
     struct PXMaterial_* MaterialOverride;
     struct PXTexture2D_* Texture2DOverride;
     void* ObjectReference; // Containing the object, type described in 'Type'
-    PXResourceType Type;
+    PXInt32U Type;
 
     // Dirty flags
 }
@@ -1230,15 +1223,7 @@ PXEngineText;
 //-----------------------------------------------------
 // Audio
 //-----------------------------------------------------
-typedef struct PXEngineSound_
-{
-    struct PXSound_* Sound;
 
-    PXInt32U PXID;
-
-    PXBool SoundLoop;
-}
-PXEngineSound;
 
 
 
@@ -2759,7 +2744,7 @@ typedef struct PXUIElementTreeViewItemInfo_
 
     //struct PXUIElement_* ElementSource;
     void* OwningObject;
-    PXResourceType OwningObjectType;
+    PXInt32U OwningObjectType;
 
     PXUIElementTreeViewItemInsertMode InsertMode;
 
@@ -2973,7 +2958,7 @@ PXPublic void PXAPI PXUIElementPositionCalculcate(PXWindow* const pxGUIElement, 
 
 
 
-
+#define PXSoundBehaviourLoop (1<<0)
 
 
 typedef struct PXSound_
@@ -3312,7 +3297,7 @@ typedef struct PXResourceTransphereInfo_
     PXResourceTransphereFunction OnDeviceDataUpload;    // Upload data fully
 
     void* ResourceSource;
-    PXResourceType ResourceType;        // Type of the resource that 'Target' points to. Example: Image, Sound, Video...
+    PXInt32U ResourceType;        // Type of the resource that 'Target' points to. Example: Image, Sound, Video...
 
 
     PXFileFormat FormatReal;
@@ -3706,12 +3691,12 @@ typedef struct PXResourceCreateInfo_
 
     char* Name;
 
-    PXResourceType Type;
-
+    PXInt32U Type;
     PXInt32U Flags;
 
-    PXDictionary* Lookup;
-    PXSize ObjectSize;
+    // Do we need this?
+   // PXDictionary* Lookup;
+    //PXSize ObjectSize;
 
     union
     {
@@ -3750,12 +3735,6 @@ PXResourceCreateInfo;
 
 
 
-PXPublic const char* PXAPI PXResourceTypeToString(const PXResourceType pxResourceType);
-
-
-
-
-
 // Returns the global resouremanager. 
 // If not yet init, do so.
 PXPublic PXResourceManager* PXAPI PXResourceManagerInstanceFetch(void);
@@ -3774,6 +3753,19 @@ PXPrivate PXActionResult PXAPI PXResourceCreateSkybox(PXResourceCreateInfo* cons
 PXPrivate PXActionResult PXAPI PXResourceCreateBrush(PXResourceCreateInfo* const pxResourceCreateInfo, PXWindowBrush* const pxWindowBrush);
 PXPrivate PXActionResult PXAPI PXResourceCreateImage(PXResourceCreateInfo* const pxResourceCreateInfo, PXImage* const pxImage);
 PXPrivate PXActionResult PXAPI PXResourceCreateShaderProgram(PXResourceCreateInfo* const pxResourceCreateInfo, PXShaderProgram* const pxShaderProgram);
+PXPrivate PXActionResult PXAPI PXResourceCreateIcon(PXResourceCreateInfo* const pxResourceCreateInfo, PXIcon* const pxIcon);
+PXPrivate PXActionResult PXAPI PXResourceCreateFont(PXResourceCreateInfo* const pxResourceCreateInfo, PXFont* const pxFont);
+PXPrivate PXActionResult PXAPI PXResourceCreateMaterial(PXResourceCreateInfo* const pxResourceCreateInfo, PXMaterial* const pxMaterial);
+PXPrivate PXActionResult PXAPI PXResourceCreateIconAtlas(PXResourceCreateInfo* const pxResourceCreateInfo, PXIconAtlas* const pxIconAtlas);
+PXPrivate PXActionResult PXAPI PXResourceCreateTextureCube(PXResourceCreateInfo* const pxResourceCreateInfo, PXTextureCube* const pxTextureCube);
+PXPrivate PXActionResult PXAPI PXResourceCreateTexture2D(PXResourceCreateInfo* const pxResourceCreateInfo, PXTexture2D* const pxTexture2D);
+PXPrivate PXActionResult PXAPI PXResourceCreateModel(PXResourceCreateInfo* const pxResourceCreateInfo, PXModel* const pxModel);
+PXPrivate PXActionResult PXAPI PXResourceCreateSprite(PXResourceCreateInfo* const pxResourceCreateInfo, PXSprite* const pxSprite);
+PXPrivate PXActionResult PXAPI PXResourceCreateSpriteAnimator(PXResourceCreateInfo* const pxResourceCreateInfo, PXSpriteAnimator* const pxSpriteAnimator);
+PXPrivate PXActionResult PXAPI PXResourceCreateHitBox(PXResourceCreateInfo* const pxResourceCreateInfo, PXHitBox* const pxHitBox);
+PXPrivate PXActionResult PXAPI PXResourceCreateSound(PXResourceCreateInfo* const pxResourceCreateInfo, PXSound* const pxSound);
+PXPrivate PXActionResult PXAPI PXResourceCreateTimer(PXResourceCreateInfo* const pxResourceCreateInfo, PXEngineTimer* const pxEngineTimer);
+PXPrivate PXActionResult PXAPI PXResourceCreateWindow(PXResourceCreateInfo* const pxResourceCreateInfo, PXWindow* const pxWindow);
 
 
 

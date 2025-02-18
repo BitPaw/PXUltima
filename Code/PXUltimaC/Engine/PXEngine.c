@@ -2267,14 +2267,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
                 );
             }
 
-
-   
-     
-
-
-       
-
-
+            pxModel->Info.Flags |= PXResourceInfoRender | PXResourceInfoActive;
 
             break;
         }
@@ -2520,6 +2513,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
         }
         case PXResourceTypeEngineSound:
         {
+            /*
             PXEngineSoundCreateInfo* const pxEngineSoundCreateInfo = &pxResourceCreateInfo->Sound;
             PXEngineSound* pxEngineSound = *(PXEngineSound**)pxResourceCreateInfo->ObjectReference;
 
@@ -2553,6 +2547,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
 #endif
 
             }
+            */
 
 
             break;

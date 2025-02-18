@@ -20,7 +20,7 @@ typedef struct PXEngine_ PXEngine;
 //-----------------------------------------------------
 typedef struct PXEngineResourceStateChangeInfo_
 {
-    PXResourceType Type;
+    PXInt32U Type;
     void* Object;
 
     PXBool Enable;
