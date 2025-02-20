@@ -2203,7 +2203,20 @@ PXVideo;
 
 
 
+//---------------------------------------------------------
+// Scollbar
+//---------------------------------------------------------
 
+#define PXScollbarBehaviourVertical     (1<<0)
+#define PXScollbarBehaviourHorrizontal  (1<<1)
+#define PXScollbarBehaviourBoth         PXScollbarBehaviourHorrizontal | PXScollbarBehaviourVertical
+
+typedef struct PXScollbar_
+{
+    PXResourceInfo Info;
+}
+PXScollbar;
+//---------------------------------------------------------
 
 
 

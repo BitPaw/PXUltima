@@ -89,6 +89,13 @@ PXPublic PXActionResult PXAPI PXNativDrawFontSelect(PXNativDraw* const pxNativDr
 
 
 //---------------------------------------------------------
+// Scrollbar
+//---------------------------------------------------------
+PXPublic PXActionResult PXAPI PXNativDrawScrollbarUpdate(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow, PXScollbar* const pxScollbar);
+//---------------------------------------------------------
+
+
+//---------------------------------------------------------
 // Icons
 //---------------------------------------------------------
 PXPublic PXActionResult PXAPI PXNativDrawIconFromImage(PXNativDraw* const pxNativDraw, PXIcon* const pxIcon, PXImage* const pxImage);

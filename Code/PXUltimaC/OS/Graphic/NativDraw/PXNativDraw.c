@@ -796,6 +796,12 @@ PXActionResult PXAPI PXNativDrawWindowCreate(PXNativDraw* const pxNativDraw, PXW
     );
 #endif
 
+    PXScollbar pxScollbar;
+    PXClear(PXScollbar, &pxScollbar);
+    pxScollbar.Info.Behaviour |= PXScollbarBehaviourBoth;
+
+    PXNativDrawScrollbarUpdate(pxNativDraw, pxWindow, &pxScollbar);
+
 
     return PXActionSuccessful;
 }
@@ -1228,6 +1234,69 @@ PXActionResult PXAPI PXNativDrawFontSelect(PXNativDraw* const pxNativDraw, PXWin
     );
 #elif OSWindows
     const HFONT fontHandleOld = (HFONT)SelectObject(pxWindow->DeviceContextHandle, pxFont->Info.Handle.FontHandle);
+#endif
+
+    return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXNativDrawScrollbarUpdate(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow, PXScollbar* const pxScollbar)
+{
+#if OSUnix
+#elif OSWindows
+
+    UINT flags = 0;
+
+    if(PXScollbarBehaviourVertical & pxScollbar->Info.Behaviour)
+    {
+        flags |= SB_VERT;
+    }
+
+    if(PXScollbarBehaviourHorrizontal & pxScollbar->Info.Behaviour)
+    {
+        flags |= SB_HORZ;
+    }
+
+
+    const BOOL enable = EnableScrollBar
+    (
+        pxWindow->Info.Handle.WindowID,
+        flags,
+        ESB_ENABLE_BOTH
+    );
+
+    const BOOL show = ShowScrollBar
+    (
+        pxWindow->Info.Handle.WindowID,
+        flags,
+        TRUE
+    );
+
+    SCROLLINFO scrollInfo;
+    PXClear(SCROLLINFO, &scrollInfo);
+    scrollInfo.cbSize = sizeof(SCROLLINFO);
+    scrollInfo.nMin = 0;
+    scrollInfo.nMax = 5;
+    scrollInfo.nPos = SIF_POS | SIF_RANGE;
+
+    int xx = SetScrollInfo
+    (
+        pxWindow->Info.Handle.WindowID,
+        flags,
+        &scrollInfo,
+        TRUE
+    );
+
+#endif
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "NativDraw",
+        "Scrollbar",
+        "-"
+
+    );
 #endif
 
     return PXActionSuccessful;
