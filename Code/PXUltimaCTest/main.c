@@ -162,6 +162,30 @@ int main()
 
 
 
+
+
+
+    PXDotNet pxDotNet;
+
+    PXActionResult pxActionResult = PXDotNetInitialize(&pxDotNet, 0);
+
+    PXDelegate pxDelegate;
+    pxDelegate.NameLibrary;
+    pxDelegate.NameNamespace;
+    pxDelegate.NameClass; 
+    pxDelegate.NameFunction;
+    pxDelegate.FunctionAdress = 0;
+
+    pxDotNet.DelegateFetch(pxDotNet.API, &pxDelegate);
+
+
+
+
+
+
+
+
+
 #if 0 
     PXInt16U data[200];
 
@@ -187,9 +211,6 @@ int main()
 
 
 
-    PXDotNet pxDotNet;
-
-    PXDotNetInit(&pxDotNet);
 
 
 

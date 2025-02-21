@@ -101,22 +101,24 @@ PXActionResult PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* con
 {
     PXClear(PXLibrary, pxLibrary);
 
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingAllocation,
-        "Library",
-        "Open",
-        "<%s>",
-        filePath->TextA
-    );
-#endif
+
 
     switch(filePath->Format)
     {
         case TextFormatUTF8:
         case TextFormatASCII:
         {
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingAllocation,
+                "Library",
+                "Open",
+                "<%s>",
+                filePath->TextA
+            );
+#endif
+
 #if OSUnix
             dlerror(); // Clear any existing error
 
@@ -135,6 +137,17 @@ PXActionResult PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* con
 
         case TextFormatUNICODE:
         {
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingAllocation,
+                "Library",
+                "Open",
+                "<%ls>",
+                filePath->TextA
+            );
+#endif
+
 #if OSUnix
             return 0;
 
@@ -192,10 +205,18 @@ PXActionResult PXAPI PXLibraryOpenA(PXLibrary* const pxLibrary, const char* cons
     return PXLibraryOpen(pxLibrary, &pxText);
 }
 
+PXActionResult PXAPI PXLibraryOpenW(PXLibrary* const pxLibrary, const wchar_t* const filePath)
+{
+    PXText pxText;
+    PXTextConstructFromAdressW(&pxText, filePath, PXTextLengthUnkown, PXPathSizeMax);
+
+    return PXLibraryOpen(pxLibrary, &pxText);
+}
+
 PXActionResult PXAPI PXLibraryClose(PXLibrary* const pxLibrary)
 {
 #if PXLogEnable
-    char moduleName[32];
+    char moduleName[128];
 
     PXDebugModuleHandleToName(pxLibrary->ID, moduleName);
 

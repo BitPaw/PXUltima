@@ -34,6 +34,7 @@ PXLibrary;
 
 PXPublic PXActionResult PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* const filePath); //  gain access to an executable object file. RTLD_LAZY
 PXPublic PXActionResult PXAPI PXLibraryOpenA(PXLibrary* const pxLibrary, const char* const filePath);
+PXPublic PXActionResult PXAPI PXLibraryOpenW(PXLibrary* const pxLibrary, const wchar_t* const filePath);
 PXPublic PXActionResult PXAPI PXLibraryClose(PXLibrary* const pxLibrary); // close a dlopen object
 
 PXPublic PXBool PXAPI PXLibraryGetSymbolBinding(PXLibrary* const pxLibrary, void** const bindingObject, const char* const symbolList, const PXSize amount, const PXBool areAllImportant);
