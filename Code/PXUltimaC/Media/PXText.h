@@ -197,6 +197,7 @@ PXPublic PXSize PXAPI PXTextAppendF(PXText* const pxText, const char* const foma
 
 PXPublic PXSize PXAPI PXTextPrint(PXText* const pxText, const char* style, ...);
 PXPublic PXSize PXAPI PXTextPrintA(char* const text, const PXSize size, const char* style, ...);
+PXPublic PXSize PXAPI PXTextPrintW(wchar_t* const text, const PXSize size, const char* style, ...);
 PXPublic PXSize PXAPI PXTextPrintAV(char* const text, const PXSize size, const char* style, va_list parameter);
 PXPublic PXSize PXAPI PXTextPrintWV(wchar_t* const text, const PXSize size, const char* style, va_list parameter);
 PXPublic PXSize PXAPI PXTextPrintV(PXText* const pxText, const char* style, va_list parameter);

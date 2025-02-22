@@ -274,6 +274,24 @@ PXSize PXAPI PXTextPrintA(char* const text, const PXSize size, const char* style
     return xx;
 }
 
+PXSize PXAPI PXTextPrintW(wchar_t* const text, const PXSize size, const char* style, ...)
+{
+    va_list args;
+    va_start(args, style);
+
+    PXSize xx = PXTextPrintAV((char*)text, size,  style, args);
+
+    va_end(args);
+
+    char cache[128];
+
+    PXTextCopyA(text, xx, cache, 128);
+
+    PXTextCopyAW(cache, 128, text, size);
+
+    return xx;
+}
+
 PXSize PXAPI PXTextPrintAV(char* const text, const PXSize size, const char* style, va_list parameter)
 {
 #if OSUnix

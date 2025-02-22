@@ -322,23 +322,7 @@ PXActionResult PXAPI PXDotNetInitializeMSCoree(PXDotNetMSCoree* const pxDotNetMS
     // Start the runtime
     const HRESULT asddssd = runtimeHost->lpVtbl->Start(runtimeHost);
 
-    // Done..?
-    WCHAR filePath[] = L"C:\\Data\\WorkSpace\\PXLibTest.dll";
 
-    //  FILE* ff = _wfopen(filePath, L"r");
-
-
-    HRESULT appReturn = 0;
-
-    const HRESULT execResult = runtimeHost->lpVtbl->ExecuteInDefaultAppDomain
-    (
-        runtimeHost,
-        filePath,
-        L"PX.Test",
-        L"main",
-        L"EEEEEEEEEEEEEEE",
-        &appReturn
-    );
 
 #if PXLogEnable
     PXLogPrint
@@ -548,10 +532,7 @@ const char PXDotNetNetHost[] =
 "C:\\Program Files\\dotnet\\packs\\Microsoft.NETCore.App.Host.win-x64\\8.0.13\\runtimes\\win-x64\\native\\nethost.dll";
 const char PXDotNetFunc[] = "get_hostfxr_path";
 
-typedef int (NETHOST_CALLTYPE* PXget_hostfxr_path)(
-    char_t* buffer,
-    size_t* buffer_size,
-    const struct get_hostfxr_parameters* parameters);
+typedef int (NETHOST_CALLTYPE* PXget_hostfxr_path)(char_t* buffer, size_t* buffer_size, const struct get_hostfxr_parameters* parameters);
 
 
 PXActionResult PXAPI PXGetloc(char* buffer)
@@ -787,7 +768,77 @@ PXActionResult PXAPI PXDotNetInitializeHostFX(PXDotNetHostFX* const pxDotNetHost
 
 PXActionResult PXAPI PXDotNetDelegateFetchMSCoree(PXDotNetMSCoree* const pxDotNetMSCoree, PXDelegate* const pxDelegate)
 {
+    ICLRRuntimeHost* const runtimeHost = (ICLRRuntimeHost*)pxDotNetMSCoree->RuntimeHost;
 
+    HRESULT appReturn = 0;
+
+    wchar_t assemblyPathW[128];
+    wchar_t typeNameW[128];
+    wchar_t methodNameW[128];
+
+    PXTextCopyAW(pxDelegate->NameLibrary, 128, assemblyPathW, 128);
+    PXTextCopyAW(pxDelegate->NameFunction, 128, methodNameW, 128);
+
+    if(pxDelegate->NameNamespace)
+    {
+        char buffer[128];
+
+        PXTextPrintA(buffer, 128, "%s.%s", pxDelegate->NameNamespace, pxDelegate->NameClass);
+
+        PXTextCopyAW(buffer, 128, typeNameW, 128);
+    }
+    else
+    {
+        PXTextCopyAW(pxDelegate->NameClass, 128, typeNameW, 128);
+    }
+
+
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        ".NET",
+        "DelegateFetch",
+        "Result:\n"
+        "%25s : %ls\n"
+        "%25s : %ls\n"
+        "%25s : %ls\n"
+        "%25s : %s %ls%s\n",
+        "DLL", assemblyPathW,
+        "Class", typeNameW,
+        "Function", methodNameW,
+        "ExpectedFormat", "public static int", methodNameW, "(string)"
+    );
+#endif
+
+
+    const HRESULT execResultID = runtimeHost->lpVtbl->ExecuteInDefaultAppDomain
+    (
+        runtimeHost,
+        assemblyPathW,
+        typeNameW,
+        methodNameW,
+        L"Data from C-Library",
+        &appReturn
+    );
+    const PXActionResult exeResult = PXWindowsHandleErrorFromID(execResultID);
+
+    if(PXActionSuccessful != exeResult)
+    {
+        return exeResult;
+    }
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        ".NET",
+        "DelegateFetch",
+        "Result: %i",
+        appReturn
+    );
+#endif
 
     return PXActionSuccessful;
 }
@@ -795,12 +846,42 @@ PXActionResult PXAPI PXDotNetDelegateFetchMSCoree(PXDotNetMSCoree* const pxDotNe
 PXActionResult PXAPI PXDotNetDelegateFetchCoreCLR(PXDotNetCoreCLR* const pxDotNetCoreCLR, PXDelegate* const pxDelegate)
 {
     const coreclr_create_delegate_ptr delegateCreate = (coreclr_create_delegate_ptr)pxDotNetCoreCLR->DelegateCreate;
+
+    char typeNameA[64];
+    char* typeNameRef = pxDelegate->NameClass;
+
+    if(pxDelegate->NameNamespace)
+    {
+        typeNameRef = typeNameA;
+        PXTextPrintA(typeNameA, 64, "%s.%s", pxDelegate->NameNamespace, pxDelegate->NameClass);
+    }
+
+    char fileName[] = "PXTestDLLRelay";
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        ".NET",
+        "DelegateFetch",
+        "Result:\n"
+        "%25s : %s\n"
+        "%25s : %s\n"
+        "%25s : %s\n"
+        "%25s : %p\n",
+        "DLL",fileName,
+        "Class", typeNameRef,
+        "Function", pxDelegate->NameFunction,
+        "Adress", pxDelegate->FunctionAdress
+    );
+#endif
+
     const HRESULT crteateResult = delegateCreate
     (
         pxDotNetCoreCLR->HostHandle,
         pxDotNetCoreCLR->DomainID,
-        "PXTestDLLRelay", // NO ".DLL" !!
-        "PX.TESTClass",
+        fileName, // NO ".DLL" !!
+        typeNameRef,
         pxDelegate->NameFunction,
         &pxDelegate->FunctionAdress
     );
@@ -810,22 +891,81 @@ PXActionResult PXAPI PXDotNetDelegateFetchCoreCLR(PXDotNetCoreCLR* const pxDotNe
 
 PXActionResult PXAPI PXDotNetDelegateFetchHostFX(PXDotNetHostFX* const pxDotNetHostFX, PXDelegate* const pxDelegate)
 {
+    wchar_t fileNameW[128] = L"C:\\Data\\WorkSpace\\[GIT]\\PXUltima\\Code\\PXUltimaCTest\\PXTestDLLRelay.dll";
+    wchar_t classNameW[64] = L"TESTB"; //L"PXTestDLLRelay.TESTB, TESTB";
     wchar_t functionNameW[64];
 
     PXTextCopyAW(pxDelegate->NameFunction, 64, functionNameW, 64);
     
     const load_assembly_and_get_function_pointer_fn assemblyLoadAndFunctionPointerGet = (load_assembly_and_get_function_pointer_fn)pxDotNetHostFX->AssemblyLoadAndFunctionPointerGet;
 
+
+
+
+
+    /*
+    ,
+        L"YourNamespace.YourClass, YourAssembly",
+        L"YourMethod",
+        L"YourNamespace.YourClass+YourMethodDelegate, YourAssembly"
+    */
+
+    char signature[128];
+
+    PXTextPrintA(signature, 128, "public static int %s(IntPtr, int)", pxDelegate->NameFunction);
+
+
+    char dllName[] = "PXTestDLLRelay";
+
+    if(pxDelegate->NameNamespace)
+    {
+        PXTextPrintW(classNameW, 64, "%s.%s, %s", pxDelegate->NameNamespace, pxDelegate->NameClass, dllName);
+    }
+    else
+    {
+        PXTextPrintW(classNameW, 64, "%s, %s", pxDelegate->NameClass, dllName);
+    }
+
+
+    PXTextCopyAW("WONKMain", 11, functionNameW, 64);
+
+
+
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        ".NET",
+        "DelegateFetch",
+        "Result:\n"
+        "%25s : %ls\n"
+        "%25s : %ls\n"
+        "%25s : %ls\n"
+        "%25s : %s\n"
+        "%25s : %p\n",
+        "DLL", fileNameW,
+        "Class", classNameW,
+        "Function", functionNameW,
+        "Expected format", signature,
+        "Adress", pxDelegate->FunctionAdress
+    );
+#endif
+
     const HRESULT loadResultID = assemblyLoadAndFunctionPointerGet
     (
-        L"PXTestDLLRelay.dll", // Name must contain DLL 
-        L"PXTestDLLRelay.TESTB, TESTB",
-        functionNameW,
-        UNMANAGEDCALLERSONLY_METHOD,
+        fileNameW, // Name must contain DLL, full path 
+        classNameW, // Format: "NameSpace.Class, DLLNameWithoutExtension"
+        functionNameW, // Function name
+        PXNull, //   L"YourNamespace.YourClass+YourMethodDelegate, YourAssembly", UNMANAGEDCALLERSONLY_METHOD
         PXNull,
         &pxDelegate->FunctionAdress
     );
-    const PXActionResult loadResult = PXErrorCurrent(0 == loadResultID);
+    const PXActionResult loadResult = PXWindowsHandleErrorFromID(loadResultID);
+
+    // If "INVALID_ARGS" -> DLL found, CLASS:OK, Function: has wrong signature
+
+    //0x80131509
 
     return loadResult;
 
@@ -881,6 +1021,20 @@ PXActionResult PXAPI PXDotNetDelegateFetchHostFX(PXDotNetHostFX* const pxDotNetH
 
 PXActionResult PXAPI PXDotNetExecuteMSCoree(PXDotNetMSCoree* const pxDotNetMSCoree)
 {
+    ICLRRuntimeHost* const runtimeHost = (ICLRRuntimeHost*)pxDotNetMSCoree->RuntimeHost;
+
+    HRESULT appReturn = 0;
+
+    const HRESULT execResult = runtimeHost->lpVtbl->ExecuteInDefaultAppDomain
+    (
+        runtimeHost,
+        L"filePath",
+        L"PX.Test",
+        L"main",
+        L"EEEEEEEEEEEEEEE",
+        &appReturn
+    );
+
     return PXActionSuccessful;
 }
 
@@ -925,7 +1079,7 @@ PXActionResult PXAPI PXDotNetInitialize(PXDotNet* const pxDotNet, const PXInt32U
 
     PXClear(PXDotNet, pxDotNet);
 
-    
+#if 1
     pxDotNet->DelegateFetch = PXDotNetDelegateFetchHostFX;
     pxDotNet->Execute = PXDotNetExecuteHostFX;
     PXActionResult resultA = PXDotNetInitializeHostFX(&pxDotNet->HostFX);
@@ -939,16 +1093,17 @@ PXActionResult PXAPI PXDotNetInitialize(PXDotNet* const pxDotNet, const PXInt32U
     pxDotNet->Execute = PXDotNetExecuteCoreCLR;
     PXActionResult resultB = PXDotNetInitializeCoreCLR(&pxDotNet->CoreCLR);
 
-    if(PXActionSuccessful == resultA)
+    if(PXActionSuccessful == resultB)
     {
         return PXActionSuccessful;
     }
+#endif
 
     pxDotNet->DelegateFetch = PXDotNetDelegateFetchMSCoree;
     pxDotNet->Execute = PXDotNetExecuteMSCoree;
     PXActionResult resultC = PXDotNetInitializeMSCoree(&pxDotNet->MSCoree);
 
-    if(PXActionSuccessful == resultA)
+    if(PXActionSuccessful == resultC)
     {
         return PXActionSuccessful;
     }

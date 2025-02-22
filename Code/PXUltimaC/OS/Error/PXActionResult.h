@@ -157,7 +157,11 @@ typedef enum PXActionResult_
     PXActionRefusedNotSupportedByLibrary, // [NOTSUP] Action can't be exectuted, as the function does not exist to be used.
     PXActionRefusedNotImplemented, // Function that exists but does not contain any code
 
-    PXActionFailedNotFound, // Object was searched but not found
+    PXActionFailedNotFoundObject, // Object was searched but not found
+    PXActionFailedNotFoundLibrary, // Object was searched but not found
+    PXActionFailedNotFoundClass, // Object was searched but not found
+    PXActionFailedNotFoundMethod, // Method does not exist in library
+
     PXActionRefusedVersionTooOld, // Object can't be used, it is requires an update
     PXActionRefusedVersionTooNew, // Object can't be used, the system requires an update
     PXActionRefusedVersionInvalid, // Object version is not defined

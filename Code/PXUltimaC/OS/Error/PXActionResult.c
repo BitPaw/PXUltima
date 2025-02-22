@@ -2016,6 +2016,12 @@ PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult)
     // but in the wrong order, or in the wrong hardware/software locations.
     case DSERR_FXUNAVAILABLE:
         return PXActionInvalid;//PXActionRefusedEffectNotAvailable;
+        
+
+        // .NET runtime
+    case 0x80070002:    return PXActionFailedNotFoundLibrary;
+    case 0x80131522:    return PXActionFailedNotFoundClass; // COR_E_MISSINGMETHOD
+    case 0x80131513:    return PXActionFailedNotFoundMethod;
 
     default:
         return PXActionInvalid;
