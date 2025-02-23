@@ -2022,6 +2022,7 @@ PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult)
     case 0x80070002:    return PXActionFailedNotFoundLibrary;
     case 0x80131522:    return PXActionFailedNotFoundClass; // COR_E_MISSINGMETHOD
     case 0x80131513:    return PXActionFailedNotFoundMethod;
+    case 0x80131621: return PXActionInvalid;  // COR_E_TARGETINVOCATION
 
     default:
         return PXActionInvalid;

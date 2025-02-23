@@ -170,10 +170,10 @@ int main()
     PXActionResult pxActionResult = PXDotNetInitialize(&pxDotNet, 0);
 
     PXDelegate pxDelegate;
-    pxDelegate.NameLibrary = "C:\\Data\\WorkSpace\\[GIT]\\PXUltima\\Code\\PXUltimaCTest\\PXTestDLLRelay.dll";
+    pxDelegate.NameLibrary = "PXTestDLLRelay.dll";
     pxDelegate.NameNamespace = "PX";
     pxDelegate.NameClass = "TESTClass";
-    pxDelegate.NameFunction = "YourMethod";
+    pxDelegate.NameFunction = "WONKMain";
     pxDelegate.FunctionAdress = 0;
 
     pxDotNet.DelegateFetch(pxDotNet.API, &pxDelegate);
