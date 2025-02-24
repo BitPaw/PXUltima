@@ -5,6 +5,7 @@
 #include <OS/Library/PXLibrary.h>
 
 
+
 typedef struct PXDotNetCoreCLR_
 {
     PXLibrary LibraryCoreCLR;
@@ -23,6 +24,10 @@ typedef struct PXDotNetCoreCLR_
 
     void* HostHandle;
     unsigned int DomainID;
+
+    PXVersion* VersionList;
+    PXVersion* VersionCurrent;
+    PXSize VersionListAmount;
 }
 PXDotNetCoreCLR;
 
@@ -128,6 +133,8 @@ PXPrivate PXActionResult PXAPI PXDotNetDelegateFetchHostFX(PXDotNetHostFX* const
 PXPrivate PXActionResult PXAPI PXDotNetExecuteMSCoree(PXDotNetMSCoree* const pxDotNetMSCoree);
 PXPrivate PXActionResult PXAPI PXDotNetExecuteCoreCLR(PXDotNetCoreCLR* const pxDotNetCoreCLR);
 PXPrivate PXActionResult PXAPI PXDotNetExecuteHostFX(PXDotNetHostFX* const pxDotNetHostFX);
+
+PXPublic PXActionResult PXAPI PXDotNetCompile(PXDotNet* const pxDotNet);
 
 PXPublic PXActionResult PXAPI PXDotNetInitialize(PXDotNet* const pxDotNet, const PXInt32U flagList);
 

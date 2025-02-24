@@ -167,6 +167,8 @@ int main()
 
     PXDotNet pxDotNet;
 
+    PXDotNetCompile(&pxDotNet);
+
     PXActionResult pxActionResult = PXDotNetInitialize(&pxDotNet, 0);
 
     PXDelegate pxDelegate;
@@ -175,6 +177,8 @@ int main()
     pxDelegate.NameClass = "TESTClass";
     pxDelegate.NameFunction = "WONKMain";
     pxDelegate.FunctionAdress = 0;
+
+
 
     pxDotNet.DelegateFetch(pxDotNet.API, &pxDelegate);
 

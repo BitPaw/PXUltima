@@ -312,7 +312,7 @@ PXActionResult PXAPI PXN64LoadFromFile(PXResourceTransphereInfo* const pxResourc
         pxMIPSProcessor.ROMOffsetVirtual = (PXSize)0x80000000 + (PXSize)0x400;
         pxMIPSProcessor.RAMAdressVirtual = 0x00000000;
         pxMIPSProcessor.RAMSize = 0x03EFFFFF;
-        pxMIPSProcessor.RAMAdress = PXMemoryVirtualAllocate(pxMIPSProcessor.RAMSize, PXAccessModeReadAndWrite);
+        pxMIPSProcessor.RAMAdress = PXMemoryVirtualAllocate(pxMIPSProcessor.RAMSize, PXNull, PXAccessModeReadAndWrite);
 
         pxMIPSProcessor.CoProcessor[0].Enabled = PXTrue;
         pxMIPSProcessor.CoProcessor[1].Enabled = PXTrue;

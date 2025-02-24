@@ -191,13 +191,21 @@ typedef const void* (CORECLR_CALLING_CONVENTION PInvokeOverrideFn)(const char* l
 
 
 #include <OS/Console/PXConsole.h>
+#include <OS/File/PXDirectory.h>
 
-
-const char CSharpCoreClrPath[] = "C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\";
+const char CSharpCoreClrPath[] = "C:/Program Files/dotnet/shared/Microsoft.NETCore.App";
+const PXInt8U CSharpCoreClrPathSize = sizeof(CSharpCoreClrPath)-1;
 const char CSharpCoreClrDLLName[] = "coreclr.dll";
 const char CSharpMSCoree[] = "mscoree.dll";
-
 const char PXDotNetName[] = ".NET";
+
+//"nethost.dll";
+const char PXDotNetNetHost[] =
+"C:\\Program Files\\dotnet\\packs\\Microsoft.NETCore.App.Host.win-x64\\8.0.13\\runtimes\\win-x64\\native\\nethost.dll";
+const char PXDotNetFunc[] = "get_hostfxr_path";
+
+typedef int (NETHOST_CALLTYPE* PXget_hostfxr_path)(char_t* buffer, size_t* buffer_size, const struct get_hostfxr_parameters* parameters);
+
 
 
 void PXDotNetCoreCLRErrorCallback(const char* message)
@@ -448,19 +456,19 @@ return PXActionRefusedTypeNotSupported;
 
 PXActionResult PXAPI PXDotNetInitializeCoreCLR(PXDotNetCoreCLR* const pxDotNetCoreCLR)
 {
-    // Look into folder. If it exists
-     // If the folder does not exist, we dont have a runtime.
-     // if it exists, get the folder names, those are the versions
-    char targetedVersionFileText[] = "9.0.2";
+    // Open lib
+    {
+        char runtimeDLLPath[_MAX_PATH];
+        char versionString[64];
+        PXVersionToString(pxDotNetCoreCLR->VersionCurrent, versionString);
 
-    char runtimeDLLPath[_MAX_PATH];
+        PXTextPrintA(runtimeDLLPath, _MAX_PATH, "%s/%s/%s", CSharpCoreClrPath, versionString, CSharpCoreClrDLLName);
 
-    PXTextPrintA(runtimeDLLPath, _MAX_PATH, "%s%s\\%s", CSharpCoreClrPath, targetedVersionFileText, CSharpCoreClrDLLName);
+        PXLibraryOpenA(&pxDotNetCoreCLR->LibraryCoreCLR, runtimeDLLPath);
+    }
 
-    PXLibraryOpenA(&pxDotNetCoreCLR->LibraryCoreCLR, runtimeDLLPath);
 
     // Functionpointers
-
     {
         PXLibraryFuntionEntry pxFunctionEntryList[] =
         {
@@ -499,14 +507,99 @@ PXActionResult PXAPI PXDotNetInitializeCoreCLR(PXDotNetCoreCLR* const pxDotNetCo
         _X("PINVOKE_OVERRIDE")
     */
 
-    char currentDir[_MAX_PATH];
-    char dllFullPath[_MAX_PATH];
-    char runtimeConfigPath[_MAX_PATH];
+    char currentDirectory[PXPathSizeMax];
+    PXSize currentDirectorySize = 0;
+    PXDirectoryCurrentA(currentDirectory, PXPathSizeMax, &currentDirectorySize);
 
-    GetCurrentDirectoryA(_MAX_PATH, currentDir);
 
-    PXTextPrintA(dllFullPath, _MAX_PATH, "%s\\%s", currentDir, "PXTestDLLRelay.dll");
-    PXTextPrintA(runtimeConfigPath, _MAX_PATH, "%s\\%s.runtimeconfig.json", currentDir, "PXTestDLLRelay");
+    PXFile asseblyList;
+
+    // We need to build string now for the next function
+    {
+        PXFileOpenInfo pxFileOpenInfo;
+        PXClear(PXFileOpenInfo, &pxFileOpenInfo);
+        pxFileOpenInfo.AccessMode = PXAccessModeReadAndWrite;
+        pxFileOpenInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
+        pxFileOpenInfo.FlagList = PXFileIOInfoFileVirtual; // No size specified, we get atleast one pagesize
+
+    
+        PXFileOpen(&asseblyList, &pxFileOpenInfo);
+
+        
+        // Add core DLLs from runtime folder
+        {
+            char versionFolder[_MAX_PATH];
+            char versionString[64];
+            PXVersionToString(pxDotNetCoreCLR->VersionCurrent, versionString);
+
+            const PXSize versionFolderSize = PXTextPrintA(versionFolder, _MAX_PATH, "%s/%s", CSharpCoreClrPath, versionString);
+
+            PXDirectorySearchCache pxDirectorySearchCache;
+            PXFileEntry pxFileEntry;
+
+            PXDirectoryOpenA(&pxDirectorySearchCache, &pxFileEntry, versionFolder);
+
+            do
+            {
+                const PXBool isTarget = PXTextCompareA(&pxFileEntry.FilePathData[pxFileEntry.FilePathSize - 4], 4, ".dll", 4);
+
+                if(!isTarget)
+                {
+                    continue;
+                }
+
+                const PXSize expectedGrouth = versionFolderSize + pxFileEntry.FilePathSize + 2;
+
+                PXFileAssureFreeSize(&asseblyList, expectedGrouth);
+
+                PXFileWriteA(&asseblyList, versionFolder, versionFolderSize);
+                PXFileWriteC(&asseblyList, '/');
+                PXFileWriteA(&asseblyList, pxFileEntry.FilePathData, pxFileEntry.FilePathSize);
+                PXFileWriteC(&asseblyList, ';');
+            } 
+            while(PXDirectoryNext(&pxDirectorySearchCache, &pxFileEntry));
+
+            PXDirectoryClose(&pxDirectorySearchCache);
+        }
+
+        // Add additional DLLs from the working directory
+        {
+            PXDirectorySearchCache pxDirectorySearchCache;
+            PXFileEntry pxFileEntry;
+
+            PXDirectoryOpenA(&pxDirectorySearchCache, &pxFileEntry, currentDirectory);  
+
+            do
+            {
+                if(pxFileEntry.FilePathSize < 5)
+                {
+                    continue;
+                }
+
+                const PXBool isTarget = PXTextCompareA(&pxFileEntry.FilePathData[pxFileEntry.FilePathSize - 4], 4, ".dll", 4);
+
+                if(!isTarget)
+                {
+                    continue;
+                }
+
+                const PXSize expectedGrouth = currentDirectorySize + pxFileEntry.FilePathSize + 2;
+
+                PXFileAssureFreeSize(&asseblyList, expectedGrouth);
+
+                PXFileWriteA(&asseblyList, currentDirectory, currentDirectorySize);
+                PXFileWriteC(&asseblyList, '//');
+                PXFileWriteA(&asseblyList, pxFileEntry.FilePathData, pxFileEntry.FilePathSize);
+                PXFileWriteC(&asseblyList, ';');
+            } 
+            while(PXDirectoryNext(&pxDirectorySearchCache, &pxFileEntry));
+
+            PXDirectoryClose(&pxDirectorySearchCache);
+        }
+
+        // Add additional paths?
+    }
+
 
     const char* appPropertyKeys[] =
     {
@@ -516,17 +609,53 @@ PXActionResult PXAPI PXDotNetInitializeCoreCLR(PXDotNetCoreCLR* const pxDotNetCo
     };
     const char* appPropertyValues[] =
     {
-        dllFullPath,
-        currentDir,
-        currentDir
+        (char*)asseblyList.Data,
+        currentDirectory,
+        currentDirectory
     };
+
+
+    PXTextReplaceByte(asseblyList.Data, asseblyList.DataCursor, '/', '\\');
+
+
+    PXSize cursorOffset = 0;
+
+    for(;;)
+    {
+        char* cursor = (char*)asseblyList.Data + cursorOffset;
+        PXSize size = PXTextFindFirstCharacterA(cursor, asseblyList.DataCursor - cursorOffset, ';');
+
+        if(size == -1 || size == 0)
+        {
+            break;
+        }
+
+        char buffer[PXPathSizeMax];
+
+        PXTextCopyA(cursor, size, buffer, PXPathSizeMax);
+
+        cursorOffset += size+1;
+
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            PXDotNetName,
+            "Assembly",
+            "%s",
+            buffer
+        );
+#endif
+    }
+
+
 
     coreclr_initialize_ptr initialize = (coreclr_initialize_ptr)pxDotNetCoreCLR->Initialize;
     coreclr_set_error_writer_ptr errorWriterSet = (coreclr_set_error_writer_ptr)pxDotNetCoreCLR->ErrorWriterSet;
 
     const HRESULT initResultID = initialize
     (
-        runtimeConfigPath,
+        currentDirectory,
         "PXInternal",
         3,
         appPropertyKeys,
@@ -544,28 +673,20 @@ PXActionResult PXAPI PXDotNetInitializeCoreCLR(PXDotNetCoreCLR* const pxDotNetCo
 #if PXLogEnable
     PXLogPrint
     (
-        PXLoggingError,
+        PXLoggingInfo,
         PXDotNetName,
         "Locate",
         "Results:\n"
         "DLLPath : %s\n"
         "runtimejson : %s",
-        dllFullPath,
-        runtimeConfigPath
+        "dllFullPath",
+        "runtimeConfigPath"
     );
 #endif
 
 
     return PXActionSuccessful;
 }
-
-const char PXDotNetNetHost[] =
-//"nethost.dll";
-"C:\\Program Files\\dotnet\\packs\\Microsoft.NETCore.App.Host.win-x64\\8.0.13\\runtimes\\win-x64\\native\\nethost.dll";
-const char PXDotNetFunc[] = "get_hostfxr_path";
-
-typedef int (NETHOST_CALLTYPE* PXget_hostfxr_path)(char_t* buffer, size_t* buffer_size, const struct get_hostfxr_parameters* parameters);
-
 
 PXActionResult PXAPI PXGetloc(char* buffer)
 {
@@ -896,8 +1017,7 @@ PXSize PXPathCurrentAndAddFileW(wchar_t* buffer, char* fileName)
 
 PXActionResult PXAPI PXDotNetDelegateFetchCoreCLR(PXDotNetCoreCLR* const pxDotNetCoreCLR, PXDelegate* const pxDelegate)
 {
-    const coreclr_create_delegate_ptr delegateCreate = (coreclr_create_delegate_ptr)pxDotNetCoreCLR->DelegateCreate;
-
+    char fileNameBuffer[_MAX_PATH];
     char typeNameA[64];
     char* typeNameRef = pxDelegate->NameClass;
 
@@ -906,10 +1026,8 @@ PXActionResult PXAPI PXDotNetDelegateFetchCoreCLR(PXDotNetCoreCLR* const pxDotNe
         typeNameRef = typeNameA;
         PXTextPrintA(typeNameA, 64, "%s.%s", pxDelegate->NameNamespace, pxDelegate->NameClass);
     }
-
-    char fileNameBuffer[_MAX_PATH];
-
-    const PXSize size = PXPathCurrentAndAddFileA(fileNameBuffer, pxDelegate->NameLibrary);
+  
+    const PXSize size = PXTextCopyA(pxDelegate->NameLibrary, _MAX_PATH, fileNameBuffer, _MAX_PATH);
 
     // Delete extension
     const PXSize amount = PXTextFindLastCharacterA(fileNameBuffer, size, '.');
@@ -917,14 +1035,21 @@ PXActionResult PXAPI PXDotNetDelegateFetchCoreCLR(PXDotNetCoreCLR* const pxDotNe
     if(amount != (PXSize)-1)
     {
         fileNameBuffer[amount] = 0;
-
     }
 
+    // Syntax:
+    // HostHandle             : Defined by previous called function "coreclr_initialize_ptr" 
+    // DomainID               : Same as HostHandle
+    // entryPointAssemblyName : No path, bare name of the DLL but without the extension!!
+    // entryPointTypeName     : Format: "NameSpace.ClassName"
+    // entryPointMethodName   : Normal ANSI name of the function
+    // delegate               : Adress for storage
+    const coreclr_create_delegate_ptr delegateCreate = (coreclr_create_delegate_ptr)pxDotNetCoreCLR->DelegateCreate;
     const HRESULT crteateResultID = delegateCreate
     (
         pxDotNetCoreCLR->HostHandle,
         pxDotNetCoreCLR->DomainID,
-        fileNameBuffer, // NO ".DLL" !!
+        fileNameBuffer,
         typeNameRef,
         pxDelegate->NameFunction,
         &pxDelegate->FunctionAdress
@@ -942,19 +1067,15 @@ PXActionResult PXAPI PXDotNetDelegateFetchCoreCLR(PXDotNetCoreCLR* const pxDotNe
         "%25s : %s\n"
         "%25s : %s\n"
         "%25s : %p\n",
-        "DLL", fileNameBuffer,
+        "DLL", pxDelegate->NameLibrary,
         "Class", typeNameRef,
         "Function", pxDelegate->NameFunction,
         "Adress", pxDelegate->FunctionAdress
     );
 #endif
 
-
     return PXActionSuccessful;
 }
-
-
-
 
 PXActionResult PXAPI PXDotNetDelegateFetchHostFX(PXDotNetHostFX* const pxDotNetHostFX, PXDelegate* const pxDelegate)
 {
@@ -1194,19 +1315,118 @@ PXActionResult PXAPI PXDotNetExecuteHostFX(PXDotNetHostFX* const pxDotNetHostFX)
     return PXActionSuccessful;
 }
 
+PXActionResult PXAPI PXDotNetCompile(PXDotNet* const pxDotNet)
+{
+    char command[1024];
+
+    char dllName[] = "PXTestDLLRelay";
+    char fileName[128];
+
+    // Create the project file
+    // netcoreapp3.0
+    {
+        const char templateFile[] = 
+            "<Project Sdk=\"Microsoft.NET.Sdk\">\n"
+            "<PropertyGroup>\n"
+            "<TargetFramework>net5.0</TargetFramework>\n"
+            "<Nullable>enable</Nullable>\n"
+            "<AssemblyName>%s</AssemblyName>\n"
+            "</PropertyGroup>\n"
+            "</Project>";
+
+        const PXSize amount = PXTextPrintA(command, sizeof(command), templateFile, dllName);
+
+
+        PXTextPrintA(fileName, sizeof(fileName), "_/%s.csproj", dllName);
+
+        FILE* file = fopen(fileName, "w");
+        fwrite(command, 1, amount, file);
+        fclose(file);
+    }
+
+    //
+    {
+
+        char currentDir[PXPathSizeMax];
+        PXDirectoryCurrentA(currentDir, PXPathSizeMax, PXNull);
+
+        PXTextPrintA(command, sizeof(command), "dotnet build -o _/%s %s", currentDir, fileName);
+
+        const int returnID = system(command);
+
+        PXDirectoryDeleteA("obj"); // Cleanup
+
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            PXDotNetName,
+            "Initialize",
+            "%i",
+            returnID
+        );
+#endif
+    }
+
+    return PXActionSuccessful;
+}
+
 PXActionResult PXAPI PXDotNetInitialize(PXDotNet* const pxDotNet, const PXInt32U flagList)
 {
 #if PXLogEnable
     PXLogPrint
     (
         PXLoggingInfo,
-        "DotNet",
+        PXDotNetName,
         "Initialize",
         "--- Start ---"
     );
 #endif
 
     PXClear(PXDotNet, pxDotNet);
+
+
+    // Probe for versions
+
+    {
+        PXDirectorySearchCache pxDirectorySearchCache;
+        PXFileEntry pxFileEntry;
+
+        PXDirectoryOpenA(&pxDirectorySearchCache, &pxFileEntry, CSharpCoreClrPath);
+
+        pxDotNet->CoreCLR.VersionListAmount = 0;
+
+
+        // Shit solution
+        pxDotNet->CoreCLR.VersionList = PXMemoryCallocT(PXVersion, 10);
+
+        do
+        {
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                PXDotNetName,
+                "Version",
+                "Detected: %s",
+                pxFileEntry.FilePathData
+            );
+#endif
+
+            PXVersion* const pxVersion = &pxDotNet->CoreCLR.VersionList[pxDotNet->CoreCLR.VersionListAmount];
+
+            PXVersionFromString(pxVersion, pxFileEntry.FilePathData);
+
+            pxDotNet->CoreCLR.VersionCurrent = pxVersion;
+            
+            ++pxDotNet->CoreCLR.VersionListAmount;
+        }
+        while(PXDirectoryNext(&pxDirectorySearchCache, &pxFileEntry));
+
+    }
+
+
+
 
 #if 0
     pxDotNet->DelegateFetch = PXDotNetDelegateFetchHostFX;

@@ -2123,8 +2123,18 @@ PXDisplayScreen;
 
 
 
+// Version holder
+typedef struct PXVersion_
+{
+    PXInt8U Major;
+    PXInt8U Minor;
+    PXInt8U Build;
+    PXInt8U Patch;
+}
+PXVersion;
 
-
+PXPublic PXActionResult PXAPI PXVersionFromString(PXVersion* const pxVersion, char* versioNString);
+PXPublic PXActionResult PXAPI PXVersionToString(PXVersion* const pxVersion, char* versioNString);
 
 
 
@@ -3357,7 +3367,7 @@ typedef struct PXFileEntry_
 {
     PXInt32U ID;
 
-    char* FilePathData;
+    char FilePathData[260];
     PXSize FilePathSize;
 
     PXSize Size;

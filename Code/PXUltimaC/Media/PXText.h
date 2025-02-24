@@ -162,6 +162,7 @@ PXPublic PXSize PXAPI PXTextFromInt(PXText* const pxText, int number);
 PXPublic PXSize PXAPI PXTextFromBool(PXText* const pxText, const PXBool number);
 PXPublic PXSize PXAPI PXTextFromFloat(PXText* const pxText, const float number);
 
+
 PXPublic PXSize PXAPI PXTextFromBinaryDataA(const void* data, const PXSize dataSize, char* string, const PXSize stringSize);
 
 PXPublic PXSize PXAPI PXTextToInt(const PXText* const pxText, int* const number);

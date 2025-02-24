@@ -407,6 +407,9 @@ PXActionResult PXAPI PXErrorCodeFromID(const int errorCode)
     case EXDEV:
         return CrossDeviceLink;
 
+    case 145:
+        return PXActionRefusedDirectoryNotEmpty;
+
     default:
         return PXActionInvalid;
     }

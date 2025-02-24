@@ -3199,35 +3199,12 @@ PXActionResult PXAPI PXOpenGLDevicePhysicalListFetch(PXOpenGL* const pxOpenGL, c
     // Parse version, Returns a version or release number.
     {
         const char* version = pxOpenGL->Binding.GetString(GL_VERSION);
+        PXVersion pxVersion;
 
-        int versionMajor = 0;
-        int versionMinor = 0;
-        int versionPatch = 0;
+        PXVersionFromString(&pxVersion, version);
 
-        PXText pxTextVersion;
-        PXTextConstructFromAdressA(&pxTextVersion, version, 0, PXTextUnkownLength);
-
-        PXSize offset = 0;
-
-        offset = PXTextToInt(&pxTextVersion, &versionMajor);
-
-        pxOpenGL->Version = PXOpenGLVersionInvalid;
-
-        if(offset != -1)
-        {
-            PXTextAdvance(&pxTextVersion, offset + 1u); // dot
-            offset = PXTextToInt(&pxTextVersion, &versionMinor);
-
-            if(offset != -1)
-            {
-                PXTextAdvance(&pxTextVersion, offset + 1u); // dot
-                PXTextToInt(&pxTextVersion, &versionPatch);
-
-                const PXInt32U id = PXInt24Make(versionMajor, versionMinor, versionPatch);
-
-                pxOpenGL->Version = PXOpenGLVersionParse(id);
-            }
-        }
+        const PXInt32U id = PXInt24Make(pxVersion.Major, pxVersion.Minor, pxVersion.Build);
+        pxOpenGL->Version = PXOpenGLVersionParse(id);
     }
 
     pxGraphicDevicePhysicalList->VideoMemoryDedicated = PXOpenGLIntergetGet(pxOpenGL, GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX);

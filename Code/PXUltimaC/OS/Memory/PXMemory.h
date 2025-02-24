@@ -185,6 +185,24 @@ typedef enum PXMemorySymbolInfoMode_
 PXMemorySymbolInfoMode;
 
 
+// Page file size, zero if not supported
+typedef struct PXMemoryPageInfo_
+{
+    PXSize PageSizeNormal;
+    PXSize PageSizeLarge;
+    PXSize PageSizeHuge;
+
+    PXSize PageAmountNormal;
+    PXSize PageAmountLarge;
+    PXSize PageAmountHuge;
+
+    PXInt8U PageUtilizationNormal;
+    PXInt8U PageUtilizationLarge;
+    PXInt8U PageUtilizationHuge;
+}
+PXMemoryPageInfo;
+
+
 // Global memory lookup.
 // This is a ugly solution but due to the
 // scattered calls of malloc and free, we
@@ -256,10 +274,13 @@ PXPublic PXBool PXAPI PXMemoryHeapReallocate(PXMemoryHeapReallocateEventData* co
 
 
 
+PXPublic void PXAPI PXMemoryPageInfoFetch(PXMemoryPageInfo* const pxFilePageFileInfo, const PXSize objectSize);
+
+
 // Allocate memory in virtual memory space.
 // The minimal size will be a pagefile (4KB) as the size will be rounded up to the next page boundary.
 // Only use for bigger datablocks as thic has very hi overhead.
-PXPublic void* PXAPI PXMemoryVirtualAllocate(const PXSize size, const PXAccessMode pxAccessMode);
+PXPublic void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize* const createdSize, const PXAccessMode pxAccessMode);
 PXPublic void PXAPI PXMemoryVirtualPrefetch(const void* adress, const PXSize size);
 PXPublic PXActionResult PXAPI PXMemoryVirtualRelease(const void* adress, const PXSize size);
 PXPublic void* PXAPI PXMemoryVirtualReallocate(const void* adress, const PXSize size);

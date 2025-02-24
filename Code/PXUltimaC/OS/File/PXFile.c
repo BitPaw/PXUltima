@@ -1238,96 +1238,6 @@ PXInt32U PXAPI PXFileMemoryCachingModeConvertToID(const PXMemoryCachingMode pxMe
     }
 }
 
-// Page file size, zero if not supported
-typedef struct PXFilePageFileInfo_
-{
-    PXSize PageSizeNormal;
-    PXSize PageSizeLarge;
-    PXSize PageSizeHuge;
-
-    PXSize PageAmountNormal;
-    PXSize PageAmountLarge;
-    PXSize PageAmountHuge;
-
-    PXInt8U PageUtilizationNormal;
-    PXInt8U PageUtilizationLarge;
-    PXInt8U PageUtilizationHuge;
-}
-PXFilePageFileInfo;
-
-
-
-void PXAPI PXFilePageFileSize(PXFilePageFileInfo* const pxFilePageFileInfo, const PXSize objectSize)
-{
-    PXClear(PXFilePageFileInfo, pxFilePageFileInfo);
-
-#if OSUnix
-
-    // Might need : "sudo apt-get install libhugetlbfs-dev"
-    // Seems to not do anything.
-    // Does linux have large table support?
-    // getconf PAGESIZE
-    // getconf LARGE_PAGESIZE
-    // getconf HUGE_PAGESIZE
-
-    pxFilePageFileInfo->PageSizeNormal = getpagesize(); //  also works, sysconf(PAGESIZE );
-    pxFilePageFileInfo->PageSizeLarge = 1<<21;//sysconf(_SC_LARGE_PAGESIZE); MAP_HUGE_2MB
-    pxFilePageFileInfo->PageSizeHuge = 1<<30;//sysconf(_SC_HUGE_PAGESIZE); MAP_HUGE_1GB
-
-#elif OSWindows
-    PERFORMANCE_INFORMATION perfInfo;
-    DWORD size = sizeof(PERFORMANCE_INFORMATION);
-
-    const BOOL result = GetPerformanceInfo(&perfInfo, size);
-
-    if(!result)
-    {
-        return;
-    }
-
-    pxFilePageFileInfo->PageSizeNormal = perfInfo.PageSize;
-    pxFilePageFileInfo->PageSizeLarge = GetLargePageMinimum(); // Windows Vista, Kernel32.dll, memoryapi.h
-   // pxFilePageFileInfo->PageSizeHuge = 0; // Does this even exist?
-
-#else
-
-#endif
-
-    // Calc the size
-    pxFilePageFileInfo->PageAmountNormal = (objectSize / pxFilePageFileInfo->PageSizeNormal + 1);
-
-    pxFilePageFileInfo->PageUtilizationNormal = (objectSize * 100) / (pxFilePageFileInfo->PageSizeNormal * pxFilePageFileInfo->PageAmountNormal);
-
-    if(pxFilePageFileInfo->PageSizeLarge > 0)
-    {
-        pxFilePageFileInfo->PageAmountLarge = objectSize / pxFilePageFileInfo->PageSizeLarge + 1;
-        pxFilePageFileInfo->PageUtilizationLarge = (objectSize * 100) / (pxFilePageFileInfo->PageSizeLarge * pxFilePageFileInfo->PageAmountLarge);
-    }
-
-    if(pxFilePageFileInfo->PageSizeHuge > 0)
-    {
-        pxFilePageFileInfo->PageAmountHuge = objectSize / pxFilePageFileInfo->PageSizeHuge + 1;
-        pxFilePageFileInfo->PageUtilizationHuge = (objectSize * 100) / (pxFilePageFileInfo->PageSizeHuge * pxFilePageFileInfo->PageAmountHuge);
-    }
-}
-
-
-
-/*
-std::string GetErrorAsString(DWORD errorMessageID)
-{
-    LPSTR messageBuffer = nullptr;
-    size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                                 NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&messageBuffer, 0, NULL);
-
-    std::string message(messageBuffer, size);
-
-    //Free the buffer.
-    LocalFree(messageBuffer);
-
-    return message;
-}
-*/
 
 #if OSWindows
 //------------------------------
@@ -1488,7 +1398,6 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, PXFileOpenInfo* const pxFi
 
     PXText pxText;
     PXTextConstructFromAdressA(&pxText, pxFileIOInfo->FilePathAdress, pxFileIOInfo->FilePathSize, pxFileIOInfo->FilePathSize);
-
 
     switch(PXFileIOInfoFileMask & pxFileIOInfo->FlagList)
     {
@@ -2065,257 +1974,9 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, PXFileOpenInfo* const pxFi
         }
         case PXFileIOInfoFileVirtual:
         {
-            PXFilePageFileInfo pxFilePageFileInfo;
-
-            PXFilePageFileSize(&pxFilePageFileInfo, pxFileIOInfo->FileSizeRequest);
-
-            // Calculate if large pages shall be used
-            const PXBool usePagesLarge = pxFilePageFileInfo.PageAmountLarge > 1;
-            const PXBool usePagesHuge = pxFilePageFileInfo.PageAmountHuge > 1;
-
-#if PXLogEnable
-            const char* text = "Normal";
-
-            if(usePagesLarge)
-            {
-                text = "Large";
-            }
-
-            if(usePagesHuge)
-            {
-                text = "Huge";
-            }
-
-
-            PXText pxTextPageSizeNormal;
-            PXText pxTextPageSizeLarge;
-            PXText pxTextPageSizeHuge;
-
-            PXTextConstructNamedBufferA(&pxTextPageSizeNormal, pxTextPageSizeNormalBuffer, 32);
-            PXTextConstructNamedBufferA(&pxTextPageSizeLarge, pxTextPageSizeLargeBuffer, 32);
-            PXTextConstructNamedBufferA(&pxTextPageSizeHuge, pxTextPageSizeHugeBuffer, 32);
-
-            PXTextFormatSize(&pxTextPageSizeNormal, pxFilePageFileInfo.PageSizeNormal);
-            PXTextFormatSize(&pxTextPageSizeLarge, pxFilePageFileInfo.PageSizeLarge);
-            PXTextFormatSize(&pxTextPageSizeHuge, pxFilePageFileInfo.PageSizeHuge);
-
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                "File",
-                "Open-Virtual",
-                "Allocating space for %i...\n"
-                "%25s : %6s -> %3ix %3i%%\n"
-                "%25s : %6s -> %3ix %3i%%\n"
-                "%25s : %6s -> %3ix %3i%%\n"
-                "%25s : %s",
-                pxFileIOInfo->FileSizeRequest,
-                "Normal-PageSize", pxTextPageSizeNormal.TextA,  pxFilePageFileInfo.PageAmountNormal, (int)pxFilePageFileInfo.PageUtilizationNormal,
-                "Large-PageSize", pxTextPageSizeLarge.TextA,   pxFilePageFileInfo.PageAmountLarge,  (int)pxFilePageFileInfo.PageUtilizationLarge,
-                "Huge-PageSize", pxTextPageSizeHuge.TextA,    pxFilePageFileInfo.PageAmountHuge,   (int)pxFilePageFileInfo.PageUtilizationHuge,
-                "Targeted type",    text
-            );
-#endif
-
-            pxFile->DataUsed = pxFileIOInfo->FileSizeRequest;
-            pxFile->DataAllocated = pxFileIOInfo->FileSizeRequest;
+            pxFile->Data = PXMemoryVirtualAllocate(pxFileIOInfo->FileSizeRequest, &pxFile->DataAllocated, PXAccessModeReadAndWrite);
+            pxFile->DataUsed = pxFile->DataAllocated;
             pxFile->LocationMode = PXFileLocationModeMappedVirtual;
-
-#if OSUnix
-            // PROT_READ, PROT_WRITE = read&write permission
-            // MAP_PRIVATE           = only for this process
-            // MAP_ANONYMOUS         = no attached file, aka. "in memory"
-            // MAP_POPULATE          = Preallocate, if not, we could get a SEGVAULT later if memory is suddenly not avalible
-            int permission = PROT_READ | PROT_WRITE;
-            int mode =
-                MAP_PRIVATE |
-                MAP_ANONYMOUS |
-                MAP_POPULATE; // Will be ignored if not spesifcally enabled
-
-            PXBool useLargePage = usePagesLarge && !usePagesHuge;
-
-#if 0 // MAP_UNINITIALIZED not public??
-            if(0) // Dont clear memory, can improve performance but will be ignored if not directly enabled. Safty reasons.
-            {
-                mode |= MAP_UNINITIALIZED;
-            }
-#endif
-
-            if(useLargePage) // Create large page
-            {
-                mode |= MAP_HUGETLB | MAP_HUGE_2MB;
-            }
-
-            if(usePagesHuge) // Create huge page
-            {
-                mode |= MAP_HUGETLB | MAP_HUGE_1GB;
-            }
-
-            for(;;)
-            {
-                pxFile->Data = mmap(NULL, pxFileIOInfo->FileSizeRequest, permission, mode, -1, 0);
-                const PXActionResult allocResult = PXErrorCurrent(MAP_FAILED != pxFile->Data);
-
-                if(PXActionSuccessful == allocResult)
-                {
-                    break;
-                }
-
-                // Did we do a normal allocation?
-                if(!useLargePage && !usePagesHuge)
-                {
-#if PXLogEnable
-                    PXLogPrint
-                    (
-                        PXLoggingError,
-                        "File",
-                        "Open-Virtual",
-                        "Allocation failed! -> mmap()"
-                    );
-#endif
-
-                    pxFile->Data = PXNull;
-                    pxFile->DataUsed = 0;
-                    pxFile->DataAllocated = 0;
-
-
-                    break;
-                }
-
-
-                // Try to recover to a normal page
-#if PXLogEnable
-                PXLogPrint
-                (
-                    PXLoggingWarning,
-                    "File",
-                    "Open-Virtual",
-                    "Allocation failed! We try again..."
-                );
-#endif
-
-
-                if(useLargePage)
-                {
-                    mode &= ~(MAP_HUGETLB | MAP_HUGE_2MB);
-                    useLargePage = PXFalse;
-                }
-                if(usePagesHuge)
-                {
-                    mode &= ~(MAP_HUGETLB | MAP_HUGE_1GB);
-                    useLargePage = PXTrue;
-                }
-            }
-
-
-
-#elif OSWindows
-
-            DWORD permissions = PAGE_READWRITE;
-            DWORD mode =
-                MEM_RESERVE |
-                MEM_COMMIT;
-
-            if(usePagesLarge)
-            {
-                mode |= MEM_LARGE_PAGES;
-
-#if OSWindows
-                // A call to VirtualAlloc() with MEM_LARGE_PAGES
-                // WILL normally fail, because we dont have permissions..?
-                // We have permissions, it is only disabled by default.
-
-
-
-               // AddPrivileges();
-
-
-
-
-                TOKEN_PRIVILEGES privileges;
-                HANDLE hToken;
-                LUID luid;
-
-
-
-                // Open the process token
-                const BOOL openTokenID = OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken);
-                const PXActionResult openTokenResult = PXErrorCurrent(openTokenID);
-
-
-                const BOOL lookupSuccess = LookupPrivilegeValue(NULL, SE_LOCK_MEMORY_NAME, &luid); // SeLockMemoryPrivilege
-                const PXActionResult lookupSuccessResult = PXErrorCurrent(lookupSuccess);
-
-                privileges.PrivilegeCount = 1;
-                privileges.Privileges[0].Luid = luid;
-                privileges.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
-
-                const BOOL privilgeResultID = AdjustTokenPrivileges
-                (
-                    hToken,
-                    FALSE,
-                    &privileges,
-                    sizeof(TOKEN_PRIVILEGES),
-                    PXNull,
-                    PXNull
-                );
-                const PXActionResult privilgeResult = PXErrorCurrent(privilgeResultID);
-
-                CloseHandle(hToken);
-#endif
-
-
-                // Adjust allocation size to be EXACTLY a multible of the page size
-                // The documentation states it will be rounded up, this is true.
-                // Except if we add the MEM_LARGE_PAGES flag, because microsoft.
-                pxFileIOInfo->FileSizeRequest = pxFilePageFileInfo.PageSizeLarge * pxFilePageFileInfo.PageAmountLarge;
-            }
-
-            // TODO: huge pages do not exist? We cant do them then.
-
-            pxFile->Data = VirtualAlloc(PXNull, pxFileIOInfo->FileSizeRequest, mode, permissions);
-            const PXActionResult allocResult = PXErrorCurrent(PXNull != pxFile->Data);
-
-            if(PXActionSuccessful != allocResult)
-            {
-#if PXLogEnable
-                PXLogPrint
-                (
-                    PXLoggingError,
-                    "File",
-                    "Open-Virtual",
-                    "Allocation failed! -> VirtualAlloc()"
-                );
-#endif
-                pxFile->Data = PXNull;
-                pxFile->DataUsed = 0;
-                pxFile->DataAllocated = 0;
-
-                return allocResult;
-            }
-
-
-            MEMORY_BASIC_INFORMATION memoryInfo;
-
-            VirtualQuery(pxFile->Data, &memoryInfo, sizeof(MEMORY_BASIC_INFORMATION));
-
-            pxFile->DataAllocated = memoryInfo.RegionSize;
-#endif
-
-
-
-#if PXLogEnable
-            PXLogPrint
-            (
-                PXLoggingAllocation,
-                "File",
-                "Open-Virtual",
-                "<%p> Size: %i",
-                pxFile->Data,
-                pxFile->DataAllocated
-            );
-#endif
-
 
             break;
         }
@@ -2682,6 +2343,46 @@ PXSize PXAPI PXFileRemainingSizeRelativeFromAddress(const PXFile* const pxFile, 
 PXBool PXAPI PXFileIsAtEnd(const PXFile* const pxFile)
 {
     return pxFile->DataCursor >= pxFile->DataUsed;
+}
+
+PXBool PXAPI PXFileAssureFreeSize(PXFile* const pxFile, const PXSize amount)
+{
+    const PXSize remainingSize = PXFileRemainingSize(pxFile);
+    const PXSize needAlloc = remainingSize < amount;
+
+    if(!needAlloc)
+    {
+        return PXTrue;
+    }
+
+    switch(pxFile->LocationMode)
+    {
+        case PXFileLocationModeInternal:
+            break;
+
+        case PXFileLocationModeExternal:
+            break;
+
+        case PXFileLocationModeMappedVirtual:
+        {
+            pxFile->DataAllocated = pxFile->DataUsed * 2;
+            pxFile->DataUsed = pxFile->DataAllocated;
+            pxFile->Data = PXMemoryVirtualReallocate(pxFile->Data, pxFile->DataUsed);
+
+            break;
+        }
+
+        case PXFileLocationModeMappedFromDisk:
+            return PXFalse;
+
+        case PXFileLocationModeDirectCached:
+            break;
+
+        case PXFileLocationModeDirectUncached:
+            break;
+    }
+
+    return PXFalse;
 }
 
 PXSize PXAPI PXFileFindEndOfText(PXFile* const pxFile)

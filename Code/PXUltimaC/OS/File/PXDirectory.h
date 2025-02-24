@@ -96,17 +96,23 @@ PXDirectorySearchCache;
 PXPrivate void PXAPI PXDirectoryEntryStore(PXDirectorySearchCache* const pxDirectorySearchCache, PXFileEntry* const pxFileEntry);
 PXPublic  PXActionResult PXAPI PXDirectorySearch(PXDirectorySearchCache* const pxDirectorySearchCache, const PXText* const directoryName);
 
-PXPublic PXActionResult PXAPI PXDirectoryOpen(PXDirectorySearchCache* const pxDirectorySearchCache, const PXText* const directoryName);
+PXPublic PXActionResult PXAPI PXDirectoryOpenA(PXDirectorySearchCache* const pxDirectorySearchCache, PXFileEntry* const pxFileEntry, const char* const directoryName);
+PXPublic PXActionResult PXAPI PXDirectoryOpen(PXDirectorySearchCache* const pxDirectorySearchCache, PXFileEntry* const pxFileEntry, const PXText* const directoryName);
 PXPublic PXBool PXAPI PXDirectoryNext(PXDirectorySearchCache* const pxDirectorySearchCache, PXFileEntry* pxFileEntry);
 PXPublic PXBool PXAPI PXDirectoryClose(PXDirectorySearchCache* const pxDirectorySearchCache);
 
 
 
 PXPublic PXActionResult PXAPI PXDirectoryCreate(const PXText* const directoryName);
-PXPublic PXActionResult PXAPI PXWorkingDirectoryGet(PXText* const workingDirectory);
-PXPublic PXActionResult PXAPI PXWorkingDirectoryChange(const PXText* const directoryName);
+PXPublic PXActionResult PXAPI PXDirectoryCurrentA(char* const directoryCurrent, const PXSize bufferSize, PXSize* const sizeWritten);
+PXPublic PXActionResult PXAPI PXDirectoryCurrentW(wchar_t* const directoryCurrent, const PXSize bufferSize, PXSize* const sizeWritten);
+PXPublic PXActionResult PXAPI PXDirectoryCurrentGet(PXText* const workingDirectory);
+PXPublic PXActionResult PXAPI PXDirectoryCurrentChange(const PXText* const directoryName);
+
 
 PXPublic PXActionResult PXAPI PXDirectoryDelete(const PXText* const directoryName);
+PXPublic PXActionResult PXAPI PXDirectoryDeleteA(const char* const directoryName);
+PXPublic PXActionResult PXAPI PXDirectoryDeleteW(const wchar_t* const directoryName);
 
 PXPublic PXActionResult PXAPI PXDirectoryFilesInFolderA(const char* folderPath, wchar_t*** list, PXSize* listSize);
 PXPublic PXActionResult PXAPI PXDirectoryFilesInFolderW();

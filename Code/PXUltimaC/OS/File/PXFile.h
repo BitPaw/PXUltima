@@ -184,6 +184,10 @@ PXPublic PXSize PXAPI PXFileRemainingSize(const PXFile* const pxFile);
 PXPublic PXSize PXAPI PXFileRemainingSizeRelativeFromAddress(const PXFile* const pxFile, const void* const adress);
 PXPublic PXBool PXAPI PXFileIsAtEnd(const PXFile* const pxFile);
 
+// Check if we have enough size, if not allocate space
+PXPublic PXBool PXAPI PXFileAssureFreeSize(PXFile* const pxFile, const PXSize amount);
+
+
 // Seeks over the file, does not change the cursor.
 // Returns offset of end.
 PXPublic PXSize PXAPI PXFileFindEndOfText(PXFile* const pxFile);
