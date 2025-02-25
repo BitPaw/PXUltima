@@ -1295,7 +1295,7 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize* const createdSize, cons
     PXLogPrint
     (
         PXLoggingInfo,
-        "File",
+        PXMemoryLogPrintTitle,
         "Open-Virtual",
         "Allocating space for %i...\n"
         "%25s : %6s -> %3ix %3i%%\n"
