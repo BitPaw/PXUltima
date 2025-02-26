@@ -167,6 +167,9 @@
     <ClCompile Include="Algorithm\Fractal\PXFractal.c" />
     <ClCompile Include="Algorithm\KalmanFilter\PXKalmanFilter.c" />
     <ClCompile Include="Algorithm\KnowlegeGraph\PXKnowlegeGraph.c" />
+    <ClCompile Include="Compiler\GCC\PXGCC.c" />
+    <ClCompile Include="Compiler\Java\PXJava.c" />
+    <ClCompile Include="Compiler\MSVC\PXMSVC.c" />
     <ClCompile Include="Compiler\PXCompiler.c" />
     <ClCompile Include="Compiler\PXCompilerSettings.c" />
     <ClCompile Include="Container\Dictionary\PXDictionary.c" />
@@ -280,7 +283,7 @@
     <ClCompile Include="Media\ZLIB\PXZLIB.c" />
     <ClCompile Include="OS\AI\PXAI.c" />
     <ClCompile Include="OS\Async\PXThreadPool.c" />
-    <ClCompile Include="OS\Framework\DotNet\PXDotNet.c" />
+    <ClCompile Include="Compiler\DotNet\PXDotNet.c" />
     <ClCompile Include="OS\Graphic\DirectX\PXDirectX10.c" />
     <ClCompile Include="OS\Graphic\DirectX\PXDirectX11.c" />
     <ClCompile Include="OS\Graphic\DirectX\PXDirectX12.c" />
@@ -357,6 +360,10 @@
     <ClInclude Include="Algorithm\Fractal\PXFractal.h" />
     <ClInclude Include="Algorithm\KalmanFilter\PXKalmanFilter.h" />
     <ClInclude Include="Algorithm\KnowlegeGraph\PXKnowlegeGraph.h" />
+    <ClInclude Include="Compiler\DotNet\coreclrhost.h" />
+    <ClInclude Include="Compiler\GCC\PXGCC.h" />
+    <ClInclude Include="Compiler\Java\PXJava.h" />
+    <ClInclude Include="Compiler\MSVC\PXMSVC.h" />
     <ClInclude Include="Compiler\PXCompiler.h" />
     <ClInclude Include="Compiler\PXCompilerSettings.h" />
     <ClInclude Include="Container\Dictionary\PXDictionary.h" />
@@ -470,7 +477,7 @@
     <ClInclude Include="Media\ZLIB\PXZLIB.h" />
     <ClInclude Include="OS\AI\PXAI.h" />
     <ClInclude Include="OS\Async\PXThreadPool.h" />
-    <ClInclude Include="OS\Framework\DotNet\PXDotNet.h" />
+    <ClInclude Include="Compiler\DotNet\PXDotNet.h" />
     <ClInclude Include="OS\Graphic\DirectX\PXDirectX10.h" />
     <ClInclude Include="OS\Graphic\DirectX\PXDirectX11.h" />
     <ClInclude Include="OS\Graphic\DirectX\PXDirectX12.h" />

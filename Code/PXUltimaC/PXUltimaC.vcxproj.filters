@@ -564,7 +564,7 @@
     <ClCompile Include="Algorithm\KnowlegeGraph\PXKnowlegeGraph.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="OS\Framework\DotNet\PXDotNet.c">
+    <ClCompile Include="Compiler\DotNet\PXDotNet.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Algorithm\CollatzConjecture\PXCollatzConjecture.c">
@@ -577,6 +577,15 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Algorithm\Fractal\PXFractal.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Compiler\Java\PXJava.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Compiler\MSVC\PXMSVC.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Compiler\GCC\PXGCC.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1127,7 +1136,7 @@
     <ClInclude Include="Algorithm\KnowlegeGraph\PXKnowlegeGraph.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="OS\Framework\DotNet\PXDotNet.h">
+    <ClInclude Include="Compiler\DotNet\PXDotNet.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Algorithm\CollatzConjecture\PXCollatzConjecture.h">
@@ -1143,6 +1152,18 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Algorithm\Fractal\PXFractal.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Compiler\Java\PXJava.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Compiler\MSVC\PXMSVC.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Compiler\GCC\PXGCC.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Compiler\DotNet\coreclrhost.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

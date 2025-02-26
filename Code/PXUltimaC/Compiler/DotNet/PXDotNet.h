@@ -4,8 +4,6 @@
 #include <Media/PXResource.h>
 #include <OS/Library/PXLibrary.h>
 
-
-
 typedef struct PXDotNetCoreCLR_
 {
     PXLibrary LibraryCoreCLR;

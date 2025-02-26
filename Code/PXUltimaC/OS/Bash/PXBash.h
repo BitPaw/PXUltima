@@ -1,11 +1,17 @@
 #ifndef PXBashINCLUDE
 #define PXBashINCLUDE
 
-#include <Media/PXType.h>
-#include <Media/PXText.h>
-#include <OS/Error/PXActionResult.h>
-#include <OS/System/Version/PXOSVersion.h>
+#include <Media/PXResource.h>
 
 PXPublic PXActionResult PXAPI PXBashExecute(const PXText* const programPath, const PXBool syncronous);
+PXPublic PXActionResult PXAPI PXBashExecuteA
+(
+    const char* const commandText,
+    const PXSize commandTextSize,
+    char** const outBuffer,
+    const PXSize outBufferSizeMax,
+    PXSize* const outBufferSizeCurrent,
+    const PXBool syncronous
+);
 
 #endif
