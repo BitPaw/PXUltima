@@ -1267,7 +1267,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
     {
         pxEngine->TimeData.CounterTimeRenderLast = timeNow;
 
-        const PXColorRGBAF color = { 0.01,0.01,0.01,1 };
+        const PXColorRGBAF color = { 0.01, 0.01, 0.01, 1 };
 
         {
             PXText pxText;
@@ -1300,11 +1300,14 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
             */
         }
 
+
+
         if(pxEngine->HasGraphicInterface && pxEngine->Graphic.WindowReference)
         {
-            const PXBool isWindowEnabled = PXNativDrawWindowIsEnabled(&pxEngine->GUISystem.NativDraw, pxEngine->Graphic.WindowReference);
+            PXWindow* sceneWindow = pxEngine->Graphic.WindowReference;
+            const PXBool isWindowEnabled = PXNativDrawWindowIsEnabled(&pxEngine->GUISystem.NativDraw, sceneWindow);
 
-            if(isWindowEnabled)
+            if(isWindowEnabled && pxEngine->DoRendering) // (pxEngine->Window->Info.Flags & PXResourceInfoSelected)
             {
 #if 1
                 pxEngine->Graphic.Clear(pxEngine->Graphic.EventOwner, &color);
@@ -1317,17 +1320,18 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
                 pxEngine->Graphic.SceneDeploy(pxEngine->Graphic.EventOwner);
 #endif
 
-                PXNativDrawWindowBufferSwap(PXNativDrawInstantance(), pxEngine->Window);
+                PXNativDrawWindowBufferSwap(PXNativDrawInstantance(), sceneWindow);
 
                 //PXWindowBufferSwap(&pxEngine->GUISystem, pxEngine->Window);
             }
-
-
+            else
+            {
+                PXNativDrawWindowBufferSwap(PXNativDrawInstantance(), sceneWindow);
+               // PXWindowDrawCustomFailback(&pxEngine->GUISystem, sceneWindow, PXNull);
+                Sleep(1);
+            }
         }
     }
-
-
-    PXThreadPool;
 
 
     ++(pxEngine->TimeData.CounterTimeWindow);

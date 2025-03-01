@@ -329,6 +329,7 @@ PXPublic PXInt8U PXAPI PXVertexBufferFormatStrideSize(const PXVertexBufferFormat
 //-----------------------------------------------------
 
 // Extended basic components
+
 #define PXResourceTypeDialogBox     29
 //-----------------------------------------------------
 
@@ -340,6 +341,7 @@ PXPublic PXInt8U PXAPI PXVertexBufferFormatStrideSize(const PXVertexBufferFormat
 #define PXResourceInfoExist           0b0000000000000001 // Indicate if resource is valid
 #define PXResourceInfoActive          0b0000000000000010 // Is it interactable or does it tick?
 #define PXResourceInfoRender          0b0000000000000100 // Shall it be rendered?
+#define PXResourceInfoSelected        0b0000000000001000
 
 #define PXResourceInfoStorageMask     0b0000000011110000
 #define PXResourceInfoStorageDrive    0b0000000000010000 // Resource is in permanent storage
@@ -1552,6 +1554,18 @@ typedef enum PXUIElementType_
     PXUIElementTypeRenderFrame,
 
     PXUIElementTypeMenuStrip, // Topline of a window that contains a selectable list of things
+
+    PXUIElementTypeScene,
+    PXUIElementTypeCode,
+    PXUIElementTypeHexEditor,
+    PXUIElementTypeGraphBehaviour,
+    PXUIElementTypeGraphTime,
+    PXUIElementTypeSoundPlayerMixer,
+    PXUIElementTypeVideoCutter,
+    PXUIElementTypeDataBaseManager,
+    PXUIElementTypeNetworkTester,
+    PXUIElementTypeInputView,
+    PXUIElementTypeHardwareInfo,
 
     PXUIElementTypeFileManager,    // TreeView of filesystem with utility
     PXUIElementTypeResourceManger, // TreeView of a list of resource entrys
@@ -2782,7 +2796,7 @@ typedef struct PXUIElementTabPageSingleInfo_
     PXWindow** UIElement;
     char* PageName;
     PXIcon* TABIcon;
-
+    PXUIElementType UIElementType;
 }
 PXUIElementTabPageSingleInfo;
 

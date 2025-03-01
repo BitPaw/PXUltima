@@ -133,7 +133,7 @@ typedef struct PXEngine_
 
     PXBool IsRunning;
     PXBool UpdateUI;
-
+    PXBool DoRendering;
 
 
     // Cached most-common objects

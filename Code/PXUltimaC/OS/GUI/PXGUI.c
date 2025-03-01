@@ -146,7 +146,7 @@
 #endif
 
 
-
+const char PXGUIName[] = "GUI-Draw";
 
 
 
@@ -178,7 +178,7 @@ PXActionResult PXAPI PXWindowDrawCustomRectangle3D(PXGUISystem* const pxGUISyste
     PXLogPrint
     (
         PXLoggingInfo,
-        "GUI-Draw",
+        PXGUIName,
         "Rectangle3D",
         "PXID:%-4i X:%-4i Y:%-4i W:%-4i H:%-4i",
         pxWindow->Info.ID,
@@ -189,7 +189,8 @@ PXActionResult PXAPI PXWindowDrawCustomRectangle3D(PXGUISystem* const pxGUISyste
     );
 #endif
 
-    const PXBool isHovered = (PXWindowBehaviourIsBeingHovered & pxWindow->Info.Behaviour) > 0;
+    const PXBool isHovered = (PXResourceInfoSelected & pxWindow->Info.Flags) > 0;
+
 
     PXWindowBrush* brushFront = pxGUISystem->BrushTextWhite;
     PXWindowBrush* brushBackground = pxGUISystem->BrushBackgroundDark;
@@ -459,7 +460,7 @@ PXActionResult PXAPI PXWindowDrawCustomFooter(PXGUISystem* const pxGUISystem, PX
     PXLogPrint
     (
         PXLoggingInfo,
-        "GUI",
+        PXGUIName,
         "Draw",
         "Footer"
     );
@@ -508,7 +509,7 @@ PXActionResult PXAPI PXWindowDrawCustomResourceView(PXGUISystem* const pxGUISyst
     PXLogPrint
     (
         PXLoggingInfo,
-        "GUI",
+        PXGUIName,
         "Draw",
         "ResourceView"
     );
@@ -925,7 +926,7 @@ PXActionResult PXAPI PXWindowDrawCustomResourceInfo(PXGUISystem* const pxGUISyst
     PXLogPrint
     (
         PXLoggingInfo,
-        "GUI",
+        PXGUIName,
         "Draw",
         "TabList"
     );
@@ -1088,7 +1089,7 @@ PXActionResult PXAPI PXWindowDrawCustomTabList(PXGUISystem* const pxGUISystem, P
     PXLogPrint
     (
         PXLoggingInfo,
-        "GUI",
+        PXGUIName,
         "Draw",
         "TabList"
     );
@@ -1100,7 +1101,7 @@ PXActionResult PXAPI PXWindowDrawCustomTabList(PXGUISystem* const pxGUISystem, P
         PXLogPrint
         (
             PXLoggingError,
-            "GUI",
+            PXGUIName,
             "Draw",
             "TabList. Extended data is missing! Canceling draw!"
         );
@@ -1132,7 +1133,9 @@ PXActionResult PXAPI PXWindowDrawCustomTabList(PXGUISystem* const pxGUISystem, P
 
         PXSize width = predictSIze + offsetX;
 
-        //PXNativDrawRectangle(pxGUISystem, pxGUIElement, left, 0, left+ size+ offsetX, height);
+
+        pxWindow->Info.Flags = pxWindowTABPage->Info.Flags;
+
         PXWindowDrawCustomRectangle3D
         (
             pxGUISystem,
@@ -1163,11 +1166,23 @@ PXActionResult PXAPI PXWindowDrawCustomTabList(PXGUISystem* const pxGUISystem, P
         pxWindow->Info.Behaviour |= PXWindowAllignLeft;
 
 
+        const PXBool isHovered = (PXResourceInfoSelected & pxWindowTABPage->Info.Flags) > 0;
+
+
+        PXWindowBrush* brushFront = pxGUISystem->BrushTextWhite;
+        PXWindowBrush* brushBackground = pxGUISystem->BrushBackgroundDark;
+     
+        if(isHovered)
+        {
+            brushBackground= pxGUISystem->BrushTextWhite;
+            brushFront = pxGUISystem->BrushBackgroundDark;
+        }
+
         PXNativDrawColorSetBrush
         (
             &pxGUISystem->NativDraw,
             pxWindow,
-            pxGUISystem->BrushBackgroundDark,
+            brushBackground,
             PXGUIDrawModeBack
         );
 
@@ -1175,7 +1190,7 @@ PXActionResult PXAPI PXWindowDrawCustomTabList(PXGUISystem* const pxGUISystem, P
         (
             &pxGUISystem->NativDraw,
             pxWindow,
-            pxGUISystem->BrushTextWhite,
+            brushFront,
             PXGUIDrawModeFront
         );
 
@@ -1210,9 +1225,11 @@ PXActionResult PXAPI PXWindowDrawCustomFailback(PXGUISystem* const pxGUISystem, 
     PXLogPrint
     (
         PXLoggingWarning,
-        "GUI-Draw",
+        PXGUIName,
         "FailBack",
-        "No function to draw element."
+        "PXID:%i, No function to draw element. [%s]",
+        pxWindow->Info.ID,
+        pxWindow->NameContent
     );
 #endif
 
@@ -1397,7 +1414,7 @@ PXActionResult PXAPI PXWindowDrawCustomButton(PXGUISystem* const pxGUISystem, PX
     PXLogPrint
     (
         PXLoggingInfo,
-        "GUI",
+        PXGUIName,
         "Draw",
         "Button"
     );
@@ -1522,7 +1539,7 @@ PXActionResult PXAPI PXWindowDrawCustomColorPicker(PXGUISystem* const pxGUISyste
     PXLogPrint
     (
         PXLoggingInfo,
-        "GUI",
+        PXGUIName,
         "Draw",
         "ColorPicker"
     );
@@ -1728,7 +1745,7 @@ PXActionResult PXAPI PXWindowDrawCustomHexView(PXGUISystem* const pxGUISystem, P
     PXLogPrint
     (
         PXLoggingInfo,
-        "GUI",
+        PXGUIName,
         "Draw",
         "HexView"
     );
@@ -1745,7 +1762,7 @@ PXActionResult PXAPI PXWindowDrawFileDirectoryView(PXGUISystem* const pxGUISyste
     PXLogPrint
     (
         PXLoggingInfo,
-        "GUI",
+        PXGUIName,
         "Draw",
         "FileDirectoryView"
     );
@@ -1876,6 +1893,216 @@ PXActionResult PXAPI PXWindowDrawFileDirectoryView(PXGUISystem* const pxGUISyste
             PXWindowAllignLeft
         );
     }
+
+    return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXWindowDrawCustomCode(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
+{
+    return PXActionRefusedNotImplemented;
+}
+
+PXActionResult PXAPI PXWindowDrawCustomHexEditor(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
+{
+    return PXActionRefusedNotImplemented;
+}
+
+PXActionResult PXAPI PXWindowDrawCustomGraphBehaviour(PXGUISystem* const pxGUISystem, PXWindow* const pxWindow, PXWindowDrawInfo* const pxGUIElementDrawInfo)
+{
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXGUIName,
+        "Draw",
+        "GraphBehaviour\n\n"
+    );
+#endif
+
+    PXWindowDrawCustomRectangle3D
+    (
+        pxGUISystem,
+        pxWindow,
+        pxWindow->Position.Form.X,
+        pxWindow->Position.Form.Y,
+        pxWindow->Position.Form.Width,
+        pxWindow->Position.Form.Height
+    );
+
+    PXNativDrawFontSelect(&pxGUISystem->NativDraw, pxWindow, pxGUISystem->FontContent);
+
+
+    PXNativDrawColorSetBrush
+    (
+        &pxGUISystem->NativDraw,
+        pxWindow,
+        pxGUISystem->BrushBackgroundDark,
+        PXGUIDrawModeBack
+    );
+    PXNativDrawColorSetBrush
+    (
+        &pxGUISystem->NativDraw,
+        pxWindow,
+        pxGUISystem->BrushTextWhite,
+        PXGUIDrawModeFront
+    );
+
+    PXNativDrawTextA
+    (
+        &pxGUISystem->NativDraw,
+        pxWindow,
+        pxWindow->Position.Form.X,
+        pxWindow->Position.Form.Y,
+        pxWindow->Position.Form.Width,
+        pxWindow->Position.Form.Height,
+        pxWindow->NameContent,
+        pxWindow->NameContentSize,
+        PXWindowAllignCenter
+    );
+
+    return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXWindowDrawCustomGraphTime(PXGUISystem* const pxGUISystem, PXWindow* const pxWindow, PXWindowDrawInfo* const pxGUIElementDrawInfo)
+{
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXGUIName,
+        "Draw",
+        "GraphTime"
+    );
+#endif
+
+    PXWindowDrawCustomRectangle3D
+    (
+        pxGUISystem,
+        pxWindow,
+        pxWindow->Position.Form.X,
+        pxWindow->Position.Form.Y,
+        pxWindow->Position.Form.Width,
+        pxWindow->Position.Form.Height
+    );
+
+    PXNativDrawFontSelect(&pxGUISystem->NativDraw, pxWindow, pxGUISystem->FontContent);
+
+
+    PXNativDrawColorSetBrush
+    (
+        &pxGUISystem->NativDraw,
+        pxWindow,
+        pxGUISystem->BrushBackgroundDark,
+        PXGUIDrawModeBack
+    );
+    PXNativDrawColorSetBrush
+    (
+        &pxGUISystem->NativDraw,
+        pxWindow,
+        pxGUISystem->BrushTextWhite,
+        PXGUIDrawModeFront
+    );
+
+    PXNativDrawTextA
+    (
+        &pxGUISystem->NativDraw,
+        pxWindow,
+        pxWindow->Position.Form.X,
+        pxWindow->Position.Form.Y,
+        pxWindow->Position.Form.Width,
+        pxWindow->Position.Form.Height,
+        pxWindow->NameContent,
+        pxWindow->NameContentSize,
+        PXWindowAllignLeft
+    );
+
+    return PXActionRefusedNotImplemented;
+}
+
+PXActionResult PXAPI PXWindowDrawCustomSoundPlayerMixer(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
+{
+    return PXActionRefusedNotImplemented;
+}
+
+PXActionResult PXAPI PXWindowDrawCustomVideoCutter(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
+{
+    return PXActionRefusedNotImplemented;
+}
+
+PXActionResult PXAPI PXWindowDrawCustomDataBaseManager(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
+{
+    return PXActionRefusedNotImplemented;
+}
+
+PXActionResult PXAPI PXWindowDrawCustomNetworkTester(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
+{
+    return PXActionRefusedNotImplemented;
+}
+
+PXActionResult PXAPI PXWindowDrawCustomInputView(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
+{
+    return PXActionRefusedNotImplemented;
+}
+
+PXActionResult PXAPI PXWindowDrawCustomHardwareInfo(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo)
+{
+    return PXActionRefusedNotImplemented;
+}
+
+PXActionResult PXAPI PXWindowTabListSwapPage(PXWindow* const pxWindow)
+{
+    PXWindowExtendedBehaviourTab* pxWindowExtendedBehaviourTab = (PXWindowExtendedBehaviourTab*)pxWindow->ExtendedData;
+        
+    ++pxWindowExtendedBehaviourTab->TABPageIndexCurrent;
+
+    pxWindowExtendedBehaviourTab->TABPageIndexCurrent %= pxWindowExtendedBehaviourTab->TABPageAmount;
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXGUIName,
+        "TAB",
+        "Index swap : %i/%i",
+        pxWindowExtendedBehaviourTab->TABPageIndexCurrent+1,
+        pxWindowExtendedBehaviourTab->TABPageAmount
+    );
+#endif
+
+    for(PXSize i = 0; i < pxWindowExtendedBehaviourTab->TABPageAmount; ++i)
+    {
+        PXWindow* const pxWindowTABPage = &pxWindowExtendedBehaviourTab->TABPageList[i];
+
+        PXInt32U flagList = pxWindowTABPage->Info.Flags;
+
+        if(pxWindowExtendedBehaviourTab->TABPageIndexCurrent == i)
+        {
+            pxWindowTABPage->Info.Flags |= PXResourceInfoSelected | PXResourceInfoRender;
+        }
+        else
+        {
+            pxWindowTABPage->Info.Flags &= ~PXResourceInfoSelected;
+            pxWindowTABPage->Info.Flags &= ~PXResourceInfoRender;
+        }
+
+        if(flagList != pxWindowTABPage->Info.Flags)
+        {
+            //InvalidateRect(pxWindowTABPage->Info.Handle.WindowID, 0, TRUE);
+            if(pxWindowTABPage->Info.Flags & PXResourceInfoSelected)
+            {
+                ShowWindow(pxWindowTABPage->Info.Handle.WindowID, SW_SHOW);
+            }
+            else
+            {
+                ShowWindow(pxWindowTABPage->Info.Handle.WindowID, SW_HIDE);
+
+            }
+
+            InvalidateRect(pxWindowTABPage->Info.Handle.WindowID, 0, TRUE);
+        }
+    }
+
+     InvalidateRect(pxWindow->Info.Handle.WindowID, 0, TRUE);
 
     return PXActionSuccessful;
 }
@@ -2025,7 +2252,7 @@ PXActionResult PXAPI PXGUIIconGetViaFilePath(PXIcon* const pxIcon, const char* f
     PXLogPrint
     (
         PXLoggingInfo,
-        "GUI",
+        PXGUIName,
         "Icon-Fetch",
         "%s",
         shFileInfo.szDisplayName
@@ -2300,7 +2527,7 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
         PXLogPrint
         (
             PXLoggingInfo,
-            "GUI",
+            PXGUIName,
             "Window",
             "Attemtinjg to create window with parent..\n"
             "%10s - PX-ID:%i, X:%4i Y:%4i W:%4i H:%4i, Name:%s, NEW\n"
@@ -2346,7 +2573,7 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
         PXLogPrint
         (
             PXLoggingInfo,
-            "GUI",
+            PXGUIName,
             "Window",
             "Attemtinjg to create global window..\n"
             "%10s PX-ID:%i, X:%4i Y:%4i W:%4i H:%4i, Name:%s",
@@ -2857,7 +3084,79 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
         {
             pxGUIElementCreateInfo->AvoidCreation = PXTrue;
             break;
+        }        
+        case PXUIElementTypeScene:
+        {
+          
+            break;
         }
+        case PXUIElementTypeCode:
+        {
+            pxGUIElementCreateInfo->DrawFunctionEngine = PXWindowDrawCustomCode;
+            break;
+        }
+        case PXUIElementTypeHexEditor:
+        {
+            pxGUIElementCreateInfo->DrawFunctionEngine = PXWindowDrawCustomHexEditor;
+            break;
+        }
+        case PXUIElementTypeGraphBehaviour:
+        {
+            pxGUIElementCreateInfo->DrawFunctionEngine = PXWindowDrawCustomGraphBehaviour;
+            pxGUIElementCreateInfo->WindowsStyleFlags |= WS_VISIBLE; 
+            pxGUIElementCreateInfo->WindowsClassName = WC_STATIC;
+            break;
+        }
+        case PXUIElementTypeGraphTime:
+        {
+           // pxGUIElementCreateInfo->DrawFunctionEngine = PXWindowDrawCustomGraphTime;
+            pxGUIElementCreateInfo->WindowsStyleFlags |= WS_VISIBLE;
+            pxGUIElementCreateInfo->WindowsClassName = WC_STATIC;
+            break;
+        }
+        case PXUIElementTypeSoundPlayerMixer:
+        {
+           // pxGUIElementCreateInfo->DrawFunctionEngine = PXWindowDrawCustomSoundPlayerMixer;
+            pxGUIElementCreateInfo->WindowsStyleFlags |= WS_VISIBLE;
+            pxGUIElementCreateInfo->WindowsClassName = WC_STATIC;
+            break;
+        }
+        case PXUIElementTypeVideoCutter:
+        {
+           // pxGUIElementCreateInfo->DrawFunctionEngine = PXWindowDrawCustomVideoCutter;
+            pxGUIElementCreateInfo->WindowsStyleFlags |= WS_VISIBLE;
+            pxGUIElementCreateInfo->WindowsClassName = WC_STATIC;
+            break;
+        }
+        case PXUIElementTypeDataBaseManager:
+        {
+           // pxGUIElementCreateInfo->DrawFunctionEngine = PXWindowDrawCustomDataBaseManager;
+            pxGUIElementCreateInfo->WindowsStyleFlags |= WS_VISIBLE;
+            pxGUIElementCreateInfo->WindowsClassName = WC_STATIC;
+            break;
+        }
+        case PXUIElementTypeNetworkTester:
+        {
+           // pxGUIElementCreateInfo->DrawFunctionEngine = PXWindowDrawCustomNetworkTester;
+            pxGUIElementCreateInfo->WindowsStyleFlags |= WS_VISIBLE;
+            pxGUIElementCreateInfo->WindowsClassName = WC_STATIC;
+            break;
+        }
+        case PXUIElementTypeInputView:
+        {
+           // pxGUIElementCreateInfo->DrawFunctionEngine = PXWindowDrawCustomInputView;
+            pxGUIElementCreateInfo->WindowsStyleFlags |= WS_VISIBLE;
+            pxGUIElementCreateInfo->WindowsClassName = WC_STATIC;
+            break;
+        }
+        case PXUIElementTypeHardwareInfo:
+        {
+            //pxGUIElementCreateInfo->DrawFunctionEngine = PXWindowDrawCustomHardwareInfo;
+            pxGUIElementCreateInfo->WindowsStyleFlags |= WS_VISIBLE;
+            pxGUIElementCreateInfo->WindowsClassName = WC_STATIC;
+            break;
+        }
+
         default:
             return PXActionRefusedArgumentInvalid;
     }
@@ -3686,7 +3985,7 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
                     PXLogPrint
                     (
                         PXLoggingInfo,
-                        "GUI",
+                        PXGUIName,
                         "ImageList-Add",
                         "New icon %i",
                         addedID
@@ -3736,12 +4035,41 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
             // Fill extended data
             pxWindowExtendedBehaviourTab->TABPageIndexCurrent = -1;
             pxWindowExtendedBehaviourTab->TABPageAmount = pxGUIElementCreateInfo->Data.TabPage.TabPageSingleInfoAmount;
-            pxWindowExtendedBehaviourTab->TABPageList = PXMemoryCallocT(PXWindow, pxGUIElementCreateInfo->Data.TabPage.TabPageSingleInfoAmount);
+            
+            // NO!! NO ALLOC HERE
+            //pxWindowExtendedBehaviourTab->TABPageList = PXMemoryCallocT(PXWindow, pxGUIElementCreateInfo->Data.TabPage.TabPageSingleInfoAmount);
 
 
             PXIcon* pxIcon = PXMemoryCallocT(PXIcon, 1);
 
             PXNativDrawIconLoad(&pxGUISystem->NativDraw, pxIcon, 0);
+
+
+
+            // Create
+            {
+                // Create a panel for each page, to contain all elements, so that we can hide and show all at once
+                PXResourceCreateInfo pxResourceCreateInfo;
+                PXClear(PXResourceCreateInfo, &pxResourceCreateInfo);
+                pxResourceCreateInfo.Type = PXResourceTypeGUIElement;
+                pxResourceCreateInfo.ObjectAmount = pxWindowExtendedBehaviourTab->TABPageAmount;
+                pxResourceCreateInfo.ObjectReference = &pxWindowExtendedBehaviourTab->TABPageList;
+                pxResourceCreateInfo.Parent = pxWindowCurrent;
+                pxResourceCreateInfo.UIElement.Type = PXUIElementTypePanel;
+                pxResourceCreateInfo.UIElement.Name = "TAB-Page";
+                pxResourceCreateInfo.UIElement.Invisible = PXTrue;
+               // pxResourceCreateInfo.UIElement.WindowCurrent = pxGUIElementCreateInfo->WindowCurrent;
+               // pxResourceCreateInfo.UIElement.WindowParent = pxWindowCurrent;
+                pxResourceCreateInfo.UIElement.BehaviourFlags = PXWindowBehaviourDefaultDecorative | PXWindowAllignLeft;
+                pxResourceCreateInfo.UIElement.Position.Margin.Left = 0.02;
+                pxResourceCreateInfo.UIElement.Position.Margin.Top = 0.02;
+                pxResourceCreateInfo.UIElement.Position.Margin.Right = 0.02;
+                pxResourceCreateInfo.UIElement.Position.Margin.Bottom = 0.02;
+
+                PXResourceManagerAdd(&pxResourceCreateInfo);
+            }
+
+
 
             for(PXSize i = 0; i < pxUIElementTabPageInfo->TabPageSingleInfoAmount; ++i)
             {
@@ -3752,32 +4080,7 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
 
                 pxWindow->NameContent = pxUIElementTabPageSingleInfo->PageName;
                 pxWindow->NameContentSize = PXTextLengthA(pxWindow->NameContent, PXTextLengthUnkown);
-
-                char buffer[64];
-                PXTextPrintA(buffer, 64, "TabPage-%i-%s", i, pxUIElementTabPageSingleInfo->PageName);
-
-                // Create a panel for each page, to contain all elements, so that we can hide and show all at once
-                PXResourceCreateInfo pxResourceCreateInfo;
-                PXClear(PXResourceCreateInfo, &pxResourceCreateInfo);
-                pxResourceCreateInfo.Type = PXResourceTypeGUIElement;
-                pxResourceCreateInfo.ObjectReference = &pxWindow;
-                pxResourceCreateInfo.UIElement.Type = PXUIElementTypeTabPage;
-                pxResourceCreateInfo.UIElement.Name = buffer;
-                pxResourceCreateInfo.UIElement.Invisible = PXTrue;
-                pxResourceCreateInfo.UIElement.WindowCurrent = pxGUIElementCreateInfo->WindowCurrent;
-                pxResourceCreateInfo.UIElement.WindowParent = pxWindowCurrent;
-                pxResourceCreateInfo.UIElement.BehaviourFlags = PXWindowBehaviourDefaultDecorative | PXWindowAllignLeft;
-                pxResourceCreateInfo.UIElement.Position.Margin.Left = 0;
-                pxResourceCreateInfo.UIElement.Position.Margin.Top = 0.08;
-                pxResourceCreateInfo.UIElement.Position.Margin.Right = 0;
-                pxResourceCreateInfo.UIElement.Position.Margin.Bottom = 0;
-
-                PXResourceManagerAddV(&pxResourceCreateInfo, 1);
-
-                PXWindowCreate(pxGUISystem, &pxResourceCreateInfo, 1);
-
-
-
+           
                 if(pxUIElementTabPageSingleInfo->TABIcon)
                 {
                     pxWindow->Icon = pxUIElementTabPageSingleInfo->TABIcon;
@@ -3818,7 +4121,7 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
                 PXLogPrint
                 (
                     PXLoggingInfo,
-                    "GUI",
+                    PXGUIName,
                     "TabControl-Add",
                     "Page added %s",
                     pxUIElementTabPageSingleInfo->PageName
@@ -4083,7 +4386,7 @@ PXActionResult PXAPI PXWindowPixelSystemSet(PXWindowPixelSystemInfo* const pxWin
     PXLogPrint
     (
         PXLoggingInfo,
-        "GUI",
+        PXGUIName,
         "Window-PixelSystem",
         "Setting info"
     );
@@ -4296,7 +4599,7 @@ PXActionResult PXAPI PXWindowMouseMovementEnable(const PXNativDrawWindowHandle p
         PXLogPrint
         (
             PXLoggingError,
-            "GUI",
+            PXGUIName,
             "Input-Mouse",
             "Failed to registerd device for <0x%p>",
             pxWindow
@@ -4310,7 +4613,7 @@ PXActionResult PXAPI PXWindowMouseMovementEnable(const PXNativDrawWindowHandle p
     PXLogPrint
     (
         PXLoggingInfo,
-        "GUI",
+        PXGUIName,
         "Input-Mouse",
         "Registerd device for <0x%p>",
         pxWindow

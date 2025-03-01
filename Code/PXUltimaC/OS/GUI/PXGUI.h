@@ -140,7 +140,26 @@ PXPublic PXActionResult PXAPI PXWindowDrawCustomComboBox(PXGUISystem* const pxGU
 PXPublic PXActionResult PXAPI PXWindowDrawCustomColorPicker(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo);
 PXPublic PXActionResult PXAPI PXWindowDrawCustomHexView(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo);
 PXPublic PXActionResult PXAPI PXWindowDrawFileDirectoryView(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo);
+
+
+PXPublic PXActionResult PXAPI PXWindowDrawCustomCode(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo);
+PXPublic PXActionResult PXAPI PXWindowDrawCustomHexEditor(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo);
+PXPublic PXActionResult PXAPI PXWindowDrawCustomGraphBehaviour(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo);
+PXPublic PXActionResult PXAPI PXWindowDrawCustomGraphTime(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo);
+PXPublic PXActionResult PXAPI PXWindowDrawCustomSoundPlayerMixer(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo);
+PXPublic PXActionResult PXAPI PXWindowDrawCustomVideoCutter(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo);
+PXPublic PXActionResult PXAPI PXWindowDrawCustomDataBaseManager(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo);
+PXPublic PXActionResult PXAPI PXWindowDrawCustomNetworkTester(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo);
+PXPublic PXActionResult PXAPI PXWindowDrawCustomInputView(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo);
+PXPublic PXActionResult PXAPI PXWindowDrawCustomHardwareInfo(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement, PXWindowDrawInfo* const pxGUIElementDrawInfo);
 //---------------------------------------------------------
+
+
+
+
+PXPublic PXActionResult PXAPI PXWindowTabListSwapPage(PXWindow* const pxWindow);
+
+
 
 
 

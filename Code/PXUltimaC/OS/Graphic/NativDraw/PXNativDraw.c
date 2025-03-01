@@ -2,6 +2,8 @@
 
 PXNativDraw _internalNativDraw;
 
+const char PXNativDrawText[] = "NativDraw";
+
 #if OSUnix
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -77,7 +79,7 @@ int CALLBACK PXWindowsFontEnumCallBack(const LOGFONT* lpelfe, const TEXTMETRIC* 
     PXLogPrint
     (
         PXLoggingInfo,
-        "NativDraw",
+        PXNativDrawText,
         "Font-Fetch",
         "detected : %s",
         lpelfe->lfFaceName
@@ -218,7 +220,7 @@ PXActionResult PXAPI PXNativDrawDisplayListFetch(PXNativDraw* const pxNativDraw)
             PXLogPrint
             (
                 PXLoggingWarning,
-                "NativDraw",
+                PXNativDraw,
                 "Display-Fetch",
                 "Devices detected : none"
             );
@@ -232,7 +234,7 @@ PXActionResult PXAPI PXNativDrawDisplayListFetch(PXNativDraw* const pxNativDraw)
         PXLogPrint
         (
             PXLoggingInfo,
-            "NativDraw",
+            PXNativDraw,
             "Display-Fetch",
             "Devices detected : %i",
             amount
@@ -298,7 +300,7 @@ PXActionResult PXAPI PXNativDrawDisplayListFetch(PXNativDraw* const pxNativDraw)
     PXLogPrint
     (
         PXLoggingInfo,
-        "GUI",
+        PXNativDraw,
         "Display-Device",
         "Fetching <%i> monitor devices",
         pxNativDraw->DisplayListAmount
@@ -327,7 +329,7 @@ PXActionResult PXAPI PXNativDrawDisplayListFetch(PXNativDraw* const pxNativDraw)
         PXLogPrint
         (
             PXLoggingInfo,
-            "GUI",
+            PXNativDraw,
             "Display-Device",
             "Detected:\n"
             "+--------------------------------------------------------+\n"
@@ -476,7 +478,7 @@ PXActionResult PXAPI PXNativDrawWindowCreate(PXNativDraw* const pxNativDraw, PXW
     PXLogPrint
     (
         PXLoggingInfo,
-        "NativDraw",
+        PXNativDrawText,
         "Window",
         "Creating window ..."
     );
@@ -780,7 +782,7 @@ PXActionResult PXAPI PXNativDrawWindowCreate(PXNativDraw* const pxNativDraw, PXW
     PXLogPrint
     (
         PXLoggingError,
-        "GUI",
+        PXNativDraw,
         "Element-Create",
         "Failed: X:%4i, Y:%4i, W:%4i, H:%4i, (%s) : [%s]",
         (int)pxWindowCreateInfo->X,
@@ -885,7 +887,7 @@ PXActionResult PXAPI PXNativDrawRectangleParent(PXNativDraw* const pxNativDraw, 
     PXLogPrint
     (
         PXLoggingInfo,
-        "NativeDraw",
+        PXNativDrawText,
         "Size-Parent",
         "PXID:%-4i X:%-4i Y:%-4i W:%-4i H:%-4i - %s",
         pxWindow->Info.ID,
@@ -940,7 +942,7 @@ PXActionResult PXAPI PXNativDrawWindowBufferSwap(PXNativDraw* const pxNativDraw,
     PXLogPrint
     (
         PXLoggingInfo,
-        "NativDraw",
+        PXNativDraw,
         "BufferSwap",
         "%i",
         pxActionResult
@@ -1041,9 +1043,9 @@ PXActionResult PXAPI PXNativDrawSetV3(PXNativDraw* const pxNativDraw, PXWindow* 
     PXLogPrint
     (
         PXLoggingInfo,
-        "GUI",
+        PXNativDrawText,
         "Brush-Set",
-        "%2.2x%2.2x%2.2x",
+        "%2.2X%2.2X%2.2X",
         pxColorRGBI8->Red,
         pxColorRGBI8->Green,
         pxColorRGBI8->Blue
@@ -1092,7 +1094,7 @@ PXActionResult PXAPI PXNativDrawSetV3(PXNativDraw* const pxNativDraw, PXWindow* 
             PXLogPrint
             (
                 PXLoggingError,
-                "GUI",
+                PXNativDrawText,
                 "Color-Set",
                 "Failed set backgroundcolor"
             );
@@ -1184,7 +1186,7 @@ PXActionResult PXAPI PXNativDrawFontLoadA(PXNativDraw* const pxNativDraw, PXFont
     PXLogPrint
     (
         PXLoggingInfo,
-        "NativDraw",
+        PXNativDrawText,
         "Font-Load",
         "PXID:%-4i %p %s",
         pxFont->Info.ID,
@@ -1215,7 +1217,7 @@ PXActionResult PXAPI PXNativDrawFontSelect(PXNativDraw* const pxNativDraw, PXWin
     PXLogPrint
     (
         PXLoggingInfo,
-        "NativDraw",
+        PXNativDrawText,
         "Font-Select",
         "PXID:%-4i %p %s",
         pxFont->Info.ID,
@@ -1292,7 +1294,7 @@ PXActionResult PXAPI PXNativDrawScrollbarUpdate(PXNativDraw* const pxNativDraw, 
     PXLogPrint
     (
         PXLoggingInfo,
-        "NativDraw",
+        PXNativDrawText,
         "Scrollbar",
         "-"
 
@@ -1436,7 +1438,7 @@ PXActionResult PXAPI PXNativDrawWindowProperty(PXNativDraw* const pxNativDraw, P
                 PXLogPrint
                 (
                     PXLoggingInfo,
-                    "GUI",
+                    PXNativDraw,
                     "Update-Text",
                     "(0x%p) %s",
                     (int)pxGUIElement->ID,
@@ -1612,7 +1614,7 @@ PXActionResult PXAPI PXNativDrawWindowProperty(PXNativDraw* const pxNativDraw, P
                 PXLogPrint
                 (
                     PXLoggingInfo,
-                    "GUI",
+                    PXNativDrawText,
                     "Update-Size",
                     "X:%4i, Y:%4i, W:%4i, H:%4i",
                     (int)pxUIElementPositionCalulcateInfo.X,
@@ -1669,7 +1671,7 @@ PXActionResult PXAPI PXNativDrawWindowProperty(PXNativDraw* const pxNativDraw, P
                     PXLogPrint
                     (
                         PXLoggingInfo,
-                        "GUI",
+                        PXNativDrawText,
                         "Visibility",
                         "%20s (0x%p), Invalid",
                         "",//pxGUIElement->NameData,
@@ -1711,7 +1713,7 @@ PXActionResult PXAPI PXNativDrawWindowProperty(PXNativDraw* const pxNativDraw, P
                 PXLogPrint
                 (
                     PXLoggingInfo,
-                    "GUI",
+                    PXNativDraw,
                     "Visibility",
                     "Page %20s, (0x%p), Mode:%s Status:%s",
                     "",//pxGUIElement->NameData,
@@ -1817,7 +1819,7 @@ PXActionResult PXAPI PXNativDrawTextSet(PXNativDraw* const pxNativDraw, PXWindow
         PXLogPrint
         (
             PXLoggingError,
-            "GUI",
+            PXNativDrawText,
             "Window-Text",
             "Failed Set: %s on (0x%p)",
             text,
@@ -1832,7 +1834,7 @@ PXActionResult PXAPI PXNativDrawTextSet(PXNativDraw* const pxNativDraw, PXWindow
     PXLogPrint
     (
         PXLoggingInfo,
-        "GUI",
+        PXNativDraw,
         "Window-Text",
         "Set: %s on (0x%p)",
         text,
@@ -2352,7 +2354,7 @@ PXActionResult PXAPI PXNativDrawClear(PXNativDraw* const pxNativDraw, PXWindow* 
     PXLogPrint
     (
         PXLoggingInfo,
-        "NativeDraw",
+        PXNativDrawText,
         "Clear",
         "PXID:%i",
         pxGUIElement->Info.ID
@@ -2387,7 +2389,7 @@ PXActionResult PXAPI PXNativDrawTextA
     PXLogPrint
     (
         PXLoggingInfo,
-        "NativeDraw",
+        PXNativDrawText,
         "Text",
         "PXID:%-4i X:%-4i Y:%-4i %2i %s",
         pxWindow->Info.ID,
@@ -2581,7 +2583,7 @@ PXActionResult PXAPI PXNativDrawRectangle(PXNativDraw* const pxNativDraw, PXWind
     PXLogPrint
     (
         PXLoggingInfo,
-        "NativeDraw",
+        PXNativDrawText,
         "Draw-Rectangle",
         "PXID:%-4i X:%-4i Y:%-4i W:%-4i H:%-4i",
         pxWindow->Info.ID,
@@ -2592,7 +2594,7 @@ PXActionResult PXAPI PXNativDrawRectangle(PXNativDraw* const pxNativDraw, PXWind
     );
 #endif
 
-    const PXBool isHovered = (PXWindowBehaviourIsBeingHovered & pxWindow->Info.Behaviour) > 0;
+    const PXBool isHovered = (PXResourceInfoSelected & pxWindow->Info.Flags) > 0;
 
     PXActionResult pxActionResult = PXActionInvalid;
 
@@ -2657,7 +2659,7 @@ PXActionResult PXAPI PXNativDrawRectangle(PXNativDraw* const pxNativDraw, PXWind
         PXLogPrint
         (
             PXLoggingInfo,
-            "GUI",
+            PXNativDraw,
             "Draw-Button",
             "%i, X:%i,Y:%i,W:%i,H:%i",
             pxGUIElement->Info.ID,
@@ -2669,7 +2671,7 @@ PXActionResult PXAPI PXNativDrawRectangle(PXNativDraw* const pxNativDraw, PXWind
         PXLogPrint
         (
             PXLoggingInfo,
-            "GUI",
+            PXNativDraw,
             "Draw-Rectangle",
             "%i, X:%i,Y:%i,W:%i,H:%i",
             pxGUIElement->Info.ID,
@@ -2709,7 +2711,7 @@ PXActionResult PXAPI PXNativDrawIconLoad(PXNativDraw* const pxGUISystem, PXIcon*
     PXLogPrint
     (
         PXLoggingInfo,
-        "NativDraw",
+        PXNativDrawText,
         "Icon-Load",
         "%s",
         iconName
@@ -3487,7 +3489,7 @@ LRESULT CALLBACK PXNativDrawEventTranslator(const HWND windowID, const UINT even
                         PXLogPrint
                         (
                             PXLoggingInfo,
-                            "GUI",
+                            PXNativDrawText,
                             "Event",
                             "Tab Select <0x%p>, %15s ID:<%i>",
                             sourceObject,
