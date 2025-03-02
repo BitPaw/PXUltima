@@ -1919,6 +1919,8 @@ PXActionResult PXAPI PXWindowDrawCustomGraphBehaviour(PXGUISystem* const pxGUISy
     );
 #endif
 
+    PXNativDrawClear(&pxGUISystem->NativDraw, pxWindow);
+
     PXWindowDrawCustomRectangle3D
     (
         pxGUISystem,
@@ -2077,32 +2079,42 @@ PXActionResult PXAPI PXWindowTabListSwapPage(PXWindow* const pxWindow)
 
         if(pxWindowExtendedBehaviourTab->TABPageIndexCurrent == i)
         {
-            pxWindowTABPage->Info.Flags |= PXResourceInfoSelected | PXResourceInfoRender;
+            pxWindowTABPage->Info.Flags |= PXResourceInfoSelected;// | PXResourceInfoRender;
         }
         else
         {
             pxWindowTABPage->Info.Flags &= ~PXResourceInfoSelected;
-            pxWindowTABPage->Info.Flags &= ~PXResourceInfoRender;
+          //  pxWindowTABPage->Info.Flags &= ~PXResourceInfoRender;
         }
 
+
+        
         if(flagList != pxWindowTABPage->Info.Flags)
         {
             //InvalidateRect(pxWindowTABPage->Info.Handle.WindowID, 0, TRUE);
             if(pxWindowTABPage->Info.Flags & PXResourceInfoSelected)
             {
                 ShowWindow(pxWindowTABPage->Info.Handle.WindowID, SW_SHOW);
+
+                if(pxWindowTABPage->DrawFunction)
+                {                   
+                    pxWindowTABPage->DrawFunction(PXNativDrawInstantance()->GUISystem, pxWindowTABPage, PXNull);
+                }
             }
             else
             {
                 ShowWindow(pxWindowTABPage->Info.Handle.WindowID, SW_HIDE);
-
             }
+          
 
-            InvalidateRect(pxWindowTABPage->Info.Handle.WindowID, 0, TRUE);
+           // InvalidateRect(pxWindowTABPage->Info.Handle.WindowID, 0, TRUE);
         }
+        
     }
 
-     InvalidateRect(pxWindow->Info.Handle.WindowID, 0, TRUE);
+    pxWindow->DrawFunction(PXNativDrawInstantance()->GUISystem, pxWindow, PXNull);
+
+    //InvalidateRect(pxWindow->Info.Handle.WindowID, 0, TRUE);
 
     return PXActionSuccessful;
 }
@@ -4057,12 +4069,12 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
                 pxResourceCreateInfo.Parent = pxWindowCurrent;
                 pxResourceCreateInfo.UIElement.Type = PXUIElementTypePanel;
                 pxResourceCreateInfo.UIElement.Name = "TAB-Page";
-                pxResourceCreateInfo.UIElement.Invisible = PXTrue;
+                pxResourceCreateInfo.UIElement.Invisible = PXFalse;
                // pxResourceCreateInfo.UIElement.WindowCurrent = pxGUIElementCreateInfo->WindowCurrent;
-               // pxResourceCreateInfo.UIElement.WindowParent = pxWindowCurrent;
+                pxResourceCreateInfo.UIElement.WindowParent = pxWindowCurrent;
                 pxResourceCreateInfo.UIElement.BehaviourFlags = PXWindowBehaviourDefaultDecorative | PXWindowAllignLeft;
                 pxResourceCreateInfo.UIElement.Position.Margin.Left = 0.02;
-                pxResourceCreateInfo.UIElement.Position.Margin.Top = 0.02;
+                pxResourceCreateInfo.UIElement.Position.Margin.Top = 0.4;
                 pxResourceCreateInfo.UIElement.Position.Margin.Right = 0.02;
                 pxResourceCreateInfo.UIElement.Position.Margin.Bottom = 0.02;
 
@@ -4089,6 +4101,68 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
                 {
                     pxWindow->Icon = pxIcon;
                 }
+
+                pxWindow->Info.Hierarchy.Parrent = pxWindowCurrent;
+                pxWindow->Type = pxUIElementTabPageSingleInfo->UIElementType;
+                pxWindow->DrawFunction = PXWindowDrawCustomFailback;
+
+                switch(pxUIElementTabPageSingleInfo->UIElementType)
+                {
+                    case PXUIElementTypeCode:
+                    {
+                        pxWindow->DrawFunction = PXWindowDrawCustomCode;
+                        break;
+                    }
+                    case PXUIElementTypeHexEditor:
+                    {
+                        pxWindow->DrawFunction = PXWindowDrawCustomHexEditor;
+                        break;
+                    }
+                    case PXUIElementTypeGraphBehaviour:
+                    {
+                        pxWindow->DrawFunction = PXWindowDrawCustomGraphBehaviour;
+                        break;
+                    }
+                    case PXUIElementTypeGraphTime:
+                    {
+                       // pxWindow->DrawFunction = PXWindowDrawCustomGraphTime;
+                        break;
+                    }
+                    case PXUIElementTypeSoundPlayerMixer:
+                    {
+                       // pxWindow->DrawFunction = PXWindowDrawCustomSoundPlayerMixer;
+                        break;
+                    }
+                    case PXUIElementTypeVideoCutter:
+                    {
+                        // pxGUIElementCreateInfo->DrawFunctionEngine = PXWindowDrawCustomVideoCutter;
+                        break;
+                    }
+                    case PXUIElementTypeDataBaseManager:
+                    {
+                        // pxGUIElementCreateInfo->DrawFunctionEngine = PXWindowDrawCustomDataBaseManager;
+                        break;
+                    }
+                    case PXUIElementTypeNetworkTester:
+                    {
+                        // pxGUIElementCreateInfo->DrawFunctionEngine = PXWindowDrawCustomNetworkTester;
+                        break;
+                    }
+                    case PXUIElementTypeInputView:
+                    {
+                        // pxGUIElementCreateInfo->DrawFunctionEngine = PXWindowDrawCustomInputView;
+                        break;
+                    }
+                    case PXUIElementTypeHardwareInfo:
+                    {
+                        //pxGUIElementCreateInfo->DrawFunctionEngine = PXWindowDrawCustomHardwareInfo;
+                        break;
+                    }
+
+                    default:
+                        break;
+                }
+
 
 
                 switch(PXResourceInfoUseByMask & pxWindowCurrent->Info.Flags)
