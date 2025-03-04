@@ -31,16 +31,16 @@ PXActionResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, con
     PXClear(PXHuffmanTree, huffmanTree);
 
     // HuffmanTree_makeFromLengths()
-    PXNewList(PXInt32U, numcodes, &huffmanTree->LengthsList, PXNull);
+    huffmanTree->LengthsList = PXMemoryHeapCallocT(PXInt32U, numcodes);
     huffmanTree->NumberOfSymbols = NUM_DEFLATE_CODE_SYMBOLS;
     huffmanTree->maxbitlen = 15;
-    PXNewList(PXInt32U, numcodes, &huffmanTree->CodeSymbols, PXNull);
+    huffmanTree->CodeSymbols = PXMemoryHeapCallocT(PXInt32U, numcodes);
 
     PXCopyList(PXInt32U, numcodes, bitlen, huffmanTree->LengthsList);
     //-----------
 
     //------------------------------------ HuffmanTree_makeFromLengths2()
-    const PXInt32U  maxBitLenghAA = maxbitlen + 1;
+    const PXInt32U maxBitLenghAA = maxbitlen + 1;
 
     //PXInt32U* blcount = PXNewList(PXInt32U, maxBitLenghAA);
     //PXInt32U* nextcode = PXNewList(PXInt32U, maxBitLenghAA);
@@ -70,13 +70,13 @@ PXActionResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, con
         {
             nextcode[bits] = (nextcode[bits - 1] + blcount[bits - 1]) << 1u;
         }
-        /*step 3: generate all the codes*/
+        // step 3: generate all the codes
         for(PXSize n = 0; n != numcodes; ++n)
         {
             if(huffmanTree->LengthsList[n] != 0)
             {
                 huffmanTree->CodeSymbols[n] = nextcode[huffmanTree->LengthsList[n]]++;
-                /*remove superfluous bits from the code*/
+                // remove superfluous bits from the code
                 huffmanTree->CodeSymbols[n] &= ((1u << huffmanTree->LengthsList[n]) - 1u);
             }
         }
@@ -116,6 +116,7 @@ PXActionResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, con
         }
         /* compute total table size: size of first table plus all secondary tables for symbols longer than FIRSTBITS */
         size = headsize;
+
         for(PXSize i = 0; i < headsize; ++i)
         {
             PXSize l = maxlens[i];
@@ -126,8 +127,8 @@ PXActionResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, con
             }
         }
 
-        PXNewList(PXInt8U, size, &huffmanTree->TableLength, PXNull); // unsigned char*
-        PXNewList(PXInt16U, size, &huffmanTree->TableValue, PXNull); // unsigned short
+        huffmanTree->TableLength = PXMemoryHeapCallocT(PXInt8U, size); // unsigned char*
+        huffmanTree->TableValue = PXMemoryHeapCallocT(PXInt16U, size); // unsigned short
 
         if(!huffmanTree->TableLength || !huffmanTree->TableValue)
         {
@@ -545,10 +546,10 @@ PXActionResult PXAPI PXHuffmanDistanceTreeGenerateFixed(PXHuffmanTree* const tre
 
 void PXAPI PXHuffmanTreeDestruct(PXHuffmanTree* const huffmanTree)
 {
-    PXDeleteList(PXInt32U, 0, huffmanTree->CodeSymbols, 0);
-    PXDeleteList(PXInt32U, 0, huffmanTree->LengthsList, 0);
-    PXDeleteList(PXInt8U, 0, huffmanTree->TableLength, 0);
-    PXDeleteList(PXInt16U, 0, huffmanTree->TableValue, 0);
+    PXMemoryHeapFree(PXNull, huffmanTree->CodeSymbols);
+    PXMemoryHeapFree(PXNull, huffmanTree->LengthsList);
+    PXMemoryHeapFree(PXNull, huffmanTree->TableLength);
+    PXMemoryHeapFree(PXNull, huffmanTree->TableValue);
 }
 
 PXHuffmanCodeType PXAPI PXHuffmanCodeTypeFromCode(const PXInt16U code)

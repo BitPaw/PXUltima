@@ -10,7 +10,7 @@ void PXAPI PXListInitialize(PXList* const pxList, const PXSize dataTypeSize, con
     if(sizeToAllocate)
     {
         // We want to preallocate memory to prepare space for data
-        pxList->Data = PXMemoryCalloc(sizeToAllocate, dataTypeSize);
+        pxList->Data = PXMemoryHeapCalloc(PXNull, sizeToAllocate, dataTypeSize);
         pxList->AmountAllocated = sizeToAllocate;
     }
     else
@@ -22,7 +22,7 @@ void PXAPI PXListInitialize(PXList* const pxList, const PXSize dataTypeSize, con
 
 void PXAPI PXListRelease(PXList* const pxList)
 {
-    PXMemoryFree(pxList->Data);
+    PXMemoryHeapFree(PXNull, pxList->Data);
 
     pxList->Data = PXNull;
 }
@@ -40,7 +40,7 @@ PXBool PXAPI PXListReserve(PXList* const pxList, const PXSize sizeToReserve)
     const PXSize newAmount = pxList->GrouthOnAlloc + sizeToReserve;
     const PXSize newSize = pxList->DataTypeSize * newAmount;
 
-    void* newMem = PXMemoryRealloc(pxList->Data, newSize);
+    void* newMem = PXMemoryHeapRealloc(PXNull, pxList->Data, newSize);
 
     if(!newMem)
     {

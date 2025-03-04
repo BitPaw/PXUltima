@@ -174,7 +174,7 @@ PXActionResult PXAPI PXNativDrawDisplayListFetch(PXNativDraw* const pxNativDraw)
         );
 
         pxNativDraw->MonitorListAmount = pxEindowsDisplayEnumInfo.OffsetMaxmimal;
-        pxNativDraw->MonitorList = PXMemoryReallocT(PXMonitor, PXNull, pxNativDraw->MonitorListAmount);
+        pxNativDraw->MonitorList = PXMemoryHeapReallocT(PXMonitor, PXNull, pxNativDraw->MonitorListAmount);
 
         pxEindowsDisplayEnumInfo.MonitorList = pxNativDraw->MonitorList;
         pxEindowsDisplayEnumInfo.CheckMode = 0;
@@ -241,7 +241,7 @@ PXActionResult PXAPI PXNativDrawDisplayListFetch(PXNativDraw* const pxNativDraw)
         );
 #endif
 
-        PXDisplay* pxDisplayList = PXMemoryReallocT(PXDisplay, PXNull, amount);
+        PXDisplay* pxDisplayList = PXMemoryHeapReallocT(PXDisplay, PXNull, amount);
 
         pxNativDraw->DisplayList = pxDisplayList;
         pxNativDraw->DisplayListAmount = amount;
@@ -480,7 +480,8 @@ PXActionResult PXAPI PXNativDrawWindowCreate(PXNativDraw* const pxNativDraw, PXW
         PXLoggingInfo,
         PXNativDrawText,
         "Window",
-        "Creating window ..."
+        "PXID:%i, Creating...",
+        pxWindow->Info.ID
     );
 #endif
 
@@ -802,102 +803,8 @@ PXActionResult PXAPI PXNativDrawWindowCreate(PXNativDraw* const pxNativDraw, PXW
     PXClear(PXScollbar, &pxScollbar);
     pxScollbar.Info.Behaviour |= PXScollbarBehaviourBoth;
 
-    PXNativDrawScrollbarUpdate(pxNativDraw, pxWindow, &pxScollbar);
+   // PXNativDrawScrollbarUpdate(pxNativDraw, pxWindow, &pxScollbar);
 
-
-    return PXActionSuccessful;
-}
-
-PXActionResult PXAPI PXNativDrawRectangleParent(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow, PXRectangleXYWHI32* const pxRectangleXYWHI32)
-{
-#if OSUnix
-   /* Get the parent window */
-
-    Display* const displayHandle = pxNativDraw->GUISystem->DisplayCurrent.DisplayHandle;
-
-    Window windowRoot;
-    Window windowParent;
-    Window* windowChildren;
-    unsigned int* windowChildrenAmount = 0;
-
-    XQueryTree
-    (
-        displayHandle,
-        pxWindow->Info.Handle.WindowID,
-        &windowRoot,
-        &windowParent,
-        &windowChildren,
-        &windowChildrenAmount
-    );
-
-    /* Get parent window attributes */
-    XWindowAttributes xWindowAttributes;
-
-
-    XGetWindowAttributes
-    (
-        displayHandle,
-        windowParent,
-        &xWindowAttributes
-    );
-
-    /* Get the absolute position of the parent window */
-
-    /*
-    XTranslateCoordinates
-    (
-        displayHandle,
-        parent_window,
-        root_window,
-        0,
-        0,
-        &abs_x,
-        &child_return
-    );
-    */
-
-    pxRectangleXYWHI32->X = 0;
-    pxRectangleXYWHI32->Y = 0;
-    pxRectangleXYWHI32->Width = xWindowAttributes.width - xWindowAttributes.x;
-    pxRectangleXYWHI32->Height = xWindowAttributes.height - xWindowAttributes.y;
-
-
-#elif OSWindows
-    RECT rect;
-
-    //const PXBool result = GetWindowRect(pxGUIElement->ID, &rect); // Windows 2000, User32.dll, winuser.h
-    const PXBool result = GetClientRect(pxWindow->Info.Handle.WindowID, &rect); // Windows 2000, User32.dll, winuser.h
-    // Get Last Error
-
-    if(!result)
-    {
-        pxRectangleXYWHI32->X = 0;
-        pxRectangleXYWHI32->Y = 0;
-        pxRectangleXYWHI32->Width = 0;
-        pxRectangleXYWHI32->Height = 0;
-
-        return PXActionRefusedNotFound;
-    }
-
-    PXRectangleLTRBI32ToXYWHI32((PXRectangleLTRBI32*)&rect, pxRectangleXYWHI32);
-#endif
-
-
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXNativDrawText,
-        "Size-Parent",
-        "PXID:%-4i X:%-4i Y:%-4i W:%-4i H:%-4i - %s",
-        pxWindow->Info.ID,
-        pxRectangleXYWHI32->X,
-        pxRectangleXYWHI32->Y,
-        pxRectangleXYWHI32->Width,
-        pxRectangleXYWHI32->Height,
-        pxWindow->NameContent
-    );
-#endif
 
     return PXActionSuccessful;
 }
@@ -1883,7 +1790,7 @@ PXActionResult PXAPI PXNativDrawWindowIsEnabled(PXNativDraw* const pxNativDraw, 
 #endif
 }
 
-PXActionResult PXAPI PXNativDrawWindowPosition(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow, PXVector2I* const position, const PXBool doWrite)
+PXActionResult PXAPI PXNativDrawWindowXYWH(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow, PXRectangleXYWHI32* const pxRectangleXYWHI32, const PXBool doWrite)
 {
     if(doWrite)
     {
@@ -1895,7 +1802,16 @@ PXActionResult PXAPI PXNativDrawWindowPosition(PXNativDraw* const pxNativDraw, P
         // MoveWindow() is a bad function. SetWindowPos() seems to be better in every case.
 
         const UINT flags = SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER;
-        const PXBool success = SetWindowPos(pxWindow->Info.Handle.WindowID, PXNull, position->X, position->Y, PXNull, PXNull, flags); // Windows 2000, User32.dll
+        const PXBool success = SetWindowPos
+        (
+            pxWindow->Info.Handle.WindowID, 
+            PXNull,
+            pxRectangleXYWHI32->X,
+            pxRectangleXYWHI32->Y,
+            pxRectangleXYWHI32->Width,
+            pxRectangleXYWHI32->Height,
+            flags
+        ); // Windows 2000, User32.dll
         const PXActionResult pxActionResult = PXErrorCurrent(success);
 
         return pxActionResult;
@@ -1906,39 +1822,95 @@ PXActionResult PXAPI PXNativDrawWindowPosition(PXNativDraw* const pxNativDraw, P
     }
     else
     {
+        pxRectangleXYWHI32->X = 0;
+        pxRectangleXYWHI32->Y = 0;
+        pxRectangleXYWHI32->Width = 0;
+        pxRectangleXYWHI32->Height = 0;
+
 #if OSUnix
-        return PXActionRefusedNotImplemented;
 
-#elif PXOSWindowsDestop
-        RECT rectangle;
+        // Get the parent window 
+        Display* const displayHandle = pxNativDraw->GUISystem->DisplayCurrent.DisplayHandle;
 
-        const PXBool success = GetWindowRect(pxWindow->Info.Handle.WindowID, &rectangle); // Windows 2000, User32.dll, winuser.h
-        const PXActionResult pxActionResult = PXErrorCurrent(success);
+        Window windowRoot;
+        Window windowParent;
+        Window* windowChildren;
+        unsigned int* windowChildrenAmount = 0;
 
-        if(PXActionSuccessful != pxActionResult)
+        XQueryTree
+        (
+            displayHandle,
+            pxWindow->Info.Handle.WindowID,
+            &windowRoot,
+            &windowParent,
+            &windowChildren,
+            &windowChildrenAmount
+        );
+
+        /* Get parent window attributes */
+        XWindowAttributes xWindowAttributes;
+
+
+        XGetWindowAttributes
+        (
+            displayHandle,
+            windowParent,
+            &xWindowAttributes
+        );
+
+        /* Get the absolute position of the parent window */
+
+        /*
+        XTranslateCoordinates
+        (
+            displayHandle,
+            parent_window,
+            root_window,
+            0,
+            0,
+            &abs_x,
+            &child_return
+        );
+        */
+
+        pxRectangleXYWHI32->X = 0;
+        pxRectangleXYWHI32->Y = 0;
+        pxRectangleXYWHI32->Width = xWindowAttributes.width - xWindowAttributes.x;
+        pxRectangleXYWHI32->Height = xWindowAttributes.height - xWindowAttributes.y;
+
+
+#elif OSWindows
+        RECT rect;
+
+        //const PXBool result = GetWindowRect(pxGUIElement->ID, &rect); // Windows 2000, User32.dll, winuser.h
+        const PXBool resultGetID = GetClientRect(pxWindow->Info.Handle.WindowID, &rect); // Windows 2000, User32.dll, winuser.h
+        const PXActionResult resultGet = PXErrorCurrent(resultGetID);
+
+        if(!resultGetID)
         {
-            position->X = -1;
-            position->Y = -1;
-
-            return pxActionResult;
+            return resultGet;
         }
 
-        position->X = rectangle.left;
-        position->Y = rectangle.top;
-    //   window->Width = rectangle.right - rectangle.left;
-    //   window->Height = rectangle.bottom - rectangle.top;
+        PXRectangleLTRBI32ToXYWHI32((PXRectangleLTRBI32*)&rect, pxRectangleXYWHI32);
+#endif
 
-        return PXActionSuccessful;
 
-#else
-        return PXActionNotSupportedByOperatingSystem;
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            PXNativDrawText,
+            "Size-Parent",
+            "PXID:%-4i X:%-4i Y:%-4i W:%-4i H:%-4i - %s",
+            pxWindow->Info.ID,
+            pxRectangleXYWHI32->X,
+            pxRectangleXYWHI32->Y,
+            pxRectangleXYWHI32->Width,
+            pxRectangleXYWHI32->Height,
+            pxWindow->NameContent
+        );
 #endif
     }
-}
-
-PXActionResult PXAPI PXNativDrawWindowMove(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow, const int x, const int y)
-{
-
 }
 
 PXActionResult PXAPI PXNativDrawWindowResize(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow, const int width, const int height)

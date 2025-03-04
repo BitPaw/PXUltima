@@ -4892,8 +4892,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
                 }
 
 
-                char* shaderErrorLengthData = PXNull;
-                PXNewStackList(char, shaderErrorLengthMaximal, &shaderErrorLengthData, PXNull);
+                char* const shaderErrorLengthData = PXMemoryHeapCallocT(char, shaderErrorLengthMaximal);
 
                 // API* PXOpenGLShaderLogInfoGetFunction)(GLuint shader, GLsizei maxLength, GLsizei* length, char* infoLog);
 
@@ -4913,7 +4912,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
                 );
 #endif
 
-                PXDeleteStackList(char, shaderErrorLengthMaximal, &shaderErrorLengthData, PXNull);
+                PXMemoryHeapFree(PXNull, shaderErrorLengthData);
 
                 break;
             }
@@ -4947,8 +4946,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
 
                 pxOpenGL->Binding.ShaderProgramGetiv(pxShaderProgram->Info.Handle.OpenGLID, GL_INFO_LOG_LENGTH, &shaderErrorLengthMaximal);
 
-                char* shaderErrorLengthData = PXNull;
-                PXNewStackList(char, shaderErrorLengthMaximal, &shaderErrorLengthData, PXNull);
+                char* shaderErrorLengthData = PXMemoryHeapCallocT(char, shaderErrorLengthMaximal);
 
                 // API* PXOpenGLShaderLogInfoGetFunction)(GLuint shader, GLsizei maxLength, GLsizei* length, char* infoLog);
 
@@ -4967,7 +4965,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
                 );
 #endif
 
-                PXDeleteStackList(char, shaderErrorLengthMaximal, &shaderErrorLengthData, PXNull);
+                PXMemoryHeapFree(PXNull, shaderErrorLengthData);
 
                 pxShaderProgram->Info.Flags &= ~PXResourceInfoExist; // Invalidate current shader
             }
@@ -5018,7 +5016,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
 
         // Create space
         pxShaderProgram->VariableListAmount = numberOfUniforms + numberOfAttributes;
-        PXNewListZerod(PXShaderVariable, pxShaderProgram->VariableListAmount, &pxShaderProgram->VariableListData, PXNull);
+        pxShaderProgram->VariableListData = PXMemoryHeapCallocT(PXShaderVariable, pxShaderProgram->VariableListAmount);
 
         PXSize currentIndex = 0;
 
@@ -5242,8 +5240,7 @@ PXActionResult PXAPI PXOpenGLTextureAction(PXOpenGL* const pxOpenGL, PXGraphicTe
         case PXResourceActionCreate:
         {
             // Batch create textures
-            PXInt32U* const openGLTextureIDListData = PXNull;
-            PXNewStackList(PXInt32U, pxGraphicTexturInfo->Amount, &openGLTextureIDListData, PXNull);
+            PXInt32U* const openGLTextureIDListData = PXMemoryHeapCallocT(PXInt32U, pxGraphicTexturInfo->Amount);
 
             pxOpenGL->Binding.TextureCreate(pxGraphicTexturInfo->Amount, openGLTextureIDListData);
 
@@ -5433,7 +5430,7 @@ PXActionResult PXAPI PXOpenGLTextureAction(PXOpenGL* const pxOpenGL, PXGraphicTe
                 }
             }
 
-            PXDeleteStackList(PXInt32U, pxGraphicTexturInfo->Amount, &openGLTextureIDListData, PXNull);
+            PXMemoryHeapFree(PXNull, openGLTextureIDListData);
 
             break;
         }
@@ -5577,9 +5574,6 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, const PXRenderEntity* co
     {
         return;
     }
-
-
-
 
     PXSkyBox* const pxSkyBox = (PXSkyBox*)pxRenderEntity->ObjectReference;
 
@@ -6725,11 +6719,11 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
         void* indexData = pxIndexBuffer->IndexData;
 
         // Copy vertex data
-        PXNewList(PXByte, pxVertexBuffer->VertexDataSize, &pxVertexBuffer->VertexData, &pxVertexBuffer->VertexDataSize);
+        pxVertexBuffer->VertexData = PXMemoryHeapCallocT(PXByte, pxVertexBuffer->VertexDataSize);
         PXMemoryCopy(vertexData, pxVertexBuffer->VertexDataSize, pxVertexBuffer->VertexData, pxVertexBuffer->VertexDataSize);
 
         // Copy index data
-        PXNewList(PXByte, pxIndexBuffer->IndexDataSize, &pxIndexBuffer->IndexData, &pxIndexBuffer->IndexDataSize);
+        pxIndexBuffer->IndexData = PXMemoryHeapCallocT(PXByte, pxIndexBuffer->IndexDataSize);
         PXMemoryCopy(indexData, pxIndexBuffer->IndexDataSize, pxIndexBuffer->IndexData, pxIndexBuffer->IndexDataSize);
 
 #if PXLogEnable
@@ -6914,9 +6908,10 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
 
                     break;
                 }
-
                 default:
-                    break;
+                { 
+                    break; 
+                }
             }
         }
 
@@ -6955,8 +6950,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
             PXMaterialContainer* const pxMaterialContainer = &pxModel->MaterialContaierList[containerID];
 
             PXSize pxTextureListCounter = 0;
-            PXTexture2D** pxTextureList = PXNull;
-            PXNewStackList(PXTexture2D*, pxMaterialContainer->MaterialListAmount, &pxTextureList, PXNull);
+            PXTexture2D** pxTextureList = PXMemoryHeapCallocT(PXTexture2D*, pxMaterialContainer->MaterialListAmount);
 
             for(PXSize materialID = 0; materialID < pxMaterialContainer->MaterialListAmount; ++materialID)
             {
@@ -6979,7 +6973,8 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
 
             PXOpenGLTextureAction(pxOpenGL, &pxGraphicTexturInfo);
 
-            PXDeleteStackList(PXTexture2D*, pxMaterialContainer->MaterialListAmount, &pxTextureList, PXNull);
+
+            PXMemoryHeapFree(PXNull, pxTextureList);
         }
     }
 

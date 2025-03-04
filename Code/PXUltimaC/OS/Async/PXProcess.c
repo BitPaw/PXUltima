@@ -496,7 +496,7 @@ PXActionResult PXAPI PXProcessHandleListAll(PXDebug* const pxDebug, PXProcess* p
 #endif
     }
 
-    PXDeleteStackList(char, sizeAllocated, &memory, PXNull);
+    PXMemoryHeapFree(PXNull, memory);
 
     PXLibraryClose(&pxLibraryNTDLL);
 #endif

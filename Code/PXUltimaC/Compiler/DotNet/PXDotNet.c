@@ -1232,7 +1232,7 @@ PXActionResult PXAPI PXDotNetInitialize(PXDotNet* const pxDotNet, const PXInt32U
 
 
         // Shit solution
-        pxDotNet->CoreCLR.VersionList = PXMemoryCallocT(PXVersion, 10);
+        pxDotNet->CoreCLR.VersionList = PXMemoryHeapCallocT(PXVersion, 10);
 
         do
         {

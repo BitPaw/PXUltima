@@ -2156,9 +2156,8 @@ PXActionResult PXAPI PXGraphicLoadImage(PXGraphic* const pxGraphic, PXImage* con
 
 */
 
+
 #include <assert.h>
-
-
 
 PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResourceCreateInfo* const pxResourceCreateInfo)
 {
@@ -2401,7 +2400,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
 
             // Regsieter texture
             {
-                PXGraphicTexturInfo* pxGraphicTexturInfo = PXMemoryCallocT(PXGraphicTexturInfo, 1);
+                PXGraphicTexturInfo* pxGraphicTexturInfo = PXMemoryHeapCallocT(PXGraphicTexturInfo, 1);
                 pxGraphicTexturInfo->TextureReference = &pxSkyBox->TextureCube;
                 pxGraphicTexturInfo->Amount = 1u;
                 pxGraphicTexturInfo->Type = PXGraphicTextureTypeCubeContainer;
@@ -2459,9 +2458,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
                 PXEngineResourceCreate(pxEngine, &pxResourceCreateInfoSub[1]);
             }
 
-            PXMaterial* pxMaterial = 0;
-
-            PXNewZerod(PXMaterial, &pxMaterial);
+            PXMaterial* pxMaterial = PXMemoryHeapCallocT(PXMaterial, 1);
 
             pxMaterial->DiffuseTexture = pxSprite->Texture;
 
@@ -2722,7 +2719,7 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEn
 
             if(material == PXNull)
             {
-                PXNewZerod(PXMaterial, &material);
+                material = PXMemoryHeapCallocT(PXMaterial, 1);
                 //PXNewZerod(PXMaterialContainer, &pxHitBox->Model->MaterialContaierList);
 
                 pxHitBox->Model->Mesh.IndexBuffer.SegmentPrime.DataRange = 1;
@@ -3347,9 +3344,7 @@ void PXAPI PXEngineResourceDefaultElements(PXEngine* const pxEngine)
         PXEngineResourceCreate(pxEngine, &pxResourceCreateInfo);
     }
 
-    PXMaterial* material;
-
-    PXNew(PXMaterial, &material);
+    PXMaterial* material = PXMemoryHeapCallocT(PXMaterial, 1);
 
     pxEngine->ResourceManager->ModelFailback->Mesh.IndexBuffer.SegmentPrime.Material = material;
     material->DiffuseTexture = pxEngine->ResourceManager->Texture2DFailBack;

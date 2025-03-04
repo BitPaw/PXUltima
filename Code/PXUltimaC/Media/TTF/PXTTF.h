@@ -201,7 +201,6 @@ typedef struct PXTTFCharacterMapping_
 {
     PXInt16U Version; // Table version number(0).
     PXInt16U NumberOfTables; // Number of encoding tables that follow.
-    PXSize EncodingRecordListSize;
     PXEncodingRecord* EncodingRecordList;
 }
 PXTTFCharacterMapping;

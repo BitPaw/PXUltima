@@ -686,12 +686,10 @@ PXActionResult PXAPI PXTTFLoadFromFile(PXResourceTransphereInfo* const pxResourc
             PXFileReadI16UE(pxResourceLoadInfo->FileReference, &ttf->CharacterMapping.Version, PXEndianBig); // Expect 0
             PXFileReadI16UE(pxResourceLoadInfo->FileReference, &ttf->CharacterMapping.NumberOfTables, PXEndianBig);
 
-            PXNewList
+            ttf->CharacterMapping.EncodingRecordList = PXMemoryHeapCallocT
             (
                 PXEncodingRecord,
-                ttf->CharacterMapping.NumberOfTables,
-                &ttf->CharacterMapping.EncodingRecordList,
-                &ttf->CharacterMapping.EncodingRecordListSize
+                ttf->CharacterMapping.NumberOfTables
             );
 
             for (PXSize i = 0; i < ttf->CharacterMapping.NumberOfTables; i++)

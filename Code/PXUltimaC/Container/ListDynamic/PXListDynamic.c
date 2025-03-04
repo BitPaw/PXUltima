@@ -22,7 +22,7 @@ void* PXAPI PXListDynamicAdd(PXListDynamic* const pxListDynamic, const void* con
             {
                 // Reallocate memory now
 
-                pxListDynamic->DataAdress = (char*)PXMemoryRealloc(pxListDynamic->DataAdress, requiredSize);
+                pxListDynamic->DataAdress = (char*)PXMemoryHeapRealloc(PXNull, pxListDynamic->DataAdress, requiredSize);
                 pxListDynamic->DataSizeAllocated = requiredSize + pxListDynamic->DataSizeUsed;
             }
         }

@@ -1339,8 +1339,8 @@ PXActionResult PXAPI PXCLoadFromFile(PXResourceTransphereInfo* const pxResourceL
 
         PXFilePathSplitt(&filePath, &pxFilePathStructure);
 
-        PXNewList(char, pxFilePathStructure.FileName.SizeUsed, &pxCodeDocumentElementRoot->NameAdress, &pxCodeDocumentElementRoot->NameSize);
-        PXTextCopyA(pxFilePathStructure.FileName.TextA, pxFilePathStructure.FileName.SizeUsed, pxCodeDocumentElementRoot->NameAdress, pxCodeDocumentElementRoot->NameSize);
+        pxCodeDocumentElementRoot->NameAdress = PXMemoryHeapCallocT(char, pxFilePathStructure.FileName.SizeUsed);
+        pxCodeDocumentElementRoot->NameSize += PXTextCopyA(pxFilePathStructure.FileName.TextA, pxFilePathStructure.FileName.SizeUsed, pxCodeDocumentElementRoot->NameAdress, pxCodeDocumentElementRoot->NameSize);
 
         PXCNameCleave(&pxCompiler, pxCodeDocumentElementRoot);
 

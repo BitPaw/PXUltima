@@ -421,7 +421,8 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
     // Parse SectionTable
 
 
-    PXNewList(PXSectionTable, pxCOFF->Header.NumberOfSections, &pxCOFF->SectionTableList, &pxCOFF->SectionTableListSize);
+    pxCOFF->SectionTableList = PXMemoryHeapCallocT(PXSectionTable, pxCOFF->Header.NumberOfSections);
+    pxCOFF->SectionTableListSize = pxCOFF->Header.NumberOfSections;
 
     for(PXInt16U sectionID = 0; sectionID < pxCOFF->Header.NumberOfSections; ++sectionID)
     {

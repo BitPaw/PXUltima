@@ -762,7 +762,7 @@ PXActionResult PXAPI PXProcessorTemperature(PXProcessorTemperatureInfo* const px
 
         if(requireResize)
         {
-            pxProcessorTemperatureInfo->ListData = PXMemoryReallocT(PXInt32S, pxProcessorTemperatureInfo->ListData, pxProcessorTemperatureInfo->ListAmount + 1);
+            pxProcessorTemperatureInfo->ListData = PXMemoryHeapReallocT(PXInt32S, pxProcessorTemperatureInfo->ListData, pxProcessorTemperatureInfo->ListAmount + 1);
         }
 
         fscanf(fileHandle, "%d", &pxProcessorTemperatureInfo->ListData[pxProcessorTemperatureInfo->ListAmount]);

@@ -453,7 +453,8 @@ PXActionResult PXAPI PXJPEGLoadFromFile(PXResourceTransphereInfo* const pxResour
                     {
                         const PXSize size = jpeg->FileInfo.ThumbnailX * jpeg->FileInfo.ThumbnailY * 3u;
 
-                        PXNewList(PXByte, size, &jpeg->FileInfo.ThumbnailData, &jpeg->FileInfo.ThumbnailDataSize);
+                        jpeg->FileInfo.ThumbnailDataSize = size;
+                        jpeg->FileInfo.ThumbnailData = PXMemoryHeapCallocT(PXByte, size);
 
                         PXFileReadB(pxResourceLoadInfo->FileReference, jpeg->FileInfo.ThumbnailData, jpeg->FileInfo.ThumbnailDataSize);
                     }
@@ -463,7 +464,8 @@ PXActionResult PXAPI PXJPEGLoadFromFile(PXResourceTransphereInfo* const pxResour
             }
             case PXJPEGChunckComment:
             {
-                PXNewList(char, pxJPEGChunkHeaderBindingData.ChunkSize, &jpeg->Comment, &jpeg->CommentSize);
+                jpeg->CommentSize = pxJPEGChunkHeaderBindingData.ChunkSize;
+                jpeg->Comment = PXMemoryHeapCallocT(char, jpeg->CommentSize);
 
                 PXFileReadB(pxResourceLoadInfo->FileReference, jpeg->Comment, pxJPEGChunkHeaderBindingData.ChunkSize);
 

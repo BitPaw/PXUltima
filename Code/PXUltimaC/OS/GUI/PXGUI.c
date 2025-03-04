@@ -2527,6 +2527,12 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
     pxUIElementPositionCalulcateInfo.WindowWidth = pxWindowSizeInfo.Data.Size.Width;
     pxUIElementPositionCalulcateInfo.WindowHeight = pxWindowSizeInfo.Data.Size.Height;
 
+    if(pxUIElementPositionCalulcateInfo.WindowWidth == 0)
+    {
+        pxUIElementPositionCalulcateInfo.WindowWidth = 400;
+        pxUIElementPositionCalulcateInfo.WindowHeight = 500;
+    }
+
     PXUIElementPositionCalculcate(pxWindowCurrent, &pxUIElementPositionCalulcateInfo);
 
 
@@ -2541,7 +2547,7 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
             PXLoggingInfo,
             PXGUIName,
             "Window",
-            "Attemtinjg to create window with parent..\n"
+            "Attempting to create window with parent..\n"
             "%10s - PX-ID:%i, X:%4i Y:%4i W:%4i H:%4i, Name:%s, NEW\n"
             "%10s - PX-ID:%i, X:%4i Y:%4i W:%4i H:%4i, Name:%s, HANDLE:%s",
             "Self",
@@ -2587,7 +2593,7 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
             PXLoggingInfo,
             PXGUIName,
             "Window",
-            "Attemtinjg to create global window..\n"
+            "Attempting to create global window..\n"
             "%10s PX-ID:%i, X:%4i Y:%4i W:%4i H:%4i, Name:%s",
             "",
             pxWindowCurrent->Info.ID,
@@ -3077,10 +3083,10 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
         {
             if(1)
             {
-                #if OSWindows
+#if OSWindows
                 pxGUIElementCreateInfo->WindowsClassName = WC_STATIC;
                 pxGUIElementCreateInfo->DrawFunctionEngine = PXWindowDrawCustomHeader;
-                #endif // OSWindows
+#endif
 
                 pxWindowCurrent->Info.Behaviour &= ~PXResourceInfoUseByMask;
                 pxWindowCurrent->Info.Behaviour |= PXResourceInfoUseByEngine;
@@ -3511,14 +3517,14 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
         {
             PXWindowMenuItemList* const menuItemListInput = &pxGUIElementCreateInfo->Data.MenuItem;
 
-            PXWindowExtendedMenuItem* menuItemListOut = PXMemoryCallocT(PXWindowExtendedMenuItem, 1);
+            PXWindowExtendedMenuItem* menuItemListOut = PXMemoryHeapCallocT(PXWindowExtendedMenuItem, 1);
 
             pxWindowCurrent->ExtendedData = menuItemListOut;
 
             // setup extended data
             {
                 menuItemListOut->MenuItemAmount = menuItemListInput->MenuItemInfoListAmount;
-                menuItemListOut->MenuItemList = PXMemoryCallocT(PXWindowMenuItem, menuItemListInput->MenuItemInfoListAmount);
+                menuItemListOut->MenuItemList = PXMemoryHeapCallocT(PXWindowMenuItem, menuItemListInput->MenuItemInfoListAmount);
 
                 for(PXSize i = 0; i < menuItemListInput->MenuItemInfoListAmount; ++i)
                 {
@@ -3628,7 +3634,7 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
         }
         case PXUIElementTypeFileDirectyView:
         {
-            PXDirectorySearchCache* pxDirectorySearchCache = PXMemoryCallocT(PXDirectorySearchCache, 1);
+            PXDirectorySearchCache* pxDirectorySearchCache = PXMemoryHeapCallocT(PXDirectorySearchCache, 1);
 
             pxWindowCurrent->ExtendedData = pxDirectorySearchCache;
 
@@ -3802,7 +3808,7 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
         }
         case PXUIElementTypeResourceManger:
         {
-            pxWindowCurrent->ExtendedData = PXMemoryCallocT(PXWindowExtendedBehaviourResourceView, 1);
+            pxWindowCurrent->ExtendedData = PXMemoryHeapCallocT(PXWindowExtendedBehaviourResourceView, 1);
 
 
 
@@ -4041,7 +4047,7 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
 
 
             // Create space for extended data
-            PXWindowExtendedBehaviourTab* pxWindowExtendedBehaviourTab = PXMemoryCallocT(PXWindowExtendedBehaviourTab, 1);
+            PXWindowExtendedBehaviourTab* pxWindowExtendedBehaviourTab = PXMemoryHeapCallocT(PXWindowExtendedBehaviourTab, 1);
             pxWindowCurrent->ExtendedData = pxWindowExtendedBehaviourTab;
 
             // Fill extended data
@@ -4049,119 +4055,130 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
             pxWindowExtendedBehaviourTab->TABPageAmount = pxGUIElementCreateInfo->Data.TabPage.TabPageSingleInfoAmount;
             
             // NO!! NO ALLOC HERE
-            //pxWindowExtendedBehaviourTab->TABPageList = PXMemoryCallocT(PXWindow, pxGUIElementCreateInfo->Data.TabPage.TabPageSingleInfoAmount);
+            //pxWindowExtendedBehaviourTab->TABPageList = PXMemoryHeapCallocT(PXWindow, pxGUIElementCreateInfo->Data.TabPage.TabPageSingleInfoAmount);
 
 
-            PXIcon* pxIcon = PXMemoryCallocT(PXIcon, 1);
+            PXIcon* pxIcon = PXMemoryHeapCallocT(PXIcon, 1);
 
             PXNativDrawIconLoad(&pxGUISystem->NativDraw, pxIcon, 0);
 
 
+            PXResourceCreateInfo pxResourceCreateInfo;
+            PXClear(PXResourceCreateInfo, &pxResourceCreateInfo);
 
             // Create
             {
                 // Create a panel for each page, to contain all elements, so that we can hide and show all at once
-                PXResourceCreateInfo pxResourceCreateInfo;
-                PXClear(PXResourceCreateInfo, &pxResourceCreateInfo);
                 pxResourceCreateInfo.Type = PXResourceTypeGUIElement;
                 pxResourceCreateInfo.ObjectAmount = pxWindowExtendedBehaviourTab->TABPageAmount;
                 pxResourceCreateInfo.ObjectReference = &pxWindowExtendedBehaviourTab->TABPageList;
-                pxResourceCreateInfo.Parent = pxWindowCurrent;
+                //pxResourceCreateInfo.Parent = pxWindowCurrent;
                 pxResourceCreateInfo.UIElement.Type = PXUIElementTypePanel;
                 pxResourceCreateInfo.UIElement.Name = "TAB-Page";
                 pxResourceCreateInfo.UIElement.Invisible = PXFalse;
-               // pxResourceCreateInfo.UIElement.WindowCurrent = pxGUIElementCreateInfo->WindowCurrent;
+                pxResourceCreateInfo.UIElement.WindowCurrent = pxWindowCurrent;
                 pxResourceCreateInfo.UIElement.WindowParent = pxWindowCurrent;
-                pxResourceCreateInfo.UIElement.BehaviourFlags = PXWindowBehaviourDefaultDecorative | PXWindowAllignLeft;
-                pxResourceCreateInfo.UIElement.Position.Margin.Left = 0.02;
-                pxResourceCreateInfo.UIElement.Position.Margin.Top = 0.4;
-                pxResourceCreateInfo.UIElement.Position.Margin.Right = 0.02;
-                pxResourceCreateInfo.UIElement.Position.Margin.Bottom = 0.02;
+                pxResourceCreateInfo.UIElement.BehaviourFlags = PXWindowBehaviourDefaultDecorative | PXWindowAllignCenter;
+                pxResourceCreateInfo.UIElement.Position.Margin.Left = 0.002;
+                pxResourceCreateInfo.UIElement.Position.Margin.Top = 0.002;
+                pxResourceCreateInfo.UIElement.Position.Margin.Right = 0.002;
+                pxResourceCreateInfo.UIElement.Position.Margin.Bottom = 0.002;
 
                 PXResourceManagerAdd(&pxResourceCreateInfo);
+                //PXWindowCreate(pxGUISystem, &pxResourceCreateInfo, 1);
             }
 
 
 
             for(PXSize i = 0; i < pxUIElementTabPageInfo->TabPageSingleInfoAmount; ++i)
             {
-                PXWindow* const pxWindow = &pxWindowExtendedBehaviourTab->TABPageList[i];
+                PXWindow* const pxWindowSub = &pxWindowExtendedBehaviourTab->TABPageList[i];
+
+                pxResourceCreateInfo.ObjectAmount = 1;
+                pxResourceCreateInfo.ObjectReference = &pxWindowSub;
+                pxResourceCreateInfo.Parent = pxWindowCurrent;
+                //pxResourceCreateInfo.UIElement.WindowCurrent = pxWindowSub;
+                pxResourceCreateInfo.UIElement.WindowParent = pxWindowCurrent;
+
+                PXWindowCreate(pxGUISystem, &pxResourceCreateInfo, 1);
 
                 PXUIElementTabPageSingleInfo* const pxUIElementTabPageSingleInfo = &pxUIElementTabPageInfo->TabPageSingleInfoList[i];
-                *pxUIElementTabPageSingleInfo->UIElement = pxWindow; // Store reference to have it for the caller
+                *pxUIElementTabPageSingleInfo->UIElement = pxWindowSub; // Store reference to have it for the caller
 
-                pxWindow->NameContent = pxUIElementTabPageSingleInfo->PageName;
-                pxWindow->NameContentSize = PXTextLengthA(pxWindow->NameContent, PXTextLengthUnkown);
+                pxWindowSub->NameContent = pxUIElementTabPageSingleInfo->PageName;
+                pxWindowSub->NameContentSize = PXTextLengthA(pxWindowSub->NameContent, PXTextLengthUnkown);
            
                 if(pxUIElementTabPageSingleInfo->TABIcon)
                 {
-                    pxWindow->Icon = pxUIElementTabPageSingleInfo->TABIcon;
+                    pxWindowSub->Icon = pxUIElementTabPageSingleInfo->TABIcon;
                 }
                 else
                 {
-                    pxWindow->Icon = pxIcon;
+                    pxWindowSub->Icon = pxIcon;
                 }
 
-                pxWindow->Info.Hierarchy.Parrent = pxWindowCurrent;
-                pxWindow->Type = pxUIElementTabPageSingleInfo->UIElementType;
-                pxWindow->DrawFunction = PXWindowDrawCustomFailback;
+                pxWindowSub->Info.Hierarchy.Parrent = pxWindowCurrent;
+                pxWindowSub->Type = pxUIElementTabPageSingleInfo->UIElementType;
+    
 
                 switch(pxUIElementTabPageSingleInfo->UIElementType)
                 {
                     case PXUIElementTypeCode:
                     {
-                        pxWindow->DrawFunction = PXWindowDrawCustomCode;
+                        pxWindowSub->DrawFunction = PXWindowDrawCustomCode;
                         break;
                     }
                     case PXUIElementTypeHexEditor:
                     {
-                        pxWindow->DrawFunction = PXWindowDrawCustomHexEditor;
+                        pxWindowSub->DrawFunction = PXWindowDrawCustomHexEditor;
                         break;
                     }
                     case PXUIElementTypeGraphBehaviour:
                     {
-                        pxWindow->DrawFunction = PXWindowDrawCustomGraphBehaviour;
+                        pxWindowSub->DrawFunction = PXWindowDrawCustomGraphBehaviour;
                         break;
                     }
                     case PXUIElementTypeGraphTime:
                     {
-                       // pxWindow->DrawFunction = PXWindowDrawCustomGraphTime;
+                        pxWindowSub->DrawFunction = PXWindowDrawCustomGraphTime;
                         break;
                     }
                     case PXUIElementTypeSoundPlayerMixer:
                     {
-                       // pxWindow->DrawFunction = PXWindowDrawCustomSoundPlayerMixer;
+                        pxWindowSub->DrawFunction = PXWindowDrawCustomSoundPlayerMixer;
                         break;
                     }
                     case PXUIElementTypeVideoCutter:
                     {
-                        // pxGUIElementCreateInfo->DrawFunctionEngine = PXWindowDrawCustomVideoCutter;
+                        pxWindowSub->DrawFunction = PXWindowDrawCustomVideoCutter;
                         break;
                     }
                     case PXUIElementTypeDataBaseManager:
                     {
-                        // pxGUIElementCreateInfo->DrawFunctionEngine = PXWindowDrawCustomDataBaseManager;
+                        pxWindowSub->DrawFunction = PXWindowDrawCustomDataBaseManager;
                         break;
                     }
                     case PXUIElementTypeNetworkTester:
                     {
-                        // pxGUIElementCreateInfo->DrawFunctionEngine = PXWindowDrawCustomNetworkTester;
+                        pxWindowSub->DrawFunction = PXWindowDrawCustomNetworkTester;
                         break;
                     }
                     case PXUIElementTypeInputView:
                     {
-                        // pxGUIElementCreateInfo->DrawFunctionEngine = PXWindowDrawCustomInputView;
+                        pxWindowSub->DrawFunction = PXWindowDrawCustomInputView;
                         break;
                     }
                     case PXUIElementTypeHardwareInfo:
                     {
-                        //pxGUIElementCreateInfo->DrawFunctionEngine = PXWindowDrawCustomHardwareInfo;
+                        pxWindowSub->DrawFunction = PXWindowDrawCustomHardwareInfo;
                         break;
                     }
 
                     default:
                         break;
                 }
+
+                pxWindowSub->DrawFunction = PXWindowDrawCustomFailback;
 
 
 
@@ -4374,7 +4391,7 @@ PXActionResult PXAPI PXWindowFetch(PXGUISystem* const pxGUISystem, PXWindowPrope
             }
             case PXUIElementPropertySize:
             {
-                PXNativDrawRectangleParent(&pxGUISystem->NativDraw, pxGUIElement, &pxGUIElementUpdateInfo->Data.Size);
+                PXNativDrawWindowXYWH(&pxGUISystem->NativDraw, pxGUIElement, &pxGUIElementUpdateInfo->Data.Size, PXFalse);
                 break;
             }
 

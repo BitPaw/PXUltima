@@ -167,7 +167,7 @@ PXActionResult PXAPI PXBitmapPeekFromFile(PXResourceTransphereInfo* const pxReso
 {
     PXImage* const pxImage = (PXImage*)pxResourceTransphereInfo->ResourceTarget;
 
-    PXBitmap* bmp = PXMemoryCallocT(PXBitmap, 1);
+    PXBitmap* bmp = PXMemoryHeapCallocT(PXBitmap, 1);
 
     pxResourceTransphereInfo->ResourceSource = bmp;
 
@@ -428,7 +428,7 @@ PXActionResult PXAPI PXBitmapSaveToFile(PXResourceTransphereInfo* const pxResour
 
 void PXAPI PXBitmapDestruct(PXBitmap* const bmp)
 {
-    PXDeleteList(PXByte, bmp->PixelDataSize, &bmp->PixelData, &bmp->PixelDataSize);
+    PXMemoryHeapFree(PXNull, bmp->PixelData);
 }
 
 void PXBitmapImageDataLayoutCalculate(PXBitmapImageDataLayout* const bmpImageDataLayout, const PXSize width, const PXSize height, const PXSize bbp)

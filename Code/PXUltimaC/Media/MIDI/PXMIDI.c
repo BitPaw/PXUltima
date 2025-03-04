@@ -7,8 +7,7 @@ const static char PXMIDITrackChunkID[4] = { 'M','T','r','k' };
 
 PXActionResult PXAPI PXMIDILoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
-    PXMIDI* const pxMIDI = PXNull;
-    PXNew(PXMIDI,&pxMIDI);
+    PXMIDI* const pxMIDI = PXMemoryHeapCallocT(PXMIDI, 1);
 
     // Parse Chunk header
     {
@@ -39,7 +38,8 @@ PXActionResult PXAPI PXMIDILoadFromFile(PXResourceTransphereInfo* const pxResour
         return PXActionSuccessful;
     }
 
-    PXNewList(PXMIDITrack, pxMIDI->TrackListAmount, &pxMIDI->TrackList, &pxMIDI->TrackListSize);
+    pxMIDI->TrackListSize = pxMIDI->TrackListAmount;
+    pxMIDI->TrackList = PXMemoryHeapCallocT(PXMIDITrack, pxMIDI->TrackListAmount);
 
     // Parse Track Header
     for (PXInt16U i = 0; i < pxMIDI->TrackListSize; ++i)
@@ -59,7 +59,8 @@ PXActionResult PXAPI PXMIDILoadFromFile(PXResourceTransphereInfo* const pxResour
         PXFileReadI32UE(pxResourceLoadInfo->FileReference, &chunkLength, PXEndianBig);
 
         track->ID = i;
-        PXNewList(PXByte, chunkLength, &track->EventData, &track->EventDataSize);
+        track->EventDataSize = chunkLength;
+        track->EventData = PXMemoryHeapCallocT(PXByte, chunkLength);
 
         PXFileReadB(pxResourceLoadInfo->FileReference, track->EventData, chunkLength);
     }

@@ -44,6 +44,9 @@ BOOL CALLBACK EnumSymProc(PSYMBOL_INFO pSymInfo, ULONG SymbolSize, PVOID UserCon
 
 #endif
 
+
+const char PXLibraryText[] = "Library";
+
 // SymGetModuleInfo64
 
 
@@ -112,7 +115,7 @@ PXActionResult PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* con
             PXLogPrint
             (
                 PXLoggingAllocation,
-                "Library",
+                PXLibraryText,
                 "Open",
                 "<%s>",
                 filePath->TextA
@@ -141,7 +144,7 @@ PXActionResult PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* con
             PXLogPrint
             (
                 PXLoggingAllocation,
-                "Library",
+                PXLibraryText,
                 "Open",
                 "<%ls>",
                 filePath->TextA
@@ -172,7 +175,7 @@ PXActionResult PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* con
         PXLogPrint
         (
             PXLoggingError,
-            "Library",
+            PXLibraryText,
             "Open",
             "Can't be opened <%s>",
             filePath->TextA
@@ -183,14 +186,19 @@ PXActionResult PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* con
     }
 
 #if PXLogEnable
+
+    char libraryPathFull[PXPathSizeMax];
+
+    PXDebugModuleNameGet(pxLibrary->ID, libraryPathFull, PXPathSizeMax, PXNull, PXDebugModuleNameFull);
+
     PXLogPrint
     (
         PXLoggingInfo,
-        "Library",
+        PXLibraryText,
         "Open",
-        "Successful <%s> -> <0x%p>",
-        filePath->TextA,
-        pxLibrary->ID
+        "<%p> - <%s>",
+        pxLibrary->ID,
+        libraryPathFull
     );
 #endif
 
@@ -216,14 +224,14 @@ PXActionResult PXAPI PXLibraryOpenW(PXLibrary* const pxLibrary, const wchar_t* c
 PXActionResult PXAPI PXLibraryClose(PXLibrary* const pxLibrary)
 {
 #if PXLogEnable
-    char moduleName[128];
+    char moduleName[97];
 
-    PXDebugModuleHandleToName(pxLibrary->ID, moduleName);
+    PXDebugModuleNameGet(pxLibrary->ID, moduleName, 64, PXNull, PXDebugModuleNameShort);
 
     PXLogPrint
     (
         PXLoggingDeallocation,
-        "Library",
+        PXLibraryText,
         "Release",
         "%s",
         moduleName
@@ -255,7 +263,7 @@ PXBool PXAPI PXLibraryGetSymbolBinding(PXLibrary* const pxLibrary, void** const 
     PXLogPrint
     (
         PXLoggingInfo,
-        "Library",
+        PXLibraryText,
         "Biding",
         "Load for <%p>...",
         pxLibrary->ID
@@ -286,7 +294,7 @@ PXBool PXAPI PXLibraryGetSymbolBinding(PXLibrary* const pxLibrary, void** const 
     PXLogPrint
     (
         PXLoggingInfo,
-        "Library",
+        PXLibraryText,
         "Biding",
         "Done for <%p>...",
         pxLibrary->ID
@@ -302,7 +310,7 @@ PXBool PXAPI PXLibraryGetSymbolListA(PXLibrary* const pxLibrary, PXLibraryFuntio
     PXLogPrint
     (
         PXLoggingAllocation,
-        "Library",
+        PXLibraryText,
         "Load",
         "Symbol batch (%i)",
         amount
@@ -321,6 +329,12 @@ PXBool PXAPI PXLibraryGetSymbolListA(PXLibrary* const pxLibrary, PXLibraryFuntio
 
 PXBool PXAPI PXLibraryGetSymbolA(PXLibrary* const pxLibrary, void** const libraryFunction, const char* const symbolName, const PXBool isImportant)
 {
+#if PXLogEnable
+    char libraryName[64];
+
+    PXDebugModuleNameGet(pxLibrary->ID, libraryName, 64, PXNull, PXDebugModuleNameShort);
+#endif
+
 #if OSUnix
     *libraryFunction = (void*)dlsym(pxLibrary->ID, symbolName);
     //const char* errorString = dlerror();
@@ -339,9 +353,10 @@ PXBool PXAPI PXLibraryGetSymbolA(PXLibrary* const pxLibrary, void** const librar
                 PXLogPrint
                 (
                     PXLoggingWarning,
-                    "Library",
+                    PXLibraryText,
                     "Symbol-Fetch",
-                    "Missing <%s>",
+                    "<%s::%s()> does not exist!",
+                    libraryName,
                     symbolName
                 );
 #endif
@@ -355,12 +370,12 @@ PXBool PXAPI PXLibraryGetSymbolA(PXLibrary* const pxLibrary, void** const librar
     PXLogPrint
     (
         PXLoggingInfo,
-        "Library",
+        PXLibraryText,
         "Symbol-Fetch",
-        "<%p>::<%s>::<%p>",
-        pxLibrary->ID,
-        symbolName,
-        *libraryFunction
+        "<%p> - <%s::%s>",
+        *libraryFunction,
+        libraryName,
+        symbolName
     );
 #endif
 
@@ -370,62 +385,4 @@ PXBool PXAPI PXLibraryGetSymbolA(PXLibrary* const pxLibrary, void** const librar
 PXBool PXAPI PXLibraryGetSymbol(PXLibrary* const pxLibrary, void** const libraryFunction, const PXText* symbolName)
 {
     return PXLibraryGetSymbolA(pxLibrary, libraryFunction, symbolName->TextA, PXTrue);
-}
-
-PXActionResult PXAPI PXLibraryName(PXLibrary* const pxLibrary, PXText* const libraryName)
-{
-    PXMemoryClear(libraryName->TextA, libraryName->SizeAllocated);
-
-    switch(libraryName->Format)
-    {
-        case TextFormatUTF8:
-        case TextFormatASCII:
-        {
-#if OSUnix
-            return PXActionRefusedNotImplemented;
-
-#elif OSWindows
-            libraryName->SizeUsed = GetModuleFileNameExA // Windows XP, Kernel32.dll, psapi.h
-            (
-                pxLibrary->ProcessHandle,
-                pxLibrary->ID,
-                libraryName->TextA,
-                libraryName->SizeAllocated
-            );
-            const PXActionResult pxActionResult = PXErrorCurrent(0 == libraryName->SizeUsed);
-
-            if(PXActionSuccessful != pxActionResult)
-            {
-                return pxActionResult;
-            }
-#endif
-
-            break;
-        }
-
-        case TextFormatUNICODE:
-        {
-#if OSUnix
-            return PXActionRefusedNotImplemented;
-
-#elif OSWindows
-            libraryName->SizeUsed = GetModuleFileNameExW // Windows XP, Kernel32.dll, psapi.h
-            (
-                pxLibrary->ProcessHandle,
-                pxLibrary->ID,
-                libraryName->TextW,
-                libraryName->SizeAllocated
-            );
-            const PXActionResult pxActionResult = PXErrorCurrent(0 == libraryName->SizeUsed);
-
-            if(PXActionSuccessful != pxActionResult)
-            {
-                return pxActionResult;
-            }
-#endif
-            break;
-        }
-    }
-
-    return PXActionSuccessful;
 }

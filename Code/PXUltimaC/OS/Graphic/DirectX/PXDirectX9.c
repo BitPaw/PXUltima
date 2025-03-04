@@ -644,9 +644,10 @@ PXActionResult PXAPI PXDirectX9ShaderProgramCreate(PXDirectX9* const pxDirectX9,
                     //if(isInvalidSize)
                     //    return false;
 
+
                     // Read constants
                     pxShader->VariableListAmount = header->Constants;
-                    PXNewList(PXShaderVariable, header->Constants, &pxShader->VariableListData, PXNull);
+                    pxShader->VariableListData = PXMemoryHeapCallocT(PXShaderVariable, header->Constants);
 
                     const CTInfo* info = (CTInfo*)(ctab + header->ConstantInfo);
 

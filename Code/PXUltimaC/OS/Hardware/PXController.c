@@ -54,7 +54,7 @@ void PXAPI PXControllerSystemInitilize(PXControllerSystem* const pxControllerSys
 
 void PXAPI PXControllerSystemShutdown(PXControllerSystem* const pxControllerSystem)
 {
-    PXDeleteList(PXController, pxControllerSystem->DeviceListAmount, &pxControllerSystem->DeviceListData, PXNull);
+    PXMemoryHeapFree(PXNull, pxControllerSystem->DeviceListData);
 
     PXLibraryClose(&pxControllerSystem->InputLibrary);
 
@@ -74,7 +74,7 @@ PXActionResult PXAPI PXControllerSystemDevicesListRefresh(PXControllerSystem* co
         //pxControllerSystem->DeviceListAmount = pxjoyGetNumDevs();
     }
 
-    PXNewListZerod(PXController, pxControllerSystem->DeviceListAmount, &pxControllerSystem->DeviceListData, PXNull);
+    pxControllerSystem->DeviceListData = PXMemoryHeapCallocT(PXController, pxControllerSystem->DeviceListAmount);
 
     // Get devices
     {

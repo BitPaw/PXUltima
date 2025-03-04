@@ -664,7 +664,7 @@ PXActionResult PXAPI PXResourceCreateShaderProgram(PXResourceCreateInfo* const p
 #if 0
     // Create job to register shader, register might need to be sync. 
     {
-        PXResourceCreateInfo* pxResourceCreateInfoASYNC = PXMemoryCallocT(PXResourceCreateInfo, 1);
+        PXResourceCreateInfo* pxResourceCreateInfoASYNC = PXMemoryHeapCallocT(PXResourceCreateInfo, 1);
         PXCopy(PXResourceCreateInfo, pxResourceCreateInfo, pxResourceCreateInfoASYNC);
         pxResourceCreateInfoASYNC->Flags |= PXResourceCreateBehaviourIsASYNCCall;
 
@@ -856,7 +856,7 @@ PXActionResult PXAPI PXResourceCreateIconAtlas(PXResourceCreateInfo* const pxRes
 
     // Preallocate icons
     pxIconAtlas->IconListAmount = pxIconAtlasCreateInfo->CellAmountTotal;
-    pxIconAtlas->IconList = PXMemoryCallocT(PXIcon, pxIconAtlasCreateInfo->CellAmountTotal);
+    pxIconAtlas->IconList = PXMemoryHeapCallocT(PXIcon, pxIconAtlasCreateInfo->CellAmountTotal);
 
 
 #if PXLogEnable
@@ -1096,8 +1096,11 @@ PXActionResult PXAPI PXResourceCreateModel(PXResourceCreateInfo* const pxResourc
                     pxIndexBuffer->IndexData = 0;
                     pxIndexBuffer->IndexDataSize = 0;
 
-                    PXNewList(PXByte, pxModelCreateInfo->VertexBuffer.VertexDataSize, &pxModel->Mesh.VertexBuffer.VertexData, &pxModel->Mesh.VertexBuffer.VertexDataSize);
-                    PXNewList(PXByte, pxModelCreateInfo->IndexBuffer.IndexDataSize, &pxModel->Mesh.IndexBuffer.IndexData, &pxModel->Mesh.IndexBuffer.IndexDataSize);
+                    pxModel->Mesh.VertexBuffer.VertexDataSize = pxModelCreateInfo->VertexBuffer.VertexDataSize;
+                    pxModel->Mesh.VertexBuffer.VertexData = PXMemoryHeapCallocT(PXByte, pxModelCreateInfo->VertexBuffer.VertexDataSize, &pxModel->Mesh.VertexBuffer.VertexData, &pxModel->Mesh.VertexBuffer.VertexDataSize);
+                  
+                    pxModel->Mesh.IndexBuffer.IndexDataSize = pxModelCreateInfo->IndexBuffer.IndexDataSize;
+                    pxModel->Mesh.IndexBuffer.IndexData = PXMemoryHeapCallocT(PXByte, pxModelCreateInfo->IndexBuffer.IndexDataSize, &pxModel->Mesh.IndexBuffer.IndexData, &pxModel->Mesh.IndexBuffer.IndexDataSize);
 
                     PXCopyList
                     (
@@ -1183,7 +1186,9 @@ PXActionResult PXAPI PXResourceCreateModel(PXResourceCreateInfo* const pxResourc
                 int segmentAmount = 16;
 
                 pxVertexBuffer->Format = PXVertexBufferFormatXYFloat;
-                PXNewList(float, segmentAmount * 2, &pxVertexBuffer->VertexData, &pxVertexBuffer->VertexDataSize);
+                pxVertexBuffer->VertexDataSize = segmentAmount * 2;
+                pxVertexBuffer->VertexData = PXMemoryHeapCallocT(float, pxVertexBuffer->VertexDataSize);
+
                 float* vertexData = (float*)pxVertexBuffer->VertexData;
 
                 for(PXSize i = 0; i < segmentAmount; ++i)
@@ -1455,7 +1460,7 @@ PXActionResult PXAPI PXResourceCreateSpriteAnimator(PXResourceCreateInfo* const 
     pxSpriteAnimator->RateUpdate = pxSpriteAnimatorInfo->UpdateRate;
     pxSpriteAnimator->TimeStampAmount = pxSpriteAnimatorInfo->TimeStampAmount;
 
-    PXNewList(PXSpriteAnimatorTimeStamp, pxSpriteAnimatorInfo->TimeStampAmount, &pxSpriteAnimator->TimeStampList, PXNull);
+    pxSpriteAnimator->TimeStampList = PXMemoryHeapCallocT(PXSpriteAnimatorTimeStamp, pxSpriteAnimatorInfo->TimeStampAmount);
     PXCopyList(PXSpriteAnimatorTimeStamp, pxSpriteAnimatorInfo->TimeStampAmount, pxSpriteAnimatorInfo->TimeStampList, pxSpriteAnimator->TimeStampList);
 
 
@@ -1617,7 +1622,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
             ++pxResourceCreateInfo->ObjectAmount; // Asumme we want one item it we didnt set it to it,
         }
 
-        void* objectList = PXMemoryCalloc(pxResourceEntry->TypeSize, pxResourceCreateInfo->ObjectAmount);
+        void* objectList = PXMemoryHeapCalloc(PXNull, pxResourceEntry->TypeSize, pxResourceCreateInfo->ObjectAmount);
 
         *pxResourceCreateInfo->ObjectReference = objectList;
 
@@ -1667,7 +1672,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
             // We want to load the resouce in an async way.
             // Start a thread and call this function again?
 
-            PXResourceCreateInfo* pxResourceCreateInfoASYNC = PXMemoryCallocT(PXResourceCreateInfo, 1);
+            PXResourceCreateInfo* pxResourceCreateInfoASYNC = PXMemoryHeapCallocT(PXResourceCreateInfo, 1);
             PXCopy(PXResourceCreateInfo, pxResourceCreateInfo, pxResourceCreateInfoASYNC);
             pxResourceCreateInfoASYNC->Flags |= PXResourceCreateBehaviourIsASYNCCall;
 
@@ -1968,14 +1973,13 @@ void PXAPI PXModelFormatTransmute(PXModel* const pxModel, PXModelFormatTransmute
     {
         case PXVertexBufferFormatXYI8:
         {
-            float* newVertexArray = 0;
-            PXSize newVertexArraySize = 0;
             PXSize amountFuture = PXVertexBufferFormatStrideSize(PXVertexBufferFormatT2F_XYZ);
             PXSize amountCurrent = PXVertexBufferFormatStrideSize(PXVertexBufferFormatXYI8);
             PXSize sizeBefore = pxModel->Mesh.VertexBuffer.VertexDataSize;
             PXSize sizeCurrent = (pxModel->Mesh.VertexBuffer.VertexDataSize / 2) * amountFuture;
-
-            PXNewList(float, sizeCurrent, &newVertexArray, &newVertexArraySize);
+                        
+            const PXSize newVertexArraySize = sizeCurrent;
+            float* newVertexArray = PXMemoryHeapCallocT(float, sizeCurrent);
 
             PXInt8S* dataSource = (PXInt8S*)pxModel->Mesh.VertexBuffer.VertexData;
 
@@ -2000,13 +2004,13 @@ void PXAPI PXModelFormatTransmute(PXModel* const pxModel, PXModelFormatTransmute
         }
         case PXVertexBufferFormatXYZI8:
         {
-            float* newVertexArray = 0;
-            PXSize newVertexArraySize = 0;
+          
             PXSize amountFuture = PXVertexBufferFormatStrideSize(PXVertexBufferFormatXYZFloat);
             PXSize amountCurrent = PXVertexBufferFormatStrideSize(PXVertexBufferFormatXYZI8);
             PXSize sizeCurrent = pxModel->Mesh.VertexBuffer.VertexDataSize / 1;
 
-            PXNewList(float, sizeCurrent, &newVertexArray, &newVertexArraySize);
+            const PXSize newVertexArraySize = sizeCurrent;
+            float* newVertexArray = PXMemoryHeapCallocT(float, sizeCurrent);
 
             PXInt8S* dataSource = (PXInt8S*)pxModel->Mesh.VertexBuffer.VertexData;
 
@@ -2064,7 +2068,7 @@ PXFontPageCharacter* PXAPI PXFontPageCharacterFetch(PXFontPage* const pxFontPage
         return PXNull;
     }
 
-    for(PXSize i = 0; i < pxFontPage->CharacteListSize && !match; ++i)
+    for(PXSize i = 0; i < pxFontPage->CharacteListEntrys && !match; ++i)
     {
         const PXFontPageCharacter* const currentCharacter = &pxFontPage->CharacteList[i];
 
@@ -2180,6 +2184,7 @@ PXActionResult PXAPI PXVersionToString(PXVersion* const pxVersion, char* versioN
 
 void PXAPI PXUIElementPositionCalculcate(PXWindow* const pxGUIElement, PXUIElementPositionCalulcateInfo* const pxUIElementPositionCalulcateInfo)
 {
+#if 1
     for
         (
         PXWindow* pxUIElementParent = (PXWindow*)pxGUIElement->Info.Hierarchy.Parrent;
@@ -2192,6 +2197,7 @@ void PXAPI PXUIElementPositionCalculcate(PXWindow* const pxGUIElement, PXUIEleme
         pxUIElementPositionCalulcateInfo->MarginRight += pxUIElementParent->Position.Margin.Right;
         pxUIElementPositionCalulcateInfo->MarginBottom += pxUIElementParent->Position.Margin.Bottom;
     }
+#endif
 
     pxUIElementPositionCalulcateInfo->MarginLeft += pxGUIElement->Position.Margin.Left;
     pxUIElementPositionCalulcateInfo->MarginTop += pxGUIElement->Position.Margin.Top;

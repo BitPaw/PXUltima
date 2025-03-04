@@ -388,50 +388,50 @@ PXSQLType PXAPI PXSQLTypeFromID(const PXInt32U sqlTypeID)
 #elif PXOSWindowsDestop
     switch(sqlTypeID)
     {
-    // Mysql?
-    case -9:
-        return PXSQLTypeStringUNICODE;
+        // Mysql?
+        case -9:
+            return PXSQLTypeStringUNICODE;
 
-    // is this thenCorrect?
-    case SQL_VARCHAR:
-        return PXSQLTypeStringANSI;
+            // is this thenCorrect?
+        case SQL_VARCHAR:
+            return PXSQLTypeStringANSI;
 
-    case SQL_UNKNOWN_TYPE:
-        return PXSQLTypeUnkown;
-    case SQL_CHAR:
-        return PXSQLTypeCharacter;
-    case SQL_NUMERIC:
-        return PXSQLTypeNumeric;
-    case SQL_DECIMAL:
-        return PXSQLTypeDecimal;
-    case SQL_INTEGER:
-        return PXSQLTypeInteger;
-    case SQL_SMALLINT:
-        return PXSQLTypeShort;
-    case SQL_FLOAT:
-        return PXSQLTypeFloat;
-    case SQL_REAL:
-        return PXSQLTypeReal;
-    case SQL_DOUBLE:
-        return PXSQLTypeDouble;
+        case SQL_UNKNOWN_TYPE:
+            return PXSQLTypeUnkown;
+        case SQL_CHAR:
+            return PXSQLTypeCharacter;
+        case SQL_NUMERIC:
+            return PXSQLTypeNumeric;
+        case SQL_DECIMAL:
+            return PXSQLTypeDecimal;
+        case SQL_INTEGER:
+            return PXSQLTypeInteger;
+        case SQL_SMALLINT:
+            return PXSQLTypeShort;
+        case SQL_FLOAT:
+            return PXSQLTypeFloat;
+        case SQL_REAL:
+            return PXSQLTypeReal;
+        case SQL_DOUBLE:
+            return PXSQLTypeDouble;
 #if (ODBCVER >= 0x0300)
-    case SQL_DATETIME:
-        return PXSQLTypeDATETIME;
+        case SQL_DATETIME:
+            return PXSQLTypeDATETIME;
 #endif
 
 
-        /* One-parameter shortcuts for date/time data types */
+            /* One-parameter shortcuts for date/time data types */
 #if (ODBCVER >= 0x0300)
-    case SQL_TYPE_DATE:
-        return PXSQLTypeTYPE_DATE;
-    case SQL_TYPE_TIME:
-        return PXSQLTypeTYPE_TIME;
-    case SQL_TYPE_TIMESTAMP:
-        return PXSQLTypeTYPE_TIMESTAMP;
+        case SQL_TYPE_DATE:
+            return PXSQLTypeTYPE_DATE;
+        case SQL_TYPE_TIME:
+            return PXSQLTypeTYPE_TIME;
+        case SQL_TYPE_TIMESTAMP:
+            return PXSQLTypeTYPE_TIMESTAMP;
 #endif
 
-    default:
-        return PXSQLTypeInvalid;
+        default:
+            return PXSQLTypeInvalid;
     }
 #else
     return PXSQLTypeInvalid;
@@ -491,80 +491,80 @@ PXActionResult PXAPI PXDataBaseConnect
 
         switch(source->Format)
         {
-        case TextFormatASCII:
-        case TextFormatUTF8:
-        {
-            const PXSQLDriverConnectA pxSQLDriverConnectA = (PXSQLDriverConnectA)pxDataBase->DriverConnectA;
+            case TextFormatASCII:
+            case TextFormatUTF8:
+            {
+                const PXSQLDriverConnectA pxSQLDriverConnectA = (PXSQLDriverConnectA)pxDataBase->DriverConnectA;
 
-            const char driver[] = "MySQL ODBC 8.0 Unicode Driver";
+                const char driver[] = "MySQL ODBC 8.0 Unicode Driver";
 
-            PXTextPrint
-            (
-                &pxTextSQLConnectionString,
-                "Driver={%ls};Server=%ls;Database=%ls;UID=%ls;PWD=%ls;",
-                driver,
-                source->TextA,
-                database->TextA,
-                user->TextA,
-                password->TextA
-            );
+                PXTextPrint
+                (
+                    &pxTextSQLConnectionString,
+                    "Driver={%ls};Server=%ls;Database=%ls;UID=%ls;PWD=%ls;",
+                    driver,
+                    source->TextA,
+                    database->TextA,
+                    user->TextA,
+                    password->TextA
+                );
 
-            SQLSMALLINT writtenSize = 0;
+                SQLSMALLINT writtenSize = 0;
 
-            resultDriverConnect = pxSQLDriverConnectA
-            (
-                pxDataBase->ConnectionID,
-                NULL,
-                (SQLCHAR*)pxTextSQLConnectionString.TextA,
-                pxTextSQLConnectionString.SizeUsed,
-                (SQLCHAR*)pxTextSQLConnectionStringResult.TextA,
-                pxTextSQLConnectionStringResult.SizeAllocated,
-                &writtenSize,
-                SQL_DRIVER_NOPROMPT
-            );
+                resultDriverConnect = pxSQLDriverConnectA
+                (
+                    pxDataBase->ConnectionID,
+                    NULL,
+                    (SQLCHAR*)pxTextSQLConnectionString.TextA,
+                    pxTextSQLConnectionString.SizeUsed,
+                    (SQLCHAR*)pxTextSQLConnectionStringResult.TextA,
+                    pxTextSQLConnectionStringResult.SizeAllocated,
+                    &writtenSize,
+                    SQL_DRIVER_NOPROMPT
+                );
 
-            pxTextSQLConnectionStringResult.SizeUsed = writtenSize;
+                pxTextSQLConnectionStringResult.SizeUsed = writtenSize;
 
-            break;
-        }
-        case TextFormatUNICODE:
-        {
-            const PXSQLDriverConnectW pxSQLDriverConnectW = (PXSQLDriverConnectW)pxDataBase->DriverConnectW;
+                break;
+            }
+            case TextFormatUNICODE:
+            {
+                const PXSQLDriverConnectW pxSQLDriverConnectW = (PXSQLDriverConnectW)pxDataBase->DriverConnectW;
 
-            const wchar_t driver[] = L"MySQL ODBC 8.0 Unicode Driver";
+                const wchar_t driver[] = L"MySQL ODBC 8.0 Unicode Driver";
 
-            pxTextSQLConnectionString.SizeUsed = wsprintfW
-            (
-                pxTextSQLConnectionString.TextW,
-                L"Driver={%ls};Server=%ls;Database=%ls;UID=%ls;PWD=%ls;",
-                driver,
-                source->TextW,
-                database->TextW,
-                user->TextW,
-                password->TextW
-            );
+                pxTextSQLConnectionString.SizeUsed = wsprintfW
+                (
+                    pxTextSQLConnectionString.TextW,
+                    L"Driver={%ls};Server=%ls;Database=%ls;UID=%ls;PWD=%ls;",
+                    driver,
+                    source->TextW,
+                    database->TextW,
+                    user->TextW,
+                    password->TextW
+                );
 
-            SQLSMALLINT writtenSize = 0;
+                SQLSMALLINT writtenSize = 0;
 
-            resultDriverConnect = pxSQLDriverConnectW
-            (
-                pxDataBase->ConnectionID,
-                NULL,
-                pxTextSQLConnectionString.TextW,
-                pxTextSQLConnectionString.SizeUsed,
-                pxTextSQLConnectionStringResult.TextW,
-                pxTextSQLConnectionStringResult.SizeAllocated,
-                &writtenSize,
-                SQL_DRIVER_NOPROMPT
-            );
+                resultDriverConnect = pxSQLDriverConnectW
+                (
+                    pxDataBase->ConnectionID,
+                    NULL,
+                    pxTextSQLConnectionString.TextW,
+                    pxTextSQLConnectionString.SizeUsed,
+                    pxTextSQLConnectionStringResult.TextW,
+                    pxTextSQLConnectionStringResult.SizeAllocated,
+                    &writtenSize,
+                    SQL_DRIVER_NOPROMPT
+                );
 
-            pxTextSQLConnectionStringResult.SizeUsed = writtenSize;
+                pxTextSQLConnectionStringResult.SizeUsed = writtenSize;
 
-            break;
-        }
+                break;
+            }
 
-        default:
-            return PXActionRefuedTextFormatUnsupported;
+            default:
+                return PXActionRefuedTextFormatUnsupported;
         }
 
         const PXBool successfulConnected = resultDriverConnect == SQL_SUCCESS || resultDriverConnect == SQL_SUCCESS_WITH_INFO;
@@ -717,8 +717,8 @@ void PXAPI PXDataBaseScanForDrivers(PXDataBase* const pxDataBase)
 
     finished = PXFalse;
 
-    PXNewListZerod(char*, pxDataBase->DriverListAmount, &pxDataBase->DriverList, PXNull);
-    PXNewListZerod(char, totalAmountOfData, &pxDataBase->DriverListData, PXNull);
+    pxDataBase->DriverList = PXMemoryHeapCallocT(char*, pxDataBase->DriverListAmount);
+    pxDataBase->DriverListData = PXMemoryHeapCallocT(char, totalAmountOfData);
 
     while(!finished)
     {
@@ -736,31 +736,31 @@ void PXAPI PXDataBaseScanForDrivers(PXDataBase* const pxDataBase)
 
         switch(resultDriver)
         {
-        case SQL_SUCCESS_WITH_INFO:
-        case SQL_SUCCESS: // Do nothing and go next
-        {
-            pxDataBase->DriverList[dataIndex] = &pxDataBase->DriverListData[dataCursor];
-
-            dataCursor += PXTextCopyA(driverDescription, driverDescriptionSizeWritten, &pxDataBase->DriverListData[dataCursor], totalAmountOfData - dataCursor) + 1;
-
-            direction = SQL_FETCH_NEXT; // [!] Important [!] - Mark to go next.
-
-            if(pxDataBase->OnDriverDetectedEvent)
+            case SQL_SUCCESS_WITH_INFO:
+            case SQL_SUCCESS: // Do nothing and go next
             {
-                pxDataBase->OnDriverDetectedEvent(driverDescription, driverAttributes);
+                pxDataBase->DriverList[dataIndex] = &pxDataBase->DriverListData[dataCursor];
+
+                dataCursor += PXTextCopyA(driverDescription, driverDescriptionSizeWritten, &pxDataBase->DriverListData[dataCursor], totalAmountOfData - dataCursor) + 1;
+
+                direction = SQL_FETCH_NEXT; // [!] Important [!] - Mark to go next.
+
+                if(pxDataBase->OnDriverDetectedEvent)
+                {
+                    pxDataBase->OnDriverDetectedEvent(driverDescription, driverAttributes);
+                }
+
+                ++dataIndex;
+
+                //printf("| %-57ls | %-13ls |\n", driverDescription, driverAttributes);
+                break;
             }
-
-            ++dataIndex;
-
-            //printf("| %-57ls | %-13ls |\n", driverDescription, driverAttributes);
-            break;
-        }
-        default:
-        case SQL_ERROR: // Unkown error
-        case SQL_INVALID_HANDLE: // Environment handle was invalid
-        case SQL_NO_DATA: // read error : No entry
-            finished = 1;
-            break;
+            default:
+            case SQL_ERROR: // Unkown error
+            case SQL_INVALID_HANDLE: // Environment handle was invalid
+            case SQL_NO_DATA: // read error : No entry
+                finished = 1;
+                break;
         }
     }
 #endif
@@ -814,24 +814,24 @@ PXActionResult PXAPI PXDataBaseCommandExecute(PXDataBase* const pxDataBase, cons
 
         switch(pxTextSQLStatement->Format)
         {
-        case TextFormatASCII:
-        case TextFormatUTF8:
-        {
-            const PXSQLExecDirectA pxSQLExecDirectA = (PXSQLExecDirectA)pxDataBase->ExecDirectA;
+            case TextFormatASCII:
+            case TextFormatUTF8:
+            {
+                const PXSQLExecDirectA pxSQLExecDirectA = (PXSQLExecDirectA)pxDataBase->ExecDirectA;
 
-            resultExecute = pxSQLExecDirectA(handleStatement, (SQLCHAR*)pxTextSQLStatement->TextA, SQL_NTS);
-            break;
-        }
-        case TextFormatUNICODE:
-        {
-            const PXSQLExecDirectW pxSQLExecDirectW = (PXSQLExecDirectW)pxDataBase->ExecDirectW;
+                resultExecute = pxSQLExecDirectA(handleStatement, (SQLCHAR*)pxTextSQLStatement->TextA, SQL_NTS);
+                break;
+            }
+            case TextFormatUNICODE:
+            {
+                const PXSQLExecDirectW pxSQLExecDirectW = (PXSQLExecDirectW)pxDataBase->ExecDirectW;
 
-            resultExecute = pxSQLExecDirectW(handleStatement, pxTextSQLStatement->TextW, SQL_NTSL);
-            break;
-        }
+                resultExecute = pxSQLExecDirectW(handleStatement, pxTextSQLStatement->TextW, SQL_NTSL);
+                break;
+            }
 
-        default:
-            return PXActionRefuedTextFormatUnsupported;
+            default:
+                return PXActionRefuedTextFormatUnsupported;
         }
 
         const PXBool successful = resultExecute == SQL_SUCCESS || resultExecute == SQL_SUCCESS_WITH_INFO;
@@ -883,17 +883,17 @@ PXActionResult PXAPI PXDataBaseCommandExecute(PXDataBase* const pxDataBase, cons
 
         const PXSQLDescribeColW pxSQLDescribeColW = (PXSQLDescribeColW)pxDataBase->DescribeColW;
         const SQLRETURN resultDescriped = pxSQLDescribeColW
-                                          (
-                                              handleStatement,
-                                              columIndex,
-                                              columnName,
-                                              columnNameSize,
-                                              &columnNameSizeWritten,
-                                              &DataType,
-                                              &ColumnSize,
-                                              &decimalDigits,
-                                              &isNullableID
-                                          );
+        (
+            handleStatement,
+            columIndex,
+            columnName,
+            columnNameSize,
+            &columnNameSizeWritten,
+            &DataType,
+            &ColumnSize,
+            &decimalDigits,
+            &isNullableID
+        );
 
         const PXSQLType type = PXSQLTypeFromID(DataType);
 
@@ -906,55 +906,55 @@ PXActionResult PXAPI PXDataBaseCommandExecute(PXDataBase* const pxDataBase, cons
 
         switch(type)
         {
-        default:
-        case PXSQLTypeInvalid:
-            typeName = "Invalid";
-            break;
-        case PXSQLTypeUnkown:
-            typeName = "Unkown";
-            break;
-        case PXSQLTypeCharacter:
-            typeName = "Character";
-            break;
-        case PXSQLTypeNumeric:
-            typeName = "Numeric";
-            break;
-        case PXSQLTypeDecimal:
-            typeName = "Decimal";
-            break;
-        case PXSQLTypeInteger:
-            typeName = "Integer";
-            break;
-        case PXSQLTypeShort:
-            typeName = "Short";
-            break;
-        case PXSQLTypeFloat:
-            typeName = "Invalid";
-            break;
-        case PXSQLTypeReal:
-            typeName = "Real";
-            break;
-        case PXSQLTypeDouble:
-            typeName = "Double";
-            break;
-        case PXSQLTypeDATETIME:
-            typeName = "DATETIME";
-            break;
-        case PXSQLTypeStringANSI:
-            typeName = "StringANSI";
-            break;
-        case PXSQLTypeStringUNICODE:
-            typeName = "StringUNICODE";
-            break;
-        case PXSQLTypeTYPE_DATE:
-            typeName = "TYPE_DATE";
-            break;
-        case PXSQLTypeTYPE_TIME:
-            typeName = "TYPE_TIME";
-            break;
-        case PXSQLTypeTYPE_TIMESTAMP:
-            typeName = "TYPE_TIMESTAMP";
-            break;
+            default:
+            case PXSQLTypeInvalid:
+                typeName = "Invalid";
+                break;
+            case PXSQLTypeUnkown:
+                typeName = "Unkown";
+                break;
+            case PXSQLTypeCharacter:
+                typeName = "Character";
+                break;
+            case PXSQLTypeNumeric:
+                typeName = "Numeric";
+                break;
+            case PXSQLTypeDecimal:
+                typeName = "Decimal";
+                break;
+            case PXSQLTypeInteger:
+                typeName = "Integer";
+                break;
+            case PXSQLTypeShort:
+                typeName = "Short";
+                break;
+            case PXSQLTypeFloat:
+                typeName = "Invalid";
+                break;
+            case PXSQLTypeReal:
+                typeName = "Real";
+                break;
+            case PXSQLTypeDouble:
+                typeName = "Double";
+                break;
+            case PXSQLTypeDATETIME:
+                typeName = "DATETIME";
+                break;
+            case PXSQLTypeStringANSI:
+                typeName = "StringANSI";
+                break;
+            case PXSQLTypeStringUNICODE:
+                typeName = "StringUNICODE";
+                break;
+            case PXSQLTypeTYPE_DATE:
+                typeName = "TYPE_DATE";
+                break;
+            case PXSQLTypeTYPE_TIME:
+                typeName = "TYPE_TIME";
+                break;
+            case PXSQLTypeTYPE_TIMESTAMP:
+                typeName = "TYPE_TIMESTAMP";
+                break;
         }
 
         if(pxDataBase->OnColumInfoEvent)

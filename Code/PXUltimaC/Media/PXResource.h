@@ -1138,7 +1138,6 @@ PXFontPageCharacter;
 
 typedef struct PXFontPage_
 {
-    PXSize CharacteListSize;
     PXSize CharacteListEntrys;
     PXFontPageCharacter* CharacteList;
 

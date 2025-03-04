@@ -136,23 +136,23 @@ void PXAPI PXMemorySymbolAdd(PXSymbolMemory* const pxSymbolMemory,  const PXMemo
 
     switch(pxMemorySymbolInfoMode)
     {
-    case PXMemorySymbolInfoModeAdd:
-    {
-        PXDictionaryAdd(&pxMemorySymbolLookup->SymbolLookup, &pxSymbolMemory->Adress, pxSymbolMemory);
-        break;
-    }
-    case PXMemorySymbolInfoModeUpdate:
-    {
+        case PXMemorySymbolInfoModeAdd:
+        {
+            PXDictionaryAdd(&pxMemorySymbolLookup->SymbolLookup, &pxSymbolMemory->Adress, pxSymbolMemory);
+            break;
+        }
+        case PXMemorySymbolInfoModeUpdate:
+        {
 
-        break;
-    }
-    case PXMemorySymbolInfoModeRemove:
-    {
+            break;
+        }
+        case PXMemorySymbolInfoModeRemove:
+        {
 
-        break;
-    }
-    default:
-        break;
+            break;
+        }
+        default:
+            break;
     }
 }
 
@@ -177,7 +177,7 @@ PXActionResult PXAPI PXMemorySymbolFetch(const void* const adress, PXSymbol* con
     // Get module name from adress
 
     pxSymbol->ModuleAdress = symbolMemory->ModuleAdress;
-    PXDebugModuleHandleToName(symbolMemory->ModuleAdress, pxSymbol->NameModule);
+    PXDebugModuleNameGet(symbolMemory->ModuleAdress, pxSymbol->NameModule, 64, PXNull, PXDebugModuleNameShort);
 
     PXTextCopyA(symbolMemory->FunctionAdress, 64, pxSymbol->NameSymbol, 64);
     PXTextCopyA(symbolMemory->FileAdress, 64, pxSymbol->NameFile, 64);
@@ -215,23 +215,27 @@ PXBool PXAPI PXMemoryDoAdressesOverlap(void* const adressA, const PXSize adressA
     return overlap;
 }
 
-void* PXAPI PXMemoryCalloc(const PXSize amount, const PXSize objectSize)
+void* PXAPI PXMemoryHeapCalloc(PXMemoryHeap* pxMemoryHeap, const PXSize amount, const PXSize objectSize)
 {
-    void* adress = PXNull;
-
     const PXSize totalAmount = amount * objectSize;
+    PXMemoryHeap redirectHeap;
+    void* adress = PXNull;
 
     if(!totalAmount)
     {
         return PXNull;
     }
 
+    if(!pxMemoryHeap)
+    {
+        PXMemoryHeapGetGlobal(&redirectHeap);
+        pxMemoryHeap = &redirectHeap;
+    }
 
 #if OSUnix || MemoryUseSystemFunction || OSForcePOSIXForWindows
     adress = calloc(amount, objectSize);
 #elif OSWindows
-    const HANDLE heapHandle = GetProcessHeap(); // Windows 2000 SP4, Kernel32.dll, heapapi.h
-    adress = HeapAlloc(heapHandle, HEAP_ZERO_MEMORY, totalAmount); // Windows 2000 SP4, Kernel32.dll, heapapi.h
+    adress = HeapAlloc(pxMemoryHeap->HeapHandle, HEAP_ZERO_MEMORY, totalAmount); // Windows 2000 SP4, Kernel32.dll, heapapi.h
 #else
 #error Memory allocate seems not to be supported on this OS
 #endif
@@ -245,6 +249,7 @@ void* PXAPI PXMemoryCalloc(const PXSize amount, const PXSize objectSize)
         pxSymbolMemory.ObjectSize = objectSize;
 
         PXSymbol pxSymbol;
+        PXClear(PXSymbol, &pxSymbol);
 
         PXDebug* pxDebug = PXDebugInstanceGet();
 
@@ -255,7 +260,7 @@ void* PXAPI PXMemoryCalloc(const PXSize amount, const PXSize objectSize)
         PXTextCopyA(pxSymbol.NameSymbol, 64, pxSymbolMemory.FunctionAdress, 64);
         pxSymbolMemory.LineNumber = pxSymbol.LineNumber;
 
-        PXMemorySymbolAdd(&pxSymbolMemory, PXMemorySymbolInfoModeAdd);
+        //PXMemorySymbolAdd(&pxSymbolMemory, PXMemorySymbolInfoModeAdd);
 
 
 #if PXLogEnable 
@@ -279,8 +284,9 @@ void* PXAPI PXMemoryCalloc(const PXSize amount, const PXSize objectSize)
     return adress;
 }
 
-void* PXAPI PXMemoryMalloc(const PXSize memorySize)
+void* PXAPI PXMemoryHeapMalloc(PXMemoryHeap* pxMemoryHeap, const PXSize memorySize)
 {
+    PXMemoryHeap redirectHeap;
     void* adress = PXNull;
 
     if(!memorySize)
@@ -288,11 +294,16 @@ void* PXAPI PXMemoryMalloc(const PXSize memorySize)
         return PXNull;
     }
 
+    if(!pxMemoryHeap)
+    {
+        PXMemoryHeapGetGlobal(&redirectHeap);
+        pxMemoryHeap = &redirectHeap;
+    }
+
 #if OSUnix || MemoryUseSystemFunction || OSForcePOSIXForWindows
     adress = malloc(memorySize);
 #elif OSWindows
-    const HANDLE heapHandle = GetProcessHeap(); // Windows 2000 SP4, Kernel32.dll, heapapi.h
-    adress = HeapAlloc(heapHandle, 0, memorySize); // Windows 2000 SP4, Kernel32.dll, heapapi.h
+    adress = HeapAlloc(pxMemoryHeap->HeapHandle, 0, memorySize); // Windows 2000 SP4, Kernel32.dll, heapapi.h
 #else
 #error Memory allocate seems not to be supported on this OS
 #endif
@@ -308,14 +319,14 @@ void* PXAPI PXMemoryMalloc(const PXSize memorySize)
 
         PXDebug* pxDebug = PXDebugInstanceGet();
 
-        PXDebugStackTrace(pxDebug, &pxSymbol, 1, 2, 1);
+        PXDebugStackTrace(pxDebug, &pxSymbol, 1, 3, 1);
 
         pxSymbolMemory.ModuleAdress = pxSymbol.ModuleAdress;
         PXTextCopyA(pxSymbol.NameFile, 64, pxSymbolMemory.FileAdress, 64);
         PXTextCopyA(pxSymbol.NameSymbol, 64, pxSymbolMemory.FunctionAdress, 64);
         pxSymbolMemory.LineNumber = pxSymbolMemory.LineNumber;
 
-        PXMemorySymbolAdd(&pxSymbolMemory, PXMemorySymbolInfoModeAdd);
+       // PXMemorySymbolAdd(&pxSymbolMemory, PXMemorySymbolInfoModeAdd);
 
 
 #if PXLogEnable
@@ -339,19 +350,25 @@ void* PXAPI PXMemoryMalloc(const PXSize memorySize)
     return adress;
 }
 
-PXBool PXAPI PXMemoryFree(const void* const adress)
+PXBool PXAPI PXMemoryHeapFree(PXMemoryHeap* pxMemoryHeap, const void* const adress)
 {
+    PXMemoryHeap redirectHeap;
+
     if(!adress)
     {
         return PXFalse;
     }
 
+    if(!pxMemoryHeap)
+    {
+        PXMemoryHeapGetGlobal(&redirectHeap);
+        pxMemoryHeap = &redirectHeap;
+    }
+
 #if OSUnix || MemoryUseSystemFunction || OSForcePOSIXForWindows
     free(adress);
 #elif OSWindows
-
-    const HANDLE heapHandle = GetProcessHeap(); // Windows 2000 SP4, Kernel32.dll, heapapi.h
-    const PXBool freeResult = HeapFree(heapHandle, 0, adress); // Windows 2000 SP4, Kernel32.dll, heapapi.h
+    const PXBool freeResult = HeapFree(pxMemoryHeap->HeapHandle, 0, adress); // Windows 2000 SP4, Kernel32.dll, heapapi.h
 
 
     // Special logging behaviour
@@ -397,10 +414,17 @@ PXBool PXAPI PXMemoryFree(const void* const adress)
 #endif
 }
 
-void* PXAPI PXMemoryRealloc(const void* const adress, const PXSize memorySize)
+void* PXAPI PXMemoryHeapRealloc(PXMemoryHeap* pxMemoryHeap, const void* const adress, const PXSize memorySize)
 {
+    PXMemoryHeap redirectHeap;
     void* newAdress = PXNull;
     PXBool updatedLocation = PXFalse;
+
+    if(!pxMemoryHeap)
+    {
+        PXMemoryHeapGetGlobal(&redirectHeap);
+        pxMemoryHeap = &redirectHeap;
+    }
 
 #if OSUnix || MemoryUseSystemFunction || OSForcePOSIXForWindows
     // Function allows NULL as an adress
@@ -409,18 +433,14 @@ void* PXAPI PXMemoryRealloc(const void* const adress, const PXSize memorySize)
 
     if(!adress)
     {
-        void* memory = PXMemoryMalloc(memorySize);
+        void* memory = PXMemoryHeapCalloc(PXNull, 1, memorySize);
 
-        PXMemorySet(memory, '°', memorySize);
+        PXMemorySet(memory, 0xFF, memorySize);
 
         return memory;
     }
 
-    const HANDLE heapHandle = GetProcessHeap(); // Windows 2000 SP4, Kernel32.dll, heapapi.h
-
-    // const PXSize oldSize = HeapSize(heapHandle, 0, adress);
-
-    newAdress = HeapReAlloc(heapHandle, HEAP_ZERO_MEMORY, adress, memorySize); // Windows 2000 SP4, Kernel32.dll, heapapi.h
+    newAdress = HeapReAlloc(pxMemoryHeap->HeapHandle, HEAP_ZERO_MEMORY, adress, memorySize); // Windows 2000 SP4, Kernel32.dll, heapapi.h
     updatedLocation = newAdress != adress;
 
     // PXMemorySet(newAdress, '°', memorySize - oldSize);
@@ -487,6 +507,33 @@ void* PXAPI PXMemoryRealloc(const void* const adress, const PXSize memorySize)
 #else
 #error Memory reallocate seems not to be supported on this OS
 #endif
+}
+
+PXActionResult PXAPI PXMemoryHeapCreate(PXMemoryHeap* const pxMemoryHeap)
+{
+#if OSUnix
+#elif OSWindows
+    pxMemoryHeap->HeapHandle = HeapCreate(NULL, 0, 0); // Windows XP, Kernel32.dll, heapapi.h
+#endif
+
+    return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXMemoryHeapRelease(PXMemoryHeap* const pxMemoryHeap)
+{
+#if OSUnix
+#elif OSWindows
+    const BOOL result = HeapDestroy(pxMemoryHeap->HeapHandle); // Windows XP, Kernel32.dll, heapapi.h
+#endif
+
+    return PXActionSuccessful;
+}
+
+void PXAPI PXMemoryHeapGetGlobal(PXMemoryHeap* const pxMemoryHeap)
+{
+    pxMemoryHeap->HeapHandle = GetProcessHeap(); // Windows 2000 SP4, Kernel32.dll, heapapi.h
+
+    return PXActionSuccessful;
 }
 
 int PXAPI PXMemoryProtectionIDTranslate(const PXInt8U protectionMode)
@@ -702,6 +749,11 @@ int PXAPI PXMemoryCompareThreeWay(const void* PXRestrict bufferA, const PXSize b
 
 PXBool PXAPI PXMemoryCompareToByte(const void* PXRestrict bufferA, const PXSize bufferASize, const PXByte dataByte)
 {
+    if(!(bufferA && bufferASize))
+    {
+        return 0;
+    }
+
     PXSize equalSum = 0;
 
     for (PXSize counter = bufferASize; counter; --counter)
@@ -797,15 +849,13 @@ PXBool PXAPI PXMemoryIsEmpty(const void* PXRestrict buffer, const PXSize bufferS
 
 PXBool PXAPI PXMemorySwap(void* PXRestrict bufferA, void* PXRestrict bufferB, const PXSize size)
 {
-    void* adress = PXNull;
-
-    PXNewStackList(char, size, &adress, PXNull);
+    void* adress = PXMemoryHeapCallocT(char, size);
 
     PXMemoryCopy(bufferA, size, adress, size);
     PXMemoryCopy(bufferB, size, bufferA, size);
     PXMemoryCopy(adress, size, bufferB, size);
 
-    PXDeleteStackList(char, size, adress, PXNull);
+    PXMemoryHeapFree(PXNull, adress);
 
     return PXTrue;
 }
@@ -927,279 +977,6 @@ PXSize PXAPI PXMemoryMove(const void* inputBuffer, const PXSize inputBufferSize,
     return bufferSize;
 }
 
-PXActionResult PXAPI PXMemoryHeapAllocate(PXMemoryInfo* const pxMemoryInfo)
-{
-    if(!pxMemoryInfo)
-    {
-        return PXActionRefusedArgumentNull;
-    }
-
-    if(!pxMemoryInfo->Data)
-    {
-        return PXActionRefusedArgumentNull;
-    }
-
-    const PXSize allocationSize = pxMemoryInfo->TypeSize * pxMemoryInfo->Amount;
-    void* allocatedMemory = PXNull;
-
-    if(!allocationSize)
-    {
-        return PXActionRefusedArgumentInvalid;
-    }
-
-    // Try allocate
-    {
-#if OSUnix
-
-        if(pxMemoryInfo->MemoryClear)
-        {
-            allocatedMemory = calloc(pxMemoryInfo->Amount, pxMemoryInfo->TypeSize);
-        }
-        else
-        {
-            allocatedMemory = malloc(allocationSize);
-        }
-
-#elif OSWindows
-
-#if MemoryUseSystemFunction
-
-#if 1
-        if(pxMemoryInfo->MemoryClear)
-        {
-            allocatedMemory = calloc(pxMemoryInfo->Amount, pxMemoryInfo->TypeSize);
-        }
-        else
-        {
-            allocatedMemory = malloc(allocationSize);
-        }
-#else
-
-        if(!pxMemoryInfo->MemoryClear)
-        {
-            allocatedMemory = _malloc_dbg(pxMemoryInfo->Amount, pxMemoryInfo->TypeSize, _NORMAL_BLOCK, pxMemoryInfo->File, pxMemoryInfo->Line); // crtdbg.h
-        }
-        else
-        {
-            allocatedMemory = _calloc_dbg(pxMemoryInfo->Amount, pxMemoryInfo->TypeSize, _NORMAL_BLOCK, pxMemoryInfo->File, pxMemoryInfo->Line); // crtdbg.h
-        }
-#endif
-
-
-#else
-        const HANDLE healHandle = GetProcessHeap(); // Windows 2000 SP4, Kernel32.dll, heapapi.h
-        const DWORD flags = pxMemoryInfo->MemoryClear * HEAP_ZERO_MEMORY;
-        allocatedMemory = HeapAlloc(healHandle, flags, allocationSize); // Windows 2000 SP4, Kernel32.dll, heapapi.h
-#endif
-
-#endif
-    }
-
-
-    if(!allocatedMemory)
-    {
-        // Allocation failed!
-        return PXActionFailedMemoryAllocation;
-    }
-
-    *pxMemoryInfo->Data = allocatedMemory;
-
-    if(pxMemoryInfo->SizeTotal > 0)
-    {
-        *pxMemoryInfo->SizeTotal = allocationSize;
-    }
-
-#if PXLogEnable && PXMemoryDebug && 0
-    PXLoggingEventData pxLoggingEventData;
-    pxLoggingEventData.MemoryData.TypeSize = pxMemoryInfo->TypeSize;
-    pxLoggingEventData.MemoryData.Amount = pxMemoryInfo->Amount;
-    pxLoggingEventData.MemoryData.NameFile = pxMemoryInfo->File;
-    pxLoggingEventData.MemoryData.NameFunction = pxMemoryInfo->Function;
-    pxLoggingEventData.MemoryData.NumberLine = pxMemoryInfo->Line;
-    pxLoggingEventData.ModuleSource = "Memory";
-    pxLoggingEventData.ModuleAction = "Heap-Alloc";
-    pxLoggingEventData.PrintFormat = "";
-    pxLoggingEventData.Type = PXLoggingAllocation;
-    pxLoggingEventData.Target = PXLoggingTypeTargetMemory;
-
-    PXLogPrintInvoke(&pxLoggingEventData);
-#endif
-
-    return PXActionSuccessful;
-}
-
-PXActionResult PXAPI PXMemoryHeapDeallocate(PXMemoryInfo* const pxMemoryInfo)
-{
-    if(!pxMemoryInfo)
-    {
-        return PXFalse;
-    }
-
-#if PXLogEnable && PXMemoryDebug && 0
-    PXLoggingEventData pxLoggingEventData;
-    PXClear(PXLoggingEventData, &pxLoggingEventData);
-    pxLoggingEventData.MemoryData.TypeSize = pxMemoryInfo->TypeSize;
-    pxLoggingEventData.MemoryData.Amount = pxMemoryInfo->Amount;
-    pxLoggingEventData.MemoryData.NameFile = pxMemoryInfo->File;
-    pxLoggingEventData.MemoryData.NameFunction = pxMemoryInfo->Function;
-    pxLoggingEventData.MemoryData.NumberLine = pxMemoryInfo->Line;
-    pxLoggingEventData.ModuleSource = "Memory";
-    pxLoggingEventData.ModuleAction = "Heap-Free";
-    pxLoggingEventData.PrintFormat = "";
-    pxLoggingEventData.Type = PXLoggingDeallocation;
-    pxLoggingEventData.Target = PXLoggingTypeTargetMemory;
-
-    PXLogPrintInvoke(&pxLoggingEventData);
-#endif
-
-#if MemorySanitise
-    MemorySet(adress, '#', size);
-#endif
-
-#if MemoryDebugLeakDetection
-    PXDictionaryRemove(&_memoryAdressLookup, adress);
-#endif
-
-    PXMemoryFree(*pxMemoryInfo->Data);
-
-    *pxMemoryInfo->Data = PXNull;
-
-    if(pxMemoryInfo->SizeTotal)
-    {
-        *pxMemoryInfo->SizeTotal = 0;
-    }
-
-
-    return PXActionSuccessful;
-}
-
-PXBool PXAPI PXMemoryHeapReallocate(PXMemoryHeapReallocateEventData* const pxMemoryHeapReallocateInfo)
-{
-    const PXSize sizeToAllocate = pxMemoryHeapReallocateInfo->AmountDemand * pxMemoryHeapReallocateInfo->TypeSize;
-
-
-
-
-    PXSize oldSize = 0;
-    void* adressOld = PXNull;
-
-    if(pxMemoryHeapReallocateInfo->DataSize)
-    {
-        oldSize = *pxMemoryHeapReallocateInfo->DataSize;
-    }
-
-    if(pxMemoryHeapReallocateInfo->DataAdress)
-    {
-        adressOld = *pxMemoryHeapReallocateInfo->DataAdress;
-    }
-
-
-
-    // Need realloc?
-    const PXSize isEnoughSpace = oldSize >= sizeToAllocate;
-
-    // If there is enough space and we dont want to minimize size, we dont need to realloc
-    if(isEnoughSpace && !pxMemoryHeapReallocateInfo->ReduceSizeIfPossible)
-    {
-        return PXTrue;
-    }
-
-
-
-
-    void* adressNew = PXNull;
-    const PXSize beforeSize = oldSize;
-
-
-#if OSUnix || MemoryUseSystemFunction
-    adressNew = realloc(adressOld, sizeToAllocate);
-#else
-    const HANDLE heapHandle = GetProcessHeap();
-    const PXBool hasNotBeenAllocated = adressOld == PXNull;
-
-    if(hasNotBeenAllocated)
-    {
-        adressNew =    HeapAlloc(heapHandle, 0, sizeToAllocate);
-    }
-    else
-    {
-        adressNew = HeapReAlloc(heapHandle, 0, adressOld, sizeToAllocate);
-    }
-
-#endif
-
-    if (!adressNew)
-    {
-        pxMemoryHeapReallocateInfo->WasSuccessful = PXFalse;
-
-        return PXFalse;
-    }
-
-    pxMemoryHeapReallocateInfo->FreshAllocationPerformed = PXNull == *pxMemoryHeapReallocateInfo->DataAdress;
-
-    pxMemoryHeapReallocateInfo->WasDataMoved = adressNew != pxMemoryHeapReallocateInfo->DataAdress;
-    *pxMemoryHeapReallocateInfo->DataAdress = adressNew;
-    *pxMemoryHeapReallocateInfo->DataSize = sizeToAllocate;
-
-    if (beforeSize == 0)
-    {
-        pxMemoryHeapReallocateInfo->WasSizeIncreased = PXTrue;
-    }
-    else
-    {
-        pxMemoryHeapReallocateInfo->WasSizeIncreased = pxMemoryHeapReallocateInfo->AmountDemand > *pxMemoryHeapReallocateInfo->AmountCurrent;
-    }
-
-
-    pxMemoryHeapReallocateInfo->WasSuccessful = PXTrue;
-
-    if (pxMemoryHeapReallocateInfo->AmountCurrent)
-    {
-        *pxMemoryHeapReallocateInfo->AmountCurrent = pxMemoryHeapReallocateInfo->AmountDemand;
-    }
-
-    // Is we have new space and we want to fill it, do now.
-    if (pxMemoryHeapReallocateInfo->FreshAllocationPerformed || pxMemoryHeapReallocateInfo->WasSizeIncreased)
-    {
-        pxMemoryHeapReallocateInfo->PointOfNewData = &((char*)adressNew)[beforeSize];
-        pxMemoryHeapReallocateInfo->PointOfNewDataSize = sizeToAllocate - beforeSize;
-
-        if (pxMemoryHeapReallocateInfo->DoFillNewSpace)
-        {
-            PXMemorySet
-            (
-                pxMemoryHeapReallocateInfo->PointOfNewData,
-                pxMemoryHeapReallocateInfo->FillSymbol,
-                pxMemoryHeapReallocateInfo->PointOfNewDataSize
-            );
-        }
-    }
-    else
-    {
-        pxMemoryHeapReallocateInfo->PointOfNewData = 0;
-        pxMemoryHeapReallocateInfo->PointOfNewDataSize = 0;
-    }
-
-#if PXLogEnable && PXMemoryDebug
-    PXLoggingEventData pxLoggingEventData;
-    PXClear(PXLoggingEventData, &pxLoggingEventData);
-    pxLoggingEventData.MemoryData.TypeSize = pxMemoryHeapReallocateInfo->TypeSize;
-    pxLoggingEventData.MemoryData.Amount = pxMemoryHeapReallocateInfo->AmountDemand;
-    pxLoggingEventData.MemoryData.NameFile = pxMemoryHeapReallocateInfo->CodeFileName;
-    pxLoggingEventData.MemoryData.NameFunction = pxMemoryHeapReallocateInfo->CodeFunctionName;
-    pxLoggingEventData.MemoryData.NumberLine = pxMemoryHeapReallocateInfo->CodeFileLine;
-    pxLoggingEventData.ModuleSource = "Memory";
-    pxLoggingEventData.ModuleAction = "Heap-Realloc";
-    pxLoggingEventData.PrintFormat = "";
-    pxLoggingEventData.Type = PXLoggingReallocation;
-    pxLoggingEventData.Target = PXLoggingTypeTargetMemory;
-
-    PXLogPrintInvoke(&pxLoggingEventData);
-#endif
-
-    return adressNew != 0;
-}
-
 void PXAPI PXMemoryPageInfoFetch(PXMemoryPageInfo* const pxFilePageFileInfo, const PXSize objectSize)
 {
     PXClear(PXMemoryPageInfo, pxFilePageFileInfo);
@@ -1220,6 +997,8 @@ void PXAPI PXMemoryPageInfoFetch(PXMemoryPageInfo* const pxFilePageFileInfo, con
 #elif OSWindows
     PERFORMANCE_INFORMATION perfInfo;
     DWORD size = sizeof(PERFORMANCE_INFORMATION);
+    PXClear(PERFORMANCE_INFORMATION, &perfInfo);
+    perfInfo.cb = size;
 
     const BOOL result = GetPerformanceInfo(&perfInfo, size);
 
@@ -1296,7 +1075,7 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize* const createdSize, cons
     (
         PXLoggingInfo,
         PXMemoryLogPrintTitle,
-        "Open-Virtual",
+        "Virtual-Alloc",
         "Allocating space for %i...\n"
         "%25s : %6s -> %3ix %3i%%\n"
         "%25s : %6s -> %3ix %3i%%\n"
@@ -1479,7 +1258,7 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize* const createdSize, cons
     // TODO: huge pages do not exist? We cant do them then.
 
     void* allocatedData = VirtualAlloc(PXNull, size, mode, permissions);
-    const PXActionResult allocResult = PXErrorCurrent(allocatedData);
+    const PXActionResult allocResult = PXErrorCurrent(0 < allocatedData);
 
     if(PXActionSuccessful != allocResult)
     {
@@ -1677,7 +1456,7 @@ PXActionResult PXAPI PXMemoryStackAllocate(PXMemoryInfo* const pxMemoryInfo)
 
 #else
 
-    return PXMemoryHeapAllocate(pxMemoryInfo);
+    return PXActionSuccessful; // PXMemoryHeapAllocate(pxMemoryInfo);
 
 #endif
 
@@ -1725,7 +1504,7 @@ PXActionResult PXAPI PXMemoryStackDeallocate(PXMemoryInfo* const pxMemoryInfo)
 
 #else
 
-    return PXMemoryHeapDeallocate(pxMemoryInfo);
+    return PXActionSuccessful; // PXMemoryHeapDeallocate(pxMemoryInfo);
 
 #endif
 

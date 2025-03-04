@@ -891,9 +891,9 @@ while(1)
 
 
 
-    int* dsfdsf = 0;// PXMemoryMallocT(int, 420);
+    int* dsfdsf = 0;// PXMemoryHeapMallocT(int, 420);
 
-    PXThread* threads = 0;// PXMemoryMallocT(PXThread, 1234);
+    PXThread* threads = 0;// PXMemoryHeapMallocT(PXThread, 1234);
     const PXSize xx = 1234;
     PXSize oeoeo = 0;
 

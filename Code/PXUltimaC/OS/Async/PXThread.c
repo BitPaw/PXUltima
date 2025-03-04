@@ -1369,7 +1369,7 @@ PXActionResult PXAPI PXThreadContextGet(PXThreadContext* const pxThreadContext, 
     pxThreadContext->X86.ESP = context.Esp;
     pxThreadContext->X86.SegSs = context.SegSs;
 
-    pxThreadContext->X86.FloatSave = context.FloatSave;
+    //pxThreadContext->X86.FloatSave = context.FloatSave;
     PXCopyList(BYTE, MAXIMUM_SUPPORTED_EXTENSION, context.ExtendedRegisters, pxThreadContext->X86.ExtendedRegisters);
  
 #elif OS64B

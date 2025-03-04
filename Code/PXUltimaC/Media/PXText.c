@@ -1416,7 +1416,7 @@ PXSize PXAPI PXTextReplaceByte(char* const text, PXSize textSize, char target, c
 
 PXActionResult PXAPI PXTextCreateCopy(PXText* const pxText, const PXText* const pxTextSource)
 {
-    PXNewList(char, pxTextSource->SizeUsed+1, &pxText->TextA, &pxText->SizeAllocated);
+    pxText->TextA = PXMemoryHeapCallocT(char, pxTextSource->SizeUsed+1);
     PXTextCopy(pxTextSource, pxText);
 
     return PXActionSuccessful;
@@ -1424,7 +1424,7 @@ PXActionResult PXAPI PXTextCreateCopy(PXText* const pxText, const PXText* const 
 
 PXActionResult PXAPI PXTextDestroy(PXText* const pxText)
 {
-    PXDeleteList(char, pxText->SizeAllocated, &pxText->TextA, &pxText->SizeAllocated);
+    PXMemoryHeapFree(PXNull, pxText->TextA);
     PXClear(PXText, pxText);
 
     return PXActionSuccessful;

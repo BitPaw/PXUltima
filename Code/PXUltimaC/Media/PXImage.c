@@ -15,7 +15,7 @@
 
 void PXAPI PXImageDestruct(PXImage* const image)
 {
-    PXDeleteList(PXByte, image->PixelDataSize, &image->PixelData, &image->PixelDataSize);
+    PXMemoryHeapFree(PXNull, image->PixelData);
 }
 
 void PXAPI PXImageCopyAsIs(PXImage* const pxImageTarget, const PXImage* const pxImageSource)
@@ -25,7 +25,7 @@ void PXAPI PXImageCopyAsIs(PXImage* const pxImageTarget, const PXImage* const px
 
 void PXAPI PXImageCopyAsNew(PXImage* const pxImageTarget, const PXImage* const pxImageSource)
 {
-    PXNewList(PXInt8U, pxImageSource->PixelDataSize, &pxImageTarget->PixelData, &pxImageTarget->PixelDataSize);
+    pxImageTarget->PixelData = PXMemoryHeapCallocT(PXInt8U, pxImageSource->PixelDataSize);
     PXCopyList(PXInt8U, pxImageSource->PixelDataSize, pxImageSource->PixelData, pxImageTarget->PixelData);
 
     pxImageTarget->Width = pxImageSource->Width;
@@ -53,7 +53,7 @@ PXBool PXAPI PXImageResize(PXImage* const image, const PXColorFormat dataFormat,
     // reallocate
     {
         image->PixelDataSize = newSize;
-        image->PixelData = PXMemoryMallocT(PXByte, newSize);
+        image->PixelData = PXMemoryHeapCallocT(PXByte, newSize);
         image->Format = dataFormat;
         image->Width = width;
         image->Height = height;
@@ -131,9 +131,7 @@ void PXAPI PXImageFlipVertical(PXImage* image)
     const PXSize bbp = PXColorFormatBytePerPixel(image->Format);;
     const PXSize scanLineWidthSize = image->Width * bbp;
     const PXSize scanLinesToSwap = image->Height / 2u;
-    PXByte* copyBufferRow = PXNull;
-
-    PXNewList(PXByte, scanLineWidthSize, &copyBufferRow, PXNull);
+    PXByte* copyBufferRow = PXMemoryHeapCallocT(PXByte, scanLineWidthSize);
 
     if(!copyBufferRow)
     {
@@ -150,7 +148,7 @@ void PXAPI PXImageFlipVertical(PXImage* image)
         PXMemoryCopy(copyBufferRow, scanLineWidthSize, bufferA, scanLineWidthSize); // Buffer -> B 'Move SaveCopy (A) to B'
     }
 
-    PXDeleteList(PXByte, scanLineWidthSize, &copyBufferRow, PXNull);
+    PXMemoryHeapFree(PXNull, copyBufferRow);
 }
 
 void PXAPI PXImageRemoveColor(PXImage* image, unsigned char red, unsigned char green, unsigned char blue)

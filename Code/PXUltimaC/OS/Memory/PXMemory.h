@@ -219,25 +219,36 @@ PXPublic PXActionResult PXAPI PXMemorySymbolFetch(const void* const adress, PXSy
 PXPublic PXBool PXAPI PXMemoryDoAdressesOverlap(void* const adressA, const PXSize adressALengh, void* const adressB, const PXSize adressBLengh);
 
 
+//-----------------------------------------------------------------------------
+// Heap - Space to allocate dynamic memory
+//-----------------------------------------------------------------------------
+typedef struct PXMemoryHeap_
+{
+    void* HeapHandle;
+    PXSize Allocated;
+}
+PXMemoryHeap;
 
-// POSIX
-PXPublic void* PXAPI PXMemoryCalloc(const PXSize amount, const PXSize objectSize);
-PXPublic void* PXAPI PXMemoryMalloc(const PXSize memorySize);
-PXPublic PXBool PXAPI PXMemoryFree(const void* const adress);
-PXPublic void* PXAPI PXMemoryRealloc(const void* const adress, const PXSize memorySize);
+PXPublic PXActionResult PXAPI PXMemoryHeapCreate(PXMemoryHeap* const pxMemoryHeap);
+PXPublic PXActionResult PXAPI PXMemoryHeapRelease(PXMemoryHeap* const pxMemoryHeap);
+PXPublic void PXAPI PXMemoryHeapGetGlobal(PXMemoryHeap* const pxMemoryHeap);
+//PXPublic PXMemoryHeap* PXAPI PXMemoryHeapGetPX(void);
+
+PXPublic void* PXAPI PXMemoryHeapCalloc(PXMemoryHeap* pxMemoryHeap, const PXSize amount, const PXSize objectSize); // [POSIX]
+PXPublic void* PXAPI PXMemoryHeapMalloc(PXMemoryHeap* pxMemoryHeap, const PXSize memorySize); // [POSIX]
+PXPublic PXBool PXAPI PXMemoryHeapFree(PXMemoryHeap* pxMemoryHeap, const void* const adress); // [POSIX]
+PXPublic void* PXAPI PXMemoryHeapRealloc(PXMemoryHeap* pxMemoryHeap, const void* const adress, const PXSize memorySize); // [POSIX]
+
+#define PXMemoryHeapCallocT(type, amount) (type*)PXMemoryHeapCalloc(PXNull, amount, sizeof(type))
+#define PXMemoryHeapMallocT(type, amount) (type*)PXMemoryHeapMalloc(PXNull, sizeof(type) * amount)
+#define PXMemoryHeapReallocT(type, adress, amount) (type*)PXMemoryHeapRealloc(PXNull, adress, sizeof(type) * amount)
+//-----------------------------------------------------------------------------
+
 
 
 PXPublic int PXAPI PXMemoryProtectionIDTranslate(const PXInt8U protectionMode);
 
 PXPublic PXActionResult PXAPI PXMemoryProtect(void* dataAdress, const PXSize dataSize, const PXInt8U protectionMode);
-
-
-// typedefed POSIX
-#define PXMemoryCallocT(type, amount) (type*)PXMemoryCalloc(amount, sizeof(type))
-#define PXMemoryMallocT(type, amount) (type*)PXMemoryMalloc(sizeof(type) * amount)
-#define PXMemoryReallocT(type, adress, amount) (type*)PXMemoryRealloc(adress, sizeof(type) * amount)
-
-
 
 PXPublic PXBool PXAPI PXMemoryScan(PXMemoryUsage* memoryUsage);
 
@@ -264,14 +275,10 @@ PXPublic inline const void* PXAPI PXMemoryLocateLast(const void* const PXRestric
 
 
 
-PXPublic PXBool PXAPI PXMemoryHeapReallocate(PXMemoryHeapReallocateEventData* const pxMemoryHeapReallocateInfo);
-
-
 //PXPublic PXBool PXMemoryHeapResizeArray(PXSize typeSize, void** dataAddress, PXSize* const dataAddressSizeCurrent, const PXSize dataAddressSizeRequired);
 
 //PXPublic void* PXMemoryHeapReallocateClear(void* const adress, const PXSize sizeBefore, const PXSize sizeAfter);
 //PXPublic void* PXMemoryHeapReallocateTypeClear(void* const adress, const PXSize objectSize, const PXSize numberOfElementsBefore, const PXSize numberOfElementsAfter);
-
 
 
 PXPublic void PXAPI PXMemoryPageInfoFetch(PXMemoryPageInfo* const pxFilePageFileInfo, const PXSize objectSize);
@@ -296,94 +303,8 @@ PXPublic PXActionResult PXAPI PXMemoryStackAllocate(PXMemoryInfo* const pxMemory
 // Deallocates stack allocated memory if it was commited to the heap.
 // Additional size parameter can be ignored
 PXPublic PXActionResult PXAPI PXMemoryStackDeallocate(PXMemoryInfo* const pxMemoryAllocateInfo);
-
-
-PXPublic PXActionResult PXAPI PXMemoryHeapAllocate(PXMemoryInfo* const pxMemoryAllocateInfo);
-PXPublic PXActionResult PXAPI PXMemoryHeapDeallocate(PXMemoryInfo* const pxMemoryAllocateInfo);
-
-#define PXMemoryInfoFill(pxMemoryInfo, type, amount, dataAdress, dataSizeAdress, memoryClear) \
-    pxMemoryInfo.Data = (void**)dataAdress; \
-    pxMemoryInfo.SizeTotal = dataSizeAdress; \
-    pxMemoryInfo.Amount = amount; \
-    pxMemoryInfo.TypeSize = sizeof(type); \
-    pxMemoryInfo.MemoryClear = memoryClear; \
-    pxMemoryInfo.File = _PX_FILENAME_; \
-    pxMemoryInfo.Function = _PX_FUNCTION_; \
-    pxMemoryInfo.Line = _PX_LINE_; \
-
-
-#define PXNewListSettings(type, amount, dataAdress, dataSizeAdress, memoryClear) { \
-    PXMemoryInfo pxMemoryInfo; \
-    PXMemoryInfoFill(pxMemoryInfo,type, amount, dataAdress, dataSizeAdress, memoryClear); \
-    PXMemoryHeapAllocate(&pxMemoryInfo); }
-
-#define PXNewList(type, amount, dataAdress, dataSizeAdress) PXNewListSettings(type, amount, dataAdress, dataSizeAdress, PXFalse);
-#define PXNewListZerod(type, amount, dataAdress, dataSizeAdress) PXNewListSettings(type, amount, dataAdress, dataSizeAdress, PXTrue)
-
-#define PXNew(type, dataAdress) PXNewList(type, 1u, dataAdress, PXNull)
-#define PXNewZerod(type, dataAdress) PXNewListZerod(type, 1u, dataAdress, PXNull)
-
-#define PXDeleteList(type, amount, dataAdress, dataSizeAdress) { \
-    PXMemoryInfo pxMemoryInfo; \
-    PXMemoryInfoFill(pxMemoryInfo,type, amount, dataAdress, dataSizeAdress, PXFalse); \
-    PXMemoryHeapDeallocate(&pxMemoryInfo); }
-
-#define PXDelete(type, dataAdress) PXDeleteList(type, 1u, dataAdress, PXNull)
-
-
-#define PXNewStackList(type, amount, dataAdress, dataSizeAdress) { \
-    PXMemoryInfo pxMemoryInfo; \
-    PXMemoryInfoFill(pxMemoryInfo,type, amount, dataAdress, dataSizeAdress, PXFalse); \
-    PXMemoryStackAllocate(&pxMemoryInfo); }
-
-#define PXNewStack(type, dataAdress) PXNewStackList(type, 1u, dataAdress, PXNull)
-
-
-#define PXDeleteStackList(type, amount, dataAdress, dataSizeAdress) { \
-    PXMemoryInfo pxMemoryInfo; \
-    PXMemoryInfoFill(pxMemoryInfo,type, amount, dataAdress, dataSizeAdress, PXFalse); \
-    PXMemoryStackDeallocate(&pxMemoryInfo); }
-
-#define PXDeleteStack(type, dataAdress) PXDeleteStackList(type, 1u, dataAdress, PXNull)
-
 //---------------------------------------------------------
 
-
-
-//---------------------------------------------------------
-// Reallocation
-//---------------------------------------------------------
-#if PXMemoryDebug
-
-// PXMemoryHeapReallocateEventData pxMemoryHeapReallocateEventData;
-// PXHeapListResizeSize
-
-#define    PXMemoryHeapReallocateEventDataFill(eventDataAdress, typeSize, target, current, sizeCurrent, dataAdress) \
-    PXMemoryClear(eventDataAdress, sizeof(PXMemoryHeapReallocateEventData));  \
-    (*eventDataAdress).TypeSize = typeSize; \
-    (*eventDataAdress).AmountDemand = target; \
-    (*eventDataAdress).AmountCurrent = current; \
-    (*eventDataAdress).DataSize = sizeCurrent; \
-    (*eventDataAdress).DataAdress = dataAdress; \
-    (*eventDataAdress).ReduceSizeIfPossible = PXTrue; \
-    (*eventDataAdress).CodeFileName = _PX_FILENAME_; \
-    (*eventDataAdress).CodeFunctionName = _PX_FUNCTION_; \
-    (*eventDataAdress).CodeFileLine = _PX_LINE_;
-
-#define    PXMemoryHeapReallocateEventDataFillType(eventDataAdress, type, target, current, sizeCurrent, dataAdress) \
-    PXMemoryHeapReallocateEventDataFill(eventDataAdress, sizeof(type), target, current, sizeCurrent, dataAdress)
-
-#define PXMemoryHeapReallocateEventDataFillNew(eventDataAdress, fillSymbol) \
-    (*eventDataAdress).DoFillNewSpace = PXTrue; \
-    (*eventDataAdress).FillSymbol = fillSymbol; \
-
-
-//#define PXHeapListResize(type, amountDemand, amountCurrent, adress) PXMemoryHeapReallocate(sizeof(type), amountDemand, amountCurrent, adress, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
-//#define PXHeapListResizeT(typeSize, amountDemand, amountCurrent, adress) PXMemoryHeapReallocate(typeSize, amountDemand, amountCurrent, adress, _PX_FILENAME_, _PX_FUNCTION_, _PX_LINE_)
-#else
-#define PXHeapListResize(type, amountDemand, amountCurrent, adress) PXMemoryHeapReallocate(sizeof(type), amountDemand, amountCurrent, adress)
-#endif
-//---------------------------------------------------------
 
 
 
@@ -411,8 +332,6 @@ PXPublic PXSize PXAPI PXMemoryCopy(const void* PXRestrict inputBuffer, const PXS
 PXPublic PXSize PXAPI PXMemoryMove(const void* inputBuffer, const PXSize inputBufferSize, void* outputBuffer, const PXSize outputBufferSize);
 
 #if PXMemoryDebug
-
-
 //#define PXMove(type, source, target) PXMemoryMove(adress, sizeof(type));
 #else
 

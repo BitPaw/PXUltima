@@ -495,7 +495,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
         vertexNormalDataCacheSize = counterNormal * 3u;
 
         vertexDataCacheSize = vertexPositionDataCacheSize + vertexTextureDataCacheSize + vertexNormalDataCacheSize;
-        PXNewList(float, vertexDataCacheSize, &vertexDataCache, PXNull);
+        vertexDataCache = PXMemoryHeapCallocT(float, vertexDataCacheSize);
 
         vertexTextureDataCache = vertexDataCache;
         vertexNormalDataCache = &vertexTextureDataCache[vertexNormalDataCacheSize];
@@ -510,8 +510,12 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
         const PXSize vertexDataStride = PXVertexBufferFormatStrideSize(pxModel->Mesh.VertexBuffer.Format);
         const PXSize vertexDataAmount = vertexDataStride * counterIndex;
 
-        PXNewListZerod(float, vertexDataAmount, &pxModel->Mesh.VertexBuffer.VertexData, &pxModel->Mesh.VertexBuffer.VertexDataSize);
-        PXNewListZerod(PXIndexSegment, materialUseIndex, &pxModel->Mesh.IndexBuffer.SegmentList, &pxModel->Mesh.IndexBuffer.SegmentListSize);
+
+        pxModel->Mesh.VertexBuffer.VertexDataSize = vertexDataAmount;
+        pxModel->Mesh.VertexBuffer.VertexData = PXMemoryHeapCallocT(float, vertexDataAmount);    
+
+        pxModel->Mesh.IndexBuffer.SegmentListSize = materialUseIndex;
+        pxModel->Mesh.IndexBuffer.SegmentList = PXMemoryHeapCallocT(PXIndexSegment, materialUseIndex);
 
 
         materialUseIndex = 0;
@@ -534,7 +538,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
 #endif
 
         pxModel->MaterialContaierListAmount = materialInlcudeIndex;
-        PXNewListZerod(PXMaterialContainer, materialInlcudeIndex, &pxModel->MaterialContaierList, PXNull);
+        pxModel->MaterialContaierList = PXMemoryHeapCallocT(PXMaterialContainer, materialInlcudeIndex);
 
 
         // Reset all size values
@@ -804,7 +808,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
 
     PXFileClose(&tokenSteam);
 
-    PXDeleteList(float, vertexDataCacheSize, &vertexDataCache, PXNull); // Delete cached vertex data
+    PXMemoryHeapFree(PXNull, vertexDataCache); // Delete cached vertex data
 
 
 #if PXLogEnable

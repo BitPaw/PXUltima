@@ -189,14 +189,21 @@ PXPublic PXActionResult PXAPI PXDebugDumpCreate(PXDebug* const pxDebug);
 // Adress to module HANDLE
 PXPublic PXActionResult PXAPI PXDebugModuleHandleFromAdress(PXHandleModule* const pxHandleModule, const void* const adress);
 
-// HANDLE to name
-PXPublic PXActionResult PXAPI PXDebugModuleHandleToName(const PXHandleModule pxHandleModule, char* moduleName);
 
 
+#define PXDebugModuleNameMask   0b11
+#define PXDebugModuleNameFull   0b00
+#define PXDebugModuleNameShort  0b01
 
 
-// Helper-wrapper funcitons
-PXPublic PXActionResult PXAPI PXDebugMolduleFileNameGet(const PXHandleModule pxHandleModule, char* moduleName, const PXSize moduleNameSize, PXSize* const sizeWritten);
-
+// Retrieves the name from a module handle
+PXPublic PXActionResult PXAPI PXDebugModuleNameGet
+(
+    const PXHandleModule pxHandleModule, 
+    char* moduleName,
+    const PXSize moduleNameSize, 
+    PXSize* const sizeWritten,
+    const PXInt32U flags
+);
 
 #endif

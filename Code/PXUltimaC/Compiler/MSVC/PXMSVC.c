@@ -96,7 +96,7 @@ PXActionResult PXAPI PXCompilerInitializeMSVC(PXCompilerMSVC* const pxCompilerMS
 PXActionResult PXAPI PXCompilerCompileMSVC(PXCompilerMSVC* const pxCompilerMSVC, const char* fileName)
 {
     const size_t size = 1024 * 8;
-    char* buffer = PXMemoryCallocT(char, size);
+    char* buffer = PXMemoryHeapCallocT(char, size);
     size_t offset = 0;
 
     offset += PXTextPrintA(&buffer[offset], size - offset, "\"");
@@ -143,7 +143,7 @@ PXActionResult PXAPI PXCompilerCompileMSVC(PXCompilerMSVC* const pxCompilerMSVC,
 PXActionResult PXAPI PXCompilerLinkMSVC(PXCompilerMSVC* const pxCompilerMSVC, int flags, const char* fileName, const char* resultName)
 {
     const size_t mmsiize = 1024 * 8;
-    char* buffer = PXMemoryCallocT(char, mmsiize);
+    char* buffer = PXMemoryHeapCallocT(char, mmsiize);
     size_t offset = 0;
 
     offset += PXTextPrintA(buffer + offset, mmsiize - offset, "\"");

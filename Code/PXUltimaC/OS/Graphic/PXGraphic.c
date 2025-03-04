@@ -139,8 +139,7 @@ void PXAPI PXRenderableConstruct(PXRenderable* const pxRenderable)
 
 void PXAPI PXUIElementColorSet4F(PXWindow* const pxGUIElement, const float red, const float green, const float blue, const float alpha)
 {
-    PXColorRGBAF* color = PXNull;
-    PXNewZerod(PXColorRGBAF, &color);
+    PXColorRGBAF* color = PXMemoryHeapCallocT(PXColorRGBAF, 1);
 
     color->Red = red;
     color->Green = green;

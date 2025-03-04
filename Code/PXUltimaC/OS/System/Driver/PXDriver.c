@@ -34,12 +34,12 @@ PXActionResult PXAPI PXDriverListFetch(PXDriver** const pxDriverList, PXSize* co
 
     // Alloc space
     PXSize driverImageBaseAdressListAmount = sizeOfList / sizeof(void*);
-    void** driverImageBaseAdressList = PXMemoryCallocT(void*, driverImageBaseAdressListAmount);
+    void** driverImageBaseAdressList = PXMemoryHeapCallocT(void*, driverImageBaseAdressListAmount);
 
     const BOOL resB = EnumDeviceDrivers(driverImageBaseAdressList, sizeOfList, &sizeOfList);
 
 
-    *pxDriverList = PXMemoryCallocT(PXDriver, driverImageBaseAdressListAmount);
+    *pxDriverList = PXMemoryHeapCallocT(PXDriver, driverImageBaseAdressListAmount);
 
     for(PXSize i = 0; i < driverImageBaseAdressListAmount; ++i)
     {

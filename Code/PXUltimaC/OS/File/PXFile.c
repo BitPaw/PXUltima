@@ -2062,7 +2062,7 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, PXFileOpenInfo* const pxFi
             }
             else
             {
-                pxFile->Data = PXMemoryCallocT(PXByte, pxFileIOInfo->FileSizeRequest);
+                pxFile->Data = PXMemoryHeapCallocT(PXByte, pxFileIOInfo->FileSizeRequest);
                 pxFile->DataAllocated = pxFileIOInfo->FileSizeRequest;
                 pxFile->LocationMode = PXFileLocationModeInternal;
 
@@ -2112,16 +2112,13 @@ PXActionResult PXAPI PXFileClose(PXFile* const pxFile)
             PXFileUnmapFromMemory(pxFile);
             break;
 
+        case PXFileLocationModeDirectCached:
         case PXFileLocationModeInternal:
-            PXDeleteList(PXByte, pxFile->DataUsed, &pxFile->Data, &pxFile->DataUsed);
+            PXMemoryHeapFree(PXNull, pxFile->Data);
             break;
 
         case PXFileLocationModeMappedVirtual:
             PXMemoryVirtualRelease(pxFile->Data, pxFile->DataAllocated);
-            break;
-
-        case PXFileLocationModeDirectCached:
-            PXDeleteList(PXByte, pxFile->DataUsed, &pxFile->Data, &pxFile->DataUsed);
             break;
 
         case PXFileLocationModeExternal:
@@ -2158,7 +2155,7 @@ PXActionResult PXAPI PXFileClose(PXFile* const pxFile)
 
 PXActionResult PXAPI PXFileMapToMemory(PXFile* const pxFile, const PXSize size, const PXAccessMode protectionMode)
 {
-    void* const data = PXMemoryMalloc(size);
+    void* const data = PXMemoryHeapMalloc(PXNull, size);
     const PXBool successful = data != 0;
 
     if(!successful)
@@ -2233,7 +2230,7 @@ PXActionResult PXAPI PXFileUnmapFromMemory(PXFile* const pxFile)
         PXFilePathGet(pxFile, &pxTextFilePath);
 
         PXText pxText;
-        PXTextConstructNamedBufferA(&pxText, pxTextBuffer, 32);
+        PXTextConstructNamedBufferA(&pxText, pxTextBuffer, 260);
 
         PXTextFormatSize(&pxText, pxFile->DataAllocated);
 
@@ -3173,8 +3170,7 @@ PXSize PXAPI PXFileIOMultible(PXFile* const pxFile, const PXTypeEntry* const pxF
             totalSizeToRead += sizeOfType;
         }
 
-        void* stackMemory = PXNull;
-        PXNewStackList(char, totalSizeToRead, &stackMemory, PXNull);
+        void* stackMemory = PXMemoryHeapCallocT(char, totalSizeToRead);
 
         PXFileOpenInfo pxFileOpenInfo;
         PXClear(PXFileOpenInfo, &pxFileOpenInfo);
@@ -3317,7 +3313,7 @@ PXSize PXAPI PXFileIOMultible(PXFile* const pxFile, const PXTypeEntry* const pxF
 #endif
     }
 
-    PXDeleteStackList(char, totalSizeToRead, &stackMemory, PXNull);
+    PXMemoryHeapFree(PXNull, stackMemory);
 
     return totalReadBytes;
 }
@@ -3894,8 +3890,7 @@ PXSize PXAPI PXFileWriteFill(PXFile* const pxFile, const PXByte value, const PXS
         return 0;
     }
 
-    PXByte* const stackMemory = PXNull;
-    PXNewStackList(PXByte, length, &stackMemory, PXNull);
+    PXByte* const stackMemory = PXMemoryHeapCallocT(PXByte, length);
 
     for(PXSize i = 0; i < length; ++i)
     {
@@ -3904,7 +3899,7 @@ PXSize PXAPI PXFileWriteFill(PXFile* const pxFile, const PXByte value, const PXS
 
     const PXSize writtenBytes = PXFileWriteB(pxFile, stackMemory, length);
 
-    PXDeleteStackList(PXByte, length, &stackMemory, PXNull);
+    PXMemoryHeapFree(PXNull, stackMemory);
 
     return writtenBytes;
 }

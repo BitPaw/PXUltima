@@ -228,7 +228,8 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXResourceTransphereInfo* const px
 
                         if (amountOfPages > 1)
                         {
-                            PXNewList(PXFontPage, amountOfPages-1, &pxFont->PageList, &pxFont->PageListAmount);
+                            pxFont->PageListAmount = amountOfPages - 1;
+                            pxFont->PageList = PXMemoryHeapCallocT(PXFontPage, pxFont->PageListAmount);
                         }
 
                         break;
@@ -363,16 +364,16 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXResourceTransphereInfo* const px
                     PXCompilerSymbolEntryExtract(&pxCompiler);
                     //-----------------------------------
 
-                    switch (variableName)
+                    switch(variableName)
                     {
-                    case PXSpriteFontSymbolCharacterAmount:
-                    {
-                        PXFontPage* const pxFontPage = PXFontPageGet(pxFont, currentPageIndex);
+                        case PXSpriteFontSymbolCharacterAmount:
+                        {
+                            PXFontPage* const pxFontPage = PXFontPageGet(pxFont, currentPageIndex);
 
-                        pxFontPage->CharacteListEntrys = pxCompiler.ReadInfo.SymbolEntryCurrent.DataI32U;
-                        PXNewList(PXFontPageCharacter, pxCompiler.ReadInfo.SymbolEntryCurrent.DataI32U, &pxFontPage->CharacteList, &pxFontPage->CharacteListSize);
-                        break;
-                    }
+                            pxFontPage->CharacteListEntrys = pxCompiler.ReadInfo.SymbolEntryCurrent.DataI32U;
+                            pxFontPage->CharacteList = PXMemoryHeapCallocT(PXFontPageCharacter, pxFontPage->CharacteListEntrys);
+                            break;
+                        }
                     }
 
                     PXCompilerSymbolEntryPeek(&pxCompiler);
@@ -387,20 +388,12 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXResourceTransphereInfo* const px
 
                 // Guarantee size of list
                 {
-                    PXMemoryHeapReallocateEventData pxMemoryHeapReallocateEventData;
-
-                    PXMemoryHeapReallocateEventDataFillType
+                    pxFontPage->CharacteList = PXMemoryHeapReallocT
                     (
-                        &pxMemoryHeapReallocateEventData,
                         PXFontPageCharacter,
-                        currentCharacterIndex + 2,
-                        &pxFontPage->CharacteListEntrys,
-                        &pxFontPage->CharacteListSize,
-                        &pxFontPage->CharacteList
+                        pxFontPage->CharacteList,
+                        pxFontPage->CharacteListEntrys+2
                     );
-                    pxMemoryHeapReallocateEventData.ReduceSizeIfPossible = PXFalse;
-
-                    PXMemoryHeapReallocate(&pxMemoryHeapReallocateEventData);
                 }
 
                 PXFontPageCharacter* const pxFontPageCharacter = &pxFontPage->CharacteList[currentCharacterIndex++];

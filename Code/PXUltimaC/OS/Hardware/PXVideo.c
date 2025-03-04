@@ -149,8 +149,7 @@ PXActionResult PXAPI PXVideoCaptureDeviceList()
         }
 
 
-        PXNewList(PXVideoDeviceEE, count, &pxVideoDeviceList, PXNull);
-
+        pxVideoDeviceList = PXMemoryHeapCallocT(PXVideoDeviceEE, count);
 
 
         for(PXSize i = 0; i < count; ++i)
@@ -164,8 +163,6 @@ PXActionResult PXAPI PXVideoCaptureDeviceList()
                 &IID_IMFMediaSource,
                 &imfMediaSource
             );
-
-
 
             UINT32 bufferSize = 0;
             wchar_t* buffer = PXNull;
@@ -181,9 +178,6 @@ PXActionResult PXAPI PXVideoCaptureDeviceList()
             PXTextCopyWA(buffer, bufferSize, pxVideoDevice->Name, 32);
 
 
-
-
-
             const HRESULT aaaaa = device->lpVtbl->GetAllocatedString
             (
                 device,
@@ -191,7 +185,6 @@ PXActionResult PXAPI PXVideoCaptureDeviceList()
                 &buffer,
                 &bufferSize
             );
-
 
             const HRESULT bbbbbb = device->lpVtbl->GetAllocatedString
             (
@@ -201,11 +194,6 @@ PXActionResult PXAPI PXVideoCaptureDeviceList()
                 &bufferSize
             );
 
-
-
-
-
-
             const HRESULT cccccc = attributeList->lpVtbl->SetString
             (
                 attributeList,
@@ -213,21 +201,10 @@ PXActionResult PXAPI PXVideoCaptureDeviceList()
                 buffer
             );
 
-
-
-
-
-
-
-
             const HRESULT ddddd = MFCreateDeviceSource(attributeList, &imfMediaSource);
 
-
             PXConsoleWrite(0, 0);
-
         }
-
-
 
 
 

@@ -653,6 +653,12 @@ void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source,
             nameColor = 'c';
             break;
 
+        case PXLoggingEvent:
+            loggingTypeSymbol = '#';
+            symbolColor = '8';
+            nameColor = '8';
+            break;
+
         case PXLoggingFailure:
             loggingTypeSymbol = 'x';
             symbolColor = '4';

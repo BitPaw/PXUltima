@@ -410,6 +410,9 @@ PXActionResult PXAPI PXErrorCodeFromID(const int errorCode)
     case 145:
         return PXActionRefusedDirectoryNotEmpty;
 
+    case 1400:
+        return PXActionRefusedObjectIDInvalid;
+
     default:
         return PXActionInvalid;
     }

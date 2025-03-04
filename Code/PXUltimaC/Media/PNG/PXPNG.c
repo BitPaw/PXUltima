@@ -146,7 +146,8 @@ PXInt8U PXAPI PXPNGInterlaceMethodToID(const PXPNGInterlaceMethod interlaceMetho
 
 void PXAPI PXPNGDestruct(PXPNG* const png)
 {
-    PXDeleteList(PXByte, png->PixelDataSize, &png->PixelData, &png->PixelDataSize);
+
+    png->PixelData = PXMemoryHeapCallocT(PXByte, png->PixelDataSize, &, &png->PixelDataSize);
 
     png->PixelDataSize = 0;
     png->PixelData = 0;
@@ -224,7 +225,7 @@ PXActionResult PXAPI PXPNGPeekFromFile(PXResourceTransphereInfo* const pxResourc
         }
 
         // Allocate resource
-        png = PXMemoryCallocT(PXPNG, 1);
+        png = PXMemoryHeapCallocT(PXPNG, 1);
         pxResourceTransphereInfo->ResourceSource = png;
         //---------------------------------------------------------------------
 
@@ -358,7 +359,7 @@ PXActionResult PXAPI PXPNGPeekFromFile(PXResourceTransphereInfo* const pxResourc
                 {
                     ++png->DataBlockListAmount;
 
-                    png->DataBlockList = PXMemoryReallocT(PXPNGDataBlock, png->DataBlockList, png->DataBlockListAmount);
+                    png->DataBlockList = PXMemoryHeapReallocT(PXPNGDataBlock, png->DataBlockList, png->DataBlockListAmount);
                     png->DataBlockTotalSize += chunk.Header.Size;
 
                     PXPNGDataBlock* pxPNGDataBlock = &png->DataBlockList[png->DataBlockListAmount - 1];
@@ -593,7 +594,8 @@ PXActionResult PXAPI PXPNGPeekFromFile(PXResourceTransphereInfo* const pxResourc
                 {
                     const PXInt32U listSize = chunk.Header.Size / 2;
 
-                    PXNewList(PXInt16U, listSize, &png->PaletteHistogram.ColorFrequencyList, &png->PaletteHistogram.ColorFrequencyListSize);
+                    png->PaletteHistogram.ColorFrequencyListSize = listSize;
+                    png->PaletteHistogram.ColorFrequencyList = PXMemoryHeapCallocT(PXInt16U, listSize);
 
                     PXFileReadI16UVE(pxResourceTransphereInfo->FileReference, &png->PaletteHistogram.ColorFrequencyList, listSize, PXEndianBig);
 
@@ -1107,7 +1109,7 @@ static unsigned filter
 
         for(type = 0; type != 5; ++type)
         {
-            PXNewList(PXByte, linebytes, &attempt[type], PXNull);
+            attempt[type] = PXMemoryHeapCallocT(PXByte, linebytes);
 
             if(!attempt[type])
                 error = 83; /*alloc fail*/
@@ -1170,7 +1172,7 @@ static unsigned filter
 
         for(type = 0; type != 5; ++type)
         {
-            PXNewList(PXByte, linebytes, &attempt[type], PXNull);
+            attempt[type] = PXMemoryHeapCallocT(PXByte, linebytes);
 
             if(!attempt[type])
                 error = 83; /*alloc fail*/
@@ -1207,14 +1209,18 @@ static unsigned filter
 
                 prevline = &in[y * linebytes];
 
-                /*now fill the out values*/
-                out[y * (linebytes + 1)] = bestType; /*the first byte of a scanline will be the filter type*/
-                for(PXSize x = 0; x != linebytes; ++x) out[y * (linebytes + 1) + 1 + x] = attempt[bestType][x];
+                // now fill the out values
+                out[y * (linebytes + 1)] = bestType; // the first byte of a scanline will be the filter type
+
+                for(PXSize x = 0; x != linebytes; ++x) 
+                    out[y * (linebytes + 1) + 1 + x] = attempt[bestType][x];
             }
         }
 
         for(type = 0; type != 5; ++type)
-            PXDeleteList(PXByte, PXNull, &attempt[type], PXNull);
+        {
+            PXMemoryHeapFree(PXNull, attempt[type]);
+        }
     }
     else if(strategy == LFS_PREDEFINED)
     {
@@ -1252,7 +1258,7 @@ static unsigned filter
 
         for(type = 0; type != 5; ++type)
         {
-            PXNewList(PXByte, linebytes, &attempt[type], PXNull);
+            attempt[type] = PXMemoryHeapCallocT(PXByte, linebytes);
 
             if(!attempt[type])
                 error = 83; /*alloc fail*/
@@ -1265,22 +1271,23 @@ static unsigned filter
                 for(type = 0; type != 5; ++type)
                 {
                     unsigned testsize = (unsigned)linebytes;
-                    /*if(testsize > 8) testsize /= 8;*/ /*it already works good enough by testing a part of the row*/
+                    // if(testsize > 8) testsize /= 8;*/ /*it already works good enough by testing a part of the row
 
                     filterScanline(attempt[type], &in[y * linebytes], prevline, linebytes, bytewidth, type);
                     size[type] = 0;
                     dummy = 0;
 
                     const PXSize sizeAA = 0xFFFF * 2;
-                    PXNewList(PXByte, sizeAA, &dummy, PXNull);
+                    dummy = PXMemoryHeapCallocT(PXByte, sizeAA);
 
                     PXSize written = 0;
 
                     // fix this: PXZLIBCompress(attempt[type], testsize, &dummy, &size[type], written);
                     // PXZLIB_compress( , &PXZLIBsettings);
-
-                    PXDeleteList(PXByte, sizeAA, dummy, PXNull);
-                    /*check if this is smallest size (or if type == 0 it's the first case so always store the values)*/
+                    
+                    PXMemoryHeapFree(PXNull, dummy);
+                    
+                    // check if this is smallest size (or if type == 0 it's the first case so always store the values)
                     if(type == 0 || size[type] < smallest)
                     {
                         bestType = type;
@@ -1288,12 +1295,17 @@ static unsigned filter
                     }
                 }
                 prevline = &in[y * linebytes];
+
                 out[y * (linebytes + 1)] = bestType; /*the first byte of a scanline will be the filter type*/
-                for(PXSize x = 0; x != linebytes; ++x) out[y * (linebytes + 1) + 1 + x] = attempt[bestType][x];
+                
+                for(PXSize x = 0; x != linebytes; ++x) 
+                    out[y * (linebytes + 1) + 1 + x] = attempt[bestType][x];
             }
         }
         for(type = 0; type != 5; ++type)
-            PXDeleteList(PXByte, 0, attempt[type], 0);
+        {
+            PXMemoryHeapFree(PXNull, attempt[type]);
+        }
     }
     else
         return 88; // unknown filter strategy
@@ -1308,8 +1320,6 @@ void setBitOfReversedStream(PXSize* bitpointer, unsigned char* bitstream, unsign
     else         bitstream[(*bitpointer) >> 3u] |= (1u << (7u - ((*bitpointer) & 7u)));
     ++(*bitpointer);
 }
-
-
 
 void addPaddingBits(unsigned char* out, const unsigned char* in, PXSize olinebits, PXSize ilinebits, PXSize h)
 {
@@ -1376,7 +1386,7 @@ PXSize preProcessScanlines
                 PXByte* padded;
 
                 const PXSize size = height * ((width * bpp + 7u) / 8u);
-                PXNewList(PXByte, size, &padded, 0);
+                padded = PXMemoryHeapCallocT(PXByte, size);
 
                 if(!padded)
                     error = 83; /*alloc fail*/
@@ -1385,9 +1395,9 @@ PXSize preProcessScanlines
                 {
                     addPaddingBits(padded, in, ((width * bpp + 7u) / 8u) * 8u, width * bpp, height);
                     error = filter(pxScanlineStream->Data, padded, width, height, bpp, LFS_MINSUM);
-                }
+                }                
 
-                PXDeleteList(PXByte, size, padded, PXNull);
+                PXMemoryHeapFree(PXNull, padded);
             }
             else
             {
@@ -1409,9 +1419,7 @@ PXSize preProcessScanlines
 
             PXActionReturnOnError(allocationResult);
 
-            PXByte* adam7 = PXNull;
-
-            PXNewList(PXByte, passstart[7], &adam7, PXNull);
+            PXByte* adam7 = PXMemoryHeapCallocT(PXByte, passstart[7]);
 
             if(!adam7 && passstart[7])
                 error = 83; //alloc fail
@@ -1423,14 +1431,14 @@ PXSize preProcessScanlines
                 {
                     if(bpp < 8)
                     {
-                        PXByte* padded = PXNull;
                         const PXSize newSize = padded_passstart[i + 1] - padded_passstart[i];
-                        PXNewList(PXByte, newSize, &padded, PXNull);
+                        PXByte* padded = PXMemoryHeapCallocT(PXByte, newSize);
+
                         //  if(!padded) ERROR_BREAK(83); //alloc fail
                         addPaddingBits(padded, &adam7[passstart[i]], ((passw[i] * bpp + 7u) / 8u) * 8u, passw[i] * bpp, passh[i]);
                         //  error = filter(&(*out)[filter_passstart[i]], padded, passw[i], passh[i], &info_png->color, settings);
-
-                        PXDeleteList(PXByte, newSize, padded, PXNull);
+                                                
+                        PXMemoryHeapFree(PXNull, padded);
                     }
                     else
                     {
@@ -1442,7 +1450,7 @@ PXSize preProcessScanlines
                 }
             }
 
-            PXDeleteList(PXByte, adam7, passstart[7], PXNull);
+            PXMemoryHeapFree(PXNull, passstart[7]);
 
             break;
         }
@@ -1801,10 +1809,10 @@ unsigned int color_tree_add(PNGColorTree* tree, unsigned char r, unsigned char g
         const int index = 8 * ((r >> bit) & 1) + 4 * ((g >> bit) & 1) + 2 * ((b >> bit) & 1) + 1 * ((a >> bit) & 1);
         if(!tree->children[index])
         {
-            PXNew(PNGColorTree, &tree->children[index]);
+            tree->children[index] = PXMemoryHeapCallocT(PNGColorTree, 1);
 
             if(!tree->children[index])
-                return 83; /*alloc fail*/
+                return 83; // alloc fail
         }
         tree = tree->children[index];
     }

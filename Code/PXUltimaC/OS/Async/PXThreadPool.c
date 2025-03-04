@@ -192,7 +192,7 @@ PXActionResult PXAPI PXThreadPoolCreate(PXThreadPool* pxThreadPool)
 
     // Lookup how many cores we have.
     pxThreadPool->ThreadListSize = 32;
-    pxThreadPool->ThreadList = PXMemoryCallocT(PXThread, pxThreadPool->ThreadListSize);
+    pxThreadPool->ThreadList = PXMemoryHeapCallocT(PXThread, pxThreadPool->ThreadListSize);
 
 #if PXLogEnable
     PXLogPrint
