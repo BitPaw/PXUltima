@@ -1455,42 +1455,45 @@ PXSkyBox;
 // Ancering will stick the given edge to a side.
 // Offset will be interpretet 0=NoSpace, 1=???
 // Goal: Scale the object with screensize
-#define PXWindowAncerParent           0b0000000000000000000000000000000000001111
-#define PXWindowAncerParentLeft       0b0000000000000000000000000000000000000001
-#define PXWindowAncerParentTop        0b0000000000000000000000000000000000000010
-#define PXWindowAncerParentRight      0b0000000000000000000000000000000000000100
-#define PXWindowAncerParentBottom     0b0000000000000000000000000000000000001000
+#define PXWindowAncerParent           0b00000000000000000000000000001111
+#define PXWindowAncerParentLeft       0b00000000000000000000000000000001
+#define PXWindowAncerParentTop        0b00000000000000000000000000000010
+#define PXWindowAncerParentRight      0b00000000000000000000000000000100
+#define PXWindowAncerParentBottom     0b00000000000000000000000000001000
 
 // Let siblings calulate their offset themself.
 // Goal: Group multible objects together that belong together
-#define PXWindowAncerSibling          0b0000000000000000000000000000000011110000
-#define PXWindowAncerSiblingLeft      0b0000000000000000000000000000000000010000
-#define PXWindowAncerSiblingTop       0b0000000000000000000000000000000000100000
-#define PXWindowAncerSiblingRight     0b0000000000000000000000000000000001000000
-#define PXWindowAncerSiblingBottom    0b0000000000000000000000000000000010000000
+#define PXWindowAncerSibling          0b00000000000000000000000011110000
+#define PXWindowAncerSiblingLeft      0b00000000000000000000000000010000
+#define PXWindowAncerSiblingTop       0b00000000000000000000000000100000
+#define PXWindowAncerSiblingRight     0b00000000000000000000000001000000
+#define PXWindowAncerSiblingBottom    0b00000000000000000000000010000000
 
-#define PXWindowKeepFlags             0b0000000000000000000000000000111100000000
-#define PXWindowKeepPositionX         0b0000000000000000000000000000000100000000
-#define PXWindowKeepPositionY         0b0000000000000000000000000000001000000000
-#define PXWindowKeepWidth             0b0000000000000000000000000000010000000000
-#define PXWindowKeepHeight            0b0000000000000000000000000000100000000000
+#define PXWindowKeepFlags             0b00000000000000000000111100000000
+#define PXWindowKeepPositionX         0b00000000000000000000000100000000
+#define PXWindowKeepPositionY         0b00000000000000000000001000000000
+#define PXWindowKeepWidth             0b00000000000000000000010000000000
+#define PXWindowKeepHeight            0b00000000000000000000100000000000
 
 // Allign content inside a element
-#define PXWindowAllignFlags           0b0000000000000000000000011111000000000000
-#define PXWindowAllignLeft            0b0000000000000000000000000001000000000000
-#define PXWindowAllignTop             0b0000000000000000000000000010000000000000
-#define PXWindowAllignRight           0b0000000000000000000000000100000000000000
-#define PXWindowAllignBottom          0b0000000000000000000000001000000000000000
-#define PXWindowAllignCenter          0b0000000000000000000000010000000000000000
+#define PXWindowAllignFlags                 0b00000000000000011111000000000000
+#define PXWindowAllignLeft                  0b00000000000000000001000000000000
+#define PXWindowAllignTop                   0b00000000000000000010000000000000
+#define PXWindowAllignRight                 0b00000000000000000100000000000000
+#define PXWindowAllignBottom                0b00000000000000001000000000000000
+#define PXWindowAllignCenter                0b00000000000000010000000000000000
 
+#define PXWindowAllignIgnoreParentMargin    0b00000000100000000000000000000000
 
-#define PXWindowBehaviourHoverable          0b0000000000000000000000100000000000000000
-#define PXWindowBehaviourIsBeingHovered     0b0000000000000000000001000000000000000000
-#define PXWindowBehaviourSelectable         0b0000000000000000000010000000000000000000
-#define PXWindowBehaviourIsBeeingSelected   0b0000000000000000000100000000000000000000
-#define PXWindowBehaviourBorder             0b0000000000000000001000000000000000000000
-#define PXWindowBehaviourScrollBarHor       0b0000000000000000010000000000000000000000
-#define PXWindowBehaviourScrollBarVer       0b0000000000000000100000000000000000000000
+// Interaction
+#define PXWindowBehaviourInteractMask       0b11111111000000000000000000000000
+#define PXWindowBehaviourHoverable          0b00000001000000000000000000000000
+#define PXWindowBehaviourIsBeingHovered     0b00000010000000000000000000000000
+#define PXWindowBehaviourSelectable         0b00000100000000000000000000000000
+#define PXWindowBehaviourIsBeeingSelected   0b00001000000000000000000000000000
+#define PXWindowBehaviourBorder             0b00010000000000000000000000000000
+#define PXWindowBehaviourScrollBarHor       0b00100000000000000000000000000000
+#define PXWindowBehaviourScrollBarVer       0b01000000000000000000000000000000
 
 #define PXWindowBehaviourDefaultKeepAspect   PXWindowKeepWidth | PXWindowKeepHeight
 #define PXWindowBehaviourDefaultDecorative   PXResourceInfoOK | PXWindowBehaviourBorder

@@ -2182,27 +2182,35 @@ PXActionResult PXAPI PXVersionToString(PXVersion* const pxVersion, char* versioN
     return PXActionSuccessful;
 }
 
-void PXAPI PXUIElementPositionCalculcate(PXWindow* const pxGUIElement, PXUIElementPositionCalulcateInfo* const pxUIElementPositionCalulcateInfo)
+void PXAPI PXUIElementPositionCalculcate(PXWindow* const pxWindow, PXUIElementPositionCalulcateInfo* const pxUIElementPositionCalulcateInfo)
 {
-#if 1
-    for
-        (
-        PXWindow* pxUIElementParent = (PXWindow*)pxGUIElement->Info.Hierarchy.Parrent;
-        pxUIElementParent;
-        pxUIElementParent = (PXWindow*)pxUIElementParent->Info.Hierarchy.Parrent
-        )
+    if(!((PXWindowAllignIgnoreParentMargin & pxWindow->Info.Behaviour) > 0)) 
     {
-        pxUIElementPositionCalulcateInfo->MarginLeft += pxUIElementParent->Position.Margin.Left;
-        pxUIElementPositionCalulcateInfo->MarginTop += pxUIElementParent->Position.Margin.Top;
-        pxUIElementPositionCalulcateInfo->MarginRight += pxUIElementParent->Position.Margin.Right;
-        pxUIElementPositionCalulcateInfo->MarginBottom += pxUIElementParent->Position.Margin.Bottom;
+        for
+            (
+            PXWindow* pxUIElementParent = (PXWindow*)pxWindow->Info.Hierarchy.Parrent;
+            pxUIElementParent;
+            pxUIElementParent = (PXWindow*)pxUIElementParent->Info.Hierarchy.Parrent
+            )
+        {
+            pxUIElementPositionCalulcateInfo->MarginLeft += pxUIElementParent->Position.Margin.Left;
+            pxUIElementPositionCalulcateInfo->MarginTop += pxUIElementParent->Position.Margin.Top;
+            pxUIElementPositionCalulcateInfo->MarginRight += pxUIElementParent->Position.Margin.Right;
+            pxUIElementPositionCalulcateInfo->MarginBottom += pxUIElementParent->Position.Margin.Bottom;
+        }
     }
-#endif
+    else
+    {
+        pxUIElementPositionCalulcateInfo->MarginLeft += 0.2;
+        pxUIElementPositionCalulcateInfo->MarginTop += 0.2;
+        pxUIElementPositionCalulcateInfo->MarginRight += 0.2;
+        pxUIElementPositionCalulcateInfo->MarginBottom += 0.2;
+    }
 
-    pxUIElementPositionCalulcateInfo->MarginLeft += pxGUIElement->Position.Margin.Left;
-    pxUIElementPositionCalulcateInfo->MarginTop += pxGUIElement->Position.Margin.Top;
-    pxUIElementPositionCalulcateInfo->MarginRight += pxGUIElement->Position.Margin.Right;
-    pxUIElementPositionCalulcateInfo->MarginBottom += pxGUIElement->Position.Margin.Bottom;
+    pxUIElementPositionCalulcateInfo->MarginLeft += pxWindow->Position.Margin.Left;
+    pxUIElementPositionCalulcateInfo->MarginTop += pxWindow->Position.Margin.Top;
+    pxUIElementPositionCalulcateInfo->MarginRight += pxWindow->Position.Margin.Right;
+    pxUIElementPositionCalulcateInfo->MarginBottom += pxWindow->Position.Margin.Bottom;
 
     // Normalizied space for OpenGL
     pxUIElementPositionCalulcateInfo->AA = -1 + pxUIElementPositionCalulcateInfo->MarginLeft;
@@ -2245,18 +2253,18 @@ void PXAPI PXUIElementPositionCalculcate(PXWindow* const pxGUIElement, PXUIEleme
     // XYWH for WindowsAPI stuff0
 
 
-    if(PXWindowKeepWidth & pxGUIElement->Info.Behaviour)
+    if(PXWindowKeepWidth & pxWindow->Info.Behaviour)
     {
-        pxUIElementPositionCalulcateInfo->Width = pxGUIElement->Position.Form.Width;
+        pxUIElementPositionCalulcateInfo->Width = pxWindow->Position.Form.Width;
     }
     else
     {
         pxUIElementPositionCalulcateInfo->Width = mathWithScaling;
     }
 
-    if(PXWindowKeepHeight & pxGUIElement->Info.Behaviour)
+    if(PXWindowKeepHeight & pxWindow->Info.Behaviour)
     {
-        pxUIElementPositionCalulcateInfo->Height = pxGUIElement->Position.Form.Height;
+        pxUIElementPositionCalulcateInfo->Height = pxWindow->Position.Form.Height;
     }
     else
     {
@@ -2264,7 +2272,7 @@ void PXAPI PXUIElementPositionCalculcate(PXWindow* const pxGUIElement, PXUIEleme
     }
 
 
-    switch(PXWindowAllignFlags & pxGUIElement->Info.Behaviour)
+    switch(PXWindowAllignFlags & pxWindow->Info.Behaviour)
     {
         default:
         case PXWindowAllignLeft:

@@ -2491,7 +2491,7 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
     pxWindowCurrent->InteractCallBack = pxGUIElementCreateInfo->InteractCallBack;
     pxWindowCurrent->InteractOwner = pxGUIElementCreateInfo->InteractOwner;
     pxWindowCurrent->Info.Hierarchy.Parrent = pxWindowParent;
-    pxWindowCurrent->Info.Behaviour = pxGUIElementCreateInfo->BehaviourFlags;
+    pxWindowCurrent->Info.Behaviour |= pxGUIElementCreateInfo->BehaviourFlags;
     //pxWindowCurrent->BrushFront = pxGUISystem->BrushTextWhite;
     //pxWindowCurrent->BrushBackground = pxGUISystem->BrushBackgroundDark;
     //pxWindowCurrent->NameContent = pxResourceCreateInfo->Name; // This breaks current names!
@@ -4078,7 +4078,7 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
                 pxResourceCreateInfo.UIElement.Invisible = PXFalse;
                 pxResourceCreateInfo.UIElement.WindowCurrent = pxWindowCurrent;
                 pxResourceCreateInfo.UIElement.WindowParent = pxWindowCurrent;
-                pxResourceCreateInfo.UIElement.BehaviourFlags = PXWindowBehaviourDefaultDecorative | PXWindowAllignCenter;
+                pxResourceCreateInfo.UIElement.BehaviourFlags = PXWindowBehaviourDefaultDecorative | PXWindowAllignCenter| PXWindowAllignIgnoreParentMargin;
                 pxResourceCreateInfo.UIElement.Position.Margin.Left = 0.002;
                 pxResourceCreateInfo.UIElement.Position.Margin.Top = 0.002;
                 pxResourceCreateInfo.UIElement.Position.Margin.Right = 0.002;
