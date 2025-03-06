@@ -386,3 +386,76 @@ PXBool PXAPI PXLibraryGetSymbol(PXLibrary* const pxLibrary, void** const library
 {
     return PXLibraryGetSymbolA(pxLibrary, libraryFunction, symbolName->TextA, PXTrue);
 }
+
+
+
+#if OSWindows
+typedef struct PXWindowsEnumCallBackRope_
+{
+    void** ListObject;
+    PXSize Amount;
+}
+PXWindowsEnumCallBackRope;
+
+static BOOL CALLBACK PXWindowsLibraryLoadedEnumCallback
+(
+    PCSTR moduleName,
+    ULONG moduleBase,
+    ULONG moduleSize,
+    PXWindowsEnumCallBackRope* userContext
+) 
+{
+    ++userContext->Amount;
+
+    char bufferName[128];
+
+    HMODULE moduleHanlde =  GetModuleHandleA(moduleName);
+    PXDebugModuleNameGet(moduleHanlde, bufferName, 128, PXNull, PXDebugModuleNameShort);
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXLibraryText,
+        "Module-Detect",
+        "[%3i] <%p> %8i %s",
+        userContext->Amount,
+        moduleBase,
+        moduleSize,
+        bufferName
+    );
+#endif
+}
+#endif
+
+
+PXActionResult PXAPI PXLibraryCurrentlyLoaded(PXProcessHandle pxProcessHandle, PXLibrary** const pxLibraryList, PXSize* const amount)
+{
+#if OSUnix
+    return PXActionRefusedNotImplemented;
+
+#elif OSWindows
+
+    if(!pxProcessHandle)
+    {
+        pxProcessHandle = GetCurrentProcess();
+    }
+
+    PXWindowsEnumCallBackRope pxWindowsEnumCallBackRope;
+    pxWindowsEnumCallBackRope.Amount = 0;
+    pxWindowsEnumCallBackRope.ListObject = pxLibraryList;
+
+    
+    EnumerateLoadedModulesEx(pxProcessHandle, PXWindowsLibraryLoadedEnumCallback, &pxWindowsEnumCallBackRope);
+
+    if(amount)
+    {
+        *amount = pxWindowsEnumCallBackRope.Amount;
+    }
+
+    return PXActionSuccessful;
+
+#else
+    return PXActionRefusedNotSupportedByLibrary;
+#endif
+}

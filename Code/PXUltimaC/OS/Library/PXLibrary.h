@@ -42,4 +42,6 @@ PXPublic PXBool PXAPI PXLibraryGetSymbolListA(PXLibrary* const pxLibrary, PXLibr
 PXPublic PXBool PXAPI PXLibraryGetSymbolA(PXLibrary* const pxLibrary, void** const libraryFunction, const char* const symbolName, const PXBool isImportant);
 PXPublic PXBool PXAPI PXLibraryGetSymbol(PXLibrary* const pxLibrary, void** const libraryFunction, const PXText* symbolName); // obtain the address of a symbol from a dlopen object
 
+PXPublic PXActionResult PXAPI PXLibraryCurrentlyLoaded(PXProcessHandle pxProcessHandle, PXLibrary** const pxLibraryList, PXSize* const amount);
+
 #endif

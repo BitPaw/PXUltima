@@ -153,17 +153,19 @@ void PXAPI Trace_FolderFiles(PXText* pxText)
 #include <OS/GUI/PXGUI.h>
 #include <OS/Graphic/NativDraw/PXNativDraw.h>
 #include <OS/System/Driver/PXDriver.h>
-#include <OS/Framework/DotNet/PXDotNet.h>
 #include <Algorithm/CollatzConjecture/PXCollatzConjecture.h>
+#include <OS/Library/PXLibrary.h>
 
 int main()
 { 
     PXConsoleWrite(0, "[i] Starting testing...\n");
 
 
+    PXLibraryCurrentlyLoaded(PXNull, 0, 0);
 
 
 
+    /*
 
     PXDotNet pxDotNet;
 
@@ -181,7 +183,7 @@ int main()
 
 
     pxDotNet.DelegateFetch(pxDotNet.API, &pxDelegate);
-
+    */
 
 
 
