@@ -3622,7 +3622,101 @@ LRESULT CALLBACK PXNativDrawEventTranslator(const HWND windowID, const UINT even
 
             break;
         }
+        case WM_POWERBROADCAST:
+        {
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingEvent,
+                "Window",
+                "EVENT",
+                "WM_POWERBROADCAST"
+            );
+#endif
 
+            // Notifies applications that a power-management event has occurred.
+            switch(wParam)
+            {
+                case PBT_APMQUERYSUSPEND:
+                {
+                    break;
+                }
+                //case PBTF_APMRESUMEFROMFAILURE:
+                case PBT_APMQUERYSTANDBY: // NOTE: Documentation says this might not trigger
+                {
+                    break;
+                }
+                case PBT_APMQUERYSUSPENDFAILED:
+                {
+                    break;
+                }
+                case PBT_APMQUERYSTANDBYFAILED:  // NOTE: Documentation says this might not trigger
+                {
+                    break;
+                }
+                case PBT_APMSUSPEND: // System is suspending operation.
+                {
+                    break;
+                }
+                case PBT_APMSTANDBY:  // NOTE: Documentation says this might not trigger
+                {
+                    break;
+                }
+                case PBT_APMRESUMECRITICAL:
+                {
+                    break;
+                }
+                case PBT_APMRESUMESUSPEND: // Operation is resuming by user input from a low-power state.
+                {
+                    break;
+                }
+                case PBT_APMRESUMESTANDBY:  // NOTE: Documentation says this might not trigger
+                {
+                    break;
+                }
+                case PBT_APMBATTERYLOW:
+                {
+                    break;
+                }
+                case PBT_APMPOWERSTATUSCHANGE:  // Power status has changed.
+                {
+#if PXLogEnable
+                    PXLogPrint
+                    (
+                        PXLoggingWarning,
+                        "Window",
+                        "Power",
+                        "Status changed!"
+                    );
+#endif
+
+                    /*
+                    pxWindowEvent.Type = PXWindowEventTypeElementResize;
+                    pxWindowEvent.Resize.Width = LOWORD(lParam);
+                    pxWindowEvent.Resize.Height = HIWORD(lParam);
+
+                    PXNativDrawEventConsumer(pxNativDraw, &pxWindowEvent);
+                    */
+                    break;
+                }
+                case PBT_APMOEMEVENT:
+                {
+                    break;
+                }
+                case PBT_APMRESUMEAUTOMATIC: // Operation is resuming automatically from a low-power state.
+                {
+                    break;
+                }
+                case PBT_POWERSETTINGCHANGE: // A power setting change event has been received. 
+                {
+                    POWERBROADCAST_SETTING* const powerBroadCastSetting = (POWERBROADCAST_SETTING*)lParam;
+
+                    break;
+                }
+            }
+
+            break;
+        }
 
 #if 0
         case WM_ACTIVATE:

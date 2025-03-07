@@ -885,3 +885,89 @@ PXActionResult PXAPI PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, co
     return PXActionSuccessful;
 #endif
 }
+
+PXActionResult PXAPI PXHardwareBattery(PXBattery* const pxBattery)
+{
+#if OSUnix
+    return PXActionRefusedNotImplemented;
+
+#elif OSWindows
+    SYSTEM_POWER_STATUS systemPowerStatus;
+
+    const BOOL resultGetID = GetSystemPowerStatus(&systemPowerStatus); // Windows XP (+UWP), Kernel32.dll, winbase.h
+    const PXActionResult resultGet = PXErrorCurrent(resultGetID);
+
+    if(PXActionSuccessful != resultGet)
+    {
+        return resultGet;
+    }
+
+    pxBattery->LifePercent = systemPowerStatus.BatteryLifePercent;
+
+    switch(systemPowerStatus.ACLineStatus)
+    {
+        case AC_LINE_OFFLINE:
+            pxBattery->StatusFlag |= PXBatteryPresentOFFLINE;
+            break;
+
+        case AC_LINE_ONLINE:
+            pxBattery->StatusFlag |= PXBatteryPresentONLINE;
+            break;
+
+        case AC_LINE_BACKUP_POWER:
+            pxBattery->StatusFlag |= 0;
+            break;
+
+        case AC_LINE_UNKNOWN:
+            pxBattery->StatusFlag |= PXBatteryPresentUNKNOWN;
+            break;
+    }
+
+    switch(systemPowerStatus.BatteryFlag)
+    {
+        case 0x00:
+            pxBattery->StatusFlag |= PXBatteryCapacityNORMAL;
+            break;
+
+        case BATTERY_FLAG_HIGH:
+            pxBattery->StatusFlag |= PXBatteryCapacityHIGH;
+            break;
+
+        case BATTERY_FLAG_LOW:
+            pxBattery->StatusFlag |= PXBatteryCapacityLOW;
+            break;
+
+        case BATTERY_FLAG_CRITICAL:
+            pxBattery->StatusFlag |= PXBatteryCapacityCRITICAL;
+            break;
+
+        case BATTERY_FLAG_CHARGING:
+            pxBattery->StatusFlag |= PXBatteryCapacityCHARGING;
+            break;
+
+        case BATTERY_FLAG_NO_BATTERY:
+            pxBattery->StatusFlag |= PXBatteryCapacityNOBATTERY;
+            break;
+
+        case BATTERY_FLAG_UNKNOWN:
+            pxBattery->StatusFlag |= PXBatteryCapacityUNKOWN;
+            break;
+    }
+
+
+    switch(systemPowerStatus.SystemStatusFlag)
+    {
+        case SYSTEM_STATUS_FLAG_POWER_SAVING_ON: // introduced in Windows 10
+            pxBattery->StatusFlag |= PXBatteryPowerSavingEnable;
+            break;
+    }
+
+    pxBattery->LifeTime = systemPowerStatus.BatteryLifeTime;
+    pxBattery->FullLifeTime = systemPowerStatus.BatteryFullLifeTime;
+
+    return PXActionSuccessful;
+
+#else
+    return PXActionRefusedNotSupportedByLibrary;
+#endif
+}

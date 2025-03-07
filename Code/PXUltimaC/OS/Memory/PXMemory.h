@@ -203,6 +203,28 @@ typedef struct PXMemoryPageInfo_
 PXMemoryPageInfo;
 
 
+
+typedef struct PXMemoryBlockInfo_
+{
+    int c;
+}
+PXMemoryBlockInfo;
+
+
+typedef struct PXMemoryManager_
+{
+    int x;
+}
+PXMemoryManager;
+
+
+
+
+
+
+
+
+
 // Global memory lookup.
 // This is a ugly solution but due to the
 // scattered calls of malloc and free, we

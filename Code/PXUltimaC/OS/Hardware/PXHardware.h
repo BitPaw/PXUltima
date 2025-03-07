@@ -396,8 +396,24 @@ PXProcessorWS;
 
 
 
+#define PXBatteryPresentMASK        0b00000011
+#define PXBatteryPresentINVALID     0b00000000
+#define PXBatteryPresentONLINE      0b00000001
+#define PXBatteryPresentOFFLINE     0b00000010
+#define PXBatteryPresentUNKNOWN     0b00000011
 
-#define PXBatteryIsPresent
+#define PXBatteryCapacityMASK       0b00011100
+#define PXBatteryCapacityNORMAL     0b00000000
+#define PXBatteryCapacityHIGH       0b00000100 // High—the battery capacity is at more than 66 percent
+#define PXBatteryCapacityLOW        0b00001000 // Low—the battery capacity is at less than 33 percent
+#define PXBatteryCapacityCRITICAL   0b00001100 // Critical—the battery capacity is at less than five percent
+#define PXBatteryCapacityCHARGING   0b00010000 // Charging
+#define PXBatteryCapacityNOBATTERY  0b00010100 // No system battery
+#define PXBatteryCapacityUNKOWN     0b00011000 // Unknown status—unable to read the battery flag information
+
+#define PXBatteryPowerSavingEnable 0b00100000
+
+
 #define PXBatteryModeCharging
 #define PXBatteryModeDischarge
 #define PXBatteryType
@@ -405,6 +421,11 @@ PXProcessorWS;
 
 typedef struct PXBattery_
 {
+    PXInt8U StatusFlag;
+    PXInt8U LifePercent; // 0-100, 255=Unkown
+    PXInt32U LifeTime;
+    PXInt32U FullLifeTime;
+
     // Info
     char Name[16];
     char MaterialTechnology[16];
@@ -479,5 +500,7 @@ PXHardwareInfo;
 #define PXHardwareInfoAll PXHardwareInfoProcesor | PXHardwareInfoHardDrive | PXHardwareInfoDisplay
 
 PXPublic PXActionResult PXAPI PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, const PXInt32U fetchFlags);
+
+PXPublic PXActionResult PXAPI PXHardwareBattery(PXBattery* const pxBattery);
 
 #endif

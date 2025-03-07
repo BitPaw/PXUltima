@@ -163,6 +163,11 @@ int main()
 
     PXLibraryCurrentlyLoaded(PXNull, 0, 0);
 
+    while(true)
+    {
+        Sleep(1000);
+    }
+
 
 
     /*
