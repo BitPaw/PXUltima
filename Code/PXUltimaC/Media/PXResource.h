@@ -481,6 +481,7 @@ typedef struct PXResourceManager_
     PXDictionary GUIElementLookup;
     PXDictionary SpriteAnimator;
     PXDictionary IconLookUp;
+    PXDictionary IconAtlasLookUp;
 
     struct PXShaderProgram_* ShaderFailback;
     struct PXModel_* ModelFailback;

@@ -11,6 +11,11 @@
 
 const char PXMemoryLogPrintTitle[] = "OS-Kernel";
 const char PXMemoryLogPrintMemory[] = "Memory";
+const char PXMemoryLogPrintMemoryCalloc[] = "Memory-Calloc";
+const char PXMemoryLogPrintMemoryMalloc[] = "Memory-Malloc";
+const char PXMemoryLogPrintMemoryRealloc[] = "Memory-Realloc";
+const char PXMemoryLogPrintMemoryFree[] = "Memory-Free";
+
 
 #if OSUnix
 
@@ -215,6 +220,36 @@ PXBool PXAPI PXMemoryDoAdressesOverlap(void* const adressA, const PXSize adressA
     return overlap;
 }
 
+PXSize PXAPI PXMemoryHeapBlockSize(PXMemoryHeap* pxMemoryHeap, const void* const adress)
+{
+    PXMemoryHeap redirectHeap;
+
+    if(!pxMemoryHeap)
+    {
+        PXMemoryHeapGetGlobal(&redirectHeap);
+        pxMemoryHeap = &redirectHeap;
+    }
+
+#if OSUnix
+    return 0;
+
+#elif OSWindows
+
+    // HeapSize cant handle NULL pointers. If we get one here, it sure is 0.
+    if(!adress)
+    {
+        return 0;
+    }
+
+    const SIZE_T size = HeapSize(pxMemoryHeap->HeapHandle, 0, adress);
+    const PXActionResult sizeError = PXErrorCurrent((SIZE_T)-1 != size);
+
+    return size;
+#else
+    return 0;
+#endif
+}
+
 void* PXAPI PXMemoryHeapCalloc(PXMemoryHeap* pxMemoryHeap, const PXSize amount, const PXSize objectSize)
 {
     const PXSize totalAmount = amount * objectSize;
@@ -269,14 +304,14 @@ void* PXAPI PXMemoryHeapCalloc(PXMemoryHeap* pxMemoryHeap, const PXSize amount, 
             PXLoggingAllocation,
             PXMemoryLogPrintTitle,
             "Memory-Calloc",
-            "%s::%s::%s::%i, %ix %i B @ <%p>",
+            "<%p> %4ix %4i B %s::%s::%s::%i",
+            adress,
+            pxSymbolMemory.Amount,
+            pxSymbolMemory.ObjectSize,
             pxSymbol.NameModule,
             pxSymbol.NameFile,
             pxSymbol.NameSymbol,
-            pxSymbolMemory.LineNumber,
-            pxSymbolMemory.Amount,
-            pxSymbolMemory.ObjectSize,
-            adress
+            pxSymbolMemory.LineNumber
         );
 #endif
     }
@@ -319,7 +354,7 @@ void* PXAPI PXMemoryHeapMalloc(PXMemoryHeap* pxMemoryHeap, const PXSize memorySi
 
         PXDebug* pxDebug = PXDebugInstanceGet();
 
-        PXDebugStackTrace(pxDebug, &pxSymbol, 1, 3, 1);
+        PXDebugStackTrace(pxDebug, &pxSymbol, 1, 2, 1);
 
         pxSymbolMemory.ModuleAdress = pxSymbol.ModuleAdress;
         PXTextCopyA(pxSymbol.NameFile, 64, pxSymbolMemory.FileAdress, 64);
@@ -329,20 +364,20 @@ void* PXAPI PXMemoryHeapMalloc(PXMemoryHeap* pxMemoryHeap, const PXSize memorySi
        // PXMemorySymbolAdd(&pxSymbolMemory, PXMemorySymbolInfoModeAdd);
 
 
-#if PXLogEnable
+#if PXLogEnable 
         PXLogPrint
         (
             PXLoggingAllocation,
             PXMemoryLogPrintTitle,
-            "Memory-Alloc",
-            "%s::%s::%s::%i, %7ix %i B @ <%p>",
+            "Memory-Malloc",
+            "<%p> %4ix %4i B %s::%s::%s::%i",
+            adress,
+            pxSymbolMemory.Amount,
+            pxSymbolMemory.ObjectSize,
             pxSymbol.NameModule,
             pxSymbol.NameFile,
             pxSymbol.NameSymbol,
-            pxSymbolMemory.LineNumber,
-            pxSymbolMemory.Amount,
-            pxSymbolMemory.ObjectSize,
-            adress
+            pxSymbolMemory.LineNumber
         );
 #endif
     }
@@ -365,6 +400,11 @@ PXBool PXAPI PXMemoryHeapFree(PXMemoryHeap* pxMemoryHeap, const void* const adre
         pxMemoryHeap = &redirectHeap;
     }
 
+#if PXLogEnable 
+    const PXSize blockSize = PXMemoryHeapBlockSize(pxMemoryHeap, adress);
+#endif
+
+
 #if OSUnix || MemoryUseSystemFunction || OSForcePOSIXForWindows
     free(adress);
 #elif OSWindows
@@ -373,6 +413,7 @@ PXBool PXAPI PXMemoryHeapFree(PXMemoryHeap* pxMemoryHeap, const void* const adre
 
     // Special logging behaviour
     {
+#if PXLogEnable 
         PXSymbolMemory pxSymbolMemory;
         pxSymbolMemory.Adress = adress;
         pxSymbolMemory.Amount = -1;
@@ -389,20 +430,20 @@ PXBool PXAPI PXMemoryHeapFree(PXMemoryHeap* pxMemoryHeap, const void* const adre
         PXTextCopyA(pxSymbol.NameSymbol, 64, pxSymbolMemory.FunctionAdress, 64);
         pxSymbolMemory.LineNumber = -1;
 
-        PXMemorySymbolAdd(&pxSymbolMemory, PXMemorySymbolInfoModeRemove);
+       // PXMemorySymbolAdd(&pxSymbolMemory, PXMemorySymbolInfoModeRemove);
 
-#if PXLogEnable
         PXLogPrint
         (
             PXLoggingAllocation,
             PXMemoryLogPrintTitle,
             "Memory-Free",
-            "%s::%s::%s::%i, %i B",
+            "<%p> %4i B %s::%s::%s::%i",
+            adress,
+            blockSize,
             pxSymbol.NameModule,
             pxSymbol.NameFile,
             pxSymbol.NameSymbol,
-            pxSymbolMemory.LineNumber,
-            pxSymbolMemory.Amount
+            pxSymbolMemory.LineNumber
         );
 #endif
     }
@@ -426,6 +467,11 @@ void* PXAPI PXMemoryHeapRealloc(PXMemoryHeap* pxMemoryHeap, const void* const ad
         pxMemoryHeap = &redirectHeap;
     }
 
+#if PXLogEnable 
+    const PXSize blockSizeOLD = PXMemoryHeapBlockSize(pxMemoryHeap, adress);
+#endif
+
+
 #if OSUnix || MemoryUseSystemFunction || OSForcePOSIXForWindows
     // Function allows NULL as an adress
     newAdress = realloc(adress, memorySize);
@@ -445,7 +491,16 @@ void* PXAPI PXMemoryHeapRealloc(PXMemoryHeap* pxMemoryHeap, const void* const ad
 
     // PXMemorySet(newAdress, '°', memorySize - oldSize);
 
-#if 0
+
+#if PXLogEnable 
+    const PXSize blockSizeNEW = PXMemoryHeapBlockSize(pxMemoryHeap, newAdress);
+    const PXOffset offset = blockSizeNEW - blockSizeOLD;
+#endif
+
+
+
+
+#if PXLogEnable
     // Special logging behaviour
     {
         PXSymbolMemory pxSymbolMemory;
@@ -466,39 +521,43 @@ void* PXAPI PXMemoryHeapRealloc(PXMemoryHeap* pxMemoryHeap, const void* const ad
 
         PXMemorySymbolAdd(&pxSymbolMemory, PXMemorySymbolInfoModeUpdate);
 
-#if PXLogEnable && 0
         if(updatedLocation)
         {
             PXLogPrint
             (
-                PXLoggingReallocation,
-                "PX",
-                "Memory-Realloc",
-                "%s::%s::%s::%i, %i B",
+                PXLoggingAllocation,
+                PXMemoryLogPrintTitle,
+                PXMemoryLogPrintMemoryRealloc,
+                "<%p> %i B -> <%p> %i B, (%i), %s::%s::%s::%i",
+                adress,
+                blockSizeOLD,
+                newAdress,
+                blockSizeNEW,
+                offset,
                 pxSymbol.NameModule,
                 pxSymbol.NameFile,
                 pxSymbol.NameSymbol,
-                pxSymbolMemory.LineNumber,
-                pxSymbolMemory.Amount
+                pxSymbolMemory.LineNumber
             );
-
         }
         else
         {
             PXLogPrint
             (
-                PXLoggingReallocation,
-                "PX",
-                "Memory-Realloc",
-                "%s::%s::%s::%i, %i B (No Move)",
+                PXLoggingAllocation,
+                PXMemoryLogPrintTitle,
+                PXMemoryLogPrintMemoryRealloc,
+                "<%p> %i B -> <No-Move> %i B, (%i), %s::%s::%s::%i",
+                adress,
+                blockSizeOLD,
+                blockSizeNEW,
+                offset,
                 pxSymbol.NameModule,
                 pxSymbol.NameFile,
                 pxSymbol.NameSymbol,
-                pxSymbolMemory.LineNumber,
-                pxSymbolMemory.Amount
+                pxSymbolMemory.LineNumber
             );
         }
-#endif
     }
 #endif
 
@@ -1266,9 +1325,9 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize* const createdSize, cons
         PXLogPrint
         (
             PXLoggingError,
-            "File",
-            "Open-Virtual",
-            "Allocation failed! -> VirtualAlloc()"
+            PXMemoryLogPrintTitle,
+            PXMemoryLogPrintMemory,
+            "Virtual-Alloc failed! -> VirtualAlloc()"
         );
 #endif
 
@@ -1277,6 +1336,7 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize* const createdSize, cons
 
 
     MEMORY_BASIC_INFORMATION memoryInfo;
+    PXClear(MEMORY_BASIC_INFORMATION, &memoryInfo);
 
     VirtualQuery(allocatedData, &memoryInfo, sizeof(MEMORY_BASIC_INFORMATION));
 

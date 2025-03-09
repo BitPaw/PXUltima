@@ -9,6 +9,8 @@
 
 #define PXWavefrontDetectMaterial 0
 
+const char PXWaveFrontText[] = "WaveFront";
+
 void PXAPI PXWavefrontElementConstruct(PXWavefrontElement* objElement)
 {
     PXClear(PXWavefrontElement, objElement);
@@ -276,7 +278,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
     PXLogPrint
     (
         PXLoggingInfo,
-        "WaveFront",
+        PXWaveFrontText,
         "Parsing",
         "Start"
     );
@@ -287,7 +289,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
     PXLogPrint
     (
         PXLoggingInfo,
-        "WaveFront",
+        PXWaveFrontText,
         "Parsing",
         "Step 1, Lexer..."
     );
@@ -303,7 +305,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
     PXLogPrint
     (
         PXLoggingInfo,
-        "WaveFront",
+        PXWaveFrontText,
         "Parsing",
         "Step 2, analyse file..."
     );
@@ -423,7 +425,8 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
                     lineCurrent = pxCompiler.ReadInfo.SymbolEntryCurrent.Line; // Update current line
 
                     isDone = PXFileIsAtEnd(&tokenSteam) || (lineStart != lineCurrent);
-                } while(!isDone);
+                } 
+                while(!isDone);
 
                 break; // [OK]
             }
@@ -435,7 +438,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
                 PXLogPrint
                 (
                     PXLoggingError,
-                    "WaveFront",
+                    PXWaveFrontText,
                     "Parsing",
                     "Unexpected"
                 );
@@ -445,7 +448,8 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
                 do
                 {
                     PXCompilerSymbolEntryExtract(&pxCompiler);
-                } while(pxCompiler.ReadInfo.SymbolEntryCurrent.ID != PXCompilerSymbolLexerNewLine);
+                } 
+                while(pxCompiler.ReadInfo.SymbolEntryCurrent.ID != PXCompilerSymbolLexerNewLine);
 
                 break;
             }
@@ -456,7 +460,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
     PXLogPrint
     (
         PXLoggingInfo,
-        "WaveFront",
+        PXWaveFrontText,
         "Parsing",
         "Step 3, prealocate memory..."
     );
@@ -494,7 +498,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
         vertexTextureDataCacheSize = counterTexture * 2u;
         vertexNormalDataCacheSize = counterNormal * 3u;
 
-        vertexDataCacheSize = vertexPositionDataCacheSize + vertexTextureDataCacheSize + vertexNormalDataCacheSize;
+        vertexDataCacheSize = sizeof(float) * (vertexPositionDataCacheSize + vertexTextureDataCacheSize + vertexNormalDataCacheSize);
         vertexDataCache = PXMemoryHeapCallocT(float, vertexDataCacheSize);
 
         vertexTextureDataCache = vertexDataCache;
@@ -511,10 +515,10 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
         const PXSize vertexDataAmount = vertexDataStride * counterIndex;
 
 
-        pxModel->Mesh.VertexBuffer.VertexDataSize = vertexDataAmount;
+        pxModel->Mesh.VertexBuffer.VertexDataSize = sizeof(float) * vertexDataAmount;
         pxModel->Mesh.VertexBuffer.VertexData = PXMemoryHeapCallocT(float, vertexDataAmount);    
 
-        pxModel->Mesh.IndexBuffer.SegmentListSize = materialUseIndex;
+        pxModel->Mesh.IndexBuffer.SegmentListSize = sizeof(PXIndexSegment) * materialUseIndex;
         pxModel->Mesh.IndexBuffer.SegmentList = PXMemoryHeapCallocT(PXIndexSegment, materialUseIndex);
 
 
@@ -537,7 +541,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
         pxModel->Mesh.IndexBuffer.IndexDataSize = 0;
 #endif
 
-        pxModel->MaterialContaierListAmount = materialInlcudeIndex;
+        pxModel->MaterialContaierListAmount = sizeof(PXMaterialContainer) * materialInlcudeIndex;
         pxModel->MaterialContaierList = PXMemoryHeapCallocT(PXMaterialContainer, materialInlcudeIndex);
 
 
@@ -559,7 +563,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
     PXLogPrint
     (
         PXLoggingInfo,
-        "WaveFront",
+        PXWaveFrontText,
         "Parsing",
         "Step 4, extract data..."
     );
@@ -815,7 +819,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
     PXLogPrint
     (
         PXLoggingInfo,
-        "WaveFront",
+        PXWaveFrontText,
         "Parsing",
         "Done!"
     );
@@ -839,7 +843,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
     PXLogPrint
     (
         PXLoggingInfo,
-        "WaveFront",
+        PXWaveFrontText,
         "Parsing",
         "Generating missing normals..."
     );
@@ -881,7 +885,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
     PXLogPrint
     (
         PXLoggingInfo,
-        "WaveFront",
+        PXWaveFrontText,
         "Parsing",
         "Generated missing normals!"
     );

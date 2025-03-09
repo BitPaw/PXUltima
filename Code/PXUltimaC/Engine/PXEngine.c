@@ -3290,7 +3290,7 @@ void PXAPI PXEngineResourceDefaultElements(PXEngine* const pxEngine)
         };
 
 
-        for(size_t i = 0; i < sizeof(indexList); i++)
+        for(PXSize i = 0; i < sizeof(indexList); ++i)
         {
             --indexList[i];
         }

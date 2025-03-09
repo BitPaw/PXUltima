@@ -256,6 +256,9 @@ PXPublic PXActionResult PXAPI PXMemoryHeapRelease(PXMemoryHeap* const pxMemoryHe
 PXPublic void PXAPI PXMemoryHeapGetGlobal(PXMemoryHeap* const pxMemoryHeap);
 //PXPublic PXMemoryHeap* PXAPI PXMemoryHeapGetPX(void);
 
+// Get the size of the allocated block
+PXPublic PXSize PXAPI PXMemoryHeapBlockSize(PXMemoryHeap* pxMemoryHeap, const void* const adress);
+
 PXPublic void* PXAPI PXMemoryHeapCalloc(PXMemoryHeap* pxMemoryHeap, const PXSize amount, const PXSize objectSize); // [POSIX]
 PXPublic void* PXAPI PXMemoryHeapMalloc(PXMemoryHeap* pxMemoryHeap, const PXSize memorySize); // [POSIX]
 PXPublic PXBool PXAPI PXMemoryHeapFree(PXMemoryHeap* pxMemoryHeap, const void* const adress); // [POSIX]

@@ -447,11 +447,11 @@ void PXBitmapImageDataLayoutCalculate(PXBitmapImageDataLayout* const bmpImageDat
         "BMP",
         "Calculate",
         "Layout\n"
-        "%15s : %i\n"
-        "%15s : %i\n"
-        "%15s : %i\n"
-        "%15s : %i\n"
-        "%15s : %i",
+        "%20s : %i\n"
+        "%20s : %i\n"
+        "%20s : %i\n"
+        "%20s : %i\n"
+        "%20s : %i",
         "ImageSize", bmpImageDataLayout->ImageSize,
         "RowImageDataSize", bmpImageDataLayout->RowImageDataSize,
         "RowPaddingSize", bmpImageDataLayout->RowPaddingSize,

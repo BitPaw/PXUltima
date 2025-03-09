@@ -69,6 +69,8 @@
 #include <OS/Async/PXThreadPool.h>
 #include <OS/Graphic/NativDraw/PXNativDraw.h>
 
+const char PXResourceManagerText[] = "PX-Resource";
+
 PXResourceManager _GLOBALResourceManager;
 
 //void _chkstk(size_t s) {};
@@ -333,6 +335,8 @@ PXResourceManager* PXAPI PXResourceManagerInstanceFetch(void)
     PXDictionaryConstruct(&_GLOBALResourceManager.GUIElementLookup, sizeof(PXInt32U), sizeof(PXWindow), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&_GLOBALResourceManager.SpriteAnimator, sizeof(PXInt32U), sizeof(PXSpriteAnimator), PXDictionaryValueLocalityExternalReference);
     PXDictionaryConstruct(&_GLOBALResourceManager.IconLookUp, sizeof(PXInt32U), sizeof(PXIcon), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&_GLOBALResourceManager.IconAtlasLookUp, sizeof(PXInt32U), sizeof(PXIconAtlas), PXDictionaryValueLocalityExternalReference);
+
 
     _GLOBALResourceManager.Flags |= PXResourceManagerInit;
 
@@ -400,29 +404,29 @@ PXResourceEntry;
 // Resource lookup for directCall
 const PXResourceEntry _GlobalResourceEntryList[] =
 {
-    {PXNull,                                PXNull, "Invalid", PXResourceTypeInvalid, 0 },
-    {PXNull,                                PXNull, "Custom", PXResourceTypeCustom, 0 },
-    {&_GLOBALResourceManager.ImageLookUp,   PXResourceCreateImage, "Image", PXResourceTypeImage, sizeof(PXImage)},
-    {&_GLOBALResourceManager.SoundLookUp,   PXResourceCreateSound, "Sound",PXResourceTypeSound, sizeof(PXSound) },
-    {PXNull,                                PXNull, "Video", PXResourceTypeVideo,sizeof(PXVideo) },
-    {&_GLOBALResourceManager.ModelLookUp,   PXResourceCreateModel, "Model",PXResourceTypeModel, sizeof(PXModel) },
-    {&_GLOBALResourceManager.FontLookUp,    PXResourceCreateFont, "Font",PXResourceTypeFont, sizeof(PXFont) },
-    {&_GLOBALResourceManager.MaterialLookUp, PXResourceCreateMaterial,"Material", PXResourceTypeMaterial, sizeof(PXMaterial) },
-    {&_GLOBALResourceManager.BrushLookUp,   PXResourceCreateBrush, "Brush",PXResourceTypeBrush, sizeof(PXWindowBrush) },
-    {&_GLOBALResourceManager.TextureLookUp, PXResourceCreateTexture2D, "Texture2D",PXResourceTypeTexture2D, sizeof(PXTexture2D) },
-    {&_GLOBALResourceManager.TextureLookUp, PXResourceCreateTextureCube,"TextureCube", PXResourceTypeTextureCube, sizeof(PXTextureCube) },
-    {&_GLOBALResourceManager.ShaderProgramLookup, PXResourceCreateShaderProgram, "ShaderProgram",PXResourceTypeShaderProgram, sizeof(PXShaderProgram) },
-    {&_GLOBALResourceManager.SkyBoxLookUp,  PXResourceCreateSkybox, "SkyBox",PXResourceTypeSkybox, sizeof(PXSkyBox) },
-    {&_GLOBALResourceManager.SpritelLookUp, PXResourceCreateSprite, "Sprite",PXResourceTypeSprite, sizeof(PXSprite) },
-    {&_GLOBALResourceManager.IconLookUp,    PXResourceCreateIcon, "Icon",PXResourceTypeIcon, sizeof(PXIcon) },
-    {PXNull,                                PXResourceCreateIconAtlas, "IconAtlas",PXResourceTypeIconAtlas, sizeof(PXIconAtlas) },
-    {&_GLOBALResourceManager.SpriteAnimator, PXResourceCreateSpriteAnimator, "SpriteAnimator",PXResourceTypeSpriteAnimator, sizeof(PXSpriteAnimator) },
-    {PXNull,                                PXNull, "Text",PXResourceTypeText, sizeof(PXText) },
-    {&_GLOBALResourceManager.TimerLookUp,   PXResourceCreateTimer, "Timer",PXResourceTypeTimer, sizeof(PXEngineTimer) },
-    {PXNull,                                PXNull, "---",PXResourceTypeEngineSound, 0 },
-    {&_GLOBALResourceManager.GUIElementLookup, PXResourceCreateWindow,"Window", PXResourceTypeGUIElement, sizeof(PXWindow) },
-    {&_GLOBALResourceManager.HitBoxLookUp,  PXResourceCreateHitBox, "---",PXResourceTypeHitBox, sizeof(PXHitBox) },
-    {&_GLOBALResourceManager.MaterialLookUp, PXNull, PXResourceTypeMaterialList, PXNull },
+    {PXNull,                                PXNull,                                 "Invalid", PXResourceTypeInvalid, 0 },
+    {PXNull,                                PXNull,                                 "Custom", PXResourceTypeCustom, 0 },
+    {&_GLOBALResourceManager.ImageLookUp,   PXResourceCreateImage,                  "Image", PXResourceTypeImage, sizeof(PXImage)},
+    {&_GLOBALResourceManager.SoundLookUp,   PXResourceCreateSound,                  "Sound",PXResourceTypeSound, sizeof(PXSound) },
+    {PXNull,                                PXNull,                                 "Video", PXResourceTypeVideo,sizeof(PXVideo) },
+    {&_GLOBALResourceManager.ModelLookUp,   PXResourceCreateModel,                  "Model",PXResourceTypeModel, sizeof(PXModel) },
+    {&_GLOBALResourceManager.FontLookUp,    PXResourceCreateFont,                   "Font",PXResourceTypeFont, sizeof(PXFont) },
+    {&_GLOBALResourceManager.MaterialLookUp, PXResourceCreateMaterial,              "Material", PXResourceTypeMaterial, sizeof(PXMaterial) },
+    {&_GLOBALResourceManager.BrushLookUp,   PXResourceCreateBrush,                  "Brush",PXResourceTypeBrush, sizeof(PXWindowBrush) },
+    {&_GLOBALResourceManager.TextureLookUp, PXResourceCreateTexture2D,              "Texture2D",PXResourceTypeTexture2D, sizeof(PXTexture2D) },
+    {&_GLOBALResourceManager.TextureLookUp, PXResourceCreateTextureCube,            "TextureCube", PXResourceTypeTextureCube, sizeof(PXTextureCube) },
+    {&_GLOBALResourceManager.ShaderProgramLookup, PXResourceCreateShaderProgram,    "ShaderProgram",PXResourceTypeShaderProgram, sizeof(PXShaderProgram) },
+    {&_GLOBALResourceManager.SkyBoxLookUp,  PXResourceCreateSkybox,                 "SkyBox",PXResourceTypeSkybox, sizeof(PXSkyBox) },
+    {&_GLOBALResourceManager.SpritelLookUp, PXResourceCreateSprite,                 "Sprite",PXResourceTypeSprite, sizeof(PXSprite) },
+    {&_GLOBALResourceManager.IconLookUp,    PXResourceCreateIcon,                   "Icon",PXResourceTypeIcon, sizeof(PXIcon) },
+    {&_GLOBALResourceManager.IconAtlasLookUp, PXResourceCreateIconAtlas,              "IconAtlas",PXResourceTypeIconAtlas, sizeof(PXIconAtlas) },
+    {&_GLOBALResourceManager.SpriteAnimator, PXResourceCreateSpriteAnimator,        "SpriteAnimator",PXResourceTypeSpriteAnimator, sizeof(PXSpriteAnimator) },
+    {PXNull,                                PXNull,                                 "Text",PXResourceTypeText, sizeof(PXText) },
+    {&_GLOBALResourceManager.TimerLookUp,   PXResourceCreateTimer,                  "Timer",PXResourceTypeTimer, sizeof(PXEngineTimer) },
+    {PXNull,                                PXNull,                                 "---",PXResourceTypeEngineSound, 0 },
+    {&_GLOBALResourceManager.GUIElementLookup, PXResourceCreateWindow,              "Window", PXResourceTypeGUIElement, sizeof(PXWindow) },
+    {&_GLOBALResourceManager.HitBoxLookUp,  PXResourceCreateHitBox,                 "---",PXResourceTypeHitBox, sizeof(PXHitBox) },
+    {&_GLOBALResourceManager.MaterialLookUp, PXNull,                                "Material", PXResourceTypeMaterialList, PXNull},
     {PXNull, PXNull, "---", PXResourceTypeCodeDocument, sizeof(PXWindowBrush) },
     {PXNull, PXNull, "---", PXResourceTypeDocument, sizeof(PXWindowBrush) },
     {PXNull, PXNull, "---", PXResourceTypeBinary, sizeof(PXWindowBrush) },
@@ -441,7 +445,7 @@ PXActionResult PXAPI PXResourceCreateSkybox(PXResourceCreateInfo* const pxResour
     PXLogPrint
     (
         PXLoggingInfo,
-        "Resource",
+        PXResourceManagerText,
         "Create",
         "SkyBox ID:%i\n"
         "%9s : %s\n"
@@ -517,7 +521,7 @@ PXActionResult PXAPI PXResourceCreateBrush(PXResourceCreateInfo* const pxResourc
     PXLogPrint
     (
         PXLoggingInfo,
-        "Resource",
+        PXResourceManagerText,
         "Brush",
         "ID:%i, Color-RGB:%2.2x%2.2x%2.2x, <%s>",
         pxWindowBrush->Info.ID,
@@ -564,7 +568,7 @@ PXActionResult PXAPI PXResourceCreateImage(PXResourceCreateInfo* const pxResourc
             PXLogPrint
             (
                 PXLoggingError,
-                "Resource",
+                PXResourceManagerText,
                 "Image-Create",
                 "Failed <%s>!",
                 pxText.TextA
@@ -578,7 +582,7 @@ PXActionResult PXAPI PXResourceCreateImage(PXResourceCreateInfo* const pxResourc
         PXLogPrint
         (
             PXLoggingInfo,
-            "Resource",
+            PXResourceManagerText,
             "Image-Create",
             "Successful <%s>.",
             pxText.TextA
@@ -603,7 +607,7 @@ PXActionResult PXAPI PXResourceCreateShaderProgram(PXResourceCreateInfo* const p
     PXLogPrint
     (
         PXLoggingInfo,
-        "Resource",
+        PXResourceManagerText,
         "Create",
         "ShaderProgram [PXID:%i]",
         pxShaderProgram->Info.ID
@@ -709,7 +713,7 @@ PXActionResult PXAPI PXResourceCreateIcon(PXResourceCreateInfo* const pxResource
     PXLogPrint
     (
         PXLoggingInfo,
-        "Resource",
+        PXResourceManagerText,
         "Icon-Create",
         "ID:%i - WHXY : %3i,%3i,%3i,%3i",
         pxIcon->Info.ID,
@@ -744,7 +748,7 @@ PXActionResult PXAPI PXResourceCreateFont(PXResourceCreateInfo* const pxResource
         PXLogPrint
         (
             PXLoggingInfo,
-            "Resource",
+            PXResourceManagerText,
             "Font-Load",
             "ID:%-4i <%s>, Name:<%s>, load from OS",
             pxFont->Info.ID,
@@ -762,7 +766,7 @@ PXActionResult PXAPI PXResourceCreateFont(PXResourceCreateInfo* const pxResource
         PXLogPrint
         (
             PXLoggingInfo,
-            "Resource",
+            PXResourceManagerText,
             "Font-Load",
             "ID:%4i <%s>, Path:<%s>, from file",
             pxFont->Info.ID,
@@ -795,7 +799,7 @@ PXActionResult PXAPI PXResourceCreateMaterial(PXResourceCreateInfo* const pxReso
     PXLogPrint
     (
         PXLoggingInfo,
-        "Resource",
+        PXResourceManagerText,
         "Material-Create",
         "Allocating x%i",
         pxResourceCreateInfo->ObjectAmount
@@ -825,7 +829,7 @@ PXActionResult PXAPI PXResourceCreateIconAtlas(PXResourceCreateInfo* const pxRes
     PXLogPrint
     (
         PXLoggingInfo,
-        "Resource",
+        PXResourceManagerText,
         "IconAtlas-Create",
         "ID:%i <%s> - CallSize:%i",
         pxIconAtlas->Info.ID,
@@ -863,7 +867,7 @@ PXActionResult PXAPI PXResourceCreateIconAtlas(PXResourceCreateInfo* const pxRes
     PXLogPrint
     (
         PXLoggingInfo,
-        "Resource",
+        PXResourceManagerText,
         "IconAtlas-Create",
         "ID:%i, CellMap:<%i/%i> from Texture:<%i/%i>. Total:%i icons",
         pxIconAtlas->Info.ID,
@@ -982,7 +986,7 @@ PXActionResult PXAPI PXResourceCreateTexture2D(PXResourceCreateInfo* const pxRes
     PXLogPrint
     (
         PXLoggingInfo,
-        "Resource",
+        PXResourceManagerText,
         "Create",
         "Texture2D PXID:%i <%s>.",
         pxTexture2D->Info.ID,
@@ -1025,7 +1029,7 @@ PXActionResult PXAPI PXResourceCreateModel(PXResourceCreateInfo* const pxResourc
         PXLogPrint
         (
             PXLoggingInfo,
-            "Resource",
+            PXResourceManagerText,
             "Create",
             "Model ID:%i <%s>.",
             pxModel->Info.ID,
@@ -1052,7 +1056,7 @@ PXActionResult PXAPI PXResourceCreateModel(PXResourceCreateInfo* const pxResourc
                 PXLogPrint
                 (
                     PXLoggingInfo,
-                    "Resource",
+                    PXResourceManagerText,
                     "Model-Load",
                     "ID:%i Failed",
                     pxModel->Info.ID
@@ -1068,7 +1072,7 @@ PXActionResult PXAPI PXResourceCreateModel(PXResourceCreateInfo* const pxResourc
         PXLogPrint
         (
             PXLoggingInfo,
-            "Resource",
+            PXResourceManagerText,
             "Model-Create",
             "ID:%i internal",
             pxModel->Info.ID
@@ -1285,7 +1289,7 @@ PXActionResult PXAPI PXResourceCreateSprite(PXResourceCreateInfo* const pxResour
     PXLogPrint
     (
         PXLoggingInfo,
-        "Resource",
+        PXResourceManagerText,
         "Create",
         "Sprite ID:%i, Use <%s>",
         pxSprite->Info.ID,
@@ -1468,7 +1472,7 @@ PXActionResult PXAPI PXResourceCreateSpriteAnimator(PXResourceCreateInfo* const 
     PXLogPrint
     (
         PXLoggingInfo,
-        "Resource",
+        PXResourceManagerText,
         "Create",
         "SpriteAnimator"
     );
@@ -1488,7 +1492,7 @@ PXActionResult PXAPI PXResourceCreateHitBox(PXResourceCreateInfo* const pxResour
     PXLogPrint
     (
         PXLoggingInfo,
-        "Resource",
+        PXResourceManagerText,
         "HitBox-Create",
         "PXID:%i",
         pxHitBox->Info.ID
@@ -1504,7 +1508,7 @@ PXActionResult PXAPI PXResourceCreateSound(PXResourceCreateInfo* const pxResourc
     PXLogPrint
     (
         PXLoggingInfo,
-        "Resource",
+        PXResourceManagerText,
         "Sound-Create",
         "PXID:%i, %s",
         pxSound->Info.ID,
@@ -1525,7 +1529,7 @@ PXActionResult PXAPI PXResourceCreateSound(PXResourceCreateInfo* const pxResourc
         PXLogPrint
         (
             PXLoggingError,
-            "Resource",
+            PXResourceManagerText,
             "Sound-Load",
             "failed <%s>!",
             pxResourceCreateInfo->FilePath
@@ -1539,7 +1543,7 @@ PXActionResult PXAPI PXResourceCreateSound(PXResourceCreateInfo* const pxResourc
     PXLogPrint
     (
         PXLoggingInfo,
-        "Resource",
+        PXResourceManagerText,
         "Sound-Load",
         "successful <%s>.",
         pxResourceCreateInfo->FilePath
@@ -1561,7 +1565,7 @@ PXActionResult PXAPI PXResourceCreateTimer(PXResourceCreateInfo* const pxResourc
     PXLogPrint
     (
         PXLoggingInfo,
-        "Resource",
+        PXResourceManagerText,
         "Timer-Create",
         "PXID:%i",
         pxEngineTimer->Info.ID
@@ -1612,6 +1616,16 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
 
     if(!isResourceAllocated)
     {
+        // Validation
+        {
+            if(!pxResourceEntry->LookupTable)
+            {
+                // TODO: Add behaviour to handle missing lookup
+
+            }
+        }
+
+
         PXLockEngage(&_GLOBALResourceManager.CreateLock);
 
         // Special behaviour if we have an object size of 0.
@@ -1637,14 +1651,15 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
             PXResourceInfo* const pxResourceInfo = (PXResourceInfo*)object;
             pxResourceInfo->ID = resourceID;
             pxResourceInfo->Flags |= PXResourceInfoExist;
-
-            PXDictionaryAdd(pxResourceEntry->LookupTable, &resourceID, *pxResourceCreateInfo->ObjectReference);
+         
+            PXDictionaryAdd(pxResourceEntry->LookupTable, &resourceID, *pxResourceCreateInfo->ObjectReference);           
+       
 
 #if PXLogEnable
             PXLogPrint
             (
                 PXLoggingInfo,
-                "Resource",
+                PXResourceManagerText,
                 "Register",
                 "PXID:%-4i Size:%-4i (%i/%i) <%s>",
                 resourceID,
@@ -1699,7 +1714,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
         PXLogPrint
         (
             PXLoggingError,
-            "Resource",
+            PXResourceManagerText,
             "Register",
             "[PXID:%-4i] <%s> Has no function to handle creation.",
             -1,
@@ -1718,7 +1733,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
         PXLogPrint
         (
             PXLoggingError,
-            "Resource",
+            PXResourceManagerText,
             "Create",
             "[PXID:%-4i] <%s> failed creation.",
             -1,
@@ -1744,6 +1759,31 @@ PXActionResult PXAPI PXResourceManagerAddV(PXResourceCreateInfo* const pxResourc
 
 PXActionResult PXAPI PXResourceStoreName(PXResourceInfo* const pxResourceInfo, const char* const name, const PXSize nameSize)
 {
+    // NULL Check
+    if(!pxResourceInfo)
+    {
+        return PXActionRefusedArgumentNull;
+    }
+
+    const PXBool callValid = name && (0 == nameSize || (PXSize)-1 == nameSize);
+
+    if(!callValid)
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingError,
+            PXResourceManagerText,
+            "Store-Name",
+            "PXID:%i, Name can't be stored!",
+            pxResourceInfo->ID
+        );
+#endif
+
+        return PXActionRefusedArgumentInvalid;
+    }
+
+
     PXSize length = nameSize;
 
     if(-1 == nameSize)
@@ -1759,10 +1799,12 @@ PXActionResult PXAPI PXResourceStoreName(PXResourceInfo* const pxResourceInfo, c
     PXLogPrint
     (
         PXLoggingInfo,
-        "Resource",
+        PXResourceManagerText,
         "Store-Name",
-        "%s",
-        buffer
+        "PXID:%i, %s (%i)",
+        pxResourceInfo->ID,
+        buffer,
+        length
     );
 #endif
 
@@ -1790,7 +1832,7 @@ PXActionResult PXAPI PXResourceStorePath(PXResourceInfo* const pxResourceInfo, c
     PXLogPrint
     (
         PXLoggingInfo,
-        "Resource",
+        PXResourceManagerText,
         "Store-Path",
         "%s",
         buffer
@@ -1978,38 +2020,37 @@ void PXAPI PXModelFormatTransmute(PXModel* const pxModel, PXModelFormatTransmute
             PXSize sizeBefore = pxModel->Mesh.VertexBuffer.VertexDataSize;
             PXSize sizeCurrent = (pxModel->Mesh.VertexBuffer.VertexDataSize / 2) * amountFuture;
                         
-            const PXSize newVertexArraySize = sizeCurrent;
-            float* newVertexArray = PXMemoryHeapCallocT(float, sizeCurrent);
+            // Store old data
+            PXInt8S* dataOld = (PXInt8S*)pxModel->Mesh.VertexBuffer.VertexData;
 
-            PXInt8S* dataSource = (PXInt8S*)pxModel->Mesh.VertexBuffer.VertexData;
+            pxModel->Mesh.VertexBuffer.Format = PXVertexBufferFormatT2F_XYZ;
+            pxModel->Mesh.VertexBuffer.VertexData = PXMemoryHeapCallocT(float, sizeCurrent);;
+            pxModel->Mesh.VertexBuffer.VertexDataSize = sizeof(float) * sizeCurrent;
+
+            float* dataNew = pxModel->Mesh.VertexBuffer.VertexData;
 
             PXSize newOffset = 0;
 
             for(PXSize i = 0; i < sizeBefore; i += 2)
             {
-                newVertexArray[newOffset++] = (dataSource[i + 0] + 1) / 2.0f;
-                newVertexArray[newOffset++] = -(dataSource[i + 1] + 1) / 2.0f;
-                newVertexArray[newOffset++] = dataSource[i + 0];
-                newVertexArray[newOffset++] = dataSource[i + 1];
-                newVertexArray[newOffset++] = 0.0f;
+                dataNew[newOffset++] = (dataOld[i + 0] + 1) / 2.0f;
+                dataNew[newOffset++] = -(dataOld[i + 1] + 1) / 2.0f;
+                dataNew[newOffset++] = dataOld[i + 0];
+                dataNew[newOffset++] = dataOld[i + 1];
+                dataNew[newOffset++] = 0.0f;
             }
 
-            // Memory leak?
-
-            pxModel->Mesh.VertexBuffer.Format = PXVertexBufferFormatT2F_XYZ;
-            pxModel->Mesh.VertexBuffer.VertexData = newVertexArray;
-            pxModel->Mesh.VertexBuffer.VertexDataSize = newVertexArraySize;
+            // Memory leak? dataOld needs to be deleted? But what if its read only?         
 
             break;
         }
         case PXVertexBufferFormatXYZI8:
-        {
-          
+        {          
             PXSize amountFuture = PXVertexBufferFormatStrideSize(PXVertexBufferFormatXYZFloat);
             PXSize amountCurrent = PXVertexBufferFormatStrideSize(PXVertexBufferFormatXYZI8);
             PXSize sizeCurrent = pxModel->Mesh.VertexBuffer.VertexDataSize / 1;
 
-            const PXSize newVertexArraySize = sizeCurrent;
+            const PXSize newVertexArraySize = sizeof(float) * sizeCurrent;
             float* newVertexArray = PXMemoryHeapCallocT(float, sizeCurrent);
 
             PXInt8S* dataSource = (PXInt8S*)pxModel->Mesh.VertexBuffer.VertexData;
@@ -2043,7 +2084,7 @@ void PXAPI PXModelFormatTransmute(PXModel* const pxModel, PXModelFormatTransmute
     PXLogPrint
     (
         PXLoggingInfo,
-        "Resource",
+        PXResourceManagerText,
         "Model-Format",
         "Transmute <%s> to <%s>",
         oldFomatText,
@@ -2759,7 +2800,7 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
             PXLogPrint
             (
                 PXLoggingError,
-                "Resource",
+                PXResourceManagerText,
                 "Load",
                 "Refused : Format not detected"
             );
@@ -2774,7 +2815,7 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
             PXLogPrint
             (
                 PXLoggingError,
-                "Resource",
+                PXResourceManagerText,
                 "Load",
                 "Refused : Not implemented"
             );
@@ -2995,7 +3036,7 @@ PXActionResult PXAPI PXResourceSave(PXResourceTransphereInfo* const pxResourceSa
             PXLogPrint
             (
                 PXLoggingError,
-                "Resource",
+                PXResourceManagerText,
                 "Save",
                 "Refused : Format not known"
             );
@@ -3010,7 +3051,7 @@ PXActionResult PXAPI PXResourceSave(PXResourceTransphereInfo* const pxResourceSa
             PXLogPrint
             (
                 PXLoggingError,
-                "Resource",
+                PXResourceManagerText,
                 "Save",
                 "Refused : Not implemented"
             );
@@ -3034,7 +3075,7 @@ PXActionResult PXAPI PXResourceSave(PXResourceTransphereInfo* const pxResourceSa
         PXLogPrint
         (
             PXLoggingInfo,
-            "Resource",
+            PXResourceManagerText,
             "Save",
             "%6.3fms SOPs:%-7i <%s>",
             timeDelta,

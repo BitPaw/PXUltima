@@ -36,6 +36,9 @@ const char PXOpenglLibraryName[]
 #endif
 ;
 
+const char PXOpenGLName[] = "OpenGL";
+const char PXOpenGLModelName[] = "Model";
+
 const PXInt16U PXOpenGLBindingSize = sizeof(PXOpenGLBinding) / sizeof(void*);
 const char PXOpenGLBindingList[] =
 {
@@ -6758,8 +6761,8 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
         PXLogPrint
         (
             PXLoggingInfo,
-            "OpenGL",
-            "Model",
+            PXOpenGLName,
+            PXOpenGLModelName,
             "Create VBO:<%i>, IBO:<%i>",
             bufferIDs[0],
             bufferIDs[1]
@@ -6789,16 +6792,13 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
     PXLogPrint
     (
         PXLoggingInfo,
-        "OpenGL",
-        "Model",
-        "VBO:<%i> upload data 0x%p with %i Bytes",
+        PXOpenGLName,
+        PXOpenGLModelName,
+        "VBO:<%i> upload <%p> %i B",
         pxVertexBuffer->Info.Handle.OpenGLID,
         pxVertexBuffer->VertexData,
         pxVertexBuffer->VertexDataSize
     );
-
-
-
 
     const PXSize amount = pxVertexBuffer->VertexDataSize / sizeof(float);
     float* data = (float*)pxVertexBuffer->VertexData;
@@ -6823,9 +6823,9 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
         PXLogPrint
         (
             PXLoggingInfo,
-            "OpenGL",
-            "Model",
-            "IBO:<%i> upload data 0x%p with %i Bytes ",
+            PXOpenGLName,
+            PXOpenGLModelName,
+            "IBO:<%i> upload <%p> with %i B",
             pxIndexBuffer->Info.Handle.OpenGLID,
             pxIndexBuffer->IndexData,
             pxIndexBuffer->IndexDataSize
