@@ -278,22 +278,20 @@ void* PXAPI PXMemoryHeapCalloc(PXMemoryHeap* pxMemoryHeap, const PXSize amount, 
 
     // Special logging behaviour
     {
-        PXSymbolMemory pxSymbolMemory;
-        pxSymbolMemory.Adress = adress;
-        pxSymbolMemory.Amount = amount;
-        pxSymbolMemory.ObjectSize = objectSize;
-
-        PXSymbol pxSymbol;
-        PXClear(PXSymbol, &pxSymbol);
+       // PXSymbolMemory pxSymbolMemory;
+       // pxSymbolMemory.Adress = adress;
+       // pxSymbolMemory.Amount = amount;
+        //pxSymbolMemory.ObjectSize = objectSize;
 
         PXDebug* pxDebug = PXDebugInstanceGet();
 
+        PXSymbol pxSymbol;
         PXDebugStackTrace(pxDebug, &pxSymbol, 1, 2, 1);
 
-        pxSymbolMemory.ModuleAdress = pxSymbol.ModuleAdress;
-        PXTextCopyA(pxSymbol.NameFile, 64, pxSymbolMemory.FileAdress, 64);
-        PXTextCopyA(pxSymbol.NameSymbol, 64, pxSymbolMemory.FunctionAdress, 64);
-        pxSymbolMemory.LineNumber = pxSymbol.LineNumber;
+      //  pxSymbolMemory.ModuleAdress = pxSymbol.ModuleAdress;
+       // PXTextCopyA(pxSymbol.NameFile, 64, pxSymbolMemory.FileAdress, 64);
+       // PXTextCopyA(pxSymbol.NameSymbol, 64, pxSymbolMemory.FunctionAdress, 64);
+       // pxSymbolMemory.LineNumber = pxSymbol.LineNumber;
 
         //PXMemorySymbolAdd(&pxSymbolMemory, PXMemorySymbolInfoModeAdd);
 
@@ -303,15 +301,15 @@ void* PXAPI PXMemoryHeapCalloc(PXMemoryHeap* pxMemoryHeap, const PXSize amount, 
         (
             PXLoggingAllocation,
             PXMemoryLogPrintTitle,
-            "Memory-Calloc",
+            PXMemoryLogPrintMemoryCalloc,
             "<%p> %4ix %4i B %s::%s::%s::%i",
             adress,
-            pxSymbolMemory.Amount,
-            pxSymbolMemory.ObjectSize,
+            amount,
+            objectSize,
             pxSymbol.NameModule,
             pxSymbol.NameFile,
             pxSymbol.NameSymbol,
-            pxSymbolMemory.LineNumber
+            pxSymbol.LineNumber
         );
 #endif
     }

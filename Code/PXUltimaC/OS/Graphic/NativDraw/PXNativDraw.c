@@ -126,6 +126,38 @@ PXActionResult PXAPI PXNativeDrawErrorFetch(const PXBool condition)
 }
 #endif
 
+
+
+
+PXActionResult PXAPI PXNativDrawWindowPrintHirachy(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow, int depth)
+{
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXNativDrawText,
+        "Hirachy",
+        "%4i, PXID:%4i, Name:%i",
+        pxWindow->Info.ID,
+        pxWindow->NameContent
+    );
+#endif
+
+    // Loop siblings
+
+    /*for(PXWindow* sibling = pxGUIElement->Info.Hierarchy.Sibling; sibling; sibling = pxGUIElement->Info.Hierarchy.Sibling)
+    {
+
+    }*/
+
+    for(PXWindow* sibling = pxWindow->Info.Hierarchy.Sibling; sibling; sibling = sibling->Info.Hierarchy.ChildFirstborn)
+    {
+        PXNativDrawWindowPrintHirachy(pxNativDraw, sibling, depth + 1);
+    }
+
+    return PXActionSuccessful;
+}
+
 PXActionResult PXAPI PXNativDrawDisplayListFetch(PXNativDraw* const pxNativDraw)
 {
 #if OSUnix && 0
@@ -775,6 +807,8 @@ PXActionResult PXAPI PXNativDrawWindowCreate(PXNativDraw* const pxNativDraw, PXW
 
     // Window create, register..
     PXDictionaryAdd(&pxNativDraw->ResourceManager->GUIElementLookup, &pxWindow->Info.Handle.WindowID, pxWindow);
+    
+    PXHierarchicalNodeParent(&pxWindow->Info.Hierarchy, &pxWindowParent->Info.Hierarchy);
 
 
 #if PXLogEnable && 0
@@ -1442,7 +1476,7 @@ PXActionResult PXAPI PXNativDrawWindowProperty(PXNativDraw* const pxNativDraw, P
             {
                 PXWindowPropertyInfo sizeFetchInfo;
                 PXClear(PXWindowPropertyInfo, &sizeFetchInfo);
-                sizeFetchInfo.WindowCurrent = pxWindowPropertyInfo->WindowReference;
+                sizeFetchInfo.WindowCurrent = pxWindowPropertyInfo->WindowParentREF;
                 sizeFetchInfo.Property = PXUIElementPropertySize;
                 sizeFetchInfo.UpdateType = PXWindowPropertyUpdateTypeRead;
 
@@ -1466,9 +1500,9 @@ PXActionResult PXAPI PXNativDrawWindowProperty(PXNativDraw* const pxNativDraw, P
                 // If the window is an actual window, we will have bad allignment if we use MoveWindow
                 //if(pxGUIElement->Type != PXUIElementTypeWindow)
 
-                if(0)
+                if(1)
                 {
-                    const PXBool success = MoveWindow
+                    const PXBool moveSuccess = MoveWindow
                     (
                         pxWindow->Info.Handle.WindowID,
                         pxUIElementPositionCalulcateInfo.X,
@@ -1477,6 +1511,7 @@ PXActionResult PXAPI PXNativDrawWindowProperty(PXNativDraw* const pxNativDraw, P
                         pxUIElementPositionCalulcateInfo.Height,
                         PXTrue
                     );
+                    const PXActionResult moveResult = PXErrorCurrent(moveSuccess);
                 }
 #if 0
                 else
@@ -1523,7 +1558,7 @@ PXActionResult PXAPI PXNativDrawWindowProperty(PXNativDraw* const pxNativDraw, P
                     PXLoggingInfo,
                     PXNativDrawText,
                     "Update-Size",
-                    "X:%4i, Y:%4i, W:%4i, H:%4i",
+                    "X:%4i, Y:%4i, W:%4i, H:%4i\n\n\n\n",
                     (int)pxUIElementPositionCalulcateInfo.X,
                     (int)pxUIElementPositionCalulcateInfo.Y,
                     (int)pxUIElementPositionCalulcateInfo.Width,
@@ -1801,7 +1836,7 @@ PXActionResult PXAPI PXNativDrawWindowXYWH(PXNativDraw* const pxNativDraw, PXWin
         // Note:
         // MoveWindow() is a bad function. SetWindowPos() seems to be better in every case.
 
-        const UINT flags = SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER;
+        const UINT flags = SWP_NOZORDER | SWP_NOOWNERZORDER; // SWP_NOSIZE
         const PXBool success = SetWindowPos
         (
             pxWindow->Info.Handle.WindowID, 
@@ -2749,8 +2784,8 @@ PXActionResult PXAPI PXNativDrawEventConsumer(PXNativDraw* const pxNativDraw, PX
         {
             PXLogPrint
             (
-                PXLoggingInfo,
-                "Windows",
+                PXLoggingEvent,
+                PXNativDrawText,
                 "Event-Click",
                 "Sender (%0xp)",
                 pxWindowEvent->UIElementSender->Info.ID
@@ -2762,8 +2797,8 @@ PXActionResult PXAPI PXNativDrawEventConsumer(PXNativDraw* const pxNativDraw, PX
         {
             PXLogPrint
             (
-                PXLoggingInfo,
-                "Windows",
+                PXLoggingEvent,
+                PXNativDrawText,
                 "Event-Select",
                 "ID:<%i>"
             );
@@ -2779,11 +2814,11 @@ PXActionResult PXAPI PXNativDrawEventConsumer(PXNativDraw* const pxNativDraw, PX
 
         case PXWindowEventTypeElementMove:
         {
-#if PXLogEnable && 1
+#if PXLogEnable
             PXLogPrint
             (
                 PXLoggingEvent,
-                "Window",
+                PXNativDrawText,
                 "Event-Move",
                 ""
             );
@@ -2799,13 +2834,18 @@ PXActionResult PXAPI PXNativDrawEventConsumer(PXNativDraw* const pxNativDraw, PX
             PXLogPrint
             (
                 PXLoggingEvent,
-                "Window",
-                "Event-Resize",
+                PXNativDrawText,
+                "Window-Resize",
                 "<%ix%i>",
                 pxWindowEventResize->Width,
                 pxWindowEventResize->Height
             );
 #endif
+
+            // Does not work here, as this is not updated for now!
+           //PXNativeDrawRefreshSizeAllChildren(pxNativDraw, pxWindowEvent->UIElementReference);
+
+
 
             // PXWindowhSizeRefresAll(pxGUISystem, pxWindowEvent->UIElementReference);
 
@@ -4662,6 +4702,79 @@ BOOL CALLBACK PXWindowEnumChildProc(HWND hwnd, LPARAM lParam)
     ShowWindow(hwnd, mode);
 }
 #endif
+
+
+
+
+
+BOOL CALLBACK PXNativeDrawRefreshSizeAllChildrenEEEEE(HWND windowHandle, PXNativDraw* const pxNativDraw)
+{
+    PXWindow* pxWindow = 0;
+
+    // Fetch window
+    {
+        PXDictionary* lookup = &pxNativDraw->ResourceManager->GUIElementLookup;
+
+        PXDictionaryFindEntry(lookup, &windowHandle, &pxWindow);
+    }
+
+
+    PXWindowPropertyInfo pxWindowSizeInfo;
+    PXClear(PXWindowPropertyInfo, &pxWindowSizeInfo);
+   // pxWindowSizeInfo.WindowParentREF = ;
+    pxWindowSizeInfo.WindowCurrent = pxWindow;
+    pxWindowSizeInfo.Property = PXUIElementPropertySizeParent;
+
+    PXUIElementPositionCalulcateInfo pxUIElementPositionCalulcateInfo;
+    PXClear(PXUIElementPositionCalulcateInfo, &pxUIElementPositionCalulcateInfo);
+
+    PXWindowFetch(pxNativDraw->GUISystem, &pxWindowSizeInfo, 1);
+
+    pxUIElementPositionCalulcateInfo.WindowWidth = pxWindowSizeInfo.Data.Size.Width;
+    pxUIElementPositionCalulcateInfo.WindowHeight = pxWindowSizeInfo.Data.Size.Height;
+
+    if(pxUIElementPositionCalulcateInfo.WindowWidth == 0)
+    {
+        pxUIElementPositionCalulcateInfo.WindowWidth = 400;
+        pxUIElementPositionCalulcateInfo.WindowHeight = 500;
+    }
+
+    PXUIElementPositionCalculcate(pxWindow, &pxUIElementPositionCalulcateInfo);
+
+
+    PXRectangleXYWHI32 pxRectangleXYWHI32;
+    pxRectangleXYWHI32.X = pxUIElementPositionCalulcateInfo.X;
+    pxRectangleXYWHI32.Y = pxUIElementPositionCalulcateInfo.Y;
+    pxRectangleXYWHI32.Width = pxUIElementPositionCalulcateInfo.Width;
+    pxRectangleXYWHI32.Height = pxUIElementPositionCalulcateInfo.Height;
+
+    PXNativDrawWindowXYWH(pxNativDraw, pxWindow, &pxRectangleXYWHI32, PXTrue);
+
+
+
+    PXLogPrint
+    (
+        PXLoggingWarning,
+        "EEEE",
+        "",
+        ""
+    );
+
+    
+}
+
+
+void PXAPI PXNativeDrawRefreshSizeAllChildren(PXNativDraw* const pxNativDraw, PXWindow* const window)
+{
+    const BOOL success = EnumChildWindows
+    (
+        window->Info.Handle.WindowID,
+        PXNativeDrawRefreshSizeAllChildrenEEEEE,
+        pxNativDraw
+    );
+
+
+}
 
 void PXAPI PXNativeDrawMouseTrack(PXWindow* const window)
 {

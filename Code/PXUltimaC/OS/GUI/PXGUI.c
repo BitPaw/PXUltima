@@ -2510,7 +2510,7 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
     PXWindowPropertyInfo pxWindowSizeInfo;
     PXClear(PXWindowPropertyInfo, &pxWindowSizeInfo);
     //sizeInfoAA.UIElement = *pxGUIElementCreateInfo->UIElement;
-    pxWindowSizeInfo.WindowReference = pxGUIElementCreateInfo->WindowCurrent;
+    pxWindowSizeInfo.WindowParentREF = pxGUIElementCreateInfo->WindowCurrent;
     pxWindowSizeInfo.Property = PXUIElementPropertySizeParent;
 
     PXUIElementPositionCalulcateInfo pxUIElementPositionCalulcateInfo;
@@ -3646,11 +3646,11 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
             PXClearList(PXWindowPropertyInfo, pxUIElementUpdateInfo, 2);
 
             pxUIElementUpdateInfo[0].WindowCurrent = pxWindowCurrent;
-            pxUIElementUpdateInfo[0].WindowReference = pxGUIElementCreateInfo->WindowParent;
+            pxUIElementUpdateInfo[0].WindowParentREF = pxGUIElementCreateInfo->WindowParent;
             pxUIElementUpdateInfo[0].Property = PXUIElementPropertyTextContent;
 
             pxUIElementUpdateInfo[1].WindowCurrent = pxWindowCurrent;
-            pxUIElementUpdateInfo[1].WindowReference = pxGUIElementCreateInfo->WindowParent;
+            pxUIElementUpdateInfo[1].WindowParentREF = pxGUIElementCreateInfo->WindowParent;
             pxUIElementUpdateInfo[1].Property = PXUIElementPropertyTextAllign;
 
             // PXWindowUpdate(pxGUISystem, pxUIElementUpdateInfo, 2);
@@ -3663,10 +3663,10 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
             PXClearList(PXWindowPropertyInfo, pxUIElementUpdateInfo, 2);
 
             pxUIElementUpdateInfo[0].WindowCurrent = pxWindowCurrent;
-            pxUIElementUpdateInfo[0].WindowReference = pxGUIElementCreateInfo->WindowParent;
+            pxUIElementUpdateInfo[0].WindowParentREF = pxGUIElementCreateInfo->WindowParent;
             pxUIElementUpdateInfo[0].Property = PXUIElementPropertyProgressbarPercentage;
             pxUIElementUpdateInfo[1].WindowCurrent = pxWindowCurrent;
-            pxUIElementUpdateInfo[1].WindowReference = pxGUIElementCreateInfo->WindowParent;
+            pxUIElementUpdateInfo[1].WindowParentREF = pxGUIElementCreateInfo->WindowParent;
             pxUIElementUpdateInfo[1].Property = PXUIElementPropertyProgressbarBarColor;
 
 
@@ -3878,10 +3878,10 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
             PXClearList(PXWindowPropertyInfo, pxUIElementUpdateInfo, 2);
 
             pxUIElementUpdateInfo[0].WindowCurrent = pxWindowCurrent;
-            pxUIElementUpdateInfo[0].WindowReference = pxGUIElementCreateInfo->WindowParent;
+            pxUIElementUpdateInfo[0].WindowParentREF = pxGUIElementCreateInfo->WindowParent;
             pxUIElementUpdateInfo[0].Property = PXUIElementPropertyProgressbarPercentage;
             pxUIElementUpdateInfo[1].WindowCurrent = pxWindowCurrent;
-            pxUIElementUpdateInfo[1].WindowReference = pxGUIElementCreateInfo->WindowParent;
+            pxUIElementUpdateInfo[1].WindowParentREF = pxGUIElementCreateInfo->WindowParent;
             pxUIElementUpdateInfo[1].Property = PXUIElementPropertyProgressbarBarColor;
 
             PXNativDrawWindowProperty(&pxGUISystem->NativDraw, pxUIElementUpdateInfo, 2);
@@ -4359,7 +4359,7 @@ PXActionResult PXAPI PXWindowFetch(PXGUISystem* const pxGUISystem, PXWindowPrope
     for(PXSize i = 0; i < amount; ++i)
     {
         PXWindowPropertyInfo* const pxGUIElementUpdateInfo = &pxGUIElementUpdateInfoList[i];
-        PXWindow* const pxGUIElement = pxGUIElementUpdateInfo->WindowCurrent;
+        PXWindow* const pxWindow = pxGUIElementUpdateInfo->WindowCurrent;
 
         switch(pxGUIElementUpdateInfo->Property)
         {
@@ -4369,11 +4369,11 @@ PXActionResult PXAPI PXWindowFetch(PXGUISystem* const pxGUISystem, PXWindowPrope
 
                 // const PXBool hasParent = pxGUIElement ? pxGUIElement->Parent : PXFalse;
 
-                const PXBool hasParent = PXNull != pxGUIElementUpdateInfoList->WindowReference;
+                const PXBool hasParent = PXNull != pxGUIElementUpdateInfoList->WindowParentREF;
 
                 if(!hasParent) // Special behaviour, if ID is null, get the screensize
                 {
-                    PXNativDrawScreenSizeGet(&pxRectangleXYWH);
+                    PXNativDrawScreenSizeGet(pxRectangleXYWH);
 
                     return PXActionSuccessful;
                 }
@@ -4381,7 +4381,7 @@ PXActionResult PXAPI PXWindowFetch(PXGUISystem* const pxGUISystem, PXWindowPrope
                 PXWindowPropertyInfo pxGUIElementUpdateInfoSub;
                 PXClear(PXWindowPropertyInfo, &pxGUIElementUpdateInfoSub);
                 pxGUIElementUpdateInfoSub.Property = PXUIElementPropertySize;
-                pxGUIElementUpdateInfoSub.WindowCurrent = pxGUIElementUpdateInfoList->WindowReference;
+                pxGUIElementUpdateInfoSub.WindowCurrent = pxGUIElementUpdateInfoList->WindowParentREF;
 
                 PXWindowFetch(pxGUISystem, &pxGUIElementUpdateInfoSub, 1);
 
@@ -4391,7 +4391,7 @@ PXActionResult PXAPI PXWindowFetch(PXGUISystem* const pxGUISystem, PXWindowPrope
             }
             case PXUIElementPropertySize:
             {
-                PXNativDrawWindowXYWH(&pxGUISystem->NativDraw, pxGUIElement, &pxGUIElementUpdateInfo->Data.Size, PXFalse);
+                PXNativDrawWindowXYWH(&pxGUISystem->NativDraw, pxWindow, &pxGUIElementUpdateInfo->Data.Size, PXFalse);
                 break;
             }
 
@@ -4435,7 +4435,28 @@ PXActionResult PXAPI PXWindowRelease(PXWindow* const pxGUIElement)
 }
 
 
-void PXAPI PXWindowhSizeRefresAll(PXGUISystem* const pxGUISystem)
+
+BOOL CALLBACK PXWindowEnumChildProc(HWND hwnd, LPARAM lParam)
+{
+    int mode = *(int*)lParam;
+
+    // Recursion
+    {
+        const BOOL success = EnumChildWindows
+        (
+            hwnd,
+            PXWindowEnumChildProc,
+            lParam
+        );
+    }
+
+    ShowWindow(hwnd, mode);
+}
+
+
+
+
+void PXAPI PXWindowhSizeRefresAll(PXGUISystem* const pxGUISystem, PXWindow* const pxWindow)
 {
     if(!(pxGUISystem))
     {
@@ -4447,28 +4468,48 @@ void PXAPI PXWindowhSizeRefresAll(PXGUISystem* const pxGUISystem)
     PXUIElementPositionCalulcateInfo pxUIElementPositionCalulcateInfo;
     PXClear(PXUIElementPositionCalulcateInfo, &pxUIElementPositionCalulcateInfo);
 
+    /*
+    const BOOL enumResult = EnumChildWindows
+    (
+        pxWindow->Info.Handle.WindowID,
+        [in]           WNDENUMPROC lpEnumFunc,
+        [in]           LPARAM      lParam
+    );
+    */
+
+
+
+    /*
+
     for(PXSize i = 0; i < uiElementLookup->EntryAmountCurrent; ++i)
     {
         PXDictionaryEntry pxDictionaryEntry;
-        PXWindow* uiElement = PXNull;
 
         PXDictionaryIndex(uiElementLookup, i, &pxDictionaryEntry);
 
-        uiElement = *(PXWindow**)pxDictionaryEntry.Value;
+        PXWindow* uiElement = *(PXWindow**)pxDictionaryEntry.Value;
 
         if(uiElement->Type == PXUIElementTypeWindow)
         {
-            continue;
+            //continue;
         }
+        
 
+
+
+
+        /*
         PXWindowPropertyInfo pxGUIElementUpdateInfo;
         PXClear(PXWindowPropertyInfo, &pxGUIElementUpdateInfo);
         pxGUIElementUpdateInfo.WindowCurrent = uiElement;
-        pxGUIElementUpdateInfo.WindowReference = PXNull;
-        pxGUIElementUpdateInfo.Property = PXUIElementPropertySizeParent;
+        pxGUIElementUpdateInfo.WindowReference = uiElement->Info.Hierarchy.Parrent;
+        pxGUIElementUpdateInfo.Property = PXUIElementPropertySize;
 
         PXNativDrawWindowProperty(&pxGUISystem->NativDraw, &pxGUIElementUpdateInfo, 1);
+     
+
     }
+       */
 }
 
 PXActionResult PXAPI PXWindowPixelSystemSet(PXWindowPixelSystemInfo* const pxWindowPixelSystemInfo)

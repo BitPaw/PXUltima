@@ -381,6 +381,8 @@ PXActionResult PXAPI PXDebugDetach(PXDebug* const pxDebug)
 
 void PXAPI PXDebugStackTrace(PXDebug* const pxDebug, PXSymbol* const pxSymbolList, const PXSize pxSymbolListAmount, const PXSize start, const PXSize depth)
 {
+    PXMemoryClear(pxSymbolList, sizeof(PXSymbol) * pxSymbolListAmount);
+
 #if OSUnix 
     void* array[10];
     size_t size;

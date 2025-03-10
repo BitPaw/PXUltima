@@ -11,6 +11,12 @@
 PXPrivate PXActionResult PXAPI PXNativeDrawErrorFetch(const PXBool condition);
 #endif
 
+//------------------------
+// Debug
+//------------------------
+PXPublic PXActionResult PXAPI PXNativDrawWindowPrintHirachy(PXNativDraw* const pxNativDraw, PXWindow* const pxWindow, int depth);
+//------------------------
+
 PXPublic PXActionResult PXAPI PXNativDrawDisplayListFetch(PXNativDraw* const pxNativDraw);
 
 // Connect to a display server and fetch data
@@ -192,8 +198,10 @@ PXPrivate BOOL CALLBACK PXWindowEnumChildProc(HWND hwnd, LPARAM lParam);
 //---------------------------------------------------------
 
 
+PXPublic void PXAPI PXNativeDrawRefreshSizeAllChildren(PXNativDraw* const pxNativDraw, PXWindow* const window);
 
-PXPrivate void PXAPI PXNativeDrawMouseTrack(PXWindow* const window);
+
+PXPublic void PXAPI PXNativeDrawMouseTrack(PXWindow* const window);
 
 
 /*

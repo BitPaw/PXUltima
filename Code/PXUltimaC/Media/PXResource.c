@@ -868,8 +868,8 @@ PXActionResult PXAPI PXResourceCreateIconAtlas(PXResourceCreateInfo* const pxRes
     (
         PXLoggingInfo,
         PXResourceManagerText,
-        "IconAtlas-Create",
-        "ID:%i, CellMap:<%i/%i> from Texture:<%i/%i>. Total:%i icons",
+        "IconAtlas",
+        "PXID:%i, CellMap:<%i/%i> from Texture:<%i/%i>. Total:%i icons",
         pxIconAtlas->Info.ID,
         pxIconAtlasCreateInfo->CellAmountX,
         pxIconAtlasCreateInfo->CellAmountY,
@@ -879,6 +879,10 @@ PXActionResult PXAPI PXResourceCreateIconAtlas(PXResourceCreateInfo* const pxRes
     );
 #endif
 
+    if(!pxIconAtlas->IconList)
+    {
+        return PXActionInvalid;
+    }
 
     // Register icons
     for(PXSize y = 0; y < pxIconAtlasCreateInfo->CellAmountY; ++y)
@@ -1638,6 +1642,24 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
 
         void* objectList = PXMemoryHeapCalloc(PXNull, pxResourceEntry->TypeSize, pxResourceCreateInfo->ObjectAmount);
 
+        if(!objectList)
+        {
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingError,
+                PXResourceManagerText,
+                "Register",
+                "Failed to allocate space for : Size:%-4i (%i) <%s>",
+                pxResourceEntry->TypeSize,
+                pxResourceCreateInfo->ObjectAmount,
+                pxResourceEntry->Name
+            );
+#endif
+
+            return PXActionFailedMemoryAllocation;
+        }
+
         *pxResourceCreateInfo->ObjectReference = objectList;
 
         for(PXSize i = 0; i < pxResourceCreateInfo->ObjectAmount; ++i)
@@ -1647,11 +1669,14 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
             // Get currect objects is we have multible
             void* object = (char*)objectList + (pxResourceEntry->TypeSize * i);
 
-            // UNSTANBLE CAST!
+            // UNSTANBLE CAST?
             PXResourceInfo* const pxResourceInfo = (PXResourceInfo*)object;
             pxResourceInfo->ID = resourceID;
             pxResourceInfo->Flags |= PXResourceInfoExist;
-         
+
+            // Store myself, so we can cast back with hirachy
+            pxResourceInfo->Hierarchy.Yourself = object;
+
             PXDictionaryAdd(pxResourceEntry->LookupTable, &resourceID, *pxResourceCreateInfo->ObjectReference);           
        
 

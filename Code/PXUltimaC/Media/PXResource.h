@@ -2863,7 +2863,7 @@ PXWindowPropertyUpdateType;
 typedef struct PXWindowPropertyInfo_
 {
     PXWindow* WindowCurrent;
-    PXWindow* WindowReference;
+    PXWindow* WindowParentREF;
     PXUIElementProperty Property;
     PXWindowCreateInfoData Data;
 

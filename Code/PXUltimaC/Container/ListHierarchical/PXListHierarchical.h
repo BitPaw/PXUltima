@@ -7,21 +7,27 @@
 typedef enum PXHierarchicalNodeDirection_
 {
     PXHierarchicalNodeDirectionInvalid,
+    PXHierarchicalNodeDirectionSelf,
     PXHierarchicalNodeDirectionParent,
     PXHierarchicalNodeDirectionSibling,
     PXHierarchicalNodeDirectionChild
 }
 PXHierarchicalNodeDirection;
 
+typedef struct PXHierarchicalNode_ PXHierarchicalNode;
+
 typedef struct PXHierarchicalNode_
 {
-    void* Parrent;          // First upper parent object
-    void* Sibling;          // Like a linked list, contain the next object
-    void* ChildFirstborn;   // contain the first child object
+    void* Yourself;         // Payload of your own data
+    PXHierarchicalNode* Parrent;          // First upper parent object
+    PXHierarchicalNode* Sibling;          // Like a linked list, contain the next object
+    PXHierarchicalNode* ChildFirstborn;   // contain the first child object
 }
 PXHierarchicalNode;
 
-PXPublic PXActionResult PXAPI PXHierarchicalNodeEntryAdd(PXHierarchicalNode* const pxHierarchicalNode, void* const entry, const PXHierarchicalNodeDirection pxHierarchicalNodeDirection);
-PXPublic PXActionResult PXAPI PXHierarchicalNodeEntryAmount(PXHierarchicalNode* const pxHierarchicalNode, void* const entry, const PXHierarchicalNodeDirection pxHierarchicalNodeDirection);
+PXPublic PXActionResult PXAPI PXHierarchicalNodeYourself(PXHierarchicalNode* pxHierarchicalNode, void* const entry);
+PXPublic PXActionResult PXAPI PXHierarchicalNodeParent(PXHierarchicalNode* pxHierarchicalNode, PXHierarchicalNode* const pxHierarchicalNodeParent);
+PXPublic PXActionResult PXAPI PXHierarchicalNodeSibling(PXHierarchicalNode* pxHierarchicalNode, PXHierarchicalNode* const entry);
+PXPublic PXActionResult PXAPI PXHierarchicalNodeChild(PXHierarchicalNode* pxHierarchicalNode, PXHierarchicalNode* const entry);
 
 #endif

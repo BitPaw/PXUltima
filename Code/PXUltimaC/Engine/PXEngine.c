@@ -1239,7 +1239,11 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
                 PXCameraAspectRatioChange(pxEngine->CameraCurrent, pxViewPort.Width, pxViewPort.Height);
             }
 
-            PXWindowhSizeRefresAll(&pxEngine->GUISystem);
+           // PXWindowhSizeRefresAll(&pxEngine->GUISystem);
+
+            PXNativDrawWindowPrintHirachy(&pxEngine->GUISystem.NativDraw, pxEngine->Window, 0);
+
+            PXNativeDrawRefreshSizeAllChildren(&pxEngine->GUISystem.NativDraw, pxEngine->Window);
         }
     }
 
