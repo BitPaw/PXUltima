@@ -224,22 +224,23 @@ PXSize PXAPI PXMemoryHeapBlockSize(PXMemoryHeap* pxMemoryHeap, const void* const
 {
     PXMemoryHeap redirectHeap;
 
+    // HeapSize cant handle NULL pointers. If we get one here, it sure is 0.
+    if(!adress)
+    {
+        return 0;
+    }
+
     if(!pxMemoryHeap)
     {
         PXMemoryHeapGetGlobal(&redirectHeap);
         pxMemoryHeap = &redirectHeap;
     }
 
-#if OSUnix
-    return 0;
+#if OSUnix  || MemoryUseSystemFunction || OSForcePOSIXForWindows
 
-#elif OSWindows
+    return _msize(adress);
 
-    // HeapSize cant handle NULL pointers. If we get one here, it sure is 0.
-    if(!adress)
-    {
-        return 0;
-    }
+#elif OSWindows  
 
     const SIZE_T size = HeapSize(pxMemoryHeap->HeapHandle, 0, adress);
     const PXActionResult sizeError = PXErrorCurrent((SIZE_T)-1 != size);
@@ -473,6 +474,13 @@ void* PXAPI PXMemoryHeapRealloc(PXMemoryHeap* pxMemoryHeap, const void* const ad
 #if OSUnix || MemoryUseSystemFunction || OSForcePOSIXForWindows
     // Function allows NULL as an adress
     newAdress = realloc(adress, memorySize);
+
+    // clear new allocated space
+    PXSize spaceNewSize = memorySize - blockSizeOLD;
+    char* spaceNewAdress = (char*)newAdress + blockSizeOLD;
+
+    PXMemoryClear(spaceNewAdress, spaceNewSize);
+
 #elif OSWindows
 
     if(!adress)
@@ -488,6 +496,10 @@ void* PXAPI PXMemoryHeapRealloc(PXMemoryHeap* pxMemoryHeap, const void* const ad
     updatedLocation = newAdress != adress;
 
     // PXMemorySet(newAdress, '°', memorySize - oldSize);
+#else
+#error Memory reallocate seems not to be supported on this OS
+#endif
+
 
 
 #if PXLogEnable 
@@ -561,9 +573,7 @@ void* PXAPI PXMemoryHeapRealloc(PXMemoryHeap* pxMemoryHeap, const void* const ad
 
     return newAdress;
 
-#else
-#error Memory reallocate seems not to be supported on this OS
-#endif
+
 }
 
 PXActionResult PXAPI PXMemoryHeapCreate(PXMemoryHeap* const pxMemoryHeap)

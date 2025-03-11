@@ -4923,15 +4923,15 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
             pxOpenGL->Binding.ShaderAttach(pxShaderProgram->Info.Handle.OpenGLID, shader->Info.Handle.OpenGLID);
 
             // This shader is now valid
-            shader->Info.Flags |= PXResourceInfoExist;
+            shader->Info.Behaviour |= PXResourceInfoExist;
 
             // Are all shaders valid?
-            pxShaderProgram->Info.Flags |= PXResourceInfoExist * (sucessfulCounter == i);
+            pxShaderProgram->Info.Behaviour |= PXResourceInfoExist * (sucessfulCounter == i);
         }
     }
 
 
-    if(pxShaderProgram->Info.Flags & PXResourceInfoExist)
+    if(pxShaderProgram->Info.Behaviour & PXResourceInfoExist)
     {
 
         // Link shaders together
@@ -4970,7 +4970,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
 
                 PXMemoryHeapFree(PXNull, shaderErrorLengthData);
 
-                pxShaderProgram->Info.Flags &= ~PXResourceInfoExist; // Invalidate current shader
+                pxShaderProgram->Info.Behaviour &= ~PXResourceInfoExist; // Invalidate current shader
             }
         }
 
@@ -4990,7 +4990,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
         }
     }
 
-    if(!(PXResourceInfoExist & pxShaderProgram->Info.Flags))
+    if(!(PXResourceInfoExist & pxShaderProgram->Info.Behaviour))
     {
         PXOpenGLShaderProgramDelete(pxOpenGL, pxShaderProgram);
 

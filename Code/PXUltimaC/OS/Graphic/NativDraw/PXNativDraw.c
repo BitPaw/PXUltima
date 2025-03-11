@@ -799,7 +799,11 @@ PXActionResult PXAPI PXNativDrawWindowCreate(PXNativDraw* const pxNativDraw, PXW
     return PXActionRefusedNotSupportedByOperatingSystem;
 #endif
 
-    pxWindow->Info.Flags |= PXResourceInfoExist | PXResourceInfoActive | PXResourceInfoStorageDevice;
+    pxWindow->Info.Behaviour |=
+        PXResourceInfoExist | 
+        PXResourceInfoActive | 
+        PXResourceInfoRender | 
+        PXResourceInfoUseByOS;
     pxWindow->Position.Form.X = pxWindowCreateInfo->X;
     pxWindow->Position.Form.Y = pxWindowCreateInfo->Y;
     pxWindow->Position.Form.Width = pxWindowCreateInfo->Width;
@@ -808,7 +812,10 @@ PXActionResult PXAPI PXNativDrawWindowCreate(PXNativDraw* const pxNativDraw, PXW
     // Window create, register..
     PXDictionaryAdd(&pxNativDraw->ResourceManager->GUIElementLookup, &pxWindow->Info.Handle.WindowID, pxWindow);
     
-    PXHierarchicalNodeParent(&pxWindow->Info.Hierarchy, &pxWindowParent->Info.Hierarchy);
+    if(pxWindowParent)
+    {
+        PXHierarchicalNodeParent(&pxWindow->Info.Hierarchy, &pxWindowParent->Info.Hierarchy);
+    }
 
 
 #if PXLogEnable && 0
@@ -1625,11 +1632,11 @@ PXActionResult PXAPI PXNativDrawWindowProperty(PXNativDraw* const pxNativDraw, P
 
                 if(show)
                 {
-                    pxWindow->Info.Flags |= PXResourceInfoRender;
+                    pxWindow->Info.Behaviour |= PXResourceInfoRender;
                 }
                 else
                 {
-                    pxWindow->Info.Flags &= ~PXResourceInfoRender;
+                    pxWindow->Info.Behaviour &= ~PXResourceInfoRender;
                 }
 
 
@@ -2601,7 +2608,7 @@ PXActionResult PXAPI PXNativDrawRectangle(PXNativDraw* const pxNativDraw, PXWind
     );
 #endif
 
-    const PXBool isHovered = (PXResourceInfoSelected & pxWindow->Info.Flags) > 0;
+    const PXBool isHovered = (PXResourceInfoSelected & pxWindow->Info.Behaviour) > 0;
 
     PXActionResult pxActionResult = PXActionInvalid;
 
@@ -3552,42 +3559,57 @@ LRESULT CALLBACK PXNativDrawEventTranslator(const HWND windowID, const UINT even
 
         case WM_PAINT:
         {
-            // No parameters
+            // No parameters           
 
-            PXWindow* const pxGUIElement = PXNull;
+            PXWindow* const pxWindowTarget = PXNull;
 
             if(pxNativDraw->ResourceManager)
             {
-                PXDictionaryFindEntry(&pxNativDraw->ResourceManager->GUIElementLookup, &windowID, &pxGUIElement);
+                PXDictionaryFindEntry(&pxNativDraw->ResourceManager->GUIElementLookup, &windowID, &pxWindowTarget);
             }
 
-            if(!pxGUIElement)
+            PXLogPrint
+            (
+                PXLoggingEvent,
+                "Window",
+                "Paint",
+                "%p",
+                pxWindowTarget
+            );
+
+            if(!pxWindowTarget)
             {
                 break; // break: not found
             }
 
-            const PXBool shallDraw = pxGUIElement->DrawFunction && (PXResourceInfoRender & pxGUIElement->Info.Flags);
+            const PXBool shallDraw = pxWindowTarget->DrawFunction && (PXResourceInfoRender & pxWindowTarget->Info.Behaviour);
 
             if(shallDraw)
             {
                 PAINTSTRUCT paintStruct;
 
-                const HWND windowHandle = pxGUIElement->Info.Handle.WindowID;
+                const HWND windowHandle = pxWindowTarget->Info.Handle.WindowID;
                 const HDC hdc = BeginPaint(windowHandle, &paintStruct);
 
                 PXWindowDrawInfo pxGUIElementDrawInfo;
                 PXClear(PXWindowDrawInfo, &pxGUIElementDrawInfo);
-                pxGUIElementDrawInfo.hwnd = pxGUIElement->Info.Handle.WindowID;
+                pxGUIElementDrawInfo.hwnd = pxWindowTarget->Info.Handle.WindowID;
                 pxGUIElementDrawInfo.hDC = hdc;
-                // pxGUIElementDrawInfo.bErase = paintStruct.fErase;
+#if 1
+                pxGUIElementDrawInfo.bErase = paintStruct.fErase;
+#endif
 
-                PXRectangleLTRBI32ToXYWHI32((PXRectangleLTRBI32*)&paintStruct.rcPaint, &pxGUIElement->Position.Form);
+                PXRectangleLTRBI32ToXYWHI32((PXRectangleLTRBI32*)&paintStruct.rcPaint, &pxWindowTarget->Position.Form);
 
-                pxGUIElement->DrawFunction(pxNativDraw->GUISystem, pxGUIElement, &pxGUIElementDrawInfo);
+                pxWindowTarget->DrawFunction(pxNativDraw->GUISystem, pxWindowTarget, &pxGUIElementDrawInfo);
 
                 const BOOL endSuccess = EndPaint(windowHandle, &paintStruct);
 
                 return TRUE; // We did a custom draw, so return true to mark this as handled
+            }
+            else 
+            {
+                //return FALSE;
             }
 
             break;
@@ -3597,31 +3619,40 @@ LRESULT CALLBACK PXNativDrawEventTranslator(const HWND windowID, const UINT even
             const HWND identifier = (HWND)wParam;
             DRAWITEMSTRUCT* const drawItemInfo = (DRAWITEMSTRUCT*)lParam;
 
-            PXWindow* const pxGUIElement = PXNull;
+            PXWindow* const pxWindowTarget = PXNull;
 
             if(pxNativDraw->ResourceManager)
             {
-                PXDictionaryFindEntry(&pxNativDraw->ResourceManager->GUIElementLookup, &drawItemInfo->hwndItem, &pxGUIElement);
+                PXDictionaryFindEntry(&pxNativDraw->ResourceManager->GUIElementLookup, &drawItemInfo->hwndItem, &pxWindowTarget);
             }
 
-            if(!pxGUIElement)
+            PXLogPrint
+            (
+                PXLoggingEvent,
+                "Window",
+                "Draw",
+                "%p",
+                pxWindowTarget
+            );
+
+            if(!pxWindowTarget)
             {
                 break; // break: not found
             }
 
-            const PXBool shallDraw = pxGUIElement->DrawFunction && (pxGUIElement->Info.Flags& PXResourceInfoRender);
+            const PXBool shallDraw = pxWindowTarget->DrawFunction && (pxWindowTarget->Info.Behaviour & PXResourceInfoRender);
 
             if(shallDraw)
             {
                 PXWindowDrawInfo pxGUIElementDrawInfo;
                 PXClear(PXWindowDrawInfo, &pxGUIElementDrawInfo);
-                pxGUIElementDrawInfo.hwnd = pxGUIElement->Info.Handle.WindowID;
+                pxGUIElementDrawInfo.hwnd = pxWindowTarget->Info.Handle.WindowID;
                 pxGUIElementDrawInfo.hDC = drawItemInfo->hDC;
                 // pxGUIElementDrawInfo.bErase = paintStruct.fErase;
 
-                PXRectangleLTRBI32ToXYWHI32((PXRectangleLTRBI32*)&drawItemInfo->rcItem, &pxGUIElement->Position.Form);
+                PXRectangleLTRBI32ToXYWHI32((PXRectangleLTRBI32*)&drawItemInfo->rcItem, &pxWindowTarget->Position.Form);
 
-                pxGUIElement->DrawFunction(pxNativDraw->GUISystem, pxGUIElement, &pxGUIElementDrawInfo);
+                pxWindowTarget->DrawFunction(pxNativDraw->GUISystem, pxWindowTarget, &pxGUIElementDrawInfo);
 
                 return TRUE; // We did a custom draw, so return true to mark this as handled
             }
@@ -4166,7 +4197,7 @@ LRESULT CALLBACK PXNativDrawEventTranslator(const HWND windowID, const UINT even
                 break;
             }
 
-            if(!(pxGUIElement->Info.Flags & PXResourceInfoActive))
+            if(!(pxGUIElement->Info.Behaviour & PXResourceInfoActive))
             {
                 // ShowWindow(pxGUIElement->ID, SW_HIDE);
             }
@@ -4467,7 +4498,7 @@ LRESULT CALLBACK PXNativDrawEventTranslator(const HWND windowID, const UINT even
             int res = DefWindowProc(windowID, eventID, wParam, lParam);
 
 
-#if 1
+#if 0
             PXLogPrint
             (
                 PXLoggingInfo,

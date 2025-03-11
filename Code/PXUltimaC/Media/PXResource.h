@@ -403,8 +403,10 @@ typedef struct PXResourceInfo_
     PXOSHandle Handle;
 
     PXInt32U ID; // Identification of this object managed by the engine itself.
-    PXInt32U Flags; // general information
+    //PXInt32U Flags; // general information
     PXInt32U Behaviour; // Depends on the type of the resource
+
+    PXInt32U Setting;
 }
 PXResourceInfo;
 
@@ -1447,7 +1449,7 @@ PXSkyBox;
 
 
 
-
+#if 1
 
 //-----------------------------------------------------
 // UI-Element
@@ -1497,10 +1499,12 @@ PXSkyBox;
 #define PXWindowBehaviourScrollBarVer       0b01000000000000000000000000000000
 
 #define PXWindowBehaviourDefaultKeepAspect   PXWindowKeepWidth | PXWindowKeepHeight
-#define PXWindowBehaviourDefaultDecorative   PXResourceInfoOK | PXWindowBehaviourBorder
-#define PXWindowBehaviourDefaultInputNormal  PXResourceInfoOK | PXWindowBehaviourSelectable | PXWindowBehaviourHoverable
-#define PXWindowBehaviourDefaultText         PXResourceInfoOK | PXWindowKeepHeight | PXWindowAllignCenter
+#define PXWindowBehaviourDefaultInputNormal  PXWindowBehaviourSelectable | PXWindowBehaviourHoverable
+#define PXWindowBehaviourDefaultText         PXWindowKeepHeight | PXWindowAllignCenter
 #define PXWindowBehaviourDefaultBuffer       PXWindowBehaviourDefaultKeepAspect
+
+#endif
+
 
 typedef enum PXUIHoverState_
 {
@@ -2910,7 +2914,8 @@ typedef struct PXWindowCreateInfo_
     //PXInt32U FlagList;
 
     PXUIElementType Type;
-    PXInt32U BehaviourFlags;
+    PXInt32U Behaviour;
+    PXInt32U Setting; 
     PXColorRGBAF* ColorTintReference;
 
     PXColorRGBAF Color;

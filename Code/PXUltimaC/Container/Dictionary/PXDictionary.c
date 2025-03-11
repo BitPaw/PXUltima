@@ -85,7 +85,7 @@ PXBool PXAPI PXDictionaryAdd(PXDictionary* const dictionary, const void* key, co
 
         PXDictionaryIndex(dictionary, i, &pxDictionaryEntry);
 
-        const PXBool isEmptyKeyField = PXMemoryCompareToByte(pxDictionaryEntry.Key, dictionary->KeyTypeSize, 0xff);
+        const PXBool isEmptyKeyField = PXMemoryCompareToByte(pxDictionaryEntry.Key, dictionary->KeyTypeSize, 0x00);
 
         if(isEmptyKeyField)
         {

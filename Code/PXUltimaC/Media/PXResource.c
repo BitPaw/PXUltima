@@ -532,7 +532,7 @@ PXActionResult PXAPI PXResourceCreateBrush(PXResourceCreateInfo* const pxResourc
     );
 #endif
 
-    pxWindowBrush->Info.Flags |= PXResourceInfoExist;
+    pxWindowBrush->Info.Behaviour |= PXResourceInfoExist;
 
     return PXActionSuccessful;
 }
@@ -633,7 +633,7 @@ PXActionResult PXAPI PXResourceCreateShaderProgram(PXResourceCreateInfo* const p
 
         PXFileOpen(&pxShaderProgramCreateData->ShaderPixelFile, &pxFileOpenInfo);
 
-        pxShaderProgram->Info.Flags |= PXResourceInfoStorageMemory;
+        pxShaderProgram->Info.Behaviour |= PXResourceInfoStorageMemory;
 
         PXResourceStorePath(&pxShaderProgram->Info, "<Internal>", -1);
     }
@@ -660,7 +660,7 @@ PXActionResult PXAPI PXResourceCreateShaderProgram(PXResourceCreateInfo* const p
 
         PXActionReturnOnError(fragmentLoadResult);
 
-        pxShaderProgram->Info.Flags |= PXResourceInfoStorageMemory;
+        pxShaderProgram->Info.Behaviour |= PXResourceInfoStorageMemory;
 
         PXResourceStorePath(&pxShaderProgram->Info, pxShaderProgramCreateData->ShaderVertexFilePath, -1);
     }
@@ -813,7 +813,7 @@ PXActionResult PXAPI PXResourceCreateMaterial(PXResourceCreateInfo* const pxReso
         PXMaterial* const pxMaterialCurrent = &pxMaterial[materialIndex];
 
         pxMaterialCurrent->Info.ID = PXResourceManagerGenerateUniqeID();
-        pxMaterialCurrent->Info.Flags |= PXResourceInfoRender;
+        pxMaterialCurrent->Info.Behaviour |= PXResourceInfoRender;
 
         keyList[materialIndex] = &pxMaterialCurrent->Info.ID;
     }
@@ -1090,8 +1090,8 @@ PXActionResult PXAPI PXResourceCreateModel(PXResourceCreateInfo* const pxResourc
             {
                 // Can the data be used form a const source? If so, we dont need to copy
                 const PXBool isDataConst =
-                    PXResourceInfoPermissionREAD & pxModel->Info.Flags &&
-                    PXResourceInfoStorageMemory & pxModel->Info.Flags;
+                    PXResourceInfoPermissionREAD & pxModel->Info.Behaviour &&
+                    PXResourceInfoStorageMemory & pxModel->Info.Behaviour;
 
                 if(!isDataConst)
                 {
@@ -1278,7 +1278,7 @@ PXActionResult PXAPI PXResourceCreateModel(PXResourceCreateInfo* const pxResourc
 
     pxModel->ShaderProgramReference = pxModelCreateInfo->ShaderProgramReference;
 
-    pxModel->Info.Flags |= PXResourceInfoRender;
+    pxModel->Info.Behaviour |= PXResourceInfoRender;
 
     return PXActionSuccessful;
 }
@@ -1287,7 +1287,7 @@ PXActionResult PXAPI PXResourceCreateSprite(PXResourceCreateInfo* const pxResour
 {
     PXSpriteCreateInfo* const pxSpriteCreateEventData = &pxResourceCreateInfo->Sprite;
 
-    pxSprite->Info.Flags |= PXResourceInfoRender;
+    pxSprite->Info.Behaviour |= PXResourceInfoRender;
 
 #if PXLogEnable
     PXLogPrint
@@ -1461,7 +1461,7 @@ PXActionResult PXAPI PXResourceCreateSpriteAnimator(PXResourceCreateInfo* const 
 {
     PXSpriteAnimatorInfo* const pxSpriteAnimatorInfo = &pxResourceCreateInfo->SpriteAnimator;
 
-    pxSpriteAnimator->Info.Flags |= PXResourceInfoActive;
+    pxSpriteAnimator->Info.Behaviour |= PXResourceInfoActive;
 
     pxSpriteAnimator->Info.Behaviour = pxSpriteAnimatorInfo->Behaviour;
     pxSpriteAnimator->SpriteTarget = pxSpriteAnimatorInfo->SpriteTarget;
@@ -1488,7 +1488,7 @@ PXActionResult PXAPI PXResourceCreateSpriteAnimator(PXResourceCreateInfo* const 
 
 PXActionResult PXAPI PXResourceCreateHitBox(PXResourceCreateInfo* const pxResourceCreateInfo, PXHitBox* const pxHitBox)
 {
-    pxHitBox->Info.Flags |= PXResourceInfoActive;
+    pxHitBox->Info.Behaviour |= PXResourceInfoActive;
     pxHitBox->Info.Behaviour = pxResourceCreateInfo->HitBox.Behaviour;
     pxHitBox->Model = pxResourceCreateInfo->HitBox.Model;
 
@@ -1672,7 +1672,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
             // UNSTANBLE CAST?
             PXResourceInfo* const pxResourceInfo = (PXResourceInfo*)object;
             pxResourceInfo->ID = resourceID;
-            pxResourceInfo->Flags |= PXResourceInfoExist;
+            pxResourceInfo->Behaviour |= PXResourceInfoExist;
 
             // Store myself, so we can cast back with hirachy
             pxResourceInfo->Hierarchy.Yourself = object;
@@ -1835,7 +1835,7 @@ PXActionResult PXAPI PXResourceStoreName(PXResourceInfo* const pxResourceInfo, c
 
     PXListDynamicAdd(&_GLOBALResourceManager.NameCache, &pxResourceInfo->ID, name, length);
 
-    pxResourceInfo->Flags |= PXResourceInfoHasName;
+    pxResourceInfo->Behaviour |= PXResourceInfoHasName;
 
     return PXActionSuccessful;
 }
@@ -1866,7 +1866,7 @@ PXActionResult PXAPI PXResourceStorePath(PXResourceInfo* const pxResourceInfo, c
 
     PXListDynamicAdd(&_GLOBALResourceManager.NameCache, &pxResourceInfo->ID, name, length);
 
-    pxResourceInfo->Flags |= PXResourceInfoHasSource;
+    pxResourceInfo->Behaviour |= PXResourceInfoHasSource;
 
     return PXActionSuccessful;
 }
@@ -2250,7 +2250,7 @@ PXActionResult PXAPI PXVersionToString(PXVersion* const pxVersion, char* versioN
 
 void PXAPI PXUIElementPositionCalculcate(PXWindow* const pxWindow, PXUIElementPositionCalulcateInfo* const pxUIElementPositionCalulcateInfo)
 {
-    if(!((PXWindowAllignIgnoreParentMargin & pxWindow->Info.Behaviour) > 0)) 
+    if(!((PXWindowAllignIgnoreParentMargin & pxWindow->Info.Setting) > 0))
     {
         for
             (
@@ -2267,10 +2267,10 @@ void PXAPI PXUIElementPositionCalculcate(PXWindow* const pxWindow, PXUIElementPo
     }
     else
     {
-        pxUIElementPositionCalulcateInfo->MarginLeft += 0.2;
-        pxUIElementPositionCalulcateInfo->MarginTop += 0.2;
-        pxUIElementPositionCalulcateInfo->MarginRight += 0.2;
-        pxUIElementPositionCalulcateInfo->MarginBottom += 0.2;
+       // pxUIElementPositionCalulcateInfo->MarginLeft += 0.2;
+       // pxUIElementPositionCalulcateInfo->MarginTop += 0.2;
+       // pxUIElementPositionCalulcateInfo->MarginRight += 0.2;
+       // pxUIElementPositionCalulcateInfo->MarginBottom += 0.2;
     }
 
     pxUIElementPositionCalulcateInfo->MarginLeft += pxWindow->Position.Margin.Left;
@@ -2319,7 +2319,7 @@ void PXAPI PXUIElementPositionCalculcate(PXWindow* const pxWindow, PXUIElementPo
     // XYWH for WindowsAPI stuff0
 
 
-    if(PXWindowKeepWidth & pxWindow->Info.Behaviour)
+    if(PXWindowKeepWidth & pxWindow->Info.Setting)
     {
         pxUIElementPositionCalulcateInfo->Width = pxWindow->Position.Form.Width;
     }
@@ -2328,7 +2328,7 @@ void PXAPI PXUIElementPositionCalculcate(PXWindow* const pxWindow, PXUIElementPo
         pxUIElementPositionCalulcateInfo->Width = mathWithScaling;
     }
 
-    if(PXWindowKeepHeight & pxWindow->Info.Behaviour)
+    if(PXWindowKeepHeight & pxWindow->Info.Setting)
     {
         pxUIElementPositionCalulcateInfo->Height = pxWindow->Position.Form.Height;
     }
@@ -2338,7 +2338,7 @@ void PXAPI PXUIElementPositionCalculcate(PXWindow* const pxWindow, PXUIElementPo
     }
 
 
-    switch(PXWindowAllignFlags & pxWindow->Info.Behaviour)
+    switch(PXWindowAllignFlags & pxWindow->Info.Setting)
     {
         default:
         case PXWindowAllignLeft:

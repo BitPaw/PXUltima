@@ -579,7 +579,7 @@ PXActionResult PXAPI PXDirectoryDelete(const PXText* const directoryName)
 PXActionResult PXAPI PXDirectoryDeleteA(const char* const directoryName)
 {
 #if OSUnix || OSForcePOSIXForWindows
-    const int resultID = rmdir(directoryName->TextA);
+    const int resultID = rmdir(directoryName);
     const PXActionResult removeResult = PXErrorCurrent(0 == resultID);
 
     return removeResult;
