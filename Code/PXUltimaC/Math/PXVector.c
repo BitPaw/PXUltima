@@ -16,7 +16,7 @@ float PXAPI PXVector3FLength(const PXVector3F* const vector)
     return sqroot;
 }
 
-void PXAPI PXVector3FCrossProduct(const PXVector3F* const vectorA, const PXVector3F* const vectorB, PXVector3F* const vectorResult)
+void PXAPI PXVector3FCrossProduct(PXVector3F* const vectorResult, const PXVector3F* const vectorA, const PXVector3F* const vectorB)
 {
     vectorResult->X = vectorA->Y * vectorB->Z - vectorA->Z * vectorB->Y;
     vectorResult->Y = vectorA->Z * vectorB->X - vectorA->X * vectorB->Z;

@@ -38,7 +38,6 @@
 #include "VRML/PXVRML.h"
 #include "N64/PXN64.h"
 #include "PHP/PXPHP.h"
-#include "MP4/PXMP4.h"
 #include "MSI/PXMSI.h"
 #include "Wave/PXWave.h"
 #include "WMA/PXWMA.h"
@@ -2010,6 +2009,21 @@ void* PXAPI PXVertexBufferInsertionPoint(const PXVertexBuffer* const pxVertexBuf
         default:
             return PXNull;
     }
+}
+
+PXSize PXAPI PXMeshTriangleAmount(PXMesh* const pxMesh)
+{
+    const PXInt8U stride = PXVertexBufferFormatStrideSize(pxMesh->VertexBuffer.Format);
+    PXSize amount = (pxMesh->VertexBuffer.VertexDataSize / stride) / 3;
+
+    return amount;
+}
+
+float* PXAPI PXMeshTriangleIndex(PXMesh* const pxMesh, const PXSize index)
+{
+    //PXVertexBufferInsertionPoint();
+
+    return 0;// PXPublic float* PXAPI();
 }
 
 void PXAPI PXModelConstruct(PXModel* const pxModel)

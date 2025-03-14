@@ -208,8 +208,9 @@ PXPublic void PXAPI PXEngineCollsisionSolve(PXEngine* const pxEngine);
 
 PXPublic PXActionResult PXAPI PXEngineSpriteTextureSet(PXEngine* const pxEngine, PXSprite* const pxSprite, PXTexture2D* const pxTexture2D);
 
-PXPrivate void PXAPI PXEngineTimerUpdate(PXEngine* const pxEngine);
-PXPrivate void PXAPI PXEngineSpriteAnimatorUpdate(PXEngine* const pxEngine);
-PXPrivate void PXAPI PXEngineHitBoxHandle(PXEngine* const pxEngine);
+
+PXPrivate void PXAPI PXEngineUpdateCollision(PXEngine* const pxEngine);
+PXPrivate void PXAPI PXEngineUpdateTimer(PXEngine* const pxEngine);
+PXPrivate void PXAPI PXEngineUpdateSpriteAnimator(PXEngine* const pxEngine);
 
 #endif

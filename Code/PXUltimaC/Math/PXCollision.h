@@ -40,6 +40,14 @@ PXCollisionGravityField;
 
 PXPublic PXBool PXAPI PXCollisionAABB(float ax, float ay, float bx, float by, float cx, float cy, float dx, float dy);
 
-//PXPublic PXBool PXAPI PXCollisionCheck(PXModel);
+
+// Start from a position, cast a ray into a direction
+// if hit, return the range. If nothing hit, return -1 
+PXPublic float PXAPI PXRayTriangleIntersect
+(
+    PXVector3F* const rayOriginPositon,
+    PXVector3F* const rayOriginDirection,
+    PXVector3F* const triangleVertexList
+);
 
 #endif

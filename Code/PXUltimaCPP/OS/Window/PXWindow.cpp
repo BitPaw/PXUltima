@@ -1,4 +1,5 @@
 #include "PXWindow.hpp"
+#include <Container/Dictionary/PXDictionary.hpp>
 
 PX::Window::Window()
 {

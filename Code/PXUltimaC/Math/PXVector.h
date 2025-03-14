@@ -98,7 +98,7 @@ PXPublic void PXAPI PXVector3FAbsolute(PXVector3F* const pxVector3F);
 PXPublic void PXAPI PXVector3FNormalize(PXVector3F* const pxVector3F);
 PXPublic float PXAPI PXVector3FLength(const PXVector3F* const vector);
 
-PXPublic void PXAPI PXVector3FCrossProduct(const PXVector3F* const vectorA, const PXVector3F* const vectorB, PXVector3F* const vectorResult);
+PXPublic void PXAPI PXVector3FCrossProduct(PXVector3F* const vectorResult, const PXVector3F* const vectorA, const PXVector3F* const vectorB);
 PXPublic float PXAPI PXVector3FDotProduct(const PXVector3F* const vectorA, const PXVector3F* const vectorB);
 PXPublic void PXAPI PXVector3FInterpolate(PXVector3F* const vectorA, const PXVector3F* const vectorB, float speed);
 

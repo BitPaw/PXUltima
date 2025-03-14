@@ -959,6 +959,9 @@ typedef struct PXMesh_
 }
 PXMesh;
 
+PXPublic PXSize PXAPI PXMeshTriangleAmount(PXMesh* const pxMesh);
+PXPublic float* PXAPI PXMeshTriangleIndex(PXMesh* const pxMesh, const PXSize index);
+
 typedef struct PXModel_
 {
     PXResourceInfo Info;

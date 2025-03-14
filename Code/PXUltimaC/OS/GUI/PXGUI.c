@@ -2986,9 +2986,6 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
             pxGUIElementCreateInfo->WindowsClassName = WC_STATIC;
 #endif
             pxGUIElementCreateInfo->DrawFunctionEngine = PXWindowDrawCustomTabList;
-
-            pxWindowCurrent->Info.Behaviour &= ~PXResourceInfoUseByMask;
-            pxWindowCurrent->Info.Behaviour |= PXResourceInfoUseByEngine;
             break;
         }
         case PXUIElementTypeTabPage:
@@ -3213,7 +3210,7 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
         }
         else
         {
-            pxWindowCurrent->DrawFunction = PXWindowDrawCustomFailback;
+           //pxWindowCurrent->DrawFunction = PXWindowDrawCustomFailback;
         }
 
         pxWindowCurrent->Info.Behaviour &= ~PXResourceInfoUseByMask;

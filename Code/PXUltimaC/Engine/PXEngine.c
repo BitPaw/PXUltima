@@ -1258,9 +1258,9 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
     {
         pxEngine->TimeData.CounterTimeCPU = PXTimeCounterStampGet();
 
-        PXEngineTimerUpdate(pxEngine);
-        PXEngineSpriteAnimatorUpdate(pxEngine);
-        PXEngineHitBoxHandle(pxEngine);
+        PXEngineUpdateTimer(pxEngine);
+        PXEngineUpdateCollision(pxEngine);
+        PXEngineUpdateSpriteAnimator(pxEngine);
 
         PXFunctionInvoke(pxEngine->OnGameUpdate, pxEngine->Owner, pxEngine);
         pxEngine->TimeData.CounterTimeCPU = PXTimeCounterStampGet() - pxEngine->TimeData.CounterTimeCPU;
@@ -1309,12 +1309,19 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
         if(pxEngine->HasGraphicInterface && pxEngine->Graphic.WindowReference)
         {
             PXWindow* sceneWindow = pxEngine->Graphic.WindowReference;
-            PXWindow* sceneParentWindow = (PXWindow*)sceneWindow->Info.Hierarchy.Parrent->Yourself;
+            PXWindow* sceneParentWindow = 0;
+            PXWindow* sceneWindowBehaviour = sceneWindow;
+
+            if(sceneWindow->Info.Hierarchy.Parrent)
+            {
+                sceneParentWindow = (PXWindow*)sceneWindow->Info.Hierarchy.Parrent->Yourself;
+                sceneWindowBehaviour = sceneParentWindow;
+            }
 
 
             const PXBool isWindowEnabled = PXNativDrawWindowIsEnabled(&pxEngine->GUISystem.NativDraw, sceneWindow);
 
-            if(PXResourceInfoRender & sceneParentWindow->Info.Behaviour) // (pxEngine->Window->Info.Flags & PXResourceInfoSelected)
+            if(PXResourceInfoRender & sceneWindowBehaviour->Info.Behaviour) // (pxEngine->Window->Info.Flags & PXResourceInfoSelected)
             {
 #if 1
                 pxEngine->Graphic.Clear(pxEngine->Graphic.EventOwner, &color);
@@ -3638,7 +3645,136 @@ PXActionResult PXAPI PXEngineSpriteTextureSet(PXEngine* const pxEngine, PXSprite
     return PXActionSuccessful;
 }
 
-void PXAPI PXEngineTimerUpdate(PXEngine* const pxEngine)
+void PXAPI PXEngineUpdateCollision(PXEngine* const pxEngine)
+{
+
+#if 0
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "HitBox",
+        "Compare",
+        "--- START ---"
+    );
+#endif
+
+    PXDictionary* const hitboxLookup = &pxEngine->ResourceManager->HitBoxLookUp;
+
+    PXSize amount = hitboxLookup->EntryAmountCurrent;
+
+    
+    PXDictionaryEntry pxDictionaryEntry;
+    PXHitBox* pxHitBoxA = PXNull;
+    PXHitBox* pxHitBoxB = PXNull;
+    float* pxHitBoxAVertex = PXNull;
+    float* pxHitBoxBVertex = PXNull;
+    PXSize pxHitBoxAAmount = 0;
+    PXSize pxHitBoxBAmount = 0;
+
+    for(PXSize i = 0; i < amount; ++i)
+    {
+        PXDictionaryIndex(hitboxLookup, i, &pxDictionaryEntry);
+
+        pxHitBoxA = *(PXHitBox**)pxDictionaryEntry.Value;
+        pxHitBoxAAmount = PXMeshTriangleAmount(&pxHitBoxA->Model->Mesh);
+
+        for(PXSize j = i + 1; j < amount; ++j)
+        {         
+            PXDictionaryIndex(hitboxLookup, j, &pxDictionaryEntry);
+
+            pxHitBoxB = *(PXHitBox**)pxDictionaryEntry.Value;
+            pxHitBoxBAmount = PXMeshTriangleAmount(&pxHitBoxB->Model->Mesh);
+
+            for(PXSize k = 0; k < pxHitBoxAAmount; ++k)
+            {
+                for(PXSize l = 0; l < pxHitBoxBAmount; ++l)
+                {
+                    float intersectionDistance = PXRayTriangleIntersect
+                    (
+
+                    );
+
+                    if(RayIntersectsTriangle(objects[i].rayOrigin, objects[i].rayVector, objects[j].triangles[l], &intersectionDistance)) 
+                    {
+                        // Resolve collision
+                    }
+                }
+            }
+        }
+
+
+    /*
+
+    // Clear
+    {
+
+        for(PXSize index = 0; index < hitboxLookup->EntryAmountCurrent; ++index)
+        {
+            PXDictionaryEntry pxDictionaryEntry;
+            PXHitBox* pxHitBoxA = PXNull;
+
+            PXDictionaryIndex(hitboxLookup, index, &pxDictionaryEntry);
+
+            pxHitBoxA = *(PXHitBox**)pxDictionaryEntry.Value;
+
+            pxHitBoxA->ColliderChild = PXNull;
+            pxHitBoxA->ColliderParent = PXNull;
+        }
+    }
+
+
+    for(PXSize index = 0; index < hitboxLookup->EntryAmountCurrent; ++index)
+    {
+        PXDictionaryEntry pxDictionaryEntry;
+        PXHitBox* pxHitBoxA = PXNull;
+
+        PXDictionaryIndex(hitboxLookup, index, &pxDictionaryEntry);
+
+        pxHitBoxA = *(PXHitBox**)pxDictionaryEntry.Value;
+
+        if(!(pxHitBoxA->Info.Behaviour & PXResourceInfoActive))
+        {
+            continue;
+        }
+
+        for(PXSize indexB = 0; indexB < hitboxLookup->EntryAmountCurrent; ++indexB)
+        {
+            PXDictionaryEntry pxDictionaryEntry;
+            PXHitBox* pxHitBoxB = PXNull;
+
+            PXDictionaryIndex(hitboxLookup, indexB, &pxDictionaryEntry);
+
+            pxHitBoxB = *(PXHitBox**)pxDictionaryEntry.Value;
+
+            if(!(pxHitBoxB->Info.Behaviour & PXResourceInfoActive))
+            {
+                continue;
+            }
+
+            if(pxHitBoxA->Info.ID == pxHitBoxB->Info.ID)
+            {
+                continue;
+            }
+
+
+            PXEngineHitBoxHandleAvsB(pxEngine, pxHitBoxA, pxHitBoxB);
+
+        }
+
+    }*/
+
+#if 0
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "HitBox",
+        "Compare",
+        "--- DONE ---"
+    );
+#endif
+}
+
+void PXAPI PXEngineUpdateTimer(PXEngine* const pxEngine)
 {
     PXDictionary* const timerList = &pxEngine->ResourceManager->TimerLookUp;
 
@@ -3700,7 +3836,7 @@ void PXAPI PXEngineTimerUpdate(PXEngine* const pxEngine)
     }
 }
 
-void PXAPI PXEngineSpriteAnimatorUpdate(PXEngine* const pxEngine)
+void PXAPI PXEngineUpdateSpriteAnimator(PXEngine* const pxEngine)
 {
     PXDictionary* const spriteAnimatorList = &pxEngine->ResourceManager->SpriteAnimator;
 
@@ -3870,88 +4006,4 @@ void PXAPI PXEngineHitBoxHandleAvsB(PXEngine* const pxEngine, PXHitBox* const hi
                     */
     }
 
-}
-
-void PXAPI PXEngineHitBoxHandle(PXEngine* const pxEngine)
-{
-#if 0
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        "HitBox",
-        "Compare",
-        "--- START ---"
-    );
-#endif
-
-    PXDictionary* const hitboxLookup = &pxEngine->ResourceManager->HitBoxLookUp;
-
-
-    // Clear
-    {
-
-        for(PXSize index = 0; index < hitboxLookup->EntryAmountCurrent; ++index)
-        {
-            PXDictionaryEntry pxDictionaryEntry;
-            PXHitBox* pxHitBoxA = PXNull;
-
-            PXDictionaryIndex(hitboxLookup, index, &pxDictionaryEntry);
-
-            pxHitBoxA = *(PXHitBox**)pxDictionaryEntry.Value;
-
-            pxHitBoxA->ColliderChild = PXNull;
-            pxHitBoxA->ColliderParent = PXNull;
-        }
-    }
-
-
-    for(PXSize index = 0; index < hitboxLookup->EntryAmountCurrent; ++index)
-    {
-        PXDictionaryEntry pxDictionaryEntry;
-        PXHitBox* pxHitBoxA = PXNull;
-
-        PXDictionaryIndex(hitboxLookup, index, &pxDictionaryEntry);
-
-        pxHitBoxA = *(PXHitBox**)pxDictionaryEntry.Value;
-
-        if(!(pxHitBoxA->Info.Behaviour & PXResourceInfoActive))
-        {
-            continue;
-        }
-
-        for(PXSize indexB = 0; indexB < hitboxLookup->EntryAmountCurrent; ++indexB)
-        {
-            PXDictionaryEntry pxDictionaryEntry;
-            PXHitBox* pxHitBoxB = PXNull;
-
-            PXDictionaryIndex(hitboxLookup, indexB, &pxDictionaryEntry);
-
-            pxHitBoxB = *(PXHitBox**)pxDictionaryEntry.Value;
-
-            if(!(pxHitBoxB->Info.Behaviour & PXResourceInfoActive))
-            {
-                continue;
-            }
-
-            if(pxHitBoxA->Info.ID == pxHitBoxB->Info.ID)
-            {
-                continue;
-            }
-
-
-            PXEngineHitBoxHandleAvsB(pxEngine, pxHitBoxA, pxHitBoxB);
-
-        }
-
-    }
-
-#if 0
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        "HitBox",
-        "Compare",
-        "--- DONE ---"
-    );
-#endif
 }
