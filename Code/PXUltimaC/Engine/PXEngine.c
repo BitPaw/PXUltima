@@ -3326,7 +3326,7 @@ void PXAPI PXEngineResourceDefaultElements(PXEngine* const pxEngine)
         pxResourceCreateInfo.Model.Form = PXModelFormCustom;
         pxResourceCreateInfo.Model.VertexBuffer.VertexData = vertexData;
         pxResourceCreateInfo.Model.VertexBuffer.VertexDataSize = sizeof(vertexData);
-        pxResourceCreateInfo.Model.VertexBuffer.Format = PXVertexBufferFormatXYZFloat;
+        pxResourceCreateInfo.Model.VertexBuffer.Format = PXVertexBufferFormatP3F;
 
         pxResourceCreateInfo.Model.IndexBuffer.IndexData = indexList;
         pxResourceCreateInfo.Model.IndexBuffer.IndexDataSize = sizeof(indexList);
@@ -3666,11 +3666,12 @@ void PXAPI PXEngineUpdateCollision(PXEngine* const pxEngine)
     PXDictionaryEntry pxDictionaryEntry;
     PXHitBox* pxHitBoxA = PXNull;
     PXHitBox* pxHitBoxB = PXNull;
-    float* pxHitBoxAVertex = PXNull;
-    float* pxHitBoxBVertex = PXNull;
+    PXVector3F* pxHitBoxAVertex = PXNull;
+    PXVector3F* pxHitBoxBVertex = PXNull;
     PXSize pxHitBoxAAmount = 0;
     PXSize pxHitBoxBAmount = 0;
 
+#if 0
     for(PXSize i = 0; i < amount; ++i)
     {
         PXDictionaryIndex(hitboxLookup, i, &pxDictionaryEntry);
@@ -3679,7 +3680,7 @@ void PXAPI PXEngineUpdateCollision(PXEngine* const pxEngine)
         pxHitBoxAAmount = PXMeshTriangleAmount(&pxHitBoxA->Model->Mesh);
 
         for(PXSize j = i + 1; j < amount; ++j)
-        {         
+        {
             PXDictionaryIndex(hitboxLookup, j, &pxDictionaryEntry);
 
             pxHitBoxB = *(PXHitBox**)pxDictionaryEntry.Value;
@@ -3687,20 +3688,28 @@ void PXAPI PXEngineUpdateCollision(PXEngine* const pxEngine)
 
             for(PXSize k = 0; k < pxHitBoxAAmount; ++k)
             {
+                pxHitBoxAVertex = PXVertexBufferInsertionPoint(&pxHitBoxA->Model->Mesh.VertexBuffer, pxHitBoxA->Model->Mesh.VertexBuffer.Format, k);
+
                 for(PXSize l = 0; l < pxHitBoxBAmount; ++l)
                 {
+                    pxHitBoxBVertex = PXVertexBufferInsertionPoint(&pxHitBoxA->Model->Mesh.VertexBuffer, pxHitBoxA->Model->Mesh.VertexBuffer.Format, l);
+
                     float intersectionDistance = PXRayTriangleIntersect
                     (
+                        pxHitBoxAVertex,
 
-                    );
 
-                    if(RayIntersectsTriangle(objects[i].rayOrigin, objects[i].rayVector, objects[j].triangles[l], &intersectionDistance)) 
+                        );
+
+                    if(RayIntersectsTriangle(objects[i].rayOrigin, objects[i].rayVector, objects[j].triangles[l], &intersectionDistance))
                     {
                         // Resolve collision
                     }
                 }
             }
         }
+    }
+#endif
 
 
     /*
@@ -3838,6 +3847,7 @@ void PXAPI PXEngineUpdateTimer(PXEngine* const pxEngine)
 
 void PXAPI PXEngineUpdateSpriteAnimator(PXEngine* const pxEngine)
 {
+    /*
     PXDictionary* const spriteAnimatorList = &pxEngine->ResourceManager->SpriteAnimator;
 
     for(PXSize index = 0; index < spriteAnimatorList->EntryAmountCurrent; ++index)
@@ -3911,10 +3921,12 @@ void PXAPI PXEngineUpdateSpriteAnimator(PXEngine* const pxEngine)
             }
         }
     }
+    */
 }
 
 void PXAPI PXEngineHitBoxHandleAvsB(PXEngine* const pxEngine, PXHitBox* const hitBoxA, PXHitBox* const hitBoxB)
 {
+    /*
     PXVector3F positionA;
     PXVector3F positionB;
     PXVector3F positionSizeA;
@@ -3986,7 +3998,7 @@ void PXAPI PXEngineHitBoxHandleAvsB(PXEngine* const pxEngine, PXHitBox* const hi
             hitBoxB
         );
 
-        */
+        * /
 
     }
     else
@@ -4003,7 +4015,7 @@ void PXAPI PXEngineHitBoxHandleAvsB(PXEngine* const pxEngine, PXHitBox* const hi
                     hitBoxA,
                     hitBoxB
                 );
-                    */
+                    * /
     }
-
+    */
 }

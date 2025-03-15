@@ -3428,14 +3428,16 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
 
     PXShaderProgram* const pxShaderProgram = pxRenderEntity->ShaderProgramReference;
     PXModel* const pxModel = (PXModel*)pxRenderEntity->ObjectReference;
-    PXVertexBuffer* const pxVertexBuffer = &pxModel->Mesh.VertexBuffer;
+    PXMesh* const pxMesh = &pxModel->Mesh;
+   
+    //PXVertexBuffer* const pxVertexBuffer = &pxModel->Mesh.VertexBuffer;
 
     PXIndexBuffer* const pxIndexBuffer = &pxModel->Mesh.IndexBuffer;
 
-    if(!pxVertexBuffer->VertexData) // Has data?
-    {
-        return PXActionRefusedArgumentInvalid;
-    }
+ //   if(!pxVertexBuffer->VertexData) // Has data?
+  //  {
+   //     return PXActionRefusedArgumentInvalid;
+  //  }
 
     const PXBool canUseShader = pxShaderProgram && pxOpenGL->Binding.ShaderProgramUse;
     const PXBool supportVAO = pxOpenGL->Binding.VertexArrayBind != PXNull;
@@ -3448,10 +3450,12 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
     {
         pxOpenGL->Binding.VertexArrayBind(pxModel->Info.Handle.OpenGLID); // Select VAO
 
+        /*
         if(pxVertexBuffer->VertexData)
         {
             pxOpenGL->Binding.BufferBind(GL_ARRAY_BUFFER, pxVertexBuffer->Info.Handle.OpenGLID);
         }
+        */
         if(pxIndexBuffer->IndexData)
         {
             pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->Info.Handle.OpenGLID);
@@ -3461,7 +3465,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
     {
         if(supportBuffers)
         {
-            pxOpenGL->Binding.BufferBind(GL_ARRAY_BUFFER, pxVertexBuffer->Info.Handle.OpenGLID); // Select VBO
+            //pxOpenGL->Binding.BufferBind(GL_ARRAY_BUFFER, pxVertexBuffer->Info.Handle.OpenGLID); // Select VBO
             pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->Info.Handle.OpenGLID); // Select IBO
 
            // assert(indexBufferTypeID != -1);
@@ -3470,6 +3474,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
         }
         else
         {
+            /*
             // Setup vertex data client side
             switch(pxVertexBuffer->Format)
             {
@@ -3491,6 +3496,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
                 default:
                     break;
             }
+            */
 
             // Setup index data client side
             //glEnableClientState(GL_INDEX_ARRAY);
@@ -3639,21 +3645,9 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
     pxOpenGL->Binding.LineWidth(2);
 
 
-    const PXSize elementSize = pxIndexBuffer->IndexDataType & PXTypeSizeMask;
-    GLsizei drawElementsCount = 0;
-
-    if(elementSize != 0)
-    {
-        drawElementsCount = pxIndexBuffer->IndexDataSize / elementSize;
-    }
-    else
-    {
-        PXInt8U stride = PXVertexBufferFormatStrideSize(pxVertexBuffer->Format) * sizeof(float);
-
-        drawElementsCount = pxVertexBuffer->VertexDataSize / stride;
-    }
-
+    const GLsizei drawElementsCount = pxIndexBuffer->IndexDataSize / PXTypeSizeGet(pxIndexBuffer->IndexDataType);
     const PXBool hasNoIndexArray = pxIndexBuffer->Info.Handle.OpenGLID == -1;
+    const GLenum indexDataType = PXOpenGLTypeToID(pxIndexBuffer->IndexDataType);
 
     if(pxIndexBuffer->DrawModeID & PXDrawModeIDTriangle)
     {
@@ -3694,7 +3688,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
                 else
                 {
                     // Render with an index buffer
-                    pxOpenGL->Binding.DrawElements(GL_TRIANGLES, pxIndexSegment->DataRange, GL_UNSIGNED_INT, indexData);
+                    pxOpenGL->Binding.DrawElements(GL_TRIANGLES, pxIndexSegment->DataRange, indexDataType, indexData);
                 }
 
                 renderOffset += pxIndexSegment->DataRange;
@@ -5588,7 +5582,7 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, const PXRenderEntity* co
     PXCamera* const pxCamera = pxRenderEntity->CameraReference;
     PXMatrix4x4F* const matrixModel = &pxRenderEntity->MatrixModel;
     PXMatrix4x4F* const matrixView = &pxCamera->MatrixView;
-    PXVertexBuffer* const pxVertexBuffer = &pxSkyBox->Model->Mesh.VertexBuffer;
+  //  PXVertexBuffer* const pxVertexBuffer = &pxSkyBox->Model->Mesh.VertexBuffer;
     PXIndexBuffer* const pxIndexBuffer = &pxSkyBox->Model->Mesh.IndexBuffer;
 
     PXModel* const pxModel = pxSkyBox->Model;
@@ -5640,7 +5634,7 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, const PXRenderEntity* co
     {
         PXOpenGLShaderProgramSelect(pxOpenGL, 0);
 
-        pxOpenGL->Binding.InterleavedArrays(GL_V3F, pxVertexBuffer->VertexDataSize, pxVertexBuffer->VertexData);
+    //    pxOpenGL->Binding.InterleavedArrays(GL_V3F, pxVertexBuffer->VertexDataSize, pxVertexBuffer->VertexData);
 
         pxOpenGL->Binding.Color4f(0.5f, 0.2f, 0.2f, 1.0f);
 
@@ -6676,13 +6670,13 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
         return PXActionRefusedArgumentNull;
     }
 
-    PXVertexBuffer* const pxVertexBuffer = &pxModel->Mesh.VertexBuffer;
+   // PXVertexBuffer* const pxVertexBuffer = &pxModel->Mesh.VertexBuffer;
     PXIndexBuffer* const pxIndexBuffer = &pxModel->Mesh.IndexBuffer;
-
+    PXMesh* const pxMesh = &pxModel->Mesh;
 
     if(pxOpenGL->Binding.VertexArraysGenerate)
     {
-        pxOpenGL->Binding.VertexArraysGenerate(1, &(pxModel->Info.Handle.OpenGLID)); // VAO
+        pxOpenGL->Binding.VertexArraysGenerate(1, &(pxMesh->Info.Handle.OpenGLID)); // VAO
         pxOpenGL->Binding.VertexArrayBind(pxModel->Info.Handle.OpenGLID);
 
 #if PXLogEnable
@@ -6717,6 +6711,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
         //PXResourceIDMarkAsUnused(&pxModel->VertexBuffer.Info);
         //PXResourceIDMarkAsUnused(&pxModel->IndexBuffer.Info);
 
+        /*
         // Copy references, we can't trust if these are not on the stack.
         void* vertexData = pxVertexBuffer->VertexData;
         void* indexData = pxIndexBuffer->IndexData;
@@ -6728,6 +6723,8 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
         // Copy index data
         pxIndexBuffer->IndexData = PXMemoryHeapCallocT(PXByte, pxIndexBuffer->IndexDataSize);
         PXMemoryCopy(indexData, pxIndexBuffer->IndexDataSize, pxIndexBuffer->IndexData, pxIndexBuffer->IndexDataSize);
+
+        */
 
 #if PXLogEnable
         PXLogPrint
@@ -6744,18 +6741,21 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
     }
 
 
-
-
     const PXBool hasIndexData = pxIndexBuffer->IndexDataSize > 0;
 
-    {
-        // Create IDs
-        PXSize amount = 1 + (hasIndexData * 1);
-        GLuint bufferIDs[2] = { -1, -1 };
-        pxOpenGL->Binding.BufferGenerate(amount, bufferIDs);
 
-        pxVertexBuffer->Info.Handle.OpenGLID = bufferIDs[0];
-        pxIndexBuffer->Info.Handle.OpenGLID = bufferIDs[1];
+    // Registering of array buffers
+    {
+
+        const PXSize bufferAmountRequest = pxMesh->VertexBufferListAmount + hasIndexData;
+
+
+        //-------------------------------------------------
+        // Create IDs
+        //-------------------------------------------------
+
+        GLuint bufferIDs[32];
+        PXSize indexCounter = 0;
 
 #if PXLogEnable
         PXLogPrint
@@ -6763,12 +6763,67 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
             PXLoggingInfo,
             PXOpenGLName,
             PXOpenGLModelName,
-            "Create VBO:<%i>, IBO:<%i>",
-            bufferIDs[0],
-            bufferIDs[1]
+            "Create array buffers: <%i>",
+            bufferAmountRequest
         );
 #endif
+
+        if(bufferAmountRequest < 32)
+        {
+            pxOpenGL->Binding.BufferGenerate(bufferAmountRequest, bufferIDs);
+        }
+        else
+        {
+            // Handle more data with allocating
+        }
+
+        //-------------------------------------------------
+        // Store BufferIDs
+        //-------------------------------------------------
+        if(hasIndexData)
+        {
+            pxIndexBuffer->Info.Handle.OpenGLID = bufferIDs[indexCounter++];
+
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                PXOpenGLName,
+                PXOpenGLModelName,
+                "IBO: <%i>",
+                pxIndexBuffer->Info.Handle.OpenGLID
+            );
+#endif
+        }
+
+        if(pxMesh->VertexBufferListAmount == 1)
+        {
+            pxMesh->VertexBufferPrime.Info.Handle.OpenGLID = bufferIDs[indexCounter++];
+        }
+        else
+        {
+            for(size_t i = 0; i < pxMesh->VertexBufferListAmount; i++)
+            {
+                PXVertexBuffer* const pxVertexBuffer = &pxMesh->VertexBufferList[i];
+
+                pxVertexBuffer->Info.Handle.OpenGLID = bufferIDs[indexCounter++];
+
+#if PXLogEnable
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    PXOpenGLName,
+                    PXOpenGLModelName,
+                    "VBO: <%i>",
+                    pxIndexBuffer->Info.Handle.OpenGLID
+                );
+#endif
+            }
+        }
     }
+
+
+
 
 
     // Make sure current format is supported.
@@ -6776,7 +6831,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
     {
         PXVertexBufferFormat pxVertexBufferFormat[] =
         {
-            PXVertexBufferFormatXYZFloat,
+            PXVertexBufferFormatP3F,
             PXVertexBufferFormatT2F_XYZ,
             PXVertexBufferFormatT2F_N3F_XYZ
         };
@@ -6788,64 +6843,143 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
         PXModelFormatTransmute(pxModel, &pxModelFormatTransmuteInfo);
     }
 
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXOpenGLName,
-        PXOpenGLModelName,
-        "VBO:<%i> upload <%p> %i B",
-        pxVertexBuffer->Info.Handle.OpenGLID,
-        pxVertexBuffer->VertexData,
-        pxVertexBuffer->VertexDataSize
-    );
-
-    const PXSize amount = pxVertexBuffer->VertexDataSize / sizeof(float);
-    float* data = (float*)pxVertexBuffer->VertexData;
-    const PXSize stride = PXVertexBufferFormatStrideSize(pxVertexBuffer->Format);
-
-    //  PXConsoleWriteTableFloat(data, amount, stride);
-
-#endif
-
-    pxOpenGL->Binding.BufferBind(GL_ARRAY_BUFFER, pxVertexBuffer->Info.Handle.OpenGLID);
-    pxOpenGL->Binding.BufferData(GL_ARRAY_BUFFER, pxVertexBuffer->VertexDataSize, pxVertexBuffer->VertexData, GL_STATIC_DRAW);
-    // pxOpenGL->Binding.PXOpenGLBindBufferCallBack(GL_ARRAY_BUFFER, 0);
 
 
-    PXActionResult vertexDataUpload = PXOpenGLErrorCurrent(pxOpenGL, 0);
 
-    // IBO
 
-    if(hasIndexData)
+
+
+    // Upload IBO
     {
+        if(hasIndexData)
+        {
 #if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            PXOpenGLName,
-            PXOpenGLModelName,
-            "IBO:<%i> upload <%p> with %i B",
-            pxIndexBuffer->Info.Handle.OpenGLID,
-            pxIndexBuffer->IndexData,
-            pxIndexBuffer->IndexDataSize
-        );
-
-        const PXSize amount = pxIndexBuffer->IndexDataSize;
-        PXInt8U* data = (PXInt8U*)pxIndexBuffer->IndexData;
-        const PXSize stride = PXVertexBufferFormatStrideSize(pxVertexBuffer->Format);
-
-        // PXConsoleWriteTableInt(data, amount, stride);
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                PXOpenGLName,
+                PXOpenGLModelName,
+                "IBO:<%i> upload <%p> with %i B",
+                pxIndexBuffer->Info.Handle.OpenGLID,
+                pxIndexBuffer->IndexData,
+                pxIndexBuffer->IndexDataSize
+            );
 #endif
+            // Select
+            pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->Info.Handle.OpenGLID);
 
-        pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->Info.Handle.OpenGLID);
-        pxOpenGL->Binding.BufferData(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->IndexDataSize, pxIndexBuffer->IndexData, GL_STATIC_DRAW);
-        //pxOpenGL->Binding.PXOpenGLBindBufferCallBack(GL_ELEMENT_ARRAY_BUFFER, 0);
+            // Define data layout?
+            // NO!, we actually define the type when we draw. Because of opengl design
 
-        PXActionResult indexDataUpload = PXOpenGLErrorCurrent(pxOpenGL, 0);
+            // Upload
+            pxOpenGL->Binding.BufferData(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->IndexDataSize, pxIndexBuffer->IndexData, GL_STATIC_DRAW);
 
-        indexDataUpload = PXActionInvalid; // TODO: TEST
+            // Unselect. not needed if VAO are supported
+            pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, 0);
+        }
     }
+
+
+
+
+
+
+    // Upload VBO
+    {
+        if(1 == pxMesh->VertexBufferListAmount)
+        {
+            PXVertexBuffer* const pxVertexBuffer = &pxMesh->VertexBufferPrime;
+
+            pxOpenGL->Binding.BufferBind(GL_ARRAY_BUFFER, pxVertexBuffer->Info.Handle.OpenGLID);
+
+            // Upload
+            pxOpenGL->Binding.BufferData(GL_ARRAY_BUFFER, pxVertexBuffer->VertexDataSize, pxVertexBuffer->VertexData, GL_STATIC_DRAW);
+
+            // Define layout   
+            const PXInt8U sizePerVertex = PXVertexBufferFormatSizePerVertex(pxVertexBuffer->Format);
+            // const GLenum openGLType = PXOpenGLTypeToID(pxVertexElementCurrent->Type);
+             // TODO: enable VBO to have other types besides floats!!!
+
+            pxOpenGL->Binding.VertexAttribPointer
+            (
+                0,
+                sizePerVertex,
+                GL_FLOAT,
+                GL_FALSE,
+                0,
+                0
+            );
+            pxOpenGL->Binding.VertexAttribArrayEnable(0);
+
+#if PXLogEnable
+            const char* vertexFormatName = PXVertexBufferFormatToString(pxVertexBuffer->Format);
+
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                PXOpenGLName,
+                PXOpenGLModelName,
+                "VBO:<%i>, %s,  upload <%p> with %i B",
+                pxVertexBuffer->Info.Handle.OpenGLID,
+                vertexFormatName,
+                pxVertexBuffer->VertexData,
+                pxVertexBuffer->VertexDataSize
+            );
+#endif
+        }
+        else
+        {
+            for(size_t i = 0; i < pxMesh->VertexBufferListAmount; i++)
+            {
+                PXVertexBuffer* const pxVertexBuffer = &pxMesh->VertexBufferList[i];
+
+                // Select
+                pxOpenGL->Binding.BufferBind(GL_ARRAY_BUFFER, pxVertexBuffer->Info.Handle.OpenGLID);
+                
+                // Upload
+                pxOpenGL->Binding.BufferData(GL_ARRAY_BUFFER, pxVertexBuffer->VertexDataSize, pxVertexBuffer->VertexData, GL_STATIC_DRAW);
+
+                // Define layout   
+                const PXInt8U sizePerVertex = PXVertexBufferFormatSizePerVertex(pxVertexBuffer->Format);
+               // const GLenum openGLType = PXOpenGLTypeToID(pxVertexElementCurrent->Type);
+                // TODO: enable VBO to have other types besides floats!!!
+
+                pxOpenGL->Binding.VertexAttribPointer
+                (
+                    i, 
+                    sizePerVertex,
+                    GL_FLOAT,
+                    GL_FALSE,
+                    0, 
+                    0
+                );
+                pxOpenGL->Binding.VertexAttribArrayEnable(i);
+
+#if PXLogEnable
+                const char* vertexFormatName = PXVertexBufferFormatToString(pxVertexBuffer->Format);
+
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    PXOpenGLName,
+                    PXOpenGLModelName,
+                    "(%i/%i) VBO:<%i>, %s,  upload <%p> with %i B",
+                    i+1,
+                    pxMesh->VertexBufferListAmount,
+                    pxVertexBuffer->Info.Handle.OpenGLID,
+                    vertexFormatName,
+                    pxVertexBuffer->VertexData,
+                    pxVertexBuffer->VertexDataSize
+                );
+#endif
+            }
+    }
+
+
+
+
+
+/*
 
     {
         PXInt8U pxVertexElementLength = 0;
@@ -6923,6 +7057,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
             pxOpenGL->Binding.VertexAttribArrayEnable(i);
             pxOpenGL->Binding.VertexAttribPointer(i, pxVertexElementCurrent->Length, openGLType, GL_FALSE, pxVertexElementCurrent->Stride, (void*)pxVertexElementCurrent->StartAdress);
         }
+        */
     }
 
     /*

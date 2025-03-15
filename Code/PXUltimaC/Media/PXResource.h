@@ -217,11 +217,12 @@ typedef enum PXVertexBufferFormat_
 {
     PXVertexBufferFormatInvalid,
 
-    // PXUltima-Custom
-    PXVertexBufferFormatXYI8,
-    PXVertexBufferFormatXYZI8,
-
-
+    // Non inteleaved
+    PXVertexBufferFormatP2I8,   // XY - Int8 - Position 
+    PXVertexBufferFormatP3I8,   // XYX - Int8 - Position 
+    PXVertexBufferFormatP3F,    // XYZ - float - Position
+    PXVertexBufferFormatN3F,    // XYZ - float - Normals 
+    PXVertexBufferFormatT2F,    // UV - float - Texture coordiantes
 
 
     // OpenGL
@@ -242,7 +243,10 @@ typedef enum PXVertexBufferFormat_
 
     // Direct X
 
-    PXVertexBufferFormatXYZFloat, // Normal spcace (x, y, z)
+
+
+
+
     PXVertexBufferFormatXYZC, // Normal spcace (x, y, z, color-RGB as 32-int)
 
     PXVertexBufferFormatXYZRHW, // DirectX only, use for pixel size instead of normal space.
@@ -261,6 +265,8 @@ PXVertexBufferFormat;
 PXPublic const char* PXAPI PXVertexBufferFormatToString(const PXVertexBufferFormat pxVertexBufferFormat);
 PXPublic PXInt8U PXAPI PXVertexBufferFormatStrideSize(const PXVertexBufferFormat pxVertexBufferFormat);
 
+// returns 1, 2, 3, 4. Nothing else
+PXPublic PXInt8U PXAPI PXVertexBufferFormatSizePerVertex(const PXVertexBufferFormat pxVertexBufferFormat);
 
 
 
@@ -872,20 +878,6 @@ typedef struct PXDrawScript_
 PXDrawScript;
 
 
-//-----------------------------------------------------
-// Vertex rendering info
-//-----------------------------------------------------
-
-typedef enum PXVertexBufferDataType_
-{
-    PXVertexBufferDataTypeInvalid,
-
-    PXVertexBufferDataTypeVertex,
-    PXVertexBufferDataTypeTexture,
-    PXVertexBufferDataTypeNormal
-}
-PXVertexBufferDataType;
-
 typedef struct PXVertexBuffer_
 {
     PXResourceInfo Info;
@@ -897,7 +889,10 @@ typedef struct PXVertexBuffer_
 }
 PXVertexBuffer;
 
-PXPublic void* PXAPI PXVertexBufferInsertionPoint(const PXVertexBuffer* const pxVertexBuffer, const PXVertexBufferDataType pxVertexBufferDataType, const PXSize index);
+
+
+
+PXPublic void* PXAPI PXVertexBufferInsertionPoint(const PXVertexBuffer* const pxVertexBuffer, const PXVertexBufferFormat XVertexBufferFormat, const PXSize index);
 
 
 
@@ -940,7 +935,6 @@ typedef struct PXIndexBuffer_
 
     PXInt32U DrawModeID; // How to draw, modes like triangle or lines
 
-    PXSize SegmentListSize;
     PXSize SegmentListAmount;
 
     union
@@ -951,16 +945,39 @@ typedef struct PXIndexBuffer_
 }
 PXIndexBuffer;
 
+
+// Allocate an indexbuffer in a way to minimize size for given amount of vertex points
+PXPublic void PXAPI PXIndexBufferPrepare(PXIndexBuffer* const pxIndexBuffer, const PXSize amountVertex, const PXSize amountMaterials);
+
+
 // A mesh is a structure that contains vertex and index data to render itself
 typedef struct PXMesh_
 {
-    PXVertexBuffer VertexBuffer;
-    PXIndexBuffer IndexBuffer;
+    PXResourceInfo Info; // Contains VAO
+
+    // Primary allocatedspace
+    PXSize VertexDataSize;
+    void* VertexDataAdress;
+
+    // Can either store interleaved data or seperate ones
+    PXSize VertexBufferListAmount;
+
+    union
+    {
+        PXVertexBuffer VertexBufferPrime;
+        PXVertexBuffer* VertexBufferList;
+    }; 
+
+    PXIndexBuffer IndexBuffer; // Contains IBO
 }
 PXMesh;
 
 PXPublic PXSize PXAPI PXMeshTriangleAmount(PXMesh* const pxMesh);
 PXPublic float* PXAPI PXMeshTriangleIndex(PXMesh* const pxMesh, const PXSize index);
+//PXPublic void* PXAPI PXMeshVertexDataInsertionPoint(PXMesh* const pxMesh, const PXVertexBufferDataType pxVertexBufferDataType);
+
+
+
 
 typedef struct PXModel_
 {

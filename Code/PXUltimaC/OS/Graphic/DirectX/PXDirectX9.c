@@ -1444,10 +1444,10 @@ PXActionResult PXAPI PXDirectX9StreamSourceGet(PXDirectX9* const pxDirectX9, con
 
 PXActionResult PXAPI PXDirectX9ModelDraw(PXDirectX9* const pxDirectX9, PXModel* const pxModel, const PXCamera* const pxCamera)
 {
-    const PXSize stride = PXVertexBufferFormatStrideSize(pxModel->Mesh.VertexBuffer.Format);
+   // const PXSize stride = PXVertexBufferFormatStrideSize(pxModel->Mesh.VertexBuffer.Format);
 
-    PXDirectX9StreamSourceSet(pxDirectX9, 0, &pxModel->Mesh.VertexBuffer, 0, stride);
-    PXDirectX9VertexFixedFunctionSet(pxDirectX9, pxModel->Mesh.VertexBuffer.Format);
+  //  PXDirectX9StreamSourceSet(pxDirectX9, 0, &pxModel->Mesh.VertexBuffer, 0, stride);
+   // PXDirectX9VertexFixedFunctionSet(pxDirectX9, pxModel->Mesh.VertexBuffer.Format);
     PXDirectX9PrimitiveDraw(pxDirectX9, PXGraphicDrawModeTriangle, 0, 1);
 
     return PXActionSuccessful;
@@ -1742,7 +1742,7 @@ PXActionResult PXAPI PXDirectX9DepthStencilSurfaceCreate(PXDirectX9* const pxDir
 
 PXActionResult PXAPI PXDirectX9ModelRegister(PXDirectX9* const pxDirectX9, PXModel* const pxModel)
 {
-    PXDirectX9VertexBufferCreate(pxDirectX9, &pxModel->Mesh.VertexBuffer);
+   // PXDirectX9VertexBufferCreate(pxDirectX9, &pxModel->Mesh.VertexBuffer);
     PXDirectX9IndexBufferCreate(pxDirectX9, &pxModel->Mesh.IndexBuffer);
 
     return PXActionSuccessful;
@@ -1809,7 +1809,7 @@ PXInt32U PXAPI PXDirectXVertexFormatFromPXVertexBufferFormat(const PXVertexBuffe
 {
     switch(pxVertexBufferFormat)
     {
-        case PXVertexBufferFormatXYZFloat:
+        case PXVertexBufferFormatP3F:
             return D3DFVF_XYZ;
         case PXVertexBufferFormatXYZC:
             return D3DFVF_XYZ | D3DFVF_DIFFUSE;

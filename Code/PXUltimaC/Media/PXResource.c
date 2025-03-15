@@ -185,14 +185,14 @@ const char* PXAPI PXVertexBufferFormatToString(const PXVertexBufferFormat pxVert
 {
     switch(pxVertexBufferFormat)
     {
-        case PXVertexBufferFormatXYI8:
-            return "P2 8-Bit";
-        case PXVertexBufferFormatXYZI8:
-            return "P3 8-Bit";
+        case PXVertexBufferFormatP2I8: return "P2 8-Bit";
+        case PXVertexBufferFormatP3I8: return "P3 8-Bit";
+        case PXVertexBufferFormatP3F: return "P3 float";
+        case PXVertexBufferFormatN3F: return "N3 float";
+        case PXVertexBufferFormatT2F: return "T2 float";
+
         case PXVertexBufferFormatXYFloat:
             return "P2 float";
-        case PXVertexBufferFormatXYZFloat:
-            return "P3 float";
         case PXVertexBufferFormatXYZW:
             return "P4 float";
         case PXVertexBufferFormatC4UB_XY:
@@ -245,18 +245,36 @@ PXInt8U PXAPI PXVertexBufferFormatStrideSize(const PXVertexBufferFormat pxVertex
 {
     switch(pxVertexBufferFormat)
     {
-        case PXVertexBufferFormatXYI8:
+        case PXVertexBufferFormatP2I8:
             return 2;
-        case PXVertexBufferFormatXYZI8:
+        case PXVertexBufferFormatP3I8:
             return 3;
         case PXVertexBufferFormatT2F_XYZ:
             return 2u + 3u;
         case PXVertexBufferFormatT2F_N3F_XYZ:
             return 2u + 3u + 3u;
-        case PXVertexBufferFormatXYZFloat:
+        case PXVertexBufferFormatP3F:
             return 3u;
         case PXVertexBufferFormatN3F_XYZ:
             return 3u + 3u;
+
+        default:
+            return 0u;
+    }
+}
+
+PXInt8U PXAPI PXVertexBufferFormatSizePerVertex(const PXVertexBufferFormat pxVertexBufferFormat)
+{
+    switch(pxVertexBufferFormat)
+    {
+        case PXVertexBufferFormatP2I8:
+        case PXVertexBufferFormatT2F:
+            return 2;
+
+        case PXVertexBufferFormatN3F:
+        case PXVertexBufferFormatP3F:
+        case PXVertexBufferFormatP3I8:
+            return 3;
 
         default:
             return 0u;
@@ -1018,7 +1036,8 @@ PXActionResult PXAPI PXResourceCreateModel(PXResourceCreateInfo* const pxResourc
     PXModelConstruct(pxModel);
 
     PXMesh* const pxMesh = &pxModel->Mesh;
-    PXVertexBuffer* const pxVertexBuffer = &pxMesh->VertexBuffer;
+    pxMesh->VertexBufferListAmount = 1;
+    PXVertexBuffer* const pxVertexBuffer = &pxMesh->VertexBufferPrime;
     PXIndexBuffer* const pxIndexBuffer = &pxMesh->IndexBuffer;
 
     PXMatrix4x4FIdentity(&pxModel->ModelMatrix);
@@ -1103,8 +1122,8 @@ PXActionResult PXAPI PXResourceCreateModel(PXResourceCreateInfo* const pxResourc
                     pxIndexBuffer->IndexData = 0;
                     pxIndexBuffer->IndexDataSize = 0;
 
-                    pxModel->Mesh.VertexBuffer.VertexDataSize = pxModelCreateInfo->VertexBuffer.VertexDataSize;
-                    pxModel->Mesh.VertexBuffer.VertexData = PXMemoryHeapCallocT(PXByte, pxModelCreateInfo->VertexBuffer.VertexDataSize, &pxModel->Mesh.VertexBuffer.VertexData, &pxModel->Mesh.VertexBuffer.VertexDataSize);
+                    pxVertexBuffer->VertexDataSize = pxModelCreateInfo->VertexBuffer.VertexDataSize;
+                    pxVertexBuffer->VertexData = PXMemoryHeapCallocT(PXByte, pxModelCreateInfo->VertexBuffer.VertexDataSize, &pxModel->Mesh.VertexBuffer.VertexData, &pxModel->Mesh.VertexBuffer.VertexDataSize);
                   
                     pxModel->Mesh.IndexBuffer.IndexDataSize = pxModelCreateInfo->IndexBuffer.IndexDataSize;
                     pxModel->Mesh.IndexBuffer.IndexData = PXMemoryHeapCallocT(PXByte, pxModelCreateInfo->IndexBuffer.IndexDataSize, &pxModel->Mesh.IndexBuffer.IndexData, &pxModel->Mesh.IndexBuffer.IndexDataSize);
@@ -1114,7 +1133,7 @@ PXActionResult PXAPI PXResourceCreateModel(PXResourceCreateInfo* const pxResourc
                         PXByte,
                         pxModelCreateInfo->VertexBuffer.VertexDataSize,
                         pxModelCreateInfo->VertexBuffer.VertexData,
-                        pxModel->Mesh.VertexBuffer.VertexData
+                        pxVertexBuffer->VertexData
                     );
                     PXCopyList
                     (
@@ -1164,7 +1183,7 @@ PXActionResult PXAPI PXResourceCreateModel(PXResourceCreateInfo* const pxResourc
             }
             case PXModelFormRectangle:
             {
-                pxVertexBuffer->Format = PXVertexBufferFormatXYI8;
+                pxVertexBuffer->Format = PXVertexBufferFormatP2I8;
                 pxVertexBuffer->VertexData = (void*)PXVertexDataRectangle;
                 pxVertexBuffer->VertexDataSize = sizeof(PXVertexDataRectangle);
 
@@ -1222,7 +1241,7 @@ PXActionResult PXAPI PXResourceCreateModel(PXResourceCreateInfo* const pxResourc
             }
             case PXModelFormCube:
             {
-                pxVertexBuffer->Format = PXVertexBufferFormatXYZI8;
+                pxVertexBuffer->Format = PXVertexBufferFormatP3I8;
                 pxVertexBuffer->VertexData = (void*)PXVertexDataCube;
                 pxVertexBuffer->VertexDataSize = sizeof(PXVertexDataCube);
 
@@ -1942,11 +1961,14 @@ PXMaterial* PXAPI PXMaterialContainerFind(const PXMaterialContainer* const pxMat
     return PXNull;
 }
 
-void* PXAPI PXVertexBufferInsertionPoint(const PXVertexBuffer* const pxVertexBuffer, const PXVertexBufferDataType pxVertexBufferDataType, const PXSize index)
+void* PXAPI PXVertexBufferInsertionPoint(const PXVertexBuffer* const pxVertexBuffer, const PXVertexBufferFormat pxVertexBufferFormat, const PXSize index)
 {
     const PXInt8U stride = PXVertexBufferFormatStrideSize(pxVertexBuffer->Format);
     const PXSize rowEntiry = stride * index;
 
+    return 0;
+
+#if 0
     switch(pxVertexBuffer->Format)
     {
         case PXVertexBufferFormatT2F_XYZ:
@@ -2009,14 +2031,52 @@ void* PXAPI PXVertexBufferInsertionPoint(const PXVertexBuffer* const pxVertexBuf
         default:
             return PXNull;
     }
+#endif
+}
+
+void PXAPI PXIndexBufferPrepare(PXIndexBuffer* const pxIndexBuffer, const PXSize amountVertex, const PXSize amountMaterials)
+{
+    // Index array data Type
+    {
+        if(amountVertex <= 0xFFu)
+        {
+            // 8-Bit
+            pxIndexBuffer->IndexDataType = PXTypeInt08U;
+        }
+        else if(amountVertex <= 0xFFFFu)
+        {
+            // 16-Bit
+            pxIndexBuffer->IndexDataType = PXTypeInt16U;
+        }
+        else if(amountVertex <= 0xFFFFFFFFu)
+        {
+            // 32-Bit
+            pxIndexBuffer->IndexDataType = PXTypeInt32U;
+        }
+        else
+        {
+            // 64-Bit
+            pxIndexBuffer->IndexDataType = PXTypeInt64U;
+        }
+
+        pxIndexBuffer->IndexDataSize = PXTypeSizeGet(pxIndexBuffer->IndexDataType) * amountVertex;
+        pxIndexBuffer->IndexData = PXMemoryHeapCalloc(PXNull, PXTypeSizeGet(pxIndexBuffer->IndexDataType), amountVertex);
+    }
+
+    pxIndexBuffer->SegmentListAmount = amountMaterials;
+    pxIndexBuffer->SegmentList = PXMemoryHeapCallocT(PXIndexSegment, amountMaterials);
 }
 
 PXSize PXAPI PXMeshTriangleAmount(PXMesh* const pxMesh)
 {
+    /*
     const PXInt8U stride = PXVertexBufferFormatStrideSize(pxMesh->VertexBuffer.Format);
     PXSize amount = (pxMesh->VertexBuffer.VertexDataSize / stride) / 3;
 
     return amount;
+    */
+
+    return 0;
 }
 
 float* PXAPI PXMeshTriangleIndex(PXMesh* const pxMesh, const PXSize index)
@@ -2042,20 +2102,18 @@ void PXAPI PXModelDestruct(PXModel* const pxModel)
 
 void PXAPI PXModelFormatTransmute(PXModel* const pxModel, PXModelFormatTransmuteInfo* const pxModelFormatTransmuteInfo)
 {
-
-
-
+#if 0
     //-----------------------------------------------------
     // Vertex
     //-----------------------------------------------------
-    PXVertexBufferFormat oldFormat = pxModel->Mesh.VertexBuffer.Format;
+    PXVertexBufferFormat oldFormat = pxModel->Mesh.VertexBufferPrime.Format;
 
     switch(pxModel->Mesh.VertexBuffer.Format)
     {
-        case PXVertexBufferFormatXYI8:
+        case PXVertexBufferFormatP2I8:
         {
-            PXSize amountFuture = PXVertexBufferFormatStrideSize(PXVertexBufferFormatT2F_XYZ);
-            PXSize amountCurrent = PXVertexBufferFormatStrideSize(PXVertexBufferFormatXYI8);
+            PXSize amountCurrent = PXVertexBufferFormatStrideSize(PXVertexBufferFormatP2I8);
+            PXSize amountFuture = PXVertexBufferFormatStrideSize(PXVertexBufferFormatT2F_XYZ);          
             PXSize sizeBefore = pxModel->Mesh.VertexBuffer.VertexDataSize;
             PXSize sizeCurrent = (pxModel->Mesh.VertexBuffer.VertexDataSize / 2) * amountFuture;
                         
@@ -2083,7 +2141,7 @@ void PXAPI PXModelFormatTransmute(PXModel* const pxModel, PXModelFormatTransmute
 
             break;
         }
-        case PXVertexBufferFormatXYZI8:
+        case PXVertexBufferFormatP3I8:
         {          
             PXSize amountFuture = PXVertexBufferFormatStrideSize(PXVertexBufferFormatXYZFloat);
             PXSize amountCurrent = PXVertexBufferFormatStrideSize(PXVertexBufferFormatXYZI8);
@@ -2135,6 +2193,7 @@ void PXAPI PXModelFormatTransmute(PXModel* const pxModel, PXModelFormatTransmute
     //-----------------------------------------------------
     // Index
     //-----------------------------------------------------
+#endif
 
 }
 
@@ -2891,7 +2950,7 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
         PXLogPrint
         (
             PXLoggingInfo,
-            "File",
+            PXResourceManagerText,
             "Load-Peek",
             "Start..."
         );
@@ -2907,7 +2966,7 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
             PXLogPrint
             (
                 PXLoggingError,
-                "File",
+                PXResourceManagerText,
                 "File-Peek",
                 "Failed"
             );
@@ -2922,7 +2981,7 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
         PXLogPrint
         (
             PXLoggingInfo,
-            "File",
+            PXResourceManagerText,
             "Load-Peek",
             "Done! Took:%6.3fs",
             pxResourceLoadInfo->TimePeek
@@ -2935,7 +2994,7 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
         PXLogPrint
         (
             PXLoggingInfo,
-            "File",
+            PXResourceManagerText,
             "Load-Peek",
             "No peek function implemented. procceed.."
         );
@@ -2949,7 +3008,7 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
         PXLogPrint
         (
             PXLoggingInfo,
-            "File",
+            PXResourceManagerText,
             "Load-PreAlloc",
             "Preallocate resource on device"
         );
@@ -2967,7 +3026,7 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
         PXLogPrint
         (
             PXLoggingInfo,
-            "File",
+            PXResourceManagerText,
             "Load-PreAlloc",
             "Preallocate took:<%6.3f>",
             pxResourceLoadInfo->TimeDeviceDataRegister
@@ -2982,7 +3041,7 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
         PXLogPrint
         (
             PXLoggingInfo,
-            "File",
+            PXResourceManagerText,
             "Load-Extract",
             "Start..."
         );
@@ -3008,7 +3067,7 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
             PXLogPrint
             (
                 PXLoggingError,
-                "File",
+                PXResourceManagerText,
                 "Load-Extract",
                 "Failed. Took:%6.3f  ROPs:%-7i <%s>",
                 pxResourceLoadInfo->TimeTransphere,
@@ -3024,7 +3083,7 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
         PXLogPrint
         (
             PXLoggingInfo,
-            "File",
+            PXResourceManagerText,
             "Load-Extract",
             "Done! Took:%6.3f  ROPs:%-7i <%s>",
             pxResourceLoadInfo->TimeTransphere,
