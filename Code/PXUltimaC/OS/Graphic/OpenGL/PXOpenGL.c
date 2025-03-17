@@ -450,6 +450,8 @@ const char PXOpenGLBindingList[] =
 "glVertexAttribPointer\0"
 "glVertexPointer\0"
 "glViewport\0"
+"glShaderStorageBlockBinding\0"
+"glBindBufferBase\0"
 
 #if OSUnix // Linux - X-System
 "glXChooseVisual\0"
@@ -1123,6 +1125,27 @@ const char PXOpenGLBindingList[] =
 
 //-------------------------------------------------------------------------
 
+
+//-------------------------------------------------------------------------
+// GL_ARB_shader_storage_buffer_object
+//-------------------------------------------------------------------------
+#define GL_SHADER_STORAGE_BARRIER_BIT 0x2000
+#define GL_MAX_COMBINED_SHADER_OUTPUT_RESOURCES 0x8F39
+#define GL_SHADER_STORAGE_BUFFER 0x90D2
+#define GL_SHADER_STORAGE_BUFFER_BINDING 0x90D3
+#define GL_SHADER_STORAGE_BUFFER_START 0x90D4
+#define GL_SHADER_STORAGE_BUFFER_SIZE 0x90D5
+#define GL_MAX_VERTEX_SHADER_STORAGE_BLOCKS 0x90D6
+#define GL_MAX_GEOMETRY_SHADER_STORAGE_BLOCKS 0x90D7
+#define GL_MAX_TESS_CONTROL_SHADER_STORAGE_BLOCKS 0x90D8
+#define GL_MAX_TESS_EVALUATION_SHADER_STORAGE_BLOCKS 0x90D9
+#define GL_MAX_FRAGMENT_SHADER_STORAGE_BLOCKS 0x90DA
+#define GL_MAX_COMPUTE_SHADER_STORAGE_BLOCKS 0x90DB
+#define GL_MAX_COMBINED_SHADER_STORAGE_BLOCKS 0x90DC
+#define GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS 0x90DD
+#define GL_MAX_SHADER_STORAGE_BLOCK_SIZE 0x90DE
+#define GL_SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT 0x90DF
+//-------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------- 4.3
@@ -2706,7 +2729,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
     // WGL-Extensions (Wiggle OpenGL)
     //-----------------------------------------------------
     {
-#if 1
+#if 0
         if(pxOpenGL->Binding.ExtensionStringGet)
         {
           
@@ -3413,6 +3436,8 @@ void PXAPI PXOpenGLDrawEnd(PXOpenGL* const pxOpenGL)
     pxOpenGL->Binding.End();
 }
 
+PXSize indexxxx = 0;
+
 PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderEntity* const pxRenderEntity)
 {
     if(!(pxOpenGL && pxRenderEntity))
@@ -3446,17 +3471,19 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
 
     void* indexData = 0;
 
+   // indexData = pxMesh->IndexBuffer.DataIndexPosition;
+
     if(supportVAO)
     {
-        pxOpenGL->Binding.VertexArrayBind(pxModel->Info.Handle.OpenGLID); // Select VAO
+        pxOpenGL->Binding.VertexArrayBind(pxModel->Mesh.Info.Handle.OpenGLID); // Select VAO
 
-        /*
+       /*
         if(pxVertexBuffer->VertexData)
         {
             pxOpenGL->Binding.BufferBind(GL_ARRAY_BUFFER, pxVertexBuffer->Info.Handle.OpenGLID);
-        }
-        */
-        if(pxIndexBuffer->IndexData)
+        }*/
+        
+        if(pxIndexBuffer->DataIndexPosition)
         {
             pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->Info.Handle.OpenGLID);
         }
@@ -3511,7 +3538,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
 
             //glIndexPointer(indexBufferTypeID, 0, pxModel->IndexBuffer.IndexData);
 
-            indexData = pxIndexBuffer->IndexData;
+            indexData = pxIndexBuffer->DataIndexPosition;
         }
     }
 
@@ -3589,6 +3616,14 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
         pxShaderVariableList[5].DataType = PXShaderVariableTypeFloatVector4;
 
         PXOpenGLShaderVariableSet(pxOpenGL, pxShaderProgram, pxShaderVariableList, 6);
+
+        PXConsoleGoToXY(0, 0);
+        PXConsoleWrite(7, "Model\n");
+        PXConsoleWriteTableFloat(modifiedModelMatrix.Data, 4 * 4, 4);
+        PXConsoleWrite(6, "View\n");
+        PXConsoleWriteTableFloat(modifiedViewMatrix.Data, 4 * 4, 4);
+        PXConsoleWrite(12, "Projection\n");
+        PXConsoleWriteTableFloat(matrixProjection->Data, 4 * 4, 4);
     }
     else // Legacy matrix stuff
     {
@@ -3641,25 +3676,84 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
     // glDepthMask(GL_FALSE);
 
 
-    pxOpenGL->Binding.PointSize(20);
+    pxOpenGL->Binding.PointSize(10);
     pxOpenGL->Binding.LineWidth(2);
 
 
-    const GLsizei drawElementsCount = pxIndexBuffer->IndexDataSize / PXTypeSizeGet(pxIndexBuffer->IndexDataType);
+
+    if(pxOpenGL->Binding.ShaderStorageBlockBinding)
+    {
+        pxOpenGL->Binding.BufferBindBase(GL_SHADER_STORAGE_BUFFER, 0, pxMesh->VertexBufferList[1].DataBuffer.Info.Handle.OpenGLID);
+        pxOpenGL->Binding.BufferBindBase(GL_SHADER_STORAGE_BUFFER, 1, pxMesh->VertexBufferList[2].DataBuffer.Info.Handle.OpenGLID);
+
+        /*
+        // Bind SSBO to binding point 0
+        pxOpenGL->Binding.ShaderStorageBlockBinding
+        (
+            pxShaderProgram->Info.Handle.OpenGLID,
+            0,
+            pxMesh->VertexBufferList[1].DataBuffer.Info.Handle.OpenGLID
+        );
+        pxOpenGL->Binding.ShaderStorageBlockBinding
+        (
+            pxShaderProgram->Info.Handle.OpenGLID,
+            1,
+            pxMesh->VertexBufferList[2].DataBuffer.Info.Handle.OpenGLID
+        );*/
+    }
+    else
+    {
+        // Activate the first texture unit and bind the normals texture
+        pxOpenGL->Binding.TextureSlotActive(GL_TEXTURE1);       // Texture unit 0
+        pxOpenGL->Binding.TextureBind(GL_TEXTURE_1D, pxMesh->VertexBufferList[1].DataBuffer.Info.Handle.OpenGLID); // Bind the normals texture
+
+        // Activate the second texture unit and bind the texture coordinates texture
+        pxOpenGL->Binding.TextureSlotActive(GL_TEXTURE2);       // Texture unit 1
+        pxOpenGL->Binding.TextureBind(GL_TEXTURE_1D, pxMesh->VertexBufferList[2].DataBuffer.Info.Handle.OpenGLID); // Bind the texture coordinates texture
+
+
+        // Set the uniform sampler locations in the shader
+        pxOpenGL->Binding.Uniform1i(pxOpenGL->Binding.GetUniformLocation(pxShaderProgram->Info.Handle.OpenGLID, "VertexAttributeNormal"), 1);   // Corresponds to GL_TEXTURE0
+        pxOpenGL->Binding.Uniform1i(pxOpenGL->Binding.GetUniformLocation(pxShaderProgram->Info.Handle.OpenGLID, "VertexAttributeTexCoords"), 2); // Corresponds to GL_TEXTURE1
+
+    }
+
+
+
+    const GLsizei drawElementsCount = pxIndexBuffer->DataIndexSizeSegment;// / PXTypeSizeGet(pxIndexBuffer->IndexDataType);
     const PXBool hasNoIndexArray = pxIndexBuffer->Info.Handle.OpenGLID == -1;
     const GLenum indexDataType = PXOpenGLTypeToID(pxIndexBuffer->IndexDataType);
 
-    if(pxIndexBuffer->DrawModeID & PXDrawModeIDTriangle)
-    {
-        pxOpenGL->Binding.Color4f(1, 1, 1, 1);
 
         const PXBool renderSegmented = pxIndexBuffer->SegmentListAmount > 1;
+        const PXBool hasIndexBuffer = (PXInt32U)-1 != pxIndexBuffer->Info.Handle.OpenGLID;
+
+        unsigned short modeAmount = 0;
+        unsigned short modeCache[5];
+
+        if(PXDrawModeIDTriangle & pxIndexBuffer->DrawModeID)
+        {
+            modeCache[modeAmount] = GL_TRIANGLES;
+            ++modeAmount;
+        }
+
+        if(PXDrawModeIDLineLoop & pxIndexBuffer->DrawModeID)
+        {
+            modeCache[modeAmount] = GL_LINE_LOOP;
+            ++modeAmount;
+        }
+
+        if(PXDrawModeIDPoint & pxIndexBuffer->DrawModeID || 1)
+        {
+            modeCache[modeAmount] = PXDrawModeIDPoint;
+            ++modeAmount;
+        }
 
         if(renderSegmented)
         {
             PXSize renderOffset = 0;
 
-            for(size_t i = 0; i < pxIndexBuffer->SegmentListAmount; i++)
+            for(PXSize i = 0; i < pxIndexBuffer->SegmentListAmount-1; ++i)
             {
                 PXIndexSegment* const pxIndexSegment = &pxIndexBuffer->SegmentList[i];
                 PXTexture2D* pxTexture = 0;
@@ -3672,24 +3766,33 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
                 if(pxTexture)
                 {
                     pxOpenGL->Binding.Enable(GL_TEXTURE_2D);
+                    pxOpenGL->Binding.TextureSlotActive(GL_TEXTURE0);
                     pxOpenGL->Binding.TextureBind(GL_TEXTURE_2D, pxTexture->Info.Handle.OpenGLID);
                 }
                 else
                 {
+                    pxOpenGL->Binding.TextureSlotActive(GL_TEXTURE0);
                     pxOpenGL->Binding.TextureBind(GL_TEXTURE_2D, PXNull);
                     pxOpenGL->Binding.Disable(GL_TEXTURE_2D);
                 }
 
-                if(pxIndexBuffer->Info.Handle.OpenGLID == -1) // Does this index array exist?
+               
+
+                for(size_t i = 0; i < modeAmount; ++i)
                 {
-                    // Render withoút an index buffer
-                    pxOpenGL->Binding.DrawArrays(GL_TRIANGLES, renderOffset, pxIndexSegment->DataRange);
+                    if(hasIndexBuffer) // Does this index array exist?
+                    {
+                        // Render with an index buffer
+                        pxOpenGL->Binding.DrawElements(modeCache[i], pxIndexSegment->DataRange, indexDataType, renderOffset);
+                    }
+                    else
+                    {
+                        // Render withoút an index buffer
+                        pxOpenGL->Binding.DrawArrays(modeCache[i], renderOffset, pxIndexSegment->DataRange);
+                    }
                 }
-                else
-                {
-                    // Render with an index buffer
-                    pxOpenGL->Binding.DrawElements(GL_TRIANGLES, pxIndexSegment->DataRange, indexDataType, indexData);
-                }
+
+
 
                 renderOffset += pxIndexSegment->DataRange;
             }
@@ -3764,62 +3867,14 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
             }
             else
             {
-                pxOpenGL->Binding.DrawElements(GL_TRIANGLES, drawElementsCount, indexBufferTypeID, indexData);
+                pxOpenGL->Binding.DrawElements(GL_TRIANGLES, drawElementsCount, indexBufferTypeID, 0);
             }
         }
-    }
-    if(pxIndexBuffer->DrawModeID & PXDrawModeIDSquare)
-    {
-        pxOpenGL->Binding.Color4f(1, 1, 1, 1);
+   
 
-        if(hasNoIndexArray)
-        {
-            pxOpenGL->Binding.DrawArrays(GL_QUADS, 0, drawElementsCount);
-        }
-        else
-        {
-            pxOpenGL->Binding.DrawElements(GL_QUADS, drawElementsCount, indexBufferTypeID, indexData);
-        }
-    }
-    if(pxIndexBuffer->DrawModeID & PXDrawModeIDLineLoop)
-    {
-        pxOpenGL->Binding.Color4f(0, 1, 0, 1);
 
-        if(hasNoIndexArray)
-        {
-            pxOpenGL->Binding.DrawArrays(GL_LINE_LOOP, 0, drawElementsCount);
-        }
-        else
-        {
-            pxOpenGL->Binding.DrawElements(GL_LINE_LOOP, drawElementsCount, indexBufferTypeID, indexData);
-        }
-    }
-    if(pxIndexBuffer->DrawModeID & PXDrawModeIDLine)
-    {
-        pxOpenGL->Binding.Color4f(0, 1, 0, 1);
 
-        if(hasNoIndexArray)
-        {
-            pxOpenGL->Binding.DrawArrays(GL_LINES, 0, drawElementsCount);
-        }
-        else
-        {
-            pxOpenGL->Binding.DrawElements(GL_LINES, drawElementsCount, indexBufferTypeID, indexData);
-        }
-    }
-    if(pxIndexBuffer->DrawModeID & PXDrawModeIDPoint)
-    {
-        pxOpenGL->Binding.Color4f(1, 1, 0, 1);
-
-        if(hasNoIndexArray)
-        {
-            pxOpenGL->Binding.DrawArrays(GL_POINTS, 0, drawElementsCount);
-        }
-        else
-        {
-            pxOpenGL->Binding.DrawElements(GL_POINTS, drawElementsCount, indexBufferTypeID, indexData);
-        }
-    }
+   
     //-----------------------------------------------------
 
 
@@ -3855,6 +3910,24 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
     pxOpenGL->Binding.Disable(GL_BLEND);
     pxOpenGL->Binding.Disable(GL_CULL_FACE);
     pxOpenGL->Binding.Disable(GL_DEPTH_TEST);
+
+    pxOpenGL->Binding.TextureSlotActive(GL_TEXTURE0);
+    pxOpenGL->Binding.TextureBind(GL_TEXTURE_2D, 0);
+
+
+    if(pxOpenGL->Binding.ShaderStorageBlockBinding)
+    {
+        pxOpenGL->Binding.BufferBind(GL_SHADER_STORAGE_BUFFER, 0);
+    }
+    else
+    {
+        pxOpenGL->Binding.TextureSlotActive(GL_TEXTURE1);
+        pxOpenGL->Binding.TextureBind(GL_TEXTURE_1D, 0);
+        pxOpenGL->Binding.TextureSlotActive(GL_TEXTURE2);
+        pxOpenGL->Binding.TextureBind(GL_TEXTURE_1D, 0);
+    }
+
+
 
     return PXActionSuccessful;
 }
@@ -5122,6 +5195,8 @@ PXActionResult PXAPI PXOpenGLShaderProgramSelect(PXOpenGL* const pxOpenGL, PXSha
     );
 #endif
 
+    // TODO: Catch if id is -1 or just invalid
+
     pxOpenGL->Binding.ShaderProgramUse(pxShaderProgram->Info.Handle.OpenGLID);
 
     const PXActionResult createResult = PXOpenGLErrorCurrent(pxOpenGL, 0);
@@ -5582,7 +5657,7 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, const PXRenderEntity* co
     PXCamera* const pxCamera = pxRenderEntity->CameraReference;
     PXMatrix4x4F* const matrixModel = &pxRenderEntity->MatrixModel;
     PXMatrix4x4F* const matrixView = &pxCamera->MatrixView;
-  //  PXVertexBuffer* const pxVertexBuffer = &pxSkyBox->Model->Mesh.VertexBuffer;
+    PXVertexBuffer* const pxVertexBuffer = &pxSkyBox->Model->Mesh.VertexBufferPrime;
     PXIndexBuffer* const pxIndexBuffer = &pxSkyBox->Model->Mesh.IndexBuffer;
 
     PXModel* const pxModel = pxSkyBox->Model;
@@ -5644,12 +5719,12 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, const PXRenderEntity* co
         //glMultMatrixf(pxSkyBox->Model.ModelMatrix.Data);
         pxOpenGL->Binding.PushMatrix();
 
-        indexBuffer = pxIndexBuffer->IndexData;
+        indexBuffer = pxIndexBuffer->DataIndexPosition;
     }
 
     if(pxOpenGL->Binding.VertexArrayBind)
     {
-        pxOpenGL->Binding.VertexArrayBind(pxModel->Info.Handle.OpenGLID);
+        pxOpenGL->Binding.VertexArrayBind(pxModel->Mesh.Info.Handle.OpenGLID);
     }
 
 
@@ -5667,9 +5742,12 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, const PXRenderEntity* co
     //PXOpenGLBufferBind(pxOpenGL, PXOpenGLBufferElementArray, skybox->Model.IndexBuffer.ResourceID.OpenGLID);
     // PXOpenGLTextureBind(pxOpenGL, PXOpenGLTextureTypeCubeMap, skybox->TextureCube.ResourceID.OpenGLID);
 
-    const GLsizei drawElementsCount = pxIndexBuffer->IndexDataSize / (pxIndexBuffer->IndexDataType & PXTypeSizeMask);
+    const GLsizei drawElementsCount = pxIndexBuffer->DataIndexSizeSegment / (pxIndexBuffer->IndexDataType & PXTypeSizeMask);
 
-    if(pxIndexBuffer->DrawModeID & PXDrawModeIDPoint)
+    pxOpenGL->Binding.BufferBind(GL_ARRAY_BUFFER, pxVertexBuffer->Info.Handle.OpenGLID);
+    pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->Info.Handle.OpenGLID);
+
+    if(pxIndexBuffer->DrawModeID & PXDrawModeIDPoint || 1)
     {
         pxOpenGL->Binding.DrawArrays(GL_POINTS, 0, drawElementsCount);
     }
@@ -6663,6 +6741,112 @@ PXActionResult PXAPI PXOpenGLLightEnableGet(PXOpenGL* const pxOpenGL, PXLight* c
     return PXActionSuccessful;
 }
 
+
+
+
+
+
+void PXOpenGKShaderDataBufferCreate(PXOpenGL* const pxOpenGL, PXShaderDataBuffer* const pxShaderDataBuffer, const PXSize sizeOfData, void* data)
+{
+    // if we support SSBOs (v.4.3), then use those
+    if(pxOpenGL->Binding.ShaderStorageBlockBinding)
+    {
+        PXSize maxAmount = 0;
+        PXSize maxSize = 0;
+
+        if(pxOpenGL->Binding.GetInteger64v)
+        {
+            PXInt64S maxAmount64 = 0;
+            PXInt64S maxSize64 = 0;
+            pxOpenGL->Binding.GetInteger64v(GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS, &maxAmount64);
+            pxOpenGL->Binding.GetInteger64v(GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &maxSize64);
+            maxAmount = maxAmount64;
+            maxSize = maxSize64;
+        }
+        else
+        {
+            PXSize maxAmount32 = 0;
+            PXSize maxSize32 = 0;
+            pxOpenGL->Binding.GetIntegerv(GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS, &maxAmount32);
+            pxOpenGL->Binding.GetIntegerv(GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &maxSize32);
+            maxAmount = maxAmount32;
+            maxSize = maxSize32;
+        }
+
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingWarning,
+            "OpenGL",
+            "Texture1D",
+            "Max supported SSBO binings:%li, size: %li",
+            maxAmount,
+            maxSize
+        );
+#endif
+
+        // Generate and bind buffer
+        GLuint ssbo;
+        pxOpenGL->Binding.BufferGenerate(1, &ssbo);
+        pxOpenGL->Binding.BufferBind(GL_SHADER_STORAGE_BUFFER, ssbo);
+
+        // Allocate and populate data
+        pxOpenGL->Binding.BufferData(GL_SHADER_STORAGE_BUFFER, sizeOfData, data, GL_STATIC_DRAW);
+
+        pxShaderDataBuffer->Info.Handle.OpenGLID = ssbo;
+
+        pxOpenGL->Binding.BufferBind(GL_SHADER_STORAGE_BUFFER, 0);
+    }
+    else
+    {
+        // Example: Creating a 1D texture for normals
+        PXSize maxTextureSize = 0;
+
+        if(pxOpenGL->Binding.GetInteger64v)
+        {
+            PXInt64S maxTextureSize64;
+            pxOpenGL->Binding.GetInteger64v(GL_MAX_TEXTURE_SIZE, &maxTextureSize64);
+            maxTextureSize = maxTextureSize64;
+        }
+        else
+        {
+            GLint maxTextureSize32;
+            pxOpenGL->Binding.GetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize32);
+            maxTextureSize = maxTextureSize32;
+        }
+
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingWarning,
+            "OpenGL",
+            "Texture1D",
+            "Max supported size: %li",
+            maxTextureSize
+        );
+#endif
+
+
+        GLuint normalsTexture;
+        pxOpenGL->Binding.TextureCreate(1, &normalsTexture);
+        pxOpenGL->Binding.TextureBind(GL_TEXTURE_1D, normalsTexture);
+
+        pxShaderDataBuffer->Info.Handle.OpenGLID = normalsTexture;
+
+        // Upload data to the texture
+        pxOpenGL->Binding.TextureData1D(GL_TEXTURE_1D, 0, GL_RED, sizeOfData / sizeof(float), 0, GL_RED, GL_FLOAT, data);
+
+
+        // Set texture parameters
+        pxOpenGL->Binding.TextureParameterI(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        pxOpenGL->Binding.TextureParameterI(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        pxOpenGL->Binding.TextureParameterI(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+
+        // Repeat for texture coordinates or any other data
+    }   
+}
+
+
 PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* const pxModel)
 {
     if(!(pxOpenGL && pxModel))
@@ -6677,7 +6861,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
     if(pxOpenGL->Binding.VertexArraysGenerate)
     {
         pxOpenGL->Binding.VertexArraysGenerate(1, &(pxMesh->Info.Handle.OpenGLID)); // VAO
-        pxOpenGL->Binding.VertexArrayBind(pxModel->Info.Handle.OpenGLID);
+        pxOpenGL->Binding.VertexArrayBind(pxMesh->Info.Handle.OpenGLID);
 
 #if PXLogEnable
         PXLogPrint
@@ -6686,7 +6870,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
             "OpenGL",
             "Model",
             "VAO created <%i>",
-            pxModel->Info.Handle.OpenGLID
+            pxMesh->Info.Handle.OpenGLID
         );
 #endif
     }
@@ -6698,8 +6882,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
             PXLoggingWarning,
             "OpenGL",
             "Model",
-            "VAO not supported",
-            pxModel->Info.Handle.OpenGLID
+            "VAO not supported"
         );
 #endif
     }
@@ -6732,8 +6915,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
             PXLoggingWarning,
             "OpenGL",
             "Model",
-            "VBO not supported, Copy for Client-Buffer use.",
-            pxModel->Info.Handle.OpenGLID
+            "VBO not supported, Copy for Client-Buffer use."
         );
 #endif
 
@@ -6741,7 +6923,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
     }
 
 
-    const PXBool hasIndexData = pxIndexBuffer->IndexDataSize > 0;
+    const PXBool hasIndexData = pxIndexBuffer->DataIndexSizeSegment > 0;
 
 
     // Registering of array buffers
@@ -6790,7 +6972,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
                 PXLoggingInfo,
                 PXOpenGLName,
                 PXOpenGLModelName,
-                "IBO: <%i>",
+                "IBO:<%i>",
                 pxIndexBuffer->Info.Handle.OpenGLID
             );
 #endif
@@ -6802,7 +6984,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
         }
         else
         {
-            for(size_t i = 0; i < pxMesh->VertexBufferListAmount; i++)
+            for(PXSize i = 0; i < pxMesh->VertexBufferListAmount; ++i)
             {
                 PXVertexBuffer* const pxVertexBuffer = &pxMesh->VertexBufferList[i];
 
@@ -6814,8 +6996,8 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
                     PXLoggingInfo,
                     PXOpenGLName,
                     PXOpenGLModelName,
-                    "VBO: <%i>",
-                    pxIndexBuffer->Info.Handle.OpenGLID
+                    "VBO:<%i>",
+                    pxVertexBuffer->Info.Handle.OpenGLID
                 );
 #endif
             }
@@ -6859,12 +7041,32 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
                 PXLoggingInfo,
                 PXOpenGLName,
                 PXOpenGLModelName,
-                "IBO:<%i> upload <%p> with %i B",
+                "IBO:<%i> upload <%p> with %i B, (TypeWidth:%i)",
                 pxIndexBuffer->Info.Handle.OpenGLID,
-                pxIndexBuffer->IndexData,
-                pxIndexBuffer->IndexDataSize
+                pxIndexBuffer->DataIndexPosition,
+                pxIndexBuffer->DataIndexSizeSegment,
+                PXTypeSizeGet(pxIndexBuffer->IndexDataType)
             );
 #endif
+
+#if PXLogEnable && 0
+            for(PXSize i = 0; i < pxIndexBuffer->IndexDataSize; i += 3)
+            {
+                PXInt8U* data = &((PXInt8U*)pxIndexBuffer->IndexData)[i];
+
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    PXOpenGLName,
+                    PXOpenGLModelName,
+                    "%2i, %2i, %2i",
+                    data[0],
+                    data[1],
+                    data[2]
+                );
+            }
+#endif
+
             // Select
             pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->Info.Handle.OpenGLID);
 
@@ -6872,10 +7074,10 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
             // NO!, we actually define the type when we draw. Because of opengl design
 
             // Upload
-            pxOpenGL->Binding.BufferData(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->IndexDataSize, pxIndexBuffer->IndexData, GL_STATIC_DRAW);
+            pxOpenGL->Binding.BufferData(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->DataIndexSizeSegment, pxIndexBuffer->DataIndexPosition, GL_STATIC_DRAW);
 
             // Unselect. not needed if VAO are supported
-            pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, 0);
+            //pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, 0);
         }
     }
 
@@ -6926,54 +7128,125 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
                 pxVertexBuffer->VertexDataSize
             );
 #endif
+
+            //PXConsoleWriteTableFloat(pxVertexBuffer->VertexData, pxVertexBuffer->VertexDataSize / sizeof(float), 3);
         }
         else
         {
-            for(size_t i = 0; i < pxMesh->VertexBufferListAmount; i++)
-            {
-                PXVertexBuffer* const pxVertexBuffer = &pxMesh->VertexBufferList[i];
+            PXVertexBuffer* const pxVertexBufferPosition = &pxMesh->VertexBufferList[0];
+            PXVertexBuffer* const pxVertexBufferNormal = &pxMesh->VertexBufferList[1];
+            PXVertexBuffer* const pxVertexBufferTexture = &pxMesh->VertexBufferList[2];
+      
+        
+            pxOpenGL->Binding.BufferBind(GL_ARRAY_BUFFER, pxVertexBufferPosition->Info.Handle.OpenGLID);
+            pxOpenGL->Binding.BufferData(GL_ARRAY_BUFFER, pxVertexBufferPosition->VertexDataSize, pxVertexBufferPosition->VertexData, GL_STATIC_DRAW);
 
-                // Select
-                pxOpenGL->Binding.BufferBind(GL_ARRAY_BUFFER, pxVertexBuffer->Info.Handle.OpenGLID);
-                
-                // Upload
-                pxOpenGL->Binding.BufferData(GL_ARRAY_BUFFER, pxVertexBuffer->VertexDataSize, pxVertexBuffer->VertexData, GL_STATIC_DRAW);
+            const PXInt8U sizePerVertex = PXVertexBufferFormatSizePerVertex(pxVertexBufferPosition->Format);
 
-                // Define layout   
-                const PXInt8U sizePerVertex = PXVertexBufferFormatSizePerVertex(pxVertexBuffer->Format);
-               // const GLenum openGLType = PXOpenGLTypeToID(pxVertexElementCurrent->Type);
-                // TODO: enable VBO to have other types besides floats!!!
+            pxOpenGL->Binding.VertexAttribPointer(0, sizePerVertex, GL_FLOAT, GL_FALSE, 0, 0);
+            pxOpenGL->Binding.VertexAttribArrayEnable(0);
 
-                pxOpenGL->Binding.VertexAttribPointer
-                (
-                    i, 
-                    sizePerVertex,
-                    GL_FLOAT,
-                    GL_FALSE,
-                    0, 
-                    0
-                );
-                pxOpenGL->Binding.VertexAttribArrayEnable(i);
+
+            // Index
+            
+            pxOpenGL->Binding.BufferBind(GL_ARRAY_BUFFER, pxVertexBufferNormal->Info.Handle.OpenGLID);
+            pxOpenGL->Binding.BufferData(GL_ARRAY_BUFFER, pxIndexBuffer->DataIndexSizeSegment, pxIndexBuffer->DataIndexNormal, GL_STATIC_DRAW);
+            pxOpenGL->Binding.VertexAttribPointer(1, 1, GL_UNSIGNED_SHORT, GL_FALSE, 0, 0);
+            pxOpenGL->Binding.VertexAttribArrayEnable(1);
+
+            // Index
+            pxOpenGL->Binding.BufferBind(GL_ARRAY_BUFFER, pxVertexBufferTexture->Info.Handle.OpenGLID);
+            pxOpenGL->Binding.BufferData(GL_ARRAY_BUFFER, pxIndexBuffer->DataIndexSizeSegment, pxIndexBuffer->DataIndexTexturePos, GL_STATIC_DRAW);
+            pxOpenGL->Binding.VertexAttribPointer(2, 1, GL_UNSIGNED_SHORT, GL_FALSE, 0, 0);
+            pxOpenGL->Binding.VertexAttribArrayEnable(2);
+
+
+
+            // Data
+            PXOpenGKShaderDataBufferCreate(pxOpenGL, &pxVertexBufferNormal->DataBuffer, pxVertexBufferNormal->VertexDataSize, pxVertexBufferNormal->VertexData);
+
+            // Data
+            PXOpenGKShaderDataBufferCreate(pxOpenGL, &pxVertexBufferTexture->DataBuffer, pxVertexBufferTexture->VertexDataSize, pxVertexBufferTexture->VertexData);
+                        
+        }
+    }
+
+
+
+
+
+
+
+
+    /*
+    
+     PXVertexBuffer* const pxVertexBuffer = &pxMesh->VertexBufferList[i];
+
+                if(i == 0)
+                {
+                    // Create as VBO
+
+                    // Select
+                    pxOpenGL->Binding.BufferBind(GL_ARRAY_BUFFER, pxVertexBuffer->Info.Handle.OpenGLID);
+
+                    // Upload
+                    pxOpenGL->Binding.BufferData(GL_ARRAY_BUFFER, pxVertexBuffer->VertexDataSize, pxVertexBuffer->VertexData, GL_STATIC_DRAW);
+
+                    // Define layout   
+                    const PXInt8U sizePerVertex = PXVertexBufferFormatSizePerVertex(pxVertexBuffer->Format);
+                    // const GLenum openGLType = PXOpenGLTypeToID(pxVertexElementCurrent->Type);
+                     // TODO: enable VBO to have other types besides floats!!!
+
+                    pxOpenGL->Binding.VertexAttribPointer
+                    (
+                        i,
+                        sizePerVertex,
+                        GL_FLOAT,
+                        GL_FALSE,
+                        0,
+                        0
+                    );
+                    pxOpenGL->Binding.VertexAttribArrayEnable(i);
 
 #if PXLogEnable
-                const char* vertexFormatName = PXVertexBufferFormatToString(pxVertexBuffer->Format);
+                    const char* vertexFormatName = PXVertexBufferFormatToString(pxVertexBuffer->Format);
 
-                PXLogPrint
-                (
-                    PXLoggingInfo,
-                    PXOpenGLName,
-                    PXOpenGLModelName,
-                    "(%i/%i) VBO:<%i>, %s,  upload <%p> with %i B",
-                    i+1,
-                    pxMesh->VertexBufferListAmount,
-                    pxVertexBuffer->Info.Handle.OpenGLID,
-                    vertexFormatName,
-                    pxVertexBuffer->VertexData,
-                    pxVertexBuffer->VertexDataSize
-                );
+                    PXLogPrint
+                    (
+                        PXLoggingInfo,
+                        PXOpenGLName,
+                        PXOpenGLModelName,
+                        "(%i/%i) VBO:<%i>, %s,  upload <%p> with %i B",
+                        i + 1,
+                        pxMesh->VertexBufferListAmount,
+                        pxVertexBuffer->Info.Handle.OpenGLID,
+                        vertexFormatName,
+                        pxVertexBuffer->VertexData,
+                        pxVertexBuffer->VertexDataSize
+                    );
 #endif
-            }
-    }
+                }
+                else
+                {
+                    PXOpenGKShaderDataBufferCreate();
+
+                 
+                }
+
+
+    */
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -7058,7 +7331,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
             pxOpenGL->Binding.VertexAttribPointer(i, pxVertexElementCurrent->Length, openGLType, GL_FALSE, pxVertexElementCurrent->Stride, (void*)pxVertexElementCurrent->StartAdress);
         }
         */
-    }
+    
 
     /*
     Now, here is how we would do it using the new APIs:

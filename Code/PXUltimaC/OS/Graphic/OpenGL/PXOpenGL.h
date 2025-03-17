@@ -744,6 +744,7 @@ typedef void (PXOpenGLAPI* PXOpenGLGenVertexArraysFunction)(GLsizei n, GLuint* a
 typedef void (PXOpenGLAPI* PXOpenGLBindVertexArrayFunction)(GLuint arrayID);
 typedef void (PXOpenGLAPI* PXOpenGLVertexAttribIPointerFunction)(GLuint index, GLint size, GLenum type, GLsizei stride, const void* pointer);
 typedef const GLubyte* (PXOpenGLAPI* PXOpenGLStringIFunction)(GLenum name, GLuint index); // glGetStringi
+typedef void (PXOpenGLAPI* PXOpenGLBufferBindBaseFunction)(GLenum target, GLuint index, GLuint buffer); // glBindBufferBase
 
 //-------------------------------------------------------------------------
 
@@ -773,6 +774,7 @@ typedef void (PXOpenGLAPI* PXOpenGLVertexAttribLPointerFunction)(GLuint index, G
 //---<PXOpenGL v.4.3.0>--------------------------------------------------------
 typedef void (PXOpenGLAPI* DEBUGPROC)(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void* userParam);
 typedef void (PXOpenGLAPI* PXOpenGLDebugMessageFunction)(DEBUGPROC callback, const void* userParam); // Set
+typedef void (PXOpenGLAPI* PXOpenGLShaderStorageBlockBindingFunction) (GLuint program, GLuint storageBlockIndex, GLuint storageBlockBinding);
 //-----------------------------------------------------------------------------
 
 //---<PXOpenGL v.4.4.0>--------------------------------------------------------
@@ -1355,6 +1357,8 @@ typedef struct PXOpenGLBinding_
     PXOpenGLVertexAttribPointerFunction VertexAttribPointer;
     PXOpenGLVertexPointerFunction       VertexPointer;
     PXOpenGLViewportFunction       Viewport;
+    PXOpenGLShaderStorageBlockBindingFunction ShaderStorageBlockBinding;
+    PXOpenGLBufferBindBaseFunction BufferBindBase;
 
 #if OSUnix
 

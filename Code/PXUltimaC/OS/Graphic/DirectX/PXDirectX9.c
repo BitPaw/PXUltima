@@ -1716,7 +1716,7 @@ PXActionResult PXAPI PXDirectX9IndexBufferCreate(PXDirectX9* const pxDirectX9, P
     const HRESULT bufferCreateResult = pxDirectX9->Device->lpVtbl->CreateIndexBuffer
     (
         pxDirectX9->Device,
-        pxIndexBuffer->IndexDataSize,
+        pxIndexBuffer->DataIndexSizeSegment,
         0,
         dataFormat,
         0,

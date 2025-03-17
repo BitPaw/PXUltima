@@ -1073,11 +1073,11 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
         {
             PXController* const pxController = &pxEngine->ControllerSystem.DeviceListData[0];
 
-            pxEngine->CameraCurrent->WalkSpeed = 1;
-            pxEngine->CameraCurrent->ViewSpeed = 1;
+           // pxEngine->CameraCurrent->WalkSpeed = 1;
+           // pxEngine->CameraCurrent->ViewSpeed = 1;
 
-            PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, pxController->AxisNormalised[0] * pxEngine->CameraCurrent->WalkSpeed, 0, -pxController->AxisNormalised[1] * pxEngine->CameraCurrent->WalkSpeed);
-            PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementView, -pxController->AxisNormalised[2] * pxEngine->CameraCurrent->ViewSpeed, pxController->AxisNormalised[3] * pxEngine->CameraCurrent->ViewSpeed, 0);
+            PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, pxController->AxisNormalised[0] * pxEngine->CameraCurrent->WalkSpeed, 0, pxController->AxisNormalised[1] * pxEngine->CameraCurrent->WalkSpeed);
+            PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementView, pxController->AxisNormalised[2] * pxEngine->CameraCurrent->ViewSpeed, pxController->AxisNormalised[3] * pxEngine->CameraCurrent->ViewSpeed, 0);
 
 
             // Up
@@ -3328,8 +3328,8 @@ void PXAPI PXEngineResourceDefaultElements(PXEngine* const pxEngine)
         pxResourceCreateInfo.Model.VertexBuffer.VertexDataSize = sizeof(vertexData);
         pxResourceCreateInfo.Model.VertexBuffer.Format = PXVertexBufferFormatP3F;
 
-        pxResourceCreateInfo.Model.IndexBuffer.IndexData = indexList;
-        pxResourceCreateInfo.Model.IndexBuffer.IndexDataSize = sizeof(indexList);
+        pxResourceCreateInfo.Model.IndexBuffer.DataIndexPosition = indexList;
+        pxResourceCreateInfo.Model.IndexBuffer.DataIndexSizeSegment = sizeof(indexList);
         pxResourceCreateInfo.Model.IndexBuffer.IndexDataType = PXTypeInt08U;
         pxResourceCreateInfo.Model.IndexBuffer.DrawModeID = PXDrawModeIDTriangle;
 
@@ -3377,6 +3377,9 @@ void PXAPI PXEngineResourceDefaultElements(PXEngine* const pxEngine)
 PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
 {
     PXRenderEntity pxRenderEntity;
+
+    glClearColor(0.1f, 0.2f, 0.3f, 1.0f); // Set background color
+    glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT);
 
     {
         PXClear(PXRenderEntity, &pxRenderEntity);

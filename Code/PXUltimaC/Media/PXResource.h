@@ -878,6 +878,16 @@ typedef struct PXDrawScript_
 PXDrawScript;
 
 
+
+
+typedef struct PXShaderDataBuffer_
+{
+    PXResourceInfo Info;
+
+    PXSize Size;
+}
+PXShaderDataBuffer;
+
 typedef struct PXVertexBuffer_
 {
     PXResourceInfo Info;
@@ -886,8 +896,14 @@ typedef struct PXVertexBuffer_
     PXSize VertexDataSize;
 
     PXVertexBufferFormat Format;
+
+
+    PXShaderDataBuffer DataBuffer;
 }
 PXVertexBuffer;
+
+
+
 
 
 
@@ -929,9 +945,15 @@ typedef struct PXIndexBuffer_
 {
     PXResourceInfo Info;
 
-    void* IndexData;
-    PXSize IndexDataSize;
+    // Total data
+    void* Data;
+    PXSize DataIndexSizeTotal;
+    PXSize DataIndexSizeSegment;
     PXInt32U IndexDataType;
+
+    void* DataIndexNormal;     // Normal Index data
+    void* DataIndexTexturePos;        // texture coordinate index data
+    void* DataIndexPosition;  // IBO  
 
     PXInt32U DrawModeID; // How to draw, modes like triangle or lines
 
@@ -998,7 +1020,6 @@ typedef struct PXModel_
     struct PXModel_* StructureChild; // Structure can only have one child, all others are siblings to a core child, the first born.
     //-----------------------------
 
-    //PXSize MaterialContaierListSize;
     PXSize MaterialContaierListAmount;
     PXMaterialContainer* MaterialContaierList;
 

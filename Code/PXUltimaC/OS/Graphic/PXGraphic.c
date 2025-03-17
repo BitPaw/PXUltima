@@ -492,8 +492,8 @@ void PXAPI PXCameraConstruct(PXCamera* const camera)
 {
     PXClear(PXCamera, camera);
 
-    camera->WalkSpeed = 0.2;
-    camera->ViewSpeed = 0.4;
+    camera->WalkSpeed = 2;
+    camera->ViewSpeed = 1;
     camera->FollowSpeed = 0.98f;
     camera->FieldOfView = 90;
     camera->Height = 1;
@@ -633,7 +633,7 @@ void PXAPI PXCameraMove(PXCamera* const camera, const PXVector3F* const vector3F
         const PXVector3F up = { 0, 1, 0 };
         const PXVector3F lookAtPosition = { camera->LookAtPosition.X, camera->LookAtPosition.Y, camera->LookAtPosition.Z };
 
-        PXVector3FCrossProduct(&lookAtPosition, &up, &xAxis);
+        PXVector3FCrossProduct(&xAxis, &lookAtPosition, &up);
         PXVector3FNormalize(&xAxis);
         PXVector3FMultiplyXYZ(&xAxis, vector3F->X, 0, vector3F->X);
 

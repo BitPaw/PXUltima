@@ -462,10 +462,10 @@ void PXAPI PXMatrix4x4FLookAt(PXMatrix4x4F* const matrix4x4F, const PXVector3F* 
 
     PXVector3FSubstract(&centereye, eye);
     PXVector3FNormalize(&centereye);
-    PXVector3FCrossProduct(&centereye, up, &frontUpCross);
+    PXVector3FCrossProduct(&frontUpCross, up, &centereye);
 
     PXVector3FNormalize(&frontUpCross);
-    PXVector3FCrossProduct(&frontUpCross, &centereye, &u);
+    PXVector3FCrossProduct(&u, &centereye, &frontUpCross);
 
     matrix4x4F->Data[XAxisX] = frontUpCross.X;
     matrix4x4F->Data[XAxisY] = frontUpCross.Y;

@@ -1119,14 +1119,14 @@ PXActionResult PXAPI PXResourceCreateModel(PXResourceCreateInfo* const pxResourc
                     // Allocate memory and copy
                     pxVertexBuffer->VertexData = 0;
                     pxVertexBuffer->VertexDataSize = 0;
-                    pxIndexBuffer->IndexData = 0;
-                    pxIndexBuffer->IndexDataSize = 0;
+                    pxIndexBuffer->DataIndexPosition = 0;
+                    pxIndexBuffer->DataIndexSizeSegment = 0;
 
                     pxVertexBuffer->VertexDataSize = pxModelCreateInfo->VertexBuffer.VertexDataSize;
                     pxVertexBuffer->VertexData = PXMemoryHeapCallocT(PXByte, pxModelCreateInfo->VertexBuffer.VertexDataSize, &pxModel->Mesh.VertexBuffer.VertexData, &pxModel->Mesh.VertexBuffer.VertexDataSize);
                   
-                    pxModel->Mesh.IndexBuffer.IndexDataSize = pxModelCreateInfo->IndexBuffer.IndexDataSize;
-                    pxModel->Mesh.IndexBuffer.IndexData = PXMemoryHeapCallocT(PXByte, pxModelCreateInfo->IndexBuffer.IndexDataSize, &pxModel->Mesh.IndexBuffer.IndexData, &pxModel->Mesh.IndexBuffer.IndexDataSize);
+                    pxModel->Mesh.IndexBuffer.DataIndexSizeSegment = pxModelCreateInfo->IndexBuffer.DataIndexSizeSegment;
+                    pxModel->Mesh.IndexBuffer.DataIndexPosition = PXMemoryHeapCallocT(PXByte, pxModelCreateInfo->IndexBuffer.DataIndexSizeSegment, &pxModel->Mesh.IndexBuffer.DataIndexPosition, &pxModel->Mesh.IndexBuffer.DataIndexSizeSegment);
 
                     PXCopyList
                     (
@@ -1138,9 +1138,9 @@ PXActionResult PXAPI PXResourceCreateModel(PXResourceCreateInfo* const pxResourc
                     PXCopyList
                     (
                         PXByte,
-                        pxModelCreateInfo->IndexBuffer.IndexDataSize,
-                        pxModelCreateInfo->IndexBuffer.IndexData,
-                        pxModel->Mesh.IndexBuffer.IndexData
+                        pxModelCreateInfo->IndexBuffer.DataIndexSizeSegment,
+                        pxModelCreateInfo->IndexBuffer.DataIndexPosition,
+                        pxModel->Mesh.IndexBuffer.DataIndexPosition
                     );
                 }
 
@@ -1164,8 +1164,8 @@ PXActionResult PXAPI PXResourceCreateModel(PXResourceCreateInfo* const pxResourc
 
                 pxIndexBuffer->IndexDataType = PXTypeInt08U;
                 pxIndexBuffer->DrawModeID = PXDrawModeIDTriangle;
-                pxIndexBuffer->IndexData = (void*)PXIndexDataTriangle;
-                pxIndexBuffer->IndexDataSize = sizeof(PXIndexDataTriangle);
+                pxIndexBuffer->DataIndexPosition = (void*)PXIndexDataTriangle;
+                pxIndexBuffer->DataIndexSizeSegment = sizeof(PXIndexDataTriangle);
 
 
 
@@ -1189,8 +1189,8 @@ PXActionResult PXAPI PXResourceCreateModel(PXResourceCreateInfo* const pxResourc
 
                 pxIndexBuffer->IndexDataType = PXTypeInt08U;
                 pxIndexBuffer->DrawModeID = PXDrawModeIDTriangle;// PXDrawModeIDPoint | PXDrawModeIDLineLoop;
-                pxIndexBuffer->IndexData = (void*)PXIndexDataRectangle;
-                pxIndexBuffer->IndexDataSize = sizeof(PXIndexDataRectangle);
+                pxIndexBuffer->DataIndexPosition = (void*)PXIndexDataRectangle;
+                pxIndexBuffer->DataIndexSizeSegment = sizeof(PXIndexDataRectangle);
 
 #if PXLogEnable
                 PXLogPrint
@@ -1247,8 +1247,8 @@ PXActionResult PXAPI PXResourceCreateModel(PXResourceCreateInfo* const pxResourc
 
                 pxIndexBuffer->IndexDataType = PXTypeInt08U;
                 pxIndexBuffer->DrawModeID = PXDrawModeIDTriangle;
-                pxIndexBuffer->IndexData = (void*)PXIndexDataCube;
-                pxIndexBuffer->IndexDataSize = sizeof(PXIndexDataCube);
+                pxIndexBuffer->DataIndexPosition = (void*)PXIndexDataCube;
+                pxIndexBuffer->DataIndexSizeSegment = sizeof(PXIndexDataCube);
 
 
 #if PXLogEnable
@@ -2059,12 +2059,36 @@ void PXAPI PXIndexBufferPrepare(PXIndexBuffer* const pxIndexBuffer, const PXSize
             pxIndexBuffer->IndexDataType = PXTypeInt64U;
         }
 
-        pxIndexBuffer->IndexDataSize = PXTypeSizeGet(pxIndexBuffer->IndexDataType) * amountVertex;
-        pxIndexBuffer->IndexData = PXMemoryHeapCalloc(PXNull, PXTypeSizeGet(pxIndexBuffer->IndexDataType), amountVertex);
+        const PXSize dataSize = PXTypeSizeGet(pxIndexBuffer->IndexDataType);
+
+        pxIndexBuffer->DataIndexSizeTotal = dataSize * amountVertex * 3;
+        pxIndexBuffer->Data = PXMemoryHeapCalloc(PXNull, dataSize, amountVertex * 3);
+
+        pxIndexBuffer->DataIndexSizeSegment = dataSize * amountVertex;
+        pxIndexBuffer->DataIndexPosition = pxIndexBuffer->Data;
+        pxIndexBuffer->DataIndexNormal = (char*)pxIndexBuffer->DataIndexPosition + pxIndexBuffer->DataIndexSizeSegment;
+        pxIndexBuffer->DataIndexTexturePos = (char*)pxIndexBuffer->DataIndexNormal + pxIndexBuffer->DataIndexSizeSegment;
     }
 
     pxIndexBuffer->SegmentListAmount = amountMaterials;
     pxIndexBuffer->SegmentList = PXMemoryHeapCallocT(PXIndexSegment, amountMaterials);
+
+
+#if PXLogEnable
+    const PXSize dataSize = PXTypeSizeGet(pxIndexBuffer->IndexDataType);
+
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "IndeBuffer",
+        "prepare",
+        "PXID:%i, TypeSize:%i, VertexAmount:%i, Materials:%i",
+        pxIndexBuffer->Info.Handle.OpenGLID,
+        dataSize,
+        amountVertex,
+        amountMaterials
+    );
+#endif
 }
 
 PXSize PXAPI PXMeshTriangleAmount(PXMesh* const pxMesh)
@@ -2102,97 +2126,106 @@ void PXAPI PXModelDestruct(PXModel* const pxModel)
 
 void PXAPI PXModelFormatTransmute(PXModel* const pxModel, PXModelFormatTransmuteInfo* const pxModelFormatTransmuteInfo)
 {
-#if 0
+#if 1
     //-----------------------------------------------------
     // Vertex
     //-----------------------------------------------------
-    PXVertexBufferFormat oldFormat = pxModel->Mesh.VertexBufferPrime.Format;
+    
+    PXMesh* pxMesh = &pxModel->Mesh;
+    const PXVertexBufferFormat oldFormat = pxMesh->VertexBufferPrime.Format;
 
-    switch(pxModel->Mesh.VertexBuffer.Format)
+
+    if(1 == pxMesh->VertexBufferListAmount)
     {
-        case PXVertexBufferFormatP2I8:
+        PXVertexBuffer* const pxVertexBuffer = &pxMesh->VertexBufferPrime;
+
+        switch(pxVertexBuffer->Format)
         {
-            PXSize amountCurrent = PXVertexBufferFormatStrideSize(PXVertexBufferFormatP2I8);
-            PXSize amountFuture = PXVertexBufferFormatStrideSize(PXVertexBufferFormatT2F_XYZ);          
-            PXSize sizeBefore = pxModel->Mesh.VertexBuffer.VertexDataSize;
-            PXSize sizeCurrent = (pxModel->Mesh.VertexBuffer.VertexDataSize / 2) * amountFuture;
-                        
-            // Store old data
-            PXInt8S* dataOld = (PXInt8S*)pxModel->Mesh.VertexBuffer.VertexData;
-
-            pxModel->Mesh.VertexBuffer.Format = PXVertexBufferFormatT2F_XYZ;
-            pxModel->Mesh.VertexBuffer.VertexData = PXMemoryHeapCallocT(float, sizeCurrent);;
-            pxModel->Mesh.VertexBuffer.VertexDataSize = sizeof(float) * sizeCurrent;
-
-            float* dataNew = pxModel->Mesh.VertexBuffer.VertexData;
-
-            PXSize newOffset = 0;
-
-            for(PXSize i = 0; i < sizeBefore; i += 2)
+            case PXVertexBufferFormatP2I8:
             {
-                dataNew[newOffset++] = (dataOld[i + 0] + 1) / 2.0f;
-                dataNew[newOffset++] = -(dataOld[i + 1] + 1) / 2.0f;
-                dataNew[newOffset++] = dataOld[i + 0];
-                dataNew[newOffset++] = dataOld[i + 1];
-                dataNew[newOffset++] = 0.0f;
+                PXSize amountCurrent = PXVertexBufferFormatStrideSize(PXVertexBufferFormatP2I8);
+                PXSize amountFuture = PXVertexBufferFormatStrideSize(PXVertexBufferFormatT2F_XYZ);
+                PXSize sizeBefore = pxVertexBuffer->VertexDataSize;
+                PXSize sizeCurrent = (pxVertexBuffer->VertexDataSize / 2) * amountFuture;
+
+                // Store old data
+                PXInt8S* dataOld = (PXInt8S*)pxVertexBuffer->VertexData;
+
+                pxVertexBuffer->Format = PXVertexBufferFormatT2F_XYZ;
+                pxVertexBuffer->VertexData = PXMemoryHeapCallocT(float, sizeCurrent);;
+                pxVertexBuffer->VertexDataSize = sizeof(float) * sizeCurrent;
+
+                float* dataNew = pxVertexBuffer->VertexData;
+
+                PXSize newOffset = 0;
+
+                for(PXSize i = 0; i < sizeBefore; i += 2)
+                {
+                    dataNew[newOffset++] = (dataOld[i + 0] + 1) / 2.0f;
+                    dataNew[newOffset++] = -(dataOld[i + 1] + 1) / 2.0f;
+                    dataNew[newOffset++] = dataOld[i + 0];
+                    dataNew[newOffset++] = dataOld[i + 1];
+                    dataNew[newOffset++] = 0.0f;
+                }
+
+                // Memory leak? dataOld needs to be deleted? But what if its read only?         
+
+                break;
             }
-
-            // Memory leak? dataOld needs to be deleted? But what if its read only?         
-
-            break;
-        }
-        case PXVertexBufferFormatP3I8:
-        {          
-            PXSize amountFuture = PXVertexBufferFormatStrideSize(PXVertexBufferFormatXYZFloat);
-            PXSize amountCurrent = PXVertexBufferFormatStrideSize(PXVertexBufferFormatXYZI8);
-            PXSize sizeCurrent = pxModel->Mesh.VertexBuffer.VertexDataSize / 1;
-
-            const PXSize newVertexArraySize = sizeof(float) * sizeCurrent;
-            float* newVertexArray = PXMemoryHeapCallocT(float, sizeCurrent);
-
-            PXInt8S* dataSource = (PXInt8S*)pxModel->Mesh.VertexBuffer.VertexData;
-
-            for(size_t i = 0; i < sizeCurrent; i++)
+            case PXVertexBufferFormatP3I8:
             {
-                newVertexArray[i] = dataSource[i];
+                const PXSize amountCurrent = PXVertexBufferFormatStrideSize(PXVertexBufferFormatP3I8);
+                const PXSize amountFuture = PXVertexBufferFormatStrideSize(PXVertexBufferFormatP3F);
+                PXSize sizeCurrent = pxVertexBuffer->VertexDataSize / 1;
+
+                const PXSize newVertexArraySize = sizeof(float) * sizeCurrent;
+                float* newVertexArray = PXMemoryHeapCallocT(float, sizeCurrent);
+
+                PXInt8S* dataSource = (PXInt8S*)pxVertexBuffer->VertexData;
+
+                for(size_t i = 0; i < sizeCurrent; i++)
+                {
+                    newVertexArray[i] = dataSource[i];
+                }
+
+                // Memory leak?
+
+                pxVertexBuffer->Format = PXVertexBufferFormatP3F;
+                pxVertexBuffer->VertexData = newVertexArray;
+                pxVertexBuffer->VertexDataSize = newVertexArraySize;
+
+
+                break;
             }
-
-            // Memory leak?
-
-            pxModel->Mesh.VertexBuffer.Format = PXVertexBufferFormatXYZFloat;
-            pxModel->Mesh.VertexBuffer.VertexData = newVertexArray;
-            pxModel->Mesh.VertexBuffer.VertexDataSize = newVertexArraySize;
-
-
-            break;
+            default:
+            {
+                break;
+            }
         }
-        default:
-        {
-            break;
-        }
-    }
 
-    PXVertexBufferFormat newFormat = pxModel->Mesh.VertexBuffer.Format;
+        PXVertexBufferFormat newFormat = pxVertexBuffer->Format;
 
-    const char* oldFomatText = PXVertexBufferFormatToString(oldFormat);
-    const char* newFomatText = PXVertexBufferFormatToString(newFormat);
+        const char* oldFomatText = PXVertexBufferFormatToString(oldFormat);
+        const char* newFomatText = PXVertexBufferFormatToString(newFormat);
 
 #if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXResourceManagerText,
-        "Model-Format",
-        "Transmute <%s> to <%s>",
-        oldFomatText,
-        newFomatText
-    );
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            PXResourceManagerText,
+            "Model-Format",
+            "Transmute <%s> to <%s>",
+            oldFomatText,
+            newFomatText
+        );
 #endif
 
+    }
+    else
+    {
 
-    //-----------------------------------------------------
-    // Index
-    //-----------------------------------------------------
+    }
+
 #endif
 
 }

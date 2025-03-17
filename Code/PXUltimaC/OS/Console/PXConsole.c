@@ -691,10 +691,10 @@ void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source,
 
 
     PXText formattedText;
-    PXTextConstructNamedBufferA(&formattedText, formattedTextBuffer, 712);
+    PXTextConstructNamedBufferA(&formattedText, formattedTextBuffer, 1024);
 
     PXText exportText;
-    PXTextConstructNamedBufferA(&exportText, bufferColorBuffer, 712);
+    PXTextConstructNamedBufferA(&exportText, bufferColorBuffer, 1024);
 
     PXTime pxTime;
     PXTimeNow(&pxTime);
