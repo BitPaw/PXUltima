@@ -2061,10 +2061,10 @@ void PXAPI PXIndexBufferPrepare(PXIndexBuffer* const pxIndexBuffer, const PXSize
 
         const PXSize dataSize = PXTypeSizeGet(pxIndexBuffer->IndexDataType);
 
-        pxIndexBuffer->DataIndexSizeTotal = dataSize * amountVertex * 3;
-        pxIndexBuffer->Data = PXMemoryHeapCalloc(PXNull, dataSize, amountVertex * 3);
-
         pxIndexBuffer->DataIndexSizeSegment = dataSize * amountVertex;
+        pxIndexBuffer->DataIndexSizeTotal = dataSize * amountVertex * 3;
+        pxIndexBuffer->Data = PXMemoryHeapCalloc(PXNull, amountVertex * 3, dataSize);
+  
         pxIndexBuffer->DataIndexPosition = pxIndexBuffer->Data;
         pxIndexBuffer->DataIndexNormal = (char*)pxIndexBuffer->DataIndexPosition + pxIndexBuffer->DataIndexSizeSegment;
         pxIndexBuffer->DataIndexTexturePos = (char*)pxIndexBuffer->DataIndexNormal + pxIndexBuffer->DataIndexSizeSegment;

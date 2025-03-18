@@ -2802,7 +2802,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
         );
 #endif
 
-#if 1
+#if 0
         for(int i = 0; i < numberOfExtensions; ++i)
         {
             const char* extension = (const char*)pxOpenGL->Binding.StringI(GL_EXTENSIONS, i);
@@ -3676,9 +3676,11 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
     // glDepthMask(GL_FALSE);
 
 
-    pxOpenGL->Binding.PointSize(10);
+    pxOpenGL->Binding.PointSize(5);
     pxOpenGL->Binding.LineWidth(2);
 
+
+    pxOpenGL->Binding.PolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 
     if(pxOpenGL->Binding.ShaderStorageBlockBinding)
@@ -3723,7 +3725,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
     const GLsizei drawElementsCount = pxIndexBuffer->DataIndexSizeSegment;// / PXTypeSizeGet(pxIndexBuffer->IndexDataType);
     const PXBool hasNoIndexArray = pxIndexBuffer->Info.Handle.OpenGLID == -1;
     const GLenum indexDataType = PXOpenGLTypeToID(pxIndexBuffer->IndexDataType);
-
+    const PXInt8U indexTypeSize = PXTypeSizeGet(pxIndexBuffer->IndexDataType);
 
         const PXBool renderSegmented = pxIndexBuffer->SegmentListAmount > 1;
         const PXBool hasIndexBuffer = (PXInt32U)-1 != pxIndexBuffer->Info.Handle.OpenGLID;
@@ -3745,7 +3747,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
 
         if(PXDrawModeIDPoint & pxIndexBuffer->DrawModeID || 1)
         {
-            modeCache[modeAmount] = PXDrawModeIDPoint;
+            modeCache[modeAmount] = GL_POINTS;
             ++modeAmount;
         }
 
@@ -3753,7 +3755,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
         {
             PXSize renderOffset = 0;
 
-            for(PXSize i = 0; i < pxIndexBuffer->SegmentListAmount-1; ++i)
+            for(PXSize i = 0; i < pxIndexBuffer->SegmentListAmount; ++i)
             {
                 PXIndexSegment* const pxIndexSegment = &pxIndexBuffer->SegmentList[i];
                 PXTexture2D* pxTexture = 0;
@@ -3776,25 +3778,25 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
                     pxOpenGL->Binding.Disable(GL_TEXTURE_2D);
                 }
 
-               
+                
 
-                for(size_t i = 0; i < modeAmount; ++i)
+                for(PXSize i = 0; i < modeAmount; ++i)
                 {
                     if(hasIndexBuffer) // Does this index array exist?
                     {
                         // Render with an index buffer
-                        pxOpenGL->Binding.DrawElements(modeCache[i], pxIndexSegment->DataRange, indexDataType, renderOffset);
+                        pxOpenGL->Binding.DrawElements(modeCache[i], pxIndexSegment->DataRange * indexTypeSize, indexDataType, renderOffset);
                     }
                     else
                     {
                         // Render withoút an index buffer
-                        pxOpenGL->Binding.DrawArrays(modeCache[i], renderOffset, pxIndexSegment->DataRange);
+                        pxOpenGL->Binding.DrawArrays(modeCache[i], renderOffset, pxIndexSegment->DataRange * indexTypeSize);
                     }
                 }
 
 
 
-                renderOffset += pxIndexSegment->DataRange;
+                renderOffset += pxIndexSegment->DataRange * indexTypeSize;
             }
         }
         else

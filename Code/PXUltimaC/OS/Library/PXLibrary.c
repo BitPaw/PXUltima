@@ -349,7 +349,7 @@ PXBool PXAPI PXLibraryGetSymbolA(PXLibrary* const pxLibrary, void** const librar
         {
             if(isImportant) // If it is not importendt, aka not an important/optional function/feature, we we dont send an error
             {
-#if PXLogEnable
+#if PXLogEnable && 0
                 PXLogPrint
                 (
                     PXLoggingWarning,
@@ -366,7 +366,7 @@ PXBool PXAPI PXLibraryGetSymbolA(PXLibrary* const pxLibrary, void** const librar
         } 
     }
 
-#if PXLogEnable
+#if PXLogEnable && 0
     PXLogPrint
     (
         PXLoggingInfo,

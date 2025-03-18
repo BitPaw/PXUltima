@@ -1398,6 +1398,17 @@ PXSize PXAPI PXTextReplaceA(char* const text, PXSize textSize, const char* const
 
 PXSize PXAPI PXTextReplaceByte(char* const text, PXSize textSize, char target, char value)
 {
+    if(!(text && textSize>0) && ((PXSize)-1 != textSize))
+    {
+        return 0;
+    }
+
+    // Would not change the state
+    if(target == value)
+    {
+        return textSize; // Done
+    }
+
     PXSize counter = 0;
 
     for(PXSize i = 0; i < textSize; ++i)
