@@ -1808,7 +1808,7 @@ PXActionResult PXAPI PXResourceStoreName(PXResourceInfo* const pxResourceInfo, c
         return PXActionRefusedArgumentNull;
     }
 
-    const PXBool callValid = name && (0 == nameSize || (PXSize)-1 == nameSize);
+    const PXBool callValid = name && !(0 == nameSize || (PXSize)-1 == nameSize);
 
     if(!callValid)
     {
