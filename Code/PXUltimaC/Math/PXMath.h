@@ -33,6 +33,174 @@ typedef struct PXMathRandomGeneratorSeed_
 }
 PXMathRandomGeneratorSeed;
 
+
+typedef void (PXAPI* PXSIMDFunction)();
+
+typedef void (PXAPI* PXSIMDF16ToU16Function)(PXF16* const listOut, const PXInt16U* const listInput, const PXSize inputAmount);
+typedef void (PXAPI* PXSIMDF32ToU32Function)(PXF32* const listOut, const PXInt32U* const listInput, const PXSize inputAmount);
+typedef void (PXAPI* PXSIMDF64ToU64Function)(PXF64* const listOut, const PXInt64U* const listInput, const PXSize inputAmount);
+
+typedef void (PXAPI* PXSIMDI16ToU16Function)(PXInt16S* const listOut, const PXInt16U* const listInput, const PXSize inputAmount);
+typedef void (PXAPI* PXSIMDI32ToU32Function)(PXInt32S* const listOut, const PXInt32U* const listInput, const PXSize inputAmount);
+typedef void (PXAPI* PXSIMDI64ToU64Function)(PXInt64S* const listOut, const PXInt64U* const listInput, const PXSize inputAmount);
+
+typedef void (PXAPI* PXSIMDU8Function)(PXInt8U* const listOut, const PXInt8U* const listInput, const PXSize inputAmount);
+typedef void (PXAPI* PXSIMDU16Function)(PXInt16U* const listOut, const PXInt16U* const listInput, const PXSize inputAmount);
+typedef void (PXAPI* PXSIMDU32Function)(PXInt32U* const listOut, const PXInt32U* const listInput, const PXSize inputAmount);
+typedef void (PXAPI* PXSIMDU64Function)(PXInt64U* const listOut, const PXInt64U* const listInput, const PXSize inputAmount);
+
+typedef void (PXAPI* PXSIMDF16Function)(PXF16* const listOut, const PXF16* const listInput, const PXSize inputAmount);
+typedef void (PXAPI* PXSIMDF32Function)(PXF32* const listOut, const PXF32* const listInput, const PXSize inputAmount);
+typedef void (PXAPI* PXSIMDF64Function)(PXF64* const listOut, const PXF64* const listInput, const PXSize inputAmount);
+
+typedef void (PXAPI* PXSIMDF16ToF32Function)(PXF32* const listOut, const PXF16* const listInput, const PXSize inputAmount);
+typedef void (PXAPI* PXSIMDF32ToF16Function)(PXF16* const listOut, const PXF32* const listInput, const PXSize inputAmount);
+
+
+// Global object, single instance. 
+// [Warning] Needs to be inizilized once 
+// as it uses intrinsics like CPUID to redirect 
+// functions if availible
+typedef struct PXMath_
+{
+    // abs()
+    PXSIMDI16ToU16Function AbsoluteI16ToU16;
+    PXSIMDI32ToU32Function AbsoluteI32ToU32;
+    PXSIMDI64ToU64Function AbsoluteI64ToU64;
+
+    // avg()
+
+    // ceil()
+    PXSIMDF16ToU16Function CeilingF16ToU16;
+    PXSIMDF32ToU32Function CeilingF32ToU32;
+    PXSIMDF64ToU64Function CeilingF64ToU64;
+
+    // floor()
+    PXSIMDF16ToU16Function FloorF16ToU16;
+    PXSIMDF32ToU32Function FloorF32ToU32;
+    PXSIMDF64ToU64Function FloorF64ToU64;
+
+    // max()
+
+    // min()
+
+
+    // normal cumulative distribution
+
+
+      // normal inverse cumulative distribution
+
+    // error function
+
+
+
+
+    // Bit logic
+    // and
+
+    // nand()
+
+    // or
+    
+    // xor
+
+
+
+
+
+
+    
+
+    PXSIMDF16Function Sinus;
+    PXSIMDF32Function Sinus;
+    PXSIMDF64Function Sinus;
+
+    PXSIMDF16Function Cosinus;
+    PXSIMDF32Function Cosinus;
+    PXSIMDF64Function Cosinus;
+
+    PXSIMDF16Function Tangens;
+    PXSIMDF32Function Tangens;
+    PXSIMDF64Function Tangens;
+
+    PXSIMDF16Function RootSquare;
+    PXSIMDF32Function RootSquare;
+    PXSIMDF64Function RootSquare;
+
+    PXSIMDF16Function RootSquareInverse;
+    PXSIMDF32Function RootSquareInverse;
+    PXSIMDF64Function RootSquareInverse;
+
+    PXSIMDF16Function RootCube;
+    PXSIMDF32Function RootCube;
+    PXSIMDF64Function RootCube;
+
+    PXSIMDF16Function RootCubeInverse;
+    PXSIMDF32Function RootCubeInverse;
+    PXSIMDF64Function RootCubeInverse;
+
+
+
+    PXSIMDU8Function CRCU8;
+    PXSIMDU16Function CRCU16;
+    PXSIMDU32Function CRCU32;
+    PXSIMDU64Function CRCU64;
+
+
+
+    /*
+
+        // Selective bit moving
+        BitScatterDeposit
+        BitGatherExtract
+        Movemask
+        ExtraBits
+
+        // Bit masking
+        ZeroHighBits
+        ResteLowestBit
+        MaskUpToLowestBit
+        FindLowestBit
+
+
+
+
+        // Trigeometric
+
+    // Specials
+        Algorithms
+        AESKeyGenAssist
+        AESInverseMMixColums
+        AESEncypt
+        AESDecrypt
+        CRC32
+
+        // Miscellaneous
+        Pause
+        MonitorMemory
+        MonitorWait
+        GetMXCSRRegister
+
+        // TransactionalMemory
+        TransactionBegin
+        TransactionCommit
+        TransactionAbort
+        */
+}
+PXMath;
+
+// This function checks what code can be 
+// executed and what not.
+// Flags: Allow defined range what should be used
+// ALL to use everything availibe
+PXPublic void PXAPI PXMathIntrinsicInit();
+
+
+
+
+
+
+
 //---------------------------------------------------------
 // Minimum - Smaler of two numbers
 //---------------------------------------------------------

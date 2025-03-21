@@ -18,6 +18,15 @@
 const float PXMathConstantPIF = PXMathConstantPI;
 const double PXMathConstantPID = PXMathConstantPI;
 
+PXMath GLOBALPXMath;
+
+void PXAPI PXMathIntrinsicInit()
+{
+    
+
+  
+}
+
 int PXAPI PXMathMinimumI(const int a, const int b)
 {
     return PXMathMinimum(a, b);
