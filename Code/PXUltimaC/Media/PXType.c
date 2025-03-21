@@ -10,6 +10,38 @@
 #define PXTypeInt32ULimit 4294967295 // 0xFFFFFFFF
 #define PXTypeInt64ULimit 0xFFFFFFFFFFFFFFFF // 0xFFFFFFFFFFFFFFFF
 
+void PXAPI PXWorkSetCounterCalc(PXWorkSetCounter* const pxWorkSetCounter)
+{
+    if(!(pxWorkSetCounter->WorkToDo && pxWorkSetCounter->BatchSize))
+    {
+        // We have no work or the batch size is 0, work can't be done like this
+        pxWorkSetCounter->AmountBatchFull = 0;
+        pxWorkSetCounter->AmountBatchRest = 0;
+        return;
+    }
+
+    if(pxWorkSetCounter->WorkToDo <= pxWorkSetCounter->BatchSize)
+    {
+        pxWorkSetCounter->AmountBatchFull = 0;
+        pxWorkSetCounter->AmountBatchRest = pxWorkSetCounter->WorkToDo;
+        return;
+    }
+
+    // return ceil(amount / (float)step);
+    pxWorkSetCounter->AmountBatchFull = pxWorkSetCounter->WorkToDo / pxWorkSetCounter->BatchSize;
+    pxWorkSetCounter->AmountBatchRest = pxWorkSetCounter->WorkToDo % pxWorkSetCounter->BatchSize;
+}
+
+PXSize PXAPI PXWorkSetCounterPull(PXWorkSetCounter* const pxWorkSetCounter, const PXSize index)
+{
+    if(index < pxWorkSetCounter->AmountBatchFull)
+    {
+        return pxWorkSetCounter->BatchSize;
+    }
+
+    return pxWorkSetCounter->AmountBatchRest;
+}
+
 void PXAPI PXTypeToString(const PXInt32U dataType, char* buffer)
 {
 //    PXText pxText;

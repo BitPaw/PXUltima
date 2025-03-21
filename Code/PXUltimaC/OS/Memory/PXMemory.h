@@ -349,6 +349,9 @@ PXPublic PXSize PXAPI PXMemoryCopy(const void* PXRestrict inputBuffer, const PXS
 //---------------------------------------------------------
 
 
+PXPublic void PXAPI PXMemoryCopyF32V(PXF32* const destination, const PXF32* const source, const PXSize amount);
+
+
 
 //---------------------------------------------------------
 // Clear

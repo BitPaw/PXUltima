@@ -84,10 +84,12 @@ PXPublic PXSize PXAPI PXMathLimitIU(const PXSize value, const PXSize minimum, co
 
 
 
-
-
-
-
+//---------------------------------------------------------
+// 16-Bit - float - Math
+//---------------------------------------------------------
+PXPublic void PXAPI PXMathF16ToF32(PXF32* const listOut, const PXF16* const listInput, const PXSize inputAmount);
+PXPublic void PXAPI PXMathF32ToF16(PXF16* const listOut, const PXF32* const listInput, const PXSize inputAmount);
+//---------------------------------------------------------
 
 
 
@@ -115,6 +117,7 @@ PXPublic PXInt32U PXAPI PXMathPowerModulo(const PXInt32U base, const PXInt32U ex
 //---------------------------------------------------------
 PXPublic double PXAPI PXMathRoot(unsigned int rootNr, double value);
 PXPublic double PXAPI PXMathRootSquare(double value);
+PXPublic void PXAPI PXMathRootSquareF32V(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount);
 PXPublic double PXAPI PXMathRootCubic(double value);
 //---------------------------------------------------------
 
@@ -130,6 +133,7 @@ PXPublic double PXAPI PXMathTangensF(const float x);
 PXPublic double PXAPI PXMathTangensD(const double x);
 
 PXPublic float PXAPI PXMathCosinusF(const float x);
+PXPublic void PXAPI PXMathCosinusDEGF32V(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount);
 PXPublic double PXAPI PXMathCosinusD(const double x);
 
 

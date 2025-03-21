@@ -329,9 +329,9 @@
 
 
 
-//-------------------------------------------------
+//------------------------------------------------------------------------------
 // Int - BitMode
-//-------------------------------------------------
+//------------------------------------------------------------------------------
 #define PXTypeBit08U(bitSize) PXTypeReciverSize08U | PXTypeBaseBit | bitSize
 #define PXTypeBit16U(bitSize) PXTypeReciverSize16U | PXTypeBaseBit | bitSize
 #define PXTypeBit32U(bitSize) PXTypeReciverSize32U | PXTypeBaseBit | bitSize
@@ -376,8 +376,66 @@ typedef void* PXAdress64;
 #else
 #error Invalid Bit Version
 #endif
+//------------------------------------------------------------------------------
 
+
+
+//------------------------------------------------------------------------------
+// Floating point units
+// Calculated by : 
+// ((-1) * sign) * 2^(exponent-bias) * (1 + mantissa)
+// Bias is calulated: 2^(exponent-bit-size - 1) - 1
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+// IEEE 754 - Half-precision floating-point
+typedef unsigned short PXF16; 
+// Most compilers do not have symbols for this type
+#define PXF16MaskSign       0b1000000000000000u //  1-Bit
+#define PXF16MaskExponent   0b0111110000000000u //  5-Bit
+#define PXF16MaskFraction   0b0000001111111111u // 10-Bit
+#define PXF16Bias           15 // = 2^(5-1)-1
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+// IEEE 754 - Single-precision floating-point
+typedef float PXF32;
+#define PXF32MaskSign       0b10000000000000000000000000000000u //  1-Bit
+#define PXF32MaskExponent   0b01111111100000000000000000000000u //  8-Bit
+#define PXF32MaskFraction   0b00000000011111111111111111111111u // 23-Bit
+#define PXF32Bias           127 // = 2^(8-1)-1
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+// IEEE 754 - Double-precision floating-point
+typedef double PXF64;
+#define PXF64MaskSign       0b1000000000000000000000000000000000000000000000000000000000000000u //  1-Bit
+#define PXF64MaskExponent   0b0111111111110000000000000000000000000000000000000000000000000000u // 11-Bit
+#define PXF64MaskFraction   0b0000000000001111111111111111111111111111111111111111111111111111u // 52-Bit
+#define PXF64Bias           1023 // = 2^(11-1)-1
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+// IEEE 754 - Quadruple-precision floating-point
+//typedef _Float128 F128;// long double sometimes used for this but can also mean 80-Bit
+#define PXF128MaskSign      0b0 //   1-Bit
+#define PXF128MaskExponent  0b0 //  15-Bit
+#define PXF128MaskFraction  0b0 // 112-Bit
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+// IEEE 754 - Octuple-precision floating-point
+typedef int PXF256;
+#define PXF256MaskSign      0b0 //   1-Bit
+#define PXF256MaskExponent  0b0 //  19-Bit
+#define PXF256MaskFraction  0b0 // 236-Bit
+//------------------------------------------------------------------------------
+
+
+
+//------------------------------------------------------------------------------
 // Text
+//------------------------------------------------------------------------------
 typedef char PXCharASCII;
 typedef wchar_t PXCharUNICODE;
 typedef PXInt32U PXCharUTF8;
@@ -385,7 +443,7 @@ typedef PXInt32U PXCharUTF8;
 typedef char* const PXTextASCII;
 typedef char* const PXTextUTF8;
 typedef wchar_t* const PXTextUNICODE;
-
+//------------------------------------------------------------------------------
 
 
 
@@ -800,6 +858,33 @@ PXEndian;
 #elif OSEngianBig
 #define EndianCurrentSystem PXEndianBig
 #endif
+
+
+
+
+
+
+
+
+// Helper object to calculate how many steps we 
+// need to crunsh through numbers
+typedef struct PXWorkSetCounter_
+{
+    int WorkToDo; // Amount of work that needs to be processed
+    int BatchSize; // Amount of work that can be done in one rotation
+
+    int AmountBatchFull; // Amount of batches that can be compleated fully
+    int AmountBatchRest; // rest amount of work that cannot be batched on its own and needs padding.
+}
+PXWorkSetCounter;
+
+PXPublic void PXAPI PXWorkSetCounterCalc(PXWorkSetCounter* const pxWorkSetCounter);
+PXPublic PXSize PXAPI PXWorkSetCounterPull(PXWorkSetCounter* const pxWorkSetCounter, const PXSize index);
+
+
+
+
+
 
 //typedef PXInt32U PXType;
 

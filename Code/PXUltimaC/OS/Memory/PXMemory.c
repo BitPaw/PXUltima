@@ -1022,6 +1022,14 @@ PXSize PXAPI PXMemoryCopy(const void* PXRestrict inputBuffer, const PXSize input
     return bufferSize;
 }
 
+void PXAPI PXMemoryCopyF32V(PXF32* const destination, const PXF32* const source, const PXSize amount)
+{
+    for(PXSize i = 0; i < amount; i++)
+    {
+        destination[i] = source[i];
+    }
+}
+
 PXSize PXAPI PXMemoryMove(const void* inputBuffer, const PXSize inputBufferSize, void* outputBuffer, const PXSize outputBufferSize)
 {
     const PXSize bufferSize = PXMathMinimumIU(inputBufferSize, outputBufferSize);
