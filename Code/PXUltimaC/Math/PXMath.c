@@ -11,7 +11,9 @@
 #include <intrin.h>
 #endif
 
+#include <Math/PXMatrix.h>
 #include <OS/Memory/PXMemory.h>
+#include <OS/Hardware/PXProcessor.h>
 
 #define PXStandardLibraryMathUse 1
 
@@ -22,9 +24,28 @@ PXMath GLOBALPXMath;
 
 void PXAPI PXMathIntrinsicInit()
 {
-    
+    PXProcessor pxProcessor;
+    PXProcessorFetchInfo(&pxProcessor);
 
   
+}
+
+void PXAPI PXMathMatrix4x4TransposeS(PXMatrix4x4* const pxMatrix4x4)
+{
+   
+}
+
+void PXAPI PXMathMatrix4x4TransposeX(PXMatrix4x4* const pxMatrix4x4)
+{
+    // _mm_loadu_ps
+    // _mm_storeu_ps
+    __m128 matrixTemp[4];
+
+    PXMemoryCopyF32V(matrixTemp, pxMatrix4x4, 16);
+
+    _MM_TRANSPOSE4_PS(matrixTemp[0], matrixTemp[1], matrixTemp[2], matrixTemp[3]);
+
+    PXMemoryCopyF32V(matrixTemp, pxMatrix4x4, 16);
 }
 
 int PXAPI PXMathMinimumI(const int a, const int b)
@@ -108,33 +129,7 @@ void PXAPI PXMathF16ToF32(PXF32* const listOut, const PXF16* const listInput, co
         // __m256i _mm512_mask_cvtps_ph (__m256i src, __mmask16 k, __m512 a, int rounding)
         //__m256i res = _mm512_mask_cvtps_ph(); // [Intrinsic] AVX512F, vcvtps2ph, 16x 32-Bit float -> 16-Bit float
 
-        __m256i simdInput;
-        __m512 simdOutput;
-
-        pxWorkSetCounter.BatchSize = 16;
-
-        PXWorkSetCounterCalc(&pxWorkSetCounter);
-
-        // Full-Batches
-        for(PXSize i = 0; i < pxWorkSetCounter.AmountBatchFull + 1; ++i)
-        {
-            const PXF16* const extractPoint = &listInput[i * pxWorkSetCounter.BatchSize];
-            PXF32* const insertPoint = &listOut[i * pxWorkSetCounter.BatchSize];
-
-            int workSet = PXWorkSetCounterPull(&pxWorkSetCounter, i);
-
-            for(char i = 0; i < workSet; ++i)
-            {
-                simdInput.m256i_u16[i] = extractPoint[i];
-            }
-
-            simdOutput = _mm512_cvtph_ps(simdInput);
-
-            for(char i = 0; i < workSet; ++i)
-            {
-                insertPoint[i] = simdOutput.m512_f32[i];
-            }
-        }
+    
 
         return; // DONE
     }
@@ -144,39 +139,72 @@ void PXAPI PXMathF16ToF32(PXF32* const listOut, const PXF16* const listInput, co
         // __m128i _mm256_cvtps_ph (__m256 a, int imm8)
         //__m128i resB = _mm256_cvtps_ph(); // [Intrinsic] immintrin.h, F16C, vcvtps2ph, 8x 32-Bit float -> 16-Bit float
 
-        pxWorkSetCounter.BatchSize = 4;
-
-        PXWorkSetCounterCalc(&pxWorkSetCounter);
-
-        __m128i simdInput;
-        __m128 simdOutput;
-
-        // Full-Batches
-        for(PXSize i = 0; i < pxWorkSetCounter.AmountBatchFull + 1; ++i)
-        {
-            const PXF16* const extractPoint = &listInput[i * pxWorkSetCounter.BatchSize];
-            PXF32* const insertPoint = &listOut[i * pxWorkSetCounter.BatchSize];
-
-            int workSet = PXWorkSetCounterPull(&pxWorkSetCounter, i);
-
-            for(PXSize i = 0; i < workSet; ++i)
-            {
-                simdInput.m128i_u16[i] = extractPoint[i];
-            }
-
-            simdOutput = _mm_cvtph_ps(simdInput); // [Intrinsic] 4x 16-Bit float -> 32-Bit float
-
-            for(PXSize i = 0; i < workSet; ++i)
-            {
-                insertPoint[i] = simdOutput.m128_f32[i];
-            }
-        }
+      
 
         return; // DONE
     }
 
     // non-intrinsic
     // ...
+}
+
+void PXAPI PXMathF16ToF32X4(PXF32* const listOut, const PXF16* const listInput, const PXSize inputAmount)
+{
+    __m128i simdInput;
+    __m128 simdOutput;
+
+    PXWorkSetCounter pxWorkSetCounter;
+    pxWorkSetCounter.WorkToDo = inputAmount;
+    pxWorkSetCounter.BatchSize = 4;
+
+    PXWorkSetCounterCalc(&pxWorkSetCounter);
+
+    // Full-Batches
+    for(PXSize i = 0; i < pxWorkSetCounter.AmountBatchFull + 1; ++i)
+    {
+        const PXF16* const extractPoint = &listInput[i * pxWorkSetCounter.BatchSize];
+        PXF32* const insertPoint = &listOut[i * pxWorkSetCounter.BatchSize];
+
+        int workSet = PXWorkSetCounterPull(&pxWorkSetCounter, i);
+
+        PXMemoryCopyF16V(simdInput.m128i_u16, extractPoint, workSet);
+
+        simdOutput = _mm_cvtph_ps(simdInput); // [Intrinsic] 4x 16-Bit float -> 32-Bit float
+
+        PXMemoryCopyF32V(insertPoint, simdOutput.m128_f32, workSet);
+    }
+}
+
+void PXAPI PXMathF16ToF32X8(PXF32* const listOut, const PXF16* const listInput, const PXSize inputAmount)
+{
+  
+}
+
+void PXAPI PXMathF16ToF32X16(PXF32* const listOut, const PXF16* const listInput, const PXSize inputAmount)
+{
+    __m256i simdInput;
+    __m512 simdOutput;
+
+    PXWorkSetCounter pxWorkSetCounter;
+    pxWorkSetCounter.WorkToDo = inputAmount;
+    pxWorkSetCounter.BatchSize = 16;
+
+    PXWorkSetCounterCalc(&pxWorkSetCounter);
+
+    // Full-Batches
+    for(PXSize i = 0; i < pxWorkSetCounter.AmountBatchFull + 1; ++i)
+    {
+        const PXF16* const extractPoint = &listInput[i * pxWorkSetCounter.BatchSize];
+        PXF32* const insertPoint = &listOut[i * pxWorkSetCounter.BatchSize];
+
+        int workSet = PXWorkSetCounterPull(&pxWorkSetCounter, i);
+
+        PXMemoryCopyF16V(simdInput.m256i_u16, extractPoint, workSet);
+
+        simdOutput = _mm512_cvtph_ps(simdInput);
+
+        PXMemoryCopyF32V(insertPoint, simdOutput.m512_f32, workSet);
+    }
 }
 
 void PXAPI PXMathF32ToF16(PXF16* const listOut, const PXF32* const listInput, const PXSize inputAmount)
@@ -193,32 +221,7 @@ void PXAPI PXMathF32ToF16(PXF16* const listOut, const PXF32* const listInput, co
     if(1) // AVX512 support
     {
         // __m256i _mm512_mask_cvtps_ph (__m256i src, __mmask16 k, __m512 a, int rounding)
-        __m512 in;
-        __m256i res;
 
-        pxWorkSetCounter.BatchSize = 16;
-
-        PXWorkSetCounterCalc(&pxWorkSetCounter);
-
-        for(PXSize i = 0; i < pxWorkSetCounter.AmountBatchFull + 1; ++i)
-        {
-            const PXF32* const extractPoint = &listInput[i * pxWorkSetCounter.BatchSize];
-            PXF16* const insertPoint = &listOut[i * pxWorkSetCounter.BatchSize];
-
-            int workSet = PXWorkSetCounterPull(&pxWorkSetCounter, i);
-
-            for(PXSize i = 0; i < workSet; ++i)
-            {
-                in.m512_f32[i] = extractPoint[i];
-            }
-
-            res = _mm512_cvtps_ph(in, _MM_FROUND_TO_NEAREST_INT); // [Intrinsic] AVX512F, vcvtps2ph, 16x 32-Bit float -> 16-Bit float
-
-            for(PXSize i = 0; i < workSet; ++i)
-            {
-                insertPoint[i] = res.m256i_u16[i];
-            }
-        }
 
         return; // DONE
     }
@@ -229,38 +232,70 @@ void PXAPI PXMathF32ToF16(PXF16* const listOut, const PXF32* const listInput, co
         // __m128i _mm256_cvtps_ph (__m256 a, int imm8)
         //__m128i resB = _mm256_cvtps_ph(); // [Intrinsic] immintrin.h, F16C, vcvtps2ph, 8x 32-Bit float -> 16-Bit float
 
-        __m128 data;
-        __m128i res;
-
-        pxWorkSetCounter.BatchSize = 4;
-
-        PXWorkSetCounterCalc(&pxWorkSetCounter);
-
-        for(PXSize i = 0; i < pxWorkSetCounter.AmountBatchFull + 1; ++i)
-        {
-            const PXF32* const extractPoint = &listInput[i * pxWorkSetCounter.BatchSize];
-            PXF16* const insertPoint = &listOut[i * pxWorkSetCounter.BatchSize];
-
-            int workSet = PXWorkSetCounterPull(&pxWorkSetCounter, i);
-
-            for(PXSize i = 0; i < workSet; ++i)
-            {
-                data.m128_f32[i] = extractPoint[i];
-            }
-
-            res = _mm_cvtps_ph(data, _MM_FROUND_TO_NEAREST_INT); // [Intrinsic] 4x 32-Bit float -> 16-Bit float
-
-            for(PXSize i = 0; i < workSet; ++i)
-            {
-                insertPoint[i] = res.m128i_u16[i];
-            }
-        }
+       
 
         return; // DONE
     }
 
     // non-intrinsic
     // ...
+}
+
+void PXAPI PXMathF32ToF16X4(PXF16* const listOut, const PXF32* const listInput, const PXSize inputAmount)
+{
+    __m128 simdInput;
+    __m128i simdOutput;
+
+    PXWorkSetCounter pxWorkSetCounter;
+    pxWorkSetCounter.WorkToDo = inputAmount;
+    pxWorkSetCounter.BatchSize = 4;
+
+    PXWorkSetCounterCalc(&pxWorkSetCounter);
+
+    for(PXSize i = 0; i < pxWorkSetCounter.AmountBatchFull + 1; ++i)
+    {
+        const PXF32* const extractPoint = &listInput[i * pxWorkSetCounter.BatchSize];
+        PXF16* const insertPoint = &listOut[i * pxWorkSetCounter.BatchSize];
+
+        int workSet = PXWorkSetCounterPull(&pxWorkSetCounter, i);
+
+        PXMemoryCopyF32V(simdInput.m128_f32, extractPoint, workSet);
+
+        simdOutput = _mm_cvtps_ph(simdInput, _MM_FROUND_TO_NEAREST_INT); // [Intrinsic] 4x 32-Bit float -> 16-Bit float
+
+        PXMemoryCopyF16V(insertPoint, simdOutput.m128i_u16, workSet);
+    }
+}
+
+void PXAPI PXMathF32ToF16X8(PXF16* const listOut, const PXF32* const listInput, const PXSize inputAmount)
+{
+
+}
+
+void PXAPI PXMathF32ToF16X16(PXF16* const listOut, const PXF32* const listInput, const PXSize inputAmount)
+{
+    __m512 simdInput;
+    __m256i simdOutput;
+
+    PXWorkSetCounter pxWorkSetCounter;
+    pxWorkSetCounter.WorkToDo = inputAmount;
+    pxWorkSetCounter.BatchSize = 16;
+
+    PXWorkSetCounterCalc(&pxWorkSetCounter);
+
+    for(PXSize i = 0; i < pxWorkSetCounter.AmountBatchFull + 1; ++i)
+    {
+        const PXF32* const extractPoint = &listInput[i * pxWorkSetCounter.BatchSize];
+        PXF16* const insertPoint = &listOut[i * pxWorkSetCounter.BatchSize];
+
+        int workSet = PXWorkSetCounterPull(&pxWorkSetCounter, i);
+
+        PXMemoryCopyF32V(simdInput.m512_f32, extractPoint, workSet);
+
+        simdOutput = _mm512_cvtps_ph(simdInput, _MM_FROUND_TO_NEAREST_INT); // [Intrinsic] AVX512F, vcvtps2ph, 16x 32-Bit float -> 16-Bit float
+
+        PXMemoryCopyF16V(insertPoint, simdOutput.m256i_u16, workSet);
+    }
 }
 
 float PXAPI PXMathFastInverseSqaureRoot(float number)
@@ -361,84 +396,108 @@ void PXAPI PXMathRootSquareF32V(PXF32* const outputListY, const PXF32* const inp
 
     if(1)
     {
-        __m512 simdInput;
-        __m512 simdOutput;
-
-        pxWorkSetCounter.BatchSize = 16;
-
-        PXWorkSetCounterCalc(&pxWorkSetCounter);
-
-        // Full-Batches
-        for(PXSize i = 0; i < pxWorkSetCounter.AmountBatchFull + 1; ++i)
-        {
-            const PXF32* const extractPoint = &inputListX[i * pxWorkSetCounter.BatchSize];
-            PXF32* const insertPoint = &outputListY[i * pxWorkSetCounter.BatchSize];
-
-            int workSet = PXWorkSetCounterPull(&pxWorkSetCounter, i);
-
-            PXMemoryCopyF32V(simdInput.m512_f32, extractPoint, workSet);
-
-            simdOutput = _mm512_sqrt_ps(simdInput); // AVX512F, 16x 32-Bit float SQRT()
-
-            PXMemoryCopyF32V(insertPoint, simdOutput.m512_f32, workSet);
-        }
+     
 
         return; // DONE
     }
 
     if(1)
     {
-        __m256 simdInput;
-        __m256 simdOutput;
-
-        pxWorkSetCounter.BatchSize = 8;
-
-        PXWorkSetCounterCalc(&pxWorkSetCounter);
-
-        // Full-Batches
-        for(PXSize i = 0; i < pxWorkSetCounter.AmountBatchFull + 1; ++i)
-        {
-            const PXF32* const extractPoint = &inputListX[i * pxWorkSetCounter.BatchSize];
-            PXF32* const insertPoint = &outputListY[i * pxWorkSetCounter.BatchSize];
-
-            int workSet = PXWorkSetCounterPull(&pxWorkSetCounter, i);
-
-            PXMemoryCopyF32V(simdInput.m256_f32, extractPoint, workSet);
-
-            simdOutput = _mm256_sqrt_ps(simdInput); // AVX, 8x 32-Bit float SQRT()
-
-            PXMemoryCopyF32V(insertPoint, simdOutput.m256_f32, workSet);
-        }
-
-        return; // DONE
+   
     }
 
   
     if(1)
     {
-        __m128 simdInput;
-        __m128 simdOutput;
-
-        pxWorkSetCounter.BatchSize = 4;
-
-        PXWorkSetCounterCalc(&pxWorkSetCounter);
-
-        // Full-Batches
-        for(PXSize i = 0; i < pxWorkSetCounter.AmountBatchFull + 1; ++i)
-        {
-            const PXF32* const extractPoint = &inputListX[i * pxWorkSetCounter.BatchSize];
-            PXF32* const insertPoint = &outputListY[i * pxWorkSetCounter.BatchSize];
-
-            int workSet = PXWorkSetCounterPull(&pxWorkSetCounter, i);
-
-            PXMemoryCopyF32V(simdInput.m128_f32, extractPoint, workSet);
-
-            simdOutput = _mm_sqrt_ps(simdInput); // SSE, 4x 32-Bit float SQRT()
-
-            PXMemoryCopyF32V(insertPoint, simdOutput.m128_f32, workSet);
-        }
+       
 
         return; // DONE
+    }
+}
+
+void PXAPI PXMathRootSquareF32VX4(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
+{
+    PXWorkSetCounter pxWorkSetCounter;
+    pxWorkSetCounter.WorkToDo = amount;
+
+    __m128 simdInput;
+    __m128 simdOutput;
+
+    pxWorkSetCounter.BatchSize = 4;
+
+    PXWorkSetCounterCalc(&pxWorkSetCounter);
+
+    // Full-Batches
+    for(PXSize i = 0; i < pxWorkSetCounter.AmountBatchFull + 1; ++i)
+    {
+        const PXF32* const extractPoint = &inputListX[i * pxWorkSetCounter.BatchSize];
+        PXF32* const insertPoint = &outputListY[i * pxWorkSetCounter.BatchSize];
+
+        int workSet = PXWorkSetCounterPull(&pxWorkSetCounter, i);
+
+        PXMemoryCopyF32V(simdInput.m128_f32, extractPoint, workSet);
+
+        simdOutput = _mm_sqrt_ps(simdInput); // SSE, 4x 32-Bit float SQRT()
+
+        PXMemoryCopyF32V(insertPoint, simdOutput.m128_f32, workSet);
+    }
+}
+
+void PXAPI PXMathRootSquareF32VX8(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
+{
+    PXWorkSetCounter pxWorkSetCounter;
+    pxWorkSetCounter.WorkToDo = amount;
+
+    __m256 simdInput;
+    __m256 simdOutput;
+
+    pxWorkSetCounter.BatchSize = 8;
+
+    PXWorkSetCounterCalc(&pxWorkSetCounter);
+
+    // Full-Batches
+    for(PXSize i = 0; i < pxWorkSetCounter.AmountBatchFull + 1; ++i)
+    {
+        const PXF32* const extractPoint = &inputListX[i * pxWorkSetCounter.BatchSize];
+        PXF32* const insertPoint = &outputListY[i * pxWorkSetCounter.BatchSize];
+
+        int workSet = PXWorkSetCounterPull(&pxWorkSetCounter, i);
+
+        PXMemoryCopyF32V(simdInput.m256_f32, extractPoint, workSet);
+
+        simdOutput = _mm256_sqrt_ps(simdInput); // AVX, 8x 32-Bit float SQRT()
+
+        PXMemoryCopyF32V(insertPoint, simdOutput.m256_f32, workSet);
+    }
+
+    return; // DONE
+}
+
+void PXAPI PXMathRootSquareF32VX16(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
+{
+    PXWorkSetCounter pxWorkSetCounter;
+    pxWorkSetCounter.WorkToDo = amount;
+
+    __m512 simdInput;
+    __m512 simdOutput;
+
+    pxWorkSetCounter.BatchSize = 16;
+
+    PXWorkSetCounterCalc(&pxWorkSetCounter);
+
+    // Full-Batches
+    for(PXSize i = 0; i < pxWorkSetCounter.AmountBatchFull + 1; ++i)
+    {
+        const PXF32* const extractPoint = &inputListX[i * pxWorkSetCounter.BatchSize];
+        PXF32* const insertPoint = &outputListY[i * pxWorkSetCounter.BatchSize];
+
+        int workSet = PXWorkSetCounterPull(&pxWorkSetCounter, i);
+
+        PXMemoryCopyF32V(simdInput.m512_f32, extractPoint, workSet);
+
+        simdOutput = _mm512_sqrt_ps(simdInput); // AVX512F, 16x 32-Bit float SQRT()
+
+        PXMemoryCopyF32V(insertPoint, simdOutput.m512_f32, workSet);
     }
 }
 
@@ -630,6 +689,81 @@ double PXAPI PXMathSinusD(const double value)
     return PXMathSinusF(value); // TODO: precision loss!
 }
 
+void PXAPI PXMathSinusRADF16V(PXF16* const outputListY, const PXF16* const inputListX, const PXSize amount)
+{
+    //__m128h _mm_sin_ph(__m128h a)
+}
+
+void PXAPI PXMathSinusRADF32V(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
+{
+   // __m128 _mm_sin_ps(__m128 a)
+}
+
+void PXAPI PXMathSinusRADF64V(PXF64* const outputListY, const PXF64* const inputListX, const PXSize amount)
+{
+  //  __m128d _mm_sin_pd(__m128d a)
+}
+
+void PXAPI PXMathSinusDEGF16V(PXF16* const outputListY, const PXF16* const inputListX, const PXSize amount)
+{
+   // __m128h _mm_sind_ph(__m128h a)
+}
+
+void PXAPI PXMathSinusDEGF32V(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
+{
+   // __m128 _mm_sind_ps(__m128 a)
+}
+
+void PXAPI PXMathSinusDEGF64V(PXF64* const outputListY, const PXF64* const inputListX, const PXSize amount)
+{
+   // __m128d _mm_sind_pd(__m128d a)
+}
+
+void PXAPI PXMathSinusHyperbolicRADF16V(PXF16* const outputListY, const PXF16* const inputListX, const PXSize amount)
+{
+   // __m128h _mm_sinh_ph(__m128h a);
+}
+
+void PXAPI PXMathSinusHyperbolicRADF32V(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
+{
+   // __m128 _mm_sinh_ps(__m128 a)
+}
+
+void PXAPI PXMathSinusHyperbolicRADF64V(PXF64* const outputListY, const PXF64* const inputListX, const PXSize amount)
+{
+   // __m128d _mm_sinh_pd(__m128d a)
+}
+
+void PXAPI PXMathCosinusRADF16V(PXF16* const outputListY, const PXF16* const inputListX, const PXSize amount)
+{
+   // __m128h _mm_cos_ph(__m128h a)
+}
+
+void PXAPI PXMathCosinusRADF32V(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
+{
+   // __m128 _mm_cos_ps(__m128 a)
+}
+
+void PXAPI PXMathCosinusRADF64V(PXF64* const outputListY, const PXF64* const inputListX, const PXSize amount)
+{
+   // __m128d _mm_cos_pd(__m128d a)
+}
+
+void PXAPI PXMathSinusAndCosinusRADF16V(PXF16* const outputListY, const PXF16* const inputListX, const PXSize amount)
+{
+    //__m128h _mm_sincos_ph(__m128h * mem_addr, __m128h a)
+}
+
+void PXAPI PXMathSinusAndCosinusRADF32V(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
+{
+   // __m128 _mm_sincos_ps(__m128 * mem_addr, __m128 a)
+}
+
+void PXAPI PXMathSinusAndCosinusRADF64V(PXF64* const outputListY, const PXF64* const inputListX, const PXSize amount)
+{
+    //__m128d _mm_sincos_pd(__m128d * mem_addr, __m128d a)
+}
+
 double PXAPI PXMathTangensF(const float x)
 {
     return PXMathTangensD(x);
@@ -649,93 +783,118 @@ float PXAPI PXMathCosinusF(const float x)
     return PXMathCosinusD(x);
 }
 
+void PXAPI PXMathCosinusDEGF16V(PXF16* const outputListY, const PXF16* const inputListX, const PXSize amount)
+{
+   
+}
+
 void PXAPI PXMathCosinusDEGF32V(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
 {
+    for(PXSize i = 0; i < amount; ++i)
+    {
+        outputListY[i] = cos(inputListX[i]);
+    }
+}
+
+void PXAPI PXMathCosinusDEGF32VX4(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
+{
+    __m128 simdInput;
+    __m128 simdOutput;
+
     PXWorkSetCounter pxWorkSetCounter;
     pxWorkSetCounter.WorkToDo = amount;
+    pxWorkSetCounter.BatchSize = 4;
 
-    if(1)
+    PXWorkSetCounterCalc(&pxWorkSetCounter);
+
+    // Full-Batches
+    for(PXSize i = 0; i < pxWorkSetCounter.AmountBatchFull + 1; ++i)
     {
-        __m512 simdInput;
-        __m512 simdOutput;
+        const PXF32* const extractPoint = &inputListX[i * pxWorkSetCounter.BatchSize];
+        PXF32* const insertPoint = &outputListY[i * pxWorkSetCounter.BatchSize];
 
-        pxWorkSetCounter.BatchSize = 16;
+        int workSet = PXWorkSetCounterPull(&pxWorkSetCounter, i);
 
-        PXWorkSetCounterCalc(&pxWorkSetCounter);
+        PXMemoryCopyF32V(simdInput.m128_f32, extractPoint, workSet);
 
-        // Full-Batches
-        for(PXSize i = 0; i < pxWorkSetCounter.AmountBatchFull + 1; ++i)
-        {
-            const PXF32* const extractPoint = &inputListX[i * pxWorkSetCounter.BatchSize];
-            PXF32* const insertPoint = &outputListY[i * pxWorkSetCounter.BatchSize];
+        simdOutput = _mm_cosd_ps(simdInput); // [Intrinsic] immintrin.h, SSE, 4x 32-Bit float in DEG -> COS(x)
 
-            int workSet = PXWorkSetCounterPull(&pxWorkSetCounter, i);
-
-            PXMemoryCopyF32V(simdInput.m512_f32, extractPoint, workSet);
-
-            simdOutput = _mm512_cosd_ps(simdInput); // AVX512F, 
-
-            PXMemoryCopyF32V(insertPoint, simdOutput.m512_f32, workSet);
-        }
-
-        return; // DONE
+        PXMemoryCopyF32V(insertPoint, simdOutput.m128_f32, workSet);
     }
+}
 
-    if(1)
+void PXAPI PXMathCosinusDEGF32VX8(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
+{
+    __m256 simdInput;
+    __m256 simdOutput;
+
+    PXWorkSetCounter pxWorkSetCounter;
+    pxWorkSetCounter.WorkToDo = amount;
+    pxWorkSetCounter.BatchSize = 8;
+
+    PXWorkSetCounterCalc(&pxWorkSetCounter);
+
+    // Full-Batches
+    for(PXSize i = 0; i < pxWorkSetCounter.AmountBatchFull + 1; ++i)
     {
-        __m256 simdInput;
-        __m256 simdOutput;
+        const PXF32* const extractPoint = &inputListX[i * pxWorkSetCounter.BatchSize];
+        PXF32* const insertPoint = &outputListY[i * pxWorkSetCounter.BatchSize];
 
-        pxWorkSetCounter.BatchSize = 8;
+        int workSet = PXWorkSetCounterPull(&pxWorkSetCounter, i);
 
-        PXWorkSetCounterCalc(&pxWorkSetCounter);
+        PXMemoryCopyF32V(simdInput.m256_f32, extractPoint, workSet);
 
-        // Full-Batches
-        for(PXSize i = 0; i < pxWorkSetCounter.AmountBatchFull + 1; ++i)
-        {
-            const PXF32* const extractPoint = &inputListX[i * pxWorkSetCounter.BatchSize];
-            PXF32* const insertPoint = &outputListY[i * pxWorkSetCounter.BatchSize];
+        simdOutput = _mm256_cosd_ps(simdInput); // [Intrinsic] AVX
 
-            int workSet = PXWorkSetCounterPull(&pxWorkSetCounter, i);
-
-            PXMemoryCopyF32V(simdInput.m256_f32, extractPoint, workSet);
-
-            simdOutput = _mm256_cosd_ps(simdInput); // [Intrinsic] AVX
-
-            PXMemoryCopyF32V(insertPoint, simdOutput.m256_f32, workSet);
-        }
-
-        return; // DONE
+        PXMemoryCopyF32V(insertPoint, simdOutput.m256_f32, workSet);
     }
+}
 
-    if(1)
+void PXAPI PXMathCosinusDEGF32VX16(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
+{
+    __m512 simdInput;
+    __m512 simdOutput;
+
+    PXWorkSetCounter pxWorkSetCounter;
+    pxWorkSetCounter.WorkToDo = amount;
+    pxWorkSetCounter.BatchSize = 16;
+
+    PXWorkSetCounterCalc(&pxWorkSetCounter);
+
+    // Full-Batches
+    for(PXSize i = 0; i < pxWorkSetCounter.AmountBatchFull + 1; ++i)
     {
-        __m128 simdInput;
-        __m128 simdOutput;
+        const PXF32* const extractPoint = &inputListX[i * pxWorkSetCounter.BatchSize];
+        PXF32* const insertPoint = &outputListY[i * pxWorkSetCounter.BatchSize];
 
-        pxWorkSetCounter.BatchSize = 4;
+        int workSet = PXWorkSetCounterPull(&pxWorkSetCounter, i);
 
-        PXWorkSetCounterCalc(&pxWorkSetCounter);
+        PXMemoryCopyF32V(simdInput.m512_f32, extractPoint, workSet);
 
-        // Full-Batches
-        for(PXSize i = 0; i < pxWorkSetCounter.AmountBatchFull + 1; ++i)
-        {
-            const PXF32* const extractPoint = &inputListX[i * pxWorkSetCounter.BatchSize];
-            PXF32* const insertPoint = &outputListY[i * pxWorkSetCounter.BatchSize];
+        simdOutput = _mm512_cosd_ps(simdInput); // AVX512F, 
 
-            int workSet = PXWorkSetCounterPull(&pxWorkSetCounter, i);
-
-            PXMemoryCopyF32V(simdInput.m128_f32, extractPoint, workSet);
-
-            simdOutput = _mm_cosd_ps(simdInput); // [Intrinsic] immintrin.h, SSE, 4x 32-Bit float in DEG -> COS(x)
-
-            PXMemoryCopyF32V(insertPoint, simdOutput.m128_f32, workSet);
-        }
-
-        return; // DONE
+        PXMemoryCopyF32V(insertPoint, simdOutput.m512_f32, workSet);
     }
+}
 
-    // No intrinsic
+void PXAPI PXMathCosinusDEGF64V(PXF64* const outputListY, const PXF64* const inputListX, const PXSize amount)
+{
+ 
+}
+
+void PXAPI PXMathCosinusHyperbolicRADF16V(PXF16* const outputListY, const PXF16* const inputListX, const PXSize amount)
+{
+  //  __m128h _mm_cos_ph(__m128h a)
+}
+
+void PXAPI PXMathCosinusHyperbolicRADF32V(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
+{
+ 
+}
+
+void PXAPI PXMathCosinusHyperbolicRADF64V(PXF64* const outputListY, const PXF64* const inputListX, const PXSize amount)
+{
+  
 }
 
 double PXAPI PXMathCosinusD(const double x)

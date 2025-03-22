@@ -1022,9 +1022,33 @@ PXSize PXAPI PXMemoryCopy(const void* PXRestrict inputBuffer, const PXSize input
     return bufferSize;
 }
 
+void PXAPI PXMemoryCopyF16V(PXF16* const destination, const PXF16* const source, const PXSize amount)
+{
+    for(PXSize i = 0; i < amount; ++i)
+    {
+        destination[i] = source[i];
+    }
+}
+
 void PXAPI PXMemoryCopyF32V(PXF32* const destination, const PXF32* const source, const PXSize amount)
 {
-    for(PXSize i = 0; i < amount; i++)
+    for(PXSize i = 0; i < amount; ++i)
+    {
+        destination[i] = source[i];
+    }
+}
+
+void PXAPI PXMemoryCopyF32ToF16V(PXF32* const destination, const PXF16* const source, const PXSize amount)
+{
+    for(PXSize i = 0; i < amount; ++i)
+    {
+        destination[i] = source[i];
+    }
+}
+
+void PXAPI PXMemoryCopyF16ToF32V(PXF16* const destination, const PXF32* const source, const PXSize amount)
+{
+    for(PXSize i = 0; i < amount; ++i)
     {
         destination[i] = source[i];
     }

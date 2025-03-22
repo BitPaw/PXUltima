@@ -155,10 +155,109 @@ void PXAPI Trace_FolderFiles(PXText* pxText)
 #include <OS/System/Driver/PXDriver.h>
 #include <Algorithm/CollatzConjecture/PXCollatzConjecture.h>
 #include <OS/Library/PXLibrary.h>
+#include <Math/PXMath.h>
+#include <Media/PXType.h>
+#include <Media/PXResource.h>
+
+
+#define VXSize 1024*100
+
+PXF32 calcNumbersIN[VXSize];
+PXF32 calcNumbersOUT[VXSize];
+
 
 int main()
 { 
     PXConsoleWrite(0, "[i] Starting testing...\n");
+
+    int amount = 100000;
+
+    for(size_t i = 0; i < VXSize; i++)
+    {
+        calcNumbersIN[i] = i*00.25f;
+    }
+
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "EEE",
+        "AA",
+        "Amount: %i",
+        amount
+    );
+
+
+    //--------------
+    {
+
+
+
+    PXInt64U timeStart = PXTimeCounterStampGet();
+
+    for(size_t i = 0; i < amount; i++)
+    {
+       PXMathCosinusDEGF32VX16(calcNumbersOUT, calcNumbersIN, VXSize);
+    }
+
+    PXInt64U timeStop = PXTimeCounterStampGet();
+
+    PXInt64U timeDelta = timeStop - timeStart;
+
+    float timeTaken =  PXTimeCounterStampToSecoundsF(timeDelta);
+   
+
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "EEE",
+        "AA",
+        "AVX: %fs",
+        timeTaken
+    );
+    }
+    //--------------
+
+
+
+       //--------------
+    {
+
+        for(size_t i = 0; i < VXSize; i++)
+        {
+            calcNumbersIN[i] = i * 00.25f;
+        }
+
+
+        PXInt64U timeStart = PXTimeCounterStampGet();
+
+        for(size_t i = 0; i < amount; i++)
+        {
+            PXMathCosinusDEGF32V(calcNumbersOUT, calcNumbersIN, VXSize);
+        }
+
+        PXInt64U timeStop = PXTimeCounterStampGet();
+
+        PXInt64U timeDelta = timeStop - timeStart;
+
+        float timeTaken = PXTimeCounterStampToSecoundsF(timeDelta);
+
+
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "EEE",
+            "AA",
+            "COS: %fs",
+            timeTaken
+        );
+    }
+    //--------------
+
+
+
+
+
+
 
 
     PXLibraryCurrentlyLoaded(PXNull, 0, 0);
