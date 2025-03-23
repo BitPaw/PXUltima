@@ -1,6 +1,6 @@
 #include "PXMediaTest.h"
 
-#include <Media/TTF/PXTTF.h>
+#include <PX/Media/TTF/PXTTF.h>
 
 void PXAPI PXMediaTestAll()
 {

@@ -1,7 +1,7 @@
 #ifndef PXWindowTestINCLUDE
 #define PXWindowTestINCLUDE
 
-#include <Media/PXResource.h>
+#include <PX/Media/PXResource.h>
 
 PXPublic void PXAPI PXTestWindowAll();
 

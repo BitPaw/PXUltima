@@ -1,6 +1,6 @@
 #include "PXTestDebug.h"
 
-#include <OS/Debug/PXDebug.h>
+#include <PX/OS/Debug/PXDebug.h>
 
 void PXAPI PXTestDebugAll()
 {

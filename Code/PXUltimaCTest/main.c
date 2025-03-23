@@ -1,4 +1,4 @@
-#include <OS/Console/PXConsole.h>
+#include <PX/OS/Console/PXConsole.h>
 
 #define PXLDAPTest 0
 #define PXKeyBoardVirtualTest 0
@@ -38,10 +38,10 @@ int _fltused = 0;
 #include "Network/PXNetworkTest.h"
 #include "Window/PXWindowTest.h"
 
-#include <OS/Console/PXConsole.h>
-#include <Media/FastFile/PXFastFile.h>
-#include <Media/C/PXC.h>
-#include <Media/PXDocument.h>
+#include <PX/OS/Console/PXConsole.h>
+#include <PX/Media/FastFile/PXFastFile.h>
+#include <PX/Media/C/PXC.h>
+#include <PX/Media/PXDocument.h>
 
 /*
 
@@ -88,16 +88,16 @@ void PXTextMatchTest()
 #include "Media/PXMediaTest.h"
 #include "Window/PXWindowTest.h"
 
-#include <OS/Hardware/PXHardware.h>
-#include <OS/Hardware/PXVideo.h>
-#include <OS/Hardware/PXProcessor.h>
-#include <Math/PXMath.h>
-#include <OS/Time/PXTime.h>
-#include <OS/Async/PXProcess.h>
-#include <OS/Async/PXThread.h>
-#include <OS/Debug/PXDebug.h>
-#include <OS/Memory/PXMemory.h>
-#include <Media/BinaryWindows/PXBinaryWindows.h>
+#include <PX/OS/Hardware/PXHardware.h>
+#include <PX/OS/Hardware/PXVideo.h>
+#include <PX/OS/Hardware/PXProcessor.h>
+#include <PX/Math/PXMath.h>
+#include <PX/OS/Time/PXTime.h>
+#include <PX/OS/Async/PXProcess.h>
+#include <PX/OS/Async/PXThread.h>
+#include <PX/OS/Debug/PXDebug.h>
+#include <PX/OS/Memory/PXMemory.h>
+#include <PX/Media/BinaryWindows/PXBinaryWindows.h>
 
 
 
@@ -106,7 +106,7 @@ void PXTextMatchTest()
 #include <conio.h>
 #include <pdh.h>
 #include <pdhmsg.h>
-#include <OS/Memory/PXMemory.h>
+#include <PX/OS/Memory/PXMemory.h>
 
 #pragma comment(lib, "pdh.lib")
 
@@ -120,7 +120,7 @@ void PXTextMatchTest()
 
 
 
-#include <OS/File/PXDirectory.h>
+#include <PX/OS/File/PXDirectory.h>
 
 
 
@@ -150,14 +150,14 @@ void PXAPI Trace_FolderFiles(PXText* pxText)
 }
 
 
-#include <OS/GUI/PXGUI.h>
-#include <OS/Graphic/NativDraw/PXNativDraw.h>
-#include <OS/System/Driver/PXDriver.h>
+#include <PX/OS/GUI/PXGUI.h>
+#include <PX/OS/Graphic/NativDraw/PXNativDraw.h>
+#include <PX/OS/System/Driver/PXDriver.h>
 #include <Algorithm/CollatzConjecture/PXCollatzConjecture.h>
-#include <OS/Library/PXLibrary.h>
-#include <Math/PXMath.h>
-#include <Media/PXType.h>
-#include <Media/PXResource.h>
+#include <PX/OS/Library/PXLibrary.h>
+#include <PX/Math/PXMath.h>
+#include <PX/Media/PXType.h>
+#include <PX/Media/PXResource.h>
 
 
 #define VXSize 1024*100
@@ -203,7 +203,7 @@ int main()
 
     PXInt64U timeDelta = timeStop - timeStart;
 
-    float timeTaken =  PXTimeCounterStampToSecoundsF(timeDelta);
+    PXF32 timeTaken =  PXTimeCounterStampToSecoundsF(timeDelta);
    
 
     PXLogPrint
@@ -239,7 +239,7 @@ int main()
 
         PXInt64U timeDelta = timeStop - timeStart;
 
-        float timeTaken = PXTimeCounterStampToSecoundsF(timeDelta);
+        PXF32 timeTaken = PXTimeCounterStampToSecoundsF(timeDelta);
 
 
         PXLogPrint
@@ -1013,7 +1013,7 @@ while(1)
     PXProcessThreadsListAll(PXNull, refB, xx, &oeoeo);
 
 
-    float percent = 0;
+    PXF32 percent = 0;
 
     for(size_t i = 0; i < 60000; i++)
     {
@@ -1043,7 +1043,7 @@ while(1)
 
 
     const PXSize amount = 100000000;
-    const float res = 1/25.0f;
+    const PXF32 res = 1/25.0f;
     
     PXConsoleWriteF(0, "[%3i] --- Start ---\n", amount);
     
@@ -1051,17 +1051,17 @@ while(1)
 
     for(PXSize i = 0; i < amount; i++)
     {
-        float input = i * res;
-        float output = PXMathSinusF(input);
+        PXF32 input = i * res;
+        PXF32 output = PXMathSinusRADF32(input);
 
         //PXConsoleWriteF(0, "[%3i] %6.4f -> %6.4f\n", i, input, output);
     }
 
     PXInt64U endTime = PXTimeCounterStampGet();
     PXInt64U delta = endTime - startTime;
-    float endTimeInS = PXTimeCounterStampToSecoundsF(delta);
+    PXF32 endTimeInS = PXTimeCounterStampToSecoundsF(delta);
 
-    float avg = delta / (float)amount;
+    PXF32 avg = delta / (PXF32)amount;
 
     PXConsoleWriteF(0, "[%3i] Took: %6.3fs. AVG: %6.3fus\n", amount, endTimeInS, avg);
 
@@ -1296,7 +1296,7 @@ while(1)
     PXAwaitChangeCU(&pxWindow.IsRunning);
 
 
-    const float vertices[] =
+    const PXF32 vertices[] =
     {
 #if 1
         -0.5f, -0.5f, 1, 0xffff0000, // x, y, z, rhw, color
@@ -1317,7 +1317,7 @@ while(1)
     PXModel pxModel;
     PXObjectClear(PXModel, &pxModel);
     pxModel.VertexBuffer.VertexData = vertices;
-    pxModel.VertexBuffer.VertexDataSize = sizeof(vertices);// / sizeof(float);
+    pxModel.VertexBuffer.VertexDataSize = sizeof(vertices);// / sizeof(PXF32);
     pxModel.VertexBuffer.VertexDataRowSize = sizeof(vertices) / 3;
     pxModel.VertexBuffer.Format = PXVertexBufferFormatXYZC; // PXVertexBufferFormatXYZC  PXVertexBufferFormatXYZHWC
 

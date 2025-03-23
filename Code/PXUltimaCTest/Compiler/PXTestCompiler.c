@@ -1,14 +1,14 @@
 #include "PXTestCompiler.h"
 
-#include <OS/File/PXFile.h>
+#include <PX/OS/File/PXFile.h>
 
-#include <Compiler/PXCompiler.h>
-#include <Media/YAML/PXYAML.h>
-#include <Media/XML/PXXML.h>
-#include <Media/Wavefront/PXWavefront.h>
-#include <Compiler/PXCompiler.h>
-#include <Media/PXDocument.h>
-#include <OS/Console/PXConsole.h>
+#include <PX/Compiler/PXCompiler.h>
+#include <PX/Media/YAML/PXYAML.h>
+#include <PX/Media/XML/PXXML.h>
+#include <PX/Media/Wavefront/PXWavefront.h>
+#include <PX/Compiler/PXCompiler.h>
+#include <PX/Media/PXDocument.h>
+#include <PX/OS/Console/PXConsole.h>
 
 void PXAPI PXTestCompilerAll()
 {

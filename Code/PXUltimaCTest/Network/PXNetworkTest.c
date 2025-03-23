@@ -1,8 +1,8 @@
 #include "PXNetworkTest.h"
 
-#include <OS/Network/PXNetwork.h>
-#include <OS/Memory/PXMemory.h>
-#include <OS/Console/PXConsole.h>
+#include <PX/OS/Network/PXNetwork.h>
+#include <PX/OS/Memory/PXMemory.h>
+#include <PX/OS/Console/PXConsole.h>
 
 void PXTestNetworkAll()
 {

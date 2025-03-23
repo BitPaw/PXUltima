@@ -1,8 +1,8 @@
 #include "PXWindowTest.h"
 
-#include <OS/GUI/PXGUI.h>
-#include <OS/Memory/PXMemory.h>
-#include <Engine/PXEngine.h>
+#include <PX/OS/GUI/PXGUI.h>
+#include <PX/OS/Memory/PXMemory.h>
+#include <PX/Engine/PXEngine.h>
 
 void PXAPI PXTestWindowAll()
 {
