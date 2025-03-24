@@ -949,6 +949,7 @@ typedef struct PXIndexBuffer_
 
     // Total data
     void* Data;
+    PXSize DataIndexAmount;
     PXSize DataIndexSizeTotal;
     PXSize DataIndexSizeSegment;
     PXInt32U IndexDataType;
@@ -972,6 +973,7 @@ PXIndexBuffer;
 
 // Allocate an indexbuffer in a way to minimize size for given amount of vertex points
 PXPublic void PXAPI PXIndexBufferPrepare(PXIndexBuffer* const pxIndexBuffer, const PXSize amountVertex, const PXSize amountMaterials);
+PXPublic PXBool PXAPI PXIndexBufferIsUsed(const PXIndexBuffer* const pxIndexBuffer);
 
 
 // A mesh is a structure that contains vertex and index data to render itself

@@ -2069,6 +2069,7 @@ void PXAPI PXIndexBufferPrepare(PXIndexBuffer* const pxIndexBuffer, const PXSize
 
         const PXSize dataSize = PXTypeSizeGet(pxIndexBuffer->IndexDataType);
 
+        pxIndexBuffer->DataIndexAmount = amountVertex;
         pxIndexBuffer->DataIndexSizeSegment = dataSize * amountVertex;
         pxIndexBuffer->DataIndexSizeTotal = dataSize * amountVertex * 3;
         pxIndexBuffer->Data = PXMemoryHeapCalloc(PXNull, amountVertex * 3, dataSize);
@@ -2097,6 +2098,11 @@ void PXAPI PXIndexBufferPrepare(PXIndexBuffer* const pxIndexBuffer, const PXSize
         amountMaterials
     );
 #endif
+}
+
+PXBool PXAPI PXIndexBufferIsUsed(const PXIndexBuffer* const pxIndexBuffer)
+{
+    return pxIndexBuffer->Info.Handle.OpenGLID != 0;
 }
 
 PXSize PXAPI PXMeshTriangleAmount(PXMesh* const pxMesh)
@@ -2227,10 +2233,6 @@ void PXAPI PXModelFormatTransmute(PXModel* const pxModel, PXModelFormatTransmute
             newFomatText
         );
 #endif
-
-    }
-    else
-    {
 
     }
 

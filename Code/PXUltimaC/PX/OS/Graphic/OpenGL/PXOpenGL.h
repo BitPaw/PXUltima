@@ -719,6 +719,8 @@ typedef void (PXOpenGLAPI* PXOpenGLUniformMatrix2fvFunction)(GLint location, GLs
 typedef void (PXOpenGLAPI* PXOpenGLUniformMatrix3fvFunction)(GLint location, GLsizei count, GLboolean transpose, const PXF32* value);
 typedef void (PXOpenGLAPI* PXOpenGLUniformMatrix4fvFunction)(GLint location, GLsizei count, GLboolean transpose, const PXF32* value);
 
+typedef void (PXOpenGLAPI* PXOpenGLBufferDataSubFunction)(GLenum target, GLintptr offset, GLsizeiptr size, const void* data); // glBufferSubData
+
 //typedef void (PXOpenGLAPI* PXOpenGLTextureCreateFunction)(GLsizei n, GLuint* textures); // glGenTextures
 //typedef void (PXOpenGLAPI* PXOpenGLTextureBindFunction)(GLenum target, GLuint texture); // glBindTexture
 //typedef void (PXOpenGLAPI* PXOpenGLTextureDeleteFunction)(GLsizei n, const GLuint* textures); // glDeleteTextures
@@ -745,6 +747,7 @@ typedef void (PXOpenGLAPI* PXOpenGLBindVertexArrayFunction)(GLuint arrayID);
 typedef void (PXOpenGLAPI* PXOpenGLVertexAttribIPointerFunction)(GLuint index, GLint size, GLenum type, GLsizei stride, const void* pointer);
 typedef const GLubyte* (PXOpenGLAPI* PXOpenGLStringIFunction)(GLenum name, GLuint index); // glGetStringi
 typedef void (PXOpenGLAPI* PXOpenGLBufferBindBaseFunction)(GLenum target, GLuint index, GLuint buffer); // glBindBufferBase
+
 
 //-------------------------------------------------------------------------
 
@@ -1359,6 +1362,7 @@ typedef struct PXOpenGLBinding_
     PXOpenGLViewportFunction       Viewport;
     PXOpenGLShaderStorageBlockBindingFunction ShaderStorageBlockBinding;
     PXOpenGLBufferBindBaseFunction BufferBindBase;
+    PXOpenGLBufferDataSubFunction BufferDataSub;
 
 #if OSUnix
 

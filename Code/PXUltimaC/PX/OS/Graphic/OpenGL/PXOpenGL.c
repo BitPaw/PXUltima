@@ -452,6 +452,7 @@ const char PXOpenGLBindingList[] =
 "glViewport\0"
 "glShaderStorageBlockBinding\0"
 "glBindBufferBase\0"
+"glBufferSubData\0"
 
 #if OSUnix // Linux - X-System
 "glXChooseVisual\0"
@@ -3485,7 +3486,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
         
         if(pxIndexBuffer->DataIndexPosition)
         {
-            pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->Info.Handle.OpenGLID);
+           ///// pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->Info.Handle.OpenGLID);
         }
     }
     else
@@ -3493,7 +3494,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
         if(supportBuffers)
         {
             //pxOpenGL->Binding.BufferBind(GL_ARRAY_BUFFER, pxVertexBuffer->Info.Handle.OpenGLID); // Select VBO
-            pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->Info.Handle.OpenGLID); // Select IBO
+           //// pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->Info.Handle.OpenGLID); // Select IBO
 
            // assert(indexBufferTypeID != -1);
 
@@ -3727,167 +3728,160 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
     const GLenum indexDataType = PXOpenGLTypeToID(pxIndexBuffer->IndexDataType);
     const PXInt8U indexTypeSize = PXTypeSizeGet(pxIndexBuffer->IndexDataType);
 
-        const PXBool renderSegmented = pxIndexBuffer->SegmentListAmount > 1;
-        const PXBool hasIndexBuffer = (PXInt32U)-1 != pxIndexBuffer->Info.Handle.OpenGLID;
+    const PXBool renderSegmented = pxIndexBuffer->SegmentListAmount > 1;
+    const PXBool hasIndexBuffer = PXIndexBufferIsUsed(pxIndexBuffer);
 
-        unsigned short modeAmount = 0;
-        unsigned short modeCache[5];
+    unsigned short modeAmount = 0;
+    unsigned short modeCache[5];
 
-        if(PXDrawModeIDTriangle & pxIndexBuffer->DrawModeID)
+    if(PXDrawModeIDTriangle & pxIndexBuffer->DrawModeID)
+    {
+        modeCache[modeAmount] = GL_TRIANGLES;
+        ++modeAmount;
+    }
+
+    if(PXDrawModeIDLineLoop & pxIndexBuffer->DrawModeID)
+    {
+        modeCache[modeAmount] = GL_LINE_LOOP;
+        ++modeAmount;
+    }
+
+    if(PXDrawModeIDPoint & pxIndexBuffer->DrawModeID)
+    {
+        modeCache[modeAmount] = GL_POINTS;
+        ++modeAmount;
+    }
+
+    if(renderSegmented)
+    {
+        PXSize renderOffset = 0;
+
+        for(PXSize i = 0; i < pxIndexBuffer->SegmentListAmount; ++i)
         {
-            modeCache[modeAmount] = GL_TRIANGLES;
-            ++modeAmount;
-        }
+            PXIndexSegment* const pxIndexSegment = &pxIndexBuffer->SegmentList[i];
+            PXTexture2D* pxTexture = 0;
 
-        if(PXDrawModeIDLineLoop & pxIndexBuffer->DrawModeID)
-        {
-            modeCache[modeAmount] = GL_LINE_LOOP;
-            ++modeAmount;
-        }
-
-        if(PXDrawModeIDPoint & pxIndexBuffer->DrawModeID)
-        {
-            modeCache[modeAmount] = GL_POINTS;
-            ++modeAmount;
-        }
-
-        if(renderSegmented)
-        {
-            PXSize renderOffset = 0;
-
-            for(PXSize i = 0; i < pxIndexBuffer->SegmentListAmount; ++i)
+            if(pxIndexSegment->Material)
             {
-                PXIndexSegment* const pxIndexSegment = &pxIndexBuffer->SegmentList[i];
-                PXTexture2D* pxTexture = 0;
+                pxTexture = pxIndexSegment->Material->DiffuseTexture;
+            }
 
-                if(pxIndexSegment->Material)
-                {
-                    pxTexture = pxIndexSegment->Material->DiffuseTexture;
-                }
+            if(pxTexture)
+            {
+                pxOpenGL->Binding.Enable(GL_TEXTURE_2D);
+                pxOpenGL->Binding.TextureSlotActive(GL_TEXTURE0);
+                pxOpenGL->Binding.TextureBind(GL_TEXTURE_2D, pxTexture->Info.Handle.OpenGLID);
+            }
+            else
+            {
+                pxOpenGL->Binding.TextureSlotActive(GL_TEXTURE0);
+                pxOpenGL->Binding.TextureBind(GL_TEXTURE_2D, PXNull);
+                pxOpenGL->Binding.Disable(GL_TEXTURE_2D);
+            }
 
-                if(pxTexture)
+
+            const unsigned short drawModeFill[] = { GL_FILL, GL_LINE };
+
+
+            for(size_t f = 0; f < 2; f++)
+            {
+                pxOpenGL->Binding.PolygonMode(GL_FRONT_AND_BACK, drawModeFill[f]);
+
+                if(f == 1)
                 {
-                    pxOpenGL->Binding.Enable(GL_TEXTURE_2D);
-                    pxOpenGL->Binding.TextureSlotActive(GL_TEXTURE0);
-                    pxOpenGL->Binding.TextureBind(GL_TEXTURE_2D, pxTexture->Info.Handle.OpenGLID);
-                }
-                else
-                {
-                    pxOpenGL->Binding.TextureSlotActive(GL_TEXTURE0);
                     pxOpenGL->Binding.TextureBind(GL_TEXTURE_2D, PXNull);
                     pxOpenGL->Binding.Disable(GL_TEXTURE_2D);
                 }
 
-                
-                const unsigned short drawModeFill[] = { GL_FILL, GL_LINE };
-
-
-                for(size_t f = 0; f < 2; f++)
+                for(PXSize r = 0; r < modeAmount; ++r)
                 {
-                    pxOpenGL->Binding.PolygonMode(GL_FRONT_AND_BACK, drawModeFill[f]);
-
-                    if(f==1)
+                    if(hasIndexBuffer) // Does this index array exist?
                     {
-                        pxOpenGL->Binding.TextureBind(GL_TEXTURE_2D, PXNull);
-                        pxOpenGL->Binding.Disable(GL_TEXTURE_2D);
+                        // Render with an index buffer
+                        pxOpenGL->Binding.DrawElements(modeCache[r], pxIndexSegment->DataRange * indexTypeSize, indexDataType, renderOffset);
                     }
-
-                    for(PXSize r = 0; r < modeAmount; ++r)
+                    else
                     {
-                        if(hasIndexBuffer) // Does this index array exist?
-                        {
-                            // Render with an index buffer
-                            pxOpenGL->Binding.DrawElements(modeCache[r], pxIndexSegment->DataRange * indexTypeSize, indexDataType, renderOffset);
-                        }
-                        else
-                        {
-                            // Render withoút an index buffer
-                            pxOpenGL->Binding.DrawArrays(modeCache[r], renderOffset, pxIndexSegment->DataRange * indexTypeSize);
-                        }
+                        // Render withoút an index buffer
+                        pxOpenGL->Binding.DrawArrays(modeCache[r], renderOffset, pxIndexSegment->DataRange * indexTypeSize);
                     }
                 }
+            }
 
-                renderOffset += pxIndexSegment->DataRange * indexTypeSize;
+            renderOffset += pxIndexSegment->DataRange * indexTypeSize;
+        }
+    }
+    else
+    {
+        const PXIndexSegment* const pxIndexSegment = &pxIndexBuffer->SegmentPrime;
+
+        PXMaterial* pxMaterial = pxIndexSegment->Material;
+
+        if(pxRenderEntity->MaterialOverride)
+        {
+            pxMaterial = pxRenderEntity->MaterialOverride;
+        }
+
+        if(pxMaterial)
+        {
+            PXShaderVariable pxShaderVariableList[3];
+            PXClearList(PXShaderVariable, pxShaderVariableList, 3);
+
+            PXTextCopyA("Material.Ambient", 17, pxShaderVariableList[0].Name, 64);
+            pxShaderVariableList[0].Amount = 1;
+            pxShaderVariableList[0].Data = pxMaterial->Ambient;
+            pxShaderVariableList[0].DataType = PXShaderVariableTypePXF32Vector4;
+
+            PXTextCopyA("Material.Diffuse", 17, pxShaderVariableList[1].Name, 64);
+            pxShaderVariableList[1].Amount = 1;
+            pxShaderVariableList[1].Data = pxMaterial->Diffuse;
+            pxShaderVariableList[1].DataType = PXShaderVariableTypePXF32Vector4;
+
+            PXTextCopyA("Material.Specular", 18, pxShaderVariableList[2].Name, 64);
+            pxShaderVariableList[2].Amount = 1;
+            pxShaderVariableList[2].Data = pxMaterial->Specular;
+            pxShaderVariableList[2].DataType = PXShaderVariableTypePXF32Vector4;
+
+            // PXTextCopyA("MaterialTexture", 16, pxShaderVariableList[2].Name, 64);
+            // pxShaderVariableList[3].Amount = 1;
+            //  pxShaderVariableList[3].Data = pxMaterial->Specular;
+            // pxShaderVariableList[3].DataType = PXShaderVariableTypeSampler2DF;
+
+            PXOpenGLShaderVariableSet(pxOpenGL, pxShaderProgram, pxShaderVariableList, 3);
+
+
+            PXTexture2D* pxTexture = pxMaterial->DiffuseTexture;
+
+            if(pxRenderEntity->Texture2DOverride)
+            {
+                pxTexture = pxRenderEntity->Texture2DOverride;
+            }
+
+            if(pxTexture)
+            {
+                pxOpenGL->Binding.Enable(GL_TEXTURE_2D);
+                pxOpenGL->Binding.TextureBind(GL_TEXTURE_2D, pxTexture->Info.Handle.OpenGLID);
+            }
+            else
+            {
+                pxOpenGL->Binding.TextureBind(GL_TEXTURE_2D, PXNull);
+                pxOpenGL->Binding.Disable(GL_TEXTURE_2D);
             }
         }
         else
         {
-            const PXIndexSegment* const pxIndexSegment = &pxIndexBuffer->SegmentPrime;
-
-            PXMaterial* pxMaterial = pxIndexSegment->Material;
-
-            if(pxRenderEntity->MaterialOverride)
-            {
-                pxMaterial = pxRenderEntity->MaterialOverride;
-            }
-
-            if(pxMaterial)
-            {
-                PXShaderVariable pxShaderVariableList[3];
-                PXClearList(PXShaderVariable, pxShaderVariableList, 3);
-
-                PXTextCopyA("Material.Ambient", 17, pxShaderVariableList[0].Name, 64);
-                pxShaderVariableList[0].Amount = 1;
-                pxShaderVariableList[0].Data = pxMaterial->Ambient;
-                pxShaderVariableList[0].DataType = PXShaderVariableTypePXF32Vector4;
-
-                PXTextCopyA("Material.Diffuse", 17, pxShaderVariableList[1].Name, 64);
-                pxShaderVariableList[1].Amount = 1;
-                pxShaderVariableList[1].Data = pxMaterial->Diffuse;
-                pxShaderVariableList[1].DataType = PXShaderVariableTypePXF32Vector4;
-
-                PXTextCopyA("Material.Specular", 18, pxShaderVariableList[2].Name, 64);
-                pxShaderVariableList[2].Amount = 1;
-                pxShaderVariableList[2].Data = pxMaterial->Specular;
-                pxShaderVariableList[2].DataType = PXShaderVariableTypePXF32Vector4;
-
-                // PXTextCopyA("MaterialTexture", 16, pxShaderVariableList[2].Name, 64);
-                // pxShaderVariableList[3].Amount = 1;
-                //  pxShaderVariableList[3].Data = pxMaterial->Specular;
-                // pxShaderVariableList[3].DataType = PXShaderVariableTypeSampler2DF;
-
-                PXOpenGLShaderVariableSet(pxOpenGL, pxShaderProgram, pxShaderVariableList, 3);
-
-
-                PXTexture2D* pxTexture = pxMaterial->DiffuseTexture;
-
-                if(pxRenderEntity->Texture2DOverride)
-                {
-                    pxTexture = pxRenderEntity->Texture2DOverride;
-                }
-
-                if(pxTexture)
-                {
-                    pxOpenGL->Binding.Enable(GL_TEXTURE_2D);
-                    pxOpenGL->Binding.TextureBind(GL_TEXTURE_2D, pxTexture->Info.Handle.OpenGLID);
-                }
-                else
-                {
-                    pxOpenGL->Binding.TextureBind(GL_TEXTURE_2D, PXNull);
-                    pxOpenGL->Binding.Disable(GL_TEXTURE_2D);
-                }
-            }
-            else
-            {
-                // Has no material
-
-
-            }
-
-            if(hasNoIndexArray)
-            {
-                pxOpenGL->Binding.DrawArrays(GL_TRIANGLES, 0, drawElementsCount);
-            }
-            else
-            {
-                pxOpenGL->Binding.DrawElements(GL_TRIANGLES, drawElementsCount, indexBufferTypeID, 0);
-            }
+            // Has no material
         }
-   
 
-
-
-   
+        if(hasNoIndexArray)
+        {
+            pxOpenGL->Binding.DrawArrays(GL_TRIANGLES, 0, drawElementsCount);
+        }
+        else
+        {
+            pxOpenGL->Binding.DrawElements(GL_TRIANGLES, drawElementsCount, indexBufferTypeID, 0);
+        }
+    }   
     //-----------------------------------------------------
 
 
@@ -5776,7 +5770,7 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, const PXRenderEntity* co
 
     if(pxIndexBuffer->DrawModeID & PXDrawModeIDTriangle)
     {
-        pxOpenGL->Binding.DrawElements(GL_TRIANGLES, drawElementsCount, GL_UNSIGNED_BYTE, indexBuffer);
+     //   pxOpenGL->Binding.DrawElements(GL_TRIANGLES, drawElementsCount, GL_UNSIGNED_BYTE, indexBuffer);
     }
 
 
@@ -6996,7 +6990,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
         //-------------------------------------------------
         if(hasIndexData)
         {
-            pxIndexBuffer->Info.Handle.OpenGLID = bufferIDs[indexCounter++];
+          //  pxIndexBuffer->Info.Handle.OpenGLID = bufferIDs[indexCounter++];
 
 #if PXLogEnable
             PXLogPrint
@@ -7103,13 +7097,13 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
 #endif
 
             // Select
-            pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->Info.Handle.OpenGLID);
+            //pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->Info.Handle.OpenGLID);
 
             // Define data layout?
             // NO!, we actually define the type when we draw. Because of opengl design
 
             // Upload
-            pxOpenGL->Binding.BufferData(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->DataIndexSizeSegment, pxIndexBuffer->DataIndexPosition, GL_STATIC_DRAW);
+          //  pxOpenGL->Binding.BufferData(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->DataIndexSizeSegment, pxIndexBuffer->DataIndexPosition, GL_STATIC_DRAW);
 
             // Unselect. not needed if VAO are supported
             //pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -7171,38 +7165,132 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
             PXVertexBuffer* const pxVertexBufferNormal = &pxMesh->VertexBufferList[1];
             PXVertexBuffer* const pxVertexBufferTexture = &pxMesh->VertexBufferList[2];
       
-        
-            pxOpenGL->Binding.BufferBind(GL_ARRAY_BUFFER, pxVertexBufferPosition->Info.Handle.OpenGLID);
-            pxOpenGL->Binding.BufferData(GL_ARRAY_BUFFER, pxVertexBufferPosition->VertexDataSize, pxVertexBufferPosition->VertexData, GL_STATIC_DRAW);
+            PXIndexBuffer* const pxIndexBuffer = &pxModel->Mesh.IndexBuffer;
 
-            const PXInt8U sizePerVertex = PXVertexBufferFormatSizePerVertex(pxVertexBufferPosition->Format);
+            const PXSize vertexTypeSize = 4;
+            const PXSize vertexStride = vertexTypeSize *(3+3+2);
+            const PXSize indexTypeSize = PXTypeSizeGet(pxIndexBuffer->IndexDataType);
+
+            void* indexVertex = pxIndexBuffer->DataIndexPosition;
+            void* indexNormal = pxIndexBuffer->DataIndexNormal;
+            void* indexTexture = pxIndexBuffer->DataIndexTexturePos;
+
+
+            PXSize vertexDataInterleavedSize = pxIndexBuffer->DataIndexAmount * vertexStride;
+
+            pxOpenGL->Binding.BufferBind(GL_ARRAY_BUFFER, pxVertexBufferPosition->Info.Handle.OpenGLID);
+            pxOpenGL->Binding.BufferData
+            (
+                GL_ARRAY_BUFFER, 
+                vertexDataInterleavedSize,
+                0,
+                GL_STATIC_DRAW
+            );
+
+           // const PXInt8U sizePerVertex = PXVertexBufferFormatSizePerVertex(pxVertexBufferPosition->Format);
             const GLenum openGLType = PXOpenGLTypeIDFromFormat(pxVertexBufferPosition->Format);
 
-            pxOpenGL->Binding.VertexAttribPointer(0, sizePerVertex, openGLType, GL_FALSE, 0, 0);
+            pxOpenGL->Binding.VertexAttribPointer(0, 3, openGLType, GL_FALSE, vertexStride, 0);
             pxOpenGL->Binding.VertexAttribArrayEnable(0);
 
-
-            // Index
-            
-            pxOpenGL->Binding.BufferBind(GL_ARRAY_BUFFER, pxVertexBufferNormal->Info.Handle.OpenGLID);
-            pxOpenGL->Binding.BufferData(GL_ARRAY_BUFFER, pxIndexBuffer->DataIndexSizeSegment, pxIndexBuffer->DataIndexNormal, GL_STATIC_DRAW);
-            pxOpenGL->Binding.VertexAttribPointer(1, 1, GL_UNSIGNED_SHORT, GL_FALSE, 0, 0);
+            pxOpenGL->Binding.VertexAttribPointer(1, 3, openGLType, GL_FALSE, vertexStride, vertexTypeSize *3);
             pxOpenGL->Binding.VertexAttribArrayEnable(1);
 
-            // Index
-            pxOpenGL->Binding.BufferBind(GL_ARRAY_BUFFER, pxVertexBufferTexture->Info.Handle.OpenGLID);
-            pxOpenGL->Binding.BufferData(GL_ARRAY_BUFFER, pxIndexBuffer->DataIndexSizeSegment, pxIndexBuffer->DataIndexTexturePos, GL_STATIC_DRAW);
-            pxOpenGL->Binding.VertexAttribPointer(2, 1, GL_UNSIGNED_SHORT, GL_FALSE, 0, 0);
+            pxOpenGL->Binding.VertexAttribPointer(2, 2, openGLType, GL_FALSE, vertexStride, vertexTypeSize * (3+3));
             pxOpenGL->Binding.VertexAttribArrayEnable(2);
+       
 
 
+            //PXByte vertexDataCache[(3 + 3 + 2) * sizeof(PXF32)];
+            PXF32 vertexDataCache[(3 + 3 + 2)];
+            PXSize vertexDataCacheOffset = 0;
 
-            // Data
-            PXOpenGKShaderDataBufferCreate(pxOpenGL, &pxVertexBufferNormal->DataBuffer, pxVertexBufferNormal->VertexDataSize, pxVertexBufferNormal->VertexData);
+            PXSize globalOffset = 0;
+            PXSize indexOffset = 0;
 
-            // Data
-            PXOpenGKShaderDataBufferCreate(pxOpenGL, &pxVertexBufferTexture->DataBuffer, pxVertexBufferTexture->VertexDataSize, pxVertexBufferTexture->VertexData);
-                        
+            for(PXSize segmentIndex = 0; segmentIndex < pxIndexBuffer->SegmentListAmount; ++segmentIndex)
+            {
+                PXIndexSegment* const pxIndexSegment = &pxIndexBuffer->SegmentList[segmentIndex];
+
+                const PXSize range = pxIndexSegment->DataRange;
+
+                for(PXSize i = 0; i < range; ++i)
+                {
+                    //for(size_t rr = 0; rr < 3; rr++)
+                    {
+
+                        PXInt16U dataIndexVertex = *(PXInt16U*)((PXByte*)indexVertex + (indexTypeSize * indexOffset));
+                        PXInt16U dataIndexNormal = *(PXInt16U*)((PXByte*)indexNormal + (indexTypeSize * indexOffset));
+                        PXInt16U dataIndexTexture = *(PXInt16U*)((PXByte*)indexTexture + (indexTypeSize * indexOffset));
+
+                        void* dataVertex = (PXByte*)pxVertexBufferPosition->VertexData + (vertexTypeSize * dataIndexVertex * 3);
+                        void* dataNormal = (PXByte*)pxVertexBufferNormal->VertexData + (vertexTypeSize * dataIndexNormal * 3);
+                        void* dataTexture = (PXByte*)pxVertexBufferTexture->VertexData + (vertexTypeSize * dataIndexTexture * 2);
+
+                        vertexDataCacheOffset += PXMemoryCopy(dataVertex, vertexTypeSize * 3, (PXByte*)vertexDataCache + vertexDataCacheOffset, 100);
+                        vertexDataCacheOffset += PXMemoryCopy(dataNormal, vertexTypeSize * 3, (PXByte*)vertexDataCache + vertexDataCacheOffset, 100);
+                        vertexDataCacheOffset += PXMemoryCopy(dataTexture, vertexTypeSize * 2, (PXByte*)vertexDataCache + vertexDataCacheOffset, 100);
+
+
+                        if(segmentIndex == (pxIndexBuffer->SegmentListAmount -1))
+                        {
+#if PXLogEnable
+                            int progress = (globalOffset / (float)vertexDataInterleavedSize) * 100;
+
+                            PXLogPrint
+                            (
+                                PXLoggingInfo,
+                                PXOpenGLName,
+                                PXOpenGLModelName,
+                                "| %4i/%4i/%4i | %10.6f %10.6f %10.6f | %10.6f %10.6f %10.6f | %10.6f %10.6f |",
+                                dataIndexVertex + 1,
+                                dataIndexNormal + 1,
+                                dataIndexTexture + 1,
+
+                                vertexDataCache[0],
+                                vertexDataCache[1],
+                                vertexDataCache[2],
+                                vertexDataCache[3],
+                                vertexDataCache[4],
+                                vertexDataCache[5],
+                                vertexDataCache[6],
+                                vertexDataCache[7]
+                            );
+#endif
+                        }
+
+
+                        pxOpenGL->Binding.BufferDataSub(GL_ARRAY_BUFFER, globalOffset, (GLsizeiptr)vertexDataCacheOffset, vertexDataCache);
+
+                        globalOffset += vertexDataCacheOffset;
+                        vertexDataCacheOffset = 0;
+                        ++indexOffset;
+                    }        
+                }             
+
+                // Mark as usable!
+
+#if PXLogEnable
+                int progress = (globalOffset / (float)vertexDataInterleavedSize) * 100;
+
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    PXOpenGLName,
+                    PXOpenGLModelName,
+                    "Segment:<%2i/%2i> ready! %7i/%7i (%3i)",
+                    segmentIndex+1,
+                    pxIndexBuffer->SegmentListAmount,
+                    globalOffset,
+                    vertexDataInterleavedSize,
+                    progress
+                );
+#endif
+            }
+       
+
+        
+          
         }
     }
 

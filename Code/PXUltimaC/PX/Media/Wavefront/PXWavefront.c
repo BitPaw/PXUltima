@@ -739,7 +739,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
                             PXIndexSegment* const pxIndexSegmentPrevious = &pxModel->Mesh.IndexBuffer.SegmentList[counter.MaterialUse - 1];
                             
                             pxIndexSegmentPrevious->DataRange = counter.Face - counter.FaceLast;
-                            pxIndexSegmentLast->DataRange = counter.FaceTotal - counter.FaceLast;
+                            pxIndexSegmentLast->DataRange = PXMathAbsoluteI32(counter.Face - counter.FaceTotal);
 
                            counter.FaceLast = counter.Face;
                         }
@@ -894,16 +894,31 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
     {
         PXIndexSegment* const pxIndexSegment = &mesh->IndexBuffer.SegmentList[i];
 
+        char materialText[256];
+
+        if(pxIndexSegment->Material)
+        {
+            char* name = 0;
+
+            PXResourceFetchName(&pxIndexSegment->Material->Info, &name, PXNull);
+
+            PXTextPrintA(materialText, 256, "PXID:%i, Name:%s", pxIndexSegment->Material->Info.ID, name);
+        }
+        else
+        {
+            PXTextPrintA(materialText, 256, "**No material**");
+        }
+
         PXLogPrint
         (
             PXLoggingInfo,
             PXWaveFrontText,
             "Segment",
-            "[%2i/%2i] %6i - %p",
+            "[%2i/%2i] %6i - %s",
             i+1,
             mesh->IndexBuffer.SegmentListAmount,
             pxIndexSegment->DataRange,
-            pxIndexSegment->Material
+            materialText
         );
     }
 #endif

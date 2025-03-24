@@ -121,7 +121,11 @@ void PXAPI PXListDynamicGet(PXListDynamic* const pxListDynamic, const void* cons
 
         if(isTarget)
         {
-            *dataSize = dataLength;
+            if(dataSize)
+            {
+                *dataSize = dataLength;
+            }
+
             *data = dataCursor;
 
             return;
@@ -130,8 +134,12 @@ void PXAPI PXListDynamicGet(PXListDynamic* const pxListDynamic, const void* cons
         dataCursor += dataLength + 1;
     }
 
+    if(dataSize)
+    {
+        *dataSize = 0;
+    }
+
     *data = 0;
-    *dataSize = 0;
 }
 
 void PXAPI PXListDynamicInit(PXListDynamic* const pxListDynamic, const PXSize keySize, const PXInt8U sizeInBytes)
