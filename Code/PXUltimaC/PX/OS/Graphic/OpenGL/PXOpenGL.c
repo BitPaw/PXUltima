@@ -3469,6 +3469,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
     const PXBool supportVAO = pxOpenGL->Binding.VertexArrayBind != PXNull;
     const PXBool supportBuffers = pxOpenGL->Binding.BufferBind != PXNull;
     const PXInt32U indexBufferTypeID = PXOpenGLTypeToID(pxIndexBuffer->IndexDataType);
+    const PXBool hasIndexBuffer = PXIndexBufferIsUsed(pxIndexBuffer);
 
     void* indexData = 0;
 
@@ -3484,9 +3485,13 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
             pxOpenGL->Binding.BufferBind(GL_ARRAY_BUFFER, pxVertexBuffer->Info.Handle.OpenGLID);
         }*/
         
-        if(pxIndexBuffer->DataIndexPosition)
+        if(hasIndexBuffer)
         {
-           ///// pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->Info.Handle.OpenGLID);
+            pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->Info.Handle.OpenGLID);
+        }
+        else
+        {
+            pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, 0);
         }
     }
     else
@@ -3724,12 +3729,11 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
 
 
     const GLsizei drawElementsCount = pxIndexBuffer->DataIndexSizeSegment;// / PXTypeSizeGet(pxIndexBuffer->IndexDataType);
-    const PXBool hasNoIndexArray = pxIndexBuffer->Info.Handle.OpenGLID == -1;
     const GLenum indexDataType = PXOpenGLTypeToID(pxIndexBuffer->IndexDataType);
     const PXInt8U indexTypeSize = PXTypeSizeGet(pxIndexBuffer->IndexDataType);
 
     const PXBool renderSegmented = pxIndexBuffer->SegmentListAmount > 1;
-    const PXBool hasIndexBuffer = PXIndexBufferIsUsed(pxIndexBuffer);
+
 
     unsigned short modeAmount = 0;
     unsigned short modeCache[5];
@@ -3798,17 +3802,17 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
                     if(hasIndexBuffer) // Does this index array exist?
                     {
                         // Render with an index buffer
-                        pxOpenGL->Binding.DrawElements(modeCache[r], pxIndexSegment->DataRange * indexTypeSize, indexDataType, renderOffset);
+                        pxOpenGL->Binding.DrawElements(modeCache[r], pxIndexSegment->DataRange * indexTypeSize, indexDataType, renderOffset* indexTypeSize);
                     }
                     else
                     {
                         // Render withoút an index buffer
-                        pxOpenGL->Binding.DrawArrays(modeCache[r], renderOffset, pxIndexSegment->DataRange * indexTypeSize);
+                        pxOpenGL->Binding.DrawArrays(modeCache[r], renderOffset, pxIndexSegment->DataRange);
                     }
                 }
             }
 
-            renderOffset += pxIndexSegment->DataRange * indexTypeSize;
+            renderOffset += pxIndexSegment->DataRange;
         }
     }
     else
@@ -3873,7 +3877,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
             // Has no material
         }
 
-        if(hasNoIndexArray)
+        if(hasIndexBuffer)
         {
             pxOpenGL->Binding.DrawArrays(GL_TRIANGLES, 0, drawElementsCount);
         }
@@ -5770,7 +5774,7 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, const PXRenderEntity* co
 
     if(pxIndexBuffer->DrawModeID & PXDrawModeIDTriangle)
     {
-     //   pxOpenGL->Binding.DrawElements(GL_TRIANGLES, drawElementsCount, GL_UNSIGNED_BYTE, indexBuffer);
+        pxOpenGL->Binding.DrawElements(GL_TRIANGLES, drawElementsCount, GL_UNSIGNED_BYTE, indexBuffer);
     }
 
 
@@ -6949,7 +6953,9 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
     }
 
 
-    const PXBool hasIndexData = pxIndexBuffer->DataIndexSizeSegment > 0;
+    const PXBool hasIndexData = 
+        pxIndexBuffer->DataIndexSizeSegment > 0 && 
+        pxMesh->VertexBufferListAmount == 1;
 
 
     // Registering of array buffers
@@ -6990,7 +6996,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
         //-------------------------------------------------
         if(hasIndexData)
         {
-          //  pxIndexBuffer->Info.Handle.OpenGLID = bufferIDs[indexCounter++];
+            pxIndexBuffer->Info.Handle.OpenGLID = bufferIDs[indexCounter++];
 
 #if PXLogEnable
             PXLogPrint
@@ -7097,16 +7103,16 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
 #endif
 
             // Select
-            //pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->Info.Handle.OpenGLID);
+            pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->Info.Handle.OpenGLID);
 
             // Define data layout?
             // NO!, we actually define the type when we draw. Because of opengl design
 
             // Upload
-          //  pxOpenGL->Binding.BufferData(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->DataIndexSizeSegment, pxIndexBuffer->DataIndexPosition, GL_STATIC_DRAW);
+            pxOpenGL->Binding.BufferData(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->DataIndexSizeSegment, pxIndexBuffer->DataIndexPosition, GL_STATIC_DRAW);
 
             // Unselect. not needed if VAO are supported
-            //pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, 0);
+           pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, 0);
         }
     }
 
@@ -7244,8 +7250,8 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
                                 PXOpenGLModelName,
                                 "| %4i/%4i/%4i | %10.6f %10.6f %10.6f | %10.6f %10.6f %10.6f | %10.6f %10.6f |",
                                 dataIndexVertex + 1,
-                                dataIndexNormal + 1,
                                 dataIndexTexture + 1,
+                                dataIndexNormal + 1,                    
 
                                 vertexDataCache[0],
                                 vertexDataCache[1],
