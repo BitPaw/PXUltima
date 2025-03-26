@@ -5,7 +5,7 @@
 
 typedef struct PXFilmBox_
 {
-    unsigned int __dummy__;
+    PXInt32U Version;
 }
 PXFilmBox;
 

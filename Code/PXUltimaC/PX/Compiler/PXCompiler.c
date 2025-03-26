@@ -722,6 +722,25 @@ PXCompilerSymbolLexer PXAPI PXCompilerTryAnalyseType(PXFile* const tokenStream, 
 
         return PXCompilerSymbolLexerSlash;
     }
+    case '@':
+    {
+        const PXBool isFull = text[textSize - 1] == '@';
+
+        if(!isFull)
+        {
+            char* const dataAdress = compilerSymbolEntry->Source + 1u;
+            const PXSize symbolPositionQuotationMark = PXTextFindFirstCharacterA(dataAdress, compilerSymbolEntry->Size, '@');
+            const PXBool hasIndex = symbolPositionQuotationMark != (PXSize)-1;
+
+            if(!hasIndex)
+            {
+                // Error
+            }
+
+            compilerSymbolEntry->Size = symbolPositionQuotationMark + 2u;
+        }
+        return PXCompilerSymbolLexerString;
+    }
     case '\'':
     {
         const PXBool isFull = text[textSize - 1] == '\'';
@@ -737,7 +756,7 @@ PXCompilerSymbolLexer PXAPI PXCompilerTryAnalyseType(PXFile* const tokenStream, 
                 // Error
             }
 
-            compilerSymbolEntry->Size = symbolPositionQuotationMark + 2u;;
+            compilerSymbolEntry->Size = symbolPositionQuotationMark + 2u;
         }
 
         return PXCompilerSymbolLexerString;

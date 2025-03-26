@@ -658,18 +658,18 @@ void PXAPI PXTypeEntryInfo(PXTypeEntry* const pxFileDataElementType, PXText* con
             {
                 case 4:
                 {
-                    PXF32* value = (PXF32*)pxFileDataElementType->Adress;
+                    PXF32 value = *(PXF32*)pxFileDataElementType->Adress;
 
-                    textType = "PXF32";
+                    textType = "F-32-";
                     PXTextPrint(dataContent, "%f", value);
 
                     break;
                 }
                 case 8:
                 {
-                    double* value = (double*)pxFileDataElementType->Adress;
+                    PXF64 value = *(PXF64*)pxFileDataElementType->Adress;
 
-                    textType = "double";
+                    textType = "F-64-";
                     PXTextPrint(dataContent, "%lf", value);
 
                     break;

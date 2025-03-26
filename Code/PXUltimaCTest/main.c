@@ -153,7 +153,7 @@ void PXAPI Trace_FolderFiles(PXText* pxText)
 #include <PX/OS/GUI/PXGUI.h>
 #include <PX/OS/Graphic/NativDraw/PXNativDraw.h>
 #include <PX/OS/System/Driver/PXDriver.h>
-#include <Algorithm/CollatzConjecture/PXCollatzConjecture.h>
+#include <PX/Algorithm/CollatzConjecture/PXCollatzConjecture.h>
 #include <PX/OS/Library/PXLibrary.h>
 #include <PX/Math/PXMath.h>
 #include <PX/Media/PXType.h>
@@ -169,6 +169,45 @@ PXF32 calcNumbersOUT[VXSize];
 int main()
 { 
     PXConsoleWrite(0, "[i] Starting testing...\n");
+
+
+    {
+        PXModel pxModel;
+        PXClear(PXBinaryWindows, &pxModel);
+
+        PXResourceTransphereInfo pxResourceTransphereInfo;
+        PXClear(PXResourceTransphereInfo, &pxResourceTransphereInfo);
+        pxResourceTransphereInfo.ResourceTarget = &pxModel;
+
+        PXResourceLoadA(&pxResourceTransphereInfo, "P:\\_Cache\\Kitchen_set\\Kitchen_set.usd");
+    }
+
+
+    {
+        PXModel pxModel;
+        PXClear(PXBinaryWindows, &pxModel);
+
+        PXResourceTransphereInfo pxResourceTransphereInfo;
+        PXClear(PXResourceTransphereInfo, &pxResourceTransphereInfo);
+        pxResourceTransphereInfo.ResourceTarget = &pxModel;
+
+        PXResourceLoadA(&pxResourceTransphereInfo, "P:\\_Cache\\test.fbx");
+    }
+
+
+
+    PXConsoleWrite(0, "eeeeeee\n");
+
+
+
+
+
+
+
+
+
+
+
 
     int amount = 100000;
 
@@ -307,15 +346,20 @@ int main()
     }
 #endif
 
-    PXBinaryWindows pxBinaryWindows;
-    PXClear(PXBinaryWindows, &pxBinaryWindows);
+
+    {
+        PXBinaryWindows pxBinaryWindows;
+        PXClear(PXBinaryWindows, &pxBinaryWindows);
 
 
-    PXResourceTransphereInfo pxResourceTransphereInfo;
-    PXClear(PXResourceTransphereInfo, &pxResourceTransphereInfo);
-    pxResourceTransphereInfo.ResourceTarget = &pxBinaryWindows;
+        PXResourceTransphereInfo pxResourceTransphereInfo;
+        PXClear(PXResourceTransphereInfo, &pxResourceTransphereInfo);
+        pxResourceTransphereInfo.ResourceTarget = &pxBinaryWindows;
 
-    PXResourceLoadA(&pxResourceTransphereInfo, "C:\\Data\\WorkSpace\\[GIT]\\BitFireEngine\\[Export]\\BitFireEngineIDE\\64B-Windows-Debug\\BitFireEngineIDE.exe");
+        PXResourceLoadA(&pxResourceTransphereInfo, "C:\\Data\\WorkSpace\\[GIT]\\BitFireEngine\\[Export]\\BitFireEngineIDE\\64B-Windows-Debug\\BitFireEngineIDE.exe");
+
+
+    }
 
 
 

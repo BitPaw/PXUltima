@@ -178,7 +178,7 @@ void PXAPI PXXMLBlockParse(PXCodeDocument* const pxDocument, PXCompiler* const p
                         break;
 
                     case PXCompilerSymbolLexerPXF32:
-                        pxDocumentElement.ElementMember.ValueType = PXTypePXF32;
+                        pxDocumentElement.ElementMember.ValueType = PXTypeF32;
                         break;
 
                     case PXCompilerSymbolLexerInteger:

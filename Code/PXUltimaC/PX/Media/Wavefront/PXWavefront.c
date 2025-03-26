@@ -227,14 +227,6 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
 
     PXFile tokenSteam;
 
-    PXCompiler pxCompiler;
-    PXClear(PXCompiler, &pxCompiler);
-    pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileReference;
-    pxCompiler.ReadInfo.FileCache = &tokenSteam;
-    pxCompiler.Flags = PXCompilerKeepAnalyseTypes;
-    pxCompiler.CommentSingleLineSize = 1u;
-    pxCompiler.CommentSingleLine = "#";
-
     struct PXWaveFrontCounter
     {
         PXInt32U MaterialInlcude;
@@ -274,6 +266,14 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
     counter;
 
     PXMemoryClear(&counter, sizeof(counter));
+
+    PXCompiler pxCompiler;
+    PXClear(PXCompiler, &pxCompiler);
+    pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileReference;
+    pxCompiler.ReadInfo.FileCache = &tokenSteam;
+    pxCompiler.Flags = PXCompilerKeepAnalyseTypes;
+    pxCompiler.CommentSingleLineSize = 1u;
+    pxCompiler.CommentSingleLine = "#";
 
 #if PXLogEnable
     PXLogPrint

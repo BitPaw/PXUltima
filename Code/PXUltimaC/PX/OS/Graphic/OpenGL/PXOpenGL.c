@@ -6394,10 +6394,10 @@ PXInt32U PXAPI PXOpenGLTypeToID(const PXInt32U pxDataType)
         case PXTypeInt32U:
             return GL_UNSIGNED_INT;
 
-        case PXTypePXF32:
+        case PXTypeF32:
             return GL_FLOAT;
 
-        case PXTypeDouble:
+        case PXTypeF64:
             return GL_DOUBLE;
 
         default:
@@ -7221,60 +7221,27 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
                 const PXSize range = pxIndexSegment->DataRange;
 
                 for(PXSize i = 0; i < range; ++i)
-                {
-                    //for(size_t rr = 0; rr < 3; rr++)
-                    {
+                {    
+                    PXInt16U dataIndexVertex = *(PXInt16U*)((PXByte*)indexVertex + (indexTypeSize * indexOffset));
+                    PXInt16U dataIndexNormal = *(PXInt16U*)((PXByte*)indexNormal + (indexTypeSize * indexOffset));
+                    PXInt16U dataIndexTexture = *(PXInt16U*)((PXByte*)indexTexture + (indexTypeSize * indexOffset));
 
-                        PXInt16U dataIndexVertex = *(PXInt16U*)((PXByte*)indexVertex + (indexTypeSize * indexOffset));
-                        PXInt16U dataIndexNormal = *(PXInt16U*)((PXByte*)indexNormal + (indexTypeSize * indexOffset));
-                        PXInt16U dataIndexTexture = *(PXInt16U*)((PXByte*)indexTexture + (indexTypeSize * indexOffset));
+                    void* dataVertex = (PXByte*)pxVertexBufferPosition->VertexData + (vertexTypeSize * dataIndexVertex * 3);
+                    void* dataNormal = (PXByte*)pxVertexBufferNormal->VertexData + (vertexTypeSize * dataIndexNormal * 3);
+                    void* dataTexture = (PXByte*)pxVertexBufferTexture->VertexData + (vertexTypeSize * dataIndexTexture * 2);
 
-                        void* dataVertex = (PXByte*)pxVertexBufferPosition->VertexData + (vertexTypeSize * dataIndexVertex * 3);
-                        void* dataNormal = (PXByte*)pxVertexBufferNormal->VertexData + (vertexTypeSize * dataIndexNormal * 3);
-                        void* dataTexture = (PXByte*)pxVertexBufferTexture->VertexData + (vertexTypeSize * dataIndexTexture * 2);
+                    vertexDataCacheOffset += PXMemoryCopy(dataVertex, vertexTypeSize * 3, (PXByte*)vertexDataCache + vertexDataCacheOffset, 100);
+                    vertexDataCacheOffset += PXMemoryCopy(dataNormal, vertexTypeSize * 3, (PXByte*)vertexDataCache + vertexDataCacheOffset, 100);
+                    vertexDataCacheOffset += PXMemoryCopy(dataTexture, vertexTypeSize * 2, (PXByte*)vertexDataCache + vertexDataCacheOffset, 100);
 
-                        vertexDataCacheOffset += PXMemoryCopy(dataVertex, vertexTypeSize * 3, (PXByte*)vertexDataCache + vertexDataCacheOffset, 100);
-                        vertexDataCacheOffset += PXMemoryCopy(dataNormal, vertexTypeSize * 3, (PXByte*)vertexDataCache + vertexDataCacheOffset, 100);
-                        vertexDataCacheOffset += PXMemoryCopy(dataTexture, vertexTypeSize * 2, (PXByte*)vertexDataCache + vertexDataCacheOffset, 100);
+                    pxOpenGL->Binding.BufferDataSub(GL_ARRAY_BUFFER, globalOffset, (GLsizeiptr)vertexDataCacheOffset, vertexDataCache);
 
+                    globalOffset += vertexDataCacheOffset;
+                    vertexDataCacheOffset = 0;
+                    ++indexOffset;
 
-                        if(segmentIndex == (pxIndexBuffer->SegmentListAmount -1))
-                        {
-#if PXLogEnable
-                            int progress = (globalOffset / (float)vertexDataInterleavedSize) * 100;
-
-                            PXLogPrint
-                            (
-                                PXLoggingInfo,
-                                PXOpenGLName,
-                                PXOpenGLModelName,
-                                "| %4i/%4i/%4i | %10.6f %10.6f %10.6f | %10.6f %10.6f %10.6f | %10.6f %10.6f |",
-                                dataIndexVertex + 1,
-                                dataIndexTexture + 1,
-                                dataIndexNormal + 1,                    
-
-                                vertexDataCache[0],
-                                vertexDataCache[1],
-                                vertexDataCache[2],
-                                vertexDataCache[3],
-                                vertexDataCache[4],
-                                vertexDataCache[5],
-                                vertexDataCache[6],
-                                vertexDataCache[7]
-                            );
-#endif
-                        }
-
-
-                        pxOpenGL->Binding.BufferDataSub(GL_ARRAY_BUFFER, globalOffset, (GLsizeiptr)vertexDataCacheOffset, vertexDataCache);
-
-                        globalOffset += vertexDataCacheOffset;
-                        vertexDataCacheOffset = 0;
-                        ++indexOffset;
-                    }        
-                }             
-
-                // Mark as usable!
+                    // Mark as usable!                      
+                }        
 
 #if PXLogEnable
                 int progress = (globalOffset / (float)vertexDataInterleavedSize) * 100;

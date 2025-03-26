@@ -211,10 +211,10 @@ PXPublic PXSize PXAPI PXCompilerSymbolRewind(PXCompiler* const pxCompiler, const
 // Fetch next symbol without actually changing the file-cursor-position
 PXPublic PXSize PXAPI PXCompilerSymbolEntryPeek(PXCompiler* const pxCompiler);
 
-// Peek enxt symbol but also ensure it is the correct type
+// Peek next symbol but also ensure it is the correct type
 PXPublic PXBool PXAPI PXCompilerSymbolEntryPeekEnsure(PXCompiler* const pxCompiler, const PXCompilerSymbolLexer pxCompilerSymbolLexer);
 
-// Same as PXCompilerSymbolEntryPeekEnsure() but as harsh
+// Same as PXCompilerSymbolEntryPeekEnsure() but not as harsh
 PXPublic PXBool PXAPI PXCompilerSymbolEntryPeekCheck(PXCompiler* const pxCompiler, const PXCompilerSymbolLexer pxCompilerSymbolLexer);
 
 // Exact behaviour as PXCompilerSymbolEntryPeekCheck but allows a list of possible values

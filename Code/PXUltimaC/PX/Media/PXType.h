@@ -192,6 +192,11 @@
 #define PXTypeBaseBit               0b00000000110000000000000000000000 // Bits are used instead of bytes
 
 
+// Array 
+#define PXTypeIsArray               0b00000000001000000000000000000000 // Is this an array of given type?
+#define PXTypeArraySize             0b00000000000000001111111100000000 // Is this an array of given type?
+
+
 #define PXTypeVarriantMask          0b00000000000010000000000000000000
 
 // When we want to parse, we often need to check against a fixed symbol 
@@ -309,11 +314,14 @@
 #define PXTypeInt128SLE  PXTypeSize128 | PXTypeIntULE
 #define PXTypeInt128SBE  PXTypeSize128 | PXTypeIntUBE
 
+// Float 16-Bit
+#define PXTypeF16 PXTypeSize16 | PXTypeBaseDecimal
+
 // PXF32 32-Bit
-#define PXTypePXF32 PXTypeSize32 | PXTypeBaseDecimal
+#define PXTypeF32 PXTypeSize32 | PXTypeBaseDecimal
 
 // PXF32 64-Bit
-#define PXTypeDouble PXTypeSize64 | PXTypeBaseDecimal
+#define PXTypeF64 PXTypeSize64 | PXTypeBaseDecimal
 
 // System depended
 #define PXTypeSize PXTypeInt64U

@@ -744,7 +744,7 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler
             {
                 PXCompilerSymbolEntryExtract(pxCompiler); // consume "const"
 
-                pxCodeDocumentElement->DataType |= PXTypePXF32;
+                pxCodeDocumentElement->DataType |= PXTypeF32;
 
                 pxCodeDocumentElement->DataTypeIsBuildIn = PXTrue;
 
@@ -756,7 +756,7 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler
             {
                 PXCompilerSymbolEntryExtract(pxCompiler); // consume "const"
 
-                pxCodeDocumentElement->DataType |= PXTypeDouble;
+                pxCodeDocumentElement->DataType |= PXTypeF64;
 
                 pxCodeDocumentElement->DataTypeIsBuildIn = PXTrue;
 

@@ -735,7 +735,7 @@ PXActionResult PXAPI PXDocumentPrintNode(PXCodeDocumentElement* const pxDocument
         PXTextPrintA(valueBuffer, 64, "%s", value ? "true" : "false");
         break;
     }
-    case PXTypePXF32:
+    case PXTypeF32:
     {
         PXF32 value;
         PXCopy(PXF32, &pxDocumentElement->ElementMember.ValueAdress, &value);
