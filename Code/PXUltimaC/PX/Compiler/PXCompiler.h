@@ -233,6 +233,20 @@ PXPublic PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxComp
 PXPublic PXBool PXAPI PXCompilerParseStringUntilNewLine(PXCompiler* const pxCompiler, PXText* const pxText);
 PXPublic PXBool PXAPI PXCompilerParseStringUntilNewLineA(PXCompiler* const pxCompiler, char* const text, const PXSize textMaxSize, PXSize* const textSize);
 
+// Expect a generic token and compare it against provided text
+PXPublic PXBool PXAPI PXCompilerEnsureTextAndCompare(PXCompiler* const pxCompiler, const char* const text, const PXSize textSize);
+
+
+PXPublic PXBool PXAPI PXCompilerEnsurePropertyText
+(
+    PXCompiler* const pxCompiler,
+    const char* const propertyKey,
+    const PXSize propertyKeySize,
+    char* const propertyValue, 
+    PXSize* propertyValueSize
+);
+
+
 PXPublic PXBool PXAPI PXCompilerParseF16V(PXCompiler* const pxCompiler, PXF16* const values, const PXSize valuesMaxSize, PXSize* const valuesSize);
 PXPublic PXBool PXAPI PXCompilerParseF32V(PXCompiler* const pxCompiler, PXF32* const values, const PXSize valuesMaxSize, PXSize* const valuesSize);
 

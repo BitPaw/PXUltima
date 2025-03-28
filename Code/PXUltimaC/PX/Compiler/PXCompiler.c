@@ -1306,6 +1306,74 @@ PXBool PXAPI PXCompilerParseStringUntilNewLineA(PXCompiler* const pxCompiler, ch
     return result;
 }
 
+PXBool PXAPI PXCompilerEnsureTextAndCompare(PXCompiler* const pxCompiler, const char* const text, const PXSize textSize)
+{
+    const PXBool isText = PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerGeneric);
+
+    if(!isText)
+    {
+        return PXFalse;
+    }
+
+    const PXBool isxform = PXTextCompareA
+    (
+        pxCompiler->ReadInfo.SymbolEntryCurrent.Source,
+        pxCompiler->ReadInfo.SymbolEntryCurrent.Size,
+        text,
+        textSize
+    );
+
+    return isxform;
+}
+
+PXBool PXAPI PXCompilerEnsurePropertyText
+(
+    PXCompiler* const pxCompiler,
+    const char* const propertyKey,
+    const PXSize propertyKeySize,
+    char* const propertyValue,
+    PXSize* propertyValueSize
+)
+{
+    // Key
+    const PXBool isTarget = PXCompilerEnsureTextAndCompare(pxCompiler, propertyKey, propertyKeySize);
+
+    if(!isTarget)
+    {
+        return PXFalse;
+    }   
+
+    // Equal
+    PXCompilerSymbolEntryForward(pxCompiler);
+
+    const PXBool isEqual = PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerEqual);
+
+    if(!isEqual)
+    {
+        return PXFalse;
+    }
+
+    // Value
+    PXCompilerSymbolEntryForward(pxCompiler);
+
+    const PXBool isString = PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerString);
+
+    if(!isString)
+    {
+        return PXFalse;
+    }
+
+    *propertyValueSize = PXTextCopyA
+    (
+        pxCompiler->ReadInfo.SymbolEntryCurrent.Source,
+        pxCompiler->ReadInfo.SymbolEntryCurrent.Size,
+        propertyValue,
+        pxCompiler->ReadInfo.SymbolEntryCurrent.Size
+    );
+
+    return PXTrue;
+}
+
 PXBool PXAPI PXCompilerParseF32(PXCompiler* const pxCompiler, PXF32* const values)
 {
     PXCompilerSymbolEntryPeek(pxCompiler);

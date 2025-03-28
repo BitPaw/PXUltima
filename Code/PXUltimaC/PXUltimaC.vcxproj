@@ -239,6 +239,7 @@
     <ClCompile Include="PX\Media\LAME\PXLAME.c" />
     <ClCompile Include="PX\Media\LDAP\PXLDAP.c" />
     <ClCompile Include="PX\Media\Lua\PXLua.c" />
+    <ClCompile Include="PX\Media\LZ4\PXLZ4.c" />
     <ClCompile Include="PX\Media\LZ77\PXLZ77.c" />
     <ClCompile Include="PX\Media\M4V\PXM4V.c" />
     <ClCompile Include="PX\Media\Markdown\PXMarkdown.c" />
@@ -362,7 +363,7 @@
     <ClCompile Include="PX\Service\LDAP\PXLDAPClient.c" />
     <ClCompile Include="PX\Service\SBP\PXSBP.c" />
   </ItemGroup>
-  <ItemGroup>   
+  <ItemGroup>
     <ClInclude Include="PX\Algorithm\BubbleSort\PXBubbleSort.h" />
     <ClInclude Include="PX\Algorithm\CollatzConjecture\PXCollatzConjecture.h" />
     <ClInclude Include="PX\Algorithm\Dijkstra\PXDijkstra.h" />
@@ -441,6 +442,7 @@
     <ClInclude Include="PX\Media\LAME\PXLAME.h" />
     <ClInclude Include="PX\Media\LDAP\PXLDAP.h" />
     <ClInclude Include="PX\Media\Lua\PXLua.h" />
+    <ClInclude Include="PX\Media\LZ4\PXLZ4.h" />
     <ClInclude Include="PX\Media\LZ77\PXLZ77.h" />
     <ClInclude Include="PX\Media\M4V\PXM4V.h" />
     <ClInclude Include="PX\Media\Markdown\PXMarkdown.h" />

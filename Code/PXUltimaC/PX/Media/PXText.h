@@ -234,6 +234,8 @@ PXPublic PXSize PXAPI PXTextCountUntilW(const wchar_t* PXText, const PXSize PXTe
 
 PXPublic PXBool PXAPI PXTextCompare(const PXText* const textA, const PXText* const textB);
 
+PXPublic PXInt8U PXAPI PXTextCompareAVI8(const char* a, PXInt8U aSize, const char** const stringList, const PXInt8U* stringListSize, const PXInt8U amount);
+
 PXPublic PXBool PXAPI PXTextCompareA(const char* a, PXSize aSize, const char* b, PXSize bSize);
 PXPublic PXBool PXAPI PXTextCompareAW(const char* a, const PXSize aSize, const wchar_t* b, const PXSize bSize);
 PXPublic PXBool PXAPI PXTextCompareW(const wchar_t* a, const PXSize aSize, const wchar_t* b, const PXSize bSize);

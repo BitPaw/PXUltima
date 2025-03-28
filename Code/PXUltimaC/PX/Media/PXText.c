@@ -741,6 +741,24 @@ PXBool PXAPI PXTextCompare(const PXText* const textA, const PXText* const textB)
     return PXTrue;
 }
 
+PXInt8U PXAPI PXTextCompareAVI8(const char* a, PXInt8U aSize, const char** const stringList, const PXInt8U* stringListSize, const PXInt8U amount)
+{
+    for(PXInt8U i = 0; i < amount; ++i)
+    {
+        const char* const stringB = stringList[i];
+        const PXInt8U stringBSize = stringListSize[i];
+
+        const PXBool isTarget = PXTextCompareA(a, aSize, stringB, stringBSize);
+
+        if(isTarget)
+        {
+            return i;
+        }
+    }
+
+    return (PXInt8U)-1;
+}
+
 PXBool PXAPI PXTextCompareA(const char* a, PXSize aSize, const char* b, PXSize bSize)
 {
     if (!(a && aSize && b && bSize))
