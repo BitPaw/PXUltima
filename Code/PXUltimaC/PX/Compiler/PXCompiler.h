@@ -5,89 +5,104 @@
 
 #define PXCompilerDEBUG 1
 
-typedef enum PXCompilerSymbolLexer_
-{
-    PXCompilerSymbolLexerInvalid,
 
-    PXCompilerSymbolLexerWhiteSpace,
-    PXCompilerSymbolLexerNewLine,
-    PXCompilerSymbolLexerTab,
+//--------------------------------------------------------
+// PX::Compiler::Symbol::Lexer
+//--------------------------------------------------------
 
-    PXCompilerSymbolLexerGeneric,
+// MSB is set to 1 to signal the use of a custom ID
+// That the user can define themself.
+#define PXCompilerSymbolLexerCustomMask 0b10000000 
 
-    PXCompilerSymbolLexerSingleCharacter,
+#define PXCompilerSymbolLexerInvalid            0 // Normally unused, undefined tokens
+#define PXCompilerSymbolLexerEndOfFile          1 // EOF
+#define PXCompilerSymbolLexerWhiteSpace         2 // ' '
+#define PXCompilerSymbolLexerNewLine            3 // '\n'
+#define PXCompilerSymbolLexerTab                4 // '\t'
+#define PXCompilerSymbolLexerEmpty              5 // Signals a deleted or allignment element
+#define PXCompilerSymbolLexerComment            6 // "//... or #..."
+#define PXCompilerSymbolLexerGeneric            7 // Strings that are jet to be analysed
 
-    PXCompilerSymbolLexerBrackedRoundOpen, // '('
-    PXCompilerSymbolLexerBrackedRoundClose, // ')'
-    PXCompilerSymbolLexerBracketSquareOpen, // '['
-    PXCompilerSymbolLexerBracketSquareClose, // ']'
-    PXCompilerSymbolLexerBracketCurlyOpen, // '{'
-    PXCompilerSymbolLexerBracketCurlyClose, // '}'
-    PXCompilerSymbolLexerBracketAngleOpen, // '<'
-    PXCompilerSymbolLexerBracketAngleClose, // '>'
+#define PXCompilerSymbolLexerBrackedRoundOpen   6 // '('
+#define PXCompilerSymbolLexerBrackedRoundClose  7 // ')'
+#define PXCompilerSymbolLexerBracketSquareOpen  8 // '['
+#define PXCompilerSymbolLexerBracketSquareClose 9 // ']'
+#define PXCompilerSymbolLexerBracketCurlyOpen   10 // '{'
+#define PXCompilerSymbolLexerBracketCurlyClose  11 // '}'
+#define PXCompilerSymbolLexerBracketAngleOpen   12 // '<'
+#define PXCompilerSymbolLexerBracketAngleClose  13 // '>'
+#define PXCompilerSymbolLexerBigger             PXCompilerSymbolLexerBracketAngleOpen
+#define PXCompilerSymbolLexerSmaler             PXCompilerSymbolLexerBracketAngleClose,
+#define PXCompilerSymbolLexerBiggerAndEqual     14 // >=
+#define PXCompilerSymbolLexerSmalerAndEqual     15 // <=
+#define PXCompilerSymbolLexerEqual              16 // '='
+#define PXCompilerSymbolLexerEqualDouble        17 // ==
+#define PXCompilerSymbolLexerEqualTrippel       18 // ===
+#define PXCompilerSymbolLexerCompareThreeWay    19 // <=>
+#define PXCompilerSymbolLexerQuestionmark       20 // ?
+#define PXCompilerSymbolLexerExclamation        21 // !
+#define PXCompilerSymbolLexerDot                22 // .
+#define PXCompilerSymbolLexerComma              23 // ,
+#define PXCompilerSymbolLexerColon              24 // :
+#define PXCompilerSymbolLexerSemiColon          25 // ;
+#define PXCompilerSymbolLexerHash               26 // #
+#define PXCompilerSymbolLexerPlus               27 // +
+#define PXCompilerSymbolLexerMinus              28 // -
+#define PXCompilerSymbolLexerSlash              29 // /
+#define PXCompilerSymbolLexerAsterisk           30 // '*'
+#define PXCompilerSymbolLexerSlashBack          31 // '\'
+#define PXCompilerSymbolLexerAmpercant          32 // '&'
+#define PXCompilerSymbolLexerPercent            33 // '%'
+#define PXCompilerSymbolLexerBar                34 // '|'
+#define PXCompilerSymbolLexerDegree             35 // '°'
+#define PXCompilerSymbolLexerExponent           36 // '^'
+#define PXCompilerSymbolLexerTilde              37 // ~
+#define PXCompilerSymbolLexerApostrophe         38 // `
+#define PXCompilerSymbolLexerUnderscore         39 // _
+#define PXCompilerSymbolLexerAt                 40 // @
+#define PXCompilerSymbolLexerParagraf           41 // §
+#define PXCompilerSymbolLexerDoller             42 // $
 
-    //PXCompilerSymbolLexerBigger,
-    //PXCompilerSymbolLexerSmaler,
-    PXCompilerSymbolLexerBiggerAndEqual,
-    PXCompilerSymbolLexerSmalerAndEqual,
-    PXCompilerSymbolLexerEqual,
-    PXCompilerSymbolLexerEqualDouble,
-    PXCompilerSymbolLexerEqualTrippel,
-    PXCompilerSymbolLexerCompareThreeWay,
+#define PXCompilerSymbolLexerBool               44 // true, false
+#define PXCompilerSymbolLexerReal               45 // 0.123
+#define PXCompilerSymbolLexerNumeric            46 // 1234
+#define PXCompilerSymbolLexerString             47 // "Text", 'Text', @Text@
+//--------------------------------------------------------
 
-    PXCompilerSymbolLexerQuestionmark,
-    PXCompilerSymbolLexerExclamation,
-    PXCompilerSymbolLexerDot,
-    PXCompilerSymbolLexerComma,
-    PXCompilerSymbolLexerColon,
-    PXCompilerSymbolLexerSemiColon,
-    PXCompilerSymbolLexerHash,
-    PXCompilerSymbolLexerPlus,
-    PXCompilerSymbolLexerMinus,
-    PXCompilerSymbolLexerSlash,
-    PXCompilerSymbolLexerAsterisk, // '*'
-    PXCompilerSymbolLexerSlashBack,
-    PXCompilerSymbolLexerAmpercant,
-    PXCompilerSymbolLexerPercent,
-    PXCompilerSymbolLexerBar,
-    PXCompilerSymbolLexerDegree,
-    PXCompilerSymbolLexerExponent,
-    PXCompilerSymbolLexerTilde,
-    PXCompilerSymbolLexerApostrophe,
 
-    PXCompilerSymbolLexerComment,
 
-    PXCompilerSymbolLexerBool,
-    PXCompilerSymbolLexerPXF32,
-    PXCompilerSymbolLexerInteger,
-    PXCompilerSymbolLexerString,
-
-    PXCompilerSymbolLexerStringBegin,
-    PXCompilerSymbolLexerStringEnd,
-
-    PXCompilerSymbolLexerEndOfFile
-}
-PXCompilerSymbolLexer;
 
 typedef struct PXCompilerSymbolEntry_
 {
-    //---<Temporal data------
     union
     {
-        char* Source;
-        PXF32 DataF;
-        PXInt32S DataI32S;
-        PXInt32U DataI32U;
-        PXInt16U DataI16U;
-        PXInt8U DataC;
+        char* Source; // Valid pointer if ID is text element
+
+#if OS64Bit
+        // If we are in X64 bit mode, we can embedd 64-Bit types for free
+        PXF64 F64;
+        PXInt64S I64S;
+        PXInt64U I64U;
+#endif
+
+        char Data[4]; // Can be used to embedd something
+
+        PXF32 F32;
+        PXInt32S I32S;
+        PXInt32U I32U;
+        
+        PXF16 F16;
+        PXInt16S I16S;
+        PXInt16U I16U;   
+        
+        PXInt8S CS;
+        PXInt8U CU;
     };
-
-    PXInt32U Coloum;
-    PXInt32U Line;
-    PXInt32U Size;
-    //----------------------
-
-    PXCompilerSymbolLexer ID;
+   
+    PXInt32U Line; // Files can be very long, although rarely they do. is this enough?
+    PXInt16U Size; // Used mostly only for strings, we will not have 4GB strings.
+    PXInt8U Coloum;  // Text files normally do not exceed colum 60,80 or alike. 255 should be fine
+    PXInt8U ID;
 }
 PXCompilerSymbolEntry;
 
@@ -242,7 +257,7 @@ PXPublic PXBool PXAPI PXCompilerEnsurePropertyText
     PXCompiler* const pxCompiler,
     const char* const propertyKey,
     const PXSize propertyKeySize,
-    char* const propertyValue, 
+    char* const propertyValue,
     PXSize* propertyValueSize
 );
 
