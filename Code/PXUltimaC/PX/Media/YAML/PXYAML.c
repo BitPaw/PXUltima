@@ -160,18 +160,18 @@ PXActionResult PXAPI PXYAMLLoadFromFile(PXResourceTransphereInfo* const pxResour
                     break;
                 }
 
-                case PXCompilerSymbolLexerInteger:
+                case PXCompilerSymbolLexerNumeric:
                 {
                     PXFileWriteI16U(outputStream, sizeof(unsigned int));
-                    PXFileWriteI8U(outputStream, PXCompilerSymbolLexerInteger);
+                    PXFileWriteI8U(outputStream, PXCompilerSymbolLexerNumeric);
                     PXFileWriteI32U(outputStream, compilerSymbolEntry.DataI32U);
                     break;
                 }
 
-                case PXCompilerSymbolLexerPXF32:
+                case PXCompilerSymbolLexerReal:
                 {
                     PXFileWriteI16U(outputStream, sizeof(PXF32));
-                    PXFileWriteI8U(outputStream, PXCompilerSymbolLexerPXF32);
+                    PXFileWriteI8U(outputStream, PXCompilerSymbolLexerReal);
                     PXFileWriteF(outputStream, compilerSymbolEntry.DataF);
                     break;
                 }
@@ -274,7 +274,7 @@ PXActionResult PXAPI PXYAMLLoadFromFile(PXResourceTransphereInfo* const pxResour
                     break;
                 }
 
-                case PXCompilerSymbolLexerInteger:
+                case PXCompilerSymbolLexerNumeric:
                 {
                     PXInt32U x = 0;
 
@@ -285,7 +285,7 @@ PXActionResult PXAPI PXYAMLLoadFromFile(PXResourceTransphereInfo* const pxResour
                     break;
                 }
 
-                case PXCompilerSymbolLexerPXF32:
+                case PXCompilerSymbolLexerReal:
                 {
                     PXF32 x = 0;
 

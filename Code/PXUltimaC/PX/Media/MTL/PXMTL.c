@@ -285,7 +285,7 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceTransphereInfo* const pxResourc
             {
                 PXCompilerSymbolEntryExtract(&pxCompiler);
 
-                const PXBool isPXF32 = PXCompilerSymbolLexerPXF32 == pxCompiler.ReadInfo.SymbolEntryCurrent.ID;
+                const PXBool isPXF32 = PXCompilerSymbolLexerReal == pxCompiler.ReadInfo.SymbolEntryCurrent.ID;
 
                 if(!isPXF32)
                 {
@@ -296,15 +296,15 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceTransphereInfo* const pxResourc
                 switch(mtlLineType)
                 {
                     case MTLLineWeight:
-                        pxMaterialCurrent->Weight = pxCompiler.ReadInfo.SymbolEntryCurrent.DataF;
+                        pxMaterialCurrent->Weight = pxCompiler.ReadInfo.SymbolEntryCurrent.F32;
                         break;
 
                     case MTLLineDissolved:
-                        pxMaterialCurrent->Dissolved = pxCompiler.ReadInfo.SymbolEntryCurrent.DataF;
+                        pxMaterialCurrent->Dissolved = pxCompiler.ReadInfo.SymbolEntryCurrent.F32;
                         break;
 
                     case MTLLineDensity:
-                        pxMaterialCurrent->Density = pxCompiler.ReadInfo.SymbolEntryCurrent.DataF;
+                        pxMaterialCurrent->Density = pxCompiler.ReadInfo.SymbolEntryCurrent.F32;
                         break;
                 }
 
@@ -352,7 +352,7 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceTransphereInfo* const pxResourc
             {
                 PXCompilerSymbolEntryExtract(&pxCompiler);
 
-                const PXBool isInt = pxCompiler.ReadInfo.SymbolEntryCurrent.ID == PXCompilerSymbolLexerInteger;
+                const PXBool isInt = pxCompiler.ReadInfo.SymbolEntryCurrent.ID == PXCompilerSymbolLexerNumeric;
 
                 if(!isInt)
                 {
@@ -360,7 +360,7 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceTransphereInfo* const pxResourc
                     break;
                 }
 
-                pxMaterialCurrent->IlluminationMode = PXMTLIlluminationModeFromID(pxCompiler.ReadInfo.SymbolEntryCurrent.DataI32U);
+                pxMaterialCurrent->IlluminationMode = PXMTLIlluminationModeFromID(pxCompiler.ReadInfo.SymbolEntryCurrent.I32U);
 
                 break;
             }

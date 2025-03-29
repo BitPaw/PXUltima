@@ -14,12 +14,12 @@
 
 // This is not set as a directive, hardcoded, not good
 
-#include "C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Host.win-x64/8.0.13/runtimes/win-x64/native/nethost.h"
-#include "C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Host.win-x64/8.0.13/runtimes/win-x64/native/coreclr_delegates.h"
-#include "C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Host.win-x64/8.0.13/runtimes/win-x64/native/hostfxr.h"
+#include "C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Host.win-x64/8.0.14/runtimes/win-x64/native/nethost.h"
+#include "C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Host.win-x64/8.0.14/runtimes/win-x64/native/coreclr_delegates.h"
+#include "C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Host.win-x64/8.0.14/runtimes/win-x64/native/hostfxr.h"
 #include "coreclrhost.h"
 
-#pragma comment(lib, "C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Host.win-x64/8.0.13/runtimes/win-x64/native/nethost.lib")
+#pragma comment(lib, "C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Host.win-x64/8.0.14/runtimes/win-x64/native/nethost.lib")
 
 #endif
 

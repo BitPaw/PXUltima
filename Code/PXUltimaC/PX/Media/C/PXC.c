@@ -884,7 +884,7 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler
     {
         PXCompilerSymbolEntryForward(pxCompiler); // Consume
 
-        const PXBool isInt = PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerInteger);
+        const PXBool isInt = PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerNumeric);
 
         if(!isInt)
         {
@@ -893,7 +893,7 @@ PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler
 
         PXCompilerSymbolEntryForward(pxCompiler); // Consume
 
-        pxCodeDocumentElement->ArrayAmount =  pxCompiler->ReadInfo.SymbolEntryCurrent.DataI32U;
+        pxCodeDocumentElement->ArrayAmount =  pxCompiler->ReadInfo.SymbolEntryCurrent.I32U;
 
         const PXBool isclosing = PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerBracketSquareClose);
     }

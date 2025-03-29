@@ -91,7 +91,7 @@ PXWavefrontLineType PXAPI PXWavefrontPeekLine(const void* line, const PXSize siz
 
 void PXAPI PXWavefrontFaceLineParse(PXCompiler* const pxCompiler, PXInt32U* const vertexData)
 {
-    const PXBool isExpectedInteger = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerInteger);
+    const PXBool isExpectedInteger = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerNumeric);
 
     if(!isExpectedInteger) // If not int => Error
     {
@@ -101,14 +101,14 @@ void PXAPI PXWavefrontFaceLineParse(PXCompiler* const pxCompiler, PXInt32U* cons
     PXCompilerSymbolEntryForward(pxCompiler); // Consume int
 
     // Save 1st value
-    vertexData[0] = pxCompiler->ReadInfo.SymbolEntryCurrent.DataI32U;
+    vertexData[0] = pxCompiler->ReadInfo.SymbolEntryCurrent.I32U;
 
 
     // Check
     {
         const PXCompilerSymbolLexer pxCompilerSymbolLexerList[2] =
         {
-            PXCompilerSymbolLexerInteger,
+            PXCompilerSymbolLexerNumeric,
             PXCompilerSymbolLexerSlash
         };
 
@@ -124,13 +124,13 @@ void PXAPI PXWavefrontFaceLineParse(PXCompiler* const pxCompiler, PXInt32U* cons
 
     switch(pxCompiler->ReadInfo.SymbolEntryCurrent.ID)
     {
-        case PXCompilerSymbolLexerInteger: // is syntax A
+        case PXCompilerSymbolLexerNumeric: // is syntax A
         {
             PXCompilerSymbolEntryForward(pxCompiler); // Peek sucessful skip to 2nd integer
 
-            vertexData[1] = pxCompiler->ReadInfo.SymbolEntryCurrent.DataI32U; // Save 2nd value
+            vertexData[1] = pxCompiler->ReadInfo.SymbolEntryCurrent.I32U; // Save 2nd value
 
-            const PXBool isExpectedThridInteger = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerInteger); // Get 3rd integer
+            const PXBool isExpectedThridInteger = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerNumeric); // Get 3rd integer
 
             if(!isExpectedThridInteger)
             {
@@ -140,7 +140,7 @@ void PXAPI PXWavefrontFaceLineParse(PXCompiler* const pxCompiler, PXInt32U* cons
 
             PXCompilerSymbolEntryForward(pxCompiler);
 
-            vertexData[2] = pxCompiler->ReadInfo.SymbolEntryCurrent.DataI32U;
+            vertexData[2] = pxCompiler->ReadInfo.SymbolEntryCurrent.I32U;
 
             break;
         }
@@ -156,7 +156,7 @@ void PXAPI PXWavefrontFaceLineParse(PXCompiler* const pxCompiler, PXInt32U* cons
                 {
                     PXCompilerSymbolEntryForward(pxCompiler);  // Remove the '/'
 
-                    const PXBool isThridToken = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerInteger); // Next token, expect int
+                    const PXBool isThridToken = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerNumeric); // Next token, expect int
 
                     if(!isThridToken) // if not int => error
                     {
@@ -166,15 +166,15 @@ void PXAPI PXWavefrontFaceLineParse(PXCompiler* const pxCompiler, PXInt32U* cons
 
                     PXCompilerSymbolEntryForward(pxCompiler); // Consume 3rd number
 
-                    vertexData[2] = pxCompiler->ReadInfo.SymbolEntryCurrent.DataI32U;      // Store 3rd number
+                    vertexData[2] = pxCompiler->ReadInfo.SymbolEntryCurrent.I32U;      // Store 3rd number
 
                     break;
                 }
-                case PXCompilerSymbolLexerInteger: // Is syntax B
+                case PXCompilerSymbolLexerNumeric: // Is syntax B
                 {
                     PXCompilerSymbolEntryForward(pxCompiler); // Peek sucessful, remove the secound value
 
-                    vertexData[1] = pxCompiler->ReadInfo.SymbolEntryCurrent.DataI32U; // Save value
+                    vertexData[1] = pxCompiler->ReadInfo.SymbolEntryCurrent.I32U; // Save value
 
                     // Exptect 2nd '/'
                     {
@@ -186,7 +186,7 @@ void PXAPI PXWavefrontFaceLineParse(PXCompiler* const pxCompiler, PXInt32U* cons
 
                             // Try get 3nd integer
                             {
-                                const PXBool isSecoundToken = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerInteger);
+                                const PXBool isSecoundToken = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerNumeric);
 
                                 if(!isSecoundToken)
                                 {
@@ -194,7 +194,7 @@ void PXAPI PXWavefrontFaceLineParse(PXCompiler* const pxCompiler, PXInt32U* cons
                                     return;
                                 }
 
-                                vertexData[2] = pxCompiler->ReadInfo.SymbolEntryCurrent.DataI32U;
+                                vertexData[2] = pxCompiler->ReadInfo.SymbolEntryCurrent.I32U;
 
                                 PXCompilerSymbolEntryForward(pxCompiler);
                             }
@@ -324,7 +324,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
             {
                 PXCompilerSymbolEntryExtract(&pxCompiler); // Expect a name.
 
-                // PXFileWriteI8U(outputStream, PXCompilerSymbolLexerInteger);
+                // PXFileWriteI8U(outputStream, PXCompilerSymbolLexerNumeric);
                 // PXFileWriteI32U(outputStream, compilerSymbolEntry.DataI32U);
 
                 break;
@@ -672,7 +672,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
             {
                 PXCompilerSymbolEntryExtract(&pxCompiler); // Expect a name .
 
-                //PXFileWriteI8U(outputStream, PXCompilerSymbolLexerInteger);
+                //PXFileWriteI8U(outputStream, PXCompilerSymbolLexerNumeric);
                 //PXFileWriteI32U(outputStream, compilerSymbolEntry.DataI32U);
 
                 break;

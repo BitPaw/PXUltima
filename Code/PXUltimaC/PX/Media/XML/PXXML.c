@@ -177,11 +177,11 @@ void PXAPI PXXMLBlockParse(PXCodeDocument* const pxDocument, PXCompiler* const p
                         pxDocumentElement.ElementMember.ValueType = PXTypeInt08S;
                         break;
 
-                    case PXCompilerSymbolLexerPXF32:
+                    case PXCompilerSymbolLexerReal:
                         pxDocumentElement.ElementMember.ValueType = PXTypeF32;
                         break;
 
-                    case PXCompilerSymbolLexerInteger:
+                    case PXCompilerSymbolLexerNumeric:
                         pxDocumentElement.ElementMember.ValueType = PXTypeIntS;
                         break;
 

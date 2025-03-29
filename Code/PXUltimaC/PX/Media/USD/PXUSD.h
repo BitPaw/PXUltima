@@ -116,6 +116,24 @@ typedef struct PXUSD_
 PXUSD;
 
 
+
+
+#define PXUSDEntryXFORM         (1<<0)
+#define PXUSDEntryKindAssembly  (1<<1)
+#define PXUSDEntryGroup         (1<<2)
+
+typedef struct PXUSDEntry
+{
+    char Name[32];
+
+    PXVector3F Position;
+    PXVector3F Rotation;
+
+    PXInt32U Flags;
+}
+PXUSDEntry;
+
+
 PXPrivate PXActionResult PXAPI PXUSDCSectionTokensLoad(PXFile* const pxFile, PXTOCSectionTokens* const pxTOCSectionTokens);
 PXPrivate PXActionResult PXAPI PXUSDCSectionStringsLoad(PXFile* const pxFile, PXTOCSectionStrings* const pxTOCSectionStrings);
 PXPrivate PXActionResult PXAPI PXUSDCSectionFields(PXFile* const pxFile, PXTOCSectionFields* const pxTOCSectionFields);

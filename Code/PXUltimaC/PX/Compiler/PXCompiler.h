@@ -23,53 +23,53 @@
 #define PXCompilerSymbolLexerComment            6 // "//... or #..."
 #define PXCompilerSymbolLexerGeneric            7 // Strings that are jet to be analysed
 
-#define PXCompilerSymbolLexerBrackedRoundOpen   6 // '('
-#define PXCompilerSymbolLexerBrackedRoundClose  7 // ')'
-#define PXCompilerSymbolLexerBracketSquareOpen  8 // '['
-#define PXCompilerSymbolLexerBracketSquareClose 9 // ']'
-#define PXCompilerSymbolLexerBracketCurlyOpen   10 // '{'
-#define PXCompilerSymbolLexerBracketCurlyClose  11 // '}'
-#define PXCompilerSymbolLexerBracketAngleOpen   12 // '<'
-#define PXCompilerSymbolLexerBracketAngleClose  13 // '>'
+#define PXCompilerSymbolLexerBrackedRoundOpen   8 // '('
+#define PXCompilerSymbolLexerBrackedRoundClose  9 // ')'
+#define PXCompilerSymbolLexerBracketSquareOpen  10 // '['
+#define PXCompilerSymbolLexerBracketSquareClose 11 // ']'
+#define PXCompilerSymbolLexerBracketCurlyOpen   12 // '{'
+#define PXCompilerSymbolLexerBracketCurlyClose  13 // '}'
+#define PXCompilerSymbolLexerBracketAngleOpen   14 // '<'
+#define PXCompilerSymbolLexerBracketAngleClose  15 // '>'
 #define PXCompilerSymbolLexerBigger             PXCompilerSymbolLexerBracketAngleOpen
 #define PXCompilerSymbolLexerSmaler             PXCompilerSymbolLexerBracketAngleClose,
-#define PXCompilerSymbolLexerBiggerAndEqual     14 // >=
-#define PXCompilerSymbolLexerSmalerAndEqual     15 // <=
-#define PXCompilerSymbolLexerEqual              16 // '='
-#define PXCompilerSymbolLexerEqualDouble        17 // ==
-#define PXCompilerSymbolLexerEqualTrippel       18 // ===
-#define PXCompilerSymbolLexerCompareThreeWay    19 // <=>
-#define PXCompilerSymbolLexerQuestionmark       20 // ?
-#define PXCompilerSymbolLexerExclamation        21 // !
-#define PXCompilerSymbolLexerDot                22 // .
-#define PXCompilerSymbolLexerComma              23 // ,
-#define PXCompilerSymbolLexerColon              24 // :
-#define PXCompilerSymbolLexerSemiColon          25 // ;
-#define PXCompilerSymbolLexerHash               26 // #
-#define PXCompilerSymbolLexerPlus               27 // +
-#define PXCompilerSymbolLexerMinus              28 // -
-#define PXCompilerSymbolLexerSlash              29 // /
-#define PXCompilerSymbolLexerAsterisk           30 // '*'
-#define PXCompilerSymbolLexerSlashBack          31 // '\'
-#define PXCompilerSymbolLexerAmpercant          32 // '&'
-#define PXCompilerSymbolLexerPercent            33 // '%'
-#define PXCompilerSymbolLexerBar                34 // '|'
-#define PXCompilerSymbolLexerDegree             35 // '°'
-#define PXCompilerSymbolLexerExponent           36 // '^'
-#define PXCompilerSymbolLexerTilde              37 // ~
-#define PXCompilerSymbolLexerApostrophe         38 // `
-#define PXCompilerSymbolLexerUnderscore         39 // _
-#define PXCompilerSymbolLexerAt                 40 // @
-#define PXCompilerSymbolLexerParagraf           41 // §
-#define PXCompilerSymbolLexerDoller             42 // $
+#define PXCompilerSymbolLexerBiggerAndEqual     16 // >=
+#define PXCompilerSymbolLexerSmalerAndEqual     17 // <=
+#define PXCompilerSymbolLexerEqual              18 // '='
+#define PXCompilerSymbolLexerEqualDouble        19 // ==
+#define PXCompilerSymbolLexerEqualTrippel       20 // ===
+#define PXCompilerSymbolLexerCompareThreeWay    21 // <=>
+#define PXCompilerSymbolLexerQuestionmark       22 // ?
+#define PXCompilerSymbolLexerExclamation        23 // !
+#define PXCompilerSymbolLexerDot                24 // .
+#define PXCompilerSymbolLexerComma              25 // ,
+#define PXCompilerSymbolLexerColon              26 // :
+#define PXCompilerSymbolLexerSemiColon          27 // ;
+#define PXCompilerSymbolLexerHash               28 // #
+#define PXCompilerSymbolLexerPlus               29 // +
+#define PXCompilerSymbolLexerMinus              30 // -
+#define PXCompilerSymbolLexerSlash              31 // /
+#define PXCompilerSymbolLexerAsterisk           32 // '*'
+#define PXCompilerSymbolLexerSlashBack          33 // '\'
+#define PXCompilerSymbolLexerAmpercant          34 // '&'
+#define PXCompilerSymbolLexerPercent            35 // '%'
+#define PXCompilerSymbolLexerBar                36 // '|'
+#define PXCompilerSymbolLexerDegree             37 // '°'
+#define PXCompilerSymbolLexerExponent           38 // '^'
+#define PXCompilerSymbolLexerTilde              39 // ~
+#define PXCompilerSymbolLexerApostrophe         40 // `
+#define PXCompilerSymbolLexerUnderscore         41 // _
+#define PXCompilerSymbolLexerAt                 42 // @
+#define PXCompilerSymbolLexerParagraf           43 // §
+#define PXCompilerSymbolLexerDoller             44 // $
 
-#define PXCompilerSymbolLexerBool               44 // true, false
-#define PXCompilerSymbolLexerReal               45 // 0.123
-#define PXCompilerSymbolLexerNumeric            46 // 1234
-#define PXCompilerSymbolLexerString             47 // "Text", 'Text', @Text@
+#define PXCompilerSymbolLexerBool               45 // true, false
+#define PXCompilerSymbolLexerReal               46 // 0.123
+#define PXCompilerSymbolLexerNumeric            47 // 1234
+#define PXCompilerSymbolLexerString             48 // "Text", 'Text', @Text@
 //--------------------------------------------------------
 
-
+typedef PXInt8U PXCompilerSymbolLexer;
 
 
 typedef struct PXCompilerSymbolEntry_
@@ -78,7 +78,7 @@ typedef struct PXCompilerSymbolEntry_
     {
         char* Source; // Valid pointer if ID is text element
 
-#if OS64Bit
+#if OS64B
         // If we are in X64 bit mode, we can embedd 64-Bit types for free
         PXF64 F64;
         PXInt64S I64S;
@@ -142,8 +142,6 @@ typedef struct PXCompilerReadInfo_
     PXSize DepthCurrent;
 
     PXSize ErrorCounter;
-
-
 }
 PXCompilerReadInfo;
 
