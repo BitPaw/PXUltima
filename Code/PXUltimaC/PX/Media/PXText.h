@@ -168,7 +168,8 @@ PXPublic PXSize PXAPI PXTextFromBinaryDataA(const void* data, const PXSize dataS
 PXPublic PXSize PXAPI PXTextToInt(const PXText* const pxText, int* const number);
 PXPublic PXSize PXAPI PXTextToIntA(const char* const text, const PXSize textSize, int* const number);
 PXPublic PXSize PXAPI PXTextToBool(const PXText* const pxText, PXBool* const number);
-PXPublic PXSize PXAPI PXTextToPXF32(const PXText* const pxText, PXF32* const number);
+PXPublic PXSize PXAPI PXTextToF32(const PXText* const pxText, PXF32* const number);
+PXPublic PXSize PXAPI PXTextToF64A(const PXText* const pxText, PXF64* const number);
 
 PXPublic PXSize PXAPI PXTextFormatDateTime(PXText* const pxText, const PXTime* const pxTime);
 PXPublic PXSize PXAPI PXTextFormatTime(PXText* const pxText, const PXSize pxTime);

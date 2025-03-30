@@ -263,6 +263,9 @@ PXPublic PXBool PXAPI PXCompilerEnsurePropertyText
 PXPublic PXBool PXAPI PXCompilerParseF16V(PXCompiler* const pxCompiler, PXF16* const values, const PXSize valuesMaxSize, PXSize* const valuesSize);
 PXPublic PXBool PXAPI PXCompilerParseF32V(PXCompiler* const pxCompiler, PXF32* const values, const PXSize valuesMaxSize, PXSize* const valuesSize);
 
+PXPublic PXBool PXAPI PXCompilerParseCSVF32(PXCompiler* const pxCompiler, PXF32* const values, const PXSize valuesSize);
+PXPublic PXBool PXAPI PXCompilerParseCSVF64(PXCompiler* const pxCompiler, PXF64* const values, const PXSize valuesSize);
+
 
 
 // Write a ASL into a given format. Uses a default way to write and can be overloaded

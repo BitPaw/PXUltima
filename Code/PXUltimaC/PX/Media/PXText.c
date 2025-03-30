@@ -1231,7 +1231,7 @@ void PXAPI PXTextParseA(const char* buffer, const PXSize bufferSize, const char*
             PXText pxTextPXF32;
             PXTextConstructFromAdressA(&pxTextPXF32, buffer + offsetData, offsetLength, offsetLength);
 
-            const PXSize readBytes = PXTextToPXF32(&pxTextPXF32, number);
+            const PXSize readBytes = PXTextToF32(&pxTextPXF32, number);
 
 #if PXTextAssertEnable
             assert(readBytes);
@@ -1707,86 +1707,95 @@ PXSize PXAPI PXTextToBool(const PXText* const pxText, PXBool* const number)
     return 0;
 }
 
-PXSize PXAPI PXTextToPXF32(const PXText* const pxText, PXF32* const number)
+PXSize PXAPI PXTextToF32(const PXText* const pxText, PXF32* const number)
 {
-    switch (pxText->Format)
+    PXF64 pxF64 = 0;
+
+    PXSize res = PXTextToF64A(pxText, &pxF64);
+
+    *number = pxF64;
+
+    return res;
+}
+
+PXSize PXAPI PXTextToF64A(const PXText* const pxText, PXF64* const number)
+{
+    switch(pxText->Format)
     {
-    case TextFormatUTF8:
-    case TextFormatASCII:
-    {
-        int accumulator = 0;
-        PXSize digitsAfterDot = 1;
-        PXSize index = 0;
-        unsigned char isNegative = 0;
-        unsigned char isWholeNumberChunk = 1;
-
-
-
-        if (!pxText)
+        case TextFormatUTF8:
+        case TextFormatASCII:
         {
-            return 0;
-        }
+            PXInt64S accumulator = 0;
+            PXSize digitsAfterDot = 1;
+            PXSize index = 0;
+            unsigned char isNegative = 0;
+            unsigned char isWholeNumberChunk = 1;
 
-        if (pxText->TextA[0] == '-')
-        {
-            index++;
-            isNegative = 1;
-        }
-
-        for (; pxText->TextA[index] != '\0'; ++index)
-        {
-            const char character = pxText->TextA[index];
-            const PXBool isDot = character == '.';
-            const PXBool isValidCharacter = (character >= '0' && character <= '9') || isDot;
-            const int numberElement = character - '0';
-
-            if (!isValidCharacter)
+            if(!pxText)
             {
-                break;
+                return 0;
             }
 
-            // Trigger when we switch to after dot
-            if (isDot && isWholeNumberChunk)
+            if(pxText->TextA[0] == '-')
             {
-                isWholeNumberChunk = 0;
-                continue;
+                index++;
+                isNegative = 1;
             }
 
-            accumulator *= 10; // "Shft number to left" Example 12 -> 120
-            accumulator += numberElement; // ASCII character to actual number.
-
-            if (!isWholeNumberChunk)
+            for(; pxText->TextA[index] != '\0'; ++index)
             {
-                digitsAfterDot *= 10;
+                const char character = pxText->TextA[index];
+                const PXBool isDot = character == '.';
+                const PXBool isValidCharacter = (character >= '0' && character <= '9') || isDot;
+                const int numberElement = character - '0';
+
+                if(!isValidCharacter)
+                {
+                    break;
+                }
+
+                // Trigger when we switch to after dot
+                if(isDot && isWholeNumberChunk)
+                {
+                    isWholeNumberChunk = 0;
+                    continue;
+                }
+
+                accumulator *= 10; // "Shft number to left" Example 12 -> 120
+                accumulator += numberElement; // ASCII character to actual number.
+
+                if(!isWholeNumberChunk)
+                {
+                    digitsAfterDot *= 10;
+                }
             }
+
+            if(isNegative)
+            {
+                accumulator *= -1;
+            }
+
+            //double stdResult = std::strtof(string, 0); // STD Method
+
+            // Calculate
+            {
+                const PXF64 a = accumulator;
+                const PXF64 b = digitsAfterDot;
+                const PXF64 c = a / b;
+
+                *number = c;
+            }
+
+            return index;
         }
 
-        if (isNegative)
+
+        case TextFormatUNICODE:
         {
-            accumulator *= -1;
+
+
+            return sizeof(wchar_t);
         }
-
-        //double stdResult = std::strtof(string, 0); // STD Method
-
-        // Calculate
-        {
-            const double a = accumulator;
-            const double b = digitsAfterDot;
-            const double c = a / b;
-
-            *number = c;
-        }
-
-        return index;
-    }
-
-
-    case TextFormatUNICODE:
-    {
-
-
-        return sizeof(wchar_t);
-    }
     }
 
     return 0;

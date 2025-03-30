@@ -812,49 +812,54 @@ PXCompilerSymbolLexer PXAPI PXCompilerTryAnalyseType(PXFile* const tokenStream, 
     {
         // Probe for number
         const PXSize dotIndex = PXTextFindFirstCharacterA(text, textSize, '.');
-        const PXBool probablyPXF32 = dotIndex != (PXSize)-1;
+        const PXBool probablyFloatingPoint = dotIndex != (PXSize)-1;
         PXSize writtenNumbers = 0;
 
-        PXBool isValidPXF32Syntax = PXTrue;
+        PXBool isValidFloatSyntax = PXTrue;
+        PXSize floatTextSize = 0;
 
-        PXSize PXF32TextSize = 0;
-
-        if (probablyPXF32)
+        if (probablyFloatingPoint)
         {
             // Validate is PXF32 is valid until the '.'
-            for (PXF32TextSize = 0; (PXF32TextSize <= dotIndex + 1) && isValidPXF32Syntax; ++PXF32TextSize)
+            for (floatTextSize = 0; (floatTextSize <= dotIndex + 1) && isValidFloatSyntax; ++floatTextSize)
             {
-                isValidPXF32Syntax = PXTextPXF32IsAllowedCharacter(text[PXF32TextSize]);
+                isValidFloatSyntax = PXTextPXF32IsAllowedCharacter(text[floatTextSize]);
             }
 
-            if (isValidPXF32Syntax)
+            if (isValidFloatSyntax)
             {
                 // If this is a PXF32, check after the '.' until we hit non numbers
-                for (PXF32TextSize = dotIndex + 1; (PXF32TextSize <= textSize) && isValidPXF32Syntax; ++PXF32TextSize)
+                for (floatTextSize = dotIndex + 1; (floatTextSize <= textSize) && isValidFloatSyntax; ++floatTextSize)
                 {
-                    isValidPXF32Syntax = PXTextPXF32IsAllowedCharacter(text[PXF32TextSize]);
+                    isValidFloatSyntax = PXTextPXF32IsAllowedCharacter(text[floatTextSize]);
                 }
 
-                PXF32TextSize -= 1;
-                isValidPXF32Syntax = PXTrue;
+                floatTextSize -= 1;
+                isValidFloatSyntax = PXTrue;
             }
         }
 
         PXText numberText;
-        PXTextConstructFromAdressA(&numberText, text, PXF32TextSize, textSize);
+        PXTextConstructFromAdressA(&numberText, text, floatTextSize, textSize);
 
-        if (probablyPXF32 && isValidPXF32Syntax)
+        if (probablyFloatingPoint && isValidFloatSyntax)
         {
-            PXF32 value = 0;
+            PXF64 value = 0;
 
-            const PXSize writtenNumbers = PXTextToPXF32(&numberText, &value);
-            const PXBool isPXF32 = PXF32TextSize == writtenNumbers;
+            const PXSize writtenNumbers = PXTextToF64A(&numberText, &value);
+            const PXBool isPXF32 = floatTextSize == writtenNumbers;
 
             if (isPXF32)
             {
                 compilerSymbolEntry->Source = 0;
                 compilerSymbolEntry->Size = writtenNumbers;
+
+#if OS64B
+                compilerSymbolEntry->F64 = value;
+#else
                 compilerSymbolEntry->F32 = value;
+#endif
+        
 
                 return PXCompilerSymbolLexerReal;
             }
@@ -889,7 +894,7 @@ PXCompilerSymbolLexer PXAPI PXCompilerTryAnalyseType(PXFile* const tokenStream, 
             ('A' <= symbol && symbol <= 'Z') ||
             ('a' <= symbol && symbol <= 'z') ||
             ('0' <= symbol && symbol <= '9') || // We already checked if it begins with a letter. This here prevents problems that "Texture2D" will get splitted
-            symbol == '.' || symbol == '_' || symbol == ':' || symbol == '/' || symbol == '\\';
+            symbol == '.' || symbol == '_' ||  symbol == '/' || symbol == '\\'; // symbol == ':'
 
         newSize += isNumber;
 
@@ -1415,6 +1420,46 @@ PXBool PXAPI PXCompilerParseF32V(PXCompiler* const pxCompiler, PXF32* const valu
     }
 
     return PXYes;
+}
+
+PXBool PXAPI PXCompilerParseCSVF32(PXCompiler* const pxCompiler, PXF32* const values, const PXSize valuesSize)
+{
+    for(PXSize i = 0; i < valuesSize; i++)
+    {
+        PXCompilerSymbolEntryPeek(pxCompiler);
+
+        values[i] = pxCompiler->ReadInfo.SymbolEntryCurrent.F64;
+
+        PXCompilerSymbolEntryForward(pxCompiler);
+
+        if(i == (valuesSize - 1))
+        {
+            continue;
+        }
+
+        PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerComma);
+        PXCompilerSymbolEntryForward(pxCompiler);
+    }
+}
+
+PXBool PXAPI PXCompilerParseCSVF64(PXCompiler* const pxCompiler, PXF64* const values, const PXSize valuesSize)
+{    
+    for(PXSize i = 0; i < valuesSize; i++)
+    {
+        PXCompilerSymbolEntryPeek(pxCompiler);
+
+        values[i] = pxCompiler->ReadInfo.SymbolEntryCurrent.F64;
+
+        PXCompilerSymbolEntryForward(pxCompiler);
+
+        if(i == (valuesSize-1))
+        {   
+            continue;
+        }
+
+        PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerComma);
+        PXCompilerSymbolEntryForward(pxCompiler);
+    }
 }
 
 void PXAPI PXCompilerWrite(PXCompiler* const pxCompiler)

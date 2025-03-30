@@ -126,8 +126,11 @@ typedef struct PXUSDEntry
 {
     char Name[32];
 
-    PXVector3F Position;
-    PXVector3F Rotation;
+    char Include[260];
+
+    PXF64 Position[3];
+    PXF32 Rotation[3];
+    PXF32 Scale[3];
 
     PXInt32U Flags;
 }

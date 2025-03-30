@@ -23,6 +23,17 @@ const PXInt8U PXUSDTextXformSize = sizeof(PXUSDTextXform);
 const char PXUSDTextprepend[7] = "prepend";
 const PXInt8U PXUSDTextprependSize = sizeof(PXUSDTextprepend);
 
+const char PXUSDTextString[6] = "string";
+const PXInt8U PXUSDTextStringSize = sizeof(PXUSDTextString);
+
+
+const char PXUSDTextmodelingVariant[15] = "modelingVariant";
+const PXInt8U PXUSDTextmodelingVariantSize = sizeof(PXUSDTextmodelingVariant);
+
+
+const char PXUSDTextvariants[8] = "variants";
+const PXInt8U PXUSDTextvariantsSize = sizeof(PXUSDTextvariants);
+
 const char PXUSDTextdefaultPrim[11] = "defaultPrim";
 const PXInt8U PXUSDTextdefaultPrimSize = sizeof(PXUSDTextdefaultPrim);
 
@@ -34,6 +45,9 @@ const PXInt8U PXUSDTextkindSize = sizeof(PXUSDTextkind);
 
 const char PXUSDTextreferences[10] = "references";
 const PXInt8U PXUSDTextreferencesSize = sizeof(PXUSDTextreferences);
+
+const char PXUSDTextFloat[5] = "float";
+const PXInt8U PXUSDTextFloatSize = sizeof(PXUSDTextFloat);
 
 const char PXUSDTextFloat3[6] = "float3";
 const PXInt8U PXUSDTextFloat3Size = sizeof(PXUSDTextFloat3);
@@ -49,12 +63,28 @@ const char PXUSDTextXFormOp[7] = "xformOp";
 const PXInt8U PXUSDTextXFormOpSize = sizeof(PXUSDTextXFormOp);
 
 
+const char PXUSDTextScale[5] = "scale";
+const PXInt8U PXUSDTextScaleSize = sizeof(PXUSDTextScale);
+
+const char PXUSDTextXrotateX[7] = "rotateX";
+const PXInt8U PXUSDTextXrotateXSize = sizeof(PXUSDTextXrotateX);
+
+const char PXUSDTextXrotateZ[7] = "rotateZ";
+const PXInt8U PXUSDTextXrotateZSize = sizeof(PXUSDTextXrotateZ);
+
 const char PXUSDTextXrotateXYZ[9] = "rotateXYZ";
 const PXInt8U PXUSDTextXrotateXYZSize = sizeof(PXUSDTextXrotateXYZ);
 
 const char PXUSDTexttranslate[9] = "translate";
 const PXInt8U PXUSDTexttranslateSize = sizeof(PXUSDTexttranslate);
 
+
+const char PXUSDTexttoken[5] = "token";
+const PXInt8U PXUSDTexttokenSize = sizeof(PXUSDTexttoken);
+
+
+const char PXUSDTextXFormOpOrder[12] = "xformOpOrder";
+const PXInt8U PXUSDTextXFormOpOrderSize = sizeof(PXUSDTextXFormOpOrder);
 
 
 
@@ -112,6 +142,9 @@ void PXAPI PXUSDParseFormThingParam(PXCompiler* pxCompiler, PXFile* tokenSteam, 
 void PXAPI PXUSDParseFormThingContent(PXCompiler* pxCompiler, PXFile* tokenSteam, PXUSDEntry* const pxUSDEntry);
 
 
+void PXAPI PXUSDParseParameterVarriants(PXCompiler* pxCompiler, PXFile* tokenSteam, PXUSDEntry* const pxUSDEntry);
+
+void PXAPI PXUSDParseContentPropertyFloat1(PXCompiler* pxCompiler, PXFile* tokenSteam, PXUSDEntry* const pxUSDEntry);
 void PXAPI PXUSDParseContentPropertyFloat3(PXCompiler* pxCompiler, PXFile* tokenSteam, PXUSDEntry* const pxUSDEntry);
 void PXAPI PXUSDParseContentPropertyDouble3(PXCompiler* pxCompiler, PXFile* tokenSteam, PXUSDEntry* const pxUSDEntry);
 void PXAPI PXUSDParseContentPropertyUniform(PXCompiler* pxCompiler, PXFile* tokenSteam, PXUSDEntry* const pxUSDEntry);
@@ -498,7 +531,16 @@ void PXAPI PXUSDParseDEF(PXCompiler* pxCompiler, PXFile* tokenSteam)
                     PXCompilerSymbolEntryForward(pxCompiler);
 
                     PXUSDParseFormThing(pxCompiler, tokenSteam, &pxUSDEntry);
-                }      
+                }
+                else
+                {
+                    const PXBool isDef = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextDef, PXUSDTextDefSize);
+
+                    if(isDef)
+                    {
+                        PXUSDParseDEF(pxCompiler, tokenSteam);
+                    }
+                }        
 
                 return;
             }
@@ -551,40 +593,30 @@ void PXAPI PXUSDParseFormThingParam(PXCompiler* pxCompiler, PXFile* tokenSteam, 
                 else
                 {
                     const PXBool isPrepend = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextprepend, PXUSDTextprependSize);
+                    const PXBool isvariants = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextvariants, PXUSDTextvariantsSize);
+
 
                     if(isPrepend)
                     {
                         PXCompilerSymbolEntryForward(pxCompiler);
 
                         PXSize pathSize = 0;
-                        char pathCache[PXPathSizeMax];
-
+       
                         const PXBool isReference = PXCompilerEnsurePropertyText
                         (
                             pxCompiler,
                             PXUSDTextreferences,
                             PXUSDTextreferencesSize,
-                            pathCache,
+                            pxUSDEntry->Include,
                             &pathSize
                         );
-
-                        if(isReference)
-                        {
-
-#if PXLogEnable
-                            PXLogPrint
-                            (
-                                PXLoggingInfo,
-                                PXUSDAName,
-                                "Parsing",
-                                "Path:%s",
-                                pathCache
-                            );
-#endif
-
-
-                        }
                     }
+                    else if(isvariants)
+                    {
+                        PXUSDParseParameterVarriants(pxCompiler, tokenSteam, pxUSDEntry);                 
+                    }
+
+
 
                    //PXCompilerSymbolEntryForward(pxCompiler);
                 }     
@@ -640,6 +672,16 @@ void PXAPI PXUSDParseFormThingContent(PXCompiler* pxCompiler, PXFile* tokenSteam
                 }
 
 
+
+                const PXBool isFloatSignle = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextFloat, PXUSDTextFloatSize);
+
+                if(isFloatSignle)
+                {
+                    PXUSDParseContentPropertyFloat1(pxCompiler, tokenSteam, pxUSDEntry);
+                    break;
+                }
+
+
                 const PXBool isFloat = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextFloat3, PXUSDTextFloat3Size);
 
                 if(isFloat)
@@ -691,6 +733,78 @@ void PXAPI PXUSDParseFormThingContent(PXCompiler* pxCompiler, PXFile* tokenSteam
     PXCompilerSymbolEntryForward(pxCompiler);
 }
 
+void PXAPI PXUSDParseParameterVarriants(PXCompiler* pxCompiler, PXFile* tokenSteam, PXUSDEntry* const pxUSDEntry)
+{
+    PXCompilerSymbolEntryForward(pxCompiler); // remove varriant
+    PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerEqual);
+    PXCompilerSymbolEntryForward(pxCompiler); // rmeove =
+
+    PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerBracketCurlyOpen);
+    PXCompilerSymbolEntryForward(pxCompiler); // rmeove =
+
+    for(;;)
+    {
+        const PXBool isEnd = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerBracketCurlyClose);
+
+        if(isEnd)
+        {
+            break;
+        }
+
+        PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextString, PXUSDTextStringSize);
+        PXCompilerSymbolEntryForward(pxCompiler); // rmeove =
+
+        PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextmodelingVariant, PXUSDTextmodelingVariantSize);
+        PXCompilerSymbolEntryForward(pxCompiler); // rmeove =
+
+        PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerEqual);
+        PXCompilerSymbolEntryForward(pxCompiler); // rmeove =
+
+        PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerString);
+        PXCompilerSymbolEntryForward(pxCompiler); // rmeove =
+    }
+
+    PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerBracketCurlyClose);
+    PXCompilerSymbolEntryForward(pxCompiler); // rmeove '}'
+}
+
+void PXAPI PXUSDParseContentPropertyFloat1(PXCompiler* pxCompiler, PXFile* tokenSteam, PXUSDEntry* const pxUSDEntry)
+{
+    PXCompilerSymbolEntryForward(pxCompiler); // float3
+
+    const PXBool iXFormOp = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextXFormOp, PXUSDTextXFormOpSize);
+
+    if(!iXFormOp)
+    {
+        return;
+    }
+
+    PXCompilerSymbolEntryForward(pxCompiler); // remove op
+    PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerColon);
+    PXCompilerSymbolEntryForward(pxCompiler);
+
+    const PXBool isRoateX = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextXrotateX, PXUSDTextXrotateXSize);
+  //  const PXBool isRoateY = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextXrotateX, PXUSDTextXrotateXSize);
+    const PXBool isRoateZ = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextXrotateZ, PXUSDTextXrotateZSize);
+      
+    PXCompilerSymbolEntryForward(pxCompiler);
+    PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerEqual);
+    PXCompilerSymbolEntryForward(pxCompiler);
+    PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerReal);
+
+    if(isRoateX)
+    {
+        pxUSDEntry->Rotation[0] = pxCompiler->ReadInfo.SymbolEntryCurrent.F64;
+    }
+    else if(isRoateZ) 
+    {
+        pxUSDEntry->Rotation[2] = pxCompiler->ReadInfo.SymbolEntryCurrent.F64;
+    }
+
+    PXCompilerSymbolEntryForward(pxCompiler);
+    
+}
+
 void PXAPI PXUSDParseContentPropertyFloat3(PXCompiler* pxCompiler, PXFile* tokenSteam, PXUSDEntry* const pxUSDEntry)
 {
     PXCompilerSymbolEntryForward(pxCompiler); // float3
@@ -699,55 +813,116 @@ void PXAPI PXUSDParseContentPropertyFloat3(PXCompiler* pxCompiler, PXFile* token
 
     if(iXFormOp)
     {
-
         PXCompilerSymbolEntryForward(pxCompiler);
         PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerColon);
         PXCompilerSymbolEntryForward(pxCompiler);
 
         const PXBool isRoate = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextXrotateXYZ, PXUSDTextXrotateXYZSize);
+        const PXBool isScale = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextScale, PXUSDTextScaleSize);
+
+        PXCompilerSymbolEntryForward(pxCompiler);
+
+        PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerEqual);
+        PXCompilerSymbolEntryForward(pxCompiler);
+        PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerBrackedRoundOpen);
+        PXCompilerSymbolEntryForward(pxCompiler);
 
         if(isRoate)
         {
-            PXCompilerSymbolEntryForward(pxCompiler);
-            PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerEqual);
-            PXCompilerSymbolEntryForward(pxCompiler);
-            PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerBrackedRoundOpen);
-            PXCompilerSymbolEntryForward(pxCompiler);
-
-            pxUSDEntry->Rotation.X = pxCompiler->ReadInfo.SymbolEntryCurrent.F32;
-            PXCompilerSymbolEntryForward(pxCompiler);
-
-            pxUSDEntry->Rotation.Y = pxCompiler->ReadInfo.SymbolEntryCurrent.F32;
-            PXCompilerSymbolEntryForward(pxCompiler);
-
-            pxUSDEntry->Rotation.Z = pxCompiler->ReadInfo.SymbolEntryCurrent.F32;
-            PXCompilerSymbolEntryForward(pxCompiler);
-
-            PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerBrackedRoundClose);
-            PXCompilerSymbolEntryForward(pxCompiler);
+            PXCompilerParseCSVF32(pxCompiler, pxUSDEntry->Rotation, 3);
         }
-
-        const PXBool isTranslate = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTexttranslate, PXUSDTexttranslateSize);
-
-        if(isTranslate)
+        else if(isScale)
         {
-         
-            PXCompilerSymbolEntryForward(pxCompiler);
+            PXCompilerParseCSVF32(pxCompiler, pxUSDEntry->Scale, 3);
         }
+
+        PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerBrackedRoundClose);
+        PXCompilerSymbolEntryForward(pxCompiler);
+
     }
-
-  //  PXCompilerEnsureTextAndCompare(pxCompiler, );
-
 }
 
 void PXAPI PXUSDParseContentPropertyDouble3(PXCompiler* pxCompiler, PXFile* tokenSteam, PXUSDEntry* const pxUSDEntry)
 {
     PXCompilerSymbolEntryForward(pxCompiler); // double3
+
+    const PXBool iXFormOp = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextXFormOp, PXUSDTextXFormOpSize);
+
+    if(iXFormOp)
+    {
+        PXCompilerSymbolEntryForward(pxCompiler);
+        PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerColon);
+        PXCompilerSymbolEntryForward(pxCompiler);
+
+        const PXBool isTranslate = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTexttranslate, PXUSDTexttranslateSize);
+
+        if(isTranslate)
+        {
+            PXCompilerSymbolEntryForward(pxCompiler);
+            PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerEqual);
+            PXCompilerSymbolEntryForward(pxCompiler);
+            PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerBrackedRoundOpen);
+            PXCompilerSymbolEntryForward(pxCompiler);   
+
+            PXCompilerParseCSVF64(pxCompiler, &pxUSDEntry->Position, 3);
+
+            PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerBrackedRoundClose);
+            PXCompilerSymbolEntryForward(pxCompiler);
+        }
+    }
+
+    //  PXCompilerEnsureTextAndCompare(pxCompiler, );
 }
 
 void PXAPI PXUSDParseContentPropertyUniform(PXCompiler* pxCompiler, PXFile* tokenSteam, PXUSDEntry* const pxUSDEntry)
 {
     PXCompilerSymbolEntryForward(pxCompiler); // uniform
+
+    const PXBool isToken = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTexttoken, PXUSDTexttokenSize);
+
+    if(isToken)
+    {
+        PXCompilerSymbolEntryForward(pxCompiler);
+        PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerBracketSquareOpen);
+        PXCompilerSymbolEntryForward(pxCompiler);
+        PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerBracketSquareClose);
+        PXCompilerSymbolEntryForward(pxCompiler);
+
+        const PXBool isOpOrder = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextXFormOpOrder, PXUSDTextXFormOpOrderSize);
+
+        if(isOpOrder)
+        {
+            PXCompilerSymbolEntryForward(pxCompiler);
+            PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerEqual);
+            PXCompilerSymbolEntryForward(pxCompiler);
+
+            PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerBracketSquareOpen);       
+            PXCompilerSymbolEntryForward(pxCompiler);
+
+
+
+            for(;;)
+            {
+                // Extract text content that holds object operation
+                PXCompilerSymbolEntryForward(pxCompiler); // remove text
+
+                // Maybe we have a list of operations seperated per comma
+                const PXBool isComma = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerComma);
+
+                if(!isComma)
+                {
+                    break;
+                }
+
+                PXCompilerSymbolEntryForward(pxCompiler); // remove comma
+            }
+
+            PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerBracketSquareClose);
+            PXCompilerSymbolEntryForward(pxCompiler);
+        }
+    }
+
+
 }
 
 void PXAPI PXUSDParseFormThing(PXCompiler* pxCompiler, PXFile* tokenSteam, PXUSDEntry* const pxUSDEntry)
@@ -763,21 +938,31 @@ void PXAPI PXUSDParseFormThing(PXCompiler* pxCompiler, PXFile* tokenSteam, PXUSD
 
     PXTextCopyA(pxCompiler->ReadInfo.SymbolEntryCurrent.Source, pxCompiler->ReadInfo.SymbolEntryCurrent.Size, pxUSDEntry->Name, 32);
 
+    PXCompilerSymbolEntryForward(pxCompiler);
+
+    PXUSDParseFormThingParam(pxCompiler, tokenSteam, pxUSDEntry);
+    PXUSDParseFormThingContent(pxCompiler, tokenSteam, pxUSDEntry);
+
+
 #if PXLogEnable
     PXLogPrint
     (
         PXLoggingInfo,
         PXUSDAName,
         "Parsing",
-        "Element:%s",
-        pxUSDEntry->Name
+        "Element detected!\n"
+        "%20s : %s\n"
+        "%20s : %s\n"
+        "%20s : %10.4lf %10.4lf %10.4lf\n"
+        "%20s : %10.4f %10.4f %10.4f\n"
+        "%20s : %10.4f %10.4f %10.4f",
+        "Name", pxUSDEntry->Name,
+        "Include", pxUSDEntry->Include,
+        "Position", pxUSDEntry->Position[0], pxUSDEntry->Position[1], pxUSDEntry->Position[2],
+        "Rotation", pxUSDEntry->Rotation[0], pxUSDEntry->Rotation[1], pxUSDEntry->Rotation[2],
+        "Scale", pxUSDEntry->Scale[0], pxUSDEntry->Scale[1], pxUSDEntry->Scale[2]
     );
 #endif
-
-    PXCompilerSymbolEntryForward(pxCompiler);
-
-    PXUSDParseFormThingParam(pxCompiler, tokenSteam, pxUSDEntry);
-    PXUSDParseFormThingContent(pxCompiler, tokenSteam, pxUSDEntry);
 }
 
 
