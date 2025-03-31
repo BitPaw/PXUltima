@@ -255,7 +255,7 @@ PXPublic PXBool PXAPI PXCompilerEnsurePropertyText
     PXCompiler* const pxCompiler,
     const char* const propertyKey,
     const PXSize propertyKeySize,
-    char* const propertyValue,
+    char** const propertyValue,
     PXSize* propertyValueSize
 );
 

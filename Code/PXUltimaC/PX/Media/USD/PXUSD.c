@@ -26,6 +26,17 @@ const PXInt8U PXUSDTextprependSize = sizeof(PXUSDTextprepend);
 const char PXUSDTextString[6] = "string";
 const PXInt8U PXUSDTextStringSize = sizeof(PXUSDTextString);
 
+const char PXUSDTextAsset[5] = "asset";
+const PXInt8U PXUSDTextAssetSize = sizeof(PXUSDTextAsset);
+
+
+const char PXUSDTextidentifier[] = "identifier";
+const PXInt8U PXUSDTextidentifierSize = sizeof(PXUSDTextidentifier);
+
+const char PXUSDTextName[] = "name";
+const PXInt8U PXUSDTextNameSize = sizeof(PXUSDTextName);
+
+
 
 const char PXUSDTextmodelingVariant[15] = "modelingVariant";
 const PXInt8U PXUSDTextmodelingVariantSize = sizeof(PXUSDTextmodelingVariant);
@@ -33,6 +44,10 @@ const PXInt8U PXUSDTextmodelingVariantSize = sizeof(PXUSDTextmodelingVariant);
 
 const char PXUSDTextvariants[8] = "variants";
 const PXInt8U PXUSDTextvariantsSize = sizeof(PXUSDTextvariants);
+
+const char PXUSDTextAssetInfo[9] = "assetInfo";
+const PXInt8U PXUSDTextAssetInfoSize = sizeof(PXUSDTextAssetInfo);
+
 
 const char PXUSDTextdefaultPrim[11] = "defaultPrim";
 const PXInt8U PXUSDTextdefaultPrimSize = sizeof(PXUSDTextdefaultPrim);
@@ -42,6 +57,10 @@ const PXInt8U PXUSDTextupAxisSize = sizeof(PXUSDTextupAxis);
 
 const char PXUSDTextkind[4] = "kind";
 const PXInt8U PXUSDTextkindSize = sizeof(PXUSDTextkind);
+
+const char PXUSDTextPayload[7] = "payload";
+const PXInt8U PXUSDTextPayloadSize = sizeof(PXUSDTextPayload);
+
 
 const char PXUSDTextreferences[10] = "references";
 const PXInt8U PXUSDTextreferencesSize = sizeof(PXUSDTextreferences);
@@ -143,6 +162,9 @@ void PXAPI PXUSDParseFormThingContent(PXCompiler* pxCompiler, PXFile* tokenSteam
 
 
 void PXAPI PXUSDParseParameterVarriants(PXCompiler* pxCompiler, PXFile* tokenSteam, PXUSDEntry* const pxUSDEntry);
+void PXAPI PXUSDParseParameterAssetInfo(PXCompiler* pxCompiler, PXFile* tokenSteam, PXUSDEntry* const pxUSDEntry);
+void PXAPI PXUSDParseParameterPayLoad(PXCompiler* pxCompiler, PXFile* tokenSteam, PXUSDEntry* const pxUSDEntry);
+
 
 void PXAPI PXUSDParseContentPropertyFloat1(PXCompiler* pxCompiler, PXFile* tokenSteam, PXUSDEntry* const pxUSDEntry);
 void PXAPI PXUSDParseContentPropertyFloat3(PXCompiler* pxCompiler, PXFile* tokenSteam, PXUSDEntry* const pxUSDEntry);
@@ -197,7 +219,7 @@ PXActionResult PXAPI PXUSDLoadFromFile(PXResourceTransphereInfo* const pxResourc
 #endif
 
 
-    return PXActionRefusedNotImplemented;
+    return result;
 }
 
 
@@ -287,9 +309,14 @@ PXActionResult PXAPI PXUSDALoadFromFile(PXResourceTransphereInfo* const pxResour
 
 
 
-    while(!PXFileIsAtEnd(&tokenSteam))
+    for(;;)
     {
         PXCompilerSymbolEntryPeek(&pxCompiler);
+
+        if(PXCompilerSymbolLexerEndOfFile == pxCompiler.ReadInfo.SymbolEntryCurrent.ID)
+        {
+            break;
+        }
 
         switch(pxCompiler.ReadInfo.SymbolEntryCurrent.ID)
         {
@@ -313,8 +340,20 @@ PXActionResult PXAPI PXUSDALoadFromFile(PXResourceTransphereInfo* const pxResour
             default:
                 break;
         }
+    }
+
+
+    // We parsed the whole file, now we need to load 
+    // all sup-data elements that are references
+
+    for(PXSize i = 0; i < length; i++)
+    {
 
     }
+
+
+
+    return PXActionSuccessful;
 }
 
 PXActionResult PXAPI PXUSDCSectionTokensLoad(PXFile* const pxFile, PXTOCSectionTokens* const pxTOCSectionTokens)
@@ -480,9 +519,14 @@ PXActionResult PXAPI PXUSDZLoadFromFile(PXResourceTransphereInfo* const pxResour
 
 void PXAPI PXUSDParsePropertysScene(PXCompiler* pxCompiler, PXFile* tokenSteam)
 {
-    while(!PXFileIsAtEnd(tokenSteam))
+    for(;;)
     {
         PXCompilerSymbolEntryPeek(pxCompiler);
+
+        if(PXCompilerSymbolLexerEndOfFile == pxCompiler->ReadInfo.SymbolEntryCurrent.ID)
+        {
+            break;
+        }
 
         switch(pxCompiler->ReadInfo.SymbolEntryCurrent.ID)
         {
@@ -514,9 +558,14 @@ void PXAPI PXUSDParseDEF(PXCompiler* pxCompiler, PXFile* tokenSteam)
         
     PXCompilerSymbolEntryForward(pxCompiler); // remove "def"
 
-    while(!PXFileIsAtEnd(tokenSteam))
+    for(;;)
     {
         PXCompilerSymbolEntryPeek(pxCompiler);
+
+        if(PXCompilerSymbolLexerEndOfFile == pxCompiler->ReadInfo.SymbolEntryCurrent.ID)
+        {
+            break;
+        } 
 
         switch(pxCompiler->ReadInfo.SymbolEntryCurrent.ID)
         {
@@ -540,8 +589,13 @@ void PXAPI PXUSDParseDEF(PXCompiler* pxCompiler, PXFile* tokenSteam)
                     {
                         PXUSDParseDEF(pxCompiler, tokenSteam);
                     }
-                }        
+                }
 
+                break;
+            }
+            case PXCompilerSymbolLexerBracketCurlyClose:
+            {
+                PXCompilerSymbolEntryForward(pxCompiler);
                 return;
             }
             case PXCompilerSymbolLexerString:
@@ -553,7 +607,7 @@ void PXAPI PXUSDParseDEF(PXCompiler* pxCompiler, PXFile* tokenSteam)
 
             default:
             {
-                PXCompilerSymbolEntryForward(pxCompiler);
+                //PXCompilerSymbolEntryForward(pxCompiler);
                 break;
             }
         }
@@ -594,6 +648,9 @@ void PXAPI PXUSDParseFormThingParam(PXCompiler* pxCompiler, PXFile* tokenSteam, 
                 {
                     const PXBool isPrepend = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextprepend, PXUSDTextprependSize);
                     const PXBool isvariants = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextvariants, PXUSDTextvariantsSize);
+                    const PXBool isAssetInfo = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextAssetInfo, PXUSDTextAssetInfoSize);
+                    const PXBool isKind = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextkind, PXUSDTextkindSize);
+                    const PXBool isPayload = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextkind, PXUSDTextkindSize);
 
 
                     if(isPrepend)
@@ -607,15 +664,30 @@ void PXAPI PXUSDParseFormThingParam(PXCompiler* pxCompiler, PXFile* tokenSteam, 
                             pxCompiler,
                             PXUSDTextreferences,
                             PXUSDTextreferencesSize,
-                            pxUSDEntry->Include,
+                            &pxUSDEntry->Include,
                             &pathSize
                         );
+
+                        pxUSDEntry->IncludeSize = pathSize;
                     }
                     else if(isvariants)
                     {
-                        PXUSDParseParameterVarriants(pxCompiler, tokenSteam, pxUSDEntry);                 
+                        PXUSDParseParameterVarriants(pxCompiler, tokenSteam, pxUSDEntry);
                     }
+                    else if(isAssetInfo)
+                    {
+                        PXUSDParseParameterAssetInfo(pxCompiler, tokenSteam, pxUSDEntry);
+                    }
+                    else if(isKind)
+                    {
+                        PXCompilerSymbolEntryForward(pxCompiler);
+                    }
+                    else if(isPayload)
+                    {
+                        PXUSDParseParameterPayLoad(pxCompiler, tokenSteam, pxUSDEntry);
 
+                    
+                    }
 
 
                    //PXCompilerSymbolEntryForward(pxCompiler);
@@ -645,19 +717,16 @@ void PXAPI PXUSDParseFormThingContent(PXCompiler* pxCompiler, PXFile* tokenSteam
 {
     PXBool isOpen = PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerBracketCurlyOpen);
 
-    PXBool done = 0;
-
     PXCompilerSymbolEntryForward(pxCompiler);
 
-    while(!done)
+    for(;;)
     {
-        if(PXFileIsAtEnd(tokenSteam))
-        {
-            done = 1;
-            continue;
-        }
-
         PXCompilerSymbolEntryPeek(pxCompiler);
+
+        if(PXCompilerSymbolLexerEndOfFile == pxCompiler->ReadInfo.SymbolEntryCurrent.ID)
+        {
+            return;
+        }
 
         switch(pxCompiler->ReadInfo.SymbolEntryCurrent.ID)
         {
@@ -711,13 +780,12 @@ void PXAPI PXUSDParseFormThingContent(PXCompiler* pxCompiler, PXFile* tokenSteam
             }
             case PXCompilerSymbolLexerBracketCurlyClose:
             {
-                done = 1;
-                continue;
-            }
-            default:
-            {
                 PXCompilerSymbolEntryForward(pxCompiler);
                 return;
+            }
+            default:
+            {         
+                break;
             }
         }
     }
@@ -768,6 +836,103 @@ void PXAPI PXUSDParseParameterVarriants(PXCompiler* pxCompiler, PXFile* tokenSte
     PXCompilerSymbolEntryForward(pxCompiler); // rmeove '}'
 }
 
+void PXAPI PXUSDParseParameterAssetInfo(PXCompiler* pxCompiler, PXFile* tokenSteam, PXUSDEntry* const pxUSDEntry)
+{
+    PXCompilerSymbolEntryForward(pxCompiler);
+
+
+
+    PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerEqual);
+    PXCompilerSymbolEntryForward(pxCompiler);
+
+    PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerBracketCurlyOpen);
+    PXCompilerSymbolEntryForward(pxCompiler);
+
+
+    for(;;)
+    {
+        const PXBool isClose = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerBracketCurlyClose);
+
+        if(isClose)
+        {
+            break;
+        }
+
+        
+        PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerGeneric);
+
+
+        PXBool isString = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextString, PXUSDTextStringSize);
+        PXBool isAsset = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextAsset, PXUSDTextAssetSize);
+
+
+        if(isString)
+        {
+            PXCompilerSymbolEntryForward(pxCompiler);
+
+            PXBool isIdentifier = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextidentifier, PXUSDTextidentifierSize);
+
+            if(isIdentifier)
+            {
+                PXCompilerSymbolEntryForward(pxCompiler);
+                PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerEqual);
+                PXCompilerSymbolEntryForward(pxCompiler);
+
+                // identifier
+
+                PXCompilerSymbolEntryForward(pxCompiler);
+            }
+        }
+        else if(isAsset)
+        {
+            PXCompilerSymbolEntryForward(pxCompiler);
+
+            PXBool isName = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextName, PXUSDTextNameSize);
+
+            if(isName)
+            {
+                PXCompilerSymbolEntryForward(pxCompiler);
+                PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerEqual);
+                PXCompilerSymbolEntryForward(pxCompiler);
+
+                // name
+
+                PXCompilerSymbolEntryForward(pxCompiler);
+            }
+        }
+    }
+
+
+    PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerBracketCurlyClose);
+    PXCompilerSymbolEntryForward(pxCompiler); // rmeove '}'
+}
+
+void PXAPI PXUSDParseParameterPayLoad(PXCompiler* pxCompiler, PXFile* tokenSteam, PXUSDEntry* const pxUSDEntry)
+{
+    PXCompilerSymbolEntryForward(pxCompiler);
+
+    PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerEqual);
+    PXCompilerSymbolEntryForward(pxCompiler);
+
+    PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerString);
+    PXCompilerSymbolEntryForward(pxCompiler);
+
+    PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerBracketAngleOpen);
+    PXCompilerSymbolEntryForward(pxCompiler);
+
+    PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerSlash);
+    PXCompilerSymbolEntryForward(pxCompiler);
+
+    PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerString);
+
+
+
+    PXCompilerSymbolEntryForward(pxCompiler);
+
+    PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerBracketAngleClose);
+    PXCompilerSymbolEntryForward(pxCompiler);
+}
+
 void PXAPI PXUSDParseContentPropertyFloat1(PXCompiler* pxCompiler, PXFile* tokenSteam, PXUSDEntry* const pxUSDEntry)
 {
     PXCompilerSymbolEntryForward(pxCompiler); // float3
@@ -790,16 +955,35 @@ void PXAPI PXUSDParseContentPropertyFloat1(PXCompiler* pxCompiler, PXFile* token
     PXCompilerSymbolEntryForward(pxCompiler);
     PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerEqual);
     PXCompilerSymbolEntryForward(pxCompiler);
-    PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerReal);
 
-    if(isRoateX)
+    PXCompilerSymbolLexer pxCompilerSymbolLexer[2] = { PXCompilerSymbolLexerReal, PXCompilerSymbolLexerNumeric };
+
+    PXCompilerSymbolEntryEnsureCheckList(pxCompiler, pxCompilerSymbolLexer, 2);
+
+    if(pxCompiler->ReadInfo.SymbolEntryCurrent.ID == PXCompilerSymbolLexerReal)
     {
-        pxUSDEntry->Rotation[0] = pxCompiler->ReadInfo.SymbolEntryCurrent.F64;
+        if(isRoateX)
+        {
+            pxUSDEntry->Rotation[0] = pxCompiler->ReadInfo.SymbolEntryCurrent.F64;
+        }
+        else if(isRoateZ)
+        {
+            pxUSDEntry->Rotation[2] = pxCompiler->ReadInfo.SymbolEntryCurrent.F64;
+        }
     }
-    else if(isRoateZ) 
+    else
     {
-        pxUSDEntry->Rotation[2] = pxCompiler->ReadInfo.SymbolEntryCurrent.F64;
+        if(isRoateX)
+        {
+            pxUSDEntry->Rotation[0] = pxCompiler->ReadInfo.SymbolEntryCurrent.I32S;
+        }
+        else if(isRoateZ)
+        {
+            pxUSDEntry->Rotation[2] = pxCompiler->ReadInfo.SymbolEntryCurrent.I32S;
+        }
     }
+
+
 
     PXCompilerSymbolEntryForward(pxCompiler);
     
@@ -936,7 +1120,8 @@ void PXAPI PXUSDParseFormThing(PXCompiler* pxCompiler, PXFile* tokenSteam, PXUSD
         return;
     }
 
-    PXTextCopyA(pxCompiler->ReadInfo.SymbolEntryCurrent.Source, pxCompiler->ReadInfo.SymbolEntryCurrent.Size, pxUSDEntry->Name, 32);
+    pxUSDEntry->Name = pxCompiler->ReadInfo.SymbolEntryCurrent.Source;
+    pxUSDEntry->NameSize = pxCompiler->ReadInfo.SymbolEntryCurrent.Size;
 
     PXCompilerSymbolEntryForward(pxCompiler);
 

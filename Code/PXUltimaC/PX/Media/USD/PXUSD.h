@@ -124,15 +124,17 @@ PXUSD;
 
 typedef struct PXUSDEntry
 {
-    char Name[32];
-
-    char Include[260];
+    char* Name;
+    char* Include;
 
     PXF64 Position[3];
     PXF32 Rotation[3];
     PXF32 Scale[3];
 
-    PXInt32U Flags;
+    PXInt8U Flags;
+
+    PXInt8U NameSize;
+    PXInt8U IncludeSize;
 }
 PXUSDEntry;
 

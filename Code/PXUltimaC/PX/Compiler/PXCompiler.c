@@ -820,7 +820,7 @@ PXCompilerSymbolLexer PXAPI PXCompilerTryAnalyseType(PXFile* const tokenStream, 
 
         if (probablyFloatingPoint)
         {
-            // Validate is PXF32 is valid until the '.'
+            // Validate is float is valid until the '.'
             for (floatTextSize = 0; (floatTextSize <= dotIndex + 1) && isValidFloatSyntax; ++floatTextSize)
             {
                 isValidFloatSyntax = PXTextPXF32IsAllowedCharacter(text[floatTextSize]);
@@ -828,7 +828,7 @@ PXCompilerSymbolLexer PXAPI PXCompilerTryAnalyseType(PXFile* const tokenStream, 
 
             if (isValidFloatSyntax)
             {
-                // If this is a PXF32, check after the '.' until we hit non numbers
+                // If this is a float, check after the '.' until we hit non numbers
                 for (floatTextSize = dotIndex + 1; (floatTextSize <= textSize) && isValidFloatSyntax; ++floatTextSize)
                 {
                     isValidFloatSyntax = PXTextPXF32IsAllowedCharacter(text[floatTextSize]);
@@ -1298,7 +1298,7 @@ PXBool PXAPI PXCompilerEnsurePropertyText
     PXCompiler* const pxCompiler,
     const char* const propertyKey,
     const PXSize propertyKeySize,
-    char* const propertyValue,
+    char** const propertyValue,
     PXSize* propertyValueSize
 )
 {
@@ -1338,21 +1338,16 @@ PXBool PXAPI PXCompilerEnsurePropertyText
         return PXTrue;
     }
 
-    const PXSize writtenSize = PXTextCopyA
-    (
-        pxCompiler->ReadInfo.SymbolEntryCurrent.Source,
-        pxCompiler->ReadInfo.SymbolEntryCurrent.Size,
-        propertyValue,
-        pxCompiler->ReadInfo.SymbolEntryCurrent.Size
-    );
+    *propertyValue = pxCompiler->ReadInfo.SymbolEntryCurrent.Source;
+
+    if(propertyValueSize)
+    {
+        *propertyValueSize = pxCompiler->ReadInfo.SymbolEntryCurrent.Size;
+    }
 
     PXCompilerSymbolEntryForward(pxCompiler);
 
     // Write if we have a target
-    if(propertyValueSize)
-    {
-        *propertyValueSize = writtenSize;
-    }
 
     return PXTrue;
 }

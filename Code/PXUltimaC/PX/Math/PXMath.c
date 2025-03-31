@@ -316,6 +316,30 @@ PXF32 PXAPI PXMathFastInverseSqaureRoot(PXF32 number)
     return y;
 }
 
+PXInt32U PXAPI PXMathPowerI32U(const PXInt32U base, const PXInt32U exponent)
+{
+    PXInt32U result = 1;
+  
+    for(PXInt32U i = 0; i < exponent; ++i)
+    {
+        result *= base;
+    }
+
+    return result;
+}
+
+PXInt64U PXAPI PXMathPowerI64U(const PXInt64U base, const PXInt64U exponent)
+{
+    PXInt64U result = 1;
+
+    for(PXInt64U i = 0; i < exponent; ++i)
+    {
+        result *= base;
+    }
+
+    return result;
+}
+
 double PXAPI PXMathPower(double base, double exponent)
 {
 #if PXStandardLibraryMathUse

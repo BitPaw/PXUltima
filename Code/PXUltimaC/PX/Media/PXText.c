@@ -1726,7 +1726,7 @@ PXSize PXAPI PXTextToF64A(const PXText* const pxText, PXF64* const number)
         case TextFormatASCII:
         {
             PXInt64S accumulator = 0;
-            PXSize digitsAfterDot = 1;
+            PXSize digitsAfterDot = 0;
             PXSize index = 0;
             unsigned char isNegative = 0;
             unsigned char isWholeNumberChunk = 1;
@@ -1751,6 +1751,34 @@ PXSize PXAPI PXTextToF64A(const PXText* const pxText, PXF64* const number)
 
                 if(!isValidCharacter)
                 {
+                    // float could end with a "e" for exponent, this needs to be detected
+                    if(character == 'e')
+                    {
+                        int exponent = 0;
+
+                        index += PXTextToIntA(&pxText->TextA[index+1], pxText->SizeUsed- (index+1), &exponent);
+                        ++index;
+
+                        digitsAfterDot += exponent*-1;
+
+                        /*
+
+                        // Caluclate expontent
+                        if(exponent <= 0)
+                        {
+                            exponent *= -1;
+                            digitsAfterDot += exponent;
+                        }
+                        else
+                        {
+                            digitsAfterDot -= exponent;
+                        }
+                        */
+
+
+                        break; // Quit
+                    }
+
                     break;
                 }
 
@@ -1766,7 +1794,7 @@ PXSize PXAPI PXTextToF64A(const PXText* const pxText, PXF64* const number)
 
                 if(!isWholeNumberChunk)
                 {
-                    digitsAfterDot *= 10;
+                    ++digitsAfterDot;
                 }
             }
 
@@ -1780,7 +1808,7 @@ PXSize PXAPI PXTextToF64A(const PXText* const pxText, PXF64* const number)
             // Calculate
             {
                 const PXF64 a = accumulator;
-                const PXF64 b = digitsAfterDot;
+                const PXF64 b = PXMathPowerI64U(10, digitsAfterDot);
                 const PXF64 c = a / b;
 
                 *number = c;

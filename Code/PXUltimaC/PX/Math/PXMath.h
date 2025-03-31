@@ -295,6 +295,9 @@ PXPublic double PXAPI PXMathLogarithmus(int base, double exponent);
 //---------------------------------------------------------
 // Power
 //---------------------------------------------------------
+PXPublic PXInt32U PXAPI PXMathPowerI32U(const PXInt32U base, const PXInt32U exponent);
+PXPublic PXInt64U PXAPI PXMathPowerI64U(const PXInt64U base, const PXInt64U exponent);
+
 PXPublic double PXAPI PXMathPower(double base, double exponent);
 PXPublic double PXAPI PXMathPowerOfTwo(double base);
 PXPublic PXInt32U PXAPI PXMathPowerModulo(const PXInt32U base, const PXInt32U exponent, const PXInt32U modulo);

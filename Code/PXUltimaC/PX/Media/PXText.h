@@ -21,7 +21,7 @@
 #define IsEndOfLineCharacter(c) (c == '\r' || c == '\n')
 #define IsEmptyChar(c) (IsTab(c) || IsEndOfLineCharacter(c) || IsEmptySpace(c) || IsEndOfString(c))
 
-#define PXTextPXF32IsAllowedCharacter(c)  ('0' <= c && c <= '9' || c == '-' || c == '+' || c == '.')
+#define PXTextPXF32IsAllowedCharacter(c)  ('0' <= c && c <= '9' || c == '-' || c == '+' || c == '.'|| c == 'e') // e=exponent
 
 #define IsPrintable(c) (0x20 <= c && c <= 0x7E)
 #define PXCharMakePrintable(c) ((0x20 <= c && c <= 0x7E) ? c : '.')
