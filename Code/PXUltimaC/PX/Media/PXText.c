@@ -743,12 +743,20 @@ PXBool PXAPI PXTextCompare(const PXText* const textA, const PXText* const textB)
 
 PXInt8U PXAPI PXTextCompareAVI8(const char* a, PXInt8U aSize, const char** const stringList, const PXInt8U* stringListSize, const PXInt8U amount)
 {
+    PXSize inputSize = aSize;
+
+    if(aSize = 0xFF)
+    {
+        inputSize = (PXSize)-1;
+    }
+
     for(PXInt8U i = 0; i < amount; ++i)
     {
         const char* const stringB = stringList[i];
         const PXInt8U stringBSize = stringListSize[i];
+       
 
-        const PXBool isTarget = PXTextCompareA(a, aSize, stringB, stringBSize);
+        const PXBool isTarget = PXTextCompareA(a, inputSize, stringB, stringBSize);
 
         if(isTarget)
         {

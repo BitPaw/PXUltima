@@ -122,6 +122,15 @@ PXPublic PXActionResult PXAPI PXFileCopy(const PXText* const sourceFilePath, con
 //PXPublic void PXFilePathSwapFile(const wchar_t* currnetPath, wchar_t* targetPath, const wchar_t* newFileName);
 
 
+PXPublic void PXAPI PXFilePathRelativeFromFileA
+(
+    const char* const pathCurrent,
+    const PXSize patHCurrentSize,
+    const char* const pathTarget,
+    const PXSize pathTargetSize,
+    char* const pathResult,
+    PXSize* const pathResultSize
+);
 
 PXPublic void PXAPI PXFilePathRelativeFromFile(const PXFile* const pxFile, const PXText* const targetPath, PXText* const resultPath);
 
@@ -410,6 +419,7 @@ PXPublic PXActionResult PXAPI PXFileTimeGet
 
 PXPublic PXActionResult PXAPI PXFilePathSet(PXFile* const pxFile, const PXText* const filePath);
 PXPublic PXActionResult PXAPI PXFilePathGet(PXFile* const pxFile, PXText* const filePath);
+PXPublic PXActionResult PXAPI PXFilePathGetA(PXFile* const pxFile, char* const filePath, PXSize* const filePathSize);
 PXPublic PXActionResult PXAPI PXFIlePathGetLong(PXText* const pxTextInput, PXText* const pxTextOutput);
 
 #endif

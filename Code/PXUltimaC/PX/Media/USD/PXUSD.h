@@ -3,20 +3,6 @@
 
 #include "../PXResource.h"
 
-typedef struct PXUSDA_
-{
-    PXF32 Version;
-}
-PXUSDA;
-
-
-
-
-
-
-
-
-
 
 typedef struct PXTOCSectionTokens_
 {
@@ -62,8 +48,8 @@ PXTOCSectionPaths;
 typedef struct PXTOCSection_
 {
     char Name[16];
-    PXF64 OffsetStart;
-    PXF64 BlockSize;
+    PXInt64U OffsetStart;
+    PXInt64U BlockSize;
 
     union
     {
@@ -99,21 +85,12 @@ typedef struct PXUSDC_
     PXSize TOCSectionCounterFieldsets;
     PXSize TOCSectionCounterSpecs;
 
-    PXF64 TOCOffset;
-    PXF64 TOCSectionsAmount;
+    PXInt64U TOCOffset;
+    PXInt64U TOCSectionsAmount;
     PXTOCSection* TOCSectionList;
 }
 PXUSDC;
 
-typedef struct PXUSD_
-{
-    union
-    {    
-        PXUSDA Text;
-        PXUSDC Binary;
-    };
-}
-PXUSD;
 
 
 
@@ -138,6 +115,25 @@ typedef struct PXUSDEntry
 }
 PXUSDEntry;
 
+typedef struct PXUSDA_
+{
+    PXF32 Version;
+
+    PXSize EntryAmount;
+    PXUSDEntry* EntryList;
+}
+PXUSDA;
+
+typedef struct PXUSD_
+{
+    union
+    {    
+        PXUSDA Text;
+        PXUSDC Binary;
+    };
+}
+PXUSD;
+
 
 PXPrivate PXActionResult PXAPI PXUSDCSectionTokensLoad(PXFile* const pxFile, PXTOCSectionTokens* const pxTOCSectionTokens);
 PXPrivate PXActionResult PXAPI PXUSDCSectionStringsLoad(PXFile* const pxFile, PXTOCSectionStrings* const pxTOCSectionStrings);
@@ -145,6 +141,27 @@ PXPrivate PXActionResult PXAPI PXUSDCSectionFields(PXFile* const pxFile, PXTOCSe
 PXPrivate PXActionResult PXAPI PXUSDCSectionFieldSets(PXFile* const pxFile, PXTOCSectionFieldSets* const pxTOCSectionFieldSets);
 PXPrivate PXActionResult PXAPI PXUSDCSectionSpecs(PXFile* const pxFile, PXTOCSectionSpecs* const pxTOCSectionSpecs);
 PXPrivate PXActionResult PXAPI PXUSDCSectionPaths(PXFile* const pxFile, PXTOCSectionPaths* const pxTOCSectionPaths);
+
+
+PXPrivate void PXAPI PXUSDParsePropertysScene(PXUSDA* const pxUSDA, PXCompiler* const pxCompiler);
+PXPrivate void PXAPI PXUSDAParseElementDefine(PXUSDA* const pxUSDA, PXCompiler* const pxCompiler);
+PXPrivate void PXAPI PXUSDAParseEntryName(PXUSDA* const pxUSDA, PXUSDEntry* const pxUSDEntry, PXCompiler* const pxCompiler);
+PXPrivate void PXAPI PXUSDAParseEntryParameter(PXUSDEntry* const pxUSDEntry, PXCompiler* const pxCompiler);
+PXPrivate void PXAPI PXUSDAParseEntryProperty(PXUSDA* const pxUSDA, PXUSDEntry* const pxUSDEntry, PXCompiler* const pxCompiler);
+
+
+PXPrivate void PXAPI PXUSDAParseXMLEndTag(PXCompiler* const pxCompiler, char** const name, PXSize* const nameSize);
+PXPrivate void PXAPI PXUSDAParseEntryParameterPrepend(PXUSDEntry* const pxUSDEntry, PXCompiler* const pxCompiler);
+PXPrivate void PXAPI PXUSDAParseEntryParameterVarriants(PXUSDEntry* const pxUSDEntry, PXCompiler* const pxCompiler);
+PXPrivate void PXAPI PXUSDAParseEntryParameterAssetInfo(PXUSDEntry* const pxUSDEntry, PXCompiler* const pxCompiler);
+PXPrivate void PXAPI PXUSDAParseEntryParameterPayLoad(PXUSDEntry* const pxUSDEntry, PXCompiler* const pxCompiler);
+PXPrivate void PXAPI PXUSDAParseEntryParameterKind(PXUSDEntry* const pxUSDEntry, PXCompiler* const pxCompiler);
+
+PXPrivate void PXAPI PXUSDAParseEntryPropertyFloat1(PXUSDEntry* const pxUSDEntry, PXCompiler* const pxCompiler);
+PXPrivate void PXAPI PXUSDAParseEntryPropertyFloat3(PXUSDEntry* const pxUSDEntry, PXCompiler* const pxCompiler);
+PXPrivate void PXAPI PXUSDAParseEntryPropertyDouble3(PXUSDEntry* const pxUSDEntry, PXCompiler* const pxCompiler);
+PXPrivate void PXAPI PXUSDAParseEntryPropertyUniform(PXUSDEntry* const pxUSDEntry, PXCompiler* const pxCompiler);
+
 
 PXPrivate PXActionResult PXAPI PXUSDALoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
 PXPrivate PXActionResult PXAPI PXUSDCLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);

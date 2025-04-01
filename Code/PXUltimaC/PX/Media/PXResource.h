@@ -3389,6 +3389,7 @@ typedef struct PXResourceTransphereInfo_
     void* ResourceSource;
     PXInt32U ResourceType;        // Type of the resource that 'Target' points to. Example: Image, Sound, Video...
 
+    void* ResourceLoadContainer; // Used to store load/Store spesific helper object
 
     PXFileFormat FormatReal;
     PXFileFormat FormatExpected;        // The format detected by the resource loader

@@ -128,6 +128,15 @@ PXActionResult PXAPI PXFilePathSplitt(const PXText* const fullPath, PXFilePathSt
 
             const PXSize lengthFileName = fullPath->SizeUsed - (endPath + 1) - (lengthExtension + 1);
 
+            if(endDrive != -1)
+            {
+                pxFilePathStructure->Drive.SizeAllocated = endDrive + 1;
+                pxFilePathStructure->Drive.SizeUsed = endDrive+1;
+                pxFilePathStructure->Drive.NumberOfCharacters;
+                pxFilePathStructure->Drive.TextA = fullPath->TextA;
+                pxFilePathStructure->Drive.Format = fullPath->Format;
+            }
+
             if(indexFirstDot)
             {
                 pxFilePathStructure->Extension.SizeAllocated = lengthExtension;
@@ -150,9 +159,9 @@ PXActionResult PXAPI PXFilePathSplitt(const PXText* const fullPath, PXFilePathSt
             if(hasDirectory)
             {
                 pxFilePathStructure->Directory.SizeAllocated = endPath + 1;
-                pxFilePathStructure->Directory.SizeUsed = pxFilePathStructure->Directory.SizeAllocated;
+                pxFilePathStructure->Directory.SizeUsed = pxFilePathStructure->Directory.SizeAllocated- pxFilePathStructure->Drive.SizeUsed;
                 pxFilePathStructure->Directory.NumberOfCharacters;
-                pxFilePathStructure->Directory.TextA = fullPath->TextA;
+                pxFilePathStructure->Directory.TextA = fullPath->TextA+ pxFilePathStructure->Drive.SizeUsed;
                 pxFilePathStructure->Directory.Format = fullPath->Format;
             }
 
@@ -995,6 +1004,21 @@ void PXFilePathSwapFile(const wchar_t* currnetPath, wchar_t* targetPath, const w
     }
 }*/
 
+void PXAPI PXFilePathRelativeFromFileA
+(
+    const char* const pathCurrent, 
+    const PXSize patHCurrentSize, 
+    const char* const pathTarget,
+    const PXSize pathTargetSize, 
+    char* const pathResult,
+    PXSize* const pathResultSize
+)
+{
+
+
+
+}
+
 void PXAPI PXFilePathRelativeFromFile(const PXFile* const pxFile, const PXText* const targetPath, PXText* const resultPath)
 {
     if(targetPath->TextA[1] == ':')
@@ -1012,7 +1036,44 @@ void PXAPI PXFilePathRelativeFromFile(const PXFile* const pxFile, const PXText* 
     const PXBool success = PXFilePathGet(pxFile, &currentObjectFilePath); // Work PXWavefront file path
     //-------------------------------
 
-    PXFilePathSwapFileName(&currentObjectFilePath, resultPath, targetPath);
+    // When we take the direct folder, we have a shortcut to directs merge paths
+    if(targetPath->TextA[0] == '.')
+    {
+        PXFilePathStructure pxFilePathStructureBefore;
+        PXFilePathStructure pxFilePathStructureAfter;
+
+        // Run a
+        {
+            const PXActionResult result = PXFilePathSplitt(&currentObjectFilePath, &pxFilePathStructureBefore);
+
+            if(PXActionSuccessful != result)
+            {
+                return result;
+            }
+
+        }
+
+        // RUn B
+        {
+            const PXActionResult result = PXFilePathSplitt(targetPath, &pxFilePathStructureAfter);
+
+            if(PXActionSuccessful != result)
+            {
+                return result;
+            }
+        }
+
+        PXTextAppend(resultPath, &pxFilePathStructureBefore.Drive);
+        PXTextAppend(resultPath, &pxFilePathStructureBefore.Directory);
+        PXTextAppend(resultPath, &pxFilePathStructureAfter.Directory);
+        PXTextAppend(resultPath, &pxFilePathStructureAfter.FileName);
+        PXTextAppendA(resultPath, ".", 1);
+        PXTextAppend(resultPath, &pxFilePathStructureAfter.Extension);
+    }
+    else
+    {
+        PXFilePathSwapFileName(&currentObjectFilePath, resultPath, targetPath);
+    }
 }
 
 PXActionResult PXAPI PXFilePathSwapFileName(const PXText* const inputPath, PXText* const exportPath, const PXText* const fileName)
@@ -4354,6 +4415,21 @@ PXActionResult PXAPI PXFilePathGet(PXFile* const pxFile, PXText* const filePath)
 
         return PXActionSuccessful;
 #endif
+}
+
+PXActionResult PXAPI PXFilePathGetA(PXFile* const pxFile, char* const filePath, PXSize* const filePathSize)
+{
+    PXText pxText;
+    PXTextConstructFromAdressA(&pxText, filePath, 0, filePathSize);
+
+    PXActionResult res = PXFilePathGet(pxFile, &pxText);
+
+    if(filePathSize)
+    {
+        *filePathSize = pxText.SizeUsed;
+    }
+
+    return res;
 }
 
 PXActionResult PXAPI PXFIlePathGetLong(PXText* const pxTextInput, PXText* const pxTextOutput)
