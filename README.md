@@ -32,17 +32,14 @@ We want to be able to fully use modern advancements in operating systems, but al
 - [C#](Code/PXUltimaCS/) Wrapper to access C-DLL
   - ... 
 - Java Wrapper to access C-DLL
-  - ... 
-
-
-
-
+  - ...
+ 
 
 ## Systems
 | OS | Windows | Linux (Mint) | OSX |
 |:--:|:--:|:--:|:--:|
-| x86 (32-Bit) | :heavy_check_mark:  | :heavy_check_mark:  | :x: |
-| x64 (64-Bit) | :heavy_check_mark: | :heavy_check_mark:  |:x: |
+| x86 (32-Bit) | [![MSBuild](https://github.com/BitPaw/PXUltima/actions/workflows/msbuild.yml/badge.svg)](https://github.com/BitPaw/PXUltima/actions/workflows/msbuild.yml) | :heavy_check_mark:  | :x: |
+| x64 (64-Bit) | [![MSBuild](https://github.com/BitPaw/PXUltima/actions/workflows/msbuild.yml/badge.svg)](https://github.com/BitPaw/PXUltima/actions/workflows/msbuild.yml) | :heavy_check_mark:  |:x: |
 |ARM32| :x:  | :x: |:x: |
 |ARM64| :x:  | :x: |:x: |
 
