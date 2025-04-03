@@ -81,64 +81,42 @@ typedef struct PXPNGPaletteHistogram_
 }
 PXPNGPaletteHistogram;
 
+/*
+//--------------------------------------------------------------------------
 // Chunk Specifications
-typedef enum PXPNGChunkType_
-{
-    PXPNGChunkInvalid,
+//--------------------------------------------------------------------------
+// [Critical chunks]
+const char PXPNGChunkImageHeader[4] = "IHDR";  // [IHDR] The chunk will appear first.
+const char PXPNGChunkPalette[4] = "PLTE"; // [PLTE] Palette
+const char PXPNGChunkImageData[4] = "IDAT"; // [IDAT] Image data
+const char PXPNGChunkImageEnd[4] = "IEND"; // [IEND] The chunk appears LAST. It marks the end of the PNG datastream.
+//--------------------------------------------------------------------------
+// Transparency information
+const char PXPNGChunkTransparency[4] = "iTXt";// [tRNS] Transparency
+//--------------------------------------------------------------------------
+// Color space information
+const char PXPNGChunkImageGamma[4] = "gAMA";// [gAMA] Image gamma
+const char PXPNGChunkPrimaryChromaticities[4] = "cHRM";// [cHRM] -
+const char PXPNGChunkStandardRGBColorSpace[4] = "sRGB";// [sRGB] -
+const char PXPNGChunkEmbeddedICCProfile[4] = "iCCP";// [iCCP] -
+//--------------------------------------------------------------------------
+// Textual, information
+const char PXPNGChunkTextualData[4] = "tEXt";// [tEXt] -
+const char PXPNGChunkCompressedTextualData[4] = "zTXt";// [zTXt] -
+const char PXPNGChunkInternationalTextualData[4] = "iTXt";// [iTXt] -
+//--------------------------------------------------------------------------
+// Miscellaneous information
+const char PXPNGChunkBackgroundColor[4] = "bKGD";// [bKGD] -
+const char PXPNGChunkPhysicalPixelDimensions[4] = "pHYs";// [pHYs] -
+const char PXPNGChunkSignificantBits[4] = "sBIT";// [sBIT] -
+const char PXPNGChunkSuggestedPalette[4] = "sPLT";// [sPLT] -
+const char PXPNGChunkPaletteHistogram[4] = "hIST";// [hIST] -
+const char PXPNGChunkLastModificationTime[4] = "tIME";// [tIME] -
+//--------------------------------------------------------------------------
+*/
 
-    //--------------------------------------------------------------------------
-    // [Critical chunks]
-    //--------------------------------------------------------------------------
 
-    PXPNGChunkImageHeader               = PXInt32Make('I', 'H', 'D', 'R'), // [IHDR] The chunk will appear first.
-    PXPNGChunkPalette                   = PXInt32Make('P', 'L', 'T', 'E'), // [PLTE] Palette
-    PXPNGChunkImageData                 = PXInt32Make('I', 'D', 'A', 'T'), // [IDAT] Image data
-    PXPNGChunkImageEnd                  = PXInt32Make('I', 'E', 'N', 'D'), // [IEND] The chunk appears LAST. It marks the end of the PNG datastream.
 
-    //--------------------------------------------------------------------------
-    // [Ancillary chunks]
-    //--------------------------------------------------------------------------
-    // Transparency information
-    //--------------------------------------------------------------------------
-
-    PXPNGChunkTransparency              = PXInt32Make('i', 'T', 'X', 't'), // [tRNS] Transparency
-
-    //--------------------------------------------------------------------------
-    // Color space information
-    //--------------------------------------------------------------------------
-
-    PXPNGChunkImageGamma                = PXInt32Make('g', 'A', 'M', 'A'), // [gAMA] Image gamma
-    PXPNGChunkPrimaryChromaticities     = PXInt32Make('c', 'H', 'R', 'M'), // [cHRM] -
-    PXPNGChunkStandardRGBColorSpace     = PXInt32Make('s', 'R', 'G', 'B'), // [sRGB] -
-    PXPNGChunkEmbeddedICCProfile        = PXInt32Make('i', 'C', 'C', 'P'), // [iCCP] -
-
-    //--------------------------------------------------------------------------
-    // Textual, information
-    //--------------------------------------------------------------------------
-
-    PXPNGChunkTextualData               = PXInt32Make('t', 'E', 'X', 't'), // [tEXt] -
-    PXPNGChunkCompressedTextualData     = PXInt32Make('z', 'T', 'X', 't'), // [zTXt] -
-    PXPNGChunkInternationalTextualData  = PXInt32Make('i', 'T', 'X', 't'), // [iTXt] -
-
-    //--------------------------------------------------------------------------
-    // Miscellaneous information
-    //--------------------------------------------------------------------------
-
-    PXPNGChunkBackgroundColor           = PXInt32Make('b', 'K', 'G', 'D'), // [bKGD] -
-    PXPNGChunkPhysicalPixelDimensions   = PXInt32Make('p', 'H', 'Y', 's'), // [pHYs] -
-    PXPNGChunkSignificantBits           = PXInt32Make('s', 'B', 'I', 'T'), // [sBIT] -
-    PXPNGChunkSuggestedPalette          = PXInt32Make('s', 'P', 'L', 'T'), // [sPLT] -
-    PXPNGChunkPaletteHistogram          = PXInt32Make('h', 'I', 'S', 'T'), // [hIST] -
-    PXPNGChunkLastModificationTime      = PXInt32Make('t', 'I', 'M', 'E'), // [tIME] -
-
-    //--------------------------------------------------------------------------
-    // Additional chunk types
-    //--------------------------------------------------------------------------
-
-    // Unkown type, placegolder for future types or a midified PNG standard
-    PXPNGChunkCustom
-}
-PXPNGChunkType;
 
 // Start of the chunk header
 typedef struct PXPNGChunkHeader_
@@ -163,7 +141,7 @@ typedef struct PXPNGChunk_
     PXBool IsSafeToCopy;  // Can this cunk be modifyed anyhow or does it have a depecdency on the imagedata?
 
     // [4-byte] uppercase and lowercase ASCII letters (A-Z and a-z, or 65-90 and 97-122 decimal).
-    PXPNGChunkType ChunkType;
+    char ChunkType[4];
 
     // A 4-byte CRC (Cyclic Redundancy Check) calculated on the preceding bytes in the chunk, including the chunk type code and chunk data fields, but not including the length field. The CRC is always present, even for chunks containing no data. See CRC algorithm.
 

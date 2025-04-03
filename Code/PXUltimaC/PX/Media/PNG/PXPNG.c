@@ -64,6 +64,87 @@ const PXInt8U PXPNGLastModificationTimeListSize = sizeof(PXPNGLastModificationTi
 
 
 
+
+const char PXPNGChunkList[18][4] =
+{
+    "IHDR",
+    "PLTE",
+    "IDAT",
+    "IEND",
+    "iTXt",
+    "gAMA",
+    "cHRM",
+    "sRGB",
+    "iCCP",
+    "tEXt",
+    "zTXt",
+    "iTXt",
+    "bKGD",
+    "pHYs",
+    "sBIT",
+    "sPLT",
+    "hIST",
+    "tIME"
+};
+
+
+
+
+
+void PXAPI PXPNGChunkReadImageHeader(PXPNG* const pxPNG, PXFile* const pxFile);
+void PXAPI PXPNGChunkReadPalette(PXPNG* const pxPNG, PXFile* const pxFile);
+void PXAPI PXPNGChunkReadImageData(PXPNG* const pxPNG, PXFile* const pxFile);
+void PXAPI PXPNGChunkReadImageEnd(PXPNG* const pxPNG, PXFile* const pxFile);
+void PXAPI PXPNGChunkReadTransparency(PXPNG* const pxPNG, PXFile* const pxFile);
+void PXAPI PXPNGChunkReadImageGamma(PXPNG* const pxPNG, PXFile* const pxFile);
+void PXAPI PXPNGChunkReadPrimaryChromaticities(PXPNG* const pxPNG, PXFile* const pxFile);
+void PXAPI PXPNGChunkReadStandardRGBColorSpace(PXPNG* const pxPNG, PXFile* const pxFile);
+void PXAPI PXPNGChunkReadEmbeddedICCProfile(PXPNG* const pxPNG, PXFile* const pxFile);
+void PXAPI PXPNGChunkReadTextualData(PXPNG* const pxPNG, PXFile* const pxFile);
+void PXAPI PXPNGChunkReadCompressedTextualData(PXPNG* const pxPNG, PXFile* const pxFile);
+void PXAPI PXPNGChunkReadInternationalTextualData(PXPNG* const pxPNG, PXFile* const pxFile);
+void PXAPI PXPNGChunkReadBackgroundColor(PXPNG* const pxPNG, PXFile* const pxFile);
+void PXAPI PXPNGChunkReadPhysicalPixelDimensions(PXPNG* const pxPNG, PXFile* const pxFile);
+void PXAPI PXPNGChunkReadSignificantBits(PXPNG* const pxPNG, PXFile* const pxFile);
+void PXAPI PXPNGChunkReadSuggestedPalette(PXPNG* const pxPNG, PXFile* const pxFile);
+void PXAPI PXPNGChunkReadPaletteHistogram(PXPNG* const pxPNG, PXFile* const pxFile);
+void PXAPI PXPNGChunkReadLastModificationTime(PXPNG* const pxPNG, PXFile* const pxFile);
+
+
+
+typedef (PXAPI* PXPNGChunkFunction)(PXPNG* const pxPNG, PXFile* const pxFile);
+
+const PXPNGChunkFunction PXPNGChunkListFunction[] =
+{
+    PXPNGChunkReadImageHeader,
+    PXPNGChunkReadPalette,
+    PXPNGChunkReadImageData,
+    PXPNGChunkReadImageEnd,
+    PXPNGChunkReadTransparency,
+    PXPNGChunkReadImageGamma,
+    PXPNGChunkReadPrimaryChromaticities,
+    PXPNGChunkReadStandardRGBColorSpace,
+    PXPNGChunkReadEmbeddedICCProfile,
+    PXPNGChunkReadTextualData,
+    PXPNGChunkReadCompressedTextualData,
+    PXPNGChunkReadInternationalTextualData,
+    PXPNGChunkReadBackgroundColor,
+    PXPNGChunkReadPhysicalPixelDimensions,
+    PXPNGChunkReadSignificantBits,
+    PXPNGChunkReadSuggestedPalette,
+    PXPNGChunkReadPaletteHistogram,
+    PXPNGChunkReadLastModificationTime
+};
+
+const PXInt8U PXPNGChunkListSize = sizeof(PXPNGChunkList) / 4;
+
+
+
+
+
+
+
+
 PXPNGColorType PXAPI PXPNGColorTypeFromID(const PXInt8U colorType)
 {
     switch(colorType)
@@ -255,7 +336,7 @@ PXActionResult PXAPI PXPNGPeekFromFile(PXResourceTransphereInfo* const pxResourc
 
             // Check
             {
-                chunk.ChunkType = PXInt32FromAdress(chunk.Header.ID);
+                //chunk.ChunkType = PXInt32FromAdress(chunk.Header.ID);
 
                 // Ancillary bit : bit 5 of first byte
                 // 0 (uppercase) = critical, 1 (lowercase) = ancillary.
@@ -288,348 +369,18 @@ PXActionResult PXAPI PXPNGPeekFromFile(PXResourceTransphereInfo* const pxResourc
             );
 #endif
 
-            //---Get Chunk Data------------------------------------------
-            switch(chunk.ChunkType)
+            const PXInt8U functionIndex = PXMemoryCompareC32V(chunk.Header.ID, PXPNGChunkList, PXPNGChunkListSize);
+
+            if(0xFF != functionIndex)
             {
-                case PXPNGChunkImageHeader:
-                {
-                    PXFileBinding
-                    (
-                        pxResourceTransphereInfo->FileReference,
-                        &png->ImageHeader,
-                        PXPNGInfoHeaderList,
-                        PXPNGInfoHeaderListSize,
-                        PXFileBindingRead
-                    );
-
-                    png->ImageHeader.ColorType = PXPNGColorTypeFromID(png->ImageHeader.ColorTypeID);
-                    png->ImageHeader.InterlaceMethod = PXPNGInterlaceMethodFromID(png->ImageHeader.InterlaceMethodID);
-
-#if PXLogEnable
-                    PXLogPrint
-                    (
-                        PXLoggingInfo,
-                        "PNG",
-                        "Load",
-                        "Header..\n"
-                        "%20s : %i\n"
-                        "%20s : %i\n"
-                        "%20s : %i\n"
-                        "%20s : %i\n"
-                        "%20s : %i\n"
-                        "%20s : %i\n"
-                        "%20s : %i\n"
-                        "%20s : %i",
-                        "Width", png->ImageHeader.Width,
-                        "Height", png->ImageHeader.Height,
-                        "BitDepth", png->ImageHeader.BitDepth,
-                        "ColorTypeID", png->ImageHeader.ColorTypeID,
-                        "CompressionMethod", png->ImageHeader.CompressionMethod,
-                        "FilterMethod", png->ImageHeader.FilterMethod,
-                        "InterlaceMethodID", png->ImageHeader.InterlaceMethodID,
-                        "ColorType", png->ImageHeader.ColorType,
-                        "InterlaceMethod", png->ImageHeader.InterlaceMethod
-                    );
-#endif
-
-                    break;
-                }
-                case PXPNGChunkPalette:
-                {
-                    const PXSize palettSize = chunk.Header.Size / 3u;
-                    const PXBool validSize = palettSize != 0 && palettSize <= 256;
-
-                    if(!validSize)
-                        return PXActionFailedFormatNotAsExpected; // palette too small or big
-
-                    png->PaletteSize = palettSize;
-
-                    for(PXSize i = 0; i < palettSize; ++i)
-                    {
-                        PXInt8U* paletteInsertion = png->Palette + i * 4;
-
-                        PXFileReadB(pxResourceTransphereInfo->FileReference, paletteInsertion, 3u); // Read RGB value
-
-                        paletteInsertion[3] = 0xFF; // Add alpha
-                    }
-
-                    break;
-                }
-                case PXPNGChunkImageData:
-                {
-                    ++png->DataBlockListAmount;
-
-                    png->DataBlockList = PXMemoryHeapReallocT(PXPNGDataBlock, png->DataBlockList, png->DataBlockListAmount);
-                    png->DataBlockTotalSize += chunk.Header.Size;
-
-                    PXPNGDataBlock* pxPNGDataBlock = &png->DataBlockList[png->DataBlockListAmount - 1];
-                    pxPNGDataBlock->FileOffset = pxResourceTransphereInfo->FileReference->DataCursor;
-                    pxPNGDataBlock->DataSize = chunk.Header.Size;
-
-                    break;
-                }
-                case PXPNGChunkImageEnd:
-                {
-                    parseFinished = 1;
-                    break;
-                }
-                case PXPNGChunkTransparency:
-                {
-                    switch(png->ImageHeader.ColorType)
-                    {
-                        case PXPNGColorGrayscale:
-                        {
-                            /*error: this chunk must be 2 bytes for grayscale image*/
-                            if(chunk.Header.Size != 2)
-                                return PXActionInvalid;
-
-                            unsigned short value;
-
-                            PXFileReadI16UE(pxResourceTransphereInfo->FileReference, &value, PXEndianBig);
-
-                            // color->key_defined = 1;
-                            //color->key_r = color->key_g = color->key_b = 256u * data[0] + data[1];
-
-                            break;
-                        }
-                        case PXPNGColorRGB:
-                        {
-                            /*error: this chunk must be 6 bytes for RGB image*/
-                            if(chunk.Header.Size != 6)
-                                return PXActionInvalid;
-
-                            unsigned short red;
-                            unsigned short green;
-                            unsigned short blue;
-
-                            PXFileReadI16UE(pxResourceTransphereInfo->FileReference, &red, PXEndianBig);
-                            PXFileReadI16UE(pxResourceTransphereInfo->FileReference, &green, PXEndianBig);
-                            PXFileReadI16UE(pxResourceTransphereInfo->FileReference, &blue, PXEndianBig);
-
-                            //color->key_defined = 1;
-                            //color->key_r = 256u * data[0] + data[1];
-                            //color->key_g = 256u * data[2] + data[3];
-                            //color->key_b = 256u * data[4] + data[5];
-
-                            break;
-                        }
-                        case PXPNGColorPalette:
-                        {
-                            /*error: more alpha values given than there are palette entries*/
-                            //if(chunkLength > color->palettesize) return 39;
-
-                            //for(PXSize i = 0; i != chunkLength; ++i) color->palette[4 * i + 3] = data[i];
-
-                            for(PXSize i = 0; i < chunk.Header.Size; ++i)
-                            {
-                                unsigned char value = 0;
-
-                                PXFileReadI8U(pxResourceTransphereInfo->FileReference, &value);
-
-                                png->Palette[i * 4 + 3] = value;
-                            }
-
-                            break;
-                        }
-                        case PXPNGColorGrayscaleAlpha:
-                        case PXPNGColorRGBA:
-                        case PXPNGColorInvalid:
-                        default:
-                            return PXActionFailedFormatNotAsExpected; // tRNS chunk not allowed for other color models
-                    }
-
-                    break;
-                }
-                case PXPNGChunkImageGamma:
-                {
-                    PXFileReadI32UE(pxResourceTransphereInfo->FileReference, &png->Gamma, PXEndianBig);
-
-                    break;
-                }
-                case PXPNGChunkPrimaryChromaticities:
-                {
-                    PXFileBinding
-                    (
-                        pxResourceTransphereInfo->FileReference,
-                        &png->PrimaryChromatics,
-                        PXPNGPrimaryChromaticsList,
-                        PXPNGPrimaryChromaticsListSize,
-                        PXFileBindingRead
-                    );
-
-                    break;
-                }
-                case PXPNGChunkStandardRGBColorSpace:
-                {
-                    // pxFile.Read(RenderingIntent);
-
-                    // COpy array
-
-                    break;
-                }
-                case PXPNGChunkEmbeddedICCProfile:
-                {
-                    //  pxFile.DataCursor += chunk.Lengh;
-
-                    break;
-                }
-                case PXPNGChunkTextualData:
-                {
-                    //  pxFile.DataCursor += chunk.Lengh;
-
-
-                    break;
-                }
-                case PXPNGChunkCompressedTextualData:
-                {
-                    // Keyword                         1 - 79 bytes(character string)
-                    // Null separator                 1 byte(null character)
-                    // Compression method             1 byte
-                    // Compressed text datastream     n bytes
-
-                    //  pxFile.DataCursor += chunk.Lengh;
-
-                    break;
-                }
-                case PXPNGChunkBackgroundColor:
-                {
-                    switch(png->ImageHeader.ColorType)
-                    {
-                        default:
-                        case PXPNGColorInvalid:
-                            break; // ERROR
-
-                        case PXPNGColorGrayscale:
-                        case PXPNGColorGrayscaleAlpha:
-                        {
-                            //  pxFile.Read(png.BackgroundColor.GreyScale, PXEndianBig);
-                            break;
-                        }
-                        case PXPNGColorRGB:
-                        case PXPNGColorRGBA:
-                        {
-                            // pxFile.Read(png.BackgroundColor.Red, PXEndianBig);
-                            // pxFile.Read(png.BackgroundColor.Green, PXEndianBig);
-                            // pxFile.Read(png.BackgroundColor.Blue, PXEndianBig);
-                            break;
-                        }
-                        case PXPNGColorPalette:
-                        {
-                            //pxFile.Read(png.BackgroundColor.PaletteIndex);
-                            break;
-                        }
-                    }
-
-                    break;
-                }
-                case PXPNGChunkPhysicalPixelDimensions:
-                {
-                    unsigned char unitSpecifier = 0;
-
-                    PXFileReadI32UE(pxResourceTransphereInfo->FileReference, &png->PhysicalPixelDimension.PixelsPerUnit[0], PXEndianBig);
-                    PXFileReadI32UE(pxResourceTransphereInfo->FileReference, &png->PhysicalPixelDimension.PixelsPerUnit[1], PXEndianBig);
-                    PXFileReadI8U(pxResourceTransphereInfo->FileReference, &unitSpecifier);
-
-                    switch(unitSpecifier)
-                    {
-                        case 0:
-                            png->PhysicalPixelDimension.UnitSpecifier = PXPNGUnitSpecifierUnkown;
-                            break;
-
-                        case 1:
-                            png->PhysicalPixelDimension.UnitSpecifier = PXPNGUnitSpecifierMeter;
-                            break;
-
-                        default:
-                            png->PhysicalPixelDimension.UnitSpecifier = PXPNGUnitSpecifierInvalid;
-                            break;
-                    }
-
-                    break;
-                }
-                case PXPNGChunkSignificantBits:
-                {
-                    /*
-                    unsigned int byteLength = 0;
-                    unsigned int result = 0;
-
-                    switch (ColorType)
-                    {
-                        case PNGColorGrayscale: // single byte,
-                            byteLength = 1;
-                            break;
-
-                        case PNGColorTruecolor: // three bytes,
-                        case PNGColorIndexedColor:
-                            byteLength = 3;
-                            break;
-
-                        case PNGColorGrayscaleWithAlphaChannel: // two bytes
-                            byteLength = 2;
-                            break;
-
-                        case PNGColorTruecolorWithAlphaChannel: //  four bytes,
-                            byteLength = 4;
-                            break;
-                    }
-
-                    for (unsigned int i = 0; i < byteLength; i++)
-                    {
-                        char calcbyte;
-
-                        pxFile.Read(calcbyte);
-
-                        result = (result << (i * 8)) | calcbyte;
-                    }
-
-                    SignificantBits = result;*/
-
-                    break;
-                }
-                case PXPNGChunkSuggestedPalette:
-                {
-                    break;
-                }
-                case PXPNGChunkPaletteHistogram:
-                {
-                    const PXInt32U listSize = chunk.Header.Size / 2;
-
-                    png->PaletteHistogram.ColorFrequencyListSize = listSize;
-                    png->PaletteHistogram.ColorFrequencyList = PXMemoryHeapCallocT(PXInt16U, listSize);
-
-                    PXFileReadI16UVE(pxResourceTransphereInfo->FileReference, &png->PaletteHistogram.ColorFrequencyList, listSize, PXEndianBig);
-
-                    break;
-                }
-                case PXPNGChunkLastModificationTime:
-                {
-                    PXFileBinding
-                    (
-                        pxResourceTransphereInfo->FileReference,
-                        &png->LastModificationTime,
-                        PXPNGLastModificationTimeList,
-                        PXPNGLastModificationTimeListSize,
-                        PXFileBindingRead
-                    );
-
-                    break;
-                }
-                case PXPNGChunkCustom:
-                default:
-                {
-                    PXFileCursorAdvance(pxResourceTransphereInfo->FileReference, chunk.Header.Size);
-                    break;
-                }
+                PXPNGChunkListFunction[functionIndex](png, pxResourceTransphereInfo->FileReference);
             }
-            //---------------------------------------------------------------
-
-#if PNGDebugInfo
-            if(pxFile->DataCursor != predictedOffset)
+            else
             {
-                printf("[i][PNG] Chunk did not handle all Bytes\n");
-            }
-#endif
-            pxResourceTransphereInfo->FileReference->DataCursor = predictedOffset;
+                // Unknown chunk!
+            }         
+   
+            PXFileCursorMoveTo(pxResourceTransphereInfo->FileReference, predictedOffset);
 
             PXFileReadI32UE(pxResourceTransphereInfo->FileReference, &chunk.CRC, PXEndianBig); // 4 Bytes
 
@@ -2627,4 +2378,255 @@ unsigned readBitsFromReversedStream(PXSize* bitpointer, const unsigned char* bit
     }
 
     return result;
+}
+
+void PXAPI PXPNGChunkReadImageHeader(PXPNG* const pxPNG, PXFile* const pxFile)
+{
+    PXFileBinding
+    (
+        pxFile,
+        &pxPNG->ImageHeader,
+        PXPNGInfoHeaderList,
+        PXPNGInfoHeaderListSize,
+        PXFileBindingRead
+    );
+
+    pxPNG->ImageHeader.ColorType = PXPNGColorTypeFromID(pxPNG->ImageHeader.ColorTypeID);
+    pxPNG->ImageHeader.InterlaceMethod = PXPNGInterlaceMethodFromID(pxPNG->ImageHeader.InterlaceMethodID);
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "PNG",
+        "Load",
+        "Header..\n"
+        "%20s : %i\n"
+        "%20s : %i\n"
+        "%20s : %i\n"
+        "%20s : %i\n"
+        "%20s : %i\n"
+        "%20s : %i\n"
+        "%20s : %i\n"
+        "%20s : %i",
+        "Width", pxPNG->ImageHeader.Width,
+        "Height", pxPNG->ImageHeader.Height,
+        "BitDepth", pxPNG->ImageHeader.BitDepth,
+        "ColorTypeID", pxPNG->ImageHeader.ColorTypeID,
+        "CompressionMethod", pxPNG->ImageHeader.CompressionMethod,
+        "FilterMethod", pxPNG->ImageHeader.FilterMethod,
+        "InterlaceMethodID", pxPNG->ImageHeader.InterlaceMethodID,
+        "ColorType", pxPNG->ImageHeader.ColorType,
+        "InterlaceMethod", pxPNG->ImageHeader.InterlaceMethod
+    );
+#endif
+}
+
+void PXAPI PXPNGChunkReadPalette(PXPNG* const pxPNG, PXFile* const pxFile)
+{
+    const PXSize palettSize = 0;// chunk.Header.Size / 3u;
+    const PXBool validSize = palettSize != 0 && palettSize <= 256;
+
+    if(!validSize)
+        return PXActionFailedFormatNotAsExpected; // palette too small or big
+
+    pxPNG->PaletteSize = palettSize;
+
+    for(PXSize i = 0; i < palettSize; ++i)
+    {
+        PXInt8U* paletteInsertion = pxPNG->Palette + i * 4;
+
+        PXFileReadB(pxFile, paletteInsertion, 3u); // Read RGB value
+
+        paletteInsertion[3] = 0xFF; // Add alpha
+    }
+}
+
+void PXAPI PXPNGChunkReadImageData(PXPNG* const pxPNG, PXFile* const pxFile)
+{
+    ++pxPNG->DataBlockListAmount;
+
+    pxPNG->DataBlockList = PXMemoryHeapReallocT(PXPNGDataBlock, pxPNG->DataBlockList, pxPNG->DataBlockListAmount);
+   // pxPNG->DataBlockTotalSize += chunk.Header.Size;
+
+    PXPNGDataBlock* pxPNGDataBlock = &pxPNG->DataBlockList[pxPNG->DataBlockListAmount - 1];
+    pxPNGDataBlock->FileOffset = pxFile->DataCursor;
+   // pxPNGDataBlock->DataSize = chunk.Header.Size;
+}
+
+void PXAPI PXPNGChunkReadImageEnd(PXPNG* const pxPNG, PXFile* const pxFile)
+{
+   
+}
+
+void PXAPI PXPNGChunkReadTransparency(PXPNG* const pxPNG, PXFile* const pxFile)
+{
+    switch(pxPNG->ImageHeader.ColorType)
+    {
+        case PXPNGColorGrayscale:
+        {
+            // error: this chunk must be 2 bytes for grayscale image
+          //  if(chunk.Header.Size != 2)
+           //     return PXActionInvalid;
+
+            unsigned short value;
+
+            PXFileReadI16UE(pxFile, &value, PXEndianBig);
+
+            // color->key_defined = 1;
+            //color->key_r = color->key_g = color->key_b = 256u * data[0] + data[1];
+
+            break;
+        }
+        case PXPNGColorRGB:
+        {
+            /*error: this chunk must be 6 bytes for RGB image*/
+            //if(chunk.Header.Size != 6)
+            //    return PXActionInvalid;
+
+            unsigned short red;
+            unsigned short green;
+            unsigned short blue;
+
+            PXFileReadI16UE(pxFile, &red, PXEndianBig);
+            PXFileReadI16UE(pxFile, &green, PXEndianBig);
+            PXFileReadI16UE(pxFile, &blue, PXEndianBig);
+
+            //color->key_defined = 1;
+            //color->key_r = 256u * data[0] + data[1];
+            //color->key_g = 256u * data[2] + data[3];
+            //color->key_b = 256u * data[4] + data[5];
+
+            break;
+        }
+        case PXPNGColorPalette:
+        {
+            /*error: more alpha values given than there are palette entries*/
+            //if(chunkLength > color->palettesize) return 39;
+
+            //for(PXSize i = 0; i != chunkLength; ++i) color->palette[4 * i + 3] = data[i];
+            /*
+            for(PXSize i = 0; i < chunk.Header.Size; ++i)
+            {
+                unsigned char value = 0;
+
+                PXFileReadI8U(pxResourceTransphereInfo->FileReference, &value);
+
+                png->Palette[i * 4 + 3] = value;
+            }
+            */
+
+            break;
+        }
+        case PXPNGColorGrayscaleAlpha:
+        case PXPNGColorRGBA:
+        case PXPNGColorInvalid:
+        default:
+            return PXActionFailedFormatNotAsExpected; // tRNS chunk not allowed for other color models
+    }
+}
+
+void PXAPI PXPNGChunkReadImageGamma(PXPNG* const pxPNG, PXFile* const pxFile)
+{
+    PXFileReadI32UE(pxFile, &pxPNG->Gamma, PXEndianBig);
+}
+
+void PXAPI PXPNGChunkReadPrimaryChromaticities(PXPNG* const pxPNG, PXFile* const pxFile)
+{
+    PXFileBinding
+    (
+        pxFile,
+        &pxPNG->PrimaryChromatics,
+        PXPNGPrimaryChromaticsList,
+        PXPNGPrimaryChromaticsListSize,
+        PXFileBindingRead
+    );
+}
+
+void PXAPI PXPNGChunkReadStandardRGBColorSpace(PXPNG* const pxPNG, PXFile* const pxFile)
+{
+    
+}
+
+void PXAPI PXPNGChunkReadEmbeddedICCProfile(PXPNG* const pxPNG, PXFile* const pxFile)
+{
+   
+}
+
+void PXAPI PXPNGChunkReadTextualData(PXPNG* const pxPNG, PXFile* const pxFile)
+{
+    
+}
+
+void PXAPI PXPNGChunkReadCompressedTextualData(PXPNG* const pxPNG, PXFile* const pxFile)
+{
+   
+}
+
+void PXAPI PXPNGChunkReadInternationalTextualData(PXPNG* const pxPNG, PXFile* const pxFile)
+{
+   
+}
+
+void PXAPI PXPNGChunkReadBackgroundColor(PXPNG* const pxPNG, PXFile* const pxFile)
+{
+   
+}
+
+void PXAPI PXPNGChunkReadPhysicalPixelDimensions(PXPNG* const pxPNG, PXFile* const pxFile)
+{
+    unsigned char unitSpecifier = 0;
+
+    PXFileReadI32UE(pxFile, &pxPNG->PhysicalPixelDimension.PixelsPerUnit[0], PXEndianBig);
+    PXFileReadI32UE(pxFile, &pxPNG->PhysicalPixelDimension.PixelsPerUnit[1], PXEndianBig);
+    PXFileReadI8U(pxFile, &unitSpecifier);
+
+    switch(unitSpecifier)
+    {
+        case 0:
+            pxPNG->PhysicalPixelDimension.UnitSpecifier = PXPNGUnitSpecifierUnkown;
+            break;
+
+        case 1:
+            pxPNG->PhysicalPixelDimension.UnitSpecifier = PXPNGUnitSpecifierMeter;
+            break;
+
+        default:
+            pxPNG->PhysicalPixelDimension.UnitSpecifier = PXPNGUnitSpecifierInvalid;
+            break;
+    }
+}
+
+void PXAPI PXPNGChunkReadSignificantBits(PXPNG* const pxPNG, PXFile* const pxFile)
+{
+  
+}
+
+void PXAPI PXPNGChunkReadSuggestedPalette(PXPNG* const pxPNG, PXFile* const pxFile)
+{
+   
+}
+
+void PXAPI PXPNGChunkReadPaletteHistogram(PXPNG* const pxPNG, PXFile* const pxFile)
+{
+    /*
+    const PXInt32U listSize = chunk.Header.Size / 2;
+
+    pxPNG->PaletteHistogram.ColorFrequencyListSize = listSize;
+    pxPNG->PaletteHistogram.ColorFrequencyList = PXMemoryHeapCallocT(PXInt16U, listSize);
+
+    PXFileReadI16UVE(pxFile, &pxPNG->PaletteHistogram.ColorFrequencyList, listSize, PXEndianBig);
+    */
+}
+
+void PXAPI PXPNGChunkReadLastModificationTime(PXPNG* const pxPNG, PXFile* const pxFile)
+{
+    PXFileBinding
+    (
+        pxFile,
+        &pxPNG->LastModificationTime,
+        PXPNGLastModificationTimeList,
+        PXPNGLastModificationTimeListSize,
+        PXFileBindingRead
+    );
 }

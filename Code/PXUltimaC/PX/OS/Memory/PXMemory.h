@@ -14,7 +14,8 @@ typedef struct PXSymbol_ PXSymbol;
 #define MemoryAssertEnable 0
 #define PXMemoryDebug 1
 #define MemoryDebugLeakDetection 0
-#define MemoryUseSystemFunction 0
+#define PXMemoryUseFunctionSTD 0
+#define PXMemoryUseFunctionOS 1
 #define MemorySanitise 0
 //----------------
 
@@ -412,6 +413,11 @@ PXPublic void PXAPI PXMemorySet(void* const PXRestrict bufferA, const PXByte val
 //---------------------------------------------------------
 // Compare
 //---------------------------------------------------------
+
+// Compare a list of 4-byte text elements.
+// Return the index of the first match
+PXPublic PXInt8U PXAPI PXMemoryCompareC32V(const char value[4],  char* const textList[4], const PXInt8U listAmount);
+
 
 PXPublic int PXAPI PXMemoryCompareThreeWay(const void* PXRestrict bufferA, const PXSize bufferASize, const void* PXRestrict bufferB, const PXSize bufferBSize);
 

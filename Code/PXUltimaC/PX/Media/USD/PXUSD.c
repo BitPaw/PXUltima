@@ -444,24 +444,37 @@ PXActionResult PXAPI PXUSDCSectionTokensLoad(PXFile* const pxFile, PXTOCSectionT
         pxFileCompressedInfo.AccessMode = PXAccessModeReadAndWrite;
         pxFileCompressedInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
         pxFileCompressedInfo.FlagList = PXFileIOInfoFileVirtual;
-        pxFileCompressedInfo.BufferSize = pxTOCSectionTokens->SizeUncompressed;
+        pxFileCompressedInfo.FileSizeRequest = pxTOCSectionTokens->SizeUncompressed;
         PXFileOpen(&pxFileUncompressed, &pxFileCompressedInfo);
     }
 
     PXActionResult uncompressResult = PXLZ4Decompress(&pxFileCompressed, &pxFileUncompressed);
 
-
 #if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXUSDCName,
-        "Load",
-        "Tokens: SizeUncompressed:%i, SizeCompressed:%i",
-        pxTOCSectionTokens->SizeUncompressed,
-        pxTOCSectionTokens->SizeCompressed
-    );
+    PXSize offset = 0;
+
+    for(PXSize i = 0; i < pxTOCSectionTokens->NumberOfTokens; ++i)
+    {
+        char* text = &((char*)pxFileUncompressed.Data)[offset];
+
+        PXSize length = PXTextLengthA(text, -1);
+
+        offset += length+1;
+
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            PXUSDCName,
+            "Load",
+            "%3i/%3i - %s",
+            i+1,
+            pxTOCSectionTokens->NumberOfTokens,
+            text
+        );
+    }
 #endif
+
+    PXConsoleWrite(0, 0);
 
 }
 

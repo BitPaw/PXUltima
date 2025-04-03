@@ -2556,15 +2556,21 @@ PXSize PXAPI PXFileCursorAdvance(PXFile* const pxFile, const PXSize steps)
     return delta;
 }
 
-void PXAPI PXFileCursorRewind(PXFile* const pxFile, const PXSize steps)
+PXSize PXAPI PXFileCursorRewind(PXFile* const pxFile, const PXSize steps)
 {
     if(pxFile->DataCursor <= steps)
     {
         PXFileCursorMoveTo(pxFile, 0);
-        return;
+
+
+        return steps - pxFile->DataCursor;
     }
 
-    PXFileCursorMoveTo(pxFile, pxFile->DataCursor - steps); // Check underflow
+    const PXSize stepsTaken = pxFile->DataCursor - steps;
+
+    PXFileCursorMoveTo(pxFile, stepsTaken); // Check underflow
+
+    return steps;
 }
 
 PXSize PXAPI PXFileCursorOffset(PXFile* const pxFile, const PXInt32S offset)
@@ -3874,6 +3880,32 @@ PXSize PXAPI PXFileWriteD(PXFile* const pxFile, const double value)
 PXSize PXAPI PXFileWriteDV(PXFile* const pxFile, const double* const valueList, const PXSize valueListSize)
 {
     return PXFileWriteB(pxFile, valueList, sizeof(double) * valueListSize);
+}
+
+PXSize PXAPI PXFileWriteInternMove(PXFile* const pxFile, const PXInt16S offset, const PXSize length)
+{
+    const PXSize oldPosition = pxFile->DataCursor;
+    char* const destination = PXFileCursorPosition(pxFile);
+
+    // Souce
+    const PXSize steptsTaken = PXFileCursorRewind(pxFile, offset); // Safe rewind
+    const char* const source = (const char*)PXFileCursorPosition(pxFile);
+
+
+    // Destination
+    pxFile->DataCursor = oldPosition; // restore
+
+    if(steptsTaken != offset)
+    {
+        // FAILUE
+        return 0;
+    }
+
+    PXSize amount = PXMemoryMove(source, length, destination, length);
+
+    PXFileCursorAdvance(pxFile, length);
+
+    return amount;
 }
 
 PXSize PXAPI PXFileWriteB(PXFile* const pxFile, const void* const value, const PXSize length)

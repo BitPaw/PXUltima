@@ -236,7 +236,7 @@ PXSize PXAPI PXMemoryHeapBlockSize(PXMemoryHeap* pxMemoryHeap, const void* const
         pxMemoryHeap = &redirectHeap;
     }
 
-#if OSUnix  || MemoryUseSystemFunction || OSForcePOSIXForWindows
+#if OSUnix  || PXMemoryUseFunctionSTD || OSForcePOSIXForWindows
 
     return _msize(adress);
 
@@ -268,7 +268,7 @@ void* PXAPI PXMemoryHeapCalloc(PXMemoryHeap* pxMemoryHeap, const PXSize amount, 
         pxMemoryHeap = &redirectHeap;
     }
 
-#if OSUnix || MemoryUseSystemFunction || OSForcePOSIXForWindows
+#if OSUnix || PXMemoryUseFunctionSTD || OSForcePOSIXForWindows
     adress = calloc(amount, objectSize);
 #elif OSWindows
     adress = HeapAlloc(pxMemoryHeap->HeapHandle, HEAP_ZERO_MEMORY, totalAmount); // Windows 2000 SP4, Kernel32.dll, heapapi.h
@@ -471,7 +471,7 @@ void* PXAPI PXMemoryHeapRealloc(PXMemoryHeap* pxMemoryHeap, const void* const ad
 #endif
 
 
-#if OSUnix || MemoryUseSystemFunction || OSForcePOSIXForWindows
+#if OSUnix || PXMemoryUseFunctionSTD || OSForcePOSIXForWindows
     // Function allows NULL as an adress
     newAdress = realloc(adress, memorySize);
 
@@ -768,6 +768,31 @@ void PXAPI PXMemorySet(void* const PXRestrict buffer, const PXByte value, const 
 #endif
 }
 
+#include <immintrin.h>
+
+PXInt8U PXAPI PXMemoryCompareC32V(const char value[4], char* const textList[4], const PXInt8U listAmount)
+{
+    __m512i value_vector = _mm512_set1_epi32(value);
+
+    for(PXInt8U i = 0; i < listAmount; i += 16)
+    {
+        __m512i data_vector = _mm512_loadu_epi32(&textList[i]);
+
+        const __mmask16 result = _mm512_cmp_epi32_mask(value_vector, data_vector, _MM_CMPINT_EQ);
+
+        if(result)
+        {
+            continue;
+        }
+
+        const unsigned int match_index = _lzcnt_u32(result);
+
+        return i + match_index;
+    }
+
+    return (PXInt8U)-1;
+}
+
 int PXAPI PXMemoryCompareThreeWay(const void* PXRestrict bufferA, const PXSize bufferASize, const void* PXRestrict bufferB, const PXSize bufferBSize)
 {
     const PXSize bufferSize = PXMathMinimumIU(bufferASize, bufferBSize);
@@ -1010,8 +1035,10 @@ PXSize PXAPI PXMemoryCopy(const void* PXRestrict inputBuffer, const PXSize input
     );
 #endif
 
-#if MemoryUseSystemFunction
+#if PXMemoryUseFunctionSTD
     memcpy(outputBuffer, inputBuffer, bufferSize);
+#elif PXMemoryUseFunctionOS
+    CopyMemory(outputBuffer, inputBuffer, bufferSize);
 #else
     for (PXSize index = bufferSize ; index ; --index)
     {
@@ -1066,20 +1093,22 @@ PXSize PXAPI PXMemoryMove(const void* inputBuffer, const PXSize inputBufferSize,
 {
     const PXSize bufferSize = PXMathMinimumIU(inputBufferSize, outputBufferSize);
 
-#if MemoryUseSystemFunction
+#if PXMemoryUseFunctionSTD
     memmove(outputBuffer, inputBuffer, bufferSize);
+#elif PXMemoryUseFunctionOS
+    MoveMemory(outputBuffer, inputBuffer, bufferSize);
 #else
     // Need a solution for a copy without a variable
     //memmove(outputBuffer, inputBuffer, bufferSize);
 
     for(size_t i = 0; i < bufferSize; i++)
     {
-        char volatile* a = &((char volatile*)outputBuffer)[i];
-        char volatile* b = &((char volatile*)inputBuffer)[i];
+        char volatile* a = &((char volatile*)inputBuffer)[i];
+        char volatile* b = &((char volatile*)outputBuffer)[i];       
 
         *b = *a;
     }
-#endif
+#endif 
 
     return bufferSize;
 }

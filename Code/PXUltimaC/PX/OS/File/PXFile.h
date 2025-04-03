@@ -206,7 +206,7 @@ PXPublic void PXAPI PXFileCursorMoveTo(PXFile* const pxFile, const PXSize positi
 PXPublic void PXAPI PXFileCursorToBeginning(PXFile* const pxFile);
 PXPublic PXSize PXAPI PXFileCursorPeek(PXFile* const pxFile, void* const data, const PXSize steps);
 PXPublic PXSize PXAPI PXFileCursorAdvance(PXFile* const pxFile, const PXSize steps);
-PXPublic void PXAPI PXFileCursorRewind(PXFile* const pxFile, const PXSize steps);
+PXPublic PXSize PXAPI PXFileCursorRewind(PXFile* const pxFile, const PXSize steps);
 PXPublic PXSize PXAPI PXFileCursorOffset(PXFile* const pxFile, const PXInt32S offset);
 PXPublic void PXAPI PXFileCursorToEnd(PXFile* const pxFile);
 //-------------------------------------------------------------------------
@@ -374,6 +374,8 @@ PXPublic PXSize PXAPI PXFileWriteFV(PXFile* const pxFile, const PXF32* const val
 
 PXPublic PXSize PXAPI PXFileWriteD(PXFile* const pxFile, const double value);
 PXPublic PXSize PXAPI PXFileWriteDV(PXFile* const pxFile, const double* const valueList, const PXSize valueListSize);
+
+PXPublic PXSize PXAPI PXFileWriteInternMove(PXFile* const pxFile, const PXInt16S offset, const PXSize length);
 
 PXPublic PXSize PXAPI PXFileWriteB(PXFile* const pxFile, const void* const value, const PXSize length);
 PXPublic PXSize PXAPI PXFileWriteAtB(PXFile* const pxFile, const void* const data, const PXSize dataSize, const PXSize index);

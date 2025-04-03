@@ -2697,6 +2697,11 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEn
         {
             PXSkyBox* const pxSkyBox = (PXSkyBox*)pxRenderEntity->ObjectReference;
 
+            if(0 == pxSkyBox || -1 == pxSkyBox)
+            {
+                break;
+            }
+
             if(!(pxSkyBox->Info.Behaviour & PXResourceInfoRender))
             {
                 break; // Skip rendering
@@ -3396,7 +3401,11 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
 
 
         pxRenderEntity.ObjectReference = pxSkyBox;
-        pxRenderEntity.ShaderProgramReference = pxSkyBox->ShaderProgramReference;
+
+        if(pxSkyBox != -1 && pxSkyBox != 0)
+        {
+            pxRenderEntity.ShaderProgramReference = pxSkyBox->ShaderProgramReference;
+        }
 
         PXEngineResourceRender(pxEngine, &pxRenderEntity);
     }
