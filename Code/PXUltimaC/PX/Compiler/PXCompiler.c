@@ -1293,6 +1293,24 @@ PXBool PXAPI PXCompilerEnsureTextAndCompare(PXCompiler* const pxCompiler, const 
     return isxform;
 }
 
+PXInt8U PXAPI PXCompilerEnsureTextListAndCompare(PXCompiler* const pxCompiler, const char** const listTextData, const PXInt8U* listTextSize, const PXInt8U amount)
+{
+    for(PXInt8U i = 0; i < amount; ++i)
+    {
+        const char* text = listTextData[i];
+        const PXInt8U size = listTextSize[i];
+
+        const PXBool isTarget = PXCompilerEnsureTextAndCompare(pxCompiler, text, size);
+
+        if(isTarget)
+        {
+            return i;
+        }
+    }
+
+    return (PXInt8U)-1;
+}
+
 PXBool PXAPI PXCompilerEnsurePropertyText
 (
     PXCompiler* const pxCompiler,
@@ -1356,20 +1374,28 @@ PXBool PXAPI PXCompilerParseF32(PXCompiler* const pxCompiler, PXF32* const value
 {
     PXCompilerSymbolEntryPeek(pxCompiler);
 
-    const PXBool isPXF32 =  pxCompiler->ReadInfo.SymbolEntryCurrent.ID == PXCompilerSymbolLexerReal;
+    const PXBool isF32 =  pxCompiler->ReadInfo.SymbolEntryCurrent.ID == PXCompilerSymbolLexerReal;
     const PXBool isInt =  pxCompiler->ReadInfo.SymbolEntryCurrent.ID == PXCompilerSymbolLexerNumeric;
-    const PXBool isValid = isPXF32 || isInt;
+    const PXBool isValid = isF32 || isInt;
 
-    if (isPXF32)
+    if (isF32)
     {
-        *values =  pxCompiler->ReadInfo.SymbolEntryCurrent.F32;
+#if OS64B
+        *values =  pxCompiler->ReadInfo.SymbolEntryCurrent.F64;
+#else
+        *values = pxCompiler->ReadInfo.SymbolEntryCurrent.F32;
+#endif
 
         PXCompilerSymbolEntryExtract(pxCompiler);
     }
 
     if (isInt)
     {
-        *values =  pxCompiler->ReadInfo.SymbolEntryCurrent.I32S;
+#if OS64B
+        *values = pxCompiler->ReadInfo.SymbolEntryCurrent.I64S;
+#else
+        *values = pxCompiler->ReadInfo.SymbolEntryCurrent.I32S;
+#endif
 
         PXCompilerSymbolEntryExtract(pxCompiler);
     }

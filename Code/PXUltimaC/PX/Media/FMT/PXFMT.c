@@ -2,7 +2,7 @@
 
 #include <PX/OS/File/PXFile.h>
 
-static const char FMTSignature[4] = { 'f', 'm', 't', ' ' };
+static const char FMTSignature[4] = "fmt ";
 
 PXActionResult PXAPI PXFMTLoadFromFile(PXFMT* const fmt, PXFile* const pxFile, const PXEndian endian)
 {

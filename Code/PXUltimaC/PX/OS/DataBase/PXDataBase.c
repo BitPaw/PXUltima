@@ -9,7 +9,7 @@
 #include <sqlext.h>
 #include <sqltypes.h>
 
-extern void __chkstk(size_t s) {};
+//extern void __chkstk(size_t s) {};
 
 typedef SQLRETURN(SQL_API* PXSQLAllocConnect)(SQLHENV EnvironmentHandle, __out SQLHDBC* ConnectionHandle);
 typedef SQLRETURN(SQL_API* PXSQLAllocEnv)(__out SQLHENV* EnvironmentHandle);

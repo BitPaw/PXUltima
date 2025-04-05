@@ -91,28 +91,28 @@ const char PXPNGChunkList[18][4] =
 
 
 
-void PXAPI PXPNGChunkReadImageHeader(PXPNG* const pxPNG, PXFile* const pxFile);
-void PXAPI PXPNGChunkReadPalette(PXPNG* const pxPNG, PXFile* const pxFile);
-void PXAPI PXPNGChunkReadImageData(PXPNG* const pxPNG, PXFile* const pxFile);
-void PXAPI PXPNGChunkReadImageEnd(PXPNG* const pxPNG, PXFile* const pxFile);
-void PXAPI PXPNGChunkReadTransparency(PXPNG* const pxPNG, PXFile* const pxFile);
-void PXAPI PXPNGChunkReadImageGamma(PXPNG* const pxPNG, PXFile* const pxFile);
-void PXAPI PXPNGChunkReadPrimaryChromaticities(PXPNG* const pxPNG, PXFile* const pxFile);
-void PXAPI PXPNGChunkReadStandardRGBColorSpace(PXPNG* const pxPNG, PXFile* const pxFile);
-void PXAPI PXPNGChunkReadEmbeddedICCProfile(PXPNG* const pxPNG, PXFile* const pxFile);
-void PXAPI PXPNGChunkReadTextualData(PXPNG* const pxPNG, PXFile* const pxFile);
-void PXAPI PXPNGChunkReadCompressedTextualData(PXPNG* const pxPNG, PXFile* const pxFile);
-void PXAPI PXPNGChunkReadInternationalTextualData(PXPNG* const pxPNG, PXFile* const pxFile);
-void PXAPI PXPNGChunkReadBackgroundColor(PXPNG* const pxPNG, PXFile* const pxFile);
-void PXAPI PXPNGChunkReadPhysicalPixelDimensions(PXPNG* const pxPNG, PXFile* const pxFile);
-void PXAPI PXPNGChunkReadSignificantBits(PXPNG* const pxPNG, PXFile* const pxFile);
-void PXAPI PXPNGChunkReadSuggestedPalette(PXPNG* const pxPNG, PXFile* const pxFile);
-void PXAPI PXPNGChunkReadPaletteHistogram(PXPNG* const pxPNG, PXFile* const pxFile);
-void PXAPI PXPNGChunkReadLastModificationTime(PXPNG* const pxPNG, PXFile* const pxFile);
+PXPrivate void PXAPI PXPNGChunkReadImageHeader(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize);
+PXPrivate void PXAPI PXPNGChunkReadPalette(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize);
+PXPrivate void PXAPI PXPNGChunkReadImageData(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize);
+PXPrivate void PXAPI PXPNGChunkReadImageEnd(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize);
+PXPrivate void PXAPI PXPNGChunkReadTransparency(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize);
+PXPrivate void PXAPI PXPNGChunkReadImageGamma(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize);
+PXPrivate void PXAPI PXPNGChunkReadPrimaryChromaticities(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize);
+PXPrivate void PXAPI PXPNGChunkReadStandardRGBColorSpace(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize);
+PXPrivate void PXAPI PXPNGChunkReadEmbeddedICCProfile(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize);
+PXPrivate void PXAPI PXPNGChunkReadTextualData(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize);
+PXPrivate void PXAPI PXPNGChunkReadCompressedTextualData(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize);
+PXPrivate void PXAPI PXPNGChunkReadInternationalTextualData(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize);
+PXPrivate void PXAPI PXPNGChunkReadBackgroundColor(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize);
+PXPrivate void PXAPI PXPNGChunkReadPhysicalPixelDimensions(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize);
+PXPrivate void PXAPI PXPNGChunkReadSignificantBits(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize);
+PXPrivate void PXAPI PXPNGChunkReadSuggestedPalette(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize);
+PXPrivate void PXAPI PXPNGChunkReadPaletteHistogram(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize);
+PXPrivate void PXAPI PXPNGChunkReadLastModificationTime(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize);
 
 
 
-typedef (PXAPI* PXPNGChunkFunction)(PXPNG* const pxPNG, PXFile* const pxFile);
+typedef (PXAPI* PXPNGChunkFunction)(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize);
 
 const PXPNGChunkFunction PXPNGChunkListFunction[] =
 {
@@ -373,7 +373,12 @@ PXActionResult PXAPI PXPNGPeekFromFile(PXResourceTransphereInfo* const pxResourc
 
             if(0xFF != functionIndex)
             {
-                PXPNGChunkListFunction[functionIndex](png, pxResourceTransphereInfo->FileReference);
+                if(0x03 == functionIndex)
+                {
+                    break; // Exit
+                }
+
+                PXPNGChunkListFunction[functionIndex](png, pxResourceTransphereInfo->FileReference, chunk.Header.Size);
             }
             else
             {
@@ -2380,7 +2385,7 @@ unsigned readBitsFromReversedStream(PXSize* bitpointer, const unsigned char* bit
     return result;
 }
 
-void PXAPI PXPNGChunkReadImageHeader(PXPNG* const pxPNG, PXFile* const pxFile)
+void PXAPI PXPNGChunkReadImageHeader(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize)
 {
     PXFileBinding
     (
@@ -2422,9 +2427,9 @@ void PXAPI PXPNGChunkReadImageHeader(PXPNG* const pxPNG, PXFile* const pxFile)
 #endif
 }
 
-void PXAPI PXPNGChunkReadPalette(PXPNG* const pxPNG, PXFile* const pxFile)
+void PXAPI PXPNGChunkReadPalette(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize)
 {
-    const PXSize palettSize = 0;// chunk.Header.Size / 3u;
+    const PXSize palettSize = chunkSize / 3u;
     const PXBool validSize = palettSize != 0 && palettSize <= 256;
 
     if(!validSize)
@@ -2442,24 +2447,24 @@ void PXAPI PXPNGChunkReadPalette(PXPNG* const pxPNG, PXFile* const pxFile)
     }
 }
 
-void PXAPI PXPNGChunkReadImageData(PXPNG* const pxPNG, PXFile* const pxFile)
+void PXAPI PXPNGChunkReadImageData(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize)
 {
     ++pxPNG->DataBlockListAmount;
 
     pxPNG->DataBlockList = PXMemoryHeapReallocT(PXPNGDataBlock, pxPNG->DataBlockList, pxPNG->DataBlockListAmount);
-   // pxPNG->DataBlockTotalSize += chunk.Header.Size;
+    pxPNG->DataBlockTotalSize += chunkSize;
 
     PXPNGDataBlock* pxPNGDataBlock = &pxPNG->DataBlockList[pxPNG->DataBlockListAmount - 1];
     pxPNGDataBlock->FileOffset = pxFile->DataCursor;
-   // pxPNGDataBlock->DataSize = chunk.Header.Size;
+    pxPNGDataBlock->DataSize = chunkSize;
 }
 
-void PXAPI PXPNGChunkReadImageEnd(PXPNG* const pxPNG, PXFile* const pxFile)
+void PXAPI PXPNGChunkReadImageEnd(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize)
 {
    
 }
 
-void PXAPI PXPNGChunkReadTransparency(PXPNG* const pxPNG, PXFile* const pxFile)
+void PXAPI PXPNGChunkReadTransparency(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize)
 {
     switch(pxPNG->ImageHeader.ColorType)
     {
@@ -2526,12 +2531,12 @@ void PXAPI PXPNGChunkReadTransparency(PXPNG* const pxPNG, PXFile* const pxFile)
     }
 }
 
-void PXAPI PXPNGChunkReadImageGamma(PXPNG* const pxPNG, PXFile* const pxFile)
+void PXAPI PXPNGChunkReadImageGamma(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize)
 {
     PXFileReadI32UE(pxFile, &pxPNG->Gamma, PXEndianBig);
 }
 
-void PXAPI PXPNGChunkReadPrimaryChromaticities(PXPNG* const pxPNG, PXFile* const pxFile)
+void PXAPI PXPNGChunkReadPrimaryChromaticities(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize)
 {
     PXFileBinding
     (
@@ -2543,37 +2548,37 @@ void PXAPI PXPNGChunkReadPrimaryChromaticities(PXPNG* const pxPNG, PXFile* const
     );
 }
 
-void PXAPI PXPNGChunkReadStandardRGBColorSpace(PXPNG* const pxPNG, PXFile* const pxFile)
+void PXAPI PXPNGChunkReadStandardRGBColorSpace(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize)
 {
     
 }
 
-void PXAPI PXPNGChunkReadEmbeddedICCProfile(PXPNG* const pxPNG, PXFile* const pxFile)
+void PXAPI PXPNGChunkReadEmbeddedICCProfile(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize)
 {
    
 }
 
-void PXAPI PXPNGChunkReadTextualData(PXPNG* const pxPNG, PXFile* const pxFile)
+void PXAPI PXPNGChunkReadTextualData(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize)
 {
     
 }
 
-void PXAPI PXPNGChunkReadCompressedTextualData(PXPNG* const pxPNG, PXFile* const pxFile)
+void PXAPI PXPNGChunkReadCompressedTextualData(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize)
 {
    
 }
 
-void PXAPI PXPNGChunkReadInternationalTextualData(PXPNG* const pxPNG, PXFile* const pxFile)
+void PXAPI PXPNGChunkReadInternationalTextualData(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize)
 {
    
 }
 
-void PXAPI PXPNGChunkReadBackgroundColor(PXPNG* const pxPNG, PXFile* const pxFile)
+void PXAPI PXPNGChunkReadBackgroundColor(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize)
 {
    
 }
 
-void PXAPI PXPNGChunkReadPhysicalPixelDimensions(PXPNG* const pxPNG, PXFile* const pxFile)
+void PXAPI PXPNGChunkReadPhysicalPixelDimensions(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize)
 {
     unsigned char unitSpecifier = 0;
 
@@ -2597,29 +2602,27 @@ void PXAPI PXPNGChunkReadPhysicalPixelDimensions(PXPNG* const pxPNG, PXFile* con
     }
 }
 
-void PXAPI PXPNGChunkReadSignificantBits(PXPNG* const pxPNG, PXFile* const pxFile)
+void PXAPI PXPNGChunkReadSignificantBits(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize)
 {
   
 }
 
-void PXAPI PXPNGChunkReadSuggestedPalette(PXPNG* const pxPNG, PXFile* const pxFile)
+void PXAPI PXPNGChunkReadSuggestedPalette(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize)
 {
    
 }
 
-void PXAPI PXPNGChunkReadPaletteHistogram(PXPNG* const pxPNG, PXFile* const pxFile)
+void PXAPI PXPNGChunkReadPaletteHistogram(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize)
 {
-    /*
-    const PXInt32U listSize = chunk.Header.Size / 2;
+    const PXInt32U listSize = chunkSize / 2;
 
     pxPNG->PaletteHistogram.ColorFrequencyListSize = listSize;
     pxPNG->PaletteHistogram.ColorFrequencyList = PXMemoryHeapCallocT(PXInt16U, listSize);
 
     PXFileReadI16UVE(pxFile, &pxPNG->PaletteHistogram.ColorFrequencyList, listSize, PXEndianBig);
-    */
 }
 
-void PXAPI PXPNGChunkReadLastModificationTime(PXPNG* const pxPNG, PXFile* const pxFile)
+void PXAPI PXPNGChunkReadLastModificationTime(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize)
 {
     PXFileBinding
     (

@@ -487,7 +487,7 @@ void* PXAPI PXMemoryHeapRealloc(PXMemoryHeap* pxMemoryHeap, const void* const ad
     {
         void* memory = PXMemoryHeapCalloc(PXNull, 1, memorySize);
 
-        PXMemorySet(memory, 0xFF, memorySize);
+        //PXMemorySet(memory, 0xFF, memorySize);
 
         return memory;
     }
@@ -770,27 +770,76 @@ void PXAPI PXMemorySet(void* const PXRestrict buffer, const PXByte value, const 
 
 #include <immintrin.h>
 
-PXInt8U PXAPI PXMemoryCompareC32V(const char value[4], char* const textList[4], const PXInt8U listAmount)
+PXInt8U PXAPI PXMemoryCompareI8V(const PXInt8U* const textList, const PXInt8U listAmount, const PXInt8U value)
 {
-    __m512i value_vector = _mm512_set1_epi32(value);
+    __m512i value_vector = _mm512_set1_epi8(value); // Load target byte gets copy'ed 64x 
 
-    for(PXInt8U i = 0; i < listAmount; i += 16)
+    for(PXInt8U i = 0; i < listAmount; i += 64)
     {
-        __m512i data_vector = _mm512_loadu_epi32(&textList[i]);
+        __m512i data_vector = _mm512_loadu_epi8(&textList[i]); // Load compare array
 
-        const __mmask16 result = _mm512_cmp_epi32_mask(value_vector, data_vector, _MM_CMPINT_EQ);
+        const PXInt64U result = _mm512_cmp_epi8_mask(value_vector, data_vector, _MM_CMPINT_EQ); // Compare both 16x char[4]
 
-        if(result)
+        if(!result) // Not a single match, get to next
         {
             continue;
         }
 
-        const unsigned int match_index = _lzcnt_u32(result);
+        // We found a match!
 
-        return i + match_index;
+        const unsigned int match_index = 31 - _lzcnt_u64(result); // Count leading zeros. We want the first one.
+
+        return i + match_index; // Index of first hit
     }
 
-    return (PXInt8U)-1;
+    return (PXInt8U)-1; // No match!
+}
+
+PXInt8U PXAPI PXMemoryCompareC32V(const char* value, char* const textList[4], const PXInt8U listAmount)
+{
+    __m512i value_vector = _mm512_set1_epi32(*(int*)value); // Load target char[4], gets copy'ed 16x 
+
+    for(PXInt8U i = 0; i < listAmount; i += 16)
+    {
+        __m512i data_vector = _mm512_loadu_epi32(&textList[i]); // Load compare array
+
+        const __mmask16 result = _mm512_cmp_epi32_mask(value_vector, data_vector, _MM_CMPINT_EQ); // Compare both 16x char[4]
+
+        if(!result) // Not a single match, get to next
+        {
+            continue;
+        }
+
+        // We found a match!
+
+        const unsigned int match_index = 31 - _lzcnt_u32(result); // Count leading zeros. We want the first one.
+
+        return i + match_index; // Index of first hit
+    }
+
+    return (PXInt8U)-1; // No match!
+}
+
+PXInt8U PXAPI PXMemoryCompareSVI8(const char** const stringList, const PXInt8U* const stringSizeList, const PXInt8U amount)
+{
+
+
+    return 0;
+}
+
+PXInt8U PXAPI PXMemoryReadBitI32U(const PXInt32U* const pxInt32U, const PXInt8U index)
+{
+    return _bittest(pxInt32U, index); // [Intrinsic] intrin.h, winnt.h
+}
+
+PXInt8U PXAPI PXMemoryReadBitI64U(const PXInt64U* const pxInt64U, const PXInt8U index)
+{
+    return _bittest64(pxInt64U, index);
+}
+
+PXInt8U PXAPI PXMemoryReadBitAndClearI32U(const PXInt32U* const pxInt32U, const PXInt8U index)
+{
+    return 0;
 }
 
 int PXAPI PXMemoryCompareThreeWay(const void* PXRestrict bufferA, const PXSize bufferASize, const void* PXRestrict bufferB, const PXSize bufferBSize)

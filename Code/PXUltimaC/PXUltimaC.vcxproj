@@ -116,13 +116,13 @@
       <OmitFramePointers>true</OmitFramePointers>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <GenerateXMLDocumentationFiles>true</GenerateXMLDocumentationFiles>
-      <GenerateSourceDependencies>true</GenerateSourceDependencies>
       <TreatSpecificWarningsAsErrors>
       </TreatSpecificWarningsAsErrors>
+      <DebugInformationFormat>None</DebugInformationFormat>
     </ClCompile>
     <Link>
       <AdditionalDependencies>ntdll.lib;DbgHelp.lib;dxguid.lib;Comctl32.lib;Wbemuuid.lib;Shlwapi.lib;Mf.lib;Mfuuid.lib;Mfplat.lib;Mfreadwrite.lib;Dnsapi.lib;Ws2_32.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -152,13 +152,13 @@
       <OmitFramePointers>true</OmitFramePointers>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <GenerateXMLDocumentationFiles>true</GenerateXMLDocumentationFiles>
-      <GenerateSourceDependencies>true</GenerateSourceDependencies>
       <TreatSpecificWarningsAsErrors>
       </TreatSpecificWarningsAsErrors>
+      <DebugInformationFormat>None</DebugInformationFormat>
     </ClCompile>
     <Link>
       <AdditionalDependencies>ntdll.lib;DbgHelp.lib;dxguid.lib;Comctl32.lib;Wbemuuid.lib;Shlwapi.lib;Mf.lib;Mfuuid.lib;Mfplat.lib;Mfreadwrite.lib;Dnsapi.lib;Ws2_32.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

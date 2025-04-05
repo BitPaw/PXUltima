@@ -414,9 +414,26 @@ PXPublic void PXAPI PXMemorySet(void* const PXRestrict bufferA, const PXByte val
 // Compare
 //---------------------------------------------------------
 
+PXPublic PXInt8U PXAPI PXMemoryCompareI8V(const PXInt8U* const textList, const PXInt8U listAmount, const PXInt8U value);
+
 // Compare a list of 4-byte text elements.
 // Return the index of the first match
-PXPublic PXInt8U PXAPI PXMemoryCompareC32V(const char value[4],  char* const textList[4], const PXInt8U listAmount);
+PXPublic PXInt8U PXAPI PXMemoryCompareC32V(const char* value,  char* const textList[4], const PXInt8U listAmount);
+
+
+PXPublic PXInt8U PXAPI PXMemoryCompareSVI8(const char** const stringList, const PXInt8U* const stringSizeList, const PXInt8U amount);
+
+
+
+
+PXPublic PXInt8U PXAPI PXMemoryReadBitI32U(const PXInt32U* const pxInt32U, const PXInt8U index);
+PXPublic PXInt8U PXAPI PXMemoryReadBitI64U(const PXInt64U* const pxInt64U, const PXInt8U index);
+
+
+PXPublic PXInt8U PXAPI PXMemoryReadBitAndClearI32U(const PXInt32U* const pxInt32U, const PXInt8U index);
+
+
+
 
 
 PXPublic int PXAPI PXMemoryCompareThreeWay(const void* PXRestrict bufferA, const PXSize bufferASize, const void* PXRestrict bufferB, const PXSize bufferBSize);

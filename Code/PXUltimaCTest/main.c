@@ -301,7 +301,7 @@ int main()
 
     PXLibraryCurrentlyLoaded(PXNull, 0, 0);
 
-    while(true)
+    while(1)
     {
         Sleep(1000);
     }

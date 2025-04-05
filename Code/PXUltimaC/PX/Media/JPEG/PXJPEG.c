@@ -5,23 +5,243 @@
 #include <PX/OS/File/PXFile.h>
 #include <PX/OS/Memory/PXMemory.h>
 
-const char PXJPEGApp0[4] = { 'J', 'F', 'I', 'F' };
+const char PXJPEGApp0[4] = "JFIF";
 
-typedef struct PXJPEGChunkHeaderBindingData_
+typedef struct PXJPEGChunkHeader_
 {
     PXInt8U SignatureKey;
     PXInt8U CommandID;
     PXInt16U ChunkSize;
 }
-PXJPEGChunkHeaderBindingData;
+PXJPEGChunkHeader;
 
 const PXInt32U PXJPEGChunkHeaderBinding[] =
 {
-    PXTypeInt08U | PXTypeSignatureCheck,
-    PXTypeInt08U,
-    PXTypeInt16UBE,
+ PXTypeInt08U | PXTypeSignatureCheck,
+ PXTypeInt08U,
+ PXTypeInt16UBE,
 };
 const PXInt8U PXJPEGChunkHeaderBindingSize = sizeof(PXJPEGChunkHeaderBinding) / sizeof(PXInt32U);
+
+
+
+
+
+
+
+typedef void (PXAPI* PXJPEGChunckHandlerFunciton)(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+
+
+
+
+
+
+PXPrivate void PXAPI PXJPEGChunckStartOfFrameHuffmanBaselineDCTHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckStartOfFrameHuffmanSequentialExtendedDCTHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckStartOfFrameHuffmanProgressiveDCTHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckStartOfFrameHuffmanSequentialLosslessHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckDefineHuffmanTableListHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckStartOfFrameHuffmanDifferentialSequentialHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckStartOfFrameHuffmanDifferentialProgressiveDCTHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckStartOfFrameHuffmanDifferentialLosslessSequentialHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckStartOfFrameArithmeticPXJPEGExtensionHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckStartOfFrameArithmeticExtendedSequentialDCTHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckStartOfFrameArithmeticProgressiveDCTHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckStartOfFrameArithmeticLosslessSequentialHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckDefineArithmeticCodingHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckStartOfFrameArithmeticDifferentialSequentialDCTHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckStartOfFrameArithmeticDifferentialProgressiveDCTHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckStartOfFrameArithmeticDifferentialLosslessSequentialHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckIntervalTerminationRestart0Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckIntervalTerminationRestart1Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckIntervalTerminationRestart2Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckIntervalTerminationRestart3Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckIntervalTerminationRestart4Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckIntervalTerminationRestart5Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckIntervalTerminationRestart6Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckIntervalTerminationRestart7Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckStartOfImageHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckEndOfImageHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckStartOfScanHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckDefineQuantizationTableListHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckDefineNumberOfLinesHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckDefineRestartIntervalHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckDefineHierarchicalProgressionHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckExpandReferenceComponentListHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckApplicationSegment00Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckApplicationSegment01Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckApplicationSegment02Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckApplicationSegment03Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckApplicationSegment04Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckApplicationSegment05Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckApplicationSegment06Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckApplicationSegment07Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckApplicationSegment08Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckApplicationSegment09Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckApplicationSegment10Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckApplicationSegment11Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckApplicationSegment12Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckApplicationSegment13Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckApplicationSegment14Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckApplicationSegment15Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckExtension00Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckExtension01Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckExtension02Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckExtension03Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckExtension04Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckExtension05Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckExtension06Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckExtension07Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckExtension08Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckExtension09Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckExtension10Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckExtension11Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckExtension12Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckExtension13Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckCommentHandle(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+
+
+
+const PXJPEGChunckHandlerFunciton PXJPEGChunkHandlerList[] =
+{
+    PXJPEGChunckStartOfFrameHuffmanBaselineDCTHandler,
+PXJPEGChunckStartOfFrameHuffmanSequentialExtendedDCTHandler,
+PXJPEGChunckStartOfFrameHuffmanProgressiveDCTHandler,
+PXJPEGChunckStartOfFrameHuffmanSequentialLosslessHandler,
+PXJPEGChunckDefineHuffmanTableListHandler,
+PXJPEGChunckStartOfFrameHuffmanDifferentialSequentialHandler,
+PXJPEGChunckStartOfFrameHuffmanDifferentialProgressiveDCTHandler,
+PXJPEGChunckStartOfFrameHuffmanDifferentialLosslessSequentialHandler,
+PXJPEGChunckStartOfFrameArithmeticPXJPEGExtensionHandler,
+PXJPEGChunckStartOfFrameArithmeticExtendedSequentialDCTHandler,
+PXJPEGChunckStartOfFrameArithmeticProgressiveDCTHandler,
+PXJPEGChunckStartOfFrameArithmeticLosslessSequentialHandler,
+PXJPEGChunckDefineArithmeticCodingHandler,
+PXJPEGChunckStartOfFrameArithmeticDifferentialSequentialDCTHandler,
+PXJPEGChunckStartOfFrameArithmeticDifferentialProgressiveDCTHandler,
+PXJPEGChunckStartOfFrameArithmeticDifferentialLosslessSequentialHandler,
+PXJPEGChunckIntervalTerminationRestart0Handler,
+PXJPEGChunckIntervalTerminationRestart1Handler,
+PXJPEGChunckIntervalTerminationRestart2Handler,
+PXJPEGChunckIntervalTerminationRestart3Handler,
+PXJPEGChunckIntervalTerminationRestart4Handler,
+PXJPEGChunckIntervalTerminationRestart5Handler,
+PXJPEGChunckIntervalTerminationRestart6Handler,
+PXJPEGChunckIntervalTerminationRestart7Handler,
+PXJPEGChunckStartOfImageHandler,
+PXJPEGChunckEndOfImageHandler,
+PXJPEGChunckStartOfScanHandler,
+PXJPEGChunckDefineQuantizationTableListHandler,
+PXJPEGChunckDefineNumberOfLinesHandler,
+PXJPEGChunckDefineRestartIntervalHandler,
+PXJPEGChunckDefineHierarchicalProgressionHandler,
+PXJPEGChunckExpandReferenceComponentListHandler,
+PXJPEGChunckApplicationSegment00Handler,
+PXJPEGChunckApplicationSegment01Handler,
+PXJPEGChunckApplicationSegment02Handler,
+PXJPEGChunckApplicationSegment03Handler,
+PXJPEGChunckApplicationSegment04Handler,
+PXJPEGChunckApplicationSegment05Handler,
+PXJPEGChunckApplicationSegment06Handler,
+PXJPEGChunckApplicationSegment07Handler,
+PXJPEGChunckApplicationSegment08Handler,
+PXJPEGChunckApplicationSegment09Handler,
+PXJPEGChunckApplicationSegment10Handler,
+PXJPEGChunckApplicationSegment11Handler,
+PXJPEGChunckApplicationSegment12Handler,
+PXJPEGChunckApplicationSegment13Handler,
+PXJPEGChunckApplicationSegment14Handler,
+PXJPEGChunckApplicationSegment15Handler,
+PXJPEGChunckExtension00Handler,
+PXJPEGChunckExtension01Handler,
+PXJPEGChunckExtension02Handler,
+PXJPEGChunckExtension03Handler,
+PXJPEGChunckExtension04Handler,
+PXJPEGChunckExtension05Handler,
+PXJPEGChunckExtension06Handler,
+PXJPEGChunckExtension07Handler,
+PXJPEGChunckExtension08Handler,
+PXJPEGChunckExtension09Handler,
+PXJPEGChunckExtension10Handler,
+PXJPEGChunckExtension11Handler,
+PXJPEGChunckExtension12Handler,
+PXJPEGChunckExtension13Handler,
+PXJPEGChunckCommentHandle
+};
+const PXInt8U PXJPEGChunkHandlerListAmount = sizeof(PXJPEGChunkHandlerList) / sizeof(PXJPEGChunckHandlerFunciton);
+
+
+#define PXJPEGChunckStartOfFrameHuffmanBaselineDCT  0xC0 // [0xFFC0] SOF0
+#define PXJPEGChunckStartOfFrameHuffmanSequentialExtendedDCT 0xC1 // [0xFFC1] SOF1
+#define PXJPEGChunckStartOfFrameHuffmanProgressiveDCT  0xC2 // [0xFFC2] SOF2
+#define PXJPEGChunckStartOfFrameHuffmanSequentialLossless 0xC3 // [0xFFC3] SOF3
+#define PXJPEGChunckDefineHuffmanTableList  0xC4 // [0xFFC4] DHT
+#define PXJPEGChunckStartOfFrameHuffmanDifferentialSequential 0xC5 // [0xFFC5] SOF5
+#define PXJPEGChunckStartOfFrameHuffmanDifferentialProgressiveDCT 0xC6 // [0xFFC6] SOF6
+#define PXJPEGChunckStartOfFrameHuffmanDifferentialLosslessSequential 0xC7 // [0xFFC7] SOF7
+#define PXJPEGChunckStartOfFrameArithmeticPXJPEGExtension 0xC8 // [0xFFC8] JPG
+#define PXJPEGChunckStartOfFrameArithmeticExtendedSequentialDCT 0xC9 // [0xFFC9] SOF09
+#define PXJPEGChunckStartOfFrameArithmeticProgressiveDCT 0xC4 // [0xFFCA] SOF10
+#define PXJPEGChunckStartOfFrameArithmeticLosslessSequential 0xCB // [0xFFCB] SOF11
+#define PXJPEGChunckDefineArithmeticCoding  0xCC // [0xFFCC] DAC
+#define PXJPEGChunckStartOfFrameArithmeticDifferentialSequentialDCT 0xCD, // [0xFFCD] SOF13
+#define PXJPEGChunckStartOfFrameArithmeticDifferentialProgressiveDCT 0xCE, // [0xFFCE] SOF14
+#define PXJPEGChunckStartOfFrameArithmeticDifferentialLosslessSequential 0xCF, // [0xFFCF] SOF15
+
+#define PXJPEGChunckIntervalTerminationRestart0 0xD0 // [0xFFD0] RST0
+#define PXJPEGChunckIntervalTerminationRestart1 0xD1 // [0xFFD1] RST1
+#define PXJPEGChunckIntervalTerminationRestart2 0xD2 // [0xFFD2] RST2
+#define PXJPEGChunckIntervalTerminationRestart3 0xD3 // [0xFFD3] RST3
+#define PXJPEGChunckIntervalTerminationRestart4 0xD4 // [0xFFD4] RST4
+#define PXJPEGChunckIntervalTerminationRestart5 0xD5 // [0xFFD5] RST5
+#define PXJPEGChunckIntervalTerminationRestart6 0xD6 // [0xFFD6] RST6
+#define PXJPEGChunckIntervalTerminationRestart7 0xD7 // [0xFFD7] RST7
+#define PXJPEGChunckStartOfImage  0xD8 // [0xFFD8] SOI
+#define PXJPEGChunckEndOfImage  0xD9 // [0xFFD9] EOI
+#define PXJPEGChunckStartOfScan  0xDA // [0xFFDA] SOS
+#define PXJPEGChunckDefineQuantizationTableList 0xDB // [0xFFDB] DQT
+#define PXJPEGChunckDefineNumberOfLines 0xDC // [0xFFDC] DNL
+#define PXJPEGChunckDefineRestartInterval 0xDD // [0xFFDD] DRI
+#define PXJPEGChunckDefineHierarchicalProgression 0xDE // [0xFFDE] DHP
+#define PXJPEGChunckExpandReferenceComponentList 0xDF // [0xFFDF] EXP
+#define PXJPEGChunckApplicationSegment00 0xE0 // [0xFFE0] APP0
+#define PXJPEGChunckApplicationSegment01 0xE1 // [0xFFE1] APP1
+#define PXJPEGChunckApplicationSegment02 0xE2 // [0xFFE2] APP2
+#define PXJPEGChunckApplicationSegment03 0xE3 // [0xFFE3] APP3
+#define PXJPEGChunckApplicationSegment04 0xE4 // [0xFFE4] APP4
+#define PXJPEGChunckApplicationSegment05 0xE5 // [0xFFE5] APP5
+#define PXJPEGChunckApplicationSegment06 0xE6 // [0xFFE6] APP6
+#define PXJPEGChunckApplicationSegment07 0xE7 // [0xFFE7] APP7
+#define PXJPEGChunckApplicationSegment08 0xE8 // [0xFFE8] APP8
+#define PXJPEGChunckApplicationSegment09 0xE9 // [0xFFE9] APP9
+#define PXJPEGChunckApplicationSegment10 0xEA // [0xFFEA] APP10
+#define PXJPEGChunckApplicationSegment11 0xEB // [0xFFEB] APP11
+#define PXJPEGChunckApplicationSegment12 0xEC // [0xFFEC] APP12
+#define PXJPEGChunckApplicationSegment13 0xED // [0xFFED] APP13
+#define PXJPEGChunckApplicationSegment14 0xEE // [0xFFEE] APP14
+#define PXJPEGChunckApplicationSegment15 0xEF // [0xFFEF] APP15
+#define PXJPEGChunckExtension00  0xF0 // [0xFFF0] JPG0
+#define PXJPEGChunckExtension01  0xF1 // [0xFFF1] JPG1
+#define PXJPEGChunckExtension02  0xF2 // [0xFFF2] JPG2
+#define PXJPEGChunckExtension03  0xF3 // [0xFFF3] JPG3
+#define PXJPEGChunckExtension04  0xF4 // [0xFFF4] JPG4
+#define PXJPEGChunckExtension05  0xF5 // [0xFFF5] JPG5
+#define PXJPEGChunckExtension06  0xF6 // [0xFFF6] JPG6
+#define PXJPEGChunckExtension07  0xF7 // [0xFFF7] JPG7
+#define PXJPEGChunckExtension08  0xF8 // [0xFFF8] JPG8
+#define PXJPEGChunckExtension09  0xF9 // [0xFFF9] JPG9
+#define PXJPEGChunckExtension10  0xFA // [0xFFFA] JPG10
+#define PXJPEGChunckExtension11  0xFB // [0xFFFB] JPG11
+#define PXJPEGChunckExtension12  0xFC // [0xFFFC] JPG12
+#define PXJPEGChunckExtension13  0xFD // [0xFFFD] JPG13
+#define PXJPEGChunckComment  0xFE // [0xFFFE] COM
+
+#define PXJPEGChunckTemporary 0x01 // [0xFF01] TEM
+#define PXJPEGChunckReservedUpper 0x02 // [0xFF02] to [0xFFBF] RES
+#define PXJPEGChunckReservedLower 0xBF // [0xFF02] to [0xFFBF] RES
+
+
+
 
 
 
@@ -31,25 +251,25 @@ const PXInt8U PXJPEGChunkHeaderBindingSize = sizeof(PXJPEGChunkHeaderBinding) / 
 // btw: Google's Guetzli project optimizes the quantization tables per image
 const PXInt8U DefaultQuantLuminance[8 * 8] =
 {
-    16, 11, 10, 16, 24, 40, 51, 61,
-    12, 12, 14, 19, 26, 58, 60, 55,
-    14, 13, 16, 24, 40, 57, 69, 56,
-    14, 17, 22, 29, 51, 87, 80, 62,
-    18, 22, 37, 56, 68,109,103, 77,
-    24, 35, 55, 64, 81,104,113, 92,
-    49, 64, 78, 87,103,121,120,101,
-    72, 92, 95, 98,112,100,103, 99
+ 16, 11, 10, 16, 24, 40, 51, 61,
+ 12, 12, 14, 19, 26, 58, 60, 55,
+ 14, 13, 16, 24, 40, 57, 69, 56,
+ 14, 17, 22, 29, 51, 87, 80, 62,
+ 18, 22, 37, 56, 68,109,103, 77,
+ 24, 35, 55, 64, 81,104,113, 92,
+ 49, 64, 78, 87,103,121,120,101,
+ 72, 92, 95, 98,112,100,103, 99
 };
 const PXInt8U DefaultQuantChrominance[8 * 8] =
 {
-    17, 18, 24, 47, 99, 99, 99, 99,
-    18, 21, 26, 66, 99, 99, 99, 99,
-    24, 26, 56, 99, 99, 99, 99, 99,
-    47, 66, 99, 99, 99, 99, 99, 99,
-    99, 99, 99, 99, 99, 99, 99, 99,
-    99, 99, 99, 99, 99, 99, 99, 99,
-    99, 99, 99, 99, 99, 99, 99, 99,
-    99, 99, 99, 99, 99, 99, 99, 99
+ 17, 18, 24, 47, 99, 99, 99, 99,
+ 18, 21, 26, 66, 99, 99, 99, 99,
+ 24, 26, 56, 99, 99, 99, 99, 99,
+ 47, 66, 99, 99, 99, 99, 99, 99,
+ 99, 99, 99, 99, 99, 99, 99, 99,
+ 99, 99, 99, 99, 99, 99, 99, 99,
+ 99, 99, 99, 99, 99, 99, 99, 99,
+ 99, 99, 99, 99, 99, 99, 99, 99
 };
 
 // 8x8 blocks are processed in zig-zag order
@@ -57,58 +277,58 @@ const PXInt8U DefaultQuantChrominance[8 * 8] =
 // note: ZigZagInv[ZigZag[i]] = i
 const PXInt8U ZigZagInv[8 * 8] =
 {
-    0, 1, 8,16, 9, 2, 3,10,     // ZigZag[] =  0, 1, 5, 6,14,15,27,28,
-    17,24,32,25,18,11, 4, 5,    //             2, 4, 7,13,16,26,29,42,
-    12,19,26,33,40,48,41,34,    //             3, 8,12,17,25,30,41,43,
-    27,20,13, 6, 7,14,21,28,    //             9,11,18,24,31,40,44,53,
-    35,42,49,56,57,50,43,36,    //            10,19,23,32,39,45,52,54,
-    29,22,15,23,30,37,44,51,    //            20,22,33,38,46,51,55,60,
-    58,59,52,45,38,31,39,46,    //            21,34,37,47,50,56,59,61,
-    53,60,61,54,47,55,62,63     //            35,36,48,49,57,58,62,63
+ 0, 1, 8,16, 9, 2, 3,10, // ZigZag[] = 0, 1, 5, 6,14,15,27,28,
+ 17,24,32,25,18,11, 4, 5, // 2, 4, 7,13,16,26,29,42,
+ 12,19,26,33,40,48,41,34, // 3, 8,12,17,25,30,41,43,
+ 27,20,13, 6, 7,14,21,28, // 9,11,18,24,31,40,44,53,
+ 35,42,49,56,57,50,43,36, // 10,19,23,32,39,45,52,54,
+ 29,22,15,23,30,37,44,51, // 20,22,33,38,46,51,55,60,
+ 58,59,52,45,38,31,39,46, // 21,34,37,47,50,56,59,61,
+ 53,60,61,54,47,55,62,63 // 35,36,48,49,57,58,62,63
 };
 
 // some constants for our DCT
-#define SqrtHalfSqrt 1.306562965f // sqrt((2 + sqrt(2)) / 2)  = cos(pi * 1 / 8) * sqrt(2)
-#define HalfSqrtSqrt  0.382683432f // sqrt( 2 - sqrt(2)) / 2   = cos(pi * 3 / 8)
-#define InvSqrt 0.707106781f // 1 / sqrt(2)              = cos(pi * 2 / 8)
-#define InvSqrtSqrt 0.541196100f // 1 / sqrt(2 - sqrt(2))    = cos(pi * 3 / 8) * sqrt(2)
+#define SqrtHalfSqrt 1.306562965f // sqrt((2 + sqrt(2)) / 2) = cos(pi * 1 / 8) * sqrt(2)
+#define HalfSqrtSqrt 0.382683432f // sqrt( 2 - sqrt(2)) / 2 = cos(pi * 3 / 8)
+#define InvSqrt 0.707106781f // 1 / sqrt(2) = cos(pi * 2 / 8)
+#define InvSqrtSqrt 0.541196100f // 1 / sqrt(2 - sqrt(2)) = cos(pi * 3 / 8) * sqrt(2)
 // scaling constants for AAN DCT algorithm: AanScaleFactors[0] = 1, AanScaleFactors[k=1..7] = cos(k*PI/16) * sqrt(2)
 const PXF32 AanScaleFactors[8] = { 1, 1.387039845f, SqrtHalfSqrt, 1.175875602f, 1, 0.785694958f, InvSqrtSqrt, 0.275899379f };
 
 // use Huffman code tables recommended by the PXJPEG standard Annex K
 // - they work quite well for most images but are not optimal
 // - CodesPerBitsize tables define how many Huffman codes will have a certain bitsize (plus 1),
-//   e.g. DcLuminanceCodesPerBitsize[2] = 5 because there are 5 Huffman codes being 2+1=3 bits long
+// e.g. DcLuminanceCodesPerBitsize[2] = 5 because there are 5 Huffman codes being 2+1=3 bits long
 // - Values tables are a list of values ordered by their Huffman code bitsize,
-//   e.g. AcLuminanceValues => Huffman(0x01,0x02,0x03) will have 2 bits, Huffman(0x00) will have 3 bits, Huffman(0x04,0x11,0x05) will have 4 bits, ...
+// e.g. AcLuminanceValues => Huffman(0x01,0x02,0x03) will have 2 bits, Huffman(0x00) will have 3 bits, Huffman(0x04,0x11,0x05) will have 4 bits, ...
 
 // Huffman definitions for first DC/AC tables (luminance / Y channel)
-const PXInt8U DcLuminanceCodesPerBitsize[16] = { 0,1,5,1,1,1,1,1,1,0,0,0,0,0,0,0 };   // sum = 12
-const PXInt8U DcLuminanceValues[12] = { 0,1,2,3,4,5,6,7,8,9,10,11 };         // => 12 codes
+const PXInt8U DcLuminanceCodesPerBitsize[16] = { 0,1,5,1,1,1,1,1,1,0,0,0,0,0,0,0 }; // sum = 12
+const PXInt8U DcLuminanceValues[12] = { 0,1,2,3,4,5,6,7,8,9,10,11 }; // => 12 codes
 const PXInt8U AcLuminanceCodesPerBitsize[16] = { 0,2,1,3,3,2,4,3,5,5,4,4,0,0,1,125 }; // sum = 162
-const PXInt8U AcLuminanceValues[162] =                                        // => 162 codes
+const PXInt8U AcLuminanceValues[162] =   // => 162 codes
 {
-    0x01,0x02,0x03,0x00,0x04,0x11,0x05,0x12,0x21,0x31,0x41,0x06,0x13,0x51,0x61,0x07,0x22,0x71,0x14,0x32,0x81,0x91,0xA1,0x08, // 16*10+2 because
-    0x23,0x42,0xB1,0xC1,0x15,0x52,0xD1,0xF0,0x24,0x33,0x62,0x72,0x82,0x09,0x0A,0x16,0x17,0x18,0x19,0x1A,0x25,0x26,0x27,0x28, // upper 4 bits can be 0..F
-    0x29,0x2A,0x34,0x35,0x36,0x37,0x38,0x39,0x3A,0x43,0x44,0x45,0x46,0x47,0x48,0x49,0x4A,0x53,0x54,0x55,0x56,0x57,0x58,0x59, // while lower 4 bits can be 1..A
-    0x5A,0x63,0x64,0x65,0x66,0x67,0x68,0x69,0x6A,0x73,0x74,0x75,0x76,0x77,0x78,0x79,0x7A,0x83,0x84,0x85,0x86,0x87,0x88,0x89, // plus two special codes 0x00 and 0xF0
-    0x8A,0x92,0x93,0x94,0x95,0x96,0x97,0x98,0x99,0x9A,0xA2,0xA3,0xA4,0xA5,0xA6,0xA7,0xA8,0xA9,0xAA,0xB2,0xB3,0xB4,0xB5,0xB6, // order of these symbols was determined empirically by PXJPEG committee
-    0xB7,0xB8,0xB9,0xBA,0xC2,0xC3,0xC4,0xC5,0xC6,0xC7,0xC8,0xC9,0xCA,0xD2,0xD3,0xD4,0xD5,0xD6,0xD7,0xD8,0xD9,0xDA,0xE1,0xE2,
-    0xE3,0xE4,0xE5,0xE6,0xE7,0xE8,0xE9,0xEA,0xF1,0xF2,0xF3,0xF4,0xF5,0xF6,0xF7,0xF8,0xF9,0xFA
+ 0x01,0x02,0x03,0x00,0x04,0x11,0x05,0x12,0x21,0x31,0x41,0x06,0x13,0x51,0x61,0x07,0x22,0x71,0x14,0x32,0x81,0x91,0xA1,0x08, // 16*10+2 because
+ 0x23,0x42,0xB1,0xC1,0x15,0x52,0xD1,0xF0,0x24,0x33,0x62,0x72,0x82,0x09,0x0A,0x16,0x17,0x18,0x19,0x1A,0x25,0x26,0x27,0x28, // upper 4 bits can be 0..F
+ 0x29,0x2A,0x34,0x35,0x36,0x37,0x38,0x39,0x3A,0x43,0x44,0x45,0x46,0x47,0x48,0x49,0x4A,0x53,0x54,0x55,0x56,0x57,0x58,0x59, // while lower 4 bits can be 1..A
+ 0x5A,0x63,0x64,0x65,0x66,0x67,0x68,0x69,0x6A,0x73,0x74,0x75,0x76,0x77,0x78,0x79,0x7A,0x83,0x84,0x85,0x86,0x87,0x88,0x89, // plus two special codes 0x00 and 0xF0
+ 0x8A,0x92,0x93,0x94,0x95,0x96,0x97,0x98,0x99,0x9A,0xA2,0xA3,0xA4,0xA5,0xA6,0xA7,0xA8,0xA9,0xAA,0xB2,0xB3,0xB4,0xB5,0xB6, // order of these symbols was determined empirically by PXJPEG committee
+ 0xB7,0xB8,0xB9,0xBA,0xC2,0xC3,0xC4,0xC5,0xC6,0xC7,0xC8,0xC9,0xCA,0xD2,0xD3,0xD4,0xD5,0xD6,0xD7,0xD8,0xD9,0xDA,0xE1,0xE2,
+ 0xE3,0xE4,0xE5,0xE6,0xE7,0xE8,0xE9,0xEA,0xF1,0xF2,0xF3,0xF4,0xF5,0xF6,0xF7,0xF8,0xF9,0xFA
 };
 // Huffman definitions for second DC/AC tables (chrominance / Cb and Cr channels)
-const PXInt8U DcChrominanceCodesPerBitsize[16] = { 0,3,1,1,1,1,1,1,1,1,1,0,0,0,0,0 };   // sum = 12
-const PXInt8U DcChrominanceValues[12] = { 0,1,2,3,4,5,6,7,8,9,10,11 };         // => 12 codes (identical to DcLuminanceValues)
+const PXInt8U DcChrominanceCodesPerBitsize[16] = { 0,3,1,1,1,1,1,1,1,1,1,0,0,0,0,0 }; // sum = 12
+const PXInt8U DcChrominanceValues[12] = { 0,1,2,3,4,5,6,7,8,9,10,11 }; // => 12 codes (identical to DcLuminanceValues)
 const PXInt8U AcChrominanceCodesPerBitsize[16] = { 0,2,1,2,4,4,3,4,7,5,4,4,0,1,2,119 }; // sum = 162
-const PXInt8U AcChrominanceValues[162] =                                        // => 162 codes
+const PXInt8U AcChrominanceValues[162] =   // => 162 codes
 {
-    0x00,0x01,0x02,0x03,0x11,0x04,0x05,0x21,0x31,0x06,0x12,0x41,0x51,0x07,0x61,0x71,0x13,0x22,0x32,0x81,0x08,0x14,0x42,0x91, // same number of symbol, just different order
-    0xA1,0xB1,0xC1,0x09,0x23,0x33,0x52,0xF0,0x15,0x62,0x72,0xD1,0x0A,0x16,0x24,0x34,0xE1,0x25,0xF1,0x17,0x18,0x19,0x1A,0x26, // (which is more efficient for AC coding)
-    0x27,0x28,0x29,0x2A,0x35,0x36,0x37,0x38,0x39,0x3A,0x43,0x44,0x45,0x46,0x47,0x48,0x49,0x4A,0x53,0x54,0x55,0x56,0x57,0x58,
-    0x59,0x5A,0x63,0x64,0x65,0x66,0x67,0x68,0x69,0x6A,0x73,0x74,0x75,0x76,0x77,0x78,0x79,0x7A,0x82,0x83,0x84,0x85,0x86,0x87,
-    0x88,0x89,0x8A,0x92,0x93,0x94,0x95,0x96,0x97,0x98,0x99,0x9A,0xA2,0xA3,0xA4,0xA5,0xA6,0xA7,0xA8,0xA9,0xAA,0xB2,0xB3,0xB4,
-    0xB5,0xB6,0xB7,0xB8,0xB9,0xBA,0xC2,0xC3,0xC4,0xC5,0xC6,0xC7,0xC8,0xC9,0xCA,0xD2,0xD3,0xD4,0xD5,0xD6,0xD7,0xD8,0xD9,0xDA,
-    0xE2,0xE3,0xE4,0xE5,0xE6,0xE7,0xE8,0xE9,0xEA,0xF2,0xF3,0xF4,0xF5,0xF6,0xF7,0xF8,0xF9,0xFA
+ 0x00,0x01,0x02,0x03,0x11,0x04,0x05,0x21,0x31,0x06,0x12,0x41,0x51,0x07,0x61,0x71,0x13,0x22,0x32,0x81,0x08,0x14,0x42,0x91, // same number of symbol, just different order
+ 0xA1,0xB1,0xC1,0x09,0x23,0x33,0x52,0xF0,0x15,0x62,0x72,0xD1,0x0A,0x16,0x24,0x34,0xE1,0x25,0xF1,0x17,0x18,0x19,0x1A,0x26, // (which is more efficient for AC coding)
+ 0x27,0x28,0x29,0x2A,0x35,0x36,0x37,0x38,0x39,0x3A,0x43,0x44,0x45,0x46,0x47,0x48,0x49,0x4A,0x53,0x54,0x55,0x56,0x57,0x58,
+ 0x59,0x5A,0x63,0x64,0x65,0x66,0x67,0x68,0x69,0x6A,0x73,0x74,0x75,0x76,0x77,0x78,0x79,0x7A,0x82,0x83,0x84,0x85,0x86,0x87,
+ 0x88,0x89,0x8A,0x92,0x93,0x94,0x95,0x96,0x97,0x98,0x99,0x9A,0xA2,0xA3,0xA4,0xA5,0xA6,0xA7,0xA8,0xA9,0xAA,0xB2,0xB3,0xB4,
+ 0xB5,0xB6,0xB7,0xB8,0xB9,0xBA,0xC2,0xC3,0xC4,0xC5,0xC6,0xC7,0xC8,0xC9,0xCA,0xD2,0xD3,0xD4,0xD5,0xD6,0xD7,0xD8,0xD9,0xDA,
+ 0xE2,0xE3,0xE4,0xE5,0xE6,0xE7,0xE8,0xE9,0xEA,0xF2,0xF3,0xF4,0xF5,0xF6,0xF7,0xF8,0xF9,0xFA
 };
 
 
@@ -133,14 +353,15 @@ PXActionResult PXAPI PXJPEGLoadFromFile(PXResourceTransphereInfo* const pxResour
 {
     PXJPEG jpeXg;
     PXJPEG* jpeg = &jpeXg;
+    PXFile* const pxFile = pxResourceLoadInfo->FileReference;
 
     PXClear(PXJPEG, &jpeg);
 
-    PXJPEGChunkHeaderBindingData pxJPEGChunkHeaderBindingData;
+    PXJPEGChunkHeader pxJPEGChunkHeaderBindingData;
 
     // Check Start of Image
     {
-        const PXSize readAbount = PXFileBinding(pxResourceLoadInfo->FileReference, &pxJPEGChunkHeaderBindingData, PXJPEGChunkHeaderBinding, PXJPEGChunkHeaderBindingSize - 1, PXFalse);
+        const PXSize readAbount = PXFileBinding(pxFile, &pxJPEGChunkHeaderBindingData, PXJPEGChunkHeaderBinding, PXJPEGChunkHeaderBindingSize - 1, PXFalse);
         const PXBool validStart = PXJPEGChunckStartOfImage == pxJPEGChunkHeaderBindingData.CommandID;
 
         if(!validStart)
@@ -149,7 +370,7 @@ PXActionResult PXAPI PXJPEGLoadFromFile(PXResourceTransphereInfo* const pxResour
         }
     }
 
-    while(!PXFileIsAtEnd(pxResourceLoadInfo->FileReference))
+    while(!PXFileIsAtEnd(pxFile))
     {
         PXSize expectedOffset;
 
@@ -166,322 +387,28 @@ PXActionResult PXAPI PXJPEGLoadFromFile(PXResourceTransphereInfo* const pxResour
 
             pxJPEGChunkHeaderBindingData.ChunkSize -= 2u; // dont count header
             expectedOffset = pxResourceLoadInfo->FileReference->DataCursor + pxJPEGChunkHeaderBindingData.ChunkSize;
-
-#if JPGDebug
-
-            unsigned int percentage = (pxFile->DataCursor / (PXF32)pxFile->DataSize) * 100;
-
-            printf("\n[i][JPG] Chunk <%2x%2x> deteced. Size:%i Bytes (Parsed : %i%%)\n", markerData.A, markerData.B, chunkLength, percentage);
-#endif
         }
 
-        switch(pxJPEGChunkHeaderBindingData.CommandID)
+        // Is defined index?
+        const PXBool isInRange = PXMathIsInRange(pxJPEGChunkHeaderBindingData.CommandID, 0xC0, 0xFE);
+
+        if(isInRange)
         {
-            case PXJPEGChunckEndOfImage:
-                return PXActionSuccessful;
+            const PXInt8U index = pxJPEGChunkHeaderBindingData.CommandID - 0xC0;
 
-            case PXJPEGChunckStartOfImage:
+            if((PXJPEGChunckEndOfImage - 0xC0) == index)
             {
-                // We read the start tag already. Reading it again is not valid.
-                return PXActionFailedFormatNotAsExpected;
+                break; // DONE!
             }
-            case PXJPEGChunckStartOfFrameHuffmanBaselineDCT:
-            {
-                PXJPEGFrame frame;
 
-                // Read frame
-                {
-                    const PXTypeEntry pxDataStreamElementList[] =
-                    {
-                        {&frame.Precision,PXTypeInt08U},
-                        {&frame.Height,PXTypeInt16UBE},
-                        {&frame.Width,PXTypeInt16UBE},
-                        {&frame.ComponentListSize,PXTypeInt08U}
-                    };
-
-                    PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
-                }
-
-                for(PXSize i = 0; i < frame.ComponentListSize; ++i)
-                {
-                    PXJPEGFrameComponent* frameComponent = &frame.ComponentList[i];
-                    unsigned char samplingFactor = 0;
-
-                    const PXTypeEntry pxDataStreamElementList[] =
-                    {
-                        {&frameComponent->ID,PXTypeInt08U},
-                        {&samplingFactor,PXTypeInt08U},
-                        {&frameComponent->QuantizationTableID,PXTypeInt08U}
-                    };
-
-                    PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
-
-                    frameComponent->SamplingFactorHorizonal = ((samplingFactor & 0b11110000) >> 4u);
-                    frameComponent->SamplingFactorVertical = (samplingFactor & 0b00001111);
-                }
-
-#if JPGDebug
-                printf
-                (
-                    "[i][JPG] Start of Frame (DCT Baseline)\n"
-                    " | Precision  : %3i |\n"
-                    " | Size       : %i, %i |\n"
-                    " | Components : %3i |\n",
-                    frame.Precision,
-                    frame.Width,
-                    frame.Height,
-                    frame.ComponentListSize
-                );
-#endif
-
-                break;
-            }
-            case PXJPEGChunckDefineQuantizationTableList:
-            {
-                PXSize remainingBytes = pxJPEGChunkHeaderBindingData.ChunkSize;
-
-                while(remainingBytes)
-                {
-                    PXInt8U precision = 0;
-                    PXInt8U matixID = 0;
-
-                    {
-                        PXInt8U cluster = 0;
-
-                        remainingBytes -= PXFileReadI8U(pxResourceLoadInfo->FileReference, &cluster);
-
-                        precision = (cluster & 0b11110000) >> 4;
-                        matixID   = (cluster & 0b00001111);
-                    }
-
-                    PXInt8U* const matrixAdress = (PXInt8U*)&jpeg->QuantizationTable[matixID];
-
-                    remainingBytes -= PXFileReadB(pxResourceLoadInfo->FileReference, matrixAdress, sizeof(PXInt8U) * 64u);
-
-#if JPGDebug
-                    printf("[i][JPG] Define Quantization Table <%i>\n", matixID);
-
-
-
-                    for(PXSize y = 0; y < 8u; ++y)
-                    {
-                        printf("|");
-
-                        for(PXSize x = 0; x < 8u; ++x)
-                        {
-                            printf("%3i |", matrixAdress[y * 8u + x]);
-                        }
-
-                        printf("\n");
-                    }
-#endif
-                }
-
-                break;
-            }
-            case PXJPEGChunckDefineHuffmanTableList:
-            {
-                PXSize remainingBytes = pxJPEGChunkHeaderBindingData.ChunkSize;
-
-                while(remainingBytes)
-                {
-                    PXJPEGHuffmanTable jpegHuffmanTable;
-
-                    {
-                        PXInt8U huffmanTableInfo;
-
-                        remainingBytes -= PXFileReadI8U(pxResourceLoadInfo->FileReference, &huffmanTableInfo);
-
-                        jpegHuffmanTable.ID = (huffmanTableInfo & 0b00001111);
-                        jpegHuffmanTable.Type = (huffmanTableInfo & 0b00010000) >> 4u;
-                        // unused 0b11100000
-                    }
-#if JPGDebug
-                    printf
-                    (
-                        "[i][JPG] Define Huffman table\n"
-                        " | ID   : %2i \n"
-                        " | Type : %2i \n",
-                        jpegHuffmanTable.ID,
-                        jpegHuffmanTable.Type
-                    );
-#endif
-
-                    PXInt16U symbolSum = 0;
-
-                    // 16 Bytes symbopls
-                    for(PXInt8U i = 0; i < 16u; ++i)
-                    {
-                        PXInt8U symbol = 0;
-
-                        remainingBytes -= PXFileReadI8U(pxResourceLoadInfo->FileReference, &symbol);
-
-#if JPGDebug
-                        printf
-                        (
-                            " | Symbol length <%zi>\n",
-                            symbol
-                        );
-#endif
-
-                        symbolSum += symbol;
-                    }
-
-#if JPGDebug
-                    printf
-                    (
-                        " | Symbol sum <%zi>\n",
-                        symbolSum
-                    );
-#endif
-
-
-                    // n bytes from that data
-                    for(PXInt16U i = 0; i < symbolSum; ++i)
-                    {
-                        PXInt8U symbol = 0;
-
-                        remainingBytes -= PXFileReadI8U(pxResourceLoadInfo->FileReference, &symbol);
-
-#if JPGDebug
-                        printf
-                        (
-                            " | Symbol <%i>\n",
-                            symbol
-                        );
-#endif
-
-                        // Save?
-                    }
-
-                }
-                break;
-            }
-            case PXJPEGChunckStartOfScan:
-            {
-                PXFileReadI8U(pxResourceLoadInfo->FileReference, &jpeg->ScanStart.ScanSelectorSize);
-
-                for(PXInt8U i = 0; i < jpeg->ScanStart.ScanSelectorSize; ++i)
-                {
-                    PXJPEGScanSelector* scanSelector = &jpeg->ScanStart.ScanSelector[i];
-                    PXInt8U huffmanTableUsed = 0;
-
-                    PXFileReadI8U(pxResourceLoadInfo->FileReference, &scanSelector->ID);
-                    PXFileReadI8U(pxResourceLoadInfo->FileReference, &huffmanTableUsed);
-
-                    scanSelector->DC = ((huffmanTableUsed & 0b11110000) >> 4u);
-                    scanSelector->ACTable = (huffmanTableUsed & 0b00001111);
-                }
-
-                PXFileCursorAdvance(pxResourceLoadInfo->FileReference, 3u); // mandatorily to skip these, why?
-
-                // Compressed image data starts here --------------------------------
-
-                //PXFileReadI8U(&PXFile, &jpeg->ScanStart.SpectralSelectFrom);
-                //PXFileReadI8U(&PXFile, &jpeg->ScanStart.SpectralSelectTo);
-                //PXFileReadI8U(&PXFile, &jpeg->ScanStart.SuccessiveAproximation);
-
-                //jpeg->CompressedImageDataSize = PXFileRemainingSize(&PXFile) - 2u;
-                //jpeg->CompressedImageData = MemoryAllocate(sizeof(unsigned char) * jpeg->CompressedImageDataSize);
-
-                //PXFileReadB(&PXFile, jpeg->CompressedImageData, jpeg->CompressedImageDataSize);
-
-                const PXSize imageDataSize = PXFileRemainingSize(pxResourceLoadInfo->FileReference) - 2u;
-
-                // Correct expected offset, as the "chunk length" seems to be only considering the data iself and not the whole chunk.
-
-                expectedOffset += imageDataSize;
-
-#if JPGDebug
-                printf
-                (
-                    "[i][JPG] Start of Scan...\n"
-                    " - Image Data <%i> Bytes\n",
-                    imageDataSize
-                );
-#endif
-                PXFileCursorAdvance(pxResourceLoadInfo->FileReference, imageDataSize);
-
-                break;
-            }
-            case PXJPEGChunckApplicationSegment00:
-            {
-                char identifier[5];
-
-                PXFileReadB(pxResourceLoadInfo->FileReference, identifier, 5u);
-
-                {
-                    const PXTypeEntry pxDataStreamElementList[] =
-                    {
-                        {&jpeg->FileInfo.VersionMajor, PXTypeInt08U},
-                        {&jpeg->FileInfo.VersionMinor, PXTypeInt08U},
-                        {&jpeg->FileInfo.DensityUnits, PXTypeInt08U},
-                        {&jpeg->FileInfo.DensityX,PXTypeInt16UBE},
-                        {&jpeg->FileInfo.DensityY,PXTypeInt16UBE},
-                        {&jpeg->FileInfo.ThumbnailX, PXTypeInt08U},
-                        {&jpeg->FileInfo.ThumbnailY, PXTypeInt08U},
-                    };
-
-                    PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
-                }
-
-#if JPGDebug
-                printf
-                (
-                    "[i][JPG] Header Info\n"
-                    " | Identifier   : %8s |\n"
-                    " | Version      : %3i, %3i |\n"
-                    " | Density Unit : %8i |\n"
-                    " | Density      : %3i, %3i |\n"
-                    " | Thumbnail    : %3i, %3i |\n",
-                    identifier,
-                    jpeg->FileInfo.VersionMajor,
-                    jpeg->FileInfo.VersionMinor,
-                    jpeg->FileInfo.DensityUnits,
-                    jpeg->FileInfo.DensityX,
-                    jpeg->FileInfo.DensityY,
-                    jpeg->FileInfo.ThumbnailX,
-                    jpeg->FileInfo.ThumbnailY
-                );
-#endif
-
-                // Load Thumbnail
-                {
-                    const PXBool hasThumbnail = jpeg->FileInfo.ThumbnailX > 0 && jpeg->FileInfo.ThumbnailY > 0;
-
-                    if(hasThumbnail)
-                    {
-                        const PXSize size = jpeg->FileInfo.ThumbnailX * jpeg->FileInfo.ThumbnailY * 3u;
-
-                        jpeg->FileInfo.ThumbnailDataSize = size;
-                        jpeg->FileInfo.ThumbnailData = PXMemoryHeapCallocT(PXByte, size);
-
-                        PXFileReadB(pxResourceLoadInfo->FileReference, jpeg->FileInfo.ThumbnailData, jpeg->FileInfo.ThumbnailDataSize);
-                    }
-                }
-
-                break;
-            }
-            case PXJPEGChunckComment:
-            {
-                jpeg->CommentSize = pxJPEGChunkHeaderBindingData.ChunkSize;
-                jpeg->Comment = PXMemoryHeapCallocT(char, jpeg->CommentSize);
-
-                PXFileReadB(pxResourceLoadInfo->FileReference, jpeg->Comment, pxJPEGChunkHeaderBindingData.ChunkSize);
-
-                break;
-            }
+            PXJPEGChunkHandlerList[index](jpeg, pxFile, &pxJPEGChunkHeaderBindingData);
         }
-
-#if JPGDebug
-        if(pxFile->DataCursor != expectedOffset)
+        else
         {
-            printf("[!][JPG] Chunk has unhandled data! Skipping <%zi> Bytes\n", expectedOffset - pxFile->DataCursor);
+            // Unkown chunk! Special handle?
         }
-#endif
-        //--<Allign>----
-        pxResourceLoadInfo->FileReference->DataCursor = expectedOffset;
-        //--------------
+
+        PXFileCursorMoveTo(pxFile, expectedOffset); // Allign
     }
 
     return PXActionSuccessful;
@@ -491,20 +418,20 @@ PXActionResult PXAPI PXJPEGLoadFromFile(PXResourceTransphereInfo* const pxResour
 // represent a few bits, typically a Huffman code
 typedef struct BitCode_
 {
-    // BitCode() {}       // undefined state, must be initialized at a later time
+    // BitCode() {} // undefined state, must be initialized at a later time
     // BitCode(PXInt16U code_, PXInt8U numBits_) : code(code_), numBits(numBits_) {}
-    PXInt16U code;     // PXJPEG's Huffman codes are limited to 16 bits
-    PXInt8U  numBits;  // actual number of bits
+    PXInt16U code; // PXJPEG's Huffman codes are limited to 16 bits
+    PXInt8U numBits; // actual number of bits
 }
 BitCode;
 
 // store the most recently encoded bits that are not written yet
 typedef struct BitBuffer_
 {
-    // BitBuffer()        // actually, there will be only one instance of this object
-    //    : bits(0), numBits(0) {}
-    PXInt32S bits;      // actually only at most 24 bits are used
-    PXInt8U numBits;   // number of valid bits (the right-most bits)
+    // BitBuffer() // actually, there will be only one instance of this object
+    // : bits(0), numBits(0) {}
+    PXInt32S bits; // actually only at most 24 bits are used
+    PXInt8U numBits; // number of valid bits (the right-most bits)
 }
 BitBuffer;
 
@@ -531,10 +458,10 @@ void PXAPI writeBits(PXFile* PXFile, BitBuffer* buffer, BitCode data)
         PXFileWriteI8U(PXFile, oneByte);
 
         if(oneByte == 0xFF) // 0xFF has a special meaning for PXJPEGs (it's a block marker)
-            PXFileWriteI8U(PXFile, 0);         // therefore pad a zero to indicate "nope, this one ain't a marker, it's just a coincidence"
+            PXFileWriteI8U(PXFile, 0); // therefore pad a zero to indicate "nope, this one ain't a marker, it's just a coincidence"
 
         // note: I don't clear those written bits, therefore buffer.bits contains garbage in the high bits
-        //       if you really want to "clean up" (e.g. for debugging purposes) then uncomment the following line
+        // if you really want to "clean up" (e.g. for debugging purposes) then uncomment the following line
         //buffer.bits &= (1 << buffer.numBits) - 1;
     }
 }
@@ -542,10 +469,10 @@ void PXAPI writeBits(PXFile* PXFile, BitBuffer* buffer, BitCode data)
 // convert to a PXJPEG codeword
 void PXAPI convertCode(BitCode* bitCode, int value)
 {
-    // positive value: code = value,     numBits = position of highest set bit
+    // positive value: code = value, numBits = position of highest set bit
     // negative value: ignore sign, then numBits = position of highest set bit, and code = (2^numBits) - 1 + value
     int absolute = value >= 0 ? +value : -value; // by the way: value is never zero
-    int mask = 0;       // will be 2^numBits - 1
+    int mask = 0; // will be 2^numBits - 1
     // find position of highest set bit, fast way for GCC: result.numBits = 32 - __builtin_clz(value);
     int numBits = 0;
     while(absolute > mask)
@@ -647,7 +574,7 @@ short PXAPI PXJPEGEncodeBlock
     else
     {
         BitCode bitCode;
-        convertCode(&bitCode, DC - lastDC);       // nope, encode the difference to previous block's average color
+        convertCode(&bitCode, DC - lastDC); // nope, encode the difference to previous block's average color
         writeBits(PXFile, buffer, huffmanDC[bitCode.numBits]);
         writeBits(PXFile, buffer, bitCode);
     }
@@ -754,17 +681,17 @@ PXActionResult PXAPI PXJPEGSaveToFile(PXResourceTransphereInfo* const pxResource
         const PXInt16U val = 16u;
         const PXTypeEntry pxDataStreamElementList[] =
         {
-            {(void*)&segmentID, PXTypeInt16UBE},
-            {(void*)&val, PXTypeInt16UBE},
-            {(void*)PXJPEGApp0, PXTypeDatax4},
-            {PXNull, PXTypePadding(1)},
-            {&jpegFileInfo.VersionMajor, PXTypeInt08U},
-            {&jpegFileInfo.VersionMinor, PXTypeInt08U},
-            {&jpegFileInfo.DensityUnits, PXTypeInt08U},
-            {&jpegFileInfo.DensityX, PXTypeInt16UBE},
-            {&jpegFileInfo.DensityY, PXTypeInt16UBE},
-            {&jpegFileInfo.ThumbnailX, PXTypeInt08U},
-            {&jpegFileInfo.ThumbnailY, PXTypeInt08U}
+        {(void*)&segmentID, PXTypeInt16UBE},
+        {(void*)&val, PXTypeInt16UBE},
+        {(void*)PXJPEGApp0, PXTypeDatax4},
+        {PXNull, PXTypePadding(1)},
+        {&jpegFileInfo.VersionMajor, PXTypeInt08U},
+        {&jpegFileInfo.VersionMinor, PXTypeInt08U},
+        {&jpegFileInfo.DensityUnits, PXTypeInt08U},
+        {&jpegFileInfo.DensityX, PXTypeInt16UBE},
+        {&jpegFileInfo.DensityY, PXTypeInt16UBE},
+        {&jpegFileInfo.ThumbnailX, PXTypeInt08U},
+        {&jpegFileInfo.ThumbnailY, PXTypeInt08U}
         };
 
         PXFileReadMultible(pxResourceSaveInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -787,15 +714,15 @@ PXActionResult PXAPI PXJPEGSaveToFile(PXResourceTransphereInfo* const pxResource
 
     // write quantization tables
     PXFileWriteI16UE(pxResourceSaveInfo->FileReference, PXJPEGChunckDefineQuantizationTableList, EndianCurrentSystem);
-    PXFileWriteI16UE(pxResourceSaveInfo->FileReference, 2 + (isRGB ? 2 : 1) * (1 + 8 * 8), PXEndianBig);  // length: 65 bytes per table + 2 bytes for this length field
+    PXFileWriteI16UE(pxResourceSaveInfo->FileReference, 2 + (isRGB ? 2 : 1) * (1 + 8 * 8), PXEndianBig); // length: 65 bytes per table + 2 bytes for this length field
 
     // each table has 64 entries and is preceded by an ID byte
-    PXFileWriteI8U(pxResourceSaveInfo->FileReference, 0u); // first  quantization table
+    PXFileWriteI8U(pxResourceSaveInfo->FileReference, 0u); // first quantization table
     PXFileWriteB(pxResourceSaveInfo->FileReference, quantLuminance, sizeof(PXInt8U) * 64u);
 
     if(isRGB)// chrominance is only relevant for color images
     {
-        PXFileWriteI8U(pxResourceSaveInfo->FileReference, 1u);  // second quantization table
+        PXFileWriteI8U(pxResourceSaveInfo->FileReference, 1u); // second quantization table
         PXFileWriteB(pxResourceSaveInfo->FileReference, quantChrominance, sizeof(PXInt8U) * 64u);
     }
 
@@ -821,10 +748,10 @@ PXActionResult PXAPI PXJPEGSaveToFile(PXResourceTransphereInfo* const pxResource
 
     for(PXInt8U id = 1; id <= numComponents; ++id)
     {
-        PXFileWriteI8U(pxResourceSaveInfo->FileReference, id);                    // component ID (Y=1, Cb=2, Cr=3)
+        PXFileWriteI8U(pxResourceSaveInfo->FileReference, id);  // component ID (Y=1, Cb=2, Cr=3)
         // bitmasks for sampling: highest 4 bits: horizontal, lowest 4 bits: vertical
         PXFileWriteI8U(pxResourceSaveInfo->FileReference, id == 1 && downsample ? 0x22 : 0x11); // 0x11 is default YCbCr 4:4:4 and 0x22 stands for YCbCr 4:2:0
-        PXFileWriteI8U(pxResourceSaveInfo->FileReference, id == 1 ? 0 : 1);       // use quantization table 0 for Y, else table 1
+        PXFileWriteI8U(pxResourceSaveInfo->FileReference, id == 1 ? 0 : 1); // use quantization table 0 for Y, else table 1
     }
 
     // ////////////////////////////////////////
@@ -835,12 +762,12 @@ PXActionResult PXAPI PXJPEGSaveToFile(PXResourceTransphereInfo* const pxResource
 
 
     // 2 bytes for the length field, store chrominance only if needed
-    //   1+16+12  for the DC luminance
-    //   1+16+162 for the AC luminance   (208 = 1+16+12 + 1+16+162)
-    //   1+16+12  for the DC chrominance
-    //   1+16+162 for the AC chrominance (208 = 1+16+12 + 1+16+162, same as above)
+    // 1+16+12 for the DC luminance
+    // 1+16+162 for the AC luminance (208 = 1+16+12 + 1+16+162)
+    // 1+16+12 for the DC chrominance
+    // 1+16+162 for the AC chrominance (208 = 1+16+12 + 1+16+162, same as above)
 
-// store luminance's DC+AC Huffman table definitions
+   // store luminance's DC+AC Huffman table definitions
     // highest 4 bits: 0 => DC, lowest 4 bits: 0 => Y (baseline)
     PXFileWriteI8U(pxResourceSaveInfo->FileReference, 0x00);
 
@@ -901,9 +828,9 @@ PXActionResult PXAPI PXJPEGSaveToFile(PXResourceTransphereInfo* const pxResource
     }
 
     // constant values for our baseline PXJPEGs with a single sequential scan
-    PXFileWriteI8U(pxResourceSaveInfo->FileReference, 0u); // spectral selection: must start at  0
-    PXFileWriteI8U(pxResourceSaveInfo->FileReference, 63u); // spectral selection: must stop  at 63
-    PXFileWriteI8U(pxResourceSaveInfo->FileReference, 0u); // successive approximation: must be  0
+    PXFileWriteI8U(pxResourceSaveInfo->FileReference, 0u); // spectral selection: must start at 0
+    PXFileWriteI8U(pxResourceSaveInfo->FileReference, 63u); // spectral selection: must stop at 63
+    PXFileWriteI8U(pxResourceSaveInfo->FileReference, 0u); // successive approximation: must be 0
 
     // adjust quantization tables with AAN scaling factors to simplify DCT
     PXF32 scaledLuminance[64u];
@@ -912,21 +839,21 @@ PXActionResult PXAPI PXJPEGSaveToFile(PXResourceTransphereInfo* const pxResource
     for(PXInt8U i = 0; i < 64u; ++i)
     {
         const PXInt8U row = ZigZagInv[i] / 8; // same as i >> 3
-        const PXInt8U column = ZigZagInv[i] % 8; // same as i &  7
+        const PXInt8U column = ZigZagInv[i] % 8; // same as i & 7
         const PXF32 factor = 1 / (AanScaleFactors[row] * AanScaleFactors[column] * 8);
         scaledLuminance[ZigZagInv[i]] = factor / quantLuminance[i];
         scaledChrominance[ZigZagInv[i]] = factor / quantChrominance[i];
         // if you really want PXJPEGs that are bitwise identical to Jon's code then you need slightly different formulas (note: sqrt(8) = 2.828427125f)
         //const PXF32 aasf[] = { 1.0f * 2.828427125f, 1.387039845f * 2.828427125f, 1.306562965f * 2.828427125f, 1.175875602f * 2.828427125f, 1.0f * 2.828427125f, 0.785694958f * 2.828427125f, 0.541196100f * 2.828427125f, 0.275899379f * 2.828427125f }; // line 240 of jo_jpeg.cpp
-        //scaledLuminance  [ZigZagInv[i]] = 1 / (quantLuminance  [i] * aasf[row] * aasf[column]); // lines 266-267 of jo_jpeg.cpp
+        //scaledLuminance [ZigZagInv[i]] = 1 / (quantLuminance [i] * aasf[row] * aasf[column]); // lines 266-267 of jo_jpeg.cpp
         //scaledChrominance[ZigZagInv[i]] = 1 / (quantChrominance[i] * aasf[row] * aasf[column]);
     }
 
     // all encoded bits pass through this buffer, it writes to output whenever a byte is completed
     BitBuffer buffer;
 
-    buffer.bits = 0;      // actually only at most 24 bits are used
-    buffer.numBits = 0;   // number of valid bits (the right-most bits)
+    buffer.bits = 0; // actually only at most 24 bits are used
+    buffer.numBits = 0; // number of valid bits (the right-most bits)
 
     // just convert image data from void*
     const unsigned char* pixels = (unsigned char*)pxImage->PixelData;
@@ -1058,4 +985,572 @@ PXActionResult PXAPI PXJPEGSaveToFile(PXResourceTransphereInfo* const pxResource
     }
 
     return PXActionSuccessful;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+void PXAPI PXJPEGChunckStartOfFrameHuffmanBaselineDCTHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+    PXJPEGFrame frame;
+
+    // Read frame
+    {
+        const PXTypeEntry pxDataStreamElementList[] =
+        {
+        {&frame.Precision,PXTypeInt08U},
+        {&frame.Height,PXTypeInt16UBE},
+        {&frame.Width,PXTypeInt16UBE},
+        {&frame.ComponentListSize,PXTypeInt08U}
+        };
+
+        PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+    }
+
+    for(PXSize i = 0; i < frame.ComponentListSize; ++i)
+    {
+        PXJPEGFrameComponent* frameComponent = &frame.ComponentList[i];
+        unsigned char samplingFactor = 0;
+
+        const PXTypeEntry pxDataStreamElementList[] =
+        {
+        {&frameComponent->ID,PXTypeInt08U},
+        {&samplingFactor,PXTypeInt08U},
+        {&frameComponent->QuantizationTableID,PXTypeInt08U}
+        };
+
+        PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+
+        frameComponent->SamplingFactorHorizonal = ((samplingFactor & 0b11110000) >> 4u);
+        frameComponent->SamplingFactorVertical = (samplingFactor & 0b00001111);
+    }
+
+#if JPGDebug
+    printf
+    (
+        "[i][JPG] Start of Frame (DCT Baseline)\n"
+        " | Precision : %3i |\n"
+        " | Size : %i, %i |\n"
+        " | Components : %3i |\n",
+        frame.Precision,
+        frame.Width,
+        frame.Height,
+        frame.ComponentListSize
+    );
+#endif
+}
+
+void PXAPI PXJPEGChunckStartOfFrameHuffmanSequentialExtendedDCTHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckStartOfFrameHuffmanProgressiveDCTHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckStartOfFrameHuffmanSequentialLosslessHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckDefineHuffmanTableListHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+    PXSize remainingBytes = pxJPEGChunkHeader->ChunkSize;
+
+    while(remainingBytes)
+    {
+        PXJPEGHuffmanTable jpegHuffmanTable;
+
+        {
+            PXInt8U huffmanTableInfo;
+
+            remainingBytes -= PXFileReadI8U(pxFile, &huffmanTableInfo);
+
+            jpegHuffmanTable.ID = (huffmanTableInfo & 0b00001111);
+            jpegHuffmanTable.Type = (huffmanTableInfo & 0b00010000) >> 4u;
+            // unused 0b11100000
+        }
+#if JPGDebug
+        printf
+        (
+            "[i][JPG] Define Huffman table\n"
+            " | ID : %2i \n"
+            " | Type : %2i \n",
+            jpegHuffmanTable.ID,
+            jpegHuffmanTable.Type
+        );
+#endif
+
+        PXInt16U symbolSum = 0;
+
+        // 16 Bytes symbopls
+        for(PXInt8U i = 0; i < 16u; ++i)
+        {
+            PXInt8U symbol = 0;
+
+            remainingBytes -= PXFileReadI8U(pxFile, &symbol);
+
+#if JPGDebug
+            printf
+            (
+                " | Symbol length <%zi>\n",
+                symbol
+            );
+#endif
+
+            symbolSum += symbol;
+        }
+
+#if JPGDebug
+        printf
+        (
+            " | Symbol sum <%zi>\n",
+            symbolSum
+        );
+#endif
+
+
+        // n bytes from that data
+        for(PXInt16U i = 0; i < symbolSum; ++i)
+        {
+            PXInt8U symbol = 0;
+
+            remainingBytes -= PXFileReadI8U(pxFile, &symbol);
+
+#if JPGDebug
+            printf
+            (
+                " | Symbol <%i>\n",
+                symbol
+            );
+#endif
+
+            // Save?
+        }
+    }
+}
+
+void PXAPI PXJPEGChunckStartOfFrameHuffmanDifferentialSequentialHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckStartOfFrameHuffmanDifferentialProgressiveDCTHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckStartOfFrameHuffmanDifferentialLosslessSequentialHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckStartOfFrameArithmeticPXJPEGExtensionHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckStartOfFrameArithmeticExtendedSequentialDCTHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckStartOfFrameArithmeticProgressiveDCTHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckStartOfFrameArithmeticLosslessSequentialHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckDefineArithmeticCodingHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckStartOfFrameArithmeticDifferentialSequentialDCTHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckStartOfFrameArithmeticDifferentialProgressiveDCTHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckStartOfFrameArithmeticDifferentialLosslessSequentialHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckIntervalTerminationRestart0Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckIntervalTerminationRestart1Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckIntervalTerminationRestart2Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckIntervalTerminationRestart3Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckIntervalTerminationRestart4Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckIntervalTerminationRestart5Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckIntervalTerminationRestart6Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckIntervalTerminationRestart7Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckStartOfImageHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckEndOfImageHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckStartOfScanHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+    PXFileReadI8U(pxFile, &jpeg->ScanStart.ScanSelectorSize);
+
+    for(PXInt8U i = 0; i < jpeg->ScanStart.ScanSelectorSize; ++i)
+    {
+        PXJPEGScanSelector* scanSelector = &jpeg->ScanStart.ScanSelector[i];
+        PXInt8U huffmanTableUsed = 0;
+
+        PXFileReadI8U(pxFile, &scanSelector->ID);
+        PXFileReadI8U(pxFile, &huffmanTableUsed);
+
+        scanSelector->DC = ((huffmanTableUsed & 0b11110000) >> 4u);
+        scanSelector->ACTable = (huffmanTableUsed & 0b00001111);
+    }
+
+    PXFileCursorAdvance(pxFile, 3u); // mandatorily to skip these, why?
+
+    // Compressed image data starts here --------------------------------
+
+    //PXFileReadI8U(&PXFile, &jpeg->ScanStart.SpectralSelectFrom);
+    //PXFileReadI8U(&PXFile, &jpeg->ScanStart.SpectralSelectTo);
+    //PXFileReadI8U(&PXFile, &jpeg->ScanStart.SuccessiveAproximation);
+
+    //jpeg->CompressedImageDataSize = PXFileRemainingSize(&PXFile) - 2u;
+    //jpeg->CompressedImageData = MemoryAllocate(sizeof(unsigned char) * jpeg->CompressedImageDataSize);
+
+    //PXFileReadB(&PXFile, jpeg->CompressedImageData, jpeg->CompressedImageDataSize);
+
+    const PXSize imageDataSize = PXFileRemainingSize(pxFile) - 2u;
+
+    // Correct expected offset, as the "chunk length" seems to be only considering the data iself and not the whole chunk.
+
+    // Jump to actual data
+    PXFileCursorAdvance(pxFile, imageDataSize);
+}
+
+void PXAPI PXJPEGChunckDefineQuantizationTableListHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+    PXSize remainingBytes = pxJPEGChunkHeader->ChunkSize;
+
+    while(remainingBytes)
+    {
+        PXInt8U precision = 0;
+        PXInt8U matixID = 0;
+
+        {
+            PXInt8U cluster = 0;
+
+            remainingBytes -= PXFileReadI8U(pxFile, &cluster);
+
+            precision = (cluster & 0b11110000) >> 4;
+            matixID = (cluster & 0b00001111);
+        }
+
+        PXInt8U* const matrixAdress = (PXInt8U*)&jpeg->QuantizationTable[matixID];
+
+        remainingBytes -= PXFileReadB(pxFile, matrixAdress, sizeof(PXInt8U) * 64u);
+
+#if JPGDebug
+        printf("[i][JPG] Define Quantization Table <%i>\n", matixID);
+
+
+
+        for(PXSize y = 0; y < 8u; ++y)
+        {
+            printf("|");
+
+            for(PXSize x = 0; x < 8u; ++x)
+            {
+                printf("%3i |", matrixAdress[y * 8u + x]);
+            }
+
+            printf("\n");
+        }
+#endif
+    }
+}
+
+void PXAPI PXJPEGChunckDefineNumberOfLinesHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckDefineRestartIntervalHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckDefineHierarchicalProgressionHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckExpandReferenceComponentListHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckApplicationSegment00Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckApplicationSegment01Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckApplicationSegment02Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckApplicationSegment03Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckApplicationSegment04Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckApplicationSegment05Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckApplicationSegment06Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckApplicationSegment07Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckApplicationSegment08Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+    char identifier[5];
+
+    PXFileReadB(pxFile, identifier, 5u);
+
+    {
+        const PXTypeEntry pxDataStreamElementList[] =
+        {
+        {&jpeg->FileInfo.VersionMajor, PXTypeInt08U},
+        {&jpeg->FileInfo.VersionMinor, PXTypeInt08U},
+        {&jpeg->FileInfo.DensityUnits, PXTypeInt08U},
+        {&jpeg->FileInfo.DensityX,PXTypeInt16UBE},
+        {&jpeg->FileInfo.DensityY,PXTypeInt16UBE},
+        {&jpeg->FileInfo.ThumbnailX, PXTypeInt08U},
+        {&jpeg->FileInfo.ThumbnailY, PXTypeInt08U},
+        };
+
+        PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+    }
+
+#if JPGDebug
+    printf
+    (
+        "[i][JPG] Header Info\n"
+        " | Identifier : %8s |\n"
+        " | Version : %3i, %3i |\n"
+        " | Density Unit : %8i |\n"
+        " | Density : %3i, %3i |\n"
+        " | Thumbnail : %3i, %3i |\n",
+        identifier,
+        jpeg->FileInfo.VersionMajor,
+        jpeg->FileInfo.VersionMinor,
+        jpeg->FileInfo.DensityUnits,
+        jpeg->FileInfo.DensityX,
+        jpeg->FileInfo.DensityY,
+        jpeg->FileInfo.ThumbnailX,
+        jpeg->FileInfo.ThumbnailY
+    );
+#endif
+
+    // Load Thumbnail
+    {
+        const PXBool hasThumbnail = jpeg->FileInfo.ThumbnailX > 0 && jpeg->FileInfo.ThumbnailY > 0;
+
+        if(hasThumbnail)
+        {
+            const PXSize size = jpeg->FileInfo.ThumbnailX * jpeg->FileInfo.ThumbnailY * 3u;
+
+            jpeg->FileInfo.ThumbnailDataSize = size;
+            jpeg->FileInfo.ThumbnailData = PXMemoryHeapCallocT(PXByte, size);
+
+            PXFileReadB(pxFile, jpeg->FileInfo.ThumbnailData, jpeg->FileInfo.ThumbnailDataSize);
+        }
+    }
+}
+
+void PXAPI PXJPEGChunckApplicationSegment09Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckApplicationSegment10Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckApplicationSegment11Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckApplicationSegment12Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckApplicationSegment13Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckApplicationSegment14Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckApplicationSegment15Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckExtension00Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckExtension01Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckExtension02Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckExtension03Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckExtension04Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckExtension05Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckExtension06Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckExtension07Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckExtension08Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckExtension09Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckExtension10Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckExtension11Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckExtension12Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckExtension13Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+
+}
+
+void PXAPI PXJPEGChunckCommentHandle(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+{
+    jpeg->CommentSize = pxJPEGChunkHeader->ChunkSize;
+    jpeg->Comment = PXMemoryHeapCallocT(char, jpeg->CommentSize);
+
+    PXFileReadB(pxFile, jpeg->Comment, pxJPEGChunkHeader->ChunkSize);
 }

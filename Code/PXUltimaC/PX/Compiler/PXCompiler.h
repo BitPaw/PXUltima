@@ -249,6 +249,14 @@ PXPublic PXBool PXAPI PXCompilerParseStringUntilNewLineA(PXCompiler* const pxCom
 // Expect a generic token and compare it against provided text
 PXPublic PXBool PXAPI PXCompilerEnsureTextAndCompare(PXCompiler* const pxCompiler, const char* const text, const PXSize textSize);
 
+PXPublic PXInt8U PXAPI PXCompilerEnsureTextListAndCompare
+(
+    PXCompiler* const pxCompiler, 
+    const char** const listTextData,
+    const PXInt8U* listTextSize,
+    const PXInt8U amount
+);
+
 
 PXPublic PXBool PXAPI PXCompilerEnsurePropertyText
 (

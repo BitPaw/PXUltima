@@ -107,6 +107,82 @@ const PXInt8U PXUSDTextXFormOpOrderSize = sizeof(PXUSDTextXFormOpOrder);
 
 
 
+
+typedef void (PXAPI* PXUSDAParseElementFunction)(PXUSDEntry* const pxUSDEntry, PXCompiler* const pxCompiler);
+
+
+
+const PXUSDAParseElementFunction PXUSDAParseEntryParameterListFunction[] =
+{
+    PXUSDAParseEntryParameterPrepend,
+    PXUSDAParseEntryParameterVarriants,
+    PXUSDAParseEntryParameterAssetInfo,
+    PXUSDAParseEntryParameterKind,
+    PXUSDAParseEntryParameterPayLoad
+};
+
+const PXUSDAParseElementFunction PXUSDAParseEntryParameterListText[5] =
+{
+    PXUSDTextprepend,
+    PXUSDTextvariants,
+    PXUSDTextAssetInfo,
+    PXUSDTextkind,
+    PXUSDTextPayload
+};
+
+const PXInt8U PXUSDAParseEntryParameterListSize[5] =
+{
+    sizeof(PXUSDTextprepend),
+    sizeof(PXUSDTextvariants),
+    sizeof(PXUSDTextAssetInfo),
+    sizeof(PXUSDTextkind),
+    sizeof(PXUSDTextPayload)
+};
+const PXInt8U PXUSDAParseEntryParameterListAmount = sizeof(PXUSDAParseEntryParameterListSize) / sizeof(PXInt8U);
+
+
+
+
+
+
+
+
+
+
+
+const PXUSDAParseElementFunction PXUSDAParseEntryPropertyListFunction[] =
+{
+    PXUSDAParseElementDefine,
+    PXUSDAParseEntryPropertyFloat1,
+    PXUSDAParseEntryPropertyFloat3,
+    PXUSDAParseEntryPropertyDouble3,
+    PXUSDAParseEntryPropertyUniform
+};
+
+const PXUSDAParseElementFunction PXUSDAParseEntryPropertyListText[5] =
+{
+    PXUSDTextDef,
+    PXUSDTextFloat,
+    PXUSDTextFloat3,
+    PXUSDTextdouble3,
+    PXUSDTextuniform
+};
+
+const PXInt8U PXUSDAParseEntryPropertyListSize[5] =
+{
+    sizeof(PXUSDTextDef),
+    sizeof(PXUSDTextFloat),
+    sizeof(PXUSDTextFloat3),
+    sizeof(PXUSDTextdouble3),
+    sizeof(PXUSDTextuniform)
+};
+const PXInt8U PXUSDAParseEntryPropertyListAmount = sizeof(PXUSDAParseEntryPropertyListSize) / sizeof(PXInt8U);
+
+
+
+
+
+
 // Binary Format
 const char PXUSDBinarySignature[8] = "PXR-USDC";
 const char PXUSDBinaryTOKENS[6] = "TOKENS";
@@ -147,9 +223,6 @@ const PXUSDSegmentLoadFunction PXUSDBinaryTokenListFunction[6] =
    PXUSDCSectionPaths
 };
 const PXInt8U PXUSDBinaryTokenListAmount = sizeof(PXUSDBinaryTokenListsize) / sizeof(PXInt8U);
-
-
-
 
 
 
@@ -298,7 +371,6 @@ PXActionResult PXAPI PXUSDALoadFromFile(PXResourceTransphereInfo* const pxResour
     // Prealloc
     if(pxUSD->Text.EntryAmount < 10)
     {
-
         pxUSD->Text.EntryAmount = 0;
         pxUSD->Text.EntryList = PXMemoryHeapCallocT(PXUSDEntry, pxCompiler.SymbolsRead / 50);
     }
@@ -721,6 +793,8 @@ void PXAPI PXUSDAParseElementDefine(PXUSDA* const pxUSDA, PXCompiler* const pxCo
 }
 
 
+
+
 void PXAPI PXUSDAParseEntryParameter(PXUSDEntry* const pxUSDEntry, PXCompiler* const pxCompiler)
 {
     const PXBool isOpen = PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerBrackedRoundOpen);
@@ -743,39 +817,20 @@ void PXAPI PXUSDAParseEntryParameter(PXUSDEntry* const pxUSDEntry, PXCompiler* c
             }
             case PXCompilerSymbolLexerGeneric:
             {
-               // if(PXUSDEntryXFORM & pxUSDEntry->Flags) // is XFORM
-              //  {
-               //     PXCompilerEnsurePropertyText(pxCompiler, PXUSDTextkind, PXUSDTextkindSize, PXNull, PXNull);
-              //  }
-              //  else
-                {
-                    const PXBool isPrepend = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextprepend, PXUSDTextprependSize);
-                    const PXBool isvariants = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextvariants, PXUSDTextvariantsSize);
-                    const PXBool isAssetInfo = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextAssetInfo, PXUSDTextAssetInfoSize);
-                    const PXBool isKind = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextkind, PXUSDTextkindSize);
-                    const PXBool isPayload = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextPayload, PXUSDTextPayloadSize);
+                const PXInt8U index = PXCompilerEnsureTextListAndCompare
+                (
+                    pxCompiler, 
+                    PXUSDAParseEntryParameterListText,
+                    PXUSDAParseEntryParameterListSize,
+                    PXUSDAParseEntryParameterListAmount
+                );
 
-                    if(isPrepend)
-                    {
-                        PXUSDAParseEntryParameterPrepend(pxUSDEntry, pxCompiler);                       
-                    }
-                    else if(isvariants)
-                    {
-                        PXUSDAParseEntryParameterVarriants(pxUSDEntry, pxCompiler);
-                    }
-                    else if(isAssetInfo)
-                    {
-                        PXUSDAParseEntryParameterAssetInfo(pxUSDEntry, pxCompiler);
-                    }
-                    else if(isKind)
-                    {
-                        PXUSDAParseEntryParameterKind(pxUSDEntry, pxCompiler);
-                    }
-                    else if(isPayload)
-                    {
-                        PXUSDAParseEntryParameterPayLoad(pxUSDEntry, pxCompiler);
-                    }
-                }     
+                if(0xFF == index)
+                {
+                    break;
+                }
+
+                PXUSDAParseEntryParameterListFunction[index](pxUSDEntry, pxCompiler);
 
                 break;
             }
@@ -787,6 +842,12 @@ void PXAPI PXUSDAParseEntryParameter(PXUSDEntry* const pxUSDEntry, PXCompiler* c
         }
     }
 }
+
+
+
+
+
+
 
 void PXAPI PXUSDAParseEntryProperty(PXUSDA* const pxUSDA, PXUSDEntry* const pxUSDEntry, PXCompiler* const pxCompiler)
 {
@@ -807,41 +868,26 @@ void PXAPI PXUSDAParseEntryProperty(PXUSDA* const pxUSDA, PXUSDEntry* const pxUS
         {
             case PXCompilerSymbolLexerGeneric:
             {
-                const PXBool isDef = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextDef, PXUSDTextDefSize);
-                const PXBool isFloatSignle = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextFloat, PXUSDTextFloatSize);
-                const PXBool isFloat = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextFloat3, PXUSDTextFloat3Size);
-                const PXBool isDouble = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextdouble3, PXUSDTextdouble3Size);
-                const PXBool isUniform = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextuniform, PXUSDTextuniformSize);
+                const PXInt8U index = PXCompilerEnsureTextListAndCompare
+                (
+                    pxCompiler,
+                    PXUSDAParseEntryPropertyListText,
+                    PXUSDAParseEntryPropertyListSize,
+                    PXUSDAParseEntryPropertyListAmount
+                );
 
-                if(isDef)
-                {             
-                    PXUSDAParseElementDefine(pxUSDA, pxCompiler);
-                    break;
-                }         
-
-                if(isFloatSignle)
+                if(0xFF == index)
                 {
-                    PXUSDAParseEntryPropertyFloat1(pxUSDEntry, pxCompiler);
-                    break;
-                }             
-
-                if(isFloat)
-                {
-                    PXUSDAParseEntryPropertyFloat3(pxUSDEntry, pxCompiler);
                     break;
                 }
 
-                if(isDouble)
+                if(0 == index)
                 {
-                    PXUSDAParseEntryPropertyDouble3(pxUSDEntry, pxCompiler);
+                    PXUSDAParseEntryPropertyListFunction[0](pxUSDA, pxCompiler); 
                     break;
                 }
 
-                if(isUniform)
-                {
-                    PXUSDAParseEntryPropertyUniform(pxUSDEntry, pxCompiler);
-                    break;
-                }
+                PXUSDAParseEntryPropertyListFunction[index](pxUSDEntry, pxCompiler);                
 
                 break;
             }
