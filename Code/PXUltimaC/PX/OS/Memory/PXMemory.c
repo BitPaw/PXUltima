@@ -820,11 +820,114 @@ PXInt8U PXAPI PXMemoryCompareC32V(const char* value, char* const textList[4], co
     return (PXInt8U)-1; // No match!
 }
 
-PXInt8U PXAPI PXMemoryCompareSVI8(const char** const stringList, const PXInt8U* const stringSizeList, const PXInt8U amount)
+PXInt8U PXAPI PXMemoryCompareSVI8(const char* const stringTarget, char** const stringList, const PXInt8U* const stringSizeList, const PXInt8U amount)
 {
+    // Load the target string into a 512-bit AVX512 register
+    __m512i target = _mm512_set1_epi64(*(PXInt64U*)stringTarget); // Mask for max 8 bytes
+    __m512i currentString = _mm512_setzero_si512();
+
+    PXSize offset = 0;
+
+    for(size_t roundIndex = 0; roundIndex < amount; ++roundIndex)
+    {
+        // Upload strings
+        for(PXInt8U batchIndex = 0; batchIndex < 8; ++batchIndex)
+        {
+            char* stringSource = stringList[(roundIndex * 8) +batchIndex];
+            PXInt8U stringLength = stringSizeList[(roundIndex*8) + batchIndex];
 
 
-    return 0;
+            // Load the current string in the list into another AVX512 register
+           // __m512i currentString = _mm512_maskz_loadu_epi8(0xFF, stringList[i]);
+            PXInt64U mask = (1LLu << stringLength) -1;
+
+            // Add already written bytes
+            mask <<= batchIndex*8;
+
+          //  offset += 8-stringLength;
+
+
+            // Push one string
+            currentString = _mm512_mask_loadu_epi8(currentString, mask, stringSource - batchIndex * 8);
+        }
+
+
+        // Compare
+
+
+        PXLogPrint
+        (
+            PXLoggingAllocation,
+            PXMemoryLogPrintTitle,
+            "SIMD-Compare",
+            "8x char[] vs char[]\n"
+            "%-8s %-8s %-8s %-8s %-8s %-8s %-8s %-8s\n"
+            "%-8s %-8s %-8s %-8s %-8s %-8s %-8s %-8s",
+            &target.m512i_i8[8 * 0],
+            &target.m512i_i8[8 * 1],
+            &target.m512i_i8[8 * 2],
+            &target.m512i_i8[8 * 3],
+            &target.m512i_i8[8 * 4],
+            &target.m512i_i8[8 * 5],
+            &target.m512i_i8[8 * 6],
+            &target.m512i_i8[8 * 7],
+
+            &currentString.m512i_i8[8 * 0],
+            &currentString.m512i_i8[8 * 1],
+            &currentString.m512i_i8[8 * 2],
+            &currentString.m512i_i8[8 * 3],
+            &currentString.m512i_i8[8 * 4],
+            &currentString.m512i_i8[8 * 5],
+            &currentString.m512i_i8[8 * 6],
+            &currentString.m512i_i8[8 * 7]
+        );
+
+
+        // Compare the target string with the current string (element-wise comparison)
+        __mmask8 resultMask = _mm512_cmp_epi64_mask(target, currentString, _MM_CMPINT_EQ);
+
+        if(!resultMask)
+        {
+            PXLogPrint
+            (
+                PXLoggingAllocation,
+                PXMemoryLogPrintTitle,
+                "SIMD-Compare",
+                "No match in this batch (%i/%i)",
+                roundIndex+1,
+                amount/8
+            );
+
+            continue;
+        }
+
+        const PXInt64U match_index = 31 - _lzcnt_u32(resultMask); // Count leading zeros. We want the first one.
+        const PXInt8U index = (roundIndex *8)+ match_index;
+
+        PXLogPrint
+        (
+            PXLoggingAllocation,
+            PXMemoryLogPrintTitle,
+            "SIMD-Compare",
+            "Match found! index:<%i>",
+            index
+        );
+
+        return index;
+    }    
+
+
+    PXLogPrint
+    (
+        PXLoggingAllocation,
+        PXMemoryLogPrintTitle,
+        "SIMD-Compare",
+        "Absolutly no match found"
+    );
+
+    // Return a sentinel value if no match is found
+    return (PXInt8U)-1;
+
 }
 
 PXInt8U PXAPI PXMemoryReadBitI32U(const PXInt32U* const pxInt32U, const PXInt8U index)

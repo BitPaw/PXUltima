@@ -171,6 +171,19 @@ int main()
     PXConsoleWrite(0, "[i] Starting testing...\n");
 
 
+
+    {
+        PXBinaryWindows bin;
+        PXClear(PXBinaryWindows, &bin);
+
+        PXResourceTransphereInfo pxResourceTransphereInfo;
+        PXClear(PXResourceTransphereInfo, &pxResourceTransphereInfo);
+        pxResourceTransphereInfo.ResourceTarget = &bin;
+
+        PXResourceLoadA(&pxResourceTransphereInfo, "C:\\Windows\\System32\\calc.exe");
+    }
+
+
     {
         PXModel pxModel;
         PXClear(PXBinaryWindows, &pxModel);

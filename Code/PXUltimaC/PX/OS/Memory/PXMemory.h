@@ -421,7 +421,7 @@ PXPublic PXInt8U PXAPI PXMemoryCompareI8V(const PXInt8U* const textList, const P
 PXPublic PXInt8U PXAPI PXMemoryCompareC32V(const char* value,  char* const textList[4], const PXInt8U listAmount);
 
 
-PXPublic PXInt8U PXAPI PXMemoryCompareSVI8(const char** const stringList, const PXInt8U* const stringSizeList, const PXInt8U amount);
+PXPublic PXInt8U PXAPI PXMemoryCompareSVI8(const char* const stringTarget, char** const stringList, const PXInt8U* const stringSizeList, const PXInt8U amount);
 
 
 

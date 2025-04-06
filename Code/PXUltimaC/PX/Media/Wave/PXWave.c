@@ -5,10 +5,10 @@
 #include <PX/OS/File/PXFile.h>
 #include <PX/OS/Memory/PXMemory.h>
 
-const static char WAVSignatureLIST[4] = { 'L', 'I', 'S', 'T' };
-const static char WAVSignatureData[4] = { 'd', 'a', 't', 'a' };
+const static char WAVSignatureLIST[4] = "LIST";
+const static char WAVSignatureData[4] = "data";
 
-#pragma optimize("", off)
+
 PXActionResult PXAPI PXWaveLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     /*
@@ -86,7 +86,7 @@ PXActionResult PXAPI PXWaveLoadFromFile(PXResourceTransphereInfo* const pxResour
     return PXActionSuccessful;
 }
 
-#pragma optimize("", off)
+
 PXActionResult PXAPI PXWaveSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
 #if 0

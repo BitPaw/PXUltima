@@ -5,7 +5,8 @@
 #include <PX/Media/Salsa20/PXSalsa20.h>
 #include <PX/OS/Console/PXConsole.h>
 
-const char PXSignature[8] = {'T', 'A', 'f', 'f', '0', '1', '0', '0' };
+const char PXSignature[8] = "TAff0100";
+const char PXSignatureName[] = "FastFile";
 
 const char PXFastFileKey[32] =
 {
@@ -85,7 +86,7 @@ PXActionResult PXAPI PXFastFileLoadFromFile(PXResourceTransphereInfo* const pxRe
     PXLogPrint
     (
         PXLoggingInfo,
-        "FastFile",
+        PXSignatureName,
         "Parse",
         "--- Start ---"
     );
@@ -107,7 +108,7 @@ PXActionResult PXAPI PXFastFileLoadFromFile(PXResourceTransphereInfo* const pxRe
             PXLogPrint
             (
                 PXLoggingInfo,
-                "FastFile",
+                PXSignatureName,
                 "Parse",
                 "Signature invalid"
             );
@@ -121,105 +122,105 @@ PXActionResult PXAPI PXFastFileLoadFromFile(PXResourceTransphereInfo* const pxRe
 
     switch(pxFastFile.Version)
     {
-    case 147: // 0x97
-    {
-        // Skip the PHEEBs71 magic.
-        const char buffer[] = {'P','H','E','E','B','s','7','1','\0','\0','\0','\0'};
-        const PXBool equal = PXFileReadAndCompare(pxFile, buffer, 12);
-
-        if(!equal)
+        case 147: // 0x97
         {
-            return PXActionInvalid;
-        }
+            // Skip the PHEEBs71 magic.
+            const char buffer[] = { 'P','H','E','E','B','s','7','1','\0','\0','\0','\0' };
+            const PXBool equal = PXFileReadAndCompare(pxFile, buffer, 12);
 
-
-        // Initialize the IV table.
-        char ivTable[16000];
-        int ivCounter[4];
-
-        char name[32];
-        PXFileReadB(pxFile, name, 32); // 0x20
-
-
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            "FastFile",
-            "Parse",
-            "Name %s",
-            name
-        );
-#endif
-
-        FillIVTable(ivTable, 16000, name);
-        SetupIVCounter(ivCounter);
-
-        // Skip the RSA sig.
-        //  _stream.Position += 0x100;
-        PXFileCursorAdvance(pxFile, 0x100);
-
-
-        // Create a file containing the decompressed/decrypted zone file.
-
-
-        PXFile outputFile;
-        PXClear(PXFile, &outputFile);
-
-        PXSalsa20 pxSalsa20;
-        PXClear(PXSalsa20, &pxSalsa20);
-
-        pxSalsa20.KeyData = PXFastFileKey;
-        pxSalsa20.KeyLength = sizeof(PXFastFileKey);
-
-        for(;;)
-        {
-            PXFileReadI32U(pxFile, &pxSalsa20.DataSize);
-
-            const PXBool isLastSection = 0 == pxSalsa20.DataSize;
-
-            if(isLastSection)
+            if(!equal)
             {
-#if PXLogEnable
-                PXLogPrint
-                (
-                    PXLoggingInfo,
-                    "FastFile",
-                    "Parse",
-                    "Final section reacherd"
-                );
-#endif
-                break;
+                return PXActionInvalid;
             }
 
 
-            // Get the IV for the current section.
-            GetIV(pxSalsa20.IV, pxSalsa20.DataSectionIndex % 4, ivTable, ivCounter);
+            // Initialize the IV table.
+            char ivTable[16000];
+            int ivCounter[4];
 
-            // Generate a decryptor to decrypt the data.
-            // var decryptor = salsa.CreateDecryptor();
-
-            // Decrypt the data
-            PXSalsa20Decrypt(&pxSalsa20, pxFile, &outputFile);
+            char name[32];
+            PXFileReadB(pxFile, name, 32); // 0x20
 
 
-            // Uncompress the decrypted data.
-            //byte[] uncompressedData = DeflateStream.UncompressBuffer(decryptedData);
-            //outputStream.Write(uncompressedData, 0, uncompressedData.Length);
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                PXSignatureName,
+                "Parse",
+                "Name %s",
+                name
+            );
+#endif
 
-            // Calculate the SHA-1 of the decrypted data and update the IV table.
-            // using (var sha1 = SHA1.Create())
-            //     UpdateIVTable(sectionIndex % 4, sha1.ComputeHash(decryptedData), ivTable, ivCounter);
+            FillIVTable(ivTable, 16000, name);
+            SetupIVCounter(ivCounter);
 
-            ++(pxSalsa20.DataSectionIndex);
+            // Skip the RSA sig.
+            //  _stream.Position += 0x100;
+            PXFileCursorAdvance(pxFile, 0x100);
+
+
+            // Create a file containing the decompressed/decrypted zone file.
+
+
+            PXFile outputFile;
+            PXClear(PXFile, &outputFile);
+
+            PXSalsa20 pxSalsa20;
+            PXClear(PXSalsa20, &pxSalsa20);
+
+            pxSalsa20.KeyData = PXFastFileKey;
+            pxSalsa20.KeyLength = sizeof(PXFastFileKey);
+
+            for(;;)
+            {
+                PXFileReadI32U(pxFile, &pxSalsa20.DataSize);
+
+                const PXBool isLastSection = 0 == pxSalsa20.DataSize;
+
+                if(isLastSection)
+                {
+#if PXLogEnable
+                    PXLogPrint
+                    (
+                        PXLoggingInfo,
+                        PXSignatureName,
+                        "Parse",
+                        "Final section reacherd"
+                    );
+#endif
+                    break;
+                }
+
+
+                // Get the IV for the current section.
+                GetIV(pxSalsa20.IV, pxSalsa20.DataSectionIndex % 4, ivTable, ivCounter);
+
+                // Generate a decryptor to decrypt the data.
+                // var decryptor = salsa.CreateDecryptor();
+
+                // Decrypt the data
+                PXSalsa20Decrypt(&pxSalsa20, pxFile, &outputFile);
+
+
+                // Uncompress the decrypted data.
+                //byte[] uncompressedData = DeflateStream.UncompressBuffer(decryptedData);
+                //outputStream.Write(uncompressedData, 0, uncompressedData.Length);
+
+                // Calculate the SHA-1 of the decrypted data and update the IV table.
+                // using (var sha1 = SHA1.Create())
+                //     UpdateIVTable(sectionIndex % 4, sha1.ComputeHash(decryptedData), ivTable, ivCounter);
+
+                ++(pxSalsa20.DataSectionIndex);
+            }
+
+
+            break;
         }
 
-
-        break;
-    }
-
-    default:
-        break;
+        default:
+            break;
     }
 
     /*

@@ -3,7 +3,7 @@
 #include <PX/OS/File/PXFile.h>
 #include <PX/OS/Memory/PXMemory.h>
 
-const static char PXOGGHeaderSignature[4] = { 'O','g','g','S' };
+const static char PXOGGHeaderSignature[4] = "OggS";
 
 #define PXOGGHeaderTypeContinuation 0x01
 #define PXOGGHeaderTypeBeginningOfStream 0x02

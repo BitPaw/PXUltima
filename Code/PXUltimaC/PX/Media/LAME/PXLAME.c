@@ -3,7 +3,7 @@
 #include <PX/Media/PXText.h>
 #include <PX/OS/File/PXFile.h>
 
-const char PXLameSignatureID[] = { 'L', 'A', 'M', 'E' };
+const char PXLameSignatureID[4] = "LAME";
 
 PXActionResult PXAPI PXLAMELoadFromFile(PXLAME* const lame, PXFile* const pxFile)
 {

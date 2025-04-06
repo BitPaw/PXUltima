@@ -3,7 +3,7 @@
 #include <PX/OS/Error/PXActionResult.h>
 #include <PX/OS/File/PXFile.h>
 
-const static char PXPDFSignature[5] = {'%', 'P', 'D', 'F', '-'};
+const char PXPDFSignature[5] = "%PDF-";
 
 PXActionResult PXAPI PXPDFLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {

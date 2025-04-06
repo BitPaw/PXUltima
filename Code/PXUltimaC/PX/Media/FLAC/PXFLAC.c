@@ -3,7 +3,7 @@
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/OS/File/PXFile.h>
 
-const char PXFLACSignature[4] = {'f','L','a','C'};
+const char PXFLACSignature[4] = "fLaC";
 
 PXFLACBlockType PXAPI PXFLACBlockTypeFromID(const PXInt8U typeID)
 {

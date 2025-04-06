@@ -3,9 +3,9 @@
 #include <PX/Math/PXMath.h>
 #include <PX/OS/File/PXFile.h>
 
-const char PXGIFHeader[3] = { 'G','I','F' };
-const char PXGIFVersionA[3] = {'8','7','a' };
-const char PXGIFVersionB[3] = {'8','9','a'};
+const char PXGIFHeader[3] = "GIF";
+const char PXGIFVersionA[3] = "87a";
+const char PXGIFVersionB[3] = "89a";
 #define PXGIFEOF 0x3B
 
 PXSize PXAPI PXGIFFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp)

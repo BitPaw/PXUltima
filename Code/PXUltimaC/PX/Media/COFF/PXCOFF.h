@@ -34,25 +34,23 @@ typedef enum PXCOFFFormat_
 }
 PXCOFFFormat;
 
-typedef enum PXSectionType_
-{
-    PXSectionTypeInvalid,
-    PXSectionTypeAlphaArchitectureInformation,
-    PXSectionTypeUninitializedData,
-    PXSectionTypeInitializedData,
-    PXSectionTypeExportTables,
-    PXSectionTypeImportTables,
-    PXSectionTypeExceptionInformationA,
-    PXSectionTypeReadOnlyInitializedData,
-    PXSectionTypeImageRelocations,
-    PXSectionTypeResourceDirectory,
-    PXSectionTypeExecutableCode,
-    PXSectionTypeThreadLocalstorage,
-    PXSectionTypeExceptionInformationB,
-    PXSectionTypeDebug,
-    PXSectionTypeDirective
-}
-PXSectionType;
+
+#define PXSectionTypeInvalid    0xFF
+#define PXSectionTypeAlphaArchitectureInformation   1
+#define PXSectionTypeUninitializedData      2
+#define PXSectionTypeInitializedData        3
+#define PXSectionTypeExportTables           4
+#define PXSectionTypeImportTables           5
+#define PXSectionTypeExceptionInformationA  6
+#define PXSectionTypeReadOnlyInitializedData 7
+#define PXSectionTypeImageRelocations       8
+#define PXSectionTypeResourceDirectory      9
+#define PXSectionTypeExecutableCode         10
+#define PXSectionTypeThreadLocalstorage     11
+#define PXSectionTypeExceptionInformationB  12
+#define PXSectionTypeDebug                  13
+#define PXSectionTypeDirective              14
+
 
 
 // 40 Bytes in file
@@ -75,7 +73,7 @@ typedef struct PXSectionTable_
     PXInt16U NumberOfLinenumbers;
     PXInt32U CharacteristicFlags;
 
-    PXSectionType Type;
+    PXInt8U Type;
 }
 PXSectionTable;
 
@@ -288,7 +286,6 @@ PXCOFF;
 
 PXPrivate inline PXCOFFMachineType PXAPI PXCOFFMachineFromID(const PXInt16U valueID);
 PXPrivate inline PXCOFFFormat PXAPI PXCOFFFormatFromID(const PXInt16U valueID);
-PXPrivate inline PXSectionType PXAPI PXSectionTypeFromID(const PXInt64U valueID);
 
 PXPublic PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFile);
 PXPublic PXActionResult PXAPI PXCOFFSaveToFile(const PXCOFF* const pxCOFF, PXFile* const pxFile);

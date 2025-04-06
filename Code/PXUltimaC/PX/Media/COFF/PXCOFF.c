@@ -7,6 +7,63 @@
 
 //#include <assert.h>
 
+
+// Every segction starts with a "."
+const char PXCOFFSectionTypeAlphaArchitectureInformation[4] = "arch";
+const char PXCOFFSectionTypeUninitializedData[3] = "bss";
+const char PXCOFFSectionTypeInitializedData[4] = "data";
+const char PXCOFFSectionTypeExportTables[5] = "edata";
+const char PXCOFFSectionTypeImportTables[5] = "idata";
+const char PXCOFFSectionTypeExceptionInformationA[5] = "pdata";
+const char PXCOFFInt4PXSectionTypeReadOnlyInitializedData8Make[5] = "rdata";
+const char PXCOFFSectionTypeImageRelocations[5] = "reloc";
+const char PXCOFFSectionTypeResourceDirectory[4] = "rsrc";
+const char PXCOFFSectionTypeExecutableCode[4] = "text";
+const char PXCOFFSectionTypeThreadLocalstorage[3] = "tls";
+const char PXCOFFSectionTypeExceptionInformationB[5] = "xdata";
+const char PXCOFFSectionTypeDebug[5] = "debug";
+const char PXCOFFSectionTypeRec[7] = "drectve";
+
+const char* PXCOFFSectionList[] =
+{
+    PXCOFFSectionTypeAlphaArchitectureInformation,
+    PXCOFFSectionTypeUninitializedData,
+    PXCOFFSectionTypeInitializedData,
+    PXCOFFSectionTypeExportTables,
+    PXCOFFSectionTypeImportTables,
+    PXCOFFSectionTypeExceptionInformationA,
+    PXCOFFInt4PXSectionTypeReadOnlyInitializedData8Make,
+    PXCOFFSectionTypeImageRelocations,
+    PXCOFFSectionTypeResourceDirectory,
+    PXCOFFSectionTypeExecutableCode,
+    PXCOFFSectionTypeThreadLocalstorage,
+    PXCOFFSectionTypeExceptionInformationB,
+    PXCOFFSectionTypeDebug,
+    PXCOFFSectionTypeRec
+};
+
+const PXInt8U PXCOFFSectionListSize[] = 
+{
+    sizeof(PXCOFFSectionTypeAlphaArchitectureInformation),
+    sizeof(PXCOFFSectionTypeUninitializedData),
+    sizeof(PXCOFFSectionTypeInitializedData),
+    sizeof(PXCOFFSectionTypeExportTables),
+    sizeof(PXCOFFSectionTypeImportTables),
+    sizeof(PXCOFFSectionTypeExceptionInformationA),
+    sizeof(PXCOFFInt4PXSectionTypeReadOnlyInitializedData8Make),
+    sizeof(PXCOFFSectionTypeImageRelocations),
+    sizeof(PXCOFFSectionTypeResourceDirectory),
+    sizeof(PXCOFFSectionTypeExecutableCode),
+    sizeof(PXCOFFSectionTypeThreadLocalstorage),
+    sizeof(PXCOFFSectionTypeExceptionInformationB),
+    sizeof(PXCOFFSectionTypeDebug),
+    sizeof(PXCOFFSectionTypeRec)
+};
+
+const PXInt8U PXCOFFSectionListAmount = sizeof(PXCOFFSectionListSize) / sizeof(PXInt8U);
+
+
+
 #define PXCOFFDebug 1
 
 #define STYP_REG 0x0000;
@@ -79,44 +136,6 @@ PXCOFFFormat PXAPI PXCOFFFormatFromID(const PXInt16U valueID)
 
         default:
             return PXCOFFFormatInvalid;
-    }
-}
-
-PXSectionType PXAPI PXSectionTypeFromID(const PXInt64U valueID)
-{
-    switch(valueID)
-    {
-        case PXInt40Make('.', 'a', 'r', 'c', 'h'):
-            return PXSectionTypeAlphaArchitectureInformation;
-        case PXInt32Make('.', 'b', 's', 's'):
-            return PXSectionTypeUninitializedData;
-        case PXInt40Make('.', 'd', 'a', 't', 'a'):
-            return PXSectionTypeInitializedData;
-        case PXInt48Make('.', 'e', 'd', 'a', 't', 'a'):
-            return PXSectionTypeExportTables;
-        case PXInt48Make('.', 'i', 'd', 'a', 't', 'a'):
-            return PXSectionTypeImportTables;
-        case PXInt48Make('.', 'p', 'd', 'a', 't', 'a'):
-            return PXSectionTypeExceptionInformationA;
-        case PXInt48Make('.', 'r', 'd', 'a', 't', 'a'):
-            return PXSectionTypeReadOnlyInitializedData;
-        case PXInt48Make('.', 'r', 'e', 'l', 'o', 'c'):
-            return PXSectionTypeImageRelocations;
-        case PXInt40Make('.', 'r', 's', 'r', 'c'):
-            return PXSectionTypeResourceDirectory;
-        case PXInt40Make('.', 't', 'e', 'x', 't'):
-            return PXSectionTypeExecutableCode;
-        case PXInt32Make('.', 't', 'l', 's'):
-            return PXSectionTypeThreadLocalstorage;
-        case PXInt48Make('.', 'x', 'd', 'a', 't', 'a'):
-            return PXSectionTypeExceptionInformationB;
-        case PXInt48Make('.', 'd', 'e', 'b', 'u', 'g'):
-            return PXSectionTypeDebug;
-        case PXInt64Make('.', 'd', 'r', 'e', 'c', 't', 'v', 'e'):
-            return PXSectionTypeDirective;
-
-        default:
-            return PXSectionTypeInvalid;
     }
 }
 
@@ -447,8 +466,17 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 
             //assert(readBytes == 40u);
 
+            if(pxSectionTableCurrent->Name.Data[0] != '.')
+            {
+                // Illegal?
+            }
 
-            pxSectionTableCurrent->Type = PXSectionTypeFromID(pxSectionTableCurrent->Name.Value);
+            PXMemoryMove(&pxSectionTableCurrent->Name.Data[1], 7, &pxSectionTableCurrent->Name.Data[0], 8);
+
+            pxSectionTableCurrent->Type = PXMemoryCompareSVI8(&pxSectionTableCurrent->Name.Data, PXCOFFSectionList, PXCOFFSectionListSize, PXCOFFSectionListAmount);
+
+
+           // pxSectionTableCurrent->Type = PXSectionTypeFromID(pxSectionTableCurrent->Name.Value);
 
 #if PXLogEnable && PXCOFFDebug
             PXLogPrint
