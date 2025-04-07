@@ -547,7 +547,6 @@ PXActionResult PXAPI PXUSDCSectionTokensLoad(PXFile* const pxFile, PXTOCSectionT
 #endif
 
     PXConsoleWrite(0, 0);
-
 }
 
 PXActionResult PXAPI PXUSDCSectionStringsLoad(PXFile* const pxFile, PXTOCSectionStrings* const pxTOCSectionStrings)

@@ -172,6 +172,18 @@ int main()
 
 
 
+
+    {
+        PXModel pxModel;
+        PXClear(PXBinaryWindows, &pxModel);
+
+        PXResourceTransphereInfo pxResourceTransphereInfo;
+        PXClear(PXResourceTransphereInfo, &pxResourceTransphereInfo);
+        pxResourceTransphereInfo.ResourceTarget = &pxModel;
+
+        PXResourceLoadA(&pxResourceTransphereInfo, "P:\\_Cache\\Kitchen_set\\Kitchen_set.usd");
+    }
+
     {
         PXBinaryWindows bin;
         PXClear(PXBinaryWindows, &bin);
@@ -184,16 +196,7 @@ int main()
     }
 
 
-    {
-        PXModel pxModel;
-        PXClear(PXBinaryWindows, &pxModel);
 
-        PXResourceTransphereInfo pxResourceTransphereInfo;
-        PXClear(PXResourceTransphereInfo, &pxResourceTransphereInfo);
-        pxResourceTransphereInfo.ResourceTarget = &pxModel;
-
-        PXResourceLoadA(&pxResourceTransphereInfo, "P:\\_Cache\\Kitchen_set\\Kitchen_set.usd");
-    }
 
 
     {
