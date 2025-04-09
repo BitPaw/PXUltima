@@ -23,6 +23,8 @@ PXTOCSectionStrings;
 typedef struct PXTOCSectionFields_
 {
     PXInt64U AmountOFFields;
+
+    PXInt32U* FieldList;
 }
 PXTOCSectionFields;
 

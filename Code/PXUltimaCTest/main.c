@@ -172,7 +172,7 @@ int main()
 
 
 
-
+#if 0
     {
         PXBinaryWindows bin;
         PXClear(PXBinaryWindows, &bin);
@@ -183,6 +183,7 @@ int main()
 
         PXResourceLoadA(&pxResourceTransphereInfo, "C:\\Windows\\System32\\calc.exe");
     }
+#endif
 
  
 

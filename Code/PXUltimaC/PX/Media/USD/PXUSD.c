@@ -276,6 +276,337 @@ PXActionResult PXAPI PXUSDLoadFromFile(PXResourceTransphereInfo* const pxResourc
 }
 
 
+
+
+
+
+PXActionResult PXAPI PXUSDCLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+{
+    PXUSD pxUSD;
+    PXFile* const pxFile = pxResourceLoadInfo->FileReference;
+
+    PXBool isSignatureValid = PXFileReadAndCompare(pxFile, PXUSDBinarySignature, sizeof(PXUSDBinarySignature));
+
+    if(!isSignatureValid)
+    {
+        return PXActionRefusedInvalidHeaderSignature;
+    }
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXUSDCName,
+        "Load",
+        "Binary format detected"
+    );
+#endif
+
+    char versionString[8];
+
+    PXFileReadB(pxFile, versionString, 8);
+    PXFileReadI64U(pxFile, &pxUSD.Binary.TOCOffset);
+
+
+    // TOC-Chunk
+    {
+        PXFileCursorMoveTo(pxFile, pxUSD.Binary.TOCOffset);
+        PXFileReadI64U(pxFile, &pxUSD.Binary.TOCSectionsAmount);
+
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            PXUSDCName,
+            "Load",
+            "Dections: %i",
+            pxUSD.Binary.TOCSectionsAmount
+        );
+#endif
+
+        pxUSD.Binary.TOCSectionList = PXMemoryHeapCallocT(PXTOCSection, pxUSD.Binary.TOCSectionsAmount);
+
+        for(PXSize i = 0; i < pxUSD.Binary.TOCSectionsAmount; ++i)
+        {
+            PXTOCSection* const pxTOCSection = &pxUSD.Binary.TOCSectionList[i];
+
+            PXFileReadTextA(pxFile, pxTOCSection->Name, 16);
+            PXFileReadI64U(pxFile, &pxTOCSection->OffsetStart);
+            PXFileReadI64U(pxFile, &pxTOCSection->BlockSize);
+
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                PXUSDCName,
+                "Load",
+                "Dection: %i/%i, %10s, Start:%7i, Size:%i",
+                i + 1,
+                pxUSD.Binary.TOCSectionsAmount,
+                pxTOCSection->Name,
+                pxTOCSection->OffsetStart,
+                pxTOCSection->BlockSize
+            );
+#endif
+        }
+    }
+
+
+    // Process tokens
+    {
+        for(PXSize i = 0; i < pxUSD.Binary.TOCSectionsAmount; ++i)
+        {
+            PXTOCSection* const pxTOCSection = &pxUSD.Binary.TOCSectionList[i];
+
+            const PXInt8U index = PXTextCompareAVI8(pxTOCSection->Name, PXTextUnkownLength, PXUSDBinaryTokenListData, PXUSDBinaryTokenListsize, PXUSDBinaryTokenListAmount);
+
+            if(-1 == index)
+            {
+                // Not registerd, cant be handled
+                continue;
+            }
+
+            PXFileCursorMoveTo(pxFile, pxTOCSection->OffsetStart);
+
+            PXFileReadI64U(pxFile, &pxTOCSection->Tokens.NumberOfTokens);
+
+            PXUSDBinaryTokenListFunction[index](pxFile, pxTOCSection->Data);
+
+            const PXBool isAlligned = pxFile->DataCursor == (pxTOCSection->OffsetStart + pxTOCSection->BlockSize);
+        }
+    }
+
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXUSDCName,
+        "Load",
+        "DONE"
+    );
+#endif
+
+
+    /*
+        PXSize TOCSectionCounterTokens;
+    PXSize TOCSectionCounterPaths;
+    PXSize TOCSectionCounterStrings;
+    PXSize TOCSectionCounterFields;
+    PXSize TOCSectionCounterFieldsets;
+    PXSize TOCSectionCounterSpecs;
+    */
+
+    return PXActionSuccessful;
+}
+
+
+PXActionResult PXAPI PXUSDCSectionTokensLoad(PXFile* const pxFile, PXTOCSectionTokens* const pxTOCSectionTokens)
+{
+    PXFileReadI64U(pxFile, &pxTOCSectionTokens->SizeUncompressed);
+    PXFileReadI64U(pxFile, &pxTOCSectionTokens->SizeCompressed);
+
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXUSDCName,
+        "Load",
+        "Tokens\n"
+        "%20s : %i\n"
+        "%20s : %i\n"
+        "%20s : %i",
+        "NumberOfTokens", pxTOCSectionTokens->NumberOfTokens,
+        "SizeCompressed", pxTOCSectionTokens->SizeCompressed,
+        "SizeUncompressed", pxTOCSectionTokens->SizeUncompressed
+    );
+#endif
+
+
+
+    PXFile pxFileCompressed;
+    PXFile pxFileUncompressed;
+
+    {
+        PXFileOpenInfo pxFileCompressedInfo;
+        PXClear(PXFileOpenInfo, &pxFileCompressedInfo);
+
+        pxFileCompressedInfo.AccessMode = PXAccessModeReadOnly;
+        pxFileCompressedInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
+        pxFileCompressedInfo.FlagList = PXFileIOInfoFileMemory;
+        pxFileCompressedInfo.BufferData = PXFileCursorPosition(pxFile);
+        pxFileCompressedInfo.BufferSize = pxTOCSectionTokens->SizeCompressed;
+        PXFileOpen(&pxFileCompressed, &pxFileCompressedInfo);
+
+        // Load B
+        PXClear(PXFileOpenInfo, &pxFileCompressedInfo);
+
+        pxFileCompressedInfo.AccessMode = PXAccessModeReadAndWrite;
+        pxFileCompressedInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
+        pxFileCompressedInfo.FlagList = PXFileIOInfoFileVirtual;
+        pxFileCompressedInfo.FileSizeRequest = pxTOCSectionTokens->SizeUncompressed;
+        PXFileOpen(&pxFileUncompressed, &pxFileCompressedInfo);
+    }
+
+    PXActionResult uncompressResult = PXLZ4Decompress(&pxFileCompressed, &pxFileUncompressed);
+
+#if PXLogEnable
+    PXSize offset = 0;
+
+    for(PXSize i = 0; i < pxTOCSectionTokens->NumberOfTokens; ++i)
+    {
+        char* text = &((char*)pxFileUncompressed.Data)[offset];
+
+        PXSize length = PXTextLengthA(text, -1);
+
+        offset += length+1;
+
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            PXUSDCName,
+            "Load",
+            "%3i/%3i - %s",
+            i+1,
+            pxTOCSectionTokens->NumberOfTokens,
+            text
+        );
+    }
+#endif
+
+    PXConsoleWrite(0, 0);
+}
+
+PXActionResult PXAPI PXUSDCReadCompressedInts(PXFile* const input,  PXFile* const output, size_t num_ints)
+{
+    // Check for max size
+    if(num_ints > 0xFFFFFFFF) 
+    {
+        return PXActionInvalid;
+    }
+
+    PXInt64U compSize;
+    PXFileReadI64U(input, &compSize);
+    /*
+
+    std::vector<char> compBuffer;
+    compBuffer.resize(compBufferSize);
+
+
+    PXInt32U* buffer = PXMemoryHeapCallocT(PXInt32U, pxTOCSectionFields->AmountOFFields);
+
+
+    if(!_sr->read(size_t(compSize), size_t(compSize),
+       reinterpret_cast<uint8_t*>(compBuffer.data()))) {
+        PUSH_ERROR_AND_RETURN_TAG(kTag, "Failed to read compressedInts.");
+    }
+
+    bool ret = Compressor::DecompressFromBuffer(
+        compBuffer.data(), size_t(compSize), out, num_ints, &_err);
+
+    REDUCE_MEMORY_USAGE(compBufferSize);
+    */
+
+    return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXUSDCSectionStringsLoad(PXFile* const pxFile, PXTOCSectionStrings* const pxTOCSectionStrings)
+{
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXUSDAName,
+        "Parse-Section",
+        "Strings"
+    );
+#endif
+
+    return PXActionRefusedNotImplemented;
+}
+
+PXActionResult PXAPI PXUSDCSectionFields(PXFile* const pxFile, PXTOCSectionFields* const pxTOCSectionFields)
+{
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXUSDAName,
+        "Parse-Section",
+        "Fields"
+    );
+#endif
+
+    pxTOCSectionFields->FieldList = PXMemoryHeapCallocT(PXInt32U, pxTOCSectionFields->AmountOFFields);
+
+
+
+    return PXActionRefusedNotImplemented;
+}
+
+PXActionResult PXAPI PXUSDCSectionFieldSets(PXFile* const pxFile, PXTOCSectionFieldSets* const pxTOCSectionFieldSets)
+{
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXUSDAName,
+        "Parse-Section",
+        "FieldSets"
+    );
+#endif
+
+    return PXActionRefusedNotImplemented;
+}
+
+PXActionResult PXAPI PXUSDCSectionSpecs(PXFile* const pxFile, PXTOCSectionSpecs* const pxTOCSectionSpecs)
+{
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXUSDAName,
+        "Parse-Section",
+        "Specs"
+    );
+#endif
+
+    return PXActionRefusedNotImplemented;
+}
+
+PXActionResult PXAPI PXUSDCSectionPaths(PXFile* const pxFile, PXTOCSectionPaths* const pxTOCSectionPaths)
+{
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXUSDAName,
+        "Parse-Section",
+        "Paths"
+    );
+#endif
+
+    return PXActionRefusedNotImplemented;
+}
+
+
+
+
+
+
+
+PXActionResult PXAPI PXUSDZLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+{
+
+}
+
+
+
+
+
+
+
 PXActionResult PXAPI PXUSDALoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     PXCompiler pxCompiler;
@@ -286,7 +617,7 @@ PXActionResult PXAPI PXUSDALoadFromFile(PXResourceTransphereInfo* const pxResour
 
     if(isPrime)
     {
-        pxResourceLoadInfo->ResourceLoadContainer = PXMemoryHeapCallocT(PXUSD, 1);   
+        pxResourceLoadInfo->ResourceLoadContainer = PXMemoryHeapCallocT(PXUSD, 1);
     }
 
     pxUSD = pxResourceLoadInfo->ResourceLoadContainer;
@@ -397,7 +728,7 @@ PXActionResult PXAPI PXUSDALoadFromFile(PXResourceTransphereInfo* const pxResour
                 const PXBool isDef = PXCompilerEnsureTextAndCompare(&pxCompiler, PXUSDTextDef, PXUSDTextDefSize);
 
                 if(isDef)
-                {            
+                {
                     PXUSDAParseElementDefine(&pxUSD->Text, &pxCompiler);
                 }
 
@@ -412,7 +743,7 @@ PXActionResult PXAPI PXUSDALoadFromFile(PXResourceTransphereInfo* const pxResour
 
     // We parsed the whole file, now we need to load 
     // all sup-data elements that are references
- 
+
 #if 1
     for(PXSize i = offset; i < pxUSD->Text.EntryAmount; ++i)
     {
@@ -449,7 +780,7 @@ PXActionResult PXAPI PXUSDALoadFromFile(PXResourceTransphereInfo* const pxResour
             "%20s : %10.4lf %10.4lf %10.4lf\n"
             "%20s : %10.4f %10.4f %10.4f\n"
             "%20s : %10.4f %10.4f %10.4f",
-            i+1, 
+            i + 1,
             pxUSD->Text.EntryAmount,
             "Name", nameBuffer,
             "Include", resultPath.TextA,
@@ -471,229 +802,6 @@ PXActionResult PXAPI PXUSDALoadFromFile(PXResourceTransphereInfo* const pxResour
 
     return PXActionSuccessful;
 }
-
-PXActionResult PXAPI PXUSDCSectionTokensLoad(PXFile* const pxFile, PXTOCSectionTokens* const pxTOCSectionTokens)
-{
-    PXFileReadI64U(pxFile, &pxTOCSectionTokens->SizeUncompressed);
-    PXFileReadI64U(pxFile, &pxTOCSectionTokens->SizeCompressed);
-
-
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXUSDCName,
-        "Load",
-        "Tokens\n"
-        "%20s : %i\n"
-        "%20s : %i\n"
-        "%20s : %i",
-        "NumberOfTokens", pxTOCSectionTokens->NumberOfTokens,
-        "SizeCompressed", pxTOCSectionTokens->SizeCompressed,
-        "SizeUncompressed", pxTOCSectionTokens->SizeUncompressed
-    );
-#endif
-
-
-
-    PXFile pxFileCompressed;
-    PXFile pxFileUncompressed;
-
-    {
-        PXFileOpenInfo pxFileCompressedInfo;
-        PXClear(PXFileOpenInfo, &pxFileCompressedInfo);
-
-        pxFileCompressedInfo.AccessMode = PXAccessModeReadOnly;
-        pxFileCompressedInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
-        pxFileCompressedInfo.FlagList = PXFileIOInfoFileMemory;
-        pxFileCompressedInfo.BufferData = PXFileCursorPosition(pxFile);
-        pxFileCompressedInfo.BufferSize = pxTOCSectionTokens->SizeCompressed;
-        PXFileOpen(&pxFileCompressed, &pxFileCompressedInfo);
-
-        // Load B
-        PXClear(PXFileOpenInfo, &pxFileCompressedInfo);
-
-        pxFileCompressedInfo.AccessMode = PXAccessModeReadAndWrite;
-        pxFileCompressedInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
-        pxFileCompressedInfo.FlagList = PXFileIOInfoFileVirtual;
-        pxFileCompressedInfo.FileSizeRequest = pxTOCSectionTokens->SizeUncompressed;
-        PXFileOpen(&pxFileUncompressed, &pxFileCompressedInfo);
-    }
-
-    PXActionResult uncompressResult = PXLZ4Decompress(&pxFileCompressed, &pxFileUncompressed);
-
-#if PXLogEnable
-    PXSize offset = 0;
-
-    for(PXSize i = 0; i < pxTOCSectionTokens->NumberOfTokens; ++i)
-    {
-        char* text = &((char*)pxFileUncompressed.Data)[offset];
-
-        PXSize length = PXTextLengthA(text, -1);
-
-        offset += length+1;
-
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            PXUSDCName,
-            "Load",
-            "%3i/%3i - %s",
-            i+1,
-            pxTOCSectionTokens->NumberOfTokens,
-            text
-        );
-    }
-#endif
-
-    PXConsoleWrite(0, 0);
-}
-
-PXActionResult PXAPI PXUSDCSectionStringsLoad(PXFile* const pxFile, PXTOCSectionStrings* const pxTOCSectionStrings)
-{
-    return PXActionRefusedNotImplemented;
-}
-
-PXActionResult PXAPI PXUSDCSectionFields(PXFile* const pxFile, PXTOCSectionFields* const pxTOCSectionFields)
-{
-    return PXActionRefusedNotImplemented;
-}
-
-PXActionResult PXAPI PXUSDCSectionFieldSets(PXFile* const pxFile, PXTOCSectionFieldSets* const pxTOCSectionFieldSets)
-{
-    return PXActionRefusedNotImplemented;
-}
-
-PXActionResult PXAPI PXUSDCSectionSpecs(PXFile* const pxFile, PXTOCSectionSpecs* const pxTOCSectionSpecs)
-{
-    return PXActionRefusedNotImplemented;
-}
-
-PXActionResult PXAPI PXUSDCSectionPaths(PXFile* const pxFile, PXTOCSectionPaths* const pxTOCSectionPaths)
-{
-    return PXActionRefusedNotImplemented;
-}
-
-
-PXActionResult PXAPI PXUSDCLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
-{
-    PXUSD pxUSD;
-    PXFile* const pxFile = pxResourceLoadInfo->FileReference;
-
-    PXBool isSignatureValid = PXFileReadAndCompare(pxFile, PXUSDBinarySignature, sizeof(PXUSDBinarySignature));
-
-    if(!isSignatureValid)
-    {
-        return PXActionRefusedInvalidHeaderSignature;
-    }
-
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXUSDCName,
-        "Load",
-        "Binary format detected"
-    );
-#endif
-
-    char versionString[8];
-
-    PXFileReadB(pxFile, versionString, 8);
-    PXFileReadI64U(pxFile, &pxUSD.Binary.TOCOffset);
-
-
-    // TOC-Chunk
-    {
-        PXFileCursorMoveTo(pxFile, pxUSD.Binary.TOCOffset);
-        PXFileReadI64U(pxFile, &pxUSD.Binary.TOCSectionsAmount);
-
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            PXUSDCName,
-            "Load",
-            "Dections: %i",
-            pxUSD.Binary.TOCSectionsAmount
-        );
-#endif
-
-        pxUSD.Binary.TOCSectionList = PXMemoryHeapCallocT(PXTOCSection, pxUSD.Binary.TOCSectionsAmount);
-
-        for(PXSize i = 0; i < pxUSD.Binary.TOCSectionsAmount; ++i)
-        {
-            PXTOCSection* const pxTOCSection = &pxUSD.Binary.TOCSectionList[i];
-
-            PXFileReadTextA(pxFile, pxTOCSection->Name, 16);
-            PXFileReadI64U(pxFile, &pxTOCSection->OffsetStart);
-            PXFileReadI64U(pxFile, &pxTOCSection->BlockSize);
-
-#if PXLogEnable
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                PXUSDCName,
-                "Load",
-                "Dection: %i/%i, %10s, Start:%7i, Size:%i",
-                i+1,
-                pxUSD.Binary.TOCSectionsAmount,
-                pxTOCSection->Name,
-                pxTOCSection->OffsetStart,
-                pxTOCSection->BlockSize
-            );
-#endif
-        }
-    }
-
-
-    // Process tokens
-    {
-        for(PXSize i = 0; i < pxUSD.Binary.TOCSectionsAmount; ++i)
-        {
-            PXTOCSection* const pxTOCSection = &pxUSD.Binary.TOCSectionList[i];
-
-            const PXInt8U index = PXTextCompareAVI8(pxTOCSection->Name, PXTextUnkownLength, PXUSDBinaryTokenListData, PXUSDBinaryTokenListsize, PXUSDBinaryTokenListAmount);
-
-            if(-1 == index)
-            {
-                // Not registerd, cant be handled
-                continue;
-            }
-
-            PXFileCursorMoveTo(pxFile, pxTOCSection->OffsetStart);
-
-            PXFileReadI64U(pxFile, &pxTOCSection->Tokens.NumberOfTokens);
-
-            PXUSDBinaryTokenListFunction[index](pxFile, pxTOCSection->Data);
-
-            const PXBool isAlligned = pxFile->DataCursor == (pxTOCSection->OffsetStart + pxTOCSection->BlockSize);
-        }
-    }
-
-
-    /*
-        PXSize TOCSectionCounterTokens;
-    PXSize TOCSectionCounterPaths;
-    PXSize TOCSectionCounterStrings;
-    PXSize TOCSectionCounterFields;
-    PXSize TOCSectionCounterFieldsets;
-    PXSize TOCSectionCounterSpecs;
-    */
-
-
-}
-
-
-
-PXActionResult PXAPI PXUSDZLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
-{
-
-}
-
-
-
-
 
 void PXAPI PXUSDParsePropertysScene(PXUSDA* const pxUSDA, PXCompiler* const pxCompiler)
 {
@@ -732,7 +840,7 @@ void PXAPI PXUSDParsePropertysScene(PXUSDA* const pxUSDA, PXCompiler* const pxCo
 void PXAPI PXUSDAParseElementDefine(PXUSDA* const pxUSDA, PXCompiler* const pxCompiler)
 {
     PXUSDEntry* const pxUSDEntry = &pxUSDA->EntryList[pxUSDA->EntryAmount++];
-        
+
     PXCompilerSymbolEntryForward(pxCompiler); // remove "def"
 
     for(;;)
@@ -742,7 +850,7 @@ void PXAPI PXUSDAParseElementDefine(PXUSDA* const pxUSDA, PXCompiler* const pxCo
         if(PXCompilerSymbolLexerEndOfFile == pxCompiler->ReadInfo.SymbolEntryCurrent.ID)
         {
             break;
-        } 
+        }
 
         switch(pxCompiler->ReadInfo.SymbolEntryCurrent.ID)
         {
@@ -791,9 +899,6 @@ void PXAPI PXUSDAParseElementDefine(PXUSDA* const pxUSDA, PXCompiler* const pxCo
     }
 }
 
-
-
-
 void PXAPI PXUSDAParseEntryParameter(PXUSDEntry* const pxUSDEntry, PXCompiler* const pxCompiler)
 {
     const PXBool isOpen = PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerBrackedRoundOpen);
@@ -818,7 +923,7 @@ void PXAPI PXUSDAParseEntryParameter(PXUSDEntry* const pxUSDEntry, PXCompiler* c
             {
                 const PXInt8U index = PXCompilerEnsureTextListAndCompare
                 (
-                    pxCompiler, 
+                    pxCompiler,
                     PXUSDAParseEntryParameterListText,
                     PXUSDAParseEntryParameterListSize,
                     PXUSDAParseEntryParameterListAmount
@@ -841,12 +946,6 @@ void PXAPI PXUSDAParseEntryParameter(PXUSDEntry* const pxUSDEntry, PXCompiler* c
         }
     }
 }
-
-
-
-
-
-
 
 void PXAPI PXUSDAParseEntryProperty(PXUSDA* const pxUSDA, PXUSDEntry* const pxUSDEntry, PXCompiler* const pxCompiler)
 {
@@ -1310,44 +1409,7 @@ void PXAPI PXUSDAParseEntryName(PXUSDA* const pxUSDA, PXUSDEntry* const pxUSDEnt
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 PXActionResult PXAPI PXUSDSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
