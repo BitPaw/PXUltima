@@ -383,6 +383,8 @@ void PXAPI PXDebugStackTrace(PXDebug* const pxDebug, PXSymbol* const pxSymbolLis
 {
     PXMemoryClear(pxSymbolList, sizeof(PXSymbol) * pxSymbolListAmount);
 
+    return;
+
 #if OSUnix 
     void* array[10];
     size_t size;
