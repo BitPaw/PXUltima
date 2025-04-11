@@ -207,6 +207,10 @@ typedef struct PXCompiler_
 }
 PXCompiler;
 
+
+PXPublic PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler);
+
+
 PXPublic const char* PXAPI PXCompilerCompilerSymbolLexerToString(const PXCompilerSymbolLexer pxCompilerSymbolLexer);
 
 PXPrivate void PXAPI PXCompilerSymbolEntryAdd(PXCompiler* const pxCompiler, const PXCompilerSymbolEntry* const compilerSymbolEntry);
@@ -241,7 +245,6 @@ PXPublic PXSize PXAPI PXCompilerSymbolEntryForward(PXCompiler* const pxCompiler)
 
 PXPrivate PXCompilerSymbolLexer PXAPI PXCompilerTryAnalyseType(PXFile* const inputStream, const char* const text, const PXSize textSize, PXCompilerSymbolEntry* const compilerSymbolEntry);
 
-PXPublic PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler);
 
 PXPublic PXBool PXAPI PXCompilerParseStringUntilNewLine(PXCompiler* const pxCompiler, PXText* const pxText);
 PXPublic PXBool PXAPI PXCompilerParseStringUntilNewLineA(PXCompiler* const pxCompiler, char* const text, const PXSize textMaxSize, PXSize* const textSize);
