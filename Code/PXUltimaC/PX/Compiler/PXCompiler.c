@@ -551,47 +551,7 @@ PXCompilerSymbolLexer PXAPI PXCompilerTryAnalyseType(PXFile* const tokenStream, 
 
     if(textSize == 1)
     {
-        switch(text[0])
-        {
-            case '.':
-                return PXCompilerSymbolLexerDot;
-            case ',':
-                return PXCompilerSymbolLexerComma;
-            case ':':
-                return PXCompilerSymbolLexerColon;
-            case ';':
-                return PXCompilerSymbolLexerSemiColon;
-            case '?':
-                return PXCompilerSymbolLexerQuestionmark;
-            case '!':
-                return PXCompilerSymbolLexerExclamation;
-            case '#':
-                return PXCompilerSymbolLexerHash;
-            case '+':
-                return PXCompilerSymbolLexerPlus;
-            case '-':
-                return PXCompilerSymbolLexerMinus;
-            case '/':
-                return PXCompilerSymbolLexerSlash;
-            case '*':
-                return PXCompilerSymbolLexerAsterisk;
-            case '\\':
-                return PXCompilerSymbolLexerSlashBack;
-            case '&':
-                return PXCompilerSymbolLexerAmpercant;
-            case '%':
-                return PXCompilerSymbolLexerPercent;
-            case '|':
-                return PXCompilerSymbolLexerBar;
-            case '°':
-                return PXCompilerSymbolLexerDegree;
-            case '^':
-                return PXCompilerSymbolLexerExponent;
-            case '~':
-                return PXCompilerSymbolLexerTilde;
-            case '\'':
-                return PXCompilerSymbolLexerApostrophe;
-        }
+        return symbol;
     }
 
     switch(text[0])
