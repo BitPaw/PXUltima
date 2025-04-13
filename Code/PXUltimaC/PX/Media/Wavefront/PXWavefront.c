@@ -91,7 +91,7 @@ PXWavefrontLineType PXAPI PXWavefrontPeekLine(const void* line, const PXSize siz
 
 void PXAPI PXWavefrontFaceLineParse(PXCompiler* const pxCompiler, PXInt32U* const vertexData)
 {
-    const PXBool isExpectedInteger = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerNumeric);
+    const PXBool isExpectedInteger = PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerNumeric);
 
     if(!isExpectedInteger) // If not int => Error
     {
@@ -156,7 +156,7 @@ void PXAPI PXWavefrontFaceLineParse(PXCompiler* const pxCompiler, PXInt32U* cons
                 {
                     PXCompilerSymbolEntryForward(pxCompiler);  // Remove the '/'
 
-                    const PXBool isThridToken = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerNumeric); // Next token, expect int
+                    const PXBool isThridToken = PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerNumeric); // Next token, expect int
 
                     if(!isThridToken) // if not int => error
                     {
@@ -186,7 +186,7 @@ void PXAPI PXWavefrontFaceLineParse(PXCompiler* const pxCompiler, PXInt32U* cons
 
                             // Try get 3nd integer
                             {
-                                const PXBool isSecoundToken = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerNumeric);
+                                const PXBool isSecoundToken = PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerNumeric);
 
                                 if(!isSecoundToken)
                                 {

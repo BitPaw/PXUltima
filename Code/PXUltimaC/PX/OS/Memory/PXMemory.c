@@ -772,13 +772,48 @@ void PXAPI PXMemorySet(void* const PXRestrict buffer, const PXByte value, const 
 
 PXInt8U PXAPI PXMemoryCompareI8V(const PXInt8U* const textList, const PXInt8U listAmount, const PXInt8U value)
 {
+    __m512i zero = _mm512_setzero_si512();
+    //__m512i zero = _mm512_set1_epi8('~');
+
     __m512i value_vector = _mm512_set1_epi8(value); // Load target byte gets copy'ed 64x 
 
     for(PXInt8U i = 0; i < listAmount; i += 64)
-    {
-        __m512i data_vector = _mm512_loadu_epi8(&textList[i]); // Load compare array
+    { 
+        __mmask64 mask = ((listAmount -i) > 64) ? 0xFFFFFFFFFFFFFFFF : (1LL << (listAmount - (i))) -1; // How many things can we load?
+        __m512i data_vector = _mm512_mask_loadu_epi8(zero, mask, &textList[i]); // Load compare array
 
-        const PXInt64U result = _mm512_cmp_epi8_mask(value_vector, data_vector, _MM_CMPINT_EQ); // Compare both 16x char[4]
+        const PXInt64U result = _mm512_cmp_epi8_mask(value_vector, data_vector, _MM_CMPINT_EQ); // Compare both 64x byte vs byte
+
+        char bufferA[64 * 2+1];
+        char bufferB[64 * 2+1];
+
+        for(size_t i = 0; i < 64; ++i)
+        {
+            bufferA[2 * i + 0] = value_vector.m512i_u8[i];
+            bufferA[2 * i + 1] = ' ';
+            bufferA[2 * i + 2] = 0;
+
+            bufferB[2 * i + 0] = PXCharMakePrintable(data_vector.m512i_u8[i]);
+            bufferB[2 * i + 1] = ' ';
+            bufferB[2 * i + 2] = 0;
+        }
+
+#if 1
+        PXLogPrint
+        (
+            PXLoggingAllocation,
+            PXMemoryLogPrintTitle,
+            "SIMD-Compare",
+            "64x (%i) Target: %c\n"
+            "%s\n"
+            "%s",
+            listAmount,
+            value,
+            bufferA,
+            bufferB
+        );
+#endif
+
 
         if(!result) // Not a single match, get to next
         {
@@ -787,7 +822,7 @@ PXInt8U PXAPI PXMemoryCompareI8V(const PXInt8U* const textList, const PXInt8U li
 
         // We found a match!
 
-        const unsigned int match_index = 31 - _lzcnt_u64(result); // Count leading zeros. We want the first one.
+        const PXInt8U match_index = 63 - _lzcnt_u64(result); // Count leading zeros. We want the first one.
 
         return i + match_index; // Index of first hit
     }
@@ -1365,14 +1400,14 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize* const createdSize, cons
         PXMemoryLogPrintTitle,
         "Virtual-Alloc",
         "Allocating space for %i...\n"
-        "%25s : %6s -> %3ix %3i%%\n"
-        "%25s : %6s -> %3ix %3i%%\n"
-        "%25s : %6s -> %3ix %3i%%\n"
-        "%25s : %s",
+        "%20s : %6s -> %3i%% %3ix\n"
+        "%20s : %6s -> %3i%% %3ix\n"
+        "%20s : %6s -> %3i%% %3ix\n"
+        "%20s : %s",
         size,
-        "Normal-PageSize", pxTextPageSizeNormal.TextA, pxFilePageFileInfo.PageAmountNormal, (int)pxFilePageFileInfo.PageUtilizationNormal,
-        "Large-PageSize", pxTextPageSizeLarge.TextA, pxFilePageFileInfo.PageAmountLarge, (int)pxFilePageFileInfo.PageUtilizationLarge,
-        "Huge-PageSize", pxTextPageSizeHuge.TextA, pxFilePageFileInfo.PageAmountHuge, (int)pxFilePageFileInfo.PageUtilizationHuge,
+        "Normal-PageSize", pxTextPageSizeNormal.TextA,(int)pxFilePageFileInfo.PageUtilizationNormal, pxFilePageFileInfo.PageAmountNormal,
+        "Large-PageSize", pxTextPageSizeLarge.TextA, (int)pxFilePageFileInfo.PageUtilizationLarge, pxFilePageFileInfo.PageAmountLarge,
+        "Huge-PageSize", pxTextPageSizeHuge.TextA, (int)pxFilePageFileInfo.PageUtilizationHuge, pxFilePageFileInfo.PageAmountHuge, 
         "Targeted type", text
     );
 #endif

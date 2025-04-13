@@ -96,9 +96,9 @@ const char* PXAPI PXCompilerCompilerSymbolLexerToString(const PXCompilerSymbolLe
         case PXCompilerSymbolLexerBool:
             return "bool";
         case PXCompilerSymbolLexerReal:
-            return "PXF32";
+            return "Real";
         case PXCompilerSymbolLexerNumeric:
-            return "int";
+            return "Numeric";
         case PXCompilerSymbolLexerString:
             return "string";
         case PXCompilerSymbolLexerEndOfFile:
@@ -115,7 +115,7 @@ void PXAPI PXCompilerSymbolEntryAdd(PXCompiler* const pxCompiler, const PXCompil
 
     ++pxCompiler->SymbolsRead;
 
-#if PXCompilerDebug && PXCompilerDEBUG
+#if PXCompilerDebug || 1  //PXCompilerDEBUG
     const char* typeName = PXCompilerCompilerSymbolLexerToString(compilerSymbolEntry->ID);
 
     switch(compilerSymbolEntry->ID)
@@ -127,12 +127,17 @@ void PXAPI PXCompilerSymbolEntryAdd(PXCompiler* const pxCompiler, const PXCompil
                 PXLoggingInfo,
                 "Compiler",
                 "Entry",
-                "L:%-4i C:%-4i S:%-4i (%s) %6.2f",
+                "L:%-4i C:%-4i S:%-4i %10s : §3%6.2f",
                 compilerSymbolEntry->Line,
                 compilerSymbolEntry->Coloum,
                 compilerSymbolEntry->Size,
                 typeName,
-                compilerSymbolEntry->DataF
+#if OS64B
+                (float)compilerSymbolEntry->F64
+#else
+                compilerSymbolEntry->F32
+#endif
+      
             );
 
             break;
@@ -145,12 +150,12 @@ void PXAPI PXCompilerSymbolEntryAdd(PXCompiler* const pxCompiler, const PXCompil
                 PXLoggingInfo,
                 "Compiler",
                 "Entry",
-                "L:%-4i C:%-4i S:%-4i (%s) %i",
+                "L:%-4i C:%-4i S:%-4i - %10s : §3%i",
                 compilerSymbolEntry->Line,
                 compilerSymbolEntry->Coloum,
                 compilerSymbolEntry->Size,
                 typeName,
-                compilerSymbolEntry->DataI32U
+                compilerSymbolEntry->I32U
             );
 
             break;
@@ -166,7 +171,7 @@ void PXAPI PXCompilerSymbolEntryAdd(PXCompiler* const pxCompiler, const PXCompil
                 PXLoggingInfo,
                 "Compiler",
                 "Entry",
-                "L:%-4i C:%-4i S:%-4i (%s) §6%s",
+                "L:%-4i C:%-4i S:%-4i - %10s : §6%s",
                 compilerSymbolEntry->Line,
                 compilerSymbolEntry->Coloum,
                 compilerSymbolEntry->Size,
@@ -181,7 +186,7 @@ void PXAPI PXCompilerSymbolEntryAdd(PXCompiler* const pxCompiler, const PXCompil
                 PXLoggingInfo,
                 "Compiler",
                 "Entry",
-                "L:%-4i C:%-4i S:%-4i (%s)",
+                "L:%-4i C:%-4i S:%-4i - %10s",
                 compilerSymbolEntry->Line,
                 compilerSymbolEntry->Coloum,
                 compilerSymbolEntry->Size,
@@ -385,6 +390,8 @@ PXBool PXAPI PXCompilerSymbolEntryPeekEnsure(PXCompiler* const pxCompiler, const
             pxCompiler->ReadInfo.SymbolEntryCurrent.Size
         );
 #endif
+
+        DebugBreak();
     }
 
     return isTarget;
@@ -468,6 +475,7 @@ const PXInt8U PXCompilerCharMatchList[] =
 
     '?',
     '!',
+    '_',
     '#',
     '+',
     '-',
@@ -480,6 +488,8 @@ const PXInt8U PXCompilerCharMatchList[] =
     '°',
     '^',
     '~',
+    '`',
+    '´',
     '\'',
     '\"',
     '@',
@@ -516,11 +526,61 @@ const PXInt8U PXCompilerCharMatchListSize = sizeof(PXCompilerCharMatchList) / si
 
 const PXInt8U PXCompilerCharIDList[] =
 {
+PXCompilerSymbolLexerNewLine,
+PXCompilerSymbolLexerNewLine,
+PXCompilerSymbolLexerWhiteSpace,
+PXCompilerSymbolLexerTab,
+PXCompilerSymbolLexerDot,
+PXCompilerSymbolLexerComma,
+PXCompilerSymbolLexerColon,
+PXCompilerSymbolLexerSemiColon,
+PXCompilerSymbolLexerQuestionmark,
+PXCompilerSymbolLexerExclamation,
+PXCompilerSymbolLexerUnderscore,
+PXCompilerSymbolLexerHash,
+PXCompilerSymbolLexerPlus,
+PXCompilerSymbolLexerMinus,
+PXCompilerSymbolLexerAsterisk,
+PXCompilerSymbolLexerSlash,
+PXCompilerSymbolLexerSlashBack,
+PXCompilerSymbolLexerAmpercant,
+PXCompilerSymbolLexerPercent,
+PXCompilerSymbolLexerBar,
+PXCompilerSymbolLexerDegree,
+PXCompilerSymbolLexerExponent,
+PXCompilerSymbolLexerTilde,
+PXCompilerSymbolLexerApostrophe,
+PXCompilerSymbolLexerApostropheB,
+PXCompilerSymbolLexerQuiteSingle,
+PXCompilerSymbolLexerQuoteDouble,
+PXCompilerSymbolLexerAt,
+PXCompilerSymbolLexerEqual,
+PXCompilerSymbolLexerBracketCurlyOpen,
+PXCompilerSymbolLexerBracketCurlyClose,
+PXCompilerSymbolLexerBrackedRoundOpen,
+PXCompilerSymbolLexerBrackedRoundClose,
+PXCompilerSymbolLexerBracketSquareOpen,
+PXCompilerSymbolLexerBracketSquareClose,
+PXCompilerSymbolLexerBracketAngleOpen,
+PXCompilerSymbolLexerBracketAngleClose,
+PXCompilerSymbolLexerBool,
+PXCompilerSymbolLexerBool,
+PXCompilerSymbolLexerBool,
+PXCompilerSymbolLexerBool,
+PXCompilerSymbolLexerNumeric,
+PXCompilerSymbolLexerNumeric,
+PXCompilerSymbolLexerNumeric,
+PXCompilerSymbolLexerNumeric,
+PXCompilerSymbolLexerNumeric,
+PXCompilerSymbolLexerNumeric,
+PXCompilerSymbolLexerNumeric,
+PXCompilerSymbolLexerNumeric,
+PXCompilerSymbolLexerNumeric,
+PXCompilerSymbolLexerNumeric,
     PXCompilerSymbolLexerNewLine,
     PXCompilerSymbolLexerNewLine,
     PXCompilerSymbolLexerWhiteSpace,
     PXCompilerSymbolLexerTab,
-
     PXCompilerSymbolLexerDot,
     PXCompilerSymbolLexerComma,
     PXCompilerSymbolLexerColon,
@@ -547,393 +607,285 @@ PXCompilerSymbolLexer PXAPI PXCompilerTryAnalyseType(PXFile* const tokenStream, 
 {
     const PXInt8U index = PXMemoryCompareI8V(PXCompilerCharMatchList, PXCompilerCharMatchListSize, text[0]);
 
-    PXCompilerSymbolLexer symbol = PXCompilerCharIDList[index];
 
+    // Special behaviour if we only have one symbol
     if(textSize == 1)
     {
-        return symbol;
+        if(0xFF != index)
+        {
+            PXCompilerSymbolLexer symbol = PXCompilerCharIDList[index];
+
+            switch(symbol)
+            {
+                case PXCompilerSymbolLexerNumeric:
+                {
+                    compilerSymbolEntry->I32U = text[0] - '0';
+                    break;
+                }
+                case PXCompilerSymbolLexerBool:
+                {
+                    compilerSymbolEntry->ID = PXCompilerSymbolLexerGeneric;
+                    break;
+                }
+            }
+
+            return symbol; // Is defines symbol
+        }
+        else
+        {
+            // Simple symbol, maybe one single letter
+            return PXCompilerSymbolLexerGeneric;
+        }
     }
 
-    switch(text[0])
+
+    if(0xFF != index)
     {
-        case '\r':
-        case '\n':
-            return PXCompilerSymbolLexerNewLine;
-
-        case ' ':
-        case '\t':
+        compilerSymbolEntry->ID = PXCompilerCharIDList[index];
+               
+        switch(compilerSymbolEntry->ID)
         {
-            return PXCompilerSymbolLexerWhiteSpace;
-        }
-
-        case '.':
-        {
-            compilerSymbolEntry->Size = 1;
-
-            return PXCompilerSymbolLexerDot;
-        }
-        case ',':
-        {
-            compilerSymbolEntry->Size = 1;
-
-            return PXCompilerSymbolLexerComma;
-        }
-        case ':':
-        {
-            compilerSymbolEntry->Size = 1;
-
-            return PXCompilerSymbolLexerColon;
-        }
-        case ';':
-        {
-            compilerSymbolEntry->Size = 1;
-
-            return PXCompilerSymbolLexerSemiColon;
-        }
-
-        case '?':
-        {
-            compilerSymbolEntry->Size = 1;
-            return PXCompilerSymbolLexerQuestionmark;
-        }
-        case '!':
-        {
-            compilerSymbolEntry->Size = 1;
-            return PXCompilerSymbolLexerExclamation;
-        }
-        case '*':
-        {
-            compilerSymbolEntry->Size = 1;
-            return PXCompilerSymbolLexerAsterisk;
-        }
-        case '&':
-        {
-            compilerSymbolEntry->Size = 1;
-            return PXCompilerSymbolLexerAmpercant;
-        }
-        case '%':
-        {
-            compilerSymbolEntry->Size = 1;
-            return PXCompilerSymbolLexerPercent;
-        }
-        case '|':
-        {
-            compilerSymbolEntry->Size = 1;
-            return PXCompilerSymbolLexerBar;
-        }
-        case '°':
-        {
-            compilerSymbolEntry->Size = 1;
-            return PXCompilerSymbolLexerDegree;
-        }
-        case '^':
-        {
-            compilerSymbolEntry->Size = 1;
-            return PXCompilerSymbolLexerExponent;
-        }
-        case '~':
-        {
-            compilerSymbolEntry->Size = 1;
-            return PXCompilerSymbolLexerTilde;
-        }
-
-        case '=':
-        {
-            if(text[1] == '=')
+            case PXCompilerSymbolLexerSlash:
+            case PXCompilerSymbolLexerHash:
+            case PXCompilerSymbolLexerBracketSquareClose:
+            case PXCompilerSymbolLexerBracketSquareOpen:
+            case PXCompilerSymbolLexerBrackedRoundClose:
+            case PXCompilerSymbolLexerBrackedRoundOpen:
+            case PXCompilerSymbolLexerBracketCurlyClose:
+            case PXCompilerSymbolLexerBracketCurlyOpen:
+            case PXCompilerSymbolLexerTilde:
+            case PXCompilerSymbolLexerExponent:
+            case PXCompilerSymbolLexerDegree:
+            case PXCompilerSymbolLexerBar:
+            case PXCompilerSymbolLexerPercent:
+            case PXCompilerSymbolLexerAmpercant:
+            case PXCompilerSymbolLexerAsterisk:
+            case PXCompilerSymbolLexerExclamation:
+            case PXCompilerSymbolLexerQuestionmark:
+            case PXCompilerSymbolLexerSemiColon:
+            case PXCompilerSymbolLexerColon:
+            case PXCompilerSymbolLexerComma:
+            case PXCompilerSymbolLexerDot:
             {
-                if(text[2] == '=')
-                {
-                    compilerSymbolEntry->Size = 3;
+                compilerSymbolEntry->Size = 1;
 
-                    return PXCompilerSymbolLexerEqualTrippel;
-                }
-
-                compilerSymbolEntry->Size = 2;
-
-                return PXCompilerSymbolLexerEqualDouble;
+                return compilerSymbolEntry->ID;
             }
-
-            compilerSymbolEntry->Size = 1;
-
-            return PXCompilerSymbolLexerEqual;
-        }
-
-        case '{':
-        {
-            compilerSymbolEntry->Size = 1;
-
-            return PXCompilerSymbolLexerBracketCurlyOpen;
-        }
-        case '}':
-        {
-            compilerSymbolEntry->Size = 1;
-
-            return PXCompilerSymbolLexerBracketCurlyClose;
-        }
-        case '(':
-        {
-            compilerSymbolEntry->Size = 1;
-
-            return PXCompilerSymbolLexerBrackedRoundOpen;
-        }
-        case ')':
-        {
-            compilerSymbolEntry->Size = 1;
-
-            return PXCompilerSymbolLexerBrackedRoundClose;
-        }
-        case '[':
-        {
-            compilerSymbolEntry->Size = 1;
-
-            return PXCompilerSymbolLexerBracketSquareOpen;
-        }
-        case ']':
-        {
-            compilerSymbolEntry->Size = 1;
-
-            return PXCompilerSymbolLexerBracketSquareClose;
-        }
-        case '#':
-        {
-            compilerSymbolEntry->Size = 1;
-
-            return PXCompilerSymbolLexerHash;
-        }
-        case '>':
-        {
-            if(text[1] == '=')
+            case PXCompilerSymbolLexerAt:
+            case PXCompilerSymbolLexerQuiteSingle:
+            case PXCompilerSymbolLexerQuoteDouble:
             {
-                compilerSymbolEntry->Size = 2;
+                const PXBool isFull = text[textSize - 1] == text[0];
 
-                return PXCompilerSymbolLexerBiggerAndEqual;
-            }
-
-            compilerSymbolEntry->Size = 1;
-
-            return PXCompilerSymbolLexerBracketAngleClose;
-        }
-        case '<':
-        {
-            if(text[1] == '=')
-            {
-                if(text[2] == '>')
+                if(!isFull)
                 {
-                    compilerSymbolEntry->Size = 3;
+                    char* const dataAdress = compilerSymbolEntry->Source + 1u;
+                    PXSize symbolPositionIndex = PXTextFindFirstCharacterA(dataAdress, compilerSymbolEntry->Size, text[0]);
+                    PXBool hasIndex = symbolPositionIndex != (PXSize)-1;
 
-                    return PXCompilerSymbolLexerCompareThreeWay;
-                }
-
-                compilerSymbolEntry->Size = 2;
-
-                return PXCompilerSymbolLexerSmalerAndEqual;
-            }
-
-            compilerSymbolEntry->Size = 1;
-
-            return PXCompilerSymbolLexerBracketAngleOpen;
-        }
-        case '/':
-        {
-            compilerSymbolEntry->Size = 1;
-
-            return PXCompilerSymbolLexerSlash;
-        }
-        case '@':
-        {
-            const PXBool isFull = text[textSize - 1] == '@';
-
-            if(!isFull)
-            {
-                char* const dataAdress = compilerSymbolEntry->Source + 1u;
-                const PXSize symbolPositionQuotationMark = PXTextFindFirstCharacterA(dataAdress, compilerSymbolEntry->Size, '@');
-                const PXBool hasIndex = symbolPositionQuotationMark != (PXSize)-1;
-
-                if(!hasIndex)
-                {
-                    // Error
-                }
-
-                compilerSymbolEntry->Size = symbolPositionQuotationMark + 2u;
-            }
-            return PXCompilerSymbolLexerString;
-        }
-        case '\'':
-        {
-            const PXBool isFull = text[textSize - 1] == '\'';
-
-            if(!isFull)
-            {
-                char* const dataAdress = compilerSymbolEntry->Source + 1u;
-                const PXSize symbolPositionQuotationMark = PXTextFindFirstCharacterA(dataAdress, compilerSymbolEntry->Size, '\'');
-                const PXBool hasIndex = symbolPositionQuotationMark != (PXSize)-1;
-
-                if(!hasIndex)
-                {
-                    // Error
-                }
-
-                compilerSymbolEntry->Size = symbolPositionQuotationMark + 2u;
-            }
-
-            return PXCompilerSymbolLexerString;
-        }
-        case '\"':
-        {
-            const PXBool isFull = text[textSize - 1] == '\"';
-
-            if(!isFull)
-            {
-                char* const dataAdress = compilerSymbolEntry->Source + 1u;
-                PXSize symbolPositionIndex = PXTextFindFirstCharacterA(dataAdress, compilerSymbolEntry->Size, '\"');
-                PXBool hasIndex = symbolPositionIndex != (PXSize)-1;
-
-                if(!hasIndex) // Prop string has empty space, so we need to mend them together
-                {
-                    char* const dataAdressExtended = &dataAdress[compilerSymbolEntry->Size - 1];
-
-                    PXBool isEmptySpace = dataAdressExtended[0] == ' ';
-
-                    if(isEmptySpace) // Parse into oblivion for next
+                    if(!hasIndex) // Prop string has empty space, so we need to mend them together
                     {
-                        const PXSize spaceLeft = PXFileRemainingSize(tokenStream);
+                        char* const dataAdressExtended = &dataAdress[compilerSymbolEntry->Size - 1];
 
-                        symbolPositionIndex = PXTextFindFirstCharacterA(dataAdress, spaceLeft, '\"');
-                        hasIndex = symbolPositionIndex != (PXSize)-1;
+                        PXBool isEmptySpace = dataAdressExtended[0] == ' ';
 
-                        if(hasIndex)
+                        if(isEmptySpace) // Parse into oblivion for next
                         {
-                            compilerSymbolEntry->Size = symbolPositionIndex;
-                            PXFileCursorAdvance(tokenStream, symbolPositionIndex);
+                            const PXSize spaceLeft = PXFileRemainingSize(tokenStream);
+
+                            symbolPositionIndex = PXTextFindFirstCharacterA(dataAdress, spaceLeft, text[0]);
+                            hasIndex = symbolPositionIndex != (PXSize)-1;
+
+                            if(hasIndex)
+                            {
+                                compilerSymbolEntry->Size = symbolPositionIndex;
+                                PXFileCursorAdvance(tokenStream, symbolPositionIndex);
+                            }
                         }
+                    }
+
+                    compilerSymbolEntry->Size = symbolPositionIndex + 2u;
+                }
+
+                return PXCompilerSymbolLexerString;
+            }
+            case PXCompilerSymbolLexerEqual:
+            {
+                if(text[1] == '=')
+                {
+                    if(text[2] == '=')
+                    {
+                        compilerSymbolEntry->Size = 3;
+
+                        return PXCompilerSymbolLexerEqualTrippel;
+                    }
+
+                    compilerSymbolEntry->Size = 2;
+
+                    return PXCompilerSymbolLexerEqualDouble;
+                }
+
+                compilerSymbolEntry->Size = 1;
+
+                return PXCompilerSymbolLexerEqual;
+            }
+            case PXCompilerSymbolLexerBracketAngleClose:
+            {
+                if(text[1] == '=')
+                {
+                    compilerSymbolEntry->Size = 2;
+
+                    return PXCompilerSymbolLexerBiggerAndEqual;
+                }
+
+                compilerSymbolEntry->Size = 1;
+
+                return PXCompilerSymbolLexerBracketAngleClose;
+            }
+            case PXCompilerSymbolLexerBracketAngleOpen:
+            {
+                if(text[1] == '=')
+                {
+                    if(text[2] == '>')
+                    {
+                        compilerSymbolEntry->Size = 3;
+
+                        return PXCompilerSymbolLexerCompareThreeWay;
+                    }
+
+                    compilerSymbolEntry->Size = 2;
+
+                    return PXCompilerSymbolLexerSmalerAndEqual;
+                }
+
+                compilerSymbolEntry->Size = 1;
+
+                return PXCompilerSymbolLexerBracketAngleOpen;
+            }
+            case PXCompilerSymbolLexerBool:
+            {
+                PXBool result = PXTextCompareIgnoreCaseA(text, textSize, "true", 4) && textSize > 4;
+
+                if(result)
+                {
+                    compilerSymbolEntry->CU = PXYes;
+
+                    return PXCompilerSymbolLexerBool;
+                }
+
+                result = PXTextCompareIgnoreCaseA(text, textSize, "false", 5) && textSize > 5;
+
+                if(result)
+                {
+                    compilerSymbolEntry->CU = PXNo;
+
+                    return PXCompilerSymbolLexerBool;
+                }      
+
+                break;
+            }
+            case PXCompilerSymbolLexerPlus:
+            case PXCompilerSymbolLexerMinus:
+            {
+                const PXBool isDouble = text[0] == text[1];
+
+                if(isDouble)
+                {
+                    compilerSymbolEntry->Size = 2;
+
+                    if(PXCompilerSymbolLexerPlus == compilerSymbolEntry->ID)
+                    {
+                        return PXCompilerSymbolLexerPlusDouble;
+                    }
+                    else // if(PXCompilerSymbolLexerMinus == symbol)
+                    {
+                        return PXCompilerSymbolLexerMinusDouble;
                     }
                 }
 
-                compilerSymbolEntry->Size = symbolPositionIndex + 2u;
-            }
-
-            return PXCompilerSymbolLexerString;
-        }
-        case 'T':
-        case 't':
-        {
-            const PXBool result = PXTextCompareIgnoreCaseA(text, textSize, "true", 4) && textSize > 4;
-
-            if(result)
-            {
-                compilerSymbolEntry->CU = PXYes;
-
-                return PXCompilerSymbolLexerBool;
-            }
-
-            break;
-        }
-        case 'F':
-        case 'f':
-        {
-            const PXBool result = PXTextCompareIgnoreCaseA(text, textSize, "false", 5) && textSize > 5;
-
-            if(result)
-            {
-                compilerSymbolEntry->CU = PXNo;
-
-                return PXCompilerSymbolLexerBool;
-            }
-
-            break;
-        }
-        case '+':
-        case '-':
-        {
-            PXBool isDouble = text[0] == text[1];
-
-            if(isDouble)
-            {
-                compilerSymbolEntry->Size = 2;
-
-                return PXCompilerSymbolLexerGeneric;
-            }
-        }
-        case '0':
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
-        {
-            // Probe for number
-            const PXSize dotIndex = PXTextFindFirstCharacterA(text, textSize, '.');
-            const PXBool probablyFloatingPoint = dotIndex != (PXSize)-1;
-            PXSize writtenNumbers = 0;
-
-            PXBool isValidFloatSyntax = PXTrue;
-            PXSize floatTextSize = 0;
-
-            if(probablyFloatingPoint)
-            {
-                // Validate is float is valid until the '.'
-                for(floatTextSize = 0; (floatTextSize <= dotIndex + 1) && isValidFloatSyntax; ++floatTextSize)
+                if(!PXMathIsInRange(text[1], '0', '9'))
                 {
-                    isValidFloatSyntax = PXTextPXF32IsAllowedCharacter(text[floatTextSize]);
+                    break;
                 }
 
-                if(isValidFloatSyntax)
+                // Fall through!
+            }
+            case PXCompilerSymbolLexerNumeric:
+            {
+                // Probe for number
+                const PXSize dotIndex = PXTextFindFirstCharacterA(text, textSize, '.');
+                const PXBool probablyFloatingPoint = dotIndex != (PXSize)-1;
+                PXSize writtenNumbers = 0;
+
+                PXBool isValidFloatSyntax = PXTrue;
+                PXSize floatTextSize = 0;
+
+                if(probablyFloatingPoint)
                 {
-                    // If this is a float, check after the '.' until we hit non numbers
-                    for(floatTextSize = dotIndex + 1; (floatTextSize <= textSize) && isValidFloatSyntax; ++floatTextSize)
+                    // Validate is float is valid until the '.'
+                    for(floatTextSize = 0; (floatTextSize <= dotIndex + 1) && isValidFloatSyntax; ++floatTextSize)
                     {
                         isValidFloatSyntax = PXTextPXF32IsAllowedCharacter(text[floatTextSize]);
                     }
 
-                    floatTextSize -= 1;
-                    isValidFloatSyntax = PXTrue;
+                    if(isValidFloatSyntax)
+                    {
+                        // If this is a float, check after the '.' until we hit non numbers
+                        for(floatTextSize = dotIndex + 1; (floatTextSize <= textSize) && isValidFloatSyntax; ++floatTextSize)
+                        {
+                            isValidFloatSyntax = PXTextPXF32IsAllowedCharacter(text[floatTextSize]);
+                        }
+
+                        floatTextSize -= 1;
+                        isValidFloatSyntax = PXTrue;
+                    }
                 }
-            }
 
-            PXText numberText;
-            PXTextConstructFromAdressA(&numberText, text, floatTextSize, textSize);
+                PXText numberText;
+                PXTextConstructFromAdressA(&numberText, text, floatTextSize, textSize);
 
-            if(probablyFloatingPoint && isValidFloatSyntax)
-            {
-                PXF64 value = 0;
-
-                const PXSize writtenNumbers = PXTextToF64A(&numberText, &value);
-                const PXBool isPXF32 = floatTextSize == writtenNumbers;
-
-                if(isPXF32)
+                if(probablyFloatingPoint && isValidFloatSyntax)
                 {
-                    compilerSymbolEntry->Source = 0;
-                    compilerSymbolEntry->Size = writtenNumbers;
+                    PXF64 value = 0;
+
+                    const PXSize writtenNumbers = PXTextToF64A(&numberText, &value);
+                    const PXBool isPXF32 = floatTextSize == writtenNumbers;
+
+                    if(isPXF32)
+                    {
+                        compilerSymbolEntry->Source = 0;
+                        compilerSymbolEntry->Size = writtenNumbers;
 
 #if OS64B
-                    compilerSymbolEntry->F64 = value;
+                        compilerSymbolEntry->F64 = value;
 #else
-                    compilerSymbolEntry->F32 = value;
+                        compilerSymbolEntry->F32 = value;
 #endif
 
 
-                    return PXCompilerSymbolLexerReal;
+                        return PXCompilerSymbolLexerReal;
+                    }
                 }
-            }
-            else
-            {
-                int value = 0;
-
-                const PXSize writtenNumbers = PXTextToInt(&numberText, &value);
-
-                if(writtenNumbers > 0)
+                else
                 {
-                    compilerSymbolEntry->Source = 0;
-                    compilerSymbolEntry->Size = writtenNumbers;
-                    compilerSymbolEntry->I32S = value;
+                    int value = 0;
 
-                    return PXCompilerSymbolLexerNumeric;
+                    const PXSize writtenNumbers = PXTextToInt(&numberText, &value);
+
+                    if(writtenNumbers > 0)
+                    {
+                        compilerSymbolEntry->Source = 0;
+                        compilerSymbolEntry->Size = writtenNumbers;
+                        compilerSymbolEntry->I32S = value;
+
+                        return PXCompilerSymbolLexerNumeric;
+                    }
                 }
+
+                break;
             }
+            default:
+                return compilerSymbolEntry->ID;
         }
     }
 

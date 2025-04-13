@@ -58,15 +58,21 @@
 #define PXCompilerSymbolLexerExponent           38 // '^'
 #define PXCompilerSymbolLexerTilde              39 // ~
 #define PXCompilerSymbolLexerApostrophe         40 // `
-#define PXCompilerSymbolLexerUnderscore         41 // _
-#define PXCompilerSymbolLexerAt                 42 // @
-#define PXCompilerSymbolLexerParagraf           43 // §
-#define PXCompilerSymbolLexerDoller             44 // $
+#define PXCompilerSymbolLexerApostropheB        41 // ´
+#define PXCompilerSymbolLexerQuiteSingle        42 // '
+#define PXCompilerSymbolLexerQuoteDouble        43 // "
+#define PXCompilerSymbolLexerUnderscore         44 // _
+#define PXCompilerSymbolLexerAt                 45 // @
+#define PXCompilerSymbolLexerParagraf           46 // §
+#define PXCompilerSymbolLexerDoller             47 // $
 
-#define PXCompilerSymbolLexerBool               45 // true, false
-#define PXCompilerSymbolLexerReal               46 // 0.123
-#define PXCompilerSymbolLexerNumeric            47 // 1234
-#define PXCompilerSymbolLexerString             48 // "Text", 'Text', @Text@
+#define PXCompilerSymbolLexerPlusDouble         50
+#define PXCompilerSymbolLexerMinusDouble        51
+
+#define PXCompilerSymbolLexerBool               52 // true, false
+#define PXCompilerSymbolLexerReal               55 // 0.123
+#define PXCompilerSymbolLexerNumeric            56 // 1234, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+#define PXCompilerSymbolLexerString             57 // "Text", 'Text', @Text@
 //--------------------------------------------------------
 
 typedef PXInt8U PXCompilerSymbolLexer;
