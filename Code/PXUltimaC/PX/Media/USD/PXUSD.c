@@ -108,7 +108,7 @@ const PXInt8U PXUSDTextXFormOpOrderSize = sizeof(PXUSDTextXFormOpOrder);
 
 
 
-typedef void (PXAPI* PXUSDAParseElementFunction)(PXUSDEntry* const pxUSDEntry, PXCompiler* const pxCompiler);
+typedef void (PXAPI* PXUSDAParseElementFunction)(void* const pxUSDEntry, PXCompiler* const pxCompiler);
 
 
 
@@ -620,7 +620,7 @@ PXActionResult PXAPI PXUSDALoadFromFile(PXResourceTransphereInfo* const pxResour
         pxResourceLoadInfo->ResourceLoadContainer = PXMemoryHeapCallocT(PXUSD, 1);
     }
 
-    pxUSD = pxResourceLoadInfo->ResourceLoadContainer;
+    pxUSD = (PXUSD*)pxResourceLoadInfo->ResourceLoadContainer;
 
     offset = pxUSD->Text.EntryAmount;
 
@@ -1239,11 +1239,20 @@ void PXAPI PXUSDAParseEntryPropertyFloat1(PXUSDEntry* const pxUSDEntry, PXCompil
     {
         if(isRoateX)
         {
+#if OS64B
             pxUSDEntry->Rotation[0] = pxCompiler->ReadInfo.SymbolEntryCurrent.F64;
+#else
+            pxUSDEntry->Rotation[0] = pxCompiler->ReadInfo.SymbolEntryCurrent.F32;
+#endif      
         }
         else if(isRoateZ)
         {
+#if OS64B
             pxUSDEntry->Rotation[2] = pxCompiler->ReadInfo.SymbolEntryCurrent.F64;
+#else
+            pxUSDEntry->Rotation[2] = pxCompiler->ReadInfo.SymbolEntryCurrent.F32;
+#endif
+
         }
     }
     else
@@ -1323,7 +1332,7 @@ void PXAPI PXUSDAParseEntryPropertyDouble3(PXUSDEntry* const pxUSDEntry, PXCompi
             PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerBrackedRoundOpen);
             PXCompilerSymbolEntryForward(pxCompiler);   
 
-            PXCompilerParseCSVF64(pxCompiler, &pxUSDEntry->Position, 3);
+            PXCompilerParseCSVF64(pxCompiler, pxUSDEntry->Position, 3);
 
             PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerBrackedRoundClose);
             PXCompilerSymbolEntryForward(pxCompiler);

@@ -128,7 +128,7 @@ void PXAPI PXFilmBoxReadProperty(PXFile* const pxFile, PXFilmBoxProperty* const 
         {
             // string ro raw data
             PXFileReadI32U(pxFile, &pxFilmBoxProperty->Data.Length);
-            pxFilmBoxProperty->Data.Data = PXFileCursorPosition(pxFile);
+            pxFilmBoxProperty->Data.Data = (char*)PXFileCursorPosition(pxFile);
             PXFileCursorAdvance(pxFile, pxFilmBoxProperty->Data.Length);
 
 

@@ -778,7 +778,7 @@ PXActionResult PXAPI PXProcessorTemperature(PXProcessorTemperatureInfo* const px
 
 #elif OSWindows
 
-    return 0;
+    return PXActionInvalid;
 
     {
         const HRESULT initializeResultID = CoInitialize(NULL);

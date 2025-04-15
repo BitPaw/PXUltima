@@ -2082,7 +2082,7 @@ PXActionResult PXAPI PXOpenGLSwapIntervalSet(PXOpenGL* const pxOpenGL, const PXI
         PXLogPrint
         (
             PXLoggingError,
-            "OpenGL",
+            PXOpenGLName,
             "SwapInterval",
             "Set not supported"
         );
@@ -2095,7 +2095,7 @@ PXActionResult PXAPI PXOpenGLSwapIntervalSet(PXOpenGL* const pxOpenGL, const PXI
     PXLogPrint
     (
         PXLoggingInfo,
-        "OpenGL",
+        PXOpenGLName,
         "SwapInterval",
         "Set to <%i>",
         interval
@@ -2327,7 +2327,7 @@ PXActionResult PXAPI PXOpenGLErrorCurrent(PXOpenGL* const pxOpenGL, PXBool wasSu
             PXLogPrint
             (
                 PXLoggingWarning,
-                "OpenGL",
+                PXOpenGLName,
                 "Error",
                 "Uncaught error detected! Please check previous calls and add checks."
             );
@@ -2340,7 +2340,7 @@ PXActionResult PXAPI PXOpenGLErrorCurrent(PXOpenGL* const pxOpenGL, PXBool wasSu
         PXLogPrint
         (
             PXLoggingError,
-            "OpenGL",
+            PXOpenGLName,
             "Error",
             "%s",
             errorText
@@ -2451,7 +2451,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
     PXLogPrint
     (
         PXLoggingInfo,
-        "OpenGL",
+        PXOpenGLName,
         "Initialize",
         "Start..."
     );
@@ -2485,7 +2485,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
             PXLogPrint
             (
                 PXLoggingWarning,
-                "OpenGL",
+                PXOpenGLName,
                 "Initialize",
                 "Wait for window..."
             );
@@ -2502,7 +2502,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
             PXLogPrint
             (
                 PXLoggingInfo,
-                "OpenGL",
+                PXOpenGLName,
                 "Initialize",
                 "Window done, proceed"
             );
@@ -2569,7 +2569,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
     PXLogPrint
     (
         PXLoggingInfo,
-        "OpenGL",
+        PXOpenGLName,
         "Initialize",
         "Context create try.."
     );
@@ -2615,7 +2615,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
             PXLogPrint
             (
                 PXLoggingError,
-                "OpenGL",
+                PXOpenGLName,
                 "Initialize",
                 "Context create failed!"
             );
@@ -2628,7 +2628,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
         PXLogPrint
         (
             PXLoggingInfo,
-            "OpenGL",
+            PXOpenGLName,
             "Initialize",
             "Context creation successful"
         );
@@ -2644,7 +2644,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
     PXLogPrint
     (
         PXLoggingInfo,
-        "OpenGL",
+        PXOpenGLName,
         "Initialize",
         "Fetching newer function adresses with <%p>",
         pxOpenGL->Binding.FunctionFetch
@@ -2716,7 +2716,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
     PXLogPrint
     (
         PXLoggingInfo,
-        "OpenGL",
+        PXOpenGLName,
         "Initialize",
         "Done fetching funtions"
     );
@@ -2757,7 +2757,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
                 PXLogPrint
                 (
                     PXLoggingInfo,
-                    "OpenGL",
+                    PXOpenGLName,
                     "Extension",
                     "%4i - %s",
                     wglExtenionAmount,
@@ -2774,7 +2774,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
             PXLogPrint
             (
                 PXLoggingWarning,
-                "OpenGL",
+                PXOpenGLName,
                 "Extension",
                 "wglGetExtensionsStringARB not deteced.."                
             );
@@ -2796,7 +2796,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
         PXLogPrint
         (
             PXLoggingInfo,
-            "OpenGL",
+            PXOpenGLName,
             "Initialize",
             "Extensions detected <%i>",
             numberOfExtensions
@@ -2812,7 +2812,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
             PXLogPrint
             (
                 PXLoggingInfo,
-                "OpenGL",
+                PXOpenGLName,
                 "Extension",
                 "%4i - %s",
                 i + 1,
@@ -2828,7 +2828,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
     PXLogPrint
     (
         PXLoggingInfo,
-        "OpenGL",
+        PXOpenGLName,
         "Initialize",
         "Enable error callback"
     );
@@ -2859,7 +2859,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
     PXLogPrint
     (
         PXLoggingInfo,
-        "OpenGL",
+        PXOpenGLName,
         "Initialize",
         "List devices"
     );
@@ -2910,7 +2910,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
             PXLogPrint
             (
                 PXLoggingInfo,
-                "OpenGL",
+                PXOpenGLName,
                 "Initialize",
                 "Device\n"
                 "%12s : %s\n"
@@ -2940,7 +2940,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
     PXLogPrint
     (
         PXLoggingInfo,
-        "OpenGL",
+        PXOpenGLName,
         "Initialize",
         "Finished"
     );
@@ -2955,7 +2955,7 @@ PXActionResult PXAPI PXOpenGLSelect(PXOpenGL* const pxOpenGL)
     PXLogPrint
     (
         PXLoggingInfo,
-        "OpenGL",
+        PXOpenGLName,
         "Context-Select",
         "Bind to current thread\n"
 #if OSUnix
@@ -2991,7 +2991,7 @@ PXActionResult PXAPI PXOpenGLSelect(PXOpenGL* const pxOpenGL)
         PXLogPrint
         (
             PXLoggingError,
-            "OpenGL",
+            PXOpenGLName,
             "Context",
             "Failed binding to current thread"
         );
@@ -3008,7 +3008,7 @@ PXActionResult PXAPI PXOpenGLSelect(PXOpenGL* const pxOpenGL)
     PXLogPrint
     (
         PXLoggingInfo,
-        "OpenGL",
+        PXOpenGLName,
         "Context",
         "OK"
     );
@@ -3023,7 +3023,7 @@ PXActionResult PXAPI PXOpenGLDeselect(PXOpenGL* const pxOpenGL)
     PXLogPrint
     (
         PXLoggingInfo,
-        "OpenGL",
+        PXOpenGLName,
         "Context",
         "Unbind from thread"
     );
@@ -3125,7 +3125,7 @@ PXActionResult PXAPI PXOpenGLDevicePhysicalListAmount(PXOpenGL* const pxOpenGL, 
         PXLogPrint
         (
             PXLoggingInfo,
-            "OpenGL",
+            PXOpenGLName,
             "Device",
             "Detected <%i>",
             gpuID
@@ -3142,7 +3142,7 @@ PXActionResult PXAPI PXOpenGLDevicePhysicalListAmount(PXOpenGL* const pxOpenGL, 
             PXLogPrint
             (
                 PXLoggingInfo,
-                "OpenGL",
+                PXOpenGLName,
                 "Device",
                 "DeviceName : %s, %s (%i, %i)",
                 gpuDEVICE.DeviceName,
@@ -3177,7 +3177,7 @@ PXActionResult PXAPI PXOpenGLDevicePhysicalListFetch(PXOpenGL* const pxOpenGL, c
         PXLogPrint
         (
             PXLoggingError,
-            "OpenGL",
+            PXOpenGLName,
             "Device-Fetch",
             "Context not bound to thread!"
         );
@@ -3194,7 +3194,7 @@ PXActionResult PXAPI PXOpenGLDevicePhysicalListFetch(PXOpenGL* const pxOpenGL, c
         PXLogPrint
         (
             PXLoggingInfo,
-            "OpenGL",
+            PXOpenGLName,
             "Device-Fetch",
             "GetString missing, cant resolve names"
         );
@@ -3288,7 +3288,7 @@ PXActionResult PXAPI PXOpenGLRelease(PXOpenGL* const pxOpenGL)
         PXLogPrint
         (
             PXLoggingError,
-            "OpenGL",
+            PXOpenGLName,
             "Release",
             "Failed!"
         );
@@ -3301,7 +3301,7 @@ PXActionResult PXAPI PXOpenGLRelease(PXOpenGL* const pxOpenGL)
     PXLogPrint
     (
         PXLoggingInfo,
-        "OpenGL",
+        PXOpenGLName,
         "Release",
         "OK"
     );
@@ -4073,7 +4073,7 @@ void PXOpenGLAPI PXOpenGLErrorMessageCallback(const GLenum source, const GLenum 
     PXLogPrint
     (
         pxLoggingType,
-        "OpenGL",
+        PXOpenGLName,
         "Log",
         "(%s.%s)\n%s",
         sourceText,
@@ -4847,7 +4847,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
                 PXLogPrint
                 (
                     PXLoggingError,
-                    "OpenGL",
+                    PXOpenGLName,
                     "Shader-Error",
                     "No data attached!\n"
                     "%25s : [PX:%4i] %i\n"
@@ -4879,7 +4879,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
             PXLogPrint
             (
                 PXLoggingError,
-                "OpenGL",
+                PXOpenGLName,
                 "Shader-Create",
                 "Program creation failed"
             );
@@ -4892,7 +4892,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
         PXLogPrint
         (
             PXLoggingInfo,
-            "OpenGL",
+            PXOpenGLName,
             "Shader-Create",
             "Program created <%i>",
             pxShaderProgram->Info.Handle.OpenGLID
@@ -4912,7 +4912,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
 
             const char* shaderTypeName = PXGraphicShaderTypeToString(shader->Type);
             const PXInt32U shaderTypeID = PXOpenGLShaderTypeToID(shader->Type);
-            const char* const shaderData = shader->ShaderFile->Data;
+            const char* const shaderData = (char*)shader->ShaderFile->Data;
             PXInt32S shaderLength = shader->ShaderFile->DataUsed;
 
             shader->Info.Handle.OpenGLID = pxOpenGL->Binding.ShaderCreate(shaderTypeID); // Create shader
@@ -4929,7 +4929,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
             PXLogPrint
             (
                 PXLoggingInfo,
-                "OpenGL",
+                PXOpenGLName,
                 "Shader-Compile",
                 "%s <%i>",
                 shaderTypeName,
@@ -4963,7 +4963,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
                     PXLogPrint
                     (
                         PXLoggingError,
-                        "OpenGL",
+                        PXOpenGLName,
                         "Shader-Compile",
                         "GLSL - %s - Error - No message can be loaded"
                     );
@@ -4985,7 +4985,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
                 PXLogPrint
                 (
                     PXLoggingError,
-                    "OpenGL",
+                    PXOpenGLName,
                     "Shader-Compile",
                     "GLSL - %s - Error\n%s",
                     shaderTypeName,
@@ -5039,7 +5039,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
                 PXLogPrint
                 (
                     PXLoggingError,
-                    "OpenGL",
+                    PXOpenGLName,
                     "Shader-Link",
                     "GLSL - Error\n%s",
                     shaderErrorLengthData
@@ -5087,7 +5087,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
         PXLogPrint
         (
             PXLoggingInfo,
-            "OpenGL",
+            PXOpenGLName,
             "Shader-GLSL",
             "Active Uniforms: %i Attributes: %i",
             numberOfUniforms,
@@ -5166,7 +5166,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
         PXLogPrint
         (
             PXLoggingInfo,
-            "OpenGL",
+            PXOpenGLName,
             "Shader-GLSL",
             "ID:%i %s",
             pxShaderVariable->RegisterIndex,
@@ -5199,7 +5199,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramSelect(PXOpenGL* const pxOpenGL, PXSha
     PXLogPrint
     (
         PXLoggingInfo,
-        "OpenGL",
+        PXOpenGLName,
         "Shaderprogram",
         "Select <%i>",
         pxShaderProgram->ResourceID.OpenGLID
@@ -5218,7 +5218,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramSelect(PXOpenGL* const pxOpenGL, PXSha
         PXLogPrint
         (
             PXLoggingError,
-            "OpenGL",
+            PXOpenGLName,
             "Shaderprogram",
             "Select failed <%i>",
             pxShaderProgram->Info.Handle.OpenGLID
@@ -5241,7 +5241,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramDelete(PXOpenGL* const pxOpenGL, PXSha
         PXLogPrint
         (
             PXLoggingInfo,
-            "OpenGL",
+            PXOpenGLName,
             "Shader-Delete",
             "ID:%i OpenGLID:%i",
             pxShaderProgram->Info.ID,
@@ -5335,7 +5335,7 @@ PXActionResult PXAPI PXOpenGLTextureAction(PXOpenGL* const pxOpenGL, PXGraphicTe
                 PXLogPrint
                 (
                     PXLoggingError,
-                    "OpenGL",
+                    PXOpenGLName,
                     "Texture2D",
                     "Batch <%i> creation failed",
                     pxGraphicTexturInfo->Amount
@@ -5349,7 +5349,7 @@ PXActionResult PXAPI PXOpenGLTextureAction(PXOpenGL* const pxOpenGL, PXGraphicTe
             PXLogPrint
             (
                 PXLoggingInfo,
-                "OpenGL",
+                PXOpenGLName,
                 "Texture2D",
                 "Batch <%i> created",
                 pxGraphicTexturInfo->Amount
@@ -5537,7 +5537,7 @@ PXActionResult PXAPI PXOpenGLTextureAction(PXOpenGL* const pxOpenGL, PXGraphicTe
             {
                 case PXGraphicTextureType2D:
                 {
-                    PXTexture2D* const pxTexture2D = pxGraphicTexturInfo->TextureReference;
+                    PXTexture2D* const pxTexture2D = (PXTexture2D*)pxGraphicTexturInfo->TextureReference;
 
                     if(pxTexture2D)
                     {
@@ -5550,7 +5550,7 @@ PXActionResult PXAPI PXOpenGLTextureAction(PXOpenGL* const pxOpenGL, PXGraphicTe
                 }
                 case PXGraphicTextureType3D:
                 {
-                    PXTexture3D* const pxTexture3D = pxGraphicTexturInfo->TextureReference;
+                    PXTexture3D* const pxTexture3D = (PXTexture3D*)pxGraphicTexturInfo->TextureReference;
 
                     if(pxTexture3D)
                     {
@@ -5563,7 +5563,7 @@ PXActionResult PXAPI PXOpenGLTextureAction(PXOpenGL* const pxOpenGL, PXGraphicTe
                 }
                 case PXGraphicTextureTypeCubeContainer:
                 {
-                    PXTextureCube* const pxTextureCube = pxGraphicTexturInfo->TextureReference;
+                    PXTextureCube* const pxTextureCube = (PXTextureCube*)pxGraphicTexturInfo->TextureReference;
 
                     if(pxTextureCube)
                     {
@@ -5627,7 +5627,7 @@ void PXAPI PXOpenGLTexture2DDataWrite(PXOpenGL* const pxOpenGL, PXTexture2D* con
     PXLogPrint
     (
         PXLoggingInfo,
-        "OpenGL",
+        PXOpenGLName,
         "Texture2D",
         "%8s  Data upload <%i> (%ix%i)",
         pxText.TextA,
@@ -5666,7 +5666,7 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, const PXRenderEntity* co
     }
 
     PXCamera* const pxCamera = pxRenderEntity->CameraReference;
-    PXMatrix4x4F* const matrixModel = &pxRenderEntity->MatrixModel;
+    const PXMatrix4x4F* const matrixModel = &pxRenderEntity->MatrixModel;
     PXMatrix4x4F* const matrixView = &pxCamera->MatrixView;
     PXVertexBuffer* const pxVertexBuffer = &pxSkyBox->Model->Mesh.VertexBufferPrime;
     PXIndexBuffer* const pxIndexBuffer = &pxSkyBox->Model->Mesh.IndexBuffer;
@@ -5820,7 +5820,7 @@ void PXAPI PXOpenGLFrameBufferCreate(PXOpenGL* const pxOpenGL, const unsigned in
     PXLogPrint
     (
         PXLoggingInfo,
-        "OpenGL",
+        PXOpenGLName,
         "Framebuffer",
         "Created <%i>",
         framebufferIDList[0]
@@ -5947,7 +5947,7 @@ PXActionResult PXAPI PXOpenGLShaderVariableSet(PXOpenGL* const pxOpenGL, const P
                     PXLogPrint
                     (
                         PXLoggingError,
-                        "OpenGL",
+                        PXOpenGLName,
                         "Shader-Uniform",
                         "Failed name resolve to ID! <%s>, PXID:%i, OpenGLID:%i",
                         pxShaderVariable->Name,
@@ -6133,7 +6133,7 @@ PXActionResult PXAPI PXOpenGLShaderVariableSet(PXOpenGL* const pxOpenGL, const P
                     PXLogPrint
                     (
                         PXLoggingInfo,
-                        "OpenGL",
+                        PXOpenGLName,
                         "Shader-Uniform",
                         "Upload Vector3 -> %s\n"
                         "| %8.2f | %8.2f | %8.2f |",
@@ -6170,7 +6170,7 @@ PXActionResult PXAPI PXOpenGLShaderVariableSet(PXOpenGL* const pxOpenGL, const P
                     PXLogPrint
                     (
                         PXLoggingInfo,
-                        "OpenGL",
+                        PXOpenGLName,
                         "Shader-Uniform",
                         "Upload Vector4 -> %s\n"
                         "| %8.2f | %8.2f | %8.2f | %8.2f |",
@@ -6225,7 +6225,7 @@ PXActionResult PXAPI PXOpenGLShaderVariableSet(PXOpenGL* const pxOpenGL, const P
                 PXLogPrint
                 (
                     PXLoggingInfo,
-                    "OpenGL",
+                    PXOpenGLName,
                     "Shader-Uniform",
                     "Upload Matrix4x4 -> %s\n"
                     "| %8.2f | %8.2f | %8.2f | %8.2f |\n"
@@ -6807,7 +6807,7 @@ void PXOpenGKShaderDataBufferCreate(PXOpenGL* const pxOpenGL, PXShaderDataBuffer
         PXLogPrint
         (
             PXLoggingWarning,
-            "OpenGL",
+            PXOpenGLName,
             "Texture1D",
             "Max supported SSBO binings:%li, size: %li",
             maxAmount,
@@ -6849,7 +6849,7 @@ void PXOpenGKShaderDataBufferCreate(PXOpenGL* const pxOpenGL, PXShaderDataBuffer
         PXLogPrint
         (
             PXLoggingWarning,
-            "OpenGL",
+            PXOpenGLName,
             "Texture1D",
             "Max supported size: %li",
             maxTextureSize
@@ -6897,7 +6897,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
         PXLogPrint
         (
             PXLoggingInfo,
-            "OpenGL",
+            PXOpenGLName,
             "Model",
             "VAO created <%i>",
             pxMesh->Info.Handle.OpenGLID
@@ -6910,7 +6910,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
         PXLogPrint
         (
             PXLoggingWarning,
-            "OpenGL",
+            PXOpenGLName,
             "Model",
             "VAO not supported"
         );
@@ -6943,7 +6943,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
         PXLogPrint
         (
             PXLoggingWarning,
-            "OpenGL",
+            PXOpenGLName,
             "Model",
             "VBO not supported, Copy for Client-Buffer use."
         );
@@ -7470,7 +7470,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
 
 
             PXGraphicTexturInfo pxGraphicTexturInfo;
-            pxGraphicTexturInfo.TextureReference = pxTextureList;
+            pxGraphicTexturInfo.TextureReference = (void**)pxTextureList;
             pxGraphicTexturInfo.Amount = pxTextureListCounter;
             pxGraphicTexturInfo.Type = PXGraphicTextureType2D;
             pxGraphicTexturInfo.Action = PXResourceActionCreate;

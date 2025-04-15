@@ -700,7 +700,7 @@ void PXAPI PXTypeEntryInfo(PXTypeEntry* const pxFileDataElementType, PXText* con
             (
                 dataContent->TextA,
                 size+1,
-                pxFileDataElementType->Adress
+                (char*)pxFileDataElementType->Adress
             );
 
             break;
@@ -1019,14 +1019,15 @@ void PXAPI PXFilePathRelativeFromFileA
 
 }
 
-void PXAPI PXFilePathRelativeFromFile(const PXFile* const pxFile, const PXText* const targetPath, PXText* const resultPath)
+PXActionResult PXAPI PXFilePathRelativeFromFile(const PXFile* const pxFile, const PXText* const targetPath, PXText* const resultPath)
 {
     if(targetPath->TextA[1] == ':')
     {
         // do nothing and keep absolut path
 
         PXTextCopy(targetPath, resultPath);
-        return;
+
+        return PXActionSuccessful;
     }
 
     //---<Get current path>----------------
@@ -1212,7 +1213,7 @@ PXActionResult PXAPI PXFileName(const PXFile* const pxFile, PXText* const fileNa
     return PXActionSuccessful;
 }
 
-PXBool PXAPI PXFileDirectoryPathExtract(const PXFile* const path, PXFile* const directoryPath)
+PXBool PXAPI PXFileDirectoryPathExtract(const PXText* const path, PXText* const directoryPath)
 {
     PXText stringTarget;
     PXSize size;
@@ -1221,7 +1222,7 @@ PXBool PXAPI PXFileDirectoryPathExtract(const PXFile* const path, PXFile* const 
     {
         PXTextMakeFixedC(&stringTarget, '/');
 
-        size = PXTextFindLast(path, &stringTarget, &directoryPath);
+        size = PXTextFindLast(path, &stringTarget, directoryPath);
         found = size != -1;
 
         if(found)
@@ -1233,7 +1234,7 @@ PXBool PXAPI PXFileDirectoryPathExtract(const PXFile* const path, PXFile* const 
     {
         PXTextMakeFixedC(&stringTarget, '\\');
 
-        size = PXTextFindLast(path, &stringTarget, &directoryPath);
+        size = PXTextFindLast(path, &stringTarget, directoryPath);
         found = size != -1;
     }
 
@@ -3885,7 +3886,7 @@ PXSize PXAPI PXFileWriteDV(PXFile* const pxFile, const double* const valueList, 
 PXSize PXAPI PXFileWriteInternMove(PXFile* const pxFile, const PXInt16S offset, const PXSize length)
 {
     const PXSize oldPosition = pxFile->DataCursor;
-    char* const destination = PXFileCursorPosition(pxFile);
+    char* const destination = (char*)PXFileCursorPosition(pxFile);
 
     // Souce
     const PXSize steptsTaken = PXFileCursorRewind(pxFile, offset); // Safe rewind
@@ -4286,7 +4287,7 @@ PXActionResult PXAPI PXFilePathSet(PXFile* const pxFile, const PXText* const fil
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXFilePathGet(PXFile* const pxFile, PXText* const filePath)
+PXActionResult PXAPI PXFilePathGet(const PXFile* const pxFile, PXText* const filePath)
 {
 #if OSUnix
 
@@ -4449,16 +4450,16 @@ PXActionResult PXAPI PXFilePathGet(PXFile* const pxFile, PXText* const filePath)
 #endif
 }
 
-PXActionResult PXAPI PXFilePathGetA(PXFile* const pxFile, char* const filePath, PXSize* const filePathSize)
+PXActionResult PXAPI PXFilePathGetA(PXFile* const pxFile, char* const filePath, const PXSize filePathSize, PXSize* const sizeWritten)
 {
     PXText pxText;
     PXTextConstructFromAdressA(&pxText, filePath, 0, filePathSize);
 
     PXActionResult res = PXFilePathGet(pxFile, &pxText);
 
-    if(filePathSize)
+    if(sizeWritten)
     {
-        *filePathSize = pxText.SizeUsed;
+        *sizeWritten = pxText.SizeUsed;
     }
 
     return res;

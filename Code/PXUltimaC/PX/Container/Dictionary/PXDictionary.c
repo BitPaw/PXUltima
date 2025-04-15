@@ -216,7 +216,7 @@ PXBool PXAPI PXDictionaryExtract(PXDictionary* const dictionary, const void* con
         return PXFalse;
     }
 
-    const void* data = (char*)valteAdress + dictionary->KeyTypeSize;
+    void* data = (char*)valteAdress + dictionary->KeyTypeSize;
 
     switch(dictionary->ValueLocality)
     {

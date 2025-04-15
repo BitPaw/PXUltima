@@ -115,7 +115,7 @@ void PXAPI PXCompilerSymbolEntryAdd(PXCompiler* const pxCompiler, const PXCompil
 
     ++pxCompiler->SymbolsRead;
 
-#if PXCompilerDebug || 1  //PXCompilerDEBUG
+#if PXCompilerDebug && 0  //PXCompilerDEBUG
     const char* typeName = PXCompilerCompilerSymbolLexerToString(compilerSymbolEntry->ID);
 
     switch(compilerSymbolEntry->ID)
@@ -275,7 +275,7 @@ PXSize PXAPI PXCompilerSymbolEntryMergeCurrentUntilNextLine(PXCompiler* const px
 
     while(!isInNewLine)
     {
-        PXCompilerSymbolEntryPeek(&mergCopy);
+        PXCompilerSymbolEntryPeek(pxCompiler);
 
         isInNewLine = currentLine != mergCopy.Line;
 
@@ -285,7 +285,7 @@ PXSize PXAPI PXCompilerSymbolEntryMergeCurrentUntilNextLine(PXCompiler* const px
         }
     }
 
-    PXCompilerSymbolEntryPeek(&mergCopy);
+    PXCompilerSymbolEntryPeek(pxCompiler);
 
     return 0;
 }
@@ -500,9 +500,9 @@ const PXInt8U PXCompilerCharMatchList[] =
     '(',
     ')',
     '[',
-    ']',
-    '>',
+    ']',  
     '<',
+    '>',
 
     // true / false
     'T',
@@ -1455,7 +1455,11 @@ PXBool PXAPI PXCompilerParseCSVF32(PXCompiler* const pxCompiler, PXF32* const va
     {
         PXCompilerSymbolEntryPeek(pxCompiler);
 
+#if OS64B
         values[i] = pxCompiler->ReadInfo.SymbolEntryCurrent.F64;
+#else
+        values[i] = pxCompiler->ReadInfo.SymbolEntryCurrent.F32;
+#endif
 
         PXCompilerSymbolEntryForward(pxCompiler);
 
@@ -1475,7 +1479,11 @@ PXBool PXAPI PXCompilerParseCSVF64(PXCompiler* const pxCompiler, PXF64* const va
     {
         PXCompilerSymbolEntryPeek(pxCompiler);
 
+#if OS64B
         values[i] = pxCompiler->ReadInfo.SymbolEntryCurrent.F64;
+#else
+        values[i] = pxCompiler->ReadInfo.SymbolEntryCurrent.F32;
+#endif
 
         PXCompilerSymbolEntryForward(pxCompiler);
 

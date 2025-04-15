@@ -92,7 +92,7 @@ const char PXPNGChunkList[18][4] =
 
 
 PXPrivate void PXAPI PXPNGChunkReadImageHeader(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize);
-PXPrivate void PXAPI PXPNGChunkReadPalette(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize);
+PXPrivate PXActionResult PXAPI PXPNGChunkReadPalette(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize);
 PXPrivate void PXAPI PXPNGChunkReadImageData(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize);
 PXPrivate void PXAPI PXPNGChunkReadImageEnd(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize);
 PXPrivate void PXAPI PXPNGChunkReadTransparency(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize);
@@ -112,7 +112,7 @@ PXPrivate void PXAPI PXPNGChunkReadLastModificationTime(PXPNG* const pxPNG, PXFi
 
 
 
-typedef (PXAPI* PXPNGChunkFunction)(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize);
+typedef void (PXAPI* PXPNGChunkFunction)(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize);
 
 const PXPNGChunkFunction PXPNGChunkListFunction[] =
 {
@@ -2365,7 +2365,7 @@ void addColorBits(unsigned char* out, PXSize index, unsigned int bits, unsigned 
     }
 }
 
-unsigned char readBitFromReversedStream(PXSize* bitpointer, const char* bitstream)
+unsigned char readBitFromReversedStream(PXSize* bitpointer, const PXByte* bitstream)
 {
     unsigned char result = (unsigned char)((bitstream[(*bitpointer) >> 3] >> (7 - ((*bitpointer) & 0x7))) & 1);
     ++(*bitpointer);
@@ -2427,7 +2427,7 @@ void PXAPI PXPNGChunkReadImageHeader(PXPNG* const pxPNG, PXFile* const pxFile, c
 #endif
 }
 
-void PXAPI PXPNGChunkReadPalette(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize)
+PXActionResult PXAPI PXPNGChunkReadPalette(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize)
 {
     const PXSize palettSize = chunkSize / 3u;
     const PXBool validSize = palettSize != 0 && palettSize <= 256;
@@ -2445,6 +2445,8 @@ void PXAPI PXPNGChunkReadPalette(PXPNG* const pxPNG, PXFile* const pxFile, const
 
         paletteInsertion[3] = 0xFF; // Add alpha
     }
+
+    return PXActionSuccessful;
 }
 
 void PXAPI PXPNGChunkReadImageData(PXPNG* const pxPNG, PXFile* const pxFile, const PXInt32U chunkSize)

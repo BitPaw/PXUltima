@@ -52,7 +52,7 @@ PXActionResult PXAPI PXADAM7ScanlinesDecode(PXADAM7* const pxADAM7)
 
             const PXActionResult pxActionResult = PXADAM7unfilter(pxADAM7);
 
-            pxADAM7->DataOutput = (char*)oldPosition;
+            pxADAM7->DataOutput = (PXByte*)oldPosition;
 
 
             PXADAM7removePaddingBits
@@ -112,8 +112,8 @@ PXActionResult PXAPI PXADAM7ScanlinesDecode(PXADAM7* const pxADAM7)
                 // bits between the different reduced images: each reduced image still starts nicely at a byte
                 PXADAM7removePaddingBits
                 (
-                    &((char*)pxADAM7->DataInput)[passstart[i]],
-                    &((char*)pxADAM7->DataInput)[padded_passstart[i]],
+                    &((PXByte*)pxADAM7->DataInput)[passstart[i]],
+                    &((PXByte*)pxADAM7->DataInput)[padded_passstart[i]],
                     passw[i] * pxADAM7->BitsPerPixel,
                     ((passw[i] * pxADAM7->BitsPerPixel + 7u) / 8u) * 8u,
                     passh[i]
@@ -344,15 +344,23 @@ PXActionResult PXAPI PXADAM7unfilter(PXADAM7* const pxADAM7)
     /*the width of a scanline in bytes, not including the filter type*/
     const PXSize linebytes = PXADAM7lodepng_get_raw_size_idat(pxADAM7->Width, 1, pxADAM7->BitsPerPixel) - 1u;
 
-    char* prevline = 0;
+    PXByte* prevline = 0;
 
     for(PXSize y = 0; y < pxADAM7->Height; ++y)
     {
         const PXSize outindex = linebytes * y;
         const PXSize inindex = (1 + linebytes) * y; /*the extra filterbyte added to each row*/
-        const unsigned char filterType = pxADAM7->DataInput[inindex];
+        const PXByte filterType = pxADAM7->DataInput[inindex];
 
-        const PXActionResult pxActionResult = PXADAM7unfilterScanline(&pxADAM7->DataOutput[outindex], &pxADAM7->DataInput[inindex + 1], prevline, bytewidth, filterType, linebytes);
+        const PXActionResult pxActionResult = PXADAM7unfilterScanline
+        (
+            &pxADAM7->DataOutput[outindex],
+            &pxADAM7->DataInput[inindex + 1], 
+            prevline,
+            bytewidth,
+            filterType, 
+            linebytes
+        );
 
         prevline = &pxADAM7->DataOutput[outindex];
     }

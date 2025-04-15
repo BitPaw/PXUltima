@@ -1116,6 +1116,7 @@ PXActionResult PXAPI PXThreadNameGet(PXDebug* const pxDebug,PXThread* const pxTh
     CloseHandle(pxThread->ThreadHandle);
     pxThread->ThreadHandle = PXNull;*/
 
+    return PXActionSuccessful;
 
 #else
     return PXActionRefusedNotSupported;

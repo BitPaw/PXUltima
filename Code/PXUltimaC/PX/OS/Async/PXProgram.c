@@ -44,18 +44,19 @@ PXThreadResult PXOSAPI PXProgramExecuteThreadFunction(void* data)
     startupInfo.cb = sizeof(STARTUPINFOA);
 
     const BOOL createSuccessful = CreateProcessA
-                                  (
-                                      program->FilePath, // lpApplicationName,
-                                      PXNull,            // lpCommandLine,
-                                      PXNull,            // LPSECURITY_ATTRIBUTES lpProcessAttributes,
-                                      PXNull,            // LPSECURITY_ATTRIBUTES lpThreadAttributes,
-                                      PXFalse,           // bInheritHandles,
-                                      0,                  // dwCreationFlags,
-                                      PXNull,            //     LPVOID                lpEnvironment,
-                                      PXNull,            //     LPCSTR                lpCurrentDirectory,
-                                      &startupInfo,
-                                      &processInformation
-                                  );
+    (
+        program->FilePath, // lpApplicationName,
+        PXNull,            // lpCommandLine,
+        PXNull,            // LPSECURITY_ATTRIBUTES lpProcessAttributes,
+        PXNull,            // LPSECURITY_ATTRIBUTES lpThreadAttributes,
+        PXFalse,           // bInheritHandles,
+        0,                  // dwCreationFlags,
+        PXNull,            //     LPVOID                lpEnvironment,
+        PXNull,            //     LPCSTR                lpCurrentDirectory,
+        &startupInfo,
+        &processInformation
+    );
+
 
     //  pxProgram.Handle = processInformation.han
 

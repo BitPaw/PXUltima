@@ -25,7 +25,7 @@ typedef MMRESULT(WINAPI* PXjoyGetPosEx)(_In_ UINT uJoyID, _Out_ LPJOYINFOEX pji)
 
 #endif
 
-void PXAPI PXControllerSystemInitilize(PXControllerSystem* const pxControllerSystem)
+PXActionResult PXAPI PXControllerSystemInitilize(PXControllerSystem* const pxControllerSystem)
 {
     // Library
     {
@@ -50,6 +50,8 @@ void PXAPI PXControllerSystemInitilize(PXControllerSystem* const pxControllerSys
 
         PXLibraryGetSymbolListA(&pxControllerSystem->InputLibrary, pxLibraryFuntionEntryList, amount);
     }
+
+    return PXActionSuccessful;
 }
 
 void PXAPI PXControllerSystemShutdown(PXControllerSystem* const pxControllerSystem)

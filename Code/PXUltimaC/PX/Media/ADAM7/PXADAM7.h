@@ -7,10 +7,10 @@
 
 typedef struct PXADAM7_
 {
-    char* DataInput;
+    PXByte* DataInput;
     PXSize InputSize;
 
-    char* DataOutput;
+    PXByte* DataOutput;
     PXSize OutputSize;
 
     PXSize Width;

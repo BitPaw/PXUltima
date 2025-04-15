@@ -182,7 +182,7 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceTransphereInfo* const pxResourc
         PXResourceCreateInfo pxResourceCreateInfo;
         PXClear(PXResourceCreateInfo, &pxResourceCreateInfo);
         pxResourceCreateInfo.Type = PXResourceTypeMaterial;
-        pxResourceCreateInfo.ObjectReference = &pxMaterialList->MaterialList;
+        pxResourceCreateInfo.ObjectReference = (void**)&pxMaterialList->MaterialList;
         pxResourceCreateInfo.ObjectAmount = materialAmount;
 
         PXResourceManagerAdd(&pxResourceCreateInfo);
@@ -257,7 +257,7 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceTransphereInfo* const pxResourc
                 PXClear(PXResourceCreateInfo, &pxResourceCreateInfo);
                 pxResourceCreateInfo.Parent = pxMaterialList;
                 pxResourceCreateInfo.Type = PXResourceTypeTexture2D;
-                pxResourceCreateInfo.ObjectReference = &pxMaterialCurrent->DiffuseTexture;
+                pxResourceCreateInfo.ObjectReference = (void**)&pxMaterialCurrent->DiffuseTexture;
                 pxResourceCreateInfo.ObjectAmount = 1;
                 pxResourceCreateInfo.FilePath = fullTexturePath.TextA;
                 pxResourceCreateInfo.FilePathSize = fullTexturePath.SizeUsed;

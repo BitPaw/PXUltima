@@ -798,7 +798,7 @@ PXInt8U PXAPI PXMemoryCompareI8V(const PXInt8U* const textList, const PXInt8U li
             bufferB[2 * i + 2] = 0;
         }
 
-#if 1
+#if 0
         PXLogPrint
         (
             PXLoggingAllocation,
@@ -822,7 +822,12 @@ PXInt8U PXAPI PXMemoryCompareI8V(const PXInt8U* const textList, const PXInt8U li
 
         // We found a match!
 
+#if OS64B
         const PXInt8U match_index = 63 - _lzcnt_u64(result); // Count leading zeros. We want the first one.
+#else
+        const PXInt8U match_index = 63 - _lzcnt_u32(result); // Count leading zeros. We want the first one.
+#endif
+ 
 
         return i + match_index; // Index of first hit
     }
@@ -972,7 +977,7 @@ PXInt8U PXAPI PXMemoryReadBitI32U(const PXInt32U* const pxInt32U, const PXInt8U 
 
 PXInt8U PXAPI PXMemoryReadBitI64U(const PXInt64U* const pxInt64U, const PXInt8U index)
 {
-    return _bittest64(pxInt64U, index);
+    return 0;// _bittest64(pxInt64U, index);
 }
 
 PXInt8U PXAPI PXMemoryReadBitAndClearI32U(const PXInt32U* const pxInt32U, const PXInt8U index)

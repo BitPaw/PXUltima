@@ -62,7 +62,7 @@ typedef struct PXControllerSystem_
 PXControllerSystem;
 
 
-PXPublic void PXAPI PXControllerSystemInitilize(PXControllerSystem* const pxControllerSystem);
+PXPublic PXActionResult PXAPI PXControllerSystemInitilize(PXControllerSystem* const pxControllerSystem);
 PXPublic void PXAPI PXControllerSystemShutdown(PXControllerSystem* const pxControllerSystem);
 
 PXPublic PXActionResult PXAPI PXControllerSystemDevicesListRefresh(PXControllerSystem* const pxControllerSystem);

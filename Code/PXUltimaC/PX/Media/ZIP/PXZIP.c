@@ -38,7 +38,7 @@ PXActionResult PXAPI PXZIPLoadFromFile(PXResourceTransphereInfo* const pxResourc
     const PXBool validSize = 26 == amount;
 
     // Name
-    pxZIP->FileName = PXFileCursorPosition(pxResourceTransphereInfo->FileReference);
+    pxZIP->FileName = (char*)PXFileCursorPosition(pxResourceTransphereInfo->FileReference);
     PXFileCursorAdvance(pxResourceTransphereInfo->FileReference, pxZIP->Filenamelength);
 
     // Extra field

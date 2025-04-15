@@ -132,7 +132,7 @@ PXPublic void PXAPI PXFilePathRelativeFromFileA
     PXSize* const pathResultSize
 );
 
-PXPublic void PXAPI PXFilePathRelativeFromFile(const PXFile* const pxFile, const PXText* const targetPath, PXText* const resultPath);
+PXPublic PXActionResult PXAPI PXFilePathRelativeFromFile(const PXFile* const pxFile, const PXText* const targetPath, PXText* const resultPath);
 
 
 PXPublic PXActionResult PXAPI PXFilePathSwapFileName(const PXText* const inputPath, PXText* const exportPath, const PXText* const fileName);
@@ -142,7 +142,7 @@ PXPublic void PXAPI PXFilePathSwapExtension(const PXText* const inputPath, PXTex
 
 
 PXPublic PXActionResult PXAPI PXFileName(const PXFile* const pxFile, PXText* const fileName);
-PXPublic PXBool PXAPI PXFileDirectoryPathExtract(const PXFile* const path, PXFile* const directoryPath);
+PXPublic PXBool PXAPI PXFileDirectoryPathExtract(const PXText* const path, PXText* const directoryPath);
 
 
 typedef struct PXFilePathStructure_
@@ -420,8 +420,8 @@ PXPublic PXActionResult PXAPI PXFileTimeGet
 );
 
 PXPublic PXActionResult PXAPI PXFilePathSet(PXFile* const pxFile, const PXText* const filePath);
-PXPublic PXActionResult PXAPI PXFilePathGet(PXFile* const pxFile, PXText* const filePath);
-PXPublic PXActionResult PXAPI PXFilePathGetA(PXFile* const pxFile, char* const filePath, PXSize* const filePathSize);
+PXPublic PXActionResult PXAPI PXFilePathGet(const PXFile* const pxFile, PXText* const filePath);
+PXPublic PXActionResult PXAPI PXFilePathGetA(PXFile* const pxFile, char* const filePath, const PXSize filePathSize, PXSize* const sizeWritten);
 PXPublic PXActionResult PXAPI PXFIlePathGetLong(PXText* const pxTextInput, PXText* const pxTextOutput);
 
 #endif

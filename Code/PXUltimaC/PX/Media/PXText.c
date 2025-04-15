@@ -1404,7 +1404,7 @@ PXSize PXAPI PXTextReplaceA(char* const text, PXSize textSize, const char* const
             break;
         }
 
-        const char* indexAdress = &text[indexStart];
+        char* indexAdress = &text[indexStart];
         const PXSize indexSize = PXMathMinimumIU(textSize - indexStart, targetSize);
 
         const PXBool doesMatch = PXTextCompareA(indexAdress, indexSize, target, targetSize);

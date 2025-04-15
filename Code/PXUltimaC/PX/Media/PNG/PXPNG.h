@@ -361,13 +361,13 @@ PXPrivate PXActionResult PXAPI rgba8ToPixel
 PXPublic PXSize lodepng_get_raw_size_lct(PXSize w, PXSize h, LodePNGColorType colortype, PXSize bitdepth);
 PXPublic PXSize lodepng_get_raw_size(PXSize w, PXSize h, const LodePNGColorMode* color);
 
-/*returns -1 if color not present, its index otherwise*/
+// returns -1 if color not present, its index otherwise
 PXPublic int color_tree_get(PNGColorTree* tree, const PXColorRGBAI8* const color);
 
-/*index: bitgroup index, bits: bitgroup size(1, 2 or 4), in: bitgroup value, out: octet array to add bits to*/
+// index: bitgroup index, bits: bitgroup size(1, 2 or 4), in: bitgroup value, out: octet array to add bits to
 PXPublic void addColorBits(unsigned char* out, PXSize index, unsigned int bits, unsigned int in);
 
-PXPublic unsigned char readBitFromReversedStream(PXSize* bitpointer, const char* bitstream);
+PXPublic unsigned char readBitFromReversedStream(PXSize* bitpointer, const PXByte* bitstream);
 PXPublic unsigned readBitsFromReversedStream(PXSize* bitpointer, const unsigned char* bitstream, PXSize nbits);
 
 

@@ -105,12 +105,12 @@ PXActionResult PXAPI PXBashExecuteA
     }
 
     // Execute the command and get the output
-    FILE* pipeHandle = _popen(commandText, "r"); // [POSIX] stdio.h
+    FILE* const pipeHandle = _popen(commandText, "r"); // [POSIX] stdio.h
+    const PXActionResult openError = PXErrorCurrent(pipeHandle>0);
 
-    if(pipeHandle == NULL)
+    if(PXActionSuccessful != openError)
     {
-        printf("Failed to run command\n");
-        return 1;
+        return openError;
     }
 
     if(!(*outBuffer)) // only if we just have a pointer without target
@@ -122,10 +122,11 @@ PXActionResult PXAPI PXBashExecuteA
     }
 
     char* res = fgets(*outBuffer, outBufferSizeMax, pipeHandle);
+    const PXActionResult getError = PXErrorCurrent(!res);
 
-    if(!res)
+    if(PXActionSuccessful != getError)
     {
-        return 1;
+        return openError;
     }
 
     // Close the pipe

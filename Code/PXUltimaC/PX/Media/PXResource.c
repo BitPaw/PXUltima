@@ -1642,7 +1642,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
     // Pre-create Object
     //-----------------------------------------------------
     const PXResourceEntry* const pxResourceEntry = &_GlobalResourceEntryList[pxResourceCreateInfo->Type];
-    const PXBool isResourceAllocated = *pxResourceCreateInfo->ObjectReference;
+    const PXBool isResourceAllocated = *pxResourceCreateInfo->ObjectReference > 0;
 
     if(!isResourceAllocated)
     {
@@ -1906,7 +1906,7 @@ PXActionResult PXAPI PXResourceFetchName(PXResourceInfo* const pxResourceInfo, c
 
 PXActionResult PXAPI PXResourceFetchPath(PXResourceInfo* const pxResourceInfo, char** name, PXSize* nameSize)
 {
-    PXListDynamicGet(&_GLOBALResourceManager.SourcePathCache, pxResourceInfo->ID, name, nameSize);
+    PXListDynamicGet(&_GLOBALResourceManager.SourcePathCache, &pxResourceInfo->ID, name, nameSize);
 
     return PXActionSuccessful;
 }
@@ -2169,7 +2169,7 @@ void PXAPI PXModelFormatTransmute(PXModel* const pxModel, PXModelFormatTransmute
                 pxVertexBuffer->VertexData = PXMemoryHeapCallocT(PXF32, sizeCurrent);;
                 pxVertexBuffer->VertexDataSize = sizeof(PXF32) * sizeCurrent;
 
-                PXF32* dataNew = pxVertexBuffer->VertexData;
+                PXF32* dataNew = (PXF32*)pxVertexBuffer->VertexData;
 
                 PXSize newOffset = 0;
 
