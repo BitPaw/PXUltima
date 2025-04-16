@@ -2297,6 +2297,30 @@ PXFontPageCharacter* PXAPI PXFontPageCharacterFetch(PXFontPage* const pxFontPage
     return lastMatch;
 }
 
+PXFontPage* PXAPI PXFontPageGet(PXFont* const pxFont, const PXSize index)
+{
+    if(!pxFont)
+    {
+        return PXNull; // PXActionRefusedArgumentNull
+    }
+
+    const PXBool isInRange = index <= pxFont->PageListAmount;
+
+    if(!isInRange)
+    {
+        return PXNull;
+    }
+
+
+    // Special case
+    if(0 == index)
+    {
+        return &pxFont->PagePrime;
+    }
+
+    return &pxFont->PageList[index];
+}
+
 const char* PXAPI PXUIElementTypeToString(const PXUIElementType pxUIElementType)
 {
     switch(pxUIElementType)

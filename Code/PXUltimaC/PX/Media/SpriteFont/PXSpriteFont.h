@@ -106,6 +106,9 @@ typedef struct PXSpriteFont_
     PXSpriteFontInfo Info;
     PXSpriteFontCommonData CommonData;
     PXSize FontPageListSize;
+
+    PXSize PageIndexCurrent;
+    PXSize CharacterIndexCurrent;
 }
 PXSpriteFont;
 

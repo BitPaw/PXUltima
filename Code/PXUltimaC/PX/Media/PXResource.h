@@ -1195,7 +1195,7 @@ PXFontPage;
 
 PXPublic PXFontPageCharacter* PXAPI PXFontPageCharacterFetch(PXFontPage* const pxFontPage, const PXInt32U characterID);
 
-#define PXFontPageGet(adress, index) (!currentPageIndex) ?  &(adress)->PagePrime : &(adress)->PageList[currentPageIndex-1];
+
 
 
 
@@ -1233,6 +1233,8 @@ typedef struct PXFont_
     char Name[32]; // ToDo: Remove this
 }
 PXFont;
+
+PXPublic PXFontPage* PXAPI PXFontPageGet(PXFont* const pxFont, const PXSize index);
 
 
 
