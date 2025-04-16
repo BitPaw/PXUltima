@@ -207,6 +207,10 @@ void PXAPI PXSpriteFontParseCommon(PXSpriteFont* const pxSpriteFont, PXCompiler*
                     pxFont->PageListAmount = amountOfPages - 1;
                     pxFont->PageList = PXMemoryHeapCallocT(PXFontPage, pxFont->PageListAmount);
                 }
+                else
+                {
+                    pxFont->PageListAmount = amountOfPages;
+                }
 
                 break;
             }
@@ -226,8 +230,6 @@ void PXAPI PXSpriteFontParseCommon(PXSpriteFont* const pxSpriteFont, PXCompiler*
 
 void PXAPI PXSpriteFontParsePage(PXSpriteFont* const pxSpriteFont, PXCompiler* const pxCompiler, PXFont* const pxFont)
 {
-    PXFontPage* const pxFontPage = PXFontPageGet(pxFont, pxSpriteFont->PageIndexCurrent);
-
     const PXSize targetLine = pxCompiler->ReadInfo.SymbolEntryCurrent.Line;
 
     for(;;)
@@ -283,6 +285,8 @@ void PXAPI PXSpriteFontParsePage(PXSpriteFont* const pxSpriteFont, PXCompiler* c
                     PXFilePathGet(pxCompiler->ReadInfo.FileInput, &fontFilePath);
 
                     PXFilePathSwapFileName(&fontFilePath, &resultFullPath, &fileName);
+
+                    PXFontPage* const pxFontPage = PXFontPageGet(pxFont, pxSpriteFont->PageIndexCurrent);
 
                     // Load
                     {
@@ -363,7 +367,7 @@ void PXAPI PXSpriteFontParseCharacterDefinition(PXSpriteFont* const pxSpriteFont
     PXFontPage* const pxFontPage = PXFontPageGet(pxFont, pxSpriteFont->PageIndexCurrent);
 
     // Guarantee size of list
-    if(pxSpriteFont->CharacterIndexCurrent >= pxFontPage->CharacteList)
+    if(pxSpriteFont->CharacterIndexCurrent >= pxFontPage->CharacteListEntrys)
     {
         pxFontPage->CharacteList = PXMemoryHeapReallocT
         (
@@ -371,6 +375,8 @@ void PXAPI PXSpriteFontParseCharacterDefinition(PXSpriteFont* const pxSpriteFont
             pxFontPage->CharacteList,
             pxFontPage->CharacteListEntrys + 2
         );
+
+        pxFontPage->CharacteListEntrys += 2;
     }
 
     PXFontPageCharacter* const pxFontPageCharacter = &pxFontPage->CharacteList[pxSpriteFont->CharacterIndexCurrent++];

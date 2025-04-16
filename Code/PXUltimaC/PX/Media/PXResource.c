@@ -2313,7 +2313,7 @@ PXFontPage* PXAPI PXFontPageGet(PXFont* const pxFont, const PXSize index)
 
 
     // Special case
-    if(0 == index)
+    if(pxFont->PageListAmount == 1)
     {
         return &pxFont->PagePrime;
     }

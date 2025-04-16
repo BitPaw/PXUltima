@@ -267,7 +267,7 @@ PXPublic void* PXAPI PXMemoryHeapRealloc(PXMemoryHeap* pxMemoryHeap, const void*
 
 #define PXMemoryHeapCallocT(type, amount) (type*)PXMemoryHeapCalloc(PXNull, amount, sizeof(type))
 #define PXMemoryHeapMallocT(type, amount) (type*)PXMemoryHeapMalloc(PXNull, sizeof(type) * amount)
-#define PXMemoryHeapReallocT(type, adress, amount) (type*)PXMemoryHeapRealloc(PXNull, adress, sizeof(type) * amount)
+#define PXMemoryHeapReallocT(type, adress, amount) (type*)PXMemoryHeapRealloc(PXNull, adress, sizeof(type) * (amount))
 //-----------------------------------------------------------------------------
 
 

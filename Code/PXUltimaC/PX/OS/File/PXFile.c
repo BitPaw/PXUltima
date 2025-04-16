@@ -2155,19 +2155,6 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, PXFileOpenInfo* const pxFi
 
 PXActionResult PXAPI PXFileClose(PXFile* const pxFile)
 {
-#if PXLogEnable
-    const char* type = PXFileLocationModeToString(pxFile->LocationMode);
-
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        "File",
-        "Close",
-        "Closing file <%s>...",
-        type
-    );
-#endif
-
     switch(pxFile->LocationMode)
     {
         case PXFileLocationModeMappedFromDisk:
@@ -2191,8 +2178,7 @@ PXActionResult PXAPI PXFileClose(PXFile* const pxFile)
                 PXLoggingInfo,
                 "File",
                 "Close",
-                "External memory is handled by parrent..",
-                type
+                "External memory is handled by parrent.."
             );
 #endif
             break;
@@ -2202,15 +2188,19 @@ PXActionResult PXAPI PXFileClose(PXFile* const pxFile)
     }
 
 #if PXLogEnable
+    const char* type = PXFileLocationModeToString(pxFile->LocationMode);
+
     PXLogPrint
     (
         PXLoggingDeallocation,
         "File",
         "Close",
-        "Closed <%s>!",
+        "<%s>!",
         type
     );
 #endif
+
+    //PXClear(PXFile, pxFile);
 
     return PXActionSuccessful;
 }
@@ -4370,7 +4360,10 @@ PXActionResult PXAPI PXFilePathGet(const PXFile* const pxFile, PXText* const fil
 
     // FILE_NAME_OPENED, VOLUME_NAME_DOS
 
-    const PXSize length = GetFinalPathNameByHandleA
+    DWORD flags = 0;
+    BOOL s = GetHandleInformation(pxFile->FileHandle, &flags);
+
+    const DWORD length = GetFinalPathNameByHandleA
     (
         pxFile->FileHandle,
         filePath->TextA,

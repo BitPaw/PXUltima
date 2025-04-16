@@ -978,7 +978,7 @@ PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler)
     PXFileOpenInfo pxFileOpenInfo;
     PXClear(PXFileOpenInfo, &pxFileOpenInfo);
     pxFileOpenInfo.FlagList = PXFileIOInfoFileVirtual;
-    pxFileOpenInfo.FileSizeRequest = pxCompiler->ReadInfo.FileInput->DataUsed * 4u;
+    pxFileOpenInfo.FileSizeRequest = pxCompiler->ReadInfo.FileInput->DataUsed * 5u;
     pxFileOpenInfo.AccessMode = PXAccessModeReadAndWrite;
 
     const PXActionResult pxOpenResult = PXFileOpen(pxCompiler->ReadInfo.FileCache, &pxFileOpenInfo);

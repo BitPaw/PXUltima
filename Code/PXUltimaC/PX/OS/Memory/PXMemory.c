@@ -10,12 +10,17 @@
 #include <malloc.h>
 
 const char PXMemoryLogPrintTitle[] = "OS-Kernel";
+const char PXMemoryLogPrintMemoryVirtual[] = "Virtual-Memory";
 const char PXMemoryLogPrintMemory[] = "Memory";
+
 const char PXMemoryLogPrintMemoryCalloc[] = "Memory-Calloc";
 const char PXMemoryLogPrintMemoryMalloc[] = "Memory-Malloc";
 const char PXMemoryLogPrintMemoryRealloc[] = "Memory-Realloc";
 const char PXMemoryLogPrintMemoryFree[] = "Memory-Free";
 
+const char PXMemoryLogPrintMemoryVirtualAlloc[] = "Virtual-Alloc";
+const char PXMemoryLogPrintMemoryVirtualFree[] = "Virtual-Free";
+const char PXMemoryLogPrintMemoryVirtualRealloc[] = "Virtual-Realloc";
 
 #if OSUnix
 
@@ -360,8 +365,7 @@ void* PXAPI PXMemoryHeapMalloc(PXMemoryHeap* pxMemoryHeap, const PXSize memorySi
         PXTextCopyA(pxSymbol.NameSymbol, 64, pxSymbolMemory.FunctionAdress, 64);
         pxSymbolMemory.LineNumber = pxSymbolMemory.LineNumber;
 
-       // PXMemorySymbolAdd(&pxSymbolMemory, PXMemorySymbolInfoModeAdd);
-
+        //PXMemorySymbolAdd(&pxSymbolMemory, PXMemorySymbolInfoModeAdd);
 
 #if PXLogEnable 
         PXLogPrint
@@ -429,7 +433,7 @@ PXBool PXAPI PXMemoryHeapFree(PXMemoryHeap* pxMemoryHeap, const void* const adre
         PXTextCopyA(pxSymbol.NameSymbol, 64, pxSymbolMemory.FunctionAdress, 64);
         pxSymbolMemory.LineNumber = -1;
 
-       // PXMemorySymbolAdd(&pxSymbolMemory, PXMemorySymbolInfoModeRemove);
+        //PXMemorySymbolAdd(&pxSymbolMemory, PXMemorySymbolInfoModeRemove);
 
         PXLogPrint
         (
@@ -1618,9 +1622,10 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize* const createdSize, cons
     (
         PXLoggingAllocation,
         PXMemoryLogPrintTitle,
-        PXMemoryLogPrintMemory,
+        PXMemoryLogPrintMemoryVirtualAlloc,
         "VirtualAlloc <%p> Requested:<%i>, Got:<%i>",
         allocatedData,
+        size,
         recievedSize
     );
 #endif
@@ -1686,8 +1691,8 @@ PXActionResult PXAPI PXMemoryVirtualRelease(const void* adress, const PXSize siz
     PXLogPrint
     (
         PXLoggingDeallocation,
-        "Memory",
-        "Virtual-Free",
+        PXMemoryLogPrintTitle,
+        PXMemoryLogPrintMemoryVirtualFree,
         "<%p> Size:%i",
         adress,
         size
