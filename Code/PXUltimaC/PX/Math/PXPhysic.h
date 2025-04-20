@@ -20,8 +20,8 @@
 typedef struct PXPhysicProperties_
 {
     PXMatrix4x4F MatrixModel;
-    PXVector3F Velocity;
-    PXVector3F Force;
+    PXVector3F32 Velocity;
+    PXVector3F32 Force;
     PXF32 Mass;
     PXF32 Friction;
     // Frriction static / dynamic
@@ -33,6 +33,6 @@ typedef struct PXPhysicProperties_
 }
 PXPhysicProperties;
 
-PXPublic void PXAPI PXPhysicGravityApply(PXPhysicProperties* const physicProperties, const PXVector3F* const gravityDircetion, const PXF32 gravityForce, const PXF32 deltaTime);
+PXPublic void PXAPI PXPhysicGravityApply(PXPhysicProperties* const physicProperties, const PXVector3F32* const gravityDircetion, const PXF32 gravityForce, const PXF32 deltaTime);
 
 #endif

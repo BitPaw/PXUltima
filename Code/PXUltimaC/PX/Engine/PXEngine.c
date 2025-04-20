@@ -1077,20 +1077,20 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
            // pxEngine->CameraCurrent->WalkSpeed = 1;
            // pxEngine->CameraCurrent->ViewSpeed = 1;
 
-            PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, pxController->AxisNormalised[0] * pxEngine->CameraCurrent->WalkSpeed, 0, pxController->AxisNormalised[1] * pxEngine->CameraCurrent->WalkSpeed);
-            PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementView, pxController->AxisNormalised[2] * pxEngine->CameraCurrent->ViewSpeed, pxController->AxisNormalised[3] * pxEngine->CameraCurrent->ViewSpeed, 0);
+            PXVector3F32AddXYZ(&pxPlayerMoveInfo.MovementWalk, pxController->AxisNormalised[0] * pxEngine->CameraCurrent->WalkSpeed, 0, pxController->AxisNormalised[1] * pxEngine->CameraCurrent->WalkSpeed);
+            PXVector3F32AddXYZ(&pxPlayerMoveInfo.MovementView, pxController->AxisNormalised[2] * pxEngine->CameraCurrent->ViewSpeed, pxController->AxisNormalised[3] * pxEngine->CameraCurrent->ViewSpeed, 0);
 
 
             // Up
             if(pxController->ButtonPressedBitList & PXControllerButton1)
             {
-                PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, -1, 0);
+                PXVector3F32AddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, -1, 0);
             }
 
             // Down
             if(pxController->ButtonPressedBitList & PXControllerButton2)
             {
-                PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, 1, 0);
+                PXVector3F32AddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, 1, 0);
             }
 
             // Update
@@ -1115,27 +1115,27 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
 
             if(keyboard->Commands & KeyBoardIDShiftLeft)
             {
-                PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, -1, 0);
+                PXVector3F32AddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, -1, 0);
             }
             if(keyboard->Letters & KeyBoardIDLetterW)
             {
-                PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, 0, 1);
+                PXVector3F32AddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, 0, 1);
             }
             if(keyboard->Letters & KeyBoardIDLetterA)
             {
-                PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, -1, 0, 0);
+                PXVector3F32AddXYZ(&pxPlayerMoveInfo.MovementWalk, -1, 0, 0);
             }
             if(keyboard->Letters & KeyBoardIDLetterS)
             {
-                PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, 0, -1);
+                PXVector3F32AddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, 0, -1);
             }
             if(keyboard->Letters & KeyBoardIDLetterD)
             {
-                PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, 1, 0, 0);
+                PXVector3F32AddXYZ(&pxPlayerMoveInfo.MovementWalk, 1, 0, 0);
             }
             if(keyboard->Letters & KeyBoardIDSpace)
             {
-                PXVector3FAddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, 1, 0);
+                PXVector3F32AddXYZ(&pxPlayerMoveInfo.MovementWalk, 0, 1, 0);
             }
             if(keyboard->Letters & KeyBoardIDLetterF && !pxEngine->InteractionLock)
             {
@@ -2494,7 +2494,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
             PXF32 txWidth = pxSprite->Texture->Image->Width;
             PXF32 txHeight = pxSprite->Texture->Image->Height;
 
-            PXVector2F aspectScaling = { 1, txHeight / txWidth };
+            PXVector2F32 aspectScaling = { 1, txHeight / txWidth };
 
 
             PXMatrix4x4FMove3F(&pxSprite->Model->ModelMatrix, &pxSpriteCreateEventData->Position);
@@ -2832,8 +2832,8 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEn
                 break;
             }
 
-            PXVector2F offsetShadowCurrent = { 0.0f, 0.0f };
-            const PXVector2F shadowOffset = { 0.0045f, -0.005f };
+            PXVector2F32 offsetShadowCurrent = { 0.0f, 0.0f };
+            const PXVector2F32 shadowOffset = { 0.0045f, -0.005f };
             PXBlendingMode blendingMode[2] = { PXBlendingModeSoureAlphaOnly, PXBlendingModeSoureAlphaOnly };
 
             for(PXInt8U j = 0; j < 2u; ++j)
@@ -3580,7 +3580,6 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
         }
     }
 
-
     return PXActionSuccessful;
 }
 
@@ -3679,12 +3678,91 @@ void PXAPI PXEngineUpdateCollision(PXEngine* const pxEngine)
     PXDictionaryEntry pxDictionaryEntry;
     PXHitBox* pxHitBoxA = PXNull;
     PXHitBox* pxHitBoxB = PXNull;
-    PXVector3F* pxHitBoxAVertex = PXNull;
-    PXVector3F* pxHitBoxBVertex = PXNull;
+    PXVector3F32* pxHitBoxAVertex = PXNull;
+    PXVector3F32* pxHitBoxBVertex = PXNull;
     PXSize pxHitBoxAAmount = 0;
     PXSize pxHitBoxBAmount = 0;
 
+
+
+    // Player vs model
+    PXCamera* const pxCamera = pxEngine->CameraCurrent;
+
+
+    PXDictionary* const modelList = &pxEngine->ResourceManager->ModelLookUp;
+
+    PXVector3F32 position;
+    PXMatrix4x4FPositionGet(&pxCamera->MatrixView, &position);
+
 #if 0
+    PXConsoleGoToXY(0, 0);
+    PXConsoleWrite(7, "Camera POS\n");
+    PXConsoleWriteTablePXF32(&position, 3, 3);
+#endif
+
+
+    for(size_t i = 0; i < modelList->EntryAmountCurrent; i++)
+    {
+        PXModel* pxModel = PXNull;
+
+        PXDictionaryIndex(modelList, i, &pxDictionaryEntry);
+
+        pxModel = *(PXModel**)pxDictionaryEntry.Value;
+
+        
+
+        if(!pxModel->Mesh.VertexBufferList)
+        {
+            continue;
+        }
+
+        PXVertexBuffer* const pxVertexBuffer = &pxModel->Mesh.VertexBufferList[0];
+
+        PXIndexBuffer* const pxIndexBuffer = &pxModel->Mesh.IndexBuffer;
+
+        /*
+        for(PXSize i = 0; i < pxIndexBuffer->SegmentListAmount; i++)
+        {
+            pxIndexBuffer->SegmentList[]
+        }*/
+
+        PXVector3F32 forward = {0,0,-1.0};
+
+        const PXSize amount = PXMeshTriangleAmount(&pxModel->Mesh);
+
+
+        pxModel->Range = PXRayTriangleIntersect
+        (
+            &position,
+            &pxCamera->LookAtPosition,
+            pxVertexBuffer->VertexData,
+            amount
+        );
+
+        if(pxModel->Range == -1)
+        {
+            continue;
+        }
+
+#if 1
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "HitBox",
+            "Compare",
+            "HIT-Range: %f",
+            pxModel->Range
+        );
+#endif
+    }
+
+
+
+
+
+
+#if 0
+    // Hitbox vs model
     for(PXSize i = 0; i < amount; ++i)
     {
         PXDictionaryIndex(hitboxLookup, i, &pxDictionaryEntry);
@@ -3699,24 +3777,38 @@ void PXAPI PXEngineUpdateCollision(PXEngine* const pxEngine)
             pxHitBoxB = *(PXHitBox**)pxDictionaryEntry.Value;
             pxHitBoxBAmount = PXMeshTriangleAmount(&pxHitBoxB->Model->Mesh);
 
-            for(PXSize k = 0; k < pxHitBoxAAmount; ++k)
+            for(PXSize k = 0; k < pxHitBoxAAmount; k+=3)
             {
-                pxHitBoxAVertex = PXVertexBufferInsertionPoint(&pxHitBoxA->Model->Mesh.VertexBuffer, pxHitBoxA->Model->Mesh.VertexBuffer.Format, k);
+                float* x = pxHitBoxA->Model->Mesh.VertexBufferList[0].VertexData;
 
-                for(PXSize l = 0; l < pxHitBoxBAmount; ++l)
+                pxHitBoxAVertex = &x[k];
+
+                for(PXSize l = 0; l < pxHitBoxBAmount; l+=3)
                 {
-                    pxHitBoxBVertex = PXVertexBufferInsertionPoint(&pxHitBoxA->Model->Mesh.VertexBuffer, pxHitBoxA->Model->Mesh.VertexBuffer.Format, l);
+                    float* y = pxHitBoxB->Model->Mesh.VertexBufferList[0].VertexData;
+
+                    pxHitBoxBVertex = &y[l];
 
                     PXF32 intersectionDistance = PXRayTriangleIntersect
                     (
                         pxHitBoxAVertex,
+                        PXNull,
+                        pxHitBoxBVertex
+                    );
 
-
-                        );
-
-                    if(RayIntersectsTriangle(objects[i].rayOrigin, objects[i].rayVector, objects[j].triangles[l], &intersectionDistance))
+                    if(intersectionDistance)
                     {
-                        // Resolve collision
+                       // pxHitBoxA->Model->Info.Setting
+
+#if 1
+                        PXLogPrint
+                        (
+                            PXLoggingInfo,
+                            "HitBox",
+                            "Compare",
+                            "HIT"
+                        );
+#endif
                     }
                 }
             }
@@ -3940,10 +4032,10 @@ void PXAPI PXEngineUpdateSpriteAnimator(PXEngine* const pxEngine)
 void PXAPI PXEngineHitBoxHandleAvsB(PXEngine* const pxEngine, PXHitBox* const hitBoxA, PXHitBox* const hitBoxB)
 {
     /*
-    PXVector3F positionA;
-    PXVector3F positionB;
-    PXVector3F positionSizeA;
-    PXVector3F positionSizeB;
+    PXVector3F32 positionA;
+    PXVector3F32 positionB;
+    PXVector3F32 positionSizeA;
+    PXVector3F32 positionSizeB;
 
     PXF32 boundingBox[8] =
     {

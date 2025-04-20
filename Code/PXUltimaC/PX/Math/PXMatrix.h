@@ -78,19 +78,19 @@ PXMatrix4x4F;
 PXPublic void PXAPI PXMatrix4x4FIdentity(PXMatrix4x4F* const matrix4x4F);
 PXPublic void PXAPI PXMatrix4x4FResetAxisW(PXMatrix4x4F* const matrix4x4F);
 
-PXPublic void PXAPI PXMatrix4x4FPositionGet(const PXMatrix4x4F* const matrix, PXVector3F* const position);
-PXPublic void PXAPI PXMatrix4x4FPositionSet(PXMatrix4x4F* const matrix4x4F, const PXVector3F* const position);
+PXPublic void PXAPI PXMatrix4x4FPositionGet(const PXMatrix4x4F* const matrix, PXVector3F32* const position);
+PXPublic void PXAPI PXMatrix4x4FPositionSet(PXMatrix4x4F* const matrix4x4F, const PXVector3F32* const position);
 
-PXPublic void PXAPI PXMatrix4x4FRotationGet(const PXMatrix4x4F* const matrix, PXVector3F* const position);
-PXPublic void PXAPI PXMatrix4x4FRotationSet(PXMatrix4x4F* const matrix4x4F, const PXVector3F* const position);
-PXPublic void PXAPI PXMatrix4x4FRotationMatrixGenerate(PXMatrix4x4F* const matrix4x4F, const PXVector3F* const position);
+PXPublic void PXAPI PXMatrix4x4FRotationGet(const PXMatrix4x4F* const matrix, PXVector3F32* const position);
+PXPublic void PXAPI PXMatrix4x4FRotationSet(PXMatrix4x4F* const matrix4x4F, const PXVector3F32* const position);
+PXPublic void PXAPI PXMatrix4x4FRotationMatrixGenerate(PXMatrix4x4F* const matrix4x4F, const PXVector3F32* const position);
 
 PXPublic void PXAPI PXMatrix4x4FMultiply(const PXMatrix4x4F* matrixA, const PXMatrix4x4F* matrixB, PXMatrix4x4F* const matrixResult);
-PXPublic void PXAPI PXMatrix4x4FRotate(PXMatrix4x4F* const matrix4x4F, const PXVector3F* const vector3F);
+PXPublic void PXAPI PXMatrix4x4FRotate(PXMatrix4x4F* const matrix4x4F, const PXVector3F32* const vector3F);
 
 PXPublic void PXAPI PXMatrix4x4FCopy(const PXMatrix4x4F* const matrixA, PXMatrix4x4F* const matrixResult);
 
-PXPublic void PXAPI PXMatrix4x4FMove3F(PXMatrix4x4F* const matrixData, const PXVector3F* const vector3F);
+PXPublic void PXAPI PXMatrix4x4FMove3F(PXMatrix4x4F* const matrixData, const PXVector3F32* const vector3F);
 PXPublic void PXAPI PXMatrix4x4FMoveXY(PXMatrix4x4F* const matrixData, const PXF32 x, const PXF32 y);
 PXPublic void PXAPI PXMatrix4x4FMoveToScaleXY(PXMatrix4x4F* const matrixData, const PXF32 x, const PXF32 y);
 PXPublic void PXAPI PXMatrix4x4FMoveXYZ(PXMatrix4x4F* const matrixData, const PXF32 x, const PXF32 y, const PXF32 z);
@@ -100,11 +100,11 @@ PXPublic void PXAPI PXMatrix4x4FScaleBy(PXMatrix4x4F* const matrixA, const PXF32
 //PXPublic void PXAPI PXMatrix4x4FScaleByMargin(PXMatrix4x4F* const pxMatrix4x4F, const PXRectangleOffset* const pxMargin);
 PXPublic void PXAPI PXMatrix4x4FScaleByXY(PXMatrix4x4F* const pxMatrix4x4F, const PXF32 x, const PXF32 y);
 
-PXPublic void PXAPI PXMatrix4x4FScaleSet(PXMatrix4x4F* const pxMatrix4x4F, const PXVector3F* const pxVector3F);
+PXPublic void PXAPI PXMatrix4x4FScaleSet(PXMatrix4x4F* const pxMatrix4x4F, const PXVector3F32* const pxVector3F32);
 PXPublic void PXAPI PXMatrix4x4FScaleSetXY(PXMatrix4x4F* const pxMatrix4x4F, const PXF32 x, const PXF32 y);
 PXPublic void PXAPI PXMatrix4x4FScaleSetXYZ(PXMatrix4x4F* const pxMatrix4x4F, const PXF32 x, const PXF32 y, const PXF32 z);
 
-PXPublic void PXAPI PXMatrix4x4FScaleGet(const PXMatrix4x4F* const matrixResult, PXVector3F* const pxVector3F);
+PXPublic void PXAPI PXMatrix4x4FScaleGet(const PXMatrix4x4F* const matrixResult, PXVector3F32* const pxVector3F32);
 PXPublic void PXAPI PXMatrix4x4FScaleGetXYZ(const PXMatrix4x4F* const matrixResult, PXF32* const x, PXF32* const y, PXF32* const z);
 
 PXPublic void PXAPI PXMatrix4x4FOrthographic(PXMatrix4x4F* const matrix4x4F, const PXF32 left, const PXF32 right, const PXF32 bottom, const PXF32 top, const PXF32 nearPlane, const PXF32 farPlane);
@@ -112,6 +112,6 @@ PXPublic void PXAPI PXMatrix4x4FPerspective(PXMatrix4x4F* const matrix4x4F, cons
 
 PXPublic PXBool PXAPI PXMatrix4x4FInverse(PXMatrix4x4F* const matrix4x4F);
 PXPublic void PXAPI PXMatrix4x4FTranpose(PXMatrix4x4F* const matrix4x4F);
-PXPublic void PXAPI PXMatrix4x4FLookAt(PXMatrix4x4F* const matrix4x4F, const PXVector3F* const eye, const PXVector3F* const  center, const PXVector3F* const up);
+PXPublic void PXAPI PXMatrix4x4FLookAt(PXMatrix4x4F* const matrix4x4F, const PXVector3F32* const eye, const PXVector3F32* const  center, const PXVector3F32* const up);
 
 #endif

@@ -386,10 +386,10 @@ PXPublic void PXAPI PXCameraViewChangeToPerspective(PXCamera* const camera, cons
 //-----------
 
 //---<Transform>-----------------------------------------------------------
-PXPublic void PXAPI PXCameraRotate(PXCamera* const camera, const PXVector3F* const vector3F);
+PXPublic void PXAPI PXCameraRotate(PXCamera* const camera, const PXVector3F32* const vector3F);
 PXPublic void PXAPI PXCameraRotateXYZ(PXCamera* const camera, const PXF32 x, const PXF32 y, const PXF32 z);
 
-PXPublic void PXAPI PXCameraMove(PXCamera* const camera, const PXVector3F* const vector3F);
+PXPublic void PXAPI PXCameraMove(PXCamera* const camera, const PXVector3F32* const vector3F);
 PXPublic void PXAPI PXCameraMoveXYZ(PXCamera* const camera, const PXF32 x, const PXF32 y, const PXF32 z);
 
 PXPublic void PXAPI PXCameraFollow(PXCamera* const camera, const PXF32 deltaTime);

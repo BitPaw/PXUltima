@@ -61,8 +61,8 @@ PXEngineResourceActionInfo;
 
 typedef struct PXPlayerMoveInfo_
 {
-    PXVector3F MovementWalk;
-    PXVector3F MovementView;
+    PXVector3F32 MovementWalk;
+    PXVector3F32 MovementView;
     PXBool IsWindowInFocus;
     PXBool ActionCommit; // If this stays true, action will be commited
 }

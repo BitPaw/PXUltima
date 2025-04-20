@@ -5,10 +5,6 @@
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/OS/Console/PXConsole.h>
 
-#define PXQuickSwap(a, b) \
-a = a + b; \
-b = a - b; \
-a = a - b;
 
 PXBitmapInfoHeaderType PXBitmapInfoHeaderTypeFromID(const PXInt8U infoHeaderType)
 {
@@ -315,17 +311,20 @@ PXActionResult PXAPI PXBitmapLoadFromFile(PXResourceTransphereInfo* const pxReso
     }
 #endif
 
+
+    // Note: No, we can't load the image data at once!
+    // Although the padding is 0, we can just read all at once, the image will be upside down.
+
+    const PXInt8U shuffleData[] = {2,1,0};
+    const PXInt8U shuffleSize = sizeof(shuffleData) / sizeof(PXInt8U);
+
     while(imageDataLayout.RowAmount--) // loop through each image row
     {
         PXByte* const data = (PXByte* const)pxImage->PixelData + (imageDataLayout.RowImageDataSize * imageDataLayout.RowAmount); // Get the starting point of each row
 
         PXFileReadB(pxResourceTransphereInfo->FileReference, data, imageDataLayout.RowImageDataSize); // Read/Write image data
         PXFileCursorAdvance(pxResourceTransphereInfo->FileReference, imageDataLayout.RowPaddingSize); // Skip padding
-
-        for(PXSize i = 0; i < imageDataLayout.RowImageDataSize; i += bbp)
-        {
-            PXQuickSwap(data[i], data[i + 2]) // BGR -> RGB, just swap Blue and Red, Green stays.
-        }
+        PXMathShuffleI8(data, data, imageDataLayout.RowImageDataSize, shuffleData, shuffleSize);
     }
 
     return PXActionSuccessful;

@@ -403,7 +403,7 @@ void PXAPI PXConsoleWriteWithColorCodes(PXText* const bufferInput)
 
 void PXAPI PXConsoleWriteTablePXF32(const PXF32* const data, const PXSize amount, const PXSize width)
 {
-    const PXSize rows = amount / 3;
+    const PXSize rows = amount / width;
 
     for(PXSize y = 0; y < rows; ++y)
     {
@@ -420,7 +420,7 @@ void PXAPI PXConsoleWriteTablePXF32(const PXF32* const data, const PXSize amount
 
 void PXAPI PXConsoleWriteTableInt(const PXInt8U* const data, const PXSize amount, const PXSize width)
 {
-    const PXSize rows = amount / 3;
+    const PXSize rows = amount / width;
 
     for(PXSize y = 0; y < rows; ++y)
     {

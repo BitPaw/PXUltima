@@ -33,8 +33,8 @@ PXCollisionElement;
 typedef struct PXCollisionGravityField_
 {
     PXF32 PullForce;
-    PXVector3F PullDirection;
-    PXVector3F IgnoreAxis;
+    PXVector3F32 PullDirection;
+    PXVector3F32 IgnoreAxis;
 }
 PXCollisionGravityField;
 
@@ -45,9 +45,10 @@ PXPublic PXBool PXAPI PXCollisionAABB(PXF32 ax, PXF32 ay, PXF32 bx, PXF32 by, PX
 // if hit, return the range. If nothing hit, return -1 
 PXPublic PXF32 PXAPI PXRayTriangleIntersect
 (
-    PXVector3F* const rayOriginPositon,
-    PXVector3F* const rayOriginDirection,
-    PXVector3F* const triangleVertexList
+    PXVector3F32* const rayOriginPositon,
+    PXVector3F32* rayOriginDirection,
+    const PXVector3F32* const triangleVertexList,
+    const PXSize amountTriangles
 );
 
 #endif

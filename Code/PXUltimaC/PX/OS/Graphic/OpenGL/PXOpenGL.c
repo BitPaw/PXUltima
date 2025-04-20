@@ -3623,6 +3623,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
 
         PXOpenGLShaderVariableSet(pxOpenGL, pxShaderProgram, pxShaderVariableList, 6);
 
+#if 0
         PXConsoleGoToXY(0, 0);
         PXConsoleWrite(7, "Model\n");
         PXConsoleWriteTablePXF32(modifiedModelMatrix.Data, 4 * 4, 4);
@@ -3630,6 +3631,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
         PXConsoleWriteTablePXF32(modifiedViewMatrix.Data, 4 * 4, 4);
         PXConsoleWrite(12, "Projection\n");
         PXConsoleWriteTablePXF32(matrixProjection->Data, 4 * 4, 4);
+#endif
     }
     else // Legacy matrix stuff
     {
@@ -6609,7 +6611,7 @@ PXActionResult PXAPI PXOpenGLSpriteRegister(PXOpenGL* const pxOpenGL, PXSprite* 
             pxSprite->TextureScalePointOffset.Y
         };
 
-        PXVector2F vxOffset[4];
+        PXVector2F32 vxOffset[4];
 
 
 

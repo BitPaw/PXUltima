@@ -2,13 +2,13 @@
 
 #include <PX/Math/PXMath.h>
 
-PXF32 PXAPI PXVector2FDistanceTo(PXVector2F* const vectorA, PXVector2F* const vectorB)
+PXF32 PXAPI PXVector2F32DistanceTo(PXVector2F32* const vectorA, PXVector2F32* const vectorB)
 {
     // d = Root((x2?x1)^2 + (y2?y1)^2)
     return PXMathRootSquareF64(PXMathPowerOfTwo(vectorB->X - vectorA->X) + PXMathPowerOfTwo(vectorB->Y - vectorA->X));
 }
 
-PXF32 PXAPI PXVector3FLength(const PXVector3F* const vector)
+PXF32 PXAPI PXVector3F32Length(const PXVector3F32* const vector)
 {
     const PXF32 sum = vector->X * vector->X + vector->Y * vector->Y + vector->Z * vector->Z; // sum = x * x + y * y + z * z
     const PXF32 sqroot = PXMathRootSquareF64(sum);
@@ -16,85 +16,85 @@ PXF32 PXAPI PXVector3FLength(const PXVector3F* const vector)
     return sqroot;
 }
 
-void PXAPI PXVector3FCrossProduct(PXVector3F* const vectorResult, const PXVector3F* const vectorA, const PXVector3F* const vectorB)
+void PXAPI PXVector3F32CrossProduct(PXVector3F32* const vectorResult, const PXVector3F32* const vectorA, const PXVector3F32* const vectorB)
 {
     vectorResult->X = vectorA->Y * vectorB->Z - vectorA->Z * vectorB->Y;
     vectorResult->Y = vectorA->Z * vectorB->X - vectorA->X * vectorB->Z;
     vectorResult->Z = vectorA->X * vectorB->Y - vectorA->Y * vectorB->X;
 }
 
-PXF32 PXAPI PXVector2FDotProduct(const PXVector2F* const vectorA, const PXVector2F* const vectorB)
+PXF32 PXAPI PXVector2F32DotProduct(const PXVector2F32* const vectorA, const PXVector2F32* const vectorB)
 {
     // a · b = ax × bx + ay × by
     return vectorA->X * vectorB->X + vectorA->Y * vectorB->Y;
 }
 
-PXF32 PXAPI PXVector3FDotProduct(const PXVector3F* const vectorA, const PXVector3F* const vectorB)
+PXF32 PXAPI PXVector3F32DotProduct(const PXVector3F32* const vectorA, const PXVector3F32* const vectorB)
 {
     return vectorA->X * vectorB->X + vectorA->Y * vectorB->Y + vectorA->Z * vectorB->Z;
 }
 
-void PXAPI PXVector3FSet(PXVector3F* const pxVector3F, const PXVector3F* const pxVector3FSource)
+void PXAPI PXVector3F32Set(PXVector3F32* const pxVector3F32, const PXVector3F32* const pxVector3F32Source)
 {
-    pxVector3F->X = pxVector3FSource->X;
-    pxVector3F->Y = pxVector3FSource->Y;
-    pxVector3F->Z = pxVector3FSource->Z;
+    pxVector3F32->X = pxVector3F32Source->X;
+    pxVector3F32->Y = pxVector3F32Source->Y;
+    pxVector3F32->Z = pxVector3F32Source->Z;
 }
 
-void PXAPI PXVector2FSet(PXVector2F* const vector, const PXVector2F* const vectorSet)
+void PXAPI PXVector2F32Set(PXVector2F32* const vector, const PXVector2F32* const vectorSet)
 {
     vector->X = vectorSet->X;
     vector->Y = vectorSet->Y;
 }
 
-void PXAPI PXVector2FSetXY(PXVector2F* const vector, const PXF32 x, const PXF32 y)
+void PXAPI PXVector2F32SetXY(PXVector2F32* const vector, const PXF32 x, const PXF32 y)
 {
-    const PXVector2F pxVectorData = { x, y };
+    const PXVector2F32 pxVectorData = { x, y };
 
-    PXVector2FSet(vector, &pxVectorData);
+    PXVector2F32Set(vector, &pxVectorData);
 }
 
-void PXAPI PXVector2FAdd(PXVector2F* const vector, const PXVector2F* const pxVectorData)
+void PXAPI PXVector2F32Add(PXVector2F32* const vector, const PXVector2F32* const pxVectorData)
 {
     vector->X += pxVectorData->X;
     vector->Y += pxVectorData->Y;
 }
 
-void PXAPI PXVector2FAddXY(PXVector2F* const vector, const PXF32 x, const PXF32 y)
+void PXAPI PXVector2F32AddXY(PXVector2F32* const vector, const PXF32 x, const PXF32 y)
 {
-    const PXVector2F pxVectorData = { x, y };
+    const PXVector2F32 pxVectorData = { x, y };
 
-    PXVector2FAdd(vector, &pxVectorData);
+    PXVector2F32Add(vector, &pxVectorData);
 }
 
-void PXAPI PXVector2FMultiply(PXVector2F* const vector, const PXVector2F* const pxVectorData)
+void PXAPI PXVector2F32Multiply(PXVector2F32* const vector, const PXVector2F32* const pxVectorData)
 {
     vector->X *= pxVectorData->X;
     vector->Y *= pxVectorData->Y;
 }
 
-void PXAPI PXVector2FMultiplyXY(PXVector2F* const vector, const PXF32 x, const PXF32 y)
+void PXAPI PXVector2F32MultiplyXY(PXVector2F32* const vector, const PXF32 x, const PXF32 y)
 {
-    const PXVector2F pxVectorData = { x, y };
+    const PXVector2F32 pxVectorData = { x, y };
 
-    PXVector2FMultiply(vector, &pxVectorData);
+    PXVector2F32Multiply(vector, &pxVectorData);
 }
 
-void PXAPI PXVector3FSetXYZ(PXVector3F* const vector, const PXF32 x, const PXF32 y, const PXF32 z)
+void PXAPI PXVector3F32SetXYZ(PXVector3F32* const vector, const PXF32 x, const PXF32 y, const PXF32 z)
 {
     vector->X = x;
     vector->Y = y;
     vector->Z = z;
 }
 
-void PXAPI PXVector3FAbsolute(PXVector3F* const pxVector3F)
+void PXAPI PXVector3F32Absolute(PXVector3F32* const pxVector3F32)
 {
-    pxVector3F->X = PXMathAbsolute(pxVector3F->X);
-    pxVector3F->Y = PXMathAbsolute(pxVector3F->Y);
-    pxVector3F->Z = PXMathAbsolute(pxVector3F->Z);
+    pxVector3F32->X = PXMathAbsolute(pxVector3F32->X);
+    pxVector3F32->Y = PXMathAbsolute(pxVector3F32->Y);
+    pxVector3F32->Z = PXMathAbsolute(pxVector3F32->Z);
 }
 
-void PXAPI PXVector4FSetXYZW(PXVector4F* const vector, const PXF32 x, const PXF32 y, const PXF32 z, const PXF32 w)
+void PXAPI PXVector4F32SetXYZW(PXVector4F32* const vector, const PXF32 x, const PXF32 y, const PXF32 z, const PXF32 w)
 {
     vector->X = x;
     vector->Y = y;
@@ -102,83 +102,83 @@ void PXAPI PXVector4FSetXYZW(PXVector4F* const vector, const PXF32 x, const PXF3
     vector->W = w;
 }
 
-void PXAPI PXVector3FSubstract(PXVector3F* const pxVector3F, const PXVector3F* const pxVector3FInput)
+void PXAPI PXVector3F32Substract(PXVector3F32* const pxVector3F32, const PXVector3F32* const pxVector3F32Input)
 {
-    pxVector3F->X -= pxVector3FInput->X;
-    pxVector3F->Y -= pxVector3FInput->Y;
-    pxVector3F->Z -= pxVector3FInput->Z;
+    pxVector3F32->X -= pxVector3F32Input->X;
+    pxVector3F32->Y -= pxVector3F32Input->Y;
+    pxVector3F32->Z -= pxVector3F32Input->Z;
 }
 
-void PXAPI PXVector3FMultiply(PXVector3F* const vector, PXVector3F* const vectorResult)
+void PXAPI PXVector3F32Multiply(PXVector3F32* const vector, PXVector3F32* const vectorResult)
 {
     vectorResult->X *= vector->X;
     vectorResult->Y *= vector->Y;
     vectorResult->Z *= vector->Z;
 }
 
-void PXAPI PXVector3FMultiplyXYZ(PXVector3F* const pxVector3F, const PXF32 x, const PXF32 y, const PXF32 z)
+void PXAPI PXVector3F32MultiplyXYZ(PXVector3F32* const pxVector3F32, const PXF32 x, const PXF32 y, const PXF32 z)
 {
-    pxVector3F->X *= x;
-    pxVector3F->Y *= y;
-    pxVector3F->Z *= z;
+    pxVector3F32->X *= x;
+    pxVector3F32->Y *= y;
+    pxVector3F32->Z *= z;
 }
 
-void PXAPI PXVector3FMultiplyS(PXVector3F* const vector, const PXF32 scalar)
+void PXAPI PXVector3F32MultiplyS(PXVector3F32* const vector, const PXF32 scalar)
 {
     vector->X *= scalar;
     vector->Y *= scalar;
     vector->Z *= scalar;
 }
 
-void PXAPI PXVector4FMultiplyXYZW(PXVector4F* const pxVector4F, const PXF32 x, const PXF32 y, const PXF32 z, const PXF32 w)
+void PXAPI PXVector4F32MultiplyXYZW(PXVector4F32* const PXVector4F32, const PXF32 x, const PXF32 y, const PXF32 z, const PXF32 w)
 {
-    pxVector4F->X *= x;
-    pxVector4F->Y *= y;
-    pxVector4F->Z *= z;
-    pxVector4F->W *= w;
+    PXVector4F32->X *= x;
+    PXVector4F32->Y *= y;
+    PXVector4F32->Z *= z;
+    PXVector4F32->W *= w;
 }
 
-void PXAPI PXVector3FDivide(PXVector3F* const pxVector3F, const PXVector3F* const vectorB)
+void PXAPI PXVector3F32Divide(PXVector3F32* const pxVector3F32, const PXVector3F32* const vectorB)
 {
-    pxVector3F->X /= vectorB->X;
-    pxVector3F->Y /= vectorB->Y;
-    pxVector3F->Z /= vectorB->Z;
+    pxVector3F32->X /= vectorB->X;
+    pxVector3F32->Y /= vectorB->Y;
+    pxVector3F32->Z /= vectorB->Z;
 }
 
-void PXAPI PXVector3FDivideS(PXVector3F* const pxVector3F, const PXF32 scalar)
+void PXAPI PXVector3F32DivideS(PXVector3F32* const pxVector3F32, const PXF32 scalar)
 {
-    pxVector3F->X /= scalar;
-    pxVector3F->Y /= scalar;
-    pxVector3F->Z /= scalar;
+    pxVector3F32->X /= scalar;
+    pxVector3F32->Y /= scalar;
+    pxVector3F32->Z /= scalar;
 }
 
-void PXAPI PXVector3FNormalize(PXVector3F* const pxVector3F)
+void PXAPI PXVector3F32Normalize(PXVector3F32* const pxVector3F32)
 {
-    const PXF32 length = PXVector3FLength(pxVector3F);
+    const PXF32 length = PXVector3F32Length(pxVector3F32);
 
     if (length)
     {
-        pxVector3F->X /= length;
-        pxVector3F->Y /= length;
-        pxVector3F->Z /= length;
+        pxVector3F32->X /= length;
+        pxVector3F32->Y /= length;
+        pxVector3F32->Z /= length;
     }
 }
 
-void PXAPI PXVector3FAdd(PXVector3F* const pxVector3F, const PXVector3F* const vectorB)
+void PXAPI PXVector3F32Add(PXVector3F32* const pxVector3F32, const PXVector3F32* const vectorB)
 {
-    pxVector3F->X += vectorB->X;
-    pxVector3F->Y += vectorB->Y;
-    pxVector3F->Z += vectorB->Z;
+    pxVector3F32->X += vectorB->X;
+    pxVector3F32->Y += vectorB->Y;
+    pxVector3F32->Z += vectorB->Z;
 }
 
-void PXAPI PXVector3FAddXYZ(PXVector3F* const pxVector3F, const PXF32 x, const PXF32 y, const PXF32 z)
+void PXAPI PXVector3F32AddXYZ(PXVector3F32* const pxVector3F32, const PXF32 x, const PXF32 y, const PXF32 z)
 {
-    pxVector3F->X += x;
-    pxVector3F->Y += y;
-    pxVector3F->Z += z;
+    pxVector3F32->X += x;
+    pxVector3F32->Y += y;
+    pxVector3F32->Z += z;
 }
 
-void PXAPI PXVector4FAddXYZW(const PXVector4F* const vector, const PXF32 x, const PXF32 y, const PXF32 z, const PXF32 w, PXVector4F* const vectorResult)
+void PXAPI PXVector4F32AddXYZW(const PXVector4F32* const vector, const PXF32 x, const PXF32 y, const PXF32 z, const PXF32 w, PXVector4F32* const vectorResult)
 {
     vectorResult->X = vector->X + x;
     vectorResult->Y = vector->Y + y;
@@ -186,19 +186,19 @@ void PXAPI PXVector4FAddXYZW(const PXVector4F* const vector, const PXF32 x, cons
     vectorResult->W = vector->W + w;
 }
 
-void PXAPI PXVector3FInterpolate(PXVector3F* const vectorA, const PXVector3F* const vectorB, PXF32 speed)
+void PXAPI PXVector3F32Interpolate(PXVector3F32* const vectorA, const PXVector3F32* const vectorB, PXF32 speed)
 {
     // A * t + (1 - t) * B
 
-    PXVector3F deltaA = { 0,0,0 };
-    PXVector3F deltaB = { 0,0,0 };
+    PXVector3F32 deltaA = { 0,0,0 };
+    PXVector3F32 deltaB = { 0,0,0 };
 
-    PXVector3FAdd(&deltaA, vectorA);
-    PXVector3FAdd(&deltaB, vectorB);
-    PXVector3FMultiplyS(&deltaA, 1 - speed);
-    PXVector3FMultiplyS(&deltaB, speed);
+    PXVector3F32Add(&deltaA, vectorA);
+    PXVector3F32Add(&deltaB, vectorB);
+    PXVector3F32MultiplyS(&deltaA, 1 - speed);
+    PXVector3F32MultiplyS(&deltaB, speed);
 
-    PXVector3FSetXYZ(vectorA, 0, 0, 0);
-    PXVector3FAdd(vectorA, &deltaA);
-    PXVector3FAdd(vectorA, &deltaB);
+    PXVector3F32SetXYZ(vectorA, 0, 0, 0);
+    PXVector3F32Add(vectorA, &deltaA);
+    PXVector3F32Add(vectorA, &deltaB);
 }

@@ -906,17 +906,6 @@ void PXAPI PXMathCosinusDEGF16V(PXF16* const outputListY, const PXF16* const inp
 
 void PXAPI PXMathCosinusDEGF32V(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
 {
-    for(PXSize i = 0; i < amount; ++i)
-    {
-        outputListY[i] = PXMathCosinusRADF32(inputListX[i]);
-    }
-}
-
-void PXAPI PXMathCosinusDEGF32VX4(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
-{
-    __m128 simdInput;
-    __m128 simdOutput;
-
     PXWorkSetCounter pxWorkSetCounter;
     pxWorkSetCounter.WorkToDo = amount;
     pxWorkSetCounter.BatchSize = 4;
@@ -929,73 +918,44 @@ void PXAPI PXMathCosinusDEGF32VX4(PXF32* const outputListY, const PXF32* const i
         const PXF32* const extractPoint = &inputListX[i * pxWorkSetCounter.BatchSize];
         PXF32* const insertPoint = &outputListY[i * pxWorkSetCounter.BatchSize];
 
-        int workSet = PXWorkSetCounterPull(&pxWorkSetCounter, i);
-
-        PXMemoryCopyF32V(simdInput.m128_f32, extractPoint, workSet);
-
-        simdOutput = _mm_cosd_ps(simdInput); // [Intrinsic] immintrin.h, SSE, 4x 32-Bit PXF32 in DEG -> COS(x)
-
-        PXMemoryCopyF32V(insertPoint, simdOutput.m128_f32, workSet);
+        PXMathCosinusDEGF32VX1(insertPoint, extractPoint, i);
     }
+}
+
+void PXAPI PXMathCosinusDEGF32VX1(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
+{
+    for(PXSize i = 0; i < amount; ++i)
+    {
+        outputListY[i] = PXMathCosinusRADF32(inputListX[i]);
+    }
+}
+
+void PXAPI PXMathCosinusDEGF32VX4(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
+{
+    __m128 input = _mm_load_ps(outputListY);
+    __m128 output = _mm_cosd_ps(input); // [Intrinsic] immintrin.h, SSE, 4x 32-Bit PXF32 in DEG -> COS(x)
+    _mm_store_ps(inputListX, output);
 }
 
 void PXAPI PXMathCosinusDEGF32VX8(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
 {
-    __m256 simdInput;
-    __m256 simdOutput;
-
-    PXWorkSetCounter pxWorkSetCounter;
-    pxWorkSetCounter.WorkToDo = amount;
-    pxWorkSetCounter.BatchSize = 8;
-
-    PXWorkSetCounterCalc(&pxWorkSetCounter);
-
-    // Full-Batches
-    for(PXSize i = 0; i < pxWorkSetCounter.AmountBatchFull + 1; ++i)
-    {
-        const PXF32* const extractPoint = &inputListX[i * pxWorkSetCounter.BatchSize];
-        PXF32* const insertPoint = &outputListY[i * pxWorkSetCounter.BatchSize];
-
-        int workSet = PXWorkSetCounterPull(&pxWorkSetCounter, i);
-
-        PXMemoryCopyF32V(simdInput.m256_f32, extractPoint, workSet);
-
-        simdOutput = _mm256_cosd_ps(simdInput); // [Intrinsic] AVX
-
-        PXMemoryCopyF32V(insertPoint, simdOutput.m256_f32, workSet);
-    }
+    __m256 input = _mm256_load_ps(outputListY);
+    __m256 output = _mm256_cosd_ps(input); // AVX512F, 16x COS() Degrees
+    _mm256_store_ps(inputListX, input);
 }
 
 void PXAPI PXMathCosinusDEGF32VX16(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
 {
-    __m512 simdInput;
-    __m512 simdOutput;
-
-    PXWorkSetCounter pxWorkSetCounter;
-    pxWorkSetCounter.WorkToDo = amount;
-    pxWorkSetCounter.BatchSize = 16;
-
-    PXWorkSetCounterCalc(&pxWorkSetCounter);
-
-    // Full-Batches
-    for(PXSize i = 0; i < pxWorkSetCounter.AmountBatchFull + 1; ++i)
-    {
-        const PXF32* const extractPoint = &inputListX[i * pxWorkSetCounter.BatchSize];
-        PXF32* const insertPoint = &outputListY[i * pxWorkSetCounter.BatchSize];
-
-        int workSet = PXWorkSetCounterPull(&pxWorkSetCounter, i);
-
-        PXMemoryCopyF32V(simdInput.m512_f32, extractPoint, workSet);
-
-        simdOutput = _mm512_cosd_ps(simdInput); // AVX512F, 
-
-        PXMemoryCopyF32V(insertPoint, simdOutput.m512_f32, workSet);
-    }
+    __m512 input = _mm512_load_ps(outputListY);
+    __m512 output = _mm512_cosd_ps(input); // AVX512F, 16x COS() Degrees
+    _mm512_store_ps(inputListX, input);
 }
 
 void PXAPI PXMathCosinusDEGF64V(PXF64* const outputListY, const PXF64* const inputListX, const PXSize amount)
 {
- 
+    __m512d input = _mm512_load_pd(outputListY);
+    __m512d output = _mm512_cosd_pd(input); // AVX512F, 16x COS() Degrees
+    _mm512_store_pd(inputListX, input);
 }
 
 void PXAPI PXMathCosinusHyperbolicRADF16V(PXF16* const outputListY, const PXF16* const inputListX, const PXSize amount)
@@ -1112,6 +1072,44 @@ double PXAPI PXMathArcusTangens(const double x)
 
     return result;
 #endif    
+}
+
+
+#define PXQuickSwap(a, b) \
+a = a + b; \
+b = a - b; \
+a = a - b;
+
+
+
+void PXAPI PXMathShuffleI8(const PXInt8U* const input, PXInt8U* const output, const PXSize amount, PXInt8U* mask, const PXInt8U maskAmount)
+{ 
+    PXSize i = 0;
+
+    __m512i shuffleMask;
+  
+    // Build
+    for(PXInt8U j = 0; j < 64; ++j)
+    {
+        shuffleMask.m512i_u8[j] = (j / maskAmount)* maskAmount + mask[j % maskAmount];
+    }
+
+#if 1
+    for(; i + 64 <= amount; i += 64)
+    {
+        __m512i bgrChunk = _mm512_loadu_epi8(&input[i]);
+        __m512i rgbChunk = _mm512_shuffle_epi8(bgrChunk, shuffleMask);
+
+        _mm512_storeu_epi8(&output[i], rgbChunk);
+    }
+#endif
+
+#if 1
+    for(size_t j = i; j < amount; ++j)
+    {
+        output[j] = input[j + shuffleMask.m512i_u8[j % maskAmount]];
+    }
+#endif
 }
 
 // Arctangent Function

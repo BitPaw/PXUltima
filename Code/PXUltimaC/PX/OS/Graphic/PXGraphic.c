@@ -483,7 +483,7 @@ PXActionResult PXAPI PXGraphicSpriteConstruct(PXGraphic* const pxGraphic, PXSpri
     //PXMatrix4x4FIdentity(&pxSprite->ModelMatrix);
     //PXMatrix4x4FMoveXYZ(&pxSprite->ModelMatrix, 0,0,-0.5f, &pxSprite->ModelMatrix);
 
-    PXVector2FSetXY(&pxSprite->TextureScalePositionOffset, 1, 1);
+    PXVector2F32SetXY(&pxSprite->TextureScalePositionOffset, 1, 1);
 
     //  PXRectangleOffsetSet(&pxSprite->Margin, 1, 1, 1, 1);
 }
@@ -511,7 +511,7 @@ void PXAPI PXCameraConstruct(PXCamera* const camera)
 
     PXCameraViewChange(camera, PXCameraPerspective3D);
 
-    const PXVector3F position = {0,0,0};
+    const PXVector3F32 position = {0,0,0};
     PXCameraRotate(camera, &position);
 }
 
@@ -578,7 +578,7 @@ void PXAPI PXCameraViewChange(PXCamera* const camera, const PXCameraPerspective 
     }
 }
 
-void PXAPI PXCameraRotate(PXCamera* const camera, const PXVector3F* const vector3F)
+void PXAPI PXCameraRotate(PXCamera* const camera, const PXVector3F32* const vector3F)
 {
     if(camera->LockView)
     {
@@ -599,57 +599,57 @@ void PXAPI PXCameraRotate(PXCamera* const camera, const PXVector3F* const vector
     const PXF32 ry = PXMathSinusRADF32(pitchRAD);
     const PXF32 rz = PXMathCosinusRADF32(pitchRAD) * PXMathSinusRADF32(yawRAD);
 
-    PXVector3FSetXYZ(&camera->LookAtPosition, rx, ry, rz);
-    PXVector3FNormalize(&camera->LookAtPosition);
+    PXVector3F32SetXYZ(&camera->LookAtPosition, rx, ry, rz);
+    PXVector3F32Normalize(&camera->LookAtPosition);
 }
 
 void PXAPI PXCameraRotateXYZ(PXCamera* const camera, const PXF32 x, const PXF32 y, const PXF32 z)
 {
-    const PXVector3F vector = { x, y, z };
+    const PXVector3F32 vector = { x, y, z };
 
     PXCameraRotate(camera, &vector);
 }
 
 void PXAPI PXCameraMoveXYZ(PXCamera* const camera, const PXF32 x, const PXF32 y, const PXF32 z)
 {
-    const PXVector3F vector3F = { x, y, z };
+    const PXVector3F32 vector3F = { x, y, z };
 
     PXCameraMove(camera, &vector3F);
 }
 
-void PXAPI PXCameraMove(PXCamera* const camera, const PXVector3F* const vector3F)
+void PXAPI PXCameraMove(PXCamera* const camera, const PXVector3F32* const vector3F)
 {
     if(camera->LockMovement)
     {
         return;
     }
 
-    PXVector3F xAxis = { 0,0,0 };
-    const PXVector3F yAxis = { 0, vector3F->Y, 0 };
-    PXVector3F zAxis = { 0,0,0 };
+    PXVector3F32 xAxis = { 0,0,0 };
+    const PXVector3F32 yAxis = { 0, vector3F->Y, 0 };
+    PXVector3F32 zAxis = { 0,0,0 };
 
     // ...
     {
-        const PXVector3F up = { 0, 1, 0 };
-        const PXVector3F lookAtPosition = { camera->LookAtPosition.X, camera->LookAtPosition.Y, camera->LookAtPosition.Z };
+        const PXVector3F32 up = { 0, 1, 0 };
+        const PXVector3F32 lookAtPosition = { camera->LookAtPosition.X, camera->LookAtPosition.Y, camera->LookAtPosition.Z };
 
-        PXVector3FCrossProduct(&xAxis, &lookAtPosition, &up);
-        PXVector3FNormalize(&xAxis);
-        PXVector3FMultiplyXYZ(&xAxis, vector3F->X, 0, vector3F->X);
+        PXVector3F32CrossProduct(&xAxis, &lookAtPosition, &up);
+        PXVector3F32Normalize(&xAxis);
+        PXVector3F32MultiplyXYZ(&xAxis, vector3F->X, 0, vector3F->X);
 
         zAxis = lookAtPosition;
 
-        PXVector3FNormalize(&zAxis);
-        PXVector3FMultiplyXYZ(&zAxis, vector3F->Z, 0, vector3F->Z);
+        PXVector3F32Normalize(&zAxis);
+        PXVector3F32MultiplyXYZ(&zAxis, vector3F->Z, 0, vector3F->Z);
     }
 
     {
-        PXVector3F targetedMovement = { 0,0,0 };
+        PXVector3F32 targetedMovement = { 0,0,0 };
 
-        PXVector3FAdd(&targetedMovement, &xAxis);
-        PXVector3FAdd(&targetedMovement, &yAxis);
-        PXVector3FAdd(&targetedMovement, &zAxis);
-        PXVector3FMultiplyS(&targetedMovement, camera->WalkSpeed);
+        PXVector3F32Add(&targetedMovement, &xAxis);
+        PXVector3F32Add(&targetedMovement, &yAxis);
+        PXVector3F32Add(&targetedMovement, &zAxis);
+        PXVector3F32MultiplyS(&targetedMovement, camera->WalkSpeed);
 
         PXMatrix4x4FMove3F(&camera->MatrixModel, &targetedMovement);
     }
@@ -657,14 +657,14 @@ void PXAPI PXCameraMove(PXCamera* const camera, const PXVector3F* const vector3F
 
 void PXAPI PXCameraFollow(PXCamera* const camera, const PXF32 deltaTime)
 {
-    PXVector3F positionCurrent;
-    PXVector3F positionDesired;
+    PXVector3F32 positionCurrent;
+    PXVector3F32 positionDesired;
 
-    PXVector3F rotationCurrent;
-    PXVector3F rotationDesired;
+    PXVector3F32 rotationCurrent;
+    PXVector3F32 rotationDesired;
 
-    PXVector3F positionDelta;
-    PXVector3F rotationDelta;
+    PXVector3F32 positionDelta;
+    PXVector3F32 rotationDelta;
 
     if (!camera->Target)
     {
@@ -681,31 +681,31 @@ void PXAPI PXCameraFollow(PXCamera* const camera, const PXF32 deltaTime)
 
     camera->FollowSpeed = 12.3;
 
-    //PXVector3FAdd(&positionCurrent, &camera->Offset); // add offset to target pos
-    PXVector3FAdd(&positionDesired, &camera->Offset); // add offset to target pos
+    //PXVector3F32Add(&positionCurrent, &camera->Offset); // add offset to target pos
+    PXVector3F32Add(&positionDesired, &camera->Offset); // add offset to target pos
 
 
-    PXVector3F eye = {0,0,0};
-    PXVector3F center = {0,0,0};
-    PXVector3F up = {0,1,0};
+    PXVector3F32 eye = {0,0,0};
+    PXVector3F32 center = {0,0,0};
+    PXVector3F32 up = {0,1,0};
 
     // PXMatrix4x4FLookAt(&camera->MatrixModel, &eye, &desiredPosition, &up);
 
-    PXVector3FInterpolate(&positionDesired, &positionCurrent, camera->FollowSpeed * deltaTime); // calculate delta movement
-    PXVector3FInterpolate(&rotationDesired, &rotationCurrent, camera->FollowSpeed * deltaTime); // calculate delta movement
+    PXVector3F32Interpolate(&positionDesired, &positionCurrent, camera->FollowSpeed * deltaTime); // calculate delta movement
+    PXVector3F32Interpolate(&rotationDesired, &rotationCurrent, camera->FollowSpeed * deltaTime); // calculate delta movement
 
 #if 0
     // Not how i want it.
     // Problem: it snaps to strong if you get in range, then no movement until were too far away again.
     // We need a deadzone- then a softstart, then a rampup the further away we are
 
-    PXVector3FSet(&positionDelta, &positionCurrent);
-    PXVector3FSubstract(&positionDelta, &positionDesired);
-    PXVector3FAbsolute(&positionDelta);
+    PXVector3F32Set(&positionDelta, &positionCurrent);
+    PXVector3F32Substract(&positionDelta, &positionDesired);
+    PXVector3F32Absolute(&positionDelta);
 
-    PXVector3FSet(&rotationDelta, &rotationCurrent);
-    PXVector3FSubstract(&rotationDelta, &rotationDesired);
-    PXVector3FAbsolute(&positionDelta);
+    PXVector3F32Set(&rotationDelta, &rotationCurrent);
+    PXVector3F32Substract(&rotationDelta, &rotationDesired);
+    PXVector3F32Absolute(&positionDelta);
 
     if(positionDelta.X < camera->DeadZone.X)
     {
@@ -732,7 +732,7 @@ void PXAPI PXCameraFollow(PXCamera* const camera, const PXF32 deltaTime)
     PXMatrix4x4FRotationSet(&camera->MatrixView, &rotationDesired);
 
 
-    PXVector3F rotation;
+    PXVector3F32 rotation;
 
     PXMatrix4x4FRotationGet(&camera->MatrixView, &rotation);
 
@@ -757,13 +757,13 @@ void PXAPI PXCameraUpdate(PXCamera* const camera, const PXF32 deltaTime)
 {
     const PXF32 walkSpeedSmoothed = camera->WalkSpeed * deltaTime;
     const PXF32 viewSpeedSmoothed = camera->ViewSpeed * deltaTime;
-    const PXVector3F up = { 0,1,0 };
-    PXVector3F currentPosition;
-    PXVector3F centerPosition;
+    const PXVector3F32 up = { 0,1,0 };
+    PXVector3F32 currentPosition;
+    PXVector3F32 centerPosition;
 
     PXMatrix4x4FPositionGet(&camera->MatrixModel, &currentPosition);
     centerPosition = currentPosition;
-    PXVector3FAdd(&centerPosition, &camera->LookAtPosition);
+    PXVector3F32Add(&centerPosition, &camera->LookAtPosition);
 
     PXMatrix4x4FLookAt(&camera->MatrixView, &currentPosition, &centerPosition, &up);
 }

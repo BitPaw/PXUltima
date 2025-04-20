@@ -380,10 +380,13 @@ PXPublic void PXAPI PXMathCosinusRADF32V(PXF32* const outputListY, const PXF32* 
 PXPublic void PXAPI PXMathCosinusRADF64V(PXF64* const outputListY, const PXF64* const inputListX, const PXSize amount);
 
 PXPublic void PXAPI PXMathCosinusDEGF16V(PXF16* const outputListY, const PXF16* const inputListX, const PXSize amount);
+
 PXPublic void PXAPI PXMathCosinusDEGF32V(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount);
+PXPublic void PXAPI PXMathCosinusDEGF32VX1(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount);
 PXPublic void PXAPI PXMathCosinusDEGF32VX4(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount);
 PXPublic void PXAPI PXMathCosinusDEGF32VX8(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount);
 PXPublic void PXAPI PXMathCosinusDEGF32VX16(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount);
+
 PXPublic void PXAPI PXMathCosinusDEGF64V(PXF64* const outputListY, const PXF64* const inputListX, const PXSize amount);
 
 PXPublic void PXAPI PXMathCosinusHyperbolicRADF16V(PXF16* const outputListY, const PXF16* const inputListX, const PXSize amount);
@@ -471,6 +474,20 @@ PXPublic PXF64 PXAPI PXMathLogarithm10(const PXF64 exponent);
 //---------------------------------------------------------
 
 
+
+//---------------------------------------------------------
+// Shuffle
+//---------------------------------------------------------
+PXPublic void PXAPI PXMathShuffleI8
+(
+    const PXInt8U* const input,
+    PXInt8U* const output,
+    const PXSize amount,
+    PXInt8U* mask, 
+    const PXInt8U maskAmount
+);
+
+//---------------------------------------------------------
 
 
 

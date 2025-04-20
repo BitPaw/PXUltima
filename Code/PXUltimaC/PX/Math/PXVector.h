@@ -18,7 +18,7 @@ typedef struct PXVector2I_
 }
 PXVector2I;
 
-typedef struct PXVector2F_
+typedef struct PXVector2F32_
 {
     union
     {
@@ -31,9 +31,37 @@ typedef struct PXVector2F_
         PXF32 Data[2];
     };
 }
-PXVector2F;
+PXVector2F32;
 
-typedef struct PXVector3F_
+
+
+
+
+
+
+
+
+
+//---------------------------------------------------------
+// Vector 3D
+//---------------------------------------------------------
+typedef struct PXVector3F16_
+{
+    union
+    {
+        struct
+        {
+            PXF16 X;
+            PXF16 Y;
+            PXF16 Z;
+        };
+
+        PXF16 Data[3];
+    };
+}
+PXVector3F16;
+
+typedef struct PXVector3F32_
 {
     union
     {
@@ -47,9 +75,97 @@ typedef struct PXVector3F_
         PXF32 Data[3];
     };
 }
-PXVector3F;
+PXVector3F32;
 
-typedef struct PXVector4F_
+typedef struct PXVector3F64_
+{
+    union
+    {
+        struct
+        {
+            PXF64 X;
+            PXF64 Y;
+            PXF64 Z;
+        };
+
+        PXF64 Data[3];
+    };
+}
+PXVector3F64;
+
+typedef struct PXTriangleF16_
+{
+    union
+    {
+        struct
+        {
+            PXVector3F16 A;
+            PXVector3F16 B;
+            PXVector3F16 C;
+        };
+
+        PXVector3F16 Data[3];
+    };
+}
+PXTriangleF16;
+
+typedef struct PXTriangleF32_
+{
+    union
+    {
+        struct
+        {
+            PXVector3F32 A;
+            PXVector3F32 B;
+            PXVector3F32 C;
+        };
+
+        PXVector3F32 Data[3];
+    };
+}
+PXTriangleF32;
+
+typedef struct PXTriangleF64_
+{
+    union 
+    {
+        struct
+        {
+            PXVector3F64 A;
+            PXVector3F64 B;
+            PXVector3F64 C;
+        };
+
+        PXVector3F64 Data[3];
+    };
+}
+PXTriangleF64;
+
+
+
+//---------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+typedef struct PXVector4F32_
 {
     union
     {
@@ -64,42 +180,60 @@ typedef struct PXVector4F_
         PXF32 Data[4];
     };
 }
-PXVector4F;
+PXVector4F32;
 
-PXPublic void PXAPI PXVector2FSet(PXVector2F* const pxVector2F, const PXVector2F* const vectorSet);
-PXPublic void PXAPI PXVector2FSetXY(PXVector2F* const pxVector2F, const PXF32 x, const PXF32 y);
-PXPublic void PXAPI PXVector3FSet(PXVector3F* const pxVector3F, const PXVector3F* const pxVector3FSource);
-PXPublic void PXAPI PXVector3FSetXYZ(PXVector3F* const pxVector3F, const PXF32 x, const PXF32 y, const PXF32 z);
-PXPublic void PXAPI PXVector4FSetXYZW(PXVector4F* const pxVector4F, const PXF32 x, const PXF32 y, const PXF32 z, const PXF32 w);
 
-PXPublic void PXAPI PXVector2FAdd(PXVector2F* const vector, const PXVector2F* const pxVectorData);
-PXPublic void PXAPI PXVector2FAddXY(PXVector2F* const vector, const PXF32 x, const PXF32 y);
-PXPublic void PXAPI PXVector3FAdd(PXVector3F* const pxVector3F, const PXVector3F* const vectorB);
-PXPublic void PXAPI PXVector3FAddXYZ(PXVector3F* const pxVector3F, const PXF32 x, const PXF32 y, const PXF32 z);
-PXPublic void PXAPI PXVector4FAddXYZW(const PXVector4F* const vector, const PXF32 x, const PXF32 y, const PXF32 z, const PXF32 w, PXVector4F* const vectorResult);
 
-PXPublic void PXAPI PXVector3FSubstract(PXVector3F* const pxVector3F, const PXVector3F* const pxVector3FInput);
 
-PXPublic void PXAPI PXVector2FMultiply(PXVector2F* const vector, const PXVector2F* const pxVectorData);
-PXPublic void PXAPI PXVector2FMultiplyXY(PXVector2F* const vector, const PXF32 x, const PXF32 y);
-PXPublic void PXAPI PXVector3FMultiply(PXVector3F* const pxVector3F, PXVector3F* const vectorResult);
-PXPublic void PXAPI PXVector3FMultiplyXYZ(PXVector3F* const pxVector3F, const PXF32 x, const PXF32 y, const PXF32 z);
-PXPublic void PXAPI PXVector3FMultiplyS(PXVector3F* const pxVector3F, const PXF32 scalar);
-PXPublic void PXAPI PXVector4FMultiplyXYZW(PXVector4F* const pxVector4F, const PXF32 x, const PXF32 y, const PXF32 z, const PXF32 w);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PXPublic void PXAPI PXVector2F32Set(PXVector2F32* const pxVector3F32, const PXVector2F32* const vectorSet);
+PXPublic void PXAPI PXVector2F32SetXY(PXVector2F32* const pxVector3F32, const PXF32 x, const PXF32 y);
+PXPublic void PXAPI PXVector3F32Set(PXVector3F32* const pxVector3F32, const PXVector3F32* const pxVector3F32Source);
+PXPublic void PXAPI PXVector3F32SetXYZ(PXVector3F32* const pxVector3F32, const PXF32 x, const PXF32 y, const PXF32 z);
+PXPublic void PXAPI PXVector4F32SetXYZW(PXVector4F32* const pxVector3F32, const PXF32 x, const PXF32 y, const PXF32 z, const PXF32 w);
+
+PXPublic void PXAPI PXVector2F32Add(PXVector2F32* const vector, const PXVector2F32* const pxVectorData);
+PXPublic void PXAPI PXVector2F32AddXY(PXVector2F32* const vector, const PXF32 x, const PXF32 y);
+PXPublic void PXAPI PXVector3F32Add(PXVector3F32* const pxVector3F32, const PXVector3F32* const vectorB);
+PXPublic void PXAPI PXVector3F32AddXYZ(PXVector3F32* const pxVector3F32, const PXF32 x, const PXF32 y, const PXF32 z);
+PXPublic void PXAPI PXVector4F32AddXYZW(const PXVector4F32* const vector, const PXF32 x, const PXF32 y, const PXF32 z, const PXF32 w, PXVector4F32* const vectorResult);
+
+PXPublic void PXAPI PXVector3F32Substract(PXVector3F32* const pxVector3F32, const PXVector3F32* const pxVector3F32Input);
+
+PXPublic void PXAPI PXVector2F32Multiply(PXVector2F32* const vector, const PXVector2F32* const pxVectorData);
+PXPublic void PXAPI PXVector2F32MultiplyXY(PXVector2F32* const vector, const PXF32 x, const PXF32 y);
+PXPublic void PXAPI PXVector3F32Multiply(PXVector3F32* const pxVector3F32, PXVector3F32* const vectorResult);
+PXPublic void PXAPI PXVector3F32MultiplyXYZ(PXVector3F32* const pxVector3F32, const PXF32 x, const PXF32 y, const PXF32 z);
+PXPublic void PXAPI PXVector3F32MultiplyS(PXVector3F32* const pxVector3F32, const PXF32 scalar);
+PXPublic void PXAPI PXVector4F32MultiplyXYZW(PXVector4F32* const PXVector4F32, const PXF32 x, const PXF32 y, const PXF32 z, const PXF32 w);
  
-PXPublic void PXAPI PXVector3FDivide(PXVector3F* const pxVector3F, const PXVector3F* const vectorB);
-PXPublic void PXAPI PXVector3FDivideS(PXVector3F* const pxVector3F, const PXF32 scalar);
+PXPublic void PXAPI PXVector3F32Divide(PXVector3F32* const pxVector3F32, const PXVector3F32* const vectorB);
+PXPublic void PXAPI PXVector3F32DivideS(PXVector3F32* const pxVector3F32, const PXF32 scalar);
 
-PXPublic PXF32 PXAPI PXVector2FDistanceTo(PXVector2F* const vectorA, PXVector2F* const vectorB);
-PXPublic PXF32 PXAPI PXVector2FDotProduct(const PXVector2F* const vectorA, const PXVector2F* const vectorB);
+PXPublic PXF32 PXAPI PXVector2F32DistanceTo(PXVector2F32* const vectorA, PXVector2F32* const vectorB);
+PXPublic PXF32 PXAPI PXVector2F32DotProduct(const PXVector2F32* const vectorA, const PXVector2F32* const vectorB);
 
-PXPublic void PXAPI PXVector3FAbsolute(PXVector3F* const pxVector3F);
+PXPublic void PXAPI PXVector3F32Absolute(PXVector3F32* const pxVector3F32);
 
-PXPublic void PXAPI PXVector3FNormalize(PXVector3F* const pxVector3F);
-PXPublic PXF32 PXAPI PXVector3FLength(const PXVector3F* const vector);
+PXPublic void PXAPI PXVector3F32Normalize(PXVector3F32* const pxVector3F32);
+PXPublic PXF32 PXAPI PXVector3F32Length(const PXVector3F32* const vector);
 
-PXPublic void PXAPI PXVector3FCrossProduct(PXVector3F* const vectorResult, const PXVector3F* const vectorA, const PXVector3F* const vectorB);
-PXPublic PXF32 PXAPI PXVector3FDotProduct(const PXVector3F* const vectorA, const PXVector3F* const vectorB);
-PXPublic void PXAPI PXVector3FInterpolate(PXVector3F* const vectorA, const PXVector3F* const vectorB, PXF32 speed);
+PXPublic void PXAPI PXVector3F32CrossProduct(PXVector3F32* const vectorResult, const PXVector3F32* const vectorA, const PXVector3F32* const vectorB);
+PXPublic PXF32 PXAPI PXVector3F32DotProduct(const PXVector3F32* const vectorA, const PXVector3F32* const vectorB);
+PXPublic void PXAPI PXVector3F32Interpolate(PXVector3F32* const vectorA, const PXVector3F32* const vectorB, PXF32 speed);
 
 #endif

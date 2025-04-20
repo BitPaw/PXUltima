@@ -1371,8 +1371,8 @@ PXActionResult PXAPI PXResourceCreateSprite(PXResourceCreateInfo* const pxResour
         //PXMatrix4x4FIdentity(&pxSprite->ModelMatrix);
         //PXMatrix4x4FMoveXYZ(&pxSprite->ModelMatrix, 0,0,-0.5f, &pxSprite->ModelMatrix);
 
-        PXVector2FSetXY(&pxSprite->TextureScalePositionOffset, 1, 1);
-        PXVector2FSetXY(&pxSprite->TextureScalePointOffset, 1, 1);
+        PXVector2F32SetXY(&pxSprite->TextureScalePositionOffset, 1, 1);
+        PXVector2F32SetXY(&pxSprite->TextureScalePointOffset, 1, 1);
 
         //  PXRectangleOffsetSet(&pxSprite->Margin, 1, 1, 1, 1);
     }
@@ -2114,7 +2114,7 @@ PXSize PXAPI PXMeshTriangleAmount(PXMesh* const pxMesh)
     return amount;
     */
 
-    return 0;
+    return (pxMesh->VertexBufferList[0].VertexDataSize / 4) / 3;
 }
 
 PXF32* PXAPI PXMeshTriangleIndex(PXMesh* const pxMesh, const PXSize index)
@@ -2248,16 +2248,16 @@ void PXAPI PXModelNormalDataGenerate(PXModel* const pxModel)
         PXF32* const positionData = (PXF32*)PXVertexBufferInsertionPoint(&pxModel->Mesh.VertexBuffer, PXVertexBufferDataTypeNormal, i);
         PXF32* const normalData = (PXF32*)PXVertexBufferInsertionPoint(&pxModel->Mesh.VertexBuffer, PXVertexBufferDataTypeVertex, i);
 
-        PXVector3F normalVector;
-        PXVector3F positionVector =
+        PXVector3F32 normalVector;
+        PXVector3F32 positionVector =
         {
             positionData[0],
             positionData[1],
             positionData[2]
         };
-        const PXVector3F positionVectorConst = { 1,1,1 };
+        const PXVector3F32 positionVectorConst = { 1,1,1 };
 
-        PXF32 normalFactor = PXVector3FDotProduct(&positionVectorConst, &positionVector);
+        PXF32 normalFactor = PXVector3F32DotProduct(&positionVectorConst, &positionVector);
 
         if(normalFactor != 0.0)
         {

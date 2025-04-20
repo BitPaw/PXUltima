@@ -1035,6 +1035,9 @@ typedef struct PXModel_
     PXBool RenderBothSides;
     //  Margin ??
     //-----------------------------
+    struct PXHitBox_* HitBox;
+
+    float Range;
 }
 PXModel;
 
@@ -1253,8 +1256,8 @@ typedef struct PXEngineText_
 {
     PXResourceInfo Info;
 
-    PXVector2F Position;
-    PXVector2F Scaling;
+    PXVector2F32 Position;
+    PXVector2F32 Scaling;
 
     PXBool DoubleRenderForShadow;
 
@@ -1300,11 +1303,15 @@ PXHitBoxForm;
 #define PXHitBoxBehaviourDetect  0b00000100 // Trigger if in inside
 #define PXHitBoxBehaviourPhysics 0b00001000 // Apply physics
 #define PXHitBoxBehaviourGravity 0b00010000 // Apply Gravity
+
+#define PXHitBoxBehaviourWallStatic PXHitBoxBehaviourKeepOut | PXHitBoxBehaviourKeepIn
 //---------------------------------------------------------
 
 typedef void(PXAPI* PXHitBoxCollisionDetect)(void* owner, struct PXHitBox_* const pxHitBox);
 
 // Collidable entity that can be defined for different behaviours
+typedef struct PXHitBox_ PXHitBox;
+
 typedef struct PXHitBox_
 {
     PXResourceInfo Info;
@@ -1313,8 +1320,8 @@ typedef struct PXHitBox_
 
     PXHitBoxForm Form;
 
-    struct PXHitBox_* ColliderChild;
-    struct PXHitBox_* ColliderParent;
+    PXHitBox* ColliderChild;
+    PXHitBox* ColliderParent;
 
     void* CallBackOwner;
     PXHitBoxCollisionDetect CollisionDetectCallBack;
@@ -1415,8 +1422,8 @@ typedef struct PXSprite
 {
     PXResourceInfo Info;
 
-    PXVector2F TextureScalePositionOffset;
-    PXVector2F TextureScalePointOffset;
+    PXVector2F32 TextureScalePositionOffset;
+    PXVector2F32 TextureScalePointOffset;
 
     PXModel* Model;
     PXTexture2D* Texture;
@@ -1457,12 +1464,12 @@ typedef struct PXCamera_
     PXMatrix4x4F MatrixView;
     PXMatrix4x4F MatrixProjection;
 
-    PXVector3F LookAtPosition;
-    PXVector3F CurrentRotation;
+    PXVector3F32 LookAtPosition;
+    PXVector3F32 CurrentRotation;
 
     //---<Follow>---
-    PXVector3F Offset;
-    PXVector3F DeadZone;
+    PXVector3F32 Offset;
+    PXVector3F32 DeadZone;
     //PXInt8U TargetFollowFlag;
     PXMatrix4x4F* Target;
     PXF32 FollowSpeed; // Ranges from 0 to 1 .. FollowSpeed; = 0.98f
@@ -3619,10 +3626,10 @@ typedef struct PXSpriteCreateInfo_
     PXTexture2D* TextureCurrent;
     PXShaderProgram* ShaderProgramCurrent;
 
-    PXVector2F TextureScalingPoints[4];
+    PXVector2F32 TextureScalingPoints[4];
 
-    PXVector3F Position;
-    PXVector2F Scaling;
+    PXVector3F32 Position;
+    PXVector2F32 Scaling;
 
     PXBool ViewRotationIgnore;
     PXBool ViewPositionIgnore;
@@ -3700,6 +3707,7 @@ typedef struct PXModelCreateInfo_
     PXShaderProgram* ShaderProgramReference;
     PXF32 Scale;
 
+    PXInt32U HitBoxBehaviour;
 
     // If not loaded by a file, this data shal be used
     PXVertexBuffer VertexBuffer;

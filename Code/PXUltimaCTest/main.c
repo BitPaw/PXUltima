@@ -172,6 +172,24 @@ int main()
 
 
 
+    PXInt8U bufferA[64] = {'A', 'A' , 'A' };
+    PXInt8U bufferB[64];
+
+    for(size_t i = 0; i < 64; i+=3)
+    {
+        bufferA[i + 0] = 'B';
+        bufferA[i + 1] = 'G';
+        bufferA[i + 2] = 'R';
+    }
+
+    PXInt8U order[] = { 2,1,0 };
+
+
+    PXMathShuffleI8(bufferA, bufferB, 64, order, 3);
+
+    PXConsoleWrite(0, "[i] Starting testing...\n");
+
+
 #if 0
     {
         PXBinaryWindows bin;
