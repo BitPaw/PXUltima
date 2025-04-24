@@ -172,6 +172,24 @@ int main()
 
 
 
+    {
+        PXModel pxModel;
+        PXClear(PXBinaryWindows, &pxModel);
+
+        PXResourceTransphereInfo pxResourceTransphereInfo;
+        PXClear(PXResourceTransphereInfo, &pxResourceTransphereInfo);
+        pxResourceTransphereInfo.ResourceTarget = &pxModel;
+
+        PXResourceLoadA(&pxResourceTransphereInfo, "H:\\[Cache]\\FINAL\\Maps\\Shipping\\Map11.wad.client");
+
+        PXConsoleWrite(0, "EE");
+    }
+
+
+    
+
+
+
     PXInt8U bufferA[64] = {'A', 'A' , 'A' };
     PXInt8U bufferB[64];
 

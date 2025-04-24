@@ -64,6 +64,7 @@
 #include "TAR/PXTAR.h"
 #include "GLSL/PXGLSL.h"
 #include "HLSL/PXHLSL.h"
+#include "WAD/PXWAD.h"
 
 #include <PX/OS/Async/PXThreadPool.h>
 #include <PX/OS/Graphic/NativDraw/PXNativDraw.h>
@@ -2871,6 +2872,12 @@ PXActionResult PXAPI PXFileTypeInfoProbe(PXResourceTransphereInfo* const pxFileT
             pxFileTypeInfo->ResourceType = PXResourceTypeModel;
             pxFileTypeInfo->ResourceLoad = PXVRMLLoadFromFile;
             pxFileTypeInfo->ResourceSave = PXVRMLSaveToFile;
+            break;
+
+        case PXFileFormatWAD:
+            pxFileTypeInfo->ResourceType = PXResourceTypeModel;
+            pxFileTypeInfo->ResourceLoad = PXWADLoadFromFile;
+            pxFileTypeInfo->ResourceSave = PXWADSaveToFile;
             break;
 
         case PXFileFormatWave:

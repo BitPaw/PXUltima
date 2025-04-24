@@ -69,9 +69,8 @@ typedef struct PXDirectorySearchCache_
     PXInt8U SearchDepthCurrent;
     PXInt8U SearchDepthMax;
 
-    PXListDynamic FilePathCache;
-
-    PXList EntryList; // PXFileEntry0
+    PXListDynamic FilePathCache; // Store names
+    PXList EntryList; // STore "PXFileEntry" objects
 
 #if OSUnix
     DIR* DirectoryHandleCurrent;

@@ -414,7 +414,7 @@ PXSize PXAPI PXTextCopy(const PXText* const source, PXText* const destination)
         return 0;
     }
 
-    const PXSize minLength = PXMathMinimumIU(source->SizeAllocated, destination->SizeAllocated);
+    const PXSize minLength = PXMathMinimumIU(source->SizeUsed, destination->SizeAllocated);
 
     if (minLength == 0)
     {
@@ -1138,7 +1138,11 @@ void PXAPI PXTextMoveByOffset(PXText* const pxText, const PXSize offset)
     case TextFormatASCII:
     case TextFormatUTF8:
     {
-        pxText->SizeAllocated -= sizeof(char) * offset;
+        if(pxText->SizeAllocated > 0)
+        {
+            pxText->SizeAllocated -= sizeof(char) * offset;
+        }
+        
         pxText->SizeUsed -= sizeof(char) * offset;
         pxText->NumberOfCharacters -= 1 * offset;
         pxText->TextA += 1 * offset;
@@ -1146,7 +1150,11 @@ void PXAPI PXTextMoveByOffset(PXText* const pxText, const PXSize offset)
     }
     case TextFormatUNICODE:
     {
-        pxText->SizeAllocated -= sizeof(wchar_t) * offset;
+        if(pxText->SizeAllocated > 0)
+        {
+            pxText->SizeAllocated -= sizeof(wchar_t) * offset;
+        }
+    
         pxText->SizeUsed -= sizeof(wchar_t) * offset;
         pxText->NumberOfCharacters -= 1 * offset;
         pxText->TextW += 1 * offset;

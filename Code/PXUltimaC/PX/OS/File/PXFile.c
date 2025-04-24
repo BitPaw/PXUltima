@@ -12,6 +12,7 @@
 #include <assert.h>
 
 
+const char PXFileText[] = "File-OS";
 
 #if OSUnix
 #include <sys/mman.h>
@@ -381,12 +382,32 @@ PXSize PXAPI PXFilePathExtensionGet(const PXText* const filePath, PXText* const 
 
 PXFileFormat PXAPI PXFilePathExtensionDetectTry(const PXText* const filePath)
 {
-    PXText pxText;
-    PXTextConstructNamedBufferA(&pxText, extensionBuffer, ExtensionMaxSize);
+    PXText pxTextExtension;
+    PXTextConstructNamedBufferA(&pxTextExtension, extensionBuffer, ExtensionMaxSize);
 
-    const PXSize writtenBytes = PXFilePathExtensionGet(filePath, &pxText);
+    const PXSize writtenBytes = PXFilePathExtensionGet(filePath, &pxTextExtension);
 
-    PXTextToUpperCase(&pxText, &pxText);
+    PXTextToUpperCase(&pxTextExtension, &pxTextExtension);
+
+#if PXLogEnable
+    char path[PXPathSizeMax];
+    char extension[PXPathSizeMax];
+
+    PXTextCopyA(filePath->TextA, filePath->SizeUsed, path, PXPathSizeMax);
+    PXTextCopyA(pxTextExtension.TextA, pxTextExtension.SizeUsed, extension, PXPathSizeMax);
+
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXFileText,
+        "Extension",
+        "Detect:\n"
+        "%20s : %s\n"
+        "%20s : %s",
+        "Path", path,
+        "Extension", extension
+    );
+#endif
 
     switch(writtenBytes)
     {
@@ -395,7 +416,7 @@ PXFileFormat PXAPI PXFilePathExtensionDetectTry(const PXText* const filePath)
 
         case 1u:
         {
-            switch(*pxText.TextA)
+            switch(*pxTextExtension.TextA)
             {
                 case 'H':
                     return PXFileFormatC;
@@ -409,7 +430,7 @@ PXFileFormat PXAPI PXFilePathExtensionDetectTry(const PXText* const filePath)
         }
         case 2u:
         {
-            const PXInt32U list = PXInt16FromAdress(pxText.TextA);
+            const PXInt32U list = PXInt16FromAdress(pxTextExtension.TextA);
 
             switch(list)
             {
@@ -428,7 +449,7 @@ PXFileFormat PXAPI PXFilePathExtensionDetectTry(const PXText* const filePath)
         }
         case 3u:
         {
-            const PXInt32U list = PXInt24FromAdress(pxText.TextA);
+            const PXInt32U list = PXInt24FromAdress(pxTextExtension.TextA);
 
             switch(list)
             {
@@ -531,6 +552,8 @@ PXFileFormat PXAPI PXFilePathExtensionDetectTry(const PXText* const filePath)
                     return PXFileFormatTGA;
                 case PXInt24Make('T', 'T', 'F'):
                     return PXFileFormatTrueTypeFont;
+                case PXInt24Make('W', 'A', 'D'):
+                    return PXFileFormatWAD;
                 case PXInt24Make('W', 'A', 'V'):
                     return PXFileFormatWave;
                 case PXInt24Make('W', 'M', 'A'):
@@ -547,7 +570,7 @@ PXFileFormat PXAPI PXFilePathExtensionDetectTry(const PXText* const filePath)
         }
         case 4u:
         {
-            const PXInt32U list = PXInt32FromAdress(pxText.TextA);
+            const PXInt32U list = PXInt32FromAdress(pxTextExtension.TextA);
 
             switch(list)
             {
@@ -583,6 +606,21 @@ PXFileFormat PXAPI PXFilePathExtensionDetectTry(const PXText* const filePath)
 
             break;
         }
+    }
+
+    // When we did not detect any format, it could be, that some nice guy added
+    // an additional "fake" extension. 
+    // Example: Instead of "myfile.ext" we get "myfile.ext"
+    
+    // Lets find the secound dot.
+    PXSize firstDot = PXTextFindLastCharacter(filePath, '.');
+    
+    if(firstDot != -1)
+    {
+        PXText pxText;
+        PXTextConstructFromAdressA(&pxText, filePath->TextA, firstDot, firstDot);
+
+        return PXFilePathExtensionDetectTry(&pxText);
     }
 
     return PXFileFormatUnkown;

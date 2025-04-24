@@ -201,6 +201,7 @@
     <ClCompile Include="PX\Service\LDAP\PXLDAPClient.c" />
     <ClCompile Include="PX\Service\SBP\PXSBP.c" />
     <ClCompile Include="PX\Media\LZ4\PXLZ4.c" />
+    <ClCompile Include="PX\Media\WAD\PXWAD.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PX\Algorithm\BubbleSort\PXBubbleSort.h" />
@@ -404,5 +405,9 @@
     <ClInclude Include="PX\Service\LDAP\PXLDAPClient.h" />
     <ClInclude Include="PX\Service\SBP\PXSBP.h" />
     <ClInclude Include="PX\Media\LZ4\PXLZ4.h" />
+    <ClInclude Include="PX\Media\WAD\PXWAD.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PX\Media\WAD\README.md" />
   </ItemGroup>
 </Project>

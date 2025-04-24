@@ -286,6 +286,7 @@
     <ClCompile Include="PX\Media\UUID\PXUUID.c" />
     <ClCompile Include="PX\Media\VOB\PXVOB.c" />
     <ClCompile Include="PX\Media\VRML\PXVRML.c" />
+    <ClCompile Include="PX\Media\WAD\PXWAD.c" />
     <ClCompile Include="PX\Media\Wavefront\PXWavefront.c" />
     <ClCompile Include="PX\Media\Wave\PXWave.c" />
     <ClCompile Include="PX\Media\WEBM\PXWEBM.c" />
@@ -489,6 +490,7 @@
     <ClInclude Include="PX\Media\UUID\PXUUID.h" />
     <ClInclude Include="PX\Media\VOB\PXVOB.h" />
     <ClInclude Include="PX\Media\VRML\PXVRML.h" />
+    <ClInclude Include="PX\Media\WAD\PXWAD.h" />
     <ClInclude Include="PX\Media\Wavefront\PXWavefront.h" />
     <ClInclude Include="PX\Media\Wave\PXWave.h" />
     <ClInclude Include="PX\Media\WEBM\PXWEBM.h" />
@@ -565,6 +567,9 @@
     <ClInclude Include="PX\Service\HTTP\PXHTTPServer.h" />
     <ClInclude Include="PX\Service\LDAP\PXLDAPClient.h" />
     <ClInclude Include="PX\Service\SBP\PXSBP.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PX\Media\WAD\README.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

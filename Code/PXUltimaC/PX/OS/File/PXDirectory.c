@@ -4,6 +4,8 @@
 #include <PX/Media/PXText.h>
 #include <PX/OS/Console/PXConsole.h>
 
+const char PXDirectoryText[] = "Directory";
+
 #if OSUnix
 #include <sys/mman.h>
 #include <sys/stat.h>
@@ -38,10 +40,10 @@ PXFileElementInfoType PXAPI PXFileTypeGet(WIN32_FIND_DATA* windowsData)
     }
 }
 
-void PXAPI PXFileElementInfoCOnvertFrom(PXDirectorySearchCache* const pxDirectorySearchCache, PXFileEntry* const pxFileEntry, WIN32_FIND_DATA* const findData, PXInt8U depth)
+void PXAPI PXFileElementInfoConvertFrom(PXDirectorySearchCache* const pxDirectorySearchCache, PXFileEntry* const pxFileEntry, WIN32_FIND_DATA* const findData, PXInt8U depth)
 {
-    pxFileEntry->FilePathSize = PXTextCopyA(findData->cFileName, MAX_PATH, pxFileEntry->FilePathData, MAX_PATH);
-
+    pxFileEntry->FilePathSize = PXTextLengthA(findData->cFileName, MAX_PATH);
+    pxFileEntry->FilePathData = findData->cFileName;
     pxFileEntry->Type = PXFileTypeGet(findData);
     pxFileEntry->Size = (findData->nFileSizeHigh * (MAXDWORD + 1u)) + findData->nFileSizeLow;
     pxFileEntry->Depth = depth; //  pxDirectorySearchInfo->DepthCounter;
@@ -76,8 +78,8 @@ void PXAPI PXDirectoryEntryStore(PXDirectorySearchCache* const pxDirectorySearch
     PXLogPrint
     (
         PXLoggingInfo,
-        "FileDir",
-        "Search-Register",
+        PXDirectoryText,
+        "Search",
         "ID:%3i - %s",
         pxFileEntryINPUT->ID,
         pxFileEntryINPUT->FilePathData
@@ -85,27 +87,13 @@ void PXAPI PXDirectoryEntryStore(PXDirectorySearchCache* const pxDirectorySearch
 #endif
 
     // Hijack adress, create
-    //pxFileEntryINPUT->FilePathData = PXListDynamicAdd(&pxDirectorySearchCache->FilePathCache, &pxFileEntryINPUT->ID, pxFileEntryINPUT->FilePathData, pxFileEntryINPUT->FilePathSize);
+    pxFileEntryINPUT->FilePathData = PXListDynamicAdd(&pxDirectorySearchCache->FilePathCache, &pxFileEntryINPUT->ID, pxFileEntryINPUT->FilePathData, pxFileEntryINPUT->FilePathSize);
 
     PXListAdd(&pxDirectorySearchCache->EntryList, pxFileEntryINPUT);
 
 
-
-
-
-
-
-
-    return;
-
-
-
-
-
-
-
-
     /*
+
 
     case PXFileElementInfoTypeFile:
     {
@@ -200,7 +188,7 @@ PXActionResult PXAPI PXDirectorySearch(PXDirectorySearchCache* const pxDirectory
         PXLogPrint
         (
             PXLoggingInfo,
-            "FileDir",
+            PXDirectoryText,
             "Search",
             "ID:%3i - %s",
             key,
@@ -208,8 +196,6 @@ PXActionResult PXAPI PXDirectorySearch(PXDirectorySearchCache* const pxDirectory
         );
 #endif
     }
-
-
 
     return PXActionSuccessful;
 }
@@ -230,7 +216,7 @@ PXActionResult PXAPI PXDirectoryOpen(PXDirectorySearchCache* const pxDirectorySe
     PXLogPrint
     (
         PXLoggingInfo,
-        "FileDir",
+        PXDirectoryText,
         "Open",
         "%s",
         directoryName->TextA
@@ -277,7 +263,7 @@ PXActionResult PXAPI PXDirectoryOpen(PXDirectorySearchCache* const pxDirectorySe
         }
     }
 
-    PXFileElementInfoCOnvertFrom(pxDirectorySearchCache, pxFileEntry, &windowsDirectoryData, 1);
+    PXFileElementInfoConvertFrom(pxDirectorySearchCache, pxFileEntry, &windowsDirectoryData, 1);
 
     PXBool isDotFolder =
         pxFileEntry->Type == PXFileElementInfoTypeDictionaryRoot ||
@@ -326,7 +312,7 @@ PXBool PXAPI PXDirectoryNext(PXDirectorySearchCache* const pxDirectorySearchCach
             return PXFalse;
         }
 
-        PXFileElementInfoCOnvertFrom(pxDirectorySearchCache, pxFileEntry, &seachResult, 0);
+        PXFileElementInfoConvertFrom(pxDirectorySearchCache, pxFileEntry, &seachResult, 0);
 
         const PXBool isDotFodler =
             PXFileElementInfoTypeDictionaryRoot == pxFileEntry->Type ||
@@ -337,7 +323,7 @@ PXBool PXAPI PXDirectoryNext(PXDirectorySearchCache* const pxDirectorySearchCach
             continue;
         }
 
-        //PXDirectoryEntryStore(pxDirectorySearchCache, pxFileEntry);
+        PXDirectoryEntryStore(pxDirectorySearchCache, pxFileEntry);
 
         break;
     }

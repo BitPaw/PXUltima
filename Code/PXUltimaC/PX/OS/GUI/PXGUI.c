@@ -4080,10 +4080,10 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
                 pxResourceCreateInfo.UIElement.WindowCurrent = pxWindowCurrent;
                 pxResourceCreateInfo.UIElement.WindowParent = pxWindowCurrent;
                 pxResourceCreateInfo.UIElement.Setting = PXWindowAllignIgnoreParentMargin | PXWindowBehaviourBorder | PXWindowAllignCenter;// | PXWindowAllignIgnoreParentMargin;
-                pxResourceCreateInfo.UIElement.Position.Margin.Left = 0.0002;
-                pxResourceCreateInfo.UIElement.Position.Margin.Top = 0.055;
-                pxResourceCreateInfo.UIElement.Position.Margin.Right = 0.0002;
-                pxResourceCreateInfo.UIElement.Position.Margin.Bottom = 0.0002;
+                pxResourceCreateInfo.UIElement.Position.Margin.Left = 0.002;
+                pxResourceCreateInfo.UIElement.Position.Margin.Top = 0.10;
+                pxResourceCreateInfo.UIElement.Position.Margin.Right = 0.002;
+                pxResourceCreateInfo.UIElement.Position.Margin.Bottom = 0.002;
 
                 PXResourceManagerAdd(&pxResourceCreateInfo);
                 //PXWindowCreate(pxGUISystem, &pxResourceCreateInfo, 1);

@@ -3325,6 +3325,7 @@ typedef enum PXFileFormat_
     PXFileFormatUniversalSceneDescription,
     PXFileFormatVideoObject,
     PXFileFormatVRML,
+    PXFileFormatWAD,
     PXFileFormatWave,
     PXFileFormatWEBM,
     PXFileFormatWEBP,
@@ -3444,7 +3445,7 @@ typedef struct PXFileEntry_
 {
     PXInt32U ID;
 
-    char FilePathData[260];
+    char* FilePathData;
     PXSize FilePathSize;
 
     PXSize Size;
