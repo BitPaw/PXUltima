@@ -7,6 +7,13 @@
 
 ---
 
+## Dependecy
+- XXH64
+- GZIP
+- ZStandard
+
+---
+
 ## Structure
 ### Header-Signature
 |Type|Size|Description| Expect|

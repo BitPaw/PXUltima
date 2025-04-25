@@ -202,6 +202,8 @@
     <ClCompile Include="PX\Service\SBP\PXSBP.c" />
     <ClCompile Include="PX\Media\LZ4\PXLZ4.c" />
     <ClCompile Include="PX\Media\WAD\PXWAD.c" />
+    <ClCompile Include="PX\Media\XXH64\PXXXH64.c" />
+    <ClCompile Include="PX\Media\ZSTD\PXZSTD.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PX\Algorithm\BubbleSort\PXBubbleSort.h" />
@@ -406,6 +408,8 @@
     <ClInclude Include="PX\Service\SBP\PXSBP.h" />
     <ClInclude Include="PX\Media\LZ4\PXLZ4.h" />
     <ClInclude Include="PX\Media\WAD\PXWAD.h" />
+    <ClInclude Include="PX\Media\XXH64\PXXXH64.h" />
+    <ClInclude Include="PX\Media\ZSTD\PXZSTD.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="PX\Media\WAD\README.md" />

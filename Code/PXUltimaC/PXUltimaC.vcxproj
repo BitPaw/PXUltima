@@ -69,25 +69,25 @@
     <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
     <TargetName>PXUltima</TargetName>
-    <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir);$(SolutionDir)[Dependency]\Include\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
     <TargetName>PXUltima</TargetName>
-    <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir);$(SolutionDir)[Dependency]\Include\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
     <TargetName>PXUltima</TargetName>
-    <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir);$(SolutionDir)[Dependency]\Include\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)[Export]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</OutDir>
     <IntDir>$(SolutionDir)[Temp]/$(ProjectName)/$(PlatformArchitecture)B-Windows-$(Configuration)/</IntDir>
     <TargetName>PXUltima</TargetName>
-    <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir);$(SolutionDir)[Dependency]\Include\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -295,9 +295,11 @@
     <ClCompile Include="PX\Media\X86\PXX86.c" />
     <ClCompile Include="PX\Media\XingInfo\PXXingInfo.c" />
     <ClCompile Include="PX\Media\XML\PXXML.c" />
+    <ClCompile Include="PX\Media\XXH64\PXXXH64.c" />
     <ClCompile Include="PX\Media\YAML\PXYAML.c" />
     <ClCompile Include="PX\Media\ZIP\PXZIP.c" />
     <ClCompile Include="PX\Media\ZLIB\PXZLIB.c" />
+    <ClCompile Include="PX\Media\ZSTD\PXZSTD.c" />
     <ClCompile Include="PX\OS\AI\PXAI.c" />
     <ClCompile Include="PX\OS\Async\PXAwait.c" />
     <ClCompile Include="PX\OS\Async\PXLock.c" />
@@ -499,9 +501,11 @@
     <ClInclude Include="PX\Media\X86\PXX86.h" />
     <ClInclude Include="PX\Media\XingInfo\PXXingInfo.h" />
     <ClInclude Include="PX\Media\XML\PXXML.h" />
+    <ClInclude Include="PX\Media\XXH64\PXXXH64.h" />
     <ClInclude Include="PX\Media\YAML\PXYAML.h" />
     <ClInclude Include="PX\Media\ZIP\PXZIP.h" />
     <ClInclude Include="PX\Media\ZLIB\PXZLIB.h" />
+    <ClInclude Include="PX\Media\ZSTD\PXZSTD.h" />
     <ClInclude Include="PX\OS\AI\PXAI.h" />
     <ClInclude Include="PX\OS\Async\PXAwait.h" />
     <ClInclude Include="PX\OS\Async\PXLock.h" />

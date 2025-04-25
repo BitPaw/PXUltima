@@ -91,6 +91,16 @@ typedef struct PXWADEntryHeader_
 }
 PXWADEntryHeader;
 
+
+
+#define PXWADEntryDataTypeUncompressedData 0
+#define PXWADEntryDataTypegzip 1
+#define PXWADEntryDataTypeFileRedirection 2
+#define PXWADEntryDataTypeZstandard    3
+#define PXWADEntryDataTypeZstandardWithSubchunks 4
+
+
+
 const PXInt32U PXWADEntryHeaderList[] =
 {
     PXTypeInt64U,
@@ -254,21 +264,74 @@ PXActionResult PXAPI PXWADLoadFromFile(PXResourceTransphereInfo* const pxResourc
         PXFileBinding
         (
             pxFile,
-            pxWAD.Data,
+            &pxWADEntryHeader,
             PXWADEntryHeaderList,
             PXWADEntryHeaderListSize,
             PXFileBindingRead
         );
 
+        PXFile decompresed;
+
+        switch(pxWADEntryHeader.DataType)
+        {
+            case PXWADEntryDataTypeUncompressedData:
+            {
+                break;
+            }
+            case PXWADEntryDataTypegzip:
+            {
+                break;
+            }
+            case PXWADEntryDataTypeFileRedirection:
+            {
+                break;
+            }
+            case PXWADEntryDataTypeZstandard:
+            {
+
+
+                break;
+            }
+            case PXWADEntryDataTypeZstandardWithSubchunks:
+            {
+                break;
+            }
+            default:
+                break;
+        }
+
+
 #if PXLogEnable
+
+
+
         PXLogPrint
         (
             PXLoggingInfo,
             PXWADText,
             "Load",
-            "Entry (%i/%i) : ",
-            i+1,
-            entryCount
+            "Entry (%i/%i) : \n"
+            "%32s : %16.16x\n"
+            "%32s : %i\n"
+            "%32s : %i\n"
+            "%32s : %i\n"
+            "%32s : %i\n"
+            "%32s : %i\n"
+            "%32s : %i\n"
+            "%32s : %i\n"
+            "%32s : %16.16x",
+
+            i + 1,
+            entryCount,
+            "path hash", pxWADEntryHeader.PathHash,
+            "data offset in the WAD archive", pxWADEntryHeader.DataOffset,
+            "compressed size", pxWADEntryHeader.CompressedSize,
+            "uncompressed size", pxWADEntryHeader.UncompressedSize,
+            "data type", pxWADEntryHeader.DataType,
+            "count of subbchunks", pxWADEntryHeader.CountOfSubbchunks,
+            "set for duplicate entries", pxWADEntryHeader.Setforduplicateentries,
+            "index of first subbchunk", pxWADEntryHeader.IndexOfFirstSubbchunk,
+            "entry checksum", pxWADEntryHeader.EntryChecksum
         );
 #endif
     }
