@@ -448,6 +448,11 @@ PXActionResult PXAPI PXDDSLoadFromFile(PXResourceTransphereInfo* const pxResourc
 {
     PXTexture* const pxTexture = (PXTexture*)pxResourceLoadInfo->ResourceTarget;
 
+    if(!pxTexture)
+    {
+        return PXActionSuccessful;
+    }
+
     PXDirectDrawTexture pxDirectDrawTexture;
     PXClear(PXDirectDrawTexture, &pxDirectDrawTexture);
     PXFile* const pxFile = pxResourceLoadInfo->FileReference;

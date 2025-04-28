@@ -1062,7 +1062,14 @@ PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler)
         // Extract comments, Single line and multible lines
         //-----------------------------------------------------------------------------
         {
-            PXBool isLineComment = PXTextCompareA(compilerSymbolEntry.Source, pxCompiler->CommentSingleLineSize, pxCompiler->CommentSingleLine, pxCompiler->CommentSingleLineSize);
+            PXBool isLineComment = PXTextCompareA
+            (
+                compilerSymbolEntry.Source, 
+                pxCompiler->CommentSingleLineSize, 
+                pxCompiler->CommentSingleLine,
+                pxCompiler->CommentSingleLineSize,
+                PXTextCompareRequireSameLength
+            );
 
             if(isLineComment)
             {
@@ -1078,7 +1085,7 @@ PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler)
                 do
                 {
                     const char* isChainedComment = &compilerSymbolEntry.Source[compilerSymbolEntry.Size];
-                    isLineComment = PXTextCompareA(isChainedComment, pxCompiler->CommentSingleLineSize, pxCompiler->CommentSingleLine, pxCompiler->CommentSingleLineSize);
+                    isLineComment = PXTextCompareA(isChainedComment, pxCompiler->CommentSingleLineSize, pxCompiler->CommentSingleLine, pxCompiler->CommentSingleLineSize, 0);
 
                     if(isLineComment)
                     {
@@ -1110,7 +1117,14 @@ PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler)
                 continue;
             }
 
-            const PXBool isStartOfMultibleLineComment = PXTextCompareA(compilerSymbolEntry.Source, compilerSymbolEntry.Size, pxCompiler->CommentMultibleLineBegin, pxCompiler->CommentMultibleLineBeginSize);
+            const PXBool isStartOfMultibleLineComment = PXTextCompareA
+            (
+                compilerSymbolEntry.Source, 
+                compilerSymbolEntry.Size,
+                pxCompiler->CommentMultibleLineBegin,
+                pxCompiler->CommentMultibleLineBeginSize, 
+                0
+            );
 
             if(isStartOfMultibleLineComment)
             {
@@ -1293,7 +1307,8 @@ PXBool PXAPI PXCompilerEnsureTextAndCompare(PXCompiler* const pxCompiler, const 
         pxCompiler->ReadInfo.SymbolEntryCurrent.Source,
         pxCompiler->ReadInfo.SymbolEntryCurrent.Size,
         text,
-        textSize
+        textSize,
+        PXTextCompareRequireSameLength
     );
 
     return isxform;

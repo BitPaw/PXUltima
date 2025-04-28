@@ -375,7 +375,7 @@ PXActionResult PXAPI PXDotNetInitializeCoreCLR(PXDotNetCoreCLR* const pxDotNetCo
 
             do
             {
-                const PXBool isTarget = PXTextCompareA(&pxFileEntry.FilePathData[pxFileEntry.FilePathSize - 4], 4, ".dll", 4);
+                const PXBool isTarget = PXTextCompareA(&pxFileEntry.FilePathData[pxFileEntry.FilePathSize - 4], 4, ".dll", 4, 0);
 
                 if(!isTarget)
                 {
@@ -410,7 +410,7 @@ PXActionResult PXAPI PXDotNetInitializeCoreCLR(PXDotNetCoreCLR* const pxDotNetCo
                     continue;
                 }
 
-                const PXBool isTarget = PXTextCompareA(&pxFileEntry.FilePathData[pxFileEntry.FilePathSize - 4], 4, ".dll", 4);
+                const PXBool isTarget = PXTextCompareA(&pxFileEntry.FilePathData[pxFileEntry.FilePathSize - 4], 4, ".dll", 4, 0);
 
                 if(!isTarget)
                 {

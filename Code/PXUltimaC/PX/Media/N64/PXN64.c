@@ -85,15 +85,15 @@ PXActionResult PXAPI PXN64LoadFromFile(PXResourceTransphereInfo* const pxResourc
 
         PXFileReadB(pxResourceLoadInfo->FileReference, buffer, 4u);
 
-        if(PXTextCompareA(bufferExpectedByteSwapped, 4, buffer, 4))
+        if(PXTextCompareA(bufferExpectedByteSwapped, 4, buffer, 4, 0))
         {
             n64.Endian = PXEndianMiddle;
         }
-        else if(PXTextCompareA(bufferExpectedEndianLittle, 4, buffer, 4))
+        else if(PXTextCompareA(bufferExpectedEndianLittle, 4, buffer, 4, 0))
         {
             n64.Endian = PXEndianLittle;
         }
-        else if(PXTextCompareA(bufferExpectedEndianBig, 4, buffer, 4))
+        else if(PXTextCompareA(bufferExpectedEndianBig, 4, buffer, 4, 0))
         {
             n64.Endian = PXEndianBig;
         }
