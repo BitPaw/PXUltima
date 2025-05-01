@@ -862,6 +862,13 @@ PXCompilerSymbolLexer PXAPI PXCompilerTryAnalyseType(PXFile* const tokenStream, 
 
                 break;
             }
+            case PXCompilerSymbolLexerUnderscore:
+            {
+                // Special case, we assume that if something that is longer 
+                // that 1 char and starts with an underscore, it must be a 
+                // generic element like a name.
+                break; // Fall through to be handled as a string
+            }
             default:
                 return compilerSymbolEntry->ID;
         }
@@ -879,7 +886,7 @@ PXCompilerSymbolLexer PXAPI PXCompilerTryAnalyseType(PXFile* const tokenStream, 
             ('A' <= symbol && symbol <= 'Z') ||
             ('a' <= symbol && symbol <= 'z') ||
             ('0' <= symbol && symbol <= '9') || // We already checked if it begins with a letter. This here prevents problems that "Texture2D" will get splitted
-            symbol == '.' || symbol == '_' || symbol == '/' || symbol == '\\'; // symbol == ':'
+            symbol == '.' || symbol == '_' || symbol == '/' || symbol == '\\' || symbol == '_'; // symbol == ':'
 
         newSize += isNumber;
 
@@ -1519,7 +1526,7 @@ PXBool PXAPI PXCompilerParseCSVF64(PXCompiler* const pxCompiler, PXF64* const va
     }
 }
 
-PXSize PXAPI PXCompilerParseText(PXCompiler* const pxCompiler, char* const text, const PXSize textLengthMax)
+PXSize PXAPI PXCompilerParseText(PXCompiler* const pxCompiler, char* const text, const PXSize textLengthMax, const PXInt8U flags)
 {
     const PXCompilerSymbolLexer pxCompilerSymbolLexerList[2] =
     {
@@ -1528,18 +1535,45 @@ PXSize PXAPI PXCompilerParseText(PXCompiler* const pxCompiler, char* const text,
     };
     const PXInt8U pxCompilerSymbolLexerListAmount = sizeof(pxCompilerSymbolLexerList) / sizeof(PXCompilerSymbolLexer);
 
-
-
     const PXBool check = PXCompilerSymbolEntryEnsureCheckList(pxCompiler, pxCompilerSymbolLexerList, pxCompilerSymbolLexerListAmount);
 
     if(!check)
     {
-        return 0;
+        return 0; // Definitly not a string
     }
 
-    const PXSize lengh = PXTextCopyA(pxCompiler->ReadInfo.SymbolEntryCurrent.Source, pxCompiler->ReadInfo.SymbolEntryCurrent.Size, text, textLengthMax);
+    // We definitly have a string
+    PXSize lengh = PXTextCopyA(pxCompiler->ReadInfo.SymbolEntryCurrent.Source, pxCompiler->ReadInfo.SymbolEntryCurrent.Size, text, textLengthMax);
+
+    const PXInt32U lineStart = pxCompiler->ReadInfo.SymbolEntryCurrent.Line;
 
     PXCompilerSymbolEntryForward(pxCompiler);
+
+    // There are stings that do not use "" and also conatin non-string characters like : or spaces.
+    // To still detect those, we need to catch all symbols until the end of the line
+
+    // If we dont want to detect more, we are done
+    if(!(PXCompilerParseTextDetectUntilNextLine & flags))
+    {
+        return lengh;
+    }
+
+    for(;;)
+    {
+        PXCompilerSymbolEntryPeek(pxCompiler);
+
+        const PXBool isEndOfFile = PXCompilerSymbolLexerEndOfFile == pxCompiler->ReadInfo.SymbolEntryCurrent.ID;
+        const PXInt32U lineCurrent = pxCompiler->ReadInfo.SymbolEntryCurrent.Line;
+
+        if((lineStart < lineCurrent) || isEndOfFile)
+        {
+            break;
+        }
+
+        lengh += PXTextCopyA(pxCompiler->ReadInfo.SymbolEntryCurrent.Source, pxCompiler->ReadInfo.SymbolEntryCurrent.Size, &text[lengh], textLengthMax - lengh);
+
+        PXCompilerSymbolEntryForward(pxCompiler);
+    }
 
     return lengh;
 }

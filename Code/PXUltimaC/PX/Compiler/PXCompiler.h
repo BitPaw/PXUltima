@@ -287,7 +287,10 @@ PXPublic PXBool PXAPI PXCompilerParseF32V(PXCompiler* const pxCompiler, PXF32* c
 PXPublic PXBool PXAPI PXCompilerParseCSVF32(PXCompiler* const pxCompiler, PXF32* const values, const PXSize valuesSize);
 PXPublic PXBool PXAPI PXCompilerParseCSVF64(PXCompiler* const pxCompiler, PXF64* const values, const PXSize valuesSize);
 
-PXPublic PXSize PXAPI PXCompilerParseText(PXCompiler* const pxCompiler, char* const text, const PXSize textLengthMax);
+
+#define PXCompilerParseTextDetectUntilNextLine (1<<0)
+
+PXPublic PXSize PXAPI PXCompilerParseText(PXCompiler* const pxCompiler, char* const text, const PXSize textLengthMax, const PXInt8U flags);
 
 
 
