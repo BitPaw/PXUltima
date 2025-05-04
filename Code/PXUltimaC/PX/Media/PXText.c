@@ -756,7 +756,7 @@ PXInt8U PXAPI PXTextCompareAVI8(const char* a, PXInt8U aSize, const char** const
         const PXInt8U stringBSize = stringListSize[i];
        
 
-        const PXBool isTarget = PXTextCompareA(a, inputSize, stringB, stringBSize);
+        const PXBool isTarget = PXTextCompareA(a, inputSize, stringB, stringBSize, 0);
 
         if(isTarget)
         {
@@ -767,7 +767,7 @@ PXInt8U PXAPI PXTextCompareAVI8(const char* a, PXInt8U aSize, const char** const
     return (PXInt8U)-1;
 }
 
-PXBool PXAPI PXTextCompareA(const char* a, PXSize aSize, const char* b, PXSize bSize)
+PXBool PXAPI PXTextCompareA(const char* a, PXSize aSize, const char* b, PXSize bSize, const PXInt8U flags)
 {
     if (!(a && aSize && b && bSize))
     {
@@ -784,7 +784,7 @@ PXBool PXAPI PXTextCompareA(const char* a, PXSize aSize, const char* b, PXSize b
         bSize = PXTextLengthA(b, PXTextUnkownLength);
     }
 
-    if (aSize != bSize) // Should be correct but can make errors?
+    if ((PXTextCompareRequireSameLength & flags) && (aSize != bSize)) // Should be correct but can make errors?
     {
         return PXFalse;
     }
@@ -796,6 +796,11 @@ PXBool PXAPI PXTextCompareA(const char* a, PXSize aSize, const char* b, PXSize b
 
     for (; (index < textSize) && (a[index] != '\0') && (b[index] != '\0'); ++index)
         samecounter += a[index] == b[index];
+
+    if(!(PXTextCompareRequireSameLength & flags))
+    {
+        return samecounter == index;
+    }
 
     const PXBool stillHasDatainA = textSize < aSize;
     const PXBool stillHasDatainB = textSize < bSize;
@@ -938,7 +943,7 @@ char* PXAPI PXTextFindPositionA(const char* data, PXSize dataSize, const char* t
     for (PXSize i = 0; (data[i] != '\0') && (i + targetSize) < dataSize && !found; i++)
     {
         source = data + i;
-        found = PXTextCompareA(source, targetSize - i, target, targetSize);
+        found = PXTextCompareA(source, targetSize - i, target, targetSize, 0);
     }
 
     return (char*)(found * (PXSize)source);
@@ -1040,7 +1045,7 @@ PXSize PXAPI PXTextFindFirstStringA(const char* PXRestrict const string, const P
         {
             const PXSize limitedLength = PXMathMinimumI(dataSize - index, targetStringSize);
 
-            found = PXTextCompareA(&string[index], limitedLength, &targetString[0], limitedLength);
+            found = PXTextCompareA(&string[index], limitedLength, &targetString[0], limitedLength, 0);
         }
     }
 
@@ -1415,7 +1420,7 @@ PXSize PXAPI PXTextReplaceA(char* const text, PXSize textSize, const char* const
         char* indexAdress = &text[indexStart];
         const PXSize indexSize = PXMathMinimumIU(textSize - indexStart, targetSize);
 
-        const PXBool doesMatch = PXTextCompareA(indexAdress, indexSize, target, targetSize);
+        const PXBool doesMatch = PXTextCompareA(indexAdress, indexSize, target, targetSize, 0);
 
         if(!doesMatch)
         {

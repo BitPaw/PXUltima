@@ -319,6 +319,7 @@
 
 // PXF32 32-Bit
 #define PXTypeF32 PXTypeSize32 | PXTypeBaseDecimal
+#define PXTypeF32List(amount) (amount*PXTypeSize32) | PXTypeBaseDecimal
 
 // PXF32 64-Bit
 #define PXTypeF64 PXTypeSize64 | PXTypeBaseDecimal

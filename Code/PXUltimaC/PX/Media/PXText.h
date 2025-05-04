@@ -237,7 +237,10 @@ PXPublic PXBool PXAPI PXTextCompare(const PXText* const textA, const PXText* con
 
 PXPublic PXInt8U PXAPI PXTextCompareAVI8(const char* a, PXInt8U aSize, const char** const stringList, const PXInt8U* stringListSize, const PXInt8U amount);
 
-PXPublic PXBool PXAPI PXTextCompareA(const char* a, PXSize aSize, const char* b, PXSize bSize);
+
+#define PXTextCompareRequireSameLength (1<<0)
+
+PXPublic PXBool PXAPI PXTextCompareA(const char* a, PXSize aSize, const char* b, PXSize bSize, const PXInt8U flags);
 PXPublic PXBool PXAPI PXTextCompareAW(const char* a, const PXSize aSize, const wchar_t* b, const PXSize bSize);
 PXPublic PXBool PXAPI PXTextCompareW(const wchar_t* a, const PXSize aSize, const wchar_t* b, const PXSize bSize);
 PXPublic PXBool PXAPI PXTextCompareWA(const wchar_t* a, const PXSize aSize, const char* b, const PXSize bSize);
