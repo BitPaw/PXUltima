@@ -1950,7 +1950,7 @@ PXActionResult PXAPI PXDebugModuleNameGet
             const char driverStoreText[] = "DriverStore";
             const PXSize driverStoreTextSize = sizeof(driverStoreText);
 
-            const PXBool isDriver = PXTextCompareA(driverStoreText, driverStoreTextSize, molduleNamefixed, driverStoreTextSize);
+            const PXBool isDriver = PXTextCompareA(driverStoreText, driverStoreTextSize, molduleNamefixed, driverStoreTextSize, 0);
 
             if(isDriver)
             {
@@ -1973,7 +1973,7 @@ PXActionResult PXAPI PXDebugModuleNameGet
 
             PXSize lastSlashA = PXTextFindLastCharacterA(currentWorkPath, currentWorkPathSize, '\\');
             PXSize lastSlashB = PXTextFindLastCharacterA(moduleNameBuffer, currentWorkPathSize, '\\');
-            PXBool isRelativePath = PXTextCompareA(currentWorkPath, lastSlashA, moduleNameBuffer, lastSlashB);
+            PXBool isRelativePath = PXTextCompareA(currentWorkPath, lastSlashA, moduleNameBuffer, lastSlashB, 0);
 
             if(isRelativePath)
             {
