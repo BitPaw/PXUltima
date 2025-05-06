@@ -1007,6 +1007,7 @@ PXPublic PXF32* PXAPI PXMeshTriangleIndex(PXMesh* const pxMesh, const PXSize ind
 
 
 
+typedef struct PXModel_ PXModel;
 
 typedef struct PXModel_
 {
@@ -1021,10 +1022,10 @@ typedef struct PXModel_
     PXShaderProgram* ShaderProgramReference;
     //-----------------------------
 
-    struct PXModel_* StructureOverride; // Used to take the model data from another structure, ther values like matrix stay unaffected
-    struct PXModel_* StructureParent; // Structural parent of structure
-    struct PXModel_* StructureSibling; // Stuctual sibling, works like a linked list.
-    struct PXModel_* StructureChild; // Structure can only have one child, all others are siblings to a core child, the first born.
+    PXModel* StructureOverride; // Used to take the model data from another structure, ther values like matrix stay unaffected
+    PXModel* StructureParent; // Structural parent of structure
+    PXModel* StructureSibling; // Stuctual sibling, works like a linked list.
+    PXModel* StructureChild; // Structure can only have one child, all others are siblings to a core child, the first born.
     //-----------------------------
 
     PXSize MaterialContaierListAmount;
@@ -1040,7 +1041,7 @@ typedef struct PXModel_
     //-----------------------------
     struct PXHitBox_* HitBox;
 
-    float Range;
+    PXF32 Range;
 }
 PXModel;
 
