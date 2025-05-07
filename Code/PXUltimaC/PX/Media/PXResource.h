@@ -3555,7 +3555,7 @@ PXFileEntry;
 typedef struct PXFile_
 {
     //---<PosisionData>---
-    void* Data; // [Do not use directly] Data from where to read/write depending on the used method of linking.
+    PXByte* Data; // [Do not use directly] Data from where to read/write depending on the used method of linking.
     PXSize DataCursor; // [Do not use directly] Current position of the data.
     PXSize DataCursorBitOffset; // [Do not use directly] Current offset in bits of current byte
     PXSize DataUsed; // [Do not use directly] The total size of the data block.
