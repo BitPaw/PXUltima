@@ -28,18 +28,19 @@ typedef struct IUnknown IUnknown;
 typedef PXThreadResult(PXOSAPI* ThreadFunction)(void* const data);
 
 
+// PXThreadState
 
-#define PXExecuteStateMask (0b00001111)
-#define PXExecuteStateInvalid     0 // Resource does not exist. Not created or deleted
-#define PXExecuteStateIDLE        1 // Resource is not doing anything, ready to be used
-#define PXExecuteStateInit        2 // Resource is inizialized and ready to be executed
-#define PXExecuteStateDibs        3 // Resource is taken by a handler and will be executed
-#define PXExecuteStateRunning     4 // Resource is currently running
-#define PXExecuteStateWaiting     5 // Resource waits for another resource
-#define PXExecuteStateSuspended   6 // Resource 
-#define PXExecuteStateFailed      7
-#define PXExecuteStateFinished    8 // Resource is done
-#define PXExecuteStateStale       9 // Resource is done
+#define PXExecuteStateMask (0b00000000000000000000001111111111)
+#define PXExecuteStateInvalid     1<<0 // Resource does not exist. Not created or deleted
+#define PXExecuteStateIDLE        1<<1 // Resource is not doing anything, ready to be used
+#define PXExecuteStateInit        1<<2 // Resource is inizialized and ready to be executed
+#define PXExecuteStateDibs        1<<3 // Resource is taken by a handler and will be executed
+#define PXExecuteStateRunning     1<<4 // Resource is currently running
+#define PXExecuteStateWaiting     1<<5 // Resource waits for another resource
+#define PXExecuteStateSuspended   1<<6 // Resource 
+#define PXExecuteStateFailed      1<<7
+#define PXExecuteStateFinished    1<<8 // Resource is done
+#define PXExecuteStateStale       1<<9 // Resource is done
 
 typedef enum PXThreadState_
 {

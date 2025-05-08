@@ -2,19 +2,13 @@
 
 #include <PX/OS/File/PXFile.h>
 #include <PX/OS/Console/PXConsole.h>
+#include <PX/Media/ZSTD/PXZSTD.h>
+#include <PX/OS/Async/PXThreadPool.h>
 
 const char PXWADText[] = "WAD";
 
 
 //---------------------------------------------------------
-typedef struct PXWADVersion1_
-{
-    PXInt16U EntryHeaderOffset;
-    PXInt16U EntryHeaderSize;
-    PXInt32U EntryCount;
-}
-PXWADVersion1;
-
 const PXInt32U PXWADVersion1List[] =
 {
     PXTypeInt16U,
@@ -25,19 +19,7 @@ const PXInt8U PXWADVersion1ListSize = sizeof(PXWADVersion1List) / sizeof(PXInt32
 //---------------------------------------------------------
 
 
-
 //---------------------------------------------------------
-typedef struct PXWADVersion2_
-{
-    PXInt8U ECDSASignatureLength;
-    char ECDSASignature[83];
-    PXInt64U  XXH64Checksum;
-    PXInt16U EntryHeaderOffset;
-    PXInt16U EntryHeaderSize;
-    PXInt32U  EntryCount;
-}
-PXWADVersion2;
-
 const PXInt32U PXWADVersion2List[] =
 {
     PXTypeInt08U,
@@ -51,16 +33,7 @@ const PXInt8U PXWADVersion2ListSize = sizeof(PXWADVersion2List) / sizeof(PXInt32
 //---------------------------------------------------------
 
 
-
 //---------------------------------------------------------
-typedef struct PXWADVersion3_
-{
-    char ECDSASignature[256];
-    char XXH64Checksum[8];
-    PXInt32U EntryCount;
-}
-PXWADVersion3;
-
 const PXInt32U PXWADVersion3List[] =
 {
     PXTypeText(256),
@@ -73,34 +46,14 @@ const PXInt8U PXWADVersion3ListSize = sizeof(PXWADVersion3List) / sizeof(PXInt32
 
 
 
-
-
-
 //---------------------------------------------------------
-typedef struct PXWADEntryHeader_
-{
-    PXInt64U PathHash;
-    PXInt32U DataOffset;
-    PXInt32U CompressedSize;
-    PXInt32U UncompressedSize;
-    PXInt8U DataType;
-    PXInt8U CountOfSubbchunks;
-    PXInt8U Setforduplicateentries;
-    PXInt16U IndexOfFirstSubbchunk;
-    PXInt64U EntryChecksum;
-}
-PXWADEntryHeader;
-
-
-
 #define PXWADEntryDataTypeUncompressedData 0
 #define PXWADEntryDataTypegzip 1
 #define PXWADEntryDataTypeFileRedirection 2
 #define PXWADEntryDataTypeZstandard    3
 #define PXWADEntryDataTypeZstandardWithSubchunks 4
 
-
-
+//---------------------------------------------------------
 const PXInt32U PXWADEntryHeaderList[] =
 {
     PXTypeInt64U,
@@ -115,20 +68,6 @@ const PXInt32U PXWADEntryHeaderList[] =
 };
 const PXInt8U PXWADEntryHeaderListSize = sizeof(PXWADEntryHeaderList) / sizeof(PXInt32U);
 //---------------------------------------------------------
-
-
-
-
-
-typedef struct PXWADHeader_
-{
-    char MagicCode[2];
-    PXInt8U VersionMajor;
-    PXInt8U VersionMinor;
-}
-PXWADHeader;
-
-
 const PXInt32U PXWADHeaderList[] =
 {
     PXTypeDatax2,
@@ -136,23 +75,162 @@ const PXInt32U PXWADHeaderList[] =
     PXTypeInt08U
 };
 const PXInt8U PXWADHeaderListSize = sizeof(PXWADHeaderList) / sizeof(PXInt32U);
+//---------------------------------------------------------
 
 
-
-typedef struct PXWAD_
+PXActionResult PXAPI PXWADEntryHandle(PXWADEntry* const pxWADEntry, PXFile* const pxFile)
 {
-    PXWADHeader Header;
+    PXFile dataCompressed;
+    PXFile dataUncompressed;
 
-    union
+    PXFileOpenInfo pxFileOpenInfo;
+
+    // Open/Wrap compressed data
     {
-        char Data[1];
-        PXWADVersion1 Version1;
-        PXWADVersion2 Version2;
-        PXWADVersion3 Version3;
+        PXClear(PXFileOpenInfo, &pxFileOpenInfo);
+        pxFileOpenInfo.AccessMode = PXAccessModeReadOnly;
+        pxFileOpenInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
+        pxFileOpenInfo.FlagList = PXFileIOInfoFileMemory;
+        pxFileOpenInfo.BufferSize = pxWADEntry->CompressedSize;
+        pxFileOpenInfo.BufferData = (PXByte*)pxFile->Data + pxWADEntry->DataOffset;
 
-    };
+        PXFileOpen(&dataCompressed, &pxFileOpenInfo);
+    }
+
+    // target
+    {
+        PXClear(PXFileOpenInfo, &pxFileOpenInfo);
+        pxFileOpenInfo.AccessMode = PXAccessModeReadAndWrite;
+        pxFileOpenInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
+        pxFileOpenInfo.FileSizeRequest = pxWADEntry->UncompressedSize;
+        pxFileOpenInfo.FlagList = PXFileIOInfoFileVirtual;
+    }
+
+    switch(pxWADEntry->DataType)
+    {
+        case PXWADEntryDataTypeUncompressedData:
+        {
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                PXWADText,
+                "Load",
+                "UncompressedData"
+            );
+#endif 
+            pxFileOpenInfo.AccessMode = PXAccessModeReadOnly;
+            pxFileOpenInfo.FlagList = PXFileIOInfoFileMemory;
+            PXFileOpen(&dataUncompressed, &pxFileOpenInfo);
+
+            break;
+        }
+        case PXWADEntryDataTypegzip:
+        {
+
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                PXWADText,
+                "Load",
+                "gzip"
+            );
+#endif 
+
+            break;
+        }
+        case PXWADEntryDataTypeFileRedirection:
+        {
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                PXWADText,
+                "Load",
+                "File redirect"
+            );
+#endif 
+
+            DebugBreak();  // How to handle???
+
+            break;
+        }
+        case PXWADEntryDataTypeZstandard:
+        {
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                PXWADText,
+                "Load",
+                "ZSTD"
+            );
+#endif 
+
+            PXFileOpen(&dataUncompressed, &pxFileOpenInfo);
+
+            PXZSTDDecompress(&dataCompressed, &dataUncompressed);
+
+            break;
+        }
+        case PXWADEntryDataTypeZstandardWithSubchunks:
+        {
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                PXWADText,
+                "Load",
+                "ZSTD+"
+            );
+#endif 
+
+            break;
+        }
+        default:
+            break;
+    }
+
+    if(PXWADEntryDataTypeZstandard != pxWADEntry->DataType)
+    {
+        return;
+    }
+
+    if(1)
+    {
+        char temp[260];
+
+        PXResourceTransphereInfo pxResourceTransphereInfo;
+        PXClear(PXResourceTransphereInfo, &pxResourceTransphereInfo);
+        pxResourceTransphereInfo.FileReference = &dataUncompressed;
+
+        // Because the filename is hashed, we cant know the actual filetype from the name.
+        // So we need to poke around to find the file. This is very bad.
+
+        PXFileFormatInfoViaContent(&pxResourceTransphereInfo.FormatInfo, &dataUncompressed);
+        PXFileTypeInfoProbe(&pxResourceTransphereInfo.FormatInfo, PXNull);
+
+        pxResourceTransphereInfo.FileReference->FilePathData = temp;
+        pxResourceTransphereInfo.FileReference->FilePathSize = PXTextPrintA
+        (
+            temp,
+            260,
+            "_TEST_DATA_OUTPUT_/WAD_TEMP/%16.16x.%s",
+            pxWADEntry->PathHash,
+            pxResourceTransphereInfo.FormatInfo.ExtensionText
+        );
+
+        PXFileStoreOnDiskA(&dataUncompressed, temp);
+
+        if(pxResourceTransphereInfo.FormatInfo.ResourceLoad)
+        {
+            pxResourceTransphereInfo.FormatInfo.ResourceLoad(&pxResourceTransphereInfo);
+        }
+    }
+
+    PXFileClose(&dataUncompressed);
 }
-PXWAD;
 
 
 
@@ -162,6 +240,8 @@ PXActionResult PXAPI PXWADLoadFromFile(PXResourceTransphereInfo* const pxResourc
 
     PXWAD pxWAD;
     PXClear(PXWAD, &pxWAD);
+
+    PXBool doDumpToFolder = 1;
 
     PXFileBinding
     (
@@ -257,54 +337,23 @@ PXActionResult PXAPI PXWADLoadFromFile(PXResourceTransphereInfo* const pxResourc
     );
 #endif
 
+    // Allocate list 
+    pxWAD.EntryList = PXMemoryHeapCallocT(PXWADEntry, entryCount);
+
     for(PXInt32U i = 0; i < entryCount; ++i)
     {
-        PXWADEntryHeader pxWADEntryHeader;
+        PXWADEntry* const pxWADEntry = &pxWAD.EntryList[i];
 
         PXFileBinding
         (
             pxFile,
-            &pxWADEntryHeader,
+            pxWADEntry,
             PXWADEntryHeaderList,
             PXWADEntryHeaderListSize,
             PXFileBindingRead
         );
 
-        PXFile decompresed;
-
-        switch(pxWADEntryHeader.DataType)
-        {
-            case PXWADEntryDataTypeUncompressedData:
-            {
-                break;
-            }
-            case PXWADEntryDataTypegzip:
-            {
-                break;
-            }
-            case PXWADEntryDataTypeFileRedirection:
-            {
-                break;
-            }
-            case PXWADEntryDataTypeZstandard:
-            {
-
-
-                break;
-            }
-            case PXWADEntryDataTypeZstandardWithSubchunks:
-            {
-                break;
-            }
-            default:
-                break;
-        }
-
-
-#if PXLogEnable
-
-
-
+#if PXLogEnable && 0
         PXLogPrint
         (
             PXLoggingInfo,
@@ -333,9 +382,20 @@ PXActionResult PXAPI PXWADLoadFromFile(PXResourceTransphereInfo* const pxResourc
             "index of first subbchunk", pxWADEntryHeader.IndexOfFirstSubbchunk,
             "entry checksum", pxWADEntryHeader.EntryChecksum
         );
-#endif
-    }
+#endif 
+    };
 
+
+    PXLogEnableASYNC();
+    PXThreadPoolCreate(PXNull);
+
+
+    for(PXInt32U i = 0; i < entryCount; ++i)
+    {
+        PXWADEntry* const pxWADEntry = &pxWAD.EntryList[i];
+
+        PXThreadPoolQueueWork(PXNull, PXWADEntryHandle, pxWADEntry, pxFile, 0);
+    }
 
     return PXActionRefusedNotImplemented;
 }

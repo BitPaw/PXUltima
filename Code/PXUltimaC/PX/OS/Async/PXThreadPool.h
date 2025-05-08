@@ -31,6 +31,8 @@ typedef struct PXThreadPool_
     PXInt16U ThreadsMaximum;
 
     PXInt32U Flags;
+
+    PXInt32U TaskCounter;
 }
 PXThreadPool;
 
@@ -41,7 +43,7 @@ PXPrivate PXThread* PXAPI PXThreadPoolThreadSelf(PXThreadPool* const pxThreadPoo
 PXPrivate PXActionResult PXAPI PXThreadPoolTaskInvoke(PXTask* const pxTask);
 
 
-
+PXPublic PXBool PXAPI PXThreadPoolIsMainThread();
 PXPublic PXActionResult PXAPI PXThreadPoolClose(PXThreadPool* pxThreadPool);
 PXPublic PXActionResult PXAPI PXThreadPoolCreate(PXThreadPool* pxThreadPool);
 PXPublic PXActionResult PXAPI PXThreadPoolThreadMaximumSet(PXThreadPool* const pxThreadPool, const PXInt32U amount);
