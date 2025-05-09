@@ -239,6 +239,7 @@ PXActionResult PXAPI PXThreadPoolCreate(PXThreadPool* pxThreadPool)
 
     // Create task buffer
     PXListInitialize(&pxThreadPool->TaskQueue, sizeof(PXTask), 512);
+    pxThreadPool->TaskQueue.GrouthOnAlloc += 512;
 
     // Create threads
     for(PXSize i = 0; i < pxThreadPool->ThreadListSize; ++i)
