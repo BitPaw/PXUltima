@@ -456,12 +456,32 @@ void PXAPI PXDebugStackTrace(PXDebug* const pxDebug, PXSymbol* const pxSymbolLis
 
     const PXStackWalk64 pxStackWalk64 = (PXStackWalk64)pxDebug->DBGStackWalk;
     const PXSymGetSymFromAddr64 pXSymGetSymFromAddr64 = (PXSymGetSymFromAddr64)pxDebug->SymbolFromAddress;
-    const HANDLE processHandle = GetCurrentProcess();
+   
     //const HANDLE processHeapHandle = GetProcessHeap();
-    const HANDLE hThread = GetCurrentThread();
-    const BOOL symbolServerInitialize = SymInitialize(processHandle, PXNull, PXTrue);
+    const HANDLE handleThreadCurrent = GetCurrentThread();
+    const HANDLE handleProcessCurrent = GetCurrentProcess();
 
-    const DWORD symbolSetResult = SymSetOptions(SYMOPT_DEBUG | SYMOPT_LOAD_ANYTHING | SYMOPT_LOAD_LINES);
+    const BOOL initializeResultID = SymInitialize(handleProcessCurrent, PXNull, PXTrue);
+    const PXActionResult initializeResult = PXErrorCurrent(initializeResultID);
+
+    if(PXActionSuccessful != initializeResult)
+    {
+        for(size_t i = 0; i < pxSymbolListAmount; i++)
+        {
+            PXSymbol* pxSymbol = &pxSymbolList[i];
+
+            PXTextCopyA("???", 3, pxSymbol->NameUndecorated, 64);
+            PXTextCopyA("???", 3, pxSymbol->NameSymbol, 64);
+            PXTextCopyA("???.c", 3, pxSymbol->NameFile, 64);
+            PXTextCopyA("???.dll", 3, pxSymbol->NameModule, 64);
+        }
+
+        return initializeResult;
+    }
+
+    const DWORD optionsMask = SymSetOptions(SYMOPT_DEBUG | SYMOPT_LOAD_ANYTHING | SYMOPT_LOAD_LINES);
+
+    
     // SymLoadModuleEx(,);
 
     DWORD                          machineType = IMAGE_FILE_MACHINE_AMD64; // IMAGE_FILE_MACHINE_I386
@@ -502,8 +522,8 @@ void PXAPI PXDebugStackTrace(PXDebug* const pxDebug, PXSymbol* const pxSymbolLis
         const BOOL result = pxStackWalk64
         (
             machineType,
-            processHandle,
-            hThread,
+            handleProcessCurrent,
+            handleThreadCurrent,
             &stackFrame,
             &contextRecord,
             NULL,

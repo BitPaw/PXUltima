@@ -130,7 +130,7 @@ PXThreadResult PXOSAPI PXThreadPoolProcessASYNC(PXThreadPool* const pxThreadPool
         PXTheadPoolText,
         "ASYNC-Worker",
         "Fetching job... Detected:<%i>",
-        pxThreadPool->TaskQueue.AmountUsed
+        pxThreadPool->TaskQueue.EntryAmountUsed
     );
 #endif
 
@@ -239,7 +239,7 @@ PXActionResult PXAPI PXThreadPoolCreate(PXThreadPool* pxThreadPool)
 
     // Create task buffer
     PXListInitialize(&pxThreadPool->TaskQueue, sizeof(PXTask), 512);
-    pxThreadPool->TaskQueue.GrouthOnAlloc += 512;
+    pxThreadPool->TaskQueue.EntryGrowthOnAllocation += 512;
 
     // Create threads
     for(PXSize i = 0; i < pxThreadPool->ThreadListSize; ++i)
@@ -311,7 +311,7 @@ PXActionResult PXAPI PXThreadPoolWaitForAll(PXThreadPool* const pxThreadPool, co
 
 PXActionResult PXAPI PXThreadPoolProcessSYNC(PXThreadPool* const pxThreadPool)
 {
-    for(PXSize i = 0; i < pxThreadPool->TaskQueue.AmountAllocated; ++i)
+    for(PXSize i = 0; i < pxThreadPool->TaskQueue.EntryAmountAllocated; ++i)
     {
         PXTask* const pxTask = PXListEntyrGetT(PXTask, &pxThreadPool->TaskQueue, i);
 
@@ -347,7 +347,7 @@ PXTask* PXAPI PXThreadPoolTaskNextWorkGet(PXThreadPool* pxThreadPool)
 
     PXLockEngage(&pxThreadPool->TaskLock);
 
-    for(PXSize i = 0; i < pxThreadPool->TaskQueue.AmountUsed; ++i)
+    for(PXSize i = 0; i < pxThreadPool->TaskQueue.EntryAmountUsed; ++i)
     {
         PXTask* const pxTask = PXListEntyrGetT(PXTask, &pxThreadPool->TaskQueue, i);
 
@@ -378,7 +378,7 @@ PXTask* PXAPI PXThreadPoolTaskNextFreeGet(PXThreadPool* pxThreadPool, void* func
     PXLockEngage(&pxThreadPool->TaskLock);
 
     // Can we recycle?
-    for(PXSize i = 0; i < pxThreadPool->TaskQueue.AmountUsed; ++i)
+    for(PXSize i = 0; i < pxThreadPool->TaskQueue.EntryAmountUsed; ++i)
     {
         PXTask* const pxTask = PXListEntyrGetT(PXTask, &pxThreadPool->TaskQueue, i);
 

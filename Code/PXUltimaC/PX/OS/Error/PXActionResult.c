@@ -102,20 +102,22 @@ PXActionResult PXAPI PXErrorCurrent(const PXBool wasSuccessful)
     }
 
 #elif OSWindows
-    char* errorMessageBuffer = 0;
+    //char* errorMessageBuffer = 0;
+    char errorMessageBuffer[1024];
+
 
     //  GetLocaleInfoEx(); only vista or later
 
     // Generate an error message string with our current errorID
     const PXSize errorMessageLength = FormatMessageA
     (
-        FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+        FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, // FORMAT_MESSAGE_ALLOCATE_BUFFER
         NULL,
         errorID,
         MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
         //MAKELANGID(LANG_ENGLISH, SUBLANG_NEUTRAL), // english does not work?
-        (char*)&errorMessageBuffer,
-        0,
+        errorMessageBuffer,
+        1024,
         NULL
     );
     const PXBool success = errorMessageLength > 0;
@@ -127,7 +129,7 @@ PXActionResult PXAPI PXErrorCurrent(const PXBool wasSuccessful)
     }
     else
     {
-        errorMessageBuffer = "**No text**";
+        PXTextPrintA(errorMessageBuffer,  1024, "**No text**");
     }
 
 #else
@@ -149,7 +151,7 @@ PXActionResult PXAPI PXErrorCurrent(const PXBool wasSuccessful)
 
 
 #if OSUnix
-#elif OSWindows
+#elif OSWindows && 0
     if(success)
     {
         LocalFree(errorMessageBuffer);  // Free the Win32's string's buffer.
@@ -406,6 +408,9 @@ PXActionResult PXAPI PXErrorCodeFromID(const int errorCode)
 
     case EXDEV:
         return CrossDeviceLink;
+
+    case ERROR_INVALID_PARAMETER:
+        return  PXActionRefusedArgumentInvalid;
 
     case 145:
         return PXActionRefusedDirectoryNotEmpty;
