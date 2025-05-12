@@ -72,7 +72,7 @@ void PXAPI PXFileElementInfoConvertFrom(PXDirectorySearchCache* const pxDirector
 
 void PXAPI PXDirectoryEntryStore(PXDirectorySearchCache* const pxDirectorySearchCache, PXFileEntry* const pxFileEntryINPUT)
 {
-    pxFileEntryINPUT->ID = pxDirectorySearchCache->EntryList.AmountUsed + 100;
+    pxFileEntryINPUT->ID = pxDirectorySearchCache->EntryList.EntryAmountUsed + 100;
 
 #if PXLogEnable
     PXLogPrint
@@ -176,7 +176,7 @@ PXActionResult PXAPI PXDirectorySearch(PXDirectorySearchCache* const pxDirectory
 
 
     // Fix stale references because an reallocation could have moved the data
-    for(size_t i = 0; i < pxDirectorySearchCache->EntryList.AmountUsed; ++i)
+    for(size_t i = 0; i < pxDirectorySearchCache->EntryList.EntryAmountUsed; ++i)
     {
         PXFileEntry* const pxFileEntry = PXListEntyrGetT(PXFileEntry, &pxDirectorySearchCache->EntryList, i);
 

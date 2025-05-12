@@ -44,7 +44,6 @@ typedef struct PXDisplay_ PXDisplay;
 typedef struct PXNativDraw_ PXNativDraw;
 typedef struct PXTask_ PXTask;
 typedef struct PXThread_ PXThread;
-typedef struct PXDebug_ PXDebug;
 
 extern void _chkstk(size_t s);
 

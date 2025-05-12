@@ -82,6 +82,7 @@ typedef enum PXActionResult_
     PXActionRefusedAlreadyInizialized, // Object has already been initialized
     PXActionRefusedAlreadyExists, // [EXIST] Object can't be created, as it alteady exists
     PXActionRefusedTypeInvalid,
+    PXActionRefusedNoSuchFunction, // When the OS does not support that function or it does not exist
     PXActionRefusedTypeNotSupported,
     PXActionRefusedAggregationNotSupported,
     PXActionRefusedPropertyNotAvailable,

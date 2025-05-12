@@ -380,7 +380,8 @@ PXSize PXAPI PXFilePathExtensionGet(const PXText* const filePath, PXText* const 
     return writtenBytes;
 }
 
-PXFileFormat PXAPI PXFilePathExtensionDetectTry(const PXText* const filePath)
+
+PXActionResult PXAPI PXFileFormatInfoViaPath(PXFileFormatInfo* const pxFileFormatInfo, const PXText* const filePath)
 {
     PXText pxTextExtension;
     PXTextConstructNamedBufferA(&pxTextExtension, extensionBuffer, ExtensionMaxSize);
@@ -409,21 +410,27 @@ PXFileFormat PXAPI PXFilePathExtensionDetectTry(const PXText* const filePath)
     );
 #endif
 
+    pxFileFormatInfo->Flags = PXFileFormatUnkown;
+
     switch(writtenBytes)
     {
         case 0:
-            return PXFileFormatInvalid;
+            pxFileFormatInfo->Flags =  PXFileFormatInvalid;
+            break;
 
         case 1u:
         {
             switch(*pxTextExtension.TextA)
             {
                 case 'H':
-                    return PXFileFormatC;
+                    pxFileFormatInfo->Flags = PXFileFormatC;
+                    break;
                 case 'C':
-                    return PXFileFormatC;
+                    pxFileFormatInfo->Flags =  PXFileFormatC;
+                    break;
                 case 'O':
-                    return PXFileFormatBinaryLinux;
+                    pxFileFormatInfo->Flags =  PXFileFormatBinaryLinux;
+                    break;
             }
 
             break;
@@ -436,13 +443,17 @@ PXFileFormat PXAPI PXFilePathExtensionDetectTry(const PXText* const filePath)
             {
                 case PXInt16Make('K', 'O'):
                 case PXInt16Make('S', 'O'):
-                    return PXFileFormatBinaryLinux;
+                    pxFileFormatInfo->Flags =  PXFileFormatBinaryLinux;
+                    break;
                 case PXInt16Make('F', 'F'):
-                    return PXFileFormatFastFile;
+                    pxFileFormatInfo->Flags =  PXFileFormatFastFile;
+                    break;
                 case PXInt16Make('C', 'S'):
-                    return PXFileFormatCSharp;
+                    pxFileFormatInfo->Flags =  PXFileFormatCSharp;
+                    break;
                 case PXInt16Make('J', 'S'):
-                    return PXFileFormatJavaScript;
+                    pxFileFormatInfo->Flags =  PXFileFormatJavaScript;
+                    break;
             }
 
             break;
@@ -456,114 +467,160 @@ PXFileFormat PXAPI PXFilePathExtensionDetectTry(const PXText* const filePath)
                 case PXInt24Make('V', 'O', 'B'):
                 case PXInt24Make('I', 'F', 'O'):
                 case PXInt24Make('B', 'U', 'P'):
-                    return PXFileFormatVideoObject;
+                    pxFileFormatInfo->Flags =  PXFileFormatVideoObject;
+                    break;
 
                 case PXInt24Make('V', '6', '4'):
                 case PXInt24Make('Z', '6', '4'):
                 case PXInt24Make('N', '6', '4'):
-                    return PXFileFormatN64;
+                    pxFileFormatInfo->Flags =  PXFileFormatN64;
+                    break;
 
                 case PXInt24Make('C', 'P', 'P'):
                 case PXInt24Make('H', 'P', 'P'):
-                    return PXFileFormatCPP;
+                    pxFileFormatInfo->Flags =  PXFileFormatCPP;
+                    break;
 
                 case PXInt24Make('C', 'R', '3'):
-                    return PXFileFormatCanonRaw3;
+                    pxFileFormatInfo->Flags =  PXFileFormatCanonRaw3;
+                    break;
 
                 case PXInt24Make('B', 'K', '2'):
                 case PXInt24Make('B', 'I', 'K'):
-                    return PXFileFormatBinkVideo;
+                    pxFileFormatInfo->Flags =  PXFileFormatBinkVideo;
+                    break;
 
                 case PXInt24Make('D', 'D', 'S'):
-                    return PXFileFormatDirectDrawSurfaceTexture;
+                    pxFileFormatInfo->Flags =  PXFileFormatDirectDrawSurfaceTexture;
+                    break;
 
                 case PXInt24Make('B', 'I', 'N'):
                 case PXInt24Make('P', 'R', 'X'):
                 case PXInt24Make('M', 'O', 'D'):
                 case PXInt24Make('E', 'L', 'F'):
                 case PXInt24Make('O', 'U', 'T'):
-                    return PXFileFormatBinaryLinux;
+                    pxFileFormatInfo->Flags =  PXFileFormatBinaryLinux;
+                    break;
 
                 case PXInt24Make('R', 'A', 'R'):
-                    return PXFileFormatEugeneRoshalArchive;
+                    pxFileFormatInfo->Flags =  PXFileFormatEugeneRoshalArchive;
+                    break;
 
                 case PXInt24Make('F', 'N', 'T'):
-                    return PXFileFormatSpriteFont;
+                    pxFileFormatInfo->Flags =  PXFileFormatSpriteFont;
+                    break;
+
                 case PXInt24Make('G', 'I', 'F'):
-                    return PXFileFormatGIF;
+                    pxFileFormatInfo->Flags =  PXFileFormatGIF;
+                    break;
                 case PXInt24Make('H', 'T', 'M'):
-                    return PXFileFormatHTML;
+                    pxFileFormatInfo->Flags =  PXFileFormatHTML;
+                    break;
                 case PXInt24Make('I', 'N', 'I'):
-                    return PXFileFormatINI;
+                    pxFileFormatInfo->Flags =  PXFileFormatINI;
+                    break;
                 case PXInt24Make('M', '4', 'A'):
-                    return PXFileFormatM4A;
+                    pxFileFormatInfo->Flags =  PXFileFormatM4A;
+                    break;
                 case PXInt24Make('3', 'D', 'S'):
-                    return PXFileFormatA3DS;
+                    pxFileFormatInfo->Flags =  PXFileFormatA3DS;
+                    break;
                 case PXInt24Make('A', 'C', 'C'):
-                    return PXFileFormatAAC;
+                    pxFileFormatInfo->Flags =  PXFileFormatAAC;
+                    break;
                 case PXInt24Make('A', 'V', 'I'):
-                    return PXFileFormatAVI;
+                    pxFileFormatInfo->Flags =  PXFileFormatAVI;
+                    break;
                 case PXInt24Make('B', 'M', 'P'):
-                    return PXFileFormatBitMap;
+                    pxFileFormatInfo->Flags =  PXFileFormatBitMap;
+                    break;
                 case PXInt24Make('C', 'S', 'S'):
-                    return PXFileFormatCSS;
+                    pxFileFormatInfo->Flags =  PXFileFormatCSS;
+                    break;
                 case PXInt24Make('E', 'M', 'L'):
-                    return PXFileFormatEML;
+                    pxFileFormatInfo->Flags =  PXFileFormatEML;
+                    break;
                 case PXInt24Make('S', 'Y', 'S'):
                 case PXInt24Make('C', 'O', 'M'):
                 case PXInt24Make('D', 'L', 'L'):
                 case PXInt24Make('E', 'X', 'E'):
-                    return PXFileFormatBinaryWindows;
+                    pxFileFormatInfo->Flags =  PXFileFormatBinaryWindows;
+                    break;
                 case PXInt24Make('F', 'B', 'X'):
-                    return PXFileFormatFilmBox;
+                    pxFileFormatInfo->Flags =  PXFileFormatFilmBox;
+                    break;
                 case PXInt24Make('M', 'P', '3'):
-                    return PXFileFormatMP3;
+                    pxFileFormatInfo->Flags =  PXFileFormatMP3;
+                    break;
                 case PXInt24Make('M', 'P', '4'):
-                    return PXFileFormatMP4;
+                    pxFileFormatInfo->Flags =  PXFileFormatMP4;
+                    break;
                 case PXInt24Make('M', 'S', 'I'):
-                    return PXFileFormatMSI;
+                    pxFileFormatInfo->Flags =  PXFileFormatMSI;
+                    break;
                 case PXInt24Make('M', 'T', 'L'):
-                    return PXFileFormatMTL;
+                    pxFileFormatInfo->Flags =  PXFileFormatMTL;
+                    break;
                 case PXInt24Make('O', 'B', 'J'):
-                    return PXFileFormatWavefront;
+                    pxFileFormatInfo->Flags =  PXFileFormatWavefront;
+                    break;
                 case PXInt24Make('M', 'K', 'V'):
-                    return PXFileFormatMatroska;
+                    pxFileFormatInfo->Flags =  PXFileFormatMatroska;
+                    break;
                 case PXInt24Make('O', 'G', 'G'):
-                    return PXFileFormatOGG;
+                    pxFileFormatInfo->Flags =  PXFileFormatOGG;
+                    break;
                 case PXInt24Make('P', 'D', 'F'):
-                    return PXFileFormatPDF;
+                    pxFileFormatInfo->Flags =  PXFileFormatPDF;
+                    break;
                 case PXInt24Make('P', 'H', 'P'):
-                    return PXFileFormatPHP;
+                    pxFileFormatInfo->Flags =  PXFileFormatPHP;
+                    break;
                 case PXInt24Make('P', 'L', 'Y'):
-                    return PXFileFormatPLY;
+                    pxFileFormatInfo->Flags =  PXFileFormatPLY;
+                    break;
                 case PXInt24Make('P', 'N', 'G'):
-                    return PXFileFormatPNG;
+                    pxFileFormatInfo->Flags =  PXFileFormatPNG;
+                    break;
                 case PXInt24Make('Q', 'U', 'I'):
-                    return PXFileFormatQOI;
+                    pxFileFormatInfo->Flags =  PXFileFormatQOI;
+                    break;
                 case PXInt24Make('S', 'T', 'L'):
-                    return PXFileFormatSTL;
+                    pxFileFormatInfo->Flags =  PXFileFormatSTL;
+                    break;
                 case PXInt24Make('S', 'V', 'G'):
-                    return PXFileFormatSVG;
+                    pxFileFormatInfo->Flags =  PXFileFormatSVG;
+                    break;
                 case PXInt24Make('T', 'I', 'F'):
-                    return PXFileFormatTagImage;
+                    pxFileFormatInfo->Flags =  PXFileFormatTagImage;
+                    break;
                 case PXInt24Make('U', 'S', 'D'):
-                    return PXFileFormatUniversalSceneDescription;
+                    pxFileFormatInfo->Flags =  PXFileFormatUniversalSceneDescription;
+                    break;
                 case PXInt24Make('T', 'G', 'A'):
-                    return PXFileFormatTGA;
+                    pxFileFormatInfo->Flags =  PXFileFormatTGA;
+                    break;
                 case PXInt24Make('T', 'T', 'F'):
-                    return PXFileFormatTrueTypeFont;
+                    pxFileFormatInfo->Flags =  PXFileFormatTrueTypeFont;
+                    break;
                 case PXInt24Make('W', 'A', 'D'):
-                    return PXFileFormatWAD;
+                    pxFileFormatInfo->Flags =  PXFileFormatWAD;
+                    break;
                 case PXInt24Make('W', 'A', 'V'):
-                    return PXFileFormatWave;
+                    pxFileFormatInfo->Flags =  PXFileFormatWave;
+                    break;
                 case PXInt24Make('W', 'M', 'A'):
-                    return PXFileFormatWMA;
+                    pxFileFormatInfo->Flags =  PXFileFormatWMA;
+                    break;
                 case PXInt24Make('X', 'M', 'L'):
-                    return PXFileFormatXML;
+                    pxFileFormatInfo->Flags =  PXFileFormatXML;
+                    break;
                 case PXInt24Make('Y', 'M', 'L'):
-                    return PXFileFormatYAML;
+                    pxFileFormatInfo->Flags =  PXFileFormatYAML;
+                    break;
                 case PXInt24Make('Z', 'I', 'P'):
-                    return PXFileFormatZIP;
+                    pxFileFormatInfo->Flags =  PXFileFormatZIP;
+                    break;
             }
 
             break;
@@ -575,38 +632,66 @@ PXFileFormat PXAPI PXFilePathExtensionDetectTry(const PXText* const filePath)
             switch(list)
             {
                 case PXInt32Make('B', 'I', 'K', '2'):
-                    return PXFileFormatBinkVideo;
+                    pxFileFormatInfo->Flags =  PXFileFormatBinkVideo;
+                    break;
                 case PXInt32Make('J', 'A', 'V', 'A'):
-                    return PXFileFormatJava;
-
+                    pxFileFormatInfo->Flags =  PXFileFormatJava;
+                    break;
                 case PXInt32Make('H', 'E', 'I', 'C'): // Fall though
                 case PXInt32Make('H', 'E', 'I', 'F'):
-                    return PXFileFormatHighEfficiencyImageFile;
+                    pxFileFormatInfo->Flags =  PXFileFormatHighEfficiencyImageFile;
+                    break;
                 case PXInt32Make('P', 'U', 'F', 'F'):
-                    return PXFileFormatBinaryLinux;
+                    pxFileFormatInfo->Flags =  PXFileFormatBinaryLinux;
+                    break;
                 case PXInt32Make('F', 'L', 'A', 'C'):
-                    return PXFileFormatFLAC;
+                    pxFileFormatInfo->Flags =  PXFileFormatFLAC;
+                    break;
                 case PXInt32Make('M', 'I', 'D', 'I'):
-                    return PXFileFormatMIDI;
+                    pxFileFormatInfo->Flags =  PXFileFormatMIDI; 
+                    break;
                 case PXInt32Make('S', 'T', 'E', 'P'):
-                    return PXFileFormatSTEP;
+                    pxFileFormatInfo->Flags =  PXFileFormatSTEP;
+                    break;
                 case PXInt32Make('T', 'I', 'F', 'F'):
-                    return PXFileFormatTagImage;
+                    pxFileFormatInfo->Flags =  PXFileFormatTagImage;
+                    break;
                 case PXInt32Make('J', 'P', 'E', 'G'):
-                    return PXFileFormatJPEG;
+                    pxFileFormatInfo->Flags =  PXFileFormatJPEG;
+                    break;
                 case PXInt32Make('J', 'S', 'O', 'N'):
-                    return PXFileFormatJSON;
+                    pxFileFormatInfo->Flags =  PXFileFormatJSON;
+                    break;
                 case PXInt32Make('V', 'R', 'M', 'L'):
-                    return PXFileFormatVRML;
+                    pxFileFormatInfo->Flags =  PXFileFormatVRML;
+                    break;
                 case PXInt32Make('W', 'E', 'B', 'M'):
-                    return PXFileFormatWEBM;
+                    pxFileFormatInfo->Flags =  PXFileFormatWEBM;
+                    break;
                 case PXInt32Make('W', 'E', 'B', 'P'):
-                    return PXFileFormatWEBP;
+                    pxFileFormatInfo->Flags =  PXFileFormatWEBP;
+                    break;
             }
 
             break;
         }
     }
+
+    if(pxFileFormatInfo->Flags != PXFileFormatUnkown)
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            PXFileText,
+            "Extension",
+            "Sucessfully detected!"
+        );
+#endif
+
+        return PXActionSuccessful;
+    }
+
 
     // When we did not detect any format, it could be, that some nice guy added
     // an additional "fake" extension. 
@@ -620,10 +705,105 @@ PXFileFormat PXAPI PXFilePathExtensionDetectTry(const PXText* const filePath)
         PXText pxText;
         PXTextConstructFromAdressA(&pxText, filePath->TextA, firstDot, firstDot);
 
-        return PXFilePathExtensionDetectTry(&pxText);
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingWarning,
+            PXFileText,
+            "Extension",
+            "Unkown extension! Two dots are detected, we might have a fake extension"
+        );
+#endif
+
+        return PXFileFormatInfoViaPath(pxFileFormatInfo, &pxText);
     }
 
-    return PXFileFormatUnkown;
+    pxFileFormatInfo->Flags = PXFileFormatUnkown;
+
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingError,
+        PXFileText,
+        "Extension",
+        "Could not resolve extension"
+    );
+#endif
+
+    return PXActionSuccessful;
+}
+
+const PXByte PXFileFormatRSkinedMeshSignature[] = { 0xC3, 0x4F, 0xFD, 0x22};
+const PXByte PXFileFormatRSkinedMeshSignatureLength = sizeof(PXFileFormatRSkinedMeshSignature) / sizeof(PXByte);
+
+const PXByte PXSignature6D[] = { 0x6D, 0x8D, 0xBF, 0x30};
+const PXByte PXSignature6DLength = sizeof(PXSignature6D) / sizeof(PXByte);
+
+
+const PXByte PXFileFormatRSkinSimpleSignature[4] = { 0x33, 0x22, 0x11, 0x00 };
+const PXByte PXFileFormatRSkinSimpleSignatureLength = sizeof(PXFileFormatRSkinSimpleSignature) / sizeof(PXByte);
+
+const PXByte PXFileFormatRLightGridSignature[] = {0x03, 0x00, 0x00, 0x00};;
+const PXByte PXFileFormatRLightGridSignatureLength = sizeof(PXFileFormatRLightGridSignature) / sizeof(PXByte);
+
+const char PXExtensionUnkown[] = "ooo";
+
+PXActionResult PXAPI PXFileFormatInfoViaContent(PXFileFormatInfo* const pxFileFormatInfo, PXFile* const pxFile)
+{
+    PXClear(PXFileFormatInfo, pxFileFormatInfo);
+
+    const PXFileFormatInfo pxFileFormatInfoList[] =
+    {
+        {"scb", 6, "r3d2Mesh", 8, 0, PXFileFormatRedshiftMesh | PXFileFormatVarriantBinary},
+        {"anm", 6, "r3d2anmd", 8, 0, PXFileFormatRedshiftAnimation | PXFileFormatVarriantBinary},
+        {"anm", 6, "r3d2canm", 8, 0, PXFileFormatRedshiftAnimation | PXFileFormatVarriantBinary},
+        {"skl", 6, "r3d2sklt", 8, 0, PXFileFormatRedshiftSkeleton | PXFileFormatVarriantBinary},
+        {"dds", 3, "DDS", 3, 0, PXFileFormatDirectDrawSurfaceTexture | PXFileFormatVarriantBinary},
+        {"skn", 4, PXFileFormatRSkinSimpleSignature, PXFileFormatRSkinSimpleSignatureLength, 0, PXFileFormatRSkinSimple},
+        {"bin", 4, "PROP", 4, 0, PXFileFormatRProperty },
+        {"bnk", 3, "BKHD", 4, 0, PXFileFormatWAudioBank},
+        {"wgeo", 3, "WGEO", 4, 0, PXFileFormatRGeometryWorld},
+        {"mapgeo", 3, "OEGM", 4, 0, PXFileFormatRGeometryMap},
+        {"sco", 3, "[ObjectBegin]", 13, 0, PXFileFormatRedshiftMesh | PXFileFormatVarriantText},
+        {"luaobj", 3, "LuaQ", 4, 0, PXFileFormatLua},
+        {PXExtensionUnkown, 3, "PreLoad", 7, 0, PXFileFormatRPreLoad },
+        {PXExtensionUnkown, 3, PXFileFormatRLightGridSignature, PXFileFormatRLightGridSignatureLength, 0, PXFileFormatRLightGrid },
+        {PXExtensionUnkown, 3, "RST", 3, 0, PXFileFormatRStringTable },
+        {PXExtensionUnkown, 3, "PTCH", 4, 0, PXFileFormatRPropertyOverride},
+        {PXExtensionUnkown, 3, PXFileFormatRSkinedMeshSignature, PXFileFormatRSkinedMeshSignatureLength, 0, PXFileFormatRSkinedMesh },
+        {"tex", 3, "TEX", 3, 0, PXFileFormatRTexture},      
+        {PXExtensionUnkown, 8, PXSignature6D, PXSignature6DLength, 4, PXFileFormat6D},
+        {"oegm", 8, "OEGM", 4, 0, PXFileFormatOEGM},
+        {"opam", 8, "OPAM", 4, 0, PXFileFormatOEGM},        
+    
+    };
+    const PXInt8U amount = sizeof(pxFileFormatInfoList) / sizeof(PXFileFormatInfo);
+
+    for(size_t i = 0; i < amount; ++i)
+    {
+        const PXFileFormatInfo* const pxFileFormatInfoComp = &pxFileFormatInfoList[i];
+
+        PXBool isMatch = PXTextCompareA
+        (
+            pxFileFormatInfoComp->SigantureText,
+            pxFileFormatInfoComp->SigantureLength, 
+            (PXByte*)pxFile->Data + pxFileFormatInfoComp->SigantureOffset,
+            pxFile->DataUsed, 
+            0
+        );
+
+        if(isMatch)
+        {
+            PXCopy(PXFileFormatInfo, pxFileFormatInfoComp, pxFileFormatInfo);
+            return PXActionSuccessful;
+        }
+    } 
+
+    PXClear(PXFileFormatInfo, pxFileFormatInfo);
+    pxFileFormatInfo->Flags = PXFileFormatUnkown; 
+
+    return PXActionSuccessful;
 }
 
 void PXAPI PXTypeEntryInfo(PXTypeEntry* const pxFileDataElementType, PXText* const dataType, PXText* const dataContent)
@@ -1205,7 +1385,7 @@ PXActionResult PXAPI PXFileName(const PXFile* const pxFile, PXText* const fileNa
 
     const char dosDriveTag[] = "\\\\?\\";
 
-    const PXByte isSS = PXTextCompareA(fileName->TextA, 4u, dosDriveTag, 4u);
+    const PXByte isSS = PXTextCompareA(fileName->TextA, fileName->SizeUsed, dosDriveTag, 4u, 0);
 
     if(isSS)
     {
@@ -1213,7 +1393,7 @@ PXActionResult PXAPI PXFileName(const PXFile* const pxFile, PXText* const fileNa
 
         const char wind[] = "C:\\Windows\\System32\\";
 
-        const PXByte isSSEE = PXTextCompareA(fileName->TextA + 4u, 20u, wind, 20u);
+        const PXByte isSSEE = PXTextCompareA(fileName->TextA + 4u, 20u, wind, 20u, 0);
 
 
         char* texxxx = fileName->TextA + 4u;
@@ -4129,6 +4309,36 @@ PXSize PXAPI PXFileWriteWF(PXFile* const pxFile, const wchar_t* const format, ..
     return  0;
 }
 
+PXActionResult PXAPI PXFileStoreOnDiskA(PXFile* const pxFile, const char* fileName)
+{
+    HANDLE fileHandle = CreateFileA
+    (
+        fileName, 
+        GENERIC_WRITE, 
+        0,
+        NULL, 
+        CREATE_NEW,
+        FILE_ATTRIBUTE_NORMAL, 
+        NULL
+    );
+    PXActionResult createResult = PXErrorCurrent(INVALID_HANDLE_VALUE != fileHandle);
+
+    if(PXActionSuccessful != createResult)
+    {
+        return createResult;
+    }
+
+    DWORD writtenFiles = 0;
+
+    WriteFile(fileHandle, pxFile->Data, pxFile->DataUsed, &writtenFiles, NULL);
+
+    FlushFileBuffers(fileHandle);
+
+    CloseHandle(fileHandle);
+
+    return PXActionSuccessful;
+}
+
 PXSize PXAPI PXFileSkipBitsToNextByte(PXFile* const pxFile)
 {
     const PXBool hasAnyBitConsumed = pxFile->DataCursorBitOffset > 0;
@@ -4456,7 +4666,7 @@ PXActionResult PXAPI PXFilePathGet(const PXFile* const pxFile, PXText* const fil
     const DWORD currentPathSize = GetCurrentDirectoryA(PXPathSizeMax, buffer); // Windows XP (+UWP), Kernel32.dll, winbase.h
 
     const PXSize maxSize = PXMathMinimumIU(currentPathSize, filePath->SizeUsed);
-    const PXBool isMatching = PXTextCompareA(buffer, currentPathSize, filePath->TextA, maxSize);
+    const PXBool isMatching = PXTextCompareA(buffer, currentPathSize, filePath->TextA, maxSize, 0);
 
     if(isMatching)
     {

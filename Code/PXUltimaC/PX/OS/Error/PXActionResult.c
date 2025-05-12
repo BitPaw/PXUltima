@@ -3,6 +3,8 @@
 #include <PX/OS/System/Version/PXOSVersion.h>
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/Media/PXText.h>
+#include <PX/OS/Debug/PXDebug.h>
+#include <PX/OS/PXOS.h>
 
 #include <errno.h> // POSIX
 
@@ -137,17 +139,36 @@ PXActionResult PXAPI PXErrorCurrent(const PXBool wasSuccessful)
 #endif
 
 #if PXLogEnable
+    PXSymbol pxSymbol;
+    PXSymbolStackTrace(&pxSymbol, 1, 2, 1);
+
     PXLogPrint
     (
         PXLoggingError,
         "OS-Kernel",
         "Error",
-        "%s [HEX:0x%8.8X, DEZ:%i]",
-        errorMessageBuffer,
-        errorID,
-        errorID
+        "Function failed! Extended info:\n"
+        "%20s : 0x%8.8X\n"
+        "%20s : %u\n"
+        "%20s : %s\n"
+        "%20s : %s::%s::%s::%i",
+        "HEX", errorID,
+        "DEZ", errorID,
+        "TEXT", errorMessageBuffer,
+        "Source",
+        pxSymbol.NameModule,
+        pxSymbol.NameFile,
+        pxSymbol.NameUndecorated,
+        pxSymbol.LineNumber
     );
 #endif
+
+    if(80 != errorID)
+    {
+        DebugBreak();
+    }
+
+
 
 
 #if OSUnix
@@ -415,7 +436,13 @@ PXActionResult PXAPI PXErrorCodeFromID(const int errorCode)
     case 145:
         return PXActionRefusedDirectoryNotEmpty;
 
+    case 317: // Cant resolve error text
+        return PXActionFailedUnkownError;
+
     case 1400:
+        return PXActionRefusedObjectIDInvalid;
+
+    case STATUS_INVALID_HANDLE:
         return PXActionRefusedObjectIDInvalid;
 
     default:

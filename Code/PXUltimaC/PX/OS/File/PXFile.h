@@ -100,8 +100,10 @@ PXFileOpenInfo;
 
 
 
+PXPublic PXActionResult PXAPI PXFileFormatInfoViaPath(PXFileFormatInfo* const pxFileFormatInfo, const PXText* const filePath);
+PXPublic PXActionResult PXAPI PXFileFormatInfoViaContent(PXFileFormatInfo* const pxFileFormatInfo, PXFile* const pxFile);
 
-PXPublic PXFileFormat PXAPI PXFilePathExtensionDetectTry(const PXText* const filePath);
+
 
 PXPublic void PXAPI PXTypeEntryInfo
 (
@@ -396,6 +398,10 @@ PXPublic PXSize PXAPI PXFileWriteW(PXFile* const pxFile, const wchar_t* const te
 
 PXPublic PXSize PXAPI PXFileWriteAF(PXFile* const pxFile, const char* const format, ...);
 PXPublic PXSize PXAPI PXFileWriteWF(PXFile* const pxFile, const wchar_t* const format, ...);
+
+// If a file is mapped, we can store 
+PXPublic PXActionResult PXAPI PXFileStoreOnDiskA(PXFile* const pxFile, const char* fileName);
+
 //-------------------------------------------------------------------------
 
 
