@@ -1,6 +1,7 @@
 #include "PXList.h"
 
 #include <PX/OS/Memory/PXMemory.h>
+#include <PX/OS/PXOS.h>
 
 void PXAPI PXListInitialize(PXList* const pxList, const PXSize dataTypeSize, const PXSize startAmount)
 {
@@ -37,7 +38,7 @@ PXBool PXAPI PXListReserve(PXList* const pxList, const PXSize amountOfElements)
     }
 
     // Try alloc
-    const PXSize newAmount = pxList->EntryGrowthOnAllocation + pxList->EntryAmountUsed;
+    const PXSize newAmount = pxList->EntryGrowthOnAllocation + pxList->EntryAmountAllocated;
     const PXSize newSize = pxList->DataTypeSize * newAmount;
 
     void* newMem = PXMemoryHeapRealloc(PXNull, pxList->Data, newSize);

@@ -12,6 +12,7 @@
 #include <PX/OS/Graphic/NativDraw/PXNativDraw.h>
 #include <PX/OS/Async/PXThreadPool.h>
 #include <PX/Math/PXCollision.h>
+#include <PX/OS/PXOS.h>
 
 void PXCDECL PXEngineOnIllegalInstruction(const int signalID)
 {
