@@ -37,19 +37,32 @@ PXBool PXAPI PXListReserve(PXList* const pxList, const PXSize amountOfElements)
         return PXTrue;
     }
 
-    // Try alloc
-    const PXSize newAmount = pxList->EntryGrowthOnAllocation + pxList->EntryAmountAllocated;
-    const PXSize newSize = pxList->DataTypeSize * newAmount;
+    void* newMem = 0;
 
-    void* newMem = PXMemoryHeapRealloc(PXNull, pxList->Data, newSize);
+    // If new list
+    if(0 == pxList->EntryAmountAllocated)
+    {
+        newMem = PXMemoryHeapCalloc(PXNull, amountOfElements, pxList->DataTypeSize);
+
+        pxList->EntryAmountAllocated = amountOfElements;
+    }
+    else
+    {
+        // Try alloc
+        const PXSize newAmount = pxList->EntryGrowthOnAllocation + pxList->EntryAmountAllocated;
+        const PXSize newSize = pxList->DataTypeSize * newAmount;
+
+        newMem = PXMemoryHeapRealloc(PXNull, pxList->Data, newSize);       
+
+        pxList->EntryAmountAllocated = newAmount;
+    }
 
     if(!newMem)
     {
         return PXFalse;
     }
 
-    pxList->Data = newMem;
-    pxList->EntryAmountAllocated = newAmount;
+    pxList->Data = newMem;  
 
     return PXTrue;
 }

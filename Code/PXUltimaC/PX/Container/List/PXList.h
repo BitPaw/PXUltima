@@ -29,6 +29,8 @@ PXList;
 
 PXPublic void PXAPI PXListInitialize(PXList* const pxList, const PXSize dataTypeSize, const PXSize startAmount);
 PXPublic void PXAPI PXListRelease(PXList* const pxList);
+
+// Returns index of element
 PXPublic PXBool PXAPI PXListReserve(PXList* const pxList, const PXSize sizeToReserve);
 
 
