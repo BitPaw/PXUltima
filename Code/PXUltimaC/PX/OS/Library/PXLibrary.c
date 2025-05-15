@@ -20,6 +20,7 @@ typedef void* LibraryDirectoryID;
 #include <stdio.h>
 #include <Psapi.h> // Psapi.lib
 #include <PX/OS/Debug/PXDebug.h>
+#include <PX/OS/PXOS.h>
 
 #pragma comment( lib, "Dbghelp.lib" )
 #pragma comment( lib, "Psapi.lib " )

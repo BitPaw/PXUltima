@@ -242,15 +242,7 @@ PXPublic PXActionResult PXAPI PXMemorySymbolFetch(const void* const adress, PXSy
 PXPublic PXBool PXAPI PXMemoryDoAdressesOverlap(void* const adressA, const PXSize adressALengh, void* const adressB, const PXSize adressBLengh);
 
 
-//-----------------------------------------------------------------------------
-// Heap - Space to allocate dynamic memory
-//-----------------------------------------------------------------------------
-typedef struct PXMemoryHeap_
-{
-    void* HeapHandle;
-    PXSize Allocated;
-}
-PXMemoryHeap;
+/*
 
 PXPublic PXActionResult PXAPI PXMemoryHeapCreate(PXMemoryHeap* const pxMemoryHeap);
 PXPublic PXActionResult PXAPI PXMemoryHeapRelease(PXMemoryHeap* const pxMemoryHeap);
@@ -264,10 +256,7 @@ PXPublic void* PXAPI PXMemoryHeapCalloc(PXMemoryHeap* pxMemoryHeap, const PXSize
 PXPublic void* PXAPI PXMemoryHeapMalloc(PXMemoryHeap* pxMemoryHeap, const PXSize memorySize); // [POSIX]
 PXPublic PXBool PXAPI PXMemoryHeapFree(PXMemoryHeap* pxMemoryHeap, const void* const adress); // [POSIX]
 PXPublic void* PXAPI PXMemoryHeapRealloc(PXMemoryHeap* pxMemoryHeap, const void* const adress, const PXSize memorySize); // [POSIX]
-
-#define PXMemoryHeapCallocT(type, amount) (type*)PXMemoryHeapCalloc(PXNull, amount, sizeof(type))
-#define PXMemoryHeapMallocT(type, amount) (type*)PXMemoryHeapMalloc(PXNull, sizeof(type) * amount)
-#define PXMemoryHeapReallocT(type, adress, amount) (type*)PXMemoryHeapRealloc(PXNull, adress, sizeof(type) * (amount))
+*/
 //-----------------------------------------------------------------------------
 
 
@@ -310,6 +299,7 @@ PXPublic inline const void* PXAPI PXMemoryLocateLast(const void* const PXRestric
 PXPublic void PXAPI PXMemoryPageInfoFetch(PXMemoryPageInfo* const pxFilePageFileInfo, const PXSize objectSize);
 
 
+/*
 // Allocate memory in virtual memory space.
 // The minimal size will be a pagefile (4KB) as the size will be rounded up to the next page boundary.
 // Only use for bigger datablocks as thic has very hi overhead.
@@ -317,7 +307,7 @@ PXPublic void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize* const createdS
 PXPublic void PXAPI PXMemoryVirtualPrefetch(const void* adress, const PXSize size);
 PXPublic PXActionResult PXAPI PXMemoryVirtualRelease(const void* adress, const PXSize size);
 PXPublic void* PXAPI PXMemoryVirtualReallocate(const void* adress, const PXSize size);
-
+*/
 
 
 

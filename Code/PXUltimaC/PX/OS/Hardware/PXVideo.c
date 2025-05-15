@@ -24,7 +24,7 @@
 
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/Media/PXText.h>
-
+#include <PX/OS/PXOS.h>
 
 
 

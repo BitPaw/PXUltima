@@ -5,11 +5,14 @@
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/Media/PXText.h>
 #include <PX/OS/Debug/PXDebug.h>
+#include <PX/OS/PXOS.h>
 
 #include <stdlib.h>
 #include <malloc.h>
 
-const char PXMemoryLogPrintTitle[] = "OS-Kernel";
+const char PXMemoryCPUName[] = "CPU-SIMD";
+const char PXMemoryCPUCompare[] = "Compare";
+
 const char PXMemoryLogPrintMemoryVirtual[] = "Virtual-Memory";
 const char PXMemoryLogPrintMemory[] = "Memory";
 
@@ -225,387 +228,8 @@ PXBool PXAPI PXMemoryDoAdressesOverlap(void* const adressA, const PXSize adressA
     return overlap;
 }
 
-PXSize PXAPI PXMemoryHeapBlockSize(PXMemoryHeap* pxMemoryHeap, const void* const adress)
-{
-    PXMemoryHeap redirectHeap;
 
-    // HeapSize cant handle NULL pointers. If we get one here, it sure is 0.
-    if(!adress)
-    {
-        return 0;
-    }
 
-    if(!pxMemoryHeap)
-    {
-        PXMemoryHeapGetGlobal(&redirectHeap);
-        pxMemoryHeap = &redirectHeap;
-    }
-
-#if OSUnix  || PXMemoryUseFunctionSTD || OSForcePOSIXForWindows
-
-    return _msize(adress);
-
-#elif OSWindows  
-
-    const SIZE_T size = HeapSize(pxMemoryHeap->HeapHandle, 0, adress);
-    const PXActionResult sizeError = PXErrorCurrent((SIZE_T)-1 != size);
-
-    return size;
-#else
-    return 0;
-#endif
-}
-
-void* PXAPI PXMemoryHeapCalloc(PXMemoryHeap* pxMemoryHeap, const PXSize amount, const PXSize objectSize)
-{
-    const PXSize totalAmount = amount * objectSize;
-    PXMemoryHeap redirectHeap;
-    void* adress = PXNull;
-
-    if(!totalAmount)
-    {
-        return PXNull;
-    }
-
-    if(!pxMemoryHeap)
-    {
-        PXMemoryHeapGetGlobal(&redirectHeap);
-        pxMemoryHeap = &redirectHeap;
-    }
-
-#if OSUnix || PXMemoryUseFunctionSTD || OSForcePOSIXForWindows
-    adress = calloc(amount, objectSize);
-#elif OSWindows
-    adress = HeapAlloc(pxMemoryHeap->HeapHandle, HEAP_ZERO_MEMORY, totalAmount); // Windows 2000 SP4, Kernel32.dll, heapapi.h
-#else
-#error Memory allocate seems not to be supported on this OS
-#endif
-
-
-    // Special logging behaviour
-    {
-       // PXSymbolMemory pxSymbolMemory;
-       // pxSymbolMemory.Adress = adress;
-       // pxSymbolMemory.Amount = amount;
-        //pxSymbolMemory.ObjectSize = objectSize;
-
-        PXDebug* pxDebug = PXDebugInstanceGet();
-
-        PXSymbol pxSymbol;
-        PXDebugStackTrace(pxDebug, &pxSymbol, 1, 2, 1);
-
-      //  pxSymbolMemory.ModuleAdress = pxSymbol.ModuleAdress;
-       // PXTextCopyA(pxSymbol.NameFile, 64, pxSymbolMemory.FileAdress, 64);
-       // PXTextCopyA(pxSymbol.NameSymbol, 64, pxSymbolMemory.FunctionAdress, 64);
-       // pxSymbolMemory.LineNumber = pxSymbol.LineNumber;
-
-        //PXMemorySymbolAdd(&pxSymbolMemory, PXMemorySymbolInfoModeAdd);
-
-
-#if PXLogEnable 
-        PXLogPrint
-        (
-            PXLoggingAllocation,
-            PXMemoryLogPrintTitle,
-            PXMemoryLogPrintMemoryCalloc,
-            "<%p> %4ix %4i B %s::%s::%s::%i",
-            adress,
-            amount,
-            objectSize,
-            pxSymbol.NameModule,
-            pxSymbol.NameFile,
-            pxSymbol.NameSymbol,
-            pxSymbol.LineNumber
-        );
-#endif
-    }
-
-    return adress;
-}
-
-void* PXAPI PXMemoryHeapMalloc(PXMemoryHeap* pxMemoryHeap, const PXSize memorySize)
-{
-    PXMemoryHeap redirectHeap;
-    void* adress = PXNull;
-
-    if(!memorySize)
-    {
-        return PXNull;
-    }
-
-    if(!pxMemoryHeap)
-    {
-        PXMemoryHeapGetGlobal(&redirectHeap);
-        pxMemoryHeap = &redirectHeap;
-    }
-
-#if OSUnix || MemoryUseSystemFunction || OSForcePOSIXForWindows
-    adress = malloc(memorySize);
-#elif OSWindows
-    adress = HeapAlloc(pxMemoryHeap->HeapHandle, 0, memorySize); // Windows 2000 SP4, Kernel32.dll, heapapi.h
-#else
-#error Memory allocate seems not to be supported on this OS
-#endif
-
-    // Special logging behaviour
-    {
-        PXSymbolMemory pxSymbolMemory;
-        pxSymbolMemory.Adress = adress;
-        pxSymbolMemory.Amount = 1;
-        pxSymbolMemory.ObjectSize = memorySize;
-
-        PXSymbol pxSymbol;
-
-        PXDebug* pxDebug = PXDebugInstanceGet();
-
-        PXDebugStackTrace(pxDebug, &pxSymbol, 1, 2, 1);
-
-        pxSymbolMemory.ModuleAdress = pxSymbol.ModuleAdress;
-        PXTextCopyA(pxSymbol.NameFile, 64, pxSymbolMemory.FileAdress, 64);
-        PXTextCopyA(pxSymbol.NameSymbol, 64, pxSymbolMemory.FunctionAdress, 64);
-        pxSymbolMemory.LineNumber = pxSymbolMemory.LineNumber;
-
-        //PXMemorySymbolAdd(&pxSymbolMemory, PXMemorySymbolInfoModeAdd);
-
-#if PXLogEnable 
-        PXLogPrint
-        (
-            PXLoggingAllocation,
-            PXMemoryLogPrintTitle,
-            "Memory-Malloc",
-            "<%p> %4ix %4i B %s::%s::%s::%i",
-            adress,
-            pxSymbolMemory.Amount,
-            pxSymbolMemory.ObjectSize,
-            pxSymbol.NameModule,
-            pxSymbol.NameFile,
-            pxSymbol.NameSymbol,
-            pxSymbolMemory.LineNumber
-        );
-#endif
-    }
-
-    return adress;
-}
-
-PXBool PXAPI PXMemoryHeapFree(PXMemoryHeap* pxMemoryHeap, const void* const adress)
-{
-    PXMemoryHeap redirectHeap;
-
-    if(!adress)
-    {
-        return PXFalse;
-    }
-
-    if(!pxMemoryHeap)
-    {
-        PXMemoryHeapGetGlobal(&redirectHeap);
-        pxMemoryHeap = &redirectHeap;
-    }
-
-#if PXLogEnable 
-    const PXSize blockSize = PXMemoryHeapBlockSize(pxMemoryHeap, adress);
-#endif
-
-
-#if OSUnix || MemoryUseSystemFunction || OSForcePOSIXForWindows
-    free(adress);
-#elif OSWindows
-    const PXBool freeResult = HeapFree(pxMemoryHeap->HeapHandle, 0, adress); // Windows 2000 SP4, Kernel32.dll, heapapi.h
-
-
-    // Special logging behaviour
-    {
-#if PXLogEnable 
-        PXSymbolMemory pxSymbolMemory;
-        pxSymbolMemory.Adress = adress;
-        pxSymbolMemory.Amount = -1;
-        pxSymbolMemory.ObjectSize = -1;
-
-        PXSymbol pxSymbol;
-
-        PXDebug* pxDebug = PXDebugInstanceGet();
-
-        PXDebugStackTrace(pxDebug, &pxSymbol, 1, 2, 1);
-
-        pxSymbolMemory.ModuleAdress = pxSymbol.ModuleAdress;
-        PXTextCopyA(pxSymbol.NameFile, 64, pxSymbolMemory.FileAdress, 64);
-        PXTextCopyA(pxSymbol.NameSymbol, 64, pxSymbolMemory.FunctionAdress, 64);
-        pxSymbolMemory.LineNumber = -1;
-
-        //PXMemorySymbolAdd(&pxSymbolMemory, PXMemorySymbolInfoModeRemove);
-
-        PXLogPrint
-        (
-            PXLoggingAllocation,
-            PXMemoryLogPrintTitle,
-            "Memory-Free",
-            "<%p> %4i B %s::%s::%s::%i",
-            adress,
-            blockSize,
-            pxSymbol.NameModule,
-            pxSymbol.NameFile,
-            pxSymbol.NameSymbol,
-            pxSymbolMemory.LineNumber
-        );
-#endif
-    }
-
-    return freeResult;
-
-#else
-#error Memory release seems not to be supported on this OS
-#endif
-}
-
-void* PXAPI PXMemoryHeapRealloc(PXMemoryHeap* pxMemoryHeap, const void* const adress, const PXSize memorySize)
-{
-    PXMemoryHeap redirectHeap;
-    void* newAdress = PXNull;
-    PXBool updatedLocation = PXFalse;
-
-    if(!pxMemoryHeap)
-    {
-        PXMemoryHeapGetGlobal(&redirectHeap);
-        pxMemoryHeap = &redirectHeap;
-    }
-
-#if PXLogEnable 
-    const PXSize blockSizeOLD = PXMemoryHeapBlockSize(pxMemoryHeap, adress);
-#endif
-
-
-#if OSUnix || PXMemoryUseFunctionSTD || OSForcePOSIXForWindows
-    // Function allows NULL as an adress
-    newAdress = realloc(adress, memorySize);
-
-    // clear new allocated space
-    PXSize spaceNewSize = memorySize - blockSizeOLD;
-    char* spaceNewAdress = (char*)newAdress + blockSizeOLD;
-
-    PXMemoryClear(spaceNewAdress, spaceNewSize);
-
-#elif OSWindows
-
-    if(!adress)
-    {
-        void* memory = PXMemoryHeapCalloc(PXNull, 1, memorySize);
-
-        //PXMemorySet(memory, 0xFF, memorySize);
-
-        return memory;
-    }
-
-    newAdress = HeapReAlloc(pxMemoryHeap->HeapHandle, HEAP_ZERO_MEMORY, adress, memorySize); // Windows 2000 SP4, Kernel32.dll, heapapi.h
-    updatedLocation = newAdress != adress;
-
-    // PXMemorySet(newAdress, '°', memorySize - oldSize);
-#else
-#error Memory reallocate seems not to be supported on this OS
-#endif
-
-
-
-#if PXLogEnable 
-    const PXSize blockSizeNEW = PXMemoryHeapBlockSize(pxMemoryHeap, newAdress);
-    const PXOffset offset = blockSizeNEW - blockSizeOLD;
-#endif
-
-
-
-
-#if PXLogEnable
-    // Special logging behaviour
-    {
-        PXSymbolMemory pxSymbolMemory;
-        pxSymbolMemory.Adress = adress;
-        pxSymbolMemory.Amount = memorySize;
-        pxSymbolMemory.ObjectSize = 1;
-
-        PXSymbol pxSymbol;
-
-        PXDebug* pxDebug = PXDebugInstanceGet();
-
-        PXDebugStackTrace(pxDebug, &pxSymbol, 1, 2, 1);
-
-        pxSymbolMemory.ModuleAdress = pxSymbol.ModuleAdress;
-        PXTextCopyA(pxSymbol.NameFile, 64, pxSymbolMemory.FileAdress, 64);
-        PXTextCopyA(pxSymbol.NameSymbol, 64, pxSymbolMemory.FunctionAdress, 64);
-        pxSymbolMemory.LineNumber = -1;
-
-        PXMemorySymbolAdd(&pxSymbolMemory, PXMemorySymbolInfoModeUpdate);
-
-        if(updatedLocation)
-        {
-            PXLogPrint
-            (
-                PXLoggingAllocation,
-                PXMemoryLogPrintTitle,
-                PXMemoryLogPrintMemoryRealloc,
-                "<%p> %i B -> <%p> %i B, (%i), %s::%s::%s::%i",
-                adress,
-                blockSizeOLD,
-                newAdress,
-                blockSizeNEW,
-                offset,
-                pxSymbol.NameModule,
-                pxSymbol.NameFile,
-                pxSymbol.NameSymbol,
-                pxSymbolMemory.LineNumber
-            );
-        }
-        else
-        {
-            PXLogPrint
-            (
-                PXLoggingAllocation,
-                PXMemoryLogPrintTitle,
-                PXMemoryLogPrintMemoryRealloc,
-                "<%p> %i B -> <No-Move> %i B, (%i), %s::%s::%s::%i",
-                adress,
-                blockSizeOLD,
-                blockSizeNEW,
-                offset,
-                pxSymbol.NameModule,
-                pxSymbol.NameFile,
-                pxSymbol.NameSymbol,
-                pxSymbolMemory.LineNumber
-            );
-        }
-    }
-#endif
-
-    return newAdress;
-
-
-}
-
-PXActionResult PXAPI PXMemoryHeapCreate(PXMemoryHeap* const pxMemoryHeap)
-{
-#if OSUnix
-#elif OSWindows
-    pxMemoryHeap->HeapHandle = HeapCreate(NULL, 0, 0); // Windows XP, Kernel32.dll, heapapi.h
-#endif
-
-    return PXActionSuccessful;
-}
-
-PXActionResult PXAPI PXMemoryHeapRelease(PXMemoryHeap* const pxMemoryHeap)
-{
-#if OSUnix
-#elif OSWindows
-    const BOOL result = HeapDestroy(pxMemoryHeap->HeapHandle); // Windows XP, Kernel32.dll, heapapi.h
-#endif
-
-    return PXActionSuccessful;
-}
-
-void PXAPI PXMemoryHeapGetGlobal(PXMemoryHeap* const pxMemoryHeap)
-{
-    pxMemoryHeap->HeapHandle = GetProcessHeap(); // Windows 2000 SP4, Kernel32.dll, heapapi.h
-
-    return PXActionSuccessful;
-}
 
 int PXAPI PXMemoryProtectionIDTranslate(const PXInt8U protectionMode)
 {
@@ -902,8 +526,8 @@ PXInt8U PXAPI PXMemoryCompareSVI8(const char* const stringTarget, char** const s
         PXLogPrint
         (
             PXLoggingAllocation,
-            PXMemoryLogPrintTitle,
-            "SIMD-Compare",
+            PXMemoryCPUName,
+            "Compare",
             "8x char[] vs char[]\n"
             "%-8s %-8s %-8s %-8s %-8s %-8s %-8s %-8s\n"
             "%-8s %-8s %-8s %-8s %-8s %-8s %-8s %-8s",
@@ -935,8 +559,8 @@ PXInt8U PXAPI PXMemoryCompareSVI8(const char* const stringTarget, char** const s
             PXLogPrint
             (
                 PXLoggingAllocation,
-                PXMemoryLogPrintTitle,
-                "SIMD-Compare",
+                PXMemoryCPUName,
+                PXMemoryCPUCompare,
                 "No match in this batch (%i/%i)",
                 roundIndex+1,
                 amount/8
@@ -951,8 +575,8 @@ PXInt8U PXAPI PXMemoryCompareSVI8(const char* const stringTarget, char** const s
         PXLogPrint
         (
             PXLoggingAllocation,
-            PXMemoryLogPrintTitle,
-            "SIMD-Compare",
+            PXMemoryCPUName,
+            PXMemoryCPUCompare,
             "Match found! index:<%i>",
             index
         );
@@ -964,8 +588,8 @@ PXInt8U PXAPI PXMemoryCompareSVI8(const char* const stringTarget, char** const s
     PXLogPrint
     (
         PXLoggingAllocation,
-        PXMemoryLogPrintTitle,
-        "SIMD-Compare",
+        PXMemoryCPUName,
+        PXMemoryCPUCompare,
         "Absolutly no match found"
     );
 
@@ -1366,388 +990,64 @@ void PXAPI PXMemoryPageInfoFetch(PXMemoryPageInfo* const pxFilePageFileInfo, con
     }
 }
 
-void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize* const createdSize, const PXAccessMode pxAccessMode)
-{
-    PXMemoryPageInfo pxFilePageFileInfo;
-    PXSize recievedSize = 0;
-
-    PXMemoryPageInfoFetch(&pxFilePageFileInfo, size);
-
-    // Calculate if large pages shall be used
-    const PXBool usePagesLarge = pxFilePageFileInfo.PageAmountLarge > 1;
-    const PXBool usePagesHuge = pxFilePageFileInfo.PageAmountHuge > 1;
-
-#if PXLogEnable
-    const char* text = "Normal";
-
-    if(usePagesLarge)
-    {
-        text = "Large";
-    }
-
-    if(usePagesHuge)
-    {
-        text = "Huge";
-    }
-
-
-    PXText pxTextPageSizeNormal;
-    PXText pxTextPageSizeLarge;
-    PXText pxTextPageSizeHuge;
-
-    PXTextConstructNamedBufferA(&pxTextPageSizeNormal, pxTextPageSizeNormalBuffer, 32);
-    PXTextConstructNamedBufferA(&pxTextPageSizeLarge, pxTextPageSizeLargeBuffer, 32);
-    PXTextConstructNamedBufferA(&pxTextPageSizeHuge, pxTextPageSizeHugeBuffer, 32);
-
-    PXTextFormatSize(&pxTextPageSizeNormal, pxFilePageFileInfo.PageSizeNormal);
-    PXTextFormatSize(&pxTextPageSizeLarge, pxFilePageFileInfo.PageSizeLarge);
-    PXTextFormatSize(&pxTextPageSizeHuge, pxFilePageFileInfo.PageSizeHuge);
-
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXMemoryLogPrintTitle,
-        "Virtual-Alloc",
-        "Allocating space for %i...\n"
-        "%20s : %6s -> %3i%% %3ix\n"
-        "%20s : %6s -> %3i%% %3ix\n"
-        "%20s : %6s -> %3i%% %3ix\n"
-        "%20s : %s",
-        size,
-        "Normal-PageSize", pxTextPageSizeNormal.TextA,(int)pxFilePageFileInfo.PageUtilizationNormal, pxFilePageFileInfo.PageAmountNormal,
-        "Large-PageSize", pxTextPageSizeLarge.TextA, (int)pxFilePageFileInfo.PageUtilizationLarge, pxFilePageFileInfo.PageAmountLarge,
-        "Huge-PageSize", pxTextPageSizeHuge.TextA, (int)pxFilePageFileInfo.PageUtilizationHuge, pxFilePageFileInfo.PageAmountHuge, 
-        "Targeted type", text
-    );
-#endif
-
-
-
-    // Special behaviour if the object size is 0.
-    // Ofcourse it would make no sense to create an object with 
-    // a size of zero but lets assume we mean to just create one 
-    // page for general useage
-    if(0 == size)
-    {
-        size = pxFilePageFileInfo.PageSizeNormal;
-    }
-
-
-
-
-
-
-#if OSUnix
-    // PROT_READ, PROT_WRITE = read&write permission
-    // MAP_PRIVATE           = only for this process
-    // MAP_ANONYMOUS         = no attached file, aka. "in memory"
-    // MAP_POPULATE          = Preallocate, if not, we could get a SEGVAULT later if memory is suddenly not avalible
-    int permission = PROT_READ | PROT_WRITE;
-    int mode =
-        MAP_PRIVATE |
-        MAP_ANONYMOUS |
-        MAP_POPULATE; // Will be ignored if not spesifcally enabled
-
-    PXBool useLargePage = usePagesLarge && !usePagesHuge;
-
-#if 0 // MAP_UNINITIALIZED not public??
-    if(0) // Dont clear memory, can improve performance but will be ignored if not directly enabled. Safty reasons.
-    {
-        mode |= MAP_UNINITIALIZED;
-    }
-#endif
-
-    if(useLargePage) // Create large page
-    {
-        mode |= MAP_HUGETLB | MAP_HUGE_2MB;
-    }
-
-    if(usePagesHuge) // Create huge page
-    {
-        mode |= MAP_HUGETLB | MAP_HUGE_1GB;
-    }
-
-    for(;;)
-    {
-        pxFile->Data = mmap(NULL, pxFileIOInfo->FileSizeRequest, permission, mode, -1, 0);
-        const PXActionResult allocResult = PXErrorCurrent(MAP_FAILED != pxFile->Data);
-
-        if(PXActionSuccessful == allocResult)
-        {
-            break;
-        }
-
-        // Did we do a normal allocation?
-        if(!useLargePage && !usePagesHuge)
-        {
-#if PXLogEnable
-            PXLogPrint
-            (
-                PXLoggingError,
-                "File",
-                "Open-Virtual",
-                "Allocation failed! -> mmap()"
-            );
-#endif
-
-            pxFile->Data = PXNull;
-            pxFile->DataUsed = 0;
-            pxFile->DataAllocated = 0;
-
-
-            break;
-        }
-
-
-        // Try to recover to a normal page
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingWarning,
-            "File",
-            "Open-Virtual",
-            "Allocation failed! We try again..."
-        );
-#endif
-
-
-        if(useLargePage)
-        {
-            mode &= ~(MAP_HUGETLB | MAP_HUGE_2MB);
-            useLargePage = PXFalse;
-        }
-        if(usePagesHuge)
-        {
-            mode &= ~(MAP_HUGETLB | MAP_HUGE_1GB);
-            useLargePage = PXTrue;
-        }
-    }
-
-
-
-#elif OSWindows
-
-    DWORD permissions = PAGE_READWRITE;
-    DWORD mode =
-        MEM_RESERVE |
-        MEM_COMMIT;
-
-    if(usePagesLarge)
-    {
-        mode |= MEM_LARGE_PAGES;
-
 #if OSWindows
-        // A call to VirtualAlloc() with MEM_LARGE_PAGES
-        // WILL normally fail, because we dont have permissions..?
-        // We have permissions, it is only disabled by default.
+#include <PX/OS/Async/PXThreadPool.h>
 
+PXBool isChecked = 0;
 
-
-       // AddPrivileges();
-
-
-
-
-        TOKEN_PRIVILEGES privileges;
-        HANDLE hToken;
-        LUID luid;
-
-
-
-        // Open the process token
-        const BOOL openTokenID = OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken);
-        const PXActionResult openTokenResult = PXErrorCurrent(openTokenID);
-
-
-        const BOOL lookupSuccess = LookupPrivilegeValue(NULL, SE_LOCK_MEMORY_NAME, &luid); // SeLockMemoryPrivilege
-        const PXActionResult lookupSuccessResult = PXErrorCurrent(lookupSuccess);
-
-        privileges.PrivilegeCount = 1;
-        privileges.Privileges[0].Luid = luid;
-        privileges.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
-
-        const BOOL privilgeResultID = AdjustTokenPrivileges
-        (
-            hToken,
-            FALSE,
-            &privileges,
-            sizeof(TOKEN_PRIVILEGES),
-            PXNull,
-            PXNull
-        );
-        const PXActionResult privilgeResult = PXErrorCurrent(privilgeResultID);
-
-        CloseHandle(hToken);
-#endif
-
-
-        // Adjust allocation size to be EXACTLY a multible of the page size
-        // The documentation states it will be rounded up, this is true.
-        // Except if we add the MEM_LARGE_PAGES flag, because microsoft.
-        size = pxFilePageFileInfo.PageSizeLarge * pxFilePageFileInfo.PageAmountLarge;
-    }
-
-    // TODO: huge pages do not exist? We cant do them then.
-
-    void* allocatedData = VirtualAlloc(PXNull, size, mode, permissions);
-    const PXActionResult allocResult = PXErrorCurrent(0 < allocatedData);
-
-    if(PXActionSuccessful != allocResult)
-    {
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingError,
-            PXMemoryLogPrintTitle,
-            PXMemoryLogPrintMemory,
-            "Virtual-Alloc failed! -> VirtualAlloc()"
-        );
-#endif
-
-        return PXNull;
-    }
-
-
-    MEMORY_BASIC_INFORMATION memoryInfo;
-    PXClear(MEMORY_BASIC_INFORMATION, &memoryInfo);
-
-    VirtualQuery(allocatedData, &memoryInfo, sizeof(MEMORY_BASIC_INFORMATION));
-
-    recievedSize = memoryInfo.RegionSize;
-
-#endif
-
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingAllocation,
-        PXMemoryLogPrintTitle,
-        PXMemoryLogPrintMemoryVirtualAlloc,
-        "VirtualAlloc <%p> Requested:<%i>, Got:<%i>",
-        allocatedData,
-        size,
-        recievedSize
-    );
-#endif
-
-    if(createdSize)
-    {
-        *createdSize = recievedSize;
-    }
-
-    return allocatedData;
-}
-
-void PXAPI PXMemoryVirtualPrefetch(const void* adress, const PXSize size)
+void PXAPI PXWindowsCheckPermission()
 {
-#if OSUnix
-#elif OSWindows
-#if WindowsAtleast8 && PXOSWindowsDestop
-    const HANDLE process = GetCurrentProcess();
-    const PXSize numberOfEntries = 2;
-    WIN32_MEMORY_RANGE_ENTRY memoryRangeEntry;
-    const PXSize flags = 0; // reserved and needs to be 0
+    // A call to VirtualAlloc() with MEM_LARGE_PAGES
+       // WILL normally fail, because we dont have permissions..?
+       // We have permissions, it is only disabled by default.
 
-    memoryRangeEntry.VirtualAddress = (void*)adress;
-    memoryRangeEntry.NumberOfBytes = size;
 
-    //const bool prefetchResult = PrefetchVirtualMemory(process, numberOfEntries, &memoryRangeEntry, flags); // Windows 8, Kernel32.dll, memoryapi.h
 
-#if PXLogEnable
-    PXText pxTextSize;
-    PXTextConstructNamedBufferA(&pxTextSize, pxTextBuffer, 32);
-    PXTextFormatSize(&pxTextSize, size);
+      // AddPrivileges();
 
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        "Memory",
-        "Prefetch",
-        "<%p> %s",
-        adress,
-        pxTextSize.TextA
-    );
-#endif
-
-#else
-    // Not supported function
-#endif
-#else
-
-#if MemoryDebug
-    printf("[#][Memory] 0x%p (%10zi B) Pre-Fetched [NOT SUPPORTED] Skipped...\n", adress, size);
-#endif
-#endif
-}
-
-PXActionResult PXAPI PXMemoryVirtualRelease(const void* adress, const PXSize size)
-{
-    if(!(adress && size))
+    if(isChecked)
     {
-        return PXActionRefusedArgumentNull;
+        return;
     }
 
-#if PXLogEnable && PXMemoryDebug
-    PXLogPrint
+
+
+    TOKEN_PRIVILEGES privileges;
+    HANDLE hToken;
+    LUID luid;
+
+
+
+    // Open the process token
+    const BOOL openTokenID = OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken);
+    const PXActionResult openTokenResult = PXErrorCurrent(openTokenID);
+
+
+    const BOOL lookupSuccess = LookupPrivilegeValue(NULL, SE_LOCK_MEMORY_NAME, &luid); // SeLockMemoryPrivilege, NOT THREAD SAFE!
+    const PXActionResult lookupSuccessResult = PXErrorCurrent(lookupSuccess);
+
+    privileges.PrivilegeCount = 1;
+    privileges.Privileges[0].Luid = luid;
+    privileges.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
+
+    const BOOL privilgeResultID = AdjustTokenPrivileges
     (
-        PXLoggingDeallocation,
-        PXMemoryLogPrintTitle,
-        PXMemoryLogPrintMemoryVirtualFree,
-        "<%p> Size:%i",
-        adress,
-        size
+        hToken,
+        FALSE,
+        &privileges,
+        sizeof(TOKEN_PRIVILEGES),
+        PXNull,
+        PXNull
     );
-#endif
+    const PXActionResult privilgeResult = PXErrorCurrent(privilgeResultID);
 
-#if OSUnix
-    const int resultID = munmap(adress, size); // sys/mman.h
-    const PXActionResult unmapResult = PXErrorCurrent(0 == resultID);
+    CloseHandle(hToken);
 
-    return unmapResult;
-
-#elif OSWindows
-    DWORD freeType = MEM_RELEASE;
-    const PXBool freeResultID = VirtualFree((void*)adress, 0, freeType); // Windows XP (+UWP), Kernel32.dll, memoryapi.h
-    const PXActionResult freeResult = PXErrorCurrent(freeResultID);
-
-    return freeResult;
-#else
-    return PXActionRefusedNotSupportedByLibrary;
-#endif
+    isChecked = 1;
 }
-
-void* PXAPI PXMemoryVirtualReallocate(const void* adress, const PXSize size)
-{
-    const PXBool newAllocation = adress == PXNull;
-
-    if (newAllocation)
-    {
-        return PXMemoryVirtualAllocate(size, PXNull, PXAccessModeReadAndWrite);
-    }
-
-#if OSUnix
-    return PXNull;
-#elif OSWindows
-
-    // Create new pages
-    void* newSpaceMemory = PXMemoryVirtualAllocate(size, PXNull, PXAccessModeReadAndWrite);
-
-    // Get size of current adress
-    MEMORY_BASIC_INFORMATION memoryInfo;    
-    VirtualQuery(adress, &memoryInfo, sizeof(MEMORY_BASIC_INFORMATION));
-
-    // Copy data to new pages
-    PXMemoryCopy(adress, memoryInfo.RegionSize, newSpaceMemory, memoryInfo.RegionSize);
-
-    // Delete old pages
-    PXMemoryVirtualRelease(adress, memoryInfo.RegionSize);
-
-    return newSpaceMemory;
-#else
-    return PXNull;
 #endif
 
-}
+
 
 #define PXMemoryUseStackAllocation 0
 
