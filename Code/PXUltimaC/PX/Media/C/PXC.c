@@ -4,6 +4,7 @@
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/Media/PXText.h>
 #include <PX/Media/PXDocument.h>
+#include <PX/OS/PXOS.h>
 
 #define PXCDebugOutput 1
 

@@ -4,6 +4,7 @@
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/OS/File/PXFile.h>
 #include <PX/Media/X86/PXX86.h>
+#include <PX/OS/PXOS.h>
 
 //#include <assert.h>
 

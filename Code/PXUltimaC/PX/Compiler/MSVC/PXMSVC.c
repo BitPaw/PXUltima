@@ -3,6 +3,7 @@
 #include <PX/OS/Bash/PXBash.h>
 #include <PX/Media/PXText.h>
 #include <PX/OS/Memory/PXMemory.h>
+#include <PX/OS/PXOS.h>
 
 const char inlcudeList[] =
 "C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/Tools/MSVC/14.40.33807/include\0"

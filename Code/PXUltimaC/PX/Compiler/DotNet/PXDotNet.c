@@ -14,18 +14,19 @@
 
 // This is not set as a directive, hardcoded, not good
 
-#include "C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Host.win-x64/8.0.15/runtimes/win-x64/native/nethost.h"
-#include "C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Host.win-x64/8.0.15/runtimes/win-x64/native/coreclr_delegates.h"
-#include "C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Host.win-x64/8.0.15/runtimes/win-x64/native/hostfxr.h"
+#include "C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Host.win-x64/8.0.16/runtimes/win-x64/native/nethost.h"
+#include "C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Host.win-x64/8.0.16/runtimes/win-x64/native/coreclr_delegates.h"
+#include "C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Host.win-x64/8.0.16/runtimes/win-x64/native/hostfxr.h"
 #include "coreclrhost.h"
 
-#pragma comment(lib, "C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Host.win-x64/8.0.15/runtimes/win-x64/native/nethost.lib")
+#pragma comment(lib, "C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Host.win-x64/8.0.16/runtimes/win-x64/native/nethost.lib")
 
 #endif
 
 
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/OS/File/PXDirectory.h>
+#include <PX/OS/PXOS.h>
 
 const char CSharpCoreClrPath[] = "C:/Program Files/dotnet/shared/Microsoft.NETCore.App";
 const PXInt8U CSharpCoreClrPathSize = sizeof(CSharpCoreClrPath)-1;
@@ -35,7 +36,7 @@ const char PXDotNetName[] = ".NET";
 
 //"nethost.dll";
 const char PXDotNetNetHost[] =
-"C:\\Program Files\\dotnet\\packs\\Microsoft.NETCore.App.Host.win-x64\\8.0.13\\runtimes\\win-x64\\native\\nethost.dll";
+"C:\\Program Files\\dotnet\\packs\\Microsoft.NETCore.App.Host.win-x64\\8.0.16\\runtimes\\win-x64\\native\\nethost.dll";
 const char PXDotNetFunc[] = "get_hostfxr_path";
 
 typedef int (NETHOST_CALLTYPE* PXget_hostfxr_path)(char_t* buffer, size_t* buffer_size, const struct get_hostfxr_parameters* parameters);

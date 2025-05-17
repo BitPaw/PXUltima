@@ -8,6 +8,7 @@
 #include <PX/Math/PXMath.h>
 #include <PX/Media/Huffman/PXHuffman.h>
 #include <PX/Media/LZ77/PXLZ77.h>
+#include <PX/OS/PXOS.h>
 
 
 #define FIRST_LENGTH_CODE_INDEX 257

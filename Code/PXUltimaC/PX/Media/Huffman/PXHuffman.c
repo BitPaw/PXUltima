@@ -3,6 +3,7 @@
 #include <PX/Math/PXMath.h>
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/OS/File/PXFile.h>
+#include <PX/OS/PXOS.h>
 
 #include <stdlib.h>
 
