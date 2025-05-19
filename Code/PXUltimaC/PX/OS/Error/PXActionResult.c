@@ -165,7 +165,7 @@ PXActionResult PXAPI PXErrorCurrent(const PXBool wasSuccessful)
 
     if(80 != errorID)
     {
-        DebugBreak();
+        //DebugBreak();
     }
 
 

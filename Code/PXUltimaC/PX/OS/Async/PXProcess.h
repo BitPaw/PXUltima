@@ -99,7 +99,6 @@ PXProcessCreationMode;
 
 typedef void (PXAPI* PXProcessDetectedEvent)(PXProcess* const pxProcess);
 
-PXPublic void PXAPI PXProcessConstruct(PXProcess* const pxProcess);
 #if OSWindows
 PXPublic void PXAPI PXProcessConstructFromHandle(PXProcess* const pxProcess, HANDLE processHandle);
 #endif
@@ -124,9 +123,6 @@ PXPublic PXActionResult PXAPI PXProcessThreadsListAll(PXProcess* const pxProcess
 
 PXPublic PXActionResult PXAPI PXProcessOpenViaID(PXProcess* const pxProcess, const PXProcessID pxProcessID);
 PXPublic PXActionResult PXAPI PXProcessClose(PXProcess* const pxProcess);
-
-PXPublic PXActionResult PXAPI PXProcessMemoryWrite(const PXProcess* const pxProcess, const void* const targetAdress, const void* const buffer, const PXSize bufferSize);
-PXPublic PXActionResult PXAPI PXProcessMemoryRead(const PXProcess* const pxProcess, const void* const targetAdress, void* const buffer, const PXSize bufferSize);
 
 PXPublic PXActionResult PXAPI PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemoryInfo);
 

@@ -30,28 +30,18 @@ typedef PXThreadResult(PXOSAPI* ThreadFunction)(void* const data);
 
 // PXThreadState
 
-#define PXExecuteStateMask (0b00000000000000000000001111111111)
-#define PXExecuteStateInvalid     1<<0 // Resource does not exist. Not created or deleted
-#define PXExecuteStateIDLE        1<<1 // Resource is not doing anything, ready to be used
-#define PXExecuteStateInit        1<<2 // Resource is inizialized and ready to be executed
-#define PXExecuteStateDibs        1<<3 // Resource is taken by a handler and will be executed
-#define PXExecuteStateRunning     1<<4 // Resource is currently running
-#define PXExecuteStateWaiting     1<<5 // Resource waits for another resource
-#define PXExecuteStateSuspended   1<<6 // Resource 
-#define PXExecuteStateFailed      1<<7
-#define PXExecuteStateFinished    1<<8 // Resource is done
-#define PXExecuteStateStale       1<<9 // Resource is done
+#define PXExecuteStateMask (0x00FF0000)
+#define PXExecuteStateInvalid     0<<16 // Resource does not exist. Not created or deleted
+#define PXExecuteStateReady       1<<16 // Resource is inizialized ready to be used
+#define PXExecuteStateReserve     2<<16 // Resource is taken by a handler and will be executed
+#define PXExecuteStateRunning     3<<16 // Resource is currently running
+#define PXExecuteStateWaiting     4<<16 // Resource waits for another resource
+#define PXExecuteStateSuspended   5<<16 // Resource 
+#define PXExecuteStateFailed      6<<16
+#define PXExecuteStateFinished    7<<16 // Resource is done
 
-typedef enum PXThreadState_
-{
-    PXThreadStateInvalid   = PXExecuteStateInvalid,
-    PXThreadStateSleeping  = PXExecuteStateIDLE,
-    PXThreadStateInit      = PXExecuteStateInit,
-    PXThreadStateRunning   = PXExecuteStateRunning,
-    PXThreadStateWaiting   = PXExecuteStateWaiting,
-    PXThreadStateSuspended = PXExecuteStateSuspended
-}
-PXThreadState;
+PXPublic const char* PXExecuteStateToString(const PXInt32U behaviour);
+
 
 
 // Windows : priority
@@ -146,7 +136,7 @@ PXTask;
 
 
 void PXAPI PXTaskStateChange(PXTask* const pxTask, const PXInt32U newState);
-
+void PXAPI PXTaskStateChangeRemote(PXThreadPool* pxThreadPool, PXTask* const pxTask, const PXInt32U newState);
 
 
 
@@ -213,7 +203,7 @@ PXPublic PXActionResult PXAPI PXThreadPrioritySet(PXThread* pxThread, const PXTh
 PXPublic PXActionResult PXAPI PXThreadPriorityGet(PXThread* pxThread, PXThreadPriorityMode* const pxThreadPriorityMode);
 
 // Change the current thread state to the wanted state if possible.
-PXPublic PXActionResult PXAPI PXThreadStateChange(PXThread* const pxThread, const PXThreadState pxThreadState);
+PXPublic PXActionResult PXAPI PXThreadStateChange(PXThread* const pxThread, const PXInt32U pxThreadState);
 
 PXPublic PXActionResult PXAPI PXThreadSleep(PXThread* const pxThread, const PXSize sleepTime);
 
@@ -221,7 +211,5 @@ PXPublic PXActionResult PXAPI PXThreadCurrentProcessorID(PXInt32U* const process
 
 PXPublic PXActionResult PXAPI PXThreadNameSet(PXThread* pxThread, PXText* const threadName);
 PXPublic PXActionResult PXAPI PXThreadNameGet(struct PXDebug_* const pxDebug, PXThread* const pxThread, PXText* const threadName);
-
-PXPublic PXActionResult PXAPI PXThreadCurrent(PXThread* const pxThread);
 
 #endif

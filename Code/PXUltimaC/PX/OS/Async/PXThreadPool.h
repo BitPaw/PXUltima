@@ -33,14 +33,17 @@ typedef struct PXThreadPool_
     PXInt32U Flags;
 
     PXInt32U TaskCounter;
+    PXInt32U TaskCounterDone;
 }
 PXThreadPool;
 
-PXPrivate PXTask* PXAPI PXThreadPoolTaskNextWorkGet(PXThreadPool* pxThreadPool);
+PXPrivate PXBool PXAPI PXThreadPoolTaskNextWorkGet(PXThreadPool* pxThreadPool, PXTask* const pxTask);
 PXPrivate PXTask* PXAPI PXThreadPoolTaskNextFreeGet(PXThreadPool* pxThreadPool, void* function, void* parameter1, void* parameter2, const PXInt32U behaviour);
 
-PXPrivate PXThread* PXAPI PXThreadPoolThreadSelf(PXThreadPool* const pxThreadPool);
-PXPrivate PXActionResult PXAPI PXThreadPoolTaskInvoke(PXTask* const pxTask);
+// Function WILL copy thread for thread-safety as data could be moved without notice
+// struct shall not be modified, use the threadpool
+PXPrivate PXActionResult PXAPI PXThreadPoolThreadSelf(PXThreadPool* const pxThreadPool, PXThread* const pxThread);
+PXPrivate PXActionResult PXAPI PXThreadPoolTaskInvoke(PXThreadPool* const pxThreadPool, PXTask* const pxTask);
 
 
 PXPublic PXBool PXAPI PXThreadPoolIsMainThread();
@@ -56,7 +59,12 @@ PXPublic void PXAPI PXThreadPoolWaking(PXThreadPool* pxThreadPool);
 // If not a task will be created internally.
 PXPublic PXActionResult PXAPI PXThreadPoolQueueWork(PXThreadPool* const pxThreadPool, void* function, void* parameter1, void* parameter2, const PXInt32U behaviour);
 PXPublic PXActionResult PXAPI PXThreadPoolQueueTask(PXThreadPool* const pxThreadPool, PXTask* const pxTask);
-PXPublic PXActionResult PXAPI PXThreadPoolWaitForAll(PXThreadPool* const pxThreadPool, const PXBool cancelRunning);
+
+// Prepares an amount of tasks, optionally write IDs of the tasks into a list to wait for later
+PXPublic PXActionResult PXAPI PXThreadPoolQueuePrepare(PXThreadPool* pxThreadPool, PXInt32U** listIDs, const PXSize amount);
+
+PXPublic PXActionResult PXAPI PXThreadPoolWaitForAll(PXThreadPool* pxThreadPool, const PXBool cancelRunning);
+PXPublic PXActionResult PXAPI PXThreadPoolWaitForSpesific(PXThreadPool* pxThreadPool, PXInt32U* listIDs, const PXSize amount, const PXBool cancelRunning);
 
 
 // Call this function in the main thread for syncronous functions

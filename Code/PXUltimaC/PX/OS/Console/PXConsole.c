@@ -374,9 +374,7 @@ void PXAPI PXConsoleWriteWithColorCodes(PXText* const bufferInput)
             {
                 PXConsoleWrite(bufferInput->SizeUsed - i, &bufferInput->TextA[i]);
 
-                PXLockRelease(&_GLOBALCosolePrintLock);
-
-                return; // DONE
+                break; // DONE
             }
 
             PXConsoleWrite(offset, &bufferInput->TextA[i]);
@@ -623,8 +621,6 @@ void PXAPI PXLogEnableASYNC()
 
 void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source, const char* const action, const char* const format, ...)
 {
-   // return;
-
     char loggingTypeSymbol;
 
     char symbolColor = '7';

@@ -17,16 +17,13 @@
 #include <PX/OS/Async/PXThread.h>
 #include <PX/OS/File/PXFile.h>
 #include <PX/OS/Debug/PXDebug.h>
+#include <PX/OS/PXOS.h>
 
-void PXAPI PXProcessConstruct(PXProcess* const pxProcess)
-{
-    PXClear(PXProcess, pxProcess);
-}
 
 #if OSWindows
 void PXAPI PXProcessConstructFromHandle(PXProcess* const pxProcess, HANDLE processHandle)
 {
-    PXProcessConstruct(pxProcess);
+    PXClear(PXProcess, pxProcess);
 
 #if WindowsAtleastXP
     pxProcess->ProcessID = GetProcessId(processHandle); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
@@ -34,27 +31,9 @@ void PXAPI PXProcessConstructFromHandle(PXProcess* const pxProcess, HANDLE proce
 }
 #endif
 
-void PXAPI PXProcessCurrent(PXProcess* const pxProcess)
-{
-    PXProcessConstruct(pxProcess);
-
-#if OSUnix
-    pxProcess->ThreadHandle = 0;
-    pxProcess->ProcessID = getpid();
-#elif OSWindows
-    // Returns a pseudo handle to the current process. Its -1 but may change in feature versions.
-    pxProcess->ProcessHandle = GetCurrentProcess(); // Windows 2000 SP4, Kernel32.dll, processthreadsapi.h
-
-#if WindowsAtleastXP
-    pxProcess->ProcessID = GetProcessId(pxProcess->ProcessHandle); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
-#endif
-
-#endif
-}
-
 void PXAPI PXProcessParent(PXProcess* const pxProcess)
 {
-    PXProcessConstruct(pxProcess);
+    PXClear(PXProcess, pxProcess);
 
 #if OSUnix
     pxProcess->ProcessHandle = 0;
@@ -506,7 +485,7 @@ PXActionResult PXAPI PXProcessHandleListAll(PXDebug* const pxDebug, PXProcess* p
 
 PXActionResult PXAPI PXProcessCreate(PXProcess* const pxProcess, const PXText* const programmPath, const PXProcessCreationMode mode)
 {
-    PXProcessConstruct(pxProcess);
+    PXClear(PXProcess, pxProcess);
 
     switch (programmPath->Format)
     {
@@ -730,7 +709,7 @@ PXActionResult PXAPI PXProcessThreadsListAll(PXProcess* const pxProcess, PXThrea
     PXSymbol pxSymbol[6];
 
 
-    PXDebugStackTrace(pxDebug, pxSymbol, 6, 0, 6);
+    PXSymbolStackTrace(pxSymbol, 6, 0, 6);
     PXDebugHeapMemoryList(pxDebug);
 
 
@@ -745,7 +724,7 @@ PXActionResult PXAPI PXProcessThreadsListAll(PXProcess* const pxProcess, PXThrea
 
 PXActionResult PXAPI PXProcessOpenViaID(PXProcess* const pxProcess, const PXProcessID pxProcessID)
 {
-    PXProcessConstruct(pxProcess);
+    PXClear(PXProcess, pxProcess);
 
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -782,63 +761,6 @@ PXActionResult PXAPI PXProcessClose(PXProcess* const pxProcess)
     }
 
     pxProcess->ProcessHandle = PXNull;
-
-    return PXActionSuccessful;
-#else
-    return PXActionNotSupportedByOperatingSystem;
-#endif
-}
-
-PXActionResult PXAPI PXProcessMemoryWrite(const PXProcess* const pxProcess, const void* const targetAdress, const void* const buffer, const PXSize bufferSize)
-{
-#if OSUnix
-    return PXActionRefusedNotImplemented;
-#elif PXOSWindowsDestop
-    SIZE_T numberOfBytesRead;
-
-    const BOOL successful = WriteProcessMemory // Windows XP, Kernel32.dll, memoryapi.h
-                            (
-                                pxProcess->ProcessHandle,
-                                (LPVOID)targetAdress,
-                                buffer,
-                                bufferSize,
-                                &numberOfBytesRead
-                            );
-    const PXActionResult pxActionResult = PXErrorCurrent(successful);
-
-    if(PXActionSuccessful != pxActionResult)
-    {
-        return pxActionResult;
-    }
-
-    return PXActionSuccessful;
-#else
-    return PXActionNotSupportedByOperatingSystem;
-#endif
-}
-
-PXActionResult PXAPI PXProcessMemoryRead(const PXProcess* const pxProcess, const void* const targetAdress, void* const buffer, const PXSize bufferSize)
-{
-#if OSUnix
-    return PXActionRefusedNotImplemented;
-
-#elif PXOSWindowsDestop
-    SIZE_T numberOfBytesRead;
-
-    const BOOL successful = ReadProcessMemory // Windows XP, Kernel32.dll, memoryapi.h
-                            (
-                                pxProcess->ProcessHandle,
-                                targetAdress,
-                                buffer,
-                                bufferSize,
-                                &numberOfBytesRead
-                            );
-    const PXActionResult pxActionResult = PXErrorCurrent(successful);
-
-    if(PXActionSuccessful != pxActionResult)
-    {
-        return pxActionResult;
-    }
 
     return PXActionSuccessful;
 #else
