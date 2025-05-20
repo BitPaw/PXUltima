@@ -1,6 +1,7 @@
 #include "PXDocument.h"
 
 #include <PX/OS/Console/PXConsole.h>
+#include <PX/OS/PXOS.h>
 
 PXDocumentElementType PXAPI PXDocumentElementAnalyseElement(const char* name, const PXSize nameSize)
 {

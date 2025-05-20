@@ -4,6 +4,7 @@
 #include <PX/Compiler/PXCompiler.h>
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/Media/LZ4/PXLZ4.h>
+#include <PX/OS/PXOS.h>
 
 // Logging
 const char PXUSDName[] = "USD";

@@ -5,6 +5,7 @@
 #include <PX/Media/PXImage.h>
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/Compiler/PXCompiler.h>
+#include <PX/OS/PXOS.h>
 
 void PXAPI PXSpriteFontParseInfo(PXSpriteFont* const pxSpriteFont, PXCompiler* const pxCompiler, PXFont* const pxFont);
 void PXAPI PXSpriteFontParseCommon(PXSpriteFont* const pxSpriteFont, PXCompiler* const pxCompiler, PXFont* const pxFont);

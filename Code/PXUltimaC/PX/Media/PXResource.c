@@ -6,6 +6,7 @@
 #include <PX/OS/Time/PXStopWatch.h>
 #include <PX/OS/Hardware/PXProcessor.h>
 #include <PX/OS/File/PXFile.h>
+#include <PX/OS/PXOS.h>
 
 #include "Autodesk3DS/PXAutodesk3DS.h"
 #include "AAC/PXAAC.h"
@@ -1754,7 +1755,8 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
             PXThreadPoolQueueWork
             (
                 PXNull,
-                PXResourceManagerAdd,
+                0,
+                PXResourceManagerAdd,             
                 pxResourceCreateInfoASYNC,
                 PXNull,
                 PXTaskParameterRelease | PXTaskExecuteASYNC

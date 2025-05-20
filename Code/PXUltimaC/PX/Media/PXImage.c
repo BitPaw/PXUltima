@@ -12,6 +12,7 @@
 #include <PX/Media/TGA/PXTGA.h>
 #include <PX/Media/TIFF/PXTIFF.h>
 #include <PX/Media/SpriteFont/PXSpriteFont.h>
+#include <PX/OS/PXOS.h>
 
 void PXAPI PXImageDestruct(PXImage* const image)
 {

@@ -1,6 +1,7 @@
 #include "PXTTF.h"
 
 #include <PX/OS/File/PXFile.h>
+#include <PX/OS/PXOS.h>
 
 PXPlatformID PXAPI PXTTFPlatformFromID(const PXInt16U platformID)
 {

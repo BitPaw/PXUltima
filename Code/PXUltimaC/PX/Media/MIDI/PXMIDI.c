@@ -1,6 +1,7 @@
 #include "PXMIDI.h"
 
 #include <PX/OS/File/PXFile.h>
+#include <PX/OS/PXOS.h>
 
 const static char PXMIDITrackHeaderID[4] = { 'M','T','h','d' };
 const static char PXMIDITrackChunkID[4] = { 'M','T','r','k' };

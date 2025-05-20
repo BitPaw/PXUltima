@@ -2289,7 +2289,8 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
                 PXThreadPoolQueueWork
                 (
                     PXNull,
-                    pxEngine->Graphic.ModelRegister,
+                    0,
+                    pxEngine->Graphic.ModelRegister,               
                     pxEngine->Graphic.EventOwner,
                     pxModel,
                     PXTaskExecuteSYNC | PXTaskDepended
@@ -2435,6 +2436,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
                 PXThreadPoolQueueWork
                 (
                     PXNull,
+                    0,
                     pxEngine->Graphic.TextureAction,
                     pxEngine->Graphic.EventOwner,
                     pxGraphicTexturInfo,

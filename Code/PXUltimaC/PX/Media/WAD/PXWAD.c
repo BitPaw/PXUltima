@@ -4,6 +4,7 @@
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/Media/ZSTD/PXZSTD.h>
 #include <PX/OS/Async/PXThreadPool.h>
+#include <PX/OS/PXOS.h>
 
 const char PXWADText[] = "WAD";
 
@@ -109,8 +110,8 @@ PXActionResult PXAPI PXWADEntryHandle(PXWADEntry* const pxWADEntry, PXFile* cons
     switch(pxWADEntry->DataType)
     {
         case PXWADEntryDataTypeUncompressedData:
-        {
-#if PXLogEnable
+        { 
+#if PXLogEnable && 0
             PXLogPrint
             (
                 PXLoggingInfo,
@@ -128,7 +129,7 @@ PXActionResult PXAPI PXWADEntryHandle(PXWADEntry* const pxWADEntry, PXFile* cons
         case PXWADEntryDataTypegzip:
         {
 
-#if PXLogEnable
+#if PXLogEnable && 0
             PXLogPrint
             (
                 PXLoggingInfo,
@@ -142,7 +143,7 @@ PXActionResult PXAPI PXWADEntryHandle(PXWADEntry* const pxWADEntry, PXFile* cons
         }
         case PXWADEntryDataTypeFileRedirection:
         {
-#if PXLogEnable
+#if PXLogEnable && 0
             PXLogPrint
             (
                 PXLoggingInfo,
@@ -158,7 +159,7 @@ PXActionResult PXAPI PXWADEntryHandle(PXWADEntry* const pxWADEntry, PXFile* cons
         }
         case PXWADEntryDataTypeZstandard:
         {
-#if PXLogEnable
+#if PXLogEnable && 0
             PXLogPrint
             (
                 PXLoggingInfo,
@@ -176,7 +177,7 @@ PXActionResult PXAPI PXWADEntryHandle(PXWADEntry* const pxWADEntry, PXFile* cons
         }
         case PXWADEntryDataTypeZstandardWithSubchunks:
         {
-#if PXLogEnable
+#if PXLogEnable && 0
             PXLogPrint
             (
                 PXLoggingInfo,
@@ -194,7 +195,7 @@ PXActionResult PXAPI PXWADEntryHandle(PXWADEntry* const pxWADEntry, PXFile* cons
 
     if(PXWADEntryDataTypeZstandard != pxWADEntry->DataType)
     {
-        return;
+        return PXActionSuccessful;
     }
 
     if(1)
@@ -251,19 +252,6 @@ PXActionResult PXAPI PXWADLoadFromFile(PXResourceTransphereInfo* const pxResourc
         PXWADHeaderListSize,
         PXFileBindingRead
     );
-
-
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXWADText,
-        "Load",
-        "Version: %i.%i",
-        pxWAD.Header.VersionMajor,
-        pxWAD.Header.VersionMinor
-    );
-#endif
 
 
     PXInt32U* dataList = 0;
@@ -332,8 +320,11 @@ PXActionResult PXAPI PXWADLoadFromFile(PXResourceTransphereInfo* const pxResourc
         PXLoggingInfo,
         PXWADText,
         "Load",
-        "EntryCount: %i",
-        entryCount
+        "\n"
+        "%20s : %i.%i\n"
+        "%20s : %i",
+        "Version", pxWAD.Header.VersionMajor, pxWAD.Header.VersionMinor,
+        "EntryCount", entryCount
     );
 #endif
 
@@ -385,17 +376,33 @@ PXActionResult PXAPI PXWADLoadFromFile(PXResourceTransphereInfo* const pxResourc
 #endif 
     };
 
+    PXInt64U start = PXTimeCounterStampGet();
+
 
     PXLogEnableASYNC();
     PXThreadPoolCreate(PXNull);
 
+    PXInt32U* taskListID = 0;
+
+    PXThreadPoolQueuePrepare(PXNull, &taskListID, entryCount);
 
     for(PXInt32U i = 0; i < entryCount; ++i)
     {
         PXWADEntry* const pxWADEntry = &pxWAD.EntryList[i];
+        const PXInt32U taskID = taskListID[i];
 
-        PXThreadPoolQueueWork(PXNull, PXWADEntryHandle, pxWADEntry, pxFile, 0);
+        PXThreadPoolTaskUpdateWork(PXNull, taskID, PXWADEntryHandle, pxWADEntry, pxFile, 0);
     }
+
+    PXThreadPoolWaitForSpesific(PXNull, taskListID, entryCount, PXFalse);
+
+    PXMemoryHeapFree(PXNull, taskListID);
+
+    PXInt64U stop = PXTimeCounterStampGet();
+
+    PXF32 timeS = PXTimeCounterStampToSecoundsF(stop- start);
+
+
 
     return PXActionRefusedNotImplemented;
 }

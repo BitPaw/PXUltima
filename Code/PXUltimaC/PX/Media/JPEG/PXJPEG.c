@@ -4,6 +4,7 @@
 #include <PX/Media/PXColor.h>
 #include <PX/OS/File/PXFile.h>
 #include <PX/OS/Memory/PXMemory.h>
+#include <PX/OS/PXOS.h>
 
 const char PXJPEGApp0[4] = "JFIF";
 
