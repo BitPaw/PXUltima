@@ -5,6 +5,7 @@
 #include <PX/Math/PXMath.h>
 #include <PX/Media/PXResource.h>
 #include <PX/OS/Console/PXConsole.h>
+#include <PX/OS/PXOS.h>
 
 #include <stdio.h>
 #include <stdarg.h>

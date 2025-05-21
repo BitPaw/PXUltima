@@ -10,6 +10,7 @@
 #include <PX/OS/GUI/PXGUI.h>
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/OS/Memory/PXMemory.h>
+#include <PX/OS/PXOS.h>
 
 #include <stdarg.h>
 

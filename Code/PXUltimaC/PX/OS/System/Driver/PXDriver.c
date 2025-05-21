@@ -8,6 +8,7 @@
 #endif
 
 #include <PX/OS/Console/PXConsole.h>
+#include <PX/OS/PXOS.h>
 
 PXActionResult PXAPI PXDriverListFetch(PXDriver** const pxDriverList, PXSize* const listSize)
 {

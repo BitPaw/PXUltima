@@ -4,6 +4,7 @@
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/OS/Graphic/PXGraphic.h>
 #include <PX/OS/Memory/PXMemory.h>
+#include <PX/OS/PXOS.h>
 
 #if PXDX9Enable
 #include <d3d9.h>
@@ -1312,7 +1313,7 @@ PXActionResult PXAPI PXDirectX9DevicePhysicalListFetchFunction(PXDirectX9* const
         {
             PXGraphicDevicePhysical* pxGraphicDevicePhysicalCurrent = &pxGraphicDevicePhysicalList[i];
 
-            PXBool found = PXTextCompareA(adapterIdentifier.DeviceName, 32, pxGraphicDevicePhysicalCurrent->DeviceDisplay, PXDeviceDisplaySize);
+            PXBool found = PXTextCompareA(adapterIdentifier.DeviceName, 32, pxGraphicDevicePhysicalCurrent->DeviceDisplay, PXDeviceDisplaySize, 0);
 
             if(found)
             {

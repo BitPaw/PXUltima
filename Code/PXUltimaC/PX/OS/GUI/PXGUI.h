@@ -85,6 +85,8 @@ PXPublic PXActionResult PXAPI PXWindowStyleUpdate(PXGUISystem* const pxGUISystem
 PXPublic PXActionResult PXAPI PXWindowTitleBarColorSet(const PXNativDrawWindowHandle pxWindowID);
 
 
+PXPublic PXActionResult PXAPI PXWindowReDrawEnable(const PXNativDrawWindowHandle pxWindowID, const PXBool enable);
+
 PXPublic PXBool PXAPI PXWindowCursorPositionInWindowGet(const PXNativDrawWindowHandle pxWindowID, PXInt32S* const x, PXInt32S* const y);
 PXPublic PXBool PXAPI PXWindowCursorPositionInDestopGet(const PXNativDrawWindowHandle pxWindowID, PXInt32S* const x, PXInt32S* const y);
 

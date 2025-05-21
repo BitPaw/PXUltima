@@ -350,6 +350,4 @@ typedef struct PXOSVersionInfo_
 }
 PXOSVersionInfo;
 
-void PXOSVersionGet(PXOSVersionInfo* const pxOSVersionInfo);
-
 #endif

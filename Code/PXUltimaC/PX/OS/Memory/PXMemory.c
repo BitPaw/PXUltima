@@ -6,6 +6,7 @@
 #include <PX/Media/PXText.h>
 #include <PX/OS/Debug/PXDebug.h>
 #include <PX/OS/PXOS.h>
+#include <PX/OS/Async/PXThreadPool.h>
 
 #include <stdlib.h>
 #include <malloc.h>
@@ -935,42 +936,13 @@ PXSize PXAPI PXMemoryMove(const void* inputBuffer, const PXSize inputBufferSize,
 
 void PXAPI PXMemoryPageInfoFetch(PXMemoryPageInfo* const pxFilePageFileInfo, const PXSize objectSize)
 {
+    PXOS* const pxOS = PXSystemGet();
+
     PXClear(PXMemoryPageInfo, pxFilePageFileInfo);
 
-#if OSUnix
-
-    // Might need : "sudo apt-get install libhugetlbfs-dev"
-    // Seems to not do anything.
-    // Does linux have large table support?
-    // getconf PAGESIZE
-    // getconf LARGE_PAGESIZE
-    // getconf HUGE_PAGESIZE
-
-    pxFilePageFileInfo->PageSizeNormal = getpagesize(); //  also works, sysconf(PAGESIZE );
-    pxFilePageFileInfo->PageSizeLarge = 1 << 21;//sysconf(_SC_LARGE_PAGESIZE); MAP_HUGE_2MB
-    pxFilePageFileInfo->PageSizeHuge = 1 << 30;//sysconf(_SC_HUGE_PAGESIZE); MAP_HUGE_1GB
-
-#elif OSWindows
-    PERFORMANCE_INFORMATION perfInfo;
-    DWORD size = sizeof(PERFORMANCE_INFORMATION);
-    PXClear(PERFORMANCE_INFORMATION, &perfInfo);
-    perfInfo.cb = size;
-
-    const BOOL result = GetPerformanceInfo(&perfInfo, size);
-
-    if(!result)
-    {
-        return;
-    }
-
-    pxFilePageFileInfo->PageSizeNormal = perfInfo.PageSize;
-    pxFilePageFileInfo->PageSizeLarge = GetLargePageMinimum(); // Windows Vista, Kernel32.dll, memoryapi.h
-    // pxFilePageFileInfo->PageSizeHuge = 0; // Does this even exist?
-
-#else
-
-#endif
-
+    pxFilePageFileInfo->PageSizeNormal = pxOS->PageSizeNormal;
+    pxFilePageFileInfo->PageSizeLarge = pxOS->PageSizeLarge;
+    pxFilePageFileInfo->PageSizeHuge = pxOS->PageSizeHuge;
 
     // Calc the size
     pxFilePageFileInfo->PageAmountNormal = (objectSize / pxFilePageFileInfo->PageSizeNormal + 1);
@@ -991,7 +963,7 @@ void PXAPI PXMemoryPageInfoFetch(PXMemoryPageInfo* const pxFilePageFileInfo, con
 }
 
 #if OSWindows
-#include <PX/OS/Async/PXThreadPool.h>
+
 
 PXBool isChecked = 0;
 

@@ -3,7 +3,7 @@
 
 #include <PX/Media/PXResource.h>
 
-#define PXLogEnable 1
+#define PXLogEnable 0
 #define PXLogEnableColor 0
 
 //PXBool PXLogEnablePrint = 1;

@@ -38,7 +38,9 @@ typedef struct PXThreadPool_
 PXThreadPool;
 
 PXPrivate PXBool PXAPI PXThreadPoolTaskNextWorkGet(PXThreadPool* pxThreadPool, PXTask* const pxTask);
-PXPrivate PXTask* PXAPI PXThreadPoolTaskNextFreeGet(PXThreadPool* pxThreadPool, void* function, void* parameter1, void* parameter2, const PXInt32U behaviour);
+
+
+PXPublic PXTask* PXAPI PXThreadPoolTaskUpdateWork(PXThreadPool* pxThreadPool, const PXInt32U taskID, void* function, void* parameter1, void* parameter2, const PXInt32U behaviour);
 
 // Function WILL copy thread for thread-safety as data could be moved without notice
 // struct shall not be modified, use the threadpool
@@ -57,8 +59,7 @@ PXPublic void PXAPI PXThreadPoolWaking(PXThreadPool* pxThreadPool);
 // Task will be added to the task queue. 
 // Inserted to any task that is avalibe. 
 // If not a task will be created internally.
-PXPublic PXActionResult PXAPI PXThreadPoolQueueWork(PXThreadPool* const pxThreadPool, void* function, void* parameter1, void* parameter2, const PXInt32U behaviour);
-PXPublic PXActionResult PXAPI PXThreadPoolQueueTask(PXThreadPool* const pxThreadPool, PXTask* const pxTask);
+PXPublic PXActionResult PXAPI PXThreadPoolQueueWork(PXThreadPool* const pxThreadPool, const PXInt32U taskID, void* function, void* parameter1, void* parameter2, const PXInt32U behaviour);
 
 // Prepares an amount of tasks, optionally write IDs of the tasks into a list to wait for later
 PXPublic PXActionResult PXAPI PXThreadPoolQueuePrepare(PXThreadPool* pxThreadPool, PXInt32U** listIDs, const PXSize amount);

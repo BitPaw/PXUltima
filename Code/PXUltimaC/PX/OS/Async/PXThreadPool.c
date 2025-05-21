@@ -121,14 +121,13 @@ PXActionResult PXAPI PXThreadPoolTaskInvoke(PXThreadPool* const pxThreadPool, PX
 
     PXTaskStateChangeRemote(pxThreadPool, pxTask, PXExecuteStateFinished);
 
+    PXThreadYieldToOtherThreads();
+
     return PXActionSuccessful;
 }
 
 PXThreadResult PXOSAPI PXThreadPoolProcessASYNC(PXThreadPool* const pxThreadPool)
 {
-    PXThread pxThread;
-    PXThreadPoolThreadSelf(pxThreadPool, &pxThread);
-
     for(;;)
     {
 #if PXLogEnable
@@ -143,7 +142,7 @@ PXThreadResult PXOSAPI PXThreadPoolProcessASYNC(PXThreadPool* const pxThreadPool
 #endif
 
         PXTask pxTask;
-        PXBool success = PXThreadPoolTaskNextWorkGet(pxThreadPool, &pxTask);     
+        PXBool success = PXThreadPoolTaskNextWorkGet(pxThreadPool, &pxTask);
 
         if(!success)
         {
@@ -153,6 +152,9 @@ PXThreadResult PXOSAPI PXThreadPoolProcessASYNC(PXThreadPool* const pxThreadPool
             {
                 return 0;
             }
+
+            PXThread pxThread;
+            PXThreadPoolThreadSelf(pxThreadPool, &pxThread);
 
 #if PXLogEnable
             PXLogPrint
@@ -205,6 +207,9 @@ PXActionResult PXAPI PXThreadPoolClose(PXThreadPool* pxThreadPool)
 
 PXActionResult PXAPI PXThreadPoolCreate(PXThreadPool* pxThreadPool)
 {
+    PXOS* pxOS = PXSystemGet();
+    const PXInt32U amountOfThreads = pxOS->ProcessorAmountLogical;
+
     if(!pxThreadPool)
     {
         pxThreadPool = &_GLOBALThreadPool;
@@ -224,12 +229,11 @@ PXActionResult PXAPI PXThreadPoolCreate(PXThreadPool* pxThreadPool)
         PXTheadPoolText,
         "Create",
         "Task-Cache:<%i>",
-        32
+        amountOfThreads
     );
 #endif
 
-    // Lookup how many cores we have.
-    pxThreadPool->ThreadListSize = 64;
+    pxThreadPool->ThreadListSize = amountOfThreads;
     pxThreadPool->ThreadList = PXMemoryHeapCallocT(PXThread, pxThreadPool->ThreadListSize);
 
 #if PXLogEnable
@@ -265,6 +269,7 @@ PXActionResult PXAPI PXThreadPoolCreate(PXThreadPool* pxThreadPool)
         PXTextPrintA(nameBuffer, 32, "PX-ThreadPool-%3.3i", i + 1);
 
         PXThreadCreate(pxThread, nameBuffer, PXNull, PXThreadPoolProcessASYNC, pxThreadPool, PXThreadBehaviourCreateSuspended);
+        PXThreadCPUCoreAffinitySet(pxThread, i);
     }
 
 
@@ -338,38 +343,74 @@ PXActionResult PXAPI PXThreadPoolWaitForSpesific(PXThreadPool* pxThreadPool, PXI
         pxThreadPool = &_GLOBALThreadPool;
     }
 
+#if PXLogEnable && 0
+    for(size_t i = 0; i < pxThreadPool->TaskQueue.EntryAmountUsed; i++)
+    {
+        PXTask* const pxTask = PXListEntyrGetT(PXTask, &pxThreadPool->TaskQueue, i);
+
+        char* textState = PXExecuteStateToString(pxTask->Info.Behaviour);
+
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            PXTheadPoolText,
+            "Task-Info",
+            "ID:%4i, State:%10s, Return:%i",
+            pxTask->Info.ID,
+            textState,
+            pxTask->FunctionReturnCode
+        );
+    }
+#endif
+
+
     PXThreadPoolProcessASYNC(pxThreadPool);
 
 
-    for(;;) // while we are not done..
+    // while we are not done..
+    PXSize counter = 0;
+
+    for(PXSize i = 0; i < amount; ++i) // .. loop over all tasks ..
     {
-        PXSize counter = 0;
+        // For every task..
+        const PXInt32U id = listIDs[i];
 
-        for(PXSize i = 0; i < amount; ++i) // .. loop over all tasks ..
+        // check the list..
+        for(PXSize w = 0; w < pxThreadPool->TaskQueue.EntryAmountUsed; )
         {
-            const PXInt32U id = listIDs[i];
+            PXTask* const pxTask = PXListEntyrGetT(PXTask, &pxThreadPool->TaskQueue, w);
 
-            for(PXSize w = 0; w < pxThreadPool->TaskQueue.EntryAmountAllocated; ++w)
+            // When task is OK, go next
+            if(pxTask->Info.ID != id)
             {
-                PXTask* const pxTask = PXListEntyrGetT(PXTask, &pxThreadPool->TaskQueue, w);
-
-                if(pxTask->Info.ID != id)
-                {
-                    continue;
-                }
-
-                counter += PXExecuteStateFinished == (PXExecuteStateMask & pxTask->Info.Behaviour);
+                ++w;
+                continue;
             }
-        }
 
-        if(counter == amount)
-        {
-            break;
-        }
+            PXBool isDone = PXExecuteStateFinished == (PXExecuteStateMask & pxTask->Info.Behaviour);
 
-        Sleep(100);
+            if(isDone)
+            {
+                break;
+            }
+
+            Sleep(100);
+
+            ++w;
+        }
     }
 
+    // Signal to all finished tasks they are now relesed (deleted)
+    
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXTheadPoolText,
+        "Task-SYNC",
+        "DONE!"
+    );
+#endif
 
     return PXActionSuccessful;
 }
@@ -426,6 +467,11 @@ void PXAPI PXTaskStateChange(PXTask* const pxTask, const PXInt32U newState)
 
 void PXAPI PXTaskStateChangeRemote(PXThreadPool* pxThreadPool, PXTask* const pxTask, const PXInt32U newState)
 {
+    if(!pxThreadPool)
+    {
+        pxThreadPool = &_GLOBALThreadPool;
+    }
+
     PXLockEngage(&pxThreadPool->TaskLock);
 
     for(PXSize i = 0; i < pxThreadPool->TaskQueue.EntryAmountUsed; ++i)
@@ -447,6 +493,11 @@ void PXAPI PXTaskStateChangeRemote(PXThreadPool* pxThreadPool, PXTask* const pxT
 PXBool PXAPI PXThreadPoolTaskNextWorkGet(PXThreadPool* pxThreadPool, PXTask* const pxTask)
 {
     PXBool success = PXFalse;
+
+    if(!pxThreadPool)
+    {
+        pxThreadPool = &_GLOBALThreadPool;
+    }
 
     PXLockEngage(&pxThreadPool->TaskLock);
 
@@ -473,45 +524,72 @@ PXBool PXAPI PXThreadPoolTaskNextWorkGet(PXThreadPool* pxThreadPool, PXTask* con
     return success;
 }
 
-PXTask* PXAPI PXThreadPoolTaskNextFreeGet(PXThreadPool* pxThreadPool, void* function, void* parameter1, void* parameter2, const PXInt32U behaviour)
+PXTask* PXAPI PXThreadPoolTaskUpdateWork(PXThreadPool* pxThreadPool, const PXInt32U taskID, void* function, void* parameter1, void* parameter2, const PXInt32U behaviour)
 {
     PXTask* pxTaskTarget = PXNull;
 
+    if(!pxThreadPool)
+    {
+        pxThreadPool = &_GLOBALThreadPool;
+    }
+
     PXLockEngage(&pxThreadPool->TaskLock);
 
-    // Can we recycle?
-    for(PXSize i = 0; i < pxThreadPool->TaskQueue.EntryAmountUsed; ++i)
+    // We defined a known task, find it!
+    if(0 != taskID)
     {
-        PXTask* const pxTask = PXListEntyrGetT(PXTask, &pxThreadPool->TaskQueue, i);
-
-        PXBool isFree = 0;
-
-        switch(PXExecuteStateMask & pxTask->Info.Behaviour)
+        for(PXSize i = 0; i < pxThreadPool->TaskQueue.EntryAmountAllocated; ++i)
         {
-            case PXExecuteStateInvalid:
-            case PXExecuteStateReady:
-                isFree = PXTrue;
+            PXTask* const pxTask = PXListEntyrGetT(PXTask, &pxThreadPool->TaskQueue, i);
+
+            if(pxTask->Info.ID == taskID)
+            {
+                pxTaskTarget = pxTask;
                 break;
+            }
         }
 
-        if(!isFree)
+        if(!pxTaskTarget)
         {
-            continue;
+            DebugBreak();
+        }
+    }
+    else
+    {
+        // Can we recycle?
+        for(PXSize i = 0; i < pxThreadPool->TaskQueue.EntryAmountAllocated; ++i)
+        {
+            PXTask* const pxTask = PXListEntyrGetT(PXTask, &pxThreadPool->TaskQueue, i);
+
+            PXBool isFree = 0;
+
+            switch(PXExecuteStateMask & pxTask->Info.Behaviour)
+            {
+                case PXExecuteStateInvalid:
+                case PXExecuteStateReady:
+                    isFree = PXTrue;
+                    break;
+            }
+
+            if(!isFree)
+            {
+                continue;
+            }
+
+            pxTaskTarget = pxTask;
+            //pxTaskTarget->Info.ID = ++pxThreadPool->TaskCounter;
         }
 
-        pxTaskTarget = pxTask;
-        pxTaskTarget->Info.ID = ++pxThreadPool->TaskCounter;
-    }
+        if(!pxTaskTarget)
+        {
+            // Task coun't be recycled, we make a new one
+            PXTask pxTask;
+            PXClear(PXTask, &pxTask);
 
-    if(!pxTaskTarget)
-    {
-        // Task coun't be recycled, we make a new one
-        PXTask pxTask;
-        PXClear(PXTask, &pxTask);
-
-        pxTask.Info.ID = ++pxThreadPool->TaskCounter;
-        pxTaskTarget = PXListAddT(PXTask, &pxThreadPool->TaskQueue, &pxTask);
-    }
+            pxTask.Info.ID = ++pxThreadPool->TaskCounter;
+            pxTaskTarget = PXListAddT(PXTask, &pxThreadPool->TaskQueue, &pxTask);
+        }
+    }    
 
     // Add data
     pxTaskTarget->Info.Behaviour = behaviour;
@@ -523,6 +601,8 @@ PXTask* PXAPI PXThreadPoolTaskNextFreeGet(PXThreadPool* pxThreadPool, void* func
     PXTaskStateChange(pxTaskTarget, PXExecuteStateRunning);
 
     PXLockRelease(&pxThreadPool->TaskLock);
+
+    PXThreadPoolWaking(pxThreadPool);
 
     return pxTaskTarget;
 }
@@ -594,13 +674,15 @@ void PXAPI PXThreadPoolWaking(PXThreadPool* pxThreadPool)
 #endif
 }
 
-PXActionResult PXAPI PXThreadPoolQueueWork(PXThreadPool* pxThreadPool, void* function, void* parameter1, void* parameter2, const PXInt32U behaviour)
+PXActionResult PXAPI PXThreadPoolQueueWork(PXThreadPool* pxThreadPool, const PXInt32U taskID, void* function, void* parameter1, void* parameter2, const PXInt32U behaviour)
 {
+    // Fetch default threadpool if not set
     if(!pxThreadPool)
     {
         pxThreadPool = &_GLOBALThreadPool;
     }
 
+    // We can force the sync processing of the whole task
     const PXBool callSyncronously = !(PXThreadPoolEnableASYNC & pxThreadPool->Flags);
 
     if(callSyncronously)
@@ -619,8 +701,9 @@ PXActionResult PXAPI PXThreadPoolQueueWork(PXThreadPool* pxThreadPool, void* fun
 
 #if PXThreadPoolUsePXIMPL
 
-    PXTask* const pxTask = PXThreadPoolTaskNextFreeGet(pxThreadPool, function, parameter1, parameter2, behaviour);
+    PXTask* const pxTask = PXThreadPoolTaskUpdateWork(pxThreadPool, taskID, function, parameter1, parameter2, behaviour);
 
+    // Poke any sleeping thread that new work is to be done
     PXThreadPoolWaking(pxThreadPool);
 
 
@@ -656,6 +739,8 @@ PXActionResult PXAPI PXThreadPoolQueueTask(PXThreadPool* const pxThreadPool, PXT
 
 PXActionResult PXAPI PXThreadPoolQueuePrepare(PXThreadPool* pxThreadPool, PXInt32U** listIDs, const PXSize amount)
 {
+    PXInt32U* list = 0;
+
 #if PXLogEnable
     PXLogPrint
     (
@@ -674,43 +759,26 @@ PXActionResult PXAPI PXThreadPoolQueuePrepare(PXThreadPool* pxThreadPool, PXInt3
 
     if(listIDs)
     {
-        *listIDs = PXMemoryHeapCallocT(PXInt32U, amount);
+        list = PXMemoryHeapCallocT(PXInt32U, amount);
+        *listIDs = list;
     }
 
     PXLockEngage(&pxThreadPool->TaskLock);
 
     PXListReserve(&pxThreadPool->TaskQueue, amount);
 
-    if(listIDs)
+    if(list)
     {
-        PXSize counter = 0;
+      //  PXSize length = pxThreadPool->TaskQueue.EntryAmountUsed;
 
-        for(PXSize i = 0; i < pxThreadPool->TaskQueue.EntryAmountUsed; ++i)
+        for(PXSize i = 0; i < amount; ++i)
         {
-            PXTask* const pxTask = PXListEntyrGetT(PXTask, &pxThreadPool->TaskQueue, i);
-
-            switch(PXExecuteStateMask & pxTask->Info.Behaviour)
-            {
-                case PXExecuteStateInvalid:
-                case PXExecuteStateReady:
-                {
-                    break;
-                }
-                default:
-                    continue;
-            }
+            PXTask* const pxTask = PXListAddT(PXTask, &pxThreadPool->TaskQueue, PXNull);
 
             pxTask->Info.ID = ++pxThreadPool->TaskCounter;
+            list[i] = pxTask->Info.ID;
+
             PXTaskStateChange(pxTask, PXExecuteStateReserve);
-
-            listIDs[counter] = pxTask->Info.ID;
-
-            ++counter;
-
-            if(counter == amount)
-            {
-                break;
-            }
         }
     }
 

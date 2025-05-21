@@ -1,12 +1,16 @@
 #include "PXOS.h"
 
-#include <Windows.h>
-#include <DbgHelp.h>
-
 #include "File/PXFile.h"
 
 #include <PX/OS/Console/PXConsole.h>
+#include <PX/OS/Async/PXThread.h>
 
+#if OSUnix
+#elif OSWindows
+#include <Windows.h>
+#include <DbgHelp.h>
+#include <Psapi.h>
+#endif
 
 
 
@@ -89,6 +93,7 @@ const char PXOSSemaphore[] = "Semaphore";
 const char PXOSCriticalSection[] = "CriticalSec.";
 
 
+const char PXWindowsLibrarNTDLL[] = "ntdll.dll";
 const char PXWindowsLibraryKernel32[] = "KERNEL32.DLL";
 const char PXWindowsLibraryDebugHelp[] = "DBGHELP.DLL";
 
@@ -97,8 +102,32 @@ const char PXWindowsLibraryDebugHelp[] = "DBGHELP.DLL";
 
 
 
+#if OSUnix
+#elif OSWindows
 
-#if OSWindows
+
+const char PXWindows11[] = "11";
+const char PXWindows10[] = "10";
+const char PXWindowsServer2016[] = "Server 2016";
+const char PXWindows81[] = "8.1";
+const char PXWindowsServer2012R2[] = "Server 2012 R2";
+const char PXWindows8[] = "8";
+const char PXWindowsServer2012[] = "Server 2012";
+const char PXWindows7[] = "7";
+const char PXWindowsServer2008R2[] = "Server 2008 R2";
+const char PXWindowsServer2008[] = "Server 2008";
+const char PXWindowsVista[] = "Vista";
+const char PXWindowsServer2003R2[] = "Server 2003 R2";
+const char PXWindowsServer2003[] = "Server 2003";
+const char PXWindowsXP[] = "XP";
+const char PXWindows2000[] = "2000";
+const char PXWindowsNT40[] = "NT 4.0";
+const char PXWindowsNT31[] = "NT 3.1";
+
+
+
+typedef LONG(WINAPI* PXWindowsRtlGetVersionPtr)(PRTL_OSVERSIONINFOW);
+
 
 PXPrivate BOOL CALLBACK PXLibraryNameSymbolEnumerate(PSYMBOL_INFO pSymInfo, ULONG SymbolSize, PVOID UserContext);
 
@@ -112,12 +141,27 @@ PXPrivate BOOL CALLBACK PXLibraryNameSymbolEnumerate(PSYMBOL_INFO pSymInfo, ULON
 
 
 
-
-
-
-PXActionResult PXAPI PXOSAPIInit()
+// Helper function to count set bits in the processor mask.
+DWORD CountSetBits(ULONG_PTR bitMask)
 {
-    if(_PXOS.DebugBreak)
+    const DWORD LSHIFT = sizeof(ULONG_PTR) * 8 - 1;
+    DWORD bitSetCount = 0;
+    ULONG_PTR bitTest = (ULONG_PTR)1 << LSHIFT;
+    DWORD i;
+
+    for(i = 0; i <= LSHIFT; ++i)
+    {
+        bitSetCount += ((bitMask & bitTest) ? 1 : 0);
+        bitTest /= 2;
+    }
+
+    return bitSetCount;
+}
+
+
+PXActionResult PXAPI PXSystemPrelude()
+{
+    if(_PXOS.Init)
     {
         return PXActionSuccessful;
     }
@@ -126,7 +170,7 @@ PXActionResult PXAPI PXOSAPIInit()
 
     // kernel32.dll
     {
-        PXLibraryOpenA(&_PXOS, PXWindowsLibraryKernel32);
+        PXLibraryOpenA(&_PXOS.LibraryKernel, PXWindowsLibraryKernel32);
 
         PXLibraryFuntionEntry pxLibraryFuntionEntryList[] =
         {
@@ -169,27 +213,707 @@ PXActionResult PXAPI PXOSAPIInit()
     }
 
 
-    /*
-        PXLibraryClose(&pxDebug->LibraryKernel);
-    PXLibraryClose(&pxDebug->LibraryDebugHelp);
-    */
+    // ntdll.dll
+    {
+        PXLibraryOpenA(&_PXOS.LibraryNT, PXWindowsLibrarNTDLL);
+
+        PXLibraryFuntionEntry pxLibraryFuntionEntryList[] =
+        {
+            { &_PXOS.RtlGetVersion, "RtlGetVersion"}
+        };
+
+        const PXSize amount = sizeof(pxLibraryFuntionEntryList) / sizeof(PXLibraryFuntionEntry);
+
+        PXLibraryGetSymbolListA(&_PXOS.LibraryNT, pxLibraryFuntionEntryList, amount);
+    }
+
+    _PXOS.Init = PXTrue;
+
+
+
+   // SetConsoleOutputCP(CP_UTF8);
+   // SetConsoleCP(CP_UTF8);
+
+
+
+    char osName[80];
+
+    PXSystemVersionGet(osName, 80);
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXOSName,
+        "Version",
+        osName
+    );
+#endif // 0
+
+
+
+
+    SYSTEM_INFO systemInfo;
+    GetSystemInfo(&systemInfo); // Windows 2000 (+UWP), Kernel32.dll, sysinfoapi.h 
+
+    _PXOS.ApplicationAddressMinimum = systemInfo.lpMinimumApplicationAddress;
+    _PXOS.ApplicationAddressMaximum = systemInfo.lpMaximumApplicationAddress;
+    _PXOS.ProcessorActiveMask = systemInfo.dwActiveProcessorMask;
+    _PXOS.ProcessorAmountPhysical = systemInfo.dwNumberOfProcessors; // [!] only detects logical!
+    _PXOS.ProcessorAmountLogical = systemInfo.dwNumberOfProcessors;
+    _PXOS.dwAllocationGranularity = systemInfo.dwAllocationGranularity;
+
+
+    SYSTEM_LOGICAL_PROCESSOR_INFORMATION* infoList;
+    DWORD amountInBytes = 0;
+    DWORD amountInObjects = 0;
+
+    // Get size
+    BOOL resLog = GetLogicalProcessorInformation(infoList, &amountInBytes);
+
+    infoList = PXMemoryHeapCalloc(PXNull, amountInBytes, 1);
+    amountInObjects = amountInBytes / sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION);
+
+    resLog = GetLogicalProcessorInformation(infoList, &amountInBytes);
+
+    _PXOS.ProcessorAmountPhysical = 0;
+    _PXOS.ProcessorAmountLogical = 0;
+
+    for(size_t i = 0; i < amountInObjects; i++)
+    {
+        SYSTEM_LOGICAL_PROCESSOR_INFORMATION* const ptr = &infoList[i];
+                
+        switch(ptr->Relationship)
+        {
+            case RelationNumaNode:
+                // Non-NUMA systems report a single record of this type.
+                ++_PXOS.ProcessorAmountNUMA;
+                break;
+
+            case RelationProcessorCore:
+
+                ++_PXOS.ProcessorAmountPhysical;
+
+                // A hyperthreaded core supplies more than one logical processor.
+                _PXOS.ProcessorAmountLogical += CountSetBits(ptr->ProcessorMask);
+                break;
+
+            case RelationCache:
+            {
+                // Cache data is in ptr->Cache, one CACHE_DESCRIPTOR structure for each cache. 
+                CACHE_DESCRIPTOR* cache = &ptr->Cache;
+                if(cache->Level == 1)
+                {
+                    _PXOS.ProcessorCacheL1Size = cache->Size;
+                }
+                else if(cache->Level == 2)
+                {
+                    _PXOS.ProcessorCacheL2Size = cache->Size;
+                }
+                else if(cache->Level == 3)
+                {
+                    _PXOS.ProcessorCacheL3Size = cache->Size;
+                }
+                break;
+            }
+            case RelationProcessorPackage:
+                // Logical processors share a physical package.
+                //processorPackageCount++;
+                break;
+
+            default:
+                //_tprintf(TEXT("\nError: Unsupported LOGICAL_PROCESSOR_RELATIONSHIP value.\n"));
+                break;
+        }
+    }
+
+
+    //-----------------------------------------------------
+    // Page sizes
+    //-----------------------------------------------------
+#if OSUnix
+
+// Might need : "sudo apt-get install libhugetlbfs-dev"
+// Seems to not do anything.
+// Does linux have large table support?
+// getconf PAGESIZE
+// getconf LARGE_PAGESIZE
+// getconf HUGE_PAGESIZE
+
+    _PXOS.PageSizeNormal = getpagesize(); //  also works, sysconf(PAGESIZE );
+    _PXOS.PageSizeLarge = 1 << 21;//sysconf(_SC_LARGE_PAGESIZE); MAP_HUGE_2MB
+    _PXOS.PageSizeHuge = 1 << 30;//sysconf(_SC_HUGE_PAGESIZE); MAP_HUGE_1GB
+
+#elif OSWindows
+    PERFORMANCE_INFORMATION perfInfo;
+    DWORD size = sizeof(PERFORMANCE_INFORMATION);
+    PXClear(PERFORMANCE_INFORMATION, &perfInfo);
+    perfInfo.cb = size;
+
+    const BOOL result = GetPerformanceInfo(&perfInfo, size);
+
+    if(!result)
+    {
+        return;
+    }
+
+    _PXOS.PageSizeNormal = perfInfo.PageSize;
+    _PXOS.PageSizeLarge = GetLargePageMinimum(); // Windows Vista, Kernel32.dll, memoryapi.h
+    // pxFilePageFileInfo->PageSizeHuge = 0; // Does this even exist?
+#endif
+    //-----------------------------------------------------
+
+
+
+
+    //-----------------------------------------------------
+    // Cacheline
+    //-----------------------------------------------------
+
+#if OSUnix
+#elif OSWindows
+    DWORD bufferSize = 0;
+    GetLogicalProcessorInformation(NULL, &bufferSize);
+
+    SYSTEM_LOGICAL_PROCESSOR_INFORMATION* buffer = (SYSTEM_LOGICAL_PROCESSOR_INFORMATION*)malloc(bufferSize);
+    GetLogicalProcessorInformation(buffer, &bufferSize);
+
+    const DWORD count = bufferSize / sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION);
+
+    for(DWORD i = 0; i < count; ++i) 
+    {
+        if(buffer[i].Relationship == RelationCache && buffer[i].Cache.Level == 1) 
+        {
+            _PXOS.CacheLineSize = buffer[i].Cache.LineSize;
+            break;
+        }
+    }
+
+    free(buffer);
+#endif
+
+    //-----------------------------------------------------
+
+
 
 
     return PXActionSuccessful;
 }
 
-PXOS* PXAPI PXOSGet()
+PXOS* PXAPI PXSystemGet()
 {
-    return &_PXOS;
+    PXOS* pxSystem = &_PXOS;
+
+    if(!pxSystem->Init)
+    {
+      //  PXSystemPrelude();
+
+       // pxSystem->Init = PXTrue;
+    }
+
+    return pxSystem;
 }
 
-void PXAPI PXProcessCurrentGet()
+void PXAPI PXSystemVersionGet(char* const text, const PXSize textSize)
+{
+#if OSUnix
+    struct utsname buffer;
+    if(uname(&buffer) != 0) {
+        return "Unable to get Linux version.";
+    }
+
+    std::ifstream os_release("/etc/os-release");
+    std::string line, name, version;
+    while(std::getline(os_release, line)) {
+        if(line.find("PRETTY_NAME=") == 0) {
+            name = line.substr(13, line.length() - 14); // remove quotes
+        }
+    }
+
+    std::ostringstream oss;
+    oss << name << " (" << buffer.sysname << " " << buffer.release << ")";
+    return oss.str();
+#elif OSWindows
+    // GetVersionEx is debricated to the beginning of windows 10 
+    // and will only yield windows 8.1 as the highest option.
+    // This was choosen, because Microsoft planned to use Build numbers as versions. 
+    // VerifyVersionInfoA() is somewhat debricated aswell, as it relyes on 
+    // a manifest file that might not exist, then it also defaults to windows 8.1
+    // Solution is to call the kernel function directly, as its better any bypasses this wierd behaviour
+
+ 
+    DWORD MajorVersion = 0;
+    DWORD MinorVersion = 0;
+    DWORD BuildNumber = 0;
+    int isWorkstation = 0;
+
+    PXWindowsRtlGetVersionPtr pxWindowsRtlGetVersion = (PXWindowsRtlGetVersionPtr)_PXOS.RtlGetVersion;
+
+    if(pxWindowsRtlGetVersion)
+    {
+        RTL_OSVERSIONINFOW osVERSIONINFO = { 0 };
+        osVERSIONINFO.dwOSVersionInfoSize = sizeof(osVERSIONINFO);
+
+        pxWindowsRtlGetVersion(&osVERSIONINFO);
+
+        MajorVersion = osVERSIONINFO.dwMajorVersion;
+        MinorVersion = osVERSIONINFO.dwMinorVersion;
+        BuildNumber = osVERSIONINFO.dwBuildNumber; 
+    }
+    else
+    {
+        OSVERSIONINFOEX osVERSIONINFOEx;
+        ZeroMemory(&osVERSIONINFOEx, sizeof(OSVERSIONINFOEX));
+        osVERSIONINFOEx.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+
+        const BOOL result = GetVersionExA((OSVERSIONINFO*)&osVERSIONINFOEx);
+
+        MajorVersion = osVERSIONINFOEx.dwMajorVersion;
+        MinorVersion = osVERSIONINFOEx.dwMinorVersion;
+        BuildNumber = osVERSIONINFOEx.dwBuildNumber;
+        isWorkstation = VER_NT_WORKSTATION == osVERSIONINFOEx.wProductType;
+    }
+
+
+    const int isServer = GetSystemMetrics(SM_SERVERR2);
+
+    char* osName = 0;
+
+    switch(MajorVersion)
+    {
+        case 4:
+            osName = PXWindowsNT40;
+            break;
+
+        case 5:
+        {
+            switch(MinorVersion)
+            {
+                case 0:
+                    osName = PXWindows2000;
+                    break;
+
+                case 1:
+                    osName = PXWindowsXP;
+                    break;
+
+                case 2:
+                {
+                    if(isServer)
+                    {
+                        osName = PXWindowsServer2003;
+                    }
+                    else
+                    {
+                        osName = PXWindowsServer2003R2;
+                    }
+
+                    break;
+                }
+            }
+        }
+        case 6:
+        {
+            switch(MinorVersion)
+            {
+                case 0:
+                {
+                    if(isWorkstation)
+                    {
+                        osName = PXWindowsVista;
+                    }
+                    else
+                    {
+                        osName = PXWindowsServer2008;
+                    }
+
+                    break;
+                }
+                case 1:
+                {
+                    if(isWorkstation)
+                    {
+                        osName = PXWindowsServer2008R2;
+                    }
+                    else
+                    {
+                        osName = PXWindows7;
+                    }
+
+                    break;
+                }
+                case 2:
+                {
+                    if(isWorkstation)
+                    {
+                        osName = PXWindowsServer2012R2;
+                    }
+                    else
+                    {
+                        osName = PXWindows8;
+                    }
+
+                    break;
+                }
+                case 3:
+                {
+                    if(isWorkstation)
+                    {
+                        osName = PXWindowsServer2012R2;
+                    }
+                    else
+                    {
+                        osName = PXWindows81;
+                    }
+
+                    break;
+                }
+            }
+
+            break;
+        }
+        case 10:
+        {
+            if(isWorkstation)
+            {
+                osName = PXWindowsServer2016;
+            }
+            else
+            {
+                osName = PXWindows10;
+            }
+
+            break;
+        }
+        case 11:
+            osName = "11";
+            break;
+
+        default:
+            osName = "Unkown";
+            break;
+    }
+
+    PXTextPrintA
+    (
+        text,
+        textSize,
+        "Windows %s (v.%i.%i - Build: %i)",   
+        osName,
+        MajorVersion,
+        MinorVersion,
+        BuildNumber
+    );
+
+#else
+    // We cant detect any OS here
+#endif
+}
+
+PXActionResult PXAPI PXFilePathCleanse(const char* pathInput, char* const pathOutput, const PXSize pathOutputSizeMAX, PXSize* const pathOutputSizeWritten)
+{
+    PXActionResult pxActionResult;
+
+#if OSUnix
+    realpath()
+#elif OSWindows
+    const DWORD length = GetFullPathNameA(pathInput, pathOutputSizeMAX, pathOutput, NULL); // Windows XP (+UWP), Kernel32.dll, fileapi.h
+
+    pxActionResult = PXErrorCurrent(0 != length);
+
+    if(pathOutputSizeWritten)
+    {
+        *pathOutputSizeWritten = length;
+    }
+#else
+    pxActionResult = PXActionRefusedNotSupportedByLibrary;
+#endif
+
+    return pxActionResult;
+}
+
+void PXAPI PXTextUTF8ToUNICODE(wchar_t* const textOutput, const char* const textInput)
+{
+#if OSUnix
+#elif OSWindows
+
+  //  MultiByteToWideChar();
+
+#else
+
+#endif
+}
+
+void PXAPI PXTextUNICODEToUTF8(char* const textOutput, const wchar_t* const textInput)
+{
+#if OSUnix
+#elif OSWindows
+
+   // WideCharToMultiByte();
+
+#else
+
+#endif
+}
+
+void PXAPI PXProcessCurrent(PXProcess* const pxProcess)
 {
     //const HANDLE processHandle = GetCurrentProcess();
+
+    PXClear(PXProcess, pxProcess);
+
+#if OSUnix
+    pxProcess->ThreadHandle = 0;
+    pxProcess->ProcessID = getpid();
+#elif OSWindows
+    // Returns a pseudo handle to the current process. Its -1 but may change in feature versions.
+    pxProcess->ProcessHandle = GetCurrentProcess(); // Windows 2000 SP4, Kernel32.dll, processthreadsapi.h
+
+#if WindowsAtleastXP
+    pxProcess->ProcessID = GetProcessId(pxProcess->ProcessHandle); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
+#endif
+
+#endif
+}
+
+PXActionResult PXAPI PXProcessMemoryWrite
+(
+    const PXProcessHandle pxProcessHandle,
+    const void* baseAddress,
+    const void* bufferData,
+    const PXSize bufferSizeMax,
+    PXSize* const bufferSizeWritten
+)
+{
+    PXActionResult pxActionResult;
+
+#if OSUnix
+#elif OSWindows
+    const BOOL successful = WriteProcessMemory // Windows XP, Kernel32.dll, memoryapi.h
+    (
+        pxProcessHandle,
+        baseAddress,
+        bufferData,
+        bufferSizeMax,
+        bufferSizeWritten
+    );
+    pxActionResult = PXErrorCurrent(successful);
+#else
+    pxActionResult = PXActionRefusedNotImplemented;
+#endif
+
+    return pxActionResult;
+}
+
+PXActionResult PXAPI PXProcessMemoryRead
+(
+    const PXProcessHandle pxProcessHandle, 
+    const void* baseAddress,
+    void* const bufferData, 
+    const PXSize bufferSizeMax, 
+    PXSize* const bufferSizeWritten
+)
+{
+    PXActionResult pxActionResult;
+
+#if OSUnix
+#elif OSWindows
+    const BOOL successful = ReadProcessMemory // Windows XP, Kernel32.dll, memoryapi.h
+    (
+        pxProcessHandle,
+        baseAddress,
+        bufferData,
+        bufferSizeMax,
+        bufferSizeWritten
+    );
+    pxActionResult = PXErrorCurrent(successful);
+#else
+    pxActionResult = PXActionRefusedNotImplemented;
+#endif
+
+    return pxActionResult;
+}
+
+PXActionResult PXAPI PXThreadCurrent(PXThread* const pxThread)
+{
+    PXClear(PXThread, pxThread);
+
+#if OSUnix
+
+    pxThread->Info.Handle.ThreadHandle = pthread_self();
+    pxThread->HandleID = getpid();
+
+    return PXActionSuccessful;
+
+#elif OSWindows
+
+    // Getting the thread handle yields a pseudo handle that is not useful
+    pxThread->Info.Handle.ThreadHandle = GetCurrentThread(); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
+    pxThread->HandleID = GetCurrentThreadId(); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
+
+    return PXActionSuccessful;
+#else
+    return PXActionRefusedNotSupportedByLibrary;
+#endif
+}
+
+PXActionResult PXAPI PXThreadResume(PXThread* const pxThread)
+{
+    pxThread->Info.Behaviour &= ~PXExecuteStateMask;
+    pxThread->Info.Behaviour |= PXExecuteStateRunning;
+
+#if OSUnix
+    return PXActionRefusedNotImplemented;
+
+#elif OSWindows
+    const PXProcessThreadHandle threadHandle = pxThread->Info.Handle.ThreadHandle;
+    const DWORD suspendCount = ResumeThread(threadHandle); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
+    const PXActionResult pxActionResult = PXErrorCurrent(-1 != suspendCount);
+
+    if(PXActionSuccessful != pxActionResult)
+    {
+        return pxActionResult;
+    }
+#endif
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXOSName,
+        "Thread-Resume",
+        "Handle:<%p>, ID:<%i>",
+        threadHandle,
+        pxThread->HandleID
+    );
+#endif
+}
+
+PXActionResult PXAPI PXThreadSuspend(PXThread* const pxThread)
+{
+    const PXProcessThreadHandle threadHandle = pxThread->Info.Handle.ThreadHandle;
+
+    pxThread->Info.Behaviour &= ~PXExecuteStateMask;
+    pxThread->Info.Behaviour |= PXExecuteStateSuspended;
+
+#if OSUnix
+    return PXActionRefusedNotImplemented;
+
+#elif OSWindows
+    const DWORD result = SuspendThread(threadHandle); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
+    const PXActionResult pxActionResult = PXErrorCurrent(-1 != result);
+
+    if(PXActionSuccessful != pxActionResult)
+    {
+        return pxActionResult;
+    }
+#endif
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXOSName,
+        "Thread-Suspend",
+        "Handle:<%p>, ID:<%i>",
+        threadHandle,
+        pxThread->HandleID
+    );
+#endif
+}
+
+PXActionResult PXAPI PXThreadWait(PXThread* const pxThread)
+{
+    pxThread->Info.Behaviour &= ~PXExecuteStateMask;
+    pxThread->Info.Behaviour |= PXExecuteStateWaiting;
+
+    pxThread->ReturnResultCode = 0; // Reset Code
+
+#if OSUnix
+    const int resultID = pthread_join(pxThread->ThreadHandle, &pxThread->ReturnResult); // pthread.h
+    const PXBool success = 0 == resultID;
+
+    if(!success)
+    {
+        return PXErrorCodeFromID(resultID);
+    }
+
+    return PXActionSuccessful;
+
+#elif OSWindows
+
+    const PXProcessThreadHandle threadHandle = pxThread->Info.Handle.ThreadHandle;
+    const DWORD resultID = WaitForSingleObject(threadHandle, INFINITE); // Windows XP (+UWP), Kernel32.dll, synchapi.h
+
+    for(;;)
+    {
+        const BOOL result = GetExitCodeThread(threadHandle, &pxThread->ReturnResultCode); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
+        const PXBool isDone = STILL_ACTIVE != pxThread->ReturnResultCode;
+
+        if(isDone)
+        {
+            break;
+        }
+
+        PXThreadYieldToOtherThreads();
+    }
+#endif
+}
+
+PXActionResult PXAPI PXThreadCPUCoreAffinitySet(PXThread* const pxThread, const PXInt16U coreIndex)
+{
+    //MAXIMUM_PROCESSORS;
+
+    const DWORD resultID = SetThreadIdealProcessor
+    (
+        pxThread->Info.Handle.ThreadHandle,
+        coreIndex
+    );
+    PXActionResult result = PXErrorCurrent(-1 == resultID);
+
+
+    /*
+    DWORD_PTR SetThreadAffinityMask(
+        [in] HANDLE    hThread,
+        [in] DWORD_PTR dwThreadAffinityMask
+    ); // Windows XP (+UWP), Kernel32.dll, winbase.h
+    */
+
+    return result;
 }
 
 
 
+PXActionResult PXAPI PXThreadYieldToOtherThreads()
+{
+    PXActionResult pxActionResult;
+
+#if OSUnix
+    const int yieldResultID =
+#if 0
+        pthread_yield(); // [deprecated] pthread.h
+#else
+        sched_yield(); // sched.h, libc, sets errno but on linux never fails
+#endif
+    pxActionResult = PXErrorCurrent(0 != yieldResultID);
+
+#elif OSWindows
+    // UmsThreadYield() // Windows 7 (64-Bit only), Kernel32.dll, winbase.h [Debcricated in Windows 11]
+
+#if 0
+    Sleep(0);
+    pxActionResult = PXActionSuccessful;
+#else
+    const PXBool switchSuccessful = SwitchToThread(); // Windows 2000 SP4 (+UWP), Kernel32.dll, processthreadsapi.h
+    pxActionResult = PXActionSuccessful; // cant fail
+#endif
+  
+#else
+    pxActionResult = PXActionNotSupportedByOperatingSystem;
+#endif
+
+    return pxActionResult;
+}
 
 
 
@@ -578,6 +1302,7 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize* const createdSize, cons
     PXMemoryPageInfo pxFilePageFileInfo;
     PXSize recievedSize = 0;
 
+
     PXMemoryPageInfoFetch(&pxFilePageFileInfo, size);
 
     // Calculate if large pages shall be used
@@ -940,7 +1665,13 @@ void* PXAPI PXMemoryVirtualReallocate(const void* adress, const PXSize size)
 
 PXActionResult PXAPI PXSymbolServerInitialize()
 {
-    PXOSAPIInit();
+    PXOS* const pxOS = PXSystemGet();
+
+    if(!pxOS->Init)
+    {
+        return PXActionRefusedNotInitialized;
+    }
+
 
     const PXSymInitializeFunction pxSymbolServerInitialize = (PXSymInitializeFunction)_PXOS.SymbolServerInitialize;
     
@@ -1477,9 +2208,32 @@ PXActionResult PXAPI PXSymbolModuleBaseGet()
  
 }
 
+PXActionResult PXAPI PXSymbolModuleHandleFromAdress(PXHandleModule* const pxHandleModule, const void* const adress)
+{
+#if OSUnix && 0
+    Dl_info info;
+
+    const int resultID = dladdr(adress, &info); // dlfcn.h
+    const PXActionResult moduleFetchResult = PXErrorCurrent(0 != resultID);
+
+    return moduleFetchResult;
+#elif OSWindows
+    const PXBool moduleFetchSuccess = GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCTSTR)adress, pxHandleModule);
+    const PXActionResult moduleFetchResult = PXErrorCurrent(moduleFetchSuccess);
+
+    return moduleFetchResult;
+#else
+    * pxHandleModule = PXNull;
+
+    return PXActionRefusedNotSupportedByOperatingSystem;
+#endif
+}
+
+
+
 
 const PXInt32U _lockWaitSpan = 100;
-const PXInt32U _lockWaitTrys = 100;
+const PXInt32U _lockWaitTrys = 3;
 
 
 PXActionResult PXAPI PXSemaphorCreate(PXLock* const pxLock)
@@ -1582,7 +2336,7 @@ PXActionResult PXAPI PXSemaphorEnter(PXLock* const pxLock)
                 continue;
             }
 
-#if PXLogEnable
+#if PXLogEnable && 0
             PXLogPrint
             (
                 PXLoggingWarning,

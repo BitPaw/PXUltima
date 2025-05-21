@@ -10,6 +10,7 @@
 #include <PX/OS/File/PXDirectory.h>
 #include <PX/OS/Graphic/NativDraw/PXNativDraw.h>
 #include <PX/OS/Hardware/PXProcessor.h>
+#include <PX/OS/PXOS.h>
 
 #if OSUnix
 
@@ -1796,7 +1797,7 @@ PXActionResult PXAPI PXWindowDrawFileDirectoryView(PXGUISystem* const pxGUISyste
 
     const PXSize iconSize = 16;
 
-    if(0 == pxDirectorySearchCache->EntryList.AmountUsed)
+    if(0 == pxDirectorySearchCache->EntryList.EntryAmountUsed)
     {
         char buffer[] = "**No files**";
         PXSize bufferSize = sizeof(buffer);
@@ -1816,7 +1817,7 @@ PXActionResult PXAPI PXWindowDrawFileDirectoryView(PXGUISystem* const pxGUISyste
     }
 
 
-    for(PXSize i = 0; i < pxDirectorySearchCache->EntryList.AmountUsed; ++i)
+    for(PXSize i = 0; i < pxDirectorySearchCache->EntryList.EntryAmountUsed; ++i)
     {
         PXFileEntry* const pxFileEntry = PXListEntyrGetT(PXFileEntry, &pxDirectorySearchCache->EntryList, i);
 
@@ -4866,6 +4867,23 @@ void PXAPI PXWindowCursorCaptureMode(const PXNativDrawWindowHandle pxWindowID, c
 
     //window->CursorModeCurrent = cursorMode;
 #endif
+}
+
+PXActionResult PXAPI PXWindowReDrawEnable(const PXNativDrawWindowHandle pxWindowID, const PXBool enable)
+{
+#if OSUnix
+#elif OSWindows
+
+    SendMessage(pxWindowID, WM_SETREDRAW, enable, 0);
+
+    if(enable)
+    {
+        const BOOL result = InvalidateRect(pxWindowID, NULL, TRUE); // forces the window to redraw.
+    }
+
+#endif
+
+    return PXActionSuccessful;
 }
 
 PXBool PXAPI PXWindowCursorPositionInWindowGet(const PXNativDrawWindowHandle pxWindowID, PXInt32S* const x, PXInt32S* const y)

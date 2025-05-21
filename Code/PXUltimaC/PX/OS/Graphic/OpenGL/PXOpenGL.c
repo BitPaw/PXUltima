@@ -9,7 +9,7 @@
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/OS/GUI/PXGUI.h>
 #include <PX/OS/Async/PXAwait.h>
-
+#include <PX/OS/PXOS.h>
 #include <PX/OS/Console/PXConsole.h>
 
 #if 0

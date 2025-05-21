@@ -85,12 +85,21 @@ PXSymbolEnumerator;
 
 
 
+
+
+
 typedef struct PXOS_
 {
+    PXLibrary LibraryNT;
     PXLibrary LibraryKernel;
     PXLibrary LibraryDebugHelp;
 
 #if OSWindows
+    // NT
+    void* RtlGetVersion;
+
+
+
     // Kernel
     void* DebugEventContinue;
     void* DebugEventWait;
@@ -115,6 +124,27 @@ typedef struct PXOS_
     void* SymbolFunctionTableAccess;
     void* SymbolModuleBaseGet;
 #endif
+
+    void* ApplicationAddressMinimum;
+    void* ApplicationAddressMaximum;
+    PXInt64U ProcessorActiveMask;
+    PXInt32U ProcessorAmountPhysical;
+    PXInt32U ProcessorAmountLogical;
+
+    PXInt32U ProcessorAmountNUMA;
+
+
+    PXInt32U ProcessorCacheL1Size;
+    PXInt32U ProcessorCacheL2Size;
+    PXInt32U ProcessorCacheL3Size;
+
+    PXSize CacheLineSize;
+    PXSize PageSizeNormal;
+    PXSize PageSizeLarge;
+    PXSize PageSizeHuge;
+    PXInt32U dwAllocationGranularity;
+
+    PXBool Init;
 }
 PXOS;
 
@@ -124,16 +154,68 @@ PXOS;
 //---------------------------------------------------------
 //  Init
 //---------------------------------------------------------
-PXPublic PXActionResult PXAPI PXOSAPIInit();
-PXPublic PXOS* PXAPI PXOSGet();
+PXPublic PXActionResult PXAPI PXSystemPrelude();
+PXPublic PXOS* PXAPI PXSystemGet();
+
+PXPublic void PXAPI PXSystemVersionGet(char* const text, const PXSize textSize);
 //---------------------------------------------------------
+
+
+
+// Cleanse the filepath from symbols like "\.", "\.." and "/"
+PXPublic PXActionResult PXAPI PXFilePathCleanse(const char* pathInput, char* const pathOutput, const PXSize pathOutputSizeMAX, PXSize* const pathOutputSizeWritten);
+
+
+
+//---------------------------------------------------------
+// Text
+//---------------------------------------------------------
+PXPublic void PXAPI PXTextUTF8ToUNICODE(wchar_t* const textOutput, const char* const textInput);
+PXPublic void PXAPI PXTextUNICODEToUTF8(char* const textOutput, const wchar_t* const textInput);
+
 
 
 
 //---------------------------------------------------------
 // Process and threads
 //---------------------------------------------------------
-PXPublic void PXAPI PXProcessCurrentGet();
+PXPublic void PXAPI PXProcessCurrent(PXProcess* const pxProcess);
+
+
+PXPublic PXActionResult PXAPI PXProcessMemoryWrite
+(
+    const PXProcessHandle pxProcessHandle,
+    const void* baseAddress,
+    const void* bufferData,
+    const PXSize bufferSizeMax,
+    PXSize* const bufferSizeWritten
+);
+
+PXPublic PXActionResult PXAPI PXProcessMemoryRead
+(
+    const PXProcessHandle pxProcessHandle,
+    const void* baseAddress,
+    void* const bufferData,
+    const PXSize bufferSizeMax,
+    PXSize* const bufferSizeWritten
+);
+
+
+
+PXPublic PXActionResult PXAPI PXThreadCurrent(PXThread* const pxThread);
+PXPublic PXActionResult PXAPI PXThreadResume(PXThread* const pxThread);
+PXPublic PXActionResult PXAPI PXThreadSuspend(PXThread* const pxThread);
+PXPublic PXActionResult PXAPI PXThreadWait(PXThread* const pxThread);
+
+PXPublic PXActionResult PXAPI PXThreadCPUCoreAffinitySet(PXThread* const pxThread, const PXInt16U coreIndex);
+
+
+// Causes the calling thread to yield execution to another
+// thread that is ready to run on the current processor.
+// The operating system selects the next thread to be executed.
+// The function returns true if a yield was caused, otherwise the
+// current thread proceeds execution and false is returned.
+PXPublic PXActionResult PXAPI PXThreadYieldToOtherThreads();
 //---------------------------------------------------------
 
 
@@ -233,6 +315,8 @@ PXPublic PXActionResult PXAPI PXSymbolFromAddress(PXSymbol* const pxSymbol, cons
 PXPublic PXActionResult PXAPI PXSymbolEnumerate();
 PXPublic PXActionResult PXAPI PXSymbolFunctionTableAccess();
 PXPublic PXActionResult PXAPI PXSymbolModuleBaseGet();
+// Adress to module HANDLE
+PXPublic PXActionResult PXAPI PXSymbolModuleHandleFromAdress(PXHandleModule* const pxHandleModule, const void* const adress);
 //---------------------------------------------------------
 
 
@@ -253,6 +337,10 @@ PXPublic PXActionResult PXAPI PXCriticalSectionDelete(PXLock* const pxLock);
 PXPublic PXActionResult PXAPI PXCriticalSectionEnter(PXLock* const pxLock);
 PXPublic PXActionResult PXAPI PXCriticalSectionLeave(PXLock* const pxLock);
 //---------------------------------------------------------
+
+
+
+
 
 
 #endif
