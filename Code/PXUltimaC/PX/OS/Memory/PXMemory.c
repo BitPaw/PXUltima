@@ -943,11 +943,17 @@ void PXAPI PXMemoryPageInfoFetch(PXMemoryPageInfo* const pxFilePageFileInfo, con
     pxFilePageFileInfo->PageSizeNormal = pxOS->PageSizeNormal;
     pxFilePageFileInfo->PageSizeLarge = pxOS->PageSizeLarge;
     pxFilePageFileInfo->PageSizeHuge = pxOS->PageSizeHuge;
+    pxFilePageFileInfo->PageSizePhysical = pxOS->PageSizePhysical;
 
     // Calc the size
     pxFilePageFileInfo->PageAmountNormal = (objectSize / pxFilePageFileInfo->PageSizeNormal + 1);
-
     pxFilePageFileInfo->PageUtilizationNormal = (objectSize * 100) / (pxFilePageFileInfo->PageSizeNormal * pxFilePageFileInfo->PageAmountNormal);
+
+    if(pxFilePageFileInfo->PageSizePhysical > 0)
+    {
+        pxFilePageFileInfo->PageAmountPhysical = objectSize / pxFilePageFileInfo->PageSizePhysical + 1;
+        pxFilePageFileInfo->PageUtilizationPhysical = (objectSize * 100) / (pxFilePageFileInfo->PageSizePhysical * pxFilePageFileInfo->PageAmountPhysical);
+    }
 
     if(pxFilePageFileInfo->PageSizeLarge > 0)
     {
@@ -960,64 +966,33 @@ void PXAPI PXMemoryPageInfoFetch(PXMemoryPageInfo* const pxFilePageFileInfo, con
         pxFilePageFileInfo->PageAmountHuge = objectSize / pxFilePageFileInfo->PageSizeHuge + 1;
         pxFilePageFileInfo->PageUtilizationHuge = (objectSize * 100) / (pxFilePageFileInfo->PageSizeHuge * pxFilePageFileInfo->PageAmountHuge);
     }
-}
-
-#if OSWindows
 
 
-PXBool isChecked = 0;
-
-void PXAPI PXWindowsCheckPermission()
-{
-    // A call to VirtualAlloc() with MEM_LARGE_PAGES
-       // WILL normally fail, because we dont have permissions..?
-       // We have permissions, it is only disabled by default.
+    // Calc affinity
 
 
+    const PXBool usePagesPhysical = pxFilePageFileInfo->PageAmountPhysical > 1;
+    const PXBool usePagesLarge = pxFilePageFileInfo->PageAmountLarge > 1;
+    const PXBool usePagesHuge = pxFilePageFileInfo->PageAmountHuge > 1;
 
-      // AddPrivileges();
+    pxFilePageFileInfo->Affinity = PXMemoryPageNormal;
 
-    if(isChecked)
+    if(usePagesPhysical)
     {
-        return;
+        pxFilePageFileInfo->Affinity = PXMemoryPagePhysical;
     }
 
+    if(usePagesLarge)
+    {
+        pxFilePageFileInfo->Affinity = PXMemoryPageLarge;
+    }
 
+    if(usePagesHuge)
+    {
+        pxFilePageFileInfo->Affinity = PXMemoryPageHuge;
+    }
 
-    TOKEN_PRIVILEGES privileges;
-    HANDLE hToken;
-    LUID luid;
-
-
-
-    // Open the process token
-    const BOOL openTokenID = OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken);
-    const PXActionResult openTokenResult = PXErrorCurrent(openTokenID);
-
-
-    const BOOL lookupSuccess = LookupPrivilegeValue(NULL, SE_LOCK_MEMORY_NAME, &luid); // SeLockMemoryPrivilege, NOT THREAD SAFE!
-    const PXActionResult lookupSuccessResult = PXErrorCurrent(lookupSuccess);
-
-    privileges.PrivilegeCount = 1;
-    privileges.Privileges[0].Luid = luid;
-    privileges.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
-
-    const BOOL privilgeResultID = AdjustTokenPrivileges
-    (
-        hToken,
-        FALSE,
-        &privileges,
-        sizeof(TOKEN_PRIVILEGES),
-        PXNull,
-        PXNull
-    );
-    const PXActionResult privilgeResult = PXErrorCurrent(privilgeResultID);
-
-    CloseHandle(hToken);
-
-    isChecked = 1;
 }
-#endif
 
 
 

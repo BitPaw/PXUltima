@@ -190,16 +190,21 @@ PXMemorySymbolInfoMode;
 typedef struct PXMemoryPageInfo_
 {
     PXSize PageSizeNormal;
+    PXSize PageSizePhysical;
     PXSize PageSizeLarge;
     PXSize PageSizeHuge;
 
     PXSize PageAmountNormal;
+    PXSize PageAmountPhysical;
     PXSize PageAmountLarge;
     PXSize PageAmountHuge;
 
     PXInt8U PageUtilizationNormal;
+    PXInt8U PageUtilizationPhysical;
     PXInt8U PageUtilizationLarge;
     PXInt8U PageUtilizationHuge;
+
+    PXInt8U Affinity;
 }
 PXMemoryPageInfo;
 

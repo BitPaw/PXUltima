@@ -8,6 +8,7 @@
 
 #include <PX/Media/PXResource.h>
 #include "Library/PXLibrary.h"
+#include <PX/OS/Async/PXThread.h>
 
 typedef enum PXSymbolType_
 {
@@ -139,16 +140,25 @@ typedef struct PXOS_
     PXInt32U ProcessorCacheL3Size;
 
     PXSize CacheLineSize;
-    PXSize PageSizeNormal;
-    PXSize PageSizeLarge;
-    PXSize PageSizeHuge;
+    PXSize PageSizeNormal;      // 2^12          4.096   4 KB (can be 2KB with PAE)
+    PXSize PageSizePhysical;    // 2^16         65.536  64 KB
+    PXSize PageSizeLarge;       // 2^21      2.097.152   2 MB
+    PXSize PageSizeHuge;        // 2^30  1.073.741.824   1 GB
+  
+
     PXInt32U dwAllocationGranularity;
 
     PXBool Init;
+
+    PXThread MainThread;
 }
 PXOS;
 
 
+#define PXMemoryPageNormal      1
+#define PXMemoryPagePhysical    2
+#define PXMemoryPageLarge       3
+#define PXMemoryPageHuge        4
 
 
 //---------------------------------------------------------
@@ -201,7 +211,7 @@ PXPublic PXActionResult PXAPI PXProcessMemoryRead
 );
 
 
-
+PXPublic PXBool PXAPI PXThreadIsMain();
 PXPublic PXActionResult PXAPI PXThreadCurrent(PXThread* const pxThread);
 PXPublic PXActionResult PXAPI PXThreadResume(PXThread* const pxThread);
 PXPublic PXActionResult PXAPI PXThreadSuspend(PXThread* const pxThread);
@@ -341,6 +351,12 @@ PXPublic PXActionResult PXAPI PXCriticalSectionLeave(PXLock* const pxLock);
 
 
 
+//---------------------------------------------------------
+// File - I/O
+//---------------------------------------------------------
+PXPublic PXActionResult PXAPI PXFileMapToMemoryEE(PXFile* const pxFile, const PXSize requestedSize, const PXAccessMode pxAccessMode, const PXBool prefetch);
+
+//---------------------------------------------------------
 
 
 #endif

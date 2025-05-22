@@ -1996,253 +1996,102 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, PXFileOpenInfo* const pxFi
             );
 #endif
 
-            // File is now opened.
-            // Can we map the whole file into memory?
-            const PXBool shallMap = (PXFileIOInfoAllowMapping & pxFileIOInfo->FlagList) && PXFileMappingAllow;
 
-            if(!shallMap)
+            // Solution A: Load file in memory 1:1
             {
-                return PXActionSuccessful; // No mapping attempt, we are done
-            }
+                pxFile->Data = PXMemoryVirtualAllocate(pxFile->DataUsed, &pxFile->DataAllocated, PXAccessModeReadAndWrite);
 
-            // Attempt memory mapping...
+                if(pxFile->Data)
+                {
+                    // SUCCESS
 
-#if OSUnix
-            const int flags = MAP_SHARED;// MAP_PRIVATE;// | MAP_POPULATE;
-            int accessType = 0;
+                    pxFile->DataUsed = pxFile->DataAllocated;
+                    pxFile->LocationMode = PXFileLocationModeMappedVirtual;
 
-            if(pxFileIOInfo->AccessMode & PXAccessREAD)
-            {
-                accessType |= PROT_READ;
-            }
+                    PXInt64U start = PXTimeCounterStampGet();           
 
-            if(pxFileIOInfo->AccessMode & PXAccessWRITE)
-            {
-                accessType |= PROT_WRITE;
-            }
+                    ReadFile(pxFile->FileHandle, pxFile->Data, pxFile->DataUsed, NULL, NULL);
 
-            if(pxFileIOInfo->AccessMode & PXAccessEXECUTE)
-            {
-                accessType |= PROT_EXEC;
-            }
 
-            // Map data into virtual memory space
-            pxFile->Data = mmap
-            (
-                0, // addressPrefered
-                pxFile->DataUsed,
-                accessType,
-                flags,
-                pxFile->FileDescriptorID, // fileDescriptor
-                0 // offset
-            );
-            const PXActionResult mappingResult = PXErrorCurrent(PXNull != pxFile->Data);
+                   // PXMemoryVirtualPrefetch(pxFile->Data, pxFile->DataUsed);
 
-            if(PXActionSuccessful != openResult)
-            {
+
+                    volatile PXByte sink = 0;
+
+                    for(PXSize i = 0; i < pxFile->DataUsed; i += 4096)
+                    {
+                        sink ^= ((PXByte*)pxFile->Data)[i]; // Touch one byte per page
+                    }
+
+
+                    PXInt64U stop = PXTimeCounterStampGet();
+                    PXInt64U diff = stop - start;
+
+                    PXF32 timeS = PXTimeCounterStampToSecoundsF(diff);
+
+                    PXInt64U bps = pxFile->DataUsed / timeS;
+
+
+
+         
+
+
 #if PXLogEnable
-                PXLogPrint
-                (
-                    PXLoggingError,
-                    "File",
-                    "Mapping",
-                    "Failed for <%s>\n",
-                    pxFileIOInfo->FilePathAdress
-                );
-#endif
-
-                return PXActionFailedFileMapping;
-            }
-
-            pxFile->LocationMode = PXFileLocationModeMappedFromDisk;
-
-            // We are allowed to close the file handle and/or descriptor?
-            // YES! but better not close the descriptor,
-            // Access works in any case but you loose the file reference
-            //
-            // const int closeResultID = fclose(pxFile->FileID);
-            // pxFile->FileID = PXNull;
-
-#elif OSWindows
-
-            // Create mapping
-            {
-                DWORD flProtect = SEC_COMMIT;
-
-                LARGE_INTEGER maximumSize;
-                maximumSize.QuadPart = 0;
-
-                if(PXAccessModeReadAndWrite == pxFile->AccessMode || PXAccessModeWriteOnly == pxFile->AccessMode)
-                {
-                    maximumSize.QuadPart = pxFileIOInfo->FileSizeRequest;
-                }
-
-
-                //  DWORD dwMaximumSizeHigh = 0;
-                // DWORD dwMaximumSizeLow = 0; // Problem if file is 0 Length
-
-#if OS32Bit
-                dwMaximumSizeHigh = 0;
-                dwMaximumSizeLow = pxFile->DataSize;
-#elif OS64Bit
-                dwMaximumSizeHigh = (pxFile->DataSize & 0xFFFFFFFF00000000) >> 32u;
-                dwMaximumSizeLow = pxFile->DataSize & 0x00000000FFFFFFFF;
-#endif
-
-                switch(pxFileIOInfo->AccessMode)
-                {
-                    case PXAccessModeNoAccess:
-                        flProtect |= PAGE_NOACCESS;
-                        break;
-
-                    case PXAccessModeReadOnly:
-                        flProtect |= PAGE_READONLY;
-                        break;
-
-                    case PXAccessModeWriteOnly:
-                        flProtect |= PAGE_READWRITE; // PAGE_WRITECOPY
-                        break;
-
-                    case PXAccessModeReadAndWrite:
-                        flProtect |= PAGE_READWRITE;
-                        break;
-                }
-
-                // [i] I want to add LargePage support but it seems you cant do that with files.
-
-                pxFile->MappingHandle = CreateFileMappingA
-                (
-                    pxFile->FileHandle,
-                    PXNull, // No security attributes
-                    flProtect,
-                    maximumSize.HighPart,   // Is those are both zero, the mapping
-                    maximumSize.LowPart,    // will be as big as the size.
-                    PXNull // No Name
-                );
-                const PXActionResult createMappingResult = PXErrorCurrent(PXNull != pxFile->MappingHandle);
-
-                // We can get a "ERROR_ALREADY_EXISTS" if the mapping
-                // exist already, the HANDLE will still be a valid one
-
-                if(PXActionSuccessful != createMappingResult)
-                {
-#if PXLogEnable
-                    char permissionText[8];
-
-                    PXAccessModeToStringA(permissionText, pxFile->AccessMode);
+                    PXText pxTextbps;
+                    PXTextConstructNamedBufferA(&pxTextbps, pxTextbpsBuffer, 32);
+                    PXTextFormatSize(&pxTextbps, bps);
 
                     PXLogPrint
                     (
-                        PXLoggingError,
+                        PXLoggingInfo,
                         "File",
-                        "Mapping-Create",
-                        "Failed, %s -> <%s>",
+                        "Open",
+                        "Read with %s/s",
+                        pxTextbps.TextA
+                    );
+#endif
+
+
+                    CloseHandle(pxFile->FileHandle);
+                    pxFile->FileHandle = PXNull;
+                }
+                else
+                {
+                    // Solution B: Mapping
+
+                    // File is now opened.
+                    // Can we map the whole file into memory?
+                    const PXBool shallMap = (PXFileIOInfoAllowMapping & pxFileIOInfo->FlagList) && PXFileMappingAllow;
+
+                    if(!shallMap)
+                    {
+                        return PXActionSuccessful; // No mapping attempt, we are done
+                    }
+
+                    // Attempt memory mapping...
+                    PXActionResult mappingResult = PXFileMapToMemoryEE(pxFile, 0, pxFileIOInfo->AccessMode, PXTrue);
+
+#if PXLogEnable
+                    char permissionText[8];
+
+                    PXAccessModeToStringA(permissionText, pxFileIOInfo->AccessMode);
+
+                    PXLogPrint
+                    (
+                        PXLoggingInfo,
+                        "File",
+                        "Mapping",
+                        "OK, %s -> <%p> for <%s>",
                         permissionText,
+                        pxFile->Data,
                         pxFileIOInfo->FilePathAdress
                     );
 #endif
 
-                    return createMappingResult;
+                    // Tell the system we will need this data, so it can prefetch
+             
                 }
-
-                // TODO: What is this for?
-                if(pxFile->DataUsed == 0)
-                {
-                    pxFile->DataUsed = maximumSize.QuadPart;
-                    pxFile->DataAllocated = maximumSize.QuadPart;
-                }
-
-                {
-                    DWORD desiredAccess = 0;
-                    DWORD fileOffsetHigh = 0;
-                    DWORD fileOffsetLow = 0;
-                    PXSize numberOfBytesToMap = 0;
-                    void* baseAddressTarget = 0;
-                    //DWORD  numaNodePreferred = -1; // (NUMA_NO_PREFERRED_NODE)
-
-                    switch(pxFileIOInfo->AccessMode)
-                    {
-                        case PXAccessModeReadOnly:
-                            desiredAccess |= FILE_MAP_READ;
-                            break;
-
-                        case PXAccessModeWriteOnly:
-                            desiredAccess |= FILE_MAP_WRITE;
-                            break;
-
-                        case PXAccessModeReadAndWrite:
-                            desiredAccess |= FILE_MAP_ALL_ACCESS;
-                            break;
-                    }
-
-                    // if large pages are supported, anable if
-#if WindowsAtleastVista && 0
-                    if(useLargeMemoryPages)
-                    {
-                        desiredAccess |= FILE_MAP_LARGE_PAGES;
-                    }
-#endif
-
-                    pxFile->Data = MapViewOfFile // MapViewOfFileExNuma is only useable starting windows vista, this function in XP
-                    (
-                        pxFile->MappingHandle,
-                        desiredAccess,
-                        fileOffsetHigh,
-                        fileOffsetLow,
-                        numberOfBytesToMap
-                    );
-                    const PXActionResult viewMappingResult = PXErrorCurrent(PXNull != pxFile->Data);
-
-                    if(PXActionSuccessful != viewMappingResult)
-                    {
-#if PXLogEnable
-                        char permissionText[8];
-
-                        PXAccessModeToStringA(permissionText, pxFileIOInfo->AccessMode);
-
-                        PXLogPrint
-                        (
-                            PXLoggingError,
-                            "File",
-                            "Mapping-View",
-                            "Failed, %s -> <%s>",
-                            permissionText,
-                            pxFileIOInfo->FilePathAdress
-                        );
-#endif
-
-                        return viewMappingResult;
-                    }
-                }
-
-                pxFile->LocationMode = PXFileLocationModeMappedFromDisk;
-
             }
-
-#endif
-
-
-
-#if PXLogEnable
-            char permissionText[8];
-
-            PXAccessModeToStringA(permissionText, pxFileIOInfo->AccessMode);
-
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                "File",
-                "Mapping",
-                "OK, %s -> <%p> for <%s>",
-                permissionText,
-                pxFile->Data,
-                pxFileIOInfo->FilePathAdress
-            );
-#endif
-
-            // Tell the system we will need this data, so it can prefetch
-            PXMemoryVirtualPrefetch(pxFile->Data, pxFile->DataUsed);
-
 
 
 #if 0
