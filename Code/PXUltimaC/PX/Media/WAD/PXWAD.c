@@ -398,6 +398,7 @@ PXActionResult PXAPI PXWADLoadFromFile(PXResourceTransphereInfo* const pxResourc
 
     PXMemoryHeapFree(PXNull, taskListID);
 
+
     PXInt64U stop = PXTimeCounterStampGet();
 
     PXF32 timeS = PXTimeCounterStampToSecoundsF(stop- start);
