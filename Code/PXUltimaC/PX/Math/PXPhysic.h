@@ -33,6 +33,45 @@ typedef struct PXPhysicProperties_
 }
 PXPhysicProperties;
 
+
+
+
+typedef struct PXVoxelParticle_
+{
+    PXF32 Mass;
+    PXF32 Velocity;
+    PXF32 Pressure;
+}
+PXVoxelParticle;
+
+// A Space of elemets with spesific properties.
+// Can be used to simpulate probalitic behaviour.
+typedef struct PXVoxelParticleSystem_
+{
+    PXF32 Mass;
+    PXF32 Velocity;
+    PXF32 Pressure;
+}
+PXVoxelParticleSystem;
+
+
+// Hooke’s Law for elasticity
+PXPublic void PXAPI PXPhysicVoxelParticleDeform();
+
+// Computational Fluid Dynamics (CFD), Navier-Stokes
+PXPublic void PXAPI PXPhysicVoxelParticleDeform();
+
+
+
+// Provide a voxel/particle system, start with empty particles.
+// We add selected tiles, all other tiles might collapse into a solution.
+PXPublic void PXAPI PXPhysicWaveFunctionCollapse();
+
+
+
+
+
+
 PXPublic void PXAPI PXPhysicGravityApply(PXPhysicProperties* const physicProperties, const PXVector3F32* const gravityDircetion, const PXF32 gravityForce, const PXF32 deltaTime);
 
 #endif
