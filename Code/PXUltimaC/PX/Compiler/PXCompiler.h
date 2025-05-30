@@ -99,7 +99,7 @@ typedef struct PXCompilerSymbolEntry_
         
         PXF16 F16;
         PXInt16S I16S;
-        PXInt16U I16U;   
+        PXInt16U I16U;
         
         PXInt8S CS;
         PXInt8U CU;

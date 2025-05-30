@@ -979,13 +979,28 @@ PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler)
 
     const PXCompilerSymbolLexer newLineSymbol = pxCompiler->Flags & PXCompilerInterpretNewLineAsWhiteSpace ? PXCompilerSymbolLexerWhiteSpace : PXCompilerSymbolLexerNewLine;
 
-    while(!PXFileIsAtEnd(pxFileInput))
-    {
-        PXCompilerSymbolEntry compilerSymbolEntry;
+    PXCompilerSymbolEntry compilerSymbolEntry;
+
+    for(;;)
+    {       
+        PXBool isAtEnd = !PXFileIsAtEnd(pxFileInput);
+
+        if(isAtEnd)
+        {
+            break;
+        }
+
         PXClear(PXCompilerSymbolEntry, &compilerSymbolEntry);
 
         compilerSymbolEntry.Size = PXFileRemainingSize(pxFileInput);
         compilerSymbolEntry.Source = (char*)PXFileCursorPosition(pxFileInput);
+
+        PXBool isEndOfString = '\0' == compilerSymbolEntry.Source[0];
+
+        if(isEndOfString)
+        {
+            break;
+        }
 
         //-----------------------------------------------------------------------------
         // Consume whitespace
