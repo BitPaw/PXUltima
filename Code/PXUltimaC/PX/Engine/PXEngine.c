@@ -14,6 +14,8 @@
 #include <PX/Math/PXCollision.h>
 #include <PX/OS/PXOS.h>
 
+const char PXEngineTextEEQ[] = "PX-Engine";
+
 void PXCDECL PXEngineOnIllegalInstruction(const int signalID)
 {
 #if PXLogEnable
@@ -1021,6 +1023,11 @@ void PXAPI PXEngineWindowEvent(PXEngine* const pxEngine, PXWindowEvent* const px
 
 void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
 {
+    if(!pxEngine->IsRunning)
+    {
+        return; // Engine is not running, we dont release
+    }
+
     const PXInt64U timeNow = PXTimeCounterStampGet();
 
     pxEngine->TimeData.CounterTimeDelta = timeNow - pxEngine->TimeData.CounterTimeLast;
@@ -1565,6 +1572,252 @@ PXBool PXAPI PXEngineIsRunning(const PXEngine* const pxEngine)
     return pxEngine->IsRunning;
 }
 
+void PXAPI PXEngineCreatePRE(PXEngine* const pxEngine, PXEngineStartInfo* const pxEngineStartInfo)
+{
+ 
+}
+
+void PXAPI PXEngineCreateAudio(PXEngine* const pxEngine, PXEngineStartInfo* const pxEngineStartInfo)
+{
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXEngineTextEEQ,
+        "Start",
+        "Audio..."
+    );
+#endif
+
+    const PXActionResult audioInitResult = PXAudioInitialize(&pxEngine->Audio, PXAudioSystemWindowsDirectSound);
+
+    if(PXActionSuccessful != audioInitResult)
+    {
+        return audioInitResult;
+    }
+
+    PXAudioDeviceAmountInfo pxAudioDeviceAmountInfo;
+
+    pxEngine->Audio.DeviceAmount(&pxEngine->Audio, &pxAudioDeviceAmountInfo);
+
+    for(PXInt32U i = 0; i < pxAudioDeviceAmountInfo.DeviceInput; ++i)
+    {
+        PXAudioDevice pxAudioDevice;
+
+        pxEngine->Audio.DeviceFetch(&pxEngine->Audio, PXAudioDeviceTypeInput, i, &pxAudioDevice);
+    }
+
+    for(PXInt32U i = 0; i < pxAudioDeviceAmountInfo.DeviceOutput; ++i)
+    {
+        PXAudioDevice pxAudioDevice;
+
+        pxEngine->Audio.DeviceFetch(&pxEngine->Audio, PXAudioDeviceTypeOutput, i, &pxAudioDevice);
+    }
+
+    pxEngine->Audio.DeviceFetch(&pxEngine->Audio, PXAudioDeviceTypeOutput, 0, &pxEngine->AudioStandardOutDevice);
+
+    pxEngine->Audio.DeviceOpen(&pxEngine->Audio, &pxEngine->AudioStandardOutDevice, PXAudioDeviceTypeOutput, 0);
+}
+
+void PXAPI PXEngineCreateGraphic(PXEngine* const pxEngine, PXEngineStartInfo* const pxEngineStartInfo)
+{
+
+
+
+
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXEngineTextEEQ,
+        "Start",
+        "Window..."
+    );
+#endif
+
+
+    PXResourceCreateInfo pxResourceCreateInfo;
+    PXClear(PXResourceCreateInfo, &pxResourceCreateInfo);
+    pxResourceCreateInfo.ObjectReference = &pxEngine->Window;
+    pxResourceCreateInfo.Type = PXResourceTypeGUIElement;
+    pxResourceCreateInfo.UIElement.Type = PXUIElementTypeWindow;
+    pxResourceCreateInfo.UIElement.Setting = PXWindowBehaviourBorder;
+    pxResourceCreateInfo.UIElement.InteractOwner = pxEngine;
+    pxResourceCreateInfo.UIElement.InteractCallBack = PXEngineWindowEvent;
+    pxResourceCreateInfo.UIElement.Data.Window.EventOwner = pxEngine;
+    pxResourceCreateInfo.UIElement.Data.Window.IsVisible = PXTrue;
+    pxResourceCreateInfo.UIElement.Data.Window.BackGroundColor.Red = 38;
+    pxResourceCreateInfo.UIElement.Data.Window.BackGroundColor.Green = 38;
+    pxResourceCreateInfo.UIElement.Data.Window.BackGroundColor.Blue = 38;
+    pxResourceCreateInfo.UIElement.Data.Window.BackGroundColor.Alpha = 0xFF;
+    pxResourceCreateInfo.UIElement.Data.Window.Width = pxEngineStartInfo->Width;
+    pxResourceCreateInfo.UIElement.Data.Window.Height = pxEngineStartInfo->Height;
+    pxResourceCreateInfo.UIElement.Data.Window.Title = "[N/A]";
+
+    switch(pxEngineStartInfo->Mode)
+    {
+        case PXGraphicInitializeModeWindowless:
+        {
+            pxResourceCreateInfo.UIElement.Data.Window.IsVisible = PXFalse;
+
+            PXEngineResourceCreate(pxEngine, &pxResourceCreateInfo);
+            break;
+        }
+        case PXGraphicInitializeModeOSGUIElement:
+        {
+            // ... ?
+
+            // We dont need to create any UI resource, it has been created already
+
+            //pxEngine->Window = pxEngineStartInfo->UIElement;
+
+            break;
+        }
+        case PXGraphicInitializeModeOSGUI:
+        case PXGraphicInitializeModeWindowfull:
+        {
+            PXEngineResourceCreate(pxEngine, &pxResourceCreateInfo);
+            break;
+        }
+    }
+
+    // Consume all events that are used for creation
+    PXNativDrawWindowEventPoll(&pxEngine->GUISystem.NativDraw, pxEngine->Window);
+
+    PXCameraAspectRatioChange(pxEngine->CameraCurrent, pxEngineStartInfo->Width, pxEngineStartInfo->Height);
+
+
+
+
+
+    if(0)
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingWarning,
+            PXEngineTextEEQ,
+            "Start",
+            "Creation of graphical not enabled!"
+        );
+#endif
+        return;
+    }
+
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXEngineTextEEQ,
+        "Start",
+        "Graphics..."
+    );
+#endif
+
+    PXGraphicInitializeInfo pxGraphicInitializeInfo;
+    PXClear(PXGraphicInitializeInfo, &pxGraphicInitializeInfo);
+    pxGraphicInitializeInfo.Mode = pxEngineStartInfo->Mode;
+    pxGraphicInitializeInfo.GraphicSystem = pxEngineStartInfo->System;
+    pxGraphicInitializeInfo.WindowReference = pxEngine->Window;
+    pxGraphicInitializeInfo.Width = -1;
+    pxGraphicInitializeInfo.Height = -1;
+    pxGraphicInitializeInfo.DirectXVersion = PXDirectXVersionNewest;
+    pxGraphicInitializeInfo.DirectXDriverType = PXDirectXDriverTypeHardwareDevice;
+
+    if(pxEngineStartInfo->WindowRenderTarget)
+    {
+        pxGraphicInitializeInfo.WindowReference = pxEngineStartInfo->WindowRenderTarget;
+        pxEngine->Window = pxEngineStartInfo->WindowRenderTarget;
+    }
+
+
+#if OSUnix
+    pxGraphicInitializeInfo.DisplayConnection = pxEngine->GUISystem.DisplayCurrent.DisplayHandle;
+#endif
+
+    const PXActionResult graphicInit = PXGraphicInstantiate(&pxEngine->Graphic, &pxGraphicInitializeInfo);
+
+    if(PXActionSuccessful != graphicInit)
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingError,
+            PXEngineTextEEQ,
+            "Instantiate",
+            "Failed to create graphical instance!\n"
+            "Graphics card driver is not able to provide a rendering context.\n "
+            "Either the card itself is not capable or a driver is missing and needs to be installed.\n"
+        );
+#endif
+
+        if(0) // If its really important that the graphic API exists, we can exit now.
+        {
+            return graphicInit;
+        }
+    }
+
+    pxEngine->HasGraphicInterface = PXTrue;
+
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXEngineTextEEQ,
+        "Start",
+        "OK, Created graphical instance"
+    );
+#endif
+
+    PXFunctionInvoke(pxEngine->Graphic.Select, pxEngine->Graphic.EventOwner);
+    PXFunctionInvoke(pxEngine->Graphic.SwapIntervalSet, pxEngine->Graphic.EventOwner, 1);
+
+
+    if(pxEngineStartInfo->Mode == PXGraphicInitializeModeOSGUI) // if we have GDI, we init this later
+    {
+        return;
+    }
+
+
+}
+
+void PXAPI PXEngineCreateMod(PXEngine* const pxEngine, PXEngineStartInfo* const pxEngineStartInfo)
+{
+    // Load all mods now, not fully tho, they may need very early checks before anything happens
+    if(pxEngineStartInfo->UseMods)
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            PXEngineTextEEQ,
+            "Start",
+            "Mods..."
+        );
+#endif
+
+        PXText pxText;
+        PXTextMakeFixedA(&pxText, "Mod\\");
+
+        PXModLoaderScan(&pxEngine->ModLoader, &pxText);
+    }
+    else
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingWarning,
+            PXEngineTextEEQ,
+            "Start",
+            "Mod loading is not enabled."
+        );
+#endif
+    }
+}
+
 PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* const pxEngineStartInfo)
 {
     if(!(pxEngine && pxEngineStartInfo))
@@ -1572,13 +1825,26 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
         return PXActionRefusedArgumentNull;
     }
 
+    // Init´the core system
+    PXSystemPrelude();
     PXLogEnableASYNC();
+
+    // register failure callbacks
+    PXSignalCallBackRegister(PXSignalTokenIllegalInstruction, PXEngineOnIllegalInstruction);
+    PXSignalCallBackRegister(PXSignalTokenMemoryViolation, PXEngineOnMemoryViolation);
+
+
+
+    PXEngineCreatePRE(pxEngine, pxEngineStartInfo);
+
+
+
 
 #if PXLogEnable
     PXLogPrint
     (
         PXLoggingInfo,
-        "PX-Engine",
+        PXEngineTextEEQ,
         "Start",
         "Initialize..."
     );
@@ -1587,15 +1853,10 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
     // Name the current thread to the engine
     {
         PXText pxText;
-        PXTextMakeFixedA(&pxText, "PXEngineMain");
+        PXTextMakeFixedA(&pxText, "PX_Engine_Main");
 
         PXThreadNameSet(PXNull, &pxText);
     }
-
-    // register failure callbacks
-    PXSignalCallBackRegister(PXSignalTokenIllegalInstruction, PXEngineOnIllegalInstruction);
-    PXSignalCallBackRegister(PXSignalTokenMemoryViolation, PXEngineOnMemoryViolation);
-
 
 
     PXClear(PXEngine, pxEngine);
@@ -1709,257 +1970,35 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
 
 
 
-    // Load all mods now, not fully tho, they may need very early checks before anything happens
-    if(pxEngineStartInfo->UseMods)
-    {
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            "PX-Engine",
-            "Start",
-            "Mods..."
-        );
-#endif
+    // Load mods, do not init them, just to preload
+    PXEngineCreateMod(pxEngine, pxEngineStartInfo);
 
-        PXText pxText;
-        PXTextMakeFixedA(&pxText, "Mod\\");
+    // Init graphical API, DirectX OpenGL or the OS-WindowManager
+    PXEngineCreateGraphic(pxEngine, pxEngineStartInfo);
 
-        PXModLoaderScan(&pxEngine->ModLoader, &pxText);
-    }
-    else
-    {
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingWarning,
-            "PX-Engine",
-            "Start",
-            "Mod loading is not enabled."
-        );
-#endif
-    }
-
-    //-----------------------------------------------------
-    // Create window
-    //-----------------------------------------------------
-    {
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            "PX-Engine",
-            "Start",
-            "Window..."
-        );
-#endif
-
-
-        PXResourceCreateInfo pxResourceCreateInfo;
-        PXClear(PXResourceCreateInfo, &pxResourceCreateInfo);
-        pxResourceCreateInfo.ObjectReference = &pxEngine->Window;
-        pxResourceCreateInfo.Type = PXResourceTypeGUIElement;
-        pxResourceCreateInfo.UIElement.Type = PXUIElementTypeWindow;
-        pxResourceCreateInfo.UIElement.Setting = PXWindowBehaviourBorder;
-        pxResourceCreateInfo.UIElement.InteractOwner = pxEngine;
-        pxResourceCreateInfo.UIElement.InteractCallBack = PXEngineWindowEvent;
-        pxResourceCreateInfo.UIElement.Data.Window.EventOwner = pxEngine;
-        pxResourceCreateInfo.UIElement.Data.Window.IsVisible = PXTrue;
-        pxResourceCreateInfo.UIElement.Data.Window.BackGroundColor.Red = 38;
-        pxResourceCreateInfo.UIElement.Data.Window.BackGroundColor.Green = 38;
-        pxResourceCreateInfo.UIElement.Data.Window.BackGroundColor.Blue = 38;
-        pxResourceCreateInfo.UIElement.Data.Window.BackGroundColor.Alpha = 0xFF;
-        pxResourceCreateInfo.UIElement.Data.Window.Width = pxEngineStartInfo->Width;
-        pxResourceCreateInfo.UIElement.Data.Window.Height = pxEngineStartInfo->Height;
-        pxResourceCreateInfo.UIElement.Data.Window.Title = "[N/A]";
-
-        switch(pxEngineStartInfo->Mode)
-        {
-            case PXGraphicInitializeModeWindowless:
-            {
-                pxResourceCreateInfo.UIElement.Data.Window.IsVisible = PXFalse;
-
-                PXEngineResourceCreate(pxEngine, &pxResourceCreateInfo);
-                break;
-            }
-            case PXGraphicInitializeModeOSGUIElement:
-            {
-                // ... ?
-
-                // We dont need to create any UI resource, it has been created already
-
-                pxEngine->Window = pxEngineStartInfo->UIElement;
-
-                break;
-            }
-            case PXGraphicInitializeModeOSGUI:
-            case PXGraphicInitializeModeWindowfull:
-            {
-                PXEngineResourceCreate(pxEngine, &pxResourceCreateInfo);
-                break;
-            }
-        }
-    }
-    //-----------------------------------------------------
+    // Audio system
+    PXEngineCreateAudio(pxEngine, pxEngineStartInfo);
 
 
 
     //-----------------------------------------------------
-    //
+    // Input
     //-----------------------------------------------------
     if(pxEngineStartInfo->UseMouseInput)
     {
-        PXNativDrawWindowEventPoll(&pxEngine->GUISystem.NativDraw, pxEngine->Window);
-
         PXWindowMouseMovementEnable(pxEngine->Window->Info.Handle.WindowID);
 
         PXControllerSystemInitilize(&pxEngine->ControllerSystem);
         PXControllerSystemDevicesListRefresh(&pxEngine->ControllerSystem);
     }
     //-----------------------------------------------------
-
-
-
-    //-----------------------------------------------------
-    // Create graphic instance
-    //-----------------------------------------------------
-    if(pxEngineStartInfo->Mode != PXGraphicInitializeModeOSGUI) // if we have GDI, we init this later
-    {
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            "PX-Engine",
-            "Start",
-            "Graphics..."
-        );
-#endif
-
-        PXGraphicInitializeInfo pxGraphicInitializeInfo;
-        PXClear(PXGraphicInitializeInfo, &pxGraphicInitializeInfo);
-        pxGraphicInitializeInfo.Mode = pxEngineStartInfo->Mode;
-        pxGraphicInitializeInfo.GraphicSystem = pxEngineStartInfo->System;
-        pxGraphicInitializeInfo.WindowReference = pxEngine->Window;
-        pxGraphicInitializeInfo.Width = -1;
-        pxGraphicInitializeInfo.Height = -1;
-        pxGraphicInitializeInfo.DirectXVersion = PXDirectXVersionNewest;
-        pxGraphicInitializeInfo.DirectXDriverType = PXDirectXDriverTypeHardwareDevice;
-            
-
-#if OSUnix
-        pxGraphicInitializeInfo.DisplayConnection = pxEngine->GUISystem.DisplayCurrent.DisplayHandle;
-#endif
-
-        const PXActionResult graphicInit = PXGraphicInstantiate(&pxEngine->Graphic, &pxGraphicInitializeInfo);
-
-        if(PXActionSuccessful != graphicInit)
-        {
-#if PXLogEnable
-            PXLogPrint
-            (
-                PXLoggingError,
-                "PX-Engine",
-                "Instantiate",
-                "Failed to create graphical instance!\n"
-                "Graphics card driver is not able to provide a rendering context.\n "
-                "Either the card itself is not capable or a driver is missing and needs to be installed.\n"
-            );
-#endif
-
-            if(0) // If its really important that the graphic API exists, we can exit now.
-            {
-                return graphicInit;
-            }
-        }
-
-        pxEngine->HasGraphicInterface = PXTrue;
-
-
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            "PX-Engine",
-            "Start",
-            "OK, Created graphical instance"
-        );
-#endif
-
-        PXFunctionInvoke(pxEngine->Graphic.Select, pxEngine->Graphic.EventOwner);
-        PXFunctionInvoke(pxEngine->Graphic.SwapIntervalSet, pxEngine->Graphic.EventOwner, 1);    
-    }
-    else
-    {
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingWarning,
-            "PX-Engine",
-            "Start",
-            "Creation of graphical not enabled!"
-        );
-#endif
-    }
-    //-----------------------------------------------------
-
-
-
-    //-----------------------------------------------------
-    // Create Audio Session
-    //-----------------------------------------------------
-    {
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            "PX-Engine",
-            "Start",
-            "Audio..."
-        );
-#endif
-
-        const PXActionResult audioInitResult = PXAudioInitialize(&pxEngine->Audio, PXAudioSystemWindowsDirectSound);
-
-        if(PXActionSuccessful == audioInitResult)
-        {
-            PXAudioDeviceAmountInfo pxAudioDeviceAmountInfo;
-
-            pxEngine->Audio.DeviceAmount(&pxEngine->Audio, &pxAudioDeviceAmountInfo);
-
-            for(size_t i = 0; i < pxAudioDeviceAmountInfo.DeviceInput; i++)
-            {
-                PXAudioDevice pxAudioDevice;
-
-                pxEngine->Audio.DeviceFetch(&pxEngine->Audio, PXAudioDeviceTypeInput, i, &pxAudioDevice);
-            }
-
-            for(size_t i = 0; i < pxAudioDeviceAmountInfo.DeviceOutput; i++)
-            {
-                PXAudioDevice pxAudioDevice;
-
-                pxEngine->Audio.DeviceFetch(&pxEngine->Audio, PXAudioDeviceTypeOutput, i, &pxAudioDevice);
-            }
-
-            pxEngine->Audio.DeviceFetch(&pxEngine->Audio, PXAudioDeviceTypeOutput, 0, &pxEngine->AudioStandardOutDevice);
-
-            pxEngine->Audio.DeviceOpen(&pxEngine->Audio, &pxEngine->AudioStandardOutDevice, PXAudioDeviceTypeOutput, 0);
-        }
-    }
-    //-----------------------------------------------------
-
-
-
-
-    if(PXGraphicInitializeModeOSGUI != pxEngineStartInfo->Mode)
-    {
-        //PXEngineResourceDefaultElements(pxEngine);
-    }
-
-
-
-
     // PXControllerAttachToWindow(&pxBitFireEngine->Controller, pxBitFireEngine->WindowMain.ID);
-    // PXCameraAspectRatioChange(pxBitFireEngine->CameraCurrent, pxBitFireEngine->WindowMain.Width, pxBitFireEngine->WindowMain.Height);
+
+
+   
+
+
+ 
 
 
     pxEngine->IsRunning = PXTrue;
@@ -1969,7 +2008,7 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
         PXLogPrint
         (
             PXLoggingInfo,
-            "PX-Engine",
+            PXEngineTextEEQ,
             "Start",
             "Engine is up and running. Invoking callback for extended load."
         );
@@ -2011,7 +2050,7 @@ PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* 
     PXLogPrint
     (
         PXLoggingInfo,
-        "PX-Engine",
+        PXEngineTextEEQ,
         "Start",
         "----------------DONE----------------"
     );
@@ -2032,7 +2071,7 @@ void PXAPI PXEngineStop(PXEngine* const pxEngine)
     PXLogPrint
     (
         PXLoggingInfo,
-        "PXEngine",
+        PXEngineTextEEQ,
         "Shutdown",
         "All running systems are beeing cloed down"
     );
@@ -2050,7 +2089,7 @@ void PXAPI PXEngineStop(PXEngine* const pxEngine)
     PXLogPrint
     (
         PXLoggingInfo,
-        "PXEngine",
+        PXEngineTextEEQ,
         "Shutdown",
         "Following data might be a sign of a resource leak. Check and advice"
     );
@@ -2086,7 +2125,7 @@ void PXAPI PXEngineStop(PXEngine* const pxEngine)
             PXLogPrint
             (
                 PXLoggingInfo,
-                "PXEngine",
+                PXEngineTextEEQ,
                 "Shutdown",
                 "Thread %s",
                 text.TextA
@@ -2106,7 +2145,7 @@ void PXAPI PXEngineStop(PXEngine* const pxEngine)
     PXLogPrint
     (
         PXLoggingInfo,
-        "PXEngine",
+        PXEngineTextEEQ,
         "Shutdown",
         "Done"
     );
@@ -2518,7 +2557,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
         case PXResourceTypeText:
         {
             //PXEngineTextCreateData* const pxEngineTextCreateData = &pxEngineResourceCreateInfo->Text;
-            PXEngineText* pxEngineText = *(PXEngineText**)pxResourceCreateInfo->ObjectReference;
+            //PXEngineTextEEQ* pxEngineText = *(PXEngineTextEEQ**)pxResourceCreateInfo->ObjectReference;
 
             break;
         }
@@ -3385,6 +3424,8 @@ void PXAPI PXEngineResourceDefaultElements(PXEngine* const pxEngine)
 
 PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
 {
+    assert(pxEngine);
+
     PXRenderEntity pxRenderEntity;
 
     glClearColor(0.1f, 0.2f, 0.3f, 1.0f); // Set background color
@@ -3400,17 +3441,20 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
 
         PXDictionaryIndex(&pxEngine->ResourceManager->SkyBoxLookUp, 0, &pxDictionaryEntry);
 
-        PXSkyBox* const pxSkyBox = *(PXSkyBox**)pxDictionaryEntry.Value;
-
-
-        pxRenderEntity.ObjectReference = pxSkyBox;
-
-        if(pxSkyBox)
+        if(pxDictionaryEntry.Value)
         {
-            pxRenderEntity.ShaderProgramReference = pxSkyBox->ShaderProgramReference;
-        }
+            PXSkyBox* const pxSkyBox = *(PXSkyBox**)pxDictionaryEntry.Value;
 
-        PXEngineResourceRender(pxEngine, &pxRenderEntity);
+
+            pxRenderEntity.ObjectReference = pxSkyBox;
+
+            if(pxSkyBox)
+            {
+                pxRenderEntity.ShaderProgramReference = pxSkyBox->ShaderProgramReference;
+            }
+
+            PXEngineResourceRender(pxEngine, &pxRenderEntity);
+        }       
     }
 
     // Model
@@ -3425,6 +3469,11 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
             PXModel* pxModel = PXNull;
 
             PXDictionaryIndex(modelLookup, i, &pxDictionaryEntry);
+
+            if(!pxDictionaryEntry.Value)
+            {
+                continue;
+            }
 
             pxModel = *(PXModel**)pxDictionaryEntry.Value;
 
@@ -3478,6 +3527,11 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
             PXSprite* pxSprite = PXNull;
 
             PXDictionaryIndex(spirteList, i, &pxDictionaryEntry);
+
+            if(!pxDictionaryEntry.Value)
+            {
+                continue;
+            }
 
             pxSprite = *(PXSprite**)pxDictionaryEntry.Value;
 
@@ -3542,6 +3596,11 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
             PXEngineText* pxEngineText = PXNull;
 
             PXDictionaryIndex(textList, i, &pxDictionaryEntry);
+
+            if(!pxDictionaryEntry.Value)
+            {
+                continue;
+            }
 
             pxEngineText = *(PXEngineText**)pxDictionaryEntry.Value;
 

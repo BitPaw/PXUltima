@@ -171,7 +171,7 @@ typedef struct PXEngineStartInfo_
     PXBool UseMods;
     PXBool UseMouseInput;
 
-    PXWindow* UIElement;
+    PXWindow* WindowRenderTarget;
 }
 PXEngineStartInfo;
 
@@ -185,6 +185,12 @@ PXPrivate void PXAPI PXEngineWindowEvent(PXEngine* const pxEngine, PXWindowEvent
 PXPublic PXInt32U PXAPI PXEngineGenerateRandom(PXEngine* const pxEngine, const PXInt32U limiter);
 
 PXPublic PXBool PXAPI PXEngineIsRunning(const PXEngine* const pxEngine);
+
+
+PXPrivate void PXAPI PXEngineCreatePRE(PXEngine* const pxEngine, PXEngineStartInfo* const pxEngineStartInfo);
+PXPrivate void PXAPI PXEngineCreateAudio(PXEngine* const pxEngine, PXEngineStartInfo* const pxEngineStartInfo);
+PXPrivate void PXAPI PXEngineCreateGraphic(PXEngine* const pxEngine, PXEngineStartInfo* const pxEngineStartInfo);
+PXPrivate void PXAPI PXEngineCreateMod(PXEngine* const pxEngine, PXEngineStartInfo* const pxEngineStartInfo);
 
 
 PXPublic PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* const pxEngineStartInfo);
