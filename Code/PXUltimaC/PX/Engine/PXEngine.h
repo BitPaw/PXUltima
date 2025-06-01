@@ -172,6 +172,7 @@ typedef struct PXEngineStartInfo_
     PXBool UseMouseInput;
 
     PXWindow* WindowRenderTarget;
+    PXWindow* WindowRenderParent;
 }
 PXEngineStartInfo;
 

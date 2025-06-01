@@ -3,6 +3,7 @@
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/Media/PXText.h>
+#include <PX/OS/PXOS.h>
 
 const char PXDictionaryName[] = "Dictionary";
 
@@ -244,6 +245,13 @@ PXBool PXAPI PXDictionaryExtract(PXDictionary* const dictionary, const void* con
 
 void PXAPI PXDictionaryIndex(const PXDictionary* const dictionary, const PXSize index, PXDictionaryEntry* const pxDictionaryEntry)
 {
+    if(!dictionary->Data)
+    {
+        pxDictionaryEntry->Key = 0;
+        pxDictionaryEntry->Value = 0;
+        return;
+    }
+
     const PXSize dataBlockSize = PXDictionaryValueSize(dictionary);
     const PXSize blockSize = dictionary->KeyTypeSize + dataBlockSize;
     const PXByte* blockStart = ((PXByte*)dictionary->Data) + blockSize * index;

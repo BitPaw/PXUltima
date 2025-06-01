@@ -1,6 +1,7 @@
 #include "PXListDynamic.h"
 
 #include <PX/OS/Memory/PXMemory.h>
+#include <PX/OS/PXOS.h>
 
 void* PXAPI PXListDynamicAdd(PXListDynamic* const pxListDynamic, const void* const key, const char* const data, const PXSize dataSize)
 {

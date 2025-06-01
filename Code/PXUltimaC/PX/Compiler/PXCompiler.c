@@ -13,6 +13,10 @@
 #include <stdio.h>
 #endif
 
+const char PXCompilerText[] = "Compiler";
+const char PXCompilerTextLexer[] = "Lexer";
+const char PXCompilerTextParse[] = "Parse";
+
 const char* PXAPI PXCompilerCompilerSymbolLexerToString(const PXCompilerSymbolLexer pxCompilerSymbolLexer)
 {
     switch(pxCompilerSymbolLexer)
@@ -379,8 +383,8 @@ PXBool PXAPI PXCompilerSymbolEntryPeekEnsure(PXCompiler* const pxCompiler, const
         PXLogPrint
         (
             PXLoggingError,
-            "Compiler",
-            "Parse",
+            PXCompilerText,
+            PXCompilerTextParse,
             "Symbol not as expected!\n"
             "Expected:<%s> but got <%s>\n"
             "Line: %i, Character: %i, Size: %i",
@@ -429,7 +433,7 @@ PXBool PXAPI PXCompilerSymbolEntryEnsureCheckList(PXCompiler* const pxCompiler, 
     PXText bufferOptions;
     PXTextConstructBufferA(&bufferOptions, 64);
 
-    for(size_t i = 0; i < amount; i++)
+    for(PXSize i = 0; i < amount; ++i)
     {
         PXCompilerSymbolLexer pxCompilerSymbolLexer = pxCompilerSymbolLexerList[i];
 
@@ -442,8 +446,8 @@ PXBool PXAPI PXCompilerSymbolEntryEnsureCheckList(PXCompiler* const pxCompiler, 
     PXLogPrint
     (
         PXLoggingError,
-        "Compiler",
-        "Parse",
+        PXCompilerText,
+        PXCompilerTextParse,
         "Symbol not as expected!\n"
         "Allowed:%s but got <%s>\n"
         "Line: %i, Character: %i, Size: %i",
@@ -917,8 +921,8 @@ PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler)
         PXLogPrint
         (
             PXLoggingError,
-            "Compiler",
-            "Lexer",
+            PXCompilerText,
+            PXCompilerTextLexer,
             "No data to analyse!"
         );
 #endif
@@ -936,8 +940,8 @@ PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler)
     PXLogPrint
     (
         PXLoggingInfo,
-        "Compiler",
-        "Lexer",
+        PXCompilerText,
+        PXCompilerTextLexer,
         "Starting analisis for <%s>",
         pxTextSize.TextA
     );
@@ -983,7 +987,7 @@ PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler)
 
     for(;;)
     {       
-        PXBool isAtEnd = !PXFileIsAtEnd(pxFileInput);
+        PXBool isAtEnd = PXFileIsAtEnd(pxFileInput);
 
         if(isAtEnd)
         {
@@ -1224,8 +1228,8 @@ PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler)
     PXLogPrint
     (
         PXLoggingInfo,
-        "Compiler",
-        "Lexer",
+        PXCompilerText,
+        PXCompilerTextLexer,
         "Finished analisis.\n"
         "%10s : %i\n"
         "%10s : %-6.3fs\n"
@@ -1629,7 +1633,7 @@ void PXAPI PXCompilerWrite(PXCompiler* const pxCompiler)
     PXLogPrint
     (
         PXLoggingInfo,
-        "Compiler",
+        PXCompilerText,
         "Writer",
         "Starting writing..."
     );
@@ -1662,7 +1666,7 @@ void PXAPI PXCompilerWrite(PXCompiler* const pxCompiler)
     PXLogPrint
     (
         PXLoggingInfo,
-        "Compiler",
+        PXCompilerText,
         "Writer",
         "Finished writing. Took %i ticks",
         timeCounterB

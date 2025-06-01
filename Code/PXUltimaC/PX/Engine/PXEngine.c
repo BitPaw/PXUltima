@@ -1642,6 +1642,7 @@ void PXAPI PXEngineCreateGraphic(PXEngine* const pxEngine, PXEngineStartInfo* co
     pxResourceCreateInfo.ObjectReference = &pxEngine->Window;
     pxResourceCreateInfo.Type = PXResourceTypeGUIElement;
     pxResourceCreateInfo.UIElement.Type = PXUIElementTypeWindow;
+    pxResourceCreateInfo.UIElement.WindowParent = pxEngineStartInfo->WindowRenderParent;
     pxResourceCreateInfo.UIElement.Setting = PXWindowBehaviourBorder;
     pxResourceCreateInfo.UIElement.InteractOwner = pxEngine;
     pxResourceCreateInfo.UIElement.InteractCallBack = PXEngineWindowEvent;
@@ -1729,7 +1730,7 @@ void PXAPI PXEngineCreateGraphic(PXEngine* const pxEngine, PXEngineStartInfo* co
     if(pxEngineStartInfo->WindowRenderTarget)
     {
         pxGraphicInitializeInfo.WindowReference = pxEngineStartInfo->WindowRenderTarget;
-        pxEngine->Window = pxEngineStartInfo->WindowRenderTarget;
+        pxEngine->Window = pxEngineStartInfo->WindowRenderTarget;    
     }
 
 
@@ -2630,7 +2631,11 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
 
             //pxUIElementCreateData.UIElement.Data.SceneRender.StartInfo->UseMouseInput
             pxGUIElementCreateInfo->Name = pxResourceCreateInfo->Name;
-            pxGUIElementCreateInfo->WindowCurrent = pxEngine->Window;
+          
+            if(pxEngine->Window)
+            {
+                pxGUIElementCreateInfo->WindowCurrent = pxEngine->Window;
+            }
 
             PXWindowCreate(&pxEngine->GUISystem, pxResourceCreateInfo, 1);
 
