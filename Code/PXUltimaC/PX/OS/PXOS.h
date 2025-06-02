@@ -174,7 +174,7 @@ PXPublic void PXAPI PXSystemVersionGet(char* const text, const PXSize textSize);
 
 // Cleanse the filepath from symbols like "\.", "\.." and "/"
 PXPublic PXActionResult PXAPI PXFilePathCleanse(const char* pathInput, char* const pathOutput, const PXSize pathOutputSizeMAX, PXSize* const pathOutputSizeWritten);
-
+PXPublic PXActionResult PXAPI PXFileNameViaHandleA(PXFile* const pxFile, char* const fileNameBuffer, const PXSize pathOutputSizeMAX, PXSize* const pathOutputSizeWritten);
 
 
 //---------------------------------------------------------
@@ -357,6 +357,52 @@ PXPublic PXActionResult PXAPI PXCriticalSectionLeave(PXLock* const pxLock);
 PXPublic PXActionResult PXAPI PXFileMapToMemoryEE(PXFile* const pxFile, const PXSize requestedSize, const PXAccessMode pxAccessMode, const PXBool prefetch);
 
 //---------------------------------------------------------
+
+
+
+// Perfromance
+
+
+typedef struct PXPerformanceInfo_
+{
+    PXInt32U UpdateCounter; // Times we updated this stucture. To update delta values.
+
+    PXInt32U PageFaultCount;
+
+    PXSize PeakWorkingSetSize;
+    PXSize WorkingSetSize;
+    PXSize QuotaPeakPagedPoolUsage;
+    PXSize QuotaPagedPoolUsage;
+    PXSize QuotaPeakNonPagedPoolUsage;
+    PXSize QuotaNonPagedPoolUsage;
+    PXSize PagefileUsage;
+    PXSize PeakPagefileUsage;
+    PXSize PrivateUsage;
+    PXSize PrivateWorkingSetSize;
+    PXSize SharedCommitUsage;
+
+    PXSize CommitTotal;
+    PXSize CommitLimit;
+    PXSize CommitPeak;
+    PXSize PhysicalTotal;
+    PXSize PhysicalAvailable;
+    PXSize SystemCache;
+    PXSize KernelTotal;
+    PXSize KernelPaged;
+    PXSize KernelNonpaged;
+    PXSize PageSize;
+
+    PXInt32U HandleCount;
+    PXInt32U ProcessCount;
+    PXInt32U ThreadCount;
+}
+PXPerformanceInfo;
+
+// When UpdateCounter is 0, we get the current data.
+// Every call after will get the delta.
+PXPublic PXActionResult PXAPI PXPerformanceInfoGet(PXPerformanceInfo* const pxPerformanceInfo);
+
+
 
 
 #endif

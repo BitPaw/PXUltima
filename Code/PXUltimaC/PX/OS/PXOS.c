@@ -4,6 +4,8 @@
 
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/OS/Async/PXThread.h>
+#include <PX/OS/Memory/PXMemory.h>
+#include <PX/Math/PXMath.h>
 
 #if OSUnix
 #elif OSWindows
@@ -91,7 +93,8 @@ PXOS _PXOS;
 const char PXOSName[] = "OS-Kernel";
 const char PXOSSemaphore[] = "Semaphore";
 const char PXOSCriticalSection[] = "CriticalSec.";
-
+const char PXOSVirtualAllocText[] = "Virtual-Alloc";
+const char PXOSVirtualFreeText[] = "Virtual-Free";
 
 const char PXWindowsLibrarNTDLL[] = "ntdll.dll";
 const char PXWindowsLibraryKernel32[] = "KERNEL32.DLL";
@@ -642,6 +645,182 @@ PXActionResult PXAPI PXFilePathCleanse(const char* pathInput, char* const pathOu
     return pxActionResult;
 }
 
+PXActionResult PXAPI PXFileNameViaHandleA(PXFile* const pxFile, char* const fileNameBuffer, const PXSize pathOutputSizeMAX, PXSize* const pathOutputSizeWritten)
+{
+    char filePathIntermediate[PXPathSizeMax];
+    char* filePathIntermediateOff = filePathIntermediate;
+    PXSize filePathIntermediateSize = 0;
+
+
+#if OSUnix
+
+    // if the filedescriptor is 0, assume we forgot to set it
+    if(0 == pxFile->FileDescriptorID)
+    {
+        pxFile->FileDescriptorID = fileno(pxFile->FileID);
+    }
+
+    const PXBool isValidFileDescriptor = 3 <= pxFile->FileDescriptorID;
+
+    if(!isValidFileDescriptor)
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingError,
+            "OS-Kernel",
+            "File",
+            "Standard input, output and error stream are not files! ID:<%i> FILE*:%p",
+            pxFile->FileDescriptorID,
+            pxFile->FileID
+        );
+#endif
+
+        return PXActionRefusedArgumentInvalid;
+    }
+
+    char namePathBuffer[64];
+    const PXSize namePathBufferSIze = sizeof(namePathBuffer);
+
+    PXTextPrintA(namePathBuffer, namePathBufferSIze, "/proc/self/fd/%d", pxFile->FileDescriptorID); // "/prof/self/fd/0123456789"
+
+    const PXSize writtenBytes = readlink(namePathBuffer, filePath->TextA, filePath->SizeAllocated); // [POSIX.1 - 2008]
+    const PXActionResult readResult = PXErrorCurrent(-1 != writtenBytes);
+
+    if(PXActionSuccessful != readResult)
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingError,
+            "OS-Kernel",
+            "File",
+            "Translate file descriptor <%i> failed! <%s>, FILE*:%p",
+            pxFile->FileDescriptorID,
+            namePathBuffer,
+            pxFile->FileID
+        );
+#endif
+
+        return readResult;
+    }
+
+    filePath->SizeUsed = writtenBytes;
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "OS-Kernel",
+        "File",
+        "Translate file descriptor <%i> to <%s>",
+        pxFile->FileDescriptorID,
+        filePath->TextA
+    );
+#endif
+
+
+    // realpath();
+    //
+    // Only for Apple-OSX
+    //const int resultID = fcntl(pxFile->FileID, F_GETPATH, filePath->TextA); // [POSIX]
+
+    return PXActionSuccessful;
+
+#elif OSWindows
+
+#if WindowsAtleastVista
+
+    // FILE_NAME_OPENED, VOLUME_NAME_DOS
+
+    DWORD flags = 0;
+    BOOL s = GetHandleInformation(pxFile->FileHandle, &flags);
+
+    filePathIntermediateSize = GetFinalPathNameByHandleA
+    (
+        pxFile->FileHandle,
+        filePathIntermediate,
+        PXPathSizeMax,
+        FILE_NAME_OPENED | VOLUME_NAME_DOS
+    ); // Windows Vista, Kernel32.dll, Windows.h
+    const PXActionResult readResult = PXErrorCurrent(0 != filePathIntermediateSize);
+
+
+    // GetShortPathNameA() makes a path to something like "\\?\C:\Data\WORKSP~1\_GIT_~1\BITFIR~1\GAMECL~1\Shader\SKYBOX~2.GLS"
+    // Why would you ever want this?
+
+    // _fullpath(filePath->TextA, buffer, PXPathSizeMax); also, does not what we need it to do
+
+    if(PXActionSuccessful != readResult)
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingError,
+            PXOSName,
+            "File",
+            "Translate file handle <%p> failed!",
+            pxFile->FileHandle,
+            fileNameBuffer
+        );
+#endif
+
+        return readResult;
+    }
+
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXOSName,
+        "File",
+        "Translate file handle <%p> to <%s>",
+        pxFile->FileHandle,
+        fileNameBuffer
+    );
+#endif
+
+
+    filePathIntermediateSize -= 4u;
+    filePathIntermediateOff += 4u;
+
+    char buffer[PXPathSizeMax];
+
+    const DWORD currentPathSize = GetCurrentDirectoryA(PXPathSizeMax, buffer); // Windows XP (+UWP), Kernel32.dll, winbase.h
+
+    const PXSize maxSize = PXMathMinimumIU(currentPathSize, filePathIntermediateSize);
+    const PXBool isMatching = PXTextCompareA(buffer, currentPathSize, filePathIntermediateOff, maxSize, 0);
+
+    if(isMatching)
+    {
+        filePathIntermediateOff += (currentPathSize + 1);
+        filePathIntermediateSize -= (currentPathSize + 1);
+    }
+
+    if(pathOutputSizeWritten)
+    {
+        *pathOutputSizeWritten = filePathIntermediateSize;
+    }
+
+
+    PXTextReplace(filePathIntermediateOff, '\\', '/');
+
+    return PXActionSuccessful;
+#elif WindowsAtleastXP && 0
+
+    GetMappedFileName(GetCurrentProcess(), pMem, pszFilename, MAX_PATH)
+
+#endif
+
+        // Last resort not to get the file name per handle but from self-storage
+        // TODO:
+        // PXTextCopy(&pxFile->FilePath, filePath);
+
+        return PXActionSuccessful;
+#endif
+}
+
 void PXAPI PXTextUTF8ToUNICODE(wchar_t* const textOutput, const char* const textInput)
 {
 #if OSUnix
@@ -1022,7 +1201,7 @@ void* PXAPI PXMemoryHeapCalloc(PXMemoryHeap* pxMemoryHeap, const PXSize amount, 
 #error Memory allocate seems not to be supported on this OS
 #endif
 
-
+#if PXLogEnable && 0
     // Special logging behaviour
     {
         // PXSymbolMemory pxSymbolMemory;
@@ -1040,8 +1219,6 @@ void* PXAPI PXMemoryHeapCalloc(PXMemoryHeap* pxMemoryHeap, const PXSize amount, 
 
           //PXMemorySymbolAdd(&pxSymbolMemory, PXMemorySymbolInfoModeAdd);
 
-
-#if PXLogEnable 
         PXLogPrint
         (
             PXLoggingAllocation,
@@ -1055,9 +1232,9 @@ void* PXAPI PXMemoryHeapCalloc(PXMemoryHeap* pxMemoryHeap, const PXSize amount, 
             pxSymbol.NameFile,
             pxSymbol.NameSymbol,
             pxSymbol.LineNumber
-        );
-#endif
+        );        
     }
+#endif
 
     return adress;
 }
@@ -1222,7 +1399,7 @@ void* PXAPI PXMemoryHeapRealloc(PXMemoryHeap* pxMemoryHeap, const void* const ad
 
     if(!adress)
     {
-        void* memory = PXMemoryHeapCalloc(PXNull, 1, memorySize);
+        void* memory = PXMemoryHeapCalloc(pxMemoryHeap, 1, memorySize);
 
         //PXMemorySet(memory, 0xFF, memorySize);
 
@@ -1243,8 +1420,6 @@ void* PXAPI PXMemoryHeapRealloc(PXMemoryHeap* pxMemoryHeap, const void* const ad
     const PXSize blockSizeNEW = PXMemoryHeapBlockSize(pxMemoryHeap, newAdress);
     const PXOffset offset = blockSizeNEW - blockSizeOLD;
 #endif
-
-
 
 
 #if PXLogEnable
@@ -1306,8 +1481,6 @@ void* PXAPI PXMemoryHeapRealloc(PXMemoryHeap* pxMemoryHeap, const void* const ad
 #endif
 
     return newAdress;
-
-
 }
 
 
@@ -1607,6 +1780,18 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize* const createdSize, cons
                 if(PXActionSuccessful != allocResult)
                 {
                     pxFilePageFileInfo.Affinity = PXMemoryPageNormal; // Demote
+
+#if PXLogEnable
+                    PXLogPrint
+                    (
+                        PXLoggingError,
+                        PXOSName,
+                        PXOSVirtualAllocText,
+                        "Failed! Demoting to <%s>",
+                        "Normal"
+                    );
+#endif
+
                     continue;
                 }
 
@@ -1628,10 +1813,28 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize* const createdSize, cons
                     MEM_LARGE_PAGES | mode,
                     permissions
                 );
+
                 allocResult = PXErrorCurrent(NULL != allocatedData);
 
-                done = PXTrue;
+                if(PXActionSuccessful != allocResult)
+                {
+                    pxFilePageFileInfo.Affinity = PXMemoryPagePhysical; // Demote
 
+#if PXLogEnable
+                    PXLogPrint
+                    (
+                        PXLoggingError,
+                        PXOSName,
+                        PXOSVirtualAllocText,
+                        "Failed! Demoting to <%s>",
+                        "Physical"
+                    );
+#endif
+
+                    continue;
+                }
+
+                done = PXTrue;
 
                 break;
             }
@@ -1658,6 +1861,19 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize* const createdSize, cons
                 if(PXActionSuccessful != allocResult)
                 {
                     pxFilePageFileInfo.Affinity = PXMemoryPageLarge; // Demote
+
+
+#if PXLogEnable
+                    PXLogPrint
+                    (
+                        PXLoggingError,
+                        PXOSName,
+                        PXOSVirtualAllocText,
+                        "Failed! Demoting to <%s>",
+                        "Large"
+                    );
+#endif
+
                     continue;
                 }
 
@@ -1675,7 +1891,7 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize* const createdSize, cons
         (
             PXLoggingError,
             PXOSName,
-            "Virtual-Alloc",
+            PXOSVirtualAllocText,
             "failed! -> VirtualAlloc()"
         );
 #endif
@@ -1698,7 +1914,7 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize* const createdSize, cons
     (
         PXLoggingAllocation,
         PXOSName,
-        "Virtual-Alloc",
+        PXOSVirtualAllocText,
         "<%p> Requested:<%lu>, Got:<%lu>",
         allocatedData,
         size,
@@ -1995,6 +2211,8 @@ PXActionResult PXAPI PXSymbolStackWalk(PXSymbolStackWalkInfo* const pxSymbolStac
 PXActionResult PXAPI PXSymbolStackTrace(PXSymbol* const pxSymbolList, const PXSize pxSymbolListAmount, const PXSize start, const PXSize depth)
 {
     PXMemoryClear(pxSymbolList, sizeof(PXSymbol) * pxSymbolListAmount);
+
+    //return 0;
 
 #if OSUnix 
     void* array[10];
@@ -2849,7 +3067,7 @@ PXActionResult PXAPI PXFileMapToMemoryEE(PXFile* const pxFile, const PXSize requ
             PXLogPrint
             (
                 PXLoggingError,
-                "File",
+                PXOSName,
                 "Mapping-Create",
                 "Failed, %s -> <%s>",
                 permissionText,
@@ -2918,7 +3136,7 @@ PXActionResult PXAPI PXFileMapToMemoryEE(PXFile* const pxFile, const PXSize requ
                 PXLogPrint
                 (
                     PXLoggingError,
-                    "File",
+                    PXOSName,
                     "Mapping-View",
                     "Failed, %s -> <%s>",
                     permissionText,
@@ -2959,7 +3177,7 @@ PXActionResult PXAPI PXFileMapToMemoryEE(PXFile* const pxFile, const PXSize requ
     PXLogPrint
     (
         PXLoggingInfo,
-        "File",
+        PXOSName,
         "Open-Mapping",
         "Read with %s/s",
         pxTextbps.TextA
@@ -2968,6 +3186,112 @@ PXActionResult PXAPI PXFileMapToMemoryEE(PXFile* const pxFile, const PXSize requ
 
     return PXActionSuccessful;
 }
+
+PXActionResult PXAPI PXPerformanceInfoGet(PXPerformanceInfo* const pxPerformanceInfo)
+{
+#if OSUnix
+#elif OSWindows
+
+    PROCESS_MEMORY_COUNTERS_EX2 processMemoryCounters; // PROCESS_MEMORY_COUNTERS
+
+    const HANDLE processHandle = GetCurrentProcess();
+    const DWORD processMemoryCountersSize = sizeof(processMemoryCounters);
+    processMemoryCounters.cb = processMemoryCountersSize;
+
+    const BOOL processMemoryInfo = GetProcessMemoryInfo
+    (
+        processHandle,
+        &processMemoryCounters,
+        processMemoryCountersSize
+    );
+    const PXActionResult pxActionResult = PXErrorCurrent(processMemoryInfo);
+
+    if(PXActionSuccessful != pxActionResult)
+    {
+        return pxActionResult;
+    }
+
+
+    PERFORMANCE_INFORMATION performanceInformation;
+    PXClear(PERFORMANCE_INFORMATION, &performanceInformation);
+    performanceInformation.cb = sizeof(performanceInformation);
+
+    const BOOL performanceInfo = GetPerformanceInfo(&performanceInformation, performanceInformation.cb);
+
+
+    // GetWsChanges
+
+
+    if(0 == pxPerformanceInfo->UpdateCounter)
+    {
+        pxPerformanceInfo->PageFaultCount = processMemoryCounters.PageFaultCount;
+        pxPerformanceInfo->PeakWorkingSetSize = processMemoryCounters.PeakWorkingSetSize;
+        pxPerformanceInfo->WorkingSetSize = processMemoryCounters.WorkingSetSize;
+        pxPerformanceInfo->QuotaPeakPagedPoolUsage = processMemoryCounters.QuotaPeakPagedPoolUsage;
+        pxPerformanceInfo->QuotaPagedPoolUsage = processMemoryCounters.QuotaPagedPoolUsage;
+        pxPerformanceInfo->QuotaPeakNonPagedPoolUsage = processMemoryCounters.QuotaPeakNonPagedPoolUsage;
+        pxPerformanceInfo->QuotaNonPagedPoolUsage = processMemoryCounters.QuotaNonPagedPoolUsage;
+        pxPerformanceInfo->PagefileUsage = processMemoryCounters.PagefileUsage;
+        pxPerformanceInfo->PeakPagefileUsage = processMemoryCounters.PeakPagefileUsage;
+        pxPerformanceInfo->PrivateUsage = processMemoryCounters.PrivateUsage;
+        pxPerformanceInfo->PrivateWorkingSetSize = processMemoryCounters.PrivateWorkingSetSize;
+        pxPerformanceInfo->SharedCommitUsage = processMemoryCounters.SharedCommitUsage;
+
+        pxPerformanceInfo->CommitTotal = performanceInformation.CommitTotal;
+        pxPerformanceInfo->CommitLimit = performanceInformation.CommitLimit;
+        pxPerformanceInfo->CommitPeak = performanceInformation.CommitPeak;
+        pxPerformanceInfo->PhysicalTotal = performanceInformation.PhysicalTotal;
+        pxPerformanceInfo->PhysicalAvailable = performanceInformation.PhysicalAvailable;
+        pxPerformanceInfo->SystemCache = performanceInformation.SystemCache;
+        pxPerformanceInfo->KernelTotal = performanceInformation.KernelTotal;
+        pxPerformanceInfo->KernelPaged = performanceInformation.KernelPaged;
+        pxPerformanceInfo->KernelNonpaged = performanceInformation.KernelNonpaged;
+        pxPerformanceInfo->PageSize = performanceInformation.PageSize;
+        pxPerformanceInfo->HandleCount = performanceInformation.HandleCount;
+        pxPerformanceInfo->ProcessCount = performanceInformation.ProcessCount;
+        pxPerformanceInfo->ThreadCount = performanceInformation.ThreadCount;
+    }
+    else
+    {
+        pxPerformanceInfo->PageFaultCount = processMemoryCounters.PageFaultCount - pxPerformanceInfo->PageFaultCount;
+        pxPerformanceInfo->PeakWorkingSetSize = processMemoryCounters.PeakWorkingSetSize - pxPerformanceInfo->PeakWorkingSetSize;
+        pxPerformanceInfo->WorkingSetSize = processMemoryCounters.WorkingSetSize - pxPerformanceInfo->WorkingSetSize;
+        pxPerformanceInfo->QuotaPeakPagedPoolUsage = processMemoryCounters.QuotaPeakPagedPoolUsage - pxPerformanceInfo->QuotaPeakPagedPoolUsage;
+        pxPerformanceInfo->QuotaPagedPoolUsage = processMemoryCounters.QuotaPagedPoolUsage - pxPerformanceInfo->QuotaPagedPoolUsage;
+        pxPerformanceInfo->QuotaPeakNonPagedPoolUsage = processMemoryCounters.QuotaPeakNonPagedPoolUsage - pxPerformanceInfo->QuotaPeakNonPagedPoolUsage;
+        pxPerformanceInfo->QuotaNonPagedPoolUsage = processMemoryCounters.QuotaNonPagedPoolUsage - pxPerformanceInfo->QuotaNonPagedPoolUsage;
+        pxPerformanceInfo->PagefileUsage = processMemoryCounters.PagefileUsage - pxPerformanceInfo->PagefileUsage;
+        pxPerformanceInfo->PeakPagefileUsage = processMemoryCounters.PeakPagefileUsage - pxPerformanceInfo->PeakPagefileUsage;
+        pxPerformanceInfo->PrivateUsage = processMemoryCounters.PrivateUsage - pxPerformanceInfo->PrivateUsage;
+        pxPerformanceInfo->PrivateWorkingSetSize = processMemoryCounters.PrivateWorkingSetSize - pxPerformanceInfo->PrivateWorkingSetSize;
+        pxPerformanceInfo->SharedCommitUsage = processMemoryCounters.SharedCommitUsage - pxPerformanceInfo->SharedCommitUsage;
+
+        pxPerformanceInfo->CommitTotal = performanceInformation.CommitTotal - pxPerformanceInfo->CommitTotal;
+        pxPerformanceInfo->CommitLimit = performanceInformation.CommitLimit - pxPerformanceInfo->CommitLimit;
+        pxPerformanceInfo->CommitPeak = performanceInformation.CommitPeak - pxPerformanceInfo->CommitPeak;
+        pxPerformanceInfo->PhysicalTotal = performanceInformation.PhysicalTotal - pxPerformanceInfo->PhysicalTotal;
+        pxPerformanceInfo->PhysicalAvailable = performanceInformation.PhysicalAvailable - pxPerformanceInfo->PhysicalAvailable;
+        pxPerformanceInfo->SystemCache = performanceInformation.SystemCache - pxPerformanceInfo->SystemCache;
+        pxPerformanceInfo->KernelTotal = performanceInformation.KernelTotal - pxPerformanceInfo->KernelTotal;
+        pxPerformanceInfo->KernelPaged = performanceInformation.KernelPaged - pxPerformanceInfo->KernelPaged;
+        pxPerformanceInfo->KernelNonpaged = performanceInformation.KernelNonpaged - pxPerformanceInfo->KernelNonpaged;
+        pxPerformanceInfo->PageSize = performanceInformation.PageSize - pxPerformanceInfo->PageSize;
+        pxPerformanceInfo->HandleCount = performanceInformation.HandleCount - pxPerformanceInfo->HandleCount;
+        pxPerformanceInfo->ProcessCount = performanceInformation.ProcessCount - pxPerformanceInfo->ProcessCount;
+        pxPerformanceInfo->ThreadCount = performanceInformation.ThreadCount - pxPerformanceInfo->ThreadCount;
+    }
+
+    ++pxPerformanceInfo->UpdateCounter;
+
+
+
+    return pxActionResult;
+
+#else
+    return PXActionInvalid;
+#endif
+}
+
 
 
 
