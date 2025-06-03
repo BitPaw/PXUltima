@@ -781,6 +781,13 @@ PXActionResult PXAPI PXFileFormatInfoViaContent(PXFileFormatInfo* const pxFileFo
     };
     const PXInt8U amount = sizeof(pxFileFormatInfoList) / sizeof(PXFileFormatInfo);
 
+
+    if(!pxFile->Data)
+    {
+
+    }
+
+
     for(size_t i = 0; i < amount; ++i)
     {
         const PXFileFormatInfo* const pxFileFormatInfoComp = &pxFileFormatInfoList[i];
@@ -1997,6 +2004,10 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, PXFileOpenInfo* const pxFi
 #endif
 
 
+            PXPerformanceInfo pxPerformanceInfo;
+            pxPerformanceInfo.UpdateCounter = 0;
+            PXPerformanceInfoGet(&pxPerformanceInfo);
+
             // Solution A: Load file in memory 1:1
             {
                 pxFile->Data = PXMemoryVirtualAllocate(pxFile->DataUsed, &pxFile->DataAllocated, PXAccessModeReadAndWrite);
@@ -2008,35 +2019,41 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, PXFileOpenInfo* const pxFi
                     pxFile->DataUsed = pxFile->DataAllocated;
                     pxFile->LocationMode = PXFileLocationModeMappedVirtual;
 
-                    PXInt64U start = PXTimeCounterStampGet();           
-
-                    ReadFile(pxFile->FileHandle, pxFile->Data, pxFile->DataUsed, NULL, NULL);
+                    BOOL ok = ReadFile(pxFile->FileHandle, pxFile->Data, pxFile->DataUsed, NULL, NULL);
 
 
                    // PXMemoryVirtualPrefetch(pxFile->Data, pxFile->DataUsed);
 
+                    PXPerformanceInfoGet(&pxPerformanceInfo);
 
+
+#if 0
                     volatile PXByte sink = 0;
 
                     for(PXSize i = 0; i < pxFile->DataUsed; i += 4096)
                     {
                         sink ^= ((PXByte*)pxFile->Data)[i]; // Touch one byte per page
                     }
+#endif
 
-
-                    PXInt64U stop = PXTimeCounterStampGet();
-                    PXInt64U diff = stop - start;
-
-                    PXF32 timeS = PXTimeCounterStampToSecoundsF(diff);
-
-                    PXInt64U bps = pxFile->DataUsed / timeS;
+                  //  PXPerformanceInfoGet(&pxPerformanceInfo);
 
 
 
-         
+               
+
+
+                    // We NEED to store the reference manually
+                   // PXFilePathSet(, );
+
+                    pxFile->FilePathData = pxFileIOInfo->FilePathAdress;
+                    pxFile->FilePathSize = pxFileIOInfo->FilePathSize;
+
+
 
 
 #if PXLogEnable
+                    PXInt64U bps = pxFile->DataUsed / pxPerformanceInfo.TimeDelta;
                     PXText pxTextbps;
                     PXTextConstructNamedBufferA(&pxTextbps, pxTextbpsBuffer, 32);
                     PXTextFormatSize(&pxTextbps, bps);
@@ -2071,7 +2088,15 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, PXFileOpenInfo* const pxFi
                     // Attempt memory mapping...
                     PXActionResult mappingResult = PXFileMapToMemoryEE(pxFile, 0, pxFileIOInfo->AccessMode, PXTrue);
 
+
+                    PXPerformanceInfoGet(&pxPerformanceInfo);
 #if PXLogEnable
+
+                    PXInt64U bps = pxFile->DataUsed / pxPerformanceInfo.TimeDelta;
+                    PXText pxTextbps;
+                    PXTextConstructNamedBufferA(&pxTextbps, pxTextbpsBuffer, 32);
+                    PXTextFormatSize(&pxTextbps, bps);
+
                     char permissionText[8];
 
                     PXAccessModeToStringA(permissionText, pxFileIOInfo->AccessMode);
@@ -2081,9 +2106,10 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, PXFileOpenInfo* const pxFi
                         PXLoggingInfo,
                         "File",
                         "Mapping",
-                        "OK, %s -> <%p> for <%s>",
+                        "OK, %s -> <%p> with %s/s for <%s>",
                         permissionText,
                         pxFile->Data,
+                        pxTextbps.TextA,
                         pxFileIOInfo->FilePathAdress
                     );
 #endif
@@ -4377,168 +4403,38 @@ PXActionResult PXAPI PXFilePathSet(PXFile* const pxFile, const PXText* const fil
 
 PXActionResult PXAPI PXFilePathGet(const PXFile* const pxFile, PXText* const filePath)
 {
-#if OSUnix
+    PXActionResult pxActionResult = PXActionInvalid;
 
-    // if the filedescriptor is 0, assume we forgot to set it
-    if(0 == pxFile->FileDescriptorID)
+    switch(pxFile->LocationMode)
     {
-        pxFile->FileDescriptorID = fileno(pxFile->FileID);
+        case PXFileLocationModeInternal:
+        case PXFileLocationModeExternal:
+        case PXFileLocationModeMappedVirtual:
+        case PXFileLocationModeDirectCached:
+        case PXFileLocationModeDirectUncached:
+        {
+            // As we are not mapped, loaded the file into direct memory, there is no file attached.
+
+            filePath->TextA = pxFile->FilePathData;
+            filePath->SizeUsed = pxFile->FilePathSize;
+            filePath->SizeAllocated = pxFile->FilePathSize;
+            filePath->Format = TextFormatUTF8;
+
+            pxActionResult = PXActionSuccessful;
+
+            break;
+        }
+        case PXFileLocationModeMappedFromDisk:
+        {
+            // We can translate a handle into a filepath
+            pxActionResult = PXFileNameViaHandleA(pxFile, filePath->TextA, filePath->SizeAllocated, &filePath->SizeUsed);
+            break;
+        }
+        default:
+            return PXActionInvalidStateImpossible;
     }
 
-    const PXBool isValidFileDescriptor = 3 <= pxFile->FileDescriptorID;
-
-    if(!isValidFileDescriptor)
-    {
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingError,
-            "OS-Kernel",
-            "File",
-            "Standard input, output and error stream are not files! ID:<%i> FILE*:%p",
-            pxFile->FileDescriptorID,
-            pxFile->FileID
-        );
-#endif
-
-        return PXActionRefusedArgumentInvalid;
-    }
-
-    char namePathBuffer[64];
-    const PXSize namePathBufferSIze = sizeof(namePathBuffer);
-
-    PXTextPrintA(namePathBuffer, namePathBufferSIze, "/proc/self/fd/%d", pxFile->FileDescriptorID); // "/prof/self/fd/0123456789"
-
-    const PXSize writtenBytes = readlink(namePathBuffer, filePath->TextA, filePath->SizeAllocated); // [POSIX.1 - 2008]
-    const PXActionResult readResult = PXErrorCurrent(-1 != writtenBytes);
-
-    if(PXActionSuccessful != readResult)
-    {
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingError,
-            "OS-Kernel",
-            "File",
-            "Translate file descriptor <%i> failed! <%s>, FILE*:%p",
-            pxFile->FileDescriptorID,
-            namePathBuffer,
-            pxFile->FileID
-        );
-#endif
-
-        return readResult;
-    }
-
-    filePath->SizeUsed = writtenBytes;
-
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        "OS-Kernel",
-        "File",
-        "Translate file descriptor <%i> to <%s>",
-        pxFile->FileDescriptorID,
-        filePath->TextA
-    );
-#endif
-
-
-    // realpath();
-    //
-    // Only for Apple-OSX
-    //const int resultID = fcntl(pxFile->FileID, F_GETPATH, filePath->TextA); // [POSIX]
-
-    return PXActionSuccessful;
-
-#elif OSWindows
-
-#if WindowsAtleastVista
-
-    // FILE_NAME_OPENED, VOLUME_NAME_DOS
-
-    DWORD flags = 0;
-    BOOL s = GetHandleInformation(pxFile->FileHandle, &flags);
-
-    const DWORD length = GetFinalPathNameByHandleA
-    (
-        pxFile->FileHandle,
-        filePath->TextA,
-        filePath->SizeAllocated,
-        FILE_NAME_OPENED | VOLUME_NAME_DOS
-    ); // Windows Vista, Kernel32.dll, Windows.h
-    const PXActionResult readResult = PXErrorCurrent(0 != length);
-
-
-    // GetShortPathNameA() makes a path to something like "\\?\C:\Data\WORKSP~1\_GIT_~1\BITFIR~1\GAMECL~1\Shader\SKYBOX~2.GLS"
-    // Why would you ever want this?
-
-    // _fullpath(filePath->TextA, buffer, PXPathSizeMax); also, does not what we need it to do
-
-    if(PXActionSuccessful != readResult)
-    {
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingError,
-            "OS-Kernel",
-            "File",
-            "Translate file handle <%p> failed!",
-            pxFile->FileHandle,
-            filePath->TextA
-        );
-#endif
-
-        return readResult;
-    }
-
-
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        "OS-Kernel",
-        "File",
-        "Translate file handle <%p> to <%s>",
-        pxFile->FileHandle,
-        filePath->TextA
-    );
-#endif
-
-
-    filePath->SizeUsed = length - 4u;
-    filePath->TextA += 4u;
-    filePath->Format = TextFormatASCII;
-
-    char buffer[PXPathSizeMax];
-
-    const DWORD currentPathSize = GetCurrentDirectoryA(PXPathSizeMax, buffer); // Windows XP (+UWP), Kernel32.dll, winbase.h
-
-    const PXSize maxSize = PXMathMinimumIU(currentPathSize, filePath->SizeUsed);
-    const PXBool isMatching = PXTextCompareA(buffer, currentPathSize, filePath->TextA, maxSize, 0);
-
-    if(isMatching)
-    {
-        filePath->TextA += (currentPathSize + 1);
-        filePath->SizeUsed -= (currentPathSize + 1);
-    }
-
-    PXTextReplace(filePath, '\\', '/');
-
-    return PXActionSuccessful;
-#elif WindowsAtleastXP && 0
-
-    GetMappedFileName(GetCurrentProcess(), pMem, pszFilename, MAX_PATH)
-
-#endif
-
-        // Last resort not to get the file name per handle but from self-storage
-        // TODO:
-        // PXTextCopy(&pxFile->FilePath, filePath);
-
-        return PXActionSuccessful;
-#endif
+    return pxActionResult;
 }
 
 PXActionResult PXAPI PXFilePathGetA(PXFile* const pxFile, char* const filePath, const PXSize filePathSize, PXSize* const sizeWritten)
