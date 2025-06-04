@@ -946,8 +946,11 @@ void PXAPI PXMemoryPageInfoFetch(PXMemoryPageInfo* const pxFilePageFileInfo, con
     pxFilePageFileInfo->PageSizePhysical = pxOS->PageSizePhysical;
 
     // Calc the size
-    pxFilePageFileInfo->PageAmountNormal = (objectSize / pxFilePageFileInfo->PageSizeNormal + 1);
-    pxFilePageFileInfo->PageUtilizationNormal = (objectSize * 100) / (pxFilePageFileInfo->PageSizeNormal * pxFilePageFileInfo->PageAmountNormal);
+    if(pxFilePageFileInfo->PageSizeNormal > 0)
+    {
+        pxFilePageFileInfo->PageAmountNormal = (objectSize / pxFilePageFileInfo->PageSizeNormal + 1);
+        pxFilePageFileInfo->PageUtilizationNormal = (objectSize * 100) / (pxFilePageFileInfo->PageSizeNormal * pxFilePageFileInfo->PageAmountNormal);
+    }
 
     if(pxFilePageFileInfo->PageSizePhysical > 0)
     {

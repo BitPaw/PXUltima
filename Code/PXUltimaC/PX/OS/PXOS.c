@@ -2059,6 +2059,55 @@ void* PXAPI PXMemoryVirtualReallocate(const void* adress, const PXSize size)
 
 }
 
+PXActionResult PXAPI PXMemoryVirtualInfoViaAdress(PXMemoryVirtualInfo* const pxMemoryVirtualInfo, const void* adress)
+{
+#if OSUnix
+#elif OSWindows
+
+    // Get size of current adress
+    MEMORY_BASIC_INFORMATION memoryInfo;
+    const SIZE_T size = VirtualQuery(adress, &memoryInfo, sizeof(MEMORY_BASIC_INFORMATION));
+
+    pxMemoryVirtualInfo->BaseAddress = memoryInfo.BaseAddress;
+    pxMemoryVirtualInfo->AllocationBase = memoryInfo.AllocationBase;
+    pxMemoryVirtualInfo->RegionSize = memoryInfo.RegionSize;
+    pxMemoryVirtualInfo->ProtectionAtCreation = memoryInfo.AllocationProtect;
+    pxMemoryVirtualInfo->ProtectionCurrent = memoryInfo.Protect;
+    pxMemoryVirtualInfo->State = memoryInfo.State;
+    pxMemoryVirtualInfo->Type = memoryInfo.Type;
+    pxMemoryVirtualInfo->PartitionID = memoryInfo.PartitionId;
+
+#if 0
+    switch(memoryInfo.AllocationProtect)
+    {
+        case PAGE_NOACCESS: { break; }
+        case PAGE_READONLY: { break; }
+        case PAGE_READWRITE: { break; }
+        case PAGE_WRITECOPY: { break; }
+        case PAGE_EXECUTE: { break; }
+        case PAGE_EXECUTE_READ: { break; }
+        case PAGE_EXECUTE_READWRITE: { break; }
+        case PAGE_EXECUTE_WRITECOPY: { break; }
+        case PAGE_TARGETS_INVALID: { break; }
+        case PAGE_TARGETS_NO_UPDATE: { break; }
+        case PAGE_GUARD: { break; }
+        case PAGE_NOCACHE: { break; }
+        case PAGE_WRITECOMBINE: { break; }
+        case PAGE_ENCLAVE_DECOMMIT: { break; }
+        case PAGE_ENCLAVE_THREAD_CONTROL: { break; }
+        case PAGE_ENCLAVE_UNVALIDATED: { break; }
+
+        default:
+            DebugBreak();
+            break;
+    }
+#endif
+
+#else
+
+#endif
+}
+
 
 
 
@@ -2492,6 +2541,7 @@ PXActionResult PXAPI PXSymbolFromAddress(PXSymbol* const pxSymbol, const void* c
 
     const HANDLE processHandle = GetCurrentProcess(); // TODO: what if we want another process?
 
+
     // Extract symbol
     {
         DWORD64 displacement = 0;
@@ -2555,6 +2605,11 @@ PXActionResult PXAPI PXSymbolFromAddress(PXSymbol* const pxSymbol, const void* c
         pxSymbol->ObjectSize = symbolInfo.SymbolInfo.Size;
         pxSymbol->ModuleAdress = symbolInfo.SymbolInfo.ModBase;
         pxSymbol->SymbolAdress = symbolInfo.SymbolInfo.Address;
+        
+        PXHandleModule pxHandleModule;
+        
+        PXSymbolModuleHandleFromAdress(&pxHandleModule, pxSymbol->ModuleAdress);
+        PXSymbolModuleName(pxHandleModule, pxSymbol->NameModule);
 
         PXTextCopyA(symbolInfo.SymbolInfo.Name, symbolInfo.SymbolInfo.NameLen, pxSymbol->NameSymbol, 64);
 
@@ -2639,6 +2694,28 @@ PXActionResult PXAPI PXSymbolModuleHandleFromAdress(PXHandleModule* const pxHand
     * pxHandleModule = PXNull;
 
     return PXActionRefusedNotSupportedByOperatingSystem;
+#endif
+}
+
+PXActionResult PXAPI PXSymbolModuleName(const PXHandleModule pxHandleModule, char* const name)
+{
+#if OSUnix
+#elif OSWindows
+    char buffer[MAX_PATH];
+
+    DWORD size = GetModuleFileName(pxHandleModule, buffer, MAX_PATH);
+
+    const PXSize index = PXTextFindLastCharacterA(buffer, -1, '\\');
+
+    if(-1 != index)
+    {
+        char* source = &buffer[index+1];
+        DWORD sourceSize = size - index-1;
+
+        PXTextCopyA(source, sourceSize, name, sourceSize);
+    }
+
+    return PXActionSuccessful;
 #endif
 }
 
@@ -2934,6 +3011,11 @@ PXActionResult PXAPI PXCriticalSectionLeave(PXLock* const pxLock)
     return PXActionSuccessful;
 }
 
+#define MAXSIZELISTEE 1024*10
+
+PSAPI_WS_WATCH_INFORMATION watchInformationList[MAXSIZELISTEE];
+
+
 PXActionResult PXAPI PXFileMapToMemoryEE(PXFile* const pxFile, const PXSize requestedSize, const PXAccessMode pxAccessMode, const PXBool prefetch)
 {
     PXInt64U start = PXTimeCounterStampGet();
@@ -3189,20 +3271,35 @@ PXActionResult PXAPI PXFileMapToMemoryEE(PXFile* const pxFile, const PXSize requ
 
 PXActionResult PXAPI PXPerformanceInfoGet(PXPerformanceInfo* const pxPerformanceInfo)
 {
+    if(0 == pxPerformanceInfo->UpdateCounter)
+    {
+        PXClear(PXPerformanceInfo, pxPerformanceInfo);
+        pxPerformanceInfo->TimeStamp = PXTimeCounterStampGet();
+    }
+    else
+    {
+        PXInt64U timestampPrevious = pxPerformanceInfo->TimeStamp;
+
+        pxPerformanceInfo->TimeStamp = PXTimeCounterStampGet(); // override new
+
+        PXInt64U timestampDelta = pxPerformanceInfo->TimeStamp - timestampPrevious;
+
+        pxPerformanceInfo->TimeDelta = PXTimeCounterStampToSecoundsF(timestampDelta);
+    }
+
 #if OSUnix
 #elif OSWindows
 
     PROCESS_MEMORY_COUNTERS_EX2 processMemoryCounters; // PROCESS_MEMORY_COUNTERS
 
     const HANDLE processHandle = GetCurrentProcess();
-    const DWORD processMemoryCountersSize = sizeof(processMemoryCounters);
-    processMemoryCounters.cb = processMemoryCountersSize;
+    processMemoryCounters.cb = sizeof(processMemoryCounters);;
 
     const BOOL processMemoryInfo = GetProcessMemoryInfo
     (
         processHandle,
         &processMemoryCounters,
-        processMemoryCountersSize
+        processMemoryCounters.cb
     );
     const PXActionResult pxActionResult = PXErrorCurrent(processMemoryInfo);
 
@@ -3250,6 +3347,8 @@ PXActionResult PXAPI PXPerformanceInfoGet(PXPerformanceInfo* const pxPerformance
         pxPerformanceInfo->HandleCount = performanceInformation.HandleCount;
         pxPerformanceInfo->ProcessCount = performanceInformation.ProcessCount;
         pxPerformanceInfo->ThreadCount = performanceInformation.ThreadCount;
+
+        const BOOL pageWatchInit = InitializeProcessForWsWatch(processHandle);
     }
     else
     {
@@ -3279,6 +3378,70 @@ PXActionResult PXAPI PXPerformanceInfoGet(PXPerformanceInfo* const pxPerformance
         pxPerformanceInfo->HandleCount = performanceInformation.HandleCount - pxPerformanceInfo->HandleCount;
         pxPerformanceInfo->ProcessCount = performanceInformation.ProcessCount - pxPerformanceInfo->ProcessCount;
         pxPerformanceInfo->ThreadCount = performanceInformation.ThreadCount - pxPerformanceInfo->ThreadCount;
+
+
+#if 0
+        PXClearList(PSAPI_WS_WATCH_INFORMATION, watchInformationList, MAXSIZELISTEE);
+        const DWORD sizeOfList = sizeof(watchInformationList);
+
+        DWORD amount = 0;
+
+        const BOOL pageWatchUpdate = GetWsChanges(processHandle, watchInformationList, sizeOfList);
+        const PXActionResult pageWatchUpdateResult = PXErrorCurrent(pageWatchUpdate);
+
+        if(PXActionSuccessful != pageWatchUpdateResult)
+        {
+            // handle..??
+        }
+        else
+        {
+            // Count
+            for(size_t i = 0; i < MAXSIZELISTEE; i++)
+            {
+                const PSAPI_WS_WATCH_INFORMATION* watchInformation = &watchInformationList[i];
+                const PXBool hasData = (watchInformation->FaultingPc || watchInformation->FaultingVa) > 0;
+
+                if(!hasData)
+                {
+                    break;
+                }
+
+                ++amount;
+            }
+
+
+            for(size_t i = 0; i < amount; i++)
+            {
+                const PSAPI_WS_WATCH_INFORMATION* watchInformation = &watchInformationList[i];
+
+                PXMemoryVirtualInfo pxMemoryVirtualInfo;
+
+                PXMemoryVirtualInfoViaAdress(&pxMemoryVirtualInfo, watchInformation->FaultingVa);
+
+
+                PXSymbol pxSymbol;
+                PXSymbolFromAddress(&pxSymbol, watchInformation->FaultingVa);
+
+#if PXLogEnable
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    PXOSName,
+                    "PageFault",
+                    "%p %i B -> %s::%s::%s::%i",
+                    pxMemoryVirtualInfo.BaseAddress,
+                    pxMemoryVirtualInfo.RegionSize,               
+                    pxSymbol.NameModule,
+                    pxSymbol.NameFile,
+                    pxSymbol.NameSymbol,
+                    pxSymbol.LineNumber
+                );
+#endif
+
+            }            
+        }       
+#endif
+          
     }
 
     ++pxPerformanceInfo->UpdateCounter;

@@ -3360,6 +3360,12 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
     {
         HINSTANCE hInstance = PXNull;
         PXNativDrawWindowHandle windowID = pxGUIElementCreateInfo->WindowCurrent ? pxGUIElementCreateInfo->WindowCurrent->Info.Handle.WindowID : PXNull;
+      //  PXNativDrawWindowHandle windowID = pxGUIElementCreateInfo->WindowParent ? pxGUIElementCreateInfo->WindowParent->Info.Handle.WindowID : PXNull;
+
+        if(pxGUIElementCreateInfo->WindowParent)
+        {
+            //windowID = pxGUIElementCreateInfo->WindowParent->Info.Handle.WindowID;
+        }
 
         if(pxGUIElementCreateInfo->WindowCurrent)
         {
@@ -4079,12 +4085,12 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
                 pxResourceCreateInfo.UIElement.Name = "TAB-Page";
                 pxResourceCreateInfo.UIElement.Invisible = PXFalse;
                 pxResourceCreateInfo.UIElement.WindowCurrent = pxWindowCurrent;
-                pxResourceCreateInfo.UIElement.WindowParent = pxWindowCurrent;
-                pxResourceCreateInfo.UIElement.Setting = PXWindowAllignIgnoreParentMargin | PXWindowBehaviourBorder | PXWindowAllignCenter;// | PXWindowAllignIgnoreParentMargin;
-                pxResourceCreateInfo.UIElement.Position.Margin.Left = 0.002;
-                pxResourceCreateInfo.UIElement.Position.Margin.Top = 0.10;
-                pxResourceCreateInfo.UIElement.Position.Margin.Right = 0.002;
-                pxResourceCreateInfo.UIElement.Position.Margin.Bottom = 0.002;
+                pxResourceCreateInfo.UIElement.WindowParent = pxWindowParent;
+                pxResourceCreateInfo.UIElement.Setting = PXWindowBehaviourBorder | PXWindowAllignCenter;// | PXWindowAllignIgnoreParentMargin;
+                pxResourceCreateInfo.UIElement.Position.Margin.Left = -0.40;
+                pxResourceCreateInfo.UIElement.Position.Margin.Top = 0.025;
+                pxResourceCreateInfo.UIElement.Position.Margin.Right = -0.40;
+                pxResourceCreateInfo.UIElement.Position.Margin.Bottom = -0.525;
 
                 PXResourceManagerAdd(&pxResourceCreateInfo);
                 //PXWindowCreate(pxGUISystem, &pxResourceCreateInfo, 1);
@@ -4263,12 +4269,15 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
             PXEngine* const pxEngine = pxUIElementSceneRenderInfo->Engine;
             PXEngineStartInfo* const pxEngineStartInfo = pxUIElementSceneRenderInfo->StartInfo;
 
+           // pxEngine->Window = pxWindowCurrent; // Maybe override?
+
             pxEngineStartInfo->Mode = PXGraphicInitializeModeOSGUIElement;
             pxEngineStartInfo->Width = pxWindowCurrent->Position.Form.Width;
             pxEngineStartInfo->Height = pxWindowCurrent->Position.Form.Height;
-            pxEngineStartInfo->UIElement = pxWindowCurrent;
             pxEngineStartInfo->Name = "UIElement-RenderFrame";
             pxEngineStartInfo->UseMouseInput = 1;
+            pxEngineStartInfo->WindowRenderTarget = pxWindowCurrent; // Maybe override?
+            pxEngineStartInfo->WindowRenderParent = pxGUIElementCreateInfo->WindowParent;
 
             PXEngineStart(pxEngine, pxEngineStartInfo);
 

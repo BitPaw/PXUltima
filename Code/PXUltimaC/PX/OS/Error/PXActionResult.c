@@ -138,7 +138,7 @@ PXActionResult PXAPI PXErrorCurrent(const PXBool wasSuccessful)
 
 #endif
 
-#if PXLogEnable
+#if PXLogEnable && 0
     PXSymbol pxSymbol;
     PXSymbolStackTrace(&pxSymbol, 1, 2, 1);
 

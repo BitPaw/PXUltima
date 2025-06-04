@@ -1450,9 +1450,11 @@ typedef struct PXOpenGL_
     Display* DisplayHandle;
     Window WindowHandle; // or GLXDrawable eqivilant
 #elif OSWindows
-    HWND WindowHandle;
-    HDC WindowDeviceContextHandle;
+
 #endif
+
+    PXWindow* WindowRenderTarget;
+
 
     PXInt32U Flags;
 }

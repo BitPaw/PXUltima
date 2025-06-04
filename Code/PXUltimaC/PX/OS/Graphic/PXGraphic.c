@@ -13,8 +13,14 @@
 #include <PX/OS/PXOS.h>
 
 #include <stdarg.h>
+#include <assert.h>
 
 #define QuadSkybox 0
+
+
+const char PXGraphicText[] = "Graphic";
+const char PXGraphicInitializeText[] = "Initialize";
+
 
 void PXAPI PXGraphicModelShaderSet(PXGraphic* const pxGraphic, PXRenderable* const renderable, const PXShaderProgram* const shaderPXProgram)
 {
@@ -176,30 +182,45 @@ void PXAPI PXRenderableMeshSegmentConstruct(PXRenderableMeshSegment* const pxRen
 
 PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicInitializeInfo* const pxGraphicInitializeInfo)
 {
+    assert(pxGraphic);
+    assert(pxGraphicInitializeInfo);
+    assert(pxGraphicInitializeInfo->WindowReference);
+
+    PXWindow* pxWindow = pxGraphicInitializeInfo->WindowReference;
+    pxGraphic->WindowReference = pxGraphicInitializeInfo->WindowReference;
+
+       
+#if OSWindows
+    // Under windows, get the device context handle, the access token to render into
+    if(!pxWindow->DeviceContextHandle)
+    {
+        pxWindow->DeviceContextHandle = GetDC(pxWindow->Info.Handle.WindowID);
+    }
+#endif
+
+
 #if PXLogEnable
     PXLogPrint
     (
         PXLoggingInfo,
-        "Graphic",
-        "Instantiate",
-        "Creating context on window:<0x%8.8x>",
-        pxGraphicInitializeInfo->WindowReference->Info.Handle.WindowID
+        PXGraphicText,
+        PXGraphicInitializeText,
+        "Creating context on..\n"
+        "%20s : %i\n"
+        "%20s : 0x%8.8x",
+        "PXID", pxWindow->Info.ID,
+        "HANDLE", pxWindow->Info.Handle.WindowID
+
     );
 #endif
 
     //pxGraphic->AttachedWindow = pxGraphicInitializeInfo->WindowReference;
     pxGraphic->GraphicSystem = pxGraphicInitializeInfo->GraphicSystem;
-    pxGraphic->WindowReference = pxGraphicInitializeInfo->WindowReference;
+
     pxGraphicInitializeInfo->Graphic = pxGraphic;
 
 #if OSUnix
     pxGraphic->DisplayConnection = pxGraphicInitializeInfo->DisplayConnection;
-#elif OSWindows
-    // Get Device context if not already done
-    if(!pxGraphicInitializeInfo->HandleDeviceContext)
-    {
-        pxGraphicInitializeInfo->HandleDeviceContext = GetDC(pxGraphic->WindowReference->Info.Handle.WindowID);
-    }
 #endif
 
 
@@ -245,8 +266,8 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
 
 #if OSUnix
 #elif OSWindows
-        pxWindowPixelSystemInfo.HandleDeviceContext = pxGraphicInitializeInfo->HandleDeviceContext;
-        pxWindowPixelSystemInfo.HandleWindow = pxGraphic->WindowReference->Info.Handle.WindowID;
+        pxWindowPixelSystemInfo.HandleDeviceContext = pxWindow->DeviceContextHandle;
+        pxWindowPixelSystemInfo.HandleWindow = pxWindow->Info.Handle.WindowID;
 #endif
 
 
@@ -326,8 +347,8 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
         PXLogPrint
         (
             PXLoggingInfo,
-            "Graphic",
-            "Initialize",
+            PXGraphicText,
+            PXGraphicInitializeText,
             "Invoke spesific API..."
         );
 
@@ -338,8 +359,8 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
             PXLogPrint
             (
                 PXLoggingWarning,
-                "Graphic",
-                "Initialize",
+                PXGraphicText,
+                PXGraphicInitializeText,
                 "Failure initializing API. Thinking about plan B"
             );
 
@@ -365,8 +386,8 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
                 PXLogPrint
                 (
                     PXLoggingError,
-                    "Graphic",
-                    "Initialize",
+                    PXGraphicText,
+                    PXGraphicInitializeText,
                     "Failure initializing plan B. Exiting engine..."
                 );
 
@@ -438,8 +459,8 @@ PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicI
     PXLogPrint
     (
         PXLoggingInfo,
-        "Graphic",
-        "Init",
+        PXGraphicText,
+        PXGraphicInitializeText,
         "Finished"
     );
 #endif

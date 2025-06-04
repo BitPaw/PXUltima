@@ -57,7 +57,7 @@ typedef struct PXGraphicInitializeInfo_
 #if OSUnix
     Display* DisplayConnection;
 #elif OSWindows
-    HDC HandleDeviceContext;
+    //HDC HandleDeviceContext;
 #endif
 
     PXSize TargetFrameRate;

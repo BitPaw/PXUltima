@@ -2447,6 +2447,8 @@ HGLRC CreateOpenGLContextOnGPU(PXOpenGL* const pxOpenGL, HDC hdc, int gpuIndex)
 
 PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicInitializeInfo* const pxGraphicInitializeInfo)
 {
+    PXWindow* const pxWindow = pxGraphicInitializeInfo->WindowReference;
+
 #if PXLogEnable
     PXLogPrint
     (
@@ -2465,11 +2467,12 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
         }
     }
 
-    pxOpenGL->WindowHandle = pxGraphicInitializeInfo->WindowReference->Info.Handle.WindowID;
+    pxOpenGL->WindowRenderTarget = pxWindow;
+
 #if OSUnix
     pxOpenGL->DisplayHandle = pxGraphicInitializeInfo->DisplayConnection;
-#elif OSWindows
-    pxOpenGL->WindowDeviceContextHandle = pxGraphicInitializeInfo->HandleDeviceContext;
+#elif OSWindows   
+
 #endif
 
 
@@ -2604,7 +2607,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
         pxOpenGL->ContextHandle = glXCreateContext(pxOpenGL->DisplayHandle, visualInfo, NULL, GL_TRUE);
 
 #elif OSWindows
-        pxOpenGL->ContextHandle = pxOpenGL->Binding.ContextCreate(pxGraphicInitializeInfo->HandleDeviceContext);
+        pxOpenGL->ContextHandle = pxOpenGL->Binding.ContextCreate(pxWindow->DeviceContextHandle);
 #endif
 
         // glError invalid here;
@@ -2700,7 +2703,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
 
                 const HGLRC contextAttributes = pxOpenGL->Binding.ContextCreateAttributes
                 (
-                    pxGraphicInitializeInfo->HandleDeviceContext,
+                    pxWindow->DeviceContextHandle,
                     pxOpenGL->ContextHandle,
                     attributeList
                 );
@@ -2951,6 +2954,8 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
 
 PXActionResult PXAPI PXOpenGLSelect(PXOpenGL* const pxOpenGL)
 {
+    PXWindow* const pxWindow = pxOpenGL->WindowRenderTarget;
+
 #if PXLogEnable
     PXLogPrint
     (
@@ -2968,7 +2973,7 @@ PXActionResult PXAPI PXOpenGLSelect(PXOpenGL* const pxOpenGL)
 #elif OSWindows
         "%10s %30s <%p>\n"
         "%10s %30s <%p>",
-        "HDC", "WindowDeviceContextHandle", pxOpenGL->WindowDeviceContextHandle,
+        "HDC", "WindowDeviceContextHandle", pxWindow->DeviceContextHandle,
         "HGLRC", "ContextHandle", pxOpenGL->ContextHandle
 #endif
     );
@@ -2982,7 +2987,7 @@ PXActionResult PXAPI PXOpenGLSelect(PXOpenGL* const pxOpenGL)
 #if OSUnix
     const int result = glXMakeCurrent(pxOpenGL->DisplayHandle, pxOpenGL->WindowHandle, pxOpenGL->ContextHandle);
 #elif OSWindows
-    const BOOL result = pxOpenGL->Binding.MakeCurrent(pxOpenGL->WindowDeviceContextHandle, pxOpenGL->ContextHandle);
+    const BOOL result = pxOpenGL->Binding.MakeCurrent(pxWindow->DeviceContextHandle, pxOpenGL->ContextHandle);
 #endif
 
     if(!result)
@@ -6890,6 +6895,23 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
     PXIndexBuffer* const pxIndexBuffer = &pxModel->Mesh.IndexBuffer;
     PXMesh* const pxMesh = &pxModel->Mesh;
 
+    // Check if the model is valid
+    if(0 == pxMesh->VertexBufferListAmount)
+    {
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingError,
+            PXOpenGLName,
+            PXOpenGLModelName,
+            "Invalid model! No vertex mesh data.",
+            pxMesh->Info.Handle.OpenGLID
+        );
+#endif
+        return PXActionInvalid;
+    }
+
+
     if(pxOpenGL->Binding.VertexArraysGenerate)
     {
         pxOpenGL->Binding.VertexArraysGenerate(1, &(pxMesh->Info.Handle.OpenGLID)); // VAO
@@ -6900,7 +6922,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
         (
             PXLoggingInfo,
             PXOpenGLName,
-            "Model",
+            PXOpenGLModelName,
             "VAO created <%i>",
             pxMesh->Info.Handle.OpenGLID
         );
@@ -6913,7 +6935,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
         (
             PXLoggingWarning,
             PXOpenGLName,
-            "Model",
+            PXOpenGLModelName,
             "VAO not supported"
         );
 #endif
@@ -6946,7 +6968,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
         (
             PXLoggingWarning,
             PXOpenGLName,
-            "Model",
+            PXOpenGLModelName,
             "VBO not supported, Copy for Client-Buffer use."
         );
 #endif
@@ -7117,11 +7139,6 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
            pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, 0);
         }
     }
-
-
-
-
-
 
     // Upload VBO
     {

@@ -264,6 +264,44 @@ PXPublic void* PXAPI PXMemoryHeapRealloc(PXMemoryHeap* pxMemoryHeap, const void*
 //---------------------------------------------------------
 // Memory - Virtual
 //---------------------------------------------------------
+#define PXPAGE_NoAccess                 0
+#define PXPAGE_Rxx                      1
+#define PXPAGE_RWx                      2
+#define PXPAGE_xWx                      3
+#define PXPAGE_xxE                      4
+#define PXPAGE_RxE                      5
+#define PXPAGE_RWE                      6
+#define PXPAGE_EXECUTE_WRITECOPY        7
+#define PXPAGE_TARGETS_INVALID          8
+#define PXPAGE_TARGETS_NO_UPDATE        9
+#define PXPAGE_GUARD                    10
+#define PXPAGE_NOCACHE                  11
+#define PXPAGE_WRITECOMBINE             12
+#define PXPAGE_ENCLAVE_DECOMMIT         13
+#define PXPAGE_ENCLAVE_THREAD_CONTROL   14
+#define PXPAGE_ENCLAVE_UNVALIDATED      15
+
+#define PXPageStateFree     
+#define PXPageStateReserved
+#define PXPageStateCommitted
+
+#define PXPageTypeImage    
+#define PXPageTypeMapped
+#define PXPageTypePrivate
+
+typedef struct PXMemoryVirtualInfo_
+{
+    void* BaseAddress;
+    void* AllocationBase;
+    PXSize RegionSize;    
+    PXInt32U ProtectionAtCreation;
+    PXInt32U ProtectionCurrent;
+    PXInt32U State;
+    PXInt32U Type;
+    PXInt16U PartitionID;
+}
+PXMemoryVirtualInfo;
+
 
 // Allocate memory in virtual memory space.
 // The minimal size will be a pagefile (4KB) as the size will be rounded up to the next page boundary.
@@ -272,6 +310,7 @@ PXPublic void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize* const createdS
 PXPublic void PXAPI PXMemoryVirtualPrefetch(const void* adress, const PXSize size);
 PXPublic PXActionResult PXAPI PXMemoryVirtualRelease(const void* adress, const PXSize size);
 PXPublic void* PXAPI PXMemoryVirtualReallocate(const void* adress, const PXSize size);
+PXPublic PXActionResult PXAPI PXMemoryVirtualInfoViaAdress(PXMemoryVirtualInfo* const pxMemoryVirtualInfo, const void* adress);
 //---------------------------------------------------------
 
 
@@ -327,6 +366,7 @@ PXPublic PXActionResult PXAPI PXSymbolFunctionTableAccess();
 PXPublic PXActionResult PXAPI PXSymbolModuleBaseGet();
 // Adress to module HANDLE
 PXPublic PXActionResult PXAPI PXSymbolModuleHandleFromAdress(PXHandleModule* const pxHandleModule, const void* const adress);
+PXPublic PXActionResult PXAPI PXSymbolModuleName(const PXHandleModule pxHandleModule, char* const name);
 //---------------------------------------------------------
 
 
@@ -359,12 +399,20 @@ PXPublic PXActionResult PXAPI PXFileMapToMemoryEE(PXFile* const pxFile, const PX
 //---------------------------------------------------------
 
 
+typedef struct PXPageFaultInfo_
+{
+    void* ProgramCounter; // Instruction that caused the page fault.
+    void* VirtualAdress; // Page that was added to the working set.
+}
+PXPageFaultInfo;
+
 
 // Perfromance
-
-
 typedef struct PXPerformanceInfo_
 {
+    PXInt64U TimeStamp;
+    PXF32 TimeDelta;
+
     PXInt32U UpdateCounter; // Times we updated this stucture. To update delta values.
 
     PXInt32U PageFaultCount;
@@ -395,6 +443,9 @@ typedef struct PXPerformanceInfo_
     PXInt32U HandleCount;
     PXInt32U ProcessCount;
     PXInt32U ThreadCount;
+
+    PXPageFaultInfo* PageFaultInfoList;
+    PXSize PageFaultInfoListAmount;
 }
 PXPerformanceInfo;
 
