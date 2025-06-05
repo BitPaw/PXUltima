@@ -954,10 +954,11 @@ PXSize PXAPI PXTextFindLastCharacter(const PXText* const pxText, const char char
 {
     switch(pxText->Format)
     {
-    case TextFormatASCII:
-    {
-        return PXTextFindLastCharacterA(pxText->TextA, pxText->SizeUsed, character);
-    }
+        case TextFormatASCII:
+        case TextFormatUTF8:
+        {
+            return PXTextFindLastCharacterA(pxText->TextA, pxText->SizeUsed, character);
+        }
     }
 
     return -1;

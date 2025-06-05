@@ -3180,6 +3180,9 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
         PXActionReturnOnError(fileLoadingResult);
     }
 
+    PXPerformanceInfo pxPerformanceInfo;
+    pxPerformanceInfo.UpdateCounter = 0;
+
     // If a peek method exists, execute it, if not, strait to loading
     if(pxResourceLoadInfo->FormatInfo.ResourcePeek)
     {
@@ -3193,7 +3196,7 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
         );
 #endif
 
-        const PXInt64U timeStampA = PXTimeCounterStampGet();
+        PXPerformanceInfoGet(&pxPerformanceInfo);
         const PXActionResult pxPeekResult = pxResourceLoadInfo->FormatInfo.ResourcePeek(pxResourceLoadInfo);
         const PXBool success = PXActionSuccessful == pxPeekResult;
 
@@ -3211,8 +3214,8 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
             return pxPeekResult;
         }
 
-        const PXInt64U timeStampB = PXTimeCounterStampGet() - timeStampA;
-        pxResourceLoadInfo->TimePeek = PXTimeCounterStampToSecoundsF(timeStampB);
+        PXPerformanceInfoGet(&pxPerformanceInfo);
+        pxResourceLoadInfo->TimePeek = pxPerformanceInfo.TimeDelta;
 
 #if PXLogEnable
         PXLogPrint
@@ -3251,13 +3254,13 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
         );
 #endif
 
-        const PXInt64U timeStampA = PXTimeCounterStampGet();
+        PXPerformanceInfoGet(&pxPerformanceInfo);
 
         pxResourceLoadInfo->OnDeviceDataRegister(pxResourceLoadInfo);
 
-        const PXInt64U timeStampB = PXTimeCounterStampGet() - timeStampA;
+        PXPerformanceInfoGet(&pxPerformanceInfo);
 
-        pxResourceLoadInfo->TimeDeviceDataRegister = PXTimeCounterStampToSecoundsF(timeStampB);
+        pxResourceLoadInfo->TimeDeviceDataRegister = pxPerformanceInfo.TimeDelta;
 
 #if PXLogEnable
         PXLogPrint
@@ -3286,13 +3289,13 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
 
         pxResourceLoadInfo->FileReference = &pxFile;
 
-        const PXInt64U timeStampA = PXTimeCounterStampGet();
+        PXPerformanceInfoGet(&pxPerformanceInfo);
 
         const PXActionResult fileParsingResult = pxResourceLoadInfo->FormatInfo.ResourceLoad(pxResourceLoadInfo);
 
-        const PXInt64U timeStampB = PXTimeCounterStampGet() - timeStampA;
+        PXPerformanceInfoGet(&pxPerformanceInfo);
 
-        pxResourceLoadInfo->TimeTransphere = PXTimeCounterStampToSecoundsF(timeStampB);
+        pxResourceLoadInfo->TimeTransphere = pxPerformanceInfo.TimeDelta;
 
 
 
@@ -3322,9 +3325,10 @@ PXActionResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLo
             PXLoggingInfo,
             PXResourceManagerText,
             "Load-Extract",
-            "Done! Took:%6.3f  ROPs:%-7i <%s>",
+            "OK! Took:%6.3f, ROPs:%-7i PageFaults:%-7i <%s>",
             pxResourceLoadInfo->TimeTransphere,
             pxFile.CounterOperationsRead,
+            pxPerformanceInfo.PageFaultCount,
             filePath->TextA
         );
 #endif
