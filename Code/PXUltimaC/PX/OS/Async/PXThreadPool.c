@@ -683,7 +683,11 @@ PXActionResult PXAPI PXThreadPoolQueueWork(PXThreadPool* pxThreadPool, const PXI
     }
 
     // We can force the sync processing of the whole task
-    const PXBool callSyncronously = !(PXThreadPoolEnableASYNC & pxThreadPool->Flags);
+    PXBool callSyncronously = !(PXThreadPoolEnableASYNC & pxThreadPool->Flags);
+
+#if 1 // FORCE SINGLE THREAD
+    callSyncronously = PXTrue;
+#endif
 
     if(callSyncronously)
     {

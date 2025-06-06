@@ -6,10 +6,12 @@
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/OS/File/PXFile.h>
 #include <PX/OS/Memory/PXMemory.h>
+#include <PX/OS/PXOS.h>
 
 #define PXWavefrontDetectMaterial 0
 
 const char PXWaveFrontText[] = "WaveFront";
+const char PXWaveFrontTextParsing[] = "Parsing";
 
 PXWavefrontLineType PXAPI PXWavefrontPeekLine(const void* line, const PXSize size)
 {
@@ -487,7 +489,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
     (
         PXLoggingInfo,
         PXWaveFrontText,
-        "Parsing",
+        PXWaveFrontTextParsing,
         "Analysed following sizes:\n"
         "%20s : x %i\n"
         "%20s : x %i\n"
@@ -514,7 +516,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
     (
         PXLoggingInfo,
         PXWaveFrontText,
-        "Parsing",
+        PXWaveFrontTextParsing,
         "Step 3, prealocate memory..."
     );
 #endif
@@ -655,7 +657,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
     (
         PXLoggingInfo,
         PXWaveFrontText,
-        "Parsing",
+        PXWaveFrontTextParsing,
         "Step 4, extract data..."
     );
 #endif
@@ -929,7 +931,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
     (
         PXLoggingInfo,
         PXWaveFrontText,
-        "Parsing",
+        PXWaveFrontTextParsing,
         "Done!"
     );
 #endif

@@ -376,8 +376,11 @@ PXActionResult PXAPI PXWADLoadFromFile(PXResourceTransphereInfo* const pxResourc
 #endif 
     };
 
-    PXInt64U start = PXTimeCounterStampGet();
 
+
+    PXPerformanceInfo pxPerformanceInfo;
+    pxPerformanceInfo.UpdateCounter = 0;
+    PXPerformanceInfoGet(&pxPerformanceInfo);
 
     PXLogEnableASYNC();
     PXThreadPoolCreate(PXNull);
@@ -398,11 +401,7 @@ PXActionResult PXAPI PXWADLoadFromFile(PXResourceTransphereInfo* const pxResourc
 
     PXMemoryHeapFree(PXNull, taskListID);
 
-
-    PXInt64U stop = PXTimeCounterStampGet();
-
-    PXF32 timeS = PXTimeCounterStampToSecoundsF(stop- start);
-
+    PXPerformanceInfoGet(&pxPerformanceInfo);
 
 
     return PXActionRefusedNotImplemented;
