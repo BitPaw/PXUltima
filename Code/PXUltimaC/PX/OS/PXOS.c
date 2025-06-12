@@ -623,6 +623,16 @@ void PXAPI PXSystemVersionGet(char* const text, const PXSize textSize)
 #endif
 }
 
+PXPublic PXActionResult PXAPI PXUserNameGet(char* const text, const PXSize textSizeMax, PXSize* const textSizeWritten)
+{
+    return PXPublic PXActionResult PXAPI();
+}
+
+PXPublic PXActionResult PXAPI PXComputerNameGet(char* const text, const PXSize textSizeMax, PXSize* const textSizeWritten)
+{
+    return PXPublic PXActionResult PXAPI();
+}
+
 PXActionResult PXAPI PXFilePathCleanse(const char* pathInput, char* const pathOutput, const PXSize pathOutputSizeMAX, PXSize* const pathOutputSizeWritten)
 {
     PXActionResult pxActionResult;

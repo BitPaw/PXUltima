@@ -172,6 +172,15 @@ PXPublic void PXAPI PXSystemVersionGet(char* const text, const PXSize textSize);
 
 
 
+//---------------------------------------------------------
+// User
+//---------------------------------------------------------
+PXPublic PXActionResult PXAPI PXUserNameGet(char* const text, const PXSize textSizeMax, PXSize* const textSizeWritten);
+PXPublic PXActionResult PXAPI PXComputerNameGet(char* const text, const PXSize textSizeMax, PXSize* const textSizeWritten);
+//---------------------------------------------------------
+
+
+
 // Cleanse the filepath from symbols like "\.", "\.." and "/"
 PXPublic PXActionResult PXAPI PXFilePathCleanse(const char* pathInput, char* const pathOutput, const PXSize pathOutputSizeMAX, PXSize* const pathOutputSizeWritten);
 PXPublic PXActionResult PXAPI PXFileNameViaHandleA(PXFile* const pxFile, char* const fileNameBuffer, const PXSize pathOutputSizeMAX, PXSize* const pathOutputSizeWritten);
