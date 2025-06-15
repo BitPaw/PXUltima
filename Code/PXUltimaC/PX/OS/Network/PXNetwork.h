@@ -186,17 +186,42 @@ PXSocketDestroyInfo;
 #define  PXIPAdressModeIPv6 (1<<2)
 #define  PXIPAdressModeText (1<<3)
 
+
+
+
+// MAC - Media-Access-Control-Adress
+typedef struct PXMAC_
+{
+    PXInt8U Data[6]; // Somewhere i saw it can be up to 32 Bytes?
+}
+PXMAC;
+
+// IP - Version 4
+typedef struct PXIPv4_
+{
+    PXInt8U Data[4];   // Use to directy update each byte
+    PXInt32U ID;    // To use it directly as an int
+
+    // IPAddr
+}
+PXIPv4;
+
+// IP - Version 6
+typedef struct PXIPv6_
+{
+    PXInt8U Data[16]; // 128-Bit
+    // Cant do IDs
+}
+PXIPv6;
+
+
 typedef struct PXIPAdress_
 {
     // Union, to combine IP versions
     union
     {
-        // IP - Version 4
-        char IPv4[4];        // Use to directy update each byte
-        PXInt32U IPv4ID;     // To use it directly as an int
-
-        // IP - Version 6
-        char IPv6[16];       // 128-Bit
+        PXIPv4 IPv4;
+        PXIPv6 IPv6;    
     };
 
     char* Text; // if NULL, use 127.0.0.1
@@ -362,6 +387,38 @@ PXPublic PXActionResult PXAPI PXNetworkSocketBind(PXNetwork* const pxNetwork, PX
 PXPublic PXActionResult PXAPI PXNetworkSocketReceive(PXNetwork* const pxNetwork, PXSocketReadInfo* const pxSocketReadInfo);
 PXPublic PXActionResult PXAPI PXNetworkSocketSend(PXNetwork* const pxNetwork, PXSocketSendInfo* const pxSocketSendInfo);
 PXPublic PXActionResult PXAPI PXNetworkSocketPoll(PXNetwork* const pxNetwork);
+
+
+
+PXPublic PXActionResult PXAPI PXNetworkMACFromIPv4A(PXMAC* const pxMAC, char* const ipv4Text);
+PXPublic PXActionResult PXAPI PXNetworkMACFromIPv4(PXMAC* const pxMAC, PXIPv4* const pxIPv4); // ARP, SendARP
+
+PXPublic PXActionResult PXAPI PXNetworkMACFromIPv6A(PXMAC* const pxMAC, char* const ipv6Text);
+PXPublic PXActionResult PXAPI PXNetworkMACFromIPv6(PXMAC* const pxMAC, PXIPv6* const pxIPv6); // NDP, 
+
+
+
+
+PXPublic PXActionResult PXAPI PXNetworkNameFromIPv4A(char* const name, char* const ipv4Text);
+PXPublic PXActionResult PXAPI PXNetworkNameFromIPv4(char* const name, PXIPv4* const pxIPv4);
+
+
+
+typedef struct PXNetworkAdapter_
+{
+    char Description[64];
+    char Name[32];
+
+    PXMAC MACAdress;
+
+    PXSize MTU; // Transmiited block size
+
+    PXSize SpeedTransmit;
+    PXSize SpeedRecieve;
+}
+PXNetworkAdapter;
+
+PXPublic PXActionResult PXAPI PXNetworkAdapterFetch();
 
 
 

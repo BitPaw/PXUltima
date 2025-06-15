@@ -39,6 +39,7 @@ typedef struct addrinfo AdressInfoType; //#define AdressInfoType (struct addrinf
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/Math/PXMath.h>
 #include <PX/OS/Async/PXThread.h>
+#include <PX/OS/PXOS.h>
 
 #pragma comment(lib, "Ws2_32.lib")
 
@@ -1333,8 +1334,419 @@ PXActionResult PXAPI PXNetworkSocketPoll(PXNetwork* const pxNetwork)
     return PXActionSuccessful;
 }
 
+PXActionResult PXAPI PXNetworkMACFromIPv4A(PXMAC* const pxMAC, char* const ipv4Text)
+{
+    PXIPv4 pxIPv4;
+    pxIPv4.ID = inet_addr(ipv4Text); // Target IP;
+
+    return PXNetworkMACFromIPv4(pxMAC, &pxIPv4);
+}
+
+PXActionResult PXAPI PXNetworkMACFromIPv4(PXMAC* const pxMAC, PXIPv4* const pxIPv4)
+{
+    PXClear(PXMAC, pxMAC);
+
+#if OSUnix
+#elif OSWindows
+
+    ULONG maxAdressLength = sizeof(pxMAC->Data);
+
+    //IPAddr DestIp = inet_addr("192.168.1.1"); // Target IP
+
+    const DWORD result = SendARP
+    (
+        pxIPv4->ID,
+        0, // optional
+        pxMAC->Data,
+        &maxAdressLength
+    ); // Windows 2000, Iphlpapi.dll, iphlpapi.h
+    const PXBool success = NO_ERROR == result;
+
+    switch(result) {
+        case ERROR_GEN_FAILURE:
+            printf(" (ERROR_GEN_FAILURE)\n");
+            break;
+        case ERROR_INVALID_PARAMETER:
+            printf(" (ERROR_INVALID_PARAMETER)\n");
+            break;
+        case ERROR_INVALID_USER_BUFFER:
+            printf(" (ERROR_INVALID_USER_BUFFER)\n");
+            break;
+        case ERROR_BAD_NET_NAME:
+            printf(" (ERROR_GEN_FAILURE)\n");
+            break;
+        case ERROR_BUFFER_OVERFLOW:
+            printf(" (ERROR_BUFFER_OVERFLOW)\n");
+            break;
+        case ERROR_NOT_FOUND:
+            printf(" (ERROR_NOT_FOUND)\n");
+            break;
+        default:
+            printf("\n");
+            break;
+    }
 
 
+#if PXLogEnable
+
+    // Reverse IP again.
+//    pxIPv4->ID = htonl(pxIPv4->ID); // inet_ntoa, ntohl
+
+    struct in_addr addr;
+    addr.S_un.S_addr = pxIPv4->ID;
+    const char* ipStr = inet_ntoa(addr);
+
+ //   inet_pton(AI_INPU);
+
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "Network",
+        "Translate",
+        "IPv4:%s is MAC:%02x-%02x-%02x-%02x-%02x-%02x",
+        ipStr,
+        pxMAC->Data[0],
+        pxMAC->Data[1],
+        pxMAC->Data[2],
+        pxMAC->Data[3],
+        pxMAC->Data[4],
+        pxMAC->Data[5]
+    );
+#endif
+
+#else
+#endif
+
+    return PXActionInvalid;
+}
+
+PXActionResult PXAPI PXNetworkMACFromIPv6A(PXMAC* const pxMAC, char* const ipv6Text)
+{
+    PXIPv6 pxIPv6;
+    const INT result = InetPtonA(AF_INET6, ipv6Text, pxIPv6.Data);
+
+    return PXNetworkMACFromIPv6(pxMAC, &pxIPv6);
+}
+
+PXActionResult PXAPI PXNetworkMACFromIPv6(PXMAC* const pxMAC, PXIPv6* const pxIPv6)
+{
+    PXClear(PXMAC, pxMAC);
+
+    MIB_IPNET_ROW2 ipList;
+    PXClear(MIB_IPNET_ROW2, &ipList);
+
+    // Set the target IP address
+    ipList.Address.Ipv6.sin6_family = AF_INET6;
+
+    PXMemoryCopy(pxIPv6->Data, 16, ipList.Address.Ipv6.sin6_addr.u.Byte, 16);
+
+    // Resolve the MAC address
+    DWORD result = ResolveIpNetEntry2(&ipList, NULL);// Windows Vista, netioapi.h
+
+    if(NO_ERROR != result)
+    {
+        return PXActionInvalid;
+    }
+
+    PXMemoryCopy(ipList.PhysicalAddress, ipList.PhysicalAddressLength, pxMAC->Data, 6);
+
+
+#if PXLogEnable
+
+    char ipStr[46]; // IPv6 max length (46 characters)
+
+    struct sockaddr_in6 addr;
+    addr.sin6_family = AF_INET6;
+    
+    PXMemoryCopy(ipList.PhysicalAddress, 16, addr.sin6_addr.u.Byte, 16);
+
+    PCSTR resultAA = InetNtopA(AF_INET6, &addr.sin6_addr, ipStr, sizeof(ipStr) / sizeof(ipStr[0]));
+
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "Network",
+        "Translate",
+        "IPv4:%s is MAC:%02x-%02x-%02x-%02x-%02x-%02x",
+        ipStr,
+        pxMAC->Data[0],
+        pxMAC->Data[1],
+        pxMAC->Data[2],
+        pxMAC->Data[3],
+        pxMAC->Data[4],
+        pxMAC->Data[5]
+    );
+#endif
+
+
+    return PXActionInvalid;
+}
+
+PXActionResult PXAPI PXNetworkNameFromIPv4A(char* const name, char* const ipv4Text)
+{
+    struct sockaddr_in sa;
+    sa.sin_family = AF_INET;
+    sa.sin_addr.s_addr = inet_addr(ipv4Text);
+
+    char hostname[NI_MAXHOST];
+    INT result = getnameinfo((struct sockaddr*)&sa, sizeof(sa), hostname, NI_MAXHOST, NULL, 0, 0) == 0;
+
+    return PXActionInvalid;
+}
+
+PXActionResult PXAPI PXNetworkNameFromIPv4(char* const name, PXIPv4* const pxIPv4)
+{
+    struct sockaddr_in sa;
+    sa.sin_family = AF_INET;
+    sa.sin_addr.s_addr = inet_addr("8.8.8.8"); // Example: Google's DNS server
+
+    char hostname[NI_MAXHOST];
+    INT result = getnameinfo((struct sockaddr*)&sa, sizeof(sa), hostname, NI_MAXHOST, NULL, 0, 0) == 0;    
+
+    return PXActionInvalid;
+}
+
+PXActionResult PXAPI PXNetworkAdapterFetch()
+{
+    WSADATA wsaData;
+    int x = WSAStartup(MAKEWORD(2, 2), &wsaData); // Initialize Winsock
+
+
+    /* Declare and initialize variables */
+
+    DWORD dwRetVal = 0;
+
+    unsigned int i = 0;
+
+    LPVOID lpMsgBuf = NULL;
+
+    ULONG outBufLen = 0;
+    ULONG Iterations = 0;
+
+
+    PIP_ADAPTER_UNICAST_ADDRESS pUnicast = NULL;
+    PIP_ADAPTER_ANYCAST_ADDRESS pAnycast = NULL;
+    PIP_ADAPTER_MULTICAST_ADDRESS pMulticast = NULL;
+    IP_ADAPTER_DNS_SERVER_ADDRESS* pDnServer = NULL;
+    IP_ADAPTER_PREFIX* pPrefix = NULL;
+
+    // Documentation states that we should preallocate atlest 15KB for this function. 
+    // As it is extremly slow and a call to just get the size will still result in this loading time.
+    // So we need to avoid any more then this call
+    outBufLen = 1024 * 16 * 2;
+    PIP_ADAPTER_ADDRESSES pAddresses = PXMemoryHeapCalloc(PXNull, 1, outBufLen);
+
+    do 
+    {
+        //ULONG outBufLen = 0;
+        dwRetVal = GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_INCLUDE_PREFIX, NULL, pAddresses, &outBufLen);        
+
+        if(ERROR_BUFFER_OVERFLOW == dwRetVal)
+        {
+            // Not enough memory! Resize and try again
+            pAddresses = NULL;
+        }
+        else
+        {
+            break;
+        }
+
+        Iterations++;
+    } 
+    while((dwRetVal == ERROR_BUFFER_OVERFLOW) && (Iterations < 5));
+
+
+    if(dwRetVal != NO_ERROR)
+    {
+        return;
+    }
+
+
+    PXNetworkAdapter* pxNetworkAdapterList = PXMemoryHeapCallocT(PXNetworkAdapter, 10);
+
+
+
+    // If successful, output some information from the data we received
+    PIP_ADAPTER_ADDRESSES pCurrAddresses = pAddresses;
+
+    for(PXSize index = 0 ; pCurrAddresses ; ++index)
+    {
+        PXNetworkAdapter* const pxNetworkAdapter = &pxNetworkAdapterList[index];
+        pxNetworkAdapter->MTU = pCurrAddresses->Mtu;
+
+        pxNetworkAdapter->SpeedTransmit = pCurrAddresses->TransmitLinkSpeed;
+        pxNetworkAdapter->SpeedRecieve = pCurrAddresses->ReceiveLinkSpeed;
+
+
+        PXTextCopyWA(pCurrAddresses->Description, PXTextUnkownLength, pxNetworkAdapter->Description, 64);
+        PXTextCopyWA(pCurrAddresses->FriendlyName, PXTextUnkownLength, pxNetworkAdapter->Name, 32);
+
+        PXMemoryCopy(pCurrAddresses->PhysicalAddress, pCurrAddresses->PhysicalAddressLength, pxNetworkAdapter->MACAdress.Data, 6);
+
+
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "Network",
+            "Translate",
+            "\n"
+            "%20s : %s\n"
+            "%20s : %s\n"
+            "%20s : %02x-%02x-%02x-%02x-%02x-%02x\n"
+            "%20s : %i\n"
+            "%20s : %i",
+
+            "Description", pxNetworkAdapter->Description,
+            "Name", pxNetworkAdapter->Name,
+            "MAC",
+            pxNetworkAdapter->MACAdress.Data[0],
+            pxNetworkAdapter->MACAdress.Data[1],
+            pxNetworkAdapter->MACAdress.Data[2],
+            pxNetworkAdapter->MACAdress.Data[3],
+            pxNetworkAdapter->MACAdress.Data[4],
+            pxNetworkAdapter->MACAdress.Data[5],
+            "SpeedTransmit", pxNetworkAdapter->SpeedTransmit,
+            "SpeedRecieve", pxNetworkAdapter->SpeedRecieve     
+        );
+#endif
+
+
+
+        for(PIP_ADAPTER_UNICAST_ADDRESS unicast = pCurrAddresses->FirstUnicastAddress; unicast; unicast = unicast->Next) 
+        {
+            char ipStr[46]; // IPv6 max size (IPv4 fits too)
+            LPSOCKADDR socketAdress = unicast->Address.lpSockaddr;
+
+            int family = socketAdress->sa_family;
+
+            switch(family)
+            {
+                case AF_INET:
+                {
+                    inet_ntop(AF_INET, &((struct sockaddr_in*)socketAdress)->sin_addr, ipStr, sizeof(ipStr));
+                    break;
+                }
+                case AF_INET6:
+                {
+                    inet_ntop(AF_INET6, &((struct sockaddr_in6*)socketAdress)->sin6_addr, ipStr, sizeof(ipStr));
+                    break;
+                }
+                default:
+                {
+                    break;
+                }
+            }
+
+
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "Network",
+                "Translate",
+                "%s",
+                ipStr                
+            );
+#endif
+        }
+
+
+
+
+
+
+        printf("\tLength of the IP_ADAPTER_ADDRESS struct: %ld\n", pCurrAddresses->Length);
+        printf("\tIfIndex (IPv4 interface): %u\n", pCurrAddresses->IfIndex);
+        printf("\tAdapter name: %s\n", pCurrAddresses->AdapterName);
+
+        pUnicast = pCurrAddresses->FirstUnicastAddress;
+        if(pUnicast != NULL) {
+            for(i = 0; pUnicast != NULL; i++)
+                pUnicast = pUnicast->Next;
+            printf("\tNumber of Unicast Addresses: %d\n", i);
+        }
+        else
+            printf("\tNo Unicast Addresses\n");
+
+        pAnycast = pCurrAddresses->FirstAnycastAddress;
+        if(pAnycast) {
+            for(i = 0; pAnycast != NULL; i++)
+                pAnycast = pAnycast->Next;
+            printf("\tNumber of Anycast Addresses: %d\n", i);
+        }
+        else
+            printf("\tNo Anycast Addresses\n");
+
+        pMulticast = pCurrAddresses->FirstMulticastAddress;
+        if(pMulticast) {
+            for(i = 0; pMulticast != NULL; i++)
+                pMulticast = pMulticast->Next;
+            printf("\tNumber of Multicast Addresses: %d\n", i);
+        }
+        else
+            printf("\tNo Multicast Addresses\n");
+
+        pDnServer = pCurrAddresses->FirstDnsServerAddress;
+        if(pDnServer) {
+            for(i = 0; pDnServer != NULL; i++)
+                pDnServer = pDnServer->Next;
+            printf("\tNumber of DNS Server Addresses: %d\n", i);
+        }
+        else
+            printf("\tNo DNS Server Addresses\n");
+
+        printf("\tDNS Suffix: %wS\n", pCurrAddresses->DnsSuffix);
+        printf("\tDescription: %wS\n", pCurrAddresses->Description);
+        printf("\tFriendly name: %wS\n", pCurrAddresses->FriendlyName);
+
+        if(pCurrAddresses->PhysicalAddressLength != 0) {
+            printf("\tPhysical address: ");
+            for(i = 0; i < (int)pCurrAddresses->PhysicalAddressLength;
+                i++) {
+                if(i == (pCurrAddresses->PhysicalAddressLength - 1))
+                    printf("%.2X\n",
+                           (int)pCurrAddresses->PhysicalAddress[i]);
+                else
+                    printf("%.2X-",
+                           (int)pCurrAddresses->PhysicalAddress[i]);
+            }
+        }
+        printf("\tFlags: %ld\n", pCurrAddresses->Flags);
+        printf("\tMtu: %lu\n", pCurrAddresses->Mtu);
+        printf("\tIfType: %ld\n", pCurrAddresses->IfType);
+        printf("\tOperStatus: %ld\n", pCurrAddresses->OperStatus);
+        printf("\tIpv6IfIndex (IPv6 interface): %u\n", pCurrAddresses->Ipv6IfIndex);
+        printf("\tZoneIndices (hex): ");
+        for(i = 0; i < 16; i++)
+            printf("%lx ", pCurrAddresses->ZoneIndices[i]);
+        printf("\n");
+
+        printf("\tTransmit link speed: %I64u\n", pCurrAddresses->TransmitLinkSpeed);
+        printf("\tReceive link speed: %I64u\n", pCurrAddresses->ReceiveLinkSpeed);
+
+        pPrefix = pCurrAddresses->FirstPrefix;
+        if(pPrefix) {
+            for(i = 0; pPrefix != NULL; i++)
+                pPrefix = pPrefix->Next;
+            printf("\tNumber of IP Adapter Prefix entries: %d\n", i);
+        }
+        else
+            printf("\tNumber of IP Adapter Prefix entries: 0\n");
+
+        printf("\n");
+
+        pCurrAddresses = pCurrAddresses->Next;
+    }
+
+
+
+    if(pAddresses) {
+        //FREE(pAddresses);
+    }
+
+    return PXActionSuccessful;
+}
 
 
 
