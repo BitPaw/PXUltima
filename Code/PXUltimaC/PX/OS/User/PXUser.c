@@ -12,7 +12,7 @@
 
 #endif
 
-PXActionResult PXAPI PXUserNameGet(PXText* const name)
+PXActionResult PXAPI PXUserNameGetAA(PXText* const name)
 {
     switch(name->Format)
     {

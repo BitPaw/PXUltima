@@ -245,9 +245,9 @@ PXActionResult PXAPI PXSystemPrelude()
 
 
 
-    char osName[80];
+    PXOSVersion pxOSVersion;
 
-    PXSystemVersionGet(osName, 80);
+    PXSystemVersionGet(&pxOSVersion);
 
 #if PXLogEnable
     PXLogPrint
@@ -255,7 +255,7 @@ PXActionResult PXAPI PXSystemPrelude()
         PXLoggingInfo,
         PXOSName,
         "Version",
-        osName
+        pxOSVersion.NameProduct
     );
 #endif // 0
 
@@ -427,7 +427,128 @@ PXOS* PXAPI PXSystemGet()
     return pxSystem;
 }
 
-void PXAPI PXSystemVersionGet(char* const text, const PXSize textSize)
+const char OSNameNotFound[] = "**Unkown**";
+
+PXActionResult PXAPI PXSystemVersionGetViaRegistry(PXOSVersion* const pxOSVersion)
+{
+    PXClear(PXOSVersion, pxOSVersion);
+
+#if OSUnix
+    FILE* const file = fopen("/etc/os-release", "r");
+
+    if(!file)
+        return;
+
+    char line[256];
+    while(fgets(line, sizeof(line), file)) {
+        if(strncmp(line, "PRETTY_NAME=", 12) == 0) {
+            char* name = strchr(line, '=');
+            if(name) {
+                name++;
+                name[strcspn(name, "\n")] = 0;
+                printf("OS: %s\n", name);
+            }
+        }
+    }
+    fclose(file);
+
+
+    // Kernel version
+    FILE* file = fopen("/proc/version", "r");
+    if(!file) return;
+
+    char buffer[512];
+    if(fgets(buffer, sizeof(buffer), file)) {
+        printf("Kernel Build Info: %s\n", buffer);
+    }
+    fclose(file);
+
+
+#elif OSWindows
+
+    HKEY hKey;
+    DWORD value_length =0;
+    DWORD type = 0;
+
+    // WinREVersion - 10.0.19041.5728
+    // Contains additional "patch" element of version
+
+    // ProductName - Windows 10 Enterprise
+    // Full name of OS
+
+    // DisplayVersion - 22H2
+    // Version String?
+
+    LSTATUS resultStatus = RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", 0, KEY_READ, &hKey);
+
+    if(ERROR_SUCCESS != resultStatus)
+    {
+        return PXActionInvalid;
+    }
+
+
+
+    // CurrentMajorVersionNumber
+    DWORD number = 0;
+    value_length = 4;
+    resultStatus = RegQueryValueExA(hKey, "CurrentMajorVersionNumber", NULL, &type, (LPBYTE)&number, &value_length);
+    pxOSVersion->Major = number;
+
+    // CurrentMinorVersionNumber
+    value_length = 4;
+    resultStatus = RegQueryValueExA(hKey, "CurrentMinorVersionNumber", NULL, &type, (LPBYTE)&number, &value_length);
+    pxOSVersion->Minor = number;
+
+    // CurrentBuild
+    char textInt[16];
+    value_length = sizeof(textInt);
+    resultStatus = RegQueryValueExA(hKey, "CurrentBuild", NULL, &type, (LPBYTE)&textInt, &value_length);
+
+    int textIntNumber = 0;
+    PXTextToIntA(textInt, value_length, &textIntNumber);
+    pxOSVersion->Build = textIntNumber;
+
+    // UBR
+    value_length = 4;
+    resultStatus = RegQueryValueExA(hKey, "UBR", NULL, &type, (LPBYTE)&number, &value_length);
+    pxOSVersion->Patch = number;
+
+
+
+
+    // ProductName
+    value_length = sizeof(pxOSVersion->NameProduct);
+    resultStatus = RegQueryValueExA(hKey, "ProductName", NULL, &type, (LPBYTE)pxOSVersion->NameProduct, &value_length);
+    pxOSVersion->NameProductLength = value_length;
+
+
+    // Try DisplayVersion first (Windows 20H2+)
+    if(RegQueryValueExA(hKey, "DisplayVersion", NULL, &type, (LPBYTE)pxOSVersion->NameVersion, &value_length) == ERROR_SUCCESS) 
+    {
+        pxOSVersion->NameVersionLength = value_length;
+    }
+    else if(RegQueryValueExA(hKey, "ReleaseId", NULL, &type, (LPBYTE)pxOSVersion->NameVersion, &value_length) == ERROR_SUCCESS)
+    {
+        pxOSVersion->NameVersionLength = value_length;
+    }
+    else 
+    {
+        PXTextCopyA(OSNameNotFound, sizeof(OSNameNotFound), pxOSVersion->NameVersionLength, value_length);
+    }
+
+    RegCloseKey(hKey);
+
+#else
+
+#endif
+}
+
+PXActionResult PXAPI PXSystemVersionGetViaKernel(PXOSVersion* const pxOSVersion)
+{
+    return PXActionInvalid;
+}
+
+void PXAPI PXSystemVersionGet(PXOSVersion* const pxOSVersion)
 {
 #if OSUnix
     struct utsname buffer;
@@ -447,6 +568,36 @@ void PXAPI PXSystemVersionGet(char* const text, const PXSize textSize)
     oss << name << " (" << buffer.sysname << " " << buffer.release << ")";
     return oss.str();
 #elif OSWindows
+
+
+
+    /*
+
+    // Registry fetch
+    {
+        FILE* file = fopen("/etc/os-release", "r");
+        if(!file) return;
+
+        char line[256];
+        while(fgets(line, sizeof(line), file)) {
+            if(strncmp(line, "PRETTY_NAME=", 12) == 0) {
+                char* name = strchr(line, '=');
+                if(name) {
+                    name++;
+                    name[strcspn(name, "\n")] = 0;
+                    printf("OS: %s\n", name);
+                }
+            }
+        }
+        fclose(file);
+    }
+    */
+
+
+
+    PXSystemVersionGetViaRegistry(pxOSVersion);
+
+
     // GetVersionEx is debricated to the beginning of windows 10 
     // and will only yield windows 8.1 as the highest option.
     // This was choosen, because Microsoft planned to use Build numbers as versions. 
@@ -474,7 +625,8 @@ void PXAPI PXSystemVersionGet(char* const text, const PXSize textSize)
         BuildNumber = osVERSIONINFO.dwBuildNumber; 
     }
     else
-    {
+    {       
+
         OSVERSIONINFOEX osVERSIONINFOEx;
         ZeroMemory(&osVERSIONINFOEx, sizeof(OSVERSIONINFOEX));
         osVERSIONINFOEx.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
@@ -609,8 +761,8 @@ void PXAPI PXSystemVersionGet(char* const text, const PXSize textSize)
 
     PXTextPrintA
     (
-        text,
-        textSize,
+        pxOSVersion->NameProduct,
+        pxOSVersion->NameProductLength,
         "Windows %s (v.%i.%i - Build: %i)",   
         osName,
         MajorVersion,
@@ -623,14 +775,40 @@ void PXAPI PXSystemVersionGet(char* const text, const PXSize textSize)
 #endif
 }
 
-PXPublic PXActionResult PXAPI PXUserNameGet(char* const text, const PXSize textSizeMax, PXSize* const textSizeWritten)
+PXActionResult PXAPI PXUserNameGet(char* const text, const PXSize textSizeMax, PXSize* const textSizeWritten)
 {
-    return PXPublic PXActionResult PXAPI();
+    PXActionResult result;
+
+#if OSUnix
+    const int userID = getuid();
+    struct passwd* pw = getpwuid();
+
+#elif OSWindows
+
+    DWORD length = textSizeMax;
+    const BOOL success = GetUserNameA(text, &length); // Windows 2000, Advapi32.dll, winbase.h
+    result = PXErrorCurrent(success);
+
+    if(textSizeWritten && success)
+    {
+        *textSizeWritten = textSizeMax;
+    }
+#else
+    result = PXActionRefusedNotImplemented;
+#endif
+
+    return result;
 }
 
-PXPublic PXActionResult PXAPI PXComputerNameGet(char* const text, const PXSize textSizeMax, PXSize* const textSizeWritten)
+PXActionResult PXAPI PXComputerNameGet(char* const text, const PXSize textSizeMax, PXSize* const textSizeWritten)
 {
-    return PXPublic PXActionResult PXAPI();
+#if OSUnix
+
+#elif OSWindows
+
+#else
+
+#endif
 }
 
 PXActionResult PXAPI PXFilePathCleanse(const char* pathInput, char* const pathOutput, const PXSize pathOutputSizeMAX, PXSize* const pathOutputSizeWritten)

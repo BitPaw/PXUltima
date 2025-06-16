@@ -167,7 +167,26 @@ PXOS;
 PXPublic PXActionResult PXAPI PXSystemPrelude();
 PXPublic PXOS* PXAPI PXSystemGet();
 
-PXPublic void PXAPI PXSystemVersionGet(char* const text, const PXSize textSize);
+
+typedef struct PXOSVersion_
+{
+    char NameVersion[16];
+    char NameProduct[32]; // Windows 10 Enterprise
+
+    PXInt8U NameVersionLength;
+    PXInt8U NameProductLength;
+
+    PXInt16U Major;
+    PXInt16U Minor;
+    PXInt16U Build;
+    PXInt16U Patch;
+}
+PXOSVersion;
+
+PXPublic PXActionResult PXAPI PXSystemVersionGetViaRegistry(PXOSVersion* const pxOSVersion);
+PXPublic PXActionResult PXAPI PXSystemVersionGetViaKernel(PXOSVersion* const pxOSVersion);
+
+PXPublic void PXAPI PXSystemVersionGet(PXOSVersion* const pxOSVersion);
 //---------------------------------------------------------
 
 

@@ -20,7 +20,7 @@ typedef enum PXUserEnviromentFolderID_
 }
 PXUserEnviromentFolderID;
 
-PXPublic PXActionResult PXAPI PXUserNameGet(PXText* const name);
+PXPublic PXActionResult PXAPI PXUserNameGetAA(PXText* const name);
 PXPublic PXBool PXAPI PXUserEnviromentFolderGet(PXText* const name, const PXUserEnviromentFolderID pxUserEnviromentFolderID);
 
 #endif
