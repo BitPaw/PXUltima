@@ -385,6 +385,11 @@ typedef void* PXAdress64;
 #else
 #error Invalid Bit Version
 #endif
+
+// Integer 128-Bit
+//typedef char[16] PXInt128S;
+//typedef char[16] PXInt128U;
+
 //------------------------------------------------------------------------------
 
 
