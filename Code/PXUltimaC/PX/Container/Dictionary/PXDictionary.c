@@ -42,6 +42,7 @@ void PXAPI PXDictionaryResize(PXDictionary* const dictionary, const PXSize entry
 {
     const PXSize rowSize = dictionary->KeyTypeSize + PXDictionaryValueSize(dictionary);
     //const PXSize oldPositionOffset = dictionary->EntryAmountMaximal * rowSize;
+    //const PXSize oldPositionOffset = dictionary->EntryAmountMaximal * rowSize;
     //const PXSize dataBlockSize = PXDictionaryValueSize(dictionary);
 
     dictionary->EntryAmountMaximal = entrys;
