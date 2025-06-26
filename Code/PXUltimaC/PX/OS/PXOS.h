@@ -171,7 +171,7 @@ PXPublic PXOS* PXAPI PXSystemGet();
 typedef struct PXOSVersion_
 {
     char NameVersion[16];
-    char NameProduct[32]; // Windows 10 Enterprise
+    char NameProduct[64]; // Windows 10 Enterprise
 
     PXInt8U NameVersionLength;
     PXInt8U NameProductLength;

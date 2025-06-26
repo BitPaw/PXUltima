@@ -762,7 +762,7 @@ void PXAPI PXSystemVersionGet(PXOSVersion* const pxOSVersion)
     PXTextPrintA
     (
         pxOSVersion->NameProduct,
-        pxOSVersion->NameProductLength,
+      64,
         "Windows %s (v.%i.%i - Build: %i)",   
         osName,
         MajorVersion,
