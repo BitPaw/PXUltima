@@ -1,5 +1,7 @@
 #include "PXNetwork.h"
 
+const char PXNetworkText[] = "Network";
+const char PXAdapterText[] = "Adapter";
 
 #if OSUnix
 #ifndef _XOPEN_SOURCE
@@ -1588,8 +1590,8 @@ PXActionResult PXAPI PXNetworkAdapterFetch()
         PXLogPrint
         (
             PXLoggingInfo,
-            "Network",
-            "Translate",
+            PXNetworkText,
+            PXAdapterText,
             "\n"
             "%20s : %s\n"
             "%20s : %s\n"
@@ -1613,8 +1615,36 @@ PXActionResult PXAPI PXNetworkAdapterFetch()
 
 
 
+
+
+
+
+
+
+       // std::cout << "DHCP Enabled: " << (adapter->Dhcpv4Enabled ? "Yes" : "No") << "\n";
+        //std::cout << "DNS Servers:\n";
+        for(PIP_ADAPTER_DNS_SERVER_ADDRESS dns = pCurrAddresses->FirstDnsServerAddress; dns; dns = dns->Next) {
+            char dnsStr[46];
+            inet_ntop(dns->Address.lpSockaddr->sa_family, &((struct sockaddr_in*)dns->Address.lpSockaddr)->sin_addr, dnsStr, sizeof(dnsStr));
+           // std::cout << " - " << dnsStr << "\n";
+
+            printf("");
+        }
+
+      //  std::cout << "Gateway: ";
+        for(PIP_ADAPTER_GATEWAY_ADDRESS_LH gateway = pCurrAddresses->FirstGatewayAddress; gateway; gateway = gateway->Next) {
+            char gatewayStr[46];
+            inet_ntop(gateway->Address.lpSockaddr->sa_family, &((struct sockaddr_in*)gateway->Address.lpSockaddr)->sin_addr, gatewayStr, sizeof(gatewayStr));
+           // std::cout << gatewayStr << "\n";
+
+            printf("");
+        }
+
+
+
         for(PIP_ADAPTER_UNICAST_ADDRESS unicast = pCurrAddresses->FirstUnicastAddress; unicast; unicast = unicast->Next) 
         {
+            char* ipTypeName = 0;
             char ipStr[46]; // IPv6 max size (IPv4 fits too)
             LPSOCKADDR socketAdress = unicast->Address.lpSockaddr;
 
@@ -1625,11 +1655,13 @@ PXActionResult PXAPI PXNetworkAdapterFetch()
                 case AF_INET:
                 {
                     inet_ntop(AF_INET, &((struct sockaddr_in*)socketAdress)->sin_addr, ipStr, sizeof(ipStr));
+                    ipTypeName = "IPv4";
                     break;
                 }
                 case AF_INET6:
                 {
                     inet_ntop(AF_INET6, &((struct sockaddr_in6*)socketAdress)->sin6_addr, ipStr, sizeof(ipStr));
+                    ipTypeName = "IPv6";
                     break;
                 }
                 default:
@@ -1643,9 +1675,10 @@ PXActionResult PXAPI PXNetworkAdapterFetch()
             PXLogPrint
             (
                 PXLoggingInfo,
-                "Network",
-                "Translate",
-                "%s",
+                PXNetworkText,
+                PXAdapterText,
+                "%s : %s",
+                ipTypeName,
                 ipStr                
             );
 #endif
@@ -1654,7 +1687,7 @@ PXActionResult PXAPI PXNetworkAdapterFetch()
 
 
 
-
+#if 0
 
         printf("\tLength of the IP_ADAPTER_ADDRESS struct: %ld\n", pCurrAddresses->Length);
         printf("\tIfIndex (IPv4 interface): %u\n", pCurrAddresses->IfIndex);
@@ -1735,11 +1768,10 @@ PXActionResult PXAPI PXNetworkAdapterFetch()
             printf("\tNumber of IP Adapter Prefix entries: 0\n");
 
         printf("\n");
+#endif
 
         pCurrAddresses = pCurrAddresses->Next;
     }
-
-
 
     if(pAddresses) {
         //FREE(pAddresses);
