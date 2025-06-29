@@ -430,7 +430,22 @@ PXResourceReference;
 
 
 
+//---------------------------------------------------------
+// Module - Library or seperate Element that manages
+//---------------------------------------------------------
 
+#define PXModuleStateDoInitialize   1<<0
+#define PXModuleStateDoRelease      1<<1
+
+typedef PXActionResult(PXAPI PXModuleStateFunction)(void** moduleAdress, const PXInt32U flags); // Initialize or Releases a module.
+
+typedef struct PXModule_
+{
+    void* ModuleAdress;
+    PXModuleStateFunction State;
+}
+PXModule;
+//---------------------------------------------------------
 
 
 
