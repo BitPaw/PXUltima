@@ -143,6 +143,7 @@ typedef enum PXActionResult_
     PXActionRefusedNotASocket, // [NOTSOCK]
     PXActionFailedConnectionTimedOut, // [TIMEDOUT]
     PXActionFailedNotConnected, // [NOTCONN]
+    PXActionRefusedConnectionClosed,
 
 
     //-------------------------------------------------------
