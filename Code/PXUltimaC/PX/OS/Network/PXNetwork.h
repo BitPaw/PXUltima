@@ -55,11 +55,11 @@ IPAdressFamily;
 typedef enum PXSocketType_
 {
     PXSocketTypeInvalid,
-    PXSocketTypeStream,// stream socket */
-    PXSocketTypeDatagram, // datagram socket */
-    PXSocketTypeRaw, // raw-protocol interface */
-    PXSocketTypeRDM, // reliably-delivered message */
-    PXSocketTypeSeqPacket // sequenced packet stream */
+    PXSocketTypeStream,// stream socket
+    PXSocketTypeDatagram, // datagram socket
+    PXSocketTypeRaw, // raw-protocol interface
+    PXSocketTypeRDM, // reliably-delivered message
+    PXSocketTypeSeqPacket // sequenced packet stream
 }
 PXSocketType;
 
@@ -162,6 +162,10 @@ typedef int    (WINAPI* PXWSACleanup)(void);
 typedef struct PXSocket_
 {
     PXSocketID ID;
+
+    char IP[44];
+    char Name[32]; // NI_MAXHOST
+    PXInt16U Port;
 }
 PXSocket;
 
@@ -274,9 +278,14 @@ PXSocketBindInfo;
 
 typedef struct PXSocketDataInfo_
 {
+    PXSocketID SocketIDCurrent;
+
     void* Buffer; // Data source/target
     PXSize BufferSize; // How much can we transphere
-    PXSize BufferOffset;
+    PXSize BufferUsed;
+
+    PXSocket* const SocketPeer;
+
 
     PXSize SegmentSize; // Size of each action of send/read
     PXSize SegmentDelay;
@@ -288,26 +297,6 @@ typedef struct PXSocketDataInfo_
     PXBool SocketDestroyed;
 }
 PXSocketDataInfo;
-
-typedef struct PXSocketReadInfo_
-{
-    PXSocketDataInfo DataInfo;
-
-    PXSocket* SocketReciverReference;
-    PXSocket* SocketSenderReference;
-}
-PXSocketReadInfo;
-
-typedef struct PXSocketSendInfo_
-{
-    PXSocketDataInfo DataInfo;
-
-    PXSocket* SocketSenderReference;
-    PXSocket* SocketRecieverReference;
-}
-PXSocketSendInfo;
-
-
 
 typedef struct PXSocketWriteInfo_
 {
@@ -374,20 +363,23 @@ PXPrivate IPAdressFamily PXAPI PXIPAdressFamilyFromID(const PXInt8U ipMode);
 PXPrivate PXInt8U PXAPI PXIPAdressFamilyToID(const IPAdressFamily ipMode);
 
 
-PXPublic PXActionResult PXAPI PXNetworkInitialize(PXNetwork* const pxNetwork);
-PXPublic PXActionResult PXAPI PXNetworkRelease(PXNetwork* const pxNetwork);
+PXPublic PXActionResult PXAPI PXNetworkModulState(PXNetwork** const pxNetworkREF, const PXInt32U flags);
 
-PXPublic PXActionResult PXAPI PXNetworkSocketCreate(PXNetwork* const pxNetwork, PXSocketCreateInfo* const pxSocketCreateInfo);
-PXPublic PXActionResult PXAPI PXNetworkSocketDestroy(PXNetwork* const pxNetwork, PXSocketDestroyInfo* const pxSocketDestroyInfo);
+PXPublic PXActionResult PXAPI PXNetworkSocketCreate(PXSocketCreateInfo* const pxSocketCreateInfo);
+PXPublic PXActionResult PXAPI PXNetworkSocketDestroy(PXSocketDestroyInfo* const pxSocketDestroyInfo);
 
-PXPublic PXActionResult PXAPI PXNetworkSocketConnect(PXNetwork* const pxNetwork, PXSocketConnectInfo* const pxSocketConnectInfo);
-PXPublic PXActionResult PXAPI PXNetworkSocketListen(PXNetwork* const pxNetwork, PXSocketListenInfo* const pxSocketListenInfo);
-PXPublic PXActionResult PXAPI PXNetworkSocketAccept(PXNetwork* const pxNetwork, PXSocketAcceptInfo* const pxSocketAcceptInfo);
-PXPublic PXActionResult PXAPI PXNetworkSocketBind(PXNetwork* const pxNetwork, PXSocketBindInfo* const pxSocketBindInfo);
-PXPublic PXActionResult PXAPI PXNetworkSocketReceive(PXNetwork* const pxNetwork, PXSocketReadInfo* const pxSocketReadInfo);
-PXPublic PXActionResult PXAPI PXNetworkSocketSend(PXNetwork* const pxNetwork, PXSocketSendInfo* const pxSocketSendInfo);
-PXPublic PXActionResult PXAPI PXNetworkSocketPoll(PXNetwork* const pxNetwork);
+PXPublic PXActionResult PXAPI PXNetworkSocketConnect(PXSocketConnectInfo* const pxSocketConnectInfo);
+PXPublic PXActionResult PXAPI PXNetworkSocketListen(PXSocketListenInfo* const pxSocketListenInfo);
+PXPublic PXActionResult PXAPI PXNetworkSocketAccept(PXSocketAcceptInfo* const pxSocketAcceptInfo);
+PXPublic PXActionResult PXAPI PXNetworkSocketBind(PXSocketBindInfo* const pxSocketBindInfo);
+PXPublic PXActionResult PXAPI PXNetworkSocketReceive(PXSocketDataInfo* const pxSocketDataInfo);
+PXPublic PXActionResult PXAPI PXNetworkSocketSend(PXSocketDataInfo* const pxSocketDataInfo);
+PXPublic PXActionResult PXAPI PXNetworkSocketPoll();
 
+
+PXPublic PXActionResult PXAPI PXNetworkSocketMTU(const PXSocket* const pxSocket, PXInt32U* value, const PXBool doWrite);
+PXPublic PXActionResult PXAPI PXNetworkSocketName(const PXSocket* const pxSocket, char* name);
+PXPublic PXActionResult PXAPI PXNetworkSocketInterfaceName(const PXSocket* const pxSocket, char* name, const PXSize nameSize);
 
 
 PXPublic PXActionResult PXAPI PXNetworkMACFromIPv4A(PXMAC* const pxMAC, char* const ipv4Text);
@@ -411,7 +403,7 @@ typedef struct PXNetworkAdapter_
 
     PXMAC MACAdress;
 
-    PXSize MTU; // Transmiited block size
+    PXInt16U MTU; // Transmiited block size
 
     PXSize SpeedTransmit;
     PXSize SpeedRecieve;
