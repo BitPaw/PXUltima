@@ -437,12 +437,12 @@ PXResourceReference;
 #define PXModuleStateDoInitialize   1<<0
 #define PXModuleStateDoRelease      1<<1
 
-typedef PXActionResult(PXAPI PXModuleStateFunction)(void** moduleAdress, const PXInt32U flags); // Initialize or Releases a module.
+typedef PXActionResult(PXAPI* PXModuleStateFunction)(void** moduleAdress, const PXInt32U flags); // Initialize or Releases a module.
 
 typedef struct PXModule_
 {
     void* ModuleAdress;
-    PXModuleStateFunction State;
+    PXModuleStateFunction StateChange;
 }
 PXModule;
 //---------------------------------------------------------
@@ -3086,16 +3086,15 @@ typedef struct PXSound_
     void* BaseObject;
     void* Data;
 
-    PXSize DataSize;
-
-    PXInt32U ChunkSize;
     PXInt32U SampleRate;
     PXInt32U ByteRate;
-
-    PXInt16U AudioFormat;
     PXInt16U NumerOfChannels;
     PXInt16U BlockAllign;
     PXInt16U BitsPerSample;
+
+    PXSize DataSize;
+    PXInt32U ChunkSize;
+    PXInt16U AudioFormat;
 }
 PXSound;
 
