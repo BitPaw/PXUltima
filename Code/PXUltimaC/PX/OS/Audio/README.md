@@ -5,6 +5,7 @@
 |:-|:-|
 |AudioOutputDevice| Speaker or headset|
 |AudioInputDevice| Microphone or singal-in|
+|AudioBuffer| Buffer for AudioData|
 
 ### Windows
 |Version|Name|Library|Description|
