@@ -178,7 +178,8 @@ PXPublic PXSize PXAPI PXTextFormatData(PXText* const pxText, const void* data, c
 
 // Print a string from a non terminated string into a buffer
 // Also converts unprintable characters into printable ones
-PXPublic PXSize PXAPI PXTextFromNonTerminated(char* const stringOutput, const PXSize dataSize, const char* const stringInput);
+PXPublic PXSize PXAPI PXTextFromNonTerminated(char* const stringOutput, const PXSize stringOutputSize, const char* const stringInput, const PXSize stringInputSize);
+
 PXPublic PXSize PXAPI PXTextFromIntToBinary8U(char* const string, const PXSize dataSize, const PXInt8U number);
 PXPublic PXSize PXAPI PXTextFromIntToBinary16U(char* const string, const PXSize dataSize, const PXInt16U number);
 PXPublic PXSize PXAPI PXTextFromIntToBinary32U(char* const string, const PXSize dataSize, const PXInt32U number);

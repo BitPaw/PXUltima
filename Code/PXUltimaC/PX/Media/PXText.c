@@ -15,11 +15,12 @@
 #include <assert.h>
 #endif
 
-PXSize PXAPI PXTextFromNonTerminated(char* const stringOutput, const PXSize dataSize, const char* const stringInput)
+PXSize PXAPI PXTextFromNonTerminated(char* const stringOutput, const PXSize stringOutputSize, const char* const stringInput, const PXSize stringInputSize)
 {
+    const PXSize length = PXMathMinimumIU(stringOutputSize, stringInputSize);
     PXSize i = 0;
 
-    for(; i < dataSize; ++i)
+    for(; i < length; ++i)
     {
         stringOutput[i] = PXCharMakePrintable(stringInput[i]);
     }
