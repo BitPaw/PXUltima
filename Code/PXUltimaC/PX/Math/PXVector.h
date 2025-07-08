@@ -3,20 +3,80 @@
 
 #include <PX/Media/PXType.h>
 
-typedef struct PXVector2I_
+typedef struct PXVector2I8S_
 {
     union
     {
         struct
         {
-            int X;
-            int Y;
+            PXInt8S X;
+            PXInt8S Y;
         };
 
-        int Data[2];
+        PXInt8S Data[2];
     };
 }
-PXVector2I;
+PXVector2I8S;
+
+typedef struct PXVector2I16S_
+{
+    union
+    {
+        struct
+        {
+            PXInt16S X;
+            PXInt16S Y;
+        };
+
+        PXInt16S Data[2];
+    };
+}
+PXVector2I16S;
+
+typedef struct PXVector2I16U_
+{
+    union
+    {
+        struct
+        {
+            PXInt16U X;
+            PXInt16U Y;
+        };
+
+        PXInt16U Data[2];
+    };
+}
+PXVector2I16U;
+
+typedef struct PXVector2I32S_
+{
+    union
+    {
+        struct
+        {
+            PXInt32S X;
+            PXInt32S Y;
+        };
+
+        PXInt32S Data[2];
+    };
+}
+PXVector2I32S;
+
+typedef struct PXVector2I32U_
+{
+    union
+    {
+        struct
+        {
+            PXInt32U X;
+            PXInt32U Y;
+        };
+
+        PXInt32U Data[2];
+    };
+}
+PXVector2I32U;
 
 typedef struct PXVector2F32_
 {
