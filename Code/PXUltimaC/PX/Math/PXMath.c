@@ -1094,7 +1094,7 @@ void PXAPI PXMathShuffleI8(const PXInt8U* const input, PXInt8U* const output, co
         shuffleMask.m512i_u8[j] = (j / maskAmount)* maskAmount + mask[j % maskAmount];
     }
 
-#if 1
+#if 0
     for(; i + 64 <= amount; i += 64)
     {
         __m512i bgrChunk = _mm512_loadu_epi8(&input[i]);
@@ -1104,7 +1104,7 @@ void PXAPI PXMathShuffleI8(const PXInt8U* const input, PXInt8U* const output, co
     }
 #endif
 
-#if 1
+#if 0
     for(size_t j = i; j < amount; ++j)
     {
         output[j] = input[j + shuffleMask.m512i_u8[j % maskAmount]];
