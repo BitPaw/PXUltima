@@ -1598,7 +1598,7 @@ void PXAPI PXEngineCreateAudio(PXEngine* const pxEngine, PXEngineStartInfo* cons
 
     PXAudioDeviceAmountInfo pxAudioDeviceAmountInfo;
 
-    pxEngine->Audio.DeviceAmount(&pxEngine->Audio, &pxAudioDeviceAmountInfo);
+    //pxEngine->Audio.DeviceAmount(&pxEngine->Audio, &pxAudioDeviceAmountInfo);
 
     for(PXInt32U i = 0; i < pxAudioDeviceAmountInfo.DeviceInput; ++i)
     {
@@ -2450,9 +2450,11 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
             {
                 PXShader pxShader[2];
                 PXClearList(PXShader, pxShader, 2);
+                pxShader[0].Info.ID = PXResourceManagerGenerateUniqeID();
                 pxShader[0].Type = PXShaderTypeVertex;
                 pxShader[0].ShaderFile = &pxSkyBoxCreateEventData->ShaderProgramCreateInfo.ShaderVertexFile;
 
+                pxShader[1].Info.ID = PXResourceManagerGenerateUniqeID();
                 pxShader[1].Type = PXShaderTypePixel;
                 pxShader[1].ShaderFile = &pxSkyBoxCreateEventData->ShaderProgramCreateInfo.ShaderPixelFile;
 
@@ -2507,7 +2509,7 @@ PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResource
 
                 pxResourceCreateInfoSub[1].Type = PXResourceTypeModel;
                 pxResourceCreateInfoSub[1].ObjectReference = (void**)&pxSprite->Model;
-                pxResourceCreateInfoSub[1].Model.Form = PXModelFormRectangle;
+                pxResourceCreateInfoSub[1].Model.Form = PXModelFormRectangleTX;
 
                 // Add hibox if needed
                 if(pxSpriteCreateEventData->HitboxBehaviour > 0)
@@ -2724,17 +2726,40 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEn
         return PXActionRefusedArgumentInvalid;
     }
 
+    // Base object, unsafe!
+    PXResourceInfo* const pxResourceInfo = (PXResourceInfo*)pxRenderEntity->ObjectReference;
+
+    if(!pxResourceInfo)
+    {
+       // DebugBreak();
+        return PXActionDidNothing; // No attached object
+    }
+
+    PXInt32U resourceID = pxResourceInfo->ID;
+
+#if 0
+    if(0 == resourceID)
+    {
+       // DebugBreak();
+        return PXActionDidNothing;
+    }
+#endif
+
+    const PXBool doRendering = 0 < (PXResourceInfoRender & pxResourceInfo->Behaviour);
+
+    if(!doRendering)
+    {
+       // DebugBreak();
+        return PXActionDidNothing; // We dont want to render. Its not visible
+    }
+
+
 #if 1
     switch(pxRenderEntity->Type)
     {
         case PXResourceTypeModel:
         {
             PXModel* const pxModel = (PXModel*)pxRenderEntity->ObjectReference;
-
-            if(!(pxModel->Info.Behaviour & PXResourceInfoRender))
-            {
-                break; // Skip rendering
-            }
 
             pxEngine->Graphic.ModelDraw(pxEngine->Graphic.EventOwner, pxRenderEntity);
 
@@ -2744,16 +2769,6 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEn
         {
             PXSkyBox* const pxSkyBox = (PXSkyBox*)pxRenderEntity->ObjectReference;
 
-            if(!pxSkyBox)
-            {
-                break;
-            }
-
-            if(!(pxSkyBox->Info.Behaviour & PXResourceInfoRender))
-            {
-                break; // Skip rendering
-            }
-
             PXOpenGLSkyboxDraw(&pxEngine->Graphic.OpenGLInstance, pxRenderEntity);
 
             break;
@@ -2762,11 +2777,6 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEn
         {
             PXSprite* const pxSprite = (PXSprite*)pxRenderEntity->ObjectReference;
 
-            if(!(pxSprite->Info.Behaviour & PXResourceInfoRender))
-            {
-                break; // Skip rendering
-            }
-
             pxEngine->Graphic.ModelDraw(pxEngine->Graphic.EventOwner, pxRenderEntity);
 
             break;
@@ -2774,12 +2784,6 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEn
         case PXResourceTypeHitBox:
         {
             PXHitBox* const pxHitBox = (PXHitBox*)pxRenderEntity->ObjectReference;
-
-            if(!(pxHitBox->Info.Behaviour & PXResourceInfoRender))
-            {
-                break; // Skip rendering
-            }
-
 
             // PXOpenGLBlendingMode(&pxEngine->Graphic.OpenGLInstance, PXBlendingModeOneToOne);
 
@@ -2873,11 +2877,6 @@ PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEn
 
             PXText* const pxText = pxEngineText->Text;
             PXFont* const pxFont = pxEngineText->Font;
-
-            if(!pxEngineText->Info.Behaviour & PXResourceInfoActive)
-            {
-                break;
-            }
 
             PXVector2F32 offsetShadowCurrent = { 0.0f, 0.0f };
             const PXVector2F32 shadowOffset = { 0.0045f, -0.005f };
@@ -3581,10 +3580,6 @@ PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine)
                     pxSprite->Material->Diffuse[3] = 1.0f;
                 }
             }
-
-
-
-
 #endif
 
             PXEngineResourceRender(pxEngine, &pxRenderEntity);
