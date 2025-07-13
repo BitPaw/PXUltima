@@ -176,6 +176,9 @@
 
 
 
+//---------------------------------------------------------
+// Type
+//---------------------------------------------------------
 
 #define PXTypeReadOnlyMask          0b10000000000000000000000000000000
 #define PXTypeAdressMask            0b01000000000000000000000000000000 // Used if the type is
@@ -317,11 +320,11 @@
 // Float 16-Bit
 #define PXTypeF16 PXTypeSize16 | PXTypeBaseDecimal
 
-// PXF32 32-Bit
+// Float 32-Bit
 #define PXTypeF32 PXTypeSize32 | PXTypeBaseDecimal
 #define PXTypeF32List(amount) (amount*PXTypeSize32) | PXTypeBaseDecimal
 
-// PXF32 64-Bit
+// Float 64-Bit
 #define PXTypeF64 PXTypeSize64 | PXTypeBaseDecimal
 
 // System depended
@@ -444,6 +447,11 @@ typedef int PXF256;
 #define PXF256MaskExponent  0b0 //  19-Bit
 #define PXF256MaskFraction  0b0 // 236-Bit
 //------------------------------------------------------------------------------
+
+
+// Internal datatype
+typedef PXInt32U PXType;
+
 
 
 
