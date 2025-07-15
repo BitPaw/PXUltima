@@ -97,13 +97,21 @@ const PXInt8S PXIndexDataTriangle[] =
     0,1,2
 };
 
-
-const PXInt8S PXVertexDataRectangle[] =
+// This only works if we dont use any texturepositions
+const PXF32 PXVertexDataRectangle[] =
 {
-    -1, -1,
-        1, -1,
-        1,  1,
-        -1,  1
+    -1, -1, 
+     1, -1,
+     1,  1,
+    -1,  1
+};
+
+const PXF32 PXVertexDataRectangleTX[] =
+{
+    -1, -1, 1, 1, // Bottom-left
+     1, -1, 0, 1, // Bottom-right
+     1,  1, 0, 0,  // Top-right
+    -1,  1, 1, 0   // Top-left
 };
 
 const PXInt8U PXIndexDataRectangle[] =
@@ -112,7 +120,7 @@ const PXInt8U PXIndexDataRectangle[] =
     2,3,0
 };
 
-const PXInt8S PXVertexDataCube[] =
+const PXF32 PXVertexDataCube[] = // PXInt8S
 {
     -1, -1, -1,
         1, -1, -1,
@@ -191,71 +199,88 @@ const char* PXAPI PXGraphicShaderTypeToString(const PXGraphicShaderType pxGraphi
     }
 }
 
-const char* PXAPI PXVertexBufferFormatToString(const PXVertexBufferFormat pxVertexBufferFormat)
+#if 0
+void PXAPI PXVertexBufferFormatInfoExtract(PXVertexBufferFormatInfo* const pxVertexBufferFormatInfo, const PXVertexBufferFormat pxVertexBufferFormat)
 {
-    switch(pxVertexBufferFormat)
+    pxVertexBufferFormatInfo->VertexAttributesAmount = 0;
+
+    pxVertexBufferFormatInfo->Format = PXVertexBufferFormatExtract(PXVertexBufferFormatFormat, pxVertexBufferFormat);
+    pxVertexBufferFormatInfo->Position = PXVertexBufferFormatExtract(PXVertexBufferFormatPosition, pxVertexBufferFormat);
+    pxVertexBufferFormatInfo->TexturePosition = PXVertexBufferFormatExtract(PXVertexBufferFormatTexturePosition, pxVertexBufferFormat);
+    pxVertexBufferFormatInfo->Normal = PXVertexBufferFormatExtract(PXVertexBufferFormatNormal, pxVertexBufferFormat);
+    pxVertexBufferFormatInfo->Color = PXVertexBufferFormatExtract(PXVertexBufferFormatColor, pxVertexBufferFormat);
+
+    char* buffer = pxVertexBufferFormatInfo->AsText;
+    PXSize offset = 0;
+    PXSize sizeLeft = 64;
+
+    if(pxVertexBufferFormatInfo->Position > 0)
     {
-        case PXVertexBufferFormatP2I8: return "P2 8-Bit";
-        case PXVertexBufferFormatP3I8: return "P3 8-Bit";
+        offset += PXTextPrintA(&buffer[offset], sizeLeft, "P%i ", pxVertexBufferFormatInfo->Position);
+        ++pxVertexBufferFormatInfo->VertexAttributesAmount;
+    }
 
-        case PXVertexBufferFormatP3F16: return "P3 F16";
-        case PXVertexBufferFormatN3F16: return "N3 F16";
-        case PXVertexBufferFormatT2F16: return "T2 F16";
+    if(pxVertexBufferFormatInfo->Normal > 0)
+    {
+        offset += PXTextPrintA(&buffer[offset], sizeLeft, "N%i ", pxVertexBufferFormatInfo->Normal);
+        ++pxVertexBufferFormatInfo->VertexAttributesAmount;
+    }
 
-        case PXVertexBufferFormatP3F32: return "P3 F32";
-        case PXVertexBufferFormatN3F32: return "N3 F32";
-        case PXVertexBufferFormatT2F32: return "T2 F32";
+    if(pxVertexBufferFormatInfo->Color > 0)
+    {
+        offset += PXTextPrintA(&buffer[offset], sizeLeft, "C%i ", pxVertexBufferFormatInfo->Color);
+        ++pxVertexBufferFormatInfo->VertexAttributesAmount;
+    }
 
-        case PXVertexBufferFormatXYPXF32:
-            return "P2 PXF32";
-        case PXVertexBufferFormatXYZW:
-            return "P4 PXF32";
-        case PXVertexBufferFormatC4UB_XY:
-            return "C4UB_XY";
-        case PXVertexBufferFormatC4UB_XYZ:
-            return "C4UB_XYZ";
-        case PXVertexBufferFormatRGBXYZ:
-            return "T2 P3 PXF32";
-        case PXVertexBufferFormatN3F_XYZ:
-            return "N3 P3 PXF32";
-        case PXVertexBufferFormatC4F_N3F_XYZ:
-            return "C4 N3 P3 PXF32";
-        case PXVertexBufferFormatT2F_XYZ:
-            return "T2 XYZ PXF32";
-        case PXVertexBufferFormatT4F_XYZW:
-            return "T4 P3 - PXF32";
-        case PXVertexBufferFormatT2F_C4UB_XYZ:
-            return "T4 C4 P3 - PXF32";
-        case PXVertexBufferFormatT2F_C3F_XYZ:
-            return "T2 C4 P3 - PXF32";
-        case PXVertexBufferFormatT2F_N3F_XYZ:
-            return "T2 N3 P3 - PXF32";
-        case PXVertexBufferFormatT2F_C4F_N3F_XYZ:
-            return "T2 C4 N3 P3 - PXF32";
-        case PXVertexBufferFormatT4F_C4F_N3F_XYZW:
-            return "T4 C4 N3 P4 - PXF32";
-        case PXVertexBufferFormatXYZC:
-            return "XYZC";
-        case PXVertexBufferFormatXYZRHW:
-            return "XYZRHW";
-        case PXVertexBufferFormatXYZHWC:
-            return "XYZHWC";
-        case PXVertexBufferFormatXYZB1:
-            return "XYZB1";
-        case PXVertexBufferFormatXYZB2:
-            return "XYZB2";
-        case PXVertexBufferFormatXYZB3:
-            return "XYZB3";
-        case PXVertexBufferFormatXYZB4:
-            return "XYZB4";
-        case PXVertexBufferFormatXYZB5:
-            return "XYZB5";
+    if(pxVertexBufferFormatInfo->TexturePosition > 0)
+    {
+        offset += PXTextPrintA(&buffer[offset], sizeLeft, "T%i ", pxVertexBufferFormatInfo->TexturePosition);
+        ++pxVertexBufferFormatInfo->VertexAttributesAmount;
+    }
+
+    switch(pxVertexBufferFormatInfo->Format)
+    {
+        case PXVertexBufferFormatI08:
+            offset += PXTextPrintA(&buffer[offset], sizeLeft, "I8");
+            pxVertexBufferFormatInfo->VertexElementSize = 1;
+            break;
+
+        case PXVertexBufferFormatI16:
+            offset += PXTextPrintA(&buffer[offset], sizeLeft, "I16");
+            pxVertexBufferFormatInfo->VertexElementSize = 2;
+            break;
+
+        case PXVertexBufferFormatI32:
+            offset += PXTextPrintA(&buffer[offset], sizeLeft, "I32");
+            pxVertexBufferFormatInfo->VertexElementSize = 4;
+            break;
+
+        case PXVertexBufferFormatF16:
+            offset += PXTextPrintA(&buffer[offset], sizeLeft, "F16");
+            pxVertexBufferFormatInfo->VertexElementSize = 2;
+            break;
+
+        case PXVertexBufferFormatF32:
+            offset += PXTextPrintA(&buffer[offset], sizeLeft, "F32");
+            pxVertexBufferFormatInfo->VertexElementSize = 4;
+            break;
 
         default:
-            return "Invalid";
+            offset += PXTextPrintA(&buffer[offset], sizeLeft, "ERROR");
+            break;
     }
-}
 
+
+    // StrideSize
+    pxVertexBufferFormatInfo->Stride =
+        pxVertexBufferFormatInfo->Position +
+        pxVertexBufferFormatInfo->TexturePosition +
+        pxVertexBufferFormatInfo->Normal +
+        pxVertexBufferFormatInfo->Color;
+}
+#endif
+
+/*
 PXInt8U PXAPI PXVertexBufferFormatStrideSize(const PXVertexBufferFormat pxVertexBufferFormat)
 {
     switch(pxVertexBufferFormat)
@@ -295,9 +320,13 @@ PXInt8U PXAPI PXVertexBufferFormatSizePerVertex(const PXVertexBufferFormat pxVer
             return 3;
 
         default:
+        {
+            DebugBreak();
             return 0u;
+        }      
     }
 }
+*/
 
 const char* PXFileLocationModeToString(const PXFileLocationMode pxFileLocationMode)
 {
@@ -468,7 +497,8 @@ const PXResourceEntry _GlobalResourceEntryList[] =
     {PXNull, PXNull, "---", PXResourceTypeStructuredText, sizeof(PXWindowBrush) },
     {PXNull, PXNull, "---", PXResourceTypeInstaller, sizeof(PXWindowBrush) },
     {PXNull, PXNull, "---", PXResourceTypeArchiv, sizeof(PXWindowBrush) },
-    {PXNull, PXNull, "---", PXResourceTypeDialogBox, sizeof(PXWindowBrush) }
+    {PXNull, PXNull, "---", PXResourceTypeDialogBox, sizeof(PXWindowBrush) },
+    {&_GLOBALResourceManager.SpriteMapAtlasLookUp, PXResourceCreateSpriteMap, "SpriteMap", PXResourceTypeSpriteMap, sizeof(PXSpriteMap) },
 };
 
 
@@ -1055,7 +1085,7 @@ PXActionResult PXAPI PXResourceCreateModel(PXResourceCreateInfo* const pxResourc
 
     PXMesh* const pxMesh = &pxModel->Mesh;
     pxMesh->VertexBufferListAmount = 1;
-    PXVertexBuffer* const pxVertexBuffer = &pxMesh->VertexBufferPrime;
+    PXVertexBuffer* const pxVertexBuffer = PXMeshVertexBufferListGET(pxMesh);
     PXIndexBuffer* const pxIndexBuffer = &pxMesh->IndexBuffer;
 
     PXMatrix4x4FIdentity(&pxModel->ModelMatrix);
@@ -1108,6 +1138,9 @@ PXActionResult PXAPI PXResourceCreateModel(PXResourceCreateInfo* const pxResourc
     }
     else
     {
+        // As this element is internal, we need to create an ID
+        pxModel->Info.ID = PXResourceManagerGenerateUniqeID();
+
 #if PXLogEnable
         PXLogPrint
         (
@@ -1128,30 +1161,35 @@ PXActionResult PXAPI PXResourceCreateModel(PXResourceCreateInfo* const pxResourc
                 const PXBool isDataConst =
                     PXResourceInfoPermissionREAD & pxModel->Info.Behaviour &&
                     PXResourceInfoStorageMemory & pxModel->Info.Behaviour;
-
+                /*
                 if(!isDataConst)
                 {
                     PXCopy(PXVertexBuffer, &pxModelCreateInfo->VertexBuffer, pxVertexBuffer);
                     PXCopy(PXIndexBuffer, &pxModelCreateInfo->IndexBuffer, pxIndexBuffer);
 
                     // Allocate memory and copy
-                    pxVertexBuffer->VertexData = 0;
-                    pxVertexBuffer->VertexDataSize = 0;
                     pxIndexBuffer->DataIndexPosition = 0;
                     pxIndexBuffer->DataIndexSizeSegment = 0;
-
-                    pxVertexBuffer->VertexDataSize = pxModelCreateInfo->VertexBuffer.VertexDataSize;
-                    pxVertexBuffer->VertexData = PXMemoryHeapCallocT(PXByte, pxModelCreateInfo->VertexBuffer.VertexDataSize, &pxModel->Mesh.VertexBuffer.VertexData, &pxModel->Mesh.VertexBuffer.VertexDataSize);
+                    pxVertexBuffer->VertexData.Size = pxModelCreateInfo->VertexBuffer.VertexData.Size;
+                    pxVertexBuffer->VertexData.Data = PXMemoryHeapCallocT(PXByte, pxModelCreateInfo->VertexBuffer.VertexData.Size, &pxModel->Mesh.VertexBuffer.VertexData, &pxModel->Mesh.VertexBuffer.VertexDataSize);
                   
+                    PXBufferAllocate(&pxModel->Mesh.IndexBuffer.Data, );
+
                     pxModel->Mesh.IndexBuffer.DataIndexSizeSegment = pxModelCreateInfo->IndexBuffer.DataIndexSizeSegment;
-                    pxModel->Mesh.IndexBuffer.DataIndexPosition = PXMemoryHeapCallocT(PXByte, pxModelCreateInfo->IndexBuffer.DataIndexSizeSegment, &pxModel->Mesh.IndexBuffer.DataIndexPosition, &pxModel->Mesh.IndexBuffer.DataIndexSizeSegment);
+                    pxModel->Mesh.IndexBuffer.DataIndexPosition = PXMemoryHeapCallocT
+                    (
+                        PXByte, 
+                        pxModelCreateInfo->IndexBuffer.DataIndexSizeSegment, 
+                        &pxModel->Mesh.IndexBuffer.DataIndexPosition,
+                        &pxModel->Mesh.IndexBuffer.DataIndexSizeSegment
+                    );
 
                     PXCopyList
                     (
                         PXByte,
-                        pxModelCreateInfo->VertexBuffer.VertexDataSize,
-                        pxModelCreateInfo->VertexBuffer.VertexData,
-                        pxVertexBuffer->VertexData
+                        pxModelCreateInfo->VertexBuffer.VertexData.Size,
+                        pxModelCreateInfo->VertexBuffer.VertexData.Data,
+                        pxVertexBuffer->VertexData.Data
                     );
                     PXCopyList
                     (
@@ -1161,6 +1199,7 @@ PXActionResult PXAPI PXResourceCreateModel(PXResourceCreateInfo* const pxResourc
                         pxModel->Mesh.IndexBuffer.DataIndexPosition
                     );
                 }
+                */
 
 #if PXLogEnable
                 PXLogPrint
@@ -1176,15 +1215,19 @@ PXActionResult PXAPI PXResourceCreateModel(PXResourceCreateInfo* const pxResourc
             }
             case PXModelFormTriangle:
             {
-                pxVertexBuffer->Format = PXVertexBufferFormatXYPXF32;
-                pxVertexBuffer->VertexData = (void*)PXVertexDataTriangle;
-                pxVertexBuffer->VertexDataSize = sizeof(PXVertexDataTriangle);
+                pxVertexBuffer->LayoutAmount = 1;
+                pxVertexBuffer->LayoutPrime[0].AmountOfElements = 2;
+                pxVertexBuffer->LayoutPrime[0].Format = PXTypeF32;
+                pxVertexBuffer->VertexData.Data = (void*)PXVertexDataTriangle;
+                pxVertexBuffer->VertexData.Size = sizeof(PXVertexDataTriangle);
 
-                pxIndexBuffer->IndexDataType = PXTypeInt08U;
+                pxIndexBuffer->DataType = PXTypeInt08U;
                 pxIndexBuffer->DrawModeID = PXDrawModeIDTriangle;
-                pxIndexBuffer->DataIndexPosition = (void*)PXIndexDataTriangle;
-                pxIndexBuffer->DataIndexSizeSegment = sizeof(PXIndexDataTriangle);
+                pxIndexBuffer->Data.Data = (void*)PXIndexDataTriangle;
+                pxIndexBuffer->Data.Size = sizeof(PXIndexDataTriangle);
 
+                pxIndexBuffer->SegmentListAmount = 1;
+                pxIndexBuffer->SegmentPrime.DataRange = pxIndexBuffer->Data.Size;
 
 
 #if PXLogEnable
@@ -1201,14 +1244,20 @@ PXActionResult PXAPI PXResourceCreateModel(PXResourceCreateInfo* const pxResourc
             }
             case PXModelFormRectangle:
             {
-                pxVertexBuffer->Format = PXVertexBufferFormatP2I8;
-                pxVertexBuffer->VertexData = (void*)PXVertexDataRectangle;
-                pxVertexBuffer->VertexDataSize = sizeof(PXVertexDataRectangle);
+                pxVertexBuffer->LayoutAmount = 1;
+                pxVertexBuffer->LayoutPrime[0].AmountOfElements = 2;
+                pxVertexBuffer->LayoutPrime[0].Format = PXTypeF32;
+                pxVertexBuffer->LayoutPrime[0].Type = PXVertexBufferLayoutTypePosition;
+                pxVertexBuffer->VertexData.Data = (void*)PXVertexDataRectangle;
+                pxVertexBuffer->VertexData.Size = sizeof(PXVertexDataRectangle);
 
-                pxIndexBuffer->IndexDataType = PXTypeInt08U;
-                pxIndexBuffer->DrawModeID = PXDrawModeIDTriangle;// PXDrawModeIDPoint | PXDrawModeIDLineLoop;
-                pxIndexBuffer->DataIndexPosition = (void*)PXIndexDataRectangle;
-                pxIndexBuffer->DataIndexSizeSegment = sizeof(PXIndexDataRectangle);
+                pxIndexBuffer->DataType = PXTypeInt08U;
+                pxIndexBuffer->DrawModeID = PXDrawModeIDTriangle | PXDrawModeIDPoint | PXDrawModeIDLineLoop;;
+                pxIndexBuffer->Data.Data = (void*)PXIndexDataRectangle;
+                pxIndexBuffer->Data.Size = sizeof(PXIndexDataRectangle);
+
+                pxIndexBuffer->SegmentListAmount = 1;
+                pxIndexBuffer->SegmentPrime.DataRange = pxIndexBuffer->Data.Size;
 
 #if PXLogEnable
                 PXLogPrint
@@ -1222,6 +1271,39 @@ PXActionResult PXAPI PXResourceCreateModel(PXResourceCreateInfo* const pxResourc
 
                 break;
             }
+            case PXModelFormRectangleTX:
+            {
+                pxVertexBuffer->LayoutAmount = 2;
+                pxVertexBuffer->LayoutPrime[0].AmountOfElements = 2;
+                pxVertexBuffer->LayoutPrime[0].Format = PXTypeF32;
+                pxVertexBuffer->LayoutPrime[0].Type = PXVertexBufferLayoutTypePosition;
+                pxVertexBuffer->LayoutPrime[1].AmountOfElements = 2;
+                pxVertexBuffer->LayoutPrime[1].Format = PXTypeF32;
+                pxVertexBuffer->LayoutPrime[1].Type = PXVertexBufferLayoutTypeTexturePos;
+                pxVertexBuffer->VertexData.Data = (void*)PXVertexDataRectangleTX;
+                pxVertexBuffer->VertexData.Size = sizeof(PXVertexDataRectangleTX);
+
+
+                pxIndexBuffer->DataType = PXTypeInt08U;
+                pxIndexBuffer->DrawModeID = PXDrawModeIDTriangle | PXDrawModeIDPoint | PXDrawModeIDLineLoop;;
+                pxIndexBuffer->Data.Data = (void*)PXIndexDataRectangle;
+                pxIndexBuffer->Data.Size = sizeof(PXIndexDataRectangle);
+
+                pxIndexBuffer->SegmentListAmount = 1;
+                pxIndexBuffer->SegmentPrime.DataRange = pxIndexBuffer->Data.Size;
+
+#if PXLogEnable
+                PXLogPrint
+                (
+                    PXLoggingInfo,
+                    "Engine",
+                    "Model-Create",
+                    "From: RectangleTX"
+                );
+#endif
+
+                break;
+            }
             case PXModelFormCircle:
             {
                 PXF32 cx = 0;
@@ -1229,11 +1311,14 @@ PXActionResult PXAPI PXResourceCreateModel(PXResourceCreateInfo* const pxResourc
                 PXF32 radius = 1;
                 int segmentAmount = 16;
 
-                pxVertexBuffer->Format = PXVertexBufferFormatXYPXF32;
-                pxVertexBuffer->VertexDataSize = segmentAmount * 2;
-                pxVertexBuffer->VertexData = PXMemoryHeapCallocT(PXF32, pxVertexBuffer->VertexDataSize);
+                pxVertexBuffer->LayoutAmount = 1;
+                pxVertexBuffer->LayoutPrime[0].AmountOfElements = 2;
+                pxVertexBuffer->LayoutPrime[0].Format = PXTypeInt32S;
+                pxVertexBuffer->LayoutPrime[0].Type = PXVertexBufferLayoutTypePosition;
+                pxVertexBuffer->VertexData.Size = segmentAmount * 2;
+                pxVertexBuffer->VertexData.Data = PXMemoryHeapCallocT(PXF32, pxVertexBuffer->VertexData.Size);
 
-                PXF32* vertexData = (PXF32*)pxVertexBuffer->VertexData;
+                PXF32* vertexData = (PXF32*)pxVertexBuffer->VertexData.Data;
 
                 for(PXSize i = 0; i < segmentAmount; ++i)
                 {
@@ -1259,15 +1344,20 @@ PXActionResult PXAPI PXResourceCreateModel(PXResourceCreateInfo* const pxResourc
             }
             case PXModelFormCube:
             {
-                pxVertexBuffer->Format = PXVertexBufferFormatP3I8;
-                pxVertexBuffer->VertexData = (void*)PXVertexDataCube;
-                pxVertexBuffer->VertexDataSize = sizeof(PXVertexDataCube);
+                pxVertexBuffer->LayoutAmount = 1;
+                pxVertexBuffer->LayoutPrime[0].AmountOfElements = 3;
+                pxVertexBuffer->LayoutPrime[0].Format = PXTypeF32; // PXTypeInt08S
+                pxVertexBuffer->LayoutPrime[0].Type = PXVertexBufferLayoutTypePosition;
+                pxVertexBuffer->VertexData.Data = (void*)PXVertexDataCube;
+                pxVertexBuffer->VertexData.Size = sizeof(PXVertexDataCube);
 
-                pxIndexBuffer->IndexDataType = PXTypeInt08U;
-                pxIndexBuffer->DrawModeID = PXDrawModeIDTriangle;
-                pxIndexBuffer->DataIndexPosition = (void*)PXIndexDataCube;
-                pxIndexBuffer->DataIndexSizeSegment = sizeof(PXIndexDataCube);
+                pxIndexBuffer->DataType = PXTypeInt08U;
+                pxIndexBuffer->DrawModeID = PXDrawModeIDTriangle | PXDrawModeIDPoint | PXDrawModeIDLineLoop;;
+                pxIndexBuffer->Data.Data = (void*)PXIndexDataCube;
+                pxIndexBuffer->Data.Size = sizeof(PXIndexDataCube);
 
+                pxIndexBuffer->SegmentListAmount = 1;
+                pxIndexBuffer->SegmentPrime.DataRange = pxIndexBuffer->Data.Size;
 
 #if PXLogEnable
                 PXLogPrint
@@ -1311,6 +1401,12 @@ PXActionResult PXAPI PXResourceCreateModel(PXResourceCreateInfo* const pxResourc
 
     // Setup
     // PXMatrix4x4FScaleBy(&pxModel->ModelMatrix, pxModelCreateInfo->Scale);
+
+
+    // After loading, we need to transmute it 
+    // into a format we can actually use
+    PXMeshVertexLayoutTransmute(&pxModel->Mesh);
+
 
     pxModel->ShaderProgramReference = pxModelCreateInfo->ShaderProgramReference;
 
@@ -1641,6 +1737,80 @@ PXActionResult PXAPI PXResourceCreateWindow(PXResourceCreateInfo* const pxResour
     return PXActionSuccessful;
 }
 
+PXActionResult PXAPI PXResourceCreateSpriteMap(PXResourceCreateInfo* const pxResourceCreateInfo, PXSpriteMap* const pxSpriteMap)
+{
+    PXEngineSpriteMapInfo* const PXEngineSpriteMapInfo = &pxResourceCreateInfo->SpriteMap;
+
+    // Create texture
+    {
+        PXResourceCreateInfo pxResourceCreateInfoList[2];
+        PXClearList(PXResourceCreateInfo, &pxResourceCreateInfoList, 2);
+
+        // Skybox CubeTexture
+        pxResourceCreateInfoList[0].Type = PXResourceTypeTexture2D;
+        pxResourceCreateInfoList[0].ObjectReference = (void**)&pxSpriteMap->Texture2D;
+
+        PXResourceManagerAdd(pxResourceCreateInfoList);
+    }
+
+    // Fetch model, a rectangle as a base.
+    {
+        PXResourceCreateInfo pxResourceCreateInfoList[2];
+        PXClearList(PXResourceCreateInfo, &pxResourceCreateInfoList, 2);
+
+        // Skybox CubeTexture
+        pxResourceCreateInfoList[0].Type = PXResourceTypeModel;
+        pxResourceCreateInfoList[0].ObjectReference = (void**)&pxSpriteMap->Model;
+        pxResourceCreateInfoList[0].Model.Form = PXModelFormRectangleTX;
+
+        PXResourceManagerAdd(pxResourceCreateInfoList);
+    }
+
+
+    // Add a instanced vertex buffer.
+    PXSize amountOfUniqeCells =
+        pxSpriteMap->Texture2D->Image->Width * 
+        pxSpriteMap->Texture2D->Image->Height;
+
+    PXSize amountOfLevelCells =
+        PXEngineSpriteMapInfo->MapSize.X * PXEngineSpriteMapInfo->MapSize.Y;
+
+    PXSize size = sizeof(PXSpriteMapEntity) * amountOfLevelCells;
+    pxSpriteMap->SpriteMapEntityList = PXMemoryHeapCallocT(PXSpriteMapEntity, amountOfLevelCells);
+    
+    
+    if(pxSpriteMap->Model)
+    {
+        PXModel* const pxModel = pxSpriteMap->Model;
+
+        PXBufferLayout pxVertexBufferLayout[3];
+        pxVertexBufferLayout[0].Format = PXTypeF32;
+        pxVertexBufferLayout[0].AmountOfElements = 2;
+        pxVertexBufferLayout[0].UpdatePerPrimitive = 1;
+
+        pxVertexBufferLayout[1].Format = PXTypeF32;
+        pxVertexBufferLayout[1].AmountOfElements = 2;
+        pxVertexBufferLayout[1].UpdatePerPrimitive = 1;
+
+        pxVertexBufferLayout[2].Format = PXTypeF32;
+        pxVertexBufferLayout[2].AmountOfElements = 2;
+        pxVertexBufferLayout[2].UpdatePerPrimitive = 1;
+
+        PXMeshVertexArrayAdd
+        (
+            &pxModel->Mesh, 
+            pxSpriteMap->SpriteMapEntityList,
+            size, 
+            pxVertexBufferLayout,
+            3
+        );
+
+        // amountOfLevelCells
+    }
+
+    return PXActionSuccessful;
+}
+
 PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResourceCreateInfo)
 {
     if(!pxResourceCreateInfo)
@@ -1722,7 +1892,7 @@ PXActionResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResource
                 PXLoggingInfo,
                 PXResourceManagerText,
                 "Register",
-                "PXID:%-4i Size:%-4i (%i/%i) <%s>",
+                "PXID:<%-4i> Size:%-4i (%i/%i) <%s>",
                 resourceID,
                 pxResourceEntry->TypeSize,
                 i+1,
@@ -1985,9 +2155,25 @@ PXMaterial* PXAPI PXMaterialContainerFind(const PXMaterialContainer* const pxMat
     return PXNull;
 }
 
+PXBufferLayout* PXAPI PXVertexBufferLayoutGET(PXVertexBuffer* const pxVertexBuffer)
+{
+    if(4 >= pxVertexBuffer->LayoutAmount)
+    {
+        return &pxVertexBuffer->LayoutPrime;
+    }
+    else
+    {
+        return pxVertexBuffer->LayoutList;
+    }
+}
+
+/*
 void* PXAPI PXVertexBufferInsertionPoint(const PXVertexBuffer* const pxVertexBuffer, const PXVertexBufferFormat pxVertexBufferFormat, const PXSize index)
 {
-    const PXInt8U stride = PXVertexBufferFormatStrideSize(pxVertexBuffer->Format);
+   // PXVertexBufferFormatInfo pxVertexBufferFormatInfo;
+   // PXVertexBufferFormatInfoExtract(&pxVertexBufferFormatInfo, pxVertexBuffer->Format);
+
+    const PXInt8U stride = 0;// pxVertexBufferFormatInfo.Stride;
     const PXSize rowEntiry = stride * index;
 
     return 0;
@@ -2057,59 +2243,68 @@ void* PXAPI PXVertexBufferInsertionPoint(const PXVertexBuffer* const pxVertexBuf
     }
 #endif
 }
+*/
 
 void PXAPI PXIndexBufferPrepare(PXIndexBuffer* const pxIndexBuffer, const PXSize amountVertex, const PXSize amountMaterials)
 {
-    // Index array data Type
+    // Index array data Type    
+    if(amountVertex <= 0xFFu)
     {
-        if(amountVertex <= 0xFFu)
-        {
-            // 8-Bit
-            pxIndexBuffer->IndexDataType = PXTypeInt08U;
-        }
-        else if(amountVertex <= 0xFFFFu)
-        {
-            // 16-Bit
-            pxIndexBuffer->IndexDataType = PXTypeInt16U;
-        }
-        else if(amountVertex <= 0xFFFFFFFFu)
-        {
-            // 32-Bit
-            pxIndexBuffer->IndexDataType = PXTypeInt32U;
-        }
-        else
-        {
-            // 64-Bit
-            pxIndexBuffer->IndexDataType = PXTypeInt64U;
-        }
-
-        const PXSize dataSize = PXTypeSizeGet(pxIndexBuffer->IndexDataType);
-
-        pxIndexBuffer->DataIndexAmount = amountVertex;
-        pxIndexBuffer->DataIndexSizeSegment = dataSize * amountVertex;
-        pxIndexBuffer->DataIndexSizeTotal = dataSize * amountVertex * 3;
-        pxIndexBuffer->Data = PXMemoryHeapCalloc(PXNull, amountVertex * 3, dataSize);
-  
-        pxIndexBuffer->DataIndexPosition = pxIndexBuffer->Data;
-        pxIndexBuffer->DataIndexNormal = (char*)pxIndexBuffer->DataIndexPosition + pxIndexBuffer->DataIndexSizeSegment;
-        pxIndexBuffer->DataIndexTexturePos = (char*)pxIndexBuffer->DataIndexNormal + pxIndexBuffer->DataIndexSizeSegment;
+        // 8-Bit
+        pxIndexBuffer->DataType = PXTypeInt08U;
     }
+    else if(amountVertex <= 0xFFFFu)
+    {
+        // 16-Bit
+        pxIndexBuffer->DataType = PXTypeInt16U;
+    }
+    else if(amountVertex <= 0xFFFFFFFFu)
+    {
+        // 32-Bit
+        pxIndexBuffer->DataType = PXTypeInt32U;
+    }
+    else
+    {
+        // 64-Bit
+        pxIndexBuffer->DataType = PXTypeInt64U;
+    }
+
+    const PXSize dataSize = PXTypeSizeGet(pxIndexBuffer->DataType);
+
+    PXBufferAllocate(&pxIndexBuffer->Data, amountVertex * 3 * dataSize);
+
+    PXSize indexAmount = 3;
+
+    pxIndexBuffer->LayoutListAmount = 3;
+    pxIndexBuffer->LayoutList = PXMemoryHeapCallocT(PXBufferLayout, pxIndexBuffer->LayoutListAmount);
+
+    pxIndexBuffer->LayoutList[0].Format = pxIndexBuffer->DataType;
+    pxIndexBuffer->LayoutList[0].AmountOfElements = 1;
+    pxIndexBuffer->LayoutList[0].Type = PXVertexBufferLayoutTypePosition;
+
+    pxIndexBuffer->LayoutList[1].Format = pxIndexBuffer->DataType;
+    pxIndexBuffer->LayoutList[1].AmountOfElements = 1;
+    pxIndexBuffer->LayoutList[1].Type = PXVertexBufferLayoutTypeNormal;
+
+    pxIndexBuffer->LayoutList[2].Format = pxIndexBuffer->DataType;
+    pxIndexBuffer->LayoutList[2].AmountOfElements = 1;
+    pxIndexBuffer->LayoutList[2].Type = PXVertexBufferLayoutTypeTexturePos;
+
 
     pxIndexBuffer->SegmentListAmount = amountMaterials;
     pxIndexBuffer->SegmentList = PXMemoryHeapCallocT(PXIndexSegment, amountMaterials);
 
 
 #if PXLogEnable
-    const PXSize dataSize = PXTypeSizeGet(pxIndexBuffer->IndexDataType);
-
     PXLogPrint
     (
         PXLoggingInfo,
         "IndeBuffer",
         "prepare",
-        "PXID:%i, TypeSize:%i, VertexAmount:%i, Materials:%i",
+        "PXID:%i, TypeSize:%i, IndexAmount:%i, VertexAmount:%i, Materials:%i",
         pxIndexBuffer->Info.Handle.OpenGLID,
         dataSize,
+        indexAmount,
         amountVertex,
         amountMaterials
     );
@@ -2121,6 +2316,867 @@ PXBool PXAPI PXIndexBufferIsUsed(const PXIndexBuffer* const pxIndexBuffer)
     return pxIndexBuffer->Info.Handle.OpenGLID != 0;
 }
 
+PXIndexSegment* PXAPI PXIndexBufferSegmentListGET(const PXIndexBuffer* const pxIndexBuffer)
+{
+    PXAssert(pxIndexBuffer->SegmentListAmount != 0, "This cant be 0");
+
+    if(pxIndexBuffer->SegmentListAmount == 1)
+    {
+        return &pxIndexBuffer->SegmentPrime;
+    }
+    else
+    {
+        return pxIndexBuffer->SegmentList;
+    }
+}
+
+PXBufferLayout* PXAPI PXIndexLayoutListGET(const PXIndexBuffer* const pxIndexBuffer)
+{
+    PXAssert(pxIndexBuffer->LayoutListAmount != 0, "This cant be 0");
+
+    if(pxIndexBuffer->LayoutListAmount == 1)
+    {
+        return &pxIndexBuffer->LayoutPrime;
+    }
+    else
+    {
+        return pxIndexBuffer->LayoutList;
+    }
+}
+
+PXSize PXAPI PXIndexIndexGET(const PXIndexBuffer* const pxIndexBuffer, const PXInt8U type)
+{
+#if 1
+    
+
+
+#else
+
+
+    PXBufferLayout* const pxBufferLayoutList = PXIndexLayoutListGET(pxIndexBuffer);
+
+    for(size_t i = 0; i < pxIndexBuffer->LayoutListAmount; i++)
+    {
+        PXBufferLayout* const pxBufferLayout = &pxBufferLayoutList[i];
+
+        if(type != pxBufferLayout->Type)
+        {
+            continue;
+        }
+
+        pxBufferLayout->
+    }
+
+    return 0;
+#endif
+}
+
+PXActionResult PXAPI PXMeshVertexLayoutPrint(PXMesh* const pxMesh)
+{
+    PXVertexBuffer* pxVertexBufferList = PXMeshVertexBufferListGET(pxMesh);
+
+    char bufferLayout[64];
+
+    for(size_t i = 0; i < pxMesh->VertexBufferListAmount; i++)
+    {
+        PXVertexBuffer* pxVertexBuffer = &pxVertexBufferList[i];
+
+        PXBufferLayout* const pxVertexBufferLayoutList = PXVertexBufferLayoutGET(pxVertexBuffer);
+
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            "Vertex",
+            "Layout",
+            "PXID:%i, GLID_VBO:%i, (%i/%i), Amount:%i",
+            pxVertexBuffer->Info.ID,
+            pxVertexBuffer->Info.Handle.OpenGLID,
+            i+1,
+            pxMesh->VertexBufferListAmount,
+            pxVertexBuffer->LayoutAmount
+        );
+#endif
+
+        for(size_t w = 0; w < pxVertexBuffer->LayoutAmount; w++)
+        {
+            PXBufferLayout* pxVertexBufferLayout = &pxVertexBufferLayoutList[w];
+
+            PXSize sizeOfSingleElement = PXTypeSizeGet(pxVertexBufferLayout->Format);
+            PXSize amountOfElement = pxVertexBufferLayout->AmountOfElements;
+
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                "Vertex",
+                "Layout",
+                "- (%i/%i) Amount:%i, TypeSize:%i, Type:%i",
+                w+1,
+                pxVertexBuffer->LayoutAmount,
+                amountOfElement,
+                sizeOfSingleElement,
+                pxVertexBufferLayout->Type
+            );
+#endif
+        }
+    }
+
+    return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXMeshVertexLayout(PXMesh* const pxMesh, const PXSize index, PXBufferLayout* const pxVertexBufferLayoutList, const PXSize amount)
+{
+    PXVertexBuffer* pxVertexBufferList = PXNull;
+
+    pxMesh->VertexBufferListAmount = amount;
+
+    //-----------------------------------------------------
+    // Calc total use
+    PXSize totalVertexDataSize = 0;
+
+    for(PXSize i = 0; i < amount; ++i)
+    {
+        PXBufferLayout* const pxVertexBufferLayout = &pxVertexBufferLayoutList[i];
+
+        PXSize sizeOfSingleElement = PXTypeSizeGet(pxVertexBufferLayout->Format);
+        PXSize amountOfElement = pxVertexBufferLayout->AmountOfElements;
+
+        totalVertexDataSize += sizeOfSingleElement * amountOfElement;
+    }
+    //-----------------------------------------------------
+
+    //-----------------------------------------------------
+    // Alloc, VBO
+    pxVertexBufferList = PXMeshVertexBufferListSET(pxMesh, amount);
+    
+    //-----------------------------------------------------
+
+    // Distructbute
+
+    PXVertexBuffer* pxVertexBuffer = &pxVertexBufferList[index];
+
+    pxVertexBuffer->LayoutAmount = amount;
+    PXCopyList(PXBufferLayout, amount, pxVertexBufferLayoutList, pxVertexBuffer->LayoutPrime);
+
+    PXBufferAllocate(&pxVertexBuffer->VertexData, totalVertexDataSize);
+
+    // How many vertex arrays?
+}
+
+PXActionResult PXAPI PXMeshIndexLayout(PXMesh* const pxMesh, const PXSize primitveAmount, const PXSize segmentAmount)
+{
+    PXIndexBufferPrepare(&pxMesh->IndexBuffer, primitveAmount, segmentAmount);
+
+    pxMesh->IndexBuffer.DrawModeID = PXDrawModeIDTriangle;// | PXDrawModeIDPoint | PXDrawModeIDLineLoop;
+
+    pxMesh->MaterialContaierListAmount = segmentAmount;
+    pxMesh->MaterialContaierList = PXMemoryHeapCallocT(PXMaterialContainer, segmentAmount);
+
+    return PXActionSuccessful;
+}
+
+PXBufferLayout* PXAPI PXMeshVertexBufferGET(PXMesh* const pxMesh, const PXInt8U type)
+{
+    PXVertexBuffer* const pxVertexBufferList = PXMeshVertexBufferListGET(pxMesh);
+
+    // Search every vertexBuffer
+    for(PXSize i = 0; i < pxMesh->VertexBufferListAmount; ++i)
+    {
+        PXVertexBuffer* const pxVertexBuffer = &pxVertexBufferList[i];
+        PXBufferLayout* const pxVertexBufferLayoutList = PXVertexBufferLayoutGET(pxVertexBuffer);
+
+        // Search every layout
+        for(PXSize w = 0; w < pxVertexBuffer->LayoutAmount; w++)
+        {
+            PXBufferLayout* pxVertexBufferLayout = &pxVertexBufferLayoutList[w];
+
+            // if layout matches..
+            if(pxVertexBufferLayout->Type == type)
+            {
+                return pxVertexBufferLayout;
+            }
+        }
+    }
+
+    return PXNull;
+}
+
+void* PXAPI PXMeshVertexInsert(PXMesh* const pxMesh, const PXInt8U type)
+{
+    PXVertexBuffer* const pxVertexBufferList = PXMeshVertexBufferListGET(pxMesh);
+
+    // Search every vertexBuffer
+    for(PXSize i = 0; i < pxMesh->VertexBufferListAmount; ++i)
+    {
+        PXVertexBuffer* const pxVertexBuffer = &pxVertexBufferList[i];
+        PXBufferLayout* const pxVertexBufferLayoutList = PXVertexBufferLayoutGET(pxVertexBuffer);
+
+        PXSize offset = 0;
+
+        // Search every layout
+        for(PXSize w = 0; w < pxVertexBuffer->LayoutAmount; w++)
+        {
+            PXBufferLayout* pxVertexBufferLayout = &pxVertexBufferLayoutList[w];
+
+            PXSize sizeOfSingleElement = PXTypeSizeGet(pxVertexBufferLayout->Format);
+            PXSize amountOfElement = pxVertexBufferLayout->AmountOfElements;
+
+            offset += sizeOfSingleElement * amountOfElement;
+
+            // if layout matches..
+            if(pxVertexBufferLayout->Type == type)
+            {               
+                void* adress = (PXByte*)pxVertexBuffer->VertexData.Data + offset;
+
+                PXAssert
+                (
+                    offset <=
+                    pxVertexBuffer->VertexData.Size,
+                    "Out of bounce"
+                );
+
+                return adress;
+            }
+        }
+    }
+
+    return PXNull;
+}
+
+void* PXAPI PXMeshIndexInsert(PXMesh* const pxMesh, const PXInt8U type)
+{
+    PXByte* data = (PXByte*)pxMesh->IndexBuffer.Data.Data;
+    const PXSize sizeOfElement = PXTypeSizeGet(pxMesh->IndexBuffer.DataType);
+
+    PXBufferLayout* pxBufferLayoutList = PXIndexLayoutListGET(&pxMesh->IndexBuffer);
+
+    for(PXSize i = 0; i < pxMesh->IndexBuffer.LayoutListAmount; ++i)
+    {
+        PXBufferLayout* pxBufferLayout = &pxBufferLayoutList[i];
+
+        if(type == pxBufferLayout->Type)
+        {
+            return data + sizeOfElement * i;
+        }     
+    }
+
+    return PXNull;    
+}
+
+PXSize PXAPI PXMeshVertexStrideGET(PXMesh* const pxMesh)
+{
+    return 0;
+}
+
+PXVertexBuffer* PXAPI PXMeshVertexBufferListGET(PXMesh* const pxMesh)
+{
+    if(pxMesh->VertexBufferListAmount <= 4)
+    {
+        return &pxMesh->VertexBufferPrime;
+    }
+    else
+    {
+        return pxMesh->VertexBufferList;
+    }
+}
+
+PXVertexBuffer* PXAPI PXMeshVertexBufferListSET(PXMesh* const pxMesh, const PXSize amount)
+{
+    if(amount <= 4)
+    {
+        return &pxMesh->VertexBufferPrime;
+    }
+    else
+    {
+        pxMesh->VertexBufferList = PXMemoryHeapCallocT(PXVertexBuffer, pxMesh->VertexBufferListAmount);
+
+        return pxMesh->VertexBufferList;
+    }
+}
+
+PXSize PXAPI PXMeshIndexBufferLengthGET(PXMesh* const pxMesh)
+{
+    PXBufferLayout* const pxBufferLayoutList = PXIndexLayoutListGET(&pxMesh->IndexBuffer);
+
+    PXInt8U typeSize = 0;
+
+    for(size_t i = 0; i < pxMesh->VertexBufferListAmount; i++)
+    {
+        PXBufferLayout* const pxBufferLayout = &pxBufferLayoutList[i];
+
+        typeSize = PXTypeSizeGet(pxBufferLayout->Type);
+    }
+
+
+    PXSize res = (pxMesh->IndexBuffer.Data.Size / typeSize) / pxMesh->VertexBufferListAmount;
+
+    return res;
+}
+
+void PXConvertAnyToFloat(void* a, PXType aType, float* b)
+{
+    const PXSize isFloat = (PXTypeF32 & aType) == PXTypeF32;
+
+    if(aType == isFloat)
+    {
+        *b = *(float*)a;
+        return;
+    }
+
+    switch(PXTypeSizeGet(aType))
+    {
+        case PXTypeInt08S:
+        {
+            *b = *(PXInt8S*)a;
+            return;
+        }
+        case PXTypeInt16S:
+        {
+            *b = *(PXInt16S*)a;
+            return;
+        }
+        case PXTypeInt32S:
+        {
+            *b = *(PXInt32S*)a;
+            return;
+        }
+        default:
+        {
+            DebugBreak();
+            return;
+        }
+    }
+}
+
+
+PXActionResult PXAPI PXMeshVertexLayoutTransmute(PXMesh* const pxMesh)
+{
+#if 0
+
+    // If we have POS; NORM; TEX. Convert it into an interleaved array
+    // As the GPU is to stupit to use seperate arrays.
+    PXIndexBuffer* pxIndexBuffer = &pxMesh->IndexBuffer;
+
+    PXVertexBuffer* const pxVertexBufferList = PXMeshVertexBufferListGET(pxMesh);
+    PXBufferLayout* const pxIndexBufferLayoutList = PXIndexLayoutListGET(pxIndexBuffer);
+
+
+    const PXSize layoutListAmount = pxIndexBuffer->LayoutListAmount;
+    const PXSize vertexBufferAmount = pxMesh->VertexBufferListAmount;
+
+    const PXBool hasMultiIndexArray = layoutListAmount > 1;
+    const PXSize indexAmount = PXMeshIndexBufferLengthGET(pxIndexBuffer);
+
+
+    // If the format is not already compatible, we need to translate it.
+    // Allocate new vertex memory for this
+    const PXSize stride = PXMeshVertexStrideGET(pxMesh);
+    const PXSize fullData = sizeof(float) * stride * indexAmount;
+
+    float* memBlock = PXMemoryVirtualAllocate(fullData, PXNull, PXAccessModeReadAndWrite);
+
+
+    PXSize offset = 0;
+    float* vertexDataNew[8];
+
+    for(size_t i = 0; i < vertexBufferAmount; i++)
+    {
+        PXVertexBuffer* const pxVertexBuffer = &pxVertexBufferList[i];
+
+        
+        // Width of the whole buffer
+        PXBufferLayout* const pxBufferLayoutList =  PXVertexBufferLayoutGET(pxVertexBuffer);
+
+        PXSize width = 0;
+
+        for(size_t i = 0; i < pxVertexBuffer->LayoutAmount; i++)
+        {
+            PXBufferLayout* const pxBufferLayout = &pxBufferLayoutList[i];
+
+            width += PXTypeSizeGet(pxBufferLayout->Format);
+        }
+
+        vertexDataNew[i] = &((float*)memBlock)[offset];
+
+        offset += indexAmount * width;
+    }
+
+
+    if(hasMultiIndexArray)
+    {   
+        // Loop over all the arrays 
+        for(PXSize x = 0; x < layoutListAmount; ++x)
+        {
+            PXBufferLayout* const pxBufferLayout = &pxIndexBufferLayoutList[x];
+
+            // Lookup reference vertex array
+            PXBufferLayout* vertexBufferLayout = PXMeshVertexBufferGET(pxMesh, pxBufferLayout->Type);
+
+            void* source = PXMeshVertexInsert(pxMesh, pxBufferLayout->Type);
+            float* target = vertexDataNew[x];
+
+
+            const PXInt8U vertexTypeSize = PXTypeSizeGet(vertexBufferLayout->Type);
+            const PXInt8U indexTypeSize = PXTypeSizeGet(pxBufferLayout->Type);
+            
+
+            void* indexData = pxIndexBuffer->Data.Data;
+        
+
+
+            for(size_t y = 0; y < indexAmount; ++y)
+            {
+                PXSize refIndex = x + y * layoutListAmount;
+                PXInt8U index = ((PXByte*)pxIndexBuffer->Data.Data)[refIndex];
+
+                void* vertexDataANY = (PXByte*)source * vertexTypeSize * index;
+                float* vertexDataF = &target[index];
+
+                PXConvertAnyToFloat(vertexDataANY, pxBufferLayout->Type, vertexDataF);
+            }
+
+            switch(indexTypeSize)
+            {
+                case 1:
+                {
+
+                    break;
+                }
+                case 2:
+                {
+                    for(size_t y = 0; y < indexAmount; ++y)
+                    {
+                        PXSize refIndex = x + y * layoutListAmount;
+                        PXInt8U index = ((PXByte*)pxIndexBuffer->Data.Data)[refIndex];
+
+                        void* vertexDataANY = index * (PXByte*)source * vertexTypeSize;
+                        float* vertexDataF = &target[index];
+
+                        PXConvertAnyToFloat(vertexDataANY, pxBufferLayout->Type, vertexDataF);
+                    }
+
+                    break;
+                }
+                case 4:
+                {
+                    for(size_t y = 0; y < indexAmount; ++y)
+                    {
+                        PXSize refIndex = x + y * layoutListAmount;
+                        PXInt8U index = ((PXByte*)pxIndexBuffer->Data.Data)[refIndex];
+
+                        void* vertexDataANY = index * (PXByte*)source * vertexTypeSize;
+                        float* vertexDataF = &target[index];
+
+                        PXConvertAnyToFloat(vertexDataANY, pxBufferLayout->Type, vertexDataF);
+                    }
+
+                    break;
+                }
+                default:
+                {
+                    break;
+                }
+            }
+        }
+    }
+    else
+    {
+        // We prob. only need to promote vertex data
+        // As the index data is only one type, there is no need to do anything
+
+        for(PXSize i = 0; i < vertexBufferAmount; i++)
+        {
+            PXVertexBuffer* const pxVertexBuffer = &pxVertexBufferList[i];
+
+            
+        }
+
+
+
+    }
+
+
+
+
+
+
+#endif
+
+
+
+#if 0
+
+
+    PXSize vertexDataCacheOffset = 0;
+
+    PXSize globalOffset = 0;
+    PXSize indexOffset = 0;
+
+    PXSize typeSize = PXTypeSizeGet(pxIndexBuffer->DataType);
+
+    PXF32 cacheLine[3 + 3 + 2];
+
+
+    float* inputPosition = PXMeshVertexInsert(pxMesh, PXVertexBufferLayoutTypePosition);
+    float* inputNormal = PXMeshVertexInsert(pxMesh, PXVertexBufferLayoutTypeNormal);
+    float* inputTexture = PXMeshVertexInsert(pxMesh, PXVertexBufferLayoutTypeTexturePos);
+
+    void* inputIndexPosition = PXMeshIndexInsert(pxMesh, PXVertexBufferLayoutTypePosition);
+    void* inputIndexNormal = PXMeshIndexInsert(pxMesh, PXVertexBufferLayoutTypeNormal);
+    void* inputIndexTexture = PXMeshIndexInsert(pxMesh, PXVertexBufferLayoutTypeTexturePos);
+
+    // Problem: Opengl does not work with multible index data 
+    // things, so we need to change them
+    const PXBool hasMultibleIndexData = pxMesh->IndexBuffer.LayoutListAmount > 1;
+
+
+
+
+    const PXSize pxIndexSegmentListAmount = pxIndexBuffer->SegmentListAmount;
+    PXIndexSegment* pxIndexSegmentList = PXIndexBufferSegmentListGET(pxIndexBuffer);
+
+    for(PXSize segmentIndex = 0; segmentIndex < pxIndexSegmentListAmount; ++segmentIndex)
+    {
+        PXIndexSegment* const pxIndexSegment = &pxIndexSegmentList[segmentIndex];
+
+        const PXSize range = pxIndexSegment->DataRange;
+
+        for(PXSize i = 0; i < range; ++i)
+        {
+            PXInt16U dataIndexVertex = *(PXInt16U*)((PXByte*)inputIndexPosition + (typeSize * i));
+            PXInt16U dataIndexNormal = *(PXInt16U*)((PXByte*)inputIndexNormal + (typeSize * i));
+            PXInt16U dataIndexTexture = *(PXInt16U*)((PXByte*)inputIndexTexture + (typeSize * i));
+
+            float* inVertex = &inputPosition[dataIndexVertex];
+            float* inNormal = &inputNormal[dataIndexNormal];
+            float* inTexture = &inputTexture[dataIndexTexture];
+
+            float* outVertex = &cacheLine[0];
+            float* outNormal = &cacheLine[3];
+            float* outTexture = &cacheLine[3 + 3];
+
+            vertexDataCacheOffset += PXMemoryCopy(inVertex, sizeof(float) * 3, outVertex, 100);
+            vertexDataCacheOffset += PXMemoryCopy(inNormal, sizeof(float) * 3, outNormal, 100);
+            vertexDataCacheOffset += PXMemoryCopy(inTexture, sizeof(float) * 2, outTexture, 100);
+
+            pxOpenGL->Binding.BufferDataSub
+            (
+                GL_ARRAY_BUFFER,
+                globalOffset,
+                (GLsizeiptr)vertexDataCacheOffset,
+                cacheLine
+            );
+
+            PXOpenGLErrorCurrent(pxOpenGL, 1);
+
+            globalOffset += vertexDataCacheOffset;
+            vertexDataCacheOffset = 0;
+            ++indexOffset;
+
+            // Mark as usable!                      
+        }
+
+#if PXLogEnable
+        int progress = -1;// (globalOffset / (float)vertexDataInterleavedSize) * 100;
+
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            PXOpenGLName,
+            PXOpenGLModelName,
+            "Segment:<%2i/%-2i> ready! %7i/%7i (%3i)",
+            segmentIndex + 1,
+            pxIndexBuffer->SegmentListAmount,
+            globalOffset,
+            -1,
+            progress
+        );
+#endif
+    }
+//#endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    PXMeshVertexLayoutPrint(pxMesh);
+
+    PXVertexBuffer* const pxVertexBufferList = PXMeshVertexBufferListGET(pxMesh);
+
+    // Search every vertexBuffer
+    for(PXSize i = 0; i < pxMesh->VertexBufferListAmount; ++i)
+    {
+        PXVertexBuffer* const pxVertexBuffer = &pxVertexBufferList[i];
+        PXBufferLayout* const pxVertexBufferLayoutList = PXVertexBufferLayoutGET(pxVertexBuffer);
+
+        PXSize offset = 0;
+
+        // Search every layout
+        for(PXSize w = 0; w < pxVertexBuffer->LayoutAmount; w++)
+        {
+            PXBufferLayout* pxVertexBufferLayout = &pxVertexBufferLayoutList[w];
+
+            PXSize sizeOfSingleElement = PXTypeSizeGet(pxVertexBufferLayout->Format);
+                 
+            if(sizeOfSingleElement == 1)
+            {
+                // We are using chars, we promite
+            }
+
+            PXSize amountOfElement = pxVertexBufferLayout->AmountOfElements;
+
+            offset += sizeOfSingleElement * amountOfElement;
+
+            
+        }
+    }
+
+
+
+//#if 0
+    //-----------------------------------------------------
+    // Vertex
+    //-----------------------------------------------------
+
+    PXMesh* pxMesh = &pxModel->Mesh;
+    const PXVertexBufferFormat oldFormat = pxMesh->VertexBufferPrime.Format;
+
+
+    if(1 == pxMesh->VertexBufferListAmount)
+    {
+        PXVertexBuffer* const pxVertexBuffer = &pxMesh->VertexBufferPrime;
+
+        PXVertexBufferFormatInfo pxVertexBufferFormatInfoOLD;
+        PXVertexBufferFormatInfoExtract(&pxVertexBufferFormatInfoOLD, pxVertexBuffer->Format);
+
+        PXVertexBufferFormat formatNEW = PXVertexBufferFormatMake(PXVertexBufferFormatF32, 3, 2, 0, 0);
+        PXVertexBufferFormatInfo pxVertexBufferFormatInfoNEW;
+        PXVertexBufferFormatInfoExtract(&pxVertexBufferFormatInfoNEW, formatNEW);
+
+
+        const PXBool isP2I8 = pxVertexBufferFormatInfoOLD.Format == PXVertexBufferFormatI08 && pxVertexBufferFormatInfoOLD.Position == 2;
+        const PXBool isP3I8 = pxVertexBufferFormatInfoOLD.Format == PXVertexBufferFormatI08 && pxVertexBufferFormatInfoOLD.Position == 3;
+        const PXBool isT2P2I8 = pxVertexBufferFormatInfoOLD.Format == PXVertexBufferFormatI08 && pxVertexBufferFormatInfoOLD.Position == 2 && pxVertexBufferFormatInfoOLD.TexturePosition == 2;
+
+        PXSize amountCurrent = pxVertexBufferFormatInfoOLD.Stride;
+        PXSize amountFuture = pxVertexBufferFormatInfoNEW.Stride;
+
+        if(isT2P2I8)
+        {
+            PXSize sizeBefore = pxVertexBuffer->VertexDataSize;
+            PXSize sizeCurrent = (pxVertexBuffer->VertexDataSize / 4) * amountFuture;
+
+            // Store old data
+            PXInt8S* dataOld = (PXInt8S*)pxVertexBuffer->VertexData;
+
+            pxVertexBuffer->Format = formatNEW;
+            pxVertexBuffer->VertexData = PXMemoryHeapCallocT(PXF32, sizeCurrent);;
+            pxVertexBuffer->VertexDataSize = sizeof(PXF32) * sizeCurrent;
+
+            PXF32* dataNew = (PXF32*)pxVertexBuffer->VertexData;
+
+            PXSize newOffset = 0;
+
+            for(PXSize i = 0; i < sizeBefore; i += 4)
+            {
+                dataNew[newOffset++] = (PXF32)dataOld[i + 0];
+                dataNew[newOffset++] = (PXF32)dataOld[i + 1];
+                dataNew[newOffset++] = 0.0f;
+                dataNew[newOffset++] = (PXF32)dataOld[i + 2];
+                dataNew[newOffset++] = (PXF32)dataOld[i + 3];
+            }
+
+            //PXConsoleWriteTablePXF32(dataNew, sizeCurrent, 5);
+        }
+        else if(isP2I8)
+        {
+            PXSize sizeBefore = pxVertexBuffer->VertexDataSize;
+            PXSize sizeCurrent = (pxVertexBuffer->VertexDataSize / 2) * amountFuture;
+
+            // Store old data
+            PXInt8S* dataOld = (PXInt8S*)pxVertexBuffer->VertexData;
+
+            pxVertexBuffer->Format = formatNEW;
+            pxVertexBuffer->VertexData = PXMemoryHeapCallocT(PXF32, sizeCurrent);;
+            pxVertexBuffer->VertexDataSize = sizeof(PXF32) * sizeCurrent;
+
+            PXF32* dataNew = (PXF32*)pxVertexBuffer->VertexData;
+
+            PXSize newOffset = 0;
+
+            const char texCoords[] =
+            {
+                0, 1,   // Top-left
+                1, 1,   // Top-right
+                1, 0,   // Bottom-right
+                0, 0    // Bottom-left
+            };
+
+            for(PXSize i = 0; i < sizeBefore; i += 2)
+            {
+                dataNew[newOffset++] = (PXF32)dataOld[i + 0];
+                dataNew[newOffset++] = (PXF32)dataOld[i + 1];
+                dataNew[newOffset++] = 0.0f;
+
+                dataNew[newOffset++] = (PXF32)texCoords[(i + 0) % 8];
+                dataNew[newOffset++] = (PXF32)texCoords[(i + 1) % 8];
+
+                //dataNew[newOffset++] = (dataOld[i + 0] + 1) / 2.0f;
+                //dataNew[newOffset++] = -(dataOld[i + 1] + 1) / 2.0f;
+            }
+
+            //PXConsoleWriteTablePXF32(dataNew, sizeCurrent, 5);
+
+            // Memory leak? dataOld needs to be deleted? But what if its read only?         
+        }
+        else if(isP3I8)
+        {
+            formatNEW = PXVertexBufferFormatMake(PXVertexBufferFormatF32, 3, 0, 0, 0);
+            PXVertexBufferFormatInfoExtract(&pxVertexBufferFormatInfoNEW, formatNEW);
+            amountFuture = pxVertexBufferFormatInfoNEW.Stride;
+
+
+            PXSize sizeCurrent = pxVertexBuffer->VertexDataSize / 1;
+
+            const PXSize newVertexArraySize = sizeof(PXF32) * sizeCurrent;
+            PXF32* newVertexArray = PXMemoryHeapCallocT(PXF32, sizeCurrent);
+
+            PXInt8S* dataSource = (PXInt8S*)pxVertexBuffer->VertexData;
+
+            for(size_t i = 0; i < sizeCurrent; i++)
+            {
+                newVertexArray[i] = dataSource[i];
+            }
+
+            // Memory leak?
+
+            pxVertexBuffer->Format = formatNEW;
+            pxVertexBuffer->VertexData = newVertexArray;
+            pxVertexBuffer->VertexDataSize = newVertexArraySize;
+        }
+
+        PXVertexBufferFormat newFormat = pxVertexBuffer->Format;
+
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            PXResourceManagerText,
+            "Model-Format",
+            "Transmute <%s> to <%s>",
+            pxVertexBufferFormatInfoOLD.AsText,
+            pxVertexBufferFormatInfoNEW.AsText
+        );
+#endif
+
+    }
+
+#endif
+}
+
+PXActionResult PXAPI PXMeshNormalDataGenerate(PXMesh* const pxMesh)
+{
+    // ...
+
+    return PXActionSuccessful;
+}
+
+PXActionResult PXAPI PXMeshVertexArrayAdd
+(
+    PXMesh* const pxMesh, 
+    void* data, 
+    const PXSize dataLength,
+    PXBufferLayout* const pxVertexBufferLayoutList,
+    const PXSize pxVertexBufferLayoutListAmount
+)
+{
+    PXVertexBuffer* pxVertexBufferTarget = PXNull;
+
+    // Do we need to allocate? Buffer
+    const PXSize expectedIndex = pxMesh->VertexBufferListAmount;
+    const PXBool createNew = 4 > (expectedIndex + 1);
+
+    if(createNew)
+    {
+        // Do then
+        pxVertexBufferTarget = &pxMesh->VertexBufferList[expectedIndex];
+    }
+    else
+    {
+        pxVertexBufferTarget = &pxMesh->VertexBufferPrime[expectedIndex];
+    }
+
+    pxVertexBufferTarget->LayoutAmount = pxVertexBufferLayoutListAmount;
+    PXCopyList(PXBufferLayout, pxVertexBufferLayoutListAmount, pxVertexBufferLayoutList, pxVertexBufferTarget->LayoutPrime);
+
+    // COPY??
+    pxVertexBufferTarget->VertexData.Data = data;
+    pxVertexBufferTarget->VertexData.Size = dataLength;
+
+
+
+    //---------------------
+   // Offset buffer
+   //---------------------
+
+   // GetGraphicsMode();
+#if 0
+
+   // Request API
+
+    PXGraphic* const pxGraphic = PXGraphicInstantiateGET();
+    PXOpenGL* const opengl = &pxGraphic->OpenGLInstance;
+
+    PXVertexBuffer indexedVertexBuffer;
+
+    PXSize attributeIndex = 0;
+
+    // Create
+    PXOpenGLBufferGenerate(opengl, 1, &indexedVertexBuffer.Info.Handle.OpenGLID);
+
+    // Bind
+    PXOpenGLBufferBind(opengl, PXOpenGLBufferArray, indexedVertexBuffer.Info.Handle.OpenGLID);
+
+    // Upload
+    PXOpenGLBufferData(opengl, PXOpenGLBufferArray, dataLength, data, PXOpenGLStoreStaticDraw);
+
+    // Define
+    PXOpenGLVertexArrayAttributeDefine(opengl, attributeIndex, 2, PXTypeF32, PXFalse, dataLength, (void*)0);
+    PXOpenGLVertexArrayEnable(opengl, attributeIndex);
+
+#endif
+
+
+
+    // Attach to model...
+
+
+
+    return PXActionSuccessful;
+}
+
 PXSize PXAPI PXMeshTriangleAmount(PXMesh* const pxMesh)
 {
     /*
@@ -2130,7 +3186,7 @@ PXSize PXAPI PXMeshTriangleAmount(PXMesh* const pxMesh)
     return amount;
     */
 
-    return (pxMesh->VertexBufferList[0].VertexDataSize / 4) / 3;
+    return 0;// (pxMesh->IndexBuffer.DataIndexSizeTotal[0];
 }
 
 PXF32* PXAPI PXMeshTriangleIndex(PXMesh* const pxMesh, const PXSize index)
@@ -2149,147 +3205,8 @@ void PXAPI PXModelConstruct(PXModel* const pxModel)
     // PXRectangleOffsetSet(&pxModel->Margin, 1, 1, 1, 1);
 }
 
-void PXAPI PXModelDestruct(PXModel* const pxModel)
-{
 
-}
-
-void PXAPI PXModelFormatTransmute(PXModel* const pxModel, PXModelFormatTransmuteInfo* const pxModelFormatTransmuteInfo)
-{
-#if 1
-    //-----------------------------------------------------
-    // Vertex
-    //-----------------------------------------------------
-    
-    PXMesh* pxMesh = &pxModel->Mesh;
-    const PXVertexBufferFormat oldFormat = pxMesh->VertexBufferPrime.Format;
-
-
-    if(1 == pxMesh->VertexBufferListAmount)
-    {
-        PXVertexBuffer* const pxVertexBuffer = &pxMesh->VertexBufferPrime;
-
-        switch(pxVertexBuffer->Format)
-        {
-            case PXVertexBufferFormatP2I8:
-            {
-                PXSize amountCurrent = PXVertexBufferFormatStrideSize(PXVertexBufferFormatP2I8);
-                PXSize amountFuture = PXVertexBufferFormatStrideSize(PXVertexBufferFormatT2F_XYZ);
-                PXSize sizeBefore = pxVertexBuffer->VertexDataSize;
-                PXSize sizeCurrent = (pxVertexBuffer->VertexDataSize / 2) * amountFuture;
-
-                // Store old data
-                PXInt8S* dataOld = (PXInt8S*)pxVertexBuffer->VertexData;
-
-                pxVertexBuffer->Format = PXVertexBufferFormatT2F_XYZ;
-                pxVertexBuffer->VertexData = PXMemoryHeapCallocT(PXF32, sizeCurrent);;
-                pxVertexBuffer->VertexDataSize = sizeof(PXF32) * sizeCurrent;
-
-                PXF32* dataNew = (PXF32*)pxVertexBuffer->VertexData;
-
-                PXSize newOffset = 0;
-
-                for(PXSize i = 0; i < sizeBefore; i += 2)
-                {
-                    dataNew[newOffset++] = (dataOld[i + 0] + 1) / 2.0f;
-                    dataNew[newOffset++] = -(dataOld[i + 1] + 1) / 2.0f;
-                    dataNew[newOffset++] = dataOld[i + 0];
-                    dataNew[newOffset++] = dataOld[i + 1];
-                    dataNew[newOffset++] = 0.0f;
-                }
-
-                // Memory leak? dataOld needs to be deleted? But what if its read only?         
-
-                break;
-            }
-            case PXVertexBufferFormatP3I8:
-            {
-                const PXSize amountCurrent = PXVertexBufferFormatStrideSize(PXVertexBufferFormatP3I8);
-                const PXSize amountFuture = PXVertexBufferFormatStrideSize(PXVertexBufferFormatP3F32);
-                PXSize sizeCurrent = pxVertexBuffer->VertexDataSize / 1;
-
-                const PXSize newVertexArraySize = sizeof(PXF32) * sizeCurrent;
-                PXF32* newVertexArray = PXMemoryHeapCallocT(PXF32, sizeCurrent);
-
-                PXInt8S* dataSource = (PXInt8S*)pxVertexBuffer->VertexData;
-
-                for(size_t i = 0; i < sizeCurrent; i++)
-                {
-                    newVertexArray[i] = dataSource[i];
-                }
-
-                // Memory leak?
-
-                pxVertexBuffer->Format = PXVertexBufferFormatP3F32;
-                pxVertexBuffer->VertexData = newVertexArray;
-                pxVertexBuffer->VertexDataSize = newVertexArraySize;
-
-
-                break;
-            }
-            default:
-            {
-                break;
-            }
-        }
-
-        PXVertexBufferFormat newFormat = pxVertexBuffer->Format;
-
-        const char* oldFomatText = PXVertexBufferFormatToString(oldFormat);
-        const char* newFomatText = PXVertexBufferFormatToString(newFormat);
-
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            PXResourceManagerText,
-            "Model-Format",
-            "Transmute <%s> to <%s>",
-            oldFomatText,
-            newFomatText
-        );
-#endif
-
-    }
-
-#endif
-
-}
-
-void PXAPI PXModelNormalDataGenerate(PXModel* const pxModel)
-{
-    /*
-    for(PXSize i = 0; i < counterVertex; ++i)
-    {
-        PXF32* const positionData = (PXF32*)PXVertexBufferInsertionPoint(&pxModel->Mesh.VertexBuffer, PXVertexBufferDataTypeNormal, i);
-        PXF32* const normalData = (PXF32*)PXVertexBufferInsertionPoint(&pxModel->Mesh.VertexBuffer, PXVertexBufferDataTypeVertex, i);
-
-        PXVector3F32 normalVector;
-        PXVector3F32 positionVector =
-        {
-            positionData[0],
-            positionData[1],
-            positionData[2]
-        };
-        const PXVector3F32 positionVectorConst = { 1,1,1 };
-
-        PXF32 normalFactor = PXVector3F32DotProduct(&positionVectorConst, &positionVector);
-
-        if(normalFactor != 0.0)
-        {
-            normalFactor = 1.0f / PXMathRootSquare(normalFactor);
-        }
-        else
-        {
-            normalFactor = 0.0;
-        }
-
-        normalData[0] = normalFactor;
-        normalData[1] = normalFactor;
-        normalData[2] = normalFactor;
-    }
-    */
-}
+#include <PX/OS/Graphic/PXGraphic.h>
 
 PXFontPageCharacter* PXAPI PXFontPageCharacterFetch(PXFontPage* const pxFontPage, const PXInt32U characterID)
 {

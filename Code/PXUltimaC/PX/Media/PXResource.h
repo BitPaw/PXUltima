@@ -10,6 +10,7 @@
 #include <PX/OS/Hardware/PXKeyBoard.h>
 #include <PX/Math/PXMatrix.h>
 #include <PX/OS/Time/PXTime.h>
+#include <PX/Container/Buffer/PXBuffer.h>
 
 #include <stdarg.h>
 
@@ -26,6 +27,8 @@
 // Predefine
 typedef enum PXActionResult_ PXActionResult;
 
+typedef struct PXBuffer_ PXBuffer;
+typedef struct PXModel_ PXModel;
 typedef struct PXImage_ PXImage;
 typedef struct PXCodeDocumentElement_ PXCodeDocumentElement;
 typedef struct PXFile_ PXFile;
@@ -212,69 +215,20 @@ typedef enum PXResourceAction_
 PXResourceAction;
 
 
-typedef enum PXVertexBufferFormat_
-{
-    PXVertexBufferFormatInvalid,
-
-    // Non inteleaved
-    PXVertexBufferFormatP2I8,   // XY - Int8 - Position 
-    PXVertexBufferFormatP3I8,   // XYX - Int8 - Position 
-
-    PXVertexBufferFormatP3F16,    // XYZ - PXF32 - Position
-    PXVertexBufferFormatN3F16,    // XYZ - PXF32 - Normals 
-    PXVertexBufferFormatT2F16,    // UV - PXF32 - Texture coordiantes
-
-    PXVertexBufferFormatP3F32,    // XYZ - PXF32 - Position
-    PXVertexBufferFormatN3F32,    // XYZ - PXF32 - Normals 
-    PXVertexBufferFormatT2F32,    // UV - PXF32 - Texture coordiantes
 
 
-    // OpenGL
 
-    PXVertexBufferFormatXYPXF32, // GL_V2F
-    PXVertexBufferFormatC4UB_XY,
-    PXVertexBufferFormatC4UB_XYZ,
-    PXVertexBufferFormatRGBXYZ,
-    PXVertexBufferFormatN3F_XYZ, // NNN PPP
-    PXVertexBufferFormatC4F_N3F_XYZ,
-    PXVertexBufferFormatT2F_XYZ, // TT PPP
-    PXVertexBufferFormatT4F_XYZW,
-    PXVertexBufferFormatT2F_C4UB_XYZ,
-    PXVertexBufferFormatT2F_C3F_XYZ,
-    PXVertexBufferFormatT2F_N3F_XYZ, // TT NNN PPP
-    PXVertexBufferFormatT2F_C4F_N3F_XYZ,
-    PXVertexBufferFormatT4F_C4F_N3F_XYZW,
-
-    // Direct X
+// Cool assert for debug
 
 
-    PXVertexBufferFormatXYZC, // Normal spcace (x, y, z, color-RGB as 32-int)
 
-    PXVertexBufferFormatXYZRHW, // DirectX only, use for pixel size instead of normal space.
-
-    PXVertexBufferFormatXYZHWC, // X, Y, Z, Tx, Ty, color-RGB as 32-int
-
-    PXVertexBufferFormatXYZB1,
-    PXVertexBufferFormatXYZB2,
-    PXVertexBufferFormatXYZB3,
-    PXVertexBufferFormatXYZB4,
-    PXVertexBufferFormatXYZB5,
-    PXVertexBufferFormatXYZW,
+#define PXAssert(condition, message) \
+if(!(condition)) \
+{ \
+    const char* buffer = _PX_FILENAME_; \
+    PXLogPrint(PXLoggingError, buffer, "Assert", message); \
+    DebugBreak(); \
 }
-PXVertexBufferFormat;
-
-PXPublic const char* PXAPI PXVertexBufferFormatToString(const PXVertexBufferFormat pxVertexBufferFormat);
-PXPublic PXInt8U PXAPI PXVertexBufferFormatStrideSize(const PXVertexBufferFormat pxVertexBufferFormat);
-
-// returns 1, 2, 3, 4. Nothing else
-PXPublic PXInt8U PXAPI PXVertexBufferFormatSizePerVertex(const PXVertexBufferFormat pxVertexBufferFormat);
-
-
-
-
-
-
-
 
 
 
@@ -338,6 +292,7 @@ PXPublic PXInt8U PXAPI PXVertexBufferFormatSizePerVertex(const PXVertexBufferFor
 // Extended basic components
 
 #define PXResourceTypeDialogBox     29
+#define PXResourceTypeSpriteMap     30
 //-----------------------------------------------------
 
 
@@ -458,6 +413,7 @@ PXModule;
 
 
 #include <PX/OS/Async/PXLock.h>
+#include <PX/Container/Buffer/PXBuffer.h>
 
 
 
@@ -506,6 +462,7 @@ typedef struct PXResourceManager_
     PXDictionary SpriteAnimator;
     PXDictionary IconLookUp;
     PXDictionary IconAtlasLookUp;
+    PXDictionary SpriteMapAtlasLookUp;
 
     struct PXShaderProgram_* ShaderFailback;
     struct PXModel_* ModelFailback;
@@ -900,36 +857,195 @@ PXDrawScript;
 
 
 
-typedef struct PXShaderDataBuffer_
+
+
+
+
+/*
+// OLD SOLUTION!
+
+
+#define PXVertexBufferFormatFormat          0
+#define PXVertexBufferFormatPosition        1
+#define PXVertexBufferFormatTexturePosition 2
+#define PXVertexBufferFormatNormal          3
+#define PXVertexBufferFormatColor           4
+
+#define PXVertexBufferFormatI08        0
+#define PXVertexBufferFormatI16        1
+#define PXVertexBufferFormatI32        2
+#define PXVertexBufferFormatF16        3
+#define PXVertexBufferFormatF32        4
+
+#define PXVertexBufferFormatMake(format, position, texturePosition, normal, color) \
+format << (4 * PXVertexBufferFormatFormat) | \
+position << (4 * PXVertexBufferFormatPosition) | \
+texturePosition << (4 * PXVertexBufferFormatTexturePosition) | \
+normal << (4 * PXVertexBufferFormatNormal) | \
+color << (4 * PXVertexBufferFormatColor)
+
+#define PXVertexBufferFormatExtract(target, value) (value >> (4*target)) & 0x0F
+
+
+#define PXVertexBufferFormatP3F16 PXVertexBufferFormatMake(PXVertexBufferFormatF16, 3, 0, 0, 0)
+#define PXVertexBufferFormatP3F32 PXVertexBufferFormatMake(PXVertexBufferFormatF32, 3, 0, 0, 0)
+
+#define PXVertexBufferFormatN3F16 PXVertexBufferFormatMake(PXVertexBufferFormatF16, 0, 0, 3, 0)
+#define PXVertexBufferFormatN3F32 PXVertexBufferFormatMake(PXVertexBufferFormatF32, 0, 0, 3, 0)
+
+#define PXVertexBufferFormatT2F16 PXVertexBufferFormatMake(PXVertexBufferFormatF16, 0, 2, 0, 0)
+#define PXVertexBufferFormatT2F32 PXVertexBufferFormatMake(PXVertexBufferFormatF32, 0, 2, 0, 0)
+
+
+#define PXVertexBufferFormatT2P3F32 PXVertexBufferFormatMake(PXVertexBufferFormatF32, 3, 2, 0, 0)
+#define PXVertexBufferFormatT2N3P3F32 PXVertexBufferFormatMake(PXVertexBufferFormatF32, 3, 2, 3, 0)
+
+typedef PXInt32U PXVertexBufferFormat;
+*/
+
+
+
+//---------------------------------------------------------
+// Vertex
+//---------------------------------------------------------
+
+
+
+
+#if 0
+
+typedef enum PXVertexBufferFormat_
 {
-    PXResourceInfo Info;
+    PXVertexBufferFormatInvalid,
 
-    PXSize Size;
+    // Non inteleaved
+    PXVertexBufferFormatP2I8,   // XY - Int8 - Position 
+    PXVertexBufferFormatP3I8,   // XYX - Int8 - Position 
+
+    PXVertexBufferFormatP3F16,    // XYZ - PXF32 - Position
+    PXVertexBufferFormatN3F16,    // XYZ - PXF32 - Normals 
+    PXVertexBufferFormatT2F16,    // UV - PXF32 - Texture coordiantes
+
+    PXVertexBufferFormatP3F32,    // XYZ - PXF32 - Position
+    PXVertexBufferFormatN3F32,    // XYZ - PXF32 - Normals 
+    PXVertexBufferFormatT2F32,    // UV - PXF32 - Texture coordiantes
+
+
+    // OpenGL
+
+    PXVertexBufferFormatP2F32, // GL_V2F
+    PXVertexBufferFormatC4UBP2F32,
+    PXVertexBufferFormatC4UBP3F32,
+    PXVertexBufferFormatC3P3F32,
+    PXVertexBufferFormatN3P3F32, // NNN PPP
+    PXVertexBufferFormatC4N3P3F32,
+    PXVertexBufferFormatT2P3F32, // TT PPP
+    PXVertexBufferFormatT4P4,
+    PXVertexBufferFormatT2C4UBP3,
+    PXVertexBufferFormatT2C3P3,
+    PXVertexBufferFormatT2N3P3, // TT NNN PPP
+    PXVertexBufferFormatT2C4N3P3,
+    PXVertexBufferFormatT4C4N3P4,
+
+    // Direct X
+
+
+    PXVertexBufferFormatXYZC, // Normal spcace (x, y, z, color-RGB as 32-int)
+
+    PXVertexBufferFormatXYZRHW, // DirectX only, use for pixel size instead of normal space.
+
+    PXVertexBufferFormatXYZHWC, // X, Y, Z, Tx, Ty, color-RGB as 32-int
+
+    PXVertexBufferFormatP3B1,
+    PXVertexBufferFormatP3B2,
+    PXVertexBufferFormatP3B3,
+    PXVertexBufferFormatP3B4,
+    PXVertexBufferFormatP3B5,
+    PXVertexBufferFormatP4,
 }
-PXShaderDataBuffer;
+PXVertexBufferFormat;
+#endif
 
+
+typedef struct PXVertexBufferFormatInfo_
+{
+    PXInt8U VertexAttributesAmount;
+
+    PXInt8U Format;
+    PXInt8U Position;
+    PXInt8U TexturePosition;
+    PXInt8U Normal;
+    PXInt8U Color;
+
+    PXInt8U Stride; // Byte per vertex
+
+    // Bytes per data.
+    // Can only be 1, 2, 3, 4. Nothing else!
+    // char = 1
+    // short = 2
+    // float = 4
+    PXInt8U VertexElementSize;
+
+    PXInt8U VertexTotalSize; // XYZ = 3
+
+    char AsText[32];
+}
+PXVertexBufferFormatInfo;
+
+
+//PXPublic void PXAPI PXVertexBufferFormatInfoExtract(PXVertexBufferFormatInfo* const pxVertexBufferFormatInfo, const PXVertexBufferFormat pxVertexBufferFormat);
+
+
+
+
+#define PXVertexBufferLayoutTypeInvalid     0
+#define PXVertexBufferLayoutTypePosition    1
+#define PXVertexBufferLayoutTypeNormal      2
+#define PXVertexBufferLayoutTypeTexturePos  3
+#define PXVertexBufferLayoutTypeColor       4
+#define PXVertexBufferLayoutTypeCustom      5
+
+// Describes how the data is stuctured
+typedef struct PXBufferLayout_
+{
+    PXType Format;
+    PXInt8U AmountOfElements; // 2=2D, 3=3D, 4=RGBA, ...
+    PXInt8U Type;
+    PXBool UpdatePerPrimitive; // 1=Instancing
+}
+PXBufferLayout;
+
+
+
+
+
+// Buffer to contain veretx data like position, normals, texturepositions, ...
+// A mesh can contain multible vertexBuffers or just one thats interleaved
 typedef struct PXVertexBuffer_
 {
-    PXResourceInfo Info;
+    PXResourceInfo Info; // VertexArrayObject (VAO)
 
-    void* VertexData;
-    PXSize VertexDataSize;
+    struct PXBuffer_ VertexData;
 
-    PXVertexBufferFormat Format;
+    PXSize LayoutAmount;
 
-
-    PXShaderDataBuffer DataBuffer;
+    union
+    {
+        PXBufferLayout LayoutPrime[4]; // Store up zo 4, saving allocations
+        PXBufferLayout* LayoutList;
+    };
 }
 PXVertexBuffer;
+//---------------------------------------------------------
+
+
+PXPublic PXBufferLayout* PXAPI PXVertexBufferLayoutGET(PXVertexBuffer* const pxVertexBuffer);
 
 
 
-
-
-
-
+/*
 PXPublic void* PXAPI PXVertexBufferInsertionPoint(const PXVertexBuffer* const pxVertexBuffer, const PXVertexBufferFormat XVertexBufferFormat, const PXSize index);
-
+*/
 
 
 
@@ -959,31 +1075,33 @@ typedef struct PXIndexSegment_
 }
 PXIndexSegment;
 
+
+
 // Index buffer, used to store the vertex render order.
 // Additionally contains info about how to actually render, like modes.
 typedef struct PXIndexBuffer_
 {
     PXResourceInfo Info;
 
-    // Total data
-    void* Data;
-    PXSize DataIndexAmount;
-    PXSize DataIndexSizeTotal;
-    PXSize DataIndexSizeSegment;
-    PXInt32U IndexDataType;
+    PXBuffer Data;
 
-    void* DataIndexNormal;     // Normal Index data
-    void* DataIndexTexturePos;        // texture coordinate index data
-    void* DataIndexPosition;  // IBO  
+    PXType DataType; // Data type for buffer
 
     PXInt32U DrawModeID; // How to draw, modes like triangle or lines
 
-    PXSize SegmentListAmount;
+    PXSize LayoutListAmount;
+    PXSize SegmentListAmount; // 0=Not allowed. 1=Mesh is single, n=Segmented
 
     union
     {
-        PXIndexSegment* SegmentList;
         PXIndexSegment SegmentPrime; // Only used if Segment is only one
+        PXIndexSegment* SegmentList;
+    };
+
+    union
+    {
+        PXBufferLayout LayoutPrime;
+        PXBufferLayout* LayoutList;
     };
 }
 PXIndexBuffer;
@@ -993,6 +1111,15 @@ PXIndexBuffer;
 PXPublic void PXAPI PXIndexBufferPrepare(PXIndexBuffer* const pxIndexBuffer, const PXSize amountVertex, const PXSize amountMaterials);
 PXPublic PXBool PXAPI PXIndexBufferIsUsed(const PXIndexBuffer* const pxIndexBuffer);
 
+PXPublic PXIndexSegment* PXAPI PXIndexBufferSegmentListGET(const PXIndexBuffer* const pxIndexBuffer);
+PXPublic PXBufferLayout* PXAPI PXIndexLayoutListGET(const PXIndexBuffer* const pxIndexBuffer);
+
+PXPublic PXSize PXAPI PXIndexIndexGET(const PXIndexBuffer* const pxIndexBuffer, const PXInt8U type);
+
+
+//---------------------------------------------------------
+// Mesh
+//---------------------------------------------------------
 
 // A mesh is a structure that contains vertex and index data to render itself
 typedef struct PXMesh_
@@ -1000,30 +1127,65 @@ typedef struct PXMesh_
     PXResourceInfo Info; // Contains VAO
 
     // Primary allocatedspace
-    PXSize VertexDataSize;
-    void* VertexDataAdress;
+    //PXSize VertexDataSize;
+    //void* VertexDataAdress;
 
     // Can either store interleaved data or seperate ones
-    PXSize VertexBufferListAmount;
+    PXSize VertexBufferListAmount; // Realistically, is not more than 1,2,3,4,..
 
     union
     {
-        PXVertexBuffer VertexBufferPrime;
-        PXVertexBuffer* VertexBufferList;
+        PXVertexBuffer VertexBufferPrime[4]; // Can store position, normal, texturepos and one additional parameter 
+        PXVertexBuffer* VertexBufferList; // Used as the same above, but can store many more.
     }; 
 
     PXIndexBuffer IndexBuffer; // Contains IBO
+
+
+    PXSize MaterialContaierListAmount;
+    PXMaterialContainer* MaterialContaierList;
 }
 PXMesh;
+
+PXPublic PXActionResult PXAPI PXMeshVertexLayoutPrint(PXMesh* const pxMesh);
+
+// Define and allocate vertex data to be stored and how
+PXPublic PXActionResult PXAPI PXMeshVertexLayout(PXMesh* const pxMesh, const PXSize index, PXBufferLayout* const pxVertexBufferLayoutList, const PXSize amount);
+PXPublic PXActionResult PXAPI PXMeshIndexLayout(PXMesh* const pxMesh, const PXSize primitveAmount, const PXSize segmentAmount);
+
+PXPublic PXBufferLayout* PXAPI PXMeshVertexBufferGET(PXMesh* const pxMesh, const PXInt8U type);
+
+PXPublic void* PXAPI PXMeshVertexInsert(PXMesh* const pxMesh, const PXInt8U type);
+PXPublic void* PXAPI PXMeshIndexInsert(PXMesh* const pxMesh, const PXInt8U type);
+
+PXPublic PXSize PXAPI PXMeshVertexStrideGET(PXMesh* const pxMesh);
+
+PXPublic PXVertexBuffer* PXAPI PXMeshVertexBufferListGET(PXMesh* const pxMesh);
+PXPublic PXVertexBuffer* PXAPI PXMeshVertexBufferListSET(PXMesh* const pxMesh, const PXSize amount);
+
+PXPublic PXSize PXAPI PXMeshIndexBufferLengthGET(PXMesh* const pxMesh);
+
+PXPublic PXActionResult PXAPI PXMeshVertexLayoutTransmute(PXMesh* const pxMesh);
+PXPublic PXActionResult PXAPI PXMeshNormalDataGenerate(PXMesh* const pxMesh);
+PXPublic PXActionResult PXAPI PXMeshVertexArrayAdd
+(    
+    PXMesh* const pxMesh,
+    void* data, 
+    const PXSize dataLength,
+    PXBufferLayout* const pxVertexBufferLayoutList,
+    const PXSize pxVertexBufferLayoutListAmount
+);
+//---------------------------------------------------------
+
 
 PXPublic PXSize PXAPI PXMeshTriangleAmount(PXMesh* const pxMesh);
 PXPublic PXF32* PXAPI PXMeshTriangleIndex(PXMesh* const pxMesh, const PXSize index);
 //PXPublic void* PXAPI PXMeshVertexDataInsertionPoint(PXMesh* const pxMesh, const PXVertexBufferDataType pxVertexBufferDataType);
 
-
-
-typedef struct PXModel_ PXModel;
-
+// A Model is a renderable entity.
+// Has a mesh as a base structure
+// Matrix for where it is
+// Render information
 typedef struct PXModel_
 {
     PXResourceInfo Info;
@@ -1037,14 +1199,11 @@ typedef struct PXModel_
     PXShaderProgram* ShaderProgramReference;
     //-----------------------------
 
-    PXModel* StructureOverride; // Used to take the model data from another structure, ther values like matrix stay unaffected
-    PXModel* StructureParent; // Structural parent of structure
-    PXModel* StructureSibling; // Stuctual sibling, works like a linked list.
-    PXModel* StructureChild; // Structure can only have one child, all others are siblings to a core child, the first born.
+   // PXModel* StructureOverride; // Used to take the model data from another structure, ther values like matrix stay unaffected
+    //PXModel* StructureParent; // Structural parent of structure
+    //XModel* StructureSibling; // Stuctual sibling, works like a linked list.
+    //PXModel* StructureChild; // Structure can only have one child, all others are siblings to a core child, the first born.
     //-----------------------------
-
-    PXSize MaterialContaierListAmount;
-    PXMaterialContainer* MaterialContaierList;
 
     //-----------------------------
     // Settings
@@ -1081,33 +1240,6 @@ PXRenderEntity;
 
 
 PXPublic void PXAPI PXModelConstruct(PXModel* const pxModel);
-PXPublic void PXAPI PXModelDestruct(PXModel* const pxModel);
-
-
-typedef struct PXModelFormatTransmuteInfo_
-{
-    // What formats are supported
-    PXSize VertexFormatAmount;
-    PXVertexBufferFormat* VertexFormatList;
-
-
-    PXVertexBufferFormat VertexFormatPreference;
-}
-PXModelFormatTransmuteInfo;
-
-
-PXPublic void PXAPI PXModelFormatTransmute(PXModel* const pxModel, PXModelFormatTransmuteInfo* const pxModelFormatTransmuteInfo);
-PXPublic void PXAPI PXModelNormalDataGenerate(PXModel* const pxModel);
-
-
-typedef struct PXVertexElement_
-{
-    PXInt32U Type;
-    PXSize Length;
-    PXSize Stride;
-    PXSize StartAdress;
-}
-PXVertexElement;
 
 
 
@@ -1437,9 +1569,9 @@ PXRectangleF;
 
 
 
-typedef struct PXSprite
+typedef struct PXSprite_
 {
-    PXResourceInfo Info;
+    PXResourceInfo Info; // PX-Engine register info
 
     PXVector2F32 TextureScalePositionOffset;
     PXVector2F32 TextureScalePointOffset;
@@ -1454,6 +1586,27 @@ PXSprite;
 
 
 
+
+typedef struct PXSpriteMapEntity_
+{
+    PXVector2F32 Position; // XY in the world, will be alligned to world space
+    PXVector2F32 SizeInCells;
+    PXVector2F32 Offset; // Slight offset, used for animation or general control.
+}
+PXSpriteMapEntity;
+
+
+typedef struct PXSpriteMap_
+{
+    PXResourceInfo Info;
+
+    PXShaderProgram* Shader;
+    PXModel* Model;
+    PXTexture2D* Texture2D;
+
+    PXSpriteMapEntity* SpriteMapEntityList;
+}
+PXSpriteMap;
 
 
 
@@ -3670,6 +3823,17 @@ typedef struct PXShaderProgramCreateInfo_
 PXShaderProgramCreateInfo;
 //-----------------------------------------------------
 
+typedef struct PXEngineSpriteMapInfo_
+{
+    PXShaderProgram* ShaderProgramCurrent;
+
+    PXVector2I32S CellSize;
+    PXVector2I32U MapSize;
+
+    char* MapFilePath; // The texture that contains all textures to build the map.
+}
+PXEngineSpriteMapInfo;
+
 
 typedef struct PXEngineFontCreateInfo_
 {
@@ -3805,6 +3969,7 @@ typedef enum PXModelForm_
     PXModelFormCustom,
     PXModelFormTriangle,
     PXModelFormRectangle,
+    PXModelFormRectangleTX,
     PXModelFormCircle,
     PXModelFormCube
 }
@@ -3912,6 +4077,7 @@ typedef struct PXResourceCreateInfo_
     union
     {
         char Data[1]; // Dummy value to access data without cast
+        PXEngineSpriteMapInfo SpriteMap;
         PXEngineFontCreateInfo Font;
         PXSkyBoxCreateEventInfo SkyBox;
         PXSpriteCreateInfo Sprite;
@@ -3953,7 +4119,7 @@ PXPublic void PXAPI PXResourceManagerRelease(PXResourceManager* const pxResource
 
 
 
-PXPrivate PXInt32U PXAPI PXResourceManagerGenerateUniqeID();
+PXPublic PXInt32U PXAPI PXResourceManagerGenerateUniqeID();
 
 
 
@@ -3977,6 +4143,7 @@ PXPrivate PXActionResult PXAPI PXResourceCreateHitBox(PXResourceCreateInfo* cons
 PXPrivate PXActionResult PXAPI PXResourceCreateSound(PXResourceCreateInfo* const pxResourceCreateInfo, PXSound* const pxSound);
 PXPrivate PXActionResult PXAPI PXResourceCreateTimer(PXResourceCreateInfo* const pxResourceCreateInfo, PXEngineTimer* const pxEngineTimer);
 PXPrivate PXActionResult PXAPI PXResourceCreateWindow(PXResourceCreateInfo* const pxResourceCreateInfo, PXWindow* const pxWindow);
+PXPrivate PXActionResult PXAPI PXResourceCreateSpriteMap(PXResourceCreateInfo* const pxResourceCreateInfo, PXSpriteMap* const pxSpriteMap);
 
 
 
