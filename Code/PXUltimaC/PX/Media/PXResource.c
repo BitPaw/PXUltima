@@ -1355,9 +1355,16 @@ PXActionResult PXAPI PXResourceCreateModel(PXResourceCreateInfo* const pxResourc
                 pxIndexBuffer->DrawModeID = PXDrawModeIDTriangle | PXDrawModeIDPoint | PXDrawModeIDLineLoop;;
                 pxIndexBuffer->Data.Data = (void*)PXIndexDataCube;
                 pxIndexBuffer->Data.Size = sizeof(PXIndexDataCube);
+                pxIndexBuffer->LayoutListAmount = 1;
+                pxIndexBuffer->LayoutPrime.AmountOfElements = 1;
+                pxIndexBuffer->LayoutPrime. = 1;
+                pxIndexBuffer->LayoutPrime.AmountOfElements = 1;
 
                 pxIndexBuffer->SegmentListAmount = 1;
                 pxIndexBuffer->SegmentPrime.DataRange = pxIndexBuffer->Data.Size;
+
+         
+
 
 #if PXLogEnable
                 PXLogPrint
