@@ -25,9 +25,7 @@ PXMath GLOBALPXMath;
 void PXAPI PXMathIntrinsicInit()
 {
     PXProcessor pxProcessor;
-    PXProcessorFetchInfo(&pxProcessor);
-
-  
+    PXProcessorFetchInfo(&pxProcessor);  
 }
 
 void PXAPI PXMathMatrix4x4TransposeS(PXMatrix4x4* const pxMatrix4x4)
