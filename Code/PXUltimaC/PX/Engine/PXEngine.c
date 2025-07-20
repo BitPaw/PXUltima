@@ -3376,13 +3376,15 @@ void PXAPI PXEngineResourceDefaultElements(PXEngine* const pxEngine)
         pxResourceCreateInfo.ObjectReference = &pxEngine->ResourceManager->ModelFailback;
 
         pxResourceCreateInfo.Model.Form = PXModelFormCustom;
-        pxResourceCreateInfo.Model.VertexBuffer.VertexData = vertexData;
-        pxResourceCreateInfo.Model.VertexBuffer.VertexDataSize = sizeof(vertexData);
-        pxResourceCreateInfo.Model.VertexBuffer.Format = PXVertexBufferFormatP3F32;
+        pxResourceCreateInfo.Model.VertexBuffer.VertexData.Data = vertexData;
+        pxResourceCreateInfo.Model.VertexBuffer.VertexData.Size = sizeof(vertexData);
+        pxResourceCreateInfo.Model.VertexBuffer.LayoutAmount = 1;
+        pxResourceCreateInfo.Model.VertexBuffer.LayoutPrime[0].AmountOfElements = 3;
+        pxResourceCreateInfo.Model.VertexBuffer.LayoutPrime[0].Format = PXTypeF32;
 
-        pxResourceCreateInfo.Model.IndexBuffer.DataIndexPosition = indexList;
-        pxResourceCreateInfo.Model.IndexBuffer.DataIndexSizeSegment = sizeof(indexList);
-        pxResourceCreateInfo.Model.IndexBuffer.IndexDataType = PXTypeInt08U;
+        pxResourceCreateInfo.Model.IndexBuffer.Data.Data = indexList;
+        pxResourceCreateInfo.Model.IndexBuffer.Data.Size = sizeof(indexList);
+        pxResourceCreateInfo.Model.IndexBuffer.DataType = PXTypeInt08U;
         pxResourceCreateInfo.Model.IndexBuffer.DrawModeID = PXDrawModeIDTriangle;
 
         pxResourceCreateInfo.Model.ShaderProgramReference = pxEngine->ResourceManager->ShaderFailback;
@@ -3797,7 +3799,7 @@ void PXAPI PXEngineUpdateCollision(PXEngine* const pxEngine)
         (
             &position,
             &pxCamera->LookAtPosition,
-            pxVertexBuffer->VertexData,
+            pxVertexBuffer->VertexData.Data,
             amount
         );
 
