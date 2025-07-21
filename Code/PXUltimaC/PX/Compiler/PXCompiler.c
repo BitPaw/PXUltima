@@ -1480,6 +1480,8 @@ PXBool PXAPI PXCompilerParseF16V(PXCompiler* const pxCompiler, PXF16* const valu
 
 PXBool PXAPI PXCompilerParseF32V(PXCompiler* const pxCompiler, PXF32* const values, const PXSize valuesMaxSize, PXSize* const valuesSize)
 {
+    PXAssert(values, "Array cant be NULL");
+
     for(PXSize i = 0; i < valuesMaxSize; ++i)
     {
         const PXBool isValid = PXCompilerParseF32(pxCompiler, &values[*valuesSize]);
