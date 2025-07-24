@@ -526,120 +526,57 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
 
     // Stage - 2 - Allocate space
     {
-        const PXBool isVNT = counter.Position && counter.Normal && counter.Texture;
-        const PXBool isVT = counter.Position && !counter.Normal && counter.Texture;
-        const PXBool isVN = counter.Position && counter.Normal && !counter.Texture;   
+        PXBufferLayout pxVertexBufferLayout[3];
+        PXClearList(PXBufferLayout, pxVertexBufferLayout, 3);
+        PXSize pxVertexBufferLayoutAmount = 0;
+     
+        // TODO: we can check if we can use 16-bit floats here
 
-        mesh->VertexDataSize = counter.SizeOfVertexData * counter.EntrysTotal;
-        mesh->VertexDataAdress = PXMemoryHeapCalloc(PXNull, counter.SizeOfVertexData, counter.EntrysTotal);
-
-        // How many vertex arrays?
-        mesh->VertexBufferListAmount = 
-            (counter.Position > 0) +
-             (counter.Normal > 0) +
-             (counter.Texture > 0);
-        mesh->VertexBufferList = PXMemoryHeapCallocT(PXVertexBuffer, mesh->VertexBufferListAmount);
-
-
-        if(isVNT)
+        // Add positions
         {
-            if(counter.CanUseF16)
-            {
-                mesh->VertexBufferList[0].Format = PXVertexBufferFormatP3F16;
-            }
-            else
-            {
-                mesh->VertexBufferList[0].Format = PXVertexBufferFormatP3F32;
-            }
-         
-            mesh->VertexBufferList[0].VertexDataSize = counter.SizeOfVertexData * counter.EntrysPosition;
-            mesh->VertexBufferList[0].VertexData = mesh->VertexDataAdress;
+            //pxVertexBufferLayout[0].AmountOfValues = counter.SizeOfVertexData * counter.EntrysPosition;
+            pxVertexBufferLayout[0].Format = PXTypeF32;
+            pxVertexBufferLayout[0].AmountOfElements = 3;
+            pxVertexBufferLayout[pxVertexBufferLayoutAmount].Type = PXVertexBufferLayoutTypePosition;
 
-            if(counter.CanUseF16)
-            {
-                mesh->VertexBufferList[1].Format = PXVertexBufferFormatN3F16;
-            }
-            else
-            {
-                mesh->VertexBufferList[1].Format = PXVertexBufferFormatN3F32;
-            }
-
-            mesh->VertexBufferList[1].VertexDataSize = counter.SizeOfVertexData * counter.EntrysNormal;
-            mesh->VertexBufferList[1].VertexData = (char*)mesh->VertexBufferList[0].VertexData + mesh->VertexBufferList[0].VertexDataSize;
-
-            if(counter.CanUseF16)
-            {
-                mesh->VertexBufferList[2].Format = PXVertexBufferFormatT2F16;
-            }
-            else
-            {
-                mesh->VertexBufferList[2].Format = PXVertexBufferFormatT2F32;
-            }
-
-            mesh->VertexBufferList[2].VertexDataSize = counter.SizeOfVertexData * counter.EntrysTexture;
-            mesh->VertexBufferList[2].VertexData = (char*)mesh->VertexBufferList[1].VertexData + mesh->VertexBufferList[1].VertexDataSize;
-
-            counter.DataVertex = mesh->VertexBufferList[0].VertexData;
-            counter.DataNormal = mesh->VertexBufferList[1].VertexData;
-            counter.DataTexture = mesh->VertexBufferList[2].VertexData;
+            ++pxVertexBufferLayoutAmount;
         }
-        else if(isVT)
+
+        // Add normals
+        if(counter.EntrysNormal > 0)
         {
-            if(counter.CanUseF16)
-            {
-                mesh->VertexBufferList[0].Format = PXVertexBufferFormatP3F16;
-            }
-            else
-            {
-                mesh->VertexBufferList[0].Format = PXVertexBufferFormatP3F32;
-            }
-            mesh->VertexBufferList[0].VertexDataSize = counter.SizeOfVertexData * counter.EntrysPosition;
-            mesh->VertexBufferList[0].VertexData = mesh->VertexDataAdress;
+          //  pxVertexBufferLayout[pxVertexBufferLayoutAmount].AmountOfValues = counter.SizeOfVertexData * counter.EntrysNormal;
+            pxVertexBufferLayout[pxVertexBufferLayoutAmount].Format = PXTypeF32;
+            pxVertexBufferLayout[pxVertexBufferLayoutAmount].AmountOfElements = 3;
+            pxVertexBufferLayout[pxVertexBufferLayoutAmount].Type = PXVertexBufferLayoutTypeNormal;
 
-            if(counter.CanUseF16)
-            {
-                mesh->VertexBufferList[1].Format = PXVertexBufferFormatT2F16;
-            }
-            else
-            {
-                mesh->VertexBufferList[1].Format = PXVertexBufferFormatT2F32;
-            }
-
-            mesh->VertexBufferList[1].VertexDataSize = counter.SizeOfVertexData * counter.EntrysTexture;
-            mesh->VertexBufferList[1].VertexData = (char*)mesh->VertexBufferList[0].VertexData + mesh->VertexBufferList[0].VertexDataSize;
-
-            counter.DataVertex = mesh->VertexBufferList[0].VertexData;
-            counter.DataTexture = mesh->VertexBufferList[1].VertexData;
-
+            ++pxVertexBufferLayoutAmount;
         }
-        else if(isVN)
+
+
+        // Add texture units
+        if(counter.EntrysTexture > 0)
         {
-            if(counter.CanUseF16)
-            {
-                mesh->VertexBufferList[0].Format = PXVertexBufferFormatP3F16;
-            }
-            else
-            {
-                mesh->VertexBufferList[0].Format = PXVertexBufferFormatP3F32;
-            }
-            mesh->VertexBufferList[0].VertexDataSize = counter.SizeOfVertexData * counter.EntrysPosition;
-            mesh->VertexBufferList[0].VertexData = mesh->VertexDataAdress;
+           // pxVertexBufferLayout[pxVertexBufferLayoutAmount].AmountOfValues = counter.SizeOfVertexData * counter.EntrysTexture;
+            pxVertexBufferLayout[pxVertexBufferLayoutAmount].Format = PXTypeF32;
+            pxVertexBufferLayout[pxVertexBufferLayoutAmount].AmountOfElements = 2;
+            pxVertexBufferLayout[pxVertexBufferLayoutAmount].Type = PXVertexBufferLayoutTypeTexturePos;
 
-            counter.DataVertex = mesh->VertexBufferList[0].VertexData;
-        }     
+            ++pxVertexBufferLayoutAmount;
+        }
 
-        PXIndexBufferPrepare(&mesh->IndexBuffer, counter.Face, counter.MaterialUse);
-        pxModel->Mesh.IndexBuffer.DrawModeID = PXDrawModeIDTriangle;// | PXDrawModeIDPoint | PXDrawModeIDLineLoop;
+        PXMeshVertexLayout(mesh, 0, pxVertexBufferLayout, pxVertexBufferLayoutAmount);
+        PXMeshIndexLayout(mesh, counter.Face, counter.MaterialUse);
+     
 
-        counter.IndexVertex = pxModel->Mesh.IndexBuffer.DataIndexPosition;
-        counter.IndexNormal = pxModel->Mesh.IndexBuffer.DataIndexNormal;
-        counter.IndexTexture = pxModel->Mesh.IndexBuffer.DataIndexTexturePos;
+        // Reset all size values 
+        counter.DataVertex = PXMeshVertexInsert(mesh, PXVertexBufferLayoutTypePosition);
+        counter.DataNormal = PXMeshVertexInsert(mesh, PXVertexBufferLayoutTypeNormal);
+        counter.DataTexture = PXMeshVertexInsert(mesh, PXVertexBufferLayoutTypeTexturePos);
 
-
-        pxModel->MaterialContaierListAmount = counter.MaterialInlcude;
-        pxModel->MaterialContaierList = PXMemoryHeapCallocT(PXMaterialContainer, counter.MaterialInlcude);
-
-        // Reset all size values        
+        counter.IndexVertex = PXMeshIndexInsert(mesh, PXVertexBufferLayoutTypePosition);
+        counter.IndexNormal = PXMeshIndexInsert(mesh, PXVertexBufferLayoutTypeNormal);
+        counter.IndexTexture = PXMeshIndexInsert(mesh, PXVertexBufferLayoutTypeTexturePos);
 
         counter.Position = 0;
         counter.Normal = 0;
@@ -662,8 +599,17 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
     );
 #endif
 
-    while(!PXFileIsAtEnd(&tokenSteam))
+    PXInt8U typeSize = PXTypeSizeGet(mesh->IndexBuffer.DataType);
+
+    for(;;)
     {
+        const PXBool isAtEnd = PXFileIsAtEnd(&tokenSteam);
+
+        if(isAtEnd)
+        {
+            break;
+        }
+
         PXCompilerSymbolEntryExtract(&pxCompiler);
 
         const PXWavefrontLineType objPeekLine = PXWavefrontPeekLine(pxCompiler.ReadInfo.SymbolEntryCurrent.Source, pxCompiler.ReadInfo.SymbolEntryCurrent.Size);
@@ -699,7 +645,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
                 {
                     case PXWavefrontLineMaterialLibraryInclude:
                     {
-                        PXMaterialContainer* const pxMaterialContaier = &pxModel->MaterialContaierList[counter.MaterialInlcude++];
+                        PXMaterialContainer* const pxMaterialContaier = &mesh->MaterialContaierList[counter.MaterialInlcude++];
                         PXFile materialFile;
                         PXClear(PXFile, &materialFile);
 
@@ -732,7 +678,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
                        
                         pxIndexSegmentCurrent->Material = PXMaterialContainerFind
                         (
-                            pxModel->MaterialContaierList,
+                            mesh->MaterialContaierList,
                             &materialFileName
                         );
 
@@ -819,6 +765,8 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
 
                 PXBool isDone = PXFalse;
 
+          
+
                 void* fp = counter.IndexVertex;
                 void* ft = counter.IndexTexture;
                 void* fn = counter.IndexNormal;
@@ -829,7 +777,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
 
                     PXWavefrontFaceLineParse(&pxCompiler, vertexData); // Get the data
 
-                    switch(PXTypeSizeGet(mesh->IndexBuffer.IndexDataType))
+                    switch(typeSize)
                     {
                         case PXTypeSize08:
                         {
