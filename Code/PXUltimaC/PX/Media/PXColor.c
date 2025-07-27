@@ -22,6 +22,22 @@ PXInt32U PXAPI PXColorI32FromRGBA(const PXInt8U r, const PXInt8U g, const PXInt8
     return b | (g << 8) | (r << 16) | (a << 32);
 }
 
+
+inline int clip(int val) {
+    return (val < 0) ? 0 : (val > 255) ? 255 : val;
+}   
+
+void PXAPI PXColorYUYToRGB(PXColorYUV* const pxColorYUV, PXColorRGBI8* const pxColorRGBI8)
+{
+    int C = pxColorYUV->Y - 16;
+    int D = pxColorYUV->U - 128;
+    int E = pxColorYUV->V - 128;
+
+    pxColorRGBI8->Red = clip((298 * C + 409 * E + 128) >> 8);
+    pxColorRGBI8->Green = clip((298 * C - 100 * D - 208 * E + 128) >> 8);
+    pxColorRGBI8->Blue = clip((298 * C + 516 * D + 128) >> 8);
+}
+
 PXInt8U PXAPI PXColorFormatBytePerPixel(const PXColorFormat imageDataFormat)
 {
     switch (imageDataFormat)

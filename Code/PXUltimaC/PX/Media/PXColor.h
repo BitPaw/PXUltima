@@ -159,6 +159,15 @@ typedef struct PXColorYCbCrI8_
 PXColorYCbCrI8;
 
 
+typedef struct PXColorYUV_
+{
+    PXInt8U Y;
+    PXInt8U U;
+    PXInt8U V;
+}
+PXColorYUV;
+
+
 PXPublic PXInt32U PXAPI PXColorI32FromBGR(const PXInt8U r, const PXInt8U g, const PXInt8U b);
 PXPublic PXInt32U PXAPI PXColorI32FromBGRA(const PXInt8U r, const PXInt8U g, const PXInt8U b, const PXInt8U a);
 
@@ -166,7 +175,7 @@ PXPublic PXInt32U PXAPI PXColorI32FromRGB(const PXInt8U r, const PXInt8U g, cons
 PXPublic PXInt32U PXAPI PXColorI32FromRGBA(const PXInt8U r, const PXInt8U g, const PXInt8U b, const PXInt8U a);
 
 
-
+PXPublic void PXAPI PXColorYUYToRGB(PXColorYUV* const pxColorYUV, PXColorRGBI8* const pxColorRGBI8);
 
 
 PXPublic PXInt8U PXAPI PXColorFormatBytePerPixel(const PXColorFormat imageDataFormat);
