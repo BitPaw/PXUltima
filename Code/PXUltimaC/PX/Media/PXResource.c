@@ -1357,7 +1357,7 @@ PXActionResult PXAPI PXResourceCreateModel(PXResourceCreateInfo* const pxResourc
                 pxIndexBuffer->Data.Size = sizeof(PXIndexDataCube);
                 pxIndexBuffer->LayoutListAmount = 1;
                 pxIndexBuffer->LayoutPrime.AmountOfElements = 1;
-                pxIndexBuffer->LayoutPrime. = 1;
+                //pxIndexBuffer->LayoutPrime. = 1;
                 pxIndexBuffer->LayoutPrime.AmountOfElements = 1;
 
                 pxIndexBuffer->SegmentListAmount = 1;
@@ -4280,16 +4280,22 @@ PXActionResult PXAPI PXResourceSave(PXResourceTransphereInfo* const pxResourceSa
     // Loading file
     {
         PXFileOpenInfo pxFileIOInfo;
+        PXClear(PXFileOpenInfo, &pxFileIOInfo);
         pxFileIOInfo.FilePathAdress = filePath->TextA;
         pxFileIOInfo.FilePathSize = filePath->SizeUsed;
         pxFileIOInfo.AccessMode = PXAccessModeWriteOnly;
         pxFileIOInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
-        pxFileIOInfo.FlagList = PXFileIOInfoAllowMapping | PXFileIOInfoCreateIfNotExist;
+        pxFileIOInfo.FlagList = PXFileIOInfoFilePhysical | PXFileIOInfoAllowMapping | PXFileIOInfoCreateIfNotExist;
 
         const PXActionResult fileLoadingResult = PXFileOpen(&pxFile, &pxFileIOInfo);
 
         PXActionReturnOnError(fileLoadingResult);
     }
+
+
+    // try to detect format over file extension
+    PXFileTypeInfoProbe(&pxResourceSaveInfo->FormatInfo, filePath);
+
 
     // Try to load assumed format
     {

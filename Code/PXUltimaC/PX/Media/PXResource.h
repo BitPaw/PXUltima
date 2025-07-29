@@ -2410,14 +2410,22 @@ typedef struct PXMonitor_
 #if OSUnix
 #elif OSWindows
     HMONITOR ID;
+    HDC DeciveContect;
 #endif
 
     char Name[MonitorNameLength];
     char Driver[MonitorNameLength];
-    PXInt16U X;
-    PXInt16U Y;
-    PXInt16U Width;
-    PXInt16U Height;
+
+
+    LONG    Left;
+    LONG    Top;
+    LONG    Right;
+    LONG    Bottom;
+
+    //PXInt16U X;
+    //PXInt16U Y;
+    //PXInt16U Width;
+    //PXInt16U Height;
 }
 PXMonitor;
 
@@ -2496,7 +2504,22 @@ HWND
 #else
 void*
 #endif
-PXNativDrawWindowHandle;
+PXWindowHandle;
+
+
+
+typedef
+#if OSUnix
+int
+#elif OSWindows
+HMONITOR
+#else
+void*
+#endif
+PXMonitorHandle;
+
+
+
 
 
 typedef struct PXDisplay_
@@ -3106,10 +3129,10 @@ typedef struct PXWindowCreateInfo_
 {
     // Handles
     PXWindow* WindowCurrent;
-    PXNativDrawWindowHandle CurrnetID;
+    PXWindowHandle CurrnetID;
 
     PXWindow* WindowParent;
-    PXNativDrawWindowHandle ParentID;
+    PXWindowHandle ParentID;
 
     PXDisplay DisplayCurrent;
 
