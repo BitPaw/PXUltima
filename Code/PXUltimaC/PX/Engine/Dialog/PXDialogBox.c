@@ -239,7 +239,7 @@ PXActionResult PXAPI PXEngineDialogBoxTimerTrigger(PXEngine* const pxEngine, PXE
         {
         case '\n':
         {
-            pxEngine->Audio.DeviceStop(&pxEngine->Audio, &pxEngine->AudioStandardOutDevice);
+           // pxEngine->Audio.DeviceStop(&pxEngine->Audio, &pxEngine->AudioStandardOutDevice);
 
             pxEngineDialogBox->LineNumber++;
 
@@ -250,7 +250,7 @@ PXActionResult PXAPI PXEngineDialogBoxTimerTrigger(PXEngine* const pxEngine, PXE
         case '\0':
         case ' ':
         {
-            pxEngine->Audio.DeviceStop(&pxEngine->Audio, &pxEngine->AudioStandardOutDevice);
+           // pxEngine->Audio.DeviceStop(&pxEngine->Audio, &pxEngine->AudioStandardOutDevice);
             pxEngineDialogBox->IsNewWord = PXFalse;
             // Nothing
             break;
@@ -261,7 +261,7 @@ PXActionResult PXAPI PXEngineDialogBoxTimerTrigger(PXEngine* const pxEngine, PXE
 
             if (!pxEngineDialogBox->IsNewWord || 1)
             {
-                pxEngine->Audio.DeviceRestart(&pxEngine->Audio, &pxEngine->AudioStandardOutDevice);
+               // pxEngine->Audio.DeviceRestart(&pxEngine->Audio, &pxEngine->AudioStandardOutDevice);
                 pxEngineDialogBox->IsNewWord = PXTrue;
             }
 

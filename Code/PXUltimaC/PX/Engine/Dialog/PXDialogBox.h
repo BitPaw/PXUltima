@@ -4,12 +4,6 @@
 #include <PX/Engine/PXEngine.h>
 #include "PXDialogContainer.h"
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-
 typedef void (PXAPI* PXEngineDialogEventLineNew)(void* owner, struct PXEngineDialogBox_* const pxEngineDialogBox);
 typedef void (PXAPI* PXEngineDialogEventPageNew)(void* owner, struct PXEngineDialogBox_* const pxEngineDialogBox);
 
@@ -75,9 +69,5 @@ PXPublic void PXAPI PXEngineDialogBoxOpen
 );
 PXPublic void PXAPI PXEngineDialogBoxClose(PXEngine* const pxEngine, PXEngineDialogBox* const pxEngineDialogBox);
 PXPublic PXActionResult PXAPI PXEngineDialogBoxTimerTrigger(PXEngine* const pxEngine, PXEngineTimerEventInfo* const pxEngineTimerEventInfo, PXEngineDialogBox* const pxEngineDialogBox);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif
