@@ -925,8 +925,9 @@ void PXAPI PXTypeEntryInfo(PXTypeEntry* const pxFileDataElementType, PXText* con
             dataContent->SizeUsed = PXTextFromNonTerminated
             (
                 dataContent->TextA,
-                size+1,
-                (char*)pxFileDataElementType->Adress
+                dataContent->SizeAllocated,
+                (char*)pxFileDataElementType->Adress,
+                size+1           
             );
 
             break;
@@ -1942,6 +1943,10 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, PXFileOpenInfo* const pxFi
                 //LPBY_HANDLE_FILE_INFORMATION fileInfo;
                 //GetFileInformationByHandle();
             }
+            else
+            {
+                // Get current time or set it
+            }
 
 
             PXFilePathSet(pxFile, &pxText);
@@ -2009,6 +2014,7 @@ PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, PXFileOpenInfo* const pxFi
             PXPerformanceInfoGet(&pxPerformanceInfo);
 
             // Solution A: Load file in memory 1:1
+            if(PXAccessModeReadOnly == pxFile->AccessMode) // Do this only when we load
             {
                 pxFile->Data = PXMemoryVirtualAllocate(pxFile->DataUsed, &pxFile->DataAllocated, PXAccessModeReadAndWrite);
 
@@ -2278,7 +2284,12 @@ PXActionResult PXAPI PXFileClose(PXFile* const pxFile)
             break;
         }
         case PXFileLocationModeDirectUncached:
+        {
+            CloseHandle(pxFile->FileHandle);
+            pxFile->FileHandle = 0;
             break;
+        }
+         
     }
 
 #if PXLogEnable
@@ -2492,6 +2503,7 @@ PXBool PXAPI PXFileAssureFreeSize(PXFile* const pxFile, const PXSize amount)
 {
     const PXSize remainingSize = PXFileRemainingSize(pxFile);
     const PXSize needAlloc = remainingSize < amount;
+    PXBool success = PXFalse;
 
     if(!needAlloc)
     {
@@ -2512,20 +2524,31 @@ PXBool PXAPI PXFileAssureFreeSize(PXFile* const pxFile, const PXSize amount)
             pxFile->DataUsed = pxFile->DataAllocated;
             pxFile->Data = PXMemoryVirtualReallocate(pxFile->Data, pxFile->DataUsed);
 
+            success = pxFile->Data > 0;
+
             break;
         }
 
         case PXFileLocationModeMappedFromDisk:
             return PXFalse;
 
-        case PXFileLocationModeDirectCached:
-            break;
-
         case PXFileLocationModeDirectUncached:
+        {
+            success = SetFileValidData
+            (
+                pxFile->FileHandle,
+                amount
+            );
+
+            pxFile->DataAllocated = amount;
+
+            break;
+        }
+        case PXFileLocationModeDirectCached:
             break;
     }
 
-    return PXFalse;
+    return success;
 }
 
 PXSize PXAPI PXFileFindEndOfText(PXFile* const pxFile)
@@ -4023,9 +4046,11 @@ PXSize PXAPI PXFileWriteB(PXFile* const pxFile, const void* const value, const P
             DWORD writtenBytes = 0;
 
             const PXBool result = WriteFile(pxFile->FileHandle, value, length, &writtenBytes, PXNull); // Windows XP (+UWP), Kernel32.dll, fileapi.h
+            const PXBool validAction = writtenBytes == length;
 
-            if(!result)
+            if(!validAction)
             {
+                DebugBreak();
                 return 0;
             }
 
@@ -4068,7 +4093,15 @@ PXSize PXAPI PXFileWriteFill(PXFile* const pxFile, const PXByte value, const PXS
         return 0;
     }
 
-    PXByte* const stackMemory = PXMemoryHeapCallocT(PXByte, length);
+    
+    char buffer[64];
+    PXByte* stackMemory = buffer;
+    PXBool isAllocated = length > 64;
+
+    if(isAllocated)
+    {
+        stackMemory = PXMemoryHeapCallocT(PXByte, length);
+    }
 
     for(PXSize i = 0; i < length; ++i)
     {
@@ -4077,7 +4110,10 @@ PXSize PXAPI PXFileWriteFill(PXFile* const pxFile, const PXByte value, const PXS
 
     const PXSize writtenBytes = PXFileWriteB(pxFile, stackMemory, length);
 
-    PXMemoryHeapFree(PXNull, stackMemory);
+    if(isAllocated)
+    {
+        PXMemoryHeapFree(PXNull, stackMemory);
+    }
 
     return writtenBytes;
 }

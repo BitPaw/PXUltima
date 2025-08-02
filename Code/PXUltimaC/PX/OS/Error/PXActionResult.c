@@ -451,7 +451,7 @@ PXActionResult PXAPI PXErrorCodeFromID(const int errorCode)
 }
 
 #if OSWindows
-PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult)
+PXActionResult PXAPI PXErrorFromHRESULT(const HRESULT handleResult)
 {
     switch (handleResult)
     {
@@ -2055,12 +2055,20 @@ PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult)
     case DSERR_FXUNAVAILABLE:
         return PXActionInvalid;//PXActionRefusedEffectNotAvailable;
         
+        // Media Foundation
+    case 0xc00d36b4: return PXActionRefusedDeviceFunctionNotSupported; // MF_E_INVALIDMEDIATYPE
+
 
         // .NET runtime
     case 0x80070002:    return PXActionFailedNotFoundLibrary;
     case 0x80131522:    return PXActionFailedNotFoundClass; // COR_E_MISSINGMETHOD
     case 0x80131513:    return PXActionFailedNotFoundMethod;
     case 0x80131621: return PXActionInvalid;  // COR_E_TARGETINVOCATION
+
+        // WSA Errors
+   // An invalid argument was supplied.
+//
+    case WSAEINVAL: return PXActionRefusedArgumentInvalid;
 
     default:
         return PXActionInvalid;

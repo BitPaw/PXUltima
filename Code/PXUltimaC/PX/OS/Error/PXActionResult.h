@@ -133,6 +133,8 @@ typedef enum PXActionResult_
     PXActionFailedTooManyFilesOpenInSystem, // NFILE
 
 
+    PXActionRefusedDeviceFunctionNotSupported, // Tryed to call a function on a device that is not capable of doing so.
+
     //-------------------------------------------------------
     // Network
     //-------------------------------------------------------
@@ -206,6 +208,12 @@ typedef enum PXActionResult_
     PXActionRefuedFormatIllegal, // Parsed format is not a legal option. The file is wrongly written or corrupted
     PXActionRefuedFormatNotSupported,
 
+
+        // Images
+        PXActionRefuedImageWidthIsZero,
+        PXActionRefuedImageHeightIsZero,
+        PXActionRefuedImageDepthIsZero,
+        PXActionRefuedImageFormatInvalid,
 
 
     //---<File-General>------------------
@@ -383,7 +391,7 @@ PXPublic PXActionResult PXAPI PXErrorCurrent(const PXBool wasSuccessful);
 // Interesting behaviour, you put in if we successfully did the last operation
 // If so, we just convert it into a successful error code, if not, fetch the
 // correct error
-PXPublic PXActionResult PXAPI PXWindowsHandleErrorFromID(const HRESULT handleResult);
+PXPublic PXActionResult PXAPI PXErrorFromHRESULT(const HRESULT handleResult);
 PXPublic PXActionResult PXAPI PXWindowsMMAudioConvertFromID(const PXInt32U mmResultID);
 #endif
 
