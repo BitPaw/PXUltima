@@ -855,7 +855,7 @@ PXActionResult PXAPI PXThreadNameSet(PXThread* pxThread, PXText* const threadNam
     PXTextCopyAW(threadName->TextA, threadName->SizeUsed, threadNameW, 64);
 
     const HRESULT resultID = SetThreadDescription(pxThread->Info.Handle.ThreadHandle, threadNameW); // Windows 10 - 1607 (+UWP), Kernel32.dll, processthreadsapi.h
-    const PXActionResult result = PXWindowsHandleErrorFromID(resultID);
+    const PXActionResult result = PXErrorFromHRESULT(resultID);
 
     return result;
 
