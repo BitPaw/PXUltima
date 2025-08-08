@@ -336,17 +336,36 @@ PXActionResult PXAPI PXBitmapSaveToFile(PXResourceTransphereInfo* const pxResour
     PXImage* const pxImage = (PXImage*)pxResourceSaveInfo->ResourceTarget;
 
 
+    if(pxImage->Width == 0)
+    {
+        return PXActionRefuedImageWidthIsZero;
+    }
+
+    if(pxImage->Height == 0)
+    {
+        return PXActionRefuedImageHeightIsZero;
+    }
+
+    if(pxImage->Format == PXColorFormatInvalid)
+    {
+        return PXActionRefuedImageFormatInvalid;
+    }
+
+
     PXBitmap bitMap;
 
     //-----------------------------------------------------
     // Header - Write
     //-----------------------------------------------------
     {
-        //bitMap.HeaderData.Type = IIIIIIIIIIIIIIIIII;
+        bitMap.HeaderData.Type[0] = 'B';
+        bitMap.HeaderData.Type[1] = 'M';
         bitMap.HeaderData.SizeOfFile = PXBitmapFilePredictSize(pxImage->Width, pxImage->Height, PXColorFormatBitsPerPixel(pxImage->Format)) - 14u;
         bitMap.HeaderData.ReservedBlock = 0;
         bitMap.HeaderData.DataOffset = 54u;
-        //byteCluster.Value = PXBitmapTypeToID(PXBitmapWindows);
+        bitMap.HeaderData.HeaderSize = PXBitmapInfoHeaderTypeToID(PXBitmapHeaderBitMapInfoHeader); // DIP header
+
+        PXFileAssureFreeSize(pxResourceSaveInfo->FileReference, bitMap.HeaderData.SizeOfFile);
 
         PXFileBinding
         (
@@ -367,11 +386,12 @@ PXActionResult PXAPI PXBitmapSaveToFile(PXResourceTransphereInfo* const pxResour
         const PXBitmapInfoHeaderType bmpInfoHeaderType = PXBitmapHeaderBitMapInfoHeader;
 
         //---<Shared>----------------------------------------------------------
-     //   bitMap.InfoHeader.HeaderSize = PXBitmapInfoHeaderTypeToID(bmpInfoHeaderType);
+        //bitMap.InfoHeader.HeaderSize = PXBitmapInfoHeaderTypeToID(bmpInfoHeaderType);
         bitMap.InfoHeader.NumberOfBitsPerPixel = PXColorFormatBitsPerPixel(pxImage->Format);
         bitMap.InfoHeader.NumberOfColorPlanes = 1;
         bitMap.InfoHeader.Width = pxImage->Width;
         bitMap.InfoHeader.Height = pxImage->Height;
+       // bitMap.InfoHeader.ImageSize = 0;
         //---------------------------------------------------------------------
 
      //   PXFileWriteI32UE(pxResourceSaveInfo->FileReference, bitMap.InfoHeader.HeaderSize, PXEndianLittle);
@@ -397,7 +417,12 @@ PXActionResult PXAPI PXBitmapSaveToFile(PXResourceTransphereInfo* const pxResour
         }
     }
     //-----------------------------------------------------
-
+    if(1)
+    {
+        // If we have embedded BMP format, we can write it directly
+        PXFileWriteB(pxResourceSaveInfo->FileReference, pxImage->PixelData, pxImage->PixelDataSize);
+    }
+    else
     {
         PXBitmapImageDataLayout imageDataLayout;
 
@@ -419,7 +444,7 @@ PXActionResult PXAPI PXBitmapSaveToFile(PXResourceTransphereInfo* const pxResour
                 PXFileWriteB(pxResourceSaveInfo->FileReference, pixelBuffer, 3u);
             }
 
-            PXFileWriteFill(pxResourceSaveInfo->FileReference, 0, imageDataLayout.RowPaddingSize);
+           // PXFileWriteFill(pxResourceSaveInfo->FileReference, 0, imageDataLayout.RowPaddingSize);
         }
     }
 
