@@ -498,7 +498,7 @@ PXActionResult PXAPI PXDotNetInitializeCoreCLR(PXDotNetCoreCLR* const pxDotNetCo
         &pxDotNetCoreCLR->HostHandle,
         &pxDotNetCoreCLR->DomainID
     );
-    const PXActionResult initResult = PXWindowsHandleErrorFromID(initResultID);
+    const PXActionResult initResult = PXErrorFromHRESULT(initResultID);
 
     if(errorWriterSet)
     {
@@ -544,7 +544,7 @@ PXActionResult PXAPI PXGetloc(char* buffer)
     size_t bufferSize = MAX_PATH;
 
     const HRESULT resultGetID = hostfxrPathGet(hostfxrPathW, &bufferSize, &init_params);
-    const PXActionResult resultGet = PXWindowsHandleErrorFromID(resultGetID);
+    const PXActionResult resultGet = PXErrorFromHRESULT(resultGetID);
 
     PXLibraryClose(&pxLibrary);
 
@@ -810,7 +810,7 @@ PXActionResult PXAPI PXDotNetDelegateFetchMSCoree(PXDotNetMSCoree* const pxDotNe
         L"Data from C-Library",
         &appReturn
     );
-    const PXActionResult exeResult = PXWindowsHandleErrorFromID(execResultID);
+    const PXActionResult exeResult = PXErrorFromHRESULT(execResultID);
 
     if(PXActionSuccessful != exeResult)
     {
@@ -889,7 +889,7 @@ PXActionResult PXAPI PXDotNetDelegateFetchCoreCLR(PXDotNetCoreCLR* const pxDotNe
         pxDelegate->NameFunction,
         &pxDelegate->FunctionAdress
     );
-    const PXActionResult crteateResult = PXWindowsHandleErrorFromID(crteateResultID);
+    const PXActionResult crteateResult = PXErrorFromHRESULT(crteateResultID);
 
 #if PXLogEnable
     PXLogPrint
@@ -985,7 +985,7 @@ PXActionResult PXAPI PXDotNetDelegateFetchHostFX(PXDotNetHostFX* const pxDotNetH
     if(canCallModern)
     {
         const HRESULT loadAssemblyResultID = assemblyLoad(fileNameW, PXNull, PXNull);
-        const PXActionResult loadAssemblyResult = PXWindowsHandleErrorFromID(loadAssemblyResultID);
+        const PXActionResult loadAssemblyResult = PXErrorFromHRESULT(loadAssemblyResultID);
 
         const HRESULT fetchResultID = functionPointerGet
         (
@@ -996,7 +996,7 @@ PXActionResult PXAPI PXDotNetDelegateFetchHostFX(PXDotNetHostFX* const pxDotNetH
             PXNull,
             &pxDelegate->FunctionAdress
         );
-        const PXActionResult fetchResult = PXWindowsHandleErrorFromID(fetchResultID);
+        const PXActionResult fetchResult = PXErrorFromHRESULT(fetchResultID);
 
         PXConsoleWrite(0, 0);
     }
@@ -1014,7 +1014,7 @@ PXActionResult PXAPI PXDotNetDelegateFetchHostFX(PXDotNetHostFX* const pxDotNetH
             PXNull,
             &pxDelegate->FunctionAdress
         );
-        const PXActionResult loadResult = PXWindowsHandleErrorFromID(loadResultID);
+        const PXActionResult loadResult = PXErrorFromHRESULT(loadResultID);
 
         PXConsoleWrite(0, 0);
     }
