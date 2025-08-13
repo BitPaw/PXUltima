@@ -356,6 +356,8 @@ typedef union PXOSHandle_
 }
 PXOSHandle;
 
+#define PXEmbeddedArraySize 4
+
 // Internal engine identification
 // Additional use is to define current storage and interactions.
 typedef struct PXResourceInfo_
@@ -1031,7 +1033,7 @@ typedef struct PXVertexBuffer_
 
     union
     {
-        PXBufferLayout LayoutPrime[4]; // Store up zo 4, saving allocations
+        PXBufferLayout LayoutPrime[PXEmbeddedArraySize]; // Store up zo 4, saving allocations
         PXBufferLayout* LayoutList;
     };
 }
@@ -1135,7 +1137,7 @@ typedef struct PXMesh_
 
     union
     {
-        PXVertexBuffer VertexBufferPrime[4]; // Can store position, normal, texturepos and one additional parameter 
+        PXVertexBuffer VertexBufferPrime[PXEmbeddedArraySize]; // Can store position, normal, texturepos and one additional parameter 
         PXVertexBuffer* VertexBufferList; // Used as the same above, but can store many more.
     }; 
 
