@@ -2164,7 +2164,7 @@ PXMaterial* PXAPI PXMaterialContainerFind(const PXMaterialContainer* const pxMat
 
 PXBufferLayout* PXAPI PXVertexBufferLayoutGET(PXVertexBuffer* const pxVertexBuffer)
 {
-    if(4 >= pxVertexBuffer->LayoutAmount)
+    if(PXEmbeddedArraySize >= pxVertexBuffer->LayoutAmount)
     {
         return &pxVertexBuffer->LayoutPrime;
     }
@@ -2615,6 +2615,10 @@ PXSize PXAPI PXMeshIndexBufferLengthGET(PXMesh* const pxMesh)
         typeSize = PXTypeSizeGet(pxBufferLayout->Type);
     }
 
+    if(typeSize == 0)
+    {
+        typeSize = 1;
+    }
 
     PXSize res = (pxMesh->IndexBuffer.Data.Size / typeSize) / pxMesh->VertexBufferListAmount;
 
@@ -3123,7 +3127,7 @@ PXActionResult PXAPI PXMeshVertexArrayAdd
 
     // Do we need to allocate? Buffer
     const PXSize expectedIndex = pxMesh->VertexBufferListAmount;
-    const PXBool createNew = 4 > (expectedIndex + 1);
+    const PXBool createNew = PXEmbeddedArraySize < (expectedIndex + 1);
 
     if(createNew)
     {
@@ -3134,6 +3138,8 @@ PXActionResult PXAPI PXMeshVertexArrayAdd
     {
         pxVertexBufferTarget = &pxMesh->VertexBufferPrime[expectedIndex];
     }
+
+    PXAssert(pxVertexBufferTarget, "Can't be NULL");
 
     pxVertexBufferTarget->LayoutAmount = pxVertexBufferLayoutListAmount;
     PXCopyList(PXBufferLayout, pxVertexBufferLayoutListAmount, pxVertexBufferLayoutList, pxVertexBufferTarget->LayoutPrime);
