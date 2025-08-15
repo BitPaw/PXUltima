@@ -82,13 +82,13 @@ PXPublic PXActionResult PXAPI PXWindowDelete(PXGUISystem* const pxGUISystem, PXW
 // Window propertys - Getter / Setter
 //---------------------------------------------------------
 PXPublic PXActionResult PXAPI PXWindowStyleUpdate(PXGUISystem* const pxGUISystem, PXWindow* const pxGUIElement);
-PXPublic PXActionResult PXAPI PXWindowTitleBarColorSet(const PXNativDrawWindowHandle pxWindowID);
+PXPublic PXActionResult PXAPI PXWindowTitleBarColorSet(const PXWindowHandle pxWindowID);
 
 
-PXPublic PXActionResult PXAPI PXWindowReDrawEnable(const PXNativDrawWindowHandle pxWindowID, const PXBool enable);
+PXPublic PXActionResult PXAPI PXWindowReDrawEnable(const PXWindowHandle pxWindowID, const PXBool enable);
 
-PXPublic PXBool PXAPI PXWindowCursorPositionInWindowGet(const PXNativDrawWindowHandle pxWindowID, PXInt32S* const x, PXInt32S* const y);
-PXPublic PXBool PXAPI PXWindowCursorPositionInDestopGet(const PXNativDrawWindowHandle pxWindowID, PXInt32S* const x, PXInt32S* const y);
+PXPublic PXBool PXAPI PXWindowCursorPositionInWindowGet(const PXWindowHandle pxWindowID, PXInt32S* const x, PXInt32S* const y);
+PXPublic PXBool PXAPI PXWindowCursorPositionInDestopGet(const PXWindowHandle pxWindowID, PXInt32S* const x, PXInt32S* const y);
 
 PXPublic PXBool PXAPI PXWindowValueFetch
 (
@@ -180,7 +180,7 @@ PXPublic PXActionResult PXAPI PXWindowPixelSystemSet(PXWindowPixelSystemInfo* co
 
 
 
-PXPublic PXNativDrawWindowHandle PXAPI PXWindowFindViaTitle(const PXText* const windowTitle);
+PXPublic PXWindowHandle PXAPI PXWindowFindViaTitle(const PXText* const windowTitle);
 
 
 
@@ -188,18 +188,18 @@ PXPublic PXNativDrawWindowHandle PXAPI PXWindowFindViaTitle(const PXText* const 
 
 
 
-PXPublic PXActionResult PXAPI PXWindowMouseMovementEnable(const PXNativDrawWindowHandle pxWindow);
+PXPublic PXActionResult PXAPI PXWindowMouseMovementEnable(const PXWindowHandle pxWindow);
 
 
 
-PXPublic void PXAPI PXWindowCursorCaptureMode(const PXNativDrawWindowHandle pxWindowID, const PXWindowCursorMode cursorMode);
+PXPublic void PXAPI PXWindowCursorCaptureMode(const PXWindowHandle pxWindowID, const PXWindowCursorMode cursorMode);
 
 
 
 
 
 // Checks if the current window is the one in focus.
-PXPublic PXBool PXAPI PXWindowIsInFocus(const PXNativDrawWindowHandle pxWindowID);
+PXPublic PXBool PXAPI PXWindowIsInFocus(const PXWindowHandle pxWindowID);
 
 PXPrivate PXInt32U PXAPI PXWindowCursorIconToID(const PXCursorIcon cursorIcon);
 

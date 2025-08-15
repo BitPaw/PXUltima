@@ -3068,7 +3068,7 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
                 CS_HREDRAW |
                 CS_VREDRAW;
 
-            PXNativDrawWindowHandle windowID = 0;
+            PXWindowHandle windowID = 0;
 
             DWORD dwStyle = 0;
             HWND hWndParent = 0;
@@ -3359,7 +3359,7 @@ PXActionResult PXAPI PXWindowCreate(PXGUISystem* const pxGUISystem, PXResourceCr
     if(!pxGUIElementCreateInfo->AvoidCreation)
     {
         HINSTANCE hInstance = PXNull;
-        PXNativDrawWindowHandle windowID = pxGUIElementCreateInfo->WindowCurrent ? pxGUIElementCreateInfo->WindowCurrent->Info.Handle.WindowID : PXNull;
+        PXWindowHandle windowID = pxGUIElementCreateInfo->WindowCurrent ? pxGUIElementCreateInfo->WindowCurrent->Info.Handle.WindowID : PXNull;
       //  PXNativDrawWindowHandle windowID = pxGUIElementCreateInfo->WindowParent ? pxGUIElementCreateInfo->WindowParent->Info.Handle.WindowID : PXNull;
 
         if(pxGUIElementCreateInfo->WindowParent)
@@ -4631,7 +4631,7 @@ PXActionResult PXAPI PXWindowPixelSystemSet(PXWindowPixelSystemInfo* const pxWin
 }
 
 
-PXNativDrawWindowHandle PXAPI PXWindowFindViaTitle(const PXText* const windowTitle)
+PXWindowHandle PXAPI PXWindowFindViaTitle(const PXText* const windowTitle)
 {
     switch(windowTitle->Format)
     {
@@ -4662,7 +4662,7 @@ PXNativDrawWindowHandle PXAPI PXWindowFindViaTitle(const PXText* const windowTit
 }
 
 
-PXActionResult PXAPI PXWindowTitleBarColorSet(const PXNativDrawWindowHandle pxWindowID)
+PXActionResult PXAPI PXWindowTitleBarColorSet(const PXWindowHandle pxWindowID)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -4712,7 +4712,7 @@ PXActionResult PXAPI PXWindowTitleBarColorSet(const PXNativDrawWindowHandle pxWi
 #endif
 }
 
-PXActionResult PXAPI PXWindowMouseMovementEnable(const PXNativDrawWindowHandle pxWindow)
+PXActionResult PXAPI PXWindowMouseMovementEnable(const PXWindowHandle pxWindow)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -4801,7 +4801,7 @@ PXActionResult PXAPI PXWindowSizeSet(const PXWindowID pxWindow, PXWindowSizeInfo
 }
 */
 
-void PXAPI PXWindowCursorCaptureMode(const PXNativDrawWindowHandle pxWindowID, const PXWindowCursorMode cursorMode)
+void PXAPI PXWindowCursorCaptureMode(const PXWindowHandle pxWindowID, const PXWindowCursorMode cursorMode)
 {
 #if OSUnix
 #elif PXOSWindowsDestop
@@ -4878,7 +4878,7 @@ void PXAPI PXWindowCursorCaptureMode(const PXNativDrawWindowHandle pxWindowID, c
 #endif
 }
 
-PXActionResult PXAPI PXWindowReDrawEnable(const PXNativDrawWindowHandle pxWindowID, const PXBool enable)
+PXActionResult PXAPI PXWindowReDrawEnable(const PXWindowHandle pxWindowID, const PXBool enable)
 {
 #if OSUnix
 #elif OSWindows
@@ -4895,7 +4895,7 @@ PXActionResult PXAPI PXWindowReDrawEnable(const PXNativDrawWindowHandle pxWindow
     return PXActionSuccessful;
 }
 
-PXBool PXAPI PXWindowCursorPositionInWindowGet(const PXNativDrawWindowHandle pxWindowID, PXInt32S* const x, PXInt32S* const y)
+PXBool PXAPI PXWindowCursorPositionInWindowGet(const PXWindowHandle pxWindowID, PXInt32S* const x, PXInt32S* const y)
 {
     PXInt32S xPos = 0;
     PXInt32S yPos = 0;
@@ -4926,7 +4926,7 @@ PXBool PXAPI PXWindowCursorPositionInWindowGet(const PXNativDrawWindowHandle pxW
 #endif
 }
 
-PXBool PXAPI PXWindowCursorPositionInDestopGet(const PXNativDrawWindowHandle pxWindowID, PXInt32S* const x, PXInt32S* const y)
+PXBool PXAPI PXWindowCursorPositionInDestopGet(const PXWindowHandle pxWindowID, PXInt32S* const x, PXInt32S* const y)
 {
 #if OSUnix
     return PXFalse;
@@ -5011,7 +5011,7 @@ PXBool PXAPI PXWindowCursorPositionInDestopGet(const PXNativDrawWindowHandle pxW
 #endif
 }
 
-PXBool PXAPI PXWindowIsInFocus(const PXNativDrawWindowHandle pxWindowID)
+PXBool PXAPI PXWindowIsInFocus(const PXWindowHandle pxWindowID)
 {
 #if OSUnix
     return PXFalse;
