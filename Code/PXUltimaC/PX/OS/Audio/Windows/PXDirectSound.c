@@ -163,12 +163,11 @@ PXActionResult PXAPI PXDirectSoundInitialize(PXAudioDirectSound** const pxAudioD
     // Link functions
     if(pxAudio)
     {
-        pxAudio->DeviceAmount = (PXAudioDeviceAmountFunction)PXDirectSoundDeviceAmount;
         pxAudio->DeviceFetch = PXDirectSoundDeviceFetch;
         pxAudio->DeviceFetchAll = PXDirectSoundDeviceFetchAll;
         pxAudio->DeviceOpen = PXDirectSoundDeviceOpen;
         pxAudio->DeviceClose = PXDirectSoundDeviceClose;
-        pxAudio->DeviceLoad = PXDirectSoundDeviceLoad;  
+        pxAudio->DeviceLoad = PXDirectSoundDeviceBufferCreate;  
         pxAudio->DeviceEffectUpdate = PXDirectSoundEffectUpdate;
     }
 
@@ -217,7 +216,7 @@ PXActionResult PXAPI PXDirectSoundDeviceAmount(PXAudioDirectSound* const pxAudio
     }
     //-----------------------------------------------------
 
-    const PXActionResult enumResult = PXWindowsHandleErrorFromID(enumResultID);
+    const PXActionResult enumResult = PXErrorFromHRESULT(enumResultID);
 
     PXActionReturnOnError(enumResult);
 #endif
@@ -264,7 +263,7 @@ PXActionResult PXAPI PXDirectSoundDeviceFetch(PXAudioDirectSound* const pxAudioD
             return PXActionRefusedArgumentInvalid;
     }
 
-    const PXActionResult enumResult = PXWindowsHandleErrorFromID(enumResultID);
+    const PXActionResult enumResult = PXErrorFromHRESULT(enumResultID);
 
     PXActionReturnOnError(enumResult);
 #endif
@@ -308,7 +307,7 @@ PXActionResult PXAPI PXDirectSoundDeviceOpen(PXAudioDevice* const pxAudioDevice,
                 crateResultID = pxDirectSoundCaptureCreate(PXNull, (IDirectSoundCapture**)&_pxAudioDirectSound.DirectSoundInterface, PXNull);
             }
 
-            const PXActionResult crateResult = PXWindowsHandleErrorFromID(crateResultID);
+            const PXActionResult crateResult = PXErrorFromHRESULT(crateResultID);
 
             PXActionReturnOnError(crateResult);
 
@@ -346,7 +345,7 @@ PXActionResult PXAPI PXDirectSoundDeviceOpen(PXAudioDevice* const pxAudioDevice,
                     crateResultID = pxDirectSoundCaptureCreate(PXNull, (PXDirectSoundOutputInterface**)&_pxAudioDirectSound.DirectSoundInterface, PXNull);
                 }
 
-                const PXActionResult crateResult = PXWindowsHandleErrorFromID(crateResultID);
+                const PXActionResult crateResult = PXErrorFromHRESULT(crateResultID);
 
                 PXActionReturnOnError(crateResult);
 
@@ -360,7 +359,7 @@ PXActionResult PXAPI PXDirectSoundDeviceOpen(PXAudioDevice* const pxAudioDevice,
                 capabiltys.dwSize = sizeof(DSCAPS);
 
                 const HRESULT capResultID = directSound->lpVtbl->GetCaps(directSound, &capabiltys);
-                const PXActionResult initResult = PXWindowsHandleErrorFromID(capResultID);
+                const PXActionResult initResult = PXErrorFromHRESULT(capResultID);
 
                 PXActionReturnOnError(initResult);
 
@@ -410,7 +409,7 @@ PXActionResult PXAPI PXDirectSoundDeviceClose(PXAudioDevice* const pxAudioDevice
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceLoad(PXAudioDevice* const pxAudioDevice, PXSound* const pxSound)
+PXActionResult PXAPI PXDirectSoundDeviceBufferCreate(PXAudioDevice* const pxAudioDevice, PXSound* const pxSound)
 {
     if(!(pxAudioDevice && pxSound))
     {
@@ -463,7 +462,7 @@ PXActionResult PXAPI PXDirectSoundDeviceLoad(PXAudioDevice* const pxAudioDevice,
         pcDSBufferDesc.dwReserved = 0;
         pcDSBufferDesc.lpwfxFormat = &waveFormat;
 #if DIRECTSOUND_VERSION >= 0x0700
-        pcDSBufferDesc.guid3DAlgorithm = DS3DALG_DEFAULT;
+       // [?????] pcDSBufferDesc.guid3DAlgorithm = DS3DALG_DEFAULT;
         //PXClear(GUID, &pcDSBufferDesc.guid3DAlgorithm);
 #endif
 
@@ -479,7 +478,7 @@ PXActionResult PXAPI PXDirectSoundDeviceLoad(PXAudioDevice* const pxAudioDevice,
             &(IDirectSoundBuffer*)pxAudioDevice->SoundBuffer,
             PXNull
         );
-        const PXActionResult createResult = PXWindowsHandleErrorFromID(createResultID);
+        const PXActionResult createResult = PXErrorFromHRESULT(createResultID);
 
         PXActionReturnOnError(createResult);
 
@@ -495,7 +494,7 @@ PXActionResult PXAPI PXDirectSoundDeviceLoad(PXAudioDevice* const pxAudioDevice,
     // Lock directSound buffer so we are allowed to write to it.
     {
         const HRESULT lockResultID = soundBuffer->lpVtbl->Lock(soundBuffer, dataOffset, pxSound->DataSize, &dataBlockAdressA, &dataBlockSizeA, &dataBlockAdressB, dataBlockSizeB, flags);
-        const PXActionResult lockResult = PXWindowsHandleErrorFromID(lockResultID);
+        const PXActionResult lockResult = PXErrorFromHRESULT(lockResultID);
 
         PXActionReturnOnError(lockResult);
     }
@@ -513,7 +512,7 @@ PXActionResult PXAPI PXDirectSoundDeviceLoad(PXAudioDevice* const pxAudioDevice,
     // Unlock buffer to release it back to DirectSound
     {
         const HRESULT lockResultID = soundBuffer->lpVtbl->Unlock(soundBuffer, dataBlockAdressA, dataBlockSizeA, dataBlockAdressB, dataBlockSizeB);
-        const PXActionResult lockResult = PXWindowsHandleErrorFromID(lockResultID);
+        const PXActionResult lockResult = PXErrorFromHRESULT(lockResultID);
 
         PXActionReturnOnError(lockResult);
     }
@@ -524,7 +523,7 @@ PXActionResult PXAPI PXDirectSoundDeviceLoad(PXAudioDevice* const pxAudioDevice,
     IDirectSound3DListener8* listener = PXNull;
 
     const HRESULT listenResultID = soundBuffer->lpVtbl->QueryInterface(soundBuffer, &IID_IDirectSound3DListener, &pxAudioDevice->Listen3DInterface);
-    const PXActionResult lockResult = PXWindowsHandleErrorFromID(listenResultID);
+    const PXActionResult lockResult = PXErrorFromHRESULT(listenResultID);
 
     //listener->lpVtbl->SetPosition
 
@@ -536,7 +535,7 @@ PXActionResult PXAPI PXDirectSoundDeviceLoad(PXAudioDevice* const pxAudioDevice,
     if(canUse3DStuff)
     {
         const HRESULT bufferResultID = soundBuffer->lpVtbl->QueryInterface(soundBuffer, &IID_IDirectSound3DBuffer, &pxAudioDevice->Buffer3DInterface);
-        const PXActionResult bufferResult = PXWindowsHandleErrorFromID(bufferResultID);
+        const PXActionResult bufferResult = PXErrorFromHRESULT(bufferResultID);
     }
 #endif
 
@@ -550,9 +549,7 @@ PXActionResult PXAPI PXDirectSoundDeviceProperty(PXAudioDevice* const pxAudioDev
         return PXActionRefusedArgumentNull;
     }
 
-    const PXBool isWriteOP = 0 < (PXSoundDevicePropertyWrite & pxSoundDeviceProperty->Flags);
-
-    
+    const PXBool isWriteOP = 0 < (PXSoundDevicePropertyWrite & pxSoundDeviceProperty->Flags);   
 
 
 #if OSUnix
@@ -710,7 +707,7 @@ PXActionResult PXAPI PXDirectSoundDeviceProperty(PXAudioDevice* const pxAudioDev
 
 #if OSUnix
 #elif OSWindows
-    const PXActionResult setResult = PXWindowsHandleErrorFromID(resultID);
+    const PXActionResult setResult = PXErrorFromHRESULT(resultID);
 
     if(PXActionSuccessful != setResult) 
         return setResult;
@@ -775,13 +772,13 @@ PXActionResult PXAPI PXDirectSoundEffectEnable(PXAudioDirectSound* const pxAudio
 
     if(wasRunning)
     {
-        PXDirectSoundDeviceStop(pxAudioDirectSound, pxAudioDevice); // Stop the device, we are not allowed to update effects while playing
+      //  PXDirectSoundDeviceStop(pxAudioDirectSound, pxAudioDevice); // Stop the device, we are not allowed to update effects while playing
     }
 
     soundBuffer->lpVtbl->SetFX(soundBuffer, 0, 0, dwResults);
 
     const HRESULT effectSetResultID = soundBuffer->lpVtbl->SetFX(soundBuffer, amountCounter, &dsEffectList, dwResults);
-    const PXActionResult effectSetResult = PXWindowsHandleErrorFromID(effectSetResultID);
+    const PXActionResult effectSetResult = PXErrorFromHRESULT(effectSetResultID);
 
     for(PXSize i = 0; i < amount; ++i)
     {
@@ -798,7 +795,7 @@ PXActionResult PXAPI PXDirectSoundEffectEnable(PXAudioDirectSound* const pxAudio
 
     if(wasRunning)
     {
-        PXDirectSoundDeviceStart(pxAudioDirectSound, pxAudioDevice);
+       // PXDirectSoundDeviceStart(pxAudioDirectSound, pxAudioDevice);
     }
 #endif
 

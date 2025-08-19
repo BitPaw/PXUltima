@@ -41,70 +41,15 @@ PXPublic PXActionResult PXAPI PXDirectSoundDeviceFetchAll(PXAudioDirectSound* co
 
 PXPublic PXActionResult PXAPI PXDirectSoundDeviceOpen(PXAudioDevice* const pxAudioDevice, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID);
 PXPublic PXActionResult PXAPI PXDirectSoundDeviceClose(PXAudioDevice* const pxAudioDevice);
-PXPublic PXActionResult PXAPI PXDirectSoundDeviceLoad
+PXPublic PXActionResult PXAPI PXDirectSoundDeviceBufferCreate
 (
     PXAudioDevice* const pxAudioDevice,
     PXSound* const pxSound
 );
 
-//--------------------------------------------------------
-// Device - Input
-//--------------------------------------------------------
-
-
-//--------------------------------------------------------
-// Device - Output
-//--------------------------------------------------------
-
-#define PXSoundDevicePropertyPositionCursor     1
-#define PXSoundDevicePropertySpeed              2
-#define PXSoundDevicePropertyPositionSpace      3
-#define PXSoundDevicePropertyAngleCone          4
-#define PXSoundDevicePropertyConeOrientation    5
-#define PXSoundDevicePropertyDistanceMaximum    6
-#define PXSoundDevicePropertyDistanceMinimum    7
-#define PXSoundDevicePropertyMode               8
-#define PXSoundDevicePropertyVelocity           9
-#define PXSoundDevicePropertyDistanceFactor     10
-#define PXSoundDevicePropertyDopplerFactor      11
-#define PXSoundDevicePropertyOrientation        12
-#define PXSoundDevicePropertyRolloffFactor      13
-#define PXSoundDevicePropertyPitch              14
-#define PXSoundDevicePropertyVolume             15
-
-// State Tranitions
 
 
 
-//  DS3D_MINDOPPLERFACTOR to DS3D_MAXDOPPLERFACTOR
-#define PXSoundDevicePropertyStatePlay      16
-#define PXSoundDevicePropertyStatePause     17
-#define PXSoundDevicePropertyStateRestart   18
-
-
-
-// Shall we read or write this property?
-#define PXSoundDevicePropertyRWMask     0b11
-#define PXSoundDevicePropertyRead       0b01
-#define PXSoundDevicePropertyWrite      0b10
-
-//#define PXSoundDevicePropertyRead
-//#define PXSoundDevicePropertyWrite
-
-// Transphere object
-typedef struct PXSoundDeviceProperty_
-{
-    PXInt16U Type;
-    PXInt16U Flags;
-
-    union
-    {
-        PXInt32U Value;
-        PXVector2F32 Position2D;
-        PXVector3F32 Position3D;
-    };
-}
-PXSoundDeviceProperty;
 
 
 // Retrieves or writes a property value on a sound device
