@@ -257,7 +257,7 @@ PXActionResult PXAPI PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, co
             PXSensorTemperature* const pxSensorTemperature = &xxxSensorTemperature;
 
             HRESULT EJIE = pxHardwareInfo->enumerator->lpVtbl->Next(pxHardwareInfo->enumerator, WBEM_INFINITE, 1, &pxHardwareInfo->obj, &u_return);
-            PXActionResult xx = PXWindowsHandleErrorFromID(EJIE);
+            PXActionResult xx = PXErrorFromHRESULT(EJIE);
 
             if(!u_return)
             {
