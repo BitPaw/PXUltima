@@ -113,11 +113,11 @@
 #define PXCDECL _cdecl
 #define PXSTDCALL _stdcall
 #define PXSYSCALL
-#define PXAPIFASTCALL _fastcall
+#define PXFASTCALL _fastcall
 
 #endif
 
-#define PXAPI PXSTDCALL
+#define PXAPI PXFASTCALL
 
 //---------------------------------------------------------
 // Change label of functions to C-Style (C++ only)
