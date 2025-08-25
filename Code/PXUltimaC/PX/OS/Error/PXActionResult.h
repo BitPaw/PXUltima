@@ -377,6 +377,10 @@ typedef enum PXActionResult_
 }
 PXActionResult;
 
+// We use this as an enum is most often forced to be 32-bit.
+// This allows assembly code to be smaler.
+typedef PXInt16U PXResult;
+
 #define PXActionReturnOnSuccess(actionResult) if (PXActionSuccessful == actionResult) return PXActionSuccessful;
 #define PXActionReturnOnError(actionResult) if (PXActionSuccessful != actionResult) return actionResult;
 #define PXActionContinueOnError(actionResult) if (PXActionSuccessful != actionResult) continue;
