@@ -75,7 +75,7 @@
 #define PXCompilerSymbolLexerString             57 // "Text", 'Text', @Text@
 //--------------------------------------------------------
 
-typedef PXInt8U PXCompilerSymbolLexer;
+typedef PXI8U PXCompilerSymbolLexer;
 
 
 typedef struct PXCompilerSymbolEntry_
@@ -87,28 +87,28 @@ typedef struct PXCompilerSymbolEntry_
 #if OS64B
         // If we are in X64 bit mode, we can embedd 64-Bit types for free
         PXF64 F64;
-        PXInt64S I64S;
-        PXInt64U I64U;
+        PXI64S I64S;
+        PXI64U I64U;
 #endif
 
         char Data[4]; // Can be used to embedd something
 
         PXF32 F32;
-        PXInt32S I32S;
-        PXInt32U I32U;
+        PXI32S I32S;
+        PXI32U I32U;
         
         PXF16 F16;
-        PXInt16S I16S;
-        PXInt16U I16U;
+        PXI16S I16S;
+        PXI16U I16U;
         
-        PXInt8S CS;
-        PXInt8U CU;
+        PXI8S CS;
+        PXI8U CU;
     };
    
-    PXInt32U Line; // Files can be very long, although rarely they do. is this enough?
-    PXInt16U Size; // Used mostly only for strings, we will not have 4GB strings.
-    PXInt8U Coloum;  // Text files normally do not exceed colum 60,80 or alike. 255 should be fine
-    PXInt8U ID;
+    PXI32U Line; // Files can be very long, although rarely they do. is this enough?
+    PXI16U Size; // Used mostly only for strings, we will not have 4GB strings.
+    PXI8U Coloum;  // Text files normally do not exceed colum 60,80 or alike. 255 should be fine
+    PXI8U ID;
 }
 PXCompilerSymbolEntry;
 
@@ -168,7 +168,7 @@ typedef struct PXCompilerWriteInfo_
     PXCompilerWriteFunction WriteDefinition;
     PXCompilerWriteFunction WriteParameter;
 
-    PXInt8U TABSize;
+    PXI8U TABSize;
 }
 PXCompilerWriteInfo;
 
@@ -203,7 +203,7 @@ typedef struct PXCompiler_
     PXSize CommentMultibleLineEndSize;
     const char* CommentMultibleLineEnd;  // Example : "*/"
 
-    PXInt32U Flags;
+    PXI32U Flags;
 
     PXSize SymbolsRead;
 
@@ -258,12 +258,12 @@ PXPublic PXBool PXAPI PXCompilerParseStringUntilNewLineA(PXCompiler* const pxCom
 // Expect a generic token and compare it against provided text
 PXPublic PXBool PXAPI PXCompilerEnsureTextAndCompare(PXCompiler* const pxCompiler, const char* const text, const PXSize textSize);
 
-PXPublic PXInt8U PXAPI PXCompilerEnsureTextListAndCompare
+PXPublic PXI8U PXAPI PXCompilerEnsureTextListAndCompare
 (
     PXCompiler* const pxCompiler, 
     const char** const listTextData,
-    const PXInt8U* listTextSize,
-    const PXInt8U amount
+    const PXI8U* listTextSize,
+    const PXI8U amount
 );
 
 
@@ -278,7 +278,7 @@ PXPublic PXBool PXAPI PXCompilerEnsurePropertyText
 
 
 
-PXPublic PXBool PXAPI PXCompilerParseI32V(PXCompiler* const pxCompiler, PXInt32U* const values, const PXSize valuesExpectedSize);
+PXPublic PXBool PXAPI PXCompilerParseI32V(PXCompiler* const pxCompiler, PXI32U* const values, const PXSize valuesExpectedSize);
 
 
 PXPublic PXBool PXAPI PXCompilerParseF16V(PXCompiler* const pxCompiler, PXF16* const values, const PXSize valuesMaxSize, PXSize* const valuesSize);
@@ -290,7 +290,7 @@ PXPublic PXBool PXAPI PXCompilerParseCSVF64(PXCompiler* const pxCompiler, PXF64*
 
 #define PXCompilerParseTextDetectUntilNextLine (1<<0)
 
-PXPublic PXSize PXAPI PXCompilerParseText(PXCompiler* const pxCompiler, char* const text, const PXSize textLengthMax, const PXInt8U flags);
+PXPublic PXSize PXAPI PXCompilerParseText(PXCompiler* const pxCompiler, char* const text, const PXSize textLengthMax, const PXI8U flags);
 
 
 

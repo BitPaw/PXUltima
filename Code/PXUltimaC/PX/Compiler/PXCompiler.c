@@ -224,8 +224,8 @@ PXSize PXAPI PXCompilerSymbolEntryMergeCurrentWithNext(PXCompiler* const pxCompi
 
     // Write merged symbol
     {
-        const PXInt8U symbolID = compilerSymbolEntry->ID;
-        const PXInt32U size = oldCopy.Size + ((mergCopy.Coloum + mergCopy.Size) - (oldCopy.Coloum + oldCopy.Size));
+        const PXI8U symbolID = compilerSymbolEntry->ID;
+        const PXI32U size = oldCopy.Size + ((mergCopy.Coloum + mergCopy.Size) - (oldCopy.Coloum + oldCopy.Size));
         const PXTypeEntry pxFileDataElementType[] =
         {
          &oldCopy.ID, PXTypeInt08U,
@@ -243,8 +243,8 @@ PXSize PXAPI PXCompilerSymbolEntryMergeCurrentWithNext(PXCompiler* const pxCompi
 
     // delete old symbol
     {
-        const PXInt8U symbolID = PXCompilerSymbolLexerInvalid;
-        const PXInt32U emptyValue = 0;
+        const PXI8U symbolID = PXCompilerSymbolLexerInvalid;
+        const PXI32U emptyValue = 0;
         const void* emptyAdress = 0;
         const PXTypeEntry pxFileDataElementType[] =
         {
@@ -465,7 +465,7 @@ PXBool PXAPI PXCompilerSymbolEntryEnsureCheckList(PXCompiler* const pxCompiler, 
 
 
 
-const PXInt8U PXCompilerCharMatchList[] =
+const PXI8U PXCompilerCharMatchList[] =
 {
     // white space / new lines
     '\r',
@@ -527,9 +527,9 @@ const PXInt8U PXCompilerCharMatchList[] =
     '8',
     '9'
 };
-const PXInt8U PXCompilerCharMatchListSize = sizeof(PXCompilerCharMatchList) / sizeof(PXInt8U);
+const PXI8U PXCompilerCharMatchListSize = sizeof(PXCompilerCharMatchList) / sizeof(PXI8U);
 
-const PXInt8U PXCompilerCharIDList[] =
+const PXI8U PXCompilerCharIDList[] =
 {
 PXCompilerSymbolLexerNewLine,
 PXCompilerSymbolLexerNewLine,
@@ -587,7 +587,7 @@ PXCompilerSymbolLexerNumeric
 
 PXCompilerSymbolLexer PXAPI PXCompilerTryAnalyseType(PXFile* const tokenStream, const char* const text, const PXSize textSize, PXCompilerSymbolEntry* const compilerSymbolEntry)
 {
-    const PXInt8U index = PXMemoryCompareI8V(PXCompilerCharMatchList, PXCompilerCharMatchListSize, text[0]);
+    const PXI8U index = PXMemoryCompareI8V(PXCompilerCharMatchList, PXCompilerCharMatchListSize, text[0]);
 
 
     // Special behaviour if we only have one symbol
@@ -930,7 +930,7 @@ PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler)
         return PXActionRefusedArgumentInvalid;
     }
 
-    const PXInt64U timeCounter = PXTimeCounterStampGet();
+    const PXI64U timeCounter = PXTimeCounterStampGet();
 
 #if PXLogEnable
     PXText pxTextSize;
@@ -1213,7 +1213,7 @@ PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler)
     // Mark end of output Stream
     pxCompiler->ReadInfo.FileCache->DataUsed = pxCompiler->ReadInfo.FileCache->DataCursor;
 
-    PXInt64U timeCounterB = PXTimeCounterStampGet() - timeCounter;
+    PXI64U timeCounterB = PXTimeCounterStampGet() - timeCounter;
     PXF32 delta = PXTimeCounterStampToSecoundsF(timeCounterB);
 
 
@@ -1324,12 +1324,12 @@ PXBool PXAPI PXCompilerEnsureTextAndCompare(PXCompiler* const pxCompiler, const 
     return isxform;
 }
 
-PXInt8U PXAPI PXCompilerEnsureTextListAndCompare(PXCompiler* const pxCompiler, const char** const listTextData, const PXInt8U* listTextSize, const PXInt8U amount)
+PXI8U PXAPI PXCompilerEnsureTextListAndCompare(PXCompiler* const pxCompiler, const char** const listTextData, const PXI8U* listTextSize, const PXI8U amount)
 {
-    for(PXInt8U i = 0; i < amount; ++i)
+    for(PXI8U i = 0; i < amount; ++i)
     {
         const char* text = listTextData[i];
-        const PXInt8U size = listTextSize[i];
+        const PXI8U size = listTextSize[i];
 
         const PXBool isTarget = PXCompilerEnsureTextAndCompare(pxCompiler, text, size);
 
@@ -1339,7 +1339,7 @@ PXInt8U PXAPI PXCompilerEnsureTextListAndCompare(PXCompiler* const pxCompiler, c
         }
     }
 
-    return (PXInt8U)-1;
+    return (PXI8U)-1;
 }
 
 PXBool PXAPI PXCompilerEnsurePropertyText
@@ -1401,7 +1401,7 @@ PXBool PXAPI PXCompilerEnsurePropertyText
     return PXTrue;
 }
 
-PXBool PXAPI PXCompilerParseI32V(PXCompiler* const pxCompiler, PXInt32U* const values, const PXSize valuesExpectedSize)
+PXBool PXAPI PXCompilerParseI32V(PXCompiler* const pxCompiler, PXI32U* const values, const PXSize valuesExpectedSize)
 {
     PXSize i = 0;
 
@@ -1547,14 +1547,14 @@ PXBool PXAPI PXCompilerParseCSVF64(PXCompiler* const pxCompiler, PXF64* const va
     }
 }
 
-PXSize PXAPI PXCompilerParseText(PXCompiler* const pxCompiler, char* const text, const PXSize textLengthMax, const PXInt8U flags)
+PXSize PXAPI PXCompilerParseText(PXCompiler* const pxCompiler, char* const text, const PXSize textLengthMax, const PXI8U flags)
 {
     const PXCompilerSymbolLexer pxCompilerSymbolLexerList[2] =
     {
         PXCompilerSymbolLexerGeneric,
         PXCompilerSymbolLexerString
     };
-    const PXInt8U pxCompilerSymbolLexerListAmount = sizeof(pxCompilerSymbolLexerList) / sizeof(PXCompilerSymbolLexer);
+    const PXI8U pxCompilerSymbolLexerListAmount = sizeof(pxCompilerSymbolLexerList) / sizeof(PXCompilerSymbolLexer);
 
     const PXBool check = PXCompilerSymbolEntryEnsureCheckList(pxCompiler, pxCompilerSymbolLexerList, pxCompilerSymbolLexerListAmount);
 
@@ -1566,7 +1566,7 @@ PXSize PXAPI PXCompilerParseText(PXCompiler* const pxCompiler, char* const text,
     // We definitly have a string
     PXSize lengh = PXTextCopyA(pxCompiler->ReadInfo.SymbolEntryCurrent.Source, pxCompiler->ReadInfo.SymbolEntryCurrent.Size, text, textLengthMax);
 
-    const PXInt32U lineStart = pxCompiler->ReadInfo.SymbolEntryCurrent.Line;
+    const PXI32U lineStart = pxCompiler->ReadInfo.SymbolEntryCurrent.Line;
 
     PXCompilerSymbolEntryForward(pxCompiler);
 
@@ -1584,7 +1584,7 @@ PXSize PXAPI PXCompilerParseText(PXCompiler* const pxCompiler, char* const text,
         PXCompilerSymbolEntryPeek(pxCompiler);
 
         const PXBool isEndOfFile = PXCompilerSymbolLexerEndOfFile == pxCompiler->ReadInfo.SymbolEntryCurrent.ID;
-        const PXInt32U lineCurrent = pxCompiler->ReadInfo.SymbolEntryCurrent.Line;
+        const PXI32U lineCurrent = pxCompiler->ReadInfo.SymbolEntryCurrent.Line;
 
         if((lineStart < lineCurrent) || isEndOfFile)
         {
@@ -1641,7 +1641,7 @@ void PXAPI PXCompilerWrite(PXCompiler* const pxCompiler)
     );
 #endif
 
-    PXInt64U timeCounter = PXTimeCounterStampGet();
+    PXI64U timeCounter = PXTimeCounterStampGet();
 
     PXTime pxTime;
     PXTimeNow(&pxTime);
@@ -1662,7 +1662,7 @@ void PXAPI PXCompilerWrite(PXCompiler* const pxCompiler)
 
     PXCompilerWriteNode(pxCompiler);
 
-    PXInt64U timeCounterB = PXTimeCounterStampGet() - timeCounter;
+    PXI64U timeCounterB = PXTimeCounterStampGet() - timeCounter;
 
 #if PXLogEnable
     PXLogPrint
