@@ -1,5 +1,5 @@
-#ifndef PXCompilerSettingsINCLUDE
-#define PXCompilerSettingsINCLUDE
+#ifndef PXCompilerSettingsIncluded
+#define PXCompilerSettingsIncluded
 
 #include <PX/OS/System/Version/PXOSVersion.h>
 
