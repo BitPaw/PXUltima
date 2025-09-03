@@ -41,7 +41,7 @@ PXPublic void* PXAPI PXListAdd(PXList* const pxList, void* const dataElement);
 #define PXListAddT(Type, pxList, dataElement) (Type*)PXListAdd(pxList, dataElement)
 
 PXPublic void* PXAPI PXListItemAtIndexGet(PXList* const pxList, const PXSize index);
-#define PXListEntyrGetT(Type, pxList, index) (Type*)PXListItemAtIndexGet(pxList, index)
+#define PXListItemAtIndexGetT(Type, pxList, index) (Type*)PXListItemAtIndexGet(pxList, index)
 //---------------------------------------------------------
 
 //---------------------------------------------------------
