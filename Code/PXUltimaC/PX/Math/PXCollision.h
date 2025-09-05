@@ -1,5 +1,5 @@
-#ifndef PXCollisionINCLUDE
-#define PXCollisionINCLUDE
+#ifndef PXCollisionIncluded
+#define PXCollisionIncluded
 
 #include <PX/Media/PXType.h>
 #include <PX/Math/PXVector.h>
@@ -42,7 +42,7 @@ PXCollisionGravityField;
 
 typedef struct PXPhysicEffector_
 {
-    PXInt32U FlagList;
+    PXI32U FlagList;
 }
 PXPhysicEffector;
 
