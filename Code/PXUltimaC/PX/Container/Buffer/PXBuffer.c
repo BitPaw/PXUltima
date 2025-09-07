@@ -2,7 +2,7 @@
 
 #include <PX/OS/PXOS.h>
 
-PXActionResult PXAPI PXBufferAllocate(PXBuffer* const pxBuffer, const PXSize size)
+PXResult PXAPI  PXBufferAllocate(PXBuffer* const pxBuffer, const PXSize size)
 {
     pxBuffer->Size = size;
     pxBuffer->Data = PXMemoryHeapCalloc(PXNull, 1, size);
@@ -10,12 +10,12 @@ PXActionResult PXAPI PXBufferAllocate(PXBuffer* const pxBuffer, const PXSize siz
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXBufferRelese(PXBuffer* const pxBuffer)
+PXResult PXAPI  PXBufferRelese(PXBuffer* const pxBuffer)
 {
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXBufferSet(PXBuffer* const pxBuffer, void* data, const PXSize size)
+PXResult PXAPI  PXBufferSet(PXBuffer* const pxBuffer, void* data, const PXSize size)
 {
     return PXActionSuccessful;
 }
