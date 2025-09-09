@@ -1,7 +1,7 @@
-#ifndef PXLobbyInclude
-#define PXLobbyInclude
+#ifndef PXLobbyIncluded
+#define PXLobbyIncluded
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 
 typedef enum PXLobbyType_
 {
@@ -61,8 +61,8 @@ PXLobbyPlayerItem;
 
 typedef struct PXLobbyPlayer_
 {
-    PXInt64U ProfileID; // Unique ID for the user.
-    PXInt32U ProfileAccountLevel; // Used in some programs
+    PXI64U ProfileID; // Unique ID for the user.
+    PXI32U ProfileAccountLevel; // Used in some programs
 
     char Name[64]; // Username, can be changed at will.
     PXSize NameSize; // Username size
@@ -99,7 +99,7 @@ typedef PXActionResult(PXAPI* PXLobbyUserBan)(void* const owner);
 typedef PXActionResult(PXAPI* PXLobbyUserMe)(void* const owner);
 typedef PXActionResult(PXAPI* PXLobbyUserListAll)(void* const owner);
 
-typedef PXActionResult(PXAPI* PXLobbyUserProfileIconFetch)(void* const owner, PXImage* const image);
+typedef PXActionResult(PXAPI* PXLobbyUserProfileIconFetch)(void* const owner, PXTexture* const image);
 
 
 
@@ -125,7 +125,7 @@ typedef PXActionResult(PXAPI* PXLobbyExternalOverlayActivate)(void* const owner)
 #if 1
 
 // Fetch user inform,at
-typedef PXActionResult(PXAPI* PXLobbyUserInformationRequest)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer, const PXInt32U fetchFlagList);
+typedef PXActionResult(PXAPI* PXLobbyUserInformationRequest)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer, const PXI32U fetchFlagList);
 
 
 typedef PXActionResult(PXAPI* PXLobbyClanOfficerListRequest)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer);
