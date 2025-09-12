@@ -1,11 +1,11 @@
-#ifndef PXEngineInclude
-#define PXEngineInclude
+#ifndef PXEngineIncluded
+#define PXEngineIncluded
 
 #include <PX/Engine/PXMod.h>
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
+#include <PX/Engine/PXGUI.h>
 #include <PX/Math/PXMath.h>
 #include <PX/OS/Signal/PXSignal.h>
-#include <PX/OS/GUI/PXGUI.h>
 #include <PX/OS/Audio/PXAudio.h>
 #include <PX/OS/Hardware/PXController.h>
 #include <PX/OS/DataBase/PXDataBase.h>
@@ -20,7 +20,7 @@ typedef struct PXEngine_ PXEngine;
 //-----------------------------------------------------
 typedef struct PXEngineResourceStateChangeInfo_
 {
-    PXInt32U Type;
+    PXI32U Type;
     void* Object;
 
     PXBool Enable;
@@ -83,19 +83,19 @@ typedef void (PXAPI* PXEngineRenderUpdateEvent)(void* const owner, PXEngine* con
 
 typedef struct PXEngineTimeData_
 {
-    PXInt32U CounterTimeLast;
-    PXInt32U CounterTimeDelta;
+    PXI32U CounterTimeLast;
+    PXI32U CounterTimeDelta;
 
-    PXInt32U CounterTimeWindow;
-    PXInt32U CounterTimeUser;
-    PXInt32U CounterTimeNetwork;
-    PXInt64U CounterTimeRenderLast;
-    PXInt32U CounterTimeGPU;
-    PXInt32U CounterTimeCPU;
-    PXInt32U TimeFrequency;
+    PXI32U CounterTimeWindow;
+    PXI32U CounterTimeUser;
+    PXI32U CounterTimeNetwork;
+    PXI64U CounterTimeRenderLast;
+    PXI32U CounterTimeGPU;
+    PXI32U CounterTimeCPU;
+    PXI32U TimeFrequency;
 
-    PXInt32U FramesPerSecound;
-    PXInt32U FrameTime;
+    PXI32U FramesPerSecound;
+    PXI32U FrameTime;
 }
 PXEngineTimeData;
 
@@ -183,7 +183,7 @@ PXPrivate void PXCDECL PXEngineOnMemoryViolation(const int signalID);
 PXPrivate void PXAPI PXEngineWindowEvent(PXEngine* const pxEngine, PXWindowEvent* const pxWindowEvent);
 
 // Generate a random number with a maximum of the "limiter"
-PXPublic PXInt32U PXAPI PXEngineGenerateRandom(PXEngine* const pxEngine, const PXInt32U limiter);
+PXPublic PXI32U PXAPI PXEngineGenerateRandom(PXEngine* const pxEngine, const PXI32U limiter);
 
 PXPublic PXBool PXAPI PXEngineIsRunning(const PXEngine* const pxEngine);
 
@@ -194,26 +194,26 @@ PXPrivate void PXAPI PXEngineCreateGraphic(PXEngine* const pxEngine, PXEngineSta
 PXPrivate void PXAPI PXEngineCreateMod(PXEngine* const pxEngine, PXEngineStartInfo* const pxEngineStartInfo);
 
 
-PXPublic PXActionResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* const pxEngineStartInfo);
+PXPublic PXResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* const pxEngineStartInfo);
 PXPublic void PXAPI PXEngineStop(PXEngine* const pxEngine);
 PXPublic void PXAPI PXEngineUpdate(PXEngine* const pxEngine);
 
-PXPublic PXActionResult PXAPI PXEngineResourceAction(PXEngine* const pxEngine, PXEngineResourceActionInfo* const pxEngineResourceActionInfo);
-PXPublic PXActionResult PXAPI PXEngineResourceActionBatch(PXEngine* const pxEngine, PXEngineResourceActionInfo* const pxEngineResourceActionInfoList, const PXSize amount);
+PXPublic PXResult PXAPI PXEngineResourceAction(PXEngine* const pxEngine, PXEngineResourceActionInfo* const pxEngineResourceActionInfo);
+PXPublic PXResult PXAPI PXEngineResourceActionBatch(PXEngine* const pxEngine, PXEngineResourceActionInfo* const pxEngineResourceActionInfoList, const PXSize amount);
 
-PXPublic PXActionResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResourceCreateInfo* const pxEngineResourceCreateInfo);
-PXPublic PXActionResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEntity* const pxRenderEntity);
+PXPublic PXResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResourceCreateInfo* const pxEngineResourceCreateInfo);
+PXPublic PXResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEntity* const pxRenderEntity);
 
-PXPublic PXActionResult PXAPI PXEngineDeviceDataRegister(PXEngine* const pxEngine, PXResourceTransphereInfo* const pxResourceTransphereInfo);
-PXPublic PXActionResult PXAPI PXEngineDeviceDataUpload(PXEngine* const pxEngine, PXResourceTransphereInfo* const pxResourceTransphereInfo);
+PXPublic PXResult PXAPI PXEngineDeviceDataRegister(PXEngine* const pxEngine, PXResourceTransphereInfo* const pxResourceTransphereInfo);
+PXPublic PXResult PXAPI PXEngineDeviceDataUpload(PXEngine* const pxEngine, PXResourceTransphereInfo* const pxResourceTransphereInfo);
 
 PXPublic void PXAPI PXEngineResourceDefaultElements(PXEngine* const pxEngine);
 
-PXPublic PXActionResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine);
+PXPublic PXResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine);
 
 PXPublic void PXAPI PXEngineCollsisionSolve(PXEngine* const pxEngine);
 
-PXPublic PXActionResult PXAPI PXEngineSpriteTextureSet(PXEngine* const pxEngine, PXSprite* const pxSprite, PXTexture2D* const pxTexture2D);
+PXPublic PXResult PXAPI PXEngineSpriteTextureSet(PXEngine* const pxEngine, PXSprite* const pxSprite, PXTexture* const PXTexture);
 
 
 PXPrivate void PXAPI PXEngineUpdateCollision(PXEngine* const pxEngine);
