@@ -1,5 +1,5 @@
-#ifndef PXEngineSignInclude
-#define PXEngineSignInclude
+#ifndef PXEngineSignIncluded
+#define PXEngineSignIncluded
 
 #include <PX/Engine/PXEngine.h>
 
