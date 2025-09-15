@@ -1,7 +1,7 @@
-#ifndef PXFractalINCLUDE
-#define PXFractalINCLUDE
+#ifndef PXFractalIncluded
+#define PXFractalIncluded
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 
 typedef struct PXFractalIterator_
 {
