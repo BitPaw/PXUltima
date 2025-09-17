@@ -1,7 +1,7 @@
-#ifndef PXWavefrontINCLUDE
-#define PXWavefrontINCLUDE
+#ifndef PXWavefrontIncluded
+#define PXWavefrontIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 #include <PX/Media/MTL/PXMTL.h>
 
@@ -14,7 +14,7 @@ typedef enum PXWavefrontLineType_
     PXWavefrontLineInvalid,
     PXWavefrontLineNone,
     PXWavefrontLineComment,
-    PXWavefrontLineMaterialLibraryInclude,
+    PXWavefrontLineMaterialLibraryIncluded,
     PXWavefrontLineMaterialLibraryUse,
     PXWavefrontLineObjectName,
     PXWavefrontLineObjectGroup,
@@ -69,9 +69,9 @@ PXPrivate PXWavefrontLineType PXAPI PXWavefrontPeekLine(const void* line, const 
 // B: "f 1/2/3"
 // C: "f 1//3"
 // D: "f 1/3"
-PXPublic void PXAPI PXWavefrontFaceLineParse(PXCompiler* const pxCompiler, PXInt32U* const pxInt32U);
+PXPublic void PXAPI PXWavefrontFaceLineParse(PXCompiler* const pxCompiler, PXI32U* const PXI32U);
 
-PXPublic PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXWavefrontSaveFromFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXWavefrontSaveFromFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

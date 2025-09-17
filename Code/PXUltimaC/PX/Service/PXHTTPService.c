@@ -1,11 +1,11 @@
 #include "PXHTTPService.h"
 
-PXActionResult PXHTTPServerStart(PXHTTPServer* const pxHTTPServer)
+PXResult PXAPI PXHTTPServerStart(PXHTTPServer* const pxHTTPServer)
 {
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXHTTPServerStop(PXHTTPServer* const pxHTTPServer)
+PXResult PXAPI PXHTTPServerStop(PXHTTPServer* const pxHTTPServer)
 {
     return PXActionRefusedNotImplemented;
 }

@@ -1,7 +1,7 @@
-#ifndef PXSTLINCLUDE
-#define PXSTLINCLUDE
+#ifndef PXSTLIncluded
+#define PXSTLIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef struct PXSTL_
 {
@@ -9,7 +9,7 @@ typedef struct PXSTL_
 }
 PXSTL;
 
-PXPublic PXActionResult PXAPI PXSTLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXSTLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXSTLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXSTLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

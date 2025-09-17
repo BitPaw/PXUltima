@@ -1,9 +1,9 @@
-#ifndef PXJSONINCLUDE
-#define PXJSONINCLUDE
+#ifndef PXJSONIncluded
+#define PXJSONIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
-PXPublic PXActionResult PXAPI PXJSONLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXJSONSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXJSONLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXJSONSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

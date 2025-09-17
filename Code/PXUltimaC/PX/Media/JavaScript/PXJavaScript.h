@@ -1,9 +1,9 @@
-#ifndef PXJavaScriptIncluded
-#define PXJavaScriptIncluded
+#ifndef PXJavaScriptIncludedd
+#define PXJavaScriptIncludedd
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
-PXPublic PXActionResult PXAPI PXJavaScriptLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXJavaScriptSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXJavaScriptLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXJavaScriptSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

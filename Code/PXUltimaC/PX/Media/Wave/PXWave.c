@@ -9,7 +9,7 @@ const static char WAVSignatureLIST[4] = "LIST";
 const static char WAVSignatureData[4] = "data";
 
 
-PXActionResult PXAPI PXWaveLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI  PXWaveLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     /*
     PXSound* const pxSound = (PXSound*)pxResourceLoadInfo->Target;
@@ -87,7 +87,7 @@ PXActionResult PXAPI PXWaveLoadFromFile(PXResourceTransphereInfo* const pxResour
 }
 
 
-PXActionResult PXAPI PXWaveSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI  PXWaveSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
 #if 0
     unsigned int bitdepth = 16, bpm = 120;

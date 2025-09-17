@@ -38,7 +38,7 @@ void PXAPI PXSocketDestruct(PXSocket* const pxSocket)
     PXSocketConstruct(pxSocket);
 }
 
-PXActionResult PXAPI PXSocketSetupAdress
+PXResult PXAPI  PXSocketSetupAdress
 (
     PXSocket* const pxSocketList,
     const PXSize socketListSizeMax,
@@ -66,7 +66,7 @@ PXActionResult PXAPI PXSocketSetupAdress
 
         PXText portText;
         PXTextConstructNamedBufferA(&portText, portTextBuffer, 30);
-        char* portTextAdress = 0;
+        char* portAdress = 0;
 
 
         portText.Format = pxSocketAdressSetupInfo->IP.Format;
@@ -75,7 +75,7 @@ PXActionResult PXAPI PXSocketSetupAdress
         {
             PXTextFromInt(&portText, pxSocketAdressSetupInfo->Port);
 
-            portTextAdress = portText.TextA;
+            portAdress = portText.A;
         }
 
         switch (pxSocketAdressSetupInfo->IP.Format)
@@ -93,7 +93,7 @@ PXActionResult PXAPI PXSocketSetupAdress
             addressInfoHint.ai_socktype = PXSocketTypeToID(pxSocketAdressSetupInfo->SocketType); // Datagram socket
             addressInfoHint.ai_protocol = ConvertFromProtocolMode(pxSocketAdressSetupInfo->ProtocolMode);
 
-            const int adressInfoResult = getaddrinfo(pxSocketAdressSetupInfo->IP.TextA, portTextAdress, &addressInfoHint, &addressInfoResult);
+            const int adressInfoResult = getaddrinfo(pxSocketAdressSetupInfo->IP.A, portAdress, &addressInfoHint, &addressInfoResult);
             const PXBool validAdressInfo = adressInfoResult == 0;
 
 #elif OSWindow
@@ -107,7 +107,7 @@ PXActionResult PXAPI PXSocketSetupAdress
             addressInfoHintA.ai_protocol = ConvertFromProtocolMode(pxSocketAdressSetupInfo->ProtocolMode);
 
 
-            const int adressInfoResult = GetAddrInfoA(pxSocketAdressSetupInfo->IP.TextA, portTextAdress, &addressInfoHintA, &addressInfoListA);
+            const int adressInfoResult = GetAddrInfoA(pxSocketAdressSetupInfo->IP.A, portAdress, &addressInfoHintA, &addressInfoListA);
             const PXBool validAdressInfo = adressInfoResult == 0;
 
             if (!validAdressInfo)
@@ -180,7 +180,7 @@ PXActionResult PXAPI PXSocketSetupAdress
 
             const int adressInfoResultID =
 #if WindowsAtleastVista
-                GetAddrInfoW(pxSocketAdressSetupInfo->IP.TextW, (wchar_t*)portTextAdress, &addressInfoHintW, &addressInfoListW); // Windows Vista, Ws2_32.dll, ws2tcpip.h
+                GetAddrInfoW(pxSocketAdressSetupInfo->IP.W, (wchar_t*)portAdress, &addressInfoHintW, &addressInfoListW); // Windows Vista, Ws2_32.dll, ws2tcpip.h
 #else
                 0;
 #endif
@@ -275,7 +275,7 @@ void PXAPI PXSocketStateChange(PXSocket* const pxSocket, const PXSocketState soc
     PXFunctionInvoke(pxSocket->EventList.SocketStateChangedCallBack, pxSocket->Owner, pxSocket, oldState, socketState);
 }
 
-PXActionResult PXAPI PXSocketClientRemove(PXSocket* const serverSocket, const PXSocketID clientID)
+PXResult PXAPI  PXSocketClientRemove(PXSocket* const serverSocket, const PXSocketID clientID)
 {
     PXSocket clientSockket;
 

@@ -1,5 +1,5 @@
-#ifndef PXTCPInclude
-#define PXTCPInclude
+#ifndef PXTCPIncluded
+#define PXTCPIncluded
 
 
 #endif

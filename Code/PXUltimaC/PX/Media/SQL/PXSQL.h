@@ -1,7 +1,7 @@
-#ifndef PXSQLINCLUDE
-#define PXSQLINCLUDE
+#ifndef PXSQLIncluded
+#define PXSQLIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef enum PXSQLKeyWord_
 {
@@ -40,7 +40,7 @@ typedef enum PXSQLKeyWord_
 }
 PXSQLKeyWord;
 
-PXPublic PXActionResult PXAPI PXSQLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXSQLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXSQLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXSQLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

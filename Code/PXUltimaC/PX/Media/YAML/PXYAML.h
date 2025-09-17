@@ -1,7 +1,7 @@
-#ifndef PXYAMLINCLUDE
-#define PXYAMLINCLUDE
+#ifndef PXYAMLIncluded
+#define PXYAMLIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef enum PXYAMLLineType_
 {
@@ -21,7 +21,7 @@ PXYAMLLineType;
 
 PXPrivate PXYAMLLineType PXAPI PXYAMLPeekLine(const void* line, const PXSize size);
 
-PXPublic PXActionResult PXAPI PXYAMLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXYAMLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXYAMLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXYAMLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

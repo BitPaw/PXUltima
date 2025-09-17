@@ -1,7 +1,7 @@
 /*
-#define PXServerINCLUDE
-#ifndef PXServerINCLUDE
-#define PXServerINCLUDE
+#define PXServerIncluded
+#ifndef PXServerIncluded
+#define PXServerIncluded
 
 #include <PX/Media/PXType.h>
 #include <PX/OS/Error/PXActionResult.h>
@@ -36,11 +36,11 @@ extern "C"
 
 	PXPrivate PXBool PXAPI PXServerSocketIDIsServer(const PXServer* const server, const PXSocketID socketID, PXSocket** const pxSocket);
 
-	PXPublic PXActionResult PXAPI PXServerStart(PXServer* const server, const PXInt16U port, const PXProtocolMode protocolMode);
-	PXPublic PXActionResult PXAPI PXServerStop(PXServer* const server);
-	PXPublic PXActionResult PXAPI PXServerKickClient(PXServer* const server, const PXSocketID socketID);
+	PXPublic PXResult PXAPI PXServerStart(PXServer* const server, const PXI16U port, const PXProtocolMode protocolMode);
+	PXPublic PXResult PXAPI PXServerStop(PXServer* const server);
+	PXPublic PXResult PXAPI PXServerKickClient(PXServer* const server, const PXSocketID socketID);
 
-	PXPublic PXActionResult PXAPI PXServerSendToAll(PXServer* const server, const void* const data, const PXSize dataSize);
+	PXPublic PXResult PXAPI PXServerSendToAll(PXServer* const server, const void* const data, const PXSize dataSize);
 
 	PXPrivate PXThreadResult PXOSAPI PXServerClientListeningThread(PXSocket* const serverSocket);
 

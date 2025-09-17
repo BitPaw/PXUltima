@@ -1,26 +1,26 @@
-#ifndef PXZIPINCLUDE
-#define PXZIPINCLUDE
+#ifndef PXZIPIncluded
+#define PXZIPIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef struct PXZIP_
 {
-    PXInt16U VersionMinimum; // needed to extract(minimum);
-    PXInt16U GeneralPurposeBitFlag;
-    PXInt16U CompressionMethod; // e.g.none = 0, DEFLATE = 8 (or "\0x08\0x00");
-    PXInt16U FileLastmodificationtime;
-    PXInt16U FileLastmodificationdate;
-    PXInt32U CRC32ofuncompressedData;
-    PXInt32U CompressedSize; // (or 0xffffffff for ZIP64);
-    PXInt32U UncompressedSize; // (or 0xffffffff for ZIP64);
-    PXInt16U Filenamelength;
-    PXInt16U Extrafieldlength;
+    PXI16U VersionMinimum; // needed to extract(minimum);
+    PXI16U GeneralPurposeBitFlag;
+    PXI16U CompressionMethod; // e.g.none = 0, DEFLATE = 8 (or "\0x08\0x00");
+    PXI16U FileLastmodificationtime;
+    PXI16U FileLastmodificationdate;
+    PXI32U CRC32ofuncompressedData;
+    PXI32U CompressedSize; // (or 0xffffffff for ZIP64);
+    PXI32U UncompressedSize; // (or 0xffffffff for ZIP64);
+    PXI16U Filenamelength;
+    PXI16U Extrafieldlength;
     char* FileName;
     char* ExtraField;
 }
 PXZIP;
 
-PXPublic PXActionResult PXAPI PXZIPLoadFromFile(PXResourceTransphereInfo* const pxResourceTransphereInfo);
-PXPublic PXActionResult PXAPI PXZIPSaveToFile(PXResourceTransphereInfo* const pxResourceTransphereInfo);
+PXPublic PXResult PXAPI PXZIPLoadFromFile(PXResourceTransphereInfo* const pxResourceTransphereInfo);
+PXPublic PXResult PXAPI PXZIPSaveToFile(PXResourceTransphereInfo* const pxResourceTransphereInfo);
 
 #endif

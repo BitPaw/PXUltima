@@ -101,7 +101,7 @@ BF::ErrorCode BF::Library::SearchDirectoryRemove(LibraryDirectoryID& libraryDire
 }*/
 
 
-PXActionResult PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* const filePath)
+PXResult PXAPI  PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* const filePath)
 {
     PXClear(PXLibrary, pxLibrary);
 
@@ -119,7 +119,7 @@ PXActionResult PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* con
                 PXLibraryText,
                 "Open",
                 "<%s>",
-                filePath->TextA
+                filePath->A
             );
 #endif
 
@@ -127,12 +127,12 @@ PXActionResult PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* con
             dlerror(); // Clear any existing error
 
             const int mode = RTLD_NOW;
-            pxLibrary->ID = dlopen(filePath->TextA, mode); // dlfcn.h   
+            pxLibrary->ID = dlopen(filePath->A, mode); // dlfcn.h   
 
 #elif PXOSWindowsDestop
             SetLastError(0);
 
-            pxLibrary->ID = LoadLibraryA(filePath->TextA); // Windows XP, Kernel32.dll, libloaderapi.h
+            pxLibrary->ID = LoadLibraryA(filePath->A); // Windows XP, Kernel32.dll, libloaderapi.h
 #else
             return PXActionRefusedNotSupported;
 #endif
@@ -148,7 +148,7 @@ PXActionResult PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* con
                 PXLibraryText,
                 "Open",
                 "<%ls>",
-                filePath->TextA
+                filePath->A
             );
 #endif
 
@@ -158,7 +158,7 @@ PXActionResult PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* con
 #elif PXOSWindowsDestop
             SetLastError(0);
 
-            pxLibrary->ID = LoadLibraryW(filePath->TextW); // Windows XP, Kernel32.dll, libloaderapi.h
+            pxLibrary->ID = LoadLibraryW(filePath->W); // Windows XP, Kernel32.dll, libloaderapi.h
 #else
             return PXActionRefusedNotSupported;
 #endif
@@ -179,7 +179,7 @@ PXActionResult PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* con
             PXLibraryText,
             "Open",
             "Can't be opened <%s>",
-            filePath->TextA
+            filePath->A
         );
 #endif
 
@@ -206,7 +206,7 @@ PXActionResult PXAPI PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* con
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXLibraryOpenA(PXLibrary* const pxLibrary, const char* const filePath)
+PXResult PXAPI  PXLibraryOpenA(PXLibrary* const pxLibrary, const char* const filePath)
 {
     PXText pxText;
     PXTextConstructFromAdressA(&pxText, filePath, PXTextLengthUnkown, PXPathSizeMax);
@@ -214,7 +214,7 @@ PXActionResult PXAPI PXLibraryOpenA(PXLibrary* const pxLibrary, const char* cons
     return PXLibraryOpen(pxLibrary, &pxText);
 }
 
-PXActionResult PXAPI PXLibraryOpenW(PXLibrary* const pxLibrary, const wchar_t* const filePath)
+PXResult PXAPI  PXLibraryOpenW(PXLibrary* const pxLibrary, const wchar_t* const filePath)
 {
     PXText pxText;
     PXTextConstructFromAdressW(&pxText, filePath, PXTextLengthUnkown, PXPathSizeMax);
@@ -222,7 +222,7 @@ PXActionResult PXAPI PXLibraryOpenW(PXLibrary* const pxLibrary, const wchar_t* c
     return PXLibraryOpen(pxLibrary, &pxText);
 }
 
-PXActionResult PXAPI PXLibraryClose(PXLibrary* const pxLibrary)
+PXResult PXAPI  PXLibraryClose(PXLibrary* const pxLibrary)
 {
 #if PXLogEnable
     char moduleName[97];
@@ -385,7 +385,7 @@ PXBool PXAPI PXLibraryGetSymbolA(PXLibrary* const pxLibrary, void** const librar
 
 PXBool PXAPI PXLibraryGetSymbol(PXLibrary* const pxLibrary, void** const libraryFunction, const PXText* symbolName)
 {
-    return PXLibraryGetSymbolA(pxLibrary, libraryFunction, symbolName->TextA, PXTrue);
+    return PXLibraryGetSymbolA(pxLibrary, libraryFunction, symbolName->A, PXTrue);
 }
 
 
@@ -430,7 +430,7 @@ static BOOL CALLBACK PXWindowsLibraryLoadedEnumCallback
 #endif
 
 
-PXActionResult PXAPI PXLibraryCurrentlyLoaded(PXProcessHandle pxProcessHandle, PXLibrary** const pxLibraryList, PXSize* const amount)
+PXResult PXAPI  PXLibraryCurrentlyLoaded(PXProcessHandle pxProcessHandle, PXLibrary** const pxLibraryList, PXSize* const amount)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;

@@ -1,7 +1,7 @@
-#ifndef PXTimelineINCLUDE
-#define PXTimelineINCLUDE
+#ifndef PXTimelineIncluded
+#define PXTimelineIncluded
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 
 typedef struct PXTimelinePath_
 {
@@ -14,7 +14,7 @@ typedef struct PXTimelineEvent_
 {
     PXResourceInfo Info;
     PXColorRGBAI8 Color;
-    PXTexture2D* Texture;
+    PXTexture* Texture;
 }
 PXTimelineEvent;
 
@@ -24,8 +24,8 @@ typedef struct PXTimeline_
 }
 PXTimeline;
 
-PXPublic PXActionResult PXAPI PXTimelineInitialize(PXTimeline* const pxTimeline);
-PXPublic PXActionResult PXAPI PXTimelineEventAdd(PXTimeline* const pxTimeline, PXTimelineEvent* const pxTimelineEvent);
-PXPublic PXActionResult PXAPI PXTimelineTimelineAdd(PXTimeline* const pxTimeline, PXTimelinePath* const pxTimelinePath);
+PXPublic PXResult PXAPI PXTimelineInitialize(PXTimeline* const pxTimeline);
+PXPublic PXResult PXAPI PXTimelineEventAdd(PXTimeline* const pxTimeline, PXTimelineEvent* const pxTimelineEvent);
+PXPublic PXResult PXAPI PXTimelineTimelineAdd(PXTimeline* const pxTimeline, PXTimelinePath* const pxTimelinePath);
 
 #endif

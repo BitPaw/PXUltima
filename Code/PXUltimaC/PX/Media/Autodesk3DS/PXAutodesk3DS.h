@@ -1,7 +1,7 @@
-#ifndef PX3DSINCLUDE
-#define PX3DSINCLUDE
+#ifndef PX3DSIncluded
+#define PX3DSIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef struct PXAutodesk3DS
 {
@@ -9,7 +9,7 @@ typedef struct PXAutodesk3DS
 }
 PXAutodesk3DS;
 
-PXPublic PXActionResult PXAPI PXAutodesk3DSLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXAutodesk3DSSafeFromFile(PXResourceTransphereInfo* const pxResourceSafeInfo);
+PXPublic PXResult PXAPI PXAutodesk3DSLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXAutodesk3DSSafeFromFile(PXResourceTransphereInfo* const pxResourceSafeInfo);
 
 #endif

@@ -20,7 +20,7 @@ void PXAPI PXClientDestruct(PXClient* const pxClient)
     PXClientConstruct(pxClient);
 }
 
-PXActionResult PXAPI PXClientSendData(PXClient* const pxClient, const void* const data, const PXSize dataSize)
+PXResult PXAPI  PXClientSendData(PXClient* const pxClient, const void* const data, const PXSize dataSize)
 {
     if (pxClient->SocketClient.ID == PXSocketUnused)
     {
@@ -36,7 +36,7 @@ PXActionResult PXAPI PXClientSendData(PXClient* const pxClient, const void* cons
     return sendResult;
 }
 
-PXActionResult PXAPI PXClientConnectToSelf(PXClient* const client, const PXInt16U port)
+PXResult PXAPI  PXClientConnectToSelf(PXClient* const client, const PXI16U port)
 {
     PXText ip;
     PXTextMakeFixedA(&ip, "127.0.0.1");
@@ -44,7 +44,7 @@ PXActionResult PXAPI PXClientConnectToSelf(PXClient* const client, const PXInt16
     return PXClientConnectToServer(client, &ip, port);
 }
 
-PXActionResult PXAPI PXClientConnectToServer(PXClient* const client, const PXText* const ip, const PXInt16U port)
+PXResult PXAPI  PXClientConnectToServer(PXClient* const client, const PXText* const ip, const PXI16U port)
 {
     PXSocket pxSocketList[3];
     const PXSize pxSocketListSizeMax = 3;
@@ -116,7 +116,7 @@ PXActionResult PXAPI PXClientConnectToServer(PXClient* const client, const PXTex
     return lastError;
 }
 
-PXActionResult PXAPI PXClientDisconnectFromServer(PXClient* const client)
+PXResult PXAPI  PXClientDisconnectFromServer(PXClient* const client)
 {
     PXSocketClose(&client->SocketClient);
     PXSocketConstruct(&client->SocketServer);

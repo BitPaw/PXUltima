@@ -1,48 +1,42 @@
 #include "PXList.h"
 
-#include <PX/OS/Memory/PXMemory.h>
 #include <PX/OS/PXOS.h>
+#include <PX/OS/Memory/PXMemory.h>
+#include <PX/Math/PXMath.h>
 
 void PXAPI PXListInitialize(PXList* const pxList, const PXSize dataTypeSize, const PXSize startAmount)
 {
-    pxList->DataTypeSize = dataTypeSize;
-    pxList->EntryAmountUsed = 0;
+    PXClear(PXList, pxList);
+
+    pxList->ValueTypeSize = dataTypeSize;
 
     if(startAmount)
     {
         // We want to preallocate memory to prepare space for data
-        pxList->Data = PXMemoryHeapCalloc(PXNull, startAmount, dataTypeSize);
+        PXBufferAllocate(&pxList->Buffer, startAmount);
         pxList->EntryAmountAllocated = startAmount;
-    }
-    else
-    {
-        pxList->Data = PXNull;
-        pxList->EntryAmountAllocated = 0;
     }
 }
 
 void PXAPI PXListRelease(PXList* const pxList)
 {
-    PXMemoryHeapFree(PXNull, pxList->Data);
-
-    pxList->Data = PXNull;
+    PXBufferRelese(&pxList->Buffer);
 }
 
 PXBool PXAPI PXListReserve(PXList* const pxList, const PXSize amountOfElements)
 {
     const PXBool isEnoughSpace = amountOfElements <= pxList->EntryAmountAllocated;
+    PXResult pxResult;
 
     if(isEnoughSpace)
     {
-        return PXTrue;
+        return PXActionSuccessful;
     }
-
-    void* newMem = 0;
 
     // If new list
     if(0 == pxList->EntryAmountAllocated)
     {
-        newMem = PXMemoryHeapCalloc(PXNull, amountOfElements, pxList->DataTypeSize);
+        pxResult = PXBufferAllocate(&pxList->Buffer, pxList->ValueTypeSize * amountOfElements);
 
         pxList->EntryAmountAllocated = amountOfElements;
     }
@@ -50,21 +44,37 @@ PXBool PXAPI PXListReserve(PXList* const pxList, const PXSize amountOfElements)
     {
         // Try alloc
         const PXSize newAmount = pxList->EntryGrowthOnAllocation + pxList->EntryAmountAllocated;
-        const PXSize newSize = pxList->DataTypeSize * newAmount;
+        const PXSize newSize = pxList->ValueTypeSize * newAmount;
 
-        newMem = PXMemoryHeapRealloc(PXNull, pxList->Data, newSize);       
+        pxResult = PXBufferResize(&pxList->Buffer, newSize);
 
         pxList->EntryAmountAllocated = newAmount;
     }
 
-    if(!newMem)
+    return pxResult;
+}
+
+PXSize PXAPI PXListSizeUsed(const PXList* const pxList)
+{
+    if(!pxList)
     {
-        return PXFalse;
+        return 0;
     }
 
-    pxList->Data = newMem;  
+    return pxList->EntryAmountUsed * pxList->ValueTypeSize;
+}
 
-    return PXTrue;
+PXBool PXAPI PXListIsAddresValid(const PXList* const pxList, const void* const adress)
+{
+    const PXSize totalSize = PXListSizeUsed(pxList);
+    const PXBool isInRange = PXMathAdressInRange(pxList->Buffer.Data, totalSize, adress);
+
+    return isInRange;
+}
+
+PXBool PXAPI PXListIsIndexValid(const PXList* const pxList, const PXSize index)
+{
+    return pxList->EntryAmountUsed > index;
 }
 
 void* PXAPI PXListAdd(PXList* const pxList, void* const dataElement)
@@ -73,7 +83,7 @@ void* PXAPI PXListAdd(PXList* const pxList, void* const dataElement)
 
     void* target = PXListItemAtIndexGet(pxList, pxList->EntryAmountUsed);
 
-    PXMemoryCopy(dataElement, pxList->DataTypeSize, target, pxList->DataTypeSize);
+    PXMemoryCopy(dataElement, target, pxList->ValueTypeSize);
 
     ++pxList->EntryAmountUsed;
 
@@ -91,7 +101,7 @@ void* PXAPI PXListItemAtIndexGet(PXList* const pxList, const PXSize index)
     }
 #endif
 
-    void* const adress = (char*)pxList->Data + pxList->DataTypeSize * index;
+    void* const adress = (char*)pxList->Buffer.Data + pxList->ValueTypeSize * index;
 
     return adress;
 }
@@ -107,7 +117,7 @@ PXBool PXAPI PXListAppend(PXList* const pxList, void* const buffer, const PXSize
 
     void* target = PXListItemAtIndexGet(pxList, pxList->EntryAmountUsed);
 
-    PXMemoryCopy(buffer, bufferSize, target, bufferSize);
+    PXMemoryCopy(buffer, target, bufferSize);
 
     pxList->EntryAmountUsed += bufferSize;
 
@@ -118,7 +128,7 @@ PXBool PXAPI PXListExtractAndReduce(PXList* const pxList, void* const buffer, co
 {
     char* dataExtractionAdress = (char*)PXListItemAtIndexGet(pxList, pxList->EntryAmountUsed);
 
-    PXMemoryCopy(dataExtractionAdress - bufferSize, bufferSize, buffer, bufferSize);
+    PXMemoryCopy(dataExtractionAdress - bufferSize, buffer, bufferSize);
 
     pxList->EntryAmountUsed -= bufferSize;
 

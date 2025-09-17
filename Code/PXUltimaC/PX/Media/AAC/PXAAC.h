@@ -1,7 +1,7 @@
-#ifndef PXAACINCLUDE
-#define PXAACINCLUDE
+#ifndef PXAACIncluded
+#define PXAACIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef struct PXAAC_
 {
@@ -9,7 +9,7 @@ typedef struct PXAAC_
 }
 PXAAC;
 
-PXPublic PXActionResult PXAPI PXAACLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXAACSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXAACLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXAACSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

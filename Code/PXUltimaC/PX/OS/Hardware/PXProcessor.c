@@ -23,10 +23,10 @@
 // 32-Bit Registers EAX, EBX, ECX, EDX
 typedef struct PXCPUInfo_
 {
-    PXInt32U EAX;
-    PXInt32U EBX;
-    PXInt32U ECX;
-    PXInt32U EDX;
+    PXI32U EAX;
+    PXI32U EBX;
+    PXI32U ECX;
+    PXI32U EDX;
 }
 PXCPUInfo;
 
@@ -36,9 +36,9 @@ void cpuid(PXCPUInfo* pxCPUInfo, int code)
 {
     asm volatile("cpuid" : "=a" (pxCPUInfo->EAX), "=b" (pxCPUInfo->EBX), "=c" (pxCPUInfo->ECX), "=d" (pxCPUInfo->EDX) : "a" (code));
 }
-#define PXIntrinsicCPUID cpuid
+#define PXIrinsicCPUID cpuid
 #elif OSWindows
-#define PXIntrinsicCPUID __cpuid
+#define PXIrinsicCPUID __cpuid
 #endif
 
 
@@ -308,7 +308,7 @@ PXProcessorBrand PXAPI PXProcessorBrandDetect(const char* name)
 
 PXProcessorModelName PXAPI PXProcessorModelNameDetect(const PXProcessorBrand processorBrand, const unsigned char famliy, const unsigned char model)
 {
-    const PXInt16U id = PXInt16Make(famliy, model);
+    const PXI16U id = PXI16Make(famliy, model);
 
     switch(processorBrand)
     {
@@ -316,59 +316,59 @@ PXProcessorModelName PXAPI PXProcessorModelNameDetect(const PXProcessorBrand pro
         {
             switch(id)
             {
-                case PXInt16Make(4, 0):
+                case PXI16Make(4, 0):
                     return Intel486DX25x33;
-                case PXInt16Make(4, 1):
+                case PXI16Make(4, 1):
                     return Intel486DX50;
-                case PXInt16Make(4, 2):
+                case PXI16Make(4, 2):
                     return Intel486SX;
-                case PXInt16Make(4, 3):
+                case PXI16Make(4, 3):
                     return Intel486DX2;
-                case PXInt16Make(4, 4):
+                case PXI16Make(4, 4):
                     return Intel486SL;
-                case PXInt16Make(4, 5):
+                case PXI16Make(4, 5):
                     return Intel486SX2;
-                case PXInt16Make(4, 7):
+                case PXI16Make(4, 7):
                     return Intel486DX2WB;
-                case PXInt16Make(4, 8):
+                case PXI16Make(4, 8):
                     return Intel486DX4;
-                case PXInt16Make(4, 9):
+                case PXI16Make(4, 9):
                     return Intel486DX4WB;
 
-                case PXInt16Make(5, 0):
+                case PXI16Make(5, 0):
                     return IntelPentium60x66AStep;
-                case PXInt16Make(5, 1):
+                case PXI16Make(5, 1):
                     return IntelPentium60x66;
-                case PXInt16Make(5, 2):
+                case PXI16Make(5, 2):
                     return IntelPentium75x200;
-                case PXInt16Make(5, 3):
+                case PXI16Make(5, 3):
                     return IntelOverDrivePODP5V83;
-                case PXInt16Make(5, 4):
+                case PXI16Make(5, 4):
                     return IntelPentiumMMX;
-                case PXInt16Make(5, 7):
+                case PXI16Make(5, 7):
                     return IntelMobilePentium75x200;
-                case PXInt16Make(5, 8):
+                case PXI16Make(5, 8):
                     return IntelMobilePentiumMMX;
 
-                case PXInt16Make(6, 1):
+                case PXI16Make(6, 1):
                     return IntelPentiumProAStep;
-                case PXInt16Make(6, 2):
+                case PXI16Make(6, 2):
                     return IntelPentiumPro;
-                case PXInt16Make(6, 3):
+                case PXI16Make(6, 3):
                     return IntelPentiumIIKlaPXMath;
-                case PXInt16Make(6, 5):
+                case PXI16Make(6, 5):
                     return IntelPentiumIIDeschutes;
-                case PXInt16Make(6, 6):
+                case PXI16Make(6, 6):
                     return IntelCeleronMendocino;
-                case PXInt16Make(6, 7):
+                case PXI16Make(6, 7):
                     return IntelPentiumIIIKatmai;
-                case PXInt16Make(6, 8):
+                case PXI16Make(6, 8):
                     return IntelPentiumIIICoppermine;
-                case PXInt16Make(6, 9):
+                case PXI16Make(6, 9):
                     return IntelMobilePentiumIII;
-                case PXInt16Make(6, 10):
+                case PXI16Make(6, 10):
                     return IntelPentiumIII0x18um;
-                case PXInt16Make(6, 11):
+                case PXI16Make(6, 11):
                     return IntelPentiumIII0x13um;
             }
 
@@ -384,53 +384,53 @@ PXProcessorModelName PXAPI PXProcessorModelNameDetect(const PXProcessorBrand pro
         {
             switch(id)
             {
-                case PXInt16Make(4, 3):
+                case PXI16Make(4, 3):
                     return AMD486DX2;
-                case PXInt16Make(4, 7):
+                case PXI16Make(4, 7):
                     return AMD486DX2WB;
-                case PXInt16Make(4, 8):
+                case PXI16Make(4, 8):
                     return AMD486DX4;
-                case PXInt16Make(4, 9):
+                case PXI16Make(4, 9):
                     return AMD486DX4WB;
-                case PXInt16Make(4, 14):
+                case PXI16Make(4, 14):
                     return AMDAm5x86WT;
-                case PXInt16Make(4, 15):
+                case PXI16Make(4, 15):
                     return AMDAm5x86WB;
 
-                case PXInt16Make(5, 0):
+                case PXI16Make(5, 0):
                     return AMDK5SSA5;
-                case PXInt16Make(5, 1): // fallthough
-                case PXInt16Make(5, 2): // fallthough
-                case PXInt16Make(5, 3):
+                case PXI16Make(5, 1): // fallthough
+                case PXI16Make(5, 2): // fallthough
+                case PXI16Make(5, 3):
                     return AMDK5;
 
-                case PXInt16Make(5, 6):  // fallthough
-                case PXInt16Make(5, 7):
+                case PXI16Make(5, 6):  // fallthough
+                case PXI16Make(5, 7):
                     return AMDK6;
 
-                case PXInt16Make(5, 8):
+                case PXI16Make(5, 8):
                     return AMDK62;
-                case PXInt16Make(5, 9):
+                case PXI16Make(5, 9):
                     return AMDK63;
-                case PXInt16Make(5, 13):
+                case PXI16Make(5, 13):
                     return AMDK63P;
 
-                case PXInt16Make(6, 0): // fallthough
-                case PXInt16Make(6, 1):
+                case PXI16Make(6, 0): // fallthough
+                case PXI16Make(6, 1):
                     return AMDAthlon0x25um;
-                case PXInt16Make(6, 2):
+                case PXI16Make(6, 2):
                     return AMDAthlon0x18um;
-                case PXInt16Make(6, 3):
+                case PXI16Make(6, 3):
                     return AMDDuron;
-                case PXInt16Make(6, 4):
+                case PXI16Make(6, 4):
                     return AMDAthlonThunderbird;
-                case PXInt16Make(6, 6):
+                case PXI16Make(6, 6):
                     return AMDAthlonPalamino;
-                case PXInt16Make(6, 7):
+                case PXI16Make(6, 7):
                     return AMDDuronMorgan;
-                case PXInt16Make(6, 8):
+                case PXI16Make(6, 8):
                     return AMDAthlonThoroughbred;
-                case PXInt16Make(6, 10):
+                case PXI16Make(6, 10):
                     return AMDAthlonBarton;
             }
 
@@ -448,8 +448,8 @@ PXProcessorModelName PXAPI PXProcessorModelNameDetect(const PXProcessorBrand pro
 
 void PXAPI PXProcessorFetchInfo(PXProcessor* const processor)
 {
-    PXInt32U maxInfoValueID = 0; // Maximum Input Value for Basic CPUID Information.
-    PXInt32U maxExtendedFunctionID = 0; // Maximum Input Value for Extended Function CPUID Information.
+    PXI32U maxInfoValueID = 0; // Maximum Input Value for Basic CPUID Information.
+    PXI32U maxExtendedFunctionID = 0; // Maximum Input Value for Extended Function CPUID Information.
 
     PXClear(PXProcessor, processor);
 
@@ -472,7 +472,7 @@ void PXAPI PXProcessorFetchInfo(PXProcessor* const processor)
     }
     PXCPUIDCommand;
 
-    const PXInt32U cpuIDCommandList[] =
+    const PXI32U cpuIDCommandList[] =
     {
         PXCPUIDCommandBasicInformation,
         PXCPUIDCommandVersionInformation,
@@ -487,7 +487,7 @@ void PXAPI PXProcessorFetchInfo(PXProcessor* const processor)
         PXCPUIDCommandTSC,
         PXCPUIDCommandPhysicalAddress
     };
-    const PXSize amount = sizeof(cpuIDCommandList) / sizeof(PXInt32U);
+    const PXSize amount = sizeof(cpuIDCommandList) / sizeof(PXI32U);
 
     for(PXSize i = 0; i < amount; ++i)
     {
@@ -495,7 +495,7 @@ void PXAPI PXProcessorFetchInfo(PXProcessor* const processor)
 
         PXCPUInfo pxCPUInfo;
          
-        PXIntrinsicCPUID(&pxCPUInfo, command);
+        PXIrinsicCPUID(&pxCPUInfo, command);
 
         switch(command)
         {
@@ -695,7 +695,7 @@ unsigned int PXAPI PXProcessorFrequencyCurrent()
     const PXSize deltaTimeD = deltaTimeIU * 0.0000001;
 
     //  Returns total user time.
-    //  Can be tweaked to include kernel times as well.
+    //  Can be tweaked to Included kernel times as well.
     return deltaTimeIU;
 
 #elif OSUnix
@@ -732,7 +732,7 @@ unsigned int PXAPI PXProcessorTimeReal()
 #endif
 }
 
-PXActionResult PXAPI PXProcessorTemperature(PXProcessorTemperatureInfo* const pxProcessorTemperatureInfo)
+PXResult PXAPI  PXProcessorTemperature(PXProcessorTemperatureInfo* const pxProcessorTemperatureInfo)
 {
     const PXSize oldAmount = pxProcessorTemperatureInfo->ListAmount;
 
@@ -762,7 +762,7 @@ PXActionResult PXAPI PXProcessorTemperature(PXProcessorTemperatureInfo* const px
 
         if(requireResize)
         {
-            pxProcessorTemperatureInfo->ListData = PXMemoryHeapReallocT(PXInt32S, pxProcessorTemperatureInfo->ListData, pxProcessorTemperatureInfo->ListAmount + 1);
+            pxProcessorTemperatureInfo->ListData = PXMemoryHeapReallocT(PXI32S, pxProcessorTemperatureInfo->ListData, pxProcessorTemperatureInfo->ListAmount + 1);
         }
 
         fscanf(fileHandle, "%d", &pxProcessorTemperatureInfo->ListData[pxProcessorTemperatureInfo->ListAmount]);
@@ -782,7 +782,7 @@ PXActionResult PXAPI PXProcessorTemperature(PXProcessorTemperatureInfo* const px
 
     {
         const HRESULT initializeResultID = CoInitialize(NULL);
-        const PXActionResult initializeResult = PXWindowsHandleErrorFromID(initializeResultID);
+        const PXActionResult initializeResult = PXErrorFromHRESULT(initializeResultID);
 
         PXActionReturnOnError(initializeResult);
     }
@@ -859,7 +859,7 @@ PXActionResult PXAPI PXProcessorTemperature(PXProcessorTemperatureInfo* const px
             &IID_IWbemLocator,
             (LPVOID*)&wmiNameSpace
         );
-        const PXActionResult instaceResult = PXWindowsHandleErrorFromID(instaceResultID);
+        const PXActionResult instaceResult = PXErrorFromHRESULT(instaceResultID);
 
         PXActionReturnOnError(instaceResult);
     }
@@ -880,7 +880,7 @@ PXActionResult PXAPI PXProcessorTemperature(PXProcessorTemperatureInfo* const px
             NULL,
             &sevices
         );
-        const PXActionResult connectResult = PXWindowsHandleErrorFromID(connectResultID);
+        const PXActionResult connectResult = PXErrorFromHRESULT(connectResultID);
 
         //locator->lpVtbl->Release(locator);
         SysFreeString(ns);
@@ -1133,7 +1133,7 @@ void PXAPI PXProcessorRandomNumber()
 #endif
 }
 
-void PXAPI PXProcessorSwapByteOrderI16U(PXInt16U* const value)
+void PXAPI PXProcessorSwapByteOrderI16U(PXI16U* const value)
 {
 #if OSUnix
 #elif OSWindows && PXDefaultLibraryEnable
@@ -1141,7 +1141,7 @@ void PXAPI PXProcessorSwapByteOrderI16U(PXInt16U* const value)
 #endif
 }
 
-void PXAPI PXProcessorSwapByteOrderI32U(PXInt32U* const value)
+void PXAPI PXProcessorSwapByteOrderI32U(PXI32U* const value)
 {
 #if OSUnix 
 #elif OSWindows && PXDefaultLibraryEnable
@@ -1149,7 +1149,7 @@ void PXAPI PXProcessorSwapByteOrderI32U(PXInt32U* const value)
 #endif
 }
 
-void PXAPI PXProcessorSwapByteOrderI64U(PXInt64U* const value)
+void PXAPI PXProcessorSwapByteOrderI64U(PXI64U* const value)
 {
 #if OSUnix
 #elif OSWindows && PXDefaultLibraryEnable

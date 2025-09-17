@@ -11,7 +11,7 @@
 #pragma comment(lib, "D3d10.lib")
 #endif
 
-PXActionResult PXAPI PXDirectX10Initialize(PXDirectX10* const pxDirectX)
+PXResult PXAPI  PXDirectX10Initialize(PXDirectX10* const pxDirectX)
 {
 #if PXLogEnable
     PXLogPrint
@@ -62,7 +62,7 @@ PXActionResult PXAPI PXDirectX10Initialize(PXDirectX10* const pxDirectX)
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectX10Release(PXDirectX10* const pxDirectX)
+PXResult PXAPI  PXDirectX10Release(PXDirectX10* const pxDirectX)
 {
     return PXActionRefusedNotImplemented;
 }

@@ -1,9 +1,9 @@
-#ifndef PXZSTDINCLUDE
-#define PXZSTDINCLUDE
+#ifndef PXZSTDIncluded
+#define PXZSTDIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
-PXPublic PXActionResult PXAPI PXZSTDCompress(PXFile* const pxFileInput, PXFile* const pxFileOutput, const PXInt8U compressionLevel);
-PXPublic PXActionResult PXAPI PXZSTDDecompress(PXFile* const pxFileInput, PXFile* const pxFileOutput);
+PXPublic PXResult PXAPI PXZSTDCompress(PXFile* const pxFileInput, PXFile* const pxFileOutput, const PXI8U compressionLevel);
+PXPublic PXResult PXAPI PXZSTDDecompress(PXFile* const pxFileInput, PXFile* const pxFileOutput);
 
 #endif

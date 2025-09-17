@@ -10,19 +10,19 @@ const char PXJPEGApp0[4] = "JFIF";
 
 typedef struct PXJPEGChunkHeader_
 {
-    PXInt8U SignatureKey;
-    PXInt8U CommandID;
-    PXInt16U ChunkSize;
+    PXI8U SignatureKey;
+    PXI8U CommandID;
+    PXI16U ChunkSize;
 }
 PXJPEGChunkHeader;
 
-const PXInt32U PXJPEGChunkHeaderBinding[] =
+const PXI32U PXJPEGChunkHeaderBinding[] =
 {
  PXTypeInt08U | PXTypeSignatureCheck,
  PXTypeInt08U,
  PXTypeInt16UBE,
 };
-const PXInt8U PXJPEGChunkHeaderBindingSize = sizeof(PXJPEGChunkHeaderBinding) / sizeof(PXInt32U);
+const PXI8U PXJPEGChunkHeaderBindingSize = sizeof(PXJPEGChunkHeaderBinding) / sizeof(PXI32U);
 
 
 
@@ -169,7 +169,7 @@ PXJPEGChunckExtension12Handler,
 PXJPEGChunckExtension13Handler,
 PXJPEGChunckCommentHandle
 };
-const PXInt8U PXJPEGChunkHandlerListAmount = sizeof(PXJPEGChunkHandlerList) / sizeof(PXJPEGChunckHandlerFunciton);
+const PXI8U PXJPEGChunkHandlerListAmount = sizeof(PXJPEGChunkHandlerList) / sizeof(PXJPEGChunckHandlerFunciton);
 
 
 #define PXJPEGChunckStartOfFrameHuffmanBaselineDCT  0xC0 // [0xFFC0] SOF0
@@ -250,7 +250,7 @@ const PXInt8U PXJPEGChunkHandlerListAmount = sizeof(PXJPEGChunkHandlerList) / si
 // quantization tables from PXJPEG Standard, Annex K
 // there are a few experts proposing slightly more efficient values, e.g. https://www.imagemagick.org/discourse-server/viewtopic.php?t=20333
 // btw: Google's Guetzli project optimizes the quantization tables per image
-const PXInt8U DefaultQuantLuminance[8 * 8] =
+const PXI8U DefaultQuantLuminance[8 * 8] =
 {
  16, 11, 10, 16, 24, 40, 51, 61,
  12, 12, 14, 19, 26, 58, 60, 55,
@@ -261,7 +261,7 @@ const PXInt8U DefaultQuantLuminance[8 * 8] =
  49, 64, 78, 87,103,121,120,101,
  72, 92, 95, 98,112,100,103, 99
 };
-const PXInt8U DefaultQuantChrominance[8 * 8] =
+const PXI8U DefaultQuantChrominance[8 * 8] =
 {
  17, 18, 24, 47, 99, 99, 99, 99,
  18, 21, 26, 66, 99, 99, 99, 99,
@@ -276,7 +276,7 @@ const PXInt8U DefaultQuantChrominance[8 * 8] =
 // 8x8 blocks are processed in zig-zag order
 // most encoders use a zig-zag table, I switched to its inverse for performance reasons
 // note: ZigZagInv[ZigZag[i]] = i
-const PXInt8U ZigZagInv[8 * 8] =
+const PXI8U ZigZagInv[8 * 8] =
 {
  0, 1, 8,16, 9, 2, 3,10, // ZigZag[] = 0, 1, 5, 6,14,15,27,28,
  17,24,32,25,18,11, 4, 5, // 2, 4, 7,13,16,26,29,42,
@@ -304,10 +304,10 @@ const PXF32 AanScaleFactors[8] = { 1, 1.387039845f, SqrtHalfSqrt, 1.175875602f, 
 // e.g. AcLuminanceValues => Huffman(0x01,0x02,0x03) will have 2 bits, Huffman(0x00) will have 3 bits, Huffman(0x04,0x11,0x05) will have 4 bits, ...
 
 // Huffman definitions for first DC/AC tables (luminance / Y channel)
-const PXInt8U DcLuminanceCodesPerBitsize[16] = { 0,1,5,1,1,1,1,1,1,0,0,0,0,0,0,0 }; // sum = 12
-const PXInt8U DcLuminanceValues[12] = { 0,1,2,3,4,5,6,7,8,9,10,11 }; // => 12 codes
-const PXInt8U AcLuminanceCodesPerBitsize[16] = { 0,2,1,3,3,2,4,3,5,5,4,4,0,0,1,125 }; // sum = 162
-const PXInt8U AcLuminanceValues[162] =   // => 162 codes
+const PXI8U DcLuminanceCodesPerBitsize[16] = { 0,1,5,1,1,1,1,1,1,0,0,0,0,0,0,0 }; // sum = 12
+const PXI8U DcLuminanceValues[12] = { 0,1,2,3,4,5,6,7,8,9,10,11 }; // => 12 codes
+const PXI8U AcLuminanceCodesPerBitsize[16] = { 0,2,1,3,3,2,4,3,5,5,4,4,0,0,1,125 }; // sum = 162
+const PXI8U AcLuminanceValues[162] =   // => 162 codes
 {
  0x01,0x02,0x03,0x00,0x04,0x11,0x05,0x12,0x21,0x31,0x41,0x06,0x13,0x51,0x61,0x07,0x22,0x71,0x14,0x32,0x81,0x91,0xA1,0x08, // 16*10+2 because
  0x23,0x42,0xB1,0xC1,0x15,0x52,0xD1,0xF0,0x24,0x33,0x62,0x72,0x82,0x09,0x0A,0x16,0x17,0x18,0x19,0x1A,0x25,0x26,0x27,0x28, // upper 4 bits can be 0..F
@@ -318,10 +318,10 @@ const PXInt8U AcLuminanceValues[162] =   // => 162 codes
  0xE3,0xE4,0xE5,0xE6,0xE7,0xE8,0xE9,0xEA,0xF1,0xF2,0xF3,0xF4,0xF5,0xF6,0xF7,0xF8,0xF9,0xFA
 };
 // Huffman definitions for second DC/AC tables (chrominance / Cb and Cr channels)
-const PXInt8U DcChrominanceCodesPerBitsize[16] = { 0,3,1,1,1,1,1,1,1,1,1,0,0,0,0,0 }; // sum = 12
-const PXInt8U DcChrominanceValues[12] = { 0,1,2,3,4,5,6,7,8,9,10,11 }; // => 12 codes (identical to DcLuminanceValues)
-const PXInt8U AcChrominanceCodesPerBitsize[16] = { 0,2,1,2,4,4,3,4,7,5,4,4,0,1,2,119 }; // sum = 162
-const PXInt8U AcChrominanceValues[162] =   // => 162 codes
+const PXI8U DcChrominanceCodesPerBitsize[16] = { 0,3,1,1,1,1,1,1,1,1,1,0,0,0,0,0 }; // sum = 12
+const PXI8U DcChrominanceValues[12] = { 0,1,2,3,4,5,6,7,8,9,10,11 }; // => 12 codes (identical to DcLuminanceValues)
+const PXI8U AcChrominanceCodesPerBitsize[16] = { 0,2,1,2,4,4,3,4,7,5,4,4,0,1,2,119 }; // sum = 162
+const PXI8U AcChrominanceValues[162] =   // => 162 codes
 {
  0x00,0x01,0x02,0x03,0x11,0x04,0x05,0x21,0x31,0x06,0x12,0x41,0x51,0x07,0x61,0x71,0x13,0x22,0x32,0x81,0x08,0x14,0x42,0x91, // same number of symbol, just different order
  0xA1,0xB1,0xC1,0x09,0x23,0x33,0x52,0xF0,0x15,0x62,0x72,0xD1,0x0A,0x16,0x24,0x34,0xE1,0x25,0xF1,0x17,0x18,0x19,0x1A,0x26, // (which is more efficient for AC coding)
@@ -350,7 +350,7 @@ void PXAPI PXJPEGDestruct(PXJPEG* const jpeg)
 
 }
 
-PXActionResult PXAPI PXJPEGLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI  PXJPEGLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     PXJPEG jpeXg;
     PXJPEG* jpeg = &jpeXg;
@@ -395,7 +395,7 @@ PXActionResult PXAPI PXJPEGLoadFromFile(PXResourceTransphereInfo* const pxResour
 
         if(isInRange)
         {
-            const PXInt8U index = pxJPEGChunkHeaderBindingData.CommandID - 0xC0;
+            const PXI8U index = pxJPEGChunkHeaderBindingData.CommandID - 0xC0;
 
             if((PXJPEGChunckEndOfImage - 0xC0) == index)
             {
@@ -420,9 +420,9 @@ PXActionResult PXAPI PXJPEGLoadFromFile(PXResourceTransphereInfo* const pxResour
 typedef struct BitCode_
 {
     // BitCode() {} // undefined state, must be initialized at a later time
-    // BitCode(PXInt16U code_, PXInt8U numBits_) : code(code_), numBits(numBits_) {}
-    PXInt16U code; // PXJPEG's Huffman codes are limited to 16 bits
-    PXInt8U numBits; // actual number of bits
+    // BitCode(PXI16U code_, PXI8U numBits_) : code(code_), numBits(numBits_) {}
+    PXI16U code; // PXJPEG's Huffman codes are limited to 16 bits
+    PXI8U numBits; // actual number of bits
 }
 BitCode;
 
@@ -431,8 +431,8 @@ typedef struct BitBuffer_
 {
     // BitBuffer() // actually, there will be only one instance of this object
     // : bits(0), numBits(0) {}
-    PXInt32S bits; // actually only at most 24 bits are used
-    PXInt8U numBits; // number of valid bits (the right-most bits)
+    PXI32S bits; // actually only at most 24 bits are used
+    PXI8U numBits; // number of valid bits (the right-most bits)
 }
 BitBuffer;
 
@@ -455,7 +455,7 @@ void PXAPI writeBits(PXFile* PXFile, BitBuffer* buffer, BitCode data)
     {
         // extract highest 8 bits
         buffer->numBits -= 8;
-        const PXInt8U oneByte = (buffer->bits >> buffer->numBits) & 0xFF;
+        const PXI8U oneByte = (buffer->bits >> buffer->numBits) & 0xFF;
         PXFileWriteI8U(PXFile, oneByte);
 
         if(oneByte == 0xFF) // 0xFF has a special meaning for PXJPEGs (it's a block marker)
@@ -546,7 +546,7 @@ short PXAPI PXJPEGEncodeBlock
     BitBuffer* buffer,
     PXF32 block[8][8],
     const PXF32 scaled[8 * 8],
-    PXInt16S lastDC,
+    PXI16S lastDC,
     const BitCode huffmanDC[256],
     const BitCode huffmanAC[256]
 )
@@ -556,19 +556,19 @@ short PXAPI PXJPEGEncodeBlock
     PXF32* block64 = (PXF32*)block;
 
     // DCT: rows
-    for(PXInt8U offset = 0; offset < 8u; ++offset)
+    for(PXI8U offset = 0; offset < 8u; ++offset)
         DCT(1u, block64 + offset * 8);
     // DCT: columns
-    for(PXInt8U offset = 0; offset < 8u; ++offset)
+    for(PXI8U offset = 0; offset < 8u; ++offset)
         DCT(8u, block64 + offset * 1);
 
     // scale
-    for(PXInt8U i = 0; i < 8 * 8; i++)
+    for(PXI8U i = 0; i < 8 * 8; i++)
         block64[i] *= scaled[i];
 
     // encode DC (the first coefficient is the "average color" of the 8x8 block)
     // convert to an integer
-    PXInt16S DC = (PXInt16S)(block64[0] + (block64[0] >= 0 ? +0.5f : -0.5f)); // C++11's nearbyint() achieves a similar effect
+    PXI16S DC = (PXI16S)(block64[0] + (block64[0] >= 0 ? +0.5f : -0.5f)); // C++11's nearbyint() achieves a similar effect
     // same "average color" as previous block ?
     if(DC == lastDC)
         writeBits(PXFile, buffer, huffmanDC[0x00]); // yes, write a special short symbol
@@ -582,12 +582,12 @@ short PXAPI PXJPEGEncodeBlock
 
     // quantize and zigzag the other 63 coefficients
     PXSize posNonZero = 0; // find last coefficient which is not zero (because trailing zeros are encoded very efficiently)
-    PXInt16S quantized[8 * 8];
+    PXI16S quantized[8 * 8];
     for(PXSize i = 1; i < 8 * 8; i++) // start at 1 because block64[0]=DC was already processed
     {
         PXF32 value = block64[ZigZagInv[i]];
         // round to nearest integer (actually, rounding is performed by casting from PXF32 to int16)
-        quantized[i] = (PXInt16S)(value + (value >= 0 ? +0.5f : -0.5f)); // C++11's nearbyint() achieves a similar effect
+        quantized[i] = (PXI16S)(value + (value >= 0 ? +0.5f : -0.5f)); // C++11's nearbyint() achieves a similar effect
         // remember offset of last non-zero coefficient
         if(quantized[i] != 0)
             posNonZero = i;
@@ -625,18 +625,18 @@ short PXAPI PXJPEGEncodeBlock
     return DC;
 }
 
-// Jon's code includes the pre-generated Huffman codes
+// Jon's code Includeds the pre-generated Huffman codes
 // I don't like these "magic constants" and compute them on my own :-)
-void PXAPI generateHuffmanTable(const PXInt8U numCodes[16], const PXInt8U* values, BitCode result[256])
+void PXAPI generateHuffmanTable(const PXI8U numCodes[16], const PXI8U* values, BitCode result[256])
 {
-    PXInt16U huffmanCode = 0; // no PXJPEG Huffman code exceeds 16 bits
+    PXI16U huffmanCode = 0; // no PXJPEG Huffman code exceeds 16 bits
     // process all bitsizes 1 thru 16
-    for(PXInt8U numBits = 1; numBits <= 16; numBits++)
+    for(PXI8U numBits = 1; numBits <= 16; numBits++)
     {
         // ... and each code of these bitsizes
-        for(PXInt8U i = 0; i < numCodes[numBits - 1]; i++) // note: numCodes array starts at zero, but smallest bitsize is 1
+        for(PXI8U i = 0; i < numCodes[numBits - 1]; i++) // note: numCodes array starts at zero, but smallest bitsize is 1
         {
-            const PXInt8U current = *values++;
+            const PXI8U current = *values++;
             result[current].code = huffmanCode++;
             result[current].numBits = numBits;
         }
@@ -645,9 +645,9 @@ void PXAPI generateHuffmanTable(const PXInt8U numCodes[16], const PXInt8U* value
     }
 }
 
-PXActionResult PXAPI PXJPEGSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI  PXJPEGSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
-    PXImage* const pxImage = (PXImage*)pxResourceSaveInfo->FileReference;
+    PXTexture* const pxTexture = (PXTexture*)pxResourceSaveInfo->FileReference;
 
     unsigned char isRGB = 1u;
     unsigned char quality = 100u;
@@ -678,8 +678,8 @@ PXActionResult PXAPI PXJPEGSaveToFile(PXResourceTransphereInfo* const pxResource
 
 
 
-        const PXInt16U segmentID = PXJPEGChunckApplicationSegment00;
-        const PXInt16U val = 16u;
+        const PXI16U segmentID = PXJPEGChunckApplicationSegment00;
+        const PXI16U val = 16u;
         const PXTypeEntry pxDataStreamElementList[] =
         {
         {(void*)&segmentID, PXTypeInt16UBE},
@@ -700,13 +700,13 @@ PXActionResult PXAPI PXJPEGSaveToFile(PXResourceTransphereInfo* const pxResource
 
     // ////////////////////////////////////////
     // adjust quantization tables to desired quality
-    PXInt8U quantLuminance[8 * 8];
-    PXInt8U quantChrominance[8 * 8];
+    PXI8U quantLuminance[8 * 8];
+    PXI8U quantChrominance[8 * 8];
 
-    for(PXInt8U i = 0; i < 8 * 8; i++)
+    for(PXI8U i = 0; i < 8 * 8; i++)
     {
-        const PXInt8U luminance = (DefaultQuantLuminance[ZigZagInv[i]] * quality + 50u) / 100u;
-        const PXInt8U chrominance = (DefaultQuantChrominance[ZigZagInv[i]] * quality + 50u) / 100u;
+        const PXI8U luminance = (DefaultQuantLuminance[ZigZagInv[i]] * quality + 50u) / 100u;
+        const PXI8U chrominance = (DefaultQuantChrominance[ZigZagInv[i]] * quality + 50u) / 100u;
 
         // clamp to 1..255
         quantLuminance[i] = (PXMathLimitCU(luminance, 1u, 255u));
@@ -719,18 +719,18 @@ PXActionResult PXAPI PXJPEGSaveToFile(PXResourceTransphereInfo* const pxResource
 
     // each table has 64 entries and is preceded by an ID byte
     PXFileWriteI8U(pxResourceSaveInfo->FileReference, 0u); // first quantization table
-    PXFileWriteB(pxResourceSaveInfo->FileReference, quantLuminance, sizeof(PXInt8U) * 64u);
+    PXFileWriteB(pxResourceSaveInfo->FileReference, quantLuminance, sizeof(PXI8U) * 64u);
 
     if(isRGB)// chrominance is only relevant for color images
     {
         PXFileWriteI8U(pxResourceSaveInfo->FileReference, 1u); // second quantization table
-        PXFileWriteB(pxResourceSaveInfo->FileReference, quantChrominance, sizeof(PXInt8U) * 64u);
+        PXFileWriteB(pxResourceSaveInfo->FileReference, quantChrominance, sizeof(PXI8U) * 64u);
     }
 
     // ////////////////////////////////////////
     // write image infos (SOF0 - start of frame)
     // length: 6 bytes general info + 3 per channel + 2 bytes for this length field
-    const PXInt8U numComponents = isRGB ? 3 : 1;
+    const PXI8U numComponents = isRGB ? 3 : 1;
 
     PXFileWriteI16UE(pxResourceSaveInfo->FileReference, PXJPEGChunckStartOfFrameHuffmanBaselineDCT, EndianCurrentSystem);
     PXFileWriteI16UE(pxResourceSaveInfo->FileReference, 2 + 6 + 3 * numComponents, PXEndianBig);
@@ -739,15 +739,15 @@ PXActionResult PXAPI PXJPEGSaveToFile(PXResourceTransphereInfo* const pxResource
     PXFileWriteI8U(pxResourceSaveInfo->FileReference, 8u); // 8 bits per channel
 
     // image dimensions (big-endian)
-    PXFileWriteI16UE(pxResourceSaveInfo->FileReference, pxImage->Height, PXEndianBig);
-    PXFileWriteI16UE(pxResourceSaveInfo->FileReference, pxImage->Width, PXEndianBig);
+    PXFileWriteI16UE(pxResourceSaveInfo->FileReference, pxTexture->Height, PXEndianBig);
+    PXFileWriteI16UE(pxResourceSaveInfo->FileReference, pxTexture->Width, PXEndianBig);
 
     // sampling and quantization tables for each component
     // 1 component (grayscale, Y only) or 3 components (Y,Cb,Cr)
     PXFileWriteI8U(pxResourceSaveInfo->FileReference, numComponents);
 
 
-    for(PXInt8U id = 1; id <= numComponents; ++id)
+    for(PXI8U id = 1; id <= numComponents; ++id)
     {
         PXFileWriteI8U(pxResourceSaveInfo->FileReference, id);  // component ID (Y=1, Cb=2, Cr=3)
         // bitmasks for sampling: highest 4 bits: horizontal, lowest 4 bits: vertical
@@ -820,7 +820,7 @@ PXActionResult PXAPI PXJPEGSaveToFile(PXResourceTransphereInfo* const pxResource
     // assign Huffman tables to each component
     PXFileWriteI8U(pxResourceSaveInfo->FileReference, numComponents);
 
-    for(PXInt8U id = 1; id <= numComponents; ++id)
+    for(PXI8U id = 1; id <= numComponents; ++id)
     {
         // component ID (Y=1, Cb=2, Cr=3)
         PXFileWriteI8U(pxResourceSaveInfo->FileReference, id);
@@ -837,10 +837,10 @@ PXActionResult PXAPI PXJPEGSaveToFile(PXResourceTransphereInfo* const pxResource
     PXF32 scaledLuminance[64u];
     PXF32 scaledChrominance[64u];
 
-    for(PXInt8U i = 0; i < 64u; ++i)
+    for(PXI8U i = 0; i < 64u; ++i)
     {
-        const PXInt8U row = ZigZagInv[i] / 8; // same as i >> 3
-        const PXInt8U column = ZigZagInv[i] % 8; // same as i & 7
+        const PXI8U row = ZigZagInv[i] / 8; // same as i >> 3
+        const PXI8U column = ZigZagInv[i] % 8; // same as i & 7
         const PXF32 factor = 1 / (AanScaleFactors[row] * AanScaleFactors[column] * 8);
         scaledLuminance[ZigZagInv[i]] = factor / quantLuminance[i];
         scaledChrominance[ZigZagInv[i]] = factor / quantChrominance[i];
@@ -857,12 +857,12 @@ PXActionResult PXAPI PXJPEGSaveToFile(PXResourceTransphereInfo* const pxResource
     buffer.numBits = 0; // number of valid bits (the right-most bits)
 
     // just convert image data from void*
-    const unsigned char* pixels = (unsigned char*)pxImage->PixelData;
+    const unsigned char* pixels = (unsigned char*)pxTexture->PixelData;
 
     // break down the image into 8x8 blocks and convert from RGB or grayscale to YCbCr color space
     PXF32 Y[8][8], Cb[8][8], Cr[8][8];
     // average color of the previous 8x8 block
-    PXInt16S lastYDC = 0, lastCbDC = 0, lastCrDC = 0;
+    PXI16S lastYDC = 0, lastCbDC = 0, lastCrDC = 0;
 
     // downsampling of Cb and Cr channels, if sampling = 2 then 2x2 samples are used
     const PXSize sampling = downsample ? 2 : 1;
@@ -870,15 +870,15 @@ PXActionResult PXAPI PXJPEGSaveToFile(PXResourceTransphereInfo* const pxResource
     // only for downsampled: sum of four pixels' red, green, blue components
     PXF32 red[8][8];
     PXF32 green[8][8];
-    PXF32 blue[8][8]; // PXInt16U works, too, but PXF32 is faster
+    PXF32 blue[8][8]; // PXI16U works, too, but PXF32 is faster
 
     PXMemoryClear(red, sizeof(PXF32) * 8 * 8);
     PXMemoryClear(green, sizeof(PXF32) * 8 * 8);
     PXMemoryClear(blue, sizeof(PXF32) * 8 * 8);
 
     // process MCUs (minimum codes units)
-    for(PXSize mcuY = 0; mcuY < pxImage->Height; mcuY += 8u * sampling)
-        for(PXSize mcuX = 0; mcuX < pxImage->Width; mcuX += 8u * sampling)
+    for(PXSize mcuY = 0; mcuY < pxTexture->Height; mcuY += 8u * sampling)
+        for(PXSize mcuX = 0; mcuX < pxTexture->Width; mcuX += 8u * sampling)
         {
             // YCbCr 4:4:4 format: each MCU is a 8x8 block - the same applies to grayscale images, too
             // YCbCr 4:2:0 format: each MCU represents a 16x16 block, stored as 4x 8x8 Y-blocks plus 1x 8x8 Cb and 1x 8x8 Cr blocks)
@@ -893,9 +893,9 @@ PXActionResult PXAPI PXJPEGSaveToFile(PXResourceTransphereInfo* const pxResource
                     for(PXSize deltaX = 0; deltaX < 8; ++deltaX)
                     {
                         // find actual pixel position within the current image
-                        const PXSize column = PXMathMinimumIU(mcuX + blockX + deltaX, pxImage->Width - 1); // must not exceed image borders, replicate last row/column if needed
-                        const PXSize row = PXMathMinimumIU(mcuY + blockY + deltaY, pxImage->Height - 1);
-                        PXSize pixelPos = row * pxImage->Width + column; // the cast ensures that we don't run into multiplication overflows
+                        const PXSize column = PXMathMinimumIU(mcuX + blockX + deltaX, pxTexture->Width - 1); // must not exceed image borders, replicate last row/column if needed
+                        const PXSize row = PXMathMinimumIU(mcuY + blockY + deltaY, pxTexture->Height - 1);
+                        PXSize pixelPos = row * pxTexture->Width + column; // the cast ensures that we don't run into multiplication overflows
 
                         // grayscale images have solely a Y channel which can be easily derived from the input pixel by shifting it by 128
                         if(!isRGB)
@@ -943,9 +943,9 @@ PXActionResult PXAPI PXJPEGSaveToFile(PXResourceTransphereInfo* const pxResource
             // YCbCr420 / downsampled: convert summed RGB values to Cb and Cr
             if(downsample)
             {
-                for(PXInt8U y = 0; y < 8u; ++y)
+                for(PXI8U y = 0; y < 8u; ++y)
                 {
-                    for(PXInt8U x = 0; x < 8u; ++x)
+                    for(PXI8U x = 0; x < 8u; ++x)
                     {
                         // each number in the arrays "red", "green" and "blue" consists of the summed values of four pixels
                         // so I still have to divide them by 4 to get their average value
@@ -1074,7 +1074,7 @@ void PXAPI PXJPEGChunckDefineHuffmanTableListHandler(PXJPEG* const jpeg, PXFile*
         PXJPEGHuffmanTable jpegHuffmanTable;
 
         {
-            PXInt8U huffmanTableInfo;
+            PXI8U huffmanTableInfo;
 
             remainingBytes -= PXFileReadI8U(pxFile, &huffmanTableInfo);
 
@@ -1093,12 +1093,12 @@ void PXAPI PXJPEGChunckDefineHuffmanTableListHandler(PXJPEG* const jpeg, PXFile*
         );
 #endif
 
-        PXInt16U symbolSum = 0;
+        PXI16U symbolSum = 0;
 
         // 16 Bytes symbopls
-        for(PXInt8U i = 0; i < 16u; ++i)
+        for(PXI8U i = 0; i < 16u; ++i)
         {
-            PXInt8U symbol = 0;
+            PXI8U symbol = 0;
 
             remainingBytes -= PXFileReadI8U(pxFile, &symbol);
 
@@ -1123,9 +1123,9 @@ void PXAPI PXJPEGChunckDefineHuffmanTableListHandler(PXJPEG* const jpeg, PXFile*
 
 
         // n bytes from that data
-        for(PXInt16U i = 0; i < symbolSum; ++i)
+        for(PXI16U i = 0; i < symbolSum; ++i)
         {
-            PXInt8U symbol = 0;
+            PXI8U symbol = 0;
 
             remainingBytes -= PXFileReadI8U(pxFile, &symbol);
 
@@ -1251,10 +1251,10 @@ void PXAPI PXJPEGChunckStartOfScanHandler(PXJPEG* const jpeg, PXFile* const pxFi
 {
     PXFileReadI8U(pxFile, &jpeg->ScanStart.ScanSelectorSize);
 
-    for(PXInt8U i = 0; i < jpeg->ScanStart.ScanSelectorSize; ++i)
+    for(PXI8U i = 0; i < jpeg->ScanStart.ScanSelectorSize; ++i)
     {
         PXJPEGScanSelector* scanSelector = &jpeg->ScanStart.ScanSelector[i];
-        PXInt8U huffmanTableUsed = 0;
+        PXI8U huffmanTableUsed = 0;
 
         PXFileReadI8U(pxFile, &scanSelector->ID);
         PXFileReadI8U(pxFile, &huffmanTableUsed);
@@ -1290,11 +1290,11 @@ void PXAPI PXJPEGChunckDefineQuantizationTableListHandler(PXJPEG* const jpeg, PX
 
     while(remainingBytes)
     {
-        PXInt8U precision = 0;
-        PXInt8U matixID = 0;
+        PXI8U precision = 0;
+        PXI8U matixID = 0;
 
         {
-            PXInt8U cluster = 0;
+            PXI8U cluster = 0;
 
             remainingBytes -= PXFileReadI8U(pxFile, &cluster);
 
@@ -1302,9 +1302,9 @@ void PXAPI PXJPEGChunckDefineQuantizationTableListHandler(PXJPEG* const jpeg, PX
             matixID = (cluster & 0b00001111);
         }
 
-        PXInt8U* const matrixAdress = (PXInt8U*)&jpeg->QuantizationTable[matixID];
+        PXI8U* const matrixAdress = (PXI8U*)&jpeg->QuantizationTable[matixID];
 
-        remainingBytes -= PXFileReadB(pxFile, matrixAdress, sizeof(PXInt8U) * 64u);
+        remainingBytes -= PXFileReadB(pxFile, matrixAdress, sizeof(PXI8U) * 64u);
 
 #if JPGDebug
         printf("[i][JPG] Define Quantization Table <%i>\n", matixID);

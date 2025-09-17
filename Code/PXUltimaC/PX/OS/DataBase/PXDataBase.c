@@ -149,7 +149,7 @@ typedef SQLRETURN(SQL_API* PXSQLDriversA)(SQLHENV henv, SQLUSMALLINT fDirection,
 
 #endif
 
-PXActionResult PXAPI PXDataBaseInitialize(PXDataBase* const pxDataBase)
+PXResult PXAPI  PXDataBaseInitialize(PXDataBase* const pxDataBase)
 {
     PXClear(PXDataBase, pxDataBase);
 
@@ -370,7 +370,7 @@ PXActionResult PXAPI PXDataBaseInitialize(PXDataBase* const pxDataBase)
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDataBaseRelease(PXDataBase* const pxDataBase)
+PXResult PXAPI  PXDataBaseRelease(PXDataBase* const pxDataBase)
 {
     PXDataBaseCleanup(pxDataBase);
 
@@ -381,7 +381,7 @@ PXActionResult PXAPI PXDataBaseRelease(PXDataBase* const pxDataBase)
     return PXActionSuccessful;
 }
 
-PXSQLType PXAPI PXSQLTypeFromID(const PXInt32U sqlTypeID)
+PXSQLType PXAPI PXSQLTypeFromID(const PXI32U sqlTypeID)
 {
 #if OSUnix
     return PXSQLTypeInvalid;
@@ -439,7 +439,7 @@ PXSQLType PXAPI PXSQLTypeFromID(const PXInt32U sqlTypeID)
 #endif
 }
 
-PXActionResult PXAPI PXDataBaseConnectA
+PXResult PXAPI  PXDataBaseConnectA
 (
     PXDataBase* const pxDataBase,
     const char* const source,
@@ -464,7 +464,7 @@ PXActionResult PXAPI PXDataBaseConnectA
     return pxActionResult;
 }
 
-PXActionResult PXAPI PXDataBaseConnect
+PXResult PXAPI  PXDataBaseConnect
 (
     PXDataBase* const pxDataBase,
     const PXText* const source,
@@ -504,10 +504,10 @@ PXActionResult PXAPI PXDataBaseConnect
                     &pxTextSQLConnectionString,
                     "Driver={%ls};Server=%ls;Database=%ls;UID=%ls;PWD=%ls;",
                     driver,
-                    source->TextA,
-                    database->TextA,
-                    user->TextA,
-                    password->TextA
+                    source->A,
+                    database->A,
+                    user->A,
+                    password->A
                 );
 
                 SQLSMALLINT writtenSize = 0;
@@ -516,9 +516,9 @@ PXActionResult PXAPI PXDataBaseConnect
                 (
                     pxDataBase->ConnectionID,
                     NULL,
-                    (SQLCHAR*)pxTextSQLConnectionString.TextA,
+                    (SQLCHAR*)pxTextSQLConnectionString.A,
                     pxTextSQLConnectionString.SizeUsed,
-                    (SQLCHAR*)pxTextSQLConnectionStringResult.TextA,
+                    (SQLCHAR*)pxTextSQLConnectionStringResult.A,
                     pxTextSQLConnectionStringResult.SizeAllocated,
                     &writtenSize,
                     SQL_DRIVER_NOPROMPT
@@ -536,13 +536,13 @@ PXActionResult PXAPI PXDataBaseConnect
 
                 pxTextSQLConnectionString.SizeUsed = wsprintfW
                 (
-                    pxTextSQLConnectionString.TextW,
+                    pxTextSQLConnectionString.W,
                     L"Driver={%ls};Server=%ls;Database=%ls;UID=%ls;PWD=%ls;",
                     driver,
-                    source->TextW,
-                    database->TextW,
-                    user->TextW,
-                    password->TextW
+                    source->W,
+                    database->W,
+                    user->W,
+                    password->W
                 );
 
                 SQLSMALLINT writtenSize = 0;
@@ -551,9 +551,9 @@ PXActionResult PXAPI PXDataBaseConnect
                 (
                     pxDataBase->ConnectionID,
                     NULL,
-                    pxTextSQLConnectionString.TextW,
+                    pxTextSQLConnectionString.W,
                     pxTextSQLConnectionString.SizeUsed,
-                    pxTextSQLConnectionStringResult.TextW,
+                    pxTextSQLConnectionStringResult.W,
                     pxTextSQLConnectionStringResult.SizeAllocated,
                     &writtenSize,
                     SQL_DRIVER_NOPROMPT
@@ -777,7 +777,7 @@ void PXAPI PXDataBaseScanForDrivers(PXDataBase* const pxDataBase)
 #endif
 }
 
-PXActionResult PXAPI PXDataBaseCommandExecute(PXDataBase* const pxDataBase, const PXText* const pxTextSQLStatement)
+PXResult PXAPI  PXDataBaseCommandExecute(PXDataBase* const pxDataBase, const PXText* const pxTextSQLStatement)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -820,14 +820,14 @@ PXActionResult PXAPI PXDataBaseCommandExecute(PXDataBase* const pxDataBase, cons
             {
                 const PXSQLExecDirectA pxSQLExecDirectA = (PXSQLExecDirectA)pxDataBase->ExecDirectA;
 
-                resultExecute = pxSQLExecDirectA(handleStatement, (SQLCHAR*)pxTextSQLStatement->TextA, SQL_NTS);
+                resultExecute = pxSQLExecDirectA(handleStatement, (SQLCHAR*)pxTextSQLStatement->A, SQL_NTS);
                 break;
             }
             case TextFormatUNICODE:
             {
                 const PXSQLExecDirectW pxSQLExecDirectW = (PXSQLExecDirectW)pxDataBase->ExecDirectW;
 
-                resultExecute = pxSQLExecDirectW(handleStatement, pxTextSQLStatement->TextW, SQL_NTSL);
+                resultExecute = pxSQLExecDirectW(handleStatement, pxTextSQLStatement->W, SQL_NTSL);
                 break;
             }
 
@@ -1018,7 +1018,7 @@ PXActionResult PXAPI PXDataBaseCommandExecute(PXDataBase* const pxDataBase, cons
 #endif
 }
 
-PXActionResult PXAPI PXDataBaseCommandCancel(PXDataBase* const dataBaseConnection)
+PXResult PXAPI  PXDataBaseCommandCancel(PXDataBase* const dataBaseConnection)
 {
     return PXActionRefusedNotImplemented; // SQLRETURN SQL_API SQLCancel(SQLHSTMT StatementHandle);
 }

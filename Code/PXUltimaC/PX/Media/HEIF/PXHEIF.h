@@ -1,9 +1,9 @@
-#ifndef PXHEIFInclude
-#define PXHEIFInclude
+#ifndef PXHEIFIncluded
+#define PXHEIFIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
-PXPublic PXActionResult PXAPI PXHEIFLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXHEIFSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXHEIFLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXHEIFSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

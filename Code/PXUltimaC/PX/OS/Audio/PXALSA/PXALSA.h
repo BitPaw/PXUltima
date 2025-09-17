@@ -1,9 +1,9 @@
-#ifndef PXALSAInclude
-#define PXALSAInclude
+#ifndef PXALSAIncluded
+#define PXALSAIncluded
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 #include <PX/OS/Audio/PXAudio.h>
 
-PXPublic PXActionResult PXAPI PXALSAInitialize(PXAudio* const pxAudio);
+PXPublic PXResult PXAPI PXALSAInitialize(PXAudio* const pxAudio);
 
 #endif

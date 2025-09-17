@@ -7,7 +7,7 @@
 #include <PX/OS/PXOS.h>
 
 
-PXBitmapInfoHeaderType PXBitmapInfoHeaderTypeFromID(const PXInt8U infoHeaderType)
+PXBitmapInfoHeaderType PXAPI PXBitmapInfoHeaderTypeFromID(const PXI8U infoHeaderType)
 {
     switch(infoHeaderType)
     {
@@ -38,7 +38,7 @@ PXBitmapInfoHeaderType PXBitmapInfoHeaderTypeFromID(const PXInt8U infoHeaderType
     }
 }
 
-PXInt8U PXBitmapInfoHeaderTypeToID(const PXBitmapInfoHeaderType infoHeaderType)
+PXI8U PXAPI PXBitmapInfoHeaderTypeToID(const PXBitmapInfoHeaderType infoHeaderType)
 {
     switch(infoHeaderType)
     {
@@ -73,7 +73,7 @@ PXInt8U PXBitmapInfoHeaderTypeToID(const PXBitmapInfoHeaderType infoHeaderType)
 //-------------------------------------
 // Layout of bitmap file
 //-------------------------------------
-const PXInt32U PXBitMapHeader[] =
+const PXI32U PXBitMapHeader[] =
 {
     PXTypeText(2),
     PXTypeInt32ULE,
@@ -81,13 +81,13 @@ const PXInt32U PXBitMapHeader[] =
     PXTypeInt32ULE,
     PXTypeInt32ULE
 };
-const PXInt8U PXBitMapHeaderSize = sizeof(PXBitMapHeader) / sizeof(PXInt32U);
+const PXI8U PXBitMapHeaderSize = sizeof(PXBitMapHeader) / sizeof(PXI32U);
 
 
 
 
 
-const PXInt32U PXBitMapInfoHeaderTypeList[] =
+const PXI32U PXBitMapInfoHeaderTypeList[] =
 {
     PXTypeInt32SLE,
     PXTypeInt32SLE,
@@ -100,10 +100,10 @@ const PXInt32U PXBitMapInfoHeaderTypeList[] =
     PXTypeInt32ULE,
     PXTypeInt32ULE
 };
-const PXInt8U PXBitMapInfoHeaderTypeListSize = sizeof(PXBitMapInfoHeaderTypeList) / sizeof(PXInt32U);
+const PXI8U PXBitMapInfoHeaderTypeListSize = sizeof(PXBitMapInfoHeaderTypeList) / sizeof(PXI32U);
 
 
-const PXInt32U PXBitMapV5HeaderTypeList[] =
+const PXI32U PXBitMapV5HeaderTypeList[] =
 {
     PXTypeInt32ULE,
     PXTypeInt32ULE,
@@ -129,22 +129,22 @@ const PXInt32U PXBitMapV5HeaderTypeList[] =
     PXTypeInt32ULE,
     PXTypePadding(4)
 };
-const PXInt8U PXBitMapV5HeaderTypeListSize = sizeof(PXBitMapV5HeaderTypeList) / sizeof(PXInt32U);
+const PXI8U PXBitMapV5HeaderTypeListSize = sizeof(PXBitMapV5HeaderTypeList) / sizeof(PXI32U);
 
 
 
 
-const PXInt32U PXBitmapHeaderOS21XBitMapHeaderTypeList[] =
+const PXI32U PXBitmapHeaderOS21XBitMapHeaderTypeList[] =
 {
     PXTypeInt16ULE,
     PXTypeInt16ULE,
     PXTypeInt16ULE,
     PXTypeInt16ULE
 };
-const PXInt8U PXBitmapHeaderOS21XBitMapHeaderTypeListSize = sizeof(PXBitmapHeaderOS21XBitMapHeaderTypeList) / sizeof(PXInt32U);
+const PXI8U PXBitmapHeaderOS21XBitMapHeaderTypeListSize = sizeof(PXBitmapHeaderOS21XBitMapHeaderTypeList) / sizeof(PXI32U);
 
 
-const PXInt32U PXBitmapHeaderOS22XList[] =
+const PXI32U PXBitmapHeaderOS22XList[] =
 {
     PXTypeInt16ULE,
     PXTypePadding(2),
@@ -155,14 +155,14 @@ const PXInt32U PXBitmapHeaderOS22XList[] =
     PXTypeInt32ULE,
     PXTypeInt32ULE
 };
-const PXInt8U PXBitmapHeaderOS22XListSize = sizeof(PXBitmapHeaderOS22XList) / sizeof(PXInt32U);
+const PXI8U PXBitmapHeaderOS22XListSize = sizeof(PXBitmapHeaderOS22XList) / sizeof(PXI32U);
 
 
 
 
-PXActionResult PXAPI PXBitmapPeekFromFile(PXResourceTransphereInfo* const pxResourceTransphereInfo)
+PXResult PXAPI  PXBitmapPeekFromFile(PXResourceTransphereInfo* const pxResourceTransphereInfo)
 {
-    PXImage* const pxImage = (PXImage*)pxResourceTransphereInfo->ResourceTarget;
+    PXTexture* const pxTexture = (PXTexture*)pxResourceTransphereInfo->ResourceTarget;
 
     PXBitmap* bmp = PXMemoryHeapCallocT(PXBitmap, 1);
 
@@ -172,7 +172,7 @@ PXActionResult PXAPI PXBitmapPeekFromFile(PXResourceTransphereInfo* const pxReso
     {
         PXFileBinding(pxResourceTransphereInfo->FileReference, &bmp->HeaderData, PXBitMapHeader, PXBitMapHeaderSize, PXFileBindingRead);
 
-        bmp->Type = (PXBitmapType)PXInt16Make(bmp->HeaderData.Type[0], bmp->HeaderData.Type[1]);
+        bmp->Type = (PXBitmapType)PXI16Make(bmp->HeaderData.Type[0], bmp->HeaderData.Type[1]);
         bmp->InfoHeaderType = PXBitmapInfoHeaderTypeFromID(bmp->HeaderData.HeaderSize);
 
         {
@@ -254,9 +254,9 @@ PXActionResult PXAPI PXBitmapPeekFromFile(PXResourceTransphereInfo* const pxReso
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXBitmapLoadFromFile(PXResourceTransphereInfo* const pxResourceTransphereInfo)
+PXResult PXAPI  PXBitmapLoadFromFile(PXResourceTransphereInfo* const pxResourceTransphereInfo)
 {
-    PXImage* const pxImage = (PXImage*)pxResourceTransphereInfo->ResourceTarget;
+    PXTexture* const pxTexture = (PXTexture*)pxResourceTransphereInfo->ResourceTarget;
 
     PXBitmap* bmp = (PXBitmap*)pxResourceTransphereInfo->ResourceSource;
 
@@ -289,7 +289,7 @@ PXActionResult PXAPI PXBitmapLoadFromFile(PXResourceTransphereInfo* const pxReso
                 break;
         }
 
-        const PXBool allocationSuccess = PXImageResize(pxImage, pxColorFormat, bmp->InfoHeader.Width, bmp->InfoHeader.Height);
+        const PXBool allocationSuccess = PXTextureResize(pxTexture, pxColorFormat, bmp->InfoHeader.Width, bmp->InfoHeader.Height);
 
         if(!allocationSuccess)
         {
@@ -298,7 +298,7 @@ PXActionResult PXAPI PXBitmapLoadFromFile(PXResourceTransphereInfo* const pxReso
     }
 
     //---[ Pixel Data ]--------------------------------------------------------
-    const PXSize bbp = PXColorFormatBytePerPixel(pxImage->Format);
+    const PXSize bbp = PXColorFormatBytePerPixel(pxTexture->Format);
 
     PXBitmapImageDataLayout imageDataLayout;
 
@@ -308,7 +308,7 @@ PXActionResult PXAPI PXBitmapLoadFromFile(PXResourceTransphereInfo* const pxReso
 #if 0
     if(0 == imageDataLayout.RowPaddingSize) // if we don't have any padding
     {
-        PXFileReadB(pxResourceTransphereInfo->FileReference, pxImage->PixelData, imageDataLayout.RowImageDataSize * imageDataLayout.RowAmount);
+        PXFileReadB(pxResourceTransphereInfo->FileReference, PXTexture->PixelData, imageDataLayout.RowImageDataSize * imageDataLayout.RowAmount);
     }
 #endif
 
@@ -316,12 +316,12 @@ PXActionResult PXAPI PXBitmapLoadFromFile(PXResourceTransphereInfo* const pxReso
     // Note: No, we can't load the image data at once!
     // Although the padding is 0, we can just read all at once, the image will be upside down.
 
-    const PXInt8U shuffleData[] = {2,1,0};
-    const PXInt8U shuffleSize = sizeof(shuffleData) / sizeof(PXInt8U);
+    const PXI8U shuffleData[] = {2,1,0};
+    const PXI8U shuffleSize = sizeof(shuffleData) / sizeof(PXI8U);
 
     while(imageDataLayout.RowAmount--) // loop through each image row
     {
-        PXByte* const data = (PXByte* const)pxImage->PixelData + (imageDataLayout.RowImageDataSize * imageDataLayout.RowAmount); // Get the starting point of each row
+        PXByte* const data = (PXByte* const)pxTexture->PixelData + (imageDataLayout.RowImageDataSize * imageDataLayout.RowAmount); // Get the starting point of each row
 
         PXFileReadB(pxResourceTransphereInfo->FileReference, data, imageDataLayout.RowImageDataSize); // Read/Write image data
         PXFileCursorAdvance(pxResourceTransphereInfo->FileReference, imageDataLayout.RowPaddingSize); // Skip padding
@@ -331,22 +331,21 @@ PXActionResult PXAPI PXBitmapLoadFromFile(PXResourceTransphereInfo* const pxReso
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXBitmapSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI  PXBitmapSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
-    PXImage* const pxImage = (PXImage*)pxResourceSaveInfo->ResourceTarget;
+    PXTexture* const pxTexture = (PXTexture*)pxResourceSaveInfo->ResourceTarget;
 
-
-    if(pxImage->Width == 0)
+    if(pxTexture->Width == 0)
     {
         return PXActionRefuedImageWidthIsZero;
     }
 
-    if(pxImage->Height == 0)
+    if(pxTexture->Height == 0)
     {
         return PXActionRefuedImageHeightIsZero;
     }
 
-    if(pxImage->Format == PXColorFormatInvalid)
+    if(pxTexture->Format == PXColorFormatInvalid)
     {
         return PXActionRefuedImageFormatInvalid;
     }
@@ -360,7 +359,7 @@ PXActionResult PXAPI PXBitmapSaveToFile(PXResourceTransphereInfo* const pxResour
     {
         bitMap.HeaderData.Type[0] = 'B';
         bitMap.HeaderData.Type[1] = 'M';
-        bitMap.HeaderData.SizeOfFile = PXBitmapFilePredictSize(pxImage->Width, pxImage->Height, PXColorFormatBitsPerPixel(pxImage->Format)) - 14u;
+        bitMap.HeaderData.SizeOfFile = PXBitmapFilePredictSize(pxTexture->Width, pxTexture->Height, PXColorFormatBitsPerPixel(pxTexture->Format)) - 14u;
         bitMap.HeaderData.ReservedBlock = 0;
         bitMap.HeaderData.DataOffset = 54u;
         bitMap.HeaderData.HeaderSize = PXBitmapInfoHeaderTypeToID(PXBitmapHeaderBitMapInfoHeader); // DIP header
@@ -387,10 +386,10 @@ PXActionResult PXAPI PXBitmapSaveToFile(PXResourceTransphereInfo* const pxResour
 
         //---<Shared>----------------------------------------------------------
         //bitMap.InfoHeader.HeaderSize = PXBitmapInfoHeaderTypeToID(bmpInfoHeaderType);
-        bitMap.InfoHeader.NumberOfBitsPerPixel = PXColorFormatBitsPerPixel(pxImage->Format);
+        bitMap.InfoHeader.NumberOfBitsPerPixel = PXColorFormatBitsPerPixel(pxTexture->Format);
         bitMap.InfoHeader.NumberOfColorPlanes = 1;
-        bitMap.InfoHeader.Width = pxImage->Width;
-        bitMap.InfoHeader.Height = pxImage->Height;
+        bitMap.InfoHeader.Width = pxTexture->Width;
+        bitMap.InfoHeader.Height = pxTexture->Height;
        // bitMap.InfoHeader.ImageSize = 0;
         //---------------------------------------------------------------------
 
@@ -420,7 +419,7 @@ PXActionResult PXAPI PXBitmapSaveToFile(PXResourceTransphereInfo* const pxResour
     if(1)
     {
         // If we have embedded BMP format, we can write it directly
-        PXFileWriteB(pxResourceSaveInfo->FileReference, pxImage->PixelData, pxImage->PixelDataSize);
+        PXFileWriteB(pxResourceSaveInfo->FileReference, pxTexture->PixelData, pxTexture->PixelDataSize);
     }
     else
     {
@@ -430,7 +429,7 @@ PXActionResult PXAPI PXBitmapSaveToFile(PXResourceTransphereInfo* const pxResour
 
         for(PXSize row = imageDataLayout.RowAmount - 1; row != (PXSize)-1; --row)
         {
-            const PXByte* const dataInsertPoint = (const PXByte* const)pxImage->PixelData + (imageDataLayout.RowImageDataSize * row);
+            const PXByte* const dataInsertPoint = (const PXByte* const)pxTexture->PixelData + (imageDataLayout.RowImageDataSize * row);
 
             for(PXSize i = 0; i < imageDataLayout.RowImageDataSize; i += 3) // Will result in RGB Pixel Data
             {

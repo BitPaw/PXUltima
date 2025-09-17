@@ -1,7 +1,7 @@
-#ifndef PXMP3INCLUDE
-#define PXMP3INCLUDE
+#ifndef PXMP3Included
+#define PXMP3Included
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 #include <PX/Media/ID3/PXID3.h>
 
 #define PXMP3Debug 0
@@ -193,8 +193,8 @@ typedef struct PXMP3Header_
     PXMP3Layer Layer;
     PXBool CRCErrorProtection;
 
-    PXInt32U BitRate;
-    PXInt16U SampleRate;
+    PXI32U BitRate;
+    PXI16U SampleRate;
     PXBool UsePadding;
     PXBool IsPrivate; // Unused
     PXMP3ChannelMode ChannelMode;
@@ -205,7 +205,7 @@ typedef struct PXMP3Header_
     PXBool CopyOfOriginal;
     PXMP3Emphasis Emphasis;
 
-    PXInt32U FrameLength;
+    PXI32U FrameLength;
 }
 PXMP3Header;
 
@@ -216,10 +216,10 @@ typedef struct PXMP3_
 }
 PXMP3;
 
-PXPrivate inline PXInt8U PXAPI PXMPEGGenreToID(const PXMPEGGenre mpegGenre);
-PXPrivate inline PXMPEGGenre PXAPI PXMPEGGenreFromID(const PXInt8U mpegGenre);
+PXPrivate inline PXI8U PXAPI PXMPEGGenreToID(const PXMPEGGenre mpegGenre);
+PXPrivate inline PXMPEGGenre PXAPI PXMPEGGenreFromID(const PXI8U mpegGenre);
 
-PXPublic PXActionResult PXAPI PXMP3LoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXMP3SaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXMP3LoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXMP3SaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

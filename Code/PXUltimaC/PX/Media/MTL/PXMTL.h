@@ -1,7 +1,7 @@
-#ifndef PXMTLINCLUDE
-#define PXMTLINCLUDE
+#ifndef PXMTLIncluded
+#define PXMTLIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 #define MTLNameSize 32u
 #define MTLFilePath 60u
@@ -43,19 +43,18 @@ typedef struct MTLMaterial_
     // range from 0.001 to 10. A value of 1.0 means that light does not bend as it passes through an object.
     PXF32 Density;
 
-    PXMaterialIlluminationMode Illumination;
+    PXIlluminationMode Illumination;
 }
 PXMTLMaterial;
 
-PXPrivate PXMaterialIlluminationMode PXAPI PXMTLIlluminationModeFromID(const unsigned int illuminationModeID);
-
+PXPrivate PXIlluminationMode PXAPI PXMTLIlluminationModeFromID(const unsigned int illuminationModeID);
 PXPrivate PXMTLLineType PXAPI PXMTLPeekLine(const char* const line, const PXSize lineSize);
 
 PXPublic PXSize PXAPI PXMTLFetchAmount(const void* const data, const PXSize dataSize);
 PXPublic PXBool PXAPI PXMTLFetchMaterial(const void* const data, const PXSize dataSize, const PXSize materialID, PXMTLMaterial* const mtlMaterial);
 
-PXPublic PXActionResult PXAPI PXMTLPeekFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXMTLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXMTLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXMTLPeekFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXMTLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXMTLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

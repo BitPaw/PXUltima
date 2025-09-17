@@ -3,7 +3,7 @@
 #include <PX/Media/RIFF/PXRIFF.h>
 #include <PX/OS/File/PXFile.h>
 
-PXActionResult PXAPI PXAVILoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI  PXAVILoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     PXRIFF riff;
 
@@ -27,7 +27,7 @@ PXActionResult PXAPI PXAVILoadFromFile(PXResourceTransphereInfo* const pxResourc
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXAVISaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI  PXAVISaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

@@ -1,7 +1,7 @@
-#ifndef PXModInclude
-#define PXModInclude
+#ifndef PXModIncluded
+#define PXModIncluded
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 #include <PX/OS/Error/PXActionResult.h>
 #include <PX/OS/Library/PXLibrary.h>
 
@@ -53,7 +53,7 @@ typedef struct PXModLoader_
 }
 PXModLoader;
 
-PXPublic PXActionResult PXAPI PXModLoaderScan(PXModLoader* const pxModLoader, const PXText* const pxTextModFileDirectory);
-PXPublic PXActionResult PXAPI PXModLoaderAdd(PXModLoader* const pxModLoader, PXMod* const pxMod);
+PXPublic PXResult PXAPI PXModLoaderScan(PXModLoader* const pxModLoader, const PXText* const pxTextModFileDirectory);
+PXPublic PXResult PXAPI PXModLoaderAdd(PXModLoader* const pxModLoader, PXMod* const pxMod);
 
 #endif

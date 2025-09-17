@@ -10,18 +10,18 @@ const char PXWADText[] = "WAD";
 
 
 //---------------------------------------------------------
-const PXInt32U PXWADVersion1List[] =
+const PXI32U PXWADVersion1List[] =
 {
     PXTypeInt16U,
     PXTypeInt16U,
     PXTypeInt32U
 };
-const PXInt8U PXWADVersion1ListSize = sizeof(PXWADVersion1List) / sizeof(PXInt32U);
+const PXI8U PXWADVersion1ListSize = sizeof(PXWADVersion1List) / sizeof(PXI32U);
 //---------------------------------------------------------
 
 
 //---------------------------------------------------------
-const PXInt32U PXWADVersion2List[] =
+const PXI32U PXWADVersion2List[] =
 {
     PXTypeInt08U,
     PXTypeText(83),
@@ -30,18 +30,18 @@ const PXInt32U PXWADVersion2List[] =
     PXTypeInt16U,
     PXTypeInt32U
 };
-const PXInt8U PXWADVersion2ListSize = sizeof(PXWADVersion2List) / sizeof(PXInt32U);
+const PXI8U PXWADVersion2ListSize = sizeof(PXWADVersion2List) / sizeof(PXI32U);
 //---------------------------------------------------------
 
 
 //---------------------------------------------------------
-const PXInt32U PXWADVersion3List[] =
+const PXI32U PXWADVersion3List[] =
 {
     PXTypeText(256),
     PXTypeInt64U,
     PXTypeInt32U
 };
-const PXInt8U PXWADVersion3ListSize = sizeof(PXWADVersion3List) / sizeof(PXInt32U);
+const PXI8U PXWADVersion3ListSize = sizeof(PXWADVersion3List) / sizeof(PXI32U);
 //---------------------------------------------------------
 
 
@@ -55,7 +55,7 @@ const PXInt8U PXWADVersion3ListSize = sizeof(PXWADVersion3List) / sizeof(PXInt32
 #define PXWADEntryDataTypeZstandardWithSubchunks 4
 
 //---------------------------------------------------------
-const PXInt32U PXWADEntryHeaderList[] =
+const PXI32U PXWADEntryHeaderList[] =
 {
     PXTypeInt64U,
     PXTypeInt32U,
@@ -67,19 +67,19 @@ const PXInt32U PXWADEntryHeaderList[] =
     PXTypeInt16U,
     PXTypeInt64U
 };
-const PXInt8U PXWADEntryHeaderListSize = sizeof(PXWADEntryHeaderList) / sizeof(PXInt32U);
+const PXI8U PXWADEntryHeaderListSize = sizeof(PXWADEntryHeaderList) / sizeof(PXI32U);
 //---------------------------------------------------------
-const PXInt32U PXWADHeaderList[] =
+const PXI32U PXWADHeaderList[] =
 {
     PXTypeDatax2,
     PXTypeInt08U,
     PXTypeInt08U
 };
-const PXInt8U PXWADHeaderListSize = sizeof(PXWADHeaderList) / sizeof(PXInt32U);
+const PXI8U PXWADHeaderListSize = sizeof(PXWADHeaderList) / sizeof(PXI32U);
 //---------------------------------------------------------
 
 
-PXActionResult PXAPI PXWADEntryHandle(PXWADEntry* const pxWADEntry, PXFile* const pxFile)
+PXResult PXAPI  PXWADEntryHandle(PXWADEntry* const pxWADEntry, PXFile* const pxFile)
 {
     PXFile dataCompressed;
     PXFile dataUncompressed;
@@ -235,7 +235,7 @@ PXActionResult PXAPI PXWADEntryHandle(PXWADEntry* const pxWADEntry, PXFile* cons
 
 
 
-PXActionResult PXAPI PXWADLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI  PXWADLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     PXFile* const pxFile = pxResourceLoadInfo->FileReference;
 
@@ -254,8 +254,8 @@ PXActionResult PXAPI PXWADLoadFromFile(PXResourceTransphereInfo* const pxResourc
     );
 
 
-    PXInt32U* dataList = 0;
-    PXInt8U amount = 0;
+    PXI32U* dataList = 0;
+    PXI8U amount = 0;
 
     switch(pxWAD.Header.VersionMajor)
     {
@@ -293,7 +293,7 @@ PXActionResult PXAPI PXWADLoadFromFile(PXResourceTransphereInfo* const pxResourc
 
 
     // Parse entry headers
-    PXInt32U entryCount = 0;
+    PXI32U entryCount = 0;
 
     switch(pxWAD.Header.VersionMajor)
     {
@@ -331,7 +331,7 @@ PXActionResult PXAPI PXWADLoadFromFile(PXResourceTransphereInfo* const pxResourc
     // Allocate list 
     pxWAD.EntryList = PXMemoryHeapCallocT(PXWADEntry, entryCount);
 
-    for(PXInt32U i = 0; i < entryCount; ++i)
+    for(PXI32U i = 0; i < entryCount; ++i)
     {
         PXWADEntry* const pxWADEntry = &pxWAD.EntryList[i];
 
@@ -385,14 +385,14 @@ PXActionResult PXAPI PXWADLoadFromFile(PXResourceTransphereInfo* const pxResourc
     PXLogEnableASYNC();
     PXThreadPoolCreate(PXNull);
 
-    PXInt32U* taskListID = 0;
+    PXI32U* taskListID = 0;
 
     PXThreadPoolQueuePrepare(PXNull, &taskListID, entryCount);
 
-    for(PXInt32U i = 0; i < entryCount; ++i)
+    for(PXI32U i = 0; i < entryCount; ++i)
     {
         PXWADEntry* const pxWADEntry = &pxWAD.EntryList[i];
-        const PXInt32U taskID = taskListID[i];
+        const PXI32U taskID = taskListID[i];
 
         PXThreadPoolTaskUpdateWork(PXNull, taskID, PXWADEntryHandle, pxWADEntry, pxFile, 0);
     }
@@ -407,7 +407,7 @@ PXActionResult PXAPI PXWADLoadFromFile(PXResourceTransphereInfo* const pxResourc
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXWADSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI  PXWADSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

@@ -8,7 +8,7 @@ const char PXMIPSProcessorName[] = "MIPS-VR43xx";
 
 void PXAPI PXMIPSBranchCalc(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction, PXMIPSBranch* const pxMIPSBranch)
 {
-    pxMIPSBranch->Address = (PXInt64S)((PXInt16S)pxMIPSTInstruction->Immediate) << 2;
+    pxMIPSBranch->Address = (PXI64S)((PXI16S)pxMIPSTInstruction->Immediate) << 2;
 
 
 #if PXLogEnable && 0
@@ -99,7 +99,7 @@ void PXAPI PXMIPSBranchCalc(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstr
 void PXAPI PXMIPSJumpCalc(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction, PXMIPSJump* const pxMIPSJump)
 {
     const PXSize actualAdress = pxMIPSProcessor->ProgramCounter + 4;
-    const PXSize delaySlotAdress = (PXInt8U*)pxMIPSProcessor->ROMOffsetVirtual + actualAdress;
+    const PXSize delaySlotAdress = (PXI8U*)pxMIPSProcessor->ROMOffsetVirtual + actualAdress;
 
 
     // 26-Bit target, shifted left because the two lowest bits are always 0 anyway (allignment).
@@ -447,12 +447,12 @@ void PXAPI PXMIPSInstructionExecute(PXMIPSProcessor* const pxMIPSProcessor)
 
     PXMIPSTInstruction pxMIPSTInstruction;
     pxMIPSTInstruction.IncrmentCounter = PXTrue;
-    pxMIPSTInstruction.Adress = (PXInt8U*)pxMIPSProcessor->ROMOffsetActual + pxMIPSProcessor->ProgramCounter;
-    pxMIPSTInstruction.AdressVirtual = (PXInt8U*)pxMIPSProcessor->ROMOffsetVirtual + pxMIPSProcessor->ProgramCounter;
+    pxMIPSTInstruction.Adress = (PXI8U*)pxMIPSProcessor->ROMOffsetActual + pxMIPSProcessor->ProgramCounter;
+    pxMIPSTInstruction.AdressVirtual = (PXI8U*)pxMIPSProcessor->ROMOffsetVirtual + pxMIPSProcessor->ProgramCounter;
 
     // instruction is big endian, to use our bit extraction, we need to swap it
 
-    pxMIPSTInstruction.OperationCode = PXInt32Make(pxMIPSTInstruction.Adress[3], pxMIPSTInstruction.Adress[2], pxMIPSTInstruction.Adress[1], pxMIPSTInstruction.Adress[0]);
+    pxMIPSTInstruction.OperationCode = PXI32Make(pxMIPSTInstruction.Adress[3], pxMIPSTInstruction.Adress[2], pxMIPSTInstruction.Adress[1], pxMIPSTInstruction.Adress[0]);
 
     if(pxMIPSTInstruction.OperationCode == 0)
     {
@@ -533,10 +533,10 @@ void PXMIPSInstructionPrint(PXMIPSTInstruction* const pxMIPSTInstruction)
 
 
 
-void PXAPI PXMIPSMemoryIO(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction, const PXInt32U datatype, PXInt8U mode)
+void PXAPI PXMIPSMemoryIO(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction, const PXI32U datatype, PXI8U mode)
 {
     const PXSize base = pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID];
-    const PXSize offset = (PXInt16S)pxMIPSTInstruction->Immediate; // Sign extend
+    const PXSize offset = (PXI16S)pxMIPSTInstruction->Immediate; // Sign extend
     pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID] += offset; // add to register
 
     const PXSize virtualAdress = pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID];
@@ -562,7 +562,7 @@ void PXAPI PXMIPSMemoryIO(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruc
         );
 #endif
 
-        PXMemoryCopy(value, typeSize, realAdressOffset, typeSize);
+        PXMemoryCopy(value, realAdressOffset, typeSize);
     }
     else
     {
@@ -580,7 +580,7 @@ void PXAPI PXMIPSMemoryIO(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruc
         );
 #endif
 
-        PXMemoryCopy(realAdressOffset, typeSize, value, typeSize);
+        PXMemoryCopy(realAdressOffset, value, typeSize);
     }
 
 
@@ -591,7 +591,7 @@ void PXAPI PXMIPSMemoryIO(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruc
 
 }
 
-PXActionResult PXAPI PXMIPSTranslate(PXMIPSProcessor* const pxMIPSProcessor, const PXByte* const data, const PXSize length)
+PXResult PXAPI  PXMIPSTranslate(PXMIPSProcessor* const pxMIPSProcessor, const PXByte* const data, const PXSize length)
 {
     //PXClear(PXMIPSProcessor, pxMIPSProcessor);
     //DWORD protectIDOld = 0;
@@ -1002,7 +1002,7 @@ void* PXAPI PXMIPSTranslateVirtualAdress(PXMIPSProcessor* const pxMIPSProcessor,
 
 
     // Check in what range this adress is and then get the proper poition
-    //     void* target = (PXInt8U*)pxMIPSProcessor->RAMAdress + realAdressOffset;
+    //     void* target = (PXI8U*)pxMIPSProcessor->RAMAdress + realAdressOffset;
 
 
     return translatedAdress;
@@ -1024,7 +1024,7 @@ void PXAPI PXMIPSInstructionReserved(PXMIPSProcessor* const pxMIPSProcessor, PXM
 
 void PXAPI PXMIPSInstructionSpecial(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
 {
-    const PXInt8U instructionID                 =  pxMIPSTInstruction->Immediate & 0b0000000000111111;
+    const PXI8U instructionID                 =  pxMIPSTInstruction->Immediate & 0b0000000000111111;
     pxMIPSTInstruction->ShiftAmount             = (pxMIPSTInstruction->Immediate & 0b0000011111000000) >> 6;
     pxMIPSTInstruction->RegisterDestinationID   = (pxMIPSTInstruction->Immediate & 0b1111100000000000) >> 11;
     pxMIPSTInstruction->Type                    = instructionID | PXMIPSOPCodeSpecial;
@@ -1038,7 +1038,7 @@ void PXAPI PXMIPSInstructionSpecial(PXMIPSProcessor* const pxMIPSProcessor, PXMI
 
 void PXAPI PXMIPSInstructionREGIMM(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
 {
-    const PXInt8U instructionID = pxMIPSTInstruction->RegisterTargetID;
+    const PXI8U instructionID = pxMIPSTInstruction->RegisterTargetID;
 
     pxMIPSTInstruction->Type = instructionID | PXMIPSOPCodeREGIMM;
 
@@ -1110,17 +1110,17 @@ void PXAPI PXMIPSInstructionADDImmediate(PXMIPSProcessor* const pxMIPSProcessor,
                 when an integer overflow exception occurs
                 */
 
-    const PXInt64S value = (PXInt16S)pxMIPSTInstruction->Immediate;
+    const PXI64S value = (PXI16S)pxMIPSTInstruction->Immediate;
 
 
 #if PXLogEnable
-    const PXInt64S rtBefore = pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterTargetID];
-    const PXInt64S rsBefore = pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID];
+    const PXI64S rtBefore = pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterTargetID];
+    const PXI64S rsBefore = pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID];
 #endif
 
-    const PXInt64S resukt =
-        (PXInt64U)pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID] +
-        (PXInt16S)pxMIPSTInstruction->Immediate;
+    const PXI64S resukt =
+        (PXI64U)pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID] +
+        (PXI16S)pxMIPSTInstruction->Immediate;
 
     pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID] = resukt;
     pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterTargetID] = resukt;
@@ -1157,7 +1157,7 @@ The only difference between this instruction and the ADDI instruction is that
 ADDIU instruction never causes an integer overflow exception.
 */
 
-    const PXInt64U value = (PXInt16S)pxMIPSTInstruction->Immediate;
+    const PXI64U value = (PXI16S)pxMIPSTInstruction->Immediate;
 
 #if PXLogEnable
     const PXSize rsBefore = pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID];
@@ -1184,8 +1184,8 @@ ADDIU instruction never causes an integer overflow exception.
         rsBefore,
         value,
         rtBefore,
-        (PXInt64U)pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterTargetID],
-        (PXInt64U)rsBefore,
+        (PXI64U)pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterTargetID],
+        (PXI64U)rsBefore,
         value,
         rtBefore
     );
@@ -1222,7 +1222,7 @@ in general purpose register rt
 #endif
 
     pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID] = pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterTargetID];
-    pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID] |= (PXInt64U)pxMIPSTInstruction->Immediate;
+    pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID] |= (PXI64U)pxMIPSTInstruction->Immediate;
     pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterTargetID] = pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID];
 
 #if PXLogEnable && 1
@@ -1236,11 +1236,11 @@ in general purpose register rt
         "%16i = %16i | %16i Before:%16i",
         pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterTargetID],
         rsBefore,
-        (PXInt64U)pxMIPSTInstruction->Immediate,
+        (PXI64U)pxMIPSTInstruction->Immediate,
         rtBefore,
         pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterTargetID],
         rsBefore,
-        (PXInt64U)pxMIPSTInstruction->Immediate,
+        (PXI64U)pxMIPSTInstruction->Immediate,
         rtBefore
     );
 #endif
@@ -1261,7 +1261,7 @@ void PXAPI PXMIPSInstructionLoadUpperImmediate(PXMIPSProcessor* const pxMIPSProc
     In 64-bit mode, the loaded word    is sign-extended to 64 bits.
     */
 
-    PXInt64U value = (PXInt16U)pxMIPSTInstruction->Immediate;
+    PXI64U value = (PXI16U)pxMIPSTInstruction->Immediate;
 
     value <<= 16;
 

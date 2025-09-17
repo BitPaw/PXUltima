@@ -1,7 +1,7 @@
-#ifndef PXMCAInclude
-#define PXMCAInclude
+#ifndef PXMCAIncluded
+#define PXMCAIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef struct PXMCA_
 {
@@ -9,7 +9,7 @@ typedef struct PXMCA_
 }
 PXMCA;
 
-PXPublic PXActionResult PXAPI PXMCALoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXMCASaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXMCALoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXMCASaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

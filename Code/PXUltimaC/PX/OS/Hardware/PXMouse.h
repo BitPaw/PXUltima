@@ -1,5 +1,5 @@
-#ifndef PXMouseINCLUDE
-#define PXMouseINCLUDE
+#ifndef PXMouseIncluded
+#define PXMouseIncluded
 
 #define ButtonLeft    0b00000001
 #define ButtonMiddle  0b00000010
@@ -25,10 +25,10 @@ typedef struct PXMouse_
 {
     PXF32 DeltaNormalisized[2];
     PXF32 PositionNormalisized[2];  // Convert Screenspace (width & height) to normal space -1 to +1
-    PXInt32S Position[2]; // Window-Position (0/0 to x/y)
-    PXInt32S Delta[2]; // Relative Input (-x/-y to 0/0 to x/y)
-    PXInt8U Buttons;
-    PXInt8U ButtonsDelta;
+    PXI32S Position[2]; // Window-Position (0/0 to x/y)
+    PXI32S Delta[2]; // Relative Input (-x/-y to 0/0 to x/y)
+    PXI8U Buttons;
+    PXI8U ButtonsDelta;
 }
 PXMouse;
 

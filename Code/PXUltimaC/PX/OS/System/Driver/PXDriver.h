@@ -1,7 +1,7 @@
-#ifndef PXDriverINCLUDE
-#define PXDriverINCLUDE
+#ifndef PXDriverIncluded
+#define PXDriverIncluded
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 
 typedef struct PXDriver_
 {
@@ -10,6 +10,6 @@ typedef struct PXDriver_
 }
 PXDriver;
 
-PXPublic PXActionResult PXAPI PXDriverListFetch(PXDriver** const pxDriverList, PXSize* const listSize);
+PXPublic PXResult PXAPI PXDriverListFetch(PXDriver** const pxDriverList, PXSize* const listSize);
 
 #endif

@@ -1,48 +1,48 @@
-#ifndef PXUSDINCLUDE
-#define PXUSDINCLUDE
+#ifndef PXUSDIncluded
+#define PXUSDIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 
 typedef struct PXTOCSectionTokens_
 {
-    PXInt64U NumberOfTokens;    // 
-    PXInt64U SizeUncompressed;  // Must be bigger than 3 and (3 + NumberOfTokens)
-    PXInt64U SizeCompressed;    // Compressed with LZ4
+    PXI64U NumberOfTokens;    // 
+    PXI64U SizeUncompressed;  // Must be bigger than 3 and (3 + NumberOfTokens)
+    PXI64U SizeCompressed;    // Compressed with LZ4
     char* TokenListCompressed;  // List of NULL terminated strings
 }
 PXTOCSectionTokens;
 
 typedef struct PXTOCSectionStrings_
 {
-    PXInt64U AmountOFElemets;
-    PXInt32U* Data;
+    PXI64U AmountOFElemets;
+    PXI32U* Data;
 }
 PXTOCSectionStrings;
 
 typedef struct PXTOCSectionFields_
 {
-    PXInt64U AmountOFFields;
+    PXI64U AmountOFFields;
 
-    PXInt32U* FieldList;
+    PXI32U* FieldList;
 }
 PXTOCSectionFields;
 
 typedef struct PXTOCSectionFieldSets_
 {
-    PXInt64U AmountOFFieldsSets;
+    PXI64U AmountOFFieldsSets;
 }
 PXTOCSectionFieldSets;
 
 typedef struct PXTOCSectionSpecs_
 {
-    PXInt64U AmountOFFieldsSpecs;
+    PXI64U AmountOFFieldsSpecs;
 }
 PXTOCSectionSpecs;
 
 typedef struct PXTOCSectionPaths_
 {
-    PXInt64U AmountOfPaths;
+    PXI64U AmountOfPaths;
 }
 PXTOCSectionPaths;
 
@@ -50,8 +50,8 @@ PXTOCSectionPaths;
 typedef struct PXTOCSection_
 {
     char Name[16];
-    PXInt64U OffsetStart;
-    PXInt64U BlockSize;
+    PXI64U OffsetStart;
+    PXI64U BlockSize;
 
     union
     {
@@ -87,8 +87,8 @@ typedef struct PXUSDC_
     PXSize TOCSectionCounterFieldsets;
     PXSize TOCSectionCounterSpecs;
 
-    PXInt64U TOCOffset;
-    PXInt64U TOCSectionsAmount;
+    PXI64U TOCOffset;
+    PXI64U TOCSectionsAmount;
     PXTOCSection* TOCSectionList;
 }
 PXUSDC;
@@ -104,16 +104,16 @@ PXUSDC;
 typedef struct PXUSDEntry
 {
     char* Name;
-    char* Include;
+    char* Included;
 
     PXF64 Position[3];
     PXF32 Rotation[3];
     PXF32 Scale[3];
 
-    PXInt8U Flags;
+    PXI8U Flags;
 
-    PXInt8U NameSize;
-    PXInt8U IncludeSize;
+    PXI8U NameSize;
+    PXI8U IncludedSize;
 }
 PXUSDEntry;
 
@@ -137,12 +137,12 @@ typedef struct PXUSD_
 PXUSD;
 
 
-PXPrivate PXActionResult PXAPI PXUSDCSectionTokensLoad(PXFile* const pxFile, PXTOCSectionTokens* const pxTOCSectionTokens);
-PXPrivate PXActionResult PXAPI PXUSDCSectionStringsLoad(PXFile* const pxFile, PXTOCSectionStrings* const pxTOCSectionStrings);
-PXPrivate PXActionResult PXAPI PXUSDCSectionFields(PXFile* const pxFile, PXTOCSectionFields* const pxTOCSectionFields);
-PXPrivate PXActionResult PXAPI PXUSDCSectionFieldSets(PXFile* const pxFile, PXTOCSectionFieldSets* const pxTOCSectionFieldSets);
-PXPrivate PXActionResult PXAPI PXUSDCSectionSpecs(PXFile* const pxFile, PXTOCSectionSpecs* const pxTOCSectionSpecs);
-PXPrivate PXActionResult PXAPI PXUSDCSectionPaths(PXFile* const pxFile, PXTOCSectionPaths* const pxTOCSectionPaths);
+PXPrivate PXResult PXAPI  PXUSDCSectionTokensLoad(PXFile* const pxFile, PXTOCSectionTokens* const pxTOCSectionTokens);
+PXPrivate PXResult PXAPI  PXUSDCSectionStringsLoad(PXFile* const pxFile, PXTOCSectionStrings* const pxTOCSectionStrings);
+PXPrivate PXResult PXAPI  PXUSDCSectionFields(PXFile* const pxFile, PXTOCSectionFields* const pxTOCSectionFields);
+PXPrivate PXResult PXAPI  PXUSDCSectionFieldSets(PXFile* const pxFile, PXTOCSectionFieldSets* const pxTOCSectionFieldSets);
+PXPrivate PXResult PXAPI  PXUSDCSectionSpecs(PXFile* const pxFile, PXTOCSectionSpecs* const pxTOCSectionSpecs);
+PXPrivate PXResult PXAPI  PXUSDCSectionPaths(PXFile* const pxFile, PXTOCSectionPaths* const pxTOCSectionPaths);
 
 
 PXPrivate void PXAPI PXUSDParsePropertysScene(PXUSDA* const pxUSDA, PXCompiler* const pxCompiler);
@@ -165,11 +165,11 @@ PXPrivate void PXAPI PXUSDAParseEntryPropertyDouble3(PXUSDEntry* const pxUSDEntr
 PXPrivate void PXAPI PXUSDAParseEntryPropertyUniform(PXUSDEntry* const pxUSDEntry, PXCompiler* const pxCompiler);
 
 
-PXPrivate PXActionResult PXAPI PXUSDALoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPrivate PXActionResult PXAPI PXUSDCLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPrivate PXActionResult PXAPI PXUSDZLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPrivate PXResult PXAPI  PXUSDALoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPrivate PXResult PXAPI  PXUSDCLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPrivate PXResult PXAPI  PXUSDZLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
 
-PXPublic PXActionResult PXAPI PXUSDLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXUSDSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXUSDLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXUSDSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

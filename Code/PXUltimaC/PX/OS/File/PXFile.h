@@ -1,5 +1,5 @@
-#ifndef PXFileINCLUDE
-#define PXFileINCLUDE
+#ifndef PXFileIncluded
+#define PXFileIncluded
 
 //---------------------------------------------------------
 // Settings
@@ -15,7 +15,7 @@
 #include <stdio.h>
 #include <wchar.h>
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 
 #include <PX/Media/PXType.h>
 #include <PX/Media/PXText.h>
@@ -88,7 +88,7 @@ typedef struct PXFileOpenInfo_
 
     PXAccessMode AccessMode;
     PXMemoryCachingMode MemoryCachingMode;
-    PXInt32U FlagList;
+    PXI32U FlagList;
 
     // if we write a file, we can preallocate a size. If not this value is ignored
     PXSize FileSizeRequest;
@@ -100,8 +100,8 @@ PXFileOpenInfo;
 
 
 
-PXPublic PXActionResult PXAPI PXFileFormatInfoViaPath(PXFileFormatInfo* const pxFileFormatInfo, const PXText* const filePath);
-PXPublic PXActionResult PXAPI PXFileFormatInfoViaContent(PXFileFormatInfo* const pxFileFormatInfo, PXFile* const pxFile);
+PXPublic PXResult PXAPI PXFileFormatInfoViaPath(PXFileFormatInfo* const pxFileFormatInfo, const PXText* const filePath);
+PXPublic PXResult PXAPI PXFileFormatInfoViaContent(PXFileFormatInfo* const pxFileFormatInfo, PXFile* const pxFile);
 
 
 
@@ -116,10 +116,10 @@ PXPublic void PXAPI PXTypeEntryInfo
 //---<Utility>---------------------------------------------------------
 PXPublic PXBool PXAPI PXFileDoesExist(const PXText* const filePath);
 PXPublic PXBool PXAPI PXFileDoesExistA(const char* const filePath);
-PXPublic PXActionResult PXAPI PXFileRemove(const PXText* const filePath);
-PXPublic PXActionResult PXAPI PXFileRename(const PXText* const oldName, const PXText* const newName);
+PXPublic PXResult PXAPI PXFileRemove(const PXText* const filePath);
+PXPublic PXResult PXAPI PXFileRename(const PXText* const oldName, const PXText* const newName);
 
-PXPublic PXActionResult PXAPI PXFileCopy(const PXText* const sourceFilePath, const PXText* const destinationFilePath, const PXBool overrideIfExists);
+PXPublic PXResult PXAPI PXFileCopy(const PXText* const sourceFilePath, const PXText* const destinationFilePath, const PXBool overrideIfExists);
 
 //PXPublic void PXFilePathSwapFile(const wchar_t* currnetPath, wchar_t* targetPath, const wchar_t* newFileName);
 
@@ -134,16 +134,16 @@ PXPublic void PXAPI PXFilePathRelativeFromFileA
     PXSize* const pathResultSize
 );
 
-PXPublic PXActionResult PXAPI PXFilePathRelativeFromFile(const PXFile* const pxFile, const PXText* const targetPath, PXText* const resultPath);
+PXPublic PXResult PXAPI PXFilePathRelativeFromFile(const PXFile* const pxFile, const PXText* const targetPath, PXText* const resultPath);
 
 
-PXPublic PXActionResult PXAPI PXFilePathSwapFileName(const PXText* const inputPath, PXText* const exportPath, const PXText* const fileName);
+PXPublic PXResult PXAPI PXFilePathSwapFileName(const PXText* const inputPath, PXText* const exportPath, const PXText* const fileName);
 PXPublic void PXAPI PXFilePathSwapExtension(const PXText* const inputPath, PXText* const exportPath);
 
 //---------------------------------------------------------------------
 
 
-PXPublic PXActionResult PXAPI PXFileName(const PXFile* const pxFile, PXText* const fileName);
+PXPublic PXResult PXAPI PXFileName(const PXFile* const pxFile, PXText* const fileName);
 PXPublic PXBool PXAPI PXFileDirectoryPathExtract(const PXText* const path, PXText* const directoryPath);
 
 
@@ -156,8 +156,8 @@ typedef struct PXFilePathStructure_
 }
 PXFilePathStructure;
 
-PXPublic PXActionResult PXAPI PXFilePathSplitt(const PXText* const fullPath, PXFilePathStructure* const pxFilePathStructure);
-PXPublic PXActionResult PXAPI PXFilePathCombine(PXText* const fullPath, PXFilePathStructure* const pxFilePathStructure);
+PXPublic PXResult PXAPI PXFilePathSplitt(const PXText* const fullPath, PXFilePathStructure* const pxFilePathStructure);
+PXPublic PXResult PXAPI PXFilePathCombine(PXText* const fullPath, PXFilePathStructure* const pxFilePathStructure);
 
 
 
@@ -177,17 +177,17 @@ PXPublic PXBool PXAPI PXFileKeyValueFetch(PXFile* const pxFile, PXTypeBinding* c
 //---------------------------------------------------------------------
 
 //---<Convert>---------------------------------------------------------
-PXPrivate PXInt32U PXAPI PXFileMemoryCachingModeConvertToID(const PXMemoryCachingMode pxMemoryCachingMode);
+PXPrivate PXI32U PXAPI PXFileMemoryCachingModeConvertToID(const PXMemoryCachingMode pxMemoryCachingMode);
 //---------------------------------------------------------------------
 
 //---<I/O>-------------------------------------------------------------
-PXPublic PXActionResult PXAPI PXFileOpen(PXFile* const pxFile, PXFileOpenInfo* const pxFileIOInfo);
-PXPublic PXActionResult PXAPI PXFileClose(PXFile* const pxFile);
+PXPublic PXResult PXAPI PXFileOpen(PXFile* const pxFile, PXFileOpenInfo* const pxFileIOInfo);
+PXPublic PXResult PXAPI PXFileClose(PXFile* const pxFile);
 //---------------------------------------------------------------------
 
 //---<Mapping>---------------------------------------------------------
-PXPublic PXActionResult PXAPI PXFileMapToMemory(PXFile* const pxFile, const PXSize size, const PXAccessMode protectionMode);
-PXPublic PXActionResult PXAPI PXFileUnmapFromMemory(PXFile* const pxFile);
+PXPublic PXResult PXAPI PXFileMapToMemory(PXFile* const pxFile, const PXSize size, const PXAccessMode protectionMode);
+PXPublic PXResult PXAPI PXFileUnmapFromMemory(PXFile* const pxFile);
 //---------------------------------------------------------------------
 
 //---<Parsing Utility>-----------------------------------------------------
@@ -209,7 +209,7 @@ PXPublic void PXAPI PXFileCursorToBeginning(PXFile* const pxFile);
 PXPublic PXSize PXAPI PXFileCursorPeek(PXFile* const pxFile, void* const data, const PXSize steps);
 PXPublic PXSize PXAPI PXFileCursorAdvance(PXFile* const pxFile, const PXSize steps);
 PXPublic PXSize PXAPI PXFileCursorRewind(PXFile* const pxFile, const PXSize steps);
-PXPublic PXSize PXAPI PXFileCursorOffset(PXFile* const pxFile, const PXInt32S offset);
+PXPublic PXSize PXAPI PXFileCursorOffset(PXFile* const pxFile, const PXI32S offset);
 PXPublic void PXAPI PXFileCursorToEnd(PXFile* const pxFile);
 //-------------------------------------------------------------------------
 
@@ -235,45 +235,45 @@ PXPublic PXSize PXAPI PXFileCursorPositionTerminate(PXFile* const pxFile);
 
 PXPublic PXSize PXAPI PXFileDataCopy(PXFile* const pxInputStream, PXFile* const pxOutputStream, const PXSize length);
 
-PXPublic PXSize PXAPI PXFileReadTextIU8(PXFile* const pxFile, PXInt8U* const number);
+PXPublic PXSize PXAPI PXFileReadTextIU8(PXFile* const pxFile, PXI8U* const number);
 PXPublic PXSize PXAPI PXFileReadTextI(PXFile* const pxFile, int* const number);
 
-PXPublic PXSize PXAPI PXFileReadType(PXFile* const pxFile, void* const valueAdress, const PXInt32U type);
+PXPublic PXSize PXAPI PXFileReadType(PXFile* const pxFile, void* const valueAdress, const PXI32U type);
 
 PXPublic PXSize PXAPI PXFileReadIXXE(PXFile* const pxFile, void* const valueAdress, const PXSize valueSize, const PXEndian pxEndian);
 PXPublic PXSize PXAPI PXFileReadIXXVE(PXFile* const pxFile, void** const valueList, const PXSize valueListSize, const PXSize valueSizeSingle, const PXEndian pxEndian);
 
-PXPublic PXSize PXAPI PXFileReadI8S(PXFile* const pxFile, PXInt8S* const value);
-PXPublic PXSize PXAPI PXFileReadI8SV(PXFile* const pxFile, PXInt8S* const valueList, const PXSize valueListSize);
-PXPublic PXSize PXAPI PXFileReadI8U(PXFile* const pxFile, PXInt8U* const value);
-PXPublic PXSize PXAPI PXFileReadI8UV(PXFile* const pxFile, PXInt8U* const valueList, const PXSize valueListSize);
+PXPublic PXSize PXAPI PXFileReadI8S(PXFile* const pxFile, PXI8S* const value);
+PXPublic PXSize PXAPI PXFileReadI8SV(PXFile* const pxFile, PXI8S* const valueList, const PXSize valueListSize);
+PXPublic PXSize PXAPI PXFileReadI8U(PXFile* const pxFile, PXI8U* const value);
+PXPublic PXSize PXAPI PXFileReadI8UV(PXFile* const pxFile, PXI8U* const valueList, const PXSize valueListSize);
 
-PXPublic PXSize PXAPI PXFileReadI16S(PXFile* const pxFile, PXInt16S* const value);
-PXPublic PXSize PXAPI PXFileReadI16SV(PXFile* const pxFile, PXInt16S* const valueList, const PXSize valueListSize);
-PXPublic PXSize PXAPI PXFileReadI16SE(PXFile* const pxFile, PXInt16S* const value, const PXEndian pxEndian);
-PXPublic PXSize PXAPI PXFileReadI16SVE(PXFile* const pxFile, PXInt16S* const valueList, const PXSize valueListSize, const PXEndian pxEndian);
-PXPublic PXSize PXAPI PXFileReadI16U(PXFile* const pxFile, PXInt16U* const value);
-PXPublic PXSize PXAPI PXFileReadI16UV(PXFile* const pxFile, PXInt16U* const valueList, const PXSize valueListSize);
-PXPublic PXSize PXAPI PXFileReadI16UE(PXFile* const pxFile, PXInt16U* const value, const PXEndian pxEndian);
-PXPublic PXSize PXAPI PXFileReadI16UVE(PXFile* const pxFile, PXInt16U** const valueList, const PXSize valueListSize, const PXEndian pxEndian);
+PXPublic PXSize PXAPI PXFileReadI16S(PXFile* const pxFile, PXI16S* const value);
+PXPublic PXSize PXAPI PXFileReadI16SV(PXFile* const pxFile, PXI16S* const valueList, const PXSize valueListSize);
+PXPublic PXSize PXAPI PXFileReadI16SE(PXFile* const pxFile, PXI16S* const value, const PXEndian pxEndian);
+PXPublic PXSize PXAPI PXFileReadI16SVE(PXFile* const pxFile, PXI16S* const valueList, const PXSize valueListSize, const PXEndian pxEndian);
+PXPublic PXSize PXAPI PXFileReadI16U(PXFile* const pxFile, PXI16U* const value);
+PXPublic PXSize PXAPI PXFileReadI16UV(PXFile* const pxFile, PXI16U* const valueList, const PXSize valueListSize);
+PXPublic PXSize PXAPI PXFileReadI16UE(PXFile* const pxFile, PXI16U* const value, const PXEndian pxEndian);
+PXPublic PXSize PXAPI PXFileReadI16UVE(PXFile* const pxFile, PXI16U** const valueList, const PXSize valueListSize, const PXEndian pxEndian);
 
-PXPublic PXSize PXAPI PXFileReadI32S(PXFile* const pxFile, PXInt32S* const value);
-PXPublic PXSize PXAPI PXFileReadI32SV(PXFile* const pxFile, PXInt32S* const valueList, const PXSize valueListSize);
-PXPublic PXSize PXAPI PXFileReadI32SE(PXFile* const pxFile, PXInt32S* const value, const PXEndian pxEndian);
-PXPublic PXSize PXAPI PXFileReadI32SVE(PXFile* const pxFile, PXInt32S* const valueList, const PXSize valueListSize, const PXEndian pxEndian);
-PXPublic PXSize PXAPI PXFileReadI32U(PXFile* const pxFile, PXInt32U* const value);
-PXPublic PXSize PXAPI PXFileReadI32UV(PXFile* const pxFile, PXInt32U* const valueList, const PXSize valueListSize);
-PXPublic PXSize PXAPI PXFileReadI32UE(PXFile* const pxFile, PXInt32U* const value, const PXEndian pxEndian);
-PXPublic PXSize PXAPI PXFileReadI32UVE(PXFile* const pxFile, PXInt32U** const valueList, const PXSize valueListSize, const PXEndian pxEndian);
+PXPublic PXSize PXAPI PXFileReadI32S(PXFile* const pxFile, PXI32S* const value);
+PXPublic PXSize PXAPI PXFileReadI32SV(PXFile* const pxFile, PXI32S* const valueList, const PXSize valueListSize);
+PXPublic PXSize PXAPI PXFileReadI32SE(PXFile* const pxFile, PXI32S* const value, const PXEndian pxEndian);
+PXPublic PXSize PXAPI PXFileReadI32SVE(PXFile* const pxFile, PXI32S* const valueList, const PXSize valueListSize, const PXEndian pxEndian);
+PXPublic PXSize PXAPI PXFileReadI32U(PXFile* const pxFile, PXI32U* const value);
+PXPublic PXSize PXAPI PXFileReadI32UV(PXFile* const pxFile, PXI32U* const valueList, const PXSize valueListSize);
+PXPublic PXSize PXAPI PXFileReadI32UE(PXFile* const pxFile, PXI32U* const value, const PXEndian pxEndian);
+PXPublic PXSize PXAPI PXFileReadI32UVE(PXFile* const pxFile, PXI32U** const valueList, const PXSize valueListSize, const PXEndian pxEndian);
 
-PXPublic PXSize PXAPI PXFileReadI64S(PXFile* const pxFile, PXInt64S* const value);
-PXPublic PXSize PXAPI PXFileReadI64SV(PXFile* const pxFile, PXInt64S* const valueList, const PXSize valueListSize);
-PXPublic PXSize PXAPI PXFileReadI64SE(PXFile* const pxFile, PXInt64S* const value, const PXEndian pxEndian);
-PXPublic PXSize PXAPI PXFileReadI64VE(PXFile* const pxFile, PXInt64S* const valueList, const PXSize valueListSize, const PXEndian pxEndian);
-PXPublic PXSize PXAPI PXFileReadI64U(PXFile* const pxFile, PXInt64U* const value);
-PXPublic PXSize PXAPI PXFileReadI64UV(PXFile* const pxFile, PXInt64U* const valueList, const PXSize valueListSize);
-PXPublic PXSize PXAPI PXFileReadI64UE(PXFile* const pxFile, PXInt64U* const value, const PXEndian pxEndian);
-PXPublic PXSize PXAPI PXFileReadI64UVE(PXFile* const pxFile, PXInt64U* const valueList, const PXSize valueListSize, const PXEndian pxEndian);
+PXPublic PXSize PXAPI PXFileReadI64S(PXFile* const pxFile, PXI64S* const value);
+PXPublic PXSize PXAPI PXFileReadI64SV(PXFile* const pxFile, PXI64S* const valueList, const PXSize valueListSize);
+PXPublic PXSize PXAPI PXFileReadI64SE(PXFile* const pxFile, PXI64S* const value, const PXEndian pxEndian);
+PXPublic PXSize PXAPI PXFileReadI64VE(PXFile* const pxFile, PXI64S* const valueList, const PXSize valueListSize, const PXEndian pxEndian);
+PXPublic PXSize PXAPI PXFileReadI64U(PXFile* const pxFile, PXI64U* const value);
+PXPublic PXSize PXAPI PXFileReadI64UV(PXFile* const pxFile, PXI64U* const valueList, const PXSize valueListSize);
+PXPublic PXSize PXAPI PXFileReadI64UE(PXFile* const pxFile, PXI64U* const value, const PXEndian pxEndian);
+PXPublic PXSize PXAPI PXFileReadI64UVE(PXFile* const pxFile, PXI64U* const valueList, const PXSize valueListSize, const PXEndian pxEndian);
 
 PXPublic PXSize PXAPI PXFileReadF(PXFile* const pxFile, PXF32* const value);
 PXPublic PXSize PXAPI PXFileReadFV(PXFile* const pxFile, PXF32* const valueList, const PXSize valueListSize);
@@ -291,9 +291,9 @@ PXPublic PXSize PXAPI PXFileReadDV(PXFile* const pxFile, double* const valueList
 // Read or write a defined binding.
 // Requires a list of types and a struct of the data that is to be used.
 // The data list and struct have to be the same!
-PXPublic PXSize PXAPI PXFileBinding(PXFile* const pxFile, void* const dataStruct, const PXInt32U* listOfTypes, const PXSize listOfTypesAmount, const PXInt8U flags);
+PXPublic PXSize PXAPI PXFileBinding(PXFile* const pxFile, void* const dataStruct, const PXI32U* listOfTypes, const PXSize listOfTypesAmount, const PXI8U flags);
 
-PXPublic PXSize PXAPI PXFileDataWidthCalculate(PXFile* const pxFile, const PXInt32U type);
+PXPublic PXSize PXAPI PXFileDataWidthCalculate(PXFile* const pxFile, const PXI32U type);
 
 // Read a batch of values. Improved fetch speed
 PXPublic PXSize PXAPI PXFileReadMultible(PXFile* const pxFile, const PXTypeEntry* const pxFileElementList, const PXSize pxFileElementListFullSize);
@@ -307,9 +307,9 @@ PXPublic PXSize PXAPI PXFileIOMultible(PXFile* const pxFile, const PXTypeEntry* 
 PXPublic PXSize PXAPI PXFileReadB(PXFile* const pxFile, void* const value, const PXSize length);
 
 // read Text
-PXPublic PXSize PXAPI PXFileReadTextA(PXFile* const pxFile, PXTextASCII value, const PXSize length);
-PXPublic PXSize PXAPI PXFileReadTextW(PXFile* const pxFile, PXTextUNICODE value, const PXSize length);
-PXPublic PXSize PXAPI PXFileReadTextU(PXFile* const pxFile, PXTextUNICODE value, const PXSize length);
+PXPublic PXSize PXAPI PXFileReadA(PXFile* const pxFile, PXASCII* value, const PXSize length);
+PXPublic PXSize PXAPI PXFileReadW(PXFile* const pxFile, PXUNICODE* value, const PXSize length);
+PXPublic PXSize PXAPI PXFileTextU(PXFile* const pxFile, PXUTF8* value, const PXSize length);
 
 PXPublic void PXAPI PXFileReadUntil(PXFile* const pxFile, void* value, const PXSize length, const char character);
 
@@ -324,7 +324,7 @@ PXPublic PXSize PXAPI PXFileByteSwap(PXFile* const pxFileTarget, PXFile* const p
 // Slower version of Read(), this function can't fail.
 //PXSize ReadSafe(Byte__* value, const PXSize length);
 
-PXPublic PXBool PXAPI PXFileReadAndCompareI64U(PXFile* const pxFile, const PXInt64U value);
+PXPublic PXBool PXAPI PXFileReadAndCompareI64U(PXFile* const pxFile, const PXI64U value);
 
 
 PXPublic PXBool PXAPI PXFileReadAndCompare(PXFile* const pxFile, const void* value, const PXSize length);
@@ -335,41 +335,41 @@ PXPublic PXBool PXAPI PXFileReadAndCompareV(PXFile* const pxFile, const void** c
 //-------------------------------------------------------------------------
 
 //-------------------------------------------------------------------------
-PXPublic PXSize PXAPI PXFileWriteI8S(PXFile* const pxFile, const PXInt8S value);
-PXPublic PXSize PXAPI PXFileWriteI8SV(PXFile* const pxFile, const PXInt8S* const valueList, const PXSize valueListSize);
-PXPublic PXSize PXAPI PXFileWriteI8U(PXFile* const pxFile, const PXInt8U value);
-PXPublic PXSize PXAPI PXFileWriteAtI8U(PXFile* const pxFile, const PXInt8U value, const PXSize index);
-PXPublic PXSize PXAPI PXFileWriteI8UV(PXFile* const pxFile, const PXInt8U* const valueList, const PXSize valueListSize);
+PXPublic PXSize PXAPI PXFileWriteI8S(PXFile* const pxFile, const PXI8S value);
+PXPublic PXSize PXAPI PXFileWriteI8SV(PXFile* const pxFile, const PXI8S* const valueList, const PXSize valueListSize);
+PXPublic PXSize PXAPI PXFileWriteI8U(PXFile* const pxFile, const PXI8U value);
+PXPublic PXSize PXAPI PXFileWriteAtI8U(PXFile* const pxFile, const PXI8U value, const PXSize index);
+PXPublic PXSize PXAPI PXFileWriteI8UV(PXFile* const pxFile, const PXI8U* const valueList, const PXSize valueListSize);
 
-PXPublic PXSize PXAPI PXFileWriteI16S(PXFile* const pxFile, const PXInt16S value);
-PXPublic PXSize PXAPI PXFileWriteI16SV(PXFile* const pxFile, const PXInt16S* const valueList, const PXSize valueListSize);
-PXPublic PXSize PXAPI PXFileWriteI16SE(PXFile* const pxFile, const PXInt16S value, const PXEndian pxEndian);
-PXPublic PXSize PXAPI PXFileWriteI16SVE(PXFile* const pxFile, const PXInt16S* const valueList, const PXSize valueListSize, const PXEndian pxEndian);
-PXPublic PXSize PXAPI PXFileWriteI16U(PXFile* const pxFile, const PXInt16U value);
-PXPublic PXSize PXAPI PXFileWriteAtI16U(PXFile* const pxFile, const PXInt16U value, const PXSize index);
-PXPublic PXSize PXAPI PXFileWriteI16UV(PXFile* const pxFile, const PXInt16U* const valueList, const PXSize valueListSize);
-PXPublic PXSize PXAPI PXFileWriteI16UE(PXFile* const pxFile, const PXInt16U value, const PXEndian pxEndian);
-PXPublic PXSize PXAPI PXFileWriteI16UVE(PXFile* const pxFile, const PXInt16U* const valueList, const PXSize valueListSize, const PXEndian pxEndian);
+PXPublic PXSize PXAPI PXFileWriteI16S(PXFile* const pxFile, const PXI16S value);
+PXPublic PXSize PXAPI PXFileWriteI16SV(PXFile* const pxFile, const PXI16S* const valueList, const PXSize valueListSize);
+PXPublic PXSize PXAPI PXFileWriteI16SE(PXFile* const pxFile, const PXI16S value, const PXEndian pxEndian);
+PXPublic PXSize PXAPI PXFileWriteI16SVE(PXFile* const pxFile, const PXI16S* const valueList, const PXSize valueListSize, const PXEndian pxEndian);
+PXPublic PXSize PXAPI PXFileWriteI16U(PXFile* const pxFile, const PXI16U value);
+PXPublic PXSize PXAPI PXFileWriteAtI16U(PXFile* const pxFile, const PXI16U value, const PXSize index);
+PXPublic PXSize PXAPI PXFileWriteI16UV(PXFile* const pxFile, const PXI16U* const valueList, const PXSize valueListSize);
+PXPublic PXSize PXAPI PXFileWriteI16UE(PXFile* const pxFile, const PXI16U value, const PXEndian pxEndian);
+PXPublic PXSize PXAPI PXFileWriteI16UVE(PXFile* const pxFile, const PXI16U* const valueList, const PXSize valueListSize, const PXEndian pxEndian);
 
-PXPublic PXSize PXAPI PXFileWriteI32S(PXFile* const pxFile, const PXInt32S value);
-PXPublic PXSize PXAPI PXFileWriteI32SV(PXFile* const pxFile, const PXInt32S* const valueList, const PXSize valueListSize);
-PXPublic PXSize PXAPI PXFileWriteI32SE(PXFile* const pxFile, const PXInt32S value, const PXEndian pxEndian);
-PXPublic PXSize PXAPI PXFileWriteI32SVE(PXFile* const pxFile, const PXInt32S* const valueList, const PXSize valueListSize, const PXEndian pxEndian);
-PXPublic PXSize PXAPI PXFileWriteI32U(PXFile* const pxFile, const PXInt32U value);
-PXPublic PXSize PXAPI PXFileWriteAtI32U(PXFile* const pxFile, const PXInt32U value, const PXSize index);
-PXPublic PXSize PXAPI PXFileWriteI32UV(PXFile* const pxFile, const PXInt32U* const valueList, const PXSize valueListSize);
-PXPublic PXSize PXAPI PXFileWriteI32UE(PXFile* const pxFile, const PXInt32U value, const PXEndian pxEndian);
-PXPublic PXSize PXAPI PXFileWriteAtI32UE(PXFile* const pxFile, const PXInt32U value, const PXEndian pxEndian, const PXSize index);
-PXPublic PXSize PXAPI PXFileWriteI32UVE(PXFile* const pxFile, const PXInt32U* const valueList, const PXSize valueListSize, const PXEndian pxEndian);
+PXPublic PXSize PXAPI PXFileWriteI32S(PXFile* const pxFile, const PXI32S value);
+PXPublic PXSize PXAPI PXFileWriteI32SV(PXFile* const pxFile, const PXI32S* const valueList, const PXSize valueListSize);
+PXPublic PXSize PXAPI PXFileWriteI32SE(PXFile* const pxFile, const PXI32S value, const PXEndian pxEndian);
+PXPublic PXSize PXAPI PXFileWriteI32SVE(PXFile* const pxFile, const PXI32S* const valueList, const PXSize valueListSize, const PXEndian pxEndian);
+PXPublic PXSize PXAPI PXFileWriteI32U(PXFile* const pxFile, const PXI32U value);
+PXPublic PXSize PXAPI PXFileWriteAtI32U(PXFile* const pxFile, const PXI32U value, const PXSize index);
+PXPublic PXSize PXAPI PXFileWriteI32UV(PXFile* const pxFile, const PXI32U* const valueList, const PXSize valueListSize);
+PXPublic PXSize PXAPI PXFileWriteI32UE(PXFile* const pxFile, const PXI32U value, const PXEndian pxEndian);
+PXPublic PXSize PXAPI PXFileWriteAtI32UE(PXFile* const pxFile, const PXI32U value, const PXEndian pxEndian, const PXSize index);
+PXPublic PXSize PXAPI PXFileWriteI32UVE(PXFile* const pxFile, const PXI32U* const valueList, const PXSize valueListSize, const PXEndian pxEndian);
 
-PXPublic PXSize PXAPI PXFileWriteI64S(PXFile* const pxFile, const PXInt64S value);
-PXPublic PXSize PXAPI PXFileWriteI64SV(PXFile* const pxFile, const PXInt64S* const valueList, const PXSize valueListSize);
-PXPublic PXSize PXAPI PXFileWriteI64SE(PXFile* const pxFile, const PXInt64S value, const PXEndian pxEndian);
-PXPublic PXSize PXAPI PXFileWriteI64VE(PXFile* const pxFile, const PXInt64S* const valueList, const PXSize valueListSize, const PXEndian pxEndian);
-PXPublic PXSize PXAPI PXFileWriteI64U(PXFile* const pxFile, const PXInt64U value);
-PXPublic PXSize PXAPI PXFileWriteI64UV(PXFile* const pxFile, const PXInt64U* const valueList, const PXSize valueListSize);
-PXPublic PXSize PXAPI PXFileWriteI64UE(PXFile* const pxFile, const PXInt64U value, const PXEndian pxEndian);
-PXPublic PXSize PXAPI PXFileWriteI64UVE(PXFile* const pxFile, const PXInt64U* const valueList, const PXSize valueListSize, const PXEndian pxEndian);
+PXPublic PXSize PXAPI PXFileWriteI64S(PXFile* const pxFile, const PXI64S value);
+PXPublic PXSize PXAPI PXFileWriteI64SV(PXFile* const pxFile, const PXI64S* const valueList, const PXSize valueListSize);
+PXPublic PXSize PXAPI PXFileWriteI64SE(PXFile* const pxFile, const PXI64S value, const PXEndian pxEndian);
+PXPublic PXSize PXAPI PXFileWriteI64VE(PXFile* const pxFile, const PXI64S* const valueList, const PXSize valueListSize, const PXEndian pxEndian);
+PXPublic PXSize PXAPI PXFileWriteI64U(PXFile* const pxFile, const PXI64U value);
+PXPublic PXSize PXAPI PXFileWriteI64UV(PXFile* const pxFile, const PXI64U* const valueList, const PXSize valueListSize);
+PXPublic PXSize PXAPI PXFileWriteI64UE(PXFile* const pxFile, const PXI64U value, const PXEndian pxEndian);
+PXPublic PXSize PXAPI PXFileWriteI64UVE(PXFile* const pxFile, const PXI64U* const valueList, const PXSize valueListSize, const PXEndian pxEndian);
 
 PXPublic PXSize PXAPI PXFileWriteF(PXFile* const pxFile, const PXF32 value);
 PXPublic PXSize PXAPI PXFileWriteFV(PXFile* const pxFile, const PXF32* const valueList, const PXSize valueListSize);
@@ -377,7 +377,7 @@ PXPublic PXSize PXAPI PXFileWriteFV(PXFile* const pxFile, const PXF32* const val
 PXPublic PXSize PXAPI PXFileWriteD(PXFile* const pxFile, const double value);
 PXPublic PXSize PXAPI PXFileWriteDV(PXFile* const pxFile, const double* const valueList, const PXSize valueListSize);
 
-PXPublic PXSize PXAPI PXFileWriteInternMove(PXFile* const pxFile, const PXInt16S offset, const PXSize length);
+PXPublic PXSize PXAPI PXFileWriteInternMove(PXFile* const pxFile, const PXI16S offset, const PXSize length);
 
 PXPublic PXSize PXAPI PXFileWriteB(PXFile* const pxFile, const void* const value, const PXSize length);
 PXPublic PXSize PXAPI PXFileWriteAtB(PXFile* const pxFile, const void* const data, const PXSize dataSize, const PXSize index);
@@ -400,7 +400,7 @@ PXPublic PXSize PXAPI PXFileWriteAF(PXFile* const pxFile, const char* const form
 PXPublic PXSize PXAPI PXFileWriteWF(PXFile* const pxFile, const wchar_t* const format, ...);
 
 // If a file is mapped, we can store 
-PXPublic PXActionResult PXAPI PXFileStoreOnDiskA(PXFile* const pxFile, const char* fileName);
+PXPublic PXResult PXAPI PXFileStoreOnDiskA(PXFile* const pxFile, const char* fileName);
 
 //-------------------------------------------------------------------------
 
@@ -417,7 +417,7 @@ PXPublic PXSize PXAPI PXFileReadBits(PXFile* const pxFile, const PXSize amountOf
 PXPublic PXSize PXAPI PXFileWriteBits(PXFile* const pxFile, const PXSize bitData, const PXSize amountOfBits);
 //-------------------------------------------------------------------------
 
-PXPublic PXActionResult PXAPI PXFileTimeGet
+PXPublic PXResult PXAPI PXFileTimeGet
 (
     const PXFile* const pxFile,
     PXTime* const pxTimeCreation,
@@ -425,9 +425,9 @@ PXPublic PXActionResult PXAPI PXFileTimeGet
     PXTime* const pxTimeWriteLast
 );
 
-PXPublic PXActionResult PXAPI PXFilePathSet(PXFile* const pxFile, const PXText* const filePath);
-PXPublic PXActionResult PXAPI PXFilePathGet(const PXFile* const pxFile, PXText* const filePath);
-PXPublic PXActionResult PXAPI PXFilePathGetA(PXFile* const pxFile, char* const filePath, const PXSize filePathSize, PXSize* const sizeWritten);
-PXPublic PXActionResult PXAPI PXFIlePathGetLong(PXText* const pxTextInput, PXText* const pxTextOutput);
+PXPublic PXResult PXAPI PXFilePathSet(PXFile* const pxFile, const PXText* const filePath);
+PXPublic PXResult PXAPI PXFilePathGet(const PXFile* const pxFile, PXText* const filePath);
+PXPublic PXResult PXAPI PXFilePathGetA(PXFile* const pxFile, char* const filePath, const PXSize filePathSize, PXSize* const sizeWritten);
+PXPublic PXResult PXAPI PXFIlePathGetLong(PXText* const pxTextInput, PXText* const pxTextOutput);
 
 #endif

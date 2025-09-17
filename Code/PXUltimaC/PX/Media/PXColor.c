@@ -2,22 +2,22 @@
 
 #include <PX/Math/PXMath.h>
 
-PXInt32U PXAPI PXColorI32FromBGR(const PXInt8U r, const PXInt8U g, const PXInt8U b)
+PXI32U PXAPI PXColorI32FromBGR(const PXI8U r, const PXI8U g, const PXI8U b)
 {
     return b + (g << 8) | (r << 16);
 }
 
-PXInt32U PXAPI PXColorI32FromBGRA(const PXInt8U r, const PXInt8U g, const PXInt8U b, const PXInt8U a)
+PXI32U PXAPI PXColorI32FromBGRA(const PXI8U r, const PXI8U g, const PXI8U b, const PXI8U a)
 {
     return b + (g << 8) | (r << 16) | (a << 32);
 }
 
-PXInt32U PXAPI PXColorI32FromRGB(const PXInt8U r, const PXInt8U g, const PXInt8U b)
+PXI32U PXAPI PXColorI32FromRGB(const PXI8U r, const PXI8U g, const PXI8U b)
 {
     return r | (g << 8) | (b << 16);
 }
 
-PXInt32U PXAPI PXColorI32FromRGBA(const PXInt8U r, const PXInt8U g, const PXInt8U b, const PXInt8U a)
+PXI32U PXAPI PXColorI32FromRGBA(const PXI8U r, const PXI8U g, const PXI8U b, const PXI8U a)
 {
     return b | (g << 8) | (r << 16) | (a << 32);
 }
@@ -38,7 +38,7 @@ void PXAPI PXColorYUYToRGB(PXColorYUV* const pxColorYUV, PXColorRGBI8* const pxC
     pxColorRGBI8->Blue = clip((298 * C + 516 * D + 128) >> 8);
 }
 
-PXInt8U PXAPI PXColorFormatBytePerPixel(const PXColorFormat imageDataFormat)
+PXI8U PXAPI PXColorFormatBytePerPixel(const PXColorFormat imageDataFormat)
 {
     switch (imageDataFormat)
     {
@@ -52,31 +52,31 @@ PXInt8U PXAPI PXColorFormatBytePerPixel(const PXColorFormat imageDataFormat)
 
     case PXColorFormatRGBI8:
     case PXColorFormatBGRI8:
-        return sizeof(PXInt8U) * 3u;
+        return sizeof(PXI8U) * 3u;
 
     case PXColorFormatRGBAI8:
     case PXColorFormatBGRAI8:
-        return sizeof(PXInt8U) * 4u;
+        return sizeof(PXI8U) * 4u;
 
     case PXColorFormatRGBI16:
     case PXColorFormatBGRI16:
-        return sizeof(PXInt16U) * 3u;
+        return sizeof(PXI16U) * 3u;
 
     case PXColorFormatRGBAI16:
     case PXColorFormatBGRAI16:
-        return sizeof(PXInt16U) * 4u;
+        return sizeof(PXI16U) * 4u;
 
     case PXColorFormatRGBI32:
     case PXColorFormatBGRI32:
     case PXColorFormatRGBF:
     case PXColorFormatBGRF:
-        return sizeof(PXInt32U) * 3u;
+        return sizeof(PXI32U) * 3u;
 
     case PXColorFormatRGBAF:
     case PXColorFormatBGRAF:
     case PXColorFormatRGBAI32:
     case PXColorFormatBGRAI32:
-        return sizeof(PXInt32U) * 4u;
+        return sizeof(PXI32U) * 4u;
 
     case PXColorFormatRGBD:
     case PXColorFormatBGRD:
@@ -88,7 +88,7 @@ PXInt8U PXAPI PXColorFormatBytePerPixel(const PXColorFormat imageDataFormat)
     }
 }
 
-PXInt8U PXAPI PXColorFormatBitsPerPixel(const PXColorFormat imageDataFormat)
+PXI8U PXAPI PXColorFormatBitsPerPixel(const PXColorFormat imageDataFormat)
 {
     return PXColorFormatBytePerPixel(imageDataFormat) * 8u;
 }

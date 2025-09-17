@@ -1,10 +1,9 @@
-#ifndef PXSoftwareRenderINCLUDE
-#define PXSoftwareRenderINCLUDE
+#ifndef PXSoftwareRenderIncluded
+#define PXSoftwareRenderIncluded
 
 #include <PX/Media/PXType.h>
-#include <PX/Media/PXImage.h>
 #include <PX/Media/PXText.h>
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 
 typedef struct PXSoftwareRender_
 {
@@ -14,7 +13,7 @@ PXSoftwareRender;
 
 PXPublic void PXAPI PXSoftwareRenderDrawRectangle
 (
-    PXImage* const image,
+    PXTexture* const image,
     const PXSize x,
     const PXSize y,
     const PXSize width,
@@ -24,9 +23,9 @@ PXPublic void PXAPI PXSoftwareRenderDrawRectangle
     const unsigned char blue,
     const unsigned char alpha
 );
-PXPublic void PXAPI PXImageDrawTextA
+PXPublic void PXAPI PXTextureDrawA
 (
-    PXImage* const image,
+    PXTexture* const image,
     const PXSize x,
     const PXSize y,
     const PXSize width,
@@ -34,9 +33,9 @@ PXPublic void PXAPI PXImageDrawTextA
     const PXFont* const font,
     const char* text
 );
-PXPublic void PXAPI PXImageDrawTextW
+PXPublic void PXAPI PXTextureDrawW
 (
-    PXImage* const image,
+    PXTexture* const image,
     const PXSize x,
     const PXSize y,
     const PXSize width,
@@ -46,16 +45,16 @@ PXPublic void PXAPI PXImageDrawTextW
 );
 
 #pragma optimize( "", off )
-PXPublic void PXAPI PXImageMerge
+PXPublic void PXAPI PXTextureMerge
 (
-    PXImage* const image,
+    PXTexture* const image,
     const PXSize x,
     const PXSize y,
     const PXSize insertX,
     const PXSize insertY,
     const PXSize insertWidth,
     const PXSize insertHeight,
-    const PXImage* const imageInsert
+    const PXTexture* const imageInsert
 );
 
 #endif

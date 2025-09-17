@@ -1,7 +1,7 @@
-#ifndef PXSalsa20INCLUDE
-#define PXSalsa20INCLUDE
+#ifndef PXSalsa20Included
+#define PXSalsa20Included
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef struct PXSalsa20_
 {
@@ -9,13 +9,13 @@ typedef struct PXSalsa20_
     PXSize KeyLength;
 
     int DataSectionIndex;
-    PXInt32U DataSize;
+    PXI32U DataSize;
 
     char IV[8];
 }
 PXSalsa20;
 
-PXPublic PXActionResult PXAPI PXSalsa20Encrypt(PXSalsa20* const pxSalsa20, PXFile* const input, PXFile* const output);
-PXPublic PXActionResult PXAPI PXSalsa20Decrypt(PXSalsa20* const pxSalsa20, PXFile* const input, PXFile* const output);
+PXPublic PXResult PXAPI PXSalsa20Encrypt(PXSalsa20* const pxSalsa20, PXFile* const input, PXFile* const output);
+PXPublic PXResult PXAPI PXSalsa20Decrypt(PXSalsa20* const pxSalsa20, PXFile* const input, PXFile* const output);
 
 #endif

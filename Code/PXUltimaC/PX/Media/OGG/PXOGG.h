@@ -1,7 +1,7 @@
-#ifndef PXOGGINCLUDE
-#define PXOGGINCLUDE
+#ifndef PXOGGIncluded
+#define PXOGGIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef enum PXOGGHeaderType_
 {
@@ -14,13 +14,13 @@ PXOGGHeaderType;
 
 typedef struct PXOGGPage_
 {
-    PXInt64U GranulePosition; // 8 Bytes
-    PXInt32U SerialNumber;
-    PXInt32U SequenceNumber;
-    PXInt32U CRC32CheckSum; // CRC32, is generated using a polynomial value of 0x04C11DB7.
-    PXInt8U PageSegments;
-    PXInt8U HeaderType;
-    PXInt8U Version; // Often a zero
+    PXI64U GranulePosition; // 8 Bytes
+    PXI32U SerialNumber;
+    PXI32U SequenceNumber;
+    PXI32U CRC32CheckSum; // CRC32, is generated using a polynomial value of 0x04C11DB7.
+    PXI8U PageSegments;
+    PXI8U HeaderType;
+    PXI8U Version; // Often a zero
 }
 PXOGGPage;
 
@@ -30,7 +30,7 @@ typedef struct PXOGG_
 }
 PXOGG;
 
-PXPublic PXActionResult PXAPI PXOGGLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXOGGSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXOGGLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXOGGSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

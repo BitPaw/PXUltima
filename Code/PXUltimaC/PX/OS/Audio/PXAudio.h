@@ -1,7 +1,7 @@
-#ifndef PXAudioINCLUDE
-#define PXAudioINCLUDE
+#ifndef PXAudioIncluded
+#define PXAudioIncluded
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 #include <PX/OS/Library/PXLibrary.h>
 
 #define PitchMaximum 2.9f
@@ -56,15 +56,15 @@ typedef PXActionResult(PXAPI* PXAudioInitializeFunction)(void* const audioAPI, P
 //--------------------------------------------------------
 typedef struct PXAudioDeviceAmountInfo_
 {
-    PXInt32U DeviceInput;
-    PXInt32U DeviceOutput;
+    PXI32U DeviceInput;
+    PXI32U DeviceOutput;
 }
 PXAudioDeviceAmountInfo;
 
-typedef PXActionResult(PXAPI* PXAudioDeviceFetchFunction)(void* const audioAPI, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID, PXAudioDevice* const pxAudioDevice);
+typedef PXActionResult(PXAPI* PXAudioDeviceFetchFunction)(void* const audioAPI, const PXAudioDeviceType pxAudioDeviceType, const PXI32U deviceID, PXAudioDevice* const pxAudioDevice);
 typedef PXActionResult(PXAPI* PXAudioDeviceFetchAllFunction)(void* const audioAPI, const PXAudioDeviceType pxAudioDeviceType, PXAudioDevice* const pxAudioDevice, const PXSize amount);
 
-typedef PXActionResult(PXAPI* PXAudioDeviceOpenFunction)(void* const audioAPI, PXAudioDevice* const pxAudioDevice, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID);
+typedef PXActionResult(PXAPI* PXAudioDeviceOpenFunction)(void* const audioAPI, PXAudioDevice* const pxAudioDevice, const PXAudioDeviceType pxAudioDeviceType, const PXI32U deviceID);
 typedef PXActionResult(PXAPI* PXAudioDeviceCloseFunction)(void* const audioAPI, PXAudioDevice* const pxAudioDevice);
 typedef PXActionResult(PXAPI* PXAudioDeviceLoadFunction)
 (
@@ -79,7 +79,7 @@ typedef PXActionResult(PXAPI* PXAudioDeviceUnloadFunction)
     PXAudioDevice* const pxAudioDevice,
     PXSound* const pxSound,
     const PXAudioDeviceType pxAudioDeviceType,
-    const PXInt32U deviceID
+    const PXI32U deviceID
 );
 
 
@@ -131,12 +131,12 @@ typedef PXActionResult(PXAPI* PXAudioDeviceUnloadFunction)
 // Transphere object
 typedef struct PXSoundDeviceProperty_
 {
-    PXInt16U Type;
-    PXInt16U Flags;
+    PXI16U Type;
+    PXI16U Flags;
 
     union
     {
-        PXInt32U Value;
+        PXI32U Value;
         PXVector2F32 Position2D;
         PXVector3F32 Position3D;
     };
@@ -222,16 +222,16 @@ typedef struct PXAudioEffectFlanger_
     PXF32    Depth;
     PXF32    Feedback;
     PXF32    Frequency;
-    PXInt32U Waveform;
+    PXI32U Waveform;
     PXF32    Delay;
-    PXInt32U Phase;
+    PXI32U Phase;
 }
 PXAudioEffectFlanger;
 
 typedef struct PXAudioEffectGargle_
 {
-    PXInt32U dwRateHz;    // Rate of modulation in hz
-    PXInt32U dwWaveShape; // DSFXGARGLE_WAVE_xxx
+    PXI32U dwRateHz;    // Rate of modulation in hz
+    PXI32U dwWaveShape; // DSFXGARGLE_WAVE_xxx
 }
 PXAudioEffectGargle;
 
@@ -245,14 +245,14 @@ PXAudioEffectParamEq;
 
 typedef struct PXAudioEffectI3DL2Reverb_
 {
-    PXInt32U Room;           // [-10000, 0]      default: -1000 mB
-    PXInt32U RoomHF;         // [-10000, 0]      default: 0 mB
+    PXI32U Room;           // [-10000, 0]      default: -1000 mB
+    PXI32U RoomHF;         // [-10000, 0]      default: 0 mB
     PXF32 RoomRolloffFactor; // [0.0, 10.0]      default: 0.0
     PXF32 DecayTime;         // [0.1, 20.0]      default: 1.49s
     PXF32 DecayHFRatio;      // [0.1, 2.0]       default: 0.83
-    PXInt32U Reflections;    // [-10000, 1000]   default: -2602 mB
+    PXI32U Reflections;    // [-10000, 1000]   default: -2602 mB
     PXF32 ReflectionsDelay;  // [0.0, 0.3]       default: 0.007 s
-    PXInt32U Reverb;         // [-10000, 2000]   default: 200 mB
+    PXI32U Reverb;         // [-10000, 2000]   default: 200 mB
     PXF32 ReverbDelay;       // [0.0, 0.1]       default: 0.011 s
     PXF32 Diffusion;         // [0.0, 100.0]     default: 100.0 %
     PXF32 Density;           // [0.0, 100.0]     default: 100.0 %
@@ -303,8 +303,8 @@ typedef struct PXAudioMultiMedia_
     void* WaveOutGetNumDevs;
     void* WaveOutGetVolume;
     void* WaveOutSetVolume;
-    void* WaveOutGetErrorTextA;
-    void* WaveOutGetErrorTextW;
+    void* WaveOutGetErrorA;
+    void* WaveOutGetErrorW;
     void* WaveOutOpen;
     void* WaveOutClose;
     void* WaveOutPrepareHeader;
@@ -324,8 +324,8 @@ typedef struct PXAudioMultiMedia_
     void* WaveInGetNumDevs;
     void* WaveInGetDevCapsA;
     void* WaveInGetDevCapsW;
-    void* WaveInGetErrorTextA;
-    void* WaveInGetErrorTextW;
+    void* WaveInGetErrorA;
+    void* WaveInGetErrorW;
     void* WaveInOpen;
     void* WaveInClose;
     void* WaveInPrepareHeader;
@@ -352,8 +352,8 @@ typedef struct PXAudioMultiMedia_
     void* MidiOutGetDevCapsW;
     void* MidiOutGetVolume;
     void* MidiOutSetVolume;
-    void* MidiOutGetErrorTextA;
-    void* MidiOutGetErrorTextW;
+    void* MidiOutGetErrorA;
+    void* MidiOutGetErrorW;
     void* MidiOutOpen;
     void* MidiOutClose;
     void* MidiOutPrepareHeader;
@@ -368,8 +368,8 @@ typedef struct PXAudioMultiMedia_
     void* MidiInGetNumDevs;
     void* MidiInGetDevCapsA;
     void* MidiInGetDevCapsW;
-    void* MidiInGetErrorTextA;
-    void* MidiInGetErrorTextW;
+    void* MidiInGetErrorA;
+    void* MidiInGetErrorW;
     void* MidiInOpen;
     void* MidiInClose;
     void* MidiInPrepareHeader;
@@ -446,8 +446,8 @@ typedef struct PXAudio_
     PXAudioSystem System;
 
 
-    PXInt32U DeviceOutputAmount;
-    PXInt32U DeviceInputAmount;
+    PXI32U DeviceOutputAmount;
+    PXI32U DeviceInputAmount;
 
     PXAudioDevice* DeviceOutputList;
 
@@ -467,10 +467,10 @@ typedef struct PXAudio_
 }
 PXAudio;
 
-PXPublic PXActionResult PXAPI PXAudioInitialize(PXAudio* const pxAudio, const PXAudioSystem pxAudioSystem);
-PXPublic PXActionResult PXAPI PXAudioRelease(PXAudio* const pxAudio);
+PXPublic PXResult PXAPI PXAudioInitialize(PXAudio* const pxAudio, const PXAudioSystem pxAudioSystem);
+PXPublic PXResult PXAPI PXAudioRelease(PXAudio* const pxAudio);
 
-PXPublic void PXAPI PXAudioSpeakerBeep(const PXInt32U hz, const PXInt32U time);
+PXPublic void PXAPI PXAudioSpeakerBeep(const PXI32U hz, const PXI32U time);
 
 
 
@@ -549,11 +549,11 @@ PXAudioWaveGenerateInfo;
 PXPublic float PXAPI PXAudioWaveGenerate(PXAudioWaveGenerateInfo* pxAudioWaveGenerateInfo);
 
 PXPublic float PXAPI envelope(float t, float attack, float sustain, float decay);
-PXPublic void PXAPI generate_sfx(PXInt16U* buffer, int samples, PXSFXParams* params);
+PXPublic void PXAPI generate_sfx(PXI16U* buffer, int samples, PXSFXParams* params);
 PXPublic float PXAPI lowpass_filter(float input, float* prev, float alpha);
-PXPublic void PXAPI add_raindrop(PXInt16U* buffer, int sampleRate, int pos, int length, float freq, float amp);
-PXPublic void PXAPI add_thunder(PXInt16U* buffer, int sampleRate, int pos, int length, float amp, float rumble);
-PXPublic void PXAPI generate_weather_sfx(PXInt16U* buffer, int samples, PXSFXWeather* params);
+PXPublic void PXAPI add_raindrop(PXI16U* buffer, int sampleRate, int pos, int length, float freq, float amp);
+PXPublic void PXAPI add_thunder(PXI16U* buffer, int sampleRate, int pos, int length, float amp, float rumble);
+PXPublic void PXAPI generate_weather_sfx(PXI16U* buffer, int samples, PXSFXWeather* params);
 
 
 
@@ -576,7 +576,7 @@ typedef enum PXAudioSystemSoundBeepType_
 
 };
 
-PXPublic void PXAPI PXAudioSystemSoundBeep(const PXInt32U hz,);
+PXPublic void PXAPI PXAudioSystemSoundBeep(const PXI32U hz,);
 */
 
 #endif

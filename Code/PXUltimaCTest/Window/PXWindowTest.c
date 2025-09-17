@@ -1,6 +1,6 @@
 #include "PXWindowTest.h"
 
-#include <PX/OS/GUI/PXGUI.h>
+#include <PX/Engine/PXGUI.h>
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/Engine/PXEngine.h>
 
@@ -36,15 +36,15 @@ void PXAPI PXTestWindowOpenUIRender()
 
     
 
-    PXWindow textA;
-    PXClear(PXWindow, &textA);
-    textA.Type = PXUIElementTypeText;
-    textA.Position.X = 20;
-    textA.Position.Y = 20;
-    textA.Position.Width = 150;
-    textA.Position.Height = 35;
+    PXWindow A;
+    PXClear(PXWindow, &A);
+    A.Type = PXUIElementTypeText;
+    A.Position.X = 20;
+    A.Position.Y = 20;
+    A.Position.Width = 150;
+    A.Position.Height = 35;
 
-    PXUIElementCreateOSStyle(&textA, &pxWindow);
+    PXUIElementCreateOSStyle(&A, &pxWindow);
 
 
     PXWindow button;
@@ -134,13 +134,13 @@ void PXAPI PXTestWindowOpenUIRender()
 
     while(1)
     {
-        PXWindowUpdateInfo pxGUIElementUpdateInfo;
-        PXClear(PXWindowUpdateInfo, &pxGUIElementUpdateInfo);
-        pxGUIElementUpdateInfo.UIElement = &button;
-        pxGUIElementUpdateInfo.WindowReference = &pxWindow;
-        pxGUIElementUpdateInfo.Property = PXUIElementPropertySize;
+        PXWindowUpdateInfo pxWindowUpdateInfo;
+        PXClear(PXWindowUpdateInfo, &pxWindowUpdateInfo);
+        pxWindowUpdateInfo.UIElement = &button;
+        pxWindowUpdateInfo.WindowReference = &pxWindow;
+        pxWindowUpdateInfo.Property = PXUIElementPropertySize;
 
-        PXWindowUpdate(PXNull, &pxGUIElementUpdateInfo, 1);
+        PXWindowUpdate(PXNull, &pxWindowUpdateInfo, 1);
 
         PXWindowUpdate(&pxWindow);
         PXWindowFrameBufferSwap(&pxWindow);

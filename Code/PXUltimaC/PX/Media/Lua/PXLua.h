@@ -1,9 +1,9 @@
-#ifndef PXLuaInclude
-#define PXLuaInclude
+#ifndef PXLuaIncluded
+#define PXLuaIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
-PXPublic PXActionResult PXAPI PXLuaLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXLuaSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXLuaLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXLuaSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

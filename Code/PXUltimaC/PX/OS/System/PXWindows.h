@@ -1,7 +1,7 @@
-#ifndef PXWindowsINCLUDE
-#define PXWindowsINCLUDE
+#ifndef PXWindowsIncluded
+#define PXWindowsIncluded
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 
 #if OSWindows
 
@@ -41,7 +41,7 @@ typedef VOID(WINAPI* PXWindowsRtlCaptureContextFunction)(PCONTEXT ContextRecord)
 PXPublic PXWindowsEncodePointerFunction PXWindowsEncodePointerCallBack = PXNull;
 PXPublic PXWindowsDecodePointerFunction PXWindowsDecodePointerCallBack = PXNull;
 PXPublic PXWindowsInitializeSListHeadFunction PXInitializeSListHeadFunctionCallBack = PXNull;
-PXPublic PXWindowsInterlockedFlushSListFunction PXInterlockedFlushSListCallBack = PXNull;
+PXPublic PXWindowsInterlockedFlushSListFunction PXIerlockedFlushSListCallBack = PXNull;
 PXPublic PXWindowsRtlCaptureContextFunction PXRtlCaptureContextCallBack = PXNull;
 //-----------------------------------------------------
 

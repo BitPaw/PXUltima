@@ -1,7 +1,7 @@
 #ifndef PXNetworkTestDEFINE
 #define PXNetworkTestDEFINE
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 
 #ifdef __cplusplus
 extern "C"

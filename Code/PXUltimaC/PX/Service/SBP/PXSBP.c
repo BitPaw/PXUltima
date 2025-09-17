@@ -69,17 +69,17 @@ void PXAPI PXSBPServerReceiverEventListSet(PXSBPServer* const pxSBPServe, PXSBPR
     PXSBPReceiverEventListSet(&pxSBPServe->Receiver, pxSBPReceiverEventList);
 }
 
-PXActionResult PXAPI PXSBPServerStart(PXSBPServer* const pxSBPServer, const PXInt16U port)
+PXResult PXAPI  PXSBPServerStart(PXSBPServer* const pxSBPServer, const PXI16U port)
 {
     return PXServerStart(&pxSBPServer->Server, port, PXProtocolModeTCP);
 }
 
-PXActionResult PXAPI PXSBPServerStop(PXSBPServer* const pxSBPServer)
+PXResult PXAPI  PXSBPServerStop(PXSBPServer* const pxSBPServer)
 {
     return PXServerStop(&pxSBPServer->Server);
 }
 
-PXActionResult PXAPI PXSBPServerSendToAll(PXSBPServer* const pxSBPServer, const void* const data, const PXSize dataSize)
+PXResult PXAPI  PXSBPServerSendToAll(PXSBPServer* const pxSBPServer, const void* const data, const PXSize dataSize)
 {
     for (PXSize i = 0; i < pxSBPServer->Server.ServerSocketListSize; i++)
     {
@@ -132,17 +132,17 @@ void PXAPI PXSBPClientReceiverEventListSet(PXSBPClient* const pxSBPClient, PXSBP
     pxSBPClient->Receiver.EventList = *pxSBPReceiverEventList;
 }
 
-PXActionResult PXAPI PXSBPClientConnectToServer(PXSBPClient* const pxSBPClient, const PXText* const ip, const PXInt16U port)
+PXResult PXAPI  PXSBPClientConnectToServer(PXSBPClient* const pxSBPClient, const PXText* const ip, const PXI16U port)
 {
     return PXClientConnectToServer(&pxSBPClient->Client, ip, port);
 }
 
-PXActionResult PXAPI PXSBPClientDisconnectFromServer(PXSBPClient* const pxSBPClient)
+PXResult PXAPI  PXSBPClientDisconnectFromServer(PXSBPClient* const pxSBPClient)
 {
     return PXClientDisconnectFromServer(&pxSBPClient->Client);
 }
 
-PXActionResult PXAPI PXSBPClientSendMessage(PXSBPClient* const pxSBPClient, const void* const data, const PXSize dataSize)
+PXResult PXAPI  PXSBPClientSendMessage(PXSBPClient* const pxSBPClient, const void* const data, const PXSize dataSize)
 {
     if (!pxSBPClient->EnableSBP)
     {
@@ -157,7 +157,7 @@ PXActionResult PXAPI PXSBPClientSendMessage(PXSBPClient* const pxSBPClient, cons
     return result;
 }
 
-PXActionResult PXAPI PXSBPClientSendFile(PXSBPClient* const pxSBPClient, const PXText* const filePath)
+PXResult PXAPI  PXSBPClientSendFile(PXSBPClient* const pxSBPClient, const PXText* const filePath)
 {
     return PXActionRefusedNotImplemented;
 }
@@ -178,8 +178,8 @@ PXBool PXAPI PXSBPMessageChunkParse(PXSBPChunkCache* const pxSBPMessageChunk, co
         return PXFalse;
     }
 
-    pxSBPMessageChunk->ID = PXInt16MakeEndianBig(((PXAdress)data)[2], ((PXAdress)data)[3]);
-    pxSBPMessageChunk->SizeExpected = PXInt16MakeEndianBig(((PXAdress)data)[4], ((PXAdress)data)[5]);
+    pxSBPMessageChunk->ID = PXI16MakeEndianBig(((PXAdress)data)[2], ((PXAdress)data)[3]);
+    pxSBPMessageChunk->SizeExpected = PXI16MakeEndianBig(((PXAdress)data)[4], ((PXAdress)data)[5]);
     pxSBPMessageChunk->Message = data;
     pxSBPMessageChunk->SizeCurrent = dataSize - PXSBPMessageChunkHeaderSize;
 
@@ -196,7 +196,7 @@ void PXAPI PXSBPReceiverEventListSet(PXSBPReceiver* const pxSBPReceiver, PXSBPRe
     pxSBPReceiver->EventList = *pxSBPReceiverEventList;
 }
 
-PXInt16U PXAPI PXSBPMessageSizeMissing(PXSBPChunkCache* const pxSBPMessage)
+PXI16U PXAPI PXSBPMessageSizeMissing(PXSBPChunkCache* const pxSBPMessage)
 {
     return pxSBPMessage->SizeExpected - pxSBPMessage->SizeCurrent;
 }
@@ -446,7 +446,7 @@ void PXAPI PXSBPOnDataChunkReceive(PXSBPReceiver* const pxSBPReceiver, const PXS
 
         // Parse byte
         {
-            PXInt8U flagValue = 0;
+            PXI8U flagValue = 0;
 
             PXFileReadI8U(&pxFile, &flagValue);
 
@@ -457,7 +457,7 @@ void PXAPI PXSBPOnDataChunkReceive(PXSBPReceiver* const pxSBPReceiver, const PXS
             {
             case PXSBPMessageBitSize8Bit:
             {
-                PXInt8U size;
+                PXI8U size;
 
                 PXFileReadI8U(&pxFile, &size);
 
@@ -467,7 +467,7 @@ void PXAPI PXSBPOnDataChunkReceive(PXSBPReceiver* const pxSBPReceiver, const PXS
             }
             case PXSBPMessageBitSize16Bit:
             {
-                PXInt16U size;
+                PXI16U size;
 
                 PXFileReadI16UE(&pxFile, &size, PXEndianBig);
 
@@ -477,7 +477,7 @@ void PXAPI PXSBPOnDataChunkReceive(PXSBPReceiver* const pxSBPReceiver, const PXS
             }
             case PXSBPMessageBitSize32Bit:
             {
-                PXInt32U size;
+                PXI32U size;
 
                 PXFileReadI32UE(&pxFile, &size, PXEndianBig);
 
@@ -487,7 +487,7 @@ void PXAPI PXSBPOnDataChunkReceive(PXSBPReceiver* const pxSBPReceiver, const PXS
             }
             case PXSBPMessageBitSize64Bit:
             {
-                PXInt64U size;
+                PXI64U size;
 
                 PXFileReadI64UE(&pxFile, &size, PXEndianBig);
 
@@ -514,7 +514,7 @@ void PXAPI PXSBPOnDataChunkReceive(PXSBPReceiver* const pxSBPReceiver, const PXS
 
         pxSBPMessage.StorageType = PXSBPMessageStorageTypeCacheCollected;
 
-        PXDictionaryAdd(&pxSBPReceiver->MessageStreamLookup, &pxSBPChunk->ChannelID, &pxSBPMessage);
+        PXDictionaryEntryAdd(&pxSBPReceiver->MessageStreamLookup, &pxSBPChunk->ChannelID, &pxSBPMessage);
 
         PXFunctionInvoke(pxSBPReceiver->EventList.OnMessageUpdatedCallBack, &pxSBPMessage);
     }
@@ -527,7 +527,7 @@ void PXAPI PXSBPEmitterConstruct(PXSBPEmitter* const pxSBPEmitter)
     pxSBPEmitter->PackageSizeMaximal = PXSocketBufferSize;
 }
 
-PXActionResult PXAPI PXSBPEmitterDeploy(PXSBPEmitter* const pxSBPEmitter, const void* const message, const PXSize messageSize)
+PXResult PXAPI  PXSBPEmitterDeploy(PXSBPEmitter* const pxSBPEmitter, const void* const message, const PXSize messageSize)
 {
     PXActionResult sendResult = PXActionInvalid;
 
@@ -537,7 +537,7 @@ PXActionResult PXAPI PXSBPEmitterDeploy(PXSBPEmitter* const pxSBPEmitter, const 
 
     for (PXSize i = 0; i < numberOfPackages; ++i)
     {
-        PXInt16U packageSizeCurrent = PXMathMinimumIU(accumulator, pxSBPEmitter->PackageSizeMaximal);
+        PXI16U packageSizeCurrent = PXMathMinimumIU(accumulator, pxSBPEmitter->PackageSizeMaximal);
         const PXAdress dataSourcePoint = (PXAdress)message + (messageSize - accumulator);
 
         accumulator -= packageSizeCurrent;

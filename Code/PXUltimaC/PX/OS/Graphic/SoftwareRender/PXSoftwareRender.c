@@ -2,7 +2,7 @@
 
 #include <PX/Math/PXMath.h>
 
-void PXAPI PXSoftwareRenderDrawRectangle(PXImage* const image, const PXSize x, const PXSize y, const PXSize width, const PXSize height, const unsigned char red, const unsigned char green, const unsigned char blue, const unsigned char alpha)
+void PXAPI PXSoftwareRenderDrawRectangle(PXTexture* const image, const PXSize x, const PXSize y, const PXSize width, const PXSize height, const unsigned char red, const unsigned char green, const unsigned char blue, const unsigned char alpha)
 {
     //unsigned char* data = ImageDataPoint(image, x, y);
 
@@ -23,16 +23,16 @@ void PXAPI PXSoftwareRenderDrawRectangle(PXImage* const image, const PXSize x, c
     }
 }
 
-void PXAPI PXImageDrawTextA(PXImage* const image, const PXSize x, const PXSize y, const PXSize width, const PXSize height, const PXFont* const font, const char* text)
+void PXAPI PXTextureDrawA(PXTexture* const image, const PXSize x, const PXSize y, const PXSize width, const PXSize height, const PXFont* const font, const char* text)
 {
-    wchar_t textW[1024];
+    wchar_t W[1024];
 
-    PXTextCopyAW(text, 1024, textW, 1024);
+    PXTextCopyAW(text, 1024, W, 1024);
 
-    PXImageDrawTextW(image, x, y, width, height, font, textW);
+    PXTextureDrawW(image, x, y, width, height, font, W);
 }
 
-void PXAPI PXImageDrawTextW(PXImage* const image, const PXSize x, const PXSize y, const PXSize width, const PXSize height, const PXFont* const font, const wchar_t* text)
+void PXAPI PXTextureDrawW(PXTexture* const image, const PXSize x, const PXSize y, const PXSize width, const PXSize height, const PXFont* const font, const wchar_t* text)
 {
 #if 0
     PXF32 fontSize = 0.002;
@@ -71,7 +71,7 @@ void PXAPI PXImageDrawTextW(PXImage* const image, const PXSize x, const PXSize y
             0
         );
 #endif
-        PXImageMerge
+        PXTextureMerge
         (
             image,
             lastPositionX + offsetX,
@@ -89,7 +89,7 @@ void PXAPI PXImageDrawTextW(PXImage* const image, const PXSize x, const PXSize y
 #endif
 }
 
-void PXAPI PXImageMerge(PXImage* const image, const PXSize x, const PXSize y, const PXSize insertX, const PXSize insertY, const PXSize insertWidth, const PXSize insertHeight, const PXImage* const imageInsert)
+void PXAPI PXTextureMerge(PXTexture* const image, const PXSize x, const PXSize y, const PXSize insertX, const PXSize insertY, const PXSize insertWidth, const PXSize insertHeight, const PXTexture* const imageInsert)
 {
     //unsigned char* data = ImageDataPoint(image, x, y);
 

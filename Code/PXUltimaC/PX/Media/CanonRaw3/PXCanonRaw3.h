@@ -1,7 +1,7 @@
-#ifndef PXCanonRaw3Include
-#define PXCanonRaw3Include
+#ifndef PXCanonRaw3Included
+#define PXCanonRaw3Included
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 #define PXCanonRaw3UUIDSize 16u
 
@@ -10,13 +10,13 @@ typedef struct PXCanonRaw3_
 
 
     // ISO chunk
-    PXInt32U ISOChunkSize;
+    PXI32U ISOChunkSize;
 
     char UUID[PXCanonRaw3UUIDSize];
 }
 PXCanonRaw3;
 
-PXPublic PXActionResult PXAPI PXCanonRaw3LoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXCanonRaw3SaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXCanonRaw3LoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXCanonRaw3SaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

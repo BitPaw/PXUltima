@@ -1,7 +1,7 @@
-#ifndef PXSpriteMeshInclude
-#define PXSpriteMeshInclude
+#ifndef PXSpriteMeshIncluded
+#define PXSpriteMeshIncluded
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 
 typedef struct PXSpriteMeshEntry_
 {
@@ -25,10 +25,10 @@ PXSpriteMesh;
 PXPublic void PXAPI PXSpriteMeshInit
 (
     PXSpriteMesh* const pxSpriteMesh,
-    const PXInt32U amountWidth,
-    const PXInt32U amountHeight,
-    const PXInt16U cellWidth,
-    const PXInt16U cellHeight
+    const PXI32U amountWidth,
+    const PXI32U amountHeight,
+    const PXI16U cellWidth,
+    const PXI16U cellHeight
 );
 PXPublic void PXAPI PXSpriteMeshSpriteInsert(PXSpriteMesh* const pxSpriteMesh);
 

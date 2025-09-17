@@ -1,7 +1,7 @@
-#ifndef PXISBNINCLUDE
-#define PXISBNINCLUDE
+#ifndef PXISBNIncluded
+#define PXISBNIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef struct PXISBN_
 {

@@ -1,7 +1,7 @@
-#ifndef PXVulcanINCLUDE
-#define PXVulcanINCLUDE
+#ifndef PXVulcanIncluded
+#define PXVulcanIncluded
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 #include <PX/OS/Library/PXLibrary.h>
 
 // Provided by VK_VERSION_1_0
@@ -1057,41 +1057,41 @@ VkInternalAllocationType;
 
 //#define VK_DEFINE_HANDLE(object) typedef struct object##_T* object;
 
-#define VkFlags PXInt32U
+#define VkFlags PXI32U
 
 typedef void* PXVulkanInstance, * VkInstance;
 typedef void* PXVulkanDeviceVirtual, * VkDevice;
 typedef void* PXVulkanDevicePhysical, * VkPhysicalDevice;
 
-typedef PXInt32U VkDeviceCreateFlags;
-typedef PXInt32U VkDeviceQueueCreateFlags;
-typedef PXInt32U VkBool32;
-typedef PXInt32U VkInstanceCreateFlags;
-typedef PXInt32U VkSampleCountFlags;
-typedef PXInt32U VkWin32SurfaceCreateFlagsKHR;
-typedef PXInt32U VkSurfaceTransformFlagsKHR;
+typedef PXI32U VkDeviceCreateFlags;
+typedef PXI32U VkDeviceQueueCreateFlags;
+typedef PXI32U VkBool32;
+typedef PXI32U VkInstanceCreateFlags;
+typedef PXI32U VkSampleCountFlags;
+typedef PXI32U VkWin32SurfaceCreateFlagsKHR;
+typedef PXI32U VkSurfaceTransformFlagsKHR;
 
-typedef PXInt32U VkSwapchainCreateFlagsKHR;
-typedef PXInt32U VkImageUsageFlags;
+typedef PXI32U VkSwapchainCreateFlagsKHR;
+typedef PXI32U VkImageUsageFlags;
 
-typedef PXInt64U VkDeviceSize;
-typedef PXInt64U VkDeviceAddress;
-typedef PXInt64U VkSwapchainKHR;
+typedef PXI64U VkDeviceSize;
+typedef PXI64U VkDeviceAddress;
+typedef PXI64U VkSwapchainKHR;
 
 
 
 typedef struct VkExtent2D
 {
-    PXInt32U width;
-    PXInt32U height;
+    PXI32U width;
+    PXI32U height;
 }
 VkExtent2D;
 
 typedef struct VkExtent3D
 {
-    PXInt32U width;
-    PXInt32U height;
-    PXInt32U depth;
+    PXI32U width;
+    PXI32U height;
+    PXI32U depth;
 }
 VkExtent3D;
 
@@ -1102,8 +1102,8 @@ typedef struct PXVukanDeviceQueueCreateInfo_
     VkStructureType sType;
     const void* pNext;
     VkDeviceQueueCreateFlags flags;
-    PXInt32U queueFamilyIndex;
-    PXInt32U queueCount;
+    PXI32U queueFamilyIndex;
+    PXI32U queueCount;
     const PXF32* pQueuePriorities;
 }
 PXVukanDeviceQueueCreateInfo,
@@ -1182,11 +1182,11 @@ typedef struct PXVulkanDeviceCreateInfo_
     VkStructureType sType;
     const void* pNext;
     VkDeviceCreateFlags flags;
-    PXInt32U queueCreateInfoCount;
+    PXI32U queueCreateInfoCount;
     const VkDeviceQueueCreateInfo* pQueueCreateInfos;
-    PXInt32U enabledLayerCount;
+    PXI32U enabledLayerCount;
     const char* const* ppEnabledLayerNames;
-    PXInt32U enabledExtensionCount;
+    PXI32U enabledExtensionCount;
     const char* const* ppEnabledExtensionNames;
     const VkPhysicalDeviceFeatures* pEnabledFeatures;
 }
@@ -1213,7 +1213,7 @@ typedef struct VkDeviceGroupDeviceCreateInfo
 {
     VkStructureType sType;
     const void* pNext;
-    PXInt32U physicalDeviceCount;
+    PXI32U physicalDeviceCount;
     const VkPhysicalDevice* pPhysicalDevices;
 }
 VkDeviceGroupDeviceCreateInfo,
@@ -1247,10 +1247,10 @@ typedef struct PXVulkanApplicationInfo_
     VkStructureType sType;
     const void* pNext;
     const char* pApplicationName;
-    PXInt32U applicationVersion;
+    PXI32U applicationVersion;
     const char* pEngineName;
-    PXInt32U engineVersion;
-    PXInt32U apiVersion;
+    PXI32U engineVersion;
+    PXI32U apiVersion;
 }
 PXVulkanApplicationInfo,
 VkApplicationInfo;
@@ -1262,9 +1262,9 @@ typedef struct PXVulkanInstanceCreateInfo_
     const void* pNext;
     VkInstanceCreateFlags flags;
     const VkApplicationInfo* pApplicationInfo;
-    PXInt32U enabledLayerCount;
+    PXI32U enabledLayerCount;
     const char* const* ppEnabledLayerNames;
-    PXInt32U enabledExtensionCount;
+    PXI32U enabledExtensionCount;
     const char* const* ppEnabledExtensionNames;
 }
 PXVulkanInstanceCreateInfo,
@@ -1286,105 +1286,105 @@ VkPhysicalDeviceType;
 
 typedef struct PXVulkanDevicePhysicalLimits_
 {
-    PXInt32U maxImageDimension1D;
-    PXInt32U maxImageDimension2D;
-    PXInt32U maxImageDimension3D;
-    PXInt32U maxImageDimensionCube;
-    PXInt32U maxImageArrayLayers;
-    PXInt32U maxTexelBufferElements;
-    PXInt32U maxUniformBufferRange;
-    PXInt32U maxStorageBufferRange;
-    PXInt32U maxPushConstantsSize;
-    PXInt32U maxMemoryAllocationCount;
-    PXInt32U maxSamplerAllocationCount;
+    PXI32U maxImageDimension1D;
+    PXI32U maxImageDimension2D;
+    PXI32U maxImageDimension3D;
+    PXI32U maxImageDimensionCube;
+    PXI32U maxImageArrayLayers;
+    PXI32U maxTexelBufferElements;
+    PXI32U maxUniformBufferRange;
+    PXI32U maxStorageBufferRange;
+    PXI32U maxPushConstantsSize;
+    PXI32U maxMemoryAllocationCount;
+    PXI32U maxSamplerAllocationCount;
     VkDeviceSize bufferImageGranularity;
     VkDeviceSize sparseAddressSpaceSize;
-    PXInt32U maxBoundDescriptorSets;
-    PXInt32U maxPerStageDescriptorSamplers;
-    PXInt32U maxPerStageDescriptorUniformBuffers;
-    PXInt32U maxPerStageDescriptorStorageBuffers;
-    PXInt32U maxPerStageDescriptorSampledImages;
-    PXInt32U maxPerStageDescriptorStorageImages;
-    PXInt32U maxPerStageDescriptorInputAttachments;
-    PXInt32U maxPerStageResources;
-    PXInt32U maxDescriptorSetSamplers;
-    PXInt32U maxDescriptorSetUniformBuffers;
-    PXInt32U maxDescriptorSetUniformBuffersDynamic;
-    PXInt32U maxDescriptorSetStorageBuffers;
-    PXInt32U maxDescriptorSetStorageBuffersDynamic;
-    PXInt32U maxDescriptorSetSampledImages;
-    PXInt32U maxDescriptorSetStorageImages;
-    PXInt32U maxDescriptorSetInputAttachments;
-    PXInt32U maxVertexInputAttributes;
-    PXInt32U maxVertexInputBindings;
-    PXInt32U maxVertexInputAttributeOffset;
+    PXI32U maxBoundDescriptorSets;
+    PXI32U maxPerStageDescriptorSamplers;
+    PXI32U maxPerStageDescriptorUniformBuffers;
+    PXI32U maxPerStageDescriptorStorageBuffers;
+    PXI32U maxPerStageDescriptorSampledImages;
+    PXI32U maxPerStageDescriptorStorageImages;
+    PXI32U maxPerStageDescriptorInputAttachments;
+    PXI32U maxPerStageResources;
+    PXI32U maxDescriptorSetSamplers;
+    PXI32U maxDescriptorSetUniformBuffers;
+    PXI32U maxDescriptorSetUniformBuffersDynamic;
+    PXI32U maxDescriptorSetStorageBuffers;
+    PXI32U maxDescriptorSetStorageBuffersDynamic;
+    PXI32U maxDescriptorSetSampledImages;
+    PXI32U maxDescriptorSetStorageImages;
+    PXI32U maxDescriptorSetInputAttachments;
+    PXI32U maxVertexInputAttributes;
+    PXI32U maxVertexInputBindings;
+    PXI32U maxVertexInputAttributeOffset;
 
-    PXInt32U maxVertexInputBindingStride;
-    PXInt32U maxVertexOutputComponents;
-    PXInt32U maxTessellationGenerationLevel;
-    PXInt32U maxTessellationPatchSize;
-    PXInt32U maxTessellationControlPerVertexInputComponents;
-    PXInt32U maxTessellationControlPerVertexOutputComponents;
-    PXInt32U maxTessellationControlPerPatchOutputComponents;
-    PXInt32U maxTessellationControlTotalOutputComponents;
-    PXInt32U maxTessellationEvaluationInputComponents;
-    PXInt32U maxTessellationEvaluationOutputComponents;
-    PXInt32U maxGeometryShaderInvocations;
-    PXInt32U maxGeometryInputComponents;
-    PXInt32U maxGeometryOutputComponents;
-    PXInt32U maxGeometryOutputVertices;
-    PXInt32U maxGeometryTotalOutputComponents;
-    PXInt32U maxFragmentInputComponents;
-    PXInt32U maxFragmentOutputAttachments;
-    PXInt32U maxFragmentDualSrcAttachments;
-    PXInt32U maxFragmentCombinedOutputResources;
-    PXInt32U maxComputeSharedMemorySize;
-    PXInt32U maxComputeWorkGroupCount[3];
-    PXInt32U maxComputeWorkGroupInvocations;
-    PXInt32U maxComputeWorkGroupSize[3];
-    PXInt32U subPixelPrecisionBits;
-    PXInt32U subTexelPrecisionBits;
-    PXInt32U mipmapPrecisionBits;
-    PXInt32U maxDrawIndexedIndexValue;
-    PXInt32U maxDrawIndirectCount;
+    PXI32U maxVertexInputBindingStride;
+    PXI32U maxVertexOutputComponents;
+    PXI32U maxTessellationGenerationLevel;
+    PXI32U maxTessellationPatchSize;
+    PXI32U maxTessellationControlPerVertexInputComponents;
+    PXI32U maxTessellationControlPerVertexOutputComponents;
+    PXI32U maxTessellationControlPerPatchOutputComponents;
+    PXI32U maxTessellationControlTotalOutputComponents;
+    PXI32U maxTessellationEvaluationInputComponents;
+    PXI32U maxTessellationEvaluationOutputComponents;
+    PXI32U maxGeometryShaderInvocations;
+    PXI32U maxGeometryInputComponents;
+    PXI32U maxGeometryOutputComponents;
+    PXI32U maxGeometryOutputVertices;
+    PXI32U maxGeometryTotalOutputComponents;
+    PXI32U maxFragmentInputComponents;
+    PXI32U maxFragmentOutputAttachments;
+    PXI32U maxFragmentDualSrcAttachments;
+    PXI32U maxFragmentCombinedOutputResources;
+    PXI32U maxComputeSharedMemorySize;
+    PXI32U maxComputeWorkGroupCount[3];
+    PXI32U maxComputeWorkGroupInvocations;
+    PXI32U maxComputeWorkGroupSize[3];
+    PXI32U subPixelPrecisionBits;
+    PXI32U subTexelPrecisionBits;
+    PXI32U mipmapPrecisionBits;
+    PXI32U maxDrawIndexedIndexValue;
+    PXI32U maxDrawIndirectCount;
     PXF32 maxSamplerLodBias;
     PXF32 maxSamplerAnisotropy;
-    PXInt32U maxViewports;
-    PXInt32U maxViewportDimensions[2];
+    PXI32U maxViewports;
+    PXI32U maxViewportDimensions[2];
     PXF32 viewportBoundsRange[2];
-    PXInt32U viewportSubPixelBits;
+    PXI32U viewportSubPixelBits;
     size_t minMemoryMapAlignment;
     VkDeviceSize minTexelBufferOffsetAlignment;
     VkDeviceSize minUniformBufferOffsetAlignment;
     VkDeviceSize minStorageBufferOffsetAlignment;
-    PXInt32S minTexelOffset; // SIGNED
-    PXInt32U maxTexelOffset;
-    PXInt32S minTexelGatherOffset; // SIGNED
-    PXInt32U maxTexelGatherOffset;
+    PXI32S minTexelOffset; // SIGNED
+    PXI32U maxTexelOffset;
+    PXI32S minTexelGatherOffset; // SIGNED
+    PXI32U maxTexelGatherOffset;
     PXF32 minInterpolationOffset;
     PXF32 maxInterpolationOffset;
-    PXInt32U subPixelInterpolationOffsetBits;
-    PXInt32U maxFramebufferWidth;
-    PXInt32U maxFramebufferHeight;
-    PXInt32U maxFramebufferLayers;
+    PXI32U subPixelInterpolationOffsetBits;
+    PXI32U maxFramebufferWidth;
+    PXI32U maxFramebufferHeight;
+    PXI32U maxFramebufferLayers;
     VkSampleCountFlags framebufferColorSampleCounts;
     VkSampleCountFlags framebufferDepthSampleCounts;
     VkSampleCountFlags framebufferStencilSampleCounts;
 
     VkSampleCountFlags framebufferNoAttachmentsSampleCounts;
-    PXInt32U maxColorAttachments;
+    PXI32U maxColorAttachments;
     VkSampleCountFlags sampledImageColorSampleCounts;
     VkSampleCountFlags sampledImageIntegerSampleCounts;
     VkSampleCountFlags sampledImageDepthSampleCounts;
     VkSampleCountFlags sampledImageStencilSampleCounts;
     VkSampleCountFlags storageImageSampleCounts;
-    PXInt32U maxSampleMaskWords;
+    PXI32U maxSampleMaskWords;
     VkBool32 timestampComputeAndGraphics;
     PXF32 timestampPeriod;
-    PXInt32U maxClipDistances;
-    PXInt32U maxCullDistances;
-    PXInt32U maxCombinedClipAndCullDistances;
-    PXInt32U discreteQueuePriorities;
+    PXI32U maxClipDistances;
+    PXI32U maxCullDistances;
+    PXI32U maxCombinedClipAndCullDistances;
+    PXI32U discreteQueuePriorities;
     PXF32 pointSizeRange[2];
     PXF32 lineWidthRange[2];
     PXF32 pointSizeGranularity;
@@ -1416,13 +1416,13 @@ VkPhysicalDeviceSparseProperties;
 
 typedef struct PXVulkanDevicePhysicalProperties_
 {
-    PXInt32U apiVersion;
-    PXInt32U driverVersion;
-    PXInt32U vendorID;
-    PXInt32U deviceID;
+    PXI32U apiVersion;
+    PXI32U driverVersion;
+    PXI32U vendorID;
+    PXI32U deviceID;
     VkPhysicalDeviceType deviceType;
     char deviceName[VK_MAX_PHYSICAL_DEVICE_NAME_SIZE];
-    PXInt8U pipelineCacheUUID[VK_UUID_SIZE];
+    PXI8U pipelineCacheUUID[VK_UUID_SIZE];
     VkPhysicalDeviceLimits limits;
     VkPhysicalDeviceSparseProperties sparseProperties;
 }
@@ -1441,7 +1441,7 @@ typedef void* PXVulkanDisplay, * VkDisplay, * VkDisplayKHR; // Is always x64
 //-----------------------------------------------------
 
 // vkEnumeratePhysicalDevices
-typedef VkResult(VKAPI_PTR* PXVulkanDevicePhysicalListEnumerate)(VkInstance instance, PXInt32U* pPhysicalDeviceCount, VkPhysicalDevice* pPhysicalDevices);
+typedef VkResult(VKAPI_PTR* PXVulkanDevicePhysicalListEnumerate)(VkInstance instance, PXI32U* pPhysicalDeviceCount, VkPhysicalDevice* pPhysicalDevices);
 
 typedef void* (VKAPI_PTR* PXVulcanInstanceProcAddrGetFunction)(VkInstance instance, const char* functionName);
 
@@ -1468,7 +1468,7 @@ typedef struct VkDisplayPropertiesKHR
 VkDisplayPropertiesKHR;
 
 // vkGetPhysicalDeviceDisplayPropertiesKHR
-typedef VkResult(VKAPI_PTR* PXVulkanDevicePhysicalDisplayPropertiesGet)(VkPhysicalDevice physicalDevice, PXInt32U* pPropertyCount, VkDisplayPropertiesKHR* pProperties);
+typedef VkResult(VKAPI_PTR* PXVulkanDevicePhysicalDisplayPropertiesGet)(VkPhysicalDevice physicalDevice, PXI32U* pPropertyCount, VkDisplayPropertiesKHR* pProperties);
 
 
 // vkDestroyInstance
@@ -1482,12 +1482,12 @@ typedef void (VKAPI_PTR* PXVulkanInstanceDestroy)(VkInstance instance, const VkA
 typedef struct VkExtensionProperties
 {
     char extensionName[VK_MAX_EXTENSION_NAME_SIZE];
-    PXInt32U specVersion;
+    PXI32U specVersion;
 }
 VkExtensionProperties;
 
 // vkEnumerateInstanceExtensionProperties
-typedef VkResult(VKAPI_PTR* PXVulkanExtensionInstancePropertiesEnumerate)(const char* pLayerName, PXInt32U* pPropertyCount, VkExtensionProperties* pProperties);
+typedef VkResult(VKAPI_PTR* PXVulkanExtensionInstancePropertiesEnumerate)(const char* pLayerName, PXI32U* pPropertyCount, VkExtensionProperties* pProperties);
 
 
 typedef enum VkFormat
@@ -2095,15 +2095,15 @@ typedef struct VkSwapchainCreateInfoKHR
     const void* pNext;
     VkSwapchainCreateFlagsKHR flags;
     VkSurfaceKHR surface;
-    PXInt32U minImageCount;
+    PXI32U minImageCount;
     VkFormat imageFormat;
     VkColorSpaceKHR imageColorSpace;
     VkExtent2D imageExtent;
-    PXInt32U imageArrayLayers;
+    PXI32U imageArrayLayers;
     VkImageUsageFlags imageUsage;
     VkSharingMode imageSharingMode;
-    PXInt32U queueFamilyIndexCount;
-    const PXInt32U* pQueueFamilyIndices;
+    PXI32U queueFamilyIndexCount;
+    const PXI32U* pQueueFamilyIndices;
     VkSurfaceTransformFlagBitsKHR preTransform;
     VkCompositeAlphaFlagBitsKHR compositeAlpha;
     VkPresentModeKHR presentMode;
@@ -2170,9 +2170,9 @@ PXVulcan;
 
 typedef struct PXGraphicInitializeInfo_ PXGraphicInitializeInfo;
 
-PXPrivate PXActionResult PXAPI PXVulcanErrorCodeFromID(const VkResult vkResultID);
+PXPrivate PXResult PXAPI  PXVulcanErrorCodeFromID(const VkResult vkResultID);
 
-PXPublic PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicInitializeInfo* const pxGraphicInitializeInfo);
-PXPublic PXActionResult PXAPI PXVulcanRelease(PXVulcan* const pxVulcan);
+PXPublic PXResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicInitializeInfo* const pxGraphicInitializeInfo);
+PXPublic PXResult PXAPI PXVulcanRelease(PXVulcan* const pxVulcan);
 
 #endif

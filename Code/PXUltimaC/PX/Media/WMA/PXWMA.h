@@ -1,7 +1,7 @@
-#ifndef PXWMAINCLUDE
-#define PXWMAINCLUDE
+#ifndef PXWMAIncluded
+#define PXWMAIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 // Windows Media Audio
 typedef struct PXWMA_
@@ -10,7 +10,7 @@ typedef struct PXWMA_
 }
 PXWMA;
 
-PXPublic PXActionResult PXAPI PXWMALoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXWMASaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXWMALoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXWMASaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

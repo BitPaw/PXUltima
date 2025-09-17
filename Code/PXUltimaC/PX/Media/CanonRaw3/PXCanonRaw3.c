@@ -4,35 +4,35 @@
 #include <PX/OS/File/PXFile.h>
 #include <PX/OS/Console/PXConsole.h>
 
-#define  PXCanonRaw3FTYPID PXInt32Make('f', 't', 'y', 'p')
-#define  PXCanonRaw3FREEID PXInt32Make('f', 'r', 'e', 'e')
-#define  PXCanonRaw3CLIPID PXInt32Make('c', 'l', 'i', 'p')
-#define  PXCanonRaw3CRGNID PXInt32Make('c', 'r', 'g', 'n')
-#define  PXCanonRaw3MATTID PXInt32Make('m', 'a', 't', 't')
-#define  PXCanonRaw3KMATID PXInt32Make('k', 'm', 'a', 't')
-#define  PXCanonRaw3PNOTID PXInt32Make('p', 'n', 'o', 't')
-#define  PXCanonRaw3CTABID PXInt32Make('c', 't', 'a', 'b')
-#define  PXCanonRaw3LOADID PXInt32Make('l', 'o', 'a', 'd')
-#define  PXCanonRaw3IMAPID PXInt32Make('i', 'm', 'a', 'p')
-#define  PXCanonRaw3TMCDID PXInt32Make('t', 'm', 'c', 'd')
-#define  PXCanonRaw3CHAPID PXInt32Make('c', 'h', 'a', 'p')
-#define  PXCanonRaw3SYNCID PXInt32Make('s', 'y', 'n', 'c')
-#define  PXCanonRaw3SCPTID PXInt32Make('s', 'c', 'p', 't')
-#define  PXCanonRaw3SSRCID PXInt32Make('s', 's', 'r', 'c')
-#define  PXCanonRaw3ISOMID PXInt32Make('i', 's', 'o', 'm')
-#define  PXCanonRaw3UUIDID PXInt32Make('u', 'u', 'i', 'd')
+#define  PXCanonRaw3FTYPID PXI32Make('f', 't', 'y', 'p')
+#define  PXCanonRaw3FREEID PXI32Make('f', 'r', 'e', 'e')
+#define  PXCanonRaw3CLIPID PXI32Make('c', 'l', 'i', 'p')
+#define  PXCanonRaw3CRGNID PXI32Make('c', 'r', 'g', 'n')
+#define  PXCanonRaw3MATTID PXI32Make('m', 'a', 't', 't')
+#define  PXCanonRaw3KMATID PXI32Make('k', 'm', 'a', 't')
+#define  PXCanonRaw3PNOTID PXI32Make('p', 'n', 'o', 't')
+#define  PXCanonRaw3CTABID PXI32Make('c', 't', 'a', 'b')
+#define  PXCanonRaw3LOADID PXI32Make('l', 'o', 'a', 'd')
+#define  PXCanonRaw3IMAPID PXI32Make('i', 'm', 'a', 'p')
+#define  PXCanonRaw3TMCDID PXI32Make('t', 'm', 'c', 'd')
+#define  PXCanonRaw3CHAPID PXI32Make('c', 'h', 'a', 'p')
+#define  PXCanonRaw3SYNCID PXI32Make('s', 'y', 'n', 'c')
+#define  PXCanonRaw3SCPTID PXI32Make('s', 'c', 'p', 't')
+#define  PXCanonRaw3SSRCID PXI32Make('s', 's', 'r', 'c')
+#define  PXCanonRaw3ISOMID PXI32Make('i', 's', 'o', 'm')
+#define  PXCanonRaw3UUIDID PXI32Make('u', 'u', 'i', 'd')
 
-#define  PXCanonRaw3MOOVID PXInt32Make('m', 'o', 'o', 'v')
-#define  PXCanonRaw3MOOVCCTPID PXInt32Make('C', 'C', 'T', 'P')
-#define  PXCanonRaw3MOOVCMT1ID PXInt32Make('C', 'M', 'T', '1')
-#define  PXCanonRaw3MOOVCMT2ID PXInt32Make('C', 'M', 'T', '2')
-#define  PXCanonRaw3MOOVCMT3ID PXInt32Make('C', 'M', 'T', '3')
-#define  PXCanonRaw3MOOVGPSInfoID PXInt32Make('C', 'M', 'T', '4')
-#define  PXCanonRaw3MOOVCompressorVersionID PXInt32Make('C', 'N', 'C', 'V')
-#define  PXCanonRaw3MOOVCNOPID PXInt32Make('C', 'N', 'O', 'P')
-#define  PXCanonRaw3MOOVCNTHID PXInt32Make('C', 'N', 'T', 'H')
-#define  PXCanonRaw3MOOVThumbnailImageID PXInt32Make('T', 'H', 'M', 'B')
-#define  PXCanonRaw3MOOVCTBOID PXInt32Make('C', 'T', 'B', 'O')
+#define  PXCanonRaw3MOOVID PXI32Make('m', 'o', 'o', 'v')
+#define  PXCanonRaw3MOOVCCTPID PXI32Make('C', 'C', 'T', 'P')
+#define  PXCanonRaw3MOOVCMT1ID PXI32Make('C', 'M', 'T', '1')
+#define  PXCanonRaw3MOOVCMT2ID PXI32Make('C', 'M', 'T', '2')
+#define  PXCanonRaw3MOOVCMT3ID PXI32Make('C', 'M', 'T', '3')
+#define  PXCanonRaw3MOOVGPSInfoID PXI32Make('C', 'M', 'T', '4')
+#define  PXCanonRaw3MOOVCompressorVersionID PXI32Make('C', 'N', 'C', 'V')
+#define  PXCanonRaw3MOOVCNOPID PXI32Make('C', 'N', 'O', 'P')
+#define  PXCanonRaw3MOOVCNTHID PXI32Make('C', 'N', 'T', 'H')
+#define  PXCanonRaw3MOOVThumbnailImageID PXI32Make('T', 'H', 'M', 'B')
+#define  PXCanonRaw3MOOVCTBOID PXI32Make('C', 'T', 'B', 'O')
 
 #define PXCanonRaw3Debug 1
 
@@ -40,7 +40,7 @@ typedef struct PXCanonRaw3ChunkMOOV_
 {
     char UUID[16];
 
-    PXInt8U CompressiorVersionSize;
+    PXI8U CompressiorVersionSize;
     char CompressiorVersion[64];
 
 }
@@ -49,9 +49,9 @@ PXCanonRaw3ChunkMOOV;
 
 typedef struct PXCanonRaw3ChunkFTYP_
 {
-    PXInt32UCluster TypeBrandMajor;
-    PXInt32U TypeVersionMinor;
-    PXInt32UCluster TypeCompatibleBrands;
+    PXI32UCluster TypeBrandMajor;
+    PXI32U TypeVersionMinor;
+    PXI32UCluster TypeCompatibleBrands;
 }
 PXCanonRaw3ChunkFTYP;
 
@@ -63,9 +63,9 @@ PXCanonRaw3ChunkUUID;
 
 typedef struct PXCanonRaw3Chunk_
 {
-    PXInt32UCluster ID;
-    PXInt32U SizeTotal;
-    PXInt32U SizeData;
+    PXI32UCluster ID;
+    PXI32U SizeTotal;
+    PXI32U SizeData;
 
     PXSize PredictedFinalPosition;
 
@@ -83,7 +83,7 @@ typedef struct PXCanonRaw3Chunk_
 PXCanonRaw3Chunk;
 
 
-PXActionResult PXAPI PXCanonRaw3BlockRead(PXCanonRaw3Chunk* const pxCanonRaw3Chunk, PXFile* const pxFile)
+PXResult PXAPI  PXCanonRaw3BlockRead(PXCanonRaw3Chunk* const pxCanonRaw3Chunk, PXFile* const pxFile)
 {
     const PXTypeEntry pxDataStreamElementList[] =
     {
@@ -144,7 +144,7 @@ PXActionResult PXAPI PXCanonRaw3BlockRead(PXCanonRaw3Chunk* const pxCanonRaw3Chu
             {
             case PXCanonRaw3UUIDID:
             {
-                PXMemoryCopy(pxCanonRaw3ChunkChild.ChunkUUID.UUID, 16, pxCanonRaw3ChunkMOOV.UUID, 16);
+                PXMemoryCopy(pxCanonRaw3ChunkChild.ChunkUUID.UUID, pxCanonRaw3ChunkMOOV.UUID, 16);
                 break;
             }
             case PXCanonRaw3MOOVCompressorVersionID:
@@ -157,7 +157,7 @@ PXActionResult PXAPI PXCanonRaw3BlockRead(PXCanonRaw3Chunk* const pxCanonRaw3Chu
                 PXFile tiffData;
                 // PXFileBufferExternal(&tiffData, PXFileCursorPosition(pxFile), pxCanonRaw3ChunkChild.SizeData);
 
-                PXImage pxxx;
+                PXTexture pxxx;
 
                 //PXTIFFLoadFromFile(&pxxx, &tiffData);
 
@@ -260,7 +260,7 @@ PXActionResult PXAPI PXCanonRaw3BlockRead(PXCanonRaw3Chunk* const pxCanonRaw3Chu
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXCanonRaw3LoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI  PXCanonRaw3LoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     PXFile* const pxFile = pxResourceLoadInfo->FileReference;
 
@@ -293,7 +293,7 @@ PXActionResult PXAPI PXCanonRaw3LoadFromFile(PXResourceTransphereInfo* const pxR
 
     // File Type Box
     {
-        PXInt32U amountOfContainers = 0;
+        PXI32U amountOfContainers = 0;
 
         // if no ftyp is contaned, use "Major_brand='mp41', minor_version=0, and the single compatible brand 'mp41'."
         PXFileReadI32UE(pxFile, &amountOfContainers, PXEndianBig);
@@ -311,9 +311,9 @@ PXActionResult PXAPI PXCanonRaw3LoadFromFile(PXResourceTransphereInfo* const pxR
         );
 #endif
 
-        for (PXInt32U i = 0; i < amountOfContainers; ++i)
+        for (PXI32U i = 0; i < amountOfContainers; ++i)
         {
-            PXInt32UCluster boxID;
+            PXI32UCluster boxID;
 
             PXFileReadI32U(pxFile, &boxID.Value);
 
@@ -342,7 +342,7 @@ PXActionResult PXAPI PXCanonRaw3LoadFromFile(PXResourceTransphereInfo* const pxR
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXCanonRaw3SaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI  PXCanonRaw3SaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

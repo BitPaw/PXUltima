@@ -58,18 +58,18 @@ void PXAPI PXDebugDebuggerSendMessage(PXDebug* const pxDebug, PXText* const mess
         case TextFormatASCII:
         case TextFormatUTF8:
         {
-            PXDebugOutputDebugStringA(message->TextA);
+            PXDebugOutputDebugStringA(message->A);
             break;
         }
         case TextFormatUNICODE:
         {
-            PXDebugOutputDebugStringW(message->TextW);
+            PXDebugOutputDebugStringW(message->W);
             break;
         }
     }
 }
 
-PXActionResult PXAPI PXDebugDebuggerInitialize(PXDebug* const pxDebug)
+PXResult PXAPI  PXDebugDebuggerInitialize(PXDebug* const pxDebug)
 {
     PXClear(PXDebug, pxDebug);
 
@@ -88,7 +88,7 @@ PXActionResult PXAPI PXDebugDebuggerInitialize(PXDebug* const pxDebug)
 #endif
 }
 
-PXActionResult PXAPI PXDebugStartProcess(PXDebug* const pxDebug, const PXText* const applicationName)
+PXResult PXAPI  PXDebugStartProcess(PXDebug* const pxDebug, const PXText* const applicationName)
 {
     PXTextCopy(applicationName, &pxDebug->ApplicatioName);
 
@@ -115,7 +115,7 @@ PXActionResult PXAPI PXDebugStartProcess(PXDebug* const pxDebug, const PXText* c
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDebugAttach(PXDebug* const pxDebug)
+PXResult PXAPI  PXDebugAttach(PXDebug* const pxDebug)
 {
 #if OSUnix
     __pid_t processID = pxDebug->Process.ProcessID;
@@ -151,7 +151,7 @@ void PXAPI OnDebugProcessCreate(PXDebug* const pxDebug)
 
 }
 
-void PXAPI OnDebugProcessExit(PXDebug* const pxDebug, const PXInt32U exitCode)
+void PXAPI OnDebugProcessExit(PXDebug* const pxDebug, const PXI32U exitCode)
 {
 #if PXLogEnable
     PXLogPrint
@@ -165,7 +165,7 @@ void PXAPI OnDebugProcessExit(PXDebug* const pxDebug, const PXInt32U exitCode)
 #endif
 }
 
-PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
+PXResult PXAPI  PXDebugWaitForEvent(PXDebug* const pxDebug)
 {
 #if OSUnix
     __pid_t processID = pxDebug->Process.ProcessID;
@@ -384,7 +384,7 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
                 "Exception",
                 "Process (%i) create : %s",
                 debugEvent.dwProcessId,
-                pxText.TextA
+                pxText.A
             );
 #endif
 
@@ -422,7 +422,7 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
         }
         case LOAD_DLL_DEBUG_EVENT:
         {
-            // Read the debugging information included in the newly
+            // Read the debugging information Includedd in the newly
             // loaded DLL. Be sure to close the handle to the loaded DLL
             // with CloseHandle.
 
@@ -445,7 +445,7 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
                 "Exception",
                 "0x%p | DLL load <%s>",
                 loadDLLDebugInfo->lpBaseOfDll,
-                pxText.TextA
+                pxText.A
             );
 #endif
 
@@ -534,7 +534,7 @@ PXActionResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug)
 #endif
 }
 
-PXActionResult PXAPI PXDebugLibrarySymbolsFetch(PXDebug* const pxDebug, const PXText* const libraryFilePath, PXSymbol* const pxSymbolList, PXSize* const amount)
+PXResult PXAPI  PXDebugLibrarySymbolsFetch(PXDebug* const pxDebug, const PXText* const libraryFilePath, PXSymbol* const pxSymbolList, PXSize* const amount)
 {
 #if OSUnix
     return PXFalse;
@@ -561,7 +561,7 @@ PXActionResult PXAPI PXDebugLibrarySymbolsFetch(PXDebug* const pxDebug, const PX
         }
     }
 
-   // PXSymbolModuleLoad(libraryFilePath->TextA, 0);
+   // PXSymbolModuleLoad(libraryFilePath->A, 0);
 
 
 
@@ -587,7 +587,7 @@ void PXAPI PXDebugLogMessage(PXText* const pxText)
 
     for(PXSize i = 0; i < pxText->SizeUsed; ++i)
     {
-        char buffer[4] = { pxText->TextA[i], 0, 0, 0 };
+        char buffer[4] = { pxText->A[i], 0, 0, 0 };
 
 #if OSUnix
         // Does this exist?
@@ -598,7 +598,7 @@ void PXAPI PXDebugLogMessage(PXText* const pxText)
 }
 
 
-PXActionResult PXAPI PXDebugHeapMemoryList(PXDebug* const pxDebug)
+PXResult PXAPI  PXDebugHeapMemoryList(PXDebug* const pxDebug)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -833,7 +833,7 @@ PXActionResult PXAPI PXDebugHeapMemoryList(PXDebug* const pxDebug)
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDebugFetchSymbolThread(PXDebug* const pxDebug, PXSymbol* const pxSymbol, PXThread* pxThread)
+PXResult PXAPI  PXDebugFetchSymbolThread(PXDebug* const pxDebug, PXSymbol* const pxSymbol, PXThread* pxThread)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -961,7 +961,7 @@ BOOL CALLBACK PXENUMERATESYMBOLSUEUE(PSYMBOL_INFO pSymInfo, ULONG SymbolSize, PS
 }
 #endif
 
-PXActionResult PXAPI PXDebugFetchSymbolFromRougeAdress(PXDebug* const pxDebug, PXSymbol* const pxSymbol, void* adress)
+PXResult PXAPI  PXDebugFetchSymbolFromRougeAdress(PXDebug* const pxDebug, PXSymbol* const pxSymbol, void* adress)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -1047,7 +1047,7 @@ PXThreadResult PXAPI PXDebugLoop(PXDebug* const pxDebug)
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDebugDumpCreate(PXDebug* const pxDebug)
+PXResult PXAPI  PXDebugDumpCreate(PXDebug* const pxDebug)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;

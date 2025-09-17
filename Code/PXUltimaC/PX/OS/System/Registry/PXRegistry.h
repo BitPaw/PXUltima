@@ -1,5 +1,5 @@
-#ifndef PXRegistryINCLUDE
-#define PXRegistryINCLUDE
+#ifndef PXRegistryIncluded
+#define PXRegistryIncluded
 
 #include <PX/OS/Library/PXLibrary.h>
 
@@ -34,19 +34,19 @@ typedef struct PXRegistry_
 }
 PXRegistry;
 
-PXPublic PXActionResult PXAPI PXRegistryInitialize(PXRegistry* const registry);
-PXPublic PXActionResult PXAPI PXRegistryRelease(PXRegistry* const registry);
+PXPublic PXResult PXAPI PXRegistryInitialize(PXRegistry* const registry);
+PXPublic PXResult PXAPI PXRegistryRelease(PXRegistry* const registry);
 
-PXPublic PXActionResult PXAPI PXRegistryConnectSpace(PXRegistry* const registry, const PXRegistrySpace registrySpace);
-PXPublic PXActionResult PXAPI PXRegistryConnectRemote(PXRegistry* const registry, const PXText* const computerName, const PXRegistrySpace registrySpace);
+PXPublic PXResult PXAPI PXRegistryConnectSpace(PXRegistry* const registry, const PXRegistrySpace registrySpace);
+PXPublic PXResult PXAPI PXRegistryConnectRemote(PXRegistry* const registry, const PXText* const computerName, const PXRegistrySpace registrySpace);
 
-PXPublic PXActionResult PXAPI PXRegistryClose(PXRegistry* const registry);
+PXPublic PXResult PXAPI PXRegistryClose(PXRegistry* const registry);
 
-PXPublic PXActionResult PXAPI PXRegistryKeyListAll(PXRegistry* const registry);
+PXPublic PXResult PXAPI PXRegistryKeyListAll(PXRegistry* const registry);
 
-PXPublic PXActionResult PXAPI PXRegistryKeyCreate(PXRegistry* const registry, const PXText* const pxTextKeyName);
-PXPublic PXActionResult PXAPI PXRegistryKeyLoad(PXRegistry* const registry, const PXText* const pxTextKeyName, const PXText* const pxTextFile);
-PXPublic PXActionResult PXAPI PXRegistryKeySave(PXRegistry* const registry, const PXText* const pxTextKeyName);
-PXPublic PXActionResult PXAPI PXRegistryKeyDelete(PXRegistry* const registry, const PXText* const pxTextKeyName);
+PXPublic PXResult PXAPI PXRegistryKeyCreate(PXRegistry* const registry, const PXText* const pxTextKeyName);
+PXPublic PXResult PXAPI PXRegistryKeyLoad(PXRegistry* const registry, const PXText* const pxTextKeyName, const PXText* const pxTextFile);
+PXPublic PXResult PXAPI PXRegistryKeySave(PXRegistry* const registry, const PXText* const pxTextKeyName);
+PXPublic PXResult PXAPI PXRegistryKeyDelete(PXRegistry* const registry, const PXText* const pxTextKeyName);
 
 #endif

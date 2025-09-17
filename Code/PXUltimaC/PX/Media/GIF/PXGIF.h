@@ -1,33 +1,33 @@
-#ifndef PXGIFINCLUDE
-#define PXGIFINCLUDE
+#ifndef PXGIFIncluded
+#define PXGIFIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef struct PXGIFImageDescriptor_
 {
-    PXInt16U LeftPosition;
-    PXInt16U TopPosition;
-    PXInt16U Width;
-    PXInt16U Height;
-    PXInt8U Separator;
-    PXInt8U LocalColorTableSize;
-    PXInt8U Reserved;
-    PXInt8U SortFlag;
-    PXInt8U InterlaceFlag;
-    PXInt8U LocalColorTableFlag;
+    PXI16U LeftPosition;
+    PXI16U TopPosition;
+    PXI16U Width;
+    PXI16U Height;
+    PXI8U Separator;
+    PXI8U LocalColorTableSize;
+    PXI8U Reserved;
+    PXI8U SortFlag;
+    PXI8U InterlaceFlag;
+    PXI8U LocalColorTableFlag;
 }
 PXGIFImageDescriptor;
 
 typedef struct PXGIF_
 {
-    PXInt16U Width;
-    PXInt16U Height;
+    PXI16U Width;
+    PXI16U Height;
 
-    PXInt8U BackgroundColorIndex;
-    PXInt8U PixelAspectRatio;
+    PXI8U BackgroundColorIndex;
+    PXI8U PixelAspectRatio;
 
-    PXInt8U GlobalColorTableSize;
-    PXInt8U ColorResolution;
+    PXI8U GlobalColorTableSize;
+    PXI8U ColorResolution;
 
     PXBool IsGlobalColorTablePresent;
     PXBool IsSorted;
@@ -36,7 +36,7 @@ PXGIF;
 
 PXPublic PXSize PXAPI PXGIFFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 
-PXPublic PXActionResult PXAPI PXGIFLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXGIFSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXGIFLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXGIFSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

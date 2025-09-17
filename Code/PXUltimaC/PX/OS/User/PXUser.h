@@ -1,5 +1,5 @@
-#ifndef PXUserINCLUDE
-#define PXUserINCLUDE
+#ifndef PXUserIncluded
+#define PXUserIncluded
 
 #include <PX/Media/PXText.h>
 #include <PX/OS/Error/PXActionResult.h>
@@ -20,7 +20,7 @@ typedef enum PXUserEnviromentFolderID_
 }
 PXUserEnviromentFolderID;
 
-PXPublic PXActionResult PXAPI PXUserNameGetAA(PXText* const name);
+PXPublic PXResult PXAPI PXUserNameGetAA(PXText* const name);
 PXPublic PXBool PXAPI PXUserEnviromentFolderGet(PXText* const name, const PXUserEnviromentFolderID pxUserEnviromentFolderID);
 
 #endif

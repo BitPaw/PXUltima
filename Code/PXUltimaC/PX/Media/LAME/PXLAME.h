@@ -1,7 +1,7 @@
-#ifndef PXLAMEINCLUDE
-#define PXLAMEINCLUDE
+#ifndef PXLAMEIncluded
+#define PXLAMEIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef enum PXLAMESourceFrequency_
 {
@@ -15,9 +15,9 @@ PXLAMESourceFrequency;
 
 typedef struct PXLAME_
 {
-    PXInt8U MajorVersion;
-    PXInt8U MinorVersion;
-    PXInt8U ReleaseVersion;
+    PXI8U MajorVersion;
+    PXI8U MinorVersion;
+    PXI8U ReleaseVersion;
     unsigned char Revision; // At this time these 4 bits are set to 0.
     unsigned char VBRType;
     unsigned char LowpassFrequency;
@@ -47,7 +47,7 @@ typedef struct PXLAME_
 }
 PXLAME;
 
-PXPublic PXActionResult PXAPI PXLAMELoadFromFile(PXLAME* const lame, PXFile* const pxFile);
-PXPublic PXActionResult PXAPI PXLAMESaveToFile(const PXLAME* const lame, PXFile* const pxFile);
+PXPublic PXResult PXAPI PXLAMELoadFromFile(PXLAME* const lame, PXFile* const pxFile);
+PXPublic PXResult PXAPI PXLAMESaveToFile(const PXLAME* const lame, PXFile* const pxFile);
 
 #endif

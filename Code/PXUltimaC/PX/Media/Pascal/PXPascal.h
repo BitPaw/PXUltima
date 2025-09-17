@@ -1,9 +1,9 @@
-#ifndef PXPascalINCLUDE
-#define PXPascalINCLUDE
+#ifndef PXPascalIncluded
+#define PXPascalIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
-PXPublic PXActionResult PXAPI PXPascalLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXPascalSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXPascalLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXPascalSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

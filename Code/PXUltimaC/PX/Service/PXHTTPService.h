@@ -1,7 +1,7 @@
-#ifndef PXHTTPINCLUDE
-#define PXHTTPINCLUDE
+#ifndef PXHTTPIncluded
+#define PXHTTPIncluded
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 
 typedef struct PXHTTPServer_
 {
@@ -15,7 +15,7 @@ typedef struct PXHTTPClient_
 }
 PXHTTPClient;
 
-PXPublic PXActionResult PXHTTPServerStart(PXHTTPServer* const pxHTTPServer);
-PXPublic PXActionResult PXHTTPServerStop(PXHTTPServer* const pxHTTPServer);
+PXPublic PXResult PXAPI PXHTTPServerStart(PXHTTPServer* const pxHTTPServer);
+PXPublic PXResult PXAPI PXHTTPServerStop(PXHTTPServer* const pxHTTPServer);
 
 #endif

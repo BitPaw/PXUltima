@@ -1,5 +1,5 @@
-#ifndef PXHardDriveINCLUDE
-#define PXHardDriveINCLUDE
+#ifndef PXHardDriveIncluded
+#define PXHardDriveIncluded
 
 #include <PX/Media/PXType.h>
 #include <PX/OS/Error/PXActionResult.h>
@@ -17,6 +17,6 @@ PXHardDrive;
 
 PXPublic PXSize PXAPI PXHardDriveListSize();
 
-PXPublic PXActionResult PXAPI PXHardDriveFetchAll(PXHardDrive* const hardDriveList, const PXSize hardDriveListMaxSize, PXSize* hardDriveListSize);
+PXPublic PXResult PXAPI PXHardDriveFetchAll(PXHardDrive* const hardDriveList, const PXSize hardDriveListMaxSize, PXSize* hardDriveListSize);
 
 #endif

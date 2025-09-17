@@ -1,7 +1,8 @@
-#ifndef PXLogINCLUDE
-#define PXLogINCLUDE
+#ifndef PXLogIncluded
+#define PXLogIncluded
 
-#include <PX/Media/PXResource.h>
+#include <PX/Media/PXType.h>
+#include <PX/OS/Error/PXActionResult.h>
 
 #define PXLogEnable         1
 #define PXLogEnableColor    0
@@ -70,7 +71,7 @@ typedef struct PXLoggingEventData_
     union
     {
         PXSize Time;
-        PXFile* FileReference;
+        struct PXFile* FileReference;
         PXLoggingMemoryData MemoryData;
     };
 
@@ -95,21 +96,21 @@ PXLoggingEventData;
 
 typedef void (PXAPI* PXLogPrintFunction)(const PXLoggingType loggingType, const char* const source, ...);
 
-PXPublic PXActionResult PXAPI PXConsoleTextColorSet(const PXConsoleTextColor pxConsoleTextColor);
-PXPublic PXActionResult PXAPI PXConsoleTextColorSetFromID(const PXInt16U coliorID);
+PXPublic PXResult PXAPI PXConsoleTextColorSet(const PXConsoleTextColor pxConsoleTextColor);
+PXPublic PXResult PXAPI PXConsoleTextColorSetFromID(const PXI16U coliorID);
 
 PXPublic void PXAPI PXConsoleClear();
-PXPublic void PXAPI PXConsoleGoToXY(const PXInt32U x, const PXInt32U y);
+PXPublic void PXAPI PXConsoleGoToXY(const PXI32U x, const PXI32U y);
 PXPublic void PXAPI PXConsoleWriteF(const PXSize length, const char* const source, ...);
 PXPublic void PXAPI PXConsoleWrite(const PXSize length, const char* const source);
 PXPublic void PXAPI PXConsoleWriteFV(const PXSize length, const char* const source, va_list va_list);
 
 
 PXPublic void PXAPI PXConsoleWriteTablePXF32(const PXF32* const data, const PXSize amount, const PXSize width);
-PXPublic void PXAPI PXConsoleWriteTableInt(const PXInt8U* const data, const PXSize amount, const PXSize width);
+PXPublic void PXAPI PXConsoleWriteTableInt(const PXI8U* const data, const PXSize amount, const PXSize width);
 
 //PXPublic void PXAPI PXConsoleTranlateColorsA(char* const bufferInput, char* const bufferOuput);
-PXPublic void PXAPI PXConsoleWriteWithColorCodes(PXText* const bufferInput);
+PXPublic void PXAPI PXConsoleWriteWithColorCodes(struct PXText_* const bufferInput);
 
 PXPublic void PXAPI PXLogPrintInvoke(PXLoggingEventData* const pxLoggingEventData, ...);
 

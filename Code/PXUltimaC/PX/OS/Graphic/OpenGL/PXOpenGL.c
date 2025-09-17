@@ -7,7 +7,7 @@
 #include <PX/Media/PXText.h>
 #include <PX/OS/Error/PXActionResult.h>
 #include <PX/OS/Memory/PXMemory.h>
-#include <PX/OS/GUI/PXGUI.h>
+#include <PX/Engine/PXGUI.h>
 #include <PX/OS/Async/PXAwait.h>
 #include <PX/OS/PXOS.h>
 #include <PX/OS/Console/PXConsole.h>
@@ -15,6 +15,7 @@
 #if 0
 #include <GLEW/glew.h>
 #endif
+#include <PX/OS/Graphic/PXGraphic.h>
 
 #if OSUnix
 #pragma comment(lib, "libGL.o") // ToDo: Is this valid?
@@ -38,8 +39,10 @@ const char PXOpenglLibraryName[]
 
 const char PXOpenGLName[] = "OpenGL";
 const char PXOpenGLModelName[] = "Model";
+const char PXOpenGLShaderProgramName[] = "ShaderProgram";
 
-const PXInt16U PXOpenGLBindingSize = sizeof(PXOpenGLBinding) / sizeof(void*);
+
+const PXI16U PXOpenGLBindingSize = sizeof(PXOpenGLBinding) / sizeof(void*);
 const char PXOpenGLBindingList[] =
 {
 "glAccum\0"
@@ -487,7 +490,7 @@ const char PXOpenGLBindingList[] =
 "wglCopyContext\0"
 "wglCreateAffinityDCNV\0"
 "wglCreateContext\0"
-"wglCreateContextAttribsARB\0"
+"wglCreateConAttribsARB\0"
 "wglCreateLayerContext\0"
 "wglDeleteContext\0"
 "wglDeleteDCNV\0"
@@ -1699,29 +1702,29 @@ GLenum PXAPI PXOpenGLTextureParameterModeToID(const PXOpenGLTextureParameterMode
     }
 }
 
-PXInt32U PXAPI PXOpenGLRenderModeToID(const PXGraphicDrawMode pxGraphicDrawMode)
+PXI32U PXAPI PXOpenGLRenderModeToID(const PXDrawMode pxGraphicDrawMode)
 {
     switch(pxGraphicDrawMode)
     {
-        case PXGraphicDrawModePoint:
+        case PXDrawModePoint:
             return GL_POINTS;
-        case PXGraphicDrawModeLine:
+        case PXDrawModeLine:
             return GL_LINES;
-        case PXGraphicDrawModeLineLoop:
+        case PXDrawModeLineLoop:
             return GL_LINE_LOOP;
-        case PXGraphicDrawModeLineStrip:
+        case PXDrawModeLineStrip:
             return GL_LINE_STRIP;
-        case PXGraphicDrawModeTriangle:
+        case PXDrawModeTriangle:
             return GL_TRIANGLES;
-        case PXGraphicDrawModeTriangleStrip:
+        case PXDrawModeTriangleStrip:
             return GL_TRIANGLE_STRIP;
-        case PXGraphicDrawModeTriangleFAN:
+        case PXDrawModeTriangleFAN:
             return GL_TRIANGLE_FAN;
-        case PXGraphicDrawModeSquare:
+        case PXDrawModeSquare:
             return GL_QUADS;
-        case PXGraphicDrawModeSquareStrip:
+        case PXDrawModeSquareStrip:
             return GL_QUAD_STRIP;
-        case PXGraphicDrawModePatches:
+        case PXDrawModePatches:
             return GL_POLYGON;
 
         default:
@@ -1977,7 +1980,7 @@ int PXAPI PXOpenGLToggleToID(const PXOpenGLToggle openGLToggle)
     }
 }
 
-PXInt32U PXAPI PXOpenGLImageFormatToID(const PXColorFormat pxColorFormat, PXInt32U* const imageFormat, PXInt32U* const dataFormat)
+PXI32U PXAPI PXOpenGLImageFormatToID(const PXColorFormat pxColorFormat, PXI32U* const imageFormat, PXI32U* const dataFormat)
 {
     switch(pxColorFormat)
     {
@@ -2074,7 +2077,7 @@ PXInt32U PXAPI PXOpenGLImageFormatToID(const PXColorFormat pxColorFormat, PXInt3
     return PXTrue;
 }
 
-PXActionResult PXAPI PXOpenGLSwapIntervalSet(PXOpenGL* const pxOpenGL, const PXInt32U interval)
+PXResult PXAPI  PXOpenGLSwapIntervalSet(PXOpenGL* const pxOpenGL, const PXI32U interval)
 {
     if(!pxOpenGL->Binding.SwapIntervalSet)
     {
@@ -2112,58 +2115,58 @@ PXActionResult PXAPI PXOpenGLSwapIntervalSet(PXOpenGL* const pxOpenGL, const PXI
     return swapSetResult;
 }
 
-PXActionResult PXAPI PXOpenGLSwapIntervalGet(PXOpenGL* const pxOpenGL, PXInt32U* const interval)
+PXResult PXAPI  PXOpenGLSwapIntervalGet(PXOpenGL* const pxOpenGL, PXI32U* const interval)
 {
     *interval = pxOpenGL->Binding.SwapIntervalGet();
 
     return PXOpenGLErrorCurrent(pxOpenGL, 0);
 }
 
-PXInt32U PXAPI PXOpenGLTextureTypeToID(const PXGraphicTextureType pxGraphicTextureType)
+PXI32U PXAPI PXOpenGLTextureTypeToID(const PXTextureType pxGraphicTextureType)
 {
     switch(pxGraphicTextureType)
     {
-        case PXGraphicTextureType1D:
+        case PXTextureType1D:
             return  GL_TEXTURE_1D;
-        case PXGraphicTextureType2D:
+        case PXTextureType2D:
             return  GL_TEXTURE_2D;
-        case PXGraphicTextureType2DProxy:
+        case PXTextureType2DProxy:
             return  GL_PROXY_TEXTURE_2D;
-        case PXGraphicTextureType3D:
+        case PXTextureType3D:
             return   GL_TEXTURE_3D;
-        case PXGraphicTextureType1DArray:
+        case PXTextureType1DArray:
             return   GL_TEXTURE_1D_ARRAY;
-        case PXGraphicTextureType1DBuffer:
+        case PXTextureType1DBuffer:
             return   GL_PROXY_TEXTURE_1D_ARRAY;
-        case PXGraphicTextureType2DArray:
+        case PXTextureType2DArray:
             return   GL_TEXTURE_2D_ARRAY;
-        case PXGraphicTextureTypeRectangle:
+        case PXTextureTypeRectangle:
             return GL_TEXTURE_RECTANGLE;
-        case PXGraphicTextureTypeRectangleProxy:
+        case PXTextureTypeRectangleProxy:
             return GL_PROXY_TEXTURE_RECTANGLE;
-        case PXGraphicTextureTypeCubeContainer:
+        case PXTextureTypeCubeContainer:
             return  GL_TEXTURE_CUBE_MAP;
-        case PXGraphicTextureTypeCubeProxy:
+        case PXTextureTypeCubeProxy:
             return GL_PROXY_TEXTURE_CUBE_MAP;
-        case PXGraphicTextureTypeCubeTop:
+        case PXTextureTypeCubeTop:
             return GL_TEXTURE_CUBE_MAP_POSITIVE_X;
-        case PXGraphicTextureTypeCubeDown:
+        case PXTextureTypeCubeDown:
             return GL_TEXTURE_CUBE_MAP_NEGATIVE_X;
-        case PXGraphicTextureTypeCubeFront:
+        case PXTextureTypeCubeFront:
             return GL_TEXTURE_CUBE_MAP_POSITIVE_Y;
-        case PXGraphicTextureTypeCubeBack:
+        case PXTextureTypeCubeBack:
             return GL_TEXTURE_CUBE_MAP_NEGATIVE_Y;
-        case PXGraphicTextureTypeCubeLeft:
+        case PXTextureTypeCubeLeft:
             return GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
-        case PXGraphicTextureTypeCubeRight:
+        case PXTextureTypeCubeRight:
             return GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
-        case PXGraphicTextureTypeCubeArray:
+        case PXTextureTypeCubeArray:
             return   GL_TEXTURE_CUBE_MAP_ARRAY;
-        case PXGraphicTextureTypeBuffer:
+        case PXTextureTypeBuffer:
             return   GL_TEXTURE_BUFFER;
-        case PXGraphicTextureType2DMultiSample:
+        case PXTextureType2DMultiSample:
             return   GL_TEXTURE_2D_MULTISAMPLE;
-        case PXGraphicTextureType2DMultiSampleArray:
+        case PXTextureType2DMultiSampleArray:
             return   GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
         default:
             return -1;
@@ -2203,49 +2206,49 @@ void PXAPI PXOpenGLBlendingMode(PXOpenGL* const pxOpenGL, const PXBlendingMode p
     pxOpenGL->Binding.BlendFunc(sfactor, dfactor);
 }
 
-PXOpenGLVersion PXAPI PXOpenGLVersionParse(const PXInt32U versionID)
+PXOpenGLVersion PXAPI PXOpenGLVersionParse(const PXI32U versionID)
 {
     switch(versionID)
     {
-        case PXInt24Make(1, 0, 0):
+        case PXI24Make(1, 0, 0):
             return PXOpenGLVersion1x0x0;
-        case PXInt24Make(1, 1, 0):
+        case PXI24Make(1, 1, 0):
             return PXOpenGLVersion1x1x0;
-        case PXInt24Make(1, 2, 0):
+        case PXI24Make(1, 2, 0):
             return PXOpenGLVersion1x2x0;
-        case PXInt24Make(1, 2, 1):
+        case PXI24Make(1, 2, 1):
             return PXOpenGLVersion1x2x1;
-        case PXInt24Make(1, 3, 0):
+        case PXI24Make(1, 3, 0):
             return PXOpenGLVersion1x3x0;
-        case PXInt24Make(1, 4, 0):
+        case PXI24Make(1, 4, 0):
             return PXOpenGLVersion1x4x0;
-        case PXInt24Make(1, 5, 0):
+        case PXI24Make(1, 5, 0):
             return PXOpenGLVersion1x5x0;
-        case PXInt24Make(2, 0, 0):
+        case PXI24Make(2, 0, 0):
             return PXOpenGLVersion2x0x0;
-        case PXInt24Make(2, 1, 0):
+        case PXI24Make(2, 1, 0):
             return PXOpenGLVersion2x1x0;
-        case PXInt24Make(3, 0, 0):
+        case PXI24Make(3, 0, 0):
             return PXOpenGLVersion3x0x0;
-        case PXInt24Make(3, 1, 0):
+        case PXI24Make(3, 1, 0):
             return PXOpenGLVersion3x1x0;
-        case PXInt24Make(3, 2, 0):
+        case PXI24Make(3, 2, 0):
             return PXOpenGLVersion3x2x0;
-        case PXInt24Make(3, 3, 0):
+        case PXI24Make(3, 3, 0):
             return PXOpenGLVersion3x3x0;
-        case PXInt24Make(4, 0, 0):
+        case PXI24Make(4, 0, 0):
             return PXOpenGLVersion4x0x0;
-        case PXInt24Make(4, 1, 0):
+        case PXI24Make(4, 1, 0):
             return PXOpenGLVersion4x1x0;
-        case PXInt24Make(4, 2, 0):
+        case PXI24Make(4, 2, 0):
             return PXOpenGLVersion4x2x0;
-        case PXInt24Make(4, 3, 0):
+        case PXI24Make(4, 3, 0):
             return PXOpenGLVersion4x3x0;
-        case PXInt24Make(4, 4, 0):
+        case PXI24Make(4, 4, 0):
             return PXOpenGLVersion4x4x0;
-        case PXInt24Make(4, 5, 0):
+        case PXI24Make(4, 5, 0):
             return PXOpenGLVersion4x5x0;
-        case PXInt24Make(4, 6, 0):
+        case PXI24Make(4, 6, 0):
             return PXOpenGLVersion4x6x0;
 
         default:
@@ -2263,12 +2266,13 @@ void PXAPI PXOpenGLDestruct(PXOpenGL* const pxOpenGL)
 
 }
 
-PXActionResult PXAPI PXOpenGLErrorCurrent(PXOpenGL* const pxOpenGL, PXBool wasSuccessultCall)
+PXResult PXAPI  PXOpenGLErrorCurrent(PXOpenGL* const pxOpenGL, PXBool wasSuccessultCall)
 {
+    PXActionResult openGLError = PXActionSuccessful;
+
     for(;;)
     {
         const GLenum openGLErrorID = pxOpenGL->Binding.ErrorGet();
-        PXActionResult openGLError = PXActionSuccessful;
         const char* errorText = 0;
 
         // Translate
@@ -2346,7 +2350,11 @@ PXActionResult PXAPI PXOpenGLErrorCurrent(PXOpenGL* const pxOpenGL, PXBool wasSu
             errorText
         );
 #endif
+
+        DebugBreak();
     }
+
+    return openGLError;
 }
 
 void PXAPI PXOpenGLSet(PXOpenGL* const pxOpenGL, const PXOpenGL* const pxOpenGLSoure)
@@ -2393,14 +2401,14 @@ HGLRC CreateOpenGLContextOnGPUNV(PXOpenGL* const pxOpenGL, HWND hwnd, int gpuInd
     //CHECK_WGL_ERROR(numFormats > 0);
     SetPixelFormat(hdc, pixelFormat, NULL);
 
-    const int contextAttribs[] = {
+    const int conAttribs[] = {
         WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
         WGL_CONTEXT_MINOR_VERSION_ARB, 5,
         WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
         0
     };
 
-    HGLRC hglrc = pxOpenGL->Binding.ContextCreateAttributes(affinityDC, NULL, contextAttribs);
+    HGLRC hglrc = pxOpenGL->Binding.ContextCreateAttributes(affinityDC, NULL, conAttribs);
    // CHECK_WGL_ERROR(hglrc != NULL);
 
     //ReleaseDC(hwnd, hdc);
@@ -2429,7 +2437,7 @@ HGLRC CreateOpenGLContextOnGPU(PXOpenGL* const pxOpenGL, HDC hdc, int gpuIndex)
 
     SetPixelFormat(hdc, pixelFormat, NULL);
 
-    const int contextAttribs[] = 
+    const int conAttribs[] = 
     {
         WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
         WGL_CONTEXT_MINOR_VERSION_ARB, 5,
@@ -2438,14 +2446,14 @@ HGLRC CreateOpenGLContextOnGPU(PXOpenGL* const pxOpenGL, HDC hdc, int gpuIndex)
         0
     };
 
-    HGLRC hglrc = pxOpenGL->Binding.ContextCreateAttributes(hdc, NULL, contextAttribs);
+    HGLRC hglrc = pxOpenGL->Binding.ContextCreateAttributes(hdc, NULL, conAttribs);
 
     return hglrc;
 }
 #endif
 
 
-PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicInitializeInfo* const pxGraphicInitializeInfo)
+PXResult PXAPI  PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicInitializeInfo* const pxGraphicInitializeInfo)
 {
     PXWindow* const pxWindow = pxGraphicInitializeInfo->WindowReference;
 
@@ -2701,14 +2709,14 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
                     0
                 };
 
-                const HGLRC contextAttributes = pxOpenGL->Binding.ContextCreateAttributes
+                const HGLRC conAttributes = pxOpenGL->Binding.ContextCreateAttributes
                 (
                     pxWindow->DeviceContextHandle,
                     pxOpenGL->ContextHandle,
                     attributeList
                 );
 
-                const PXActionResult xx = PXOpenGLErrorCurrent(pxOpenGL, contextAttributes);
+                const PXActionResult xx = PXOpenGLErrorCurrent(pxOpenGL, conAttributes);
             }
         }
 #endif
@@ -2739,7 +2747,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
           
             char* extensionString = pxOpenGL->Binding.ExtensionStringGet(pxOpenGL->WindowDeviceContextHandle);
             char* cursor = extensionString;
-            PXInt32U wglExtenionAmount = 0;
+            PXI32U wglExtenionAmount = 0;
             
             for(;;)
             {
@@ -2870,10 +2878,10 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
 
     // List devices
     {
-        PXGraphicDevicePhysical pxGraphicDevicePhysical[4];
-        PXClearList(PXGraphicDevicePhysical, &pxGraphicDevicePhysical, 4);
+        PXGPUPhysical pxGraphicDevicePhysical[4];
+        PXClearList(PXGPUPhysical, &pxGraphicDevicePhysical, 4);
 
-        PXInt32U devices = 2;
+        PXI32U devices = 2;
 
        // PXOpenGLDevicePhysicalListAmount(pxOpenGL, &devices);
 
@@ -2884,7 +2892,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
             devices = 0;
         }
 
-        for(PXInt32U i = 0; i < devices; i++)
+        for(PXI32U i = 0; i < devices; i++)
         {
             PXText pxTextVideoMemoryCurrent;
             PXTextConstructNamedBufferA(&pxTextVideoMemoryCurrent, pxTextVideoMemoryCurrentBuffer, 32);
@@ -2924,14 +2932,14 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
                 "Renderer", pxGraphicDevicePhysical[i].Renderer,
 
                 "Memory",
-                pxTextVideoMemoryCurrent.TextA,
-                pxTextVideoMemoryTotal.TextA,
+                pxTextVideoMemoryCurrent.A,
+                pxTextVideoMemoryTotal.A,
                 percent,
-                pxTextVideoMemoryDedicated.TextA,
+                pxTextVideoMemoryDedicated.A,
 
                 "Evicted",
                 pxGraphicDevicePhysical[i].VideoMemoryEvictionCount,
-                pxTextVideoMemorySize.TextA
+                pxTextVideoMemorySize.A
             );
 #endif
         }
@@ -2952,7 +2960,7 @@ PXActionResult PXAPI PXOpenGLInitialize(PXOpenGL* const pxOpenGL, PXGraphicIniti
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXOpenGLSelect(PXOpenGL* const pxOpenGL)
+PXResult PXAPI  PXOpenGLSelect(PXOpenGL* const pxOpenGL)
 {
     PXWindow* const pxWindow = pxOpenGL->WindowRenderTarget;
 
@@ -3022,7 +3030,7 @@ PXActionResult PXAPI PXOpenGLSelect(PXOpenGL* const pxOpenGL)
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXOpenGLDeselect(PXOpenGL* const pxOpenGL)
+PXResult PXAPI  PXOpenGLDeselect(PXOpenGL* const pxOpenGL)
 {
 #if PXLogEnable
     PXLogPrint
@@ -3057,13 +3065,13 @@ PXActionResult PXAPI PXOpenGLDeselect(PXOpenGL* const pxOpenGL)
     return PXActionSuccessful;
 }
 
-PXInt64S PXAPI PXOpenGLIntergetGet(PXOpenGL* const pxOpenGL, const GLenum enumID)
+PXI64S PXAPI PXOpenGLIntergetGet(PXOpenGL* const pxOpenGL, const GLenum enumID)
 {
-    PXInt64S result = 0;
+    PXI64S result = 0;
 
     if(pxOpenGL->Binding.GetInteger64v)
     {
-        PXInt64S currentMemory = 0;
+        PXI64S currentMemory = 0;
 
         pxOpenGL->Binding.GetInteger64v(enumID, &currentMemory);
 
@@ -3071,7 +3079,7 @@ PXInt64S PXAPI PXOpenGLIntergetGet(PXOpenGL* const pxOpenGL, const GLenum enumID
     }
     else if(pxOpenGL->Binding.GetIntegerv)
     {
-        PXInt32S currentMemory = 0;
+        PXI32S currentMemory = 0;
 
         pxOpenGL->Binding.GetIntegerv(enumID, &currentMemory);
 
@@ -3100,7 +3108,7 @@ PXInt64S PXAPI PXOpenGLIntergetGet(PXOpenGL* const pxOpenGL, const GLenum enumID
     return result; // Returning -1 is not a good idea
 }
 
-PXActionResult PXAPI PXOpenGLDevicePhysicalListAmount(PXOpenGL* const pxOpenGL, PXInt32U* const amount)
+PXResult PXAPI  PXOpenGLDevicePhysicalListAmount(PXOpenGL* const pxOpenGL, PXI32U* const amount)
 {
     if(!(pxOpenGL && amount))
     {
@@ -3164,7 +3172,7 @@ PXActionResult PXAPI PXOpenGLDevicePhysicalListAmount(PXOpenGL* const pxOpenGL, 
 #endif
 }
 
-PXActionResult PXAPI PXOpenGLDevicePhysicalListFetch(PXOpenGL* const pxOpenGL, const PXInt32U amount, PXGraphicDevicePhysical* const pxGraphicDevicePhysicalList)
+PXResult PXAPI  PXOpenGLDevicePhysicalListFetch(PXOpenGL* const pxOpenGL, const PXI32U amount, PXGPUPhysical* const pxGraphicDevicePhysicalList)
 {
     if(!(pxOpenGL && pxGraphicDevicePhysicalList))
     {
@@ -3191,7 +3199,7 @@ PXActionResult PXAPI PXOpenGLDevicePhysicalListFetch(PXOpenGL* const pxOpenGL, c
         return PXActionRefusedContextNotBound;
     }
 
-    PXClearList(PXGraphicDevicePhysical, pxGraphicDevicePhysicalList, amount);
+    PXClearList(PXGPUPhysical, pxGraphicDevicePhysicalList, amount);
 
     if(!pxOpenGL->Binding.GetString)
     {
@@ -3235,7 +3243,7 @@ PXActionResult PXAPI PXOpenGLDevicePhysicalListFetch(PXOpenGL* const pxOpenGL, c
 
         PXVersionFromString(&pxVersion, version);
 
-        const PXInt32U id = PXInt24Make(pxVersion.Major, pxVersion.Minor, pxVersion.Build);
+        const PXI32U id = PXI24Make(pxVersion.Major, pxVersion.Minor, pxVersion.Build);
         pxOpenGL->Version = PXOpenGLVersionParse(id);
     }
 
@@ -3251,23 +3259,23 @@ PXActionResult PXAPI PXOpenGLDevicePhysicalListFetch(PXOpenGL* const pxOpenGL, c
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXOpenGLScreenBufferRead(PXOpenGL* const pxOpenGL, PXImage* const pxImage)
+PXResult PXAPI  PXOpenGLScreenBufferRead(PXOpenGL* const pxOpenGL, PXTexture* const PXTexture)
 {
     GLenum formatStructure = 0;
     GLenum formatData = 0;
 
-    PXOpenGLImageFormatToID(pxImage->Format, &formatStructure, &formatData);
+    PXOpenGLImageFormatToID(PXTexture->Format, &formatStructure, &formatData);
+      
+    PXTextureResize(PXTexture, PXTexture->Format, PXTexture->Width, PXTexture->Height);
 
-    PXImageResize(pxImage, pxImage->Format, pxImage->Width, pxImage->Height);
-
-    pxOpenGL->Binding.ReadPixels(0, 0, pxImage->Width, pxImage->Height, formatStructure, formatData, pxImage->PixelData);
+    pxOpenGL->Binding.ReadPixels(0, 0, PXTexture->Width, PXTexture->Height, formatStructure, formatData, PXTexture->PixelData);
 
     const PXActionResult pxActionResult = PXOpenGLErrorCurrent(pxOpenGL, 0);
 
     return pxActionResult;
 }
 
-PXActionResult PXAPI PXOpenGLRelease(PXOpenGL* const pxOpenGL)
+PXResult PXAPI  PXOpenGLRelease(PXOpenGL* const pxOpenGL)
 {
     if(!pxOpenGL)
     {
@@ -3360,22 +3368,22 @@ void PXAPI PXOpenGLDrawOrder(PXOpenGL* const pxOpenGL, const PXOpenGLDrawOrderMo
 
 }
 
-void PXAPI PXOpenGLDrawMode(PXOpenGL* const pxOpenGL, const PXGraphicDrawFillMode pxGraphicDrawFillMode, const int cullingMode)
+void PXAPI PXOpenGLDrawMode(PXOpenGL* const pxOpenGL, const PXDrawFillMode pxGraphicDrawFillMode, const int cullingMode)
 {
     GLenum fillMode;
 
     switch(pxGraphicDrawFillMode)
     {
-        case PXGraphicDrawFillModePoints:
+        case PXDrawModeFillPoints:
             fillMode = GL_POINT;
             break;
-        case PXGraphicDrawFillModeLines:
+        case PXDrawModeFillLines:
             fillMode = GL_LINE;
             break;
-        case PXGraphicDrawFillModeFill:
+        case PXDrawModeFillFill:
             fillMode = GL_FILL;
             break;
-        case PXGraphicDrawFillModeInvalid:
+        case PXDrawModeFillInvalid:
         default:
             return;
     }
@@ -3415,7 +3423,7 @@ void PXAPI PXOpenGLDrawScaleF(PXOpenGL* const pxOpenGL, const PXF32 x, const PXF
     pxOpenGL->Binding.Scaled(x, y, z);
 }
 
-void PXAPI PXOpenGLDrawBegin(PXOpenGL* const pxOpenGL, const PXGraphicDrawMode openGLRenderMode)
+void PXAPI PXOpenGLDrawBegin(PXOpenGL* const pxOpenGL, const PXDrawMode openGLRenderMode)
 {
     const int openGLRenderModeID = PXOpenGLRenderModeToID(openGLRenderMode);
 
@@ -3444,7 +3452,7 @@ void PXAPI PXOpenGLDrawEnd(PXOpenGL* const pxOpenGL)
 
 PXSize indexxxx = 0;
 
-PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderEntity* const pxRenderEntity)
+PXResult PXAPI  PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderEntity* const pxRenderEntity)
 {
     if(!(pxOpenGL && pxRenderEntity))
     {
@@ -3473,7 +3481,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
     const PXBool canUseShader = pxShaderProgram && pxOpenGL->Binding.ShaderProgramUse;
     const PXBool supportVAO = pxOpenGL->Binding.VertexArrayBind != PXNull;
     const PXBool supportBuffers = pxOpenGL->Binding.BufferBind != PXNull;
-    const PXInt32U indexBufferTypeID = PXOpenGLTypeToID(pxIndexBuffer->IndexDataType);
+    const PXI32U indexBufferTypeID = PXOpenGLTypeToID(pxIndexBuffer->DataType);
     const PXBool hasIndexBuffer = PXIndexBufferIsUsed(pxIndexBuffer);
 
     void* indexData = 0;
@@ -3484,12 +3492,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
     {
         pxOpenGL->Binding.VertexArrayBind(pxModel->Mesh.Info.Handle.OpenGLID); // Select VAO
 
-       /*
-        if(pxVertexBuffer->VertexData)
-        {
-            pxOpenGL->Binding.BufferBind(GL_ARRAY_BUFFER, pxVertexBuffer->Info.Handle.OpenGLID);
-        }*/
-        
+               
         if(hasIndexBuffer)
         {
             pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->Info.Handle.OpenGLID);
@@ -3541,15 +3544,17 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
 
             GLenum indexTypeID = 0;
 
+            /*
             switch(pxIndexBuffer->IndexDataType)
             {
                 default:
                     break;
             }
+            */
 
             //glIndexPointer(indexBufferTypeID, 0, pxModel->IndexBuffer.IndexData);
 
-            indexData = pxIndexBuffer->DataIndexPosition;
+            indexData = pxIndexBuffer->Data.Data;
         }
     }
 
@@ -3689,8 +3694,8 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
     // glDepthMask(GL_FALSE);
 
 
-    pxOpenGL->Binding.PointSize(5);
-    pxOpenGL->Binding.LineWidth(4);
+    pxOpenGL->Binding.PointSize(15); // 5
+    pxOpenGL->Binding.LineWidth(14); // 4
 
 
 
@@ -3735,9 +3740,9 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
 
 
 
-    const GLsizei drawElementsCount = pxIndexBuffer->DataIndexSizeSegment;// / PXTypeSizeGet(pxIndexBuffer->IndexDataType);
-    const GLenum indexDataType = PXOpenGLTypeToID(pxIndexBuffer->IndexDataType);
-    const PXInt8U indexTypeSize = PXTypeSizeGet(pxIndexBuffer->IndexDataType);
+    const GLsizei drawElementsCount = pxIndexBuffer->SegmentListAmount;// / PXTypeSizeGet(pxIndexBuffer->IndexDataType);
+    const GLenum indexDataType = PXOpenGLTypeToID(pxIndexBuffer->DataType);
+    const PXI8U indexTypeSize = PXTypeSizeGet(pxIndexBuffer->DataType);
 
     const PXBool renderSegmented = pxIndexBuffer->SegmentListAmount > 1;
 
@@ -3770,7 +3775,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
         for(PXSize i = 0; i < pxIndexBuffer->SegmentListAmount; ++i)
         {
             PXIndexSegment* const pxIndexSegment = &pxIndexBuffer->SegmentList[i];
-            PXTexture2D* pxTexture = 0;
+            PXTexture* pxTexture = 0;
 
             if(pxIndexSegment->Material)
             {
@@ -3840,17 +3845,17 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
 
             PXTextCopyA("Material.Ambient", 17, pxShaderVariableList[0].Name, 64);
             pxShaderVariableList[0].Amount = 1;
-            pxShaderVariableList[0].Data = pxMaterial->Ambient;
+            pxShaderVariableList[0].Data = &pxMaterial->Ambient;
             pxShaderVariableList[0].DataType = PXShaderVariableTypePXF32Vector4;
 
             PXTextCopyA("Material.Diffuse", 17, pxShaderVariableList[1].Name, 64);
             pxShaderVariableList[1].Amount = 1;
-            pxShaderVariableList[1].Data = pxMaterial->Diffuse;
+            pxShaderVariableList[1].Data = &pxMaterial->Diffuse;
             pxShaderVariableList[1].DataType = PXShaderVariableTypePXF32Vector4;
 
             PXTextCopyA("Material.Specular", 18, pxShaderVariableList[2].Name, 64);
             pxShaderVariableList[2].Amount = 1;
-            pxShaderVariableList[2].Data = pxMaterial->Specular;
+            pxShaderVariableList[2].Data = &pxMaterial->Specular;
             pxShaderVariableList[2].DataType = PXShaderVariableTypePXF32Vector4;
 
             // PXTextCopyA("MaterialTexture", 16, pxShaderVariableList[2].Name, 64);
@@ -3861,7 +3866,7 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
             PXOpenGLShaderVariableSet(pxOpenGL, pxShaderProgram, pxShaderVariableList, 3);
 
 
-            PXTexture2D* pxTexture = pxMaterial->DiffuseTexture;
+            PXTexture* pxTexture = pxMaterial->DiffuseTexture;
 
             if(pxRenderEntity->Texture2DOverride)
             {
@@ -3884,14 +3889,18 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
             // Has no material
         }
 
-        if(hasIndexBuffer)
+        for(PXI8U i = 0; i < modeAmount; ++i)
         {
-            pxOpenGL->Binding.DrawArrays(GL_TRIANGLES, 0, drawElementsCount);
-        }
-        else
-        {
-            pxOpenGL->Binding.DrawElements(GL_TRIANGLES, drawElementsCount, indexBufferTypeID, 0);
-        }
+            if(hasIndexBuffer)
+            {
+                pxOpenGL->Binding.DrawElements(modeCache[i], drawElementsCount, indexBufferTypeID, 0);       
+            }
+            else
+            {
+                // Potential crash. When index array is invalid?
+                pxOpenGL->Binding.DrawArrays(modeCache[i], 0, drawElementsCount);
+            }
+        }    
     }   
     //-----------------------------------------------------
 
@@ -3950,14 +3959,14 @@ PXActionResult PXAPI PXOpenGLModelDraw(PXOpenGL* const pxOpenGL, const PXRenderE
     return PXActionSuccessful;
 }
 
-void PXAPI PXOpenGLTextureParameter(PXOpenGL* const pxOpenGL, const PXGraphicTextureType textureType, const PXOpenGLTextureParameterMode pname, const PXOpenGLTextureParameterValue openGLTextureParameterValue)
+void PXAPI PXOpenGLTextureParameter(PXOpenGL* const pxOpenGL, const PXTextureType textureType, const PXOpenGLTextureParameterMode pname, const PXOpenGLTextureParameterValue openGLTextureParameterValue)
 {
     const GLint openGLTextureParameterValueID = PXOpenGLTextureParameterValueToID(openGLTextureParameterValue);
 
     PXOpenGLTextureParameterI(pxOpenGL, textureType, pname, openGLTextureParameterValueID);
 }
 
-void PXAPI PXOpenGLTextureParameterI(PXOpenGL* const pxOpenGL, const PXGraphicTextureType textureType, const PXOpenGLTextureParameterMode pname, const int param)
+void PXAPI PXOpenGLTextureParameterI(PXOpenGL* const pxOpenGL, const PXTextureType textureType, const PXOpenGLTextureParameterMode pname, const int param)
 {
     const GLenum textureTypeID = PXOpenGLTextureTypeToID(textureType);
     const GLenum pnameID = PXOpenGLTextureParameterModeToID(pname);
@@ -3965,7 +3974,7 @@ void PXAPI PXOpenGLTextureParameterI(PXOpenGL* const pxOpenGL, const PXGraphicTe
     pxOpenGL->Binding.TextureParameterI(textureTypeID, pnameID, param);
 }
 
-void PXAPI PXOpenGLTextureParameterF(PXOpenGL* const pxOpenGL, const PXGraphicTextureType textureType, const PXOpenGLTextureParameterMode pname, const PXF32 param)
+void PXAPI PXOpenGLTextureParameterF(PXOpenGL* const pxOpenGL, const PXTextureType textureType, const PXOpenGLTextureParameterMode pname, const PXF32 param)
 {
     const GLenum textureTypeID = PXOpenGLTextureTypeToID(textureType);
     const GLenum pnameID = PXOpenGLTextureParameterModeToID(pname);
@@ -4359,35 +4368,35 @@ PXOpenGLID PXOpenGLToImageFormat(const ImageDataFormat imageFormat)
     }
 }
 
-PXOpenGLID PXOpenGLToImageType(const PXGraphicTextureType imageType)
+PXOpenGLID PXOpenGLToImageType(const PXTextureType imageType)
 {
     switch (imageType)
     {
-    case PXGraphicTextureType2D:
+    case PXTextureType2D:
         return GL_TEXTURE_2D;
 
-    //case PXGraphicTextureType3D:
+    //case PXTextureType3D:
    //     return GL_TEXTURE_3D;
 
-    case PXGraphicTextureTypeCubeContainer:
+    case PXTextureTypeCubeContainer:
         return GL_TEXTURE_CUBE_MAP;
 
-    case PXGraphicTextureTypeCubeRight:
+    case PXTextureTypeCubeRight:
         return GL_TEXTURE_CUBE_MAP_POSITIVE_X;
 
-    case PXGraphicTextureTypeCubeLeft:
+    case PXTextureTypeCubeLeft:
         return GL_TEXTURE_CUBE_MAP_NEGATIVE_X;
 
-    case PXGraphicTextureTypeCubeTop:
+    case PXTextureTypeCubeTop:
         return GL_TEXTURE_CUBE_MAP_POSITIVE_Y;
 
-    case PXGraphicTextureTypeCubeDown:
+    case PXTextureTypeCubeDown:
         return GL_TEXTURE_CUBE_MAP_NEGATIVE_Y;
 
-    case PXGraphicTextureTypeCubeBack:
+    case PXTextureTypeCubeBack:
         return GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
 
-    case PXGraphicTextureTypeCubeFront:
+    case PXTextureTypeCubeFront:
         return GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
 
     default:
@@ -4830,7 +4839,7 @@ void BF::PXOpenGL::ShaderSetUniformVector4(int vector3UniformID, PXF32 x, PXF32 
 
 */
 
-PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram, PXShader* const shaderList, const PXSize amount)
+PXResult PXAPI  PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram, PXShader* const shaderList, const PXSize amount)
 {
     if(!pxOpenGL->Binding.ShaderProgramCreate)
     {
@@ -4901,7 +4910,8 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
             PXLoggingInfo,
             PXOpenGLName,
             "Shader-Create",
-            "Program created <%i>",
+            "PXID:<%i>, GLID:<%i>, Program created",
+            pxShaderProgram->Info.ID,
             pxShaderProgram->Info.Handle.OpenGLID
         );
 #endif
@@ -4918,9 +4928,9 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
             PXShader* const shader = &shaderList[i];
 
             const char* shaderTypeName = PXGraphicShaderTypeToString(shader->Type);
-            const PXInt32U shaderTypeID = PXOpenGLShaderTypeToID(shader->Type);
+            const PXI32U shaderTypeID = PXOpenGLShaderTypeToID(shader->Type);
             const char* const shaderData = (char*)shader->ShaderFile->Data;
-            PXInt32S shaderLength = shader->ShaderFile->DataUsed;
+            PXI32S shaderLength = shader->ShaderFile->DataUsed;
 
             shader->Info.Handle.OpenGLID = pxOpenGL->Binding.ShaderCreate(shaderTypeID); // Create shader
 
@@ -4938,9 +4948,10 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
                 PXLoggingInfo,
                 PXOpenGLName,
                 "Shader-Compile",
-                "%s <%i>",
-                shaderTypeName,
-                shader->Info.Handle.OpenGLID
+                "PXID:<%i>, GLID:<%i>, Type:<%s>",
+                shader->Info.ID,
+                shader->Info.Handle.OpenGLID,
+                shaderTypeName               
             );
 #endif
 
@@ -4956,8 +4967,8 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
             {
                 isValidShader = 0;
 
-                PXInt32S shaderErrorLengthMaximal = 0;
-                PXInt32S shaderErrorLengthCurrent = 0;
+                PXI32S shaderErrorLengthMaximal = 0;
+                PXI32S shaderErrorLengthCurrent = 0;
 
 
                 pxOpenGL->Binding.ShaderGetiv(shader->Info.Handle.OpenGLID, GL_INFO_LOG_LENGTH, &shaderErrorLengthMaximal);
@@ -5029,31 +5040,34 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
 
             if(GL_TRUE != linkStatus)
             {
-                PXInt32S shaderErrorLengthMaximal = 0;
-                PXInt32S shaderErrorLengthCurrent = 0;
+                PXI32S shaderErrorLengthMaximal = 0;
+                PXI32S shaderErrorLengthCurrent = 0;
 
                 pxOpenGL->Binding.ShaderProgramGetiv(pxShaderProgram->Info.Handle.OpenGLID, GL_INFO_LOG_LENGTH, &shaderErrorLengthMaximal);
 
-                char* shaderErrorLengthData = PXMemoryHeapCallocT(char, shaderErrorLengthMaximal);
+                if(shaderErrorLengthMaximal > 0)
+                {
+                    char* shaderErrorLengthData = PXMemoryHeapCallocT(char, shaderErrorLengthMaximal);
 
-                // API* PXOpenGLShaderLogInfoGetFunction)(GLuint shader, GLsizei maxLength, GLsizei* length, char* infoLog);
+                    // API* PXOpenGLShaderLogInfoGetFunction)(GLuint shader, GLsizei maxLength, GLsizei* length, char* infoLog);
 
-                pxOpenGL->Binding.ProgramInfoLogGet(pxShaderProgram->Info.Handle.OpenGLID, shaderErrorLengthMaximal, &shaderErrorLengthCurrent, shaderErrorLengthData);
+                    pxOpenGL->Binding.ProgramInfoLogGet(pxShaderProgram->Info.Handle.OpenGLID, shaderErrorLengthMaximal, &shaderErrorLengthCurrent, shaderErrorLengthData);
 
-                shaderErrorLengthData[shaderErrorLengthCurrent - 1] = '\0';
+                    shaderErrorLengthData[shaderErrorLengthCurrent - 1] = '\0';
 
 #if PXLogEnable
-                PXLogPrint
-                (
-                    PXLoggingError,
-                    PXOpenGLName,
-                    "Shader-Link",
-                    "GLSL - Error\n%s",
-                    shaderErrorLengthData
-                );
+                    PXLogPrint
+                    (
+                        PXLoggingError,
+                        PXOpenGLName,
+                        "Shader-Link",
+                        "GLSL - Error\n%s",
+                        shaderErrorLengthData
+                    );
 #endif
 
-                PXMemoryHeapFree(PXNull, shaderErrorLengthData);
+                    PXMemoryHeapFree(PXNull, shaderErrorLengthData);
+                }
 
                 pxShaderProgram->Info.Behaviour &= ~PXResourceInfoExist; // Invalidate current shader
             }
@@ -5186,7 +5200,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL* const pxOpenGL, PXSha
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXOpenGLShaderProgramSelect(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram)
+PXResult PXAPI  PXOpenGLShaderProgramSelect(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram)
 {
     if(!pxOpenGL->Binding.ShaderProgramUse)
     {
@@ -5226,8 +5240,9 @@ PXActionResult PXAPI PXOpenGLShaderProgramSelect(PXOpenGL* const pxOpenGL, PXSha
         (
             PXLoggingError,
             PXOpenGLName,
-            "Shaderprogram",
-            "Select failed <%i>",
+            PXOpenGLShaderProgramName,
+            "Program Select failed PXID:<%i>, GLID:<%i>",
+            pxShaderProgram->Info.ID,
             pxShaderProgram->Info.Handle.OpenGLID
         );
 #endif
@@ -5236,7 +5251,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramSelect(PXOpenGL* const pxOpenGL, PXSha
     return createResult;
 }
 
-PXActionResult PXAPI PXOpenGLShaderProgramDelete(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram)
+PXResult PXAPI  PXOpenGLShaderProgramDelete(PXOpenGL* const pxOpenGL, PXShaderProgram* const pxShaderProgram)
 {
     pxOpenGL->Binding.ShaderProgramDelete(pxShaderProgram->Info.Handle.OpenGLID);
 
@@ -5262,7 +5277,7 @@ PXActionResult PXAPI PXOpenGLShaderProgramDelete(PXOpenGL* const pxOpenGL, PXSha
     return createResult;
 }
 
-PXInt32U PXAPI PXOpenGLShaderTypeToID(const PXGraphicShaderType pxGraphicShaderType)
+PXI32U PXAPI PXOpenGLShaderTypeToID(const PXGraphicShaderType pxGraphicShaderType)
 {
     switch(pxGraphicShaderType)
     {
@@ -5290,14 +5305,14 @@ PXInt32U PXAPI PXOpenGLShaderTypeToID(const PXGraphicShaderType pxGraphicShaderT
     }
 }
 
-void PXAPI PXOpenGLDrawArrays(const PXOpenGL* const pxOpenGL, const PXGraphicDrawMode renderMode, const PXSize offset, const PXSize amount)
+void PXAPI PXOpenGLDrawArrays(const PXOpenGL* const pxOpenGL, const PXDrawMode renderMode, const PXSize offset, const PXSize amount)
 {
     const GLenum renderModeID = PXOpenGLRenderModeToID(renderMode);
 
     pxOpenGL->Binding.DrawArrays(renderModeID, offset, amount);
 }
 
-void PXAPI PXOpenGLDrawElements(const PXOpenGL* const pxOpenGL, const PXGraphicDrawMode renderMode, const PXSize amount, const PXInt32U pxDataType, const void* const indexList)
+void PXAPI PXOpenGLDrawElements(const PXOpenGL* const pxOpenGL, const PXDrawMode renderMode, const PXSize amount, const PXI32U pxDataType, const void* const indexList)
 {
     const GLenum renderModeID = PXOpenGLRenderModeToID(renderMode);
     const GLenum openGLDataTypeID = PXOpenGLTypeToID(pxDataType);
@@ -5305,7 +5320,7 @@ void PXAPI PXOpenGLDrawElements(const PXOpenGL* const pxOpenGL, const PXGraphicD
     pxOpenGL->Binding.DrawElements(renderModeID, amount, openGLDataTypeID, indexList);
 }
 
-void PXAPI PXOpenGLDrawArraysInstanced(const PXOpenGL* const pxOpenGL, const PXGraphicDrawMode renderMode, const PXSize startOffset, const PXSize amount, const PXSize instanceAmount)
+void PXAPI PXOpenGLDrawArraysInstanced(const PXOpenGL* const pxOpenGL, const PXDrawMode renderMode, const PXSize startOffset, const PXSize amount, const PXSize instanceAmount)
 {
     const PXBool isSupported = pxOpenGL->Binding.DrawArraysInstanced != PXNull;
     const GLenum renderModeID = PXOpenGLRenderModeToID(renderMode);
@@ -5323,18 +5338,25 @@ void PXAPI PXOpenGLDrawArraysInstanced(const PXOpenGL* const pxOpenGL, const PXG
     }
 }
 
-PXActionResult PXAPI PXOpenGLTextureAction(PXOpenGL* const pxOpenGL, PXGraphicTexturInfo* const pxGraphicTexturInfo)
+PXResult PXAPI  PXOpenGLTextureAction(PXOpenGL* const pxOpenGL, PXTexturInfo* const pxGraphicTexturInfo)
 {
     switch(pxGraphicTexturInfo->Action)
     {
         case PXResourceActionCreate:
         {
+            if(pxGraphicTexturInfo->Amount == 0)
+            {
+                return PXActionRefusedArgumentInvalid;
+            }
+
             // Batch create textures
-            PXInt32U* const openGLTextureIDListData = PXMemoryHeapCallocT(PXInt32U, pxGraphicTexturInfo->Amount);
+            PXI32U* const openGLTextureIDListData = PXMemoryHeapCallocT(PXI32U, pxGraphicTexturInfo->Amount);
 
             pxOpenGL->Binding.TextureCreate(pxGraphicTexturInfo->Amount, openGLTextureIDListData);
 
-            const PXActionResult createResult = PXOpenGLErrorCurrent(pxOpenGL, 0);
+            const PXBool wasSuccess = *openGLTextureIDListData != 0;
+
+            const PXActionResult createResult = PXOpenGLErrorCurrent(pxOpenGL, wasSuccess);
 
             if(createResult != PXActionSuccessful)
             {
@@ -5365,21 +5387,21 @@ PXActionResult PXAPI PXOpenGLTextureAction(PXOpenGL* const pxOpenGL, PXGraphicTe
 
             for(PXSize textureIndex = 0; textureIndex < pxGraphicTexturInfo->Amount; textureIndex++)
             {
-                const PXInt32U textureID = openGLTextureIDListData[textureIndex];
+                const PXI32U textureID = openGLTextureIDListData[textureIndex];
                 void* textureAdress = pxGraphicTexturInfo->TextureReference[textureIndex];
 
                 assert(textureAdress);
 
                 switch(pxGraphicTexturInfo->Type)
                 {
-                    case PXGraphicTextureType2D:
+                    case PXTextureType2D:
                     {
-                        PXTexture2D* const pxTexture2D = (PXTexture2D*)textureAdress;
-                        pxTexture2D->Info.Handle.OpenGLID = textureID;
+                        PXTexture* const pxTexture = (PXTexture*)textureAdress;
+                        pxTexture->Info.Handle.OpenGLID = textureID;
 
                         // Bind resource
                         {
-                            pxOpenGL->Binding.TextureBind(GL_TEXTURE_2D, pxTexture2D->Info.Handle.OpenGLID);
+                            pxOpenGL->Binding.TextureBind(GL_TEXTURE_2D, pxTexture->Info.Handle.OpenGLID);
 
                             const PXActionResult createResult = PXOpenGLErrorCurrent(pxOpenGL, 0);
 
@@ -5391,10 +5413,10 @@ PXActionResult PXAPI PXOpenGLTextureAction(PXOpenGL* const pxOpenGL, PXGraphicTe
 
                         // Texture Style setup
                         {
-                            const GLint textureWrapWidth = PXOpenGLGraphicImageWrapToID(pxTexture2D->WrapWidth);
-                            const GLint textureWrapHeight = PXOpenGLGraphicImageWrapToID(pxTexture2D->WrapHeight);
-                            const GLint textueFilterNear = PXOpenGLGraphicImageLayoutToID(pxTexture2D->LayoutNear);
-                            const GLint textueFilterFar = PXOpenGLGraphicImageLayoutToID(pxTexture2D->LayoutFar);
+                            const GLint textureWrapWidth = PXOpenGLGraphicImageWrapToID(pxTexture->WrapWidth);
+                            const GLint textureWrapHeight = PXOpenGLGraphicImageWrapToID(pxTexture->WrapHeight);
+                            const GLint textueFilterNear = PXOpenGLGraphicImageLayoutToID(pxTexture->LayoutNear);
+                            const GLint textueFilterFar = PXOpenGLGraphicImageLayoutToID(pxTexture->LayoutFar);
 
                             pxOpenGL->Binding.TextureParameterI(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, textureWrapWidth);
                             pxOpenGL->Binding.TextureParameterI(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, textureWrapHeight);
@@ -5407,30 +5429,30 @@ PXActionResult PXAPI PXOpenGLTextureAction(PXOpenGL* const pxOpenGL, PXGraphicTe
 
                         // Image upload
                         {
-                            PXImage* pxImage = pxTexture2D->Image;
+                           /// PXTexture* PXTexture = PXTexture->Image;
 
-                            if(!pxImage)
+                            if(!pxTexture)
                             {
                                 return PXActionSuccessful; // No image
                             }
 
-                            if(!pxImage->PixelData)
+                            if(!pxTexture->PixelData)
                             {
                                 return PXActionSuccessful; // No image data
                             }
 
                             // image data upload
-                            PXOpenGLTexture2DDataWrite(pxOpenGL, pxTexture2D);
+                            PXOpenGLTexture2DDataWrite(pxOpenGL, pxTexture);
                         }
 
                         pxOpenGL->Binding.TextureBind(GL_TEXTURE_2D, 0);
 
                         break;
                     }
-                    case PXGraphicTextureType3D:
+                    case PXTextureType3D:
                     {
-                        PXTexture3D* const pxTexture3D = (PXTexture3D*)textureAdress;
-                        pxTexture3D->Info.Handle.OpenGLID = textureID;
+                        PXTexture* const pxTexture = (PXTexture*)textureAdress;
+                        pxTexture->Info.Handle.OpenGLID = textureID;
 
                         pxOpenGL->Binding.TextureBind(GL_TEXTURE_3D, textureID);
 
@@ -5440,10 +5462,10 @@ PXActionResult PXAPI PXOpenGLTextureAction(PXOpenGL* const pxOpenGL, PXGraphicTe
 
                         break;
                     }
-                    case PXGraphicTextureTypeCubeContainer:
+                    case PXTextureTypeCubeContainer:
                     {
-                        PXTextureCube* const pxTextureCube = (PXTextureCube*)textureAdress;
-                        pxTextureCube->Info.Handle.OpenGLID = textureID;
+                        PXTexture* const pxTexture = (PXTexture*)textureAdress;
+                        pxTexture->Info.Handle.OpenGLID = textureID;
 
                         pxOpenGL->Binding.TextureBind(GL_TEXTURE_CUBE_MAP, textureID);
 
@@ -5457,7 +5479,7 @@ PXActionResult PXAPI PXOpenGLTextureAction(PXOpenGL* const pxOpenGL, PXGraphicTe
 
                         pxOpenGL->Binding.Enable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
-                        const PXInt16U openGLTextureTypeList[6] =
+                        const PXI16U openGLTextureTypeList[6] =
                         {
                             GL_TEXTURE_CUBE_MAP_POSITIVE_X,
                             GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
@@ -5467,29 +5489,29 @@ PXActionResult PXAPI PXOpenGLTextureAction(PXOpenGL* const pxOpenGL, PXGraphicTe
                             GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
                         };
 
-                        PXImage* imageList[6] =
+                        PXTexture* imageList[6] =
                         {
-                            pxTextureCube->ImageA,
-                            pxTextureCube->ImageB,
-                            pxTextureCube->ImageC,
-                            pxTextureCube->ImageD,
-                            pxTextureCube->ImageE,
-                            pxTextureCube->ImageF,
+                            0, //pxTexture->ImageA,
+                            0, //pxTexture->ImageB,
+                            0, //pxTexture->ImageC,
+                            0, //pxTexture->ImageD,
+                            0, //pxTexture->ImageE,
+                            0 //pxTexture->ImageF,
                         };
 
                         for(PXSize i = 0; i < 6u; ++i)
                         {
-                            PXImage* image = imageList[i];
-                            const PXInt16U textureTypeID = openGLTextureTypeList[i];
+                            PXTexture* image = imageList[i];
+                            const PXI16U textureTypeID = openGLTextureTypeList[i];
                             const int levelOfDetail = 0;
 
-                            PXTexture2D pxTexture2D;
-                            pxTexture2D.Image = image;
+                            PXTexture PXTexture;
+                            //PXTexture.Image = image;
 
-                            PXInt32U imageFormat;
-                            PXInt32U imageFormatType;
-                            PXInt32U internalFormat;
-                            PXInt32U internalType;
+                            PXI32U imageFormat;
+                            PXI32U imageFormatType;
+                            PXI32U internalFormat;
+                            PXI32U internalType;
 
                             const PXBool successA = PXOpenGLImageFormatToID(image->Format, &imageFormat, &imageFormatType);
                             const PXBool successB = PXOpenGLImageFormatToID(PXColorFormatRGBAF, &internalFormat, &internalType);
@@ -5536,45 +5558,45 @@ PXActionResult PXAPI PXOpenGLTextureAction(PXOpenGL* const pxOpenGL, PXGraphicTe
         }
         case PXResourceActionSelect:
         {
-            PXInt32U textureType = 0;
-            PXInt32U textureID = 0;
-            PXInt32U enable = pxGraphicTexturInfo->TextureReference;
+            PXI32U textureType = 0;
+            PXI32U textureID = 0;
+            PXI32U enable = pxGraphicTexturInfo->TextureReference;
 
             switch(pxGraphicTexturInfo->Type)
             {
-                case PXGraphicTextureType2D:
+                case PXTextureType2D:
                 {
-                    PXTexture2D* const pxTexture2D = (PXTexture2D*)pxGraphicTexturInfo->TextureReference;
+                    PXTexture* const pxTexture = (PXTexture*)pxGraphicTexturInfo->TextureReference;
 
-                    if(pxTexture2D)
+                    if(pxTexture)
                     {
-                        textureID = pxTexture2D->Info.Handle.OpenGLID;
+                        textureID = pxTexture->Info.Handle.OpenGLID;
                     }
 
                     textureType = GL_TEXTURE_2D;
 
                     break;
                 }
-                case PXGraphicTextureType3D:
+                case PXTextureType3D:
                 {
-                    PXTexture3D* const pxTexture3D = (PXTexture3D*)pxGraphicTexturInfo->TextureReference;
+                    PXTexture* const pxTexture = (PXTexture*)pxGraphicTexturInfo->TextureReference;
 
-                    if(pxTexture3D)
+                    if(pxTexture)
                     {
-                        textureID = pxTexture3D->Info.Handle.OpenGLID;
+                        textureID = pxTexture->Info.Handle.OpenGLID;
                     }
 
                     textureType = GL_TEXTURE_3D;
 
                     break;
                 }
-                case PXGraphicTextureTypeCubeContainer:
+                case PXTextureTypeCubeContainer:
                 {
-                    PXTextureCube* const pxTextureCube = (PXTextureCube*)pxGraphicTexturInfo->TextureReference;
+                    PXTexture* const pxTexture = (PXTexture*)pxGraphicTexturInfo->TextureReference;
 
-                    if(pxTextureCube)
+                    if(pxTexture)
                     {
-                        textureID = pxTextureCube->Info.Handle.OpenGLID;
+                        textureID = pxTexture->Info.Handle.OpenGLID;
                     }
 
                     textureType = GL_TEXTURE_CUBE_MAP;
@@ -5614,21 +5636,21 @@ void PXAPI PXOpenGLTextureActivate(PXOpenGL* const pxOpenGL, const unsigned int 
     pxOpenGL->Binding.TextureSlotActive(indexID);
 }
 
-void PXAPI PXOpenGLTexture2DDataWrite(PXOpenGL* const pxOpenGL, PXTexture2D* const pxTexture2D)
+void PXAPI PXOpenGLTexture2DDataWrite(PXOpenGL* const pxOpenGL, PXTexture* const PXTexture)
 {
     GLenum imageFormat = 0;
     GLenum imageFormatType = 0;
     GLenum internalFormat = 0;
     GLenum internalType = 0;
 
-    const PXBool successA = PXOpenGLImageFormatToID(pxTexture2D->Image->Format, &imageFormat, &imageFormatType);
+    const PXBool successA = PXOpenGLImageFormatToID(PXTexture->Format, &imageFormat, &imageFormatType);
     const PXBool successB = PXOpenGLImageFormatToID(PXColorFormatRGBAF, &internalFormat, &internalType);
 
     pxOpenGL->Binding.PixelStorei(GL_UNPACK_ALIGNMENT, 1); // This is needed to state we have tightly packed image data. If not, the GPU expects padding bytes and will crash.
 
     PXText pxText;
     PXTextConstructBufferA(&pxText, 32);
-    PXTextFormatSize(&pxText, pxTexture2D->Image->PixelDataSize);
+    PXTextFormatSize(&pxText, PXTexture->PixelDataSize);
 
 #if PXLogEnable
     PXLogPrint
@@ -5637,10 +5659,10 @@ void PXAPI PXOpenGLTexture2DDataWrite(PXOpenGL* const pxOpenGL, PXTexture2D* con
         PXOpenGLName,
         "Texture2D",
         "%8s  Data upload <%i> (%ix%i)",
-        pxText.TextA,
-        pxTexture2D->Info.Handle.OpenGLID,
-        pxTexture2D->Image->Width,
-        pxTexture2D->Image->Height
+        pxText.A,
+        PXTexture->Info.Handle.OpenGLID,
+        PXTexture->Width,
+        PXTexture->Height
     );
 #endif
 
@@ -5649,12 +5671,12 @@ void PXAPI PXOpenGLTexture2DDataWrite(PXOpenGL* const pxOpenGL, PXTexture2D* con
         GL_TEXTURE_2D,
         0, // detail
         internalFormat,
-        pxTexture2D->Image->Width,
-        pxTexture2D->Image->Height,
+        PXTexture->Width,
+        PXTexture->Height,
         0,
         imageFormat,
         imageFormatType,
-        pxTexture2D->Image->PixelData
+        PXTexture->PixelData
     );
 }
 
@@ -5679,10 +5701,12 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, const PXRenderEntity* co
     PXIndexBuffer* const pxIndexBuffer = &pxSkyBox->Model->Mesh.IndexBuffer;
 
     PXModel* const pxModel = pxSkyBox->Model;
-    PXTextureCube* const pxTextureCube = pxSkyBox->TextureCube;
+    PXTexture* const pxTexture = pxSkyBox->TextureCube;
+
+    PXMesh* const pxMesh = &pxModel->Mesh;
 
     //assert(pxModel);
-    //assert(pxTextureCube);
+    //assert(pxTexture);
 
     void* indexBuffer = 0;
 
@@ -5737,7 +5761,7 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, const PXRenderEntity* co
         //glMultMatrixf(pxSkyBox->Model.ModelMatrix.Data);
         pxOpenGL->Binding.PushMatrix();
 
-        indexBuffer = pxIndexBuffer->DataIndexPosition;
+        indexBuffer = pxIndexBuffer->Data.Data;
     }
 
     if(pxOpenGL->Binding.VertexArrayBind)
@@ -5748,9 +5772,9 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, const PXRenderEntity* co
 
     // pxOpenGL->Binding.PXOpenGLBindBufferCallBack(GL_ARRAY_BUFFER, pxSkyBox->Model.VertexBuffer.ResourceID.OpenGLID);
     // pxOpenGL->Binding.PXOpenGLBindBufferCallBack(GL_ELEMENT_ARRAY_BUFFER, pxSkyBox->Model.IndexBuffer.ResourceID.OpenGLID);
-    if(pxTextureCube)
+    if(pxTexture)
     {
-        pxOpenGL->Binding.TextureBind(GL_TEXTURE_CUBE_MAP, pxTextureCube->Info.Handle.OpenGLID);
+        pxOpenGL->Binding.TextureBind(GL_TEXTURE_CUBE_MAP, pxTexture->Info.Handle.OpenGLID);
     }
 
 
@@ -5760,12 +5784,13 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL* const pxOpenGL, const PXRenderEntity* co
     //PXOpenGLBufferBind(pxOpenGL, PXOpenGLBufferElementArray, skybox->Model.IndexBuffer.ResourceID.OpenGLID);
     // PXOpenGLTextureBind(pxOpenGL, PXOpenGLTextureTypeCubeMap, skybox->TextureCube.ResourceID.OpenGLID);
 
-    const GLsizei drawElementsCount = pxIndexBuffer->DataIndexSizeSegment / (pxIndexBuffer->IndexDataType & PXTypeSizeMask);
+    const PXSize segmentSize = PXTypeSizeGet(pxIndexBuffer->DataType);
+    const GLsizei drawElementsCount = PXMeshIndexBufferLengthGET(pxMesh);
 
     pxOpenGL->Binding.BufferBind(GL_ARRAY_BUFFER, pxVertexBuffer->Info.Handle.OpenGLID);
     pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->Info.Handle.OpenGLID);
 
-    if(pxIndexBuffer->DrawModeID & PXDrawModeIDPoint || 1)
+    if(pxIndexBuffer->DrawModeID & PXDrawModeIDPoint)
     {
         pxOpenGL->Binding.DrawArrays(GL_POINTS, 0, drawElementsCount);
     }
@@ -5889,10 +5914,10 @@ void PXAPI PXOpenGLRenderBufferDelete(PXOpenGL* const pxOpenGL, GLsizei n, GLuin
     pxOpenGL->Binding.RenderBufferDelete(n, renderbuffers);
 }
 
-void PXAPI PXOpenGLFrameBufferLinkTexture2D(PXOpenGL* const pxOpenGL, const PXOpenGLRenderBufferAttachmentPoint attachment, const PXGraphicTextureType textarget, const unsigned int textureID, const int level)
+void PXAPI PXOpenGLFrameBufferLinkTexture2D(PXOpenGL* const pxOpenGL, const PXOpenGLRenderBufferAttachmentPoint attachment, const PXTextureType Arget, const unsigned int textureID, const int level)
 {
     const unsigned int attachmentID = PXOpenGLRenderBufferAttachmentPointToID(attachment);
-    const unsigned int textureTypeID = PXOpenGLTextureTypeToID(textarget);
+    const unsigned int textureTypeID = PXOpenGLTextureTypeToID(Arget);
 
     pxOpenGL->Binding.FrameBufferLinkTexture2D(GL_FRAMEBUFFER, attachmentID, textureTypeID, textureID, level);
 }
@@ -5906,7 +5931,7 @@ GLuint PXAPI PXOpenGLFrameBufferLinkRenderBuffer(PXOpenGL* const pxOpenGL, const
 
 #define PXOpenGLShaderVariableSetDebug 0
 
-PXActionResult PXAPI PXOpenGLShaderVariableSet(PXOpenGL* const pxOpenGL, const PXShaderProgram* const pxShaderProgram, PXShaderVariable* const pxShaderVariableList, const PXSize amount)
+PXResult PXAPI  PXOpenGLShaderVariableSet(PXOpenGL* const pxOpenGL, const PXShaderProgram* const pxShaderProgram, PXShaderVariable* const pxShaderVariableList, const PXSize amount)
 {
     if(!(pxOpenGL && pxShaderProgram && pxShaderVariableList))
     {
@@ -5944,7 +5969,7 @@ PXActionResult PXAPI PXOpenGLShaderVariableSet(PXOpenGL* const pxOpenGL, const P
 
             // If no error, exit
             {
-                const PXBool fetchSuccessful = pxShaderVariable->RegisterIndex != (PXInt32U)-1;
+                const PXBool fetchSuccessful = pxShaderVariable->RegisterIndex != (PXI32U)-1;
 
                 if(!fetchSuccessful)
                 {
@@ -6295,11 +6320,11 @@ void PXAPI PXOpenGLVertexArrayUnbind(PXOpenGL* const pxOpenGL)
 void PXAPI PXOpenGLVertexArrayAttributeDefine
 (
     PXOpenGL* const pxOpenGL,
-    const PXInt32U index,
-    const PXInt32U size,
-    const PXInt32U datatype,
+    const PXI32U index,
+    const PXI32U size,
+    const PXI32U datatype,
     const PXBool normalized,
-    const PXInt32U stride,
+    const PXI32U stride,
     const PXSize offset
 )
 {
@@ -6350,28 +6375,28 @@ void PXAPI PXOpenGLBufferUnbind(PXOpenGL* const pxOpenGL, const PXOpenGLBufferTy
     pxOpenGL->Binding.BufferBind(bufferTypeID, 0);
 }
 
-void PXAPI PXOpenGLTexture2DDataRead(PXOpenGL* const pxOpenGL, PXTexture2D* const pxTexture2D)
+void PXAPI PXOpenGLTexture2DDataRead(PXOpenGL* const pxOpenGL, PXTexture* const PXTexture)
 {
     GLint viewPort[4];
 
     pxOpenGL->Binding.GetIntegerv(GL_VIEWPORT, viewPort);
 
-    PXOpenGLTexture2DDataReadFrom(pxOpenGL, pxTexture2D, viewPort[0], viewPort[0], viewPort[2], viewPort[3]);
+    PXOpenGLTexture2DDataReadFrom(pxOpenGL, PXTexture, viewPort[0], viewPort[0], viewPort[2], viewPort[3]);
 }
 
-void PXAPI PXOpenGLTexture2DDataReadFrom(PXOpenGL* const pxOpenGL, PXTexture2D* const pxTexture2D, const PXInt32U x, const PXInt32U y, const PXInt32U width, const PXInt32U height)
+void PXAPI PXOpenGLTexture2DDataReadFrom(PXOpenGL* const pxOpenGL, PXTexture* const PXTexture, const PXI32U x, const PXI32U y, const PXI32U width, const PXI32U height)
 {
-    PXInt32U imageFormatID = 0;
-    PXInt32U dataTypeID = 0;
+    PXI32U imageFormatID = 0;
+    PXI32U dataTypeID = 0;
 
-    PXOpenGLImageFormatToID(pxTexture2D->Image->Format, &imageFormatID, &dataTypeID);
+    PXOpenGLImageFormatToID(PXTexture->Format, &imageFormatID, &dataTypeID);
 
-    PXImageResize(pxTexture2D->Image, pxTexture2D->Image->Format, width, height);
+    PXTextureResize(PXTexture, PXTexture->Format, width, height);
 
-    pxOpenGL->Binding.ReadPixels(x, y, width, height, imageFormatID, dataTypeID, pxTexture2D->Image->PixelData);
+    pxOpenGL->Binding.ReadPixels(x, y, width, height, imageFormatID, dataTypeID, PXTexture->PixelData);
 }
 
-PXInt32U PXAPI PXOpenGLTypeToID(const PXInt32U pxDataType)
+PXI32U PXAPI PXOpenGLTypeToID(const PXI32U pxDataType)
 {
     switch(pxDataType)
     {
@@ -6401,6 +6426,9 @@ PXInt32U PXAPI PXOpenGLTypeToID(const PXInt32U pxDataType)
         case PXTypeInt32U:
             return GL_UNSIGNED_INT;
 
+        case PXTypeF16:
+            return GL_2_BYTES; // GL_HALF_FLOAT;
+
         case PXTypeF32:
             return GL_FLOAT;
 
@@ -6408,44 +6436,26 @@ PXInt32U PXAPI PXOpenGLTypeToID(const PXInt32U pxDataType)
             return GL_DOUBLE;
 
         default:
+            DebugBreak();
             return -1;
     }
 }
 
-PXInt32U PXAPI PXOpenGLTypeIDFromFormat(const PXVertexBufferFormat pxVertexBufferFormat)
-{
-    switch(pxVertexBufferFormat)
-    {
-        case PXVertexBufferFormatP3F16:
-        case PXVertexBufferFormatN3F16:
-        case PXVertexBufferFormatT2F16:
-            return GL_2_BYTES; // GL_HALF_FLOAT
-
-        case PXVertexBufferFormatP3F32:
-        case PXVertexBufferFormatN3F32:
-        case PXVertexBufferFormatT2F32:
-            return GL_FLOAT;
-
-        default:
-            return 0;
-    }
-}
-
-PXInt32U PXAPI PXOpenGLGraphicImageLayoutToID(const PXGraphicImageLayout pxGraphicImageLayout)
+PXI32U PXAPI PXOpenGLGraphicImageLayoutToID(const PXTextureLayout pxGraphicImageLayout)
 {
     switch(pxGraphicImageLayout)
     {
-        case PXGraphicImageLayoutNearest:
+        case PXTextureLayoutNearest:
             return GL_NEAREST;
-        case PXGraphicImageLayoutLinear:
+        case PXTextureLayoutLinear:
             return GL_LINEAR;
-        case PXGraphicImageLayoutMipMapNearestNearest:
+        case PXTextureLayoutMipMapNearestNearest:
             return GL_NEAREST_MIPMAP_NEAREST;
-        case PXGraphicImageLayoutMipMapLinearNearest:
+        case PXTextureLayoutMipMapLinearNearest:
             return GL_LINEAR_MIPMAP_NEAREST;
-        case PXGraphicImageLayoutMipMapNNearestLinear:
+        case PXTextureLayoutMipMapNNearestLinear:
             return GL_NEAREST_MIPMAP_LINEAR;
-        case PXGraphicImageLayoutMipMapLinearLinear:
+        case PXTextureLayoutMipMapLinearLinear:
             return GL_LINEAR_MIPMAP_LINEAR;
 
         default:
@@ -6453,19 +6463,19 @@ PXInt32U PXAPI PXOpenGLGraphicImageLayoutToID(const PXGraphicImageLayout pxGraph
     }
 }
 
-PXInt32U PXAPI PXOpenGLGraphicImageWrapToID(const PXGraphicImageWrap pxGraphicImageWrap)
+PXI32U PXAPI PXOpenGLGraphicImageWrapToID(const PXTextureWrap pxGraphicImageWrap)
 {
     switch(pxGraphicImageWrap)
     {
-        case PXGraphicImageWrapNoModification:
+        case PXTextureWrapNoModification:
             return GL_CLAMP;
-        case PXGraphicImageWrapStrechEdges:
+        case PXTextureWrapStrechEdges:
             return GL_CLAMP;
-        case PXGraphicImageWrapStrechEdgesAndMirror:
+        case PXTextureWrapStrechEdgesAndMirror:
             return GL_CLAMP;
-        case PXGraphicImageWrapRepeat:
+        case PXTextureWrapRepeat:
             return GL_REPEAT;
-        case PXGraphicImageWrapRepeatAndMirror:
+        case PXTextureWrapRepeatAndMirror:
             return GL_REPEAT;
 
         default:
@@ -6473,7 +6483,7 @@ PXInt32U PXAPI PXOpenGLGraphicImageWrapToID(const PXGraphicImageWrap pxGraphicIm
     }
 }
 
-PXShaderVariableType PXAPI PXOpenGLShaderVariableTypeFromID(const PXInt16U openGLShaderVariableTypeID)
+PXShaderVariableType PXAPI PXOpenGLShaderVariableTypeFromID(const PXI16U openGLShaderVariableTypeID)
 {
     switch(openGLShaderVariableTypeID)
     {
@@ -6563,7 +6573,7 @@ PXShaderVariableType PXAPI PXOpenGLShaderVariableTypeFromID(const PXInt16U openG
     }
 }
 
-PXActionResult PXAPI PXOpenGLSpriteRegister(PXOpenGL* const pxOpenGL, PXSprite* const pxSprite)
+PXResult PXAPI  PXOpenGLSpriteRegister(PXOpenGL* const pxOpenGL, PXSprite* const pxSprite)
 {
 #if 0
     const PXBool hasScaling = pxSprite->TextureScalePositionOffset.X != 0 || pxSprite->TextureScalePositionOffset.Y != 0;
@@ -6577,8 +6587,8 @@ PXActionResult PXAPI PXOpenGLSpriteRegister(PXOpenGL* const pxOpenGL, PXSprite* 
             1, 0,  1,  1, 0,// 10
             0, 0, -1,  1, 0,
         };
-        const PXInt8U indexData[] = { 0, 1, 2, 2, 3, 0 };
-        const PXInt8U indexAmount = sizeof(indexData) / sizeof(PXInt8U);
+        const PXI8U indexData[] = { 0, 1, 2, 2, 3, 0 };
+        const PXI8U indexAmount = sizeof(indexData) / sizeof(PXI8U);
 
         pxSprite->Model.VertexBuffer.Format = PXVertexBufferFormatT2F_XYZ;
         pxSprite->Model.VertexBuffer.VertexData = (void*)vertexData;
@@ -6646,7 +6656,7 @@ PXActionResult PXAPI PXOpenGLSpriteRegister(PXOpenGL* const pxOpenGL, PXSprite* 
             1,              0,              1,                 1,                0,
             1 - tx[0],  0,              1 - offset[0],     1,                0
         };
-        const PXInt8U indexData[] =
+        const PXI8U indexData[] =
         {
 #if Quad
             0,1,2,3, // Left-Lower
@@ -6690,7 +6700,7 @@ PXActionResult PXAPI PXOpenGLSpriteRegister(PXOpenGL* const pxOpenGL, PXSprite* 
 
 #endif
         };
-        const PXInt8U indexAmount = sizeof(indexData) / sizeof(PXInt8U);
+        const PXI8U indexAmount = sizeof(indexData) / sizeof(PXI8U);
 
         pxSprite->Model.VertexBuffer.Format = PXVertexBufferFormatT2F_XYZ;
         pxSprite->Model.VertexBuffer.VertexData = (void*)vertexData;
@@ -6711,7 +6721,7 @@ PXActionResult PXAPI PXOpenGLSpriteRegister(PXOpenGL* const pxOpenGL, PXSprite* 
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXOpenGLDrawScriptCreate(PXOpenGL* const pxOpenGL, PXDrawScript* const pxDrawScript)
+PXResult PXAPI  PXOpenGLDrawScriptCreate(PXOpenGL* const pxOpenGL, PXDrawScript* const pxDrawScript)
 {
     // Create one display list
     pxDrawScript->Info.Handle.OpenGLID = pxOpenGL->Binding.GenLists(1);
@@ -6719,21 +6729,21 @@ PXActionResult PXAPI PXOpenGLDrawScriptCreate(PXOpenGL* const pxOpenGL, PXDrawSc
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXOpenGLDrawScriptBegin(PXOpenGL* const pxOpenGL, PXDrawScript* const pxDrawScript)
+PXResult PXAPI  PXOpenGLDrawScriptBegin(PXOpenGL* const pxOpenGL, PXDrawScript* const pxDrawScript)
 {
     pxOpenGL->Binding.NewList(pxDrawScript->Info.Handle.OpenGLID, GL_COMPILE);
 
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXOpenGLDrawScriptEnd(PXOpenGL* const pxOpenGL, PXDrawScript* const pxDrawScript)
+PXResult PXAPI  PXOpenGLDrawScriptEnd(PXOpenGL* const pxOpenGL, PXDrawScript* const pxDrawScript)
 {
     pxOpenGL->Binding.EndList();
 
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXOpenGLDrawScriptDelete(PXOpenGL* const pxOpenGL, PXDrawScript* const pxDrawScript)
+PXResult PXAPI  PXOpenGLDrawScriptDelete(PXOpenGL* const pxOpenGL, PXDrawScript* const pxDrawScript)
 {
     pxOpenGL->Binding.DeleteLists(pxDrawScript->Info.Handle.OpenGLID, 1);
 
@@ -6742,14 +6752,14 @@ PXActionResult PXAPI PXOpenGLDrawScriptDelete(PXOpenGL* const pxOpenGL, PXDrawSc
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXOpenGLDrawScriptExecute(PXOpenGL* const pxOpenGL, PXDrawScript* const pxDrawScript)
+PXResult PXAPI  PXOpenGLDrawScriptExecute(PXOpenGL* const pxOpenGL, PXDrawScript* const pxDrawScript)
 {
     pxOpenGL->Binding.CallList(pxDrawScript->Info.Handle.OpenGLID);
 
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXOpenGLLightSet(PXOpenGL* const pxOpenGL, PXLight* const pxLight, const PXInt32U index)
+PXResult PXAPI  PXOpenGLLightSet(PXOpenGL* const pxOpenGL, PXLight* const pxLight, const PXI32U index)
 {
     pxOpenGL->Binding.Lightf(index, GL_SPOT_EXPONENT, pxLight->Falloff);
     pxOpenGL->Binding.Lightf(index, GL_SPOT_CUTOFF, pxLight->CutoffRange);
@@ -6759,7 +6769,7 @@ PXActionResult PXAPI PXOpenGLLightSet(PXOpenGL* const pxOpenGL, PXLight* const p
 
     return PXActionSuccessful;
 }
-PXActionResult PXAPI PXOpenGLLightGet(PXOpenGL* const pxOpenGL, PXLight* const pxLight, const PXInt32U index)
+PXResult PXAPI  PXOpenGLLightGet(PXOpenGL* const pxOpenGL, PXLight* const pxLight, const PXI32U index)
 {
     pxOpenGL->Binding.GetLightfv(index, GL_SPOT_EXPONENT, &pxLight->Falloff);
     pxOpenGL->Binding.GetLightfv(index, GL_SPOT_CUTOFF, &pxLight->CutoffRange);
@@ -6769,18 +6779,18 @@ PXActionResult PXAPI PXOpenGLLightGet(PXOpenGL* const pxOpenGL, PXLight* const p
 
     return PXActionSuccessful;
 }
-PXActionResult PXAPI PXOpenGLLightEnableSet(PXOpenGL* const pxOpenGL, PXLight* const pxLight, const PXInt32U index, const PXBool enable)
+PXResult PXAPI  PXOpenGLLightEnableSet(PXOpenGL* const pxOpenGL, PXLight* const pxLight, const PXI32U index, const PXBool enable)
 {
     return PXActionSuccessful;
 }
-PXActionResult PXAPI PXOpenGLLightEnableGet(PXOpenGL* const pxOpenGL, PXLight* const pxLight, const PXInt32U index, PXBool* const enable)
+PXResult PXAPI  PXOpenGLLightEnableGet(PXOpenGL* const pxOpenGL, PXLight* const pxLight, const PXI32U index, PXBool* const enable)
 {
     return PXActionSuccessful;
 }
 
 
 
-
+/*
 
 
 void PXOpenGKShaderDataBufferCreate(PXOpenGL* const pxOpenGL, PXShaderDataBuffer* const pxShaderDataBuffer, const PXSize sizeOfData, void* data)
@@ -6793,8 +6803,8 @@ void PXOpenGKShaderDataBufferCreate(PXOpenGL* const pxOpenGL, PXShaderDataBuffer
 
         if(pxOpenGL->Binding.GetInteger64v)
         {
-            PXInt64S maxAmount64 = 0;
-            PXInt64S maxSize64 = 0;
+            PXI64S maxAmount64 = 0;
+            PXI64S maxSize64 = 0;
             pxOpenGL->Binding.GetInteger64v(GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS, &maxAmount64);
             pxOpenGL->Binding.GetInteger64v(GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &maxSize64);
             maxAmount = maxAmount64;
@@ -6841,7 +6851,7 @@ void PXOpenGKShaderDataBufferCreate(PXOpenGL* const pxOpenGL, PXShaderDataBuffer
 
         if(pxOpenGL->Binding.GetInteger64v)
         {
-            PXInt64S maxTextureSize64;
+            PXI64S maxTextureSize64;
             pxOpenGL->Binding.GetInteger64v(GL_MAX_TEXTURE_SIZE, &maxTextureSize64);
             maxTextureSize = maxTextureSize64;
         }
@@ -6881,22 +6891,23 @@ void PXOpenGKShaderDataBufferCreate(PXOpenGL* const pxOpenGL, PXShaderDataBuffer
 
         // Repeat for texture coordinates or any other data
     }   
-}
+}*/
 
 
-PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* const pxModel)
+PXResult PXAPI  PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* const pxModel)
 {
     if(!(pxOpenGL && pxModel))
     {
         return PXActionRefusedArgumentNull;
     }
 
-   // PXVertexBuffer* const pxVertexBuffer = &pxModel->Mesh.VertexBuffer;
-    PXIndexBuffer* const pxIndexBuffer = &pxModel->Mesh.IndexBuffer;
     PXMesh* const pxMesh = &pxModel->Mesh;
+    PXIndexBuffer* const pxIndexBuffer = &pxMesh->IndexBuffer;
+    PXVertexBuffer* pxVertexBufferList = PXMeshVertexBufferListGET(pxMesh);
+    PXSize pxVertexBufferListAmount = pxMesh->VertexBufferListAmount;
 
     // Check if the model is valid
-    if(0 == pxMesh->VertexBufferListAmount)
+    if(0 == pxVertexBufferListAmount)
     {
 #if PXLogEnable
         PXLogPrint
@@ -6923,7 +6934,8 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
             PXLoggingInfo,
             PXOpenGLName,
             PXOpenGLModelName,
-            "VAO created <%i>",
+            "PXID:<%i>, GLID_VAO:<%i> created",
+            pxMesh->Info.ID,
             pxMesh->Info.Handle.OpenGLID
         );
 #endif
@@ -6976,15 +6988,13 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
         return PXActionSuccessful;
     }
 
-
     const PXBool hasIndexData = 
-        pxIndexBuffer->DataIndexSizeSegment > 0 && 
+        pxIndexBuffer->Data.Size > 0 && 
         pxMesh->VertexBufferListAmount == 1;
 
 
     // Registering of array buffers
     {
-
         const PXSize bufferAmountRequest = pxMesh->VertexBufferListAmount + hasIndexData;
 
 
@@ -7028,53 +7038,52 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
                 PXLoggingInfo,
                 PXOpenGLName,
                 PXOpenGLModelName,
-                "IBO:<%i>",
+                "PXID:<%i>, GLID_IBO:<%i>",
+                pxIndexBuffer->Info.ID,
                 pxIndexBuffer->Info.Handle.OpenGLID
             );
 #endif
         }
 
-        if(pxMesh->VertexBufferListAmount == 1)
+
+
+        for(PXSize i = 0; i < pxVertexBufferListAmount; ++i)
         {
-            pxMesh->VertexBufferPrime.Info.Handle.OpenGLID = bufferIDs[indexCounter++];
-        }
-        else
-        {
-            for(PXSize i = 0; i < pxMesh->VertexBufferListAmount; ++i)
-            {
-                PXVertexBuffer* const pxVertexBuffer = &pxMesh->VertexBufferList[i];
+            PXVertexBuffer* const pxVertexBuffer = &pxVertexBufferList[i];
 
-                pxVertexBuffer->Info.Handle.OpenGLID = bufferIDs[indexCounter++];
+            pxVertexBuffer->Info.Handle.OpenGLID = bufferIDs[indexCounter++];
 
-                const char* formatName = PXVertexBufferFormatToString(pxVertexBuffer->Format);
+#if PXLogEnable && 0
+            PXVertexBufferFormatInfo pxVertexBufferFormatInfo;
+            PXVertexBufferFormatInfoExtract(&pxVertexBufferFormatInfo, pxVertexBuffer->Format);
 
-#if PXLogEnable
-                PXLogPrint
-                (
-                    PXLoggingInfo,
-                    PXOpenGLName,
-                    PXOpenGLModelName,
-                    "VBO:<%i>, <%s>",
-                    pxVertexBuffer->Info.Handle.OpenGLID,
-                    formatName
-                );
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                PXOpenGLName,
+                PXOpenGLModelName,
+                "PXID:<%i>, GLID_VBO:<%i>, <%s>",
+                pxVertexBuffer->Info.ID,
+                pxVertexBuffer->Info.Handle.OpenGLID,
+                pxVertexBufferFormatInfo.AsText
+            );
 #endif
-            }
         }
+        
     }
 
 
 
 
-
+#if 0
     // Make sure current format is supported.
     // Transform data is needed from current format to supported one
     {
         PXVertexBufferFormat pxVertexBufferFormat[] =
         {
             PXVertexBufferFormatP3F32,
-            PXVertexBufferFormatT2F_XYZ,
-            PXVertexBufferFormatT2F_N3F_XYZ
+            PXVertexBufferFormatT2P3F32,
+            PXVertexBufferFormatT2N3P3F32
         };
 
         PXModelFormatTransmuteInfo pxModelFormatTransmuteInfo;
@@ -7083,6 +7092,7 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
 
         PXModelFormatTransmute(pxModel, &pxModelFormatTransmuteInfo);
     }
+#endif
 
 
 
@@ -7094,390 +7104,193 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
     {
         if(hasIndexData)
         {
+            // Select
+            pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->Info.Handle.OpenGLID);
+            PXOpenGLErrorCurrent(pxOpenGL, 1);
+
+            // Define data layout?
+            // NO!, we actually define the type when we draw. Because of opengl design
+
+
 #if PXLogEnable
             PXLogPrint
             (
                 PXLoggingInfo,
                 PXOpenGLName,
                 PXOpenGLModelName,
-                "IBO:<%i> upload <%p> with %i B, (TypeWidth:%i)",
+                "PXID:<%i>, GLID_IBO:<%i> upload <%p> with %i B, (TypeWidth:%i)",
+                pxIndexBuffer->Info.ID,
                 pxIndexBuffer->Info.Handle.OpenGLID,
-                pxIndexBuffer->DataIndexPosition,
-                pxIndexBuffer->DataIndexSizeSegment,
-                PXTypeSizeGet(pxIndexBuffer->IndexDataType)
+                pxIndexBuffer->Data.Data,
+                pxIndexBuffer->Data.Size,
+                PXTypeSizeGet(pxIndexBuffer->DataType)
             );
 #endif
 
-#if PXLogEnable && 0
-            for(PXSize i = 0; i < pxIndexBuffer->IndexDataSize; i += 3)
-            {
-                PXInt8U* data = &((PXInt8U*)pxIndexBuffer->IndexData)[i];
-
-                PXLogPrint
-                (
-                    PXLoggingInfo,
-                    PXOpenGLName,
-                    PXOpenGLModelName,
-                    "%2i, %2i, %2i",
-                    data[0],
-                    data[1],
-                    data[2]
-                );
-            }
-#endif
-
-            // Select
-            pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->Info.Handle.OpenGLID);
-
-            // Define data layout?
-            // NO!, we actually define the type when we draw. Because of opengl design
-
             // Upload
-            pxOpenGL->Binding.BufferData(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->DataIndexSizeSegment, pxIndexBuffer->DataIndexPosition, GL_STATIC_DRAW);
+            pxOpenGL->Binding.BufferData
+            (
+                GL_ELEMENT_ARRAY_BUFFER, 
+                pxIndexBuffer->Data.Size, 
+                pxIndexBuffer->Data.Data, 
+                GL_STATIC_DRAW
+            );
+            PXOpenGLErrorCurrent(pxOpenGL, 1);
 
             // Unselect. not needed if VAO are supported
            pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, 0);
+           PXOpenGLErrorCurrent(pxOpenGL, 1);
         }
     }
 
     // Upload VBO
     {
-        if(1 == pxMesh->VertexBufferListAmount)
+        for(PXSize vboIndex = 0; vboIndex < pxVertexBufferListAmount; ++vboIndex)
         {
-            PXVertexBuffer* const pxVertexBuffer = &pxMesh->VertexBufferPrime;
+            PXVertexBuffer* const pxVertexBuffer = &pxVertexBufferList[vboIndex];
 
+            //---------------------------------------------
+            // Bind
             pxOpenGL->Binding.BufferBind(GL_ARRAY_BUFFER, pxVertexBuffer->Info.Handle.OpenGLID);
+            PXOpenGLErrorCurrent(pxOpenGL, 1);
+            //---------------------------------------------
 
-            // Upload
-            pxOpenGL->Binding.BufferData(GL_ARRAY_BUFFER, pxVertexBuffer->VertexDataSize, pxVertexBuffer->VertexData, GL_STATIC_DRAW);
 
-            // Define layout   
-            const PXInt8U sizePerVertex = PXVertexBufferFormatSizePerVertex(pxVertexBuffer->Format);
-            const GLenum openGLType = PXOpenGLTypeIDFromFormat(pxVertexBuffer->Format);
+             //---------------------------------------------
+            // Layout define
+            const PXSize layoutAmount = pxVertexBuffer->LayoutAmount;
+            const PXBufferLayout* pxVertexBufferLayoutList = PXVertexBufferLayoutGET(pxVertexBuffer);
 
-            pxOpenGL->Binding.VertexAttribPointer
-            (
-                0,
-                sizePerVertex,
-                openGLType,
-                GL_FALSE,
-                0,
-                0
-            );
-            pxOpenGL->Binding.VertexAttribArrayEnable(0);
+            PXSize vertexStride = 0; // Stride is the offset to the next rotation of values. When no other data is in, its 0.
+            PXSize offset = 0;
 
-#if PXLogEnable
-            const char* vertexFormatName = PXVertexBufferFormatToString(pxVertexBuffer->Format);
+            // Calc Stride
+#if 0
+            for(PXSize attributeIndex = 0; attributeIndex < layoutAmount; ++attributeIndex)
+            {
+                const PXBufferLayout* const pxVertexBufferLayout = &pxVertexBufferLayoutList[attributeIndex];
+                const PXSize sizeOfType = PXTypeSizeGet(pxVertexBufferLayout->Format);
+                const PXSize sizeOfSegment = sizeOfType * pxVertexBufferLayout->AmountOfElements;
 
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                PXOpenGLName,
-                PXOpenGLModelName,
-                "VBO:<%i>, %s,  upload <%p> with %i B",
-                pxVertexBuffer->Info.Handle.OpenGLID,
-                vertexFormatName,
-                pxVertexBuffer->VertexData,
-                pxVertexBuffer->VertexDataSize
-            );
+                vertexStride += sizeOfSegment;
+            }
 #endif
 
-            //PXConsoleWriteTablePXF32(pxVertexBuffer->VertexData, pxVertexBuffer->VertexDataSize / sizeof(PXF32), 3);
-        }
-        else
-        {
-            PXVertexBuffer* const pxVertexBufferPosition = &pxMesh->VertexBufferList[0];
-            PXVertexBuffer* const pxVertexBufferNormal = &pxMesh->VertexBufferList[1];
-            PXVertexBuffer* const pxVertexBufferTexture = &pxMesh->VertexBufferList[2];
-      
-            PXIndexBuffer* const pxIndexBuffer = &pxModel->Mesh.IndexBuffer;
-
-            const PXSize vertexTypeSize = 4;
-            const PXSize vertexStride = vertexTypeSize *(3+3+2);
-            const PXSize indexTypeSize = PXTypeSizeGet(pxIndexBuffer->IndexDataType);
-
-            void* indexVertex = pxIndexBuffer->DataIndexPosition;
-            void* indexNormal = pxIndexBuffer->DataIndexNormal;
-            void* indexTexture = pxIndexBuffer->DataIndexTexturePos;
-
-
-            PXSize vertexDataInterleavedSize = pxIndexBuffer->DataIndexAmount * vertexStride;
-
-            pxOpenGL->Binding.BufferBind(GL_ARRAY_BUFFER, pxVertexBufferPosition->Info.Handle.OpenGLID);
-            pxOpenGL->Binding.BufferData
-            (
-                GL_ARRAY_BUFFER, 
-                vertexDataInterleavedSize,
-                0,
-                GL_STATIC_DRAW
-            );
-
-           // const PXInt8U sizePerVertex = PXVertexBufferFormatSizePerVertex(pxVertexBufferPosition->Format);
-            const GLenum openGLType = PXOpenGLTypeIDFromFormat(pxVertexBufferPosition->Format);
-
-            pxOpenGL->Binding.VertexAttribPointer(0, 3, openGLType, GL_FALSE, vertexStride, 0);
-            pxOpenGL->Binding.VertexAttribArrayEnable(0);
-
-            pxOpenGL->Binding.VertexAttribPointer(1, 3, openGLType, GL_FALSE, vertexStride, vertexTypeSize *3);
-            pxOpenGL->Binding.VertexAttribArrayEnable(1);
-
-            pxOpenGL->Binding.VertexAttribPointer(2, 2, openGLType, GL_FALSE, vertexStride, vertexTypeSize * (3+3));
-            pxOpenGL->Binding.VertexAttribArrayEnable(2);
-       
-
-
-            //PXByte vertexDataCache[(3 + 3 + 2) * sizeof(PXF32)];
-            PXF32 vertexDataCache[(3 + 3 + 2)];
-            PXSize vertexDataCacheOffset = 0;
-
-            PXSize globalOffset = 0;
-            PXSize indexOffset = 0;
-
-            for(PXSize segmentIndex = 0; segmentIndex < pxIndexBuffer->SegmentListAmount; ++segmentIndex)
+            for(PXSize attributeIndex = 0; attributeIndex < layoutAmount; ++attributeIndex)
             {
-                PXIndexSegment* const pxIndexSegment = &pxIndexBuffer->SegmentList[segmentIndex];
-
-                const PXSize range = pxIndexSegment->DataRange;
-
-                for(PXSize i = 0; i < range; ++i)
-                {    
-                    PXInt16U dataIndexVertex = *(PXInt16U*)((PXByte*)indexVertex + (indexTypeSize * indexOffset));
-                    PXInt16U dataIndexNormal = *(PXInt16U*)((PXByte*)indexNormal + (indexTypeSize * indexOffset));
-                    PXInt16U dataIndexTexture = *(PXInt16U*)((PXByte*)indexTexture + (indexTypeSize * indexOffset));
-
-                    void* dataVertex = (PXByte*)pxVertexBufferPosition->VertexData + (vertexTypeSize * dataIndexVertex * 3);
-                    void* dataNormal = (PXByte*)pxVertexBufferNormal->VertexData + (vertexTypeSize * dataIndexNormal * 3);
-                    void* dataTexture = (PXByte*)pxVertexBufferTexture->VertexData + (vertexTypeSize * dataIndexTexture * 2);
-
-                    vertexDataCacheOffset += PXMemoryCopy(dataVertex, vertexTypeSize * 3, (PXByte*)vertexDataCache + vertexDataCacheOffset, 100);
-                    vertexDataCacheOffset += PXMemoryCopy(dataNormal, vertexTypeSize * 3, (PXByte*)vertexDataCache + vertexDataCacheOffset, 100);
-                    vertexDataCacheOffset += PXMemoryCopy(dataTexture, vertexTypeSize * 2, (PXByte*)vertexDataCache + vertexDataCacheOffset, 100);
-
-                    pxOpenGL->Binding.BufferDataSub(GL_ARRAY_BUFFER, globalOffset, (GLsizeiptr)vertexDataCacheOffset, vertexDataCache);
-
-                    globalOffset += vertexDataCacheOffset;
-                    vertexDataCacheOffset = 0;
-                    ++indexOffset;
-
-                    // Mark as usable!                      
-                }        
+                const PXBufferLayout* const pxVertexBufferLayout = &pxVertexBufferLayoutList[attributeIndex];
+                const GLenum openGLType = PXOpenGLTypeToID(pxVertexBufferLayout->Format);
+                const PXSize sizeOfType = PXTypeSizeGet(pxVertexBufferLayout->Format);
+                const PXSize sizeOfSegment = sizeOfType * pxVertexBufferLayout->AmountOfElements;
 
 #if PXLogEnable
-                int progress = (globalOffset / (float)vertexDataInterleavedSize) * 100;
-
                 PXLogPrint
                 (
                     PXLoggingInfo,
                     PXOpenGLName,
                     PXOpenGLModelName,
-                    "Segment:<%2i/%2i> ready! %7i/%7i (%3i)",
-                    segmentIndex+1,
-                    pxIndexBuffer->SegmentListAmount,
-                    globalOffset,
-                    vertexDataInterleavedSize,
-                    progress
+                    "VertexAttribut (%2i/%-2i)\n"
+                    "%20s : %i\n" 
+                    "%20s : %i\n"
+                    "%20s : %s\n"
+                    "%20s : %i\n"
+                    "%20s : %i\n"
+                    "%20s : %i\n"
+                    "%20s : %i B",
+                    attributeIndex + 1,
+                    layoutAmount,
+
+                    "TypeSize", sizeOfType,
+                    "AmountOfElements", pxVertexBufferLayout->AmountOfElements,
+                    "Type", "---",
+                    "UpdatePerPrimive", pxVertexBufferLayout->UpdatePerPrimitive,
+                    "Stride", vertexStride,
+                    "Offset", offset,
+                    "Segment", sizeOfSegment
                 );
 #endif
-            }
-       
 
-        
-          
+                // DEFINE
+                pxOpenGL->Binding.VertexAttribPointer
+                (
+                    attributeIndex,
+                    pxVertexBufferLayout->AmountOfElements,
+                    openGLType,
+                    GL_FALSE,
+                    vertexStride,
+                    offset
+                );
+                PXOpenGLErrorCurrent(pxOpenGL, 1);
+
+                offset += sizeOfSegment;
+
+                // ENABLE
+                pxOpenGL->Binding.VertexAttribArrayEnable(attributeIndex);
+                PXOpenGLErrorCurrent(pxOpenGL, 1);
+
+                // POSSIVLE INSTANCING
+                if(pxVertexBufferLayout->UpdatePerPrimitive > 0)
+                {
+                    // This makes it instanced!  
+                    pxOpenGL->Binding.VertexAttribDivisor(attributeIndex, pxVertexBufferLayout->UpdatePerPrimitive);
+                }
+            }
+            //---------------------------------------------
+
+
+            //---------------------------------------------
+            // Upload
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                PXOpenGLName,
+                PXOpenGLModelName,
+                "PXID:<%i>, GLID_VBO:<%i>, <%s>, upload <%p> with %i B",
+                pxVertexBuffer->Info.ID,
+                pxVertexBuffer->Info.Handle.OpenGLID,
+                "Err",
+                pxVertexBuffer->VertexData.Data,
+                pxVertexBuffer->VertexData.Size
+            );
+#endif
+
+            pxOpenGL->Binding.BufferData
+            (
+                GL_ARRAY_BUFFER,
+                pxVertexBuffer->VertexData.Size,
+                pxVertexBuffer->VertexData.Data,
+                GL_STATIC_DRAW
+            );
+            PXOpenGLErrorCurrent(pxOpenGL, 1);
+            //---------------------------------------------
+
+
+           // pxOpenGL->Binding.BufferBind(GL_ARRAY_BUFFER, 0);
         }
     }
 
-
-
-
-
-
-
-
-    /*
-    
-     PXVertexBuffer* const pxVertexBuffer = &pxMesh->VertexBufferList[i];
-
-                if(i == 0)
-                {
-                    // Create as VBO
-
-                    // Select
-                    pxOpenGL->Binding.BufferBind(GL_ARRAY_BUFFER, pxVertexBuffer->Info.Handle.OpenGLID);
-
-                    // Upload
-                    pxOpenGL->Binding.BufferData(GL_ARRAY_BUFFER, pxVertexBuffer->VertexDataSize, pxVertexBuffer->VertexData, GL_STATIC_DRAW);
-
-                    // Define layout   
-                    const PXInt8U sizePerVertex = PXVertexBufferFormatSizePerVertex(pxVertexBuffer->Format);
-                    // const GLenum openGLType = PXOpenGLTypeToID(pxVertexElementCurrent->Type);
-                     // TODO: enable VBO to have other types besides PXF32s!!!
-
-                    pxOpenGL->Binding.VertexAttribPointer
-                    (
-                        i,
-                        sizePerVertex,
-                        GL_FLOAT,
-                        GL_FALSE,
-                        0,
-                        0
-                    );
-                    pxOpenGL->Binding.VertexAttribArrayEnable(i);
-
-#if PXLogEnable
-                    const char* vertexFormatName = PXVertexBufferFormatToString(pxVertexBuffer->Format);
-
-                    PXLogPrint
-                    (
-                        PXLoggingInfo,
-                        PXOpenGLName,
-                        PXOpenGLModelName,
-                        "(%i/%i) VBO:<%i>, %s,  upload <%p> with %i B",
-                        i + 1,
-                        pxMesh->VertexBufferListAmount,
-                        pxVertexBuffer->Info.Handle.OpenGLID,
-                        vertexFormatName,
-                        pxVertexBuffer->VertexData,
-                        pxVertexBuffer->VertexDataSize
-                    );
-#endif
-                }
-                else
-                {
-                    PXOpenGKShaderDataBufferCreate();
-
-                 
-                }
-
-
-    */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-
-    {
-        PXInt8U pxVertexElementLength = 0;
-        PXVertexElement pxVertexElementList[20];
-        PXClearList(PXVertexElement, pxVertexElementList, 20);
-
-        // make
-        {
-            const PXInt8U stride = PXVertexBufferFormatStrideSize(pxVertexBuffer->Format) * sizeof(PXF32);
-
-            switch(pxVertexBuffer->Format)
-            {
-                case PXVertexBufferFormatXYZPXF32:
-                {
-                    PXVertexElement* pxVertexElement = &pxVertexElementList[0];
-
-                    pxVertexElement->Type = PXTypePXF32;
-                    pxVertexElement->Length = 3u; // X, Y, Z => 3 Elemets
-                    pxVertexElement->Stride = stride; // Size of a whole vertex
-                    pxVertexElement->StartAdress = 0; // No offset, we start at 0
-
-                    pxVertexElementLength = 1;
-
-                    break;
-                }
-                case PXVertexBufferFormatT2F_XYZ:
-                {
-                    pxVertexElementList[0].Type = PXTypePXF32;
-                    pxVertexElementList[0].Length = 2u; // X, Y, Z => 3 Elemets
-                    pxVertexElementList[0].Stride = stride;
-                    pxVertexElementList[0].StartAdress = 0; // No offset, we start at 0
-
-                    pxVertexElementList[1].Type = PXTypePXF32;
-                    pxVertexElementList[1].Length = 3u; // X, Y, Z => 3 Elemets
-                    pxVertexElementList[1].Stride = stride;
-                    pxVertexElementList[1].StartAdress = 2 * sizeof(PXF32); // No offset, we start at 0
-
-                    pxVertexElementLength = 2;
-
-                    break;
-                }
-                case PXVertexBufferFormatT2F_N3F_XYZ:
-                {
-                    pxVertexElementList[0].Type = PXTypePXF32;
-                    pxVertexElementList[0].Length = 2u; // X, Y, Z => 3 Elemets
-                    pxVertexElementList[0].Stride = stride;
-                    pxVertexElementList[0].StartAdress = 0; // No offset, we start at 0
-
-                    pxVertexElementList[1].Type = PXTypePXF32;
-                    pxVertexElementList[1].Length = 3u; // X, Y, Z => 3 Elemets
-                    pxVertexElementList[1].Stride = stride;
-                    pxVertexElementList[1].StartAdress = 2 * sizeof(PXF32); // No offset, we start at 0
-
-                    pxVertexElementList[2].Type = PXTypePXF32;
-                    pxVertexElementList[2].Length = 3u; // X, Y, Z => 3 Elemets
-                    pxVertexElementList[2].Stride = stride;
-                    pxVertexElementList[2].StartAdress = (2 + 3) * sizeof(PXF32); // No offset, we start at 0
-
-                    pxVertexElementLength = 3;
-
-                    break;
-                }
-                default:
-                { 
-                    break; 
-                }
-            }
-        }
-
-        for(PXSize i = 0; i < pxVertexElementLength; ++i)
-        {
-            const PXVertexElement* const pxVertexElementCurrent = &pxVertexElementList[i];
-            const GLenum openGLType = PXOpenGLTypeToID(pxVertexElementCurrent->Type);
-
-            pxOpenGL->Binding.VertexAttribArrayEnable(i);
-            pxOpenGL->Binding.VertexAttribPointer(i, pxVertexElementCurrent->Length, openGLType, GL_FALSE, pxVertexElementCurrent->Stride, (void*)pxVertexElementCurrent->StartAdress);
-        }
-        */
-    
-
-    /*
-    Now, here is how we would do it using the new APIs:
-
-    glBindVertexBuffer(0, buff, baseOffset, sizeof(Vertex));
-
-    glEnableVertexAttribArray(0);
-    glVertexAttribFormat(0, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, position));
-    glVertexAttribBinding(0, 0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribFormat(1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, normal));
-    glVertexAttribBinding(1, 0);
-    glEnableVertexAttribArray(2);
-    glVertexAttribFormat(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, offsetof(Vertex, color));
-    glVertexAttribBinding(2, 0);
-    */
-
+    // DONE WITH VERTEX DATA....
     pxOpenGL->Binding.VertexArrayBind(0);
+
+
+    PXMeshVertexLayoutPrint(pxMesh); // PLI
+
 
     // Additional textures
     {
-        for(PXSize containerID = 0; containerID < pxModel->MaterialContaierListAmount; ++containerID)
+        PXMaterialContainer* pxMaterialContainer = pxMesh->MaterialContaierList;
+
+        for(PXSize containerID = 0; containerID < pxMesh->MaterialContaierListAmount; ++containerID)
         {
-            PXMaterialContainer* const pxMaterialContainer = &pxModel->MaterialContaierList[containerID];
+            PXMaterialContainer* const pxMaterialContainerA = &pxMaterialContainer[containerID];
 
             PXSize pxTextureListCounter = 0;
-            PXTexture2D** pxTextureList = PXMemoryHeapCallocT(PXTexture2D*, pxMaterialContainer->MaterialListAmount);
+            PXTexture** pxTextureList = PXMemoryHeapCallocT(PXTexture*, pxMaterialContainerA->MaterialListAmount);
 
-            for(PXSize materialID = 0; materialID < pxMaterialContainer->MaterialListAmount; ++materialID)
+            for(PXSize materialID = 0; materialID < pxMaterialContainerA->MaterialListAmount; ++materialID)
             {
-                PXMaterial* const pxMaterial = &pxMaterialContainer->MaterialList[materialID];
+                PXMaterial* const pxMaterial = &pxMaterialContainerA->MaterialList[materialID];
 
                 if(pxMaterial->DiffuseTexture)
                 {
@@ -7488,10 +7301,10 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
             }
 
 
-            PXGraphicTexturInfo pxGraphicTexturInfo;
+            PXTexturInfo pxGraphicTexturInfo;
             pxGraphicTexturInfo.TextureReference = (void**)pxTextureList;
             pxGraphicTexturInfo.Amount = pxTextureListCounter;
-            pxGraphicTexturInfo.Type = PXGraphicTextureType2D;
+            pxGraphicTexturInfo.Type = PXTextureType2D;
             pxGraphicTexturInfo.Action = PXResourceActionCreate;
 
             PXOpenGLTextureAction(pxOpenGL, &pxGraphicTexturInfo);
@@ -7504,14 +7317,14 @@ PXActionResult PXAPI PXOpenGLModelRegister(PXOpenGL* const pxOpenGL, PXModel* co
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXOpenGLModelDeregister(PXOpenGL* const pxOpenGL, PXModel* const pxModel)
+PXResult PXAPI  PXOpenGLModelDeregister(PXOpenGL* const pxOpenGL, PXModel* const pxModel)
 {
     //pxOpenGL->Binding.Vertex(1, pxModel->ResourceID.OpenGLID); glDeleteVertexArrays
 
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXOpenGLRectangleDraw(PXOpenGL* const pxOpenGL, const PXF32 xA, const PXF32 yA, const PXF32 xB, const PXF32 yB, const PXInt8U mode)
+PXResult PXAPI  PXOpenGLRectangleDraw(PXOpenGL* const pxOpenGL, const PXF32 xA, const PXF32 yA, const PXF32 xB, const PXF32 yB, const PXI8U mode)
 {
     switch(mode)
     {
@@ -7537,7 +7350,7 @@ PXActionResult PXAPI PXOpenGLRectangleDraw(PXOpenGL* const pxOpenGL, const PXF32
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXOpenGLRectangleDrawTx(PXOpenGL* const pxOpenGL, const PXF32 xA, const PXF32 yA, const PXF32 xB, const PXF32 yB, const PXF32 txA, const PXF32 tyA, const PXF32 txB, const PXF32 tyB, const PXInt8U mode)
+PXResult PXAPI  PXOpenGLRectangleDrawTx(PXOpenGL* const pxOpenGL, const PXF32 xA, const PXF32 yA, const PXF32 xB, const PXF32 yB, const PXF32 txA, const PXF32 tyA, const PXF32 txB, const PXF32 tyB, const PXI8U mode)
 {
     switch(mode)
     {

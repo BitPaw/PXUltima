@@ -5,7 +5,7 @@
 static const char PXXingInfoSignatureInfo[4] = { 'I', 'n', 'f', 'o' };
 static const char PXXingInfoSignatureXing[4] = { 'X', 'i', 'n', 'g' };
 
-PXActionResult PXAPI PXXingInfoParse(PXXingInfo* const xingInfo, PXFile* const PXFile)
+PXResult PXAPI  PXXingInfoParse(PXXingInfo* const xingInfo, PXFile* const PXFile)
 {
     // parse signature
     {
@@ -52,7 +52,7 @@ PXActionResult PXAPI PXXingInfoParse(PXXingInfo* const xingInfo, PXFile* const P
 
     // (0x0002) is set, then read one 32 bit integer in Big PXEndian.
     // It represents the total number of bytes of MPEG Audio in the file.
-    // This does not include the PXID3 tag, however, it includes this very tag.
+    // This does not Included the PXID3 tag, however, it Includeds this very tag.
     if(hasSizeInBytes)
     {
         PXFileReadI32UE(PXFile, &xingInfo->SizeInBytes, PXEndianBig);

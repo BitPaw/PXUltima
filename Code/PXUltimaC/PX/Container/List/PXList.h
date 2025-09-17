@@ -2,6 +2,7 @@
 #define PXListDEFINED
 
 #include <PX/Media/PXType.h>
+#include <PX/Container/Buffer/PXBuffer.h>
 
 #define PXListBehaviourMemoryVirtual 1
 
@@ -17,13 +18,13 @@ PXListMode;
 
 typedef struct PXList_
 {
-    void* Data; // Contains the whole data.
+    PXBuffer Buffer;
 
-    PXSize EntryAmountUsed;  // Size currently used by data.
-    PXSize EntryAmountAllocated; // Size currently allocated and usable
-    PXSize EntryGrowthOnAllocation;
+    PXSize EntryAmountUsed;         // Size currently used by data.
+    PXSize EntryAmountAllocated;    // Size currently allocated and usable
+    PXSize EntryGrowthOnAllocation; // How much to grow if an allocation if space is insufficent
 
-    PXSize DataTypeSize; // Size of a single object.
+    PXSize ValueTypeSize;           // Size of a single object.
 }
 PXList;
 
@@ -32,6 +33,12 @@ PXPublic void PXAPI PXListRelease(PXList* const pxList);
 
 // Returns index of element
 PXPublic PXBool PXAPI PXListReserve(PXList* const pxList, const PXSize sizeToReserve);
+
+PXPublic PXSize PXAPI PXListSizeUsed(const PXList* const pxList);
+
+// Check if the given adress exist or is owned by this list
+PXPublic PXBool PXAPI PXListIsAddresValid(const PXList* const pxList, const void* const adress);
+PXPublic PXBool PXAPI PXListIsIndexValid(const PXList* const pxList, const PXSize index);
 
 
 //---------------------------------------------------------

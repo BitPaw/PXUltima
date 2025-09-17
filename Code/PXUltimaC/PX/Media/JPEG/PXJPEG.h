@@ -1,7 +1,7 @@
-#ifndef PXJPEGInclude
-#define PXJPEGInclude
+#ifndef PXJPEGIncluded
+#define PXJPEGIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 #define PXJPEGQuantizationTableLuminanceIndex   0
 #define PXJPEGQuantizationTableChrominanceIndex 1
@@ -80,59 +80,59 @@
 
 typedef struct PXJPEGFrameComponent_
 {
-    PXInt8U ID;
-    PXInt8U SamplingFactorHorizonal;
-    PXInt8U SamplingFactorVertical;
-    PXInt8U QuantizationTableID;
+    PXI8U ID;
+    PXI8U SamplingFactorHorizonal;
+    PXI8U SamplingFactorVertical;
+    PXI8U QuantizationTableID;
 }
 PXJPEGFrameComponent;
 
 typedef struct PXJPEGFrame_
 {
     PXJPEGFrameComponent ComponentList[255];
-    PXInt16U Width;
-    PXInt16U Height;
-    PXInt8U Precision;
-    PXInt8U ComponentListSize;
+    PXI16U Width;
+    PXI16U Height;
+    PXI8U Precision;
+    PXI8U ComponentListSize;
 }
 PXJPEGFrame;
 
 typedef struct PXJPEGFileInfo_
 {
     void* ThumbnailData;
-    PXInt32U ThumbnailDataSize;
-    PXInt16U DensityX;
-    PXInt16U DensityY;
-    PXInt8U VersionMajor;
-    PXInt8U VersionMinor;
-    PXInt8U DensityUnits;
-    PXInt8U ThumbnailX;
-    PXInt8U ThumbnailY;
+    PXI32U ThumbnailDataSize;
+    PXI16U DensityX;
+    PXI16U DensityY;
+    PXI8U VersionMajor;
+    PXI8U VersionMinor;
+    PXI8U DensityUnits;
+    PXI8U ThumbnailX;
+    PXI8U ThumbnailY;
 }
 PXJPEGFileInfo;
 
 typedef struct PXJPEGHuffmanTable_
 {
-    PXInt8U ID;
-    PXInt8U Type;
+    PXI8U ID;
+    PXI8U Type;
 }
 PXJPEGHuffmanTable;
 
 typedef struct PXJPEGScanSelector_
 {
-    PXInt8U ID;
-    PXInt8U DC;
-    PXInt8U ACTable;
+    PXI8U ID;
+    PXI8U DC;
+    PXI8U ACTable;
 }
 PXJPEGScanSelector;
 
 typedef struct PXJPEGScanStart_
 {
     PXJPEGScanSelector ScanSelector[3];
-    PXInt8U ScanSelectorSize;
-    PXInt8U SpectralSelectFrom;
-    PXInt8U SpectralSelectTo;
-    PXInt8U SuccessiveAproximation;
+    PXI8U ScanSelectorSize;
+    PXI8U SpectralSelectFrom;
+    PXI8U SpectralSelectTo;
+    PXI8U SuccessiveAproximation;
 }
 PXJPEGScanStart;
 
@@ -140,7 +140,7 @@ typedef struct PXJPEG_
 {
     PXJPEGFileInfo FileInfo;
 
-    PXInt8U QuantizationTable[2][64];
+    PXI8U QuantizationTable[2][64];
 
     PXSize HuffmanTableSize;
     PXJPEGHuffmanTable* HuffmanTable;
@@ -158,7 +158,7 @@ PXPublic void PXAPI PXJPEGDestruct(PXJPEG* const jpeg);
 
 PXPublic PXSize PXAPI PXJPEGFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 
-PXPublic PXActionResult PXAPI PXJPEGLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXJPEGSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXJPEGLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXJPEGSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

@@ -1,15 +1,15 @@
-#ifndef PXFastFileINCLUDE
-#define PXFastFileINCLUDE
+#ifndef PXFastFileIncluded
+#define PXFastFileIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef struct PXFastFile_
 {
-    PXInt32U Version;
+    PXI32U Version;
 }
 PXFastFile;
 
-PXPublic PXActionResult PXAPI PXFastFileLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXFastFileSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXFastFileLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXFastFileSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

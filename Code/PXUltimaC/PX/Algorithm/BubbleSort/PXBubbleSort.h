@@ -1,7 +1,6 @@
-#ifndef PXBubbleSortInclude
-#define PXBubbleSortInclude
+#ifndef PXBubbleSortIncluded
+#define PXBubbleSortIncluded
 
-#include <PX/Media/PXResource.h>
-
+#include <PX/Engine/PXResource.h>
 
 #endif

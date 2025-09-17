@@ -3,11 +3,11 @@
 #include <PX/Media/RIFF/PXRIFF.h>
 #include <PX/OS/File/PXFile.h>
 
-const char PXWEBPVP[4] = { 'V', 'P', '8', ' ' };
+const char PXWEBPVP[4] = "VP8 ";
 
-PXActionResult PXAPI PXWEBPLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI  PXWEBPLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
-    PXImage* const pxImage = (PXImage*)pxResourceLoadInfo->ResourceTarget;
+    PXTexture* const pxTexture = (PXTexture*)pxResourceLoadInfo->ResourceTarget;
 
     // Parse RIFF header
     {
@@ -15,7 +15,8 @@ PXActionResult PXAPI PXWEBPLoadFromFile(PXResourceTransphereInfo* const pxResour
 
         const PXActionResult riffResult = PXRIFFLoadFromFile(&pxRiff, pxResourceLoadInfo->FileReference);
 
-        PXActionReturnOnError(riffResult);
+        if(PXActionSuccessful != riffResult) 
+            return riffResult;
 
         if (PXRIFFWebPicture != pxRiff.Format)
         {
@@ -29,23 +30,23 @@ PXActionResult PXAPI PXWEBPLoadFromFile(PXResourceTransphereInfo* const pxResour
 
     while (!PXFileIsAtEnd(pxResourceLoadInfo->FileReference))
     {
-        PXInt32UCluster chunkID;
+        PXI32UCluster chunkID;
 
         PXFileReadB(pxResourceLoadInfo->FileReference, chunkID.Data, 4u);
 
         switch (chunkID.Value)
         {
-        case PXInt32Make('V', 'P', '8', 'L'):
+        case PXI32Make('V', 'P', '8', 'L'):
         {
-            PXInt32U streamSize = 0;
+            PXI32U streamSize = 0;
             PXFileReadI32UE(pxResourceLoadInfo->FileReference, &streamSize, PXEndianLittle);
 
             const char signature = 0x2f;
             const PXBool isValid = PXFileReadAndCompare(pxResourceLoadInfo->FileReference, &signature, sizeof(char));
 
             // Images can only be 16384x16384
-            pxImage->Width = PXFileReadBits(pxResourceLoadInfo->FileReference, 14u) + 1u;
-            pxImage->Height = PXFileReadBits(pxResourceLoadInfo->FileReference, 14u) + 1u;
+            pxTexture->Width = PXFileReadBits(pxResourceLoadInfo->FileReference, 14u) + 1u;
+            pxTexture->Height = PXFileReadBits(pxResourceLoadInfo->FileReference, 14u) + 1u;
 
             PXBool hasAlpha = PXFileReadBits(pxResourceLoadInfo->FileReference, 1u);
             PXBool version = PXFileReadBits(pxResourceLoadInfo->FileReference, 3u);
@@ -62,7 +63,7 @@ PXActionResult PXAPI PXWEBPLoadFromFile(PXResourceTransphereInfo* const pxResour
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXWEBPSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI  PXWEBPSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     // Write RIFF
     {

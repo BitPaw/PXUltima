@@ -1,7 +1,7 @@
-#ifndef PXProcessorINCLUDE
-#define PXProcessorINCLUDE
+#ifndef PXProcessorIncluded
+#define PXProcessorIncluded
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 
 typedef enum PXProcessorBrand_
 {
@@ -178,22 +178,22 @@ PXProcessorModelName;
 
 typedef struct PXProcessor_
 {
-    char BrandName[64];  // string includes manufacturer, model and clockspeed
+    char BrandName[64];  // string Includeds manufacturer, model and clockspeed
     char IdentityString[13];
 
     PXProcessorBrand BrandID;
     PXProcessorModelName ModelNameID;
 
-    PXInt8U NumberOfProcessors;
-    PXInt8U BrandNameSize;
+    PXI8U NumberOfProcessors;
+    PXI8U BrandNameSize;
 
     PXBool IsInvariantTSCAvailable;
 
-    PXInt8U L2AssociativityField;
-    PXInt8U CacheSizein1Kunits;
-    PXInt16U CacheLineSizeInBytes;
+    PXI8U L2AssociativityField;
+    PXI8U CacheSizein1Kunits;
+    PXI16U CacheLineSizeInBytes;
 
-    PXInt64U FeatureList;
+    PXI64U FeatureList;
 
 
     // eax
@@ -207,10 +207,10 @@ typedef struct PXProcessor_
     PXBool ReservedBitsB;
 
     // EBX
-    PXInt8U BrandIndex;
-    PXInt8U CLflushCacheLineSize;
-    PXInt8U logicalProcessors;
-    PXInt8U initialApicID;
+    PXI8U BrandIndex;
+    PXI8U CLflushCacheLineSize;
+    PXI8U logicalProcessors;
+    PXI8U initialApicID;
 }
 PXProcessor;
 
@@ -231,14 +231,14 @@ PXPublic unsigned int PXAPI PXProcessorTimeReal();
 typedef struct PXProcessorTemperatureInfo_
 {
     PXSize ListAmount;  // Amount of data values
-    PXInt32S* ListData; // List of data values
-    PXInt32S Average;   // The average temp of all temperatures
+    PXI32S* ListData; // List of data values
+    PXI32S Average;   // The average temp of all temperatures
 }
 PXProcessorTemperatureInfo;
 
 
 // Fetch temperature from the processor(s) 
-PXPublic PXActionResult PXAPI PXProcessorTemperature(PXProcessorTemperatureInfo* const pxProcessorTemperatureInfo);
+PXPublic PXResult PXAPI PXProcessorTemperature(PXProcessorTemperatureInfo* const pxProcessorTemperatureInfo);
 
 
 //-----------------------------------------------------
@@ -251,8 +251,8 @@ PXPublic PXActionResult PXAPI PXProcessorTemperature(PXProcessorTemperatureInfo*
 PXPublic void PXAPI PXProcessorNoOperation();
 PXPublic void PXAPI PXProcessorRandomNumber();
 
-PXPublic void PXAPI PXProcessorSwapByteOrderI16U(PXInt16U* const value);
-PXPublic void PXAPI PXProcessorSwapByteOrderI32U(PXInt32U* const value);
-PXPublic void PXAPI PXProcessorSwapByteOrderI64U(PXInt64U* const value);
+PXPublic void PXAPI PXProcessorSwapByteOrderI16U(PXI16U* const value);
+PXPublic void PXAPI PXProcessorSwapByteOrderI32U(PXI32U* const value);
+PXPublic void PXAPI PXProcessorSwapByteOrderI64U(PXI64U* const value);
 
 #endif

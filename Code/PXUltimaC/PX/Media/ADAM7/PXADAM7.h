@@ -1,8 +1,7 @@
-#ifndef PXADAM7Include
-#define PXADAM7Include
+#ifndef PXADAM7Included
+#define PXADAM7Included
 
-#include "../PXResource.h"
-
+#include <PX/Engine/PXResource.h>
 #include <PX/Media/PNG/PXPNG.h>
 
 typedef struct PXADAM7_
@@ -28,15 +27,15 @@ PXPublic void PXAPI PXADAM7setBitOfReversedStream(PXSize* bitpointer, unsigned c
 PXPublic void PXAPI PXADAM7_getpassvalues(unsigned passw[7], unsigned passh[7], PXSize filter_passstart[8], PXSize padded_passstart[8], PXSize passstart[8], PXSize w, PXSize h, PXSize bpp);
 
 
-PXPublic PXActionResult PXAPI PXADAM7ScanlinesDecode(PXADAM7* const pxADAM7);
-PXPublic PXActionResult PXAPI PXADAM7ScanlinesEncode(PXADAM7* const pxADAM7);
+PXPublic PXResult PXAPI PXADAM7ScanlinesDecode(PXADAM7* const pxADAM7);
+PXPublic PXResult PXAPI PXADAM7ScanlinesEncode(PXADAM7* const pxADAM7);
 
 PXPublic PXSize PXAPI PXADAM7CaluclateExpectedSize(PXADAM7* const pxADAM7);
 PXPublic PXSize PXAPI PXADAM7lodepng_get_raw_size_idat(PXSize w, PXSize h, PXSize bpp);
 
 PXPublic void PXAPI PXADAM7Deinterlace(PXADAM7* const pxADAM7);
 
-PXPublic PXActionResult PXAPI PXADAM7unfilter(PXADAM7* const pxADAM7);
-PXPublic PXActionResult PXAPI PXADAM7unfilterScanline(unsigned char* recon, const unsigned char* scanline, const unsigned char* precon, PXSize bytewidth, unsigned char filterType, PXSize length);
+PXPublic PXResult PXAPI PXADAM7unfilter(PXADAM7* const pxADAM7);
+PXPublic PXResult PXAPI PXADAM7unfilterScanline(unsigned char* recon, const unsigned char* scanline, const unsigned char* precon, PXSize bytewidth, unsigned char filterType, PXSize length);
 
 #endif

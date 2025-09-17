@@ -1,5 +1,5 @@
-#ifndef PXLDAPINCLUDE
-#define PXLDAPINCLUDE
+#ifndef PXLDAPIncluded
+#define PXLDAPIncluded
 
 #include <PX/Media/PXText.h>
 #include <PX/OS/Error/PXActionResult.h>
@@ -275,11 +275,11 @@ typedef struct PXLDAPConnectionInfo_
 
     // Init
     PXText Host;
-    PXInt16U Port;
+    PXI16U Port;
     PXBool SSLUse;
 
     // connect
-    PXInt32U ConnectTimeout;
+    PXI32U ConnectTimeout;
 
     // Bind
     PXText ConnectionDomain;
@@ -301,14 +301,14 @@ typedef struct PXLDAPSearchInfo_
 }
 PXLDAPSearchInfo;
 
-PXPublic PXActionResult PXAPI PXLDAPClienInitialize(PXLDAPClient* const pxLDAPClient);
-PXPublic PXActionResult PXAPI PXLDAPClienRelease(PXLDAPClient* const pxLDAPClient);
+PXPublic PXResult PXAPI PXLDAPClienInitialize(PXLDAPClient* const pxLDAPClient);
+PXPublic PXResult PXAPI PXLDAPClienRelease(PXLDAPClient* const pxLDAPClient);
 
-PXPublic PXActionResult PXAPI PXLDAPClientOpen(PXLDAPClient* const pxLDAPClient, const PXLDAPConnectionInfo* const pxLDAPConnectionInfo);
-PXPublic PXActionResult PXAPI PXLDAPClientClose(PXLDAPClient* const pxLDAPClient);
+PXPublic PXResult PXAPI PXLDAPClientOpen(PXLDAPClient* const pxLDAPClient, const PXLDAPConnectionInfo* const pxLDAPConnectionInfo);
+PXPublic PXResult PXAPI PXLDAPClientClose(PXLDAPClient* const pxLDAPClient);
 
 // Used an open connection to fetch data either syncrounous or asyncounous.
 // The result is fetched into an adress that need to be cleared before the next call.
-PXPublic PXActionResult PXAPI PXLDAPClientSearch(PXLDAPClient* const pxLDAPClient, PXLDAPSearchInfo* const pxLDAPSearchInfo);
+PXPublic PXResult PXAPI PXLDAPClientSearch(PXLDAPClient* const pxLDAPClient, PXLDAPSearchInfo* const pxLDAPSearchInfo);
 
 #endif

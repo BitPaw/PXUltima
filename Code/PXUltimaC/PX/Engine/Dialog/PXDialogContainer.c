@@ -2,7 +2,7 @@
 
 #include <PX/OS/File/PXFile.h>
 
-PXActionResult PXAPI PXDialogContainerMessageFetch(PXDialogMessagePage* const pxDialogContainer)
+PXResult PXAPI  PXDialogContainerMessageFetch(PXDialogMessagePage* const pxDialogContainer)
 {
     return PXActionRefusedNotImplemented;
 }

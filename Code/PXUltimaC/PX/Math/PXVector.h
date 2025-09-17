@@ -1,7 +1,22 @@
-#ifndef PXVectorINCLUDE
-#define PXVectorINCLUDE
+#ifndef PXVectorIncluded
+#define PXVectorIncluded
 
 #include <PX/Media/PXType.h>
+
+typedef struct PXVec2I8U_
+{
+    union
+    {
+        struct
+        {
+            PXI8U X;
+            PXI8U Y;
+        };
+
+        PXI8U Data[2];
+    };
+}
+PXVec2I8U;
 
 typedef struct PXVector2I8S_
 {
@@ -9,11 +24,11 @@ typedef struct PXVector2I8S_
     {
         struct
         {
-            PXInt8S X;
-            PXInt8S Y;
+            PXI8S X;
+            PXI8S Y;
         };
 
-        PXInt8S Data[2];
+        PXI8S Data[2];
     };
 }
 PXVector2I8S;
@@ -24,11 +39,11 @@ typedef struct PXVector2I16S_
     {
         struct
         {
-            PXInt16S X;
-            PXInt16S Y;
+            PXI16S X;
+            PXI16S Y;
         };
 
-        PXInt16S Data[2];
+        PXI16S Data[2];
     };
 }
 PXVector2I16S;
@@ -39,11 +54,11 @@ typedef struct PXVector2I16U_
     {
         struct
         {
-            PXInt16U X;
-            PXInt16U Y;
+            PXI16U X;
+            PXI16U Y;
         };
 
-        PXInt16U Data[2];
+        PXI16U Data[2];
     };
 }
 PXVector2I16U;
@@ -54,11 +69,11 @@ typedef struct PXVector2I32S_
     {
         struct
         {
-            PXInt32S X;
-            PXInt32S Y;
+            PXI32S X;
+            PXI32S Y;
         };
 
-        PXInt32S Data[2];
+        PXI32S Data[2];
     };
 }
 PXVector2I32S;
@@ -69,11 +84,11 @@ typedef struct PXVector2I32U_
     {
         struct
         {
-            PXInt32U X;
-            PXInt32U Y;
+            PXI32U X;
+            PXI32U Y;
         };
 
-        PXInt32U Data[2];
+        PXI32U Data[2];
     };
 }
 PXVector2I32U;
@@ -295,5 +310,26 @@ PXPublic PXF32 PXAPI PXVector3F32Length(const PXVector3F32* const vector);
 PXPublic void PXAPI PXVector3F32CrossProduct(PXVector3F32* const vectorResult, const PXVector3F32* const vectorA, const PXVector3F32* const vectorB);
 PXPublic PXF32 PXAPI PXVector3F32DotProduct(const PXVector3F32* const vectorA, const PXVector3F32* const vectorB);
 PXPublic void PXAPI PXVector3F32Interpolate(PXVector3F32* const vectorA, const PXVector3F32* const vectorB, PXF32 speed);
+
+PXPublic void PXAPI PXVector4Demote(PXVector4F32* const pxVectorIn, PXVector3F32* pxVectorOut, const PXF32 distance);
+PXPublic void PXAPI PXVector3Demote(PXVector3F32* const pxVectorIn, PXVector2F32* pxVectorOut, const PXF32 distance);
+
+
+PXPublic void PXAPI PXVector3FNormal
+(
+    PXVector3F32* const res,
+    const PXVector3F32* const a,
+    const PXVector3F32* const b,
+    const PXVector3F32* const c
+);
+
+PXPublic void PXAPI PXVector4FNormal
+(
+    PXVector3F32* const res,
+    const PXVector4F32* const a,
+    const PXVector4F32* const b,
+    const PXVector4F32* const c,
+    const PXF32 distance
+);
 
 #endif

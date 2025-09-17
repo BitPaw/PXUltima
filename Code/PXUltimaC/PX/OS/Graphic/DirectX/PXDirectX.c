@@ -8,7 +8,7 @@
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/Media/PXText.h>
 #include <PX/OS/Graphic/PXGraphic.h>
-#include <PX/OS/GUI/PXGUI.h>
+#include <PX/Engine/PXGUI.h>
 #include <PX/OS/Console/PXConsole.h>
 
 #include "PXDirectX9.h"
@@ -17,12 +17,14 @@
 #include "PXDirectX11.h"
 #include "PXDirectX12.h"
 
-PXActionResult PXAPI PXDirectXInitialize(PXDirectX* const pxDirectX, PXGraphicInitializeInfo* const pxGraphicInitializeInfo)
+const char PXDirectXText[] = "DirectX";
+
+PXResult PXAPI  PXDirectXInitialize(PXDirectX* const pxDirectX, PXGraphicInitializeInfo* const pxGraphicInitializeInfo)
 {
     PXLogPrint
     (
         PXLoggingInfo,
-        "DirectX",
+        PXDirectXText,
         "Initialize",
         "---Start---"
     );
@@ -44,7 +46,7 @@ PXActionResult PXAPI PXDirectXInitialize(PXDirectX* const pxDirectX, PXGraphicIn
         PXLogPrint
         (
             PXLoggingInfo,
-            "DirectX",
+            PXDirectXText,
             "Initialize",
             "Brute force newest version, testing each one."
         );
@@ -77,7 +79,7 @@ PXActionResult PXAPI PXDirectXInitialize(PXDirectX* const pxDirectX, PXGraphicIn
             PXLogPrint
             (
                 PXLoggingInfo,
-                "DirectX",
+                PXDirectXText,
                 "Initialize",
                 "Calling spesific API. Try <%i/%i>",
                 i+1,
@@ -91,7 +93,7 @@ PXActionResult PXAPI PXDirectXInitialize(PXDirectX* const pxDirectX, PXGraphicIn
                 PXLogPrint
                 (
                     PXLoggingInfo,
-                    "DirectX",
+                    PXDirectXText,
                     "Initialize",
                     "Creation try successful <%i/%i>",
                     i + 1,
@@ -106,7 +108,7 @@ PXActionResult PXAPI PXDirectXInitialize(PXDirectX* const pxDirectX, PXGraphicIn
             PXLogPrint
             (
                 PXLoggingWarning,
-                "DirectX",
+                PXDirectXText,
                 "Initialize",
                 "Failed try <%i/%i>",
                 i + 1,
@@ -123,7 +125,7 @@ PXActionResult PXAPI PXDirectXInitialize(PXDirectX* const pxDirectX, PXGraphicIn
         PXLogPrint
         (
             PXLoggingError,
-            "DirectX",
+            PXDirectXText,
             "Initialize",
             "Failed all attempts! DirectX API is not reachable. A supported device or drivers might be missing."
         );
@@ -149,7 +151,7 @@ PXActionResult PXAPI PXDirectXInitialize(PXDirectX* const pxDirectX, PXGraphicIn
         PXLogPrint
         (
             PXLoggingInfo,
-            "DirectX",
+            PXDirectXText,
             "Initialize",
             "Select DirectX 12"
         );
@@ -170,7 +172,7 @@ PXActionResult PXAPI PXDirectXInitialize(PXDirectX* const pxDirectX, PXGraphicIn
         PXLogPrint
         (
             PXLoggingInfo,
-            "DirectX",
+            PXDirectXText,
             "Initialize",
             "Select DirectX 11"
         );
@@ -245,7 +247,7 @@ PXActionResult PXAPI PXDirectXInitialize(PXDirectX* const pxDirectX, PXGraphicIn
 #endif
 }
 
-PXActionResult PXAPI PXDirectXRelease(PXDirectX* const pxDirectX)
+PXResult PXAPI  PXDirectXRelease(PXDirectX* const pxDirectX)
 {
     return PXActionInvalid;
 

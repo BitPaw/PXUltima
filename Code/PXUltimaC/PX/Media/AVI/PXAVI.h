@@ -1,22 +1,22 @@
-#ifndef PXAVIINCLUDE
-#define PXAVIINCLUDE
+#ifndef PXAVIIncluded
+#define PXAVIIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef struct PXAVIHeader_
 {
-    PXInt32U MicroSecPerFrame; // frame display rate (or 0)
-    PXInt32U MaxBytesPerSec; // max. transfer rate
-    PXInt32U PaddingGranularity; // pad to multiples of this
+    PXI32U MicroSecPerFrame; // frame display rate (or 0)
+    PXI32U MaxBytesPerSec; // max. transfer rate
+    PXI32U PaddingGranularity; // pad to multiples of this
     // size;
-    PXInt32U Flags; // the ever-present flags
-    PXInt32U TotalFrames; // # frames in file
-    PXInt32U InitialFrames;
-    PXInt32U Streams;
-    PXInt32U SuggestedBufferSize;
-    PXInt32U Width;
-    PXInt32U Height;
-    PXInt32U Reserved[4];
+    PXI32U Flags; // the ever-present flags
+    PXI32U TotalFrames; // # frames in file
+    PXI32U InitialFrames;
+    PXI32U Streams;
+    PXI32U SuggestedBufferSize;
+    PXI32U Width;
+    PXI32U Height;
+    PXI32U Reserved[4];
 }
 PXAVIHeader;
 
@@ -26,7 +26,7 @@ typedef struct PXAVI_
 }
 PXAVI;
 
-PXPublic PXActionResult PXAPI PXAVILoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXAVISaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXAVILoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXAVISaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

@@ -1,7 +1,7 @@
-#ifndef PXPHPINCLUDE
-#define PXPHPINCLUDE
+#ifndef PXPHPIncluded
+#define PXPHPIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef struct PXPHP_
 {
@@ -9,7 +9,7 @@ typedef struct PXPHP_
 }
 PXPHP;
 
-PXPublic PXActionResult PXAPI PXPHPLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXPHPSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXPHPLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXPHPSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

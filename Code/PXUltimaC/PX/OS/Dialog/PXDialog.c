@@ -31,7 +31,7 @@ typedef BOOL(APIENTRY* PXPrintDlgW)(LPPRINTDLGW pPD);
 #endif
 
 
-PXActionResult PXAPI PXDialogSystemInitialize(PXDialogSystem* const pxDialogSystem)
+PXResult PXAPI  PXDialogSystemInitialize(PXDialogSystem* const pxDialogSystem)
 {
 #if OSUnix
 #elif OSWindows
@@ -74,7 +74,7 @@ PXActionResult PXAPI PXDialogSystemInitialize(PXDialogSystem* const pxDialogSyst
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDialogSystemRelease(PXDialogSystem* const pxDialogSystem)
+PXResult PXAPI  PXDialogSystemRelease(PXDialogSystem* const pxDialogSystem)
 {
     PXLibraryClose(&pxDialogSystem->CommonDialogLibrary);
 
@@ -83,7 +83,7 @@ PXActionResult PXAPI PXDialogSystemRelease(PXDialogSystem* const pxDialogSystem)
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDialogFileOpen(PXDialogSystem* const pxDialogSystem, PXText* const filePath)
+PXResult PXAPI  PXDialogFileOpen(PXDialogSystem* const pxDialogSystem, PXText* const filePath)
 {
 #if OSUnix
 
@@ -144,7 +144,7 @@ PXActionResult PXAPI PXDialogFileOpen(PXDialogSystem* const pxDialogSystem, PXTe
         openFileName.lStructSize = sizeof(OPENFILENAMEA);
         openFileName.hwndOwner = owner;
         openFileName.lpstrFilter = filter;
-        openFileName.lpstrFile = filePath->TextA;
+        openFileName.lpstrFile = filePath->A;
         openFileName.nMaxFile = filePath->SizeAllocated;
         openFileName.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
         openFileName.lpstrDefExt = "";
@@ -173,7 +173,7 @@ PXActionResult PXAPI PXDialogFileOpen(PXDialogSystem* const pxDialogSystem, PXTe
         openFileName.lStructSize = sizeof(OPENFILENAMEW);
         openFileName.hwndOwner = owner;
         openFileName.lpstrFilter = filter;
-        openFileName.lpstrFile = filePath->TextW;
+        openFileName.lpstrFile = filePath->W;
         openFileName.nMaxFile = filePath->SizeAllocated;
         openFileName.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
         openFileName.lpstrDefExt = L"";
@@ -199,7 +199,7 @@ PXActionResult PXAPI PXDialogFileOpen(PXDialogSystem* const pxDialogSystem, PXTe
 #endif
 }
 
-PXActionResult PXAPI PXDialogFileSave(PXDialogSystem* const pxDialogSystem, PXText* const filePath)
+PXResult PXAPI  PXDialogFileSave(PXDialogSystem* const pxDialogSystem, PXText* const filePath)
 {
 #if OSUnix
     return 0;
@@ -219,7 +219,7 @@ PXActionResult PXAPI PXDialogFileSave(PXDialogSystem* const pxDialogSystem, PXTe
         openFileName.lStructSize = sizeof(OPENFILENAMEA);
         openFileName.hwndOwner = owner;
         openFileName.lpstrFilter = filter;
-        openFileName.lpstrFile = filePath->TextA;
+        openFileName.lpstrFile = filePath->A;
         openFileName.nMaxFile = MAX_PATH;
         openFileName.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
         openFileName.lpstrDefExt = "";
@@ -246,7 +246,7 @@ PXActionResult PXAPI PXDialogFileSave(PXDialogSystem* const pxDialogSystem, PXTe
         openFileName.lStructSize = sizeof(OPENFILENAMEW);
         openFileName.hwndOwner = owner;
         openFileName.lpstrFilter = filter;
-        openFileName.lpstrFile = filePath->TextW;
+        openFileName.lpstrFile = filePath->W;
         openFileName.nMaxFile = MAX_PATH;
         openFileName.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
         openFileName.lpstrDefExt = L"";

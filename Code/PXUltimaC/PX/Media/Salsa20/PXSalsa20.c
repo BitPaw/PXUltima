@@ -4,12 +4,12 @@
 #include <PX/OS/File/PXFile.h>
 #include <PX/OS/Console/PXConsole.h>
 
-PXActionResult PXAPI PXSalsa20Encrypt(PXSalsa20* const pxSalsa20, PXFile* const input, PXFile* const output)
+PXResult PXAPI  PXSalsa20Encrypt(PXSalsa20* const pxSalsa20, PXFile* const input, PXFile* const output)
 {
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXSalsa20Decrypt(PXSalsa20* const pxSalsa20, PXFile* const input, PXFile* const output)
+PXResult PXAPI  PXSalsa20Decrypt(PXSalsa20* const pxSalsa20, PXFile* const input, PXFile* const output)
 {
 #if PXLogEnable
     PXLogPrint

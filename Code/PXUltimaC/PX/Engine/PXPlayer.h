@@ -1,5 +1,5 @@
-#ifndef PXPlayerInclude
-#define PXPlayerInclude
+#ifndef PXPlayerIncluded
+#define PXPlayerIncluded
 
 //#include "Media/PXResource.h"
 

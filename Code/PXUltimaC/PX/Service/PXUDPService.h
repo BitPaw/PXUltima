@@ -1,5 +1,5 @@
-#ifndef PXUDPInclude
-#define PXUDPInclude
+#ifndef PXUDPIncluded
+#define PXUDPIncluded
 
 
 #endif

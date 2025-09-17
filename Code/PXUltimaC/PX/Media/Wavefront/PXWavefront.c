@@ -46,15 +46,15 @@ PXWavefrontLineType PXAPI PXWavefrontPeekLine(const void* line, const PXSize siz
         }
         case 2:
         {
-            const PXInt16U lineTagID = PXInt16Make(text[0], text[1]);
+            const PXI16U lineTagID = PXI16Make(text[0], text[1]);
 
             switch(lineTagID)
             {
-                case PXInt16Make('v', 't'):
+                case PXI16Make('v', 't'):
                     return PXWavefrontLineVertexTexture;
-                case PXInt16Make('v', 'n'):
+                case PXI16Make('v', 'n'):
                     return PXWavefrontLineVertexNormal;
-                case PXInt16Make('v', 'p'):
+                case PXI16Make('v', 'p'):
                     return PXWavefrontLineVertexParameter;
             }
 
@@ -63,20 +63,20 @@ PXWavefrontLineType PXAPI PXWavefrontPeekLine(const void* line, const PXSize siz
 
         case 6:
         {
-            const unsigned long long lineTagID = PXInt32Make(text[0], text[1], text[2], text[3]);
+            const unsigned long long lineTagID = PXI32Make(text[0], text[1], text[2], text[3]);
 
             switch(lineTagID)
             {
-                case PXInt32Make('m', 't', 'l', 'l'):
-                case PXInt32Make('u', 's', 'e', 'm'):
+                case PXI32Make('m', 't', 'l', 'l'):
+                case PXI32Make('u', 's', 'e', 'm'):
                 {
-                    const unsigned short lineTagID = PXInt16Make(text[4], text[5]);
+                    const unsigned short lineTagID = PXI16Make(text[4], text[5]);
 
                     switch(lineTagID)
                     {
-                        case PXInt16Make('i', 'b'):
-                            return PXWavefrontLineMaterialLibraryInclude;
-                        case PXInt16Make('t', 'l'):
+                        case PXI16Make('i', 'b'):
+                            return PXWavefrontLineMaterialLibraryIncluded;
+                        case PXI16Make('t', 'l'):
                             return PXWavefrontLineMaterialLibraryUse;
                     }
 
@@ -91,7 +91,7 @@ PXWavefrontLineType PXAPI PXWavefrontPeekLine(const void* line, const PXSize siz
     return PXWavefrontLineInvalid;
 }
 
-void PXAPI PXWavefrontFaceLineParse(PXCompiler* const pxCompiler, PXInt32U* const vertexData)
+void PXAPI PXWavefrontFaceLineParse(PXCompiler* const pxCompiler, PXI32U* const vertexData)
 {
     const PXBool isExpectedInteger = PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerNumeric);
 
@@ -222,7 +222,7 @@ void PXAPI PXWavefrontFaceLineParse(PXCompiler* const pxCompiler, PXInt32U* cons
     }
 }
 
-PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI  PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     PXModel* const pxModel = (PXModel*)pxResourceLoadInfo->ResourceTarget;
     PXMesh* const mesh = &pxModel->Mesh;
@@ -231,28 +231,28 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
 
     struct PXWaveFrontCounter
     {
-        PXInt32U MaterialInlcude;
-        PXInt32U MaterialUse;
+        PXI32U MaterialInlcude;
+        PXI32U MaterialUse;
 
         // Vertex Data
-        PXInt32U Position;
-        PXInt32U Texture;
-        PXInt32U Normal;
-        PXInt32U Face;
+        PXI32U Position;
+        PXI32U Texture;
+        PXI32U Normal;
+        PXI32U Face;
 
         PXSize EntrysPosition;
         PXSize EntrysTexture;
         PXSize EntrysNormal;
         PXSize EntrysTotal;
 
-        PXInt32U FaceLast;
-        PXInt32U FaceTotal;
+        PXI32U FaceLast;
+        PXI32U FaceTotal;
 
         // Index data
-        PXInt32U VertexMaxID;
+        PXI32U VertexMaxID;
 
-        PXInt32U ExpetcedInterleavedSizeInByte;
-        PXInt32U ExpetcedNonInterleavedSizeInByte;
+        PXI32U ExpetcedInterleavedSizeInByte;
+        PXI32U ExpetcedNonInterleavedSizeInByte;
 
         void* DataVertex;
         void* DataNormal;
@@ -263,7 +263,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
         void* IndexTexture;
 
         PXBool CanUseF16;
-        PXInt8U SizeOfVertexData;
+        PXI8U SizeOfVertexData;
     }
     counter;
 
@@ -331,7 +331,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
 
                 break;
             }
-            case PXWavefrontLineMaterialLibraryInclude:
+            case PXWavefrontLineMaterialLibraryIncluded:
             case PXWavefrontLineMaterialLibraryUse:
             case PXWavefrontLineObjectName:
             case PXWavefrontLineObjectGroup:
@@ -351,7 +351,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
 
                 switch(objPeekLine)
                 {
-                    case PXWavefrontLineMaterialLibraryInclude:
+                    case PXWavefrontLineMaterialLibraryIncluded:
                     {
                         ++counter.MaterialInlcude;
                         break;
@@ -415,7 +415,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
 
                 do
                 {
-                    PXInt32U vertexData[3] = { 0, 0, 0 };
+                    PXI32U vertexData[3] = { 0, 0, 0 };
 
                     PXWavefrontFaceLineParse(&pxCompiler, vertexData); // Get the data
 
@@ -461,7 +461,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
    // counter.CanUseF16 = PXTrue;
 
 
-    const PXInt32U type = PXTypeIntFitting(counter.VertexMaxID);
+    const PXI32U type = PXTypeIntFitting(counter.VertexMaxID);
 
     if(counter.CanUseF16)
     {
@@ -499,7 +499,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
         "%20s : x %i (%i max)\n"
         "%20s : B %i\n"
         "%20s : B %i",
-        "Material-Include", counter.MaterialInlcude,
+        "Material-Included", counter.MaterialInlcude,
         "Material-Use", counter.MaterialUse,
         "Position", counter.Position,
         "Texture", counter.Texture,
@@ -599,7 +599,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
     );
 #endif
 
-    PXInt8U typeSize = PXTypeSizeGet(mesh->IndexBuffer.DataType);
+    PXI8U typeSize = PXTypeSizeGet(mesh->IndexBuffer.DataType);
 
     for(;;)
     {
@@ -625,7 +625,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
 
                 break;
             }
-            case PXWavefrontLineMaterialLibraryInclude:
+            case PXWavefrontLineMaterialLibraryIncluded:
             case PXWavefrontLineMaterialLibraryUse:
             case PXWavefrontLineObjectName:
             case PXWavefrontLineObjectGroup:
@@ -643,7 +643,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
 
                 switch(objPeekLine)
                 {
-                    case PXWavefrontLineMaterialLibraryInclude:
+                    case PXWavefrontLineMaterialLibraryIncluded:
                     {
                         PXMaterialContainer* const pxMaterialContaier = &mesh->MaterialContaierList[counter.MaterialInlcude++];
                         PXFile materialFile;
@@ -773,7 +773,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
 
                 do
                 {
-                    PXInt32U vertexData[3] = { 0, 0, 0 };
+                    PXI32U vertexData[3] = { 0, 0, 0 };
 
                     PXWavefrontFaceLineParse(&pxCompiler, vertexData); // Get the data
 
@@ -781,31 +781,31 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
                     {
                         case PXTypeSize08:
                         {
-                            ((PXInt8U*)fp)[counter.Face] = vertexData[0];
-                            ((PXInt8U*)ft)[counter.Face] = vertexData[1];
-                            ((PXInt8U*)fn)[counter.Face] = vertexData[2];
+                            ((PXI8U*)fp)[counter.Face] = vertexData[0];
+                            ((PXI8U*)ft)[counter.Face] = vertexData[1];
+                            ((PXI8U*)fn)[counter.Face] = vertexData[2];
 
                             break;
                         }
                         case PXTypeSize16:
                         {
-                            ((PXInt16U*)fp)[counter.Face] = vertexData[0];
-                            ((PXInt16U*)ft)[counter.Face] = vertexData[1];
-                            ((PXInt16U*)fn)[counter.Face] = vertexData[2];
+                            ((PXI16U*)fp)[counter.Face] = vertexData[0];
+                            ((PXI16U*)ft)[counter.Face] = vertexData[1];
+                            ((PXI16U*)fn)[counter.Face] = vertexData[2];
                             break;
                         }
                         case PXTypeSize32:
                         {
-                            ((PXInt32U*)fp)[counter.Face] = vertexData[0];
-                            ((PXInt32U*)ft)[counter.Face] = vertexData[1];
-                            ((PXInt32U*)fn)[counter.Face] = vertexData[2];
+                            ((PXI32U*)fp)[counter.Face] = vertexData[0];
+                            ((PXI32U*)ft)[counter.Face] = vertexData[1];
+                            ((PXI32U*)fn)[counter.Face] = vertexData[2];
                             break;
                         }
                         case PXTypeSize64:
                         {
-                            ((PXInt64U*)fp)[counter.Face] = vertexData[0];
-                            ((PXInt64U*)ft)[counter.Face] = vertexData[1];
-                            ((PXInt64U*)fn)[counter.Face] = vertexData[2];
+                            ((PXI64U*)fp)[counter.Face] = vertexData[0];
+                            ((PXI64U*)ft)[counter.Face] = vertexData[1];
+                            ((PXI64U*)fn)[counter.Face] = vertexData[2];
                             break;
                         }
                     }
@@ -887,7 +887,7 @@ PXActionResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxR
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXWavefrontSaveFromFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI  PXWavefrontSaveFromFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

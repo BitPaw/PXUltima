@@ -1,12 +1,12 @@
-#ifndef PXDirectSoundInclude
-#define PXDirectSoundInclude
+#ifndef PXDirectSoundIncluded
+#define PXDirectSoundIncluded
 
 #include <PX/OS/Audio/PXAudio.h>
 
 typedef struct PXAudioDeviceDetectObjectEventData_
 {
-    PXInt32U IndexCurrent;
-    PXInt32U IndexTarget;
+    PXI32U IndexCurrent;
+    PXI32U IndexTarget;
     PXAudioDevice* AudioDevice;
 }
 PXAudioDeviceDetectObjectEventData;
@@ -15,7 +15,7 @@ PXAudioDeviceDetectObjectEventData;
 #elif OSWindows
 
 
-PXPrivate BOOL CALLBACK PXAudioDeviceDetectAmountCallBack(LPGUID guid, LPCSTR cstrDescription, LPCSTR cstrModule, PXInt32U* const amount);
+PXPrivate BOOL CALLBACK PXAudioDeviceDetectAmountCallBack(LPGUID guid, LPCSTR cstrDescription, LPCSTR cstrModule, PXI32U* const amount);
 PXPrivate BOOL CALLBACK PXAudioDeviceDetectObjectCallBack(LPGUID guid, LPCSTR cstrDescription, LPCSTR cstrModule, PXAudioDeviceDetectObjectEventData* const pxAudioDeviceDetectObjectEventData);
 
 
@@ -33,15 +33,15 @@ typedef HRESULT(WINAPI* PXDllCanUnloadNow)(void);
 #endif
 
 //--------------------------------------------------------
-PXPublic PXActionResult PXAPI PXDirectSoundInitialize(PXAudioDirectSound** const pxAudioDirectSound, PXAudioInitializeInfo* const pxAudioInitializeInfo);
+PXPublic PXResult PXAPI PXDirectSoundInitialize(PXAudioDirectSound** const pxAudioDirectSound, PXAudioInitializeInfo* const pxAudioInitializeInfo);
 
-PXPublic PXActionResult PXAPI PXDirectSoundDeviceAmount(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDeviceAmountInfo* const pxAudioDeviceAmountInfo);
-PXPublic PXActionResult PXAPI PXDirectSoundDeviceFetch(PXAudioDirectSound* const pxAudioDirectSound, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID, PXAudioDevice* const pxAudioDevice);
-PXPublic PXActionResult PXAPI PXDirectSoundDeviceFetchAll(PXAudioDirectSound* const pxAudioDirectSound, const PXAudioDeviceType pxAudioDeviceType, PXAudioDevice* const pxAudioDevice, const PXSize amount);
+PXPublic PXResult PXAPI PXDirectSoundDeviceAmount(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDeviceAmountInfo* const pxAudioDeviceAmountInfo);
+PXPublic PXResult PXAPI PXDirectSoundDeviceFetch(PXAudioDirectSound* const pxAudioDirectSound, const PXAudioDeviceType pxAudioDeviceType, const PXI32U deviceID, PXAudioDevice* const pxAudioDevice);
+PXPublic PXResult PXAPI PXDirectSoundDeviceFetchAll(PXAudioDirectSound* const pxAudioDirectSound, const PXAudioDeviceType pxAudioDeviceType, PXAudioDevice* const pxAudioDevice, const PXSize amount);
 
-PXPublic PXActionResult PXAPI PXDirectSoundDeviceOpen(PXAudioDevice* const pxAudioDevice, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID);
-PXPublic PXActionResult PXAPI PXDirectSoundDeviceClose(PXAudioDevice* const pxAudioDevice);
-PXPublic PXActionResult PXAPI PXDirectSoundDeviceBufferCreate
+PXPublic PXResult PXAPI PXDirectSoundDeviceOpen(PXAudioDevice* const pxAudioDevice, const PXAudioDeviceType pxAudioDeviceType, const PXI32U deviceID);
+PXPublic PXResult PXAPI PXDirectSoundDeviceClose(PXAudioDevice* const pxAudioDevice);
+PXPublic PXResult PXAPI PXDirectSoundDeviceBufferCreate
 (
     PXAudioDevice* const pxAudioDevice,
     PXSound* const pxSound
@@ -53,11 +53,11 @@ PXPublic PXActionResult PXAPI PXDirectSoundDeviceBufferCreate
 
 
 // Retrieves or writes a property value on a sound device
-PXPublic PXActionResult PXAPI PXDirectSoundDeviceProperty(PXAudioDevice* const pxAudioDevice, PXSoundDeviceProperty* const pxSoundDeviceProperty);
+PXPublic PXResult PXAPI PXDirectSoundDeviceProperty(PXAudioDevice* const pxAudioDevice, PXSoundDeviceProperty* const pxSoundDeviceProperty);
 
 
-PXPublic PXActionResult PXAPI PXDirectSoundEffectEnable(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice);
-PXPublic PXActionResult PXAPI PXDirectSoundEffectUpdate(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, PXAudioEffect* const pxAudioEffect);
+PXPublic PXResult PXAPI PXDirectSoundEffectEnable(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice);
+PXPublic PXResult PXAPI PXDirectSoundEffectUpdate(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, PXAudioEffect* const pxAudioEffect);
 
 
 #endif

@@ -1,5 +1,5 @@
-#ifndef PXAwaitInclude
-#define PXAwaitInclude
+#ifndef PXAwaitIncluded
+#define PXAwaitIncluded
 
 #include <PX/Media/PXType.h>
 

@@ -1,9 +1,9 @@
-#ifndef PXDirectX10INCLUDE
-#define PXDirectX10INCLUDE
+#ifndef PXDirectX10Included
+#define PXDirectX10Included
 
 #include <PX/OS/Graphic/DirectX/PXDirectX.h>
 
-PXPublic PXActionResult PXAPI PXDirectX10Initialize(PXDirectX10* const pxDirectX);
-PXPublic PXActionResult PXAPI PXDirectX10Release(PXDirectX10* const pxDirectX);
+PXPublic PXResult PXAPI PXDirectX10Initialize(PXDirectX10* const pxDirectX);
+PXPublic PXResult PXAPI PXDirectX10Release(PXDirectX10* const pxDirectX);
 
 #endif

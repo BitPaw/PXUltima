@@ -1,8 +1,8 @@
-#ifndef PXCollatzConjectureInclude
-#define PXCollatzConjectureInclude
+#ifndef PXCollatzConjectureIncluded
+#define PXCollatzConjectureIncluded
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 
-PXPublic PXSize PXCollatzConjectureGenerate16(PXInt16U* const list, const PXSize amount, const PXInt16U start);
+PXPublic PXSize PXAPI PXCollatzConjectureGenerate16(PXI16U* const list, const PXSize amount, const PXI16U start);
 
 #endif

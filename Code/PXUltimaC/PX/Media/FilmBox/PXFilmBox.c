@@ -10,19 +10,19 @@ const char PXFBXSignature[] = "Kaydara FBX Binary  \x00\x1A"; // Hidden \0
 
 
 
-const PXInt32U PXFilmBoxNodeRecordArrayBinding[] =
+const PXI32U PXFilmBoxNodeRecordArrayBinding[] =
 {
     PXTypeInt32ULE,
     PXTypeInt32ULE,
     PXTypeInt32ULE,
 };
-const PXInt8U PXFilmBoxNodeRecordArrayBindingSize = sizeof(PXFilmBoxNodeRecordArrayBinding) / sizeof(PXInt32U);
+const PXI8U PXFilmBoxNodeRecordArrayBindingSize = sizeof(PXFilmBoxNodeRecordArrayBinding) / sizeof(PXI32U);
 
 typedef struct PXFilmBoxNodeRecordArray_
 {
-    PXInt32U ArrayLength;
-    PXInt32U Encoding;
-    PXInt32U CompressedLength;
+    PXI32U ArrayLength;
+    PXI32U Encoding;
+    PXI32U CompressedLength;
 
     void* Data;
 }
@@ -31,7 +31,7 @@ PXFilmBoxNodeRecordArray;
 
 typedef struct PXFilmBoxNodeRecordData_
 {
-    PXInt32U Length;
+    PXI32U Length;
     char* Data;
 }
 PXFilmBoxNodeRecordData;
@@ -45,8 +45,8 @@ typedef struct PXFilmBoxProperty_
         PXFilmBoxNodeRecordData Data;
     };
 
-    PXInt8U Typecode;
-    PXInt32U PXType;
+    PXI8U Typecode;
+    PXI32U PXType;
 
 
 }
@@ -54,28 +54,28 @@ PXFilmBoxProperty;
 
 
 
-const PXInt32U PXFilmBoxNodeRecordList[] =
+const PXI32U PXFilmBoxNodeRecordList[] =
 {
     PXTypeInt32ULE,
     PXTypeInt32ULE,
     PXTypeInt32ULE,
     PXTypeInt08U
 };
-const PXInt8U PXFilmBoxNodeRecordListSize = sizeof(PXFilmBoxNodeRecordList) / sizeof(PXInt32U);
+const PXI8U PXFilmBoxNodeRecordListSize = sizeof(PXFilmBoxNodeRecordList) / sizeof(PXI32U);
 
 typedef struct PXFilmBoxNodeRecord_
 {
-    PXInt32U EndOffset;
-    PXInt32U NumProperties;
-    PXInt32U PropertyListLen;
-    PXInt8U NameLen;
+    PXI32U EndOffset;
+    PXI32U NumProperties;
+    PXI32U PropertyListLen;
+    PXI8U NameLen;
     char* Name;
 }
 PXFilmBoxNodeRecord;
 
 
 
-PXInt32U PXAPI PXFilmBoxTypeTranslate(const PXInt8U type)
+PXI32U PXAPI PXFilmBoxTypeTranslate(const PXI8U type)
 {
     switch(type)
     {
@@ -217,8 +217,8 @@ void PXAPI PXFilmBoxReadProperty(PXFile* const pxFile, PXFilmBoxProperty* const 
             "Property-Value (%c): (%i B) %20s : %s",
             pxFilmBoxProperty->Typecode,
             dataTypeSize,
-            dataType.TextA,
-            dataContent.TextA
+            dataType.A,
+            dataContent.A
         );
 #endif
 
@@ -316,7 +316,7 @@ void PXAPI PXFilmBoxReadNode(PXFile* const pxFile, PXFilmBoxNodeRecord* const px
 
 
 
-PXActionResult PXAPI PXFilmBoxLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI  PXFilmBoxLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     PXFile* const pxFile = pxResourceLoadInfo->FileReference;
     PXFilmBox pxFilmBox;
@@ -343,7 +343,7 @@ PXActionResult PXAPI PXFilmBoxLoadFromFile(PXResourceTransphereInfo* const pxRes
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXFilmBoxSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI  PXFilmBoxSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

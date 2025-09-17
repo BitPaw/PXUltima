@@ -1,9 +1,9 @@
-#ifndef PXLDAPInclude
-#define PXLDAPInclude
+#ifndef PXLDAPIncluded
+#define PXLDAPIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
-PXPublic PXActionResult PXAPI PXLDAPLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXLDAPSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXLDAPLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXLDAPSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

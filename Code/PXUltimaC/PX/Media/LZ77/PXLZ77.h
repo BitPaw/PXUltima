@@ -1,7 +1,7 @@
-#ifndef PXLZ77INCLUDE
-#define PXLZ77INCLUDE
+#ifndef PXLZ77Included
+#define PXLZ77Included
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 // write the lz77-encoded data, which has lit, len and dist codes, to compressed stream using huffman trees.
 // tree_ll: the tree for lit and len codes.
@@ -17,7 +17,7 @@ PXLZ77ESetting;
 
 /*
 
-PXPublic PXActionResult PXLZ77Encode
+PXPublic PXResult PXLZ77Encode
 (
     //PXFile* const pxOutputStream,
     PXFile* const pxCacheStream,
@@ -29,6 +29,6 @@ PXPublic PXActionResult PXLZ77Encode
     const HuffmanTree* tree_d,
     const PXLZ77ESetting* const pxLZ77ESetting
 );
-PXPublic PXActionResult PXLZ77Decode();    */
+PXPublic PXResult PXLZ77Decode();    */
 
 #endif

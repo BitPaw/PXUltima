@@ -1,5 +1,5 @@
-#ifndef PXProcessINCLUDE
-#define PXProcessINCLUDE
+#ifndef PXProcessIncluded
+#define PXProcessIncluded
 
 #include <PX/Media/PXType.h>
 #include <PX/Media/PXText.h>
@@ -37,11 +37,11 @@ typedef struct PXProcess_
     // Main Thread
     PXProcessThreadHandle ThreadHandle;
     PXProcessThreadID ThreadID;
-    PXInt32U ThreadsAtStart;
-    PXInt32U ThreadBasePriority;
+    PXI32U ThreadsAtStart;
+    PXI32U ThreadBasePriority;
 
     // Parent Process
-    PXInt32U ProcessIDParent;
+    PXI32U ProcessIDParent;
 
     PXText ExecutableFilePath;
 }
@@ -106,24 +106,24 @@ PXPublic void PXAPI PXProcessConstructFromHandle(PXProcess* const pxProcess, HAN
 PXPublic void PXAPI PXProcessCurrent(PXProcess* const pxProcess);
 PXPublic void PXAPI PXProcessParent(PXProcess* const pxProcess);
 
-PXPublic void PXAPI PXProcessExitCurrent(const PXInt32U exitCode);
+PXPublic void PXAPI PXProcessExitCurrent(const PXI32U exitCode);
 
 // Get all open handles from given process.
 // pxProcess can be NULL, current process is used.
-PXPublic PXActionResult PXAPI PXProcessHandleCountGet(PXProcess* pxProcess, PXSize* const handlesAmount);
+PXPublic PXResult PXAPI PXProcessHandleCountGet(PXProcess* pxProcess, PXSize* const handlesAmount);
 
-PXPublic PXActionResult PXAPI PXProcessHandleListAll(PXDebug* const pxDebug, PXProcess* pxProcess);
+PXPublic PXResult PXAPI PXProcessHandleListAll(PXDebug* const pxDebug, PXProcess* pxProcess);
 
 
-PXPublic PXActionResult PXAPI PXProcessCreate(PXProcess* const pxProcess, const PXText* const programmPath, const PXProcessCreationMode mode);
+PXPublic PXResult PXAPI PXProcessCreate(PXProcess* const pxProcess, const PXText* const programmPath, const PXProcessCreationMode mode);
 
-PXPublic PXActionResult PXAPI PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEvent);
+PXPublic PXResult PXAPI PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEvent);
 
-PXPublic PXActionResult PXAPI PXProcessThreadsListAll(PXProcess* const pxProcess, PXThread** pxThreadListRef, const PXSize amount, PXSize* resultSIze);
+PXPublic PXResult PXAPI PXProcessThreadsListAll(PXProcess* const pxProcess, PXThread** pxThreadListRef, const PXSize amount, PXSize* resultSIze);
 
-PXPublic PXActionResult PXAPI PXProcessOpenViaID(PXProcess* const pxProcess, const PXProcessID pxProcessID);
-PXPublic PXActionResult PXAPI PXProcessClose(PXProcess* const pxProcess);
+PXPublic PXResult PXAPI PXProcessOpenViaID(PXProcess* const pxProcess, const PXProcessID pxProcessID);
+PXPublic PXResult PXAPI PXProcessClose(PXProcess* const pxProcess);
 
-PXPublic PXActionResult PXAPI PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemoryInfo);
+PXPublic PXResult PXAPI PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemoryInfo);
 
 #endif

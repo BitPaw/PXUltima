@@ -42,7 +42,7 @@ PXSize PXAPI PXWorkSetCounterPull(PXWorkSetCounter* const pxWorkSetCounter, cons
     return pxWorkSetCounter->AmountBatchRest;
 }
 
-void PXAPI PXTypeToString(const PXInt32U dataType, char* buffer)
+void PXAPI PXTypeToString(const PXI32U dataType, char* buffer)
 {
 //    PXText pxText;
     //PXTextConstructBufferA(&pxText, 256);
@@ -62,7 +62,7 @@ void PXAPI PXTypeToString(const PXInt32U dataType, char* buffer)
 #endif
 }
 
-PXInt32U PXAPI PXTypeIntFitting(const PXSize expectedSize)
+PXI32U PXAPI PXTypeIntFitting(const PXSize expectedSize)
 {
     {
         const PXBool fitIn08Bit = expectedSize <= (PXSize)PXTypeInt08ULimit;
@@ -94,14 +94,14 @@ PXInt32U PXAPI PXTypeIntFitting(const PXSize expectedSize)
     return PXTypeInt64U;
 }
 
-void PXAPI PXEndianSwapI32U(PXInt32U* const value)
+void PXAPI PXEndianSwapI32U(PXI32U* const value)
 {
 
 
 
 #if PX_X86_BSWAP_ALLOW
 
-    PXInt32U wurst = *value;
+    PXI32U wurst = *value;
 
     __asm
     {
@@ -122,7 +122,7 @@ void PXAPI PXEndianSwapI32U(PXInt32U* const value)
 #endif // 0
 }
 
-void PXAPI PXEndianSwapI16U(PXInt16U* const value)
+void PXAPI PXEndianSwapI16U(PXI16U* const value)
 {
 
 #if PX_X86_BSWAP_ALLOW

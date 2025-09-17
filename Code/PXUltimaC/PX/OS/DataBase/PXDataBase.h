@@ -1,7 +1,7 @@
 #ifndef PXDataBaseINLCUDE
 #define PXDataBaseINLCUDE
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 #include <PX/OS/Library/PXLibrary.h>
 
 typedef enum PXSQLType_
@@ -199,12 +199,12 @@ typedef struct PXDataBase_
 }
 PXDataBase;
 
-PXPrivate PXSQLType PXAPI PXSQLTypeFromID(const PXInt32U sqlTypeID);
+PXPrivate PXSQLType PXAPI PXSQLTypeFromID(const PXI32U sqlTypeID);
 
-PXPublic PXActionResult PXAPI PXDataBaseInitialize(PXDataBase* const pxDataBase);
-PXPublic PXActionResult PXAPI PXDataBaseRelease(PXDataBase* const pxDataBase);
+PXPublic PXResult PXAPI PXDataBaseInitialize(PXDataBase* const pxDataBase);
+PXPublic PXResult PXAPI PXDataBaseRelease(PXDataBase* const pxDataBase);
 
-PXPublic PXActionResult PXAPI PXDataBaseConnectA
+PXPublic PXResult PXAPI PXDataBaseConnectA
 (
     PXDataBase* const pxDataBase,
     const char* const source,
@@ -212,7 +212,7 @@ PXPublic PXActionResult PXAPI PXDataBaseConnectA
     const char* const user,
     const char* const password
 );
-PXPublic PXActionResult PXAPI PXDataBaseConnect
+PXPublic PXResult PXAPI PXDataBaseConnect
 (
     PXDataBase* const pxDataBase,
     const PXText* const source,
@@ -223,7 +223,7 @@ PXPublic PXActionResult PXAPI PXDataBaseConnect
 PXPublic void PXAPI PXDataBaseDisconnect(PXDataBase* const pxDataBase);
 PXPublic void PXAPI PXDataBaseCleanup(PXDataBase* const pxDataBase);
 PXPublic void PXAPI PXDataBaseScanForDrivers(PXDataBase* const pxDataBase);
-PXPublic PXActionResult PXAPI PXDataBaseCommandExecute(PXDataBase* const pxDataBase, const PXText* const PXSQLStatement);
-PXPublic PXActionResult PXAPI PXDataBaseCommandCancel(PXDataBase* const pxDataBase);
+PXPublic PXResult PXAPI PXDataBaseCommandExecute(PXDataBase* const pxDataBase, const PXText* const PXSQLStatement);
+PXPublic PXResult PXAPI PXDataBaseCommandCancel(PXDataBase* const pxDataBase);
 
 #endif

@@ -3,34 +3,15 @@
 
 //#include <PX/Media/PXType.h>
 #include <stdarg.h>
-#include <PX/Media/PXResource.h>
 
-//---<Makros>------------------------------------------------------------------
-
-#define PXTextIsLetterCaseLower(character) ((character & 0b00100000) >> 5)
-#define PXTextIsLetterCaseUpper(character) !PXTextIsLetterCaseLower(character)
-
-
-#define MakeLetterCaseLower(character) (character | 0b00100000)
-#define MakeLetterCaseUpper(c) (('a' <= c && c <= 'z') ? c & 0b11011111 : c)
-#define CompareLetterCaseIgnore(a, b) (MakeLetterCaseLower(a) == b) || (MakeLetterCaseUpper(a) == b)
-#define UnicodeToASCII(wc) (wc <= 0xFF ? (char)wc : '?')
-#define IsEndOfString(c) (c == '\0')
-#define IsTab(c) (c == '\t')
-#define IsEmptySpace(c) (c == ' ')
-#define IsEndOfLineCharacter(c) (c == '\r' || c == '\n')
-#define IsEmptyChar(c) (IsTab(c) || IsEndOfLineCharacter(c) || IsEmptySpace(c) || IsEndOfString(c))
-
-#define PXTextPXF32IsAllowedCharacter(c)  ('0' <= c && c <= '9' || c == '-' || c == '+' || c == '.'|| c == 'e') // e=exponent
-
-#define IsPrintable(c) (0x20 <= c && c <= 0x7E)
-#define PXCharMakePrintable(c) ((0x20 <= c && c <= 0x7E) ? c : '.')
-//-----------------------------------------------------------------------------
+#include <PX/Media/PXType.h>
+#include <PX/OS/Error/PXActionResult.h>
 
 #define PXTextUnkownLength -1
 #define PXTextIndexNotFound -1
 
 
+typedef struct PXTime_ PXTime;
 
 
 typedef struct ParsingTokenA_
@@ -50,6 +31,11 @@ typedef enum PXTextFormat_
 }
 PXTextFormat;
 
+
+typedef char PXASCII; // ASCII is always 1-Byte per character
+typedef wchar_t PXUNICODE; // UNICODE is always 2-Byte per character
+typedef char PXUTF8; // Varraiable size 1-4 Bytes per character
+
 typedef struct PXText_
 {
     PXSize SizeAllocated; // [8 Byte, Offset 0] Size that the buffer ponited to has
@@ -58,8 +44,9 @@ typedef struct PXText_
 
     union
     {
-        char* TextA; // [8 Byte, Offset 24]
-        wchar_t* TextW; // [8 Byte, Offset 24]
+        PXASCII* A; // [8 Byte, Offset 24]
+        PXUNICODE* W; // [8 Byte, Offset 24]
+        PXUTF8* U;
     };
 
     PXTextFormat Format; // [4 Byte, Offset 32]
@@ -77,8 +64,8 @@ PXText;
         (pxText)->SizeUsed = 0;\
         (pxText)->NumberOfCharacters = 0;\
         (pxText)->Format = format;\
-        (pxText)->TextA = bufferCacheName;\
-        PXMemorySet((pxText)->TextA, '\0', (pxText)->SizeAllocated);
+        (pxText)->A = bufferCacheName;\
+        PXMemorySet((pxText)->A, '\0', (pxText)->SizeAllocated);
 
 
 #define PXTextConstructNamedBufferA(pxText, bufferCacheName, bufferCacheSize) PXTextConstructNamedBuffer(pxText, bufferCacheName, bufferCacheSize, TextFormatASCII)
@@ -104,7 +91,7 @@ PXText;
             (pxText)->NumberOfCharacters = sizeUsed; \
         } \
         (pxText)->Format = format; \
-        (pxText)->TextA = (char*)(address);
+        (pxText)->A = (char*)(address);
 
 #define PXTextLengthUnkown -1
 
@@ -117,7 +104,7 @@ PXText;
         (pxText)->SizeUsed = sizeof(character);\
         (pxText)->NumberOfCharacters = sizeof(character);\
         (pxText)->Format = TextFormatASCII;\
-        (pxText)->TextA = &character;
+        (pxText)->A = &character;
 
 #define PXTextMakeFixedA(pxText, s)\
         char text[] = s;\
@@ -125,11 +112,11 @@ PXText;
         (pxText)->SizeUsed = (pxText)->SizeAllocated;\
         (pxText)->NumberOfCharacters = (pxText)->SizeAllocated;\
         (pxText)->Format = TextFormatASCII;\
-        (pxText)->TextA = text;
+        (pxText)->A = text;
 
 #define PXTextMakeFixedGlobalA(pxText, s) \
-        (pxText)->TextA = s; \
-        (pxText)->SizeAllocated = PXTextLengthA((pxText)->TextA, PXTextLengthUnkown);\
+        (pxText)->A = s; \
+        (pxText)->SizeAllocated = PXTextLengthA((pxText)->A, PXTextLengthUnkown);\
         (pxText)->SizeUsed = (pxText)->SizeAllocated;\
         (pxText)->NumberOfCharacters = (pxText)->SizeAllocated;\
         (pxText)->Format = TextFormatASCII;\
@@ -141,7 +128,7 @@ PXText;
         (pxText)->SizeUsed = (pxText)->SizeAllocated;\
         (pxText)->NumberOfCharacters = 0;\
         (pxText)->Format = format;\
-        (pxText)->TextA = name;
+        (pxText)->A = name;
 
 #define PXTextMakeFixedNamedA(pxText, name, str) PXTextMakeFixedNamed(pxText, name, str, TextFormatASCII);
 #define PXTextMakeFixedNamedW(pxText, name, str) PXTextMakeFixedNamed(pxText, name, str, TextFormatUNICODE);
@@ -152,15 +139,38 @@ PXText;
         (pxText)->SizeUsed = sizeof(text);\
         (pxText)->NumberOfCharacters = sizeof(text) / 2;\
         (pxText)->Format = TextFormatUNICODE;\
-        (pxText)->TextA = text;
+        (pxText)->A = text;
 
 
-PXPublic enum PXActionResult_ PXAPI PXTextCreateCopy(PXText* const pxText, const PXText* const pxTextSource);
-PXPublic enum PXActionResult_ PXAPI PXTextDestroy(PXText* const pxText);
+PXPublic PXResult PXAPI PXTextCreateCopy(PXText* const pxText, const PXText* const pxTextSource);
+PXPublic PXResult PXAPI PXTextDestroy(PXText* const pxText);
 
 PXPublic PXSize PXAPI PXTextFromInt(PXText* const pxText, int number);
 PXPublic PXSize PXAPI PXTextFromBool(PXText* const pxText, const PXBool number);
 PXPublic PXSize PXAPI PXTextFromPXF32(PXText* const pxText, const PXF32 number);
+
+
+
+
+
+PXPublic PXBool PXAPI PXTextIsPrintableA(const PXASCII c);
+PXPublic PXBool PXAPI PXTextIsLetterCaseLower(const PXASCII c);
+PXPublic PXBool PXAPI PXTextIsLetterCaseUpper(const PXASCII c);
+PXPublic PXBool PXAPI PXTextCompareCaseIgnore(const PXASCII a, const PXASCII b);
+PXPublic PXBool PXAPI PXTextIsEndOfString(const PXASCII c);
+PXPublic PXBool PXAPI PXTextIsTab(const PXASCII c);
+PXPublic PXBool PXAPI PXTextIsEmptySpace(const PXASCII c);
+PXPublic PXBool PXAPI PXTextIsEndOfLine(const PXASCII c);
+PXPublic PXBool PXAPI PXTextIsEmpty(const PXASCII c);
+PXPublic PXBool PXAPI PXTextIsAllowedForF32(const PXASCII c);
+
+PXPublic PXASCII PXAPI PXTextMakeCaseLower(const PXASCII c);
+PXPublic PXASCII PXAPI PXTextMakeCaseUpper(const PXASCII c);
+
+PXPublic PXASCII PXAPI PXTextUnicodeToASCII(const PXASCII wc);
+PXPublic PXASCII PXAPI PXTextMakePrintable(const PXASCII c);
+
+
 
 
 PXPublic PXSize PXAPI PXTextFromBinaryDataA(const void* data, const PXSize dataSize, char* string, const PXSize stringSize);
@@ -180,11 +190,11 @@ PXPublic PXSize PXAPI PXTextFormatData(PXText* const pxText, const void* data, c
 // Also converts unprintable characters into printable ones
 PXPublic PXSize PXAPI PXTextFromNonTerminated(char* const stringOutput, const PXSize stringOutputSize, const char* const stringInput, const PXSize stringInputSize);
 
-PXPublic PXSize PXAPI PXTextFromIntToBinary8U(char* const string, const PXSize dataSize, const PXInt8U number);
-PXPublic PXSize PXAPI PXTextFromIntToBinary16U(char* const string, const PXSize dataSize, const PXInt16U number);
-PXPublic PXSize PXAPI PXTextFromIntToBinary32U(char* const string, const PXSize dataSize, const PXInt32U number);
-PXPublic PXSize PXAPI PXTextFromIntToBinary64U(char* const string, const PXSize dataSize, const PXInt64U number);
-PXPublic PXSize PXAPI PXTextFromIntToBinary64UR(char* const string, const PXSize dataSize, const PXInt64U number, const unsigned char numberOfDigits);
+PXPublic PXSize PXAPI PXTextFromIntToBinary8U(char* const string, const PXSize dataSize, const PXI8U number);
+PXPublic PXSize PXAPI PXTextFromIntToBinary16U(char* const string, const PXSize dataSize, const PXI16U number);
+PXPublic PXSize PXAPI PXTextFromIntToBinary32U(char* const string, const PXSize dataSize, const PXI32U number);
+PXPublic PXSize PXAPI PXTextFromIntToBinary64U(char* const string, const PXSize dataSize, const PXI64U number);
+PXPublic PXSize PXAPI PXTextFromIntToBinary64UR(char* const string, const PXSize dataSize, const PXI64U number, const unsigned char numberOfDigits);
 
 PXPublic PXSize PXAPI PXTextFromIntToBinary(char* const string, const PXSize dataSize, const void* const data, const unsigned char numberOfDigits);
 
@@ -193,10 +203,10 @@ PXPublic PXSize PXAPI PXTextToUpperCase(const PXText* const pxTextSource, PXText
 
 PXPublic PXSize PXAPI PXTextTrimA(char* const text, const PXSize textSize);
 
-PXPublic PXSize PXAPI PXTextAppend(PXText* const currentString, const PXText* const appendingString);
-PXPublic PXSize PXAPI PXTextAppendA(PXText* const currentString, const char* const appaendString, const char appaendStringSize);
-PXPublic PXSize PXAPI PXTextAppendW(wchar_t* const dataString, const PXSize dataStringSize, const wchar_t* const appaendString, const PXSize appaendStringSize);
-PXPublic PXSize PXAPI PXTextAppendF(PXText* const pxText, const char* const fomat, ...);
+PXPublic PXSize PXAPI PXAppend(PXText* const currentString, const PXText* const appendingString);
+PXPublic PXSize PXAPI PXAppendA(PXText* const currentString, const char* const appaendString, const char appaendStringSize);
+PXPublic PXSize PXAPI PXAppendW(wchar_t* const dataString, const PXSize dataStringSize, const wchar_t* const appaendString, const PXSize appaendStringSize);
+PXPublic PXSize PXAPI PXAppendF(PXText* const pxText, const char* const fomat, ...);
 
 PXPublic PXSize PXAPI PXTextPrint(PXText* const pxText, const char* style, ...);
 PXPublic PXSize PXAPI PXTextPrintA(char* const text, const PXSize size, const char* style, ...);
@@ -207,7 +217,7 @@ PXPublic PXSize PXAPI PXTextPrintV(PXText* const pxText, const char* style, va_l
 
 PXPublic PXSize PXAPI PXTextClear(PXText* const pxText);
 
-PXPublic void PXAPI PXTextAdvance(PXText* const pxText, const PXSize advanceBy);
+PXPublic void PXAPI PXAdvance(PXText* const pxText, const PXSize advanceBy);
 
 PXPublic PXSize PXAPI PXTextLengthA(const char* string, const PXSize stringSize);
 PXPublic PXSize PXAPI PXTextLengthW(const wchar_t* string, const PXSize stringSize);
@@ -234,14 +244,14 @@ PXPublic PXSize PXAPI PXTextPascalCaseCleave(const char* pxText, const PXSize PX
 PXPublic PXSize PXAPI PXTextCountUntilA(const char* PXText, const PXSize PXTextSize, const char target, const char stopAt);
 PXPublic PXSize PXAPI PXTextCountUntilW(const wchar_t* PXText, const PXSize PXTextSize, const wchar_t target, const wchar_t stopAt);
 
-PXPublic PXBool PXAPI PXTextCompare(const PXText* const textA, const PXText* const textB);
+PXPublic PXBool PXAPI PXTextCompare(const PXText* const A, const PXText* const textB);
 
-PXPublic PXInt8U PXAPI PXTextCompareAVI8(const char* a, PXInt8U aSize, const char** const stringList, const PXInt8U* stringListSize, const PXInt8U amount);
+PXPublic PXI8U PXAPI PXTextCompareAVI8(const char* a, PXI8U aSize, const char** const stringList, const PXI8U* stringListSize, const PXI8U amount);
 
 
 #define PXTextCompareRequireSameLength (1<<0)
 
-PXPublic PXBool PXAPI PXTextCompareA(const char* a, PXSize aSize, const char* b, PXSize bSize, const PXInt8U flags);
+PXPublic PXBool PXAPI PXTextCompareA(const char* a, PXSize aSize, const char* b, PXSize bSize, const PXI8U flags);
 PXPublic PXBool PXAPI PXTextCompareAW(const char* a, const PXSize aSize, const wchar_t* b, const PXSize bSize);
 PXPublic PXBool PXAPI PXTextCompareW(const wchar_t* a, const PXSize aSize, const wchar_t* b, const PXSize bSize);
 PXPublic PXBool PXAPI PXTextCompareWA(const wchar_t* a, const PXSize aSize, const char* b, const PXSize bSize);

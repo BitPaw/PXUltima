@@ -13,98 +13,98 @@ const char PXUSDCName[] = "Binary-USD";
 
 // Text format
 const char PXUSDTextSignature[4] = "usda";
-const PXInt8U PXUSDTextSignatureSize = sizeof(PXUSDTextSignature);
+const PXI8U PXUSDTextSignatureSize = sizeof(PXUSDTextSignature);
 
 const char PXUSDTextDef[3] = "def";
-const PXInt8U PXUSDTextDefSize = sizeof(PXUSDTextDef);
+const PXI8U PXUSDTextDefSize = sizeof(PXUSDTextDef);
 
 const char PXUSDTextXform[5] = "Xform";
-const PXInt8U PXUSDTextXformSize = sizeof(PXUSDTextXform);
+const PXI8U PXUSDTextXformSize = sizeof(PXUSDTextXform);
 
 const char PXUSDTextprepend[7] = "prepend";
-const PXInt8U PXUSDTextprependSize = sizeof(PXUSDTextprepend);
+const PXI8U PXUSDTextprependSize = sizeof(PXUSDTextprepend);
 
 const char PXUSDTextString[6] = "string";
-const PXInt8U PXUSDTextStringSize = sizeof(PXUSDTextString);
+const PXI8U PXUSDTextStringSize = sizeof(PXUSDTextString);
 
-const char PXUSDTextAsset[5] = "asset";
-const PXInt8U PXUSDTextAssetSize = sizeof(PXUSDTextAsset);
+const char PXUSDAsset[5] = "asset";
+const PXI8U PXUSDAssetSize = sizeof(PXUSDAsset);
 
 
 const char PXUSDTextidentifier[10] = "identifier";
-const PXInt8U PXUSDTextidentifierSize = sizeof(PXUSDTextidentifier);
+const PXI8U PXUSDTextidentifierSize = sizeof(PXUSDTextidentifier);
 
 const char PXUSDTextName[4] = "name";
-const PXInt8U PXUSDTextNameSize = sizeof(PXUSDTextName);
+const PXI8U PXUSDTextNameSize = sizeof(PXUSDTextName);
 
 
 
 const char PXUSDTextmodelingVariant[15] = "modelingVariant";
-const PXInt8U PXUSDTextmodelingVariantSize = sizeof(PXUSDTextmodelingVariant);
+const PXI8U PXUSDTextmodelingVariantSize = sizeof(PXUSDTextmodelingVariant);
 
 
 const char PXUSDTextvariants[8] = "variants";
-const PXInt8U PXUSDTextvariantsSize = sizeof(PXUSDTextvariants);
+const PXI8U PXUSDTextvariantsSize = sizeof(PXUSDTextvariants);
 
-const char PXUSDTextAssetInfo[9] = "assetInfo";
-const PXInt8U PXUSDTextAssetInfoSize = sizeof(PXUSDTextAssetInfo);
+const char PXUSDAssetInfo[9] = "assetInfo";
+const PXI8U PXUSDAssetInfoSize = sizeof(PXUSDAssetInfo);
 
 
 const char PXUSDTextdefaultPrim[11] = "defaultPrim";
-const PXInt8U PXUSDTextdefaultPrimSize = sizeof(PXUSDTextdefaultPrim);
+const PXI8U PXUSDTextdefaultPrimSize = sizeof(PXUSDTextdefaultPrim);
 
 const char PXUSDTextupAxis[6] = "upAxis";
-const PXInt8U PXUSDTextupAxisSize = sizeof(PXUSDTextupAxis);
+const PXI8U PXUSDTextupAxisSize = sizeof(PXUSDTextupAxis);
 
 const char PXUSDTextkind[4] = "kind";
-const PXInt8U PXUSDTextkindSize = sizeof(PXUSDTextkind);
+const PXI8U PXUSDTextkindSize = sizeof(PXUSDTextkind);
 
 const char PXUSDTextPayload[7] = "payload";
-const PXInt8U PXUSDTextPayloadSize = sizeof(PXUSDTextPayload);
+const PXI8U PXUSDTextPayloadSize = sizeof(PXUSDTextPayload);
 
 
 const char PXUSDTextreferences[10] = "references";
-const PXInt8U PXUSDTextreferencesSize = sizeof(PXUSDTextreferences);
+const PXI8U PXUSDTextreferencesSize = sizeof(PXUSDTextreferences);
 
 const char PXUSDTextFloat[5] = "float";
-const PXInt8U PXUSDTextFloatSize = sizeof(PXUSDTextFloat);
+const PXI8U PXUSDTextFloatSize = sizeof(PXUSDTextFloat);
 
 const char PXUSDTextFloat3[6] = "float3";
-const PXInt8U PXUSDTextFloat3Size = sizeof(PXUSDTextFloat3);
+const PXI8U PXUSDTextFloat3Size = sizeof(PXUSDTextFloat3);
 
 const char PXUSDTextdouble3[7] = "double3";
-const PXInt8U PXUSDTextdouble3Size = sizeof(PXUSDTextdouble3);
+const PXI8U PXUSDTextdouble3Size = sizeof(PXUSDTextdouble3);
 
 const char PXUSDTextuniform[7] = "uniform";
-const PXInt8U PXUSDTextuniformSize = sizeof(PXUSDTextuniform);
+const PXI8U PXUSDTextuniformSize = sizeof(PXUSDTextuniform);
 
 
 const char PXUSDTextXFormOp[7] = "xformOp";
-const PXInt8U PXUSDTextXFormOpSize = sizeof(PXUSDTextXFormOp);
+const PXI8U PXUSDTextXFormOpSize = sizeof(PXUSDTextXFormOp);
 
 
 const char PXUSDTextScale[5] = "scale";
-const PXInt8U PXUSDTextScaleSize = sizeof(PXUSDTextScale);
+const PXI8U PXUSDTextScaleSize = sizeof(PXUSDTextScale);
 
 const char PXUSDTextXrotateX[7] = "rotateX";
-const PXInt8U PXUSDTextXrotateXSize = sizeof(PXUSDTextXrotateX);
+const PXI8U PXUSDTextXrotateXSize = sizeof(PXUSDTextXrotateX);
 
 const char PXUSDTextXrotateZ[7] = "rotateZ";
-const PXInt8U PXUSDTextXrotateZSize = sizeof(PXUSDTextXrotateZ);
+const PXI8U PXUSDTextXrotateZSize = sizeof(PXUSDTextXrotateZ);
 
 const char PXUSDTextXrotateXYZ[9] = "rotateXYZ";
-const PXInt8U PXUSDTextXrotateXYZSize = sizeof(PXUSDTextXrotateXYZ);
+const PXI8U PXUSDTextXrotateXYZSize = sizeof(PXUSDTextXrotateXYZ);
 
 const char PXUSDTexttranslate[9] = "translate";
-const PXInt8U PXUSDTexttranslateSize = sizeof(PXUSDTexttranslate);
+const PXI8U PXUSDTexttranslateSize = sizeof(PXUSDTexttranslate);
 
 
 const char PXUSDTexttoken[5] = "token";
-const PXInt8U PXUSDTexttokenSize = sizeof(PXUSDTexttoken);
+const PXI8U PXUSDTexttokenSize = sizeof(PXUSDTexttoken);
 
 
 const char PXUSDTextXFormOpOrder[12] = "xformOpOrder";
-const PXInt8U PXUSDTextXFormOpOrderSize = sizeof(PXUSDTextXFormOpOrder);
+const PXI8U PXUSDTextXFormOpOrderSize = sizeof(PXUSDTextXFormOpOrder);
 
 
 
@@ -126,20 +126,20 @@ const PXUSDAParseElementFunction PXUSDAParseEntryParameterListText[5] =
 {
     PXUSDTextprepend,
     PXUSDTextvariants,
-    PXUSDTextAssetInfo,
+    PXUSDAssetInfo,
     PXUSDTextkind,
     PXUSDTextPayload
 };
 
-const PXInt8U PXUSDAParseEntryParameterListSize[5] =
+const PXI8U PXUSDAParseEntryParameterListSize[5] =
 {
     sizeof(PXUSDTextprepend),
     sizeof(PXUSDTextvariants),
-    sizeof(PXUSDTextAssetInfo),
+    sizeof(PXUSDAssetInfo),
     sizeof(PXUSDTextkind),
     sizeof(PXUSDTextPayload)
 };
-const PXInt8U PXUSDAParseEntryParameterListAmount = sizeof(PXUSDAParseEntryParameterListSize) / sizeof(PXInt8U);
+const PXI8U PXUSDAParseEntryParameterListAmount = sizeof(PXUSDAParseEntryParameterListSize) / sizeof(PXI8U);
 
 
 
@@ -169,7 +169,7 @@ const PXUSDAParseElementFunction PXUSDAParseEntryPropertyListText[5] =
     PXUSDTextuniform
 };
 
-const PXInt8U PXUSDAParseEntryPropertyListSize[5] =
+const PXI8U PXUSDAParseEntryPropertyListSize[5] =
 {
     sizeof(PXUSDTextDef),
     sizeof(PXUSDTextFloat),
@@ -177,7 +177,7 @@ const PXInt8U PXUSDAParseEntryPropertyListSize[5] =
     sizeof(PXUSDTextdouble3),
     sizeof(PXUSDTextuniform)
 };
-const PXInt8U PXUSDAParseEntryPropertyListAmount = sizeof(PXUSDAParseEntryPropertyListSize) / sizeof(PXInt8U);
+const PXI8U PXUSDAParseEntryPropertyListAmount = sizeof(PXUSDAParseEntryPropertyListSize) / sizeof(PXI8U);
 
 
 
@@ -205,7 +205,7 @@ const char* PXUSDBinaryTokenListData[6] =
     PXUSDBinarySPECS,
     PXUSDBinaryPATHS
 };
-const PXInt8U PXUSDBinaryTokenListsize[6] =
+const PXI8U PXUSDBinaryTokenListsize[6] =
 {
     sizeof(PXUSDBinaryTOKENS),
     sizeof(PXUSDBinarySTRINGS),
@@ -223,12 +223,12 @@ const PXUSDSegmentLoadFunction PXUSDBinaryTokenListFunction[6] =
    PXUSDCSectionSpecs,
    PXUSDCSectionPaths
 };
-const PXInt8U PXUSDBinaryTokenListAmount = sizeof(PXUSDBinaryTokenListsize) / sizeof(PXInt8U);
+const PXI8U PXUSDBinaryTokenListAmount = sizeof(PXUSDBinaryTokenListsize) / sizeof(PXI8U);
 
 
 
 
-PXActionResult PXAPI PXUSDLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI  PXUSDLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     PXFile* const pxFile = pxResourceLoadInfo->FileReference; 
     PXUSDLoadFunction pxUSDLoadFunction;
@@ -281,7 +281,7 @@ PXActionResult PXAPI PXUSDLoadFromFile(PXResourceTransphereInfo* const pxResourc
 
 
 
-PXActionResult PXAPI PXUSDCLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI  PXUSDCLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     PXUSD pxUSD;
     PXFile* const pxFile = pxResourceLoadInfo->FileReference;
@@ -331,7 +331,7 @@ PXActionResult PXAPI PXUSDCLoadFromFile(PXResourceTransphereInfo* const pxResour
         {
             PXTOCSection* const pxTOCSection = &pxUSD.Binary.TOCSectionList[i];
 
-            PXFileReadTextA(pxFile, pxTOCSection->Name, 16);
+            PXFileReadA(pxFile, pxTOCSection->Name, 16);
             PXFileReadI64U(pxFile, &pxTOCSection->OffsetStart);
             PXFileReadI64U(pxFile, &pxTOCSection->BlockSize);
 
@@ -359,7 +359,7 @@ PXActionResult PXAPI PXUSDCLoadFromFile(PXResourceTransphereInfo* const pxResour
         {
             PXTOCSection* const pxTOCSection = &pxUSD.Binary.TOCSectionList[i];
 
-            const PXInt8U index = PXTextCompareAVI8(pxTOCSection->Name, PXTextUnkownLength, PXUSDBinaryTokenListData, PXUSDBinaryTokenListsize, PXUSDBinaryTokenListAmount);
+            const PXI8U index = PXTextCompareAVI8(pxTOCSection->Name, PXTextUnkownLength, PXUSDBinaryTokenListData, PXUSDBinaryTokenListsize, PXUSDBinaryTokenListAmount);
 
             if(-1 == index)
             {
@@ -402,7 +402,7 @@ PXActionResult PXAPI PXUSDCLoadFromFile(PXResourceTransphereInfo* const pxResour
 }
 
 
-PXActionResult PXAPI PXUSDCSectionTokensLoad(PXFile* const pxFile, PXTOCSectionTokens* const pxTOCSectionTokens)
+PXResult PXAPI  PXUSDCSectionTokensLoad(PXFile* const pxFile, PXTOCSectionTokens* const pxTOCSectionTokens)
 {
     PXFileReadI64U(pxFile, &pxTOCSectionTokens->SizeUncompressed);
     PXFileReadI64U(pxFile, &pxTOCSectionTokens->SizeCompressed);
@@ -479,7 +479,7 @@ PXActionResult PXAPI PXUSDCSectionTokensLoad(PXFile* const pxFile, PXTOCSectionT
     PXConsoleWrite(0, 0);
 }
 
-PXActionResult PXAPI PXUSDCReadCompressedInts(PXFile* const input,  PXFile* const output, size_t num_ints)
+PXResult PXAPI  PXUSDCReadCompressedInts(PXFile* const input,  PXFile* const output, size_t num_ints)
 {
     // Check for max size
     if(num_ints > 0xFFFFFFFF) 
@@ -487,7 +487,7 @@ PXActionResult PXAPI PXUSDCReadCompressedInts(PXFile* const input,  PXFile* cons
         return PXActionInvalid;
     }
 
-    PXInt64U compSize;
+    PXI64U compSize;
     PXFileReadI64U(input, &compSize);
     /*
 
@@ -495,7 +495,7 @@ PXActionResult PXAPI PXUSDCReadCompressedInts(PXFile* const input,  PXFile* cons
     compBuffer.resize(compBufferSize);
 
 
-    PXInt32U* buffer = PXMemoryHeapCallocT(PXInt32U, pxTOCSectionFields->AmountOFFields);
+    PXI32U* buffer = PXMemoryHeapCallocT(PXI32U, pxTOCSectionFields->AmountOFFields);
 
 
     if(!_sr->read(size_t(compSize), size_t(compSize),
@@ -512,7 +512,7 @@ PXActionResult PXAPI PXUSDCReadCompressedInts(PXFile* const input,  PXFile* cons
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXUSDCSectionStringsLoad(PXFile* const pxFile, PXTOCSectionStrings* const pxTOCSectionStrings)
+PXResult PXAPI  PXUSDCSectionStringsLoad(PXFile* const pxFile, PXTOCSectionStrings* const pxTOCSectionStrings)
 {
 #if PXLogEnable
     PXLogPrint
@@ -527,7 +527,7 @@ PXActionResult PXAPI PXUSDCSectionStringsLoad(PXFile* const pxFile, PXTOCSection
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXUSDCSectionFields(PXFile* const pxFile, PXTOCSectionFields* const pxTOCSectionFields)
+PXResult PXAPI  PXUSDCSectionFields(PXFile* const pxFile, PXTOCSectionFields* const pxTOCSectionFields)
 {
 #if PXLogEnable
     PXLogPrint
@@ -539,14 +539,14 @@ PXActionResult PXAPI PXUSDCSectionFields(PXFile* const pxFile, PXTOCSectionField
     );
 #endif
 
-    pxTOCSectionFields->FieldList = PXMemoryHeapCallocT(PXInt32U, pxTOCSectionFields->AmountOFFields);
+    pxTOCSectionFields->FieldList = PXMemoryHeapCallocT(PXI32U, pxTOCSectionFields->AmountOFFields);
 
 
 
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXUSDCSectionFieldSets(PXFile* const pxFile, PXTOCSectionFieldSets* const pxTOCSectionFieldSets)
+PXResult PXAPI  PXUSDCSectionFieldSets(PXFile* const pxFile, PXTOCSectionFieldSets* const pxTOCSectionFieldSets)
 {
 #if PXLogEnable
     PXLogPrint
@@ -561,7 +561,7 @@ PXActionResult PXAPI PXUSDCSectionFieldSets(PXFile* const pxFile, PXTOCSectionFi
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXUSDCSectionSpecs(PXFile* const pxFile, PXTOCSectionSpecs* const pxTOCSectionSpecs)
+PXResult PXAPI  PXUSDCSectionSpecs(PXFile* const pxFile, PXTOCSectionSpecs* const pxTOCSectionSpecs)
 {
 #if PXLogEnable
     PXLogPrint
@@ -576,7 +576,7 @@ PXActionResult PXAPI PXUSDCSectionSpecs(PXFile* const pxFile, PXTOCSectionSpecs*
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXUSDCSectionPaths(PXFile* const pxFile, PXTOCSectionPaths* const pxTOCSectionPaths)
+PXResult PXAPI  PXUSDCSectionPaths(PXFile* const pxFile, PXTOCSectionPaths* const pxTOCSectionPaths)
 {
 #if PXLogEnable
     PXLogPrint
@@ -597,7 +597,7 @@ PXActionResult PXAPI PXUSDCSectionPaths(PXFile* const pxFile, PXTOCSectionPaths*
 
 
 
-PXActionResult PXAPI PXUSDZLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI  PXUSDZLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
 
 }
@@ -608,7 +608,7 @@ PXActionResult PXAPI PXUSDZLoadFromFile(PXResourceTransphereInfo* const pxResour
 
 
 
-PXActionResult PXAPI PXUSDALoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI  PXUSDALoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     PXCompiler pxCompiler;
     PXFile tokenSteam;
@@ -668,7 +668,7 @@ PXActionResult PXAPI PXUSDALoadFromFile(PXResourceTransphereInfo* const pxResour
         }
 
         PXCompilerSymbolEntryForward(&pxCompiler);
-        PXBool isusda = PXCompilerEnsureTextAndCompare(&pxCompiler, PXUSDTextSignature, PXUSDTextSignatureSize);
+        PXBool isusda = PXCompilerEnsureAndCompare(&pxCompiler, PXUSDTextSignature, PXUSDTextSignatureSize);
 
         if(!isusda)
         {
@@ -726,7 +726,7 @@ PXActionResult PXAPI PXUSDALoadFromFile(PXResourceTransphereInfo* const pxResour
             }
             case PXCompilerSymbolLexerGeneric:
             {
-                const PXBool isDef = PXCompilerEnsureTextAndCompare(&pxCompiler, PXUSDTextDef, PXUSDTextDefSize);
+                const PXBool isDef = PXCompilerEnsureAndCompare(&pxCompiler, PXUSDTextDef, PXUSDTextDefSize);
 
                 if(isDef)
                 {
@@ -750,7 +750,7 @@ PXActionResult PXAPI PXUSDALoadFromFile(PXResourceTransphereInfo* const pxResour
     {
         PXUSDEntry* const pxUSDEntry = &pxUSD->Text.EntryList[i];
 
-        if(!pxUSDEntry->Include)
+        if(!pxUSDEntry->Included)
         {
             continue;
         }
@@ -761,7 +761,7 @@ PXActionResult PXAPI PXUSDALoadFromFile(PXResourceTransphereInfo* const pxResour
         PXText resultPath;
 
         PXTextConstructBufferA(&resultPath, 260);
-        PXTextConstructFromAdressA(&subFile, pxUSDEntry->Include, pxUSDEntry->IncludeSize, pxUSDEntry->IncludeSize);
+        PXTextConstructFromAdressA(&subFile, pxUSDEntry->Included, pxUSDEntry->IncludedSize, pxUSDEntry->IncludedSize);
 
         PXFilePathRelativeFromFile(pxResourceLoadInfo->FileReference, &subFile, &resultPath);
 
@@ -784,7 +784,7 @@ PXActionResult PXAPI PXUSDALoadFromFile(PXResourceTransphereInfo* const pxResour
             i + 1,
             pxUSD->Text.EntryAmount,
             "Name", nameBuffer,
-            "Include", resultPath.TextA,
+            "Included", resultPath.A,
             "Position", pxUSDEntry->Position[0], pxUSDEntry->Position[1], pxUSDEntry->Position[2],
             "Rotation", pxUSDEntry->Rotation[0], pxUSDEntry->Rotation[1], pxUSDEntry->Rotation[2],
             "Scale", pxUSDEntry->Scale[0], pxUSDEntry->Scale[1], pxUSDEntry->Scale[2]
@@ -857,7 +857,7 @@ void PXAPI PXUSDAParseElementDefine(PXUSDA* const pxUSDA, PXCompiler* const pxCo
         {
             case PXCompilerSymbolLexerGeneric:
             {
-                const PXBool isxform = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextXform, PXUSDTextXformSize);
+                const PXBool isxform = PXCompilerEnsureAndCompare(pxCompiler, PXUSDTextXform, PXUSDTextXformSize);
 
                 if(isxform)
                 {
@@ -869,7 +869,7 @@ void PXAPI PXUSDAParseElementDefine(PXUSDA* const pxUSDA, PXCompiler* const pxCo
                 }
                 else
                 {
-                    const PXBool isDef = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextDef, PXUSDTextDefSize);
+                    const PXBool isDef = PXCompilerEnsureAndCompare(pxCompiler, PXUSDTextDef, PXUSDTextDefSize);
 
                     if(isDef)
                     {
@@ -922,7 +922,7 @@ void PXAPI PXUSDAParseEntryParameter(PXUSDEntry* const pxUSDEntry, PXCompiler* c
             }
             case PXCompilerSymbolLexerGeneric:
             {
-                const PXInt8U index = PXCompilerEnsureTextListAndCompare
+                const PXI8U index = PXCompilerEnsureTextListAndCompare
                 (
                     pxCompiler,
                     PXUSDAParseEntryParameterListText,
@@ -967,7 +967,7 @@ void PXAPI PXUSDAParseEntryProperty(PXUSDA* const pxUSDA, PXUSDEntry* const pxUS
         {
             case PXCompilerSymbolLexerGeneric:
             {
-                const PXInt8U index = PXCompilerEnsureTextListAndCompare
+                const PXI8U index = PXCompilerEnsureTextListAndCompare
                 (
                     pxCompiler,
                     PXUSDAParseEntryPropertyListText,
@@ -1042,11 +1042,11 @@ void PXAPI PXUSDAParseEntryParameterPrepend(PXUSDEntry* const pxUSDEntry, PXComp
         pxCompiler,
         PXUSDTextreferences,
         PXUSDTextreferencesSize,
-        &pxUSDEntry->Include,
+        &pxUSDEntry->Included,
         &pathSize
     );
 
-    pxUSDEntry->IncludeSize = pathSize;
+    pxUSDEntry->IncludedSize = pathSize;
 
 
     // In some files, one payload file, this ends with a XML token. For some reason
@@ -1079,10 +1079,10 @@ void PXAPI PXUSDAParseEntryParameterVarriants(PXUSDEntry* const pxUSDEntry, PXCo
             break;
         }
 
-        PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextString, PXUSDTextStringSize);
+        PXCompilerEnsureAndCompare(pxCompiler, PXUSDTextString, PXUSDTextStringSize);
         PXCompilerSymbolEntryForward(pxCompiler); // rmeove =
 
-        PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextmodelingVariant, PXUSDTextmodelingVariantSize);
+        PXCompilerEnsureAndCompare(pxCompiler, PXUSDTextmodelingVariant, PXUSDTextmodelingVariantSize);
         PXCompilerSymbolEntryForward(pxCompiler); // rmeove =
 
         PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerEqual);
@@ -1122,16 +1122,16 @@ void PXAPI PXUSDAParseEntryParameterAssetInfo(PXUSDEntry* const pxUSDEntry, PXCo
         PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerGeneric);
 
 
-        PXBool isString = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextString, PXUSDTextStringSize);
-        PXBool isAsset = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextAsset, PXUSDTextAssetSize);
+        PXBool isString = PXCompilerEnsureAndCompare(pxCompiler, PXUSDTextString, PXUSDTextStringSize);
+        PXBool isAsset = PXCompilerEnsureAndCompare(pxCompiler, PXUSDAsset, PXUSDAssetSize);
 
 
         if(isString)
         {
             PXCompilerSymbolEntryForward(pxCompiler);
 
-            PXBool isIdentifier = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextidentifier, PXUSDTextidentifierSize);
-            PXBool isName = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextName, PXUSDTextNameSize);
+            PXBool isIdentifier = PXCompilerEnsureAndCompare(pxCompiler, PXUSDTextidentifier, PXUSDTextidentifierSize);
+            PXBool isName = PXCompilerEnsureAndCompare(pxCompiler, PXUSDTextName, PXUSDTextNameSize);
 
             PXCompilerSymbolEntryForward(pxCompiler);
             PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerEqual);
@@ -1156,8 +1156,8 @@ void PXAPI PXUSDAParseEntryParameterAssetInfo(PXUSDEntry* const pxUSDEntry, PXCo
         {
             PXCompilerSymbolEntryForward(pxCompiler);
 
-            PXBool isIdentifier = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextidentifier, PXUSDTextidentifierSize);
-            PXBool isName = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextName, PXUSDTextNameSize);
+            PXBool isIdentifier = PXCompilerEnsureAndCompare(pxCompiler, PXUSDTextidentifier, PXUSDTextidentifierSize);
+            PXBool isName = PXCompilerEnsureAndCompare(pxCompiler, PXUSDTextName, PXUSDTextNameSize);
 
 
             PXCompilerSymbolEntryForward(pxCompiler);
@@ -1192,8 +1192,8 @@ void PXAPI PXUSDAParseEntryParameterPayLoad(PXUSDEntry* const pxUSDEntry, PXComp
 
     PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerString);
 
-    pxUSDEntry->Include = pxCompiler->ReadInfo.SymbolEntryCurrent.Source;
-    pxUSDEntry->IncludeSize = pxCompiler->ReadInfo.SymbolEntryCurrent.Size;
+    pxUSDEntry->Included = pxCompiler->ReadInfo.SymbolEntryCurrent.Source;
+    pxUSDEntry->IncludedSize = pxCompiler->ReadInfo.SymbolEntryCurrent.Size;
 
     PXCompilerSymbolEntryForward(pxCompiler);
 
@@ -1213,7 +1213,7 @@ void PXAPI PXUSDAParseEntryPropertyFloat1(PXUSDEntry* const pxUSDEntry, PXCompil
 {
     PXCompilerSymbolEntryForward(pxCompiler); // float3
 
-    const PXBool iXFormOp = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextXFormOp, PXUSDTextXFormOpSize);
+    const PXBool iXFormOp = PXCompilerEnsureAndCompare(pxCompiler, PXUSDTextXFormOp, PXUSDTextXFormOpSize);
 
     if(!iXFormOp)
     {
@@ -1224,9 +1224,9 @@ void PXAPI PXUSDAParseEntryPropertyFloat1(PXUSDEntry* const pxUSDEntry, PXCompil
     PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerColon);
     PXCompilerSymbolEntryForward(pxCompiler);
 
-    const PXBool isRoateX = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextXrotateX, PXUSDTextXrotateXSize);
-  //  const PXBool isRoateY = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextXrotateX, PXUSDTextXrotateXSize);
-    const PXBool isRoateZ = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextXrotateZ, PXUSDTextXrotateZSize);
+    const PXBool isRoateX = PXCompilerEnsureAndCompare(pxCompiler, PXUSDTextXrotateX, PXUSDTextXrotateXSize);
+  //  const PXBool isRoateY = PXCompilerEnsureAndCompare(pxCompiler, PXUSDTextXrotateX, PXUSDTextXrotateXSize);
+    const PXBool isRoateZ = PXCompilerEnsureAndCompare(pxCompiler, PXUSDTextXrotateZ, PXUSDTextXrotateZSize);
       
     PXCompilerSymbolEntryForward(pxCompiler);
     PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerEqual);
@@ -1278,7 +1278,7 @@ void PXAPI PXUSDAParseEntryPropertyFloat3(PXUSDEntry* const pxUSDEntry, PXCompil
 {
     PXCompilerSymbolEntryForward(pxCompiler); // float3
 
-    const PXBool iXFormOp = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextXFormOp, PXUSDTextXFormOpSize);
+    const PXBool iXFormOp = PXCompilerEnsureAndCompare(pxCompiler, PXUSDTextXFormOp, PXUSDTextXFormOpSize);
 
     if(iXFormOp)
     {
@@ -1286,8 +1286,8 @@ void PXAPI PXUSDAParseEntryPropertyFloat3(PXUSDEntry* const pxUSDEntry, PXCompil
         PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerColon);
         PXCompilerSymbolEntryForward(pxCompiler);
 
-        const PXBool isRoate = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextXrotateXYZ, PXUSDTextXrotateXYZSize);
-        const PXBool isScale = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextScale, PXUSDTextScaleSize);
+        const PXBool isRoate = PXCompilerEnsureAndCompare(pxCompiler, PXUSDTextXrotateXYZ, PXUSDTextXrotateXYZSize);
+        const PXBool isScale = PXCompilerEnsureAndCompare(pxCompiler, PXUSDTextScale, PXUSDTextScaleSize);
 
         PXCompilerSymbolEntryForward(pxCompiler);
 
@@ -1315,7 +1315,7 @@ void PXAPI PXUSDAParseEntryPropertyDouble3(PXUSDEntry* const pxUSDEntry, PXCompi
 {
     PXCompilerSymbolEntryForward(pxCompiler); // double3
 
-    const PXBool iXFormOp = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextXFormOp, PXUSDTextXFormOpSize);
+    const PXBool iXFormOp = PXCompilerEnsureAndCompare(pxCompiler, PXUSDTextXFormOp, PXUSDTextXFormOpSize);
 
     if(iXFormOp)
     {
@@ -1323,7 +1323,7 @@ void PXAPI PXUSDAParseEntryPropertyDouble3(PXUSDEntry* const pxUSDEntry, PXCompi
         PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerColon);
         PXCompilerSymbolEntryForward(pxCompiler);
 
-        const PXBool isTranslate = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTexttranslate, PXUSDTexttranslateSize);
+        const PXBool isTranslate = PXCompilerEnsureAndCompare(pxCompiler, PXUSDTexttranslate, PXUSDTexttranslateSize);
 
         if(isTranslate)
         {
@@ -1340,14 +1340,14 @@ void PXAPI PXUSDAParseEntryPropertyDouble3(PXUSDEntry* const pxUSDEntry, PXCompi
         }
     }
 
-    //  PXCompilerEnsureTextAndCompare(pxCompiler, );
+    //  PXCompilerEnsureAndCompare(pxCompiler, );
 }
 
 void PXAPI PXUSDAParseEntryPropertyUniform(PXUSDEntry* const pxUSDEntry, PXCompiler* const pxCompiler)
 {
     PXCompilerSymbolEntryForward(pxCompiler); // uniform
 
-    const PXBool isToken = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTexttoken, PXUSDTexttokenSize);
+    const PXBool isToken = PXCompilerEnsureAndCompare(pxCompiler, PXUSDTexttoken, PXUSDTexttokenSize);
 
     if(isToken)
     {
@@ -1357,7 +1357,7 @@ void PXAPI PXUSDAParseEntryPropertyUniform(PXUSDEntry* const pxUSDEntry, PXCompi
         PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerBracketSquareClose);
         PXCompilerSymbolEntryForward(pxCompiler);
 
-        const PXBool isOpOrder = PXCompilerEnsureTextAndCompare(pxCompiler, PXUSDTextXFormOpOrder, PXUSDTextXFormOpOrderSize);
+        const PXBool isOpOrder = PXCompilerEnsureAndCompare(pxCompiler, PXUSDTextXFormOpOrder, PXUSDTextXFormOpOrderSize);
 
         if(isOpOrder)
         {
@@ -1419,7 +1419,7 @@ void PXAPI PXUSDAParseEntryName(PXUSDA* const pxUSDA, PXUSDEntry* const pxUSDEnt
 
 
 
-PXActionResult PXAPI PXUSDSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI  PXUSDSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

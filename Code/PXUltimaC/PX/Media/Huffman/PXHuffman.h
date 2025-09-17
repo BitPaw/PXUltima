@@ -1,7 +1,7 @@
-#ifndef PXHuffmanTreeINCLUDE
-#define PXHuffmanTreeINCLUDE
+#ifndef PXHuffmanTreeIncluded
+#define PXHuffmanTreeIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 // amount of bits for first huffman table lookup (aka root bits),
 // see HuffmanTree_makeTable and huffmanDecodeSymbol.
@@ -19,30 +19,30 @@ PXHuffmanCodeType;
 
 typedef struct PXHuffmanNumberCode_
 {
-    PXInt16U NumberOfLiteralCodes; // 9-Bit
-    PXInt16U NumberOfDistanceCodes; // 5-Bit
-    PXInt16U NumberOfLengthCodes; // 4-Bit
+    PXI16U NumberOfLiteralCodes; // 9-Bit
+    PXI16U NumberOfDistanceCodes; // 5-Bit
+    PXI16U NumberOfLengthCodes; // 4-Bit
 }
 PXHuffmanNumberCode;
 
 typedef struct PXHuffmanSymbol_
 {
-    PXInt16U Code;
-    PXInt16U Length;
-    PXInt16U Value;
+    PXI16U Code;
+    PXI16U Length;
+    PXI16U Value;
 }
 PXHuffmanSymbol;
 
 typedef struct PXHuffmanTree_
 {
-    PXInt32U* CodeSymbols; // the huffman codes (bit patterns representing the symbols)
-    PXInt32U* LengthsList; // the lengths of the huffman codes
-    PXInt32U maxbitlen; // maximum number of bits a single code can get
-    PXInt32U NumberOfSymbols; // number of symbols in the alphabet = number of codes
+    PXI32U* CodeSymbols; // the huffman codes (bit patterns representing the symbols)
+    PXI32U* LengthsList; // the lengths of the huffman codes
+    PXI32U maxbitlen; // maximum number of bits a single code can get
+    PXI32U NumberOfSymbols; // number of symbols in the alphabet = number of codes
 
     // for reading only
-    PXInt8U* TableLength; // length of symbol from lookup table, or max length if secondary lookup needed
-    PXInt16U* TableValue; // value of symbol from lookup table, or pointer to secondary table if needed
+    PXI8U* TableLength; // length of symbol from lookup table, or max length if secondary lookup needed
+    PXI16U* TableValue; // value of symbol from lookup table, or pointer to secondary table if needed
 }
 PXHuffmanTree;
 
@@ -52,15 +52,15 @@ PXPublic void PXAPI PXHuffmanTreeDestruct(PXHuffmanTree* const huffmanTree);
 // End of Block : x = 256
 // Length : 256 < x < 285
 // Invalid : x > 285
-PXPublic PXHuffmanCodeType PXAPI PXHuffmanCodeTypeFromCode(const PXInt16U code);
+PXPublic PXHuffmanCodeType PXAPI PXHuffmanCodeTypeFromCode(const PXI16U code);
 
-PXPublic PXActionResult PXAPI PXHuffmanDistanceTreeGenerateFixed(PXHuffmanTree* const treeLength, PXHuffmanTree* const treeDistance);
-PXPublic PXActionResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(PXFile* const pxFile, PXHuffmanTree* const treeLength, PXHuffmanTree* const treeDistance);
+PXPublic PXResult PXAPI PXHuffmanDistanceTreeGenerateFixed(PXHuffmanTree* const treeLength, PXHuffmanTree* const treeDistance);
+PXPublic PXResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(PXFile* const pxFile, PXHuffmanTree* const treeLength, PXHuffmanTree* const treeDistance);
 
-PXPublic PXActionResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, const PXInt32U* const bitlen, const PXSize numcodes, const PXSize maxbitlen);
+PXPublic PXResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, const PXI32U* const bitlen, const PXSize numcodes, const PXSize maxbitlen);
 
-PXPublic PXInt16U PXAPI PXHuffmanSymbolDecode(struct PXFile_* const pxFile, const PXHuffmanTree* const codetree);
+PXPublic PXI16U PXAPI PXHuffmanSymbolDecode(struct PXFile_* const pxFile, const PXHuffmanTree* const codetree);
 
-PXPublic PXInt32U PXAPI reverseBits(const PXInt32U bits, const PXInt32U num);
+PXPublic PXI32U PXAPI reverseBits(const PXI32U bits, const PXI32U num);
 
 #endif

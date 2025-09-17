@@ -46,7 +46,7 @@ void PXCSSerialize(PXFile* const inputSteam, PXFile* const outputStream, PXCTran
 
             for (PXSize i = 0; i < pxCStructure->MemberAmount; ++i)
             {
-                PXInt8U enumElementBufferLength = 0;
+                PXI8U enumElementBufferLength = 0;
                 char enumElementBuffer[64];
 
                 PXFileReadI8U(inputSteam, &enumElementBufferLength);
@@ -149,7 +149,7 @@ void PXCSSerialize(PXFile* const inputSteam, PXFile* const outputStream, PXCTran
             }
 
             PXFileWriteB(outputStream, "\t\t[FieldOffset(", 15);
-            PXFileWriteB(outputStream, pxText.TextA, pxText.SizeUsed);
+            PXFileWriteB(outputStream, pxText.A, pxText.SizeUsed);
             PXFileWriteB(outputStream, ")] public ", 10);
 
             //pxCStructure->MemberOffsetCurrent += (typeSize * !(pxCStructure->Type == PXCStructureTypeUnion && PXCStructureHasName(pxCStructure)));
@@ -175,7 +175,7 @@ void PXCSSerialize(PXFile* const inputSteam, PXFile* const outputStream, PXCTran
                 PXFileWriteB(outputStream, volatileText, sizeof(volatileText) - 1);
             }
 
-            PXInt8U sizeofKey = 0;
+            PXI8U sizeofKey = 0;
             const char* keyText = 0;
 
             if (pxCStructureVariable->IsKnownPrimitve)
@@ -560,12 +560,12 @@ void PXAPI PXCSharpDefinitionWrite(PXCompiler* const pxCompiler)
     PXFileWriteA(pxFile, symbol->NameAdress, symbol->NameSize);
 }
 
-PXActionResult PXAPI PXCSharpLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI  PXCSharpLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXCSharpSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI  PXCSharpSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     PXFile* pxFile = pxResourceSaveInfo->FileReference;
 

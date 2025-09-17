@@ -1,10 +1,10 @@
-#ifndef PXBashINCLUDE
-#define PXBashINCLUDE
+#ifndef PXBashIncluded
+#define PXBashIncluded
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 
-PXPublic PXActionResult PXAPI PXBashExecute(const PXText* const programPath, const PXBool syncronous);
-PXPublic PXActionResult PXAPI PXBashExecuteA
+PXPublic PXResult PXAPI PXBashExecute(const PXText* const programPath, const PXBool syncronous);
+PXPublic PXResult PXAPI PXBashExecuteA
 (
     const char* const commandText,
     const PXSize commandTextSize,

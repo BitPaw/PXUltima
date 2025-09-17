@@ -1,7 +1,7 @@
-#ifndef PXSVGINCLUDE
-#define PXSVGINCLUDE
+#ifndef PXSVGIncluded
+#define PXSVGIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef struct PXSVG_
 {
@@ -9,7 +9,7 @@ typedef struct PXSVG_
 }
 PXSVG;
 
-PXPublic PXActionResult PXAPI PXSVGLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXSVGSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXSVGLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXSVGSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

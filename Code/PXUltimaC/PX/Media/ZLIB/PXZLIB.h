@@ -1,7 +1,7 @@
-#ifndef PXZLIBINCLUDE
-#define PXZLIBINCLUDE
+#ifndef PXZLIBIncluded
+#define PXZLIBIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 #include <PX/Media/PNG/PXPNG.h>
 
 typedef enum PXPXZLIBCompressionLevel_
@@ -38,7 +38,7 @@ typedef struct PXZLIBHeader_
     unsigned char CompressionInfo;
 
     PXSize WindowSize;
-    PXInt8U CheckFlag; // 5 Bits
+    PXI8U CheckFlag; // 5 Bits
     PXBool DictionaryPresent; // 1 Bit
     PXZLIBCompressionLevel CompressionLevel; // 2 Bits
 }
@@ -51,18 +51,18 @@ typedef struct PXZLIB_
     PXSize CompressedDataSize;
     void* CompressedData;
 
-    PXInt32U AdlerChecksum;
+    PXI32U AdlerChecksum;
 }
 PXZLIB;
 
-PXPrivate inline PXZLIBCompressionLevel PXAPI PXZLIBCompressionLevelFromID(const PXInt8U compressionLevel);
-PXPrivate inline PXInt8U PXAPI PXZLIBCompressionLevelToID(const PXZLIBCompressionLevel compressionLevel);
+PXPrivate inline PXZLIBCompressionLevel PXAPI PXZLIBCompressionLevelFromID(const PXI8U compressionLevel);
+PXPrivate inline PXI8U PXAPI PXZLIBCompressionLevelToID(const PXZLIBCompressionLevel compressionLevel);
 
-PXPrivate inline PXZLIBCompressionMethod PXAPI PXZLIBCompressionMethodFromID(const PXInt8U compressionMethod);
-PXPrivate inline PXInt8U PXAPI PXZLIBCompressionMethodToID(const PXZLIBCompressionMethod compressionMethod);
+PXPrivate inline PXZLIBCompressionMethod PXAPI PXZLIBCompressionMethodFromID(const PXI8U compressionMethod);
+PXPrivate inline PXI8U PXAPI PXZLIBCompressionMethodToID(const PXZLIBCompressionMethod compressionMethod);
 
-PXPublic PXActionResult PXAPI PXZLIBDecompress(PXFile* const pxInputSteam, PXFile* const pxOutputSteam);
-PXPublic PXActionResult PXAPI PXZLIBCompress(PXFile* const pxInputSteam, PXFile* const pxOutputSteam);
+PXPublic PXResult PXAPI PXZLIBDecompress(PXFile* const pxInputSteam, PXFile* const pxOutputSteam);
+PXPublic PXResult PXAPI PXZLIBCompress(PXFile* const pxInputSteam, PXFile* const pxOutputSteam);
 
 
 PXPublic PXSize PXAPI PXZLIBCalculateExpectedSize(const PXSize width, const PXSize height, const PXSize bpp, const PXPNGInterlaceMethod interlaceMethod);

@@ -134,7 +134,7 @@
 
 const char PXMP3ChunkTag[4] = { 'L', 'a', 'v', 'c' };
 
-PXMPEGGenre PXAPI PXMPEGGenreFromID(const PXInt8U mpegGenre)
+PXMPEGGenre PXAPI PXMPEGGenreFromID(const PXI8U mpegGenre)
 {
     switch(mpegGenre)
     {
@@ -524,7 +524,7 @@ PXMPEGGenre PXAPI PXMPEGGenreFromID(const PXInt8U mpegGenre)
     }
 }
 
-PXInt8U PXAPI PXMPEGGenreToID(const PXMPEGGenre mpegGenre)
+PXI8U PXAPI PXMPEGGenreToID(const PXMPEGGenre mpegGenre)
 {
     switch(mpegGenre)
     {
@@ -787,7 +787,7 @@ PXInt8U PXAPI PXMPEGGenreToID(const PXMPEGGenre mpegGenre)
     return -1; // MPEGGenreUnknown
 }
 
-PXActionResult PXAPI PXMP3LoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI  PXMP3LoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     PXMP3 pxMP3;
 
@@ -887,8 +887,8 @@ PXActionResult PXAPI PXMP3LoadFromFile(PXResourceTransphereInfo* const pxResourc
                 {
                     const PXByte bitRateTag = (byteC & 0b11110000) >> 4;
 
-                    const PXInt16U bad = 0x00;
-                    const PXInt16U bitRateKBpsLookup[16][5] =
+                    const PXI16U bad = 0x00;
+                    const PXI16U bitRateKBpsLookup[16][5] =
                     {
                         {bad,     bad,     bad,    bad,    bad},
                         {  32,     32,     32,    32,    8},
@@ -908,17 +908,17 @@ PXActionResult PXAPI PXMP3LoadFromFile(PXResourceTransphereInfo* const pxResourc
                         { bad,     bad,     bad,    bad,    bad }
                     };
 
-                    const PXInt8U yPos = bitRateTag;
-                    const PXInt8U xPos =
+                    const PXI8U yPos = bitRateTag;
+                    const PXI8U xPos =
                         0 * (isMPEGVersion1 && isLayer1) +
                         1 * (isMPEGVersion1 && isLayer2) +
                         2 * (isMPEGVersion1 && isLayer3) +
                         3 * (isMPEGVersion2 && isLayer1) +
                         4 * ((isMPEGVersion2 || isMPEGVersion25) && (isLayer2 || isLayer3));
 
-                    const PXInt16U bitRateKBps = bitRateKBpsLookup[yPos][xPos];
+                    const PXI16U bitRateKBps = bitRateKBpsLookup[yPos][xPos];
 
-                    mp3->Header.BitRate = (PXInt32U)bitRateKBps * 1000u;
+                    mp3->Header.BitRate = (PXI32U)bitRateKBps * 1000u;
                 }
 
                 //For Layer II there are some combinations of bitrate and mode which are not allowed.
@@ -1140,7 +1140,7 @@ PXActionResult PXAPI PXMP3LoadFromFile(PXResourceTransphereInfo* const pxResourc
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXMP3SaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI  PXMP3SaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

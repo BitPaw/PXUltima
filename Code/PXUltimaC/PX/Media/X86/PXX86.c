@@ -25,7 +25,7 @@ void PXAPI PXX86InstructionSUBImidate(PXX86Iterator* const pxX86Iterator)
 {
     PXX86ModRM pxX86ModRM;
 
-    PXInt32U amount = 0; 
+    PXI32U amount = 0; 
 
     PXX86InstructionFunctionMODRMRead(pxX86Iterator, &pxX86ModRM);
 
@@ -62,7 +62,7 @@ void PXAPI PXX86InstructionInvoke(PXX86Iterator* const pxX86Iterator)
 
 void PXAPI PXX86InstructionFunctionMODRMRead(PXX86Iterator* const pxX86Iterator, PXX86ModRM* const pxX86ModRM)
 {
-    PXInt8U modRM = 0;
+    PXI8U modRM = 0;
 
     PXFileReadI8U(pxX86Iterator->Data, &modRM);
 
@@ -78,8 +78,8 @@ void PXAPI PXX86InstructionFunctionMOVx3(PXX86Iterator* const pxX86Iterator)
 {
     PXX86ModRM pxX86ModRM;
 
-    PXInt8U SIB = 0;
-    PXInt8U offset = 0;
+    PXI8U SIB = 0;
+    PXI8U offset = 0;
 
 
     PXX86InstructionFunctionMODRMRead(pxX86Iterator, &pxX86ModRM);
@@ -89,9 +89,9 @@ void PXAPI PXX86InstructionFunctionMOVx3(PXX86Iterator* const pxX86Iterator)
     PXFileReadI8U(pxX86Iterator->Data, &offset);
 
 
-    PXInt8U scale = (0b11000000 & SIB) >> 5;
-    PXInt8U index = (0b00111000 & SIB) >> 3;
-    PXInt8U base  = (0b00000111 & SIB) >> 0;
+    PXI8U scale = (0b11000000 & SIB) >> 5;
+    PXI8U index = (0b00111000 & SIB) >> 3;
+    PXI8U base  = (0b00000111 & SIB) >> 0;
 
 
 
@@ -513,7 +513,7 @@ const char PXX86InstructionListD8High[] =
 }
 */
 
-PXActionResult PXAPI PXX86InstructionNext(PXX86Iterator* const pxX86Iterator)
+PXResult PXAPI  PXX86InstructionNext(PXX86Iterator* const pxX86Iterator)
 {
     PXFileReadI8U(pxX86Iterator->Data, &pxX86Iterator->OperationCode);
 
@@ -553,7 +553,7 @@ PXActionResult PXAPI PXX86InstructionNext(PXX86Iterator* const pxX86Iterator)
     }
 }
 
-PXActionResult PXAPI PXX86InstructionDisassemble(PXX86Iterator* const pxX86Iterator)
+PXResult PXAPI  PXX86InstructionDisassemble(PXX86Iterator* const pxX86Iterator)
 {
     PXX86InstructionNext(pxX86Iterator);
 
@@ -563,7 +563,7 @@ PXActionResult PXAPI PXX86InstructionDisassemble(PXX86Iterator* const pxX86Itera
 
     char buffer[64];
     PXSize offset = 0;
-    PXInt8U dataByte = 0;
+    PXI8U dataByte = 0;
 
     offset += PXTextPrintA(buffer, 64, "%2.2X", pxX86Iterator->OperationCode);
 
@@ -653,7 +653,7 @@ PXActionResult PXAPI PXX86InstructionDisassemble(PXX86Iterator* const pxX86Itera
 }
 
 
-PXActionResult PXAPI PXX86InstructionWalk(PXFile* const pxFile, PXSectionTable* const pxSectionTable)
+PXResult PXAPI  PXX86InstructionWalk(PXFile* const pxFile, PXSectionTable* const pxSectionTable)
 {
     PXSize old = pxFile->DataCursor;
     PXX86Iterator pxX86Iterator;

@@ -43,7 +43,7 @@ const char* PXCOFFSectionList[] =
     PXCOFFSectionTypeRec
 };
 
-const PXInt8U PXCOFFSectionListSize[] = 
+const PXI8U PXCOFFSectionListSize[] = 
 {
     sizeof(PXCOFFSectionTypeAlphaArchitectureInformation),
     sizeof(PXCOFFSectionTypeUninitializedData),
@@ -61,7 +61,7 @@ const PXInt8U PXCOFFSectionListSize[] =
     sizeof(PXCOFFSectionTypeRec)
 };
 
-const PXInt8U PXCOFFSectionListAmount = sizeof(PXCOFFSectionListSize) / sizeof(PXInt8U);
+const PXI8U PXCOFFSectionListAmount = sizeof(PXCOFFSectionListSize) / sizeof(PXI8U);
 
 
 
@@ -82,7 +82,7 @@ const PXInt8U PXCOFFSectionListAmount = sizeof(PXCOFFSectionListSize) / sizeof(P
 #define STYP_VECTOR 0x8000
 #define STYP_PADDED 0x00010000
 
-PXCOFFMachineType PXAPI PXCOFFMachineFromID(const PXInt16U valueID)
+PXCOFFMachineType PXAPI PXCOFFMachineFromID(const PXI16U valueID)
 {
     switch(valueID)
     {
@@ -126,7 +126,7 @@ PXCOFFMachineType PXAPI PXCOFFMachineFromID(const PXInt16U valueID)
     }
 }
 
-PXCOFFFormat PXAPI PXCOFFFormatFromID(const PXInt16U valueID)
+PXCOFFFormat PXAPI PXCOFFFormatFromID(const PXI16U valueID)
 {
     switch(valueID)
     {
@@ -140,7 +140,7 @@ PXCOFFFormat PXAPI PXCOFFFormatFromID(const PXInt16U valueID)
     }
 }
 
-PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFile)
+PXResult PXAPI  PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFile)
 {
     PXClear(PXCOFF, pxCOFF);
 
@@ -156,7 +156,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 
     // COFF File Header
     {
-        PXInt16U machineTypeID = 0;
+        PXI16U machineTypeID = 0;
 
         const PXTypeEntry pxDataStreamElementList[] =
         {
@@ -183,7 +183,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
         if(hasOptionalHeader)
         {
             {
-                PXInt16U magicNumber = 0;
+                PXI16U magicNumber = 0;
 
                 remainingOptionalHeaderOffset -= PXFileReadI16UE(pxFile, &magicNumber, PXEndianLittle);
 
@@ -203,7 +203,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 
 
             {
-                PXInt16U magicNumber = 0;
+                PXI16U magicNumber = 0;
 
                 const PXTypeEntry pxDataStreamElementList[] =
                 {
@@ -336,10 +336,10 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 
                         if(pxCOFF->OptionalHeader.WindowsNT.NumberOfRvaAndSizes > 0 && 0)
                         {
-                            PXInt32U virtualAddress = 0;
-                            PXInt32U size = 0;
+                            PXI32U virtualAddress = 0;
+                            PXI32U size = 0;
 
-                            //assert(pxCOFF->OptionalHeader.WindowsNT.NumberOfRvaAndSizes * 2*sizeof(PXInt32U) < pxFile->DataSize);
+                            //assert(pxCOFF->OptionalHeader.WindowsNT.NumberOfRvaAndSizes * 2*sizeof(PXI32U) < pxFile->DataSize);
 
 #if PXLogEnable && PXCOFFDebug
                             PXLogPrint
@@ -351,7 +351,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
                             );
 #endif
 
-                            for(PXInt32U i = 0; i < pxCOFF->OptionalHeader.WindowsNT.NumberOfRvaAndSizes; ++i)
+                            for(PXI32U i = 0; i < pxCOFF->OptionalHeader.WindowsNT.NumberOfRvaAndSizes; ++i)
                             {
                                 PXFileReadI32U(pxFile, &virtualAddress);
                                 PXFileReadI32U(pxFile, &size);
@@ -444,7 +444,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
     pxCOFF->SectionTableList = PXMemoryHeapCallocT(PXSectionTable, pxCOFF->Header.NumberOfSections);
     pxCOFF->SectionTableListSize = pxCOFF->Header.NumberOfSections;
 
-    for(PXInt16U sectionID = 0; sectionID < pxCOFF->Header.NumberOfSections; ++sectionID)
+    for(PXI16U sectionID = 0; sectionID < pxCOFF->Header.NumberOfSections; ++sectionID)
     {
         PXSectionTable* const pxSectionTableCurrent = &pxCOFF->SectionTableList[sectionID];
 
@@ -576,7 +576,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
                             break;
                         }
 
-                        PXSize namePosition = ((PXInt32S)pxCOFF->ImportDirectoryTable.NameOffset - (PXInt32S)pxSectionTableCurrent->SectionRawDataAdress);
+                        PXSize namePosition = ((PXI32S)pxCOFF->ImportDirectoryTable.NameOffset - (PXI32S)pxSectionTableCurrent->SectionRawDataAdress);
 
                         //PXFileCursorRewind(pxFile, namePosition);
 
@@ -709,7 +709,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
         {
             PXFileCursorMoveTo(pxFile, pxSectionTableCurrent->PointerToRelocations);
 
-            for(PXInt16U i = 0; i < pxSectionTableCurrent->NumberOfRelocations; ++i)
+            for(PXI16U i = 0; i < pxSectionTableCurrent->NumberOfRelocations; ++i)
             {
                 PXRelocationInformation pxRelocationInformation;
 
@@ -744,7 +744,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
 
             PXFileCursorMoveTo(pxFile, pxSectionTableCurrent->PointerToLinenumbers);
 
-            for(PXInt16U i = 0; i < pxSectionTableCurrent->NumberOfLinenumbers; ++i)
+            for(PXI16U i = 0; i < pxSectionTableCurrent->NumberOfLinenumbers; ++i)
             {
                 PXLineNumberEntry* pxLineNumberEntry = &pxLineNumberEntryXX;
 
@@ -795,7 +795,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
             );
 #endif
 
-            for(PXInt32U i = 0; i < pxCOFF->Header.NumberOfSymbols; i++)
+            for(PXI32U i = 0; i < pxCOFF->Header.NumberOfSymbols; i++)
             {
                 PXCOFFSymbolTableEntry* pxCOFFSymbolTableEntry = &pxCOFFSymbolTableEntryXX;
 
@@ -879,7 +879,7 @@ PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFi
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXCOFFSaveToFile(const PXCOFF* const pxCOFF, PXFile* const pxFile)
+PXResult PXAPI  PXCOFFSaveToFile(const PXCOFF* const pxCOFF, PXFile* const pxFile)
 {
     return PXActionRefusedNotImplemented;
 }

@@ -13,7 +13,7 @@ PXSize PXAPI PXGIFFilePredictSize(const PXSize width, const PXSize height, const
     return 0;
 }
 
-PXActionResult PXAPI PXGIFLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI  PXGIFLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     PXGIF gif;
 
@@ -46,7 +46,7 @@ PXActionResult PXAPI PXGIFLoadFromFile(PXResourceTransphereInfo* const pxResourc
     // Logical Screen Descriptor.
     {
         {
-            PXInt8U packedFields = 0;
+            PXI8U packedFields = 0;
 
             const PXTypeEntry pxDataStreamElementList[] =
             {
@@ -75,7 +75,7 @@ PXActionResult PXAPI PXGIFLoadFromFile(PXResourceTransphereInfo* const pxResourc
             PXGIFImageDescriptor imageDescriptor;
 
             {
-                PXInt8U packedFields = 0;
+                PXI8U packedFields = 0;
 
                 const PXTypeEntry pxDataStreamElementList[] =
                 {
@@ -114,7 +114,7 @@ PXActionResult PXAPI PXGIFLoadFromFile(PXResourceTransphereInfo* const pxResourc
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXGIFSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI  PXGIFSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     PXFileWriteB(pxResourceSaveInfo->FileReference, PXGIFHeader, sizeof(PXGIFHeader));
 

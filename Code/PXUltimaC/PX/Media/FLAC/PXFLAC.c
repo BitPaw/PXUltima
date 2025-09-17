@@ -5,7 +5,7 @@
 
 const char PXFLACSignature[4] = "fLaC";
 
-PXFLACBlockType PXAPI PXFLACBlockTypeFromID(const PXInt8U typeID)
+PXFLACBlockType PXAPI PXFLACBlockTypeFromID(const PXI8U typeID)
 {
     switch (typeID)
     {
@@ -30,7 +30,7 @@ PXFLACBlockType PXAPI PXFLACBlockTypeFromID(const PXInt8U typeID)
     }
 }
 
-PXActionResult PXAPI PXFLACLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI  PXFLACLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     PXFLACSteamInfo pxFLACSteamInfo;
 
@@ -78,7 +78,7 @@ PXActionResult PXAPI PXFLACLoadFromFile(PXResourceTransphereInfo* const pxResour
     {
 
         PXFLACBlock pxFLACBlock;
-        PXInt8U typeID;
+        PXI8U typeID;
 
         const PXTypeEntry pxDataStreamElementList[] =
         {
@@ -104,7 +104,7 @@ PXActionResult PXAPI PXFLACLoadFromFile(PXResourceTransphereInfo* const pxResour
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXFLACSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI  PXFLACSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     PXFLACSteamInfo pxFLACSteamInfo;
 

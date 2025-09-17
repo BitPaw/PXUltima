@@ -5,32 +5,32 @@
 
 #define M4ADebugLog 0
 
-#define M4AChunkIDFTYP PXInt32Make('f','t','y','p')
-#define M4AChunkIDMDAT PXInt32Make('m','d','a','t')
-#define M4AChunkIDMOOV PXInt32Make('m','o','o','v')
-#define M4AChunkIDPNOT PXInt32Make('p','n','o','t')
-#define M4AChunkIDUDTA PXInt32Make('u','d','t','a')
-#define M4AChunkIDUUID PXInt32Make('u','u','i','d')
-#define M4AChunkIDMOOF PXInt32Make('m','o','o','f')
-#define M4AChunkIDFREE PXInt32Make('f','r','e','e')
-#define M4AChunkIDSKIP PXInt32Make('s','k','i','p')
-#define M4AChunkIDJP2 PXInt32Make('j','P','2',' ')
-#define M4AChunkIDWIDE PXInt32Make('w','i','d','e')
-#define M4AChunkIDLOAD PXInt32Make('l','o','a','d')
-#define M4AChunkIDCTAB PXInt32Make('c','t','a','b')
-#define M4AChunkIDIMAP PXInt32Make('i','m','a','p')
-#define M4AChunkIDMATT PXInt32Make('m','a','t','t')
-#define M4AChunkIDKMAT PXInt32Make('k','m','a','t')
-#define M4AChunkIDCLIP PXInt32Make('c','l','i','p')
-#define M4AChunkIDCRGN PXInt32Make('c','r','g','n')
-#define M4AChunkIDSYNC PXInt32Make('s','y','n','c')
-#define M4AChunkIDCHAP PXInt32Make('c','h','a','p')
-#define M4AChunkIDTMCD PXInt32Make('t','m','c','d')
-#define M4AChunkIDSCPT PXInt32Make('s','c','p','t')
-#define M4AChunkIDSSRC PXInt32Make('s','s','r','c')
-#define M4AChunkIDPICT PXInt32Make('P','I','C','T')
+#define M4AChunkIDFTYP PXI32Make('f','t','y','p')
+#define M4AChunkIDMDAT PXI32Make('m','d','a','t')
+#define M4AChunkIDMOOV PXI32Make('m','o','o','v')
+#define M4AChunkIDPNOT PXI32Make('p','n','o','t')
+#define M4AChunkIDUDTA PXI32Make('u','d','t','a')
+#define M4AChunkIDUUID PXI32Make('u','u','i','d')
+#define M4AChunkIDMOOF PXI32Make('m','o','o','f')
+#define M4AChunkIDFREE PXI32Make('f','r','e','e')
+#define M4AChunkIDSKIP PXI32Make('s','k','i','p')
+#define M4AChunkIDJP2 PXI32Make('j','P','2',' ')
+#define M4AChunkIDWIDE PXI32Make('w','i','d','e')
+#define M4AChunkIDLOAD PXI32Make('l','o','a','d')
+#define M4AChunkIDCTAB PXI32Make('c','t','a','b')
+#define M4AChunkIDIMAP PXI32Make('i','m','a','p')
+#define M4AChunkIDMATT PXI32Make('m','a','t','t')
+#define M4AChunkIDKMAT PXI32Make('k','m','a','t')
+#define M4AChunkIDCLIP PXI32Make('c','l','i','p')
+#define M4AChunkIDCRGN PXI32Make('c','r','g','n')
+#define M4AChunkIDSYNC PXI32Make('s','y','n','c')
+#define M4AChunkIDCHAP PXI32Make('c','h','a','p')
+#define M4AChunkIDTMCD PXI32Make('t','m','c','d')
+#define M4AChunkIDSCPT PXI32Make('s','c','p','t')
+#define M4AChunkIDSSRC PXI32Make('s','s','r','c')
+#define M4AChunkIDPICT PXI32Make('P','I','C','T')
 
-PXM4AChunkID PXAPI PXMP4ChunkFromID(const PXInt32U chunkID)
+PXM4AChunkID PXAPI PXMP4ChunkFromID(const PXI32U chunkID)
 {
     switch(chunkID)
     {
@@ -88,7 +88,7 @@ PXM4AChunkID PXAPI PXMP4ChunkFromID(const PXInt32U chunkID)
     }
 }
 
-PXActionResult PXAPI PXMP4LoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI  PXMP4LoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     PXFile* const pxFile = pxResourceLoadInfo->FileReference;
 
@@ -101,7 +101,7 @@ PXActionResult PXAPI PXMP4LoadFromFile(PXResourceTransphereInfo* const pxResourc
         PXM4AChunk chunk;
 
         unsigned int chunkSize = 0;
-        PXInt32UCluster typePrimaryID;
+        PXI32UCluster typePrimaryID;
 
         PXFileReadI32UE(&pxFile, &chunkSize, PXEndianBig);
         PXFileReadB(&pxFile, typePrimaryID.Data, 4u);
@@ -207,7 +207,7 @@ PXActionResult PXAPI PXMP4LoadFromFile(PXResourceTransphereInfo* const pxResourc
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXMP4SaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI  PXMP4SaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

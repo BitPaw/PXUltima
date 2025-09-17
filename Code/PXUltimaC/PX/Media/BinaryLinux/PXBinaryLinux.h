@@ -1,7 +1,7 @@
-#ifndef PXELFINCLUDE
-#define PXELFINCLUDE
+#ifndef PXELFIncluded
+#define PXELFIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef enum PXELFTargetOSAPI_
 {
@@ -162,35 +162,35 @@ typedef struct PXELFHeader_
     PXELFType Type;
 
     PXELFTargetOSAPI TargetOSAPI;
-    PXInt8U TargetOSAPIVersion;
+    PXI8U TargetOSAPIVersion;
 
 
     // Offset
     PXAdress64 EntryPointOfCode;
 
     PXAdress64 ProgrammHeaderOffset;
-    PXInt16U ProgrammHeaderSize;
-    PXInt16U ProgrammHeaderAmount;
+    PXI16U ProgrammHeaderSize;
+    PXI16U ProgrammHeaderAmount;
 
     PXAdress64 SectionHeaderOffset;
-    PXInt16U SectionHeaderSize;
-    PXInt16U SectionHeaderAmount;
+    PXI16U SectionHeaderSize;
+    PXI16U SectionHeaderAmount;
 
 }
 PXELFHeader;
 
 typedef struct PXSectionHeader_
 {
-    PXInt32U sh_nameOffset;
-    PXInt32U sh_type;
-    PXInt64U sh_flags;
-    PXInt64U sh_addr;
-    PXInt64U FileImageOffset;
-    PXInt64U FileImageSize;
-    PXInt32U sh_link;
-    PXInt32U sh_info;
-    PXInt64U sh_addralign;
-    PXInt64U sh_entsize;
+    PXI32U sh_nameOffset;
+    PXI32U sh_type;
+    PXI64U sh_flags;
+    PXI64U sh_addr;
+    PXI64U FileImageOffset;
+    PXI64U FileImageSize;
+    PXI32U sh_link;
+    PXI32U sh_info;
+    PXI64U sh_addralign;
+    PXI64U sh_entsize;
 }
 PXSectionHeader;
 
@@ -200,14 +200,14 @@ typedef struct PXBinaryLinux_
 }
 PXBinaryLinux;
 
-PXPrivate inline PXEndian PXAPI PXELFEndianessFromID(const PXInt8U value);
-PXPrivate inline PXBitFormat PXAPI PXELFBitFormatFromID(const PXInt8U value);
-PXPrivate inline PXELFTargetOSAPI PXAPI PXPXELFTargetOSAPIFromID(const PXInt8U value);
-PXPrivate inline PXELFMachine PXAPI PXELFMachineFromID(const PXInt8U value);
-PXPrivate inline PXELFType PXAPI PXELFTypeFromID(const PXInt8U value);
-PXPrivate inline PXELFSegmentType PXAPI PXELFSegmentTypeFromID(const PXInt32U value);
+PXPrivate inline PXEndian PXAPI PXELFEndianessFromID(const PXI8U value);
+PXPrivate inline PXBitFormat PXAPI PXELFBitFormatFromID(const PXI8U value);
+PXPrivate inline PXELFTargetOSAPI PXAPI PXPXELFTargetOSAPIFromID(const PXI8U value);
+PXPrivate inline PXELFMachine PXAPI PXELFMachineFromID(const PXI8U value);
+PXPrivate inline PXELFType PXAPI PXELFTypeFromID(const PXI8U value);
+PXPrivate inline PXELFSegmentType PXAPI PXELFSegmentTypeFromID(const PXI32U value);
 
-PXPublic PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXBinaryLinuxSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXBinaryLinuxSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

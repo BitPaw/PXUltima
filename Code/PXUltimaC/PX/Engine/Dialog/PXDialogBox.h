@@ -1,5 +1,5 @@
-#ifndef PXEngineDialogBoxInclude
-#define PXEngineDialogBoxInclude
+#ifndef PXEngineDialogBoxIncluded
+#define PXEngineDialogBoxIncluded
 
 #include <PX/Engine/PXEngine.h>
 #include "PXDialogContainer.h"
@@ -31,11 +31,11 @@ typedef struct PXEngineDialogBox_
 
     PXSprite* DialogBoxSprite;
 
-    PXEngineText* DialogBoxText;
-    PXEngineTimer* DialogBoxTextTimer;
+    PXDialogText* DialogBoxText;
+    PXTimer* DialogBoxTextTimer;
 
-    PXTexture2D* TexturePageNext;
-    PXTexture2D* TexturePageFinal;
+    PXTexture* TexturePageNext;
+    PXTexture* TexturePageFinal;
 
     // References
     PXSprite* SpriteCharacterFace;
@@ -45,12 +45,12 @@ typedef struct PXEngineDialogBox_
     // Internal
     PXBool IsLocked;
     PXBool IsNewWord;
-    PXInt32U LineNumber;
+    PXI32U LineNumber;
 
     // Setting
     PXBool DelayEnable;
     PXF32 DelaySpan;
-    PXInt32U TextSpeed;
+    PXI32U TextSpeed;
 
 
     PXDialogMessagePage* DialogMessagePageList;
@@ -68,6 +68,6 @@ PXPublic void PXAPI PXEngineDialogBoxOpen
     const PXSize amountOfPages
 );
 PXPublic void PXAPI PXEngineDialogBoxClose(PXEngine* const pxEngine, PXEngineDialogBox* const pxEngineDialogBox);
-PXPublic PXActionResult PXAPI PXEngineDialogBoxTimerTrigger(PXEngine* const pxEngine, PXEngineTimerEventInfo* const pxEngineTimerEventInfo, PXEngineDialogBox* const pxEngineDialogBox);
+PXPublic PXResult PXAPI PXEngineDialogBoxTimerTrigger(PXEngine* const pxEngine, PXTimerEventInfo* const pxEngineTimerEventInfo, PXEngineDialogBox* const pxEngineDialogBox);
 
 #endif

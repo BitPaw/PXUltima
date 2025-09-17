@@ -1,7 +1,7 @@
 #ifndef TestPXCompilerDEFINE
 #define TestPXCompilerDEFINE
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 
 PXPublic void PXAPI PXTestCompilerAll();
 

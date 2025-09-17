@@ -3,7 +3,7 @@
 #include <PX/OS/File/PXFile.h>
 #include <PX/OS/PXOS.h>
 
-PXPlatformID PXAPI PXTTFPlatformFromID(const PXInt16U platformID)
+PXPlatformID PXAPI PXTTFPlatformFromID(const PXI16U platformID)
 {
     switch (platformID)
     {
@@ -21,7 +21,7 @@ PXPlatformID PXAPI PXTTFPlatformFromID(const PXInt16U platformID)
     }
 }
 
-PXEncodingID PXAPI PXTTFEncodingFromID(const PXPlatformID platformID, const PXInt16U encodingID)
+PXEncodingID PXAPI PXTTFEncodingFromID(const PXPlatformID platformID, const PXI16U encodingID)
 {
     switch(platformID)
     {
@@ -143,107 +143,107 @@ void PXAPI PXTTFTableEntryTypeToID(unsigned short* major, unsigned short* minor,
 
 }
 
-PXTTFTableEntryType PXAPI PXTTFTableEntryTypeFromID(const PXInt32U tableEntryType)
+PXTTFTableEntryType PXAPI PXTTFTableEntryTypeFromID(const PXI32U tableEntryType)
 {
     switch(tableEntryType)
     {
-    case PXInt32MakeEndianBig('a', 'c', 'n', 't'):
+    case PXI32MakeEndianBig('a', 'c', 'n', 't'):
         return PXTTFTableEntryAccentAttachment;
-    case PXInt32MakeEndianBig('a', 'n', 'k', 'r'):
+    case PXI32MakeEndianBig('a', 'n', 'k', 'r'):
         return PXTTFTableEntryAnchorPoint;
-    case PXInt32MakeEndianBig('a', 'v', 'a', 'r'):
+    case PXI32MakeEndianBig('a', 'v', 'a', 'r'):
         return PXTTFTableEntryAxisVariation;
-    case PXInt32MakeEndianBig('b', 'd', 'a', 't'):
+    case PXI32MakeEndianBig('b', 'd', 'a', 't'):
         return PXTTFTableEntryBitmapData;
-    case PXInt32MakeEndianBig('b', 'h', 'e', 'd'):
+    case PXI32MakeEndianBig('b', 'h', 'e', 'd'):
         return PXTTFTableEntryBitmapFontHeader;
-    case PXInt32MakeEndianBig('b', 'l', 'o', 'c'):
+    case PXI32MakeEndianBig('b', 'l', 'o', 'c'):
         return PXTTFTableEntryBitmapLocation;
-    case PXInt32MakeEndianBig('b', 's', 'l', 'n'):
+    case PXI32MakeEndianBig('b', 's', 'l', 'n'):
         return PXTTFTableEntryBaseline;
-    case PXInt32MakeEndianBig('c', 'm', 'a', 'p'):
+    case PXI32MakeEndianBig('c', 'm', 'a', 'p'):
         return PXTTFTableEntryCharacterCodeMapping;
-    case PXInt32MakeEndianBig('c', 'v', 'a', 'r'):
+    case PXI32MakeEndianBig('c', 'v', 'a', 'r'):
         return PXTTFTableEntryCVTVariation;
-    case PXInt32MakeEndianBig('c', 'v', 't', ' '):
+    case PXI32MakeEndianBig('c', 'v', 't', ' '):
         return PXTTFTableEntryControlValue;
-    case PXInt32MakeEndianBig('D', 'S', 'I', 'G'):
+    case PXI32MakeEndianBig('D', 'S', 'I', 'G'):
         return PXTTFTableEntryDigitalSignature;
-    case PXInt32MakeEndianBig('E', 'B', 'S', 'C'):
+    case PXI32MakeEndianBig('E', 'B', 'S', 'C'):
         return PXTTFTableEntryEmbeddedBitmapScalingControl;
-    case PXInt32MakeEndianBig('f', 'd', 's', 'c'):
+    case PXI32MakeEndianBig('f', 'd', 's', 'c'):
         return PXTTFTableEntryFontDescriptor;
-    case PXInt32MakeEndianBig('f', 'e', 'a', 't'):
+    case PXI32MakeEndianBig('f', 'e', 'a', 't'):
         return PXTTFTableEntryLayoutFeature;
-    case PXInt32MakeEndianBig('f', 'm', 't', 'x'):
+    case PXI32MakeEndianBig('f', 'm', 't', 'x'):
         return PXTTFTableEntryFontMetrics;
-    case PXInt32MakeEndianBig('f', 'o', 'n', 'd'):
+    case PXI32MakeEndianBig('f', 'o', 'n', 'd'):
         return PXTTFTableEntryFontFamilyCompatibility;
-    case PXInt32MakeEndianBig('f', 'p', 'g', 'm'):
+    case PXI32MakeEndianBig('f', 'p', 'g', 'm'):
         return PXTTFTableEntryFontProgram;
-    case PXInt32MakeEndianBig('f', 'v', 'a', 'r'):
+    case PXI32MakeEndianBig('f', 'v', 'a', 'r'):
         return PXTTFTableEntryFontVariation;
-    case PXInt32MakeEndianBig('g', 'a', 's', 'p'):
+    case PXI32MakeEndianBig('g', 'a', 's', 'p'):
         return PXTTFTableEntryGridFittingAndScanConversionProcedure;
-    case PXInt32MakeEndianBig('g', 'l', 'y', 'f'):
+    case PXI32MakeEndianBig('g', 'l', 'y', 'f'):
         return PXTTFTableEntryGlyphOutline;
-    case PXInt32MakeEndianBig('g', 'v', 'a', 'r'):
+    case PXI32MakeEndianBig('g', 'v', 'a', 'r'):
         return PXTTFTableEntryGlyphVariation;
-    case PXInt32MakeEndianBig('h', 'd', 'm', 'x'):
+    case PXI32MakeEndianBig('h', 'd', 'm', 'x'):
         return PXTTFTableEntryHorizontalDeviceMetrics;
-    case PXInt32MakeEndianBig('h', 'e', 'a', 'd'):
+    case PXI32MakeEndianBig('h', 'e', 'a', 'd'):
         return PXTTFTableEntryFontHeader;
-    case PXInt32MakeEndianBig('h', 'h', 'e', 'a'):
+    case PXI32MakeEndianBig('h', 'h', 'e', 'a'):
         return PXTTFTableEntryHorizontalHeader;
-    case PXInt32MakeEndianBig('h', 'm', 't', 'x'):
+    case PXI32MakeEndianBig('h', 'm', 't', 'x'):
         return PXTTFTableEntryHorizontalMetrics;
-    case PXInt32MakeEndianBig('j', 'u', 's', 't'):
+    case PXI32MakeEndianBig('j', 'u', 's', 't'):
         return PXTTFTableEntryJustification;
-    case PXInt32MakeEndianBig('k', 'e', 'r', 'n'):
+    case PXI32MakeEndianBig('k', 'e', 'r', 'n'):
         return PXTTFTableEntryKerning;
-    case PXInt32MakeEndianBig('k', 'e', 'r', 'x'):
+    case PXI32MakeEndianBig('k', 'e', 'r', 'x'):
         return PXTTFTableEntryExtendedKerning;
-    case PXInt32MakeEndianBig('l', 'c', 'a', 'r'):
+    case PXI32MakeEndianBig('l', 'c', 'a', 'r'):
         return PXTTFTableEntryLigatureCaret;
-    case PXInt32MakeEndianBig('l', 'o', 'c', 'a'):
+    case PXI32MakeEndianBig('l', 'o', 'c', 'a'):
         return PXTTFTableEntryGlyphLocation;
-    case PXInt32MakeEndianBig('l', 't', 'a', 'g'):
+    case PXI32MakeEndianBig('l', 't', 'a', 'g'):
         return PXTTFTableEntryLanguageTag;
-    case PXInt32MakeEndianBig('L', 'T', 'S', 'H'):
+    case PXI32MakeEndianBig('L', 'T', 'S', 'H'):
         return PXTTFTableEntryLinearThreshold;
-    case PXInt32MakeEndianBig('m', 'a', 'x', 'p'):
+    case PXI32MakeEndianBig('m', 'a', 'x', 'p'):
         return PXTTFTableEntryMaximumProfile;
-    case PXInt32MakeEndianBig('m', 'e', 't', 'a'):
+    case PXI32MakeEndianBig('m', 'e', 't', 'a'):
         return PXTTFTableEntryMetadata;
-    case PXInt32MakeEndianBig('m', 'o', 'r', 't'):
+    case PXI32MakeEndianBig('m', 'o', 'r', 't'):
         return PXTTFTableEntryMetamorphosisTabledeprecated;
-    case PXInt32MakeEndianBig('m', 'o', 'r', 'x'):
+    case PXI32MakeEndianBig('m', 'o', 'r', 'x'):
         return PXTTFTableEntryExtendedMetamorphosis;
-    case PXInt32MakeEndianBig('n', 'a', 'm', 'e'):
+    case PXI32MakeEndianBig('n', 'a', 'm', 'e'):
         return PXTTFTableEntryName;
-    case PXInt32MakeEndianBig('o', 'p', 'b', 'd'):
+    case PXI32MakeEndianBig('o', 'p', 'b', 'd'):
         return PXTTFTableEntryOpticalBounds;
-    case PXInt32MakeEndianBig('O', 'S', '/', '2'):
+    case PXI32MakeEndianBig('O', 'S', '/', '2'):
         return PXTTFTableEntryCompatibility;
-    case PXInt32MakeEndianBig('p', 'o', 's', 't'):
+    case PXI32MakeEndianBig('p', 'o', 's', 't'):
         return PXTTFTableEntryGlyphNameAndPostScriptCompatibility;
-    case PXInt32MakeEndianBig('p', 'r', 'e', 'p'):
+    case PXI32MakeEndianBig('p', 'r', 'e', 'p'):
         return PXTTFTableEntryControlValueProgram;
-    case PXInt32MakeEndianBig('p', 'r', 'o', 'p'):
+    case PXI32MakeEndianBig('p', 'r', 'o', 'p'):
         return PXTTFTableEntryProperties;
-    case PXInt32MakeEndianBig('s', 'b', 'i', 'x'):
+    case PXI32MakeEndianBig('s', 'b', 'i', 'x'):
         return PXTTFTableEntryExtendedBitmaps;
-    case PXInt32MakeEndianBig('t', 'r', 'a', 'k'):
+    case PXI32MakeEndianBig('t', 'r', 'a', 'k'):
         return PXTTFTableEntryTracking;
-    case PXInt32MakeEndianBig('v', 'h', 'e', 'a'):
+    case PXI32MakeEndianBig('v', 'h', 'e', 'a'):
         return PXTTFTableEntryVerticalHeader;
-    case PXInt32MakeEndianBig('v', 'm', 't', 'x'):
+    case PXI32MakeEndianBig('v', 'm', 't', 'x'):
         return PXTTFTableEntryVerticalMetrics;
-    case PXInt32MakeEndianBig('V', 'D', 'M', 'X'):
+    case PXI32MakeEndianBig('V', 'D', 'M', 'X'):
         return PXTTFTableEntryVerticalDeviceMetrics;
-    case PXInt32MakeEndianBig('x', 'r', 'e', 'f'):
+    case PXI32MakeEndianBig('x', 'r', 'e', 'f'):
         return PXTTFTableEntryCrossReference;
-    case PXInt32MakeEndianBig('Z', 'a', 'p', 'f'):
+    case PXI32MakeEndianBig('Z', 'a', 'p', 'f'):
         return PXTTFTableEntryGlyphReference;
     default:
         return PXTTFTableEntryUnkown;
@@ -255,7 +255,7 @@ void PXAPI PXTTFDestruct(PXTTF* const ttf)
     // TODO
 }
 
-PXActionResult PXAPI PXTTFLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI  PXTTFLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     PXTTF ttfdata;
     PXTTF* ttf = &ttfdata;
@@ -659,9 +659,9 @@ PXActionResult PXAPI PXTTFLoadFromFile(PXResourceTransphereInfo* const pxResourc
         {
             typedef struct PXTTFNameTableFormat_
             {
-                PXInt16U Format;
-                PXInt16U Count;
-                PXInt16U StringOffset;
+                PXI16U Format;
+                PXI16U Count;
+                PXI16U StringOffset;
             }
             PXTTFNameTableFormat;
 
@@ -697,8 +697,8 @@ PXActionResult PXAPI PXTTFLoadFromFile(PXResourceTransphereInfo* const pxResourc
             {
                 PXEncodingRecord* const encodingRecord = &ttf->CharacterMapping.EncodingRecordList[i];
 
-                PXInt16U platformID = 0;
-                PXInt16U encodingID = 0;
+                PXI16U platformID = 0;
+                PXI16U encodingID = 0;
 
                 PXFileReadI16UE(pxResourceLoadInfo->FileReference, &platformID, PXEndianBig);
                 PXFileReadI16UE(pxResourceLoadInfo->FileReference, &encodingID, PXEndianBig);
@@ -776,7 +776,7 @@ PXActionResult PXAPI PXTTFLoadFromFile(PXResourceTransphereInfo* const pxResourc
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXTTFSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI  PXTTFSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

@@ -1,6 +1,6 @@
-#ifndef PXHTMLINCLUDE
-#define PXHTMLINCLUDE
+#ifndef PXHTMLIncluded
+#define PXHTMLIncluded
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 
 #endif

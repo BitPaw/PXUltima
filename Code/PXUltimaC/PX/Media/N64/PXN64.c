@@ -5,8 +5,9 @@
 #include <PX/OS/Error/PXActionResult.h>
 #include <PX/Media/CRC32/PXCRC32.h>
 #include <PX/Media/MIPS/PXMIPS.h>
+#include <PX/OS/PXOS.h>
 
-PXN64CountryCode PXAPI PXN64CountryCodeFromID(PXInt8U pxN64CountryCodeID)
+PXN64CountryCode PXAPI PXN64CountryCodeFromID(PXI8U pxN64CountryCodeID)
 {
     switch(pxN64CountryCodeID)
     {
@@ -65,7 +66,7 @@ const char* PXN64CountryCodeToString(const PXN64CountryCode pxN64CountryCode)
     }
 }
 
-PXActionResult PXAPI PXN64LoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI  PXN64LoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     PXFile* pxFile = pxResourceLoadInfo->FileReference;
 
@@ -297,7 +298,7 @@ PXActionResult PXAPI PXN64LoadFromFile(PXResourceTransphereInfo* const pxResourc
             "%10s : 0x%8.8x\n"
             "%10s : %s",
             "Name", n64.ImageName,
-            "Size", sizeText.TextA,
+            "Size", sizeText.A,
             "EntyPoint", (0x80000000 + n64.RAMEntryPointOffset),
             "Country", countryCodeName
         );
@@ -331,7 +332,7 @@ PXActionResult PXAPI PXN64LoadFromFile(PXResourceTransphereInfo* const pxResourc
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXN64SaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI  PXN64SaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

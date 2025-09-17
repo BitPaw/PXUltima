@@ -1,7 +1,7 @@
-#ifndef PXDiagramINCLUDE
-#define PXDiagramINCLUDE
+#ifndef PXDiagramIncluded
+#define PXDiagramIncluded
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 
 typedef struct PXBoxPlot_
 {

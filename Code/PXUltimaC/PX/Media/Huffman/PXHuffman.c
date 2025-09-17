@@ -17,7 +17,7 @@
 
     // the order in which "code length alphabet code lengths" are stored as specified by deflate, out of this the huffman
     // tree of the dynamic huffman tree lengths is generated
-const PXInt8U PXHuffmanCodeLengthIndex[NUM_CODE_LENGTH_CODES] =
+const PXI8U PXHuffmanCodeLengthIndex[NUM_CODE_LENGTH_CODES] =
 {
     16, 17, 18, 0, 8, 7,
     9, 6, 10, 5, 11, 4, 12,
@@ -27,29 +27,29 @@ const PXInt8U PXHuffmanCodeLengthIndex[NUM_CODE_LENGTH_CODES] =
 
 // numcodes = 288
 // maxbitlen = 15
-PXActionResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, const PXInt32U* const bitlen, const PXSize numcodes, const PXSize maxbitlen)
+PXResult PXAPI  PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, const PXI32U* const bitlen, const PXSize numcodes, const PXSize maxbitlen)
 {
     PXClear(PXHuffmanTree, huffmanTree);
 
     // HuffmanTree_makeFromLengths()
-    huffmanTree->LengthsList = PXMemoryHeapCallocT(PXInt32U, numcodes);
+    huffmanTree->LengthsList = PXMemoryHeapCallocT(PXI32U, numcodes);
     huffmanTree->NumberOfSymbols = NUM_DEFLATE_CODE_SYMBOLS;
     huffmanTree->maxbitlen = 15;
-    huffmanTree->CodeSymbols = PXMemoryHeapCallocT(PXInt32U, numcodes);
+    huffmanTree->CodeSymbols = PXMemoryHeapCallocT(PXI32U, numcodes);
 
-    PXCopyList(PXInt32U, numcodes, bitlen, huffmanTree->LengthsList);
+    PXCopyList(PXI32U, numcodes, bitlen, huffmanTree->LengthsList);
     //-----------
 
     //------------------------------------ HuffmanTree_makeFromLengths2()
-    const PXInt32U maxBitLenghAA = maxbitlen + 1;
+    const PXI32U maxBitLenghAA = maxbitlen + 1;
 
-    //PXInt32U* blcount = PXNewList(PXInt32U, maxBitLenghAA);
-    //PXInt32U* nextcode = PXNewList(PXInt32U, maxBitLenghAA);
+    //PXI32U* blcount = PXNewList(PXI32U, maxBitLenghAA);
+    //PXI32U* nextcode = PXNewList(PXI32U, maxBitLenghAA);
 
-    PXInt32U blcount[16];
-    PXInt32U nextcode[16];
-    PXClearList(PXInt32U, blcount, 16);
-    PXClearList(PXInt32U, nextcode, 16);
+    PXI32U blcount[16];
+    PXI32U nextcode[16];
+    PXClearList(PXI32U, blcount, 16);
+    PXClearList(PXI32U, nextcode, 16);
 
     unsigned error = 0;
 
@@ -57,8 +57,8 @@ PXActionResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, con
 
     if(!error)
     {
-        //PXClearList(PXInt32U, blcount, maxbitlen + 1);
-        //PXClearList(PXInt32U, nextcode, maxbitlen + 1);
+        //PXClearList(PXI32U, blcount, maxbitlen + 1);
+        //PXClearList(PXI32U, nextcode, maxbitlen + 1);
 
         // step 1: count number of instances of each code length
         for(PXSize bits = 0; bits != numcodes; ++bits)
@@ -83,21 +83,21 @@ PXActionResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, con
         }
     }
 
-    //PXDeleteList(PXInt32U, blcount, maxBitLenghAA);
-    //PXDeleteList(PXInt32U, nextcode, maxBitLenghAA);
+    //PXDeleteList(PXI32U, blcount, maxBitLenghAA);
+    //PXDeleteList(PXI32U, nextcode, maxBitLenghAA);
     //-------------------------------------------------
 
     // HuffmanTree_makeTable()
-    const PXInt16U headsize = 1u << PXHuffmanFirstBits; // size of the first table, 512
-    const PXInt16U mask = (1u << PXHuffmanFirstBits) /*headsize*/ - 1u;
+    const PXI16U headsize = 1u << PXHuffmanFirstBits; // size of the first table, 512
+    const PXI16U mask = (1u << PXHuffmanFirstBits) /*headsize*/ - 1u;
     PXSize pointer, size; /*total table size*/
 
     {
         const PXSize maxlensSize = sizeof(unsigned int) * headsize;
         //unsigned int* maxlens = PXNewList(unsigned int, headsize);
 
-        PXInt32U maxlens[512];
-        PXClearList(PXInt32U, maxlens, 512);
+        PXI32U maxlens[512];
+        PXClearList(PXI32U, maxlens, 512);
 
         //if (!maxlens) return 83; // alloc fail
 
@@ -105,14 +105,14 @@ PXActionResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, con
 
         for(PXSize i = 0; i < numcodes; i++)
         {
-            const PXInt32U symbol = huffmanTree->CodeSymbols[i];
-            const PXInt32U l = huffmanTree->LengthsList[i];
+            const PXI32U symbol = huffmanTree->CodeSymbols[i];
+            const PXI32U l = huffmanTree->LengthsList[i];
 
             if(l <= PXHuffmanFirstBits)
                 continue; // symbols that fit in first table don't increase secondary table size*/
 
             /*get the FIRSTBITS MSBs, the MSBs of the symbol are encoded first. See later comment about the reversing*/
-            const PXInt32U index = reverseBits(symbol >> (l - PXHuffmanFirstBits), PXHuffmanFirstBits);
+            const PXI32U index = reverseBits(symbol >> (l - PXHuffmanFirstBits), PXHuffmanFirstBits);
             maxlens[index] = PXMathMaximum(maxlens[index], l);
         }
         /* compute total table size: size of first table plus all secondary tables for symbols longer than FIRSTBITS */
@@ -128,12 +128,12 @@ PXActionResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, con
             }
         }
 
-        huffmanTree->TableLength = PXMemoryHeapCallocT(PXInt8U, size); // unsigned char*
-        huffmanTree->TableValue = PXMemoryHeapCallocT(PXInt16U, size); // unsigned short
+        huffmanTree->TableLength = PXMemoryHeapCallocT(PXI8U, size); // unsigned char*
+        huffmanTree->TableValue = PXMemoryHeapCallocT(PXI16U, size); // unsigned short
 
         if(!huffmanTree->TableLength || !huffmanTree->TableValue)
         {
-            //PXDeleteList(PXInt32U, maxlens, maxlensSize);
+            //PXDeleteList(PXI32U, maxlens, maxlensSize);
             /* freeing tree->table values is done at a higher scope */
             return PXActionFailedMemoryAllocation; /*alloc fail*/
         }
@@ -143,9 +143,9 @@ PXActionResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, con
 
         /*fill in the first table for long symbols: max prefix size and pointer to secondary tables*/
         pointer = headsize;
-        for(PXInt16U i = 0; i < headsize; ++i)
+        for(PXI16U i = 0; i < headsize; ++i)
         {
-            const PXInt32U l = maxlens[i];
+            const PXI32U l = maxlens[i];
 
             if(l <= PXHuffmanFirstBits)
                 continue;
@@ -163,10 +163,10 @@ PXActionResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, con
     PXSize numpresent = 0;
     for(PXSize i = 0; i < numcodes; ++i)
     {
-        const PXInt32U l = huffmanTree->LengthsList[i];
-        const PXInt32U symbol = huffmanTree->CodeSymbols[i]; // the huffman bit pattern. i itself is the value.
+        const PXI32U l = huffmanTree->LengthsList[i];
+        const PXI32U symbol = huffmanTree->CodeSymbols[i]; // the huffman bit pattern. i itself is the value.
         // reverse bits, because the huffman bits are given in MSB first order but the bit reader reads LSB first
-        const PXInt32U reverse = reverseBits(symbol, l);
+        const PXI32U reverse = reverseBits(symbol, l);
 
         if(l == 0)
             continue;
@@ -176,12 +176,12 @@ PXActionResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, con
         if(l <= PXHuffmanFirstBits)
         {
             // short symbol, fully in first table, replicated num times if l < FIRSTBITS
-            const PXInt16U num = 1u << (PXHuffmanFirstBits - l); // Can only be 0..512 max
+            const PXI16U num = 1u << (PXHuffmanFirstBits - l); // Can only be 0..512 max
 
-            for(PXInt16U j = 0; j < num; ++j)
+            for(PXI16U j = 0; j < num; ++j)
             {
                 // bit reader will read the l bits of symbol first, the remaining FIRSTBITS - l bits go to the MSB's
-                PXInt32U index = reverse | (j << l);
+                PXI32U index = reverse | (j << l);
 
                 if(huffmanTree->TableLength[index] != 16)
                     return PXActionRefusedParserSymbolNotAsExpected; // invalid tree: long symbol shares prefix with short symbol
@@ -194,20 +194,20 @@ PXActionResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, con
         {
             /*long symbol, shares prefix with other long symbols in first lookup table, needs second lookup*/
             /*the FIRSTBITS MSBs of the symbol are the first table index*/
-            const PXInt32U index = reverse & mask;
-            const PXInt8U maxlen = huffmanTree->TableLength[index];
+            const PXI32U index = reverse & mask;
+            const PXI8U maxlen = huffmanTree->TableLength[index];
             /*log2 of secondary table length, should be >= l - FIRSTBITS*/
-            const PXInt8U tablelen = maxlen - PXHuffmanFirstBits;
-            const PXInt16U start = huffmanTree->TableValue[index]; /*starting index in secondary table*/
-            const PXInt32U num = 1u << (tablelen - (l - PXHuffmanFirstBits)); /*amount of entries of this symbol in secondary table*/
+            const PXI8U tablelen = maxlen - PXHuffmanFirstBits;
+            const PXI16U start = huffmanTree->TableValue[index]; /*starting index in secondary table*/
+            const PXI32U num = 1u << (tablelen - (l - PXHuffmanFirstBits)); /*amount of entries of this symbol in secondary table*/
 
             if(maxlen < l)
                 return PXActionRefusedParserSymbolNotAsExpected; // invalid tree: long symbol shares prefix with short symbol
 
-            for(PXInt32U j = 0; j < num; ++j)
+            for(PXI32U j = 0; j < num; ++j)
             {
-                const PXInt32U reverse2 = reverse >> PXHuffmanFirstBits; /* l - FIRSTBITS bits */
-                const PXInt32U index2 = start + (reverse2 | (j << (l - PXHuffmanFirstBits)));
+                const PXI32U reverse2 = reverse >> PXHuffmanFirstBits; /* l - FIRSTBITS bits */
+                const PXI32U index2 = start + (reverse2 | (j << (l - PXHuffmanFirstBits)));
                 huffmanTree->TableLength[index2] = l;
                 huffmanTree->TableValue[index2] = i;
             }
@@ -251,7 +251,7 @@ PXActionResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, con
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(PXFile* const pxFile, PXHuffmanTree* const treeLength, PXHuffmanTree* const treeDistance)
+PXResult PXAPI  PXHuffmanDistanceTreeGenerateDynamic(PXFile* const pxFile, PXHuffmanTree* const treeLength, PXHuffmanTree* const treeDistance)
 {
     PXClear(PXHuffmanTree, treeLength);
 
@@ -260,19 +260,19 @@ PXActionResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(PXFile* const pxFile, 
     unsigned n;
 
     /*see comments in deflateDynamic for explanation of the context and these variables, it is analogous*/
-    PXInt32U bitlen_lengh[NUM_DEFLATE_CODE_SYMBOLS]; /*lit,len code lengths*/
-    PXInt32U bitlen_distance[NUM_DISTANCE_SYMBOLS]; /*dist code lengths*/
+    PXI32U bitlen_lengh[NUM_DEFLATE_CODE_SYMBOLS]; /*lit,len code lengths*/
+    PXI32U bitlen_distance[NUM_DISTANCE_SYMBOLS]; /*dist code lengths*/
     /*code length code lengths ("clcl"), the bit lengths of the huffman tree used to compress bitlen_ll and bitlen_d*/
-    PXInt32U bitlen_codeLength[NUM_CODE_LENGTH_CODES];
+    PXI32U bitlen_codeLength[NUM_CODE_LENGTH_CODES];
     PXHuffmanTree tree_cl; /*the code tree for code length codes (the huffman tree for compressed huffman trees)*/
 
     //if (!ensureBits17(reader, 14)) return 49; //error: the bit pointer is or will go past the memory BBBB
 
     PXClear(PXHuffmanTree, &tree_cl);
 
-    PXClearList(PXInt32U, bitlen_lengh, NUM_DEFLATE_CODE_SYMBOLS);
-    PXClearList(PXInt32U, bitlen_distance, NUM_DISTANCE_SYMBOLS);
-    PXClearList(PXInt32U, bitlen_codeLength, NUM_CODE_LENGTH_CODES);
+    PXClearList(PXI32U, bitlen_lengh, NUM_DEFLATE_CODE_SYMBOLS);
+    PXClearList(PXI32U, bitlen_distance, NUM_DISTANCE_SYMBOLS);
+    PXClearList(PXI32U, bitlen_codeLength, NUM_CODE_LENGTH_CODES);
 
 
     PXHuffmanNumberCode huffmanNumberCode;
@@ -311,12 +311,12 @@ PXActionResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(PXFile* const pxFile, 
     {
         // throw(50); // error: the bit pointer is or will go past the memory* AAAA/
     }*/
-    for(PXInt8U index = 0; index != huffmanNumberCode.NumberOfLengthCodes; ++index)
+    for(PXI8U index = 0; index != huffmanNumberCode.NumberOfLengthCodes; ++index)
     {
         //ensureBits9(reader, 3); /*out of bounds already checked above */
         bitlen_codeLength[PXHuffmanCodeLengthIndex[index]] = PXFileReadBits(pxFile, 3u);
     }
-    for(PXInt8U index = huffmanNumberCode.NumberOfLengthCodes; index != NUM_CODE_LENGTH_CODES; ++index)
+    for(PXI8U index = huffmanNumberCode.NumberOfLengthCodes; index != NUM_CODE_LENGTH_CODES; ++index)
     {
         bitlen_codeLength[PXHuffmanCodeLengthIndex[index]] = 0;
     }
@@ -337,7 +337,7 @@ PXActionResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(PXFile* const pxFile, 
     {
         //ensureBits25(reader, 22); /* up to 15 bits for huffman code, up to 7 extra bits below*/
 
-        const PXInt16U code = PXHuffmanSymbolDecode(pxFile, &tree_cl);
+        const PXI16U code = PXHuffmanSymbolDecode(pxFile, &tree_cl);
         const PXBool isValid = 19 > code; // valid is 0..18
 
         if(!isValid) // INVALIDSYMBOL
@@ -467,7 +467,7 @@ PXActionResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(PXFile* const pxFile, 
     return PXActionSuccessful;
 }
 
-PXInt16U PXAPI PXHuffmanSymbolDecode(struct PXFile_* const pxFile, const PXHuffmanTree* const huffmanTree)
+PXI16U PXAPI PXHuffmanSymbolDecode(struct PXFile_* const pxFile, const PXHuffmanTree* const huffmanTree)
 {
     PXHuffmanSymbol huffmanSymbol;
     huffmanSymbol.Code = PXFilePeekBits(pxFile, PXHuffmanFirstBits);
@@ -486,11 +486,11 @@ PXInt16U PXAPI PXHuffmanSymbolDecode(struct PXFile_* const pxFile, const PXHuffm
     {
         PXFileCursorMoveBits(pxFile, PXHuffmanFirstBits);
 
-        const PXInt16U extraBitsToRead = huffmanSymbol.Length - PXHuffmanFirstBits;
-        const PXInt16U extraBits = PXFilePeekBits(pxFile, extraBitsToRead);
-        const PXInt16U index2 = huffmanSymbol.Value + extraBits;
-        const PXInt16U moveBits = huffmanTree->TableLength[index2] - PXHuffmanFirstBits;
-        const PXInt16U result = huffmanTree->TableValue[index2];
+        const PXI16U extraBitsToRead = huffmanSymbol.Length - PXHuffmanFirstBits;
+        const PXI16U extraBits = PXFilePeekBits(pxFile, extraBitsToRead);
+        const PXI16U index2 = huffmanSymbol.Value + extraBits;
+        const PXI16U moveBits = huffmanTree->TableLength[index2] - PXHuffmanFirstBits;
+        const PXI16U result = huffmanTree->TableValue[index2];
 
         PXFileCursorMoveBits(pxFile, moveBits);
 
@@ -498,29 +498,29 @@ PXInt16U PXAPI PXHuffmanSymbolDecode(struct PXFile_* const pxFile, const PXHuffm
     }
 }
 
-PXInt32U PXAPI reverseBits(const PXInt32U bits, const PXInt32U num)
+PXI32U PXAPI reverseBits(const PXI32U bits, const PXI32U num)
 {
     /*TODO: implement faster lookup table based version when needed*/
-    PXInt32U result = 0;
-    for(PXInt32U i = 0; i < num; i++)
+    PXI32U result = 0;
+    for(PXI32U i = 0; i < num; i++)
         result |= ((bits >> (num - i - 1u)) & 1u) << i;
     return result;
 }
 
-PXActionResult PXAPI PXHuffmanDistanceTreeGenerateFixed(PXHuffmanTree* const treeLength, PXHuffmanTree* const treeDistance)
+PXResult PXAPI  PXHuffmanDistanceTreeGenerateFixed(PXHuffmanTree* const treeLength, PXHuffmanTree* const treeDistance)
 {
     {
         //------------------------------------------- generateFixedLitLenTree()
         const PXSize maxbitlen = 15;
         const PXSize numcodes = NUM_DEFLATE_CODE_SYMBOLS;
-        PXInt32U bitlen[NUM_DEFLATE_CODE_SYMBOLS];
+        PXI32U bitlen[NUM_DEFLATE_CODE_SYMBOLS];
 
         // 288 possible codes:
         // 0-255=literals, 256=endcode, 257-285=lengthcodes, 286-287=unused*/
-        for(PXInt16U i = 0u; i <= 143u; ++i) bitlen[i] = 8u;
-        for(PXInt16U i = 144u; i <= 255u; ++i) bitlen[i] = 9u;
-        for(PXInt16U i = 256u; i <= 279u; ++i) bitlen[i] = 7u;
-        for(PXInt16U i = 280u; i <= 287u; ++i) bitlen[i] = 8u;
+        for(PXI16U i = 0u; i <= 143u; ++i) bitlen[i] = 8u;
+        for(PXI16U i = 144u; i <= 255u; ++i) bitlen[i] = 9u;
+        for(PXI16U i = 256u; i <= 279u; ++i) bitlen[i] = 7u;
+        for(PXI16U i = 280u; i <= 287u; ++i) bitlen[i] = 8u;
         //---------------------------------------------------------------------------
 
         const PXActionResult result = PXGenerateFromLengths(treeLength, bitlen, numcodes, maxbitlen);
@@ -532,9 +532,9 @@ PXActionResult PXAPI PXHuffmanDistanceTreeGenerateFixed(PXHuffmanTree* const tre
 
         const PXSize maxbitlen = 15;
         const PXSize numcodes = NUM_DISTANCE_SYMBOLS;
-        PXInt32U bitlen[NUM_DISTANCE_SYMBOLS];
+        PXI32U bitlen[NUM_DISTANCE_SYMBOLS];
 
-        for(PXInt8U i = 0; i < NUM_DISTANCE_SYMBOLS; ++i)
+        for(PXI8U i = 0; i < NUM_DISTANCE_SYMBOLS; ++i)
         {
             bitlen[i] = 5u;
         }
@@ -553,7 +553,7 @@ void PXAPI PXHuffmanTreeDestruct(PXHuffmanTree* const huffmanTree)
     PXMemoryHeapFree(PXNull, huffmanTree->TableValue);
 }
 
-PXHuffmanCodeType PXAPI PXHuffmanCodeTypeFromCode(const PXInt16U code)
+PXHuffmanCodeType PXAPI PXHuffmanCodeTypeFromCode(const PXI16U code)
 {
     if(285u < code) return PXHuffmanCodeInvalid; // if too big => Invalid
 

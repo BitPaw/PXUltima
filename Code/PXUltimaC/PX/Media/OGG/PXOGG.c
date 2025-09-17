@@ -11,7 +11,7 @@ const static char PXOGGHeaderSignature[4] = "OggS";
 
 #define PXOPGGDebug 0
 
-PXActionResult PXAPI PXOGGLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI  PXOGGLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     PXOGG ogg;
 
@@ -23,7 +23,7 @@ PXActionResult PXAPI PXOGGLoadFromFile(PXResourceTransphereInfo* const pxResourc
         // You can refocus it when the file is corrupted.
         PXOGGPage page;
 
-        PXInt32UCluster signature;
+        PXI32UCluster signature;
 
         const PXTypeEntry pxDataStreamElementList[] =
         {
@@ -123,7 +123,7 @@ PXActionResult PXAPI PXOGGLoadFromFile(PXResourceTransphereInfo* const pxResourc
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXOGGSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI  PXOGGSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     PXFileWriteB(pxResourceSaveInfo->FileReference, PXOGGHeaderSignature, sizeof(PXOGGHeaderSignature));
 

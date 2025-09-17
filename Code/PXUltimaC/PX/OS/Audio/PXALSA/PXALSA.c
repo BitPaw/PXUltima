@@ -6,7 +6,7 @@
 #pragma comment(lib, "libasound.so")
 #endif
 
-PXActionResult PXAPI PXALSAInitialize(PXAudio* const pxAudio)
+PXResult PXAPI  PXALSAInitialize(PXAudio* const pxAudio)
 {
 #if OSUnix && 0
     // sound PCM (Pulse Code Modulation)
@@ -267,7 +267,7 @@ PXActionResult PXAPI PXALSAInitialize(PXAudio* const pxAudio)
 #endif
 }
 
-PXActionResult PXAPI PXALSARelease(PXAudio* const pxAudio)
+PXResult PXAPI  PXALSARelease(PXAudio* const pxAudio)
 {
 #if OSUnix && 0
     snd_pcm_close (pxAudio->SoundDeviceCurrent);

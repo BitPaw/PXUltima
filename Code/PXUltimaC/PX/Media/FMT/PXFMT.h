@@ -1,23 +1,23 @@
-#ifndef PXFMTINCLUDE
-#define PXFMTINCLUDE
+#ifndef PXFMTIncluded
+#define PXFMTIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 // Format header
 typedef struct PXFMT_
 {
-    PXInt32U ChunkSize;
-    PXInt32U SampleRate;
-    PXInt32U ByteRate;
+    PXI32U ChunkSize;
+    PXI32U SampleRate;
+    PXI32U ByteRate;
 
-    PXInt16U AudioFormat;
-    PXInt16U NumerOfChannels;
-    PXInt16U BlockAllign;
-    PXInt16U BitsPerSample;
+    PXI16U AudioFormat;
+    PXI16U NumerOfChannels;
+    PXI16U BlockAllign;
+    PXI16U BitsPerSample;
 }
 PXFMT;
 
-PXPublic PXActionResult PXAPI PXFMTLoadFromFile(PXFMT* const pxFMT, PXFile* const pxFile, const PXEndian endian);
-PXPublic PXActionResult PXAPI PXFMTSaveToFile(const PXFMT* const pxFMT, PXFile* const pxFile, const PXEndian endian);
+PXPublic PXResult PXAPI PXFMTLoadFromFile(PXFMT* const pxFMT, PXFile* const pxFile, const PXEndian endian);
+PXPublic PXResult PXAPI PXFMTSaveToFile(const PXFMT* const pxFMT, PXFile* const pxFile, const PXEndian endian);
 
 #endif

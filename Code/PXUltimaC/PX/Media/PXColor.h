@@ -1,5 +1,5 @@
-#ifndef PXColorINCLUDE
-#define PXColorINCLUDE
+#ifndef PXColorIncluded
+#define PXColorIncluded
 
 #include <PX/Media/PXType.h>
 
@@ -86,9 +86,9 @@ PXColorFormat;
 
 typedef struct PXColorRGBI8_
 {
-    PXInt8U Red;
-    PXInt8U Green;
-    PXInt8U Blue;
+    PXI8U Red;
+    PXI8U Green;
+    PXI8U Blue;
 }
 PXColorRGBI8;
 
@@ -102,26 +102,26 @@ PXColorHSV;
 
 typedef struct PXColorRGBAI8_
 {
-    PXInt8U Red;
-    PXInt8U Green;
-    PXInt8U Blue;
-    PXInt8U Alpha;
+    PXI8U Red;
+    PXI8U Green;
+    PXI8U Blue;
+    PXI8U Alpha;
 }
 PXColorRGBAI8;
 
 typedef struct PXColorRGBI16_
 {
-    PXInt16U Red;
-    PXInt16U Green;
-    PXInt16U Blue;
+    PXI16U Red;
+    PXI16U Green;
+    PXI16U Blue;
 }
 PXColorRGBI16;
 
 typedef struct PXColorRGBI32_
 {
-    PXInt32U Red;
-    PXInt32U Green;
-    PXInt32U Blue;
+    PXI32U Red;
+    PXI32U Green;
+    PXI32U Blue;
 }
 PXColorRGBI32;
 
@@ -144,42 +144,42 @@ PXColorRGBAF;
 
 typedef struct PXColorRGBD_
 {
-    double Red;
-    double Green;
-    double Blue;
+    PXF64 Red;
+    PXF64 Green;
+    PXF64 Blue;
 }
 PXColorRGBD;
 
 typedef struct PXColorYCbCrI8_
 {
-    PXInt8U Y;
-    PXInt8U Cb;
-    PXInt8U Cr;
+    PXI8U Y;
+    PXI8U Cb;
+    PXI8U Cr;
 }
 PXColorYCbCrI8;
 
 
 typedef struct PXColorYUV_
 {
-    PXInt8U Y;
-    PXInt8U U;
-    PXInt8U V;
+    PXI8U Y;
+    PXI8U U;
+    PXI8U V;
 }
 PXColorYUV;
 
 
-PXPublic PXInt32U PXAPI PXColorI32FromBGR(const PXInt8U r, const PXInt8U g, const PXInt8U b);
-PXPublic PXInt32U PXAPI PXColorI32FromBGRA(const PXInt8U r, const PXInt8U g, const PXInt8U b, const PXInt8U a);
+PXPublic PXI32U PXAPI PXColorI32FromBGR(const PXI8U r, const PXI8U g, const PXI8U b);
+PXPublic PXI32U PXAPI PXColorI32FromBGRA(const PXI8U r, const PXI8U g, const PXI8U b, const PXI8U a);
 
-PXPublic PXInt32U PXAPI PXColorI32FromRGB(const PXInt8U r, const PXInt8U g, const PXInt8U b);
-PXPublic PXInt32U PXAPI PXColorI32FromRGBA(const PXInt8U r, const PXInt8U g, const PXInt8U b, const PXInt8U a);
+PXPublic PXI32U PXAPI PXColorI32FromRGB(const PXI8U r, const PXI8U g, const PXI8U b);
+PXPublic PXI32U PXAPI PXColorI32FromRGBA(const PXI8U r, const PXI8U g, const PXI8U b, const PXI8U a);
 
 
 PXPublic void PXAPI PXColorYUYToRGB(PXColorYUV* const pxColorYUV, PXColorRGBI8* const pxColorRGBI8);
 
 
-PXPublic PXInt8U PXAPI PXColorFormatBytePerPixel(const PXColorFormat imageDataFormat);
-PXPublic PXInt8U PXAPI PXColorFormatBitsPerPixel(const PXColorFormat imageDataFormat);
+PXPublic PXI8U PXAPI PXColorFormatBytePerPixel(const PXColorFormat imageDataFormat);
+PXPublic PXI8U PXAPI PXColorFormatBitsPerPixel(const PXColorFormat imageDataFormat);
 
 PXPublic void PXAPI PXColorRGBToYCbCr(const PXColorRGBI8* const colorRGB, PXColorYCbCrI8* const ColorYCbCr);
 PXPublic void PXAPI PXColorYCbCrToRGB(const PXColorYCbCrI8* const colorYCbCr, PXColorRGBI8* const colorRGB);

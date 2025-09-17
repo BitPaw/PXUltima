@@ -6,13 +6,13 @@
 const static char PXMIDITrackHeaderID[4] = { 'M','T','h','d' };
 const static char PXMIDITrackChunkID[4] = { 'M','T','r','k' };
 
-PXActionResult PXAPI PXMIDILoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI  PXMIDILoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     PXMIDI* const pxMIDI = PXMemoryHeapCallocT(PXMIDI, 1);
 
     // Parse Chunk header
     {
-        PXInt16U chunkLength = 0;
+        PXI16U chunkLength = 0;
 
         {
             const PXBool isValid = PXFileReadAndCompare(pxResourceLoadInfo->FileReference, PXMIDITrackHeaderID, sizeof(PXMIDITrackHeaderID));
@@ -43,10 +43,10 @@ PXActionResult PXAPI PXMIDILoadFromFile(PXResourceTransphereInfo* const pxResour
     pxMIDI->TrackList = PXMemoryHeapCallocT(PXMIDITrack, pxMIDI->TrackListAmount);
 
     // Parse Track Header
-    for (PXInt16U i = 0; i < pxMIDI->TrackListSize; ++i)
+    for (PXI16U i = 0; i < pxMIDI->TrackListSize; ++i)
     {
         PXMIDITrack* const track = &pxMIDI->TrackList[i];
-        PXInt32U chunkLength = 0;
+        PXI32U chunkLength = 0;
 
         {
             const PXBool isValid = PXFileReadAndCompare(pxResourceLoadInfo->FileReference, PXMIDITrackChunkID, sizeof(PXMIDITrackChunkID));
@@ -69,12 +69,12 @@ PXActionResult PXAPI PXMIDILoadFromFile(PXResourceTransphereInfo* const pxResour
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXMIDISaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI  PXMIDISaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     PXMIDI* pxMIDI = PXNull;
 
     {
-        const PXInt16U chunkLength = 6;
+        const PXI16U chunkLength = 6;
         const PXTypeEntry pxDataStreamElementList[] =
         {
             {PXMIDITrackHeaderID,PXTypeDatax4},
@@ -87,7 +87,7 @@ PXActionResult PXAPI PXMIDISaveToFile(PXResourceTransphereInfo* const pxResource
         PXFileWriteMultible(pxResourceSaveInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
     }
 
-    for (PXInt16U i = 0; i < pxMIDI->TrackListSize; ++i)
+    for (PXI16U i = 0; i < pxMIDI->TrackListSize; ++i)
     {
         PXMIDITrack* const track = &pxMIDI->TrackList[i];
 

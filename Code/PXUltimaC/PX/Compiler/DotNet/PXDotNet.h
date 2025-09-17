@@ -1,7 +1,7 @@
-#ifndef PXDotNetIncluded
-#define PXDotNetIncluded
+#ifndef PXDotNetIncludedd
+#define PXDotNetIncludedd
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 #include <PX/OS/Library/PXLibrary.h>
 
 typedef struct PXDotNetCoreCLR_
@@ -120,20 +120,20 @@ typedef struct PXDotNet_
 }
 PXDotNet;
 
-PXPrivate PXActionResult PXAPI PXDotNetInitializeMSCoree(PXDotNetMSCoree* const pxDotNetMSCoree);
-PXPrivate PXActionResult PXAPI PXDotNetInitializeCoreCLR(PXDotNetCoreCLR* const pxDotNetCoreCLR);
-PXPrivate PXActionResult PXAPI PXDotNetInitializeHostFX(PXDotNetHostFX* const pxDotNetHostFX);
+PXPrivate PXResult PXAPI  PXDotNetInitializeMSCoree(PXDotNetMSCoree* const pxDotNetMSCoree);
+PXPrivate PXResult PXAPI  PXDotNetInitializeCoreCLR(PXDotNetCoreCLR* const pxDotNetCoreCLR);
+PXPrivate PXResult PXAPI  PXDotNetInitializeHostFX(PXDotNetHostFX* const pxDotNetHostFX);
 
-PXPrivate PXActionResult PXAPI PXDotNetDelegateFetchMSCoree(PXDotNetMSCoree* const pxDotNetMSCoree, PXDelegate* const pxDelegate);
-PXPrivate PXActionResult PXAPI PXDotNetDelegateFetchCoreCLR(PXDotNetCoreCLR* const pxDotNetCoreCLR, PXDelegate* const pxDelegate);
-PXPrivate PXActionResult PXAPI PXDotNetDelegateFetchHostFX(PXDotNetHostFX* const pxDotNetHostFX, PXDelegate* const pxDelegate);
+PXPrivate PXResult PXAPI  PXDotNetDelegateFetchMSCoree(PXDotNetMSCoree* const pxDotNetMSCoree, PXDelegate* const pxDelegate);
+PXPrivate PXResult PXAPI  PXDotNetDelegateFetchCoreCLR(PXDotNetCoreCLR* const pxDotNetCoreCLR, PXDelegate* const pxDelegate);
+PXPrivate PXResult PXAPI  PXDotNetDelegateFetchHostFX(PXDotNetHostFX* const pxDotNetHostFX, PXDelegate* const pxDelegate);
 
-PXPrivate PXActionResult PXAPI PXDotNetExecuteMSCoree(PXDotNetMSCoree* const pxDotNetMSCoree);
-PXPrivate PXActionResult PXAPI PXDotNetExecuteCoreCLR(PXDotNetCoreCLR* const pxDotNetCoreCLR);
-PXPrivate PXActionResult PXAPI PXDotNetExecuteHostFX(PXDotNetHostFX* const pxDotNetHostFX);
+PXPrivate PXResult PXAPI  PXDotNetExecuteMSCoree(PXDotNetMSCoree* const pxDotNetMSCoree);
+PXPrivate PXResult PXAPI  PXDotNetExecuteCoreCLR(PXDotNetCoreCLR* const pxDotNetCoreCLR);
+PXPrivate PXResult PXAPI  PXDotNetExecuteHostFX(PXDotNetHostFX* const pxDotNetHostFX);
 
-PXPublic PXActionResult PXAPI PXDotNetCompile(PXDotNet* const pxDotNet);
+PXPublic PXResult PXAPI PXDotNetCompile(PXDotNet* const pxDotNet);
 
-PXPublic PXActionResult PXAPI PXDotNetInitialize(PXDotNet* const pxDotNet, const PXInt32U flagList);
+PXPublic PXResult PXAPI PXDotNetInitialize(PXDotNet* const pxDotNet, const PXI32U flagList);
 
 #endif

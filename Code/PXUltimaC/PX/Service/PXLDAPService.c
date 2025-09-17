@@ -248,7 +248,7 @@ typedef LDAP* (LDAPAPI* PXldap_conn_from_msg)(LDAP* PrimaryConn, LDAPMessage* re
 
 
 
-PXActionResult PXAPI PXLDAPClienInitialize(PXLDAPClient* const pxLDAPClient)
+PXResult PXAPI  PXLDAPClienInitialize(PXLDAPClient* const pxLDAPClient)
 {
     PXClear(PXLDAPClient, pxLDAPClient);
 
@@ -510,7 +510,7 @@ PXActionResult PXAPI PXLDAPClienInitialize(PXLDAPClient* const pxLDAPClient)
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXLDAPClienRelease(PXLDAPClient* const pxLDAPClient)
+PXResult PXAPI  PXLDAPClienRelease(PXLDAPClient* const pxLDAPClient)
 {
     PXLDAPClientClose(pxLDAPClient);
 
@@ -521,7 +521,7 @@ PXActionResult PXAPI PXLDAPClienRelease(PXLDAPClient* const pxLDAPClient)
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXLDAPClientOpen(PXLDAPClient* const pxLDAPClient, const PXLDAPConnectionInfo* const pxLDAPInfo)
+PXResult PXAPI  PXLDAPClientOpen(PXLDAPClient* const pxLDAPClient, const PXLDAPConnectionInfo* const pxLDAPInfo)
 {
     switch(pxLDAPInfo->Host.Format)
     {
@@ -536,13 +536,13 @@ PXActionResult PXAPI PXLDAPClientOpen(PXLDAPClient* const pxLDAPClient, const PX
             {
                 const PXldap_sslinitA pxldap_sslinitA = (PXldap_sslinitA)pxLDAPClient->sslinitA;
 
-                pxLDAPClient->ID = pxldap_sslinitA(pxLDAPInfo->Host.TextA, pxLDAPInfo->Port, pxLDAPInfo->SSLUse); // Windows Vista, Wldap32.dll, winldap.h
+                pxLDAPClient->ID = pxldap_sslinitA(pxLDAPInfo->Host.A, pxLDAPInfo->Port, pxLDAPInfo->SSLUse); // Windows Vista, Wldap32.dll, winldap.h
             }
             else
             {
                 const PXcldap_openA pxcldap_openA = (PXcldap_openA)pxLDAPClient->openA;
 
-                pxLDAPClient->ID = pxcldap_openA(pxLDAPInfo->Host.TextA, pxLDAPInfo->Port); // Windows Vista, Wldap32.dll, winldap.h
+                pxLDAPClient->ID = pxcldap_openA(pxLDAPInfo->Host.A, pxLDAPInfo->Port); // Windows Vista, Wldap32.dll, winldap.h
             }
 
             const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
@@ -567,13 +567,13 @@ PXActionResult PXAPI PXLDAPClientOpen(PXLDAPClient* const pxLDAPClient, const PX
             {
                 const PXldap_sslinitW pxldap_sslinitW = (PXldap_sslinitW)pxLDAPClient->sslinitW;
 
-                pxLDAPClient->ID = pxldap_sslinitW(pxLDAPInfo->Host.TextW, pxLDAPInfo->Port, pxLDAPInfo->SSLUse); // Windows Vista, Wldap32.dll, winldap.h
+                pxLDAPClient->ID = pxldap_sslinitW(pxLDAPInfo->Host.W, pxLDAPInfo->Port, pxLDAPInfo->SSLUse); // Windows Vista, Wldap32.dll, winldap.h
             }
             else
             {
                 const PXcldap_openW pxcldap_openW = (PXcldap_openW)pxLDAPClient->openW;
 
-                pxLDAPClient->ID = pxcldap_openW(pxLDAPInfo->Host.TextW, pxLDAPInfo->Port); // Windows Vista, Wldap32.dll, winldap.h
+                pxLDAPClient->ID = pxcldap_openW(pxLDAPInfo->Host.W, pxLDAPInfo->Port); // Windows Vista, Wldap32.dll, winldap.h
             }
 
             const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
@@ -637,8 +637,8 @@ PXActionResult PXAPI PXLDAPClientOpen(PXLDAPClient* const pxLDAPClient, const PX
         const ULONG bindResult = pxldap_bind_sA
         (
             pxLDAPClient->ID,
-            pxLDAPInfo->ConnectionDomain.TextA,
-            pxLDAPInfo->AuthenticationCredentials.TextA,
+            pxLDAPInfo->ConnectionDomain.A,
+            pxLDAPInfo->AuthenticationCredentials.A,
             LDAP_AUTH_SIMPLE
         );
         const PXBool bindSuccessful = LDAP_SUCCESS == bindResult;
@@ -657,7 +657,7 @@ PXActionResult PXAPI PXLDAPClientOpen(PXLDAPClient* const pxLDAPClient, const PX
 #endif
 }
 
-PXActionResult PXAPI PXLDAPClientClose(PXLDAPClient* const pxLDAPClient)
+PXResult PXAPI  PXLDAPClientClose(PXLDAPClient* const pxLDAPClient)
 {
     if(!pxLDAPClient->ID)
     {
@@ -686,7 +686,7 @@ PXActionResult PXAPI PXLDAPClientClose(PXLDAPClient* const pxLDAPClient)
 #endif
 }
 
-PXActionResult PXAPI PXLDAPClientSearch(PXLDAPClient* const pxLDAPClient, PXLDAPSearchInfo* const pxLDAPSearchInfo)
+PXResult PXAPI  PXLDAPClientSearch(PXLDAPClient* const pxLDAPClient, PXLDAPSearchInfo* const pxLDAPSearchInfo)
 {
     if(!pxLDAPClient->ID)
     {
@@ -741,9 +741,9 @@ PXActionResult PXAPI PXLDAPClientSearch(PXLDAPClient* const pxLDAPClient, PXLDAP
                 const ULONG messageID = pxldap_searchA
                 (
                     pxLDAPClient->ID,
-                    pxLDAPSearchInfo->EntryName.TextA,
+                    pxLDAPSearchInfo->EntryName.A,
                     scope,
-                    pxLDAPSearchInfo->Filter.TextA,
+                    pxLDAPSearchInfo->Filter.A,
                     pxLDAPSearchInfo->AttributeList,
                     pxLDAPSearchInfo->OnlyTypesRequired
                 );
@@ -764,9 +764,9 @@ PXActionResult PXAPI PXLDAPClientSearch(PXLDAPClient* const pxLDAPClient, PXLDAP
                 const ULONG searchResult = pxldap_search_sA
                 (
                     pxLDAPClient->ID,
-                    pxLDAPSearchInfo->EntryName.TextA,
+                    pxLDAPSearchInfo->EntryName.A,
                     scope,
-                    pxLDAPSearchInfo->Filter.TextA,
+                    pxLDAPSearchInfo->Filter.A,
                     pxLDAPSearchInfo->AttributeList,
                     pxLDAPSearchInfo->OnlyTypesRequired,
                     &pxLDAPClient->SearchResult
@@ -797,9 +797,9 @@ PXActionResult PXAPI PXLDAPClientSearch(PXLDAPClient* const pxLDAPClient, PXLDAP
             const ULONG messageID = pxldap_searchW
             (
                 pxLDAPClient->ID,
-                pxLDAPSearchInfo->EntryName.TextW,
+                pxLDAPSearchInfo->EntryName.W,
                 scope,
-                pxLDAPSearchInfo->Filter.TextW,
+                pxLDAPSearchInfo->Filter.W,
                 pxLDAPSearchInfo->AttributeList,
                 pxLDAPSearchInfo->OnlyTypesRequired
             );

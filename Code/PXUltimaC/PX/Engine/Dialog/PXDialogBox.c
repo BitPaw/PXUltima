@@ -57,7 +57,7 @@ void PXAPI PXEngineDialogBoxOpen
     const PXSize amountOfPages
 )
 {
-    PXEngineText* const dialogBoxText = pxEngineDialogBox->DialogBoxText;
+    PXDialogText* const dialogBoxText = pxEngineDialogBox->DialogBoxText;
 
     pxEngineDialogBox->State = PXEngineDialogStateActive;
     pxEngineDialogBox->PageAmountCurrent = 0;
@@ -139,7 +139,7 @@ void PXAPI PXEngineDialogBoxClose(PXEngine* const pxEngine, PXEngineDialogBox* c
     pxEngineDialogBox->IsLocked = PXFalse;
 }
 
-PXActionResult PXAPI PXEngineDialogBoxTimerTrigger(PXEngine* const pxEngine, PXEngineTimerEventInfo* const pxEngineTimerEventInfo, PXEngineDialogBox* const pxEngineDialogBox)
+PXResult PXAPI  PXEngineDialogBoxTimerTrigger(PXEngine* const pxEngine, PXTimerEventInfo* const pxEngineTimerEventInfo, PXEngineDialogBox* const pxEngineDialogBox)
 {
     if (!(pxEngine && pxEngineTimerEventInfo && pxEngineDialogBox))
     {
@@ -155,7 +155,7 @@ PXActionResult PXAPI PXEngineDialogBoxTimerTrigger(PXEngine* const pxEngine, PXE
 
     case PXEngineDialogStateActive:
     {
-        PXEngineText* const dialogBoxText = pxEngineDialogBox->DialogBoxText;
+        PXDialogText* const dialogBoxText = pxEngineDialogBox->DialogBoxText;
         PXDialogMessagePage* const pxDialogMessagePage = &pxEngineDialogBox->DialogMessagePageList[pxEngineDialogBox->PageAmountCurrent];
         PXText* const pxTextDialog = &pxDialogMessagePage->Text;
 
@@ -222,10 +222,10 @@ PXActionResult PXAPI PXEngineDialogBoxTimerTrigger(PXEngine* const pxEngine, PXE
 
         ++(dialogBoxText->TextRenderAmount);
 
-        char character = pxTextDialog->TextA[dialogBoxText->TextRenderAmount];
+        char character = pxTextDialog->A[dialogBoxText->TextRenderAmount];
 
-        const PXInt32U rendomDelay = (PXEngineGenerateRandom(pxEngine, 400) - 200) * 1000; // -2000 to 2000
-        PXEngineTimer* const pxEngineTimer = pxEngineTimerEventInfo->TimerReference;
+        const PXI32U rendomDelay = (PXEngineGenerateRandom(pxEngine, 400) - 200) * 1000; // -2000 to 2000
+        PXTimer* const pxEngineTimer = pxEngineTimerEventInfo->TimerReference;
 
         pxEngineTimer->TimeDelayShift = 0;
 

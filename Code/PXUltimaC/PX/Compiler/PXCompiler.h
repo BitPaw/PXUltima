@@ -1,7 +1,7 @@
-#ifndef PXCompilerINCLUDE
-#define PXCompilerINCLUDE
+#ifndef PXCompilerIncluded
+#define PXCompilerIncluded
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 
 #define PXCompilerDEBUG 1
 
@@ -162,7 +162,7 @@ typedef struct PXCompilerWriteInfo_
     PXCompilerWriteFunction WriteNode;
     PXCompilerWriteFunction WriteComment; // Special behaviour, if position does not match, dont write
     PXCompilerWriteFunction WriteFile; // Regarded as the root of all things. The physical file
-    PXCompilerWriteFunction WriteInclude;
+    PXCompilerWriteFunction WriteIncluded;
     PXCompilerWriteFunction WriteContainer;
     PXCompilerWriteFunction WriteFunction;
     PXCompilerWriteFunction WriteDefinition;
@@ -214,7 +214,7 @@ typedef struct PXCompiler_
 PXCompiler;
 
 
-PXPublic PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler);
+PXPublic PXResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler);
 
 
 PXPublic const char* PXAPI PXCompilerCompilerSymbolLexerToString(const PXCompilerSymbolLexer pxCompilerSymbolLexer);
@@ -256,7 +256,7 @@ PXPublic PXBool PXAPI PXCompilerParseStringUntilNewLine(PXCompiler* const pxComp
 PXPublic PXBool PXAPI PXCompilerParseStringUntilNewLineA(PXCompiler* const pxCompiler, char* const text, const PXSize textMaxSize, PXSize* const textSize);
 
 // Expect a generic token and compare it against provided text
-PXPublic PXBool PXAPI PXCompilerEnsureTextAndCompare(PXCompiler* const pxCompiler, const char* const text, const PXSize textSize);
+PXPublic PXBool PXAPI PXCompilerEnsureAndCompare(PXCompiler* const pxCompiler, const char* const text, const PXSize textSize);
 
 PXPublic PXI8U PXAPI PXCompilerEnsureTextListAndCompare
 (
@@ -297,7 +297,7 @@ PXPublic PXSize PXAPI PXCompilerParseText(PXCompiler* const pxCompiler, char* co
 // Write a ASL into a given format. Uses a default way to write and can be overloaded
 PXPublic void PXAPI PXCompilerWrite(PXCompiler* const pxCompiler);
 PXPublic void PXAPI PXCompilerWriteNode(PXCompiler* const pxCompiler);
-PXPublic void PXAPI PXCompilerWriteInclude(PXCompiler* const pxCompiler);
+PXPublic void PXAPI PXCompilerWriteIncluded(PXCompiler* const pxCompiler);
 PXPublic void PXAPI PXCompilerWriteComment(PXCompiler* const pxCompiler);
 PXPublic void PXAPI PXCompilerWriteParameterList(PXCompiler* const pxCompiler);
 

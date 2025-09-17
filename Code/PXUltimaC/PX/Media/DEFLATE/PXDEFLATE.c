@@ -30,16 +30,16 @@
 // base lengths represented by codes 257-285
 // WARNING! You need to add +3. 
 // This list is reduced by 3 to fit into 8-Bit
-static const PXInt8U PXHuffmanLengthBase[29] =
+static const PXI8U PXHuffmanLengthBase[29] =
 {
     0,1,2,3,4,5,6,7,8,10,12,14,16,20,
     24,28,32,40,48,56,64,80,96,112,
     128,160,192,224,255
 };
-#define PXHuffmanLengthBaseGet(index) (((PXInt16U)PXHuffmanLengthBase[index]) + 3u)
+#define PXHuffmanLengthBaseGet(index) (((PXI16U)PXHuffmanLengthBase[index]) + 3u)
 
 // extra bits used by codes 257-285 (added to base length)
-static const PXInt8U PXHuffmanLengthExtra[29] =
+static const PXI8U PXHuffmanLengthExtra[29] =
 {
     0, 0, 0, 0, 0, 0, 0, 0, 1, 1,
     1, 1, 2, 2, 2, 2, 3, 3, 3, 3,
@@ -47,7 +47,7 @@ static const PXInt8U PXHuffmanLengthExtra[29] =
 };
 
 // base backwards distances (the bits of distance codes appear after length codes and use their own huffman tree)
-static const PXInt16U PXHuffmanDistanceBase[30] =
+static const PXI16U PXHuffmanDistanceBase[30] =
 {
        1,  2,       3,     4,     5,    7,    9,   13,    17, 25,
       33, 49,      65,    97,   129,  193,  257,  385,   513,
@@ -55,7 +55,7 @@ static const PXInt16U PXHuffmanDistanceBase[30] =
 };
 
 // extra bits of backwards distances (added to base)
-static const PXInt8U PXHuffmanDistanceExtra[30] =
+static const PXI8U PXHuffmanDistanceExtra[30] =
 {
     0, 0,  0,  0,  1,  1,  2,  2,  3,  3, 
     4, 4,  5,  5,  6,  6,  7,  7,  8,  8, 
@@ -66,7 +66,7 @@ static const PXInt8U PXHuffmanDistanceExtra[30] =
 // the order in which "code length alphabet code lengths" 
 // are stored as specified by deflate, out of this the huffman 
 // tree of the dynamic huffman tree lengths is generated
-const PXInt8U PXHuffmanCLCL_ORDER[NUM_CODE_LENGTH_CODES] =
+const PXI8U PXHuffmanCLCL_ORDER[NUM_CODE_LENGTH_CODES] =
 { 
     16, 17, 18,  0,  8, 
      7,  9,  6, 10,  5, 
@@ -108,31 +108,31 @@ which is possible in case of only 0 or 1 present symbols. */
 
 
 
-const PXInt32U PXDEFLATEHeader[] =
+const PXI32U PXDEFLATEHeader[] =
 {
     PXTypeReciverSize08U | PXTypeBit08U(1),
     PXTypeReciverSize08U | PXTypeBit08U(2)
 };
-const PXInt8U PXDEFLATEHeaderSize = sizeof(PXDEFLATEHeader) / sizeof(PXInt32U);
+const PXI8U PXDEFLATEHeaderSize = sizeof(PXDEFLATEHeader) / sizeof(PXI32U);
 
 
-const PXInt32U PXDEFLATELiteralRawDataList[] =
+const PXI32U PXDEFLATELiteralRawDataList[] =
 {
     PXTypeInt16ULE,
     PXTypeInt16ULE
 };
-const PXInt8U PXDEFLATELiteralRawDataListSize = sizeof(PXDEFLATELiteralRawDataList) / sizeof(PXInt32U);
+const PXI8U PXDEFLATELiteralRawDataListSize = sizeof(PXDEFLATELiteralRawDataList) / sizeof(PXI32U);
 
 
 typedef struct PXDEFLATELiteralRawData_
 {
-    PXInt16U LengthActual;
-    PXInt16U LengthRemainder;
+    PXI16U LengthActual;
+    PXI16U LengthRemainder;
 }
 PXDEFLATELiteralRawData;
 
 
-PXActionResult PXAPI PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const pxOutputStream)
+PXResult PXAPI  PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const pxOutputStream)
 {
     PXHuffmanTree literalAndLengthCodes;
     PXHuffmanTree distanceCodes;
@@ -209,7 +209,7 @@ PXActionResult PXAPI PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const p
         // Start to decode huffman symbols and trees
         while(!foundEndOFBlock)
         {
-            const PXInt16U resultLengthCode = PXHuffmanSymbolDecode(pxInputStream, &literalAndLengthCodes);
+            const PXI16U resultLengthCode = PXHuffmanSymbolDecode(pxInputStream, &literalAndLengthCodes);
             const PXHuffmanCodeType huffmanCodeType = PXHuffmanCodeTypeFromCode(resultLengthCode);
 
             switch(huffmanCodeType)
@@ -232,10 +232,10 @@ PXActionResult PXAPI PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const p
        
 
                     // part 1: get length base
-                    PXInt16U length = PXHuffmanLengthBaseGet(resultLengthCode - FIRST_LENGTH_CODE_INDEX);
+                    PXI16U length = PXHuffmanLengthBaseGet(resultLengthCode - FIRST_LENGTH_CODE_INDEX);
 
                     // part 2: get extra bits and add the value of that to length
-                    const PXInt8U numextrabits_l = PXHuffmanLengthExtra[resultLengthCode - FIRST_LENGTH_CODE_INDEX];
+                    const PXI8U numextrabits_l = PXHuffmanLengthExtra[resultLengthCode - FIRST_LENGTH_CODE_INDEX];
 
 
                     if(numextrabits_l != 0)
@@ -246,7 +246,7 @@ PXActionResult PXAPI PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const p
 
                     /*part 3: get distance code*/
                     //ensureBits32(reader, 28); /* up to 15 for the huffman symbol, up to 13 for the extra bits */
-                    const PXInt16U resultDistanceCode = PXHuffmanSymbolDecode(pxInputStream, &distanceCodes);
+                    const PXI16U resultDistanceCode = PXHuffmanSymbolDecode(pxInputStream, &distanceCodes);
                     PXBool isUnsupportedCode = resultDistanceCode > 29u;
                     PXBool isIllegalCode = resultDistanceCode > 31u;
 
@@ -265,7 +265,7 @@ PXActionResult PXAPI PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const p
                     PXSize distance = PXHuffmanDistanceBase[resultDistanceCode];
 
                     // part 4: get extra bits from distance
-                    PXInt8U numextrabits_d = PXHuffmanDistanceExtra[resultDistanceCode]; // extra bits for length and distance
+                    PXI8U numextrabits_d = PXHuffmanDistanceExtra[resultDistanceCode]; // extra bits for length and distance
                  
                     if(numextrabits_d != 0)
                     {
@@ -288,7 +288,7 @@ PXActionResult PXAPI PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const p
 
                     if(distance < length)
                     {
-                        start += PXMemoryCopy((PXAdress)pxOutputStream->Data + backward, distance, (PXAdress)pxOutputStream->Data + start, distance);
+                        start += PXMemoryCopy((PXAdress)pxOutputStream->Data + backward, (PXAdress)pxOutputStream->Data + start, distance);
 
                         for(PXSize forward = distance; forward < length; ++forward)
                         {
@@ -297,7 +297,7 @@ PXActionResult PXAPI PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const p
                     }
                     else
                     {
-                        PXMemoryCopy((PXAdress)pxOutputStream->Data + backward, length, (PXAdress)pxOutputStream->Data + start, length);
+                        PXMemoryCopy((PXAdress)pxOutputStream->Data + backward, (PXAdress)pxOutputStream->Data + start, length);
                     }
                     break;
                 }
@@ -426,24 +426,24 @@ typedef struct Hash
 {
     int* head; /*hash value to head circular pos - can be outdated if went around window*/
     /*circular pos to prev circular pos*/
-    PXInt16U* chain;
+    PXI16U* chain;
     int* val; /*circular pos to hash value*/
 
     /*TODO: do this not only for zeros but for any repeated byte. However for PNG
     it's always going to be the zeros that dominate, so not important for PNG*/
     int* headz; /*similar to head, but for chainz*/
-    PXInt16U* chainz; /*those with same amount of zeros*/
-    PXInt16U* zeros; /*length of zeros streak, used as a second hash chain*/
+    PXI16U* chainz; /*those with same amount of zeros*/
+    PXI16U* zeros; /*length of zeros streak, used as a second hash chain*/
 } Hash;
 
-PXActionResult PXAPI hash_init(Hash* const hash, const PXSize windowsize)
+PXResult PXAPI  hash_init(Hash* const hash, const PXSize windowsize)
 {
     hash->head = PXMemoryHeapCallocT(int, HASH_NUM_VALUES);
     hash->val = PXMemoryHeapCallocT(int, windowsize);
-    hash->chain = PXMemoryHeapCallocT(PXInt16U, windowsize);
-    hash->zeros = PXMemoryHeapCallocT(PXInt16U, windowsize);
+    hash->chain = PXMemoryHeapCallocT(PXI16U, windowsize);
+    hash->zeros = PXMemoryHeapCallocT(PXI16U, windowsize);
     hash->headz = PXMemoryHeapCallocT(int, (MAX_SUPPORTED_DEFLATE_LENGTH + 1));
-    hash->chainz = PXMemoryHeapCallocT(PXInt16U, windowsize);
+    hash->chainz = PXMemoryHeapCallocT(PXI16U, windowsize);
 
     if(!hash->head || !hash->chain || !hash->val || !hash->headz || !hash->chainz || !hash->zeros)
     {
@@ -479,18 +479,18 @@ void PXAPI hash_cleanup(Hash* const hash)
     PXMemoryHeapFree(PXNull, hash->chainz);
 }
 
-PXInt32U getHash(const unsigned char* data, const PXSize size, const PXSize pos)
+PXI32U getHash(const unsigned char* data, const PXSize size, const PXSize pos)
 {
-    PXInt32U result = 0;
+    PXI32U result = 0;
     if(pos + 2 < size)
     {
         /*A simple shift and xor hash is used. Since the data of PNGs is dominated
         by zeroes due to the filters, a better hash does not have a significant
         effect on speed in traversing the chain, and causes more time spend on
         calculating the hash.*/
-        result ^= ((PXInt32U)data[pos + 0] << 0u);
-        result ^= ((PXInt32U)data[pos + 1] << 4u);
-        result ^= ((PXInt32U)data[pos + 2] << 8u);
+        result ^= ((PXI32U)data[pos + 0] << 0u);
+        result ^= ((PXI32U)data[pos + 1] << 4u);
+        result ^= ((PXI32U)data[pos + 2] << 8u);
     }
     else
     {
@@ -500,7 +500,7 @@ PXInt32U getHash(const unsigned char* data, const PXSize size, const PXSize pos)
         amount = size - pos;
 
         for(PXSize i = 0; i != amount; ++i) 
-            result ^= ((PXInt32U)data[pos + i] << (i * 8u));
+            result ^= ((PXI32U)data[pos + i] << (i * 8u));
     }
     return result & HASH_BIT_MASK;
 }
@@ -616,7 +616,7 @@ unsigned encodeLZ77(uivector* out, Hash* hash, const unsigned char* in, PXSize i
 
 
 
-PXActionResult PXAPI deflateFixed
+PXResult PXAPI  deflateFixed
 (
     PXFile* const pxFile,
     Hash* hash,
@@ -673,7 +673,7 @@ PXActionResult PXAPI deflateFixed
         {
             for(PXSize i = datapos; i < dataend; ++i)
             {
-                PXInt8U codeIndex = ((PXInt8U*)data)[i];
+                PXI8U codeIndex = ((PXI8U*)data)[i];
 
                 writeBitsReversed(writer, tree_ll.CodeSymbols[codeIndex], tree_ll.LengthsList[codeIndex]);
             }
@@ -718,7 +718,7 @@ void updateHashChain(Hash* hash, PXSize wpos, unsigned hashval, unsigned short n
     hash->headz[numzeros] = (int)wpos;
 }
 
-PXInt32U PXAPI searchCodeIndexI8(const PXInt8U* array, PXSize array_size, PXSize value)
+PXI32U PXAPI searchCodeIndexI8(const PXI8U* array, PXSize array_size, PXSize value)
 {
     // binary search (only small gain over linear). TODO: use CPU log2 instruction for getting symbols instead
     PXSize left = 1;
@@ -728,7 +728,7 @@ PXInt32U PXAPI searchCodeIndexI8(const PXInt8U* array, PXSize array_size, PXSize
     {
         PXSize mid = (left + right) >> 1;
 
-        PXInt16U vvvvak = ((PXInt16U)array[mid]) + 3;
+        PXI16U vvvvak = ((PXI16U)array[mid]) + 3;
 
         if(vvvvak >= value)
         {
@@ -740,7 +740,7 @@ PXInt32U PXAPI searchCodeIndexI8(const PXInt8U* array, PXSize array_size, PXSize
         }
     }
 
-    PXInt16U wwww = ((PXInt16U)array[left]) + 3;
+    PXI16U wwww = ((PXI16U)array[left]) + 3;
 
     if(left >= array_size || wwww > value)
         left--;
@@ -748,7 +748,7 @@ PXInt32U PXAPI searchCodeIndexI8(const PXInt8U* array, PXSize array_size, PXSize
     return left;
 }
 
-PXInt32U PXAPI searchCodeIndexI16(const PXInt16U* array, PXSize array_size, PXSize value)
+PXI32U PXAPI searchCodeIndexI16(const PXI16U* array, PXSize array_size, PXSize value)
 {
     // binary search (only small gain over linear). TODO: use CPU log2 instruction for getting symbols instead
     PXSize left = 1;
@@ -779,10 +779,10 @@ void PXAPI addLengthDistance(uivector* values, const PXSize length, const PXSize
     257-285: length/distance pair (length code, followed by extra length bits, distance code, extra distance bits)
     286-287: invalid*/
 
-    PXInt32U length_code = searchCodeIndexI8(PXHuffmanLengthBase, 29, length);
-    PXInt32U extra_length = (length - PXHuffmanLengthBaseGet(length_code));
-    PXInt32U dist_code = searchCodeIndexI16(PXHuffmanDistanceBase, 30, distance);
-    PXInt32U extra_distance = (distance - PXHuffmanDistanceBase[dist_code]);
+    PXI32U length_code = searchCodeIndexI8(PXHuffmanLengthBase, 29, length);
+    PXI32U extra_length = (length - PXHuffmanLengthBaseGet(length_code));
+    PXI32U dist_code = searchCodeIndexI16(PXHuffmanDistanceBase, 30, distance);
+    PXI32U extra_distance = (distance - PXHuffmanDistanceBase[dist_code]);
 
     PXSize pos = values->size;
     /*TODO: return error when this fails (out of memory)*/
@@ -895,7 +895,7 @@ void bpmnode_sort(BPMNode* const leaves, const PXSize num)
     {
         const PXSize size = sizeof(*leaves) * num;
 
-        PXMemoryCopy(mem, size, leaves, size);
+        PXMemoryCopy(mem, leaves, size);
     }
 
     PXMemoryHeapFree(PXNull, &mem);
@@ -939,7 +939,7 @@ unsigned HuffmanTree_makeTable(PXHuffmanTree* tree)
     static const unsigned headsize = 1u << PXHuffmanFirstBits; /*size of the first table*/
     static const unsigned mask = (1u << PXHuffmanFirstBits) /*headsize*/ - 1u;
     PXSize i, numpresent, pointer, size; /*total table size*/
-    PXInt32U* maxlens = PXMemoryHeapCallocT(PXInt32U, headsize);
+    PXI32U* maxlens = PXMemoryHeapCallocT(PXI32U, headsize);
 
     if(!maxlens) 
         return 83; /*alloc fail*/
@@ -966,8 +966,8 @@ unsigned HuffmanTree_makeTable(PXHuffmanTree* tree)
             size += (1u << (l - PXHuffmanFirstBits));
     }
 
-    tree->TableLength = PXMemoryHeapCallocT(PXInt8U, size);
-    tree->TableValue = PXMemoryHeapCallocT(PXInt16U, size);
+    tree->TableLength = PXMemoryHeapCallocT(PXI8U, size);
+    tree->TableValue = PXMemoryHeapCallocT(PXI16U, size);
 
     if(!tree->TableLength || !tree->TableValue)
     {
@@ -1082,9 +1082,9 @@ static unsigned HuffmanTree_makeFromLengths2(PXHuffmanTree* const tree)
 {
     PXSize error = 0;
 
-    tree->CodeSymbols = PXMemoryHeapCallocT(PXInt32U, tree->NumberOfSymbols);
-    PXInt32U* blcount = PXMemoryHeapCallocT(PXInt32U, (tree->maxbitlen + 1));
-    PXInt32U* nextcode = PXMemoryHeapCallocT(PXInt32U, (tree->maxbitlen + 1));
+    tree->CodeSymbols = PXMemoryHeapCallocT(PXI32U, tree->NumberOfSymbols);
+    PXI32U* blcount = PXMemoryHeapCallocT(PXI32U, (tree->maxbitlen + 1));
+    PXI32U* nextcode = PXMemoryHeapCallocT(PXI32U, (tree->maxbitlen + 1));
 
     if(!tree->CodeSymbols || !blcount || !nextcode) error = 83; /*alloc fail*/
 
@@ -1220,7 +1220,7 @@ unsigned HuffmanTree_makeFromFrequencies(PXHuffmanTree* tree, const unsigned* fr
     while(!frequencies[numcodes - 1] && numcodes > mincodes)
         --numcodes; // trim zeroes
 
-    tree->LengthsList = PXMemoryHeapCallocT(PXInt32U, numcodes);
+    tree->LengthsList = PXMemoryHeapCallocT(PXI32U, numcodes);
 
     if(!tree->LengthsList) 
         return 83; // alloc fail
@@ -1238,7 +1238,7 @@ unsigned HuffmanTree_makeFromFrequencies(PXHuffmanTree* tree, const unsigned* fr
 
 
 
-PXActionResult PXAPI deflateDynamic
+PXResult PXAPI  deflateDynamic
 (
     PXFile* const pxFile,
     Hash* hash,
@@ -1289,11 +1289,11 @@ PXActionResult PXAPI deflateDynamic
     PXHuffmanTree tree_ll; /*tree for lit,len values*/
     PXHuffmanTree tree_d; /*tree for distance codes*/
     PXHuffmanTree tree_cl; /*tree for encoding the code lengths representing tree_ll and tree_d*/
-    PXInt32U frequencies_ll[286]; /*frequency of lit,len codes*/
-    PXInt32U frequencies_d[30]; /*frequency of dist codes*/
-    PXInt32U frequencies_cl[NUM_CODE_LENGTH_CODES]; /*frequency of code length codes*/
-    PXInt32U* bitlen_lld = 0; /*lit,len,dist code lengths (int bits), literally (without repeat codes).*/
-    PXInt32U* bitlen_lld_e = 0; /*bitlen_lld encoded with repeat codes (this is a rudimentary run length compression)*/
+    PXI32U frequencies_ll[286]; /*frequency of lit,len codes*/
+    PXI32U frequencies_d[30]; /*frequency of dist codes*/
+    PXI32U frequencies_cl[NUM_CODE_LENGTH_CODES]; /*frequency of code length codes*/
+    PXI32U* bitlen_lld = 0; /*lit,len,dist code lengths (int bits), literally (without repeat codes).*/
+    PXI32U* bitlen_lld_e = 0; /*bitlen_lld encoded with repeat codes (this is a rudimentary run length compression)*/
     PXSize datasize = dataend - datapos;
 
     /*
@@ -1319,9 +1319,9 @@ PXActionResult PXAPI deflateDynamic
     allow breaking out of it to the cleanup phase on error conditions.*/
     while(!error)
     {
-        PXClearList(PXInt32U, frequencies_ll, 286);
-        PXClearList(PXInt32U, frequencies_d, 30);
-        PXClearList(PXInt32U, frequencies_cl, NUM_CODE_LENGTH_CODES);
+        PXClearList(PXI32U, frequencies_ll, 286);
+        PXClearList(PXI32U, frequencies_d, 30);
+        PXClearList(PXI32U, frequencies_cl, NUM_CODE_LENGTH_CODES);
 
         if(settings->use_lz77)
         {
@@ -1393,9 +1393,9 @@ PXActionResult PXAPI deflateDynamic
         // store the code lengths of both generated trees in bitlen_lld
         numcodes_lld = numcodes_ll + numcodes_d;
 
-        bitlen_lld = PXMemoryHeapCallocT(PXInt32U, numcodes_lld);
+        bitlen_lld = PXMemoryHeapCallocT(PXI32U, numcodes_lld);
         // numcodes_lld_e never needs more size than bitlen_lld
-        bitlen_lld_e = PXMemoryHeapCallocT(PXInt32U, numcodes_lld);      
+        bitlen_lld_e = PXMemoryHeapCallocT(PXI32U, numcodes_lld);      
         
         if(!bitlen_lld || !bitlen_lld_e) 
             ERROR_BREAK(83); /*alloc fail*/
@@ -1417,7 +1417,7 @@ PXActionResult PXAPI deflateDynamic
 
             if(bitlen_lld[i] == 0 && j >= 2) /*repeat code for zeroes*/
             {
-                ++j; /*include the first zero*/
+                ++j; /*Included the first zero*/
                 if(j <= 10) /*repeat code 17 supports max 10 zeroes*/
                 {
                     bitlen_lld_e[numcodes_lld_e++] = 17;
@@ -1555,7 +1555,7 @@ PXActionResult PXAPI deflateDynamic
 
 #define DEFAULT_WINDOWSIZE 2048
 
-PXActionResult PXAPI PXDEFLATESerialize(PXFile* const pxInputStream, PXFile* const pxOutputStream)
+PXResult PXAPI  PXDEFLATESerialize(PXFile* const pxInputStream, PXFile* const pxOutputStream)
 {
     PXSize blocksize;
     Hash hash;
@@ -1572,7 +1572,7 @@ PXActionResult PXAPI PXDEFLATESerialize(PXFile* const pxInputStream, PXFile* con
     lodePNGCompressSettings.custom_deflate = 0;
     lodePNGCompressSettings.custom_context = 0;
 
-    PXInt8U deflateEncodingMethod = PXDeflateEncodingHuffmanDynamic;// DeflateEncodingHuffmanDynamic;
+    PXI8U deflateEncodingMethod = PXDeflateEncodingHuffmanDynamic;// DeflateEncodingHuffmanDynamic;
 
     switch(deflateEncodingMethod)
     {
@@ -1584,8 +1584,8 @@ PXActionResult PXAPI PXDEFLATESerialize(PXFile* const pxInputStream, PXFile* con
             for(PXSize i = 0; i != numdeflateblocks; ++i)
             {
                 const PXBool BFINAL = (i == numdeflateblocks - 1);
-                const PXInt16U chunkLength = PXMathMinimumIU(65535, pxInputStream->DataUsed - datapos);
-                const PXInt16U chunkLengthNegated = 65535 - chunkLength;
+                const PXI16U chunkLength = PXMathMinimumIU(65535, pxInputStream->DataUsed - datapos);
+                const PXI16U chunkLengthNegated = 65535 - chunkLength;
 
                 const PXByte firstbyte = BFINAL;//(unsigned char)(BFINAL + ((BTYPE & 1u) << 1u) + ((BTYPE & 2u) << 1u));
 
@@ -1730,17 +1730,17 @@ void writeLZ77data
     PXSize i = 0;
     for(i = 0; i != lz77_encoded->size; ++i)
     {
-        PXInt32U val = lz77_encoded->data[i];
+        PXI32U val = lz77_encoded->data[i];
         writeBitsReversed(writer, tree_ll->CodeSymbols[val], tree_ll->LengthsList[val]);
         if(val > 256) /*for a length code, 3 more things have to be added*/
         {
-            const PXInt32U length_index = val - FIRST_LENGTH_CODE_INDEX;
-            const PXInt8U n_length_extra_bits = PXHuffmanLengthExtra[length_index];
+            const PXI32U length_index = val - FIRST_LENGTH_CODE_INDEX;
+            const PXI8U n_length_extra_bits = PXHuffmanLengthExtra[length_index];
             PXSize length_extra_bits = lz77_encoded->data[++i];
 
             const PXSize distance_code = lz77_encoded->data[++i];
             const PXSize distance_index = distance_code;
-            const PXInt8U n_distance_extra_bits = PXHuffmanDistanceExtra[distance_index];
+            const PXI8U n_distance_extra_bits = PXHuffmanDistanceExtra[distance_index];
             PXSize distance_extra_bits = lz77_encoded->data[++i];
 
             PNGwriteBits(writer, length_extra_bits, n_length_extra_bits);

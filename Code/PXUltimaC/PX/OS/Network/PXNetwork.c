@@ -9,7 +9,7 @@ const char PXWindowsWinSockDLL[] = "WS2_32.DLL";
 
 #if OSUnix
 #ifndef _XOPEN_SOURCE
-// Needed for some reason, as without the "netdb.h" does not get included properly
+// Needed for some reason, as without the "netdb.h" does not get Includedd properly
 // Some say that there a flags that disable the code.
 // This statement here.. counters this.
 #define _XOPEN_SOURCE 600
@@ -190,7 +190,7 @@ typedef struct addrinfo AdressInfoType; //#define AdressInfoType (struct addrinf
 PXNetwork _pxNetwork;
 
 
-PXActionResult PXAPI PXNetworkModulState(PXNetwork** const pxNetworkREF, const PXInt32U flags)
+PXResult PXAPI  PXNetworkModulState(PXNetwork** const pxNetworkREF, const PXI32U flags)
 {
     if(pxNetworkREF)
     {
@@ -342,7 +342,7 @@ PXActionResult PXAPI PXNetworkModulState(PXNetwork** const pxNetworkREF, const P
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXNetworkSocketCreate(PXSocketCreateInfo* const pxSocketCreateInfo)
+PXResult PXAPI  PXNetworkSocketCreate(PXSocketCreateInfo* const pxSocketCreateInfo)
 {
     PXSocket* const pxSocket = pxSocketCreateInfo->SocketReference;
 
@@ -413,12 +413,12 @@ PXActionResult PXAPI PXNetworkSocketCreate(PXSocketCreateInfo* const pxSocketCre
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXNetworkIPLocate(const PXIPAdress* const pxIPAdress)
+PXResult PXAPI  PXNetworkIPLocate(const PXIPAdress* const pxIPAdress)
 {
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXNetworkSocketPeerGet(PXNetwork* const pxNetwork, PXSocketConnectionInfo* const pxSocketConnectionInfo)
+PXResult PXAPI  PXNetworkSocketPeerGet(PXNetwork* const pxNetwork, PXSocketConnectionInfo* const pxSocketConnectionInfo)
 {
 #if OSUnix || OSWindows
     struct sockaddr socketAdress;
@@ -437,27 +437,13 @@ PXActionResult PXAPI PXNetworkSocketPeerGet(PXNetwork* const pxNetwork, PXSocket
 #endif
 }
 
-PXActionResult PXAPI PXNetworkSocketDestroy(PXSocketDestroyInfo* const pxSocketDestroyInfo)
+PXResult PXAPI  PXNetworkSocketDestroy(const PXSocketID pxSocketID)
 {
-    PXSocket* const pxSocket = pxSocketDestroyInfo->SocketReference;
-
-#if 0
-    // If not used, we cant close.
-    {
-        const PXBool isSocketUsed = PXSocketIsCurrentlyUsed(pxSocket);
-
-        if(!isSocketUsed)
-        {
-            return;
-        }
-    }
-#endif
-
 #if OSUnix
     close(pxSocket->ID);
 #elif OSWindows
-    _pxNetwork.SocketShutdown(pxSocket->ID, SD_SEND);
-    _pxNetwork.SocketClose(pxSocket->ID);
+    _pxNetwork.SocketShutdown(pxSocketID, SD_SEND);
+    _pxNetwork.SocketClose(pxSocketID);
 #endif
 
     // PXFunctionInvoke(pxSocket->EventList.SocketClosedCallBack, pxSocket->Owner, pxSocket);
@@ -469,14 +455,12 @@ PXActionResult PXAPI PXNetworkSocketDestroy(PXSocketDestroyInfo* const pxSocketD
         PXNetworkText,
         "Socket-Destroy",
         "Terminated <%i>",
-        (int)pxSocket->ID
+        pxSocketID
     );
 #endif
-
-    PXClear(PXSocket, pxSocket);
 }
 
-PXActionResult PXAPI PXNetworkSocketConnect(PXSocketConnectInfo* const pxSocketConnectInfo)
+PXResult PXAPI  PXNetworkSocketConnect(PXSocketConnectInfo* const pxSocketConnectInfo)
 {
     PXSocket* const pxSocket = pxSocketConnectInfo->SocketReference;
 
@@ -526,7 +510,7 @@ PXActionResult PXAPI PXNetworkSocketConnect(PXSocketConnectInfo* const pxSocketC
             const int resultID = _pxNetwork.AdressInfoGet
             (
                 adresspoint,
-                portText.TextA,
+                portText.A,
                 &adressInput,
                 &adressResult
             );
@@ -597,7 +581,7 @@ PXActionResult PXAPI PXNetworkSocketConnect(PXSocketConnectInfo* const pxSocketC
                 return 0;
             }
 
-            PXMemoryCopy(host->h_addr_list, host->h_length, &server.sin_addr, host->h_length);
+            PXMemoryCopy(host->h_addr_list, &server.sin_addr, host->h_length);
             server.sin_port = pxSocketConnectInfo->Port;
             serverAdressLength = sizeof(struct sockaddr_in);
 
@@ -639,7 +623,7 @@ PXActionResult PXAPI PXNetworkSocketConnect(PXSocketConnectInfo* const pxSocketC
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXNetworkSocketListen(PXSocketListenInfo* const pxSocketListenInfo)
+PXResult PXAPI  PXNetworkSocketListen(PXSocketListenInfo* const pxSocketListenInfo)
 {
     PXSocket* const pxSocket = pxSocketListenInfo->SocketReference;
     const int listeningResult = _pxNetwork.SocketListen(pxSocket->ID, pxSocketListenInfo->ClientInQueueMaximal);
@@ -675,7 +659,7 @@ PXActionResult PXAPI PXNetworkSocketListen(PXSocketListenInfo* const pxSocketLis
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXNetworkSocketAccept(PXSocketAcceptInfo* const pxSocketAcceptInfo)
+PXResult PXAPI  PXNetworkSocketAccept(PXSocketAcceptInfo* const pxSocketAcceptInfo)
 {
     PXSocket* const pxSocketServer = pxSocketAcceptInfo->SocketServerReference;
     PXSocket* const pxSocketClient = pxSocketAcceptInfo->SocketClientReference;
@@ -727,7 +711,7 @@ PXActionResult PXAPI PXNetworkSocketAccept(PXSocketAcceptInfo* const pxSocketAcc
     }
 
     char ipname[128];
-    PXInt8U ipNameLength = 128;
+    PXI8U ipNameLength = 128;
 
     char hostname[300];
     char servInfo[NI_MAXSERV];
@@ -814,7 +798,7 @@ PXActionResult PXAPI PXNetworkSocketAccept(PXSocketAcceptInfo* const pxSocketAcc
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXNetworkSocketBind(PXSocketBindInfo* const pxSocketBindInfo)
+PXResult PXAPI  PXNetworkSocketBind(PXSocketBindInfo* const pxSocketBindInfo)
 {
     if(!pxSocketBindInfo)
     {
@@ -868,7 +852,7 @@ PXActionResult PXAPI PXNetworkSocketBind(PXSocketBindInfo* const pxSocketBindInf
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXNetworkSocketReceive(PXSocketDataInfo* const pxSocketDataInfo)
+PXResult PXAPI  PXNetworkSocketReceive(PXSocketDataInfo* const pxSocketDataInfo)
 {
     PXActionResult pxActionResult = PXActionInvalid;
 
@@ -892,8 +876,9 @@ PXActionResult PXAPI PXNetworkSocketReceive(PXSocketDataInfo* const pxSocketData
     socklen_t len = sizeof(socketType);
 
     const int typeFetch = getsockopt(socketID, SOL_SOCKET, SO_TYPE, &socketType, &len);
+    const PXBool isUDP = SOCK_DGRAM == socketType;
 
-    if(SOCK_DGRAM == typeFetch) // No Connection
+    if(isUDP) // No Connection
     {
         // UDP socket
         readResult = recvfrom
@@ -936,6 +921,8 @@ PXActionResult PXAPI PXNetworkSocketReceive(PXSocketDataInfo* const pxSocketData
             );
 #endif
 
+            PXNetworkSocketDestroy(socketID);
+
             break;
         }
         case SOCKET_ERROR:
@@ -965,116 +952,48 @@ PXActionResult PXAPI PXNetworkSocketReceive(PXSocketDataInfo* const pxSocketData
 
             PXSocket* const pxSocket = pxSocketDataInfo->SocketPeer;
 
-            PXBool fetchExtendedData = (SOCK_DGRAM == typeFetch) && pxSocket;
+            PXBool fetchExtendedData = isUDP && pxSocket;
 
-            if(!fetchExtendedData)
+            if(fetchExtendedData)
             {
-                break;
+                pxSocket->Port = ntohs(sockAdressInfo.sin_port);
+                inet_ntop(sockAdressInfo.sin_family, &sockAdressInfo.sin_addr, pxSocket->IP, sizeof(pxSocket->IP));
+
+                getnameinfo((struct sockaddr*)&sockAdressInfo, sockAdressInfoLength, pxSocket->Name, sizeof(pxSocket->Name), NULL, 0, 0);
             }
 
-            pxSocket->Port = ntohs(sockAdressInfo.sin_port);
-            inet_ntop(sockAdressInfo.sin_family, &sockAdressInfo.sin_addr, pxSocket->IP, sizeof(pxSocket->IP));
+#if PXLogEnable
+            char printableText[64];
 
-            getnameinfo((struct sockaddr*)&sockAdressInfo, sockAdressInfoLength, pxSocket->Name, sizeof(pxSocket->Name), NULL, 0, 0);
+            PXTextFromNonTerminated(printableText, 64, pxSocketDataInfo->Buffer, readResult);
 
-            printf("Received from %s:%d -> %s\n", client_ip, port, buffer);
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                PXNetworkText,
+                "Socket-Recive",
+                "<%i> <-- <%i> %20s:%-5i - %-15s - %4i B, %s",
+                socketID,
+                0,          
+                pxSocket->IP,
+                pxSocket->Port,
+                pxSocket->Name,
+                readResult,
+                printableText
+            );
+#endif
+
 
             break;
         }
     }
-
-
-
-
-
-
-
-
-    // Read data
-    {
-        //StateChange(SocketStateDataReceiving);
-
-
-
-
-        // StateChange(SocketStateIDLE);
-
-        switch(sizeRead)
-        {
-            case -1:
-            {
-                pxSocketReadInfo->DataInfo.MovedCurrent = 0;
-                pxSocketReadInfo->DataInfo.SocketDestroyed = PXTrue;
-
-
-
-                return PXErrorCurrent(0);
-            }
-
-            case 0:// endOfFile
-            {
-                pxSocketReadInfo->DataInfo.MovedCurrent = 0;
-                pxSocketReadInfo->DataInfo.SocketDestroyed = PXTrue;
-
-
-                PXSocketDestroyInfo pxSocketDestroyInfo;
-                pxSocketDestroyInfo.SocketReference = pxSocketSender;
-                PXNetworkSocketDestroy(&pxSocketDestroyInfo);
-
-                return PXActionRefusedSocketNotConnected; // How to handle, 0 means connected but this is not the terminating phase.
-            }
-            default:
-            {
-                pxSocketReadInfo->DataInfo.MovedCurrent = sizeRead;
-                pxSocketReadInfo->DataInfo.MovedTotal += sizeRead;
-                pxSocketReadInfo->DataInfo.BufferOffset += sizeRead;
-                pxSocketReadInfo->DataInfo.Percentage = ((PXF32)pxSocketReadInfo->DataInfo.BufferOffset / (PXF32)pxSocketReadInfo->DataInfo.MovedTotal) * 100.0f;
-
-
-
-
-
-#if PXLogEnable
-                PXText pxTextTotal;
-                PXText pxTextTotalGain;
-
-                PXTextConstructNamedBufferA(&pxTextTotal, pxTextTotalBuffer, 32);
-                PXTextConstructNamedBufferA(&pxTextTotalGain, pxTextTotalGainBuffer, 32);
-
-                PXTextFormatSize(&pxTextTotalGain, pxSocketReadInfo->DataInfo.MovedCurrent);
-                PXTextFormatSize(&pxTextTotal, pxSocketReadInfo->DataInfo.MovedTotal);
-
-                PXLogPrint
-                (
-                    PXLoggingInfo,
-                    PXNetworkText,
-                    "Socket-Recive",
-                    "<%i> <-- <%i> %-3i%% (+ %s), %s",
-                    pxSocketReciver ? pxSocketReciver->ID : -1,
-                    pxSocketSender->ID,
-                    pxSocketReadInfo->DataInfo.Percentage,
-                    pxTextTotalGain.TextA,
-                    pxTextTotal.TextA
-                );
-#endif
-
-#if 0
-                PXSocketDataReceivedEventData pxSocketDataReceivedEventData;
-                pxSocketDataReceivedEventData.SocketSending = pxSocketSenderID;
-                pxSocketDataReceivedEventData.SocketReceiving = pxSocketReceiver;
-                pxSocketDataReceivedEventData.Data = data;
-                pxSocketDataReceivedEventData.DataSize = sizeRead;
-
-                PXFunctionInvoke(pxSocketReceiver->EventList.SocketDataReceiveCallBack, pxSocketReceiver->Owner, &pxSocketDataReceivedEventData);
-#endif
-            }
-        }
-    }
+    
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXNetworkSocketSend(PXSocketSendInfo* const pxSocketSendInfo)
+PXResult PXAPI  PXNetworkSocketSend(PXSocketDataInfo* const pxSocketDataInfo)
 {
+#if 0
     PXSocket* const pxSocketReciever = pxSocketSendInfo->SocketRecieverReference;
     PXSocket* const pxSocketSender = pxSocketSendInfo->SocketSenderReference;
 
@@ -1183,8 +1102,8 @@ PXActionResult PXAPI PXNetworkSocketSend(PXSocketSendInfo* const pxSocketSendInf
                 pxSocketSender->ID,
                 pxSocketReciever->ID,
                 pxSocketSendInfo->DataInfo.Percentage,
-                pxTextTotalGain.TextA,
-                pxTextTotal.TextA
+                pxTextTotalGain.A,
+                pxTextTotal.A
             );
         }
         else
@@ -1197,8 +1116,8 @@ PXActionResult PXAPI PXNetworkSocketSend(PXSocketSendInfo* const pxSocketSendInf
                 "<%i> --> Server %3i%% (+ %s), %s",
                 pxSocketReciever->ID,
                 pxSocketSendInfo->DataInfo.Percentage,
-                pxTextTotalGain.TextA,
-                pxTextTotal.TextA
+                pxTextTotalGain.A,
+                pxTextTotal.A
             );
         }
 
@@ -1208,10 +1127,12 @@ PXActionResult PXAPI PXNetworkSocketSend(PXSocketSendInfo* const pxSocketSendInf
         done = pxSocketSendInfo->DataInfo.BufferOffset >= pxSocketSendInfo->DataInfo.BufferSize;
     } while(!done);
 
+#endif
+
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXNetworkSocketPoll()
+PXResult PXAPI  PXNetworkSocketPoll()
 {
 #if 0
     /*
@@ -1428,7 +1349,7 @@ PXActionResult PXAPI PXNetworkSocketPoll()
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXNetworkSocketMTU(const PXSocket* const pxSocket, PXInt32U* value, const PXBool doWrite)
+PXResult PXAPI  PXNetworkSocketMTU(const PXSocket* const pxSocket, PXI32U* value, const PXBool doWrite)
 {
     PXActionResult error = PXActionInvalid;
 
@@ -1464,7 +1385,7 @@ PXActionResult PXAPI PXNetworkSocketMTU(const PXSocket* const pxSocket, PXInt32U
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXNetworkSocketName(const PXSocket* const pxSocket, char* name)
+PXResult PXAPI  PXNetworkSocketName(const PXSocket* const pxSocket, char* name)
 {
     struct sockaddr_in adressInfo;
     socklen_t addr_len = sizeof(adressInfo);
@@ -1474,7 +1395,7 @@ PXActionResult PXAPI PXNetworkSocketName(const PXSocket* const pxSocket, char* n
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXNetworkSocketInterfaceName(const PXSocket* const pxSocket, char* name, const PXSize nameSize)
+PXResult PXAPI  PXNetworkSocketInterfaceName(const PXSocket* const pxSocket, char* name, const PXSize nameSize)
 {
 #if OSUnix
 
@@ -1518,7 +1439,7 @@ PXActionResult PXAPI PXNetworkSocketInterfaceName(const PXSocket* const pxSocket
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXNetworkMACFromIPv4A(PXMAC* const pxMAC, char* const ipv4Text)
+PXResult PXAPI  PXNetworkMACFromIPv4A(PXMAC* const pxMAC, char* const ipv4Text)
 {
     PXIPv4 pxIPv4;
     pxIPv4.ID = inet_addr(ipv4Text); // Target IP;
@@ -1526,7 +1447,7 @@ PXActionResult PXAPI PXNetworkMACFromIPv4A(PXMAC* const pxMAC, char* const ipv4T
     return PXNetworkMACFromIPv4(pxMAC, &pxIPv4);
 }
 
-PXActionResult PXAPI PXNetworkMACFromIPv4(PXMAC* const pxMAC, PXIPv4* const pxIPv4)
+PXResult PXAPI  PXNetworkMACFromIPv4(PXMAC* const pxMAC, PXIPv4* const pxIPv4)
 {
     PXClear(PXMAC, pxMAC);
 
@@ -1604,7 +1525,7 @@ PXActionResult PXAPI PXNetworkMACFromIPv4(PXMAC* const pxMAC, PXIPv4* const pxIP
     return PXActionInvalid;
 }
 
-PXActionResult PXAPI PXNetworkMACFromIPv6A(PXMAC* const pxMAC, char* const ipv6Text)
+PXResult PXAPI  PXNetworkMACFromIPv6A(PXMAC* const pxMAC, char* const ipv6Text)
 {
     PXIPv6 pxIPv6;
     const INT result = InetPtonA(AF_INET6, ipv6Text, pxIPv6.Data);
@@ -1612,7 +1533,7 @@ PXActionResult PXAPI PXNetworkMACFromIPv6A(PXMAC* const pxMAC, char* const ipv6T
     return PXNetworkMACFromIPv6(pxMAC, &pxIPv6);
 }
 
-PXActionResult PXAPI PXNetworkMACFromIPv6(PXMAC* const pxMAC, PXIPv6* const pxIPv6)
+PXResult PXAPI  PXNetworkMACFromIPv6(PXMAC* const pxMAC, PXIPv6* const pxIPv6)
 {
     PXClear(PXMAC, pxMAC);
 
@@ -1622,7 +1543,7 @@ PXActionResult PXAPI PXNetworkMACFromIPv6(PXMAC* const pxMAC, PXIPv6* const pxIP
     // Set the target IP address
     ipList.Address.Ipv6.sin6_family = AF_INET6;
 
-    PXMemoryCopy(pxIPv6->Data, 16, ipList.Address.Ipv6.sin6_addr.u.Byte, 16);
+    PXMemoryCopy(pxIPv6->Data, ipList.Address.Ipv6.sin6_addr.u.Byte, 16);
 
     // Resolve the MAC address
     DWORD result = ResolveIpNetEntry2(&ipList, NULL);// Windows Vista, netioapi.h
@@ -1632,7 +1553,7 @@ PXActionResult PXAPI PXNetworkMACFromIPv6(PXMAC* const pxMAC, PXIPv6* const pxIP
         return PXActionInvalid;
     }
 
-    PXMemoryCopy(ipList.PhysicalAddress, ipList.PhysicalAddressLength, pxMAC->Data, 6);
+    PXMemoryCopyX(ipList.PhysicalAddress, ipList.PhysicalAddressLength, pxMAC->Data, 6);
 
 
 #if PXLogEnable
@@ -1642,7 +1563,7 @@ PXActionResult PXAPI PXNetworkMACFromIPv6(PXMAC* const pxMAC, PXIPv6* const pxIP
     struct sockaddr_in6 addr;
     addr.sin6_family = AF_INET6;
 
-    PXMemoryCopy(ipList.PhysicalAddress, 16, addr.sin6_addr.u.Byte, 16);
+    PXMemoryCopy(ipList.PhysicalAddress, addr.sin6_addr.u.Byte, 16);
 
     PCSTR resultAA = InetNtopA(AF_INET6, &addr.sin6_addr, ipStr, sizeof(ipStr) / sizeof(ipStr[0]));
 
@@ -1666,7 +1587,7 @@ PXActionResult PXAPI PXNetworkMACFromIPv6(PXMAC* const pxMAC, PXIPv6* const pxIP
     return PXActionInvalid;
 }
 
-PXActionResult PXAPI PXNetworkNameFromIPv4A(char* const name, char* const ipv4Text)
+PXResult PXAPI  PXNetworkNameFromIPv4A(char* const name, char* const ipv4Text)
 {
     struct sockaddr_in sa;
     sa.sin_family = AF_INET;
@@ -1678,7 +1599,7 @@ PXActionResult PXAPI PXNetworkNameFromIPv4A(char* const name, char* const ipv4Te
     return PXActionInvalid;
 }
 
-PXActionResult PXAPI PXNetworkNameFromIPv4(char* const name, PXIPv4* const pxIPv4)
+PXResult PXAPI  PXNetworkNameFromIPv4(char* const name, PXIPv4* const pxIPv4)
 {
     struct sockaddr_in sa;
     sa.sin_family = AF_INET;
@@ -1690,7 +1611,7 @@ PXActionResult PXAPI PXNetworkNameFromIPv4(char* const name, PXIPv4* const pxIPv
     return PXActionInvalid;
 }
 
-PXActionResult PXAPI PXNetworkAdapterFetch()
+PXResult PXAPI  PXNetworkAdapterFetch()
 {
     WSADATA wsaData;
     int x = WSAStartup(MAKEWORD(2, 2), &wsaData); // Initialize Winsock
@@ -1723,7 +1644,7 @@ PXActionResult PXAPI PXNetworkAdapterFetch()
     do
     {
         //ULONG outBufLen = 0;
-        dwRetVal = GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_INCLUDE_PREFIX, NULL, pAddresses, &outBufLen);
+        dwRetVal = 0;// GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_Included_PREFIX, NULL, pAddresses, &outBufLen);
 
         if(ERROR_BUFFER_OVERFLOW == dwRetVal)
         {
@@ -1764,7 +1685,7 @@ PXActionResult PXAPI PXNetworkAdapterFetch()
         PXTextCopyWA(pCurrAddresses->Description, PXTextUnkownLength, pxNetworkAdapter->Description, 64);
         PXTextCopyWA(pCurrAddresses->FriendlyName, PXTextUnkownLength, pxNetworkAdapter->Name, 32);
 
-        PXMemoryCopy(pCurrAddresses->PhysicalAddress, pCurrAddresses->PhysicalAddressLength, pxNetworkAdapter->MACAdress.Data, 6);
+        PXMemoryCopyX(pCurrAddresses->PhysicalAddress, pCurrAddresses->PhysicalAddressLength, pxNetworkAdapter->MACAdress.Data, 6);
 
 
 #if PXLogEnable
@@ -1973,7 +1894,7 @@ PXActionResult PXAPI PXNetworkAdapterFetch()
 
 
 
-PXProtocolMode PXAPI PXProtocolModeFromID(const PXInt8U protocolMode)
+PXProtocolMode PXAPI PXProtocolModeFromID(const PXI8U protocolMode)
 {
     switch(protocolMode)
     {
@@ -2087,7 +2008,7 @@ PXProtocolMode PXAPI PXProtocolModeFromID(const PXInt8U protocolMode)
     }
 }
 
-PXInt8U PXAPI PXProtocolModeToID(const PXProtocolMode protocolMode)
+PXI8U PXAPI PXProtocolModeToID(const PXProtocolMode protocolMode)
 {
     switch(protocolMode)
     {
@@ -2202,7 +2123,7 @@ PXInt8U PXAPI PXProtocolModeToID(const PXProtocolMode protocolMode)
     }
 }
 
-PXSocketType PXAPI PXSocketTypeFromID(const PXInt8U socketType)
+PXSocketType PXAPI PXSocketTypeFromID(const PXI8U socketType)
 {
     switch(socketType)
     {
@@ -2226,7 +2147,7 @@ PXSocketType PXAPI PXSocketTypeFromID(const PXInt8U socketType)
     }
 }
 
-PXInt8U PXAPI PXSocketTypeToID(const PXSocketType socketType)
+PXI8U PXAPI PXSocketTypeToID(const PXSocketType socketType)
 {
     switch(socketType)
     {
@@ -2251,7 +2172,7 @@ PXInt8U PXAPI PXSocketTypeToID(const PXSocketType socketType)
     }
 }
 
-IPAdressFamily PXAPI PXIPAdressFamilyFromID(const PXInt8U ipMode)
+IPAdressFamily PXAPI PXIPAdressFamilyFromID(const PXI8U ipMode)
 {
     switch(ipMode)
     {
@@ -2318,7 +2239,7 @@ IPAdressFamily PXAPI PXIPAdressFamilyFromID(const PXInt8U ipMode)
     }
 }
 
-PXInt8U PXAPI PXIPAdressFamilyToID(const IPAdressFamily ipMode)
+PXI8U PXAPI PXIPAdressFamilyToID(const IPAdressFamily ipMode)
 {
     switch(ipMode)
     {
@@ -2440,7 +2361,7 @@ PXInt8U PXAPI PXIPAdressFamilyToID(const IPAdressFamily ipMode)
 }
 
 #if OSWindows
-PXActionResult PXAPI PXWindowsSocketAgentErrorFetch(PXNetwork* const pxNetwork)
+PXResult PXAPI  PXWindowsSocketAgentErrorFetch(PXNetwork* const pxNetwork)
 {
     const int wsaErrorID = pxNetwork->SocketSystemErrorLastGet();
     const PXActionResult pxActionResult = PXWindowsSocketAgentErrorFromID(wsaErrorID);
@@ -2448,7 +2369,7 @@ PXActionResult PXAPI PXWindowsSocketAgentErrorFetch(PXNetwork* const pxNetwork)
     return pxActionResult;
 }
 
-PXActionResult PXAPI PXWindowsSocketAgentErrorFromID(const PXInt32S errorID)
+PXResult PXAPI  PXWindowsSocketAgentErrorFromID(const PXI32S errorID)
 {
     switch(errorID)
     {

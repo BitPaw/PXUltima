@@ -20,7 +20,7 @@ void PXTestNetworkServer()
     PXSocket pxServer;
     PXSocket pxClient;
 
-    PXNetworkInitialize(&pxNetwork);
+    //PXNetworkInitialize(&pxNetwork);
 
 
     // Create server
@@ -31,7 +31,7 @@ void PXTestNetworkServer()
         pxSocketCreateInfo.Type = PXSocketTypeStream;
         pxSocketCreateInfo.ProtocolMode = PXProtocolModeTCP;
 
-        PXNetworkSocketCreate(&pxNetwork, &pxSocketCreateInfo);
+      //  PXNetworkSocketCreate(&pxNetwork, &pxSocketCreateInfo);
     }
 
 
@@ -45,7 +45,7 @@ void PXTestNetworkServer()
         //pxSocketBindInfo.AdressInfo = ;
         //pxSocketBindInfo.AdressInfoSize;
 
-        PXNetworkSocketBind(&pxNetwork, &pxSocketBindInfo);
+      //  PXNetworkSocketBind(&pxNetwork, &pxSocketBindInfo);
     }
 
 
@@ -55,9 +55,9 @@ void PXTestNetworkServer()
         pxSocketListenInfo.SocketReference = &pxServer;
         pxSocketListenInfo.ClientInQueueMaximal = 10;
 
-        PXNetworkSocketListen(&pxNetwork, &pxSocketListenInfo);
+       // PXNetworkSocketListen(&pxNetwork, &pxSocketListenInfo);
     }
-
+    /*
     while(1)
     {
         {
@@ -65,15 +65,15 @@ void PXTestNetworkServer()
             pxSocketAcceptInfo.SocketServerReference = &pxServer;
             pxSocketAcceptInfo.SocketClientReference = &pxClient;
 
-            PXNetworkSocketAccept(&pxNetwork, &pxSocketAcceptInfo);
+           // PXNetworkSocketAccept(&pxNetwork, &pxSocketAcceptInfo);
         }
 
         char messageBuffer[128];
 
         while(1)
         {
-            PXSocketReadInfo pxSocketReadInfo;
-            PXClear(PXSocketReadInfo, &pxSocketReadInfo);
+            //PXSocketReadInfo pxSocketReadInfo;
+           // PXClear(PXSocketReadInfo, &pxSocketReadInfo);
             pxSocketReadInfo.SocketReciverReference = &pxServer;
             pxSocketReadInfo.SocketSenderReference = &pxClient;
             pxSocketReadInfo.DataInfo.Buffer = messageBuffer;
@@ -91,10 +91,12 @@ void PXTestNetworkServer()
     }    
 
     PXNetworkRelease(&pxNetwork);
+    */
 }
 
 void PXTestNetworkClient()
 {
+    /*
     PXNetwork pxNetwork;
     PXSocket pxClient;
     PXSocket pxServer;
@@ -187,6 +189,7 @@ void PXTestNetworkClient()
             }        
         }
     }
+    */
 
-    PXNetworkRelease(&pxNetwork);
+   // PXNetworkRelease(&pxNetwork);
 }

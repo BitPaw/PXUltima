@@ -34,29 +34,29 @@ void* PXAPI PXListDynamicAdd(PXListDynamic* const pxListDynamic, const void* con
     char* insertAdress = pxListDynamic->DataAdress + pxListDynamic->InsertionPointOffset;
     
     // Write Key
-    insertAdress += PXMemoryCopy(key, pxListDynamic->KeySize, insertAdress, pxListDynamic->KeySize);
+    insertAdress += PXMemoryCopy(key, insertAdress, pxListDynamic->KeySize);
     
     // Write size for string
     switch(pxListDynamic->SizeInBytes)
     {
         case PXListDynamicSizeObject1Byte:
         {
-            *(PXInt8U*)insertAdress = dataSize;
+            *(PXI8U*)insertAdress = dataSize;
             break;
         }
         case PXListDynamicSizeObject2Byte:
         {
-            *(PXInt16U*)insertAdress = dataSize;
+            *(PXI16U*)insertAdress = dataSize;
             break;
         }
         case PXListDynamicSizeObject4Byte:
         {
-            *(PXInt32U*)insertAdress = dataSize;
+            *(PXI32U*)insertAdress = dataSize;
             break;
         }
         case PXListDynamicSizeObject8Byte:
         {
-            *(PXInt64U*)insertAdress = dataSize;
+            *(PXI64U*)insertAdress = dataSize;
             break;
         }
         default:
@@ -67,7 +67,7 @@ void* PXAPI PXListDynamicAdd(PXListDynamic* const pxListDynamic, const void* con
 
     // Writze Data
     char* insertionBase = insertAdress;
-    insertAdress += PXMemoryCopy(data, dataSize, insertAdress, dataSize);
+    insertAdress += PXMemoryCopy(data, insertAdress, dataSize);
     
 
      pxListDynamic->DataSizeUsed += rowSizeNew;
@@ -99,22 +99,22 @@ void PXAPI PXListDynamicGet(PXListDynamic* const pxListDynamic, const void* cons
         {
             case PXListDynamicSizeObject1Byte:
             {
-                dataLength = *(PXInt8U*)dataCursor;
+                dataLength = *(PXI8U*)dataCursor;
                 break;
             }
             case PXListDynamicSizeObject2Byte:
             {
-                dataLength = *(PXInt16U*)dataCursor;
+                dataLength = *(PXI16U*)dataCursor;
                 break;
             }
             case PXListDynamicSizeObject4Byte:
             {
-                dataLength = *(PXInt32U*)dataCursor;
+                dataLength = *(PXI32U*)dataCursor;
                 break;
             }
             case PXListDynamicSizeObject8Byte:
             {
-                dataLength = *(PXInt64U*)dataCursor;
+                dataLength = *(PXI64U*)dataCursor;
                 break;
             }
         }
@@ -143,7 +143,7 @@ void PXAPI PXListDynamicGet(PXListDynamic* const pxListDynamic, const void* cons
     *data = 0;
 }
 
-void PXAPI PXListDynamicInit(PXListDynamic* const pxListDynamic, const PXSize keySize, const PXInt8U sizeInBytes)
+void PXAPI PXListDynamicInit(PXListDynamic* const pxListDynamic, const PXSize keySize, const PXI8U sizeInBytes)
 {
     PXClear(PXListDynamic, pxListDynamic);
 

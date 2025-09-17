@@ -1,9 +1,9 @@
-#ifndef PXGLSLInclude
-#define PXGLSLInclude
+#ifndef PXGLSLIncluded
+#define PXGLSLIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
-PXPublic PXActionResult PXAPI PXGLSLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXGLSLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXGLSLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXGLSLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

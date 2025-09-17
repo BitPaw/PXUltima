@@ -1,5 +1,5 @@
-#ifndef PXPowerPCINCLUDE
-#define PXPowerPCINCLUDE
+#ifndef PXPowerPCIncluded
+#define PXPowerPCIncluded
 
 
 

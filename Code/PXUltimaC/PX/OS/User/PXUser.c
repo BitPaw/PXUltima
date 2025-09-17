@@ -12,7 +12,7 @@
 
 #endif
 
-PXActionResult PXAPI PXUserNameGetAA(PXText* const name)
+PXResult PXAPI  PXUserNameGetAA(PXText* const name)
 {
     switch(name->Format)
     {
@@ -20,7 +20,7 @@ PXActionResult PXAPI PXUserNameGetAA(PXText* const name)
         case TextFormatASCII:
         {
 #if OSUnix
-            name->SizeUsed = getlogin_r(name->TextA, name->SizeAllocated); // unistd.h
+            name->SizeUsed = getlogin_r(name->A, name->SizeAllocated); // unistd.h
 
             const PXBool success = name->SizeUsed > 0;
 
@@ -29,7 +29,7 @@ PXActionResult PXAPI PXUserNameGetAA(PXText* const name)
 #elif OSWindows
             DWORD size = name->SizeAllocated;
 
-            const PXBool successful = GetComputerNameA(name->TextA, &size); // Windows 2000 (+UWP), Kernel32.dll, winbase.h
+            const PXBool successful = GetComputerNameA(name->A, &size); // Windows 2000 (+UWP), Kernel32.dll, winbase.h
             const PXActionResult result = PXErrorCurrent(successful);
 
             name->SizeUsed = (PXSize)successful * (PXSize)size;
@@ -48,7 +48,7 @@ PXActionResult PXAPI PXUserNameGetAA(PXText* const name)
 #elif OSWindows
             DWORD size = name->SizeAllocated;
 
-            const PXBool successful = GetComputerNameW(name->TextW, &size); // Windows 2000 (+UWP), Kernel32.dll, winbase.h
+            const PXBool successful = GetComputerNameW(name->W, &size); // Windows 2000 (+UWP), Kernel32.dll, winbase.h
             const PXActionResult result = PXErrorCurrent(successful);
 
             name->NumberOfCharacters = (PXSize)successful * (PXSize)size;
@@ -72,7 +72,7 @@ PXBool PXAPI PXUserEnviromentFolderGet(PXText* const name, const PXUserEnviromen
 
 #elif OSWindows
 
-#if WindowsAtleastVista && PXOSWindowsDestop
+#if WindowsAtleastVista && PXOSWindowsDestop && 0
 
     const GUID* pathID = 0;
 
@@ -121,12 +121,12 @@ PXBool PXAPI PXUserEnviromentFolderGet(PXText* const name, const PXUserEnviromen
     PXText temporalCache;
     PXTextConstructBufferW(&temporalCache, 260);
 
-    const HRESULT result = SHGetKnownFolderPath((KNOWNFOLDERID*)pathID, KF_FLAG_DEFAULT_PATH, PXNull, (PWSTR*)temporalCache.TextW); // Windows Vista, Shell32.dll, shlobj_core.h
+    const HRESULT result = SHGetKnownFolderPath((KNOWNFOLDERID*)pathID, KF_FLAG_DEFAULT_PATH, PXNull, (PWSTR*)temporalCache.W); // Windows Vista, Shell32.dll, shlobj_core.h
     const PXBool success = S_OK == result;
 
     PXTextCopy(&temporalCache, name);
 
-    CoTaskMemFree(temporalCache.TextW); // Needs to be called in ANY case.
+    CoTaskMemFree(temporalCache.W); // Needs to be called in ANY case.
 
     return success;
 #else

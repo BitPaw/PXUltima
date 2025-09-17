@@ -1,7 +1,7 @@
-#ifndef PXX86INCLUDE
-#define PXX86INCLUDE
+#ifndef PXX86Included
+#define PXX86Included
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 #include <PX/Container/List/PXList.h>
 
 //---------------------------------------------------------
@@ -74,7 +74,7 @@ typedef struct PXX86Instruction
     PXX86InstructionFunction HandlerFunction;
     char* Name;
     char* Description;
-    PXInt32U Type;
+    PXI32U Type;
 }
 PXX86Instruction;
 
@@ -84,25 +84,25 @@ typedef struct PXX86Iterator_
     PXFile* Data;
     void* VirtualAdress;
 
-    PXInt8U OperationCode; // opcode
-    PXInt8U REX;
-    PXInt8U ModRM;
+    PXI8U OperationCode; // opcode
+    PXI8U REX;
+    PXI8U ModRM;
 
     union
     {
-        PXInt8S I8S;
-        PXInt16S I16S;
-        PXInt32S I32S;
-        PXInt64S I64S;
+        PXI8S I8S;
+        PXI16S I16S;
+        PXI32S I32S;
+        PXI64S I64S;
     }
     Displacement;
 
     union
     {
-        PXInt8S I8S;
-        PXInt16S I16S;
-        PXInt32S I32S;
-        PXInt64S I64S;
+        PXI8S I8S;
+        PXI16S I16S;
+        PXI32S I32S;
+        PXI64S I64S;
     }
     Immediate;
 
@@ -112,9 +112,9 @@ PXX86Iterator;
 
 typedef struct PXX86ModRM
 {
-    PXInt8U Mod;
-    PXInt8U RegisterIndex;
-    PXInt8U RM;
+    PXI8U Mod;
+    PXI8U RegisterIndex;
+    PXI8U RM;
 
     char* Name;
 }
@@ -132,13 +132,13 @@ PXPrivate void PXAPI PXX86InstructionRET(PXX86Iterator* const pxX86Iterator);
 PXPrivate void PXAPI PXX86InstructionJMPNEAR(PXX86Iterator* const pxX86Iterator);
 PXPrivate void PXAPI PXX86InstructionCall(PXX86Iterator* const pxX86Iterator);
 
-PXPublic PXActionResult PXAPI PXX86InstructionNext(PXX86Iterator* const pxX86Iterator);
+PXPublic PXResult PXAPI PXX86InstructionNext(PXX86Iterator* const pxX86Iterator);
 
-PXPublic PXActionResult PXAPI PXX86InstructionDisassemble(PXX86Iterator* const pxX86Iterator);
+PXPublic PXResult PXAPI PXX86InstructionDisassemble(PXX86Iterator* const pxX86Iterator);
 
 
 typedef struct PXSectionTable_ PXSectionTable;
 
-PXPublic PXActionResult PXAPI PXX86InstructionWalk(PXFile* const pxFile, PXSectionTable* const pxSectionTable);
+PXPublic PXResult PXAPI PXX86InstructionWalk(PXFile* const pxFile, PXSectionTable* const pxSectionTable);
 
 #endif

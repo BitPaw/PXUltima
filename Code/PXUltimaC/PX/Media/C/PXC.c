@@ -8,7 +8,7 @@
 
 #define PXCDebugOutput 1
 
-PXActionResult PXAPI PXCParsePreprocessorCondition(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent)
+PXResult PXAPI  PXCParsePreprocessorCondition(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent)
 {
     PXCompilerSymbolEntryExtract(pxCompiler);
 
@@ -45,7 +45,7 @@ PXActionResult PXAPI PXCParsePreprocessorCondition(PXCompiler* const pxCompiler,
     return PXActionInvalid;
 }
 
-PXActionResult PXAPI PXCParsePreprocessorDefine(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent)
+PXResult PXAPI  PXCParsePreprocessorDefine(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent)
 {
     const PXSize defineTypePosition = 0;// pxCompiler->DataCursor;
 
@@ -91,11 +91,11 @@ PXActionResult PXAPI PXCParsePreprocessorDefine(PXCompiler* const pxCompiler, PX
     }
 
 
-    PXInt16U currentLineA =  pxCompiler->ReadInfo.SymbolEntryCurrent.Line;
+    PXI16U currentLineA =  pxCompiler->ReadInfo.SymbolEntryCurrent.Line;
 
     PXCompilerSymbolEntryPeek(pxCompiler);
 
-    PXInt16U currentLineB =  pxCompiler->ReadInfo.SymbolEntryCurrent.Line;
+    PXI16U currentLineB =  pxCompiler->ReadInfo.SymbolEntryCurrent.Line;
 
     PXBool isNewLine = currentLineA != currentLineB;
 
@@ -114,7 +114,7 @@ PXActionResult PXAPI PXCParsePreprocessorDefine(PXCompiler* const pxCompiler, PX
             // Is Makro-Function
 
             const PXSize position = 0;// outputStream->DataCursor;
-            PXInt8U parameterListLength = 0;
+            PXI8U parameterListLength = 0;
 
             //PXFileWriteAtI8U(outputStream, PXCStructureTypeMakroFunction, defineTypePosition);
             // PXFileWriteI8U(outputStream, 0xFF);
@@ -175,11 +175,11 @@ PXActionResult PXAPI PXCParsePreprocessorDefine(PXCompiler* const pxCompiler, PX
     return PXActionInvalid;
 }
 
-PXActionResult PXAPI PXCParsePreprocessorInclude(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent)
+PXResult PXAPI  PXCParsePreprocessorIncluded(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent)
 {
     PXCodeDocumentElement* pxCodeDocumentElement = PXNull;
 
-    PXCodeDocumentElementGenerateChild(pxCompiler->CodeDocument, PXDocumentElementTypePreprocessorInclude, pxCompiler->ReadInfo.DepthCurrent, &pxCodeDocumentElement, parrent);
+    PXCodeDocumentElementGenerateChild(pxCompiler->CodeDocument, PXDocumentElementTypePreprocessorIncluded, pxCompiler->ReadInfo.DepthCurrent, &pxCodeDocumentElement, parrent);
 
     PXCompilerSymbolEntryExtract(pxCompiler);
 
@@ -254,7 +254,7 @@ PXActionResult PXAPI PXCParsePreprocessorInclude(PXCompiler* const pxCompiler, P
                     PXLoggingInfo,
                     "C",
                     "Parsing",
-                    "Invalid include"
+                    "Invalid Included"
                 );
 #endif
                 break;
@@ -271,7 +271,7 @@ PXActionResult PXAPI PXCParsePreprocessorInclude(PXCompiler* const pxCompiler, P
             PXLoggingInfo,
             "C",
             "Parsing",
-            "Include library (global) : %s",
+            "Included library (global) : %s",
             buffer
         );
 #endif
@@ -300,8 +300,8 @@ PXActionResult PXAPI PXCParsePreprocessorInclude(PXCompiler* const pxCompiler, P
             (
                 PXLoggingError,
                 "C",
-                "Include",
-                "Makro include has invalid name"
+                "Included",
+                "Makro Included has invalid name"
             );
 #endif
         }
@@ -313,17 +313,17 @@ PXActionResult PXAPI PXCParsePreprocessorInclude(PXCompiler* const pxCompiler, P
 
 
 #if PXCDebugOutput
-        char includeName[64];
+        char IncludedName[64];
 
-        PXTextCopyA( pxCompiler->ReadInfo.SymbolEntryCurrent.Source,  pxCompiler->ReadInfo.SymbolEntryCurrent.Size, includeName, 64);
+        PXTextCopyA( pxCompiler->ReadInfo.SymbolEntryCurrent.Source,  pxCompiler->ReadInfo.SymbolEntryCurrent.Size, IncludedName, 64);
 
         PXLogPrint
         (
             PXLoggingInfo,
             "C",
-            "Include",
+            "Included",
             "Makro define name : %s",
-            includeName
+            IncludedName
         );
 #endif
 
@@ -345,7 +345,7 @@ PXActionResult PXAPI PXCParsePreprocessorInclude(PXCompiler* const pxCompiler, P
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXCParsePreprocessorPragma(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent)
+PXResult PXAPI  PXCParsePreprocessorPragma(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent)
 {
     PXCompilerSymbolEntryExtract(pxCompiler);
 
@@ -378,7 +378,7 @@ PXActionResult PXAPI PXCParsePreprocessorPragma(PXCompiler* const pxCompiler, PX
     return PXActionInvalid;
 }
 
-PXActionResult PXAPI PXCParseTypeDefinition(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent)
+PXResult PXAPI  PXCParseTypeDefinition(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent)
 {
     PXCodeDocumentElement* pxCodeDocumentElement = PXNull;
 
@@ -521,7 +521,7 @@ PXActionResult PXAPI PXCParseTypeDefinition(PXCompiler* const pxCompiler, PXCode
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXCParseEndOfCommand(PXCompiler* const pxCompiler)
+PXResult PXAPI  PXCParseEndOfCommand(PXCompiler* const pxCompiler)
 {
     const PXBool isSemicolon = PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerSemiColon);
 
@@ -535,7 +535,7 @@ PXActionResult PXAPI PXCParseEndOfCommand(PXCompiler* const pxCompiler)
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXCParseTypeParameterList(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent)
+PXResult PXAPI  PXCParseTypeParameterList(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent)
 {
     // expect '('
     const PXBool isOpenBracked = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerBrackedRoundOpen);
@@ -579,7 +579,7 @@ PXActionResult PXAPI PXCParseTypeParameterList(PXCompiler* const pxCompiler, PXC
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXCParseFunctionDefinition(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent)
+PXResult PXAPI  PXCParseFunctionDefinition(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent)
 {
     PXCodeDocumentElement* pxCodeDocumentElement = PXNull;
 
@@ -645,7 +645,7 @@ PXActionResult PXAPI PXCParseFunctionDefinition(PXCompiler* const pxCompiler, PX
     return PXActionInvalid;
 }
 
-PXActionResult PXAPI PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parent)
+PXResult PXAPI  PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parent)
 {
     PXCodeDocumentElement* pxCodeDocumentElement = PXNull;
 
@@ -1055,7 +1055,7 @@ void PXAPI PXCNameCleave(PXCompiler* const pxCompiler, PXCodeDocumentElement* co
     }
 }
 
-PXActionResult PXAPI PXCParseEnumMember(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent)
+PXResult PXAPI  PXCParseEnumMember(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent)
 {
     PXCodeDocumentElement* pxCodeDocumentElement = PXNull;
 
@@ -1106,7 +1106,7 @@ PXActionResult PXAPI PXCParseEnumMember(PXCompiler* const pxCompiler, PXCodeDocu
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXCParseTypeContainer(PXCompiler* const pxCompiler, PXCodeDocumentElement* const pxCodeDocumentElement)
+PXResult PXAPI  PXCParseTypeContainer(PXCompiler* const pxCompiler, PXCodeDocumentElement* const pxCodeDocumentElement)
 {
     // Get name [optional]
     {
@@ -1267,7 +1267,7 @@ PXActionResult PXAPI PXCParseTypeContainer(PXCompiler* const pxCompiler, PXCodeD
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXCParseTypeEnum(PXCompiler* const pxCompiler, PXCodeDocumentElement* const pxCodeDocumentElementParent)
+PXResult PXAPI  PXCParseTypeEnum(PXCompiler* const pxCompiler, PXCodeDocumentElement* const pxCodeDocumentElementParent)
 {
     PXCompilerSymbolEntryExtract(pxCompiler);
 
@@ -1287,7 +1287,7 @@ PXActionResult PXAPI PXCParseTypeEnum(PXCompiler* const pxCompiler, PXCodeDocume
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXCLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI  PXCLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
 #if PXLogEnable
     PXLogPrint
@@ -1341,7 +1341,7 @@ PXActionResult PXAPI PXCLoadFromFile(PXResourceTransphereInfo* const pxResourceL
         PXFilePathSplitt(&filePath, &pxFilePathStructure);
 
         pxCodeDocumentElementRoot->NameAdress = PXMemoryHeapCallocT(char, pxFilePathStructure.FileName.SizeUsed);
-        pxCodeDocumentElementRoot->NameSize += PXTextCopyA(pxFilePathStructure.FileName.TextA, pxFilePathStructure.FileName.SizeUsed, pxCodeDocumentElementRoot->NameAdress, pxCodeDocumentElementRoot->NameSize);
+        pxCodeDocumentElementRoot->NameSize += PXTextCopyA(pxFilePathStructure.FileName.A, pxFilePathStructure.FileName.SizeUsed, pxCodeDocumentElementRoot->NameAdress, pxCodeDocumentElementRoot->NameSize);
 
         PXCNameCleave(&pxCompiler, pxCodeDocumentElementRoot);
 
@@ -1402,9 +1402,9 @@ PXActionResult PXAPI PXCLoadFromFile(PXResourceTransphereInfo* const pxResourceL
                 PXCParsePreprocessorCondition(&pxCompiler, pxCodeDocumentElementRoot);
                 break;
             }
-            case PXDocumentElementTypePreprocessorInclude:
+            case PXDocumentElementTypePreprocessorIncluded:
             {
-                PXCParsePreprocessorInclude(&pxCompiler, pxCodeDocumentElementRoot);
+                PXCParsePreprocessorIncluded(&pxCompiler, pxCodeDocumentElementRoot);
                 break;
             }
             case PXDocumentElementTypePreprocessorPragma:
@@ -1576,7 +1576,7 @@ PXActionResult PXAPI PXCLoadFromFile(PXResourceTransphereInfo* const pxResourceL
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXCSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI  PXCSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

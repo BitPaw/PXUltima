@@ -1,5 +1,5 @@
-#ifndef PXTreeBinaryINCLUDE
-#define PXTreeBinaryINCLUDE
+#ifndef PXTreeBinaryIncluded
+#define PXTreeBinaryIncluded
 
 typedef struct PXTreeBinary_
 {

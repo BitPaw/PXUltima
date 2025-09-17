@@ -1,10 +1,10 @@
 #include "PXKnowlegeGraph.h"
 
 #include <PX/OS/Graphic/PXGraphic.h>
-#include <PX/OS/GUI/PXGUI.h>
+#include <PX/Engine/PXGUI.h>
 #include <PX/Math/PXMath.h>
 
-PXActionResult PXAPI PXKnowlegeGraphNodeInsert(PXKnowlegeGraph* const pxKnowlegeGraph, PXKnowlegeGraphNode* const pxKnowlegeGraphNode)
+PXResult PXAPI  PXKnowlegeGraphNodeInsert(PXKnowlegeGraph* const pxKnowlegeGraph, PXKnowlegeGraphNode* const pxKnowlegeGraphNode)
 {
 
 
@@ -41,7 +41,7 @@ typedef struct PXCircle
     PXF32 Positon[2];
     PXF32 Scale[2];
 
-    PXInt32U LevelOfDetail;
+    PXI32U LevelOfDetail;
 }
 PXCircle;
 
@@ -131,7 +131,7 @@ void PXDrawCircleList(PXOpenGL* const pxOpenGL, PXCircle* const pxCircleList, co
     }
 }
 
-PXActionResult PXAPI PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph* const pxKnowlegeGraph, PXCodeDocument* const pxDocument, PXImage* const pxImage)
+PXResult PXAPI  PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph* const pxKnowlegeGraph, PXCodeDocument* const pxDocument, PXTexture* const PXTexture)
 {
     PXSize imageWidth = pxKnowlegeGraph->SizeMaxWidth;
     PXSize imageHeight = pxKnowlegeGraph->SizeMaxHeight;
@@ -222,13 +222,13 @@ PXActionResult PXAPI PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph* const pxKnowle
 
     // Screenshot Scene
     {
-        PXClear(PXImage, pxImage);
+        PXClear(PXTexture, PXTexture);
 
-        PXImageResize(pxImage, PXColorFormatRGBI8, imageWidth, imageHeight);
+        PXTextureResize(PXTexture, PXColorFormatRGBI8, imageWidth, imageHeight);
 
-        pxGraphic.ScreenBufferRead(pxGraphic.EventOwner, pxImage);
+        pxGraphic.ScreenBufferRead(pxGraphic.EventOwner, PXTexture);
 
-        //const PXActionResult pxSaveResult = PXResourceSaveA(pxImage, "_TEST_DATA_INPUT_\\books.bmp", PXFileFormatBitMap);
+        //const PXActionResult pxSaveResult = PXResourceSaveA(PXTexture, "_TEST_DATA_INPUT_\\books.bmp", PXFileFormatBitMap);
     }
 
 

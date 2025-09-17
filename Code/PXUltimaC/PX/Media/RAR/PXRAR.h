@@ -1,7 +1,7 @@
-#ifndef PXRARInclude
-#define PXRARInclude
+#ifndef PXRARIncluded
+#define PXRARIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef enum PXRARVersion_
 {
@@ -20,7 +20,7 @@ typedef struct PXRAR_
 }
 PXRAR;
 
-PXPublic PXActionResult PXAPI PXRARLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXRARSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXRARLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXRARSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

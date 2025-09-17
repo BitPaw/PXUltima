@@ -1,7 +1,7 @@
-#ifndef PXPNGINCLUDE
-#define PXPNGINCLUDE
+#ifndef PXPNGIncluded
+#define PXPNGIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 // 0x0001 = palette used
 // 0x0010 = color used
@@ -35,49 +35,49 @@ PXPNGUnitSpecifier;
 
 typedef struct PXPNGPhysicalPixelDimension_
 {
-    PXInt32U PixelsPerUnit[2];
+    PXI32U PixelsPerUnit[2];
     PXPNGUnitSpecifier UnitSpecifier;
 }
 PXPNGPhysicalPixelDimension;
 
 typedef struct PXPNGPrimaryChromatics_
 {
-    PXInt32U WhiteX;
-    PXInt32U WhiteY;
-    PXInt32U RedX;
-    PXInt32U RedY;
-    PXInt32U GreenX;
-    PXInt32U GreenY;
-    PXInt32U BlueX;
-    PXInt32U BlueY;
+    PXI32U WhiteX;
+    PXI32U WhiteY;
+    PXI32U RedX;
+    PXI32U RedY;
+    PXI32U GreenX;
+    PXI32U GreenY;
+    PXI32U BlueX;
+    PXI32U BlueY;
 }
 PXPNGPrimaryChromatics;
 
 typedef struct PXPNGBackgroundColor_
 {
-    PXInt16U GreyScale;
-    PXInt16U Red;
-    PXInt16U Green;
-    PXInt16U Blue;
-    PXInt8U PaletteIndex;
+    PXI16U GreyScale;
+    PXI16U Red;
+    PXI16U Green;
+    PXI16U Blue;
+    PXI8U PaletteIndex;
 }
 PXPNGBackgroundColor;
 
 typedef struct PXPNGLastModificationTime_
 {
-    PXInt16U Year;
-    PXInt8U Month;
-    PXInt8U Day;
-    PXInt8U Hour;
-    PXInt8U Minute;
-    PXInt8U Second;
+    PXI16U Year;
+    PXI8U Month;
+    PXI8U Day;
+    PXI8U Hour;
+    PXI8U Minute;
+    PXI8U Second;
 }
 PXPNGLastModificationTime;
 
 typedef struct PXPNGPaletteHistogram_
 {
     PXSize ColorFrequencyListSize;
-    PXInt16U* ColorFrequencyList;
+    PXI16U* ColorFrequencyList;
 }
 PXPNGPaletteHistogram;
 
@@ -121,7 +121,7 @@ const char PXPNGChunkLastModificationTime[4] = "tIME";// [tIME] -
 // Start of the chunk header
 typedef struct PXPNGChunkHeader_
 {
-    PXInt32U Size;
+    PXI32U Size;
     char ID[4];
 }
 PXPNGChunkHeader;
@@ -134,7 +134,7 @@ typedef struct PXPNGChunk_
     //void* ChunkData;
 
     // [4-byte] Giving the number of bytes in the chunk's data field. The length counts only the data field, not itself, the chunk type code, or the CRC. Zero is a valid length. Although encoders and decoders should treat the length as unsigned, its value must not exceed 231 bytes.
-   // PXInt32U Lengh;
+   // PXI32U Lengh;
 
     PXBool IsEssential; // Ancillary Bit - Is this chunk not replaceable?.
     PXBool IsRegisteredStandard; // Private Bit - Is this chunk in the offically registered in any way?
@@ -146,22 +146,22 @@ typedef struct PXPNGChunk_
     // A 4-byte CRC (Cyclic Redundancy Check) calculated on the preceding bytes in the chunk, including the chunk type code and chunk data fields, but not including the length field. The CRC is always present, even for chunks containing no data. See CRC algorithm.
 
     PXBool CRCOK;
-    PXInt32U CRC;
+    PXI32U CRC;
 }
 PXPNGChunk;
 
 typedef struct PXPNGImageHeader_
 {
-    PXInt32U Width;
-    PXInt32U Height;
+    PXI32U Width;
+    PXI32U Height;
 
     // Bit depth is a single-byte integer giving the number of bits per sample or per palette index (not per pixel).
     // Valid values are 1, 2, 4, 8, and 16, although not all values are allowed for all color types.
-    PXInt8U BitDepth;
-    PXInt8U ColorTypeID;
-    PXInt8U CompressionMethod;
-    PXInt8U FilterMethod;
-    PXInt8U InterlaceMethodID;
+    PXI8U BitDepth;
+    PXI8U ColorTypeID;
+    PXI8U CompressionMethod;
+    PXI8U FilterMethod;
+    PXI8U InterlaceMethodID;
 
     // Color type is a single-byte integer that describes the interpretation of the image data.
     // Color type codes represent sums of the following values: 1 (palette used), 2 (color used),
@@ -182,14 +182,14 @@ typedef struct PXPNG_
 {
     //---[Important Data]--------------------------------------------------------
     PXPNGImageHeader ImageHeader;
-    PXInt16U PaletteSize;
-    PXInt8U Palette[1024];
+    PXI16U PaletteSize;
+    PXI8U Palette[1024];
     PXPNGPrimaryChromatics PrimaryChromatics;
     //---------------------------------------------------------------------------
 
     //---[Optional Data]---------------------------------------------------------
-    PXInt32U SignificantBits; // sBIT
-    PXInt32U Gamma; // gAMA
+    PXI32U SignificantBits; // sBIT
+    PXI32U Gamma; // gAMA
     PXPNGBackgroundColor BackgroundColor; // bKGD
     PXPNGPaletteHistogram PaletteHistogram; // hIST
     // XXXXXXXXXXXXXX XXXXXXXXXXXXXX // cHRM
@@ -267,7 +267,7 @@ typedef struct LodePNGColorMode
 
     The palette is only supported for color type 3.
     */
-    const PXInt8U* palette; /*palette in RGBARGBA... order. Must be either 0, or when allocated must have 1024 bytes*/
+    const PXI8U* palette; /*palette in RGBARGBA... order. Must be either 0, or when allocated must have 1024 bytes*/
     PXSize palettesize; /*palette size in number of colors (amount of used bytes is 4 * palettesize)*/
 
     /*
@@ -306,7 +306,7 @@ PNGColorTree;
 
 
 
-PXPublic PXActionResult PXAPI PXPNGImageDataDecompress(const PXPNG* const png, const void* pixelDataIn, void* pixelDataOut, unsigned char bitDepth, PXPNGColorType colorType);
+PXPublic PXResult PXAPI PXPNGImageDataDecompress(const PXPNG* const png, const void* pixelDataIn, void* pixelDataOut, unsigned char bitDepth, PXPNGColorType colorType);
 
 
 
@@ -348,7 +348,7 @@ static void getPixelColorRGBA8(PXColorRGBAI8* const color, const unsigned char* 
 
 
 /*put a pixel, given its RGBA color, into image of any color type*/
-PXPrivate PXActionResult PXAPI rgba8ToPixel
+PXPrivate PXResult PXAPI  rgba8ToPixel
 (
     unsigned char* out,
     PXSize i,
@@ -373,21 +373,21 @@ PXPublic unsigned readBitsFromReversedStream(PXSize* bitpointer, const unsigned 
 
 
 //----------------------------------------------------
-PXPrivate inline PXPNGColorType PXAPI PXPNGColorTypeFromID(const PXInt8U colorType);
-PXPrivate inline PXInt8U PXAPI PXPNGColorTypeToID(const PXPNGColorType colorType);
+PXPrivate inline PXPNGColorType PXAPI PXPNGColorTypeFromID(const PXI8U colorType);
+PXPrivate inline PXI8U PXAPI PXPNGColorTypeToID(const PXPNGColorType colorType);
 
-PXPrivate inline PXPNGInterlaceMethod PXAPI PXPNGInterlaceMethodFromID(const PXInt8U interlaceMethod);
-PXPrivate inline PXInt8U PXAPI PXPNGInterlaceMethodToID(const PXPNGInterlaceMethod interlaceMethod);
+PXPrivate inline PXPNGInterlaceMethod PXAPI PXPNGInterlaceMethodFromID(const PXI8U interlaceMethod);
+PXPrivate inline PXI8U PXAPI PXPNGInterlaceMethodToID(const PXPNGInterlaceMethod interlaceMethod);
 
-PXPrivate inline PXInt8U PXAPI PXPNGColorTypeNumberOfChannels(const PXPNGColorType pngColorType);
+PXPrivate inline PXI8U PXAPI PXPNGColorTypeNumberOfChannels(const PXPNGColorType pngColorType);
 
 PXPublic void PXAPI PXPNGDestruct(PXPNG* const png);
 
-PXPublic PXInt8U PXAPI PXPNGBitsPerPixel(const PXPNG* const png);
+PXPublic PXI8U PXAPI PXPNGBitsPerPixel(const PXPNG* const png);
 
-PXPublic PXSize PXAPI PXPNGFilePredictSize(PXImage* const pxImage, PXSize* const fileSize);
-PXPublic PXActionResult PXAPI PXPNGPeekFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXPNGLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXPNGSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXSize PXAPI PXPNGFilePredictSize(PXTexture* const pxTexture, PXSize* const fileSize);
+PXPublic PXResult PXAPI PXPNGPeekFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXPNGLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXPNGSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

@@ -1,5 +1,5 @@
-#ifndef PXTimeINCLUDE
-#define PXTimeINCLUDE
+#ifndef PXTimeIncluded
+#define PXTimeIncluded
 
 #include <PX/Media/PXType.h>
 #include <time.h>
@@ -44,19 +44,19 @@ PXTimeMonth;
 // 10 Byte
 typedef struct PXTime_
 {
-    PXInt16U Year;
-    PXInt16U Milliseconds; // 0-1000
-    PXInt8U Second;  // 0-60
-    PXInt8U Minute; // 0-60
-    PXInt8U Hour; // 0-24
-    PXInt8U Day; // 0-31
-    PXInt8U DayOfWeek; // enum
-    PXInt8U Month; // 0-12
+    PXI16U Year;
+    PXI16U Milliseconds; // 0-1000
+    PXI8U Second;  // 0-60
+    PXI8U Minute; // 0-60
+    PXI8U Hour; // 0-24
+    PXI8U Day; // 0-31
+    PXI8U DayOfWeek; // enum
+    PXI8U Month; // 0-12
 }
 PXTime;
 
-PXPublic PXTimeMonth  PXAPI PXTimeMonthFromID(const PXInt8U monthID);
-PXPublic PXTimeDayOfWeek PXAPI PXTimeDayFromID(const PXInt8U dayID);
+PXPublic PXTimeMonth  PXAPI PXTimeMonthFromID(const PXI8U monthID);
+PXPublic PXTimeDayOfWeek PXAPI PXTimeDayFromID(const PXI8U dayID);
 
 PXPublic void PXAPI PXTimeNow(PXTime* const time);
 
@@ -65,10 +65,10 @@ PXPublic PXSize PXAPI PXTimeDelta(const PXTime* const timeA, const PXTime* const
 PXPublic PXSize PXAPI PXTimeMilliseconds(const PXTime* time);
 PXPublic PXSize PXAPI PXTimeMillisecondsDelta(const PXTime* timeA, const PXTime* timeB);
 
-PXPublic PXF32 PXAPI PXTimeCounterStampToSecoundsF(const PXInt64U timestamp);
+PXPublic PXF32 PXAPI PXTimeCounterStampToSecoundsF(const PXI64U timestamp);
 
-PXPublic PXInt64U PXAPI PXTimeCounterStampGet();
-PXPublic PXInt64U PXAPI PXTimeCounterFrequencyGet();
+PXPublic PXI64U PXAPI PXTimeCounterStampGet();
+PXPublic PXI64U PXAPI PXTimeCounterFrequencyGet();
 
 
 PXPublic void PXAPI PXTimeFromOSCTime(PXTime* const pxTime, const time_t timeValue);

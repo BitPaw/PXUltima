@@ -1,7 +1,7 @@
-#ifndef PXDialogInclude
-#define PXDialogInclude
+#ifndef PXDialogIncluded
+#define PXDialogIncluded
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 #include <PX/Media/PXText.h>
 
 #ifdef __cplusplus
@@ -36,9 +36,9 @@ PXDialogCharacterMood;
 typedef struct PXDialogMessagePage_
 {
     PXDialogCharacterMood CharacterMood;
-    PXInt8U CharacterMoodCounter;
+    PXI8U CharacterMoodCounter;
 
-    PXTexture2D* CharacterSprite; // Can be NULL, means no texture shall be used
+    PXTexture* CharacterSprite; // Can be NULL, means no texture shall be used
     //PXFont* FontOverride;
 
     PXText Text;
@@ -46,7 +46,7 @@ typedef struct PXDialogMessagePage_
 PXDialogMessagePage;
 
 
-PXPublic PXActionResult PXAPI PXDialogContainerMessageFetch(PXDialogMessagePage* const pxDialogContainer);
+PXPublic PXResult PXAPI PXDialogContainerMessageFetch(PXDialogMessagePage* const pxDialogContainer);
 
 #ifdef __cplusplus
 }

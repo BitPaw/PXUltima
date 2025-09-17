@@ -1,8 +1,8 @@
 #ifndef PXDNSINLCUDE
 #define PXDNSINLCUDE
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 
-PXPublic PXActionResult PXAPI PXDNSFetch(const char* name);
+PXPublic PXResult PXAPI PXDNSFetch(const char* name);
 
 #endif

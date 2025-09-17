@@ -1,5 +1,5 @@
-#ifndef PXListDynamicIncluded
-#define PXListDynamicIncluded
+#ifndef PXListDynamicIncludedd
+#define PXListDynamicIncludedd
 
 #include <PX/Media/PXType.h>
 
@@ -23,12 +23,12 @@ typedef struct PXListDynamic_
 
     PXBool ReallocationAllow;
     PXBool DoNullTerminate;
-    PXInt8U SizeInBytes;
+    PXI8U SizeInBytes;
 }
 PXListDynamic;
 
 
-PXPublic void PXAPI PXListDynamicInit(PXListDynamic* const pxListDynamic, const PXSize keySize, const PXInt8U sizeInBytes);
+PXPublic void PXAPI PXListDynamicInit(PXListDynamic* const pxListDynamic, const PXSize keySize, const PXI8U sizeInBytes);
 
 // Adds an entry, data is copyed given the range.
 // a direct adress to the object is returned

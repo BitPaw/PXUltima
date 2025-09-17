@@ -1,21 +1,21 @@
-#ifndef PXHardwareInclude
-#define PXHardwareInclude
+#ifndef PXHardwareIncluded
+#define PXHardwareIncluded
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 
 typedef struct PXBIOS_
 {
-    PXInt16U   BiosCharacteristics[64];
+    PXI16U   BiosCharacteristics[64];
     char   BIOSVersion[64];
     char   BuildNumber[64];
     char   Caption[64];
     char   CodeSet[64];
     char   CurrentLanguage[64];
     char   Description[64];
-    PXInt8U    EmbeddedControllerMajorVersion;
-    PXInt8U    EmbeddedControllerMinorVersion;
+    PXI8U    EmbeddedControllerMajorVersion;
+    PXI8U    EmbeddedControllerMinorVersion;
     char   IdentificationCode[64];
-    PXInt16U   InstallableLanguages;
+    PXI16U   InstallableLanguages;
     double InstallDate; // ???
     char   LanguageEdition[64];
     char   ListOfLanguages[64];
@@ -26,98 +26,98 @@ typedef struct PXBIOS_
     double ReleaseDate; // ???
     char   SerialNumber[64];
     char   SMBIOSBIOSVersion[64];
-    PXInt16U   SMBIOSMajorVersion;
-    PXInt16U   SMBIOSMinorVersion;
+    PXI16U   SMBIOSMajorVersion;
+    PXI16U   SMBIOSMinorVersion;
     PXBool  SMBIOSPresent;
     char   SoftwareElementID[64];
-    PXInt16U   SoftwareElementState;
+    PXI16U   SoftwareElementState;
     char   BIOSStatus[64];
-    PXInt8U    SystemBiosMajorVersion;
-    PXInt8U    SystemBiosMinorVersion;
-    PXInt16U   TargetOperatingSystem;
+    PXI8U    SystemBiosMajorVersion;
+    PXI8U    SystemBiosMinorVersion;
+    PXI16U   TargetOperatingSystem;
     char   Version[64];
 }
 PXBIOS;
 
 typedef struct PXPhysicalMemory_
 {
-    PXInt32U   Attributes;
+    PXI32U   Attributes;
     char   BankLabel[64];
-    PXInt64U   Capacity;
+    PXI64U   Capacity;
     char   Caption[64];
-    PXInt32U   ConfiguredClockSpeed;
-    PXInt32U   ConfiguredVoltage;
+    PXI32U   ConfiguredClockSpeed;
+    PXI32U   ConfiguredVoltage;
     char   CreationClassName[64];
-    PXInt16U   DataWidth;
+    PXI16U   DataWidth;
     char   Description[64];
     char   DeviceLocator[64];
-    PXInt16U   FormFactor;
+    PXI16U   FormFactor;
     PXBool  HotSwappable;
     double InstallDate; // ???
-    PXInt16U   InterleaveDataDepth;
-    PXInt32U   InterleavePosition;
+    PXI16U   InterleaveDataDepth;
+    PXI32U   InterleavePosition;
     char   Manufacturer[64];
-    PXInt32U   MaxVoltage;
-    PXInt16U   MemoryType;
-    PXInt32U   MinVoltage;
+    PXI32U   MaxVoltage;
+    PXI16U   MemoryType;
+    PXI32U   MinVoltage;
     char   Model[64];
     char   Name[64];
     char   OtherIdentifyingInfo[64];
     char   PartNumber[64];
-    PXInt32U   PositionInRow;
+    PXI32U   PositionInRow;
     PXBool  PoweredOn;
     PXBool  Removable;
     PXBool  Replaceable;
     char   SerialNumber[64];
     char   SKU[64];
-    PXInt32U   SMBIOSMemoryType;
-    PXInt32U   Speed;
+    PXI32U   SMBIOSMemoryType;
+    PXI32U   Speed;
     char   MemoryStatus[64];
     char   Tag[64];
-    PXInt16U   TotalWidth;
-    PXInt16U   TypeDetail;
+    PXI16U   TotalWidth;
+    PXI16U   TypeDetail;
     char   Version[64];
 }
 PXPhysicalMemory;
 
 typedef struct PXCCCCMemory_
 {
-    PXInt16U   Access;
-    PXInt8U    AdditionalErrorData[10];
-    PXInt16U   Availability;
-    PXInt64U   BlockSize;
+    PXI16U   Access;
+    PXI8U    AdditionalErrorData[10];
+    PXI16U   Availability;
+    PXI64U   BlockSize;
     char   Caption[64];
-    PXInt32U   ConfigManagerErrorCode;
+    PXI32U   ConfigManagerErrorCode;
     PXBool  ConfigManagerUserConfig;
     PXBool  CorrectableError;
     char   CreationClassName[64];
     char   Description[64];
     char   DeviceID[64];
-    PXInt64U   EndingAddress;
-    PXInt16U   ErrorAccess;
-    PXInt64U   ErrorAddress;
+    PXI64U   EndingAddress;
+    PXI16U   ErrorAccess;
+    PXI64U   ErrorAddress;
     PXBool  ErrorCleared;
-    PXInt8U    ErrorData[10];
-    PXInt16U   ErrorDataOrder;
+    PXI8U    ErrorData[10];
+    PXI16U   ErrorDataOrder;
     char   ErrorDescription[64];
-    PXInt16U   ErrorGranularity;
-    PXInt16U   ErrorInfo;
+    PXI16U   ErrorGranularity;
+    PXI16U   ErrorInfo;
     char   ErrorMethodology[64];
-    PXInt64U   ErrorResolution;
+    PXI64U   ErrorResolution;
     double ErrorTime; // ??
-    PXInt32U   ErrorTransferSize;
+    PXI32U   ErrorTransferSize;
     double InstallDate;  // ??
-    PXInt32U   LastErrorCode;
+    PXI32U   LastErrorCode;
     char   Name[64];
-    PXInt64U   NumberOfBlocks;
+    PXI64U   NumberOfBlocks;
     char   OtherErrorDescription[64];
     char   PNPDeviceID[64];
-    PXInt16U   PowerManagementCapabilities[10];
+    PXI16U   PowerManagementCapabilities[10];
     PXBool  PowerManagementSupported;
     char   Purpose[64];
-    PXInt64U   StartingAddress;
+    PXI64U   StartingAddress;
     char   CCStatus[64];
-    PXInt16U   StatusInfo;
+    PXI16U   StatusInfo;
     char   SystemCreationClassName[64];
     PXBool  SystemLevelAddress;
     char   SystemName[64];
@@ -126,121 +126,121 @@ PXCCCCMemory;
 
 typedef struct PXCacheMemory_
 {
-    PXInt16U   Access;
-    PXInt8U    AdditionalErrorData[10];
-    PXInt16U   Associativity;
-    PXInt16U   Availability;
-    PXInt64U   BlockSize;
-    PXInt32U   CacheSpeed;
-    PXInt16U   CacheType;
+    PXI16U   Access;
+    PXI8U    AdditionalErrorData[10];
+    PXI16U   Associativity;
+    PXI16U   Availability;
+    PXI64U   BlockSize;
+    PXI32U   CacheSpeed;
+    PXI16U   CacheType;
     char   Caption[64];
-    PXInt32U   ConfigManagerErrorCode;
+    PXI32U   ConfigManagerErrorCode;
     PXBool  ConfigManagerUserConfig;
     PXBool  CorrectableError;
     char   CreationClassName[64];
-    PXInt16U   CurrentSRAM[10];
+    PXI16U   CurrentSRAM[10];
     char   Description[64];
     char   DeviceID[64];
-    PXInt64U   EndingAddress;
-    PXInt16U   ErrorAccess;
-    PXInt64U   ErrorAddress;
+    PXI64U   EndingAddress;
+    PXI16U   ErrorAccess;
+    PXI64U   ErrorAddress;
     PXBool  ErrorCleared;
-    PXInt16U   ErrorCorrectType;
-    PXInt8U    ErrorData[10];
-    PXInt16U   ErrorDataOrder;
+    PXI16U   ErrorCorrectType;
+    PXI8U    ErrorData[10];
+    PXI16U   ErrorDataOrder;
     char   ErrorDescription[64];
-    PXInt16U   ErrorInfo;
+    PXI16U   ErrorInfo;
     char   ErrorMethodology[64];
-    PXInt64U   ErrorResolution;
+    PXI64U   ErrorResolution;
     double ErrorTime; // !
-    PXInt32U   ErrorTransferSize;
-    PXInt32U   FlushTimer;
+    PXI32U   ErrorTransferSize;
+    PXI32U   FlushTimer;
     double InstallDate; // !
-    PXInt32U   InstalledSize;
-    PXInt32U   LastErrorCode;
-    PXInt16U   Level;
-    PXInt32U   LineSize;
-    PXInt16U   Location;
-    PXInt32U   MaxCacheSize;
+    PXI32U   InstalledSize;
+    PXI32U   LastErrorCode;
+    PXI16U   Level;
+    PXI32U   LineSize;
+    PXI16U   Location;
+    PXI32U   MaxCacheSize;
     char   Name[64];
-    PXInt64U   NumberOfBlocks;
+    PXI64U   NumberOfBlocks;
     char   OtherErrorDescription[64];
     char   PNPDeviceID[64];
-    PXInt16U   PowerManagementCapabilities[10];
+    PXI16U   PowerManagementCapabilities[10];
     PXBool  PowerManagementSupported;
     char   Purpose[64];
-    PXInt16U   ReadPolicy;
-    PXInt16U   ReplacementPolicy;
-    PXInt64U   StartingAddress;
+    PXI16U   ReadPolicy;
+    PXI16U   ReplacementPolicy;
+    PXI64U   StartingAddress;
     char   MemoryStatus[64];
-    PXInt16U   StatusInfo;
-    PXInt16U   SupportedSRAM[10];
+    PXI16U   StatusInfo;
+    PXI16U   SupportedSRAM[10];
     char   SystemCreationClassName[64];
     PXBool  SystemLevelAddress;
     char   SystemName[64];
-    PXInt16U   WritePolicy;
+    PXI16U   WritePolicy;
 }
 PXCacheMemory;
 
 typedef struct PXVideoDevice_
 {
-    PXInt16U   AcceleratorCapabilities[10];
+    PXI16U   AcceleratorCapabilities[10];
     char   AdapterCompatibility[64];
     char   AdapterDACType[64];
-    PXInt32U   AdapterRAM;
-    PXInt16U   Availability;
+    PXI32U   AdapterRAM;
+    PXI16U   Availability;
     char   CapabilityDescriptions[64];
     char   Caption[64];
-    PXInt32U   ColorTableEntries;
-    PXInt32U   ConfigManagerErrorCode;
+    PXI32U   ColorTableEntries;
+    PXI32U   ConfigManagerErrorCode;
     PXBool  ConfigManagerUserConfig;
     char   CreationClassName;
-    PXInt32U   CurrentBitsPerPixel;
-    PXInt32U   CurrentHorizontalResolution;
-    PXInt64U   CurrentNumberOfColors;
-    PXInt32U   CurrentNumberOfColumns;
-    PXInt32U   CurrentNumberOfRows;
-    PXInt32U   CurrentRefreshRate;
-    PXInt16U   CurrentScanMode;
-    PXInt32U   CurrentVerticalResolution;
+    PXI32U   CurrentBitsPerPixel;
+    PXI32U   CurrentHorizontalResolution;
+    PXI64U   CurrentNumberOfColors;
+    PXI32U   CurrentNumberOfColumns;
+    PXI32U   CurrentNumberOfRows;
+    PXI32U   CurrentRefreshRate;
+    PXI16U   CurrentScanMode;
+    PXI32U   CurrentVerticalResolution;
     char   Description[64];
     char   DeviceID[64];
-    PXInt32U   DeviceSpecificPens;
-    PXInt32U   DitherType;
+    PXI32U   DeviceSpecificPens;
+    PXI32U   DitherType;
     PXF32 DriverDate; // Format wierd !!
     char   DriverVersion[64];
     PXBool  ErrorCleared;
     char   ErrorDescription[64];
-    PXInt32U   ICMIntent;
-    PXInt32U   ICMMethod;
+    PXI32U   ICMIntent;
+    PXI32U   ICMMethod;
     char   InfFilename[64];
     char   InfSection[64];
     double InstallDate; // !
     char   InstalledDisplayDrivers[64];
-    PXInt32U   LastErrorCode;
-    PXInt32U   MaxMemorySupported;
-    PXInt32U   MaxNumberControlled;
-    PXInt32U   MaxRefreshRate;
-    PXInt32U   MinRefreshRate;
+    PXI32U   LastErrorCode;
+    PXI32U   MaxMemorySupported;
+    PXI32U   MaxNumberControlled;
+    PXI32U   MaxRefreshRate;
+    PXI32U   MinRefreshRate;
     PXBool  Monochrome;
     char   Name[64];
-    PXInt16U   NumberOfColorPlanes;
-    PXInt32U   NumberOfVideoPages;
+    PXI16U   NumberOfColorPlanes;
+    PXI32U   NumberOfVideoPages;
     char   PNPDeviceID[64];
-    PXInt16U   PowerManagementCapabilities[10];
+    PXI16U   PowerManagementCapabilities[10];
     PXBool  PowerManagementSupported;
-    PXInt16U   ProtocolSupported;
-    PXInt32U   ReservedSystemPaletteEntries;
-    PXInt32U   SpecificationVersion;
+    PXI16U   ProtocolSupported;
+    PXI32U   ReservedSystemPaletteEntries;
+    PXI32U   SpecificationVersion;
     char   VideoStatus[64];
-    PXInt16U   StatusInfo;
+    PXI16U   StatusInfo;
     char   SystemCreationClassName[64];
     char   SystemName[64];
-    PXInt32U   SystemPaletteEntries;
+    PXI32U   SystemPaletteEntries;
     double TimeOfLastReset; // !
-    PXInt16U   VideoArchitecture;
-    PXInt16U   VideoMemoryType;
-    PXInt16U   VideoMode;
+    PXI16U   VideoArchitecture;
+    PXI16U   VideoMemoryType;
+    PXI16U   VideoMode;
     char   VideoModeDescription[64];
     char   VideoProcessor[64];
 }
@@ -262,12 +262,12 @@ typedef struct PXMainBoard_
     char SystemCreationClassName[64];
     char SystemName[64];
 
-    PXInt16U   Availability;
-    PXInt16U   PowerManagementCapabilities[5];
-    PXInt16U   StatusInfo;
+    PXI16U   Availability;
+    PXI16U   PowerManagementCapabilities[5];
+    PXI16U   StatusInfo;
 
-    PXInt32U   ConfigManagerErrorCode;
-    PXInt32U   LastErrorCode;
+    PXI32U   ConfigManagerErrorCode;
+    PXI32U   LastErrorCode;
 
     double InstallDate; // !
 
@@ -290,27 +290,27 @@ typedef struct PXSensorTemperature_
     char SystemCreationClassName[64];
     char SystemName[64];
 
-    PXInt32S   Accuracy;
-    PXInt32U   ConfigManagerErrorCode;
-    PXInt32S   CurrentReading;
-    PXInt32U   LastErrorCode;
-    PXInt32S   LowerThresholdCritical;
-    PXInt32S   LowerThresholdFatal;
-    PXInt32S   LowerThresholdNonCritical;
-    PXInt32S   MaxReadable;
-    PXInt32S   MinReadable;
-    PXInt32S   NominalReading;
-    PXInt32S   NormalMax;
-    PXInt32S   NormalMin;
-    PXInt32U   Resolution;
-    PXInt32S   Tolerance;
-    PXInt32S   UpperThresholdCritical;
-    PXInt32S   UpperThresholdFatal;
-    PXInt32S   UpperThresholdNonCritical;
+    PXI32S   Accuracy;
+    PXI32U   ConfigManagerErrorCode;
+    PXI32S   CurrentReading;
+    PXI32U   LastErrorCode;
+    PXI32S   LowerThresholdCritical;
+    PXI32S   LowerThresholdFatal;
+    PXI32S   LowerThresholdNonCritical;
+    PXI32S   MaxReadable;
+    PXI32S   MinReadable;
+    PXI32S   NominalReading;
+    PXI32S   NormalMax;
+    PXI32S   NormalMin;
+    PXI32U   Resolution;
+    PXI32S   Tolerance;
+    PXI32S   UpperThresholdCritical;
+    PXI32S   UpperThresholdFatal;
+    PXI32S   UpperThresholdNonCritical;
 
-    PXInt16U   Availability;
-    PXInt16U   PowerManagementCapabilities[5];
-    PXInt16U   StatusInfo;
+    PXI16U   Availability;
+    PXI16U   PowerManagementCapabilities[5];
+    PXI16U   StatusInfo;
 
     PXBool ConfigManagerUserConfig;
     PXBool ErrorCleared;
@@ -347,38 +347,38 @@ typedef struct PXProcessorWS
     char Version[64];
 
     // 32x
-    PXInt32U   Characteristics;
-    PXInt32U   ConfigManagerErrorCode;
-    PXInt32U   CurrentClockSpeed;
-    PXInt32U   ExtClock;
-    PXInt32U   L2CacheSize;
-    PXInt32U   L2CacheSpeed;
-    PXInt32U   L3CacheSize;
-    PXInt32U   L3CacheSpeed;
-    PXInt32U   LastErrorCode;
-    PXInt32U   MaxClockSpeed;
-    PXInt32U   NumberOfCores;
-    PXInt32U   NumberOfEnabledCore;
-    PXInt32U   NumberOfLogicalProcessors;
-    PXInt32U   ThreadCount;
-    PXInt32U   VoltageCaps;
+    PXI32U   Characteristics;
+    PXI32U   ConfigManagerErrorCode;
+    PXI32U   CurrentClockSpeed;
+    PXI32U   ExtClock;
+    PXI32U   L2CacheSize;
+    PXI32U   L2CacheSpeed;
+    PXI32U   L3CacheSize;
+    PXI32U   L3CacheSpeed;
+    PXI32U   LastErrorCode;
+    PXI32U   MaxClockSpeed;
+    PXI32U   NumberOfCores;
+    PXI32U   NumberOfEnabledCore;
+    PXI32U   NumberOfLogicalProcessors;
+    PXI32U   ThreadCount;
+    PXI32U   VoltageCaps;
 
 
     // 16x
-    PXInt16U   AddressWidth;
-    PXInt16U   Architecture;
-    PXInt16U   Availability;
-    PXInt16U   CpuStatus;
-    PXInt16U   CurrentVoltage;
-    PXInt16U   DataWidth;
-    PXInt16U   Family;
-    PXInt16U   Level;
-    PXInt16U   LoadPercentage;
-    PXInt16U   PowerManagementCapabilities[5];
-    PXInt16U   ProcessorType;
-    PXInt16U   Revision;
-    PXInt16U   StatusInfo;
-    PXInt16U   UpgradeMethod;
+    PXI16U   AddressWidth;
+    PXI16U   Architecture;
+    PXI16U   Availability;
+    PXI16U   CpuStatus;
+    PXI16U   CurrentVoltage;
+    PXI16U   DataWidth;
+    PXI16U   Family;
+    PXI16U   Level;
+    PXI16U   LoadPercentage;
+    PXI16U   PowerManagementCapabilities[5];
+    PXI16U   ProcessorType;
+    PXI16U   Revision;
+    PXI16U   StatusInfo;
+    PXI16U   UpgradeMethod;
 
     // bool
     PXBool  ConfigManagerUserConfig;
@@ -421,10 +421,10 @@ PXProcessorWS;
 
 typedef struct PXBattery_
 {
-    PXInt8U StatusFlag;
-    PXInt8U LifePercent; // 0-100, 255=Unkown
-    PXInt32U LifeTime;
-    PXInt32U FullLifeTime;
+    PXI8U StatusFlag;
+    PXI8U LifePercent; // 0-100, 255=Unkown
+    PXI32U LifeTime;
+    PXI32U FullLifeTime;
 
     // Info
     char Name[16];
@@ -433,30 +433,30 @@ typedef struct PXBattery_
     char MODEL_NAME[16];
     char MANUFACTURER[16];
     PXBool PRESENT;
-    PXInt8U SERIAL_NUMBER;
+    PXI8U SERIAL_NUMBER;
 
     // Status
     char ChargeStatus[16];
-    PXInt8U CAPACITY;
-    PXInt32U CYCLE_COUNT;
+    PXI8U CAPACITY;
+    PXI32U CYCLE_COUNT;
 
     // A _ Ampere
-    PXInt32U CURRENT_NOW;
+    PXI32U CURRENT_NOW;
 
     // V - Voltage
-    PXInt32U VOLTAGE_MIN_DESIGN;
-    PXInt32U VOLTAGE_NOW;
+    PXI32U VOLTAGE_MIN_DESIGN;
+    PXI32U VOLTAGE_NOW;
 
     // C - Capacity
-    PXInt32U ChargeCurrent; // µAh
-    PXInt32U ChargeMaximumPractical; // µAh
-    PXInt32U ChargeMaximalTheroetical; // µAh
+    PXI32U ChargeCurrent; // µAh
+    PXI32U ChargeMaximumPractical; // µAh
+    PXI32U ChargeMaximalTheroetical; // µAh
 }
 PXBattery;
 
 
 
-PXPublic PXActionResult PXAPI PXHardwareBatteryFetch(PXBattery* const pxBattery);
+PXPublic PXResult PXAPI PXHardwareBatteryFetch(PXBattery* const pxBattery);
 
 
 
@@ -499,8 +499,8 @@ PXHardwareInfo;
 #define PXHardwareInfoDisplay (1 << 0)
 #define PXHardwareInfoAll PXHardwareInfoProcesor | PXHardwareInfoHardDrive | PXHardwareInfoDisplay
 
-PXPublic PXActionResult PXAPI PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, const PXInt32U fetchFlags);
+PXPublic PXResult PXAPI PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, const PXI32U fetchFlags);
 
-PXPublic PXActionResult PXAPI PXHardwareBattery(PXBattery* const pxBattery);
+PXPublic PXResult PXAPI PXHardwareBattery(PXBattery* const pxBattery);
 
 #endif

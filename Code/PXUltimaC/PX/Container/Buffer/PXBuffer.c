@@ -10,8 +10,20 @@ PXResult PXAPI  PXBufferAllocate(PXBuffer* const pxBuffer, const PXSize size)
     return PXActionSuccessful;
 }
 
+PXResult PXAPI PXBufferResize(PXBuffer* const pxBuffer, const PXSize size)
+{
+
+
+    return PXActionSuccessful;
+}
+
 PXResult PXAPI  PXBufferRelese(PXBuffer* const pxBuffer)
 {
+    PXMemoryHeapFree(PXNull, pxBuffer->Data);
+
+    pxBuffer->Data = 0;
+    pxBuffer->Size = 0;
+
     return PXActionSuccessful;
 }
 

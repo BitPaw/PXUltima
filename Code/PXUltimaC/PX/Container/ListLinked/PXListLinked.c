@@ -37,7 +37,7 @@ PXBool PXAPI PXListLinkedFixedNodeAt(const PXListLinkedFixed* const linkedListFi
     const PXSize nodeBlockSize = PXListLinkedFixedNodeStride(linkedListFixed);
     const void* const data = (PXAdress)linkedListFixed->Data + nodeBlockSize * index;
 
-    PXMemoryCopy(data, sizeof(void*), &pxLinkedListNodeFixed->BlockData, sizeof(void*));
+    PXMemoryCopy(data, &pxLinkedListNodeFixed->BlockData, sizeof(void*));
 
     {
         const PXSize dataSize = PXListLinkedFixedDataSize(linkedListFixed);
@@ -149,7 +149,7 @@ PXBool PXAPI PXListLinkedFixedNodeAdd(PXListLinkedFixed* const linkedListFixed, 
         const PXBool isDataEmbedded = PXListLinkedFixedIsDataEmbedded(linkedListFixed);
         const void* const dataSource = isDataEmbedded ? element : &element;
 
-        PXMemoryCopy(dataSource, dataBlockSize, data, dataBlockSize); // Copy the whole data into this node or  Copy only the adress to the data into the node
+        PXMemoryCopy(dataSource, data, dataBlockSize); // Copy the whole data into this node or  Copy only the adress to the data into the node
     }   
 
     // Add next pointer
@@ -158,7 +158,7 @@ PXBool PXAPI PXListLinkedFixedNodeAdd(PXListLinkedFixed* const linkedListFixed, 
         const void* value = PXListLinkedNodeNoNext;
         void* const target = (PXAdress)data + dataBlockSize;
 
-        PXMemoryCopy(&value, targetSize, target, targetSize);
+        PXMemoryCopy(&value, target, targetSize);
     } 
 
     // Fetch Last and register this node into it
@@ -167,7 +167,7 @@ PXBool PXAPI PXListLinkedFixedNodeAdd(PXListLinkedFixed* const linkedListFixed, 
         {
             void* const lastOBJ = (PXAdress)linkedListFixed->DataEntryLast + dataBlockSize;
 
-            PXMemoryCopy(&data, sizeof(void*), lastOBJ, sizeof(void*));
+            PXMemoryCopy(&data, lastOBJ, sizeof(void*));
 
             linkedListFixed->DataEntryLast = data;
         }      

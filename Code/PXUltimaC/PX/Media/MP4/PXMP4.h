@@ -1,7 +1,7 @@
-#ifndef PXMP4MINCLUDE
-#define PXMP4MINCLUDE
+#ifndef PXMP4MIncluded
+#define PXMP4MIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef enum PXM4AChunkID_
 {
@@ -47,9 +47,9 @@ typedef struct PXMP4_
 }
 PXMP4;
 
-PXPrivate PXM4AChunkID PXAPI PXMP4ChunkFromID(const PXInt32U chunkID);
+PXPrivate PXM4AChunkID PXAPI PXMP4ChunkFromID(const PXI32U chunkID);
 
-PXPublic PXActionResult PXAPI PXMP4LoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXMP4SaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXMP4LoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXMP4SaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

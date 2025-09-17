@@ -1,7 +1,7 @@
-#ifndef PXMatroskaInclude
-#define PXMatroskaInclude
+#ifndef PXMatroskaIncluded
+#define PXMatroskaIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef struct PXMatroska_
 {
@@ -9,7 +9,7 @@ typedef struct PXMatroska_
 }
 PXMatroska;
 
-PXPublic PXActionResult PXAPI PXMatroskaLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXMatroskaSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXMatroskaLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXMatroskaSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

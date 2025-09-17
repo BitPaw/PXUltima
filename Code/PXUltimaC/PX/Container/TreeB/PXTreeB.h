@@ -1,7 +1,7 @@
-#ifndef PXTreeBInclude
-#define PXTreeBInclude
+#ifndef PXTreeBIncluded
+#define PXTreeBIncluded
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 
 // Node
 typedef struct PXTreeBNode_
@@ -11,8 +11,8 @@ typedef struct PXTreeBNode_
     void* KeyList; // The list of keys,  
     void* NodeList; // The list of keys, 
 
-    PXInt8U KeyListAmount; // How many keys do we have
-    PXInt8U NodeListAmount; // How many keys do we have
+    PXI8U KeyListAmount; // How many keys do we have
+    PXI8U NodeListAmount; // How many keys do we have
 }
 PXTreeBNode;
 
@@ -33,18 +33,18 @@ typedef struct PXTreeB_
     void* KeyDataAdress;
     PXSize KeyAmount;
     PXSize KeySize;
-    PXInt8U KeyOrder;
+    PXI8U KeyOrder;
     //-------------------    
 }
 PXTreeB;
 
-PXPublic void PXAPI PXTreeBInitialize(PXTreeB* const pxTreeB, const PXSize keySize, const PXSize valueSize, const PXInt8U keyOrder);
-PXPublic PXActionResult PXAPI PXTreeBResize(PXTreeB* const pxTreeB, const PXSize amount);
-PXPublic PXActionResult PXAPI PXTreeBInsert(PXTreeB* const pxTreeB, const void* const key, const void* const value);
-PXPublic PXActionResult PXAPI PXTreeBFindIndexed(PXTreeB* const pxTreeB, const void* const key, void** const value);
-PXPublic PXActionResult PXAPI PXTreeBFindUnindexed(PXTreeB* const pxTreeB, const void* const key, void** const value);
+PXPublic void PXAPI PXTreeBInitialize(PXTreeB* const pxTreeB, const PXSize keySize, const PXSize valueSize, const PXI8U keyOrder);
+PXPublic PXResult PXAPI PXTreeBResize(PXTreeB* const pxTreeB, const PXSize amount);
+PXPublic PXResult PXAPI PXTreeBInsert(PXTreeB* const pxTreeB, const void* const key, const void* const value);
+PXPublic PXResult PXAPI PXTreeBFindIndexed(PXTreeB* const pxTreeB, const void* const key, void** const value);
+PXPublic PXResult PXAPI PXTreeBFindUnindexed(PXTreeB* const pxTreeB, const void* const key, void** const value);
 PXPublic void PXAPI PXTreeBValueIndex(PXTreeB* const pxTreeB, const PXSize index, void** const key, void** const value);
-PXPrivate PXActionResult PXAPI PXTreeBNodeExtractFromAdress(PXTreeB* const pxTreeB, PXTreeBNode* const pxTreeBNode, void* adress);
-PXPrivate PXActionResult PXAPI PXTreeBNodeInsert(PXTreeB* const pxTreeB, PXTreeBNode* const pxTreeBNode, const void* const key, const void* const value);
+PXPrivate PXResult PXAPI  PXTreeBNodeExtractFromAdress(PXTreeB* const pxTreeB, PXTreeBNode* const pxTreeBNode, void* adress);
+PXPrivate PXResult PXAPI  PXTreeBNodeInsert(PXTreeB* const pxTreeB, PXTreeBNode* const pxTreeBNode, const void* const key, const void* const value);
 
 #endif

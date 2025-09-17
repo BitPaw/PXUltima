@@ -1,7 +1,7 @@
-#ifndef PXThreadInclude
-#define PXThreadInclude
+#ifndef PXThreadIncluded
+#define PXThreadIncluded
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 #include "PXProcess.h"
 
 // Return IDs
@@ -40,7 +40,7 @@ typedef PXThreadResult(PXOSAPI* ThreadFunction)(void* const data);
 #define PXExecuteStateFailed      6<<16
 #define PXExecuteStateFinished    7<<16 // Resource is done
 
-PXPublic const char* PXExecuteStateToString(const PXInt32U behaviour);
+PXPublic const char* PXExecuteStateToString(const PXI32U behaviour);
 
 
 
@@ -135,8 +135,8 @@ typedef struct PXTask_
 PXTask;
 
 
-void PXAPI PXTaskStateChange(PXTask* const pxTask, const PXInt32U newState);
-void PXAPI PXTaskStateChangeRemote(PXThreadPool* pxThreadPool, PXTask* const pxTask, const PXInt32U newState);
+void PXAPI PXTaskStateChange(PXTask* const pxTask, const PXI32U newState);
+void PXAPI PXTaskStateChangeRemote(PXThreadPool* pxThreadPool, PXTask* const pxTask, const PXI32U newState);
 
 
 
@@ -145,7 +145,7 @@ void PXAPI PXTaskStateChangeRemote(PXThreadPool* pxThreadPool, PXTask* const pxT
 #define PXThreadStartOnAdd                  (1<<10)
 
 #if OSUnix
-typedef PXInt32U PXThreadHandleID;
+typedef PXI32U PXThreadHandleID;
 #elif OSWindows
 typedef DWORD PXThreadHandleID;
 #endif 
@@ -171,45 +171,45 @@ PXPublic void PXAPI PXThreadConstructFromHandle(PXThread* const pxThread, HANDLE
 // The thread will clean itself up, yet you need to release the handle as a final step.
 // "targetProcessHandle" can be NULL, will target own process
 // "threadName" can be NULL, it helps for debugging
-PXPublic PXActionResult PXAPI PXThreadCreate
+PXPublic PXResult PXAPI PXThreadCreate
 (
     PXThread* const pxThread,
     const char* const threadName,
     const PXProcessHandle targetProcessHandle,
     ThreadFunction threadFunction,
     void* parameter, 
-    const PXInt32U behaviour
+    const PXI32U behaviour
 );
 
 // Dont call this function if you dont have to.
 // In C++ this can cause memory leaks as destructors might not be called.
-PXPublic PXActionResult PXAPI PXThreadExitCurrent(const PXInt32U exitCode);
+PXPublic PXResult PXAPI PXThreadExitCurrent(const PXI32U exitCode);
 
 // Causes the calling thread to yield execution to another
 // thread that is ready to run on the current processor.
 // The operating system selects the next thread to be executed.
 // The function returns true if a yield was caused, otherwise the
 // current thread proceeds execution and false is returned.
-PXPublic PXActionResult PXAPI PXThreadYieldToOtherThreads();
+PXPublic PXResult PXAPI PXThreadYieldToOtherThreads();
 
-PXPublic PXActionResult PXAPI PXThreadOpen(PXThread* const pxThread);
-
-
+PXPublic PXResult PXAPI PXThreadOpen(PXThread* const pxThread);
 
 
 
 
-PXPublic PXActionResult PXAPI PXThreadPrioritySet(PXThread* pxThread, const PXThreadPriorityMode pxThreadPriorityMode);
-PXPublic PXActionResult PXAPI PXThreadPriorityGet(PXThread* pxThread, PXThreadPriorityMode* const pxThreadPriorityMode);
+
+
+PXPublic PXResult PXAPI PXThreadPrioritySet(PXThread* pxThread, const PXThreadPriorityMode pxThreadPriorityMode);
+PXPublic PXResult PXAPI PXThreadPriorityGet(PXThread* pxThread, PXThreadPriorityMode* const pxThreadPriorityMode);
 
 // Change the current thread state to the wanted state if possible.
-PXPublic PXActionResult PXAPI PXThreadStateChange(PXThread* const pxThread, const PXInt32U pxThreadState);
+PXPublic PXResult PXAPI PXThreadStateChange(PXThread* const pxThread, const PXI32U pxThreadState);
 
-PXPublic PXActionResult PXAPI PXThreadSleep(PXThread* const pxThread, const PXSize sleepTime);
+PXPublic PXResult PXAPI PXThreadSleep(PXThread* const pxThread, const PXSize sleepTime);
 
-PXPublic PXActionResult PXAPI PXThreadCurrentProcessorID(PXInt32U* const processorID);
+PXPublic PXResult PXAPI PXThreadCurrentProcessorID(PXI32U* const processorID);
 
-PXPublic PXActionResult PXAPI PXThreadNameSet(PXThread* pxThread, PXText* const threadName);
-PXPublic PXActionResult PXAPI PXThreadNameGet(struct PXDebug_* const pxDebug, PXThread* const pxThread, PXText* const threadName);
+PXPublic PXResult PXAPI PXThreadNameSet(PXThread* pxThread, PXText* const threadName);
+PXPublic PXResult PXAPI PXThreadNameGet(struct PXDebug_* const pxDebug, PXThread* const pxThread, PXText* const threadName);
 
 #endif

@@ -1,5 +1,5 @@
-#ifndef PXActionResultInclude
-#define PXActionResultInclude
+#ifndef PXActionResultIncluded
+#define PXActionResultIncluded
 
 #include <PX/Media/PXType.h>
 
@@ -377,17 +377,26 @@ typedef enum PXActionResult_
 }
 PXActionResult;
 
+
 // We use this as an enum is most often forced to be 32-bit.
 // This allows assembly code to be smaler.
-typedef PXInt16U PXResult;
+#if PXDEBUG
+typedef PXActionResult PXResult;
+#else
+typedef PXI16U PXResult;
+#endif
+
+
+
+
 
 #define PXActionReturnOnSuccess(actionResult) if (PXActionSuccessful == actionResult) return PXActionSuccessful;
 #define PXActionReturnOnError(actionResult) if (PXActionSuccessful != actionResult) return actionResult;
 #define PXActionContinueOnError(actionResult) if (PXActionSuccessful != actionResult) continue;
 //#define PXActionOnErrorFetchAndReturn(b) if(b) { return PXErrorCurrent(); }
 
-PXPublic PXActionResult PXAPI PXErrorCodeFromID(const int errorCode);
-PXPublic PXActionResult PXAPI PXErrorCurrent(const PXBool wasSuccessful);
+PXPublic PXResult PXAPI PXErrorCodeFromID(const int errorCode);
+PXPublic PXResult PXAPI PXErrorCurrent(const PXBool wasSuccessful);
 
 
 #if PXOSWindowsDestop
@@ -395,8 +404,8 @@ PXPublic PXActionResult PXAPI PXErrorCurrent(const PXBool wasSuccessful);
 // Interesting behaviour, you put in if we successfully did the last operation
 // If so, we just convert it into a successful error code, if not, fetch the
 // correct error
-PXPublic PXActionResult PXAPI PXErrorFromHRESULT(const HRESULT handleResult);
-PXPublic PXActionResult PXAPI PXWindowsMMAudioConvertFromID(const PXInt32U mmResultID);
+PXPublic PXResult PXAPI PXErrorFromHRESULT(const HRESULT handleResult);
+PXPublic PXResult PXAPI PXWindowsMMAudioConvertFromID(const PXI32U mmResultID);
 #endif
 
 #endif

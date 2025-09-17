@@ -1,19 +1,21 @@
 #include "PXConsole.h"
 
 #include <stdarg.h>
+
 #include <PX/Media/PXText.h>
 #include <PX/OS/Async/PXThread.h>
 #include <PX/OS/Time/PXTime.h>
 #include <PX/OS/File/PXFile.h>
 #include <PX/OS/Debug/PXDebug.h>
 #include <PX/OS/Async/PXLock.h>
+#include <PX/OS/PXOS.h>
 
 PXLock _GLOBALCosolePrintLock;
 PXThread _GLOBALSourceThread;
 
 #define PXConsoleColorEnable 1
 
-PXActionResult PXAPI PXConsoleTextColorSetFromID(const PXInt16U coliorID)
+PXResult PXAPI  PXConsoleTextColorSetFromID(const PXI16U coliorID)
 {
     PXConsoleTextColor pxConsoleTextColor = 0;
 
@@ -33,7 +35,7 @@ PXActionResult PXAPI PXConsoleTextColorSetFromID(const PXInt16U coliorID)
     return PXConsoleTextColorSet(pxConsoleTextColor);
 }
 
-PXActionResult PXAPI PXConsoleTextColorSet(const PXConsoleTextColor pxConsoleTextColor)
+PXResult PXAPI  PXConsoleTextColorSet(const PXConsoleTextColor pxConsoleTextColor)
 {
 #if OSUnix
 
@@ -283,8 +285,8 @@ PXActionResult PXAPI PXConsoleTextColorSet(const PXConsoleTextColor pxConsoleTex
 
         //return PXActionRefusedArgumentInvalid;
     }
-
-    SetConsoleTextAttribute(consoleHandle, colorID);
+ 
+    const BOOL result = SetConsoleTextAttribute(consoleHandle, colorID);
 #else
     return PXActionRefusedNotSupportedByLibrary;
 #endif
@@ -300,7 +302,7 @@ void PXAPI PXConsoleClear()
 #endif
 }
 
-void PXAPI PXConsoleGoToXY(const PXInt32U x, const PXInt32U y)
+void PXAPI PXConsoleGoToXY(const PXI32U x, const PXI32U y)
 {
 #if OSUnix || OSForcePOSIXForWindows
     printf("\033[%d;%dH", y, x);
@@ -364,20 +366,20 @@ void PXAPI PXConsoleWriteWithColorCodes(PXText* const bufferInput)
 
     for (PXSize i = 0; i < bufferInput->SizeUsed; i++)
     {
-        PXByte isColorKey = bufferInput->TextA[i] == '§';
+        PXByte isColorKey = bufferInput->A[i] == '§';
 
         if (!isColorKey)
         {
-            PXSize offset = PXTextFindFirstCharacterA(&bufferInput->TextA[i], bufferInput->SizeUsed -i, '§');
+            PXSize offset = PXTextFindFirstCharacterA(&bufferInput->A[i], bufferInput->SizeUsed -i, '§');
 
             if (offset == (PXSize)-1)
             {
-                PXConsoleWrite(bufferInput->SizeUsed - i, &bufferInput->TextA[i]);
+                PXConsoleWrite(bufferInput->SizeUsed - i, &bufferInput->A[i]);
 
                 break; // DONE
             }
 
-            PXConsoleWrite(offset, &bufferInput->TextA[i]);
+            PXConsoleWrite(offset, &bufferInput->A[i]);
 
             i += offset - 1;
 
@@ -387,7 +389,7 @@ void PXAPI PXConsoleWriteWithColorCodes(PXText* const bufferInput)
         ++i;
 
 #if PXConsoleColorEnable
-        PXConsoleTextColorSetFromID(bufferInput->TextA[i]);
+        PXConsoleTextColorSetFromID(bufferInput->A[i]);
 
         //PXConsoleTextColorSet(color);
 #else
@@ -416,7 +418,7 @@ void PXAPI PXConsoleWriteTablePXF32(const PXF32* const data, const PXSize amount
     }
 }
 
-void PXAPI PXConsoleWriteTableInt(const PXInt8U* const data, const PXSize amount, const PXSize width)
+void PXAPI PXConsoleWriteTableInt(const PXI8U* const data, const PXSize amount, const PXSize width)
 {
     const PXSize rows = amount / width;
 
@@ -424,7 +426,7 @@ void PXAPI PXConsoleWriteTableInt(const PXInt8U* const data, const PXSize amount
     {
         for(PXSize x = 0; x < width; ++x)
         {
-            PXInt8U number = data[x + y * width];
+            PXI8U number = data[x + y * width];
 
             PXConsoleWriteF(260, "%3i ", number);
         }
@@ -529,9 +531,9 @@ void PXAPI PXLogPrintInvoke(PXLoggingEventData* const pxLoggingEventData, ...)
         (
             &textExtra,
             "%8s  ID:%i <%s>",
-            pxText.TextA,
+            pxText.A,
             (int)pxFile->FileID,
-            pxTextFilePath.TextA
+            pxTextFilePath.A
         );
 #endif
 
@@ -552,7 +554,7 @@ void PXAPI PXLogPrintInvoke(PXLoggingEventData* const pxLoggingEventData, ...)
             (
                 &textExtra,
                 "%8s  %s::%s::%i",
-                pxText.TextA,
+                pxText.A,
                 pxLoggingMemoryData->NameFile,
                 pxLoggingMemoryData->NameFunction,
                 pxLoggingMemoryData->NumberLine
@@ -564,7 +566,7 @@ void PXAPI PXLogPrintInvoke(PXLoggingEventData* const pxLoggingEventData, ...)
             (
                 &textExtra,
                 "%8s",
-                pxText.TextA
+                pxText.A
             );
         }
 
@@ -583,7 +585,7 @@ void PXAPI PXLogPrintInvoke(PXLoggingEventData* const pxLoggingEventData, ...)
 
     textPreFormatted.SizeUsed = PXTextPrintA
     (
-        textPreFormatted.TextA,
+        textPreFormatted.A,
         textPreFormatted.SizeAllocated,
         "[%2.2i:%2.2i:%2.2i] §3%11s §%i%c %-14s §%i%s%s\n",
         pxTime.Hour,
@@ -595,7 +597,7 @@ void PXAPI PXLogPrintInvoke(PXLoggingEventData* const pxLoggingEventData, ...)
         loggingTypeSymbol,
         pxLoggingEventData->ModuleAction,
         nameColor,
-        textExtra.TextA,
+        textExtra.A,
         pxLoggingEventData->PrintFormat
     );
 
@@ -605,9 +607,9 @@ void PXAPI PXLogPrintInvoke(PXLoggingEventData* const pxLoggingEventData, ...)
     va_list args;
     va_start(args, pxLoggingEventData);
 
-    PXConsoleWriteFV(0, textColored.TextA, args);
+    PXConsoleWriteFV(0, textColored.A, args);
 
-    // vfprintf(stdout, textColored.TextA, args);
+    // vfprintf(stdout, textColored.A, args);
 
     va_end(args);
 }
@@ -715,7 +717,7 @@ void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source,
     // Pre formatting
     formattedText.SizeUsed = PXTextPrintA
     (
-        formattedText.TextA,
+        formattedText.A,
         formattedText.SizeAllocated,
         "§8[%s§8]§8[§9%2.2i§8:§9%2.2i§8:§9%2.2i§8] §6%12s §%c%c %-14s §%c%s§f\n", //
         //"§0# §1# §2# §3# §4# §5# §6# §7# §8# §9# §a# §b# §c# §d# §e# §f#\n",
@@ -736,9 +738,9 @@ void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source,
         va_list args;
         va_start(args, format);
 
-        PXTextPrintV(&exportText, formattedText.TextA, args);
+        PXTextPrintV(&exportText, formattedText.A, args);
 
-        // vfprintf(stdout, exportText.TextA, args);
+        // vfprintf(stdout, exportText.A, args);
 
         va_end(args);
 

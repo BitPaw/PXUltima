@@ -1,6 +1,7 @@
 #include "PXTranslator.h"
 
 #include <PX/Media/PXText.h>
+#include <PX/OS/File/PXFile.h>
 
 // English <=> German translate
 
@@ -16,7 +17,7 @@
 // V <=> B
 // GHT <=> CHT
 
-PXActionResult PXTranslatorEnglishToGerman(PXFile* const inputStreamEnglish, PXFile* const outputStreamGerman)
+PXResult PXAPI PXTranslatorEnglishToGerman(PXFile* const inputStreamEnglish, PXFile* const outputStreamGerman)
 {
     while (!PXFileIsAtEnd(inputStreamEnglish))
     {
@@ -31,7 +32,7 @@ PXActionResult PXTranslatorEnglishToGerman(PXFile* const inputStreamEnglish, PXF
     return PXActionSuccessful;
 }
 
-PXActionResult PXTranslatorGermanToEnglish(PXFile* const inputStreamGerman, PXFile* const outputStreamEnglish)
+PXResult PXAPI PXTranslatorGermanToEnglish(PXFile* const inputStreamGerman, PXFile* const outputStreamEnglish)
 {
     return PXActionSuccessful;
 }

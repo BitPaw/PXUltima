@@ -37,7 +37,7 @@ PXBool PXAPI PXServerSocketIDIsServer(const PXServer* const server, const PXSock
     return PXFalse;
 }
 
-PXActionResult PXAPI PXServerStart(PXServer* const server, const PXInt16U port, const PXProtocolMode protocolMode)
+PXResult PXAPI  PXServerStart(PXServer* const server, const PXI16U port, const PXProtocolMode protocolMode)
 {
     // Setup adress info
     {
@@ -115,7 +115,7 @@ PXActionResult PXAPI PXServerStart(PXServer* const server, const PXInt16U port, 
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXServerStop(PXServer* const server)
+PXResult PXAPI  PXServerStop(PXServer* const server)
 {
     if (server->ServerSocketListSize == 0)
     {
@@ -139,12 +139,12 @@ PXActionResult PXAPI PXServerStop(PXServer* const server)
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXServerKickClient(PXServer* const server, const PXSocketID socketID)
+PXResult PXAPI  PXServerKickClient(PXServer* const server, const PXSocketID socketID)
 {
     return PXActionInvalid;
 }
 
-PXActionResult PXAPI PXServerSendToAll(PXServer* const server, const void* const data, const PXSize dataSize)
+PXResult PXAPI  PXServerSendToAll(PXServer* const server, const void* const data, const PXSize dataSize)
 {
     for (PXSize i = 0; i < server->ServerSocketListSize; i++)
     {
@@ -178,7 +178,7 @@ PXThreadResult PXOSAPI PXServerClientListeningThread(PXSocket* const serverSocke
         return PXActionSuccessful;
     }
 
-    PXDictionaryAdd(&serverSocket->SocketLookup, &serverSocket->ID, serverSocket);
+    PXDictionaryEntryAdd(&serverSocket->SocketLookup, &serverSocket->ID, serverSocket);
 
     PXBufferConstruct(&serverSocket->BufferInput, pollBuffer, PXSocketBufferSize, PXBufferTypeStack);
 

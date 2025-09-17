@@ -1,7 +1,7 @@
-#ifndef PXVRMLINCLUDE
-#define PXVRMLINCLUDE
+#ifndef PXVRMLIncluded
+#define PXVRMLIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef struct PXVRML_
 {
@@ -9,7 +9,7 @@ typedef struct PXVRML_
 }
 PXVRML;
 
-PXPublic PXActionResult PXAPI PXVRMLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXVRMLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXVRMLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXVRMLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

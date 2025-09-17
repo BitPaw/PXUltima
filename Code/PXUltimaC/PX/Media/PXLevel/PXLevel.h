@@ -1,12 +1,12 @@
-#ifndef PXLevelINCLUDE
-#define PXLevelINCLUDE
+#ifndef PXLevelIncluded
+#define PXLevelIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef struct PXLevel_
 {
-    PXInt16U Version;
-    PXInt32U EntryAmount;
+    PXI16U Version;
+    PXI32U EntryAmount;
 }
 PXLevel;
 
@@ -18,12 +18,12 @@ typedef struct PXLevelEntry_
     void* DataAdress;
     PXSize DataSize; // Can also be 0 is size if not known
 
-    PXInt32U Flags;
-    PXInt32U ResourceType; // Expected type
+    PXI32U Flags;
+    PXI32U ResourceType; // Expected type
 }
 PXLevelEntry;
 
-PXPublic PXActionResult PXAPI PXLevelLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXLevelSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXLevelLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXLevelSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

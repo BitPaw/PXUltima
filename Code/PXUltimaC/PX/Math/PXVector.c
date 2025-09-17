@@ -202,3 +202,56 @@ void PXAPI PXVector3F32Interpolate(PXVector3F32* const vectorA, const PXVector3F
     PXVector3F32Add(vectorA, &deltaA);
     PXVector3F32Add(vectorA, &deltaB);
 }
+
+void PXAPI PXVector4Demote(PXVector4F32* const pxVectorIn, PXVector3F32* pxVectorOut, const PXF32 distance)
+{
+    const float w = 1.0f / (distance - pxVectorIn->W);
+
+    pxVectorOut->X = pxVectorIn->X * w;
+    pxVectorOut->Y = pxVectorIn->Y * w;
+    pxVectorOut->Z = pxVectorIn->Z * w;
+}
+
+void PXAPI PXVector3Demote(PXVector3F32* const pxVectorIn, PXVector2F32* pxVectorOut, const PXF32 distance)
+{
+    const float z = 1.0f / (distance - pxVectorIn->Z);
+
+    pxVectorOut->X = pxVectorIn->X * z;
+    pxVectorOut->Y = pxVectorIn->Y * z;
+}
+
+void PXAPI PXVector3FNormal
+(
+    PXVector3F32* const res,
+    const PXVector3F32* const a,
+    const PXVector3F32* const b, 
+    const PXVector3F32* const c
+)
+{
+    PXVector3F32 u = { b->X - a->X, b->Y - a->Y, b->Z - a->Z };
+    PXVector3F32 v = { c->X - a->X, c->Y - a->Y, c->Z - a->Z };
+
+    res->X = u.Y * v.Z - u.Z * v.Y;
+    res->Y = u.Z * v.X - u.X * v.Z;
+    res->Z = u.X * v.Y - u.Y * v.X;
+
+    PXVector3F32Normalize(res);
+}
+
+void PXAPI PXVector4FNormal
+(
+    PXVector3F32* const res,
+    const PXVector4F32* const a,
+    const PXVector4F32* const b,
+    const PXVector4F32* const c,
+    const PXF32 distance
+)
+{
+    PXVector3F32 data[3];
+
+    PXVector4Demote(a, &data[0], distance);
+    PXVector4Demote(b, &data[1], distance);
+    PXVector4Demote(c, &data[2], distance);
+
+    PXVector3FNormal(res, &data[0], &data[1], &data[2]);
+}

@@ -6,11 +6,11 @@
 #endif
 
 const unsigned char CRC7_POLY = 0x91;
-PXInt32U CRCTable[256];
+PXI32U CRCTable[256];
 
-PXInt32U getCRCForByte(PXInt32U val)
+PXI32U getCRCForByte(PXI32U val)
 {
-    for(PXInt32U j = 0; j < 8; j++)
+    for(PXI32U j = 0; j < 8; j++)
     {
         if(val & 1)
             val ^= CRC7_POLY;
@@ -30,9 +30,9 @@ void buildCRCTable()
 }
 
 
-PXInt32U PXAPI PXCRC32Generate(const PXByte* const data, const PXSize length)
+PXI32U PXAPI PXCRC32Generate(const PXByte* const data, const PXSize length)
 {
-    PXInt32U crcAccumulator = 0xFFFFFFFF;
+    PXI32U crcAccumulator = 0xFFFFFFFF;
 
 #if 0
     for(PXSize i = 0; i < length; ++i)
@@ -40,7 +40,7 @@ PXInt32U PXAPI PXCRC32Generate(const PXByte* const data, const PXSize length)
         crcAccumulator = _mm_crc32_u8(crcAccumulator, data[i]); //
     }
 #elif 1
-    const PXInt32U table[256] =
+    const PXI32U table[256] =
     {
         0u, 1996959894u, 3993919788u, 2567524794u,  124634137u, 1886057615u, 3915621685u, 2657392035u,
         249268274u, 2044508324u, 3772115230u, 2547177864u,  162941995u, 2125561021u, 3887607047u, 2428444049u,

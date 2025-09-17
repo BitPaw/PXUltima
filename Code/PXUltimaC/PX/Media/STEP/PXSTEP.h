@@ -1,7 +1,7 @@
-#ifndef PXSTEPINCLUDE
-#define PXSTEPINCLUDE
+#ifndef PXSTEPIncluded
+#define PXSTEPIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 // (St)andard (E)xchange (P)roduct Data (ISO 10303-2xx)
 typedef struct PXSTEP_
@@ -10,7 +10,7 @@ typedef struct PXSTEP_
 }
 PXSTEP;
 
-PXPublic PXActionResult PXAPI PXSTEPLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXSTEPSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXSTEPLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXSTEPSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

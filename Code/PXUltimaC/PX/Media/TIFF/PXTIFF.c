@@ -201,7 +201,7 @@ PXSize PXAPI PXTIFFFilePredictSize(const PXSize width, const PXSize height, cons
     return 0;
 }
 
-PXActionResult PXAPI PXTIFFLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI  PXTIFFLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     PXTIFF pxTIFFOBject;
     PXTIFF* tiff = &pxTIFFOBject;
@@ -212,17 +212,17 @@ PXActionResult PXAPI PXTIFFLoadFromFile(PXResourceTransphereInfo* const pxResour
     {
         // Get engianess
         {
-            PXInt16UCluster headerTag;
+            PXI16UCluster headerTag;
 
             PXFileReadB(pxResourceLoadInfo->FileReference, headerTag.Data, 2u);
 
             switch (headerTag.Value)
             {
-            case PXInt16Make('M', 'M'):
+            case PXI16Make('M', 'M'):
                 tiff->Endianness = PXEndianBig;
                 break;
 
-            case PXInt16Make('I', 'I'):
+            case PXI16Make('I', 'I'):
                 tiff->Endianness = PXEndianLittle;
                 break;
 
@@ -259,7 +259,7 @@ PXActionResult PXAPI PXTIFFLoadFromFile(PXResourceTransphereInfo* const pxResour
 
             tiffPage.PredictedEndPosition = pxResourceLoadInfo->FileReference->DataCursor + 12u * tiffPage.NumberOfTags;
 
-            for (PXInt16U i = 0; i < tiffPage.NumberOfTags; ++i) // Read 12-Bytes
+            for (PXI16U i = 0; i < tiffPage.NumberOfTags; ++i) // Read 12-Bytes
             {
                 PXTIFFTag tiffTag;
 
@@ -344,7 +344,7 @@ PXActionResult PXAPI PXTIFFLoadFromFile(PXResourceTransphereInfo* const pxResour
                 }
                 case PXTIFFTagStripByteCounts:
                 {
-                    const PXInt32U amount = tiffTag.ImageFileDataOffset;
+                    const PXI32U amount = tiffTag.ImageFileDataOffset;
 
                     break;
                 }
@@ -496,7 +496,7 @@ PXActionResult PXAPI PXTIFFLoadFromFile(PXResourceTransphereInfo* const pxResour
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXTIFFSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI  PXTIFFSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

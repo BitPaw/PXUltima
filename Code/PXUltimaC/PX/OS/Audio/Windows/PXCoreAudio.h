@@ -1,5 +1,5 @@
-#ifndef PXIAudioINCLUDE
-#define PXIAudioINCLUDE
+#ifndef PXIAudioIncluded
+#define PXIAudioIncluded
 
 #include <PX/OS/Audio/PXAudio.h>
 
@@ -17,6 +17,6 @@ typedef struct PXCoreAudio_
 }
 PXCoreAudio;
 
-PXPublic PXActionResult PXAPI PXCoreAudioInitialize(PXAudio* const pxAudio);
+PXPublic PXResult PXAPI PXCoreAudioInitialize(PXAudio* const pxAudio);
 
 #endif

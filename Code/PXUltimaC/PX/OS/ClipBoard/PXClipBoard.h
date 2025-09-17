@@ -1,5 +1,5 @@
-#ifndef PXPXClipBoardINCLUDE
-#define PXPXClipBoardINCLUDE
+#ifndef PXPXClipBoardIncluded
+#define PXPXClipBoardIncluded
 
 #include <PX/Media/PXType.h>
 #include <PX/OS/Error/PXActionResult.h>
@@ -43,18 +43,18 @@ typedef struct PXClipBoard_
 }
 PXClipBoard;
 
-PXPrivate PXInt32U PXAPI PXClipBoardFormatToID(const PXClipBoardFormat PXClipBoardFormat);
-PXPrivate PXClipBoardFormat PXAPI PXClipBoardFormatFromID(const PXInt32U PXClipBoardFormat);
+PXPrivate PXI32U PXAPI PXClipBoardFormatToID(const PXClipBoardFormat PXClipBoardFormat);
+PXPrivate PXClipBoardFormat PXAPI PXClipBoardFormatFromID(const PXI32U PXClipBoardFormat);
 
 // Open PXClipBoard, close it imedidly after using!
 // Fails if another window has the PXClipBoard open.
-PXPublic PXActionResult PXAPI PXClipBoardOpen(PXClipBoard* const PXClipBoard);
+PXPublic PXResult PXAPI PXClipBoardOpen(PXClipBoard* const PXClipBoard);
 
 // Use this right after using!
-PXPublic PXActionResult PXAPI PXClipBoardClose(PXClipBoard* const PXClipBoard);
+PXPublic PXResult PXAPI PXClipBoardClose(PXClipBoard* const PXClipBoard);
 
-PXPublic PXActionResult PXAPI PXClipBoardSet(PXClipBoard* const PXClipBoard, const PXClipBoardFormat format, const void* data);
+PXPublic PXResult PXAPI PXClipBoardSet(PXClipBoard* const PXClipBoard, const PXClipBoardFormat format, const void* data);
 
-PXPublic PXActionResult PXAPI PXClipBoardClear(PXClipBoard* const PXClipBoard);
+PXPublic PXResult PXAPI PXClipBoardClear(PXClipBoard* const PXClipBoard);
 
 #endif

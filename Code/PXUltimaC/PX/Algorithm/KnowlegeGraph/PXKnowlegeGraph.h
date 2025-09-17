@@ -1,7 +1,7 @@
-#ifndef PXKnowlegeGraphINCLUDE
-#define PXKnowlegeGraphINCLUDE
+#ifndef PXKnowlegeGraphIncluded
+#define PXKnowlegeGraphIncluded
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 #include <PX/Media/PXDocument.h>
 
 typedef struct PXKnowlegeGraphNode_
@@ -15,15 +15,15 @@ PXKnowlegeGraphNode;
 
 typedef struct PXKnowlegeGraph_
 {
-    PXInt32U NodeMinValue;
-    PXInt32U NodeMaxValue;
-    PXInt32U SizeMaxWidth;
-    PXInt32U SizeMaxHeight;
+    PXI32U NodeMinValue;
+    PXI32U NodeMaxValue;
+    PXI32U SizeMaxWidth;
+    PXI32U SizeMaxHeight;
 }
 PXKnowlegeGraph;
 
-PXPublic PXActionResult PXAPI PXKnowlegeGraphNodeInsert(PXKnowlegeGraph* const pxKnowlegeGraph, PXKnowlegeGraphNode* const pxKnowlegeGraphNode);
+PXPublic PXResult PXAPI PXKnowlegeGraphNodeInsert(PXKnowlegeGraph* const pxKnowlegeGraph, PXKnowlegeGraphNode* const pxKnowlegeGraphNode);
 
-PXPublic PXActionResult PXAPI PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph* const pxKnowlegeGraph, PXCodeDocument* const pxDocument, PXImage* const pxImage);
+PXPublic PXResult PXAPI PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph* const pxKnowlegeGraph, PXCodeDocument* const pxDocument, PXTexture* const PXTexture);
 
 #endif

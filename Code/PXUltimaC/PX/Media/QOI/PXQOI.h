@@ -1,7 +1,7 @@
-#ifndef PXQOIINCLUDE
-#define PXQOIINCLUDE
+#ifndef PXQOIIncluded
+#define PXQOIIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef struct PXQOI_
 {
@@ -9,7 +9,7 @@ typedef struct PXQOI_
 }
 PXQOI;
 
-PXPublic PXActionResult PXAPI PXQOILoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXQOISaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXQOILoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXQOISaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

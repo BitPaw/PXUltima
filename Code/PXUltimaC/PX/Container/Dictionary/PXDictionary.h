@@ -2,6 +2,7 @@
 #define PXDictionaryDEFINED
 
 #include <PX/Media/PXType.h>
+#include <PX/Container/List/PXList.h>
 
 typedef enum PXDictionaryValueLocality_
 {
@@ -13,22 +14,15 @@ PXDictionaryValueLocality;
 
 typedef struct PXDictionary_
 {
-    PXSize EntryAmountGrowth; // How much to grow if an allocation if space is insufficent
+    PXList List;
 
-    PXSize EntryAmountCurrent;
-    PXSize EntryAmountMaximal;
-
-    //---<Need to be predefined>------------
     PXSize KeyTypeSize;
-    PXSize ValueTypeSize;
-    //--------------------------------------
-
-    PXSize DataSize;
-    void* Data;
 
     PXDictionaryValueLocality ValueLocality;
 }
 PXDictionary;
+
+#define PXDictionaryT(typeKey, typeValue) PXDictionary
 
 typedef struct PXDictionaryEntry_
 {
@@ -43,14 +37,21 @@ PXPublic void PXAPI PXDictionaryDestruct(PXDictionary* const dictionary);
 PXPublic PXSize PXAPI PXDictionaryValueSize(const PXDictionary* const dictionary);
 
 PXPublic void PXAPI PXDictionaryResize(PXDictionary* const dictionary, const PXSize entrys);
-PXPublic PXBool PXAPI PXDictionaryAdd(PXDictionary* const dictionary, const void* key, const void* value);
-PXPublic PXBool PXAPI PXDictionaryAddMultible(PXDictionary* const dictionary, const void** key, const void** value, const PXSize amount);
+
+//-------------------------------------
+// Entry
+PXPublic PXResult PXAPI PXDictionaryEntryCreate(PXDictionary* const dictionary, const void* key, const void** value);
+PXPublic PXResult PXAPI PXDictionaryEntryAdd(PXDictionary* const dictionary, const void* key, const void* value);
+PXPublic PXResult PXAPI PXDictionaryEntryFind(PXDictionary* const dictionary, const void* const key, void** const valueResult);
+
+PXPublic PXBool PXAPI PXDictionaryEntryAddMultible(PXDictionary* const dictionary, const void** key, const void** value, const PXSize amount);
 PXPublic void PXAPI PXDictionaryRemove(PXDictionary* const dictionary, const void* key);
 PXPublic PXBool PXAPI PXDictionaryRemoveFound(PXDictionary* const dictionary, const void* key, void* const value);
+//-------------------------------------
 
 // Removed the object and returns it
 PXPublic PXBool PXAPI PXDictionaryExtract(PXDictionary* const dictionary, const void* const key, void* const value);
 PXPublic void PXAPI PXDictionaryIndex(const PXDictionary* const dictionary, const PXSize index, PXDictionaryEntry* const pxDictionaryEntry);
-PXPublic PXBool PXAPI PXDictionaryFindEntry(PXDictionary* const dictionary, const void* const key, void** const valueResult);
+
 
 #endif

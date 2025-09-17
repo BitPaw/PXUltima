@@ -1,15 +1,15 @@
-#ifndef PXFBXINCLUDE
-#define PXFBXINCLUDE
+#ifndef PXFBXIncluded
+#define PXFBXIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef struct PXFilmBox_
 {
-    PXInt32U Version;
+    PXI32U Version;
 }
 PXFilmBox;
 
-PXPublic PXActionResult PXAPI PXFilmBoxLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXFilmBoxSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXFilmBoxLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXFilmBoxSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

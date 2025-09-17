@@ -14,11 +14,12 @@
 #include <PX/Math/PXMatrix.h>
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/OS/Hardware/PXProcessor.h>
+#include <PX/OS/Console/PXConsole.h>
 
 #define PXStandardLibraryMathUse 1
 
 const PXF32 PXMathConstantPIF = PXMathConstantPI;
-const double PXMathConstantPID = PXMathConstantPI;
+const PXF64 PXMathConstantPID = PXMathConstantPI;
 
 PXMath GLOBALPXMath;
 
@@ -28,12 +29,22 @@ void PXAPI PXMathIntrinsicInit()
     PXProcessorFetchInfo(&pxProcessor);  
 }
 
-void PXAPI PXMathMatrix4x4TransposeS(PXMatrix4x4* const pxMatrix4x4)
+PXBool PXAPI PXMathAdressInRange(const void* const dataAdress, const PXSize dataAdressSize, const void* target)
+{
+    const PXSize adressMin = (PXSize)dataAdress;
+    const PXSize adressMax = adressMin + dataAdressSize;
+    const PXSize x = (PXSize)target;
+    const PXBool isInTage = adressMin <= x && x <= adressMax;
+  
+    return isInTage;
+}
+
+void PXAPI PXMathMatrix4x4TransposeS(PXMatrix4x4F* const pxMatrix4x4)
 {
    
 }
 
-void PXAPI PXMathMatrix4x4TransposeX(PXMatrix4x4* const pxMatrix4x4)
+void PXAPI PXMathMatrix4x4TransposeX(PXMatrix4x4F* const pxMatrix4x4)
 {
     // _mm_loadu_ps
     // _mm_storeu_ps
@@ -76,19 +87,32 @@ int PXAPI PXMathFloorD(const double a)
     return PXMathFloor(a);
 }
 
-PXInt16U PXAPI PXMathAbsoluteI16(const PXInt16S value)
+PXI16U PXAPI PXMathAbsoluteI16(const PXI16S value)
 {
     return PXMathAbsolute(value);
 }
 
-PXInt32U PXAPI PXMathAbsoluteI32(const PXInt32S value)
+PXI32U PXAPI PXMathAbsoluteI32(const PXI32S value)
 {
     return PXMathAbsolute(value);
 }
 
-double PXAPI PXMathAbsoluteD(const double a)
+PXF32 PXAPI PXMathAbsoluteF(const PXF32 value)
 {
+#if 0
     return PXMathAbsolute(a);
+#else
+    return fabsf(value);
+#endif 
+}
+
+PXF64 PXAPI PXMathAbsoluteD(const PXF64 value)
+{
+#if 0
+    return PXMathAbsolute(a);
+#else
+    return fabs(value);
+#endif 
 }
 
 char PXAPI PXMathLimitC(const char value, const char minimum, const char maximum)
@@ -109,6 +133,11 @@ int PXAPI PXMathLimitI(const int value, const int minimum, const int maximum)
 PXSize PXAPI PXMathLimitIU(const PXSize value, const PXSize minimum, const PXSize maximum)
 {
     return PXMathLimit(value, minimum, maximum);
+}
+
+PXF32 PXAPI PXMathCopysignf(const PXF32 a, const PXF32 b)
+{
+    return copysignf(a, b);
 }
 
 void PXAPI PXMathF16ToF32(PXF32* const listOut, const PXF16* const listInput, const PXSize inputAmount)
@@ -314,11 +343,11 @@ PXF32 PXAPI PXMathFastInverseSqaureRoot(PXF32 number)
     return y;
 }
 
-PXInt32U PXAPI PXMathPowerI32U(const PXInt32U base, const PXInt32U exponent)
+PXI32U PXAPI PXMathPowerI32U(const PXI32U base, const PXI32U exponent)
 {
-    PXInt32U result = 1;
+    PXI32U result = 1;
   
-    for(PXInt32U i = 0; i < exponent; ++i)
+    for(PXI32U i = 0; i < exponent; ++i)
     {
         result *= base;
     }
@@ -326,11 +355,11 @@ PXInt32U PXAPI PXMathPowerI32U(const PXInt32U base, const PXInt32U exponent)
     return result;
 }
 
-PXInt64U PXAPI PXMathPowerI64U(const PXInt64U base, const PXInt64U exponent)
+PXI64U PXAPI PXMathPowerI64U(const PXI64U base, const PXI64U exponent)
 {
-    PXInt64U result = 1;
+    PXI64U result = 1;
 
-    for(PXInt64U i = 0; i < exponent; ++i)
+    for(PXI64U i = 0; i < exponent; ++i)
     {
         result *= base;
     }
@@ -357,11 +386,11 @@ double PXAPI PXMathPowerOfTwo(double base)
     return PXMathPower(base, 2);
 }
 
-PXInt32U PXAPI PXMathPowerModulo(const PXInt32U base, const PXInt32U exponent, const PXInt32U modulo)
+PXI32U PXAPI PXMathPowerModulo(const PXI32U base, const PXI32U exponent, const PXI32U modulo)
 {
-    PXInt32U result = 1;
+    PXI32U result = 1;
 
-    for(PXInt32U i = 0; i < exponent; ++i)
+    for(PXI32U i = 0; i < exponent; ++i)
     {
         result *= base;
         result %= modulo;
@@ -389,6 +418,11 @@ PXF64 PXAPI PXMathRootF64(unsigned int rootNr, const PXF64 value)
         default:
             return 0;
     }
+}
+
+PXF32 PXAPI PXMathRootSquareF32(const PXF32 value)
+{
+    return sqrtf(value);  // TODO: Dependeny problem
 }
 
 PXF64 PXAPI PXMathRootSquareF64(const PXF64  value)
@@ -614,7 +648,7 @@ void PXAPI PXMathRootCubeInverseF64VX2(PXF64* const outputListY, const PXF64* co
     PXMemoryCopyF64V(outputListY, dataInput.m128d_f64, 2);
 }
 
-PXF64 PXAPI PXMathRootNF64(const PXInt32U amount, const PXF64 x)
+PXF64 PXAPI PXMathRootNF64(const PXI32U amount, const PXF64 x)
 {
     // Newton-Raphson method
     const PXF64 epsilon = 0.00001; // Precision level
@@ -748,9 +782,9 @@ void PXAPI PXMathRandomeSeed(PXMathRandomGeneratorSeed* const pxMathRandomGenera
     pxMathRandomGeneratorSeed->Z = 521288629;
 }
 
-PXInt32U PXAPI PXMathRandomeNumber(PXMathRandomGeneratorSeed* const pxMathRandomGeneratorSeed)
+PXI32U PXAPI PXMathRandomeNumber(PXMathRandomGeneratorSeed* const pxMathRandomGeneratorSeed)
 {
-    PXInt32U t;
+    PXI32U t;
 
     pxMathRandomGeneratorSeed->X ^= pxMathRandomGeneratorSeed->X << 16;
     pxMathRandomGeneratorSeed->X ^= pxMathRandomGeneratorSeed->X >> 5;
@@ -764,8 +798,28 @@ PXInt32U PXAPI PXMathRandomeNumber(PXMathRandomGeneratorSeed* const pxMathRandom
     return pxMathRandomGeneratorSeed->Z;
 }
 
-//extern _cdecl PXIntrinsicFSIN(PXF32* val);
-//extern _cdecl PXIntrinsicFSQRT(PXF32* val);
+PXF32 PXAPI PXMathLerpF32L(const PXF32 v0, const PXF32 v1, const PXF32 t)
+{
+    return v0 + t * (v1 - v0);
+}
+
+PXF32 PXAPI PXMathLerpF32H(const PXF32 v0, const PXF32 v1, const PXF32 t)
+{
+    if(v0 == v1 || t <= 0)
+    {
+        return v0;
+    }
+
+    if(t >= 1.0f)
+    {
+        return v1;
+    }
+
+    return (1.0f - t) * v0 + t * v1;
+}
+
+//extern _cdecl PXIrinsicFSIN(PXF32* val);
+//extern _cdecl PXIrinsicFSQRT(PXF32* val);
 
 PXF32 PXAPI PXMathSinusRADF32(const PXF32 x)
 {
@@ -777,11 +831,11 @@ PXF64 PXAPI PXMathSinusRADF64(const PXF64 x)
 #if PXStandardLibraryMathUse
     return sin(x);
 
-#elif PXIntrinsicUse
+#elif PXIrinsicUse
 
     double dx = value;
 
-    PXIntrinsicFSIN(&dx); // sin(value); // TODO: Dependeny problem
+    PXIrinsicFSIN(&dx); // sin(value); // TODO: Dependeny problem
 
     return dx;
 #else
@@ -856,6 +910,44 @@ void PXAPI PXMathCosinusRADF16V(PXF16* const outputListY, const PXF16* const inp
 void PXAPI PXMathCosinusRADF32V(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
 {
    // __m128 _mm_cos_ps(__m128 a)
+}
+
+void PXAPI PXMathSinCosRADF32(const PXF32 angle, PXF32* const valueSIN, PXF32* const valueCOS)
+{
+    *valueSIN = PXMathSinusRADF32(angle);
+    *valueCOS = PXMathCosinusRADF32(angle);
+}
+
+void PXAPI PXMathSinCosRADF16V(PXF16* const data, const PXSize amount)
+{
+
+}
+void PXAPI PXMathSinCosRADF32V(PXF32* const data, const PXSize amount)
+{
+    PXAssert((amount % 2) == 0, "We need 2 here");
+
+    for(PXSize i = 0; i < amount; ++i)
+    {
+        data[i + 0] = PXMathSinusRADF32(data[i + 0]);
+        data[i + 1] = PXMathCosinusRADF32(data[i + 1]);
+    }
+
+#if 0
+    __m128 x = _mm_loadu_ps(data);       // Load 4 floats into SSE register
+    __m128 cos_x;                           // Will hold cosine results
+    __m128 sin_x = _mm_sincos_ps(&cos_x, x); // Compute sine and cosine
+
+    // Store results
+    float sin_vals[4], cos_vals[4];
+    _mm_storeu_ps(sin_vals, sin_x);
+    _mm_storeu_ps(cos_vals, cos_x);
+
+    _mm_sincos_ps(); // SSE, 2xsin&cos
+#endif
+}
+void PXAPI PXMathSinCosRADF64V(PXF64* const data, const PXSize amount)
+{
+    //_mm_sincos_pd(); // SSE, 1xsin&cos
 }
 
 void PXAPI PXMathCosinusRADF64V(PXF64* const outputListY, const PXF64* const inputListX, const PXSize amount)
@@ -1029,6 +1121,11 @@ double PXAPI PXMathArcusSinus(const double x)
 #endif
 }
 
+PXF32 PXAPI PXMathArcusCosinusF32(const PXF32 x)
+{
+    return acosf(x);
+}
+
 double PXAPI PXMathHyperbolicCosinus(const double x)
 {
 #if PXStandardLibraryMathUse 
@@ -1080,14 +1177,14 @@ a = a - b;
 
 
 
-void PXAPI PXMathShuffleI8(const PXInt8U* const input, PXInt8U* const output, const PXSize amount, PXInt8U* mask, const PXInt8U maskAmount)
+void PXAPI PXMathShuffleI8(const PXI8U* const input, PXI8U* const output, const PXSize amount, PXI8U* mask, const PXI8U maskAmount)
 { 
     PXSize i = 0;
 
     __m512i shuffleMask;
   
     // Build
-    for(PXInt8U j = 0; j < 64; ++j)
+    for(PXI8U j = 0; j < 64; ++j)
     {
         shuffleMask.m512i_u8[j] = (j / maskAmount)* maskAmount + mask[j % maskAmount];
     }
@@ -1246,7 +1343,7 @@ void PXAPI PXMathFormulaPQ(const PXF32 p, const PXF32 q, PXF32* const resultA, P
 // double coefficientList[] = {2, -6, 2, -1}; // Each element is a a*x^b
 // int degree = 3; // The size of the list -1. 
 // double x = 3.0; // The value for x in the term
-double PXAPI PXMathHornerD(double* const coefficientList, const PXInt32U degree, const double x)
+double PXAPI PXMathHornerD(double* const coefficientList, const PXI32U degree, const double x)
 {
     double result = coefficientList[0];
     

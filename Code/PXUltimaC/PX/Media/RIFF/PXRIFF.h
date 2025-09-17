@@ -1,7 +1,7 @@
-#ifndef PXRIFFINCLUDE
-#define PXRIFFINCLUDE
+#ifndef PXRIFFIncluded
+#define PXRIFFIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef enum PXRIFFFormat_
 {
@@ -20,21 +20,21 @@ PXRIFFFormat;
 // Resource Interchange File Format.
 typedef struct PXRIFF_
 {
-    PXInt32U ChunkSize;
+    PXI32U ChunkSize;
     PXRIFFFormat Format;
     PXEndian EndianFormat;
     PXBool Valid;
 }
 PXRIFF;
 
-PXPrivate inline PXEndian PXAPI PXRIFFEndianFromID(const PXInt32U value);
-PXPrivate inline PXInt32U PXAPI PXRIFFEndianToID(const PXEndian value);
+PXPrivate inline PXEndian PXAPI PXRIFFEndianFromID(const PXI32U value);
+PXPrivate inline PXI32U PXAPI PXRIFFEndianToID(const PXEndian value);
 
-PXPrivate inline PXRIFFFormat PXAPI PXRIFFFormatFromID(const PXInt32U value);
-PXPrivate inline PXInt32U PXAPI PXRIFFFormatToID(const PXRIFFFormat value);
+PXPrivate inline PXRIFFFormat PXAPI PXRIFFFormatFromID(const PXI32U value);
+PXPrivate inline PXI32U PXAPI PXRIFFFormatToID(const PXRIFFFormat value);
 
 
-PXPublic PXActionResult PXAPI PXRIFFLoadFromFile(PXRIFF* const riff, PXFile* const PXFile);
-PXPublic PXActionResult PXAPI PXRIFFSaveToFile(const PXRIFF* const riff, PXFile* const PXFile);
+PXPublic PXResult PXAPI PXRIFFLoadFromFile(PXRIFF* const riff, PXFile* const PXFile);
+PXPublic PXResult PXAPI PXRIFFSaveToFile(const PXRIFF* const riff, PXFile* const PXFile);
 
 #endif

@@ -1,6 +1,6 @@
-#define PXClientInclude
-#ifndef PXClientInclude
-#define PXClientInclude
+#define PXClientIncluded
+#ifndef PXClientIncluded
+#define PXClientIncluded
 
 #include <PX/Media/PXType.h>
 #include <PX/Media/PXText.h>
@@ -29,11 +29,11 @@ PXClient;
 PXPublic void PXAPI PXClientConstruct(PXClient* const pxClient);
 PXPublic void PXAPI PXClientDestruct(PXClient* const pxClient);
 
-PXPublic PXActionResult PXAPI PXClientSendData(PXClient* const pxClient, const void* const data, const PXSize dataSize);
+PXPublic PXResult PXAPI PXClientSendData(PXClient* const pxClient, const void* const data, const PXSize dataSize);
 
-PXPublic PXActionResult PXAPI PXClientConnectToSelf(PXClient* const client, const PXInt16U port);
-PXPublic PXActionResult PXAPI PXClientConnectToServer(PXClient* const client, const PXText* const ip, const PXInt16U port);
-PXPublic PXActionResult PXAPI PXClientDisconnectFromServer(PXClient* const client);
+PXPublic PXResult PXAPI PXClientConnectToSelf(PXClient* const client, const PXI16U port);
+PXPublic PXResult PXAPI PXClientConnectToServer(PXClient* const client, const PXText* const ip, const PXI16U port);
+PXPublic PXResult PXAPI PXClientDisconnectFromServer(PXClient* const client);
 
 PXPublic PXThreadResult PXOSAPI PXClientCommunicationThread(PXSocket* const pxSocket);
 

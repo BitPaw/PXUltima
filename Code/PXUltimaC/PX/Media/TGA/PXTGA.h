@@ -1,7 +1,7 @@
-#ifndef PXPXTGAINCLUDE
-#define PXPXTGAINCLUDE
+#ifndef PXPXTGAIncluded
+#define PXPXTGAIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef enum PXTGAColorType_
 {
@@ -41,15 +41,15 @@ PXTGAImageDataType;
 typedef struct PXTGA_
 {
     //---[Header]----------------------
-    PXInt8U ColorPaletteType;
+    PXI8U ColorPaletteType;
     PXTGAImageDataType ImageDataType;
 
-    PXInt16U OriginX;
-    PXInt16U OriginY;
-    PXInt16U Width;
-    PXInt16U Height;
+    PXI16U OriginX;
+    PXI16U OriginY;
+    PXI16U Width;
+    PXI16U Height;
     PXTGABitsPerPixel PixelDepth;
-    PXInt8U ImageDescriptor;
+    PXI8U ImageDescriptor;
     //---------------------------------
 
     //---[Image specification]---------
@@ -67,45 +67,45 @@ typedef struct PXTGA_
     char AuthorName[41]; // Name of the author. If not used, bytes should be set to NULL (\0) or spaces
     char AuthorComment[324]; // A comment, organized as four lines, each consisting of 80 characters plus a NULL
 
-    PXInt16U DateTimeMonth;// Date and time at which the image was created
-    PXInt16U JobTimeDay;
-    PXInt16U JobTimeYear;
-    PXInt16U JobTimeHour;
-    PXInt16U JobTimeMinute;
-    PXInt16U JobTimeSecond;
+    PXI16U DateTimeMonth;// Date and time at which the image was created
+    PXI16U JobTimeDay;
+    PXI16U JobTimeYear;
+    PXI16U JobTimeHour;
+    PXI16U JobTimeMinute;
+    PXI16U JobTimeSecond;
 
     char JobID[41];
-    PXInt16U JobTimeHours; // spent creating the file (for billing, etc.)
-    PXInt16U JobTimeMinutes;
-    PXInt16U JobTimeSeconds;
+    PXI16U JobTimeHours; // spent creating the file (for billing, etc.)
+    PXI16U JobTimeMinutes;
+    PXI16U JobTimeSeconds;
     char SoftwareName[41]; // The application that created the file.
-    PXInt16U VersionNumber;
+    PXI16U VersionNumber;
     char SoftwareVersion;
-    PXInt32U BackGroundColor;
-    PXInt16U PixelAspectRatioCounter;
-    PXInt16U PixelAspectRatioDenominator;
-    PXInt16U GammaCounter;
-    PXInt16U GammaDenominator;
+    PXI32U BackGroundColor;
+    PXI16U PixelAspectRatioCounter;
+    PXI16U PixelAspectRatioDenominator;
+    PXI16U GammaCounter;
+    PXI16U GammaDenominator;
 
-    PXInt32U ColorCorrectionOffset; // Number of bytes from the beginning of the file to the color correction table if present
-    PXInt32U PostagestampOffset; // Number of bytes from the beginning of the file to the postage stamp image if present
-    PXInt32U ScanlineOffset; // Number of bytes from the beginning of the file to the scan lines table if present
-    PXInt8U AttributesType; // Specifies the alpha channel
+    PXI32U ColorCorrectionOffset; // Number of bytes from the beginning of the file to the color correction table if present
+    PXI32U PostagestampOffset; // Number of bytes from the beginning of the file to the postage stamp image if present
+    PXI32U ScanlineOffset; // Number of bytes from the beginning of the file to the scan lines table if present
+    PXI8U AttributesType; // Specifies the alpha channel
     //-------------------------------
 }
 PXTGA;
 
 PXPrivate PXTGABitsPerPixel PXAPI ConvertToPixelDepth(const unsigned char pixelDepth);
-PXPrivate PXInt8U PXAPI ConvertFromPixelDepth(const PXTGABitsPerPixel bitsPerPixel);
+PXPrivate PXI8U PXAPI ConvertFromPixelDepth(const PXTGABitsPerPixel bitsPerPixel);
 
 PXPrivate PXTGAImageDataType PXAPI ConvertToImageDataType(const unsigned char id);
-PXPrivate PXInt8U PXAPI ConvertFromImageDataType(const PXTGAImageDataType imageDataType);
+PXPrivate PXI8U PXAPI ConvertFromImageDataType(const PXTGAImageDataType imageDataType);
 
 PXPublic PXSize PXAPI PXTGAFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 
 PXPublic void PXAPI PXTGADestruct(PXTGA* const tga);
 
-PXPublic PXActionResult PXAPI PXTGALoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXTGASaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXTGALoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXTGASaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

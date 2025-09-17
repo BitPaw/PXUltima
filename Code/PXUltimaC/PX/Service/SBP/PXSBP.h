@@ -1,5 +1,5 @@
-#ifndef PXSBPINCLUDE
-#define PXSBPINCLUDE
+#ifndef PXSBPIncluded
+#define PXSBPIncluded
 
 #include <PX/OS/Network/PXClient.h>
 #include <PX/OS/Network/PXServer.h>
@@ -18,7 +18,7 @@ extern "C"
 {
 #endif
 
-typedef PXInt16U PXMessageID;
+typedef PXI16U PXMessageID;
 
 typedef void (PXAPI*PXSBPReceiverOnMessageInvalid)(PXSocket* const socket, const PXSocketID socketID);
 
@@ -78,7 +78,7 @@ typedef struct PXSBPMessage_
     // Delegation info
     PXMessageID ID; // ID that belongs to message itself. So that chunks can conbine them.
 
-    PXInt8U MessageSizeCachedInPercent;
+    PXI8U MessageSizeCachedInPercent;
 
     // Extended delegation
     PXBool HasExtendedDelegation;
@@ -102,8 +102,8 @@ typedef struct PXSBPChunkCache_
 {
     void* Message; // Payload data. Context of this data is not interpreted.
 
-    PXInt16U SizeCurrent;// Current size of the data chunk, cant be bigger than expected size.
-    PXInt16U SizeExpected;// Expected size of the data. Known from the header info of the first chunk.
+    PXI16U SizeCurrent;// Current size of the data chunk, cant be bigger than expected size.
+    PXI16U SizeExpected;// Expected size of the data. Known from the header info of the first chunk.
     PXMessageID ID; // ID that belongs to message itself. So that chunks can conbine them.
 }
 PXSBPChunkCache;
@@ -112,7 +112,7 @@ typedef void (PXAPI*PXSBPOnChunkSegmentUpdatedFunction)(const PXSBPChunkCache* c
 
 PXPrivate PXBool PXAPI PXSBPMessageChunkParse(PXSBPChunkCache* const pxSBPMessageChunk, const void* const data, const PXSize dataSize);
 
-PXPublic PXInt16U PXAPI PXSBPMessageSizeMissing(PXSBPChunkCache* const pxSBPMessage);
+PXPublic PXI16U PXAPI PXSBPMessageSizeMissing(PXSBPChunkCache* const pxSBPMessage);
 PXPublic PXBool PXAPI PXSBPMessageSizeComplete(PXSBPChunkCache* const pxSBPMessage);
 
 PXPublic PXBool PXAPI PXSBPMessageChunkDataIsComplete(const PXSBPChunkCache* const pxSBPMessageChunk);
@@ -133,7 +133,7 @@ PXPublic void PXAPI PXSBPMessageConstructAllocate(PXSBPChunkCache* const pxSBPMe
 typedef struct PXSBPChunk_
 {
     void* Data;
-    PXInt16U DataSize;
+    PXI16U DataSize;
     PXMessageID ChannelID;
 }
 PXSBPChunk;
@@ -198,9 +198,9 @@ typedef struct PXSBPEmitter_
     PXSBPOnChunkEmittedFunction OnChunkEmittedCallBack;
 
     // Message queue?
-    PXInt16U PackageSizeMaximal;
+    PXI16U PackageSizeMaximal;
 
-    PXInt16U MessageID;
+    PXI16U MessageID;
 
     PXSocket* SocketSender;
     PXSocketID SocketReceiverID;
@@ -208,7 +208,7 @@ typedef struct PXSBPEmitter_
 PXSBPEmitter;
 
 PXPublic void PXAPI PXSBPEmitterConstruct(PXSBPEmitter* const pxSBPEmitter);
-PXPublic PXActionResult PXAPI PXSBPEmitterDeploy(PXSBPEmitter* const pxSBPEmitter, const void* const message, const PXSize messageSize);
+PXPublic PXResult PXAPI PXSBPEmitterDeploy(PXSBPEmitter* const pxSBPEmitter, const void* const message, const PXSize messageSize);
 //-----------------------------------------------------
 
 
@@ -231,11 +231,11 @@ PXPublic void PXAPI PXSBPClientDestruct(PXSBPClient* const pxSBPClient);
 
 PXPublic void PXAPI PXSBPClientReceiverEventListSet(PXSBPClient* const pxSBPClient, PXSBPReceiverEventList* const pxSBPReceiverEventList);
 
-PXPublic PXActionResult PXAPI PXSBPClientConnectToServer(PXSBPClient* const pxSBPClient, const PXText* const ip, const PXInt16U port);
-PXPublic PXActionResult PXAPI PXSBPClientDisconnectFromServer(PXSBPClient* const pxSBPClient);
+PXPublic PXResult PXAPI PXSBPClientConnectToServer(PXSBPClient* const pxSBPClient, const PXText* const ip, const PXI16U port);
+PXPublic PXResult PXAPI PXSBPClientDisconnectFromServer(PXSBPClient* const pxSBPClient);
 
-PXPublic PXActionResult PXAPI PXSBPClientSendMessage(PXSBPClient* const pxSBPClient, const void* const data, const PXSize dataSize);
-PXPublic PXActionResult PXAPI PXSBPClientSendFile(PXSBPClient* const pxSBPClient, const PXText* const filePath);
+PXPublic PXResult PXAPI PXSBPClientSendMessage(PXSBPClient* const pxSBPClient, const void* const data, const PXSize dataSize);
+PXPublic PXResult PXAPI PXSBPClientSendFile(PXSBPClient* const pxSBPClient, const PXText* const filePath);
 //-----------------------------------------------------
 
 
@@ -256,10 +256,10 @@ PXPublic void PXAPI PXSBPServerDestruct(PXSBPServer* const pxSBPServer);
 
 PXPublic void PXAPI PXSBPServerReceiverEventListSet(PXSBPServer* const pxSBPServe, PXSBPReceiverEventList* const pxSBPReceiverEventList);
 
-PXPublic PXActionResult PXAPI PXSBPServerStart(PXSBPServer* const pxSBPServer, const PXInt16U port);
-PXPublic PXActionResult PXAPI PXSBPServerStop(PXSBPServer* const pxSBPServer);
+PXPublic PXResult PXAPI PXSBPServerStart(PXSBPServer* const pxSBPServer, const PXI16U port);
+PXPublic PXResult PXAPI PXSBPServerStop(PXSBPServer* const pxSBPServer);
 
-PXPublic PXActionResult PXAPI PXSBPServerSendToAll(PXSBPServer* const pxSBPServer, const void* const data, const PXSize dataSize);
+PXPublic PXResult PXAPI PXSBPServerSendToAll(PXSBPServer* const pxSBPServer, const void* const data, const PXSize dataSize);
 //-----------------------------------------------------
 
 #ifdef __cplusplus

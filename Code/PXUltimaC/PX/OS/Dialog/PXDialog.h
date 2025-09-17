@@ -1,7 +1,7 @@
-#ifndef PXDialogINCLUDE
-#define PXDialogINCLUDE
+#ifndef PXDialogIncluded
+#define PXDialogIncluded
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 #include <PX/OS/Library/PXLibrary.h>
 
 typedef struct PXDialogSystem_
@@ -21,11 +21,11 @@ typedef struct PXDialogSystem_
 }
 PXDialogSystem;
 
-PXPublic PXActionResult PXAPI PXDialogSystemInitialize(PXDialogSystem* const pxDialogSystem);
-PXPublic PXActionResult PXAPI PXDialogSystemRelease(PXDialogSystem* const pxDialogSystem);
+PXPublic PXResult PXAPI PXDialogSystemInitialize(PXDialogSystem* const pxDialogSystem);
+PXPublic PXResult PXAPI PXDialogSystemRelease(PXDialogSystem* const pxDialogSystem);
 
-PXPublic PXActionResult PXAPI PXDialogFileOpen(PXDialogSystem* const pxDialogSystem, PXText* const filePath);
-PXPublic PXActionResult PXAPI PXDialogFileSave(PXDialogSystem* const pxDialogSystem, PXText* const filePath);
+PXPublic PXResult PXAPI PXDialogFileOpen(PXDialogSystem* const pxDialogSystem, PXText* const filePath);
+PXPublic PXResult PXAPI PXDialogFileSave(PXDialogSystem* const pxDialogSystem, PXText* const filePath);
 
 PXPublic PXBool PXAPI PXDialogColorSelect(PXDialogSystem* const pxDialogSystem, PXColorRGBI8* const color);
 PXPublic PXBool PXAPI PXDialogFontSelect(PXDialogSystem* const pxDialogSystem);

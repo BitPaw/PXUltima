@@ -1,11 +1,11 @@
 #include "PXCollatzConjecture.h"
 
-PXSize PXCollatzConjectureGenerate16(PXInt16U* const list, const PXSize amount, const PXInt16U start)
+PXSize PXAPI PXCollatzConjectureGenerate16(PXI16U* const list, const PXSize amount, const PXI16U start)
 {
     list[0] = start;
 
     PXSize i = 0;
-    PXInt16U val = 0;
+    PXI16U val = 0;
 
     for(;;)
     {

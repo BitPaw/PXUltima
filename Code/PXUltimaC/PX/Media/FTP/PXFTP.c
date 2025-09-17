@@ -133,13 +133,13 @@ PXFTPResult PXAPI PXFTPResultParse(const unsigned short resultID)
 
             // 5xx
         case 500:
-            return PXFTPResultCommandInvalid; // 500 Syntax error, command unrecognized.    This may include errors such as command line too long.
+            return PXFTPResultCommandInvalid; // 500 Syntax error, command unrecognized.    This may Included errors such as command line too long.
         case 501:
             return PXFTPResultParameterSyntaxError; // 501 Syntax error in parameters or arguments.
 
             // 503 Bad sequence of commands.
             // 504 Command not implemented for that parameter.
-            // 500 Syntax error, command unrecognized.This may include errors such as command line too long.
+            // 500 Syntax error, command unrecognized.This may Included errors such as command line too long.
             // 501 Syntax error in parameters or arguments.
             // 502 Command not implemented.
             // 503 Bad sequence of commands.

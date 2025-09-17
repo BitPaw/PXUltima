@@ -9,14 +9,14 @@ PXDocumentElementType PXAPI PXDocumentElementAnalyseElement(const char* name, co
     {
     case 2:
     {
-        const PXInt16U key = PXInt16FromAdress(name);
+        const PXI16U key = PXI16FromAdress(name);
 
         switch(key)
         {
-        case PXInt16Make('i', 'f'):
+        case PXI16Make('i', 'f'):
             return PXDocumentElementTypeIf;
 
-        case PXInt16Make('d', 'o'):
+        case PXI16Make('d', 'o'):
             return PXDocumentElementTypeDo;
         }
 
@@ -24,14 +24,14 @@ PXDocumentElementType PXAPI PXDocumentElementAnalyseElement(const char* name, co
     }
     case 3:
     {
-        const PXInt32U key = PXInt24FromAdress(name);
+        const PXI32U key = PXI24FromAdress(name);
 
         switch(key)
         {
-        case PXInt24Make('i', 'n', 't'):
+        case PXI24Make('i', 'n', 't'):
             return PXDocumentElementTypeInt;
 
-        case PXInt24Make('f', 'o', 'r'):
+        case PXI24Make('f', 'o', 'r'):
             return PXDocumentElementTypeFor;
         }
 
@@ -39,29 +39,29 @@ PXDocumentElementType PXAPI PXDocumentElementAnalyseElement(const char* name, co
     }
     case 4:
     {
-        const PXInt32U key = PXInt32FromAdress(name);
+        const PXI32U key = PXI32FromAdress(name);
 
         switch(key)
         {
-        case PXInt32Make('c', 'a', 's', 'e'):
+        case PXI32Make('c', 'a', 's', 'e'):
             return PXDocumentElementTypeCase;
-        case PXInt32Make('t', 'r', 'u', 'e'):
+        case PXI32Make('t', 'r', 'u', 'e'):
             return PXDocumentElementTypeTrue;
-        case PXInt32Make('b', 'o', 'o', 'l'):
+        case PXI32Make('b', 'o', 'o', 'l'):
             return PXDocumentElementTypeBool;
-        case PXInt32Make('c', 'h', 'a', 'r'):
+        case PXI32Make('c', 'h', 'a', 'r'):
             return PXDocumentElementTypeChar;
-        case PXInt32Make('l', 'o', 'n', 'g'):
+        case PXI32Make('l', 'o', 'n', 'g'):
             return PXDocumentElementTypeLong;
-        case PXInt32Make('a', 'u', 't', 'o'):
+        case PXI32Make('a', 'u', 't', 'o'):
             return PXDocumentElementTypeAutomaticType;
-        case PXInt32Make('e', 'l', 's', 'e'):
+        case PXI32Make('e', 'l', 's', 'e'):
             return PXDocumentElementTypeElse;
-        case PXInt32Make('g', 'o', 't', 'o'):
+        case PXI32Make('g', 'o', 't', 'o'):
             return PXDocumentElementTypeGoTo;
-        case PXInt32Make('e', 'n', 'u', 'm'):
+        case PXI32Make('e', 'n', 'u', 'm'):
             return PXDocumentElementTypeEnum;
-        case PXInt32Make('v', 'o', 'i', 'd'):
+        case PXI32Make('v', 'o', 'i', 'd'):
             return PXDocumentElementTypeVoid;
         }
 
@@ -69,29 +69,29 @@ PXDocumentElementType PXAPI PXDocumentElementAnalyseElement(const char* name, co
     }
     case 5u:
     {
-        const PXInt64U key = PXInt40FromAdress(name);
+        const PXI64U key = PXI40FromAdress(name);
 
         switch(key)
         {
-        case PXInt40Make('f', 'i', 'n', 'a', 'l'):
+        case PXI40Make('f', 'i', 'n', 'a', 'l'):
             return PXDocumentElementTypeFinal;
-        case PXInt40Make('s', 'h', 'o', 'r', 't'):
+        case PXI40Make('s', 'h', 'o', 'r', 't'):
             return PXDocumentElementTypeShort;
-        case PXInt40Make('u', 'n', 'i', 'o', 'n'):
+        case PXI40Make('u', 'n', 'i', 'o', 'n'):
             return PXDocumentElementTypeUnion;
-        case PXInt40Make('w', 'h', 'i', 'l', 'e'):
+        case PXI40Make('w', 'h', 'i', 'l', 'e'):
             return PXDocumentElementTypeWhile;
-        case PXInt40Make('f', 'a', 'l', 's', 'e'):
+        case PXI40Make('f', 'a', 'l', 's', 'e'):
             return PXDocumentElementTypeFalse;
-        case PXInt40Make('f', 'l', 'o', 'a', 't'):
+        case PXI40Make('f', 'l', 'o', 'a', 't'):
             return PXDocumentElementTypePXF32;
-        case PXInt40Make('c', 'o', 'n', 's', 't'):
+        case PXI40Make('c', 'o', 'n', 's', 't'):
             return PXDocumentElementTypeConst;
-        case PXInt40Make('b', 'r', 'e', 'a', 'k'):
+        case PXI40Make('b', 'r', 'e', 'a', 'k'):
             return PXDocumentElementTypeBreak;
-        case PXInt40Make('i', 'f', 'd', 'e', 'f'):
+        case PXI40Make('i', 'f', 'd', 'e', 'f'):
             return PXDocumentElementTypePreprocessorIfDefined;
-        case PXInt40Make('e', 'n', 'd', 'i', 'f'):
+        case PXI40Make('e', 'n', 'd', 'i', 'f'):
             return PXDocumentElementTypePreprocessorDefinitionEnd;
         }
 
@@ -99,31 +99,31 @@ PXDocumentElementType PXAPI PXDocumentElementAnalyseElement(const char* name, co
     }
     case 6u:
     {
-        const PXInt64U key = PXInt48FromAdress(name);
+        const PXI64U key = PXI48FromAdress(name);
 
         switch(key)
         {
-        case PXInt48Make('s', 'i', 'z', 'e', 'o', 'f'):
+        case PXI48Make('s', 'i', 'z', 'e', 'o', 'f'):
             return PXDocumentElementTypeSizeOfType;
-        case PXInt48Make('r', 'e', 't', 'u', 'r', 'n'):
+        case PXI48Make('r', 'e', 't', 'u', 'r', 'n'):
             return PXDocumentElementTypeReturn;
-        case PXInt48Make('e', 'x', 't', 'e', 'r', 'n'):
+        case PXI48Make('e', 'x', 't', 'e', 'r', 'n'):
             return PXDocumentElementTypeExtern;
-        case PXInt48Make('s', 't', 'a', 't', 'i', 'c'):
+        case PXI48Make('s', 't', 'a', 't', 'i', 'c'):
             return PXDocumentElementTypeStatic;
-        case PXInt48Make('s', 't', 'r', 'u', 'c', 't'):
+        case PXI48Make('s', 't', 'r', 'u', 'c', 't'):
             return PXDocumentElementTypeStruct;
-        case PXInt48Make('d', 'o', 'u', 'b', 'l', 'e'):
+        case PXI48Make('d', 'o', 'u', 'b', 'l', 'e'):
             return PXDocumentElementTypeDouble;
-        case PXInt48Make('s', 'i', 'g', 'n', 'e', 'd'):
+        case PXI48Make('s', 'i', 'g', 'n', 'e', 'd'):
             return PXDocumentElementTypeSigned;
-        case PXInt48Make('s', 'w', 'i', 't', 'c', 'h'):
+        case PXI48Make('s', 'w', 'i', 't', 'c', 'h'):
             return PXDocumentElementTypeSwitch;
-        case PXInt48Make('i', 'f', 'n', 'd', 'e', 'f'):
+        case PXI48Make('i', 'f', 'n', 'd', 'e', 'f'):
             return PXDocumentElementTypePreprocessorIfNotDefined;
-        case PXInt48Make('d', 'e', 'f', 'i', 'n', 'e'):
+        case PXI48Make('d', 'e', 'f', 'i', 'n', 'e'):
             return PXDocumentElementTypePreprocessorDefine;
-        case PXInt48Make('p', 'r', 'a', 'g', 'm', 'a'):
+        case PXI48Make('p', 'r', 'a', 'g', 'm', 'a'):
             return PXDocumentElementTypePreprocessorPragma;
         }
 
@@ -131,35 +131,35 @@ PXDocumentElementType PXAPI PXDocumentElementAnalyseElement(const char* name, co
     }
     case 7u:
     {
-        const PXInt64U key = PXInt56FromAdress(name);
+        const PXI64U key = PXI56FromAdress(name);
 
         switch(key)
         {
-        case PXInt56Make('d', 'e', 'f', 'a', 'u', 'l', 't'):
+        case PXI56Make('d', 'e', 'f', 'a', 'u', 'l', 't'):
             return PXDocumentElementTypeDefault;
-        case PXInt56Make('t', 'y', 'p', 'e', 'd', 'e', 'f'):
+        case PXI56Make('t', 'y', 'p', 'e', 'd', 'e', 'f'):
             return PXDocumentElementTypeTypeDefinition;
-        case PXInt56Make('i', 'n', 'c', 'l', 'u', 'd', 'e'):
-            return PXDocumentElementTypePreprocessorInclude;
+        case PXI56Make('i', 'n', 'c', 'l', 'u', 'd', 'e'):
+            return PXDocumentElementTypePreprocessorIncluded;
         }
 
         break;
     }
     case 8u:
     {
-        const PXInt64U key = PXInt64FromAdress(name);
+        const PXI64U key = PXI64FromAdress(name);
 
         switch(key)
         {
-        case PXInt64Make('c', 'o', 'n', 't', 'i', 'n', 'u', 'e'):
+        case PXI64Make('c', 'o', 'n', 't', 'i', 'n', 'u', 'e'):
             return PXDocumentElementTypeContinue;
-        case PXInt64Make('u', 'n', 's', 'i', 'g', 'n', 'e', 'd'):
+        case PXI64Make('u', 'n', 's', 'i', 'g', 'n', 'e', 'd'):
             return PXDocumentElementTypeUnsigned;
-        case PXInt64Make('r', 'e', 's', 't', 'r', 'i', 'c', 't'):
+        case PXI64Make('r', 'e', 's', 't', 'r', 'i', 'c', 't'):
             return PXDocumentElementTypeRestrict;
-        case PXInt64Make('v', 'o', 'l', 'a', 't', 'i', 'l', 'e'):
+        case PXI64Make('v', 'o', 'l', 'a', 't', 'i', 'l', 'e'):
             return PXDocumentElementTypeVolitile;
-        case PXInt64Make('r', 'e', 'g', 'i', 's', 't', 'e', 'r'):
+        case PXI64Make('r', 'e', 'g', 'i', 's', 't', 'e', 'r'):
             return PXDocumentElementTypeRegister;
 
         }
@@ -175,8 +175,8 @@ const char* PXAPI PXDocumentElementTypeToString(const PXDocumentElementType pxDo
 {
     switch(pxDocumentElementType)
     {
-    case PXDocumentElementTypePreprocessorInclude:
-        return "include";
+    case PXDocumentElementTypePreprocessorIncluded:
+        return "Included";
     case PXDocumentElementTypeNamespace:
         return "namespace";
     case PXDocumentElementTypeStruct:
@@ -205,17 +205,17 @@ const char* PXAPI PXDocumentElementTypeToString(const PXDocumentElementType pxDo
     }
 }
 
-PXActionResult PXAPI PXDocumentElementRoot(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement)
+PXResult PXAPI  PXDocumentElementRoot(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement)
 {
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDocumentElementChildGet(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement)
+PXResult PXAPI  PXDocumentElementChildGet(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement)
 {
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDocumentElementSiblingGet(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement)
+PXResult PXAPI  PXDocumentElementSiblingGet(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement)
 {
     return PXActionSuccessful;
 }
@@ -325,7 +325,7 @@ PXCodeDocumentElement* PXAPI PXCodeDocumentElementAdd(PXCodeDocument* const pxDo
     return newTarget;
 }
 
-PXActionResult PXAPI PXCodeDocumentElementGenerateChild
+PXResult PXAPI  PXCodeDocumentElementGenerateChild
 (
     PXCodeDocument* const pxDocument,
     PXDocumentElementType pxDocumentElementType,
@@ -444,7 +444,7 @@ void PXAPI PXCodeDocumentElementPrintSingle(PXCodeDocument* const pxDocument, PX
 
     switch(pxDocumentElement->Type)
     {
-    case PXDocumentElementTypePreprocessorInclude:
+    case PXDocumentElementTypePreprocessorIncluded:
     {
         PXLogPrint
         (
@@ -565,8 +565,8 @@ void PXAPI PXCodeDocumentElementPrintAll(PXCodeDocument* const pxDocument)
 PXSize PXAPI PXDocumentElementIO(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement, PXFileIOMultibleFunction pxFileIOMultibleFunction)
 {
 #if 0
-    const PXInt8U symbolID = pxDocumentElement->Type;
-    PXInt32U amount = 0;
+    const PXI8U symbolID = pxDocumentElement->Type;
+    PXI32U amount = 0;
 
     PXTypeEntry pxFileDataElementTypeList[] =
     {
@@ -592,7 +592,7 @@ PXSize PXAPI PXDocumentElementIO(PXCodeDocument* const pxDocument, PXCodeDocumen
     return 0;
 }
 
-PXActionResult PXAPI PXDocumentElementWrite(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement)
+PXResult PXAPI  PXDocumentElementWrite(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement)
 {
 
 #if 0
@@ -666,12 +666,12 @@ PXActionResult PXAPI PXDocumentElementWrite(PXCodeDocument* const pxDocument, PX
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDocumentElementRead(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement)
+PXResult PXAPI  PXDocumentElementRead(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement)
 {
     return PXDocumentElementIO(pxDocument, pxDocumentElement, PXFileReadMultible);;
 }
 
-PXActionResult PXAPI PXDocumentElementAdd(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement)
+PXResult PXAPI  PXDocumentElementAdd(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement)
 {
     switch (pxDocumentElement->Type)
     {
@@ -713,7 +713,7 @@ PXActionResult PXAPI PXDocumentElementAdd(PXCodeDocument* const pxDocument, PXCo
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDocumentPrintNode(PXCodeDocumentElement* const pxDocumentElement)
+PXResult PXAPI  PXDocumentPrintNode(PXCodeDocumentElement* const pxDocumentElement)
 {
 #if PXLogEnable
     char elementType[64];
@@ -813,7 +813,7 @@ PXActionResult PXAPI PXDocumentPrintNode(PXCodeDocumentElement* const pxDocument
 #endif
 }
 
-PXActionResult PXAPI PXDocumentPrint(PXCodeDocument* const pxDocument)
+PXResult PXAPI  PXDocumentPrint(PXCodeDocument* const pxDocument)
 {
 #if 0
     PXCodeDocumentElement pxDocumentElement;

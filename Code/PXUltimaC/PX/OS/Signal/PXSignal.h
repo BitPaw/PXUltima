@@ -1,7 +1,7 @@
-#ifndef OSSignalINCLUDE
-#define OSSignalINCLUDE
+#ifndef OSSignalIncluded
+#define OSSignalIncluded
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 
 #include <setjmp.h>
 //#include <csetjmp> C++ lib
@@ -28,7 +28,7 @@ PXSignalToken;
 
 typedef void (PXCDECL* PXSignalCallBack)(const int signalID);
 
-PXPublic PXActionResult PXAPI PXSignalCallBackRegister(const PXSignalToken pxSignalToken, PXSignalCallBack pxSignalCallBack);
+PXPublic PXResult PXAPI PXSignalCallBackRegister(const PXSignalToken pxSignalToken, PXSignalCallBack pxSignalCallBack);
 
 // Current state of the processor.
 // Is used to restore a point in execution
@@ -38,7 +38,7 @@ typedef struct PXRecoveryPoint_
 }
 PXRecoveryPoint;
 
-PXPublic PXActionResult PXAPI PXRecoveryPointSet(PXRecoveryPoint* const pxRecoveryPoint);
-PXPublic PXActionResult PXAPI PXRecoveryPointRestore(PXRecoveryPoint* const pxRecoveryPoint);
+PXPublic PXResult PXAPI PXRecoveryPointSet(PXRecoveryPoint* const pxRecoveryPoint);
+PXPublic PXResult PXAPI PXRecoveryPointRestore(PXRecoveryPoint* const pxRecoveryPoint);
 
 #endif

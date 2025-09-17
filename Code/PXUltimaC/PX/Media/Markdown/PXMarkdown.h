@@ -1,9 +1,9 @@
-#ifndef PXMarkdownInclude
-#define PXMarkdownInclude
+#ifndef PXMarkdownIncluded
+#define PXMarkdownIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
-PXPublic PXActionResult PXAPI PXMarkdownLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXMarkdownSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXMarkdownLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXMarkdownSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

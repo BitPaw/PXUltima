@@ -17,10 +17,10 @@
 #pragma comment(lib, "shlwapi.lib")
 #endif
 
-PXInt16U _windowHandleAmount = 0;
+PXI16U _windowHandleAmount = 0;
 HWND _windowHandleList[16];
 
-PXInt16U _monitorHandleAmount = 0;
+PXI16U _monitorHandleAmount = 0;
 PXMonitor _monitorHandleList[16];
 
 BOOL IsAltTabWindow(HWND hwnd)
@@ -122,14 +122,14 @@ BOOL CALLBACK PXWindowsMonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT
     return TRUE; // continue enumeration
 }
 
-PXActionResult PXAPI PXWindowListUpdate()
+PXResult PXAPI  PXWindowListUpdate()
 {
     _windowHandleAmount = 0;
 
     const BOOL res = EnumWindows(PXWindowsEnumWindowsProc, 0);
 }
 
-PXActionResult PXAPI PXMonitorListUpdate()
+PXResult PXAPI  PXMonitorListUpdate()
 {
     _monitorHandleAmount = 0;
 
@@ -137,7 +137,7 @@ PXActionResult PXAPI PXMonitorListUpdate()
 }
 
 
-PXActionResult PXAPI PXStreamCreateWindow(PXStream* const pxStream, PXStreamOpenInfo* const pxStreamOpenInfo)
+PXResult PXAPI  PXStreamCreateWindow(PXStream* const pxStream, PXStreamOpenInfo* const pxStreamOpenInfo)
 {
     PXWindowListUpdate();
 
@@ -168,7 +168,7 @@ PXActionResult PXAPI PXStreamCreateWindow(PXStream* const pxStream, PXStreamOpen
     SelectObject(pxStreamWindow->MemoryDC, pxStreamWindow->BitmapHandle);
 }
 
-PXActionResult PXAPI PXStreamCreateMonitor(PXStream* const pxStream, PXStreamOpenInfo* const pxStreamOpenInfo)
+PXResult PXAPI  PXStreamCreateMonitor(PXStream* const pxStream, PXStreamOpenInfo* const pxStreamOpenInfo)
 {
     PXStreamWindow* const pxStreamWindow = &pxStream->Window;
 
@@ -384,9 +384,9 @@ const PXVideoFormatEntry PXVideoFormatList[] =
 const PXSize PXVideoFormatAmount = sizeof(PXVideoFormatList) / sizeof(PXVideoFormat);
 
 
-PXActionResult PXAPI PXStreamCreateCamera(PXStream* const pxStream, PXStreamOpenInfo* const pxStreamOpenInfo)
+PXResult PXAPI  PXStreamCreateCamera(PXStream* const pxStream, PXStreamOpenInfo* const pxStreamOpenInfo)
 {
-    const PXInt16U deviceIndex = pxStreamOpenInfo->DeviceIndex;
+    const PXI16U deviceIndex = pxStreamOpenInfo->DeviceIndex;
     PXStreamCamera* const pxStreamCamera = &pxStream->Camera;
   
 
@@ -542,7 +542,7 @@ PXActionResult PXAPI PXStreamCreateCamera(PXStream* const pxStream, PXStreamOpen
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXStreamCreateTV(PXStream* const pxStream, PXStreamOpenInfo* const pxStreamOpenInfo)
+PXResult PXAPI  PXStreamCreateTV(PXStream* const pxStream, PXStreamOpenInfo* const pxStreamOpenInfo)
 {
     HRESULT resultHandle = S_OK;
     PXActionResult pxActionResult = 0;
@@ -618,7 +618,7 @@ PXActionResult PXAPI PXStreamCreateTV(PXStream* const pxStream, PXStreamOpenInfo
 
 PXColorRGBAI8 buffer[3840 *1080];
 
-PXActionResult PXAPI PXStreamUpdateWindow(PXStream* const pxStream)
+PXResult PXAPI  PXStreamUpdateWindow(PXStream* const pxStream)
 {
     PXStreamWindow* const pxStreamWindow = &pxStream->Window;
     
@@ -696,7 +696,7 @@ PXActionResult PXAPI PXStreamUpdateWindow(PXStream* const pxStream)
 
 void ConvertYUY2ToRGB
 (
-    const PXInt8U* yuy2Buffer,
+    const PXI8U* yuy2Buffer,
     int width,
     int height,
     PXColorRGBI8* rgbBuffer
@@ -711,10 +711,10 @@ void ConvertYUY2ToRGB
     for(int i = 0; i < frameSize * 2; i += 4)
     {
         // YUY2: 4 bytes for 2 pixels
-        PXInt8U Y0 = yuy2Buffer[i + 0];
-        PXInt8U U = yuy2Buffer[i + 1];
-        PXInt8U Y1 = yuy2Buffer[i + 2];
-        PXInt8U V = yuy2Buffer[i + 3];
+        PXI8U Y0 = yuy2Buffer[i + 0];
+        PXI8U U = yuy2Buffer[i + 1];
+        PXI8U Y1 = yuy2Buffer[i + 2];
+        PXI8U V = yuy2Buffer[i + 3];
 
 
         PXColorRGBI8* pxColorRGBI8_1 = &rgbBuffer[indexRGB++];
@@ -732,7 +732,7 @@ void ConvertYUY2ToRGB
     }
 }
 
-PXActionResult PXAPI PXStreamUpdateCamera(PXStream* const pxStream)
+PXResult PXAPI  PXStreamUpdateCamera(PXStream* const pxStream)
 {
     PXStreamCamera* const pxStreamCamera = &pxStream->Camera;
     IMFSourceReader* const sourceReader = pxStreamCamera->SourceReader;
@@ -806,7 +806,7 @@ PXActionResult PXAPI PXStreamUpdateCamera(PXStream* const pxStream)
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXStreamUpdateTV(PXStream* const pxStream)
+PXResult PXAPI  PXStreamUpdateTV(PXStream* const pxStream)
 {
     /*
     // Read samples
@@ -844,7 +844,7 @@ PXActionResult PXAPI PXStreamUpdateTV(PXStream* const pxStream)
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXStreamReleaseWindow(PXStream* const pxStream)
+PXResult PXAPI  PXStreamReleaseWindow(PXStream* const pxStream)
 {
     //DeleteDC(hMemoryDC);
     //ReleaseDC(hwnd, hWindowDC);
@@ -852,12 +852,12 @@ PXActionResult PXAPI PXStreamReleaseWindow(PXStream* const pxStream)
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXStreamReleaseMonitor(PXStream* const pxStream)
+PXResult PXAPI  PXStreamReleaseMonitor(PXStream* const pxStream)
 {
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXStreamReleaseCamera(PXStream* const pxStream)
+PXResult PXAPI  PXStreamReleaseCamera(PXStream* const pxStream)
 {
     IMFMediaBuffer* const mediaBuffer = pxStream->Camera.MediaBuffer;
     mediaBuffer->lpVtbl->Release(mediaBuffer);
@@ -865,7 +865,7 @@ PXActionResult PXAPI PXStreamReleaseCamera(PXStream* const pxStream)
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXStreamOpen(PXStream* const pxStream, PXStreamOpenInfo* const pxStreamOpenInfo)
+PXResult PXAPI  PXStreamOpen(PXStream* const pxStream, PXStreamOpenInfo* const pxStreamOpenInfo)
 {
     PXClear(PXStream, pxStream);
 
@@ -913,7 +913,7 @@ PXActionResult PXAPI PXStreamOpen(PXStream* const pxStream, PXStreamOpenInfo* co
     return pxActionResult;
 }
 
-PXActionResult PXAPI PXStreamClose(PXStream* const pxStream)
+PXResult PXAPI  PXStreamClose(PXStream* const pxStream)
 {
     return PXActionSuccessful;
 }

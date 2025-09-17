@@ -1,7 +1,7 @@
-#ifndef PXXMLINCLUDE
-#define PXXMLINCLUDE
+#ifndef PXXMLIncluded
+#define PXXMLIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef enum PXXMLSymbol_
 {
@@ -24,7 +24,7 @@ PXXMLSymbol;
 PXPrivate PXXMLSymbol PXAPI PXXMLPeekLine(const char* const text, const PXSize textSize);
 PXPrivate void PXAPI PXXMLBlockParse(PXCodeDocument* const pxDocument, PXCompiler* const pxCompiler);
 
-PXPublic PXActionResult PXAPI PXXMLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXXMLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXXMLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXXMLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

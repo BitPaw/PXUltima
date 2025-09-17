@@ -1,5 +1,5 @@
-#ifndef KeyBoardInclude
-#define KeyBoardInclude
+#ifndef KeyBoardIncluded
+#define KeyBoardIncluded
 
 #include <PX/Media/PXType.h>
 
@@ -321,10 +321,10 @@ PXKeyPressState;
 
 typedef struct PXKeyBoard_
 {
-    PXInt32U Letters; // A, B, C, D, ...
-    PXInt32U Numbers; // 0,1,2... and +, -, /, ...
-    PXInt32U Commands; // Enter, Escape, ect..
-    PXInt32U Actions; // F-01 to F-xx
+    PXI32U Letters; // A, B, C, D, ...
+    PXI32U Numbers; // 0,1,2... and +, -, /, ...
+    PXI32U Commands; // Enter, Escape, ect..
+    PXI32U Actions; // F-01 to F-xx
 }
 PXKeyBoard;
 
@@ -336,8 +336,8 @@ typedef struct PXKeyBoardVirtualInput_
 PXKeyBoardVirtualInput;
 
 
-PXPublic PXVirtualKey PXAPI PXVirtualKeyFromID(const PXInt8U character);
-PXPublic PXInt8U PXAPI PXVirtualKeyToID(const PXVirtualKey character);
+PXPublic PXVirtualKey PXAPI PXVirtualKeyFromID(const PXI8U character);
+PXPublic PXI8U PXAPI PXVirtualKeyToID(const PXVirtualKey character);
 
 PXPublic void PXAPI PXKeyBoardInputReset(PXKeyBoard* const keyBoard);
 PXPublic void PXAPI PXKeyBoardInputPrint(const PXKeyBoard* const keyBoard);
@@ -351,8 +351,8 @@ PXPublic unsigned char PXAPI PXInputButtonIsShortPressed(const unsigned char val
 PXPublic unsigned char PXAPI PXInputButtonIsLongPressed(const unsigned charvalue);
 PXPublic unsigned char PXAPI PXInputButtonIsPressed(const unsigned char value);
 
-PXPublic PXKeyPressState PXAPI PXKeyPressStateFromID(const PXInt8U pxKeyPressStateID);
-PXPublic PXInt8U PXAPI PXKeyPressStateToID(const PXKeyPressState pxKeyPressState);
+PXPublic PXKeyPressState PXAPI PXKeyPressStateFromID(const PXI8U pxKeyPressStateID);
+PXPublic PXI8U PXAPI PXKeyPressStateToID(const PXKeyPressState pxKeyPressState);
 
 #define PXKeyBoardVirtualInputSet(adress, pxVirtualKey, PXKeyPressState) (adress)->VirtualKey = pxVirtualKey; (adress)->KeyStrokeMode = PXKeyPressState;
 

@@ -1,7 +1,7 @@
-#ifndef PXFTPINCLUDE
-#define PXFTPINCLUDE
+#ifndef PXFTPIncluded
+#define PXFTPIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 #define FTPDefaultPort 21
 
@@ -93,12 +93,12 @@ typedef enum PXFTPResult_
     //---------------------------------------------------------------------
 
     // 5xx
-    PXFTPResultCommandInvalid, // 500 Syntax error, command unrecognized.    This may include errors such as command line too long.
+    PXFTPResultCommandInvalid, // 500 Syntax error, command unrecognized.    This may Included errors such as command line too long.
     PXFTPResultParameterSyntaxError, // 501 Syntax error in parameters or arguments.
 
     // 503 Bad sequence of commands.
     // 504 Command not implemented for that parameter.
-    // 500 Syntax error, command unrecognized.This may include errors such as command line too long.
+    // 500 Syntax error, command unrecognized.This may Included errors such as command line too long.
     // 501 Syntax error in parameters or arguments.
     // 502 Command not implemented.
     // 503 Bad sequence of commands.

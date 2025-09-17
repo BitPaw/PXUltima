@@ -2,7 +2,7 @@
 
 #include <PX/Math/PXMath.h>
 #include <PX/OS/Memory/PXMemory.h>
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 
 void PXAPI PXMatrix4x4FIdentity(PXMatrix4x4F* const matrix4x4F)
 {
@@ -29,6 +29,19 @@ void PXAPI PXMatrix4x4FResetAxisW(PXMatrix4x4F* const matrix4x4F)
     matrix4x4F->Data[TransformY] = 0.0f;
     matrix4x4F->Data[TransformZ] = 0.0f;
     matrix4x4F->Data[TransformW] = 1.0f;
+}
+
+void PXAPI PXMatrix4x4FRotationAxisSet(PXMatrix4x4F* const matrix4x4F, const PXI8U axisA, const PXI8U axisB, const PXF32 angle)
+{
+    float s;//sinf(angle);
+    float c;//cosf(angle);  
+
+    PXMathSinCosRADF32(angle, &s, &c);  
+
+    matrix4x4F->DataXY[axisA][axisA] = c;
+    matrix4x4F->DataXY[axisA][axisB] = -s;
+    matrix4x4F->DataXY[axisB][axisA] = s;
+    matrix4x4F->DataXY[axisB][axisB] = c;
 }
 
 void PXAPI PXMatrix4x4FPositionGet(const PXMatrix4x4F* const matrix, PXVector3F32* const position)
@@ -141,9 +154,9 @@ void PXAPI PXMatrix4x4FRotationMatrixGenerate(PXMatrix4x4F* const matrix4x4F, co
 
         PXMatrix4x4FIdentity(matrix4x4F);
 
-        PXMatrix4x4FMultiply(matrix4x4F, &zRotation, matrix4x4F);
-        PXMatrix4x4FMultiply(matrix4x4F, &yRotation, matrix4x4F);
-        PXMatrix4x4FMultiply(matrix4x4F, &xRotation, matrix4x4F);
+        PXMatrix4x4FMultiply(matrix4x4F, &zRotation);
+        PXMatrix4x4FMultiply(matrix4x4F, &yRotation);
+        PXMatrix4x4FMultiply(matrix4x4F, &xRotation);
 
         /*
                 PXMatrix4x4F tempRotation;
@@ -157,7 +170,7 @@ void PXAPI PXMatrix4x4FRotationMatrixGenerate(PXMatrix4x4F* const matrix4x4F, co
     }
 }
 
-void PXAPI PXMatrix4x4FMultiply(const PXMatrix4x4F* matrixA, const PXMatrix4x4F* matrixB, PXMatrix4x4F* const matrixResult)
+void PXAPI PXMatrix4x4FMultiply(PXMatrix4x4F* const matrixA, const PXMatrix4x4F* const matrixB)
 {
     PXF32 a = matrixA->Data[0];
     PXF32 b = matrixA->Data[1];
@@ -193,25 +206,35 @@ void PXAPI PXMatrix4x4FMultiply(const PXMatrix4x4F* matrixA, const PXMatrix4x4F*
     PXF32 O = matrixB->Data[14];
     PXF32 P = matrixB->Data[15];
 
-    matrixResult->Data[0] = a * A + b * E + c * I + d * M;
-    matrixResult->Data[1] = e * A + f * E + g * I + h * M;
-    matrixResult->Data[2] = i * A + j * E + k * I + l * M;
-    matrixResult->Data[3] = m * A + n * E + o * I + p * M;
+    matrixA->Data[0] = a * A + b * E + c * I + d * M;
+    matrixA->Data[1] = e * A + f * E + g * I + h * M;
+    matrixA->Data[2] = i * A + j * E + k * I + l * M;
+    matrixA->Data[3] = m * A + n * E + o * I + p * M;
 
-    matrixResult->Data[4] = a * B + b * F + c * J + d * N;
-    matrixResult->Data[5] = e * B + f * F + g * J + h * N;
-    matrixResult->Data[6] = i * B + j * F + k * J + l * N;
-    matrixResult->Data[7] = m * B + n * F + o * J + p * N;
+    matrixA->Data[4] = a * B + b * F + c * J + d * N;
+    matrixA->Data[5] = e * B + f * F + g * J + h * N;
+    matrixA->Data[6] = i * B + j * F + k * J + l * N;
+    matrixA->Data[7] = m * B + n * F + o * J + p * N;
 
-    matrixResult->Data[8] = a * C + b * G + c * K + d * O;
-    matrixResult->Data[9] = e * C + f * G + g * K + h * O;
-    matrixResult->Data[10] = i * C + j * G + k * K + l * O;
-    matrixResult->Data[11] = m * C + n * G + o * K + p * O;
+    matrixA->Data[8] = a * C + b * G + c * K + d * O;
+    matrixA->Data[9] = e * C + f * G + g * K + h * O;
+    matrixA->Data[10] = i * C + j * G + k * K + l * O;
+    matrixA->Data[11] = m * C + n * G + o * K + p * O;
 
-    matrixResult->Data[12] = a * D + b * H + c * L + d * P;
-    matrixResult->Data[13] = e * D + f * H + g * L + h * P;
-    matrixResult->Data[14] = i * D + j * H + k * L + l * P;
-    matrixResult->Data[15] = m * D + n * H + o * L + p * P;
+    matrixA->Data[12] = a * D + b * H + c * L + d * P;
+    matrixA->Data[13] = e * D + f * H + g * L + h * P;
+    matrixA->Data[14] = i * D + j * H + k * L + l * P;
+    matrixA->Data[15] = m * D + n * H + o * L + p * P;
+}
+
+void PXAPI PXMatrix4x4FMultiplyV4F(const PXMatrix4x4F* const matrix, PXVector4F32* const pxVector4F32)
+{
+    const PXVector4F32 copy = *pxVector4F32;
+
+    pxVector4F32->X = matrix->DataXY[0][0] * copy.X + matrix->DataXY[0][1] * copy.Y + matrix->DataXY[0][2] * copy.Z + matrix->DataXY[0][3] * copy.W;
+    pxVector4F32->Y = matrix->DataXY[1][0] * copy.X + matrix->DataXY[1][1] * copy.Y + matrix->DataXY[1][2] * copy.Z + matrix->DataXY[1][3] * copy.W;
+    pxVector4F32->Z = matrix->DataXY[2][0] * copy.X + matrix->DataXY[2][1] * copy.Y + matrix->DataXY[2][2] * copy.Z + matrix->DataXY[2][3] * copy.W;
+    pxVector4F32->W = matrix->DataXY[3][0] * copy.X + matrix->DataXY[3][1] * copy.Y + matrix->DataXY[3][2] * copy.Z + matrix->DataXY[3][3] * copy.W;
 }
 
 void PXAPI PXMatrix4x4FRotate(PXMatrix4x4F* const matrix4x4F, const PXVector3F32* const vector3F)
@@ -220,7 +243,7 @@ void PXAPI PXMatrix4x4FRotate(PXMatrix4x4F* const matrix4x4F, const PXVector3F32
 
     PXMatrix4x4FRotationMatrixGenerate(&matrixRotation, vector3F);
 
-    PXMatrix4x4FMultiply(matrix4x4F, &matrixRotation, matrix4x4F);
+    PXMatrix4x4FMultiply(matrix4x4F, &matrixRotation);
 }
 
 void PXAPI PXMatrix4x4FCopy(const PXMatrix4x4F* const matrixA, PXMatrix4x4F* const matrixResult)

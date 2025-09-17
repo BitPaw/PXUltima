@@ -28,8 +28,8 @@ PXYAMLLineType PXAPI PXYAMLPeekLine(const void* line, const PXSize size)
     case '-':
     {
         const unsigned char* data = (unsigned char*)line + 1;
-        const PXInt16U checkA = PXInt16Make('-', '-');
-        const PXInt16U checkB = PXInt16Make(data[0], data[1]);
+        const PXI16U checkA = PXI16Make('-', '-');
+        const PXI16U checkB = PXI16Make(data[0], data[1]);
         const PXBool isSeperator = checkA == checkB;
 
         if (isSeperator)
@@ -57,7 +57,7 @@ PXYAMLLineType PXAPI PXYAMLPeekLine(const void* line, const PXSize size)
     return PXYAMLLineTypeUnkown;
 }
 
-PXActionResult PXAPI PXYAMLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI  PXYAMLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     PXSize errorCounter = 0;
     PXFile tokenSteam;
@@ -211,8 +211,8 @@ PXActionResult PXAPI PXYAMLLoadFromFile(PXResourceTransphereInfo* const pxResour
 
     while (!PXFileIsAtEnd(outputStream))
     {
-        PXInt8U depth = 0;
-        PXInt8U lineTypeID = 0;
+        PXI8U depth = 0;
+        PXI8U lineTypeID = 0;
 
         PXYAMLLineType lineType = PXYAMLLineTypeInvalid;
 
@@ -226,8 +226,8 @@ PXActionResult PXAPI PXYAMLLoadFromFile(PXResourceTransphereInfo* const pxResour
         {
         case PXYAMLLineTypeKeyValueDeclare:
         {
-            unsigned short textASize = 0;
-            char textA[256];
+            unsigned short ASize = 0;
+            char A[256];
             unsigned short textBSize = 0;
             char textB[256];
 
@@ -236,12 +236,12 @@ PXActionResult PXAPI PXYAMLLoadFromFile(PXResourceTransphereInfo* const pxResour
 
             char emotySpace[25];
 
-            PXMemoryClear(textA, 256u);
+            PXMemoryClear(A, 256u);
             PXMemoryClear(textB, 256u);
             PXMemoryClear(emotySpace, 25u);
 
-            PXFileReadI16U(outputStream, &textASize);
-            PXFileReadB(outputStream, textA, textASize);
+            PXFileReadI16U(outputStream, &ASize);
+            PXFileReadB(outputStream, A, ASize);
             PXFileReadI16U(outputStream, &textBSize);
 
             for (PXSize i = 0; i < depth; i++)
@@ -254,7 +254,7 @@ PXActionResult PXAPI PXYAMLLoadFromFile(PXResourceTransphereInfo* const pxResour
                 PXCompilerSymbolLexer lexer;
 
                 {
-                    PXInt8U lx = 0;
+                    PXI8U lx = 0;
 
                     PXFileReadI8U(outputStream, &lx);
 
@@ -276,7 +276,7 @@ PXActionResult PXAPI PXYAMLLoadFromFile(PXResourceTransphereInfo* const pxResour
 
                 case PXCompilerSymbolLexerNumeric:
                 {
-                    PXInt32U x = 0;
+                    PXI32U x = 0;
 
                     PXFileReadI32U(outputStream, &x);
 
@@ -304,7 +304,7 @@ PXActionResult PXAPI PXYAMLLoadFromFile(PXResourceTransphereInfo* const pxResour
                 }
             }
 
-            printf("[YAML][%i] %s %s:%s\n", depth, emotySpace, textA, textB);
+            printf("[YAML][%i] %s %s:%s\n", depth, emotySpace, A, textB);
         }
 
         default:
@@ -318,7 +318,7 @@ PXActionResult PXAPI PXYAMLLoadFromFile(PXResourceTransphereInfo* const pxResour
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXYAMLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI  PXYAMLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

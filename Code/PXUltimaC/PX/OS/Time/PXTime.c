@@ -9,7 +9,7 @@
 #include <Windows.h>
 #endif
 
-PXTimeMonth PXAPI PXTimeMonthFromID(const PXInt8U monthID)
+PXTimeMonth PXAPI PXTimeMonthFromID(const PXI8U monthID)
 {
     switch(monthID)
     {
@@ -42,7 +42,7 @@ PXTimeMonth PXAPI PXTimeMonthFromID(const PXInt8U monthID)
     }
 }
 
-PXTimeDayOfWeek PXAPI PXTimeDayFromID(const PXInt8U dayID)
+PXTimeDayOfWeek PXAPI PXTimeDayFromID(const PXI8U dayID)
 {
     switch(dayID)
     {
@@ -147,7 +147,7 @@ PXSize PXAPI PXTimeMillisecondsDelta(const PXTime* timeA, const PXTime* timeB)
     return millisecondsDelta;
 }
 
-PXF32 PXAPI PXTimeCounterStampToSecoundsF(const PXInt64U timestamp)
+PXF32 PXAPI PXTimeCounterStampToSecoundsF(const PXI64U timestamp)
 {
     PXF32 result = 0;
 
@@ -170,7 +170,7 @@ PXF32 PXAPI PXTimeCounterStampToSecoundsF(const PXInt64U timestamp)
 
 
 // Generates a timestamp in nanosecound space
-PXInt64U PXAPI PXTimeCounterStampGet()
+PXI64U PXAPI PXTimeCounterStampGet()
 {
 #if OSUnix
     struct timespec  ts;
@@ -207,7 +207,7 @@ PXInt64U PXAPI PXTimeCounterStampGet()
 #endif
 }
 
-PXInt64U PXAPI PXTimeCounterFrequencyGet()
+PXI64U PXAPI PXTimeCounterFrequencyGet()
 {
 #if OSUnix
     /*

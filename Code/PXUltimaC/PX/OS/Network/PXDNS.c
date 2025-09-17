@@ -8,7 +8,7 @@
 // https://learn.microsoft.com/en-us/windows/win32/api/windns/
 #endif
 
-PXActionResult PXAPI PXDNSFetch(const char* name)
+PXResult PXAPI  PXDNSFetch(const char* name)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;

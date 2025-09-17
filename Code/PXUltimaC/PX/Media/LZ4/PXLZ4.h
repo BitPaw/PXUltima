@@ -1,11 +1,11 @@
-#ifndef PXLZ4Include
-#define PXLZ4Include
+#ifndef PXLZ4Included
+#define PXLZ4Included
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
-PXPrivate PXActionResult PXAPI PXLZ4DecompressChunk(PXFile* const pxFileInput, PXFile* const pxFileOutput);
+PXPrivate PXResult PXAPI  PXLZ4DecompressChunk(PXFile* const pxFileInput, PXFile* const pxFileOutput);
 
-PXPublic PXActionResult PXAPI PXLZ4Compress(PXFile* const pxFileInput, PXFile* const pxFileOutput);
-PXPublic PXActionResult PXAPI PXLZ4Decompress(PXFile* const pxFileInput, PXFile* const pxFileOutput);
+PXPublic PXResult PXAPI PXLZ4Compress(PXFile* const pxFileInput, PXFile* const pxFileOutput);
+PXPublic PXResult PXAPI PXLZ4Decompress(PXFile* const pxFileInput, PXFile* const pxFileOutput);
 
 #endif

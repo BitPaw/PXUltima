@@ -47,7 +47,7 @@ typedef HRESULT(WINAPI* PXDirectSoundCaptureCreate8)(__in_opt LPCGUID pcGuidDevi
 
 
 
-BOOL CALLBACK PXAudioDeviceDetectAmountCallBack(LPGUID guid, LPCSTR cstrDescription, LPCSTR cstrModule, PXInt32U* const amount)
+BOOL CALLBACK PXAudioDeviceDetectAmountCallBack(LPGUID guid, LPCSTR cstrDescription, LPCSTR cstrModule, PXI32U* const amount)
 {
     if(!guid)
     {
@@ -93,7 +93,7 @@ BOOL CALLBACK PXAudioDeviceDetectObjectCallBack(LPGUID guid, LPCSTR cstrDescript
 PXAudioDirectSound _pxAudioDirectSound;
 
 
-PXActionResult PXAPI PXDirectSoundInitialize(PXAudioDirectSound** const pxAudioDirectSound, PXAudioInitializeInfo* const pxAudioInitializeInfo)
+PXResult PXAPI  PXDirectSoundInitialize(PXAudioDirectSound** const pxAudioDirectSound, PXAudioInitializeInfo* const pxAudioInitializeInfo)
 {
     PXAudio* pxAudio = PXNull;
 
@@ -184,7 +184,7 @@ PXActionResult PXAPI PXDirectSoundInitialize(PXAudioDirectSound** const pxAudioD
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceAmount(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDeviceAmountInfo* const pxAudioDeviceAmountInfo)
+PXResult PXAPI  PXDirectSoundDeviceAmount(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDeviceAmountInfo* const pxAudioDeviceAmountInfo)
 {
 #if OSUnix
 #elif OSWindows
@@ -224,7 +224,7 @@ PXActionResult PXAPI PXDirectSoundDeviceAmount(PXAudioDirectSound* const pxAudio
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceFetch(PXAudioDirectSound* const pxAudioDirectSound, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID, PXAudioDevice* const pxAudioDevice)
+PXResult PXAPI  PXDirectSoundDeviceFetch(PXAudioDirectSound* const pxAudioDirectSound, const PXAudioDeviceType pxAudioDeviceType, const PXI32U deviceID, PXAudioDevice* const pxAudioDevice)
 {
 #if OSUnix
 #elif OSWindows
@@ -271,7 +271,7 @@ PXActionResult PXAPI PXDirectSoundDeviceFetch(PXAudioDirectSound* const pxAudioD
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceFetchAll(PXAudioDirectSound* const pxAudioDirectSound, const PXAudioDeviceType pxAudioDeviceType, PXAudioDevice* const pxAudioDevice, const PXSize amount)
+PXResult PXAPI  PXDirectSoundDeviceFetchAll(PXAudioDirectSound* const pxAudioDirectSound, const PXAudioDeviceType pxAudioDeviceType, PXAudioDevice* const pxAudioDevice, const PXSize amount)
 {
     for(PXSize i = 0; i < amount; ++i)
     {
@@ -281,7 +281,7 @@ PXActionResult PXAPI PXDirectSoundDeviceFetchAll(PXAudioDirectSound* const pxAud
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceOpen(PXAudioDevice* const pxAudioDevice, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID)
+PXResult PXAPI  PXDirectSoundDeviceOpen(PXAudioDevice* const pxAudioDevice, const PXAudioDeviceType pxAudioDeviceType, const PXI32U deviceID)
 {
 #if OSUnix
 #elif OSWindows
@@ -404,12 +404,12 @@ PXActionResult PXAPI PXDirectSoundDeviceOpen(PXAudioDevice* const pxAudioDevice,
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceClose(PXAudioDevice* const pxAudioDevice)
+PXResult PXAPI  PXDirectSoundDeviceClose(PXAudioDevice* const pxAudioDevice)
 {
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceBufferCreate(PXAudioDevice* const pxAudioDevice, PXSound* const pxSound)
+PXResult PXAPI  PXDirectSoundDeviceBufferCreate(PXAudioDevice* const pxAudioDevice, PXSound* const pxSound)
 {
     if(!(pxAudioDevice && pxSound))
     {
@@ -542,7 +542,7 @@ PXActionResult PXAPI PXDirectSoundDeviceBufferCreate(PXAudioDevice* const pxAudi
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDirectSoundDeviceProperty(PXAudioDevice* const pxAudioDevice, PXSoundDeviceProperty* const pxSoundDeviceProperty)
+PXResult PXAPI  PXDirectSoundDeviceProperty(PXAudioDevice* const pxAudioDevice, PXSoundDeviceProperty* const pxSoundDeviceProperty)
 {
     if(!(pxAudioDevice && pxSoundDeviceProperty))
     {
@@ -717,7 +717,7 @@ PXActionResult PXAPI PXDirectSoundDeviceProperty(PXAudioDevice* const pxAudioDev
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDirectSoundEffectEnable(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice)
+PXResult PXAPI  PXDirectSoundEffectEnable(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice)
 {
 #if OSUnix
 #elif OSWindows
@@ -802,7 +802,7 @@ PXActionResult PXAPI PXDirectSoundEffectEnable(PXAudioDirectSound* const pxAudio
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDirectSoundEffectUpdate(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, PXAudioEffect* const pxAudioEffect)
+PXResult PXAPI  PXDirectSoundEffectUpdate(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, PXAudioEffect* const pxAudioEffect)
 {
 #if OSUnix
 #elif OSWindows
@@ -811,7 +811,7 @@ PXActionResult PXAPI PXDirectSoundEffectUpdate(PXAudioDirectSound* const pxAudio
 
     // Check if enabled
     {
-        PXInt32U flag = 0;
+        PXI32U flag = 0;
 
         switch(pxAudioEffect->Type)
         {

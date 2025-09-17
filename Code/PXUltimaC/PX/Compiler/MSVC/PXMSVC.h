@@ -1,7 +1,7 @@
-#ifndef PXJavaIncluded
-#define PXJavaIncluded
+#ifndef PXJavaIncludedd
+#define PXJavaIncludedd
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 
 #define PXCompilerTargetExecutable      (1<<0)
 #define PXCompilerTargetLibraryStatic   (1<<1)
@@ -11,14 +11,14 @@ typedef struct PXCompilerMSVC_
 {
     char CompilerPathRoot[260];
 
-    const char* CompilerPathInclude;
+    const char* CompilerPathIncluded;
     const char* CompilerPathLibrarySearch;
     const char* CompilerPathLibraryFile;
 }
 PXCompilerMSVC;
 
 
-PXPublic PXActionResult PXAPI PXCompilerInitializeMSVC(PXCompilerMSVC* const pxCompilerMSVC);
-PXPublic PXActionResult PXAPI PXCompilerLinkMSVC(PXCompilerMSVC* const pxCompilerMSVC, int flags, const char* fileName, const char* resultName);
+PXPublic PXResult PXAPI PXCompilerInitializeMSVC(PXCompilerMSVC* const pxCompilerMSVC);
+PXPublic PXResult PXAPI PXCompilerLinkMSVC(PXCompilerMSVC* const pxCompilerMSVC, int flags, const char* fileName, const char* resultName);
 
 #endif

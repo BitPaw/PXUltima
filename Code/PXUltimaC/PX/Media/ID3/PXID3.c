@@ -9,158 +9,158 @@ const char PXID3HeaderSignature[3] = { 'I','D','3' };
 #include <cstdio>
 #endif
 
-PXID3v2xFrameTag PXAPI PXID3v2xFrameTagFromID(const PXInt32U id3v2xFrameTagID)
+PXID3v2xFrameTag PXAPI PXID3v2xFrameTagFromID(const PXI32U id3v2xFrameTagID)
 {
     switch(id3v2xFrameTagID)
     {
-    case PXInt32Make('A', 'E', 'N', 'C'):
+    case PXI32Make('A', 'E', 'N', 'C'):
         return PXID3v2xFrameTagAudioEncryption;
-    case PXInt32Make('A', 'P', 'I', 'C'):
+    case PXI32Make('A', 'P', 'I', 'C'):
         return PXID3v2xFrameTagAttachedPicture;
-    case PXInt32Make('C', 'O', 'M', 'M'):
+    case PXI32Make('C', 'O', 'M', 'M'):
         return PXID3v2xFrameTagComments;
-    case PXInt32Make('C', 'O', 'M', 'R'):
+    case PXI32Make('C', 'O', 'M', 'R'):
         return PXID3v2xFrameTagCommercialFrame;
-    case PXInt32Make('E', 'N', 'C', 'R'):
+    case PXI32Make('E', 'N', 'C', 'R'):
         return PXID3v2xFrameTagEncryptionMethodRegistration;
-    case PXInt32Make('E', 'Q', 'U', 'A'):
+    case PXI32Make('E', 'Q', 'U', 'A'):
         return PXID3v2xFrameTagEqualization;
-    case PXInt32Make('E', 'T', 'C', 'O'):
+    case PXI32Make('E', 'T', 'C', 'O'):
         return PXID3v2xFrameTagEventTimingCodes;
-    case PXInt32Make('G', 'E', 'O', 'B'):
+    case PXI32Make('G', 'E', 'O', 'B'):
         return PXID3v2xFrameTagGeneralEncapsulatedObject;
-    case PXInt32Make('G', 'R', 'I', 'D'):
+    case PXI32Make('G', 'R', 'I', 'D'):
         return PXID3v2xFrameTagGroupIdentificationRegistration;
-    case PXInt32Make('I', 'P', 'L', 'S'):
+    case PXI32Make('I', 'P', 'L', 'S'):
         return PXID3v2xFrameTagInvolvedPeopleList;
-    case PXInt32Make('L', 'I', 'N', 'K'):
+    case PXI32Make('L', 'I', 'N', 'K'):
         return PXID3v2xFrameTagLinkedInformation;
-    case PXInt32Make('M', 'C', 'D', 'I'):
+    case PXI32Make('M', 'C', 'D', 'I'):
         return PXID3v2xFrameTagMusicCDIdentifier;
-    case PXInt32Make('M', 'L', 'L', 'T'):
+    case PXI32Make('M', 'L', 'L', 'T'):
         return PXID3v2xFrameTagMPEGLocationLookupTable;
-    case PXInt32Make('O', 'W', 'N', 'E'):
+    case PXI32Make('O', 'W', 'N', 'E'):
         return PXID3v2xFrameTagOwnershipFrame;
-    case PXInt32Make('P', 'R', 'I', 'V'):
+    case PXI32Make('P', 'R', 'I', 'V'):
         return PXID3v2xFrameTagPrivateFrame;
-    case PXInt32Make('P', 'C', 'N', 'T'):
+    case PXI32Make('P', 'C', 'N', 'T'):
         return PXID3v2xFrameTagPlayCounter;
-    case PXInt32Make('P', 'O', 'P', 'M'):
+    case PXI32Make('P', 'O', 'P', 'M'):
         return PXID3v2xFrameTagPopularimeter;
-    case PXInt32Make('P', 'O', 'S', 'S'):
+    case PXI32Make('P', 'O', 'S', 'S'):
         return PXID3v2xFrameTagPositionSynchronisationFrame;
-    case PXInt32Make('R', 'B', 'U', 'F'):
+    case PXI32Make('R', 'B', 'U', 'F'):
         return PXID3v2xFrameTagRecommendedBufferSize;
-    case PXInt32Make('R', 'V', 'A', 'D'):
+    case PXI32Make('R', 'V', 'A', 'D'):
         return PXID3v2xFrameTagRelativeVolumeAdjustment;
-    case PXInt32Make('R', 'V', 'R', 'B'):
+    case PXI32Make('R', 'V', 'R', 'B'):
         return PXID3v2xFrameTagReverb;
-    case PXInt32Make('S', 'Y', 'L', 'T'):
+    case PXI32Make('S', 'Y', 'L', 'T'):
         return PXID3v2xFrameTagSynchronizedLyric;
-    case PXInt32Make('S', 'Y', 'T', 'C'):
+    case PXI32Make('S', 'Y', 'T', 'C'):
         return PXID3v2xFrameTagSynchronizedTempocodes;
-    case PXInt32Make('T', 'A', 'L', 'B'):
+    case PXI32Make('T', 'A', 'L', 'B'):
         return PXID3v2xFrameTagAlbum;
-    case PXInt32Make('T', 'B', 'P', 'M'):
+    case PXI32Make('T', 'B', 'P', 'M'):
         return PXID3v2xFrameTagBeatsPerMinute;
-    case PXInt32Make('T', 'C', 'O', 'M'):
+    case PXI32Make('T', 'C', 'O', 'M'):
         return PXID3v2xFrameTagComposer;
-    case PXInt32Make('T', 'C', 'O', 'N'):
+    case PXI32Make('T', 'C', 'O', 'N'):
         return PXID3v2xFrameTagContentType;
-    case PXInt32Make('T', 'C', 'O', 'P'):
+    case PXI32Make('T', 'C', 'O', 'P'):
         return PXID3v2xFrameTagCopyrightMessage;
-    case PXInt32Make('T', 'D', 'A', 'T'):
+    case PXI32Make('T', 'D', 'A', 'T'):
         return PXID3v2xFrameTagDate;
-    case PXInt32Make('T', 'D', 'L', 'Y'):
+    case PXI32Make('T', 'D', 'L', 'Y'):
         return PXID3v2xFrameTagPlaylistDelay;
-    //case PXInt32Make('T', 'D', 'T', 'G'): return TaggingTime;
-    case PXInt32Make('T', 'E', 'N', 'C'):
+    //case PXI32Make('T', 'D', 'T', 'G'): return TaggingTime;
+    case PXI32Make('T', 'E', 'N', 'C'):
         return PXID3v2xFrameTagEncodedBy;
-    case PXInt32Make('T', 'E', 'X', 'T'):
+    case PXI32Make('T', 'E', 'X', 'T'):
         return PXID3v2xFrameTagLyricist;
-    case PXInt32Make('T', 'F', 'L', 'T'):
+    case PXI32Make('T', 'F', 'L', 'T'):
         return PXID3v2xFrameTagFileType;
-    case PXInt32Make('T', 'I', 'M', 'E'):
+    case PXI32Make('T', 'I', 'M', 'E'):
         return PXID3v2xFrameTagTime;
-    case PXInt32Make('T', 'I', 'T', '1'):
+    case PXI32Make('T', 'I', 'T', '1'):
         return PXID3v2xFrameTagContentGroupDescription;
-    case PXInt32Make('T', 'I', 'T', '2'):
+    case PXI32Make('T', 'I', 'T', '2'):
         return PXID3v2xFrameTagTitle;
-    case PXInt32Make('T', 'I', 'T', '3'):
+    case PXI32Make('T', 'I', 'T', '3'):
         return PXID3v2xFrameTagSubtitle;
-    case PXInt32Make('T', 'K', 'E', 'Y'):
+    case PXI32Make('T', 'K', 'E', 'Y'):
         return PXID3v2xFrameTagInitialKey;
-    case PXInt32Make('T', 'L', 'A', 'N'):
+    case PXI32Make('T', 'L', 'A', 'N'):
         return PXID3v2xFrameTagLanguage;
-    case PXInt32Make('T', 'L', 'E', 'N'):
+    case PXI32Make('T', 'L', 'E', 'N'):
         return PXID3v2xFrameTagLength;
-    case PXInt32Make('T', 'M', 'E', 'D'):
+    case PXI32Make('T', 'M', 'E', 'D'):
         return PXID3v2xFrameTagMediaType;
-    case PXInt32Make('T', 'O', 'A', 'L'):
+    case PXI32Make('T', 'O', 'A', 'L'):
         return PXID3v2xFrameTagOriginalAlbum;
-    case PXInt32Make('T', 'O', 'F', 'N'):
+    case PXI32Make('T', 'O', 'F', 'N'):
         return PXID3v2xFrameTagOriginalFilename;
-    case PXInt32Make('T', 'O', 'L', 'Y'):
+    case PXI32Make('T', 'O', 'L', 'Y'):
         return PXID3v2xFrameTagOriginalLyricist;
-    case PXInt32Make('T', 'O', 'P', 'E'):
+    case PXI32Make('T', 'O', 'P', 'E'):
         return PXID3v2xFrameTagOriginalArtist;
-    case PXInt32Make('T', 'O', 'R', 'Y'):
+    case PXI32Make('T', 'O', 'R', 'Y'):
         return PXID3v2xFrameTagOriginalReleaseYear;
-    case PXInt32Make('T', 'O', 'W', 'N'):
+    case PXI32Make('T', 'O', 'W', 'N'):
         return PXID3v2xFrameTagFileOwner;
-    case PXInt32Make('T', 'P', 'E', '1'):
+    case PXI32Make('T', 'P', 'E', '1'):
         return PXID3v2xFrameTagLeadPerformer;
-    case PXInt32Make('T', 'P', 'E', '2'):
+    case PXI32Make('T', 'P', 'E', '2'):
         return PXID3v2xFrameTagBand;
-    case PXInt32Make('T', 'P', 'E', '3'):
+    case PXI32Make('T', 'P', 'E', '3'):
         return PXID3v2xFrameTagConductor;
-    case PXInt32Make('T', 'P', 'E', '4'):
+    case PXI32Make('T', 'P', 'E', '4'):
         return PXID3v2xFrameTagInterpretedBy;
-    case PXInt32Make('T', 'P', 'O', 'S'):
+    case PXI32Make('T', 'P', 'O', 'S'):
         return PXID3v2xFrameTagPartOfASet;
-    case PXInt32Make('T', 'P', 'U', 'B'):
+    case PXI32Make('T', 'P', 'U', 'B'):
         return PXID3v2xFrameTagPublisher;
-    case PXInt32Make('T', 'R', 'C', 'K'):
+    case PXI32Make('T', 'R', 'C', 'K'):
         return PXID3v2xFrameTagTrackNumber;
-    case PXInt32Make('T', 'R', 'D', 'A'):
+    case PXI32Make('T', 'R', 'D', 'A'):
         return PXID3v2xFrameTagRecordingDates;
-    case PXInt32Make('T', 'R', 'S', 'N'):
+    case PXI32Make('T', 'R', 'S', 'N'):
         return PXID3v2xFrameTagInternetRadioStationName;
-    case PXInt32Make('T', 'R', 'S', 'O'):
+    case PXI32Make('T', 'R', 'S', 'O'):
         return PXID3v2xFrameTagInternetRadioStationOwner;
-    case PXInt32Make('T', 'S', 'I', 'Z'):
+    case PXI32Make('T', 'S', 'I', 'Z'):
         return PXID3v2xFrameTagSize;
-    case PXInt32Make('T', 'S', 'R', 'C'):
+    case PXI32Make('T', 'S', 'R', 'C'):
         return PXID3v2xFrameTagInternationalStandardRecordingCode;
-    case PXInt32Make('T', 'S', 'S', 'E'):
+    case PXI32Make('T', 'S', 'S', 'E'):
         return PXID3v2xFrameTagSoftwareHardwaresettingsUsedForEncoding;
-    case PXInt32Make('T', 'Y', 'E', 'R'):
+    case PXI32Make('T', 'Y', 'E', 'R'):
         return PXID3v2xFrameTagYear;
-    case PXInt32Make('T', 'X', 'X', 'X'):
+    case PXI32Make('T', 'X', 'X', 'X'):
         return PXID3v2xFrameTagUserDefinedText;
-    case PXInt32Make('U', 'F', 'I', 'D'):
+    case PXI32Make('U', 'F', 'I', 'D'):
         return PXID3v2xFrameTagUniqueFileIdentifier;
-    case PXInt32Make('U', 'S', 'E', 'R'):
+    case PXI32Make('U', 'S', 'E', 'R'):
         return PXID3v2xFrameTagTermsOfUse;
-    case PXInt32Make('U', 'S', 'L', 'T'):
+    case PXI32Make('U', 'S', 'L', 'T'):
         return PXID3v2xFrameTagUnsychronizedLyric;
-    case PXInt32Make('W', 'C', 'O', 'M'):
+    case PXI32Make('W', 'C', 'O', 'M'):
         return PXID3v2xFrameTagCommercialInformation;
-    case PXInt32Make('W', 'C', 'O', 'P'):
+    case PXI32Make('W', 'C', 'O', 'P'):
         return PXID3v2xFrameTagCopyrightLegalInformation;
-    case PXInt32Make('W', 'O', 'A', 'F'):
+    case PXI32Make('W', 'O', 'A', 'F'):
         return PXID3v2xFrameTagOfficialAudioFileWebpage;
-    case PXInt32Make('W', 'O', 'A', 'R'):
+    case PXI32Make('W', 'O', 'A', 'R'):
         return PXID3v2xFrameTagOfficialArtistPerformerWebpage;
-    case PXInt32Make('W', 'O', 'A', 'S'):
+    case PXI32Make('W', 'O', 'A', 'S'):
         return PXID3v2xFrameTagOfficialAudioSourceWebpage;
-    case PXInt32Make('W', 'O', 'R', 'S'):
+    case PXI32Make('W', 'O', 'R', 'S'):
         return PXID3v2xFrameTagInternetRadioStationHomepage;
-    case PXInt32Make('W', 'P', 'A', 'Y'):
+    case PXI32Make('W', 'P', 'A', 'Y'):
         return PXID3v2xFrameTagPayment;
-    case PXInt32Make('W', 'P', 'U', 'B'):
+    case PXI32Make('W', 'P', 'U', 'B'):
         return PXID3v2xFrameTagPublishersOfficialWebpage;
-    case PXInt32Make('W', 'X', 'X', 'X'):
+    case PXI32Make('W', 'X', 'X', 'X'):
         return PXID3v2xFrameTagUserDefinedURLLinkFrame;
 
     default:
@@ -168,7 +168,7 @@ PXID3v2xFrameTag PXAPI PXID3v2xFrameTagFromID(const PXInt32U id3v2xFrameTagID)
     }
 }
 
-PXActionResult PXAPI PXID3LoadFromFile(PXID3* const id3, PXFile* const PXFile)
+PXResult PXAPI  PXID3LoadFromFile(PXID3* const id3, PXFile* const PXFile)
 {
     PXID3Version version = PXID3VersionInvalid;
 
@@ -285,7 +285,7 @@ PXActionResult PXAPI PXID3LoadFromFile(PXID3* const id3, PXFile* const PXFile)
 
             // read Size
             {
-                PXInt32UCluster sizeCluster;
+                PXI32UCluster sizeCluster;
 
                 PXFileReadB(PXFile, sizeCluster.Data, 4u);
 
@@ -323,9 +323,9 @@ PXActionResult PXAPI PXID3LoadFromFile(PXID3* const id3, PXFile* const PXFile)
                 while(PXFile->DataCursor < sizeOfDataSegment) // until the offset is reached
                 {
                     // Read 4 byte indexes
-                    PXInt32UCluster indentifier;
-                    PXInt32U frameSize = 0;
-                    PXInt16U frameFlags = 0;
+                    PXI32UCluster indentifier;
+                    PXI32U frameSize = 0;
+                    PXI16U frameFlags = 0;
 
                     PXFileReadB(PXFile, indentifier.Data, 4u);
                     PXFileReadI32UE(PXFile, &frameSize, PXEndianBig);
@@ -604,7 +604,7 @@ PXActionResult PXAPI PXID3LoadFromFile(PXID3* const id3, PXFile* const PXFile)
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXID3SaveToFile(const PXID3* const id3, PXFile* const pxFile)
+PXResult PXAPI  PXID3SaveToFile(const PXID3* const id3, PXFile* const pxFile)
 {
     //-----------------------------------------------------
     // ID3 - Header write

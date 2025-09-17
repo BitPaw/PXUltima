@@ -130,7 +130,7 @@ PXBool PXAPI PXWindowsWMIClassOpen(PXHardwareInfo* const pxHardwareInfo, const c
 #endif
 
 
-PXActionResult PXAPI PXHardwareBatteryFetch(PXBattery* const pxBattery)
+PXResult PXAPI  PXHardwareBatteryFetch(PXBattery* const pxBattery)
 {
     PXClear(PXBattery, pxBattery);
 
@@ -160,7 +160,7 @@ PXActionResult PXAPI PXHardwareBatteryFetch(PXBattery* const pxBattery)
         {pxBattery->MANUFACTURER, "MANUFACTURER", PXTypeText(32) }, // COMPAL
         {&pxBattery->SERIAL_NUMBER, "SERIAL_NUMBER", PXTypeInt08U } // 41167
         };
-        const PXInt8U amount = sizeof(list) / sizeof(PXTypeBinding);
+        const PXI8U amount = sizeof(list) / sizeof(PXTypeBinding);
 
         PXFile pxFile;
 
@@ -174,7 +174,7 @@ PXActionResult PXAPI PXHardwareBatteryFetch(PXBattery* const pxBattery)
 
         PXFileOpen(&pxFile, &pxFileOpenInfo);
 
-        for(PXInt8U i = 0; i < amount; ++i)
+        for(PXI8U i = 0; i < amount; ++i)
         {
             PXTypeBinding* pxTypeBindingEntry = &list[i];
 
@@ -197,7 +197,7 @@ PXActionResult PXAPI PXHardwareBatteryFetch(PXBattery* const pxBattery)
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, const PXInt32U fetchFlags)
+PXResult PXAPI  PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, const PXI32U fetchFlags)
 {
 #if OSUnix
 #elif OSWindows
@@ -886,7 +886,7 @@ PXActionResult PXAPI PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, co
 #endif
 }
 
-PXActionResult PXAPI PXHardwareBattery(PXBattery* const pxBattery)
+PXResult PXAPI  PXHardwareBattery(PXBattery* const pxBattery)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;

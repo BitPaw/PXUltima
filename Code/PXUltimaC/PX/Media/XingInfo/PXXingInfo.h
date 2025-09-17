@@ -1,7 +1,7 @@
-#ifndef PXXingInfoINCLUDE
-#define PXXingInfoINCLUDE
+#ifndef PXXingInfoIncluded
+#define PXXingInfoIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 #define PXXingInfoTOCBufferSize 100u
 
@@ -16,13 +16,13 @@ PXXingInfoVersion;
 typedef struct PXXingInfo_
 {
     PXXingInfoVersion Version;
-    PXInt32U NumberOfFrames;
-    PXInt32U SizeInBytes;
+    PXI32U NumberOfFrames;
+    PXI32U SizeInBytes;
     char TOCBuffer[PXXingInfoTOCBufferSize];
-    PXInt32U VBRScale; // 0-100
+    PXI32U VBRScale; // 0-100
 }
 PXXingInfo;
 
-PXPublic PXActionResult PXAPI PXXingInfoParse(PXXingInfo* const xingInfo, PXFile* const PXFile);
+PXPublic PXResult PXAPI PXXingInfoParse(PXXingInfo* const xingInfo, PXFile* const PXFile);
 
 #endif

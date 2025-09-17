@@ -4,7 +4,7 @@
 
 static const char FMTSignature[4] = "fmt ";
 
-PXActionResult PXAPI PXFMTLoadFromFile(PXFMT* const fmt, PXFile* const pxFile, const PXEndian endian)
+PXResult PXAPI  PXFMTLoadFromFile(PXFMT* const fmt, PXFile* const pxFile, const PXEndian endian)
 {
     PXClear(PXFMT, fmt);
 
@@ -18,8 +18,8 @@ PXActionResult PXAPI PXFMTLoadFromFile(PXFMT* const fmt, PXFile* const pxFile, c
         }
     }
 
-    const PXInt32U x16 = endian == PXEndianLittle ? PXTypeInt16ULE : PXTypeInt16UBE;
-    const PXInt32U x32 = endian == PXEndianLittle ? PXTypeInt32ULE : PXTypeInt32UBE;
+    const PXI32U x16 = endian == PXEndianLittle ? PXTypeInt16ULE : PXTypeInt16UBE;
+    const PXI32U x32 = endian == PXEndianLittle ? PXTypeInt32ULE : PXTypeInt32UBE;
 
     const PXTypeEntry pxDataStreamElementList[] =
     {
@@ -37,10 +37,10 @@ PXActionResult PXAPI PXFMTLoadFromFile(PXFMT* const fmt, PXFile* const pxFile, c
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXFMTSaveToFile(const PXFMT* const fmt, PXFile* const pxFile, const PXEndian endian)
+PXResult PXAPI  PXFMTSaveToFile(const PXFMT* const fmt, PXFile* const pxFile, const PXEndian endian)
 {
-    const PXInt32U x16 = endian == PXEndianLittle ? PXTypeInt16ULE : PXTypeInt16UBE;
-    const PXInt32U x32 = endian == PXEndianLittle ? PXTypeInt32ULE : PXTypeInt32UBE;
+    const PXI32U x16 = endian == PXEndianLittle ? PXTypeInt16ULE : PXTypeInt16UBE;
+    const PXI32U x32 = endian == PXEndianLittle ? PXTypeInt32ULE : PXTypeInt32UBE;
 
     const PXTypeEntry pxDataStreamElementList[] =
     {

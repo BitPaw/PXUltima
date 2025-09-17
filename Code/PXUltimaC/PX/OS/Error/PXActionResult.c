@@ -60,10 +60,10 @@ const char* PXERRNOList[][2] =
 {"ERANGE", "Result too large" } // 34
 };
 
-const PXInt16U PXERRNOListMax = (sizeof(PXERRNOList) / sizeof(char*)) / 2;
+const PXI16U PXERRNOListMax = (sizeof(PXERRNOList) / sizeof(char*)) / 2;
 
 
-PXActionResult PXAPI PXErrorCurrent(const PXBool wasSuccessful)
+PXResult PXAPI  PXErrorCurrent(const PXBool wasSuccessful)
 {
     // if we did fail, we dont even aknowlege if an error is set.
     if(wasSuccessful)
@@ -182,7 +182,7 @@ PXActionResult PXAPI PXErrorCurrent(const PXBool wasSuccessful)
     return actionResult;
 }
 
-PXActionResult PXAPI PXErrorCodeFromID(const int errorCode)
+PXResult PXAPI  PXErrorCodeFromID(const int errorCode)
 {
     switch(errorCode)
     {
@@ -451,7 +451,7 @@ PXActionResult PXAPI PXErrorCodeFromID(const int errorCode)
 }
 
 #if OSWindows
-PXActionResult PXAPI PXErrorFromHRESULT(const HRESULT handleResult)
+PXResult PXAPI  PXErrorFromHRESULT(const HRESULT handleResult)
 {
     switch (handleResult)
     {
@@ -1654,7 +1654,7 @@ PXActionResult PXAPI PXErrorFromHRESULT(const HRESULT handleResult)
     case     WBEM_E_READ_ONLY:
         return PXActionInvalid; //    An attempt was made to modify a read-only property.    2147749923 (0x80041023)
     case     WBEM_E_PROVIDER_NOT_CAPABLE:
-        return PXActionInvalid; //    Provider cannot perform the requested operation. This can include a query that is too complex, retrieving an instance, creating or updating a class, deleting a class, or enumerating a class.    2147749924 (0x80041024)
+        return PXActionInvalid; //    Provider cannot perform the requested operation. This can Included a query that is too complex, retrieving an instance, creating or updating a class, deleting a class, or enumerating a class.    2147749924 (0x80041024)
     case     WBEM_E_CLASS_HAS_CHILDREN:
         return PXActionInvalid; //    Attempt was made to make a change that invalidates a subclass.    2147749925 (0x80041025)
     case     WBEM_E_CLASS_HAS_INSTANCES:
@@ -1936,7 +1936,7 @@ PXActionResult PXAPI PXErrorFromHRESULT(const HRESULT handleResult)
     case     WBEMMOF_E_ERROR_CREATING_TEMP_FILE:
         return PXActionInvalid; //    Error creating temporary file. The temporary file is an intermediate stage in the MOF compilation.    2147762223 (0x8004402F)
     case     WBEMMOF_E_ERROR_INVALID_INCLUDE_FILE:
-        return PXActionInvalid; //    A file included in the MOF by the preprocessor command #include is not valid.    2147762224 (0x80044030)
+        return PXActionInvalid; //    A file Includedd in the MOF by the preprocessor command #include is not valid.    2147762224 (0x80044030)
     case     WBEMMOF_E_INVALID_DELETECLASS_SYNTAX:
         return PXActionInvalid; //    The syntax for the preprocessor commands #pragma deleteinstance or #pragma deleteclass is not valid.    2147762225 (0x80044031)
 
@@ -2075,7 +2075,7 @@ PXActionResult PXAPI PXErrorFromHRESULT(const HRESULT handleResult)
     }
 }
 
-PXActionResult PXAPI PXWindowsMMAudioConvertFromID(const PXInt32U mmResultID)
+PXResult PXAPI  PXWindowsMMAudioConvertFromID(const PXI32U mmResultID)
 {
     switch (mmResultID)
     {

@@ -2,7 +2,7 @@
 
 #include <PX/OS/Memory/PXMemory.h>
 
-void PXAPI PXTreeBInitialize(PXTreeB* const pxTreeB, const PXSize keySize, const PXSize valueSize, const PXInt8U keyOrder)
+void PXAPI PXTreeBInitialize(PXTreeB* const pxTreeB, const PXSize keySize, const PXSize valueSize, const PXI8U keyOrder)
 {
     pxTreeB->ValueDataAdress = PXNull;
     pxTreeB->ValueAmount = 0;
@@ -13,7 +13,7 @@ void PXAPI PXTreeBInitialize(PXTreeB* const pxTreeB, const PXSize keySize, const
     pxTreeB->KeyOrder = keyOrder;
 }
 
-PXActionResult PXAPI PXTreeBResize(PXTreeB* const pxTreeB, const PXSize amount)
+PXResult PXAPI  PXTreeBResize(PXTreeB* const pxTreeB, const PXSize amount)
 {
     // Allocate Data
     {
@@ -30,7 +30,7 @@ PXActionResult PXAPI PXTreeBResize(PXTreeB* const pxTreeB, const PXSize amount)
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXTreeBInsert(PXTreeB* const pxTreeB, const void* const key, const void* const value)
+PXResult PXAPI  PXTreeBInsert(PXTreeB* const pxTreeB, const void* const key, const void* const value)
 {
     PXTreeBNode pxTreeBNode; 
 
@@ -92,12 +92,12 @@ PXActionResult PXAPI PXTreeBInsert(PXTreeB* const pxTreeB, const void* const key
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXTreeBFindIndexed(PXTreeB* const pxTreeB, const void* const key, void** const value)
+PXResult PXAPI  PXTreeBFindIndexed(PXTreeB* const pxTreeB, const void* const key, void** const value)
 {
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXTreeBFindUnindexed(PXTreeB* const pxTreeB, const void* const key, void** const value)
+PXResult PXAPI  PXTreeBFindUnindexed(PXTreeB* const pxTreeB, const void* const key, void** const value)
 {
     for (PXSize i = 0; i < pxTreeB->ValueAmount; ++i)
     {       
@@ -127,7 +127,7 @@ void PXAPI PXTreeBValueIndex(PXTreeB* const pxTreeB, const PXSize index, void** 
     *value = (PXAdress)*key + pxTreeB->ValueSize;
 }
 
-PXActionResult PXAPI PXTreeBNodeExtractFromAdress(PXTreeB* const pxTreeB, PXTreeBNode* const pxTreeBNode, void* adress)
+PXResult PXAPI  PXTreeBNodeExtractFromAdress(PXTreeB* const pxTreeB, PXTreeBNode* const pxTreeBNode, void* adress)
 {
     pxTreeBNode->Data = adress; 
     
@@ -148,7 +148,7 @@ PXActionResult PXAPI PXTreeBNodeExtractFromAdress(PXTreeB* const pxTreeB, PXTree
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXTreeBNodeInsert(PXTreeB* const pxTreeB, PXTreeBNode* const pxTreeBNode, const void* const key, const void* const value)
+PXResult PXAPI  PXTreeBNodeInsert(PXTreeB* const pxTreeB, PXTreeBNode* const pxTreeBNode, const void* const key, const void* const value)
 {
     // Has enough space 
     {
@@ -165,8 +165,8 @@ PXActionResult PXAPI PXTreeBNodeInsert(PXTreeB* const pxTreeB, PXTreeBNode* cons
         void* const keyEntry = (PXAdress)pxTreeBNode->KeyList + pxTreeBNode->KeyListAmount * pxTreeB->KeySize;
         void* const valueEntry = (PXAdress)pxTreeBNode->NodeList + pxTreeBNode->NodeListAmount * pxTreeB->ValueSize;
 
-        PXMemoryCopy(key, pxTreeB->KeySize, keyEntry, pxTreeB->KeySize);
-        PXMemoryCopy(value, pxTreeB->ValueSize, valueEntry, pxTreeB->ValueSize);
+        PXMemoryCopy(key, keyEntry, pxTreeB->KeySize);
+        PXMemoryCopy(value, valueEntry, pxTreeB->ValueSize);
     }  
 
     // Sort node

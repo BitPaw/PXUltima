@@ -34,14 +34,14 @@ const char PXDDSSignature[4] = { 'D', 'D', 'S', ' ' }; // 0x20534444
 
 typedef struct PXDDSPixelFormat_
 {
-    PXInt32U  size;
-    PXInt32U  flags;
-    PXInt32U  fourCC;
-    PXInt32U  RGBBitCount;
-    PXInt32U  RBitMask;
-    PXInt32U  GBitMask;
-    PXInt32U  BBitMask;
-    PXInt32U  ABitMask;
+    PXI32U  size;
+    PXI32U  flags;
+    PXI32U  fourCC;
+    PXI32U  RGBBitCount;
+    PXI32U  RBitMask;
+    PXI32U  GBitMask;
+    PXI32U  BBitMask;
+    PXI32U  ABitMask;
 }
 PXDDSPixelFormat;
 
@@ -83,24 +83,24 @@ PXDDSPixelFormat;
 
 typedef struct PXDirectDrawTexture_
 {
-    PXInt32U Size;
-    PXInt32U Flags;
-    PXInt32U Height;
-    PXInt32U Width;
-    PXInt32U pitchOrLinearSize;
-    PXInt32U Depth; // only if DDS_HEADER_FLAGS_VOLUME is set in flags
-    PXInt32U MipMapCount;
-    PXInt32U ddspf; // DDS_PIXELFORMAT
-    PXInt32U caps;
-    PXInt32U caps2;
-    PXInt32U caps3;
-    PXInt32U caps4;
+    PXI32U Size;
+    PXI32U Flags;
+    PXI32U Height;
+    PXI32U Width;
+    PXI32U pitchOrLinearSize;
+    PXI32U Depth; // only if DDS_HEADER_FLAGS_VOLUME is set in flags
+    PXI32U MipMapCount;
+    PXI32U ddspf; // DDS_PIXELFORMAT
+    PXI32U caps;
+    PXI32U caps2;
+    PXI32U caps3;
+    PXI32U caps4;
 
     // DDS_HEADER_DXT10 extension
-    PXInt32U GIFormatID; // DXGI_FORMAT
-    PXInt32U resourceDimension;
-    PXInt32U miscFlag; // See D3D11_RESOURCE_MISC_FLAG
-    PXInt32U arraySize;
+    PXI32U GIFormatID; // DXGI_FORMAT
+    PXI32U resourceDimension;
+    PXI32U miscFlag; // See D3D11_RESOURCE_MISC_FLAG
+    PXI32U arraySize;
 
 
     // Extra
@@ -109,7 +109,7 @@ typedef struct PXDirectDrawTexture_
     DXGI_FORMAT Format;
 #endif
 
-    PXInt8U BitPerPixel;
+    PXI8U BitPerPixel;
 
     PXBool IsDX10;
 }
@@ -119,7 +119,7 @@ PXDirectDrawTexture;
 #if OSUnix
 #elif OSWindows
 
-static PXInt8U PXDXGIBitsPerPixel(DXGI_FORMAT fmt)
+static PXI8U PXDXGIBitsPerPixel(DXGI_FORMAT fmt)
 {
     switch(fmt)
     {
@@ -362,31 +362,31 @@ DXGI_FORMAT PXDXGIFormatGet(PXDirectDrawTexture* const pxDirectDrawTexture)
     {
         switch(pxDirectDrawTexture->ddspf)
         {
-        case PXInt32Make('D', 'X', 'T', '1'):
+        case PXI32Make('D', 'X', 'T', '1'):
             return DXGI_FORMAT_BC1_UNORM;
-        case PXInt32Make('D', 'X', 'T', '3'):
+        case PXI32Make('D', 'X', 'T', '3'):
             return DXGI_FORMAT_BC2_UNORM;
-        case PXInt32Make('D', 'X', 'T', '5'):
+        case PXI32Make('D', 'X', 'T', '5'):
             return DXGI_FORMAT_BC3_UNORM;
         // While pre-mulitplied alpha isn't directly supported by the DXGI formats,
         // they are basically the same as these BC formats so they can be mapped
-        case PXInt32Make('D', 'X', 'T', '2'):
+        case PXI32Make('D', 'X', 'T', '2'):
             return DXGI_FORMAT_BC2_UNORM;
-        case PXInt32Make('D', 'X', 'T', '4'):
+        case PXI32Make('D', 'X', 'T', '4'):
             return DXGI_FORMAT_BC3_UNORM;
-        case PXInt32Make('B', 'C', '4', 'U'):
-        case PXInt32Make('A', 'T', 'I', '1'):
+        case PXI32Make('B', 'C', '4', 'U'):
+        case PXI32Make('A', 'T', 'I', '1'):
             return DXGI_FORMAT_BC4_UNORM;
-        case PXInt32Make('B', 'C', '4', 'S'):
+        case PXI32Make('B', 'C', '4', 'S'):
             return DXGI_FORMAT_BC4_SNORM;
-        case PXInt32Make('A', 'T', 'I', '2'):
-        case PXInt32Make('B', 'C', '5', 'U'):
+        case PXI32Make('A', 'T', 'I', '2'):
+        case PXI32Make('B', 'C', '5', 'U'):
             return DXGI_FORMAT_BC5_UNORM;
-        case PXInt32Make('B', 'C', '5', 'S'):
+        case PXI32Make('B', 'C', '5', 'S'):
             return DXGI_FORMAT_BC5_SNORM;
 
         // BC6H and BC7 are written using the "DX10" extended header
-        case PXInt32Make('R', 'G', 'B', 'G'):
+        case PXI32Make('R', 'G', 'B', 'G'):
             return DXGI_FORMAT_R8G8_B8G8_UNORM;
 
         default:
@@ -444,7 +444,7 @@ DXGI_FORMAT PXDXGIFormatGet(PXDirectDrawTexture* const pxDirectDrawTexture)
 
 */
 
-PXActionResult PXAPI PXDDSLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI  PXDDSLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     PXTexture* const pxTexture = (PXTexture*)pxResourceLoadInfo->ResourceTarget;
 
@@ -478,13 +478,13 @@ PXActionResult PXAPI PXDDSLoadFromFile(PXResourceTransphereInfo* const pxResourc
             {&pxDirectDrawTexture.pitchOrLinearSize,PXTypeInt32ULE},
             {&pxDirectDrawTexture.Depth,PXTypeInt32ULE},
             {&pxDirectDrawTexture.MipMapCount,PXTypeInt32ULE},
-            {PXNull, PXTypePadding(sizeof(PXInt32U) * 11u)},
+            {PXNull, PXTypePadding(sizeof(PXI32U) * 11u)},
             {&pxDirectDrawTexture.ddspf,PXTypeInt32ULE},
             {&pxDirectDrawTexture.caps,PXTypeInt32ULE},
             {&pxDirectDrawTexture.caps2,PXTypeInt32ULE},
             {&pxDirectDrawTexture.caps3,PXTypeInt32ULE},
             {&pxDirectDrawTexture.caps4,PXTypeInt32ULE},
-            {PXNull, PXTypePadding(sizeof(PXInt32U) * 2u)}
+            {PXNull, PXTypePadding(sizeof(PXI32U) * 2u)}
         };
 
         PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -494,7 +494,7 @@ PXActionResult PXAPI PXDDSLoadFromFile(PXResourceTransphereInfo* const pxResourc
         pxDirectDrawTexture.Format = PXDXGIFormatGet(&pxDirectDrawTexture);
 #endif
 
-        pxDirectDrawTexture.IsDX10 = PXInt32Make('D', 'X', '1', '0') == pxDirectDrawTexture.ddspf;
+        pxDirectDrawTexture.IsDX10 = PXI32Make('D', 'X', '1', '0') == pxDirectDrawTexture.ddspf;
 
         if(pxDirectDrawTexture.MipMapCount == 0)
         {
@@ -511,7 +511,7 @@ PXActionResult PXAPI PXDDSLoadFromFile(PXResourceTransphereInfo* const pxResourc
             {&pxDirectDrawTexture.resourceDimension,PXTypeInt32ULE},
             {&pxDirectDrawTexture.miscFlag,PXTypeInt32ULE},
             {&pxDirectDrawTexture.arraySize,PXTypeInt32ULE},
-            {PXNull, PXTypePadding(sizeof(PXInt32U))}
+            {PXNull, PXTypePadding(sizeof(PXI32U))}
         };
 
         PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
@@ -534,7 +534,7 @@ PXActionResult PXAPI PXDDSLoadFromFile(PXResourceTransphereInfo* const pxResourc
         {
         case 2: // D3D10_RESOURCE_DIMENSION_TEXTURE1D:
         {
-            pxTexture->Type = PXGraphicTextureType1D;
+            pxTexture->Type = PXTextureType1D;
 
             // D3DX writes 1D textures with a fixed Height of 1.
             if((pxDirectDrawTexture.Flags & DDS_HEIGHT) && pxDirectDrawTexture.Height != 1)
@@ -548,13 +548,13 @@ PXActionResult PXAPI PXDDSLoadFromFile(PXResourceTransphereInfo* const pxResourc
         {
             if(pxDirectDrawTexture.miscFlag & 4) // D3D11_RESOURCE_MISC_TEXTURECUBE
             {
-                pxTexture->Type = PXGraphicTextureTypeCubeContainer;
+                pxTexture->Type = PXTextureTypeCubeContainer;
                 // arraySize *= 6;
                 // isCubeMap = true;
             }
             else
             {
-                pxTexture->Type = PXGraphicTextureType2D;
+                pxTexture->Type = PXTextureType2D;
             }
 
             break;
@@ -580,7 +580,7 @@ PXActionResult PXAPI PXDDSLoadFromFile(PXResourceTransphereInfo* const pxResourc
     {
         if(pxDirectDrawTexture.Flags & DDS_HEADER_FLAGS_VOLUME)
         {
-            pxTexture->Type = PXGraphicTextureType3D;
+            pxTexture->Type = PXTextureType3D;
         }
         else
         {
@@ -591,14 +591,14 @@ PXActionResult PXAPI PXDDSLoadFromFile(PXResourceTransphereInfo* const pxResourc
                 {
                     return PXActionInvalid;
                 }
-                pxTexture->Type = PXGraphicTextureTypeCubeContainer;
+                pxTexture->Type = PXTextureTypeCubeContainer;
 
                 //arraySize = 6;
                 //isCubeMap = true;
             }
             else
             {
-                pxTexture->Type = PXGraphicTextureType2D;
+                pxTexture->Type = PXTextureType2D;
             }
 
             // depth = 1;
@@ -705,7 +705,7 @@ PXActionResult PXAPI PXDDSLoadFromFile(PXResourceTransphereInfo* const pxResourc
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDDSSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI  PXDDSSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

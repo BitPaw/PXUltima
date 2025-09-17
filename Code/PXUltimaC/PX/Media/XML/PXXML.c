@@ -204,7 +204,7 @@ void PXAPI PXXMLBlockParse(PXCodeDocument* const pxDocument, PXCompiler* const p
     }
 }
 
-PXActionResult PXAPI PXXMLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI  PXXMLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     PXFile tokenSteam;
     PXClear(PXFile, &tokenSteam);
@@ -229,7 +229,7 @@ PXActionResult PXAPI PXXMLLoadFromFile(PXResourceTransphereInfo* const pxResourc
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXXMLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI  PXXMLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

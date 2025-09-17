@@ -1,7 +1,7 @@
-#ifndef PXIPINCLUDE
-#define PXIPINCLUDE
+#ifndef PXIPIncluded
+#define PXIPIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef enum PXIPVersion_
 {

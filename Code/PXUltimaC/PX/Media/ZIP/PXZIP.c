@@ -6,7 +6,7 @@
 const char PXZIPSignature[4] = { 'P', 'K', 0x03, 0x04 };
 const char PXZIPChunk[4] = { 'P', 'K', 0x05, 0x06 };
 
-PXActionResult PXAPI PXZIPLoadFromFile(PXResourceTransphereInfo* const pxResourceTransphereInfo)
+PXResult PXAPI  PXZIPLoadFromFile(PXResourceTransphereInfo* const pxResourceTransphereInfo)
 {
     PXZIP pxZIPAA;
     PXClear(PXZIP, &pxZIPAA);
@@ -63,7 +63,7 @@ PXActionResult PXAPI PXZIPLoadFromFile(PXResourceTransphereInfo* const pxResourc
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXZIPSaveToFile(PXResourceTransphereInfo* const pxResourceTransphereInfo)
+PXResult PXAPI  PXZIPSaveToFile(PXResourceTransphereInfo* const pxResourceTransphereInfo)
 {
     return PXActionSuccessful;
 }

@@ -1,6 +1,6 @@
-#ifndef PXAIINCLUDE
-#define PXAIINCLUDE
+#ifndef PXAIIncluded
+#define PXAIIncluded
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 
 #endif

@@ -1,5 +1,5 @@
-#ifndef PXJavaIncluded
-#define PXJavaIncluded
+#ifndef PXJavaIncludedd
+#define PXJavaIncludedd
 
 typedef struct PXJava_
 {

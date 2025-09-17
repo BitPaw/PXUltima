@@ -1968,8 +1968,9 @@ PXResult PXAPI  PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* const
     pxEngine->GUISystem.NativDraw.ResourceManager = pxEngine->ResourceManager;
     pxEngine->GUISystem.NativDraw.GUISystem = &pxEngine->GUISystem;
 
-    PXGUIInitialize();
 
+
+    PXGUIInitialize();
 
 
     // Load mods, do not init them, just to preload
@@ -2214,7 +2215,7 @@ PXResult PXAPI  PXGraphicLoadImage(PXGraphic* const pxGraphic, PXTexture* const 
             PXTextureFilePath->A
         );
 
-        PXDictionaryAdd(&pxGraphic->ResourceImageLookUp, &checkSum, PXTexture);
+        PXDictionaryEntryAdd(&pxGraphic->ResourceImageLookUp, &checkSum, PXTexture);
     }
 
     return PXActionSuccessful;
@@ -2249,7 +2250,7 @@ PXResult PXAPI  PXEngineResourceCreate(PXEngine* const pxEngine, PXResourceCreat
 
     switch(pxResourceCreateInfo->Type)
     {
-        case PXResourceTypeImage:
+        case PXResourceTypeTexture:
         {
 
             break;
@@ -3473,7 +3474,7 @@ PXResult PXAPI  PXEngineResourceRenderDefault(PXEngine* const pxEngine)
 
         PXShaderProgram* qqq = 0;
 
-        for(PXSize i = 0; i < modelLookup->EntryAmountCurrent; ++i)
+        for(PXSize i = 0; i < modelLookup->List.EntryAmountUsed; ++i)
         {
             PXDictionaryEntry pxDictionaryEntry;
             PXModel* pxModel = PXNull;
@@ -3527,7 +3528,7 @@ PXResult PXAPI  PXEngineResourceRenderDefault(PXEngine* const pxEngine)
     {
         PXDictionary* const spirteList = &pxEngine->ResourceManager->SpritelLookUp;
 
-        for(PXSize i = 0; i < spirteList->EntryAmountCurrent; ++i)
+        for(PXSize i = 0; i < spirteList->List.EntryAmountUsed; ++i)
         {
             PXDictionaryEntry pxDictionaryEntry;
             PXSprite* pxSprite = PXNull;
@@ -3592,7 +3593,7 @@ PXResult PXAPI  PXEngineResourceRenderDefault(PXEngine* const pxEngine)
     {
         PXDictionary* const textList = &pxEngine->ResourceManager->TextLookUp;
 
-        for(PXSize i = 0; i < textList->EntryAmountCurrent; ++i)
+        for(PXSize i = 0; i < textList->List.EntryAmountUsed; ++i)
         {
             PXDictionaryEntry pxDictionaryEntry;
             //PXEngineText* pxEngineText = PXNull;
@@ -3625,7 +3626,7 @@ PXResult PXAPI  PXEngineResourceRenderDefault(PXEngine* const pxEngine)
     {
         PXDictionary* const hitBoxList = &pxEngine->ResourceManager->HitBoxLookUp;
 
-        for(PXSize i = 0; i < hitBoxList->EntryAmountCurrent; ++i)
+        for(PXSize i = 0; i < hitBoxList->List.EntryAmountUsed; ++i)
         {
             PXDictionaryEntry pxDictionaryEntry;
             PXHitBox* pxHitBox = PXNull;
@@ -3651,7 +3652,7 @@ void PXAPI PXEngineCollsisionSolve(PXEngine* const pxEngine)
 {
     PXDictionary* const hitBoxLookUp = &pxEngine->ResourceManager->HitBoxLookUp;
 
-    for(PXSize indexA = 0; indexA < hitBoxLookUp->EntryAmountCurrent; ++indexA)
+    for(PXSize indexA = 0; indexA < hitBoxLookUp->List.EntryAmountUsed; ++indexA)
     {
         PXDictionaryEntry pxDictionaryEntryA;
         PXHitBox* pxHitBoxA = PXNull;
@@ -3665,7 +3666,7 @@ void PXAPI PXEngineCollsisionSolve(PXEngine* const pxEngine)
             continue;
         }
 
-        for(PXSize indexB = 0; indexB < hitBoxLookUp->EntryAmountCurrent; ++indexB)
+        for(PXSize indexB = 0; indexB < hitBoxLookUp->List.EntryAmountUsed; ++indexB)
         {
             PXDictionaryEntry pxDictionaryEntryB;
             PXHitBox* hitBoxB = PXNull;
@@ -3736,7 +3737,7 @@ void PXAPI PXEngineUpdateCollision(PXEngine* const pxEngine)
 
     PXDictionary* const hitboxLookup = &pxEngine->ResourceManager->HitBoxLookUp;
 
-    PXSize amount = hitboxLookup->EntryAmountCurrent;
+    PXSize amount = hitboxLookup->List.EntryAmountUsed;
 
     
     PXDictionaryEntry pxDictionaryEntry;
@@ -3765,7 +3766,7 @@ void PXAPI PXEngineUpdateCollision(PXEngine* const pxEngine)
 #endif
 
 
-    for(size_t i = 0; i < modelList->EntryAmountCurrent; i++)
+    for(size_t i = 0; i < modelList->List.EntryAmountUsed; i++)
     {
         PXModel* pxModel = PXNull;
 
@@ -3956,7 +3957,7 @@ void PXAPI PXEngineUpdateTimer(PXEngine* const pxEngine)
 {
     PXDictionary* const timerList = &pxEngine->ResourceManager->TimerLookUp;
 
-    for(PXSize timerIndex = 0; timerIndex < timerList->EntryAmountCurrent; ++timerIndex)
+    for(PXSize timerIndex = 0; timerIndex < timerList->List.EntryAmountUsed; ++timerIndex)
     {
         PXDictionaryEntry pxDictionaryEntry;
         PXTimer* pxEngineTimer = PXNull;

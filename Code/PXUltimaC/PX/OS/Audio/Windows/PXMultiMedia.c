@@ -26,8 +26,8 @@ typedef MMRESULT(WINAPI* PXwaveOutGetDevCapsW)(UINT_PTR uDeviceID, LPWAVEOUTCAPS
 typedef UINT(WINAPI* PXwaveOutGetNumDevs)(void);
 typedef MMRESULT(WINAPI* PXwaveOutGetVolume)(HWAVEOUT hwo, LPDWORD pdwVolume);
 typedef MMRESULT(WINAPI* PXwaveOutSetVolume)(HWAVEOUT hwo, DWORD dwVolume);
-typedef MMRESULT(WINAPI* PXwaveOutGetErrorTextA)(MMRESULT mmrError, LPSTR pszText, UINT cchText);
-typedef MMRESULT(WINAPI* PXwaveOutGetErrorTextW)(MMRESULT mmrError, LPWSTR pszText, UINT cchText);
+typedef MMRESULT(WINAPI* PXwaveOutGetErrorA)(MMRESULT mmrError, LPSTR pszText, UINT cchText);
+typedef MMRESULT(WINAPI* PXwaveOutGetErrorW)(MMRESULT mmrError, LPWSTR pszText, UINT cchText);
 typedef MMRESULT(WINAPI* PXwaveOutOpen)(LPHWAVEOUT phwo, UINT uDeviceID, LPCWAVEFORMATEX pwfx, DWORD_PTR dwCallback, DWORD_PTR dwInstance, DWORD fdwOpen);
 typedef MMRESULT(WINAPI* PXwaveOutClose)(HWAVEOUT hwo);
 typedef MMRESULT(WINAPI* PXwaveOutPrepareHeader)(HWAVEOUT hwo, LPWAVEHDR pwh, UINT cbwh);
@@ -47,8 +47,8 @@ typedef MMRESULT(WINAPI* PXwaveOutMessage)(HWAVEOUT hwo, UINT uMsg, DWORD_PTR dw
 typedef UINT(WINAPI* PXwaveInGetNumDevs)(void);
 typedef MMRESULT(WINAPI* PXwaveInGetDevCapsA)(UINT_PTR uDeviceID, LPWAVEINCAPSA pwic, UINT cbwic);
 typedef MMRESULT(WINAPI* PXwaveInGetDevCapsW)(UINT_PTR uDeviceID, LPWAVEINCAPSW pwic, UINT cbwic);
-typedef MMRESULT(WINAPI* PXwaveInGetErrorTextA)(MMRESULT mmrError, LPSTR pszText, UINT cchText);
-typedef MMRESULT(WINAPI* PXwaveInGetErrorTextW)(MMRESULT mmrError, LPWSTR pszText, UINT cchText);
+typedef MMRESULT(WINAPI* PXwaveInGetErrorA)(MMRESULT mmrError, LPSTR pszText, UINT cchText);
+typedef MMRESULT(WINAPI* PXwaveInGetErrorW)(MMRESULT mmrError, LPWSTR pszText, UINT cchText);
 typedef MMRESULT(WINAPI* PXwaveInOpen)(LPHWAVEIN phwi, UINT uDeviceID, LPCWAVEFORMATEX pwfx, DWORD_PTR dwCallback, DWORD_PTR dwInstance, DWORD fdwOpen);
 typedef MMRESULT(WINAPI* PXwaveInClose)(HWAVEIN hwi);
 typedef MMRESULT(WINAPI* PXwaveInPrepareHeader)(HWAVEIN hwi, LPWAVEHDR pwh, UINT cbwh);
@@ -89,7 +89,7 @@ typedef MMRESULT(WINAPI* PXmixerGetControlDetailsW)(HMIXEROBJ hmxobj, LPMIXERCON
 const char PXWindowsMMText[] = "WIN-MM";
 PXAudioMultiMedia _pxAudioMultiMedia;
 
-PXActionResult PXAPI PXMultiMediaInitialize(PXAudioMultiMedia** const pxAudioMultiMedia, PXAudioInitializeInfo* const pxAudioInitializeInfo)
+PXResult PXAPI  PXMultiMediaInitialize(PXAudioMultiMedia** const pxAudioMultiMedia, PXAudioInitializeInfo* const pxAudioInitializeInfo)
 {
     PXClear(PXAudioMultiMedia, &_pxAudioMultiMedia);
 
@@ -132,8 +132,8 @@ PXActionResult PXAPI PXMultiMediaInitialize(PXAudioMultiMedia** const pxAudioMul
             { &_pxAudioMultiMedia.WaveOutGetNumDevs, "waveOutGetNumDevs"},
             { &_pxAudioMultiMedia.WaveOutGetVolume,"waveOutGetVolume"},
             { &_pxAudioMultiMedia.WaveOutSetVolume,"waveOutSetVolume"},
-            { &_pxAudioMultiMedia.WaveOutGetErrorTextA,"waveOutGetErrorTextA"},
-            { &_pxAudioMultiMedia.WaveOutGetErrorTextW,"waveOutGetErrorTextW"},
+            { &_pxAudioMultiMedia.WaveOutGetErrorA,"waveOutGetErrorA"},
+            { &_pxAudioMultiMedia.WaveOutGetErrorW,"waveOutGetErrorW"},
             { &_pxAudioMultiMedia.WaveOutOpen,"waveOutOpen"},
             { &_pxAudioMultiMedia.WaveOutClose,"waveOutClose"},
             { &_pxAudioMultiMedia.WaveOutPrepareHeader,"waveOutPrepareHeader"},
@@ -153,8 +153,8 @@ PXActionResult PXAPI PXMultiMediaInitialize(PXAudioMultiMedia** const pxAudioMul
             { &_pxAudioMultiMedia.WaveInGetNumDevs, "waveInGetNumDevs" },
             { &_pxAudioMultiMedia.WaveInGetDevCapsA, "waveInGetDevCapsA" },
             { &_pxAudioMultiMedia.WaveInGetDevCapsW, "waveInGetDevCapsW" },
-            { &_pxAudioMultiMedia.WaveInGetErrorTextA, "waveInGetErrorTextA" },
-            { &_pxAudioMultiMedia.WaveInGetErrorTextW,    "waveInGetErrorTextW" },
+            { &_pxAudioMultiMedia.WaveInGetErrorA, "waveInGetErrorA" },
+            { &_pxAudioMultiMedia.WaveInGetErrorW,    "waveInGetErrorW" },
             { &_pxAudioMultiMedia.WaveInOpen,    "waveInOpen" },
             { &_pxAudioMultiMedia.WaveInClose,    "waveInClose" },
             { &_pxAudioMultiMedia.WaveInPrepareHeader,    "waveInPrepareHeader" },
@@ -181,8 +181,8 @@ PXActionResult PXAPI PXMultiMediaInitialize(PXAudioMultiMedia** const pxAudioMul
             { &_pxAudioMultiMedia.MidiOutGetDevCapsW,"midiOutGetDevCapsW" },
             { &_pxAudioMultiMedia.MidiOutGetVolume,"midiOutGetVolume" },
             { &_pxAudioMultiMedia.MidiOutSetVolume,"midiOutSetVolume" },
-            { &_pxAudioMultiMedia.MidiOutGetErrorTextA,"midiOutGetErrorTextA" },
-            { &_pxAudioMultiMedia.MidiOutGetErrorTextW,"midiOutGetErrorTextW" },
+            { &_pxAudioMultiMedia.MidiOutGetErrorA,"midiOutGetErrorA" },
+            { &_pxAudioMultiMedia.MidiOutGetErrorW,"midiOutGetErrorW" },
             { &_pxAudioMultiMedia.MidiOutOpen,"midiOutOpen" },
             { &_pxAudioMultiMedia.MidiOutClose,"midiOutClose" },
             { &_pxAudioMultiMedia.MidiOutPrepareHeader,"midiOutPrepareHeader" },
@@ -197,8 +197,8 @@ PXActionResult PXAPI PXMultiMediaInitialize(PXAudioMultiMedia** const pxAudioMul
             { &_pxAudioMultiMedia.MidiInGetNumDevs,"midiInGetNumDevs" },
             { &_pxAudioMultiMedia.MidiInGetDevCapsA,"midiInGetDevCapsA" },
             { &_pxAudioMultiMedia.MidiInGetDevCapsW,"midiInGetDevCapsW" },
-            { &_pxAudioMultiMedia.MidiInGetErrorTextA,"midiInGetErrorTextA" },
-            { &_pxAudioMultiMedia.MidiInGetErrorTextW,"midiInGetErrorTextW" },
+            { &_pxAudioMultiMedia.MidiInGetErrorA,"midiInGetErrorA" },
+            { &_pxAudioMultiMedia.MidiInGetErrorW,"midiInGetErrorW" },
             { &_pxAudioMultiMedia.MidiInOpen,"midiInOpen" },
             { &_pxAudioMultiMedia.MidiInClose,"midiInClose" },
             { &_pxAudioMultiMedia.MidiInPrepareHeader,"midiInPrepareHeader" },
@@ -260,7 +260,7 @@ PXActionResult PXAPI PXMultiMediaInitialize(PXAudioMultiMedia** const pxAudioMul
 
 
 
-PXActionResult PXAPI PXMultiMediaDeviceProperty(PXAudioDevice* const pxAudioDevice, PXSoundDeviceProperty* const pxSoundDeviceProperty)
+PXResult PXAPI  PXMultiMediaDeviceProperty(PXAudioDevice* const pxAudioDevice, PXSoundDeviceProperty* const pxSoundDeviceProperty)
 {
     if(!(pxAudioDevice && pxSoundDeviceProperty))
     {
@@ -553,7 +553,7 @@ PXActionResult PXAPI PXMultiMediaDeviceProperty(PXAudioDevice* const pxAudioDevi
 
 
 
-PXActionResult PXAPI PXMultiMediaDeviceFetch(PXAudioMultiMedia* const pxAudioMultiMedia, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID, PXAudioDevice* const pxAudioDevice)
+PXResult PXAPI  PXMultiMediaDeviceFetch(PXAudioMultiMedia* const pxAudioMultiMedia, const PXAudioDeviceType pxAudioDeviceType, const PXI32U deviceID, PXAudioDevice* const pxAudioDevice)
 {
 #if OSUnix
     return PXActionRefusedNotSupportedByOperatingSystem;
@@ -629,7 +629,7 @@ PXActionResult PXAPI PXMultiMediaDeviceFetch(PXAudioMultiMedia* const pxAudioMul
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXMultiMediaDeviceFetchAll(PXAudioMultiMedia* const pxAudioMultiMedia, const PXAudioDeviceType pxAudioDeviceType, PXAudioDevice* const pxAudioDevice, const PXSize amount)
+PXResult PXAPI  PXMultiMediaDeviceFetchAll(PXAudioMultiMedia* const pxAudioMultiMedia, const PXAudioDeviceType pxAudioDeviceType, PXAudioDevice* const pxAudioDevice, const PXSize amount)
 {
     for(PXSize i = 0; i < amount; ++i)
     {
@@ -641,7 +641,7 @@ PXActionResult PXAPI PXMultiMediaDeviceFetchAll(PXAudioMultiMedia* const pxAudio
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXMultiMediaDeviceOpen(PXAudioMultiMedia* const pxAudioMultiMedia, PXAudioDevice* const pxAudioDevice, const PXAudioDeviceType pxAudioDeviceType, const PXInt32U deviceID)
+PXResult PXAPI  PXMultiMediaDeviceOpen(PXAudioMultiMedia* const pxAudioMultiMedia, PXAudioDevice* const pxAudioDevice, const PXAudioDeviceType pxAudioDeviceType, const PXI32U deviceID)
 {
 #if OSUnix
     return PXActionRefusedNotSupportedByOperatingSystem;
@@ -733,7 +733,7 @@ PXActionResult PXAPI PXMultiMediaDeviceOpen(PXAudioMultiMedia* const pxAudioMult
 #endif
 }
 
-PXActionResult PXAPI PXMultiMediaDeviceClose(PXAudioMultiMedia* const pxAudioMultiMedia, PXAudioDevice* const pxAudioDevice)
+PXResult PXAPI  PXMultiMediaDeviceClose(PXAudioMultiMedia* const pxAudioMultiMedia, PXAudioDevice* const pxAudioDevice)
 {
 #if OSUnix
     return PXActionRefusedNotSupportedByOperatingSystem;
@@ -772,7 +772,7 @@ PXActionResult PXAPI PXMultiMediaDeviceClose(PXAudioMultiMedia* const pxAudioMul
 #endif
 }
 
-PXActionResult PXAPI PXMultiMediaDeviceLoad(PXAudioMultiMedia* const pxAudioMultiMedia, PXAudioDevice* const pxAudioDevice, PXSound* const pxSound)
+PXResult PXAPI  PXMultiMediaDeviceLoad(PXAudioMultiMedia* const pxAudioMultiMedia, PXAudioDevice* const pxAudioDevice, PXSound* const pxSound)
 {
 #if OSUnix
     return PXActionRefusedNotSupportedByOperatingSystem;

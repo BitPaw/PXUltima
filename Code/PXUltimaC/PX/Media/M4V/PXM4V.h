@@ -1,9 +1,9 @@
-#ifndef PXM4VInclude
-#define PXM4VInclude
+#ifndef PXM4VIncluded
+#define PXM4VIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
-PXPublic PXActionResult PXAPI PXM4VLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXM4VSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXM4VLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXM4VSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

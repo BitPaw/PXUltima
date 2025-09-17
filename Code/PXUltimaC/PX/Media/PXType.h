@@ -1,5 +1,5 @@
-#ifndef PXTypeINCLUDE
-#define PXTypeINCLUDE
+#ifndef PXTypeIncluded
+#define PXTypeIncluded
 
 //#include <stddef.h>
 
@@ -12,6 +12,11 @@
 //-----------------------------------------------------------------------------
 
 
+#ifdef NDEBUG
+#define PXDEBUG 0
+#else
+#define PXDEBUG 1
+#endif
 
 
 
@@ -125,11 +130,11 @@
 #ifdef __cplusplus
 #define PXFunction extern "C"
 #else
-#define PXFunction
+#define PXFunction extern
 #endif
 //---------------------------------------------------------
 
-#define PXPrivate PXFunction static
+#define PXPrivate static
 #define PXInternal
 
 #if OSUnix
@@ -137,7 +142,7 @@
 #define PXMSHandle void*
 #elif OSWindows
 #define PXDLLExport __declspec(dllexport)
-#define PXPublic PXFunction extern PXDLLExport // The visual studio compiler also wants this definition, for microsoft stuff.
+#define PXPublic PXFunction PXDLLExport // The visual studio compiler also wants this definition, for microsoft stuff.
 #define PXMSHandle HANDLE
 #endif
 //-----------------------------------------------------------------------------
@@ -159,11 +164,21 @@
 #define PXRestrict __restrict
 #endif
 
+
+#ifdef __cplusplus
+#define PXYes true
+#define PXNo false
+#define PXTrue true
+#define PXFalse false
+#define PXNull nullptr
+#else
 #define PXYes 1u
 #define PXNo 0u
 #define PXTrue 1u
 #define PXFalse 0u
 #define PXNull 0u
+#endif
+
 
 
 
@@ -357,41 +372,41 @@ typedef unsigned char PXBool;
 typedef unsigned char* PXAdress;
 
 // Integer 8-Bit
-typedef char PXInt8S;
-typedef unsigned char PXInt8U;
+typedef char PXI8S;
+typedef unsigned char PXI8U;
 
 // Integer 16-Bit, WORD
-typedef short PXInt16S;
-typedef unsigned short PXInt16U;
+typedef short PXI16S;
+typedef unsigned short PXI16U;
 
 // Integer 32-Bit, DWORD
-typedef int PXInt32S;
-typedef unsigned int PXInt32U;
+typedef int PXI32S;
+typedef unsigned int PXI32U;
 
 // Integer 64-Bit, QWORD
 #if OSUnix
-typedef long long PXInt64S;
-typedef unsigned long long PXInt64U;
+typedef long long PXI64S;
+typedef unsigned long long PXI64U;
 #elif OSWindows
-typedef __int64 PXInt64S;
-typedef unsigned __int64 PXInt64U;
+typedef __int64 PXI64S;
+typedef unsigned __int64 PXI64U;
 #endif // OSUnix
 
 #if OS32B
-typedef PXInt32U PXSize;
-typedef PXInt32S PXOffset;
-typedef PXInt64U PXAdress64;
+typedef PXI32U PXSize;
+typedef PXI32S PXOffset;
+typedef PXI64U PXAdress64;
 #elif OS64B
-typedef PXInt64U PXSize;
-typedef PXInt64S PXOffset;
+typedef PXI64U PXSize;
+typedef PXI64S PXOffset;
 typedef void* PXAdress64;
 #else
 #error Invalid Bit Version
 #endif
 
 // Integer 128-Bit
-//typedef char[16] PXInt128S;
-//typedef char[16] PXInt128U;
+//typedef char[16] PXI128S;
+//typedef char[16] PXI128U;
 
 //------------------------------------------------------------------------------
 
@@ -450,7 +465,7 @@ typedef int PXF256;
 
 
 // Internal datatype
-typedef PXInt32U PXType;
+typedef PXI32U PXType;
 
 
 
@@ -458,13 +473,15 @@ typedef PXInt32U PXType;
 //------------------------------------------------------------------------------
 // Text
 //------------------------------------------------------------------------------
+#if 0
 typedef char PXCharASCII;
 typedef wchar_t PXCharUNICODE;
-typedef PXInt32U PXCharUTF8;
+typedef PXI32U PXCharUTF8;
 
-typedef char* const PXTextASCII;
+typedef char* const PXASCII;
 typedef char* const PXTextUTF8;
 typedef wchar_t* const PXTextUNICODE;
+#endif
 //------------------------------------------------------------------------------
 
 
@@ -474,7 +491,7 @@ typedef wchar_t* const PXTextUNICODE;
 typedef struct PXTypeEntry_
 {
     void* Adress;
-    PXInt32U Type;
+    PXI32U Type;
 }
 PXTypeEntry;
 
@@ -484,7 +501,7 @@ typedef struct PXTypeBinding_
 {
     void* Adress;
     const char* Name;
-    PXInt32U Type;
+    PXI32U Type;
 }
 PXTypeBinding;
 
@@ -515,195 +532,195 @@ PXTypeBinding;
 //---------------------------------------------------------
 // 16-Bit int
 //---------------------------------------------------------
-#define PXInt16SplittEndianLittle(number, a, b) \
+#define PXI16SplittEndianLittle(number, a, b) \
     a = (number & 0xFF); \
     b = (number & 0xFF00) >> 8u;
 
-#define PXInt16SplittEndianBig(number, a, b) \
+#define PXI16SplittEndianBig(number, a, b) \
     a = (number & 0xFF00) >> 8u; \
     b = (number & 0xFF);
 
 
-#define PXInt16MakeEndianLittle(a, b) (\
-    ((PXInt16U)a) | \
-    ((PXInt16U)b << 8u))
+#define PXI16MakeEndianLittle(a, b) (\
+    ((PXI16U)a) | \
+    ((PXI16U)b << 8u))
 
-#define PXInt16MakeEndianBig(a, b) (\
-    ((PXInt16U)a << 8u) | \
-    ((PXInt16U)b))
+#define PXI16MakeEndianBig(a, b) (\
+    ((PXI16U)a << 8u) | \
+    ((PXI16U)b))
 
-#define PXInt16FromAdressEndianLittle(list) PXInt16MakeEndianLittle(((PXAdress)list)[0], ((PXAdress)list)[1])
-#define PXInt16FromAdressEndianBig(list) PXInt16MakeEndianBig(((PXAdress)list)[0], ((PXAdress)list)[1])
+#define PXI16FromAdressEndianLittle(list) PXI16MakeEndianLittle(((PXAdress)list)[0], ((PXAdress)list)[1])
+#define PXI16FromAdressEndianBig(list) PXI16MakeEndianBig(((PXAdress)list)[0], ((PXAdress)list)[1])
 //---------------------------------------------------------
 
 //---------------------------------------------------------
 // 24-Bit int
 //---------------------------------------------------------
-#define PXInt24MakeEndianLittle(a, b, c) (\
-    ((PXInt32U)a) | \
-    ((PXInt32U)b << 8u) | \
-    ((PXInt32U)c << 16u))
+#define PXI24MakeEndianLittle(a, b, c) (\
+    ((PXI32U)a) | \
+    ((PXI32U)b << 8u) | \
+    ((PXI32U)c << 16u))
 
-#define PXInt24MakeEndianBig(a, b, c) (\
-    ((PXInt32U)b << 16u) | \
-    ((PXInt32U)c << 8u) | \
-    ((PXInt32U)d))
+#define PXI24MakeEndianBig(a, b, c) (\
+    ((PXI32U)b << 16u) | \
+    ((PXI32U)c << 8u) | \
+    ((PXI32U)d))
 
 
-#define PXInt24FromAdressEndianLittle(list) PXInt24MakeEndianLittle(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2])
-#define PXInt24FromAdressEndianBig(list) PXInt24MakeEndianBig(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2])
+#define PXI24FromAdressEndianLittle(list) PXI24MakeEndianLittle(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2])
+#define PXI24FromAdressEndianBig(list) PXI24MakeEndianBig(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2])
 //---------------------------------------------------------
 
 //---------------------------------------------------------
 // 32-Bit int
 //---------------------------------------------------------
-#define PXInt32MakeEndianLittle(a, b, c, d) (\
-    ((PXInt32U)a) | \
-    ((PXInt32U)b << 8u) | \
-    ((PXInt32U)c << 16u) | \
-    ((PXInt32U)d << 24u))
+#define PXI32MakeEndianLittle(a, b, c, d) (\
+    ((PXI32U)a) | \
+    ((PXI32U)b << 8u) | \
+    ((PXI32U)c << 16u) | \
+    ((PXI32U)d << 24u))
 
-#define PXInt32MakeEndianBig(a, b, c, d) (\
-    ((PXInt32U)a << 24u) | \
-    ((PXInt32U)b << 16u) | \
-    ((PXInt32U)c << 8u) | \
-    ((PXInt32U)d))
+#define PXI32MakeEndianBig(a, b, c, d) (\
+    ((PXI32U)a << 24u) | \
+    ((PXI32U)b << 16u) | \
+    ((PXI32U)c << 8u) | \
+    ((PXI32U)d))
 
-#define PXInt32FromAdressEndianLittle(list) PXInt32MakeEndianLittle(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2], ((PXAdress)list)[3])
-#define PXInt32FromAdressEndianBig(list) PXInt32MakeEndianBig(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2], ((PXAdress)list)[3])
+#define PXI32FromAdressEndianLittle(list) PXI32MakeEndianLittle(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2], ((PXAdress)list)[3])
+#define PXI32FromAdressEndianBig(list) PXI32MakeEndianBig(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2], ((PXAdress)list)[3])
 //---------------------------------------------------------
 
 //---------------------------------------------------------
 // 40-Bit int
 //---------------------------------------------------------
-#define PXInt40MakeEndianLittle(a, b, c, d, e) (\
-    ((PXInt64U)a | \
-    ((PXInt64U)b << 8u) | \
-    ((PXInt64U)c << 16u) | \
-    ((PXInt64U)d << 24u) | \
-    ((PXInt64U)e << 32u)))
+#define PXI40MakeEndianLittle(a, b, c, d, e) (\
+    ((PXI64U)a | \
+    ((PXI64U)b << 8u) | \
+    ((PXI64U)c << 16u) | \
+    ((PXI64U)d << 24u) | \
+    ((PXI64U)e << 32u)))
 
-#define PXInt40MakeEndianBig(a, b, c, d, e) (\
-    ((PXInt64U)a << 32u) | \
-    ((PXInt64U)b << 24u) | \
-    ((PXInt64U)c << 16u) | \
-    ((PXInt64U)d << 8u) | \
-    ((PXInt64U)e)))
+#define PXI40MakeEndianBig(a, b, c, d, e) (\
+    ((PXI64U)a << 32u) | \
+    ((PXI64U)b << 24u) | \
+    ((PXI64U)c << 16u) | \
+    ((PXI64U)d << 8u) | \
+    ((PXI64U)e)))
 
-#define PXInt40FromAdressEndianLittle(list) PXInt40MakeEndianLittle(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2], ((PXAdress)list)[3], ((PXAdress)list)[4])
-#define PXInt40FromAdressEndianBig(list) PXInt40MakeEndianBig(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2], ((PXAdress)list)[3], ((PXAdress)list)[4])
+#define PXI40FromAdressEndianLittle(list) PXI40MakeEndianLittle(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2], ((PXAdress)list)[3], ((PXAdress)list)[4])
+#define PXI40FromAdressEndianBig(list) PXI40MakeEndianBig(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2], ((PXAdress)list)[3], ((PXAdress)list)[4])
 //---------------------------------------------------------
 
 //---------------------------------------------------------
 // 48-Bit int
 //---------------------------------------------------------
-#define PXInt48MakeEndianLittle(a, b, c, d, e, f) (\
-    ((PXInt64U)a | \
-    ((PXInt64U)b << 8u) | \
-    ((PXInt64U)c << 16u) | \
-    ((PXInt64U)d << 24u) | \
-    ((PXInt64U)e << 32u) | \
-    ((PXInt64U)f << 40u)))
+#define PXI48MakeEndianLittle(a, b, c, d, e, f) (\
+    ((PXI64U)a | \
+    ((PXI64U)b << 8u) | \
+    ((PXI64U)c << 16u) | \
+    ((PXI64U)d << 24u) | \
+    ((PXI64U)e << 32u) | \
+    ((PXI64U)f << 40u)))
 
-#define PXInt48MakeEndianBig(a, b, c, d, e, f) (\
-    ((PXInt64U)a << 40u) | \
-    ((PXInt64U)b << 32u) | \
-    ((PXInt64U)c << 24u) | \
-    ((PXInt64U)d << 16u) | \
-    ((PXInt64U)e << 8u) | \
-    ((PXInt64U)f)))
+#define PXI48MakeEndianBig(a, b, c, d, e, f) (\
+    ((PXI64U)a << 40u) | \
+    ((PXI64U)b << 32u) | \
+    ((PXI64U)c << 24u) | \
+    ((PXI64U)d << 16u) | \
+    ((PXI64U)e << 8u) | \
+    ((PXI64U)f)))
 
-#define PXInt48FromAdressEndianLittle(list) PXInt48MakeEndianLittle(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2], ((PXAdress)list)[3], ((PXAdress)list)[4], ((PXAdress)list)[5])
-#define PXInt48FromAdressEndianBig(list) PXInt48MakeEndianBig(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2], ((PXAdress)list)[3], ((PXAdress)list)[4], ((PXAdress)list)[5])
+#define PXI48FromAdressEndianLittle(list) PXI48MakeEndianLittle(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2], ((PXAdress)list)[3], ((PXAdress)list)[4], ((PXAdress)list)[5])
+#define PXI48FromAdressEndianBig(list) PXI48MakeEndianBig(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2], ((PXAdress)list)[3], ((PXAdress)list)[4], ((PXAdress)list)[5])
 //---------------------------------------------------------
 
 //---------------------------------------------------------
 // 56-Bit int
 //---------------------------------------------------------
-#define PXInt56MakeEndianLittle(a, b, c, d, e, f, g) (\
-    ((PXInt64U)a | \
-    ((PXInt64U)b << 8u) | \
-    ((PXInt64U)c << 16u) | \
-    ((PXInt64U)d << 24u) | \
-    ((PXInt64U)e << 32u) | \
-    ((PXInt64U)f << 40u) | \
-    ((PXInt64U)g << 48u)))
+#define PXI56MakeEndianLittle(a, b, c, d, e, f, g) (\
+    ((PXI64U)a | \
+    ((PXI64U)b << 8u) | \
+    ((PXI64U)c << 16u) | \
+    ((PXI64U)d << 24u) | \
+    ((PXI64U)e << 32u) | \
+    ((PXI64U)f << 40u) | \
+    ((PXI64U)g << 48u)))
 
-#define PXInt56MakeEndianBig(a, b, c, d, e, f, g) (\
-    ((PXInt64U)a << 48u) | \
-    ((PXInt64U)b << 40u) | \
-    ((PXInt64U)c << 32u) | \
-    ((PXInt64U)d << 24u) | \
-    ((PXInt64U)e << 16u) | \
-    ((PXInt64U)f << 8u) | \
-    ((PXInt64U)g)))
+#define PXI56MakeEndianBig(a, b, c, d, e, f, g) (\
+    ((PXI64U)a << 48u) | \
+    ((PXI64U)b << 40u) | \
+    ((PXI64U)c << 32u) | \
+    ((PXI64U)d << 24u) | \
+    ((PXI64U)e << 16u) | \
+    ((PXI64U)f << 8u) | \
+    ((PXI64U)g)))
 
-#define PXInt56FromAdressEndianLittle(list) PXInt56MakeEndianLittle(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2], ((PXAdress)list)[3], ((PXAdress)list)[4], ((PXAdress)list)[5], ((PXAdress)list)[6])
-#define PXInt56FromAdressEndianBig(list) PXInt56MakeEndianBig(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2], ((PXAdress)list)[3], ((PXAdress)list)[4], ((PXAdress)list)[5], ((PXAdress)list)[6])
+#define PXI56FromAdressEndianLittle(list) PXI56MakeEndianLittle(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2], ((PXAdress)list)[3], ((PXAdress)list)[4], ((PXAdress)list)[5], ((PXAdress)list)[6])
+#define PXI56FromAdressEndianBig(list) PXI56MakeEndianBig(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2], ((PXAdress)list)[3], ((PXAdress)list)[4], ((PXAdress)list)[5], ((PXAdress)list)[6])
 //---------------------------------------------------------
 
 //---------------------------------------------------------
 // 64-Bit int
 //---------------------------------------------------------
-#define PXInt64MakeEndianLittle(a, b, c, d, e, f, g, h) (\
-    ((PXInt64U)a | \
-    ((PXInt64U)b << 8u) | \
-    ((PXInt64U)c << 16u) | \
-    ((PXInt64U)d << 24u) | \
-    ((PXInt64U)e << 32u) | \
-    ((PXInt64U)f << 40u) | \
-    ((PXInt64U)g << 48u) | \
-    ((PXInt64U)h << 56u)))
+#define PXI64MakeEndianLittle(a, b, c, d, e, f, g, h) (\
+    ((PXI64U)a | \
+    ((PXI64U)b << 8u) | \
+    ((PXI64U)c << 16u) | \
+    ((PXI64U)d << 24u) | \
+    ((PXI64U)e << 32u) | \
+    ((PXI64U)f << 40u) | \
+    ((PXI64U)g << 48u) | \
+    ((PXI64U)h << 56u)))
 
-#define PXInt64MakeEndianBig(a, b, c, d, e, f, g, h) (\
-    ((PXInt64U)a << 56u) | \
-    ((PXInt64U)b << 48u) | \
-    ((PXInt64U)c << 40u) | \
-    ((PXInt64U)d << 32u) | \
-    ((PXInt64U)e << 24u) | \
-    ((PXInt64U)f << 16u) | \
-    ((PXInt64U)g << 8u) | \
-    ((PXInt64U)h)))
+#define PXI64MakeEndianBig(a, b, c, d, e, f, g, h) (\
+    ((PXI64U)a << 56u) | \
+    ((PXI64U)b << 48u) | \
+    ((PXI64U)c << 40u) | \
+    ((PXI64U)d << 32u) | \
+    ((PXI64U)e << 24u) | \
+    ((PXI64U)f << 16u) | \
+    ((PXI64U)g << 8u) | \
+    ((PXI64U)h)))
 
-#define PXInt64FromAdressEndianLittle(list) PXInt64MakeEndianLittle(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2], ((PXAdress)list)[3], ((PXAdress)list)[4], ((PXAdress)list)[5], ((PXAdress)list)[6], ((PXAdress)list)[7])
-#define PXInt64FromAdressEndianBig(list) PXInt64MakeEndianBig(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2], ((PXAdress)list)[3], ((PXAdress)list)[4], ((PXAdress)list)[5], ((PXAdress)list)[6], ((PXAdress)list)[7])
+#define PXI64FromAdressEndianLittle(list) PXI64MakeEndianLittle(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2], ((PXAdress)list)[3], ((PXAdress)list)[4], ((PXAdress)list)[5], ((PXAdress)list)[6], ((PXAdress)list)[7])
+#define PXI64FromAdressEndianBig(list) PXI64MakeEndianBig(((PXAdress)list)[0], ((PXAdress)list)[1], ((PXAdress)list)[2], ((PXAdress)list)[3], ((PXAdress)list)[4], ((PXAdress)list)[5], ((PXAdress)list)[6], ((PXAdress)list)[7])
 //---------------------------------------------------------
 
 //---------------------------------------------------------
 // Direct int make/create depending on OS
 //---------------------------------------------------------
 #if OSEngianLittle
-#define PXInt16Make PXInt16MakeEndianLittle
-#define PXInt24Make PXInt24MakeEndianLittle
-#define PXInt32Make PXInt32MakeEndianLittle
-#define PXInt40Make PXInt40MakeEndianLittle
-#define PXInt48Make PXInt48MakeEndianLittle
-#define PXInt56Make PXInt56MakeEndianLittle
-#define PXInt64Make PXInt64MakeEndianLittle
+#define PXI16Make PXI16MakeEndianLittle
+#define PXI24Make PXI24MakeEndianLittle
+#define PXI32Make PXI32MakeEndianLittle
+#define PXI40Make PXI40MakeEndianLittle
+#define PXI48Make PXI48MakeEndianLittle
+#define PXI56Make PXI56MakeEndianLittle
+#define PXI64Make PXI64MakeEndianLittle
 
-#define PXInt16FromAdress PXInt16FromAdressEndianLittle
-#define PXInt24FromAdress PXInt24FromAdressEndianLittle
-#define PXInt32FromAdress PXInt32FromAdressEndianLittle
-#define PXInt40FromAdress PXInt40FromAdressEndianLittle
-#define PXInt48FromAdress PXInt48FromAdressEndianLittle
-#define PXInt56FromAdress PXInt56FromAdressEndianLittle
-#define PXInt64FromAdress PXInt64FromAdressEndianLittle
+#define PXI16FromAdress PXI16FromAdressEndianLittle
+#define PXI24FromAdress PXI24FromAdressEndianLittle
+#define PXI32FromAdress PXI32FromAdressEndianLittle
+#define PXI40FromAdress PXI40FromAdressEndianLittle
+#define PXI48FromAdress PXI48FromAdressEndianLittle
+#define PXI56FromAdress PXI56FromAdressEndianLittle
+#define PXI64FromAdress PXI64FromAdressEndianLittle
 #elif OSEngianBig
-#define PXInt16Make PXInt16MakeEndianBig
-#define PXInt24Make PXInt24MakeEndianBig
-#define PXInt32Make PXInt32MakeEndianBig
-#define PXInt40Make PXInt40MakeEndianBig
-#define PXInt48Make PXInt48MakeEndianBig
-#define PXInt56Make PXInt56MakeEndianBig
-#define PXInt64Make PXInt64MakeEndianBig
+#define PXI16Make PXI16MakeEndianBig
+#define PXI24Make PXI24MakeEndianBig
+#define PXI32Make PXI32MakeEndianBig
+#define PXI40Make PXI40MakeEndianBig
+#define PXI48Make PXI48MakeEndianBig
+#define PXI56Make PXI56MakeEndianBig
+#define PXI64Make PXI64MakeEndianBig
 
-#define PXInt16FromAdress PXInt16FromAdressEndianBig
-#define PXInt24FromAdress PXInt24FromAdressEndianBig
-#define PXInt32FromAdress PXInt32FromAdressEndianBig
-#define PXInt40FromAdress PXInt40FromAdressEndianBig
-#define PXInt48FromAdress PXInt48FromAdressEndianBig
-#define PXInt56FromAdress PXInt56FromAdressEndianBig
-#define PXInt64FromAdress PXInt64FromAdressEndianBig
+#define PXI16FromAdress PXI16FromAdressEndianBig
+#define PXI24FromAdress PXI24FromAdressEndianBig
+#define PXI32FromAdress PXI32FromAdressEndianBig
+#define PXI40FromAdress PXI40FromAdressEndianBig
+#define PXI48FromAdress PXI48FromAdressEndianBig
+#define PXI56FromAdress PXI56FromAdressEndianBig
+#define PXI64FromAdress PXI64FromAdressEndianBig
 #else
 #endif
 //---------------------------------------------------------
@@ -722,7 +739,7 @@ d = SplittIntLED(i);
 
 #define SplittInt(i, a, b, c, d) SplittIntLE(i, a, b, c, d)
 
-typedef struct PXInt16SCluster
+typedef struct PXI16SCluster
 {
     union
     {
@@ -734,12 +751,12 @@ typedef struct PXInt16SCluster
 
         PXByte Data[2];
 
-        PXInt16S Value;
+        PXI16S Value;
     };
 }
-PXInt16SCluster;
+PXI16SCluster;
 
-typedef struct PXInt16UCluster
+typedef struct PXI16UCluster
 {
     union
     {
@@ -751,12 +768,12 @@ typedef struct PXInt16UCluster
 
         PXByte Data[2];
 
-        PXInt16S Value;
+        PXI16S Value;
     };
 }
-PXInt16UCluster;
+PXI16UCluster;
 
-typedef struct PXInt32SCluster_
+typedef struct PXI32SCluster_
 {
     union
     {
@@ -770,12 +787,12 @@ typedef struct PXInt32SCluster_
 
         PXByte Data[4];
 
-        PXInt32S Value;
+        PXI32S Value;
     };
 }
-PXInt32SCluster;
+PXI32SCluster;
 
-typedef struct PXInt32UCluster_
+typedef struct PXI32UCluster_
 {
     union
     {
@@ -789,12 +806,12 @@ typedef struct PXInt32UCluster_
 
         PXByte Data[4];
 
-        PXInt32U Value;
+        PXI32U Value;
     };
 }
-PXInt32UCluster;
+PXI32UCluster;
 
-typedef struct PXInt64SCluster_
+typedef struct PXI64SCluster_
 {
     union
     {
@@ -812,12 +829,12 @@ typedef struct PXInt64SCluster_
 
         PXByte Data[8];
 
-        PXInt64S Value;
+        PXI64S Value;
     };
 }
-PXInt64SCluster;
+PXI64SCluster;
 
-typedef struct PXInt64UCluster_
+typedef struct PXI64UCluster_
 {
     union
     {
@@ -835,10 +852,10 @@ typedef struct PXInt64UCluster_
 
         PXByte Data[8];
 
-        PXInt64U Value;
+        PXI64U Value;
     };
 }
-PXInt64UCluster;
+PXI64UCluster;
 
 
 typedef enum PXBitFormat_
@@ -908,14 +925,14 @@ PXPublic PXSize PXAPI PXWorkSetCounterPull(PXWorkSetCounter* const pxWorkSetCoun
 
 
 
-//typedef PXInt32U PXType;
+//typedef PXI32U PXType;
 
-PXPublic void PXAPI PXTypeToString(const PXInt32U dataType, char* buffer);
+PXPublic void PXAPI PXTypeToString(const PXI32U dataType, char* buffer);
 
-PXPublic PXInt32U PXAPI PXTypeIntFitting(const PXSize expectedSize);
+PXPublic PXI32U PXAPI PXTypeIntFitting(const PXSize expectedSize);
 
-PXPublic void PXAPI PXEndianSwapI32U(PXInt32U* const value);
-PXPublic void PXAPI PXEndianSwapI16U(PXInt16U* const value);
+PXPublic void PXAPI PXEndianSwapI32U(PXI32U* const value);
+PXPublic void PXAPI PXEndianSwapI16U(PXI16U* const value);
 
 
 PXPublic void PXAPI PXEndianSwap(void* const data, const PXSize dataSize, const PXEndian endianFrom, const PXEndian endianTo);

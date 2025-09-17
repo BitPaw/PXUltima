@@ -82,7 +82,7 @@ PXThreadResult PXOSAPI PXProgramExecuteThreadFunction(void* data)
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXProgramExecute(PXProgram* const program)
+PXResult PXAPI  PXProgramExecute(PXProgram* const program)
 {
     if (program->PXProgramExecutedCallBack)
     {
@@ -109,7 +109,7 @@ PXActionResult PXAPI PXProgramExecute(PXProgram* const program)
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXProgramExecuteAS(PXProgram* const program, const char* programPath, const char* parameterString, PXProgramExecutedEvent callback)
+PXResult PXAPI  PXProgramExecuteAS(PXProgram* const program, const char* programPath, const char* parameterString, PXProgramExecutedEvent callback)
 {
 #if 0
     PXTextCopyAW(programPath, 260, program->FilePath, 260);
@@ -140,7 +140,7 @@ PXActionResult PXAPI PXProgramExecuteAS(PXProgram* const program, const char* pr
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXProgramExecuteAL(PXProgram* const program, const char* programPath, const char** parameterList, PXSize parameterListSize, PXProgramExecutedEvent callback)
+PXResult PXAPI  PXProgramExecuteAL(PXProgram* const program, const char* programPath, const char** parameterList, PXSize parameterListSize, PXProgramExecutedEvent callback)
 {
 #if 0
 
@@ -184,7 +184,7 @@ PXActionResult PXAPI PXProgramExecuteAL(PXProgram* const program, const char* pr
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXProgramExecuteWS(PXProgram* const program, const wchar_t* programPath, const wchar_t* parameterList, PXProgramExecutedEvent* callback)
+PXResult PXAPI  PXProgramExecuteWS(PXProgram* const program, const wchar_t* programPath, const wchar_t* parameterList, PXProgramExecutedEvent* callback)
 {
     char programPathA[1024];
     char parameterListA[1024];
@@ -197,7 +197,7 @@ PXActionResult PXAPI PXProgramExecuteWS(PXProgram* const program, const wchar_t*
     return PXActionRefusedFormatNotSupported;
 }
 
-PXActionResult PXAPI PXProgramWaitForFinish(PXProgram* const program, PXInt32U* const returnCode)
+PXResult PXAPI  PXProgramWaitForFinish(PXProgram* const program, PXI32U* const returnCode)
 {
 #if OSUnix
 
@@ -264,7 +264,7 @@ ProcessID PXAPI PXProgramCurrentProcessID()
 #endif
 }
 
-PXActionResult PXAPI PXProgramAttach(PXProgram* const pxProgram)
+PXResult PXAPI  PXProgramAttach(PXProgram* const pxProgram)
 {
 #if OSUnix
     char processFileName[64];
@@ -296,7 +296,7 @@ PXActionResult PXAPI PXProgramAttach(PXProgram* const pxProgram)
 #endif
 }
 
-PXActionResult PXAPI PXProgramDetach(PXProgram* const pxProgram)
+PXResult PXAPI  PXProgramDetach(PXProgram* const pxProgram)
 {
 #if OSUnix
 
@@ -323,7 +323,7 @@ PXActionResult PXAPI PXProgramDetach(PXProgram* const pxProgram)
 #endif
 }
 
-PXActionResult PXAPI PXProgramReadMemory(PXProgram* const pxProgram, const void* const adress, void* const buffer, const PXSize bufferSize, PXSize* const bufferSizeWritten)
+PXResult PXAPI  PXProgramReadMemory(PXProgram* const pxProgram, const void* const adress, void* const buffer, const PXSize bufferSize, PXSize* const bufferSizeWritten)
 {
 #if OSUnix
 
@@ -351,7 +351,7 @@ PXActionResult PXAPI PXProgramReadMemory(PXProgram* const pxProgram, const void*
 #endif
 }
 
-PXActionResult PXAPI PXProgramWriteMemory(PXProgram* const pxProgram, const void* const adress, const void* const buffer, const PXSize bufferSize, PXSize* const bufferSizeWritten)
+PXResult PXAPI  PXProgramWriteMemory(PXProgram* const pxProgram, const void* const adress, const void* const buffer, const PXSize bufferSize, PXSize* const bufferSizeWritten)
 {
 #if OSUnix
 

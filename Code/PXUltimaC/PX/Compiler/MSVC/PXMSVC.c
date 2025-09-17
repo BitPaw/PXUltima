@@ -6,15 +6,15 @@
 #include <PX/OS/PXOS.h>
 
 const char inlcudeList[] =
-"C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/Tools/MSVC/14.40.33807/include\0"
-"C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/Tools/MSVC/14.40.33807/atlmfc/include\0"
-"C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/Auxiliary/VS/include\0"
-"C:/Program Files (x86)/Windows Kits/10/Include/10.0.22621.0/ucrt\0"
-"C:/Program Files (x86)/Windows Kits/10/Include/10.0.22621.0/um\0"
-"C:/Program Files (x86)/Windows Kits/10/Include/10.0.22621.0/shared\0"
-"C:/Program Files (x86)/Windows Kits/10/Include/10.0.22621.0/winrt\0"
-"C:/Program Files (x86)/Windows Kits/10/Include/10.0.22621.0/cppwinrt\0"
-"C:/Program Files (x86)/Windows Kits/NETFXSDK/4.8/Include/um\0"
+"C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/Tools/MSVC/14.40.33807/Included\0"
+"C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/Tools/MSVC/14.40.33807/atlmfc/Included\0"
+"C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/Auxiliary/VS/Included\0"
+"C:/Program Files (x86)/Windows Kits/10/Included/10.0.22621.0/ucrt\0"
+"C:/Program Files (x86)/Windows Kits/10/Included/10.0.22621.0/um\0"
+"C:/Program Files (x86)/Windows Kits/10/Included/10.0.22621.0/shared\0"
+"C:/Program Files (x86)/Windows Kits/10/Included/10.0.22621.0/winrt\0"
+"C:/Program Files (x86)/Windows Kits/10/Included/10.0.22621.0/cppwinrt\0"
+"C:/Program Files (x86)/Windows Kits/NETFXSDK/4.8/Included/um\0"
 "\0";
 
 
@@ -51,9 +51,9 @@ const char libraryFileList[] =
 
 
 const char PXCompilerMSVCWhere[] = "\"C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe\" -latest -products * -requires Microsoft.Component.MSBuild -property installationPath";
-const PXInt8U PXCompilerMSVCWhereSize = sizeof(PXCompilerMSVCWhere);
+const PXI8U PXCompilerMSVCWhereSize = sizeof(PXCompilerMSVCWhere);
 
-PXActionResult PXAPI PXCompilerInitializeMSVC(PXCompilerMSVC* const pxCompilerMSVC)
+PXResult PXAPI  PXCompilerInitializeMSVC(PXCompilerMSVC* const pxCompilerMSVC)
 {
     PXClear(PXCompilerMSVC, pxCompilerMSVC);
 
@@ -81,20 +81,20 @@ PXActionResult PXAPI PXCompilerInitializeMSVC(PXCompilerMSVC* const pxCompilerMS
     // VC\Tools\MSVC
     writtenBytes += PXTextPrintA(&pxCompilerMSVC->CompilerPathRoot[writtenBytes], 260 - writtenBytes, "/14.40.33807/bin/Hostx64/x64");
 
-    // Create library include list
-    pxCompilerMSVC->CompilerPathInclude = inlcudeList;
+    // Create library Included list
+    pxCompilerMSVC->CompilerPathIncluded = inlcudeList;
     pxCompilerMSVC->CompilerPathLibrarySearch = libraryList;
     pxCompilerMSVC->CompilerPathLibraryFile = libraryFileList;
 
 
-    //    memcpy_s(pxCompilerMSVC->CompilerPathInclude, 700, inlcudeList, sizeof(inlcudeList));    
+    //    memcpy_s(pxCompilerMSVC->CompilerPathIncluded, 700, inlcudeList, sizeof(inlcudeList));    
   //memcpy_s(pxCompilerMSVC->CompilerPathLibrarySearch, 700, libraryList, sizeof(libraryList));
     //    memcpy_s(pxCompilerMSVC->CompilerPathLibraryFile, 1024, libraryFileList, sizeof(libraryFileList));
 
     return 0;
 }
 
-PXActionResult PXAPI PXCompilerCompileMSVC(PXCompilerMSVC* const pxCompilerMSVC, const char* fileName)
+PXResult PXAPI  PXCompilerCompileMSVC(PXCompilerMSVC* const pxCompilerMSVC, const char* fileName)
 {
     const size_t size = 1024 * 8;
     char* buffer = PXMemoryHeapCallocT(char, size);
@@ -114,7 +114,7 @@ PXActionResult PXAPI PXCompilerCompileMSVC(PXCompilerMSVC* const pxCompilerMSVC,
     }
 
     // Add library path
-    const char* cursor = pxCompilerMSVC->CompilerPathInclude;
+    const char* cursor = pxCompilerMSVC->CompilerPathIncluded;
 
     for(;;)
     {
@@ -125,7 +125,7 @@ PXActionResult PXAPI PXCompilerCompileMSVC(PXCompilerMSVC* const pxCompilerMSVC,
             break;
         }
 
-        //printf("[+] Include <%s>\n", cursor);
+        //printf("[+] Included <%s>\n", cursor);
 
         offset += PXTextPrintA(&buffer[offset], size - offset, " /I\"%s\"", cursor);
 
@@ -141,7 +141,7 @@ PXActionResult PXAPI PXCompilerCompileMSVC(PXCompilerMSVC* const pxCompilerMSVC,
     return 1;
 }
 
-PXActionResult PXAPI PXCompilerLinkMSVC(PXCompilerMSVC* const pxCompilerMSVC, int flags, const char* fileName, const char* resultName)
+PXResult PXAPI  PXCompilerLinkMSVC(PXCompilerMSVC* const pxCompilerMSVC, int flags, const char* fileName, const char* resultName)
 {
     const size_t mmsiize = 1024 * 8;
     char* buffer = PXMemoryHeapCallocT(char, mmsiize);

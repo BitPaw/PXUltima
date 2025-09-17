@@ -1,9 +1,9 @@
-#ifndef PXHTMLInclude
-#define PXHTMLInclude
+#ifndef PXHTMLIncluded
+#define PXHTMLIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
-PXPublic PXActionResult PXAPI PXHTMLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXHTMLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXHTMLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXHTMLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

@@ -1,7 +1,7 @@
-#ifndef PXID3Include
-#define PXID3Include
+#ifndef PXID3Included
+#define PXID3Included
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 #define PXID3Debug 0
 
@@ -112,20 +112,20 @@ typedef struct PXID3_
     char Album[PXID3AlbumSize + 1];
     char Year[PXID3YearSize + 1];
     char Comment[PXID3CommentSize + 1];
-    PXInt8U Genre;
+    PXI8U Genre;
 
     // Version 1.1
-    PXInt8U TrackID;
+    PXI8U TrackID;
 
     // Version 2.x
-    PXInt32U BeatsPerMinute;
+    PXI32U BeatsPerMinute;
     char Composer[PXID3ArtistSize + 1];
 }
 PXID3;
 
-PXPrivate inline PXID3v2xFrameTag PXAPI PXID3v2xFrameTagFromID(const PXInt32U id3v2xFrameTagID);
+PXPrivate inline PXID3v2xFrameTag PXAPI PXID3v2xFrameTagFromID(const PXI32U id3v2xFrameTagID);
 
-PXPublic PXActionResult PXAPI PXID3LoadFromFile(PXID3* const id3, PXFile* const PXFile);
-PXPublic PXActionResult PXAPI PXID3SaveToFile(const PXID3* const id3, PXFile* const PXFile);
+PXPublic PXResult PXAPI PXID3LoadFromFile(PXID3* const id3, PXFile* const PXFile);
+PXPublic PXResult PXAPI PXID3SaveToFile(const PXID3* const id3, PXFile* const PXFile);
 
 #endif

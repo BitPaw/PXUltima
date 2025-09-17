@@ -2,7 +2,6 @@
 
 #include <PX/Media/PXText.h>
 #include <PX/OS/File/PXFile.h>
-#include <PX/Media/PXImage.h>
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/Compiler/PXCompiler.h>
 #include <PX/OS/PXOS.h>
@@ -201,7 +200,7 @@ void PXAPI PXSpriteFontParseCommon(PXSpriteFont* const pxSpriteFont, PXCompiler*
             }
             case PXSpriteFontSymbolPageList:
             {
-                const PXInt32U amountOfPages = pxCompiler->ReadInfo.SymbolEntryCurrent.I32U;
+                const PXI32U amountOfPages = pxCompiler->ReadInfo.SymbolEntryCurrent.I32U;
 
                 if(amountOfPages > 1)
                 {
@@ -296,7 +295,7 @@ void PXAPI PXSpriteFontParsePage(PXSpriteFont* const pxSpriteFont, PXCompiler* c
 
                         pxResourceCreateInfoList.Type = PXResourceTypeTexture2D;
                         pxResourceCreateInfoList.ObjectReference = (void**)&pxFontPage->Texture;
-                        pxResourceCreateInfoList.FilePath = resultFullPath.TextA;
+                        pxResourceCreateInfoList.FilePathAdress = resultFullPath.A;
                         pxResourceCreateInfoList.FilePathSize = resultFullPath.SizeUsed;
 
                         PXResourceManagerAdd(&pxResourceCreateInfoList);
@@ -476,7 +475,7 @@ void PXAPI PXSpriteFontParseCharacterDefinition(PXSpriteFont* const pxSpriteFont
     }
 }
 
-PXActionResult PXAPI PXSpriteFontLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI  PXSpriteFontLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     PXFont* const pxFont = (PXFont*)pxResourceLoadInfo->ResourceTarget;
 
@@ -558,7 +557,7 @@ PXActionResult PXAPI PXSpriteFontLoadFromFile(PXResourceTransphereInfo* const px
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXSpriteFontSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI  PXSpriteFontSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }
@@ -574,7 +573,7 @@ PXSpriteFontLineType PXAPI PeekSymbol(const char* const line, const PXSize fileD
     {
         case 1:
         {
-            const PXInt8U id = *line;
+            const PXI8U id = *line;
 
             switch(id)
             {
@@ -592,13 +591,13 @@ PXSpriteFontLineType PXAPI PeekSymbol(const char* const line, const PXSize fileD
 
         case 2:
         {
-            const PXInt16U id = PXInt16FromAdress(line);
+            const PXI16U id = PXI16FromAdress(line);
 
             switch(id)
             {
-                case PXInt16Make('a', 'a'):
+                case PXI16Make('a', 'a'):
                     return PXSpriteFontSymbolAntilising;
-                case PXInt16Make('i', 'd'):
+                case PXI16Make('i', 'd'):
                     return PXSpriteFontSymbolID;
 
                 default:
@@ -610,27 +609,27 @@ PXSpriteFontLineType PXAPI PeekSymbol(const char* const line, const PXSize fileD
 
         case 4:
         {
-            const PXInt32U id = PXInt32FromAdress(line);
+            const PXI32U id = PXI32FromAdress(line);
 
             switch(id)
             {
-                case PXInt32Make('c', 'h', 'a', 'r'):
+                case PXI32Make('c', 'h', 'a', 'r'):
                     return PXSpriteFontSymbolCharacterDefinition;
-                case PXInt32Make('b', 'a', 's', 'e'):
+                case PXI32Make('b', 'a', 's', 'e'):
                     return PXSpriteFontSymbolBase;
-                case PXInt32Make('i', 'n', 'f', 'o'):
+                case PXI32Make('i', 'n', 'f', 'o'):
                     return PXSpriteFontSymbolInfo;
-                case PXInt32Make('f', 'a', 'c', 'e'):
+                case PXI32Make('f', 'a', 'c', 'e'):
                     return PXSpriteFontSymbolFontName;
-                case PXInt32Make('s', 'i', 'z', 'e'):
+                case PXI32Make('s', 'i', 'z', 'e'):
                     return PXSpriteFontSymbolFontSize;
-                case PXInt32Make('b', 'o', 'l', 'd'):
+                case PXI32Make('b', 'o', 'l', 'd'):
                     return PXSpriteFontSymbolBold;
-                case PXInt32Make('p', 'a', 'g', 'e'):
+                case PXI32Make('p', 'a', 'g', 'e'):
                     return PXSpriteFontSymbolPage;
-                case PXInt32Make('f', 'i', 'l', 'e'):
+                case PXI32Make('f', 'i', 'l', 'e'):
                     return PXSpriteFontSymbolFilePath;
-                case PXInt32Make('c', 'h', 'n', 'l'):
+                case PXI32Make('c', 'h', 'n', 'l'):
                     return PXSpriteFontSymbolChannel;
 
                 default:
@@ -641,17 +640,17 @@ PXSpriteFontLineType PXAPI PeekSymbol(const char* const line, const PXSize fileD
         }
         case 5:
         {
-            const PXInt64U id = PXInt40FromAdress(line);
+            const PXI64U id = PXI40FromAdress(line);
 
             switch(id)
             {
-                case PXInt40Make('c', 'h', 'a', 'r', 's'):
+                case PXI40Make('c', 'h', 'a', 'r', 's'):
                     return PXSpriteFontSymbolCharacterList;
-                case PXInt40Make('c', 'o', 'u', 'n', 't'):
+                case PXI40Make('c', 'o', 'u', 'n', 't'):
                     return PXSpriteFontSymbolCharacterAmount;
-                case PXInt40Make('p', 'a', 'g', 'e', 's'):
+                case PXI40Make('p', 'a', 'g', 'e', 's'):
                     return PXSpriteFontSymbolPageList;
-                case PXInt40Make('w', 'i', 'd', 't', 'h'):
+                case PXI40Make('w', 'i', 'd', 't', 'h'):
                     return PXSpriteFontSymbolScaleWidth;
 
                 default:
@@ -660,23 +659,23 @@ PXSpriteFontLineType PXAPI PeekSymbol(const char* const line, const PXSize fileD
         }
         case 6:
         {
-            const PXInt64U id = PXInt48FromAdress(line);
+            const PXI64U id = PXI48FromAdress(line);
 
             switch(id)
             {
-                case PXInt48Make('i', 't', 'a', 'l', 'i', 'c'):
+                case PXI48Make('i', 't', 'a', 'l', 'i', 'c'):
                     return PXSpriteFontSymbolItalic;
-                case PXInt48Make('s', 'c', 'a', 'l', 'e', 'W'):
+                case PXI48Make('s', 'c', 'a', 'l', 'e', 'W'):
                     return PXSpriteFontSymbolScaleWidth;
-                case PXInt48Make('s', 'c', 'a', 'l', 'e', 'H'):
+                case PXI48Make('s', 'c', 'a', 'l', 'e', 'H'):
                     return PXSpriteFontSymbolScaleHeight;
-                case PXInt48Make('p', 'a', 'c', 'k', 'e', 'd'):
+                case PXI48Make('p', 'a', 'c', 'k', 'e', 'd'):
                     return PXSpriteFontSymbolPacked;
-                case PXInt48Make('h', 'e', 'i', 'g', 'h', 't'):
+                case PXI48Make('h', 'e', 'i', 'g', 'h', 't'):
                     return PXSpriteFontSymbolScaleHeight;
-                case PXInt48Make('c', 'o', 'm', 'm', 'o', 'n'):
+                case PXI48Make('c', 'o', 'm', 'm', 'o', 'n'):
                     return PXSpriteFontSymbolCommon;
-                case PXInt48Make('s', 'm', 'o', 'o', 't', 'h'):
+                case PXI48Make('s', 'm', 'o', 'o', 't', 'h'):
                     return PXSpriteFontSymbolSmooth;
 
                 default:
@@ -685,21 +684,21 @@ PXSpriteFontLineType PXAPI PeekSymbol(const char* const line, const PXSize fileD
         }
         case 7:
         {
-            const PXInt64U id = PXInt56FromAdress(line);
+            const PXI64U id = PXI56FromAdress(line);
 
             switch(id)
             {
-                case PXInt56Make('c', 'h', 'a', 't', 's', 'e', 't'):
+                case PXI56Make('c', 'h', 'a', 't', 's', 'e', 't'):
                     return PXSpriteFontSymbolCharSet;
-                case PXInt56Make('u', 'n', 'i', 'c', 'o', 'd', 'e'):
+                case PXI56Make('u', 'n', 'i', 'c', 'o', 'd', 'e'):
                     return PXSpriteFontSymbolUnicode;
-                case PXInt56Make('p', 'a', 'd', 'd', 'i', 'n', 'g'):
+                case PXI56Make('p', 'a', 'd', 'd', 'i', 'n', 'g'):
                     return PXSpriteFontSymbolPadding;
-                case PXInt56Make('s', 'p', 'a', 'c', 'i', 'n', 'g'):
+                case PXI56Make('s', 'p', 'a', 'c', 'i', 'n', 'g'):
                     return PXSpriteFontSymbolSpacing;
-                case PXInt56Make('x', 'o', 'f', 'f', 's', 'e', 't'):
+                case PXI56Make('x', 'o', 'f', 'f', 's', 'e', 't'):
                     return PXSpriteFontSymbolXOffset;
-                case PXInt56Make('y', 'o', 'f', 'f', 's', 'e', 't'):
+                case PXI56Make('y', 'o', 'f', 'f', 's', 'e', 't'):
                     return PXSpriteFontSymbolYOffset;
 
                 default:
@@ -710,13 +709,13 @@ PXSpriteFontLineType PXAPI PeekSymbol(const char* const line, const PXSize fileD
 
         case 8:
         {
-            const PXInt64U id = PXInt64FromAdress(line);
+            const PXI64U id = PXI64FromAdress(line);
 
             switch(id)
             {
-                case PXInt64Make('x', 'a', 'd', 'v', 'a', 'n', 'c', 'e'):
+                case PXI64Make('x', 'a', 'd', 'v', 'a', 'n', 'c', 'e'):
                     return PXSpriteFontSymbolXAdvance;
-                case PXInt64Make('s', 't', 'r', 'e', 'a', 'c', 'h', 'H'):
+                case PXI64Make('s', 't', 'r', 'e', 'a', 'c', 'h', 'H'):
                     return PXSpriteFontSymbolStretchH;
 
                 default:

@@ -1,5 +1,5 @@
-#ifndef PXHierarchicalNodeINCLUDE
-#define PXHierarchicalNodeINCLUDE
+#ifndef PXHierarchicalNodeIncluded
+#define PXHierarchicalNodeIncluded
 
 #include <PX/Media/PXType.h>
 #include <PX/OS/Error/PXActionResult.h>
@@ -25,9 +25,9 @@ typedef struct PXHierarchicalNode_
 }
 PXHierarchicalNode;
 
-PXPublic PXActionResult PXAPI PXHierarchicalNodeYourself(PXHierarchicalNode* pxHierarchicalNode, void* const entry);
-PXPublic PXActionResult PXAPI PXHierarchicalNodeParent(PXHierarchicalNode* pxHierarchicalNode, PXHierarchicalNode* const pxHierarchicalNodeParent);
-PXPublic PXActionResult PXAPI PXHierarchicalNodeSibling(PXHierarchicalNode* pxHierarchicalNode, PXHierarchicalNode* const entry);
-PXPublic PXActionResult PXAPI PXHierarchicalNodeChild(PXHierarchicalNode* pxHierarchicalNode, PXHierarchicalNode* const entry);
+PXPublic PXResult PXAPI PXHierarchicalNodeYourself(PXHierarchicalNode* pxHierarchicalNode, void* const entry);
+PXPublic PXResult PXAPI PXHierarchicalNodeParent(PXHierarchicalNode* pxHierarchicalNode, PXHierarchicalNode* const pxHierarchicalNodeParent);
+PXPublic PXResult PXAPI PXHierarchicalNodeSibling(PXHierarchicalNode* pxHierarchicalNode, PXHierarchicalNode* const entry);
+PXPublic PXResult PXAPI PXHierarchicalNodeChild(PXHierarchicalNode* pxHierarchicalNode, PXHierarchicalNode* const entry);
 
 #endif

@@ -26,7 +26,7 @@ typedef MMRESULT(WINAPI* PXjoyGetPosEx)(_In_ UINT uJoyID, _Out_ LPJOYINFOEX pji)
 
 #endif
 
-PXActionResult PXAPI PXControllerSystemInitilize(PXControllerSystem* const pxControllerSystem)
+PXResult PXAPI  PXControllerSystemInitilize(PXControllerSystem* const pxControllerSystem)
 {
     // Library
     {
@@ -64,7 +64,7 @@ void PXAPI PXControllerSystemShutdown(PXControllerSystem* const pxControllerSyst
     PXClear(PXControllerSystem, pxControllerSystem);
 }
 
-PXActionResult PXAPI PXControllerSystemDevicesListRefresh(PXControllerSystem* const pxControllerSystem)
+PXResult PXAPI  PXControllerSystemDevicesListRefresh(PXControllerSystem* const pxControllerSystem)
 {
 #if OSUnix
 #elif OSWindows
@@ -123,7 +123,7 @@ PXActionResult PXAPI PXControllerSystemDevicesListRefresh(PXControllerSystem* co
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXControllerSystemDevicesDataUpdate(PXControllerSystem* const pxControllerSystem)
+PXResult PXAPI  PXControllerSystemDevicesDataUpdate(PXControllerSystem* const pxControllerSystem)
 {
     for(PXSize i = 0; i < pxControllerSystem->DeviceListAmount; ++i)
     {

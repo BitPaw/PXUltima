@@ -1,6 +1,6 @@
-#ifndef PXVideoINCLUDE
-#define PXVideoINCLUDE
+#ifndef PXVideoIncluded
+#define PXVideoIncluded
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 
 #endif

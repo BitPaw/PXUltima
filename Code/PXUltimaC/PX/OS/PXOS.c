@@ -15,6 +15,9 @@
 #endif
 
 
+//void _chkstk(size_t s) {};
+//extern int _fltused = 0;
+
 
 
 typedef BOOL(WINAPI* PXDebugActiveProcessStopFunction)(_In_ DWORD dwProcessId);
@@ -162,7 +165,7 @@ DWORD CountSetBits(ULONG_PTR bitMask)
 }
 
 
-PXActionResult PXAPI PXSystemPrelude()
+PXResult PXAPI  PXSystemPrelude()
 {
     if(_PXOS.Init)
     {
@@ -429,7 +432,7 @@ PXOS* PXAPI PXSystemGet()
 
 const char OSNameNotFound[] = "**Unkown**";
 
-PXActionResult PXAPI PXSystemVersionGetViaRegistry(PXOSVersion* const pxOSVersion)
+PXResult PXAPI  PXSystemVersionGetViaRegistry(PXOSVersion* const pxOSVersion)
 {
     PXClear(PXOSVersion, pxOSVersion);
 
@@ -543,7 +546,7 @@ PXActionResult PXAPI PXSystemVersionGetViaRegistry(PXOSVersion* const pxOSVersio
 #endif
 }
 
-PXActionResult PXAPI PXSystemVersionGetViaKernel(PXOSVersion* const pxOSVersion)
+PXResult PXAPI  PXSystemVersionGetViaKernel(PXOSVersion* const pxOSVersion)
 {
     return PXActionInvalid;
 }
@@ -775,7 +778,7 @@ void PXAPI PXSystemVersionGet(PXOSVersion* const pxOSVersion)
 #endif
 }
 
-PXActionResult PXAPI PXUserNameGet(char* const text, const PXSize textSizeMax, PXSize* const textSizeWritten)
+PXResult PXAPI  PXUserNameGet(char* const text, const PXSize textSizeMax, PXSize* const textSizeWritten)
 {
     PXActionResult result;
 
@@ -800,7 +803,7 @@ PXActionResult PXAPI PXUserNameGet(char* const text, const PXSize textSizeMax, P
     return result;
 }
 
-PXActionResult PXAPI PXComputerNameGet(char* const text, const PXSize textSizeMax, PXSize* const textSizeWritten)
+PXResult PXAPI  PXComputerNameGet(char* const text, const PXSize textSizeMax, PXSize* const textSizeWritten)
 {
 #if OSUnix
 
@@ -811,7 +814,7 @@ PXActionResult PXAPI PXComputerNameGet(char* const text, const PXSize textSizeMa
 #endif
 }
 
-PXActionResult PXAPI PXFilePathCleanse(const char* pathInput, char* const pathOutput, const PXSize pathOutputSizeMAX, PXSize* const pathOutputSizeWritten)
+PXResult PXAPI  PXFilePathCleanse(const char* pathInput, char* const pathOutput, const PXSize pathOutputSizeMAX, PXSize* const pathOutputSizeWritten)
 {
     PXActionResult pxActionResult;
 
@@ -833,7 +836,7 @@ PXActionResult PXAPI PXFilePathCleanse(const char* pathInput, char* const pathOu
     return pxActionResult;
 }
 
-PXActionResult PXAPI PXFileNameViaHandleA(PXFile* const pxFile, char* const fileNameBuffer, const PXSize pathOutputSizeMAX, PXSize* const pathOutputSizeWritten)
+PXResult PXAPI  PXFileNameViaHandleA(PXFile* const pxFile, char* const fileNameBuffer, const PXSize pathOutputSizeMAX, PXSize* const pathOutputSizeWritten)
 {
     char filePathIntermediate[PXPathSizeMax];
     char* filePathIntermediateOff = filePathIntermediate;
@@ -872,7 +875,7 @@ PXActionResult PXAPI PXFileNameViaHandleA(PXFile* const pxFile, char* const file
 
     PXTextPrintA(namePathBuffer, namePathBufferSIze, "/proc/self/fd/%d", pxFile->FileDescriptorID); // "/prof/self/fd/0123456789"
 
-    const PXSize writtenBytes = readlink(namePathBuffer, filePath->TextA, filePath->SizeAllocated); // [POSIX.1 - 2008]
+    const PXSize writtenBytes = readlink(namePathBuffer, filePath->A, filePath->SizeAllocated); // [POSIX.1 - 2008]
     const PXActionResult readResult = PXErrorCurrent(-1 != writtenBytes);
 
     if(PXActionSuccessful != readResult)
@@ -903,7 +906,7 @@ PXActionResult PXAPI PXFileNameViaHandleA(PXFile* const pxFile, char* const file
         "File",
         "Translate file descriptor <%i> to <%s>",
         pxFile->FileDescriptorID,
-        filePath->TextA
+        filePath->A
     );
 #endif
 
@@ -911,7 +914,7 @@ PXActionResult PXAPI PXFileNameViaHandleA(PXFile* const pxFile, char* const file
     // realpath();
     //
     // Only for Apple-OSX
-    //const int resultID = fcntl(pxFile->FileID, F_GETPATH, filePath->TextA); // [POSIX]
+    //const int resultID = fcntl(pxFile->FileID, F_GETPATH, filePath->A); // [POSIX]
 
     return PXActionSuccessful;
 
@@ -937,7 +940,7 @@ PXActionResult PXAPI PXFileNameViaHandleA(PXFile* const pxFile, char* const file
     // GetShortPathNameA() makes a path to something like "\\?\C:\Data\WORKSP~1\_GIT_~1\BITFIR~1\GAMECL~1\Shader\SKYBOX~2.GLS"
     // Why would you ever want this?
 
-    // _fullpath(filePath->TextA, buffer, PXPathSizeMax); also, does not what we need it to do
+    // _fullpath(filePath->A, buffer, PXPathSizeMax); also, does not what we need it to do
 
     if(PXActionSuccessful != readResult)
     {
@@ -1053,7 +1056,7 @@ void PXAPI PXProcessCurrent(PXProcess* const pxProcess)
 #endif
 }
 
-PXActionResult PXAPI PXProcessMemoryWrite
+PXResult PXAPI  PXProcessMemoryWrite
 (
     const PXProcessHandle pxProcessHandle,
     const void* baseAddress,
@@ -1082,7 +1085,7 @@ PXActionResult PXAPI PXProcessMemoryWrite
     return pxActionResult;
 }
 
-PXActionResult PXAPI PXProcessMemoryRead
+PXResult PXAPI  PXProcessMemoryRead
 (
     const PXProcessHandle pxProcessHandle, 
     const void* baseAddress,
@@ -1120,7 +1123,7 @@ PXBool PXAPI PXThreadIsMain()
     return _PXOS.MainThread.HandleID == pxThreadCurrent.HandleID;
 }
 
-PXActionResult PXAPI PXThreadCurrent(PXThread* const pxThread)
+PXResult PXAPI PXThreadCurrent(PXThread* const pxThread)
 {
     PXClear(PXThread, pxThread);
 
@@ -1143,7 +1146,7 @@ PXActionResult PXAPI PXThreadCurrent(PXThread* const pxThread)
 #endif
 }
 
-PXActionResult PXAPI PXThreadResume(PXThread* const pxThread)
+PXResult PXAPI  PXThreadResume(PXThread* const pxThread)
 {
     pxThread->Info.Behaviour &= ~PXExecuteStateMask;
     pxThread->Info.Behaviour |= PXExecuteStateRunning;
@@ -1175,7 +1178,7 @@ PXActionResult PXAPI PXThreadResume(PXThread* const pxThread)
 #endif
 }
 
-PXActionResult PXAPI PXThreadSuspend(PXThread* const pxThread)
+PXResult PXAPI  PXThreadSuspend(PXThread* const pxThread)
 {
     const PXProcessThreadHandle threadHandle = pxThread->Info.Handle.ThreadHandle;
 
@@ -1208,7 +1211,7 @@ PXActionResult PXAPI PXThreadSuspend(PXThread* const pxThread)
 #endif
 }
 
-PXActionResult PXAPI PXThreadWait(PXThread* const pxThread)
+PXResult PXAPI  PXThreadWait(PXThread* const pxThread)
 {
     pxThread->Info.Behaviour &= ~PXExecuteStateMask;
     pxThread->Info.Behaviour |= PXExecuteStateWaiting;
@@ -1246,7 +1249,7 @@ PXActionResult PXAPI PXThreadWait(PXThread* const pxThread)
 #endif
 }
 
-PXActionResult PXAPI PXThreadCPUCoreAffinitySet(PXThread* const pxThread, const PXInt16U coreIndex)
+PXResult PXAPI  PXThreadCPUCoreAffinitySet(PXThread* const pxThread, const PXI16U coreIndex)
 {
     //MAXIMUM_PROCESSORS;
 
@@ -1270,7 +1273,7 @@ PXActionResult PXAPI PXThreadCPUCoreAffinitySet(PXThread* const pxThread, const 
 
 
 
-PXActionResult PXAPI PXThreadYieldToOtherThreads()
+PXResult PXAPI  PXThreadYieldToOtherThreads()
 {
     PXActionResult pxActionResult;
 
@@ -1306,7 +1309,7 @@ PXActionResult PXAPI PXThreadYieldToOtherThreads()
 
 
 
-PXActionResult PXAPI PXMemoryHeapCreate(PXMemoryHeap* const pxMemoryHeap)
+PXResult PXAPI  PXMemoryHeapCreate(PXMemoryHeap* const pxMemoryHeap)
 {
 #if OSUnix
 #elif OSWindows
@@ -1316,7 +1319,7 @@ PXActionResult PXAPI PXMemoryHeapCreate(PXMemoryHeap* const pxMemoryHeap)
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXMemoryHeapRelease(PXMemoryHeap* const pxMemoryHeap)
+PXResult PXAPI  PXMemoryHeapRelease(PXMemoryHeap* const pxMemoryHeap)
 {
 #if OSUnix
 #elif OSWindows
@@ -1795,10 +1798,10 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize* const createdSize, cons
         "%20s : %7s -> %3i%% %6ix\n"
         "%20s : %s",
         size,
-        "Normal-PageSize", pxTextPageSizeNormal.TextA, (int)pxFilePageFileInfo.PageUtilizationNormal, pxFilePageFileInfo.PageAmountNormal,
-        "Physical-PageSize", pxTextPageSizePhysical.TextA, (int)pxFilePageFileInfo.PageUtilizationPhysical, pxFilePageFileInfo.PageAmountPhysical,
-        "Large-PageSize", pxTextPageSizeLarge.TextA, (int)pxFilePageFileInfo.PageUtilizationLarge, pxFilePageFileInfo.PageAmountLarge,
-        "Huge-PageSize", pxTextPageSizeHuge.TextA, (int)pxFilePageFileInfo.PageUtilizationHuge, pxFilePageFileInfo.PageAmountHuge,
+        "Normal-PageSize", pxTextPageSizeNormal.A, (int)pxFilePageFileInfo.PageUtilizationNormal, pxFilePageFileInfo.PageAmountNormal,
+        "Physical-PageSize", pxTextPageSizePhysical.A, (int)pxFilePageFileInfo.PageUtilizationPhysical, pxFilePageFileInfo.PageAmountPhysical,
+        "Large-PageSize", pxTextPageSizeLarge.A, (int)pxFilePageFileInfo.PageUtilizationLarge, pxFilePageFileInfo.PageAmountLarge,
+        "Huge-PageSize", pxTextPageSizeHuge.A, (int)pxFilePageFileInfo.PageUtilizationHuge, pxFilePageFileInfo.PageAmountHuge,
         "Targeted type", text
     );
 #endif
@@ -2150,7 +2153,7 @@ void PXAPI PXMemoryVirtualPrefetch(const void* adress, const PXSize size)
         "Prefetch",
         "<%p> %s",
         adress,
-        pxTextSize.TextA
+        pxTextSize.A
     );
 #endif
 
@@ -2178,7 +2181,7 @@ void PXAPI PXMemoryVirtualPrefetch(const void* adress, const PXSize size)
 #endif
 }
 
-PXActionResult PXAPI PXMemoryVirtualRelease(const void* adress, const PXSize size)
+PXResult PXAPI  PXMemoryVirtualRelease(const void* adress, const PXSize size)
 {
     if(!(adress && size))
     {
@@ -2235,7 +2238,7 @@ void* PXAPI PXMemoryVirtualReallocate(const void* adress, const PXSize size)
     VirtualQuery(adress, &memoryInfo, sizeof(MEMORY_BASIC_INFORMATION));
 
     // Copy data to new pages
-    PXMemoryCopy(adress, memoryInfo.RegionSize, newSpaceMemory, memoryInfo.RegionSize);
+    PXMemoryCopy(adress, newSpaceMemory, memoryInfo.RegionSize);
 
     // Delete old pages
     PXMemoryVirtualRelease(adress, memoryInfo.RegionSize);
@@ -2247,7 +2250,7 @@ void* PXAPI PXMemoryVirtualReallocate(const void* adress, const PXSize size)
 
 }
 
-PXActionResult PXAPI PXMemoryVirtualInfoViaAdress(PXMemoryVirtualInfo* const pxMemoryVirtualInfo, const void* adress)
+PXResult PXAPI  PXMemoryVirtualInfoViaAdress(PXMemoryVirtualInfo* const pxMemoryVirtualInfo, const void* adress)
 {
 #if OSUnix
 #elif OSWindows
@@ -2263,7 +2266,10 @@ PXActionResult PXAPI PXMemoryVirtualInfoViaAdress(PXMemoryVirtualInfo* const pxM
     pxMemoryVirtualInfo->ProtectionCurrent = memoryInfo.Protect;
     pxMemoryVirtualInfo->State = memoryInfo.State;
     pxMemoryVirtualInfo->Type = memoryInfo.Type;
+
+#if OS64B
     pxMemoryVirtualInfo->PartitionID = memoryInfo.PartitionId;
+#endif
 
 #if 0
     switch(memoryInfo.AllocationProtect)
@@ -2311,7 +2317,7 @@ PXActionResult PXAPI PXMemoryVirtualInfoViaAdress(PXMemoryVirtualInfo* const pxM
 
 
 
-PXActionResult PXAPI PXSymbolServerInitialize()
+PXResult PXAPI  PXSymbolServerInitialize()
 {
     PXOS* const pxOS = PXSystemGet();
 
@@ -2350,7 +2356,7 @@ PXActionResult PXAPI PXSymbolServerInitialize()
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXSymbolServerCleanup()
+PXResult PXAPI  PXSymbolServerCleanup()
 {
     HANDLE processID = GetCurrentProcess();
     const PXSymCleanupFunction pxSymCleanup = (PXSymCleanupFunction)_PXOS.SymbolServerCleanup;
@@ -2364,14 +2370,14 @@ PXActionResult PXAPI PXSymbolServerCleanup()
     return PXActionFailedLoad;
 }
 
-PXActionResult PXAPI PXSymbolServerOptionsSet()
+PXResult PXAPI  PXSymbolServerOptionsSet()
 {
    // DWORD xxxas = SymSetOptions(SYMOPT_LOAD_ANYTHING); // SYMOPT_LOAD_LINES
 
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXSymbolListLoad(const PXProcessHandle processHandle, const void* baseAdress)
+PXResult PXAPI  PXSymbolListLoad(const PXProcessHandle processHandle, const void* baseAdress)
 {
 #if OSUnix
 
@@ -2399,7 +2405,7 @@ PXActionResult PXAPI PXSymbolListLoad(const PXProcessHandle processHandle, const
 #endif
 }
 
-PXActionResult PXAPI PXSymbolModuleLoad(const PXProcessHandle processHandle, const char* moduleName, void** baseAdress)
+PXResult PXAPI  PXSymbolModuleLoad(const PXProcessHandle processHandle, const char* moduleName, void** baseAdress)
 {
     const PXSymLoadModuleFunction pxSymbolModuleLoad = (PXSymLoadModuleFunction)_PXOS.SymbolModuleLoad;
     const DWORD64 baseOfDll = pxSymbolModuleLoad // DbgHelp.dll 5.1 or later        SymLoadModuleEx, DbgHelp.dll 6.0 or later
@@ -2423,7 +2429,7 @@ PXActionResult PXAPI PXSymbolModuleLoad(const PXProcessHandle processHandle, con
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXSymbolStackWalk(PXSymbolStackWalkInfo* const pxSymbolStackWalkInfo)
+PXResult PXAPI  PXSymbolStackWalk(PXSymbolStackWalkInfo* const pxSymbolStackWalkInfo)
 {
      const PXStackWalk64Function pxStackWalk64 = (PXStackWalk64Function)_PXOS.SymbolStackWalk;
 // const PXSymGetSymFromAddr64 pXSymGetSymFromAddr64 = (PXSymGetSymFromAddr64)pxDebug->SymbolFromAddress;
@@ -2445,7 +2451,7 @@ PXActionResult PXAPI PXSymbolStackWalk(PXSymbolStackWalkInfo* const pxSymbolStac
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXSymbolStackTrace(PXSymbol* const pxSymbolList, const PXSize pxSymbolListAmount, const PXSize start, const PXSize depth)
+PXResult PXAPI  PXSymbolStackTrace(PXSymbol* const pxSymbolList, const PXSize pxSymbolListAmount, const PXSize start, const PXSize depth)
 {
     PXMemoryClear(pxSymbolList, sizeof(PXSymbol) * pxSymbolListAmount);
 
@@ -2693,7 +2699,7 @@ PXActionResult PXAPI PXSymbolStackTrace(PXSymbol* const pxSymbolList, const PXSi
 #endif
 }
 
-PXActionResult PXAPI PXSymbolUnDecorateName(const char* inputName, char* name, const PXSize nameLengthMax, PXSize* nameLengthWritten)
+PXResult PXAPI  PXSymbolUnDecorateName(const char* inputName, char* name, const PXSize nameLengthMax, PXSize* nameLengthWritten)
 {
     if(!(inputName && name && nameLengthMax))
     {
@@ -2718,7 +2724,7 @@ PXActionResult PXAPI PXSymbolUnDecorateName(const char* inputName, char* name, c
     return pxActionResult;
 }
 
-PXActionResult PXAPI PXSymbolFromAddress(PXSymbol* const pxSymbol, const void* const adress)
+PXResult PXAPI  PXSymbolFromAddress(PXSymbol* const pxSymbol, const void* const adress)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -2849,22 +2855,22 @@ PXActionResult PXAPI PXSymbolFromAddress(PXSymbol* const pxSymbol, const void* c
 #endif
 }
 
-PXActionResult PXAPI PXSymbolEnumerate()
+PXResult PXAPI  PXSymbolEnumerate()
 {
    
 }
 
-PXActionResult PXAPI PXSymbolFunctionTableAccess()
+PXResult PXAPI  PXSymbolFunctionTableAccess()
 {
    
 }
 
-PXActionResult PXAPI PXSymbolModuleBaseGet()
+PXResult PXAPI  PXSymbolModuleBaseGet()
 {
  
 }
 
-PXActionResult PXAPI PXSymbolModuleHandleFromAdress(PXHandleModule* const pxHandleModule, const void* const adress)
+PXResult PXAPI  PXSymbolModuleHandleFromAdress(PXHandleModule* const pxHandleModule, const void* const adress)
 {
 #if OSUnix && 0
     Dl_info info;
@@ -2885,7 +2891,7 @@ PXActionResult PXAPI PXSymbolModuleHandleFromAdress(PXHandleModule* const pxHand
 #endif
 }
 
-PXActionResult PXAPI PXSymbolModuleName(const PXHandleModule pxHandleModule, char* const name)
+PXResult PXAPI  PXSymbolModuleName(const PXHandleModule pxHandleModule, char* const name)
 {
 #if OSUnix
 #elif OSWindows
@@ -2910,11 +2916,11 @@ PXActionResult PXAPI PXSymbolModuleName(const PXHandleModule pxHandleModule, cha
 
 
 
-const PXInt32U _lockWaitSpan = 100;
-const PXInt32U _lockWaitTrys = 3;
+const PXI32U _lockWaitSpan = 100;
+const PXI32U _lockWaitTrys = 3;
 
 
-PXActionResult PXAPI PXSemaphorCreate(PXLock* const pxLock)
+PXResult PXAPI  PXSemaphorCreate(PXLock* const pxLock)
 {
     PXActionResult pxActionResult;
 
@@ -2952,7 +2958,7 @@ PXActionResult PXAPI PXSemaphorCreate(PXLock* const pxLock)
     return pxActionResult; // Success
 }
 
-PXActionResult PXAPI PXSemaphorDelete(PXLock* const pxLock)
+PXResult PXAPI  PXSemaphorDelete(PXLock* const pxLock)
 {
 #if PXLogEnable
     PXLogPrint
@@ -2972,7 +2978,7 @@ PXActionResult PXAPI PXSemaphorDelete(PXLock* const pxLock)
 #endif
 }
 
-PXActionResult PXAPI PXSemaphorEnter(PXLock* const pxLock)
+PXResult PXAPI  PXSemaphorEnter(PXLock* const pxLock)
 {
 #if PXLogEnable && 0
     PXLogPrint
@@ -3047,7 +3053,7 @@ PXActionResult PXAPI PXSemaphorEnter(PXLock* const pxLock)
     return waitResult;
 }
 
-PXActionResult PXAPI PXSemaphorLeave(PXLock* const pxLock)
+PXResult PXAPI  PXSemaphorLeave(PXLock* const pxLock)
 { 
     if(!pxLock)
     {
@@ -3078,7 +3084,7 @@ PXActionResult PXAPI PXSemaphorLeave(PXLock* const pxLock)
 #endif   
 }
 
-PXActionResult PXAPI PXCriticalSectionCreate(PXLock* const pxLock)
+PXResult PXAPI  PXCriticalSectionCreate(PXLock* const pxLock)
 {
 #if PXLogEnable
     PXLogPrint
@@ -3097,7 +3103,7 @@ PXActionResult PXAPI PXCriticalSectionCreate(PXLock* const pxLock)
 #endif  
 }
 
-PXActionResult PXAPI PXCriticalSectionDelete(PXLock* const pxLock)
+PXResult PXAPI  PXCriticalSectionDelete(PXLock* const pxLock)
 {
 #if PXLogEnable
     PXLogPrint
@@ -3119,7 +3125,7 @@ PXActionResult PXAPI PXCriticalSectionDelete(PXLock* const pxLock)
 
 
 
-PXActionResult PXAPI PXCriticalSectionEnter(PXLock* const pxLock)
+PXResult PXAPI  PXCriticalSectionEnter(PXLock* const pxLock)
 {
 #if PXLogEnable && 0
     PXLogPrint
@@ -3176,7 +3182,7 @@ PXActionResult PXAPI PXCriticalSectionEnter(PXLock* const pxLock)
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXCriticalSectionLeave(PXLock* const pxLock)
+PXResult PXAPI  PXCriticalSectionLeave(PXLock* const pxLock)
 {
 #if PXLogEnable && 0
     PXLogPrint
@@ -3204,9 +3210,9 @@ PXActionResult PXAPI PXCriticalSectionLeave(PXLock* const pxLock)
 PSAPI_WS_WATCH_INFORMATION watchInformationList[MAXSIZELISTEE];
 
 
-PXActionResult PXAPI PXFileMapToMemoryEE(PXFile* const pxFile, const PXSize requestedSize, const PXAccessMode pxAccessMode, const PXBool prefetch)
+PXResult PXAPI  PXFileMapToMemoryEE(PXFile* const pxFile, const PXSize requestedSize, const PXAccessMode pxAccessMode, const PXBool prefetch)
 {
-    PXInt64U start = PXTimeCounterStampGet();
+    PXI64U start = PXTimeCounterStampGet();
 
 
 
@@ -3431,12 +3437,12 @@ PXActionResult PXAPI PXFileMapToMemoryEE(PXFile* const pxFile, const PXSize requ
         PXMemoryVirtualPrefetch(pxFile->Data, pxFile->DataUsed);
     }
 
-    PXInt64U stop = PXTimeCounterStampGet();
-    PXInt64U diff = stop - start;
+    PXI64U stop = PXTimeCounterStampGet();
+    PXI64U diff = stop - start;
 
     PXF32 timeS = PXTimeCounterStampToSecoundsF(diff);
 
-    PXInt64U bps = pxFile->DataUsed / timeS;
+    PXI64U bps = pxFile->DataUsed / timeS;
 
 
 #if PXLogEnable
@@ -3450,14 +3456,14 @@ PXActionResult PXAPI PXFileMapToMemoryEE(PXFile* const pxFile, const PXSize requ
         PXOSName,
         "Open-Mapping",
         "Read with %s/s",
-        pxTextbps.TextA
+        pxTextbps.A
     );
 #endif
 
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXPerformanceInfoGet(PXPerformanceInfo* const pxPerformanceInfo)
+PXResult PXAPI  PXPerformanceInfoGet(PXPerformanceInfo* const pxPerformanceInfo)
 {
     if(0 == pxPerformanceInfo->UpdateCounter)
     {
@@ -3466,11 +3472,11 @@ PXActionResult PXAPI PXPerformanceInfoGet(PXPerformanceInfo* const pxPerformance
     }
     else
     {
-        PXInt64U timestampPrevious = pxPerformanceInfo->TimeStamp;
+        PXI64U timestampPrevious = pxPerformanceInfo->TimeStamp;
 
         pxPerformanceInfo->TimeStamp = PXTimeCounterStampGet(); // override new
 
-        PXInt64U timestampDelta = pxPerformanceInfo->TimeStamp - timestampPrevious;
+        PXI64U timestampDelta = pxPerformanceInfo->TimeStamp - timestampPrevious;
 
         pxPerformanceInfo->TimeDelta = PXTimeCounterStampToSecoundsF(timestampDelta);
     }
@@ -3643,12 +3649,47 @@ PXActionResult PXAPI PXPerformanceInfoGet(PXPerformanceInfo* const pxPerformance
 #endif
 }
 
+PXResult PXAPI PXGPUList(PXGPUPhysical* const pxGPUPhysicalList, PXSize* const pxGPUPhysicalListSize)
+{
+#if OSUnix
+#elif OSWindows
+    DISPLAY_DEVICEA displayDevice;
+    displayDevice.cb = sizeof(DISPLAY_DEVICEA);
 
+    for(DWORD displayDeviceIndex = 0; EnumDisplayDevicesA(NULL, displayDeviceIndex, &displayDevice, 0); ++displayDeviceIndex)
+    {
+        PXBool isActive = (DISPLAY_DEVICE_ACTIVE & displayDevice.StateFlags) > 0;
+        PXBool isDeviceAttached = (DISPLAY_DEVICE_ATTACHED_TO_DESKTOP & displayDevice.StateFlags) > 0;
+        PXBool isDevice = isActive || isDeviceAttached;
 
+        if(!isDevice) 
+        {
+            continue;
+        }
 
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            PXOSName,
+            "GPU",
+            "%20s : %s\n"
+            "%20s : %s\n"
+            "%20s : %s\n"
+            "%20s : %s"
+            "DeviceName", displayDevice.DeviceName,
+            "DeviceString", displayDevice.DeviceString,
+            "DeviceID", displayDevice.DeviceID,
+            "DeviceKey", displayDevice.DeviceKey
+        );
+#endif
+    }
+#endif
 
+    return PXActionSuccessful;
+}
 
-PXActionResult PXAPI PXDebugEventContinue(const PXInt32U processID, const PXInt32U threadID)
+PXResult PXAPI  PXDebugEventContinue(const PXI32U processID, const PXI32U threadID)
 {
 #if OSUnix
 
@@ -3670,7 +3711,7 @@ PXActionResult PXAPI PXDebugEventContinue(const PXInt32U processID, const PXInt3
 #endif
 }
 
-PXActionResult PXAPI PXDebugEventWait(void* pxDebugEventInfo, const PXInt32U time)
+PXResult PXAPI  PXDebugEventWait(void* pxDebugEventInfo, const PXI32U time)
 {
     // WaitForDebugEvent() Windows XP, Kernel32.dll, debugapi.h
 // WaitForDebugEventEx() Windows 10, Kernel32.dll, debugapi.h
@@ -3686,12 +3727,12 @@ PXActionResult PXAPI PXDebugEventWait(void* pxDebugEventInfo, const PXInt32U tim
     return pxActionResult;
 }
 
-PXActionResult PXAPI PXDebugProcessActive()
+PXResult PXAPI  PXDebugProcessActive()
 {
     
 }
 
-PXActionResult PXAPI PXDebugBreak()
+PXResult PXAPI  PXDebugBreak()
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -3706,7 +3747,7 @@ PXActionResult PXAPI PXDebugBreak()
 #endif
 }
 
-PXActionResult PXAPI PXDebugOutputDebugStringA(const char* text)
+PXResult PXAPI  PXDebugOutputDebugStringA(const char* text)
 {
 #if OSUnix
 #elif OSWindows
@@ -3716,7 +3757,7 @@ PXActionResult PXAPI PXDebugOutputDebugStringA(const char* text)
 #endif
 }
 
-PXActionResult PXAPI PXDebugOutputDebugStringW(const wchar_t* text)
+PXResult PXAPI  PXDebugOutputDebugStringW(const wchar_t* text)
 {
 #if OSUnix
 #elif OSWindows
@@ -3726,12 +3767,12 @@ PXActionResult PXAPI PXDebugOutputDebugStringW(const wchar_t* text)
 #endif
 }
 
-PXActionResult PXAPI PXDebugProcessBreak()
+PXResult PXAPI  PXDebugProcessBreak()
 {
  
 }
 
-PXActionResult PXAPI PXDebugIsPresent(PXBool* const isPresent)
+PXResult PXAPI  PXDebugIsPresent(PXBool* const isPresent)
 {
 #if OSUnix
 #elif OSWindows
@@ -3747,7 +3788,7 @@ PXActionResult PXAPI PXDebugIsPresent(PXBool* const isPresent)
 #endif
 }
 
-PXActionResult PXAPI PXDebugIsPresentRemote(const PXProcessHandle processHandle, PXBool* const isPresent)
+PXResult PXAPI  PXDebugIsPresentRemote(const PXProcessHandle processHandle, PXBool* const isPresent)
 {
     if(!isPresent)
     {
@@ -3775,7 +3816,7 @@ PXActionResult PXAPI PXDebugIsPresentRemote(const PXProcessHandle processHandle,
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXDebugActiveProcessStop(const PXInt32U processID)
+PXResult PXAPI  PXDebugActiveProcessStop(const PXI32U processID)
 {
 #if OSUnix
     const long result = ptrace(PTRACE_DETACH, pxDebug->Process.ProcessID, 0, 0);
@@ -3796,13 +3837,13 @@ PXActionResult PXAPI PXDebugActiveProcessStop(const PXInt32U processID)
 #endif
 }
 
-PXActionResult PXAPI PXDebugModuleNameGet
+PXResult PXAPI  PXDebugModuleNameGet
 (
     const PXHandleModule pxHandleModule,
     char* moduleName,
     const PXSize moduleNameSize,
     PXSize* const sizeWritten,
-    const PXInt32U flags
+    const PXI32U flags
 )
 {
     char moduleNameBuffer[PXPathSizeMax];

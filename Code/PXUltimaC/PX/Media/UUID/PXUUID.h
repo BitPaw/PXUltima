@@ -1,7 +1,7 @@
-#ifndef PXUUIDINCLUDE
-#define PXUUIDINCLUDE
+#ifndef PXUUIDIncluded
+#define PXUUIDIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef struct PXUUID_
 {

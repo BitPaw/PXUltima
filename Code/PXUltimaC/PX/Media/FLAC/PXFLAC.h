@@ -1,7 +1,7 @@
-#ifndef PXFLACINCLUDE
-#define PXFLACINCLUDE
+#ifndef PXFLACIncluded
+#define PXFLACIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef enum PXFLACBlockType_
 {
@@ -19,7 +19,7 @@ PXFLACBlockType;
 
 typedef struct PXFLACBlock_
 {
-    PXInt32U BlockLength;
+    PXI32U BlockLength;
     PXFLACBlockType BlockType;
     PXBool IsLastMetaDataBlock;
 }
@@ -28,14 +28,14 @@ PXFLACBlock;
 typedef struct PXFLACSteamInfo_
 {
     char MD5Signature[16];
-    PXInt64U TotalSamples;
-    PXInt32U FrameSizeMinimum;
-    PXInt32U FrameSizeMaximum;
-    PXInt32U SampleRate;
-    PXInt16U SampleSizeMinimum;
-    PXInt16U SampleSizeMaximum;
-    PXInt8U NumberOfChannels;
-    PXInt8U BitsPerSample;
+    PXI64U TotalSamples;
+    PXI32U FrameSizeMinimum;
+    PXI32U FrameSizeMaximum;
+    PXI32U SampleRate;
+    PXI16U SampleSizeMinimum;
+    PXI16U SampleSizeMaximum;
+    PXI8U NumberOfChannels;
+    PXI8U BitsPerSample;
 }
 PXFLACSteamInfo;
 
@@ -45,9 +45,9 @@ typedef struct PXFLAC_
 }
 PXFLAC;
 
-PXPrivate inline PXFLACBlockType PXAPI PXFLACBlockTypeFromID(const PXInt8U typeID);
+PXPrivate inline PXFLACBlockType PXAPI PXFLACBlockTypeFromID(const PXI8U typeID);
 
-PXPublic PXActionResult PXAPI PXFLACLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXFLACSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXFLACLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXFLACSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

@@ -2,7 +2,7 @@
 
 #include <PX/OS/PXOS.h>
 
-PXActionResult PXAPI PXLockCreate(PXLock* const lock, const PXLockType type)
+PXResult PXAPI  PXLockCreate(PXLock* const lock, const PXLockType type)
 {
     PXActionResult pxActionResult;
 
@@ -28,7 +28,7 @@ PXActionResult PXAPI PXLockCreate(PXLock* const lock, const PXLockType type)
     return pxActionResult;
 }
 
-PXActionResult PXAPI PXLockDelete(PXLock* const lock)
+PXResult PXAPI  PXLockDelete(PXLock* const lock)
 {
     PXActionResult pxActionResult;
 
@@ -51,7 +51,7 @@ PXActionResult PXAPI PXLockDelete(PXLock* const lock)
     return pxActionResult;
 }
 
-PXActionResult PXAPI PXLockEngage(PXLock* const lock)
+PXResult PXAPI  PXLockEngage(PXLock* const lock)
 {
     PXActionResult pxActionResult;
 
@@ -76,7 +76,7 @@ PXActionResult PXAPI PXLockEngage(PXLock* const lock)
     return pxActionResult;
 }
 
-PXActionResult PXAPI PXLockRelease(PXLock* const pxLock)
+PXResult PXAPI  PXLockRelease(PXLock* const pxLock)
 {
     PXActionResult pxActionResult;
 

@@ -1,7 +1,7 @@
-#ifndef PXMSIINCLUDE
-#define PXMSIINCLUDE
+#ifndef PXMSIIncluded
+#define PXMSIIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef struct PXMSI_
 {
@@ -9,7 +9,7 @@ typedef struct PXMSI_
 }
 PXMSI;
 
-PXPublic PXActionResult PXAPI PXMSILoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXMSISaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXMSILoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXMSISaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

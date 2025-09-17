@@ -1,20 +1,9 @@
-#ifndef PXTranslatorINCLUDE
-#define PXTranslatorINCLUDE
+#ifndef PXTranslatorIncluded
+#define PXTranslatorIncluded
 
-#include <PX/OS/Error/PXActionResult.h>
-#include <PX/Media/PXType.h>
-#include <PX/OS/File/PXFile.h>
+#include <PX/Engine/PXResource.h>
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-PXPublic PXActionResult PXTranslatorEnglishToGerman(PXFile* const inputStreamEnglish, PXFile* const outputStreamGerman);
-PXPublic PXActionResult PXTranslatorGermanToEnglish(PXFile* const inputStreamGerman, PXFile* const outputStreamEnglish);
-
-#ifdef __cplusplus
-}
-#endif
+PXPublic PXResult PXAPI PXTranslatorEnglishToGerman(PXFile* const inputStreamEnglish, PXFile* const outputStreamGerman);
+PXPublic PXResult PXAPI PXTranslatorGermanToEnglish(PXFile* const inputStreamGerman, PXFile* const outputStreamEnglish);
 
 #endif

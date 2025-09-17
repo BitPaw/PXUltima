@@ -1,6 +1,6 @@
-#ifndef PXMD5INCLUDE
-#define PXMD5INCLUDE
+#ifndef PXMD5Included
+#define PXMD5Included
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 #endif

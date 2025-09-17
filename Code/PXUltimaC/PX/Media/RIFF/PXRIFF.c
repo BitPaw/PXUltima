@@ -3,22 +3,22 @@
 #include <PX/OS/File/PXFile.h>
 #include <PX/OS/Memory/PXMemory.h>
 
-#define PXRIFFSignature PXInt32Make('R', 'I', 'F', 'F')
-#define RIFXSignature PXInt32Make('R', 'I', 'F', 'X')
-//#define PXRIFFSubTypeANI PXInt32MakeEndianBig('x', 'x', 'x', 'x')
-#define PXRIFFSubTypeAVI PXInt32Make('A', 'V', 'I', ' ')
-#define PXRIFFSubTypeAVIX PXInt32Make('A', 'V', 'I', 'X')
-#define PXRIFFSubTypeRDIB PXInt32Make('R', 'D', 'I', 'B')
-//#define PXRIFFSubTypeBND PXInt32MakeEndianBig('x', 'x', 'x', 'x')
-//#define PXRIFFSubTypeDXR PXInt32MakeEndianBig('x', 'x', 'x', 'x')
-#define PXRIFFSubTypePAL PXInt32Make('P', 'A', 'L', ' ')
-//#define PXRIFFSubTypeRDI PXInt32MakeEndianBig('x', 'x', 'x', 'x')
-#define PXRIFFSubTypeRMMP PXInt32Make('R', 'M', 'M', 'P')
-#define PXRIFFSubTypeRMID PXInt32Make('R', 'M', 'I', 'D')
-#define PXRIFFSubTypeWAVE PXInt32Make('W', 'A', 'V', 'E')
-#define PXRIFFSubTypeWEBP PXInt32Make('W', 'E', 'B', 'P')
+#define PXRIFFSignature PXI32Make('R', 'I', 'F', 'F')
+#define RIFXSignature PXI32Make('R', 'I', 'F', 'X')
+//#define PXRIFFSubTypeANI PXI32MakeEndianBig('x', 'x', 'x', 'x')
+#define PXRIFFSubTypeAVI PXI32Make('A', 'V', 'I', ' ')
+#define PXRIFFSubTypeAVIX PXI32Make('A', 'V', 'I', 'X')
+#define PXRIFFSubTypeRDIB PXI32Make('R', 'D', 'I', 'B')
+//#define PXRIFFSubTypeBND PXI32MakeEndianBig('x', 'x', 'x', 'x')
+//#define PXRIFFSubTypeDXR PXI32MakeEndianBig('x', 'x', 'x', 'x')
+#define PXRIFFSubTypePAL PXI32Make('P', 'A', 'L', ' ')
+//#define PXRIFFSubTypeRDI PXI32MakeEndianBig('x', 'x', 'x', 'x')
+#define PXRIFFSubTypeRMMP PXI32Make('R', 'M', 'M', 'P')
+#define PXRIFFSubTypeRMID PXI32Make('R', 'M', 'I', 'D')
+#define PXRIFFSubTypeWAVE PXI32Make('W', 'A', 'V', 'E')
+#define PXRIFFSubTypeWEBP PXI32Make('W', 'E', 'B', 'P')
 
-PXEndian PXAPI PXRIFFEndianFromID(const PXInt32U value)
+PXEndian PXAPI PXRIFFEndianFromID(const PXI32U value)
 {
     switch (value)
     {
@@ -31,7 +31,7 @@ PXEndian PXAPI PXRIFFEndianFromID(const PXInt32U value)
     }
 }
 
-PXInt32U PXAPI PXRIFFEndianToID(const PXEndian value)
+PXI32U PXAPI PXRIFFEndianToID(const PXEndian value)
 {
     switch (value)
     {
@@ -44,7 +44,7 @@ PXInt32U PXAPI PXRIFFEndianToID(const PXEndian value)
     }
 }
 
-PXRIFFFormat PXAPI PXRIFFFormatFromID(const PXInt32U value)
+PXRIFFFormat PXAPI PXRIFFFormatFromID(const PXI32U value)
 {
     switch (value)
     {
@@ -69,7 +69,7 @@ PXRIFFFormat PXAPI PXRIFFFormatFromID(const PXInt32U value)
     }
 }
 
-PXInt32U PXAPI PXRIFFFormatToID(const PXRIFFFormat value)
+PXI32U PXAPI PXRIFFFormatToID(const PXRIFFFormat value)
 {
     switch (value)
     {
@@ -93,10 +93,10 @@ PXInt32U PXAPI PXRIFFFormatToID(const PXRIFFFormat value)
     }
 }
 
-PXActionResult PXAPI PXRIFFLoadFromFile(PXRIFF* const riff, PXFile* const pxFile)
+PXResult PXAPI  PXRIFFLoadFromFile(PXRIFF* const riff, PXFile* const pxFile)
 {
-    PXInt32UCluster chunkID;
-    PXInt32UCluster formatID;
+    PXI32UCluster chunkID;
+    PXI32UCluster formatID;
 
     const PXTypeEntry pxDataStreamElementList[] =
     {
@@ -114,10 +114,10 @@ PXActionResult PXAPI PXRIFFLoadFromFile(PXRIFF* const riff, PXFile* const pxFile
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXRIFFSaveToFile(const PXRIFF* const riff, PXFile* const pxFile)
+PXResult PXAPI  PXRIFFSaveToFile(const PXRIFF* const riff, PXFile* const pxFile)
 {
-    const PXInt32U riffSignature = PXRIFFEndianToID(riff->EndianFormat);
-    const PXInt32U riffType = PXRIFFFormatToID(riff->Format);
+    const PXI32U riffSignature = PXRIFFEndianToID(riff->EndianFormat);
+    const PXI32U riffType = PXRIFFFormatToID(riff->Format);
 
     const PXTypeEntry pxDataStreamElementList[] =
     {

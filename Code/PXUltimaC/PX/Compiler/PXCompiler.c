@@ -439,7 +439,7 @@ PXBool PXAPI PXCompilerSymbolEntryEnsureCheckList(PXCompiler* const pxCompiler, 
 
         const char* expectedTypeText = PXCompilerCompilerSymbolLexerToString(pxCompilerSymbolLexer);
 
-        PXTextAppendF(&bufferOptions, "%s, ", expectedTypeText);
+        PXAppendF(&bufferOptions, "%s, ", expectedTypeText);
     }
 
 
@@ -451,7 +451,7 @@ PXBool PXAPI PXCompilerSymbolEntryEnsureCheckList(PXCompiler* const pxCompiler, 
         "Symbol not as expected!\n"
         "Allowed:%s but got <%s>\n"
         "Line: %i, Character: %i, Size: %i",
-        bufferOptions.TextA,
+        bufferOptions.A,
         gotTypeText,
         pxCompiler->ReadInfo.SymbolEntryCurrent.Line,
         pxCompiler->ReadInfo.SymbolEntryCurrent.Coloum,
@@ -807,7 +807,7 @@ PXCompilerSymbolLexer PXAPI PXCompilerTryAnalyseType(PXFile* const tokenStream, 
                     // Validate is float is valid until the '.'
                     for(floatTextSize = 0; (floatTextSize <= dotIndex + 1) && isValidFloatSyntax; ++floatTextSize)
                     {
-                        isValidFloatSyntax = PXTextPXF32IsAllowedCharacter(text[floatTextSize]);
+                        isValidFloatSyntax = PXTextIsAllowedForF32(text[floatTextSize]);
                     }
 
                     if(isValidFloatSyntax)
@@ -815,7 +815,7 @@ PXCompilerSymbolLexer PXAPI PXCompilerTryAnalyseType(PXFile* const tokenStream, 
                         // If this is a float, check after the '.' until we hit non numbers
                         for(floatTextSize = dotIndex + 1; (floatTextSize <= textSize) && isValidFloatSyntax; ++floatTextSize)
                         {
-                            isValidFloatSyntax = PXTextPXF32IsAllowedCharacter(text[floatTextSize]);
+                            isValidFloatSyntax = PXTextIsAllowedForF32(text[floatTextSize]);
                         }
 
                         floatTextSize -= 1;
@@ -906,7 +906,7 @@ PXCompilerSymbolLexer PXAPI PXCompilerTryAnalyseType(PXFile* const tokenStream, 
     return PXCompilerSymbolLexerGeneric;
 }
 
-PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler)
+PXResult PXAPI  PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler)
 {
     if(!pxCompiler)
     {
@@ -943,7 +943,7 @@ PXActionResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler)
         PXCompilerText,
         PXCompilerTextLexer,
         "Starting analisis for <%s>",
-        pxTextSize.TextA
+        pxTextSize.A
     );
 #endif
 
@@ -1287,7 +1287,7 @@ PXBool PXAPI PXCompilerParseStringUntilNewLine(PXCompiler* const pxCompiler, PXT
         dataBlockSize = (pxCompiler->ReadInfo.SymbolEntryCurrent.Coloum - coloumStart) + pxCompiler->ReadInfo.SymbolEntryCurrent.Size;
     }
 
-    pxText->SizeUsed = PXTextCopyA(dataBlockPoint, dataBlockSize, pxText->TextA, pxText->SizeAllocated);
+    pxText->SizeUsed = PXTextCopyA(dataBlockPoint, dataBlockSize, pxText->A, pxText->SizeAllocated);
 
     return PXYes;
 }
@@ -1303,7 +1303,7 @@ PXBool PXAPI PXCompilerParseStringUntilNewLineA(PXCompiler* const pxCompiler, ch
     return result;
 }
 
-PXBool PXAPI PXCompilerEnsureTextAndCompare(PXCompiler* const pxCompiler, const char* const text, const PXSize textSize)
+PXBool PXAPI PXCompilerEnsureAndCompare(PXCompiler* const pxCompiler, const char* const text, const PXSize textSize)
 {
     const PXBool isText = PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerGeneric);
 
@@ -1331,7 +1331,7 @@ PXI8U PXAPI PXCompilerEnsureTextListAndCompare(PXCompiler* const pxCompiler, con
         const char* text = listTextData[i];
         const PXI8U size = listTextSize[i];
 
-        const PXBool isTarget = PXCompilerEnsureTextAndCompare(pxCompiler, text, size);
+        const PXBool isTarget = PXCompilerEnsureAndCompare(pxCompiler, text, size);
 
         if(isTarget)
         {
@@ -1352,7 +1352,7 @@ PXBool PXAPI PXCompilerEnsurePropertyText
 )
 {
     // Key
-    const PXBool isTarget = PXCompilerEnsureTextAndCompare(pxCompiler, propertyKey, propertyKeySize);
+    const PXBool isTarget = PXCompilerEnsureAndCompare(pxCompiler, propertyKey, propertyKeySize);
 
     if(!isTarget)
     {
@@ -1608,9 +1608,9 @@ void PXAPI PXCompilerWrite(PXCompiler* const pxCompiler)
     // Add missing parsing functions
     pxCompilerWriteInfo->WriteNode = PXCompilerWriteNode;
 
-    if(!pxCompilerWriteInfo->WriteInclude)
+    if(!pxCompilerWriteInfo->WriteIncluded)
     {
-        pxCompilerWriteInfo->WriteInclude = PXCompilerWriteInclude;
+        pxCompilerWriteInfo->WriteIncluded = PXCompilerWriteIncluded;
     }
 
     if(!pxCompilerWriteInfo->WriteComment)
@@ -1688,9 +1688,9 @@ void PXAPI PXCompilerWriteNode(PXCompiler* const pxCompiler)
             pxCompiler->WriteInfo.WriteFile(pxCompiler);
             break;
         }
-        case PXDocumentElementTypePreprocessorInclude:
+        case PXDocumentElementTypePreprocessorIncluded:
         {
-            pxCompiler->WriteInfo.WriteInclude(pxCompiler);
+            pxCompiler->WriteInfo.WriteIncluded(pxCompiler);
             break;
         }
         case PXDocumentElementTypeEnum:
@@ -1721,9 +1721,9 @@ void PXAPI PXCompilerWriteNode(PXCompiler* const pxCompiler)
                 PXJavaContainerWrite(sibling, pxFile);
                 break;
             }
-            case PXDocumentElementTypeInclude:
+            case PXDocumentElementTypeIncluded:
             {
-                PXJavaIncludeWrite(sibling, pxFile);
+                PXJavaIncludedWrite(sibling, pxFile);
                 break;
             }
             case PXDocumentElementTypeEnum:
@@ -1754,7 +1754,7 @@ void PXAPI PXCompilerWriteNode(PXCompiler* const pxCompiler)
 #endif
 }
 
-void PXAPI PXCompilerWriteInclude(PXCompiler* const pxCompiler)
+void PXAPI PXCompilerWriteIncluded(PXCompiler* const pxCompiler)
 {
     PXFile* const pxFile = pxCompiler->WriteInfo.FileOutput;
     PXCodeDocumentElement* const entry = pxCompiler->WriteInfo.CodeElementCurrent;

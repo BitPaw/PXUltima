@@ -1,7 +1,7 @@
-#ifndef PXVOBLINCLUDE
-#define PXVOBLINCLUDE
+#ifndef PXVOBLIncluded
+#define PXVOBLIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef struct PXVOB_
 {
@@ -9,7 +9,7 @@ typedef struct PXVOB_
 }
 PXVOB;
 
-PXPublic PXActionResult PXAPI PXVOBLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXVOBLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXVOBLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXVOBLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

@@ -1,14 +1,14 @@
 #include "PXVulcan.h"
 
 #include <PX/OS/Memory/PXMemory.h>
-#include <PX/OS/GUI/PXGUI.h>
+#include <PX/Engine/PXGUI.h>
 #include <PX/OS/Console/PXConsole.h>
 
 #include <stdio.h>
 
 #define PXVulcanDebug 1
 
-PXActionResult PXAPI PXVulcanErrorCodeFromID(const VkResult vkResultID)
+PXResult PXAPI  PXVulcanErrorCodeFromID(const VkResult vkResultID)
 {
     switch (vkResultID)
     {
@@ -124,7 +124,7 @@ PXActionResult PXAPI PXVulcanErrorCodeFromID(const VkResult vkResultID)
     };
 }
 
-PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicInitializeInfo* const pxGraphicInitializeInfo)
+PXResult PXAPI  PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicInitializeInfo* const pxGraphicInitializeInfo)
 {
     PXClear(PXVulcan, pxVulcan);
 
@@ -299,7 +299,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicIniti
 
     // Fetch extensions
     {
-        PXInt32U amountOfExtenions = 0;
+        PXI32U amountOfExtenions = 0;
 
         const VkResult fetch = pxVulcan->ExtensionInstancePropertiesEnumerate(PXNull, &amountOfExtenions, PXNull);
 
@@ -318,7 +318,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicIniti
         );
 #endif
 
-        for (PXInt32U i = 0; i < amountOfExtenions; i++)
+        for (PXI32U i = 0; i < amountOfExtenions; i++)
         {
             VkExtensionProperties* const extensionPropertie = &VkExtensionPropertieList[i];
 
@@ -349,7 +349,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicIniti
         vkWin32SurfaceCreateInfoKHR.pNext = PXNull;
         vkWin32SurfaceCreateInfoKHR.flags = PXNull;
         vkWin32SurfaceCreateInfoKHR.hinstance = GetModuleHandle(NULL);
-        vkWin32SurfaceCreateInfoKHR.hwnd = pxGraphicInitializeInfo->WindowReference->Info.Handle.WindowID;
+        vkWin32SurfaceCreateInfoKHR.hwnd = pxGraphicInitializeInfo->WindowReference->Info.Handle.WindowHandle;
 
         const VkResult createSurface = pxVulcan->SurfaceCreate(pxVulcan->Instance, &vkWin32SurfaceCreateInfoKHR, PXNull, &pxVulcan->SurfaceMainRendering);
     }
@@ -358,7 +358,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicIniti
     // List and select physical device
     {
 
-        PXInt32U numberOfDevices = 0;
+        PXI32U numberOfDevices = 0;
 
         pxVulcan->DevicePhysicalListEnumerate(pxVulcan->Instance, &numberOfDevices, PXNull); // Get number of devices
 
@@ -378,7 +378,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicIniti
         );
 #endif
 
-        for (PXInt32U i = 0; i < numberOfDevices; ++i)
+        for (PXI32U i = 0; i < numberOfDevices; ++i)
         {
             PXVulkanDevicePhysical* const vulkanDevicePhysical = &pxVulkanDevicePhysicalList[i];
 
@@ -439,7 +439,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicIniti
     // Get Display infos
     if(pxVulcan->DevicePhysicalDisplayPropertiesGet)
     {
-        PXInt32U amountOfDisplays = 0;
+        PXI32U amountOfDisplays = 0;
 
         const VkResult fetchNumberResult = pxVulcan->DevicePhysicalDisplayPropertiesGet(pxVulcan->DevicePhysical, &amountOfDisplays, PXNull);
 
@@ -459,7 +459,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicIniti
         const VkResult fetchDataResult = pxVulcan->DevicePhysicalDisplayPropertiesGet(pxVulcan->DevicePhysical, &amountOfDisplays, VkDisplayPropertieList);
 
 
-        for (PXInt32U i = 0; i < amountOfDisplays; i++)
+        for (PXI32U i = 0; i < amountOfDisplays; i++)
         {
 #if PXVulcanDebug
             PXLogPrint
@@ -502,7 +502,7 @@ PXActionResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicIniti
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXVulcanRelease(PXVulcan* const pxVulcan)
+PXResult PXAPI  PXVulcanRelease(PXVulcan* const pxVulcan)
 {
     pxVulcan->InstanceDestroy(pxVulcan->Instance, PXNull);
     pxVulcan->Instance = PXNull;

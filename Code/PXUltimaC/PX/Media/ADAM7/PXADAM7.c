@@ -16,7 +16,7 @@ static const unsigned PXADAM7_IY[7] = { 0, 0, 4, 0, 2, 0, 1 }; /*y start values*
 static const unsigned PXADAM7_DX[7] = { 8, 8, 4, 4, 2, 2, 1 }; /*x delta values*/
 static const unsigned PXADAM7_DY[7] = { 8, 8, 8, 4, 4, 2, 2 }; /*y delta values*/
 
-PXActionResult PXAPI PXADAM7ScanlinesDecode(PXADAM7* const pxADAM7)
+PXResult PXAPI  PXADAM7ScanlinesDecode(PXADAM7* const pxADAM7)
 {
     /*
      This function converts the filtered-padded-interlaced data into pure 2D image buffer with the PNG's colortype.
@@ -130,7 +130,7 @@ PXActionResult PXAPI PXADAM7ScanlinesDecode(PXADAM7* const pxADAM7)
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXADAM7ScanlinesEncode(PXADAM7* const pxADAM7)
+PXResult PXAPI  PXADAM7ScanlinesEncode(PXADAM7* const pxADAM7)
 {
     return PXActionRefusedNotImplemented;
 }
@@ -157,14 +157,14 @@ unsigned char PXAPI PXADAM7paethPredictor(short a, short b, short c)
     return (pc < pa) ? c : a;
 }
 
-PXActionResult PXAPI PXADAM7unfilterScanline(unsigned char* recon, const unsigned char* scanline, const unsigned char* precon, PXSize bytewidth, unsigned char filterType, PXSize length)
+PXResult PXAPI  PXADAM7unfilterScanline(unsigned char* recon, const unsigned char* scanline, const unsigned char* precon, PXSize bytewidth, unsigned char filterType, PXSize length)
 {
     /*
     For PNG filter method 0
     unfilter a PNG image scanline by scanline. when the pixels are smaller than 1 byte,
     the filter works byte per byte (bytewidth = 1)
     precon is the previous unfiltered scanline, recon the result, scanline the current one
-    the incoming scanlines do NOT include the filtertype byte, that one is given in the parameter filterType instead
+    the incoming scanlines do NOT Included the filtertype byte, that one is given in the parameter filterType instead
     recon and scanline MAY be the same memory address! precon must be disjoint.
     */
 
@@ -328,7 +328,7 @@ PXSize PXAPI PXADAM7lodepng_get_raw_size_idat(PXSize w, PXSize h, PXSize bpp)
     return (PXSize)h * line;
 }
 
-PXActionResult PXAPI PXADAM7unfilter(PXADAM7* const pxADAM7)
+PXResult PXAPI  PXADAM7unfilter(PXADAM7* const pxADAM7)
 {
     /*
     For PNG filter method 0
@@ -470,7 +470,7 @@ void PXAPI PXADAM7Deinterlace(PXADAM7* const pxADAM7)
     }
     else /*bpp < 8: Adam7 with pixels < 8 bit is a bit trickier: with bit pointers*/
     {
-        for(PXInt8U i = 0; i != 7u; ++i)
+        for(PXI8U i = 0; i != 7u; ++i)
         {
             const PXSize ilinebits = pxADAM7->BitsPerPixel * passw[i];
             const PXSize olinebits = pxADAM7->BitsPerPixel * pxADAM7->Width;

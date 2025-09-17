@@ -1,5 +1,5 @@
-#ifndef PXPhysicINCLUDE
-#define PXPhysicINCLUDE
+#ifndef PXPhysicIncluded
+#define PXPhysicIncluded
 
 #include <PX/Media/PXType.h>
 #include <PX/Math/PXVector.h>

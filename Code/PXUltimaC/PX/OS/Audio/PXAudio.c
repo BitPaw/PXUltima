@@ -10,7 +10,7 @@
 //#include "PXXAudio/PXXAudio.h"
 //#include "PXAudioMIDI/PXAudioMIDI.h"
 
-PXActionResult PXAPI PXAudioInitialize(PXAudio* const pxAudio, const PXAudioSystem pxAudioSystem)
+PXResult PXAPI  PXAudioInitialize(PXAudio* const pxAudio, const PXAudioSystem pxAudioSystem)
 {
 #if PXLogEnable
     PXLogPrint
@@ -125,12 +125,12 @@ PXActionResult PXAPI PXAudioInitialize(PXAudio* const pxAudio, const PXAudioSyst
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXAudioRelease(PXAudio* const pxAudio)
+PXResult PXAPI  PXAudioRelease(PXAudio* const pxAudio)
 {
     return PXActionSuccessful;
 }
 
-void PXAPI PXAudioSpeakerBeep(const PXInt32U hz, const PXInt32U time)
+void PXAPI PXAudioSpeakerBeep(const PXI32U hz, const PXI32U time)
 {
 #if OSUnix
 #elif OSWindows
@@ -230,7 +230,7 @@ float PXAPI envelope(float t, float attack, float sustain, float decay)
     else return 0.0f;
 }
 
-void PXAPI generate_sfx(PXInt16U* buffer, int samples, PXSFXParams* params)
+void PXAPI generate_sfx(PXI16U* buffer, int samples, PXSFXParams* params)
 {
     float phase = 0.0f;
     float freq = params->base_freq;
@@ -255,7 +255,7 @@ void PXAPI generate_sfx(PXInt16U* buffer, int samples, PXSFXParams* params)
         float sample = PXAudioWaveGenerate(&pxAudioWaveGenerateInfo) * env * params->volume;
         
         
-        buffer[i] = (PXInt16U)(sample * 32767);
+        buffer[i] = (PXI16U)(sample * 32767);
         freq += params->freq_slide * dt;
         time += dt;
     }
@@ -267,7 +267,7 @@ float PXAPI lowpass_filter(float input, float* prev, float alpha)
     return *prev;
 }
 
-void add_raindrop(PXInt16U* buffer, int sampleRate, int pos, int length, float freq, float amp)
+void PXAPI add_raindrop(PXI16U* buffer, int sampleRate, int pos, int length, float freq, float amp)
 {
     for(int i = 0; i < length; i++) 
     {
@@ -276,11 +276,11 @@ void add_raindrop(PXInt16U* buffer, int sampleRate, int pos, int length, float f
 
         float env = 1.0f - (float)i / length;
         float sample = amp * env * sinf(2.0f * PXMathConstantPI * freq * i / sampleRate);
-        buffer[pos + i] += (PXInt16U)(sample * 32767);
+        buffer[pos + i] += (PXI16U)(sample * 32767);
     }
 }
 
-void add_thunder(PXInt16U* buffer, int sampleRate, int pos, int length, float amp, float rumble)
+void PXAPI add_thunder(PXI16U* buffer, int sampleRate, int pos, int length, float amp, float rumble)
 {
     for(int i = 0; i < length; i++) 
     {       
@@ -294,11 +294,11 @@ void add_thunder(PXInt16U* buffer, int sampleRate, int pos, int length, float am
         pxAudioWaveGenerateInfo.WaveType = PXAudioWaveTypeNoiseWhite;
 
         float sample = amp * decay * PXAudioWaveGenerate(&pxAudioWaveGenerateInfo);
-        buffer[pos + i] += (PXInt16U)(sample * 32767);
+        buffer[pos + i] += (PXI16U)(sample * 32767);
     }
 }
 
-void generate_weather_sfx(PXInt16U* buffer, int samples, PXSFXWeather* params) 
+void PXAPI generate_weather_sfx(PXI16U* buffer, int samples, PXSFXWeather* params)
 {
     float wind_prev = 0.0f;
     float thunder_timer = 0.0f;
@@ -339,7 +339,7 @@ void generate_weather_sfx(PXInt16U* buffer, int samples, PXSFXWeather* params)
         }
 
         // Mix wind into buffer
-        buffer[i] += (PXInt16U)(wind_sample * 32767);
+        buffer[i] += (PXI16U)(wind_sample * 32767);
     }
 }
 

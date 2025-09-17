@@ -1,7 +1,7 @@
-#ifndef PXDirectXINCLUDE
-#define PXDirectXINCLUDE
+#ifndef PXDirectXIncluded
+#define PXDirectXIncluded
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 #include <PX/OS/Library/PXLibrary.h>
 
 //-------------------------------------
@@ -28,7 +28,7 @@ typedef void* D3DMATERIAL9;
 
 
 typedef struct PXGraphicInitializeInfo_ PXGraphicInitializeInfo;
-typedef struct PXGraphicDevicePhysical_    PXGraphicDevicePhysical;
+
 
 typedef enum PXDirectXDriverType_
 {
@@ -260,16 +260,16 @@ typedef PXActionResult(PXAPI* PXDirectXClear)(PXDirectX* const pxDirectX, const 
 typedef PXActionResult(PXAPI* PXDirectXColorFill)(PXDirectX* const pxDirectX, IDirect3DSurface9* pSurface, const RECT* pRect, D3DCOLOR color);
 typedef PXActionResult(PXAPI* PXDirectXReset)(PXDirectX* const pxDirectX, D3DPRESENT_PARAMETERS* pPresentationParameters);
 typedef PXActionResult(PXAPI* PXDirectXSceneDeploy)(PXDirectX* const pxDirectX);
-typedef PXActionResult(PXAPI* PXDirectXPrimitiveIndexedDraw)(PXDirectX* const pxDirectX, const PXGraphicDrawMode PXGraphicDrawMode, const PXInt32U BaseVertexIndex, const PXInt32U MinVertexIndex, const PXInt32U NumVertices, const PXInt32U startIndex, const PXInt32U primCount);
-typedef PXActionResult(PXAPI* PXDirectXPrimitiveDraw)(PXDirectX* const pxDirectX, const PXGraphicDrawMode PXGraphicDrawMode, const PXInt32U startVertex, const PXInt32U primitiveCount);
-typedef PXActionResult(PXAPI* PXDirectXPrimitiveUPDraw)(PXDirectX* const pxDirectX, const PXGraphicDrawMode PXGraphicDrawMode, const PXInt32U PrimitiveCount, const void* pVertexStreamZeroData, const PXInt32U VertexStreamZeroStride);
-typedef PXActionResult(PXAPI* PXDirectXPrimitiveUPIndexedDraw)(PXDirectX* const pxDirectX, const PXGraphicDrawMode PXGraphicDrawMode, const PXInt32U MinVertexIndex, const PXInt32U NumVertices, const PXInt32U PrimitiveCount, const void* pIndexData, D3DFORMAT IndexDataFormat, const void* pVertexStreamZeroData, const PXInt32U VertexStreamZeroStride);
+typedef PXActionResult(PXAPI* PXDirectXPrimitiveIndexedDraw)(PXDirectX* const pxDirectX, const PXGraphicDrawMode PXGraphicDrawMode, const PXI32U BaseVertexIndex, const PXI32U MinVertexIndex, const PXI32U NumVertices, const PXI32U startIndex, const PXI32U primCount);
+typedef PXActionResult(PXAPI* PXDirectXPrimitiveDraw)(PXDirectX* const pxDirectX, const PXGraphicDrawMode PXGraphicDrawMode, const PXI32U startVertex, const PXI32U primitiveCount);
+typedef PXActionResult(PXAPI* PXDirectXPrimitiveUPDraw)(PXDirectX* const pxDirectX, const PXGraphicDrawMode PXGraphicDrawMode, const PXI32U PrimitiveCount, const void* pVertexStreamZeroData, const PXI32U VertexStreamZeroStride);
+typedef PXActionResult(PXAPI* PXDirectXPrimitiveUPIndexedDraw)(PXDirectX* const pxDirectX, const PXGraphicDrawMode PXGraphicDrawMode, const PXI32U MinVertexIndex, const PXI32U NumVertices, const PXI32U PrimitiveCount, const void* pIndexData, D3DFORMAT IndexDataFormat, const void* pVertexStreamZeroData, const PXI32U VertexStreamZeroStride);
 
 
 typedef PXActionResult(PXAPI* PXDirectXVertexFixedFunctionSet)(PXDirectX* const pxDirectX, const PXVertexBufferFormat pxVertexBufferFormat);
 typedef PXActionResult(PXAPI* PXDirectXVertexFixedFunctionGet)(PXDirectX* const pxDirectX, PXVertexBufferFormat* const pxVertexBufferFormat);
-typedef PXActionResult(PXAPI* PXDirectXStreamSourceSet)(PXDirectX* const pxDirectX, const PXInt32U StreamNumber, PXVertexBuffer* pxVertexBuffer, const PXInt32U OffsetInBytes, const PXInt32U Stride);
-typedef PXActionResult(PXAPI* PXDirectXStreamSourceGet)(PXDirectX* const pxDirectX, const PXInt32U StreamNumber, PXVertexBuffer** pxVertexBuffer, PXInt32U* pOffsetInBytes, PXInt32U* pStride);
+typedef PXActionResult(PXAPI* PXDirectXStreamSourceSet)(PXDirectX* const pxDirectX, const PXI32U StreamNumber, PXVertexBuffer* pxVertexBuffer, const PXI32U OffsetInBytes, const PXI32U Stride);
+typedef PXActionResult(PXAPI* PXDirectXStreamSourceGet)(PXDirectX* const pxDirectX, const PXI32U StreamNumber, PXVertexBuffer** pxVertexBuffer, PXI32U* pOffsetInBytes, PXI32U* pStride);
 typedef PXActionResult(PXAPI* PXDirectXStreamSourceFreqSet)(PXDirectX* const pxDirectX, UINT StreamNumber, UINT Setting);
 typedef PXActionResult(PXAPI* PXDirectXStreamSourceFreqGet)(PXDirectX* const pxDirectX, UINT StreamNumber, UINT* pSetting);
 
@@ -279,10 +279,10 @@ typedef PXActionResult(PXAPI* PXDirectXModelDraw)(PXDirectX* const pxDirectX, PX
 //-----------------------------------------------------
 // Direct X - Light
 //-----------------------------------------------------
-typedef PXActionResult(PXAPI* PXDirectXLightSet)(PXDirectX* const pxDirectX, PXLight* const pxLight, const PXInt32U index); // D3DLIGHT9
-typedef PXActionResult(PXAPI* PXDirectXLightGet)(PXDirectX* const pxDirectX, PXLight* const pxLight, const PXInt32U index);
-typedef PXActionResult(PXAPI* PXDirectXLightEnableSet)(PXDirectX* const pxDirectX, PXLight* const pxLight, const PXInt32U index, const PXBool enable);
-typedef PXActionResult(PXAPI* PXDirectXLightEnableGet)(PXDirectX* const pxDirectX, PXLight* const pxLight, const PXInt32U index, PXBool* const enable);
+typedef PXActionResult(PXAPI* PXDirectXLightSet)(PXDirectX* const pxDirectX, PXLight* const pxLight, const PXI32U index); // D3DLIGHT9
+typedef PXActionResult(PXAPI* PXDirectXLightGet)(PXDirectX* const pxDirectX, PXLight* const pxLight, const PXI32U index);
+typedef PXActionResult(PXAPI* PXDirectXLightEnableSet)(PXDirectX* const pxDirectX, PXLight* const pxLight, const PXI32U index, const PXBool enable);
+typedef PXActionResult(PXAPI* PXDirectXLightEnableGet)(PXDirectX* const pxDirectX, PXLight* const pxLight, const PXI32U index, PXBool* const enable);
 
 
 //-----------------------------------------------------
@@ -325,7 +325,7 @@ typedef PXActionResult(PXAPI* PXDirectXShaderCreate)(PXDirectX* const pxDirectX,
 typedef PXActionResult(PXAPI* PXDirectXShaderSelect)(PXDirectX* const pxDirectX, PXShader* const pxShader);
 typedef PXActionResult(PXAPI* PXDirectXShaderCompile)(PXDirectX* const pxDirectX, PXShader* const pxShader, const PXText* const shaderFilePath);
 
-typedef PXActionResult(PXAPI* PXDirectXShaderVariableIDFetch)(PXDirectX* const pxDirectX, const PXShader* pxShader, PXInt32U* const shaderVariableID, const char* const name);
+typedef PXActionResult(PXAPI* PXDirectXShaderVariableIDFetch)(PXDirectX* const pxDirectX, const PXShader* pxShader, PXI32U* const shaderVariableID, const char* const name);
 
 
 typedef PXActionResult(PXAPI* PXDirectXVertexShaderCreate)(PXDirectX* const pxDirectX, const DWORD* pFunction, IDirect3DVertexShader9** ppShader);
@@ -379,14 +379,14 @@ typedef PXActionResult(PXAPI* PXDirectXModelRegister)(PXDirectX* const pxDirectX
 //-----------------------------------------------------
 // Direct X - Textures
 //-----------------------------------------------------
-typedef PXActionResult(PXAPI* PXDirectXTextureMemoryAvailable)(PXDirectX* const pxDirectX, PXInt32U* const value);
-typedef PXActionResult(PXAPI* PXDirectXTexture2DCreate)(PXDirectX* const pxDirectX, PXTexture2D* const pxTexture2D);
-typedef PXActionResult(PXAPI* PXDirectXTexture3DCreate)(PXDirectX* const pxDirectX, PXTexture3D* const pxTexture3D);
-typedef PXActionResult(PXAPI* PXDirectXTextureCubeCreate)(PXDirectX* const pxDirectX, PXTextureCube* const pxTextureCube);
-typedef PXActionResult(PXAPI* PXDirectXDevicePhysicalListAmountFunction)(PXDirectX* const pxDirectX, PXInt32U* const amountOfAdapters);
-typedef PXActionResult(PXAPI* PXDirectXDevicePhysicalListFetchFunction)(PXDirectX* const pxDirectX, const PXInt32U pxGraphicDevicePhysicalListSize, PXGraphicDevicePhysical* const pxGraphicDevicePhysicalList);
-typedef PXActionResult(PXAPI* PXDirectXSwapIntervalSet)(PXDirectX* const pxDirectX, const PXInt32U interval);
-typedef PXActionResult(PXAPI* PXDirectXSwapIntervalGet)(PXDirectX* const pxDirectX, PXInt32U* const interval);
+typedef PXActionResult(PXAPI* PXDirectXTextureMemoryAvailable)(PXDirectX* const pxDirectX, PXI32U* const value);
+typedef PXActionResult(PXAPI* PXDirectXTexture2DCreate)(PXDirectX* const pxDirectX, PXTexture* const PXTexture);
+typedef PXActionResult(PXAPI* PXDirectXTexture3DCreate)(PXDirectX* const pxDirectX, PXTexture* const pxTexture);
+typedef PXActionResult(PXAPI* PXDirectXTextureCubeCreate)(PXDirectX* const pxDirectX, PXTexture* const pxTexture);
+typedef PXActionResult(PXAPI* PXDirectXDevicePhysicalListAmountFunction)(PXDirectX* const pxDirectX, PXI32U* const amountOfAdapters);
+typedef PXActionResult(PXAPI* PXDirectXDevicePhysicalListFetchFunction)(PXDirectX* const pxDirectX, const PXI32U pxGraphicDevicePhysicalListSize, PXGraphicDevicePhysical* const pxGraphicDevicePhysicalList);
+typedef PXActionResult(PXAPI* PXDirectXSwapIntervalSet)(PXDirectX* const pxDirectX, const PXI32U interval);
+typedef PXActionResult(PXAPI* PXDirectXSwapIntervalGet)(PXDirectX* const pxDirectX, PXI32U* const interval);
 
 #endif
 
@@ -408,7 +408,7 @@ typedef struct PXDirectX
 }
 PXDirectX;
 
-PXPublic PXActionResult PXAPI PXDirectXInitialize(PXDirectX* const pxDirectX, PXGraphicInitializeInfo* const pxGraphicInitializeInfo);
-PXPublic PXActionResult PXAPI PXDirectXRelease(PXDirectX* const pxDirectX);
+PXPublic PXResult PXAPI PXDirectXInitialize(PXDirectX* const pxDirectX, PXGraphicInitializeInfo* const pxGraphicInitializeInfo);
+PXPublic PXResult PXAPI PXDirectXRelease(PXDirectX* const pxDirectX);
 
 #endif

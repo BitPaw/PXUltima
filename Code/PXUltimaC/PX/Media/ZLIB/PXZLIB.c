@@ -5,7 +5,7 @@
 #include <PX/Media/DEFLATE/PXDEFLATE.h>
 #include <PX/Media/ADLER/PXAdler32.h>
 
-PXZLIBCompressionLevel PXAPI PXZLIBCompressionLevelFromID(const PXInt8U compressionLevel)
+PXZLIBCompressionLevel PXAPI PXZLIBCompressionLevelFromID(const PXI8U compressionLevel)
 {
     switch(compressionLevel)
     {
@@ -26,7 +26,7 @@ PXZLIBCompressionLevel PXAPI PXZLIBCompressionLevelFromID(const PXInt8U compress
     }
 }
 
-PXInt8U PXAPI PXZLIBCompressionLevelToID(const PXZLIBCompressionLevel compressionLevel)
+PXI8U PXAPI PXZLIBCompressionLevelToID(const PXZLIBCompressionLevel compressionLevel)
 {
     switch(compressionLevel)
     {
@@ -48,7 +48,7 @@ PXInt8U PXAPI PXZLIBCompressionLevelToID(const PXZLIBCompressionLevel compressio
     }
 }
 
-PXZLIBCompressionMethod PXAPI PXZLIBCompressionMethodFromID(const PXInt8U compressionMethod)
+PXZLIBCompressionMethod PXAPI PXZLIBCompressionMethodFromID(const PXI8U compressionMethod)
 {
     switch(compressionMethod)
     {
@@ -63,7 +63,7 @@ PXZLIBCompressionMethod PXAPI PXZLIBCompressionMethodFromID(const PXInt8U compre
     }
 }
 
-PXInt8U PXAPI PXZLIBCompressionMethodToID(const PXZLIBCompressionMethod compressionMethod)
+PXI8U PXAPI PXZLIBCompressionMethodToID(const PXZLIBCompressionMethod compressionMethod)
 {
     switch(compressionMethod)
     {
@@ -79,7 +79,7 @@ PXInt8U PXAPI PXZLIBCompressionMethodToID(const PXZLIBCompressionMethod compress
     }
 }
 
-PXActionResult PXAPI PXZLIBDecompress(PXFile* const pxInputSteam, PXFile* const pxOutputSteam)
+PXResult PXAPI  PXZLIBDecompress(PXFile* const pxInputSteam, PXFile* const pxOutputSteam)
 {
     PXZLIB PXZLIB;
 
@@ -88,15 +88,15 @@ PXActionResult PXAPI PXZLIBDecompress(PXFile* const pxInputSteam, PXFile* const 
 
     // Parse header ->     Header.Parse(compressionFormatByte, flagByte);
     {
-        PXInt8U compressionFormatByte = 0;
-        PXInt8U flagByte = 0;
+        PXI8U compressionFormatByte = 0;
+        PXI8U flagByte = 0;
 
         PXFileReadI8U(pxInputSteam, &compressionFormatByte);
         PXFileReadI8U(pxInputSteam, &flagByte);
 
         // Valid Check
         {
-            const PXBool validFlags = PXInt16MakeEndianBig(compressionFormatByte, flagByte) % 31u == 0;
+            const PXBool validFlags = PXI16MakeEndianBig(compressionFormatByte, flagByte) % 31u == 0;
 
             if(!validFlags)
             {
@@ -106,7 +106,7 @@ PXActionResult PXAPI PXZLIBDecompress(PXFile* const pxInputSteam, PXFile* const 
 
         //---<Parse First Byte__ - Compression Info>---------------------------------
         {
-            const PXInt8U compressionMethodValue = (compressionFormatByte & 0b00001111);
+            const PXI8U compressionMethodValue = (compressionFormatByte & 0b00001111);
 
             PXZLIB.Header.CompressionMethod = PXZLIBCompressionMethodFromID(compressionMethodValue);
             PXZLIB.Header.CompressionInfo = (compressionFormatByte & 0b11110000) >> 4;
@@ -130,7 +130,7 @@ PXActionResult PXAPI PXZLIBDecompress(PXFile* const pxInputSteam, PXFile* const 
 
         //---<Parse Second Byte - Flags>-------------------------------------------
         {
-            const PXInt8U compressionLevelValue = (flagByte & 0b11000000) >> 6;
+            const PXI8U compressionLevelValue = (flagByte & 0b11000000) >> 6;
 
             PXZLIB.Header.CheckFlag = (flagByte & 0b00011111);
             PXZLIB.Header.DictionaryPresent = ((flagByte & 0b00100000) >> 5) == 1;
@@ -181,7 +181,7 @@ PXActionResult PXAPI PXZLIBDecompress(PXFile* const pxInputSteam, PXFile* const 
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXZLIBCompress(PXFile* const pxInputSteam, PXFile* const pxOutputSteam)
+PXResult PXAPI  PXZLIBCompress(PXFile* const pxInputSteam, PXFile* const pxOutputSteam)
 {
     // Write PXZLIB Header
     {
@@ -207,8 +207,8 @@ PXActionResult PXAPI PXZLIBCompress(PXFile* const pxInputSteam, PXFile* const px
 
         // Check
         {
-            const PXInt16U checksum = PXInt16Make(buffer[0], buffer[1]);
-            const PXInt8U multble = 31-checksum % 31;
+            const PXI16U checksum = PXI16Make(buffer[0], buffer[1]);
+            const PXI8U multble = 31-checksum % 31;
 
             buffer[1] += multble;
         }
@@ -225,7 +225,7 @@ PXActionResult PXAPI PXZLIBCompress(PXFile* const pxInputSteam, PXFile* const px
 
     // Write ADLER
     {
-        const PXInt32U adler = (PXInt32U)PXAdler32Create(1, pxInputSteam->Data, pxInputSteam->DataUsed);
+        const PXI32U adler = (PXI32U)PXAdler32Create(1, pxInputSteam->Data, pxInputSteam->DataUsed);
 
         PXFileWriteI32UE(pxOutputSteam, adler, PXEndianBig);
     }

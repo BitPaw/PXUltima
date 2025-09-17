@@ -1,32 +1,32 @@
-#ifndef PXWADINCLUDE
-#define PXWADINCLUDE
+#ifndef PXWADIncluded
+#define PXWADIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef struct PXWADHeader_
 {
     char MagicCode[2];
-    PXInt8U VersionMajor;
-    PXInt8U VersionMinor;
+    PXI8U VersionMajor;
+    PXI8U VersionMinor;
 }
 PXWADHeader;
 
 typedef struct PXWADVersion1_
 {
-    PXInt16U EntryHeaderOffset;
-    PXInt16U EntryHeaderSize;
-    PXInt32U EntryCount;
+    PXI16U EntryHeaderOffset;
+    PXI16U EntryHeaderSize;
+    PXI32U EntryCount;
 }
 PXWADVersion1;
 
 typedef struct PXWADVersion2_
 {
-    PXInt8U ECDSASignatureLength;
+    PXI8U ECDSASignatureLength;
     char ECDSASignature[83];
-    PXInt64U  XXH64Checksum;
-    PXInt16U EntryHeaderOffset;
-    PXInt16U EntryHeaderSize;
-    PXInt32U  EntryCount;
+    PXI64U  XXH64Checksum;
+    PXI16U EntryHeaderOffset;
+    PXI16U EntryHeaderSize;
+    PXI32U  EntryCount;
 }
 PXWADVersion2;
 
@@ -34,21 +34,21 @@ typedef struct PXWADVersion3_
 {
     char ECDSASignature[256];
     char XXH64Checksum[8];
-    PXInt32U EntryCount;
+    PXI32U EntryCount;
 }
 PXWADVersion3;
 
 typedef struct PXWADEntry_
 {
-    PXInt64U PathHash;
-    PXInt32U DataOffset;
-    PXInt32U CompressedSize;
-    PXInt32U UncompressedSize;
-    PXInt8U DataType;
-    PXInt8U CountOfSubbchunks;
-    PXInt8U Setforduplicateentries;
-    PXInt16U IndexOfFirstSubbchunk;
-    PXInt64U EntryChecksum;
+    PXI64U PathHash;
+    PXI32U DataOffset;
+    PXI32U CompressedSize;
+    PXI32U UncompressedSize;
+    PXI8U DataType;
+    PXI8U CountOfSubbchunks;
+    PXI8U Setforduplicateentries;
+    PXI16U IndexOfFirstSubbchunk;
+    PXI64U EntryChecksum;
 }
 PXWADEntry;
 
@@ -68,7 +68,7 @@ typedef struct PXWAD_
 }
 PXWAD;
 
-PXPublic PXActionResult PXAPI PXWADLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXWADSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXWADLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXWADSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

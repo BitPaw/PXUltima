@@ -210,12 +210,12 @@ void PXAPI PXJavaDefinitionWrite(PXCompiler* const pxCompiler)
     PXFileWriteA(pxFile, entry->NameAdress, entry->NameSize);
 }
 
-PXActionResult PXAPI PXJavaLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI  PXJavaLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXJavaSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI  PXJavaSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     if(!pxResourceSaveInfo)
     {

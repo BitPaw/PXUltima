@@ -31,7 +31,7 @@ PXTGABitsPerPixel PXAPI ConvertToPixelDepth(const unsigned char pixelDepth)
     }
 }
 
-PXInt8U PXAPI ConvertFromPixelDepth(const PXTGABitsPerPixel bitsPerPixel)
+PXI8U PXAPI ConvertFromPixelDepth(const PXTGABitsPerPixel bitsPerPixel)
 {
     switch(bitsPerPixel)
     {
@@ -89,7 +89,7 @@ PXTGAImageDataType PXAPI ConvertToImageDataType(const unsigned char id)
     }
 }
 
-PXInt8U PXAPI ConvertFromImageDataType(const PXTGAImageDataType imageDataType)
+PXI8U PXAPI ConvertFromImageDataType(const PXTGAImageDataType imageDataType)
 {
     switch(imageDataType)
     {
@@ -130,29 +130,29 @@ void PXAPI PXTGADestruct(PXTGA* const tga)
 
 }
 
-PXActionResult PXAPI PXTGALoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI  PXTGALoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
-    PXImage* const pxImage = (PXImage*)pxResourceLoadInfo->ResourceTarget;
+    PXTexture* const pxTexture = (PXTexture*)pxResourceLoadInfo->ResourceTarget;
 
     PXTGA tgaOBJ;
     PXTGA* tga = &tgaOBJ;
 
     PXClear(PXTGA, tga);
 
-    PXInt16U colorPaletteChunkEntryIndex = 0;
-    PXInt16U colorPaletteChunkSize = 0;
-    PXInt8U colorPaletteEntrySizeInBits = 0;
+    PXI16U colorPaletteChunkEntryIndex = 0;
+    PXI16U colorPaletteChunkSize = 0;
+    PXI8U colorPaletteEntrySizeInBits = 0;
 
     PXSize footerEntryIndex = 0;
-    PXInt32U extensionOffset = 0;
-    PXInt32U developerAreaOffset = 0;
+    PXI32U extensionOffset = 0;
+    PXI32U developerAreaOffset = 0;
     PXSize firstFieldAfterHeader = 0;
 
     //---[ Parse Header ]-------------------------------
     {
-        PXInt8U imageIDLengh = 0;
-        PXInt8U pixelDepth = 0;
-        PXInt8U imageTypeValue = 0;
+        PXI8U imageIDLengh = 0;
+        PXI8U pixelDepth = 0;
+        PXI8U imageTypeValue = 0;
 
         const PXTypeEntry pxDataStreamElementList[] =
         {
@@ -203,7 +203,7 @@ PXActionResult PXAPI PXTGALoadFromFile(PXResourceTransphereInfo* const pxResourc
                 break;
         }
 
-        PXImageResize(pxImage, pxColorFormat, tga->Width, tga->Height);
+        PXTextureResize(pxTexture, pxColorFormat, tga->Width, tga->Height);
     }
     //----------------------------------------------------
 
@@ -222,7 +222,7 @@ PXActionResult PXAPI PXTGALoadFromFile(PXResourceTransphereInfo* const pxResourc
     //--------------------------------
 
     //---[ ImageData ]------------------
-    PXFileReadB(pxResourceLoadInfo->FileReference, pxImage->PixelData, pxImage->PixelDataSize);
+    PXFileReadB(pxResourceLoadInfo->FileReference, pxTexture->PixelData, pxTexture->PixelDataSize);
     //-----------------------------------------------------------------
 
 
@@ -259,7 +259,7 @@ PXActionResult PXAPI PXTGALoadFromFile(PXResourceTransphereInfo* const pxResourc
     //---[ Extension Area ]--------------------------------------------------------
     if(extensionOffset > 0)
     {
-        PXInt16U extensionSize = 0;
+        PXI16U extensionSize = 0;
 
         pxResourceLoadInfo->FileReference->DataCursor = extensionOffset; // Jump to Extension Header
         PXFileReadI16UE(pxResourceLoadInfo->FileReference, &extensionSize, PXEndianLittle);
@@ -313,7 +313,7 @@ PXActionResult PXAPI PXTGALoadFromFile(PXResourceTransphereInfo* const pxResourc
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXTGASaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI  PXTGASaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

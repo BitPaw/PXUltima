@@ -91,7 +91,7 @@ const char PXELFSignature[4] = { 0x7F, 'E', 'L','F' };
 #define PXELFMachineBerkeleyPacketFilterID                0xF7
 #define PXELFMachineWDC65C816ID                    0x101
 
-PXEndian PXAPI PXELFEndianessFromID(const PXInt8U value)
+PXEndian PXAPI PXELFEndianessFromID(const PXI8U value)
 {
     switch (value)
     {
@@ -105,7 +105,7 @@ PXEndian PXAPI PXELFEndianessFromID(const PXInt8U value)
     }
 }
 
-PXBitFormat PXAPI PXELFBitFormatFromID(const PXInt8U value)
+PXBitFormat PXAPI PXELFBitFormatFromID(const PXI8U value)
 {
     switch (value)
     {
@@ -119,7 +119,7 @@ PXBitFormat PXAPI PXELFBitFormatFromID(const PXInt8U value)
     }
 }
 
-PXELFTargetOSAPI PXAPI PXPXELFTargetOSAPIFromID(const PXInt8U value)
+PXELFTargetOSAPI PXAPI PXPXELFTargetOSAPIFromID(const PXI8U value)
 {
     switch (value)
     {
@@ -165,7 +165,7 @@ PXELFTargetOSAPI PXAPI PXPXELFTargetOSAPIFromID(const PXInt8U value)
     }
 }
 
-PXELFMachine PXAPI PXELFMachineFromID(const PXInt8U value)
+PXELFMachine PXAPI PXELFMachineFromID(const PXI8U value)
 {
     switch (value)
     {
@@ -332,12 +332,12 @@ PXELFMachine PXAPI PXELFMachineFromID(const PXInt8U value)
     }
 }
 
-PXELFType PXAPI PXELFTypeFromID(const PXInt8U value)
+PXELFType PXAPI PXELFTypeFromID(const PXI8U value)
 {
     return PXELFTypeInvalid;
 }
 
-PXELFSegmentType PXAPI PXELFSegmentTypeFromID(const PXInt32U value)
+PXELFSegmentType PXAPI PXELFSegmentTypeFromID(const PXI32U value)
 {
     switch (value)
     {
@@ -371,7 +371,7 @@ PXELFSegmentType PXAPI PXELFSegmentTypeFromID(const PXInt32U value)
     }
 }
 
-PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI  PXBinaryLinuxLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     PXBinaryLinux* const pxBinaryLinux = (PXBinaryLinux*)pxResourceLoadInfo->ResourceTarget;
 
@@ -381,11 +381,11 @@ PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceTransphereInfo* const p
     {
         // A
         {
-            PXInt32UCluster signature;
-            PXInt8U classID;
-            PXInt8U dataID;
-            PXInt8U versionID; // Expect to be = 1
-            PXInt8U osAPIID;
+            PXI32UCluster signature;
+            PXI8U classID;
+            PXI8U dataID;
+            PXI8U versionID; // Expect to be = 1
+            PXI8U osAPIID;
 
             const PXTypeEntry pxDataStreamElementList[] =
             {
@@ -419,12 +419,12 @@ PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceTransphereInfo* const p
 
         // B
         {
-            PXInt16U typeID;
-            PXInt16U machineID;
-            PXInt32U versionID; // Extecped to be = 1
-            PXInt32U e_flags;
-            PXInt16U sizeOfThisHeader;
-            PXInt16U shstrndx;
+            PXI16U typeID;
+            PXI16U machineID;
+            PXI32U versionID; // Extecped to be = 1
+            PXI32U e_flags;
+            PXI16U sizeOfThisHeader;
+            PXI16U shstrndx;
 
             const PXTypeEntry pxDataStreamElementList[] =
             {
@@ -457,11 +457,11 @@ PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceTransphereInfo* const p
     {
         PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, (PXSize)pxBinaryLinux->Header.ProgrammHeaderOffset);
 
-        for (PXInt16U programHeaderID = 0; programHeaderID < pxBinaryLinux->Header.ProgrammHeaderAmount; ++programHeaderID)
+        for (PXI16U programHeaderID = 0; programHeaderID < pxBinaryLinux->Header.ProgrammHeaderAmount; ++programHeaderID)
         {
             PXELFProgramHeader pxELFProgramHeader;
-            PXInt32U typeID;
-            PXInt32U flagsID;
+            PXI32U typeID;
+            PXI32U flagsID;
 
             const PXTypeEntry pxDataStreamElementList[] =
             {
@@ -504,7 +504,7 @@ PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceTransphereInfo* const p
     {
         PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, (PXSize)pxBinaryLinux->Header.SectionHeaderOffset);
 
-        for (PXInt16U i = 0; i < pxBinaryLinux->Header.SectionHeaderAmount; ++i)
+        for (PXI16U i = 0; i < pxBinaryLinux->Header.SectionHeaderAmount; ++i)
         {
             PXSectionHeader pxSectionHeader;
 
@@ -529,7 +529,7 @@ PXActionResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceTransphereInfo* const p
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXBinaryLinuxSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI  PXBinaryLinuxSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     PXFileWriteB(pxResourceSaveInfo->FileReference, PXELFSignature, sizeof(PXELFSignature));
 

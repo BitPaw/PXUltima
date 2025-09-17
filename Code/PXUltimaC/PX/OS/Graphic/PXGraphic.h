@@ -1,29 +1,28 @@
-#ifndef PXGraphicINCLUDE
-#define PXGraphicINCLUDE
+#ifndef PXGraphicIncluded
+#define PXGraphicIncluded
 
-#include <PX/Media/PXType.h>
-#include <PX/Media/PXImage.h>
+#include <PX/Engine/PXResource.h>
 #include <PX/Media/PXColor.h>
-#include <PX/Media/PXResource.h>
 #include <PX/OS/Async/PXLock.h>
 #include <PX/OS/Graphic/NativDraw/PXNativDraw.h>
 #include <PX/OS/Graphic/DirectX/PXDirectX.h>
 #include <PX/OS/Graphic/OpenGL/PXOpenGL.h>
 #include <PX/OS/Graphic/Vulcan/PXVulcan.h>
 
-
 #define PXShaderNotRegisterd (unsigned int)-1
 
-typedef enum PXGraphicSystem_
-{
-    PXGraphicSystemInvalid,
-    PXGraphicSystemOpenGL,
-    PXGraphicSystemDirectX,
-    PXGraphicSystemVulcan
-}
-PXGraphicSystem;
 
-typedef PXInt32U PXGraphicResourceID;
+
+#define PXGraphicSystemInvalid  0
+#define PXGraphicSystemGDI      1
+#define PXGraphicSystemOpenGL   2
+#define PXGraphicSystemDirectX  3
+#define PXGraphicSystemVulcan   4
+typedef PXI8U PXGraphicSystem;
+
+
+
+typedef PXI32U PXGraphicResourceID;
 
 typedef struct PXGraphicResourceInfo_
 {
@@ -34,7 +33,7 @@ typedef struct PXGraphicResourceInfo_
     union
     {
         PXMSHandle DirectXID;
-        PXInt32U OpengGLID;
+        PXI32U OpengGLID;
     };
 }
 PXGraphicResourceInfo;
@@ -78,7 +77,7 @@ PXGraphicInitializeInfo;
 typedef struct PXGraphicConfig_
 {
     PXRefreshRateMode WindowRefreshRateMode;
-    PXInt32S ScreenResolution[2];
+    PXI32S ScreenResolution[2];
     PXBool FullScreen;
 }
 PXGraphicConfig;
@@ -92,7 +91,7 @@ typedef struct PXRenderableMeshSegment_
     unsigned int TextureID;
     unsigned int ShaderID;
 
-    PXGraphicDrawMode RenderMode;
+    PXDrawMode RenderMode;
 
     PXBool DoRendering;
 }
@@ -115,6 +114,61 @@ PXRenderable;
 
 
 //---<UI Elements>---------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+typedef struct PXFrameBufferGDI_
+{
+    HDC MemoryDeviceContext; // Memory registered redircect fot the bitmap
+    HBITMAP FrameBufferTexture; // Render sink where the rendered data is stored
+}
+PXFrameBufferGDI;
+
+typedef struct PXFrameBufferOpenGL_
+{
+    GLuint FBO;
+    GLuint TextureID;
+}
+PXFrameBufferOpenGL;
+
+typedef struct PXFrameBuffer_
+{
+    union
+    {
+        PXFrameBufferGDI GDI;
+        PXFrameBufferOpenGL OpenGL;
+    };
+
+    PXI32S Width;
+    PXI32S Height;
+}
+PXFrameBuffer;
+
+
+
+typedef struct PXFrameBufferCreateInfo_
+{
+    PXGraphicSystem System;
+
+    PXI32S Width;
+    PXI32S Height;
+
+    HWND WindowHandle;
+    HDC WindowDeviceContext;
+}
+PXFrameBufferCreateInfo;
+
+PXPublic PXResult PXAPI PXFrameBufferCreate(PXFrameBuffer* const pxFrameBuffer, PXFrameBufferCreateInfo* const pxFrameBufferCreateInfo);
 
 
 
@@ -163,7 +217,7 @@ typedef PXActionResult(PXAPI* PXGraphicViewPortGetFunction)(void* const pxGraphi
 typedef void (PXAPI* PXGraphicSceneBeginFunction)(void* const pxGraphicAPI);
 typedef void (PXAPI* PXGraphicSceneEndFunction)(void* const pxGraphicAPI);
 
-typedef PXActionResult(PXAPI* PXGraphicScreenBufferReadFunction)(void* const pxGraphicAPI, PXImage* const pxImage);
+typedef PXActionResult(PXAPI* PXGraphicScreenBufferReadFunction)(void* const pxGraphicAPI, PXTexture* const PXTexture);
 
 typedef PXActionResult(PXAPI* PXGraphicDrawScriptCreate)(void* const pxGraphicAPI, PXDrawScript* const pxDrawScript, const PXDrawScriptType pxDrawScriptType);
 typedef PXActionResult(PXAPI* PXGraphicDrawScriptBegin)(void* const pxGraphicAPI, PXDrawScript* const pxDrawScript);
@@ -177,23 +231,23 @@ typedef PXActionResult(PXAPI* PXGraphicModelDrawFunction)(void* const pxGraphicA
 typedef PXActionResult(PXAPI* PXGraphicModelSelectFunction)(void* const pxGraphicAPI, PXModel* const pxModel);
 typedef PXActionResult(PXAPI* PXGraphicModelReleaseFunction)(void* const pxGraphicAPI, PXModel* const pxModel);
 
-typedef PXActionResult(PXAPI* PXGraphicLightSetFunction)(void* const pxGraphicAPI, PXLight* const pxLight, const PXInt32U index);
-typedef PXActionResult(PXAPI* PXGraphicLightGetFunction)(void* const pxGraphicAPI, PXLight* const pxLight, const PXInt32U index);
-typedef PXActionResult(PXAPI* PXGraphicLightEnableSetFunction)(void* const pxGraphicAPI, PXLight* const pxLight, const PXInt32U index, const PXBool enable);
-typedef PXActionResult(PXAPI* PXGraphicLightEnableGetFunction)(void* const pxGraphicAPI, PXLight* const pxLight, const PXInt32U index, PXBool* const enable);
+typedef PXActionResult(PXAPI* PXGraphicLightSetFunction)(void* const pxGraphicAPI, PXLight* const pxLight, const PXI32U index);
+typedef PXActionResult(PXAPI* PXGraphicLightGetFunction)(void* const pxGraphicAPI, PXLight* const pxLight, const PXI32U index);
+typedef PXActionResult(PXAPI* PXGraphicLightEnableSetFunction)(void* const pxGraphicAPI, PXLight* const pxLight, const PXI32U index, const PXBool enable);
+typedef PXActionResult(PXAPI* PXGraphicLightEnableGetFunction)(void* const pxGraphicAPI, PXLight* const pxLight, const PXI32U index, PXBool* const enable);
 
 
-typedef PXActionResult(PXAPI* PXGraphicTextureActionFunction)(void* const pxGraphicAPI, PXGraphicTexturInfo* const pxGraphicTexturInfo);
+typedef PXActionResult(PXAPI* PXGraphicTextureActionFunction)(void* const pxGraphicAPI, PXTexturInfo* const pxGraphicTexturInfo);
 
 
 typedef void (PXAPI* PXGraphicClearFunction)(void* const pxGraphicAPI, const PXColorRGBAF* const backgroundColor);
 typedef PXBool(PXAPI* PXGraphicSceneDeployFunction)(void* const pxGraphicAPI);
 
-typedef PXActionResult(PXAPI* PXGraphicDevicePhysicalListAmountFunction)(void* const graphicAPI, PXInt32U* const amount);
-typedef PXActionResult(PXAPI* PXGraphicDevicePhysicalListFetchFunction)(void* const graphicAPI, const PXInt32U amount, PXGraphicDevicePhysical* const pxGraphicDevicePhysicalList);
+typedef PXActionResult(PXAPI* PXGraphicDevicePhysicalListAmountFunction)(void* const graphicAPI, PXI32U* const amount);
+typedef PXActionResult(PXAPI* PXGraphicDevicePhysicalListFetchFunction)(void* const graphicAPI, const PXI32U amount, PXGPUPhysical* const pxGraphicDevicePhysicalList);
 
-typedef PXActionResult(PXAPI* PXGraphicSwapIntervalSetFunction)(void* const graphicAPI, const PXInt32U interval);
-typedef PXActionResult(PXAPI* PXGraphicSwapIntervalGetFunction)(void* const graphicAPI, PXInt32U* const interval);
+typedef PXActionResult(PXAPI* PXGraphicSwapIntervalSetFunction)(void* const graphicAPI, const PXI32U interval);
+typedef PXActionResult(PXAPI* PXGraphicSwapIntervalGetFunction)(void* const graphicAPI, PXI32U* const interval);
 
 
 typedef PXActionResult(PXAPI* PXGraphicRectangleDrawFunction)(void* const graphicAPI, const PXF32 xA, const PXF32 yA, const PXF32 xB, const PXF32 yB, const char mode);
@@ -202,7 +256,7 @@ typedef PXActionResult(PXAPI* PXGraphicRectangleDrawTxFunction)(void* const grap
 
 typedef PXActionResult(PXAPI* PXGraphicDrawColorRGBFFunction)(void* const graphicAPI, const PXF32 red, const PXF32 green, const PXF32 blue, const PXF32 alpha);
 
-typedef PXActionResult(PXAPI* PXGraphicDrawModeSetFunction)(void* const graphicAPI, const PXGraphicDrawFillMode pxGraphicDrawFillMode);
+typedef PXActionResult(PXAPI* PXGraphicDrawModeSetFunction)(void* const graphicAPI, const PXDrawFillMode pxGraphicDrawFillMode);
 
 typedef PXActionResult(PXAPI* PXGraphicShaderProgramCreateFunction)(void* const graphicAPI, PXShaderProgram* const pxShaderProgram, PXShader* const shaderList, const PXSize amount);
 typedef PXActionResult(PXAPI* PXGraphicShaderProgramSelectFunction)(void* const graphicAPI, PXShaderProgram* const pxShaderProgram);
@@ -319,7 +373,7 @@ typedef struct PXGraphic_
     PXGraphicSystem GraphicSystem;
 
     PXSize DevicePhysicalListSize;
-    PXGraphicDevicePhysical* DevicePhysicalList;
+    PXGPUPhysical* DevicePhysicalList;
 
 #if OSUnix
     Display* DisplayConnection;
@@ -328,21 +382,25 @@ typedef struct PXGraphic_
 PXGraphic;
 
 
+
+PXPublic PXGraphic* PXAPI PXGraphicInstantiateGET(void);
+
+
 //-----------------------------------------------------
-PXPublic PXActionResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicInitializeInfo* const pxGraphicInitializeInfo);
-PXPublic PXActionResult PXAPI PXGraphicRelease(PXGraphic* const pxGraphic);
-PXPublic PXActionResult PXAPI PXGraphicHotSwap(PXGraphic* const pxGraphic, const PXGraphicSystem pxGraphicSystem);
+PXPublic PXResult PXAPI PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicInitializeInfo* const pxGraphicInitializeInfo);
+PXPublic PXResult PXAPI PXGraphicRelease(PXGraphic* const pxGraphic);
+PXPublic PXResult PXAPI PXGraphicHotSwap(PXGraphic* const pxGraphic, const PXGraphicSystem pxGraphicSystem);
 //-----------------------------------------------------
 
 
 
 
 
-typedef void (PXAPI* PXGraphicUIElementTrigger)(void* sender, PXWindow* const pxGUIElement);
+typedef void (PXAPI* PXGraphicUIElementTrigger)(void* sender, PXWindow* const pxWindow);
 
 //-------------------------------------------------------------------------
-PXPublic void PXAPI PXUIElementColorSet4F(PXWindow* const pxGUIElement, const PXF32 red, const PXF32 green, const PXF32 blue, const PXF32 alpha);
-PXPublic void PXAPI PXUIElementSizeSet(PXWindow* const pxGUIElement, const PXF32 x, const PXF32 y, const PXF32 width, const PXF32 height, const PXInt32U pxUIElementPositionMode);
+PXPublic void PXAPI PXUIElementColorSet4F(PXWindow* const pxWindow, const PXF32 red, const PXF32 green, const PXF32 blue, const PXF32 alpha);
+PXPublic void PXAPI PXUIElementSizeSet(PXWindow* const pxWindow, const PXF32 x, const PXF32 y, const PXF32 width, const PXF32 height, const PXI32U pxUIElementPositionMode);
 
 //-------------------------------------------------------------------------
 
@@ -350,7 +408,7 @@ PXPublic void PXAPI PXUIElementSizeSet(PXWindow* const pxGUIElement, const PXF32
 //-------------------------------------------------------------------------
 PXPublic void PXAPI PXRenderableConstruct(PXRenderable* const pxRenderable);
 
-PXPublic void PXAPI PXTextureConstruct(PXTexture2D* const texture);
+PXPublic void PXAPI PXTextureConstruct(PXTexture* const texture);
 
 
 //-------------------------------------------------------------------------
@@ -358,7 +416,7 @@ PXPublic void PXAPI PXTextureConstruct(PXTexture2D* const texture);
 //-----------------------------------------------------
 // Sprite
 //-----------------------------------------------------
-PXPublic PXActionResult PXAPI PXGraphicSpriteConstruct(PXGraphic* const pxGraphic, PXSprite* const pxSprite);
+PXPublic PXResult PXAPI PXGraphicSpriteConstruct(PXGraphic* const pxGraphic, PXSprite* const pxSprite);
 
 
 
@@ -366,9 +424,11 @@ PXPublic void PXAPI PXRenderableMeshSegmentConstruct(PXRenderableMeshSegment* co
 
 
 PXPublic void PXAPI PXGraphicModelShaderSet(PXGraphic* const pxGraphic, PXRenderable* const renderable, const PXShaderProgram* const shaderPXProgram);
-//PXPublic PXActionResult PXGraphicModelGenerate(PXGraphic* const pxGraphic, PXRenderable** const renderable, const PXTextASCII filePath);
-//PXPublic PXActionResult PXGraphicModelLoad(PXGraphic* const pxGraphic, PXRenderable* const renderable, const PXText* const filePath);
-//PXPublic PXActionResult PXGraphicModelRegisterFromModel(PXGraphic* const pxGraphic, PXRenderable* const renderable, const PXModel* const model);
+
+
+//PXPublic PXResult PXGraphicModelGenerate(PXGraphic* const pxGraphic, PXRenderable** const renderable, const PXASCII filePath);
+//PXPublic PXResult PXGraphicModelLoad(PXGraphic* const pxGraphic, PXRenderable* const renderable, const PXText* const filePath);
+//PXPublic PXResult PXGraphicModelRegisterFromModel(PXGraphic* const pxGraphic, PXRenderable* const renderable, const PXModel* const model);
 //-------------------------------------------------------------------------
 
 

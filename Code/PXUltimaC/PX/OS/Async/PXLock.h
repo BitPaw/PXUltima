@@ -1,5 +1,5 @@
-#ifndef PXLockInclude
-#define PXLockInclude
+#ifndef PXLockIncluded
+#define PXLockIncluded
 
 #include <PX/OS/System/Version/PXOSVersion.h>
 #include <PX/OS/Error/PXActionResult.h>
@@ -24,7 +24,7 @@ PXLockType;
 typedef struct PXLock_
 {
     PXLockType Type;
-    PXInt32U LockCounter;
+    PXI32U LockCounter;
 
     union
     {
@@ -37,9 +37,9 @@ typedef struct PXLock_
 }
 PXLock;
 
-PXPublic PXActionResult PXAPI PXLockCreate(PXLock* const lock, const PXLockType type);
-PXPublic PXActionResult PXAPI PXLockDelete(PXLock* const lock);
-PXPublic PXActionResult PXAPI PXLockEngage(PXLock* const lock);
-PXPublic PXActionResult PXAPI PXLockRelease(PXLock* const lock);
+PXPublic PXResult PXAPI PXLockCreate(PXLock* const lock, const PXLockType type);
+PXPublic PXResult PXAPI PXLockDelete(PXLock* const lock);
+PXPublic PXResult PXAPI PXLockEngage(PXLock* const lock);
+PXPublic PXResult PXAPI PXLockRelease(PXLock* const lock);
 
 #endif

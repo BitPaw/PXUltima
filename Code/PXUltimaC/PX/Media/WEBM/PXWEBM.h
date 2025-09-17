@@ -1,7 +1,7 @@
-#ifndef PXWEBMINCLUDE
-#define PXWEBMINCLUDE
+#ifndef PXWEBMIncluded
+#define PXWEBMIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef struct PXWEBM_
 {
@@ -9,7 +9,7 @@ typedef struct PXWEBM_
 }
 PXWEBM;
 
-PXPublic PXActionResult PXAPI PXWEBMLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXWEBMSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXWEBMLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXWEBMSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

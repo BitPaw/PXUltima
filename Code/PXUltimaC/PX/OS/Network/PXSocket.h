@@ -1,6 +1,6 @@
-#define PXSocketInclude
-#ifndef PXSocketInclude
-#define PXSocketInclude
+#define PXSocketIncluded
+#ifndef PXSocketIncluded
+#define PXSocketIncluded
 
 #include <PX/OS/System/PXOSVersion.h>
 
@@ -19,7 +19,7 @@
 #include <PX/Container/Dictionary/PXDictionary.h>
 #include <PX/Container/Buffer/PXBuffer.h>
 
-typedef PXInt32U PXSocketID;
+typedef PXI32U PXSocketID;
 
 #define SocketDebug 0
 #define IPv6LengthMax 65
@@ -104,7 +104,7 @@ typedef struct PXSocket_
     PXSocketType Type;
     char IP[IPv6LengthMax];
     PXSize IPSize;
-    PXInt16U Port;
+    PXI16U Port;
 
 
     void* Owner;
@@ -126,7 +126,7 @@ PXSocket;
 typedef struct PXSocketAdressSetupInfo_
 {
     PXText IP; // null for any ipAdress
-    PXInt16U Port; // -1 for no port
+    PXI16U Port; // -1 for no port
     IPAdressFamily IPMode;
     PXSocketType SocketType;
     PXProtocolMode ProtocolMode;
@@ -143,7 +143,7 @@ PXPublic void PXAPI PXSocketDestruct(PXSocket* const pxSocket);
 
 
 
-PXPublic PXActionResult PXAPI PXSocketSetupAdress
+PXPublic PXResult PXAPI PXSocketSetupAdress
 (
     PXSocket* const pxSocketList,
     const PXSize PXSocketListSizeMax,
@@ -157,11 +157,11 @@ PXPublic PXBool PXAPI PXSocketIsCurrentlyUsed(PXSocket* const pxSocket);
 PXPublic void PXAPI PXSocketStateChange(PXSocket* const pxSocket, const PXSocketState socketState);
 
 
-PXPublic PXActionResult PXAPI PXSocketClientRemove(PXSocket* const serverSocket, const PXSocketID clientID);
+PXPublic PXResult PXAPI PXSocketClientRemove(PXSocket* const serverSocket, const PXSocketID clientID);
 
 #if OSWindows
-PXPrivate PXActionResult PXAPI PXWindowsSocketAgentErrorFetch(void);
-PXPrivate PXActionResult PXAPI PXWindowsSocketAgentErrorFromID(const PXInt32S errorID);
+PXPrivate PXResult PXAPI  PXWindowsSocketAgentErrorFetch(void);
+PXPrivate PXResult PXAPI  PXWindowsSocketAgentErrorFromID(const PXI32S errorID);
 #endif
 
 #ifdef __cplusplus

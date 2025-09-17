@@ -5,9 +5,9 @@
 
 const char PXLU4Name[] = "LZ4";
 
-const PXInt32U LZ4_MAX_INPUT_SIZE = 0x7E000000; // 2 113 929 216 bytes
-const PXInt8U PXLZ4ChunksMaxAmount = 127;
-const PXInt8U PXLZ4TokenLengthMAX = 0x0F;
+const PXI32U LZ4_MAX_INPUT_SIZE = 0x7E000000; // 2 113 929 216 bytes
+const PXI8U PXLZ4ChunksMaxAmount = 127;
+const PXI8U PXLZ4TokenLengthMAX = 0x0F;
 
 
 #define ML_BITS  4
@@ -23,7 +23,7 @@ typedef enum { decode_full_block = 0, partial_decode = 1 } earlyEnd_directive;
 typedef enum { noDict = 0, withPrefix64k, usingExtDict, usingDictCtx } dict_directive;
 typedef enum { noDictIssue = 0, dictSmall } dictIssue_directive;
 
-PXActionResult PXAPI PXLZ4DecompressChunk(PXFile* const pxFileInput, PXFile* const pxFileOutput)
+PXResult PXAPI  PXLZ4DecompressChunk(PXFile* const pxFileInput, PXFile* const pxFileOutput)
 {
 
 
@@ -57,11 +57,11 @@ PXActionResult PXAPI PXLZ4DecompressChunk(PXFile* const pxFileInput, PXFile* con
             break;
         }
 
-        PXInt16U literalLength = 0;
-        PXInt16U matchlength = 0;
+        PXI16U literalLength = 0;
+        PXI16U matchlength = 0;
 
         {
-            PXInt8U token = 0;
+            PXI8U token = 0;
 
             // First byte / two nibbles
             // HI-Nibble is length
@@ -78,7 +78,7 @@ PXActionResult PXAPI PXLZ4DecompressChunk(PXFile* const pxFileInput, PXFile* con
         {
             for(;;)
             {
-                PXInt8U size = 0;
+                PXI8U size = 0;
 
                 PXFileReadI8U(pxFileInput, &size);
 
@@ -98,7 +98,7 @@ PXActionResult PXAPI PXLZ4DecompressChunk(PXFile* const pxFileInput, PXFile* con
 
 
         // Match copy
-        PXInt16S offset = 0;
+        PXI16S offset = 0;
 
         PXFileReadI16SE(pxFileInput, &offset, PXEndianLittle);
 
@@ -108,7 +108,7 @@ PXActionResult PXAPI PXLZ4DecompressChunk(PXFile* const pxFileInput, PXFile* con
 
             for(;;)
             {
-                PXInt8U size = 0;
+                PXI8U size = 0;
 
                 PXFileReadI8U(pxFileInput, &size);
 
@@ -308,14 +308,14 @@ PXActionResult PXAPI PXLZ4DecompressChunk(PXFile* const pxFileInput, PXFile* con
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXLZ4Compress(PXFile* const pxFileInput, PXFile* const pxFileOutput)
+PXResult PXAPI  PXLZ4Compress(PXFile* const pxFileInput, PXFile* const pxFileOutput)
 {
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXLZ4Decompress(PXFile* const pxFileInput, PXFile* const pxFileOutput)
+PXResult PXAPI  PXLZ4Decompress(PXFile* const pxFileInput, PXFile* const pxFileOutput)
 {
-    PXInt8U nChunks = 0;
+    PXI8U nChunks = 0;
 
     if(!(pxFileInput && pxFileOutput))
     {
@@ -371,9 +371,9 @@ PXActionResult PXAPI PXLZ4Decompress(PXFile* const pxFileInput, PXFile* const px
     }
 
     // We need to decompress more than one block
-    for(PXInt8U i = 0; i < nChunks; ++i)
+    for(PXI8U i = 0; i < nChunks; ++i)
     {
-        PXInt32U chunkSize = 0;
+        PXI32U chunkSize = 0;
 
         PXFileReadI32UE(pxFileInput, &chunkSize, PXEndianLittle);
 

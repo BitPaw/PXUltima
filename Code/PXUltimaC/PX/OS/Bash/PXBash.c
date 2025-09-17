@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-PXActionResult PXAPI PXBashExecute(const PXText* const programPath, const PXBool syncronous)
+PXResult PXAPI  PXBashExecute(const PXText* const programPath, const PXBool syncronous)
 {
     /*
     Pipe pipe;
@@ -30,7 +30,7 @@ PXActionResult PXAPI PXBashExecute(const PXText* const programPath, const PXBool
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXBashExecuteA
+PXResult PXAPI  PXBashExecuteA
 (
     const char* const commandText,
     const PXSize commandTextSize,

@@ -1,16 +1,16 @@
-#ifndef PXPDFINCLUDE
-#define PXPDFINCLUDE
+#ifndef PXPDFIncluded
+#define PXPDFIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef struct PXPDF_
 {
-    PXInt8U VersionMajor;
-    PXInt8U VersionMinor;
+    PXI8U VersionMajor;
+    PXI8U VersionMinor;
 }
 PXPDF;
 
-PXPublic PXActionResult PXAPI PXPDFLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXPDFSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXPDFLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXPDFSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

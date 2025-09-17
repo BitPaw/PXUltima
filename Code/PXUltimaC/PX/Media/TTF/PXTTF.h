@@ -1,9 +1,9 @@
-#ifndef PXTTFINCLUDE
-#define PXTTFINCLUDE
+#ifndef PXTTFIncluded
+#define PXTTFIncluded
 
 #define PXTTFDebug 0
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef enum PXTTFTableEntryType_
 {
@@ -75,8 +75,8 @@ PXTTFVersionType;
 
 typedef struct PXTTFVersion_
 {
-    PXInt16U Major;
-    PXInt16U Minor;
+    PXI16U Major;
+    PXI16U Minor;
     PXTTFVersionType Type;
 }
 PXTTFVersion;
@@ -193,14 +193,14 @@ typedef struct PXEncodingRecord_
 {
     PXPlatformID Platform;
     PXEncodingID Encoding; // Platform specific.
-    PXInt32U SubtableOffset;//     Byte__ offset from beginning of table to the subtable for this encoding.
+    PXI32U SubtableOffset;//     Byte__ offset from beginning of table to the subtable for this encoding.
 }
 PXEncodingRecord;
 
 typedef struct PXTTFCharacterMapping_
 {
-    PXInt16U Version; // Table version number(0).
-    PXInt16U NumberOfTables; // Number of encoding tables that follow.
+    PXI16U Version; // Table version number(0).
+    PXI16U NumberOfTables; // Number of encoding tables that follow.
     PXEncodingRecord* EncodingRecordList;
 }
 PXTTFCharacterMapping;
@@ -334,7 +334,7 @@ typedef enum PXTTFFamilyType_
     PXTTFFamilyInvalid,
     PXTTFFamilyAny,
     PXTTFFamilyNoFit,
-    PXTTFFamilyTextAndDisplay,
+    PXTTFFamilyAndDisplay,
     PXTTFFamilyScript,
     PXTTFFamilyDecorative,
     PXTTFFamilyPictorial
@@ -594,10 +594,10 @@ PXTTFPostScript;
 typedef struct PXTTFOffsetTable_
 {
     PXTTFVersion Version;
-    PXInt16U NumberOfTables;
-    PXInt16U SearchRange;
-    PXInt16U EntrySelctor;
-    PXInt16U RangeShift;
+    PXI16U NumberOfTables;
+    PXI16U SearchRange;
+    PXI16U EntrySelctor;
+    PXI16U RangeShift;
 }
 PXTTFOffsetTable;
 
@@ -605,20 +605,20 @@ PXTTFOffsetTable;
 typedef struct PXTTFMaximumProfile_
 {
     PXTTFVersion Version;
-    PXInt16S NumberOfGlyphs; // the number of glyphs in the font
-    PXInt16S PointsMaximal; // points in non - compound glyph
-    PXInt16S ContoursMaximal; // contours in non - compound glyph
-    PXInt16S ComponentPointsMaximal; //points in compound glyph
-    PXInt16S ComponentContoursMaximal; //    contours in compound glyph
-    PXInt16S ZonesMaximal; // set to 2
-    PXInt16S TwilightPointsMaximal;//points used in Twilight Zone(Z0)
-    PXInt16S StorageMaximal; // number of Storage Area locations
-    PXInt16S FunctionDefsMaximal; // number of FDEFs
-    PXInt16S InstructionDefsMaximal; // number of IDEFs
-    PXInt16S StackElementsMaximal; // maximum stack depth
-    PXInt16S SizeOfInstructionsMaximal; // byte count for glyph instructions
-    PXInt16S ComponentElementsMaximal; // number of glyphs referenced at top level
-    PXInt16S ComponentDepthMaximal; // levels of recursion, set to 0 if font has only simple glyphs
+    PXI16S NumberOfGlyphs; // the number of glyphs in the font
+    PXI16S PointsMaximal; // points in non - compound glyph
+    PXI16S ContoursMaximal; // contours in non - compound glyph
+    PXI16S ComponentPointsMaximal; //points in compound glyph
+    PXI16S ComponentContoursMaximal; //    contours in compound glyph
+    PXI16S ZonesMaximal; // set to 2
+    PXI16S TwilightPointsMaximal;//points used in Twilight Zone(Z0)
+    PXI16S StorageMaximal; // number of Storage Area locations
+    PXI16S FunctionDefsMaximal; // number of FDEFs
+    PXI16S InstructionDefsMaximal; // number of IDEFs
+    PXI16S StackElementsMaximal; // maximum stack depth
+    PXI16S SizeOfInstructionsMaximal; // byte count for glyph instructions
+    PXI16S ComponentElementsMaximal; // number of glyphs referenced at top level
+    PXI16S ComponentDepthMaximal; // levels of recursion, set to 0 if font has only simple glyphs
 }
 PXTTFMaximumProfile;
 
@@ -633,22 +633,22 @@ PXTTFMaximumProfile;
 
 typedef struct PXTableEntryGlyphOutlineEntry_
 {
-    PXInt16U* ContourList;
-    PXInt16S ContourListSize;
-    PXInt16U Minimum[2];
-    PXInt16U Maximum[2];
+    PXI16U* ContourList;
+    PXI16S ContourListSize;
+    PXI16U Minimum[2];
+    PXI16U Maximum[2];
 
 
     // Simple glyphs
-    PXInt8U FlagList;
+    PXI8U FlagList;
 
-    PXInt8U* InstructionList;
-    PXInt16U InstructionListSize;
+    PXI8U* InstructionList;
+    PXI16U InstructionListSize;
 
 
     // Compound glyphs
-    PXInt16U ComponentFlagList;
-    PXInt16U GlyphIndex;
+    PXI16U ComponentFlagList;
+    PXI16U GlyphIndex;
 }
 PXTableEntryGlyphOutlineEntry;
 
@@ -674,18 +674,18 @@ typedef struct PXTTF_
 }
 PXTTF;
 
-PXPrivate PXPlatformID PXAPI PXTTFPlatformFromID(const PXInt16U platformID);
-PXPrivate PXEncodingID PXAPI PXTTFEncodingFromID(const PXPlatformID platformID, const PXInt16U encodingID);
+PXPrivate PXPlatformID PXAPI PXTTFPlatformFromID(const PXI16U platformID);
+PXPrivate PXEncodingID PXAPI PXTTFEncodingFromID(const PXPlatformID platformID, const PXI16U encodingID);
 
 PXPrivate PXTTFVersionType PXAPI PXTTFVersionTypeFromID(unsigned short major, unsigned short minor);
 //PXPublic void PXTTFVersionTypeToID(unsigned short* major, unsigned short* minor, const PXTTFVersionType versionType);
 
-PXPrivate PXTTFTableEntryType PXAPI PXTTFTableEntryTypeFromID(const PXInt32U tableEntryType);
-//PXPublic PXInt32U PXTTFTableEntryTypeFromID(const PXTTFTableEntryType tableEntryType);
+PXPrivate PXTTFTableEntryType PXAPI PXTTFTableEntryTypeFromID(const PXI32U tableEntryType);
+//PXPublic PXI32U PXTTFTableEntryTypeFromID(const PXTTFTableEntryType tableEntryType);
 
 PXPublic void PXAPI PXTTFDestruct(PXTTF* const ttf);
 
-PXPublic PXActionResult PXAPI PXTTFLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXTTFSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXTTFLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXTTFSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

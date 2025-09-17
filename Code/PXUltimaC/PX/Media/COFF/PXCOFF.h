@@ -1,7 +1,7 @@
-#ifndef PXCOFFInclude
-#define PXCOFFInclude
+#ifndef PXCOFFIncluded
+#define PXCOFFIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef enum PXCOFFMachineType_
 {
@@ -56,24 +56,24 @@ PXCOFFFormat;
 // 40 Bytes in file
 typedef struct PXSectionTable_
 {
-    PXInt64UCluster Name;
+    PXI64UCluster Name;
 
     union
     {
-        PXInt32U PhysicalAddress;
-        PXInt32U VirtualSize;
+        PXI32U PhysicalAddress;
+        PXI32U VirtualSize;
     };
 
-    PXInt32U VirtualAddress;
-    PXInt32U SectionRawDataSize;
-    PXInt32U SectionRawDataAdress;
-    PXInt32U PointerToRelocations;
-    PXInt32U PointerToLinenumbers;
-    PXInt16U NumberOfRelocations;
-    PXInt16U NumberOfLinenumbers;
-    PXInt32U CharacteristicFlags;
+    PXI32U VirtualAddress;
+    PXI32U SectionRawDataSize;
+    PXI32U SectionRawDataAdress;
+    PXI32U PointerToRelocations;
+    PXI32U PointerToLinenumbers;
+    PXI16U NumberOfRelocations;
+    PXI16U NumberOfLinenumbers;
+    PXI32U CharacteristicFlags;
 
-    PXInt8U Type;
+    PXI8U Type;
 }
 PXSectionTable;
 
@@ -85,8 +85,8 @@ typedef struct PXCOFFSymbolTableEntry_
 
         struct
         {
-            PXInt32U DoesNotUseExternalString;
-            PXInt32U NameReferenceOffset;
+            PXI32U DoesNotUseExternalString;
+            PXI32U NameReferenceOffset;
         };
 
         // If the symbol name is greater than eight characters, this field is treated as two integers. The entire
@@ -94,19 +94,19 @@ typedef struct PXCOFFSymbolTableEntry_
         //    string table.
     };
 
-    PXInt32U ValueOfSymbol;
-    PXInt16S SectionNumber;
-    PXInt16U TypeAndDerived;
-    PXInt8U StorageClass;
-    PXInt8U NumberOfAuxiliaryEntries;
+    PXI32U ValueOfSymbol;
+    PXI16S SectionNumber;
+    PXI16U TypeAndDerived;
+    PXI8U StorageClass;
+    PXI8U NumberOfAuxiliaryEntries;
 }
 PXCOFFSymbolTableEntry;
 
 typedef struct PXRelocationInformation_
 {
-    PXInt32U VirtualAddressOfReference;
-    PXInt32U SymbolTableIndex;
-    PXInt16U RelocationType;
+    PXI32U VirtualAddressOfReference;
+    PXI32U SymbolTableIndex;
+    PXI16U RelocationType;
 }
 PXRelocationInformation;
 
@@ -114,26 +114,26 @@ typedef struct PXLineNumberEntry_
 {
     union
     {
-        PXInt32U SymbolIndex;
-        PXInt32U PhysicalAddress;
+        PXI32U SymbolIndex;
+        PXI32U PhysicalAddress;
     };
-    PXInt16U LineNumber;
+    PXI16U LineNumber;
 }
 PXLineNumberEntry;
 
 typedef struct PXCOFFExportDirectoryTable_
 {
-    PXInt32U ExportFlags;
-    PXInt32U TimeDateStamp;
-    PXInt16U MajorVersion;
-    PXInt16U MinorVersion;
-    PXInt32U NameRVA;
-    PXInt32U OrdinalBase;
-    PXInt32U AddressTableEntries;
-    PXInt32U NumberOfNamePointers;
-    PXInt32U ExportAddressTableRVA;
-    PXInt32U NamePointerRVA;
-    PXInt32U OrdinalTableRVA;
+    PXI32U ExportFlags;
+    PXI32U TimeDateStamp;
+    PXI16U MajorVersion;
+    PXI16U MinorVersion;
+    PXI32U NameRVA;
+    PXI32U OrdinalBase;
+    PXI32U AddressTableEntries;
+    PXI32U NumberOfNamePointers;
+    PXI32U ExportAddressTableRVA;
+    PXI32U NamePointerRVA;
+    PXI32U OrdinalTableRVA;
 }
 PXCOFFExportDirectoryTable;
 
@@ -141,8 +141,8 @@ typedef struct PXCOFFExportAddressTableEntry_
 {
     union
     {
-        PXInt32U ExportSymbolOffset;
-        PXInt32U ForwarderOffset;
+        PXI32U ExportSymbolOffset;
+        PXI32U ForwarderOffset;
     };
 }
 PXCOFFExportAddressTableEntry;
@@ -150,11 +150,11 @@ PXCOFFExportAddressTableEntry;
 
 typedef struct PXCOFFImportDirectoryTable_
 {
-    PXInt32U ImportLookupTableOffset;
-    PXInt32U TimeDateStamp;
-    PXInt32U FowarderChainOffset;
-    PXInt32U NameOffset;
-    PXInt32U ImportAddressTableOffset;
+    PXI32U ImportLookupTableOffset;
+    PXI32U TimeDateStamp;
+    PXI32U FowarderChainOffset;
+    PXI32U NameOffset;
+    PXI32U ImportAddressTableOffset;
 }
 PXCOFFImportDirectoryTable;
 
@@ -164,13 +164,13 @@ typedef struct PXCOFFImportLookupTable_
     {
         union
         {
-            PXInt64U OrdinalNumber64;
-            PXInt64U Name64;
+            PXI64U OrdinalNumber64;
+            PXI64U Name64;
         };
         union
         {
-            PXInt32U OrdinalNumber32;
-            PXInt32U Name32;
+            PXI32U OrdinalNumber32;
+            PXI32U Name32;
         };
     };
 
@@ -180,12 +180,12 @@ PXCOFFImportLookupTable;
 
 typedef struct PXCOFFHeader_
 {
-    PXInt32U TimeDateStamp;
-    PXInt32U PointerToSymbolTable;
-    PXInt32U NumberOfSymbols;
-    PXInt16U NumberOfSections;
-    PXInt16U SizeOfOptionalHeader;
-    PXInt16U CharacteristicsFlagList;
+    PXI32U TimeDateStamp;
+    PXI32U PointerToSymbolTable;
+    PXI32U NumberOfSymbols;
+    PXI16U NumberOfSections;
+    PXI16U SizeOfOptionalHeader;
+    PXI16U CharacteristicsFlagList;
     PXCOFFMachineType MachineType;
 }
 PXCOFFHeader;
@@ -195,40 +195,40 @@ typedef struct PXCOFFOptionalHeaderStandardFields_
 {
     int StateType;
 
-    PXInt8U MajorLinkerVersion;
-    PXInt8U MinorLinkerVersion;
+    PXI8U MajorLinkerVersion;
+    PXI8U MinorLinkerVersion;
 
-    PXInt32U SizeOfCode;
-    PXInt32U SizeOfInitializedData;
-    PXInt32U SizeOfUninitializedData;
-    PXInt32U AddressOfEntryPoint;
-    PXInt32U BaseOfCode;
-    PXInt32U BaseOfData; // Only in PE32, not used in PE32+
+    PXI32U SizeOfCode;
+    PXI32U SizeOfInitializedData;
+    PXI32U SizeOfUninitializedData;
+    PXI32U AddressOfEntryPoint;
+    PXI32U BaseOfCode;
+    PXI32U BaseOfData; // Only in PE32, not used in PE32+
 }
 PXCOFFOptionalHeaderStandardFields;
 
 typedef struct PXCOFFOptionalHeaderWindowsNT_
 {
-    PXInt64U ImageBase;
-    PXInt32U SectionAlignment;
-    PXInt32U FileAlignment;
-    PXInt16U MajorOperatingSystemVersion;
-    PXInt16U MinorOperatingSystemVersion;
-    PXInt16U MajorImageVersion;
-    PXInt16U MinorImageVersion;
-    PXInt16U MajorSubsystemVersion;
-    PXInt16U MinorSubsystemVersion;
-    PXInt32U SizeOfImage;
-    PXInt32U SizeOfHeaders;
-    PXInt32U CheckSum;
-    PXInt16U Subsystem;
-    PXInt16U DLLCharacteristics;
-    PXInt64U SizeOfStackReserve;
-    PXInt64U SizeOfStackCommit;
-    PXInt64U SizeOfHeapReserve;
-    PXInt64U SizeOfHeapCommit;
-    PXInt32U LoaderFlags;
-    PXInt32U NumberOfRvaAndSizes;
+    PXI64U ImageBase;
+    PXI32U SectionAlignment;
+    PXI32U FileAlignment;
+    PXI16U MajorOperatingSystemVersion;
+    PXI16U MinorOperatingSystemVersion;
+    PXI16U MajorImageVersion;
+    PXI16U MinorImageVersion;
+    PXI16U MajorSubsystemVersion;
+    PXI16U MinorSubsystemVersion;
+    PXI32U SizeOfImage;
+    PXI32U SizeOfHeaders;
+    PXI32U CheckSum;
+    PXI16U Subsystem;
+    PXI16U DLLCharacteristics;
+    PXI64U SizeOfStackReserve;
+    PXI64U SizeOfStackCommit;
+    PXI64U SizeOfHeapReserve;
+    PXI64U SizeOfHeapCommit;
+    PXI32U LoaderFlags;
+    PXI32U NumberOfRvaAndSizes;
 
     // Extra
     PXWindowsVersion WindowsVersion;
@@ -237,8 +237,8 @@ PXCOFFOptionalHeaderWindowsNT;
 
 typedef struct PXCOFFOptionalHeaderDataDirectoriesEntry_
 {
-    PXInt32U RelativeVirtualAddress;
-    PXInt32U Size;
+    PXI32U RelativeVirtualAddress;
+    PXI32U Size;
 }
 PXCOFFOptionalHeaderDataDirectoriesEntry;
 
@@ -284,10 +284,10 @@ typedef struct PXCOFF_
 }
 PXCOFF;
 
-PXPrivate inline PXCOFFMachineType PXAPI PXCOFFMachineFromID(const PXInt16U valueID);
-PXPrivate inline PXCOFFFormat PXAPI PXCOFFFormatFromID(const PXInt16U valueID);
+PXPrivate inline PXCOFFMachineType PXAPI PXCOFFMachineFromID(const PXI16U valueID);
+PXPrivate inline PXCOFFFormat PXAPI PXCOFFFormatFromID(const PXI16U valueID);
 
-PXPublic PXActionResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFile);
-PXPublic PXActionResult PXAPI PXCOFFSaveToFile(const PXCOFF* const pxCOFF, PXFile* const pxFile);
+PXPublic PXResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFile);
+PXPublic PXResult PXAPI PXCOFFSaveToFile(const PXCOFF* const pxCOFF, PXFile* const pxFile);
 
 #endif

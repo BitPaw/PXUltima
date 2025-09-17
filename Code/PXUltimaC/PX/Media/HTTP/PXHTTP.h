@@ -1,7 +1,7 @@
-#ifndef PXHTTPINCLUDE
-#define PXHTTPINCLUDE
+#ifndef PXHTTPIncluded
+#define PXHTTPIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef enum PXHTTPVersion_
 {
@@ -54,10 +54,10 @@ typedef struct PXHTTPResponse_
 }
 PXHTTPResponse;
 
-PXPublic PXActionResult PXAPI PXHTTPRequestParse(PXHTTPRequest* const pxHTTPRequest, PXFile* const PXFile);
-PXPublic PXActionResult PXAPI PXHTTPRequestSerialize(PXHTTPRequest* const pxHTTPRequest, PXFile* const PXFile);
+PXPublic PXResult PXAPI PXHTTPRequestParse(PXHTTPRequest* const pxHTTPRequest, PXFile* const PXFile);
+PXPublic PXResult PXAPI PXHTTPRequestSerialize(PXHTTPRequest* const pxHTTPRequest, PXFile* const PXFile);
 
-PXPublic PXActionResult PXAPI PXHTTPResponseParse(PXHTTPResponse* const pxHTTPResponse, PXFile* const PXFile);
-PXPublic PXActionResult PXAPI PXHTTPResponseSerialize(PXHTTPResponse* const pxHTTPResponse, PXFile* const PXFile);
+PXPublic PXResult PXAPI PXHTTPResponseParse(PXHTTPResponse* const pxHTTPResponse, PXFile* const PXFile);
+PXPublic PXResult PXAPI PXHTTPResponseSerialize(PXHTTPResponse* const pxHTTPResponse, PXFile* const PXFile);
 
 #endif

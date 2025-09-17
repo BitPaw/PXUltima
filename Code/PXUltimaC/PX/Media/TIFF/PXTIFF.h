@@ -1,7 +1,7 @@
-#ifndef PXTIFFInclude
-#define PXTIFFInclude
+#ifndef PXTIFFIncluded
+#define PXTIFFIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef enum PXTIFFType_
 {
@@ -139,8 +139,8 @@ PXTIFFCompression;
 typedef struct PXTIFFPage_
 {
     void* TagData;
-    PXInt32U OffsetToNextImageFileDirectory;
-    PXInt16U NumberOfTags;
+    PXI32U OffsetToNextImageFileDirectory;
+    PXI16U NumberOfTags;
 
     PXSize PredictedEndPosition;
 }
@@ -156,11 +156,11 @@ PXTIFFPlanarConfiguration;
 
 typedef struct PXTIFFTag_
 {
-    PXInt32U NumberOfValues;
-    PXInt32U ImageFileDataOffset;
+    PXI32U NumberOfValues;
+    PXI32U ImageFileDataOffset;
 
-    PXInt16U TypeID;
-    PXInt16U DataTypeID;
+    PXI16U TypeID;
+    PXI16U DataTypeID;
 
     PXTIFFTagType Type;
     PXTIFFType DataType;
@@ -171,24 +171,24 @@ PXTIFFTag;
 typedef struct PXTIFF_
 {
     PXEndian Endianness;
-    PXInt16U Version;
-    PXInt32U OffsetToIFD;
+    PXI16U Version;
+    PXI32U OffsetToIFD;
 
     char CopyRight[32];
     char DateTimeStamp[32];
     char Software[32];
 
-    PXInt16U MaxSampleValue;
-    PXInt16U MinSampleValue;
+    PXI16U MaxSampleValue;
+    PXI16U MinSampleValue;
 
-    PXInt32U Width;
-    PXInt32U Height;
+    PXI32U Width;
+    PXI32U Height;
 
-    PXInt32U RowsPerStrip;
+    PXI32U RowsPerStrip;
     PXTIFFPlanarConfiguration PlanarConfiguration;
 
-    PXInt16U SamplesPerPixel;
-    PXInt16U BitsPerSample[4];
+    PXI16U SamplesPerPixel;
+    PXI16U BitsPerSample[4];
 
     PXTIFFColorFormat PhotometricInterpretation;
     PXTIFFCompression Compression;
@@ -204,7 +204,7 @@ PXPrivate inline PXTIFFColorFormat PXAPI PXTIFFColorFormatFromID(const unsigned 
 
 PXPublic PXSize PXAPI PXTIFFFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 
-PXPublic PXActionResult PXAPI PXTIFFLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXTIFFSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXTIFFLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXTIFFSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

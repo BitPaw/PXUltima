@@ -1,7 +1,7 @@
-#ifndef PXMIPSINCLUDE
-#define PXMIPSINCLUDE
+#ifndef PXMIPSIncluded
+#define PXMIPSIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 #define PXMIPSOPCodeNormal  0b00000000
 #define PXMIPSOPCodeSpecial 0b01000000
@@ -339,25 +339,25 @@ PXCodeSegment;
 
 typedef struct PXMIPSTInstruction_
 {
-    PXInt8U* Adress;
-    PXInt8U* AdressVirtual;
-    PXInt16U Immediate;
+    PXI8U* Adress;
+    PXI8U* AdressVirtual;
+    PXI16U Immediate;
 
-    PXInt32U OperationCode;
+    PXI32U OperationCode;
 
     PXMIPSInstructionType Type;
 
-    PXInt8U RegisterSourceID;
-    PXInt8U RegisterTargetID; // target register ID
-    PXInt8U RegisterDestinationID; // destination? register ID
-    PXInt8U ShiftAmount;
+    PXI8U RegisterSourceID;
+    PXI8U RegisterTargetID; // target register ID
+    PXI8U RegisterDestinationID; // destination? register ID
+    PXI8U ShiftAmount;
 
-    PXInt8U FS; // PXF32ingpoint register ID
+    PXI8U FS; // PXF32ingpoint register ID
 
 
 
     PXBool IncrmentCounter;
-    PXInt8U CoProcessorID;
+    PXI8U CoProcessorID;
 }
 PXMIPSTInstruction;
 
@@ -370,7 +370,7 @@ PXMIPSTInstruction;
 #define PXMIPSMemoryIOStore 0x01
 #define PXMIPSMemoryIOLoad  0x02
 
-void PXAPI PXMIPSMemoryIO(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction, const PXInt32U datatype, PXInt8U mode);
+void PXAPI PXMIPSMemoryIO(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction, const PXI32U datatype, PXI8U mode);
 
 
 #define PXMIPSBranchEqual 0x01
@@ -390,7 +390,7 @@ void PXAPI PXMIPSMemoryIO(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruc
 typedef struct PXMIPSBranch_
 {
     void* Address;
-    PXInt8U Mode;
+    PXI8U Mode;
     PXBool Likely;
     PXBool CompareToRegister;
     PXBool CommitJump;
@@ -417,7 +417,7 @@ void PXAPI PXMIPSJumpCalc(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruc
 
 typedef struct PXMIPSInstructionCoProcessor_
 {
-    PXInt8U ProcessorID;
+    PXI8U ProcessorID;
 }
 PXMIPSInstructionCoProcessor;
 
@@ -439,7 +439,7 @@ PXPublic const char* PXAPI PXMIPSInstructionTypeToStringLong(const PXMIPSInstruc
 
 PXPublic void PXAPI PXMIPSInstructionExecute(PXMIPSProcessor* const pxMIPSProcessor);
 
-PXPublic PXActionResult PXAPI PXMIPSTranslate(PXMIPSProcessor* const pxMIPSProcessor, const PXByte* const data, const PXSize length);
+PXPublic PXResult PXAPI PXMIPSTranslate(PXMIPSProcessor* const pxMIPSProcessor, const PXByte* const data, const PXSize length);
 
 
 

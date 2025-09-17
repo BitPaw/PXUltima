@@ -1,7 +1,7 @@
-#ifndef PXN64INCLUDE
-#define PXN64INCLUDE
+#ifndef PXN64Included
+#define PXN64Included
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 /*
 * N64 only reads up to 0x18
@@ -187,36 +187,36 @@ typedef struct PXN64_
     PXN64CICType CICType;
     void* RAMEntryPointAdress;
 
-    PXInt8U EndiannessID;
-    PXInt8U initialPI_BSB_DOM1_LAT_REG;
-    PXInt8U initialPI_BSD_DOM1_PGS_REG;
-    PXInt8U initialPI_BSD_DOM1_PWD_REG;
-    PXInt8U initialPI_BSB_DOM1_PGS_REG;
-    PXInt32U ClockRateOverride;
-    PXInt32U RAMEntryPointOffset; // ProgramCounter, LoadAddress
-    PXInt32U RAMEntryPointLength;
-    PXInt32U ReleaseAddress;
-    PXInt32U CRC1Checksum;
-    PXInt32U CRC2;
-    PXInt64U UnknownA;
+    PXI8U EndiannessID;
+    PXI8U initialPI_BSB_DOM1_LAT_REG;
+    PXI8U initialPI_BSD_DOM1_PGS_REG;
+    PXI8U initialPI_BSD_DOM1_PWD_REG;
+    PXI8U initialPI_BSB_DOM1_PGS_REG;
+    PXI32U ClockRateOverride;
+    PXI32U RAMEntryPointOffset; // ProgramCounter, LoadAddress
+    PXI32U RAMEntryPointLength;
+    PXI32U ReleaseAddress;
+    PXI32U CRC1Checksum;
+    PXI32U CRC2;
+    PXI64U UnknownA;
     char ImageName[21];
-    PXInt32U UnknownB;
+    PXI32U UnknownB;
     char MediaFormatID[4];
     char CartridgeID[3];
-    PXInt8U CountryCodeID;
+    PXI8U CountryCodeID;
     PXN64CountryCode CountryCode;
-    PXInt8U Version;
+    PXI8U Version;
 
     void* BootCode;
     PXSize BootCodeSize;
-    PXInt32U BootCodeCRC;
+    PXI32U BootCodeCRC;
 }
 PXN64;
 
-PXPrivate PXN64CountryCode PXAPI PXN64CountryCodeFromID(PXInt8U pxN64CountryCodeID);
+PXPrivate PXN64CountryCode PXAPI PXN64CountryCodeFromID(PXI8U pxN64CountryCodeID);
 PXPrivate const char* PXN64CountryCodeToString(const PXN64CountryCode pxN64CountryCode);
 
-PXPublic PXActionResult PXAPI PXN64LoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXN64SaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXN64LoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXN64SaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

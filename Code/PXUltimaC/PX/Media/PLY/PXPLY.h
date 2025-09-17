@@ -1,7 +1,7 @@
-#ifndef PXPLYINCLUDE
-#define PXPLYINCLUDE
+#ifndef PXPLYIncluded
+#define PXPLYIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef struct PXPLY_
 {
@@ -9,7 +9,7 @@ typedef struct PXPLY_
 }
 PXPLY;
 
-PXPublic PXActionResult PXAPI PXPLYLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXPLYSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXPLYLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXPLYSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

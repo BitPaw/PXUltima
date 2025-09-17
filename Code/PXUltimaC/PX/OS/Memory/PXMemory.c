@@ -48,7 +48,7 @@ const char PXMemoryLogPrintMemoryVirtualRealloc[] = "Virtual-Realloc";
 
 
 /*
-PXActionResult PXAPI WindowsProcessPrivilege(const char* pszPrivilege, BOOL bEnable)
+PXResult PXAPI  WindowsProcessPrivilege(const char* pszPrivilege, BOOL bEnable)
 {
     HANDLE           hToken;
     TOKEN_PRIVILEGES tp;
@@ -152,7 +152,7 @@ void PXAPI PXMemorySymbolAdd(PXSymbolMemory* const pxSymbolMemory,  const PXMemo
     {
         case PXMemorySymbolInfoModeAdd:
         {
-            PXDictionaryAdd(&pxMemorySymbolLookup->SymbolLookup, &pxSymbolMemory->Adress, pxSymbolMemory);
+            PXDictionaryEntryAdd(&pxMemorySymbolLookup->SymbolLookup, &pxSymbolMemory->Adress, pxSymbolMemory);
             break;
         }
         case PXMemorySymbolInfoModeUpdate:
@@ -170,12 +170,12 @@ void PXAPI PXMemorySymbolAdd(PXSymbolMemory* const pxSymbolMemory,  const PXMemo
     }
 }
 
-PXActionResult PXAPI PXMemorySymbolFetch(const void* const adress, PXSymbol* const pxSymbol)
+PXResult PXAPI  PXMemorySymbolFetch(const void* const adress, PXSymbol* const pxSymbol)
 {
     PXMemorySymbolLookup* const pxMemorySymbolLookup = PXMemorySymbolLookupInstanceGet();
     PXSymbolMemory* symbolMemory = PXNull;
 
-    PXBool success = PXDictionaryFindEntry(&pxMemorySymbolLookup->SymbolLookup, &adress, &symbolMemory);
+    PXBool success = PXDictionaryEntryFind(&pxMemorySymbolLookup->SymbolLookup, &adress, &symbolMemory);
 
     PXClear(PXSymbol, pxSymbol);
 
@@ -232,7 +232,7 @@ PXBool PXAPI PXMemoryDoAdressesOverlap(void* const adressA, const PXSize adressA
 
 
 
-int PXAPI PXMemoryProtectionIDTranslate(const PXInt8U protectionMode)
+int PXAPI PXMemoryProtectionIDTranslate(const PXI8U protectionMode)
 {
     int protectionID = 0;
 #if OSUnix
@@ -288,9 +288,9 @@ int PXAPI PXMemoryProtectionIDTranslate(const PXInt8U protectionMode)
     return protectionID;
 }
 
-PXActionResult PXAPI PXMemoryProtect(void* dataAdress, const PXSize dataSize, const PXInt8U protectionMode)
+PXResult PXAPI  PXMemoryProtect(void* dataAdress, const PXSize dataSize, const PXI8U protectionMode)
 {
-    const PXInt32U protectionID = PXMemoryProtectionIDTranslate(protectionMode);
+    const PXI32U protectionID = PXMemoryProtectionIDTranslate(protectionMode);
 
 #if OSUnix
     const int protectResultID = mprotect(dataAdress, dataSize, protectionID); // libc.so, sys/mman.h
@@ -399,19 +399,19 @@ void PXAPI PXMemorySet(void* const PXRestrict buffer, const PXByte value, const 
 
 #include <immintrin.h>
 
-PXInt8U PXAPI PXMemoryCompareI8V(const PXInt8U* const textList, const PXInt8U listAmount, const PXInt8U value)
+PXI8U PXAPI PXMemoryCompareI8V(const PXI8U* const textList, const PXI8U listAmount, const PXI8U value)
 {
     __m512i zero = _mm512_setzero_si512();
     //__m512i zero = _mm512_set1_epi8('~');
 
     __m512i value_vector = _mm512_set1_epi8(value); // Load target byte gets copy'ed 64x 
 
-    for(PXInt8U i = 0; i < listAmount; i += 64)
+    for(PXI8U i = 0; i < listAmount; i += 64)
     { 
         __mmask64 mask = ((listAmount -i) > 64) ? 0xFFFFFFFFFFFFFFFF : (1LL << (listAmount - (i))) -1; // How many things can we load?
         __m512i data_vector = _mm512_mask_loadu_epi8(zero, mask, &textList[i]); // Load compare array
 
-        const PXInt64U result = _mm512_cmp_epi8_mask(value_vector, data_vector, _MM_CMPINT_EQ); // Compare both 64x byte vs byte
+        const PXI64U result = _mm512_cmp_epi8_mask(value_vector, data_vector, _MM_CMPINT_EQ); // Compare both 64x byte vs byte
 
         char bufferA[64 * 2+1];
         char bufferB[64 * 2+1];
@@ -420,9 +420,9 @@ PXInt8U PXAPI PXMemoryCompareI8V(const PXInt8U* const textList, const PXInt8U li
         {
             bufferA[2 * i + 0] = value_vector.m512i_u8[i];
             bufferA[2 * i + 1] = ' ';
-            bufferA[2 * i + 2] = 0;
+            bufferA[2 * i + 2] = 0;            
 
-            bufferB[2 * i + 0] = PXCharMakePrintable(data_vector.m512i_u8[i]);
+            bufferB[2 * i + 0] = PXTextMakePrintable(data_vector.m512i_u8[i]);
             bufferB[2 * i + 1] = ' ';
             bufferB[2 * i + 2] = 0;
         }
@@ -452,23 +452,23 @@ PXInt8U PXAPI PXMemoryCompareI8V(const PXInt8U* const textList, const PXInt8U li
         // We found a match!
 
 #if OS64B
-        const PXInt8U match_index = 63 - _lzcnt_u64(result); // Count leading zeros. We want the first one.
+        const PXI8U match_index = 63 - _lzcnt_u64(result); // Count leading zeros. We want the first one.
 #else
-        const PXInt8U match_index = 63 - _lzcnt_u32(result); // Count leading zeros. We want the first one.
+        const PXI8U match_index = 63 - _lzcnt_u32(result); // Count leading zeros. We want the first one.
 #endif
  
 
         return i + match_index; // Index of first hit
     }
 
-    return (PXInt8U)-1; // No match!
+    return (PXI8U)-1; // No match!
 }
 
-PXInt8U PXAPI PXMemoryCompareC32V(const char* value, char* const textList[4], const PXInt8U listAmount)
+PXI8U PXAPI PXMemoryCompareC32V(const char* value, char* const textList[4], const PXI8U listAmount)
 {
     __m512i value_vector = _mm512_set1_epi32(*(int*)value); // Load target char[4], gets copy'ed 16x 
 
-    for(PXInt8U i = 0; i < listAmount; i += 16)
+    for(PXI8U i = 0; i < listAmount; i += 16)
     {
         __m512i data_vector = _mm512_loadu_epi32(&textList[i]); // Load compare array
 
@@ -486,13 +486,13 @@ PXInt8U PXAPI PXMemoryCompareC32V(const char* value, char* const textList[4], co
         return i + match_index; // Index of first hit
     }
 
-    return (PXInt8U)-1; // No match!
+    return (PXI8U)-1; // No match!
 }
 
-PXInt8U PXAPI PXMemoryCompareSVI8(const char* const stringTarget, char** const stringList, const PXInt8U* const stringSizeList, const PXInt8U amount)
+PXI8U PXAPI PXMemoryCompareSVI8(const char* const stringTarget, char** const stringList, const PXI8U* const stringSizeList, const PXI8U amount)
 {
     // Load the target string into a 512-bit AVX512 register
-    __m512i target = _mm512_set1_epi64(*(PXInt64U*)stringTarget); // Mask for max 8 bytes
+    __m512i target = _mm512_set1_epi64(*(PXI64U*)stringTarget); // Mask for max 8 bytes
     __m512i currentString = _mm512_setzero_si512();
 
     PXSize offset = 0;
@@ -500,15 +500,15 @@ PXInt8U PXAPI PXMemoryCompareSVI8(const char* const stringTarget, char** const s
     for(size_t roundIndex = 0; roundIndex < amount; ++roundIndex)
     {
         // Upload strings
-        for(PXInt8U batchIndex = 0; batchIndex < 8; ++batchIndex)
+        for(PXI8U batchIndex = 0; batchIndex < 8; ++batchIndex)
         {
             char* stringSource = stringList[(roundIndex * 8) +batchIndex];
-            PXInt8U stringLength = stringSizeList[(roundIndex*8) + batchIndex];
+            PXI8U stringLength = stringSizeList[(roundIndex*8) + batchIndex];
 
 
             // Load the current string in the list into another AVX512 register
            // __m512i currentString = _mm512_maskz_loadu_epi8(0xFF, stringList[i]);
-            PXInt64U mask = (1LLu << stringLength) -1;
+            PXI64U mask = (1LLu << stringLength) -1;
 
             // Add already written bytes
             mask <<= batchIndex*8;
@@ -570,8 +570,8 @@ PXInt8U PXAPI PXMemoryCompareSVI8(const char* const stringTarget, char** const s
             continue;
         }
 
-        const PXInt64U match_index = 31 - _lzcnt_u32(resultMask); // Count leading zeros. We want the first one.
-        const PXInt8U index = (roundIndex *8)+ match_index;
+        const PXI64U match_index = 31 - _lzcnt_u32(resultMask); // Count leading zeros. We want the first one.
+        const PXI8U index = (roundIndex *8)+ match_index;
 
         PXLogPrint
         (
@@ -595,21 +595,21 @@ PXInt8U PXAPI PXMemoryCompareSVI8(const char* const stringTarget, char** const s
     );
 
     // Return a sentinel value if no match is found
-    return (PXInt8U)-1;
+    return (PXI8U)-1;
 
 }
 
-PXInt8U PXAPI PXMemoryReadBitI32U(const PXInt32U* const pxInt32U, const PXInt8U index)
+PXI8U PXAPI PXMemoryReadBitI32U(const PXI32U* const PXI32U, const PXI8U index)
 {
-    return _bittest(pxInt32U, index); // [Intrinsic] intrin.h, winnt.h
+    return _bittest(PXI32U, index); // [Intrinsic] intrin.h, winnt.h
 }
 
-PXInt8U PXAPI PXMemoryReadBitI64U(const PXInt64U* const pxInt64U, const PXInt8U index)
+PXI8U PXAPI PXMemoryReadBitI64U(const PXI64U* const PXI64U, const PXI8U index)
 {
-    return 0;// _bittest64(pxInt64U, index);
+    return 0;// _bittest64(PXI64U, index);
 }
 
-PXInt8U PXAPI PXMemoryReadBitAndClearI32U(const PXInt32U* const pxInt32U, const PXInt8U index)
+PXI8U PXAPI PXMemoryReadBitAndClearI32U(const PXI32U* const PXI32U, const PXI8U index)
 {
     return 0;
 }
@@ -712,11 +712,11 @@ PXBool PXAPI PXMemoryCompare(const void* PXRestrict bufferA, const PXSize buffer
         const PXSize bufferACap = PXMathMinimumIU(bufferASize, bufferCap);
         const PXSize bufferBCap = PXMathMinimumIU(bufferBSize, bufferCap);
 
-        PXText pxTextA;
+        PXText pxA;
         PXText pxTextB;
-        PXTextConstructNamedBufferA(&pxTextA, pxTextABuffer, 16);
+        PXTextConstructNamedBufferA(&pxA, pxABuffer, 16);
         PXTextConstructNamedBufferA(&pxTextB, pxTextBBuffer, 16);
-        PXTextFormatData(&pxTextA, bufferA, bufferSize);
+        PXTextFormatData(&pxA, bufferA, bufferSize);
         PXTextFormatData(&pxTextB, bufferB, bufferSize);
 
         PXLogPrint
@@ -726,8 +726,8 @@ PXBool PXAPI PXMemoryCompare(const void* PXRestrict bufferA, const PXSize buffer
             "Compare",
             "%6zi B  <%s> == <%s>",
             bufferSize,
-            pxTextA.TextA,
-            pxTextB.TextA
+            pxA.A,
+            pxTextB.A
         );
     }
 
@@ -764,9 +764,9 @@ PXBool PXAPI PXMemorySwap(void* PXRestrict bufferA, void* PXRestrict bufferB, co
 {
     void* adress = PXMemoryHeapCallocT(char, size);
 
-    PXMemoryCopy(bufferA, size, adress, size);
-    PXMemoryCopy(bufferB, size, bufferA, size);
-    PXMemoryCopy(adress, size, bufferB, size);
+    PXMemoryCopy(bufferA, adress, size);
+    PXMemoryCopy(bufferB, bufferA, size);
+    PXMemoryCopy(adress, bufferB, size);
 
     PXMemoryHeapFree(PXNull, adress);
 
@@ -826,48 +826,6 @@ const void* PXAPI PXMemoryLocateLast(const void* const PXRestrict inputBuffer, c
 #endif
 
     return PXNull;
-}
-
-PXSize PXAPI PXMemoryCopy(const void* PXRestrict inputBuffer, const PXSize inputBufferSize, void* outputBuffer, const PXSize outputBufferSize)
-{
-    const PXSize bufferSize = PXMathMinimumIU(inputBufferSize, outputBufferSize);
-
-    if(!(inputBuffer && outputBuffer && bufferSize > 0))
-    {
-        return 0;
-    }
-
-#if MemoryAssertEnable
-    //assert(bufferSize > 0);
-    assert(inputBuffer);
-    assert(outputBuffer);
-#endif
-
-#if PXMemoryDebug && 0
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        "Memory",
-        "Copy",
-        "%6zi B  0x%p -> 0x%p",
-        bufferSize,
-        inputBuffer,
-        outputBufferSize
-    );
-#endif
-
-#if PXMemoryUseFunctionSTD
-    memcpy(outputBuffer, inputBuffer, bufferSize);
-#elif PXMemoryUseFunctionOS
-    CopyMemory(outputBuffer, inputBuffer, bufferSize);
-#else
-    for (PXSize index = bufferSize ; index ; --index)
-    {
-        ((char volatile*)outputBuffer)[index-1] = ((char volatile*)inputBuffer)[index-1];
-    }
-#endif
-
-    return bufferSize;
 }
 
 void PXAPI PXMemoryCopyF16V(PXF16* const destination, const PXF16* const source, const PXSize amount)
@@ -1001,7 +959,7 @@ void PXAPI PXMemoryPageInfoFetch(PXMemoryPageInfo* const pxFilePageFileInfo, con
 
 #define PXMemoryUseStackAllocation 0
 
-PXActionResult PXAPI PXMemoryStackAllocate(PXMemoryInfo* const pxMemoryInfo)
+PXResult PXAPI  PXMemoryStackAllocate(PXMemoryInfo* const pxMemoryInfo)
 {
 #if PXMemoryUseStackAllocation
     const PXSize totalSize = pxMemoryInfo->TypeSize * pxMemoryInfo->Amount;
@@ -1047,7 +1005,7 @@ PXActionResult PXAPI PXMemoryStackAllocate(PXMemoryInfo* const pxMemoryInfo)
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXMemoryStackDeallocate(PXMemoryInfo* const pxMemoryInfo)
+PXResult PXAPI  PXMemoryStackDeallocate(PXMemoryInfo* const pxMemoryInfo)
 {
     if(!pxMemoryInfo)
     {
@@ -1093,6 +1051,53 @@ PXActionResult PXAPI PXMemoryStackDeallocate(PXMemoryInfo* const pxMemoryInfo)
 #endif
 
 
+}
+
+PXSize PXAPI PXMemoryCopy(const void* PXRestrict const inputBuffer, void* PXRestrict const outputBuffer, const PXSize bufferSize)
+{
+#if MemoryAssertEnable
+    //assert(bufferSize > 0);
+    assert(inputBuffer);
+    assert(outputBuffer);
+#endif
+
+#if PXMemoryDebug && 0
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        "Memory",
+        "Copy",
+        "%6zi B  0x%p -> 0x%p",
+        bufferSize,
+        inputBuffer,
+        outputBufferSize
+    );
+#endif
+
+#if PXMemoryUseFunctionSTD
+    memcpy(outputBuffer, inputBuffer, bufferSize);
+#elif PXMemoryUseFunctionOS
+    CopyMemory(outputBuffer, inputBuffer, bufferSize);
+#else
+    for(PXSize index = bufferSize; index; --index)
+    {
+        ((char volatile*)outputBuffer)[index - 1] = ((char volatile*)inputBuffer)[index - 1];
+    }
+#endif
+
+    return bufferSize;
+}
+
+PXSize PXAPI PXMemoryCopyX(const void* PXRestrict const inputBuffer, const PXSize inputBufferSize, void* const outputBuffer, const PXSize outputBufferSize)
+{
+    const PXSize bufferSize = PXMathMinimumIU(inputBufferSize, outputBufferSize);
+
+    if(!(inputBuffer && outputBuffer && bufferSize > 0))
+    {
+        return 0;
+    }
+
+    return PXMemoryCopy(inputBuffer, outputBuffer, bufferSize);
 }
 
 /*

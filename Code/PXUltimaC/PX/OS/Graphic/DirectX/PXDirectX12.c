@@ -15,10 +15,10 @@
 #endif
 
 #include <PX/OS/Graphic/PXGraphic.h>
-#include <PX/OS/GUI/PXGUI.h>
+#include <PX/Engine/PXGUI.h>
 #include <PX/OS/Console/PXConsole.h>
 
-PXActionResult PXAPI PXDirectX12Initialize(PXDirectX12* const pxDirectX12, PXGraphicInitializeInfo* const pxGraphicInitializeInfo)
+PXResult PXAPI  PXDirectX12Initialize(PXDirectX12* const pxDirectX12, PXGraphicInitializeInfo* const pxGraphicInitializeInfo)
 {
 #if PXLogEnable
     PXLogPrint
@@ -230,12 +230,12 @@ PXActionResult PXAPI PXDirectX12Initialize(PXDirectX12* const pxDirectX12, PXGra
 #endif
 }
 
-PXActionResult PXAPI PXDirectX12Release(PXDirectX12* const pxDirectX12)
+PXResult PXAPI  PXDirectX12Release(PXDirectX12* const pxDirectX12)
 {
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXDirectX12DevicePhysicalListAmountFunction(PXDirectX12* const pxDirectX12, PXInt32U* const amountOfAdapters)
+PXResult PXAPI  PXDirectX12DevicePhysicalListAmountFunction(PXDirectX12* const pxDirectX12, PXI32U* const amountOfAdapters)
 {
 #if 0
     D3D_FEATURE_LEVEL featureLevel;

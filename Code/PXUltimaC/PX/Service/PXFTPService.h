@@ -1,7 +1,7 @@
-#ifndef PXFTPINCLUDE
-#define PXFTPINCLUDE
+#ifndef PXFTPIncluded
+#define PXFTPIncluded
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 #include <PX/Media/FTP/PXFTP.h>
 #include <PX/OS/Network/PXServer.h>
 

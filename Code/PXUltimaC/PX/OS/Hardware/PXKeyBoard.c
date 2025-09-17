@@ -65,7 +65,7 @@
 #include <WinUser.h>
 #endif
 
-PXVirtualKey PXAPI PXVirtualKeyFromID(const PXInt8U character)
+PXVirtualKey PXAPI PXVirtualKeyFromID(const PXI8U character)
 {
 #if OSUnix
 #elif OSWindows
@@ -525,7 +525,7 @@ PXVirtualKey PXAPI PXVirtualKeyFromID(const PXInt8U character)
 #endif
 }
 
-PXInt8U PXAPI PXVirtualKeyToID(const PXVirtualKey character)
+PXI8U PXAPI PXVirtualKeyToID(const PXVirtualKey character)
 {
     switch (character)
     {
@@ -673,7 +673,7 @@ unsigned char PXAPI PXInputButtonIsPressed(const unsigned char value)
     return value > 0;
 }
 
-PXKeyPressState PXAPI PXKeyPressStateFromID(const PXInt8U pxKeyPressStateID)
+PXKeyPressState PXAPI PXKeyPressStateFromID(const PXI8U pxKeyPressStateID)
 {
 #if OSUnix
     return -1;
@@ -695,7 +695,7 @@ PXKeyPressState PXAPI PXKeyPressStateFromID(const PXInt8U pxKeyPressStateID)
 #endif
 }
 
-PXInt8U PXAPI PXKeyPressStateToID(const PXKeyPressState pxKeyPressState)
+PXI8U PXAPI PXKeyPressStateToID(const PXKeyPressState pxKeyPressState)
 {
 #if OSUnix
     return -1;

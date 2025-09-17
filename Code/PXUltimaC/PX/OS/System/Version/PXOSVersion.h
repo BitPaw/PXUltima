@@ -1,5 +1,5 @@
-#ifndef PXOSVersionINCLUDE
-#define PXOSVersionINCLUDE
+#ifndef PXOSVersionIncluded
+#define PXOSVersionIncluded
 
 //---------------------------------------------------------
 // Windows setup settings

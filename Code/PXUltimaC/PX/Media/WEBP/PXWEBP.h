@@ -1,7 +1,7 @@
-#ifndef PXWEBPINCLUDE
-#define PXWEBPINCLUDE
+#ifndef PXWEBPIncluded
+#define PXWEBPIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef enum PXWEBPChunk_
 {
@@ -22,7 +22,7 @@ typedef struct PXWEBP_
 }
 PXWEBP;
 
-PXPublic PXActionResult PXAPI PXWEBPLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXWEBPSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXWEBPLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXWEBPSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

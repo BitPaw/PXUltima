@@ -55,7 +55,7 @@
 
 #endif
 
-PXInt32U PXAPI PXClipBoardFormatToID(const PXClipBoardFormat clipBoardFormat)
+PXI32U PXAPI PXClipBoardFormatToID(const PXClipBoardFormat clipBoardFormat)
 {
 
 #if OSUnix
@@ -152,7 +152,7 @@ PXInt32U PXAPI PXClipBoardFormatToID(const PXClipBoardFormat clipBoardFormat)
 #endif
 }
 
-PXClipBoardFormat PXAPI PXClipBoardFormatFromID(const PXInt32U clipBoardFormat)
+PXClipBoardFormat PXAPI PXClipBoardFormatFromID(const PXI32U clipBoardFormat)
 {
 #if OSUnix
     return PXActionInvalid;
@@ -247,7 +247,7 @@ PXClipBoardFormat PXAPI PXClipBoardFormatFromID(const PXInt32U clipBoardFormat)
 #endif // defined
 }
 
-PXActionResult PXAPI PXClipBoardOpen(PXClipBoard* const clipBoard)
+PXResult PXAPI  PXClipBoardOpen(PXClipBoard* const clipBoard)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -263,7 +263,7 @@ PXActionResult PXAPI PXClipBoardOpen(PXClipBoard* const clipBoard)
 #endif
 }
 
-PXActionResult PXAPI PXClipBoardClose(PXClipBoard* const clipBoard)
+PXResult PXAPI  PXClipBoardClose(PXClipBoard* const clipBoard)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -279,7 +279,7 @@ PXActionResult PXAPI PXClipBoardClose(PXClipBoard* const clipBoard)
 #endif
 }
 
-PXActionResult PXAPI PXClipBoardSet(PXClipBoard* const clipBoard, const PXClipBoardFormat format, const void* data)
+PXResult PXAPI  PXClipBoardSet(PXClipBoard* const clipBoard, const PXClipBoardFormat format, const void* data)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -288,7 +288,7 @@ PXActionResult PXAPI PXClipBoardSet(PXClipBoard* const clipBoard, const PXClipBo
     // Maybe copy data?
 
     const HGLOBAL memory = 0;
-    const PXInt32U formatID = PXClipBoardFormatToID(format);
+    const PXI32U formatID = PXClipBoardFormatToID(format);
     const HANDLE handle = SetClipboardData(formatID, memory); // Windows 2000, User32.dll, winuser.h
     const PXActionResult pxActionResult = PXErrorCurrent(handle != 0);
 
@@ -298,7 +298,7 @@ PXActionResult PXAPI PXClipBoardSet(PXClipBoard* const clipBoard, const PXClipBo
 #endif
 }
 
-PXActionResult PXAPI PXClipBoardClear(PXClipBoard* const clipBoard)
+PXResult PXAPI  PXClipBoardClear(PXClipBoard* const clipBoard)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;

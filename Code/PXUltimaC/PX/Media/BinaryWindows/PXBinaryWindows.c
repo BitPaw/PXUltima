@@ -9,7 +9,7 @@ const char PXPEHeaderSignatore[4] = { 'P', 'E', '\0', '\0' };
 
 
 
-const PXInt32U PXDOSHeaderLayout[] =
+const PXI32U PXDOSHeaderLayout[] =
 {
     PXTypeDatax2,
     PXTypeInt16ULE,
@@ -31,12 +31,12 @@ const PXInt32U PXDOSHeaderLayout[] =
     PXTypePadding(20),
     PXTypeInt32ULE
 };
-const PXSize PXDOSHeaderLayoutSize = sizeof(PXDOSHeaderLayout) / sizeof(PXInt32U);
+const PXSize PXDOSHeaderLayoutSize = sizeof(PXDOSHeaderLayout) / sizeof(PXI32U);
 
 
 #define PXBinaryWindowsDebug 1
 
-PXActionResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI  PXBinaryWindowsLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     PXBinaryWindows* const pxBinaryWindows = (PXBinaryWindows*)pxResourceLoadInfo->ResourceTarget;
 
@@ -198,11 +198,11 @@ PXActionResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceTransphereInfo* const
             //----------------------------------------------
             PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, pxNEHeader->OffStartNonResTab);
 
-            for(PXInt16U i = 0; i < pxNEHeader->NonresidentNameTableEntryAmount; ++i)
+            for(PXI16U i = 0; i < pxNEHeader->NonresidentNameTableEntryAmount; ++i)
             {
                 char text[0xFF];
-                PXInt16U ordinal = 0;
-                PXInt8U stringSize = 0;
+                PXI16U ordinal = 0;
+                PXI8U stringSize = 0;
 
                 PXFileReadI8U(pxResourceLoadInfo->FileReference, &stringSize);
 
@@ -239,7 +239,7 @@ PXActionResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceTransphereInfo* const
 
             for(PXSize i = 0; i < pxNEHeader->ImportNameTable; ++i)
             {
-                PXInt16U offset = 0;
+                PXI16U offset = 0;
 
                 PXFileReadI16UE(pxResourceLoadInfo->FileReference, &offset, PXEndianLittle);
 
@@ -249,7 +249,7 @@ PXActionResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceTransphereInfo* const
                 PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, offset);
 
 
-                PXInt16U length = 0;
+                PXI16U length = 0;
 
                 PXFileReadI16UE(pxResourceLoadInfo->FileReference, &length, PXEndianLittle);
 
@@ -292,7 +292,7 @@ PXActionResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceTransphereInfo* const
     return PXActionRefusedNotImplemented;
 }
 
-PXActionResult PXAPI PXBinaryWindowsSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI  PXBinaryWindowsSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

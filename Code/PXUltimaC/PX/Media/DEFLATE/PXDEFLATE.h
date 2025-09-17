@@ -1,7 +1,7 @@
-#ifndef PXDeflateINCLUDE
-#define PXDeflateINCLUDE
+#ifndef PXDeflateIncluded
+#define PXDeflateIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 #define PXDeflateEncodingLiteralRaw     0b00
 #define PXDeflateEncodingHuffmanStatic  0b01
@@ -10,12 +10,12 @@
 
 typedef struct PXDeflateBlock_
 {
-    PXInt8U IsLastBlock;
-    PXInt8U EncodingMethod;
+    PXI8U IsLastBlock;
+    PXI8U EncodingMethod;
 }
 PXDeflateBlock;
 
-PXPublic PXActionResult PXAPI PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const pxOutputStream);
-PXPublic PXActionResult PXAPI PXDEFLATESerialize(PXFile* const pxInputStream, PXFile* const pxOutputStream);
+PXPublic PXResult PXAPI PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const pxOutputStream);
+PXPublic PXResult PXAPI PXDEFLATESerialize(PXFile* const pxInputStream, PXFile* const pxOutputStream);
 
 #endif

@@ -1,8 +1,8 @@
-#ifndef PXCRC32INCLUDE
-#define PXCRC32INCLUDE
+#ifndef PXCRC32Included
+#define PXCRC32Included
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
-PXPublic PXInt32U PXAPI PXCRC32Generate(const PXByte* const data, const PXSize length);
+PXPublic PXI32U PXAPI PXCRC32Generate(const PXByte* const data, const PXSize length);
 
 #endif

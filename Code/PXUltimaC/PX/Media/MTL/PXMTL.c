@@ -6,35 +6,35 @@
 #include <PX/Compiler/PXCompiler.h>
 #include <PX/OS/Console/PXConsole.h>
 
-PXMaterialIlluminationMode PXAPI PXMTLIlluminationModeFromID(const unsigned int illuminationModeID)
+PXIlluminationMode PXAPI PXMTLIlluminationModeFromID(const unsigned int illuminationModeID)
 {
     switch(illuminationModeID)
     {
         case 0u:
-            return IlluminationColorAndAmbientDisable;
+            return PXIlluminationColorAndAmbientDisable;
         case 1u:
-            return IlluminationColorAndAmbientEnable;
+            return PXIlluminationColorAndAmbientEnable;
         case 2u:
-            return IlluminationHighlightEnable;
+            return PXIlluminationHighlightEnable;
         case 3u:
-            return IlluminationReflectionOnRayTraceEnable;
+            return PXIlluminationReflectionOnRayTraceEnable;
         case 4u:
-            return IlluminationReflectionOnRayTraceTransparency;
+            return PXIlluminationReflectionOnRayTraceTransparency;
         case 5u:
-            return IlluminationReflectionOnRayTraceFresnel;
+            return PXIlluminationReflectionOnRayTraceFresnel;
         case 6u:
-            return IlluminationReflectionOnRayTraceTransparencyFresnel;
+            return PXIlluminationReflectionOnRayTraceTransparencyFresnel;
         case 7u:
-            return IlluminationReflectionOnRayTraceFullEnable;
+            return PXIlluminationReflectionOnRayTraceFullEnable;
         case 8u:
-            return IlluminationReflectionEnable;
+            return PXIlluminationReflectionEnable;
         case 9u:
-            return IlluminationTransparencyEnable;
+            return PXIlluminationTransparencyEnable;
         case 10u:
-            return IlluminationShadowsEnable;
+            return PXIlluminationShadowsEnable;
 
         default:
-            return IlluminationNone;
+            return PXIlluminationNone;
     }
 }
 
@@ -45,36 +45,36 @@ PXMTLLineType PXAPI PXMTLPeekLine(const char* const line, const PXSize lineSize)
         return MTLLineInvalid;
     }
 
-    const unsigned short tagID = PXInt16Make(line[0], line[1]);
+    const unsigned short tagID = PXI16Make(line[0], line[1]);
 
     switch(tagID)
     {
-        case PXInt16Make('m', 'a'):
+        case PXI16Make('m', 'a'):
             return MTLLineTexture; // map_Kd
-        case PXInt16Make('n', 'e'):
+        case PXI16Make('n', 'e'):
             return MTLLineName; // newmtl
-        case PXInt16Make('N', 's'):
+        case PXI16Make('N', 's'):
             return MTLLineWeight;
-        case PXInt16Make('N', 'i'):
+        case PXI16Make('N', 'i'):
             return MTLLineDensity;
-        case PXInt16Make('K', 'a'):
+        case PXI16Make('K', 'a'):
             return MTLLineColorAmbient;
-        case PXInt16Make('K', 'd'):
+        case PXI16Make('K', 'd'):
             return MTLLineColorDiffuse;
-        case PXInt16Make('K', 's'):
+        case PXI16Make('K', 's'):
             return MTLLineColorSpecular;
-        case PXInt16Make('K', 'e'):
+        case PXI16Make('K', 'e'):
             return MTLLineColorEmission;
-        case PXInt16Make('d', ' '):
+        case PXI16Make('d', ' '):
             return MTLLineDissolved;
-        case PXInt16Make('i', 'l'):
+        case PXI16Make('i', 'l'):
             return MTLLineIllumination; // illum
         default:
             return MTLLineInvalid;
     }
 }
 
-PXActionResult PXAPI PXMTLPeekFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI  PXMTLPeekFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     PXMaterialContainer* const pxMaterialList = (PXMaterialContainer*)pxResourceLoadInfo->ResourceTarget;
 
@@ -83,11 +83,11 @@ PXActionResult PXAPI PXMTLPeekFromFile(PXResourceTransphereInfo* const pxResourc
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXMTLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI  PXMTLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
 {
     PXMaterialContainer* const pxMaterialList = (PXMaterialContainer*)pxResourceLoadInfo->ResourceTarget;
 
-    PXInt32U materialAmount = 0;
+    PXI32U materialAmount = 0;
     PXMaterial* pxMaterialCurrent = PXNull;
 
 #if PXLogEnable
@@ -259,21 +259,21 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceTransphereInfo* const pxResourc
                 pxResourceCreateInfo.Type = PXResourceTypeTexture2D;
                 pxResourceCreateInfo.ObjectReference = (void**)&pxMaterialCurrent->DiffuseTexture;
                 pxResourceCreateInfo.ObjectAmount = 1;
-                pxResourceCreateInfo.FilePath = fullTexturePath.TextA;
+                pxResourceCreateInfo.FilePathAdress = fullTexturePath.A;
                 pxResourceCreateInfo.FilePathSize = fullTexturePath.SizeUsed;
                 pxResourceCreateInfo.Flags = PXResourceCreateBehaviourLoadASYNC;
 
                 PXResourceManagerAdd(&pxResourceCreateInfo);
 
-                //PXTextCopyA(fullTexturePath.TextA, fullTexturePath.SizeUsed, pxMaterialCurrent->DiffuseTextureFilePath, 260);
+                //PXTextCopyA(fullTexturePath.A, fullTexturePath.SizeUsed, pxMaterialCurrent->DiffuseTextureFilePath, 260);
 
 
 
 
-                //PXNewZerod(PXTexture2D, &pxMaterialCurrent->DiffuseTexture);
-                //PXNewZerod(PXImage, &pxMaterialCurrent->DiffuseTexture->Image);
+                //PXNewZerod(PXTexture, &pxMaterialCurrent->DiffuseTexture);
+                //PXNewZerod(PXTexture, &pxMaterialCurrent->DiffuseTexture->Image);
 
-                //PXTexture2DSet(pxMaterialCurrent->DiffuseTexture, 0,0,0);
+                //PXTextureSet(pxMaterialCurrent->DiffuseTexture, 0,0,0);
 
                 //PXResourceLoad(pxMaterialCurrent->DiffuseTexture->Image, &fullTexturePath);
 
@@ -317,21 +317,21 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceTransphereInfo* const pxResourc
             {
                 PXSize valuesDetected = 0;
                 const PXSize colorVectorSize = 3u;
-                PXF32* colorVector;
+                PXColorRGBAF* colorVector;
 
                 switch(mtlLineType)
                 {
                     case MTLLineColorAmbient:
-                        colorVector = pxMaterialCurrent->Ambient;
+                        colorVector = &pxMaterialCurrent->Ambient;
                         break;
                     case MTLLineColorDiffuse:
-                        colorVector = pxMaterialCurrent->Diffuse;
+                        colorVector = &pxMaterialCurrent->Diffuse;
                         break;
                     case MTLLineColorSpecular:
-                        colorVector = pxMaterialCurrent->Specular;
+                        colorVector = &pxMaterialCurrent->Specular;
                         break;
                     case MTLLineColorEmission:
-                        colorVector = pxMaterialCurrent->Emission;
+                        colorVector = &pxMaterialCurrent->Emission;
                         break;
                     default:
                         colorVector = PXNull;
@@ -382,7 +382,7 @@ PXActionResult PXAPI PXMTLLoadFromFile(PXResourceTransphereInfo* const pxResourc
     return PXActionSuccessful;
 }
 
-PXActionResult PXAPI PXMTLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI  PXMTLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

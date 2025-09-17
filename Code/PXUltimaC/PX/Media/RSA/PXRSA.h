@@ -1,7 +1,7 @@
-#ifndef PXRSAINCLUDE
-#define PXRSAINCLUDE
+#ifndef PXRSAIncluded
+#define PXRSAIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 #ifdef __cplusplus
 extern "C"

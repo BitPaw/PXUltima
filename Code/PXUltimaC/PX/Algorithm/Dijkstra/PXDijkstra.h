@@ -1,6 +1,6 @@
-#ifndef PXDijkstraINCLUDE
-#define PXDijkstraINCLUDE
+#ifndef PXDijkstraIncluded
+#define PXDijkstraIncluded
 
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 
 #endif

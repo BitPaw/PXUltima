@@ -1,7 +1,7 @@
-#ifndef PXMIDINCLUDE
-#define PXMIDINCLUDE
+#ifndef PXMIDIncluded
+#define PXMIDIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef enum PXMIDICommand_
 {
@@ -31,9 +31,9 @@ PXMIDICommandExtended;
 
 typedef struct PXMIDINote_
 {
-    PXInt8U DeltaTime;
-    PXInt8U KeyNote;
-    PXInt8U Volume;
+    PXI8U DeltaTime;
+    PXI8U KeyNote;
+    PXI8U Volume;
 }
 PXMIDINote;
 
@@ -50,13 +50,13 @@ typedef struct PXMIDI_
     PXMIDITrack* TrackList;
     PXSize TrackListSize;
 
-    PXInt16U TrackListAmount;
-    PXInt16U Format;
-    PXInt16U MusicSpeed;
+    PXI16U TrackListAmount;
+    PXI16U Format;
+    PXI16U MusicSpeed;
 }
 PXMIDI;
 
-PXPublic PXActionResult PXAPI PXMIDILoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXActionResult PXAPI PXMIDISaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXMIDILoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXMIDISaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
 
 #endif

@@ -1,7 +1,7 @@
-#ifndef PXEmailINCLUDE
-#define PXEmailINCLUDE
+#ifndef PXEmailIncluded
+#define PXEmailIncluded
 
-#include "../PXResource.h"
+#include <PX/Engine/PXResource.h>
 
 typedef struct PXEmail_
 {

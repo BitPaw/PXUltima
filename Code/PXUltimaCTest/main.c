@@ -21,6 +21,10 @@ int _fltused = 0;
 #endif
 
 
+#pragma comment(lib, "opengl32.lib")
+
+
+
 #if 0
 #include "OS/TestSystemInfo.h"
 #include "Graphic/TestWindow.h"
@@ -89,7 +93,6 @@ void PXTextMatchTest()
 #include "Window/PXWindowTest.h"
 
 #include <PX/OS/Hardware/PXHardware.h>
-#include <PX/OS/Hardware/PXVideo.h>
 #include <PX/OS/Hardware/PXProcessor.h>
 #include <PX/Math/PXMath.h>
 #include <PX/OS/Time/PXTime.h>
@@ -135,7 +138,7 @@ void PXAPI Trace_File()
 
     PXDirectoryIterator pxDirectoryIterator;
 
-  //  PXConsoleWriteF(0, "File: %s\n", pxTextSubDir.TextA);
+  //  PXConsoleWriteF(0, "File: %s\n", pxTextSubDir.A);
 }
 
 void PXAPI Trace_Folder(PXDirectoryIterator* parentDir, PXText* pxText)
@@ -150,14 +153,14 @@ void PXAPI Trace_FolderFiles(PXText* pxText)
 }
 
 
-#include <PX/OS/GUI/PXGUI.h>
+#include <PX/Engine/PXGUI.h>
 #include <PX/OS/Graphic/NativDraw/PXNativDraw.h>
 #include <PX/OS/System/Driver/PXDriver.h>
 #include <PX/Algorithm/CollatzConjecture/PXCollatzConjecture.h>
 #include <PX/OS/Library/PXLibrary.h>
 #include <PX/Math/PXMath.h>
 #include <PX/Media/PXType.h>
-#include <PX/Media/PXResource.h>
+#include <PX/Engine/PXResource.h>
 
 
 #define VXSize 1024*100
@@ -166,8 +169,930 @@ PXF32 calcNumbersIN[VXSize];
 PXF32 calcNumbersOUT[VXSize];
 
 
+#include <PX/OS/PXOS.h>
+#include <PX/OS/Network/PXNetwork.h>
+#include <PX/Media/PXSound.h>
+#include <PX/OS/Audio/Windows/PXDirectSound.h>
+#include <PX/Math/PXMath.h>
+#include <PX/OS/Stream/PXStream.h>
+
+#define _CRT_SECURE_NO_WARNINGS
+#include <windows.h>
+#include <mmreg.h>
+#include <dsound.h>
+#include <math.h>
+
+
+#pragma comment(lib, "dsound.lib")
+#pragma comment(lib, "dxguid.lib")
+#pragma comment(lib, "winmm.lib")
+
+#include <PX/Media/Bitmap/PXBitmap.h>
+
+
+
+int SaveBMP(const char* filename, BYTE* pData, int width, int height, int bbp) 
+{
+    BITMAPFILEHEADER fileHeader = { 0 };
+    BITMAPINFOHEADER infoHeader = { 0 };
+
+    int bytesPerPixel = bbp / 8;
+
+    int rowSize = ((width * 3 + 3) & ~3); // Pad row to multiple of 4 bytes
+    int dataSize = rowSize * height;
+
+
+    int stride = width * bytesPerPixel;
+    int padding = (4 - (stride % 4)) % 4;
+    int imageSize = (stride + padding) * height;
+
+
+    fileHeader.bfType = 0x4D42; // "BM"
+    fileHeader.bfSize = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + dataSize;
+    fileHeader.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
+
+    infoHeader.biSize = sizeof(BITMAPINFOHEADER);
+    infoHeader.biWidth = width;
+    infoHeader.biHeight = height;
+    infoHeader.biPlanes = 1;
+    infoHeader.biBitCount = bbp;
+    infoHeader.biCompression = BI_RGB;
+    infoHeader.biSizeImage = dataSize;
+
+
+    
+
+    FILE* fp = fopen(filename, "wb");
+
+    if(!fp) 
+        return 0;
+
+    fwrite(&fileHeader, sizeof(fileHeader), 1, fp);
+    fwrite(&infoHeader, sizeof(infoHeader), 1, fp);
+
+    if(bbp == 24)
+    {
+        // BMP stores bottom-up: flip vertically
+        for(int y = height - 1; y >= 0; y--) 
+        {
+            fwrite(pData + y * width * 3, 1, rowSize, fp);
+        }
+    }
+    else
+    {
+        PXColorRGBAI8* dataUB = (PXColorRGBAI8*)pData;
+
+        for(size_t i = 0; i < width*height; i++)
+        {
+            PXColorRGBAI8 pixel = dataUB[i];
+
+            fwrite(&pixel.Red, 1, 1, fp);
+            fwrite(&pixel.Green, 1, 1, fp);
+            fwrite(&pixel.Blue, 1, 1, fp);         
+        }
+
+        /*
+         if(padding) {
+                BYTE pad[3] = { 0, 0, 0 };
+                fwrite(pad, padding, 1, fp);
+            }
+        */
+    }
+
+  
+
+    fclose(fp);
+    return 1;
+}
+
+
+
+int i = 0;
+
+PXResult PXAPI  PXStreamOnFrame(PXStream* const pxStream, const PXStreamOnFrameInfo* const pxStreamOnFrameInfo)
+{
+    // Save raw RGB32 data to file (for testing)
+    // FILE* f = fopen("webcam_frame.raw", "wb");
+    // fwrite(dataAdress, 1, dataSize, f);
+    // fclose(f);
+
+   // void
+
+    char fileBuffer[64];
+
+    PXTextPrintA
+    (
+        fileBuffer, 
+        64,
+        "P:\\_IN\\%2.2i___%4.4ix%4.4i___X%i.bmp",
+        i,
+        pxStreamOnFrameInfo->Width,
+        pxStreamOnFrameInfo->Height,
+        pxStreamOnFrameInfo->BitPerPixel
+    );
+
+
+    PXTexture PXTexture;
+    PXTexture.PixelData = pxStreamOnFrameInfo->DataAdress;
+    PXTexture.PixelDataSize = pxStreamOnFrameInfo->DataSize;
+    PXTexture.Width = pxStreamOnFrameInfo->Width;
+    PXTexture.Height = pxStreamOnFrameInfo->Height;
+    PXTexture.Depth = 1;
+
+    if(pxStreamOnFrameInfo->BitPerPixel == 24)
+    {
+        PXTexture.Format = PXColorFormatRGBI8;
+    }
+    else
+    {
+        PXTexture.Format = PXColorFormatRGBAI8;
+    }
+
+    PXResourceTransphereInfo pxResourceTransphereInfo;
+    PXClear(PXResourceTransphereInfo, &pxResourceTransphereInfo);
+    pxResourceTransphereInfo.ResourceType =PXResourceTypeTexture;
+    pxResourceTransphereInfo.ResourceTarget = &PXTexture;
+
+#if 1
+    PXResourceSaveA(&pxResourceTransphereInfo, fileBuffer);
+#else
+    SaveBMP
+    (
+        fileBuffer,
+        pxStreamOnFrameInfo->DataAdress,
+        pxStreamOnFrameInfo->Width,
+        pxStreamOnFrameInfo->Height,
+        pxStreamOnFrameInfo->BitPerPixel
+    );
+#endif
+    return PXActionSuccessful;
+}
+
+
+
+
+
+
+
+
+
+
+#define NUM_VERTICES 16
+const PXVector4F32 PXTesseractVertices[] =
+{
+    {-1,-1,-1,-1},
+    {1,-1,-1,-1},
+    {-1,1,-1,-1},
+    {1,1,-1,-1},
+    {-1,-1,1,-1},
+    {1,-1,1,-1},
+    {-1,1,1,-1},
+    {1,1,1,-1},
+    {-1,-1,-1,1},
+    {1,-1,-1,1},
+    {-1,1,-1,1},
+    {1,1,-1,1},
+    {-1,-1,1,1},
+    {1,-1,1,1},
+    {-1,1,1,1},
+    {1,1,1,1}
+};
+
+#define NUM_TRIANGLES 48
+int triangleFaces[NUM_TRIANGLES][3] =
+{
+    // Cube 1 faces (indices 0–7)
+    {0,1,2},{1,3,2}, {4,5,6},{5,7,6},
+    {0,1,4},{1,5,4}, {2,3,6},{3,7,6},
+    {0,2,4},{2,6,4}, {1,3,5},{3,7,5},
+
+    // Cube 2 faces (indices 8–15)
+    {8,9,10},{9,11,10}, {12,13,14},{13,15,14},
+    {8,9,12},{9,13,12}, {10,11,14},{11,15,14},
+    {8,10,12},{10,14,12}, {9,11,13},{11,15,13},
+
+    // Connections between cubes
+    {0,8,1},{1,9,8}, {2,10,3},{3,11,10},
+    {4,12,5},{5,13,12}, {6,14,7},{7,15,14},
+    {0,8,2},{2,10,8}, {1,9,3},{3,11,9},
+    {4,12,6},{6,14,12}, {5,13,7},{7,15,13}
+};
+
+
+
+
+
+
+
+
+// D20 (Icosahedron)
+const PXVector4F32 PXD20_vertices[] = {
+    -1.000000, 1.618034, 0.000000, 0,
+    1.000000, 1.618034, 0.000000, 0,
+    -1.000000, -1.618034, 0.000000, 0,
+    1.000000, -1.618034, 0.000000, 0,
+    0.000000, -1.000000, 1.618034, 0,
+    0.000000, 1.000000, 1.618034, 0,
+    0.000000, -1.000000, -1.618034, 0,
+    0.000000, 1.000000, -1.618034, 0,
+    1.618034, 0.000000, -1.000000, 0,
+    1.618034, 0.000000, 1.000000, 0,
+    -1.618034, 0.000000, -1.000000, 0,
+    -1.618034, 0.000000, 1.000000, 0
+};
+const unsigned char PXD20_indices[] =
+{
+    0, 11, 5,
+    0, 5, 1,
+    0, 1, 7,
+    0, 7, 10,
+    0, 10, 11,
+    1, 5, 9,
+    5, 11, 4,
+    11, 10, 2,
+    10, 7, 6,
+    7, 1, 8,
+    3, 9, 4,
+    3, 4, 2,
+    3, 2, 6,
+    3, 6, 8,
+    3, 8, 9,
+    4, 9, 5,
+    2, 4, 11,
+    6, 2, 10,
+    8, 6, 7,
+    9, 8, 1,
+};
+const int PXD20_Triangles = sizeof(PXD20_indices) / (3 * sizeof(char));
+
+
+
+
+
+
+
+
+
+
+
+LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+    if(msg == WM_DESTROY) PostQuitMessage(0);
+    return DefWindowProc(hWnd, msg, wParam, lParam);
+}
+
+void setupPixelFormat(HDC hdc) {
+    PIXELFORMATDESCRIPTOR pfd = {
+        sizeof(PIXELFORMATDESCRIPTOR), 1,
+        PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
+        PFD_TYPE_RGBA, 
+        32, 
+        0,0,0,0,0,0,0,0,0,0,0,0,0,
+        16, 0, 0, PFD_MAIN_PLANE, 0, 0, 0, 0
+    };
+    int format = ChoosePixelFormat(hdc, &pfd);
+    SetPixelFormat(hdc, format, &pfd);
+}
+
+
+
+float distance = 3.0f;
+float y22 = 0;
+//PXTesseract pxTesseract;
+
+#define usehypercube 1
+
+void drawHypercube(PXRenderEntity* pxRenderEntity, float angle)
+{
+
+    glEnable(GL_DEPTH_TEST);
+    // glEnable(GL_LIGHTING);
+    // glEnable(GL_LIGHT0);
+    // glEnable(GL_COLOR_MATERIAL);
+    // glEnable(GL_DITHER);
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClearColor(0.1, 0.1, 0.1, 1.0);
+
+    glLoadIdentity();
+    glTranslatef(0.0f, 0.0f, -0.5);
+
+    //pxRenderEntity->Draw();
+
+   // distance -= angle;
+
+
+    // Create rotation matrices
+    PXMatrix4x4F rotXY;
+    PXMatrix4x4F rotXW;
+    PXMatrix4x4F rotYZ;
+
+    //y22 += angle*0.02;    
+
+    PXMatrix4x4FIdentity(&rotXY);
+    PXMatrix4x4FIdentity(&rotXW);
+    PXMatrix4x4FIdentity(&rotYZ);
+    //  Matrix4x4RotationSet4D(&rotXW, 0, 2, angle);
+    // Matrix4x4RotationSet4D(&rotXW, 0, 3, angle);    
+     // Matrix4x4RotationSet4D(&rotXY, 0, 1, angle);
+#if usehypercube
+    PXMatrix4x4FRotationAxisSet(&rotXW, 1, 3, angle);
+    PXMatrix4x4FRotationAxisSet(&rotYZ, 0, 2, angle);
+#else
+    //Matrix4x4RotationSet4D(&rotXW, 0, 3, angle);
+    Matrix4x4RotationSet4D(&rotYZ, 1, 2, -angle);
+#endif
+
+
+    PXMatrix4x4F combined;
+
+    PXMatrix4x4FIdentity(&combined);
+    PXMatrix4x4FMultiply(&combined, &rotXY);
+    PXMatrix4x4FMultiply(&combined, &rotYZ);
+    PXMatrix4x4FMultiply(&combined, &rotXW);
+
+    PXVector4F32 lineColor = { 0.15f,0.15f,0.15f,0 };
+    PXVector4F32 dotColor = { 1.0f,0,0,0 };
+
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glDisable(GL_CULL_FACE);
+    //glEnable(GL_CULL_FACE);
+    //glCullFace(GL_BACK); // or GL_FRONT
+
+
+
+    GLfloat lightPos[] = { 0.0f, 0.0f, 5.0f, 1.0f }; // Positional light
+    GLfloat lightAmbient[] = { 0.2f, 0.2f, 0.2f, 1.0f };
+    GLfloat lightDiffuse[] = { 0.8f, 0.8f, 0.8f, 1.0f };
+    GLfloat lightSpecular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+    glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
+    glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbient);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
+
+
+#if usehypercube
+    int trianglesToRender = NUM_TRIANGLES; // PXD20_Triangles
+#else
+    int trianglesToRender = PXD20_Triangles; // PXD20_Triangles
+#endif
+
+
+    // Draw triangle faces
+#if 1
+    glDepthMask(GL_FALSE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glBegin(GL_TRIANGLES);
+    int oneCube = NUM_TRIANGLES / 3;
+
+    for(int i = 0; i < trianglesToRender; ++i)
+    {
+#if usehypercube
+        PXVector4F32 vA = PXTesseractVertices[triangleFaces[i][0]];
+        PXVector4F32 vB = PXTesseractVertices[triangleFaces[i][1]];
+        PXVector4F32 vC = PXTesseractVertices[triangleFaces[i][2]];
+#else
+        Vec4 vA = PXD20_vertices[PXD20_indices[i * 3 + 0]];
+        Vec4 vB = PXD20_vertices[PXD20_indices[i * 3 + 1]];
+        Vec4 vC = PXD20_vertices[PXD20_indices[i * 3 + 2]];
+#endif
+
+        PXVector3F32 n;
+
+        PXVector4FNormal(&n, &vA, &vB, &vC, distance);
+
+        glNormal3f(n.X, n.Y, n.Z);
+
+        for(int j = 0; j < 3; ++j)
+        {
+#if usehypercube
+            PXVector4F32 vOrg = PXTesseractVertices[triangleFaces[i][j]];
+#else
+            Vec4 vOrg = PXD20_vertices[PXD20_indices[i * 3 + j]];
+#endif
+
+
+            PXVector4F32 v = vOrg;
+            PXVector3F32 p;
+
+
+            PXMatrix4x4FMultiplyV4F(&combined, &v);
+            PXVector4Demote(&v, &p, distance);
+
+            // Color based on w (depth cue)
+            float color = (v.W + 1.0f) / 2.0f;
+
+
+            PXVector4F32 ccolor = (vOrg);
+            ccolor.X = 1 - (ccolor.X + color) / 2.0f;
+            ccolor.Y = 1 - (ccolor.Y + color) / 2.0f;
+            ccolor.Z = 1 - (ccolor.Z + color) / 2.0f;
+            ccolor.W = 0.6;
+
+            glColor4f(ccolor.X, ccolor.Y, ccolor.Z, ccolor.W);
+
+            // glVertex4f();
+
+            glVertex3f(p.X, p.Y, p.Z);
+        }
+    }
+    glEnd();
+
+    glDepthMask(GL_TRUE);
+#endif
+
+
+
+
+
+
+    // Draw triangle faces
+#if 0
+   // glDisable(GL_BLEND);
+    //glDepthMask(GL_FALSE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glBegin(GL_LINES);
+
+    for(int i = 0; i < trianglesToRender; ++i)
+    {
+#if usehypercube
+        Vec4 vA = Vec4bTo4f(PXTesseractVertices[triangleFaces[i][0]]);
+        Vec4 vB = Vec4bTo4f(PXTesseractVertices[triangleFaces[i][1]]);
+        Vec4 vC = Vec4bTo4f(PXTesseractVertices[triangleFaces[i][2]]);
+#else
+        Vec4 vA = PXD20_vertices[PXD20_indices[i * 3 + 0]];
+        Vec4 vB = PXD20_vertices[PXD20_indices[i * 3 + 1]];
+        Vec4 vC = PXD20_vertices[PXD20_indices[i * 3 + 2]];
+#endif
+
+        Vec3 vProj3DA = project4Dto3D(multiplyMatrixVec4(combined, vA), distance);
+        Vec3 vProj3DB = project4Dto3D(multiplyMatrixVec4(combined, vB), distance);
+        Vec3 vProj3DC = project4Dto3D(multiplyMatrixVec4(combined, vC), distance);
+
+        Vec3 normalStart = computeNormal
+        (
+            vProj3DA,
+            vProj3DB,
+            vProj3DC
+        );
+
+        float scale = 0.05f; // Adjust length of the normal line
+
+
+        Vec3 surfacePosition = Vec3TriangleCenter(&vProj3DA, &vProj3DB, &vProj3DC);
+
+
+        Vec3 normalDirection;
+        normalDirection.x = surfacePosition.x + normalStart.x * scale;
+        normalDirection.y = surfacePosition.y + normalStart.y * scale;
+        normalDirection.z = surfacePosition.z + normalStart.z * scale;
+
+        //glColor4f(1.0, 0, 1.0, 1.0);
+        //glVertex3f(vProj3DA.x, vProj3DA.y, vProj3DA.z);
+        //glVertex3f(vProj3DB.x, vProj3DB.y, vProj3DB.z);
+        //glVertex3f(vProj3DC.x, vProj3DC.y, vProj3DC.z);
+
+        glColor4f(0.0, 1.0, 0, 1.0);
+        glVertex3f(surfacePosition.x, surfacePosition.y, surfacePosition.z);
+        glColor4f(1.0, 1.0, 0, 1.0);
+        glVertex3f(normalDirection.x, normalDirection.y, normalDirection.z);
+    }
+    glEnd();
+#endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+#if 1
+    glDisable(GL_BLEND);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glLineWidth(2);
+    glPointSize(10.0f);
+    glBegin(GL_TRIANGLES);
+
+    glColor4f(lineColor.X, lineColor.Y, lineColor.Z, 1.0f);
+    //glColor4f(dotColor.x, dotColor.y, dotColor.z, 1.0f);
+
+    for(int i = 0; i < trianglesToRender; ++i)
+    {
+        for(int j = 0; j < 3; ++j)
+        {
+
+            PXVector4F32 vOrg =
+#if usehypercube
+                PXTesseractVertices[triangleFaces[i][j]];
+#else
+                PXD20_vertices[PXD20_indices[i * 3 + j]];
+#endif
+
+            PXVector4F32 v;
+            PXVector3F32 p;
+
+            v = vOrg;
+            
+            PXMatrix4x4FMultiplyV4F(&combined, &v);
+            PXVector4Demote(&v, &p, distance);
+
+            glVertex3f(p.X, p.Y, p.Z);
+        }
+    }
+    glEnd();
+
+#else
+    // glBegin(GL_LINES);
+    for(int i = 0; i < NUM_EDGES; ++i) {
+        // Vec4 v1 = vertices[edges[i][0]];
+         //Vec4 v2 = vertices[edges[i][1]];
+
+         //float color = i / (float)NUM_EDGES;
+
+        Vec4 v1 = multiplyMatrixVec4(combined, Vec4bTo4f(PXTesseractVertices[edges[i][0]]));
+        Vec4 v2 = multiplyMatrixVec4(combined, Vec4bTo4f(PXTesseractVertices[edges[i][1]]));
+
+        Vec3 p1 = project4Dto3D(v1, distance);
+        Vec3 p2 = project4Dto3D(v2, distance);
+
+
+#if 0
+        rotate4D(&v1, angle, 0, 3); // X-W
+        rotate4D(&v1, angle, 1, 2); // Y-Z
+        rotate4D(&v2, angle, 0, 3);
+        rotate4D(&v2, angle, 1, 2);
+
+        Vec3 p1 = project4Dto3D(v1, 4.0f);
+        Vec3 p2 = project4Dto3D(v2, 4.0f);
+#endif
+
+        float color = (v1.w + 1.0f) / 2.0f; // Normalize w from [-1,1] to [0,1]
+        // glColor3f(color, 0.5f, 1.0f - color);
+         //glColor3f(0.2, 0.2f, 0.2f);
+        glColor3f(lineColor.x, lineColor.y, lineColor.z);
+
+        glVertex3f(p1.x, p1.y, p1.z);
+        glVertex3f(p2.x, p2.y, p2.z);
+    }
+
+    glEnd();
+#endif
+
+
+#if 0
+    glPointSize(6.0f);
+    glBegin(GL_POINTS);
+    for(int i = 0; i < NUM_VERTICES; ++i)
+    {
+
+        Vec4 v = multiplyMatrixVec4(combined, Vec4bTo4f(PXTesseractVertices[i]));
+        Vec3 p = project4Dto3D(v, distance);
+
+        glColor3f(dotColor.x, dotColor.y, dotColor.z);
+
+        glVertex3f(p.x, p.y, p.z);
+    }
+    glEnd();
+#endif
+}
+
+
+void TEST_OPENGL_1x1()
+{
+    HINSTANCE hInstance = GetModuleHandle(NULL);
+
+
+    int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+    int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+
+    // Create a window that's 90% of the screen size
+    int windowWidth = (int)(screenWidth * 0.9);
+    int windowHeight = (int)(screenHeight * 0.9);
+
+    // Center the window
+    int windowX = (screenWidth - windowWidth) / 2;
+    int windowY = (screenHeight - windowHeight) / 2;
+
+
+
+
+    WNDCLASSA wc = { CS_OWNDC, WndProc, 0, 0, hInstance, NULL, NULL, NULL, NULL, "4DWindow" };
+    RegisterClassA(&wc);
+    HWND hWnd = CreateWindowA("4DWindow", "4D Hypercube", WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+                              windowX, windowY, windowWidth, windowHeight, NULL, NULL, hInstance, NULL);
+
+    HDC hdc = GetDC(hWnd);
+    setupPixelFormat(hdc);
+    HGLRC hglrc = wglCreateContext(hdc);
+    wglMakeCurrent(hdc, hglrc);
+
+    glEnable(GL_DEPTH_TEST);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+
+    PXMatrix4x4F perspecive;
+    PXMatrix4x4FPerspective(&perspecive, 60.0, (float)windowWidth / (float)windowHeight, 0.1, 100.0);
+
+    glLoadMatrixf(perspecive.Data);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    //initHypercube();
+
+    MSG msg;
+    float angle = 0.0f;
+    while(1) {
+        while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+            if(msg.message == WM_QUIT) goto exit;
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+        angle += 0.01f;
+        drawHypercube(0, angle);
+        SwapBuffers(hdc);
+        Sleep(16);
+    }
+
+exit:
+    wglMakeCurrent(NULL, NULL);
+    wglDeleteContext(hglrc);
+    ReleaseDC(hWnd, hdc);
+}
+
+
 int main()
 { 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    TEST_OPENGL_1x1();
+
+
+
+
+
+    PXGPUList(0, 0);
+
+
+    PXStream pxStream;
+
+    for(i = 0; i < 27; i++)
+    {
+        PXStreamOpenInfo pxStreamOpenInfo;
+        pxStreamOpenInfo.Mode = PXStreamModeWindow;
+        pxStreamOpenInfo.DeviceIndex = i;
+        pxStreamOpenInfo.OnFrameCallBack = PXStreamOnFrame;
+
+        PXStreamOpen(&pxStream, &pxStreamOpenInfo);
+
+       // while(0)
+        {
+            pxStream.Update(&pxStream);
+            Sleep(250);
+        }
+
+    }
+
+
+    Sleep(0);
+
+
+
+
+
+
+
+
+#define SAMPLE_RATE 44100
+#define DURATION_SECONDS 4
+#define BUFFER_SIZE (SAMPLE_RATE * DURATION_SECONDS)
+
+  
+
+   // void InitDirectSound(HWND hwnd) 
+
+  //  GetWind
+
+    PXAudioDevice pxAudioDevice;
+
+    PXDirectSoundInitialize(PXNull, PXNull);
+
+    PXDirectSoundDeviceOpen(&pxAudioDevice, PXAudioDeviceTypeOutput, 0);
+   
+
+    PXSound pxSound;
+    PXClear(PXSound, &pxSound);
+    pxSound.SampleRate = SAMPLE_RATE;
+    pxSound.ByteRate = SAMPLE_RATE * 2;  
+    pxSound.NumerOfChannels = 1;
+    pxSound.BlockAllign = 2;
+    pxSound.BitsPerSample = 16;
+    pxSound.DataSize;
+    pxSound.ChunkSize;
+    pxSound.AudioFormat;
+
+    // gen sound
+
+    pxSound.DataSize = BUFFER_SIZE * 2;
+    pxSound.Data = PXMemoryHeapCalloc(PXNull, pxSound.DataSize, 1);
+
+
+   // PXAudioWaveGenerate();
+    //FillBufferWithWeather(pxSound.Data, BUFFER_SIZE, 0.2, 0.8, 0.0);
+
+    PXSFXParams pxSFXParams;
+
+
+    PXSFXParams jump;
+    jump.WaveType = PXAudioWaveTypeTRIANGLE;
+    jump.base_freq = 155.0f;
+    jump.freq_slide = 8.0f;
+    jump.vibrato_speed = 1.8f;
+    jump.vibrato_depth = 5.8f;
+    jump.attack = 0.025f;
+    jump.sustain = 0.5f;
+    jump.decay = 0.02f;
+    jump.volume = 1.0f;
+    jump.PI = PXMathConstantPI;
+    jump.SampleRate = SAMPLE_RATE;
+
+    generate_sfx(pxSound.Data, BUFFER_SIZE, &jump);
+
+
+    short* soundData = (short*)pxSound.Data;
+    
+    PXAudioWaveGenerateInfo pxAudioWaveGenerateInfo;
+    pxAudioWaveGenerateInfo.WaveType = PXAudioWaveTypeSQUARE;
+    pxAudioWaveGenerateInfo.Hz = 20.0f;
+    pxAudioWaveGenerateInfo.PWM = 0.2f;
+    pxAudioWaveGenerateInfo.Amplitude = 1.0f;
+
+    for(size_t i = 0; i < BUFFER_SIZE; i++)
+    {
+        pxAudioWaveGenerateInfo.X = (float)i / SAMPLE_RATE;
+
+        //float sample = 0.3f * sinf(2.0f * PXMathConstantPI * pxAudioWaveGenerateInfo.Phase * pxAudioWaveGenerateInfo.T);
+        
+        //buffer[i] = (int16_t)(sample * 32767);
+        //soundData[i] = (short)(sample * (0xFFFF / 2));
+
+       // soundData[i] = (short)(PXAudioWaveGenerate(&pxAudioWaveGenerateInfo) * (0xFFFF / 2));
+    }
+
+    for(size_t i = 0; i < BUFFER_SIZE; i++)
+    {
+        //soundData[i] = PXAudioWaveGenerate(&pxAudioWaveGenerateInfo) * (0xFFFF / 2);
+    }
+
+
+    FILE* fileHandle = fopen("C:\\Users\\BitPaw\\Downloads\\TEST.csv", "wb");
+
+ 
+
+    for(size_t i = 0; i < BUFFER_SIZE/4; i++)
+    {
+        fprintf(fileHandle, "%i\n", soundData[i]);
+    }
+
+    fclose(fileHandle);
+
+    PXDirectSoundDeviceBufferCreate(&pxAudioDevice, &pxSound);
+
+
+
+    while(1)
+    {
+        PXSoundDeviceProperty pxSoundDeviceProperty;
+        pxSoundDeviceProperty.Type = PXSoundDevicePropertyStatePlay;
+
+        PXDirectSoundDeviceProperty(&pxAudioDevice, &pxSoundDeviceProperty);
+
+        Sleep(100);
+    }
+
+  
+    
+
+    /*
+    DSBUFFERDESC desc = {
+        sizeof(DSBUFFERDESC), DSBCAPS_GLOBALFOCUS, BUFFER_SIZE * 2,
+        0, &format, 0
+    };
+
+    dsound->lpVtbl->CreateSoundBuffer(dsound, &desc, &buffer, NULL);
+
+    void* audioPtr;
+    DWORD audioBytes;
+    buffer->lpVtbl->Lock(buffer, 0, BUFFER_SIZE * 2, &audioPtr, &audioBytes, NULL, NULL, 0);
+
+    short* samples = (short*)audioPtr;
+    //FillBufferWithElectricHum(SAMPLE_RATE, samples, BUFFER_SIZE, 50.0f);  // 60Hz hum
+    FillBufferWithWeather(samples, BUFFER_SIZE, 0.2, 0.8,0.0);
+
+    buffer->lpVtbl->Unlock(buffer, audioPtr, audioBytes, NULL, 0);
+    buffer->lpVtbl->Play(buffer, 0, 0, DSBPLAY_LOOPING);
+    */
+
+    while(1)
+    {
+        Sleep(10);
+    }
+
+
+
+
+
+
+    // USP server test
+    PXSocket server;
+
+    PXNetworkModulState(PXNull, PXModuleStateDoInitialize);
+
+    PXSocketCreateInfo pxSocketCreateInfo;
+    pxSocketCreateInfo.SocketReference = &server;
+    pxSocketCreateInfo.AdressFamily = IPAdressFamilyINET;
+    pxSocketCreateInfo.Type = PXSocketTypeDatagram;
+    pxSocketCreateInfo.ProtocolMode = PXProtocolModeUDP;
+
+    PXNetworkSocketCreate(&pxSocketCreateInfo);
+
+
+    PXSocketBindInfo pxSocketBindInfo;
+    pxSocketBindInfo.SocketReference = &server;
+    pxSocketBindInfo.Port = 8000;
+    pxSocketBindInfo.IP = PXNull;
+
+    PXNetworkSocketBind(&pxSocketBindInfo);
+
+    while(1)
+    {
+        char message[128];
+        PXSocket SocketPeer;
+
+        PXSocketDataInfo pxSocketDataInfo;
+        PXClear(PXSocketDataInfo, &pxSocketDataInfo);
+        pxSocketDataInfo.SocketIDCurrent = server.ID;
+        pxSocketDataInfo.Buffer = message;
+        pxSocketDataInfo.BufferSize = 128; 
+        pxSocketDataInfo.BufferUsed = 0;
+        pxSocketDataInfo.SocketPeer = &SocketPeer;
+
+        PXNetworkSocketReceive(&pxSocketDataInfo);
+        Sleep(10);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    PXMAC pxMAC;
+
+    char nameWhoIs[1024];
+
+    PXNetworkAdapterFetch();
+    PXNetworkNameFromIPv4A(nameWhoIs, "192.168.0.246");
+
+    PXNetworkMACFromIPv4A(&pxMAC, "192.168.0.246");
+
+    PXNetworkMACFromIPv6A(&pxMAC, "2a02:908:f42:fa00:b628:6934:dd08:6933");
+ 
+
+
+    PXSystemPrelude();
+
+    PXDebug* pxDebug = PXDebugInstanceGet();
+
     PXConsoleWrite(0, "[i] Starting testing...\n");
 
 
@@ -180,18 +1105,27 @@ int main()
         PXClear(PXResourceTransphereInfo, &pxResourceTransphereInfo);
         pxResourceTransphereInfo.ResourceTarget = &pxModel;
 
-        PXResourceLoadA(&pxResourceTransphereInfo, "H:\\[Cache]\\FINAL\\Maps\\Shipping\\Map11.wad.client");
+    
+       // PXResourceLoadA(&pxResourceTransphereInfo, "H:\\[Cache]\\FINAL\\Champions\\Yuumi.wad.client");
+
+       // PXResourceLoadA(&pxResourceTransphereInfo, "H:\\[Cache]\\FINAL\\Champions\\MasterYi.wad.client");
+       // PXResourceLoadA(&pxResourceTransphereInfo, "H:\\[Cache]\\FINAL\\Champions\\MasterYi.en_US.wad.client");
+       //PXResourceLoadA(&pxResourceTransphereInfo, "H:/[Cache]/FINAL/Maps/Shipping/Map11.wad.client");
+       PXResourceLoadA(&pxResourceTransphereInfo, "C:/Data/Map11.wad.client");
+
+        //PXResourceLoadA(&pxResourceTransphereInfo, "H:\\[Cache]\\FINAL\\Global.wad.client");
+
 
         PXConsoleWrite(0, "EE");
     }
 
-
+    return 0;
     
 
 
 
-    PXInt8U bufferA[64] = {'A', 'A' , 'A' };
-    PXInt8U bufferB[64];
+    PXI8U bufferA[64] = {'A', 'A' , 'A' };
+    PXI8U bufferB[64];
 
     for(size_t i = 0; i < 64; i+=3)
     {
@@ -200,7 +1134,7 @@ int main()
         bufferA[i + 2] = 'R';
     }
 
-    PXInt8U order[] = { 2,1,0 };
+    PXI8U order[] = { 2,1,0 };
 
 
     PXMathShuffleI8(bufferA, bufferB, 64, order, 3);
@@ -286,16 +1220,16 @@ int main()
 
 
 
-    PXInt64U timeStart = PXTimeCounterStampGet();
+    PXI64U timeStart = PXTimeCounterStampGet();
 
     for(size_t i = 0; i < amount; i++)
     {
        PXMathCosinusDEGF32VX16(calcNumbersOUT, calcNumbersIN, VXSize);
     }
 
-    PXInt64U timeStop = PXTimeCounterStampGet();
+    PXI64U timeStop = PXTimeCounterStampGet();
 
-    PXInt64U timeDelta = timeStop - timeStart;
+    PXI64U timeDelta = timeStop - timeStart;
 
     PXF32 timeTaken =  PXTimeCounterStampToSecoundsF(timeDelta);
    
@@ -322,16 +1256,16 @@ int main()
         }
 
 
-        PXInt64U timeStart = PXTimeCounterStampGet();
+        PXI64U timeStart = PXTimeCounterStampGet();
 
         for(size_t i = 0; i < amount; i++)
         {
             PXMathCosinusDEGF32V(calcNumbersOUT, calcNumbersIN, VXSize);
         }
 
-        PXInt64U timeStop = PXTimeCounterStampGet();
+        PXI64U timeStop = PXTimeCounterStampGet();
 
-        PXInt64U timeDelta = timeStop - timeStart;
+        PXI64U timeDelta = timeStop - timeStart;
 
         PXF32 timeTaken = PXTimeCounterStampToSecoundsF(timeDelta);
 
@@ -391,7 +1325,7 @@ int main()
 
 
 #if 0 
-    PXInt16U data[200];
+    PXI16U data[200];
 
     PXSize fgdgfdgfd = PXCollatzConjectureGenerate16(data, 200, 12);
 
@@ -745,7 +1679,7 @@ int main()
     ZeroMemory(&CounterPathBuffer, sizeof(CounterPathBuffer));
     ZeroMemory(&BrowseDlgData, sizeof(PDH_BROWSE_DLG_CONFIG));
 
-    BrowseDlgData.bIncludeInstanceIndex = 0;
+    BrowseDlgData.bIncludedInstanceIndex = 0;
     BrowseDlgData.bSingleCounterPerAdd = 0;
     BrowseDlgData.bSingleCounterPerDialog = 0;
     BrowseDlgData.bLocalCountersOnly = 0;
@@ -753,7 +1687,7 @@ int main()
     BrowseDlgData.bHideDetailBox = 0;
     BrowseDlgData.bInitializePath = 0;
     BrowseDlgData.bDisableMachineSelection = 0;
-    BrowseDlgData.bIncludeCostlyObjects = 0;
+    BrowseDlgData.bIncludedCostlyObjects = 0;
     BrowseDlgData.bShowObjectBrowser = 0;
     BrowseDlgData.hWndOwner = NULL;
     BrowseDlgData.szReturnPathBuffer = CounterPathBuffer;
@@ -1146,7 +2080,7 @@ while(1)
     
     PXConsoleWriteF(0, "[%3i] --- Start ---\n", amount);
     
-    PXInt64U startTime = PXTimeCounterStampGet();
+    PXI64U startTime = PXTimeCounterStampGet();
 
     for(PXSize i = 0; i < amount; i++)
     {
@@ -1156,8 +2090,8 @@ while(1)
         //PXConsoleWriteF(0, "[%3i] %6.4f -> %6.4f\n", i, input, output);
     }
 
-    PXInt64U endTime = PXTimeCounterStampGet();
-    PXInt64U delta = endTime - startTime;
+    PXI64U endTime = PXTimeCounterStampGet();
+    PXI64U delta = endTime - startTime;
     PXF32 endTimeInS = PXTimeCounterStampToSecoundsF(delta);
 
     PXF32 avg = delta / (PXF32)amount;
@@ -1194,7 +2128,7 @@ while(1)
 
     while(1)
     {
-        PXInt32S temperature = 0;
+        PXI32S temperature = 0;
 
 
 
@@ -1258,11 +2192,11 @@ while(1)
 
 #if 0
     {
-        PXImage pxImage;
-        PXClear(PXImage, &pxImage);
+        PXTexture PXTexture;
+        PXClear(PXTexture, &PXTexture);
 
-        const PXActionResult pxLoadResult = PXResourceLoadA(&pxImage, "_TEST_DATA_INPUT_\\ImageInput.bmp");
-        const PXActionResult pxSaveResult = PXResourceSaveA(&pxImage, "_TEST_DATA_INPUT_\\ImageInput_COPY.bmp", PXFileFormatBitMap);
+        const PXActionResult pxLoadResult = PXResourceLoadA(&PXTexture, "_TEST_DATA_INPUT_\\ImageInput.bmp");
+        const PXActionResult pxSaveResult = PXResourceSaveA(&PXTexture, "_TEST_DATA_INPUT_\\ImageInput_COPY.bmp", PXFileFormatBitMap);
 
         printf("\n");
     }
@@ -1273,13 +2207,13 @@ while(1)
     {
         PXKnowlegeGraph pxKnowlegeGraph;
         PXDocument pxDocument;
-        PXImage pxImage;
+        PXTexture PXTexture;
 
         const PXActionResult pxLoadResult = PXResourceLoadA(&pxDocument, "_TEST_DATA_INPUT_\\books.xml");
 
-        const PXActionResult pxGraphResult = PXKnowlegeGraphLoadAndBuild(&pxKnowlegeGraph, &pxDocument, &pxImage);
+        const PXActionResult pxGraphResult = PXKnowlegeGraphLoadAndBuild(&pxKnowlegeGraph, &pxDocument, &PXTexture);
 
-        const PXActionResult pxSaveResult = PXResourceSaveA(&pxImage, "_TEST_DATA_INPUT_\\books.bmp", PXFileFormatBitMap);
+        const PXActionResult pxSaveResult = PXResourceSaveA(&PXTexture, "_TEST_DATA_INPUT_\\books.bmp", PXFileFormatBitMap);
 
         printf("\n");
 
@@ -1294,7 +2228,7 @@ while(1)
 #if 0
     PXFile pxFile;
 
-    PXResourceLoadA(&pxFile, "C:\\Data\\WorkSpace\\[GIT]\\PXUltima\\Code\\PXUltimaC\\Media\\PXImage.h");
+    PXResourceLoadA(&pxFile, "C:\\Data\\WorkSpace\\[GIT]\\PXUltima\\Code\\PXUltimaC\\Media\\PXTexture.h");
 #endif // 0
 
 
@@ -1311,7 +2245,7 @@ while(1)
 #if 0
     while (1)
     {
-        PXInt32U temp;
+        PXI32U temp;
 
         PXProcessorTemperature(&temp);
 
@@ -1331,9 +2265,9 @@ while(1)
 
 #if 0
     
-    PXImage pxImage;
+    PXTexture PXTexture;
 
-    PXResourceLoadA(&pxImage, "N:\\IMG_0147.CR3");
+    PXResourceLoadA(&PXTexture, "N:\\IMG_0147.CR3");
 #endif
 
 
@@ -1367,7 +2301,7 @@ while(1)
 #if 0
     // X86
     {
-        PXInt32U coolNumber = 0xAABBCCDD;
+        PXI32U coolNumber = 0xAABBCCDD;
 
         //PXEndianSwapI32U(&coolNumber);
 
@@ -1636,7 +2570,7 @@ while(1)
 #if 0
     while (1)
     {
-        const PXInt32U temperature = PXProcessorTemperature();
+        const PXI32U temperature = PXProcessorTemperature();
 
         printf("CPU Temp : %i\n", temperature);
 
@@ -1647,7 +2581,7 @@ while(1)
 
 
 #if 0
-    PXImage image;
+    PXTexture image;
 
     //ImageLoadTest(&image, "C:/Users/BitPaw/Videos/SquareBlue.bmp");
     ImageLoadTest(&image, "C:/Users/BitPaw/Videos/SquareBlue.png");

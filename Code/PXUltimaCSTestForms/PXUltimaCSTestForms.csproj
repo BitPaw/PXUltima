@@ -10,11 +10,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PXUltimaCS\PXUltimaCS.csproj" />
+    <ProjectReference Included="..\PXUltimaCS\PXUltimaCS.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="System.Windows.Forms" />
+    <Reference Included="System.Windows.Forms" />
   </ItemGroup>
 
 </Project>

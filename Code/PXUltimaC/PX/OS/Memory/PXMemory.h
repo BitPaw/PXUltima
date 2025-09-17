@@ -1,5 +1,5 @@
-#ifndef PXMemoryINCLUDE
-#define PXMemoryINCLUDE
+#ifndef PXMemoryIncluded
+#define PXMemoryIncluded
 
 #include <PX/Media/PXType.h>
 #include <PX/Compiler/PXCompilerSettings.h>
@@ -159,7 +159,7 @@ typedef struct PXSymbolMemory_
     PXSize Amount;
     PXSize ObjectSize;
     PXSize LineNumber;
-    //PXInt64U CreationTime;   // timestamps?
+    //PXI64U CreationTime;   // timestamps?
 
 
 
@@ -199,12 +199,12 @@ typedef struct PXMemoryPageInfo_
     PXSize PageAmountLarge;
     PXSize PageAmountHuge;
 
-    PXInt8U PageUtilizationNormal;
-    PXInt8U PageUtilizationPhysical;
-    PXInt8U PageUtilizationLarge;
-    PXInt8U PageUtilizationHuge;
+    PXI8U PageUtilizationNormal;
+    PXI8U PageUtilizationPhysical;
+    PXI8U PageUtilizationLarge;
+    PXI8U PageUtilizationHuge;
 
-    PXInt8U Affinity;
+    PXI8U Affinity;
 }
 PXMemoryPageInfo;
 
@@ -239,7 +239,7 @@ PXMemoryManager;
 // Singleton of a global memory table, all PXMemory allocations are regsieterd here
 PXPrivate PXMemorySymbolLookup* PXAPI PXMemorySymbolLookupInstanceGet(void);
 PXPublic void PXAPI PXMemorySymbolAdd(PXSymbolMemory* const pxSymbolMemory, const PXMemorySymbolInfoMode pxMemorySymbolInfoMode);
-PXPublic PXActionResult PXAPI PXMemorySymbolFetch(const void* const adress, PXSymbol* const pxSymbol);
+PXPublic PXResult PXAPI PXMemorySymbolFetch(const void* const adress, PXSymbol* const pxSymbol);
 
 
 // Check if two pointers overlap, if they do, we can't use a memory copy function, instaead 
@@ -249,8 +249,8 @@ PXPublic PXBool PXAPI PXMemoryDoAdressesOverlap(void* const adressA, const PXSiz
 
 /*
 
-PXPublic PXActionResult PXAPI PXMemoryHeapCreate(PXMemoryHeap* const pxMemoryHeap);
-PXPublic PXActionResult PXAPI PXMemoryHeapRelease(PXMemoryHeap* const pxMemoryHeap);
+PXPublic PXResult PXAPI PXMemoryHeapCreate(PXMemoryHeap* const pxMemoryHeap);
+PXPublic PXResult PXAPI PXMemoryHeapRelease(PXMemoryHeap* const pxMemoryHeap);
 PXPublic void PXAPI PXMemoryHeapGetGlobal(PXMemoryHeap* const pxMemoryHeap);
 //PXPublic PXMemoryHeap* PXAPI PXMemoryHeapGetPX(void);
 
@@ -266,9 +266,9 @@ PXPublic void* PXAPI PXMemoryHeapRealloc(PXMemoryHeap* pxMemoryHeap, const void*
 
 
 
-PXPublic int PXAPI PXMemoryProtectionIDTranslate(const PXInt8U protectionMode);
+PXPublic int PXAPI PXMemoryProtectionIDTranslate(const PXI8U protectionMode);
 
-PXPublic PXActionResult PXAPI PXMemoryProtect(void* dataAdress, const PXSize dataSize, const PXInt8U protectionMode);
+PXPublic PXResult PXAPI PXMemoryProtect(void* dataAdress, const PXSize dataSize, const PXI8U protectionMode);
 
 PXPublic PXBool PXAPI PXMemoryScan(PXMemoryUsage* memoryUsage);
 
@@ -310,7 +310,7 @@ PXPublic void PXAPI PXMemoryPageInfoFetch(PXMemoryPageInfo* const pxFilePageFile
 // Only use for bigger datablocks as thic has very hi overhead.
 PXPublic void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize* const createdSize, const PXAccessMode pxAccessMode);
 PXPublic void PXAPI PXMemoryVirtualPrefetch(const void* adress, const PXSize size);
-PXPublic PXActionResult PXAPI PXMemoryVirtualRelease(const void* adress, const PXSize size);
+PXPublic PXResult PXAPI PXMemoryVirtualRelease(const void* adress, const PXSize size);
 PXPublic void* PXAPI PXMemoryVirtualReallocate(const void* adress, const PXSize size);
 */
 
@@ -319,11 +319,11 @@ PXPublic void* PXAPI PXMemoryVirtualReallocate(const void* adress, const PXSize 
 // Allocates size bytes on the program stack.
 // The allocated space is automatically freed when the calling function exits
 // (not when the allocation merely passes out of scope).
-PXPublic PXActionResult PXAPI PXMemoryStackAllocate(PXMemoryInfo* const pxMemoryAllocateInfo);
+PXPublic PXResult PXAPI PXMemoryStackAllocate(PXMemoryInfo* const pxMemoryAllocateInfo);
 
 // Deallocates stack allocated memory if it was commited to the heap.
 // Additional size parameter can be ignored
-PXPublic PXActionResult PXAPI PXMemoryStackDeallocate(PXMemoryInfo* const pxMemoryAllocateInfo);
+PXPublic PXResult PXAPI PXMemoryStackDeallocate(PXMemoryInfo* const pxMemoryAllocateInfo);
 //---------------------------------------------------------
 
 
@@ -332,15 +332,16 @@ PXPublic PXActionResult PXAPI PXMemoryStackDeallocate(PXMemoryInfo* const pxMemo
 //---------------------------------------------------------
 // Copy
 //---------------------------------------------------------
-#pragma optimize( "", off )
-PXPublic PXSize PXAPI PXMemoryCopy(const void* PXRestrict inputBuffer, const PXSize inputBufferSize, void* outputBuffer, const PXSize outputBufferSize);
+PXPublic PXSize PXAPI PXMemoryCopy(const void* PXRestrict const inputBuffer, void* PXRestrict const outputBuffer, const PXSize bufferSize);
+PXPublic PXSize PXAPI PXMemoryCopyX(const void* PXRestrict const inputBuffer, const PXSize inputBufferSize, void* const outputBuffer, const PXSize outputBufferSize);
+
 
 #if PXMemoryDebug
-#define PXCopy(type, source, target) PXMemoryCopy(source, sizeof(type), target, sizeof(type));
-#define PXCopyList(type, amount, source, target) PXMemoryCopy(source, sizeof(type)*amount, target, sizeof(type)*amount);
+#define PXCopy(type, source, target) PXMemoryCopy(source, target, sizeof(type));
+#define PXCopyList(type, amount, source, target) PXMemoryCopy(source, target, sizeof(type)*amount);
 #else
-#define PXCopy(type, source, target) PXMemoryCopy(source, sizeof(type), target, sizeof(type));
-#define PXCopyList(type, amount, source, target) PXMemoryCopy(source, sizeof(type)*amount, target, sizeof(type)*amount);
+#define PXCopy(type, source, target) PXMemoryCopy(source, target, sizeof(type));
+#define PXCopyList(type, amount, source, target) PXMemoryCopy(source, target, sizeof(type)*amount);
 #endif
 //---------------------------------------------------------
 
@@ -409,23 +410,23 @@ PXPublic void PXAPI PXMemorySet(void* const PXRestrict bufferA, const PXByte val
 // Compare
 //---------------------------------------------------------
 
-PXPublic PXInt8U PXAPI PXMemoryCompareI8V(const PXInt8U* const textList, const PXInt8U listAmount, const PXInt8U value);
+PXPublic PXI8U PXAPI PXMemoryCompareI8V(const PXI8U* const textList, const PXI8U listAmount, const PXI8U value);
 
 // Compare a list of 4-byte text elements.
 // Return the index of the first match
-PXPublic PXInt8U PXAPI PXMemoryCompareC32V(const char* value,  char* const textList[4], const PXInt8U listAmount);
+PXPublic PXI8U PXAPI PXMemoryCompareC32V(const char* value,  char* const textList[4], const PXI8U listAmount);
 
 
-PXPublic PXInt8U PXAPI PXMemoryCompareSVI8(const char* const stringTarget, char** const stringList, const PXInt8U* const stringSizeList, const PXInt8U amount);
+PXPublic PXI8U PXAPI PXMemoryCompareSVI8(const char* const stringTarget, char** const stringList, const PXI8U* const stringSizeList, const PXI8U amount);
 
 
 
 
-PXPublic PXInt8U PXAPI PXMemoryReadBitI32U(const PXInt32U* const pxInt32U, const PXInt8U index);
-PXPublic PXInt8U PXAPI PXMemoryReadBitI64U(const PXInt64U* const pxInt64U, const PXInt8U index);
+PXPublic PXI8U PXAPI PXMemoryReadBitI32U(const PXI32U* const PXI32U, const PXI8U index);
+PXPublic PXI8U PXAPI PXMemoryReadBitI64U(const PXI64U* const PXI64U, const PXI8U index);
 
 
-PXPublic PXInt8U PXAPI PXMemoryReadBitAndClearI32U(const PXInt32U* const pxInt32U, const PXInt8U index);
+PXPublic PXI8U PXAPI PXMemoryReadBitAndClearI32U(const PXI32U* const PXI32U, const PXI8U index);
 
 
 

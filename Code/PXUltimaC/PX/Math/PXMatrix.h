@@ -1,5 +1,5 @@
-#ifndef PXMatrixINCLUDE
-#define PXMatrixINCLUDE
+#ifndef PXMatrixIncluded
+#define PXMatrixIncluded
 
 #include <PX/Media/PXType.h>
 #include <PX/Math/PXVector.h>
@@ -78,6 +78,8 @@ PXMatrix4x4F;
 PXPublic void PXAPI PXMatrix4x4FIdentity(PXMatrix4x4F* const matrix4x4F);
 PXPublic void PXAPI PXMatrix4x4FResetAxisW(PXMatrix4x4F* const matrix4x4F);
 
+PXPublic void PXAPI PXMatrix4x4FRotationAxisSet(PXMatrix4x4F* const matrix4x4F, const PXI8U axisA, const PXI8U axisB, const PXF32 angle);
+
 PXPublic void PXAPI PXMatrix4x4FPositionGet(const PXMatrix4x4F* const matrix, PXVector3F32* const position);
 PXPublic void PXAPI PXMatrix4x4FPositionSet(PXMatrix4x4F* const matrix4x4F, const PXVector3F32* const position);
 
@@ -85,7 +87,10 @@ PXPublic void PXAPI PXMatrix4x4FRotationGet(const PXMatrix4x4F* const matrix, PX
 PXPublic void PXAPI PXMatrix4x4FRotationSet(PXMatrix4x4F* const matrix4x4F, const PXVector3F32* const position);
 PXPublic void PXAPI PXMatrix4x4FRotationMatrixGenerate(PXMatrix4x4F* const matrix4x4F, const PXVector3F32* const position);
 
-PXPublic void PXAPI PXMatrix4x4FMultiply(const PXMatrix4x4F* matrixA, const PXMatrix4x4F* matrixB, PXMatrix4x4F* const matrixResult);
+PXPublic void PXAPI PXMatrix4x4FMultiply(PXMatrix4x4F* const matrixA, const PXMatrix4x4F* const matrixB);
+
+PXPublic void PXAPI PXMatrix4x4FMultiplyV4F(const PXMatrix4x4F* const matrix, PXVector4F32* const pxVector4F32);
+
 PXPublic void PXAPI PXMatrix4x4FRotate(PXMatrix4x4F* const matrix4x4F, const PXVector3F32* const vector3F);
 
 PXPublic void PXAPI PXMatrix4x4FCopy(const PXMatrix4x4F* const matrixA, PXMatrix4x4F* const matrixResult);
