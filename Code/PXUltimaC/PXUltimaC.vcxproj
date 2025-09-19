@@ -210,6 +210,7 @@
     <ClCompile Include="PX\OS\Hardware\PXKeyBoard.c" />
     <ClCompile Include="PX\OS\Hardware\PXMouse.c" />
     <ClCompile Include="PX\OS\Hardware\PXProcessor.c" />
+    <ClCompile Include="PX\OS\Input\PXInput.c" />
     <ClCompile Include="PX\OS\Library\PXLibrary.c" />
     <ClCompile Include="PX\OS\Memory\PXMemory.c" />
     <ClCompile Include="PX\OS\Network\PXClient.c" />
@@ -431,6 +432,7 @@
     <ClInclude Include="PX\OS\Hardware\PXKeyBoard.h" />
     <ClInclude Include="PX\OS\Hardware\PXMouse.h" />
     <ClInclude Include="PX\OS\Hardware\PXProcessor.h" />
+    <ClInclude Include="PX\OS\Input\PXInput.h" />
     <ClInclude Include="PX\OS\Library\PXLibrary.h" />
     <ClInclude Include="PX\OS\Memory\PXMemory.h" />
     <ClInclude Include="PX\OS\Network\PXClient.h" />
