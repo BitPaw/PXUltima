@@ -2634,21 +2634,21 @@ PXResult PXAPI  PXEngineResourceCreate(PXEngine* const pxEngine, PXResourceCreat
             // pxWindowCreateInfo->U
 
             //pxUIElementCreateData.UIElement.Data.SceneRender.StartInfo->UseMouseInput
-            pxWindowCreateInfo->Name = pxResourceCreateInfo->NameAdress;
+           // pxWindowCreateInfo->Name = pxResourceCreateInfo->NameAdress;
           
-            if(pxEngine->Window)
-            {
-                pxWindowCreateInfo->WindowCurrent = pxEngine->Window;
-            }
+          //  if(pxEngine->Window)
+          //  {
+          //      pxWindowCreateInfo->WindowCurrent = pxEngine->Window;
+         //   }
 
-            PXWindowCreate(&pxEngine->GUISystem, pxResourceCreateInfo, 1);
+          //  PXWindowCreate(&pxEngine->GUISystem, pxResourceCreateInfo, 1);
 
-            PXFunctionInvoke(pxEngine->ResourceAdded, pxEngine->Owner, pxEngine, pxResourceCreateInfo);
+           // PXFunctionInvoke(pxEngine->ResourceAdded, pxEngine->Owner, pxEngine, pxResourceCreateInfo);
 
-            PXWindow* pxWindow = *(PXWindow**)pxResourceCreateInfo->ObjectReference;
+           // PXWindow* pxWindow = *(PXWindow**)pxResourceCreateInfo->ObjectReference;
 
-            pxWindow->NameContent = pxResourceCreateInfo->NameAdress;
-            pxWindow->NameContentSize = PXTextLengthA(pxResourceCreateInfo->NameAdress, 128);
+            //pxWindow->NameContent = pxResourceCreateInfo->NameAdress;
+            //pxWindow->NameContentSize = PXTextLengthA(pxResourceCreateInfo->NameAdress, 128);
 
             break;
         }
