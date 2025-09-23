@@ -13,6 +13,8 @@
 #include <PX/OS/Async/PXThreadPool.h>
 #include <PX/Math/PXCollision.h>
 #include <PX/OS/PXOS.h>
+#include <PX/OS/Hardware/PXMouse.h>
+#include <PX/OS/Graphic/PXGraphic.h>
 
 const char PXEngineText[] = "PX-Engine";
 
@@ -1223,8 +1225,8 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
         // Extended windows resize check
         if(pxEngine->UpdateUI)
         {
-            PXWindowPropertyInfo pxWindowUpdateInfo;
-            PXClear(PXWindowPropertyInfo, &pxWindowUpdateInfo);
+            PXGUIProperty pxWindowUpdateInfo;
+            PXClear(PXGUIProperty, &pxWindowUpdateInfo);
             pxWindowUpdateInfo.WindowCurrent = pxWindow;
             pxWindowUpdateInfo.Property = PXUIElementPropertySize;
 
@@ -1964,7 +1966,6 @@ PXResult PXAPI  PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* const
     PXMathRandomeSeed(&pxEngine->RandomGeneratorSeed);
 
     // TODO: silly
-    pxEngine->GUISystem.ResourceManager = pxEngine->ResourceManager;
     pxEngine->GUISystem.NativDraw.ResourceManager = pxEngine->ResourceManager;
     pxEngine->GUISystem.NativDraw.GUISystem = &pxEngine->GUISystem;
 
@@ -1989,7 +1990,7 @@ PXResult PXAPI  PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* const
     //-----------------------------------------------------
     if(pxEngineStartInfo->UseMouseInput)
     {
-        PXWindowMouseMovementEnable(pxEngine->Window->Info.Handle.WindowHandle);
+        PXGUIMouseMovementEnable(pxEngine->Window->Info.Handle.WindowHandle);
 
         PXControllerSystemInitilize(&pxEngine->ControllerSystem);
         PXControllerSystemDevicesListRefresh(&pxEngine->ControllerSystem);
