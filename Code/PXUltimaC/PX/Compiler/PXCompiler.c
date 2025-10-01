@@ -226,13 +226,13 @@ PXSize PXAPI PXCompilerSymbolEntryMergeCurrentWithNext(PXCompiler* const pxCompi
     {
         const PXI8U symbolID = compilerSymbolEntry->ID;
         const PXI32U size = oldCopy.Size + ((mergCopy.Coloum + mergCopy.Size) - (oldCopy.Coloum + oldCopy.Size));
-        const PXTypeEntry pxFileDataElementType[] =
+        PXTypeEntry pxFileDataElementType[] =
         {
-         &oldCopy.ID, PXTypeInt08U,
-         &oldCopy.Coloum, PXTypeInt32U,
-         &oldCopy.Line, PXTypeInt32U,
-         &size, PXTypeInt32U,
-         &oldCopy.Source, PXTypeAdress
+            &oldCopy.ID, PXTypeInt08U,
+            &oldCopy.Coloum, PXTypeInt32U,
+            &oldCopy.Line, PXTypeInt32U,
+            &size, PXTypeInt32U,
+            &oldCopy.Source, PXTypeAdress
         };
 
         const PXSize written = PXFileWriteMultible(pxCompiler->ReadInfo.FileCache, pxFileDataElementType, sizeof(pxFileDataElementType));
@@ -970,7 +970,7 @@ PXResult PXAPI  PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler)
     pxFileOpenInfo.FileSizeRequest = pxCompiler->ReadInfo.FileInput->DataUsed * 5u;
     pxFileOpenInfo.AccessMode = PXAccessModeReadAndWrite;
 
-    const PXActionResult pxOpenResult = PXFileOpen(pxCompiler->ReadInfo.FileCache, &pxFileOpenInfo);
+    const PXResult pxOpenResult = PXFileOpen(pxCompiler->ReadInfo.FileCache, &pxFileOpenInfo);
 
 
     PXSize currentLine = 1;
