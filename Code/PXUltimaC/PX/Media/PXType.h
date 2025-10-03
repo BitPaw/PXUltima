@@ -368,7 +368,13 @@
 
 
 typedef unsigned char PXByte;
+
+#ifdef __cplusplus
+typedef bool PXBool;
+#else
 typedef unsigned char PXBool;
+#endif
+
 typedef unsigned char* PXAdress;
 
 // Integer 8-Bit
