@@ -13,19 +13,19 @@ typedef struct PXEulerAngle3F32_
     {
         struct
         {
-            float Yaw;
-            float Pitch;
-            float Roll;
+            PXF32 Yaw;
+            PXF32 Pitch;
+            PXF32 Roll;
         };
 
         struct
         {
-            float X;
-            float Y;
-            float Z;
+            PXF32 X;
+            PXF32 Y;
+            PXF32 Z;
         };
 
-        float Data[3];
+        PXF32 Data[3];
     };
 }
 PXEulerAngleF32;
@@ -38,21 +38,21 @@ typedef struct PXEulerAngle4F32_
     {
         struct
         {
-            float Yaw;
-            float Pitch;
-            float Roll;
-            float Skew;
+            PXF32 Yaw;
+            PXF32 Pitch;
+            PXF32 Roll;
+            PXF32 Skew;
         };
 
         struct
         {
-            float X;
-            float Y;
-            float Z;
-            float W;
+            PXF32 X;
+            PXF32 Y;
+            PXF32 Z;
+            PXF32 W;
         };
 
-        float Data[4];
+        PXF32 Data[4];
     };
 }
 PXEulerAngle4F32;
@@ -65,21 +65,21 @@ typedef struct PXQuaternionF32_
     {
         struct
         {
-            float Lambda;
-            float I;
-            float J;
-            float K;
+            PXF32 Lambda;
+            PXF32 I;
+            PXF32 J;
+            PXF32 K;
         };
 
         struct
         {
-            float W;
-            float X;
-            float Y;
-            float Z;
+            PXF32 W;
+            PXF32 X;
+            PXF32 Y;
+            PXF32 Z;
         };
 
-        float Data[4];
+        PXF32 Data[4];
     };
 }
 PXQuaternionF32;
@@ -100,12 +100,12 @@ typedef struct PXRotor_
     // 5D = 10x (XY, XZ, XW, YZ, YW, ZW, YV, ZV, WV, XV)
     // nD = (n(n-1))/2
     PXI32U Dimension;
-    float Scalar;  // cos(?)
+    PXF32 Scalar;  // cos(?)
 
     union
     {
-        float* PlaneAngleList;    // sin(?) · plane components (size = n(n-1)/2)
-        float PlaneAngles[PXRotorNormalDimension];
+        PXF32* PlaneAngleList;    // sin(?) · plane components (size = n(n-1)/2)
+        PXF32 PlaneAngles[PXRotorNormalDimension];
     };
 }
 PXRotor;
