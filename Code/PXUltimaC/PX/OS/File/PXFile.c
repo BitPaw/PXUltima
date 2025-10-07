@@ -1046,7 +1046,7 @@ PXResult PXAPI  PXFileRemove(const PXText* const filePath)
             const PXBool success = DeleteFileA(filePath->A);
 #endif
 
-            const PXActionResult pxActionResult = PXErrorCurrent(success);
+            const PXResult pxActionResult = PXErrorCurrent(success);
 
             if(PXActionSuccessful != pxActionResult)
             {
@@ -1068,7 +1068,7 @@ PXResult PXAPI  PXFileRemove(const PXText* const filePath)
             const PXBool success = DeleteFileW(filePath->W);
 #endif
 
-            const PXActionResult pxActionResult = PXErrorCurrent(success);
+            const PXResult pxActionResult = PXErrorCurrent(success);
 
             if(PXActionSuccessful != pxActionResult)
             {
@@ -1106,7 +1106,7 @@ PXResult PXAPI  PXFileRename(const PXText* const oldName, const PXText* const ne
 #elif OSWindows
             const PXBool success = MoveFileA(oldName->A, newName->A); // Windows XP, Kernel32.dll, winbase.h
 #endif
-            const PXActionResult pxActionResult = PXErrorCurrent(success);
+            const PXResult pxActionResult = PXErrorCurrent(success);
 
             if(PXActionSuccessful != pxActionResult)
             {
@@ -1128,7 +1128,7 @@ PXResult PXAPI  PXFileRename(const PXText* const oldName, const PXText* const ne
             const PXBool success = MoveFileW(oldName->W, newName->W); // Windows XP, Kernel32.dll, winbase.h
 #endif
 
-            const PXActionResult pxActionResult = PXErrorCurrent(success);
+            const PXResult pxActionResult = PXErrorCurrent(success);
 
             if(PXActionSuccessful != pxActionResult)
             {
@@ -1179,7 +1179,7 @@ PXResult PXAPI  PXFileCopy(const PXText* const sourceFilePath, const PXText* con
             const int closeB = fclose(fileDestination);
 #elif OSWindows
             const PXBool succesfull = CopyFileA(sourceFilePath->A, destinationFilePath->A, overrideIfExists); // Windows XP (+UWP), Kernel32.dll, winbase.h
-            const PXActionResult pxActionResult = PXErrorCurrent(succesfull);
+            const PXResult pxActionResult = PXErrorCurrent(succesfull);
 
             if(PXActionSuccessful != pxActionResult)
             {
@@ -1199,7 +1199,7 @@ PXResult PXAPI  PXFileCopy(const PXText* const sourceFilePath, const PXText* con
 
 #elif OSWindows
             const PXBool succesfull = CopyFileW(sourceFilePath->W, destinationFilePath->W, overrideIfExists); // Windows XP (+UWP), Kernel32.dll, winbase.h
-            const PXActionResult pxActionResult = PXErrorCurrent(succesfull);
+            const PXResult pxActionResult = PXErrorCurrent(succesfull);
 
             if(PXActionSuccessful != pxActionResult)
             {
@@ -1272,7 +1272,7 @@ PXResult PXAPI  PXFilePathRelativeFromFile(const PXFile* const pxFile, const PXT
 
         // Run a
         {
-            const PXActionResult result = PXFilePathSplitt(&currentObjectFilePath, &pxFilePathStructureBefore);
+            const PXResult result = PXFilePathSplitt(&currentObjectFilePath, &pxFilePathStructureBefore);
 
             if(PXActionSuccessful != result)
             {
@@ -1283,7 +1283,7 @@ PXResult PXAPI  PXFilePathRelativeFromFile(const PXFile* const pxFile, const PXT
 
         // RUn B
         {
-            const PXActionResult result = PXFilePathSplitt(targetPath, &pxFilePathStructureAfter);
+            const PXResult result = PXFilePathSplitt(targetPath, &pxFilePathStructureAfter);
 
             if(PXActionSuccessful != result)
             {
@@ -1311,7 +1311,7 @@ PXResult PXAPI  PXFilePathSwapFileName(const PXText* const inputPath, PXText* co
 
     // Run a
     {
-        const PXActionResult result = PXFilePathSplitt(inputPath, &pxFilePathStructureBefore);
+        const PXResult result = PXFilePathSplitt(inputPath, &pxFilePathStructureBefore);
 
         if(PXActionSuccessful != result)
         {
@@ -1322,7 +1322,7 @@ PXResult PXAPI  PXFilePathSwapFileName(const PXText* const inputPath, PXText* co
 
     // RUn B
     {
-        const PXActionResult result = PXFilePathSplitt(fileName, &pxFilePathStructureAfter);
+        const PXResult result = PXFilePathSplitt(fileName, &pxFilePathStructureAfter);
 
         if(PXActionSuccessful != result)
         {
@@ -1620,7 +1620,7 @@ void AddPrivileges()
 
     // Create an LSA_UNICODE_STRING for the privilege names.
     const BOOL initSuccess = InitLsaString(&lucPrivilege, L"SeLockMemoryPrivilege");
-    const PXActionResult openTokenResult = PXErrorCurrent(initSuccess);
+    const PXResult openTokenResult = PXErrorCurrent(initSuccess);
 
 
     if(!initSuccess)
@@ -1636,7 +1636,7 @@ void AddPrivileges()
         &lucPrivilege, // The privileges.
         1              // Number of privileges.
     );
-    const PXActionResult ntsResult = PXErrorCurrent(STATUS_SUCCESS == ntsResultID);
+    const PXResult ntsResult = PXErrorCurrent(STATUS_SUCCESS == ntsResultID);
 
 
     if(ntsResultID == STATUS_SUCCESS)
@@ -1714,11 +1714,11 @@ PXResult PXAPI  PXFileOpen(PXFile* const pxFile, PXFileOpenInfo* const pxFileIOI
 
 #if CVersionNewerThen2011 && OSWindows
             const errno_t openResultID = fopen_s(&pxFile->FileID, pxText.A, readMode);
-            const PXActionResult openResult = PXErrorCodeFromID(openResultID);
+            const PXResult openResult = PXErrorCodeFromID(openResultID);
 #else
             //open64();
             pxFile->FileID = fopen(pxText.A, readMode);
-            const PXActionResult openResult = PXErrorCurrent(PXNull != pxFile->FileID);
+            const PXResult openResult = PXErrorCurrent(PXNull != pxFile->FileID);
 #endif
 
             if(PXActionSuccessful != openResult)
@@ -1807,7 +1807,7 @@ PXResult PXAPI  PXFileOpen(PXFile* const pxFile, PXFileOpenInfo* const pxFileIOI
             // FilePathExtensionGetW
             if(pxFileIOInfo->AccessMode == PXAccessModeWriteOnly || pxFileIOInfo->AccessMode == PXAccessModeReadAndWrite)
             {
-                //const PXActionResult directoryCreateResult = DirectoryCreateA(filePath);
+                //const PXResult directoryCreateResult = DirectoryCreateA(filePath);
 
                 //PXActionExitOnError(directoryCreateResult);
             }
@@ -1888,7 +1888,7 @@ PXResult PXAPI  PXFileOpen(PXFile* const pxFile, PXFileOpenInfo* const pxFileIOI
                     }
                 }
 
-                const PXActionResult fileOpenResult = PXErrorCurrent(INVALID_HANDLE_VALUE != fileHandle);
+                const PXResult fileOpenResult = PXErrorCurrent(INVALID_HANDLE_VALUE != fileHandle);
 
                 if(PXActionSuccessful != fileOpenResult)
                 {
@@ -2353,7 +2353,7 @@ PXResult PXAPI  PXFileUnmapFromMemory(PXFile* const pxFile)
     // Unmap
     {
         const int unmapResultID = munmap(pxFile->Data, pxFile->DataCursor);
-        const PXActionResult unmapResult = PXErrorCurrent(0 == unmapResultID);
+        const PXResult unmapResult = PXErrorCurrent(0 == unmapResultID);
 
         if(PXActionSuccessful != unmapResult)
         {
@@ -2369,7 +2369,7 @@ PXResult PXAPI  PXFileUnmapFromMemory(PXFile* const pxFile)
     // Release
     {
         const int closeResultID = fclose(pxFile->FileID);
-        const PXActionResult closeResult = PXErrorCurrent(0 == closeResultID);
+        const PXResult closeResult = PXErrorCurrent(0 == closeResultID);
 
 
         return closeResult;
@@ -2413,7 +2413,7 @@ PXResult PXAPI  PXFileUnmapFromMemory(PXFile* const pxFile)
             if(isWriteMapped)
             {
                 const BOOL flushSuccessful = FlushViewOfFile(pxFile->Data, pxFile->DataCursor);
-                const PXActionResult pxActionResult = PXErrorCurrent(flushSuccessful);
+                const PXResult pxActionResult = PXErrorCurrent(flushSuccessful);
 
                 if(PXActionSuccessful != pxActionResult)
                 {
@@ -2424,7 +2424,7 @@ PXResult PXAPI  PXFileUnmapFromMemory(PXFile* const pxFile)
 
         {
             const PXBool unmappingSucessful = UnmapViewOfFile(pxFile->Data);
-            const PXActionResult pxActionResult = PXErrorCurrent(unmappingSucessful);
+            const PXResult pxActionResult = PXErrorCurrent(unmappingSucessful);
 
             if(PXActionSuccessful != pxActionResult)
             {
@@ -2436,7 +2436,7 @@ PXResult PXAPI  PXFileUnmapFromMemory(PXFile* const pxFile)
 
         {
             const PXBool closeMappingSucessful = CloseHandle(pxFile->MappingHandle);
-            const PXActionResult pxActionResult = PXErrorCurrent(closeMappingSucessful);
+            const PXResult pxActionResult = PXErrorCurrent(closeMappingSucessful);
 
             if(PXActionSuccessful != pxActionResult)
             {
@@ -2467,7 +2467,7 @@ PXResult PXAPI  PXFileUnmapFromMemory(PXFile* const pxFile)
         //      _fclose_nolock(pxFile->FileHandleCStyle);
 
         const PXBool successful = CloseHandle(pxFile->FileHandle); // Windows 2000 (+UWP), Kernel32.dll, handleapi.h
-        const PXActionResult closeResult = PXErrorCurrent(successful);
+        const PXResult closeResult = PXErrorCurrent(successful);
 
         if(PXActionSuccessful != closeResult)
         {
@@ -3353,7 +3353,7 @@ PXSize PXAPI PXFileIOMultible(PXFile* const pxFile, const PXTypeEntry* const pxF
         pxFileOpenInfo.BufferData = stackMemory;
         pxFileOpenInfo.BufferSize = totalSizeToRead;
 
-        const PXActionResult fileOpenResult = PXFileOpen(&pxStackFile, &pxFileOpenInfo);
+        const PXResult fileOpenResult = PXFileOpen(&pxStackFile, &pxFileOpenInfo);
 
         PXFileDataCopy(pxFile, &pxStackFile, totalSizeToRead); // Read actual data all at once
         pxStackFile.DataCursor = 0;
@@ -3550,7 +3550,7 @@ PXSize PXAPI PXFileReadB(PXFile* const pxFile, void* const value, const PXSize l
 #elif OSWindows
             DWORD writtenBytes = 0;
             const PXBool success = ReadFile(pxFile->FileHandle, value, length, &writtenBytes, PXNull);
-            const PXActionResult pxActionResult = PXErrorCurrent(success);
+            const PXResult pxActionResult = PXErrorCurrent(success);
 
             if(PXActionSuccessful != pxActionResult)
             {
@@ -4386,7 +4386,7 @@ PXResult PXAPI  PXFileTimeGet
             &fileTimeList[1],
             &fileTimeList[2]
         );
-        const PXActionResult pxActionResult = PXErrorCurrent(result);
+        const PXResult pxActionResult = PXErrorCurrent(result);
 
         if(PXActionSuccessful != pxActionResult)
         {
@@ -4602,7 +4602,7 @@ PXActionResult FileReadFromDisk(const char* filePath, bool addNullTerminator, Fi
 
     // Open file
     {
-        const PXActionResult result = file.Open(filePath, FileOpenMode::Read, FileCachingMode::Sequential);
+        const PXResult result = file.Open(filePath, FileOpenMode::Read, FileCachingMode::Sequential);
         const bool sucessful = result == PXActionSuccessful;
 
         if(!sucessful)
@@ -4613,7 +4613,7 @@ PXActionResult FileReadFromDisk(const char* filePath, bool addNullTerminator, Fi
 
     // Read
     {
-        const PXActionResult result = file.ReadFromDisk(&Data, DataSize, addNullTerminator);
+        const PXResult result = file.ReadFromDisk(&Data, DataSize, addNullTerminator);
         const bool sucessful = result == PXActionSuccessful;
 
         if(!sucessful)
@@ -4625,7 +4625,7 @@ PXActionResult FileReadFromDisk(const char* filePath, bool addNullTerminator, Fi
 
     // Close
     {
-        const PXActionResult result = file.Close();
+        const PXResult result = file.Close();
         const bool sucessful = result == PXActionSuccessful;
 
         if(!sucessful)
@@ -4856,7 +4856,7 @@ PXActionResult FileWriteToDisk(const wchar_t* filePath, FilePersistence filePers
     File file;
 
     {
-        const PXActionResult filePXActionResult = file.Open(filePath, FileOpenMode::Write);
+        const PXResult filePXActionResult = file.Open(filePath, FileOpenMode::Write);
         const bool sucessful = filePXActionResult == PXActionSuccessful;
 
         if(!sucessful)
@@ -4873,7 +4873,7 @@ PXActionResult FileWriteToDisk(const wchar_t* filePath, FilePersistence filePers
 #endif
 
     {
-        const PXActionResult closeResult = file.Close();
+        const PXResult closeResult = file.Close();
         const bool sucessful = closeResult == PXActionSuccessful;
 
         if(!sucessful)
