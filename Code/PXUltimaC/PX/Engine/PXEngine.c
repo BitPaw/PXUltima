@@ -240,8 +240,8 @@ void PXAPI PXEngineWindowEvent(PXEngine* const pxEngine, PXWindowEvent* const px
                 mousePositionNew[0] - mousePositionOld[0],
                 mousePositionNew[1] - mousePositionOld[1]
     #else
-                inputMouseMove->DeltaX,
-                inputMouseMove->DeltaY
+                inputMouseMove->Delta.X,
+                inputMouseMove->Delta.Y
     #endif
             };
 
@@ -249,16 +249,16 @@ void PXAPI PXEngineWindowEvent(PXEngine* const pxEngine, PXWindowEvent* const px
 
             if(hasDelta)
             {
-                //mouse->Delta[0] = mousePositionDeltaNew[0];
-                //mouse->Delta[1] = mousePositionDeltaNew[1];
-                mouse->Delta[0] += inputMouseMove->DeltaX;
-                mouse->Delta[1] += inputMouseMove->DeltaY;
+                // mouse->Delta[0] = mousePositionDeltaNew[0];
+                // mouse->Delta[1] = mousePositionDeltaNew[1];
+                mouse->Delta[0] += inputMouseMove->Delta.X;
+                mouse->Delta[1] += inputMouseMove->Delta.Y;
                 // mouse->DeltaNormalisized[0] = (mousePositionDeltaNew[0] / ((PXF32)window->Width / 2.0f)) - 1.0f;
-                //  mouse->DeltaNormalisized[1] = (mousePositionDeltaNew[1] / ((PXF32)window->Height / 2.0f)) - 1.0f;
+                // mouse->DeltaNormalisized[1] = (mousePositionDeltaNew[1] / ((PXF32)window->Height / 2.0f)) - 1.0f;
                 mouse->Position[0] = mousePositionNew[0];
                 mouse->Position[1] = mousePositionNew[1];
-                //   mouse->PositionNormalisized[0] = (mousePositionNew[0] / ((PXF32)window->Width / 2.0f)) - 1.0f;
-                //   mouse->PositionNormalisized[1] = (mousePositionNew[1] / ((PXF32)window->Height / 2.0f)) - 1.0f;
+                // mouse->PositionNormalisized[0] = (mousePositionNew[0] / ((PXF32)window->Width / 2.0f)) - 1.0f;
+                // mouse->PositionNormalisized[1] = (mousePositionNew[1] / ((PXF32)window->Height / 2.0f)) - 1.0f;
             }
             else
             {
@@ -1225,20 +1225,18 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
         // Extended windows resize check
         if(pxEngine->UpdateUI)
         {
-            PXGUIProperty pxWindowUpdateInfo;
-            PXClear(PXGUIProperty, &pxWindowUpdateInfo);
-            pxWindowUpdateInfo.WindowCurrent = pxWindow;
-            pxWindowUpdateInfo.Property = PXUIElementPropertySize;
+            PXGUIProperty pxGUIProperty;
+            PXClear(PXGUIProperty, &pxGUIProperty);
+            //pxGUIProperty.WindowCurrent = pxWindow;
+            pxGUIProperty.Property = PXUIElementPropertySize;
 
-            PXWindowFetch(&pxEngine->GUISystem, &pxWindowUpdateInfo, 1);
-
-
+            PXGUIPropertyFetch(pxWindow, &pxGUIProperty, 1, PXFalse);
 
             PXViewPort pxViewPort;
             pxViewPort.X = 0;
             pxViewPort.Y = 0;
-            pxViewPort.Width = pxWindowUpdateInfo.Data.Size.Width;
-            pxViewPort.Height = pxWindowUpdateInfo.Data.Size.Height;
+            pxViewPort.Width = pxGUIProperty.Size.Width;
+            pxViewPort.Height = pxGUIProperty.Size.Height;
             pxViewPort.ClippingMinimum = 0;
             pxViewPort.ClippingMaximum = 1;
 
@@ -1592,7 +1590,7 @@ void PXAPI PXEngineCreateAudio(PXEngine* const pxEngine, PXEngineStartInfo* cons
     );
 #endif
 
-    const PXActionResult audioInitResult = PXAudioInitialize(&pxEngine->Audio, PXAudioSystemWindowsDirectSound);
+    const PXResult audioInitResult = PXAudioInitialize(&pxEngine->Audio, PXAudioSystemWindowsDirectSound);
 
     if(PXActionSuccessful != audioInitResult)
     {
@@ -1645,25 +1643,25 @@ void PXAPI PXEngineCreateGraphic(PXEngine* const pxEngine, PXEngineStartInfo* co
     pxResourceCreateInfo.ObjectReference = &pxEngine->Window;
     pxResourceCreateInfo.Type = PXResourceTypeGUIElement;
     pxResourceCreateInfo.UIElement.Type = PXUIElementTypeWindow;
-    pxResourceCreateInfo.UIElement.WindowParent = pxEngineStartInfo->WindowRenderParent;
+    //pxResourceCreateInfo.UIElement.WindowParent = pxEngineStartInfo->WindowRenderParent;
     pxResourceCreateInfo.UIElement.Setting = PXWindowBehaviourBorder;
     pxResourceCreateInfo.UIElement.InteractOwner = pxEngine;
     pxResourceCreateInfo.UIElement.InteractCallBack = PXEngineWindowEvent;
-    pxResourceCreateInfo.UIElement.Data.Window.EventOwner = pxEngine;
-    pxResourceCreateInfo.UIElement.Data.Window.IsVisible = PXTrue;
-    pxResourceCreateInfo.UIElement.Data.Window.BackGroundColor.Red = 38;
-    pxResourceCreateInfo.UIElement.Data.Window.BackGroundColor.Green = 38;
-    pxResourceCreateInfo.UIElement.Data.Window.BackGroundColor.Blue = 38;
-    pxResourceCreateInfo.UIElement.Data.Window.BackGroundColor.Alpha = 0xFF;
-    pxResourceCreateInfo.UIElement.Data.Window.Width = pxEngineStartInfo->Width;
-    pxResourceCreateInfo.UIElement.Data.Window.Height = pxEngineStartInfo->Height;
-    pxResourceCreateInfo.UIElement.Data.Window.Title = "[N/A]";
+    pxResourceCreateInfo.UIElement.Size.Width = pxEngineStartInfo->Width;
+    pxResourceCreateInfo.UIElement.Size.Height = pxEngineStartInfo->Height;
+    pxResourceCreateInfo.UIElement.WindowText.A = "[N/A]";
+
+    //pxResourceCreateInfo.UIElement.Data.Window.EventOwner = pxEngine;
+    //pxResourceCreateInfo.UIElement.Data.Window.BackGroundColor.Red = 38;
+    //pxResourceCreateInfo.UIElement.Data.Window.BackGroundColor.Green = 38;
+    //pxResourceCreateInfo.UIElement.Data.Window.BackGroundColor.Blue = 38;
+    //pxResourceCreateInfo.UIElement.Data.Window.BackGroundColor.Alpha = 0xFF;
 
     switch(pxEngineStartInfo->Mode)
     {
         case PXGraphicInitializeModeWindowless:
         {
-            pxResourceCreateInfo.UIElement.Data.Window.IsVisible = PXFalse;
+            pxResourceCreateInfo.UIElement.Invisible = PXTrue;
 
             PXEngineResourceCreate(pxEngine, &pxResourceCreateInfo);
             break;
@@ -1690,9 +1688,6 @@ void PXAPI PXEngineCreateGraphic(PXEngine* const pxEngine, PXEngineStartInfo* co
     PXNativDrawWindowEventPoll(&pxEngine->GUISystem.NativDraw, pxEngine->Window);
 
     PXCameraAspectRatioChange(pxEngine->CameraCurrent, pxEngineStartInfo->Width, pxEngineStartInfo->Height);
-
-
-
 
 
     if(0)
@@ -1741,7 +1736,7 @@ void PXAPI PXEngineCreateGraphic(PXEngine* const pxEngine, PXEngineStartInfo* co
     pxGraphicInitializeInfo.DisplayConnection = pxEngine->GUISystem.DisplayCurrent.DisplayHandle;
 #endif
 
-    const PXActionResult graphicInit = PXGraphicInstantiate(&pxEngine->Graphic, &pxGraphicInitializeInfo);
+    const PXResult graphicInit = PXGraphicInstantiate(&pxEngine->Graphic, &pxGraphicInitializeInfo);
 
     if(PXActionSuccessful != graphicInit)
     {
@@ -1752,12 +1747,12 @@ void PXAPI PXEngineCreateGraphic(PXEngine* const pxEngine, PXEngineStartInfo* co
             PXEngineText,
             "Instantiate",
             "Failed to create graphical instance!\n"
-            "Graphics card driver is not able to provide a rendering context.\n "
-            "Either the card itself is not capable or a driver is missing and needs to be installed.\n"
+            "Graphics card driver is not able to provide a rendering context.\n"
+            "Either the card itself is not capable or a driver is missing and needs to be installed."
         );
 #endif
 
-        if(0) // If its really important that the graphic API exists, we can exit now.
+        if(1) // If its really important that the graphic API exists, we can exit now.
         {
             return graphicInit;
         }
@@ -2191,7 +2186,7 @@ PXResult PXAPI  PXGraphicLoadImage(PXGraphic* const pxGraphic, PXTexture* const 
 
     // Load texture
     {
-        const PXActionResult loadResult = PXResourceLoad(PXTexture, PXTextureFilePath);
+        const PXResult loadResult = PXResourceLoad(PXTexture, PXTextureFilePath);
 
         if (PXActionSuccessful != loadResult)
         {
@@ -2237,7 +2232,7 @@ PXResult PXAPI  PXEngineResourceCreate(PXEngine* const pxEngine, PXResourceCreat
 
     // Primary load
     {
-        const PXActionResult resourceAddResult = PXResourceManagerAdd(pxResourceCreateInfo);
+        const PXResult resourceAddResult = PXResourceManagerAdd(pxResourceCreateInfo);
         const PXBool success = PXActionSuccessful == resourceAddResult;
 
         if(!success)
@@ -2592,7 +2587,7 @@ PXResult PXAPI  PXEngineResourceCreate(PXEngine* const pxEngine, PXResourceCreat
             PXEngineSound* pxEngineSound = *(PXEngineSound**)pxResourceCreateInfo->ObjectReference;
 
             {
-                const PXActionResult pxActionResult = pxEngine->Audio.DeviceLoad(&pxEngine->Audio, &pxEngine->AudioStandardOutDevice, pxEngineSound->Sound);
+                const PXResult pxActionResult = pxEngine->Audio.DeviceLoad(&pxEngine->Audio, &pxEngine->AudioStandardOutDevice, pxEngineSound->Sound);
 
 #if PXLogEnable
                 if(PXActionSuccessful == pxActionResult)
@@ -3152,7 +3147,7 @@ PXResult PXAPI  PXEngineDeviceDataRegister(PXEngine* const pxEngine, PXResourceT
             pxGraphicTexturInfo.Type = PXTextureType2D;
             pxGraphicTexturInfo.Action = PXResourceActionCreate;
 
-            const PXActionResult textureAction = pxGraphic->TextureAction(pxGraphic->EventOwner, &pxGraphicTexturInfo);
+            const PXResult textureAction = pxGraphic->TextureAction(pxGraphic->EventOwner, &pxGraphicTexturInfo);
 
 
             break;
