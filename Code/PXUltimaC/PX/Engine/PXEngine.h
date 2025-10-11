@@ -3,12 +3,15 @@
 
 #include <PX/Engine/PXMod.h>
 #include <PX/Engine/PXResource.h>
-#include <PX/Engine/PXGUI.h>
 #include <PX/Math/PXMath.h>
 #include <PX/OS/Signal/PXSignal.h>
 #include <PX/OS/Audio/PXAudio.h>
 #include <PX/OS/Hardware/PXController.h>
 #include <PX/OS/DataBase/PXDataBase.h>
+
+#include "PXGUI.h"
+#include <PX/OS/Graphic/PXGraphic.h>
+#include <PX/OS/Hardware/PXMouse.h>
 
 typedef struct PXEngine_ PXEngine;
 
@@ -102,7 +105,7 @@ PXEngineTimeData;
 typedef struct PXEngine_
 {
     PXResourceManager* ResourceManager;
-    PXGUISystem GUISystem;
+    PXGUIManager GUISystem;
     PXGraphic Graphic;
     PXWindow* Window; // PXWindow
     PXModLoader ModLoader;
