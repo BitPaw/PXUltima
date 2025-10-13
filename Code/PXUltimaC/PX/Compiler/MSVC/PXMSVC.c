@@ -64,7 +64,7 @@ PXResult PXAPI  PXCompilerInitializeMSVC(PXCompilerMSVC* const pxCompilerMSVC)
     char* adr = pxCompilerMSVC->CompilerPathRoot;
     PXSize writtenBytes = 0;
 
-    const PXActionResult fetchResult = PXBashExecuteA
+    const PXResult fetchResult = PXBashExecuteA
     (
         PXCompilerMSVCWhere,
         PXCompilerMSVCWhereSize,
