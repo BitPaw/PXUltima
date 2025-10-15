@@ -131,7 +131,7 @@ void PXDrawCircleList(PXOpenGL* const pxOpenGL, PXCircle* const pxCircleList, co
     }
 }
 
-PXResult PXAPI  PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph* const pxKnowlegeGraph, PXCodeDocument* const pxDocument, PXTexture* const PXTexture)
+PXResult PXAPI PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph* const pxKnowlegeGraph, PXCodeDocument* const pxDocument, PXTexture* const PXTexture)
 {
     PXSize imageWidth = pxKnowlegeGraph->SizeMaxWidth;
     PXSize imageHeight = pxKnowlegeGraph->SizeMaxHeight;
@@ -228,7 +228,7 @@ PXResult PXAPI  PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph* const pxKnowlegeGra
 
         pxGraphic.ScreenBufferRead(pxGraphic.EventOwner, PXTexture);
 
-        //const PXActionResult pxSaveResult = PXResourceSaveA(PXTexture, "_TEST_DATA_INPUT_\\books.bmp", PXFileFormatBitMap);
+        //const PXResult pxSaveResult = PXResourceSaveA(PXTexture, "_TEST_DATA_INPUT_\\books.bmp", PXFileFormatBitMap);
     }
 
 
