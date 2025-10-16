@@ -2355,7 +2355,7 @@ PXResult PXAPI  PXEngineResourceCreate(PXEngine* const pxEngine, PXResourceCreat
                     PXEngineText,
                     "Texture-Create",
                     "Not possible",
-                    pxResourceCreateInfo->FilePathAdress
+                    pxResourceCreateInfo->FilePath.A
                 );
 #endif
 
@@ -2503,7 +2503,7 @@ PXResult PXAPI  PXEngineResourceCreate(PXEngine* const pxEngine, PXResourceCreat
 
                 pxResourceCreateInfoSub[0].Type = PXResourceTypeTexture2D;
                 pxResourceCreateInfoSub[0].ObjectReference = (void**)&pxSprite->Texture;
-                pxResourceCreateInfoSub[0].FilePathAdress = pxResourceCreateInfo->FilePathAdress;
+                pxResourceCreateInfoSub[0].FilePath = pxResourceCreateInfo->FilePath;
 
                 pxResourceCreateInfoSub[1].Type = PXResourceTypeModel;
                 pxResourceCreateInfoSub[1].ObjectReference = (void**)&pxSprite->Model;
