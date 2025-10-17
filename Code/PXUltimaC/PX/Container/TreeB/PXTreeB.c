@@ -39,9 +39,10 @@ PXResult PXAPI  PXTreeBInsert(PXTreeB* const pxTreeB, const void* const key, con
 
     // Try insert into current node
     {
-        const PXActionResult actionResult = PXTreeBNodeInsert(pxTreeB, &pxTreeBNode, key, value); // Add to node and be done.
+        const PXResult actionResult = PXTreeBNodeInsert(pxTreeB, &pxTreeBNode, key, value); // Add to node and be done.
 
-        PXActionReturnOnSuccess(actionResult);
+        if(PXActionSuccessful == actionResult) 
+            return actionResult;
     }
 
 
