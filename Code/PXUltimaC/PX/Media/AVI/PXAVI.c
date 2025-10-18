@@ -9,9 +9,10 @@ PXResult PXAPI  PXAVILoadFromFile(PXResourceTransphereInfo* const pxResourceLoad
 
     // RIFF
     {
-        const PXActionResult riffResult = PXRIFFLoadFromFile(&riff, pxResourceLoadInfo->FileReference);
+        const PXResult riffResult = PXRIFFLoadFromFile(&riff, pxResourceLoadInfo->FileReference);
 
-        PXActionReturnOnError(riffResult);
+        if(PXActionSuccessful != riffResult)
+            return riffResult;
 
         // Valid RIFF
         {
