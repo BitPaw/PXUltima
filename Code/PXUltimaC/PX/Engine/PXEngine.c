@@ -1051,6 +1051,8 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
         {
             PXNativDrawWindowEventPoll(&pxEngine->GUISystem.NativDraw, pxEngine->Window);
 
+            //PXNativeDrawChildrenReDraw(&pxEngine->GUISystem.NativDraw, pxEngine->Window);
+
             // After we updated, lets do manual updates that might not have been fetched
             //PXNativDrawCursorCollisionCheck(&pxEngine->GUISystem.NativDraw);
 
@@ -1092,6 +1094,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
             PXVector3F32AddXYZ(&pxPlayerMoveInfo.MovementView, pxController->AxisNormalised[2] * pxEngine->CameraCurrent->ViewSpeed, pxController->AxisNormalised[3] * pxEngine->CameraCurrent->ViewSpeed, 0);
 
 
+
             // Up
             if(pxController->ButtonPressedBitList & PXControllerButton1)
             {
@@ -1121,6 +1124,13 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
 
 
                 pxEngine->UpdateUI = 1;
+            }
+
+
+            if(keyboard->Commands & KeyBoardIDLetterO)
+            {
+                PXNativeWindowListUpdate(pxWindow);
+                //PXGUIChildEnumerate(_gui);
             }
 
 
@@ -1620,13 +1630,8 @@ void PXAPI PXEngineCreateAudio(PXEngine* const pxEngine, PXEngineStartInfo* cons
     pxEngine->Audio.DeviceOpen(&pxEngine->Audio, &pxEngine->AudioStandardOutDevice, PXAudioDeviceTypeOutput, 0);
 }
 
-void PXAPI PXEngineCreateGraphic(PXEngine* const pxEngine, PXEngineStartInfo* const pxEngineStartInfo)
+PXResult PXAPI PXEngineCreateGraphic(PXEngine* const pxEngine, PXEngineStartInfo* const pxEngineStartInfo)
 {
-
-
-
-
-
 #if PXLogEnable
     PXLogPrint
     (
@@ -1637,10 +1642,9 @@ void PXAPI PXEngineCreateGraphic(PXEngine* const pxEngine, PXEngineStartInfo* co
     );
 #endif
 
-
     PXResourceCreateInfo pxResourceCreateInfo;
     PXClear(PXResourceCreateInfo, &pxResourceCreateInfo);
-    pxResourceCreateInfo.ObjectReference = &pxEngine->Window;
+    pxResourceCreateInfo.ObjectReference = (PXResourceInfo**)&pxEngine->Window;
     pxResourceCreateInfo.Type = PXResourceTypeGUIElement;
     pxResourceCreateInfo.UIElement.Type = PXUIElementTypeWindow;
     //pxResourceCreateInfo.UIElement.WindowParent = pxEngineStartInfo->WindowRenderParent;
@@ -2274,7 +2278,7 @@ PXResult PXAPI  PXEngineResourceCreate(PXEngine* const pxEngine, PXResourceCreat
             }
 
             PXTexturInfo pxGraphicTexturInfo;
-            pxGraphicTexturInfo.TextureReference = pxTexture;
+            pxGraphicTexturInfo.TextureReference = &pxTexture;
             pxGraphicTexturInfo.Amount = 1u;
             pxGraphicTexturInfo.Type = PXTextureTypeCubeContainer;
             pxGraphicTexturInfo.Action = PXResourceActionCreate;
@@ -2438,7 +2442,7 @@ PXResult PXAPI  PXEngineResourceCreate(PXEngine* const pxEngine, PXResourceCreat
                 PXResourceCreateInfo pxResourceCreateInfo;
                 PXClear(PXResourceCreateInfo, &pxResourceCreateInfo);
                 pxResourceCreateInfo.Type = PXResourceTypeModel;
-                pxResourceCreateInfo.ObjectReference = &pxSkyBox->Model;
+                pxResourceCreateInfo.ObjectReference = (PXResourceInfo**)&pxSkyBox->Model;
                 pxResourceCreateInfo.Model.Form = PXModelFormCube;
 
                 PXEngineResourceCreate(pxEngine, &pxResourceCreateInfo);
@@ -2502,18 +2506,18 @@ PXResult PXAPI  PXEngineResourceCreate(PXEngine* const pxEngine, PXResourceCreat
                 PXSize amount = 2;
 
                 pxResourceCreateInfoSub[0].Type = PXResourceTypeTexture2D;
-                pxResourceCreateInfoSub[0].ObjectReference = (void**)&pxSprite->Texture;
+                pxResourceCreateInfoSub[0].ObjectReference = (PXResourceInfo**)&pxSprite->Texture;
                 pxResourceCreateInfoSub[0].FilePath = pxResourceCreateInfo->FilePath;
 
                 pxResourceCreateInfoSub[1].Type = PXResourceTypeModel;
-                pxResourceCreateInfoSub[1].ObjectReference = (void**)&pxSprite->Model;
+                pxResourceCreateInfoSub[1].ObjectReference = (PXResourceInfo**)&pxSprite->Model;
                 pxResourceCreateInfoSub[1].Model.Form = PXModelFormRectangleTX;
 
                 // Add hibox if needed
                 if(pxSpriteCreateEventData->HitboxBehaviour > 0)
                 {
                     pxResourceCreateInfoSub[2].Type = PXResourceTypeHitBox;
-                    pxResourceCreateInfoSub[2].ObjectReference = (void**)&pxSprite->HitBox;
+                    pxResourceCreateInfoSub[2].ObjectReference = (PXResourceInfo**)&pxSprite->HitBox;
                     pxResourceCreateInfoSub[2].HitBox.Behaviour = 0;
                     pxResourceCreateInfoSub[2].HitBox.Model = pxSprite->Model;
 
