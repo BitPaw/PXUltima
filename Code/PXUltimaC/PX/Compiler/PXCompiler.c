@@ -248,11 +248,11 @@ PXSize PXAPI PXCompilerSymbolEntryMergeCurrentWithNext(PXCompiler* const pxCompi
         const void* emptyAdress = 0;
         const PXTypeEntry pxFileDataElementType[] =
         {
-         &symbolID, PXTypeInt08U,
-         &mergCopy.Coloum, PXTypeInt32U,
-         &mergCopy.Line, PXTypeInt32U,
-         &emptyValue, PXTypeInt32U,
-         &emptyAdress, PXTypeAdress
+            &symbolID, PXTypeInt08U,
+            &mergCopy.Coloum, PXTypeInt32U,
+            &mergCopy.Line, PXTypeInt32U,
+            &emptyValue, PXTypeInt32U,
+            &emptyAdress, PXTypeAdress
         };
 
         //const PXSize written = PXFileWriteB(pxCompiler->ReadInfo.FileCache, pxCompilerSymbolEntry, sizeof(PXCompilerSymbolEntry));
