@@ -13,9 +13,9 @@ typedef struct PXBuffer_
 }
 PXBuffer;
 
-PXPublic PXResult PXAPI PXBufferAllocate(PXBuffer* const pxBuffer, const PXSize size);
-PXPublic PXResult PXAPI PXBufferResize(PXBuffer* const pxBuffer, const PXSize size);
-PXPublic PXResult PXAPI PXBufferRelese(PXBuffer* const pxBuffer);
-PXPublic PXResult PXAPI PXBufferSet(PXBuffer* const pxBuffer, void* data, const PXSize size);
+PXPublic PXResult PXAPI PXBufferAllocate(PXBuffer PXREF pxBuffer, const PXSize size);
+PXPublic PXResult PXAPI PXBufferResize(PXBuffer PXREF pxBuffer, const PXSize size);
+PXPublic PXResult PXAPI PXBufferRelese(PXBuffer PXREF pxBuffer);
+PXPublic PXResult PXAPI PXBufferSet(PXBuffer PXREF pxBuffer, void* data, const PXSize size);
 
 #endif
