@@ -4,14 +4,14 @@
 #include <PX/Media/PXText.h>
 #include <PX/OS/Console/PXConsole.h>
 
-void PXAPI PXMouseInputReset(PXMouse* const mouse)
+void PXAPI PXMouseInputReset(PXMouse PXREF mouse)
 {
     //PXMemoryClear(mouse, sizeof(PXMouse));
     mouse->Delta[0] = 0;
     mouse->Delta[1] = 0;
 }
 
-void PXAPI PXMouseInputPrint(const PXMouse* const mouse)
+void PXAPI PXMouseInputPrint(const PXMouse PXREF mouse)
 {
     const PXSize buttonTextSize = 2 + 4 * 8+1;
     char buttons[34+1];
@@ -37,7 +37,7 @@ void PXAPI PXMouseInputPrint(const PXMouse* const mouse)
     );
 }
 
-void PXAPI PXMouseInputFetch(PXMouse* const mouse)
+void PXAPI PXMouseInputFetch(PXMouse PXREF mouse)
 {
 #if OSUnix
 #elif OSWindows
@@ -57,7 +57,7 @@ void PXAPI PXMouseInputFetch(PXMouse* const mouse)
         64,
         GMMP_USE_DISPLAY_POINTS
     );
-    const PXActionResult res = PXErrorCurrent(-1 != resID);
+    const PXResult res = PXErrorCurrent(-1 != resID);
 
 
 #endif
