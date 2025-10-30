@@ -151,7 +151,7 @@ typedef struct PXCompilerReadInfo_
 }
 PXCompilerReadInfo;
 
-typedef void (PXAPI* PXCompilerWriteFunction)(PXCompiler* const pxCompiler);
+typedef void (PXAPI* PXCompilerWriteFunction)(PXCompiler PXREF pxCompiler);
 
 typedef struct PXCompilerWriteInfo_
 {
@@ -214,54 +214,54 @@ typedef struct PXCompiler_
 PXCompiler;
 
 
-PXPublic PXResult PXAPI PXCompilerLexicalAnalysis(PXCompiler* const pxCompiler);
+PXPublic PXResult PXAPI PXCompilerLexicalAnalysis(PXCompiler PXREF pxCompiler);
 
 
 PXPublic const char* PXAPI PXCompilerCompilerSymbolLexerToString(const PXCompilerSymbolLexer pxCompilerSymbolLexer);
 
-PXPrivate void PXAPI PXCompilerSymbolEntryAdd(PXCompiler* const pxCompiler, const PXCompilerSymbolEntry* const compilerSymbolEntry);
+PXPrivate void PXAPI PXCompilerSymbolEntryAdd(PXCompiler PXREF pxCompiler, const PXCompilerSymbolEntry PXREF compilerSymbolEntry);
 
 // Take current Node and merge it with the next one.
-PXPublic PXSize PXAPI PXCompilerSymbolEntryMergeCurrentWithNext(PXCompiler* const pxCompiler, PXCompilerSymbolEntry* const compilerSymbolEntry);
+PXPublic PXSize PXAPI PXCompilerSymbolEntryMergeCurrentWithNext(PXCompiler PXREF pxCompiler, PXCompilerSymbolEntry PXREF compilerSymbolEntry);
 
 // Merge all symbols togteher until end of line.
 // This is used for strings that can contain unexpected or illegal symbols
-PXPublic PXSize PXAPI PXCompilerSymbolEntryMergeCurrentUntilNextLine(PXCompiler* const pxCompiler, PXCompilerSymbolEntry* const compilerSymbolEntry);
+PXPublic PXSize PXAPI PXCompilerSymbolEntryMergeCurrentUntilNextLine(PXCompiler PXREF pxCompiler, PXCompilerSymbolEntry PXREF compilerSymbolEntry);
 
 // rewind one symbol back
-PXPublic PXSize PXAPI PXCompilerSymbolRewind(PXCompiler* const pxCompiler, const PXSize amount);
+PXPublic PXSize PXAPI PXCompilerSymbolRewind(PXCompiler PXREF pxCompiler, const PXSize amount);
 
 // Fetch next symbol without actually changing the file-cursor-position
-PXPublic PXSize PXAPI PXCompilerSymbolEntryPeek(PXCompiler* const pxCompiler);
+PXPublic PXSize PXAPI PXCompilerSymbolEntryPeek(PXCompiler PXREF pxCompiler);
 
 // Peek next symbol but also ensure it is the correct type
-PXPublic PXBool PXAPI PXCompilerSymbolEntryPeekEnsure(PXCompiler* const pxCompiler, const PXCompilerSymbolLexer pxCompilerSymbolLexer);
+PXPublic PXBool PXAPI PXCompilerSymbolEntryPeekEnsure(PXCompiler PXREF pxCompiler, const PXCompilerSymbolLexer pxCompilerSymbolLexer);
 
 // Same as PXCompilerSymbolEntryPeekEnsure() but not as harsh
-PXPublic PXBool PXAPI PXCompilerSymbolEntryPeekCheck(PXCompiler* const pxCompiler, const PXCompilerSymbolLexer pxCompilerSymbolLexer);
+PXPublic PXBool PXAPI PXCompilerSymbolEntryPeekCheck(PXCompiler PXREF pxCompiler, const PXCompilerSymbolLexer pxCompilerSymbolLexer);
 
 // Exact behaviour as PXCompilerSymbolEntryPeekCheck but allows a list of possible values
-PXPublic PXBool PXAPI PXCompilerSymbolEntryEnsureCheckList(PXCompiler* const pxCompiler, const PXCompilerSymbolLexer* const pxCompilerSymbolLexerList, const PXSize amount);
+PXPublic PXBool PXAPI PXCompilerSymbolEntryEnsureCheckList(PXCompiler PXREF pxCompiler, const PXCompilerSymbolLexer PXREF pxCompilerSymbolLexerList, const PXSize amount);
 
 // Fetch next symbol and consume symbol
-PXPublic PXSize PXAPI PXCompilerSymbolEntryExtract(PXCompiler* const pxCompiler);
+PXPublic PXSize PXAPI PXCompilerSymbolEntryExtract(PXCompiler PXREF pxCompiler);
 
 // Without fetching the symbol, consume it.
-PXPublic PXSize PXAPI PXCompilerSymbolEntryForward(PXCompiler* const pxCompiler);
+PXPublic PXSize PXAPI PXCompilerSymbolEntryForward(PXCompiler PXREF pxCompiler);
 
-PXPrivate PXCompilerSymbolLexer PXAPI PXCompilerTryAnalyseType(PXFile* const inputStream, const char* const text, const PXSize textSize, PXCompilerSymbolEntry* const compilerSymbolEntry);
+PXPrivate PXCompilerSymbolLexer PXAPI PXCompilerTryAnalyseType(PXFile PXREF inputStream, const char PXREF text, const PXSize textSize, PXCompilerSymbolEntry PXREF compilerSymbolEntry);
 
 
-PXPublic PXBool PXAPI PXCompilerParseStringUntilNewLine(PXCompiler* const pxCompiler, PXText* const pxText);
-PXPublic PXBool PXAPI PXCompilerParseStringUntilNewLineA(PXCompiler* const pxCompiler, char* const text, const PXSize textMaxSize, PXSize* const textSize);
+PXPublic PXBool PXAPI PXCompilerParseStringUntilNewLine(PXCompiler PXREF pxCompiler, PXText PXREF pxText);
+PXPublic PXBool PXAPI PXCompilerParseStringUntilNewLineA(PXCompiler PXREF pxCompiler, char PXREF text, const PXSize textMaxSize, PXSize PXREF textSize);
 
 // Expect a generic token and compare it against provided text
-PXPublic PXBool PXAPI PXCompilerEnsureAndCompare(PXCompiler* const pxCompiler, const char* const text, const PXSize textSize);
+PXPublic PXBool PXAPI PXCompilerEnsureAndCompare(PXCompiler PXREF pxCompiler, const char PXREF text, const PXSize textSize);
 
 PXPublic PXI8U PXAPI PXCompilerEnsureTextListAndCompare
 (
-    PXCompiler* const pxCompiler, 
-    const char** const listTextData,
+    PXCompiler PXREF pxCompiler, 
+    const char* PXREF listTextData,
     const PXI8U* listTextSize,
     const PXI8U amount
 );
@@ -269,36 +269,36 @@ PXPublic PXI8U PXAPI PXCompilerEnsureTextListAndCompare
 
 PXPublic PXBool PXAPI PXCompilerEnsurePropertyText
 (
-    PXCompiler* const pxCompiler,
-    const char* const propertyKey,
+    PXCompiler PXREF pxCompiler,
+    const char PXREF propertyKey,
     const PXSize propertyKeySize,
-    char** const propertyValue,
+    char* PXREF propertyValue,
     PXSize* propertyValueSize
 );
 
 
 
-PXPublic PXBool PXAPI PXCompilerParseI32V(PXCompiler* const pxCompiler, PXI32U* const values, const PXSize valuesExpectedSize);
+PXPublic PXBool PXAPI PXCompilerParseI32V(PXCompiler PXREF pxCompiler, PXI32U PXREF values, const PXSize valuesExpectedSize);
 
 
-PXPublic PXBool PXAPI PXCompilerParseF16V(PXCompiler* const pxCompiler, PXF16* const values, const PXSize valuesMaxSize, PXSize* const valuesSize);
-PXPublic PXBool PXAPI PXCompilerParseF32V(PXCompiler* const pxCompiler, PXF32* const values, const PXSize valuesMaxSize, PXSize* const valuesSize);
+PXPublic PXBool PXAPI PXCompilerParseF16V(PXCompiler PXREF pxCompiler, PXF16 PXREF values, const PXSize valuesMaxSize, PXSize PXREF valuesSize);
+PXPublic PXBool PXAPI PXCompilerParseF32V(PXCompiler PXREF pxCompiler, PXF32 PXREF values, const PXSize valuesMaxSize, PXSize PXREF valuesSize);
 
-PXPublic PXBool PXAPI PXCompilerParseCSVF32(PXCompiler* const pxCompiler, PXF32* const values, const PXSize valuesSize);
-PXPublic PXBool PXAPI PXCompilerParseCSVF64(PXCompiler* const pxCompiler, PXF64* const values, const PXSize valuesSize);
+PXPublic PXBool PXAPI PXCompilerParseCSVF32(PXCompiler PXREF pxCompiler, PXF32 PXREF values, const PXSize valuesSize);
+PXPublic PXBool PXAPI PXCompilerParseCSVF64(PXCompiler PXREF pxCompiler, PXF64 PXREF values, const PXSize valuesSize);
 
 
 #define PXCompilerParseTextDetectUntilNextLine (1<<0)
 
-PXPublic PXSize PXAPI PXCompilerParseText(PXCompiler* const pxCompiler, char* const text, const PXSize textLengthMax, const PXI8U flags);
+PXPublic PXSize PXAPI PXCompilerParseText(PXCompiler PXREF pxCompiler, char PXREF text, const PXSize textLengthMax, const PXI8U flags);
 
 
 
 // Write a ASL into a given format. Uses a default way to write and can be overloaded
-PXPublic void PXAPI PXCompilerWrite(PXCompiler* const pxCompiler);
-PXPublic void PXAPI PXCompilerWriteNode(PXCompiler* const pxCompiler);
-PXPublic void PXAPI PXCompilerWriteIncluded(PXCompiler* const pxCompiler);
-PXPublic void PXAPI PXCompilerWriteComment(PXCompiler* const pxCompiler);
-PXPublic void PXAPI PXCompilerWriteParameterList(PXCompiler* const pxCompiler);
+PXPublic void PXAPI PXCompilerWrite(PXCompiler PXREF pxCompiler);
+PXPublic void PXAPI PXCompilerWriteNode(PXCompiler PXREF pxCompiler);
+PXPublic void PXAPI PXCompilerWriteIncluded(PXCompiler PXREF pxCompiler);
+PXPublic void PXAPI PXCompilerWriteComment(PXCompiler PXREF pxCompiler);
+PXPublic void PXAPI PXCompilerWriteParameterList(PXCompiler PXREF pxCompiler);
 
 #endif
