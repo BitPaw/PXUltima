@@ -11,7 +11,7 @@
 
 #pragma comment(lib, "setupapi.lib")
 
-PXResult PXAPI PXDeviceNameResolveA(const char* devicePath, const PXSize textSize, char* const textResol, PXSize* const textSizeResol)
+PXResult PXAPI PXDeviceNameResolveA(const char* devicePath, const PXSize textSize, char PXREF textResol, PXSize PXREF textSizeResol)
 {
     *textSizeResol = PXTextCopyA("*No device name*", 17, textResol, *textSizeResol);
 
@@ -60,7 +60,7 @@ PXResult PXAPI PXDeviceNameResolveA(const char* devicePath, const PXSize textSiz
     return PXActionInvalid;
 }
 
-void PXAPI PXDeviceFill(PXDeviceInput* const pxDeviceInput, const HANDLE deviceHandle)
+void PXAPI PXDeviceFill(PXDeviceInput PXREF pxDeviceInput, const HANDLE deviceHandle)
 {
     RID_DEVICE_INFO deviceInfo;
     deviceInfo.cbSize = sizeof(RID_DEVICE_INFO);
@@ -77,7 +77,7 @@ void PXAPI PXDeviceFill(PXDeviceInput* const pxDeviceInput, const HANDLE deviceH
     {
         case RIM_TYPEKEYBOARD:
         {
-            RID_DEVICE_INFO_KEYBOARD* const deviceInfoKeyBoard = &deviceInfo.keyboard;
+            RID_DEVICE_INFO_KEYBOARD PXREF deviceInfoKeyBoard = &deviceInfo.keyboard;
             pxDeviceInput->Type = PXDeviceInputTypeKeyBoard;
 
             pxDeviceInput->KeyBoard.dwType = deviceInfoKeyBoard->dwType;
@@ -91,7 +91,7 @@ void PXAPI PXDeviceFill(PXDeviceInput* const pxDeviceInput, const HANDLE deviceH
         }
         case RIM_TYPEMOUSE:
         {
-            RID_DEVICE_INFO_MOUSE* const deviceInfoMouse = &deviceInfo.mouse;
+            RID_DEVICE_INFO_MOUSE PXREF deviceInfoMouse = &deviceInfo.mouse;
             pxDeviceInput->Type = PXDeviceInputTypeMouse;
 
             pxDeviceInput->Mouse.dwId = deviceInfoMouse->dwId;
@@ -103,7 +103,7 @@ void PXAPI PXDeviceFill(PXDeviceInput* const pxDeviceInput, const HANDLE deviceH
         }
         case RIM_TYPEHID:
         {
-            RID_DEVICE_INFO_HID* const deviceInfoHID = &deviceInfo.hid;
+            RID_DEVICE_INFO_HID PXREF deviceInfoHID = &deviceInfo.hid;
             pxDeviceInput->Type = PXDeviceInputTypeGeneric;
 
             pxDeviceInput->Generic.dwVendorId = deviceInfoHID->dwVendorId;
@@ -121,7 +121,7 @@ void PXAPI PXDeviceFill(PXDeviceInput* const pxDeviceInput, const HANDLE deviceH
     }
 }
 
-PXResult PXAPI PXDeviceInputUpdate(PXDeviceInputUpdateInfo* const pxDeviceInputUpdateInfo)
+PXResult PXAPI PXDeviceInputUpdate(PXDeviceInputUpdateInfo PXREF pxDeviceInputUpdateInfo)
 {
 
 
@@ -164,7 +164,7 @@ PXResult PXAPI PXDeviceInputUpdate(PXDeviceInputUpdateInfo* const pxDeviceInputU
     return PXActionSuccessful;
 }
 
-PXResult PXAPI PXDeviceInputFetch(PXDeviceInput** const pxDeviceInput, PXSize* const amount)
+PXResult PXAPI PXDeviceInputFetch(PXDeviceInput* PXREF pxDeviceInput, PXSize PXREF amount)
 {
     if(!amount)
     {
@@ -212,8 +212,8 @@ PXResult PXAPI PXDeviceInputFetch(PXDeviceInput** const pxDeviceInput, PXSize* c
 
     for(UINT i = 0; i < numDevices; ++i) 
     {
-        PXDeviceInput* const pxDeviceInput = &pxDeviceInputList[i];
-        RAWINPUTDEVICELIST* const rawINPUTDEVICELIST = &deviceList[i];
+        PXDeviceInput PXREF pxDeviceInput = &pxDeviceInputList[i];
+        RAWINPUTDEVICELIST PXREF rawINPUTDEVICELIST = &deviceList[i];
 
         PXDeviceFill(pxDeviceInput, rawINPUTDEVICELIST->hDevice);
       

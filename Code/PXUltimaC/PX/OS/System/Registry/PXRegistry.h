@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXRegistryIncluded
 #define PXRegistryIncluded
 
@@ -34,19 +36,19 @@ typedef struct PXRegistry_
 }
 PXRegistry;
 
-PXPublic PXResult PXAPI PXRegistryInitialize(PXRegistry* const registry);
-PXPublic PXResult PXAPI PXRegistryRelease(PXRegistry* const registry);
+PXPublic PXResult PXAPI PXRegistryInitialize(PXRegistry PXREF registry);
+PXPublic PXResult PXAPI PXRegistryRelease(PXRegistry PXREF registry);
 
-PXPublic PXResult PXAPI PXRegistryConnectSpace(PXRegistry* const registry, const PXRegistrySpace registrySpace);
-PXPublic PXResult PXAPI PXRegistryConnectRemote(PXRegistry* const registry, const PXText* const computerName, const PXRegistrySpace registrySpace);
+PXPublic PXResult PXAPI PXRegistryConnectSpace(PXRegistry PXREF registry, const PXRegistrySpace registrySpace);
+PXPublic PXResult PXAPI PXRegistryConnectRemote(PXRegistry PXREF registry, const PXText PXREF computerName, const PXRegistrySpace registrySpace);
 
-PXPublic PXResult PXAPI PXRegistryClose(PXRegistry* const registry);
+PXPublic PXResult PXAPI PXRegistryClose(PXRegistry PXREF registry);
 
-PXPublic PXResult PXAPI PXRegistryKeyListAll(PXRegistry* const registry);
+PXPublic PXResult PXAPI PXRegistryKeyListAll(PXRegistry PXREF registry);
 
-PXPublic PXResult PXAPI PXRegistryKeyCreate(PXRegistry* const registry, const PXText* const pxTextKeyName);
-PXPublic PXResult PXAPI PXRegistryKeyLoad(PXRegistry* const registry, const PXText* const pxTextKeyName, const PXText* const pxTextFile);
-PXPublic PXResult PXAPI PXRegistryKeySave(PXRegistry* const registry, const PXText* const pxTextKeyName);
-PXPublic PXResult PXAPI PXRegistryKeyDelete(PXRegistry* const registry, const PXText* const pxTextKeyName);
+PXPublic PXResult PXAPI PXRegistryKeyCreate(PXRegistry PXREF registry, const PXText PXREF pxTextKeyName);
+PXPublic PXResult PXAPI PXRegistryKeyLoad(PXRegistry PXREF registry, const PXText PXREF pxTextKeyName, const PXText PXREF pxTextFile);
+PXPublic PXResult PXAPI PXRegistryKeySave(PXRegistry PXREF registry, const PXText PXREF pxTextKeyName);
+PXPublic PXResult PXAPI PXRegistryKeyDelete(PXRegistry PXREF registry, const PXText PXREF pxTextKeyName);
 
 #endif

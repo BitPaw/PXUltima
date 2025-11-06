@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXDialogIncluded
 #define PXDialogIncluded
 
@@ -21,14 +23,14 @@ typedef struct PXDialogSystem_
 }
 PXDialogSystem;
 
-PXPublic PXResult PXAPI PXDialogSystemInitialize(PXDialogSystem* const pxDialogSystem);
-PXPublic PXResult PXAPI PXDialogSystemRelease(PXDialogSystem* const pxDialogSystem);
+PXPublic PXResult PXAPI PXDialogSystemInitialize(PXDialogSystem PXREF pxDialogSystem);
+PXPublic PXResult PXAPI PXDialogSystemRelease(PXDialogSystem PXREF pxDialogSystem);
 
-PXPublic PXResult PXAPI PXDialogFileOpen(PXDialogSystem* const pxDialogSystem, PXText* const filePath);
-PXPublic PXResult PXAPI PXDialogFileSave(PXDialogSystem* const pxDialogSystem, PXText* const filePath);
+PXPublic PXResult PXAPI PXDialogFileOpen(PXDialogSystem PXREF pxDialogSystem, PXText PXREF filePath);
+PXPublic PXResult PXAPI PXDialogFileSave(PXDialogSystem PXREF pxDialogSystem, PXText PXREF filePath);
 
-PXPublic PXBool PXAPI PXDialogColorSelect(PXDialogSystem* const pxDialogSystem, PXColorRGBI8* const color);
-PXPublic PXBool PXAPI PXDialogFontSelect(PXDialogSystem* const pxDialogSystem);
-PXPublic PXBool PXAPI PXDialogPrint(PXDialogSystem* const pxDialogSystem);
+PXPublic PXBool PXAPI PXDialogColorSelect(PXDialogSystem PXREF pxDialogSystem, PXColorRGBI8 PXREF color);
+PXPublic PXBool PXAPI PXDialogFontSelect(PXDialogSystem PXREF pxDialogSystem);
+PXPublic PXBool PXAPI PXDialogPrint(PXDialogSystem PXREF pxDialogSystem);
 
 #endif

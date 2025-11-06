@@ -29,7 +29,7 @@ void PXAPI PXMathIntrinsicInit()
     PXProcessorFetchInfo(&pxProcessor);  
 }
 
-PXBool PXAPI PXMathAdressInRange(const void* const dataAdress, const PXSize dataAdressSize, const void* target)
+PXBool PXAPI PXMathAdressInRange(const void PXREF dataAdress, const PXSize dataAdressSize, const void* target)
 {
     const PXSize adressMin = (PXSize)dataAdress;
     const PXSize adressMax = adressMin + dataAdressSize;
@@ -39,12 +39,12 @@ PXBool PXAPI PXMathAdressInRange(const void* const dataAdress, const PXSize data
     return isInTage;
 }
 
-void PXAPI PXMathMatrix4x4TransposeS(PXMatrix4x4F* const pxMatrix4x4)
+void PXAPI PXMathMatrix4x4TransposeS(PXMatrix4x4F PXREF pxMatrix4x4)
 {
    
 }
 
-void PXAPI PXMathMatrix4x4TransposeX(PXMatrix4x4F* const pxMatrix4x4)
+void PXAPI PXMathMatrix4x4TransposeX(PXMatrix4x4F PXREF pxMatrix4x4)
 {
     // _mm_loadu_ps
     // _mm_storeu_ps
@@ -140,7 +140,7 @@ PXF32 PXAPI PXMathCopysignf(const PXF32 a, const PXF32 b)
     return copysignf(a, b);
 }
 
-void PXAPI PXMathF16ToF32(PXF32* const listOut, const PXF16* const listInput, const PXSize inputAmount)
+void PXAPI PXMathF16ToF32(PXF32 PXREF listOut, const PXF16 PXREF listInput, const PXSize inputAmount)
 {
     PXWorkSetCounter pxWorkSetCounter;
     pxWorkSetCounter.WorkToDo = inputAmount;
@@ -175,7 +175,7 @@ void PXAPI PXMathF16ToF32(PXF32* const listOut, const PXF16* const listInput, co
     // ...
 }
 
-void PXAPI PXMathF16ToF32X4(PXF32* const listOut, const PXF16* const listInput, const PXSize inputAmount)
+void PXAPI PXMathF16ToF32X4(PXF32 PXREF listOut, const PXF16 PXREF listInput, const PXSize inputAmount)
 {
     __m128i simdInput;
     __m128 simdOutput;
@@ -189,8 +189,8 @@ void PXAPI PXMathF16ToF32X4(PXF32* const listOut, const PXF16* const listInput, 
     // Full-Batches
     for(PXSize i = 0; i < pxWorkSetCounter.AmountBatchFull + 1; ++i)
     {
-        const PXF16* const extractPoint = &listInput[i * pxWorkSetCounter.BatchSize];
-        PXF32* const insertPoint = &listOut[i * pxWorkSetCounter.BatchSize];
+        const PXF16 PXREF extractPoint = &listInput[i * pxWorkSetCounter.BatchSize];
+        PXF32 PXREF insertPoint = &listOut[i * pxWorkSetCounter.BatchSize];
 
         int workSet = PXWorkSetCounterPull(&pxWorkSetCounter, i);
 
@@ -202,12 +202,12 @@ void PXAPI PXMathF16ToF32X4(PXF32* const listOut, const PXF16* const listInput, 
     }
 }
 
-void PXAPI PXMathF16ToF32X8(PXF32* const listOut, const PXF16* const listInput, const PXSize inputAmount)
+void PXAPI PXMathF16ToF32X8(PXF32 PXREF listOut, const PXF16 PXREF listInput, const PXSize inputAmount)
 {
   
 }
 
-void PXAPI PXMathF16ToF32X16(PXF32* const listOut, const PXF16* const listInput, const PXSize inputAmount)
+void PXAPI PXMathF16ToF32X16(PXF32 PXREF listOut, const PXF16 PXREF listInput, const PXSize inputAmount)
 {
     __m256i simdInput;
     __m512 simdOutput;
@@ -221,8 +221,8 @@ void PXAPI PXMathF16ToF32X16(PXF32* const listOut, const PXF16* const listInput,
     // Full-Batches
     for(PXSize i = 0; i < pxWorkSetCounter.AmountBatchFull + 1; ++i)
     {
-        const PXF16* const extractPoint = &listInput[i * pxWorkSetCounter.BatchSize];
-        PXF32* const insertPoint = &listOut[i * pxWorkSetCounter.BatchSize];
+        const PXF16 PXREF extractPoint = &listInput[i * pxWorkSetCounter.BatchSize];
+        PXF32 PXREF insertPoint = &listOut[i * pxWorkSetCounter.BatchSize];
 
         int workSet = PXWorkSetCounterPull(&pxWorkSetCounter, i);
 
@@ -234,7 +234,7 @@ void PXAPI PXMathF16ToF32X16(PXF32* const listOut, const PXF16* const listInput,
     }
 }
 
-void PXAPI PXMathF32ToF16(PXF16* const listOut, const PXF32* const listInput, const PXSize inputAmount)
+void PXAPI PXMathF32ToF16(PXF16 PXREF listOut, const PXF32 PXREF listInput, const PXSize inputAmount)
 {
     PXWorkSetCounter pxWorkSetCounter;
     pxWorkSetCounter.WorkToDo = inputAmount;
@@ -270,7 +270,7 @@ void PXAPI PXMathF32ToF16(PXF16* const listOut, const PXF32* const listInput, co
     // ...
 }
 
-void PXAPI PXMathF32ToF16X4(PXF16* const listOut, const PXF32* const listInput, const PXSize inputAmount)
+void PXAPI PXMathF32ToF16X4(PXF16 PXREF listOut, const PXF32 PXREF listInput, const PXSize inputAmount)
 {
     __m128 simdInput;
     __m128i simdOutput;
@@ -283,8 +283,8 @@ void PXAPI PXMathF32ToF16X4(PXF16* const listOut, const PXF32* const listInput, 
 
     for(PXSize i = 0; i < pxWorkSetCounter.AmountBatchFull + 1; ++i)
     {
-        const PXF32* const extractPoint = &listInput[i * pxWorkSetCounter.BatchSize];
-        PXF16* const insertPoint = &listOut[i * pxWorkSetCounter.BatchSize];
+        const PXF32 PXREF extractPoint = &listInput[i * pxWorkSetCounter.BatchSize];
+        PXF16 PXREF insertPoint = &listOut[i * pxWorkSetCounter.BatchSize];
 
         int workSet = PXWorkSetCounterPull(&pxWorkSetCounter, i);
 
@@ -296,12 +296,12 @@ void PXAPI PXMathF32ToF16X4(PXF16* const listOut, const PXF32* const listInput, 
     }
 }
 
-void PXAPI PXMathF32ToF16X8(PXF16* const listOut, const PXF32* const listInput, const PXSize inputAmount)
+void PXAPI PXMathF32ToF16X8(PXF16 PXREF listOut, const PXF32 PXREF listInput, const PXSize inputAmount)
 {
 
 }
 
-void PXAPI PXMathF32ToF16X16(PXF16* const listOut, const PXF32* const listInput, const PXSize inputAmount)
+void PXAPI PXMathF32ToF16X16(PXF16 PXREF listOut, const PXF32 PXREF listInput, const PXSize inputAmount)
 {
     __m512 simdInput;
     __m256i simdOutput;
@@ -314,8 +314,8 @@ void PXAPI PXMathF32ToF16X16(PXF16* const listOut, const PXF32* const listInput,
 
     for(PXSize i = 0; i < pxWorkSetCounter.AmountBatchFull + 1; ++i)
     {
-        const PXF32* const extractPoint = &listInput[i * pxWorkSetCounter.BatchSize];
-        PXF16* const insertPoint = &listOut[i * pxWorkSetCounter.BatchSize];
+        const PXF32 PXREF extractPoint = &listInput[i * pxWorkSetCounter.BatchSize];
+        PXF16 PXREF insertPoint = &listOut[i * pxWorkSetCounter.BatchSize];
 
         int workSet = PXWorkSetCounterPull(&pxWorkSetCounter, i);
 
@@ -447,7 +447,7 @@ PXF64 PXAPI PXMathRootSquareF64(const PXF64  value)
 #endif
 }
 
-void PXAPI PXMathRootSquareF32V(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
+void PXAPI PXMathRootSquareF32V(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount)
 {
     PXWorkSetCounter pxWorkSetCounter;
     pxWorkSetCounter.WorkToDo = amount;
@@ -473,7 +473,7 @@ void PXAPI PXMathRootSquareF32V(PXF32* const outputListY, const PXF32* const inp
     }
 }
 
-void PXAPI PXMathRootSquareF32VX4(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
+void PXAPI PXMathRootSquareF32VX4(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount)
 {
     PXWorkSetCounter pxWorkSetCounter;
     pxWorkSetCounter.WorkToDo = amount;
@@ -488,8 +488,8 @@ void PXAPI PXMathRootSquareF32VX4(PXF32* const outputListY, const PXF32* const i
     // Full-Batches
     for(PXSize i = 0; i < pxWorkSetCounter.AmountBatchFull + 1; ++i)
     {
-        const PXF32* const extractPoint = &inputListX[i * pxWorkSetCounter.BatchSize];
-        PXF32* const insertPoint = &outputListY[i * pxWorkSetCounter.BatchSize];
+        const PXF32 PXREF extractPoint = &inputListX[i * pxWorkSetCounter.BatchSize];
+        PXF32 PXREF insertPoint = &outputListY[i * pxWorkSetCounter.BatchSize];
 
         int workSet = PXWorkSetCounterPull(&pxWorkSetCounter, i);
 
@@ -501,7 +501,7 @@ void PXAPI PXMathRootSquareF32VX4(PXF32* const outputListY, const PXF32* const i
     }
 }
 
-void PXAPI PXMathRootSquareF32VX8(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
+void PXAPI PXMathRootSquareF32VX8(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount)
 {
     PXWorkSetCounter pxWorkSetCounter;
     pxWorkSetCounter.WorkToDo = amount;
@@ -516,8 +516,8 @@ void PXAPI PXMathRootSquareF32VX8(PXF32* const outputListY, const PXF32* const i
     // Full-Batches
     for(PXSize i = 0; i < pxWorkSetCounter.AmountBatchFull + 1; ++i)
     {
-        const PXF32* const extractPoint = &inputListX[i * pxWorkSetCounter.BatchSize];
-        PXF32* const insertPoint = &outputListY[i * pxWorkSetCounter.BatchSize];
+        const PXF32 PXREF extractPoint = &inputListX[i * pxWorkSetCounter.BatchSize];
+        PXF32 PXREF insertPoint = &outputListY[i * pxWorkSetCounter.BatchSize];
 
         int workSet = PXWorkSetCounterPull(&pxWorkSetCounter, i);
 
@@ -531,7 +531,7 @@ void PXAPI PXMathRootSquareF32VX8(PXF32* const outputListY, const PXF32* const i
     return; // DONE
 }
 
-void PXAPI PXMathRootSquareF32VX16(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
+void PXAPI PXMathRootSquareF32VX16(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount)
 {
     PXWorkSetCounter pxWorkSetCounter;
     pxWorkSetCounter.WorkToDo = amount;
@@ -546,8 +546,8 @@ void PXAPI PXMathRootSquareF32VX16(PXF32* const outputListY, const PXF32* const 
     // Full-Batches
     for(PXSize i = 0; i < pxWorkSetCounter.AmountBatchFull + 1; ++i)
     {
-        const PXF32* const extractPoint = &inputListX[i * pxWorkSetCounter.BatchSize];
-        PXF32* const insertPoint = &outputListY[i * pxWorkSetCounter.BatchSize];
+        const PXF32 PXREF extractPoint = &inputListX[i * pxWorkSetCounter.BatchSize];
+        PXF32 PXREF insertPoint = &outputListY[i * pxWorkSetCounter.BatchSize];
 
         int workSet = PXWorkSetCounterPull(&pxWorkSetCounter, i);
 
@@ -559,7 +559,7 @@ void PXAPI PXMathRootSquareF32VX16(PXF32* const outputListY, const PXF32* const 
     }
 }
 
-void PXAPI PXMathRootSquareInverseF16VX8(PXF16* const outputListY, const PXF16* const inputListX, const PXSize amount)
+void PXAPI PXMathRootSquareInverseF16VX8(PXF16 PXREF outputListY, const PXF16 PXREF inputListX, const PXSize amount)
 {
     __m128h dataInput;
     __m128h dataOut;
@@ -571,7 +571,7 @@ void PXAPI PXMathRootSquareInverseF16VX8(PXF16* const outputListY, const PXF16* 
     PXMemoryCopyF16V(outputListY, dataOut.m128i_u16, 8);
 }
 
-void PXAPI PXMathRootSquareInverseF32VX4(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
+void PXAPI PXMathRootSquareInverseF32VX4(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount)
 {
     __m128 dataInput;
     __m128 dataOut;
@@ -583,7 +583,7 @@ void PXAPI PXMathRootSquareInverseF32VX4(PXF32* const outputListY, const PXF32* 
     PXMemoryCopyF32V(outputListY, dataOut.m128_u16, 4);
 }
 
-void PXAPI PXMathRootSquareInverseF64VX2(PXF64* const outputListY, const PXF64* const inputListX, const PXSize amount)
+void PXAPI PXMathRootSquareInverseF64VX2(PXF64 PXREF outputListY, const PXF64 PXREF inputListX, const PXSize amount)
 {
     __m128d dataInput;
     __m128d dataOut;
@@ -612,7 +612,7 @@ double PXAPI PXMathRootCubic(const double x)
 #endif  
 }
 
-void PXAPI PXMathRootCubeInverseF16VX8(PXF16* const outputListY, const PXF16* const inputListX, const PXSize amount)
+void PXAPI PXMathRootCubeInverseF16VX8(PXF16 PXREF outputListY, const PXF16 PXREF inputListX, const PXSize amount)
 {
     __m128h dataInput;
     __m128h dataOut;
@@ -624,7 +624,7 @@ void PXAPI PXMathRootCubeInverseF16VX8(PXF16* const outputListY, const PXF16* co
     PXMemoryCopyF16V(outputListY, dataInput.m128i_u16, 8);
 }
 
-void PXAPI PXMathRootCubeInverseF32VX4(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
+void PXAPI PXMathRootCubeInverseF32VX4(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount)
 {
     __m128 dataInput;
     __m128 dataOut;
@@ -636,7 +636,7 @@ void PXAPI PXMathRootCubeInverseF32VX4(PXF32* const outputListY, const PXF32* co
     PXMemoryCopyF32V(outputListY, dataInput.m128_f32, 4);
 }
 
-void PXAPI PXMathRootCubeInverseF64VX2(PXF64* const outputListY, const PXF64* const inputListX, const PXSize amount)
+void PXAPI PXMathRootCubeInverseF64VX2(PXF64 PXREF outputListY, const PXF64 PXREF inputListX, const PXSize amount)
 {
     __m128d dataInput;
     __m128d dataOut;
@@ -775,14 +775,14 @@ int PXAPI PXMathCeilingD(const double value)
     return fullNumberBlockInt;
 }
 
-void PXAPI PXMathRandomeSeed(PXMathRandomGeneratorSeed* const pxMathRandomGeneratorSeed)
+void PXAPI PXMathRandomeSeed(PXMathRandomGeneratorSeed PXREF pxMathRandomGeneratorSeed)
 {
     pxMathRandomGeneratorSeed->X = 123456789;
     pxMathRandomGeneratorSeed->Y = 362436069;
     pxMathRandomGeneratorSeed->Z = 521288629;
 }
 
-PXI32U PXAPI PXMathRandomeNumber(PXMathRandomGeneratorSeed* const pxMathRandomGeneratorSeed)
+PXI32U PXAPI PXMathRandomeNumber(PXMathRandomGeneratorSeed PXREF pxMathRandomGeneratorSeed)
 {
     PXI32U t;
 
@@ -857,72 +857,72 @@ PXF64 PXAPI PXMathSinusRADF64(const PXF64 x)
 #endif
 }
 
-void PXAPI PXMathSinusRADF16V(PXF16* const outputListY, const PXF16* const inputListX, const PXSize amount)
+void PXAPI PXMathSinusRADF16V(PXF16 PXREF outputListY, const PXF16 PXREF inputListX, const PXSize amount)
 {
     //__m128h _mm_sin_ph(__m128h a)
 }
 
-void PXAPI PXMathSinusRADF32V(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
+void PXAPI PXMathSinusRADF32V(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount)
 {
    // __m128 _mm_sin_ps(__m128 a)
 }
 
-void PXAPI PXMathSinusRADF64V(PXF64* const outputListY, const PXF64* const inputListX, const PXSize amount)
+void PXAPI PXMathSinusRADF64V(PXF64 PXREF outputListY, const PXF64 PXREF inputListX, const PXSize amount)
 {
   //  __m128d _mm_sin_pd(__m128d a)
 }
 
-void PXAPI PXMathSinusDEGF16V(PXF16* const outputListY, const PXF16* const inputListX, const PXSize amount)
+void PXAPI PXMathSinusDEGF16V(PXF16 PXREF outputListY, const PXF16 PXREF inputListX, const PXSize amount)
 {
    // __m128h _mm_sind_ph(__m128h a)
 }
 
-void PXAPI PXMathSinusDEGF32V(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
+void PXAPI PXMathSinusDEGF32V(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount)
 {
    // __m128 _mm_sind_ps(__m128 a)
 }
 
-void PXAPI PXMathSinusDEGF64V(PXF64* const outputListY, const PXF64* const inputListX, const PXSize amount)
+void PXAPI PXMathSinusDEGF64V(PXF64 PXREF outputListY, const PXF64 PXREF inputListX, const PXSize amount)
 {
    // __m128d _mm_sind_pd(__m128d a)
 }
 
-void PXAPI PXMathSinusHyperbolicRADF16V(PXF16* const outputListY, const PXF16* const inputListX, const PXSize amount)
+void PXAPI PXMathSinusHyperbolicRADF16V(PXF16 PXREF outputListY, const PXF16 PXREF inputListX, const PXSize amount)
 {
    // __m128h _mm_sinh_ph(__m128h a);
 }
 
-void PXAPI PXMathSinusHyperbolicRADF32V(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
+void PXAPI PXMathSinusHyperbolicRADF32V(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount)
 {
    // __m128 _mm_sinh_ps(__m128 a)
 }
 
-void PXAPI PXMathSinusHyperbolicRADF64V(PXF64* const outputListY, const PXF64* const inputListX, const PXSize amount)
+void PXAPI PXMathSinusHyperbolicRADF64V(PXF64 PXREF outputListY, const PXF64 PXREF inputListX, const PXSize amount)
 {
    // __m128d _mm_sinh_pd(__m128d a)
 }
 
-void PXAPI PXMathCosinusRADF16V(PXF16* const outputListY, const PXF16* const inputListX, const PXSize amount)
+void PXAPI PXMathCosinusRADF16V(PXF16 PXREF outputListY, const PXF16 PXREF inputListX, const PXSize amount)
 {
    // __m128h _mm_cos_ph(__m128h a)
 }
 
-void PXAPI PXMathCosinusRADF32V(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
+void PXAPI PXMathCosinusRADF32V(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount)
 {
    // __m128 _mm_cos_ps(__m128 a)
 }
 
-void PXAPI PXMathSinCosRADF32(const PXF32 angle, PXF32* const valueSIN, PXF32* const valueCOS)
+void PXAPI PXMathSinCosRADF32(const PXF32 angle, PXF32 PXREF valueSIN, PXF32 PXREF valueCOS)
 {
     *valueSIN = PXMathSinusRADF32(angle);
     *valueCOS = PXMathCosinusRADF32(angle);
 }
 
-void PXAPI PXMathSinCosRADF16V(PXF16* const data, const PXSize amount)
+void PXAPI PXMathSinCosRADF16V(PXF16 PXREF data, const PXSize amount)
 {
 
 }
-void PXAPI PXMathSinCosRADF32V(PXF32* const data, const PXSize amount)
+void PXAPI PXMathSinCosRADF32V(PXF32 PXREF data, const PXSize amount)
 {
     PXAssert((amount % 2) == 0, "We need 2 here");
 
@@ -945,27 +945,27 @@ void PXAPI PXMathSinCosRADF32V(PXF32* const data, const PXSize amount)
     _mm_sincos_ps(); // SSE, 2xsin&cos
 #endif
 }
-void PXAPI PXMathSinCosRADF64V(PXF64* const data, const PXSize amount)
+void PXAPI PXMathSinCosRADF64V(PXF64 PXREF data, const PXSize amount)
 {
     //_mm_sincos_pd(); // SSE, 1xsin&cos
 }
 
-void PXAPI PXMathCosinusRADF64V(PXF64* const outputListY, const PXF64* const inputListX, const PXSize amount)
+void PXAPI PXMathCosinusRADF64V(PXF64 PXREF outputListY, const PXF64 PXREF inputListX, const PXSize amount)
 {
    // __m128d _mm_cos_pd(__m128d a)
 }
 
-void PXAPI PXMathSinusAndCosinusRADF16V(PXF16* const outputListY, const PXF16* const inputListX, const PXSize amount)
+void PXAPI PXMathSinusAndCosinusRADF16V(PXF16 PXREF outputListY, const PXF16 PXREF inputListX, const PXSize amount)
 {
     //__m128h _mm_sincos_ph(__m128h * mem_addr, __m128h a)
 }
 
-void PXAPI PXMathSinusAndCosinusRADF32V(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
+void PXAPI PXMathSinusAndCosinusRADF32V(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount)
 {
    // __m128 _mm_sincos_ps(__m128 * mem_addr, __m128 a)
 }
 
-void PXAPI PXMathSinusAndCosinusRADF64V(PXF64* const outputListY, const PXF64* const inputListX, const PXSize amount)
+void PXAPI PXMathSinusAndCosinusRADF64V(PXF64 PXREF outputListY, const PXF64 PXREF inputListX, const PXSize amount)
 {
     //__m128d _mm_sincos_pd(__m128d * mem_addr, __m128d a)
 }
@@ -989,12 +989,12 @@ PXF32 PXAPI PXMathCosinusRADF32(const PXF32 x)
     return PXMathCosinusRADF64(x);
 }
 
-void PXAPI PXMathCosinusDEGF16V(PXF16* const outputListY, const PXF16* const inputListX, const PXSize amount)
+void PXAPI PXMathCosinusDEGF16V(PXF16 PXREF outputListY, const PXF16 PXREF inputListX, const PXSize amount)
 {
    
 }
 
-void PXAPI PXMathCosinusDEGF32V(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
+void PXAPI PXMathCosinusDEGF32V(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount)
 {
     PXWorkSetCounter pxWorkSetCounter;
     pxWorkSetCounter.WorkToDo = amount;
@@ -1005,14 +1005,14 @@ void PXAPI PXMathCosinusDEGF32V(PXF32* const outputListY, const PXF32* const inp
     // Full-Batches
     for(PXSize i = 0; i < pxWorkSetCounter.AmountBatchFull + 1; ++i)
     {
-        const PXF32* const extractPoint = &inputListX[i * pxWorkSetCounter.BatchSize];
-        PXF32* const insertPoint = &outputListY[i * pxWorkSetCounter.BatchSize];
+        const PXF32 PXREF extractPoint = &inputListX[i * pxWorkSetCounter.BatchSize];
+        PXF32 PXREF insertPoint = &outputListY[i * pxWorkSetCounter.BatchSize];
 
         PXMathCosinusDEGF32VX1(insertPoint, extractPoint, i);
     }
 }
 
-void PXAPI PXMathCosinusDEGF32VX1(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
+void PXAPI PXMathCosinusDEGF32VX1(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount)
 {
     for(PXSize i = 0; i < amount; ++i)
     {
@@ -1020,45 +1020,45 @@ void PXAPI PXMathCosinusDEGF32VX1(PXF32* const outputListY, const PXF32* const i
     }
 }
 
-void PXAPI PXMathCosinusDEGF32VX4(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
+void PXAPI PXMathCosinusDEGF32VX4(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount)
 {
     __m128 input = _mm_load_ps(outputListY);
     __m128 output = _mm_cosd_ps(input); // [Intrinsic] immintrin.h, SSE, 4x 32-Bit PXF32 in DEG -> COS(x)
     _mm_store_ps(inputListX, output);
 }
 
-void PXAPI PXMathCosinusDEGF32VX8(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
+void PXAPI PXMathCosinusDEGF32VX8(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount)
 {
     __m256 input = _mm256_load_ps(outputListY);
     __m256 output = _mm256_cosd_ps(input); // AVX512F, 16x COS() Degrees
     _mm256_store_ps(inputListX, input);
 }
 
-void PXAPI PXMathCosinusDEGF32VX16(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
+void PXAPI PXMathCosinusDEGF32VX16(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount)
 {
     __m512 input = _mm512_load_ps(outputListY);
     __m512 output = _mm512_cosd_ps(input); // AVX512F, 16x COS() Degrees
     _mm512_store_ps(inputListX, input);
 }
 
-void PXAPI PXMathCosinusDEGF64V(PXF64* const outputListY, const PXF64* const inputListX, const PXSize amount)
+void PXAPI PXMathCosinusDEGF64V(PXF64 PXREF outputListY, const PXF64 PXREF inputListX, const PXSize amount)
 {
     __m512d input = _mm512_load_pd(outputListY);
     __m512d output = _mm512_cosd_pd(input); // AVX512F, 16x COS() Degrees
     _mm512_store_pd(inputListX, input);
 }
 
-void PXAPI PXMathCosinusHyperbolicRADF16V(PXF16* const outputListY, const PXF16* const inputListX, const PXSize amount)
+void PXAPI PXMathCosinusHyperbolicRADF16V(PXF16 PXREF outputListY, const PXF16 PXREF inputListX, const PXSize amount)
 {
   //  __m128h _mm_cos_ph(__m128h a)
 }
 
-void PXAPI PXMathCosinusHyperbolicRADF32V(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount)
+void PXAPI PXMathCosinusHyperbolicRADF32V(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount)
 {
  
 }
 
-void PXAPI PXMathCosinusHyperbolicRADF64V(PXF64* const outputListY, const PXF64* const inputListX, const PXSize amount)
+void PXAPI PXMathCosinusHyperbolicRADF64V(PXF64 PXREF outputListY, const PXF64 PXREF inputListX, const PXSize amount)
 {
   
 }
@@ -1177,7 +1177,14 @@ a = a - b;
 
 
 
-void PXAPI PXMathShuffleI8(const PXI8U* const input, PXI8U* const output, const PXSize amount, PXI8U* mask, const PXI8U maskAmount)
+void PXAPI PXMathShuffleI8
+(
+    const PXI8U PXREF input, 
+    PXI8U PXREF output,
+    const PXSize amount, 
+    const PXI8U* mask,
+    const PXI8U maskAmount
+)
 { 
     PXSize i = 0;
 
@@ -1316,7 +1323,7 @@ unsigned int PXAPI PXMathLiniarClampAsRGBColorF(const PXF32 minimum, const PXF32
     return convertedResult;
 }
 
-void PXAPI PXMathFormulaQuadratic(const PXF32 a, const PXF32 b, const PXF32 c, PXF32* const resultA, PXF32* const resultB)
+void PXAPI PXMathFormulaQuadratic(const PXF32 a, const PXF32 b, const PXF32 c, PXF32 PXREF resultA, PXF32 PXREF resultB)
 {
     const PXF32 bNegativ = -b;
     const PXF32 dividor = 2.0f * a;
@@ -1327,7 +1334,7 @@ void PXAPI PXMathFormulaQuadratic(const PXF32 a, const PXF32 b, const PXF32 c, P
     *resultB = (bNegativ - rootResult) / dividor;
 }
 
-void PXAPI PXMathFormulaPQ(const PXF32 p, const PXF32 q, PXF32* const resultA, PXF32* const resultB)
+void PXAPI PXMathFormulaPQ(const PXF32 p, const PXF32 q, PXF32 PXREF resultA, PXF32 PXREF resultB)
 {
     const PXF32 pHalf = p / 2.0f;
     const PXF32 pHalfNeg = -pHalf;
@@ -1343,7 +1350,7 @@ void PXAPI PXMathFormulaPQ(const PXF32 p, const PXF32 q, PXF32* const resultA, P
 // double coefficientList[] = {2, -6, 2, -1}; // Each element is a a*x^b
 // int degree = 3; // The size of the list -1. 
 // double x = 3.0; // The value for x in the term
-double PXAPI PXMathHornerD(double* const coefficientList, const PXI32U degree, const double x)
+double PXAPI PXMathHornerD(double PXREF coefficientList, const PXI32U degree, const double x)
 {
     double result = coefficientList[0];
     

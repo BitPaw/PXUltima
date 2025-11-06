@@ -3,23 +3,25 @@
 #if OSUnix
 #elif OSWindows
 #include <Windows.h>
-#include <MSCorEE.h>
-#include <metahost.h>
+
+#define OSWindowsDotNETAviable 0
+#if OSWindowsDotNETAviable
+#include <MSCorEE.h>    // Missing on windows 10
+#include <metahost.h>   // Missing on windows 10
+#include "coreclrhost.h" // What is this??
 #pragma comment(lib, "mscoree.lib")
 #pragma comment(lib, "format.lib")
 //#pragma comment(lib, "mscories.lib")
 
-
-//#include "coreclrhost.h" // What is this??
-
 // This is not set as a directive, hardcoded, not good
-
-#include "C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Host.win-x64/8.0.19/runtimes/win-x64/native/nethost.h"
-#include "C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Host.win-x64/8.0.19/runtimes/win-x64/native/coreclr_delegates.h"
-#include "C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Host.win-x64/8.0.19/runtimes/win-x64/native/hostfxr.h"
+#include "C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Host.win-x64/8.0.21/runtimes/win-x64/native/nethost.h"
+#include "C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Host.win-x64/8.0.21/runtimes/win-x64/native/coreclr_delegates.h"
+#include "C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Host.win-x64/8.0.21/runtimes/win-x64/native/hostfxr.h"
 #include "coreclrhost.h"
 
-#pragma comment(lib, "C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Host.win-x64/8.0.19/runtimes/win-x64/native/nethost.lib")
+#pragma comment(lib, "C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Host.win-x64/8.0.21/runtimes/win-x64/native/nethost.lib")
+
+#endif
 
 #endif
 
@@ -39,8 +41,9 @@ const char PXDotNetNetHost[] =
 "C:\\Program Files\\dotnet\\packs\\Microsoft.NETCore.App.Host.win-x64\\8.0.16\\runtimes\\win-x64\\native\\nethost.dll";
 const char PXDotNetFunc[] = "get_hostfxr_path";
 
-typedef int (NETHOST_CALLTYPE* PXget_hostfxr_path)(char_t* buffer, size_t* buffer_size, const struct get_hostfxr_parameters* parameters);
-
+#if OSWindowsDotNETAviable
+typedef int (NETHOST_CALLTYPE* PXget_hostfxr_path)(char* buffer, size_t* buffer_size, const struct get_hostfxr_parameters* parameters);
+#endif
 
 
 void PXDotNetCoreCLRErrorCallback(const char* message)
@@ -60,6 +63,7 @@ void PXDotNetCoreCLRErrorCallback(const char* message)
 #endif
 }
 
+#if OSWindowsDotNETAviable
 void HOSTFXR_CALLTYPE PXDotNetHostFXRuntimeErrorCallback(const char_t* message)
 {
 #if PXLogEnable
@@ -76,17 +80,18 @@ void HOSTFXR_CALLTYPE PXDotNetHostFXRuntimeErrorCallback(const char_t* message)
     );
 #endif
 }
+#endif
 
 
-
-PXResult PXAPI  PXDotNetInitializeMSCoree(PXDotNetMSCoree* const pxDotNetMSCoree)
-{
 #if OSWindows
+PXResult PXAPI PXDotNetInitializeMSCoree(PXDotNetMSCoree PXREF pxDotNetMSCoree)
+{
+#if OSWindowsDotNETAviable
     CreateInterfaceFnPtr createInterface;
 
     // open
     {
-        const PXActionResult pxActionResult = PXLibraryOpenA(&pxDotNetMSCoree->Library, CSharpMSCoree);
+        const PXResult pxActionResult = PXLibraryOpenA(&pxDotNetMSCoree->Library, CSharpMSCoree);
 
         if(PXActionSuccessful != pxActionResult)
         {
@@ -104,9 +109,9 @@ PXResult PXAPI  PXDotNetInitializeMSCoree(PXDotNetMSCoree* const pxDotNetMSCoree
         //const HRESULT resC = createInterface(&CLSID_CLRDebugging,      &IID_ICLRDebugging,      &pxDotNet->Debugging);
     }
 
-    ICLRMetaHost* const metaHost = (ICLRMetaHost*)pxDotNetMSCoree->MetaHost;
-    ICLRMetaHostPolicy* const metaHostPolicy = (ICLRMetaHostPolicy*)pxDotNetMSCoree->MetaHostPolicy;
-    ICLRDebugging* const debugging = (ICLRDebugging*)pxDotNetMSCoree->Debugging;
+    ICLRMetaHost PXREF metaHost = (ICLRMetaHost*)pxDotNetMSCoree->MetaHost;
+    ICLRMetaHostPolicy PXREF metaHostPolicy = (ICLRMetaHostPolicy*)pxDotNetMSCoree->MetaHostPolicy;
+    ICLRDebugging PXREF debugging = (ICLRDebugging*)pxDotNetMSCoree->Debugging;
     ICLRRuntimeInfo* runtimeInfo = PXNull;
 
     IEnumUnknown* enumUnknown = 0; // ICLRRuntimeInfo
@@ -118,7 +123,7 @@ PXResult PXAPI  PXDotNetInitializeMSCoree(PXDotNetMSCoree* const pxDotNetMSCoree
     // Get a list of all versions
     {
         const HRESULT resultID = metaHost->lpVtbl->EnumerateInstalledRuntimes(metaHost, &enumUnknown);
-        const PXActionResult result = PXErrorCurrent(S_OK == resultID);
+        const PXResult result = PXErrorCurrent(S_OK == resultID);
 
         BOOL isLoadable = PXFalse;
         BOOL isLoaded = PXFalse;
@@ -172,7 +177,7 @@ PXResult PXAPI  PXDotNetInitializeMSCoree(PXDotNetMSCoree* const pxDotNetMSCoree
     }
 
     //ICorRuntimeHost
-    ICLRRuntimeHost* const runtimeHost = (ICLRRuntimeHost*)pxDotNetMSCoree->RuntimeHost;
+    ICLRRuntimeHost PXREF runtimeHost = (ICLRRuntimeHost*)pxDotNetMSCoree->RuntimeHost;
 
     // Start the runtime
     const HRESULT asddssd = runtimeHost->lpVtbl->Start(runtimeHost);
@@ -201,7 +206,7 @@ PXResult PXAPI  PXDotNetInitializeMSCoree(PXDotNetMSCoree* const pxDotNetMSCoree
 
     const HRESULT asdasdt = runtimeHost->lpVtbl->GetDefaultDomain(runtimeHost, &pxDotNet->AppDomain);
 
-    IAppDomainBinding* const appDomainBinding = (IAppDomainBinding*)pxDotNet->AppDomain;
+    IAppDomainBinding PXREF appDomainBinding = (IAppDomainBinding*)pxDotNet->AppDomain;
 
     *
 
@@ -281,16 +286,18 @@ PXResult PXAPI  PXDotNetInitializeMSCoree(PXDotNetMSCoree* const pxDotNetMSCoree
 
 
     */
+#endif
 
     return PXActionSuccessful;
-
-#else
-return PXActionRefusedTypeNotSupported;
-#endif
 }
 
-PXResult PXAPI  PXDotNetInitializeCoreCLR(PXDotNetCoreCLR* const pxDotNetCoreCLR)
+PXResult PXAPI PXDotNetInitializeCoreCLR(PXDotNetCoreCLR PXREF pxDotNetCoreCLR)
 {
+#if OSUnix
+
+    return PXActionRefusedNotImplemented;
+
+#elif OSWindows
     // Open lib
     {
         char runtimeDLLPath[_MAX_PATH];
@@ -484,7 +491,7 @@ PXResult PXAPI  PXDotNetInitializeCoreCLR(PXDotNetCoreCLR* const pxDotNetCoreCLR
     }
 
 
-
+#if OSWindowsDotNETAviable
     coreclr_initialize_ptr initialize = (coreclr_initialize_ptr)pxDotNetCoreCLR->Initialize;
     coreclr_set_error_writer_ptr errorWriterSet = (coreclr_set_error_writer_ptr)pxDotNetCoreCLR->ErrorWriterSet;
 
@@ -498,12 +505,14 @@ PXResult PXAPI  PXDotNetInitializeCoreCLR(PXDotNetCoreCLR* const pxDotNetCoreCLR
         &pxDotNetCoreCLR->HostHandle,
         &pxDotNetCoreCLR->DomainID
     );
-    const PXActionResult initResult = PXErrorFromHRESULT(initResultID);
+    const PXResult initResult = PXErrorFromHRESULT(initResultID);
 
     if(errorWriterSet)
     {
         errorWriterSet(PXDotNetCoreCLRErrorCallback);
     }
+#endif
+
 
 #if PXLogEnable
     PXLogPrint
@@ -519,18 +528,30 @@ PXResult PXAPI  PXDotNetInitializeCoreCLR(PXDotNetCoreCLR* const pxDotNetCoreCLR
     );
 #endif
 
-
     return PXActionSuccessful;
+
+#else
+// ???
+return PXActionRefusedNotImplemented;
+#endif
 }
 
-PXResult PXAPI  PXGetloc(char* buffer)
+PXResult PXAPI PXGetloc(char* buffer)
 {
+#if OSUnix
+
+    return PXActionRefusedNotImplemented;
+
+#elif OSWindows
     // C:\\Program Files\\dotnet\\packs\\Microsoft.NETCore.App.Host.win-x64\\8.0.13\\runtimes\\win-x64\\native\\nethost.dll"
-    char_t hostfxrPathW[MAX_PATH];
+
+#if OSWindowsDotNETAviable
+	char hostfxrPathW[MAX_PATH];
 
     PXLibrary pxLibrary;
 
     PXLibraryOpenA(&pxLibrary, PXDotNetNetHost);
+
 
     PXget_hostfxr_path hostfxrPathGet;
 
@@ -541,10 +562,12 @@ PXResult PXAPI  PXGetloc(char* buffer)
     init_params.assembly_path = L"dotnet";
     init_params.dotnet_root = L"C:\\Program Files\\dotnet";
 
+
+
     size_t bufferSize = MAX_PATH;
 
     const HRESULT resultGetID = hostfxrPathGet(hostfxrPathW, &bufferSize, &init_params);
-    const PXActionResult resultGet = PXErrorFromHRESULT(resultGetID);
+    const PXResult resultGet = PXErrorFromHRESULT(resultGetID);
 
     PXLibraryClose(&pxLibrary);
 
@@ -556,15 +579,20 @@ PXResult PXAPI  PXGetloc(char* buffer)
     PXTextCopyWA(hostfxrPathW, bufferSize, buffer, MAX_PATH);
 
     return PXActionSuccessful;
+#endif
+
+#else
+    return PXActionRefusedNotImplemented;
+#endif
 }
 
-PXResult PXAPI  PXDotNetInitializeHostFX(PXDotNetHostFX* const pxDotNetHostFX)
+PXResult PXAPI PXDotNetInitializeHostFX(PXDotNetHostFX PXREF pxDotNetHostFX)
 {
     // Load the hostfxr library
     {
         char hostfxrPath[MAX_PATH];
 
-        const PXActionResult result = PXGetloc(hostfxrPath);
+        const PXResult result = PXGetloc(hostfxrPath);
 
         if(PXActionSuccessful != result)
         {
@@ -648,7 +676,7 @@ PXResult PXAPI  PXDotNetInitializeHostFX(PXDotNetHostFX* const pxDotNetHostFX)
     */
 
 
-    
+#if OSWindowsDotNETAviable
     // Initialize the .NET runtime
     {
         const hostfxr_initialize_for_runtime_config_fn initializeForRuntimeConfig = (hostfxr_initialize_for_runtime_config_fn)pxDotNetHostFX->InitializeForRuntimeConfig;
@@ -666,7 +694,7 @@ PXResult PXAPI  PXDotNetInitializeHostFX(PXDotNetHostFX* const pxDotNetHostFX)
         {
             //printf("Failed to initialize .NET runtime\n");
             //  FreeLibrary(hostfxr);
-            return -1;
+            return PXActionInvalid;
         }
 
         // Add error callback to find problems instandly
@@ -693,8 +721,8 @@ PXResult PXAPI  PXDotNetInitializeHostFX(PXDotNetHostFX* const pxDotNetHostFX)
     // Fetch propeteis
     {
         size_t count = 0;
-        const char_t** keys = 0;
-        const char_t** values = 0;
+        const char** keys = 0;
+        const char** values = 0;
 
         // Get the amount of properties
         const hostfxr_get_runtime_properties_fn runtimePropertiesGet = (hostfxr_get_runtime_properties_fn)pxDotNetHostFX->RuntimePropertiesGet;
@@ -749,14 +777,16 @@ PXResult PXAPI  PXDotNetInitializeHostFX(PXDotNetHostFX* const pxDotNetHostFX)
 
     // Call the managed method
    // int x = executeScript();
+#endif
 
 
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXDotNetDelegateFetchMSCoree(PXDotNetMSCoree* const pxDotNetMSCoree, PXDelegate* const pxDelegate)
+PXResult PXAPI PXDotNetDelegateFetchMSCoree(PXDotNetMSCoree PXREF pxDotNetMSCoree, PXDelegate PXREF pxDelegate)
 {
-    ICLRRuntimeHost* const runtimeHost = (ICLRRuntimeHost*)pxDotNetMSCoree->RuntimeHost;
+#if OSWindowsDotNETAviable
+    ICLRRuntimeHost PXREF runtimeHost = (ICLRRuntimeHost*)pxDotNetMSCoree->RuntimeHost;
 
     HRESULT appReturn = 0;
 
@@ -810,7 +840,7 @@ PXResult PXAPI  PXDotNetDelegateFetchMSCoree(PXDotNetMSCoree* const pxDotNetMSCo
         L"Data from C-Library",
         &appReturn
     );
-    const PXActionResult exeResult = PXErrorFromHRESULT(execResultID);
+    const PXResult exeResult = PXErrorFromHRESULT(execResultID);
 
     if(PXActionSuccessful != exeResult)
     {
@@ -827,6 +857,7 @@ PXResult PXAPI  PXDotNetDelegateFetchMSCoree(PXDotNetMSCoree* const pxDotNetMSCo
         appReturn
     );
 #endif
+#endif
 
     return PXActionSuccessful;
 }
@@ -838,7 +869,6 @@ PXSize PXPathCurrentAndAddFileA(char* buffer, char* fileName)
     GetCurrentDirectoryA(_MAX_PATH, currentDir);
 
     return PXTextPrintA(buffer, _MAX_PATH, "%s\\%s", currentDir, fileName);
-
 }
 
 PXSize PXPathCurrentAndAddFileW(wchar_t* buffer, char* fileName)
@@ -850,8 +880,10 @@ PXSize PXPathCurrentAndAddFileW(wchar_t* buffer, char* fileName)
     return PXTextCopyAW(currentDir, _MAX_PATH, buffer, _MAX_PATH * 2);
 }
 
-PXResult PXAPI  PXDotNetDelegateFetchCoreCLR(PXDotNetCoreCLR* const pxDotNetCoreCLR, PXDelegate* const pxDelegate)
+PXResult PXAPI PXDotNetDelegateFetchCoreCLR(PXDotNetCoreCLR PXREF pxDotNetCoreCLR, PXDelegate PXREF pxDelegate)
 {
+#if OSWindowsDotNETAviable
+
     char fileNameBuffer[_MAX_PATH];
     char typeNameA[64];
     char* typeNameRef = pxDelegate->NameClass;
@@ -889,7 +921,7 @@ PXResult PXAPI  PXDotNetDelegateFetchCoreCLR(PXDotNetCoreCLR* const pxDotNetCore
         pxDelegate->NameFunction,
         &pxDelegate->FunctionAdress
     );
-    const PXActionResult crteateResult = PXErrorFromHRESULT(crteateResultID);
+    const PXResult crteateResult = PXErrorFromHRESULT(crteateResultID);
 
 #if PXLogEnable
     PXLogPrint
@@ -909,11 +941,15 @@ PXResult PXAPI  PXDotNetDelegateFetchCoreCLR(PXDotNetCoreCLR* const pxDotNetCore
     );
 #endif
 
+#endif
+
+
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXDotNetDelegateFetchHostFX(PXDotNetHostFX* const pxDotNetHostFX, PXDelegate* const pxDelegate)
+PXResult PXAPI PXDotNetDelegateFetchHostFX(PXDotNetHostFX PXREF pxDotNetHostFX, PXDelegate PXREF pxDelegate)
 {
+#if OSWindowsDotNETAviable
     wchar_t fileNameW[_MAX_PATH];// = L"C:\\Data\\WorkSpace\\[GIT]\\PXUltima\\Code\\PXUltimaCTest\\PXTestDLLRelay.dll";
     wchar_t classNameW[64]; //L"PXTestDLLRelay.TESTB, TESTB";
     wchar_t functionNameW[64];
@@ -985,7 +1021,7 @@ PXResult PXAPI  PXDotNetDelegateFetchHostFX(PXDotNetHostFX* const pxDotNetHostFX
     if(canCallModern)
     {
         const HRESULT loadAssemblyResultID = assemblyLoad(fileNameW, PXNull, PXNull);
-        const PXActionResult loadAssemblyResult = PXErrorFromHRESULT(loadAssemblyResultID);
+        const PXResult loadAssemblyResult = PXErrorFromHRESULT(loadAssemblyResultID);
 
         const HRESULT fetchResultID = functionPointerGet
         (
@@ -996,7 +1032,7 @@ PXResult PXAPI  PXDotNetDelegateFetchHostFX(PXDotNetHostFX* const pxDotNetHostFX
             PXNull,
             &pxDelegate->FunctionAdress
         );
-        const PXActionResult fetchResult = PXErrorFromHRESULT(fetchResultID);
+        const PXResult fetchResult = PXErrorFromHRESULT(fetchResultID);
 
         PXConsoleWrite(0, 0);
     }
@@ -1014,7 +1050,7 @@ PXResult PXAPI  PXDotNetDelegateFetchHostFX(PXDotNetHostFX* const pxDotNetHostFX
             PXNull,
             &pxDelegate->FunctionAdress
         );
-        const PXActionResult loadResult = PXErrorFromHRESULT(loadResultID);
+        const PXResult loadResult = PXErrorFromHRESULT(loadResultID);
 
         PXConsoleWrite(0, 0);
     }
@@ -1101,12 +1137,16 @@ PXResult PXAPI  PXDotNetDelegateFetchHostFX(PXDotNetHostFX* const pxDotNetHostFX
     }
     */
 
+#endif
+
+
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXDotNetExecuteMSCoree(PXDotNetMSCoree* const pxDotNetMSCoree)
+PXResult PXAPI PXDotNetExecuteMSCoree(PXDotNetMSCoree PXREF pxDotNetMSCoree)
 {
-    ICLRRuntimeHost* const runtimeHost = (ICLRRuntimeHost*)pxDotNetMSCoree->RuntimeHost;
+#if OSWindowsDotNETAviable
+    ICLRRuntimeHost PXREF runtimeHost = (ICLRRuntimeHost*)pxDotNetMSCoree->RuntimeHost;
 
     HRESULT appReturn = 0;
 
@@ -1119,12 +1159,14 @@ PXResult PXAPI  PXDotNetExecuteMSCoree(PXDotNetMSCoree* const pxDotNetMSCoree)
         L"EEEEEEEEEEEEEEE",
         &appReturn
     );
+#endif
 
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXDotNetExecuteCoreCLR(PXDotNetCoreCLR* const pxDotNetCoreCLR)
+PXResult PXAPI PXDotNetExecuteCoreCLR(PXDotNetCoreCLR PXREF pxDotNetCoreCLR)
 {
+#if OSWindowsDotNETAviable
     const char* args[] = { "MyScriptApp.dll" };
 
     unsigned int exitCode = 0;
@@ -1139,19 +1181,23 @@ PXResult PXAPI  PXDotNetExecuteCoreCLR(PXDotNetCoreCLR* const pxDotNetCoreCLR)
         "C:\\...\\PXTestDLLRelay.dll",
         &exitCode
     );
+#endif
 
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXDotNetExecuteHostFX(PXDotNetHostFX* const pxDotNetHostFX)
+PXResult PXAPI PXDotNetExecuteHostFX(PXDotNetHostFX PXREF pxDotNetHostFX)
 {
-
-
     return PXActionSuccessful;
 }
+#endif
 
-PXResult PXAPI  PXDotNetCompile(PXDotNet* const pxDotNet)
+PXResult PXAPI PXDotNetCompile(PXDotNet PXREF pxDotNet)
 {
+#if OSUnix
+    return PXActionSuccessful;
+
+#elif OSWindows
     char command[1024];
 
     char dllName[] = "PXTestDLLRelay";
@@ -1204,9 +1250,10 @@ PXResult PXAPI  PXDotNetCompile(PXDotNet* const pxDotNet)
     }
 
     return PXActionSuccessful;
+#endif
 }
 
-PXResult PXAPI  PXDotNetInitialize(PXDotNet* const pxDotNet, const PXI32U flagList)
+PXResult PXAPI PXDotNetInitialize(PXDotNet PXREF pxDotNet, const PXI32U flagList)
 {
 #if PXLogEnable
     PXLogPrint
@@ -1220,6 +1267,9 @@ PXResult PXAPI  PXDotNetInitialize(PXDotNet* const pxDotNet, const PXI32U flagLi
 
     PXClear(PXDotNet, pxDotNet);
 
+
+#if OSUnix
+#elif OSWindows
 
     // Probe for versions
 
@@ -1248,7 +1298,7 @@ PXResult PXAPI  PXDotNetInitialize(PXDotNet* const pxDotNet, const PXI32U flagLi
             );
 #endif
 
-            PXVersion* const pxVersion = &pxDotNet->CoreCLR.VersionList[pxDotNet->CoreCLR.VersionListAmount];
+            PXVersion PXREF pxVersion = &pxDotNet->CoreCLR.VersionList[pxDotNet->CoreCLR.VersionListAmount];
 
             PXVersionFromString(pxVersion, pxFileEntry.FilePathData);
 
@@ -1296,6 +1346,7 @@ PXResult PXAPI  PXDotNetInitialize(PXDotNet* const pxDotNet, const PXI32U flagLi
     }
 
     PXClear(PXDotNet, pxDotNet);
+#endif
 
     return resultC;
 }

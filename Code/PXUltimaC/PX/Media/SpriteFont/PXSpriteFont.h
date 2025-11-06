@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXSpriteFontIncluded
 #define PXSpriteFontIncluded
 
@@ -112,10 +114,10 @@ typedef struct PXSpriteFont_
 }
 PXSpriteFont;
 
-PXPublic PXResult PXAPI PXSpriteFontLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXSpriteFontSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXSpriteFontLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXSpriteFontSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
-PXPrivate PXSpriteFontLineType PXAPI PeekSymbol(const char* const line, const PXSize fileDataSize);
+PXPrivate PXSpriteFontLineType PXAPI PeekSymbol(const char PXREF line, const PXSize fileDataSize);
 
 PXPublic void PXAPI PXSpriteFontPrtinf(const PXSpriteFont* pxSpriteFont);
 

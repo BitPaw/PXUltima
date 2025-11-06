@@ -4,7 +4,7 @@
 #include <PX/Engine/PXGUI.h>
 #include <PX/Math/PXMath.h>
 
-PXResult PXAPI  PXKnowlegeGraphNodeInsert(PXKnowlegeGraph* const pxKnowlegeGraph, PXKnowlegeGraphNode* const pxKnowlegeGraphNode)
+PXResult PXAPI PXKnowlegeGraphNodeInsert(PXKnowlegeGraph PXREF pxKnowlegeGraph, PXKnowlegeGraphNode PXREF pxKnowlegeGraphNode)
 {
 
 
@@ -45,9 +45,9 @@ typedef struct PXCircle
 }
 PXCircle;
 
-void PXDrawLine(PXOpenGL* const pxOpenGL, PXLine* const pxLine)
+void PXDrawLine(PXOpenGL PXREF pxOpenGL, PXLine PXREF pxLine)
 {
-    const PXColorRGBAF* const colorList[2] = {pxLine->ColorBorder, pxLine->ColorFill };
+    const PXColorRGBAF PXREF colorList[2] = {pxLine->ColorBorder, pxLine->ColorFill };
     const int lineSize[2] = { 20, 6 };
     const int drawMode[2] = { GL_LINES, GL_POINTS };
 
@@ -55,7 +55,7 @@ void PXDrawLine(PXOpenGL* const pxOpenGL, PXLine* const pxLine)
     {
         for (size_t i = 0; i < 2; i++)
         {
-            const PXColorRGBAF* const color = colorList[i];
+            const PXColorRGBAF PXREF color = colorList[i];
 
             pxOpenGL->Binding.LineWidth(lineSize[i]);
             pxOpenGL->Binding.PointSize(lineSize[i]);
@@ -74,7 +74,7 @@ void PXDrawLine(PXOpenGL* const pxOpenGL, PXLine* const pxLine)
 
 }
 
-void PXDrawCircle(PXOpenGL* const pxOpenGL, PXCircle* const pxCircle)
+void PXDrawCircle(PXOpenGL PXREF pxOpenGL, PXCircle PXREF pxCircle)
 {
     const PXF32 piX2 = PXMathConstantPI * 2.0f;
 
@@ -103,7 +103,7 @@ void PXDrawCircle(PXOpenGL* const pxOpenGL, PXCircle* const pxCircle)
     }
 }
 
-void PXDrawCircleList(PXOpenGL* const pxOpenGL, PXCircle* const pxCircleList, const PXSize pxSize)
+void PXDrawCircleList(PXOpenGL PXREF pxOpenGL, PXCircle PXREF pxCircleList, const PXSize pxSize)
 {
     PXColorRGBAF fillColor = { 0.6,0.2,0.6,1 };
     PXColorRGBAF borderColor = { 0.8,0.8,0.8,1 };
@@ -114,7 +114,7 @@ void PXDrawCircleList(PXOpenGL* const pxOpenGL, PXCircle* const pxCircleList, co
 
     for (PXSize i = 0; i < pxSize; ++i)
     {
-        PXCircle* const pxCircle = &pxCircleList[i];
+        PXCircle PXREF pxCircle = &pxCircleList[i];
 
         pxLine.Positon[2] = pxCircle->Positon[0];
         pxLine.Positon[3] = pxCircle->Positon[1];
@@ -131,7 +131,7 @@ void PXDrawCircleList(PXOpenGL* const pxOpenGL, PXCircle* const pxCircleList, co
     }
 }
 
-PXResult PXAPI PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph* const pxKnowlegeGraph, PXCodeDocument* const pxDocument, PXTexture* const PXTexture)
+PXResult PXAPI PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph PXREF pxKnowlegeGraph, PXCodeDocument PXREF pxDocument, PXTexture PXREF PXTexture)
 {
     PXSize imageWidth = pxKnowlegeGraph->SizeMaxWidth;
     PXSize imageHeight = pxKnowlegeGraph->SizeMaxHeight;
@@ -199,7 +199,7 @@ PXResult PXAPI PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph* const pxKnowlegeGrap
 
             for (size_t i = 0; i < 6; i++)
             {
-                PXCircle* const pxCircle = &pxCircleList[i];
+                PXCircle PXREF pxCircle = &pxCircleList[i];
 
                 pxCircle->ColorBorder = &borderColor;
                 pxCircle->ColorFill = &fillColor;

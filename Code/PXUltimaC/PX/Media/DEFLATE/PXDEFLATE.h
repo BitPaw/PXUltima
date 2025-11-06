@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXDeflateIncluded
 #define PXDeflateIncluded
 
@@ -15,7 +17,7 @@ typedef struct PXDeflateBlock_
 }
 PXDeflateBlock;
 
-PXPublic PXResult PXAPI PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const pxOutputStream);
-PXPublic PXResult PXAPI PXDEFLATESerialize(PXFile* const pxInputStream, PXFile* const pxOutputStream);
+PXPublic PXResult PXAPI PXDEFLATEParse(PXFile PXREF pxInputStream, PXFile PXREF pxOutputStream);
+PXPublic PXResult PXAPI PXDEFLATESerialize(PXFile PXREF pxInputStream, PXFile PXREF pxOutputStream);
 
 #endif

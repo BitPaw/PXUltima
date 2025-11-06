@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXGIFIncluded
 #define PXGIFIncluded
 
@@ -36,7 +38,7 @@ PXGIF;
 
 PXPublic PXSize PXAPI PXGIFFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 
-PXPublic PXResult PXAPI PXGIFLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXGIFSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXGIFLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXGIFSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

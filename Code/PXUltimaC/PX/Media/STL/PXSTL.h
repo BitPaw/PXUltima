@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXSTLIncluded
 #define PXSTLIncluded
 
@@ -9,7 +11,7 @@ typedef struct PXSTL_
 }
 PXSTL;
 
-PXPublic PXResult PXAPI PXSTLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXSTLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXSTLLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXSTLSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

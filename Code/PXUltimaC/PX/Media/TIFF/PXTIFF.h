@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXTIFFIncluded
 #define PXTIFFIncluded
 
@@ -204,7 +206,7 @@ PXPrivate inline PXTIFFColorFormat PXAPI PXTIFFColorFormatFromID(const unsigned 
 
 PXPublic PXSize PXAPI PXTIFFFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 
-PXPublic PXResult PXAPI PXTIFFLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXTIFFSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXTIFFLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXTIFFSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

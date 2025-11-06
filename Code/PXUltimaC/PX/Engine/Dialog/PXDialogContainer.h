@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXDialogIncluded
 #define PXDialogIncluded
 
@@ -46,7 +48,7 @@ typedef struct PXDialogMessagePage_
 PXDialogMessagePage;
 
 
-PXPublic PXResult PXAPI PXDialogContainerMessageFetch(PXDialogMessagePage* const pxDialogContainer);
+PXPublic PXResult PXAPI PXDialogContainerMessageFetch(PXDialogMessagePage PXREF pxDialogContainer);
 
 #ifdef __cplusplus
 }

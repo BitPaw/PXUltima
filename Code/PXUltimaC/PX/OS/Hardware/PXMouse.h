@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXMouseIncluded
 #define PXMouseIncluded
 
@@ -32,9 +34,9 @@ typedef struct PXMouse_
 }
 PXMouse;
 
-PXPublic void PXAPI PXMouseInputReset(PXMouse* const mouse);
-PXPublic void PXAPI PXMouseInputPrint(const PXMouse* const mouse);
+PXPublic void PXAPI PXMouseInputReset(PXMouse PXREF mouse);
+PXPublic void PXAPI PXMouseInputPrint(const PXMouse PXREF mouse);
 
-PXPublic void PXAPI PXMouseInputFetch(PXMouse* const mouse);
+PXPublic void PXAPI PXMouseInputFetch(PXMouse PXREF mouse);
 
 #endif

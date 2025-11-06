@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXX86Included
 #define PXX86Included
 
@@ -51,7 +53,7 @@ PXAssemblyInstruction;
 
 typedef struct PXX86Iterator_ PXX86Iterator;
 
-typedef void (PXAPI* PXX86InstructionFunction)(PXX86Iterator* const pxX86Iterator);
+typedef void (PXAPI* PXX86InstructionFunction)(PXX86Iterator PXREF pxX86Iterator);
 
 
 #define PXX86InstructionREX                 (0b00000001)
@@ -122,23 +124,23 @@ PXX86ModRM;
 
 
 
-PXPrivate void PXAPI PXX86InstructionSUBImidate(PXX86Iterator* const pxX86Iterator);
-PXPrivate void PXAPI PXX86InstructionInvoke(PXX86Iterator* const pxX86Iterator);
-PXPrivate void PXAPI PXX86InstructionFunctionMODRMRead(PXX86Iterator* const pxX86Iterator, PXX86ModRM* const pxX86ModRM);
-PXPrivate void PXAPI PXX86InstructionFunctionMOVx3(PXX86Iterator* const pxX86Iterator);
-PXPrivate void PXAPI PXX86InstructionFunctionREXMOV(PXX86Iterator* const pxX86Iterator);
+PXPrivate void PXAPI PXX86InstructionSUBImidate(PXX86Iterator PXREF pxX86Iterator);
+PXPrivate void PXAPI PXX86InstructionInvoke(PXX86Iterator PXREF pxX86Iterator);
+PXPrivate void PXAPI PXX86InstructionFunctionMODRMRead(PXX86Iterator PXREF pxX86Iterator, PXX86ModRM PXREF pxX86ModRM);
+PXPrivate void PXAPI PXX86InstructionFunctionMOVx3(PXX86Iterator PXREF pxX86Iterator);
+PXPrivate void PXAPI PXX86InstructionFunctionREXMOV(PXX86Iterator PXREF pxX86Iterator);
 
-PXPrivate void PXAPI PXX86InstructionRET(PXX86Iterator* const pxX86Iterator);
-PXPrivate void PXAPI PXX86InstructionJMPNEAR(PXX86Iterator* const pxX86Iterator);
-PXPrivate void PXAPI PXX86InstructionCall(PXX86Iterator* const pxX86Iterator);
+PXPrivate void PXAPI PXX86InstructionRET(PXX86Iterator PXREF pxX86Iterator);
+PXPrivate void PXAPI PXX86InstructionJMPNEAR(PXX86Iterator PXREF pxX86Iterator);
+PXPrivate void PXAPI PXX86InstructionCall(PXX86Iterator PXREF pxX86Iterator);
 
-PXPublic PXResult PXAPI PXX86InstructionNext(PXX86Iterator* const pxX86Iterator);
+PXPublic PXResult PXAPI PXX86InstructionNext(PXX86Iterator PXREF pxX86Iterator);
 
-PXPublic PXResult PXAPI PXX86InstructionDisassemble(PXX86Iterator* const pxX86Iterator);
+PXPublic PXResult PXAPI PXX86InstructionDisassemble(PXX86Iterator PXREF pxX86Iterator);
 
 
 typedef struct PXSectionTable_ PXSectionTable;
 
-PXPublic PXResult PXAPI PXX86InstructionWalk(PXFile* const pxFile, PXSectionTable* const pxSectionTable);
+PXPublic PXResult PXAPI PXX86InstructionWalk(PXFile PXREF pxFile, PXSectionTable PXREF pxSectionTable);
 
 #endif

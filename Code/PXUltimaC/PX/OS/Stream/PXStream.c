@@ -122,14 +122,14 @@ BOOL CALLBACK PXWindowsMonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT
     return TRUE; // continue enumeration
 }
 
-PXResult PXAPI  PXWindowListUpdate()
+PXResult PXAPI PXWindowListUpdate()
 {
     _windowHandleAmount = 0;
 
     const BOOL res = EnumWindows(PXWindowsEnumWindowsProc, 0);
 }
 
-PXResult PXAPI  PXMonitorListUpdate()
+PXResult PXAPI PXMonitorListUpdate()
 {
     _monitorHandleAmount = 0;
 
@@ -137,7 +137,7 @@ PXResult PXAPI  PXMonitorListUpdate()
 }
 
 
-PXResult PXAPI  PXStreamCreateWindow(PXStream* const pxStream, PXStreamOpenInfo* const pxStreamOpenInfo)
+PXResult PXAPI PXStreamCreateWindow(PXStream PXREF pxStream, PXStreamOpenInfo PXREF pxStreamOpenInfo)
 {
     PXWindowListUpdate();
 
@@ -149,7 +149,7 @@ PXResult PXAPI  PXStreamCreateWindow(PXStream* const pxStream, PXStreamOpenInfo*
         return PXActionInvalid;
     }
 
-    PXStreamWindow* const pxStreamWindow = &pxStream->Window;
+    PXStreamWindow PXREF pxStreamWindow = &pxStream->Window;
 
     pxStreamWindow->WindowHandle = _windowHandleList[pxStreamOpenInfo->DeviceIndex];
 
@@ -168,9 +168,9 @@ PXResult PXAPI  PXStreamCreateWindow(PXStream* const pxStream, PXStreamOpenInfo*
     SelectObject(pxStreamWindow->MemoryDC, pxStreamWindow->BitmapHandle);
 }
 
-PXResult PXAPI  PXStreamCreateMonitor(PXStream* const pxStream, PXStreamOpenInfo* const pxStreamOpenInfo)
+PXResult PXAPI PXStreamCreateMonitor(PXStream PXREF pxStream, PXStreamOpenInfo PXREF pxStreamOpenInfo)
 {
-    PXStreamWindow* const pxStreamWindow = &pxStream->Window;
+    PXStreamWindow PXREF pxStreamWindow = &pxStream->Window;
 
     PXMonitorListUpdate();
 
@@ -384,10 +384,10 @@ const PXVideoFormatEntry PXVideoFormatList[] =
 const PXSize PXVideoFormatAmount = sizeof(PXVideoFormatList) / sizeof(PXVideoFormat);
 
 
-PXResult PXAPI  PXStreamCreateCamera(PXStream* const pxStream, PXStreamOpenInfo* const pxStreamOpenInfo)
+PXResult PXAPI PXStreamCreateCamera(PXStream PXREF pxStream, PXStreamOpenInfo PXREF pxStreamOpenInfo)
 {
     const PXI16U deviceIndex = pxStreamOpenInfo->DeviceIndex;
-    PXStreamCamera* const pxStreamCamera = &pxStream->Camera;
+    PXStreamCamera PXREF pxStreamCamera = &pxStream->Camera;
   
 
     HRESULT resultID = 0;
@@ -437,7 +437,7 @@ PXResult PXAPI  PXStreamCreateCamera(PXStream* const pxStream, PXStreamOpenInfo*
     resultID = MFCreateSourceReaderFromMediaSource(pxStreamCamera->MediaSource, NULL, &pxStreamCamera->SourceReader);
     pxActionResult = PXErrorFromHRESULT(resultID);
 
-    IMFSourceReader* const sourceReader = pxStreamCamera->SourceReader;
+    IMFSourceReader PXREF sourceReader = pxStreamCamera->SourceReader;
 
     // Set media type (RGB32)
     {
@@ -542,10 +542,10 @@ PXResult PXAPI  PXStreamCreateCamera(PXStream* const pxStream, PXStreamOpenInfo*
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXStreamCreateTV(PXStream* const pxStream, PXStreamOpenInfo* const pxStreamOpenInfo)
+PXResult PXAPI PXStreamCreateTV(PXStream PXREF pxStream, PXStreamOpenInfo PXREF pxStreamOpenInfo)
 {
     HRESULT resultHandle = S_OK;
-    PXActionResult pxActionResult = 0;
+    PXResult pxActionResult = PXActionInvalid;
 
     IMFActivate** ppDevices = NULL;
     UINT32 count = 0;
@@ -618,9 +618,9 @@ PXResult PXAPI  PXStreamCreateTV(PXStream* const pxStream, PXStreamOpenInfo* con
 
 PXColorRGBAI8 buffer[3840 *1080];
 
-PXResult PXAPI  PXStreamUpdateWindow(PXStream* const pxStream)
+PXResult PXAPI PXStreamUpdateWindow(PXStream PXREF pxStream)
 {
-    PXStreamWindow* const pxStreamWindow = &pxStream->Window;
+    PXStreamWindow PXREF pxStreamWindow = &pxStream->Window;
     
     PXBool validCall = pxStreamWindow->MemoryDC > 0 && pxStreamWindow->WindowDC > 0;
 
@@ -732,10 +732,10 @@ void ConvertYUY2ToRGB
     }
 }
 
-PXResult PXAPI  PXStreamUpdateCamera(PXStream* const pxStream)
+PXResult PXAPI PXStreamUpdateCamera(PXStream PXREF pxStream)
 {
-    PXStreamCamera* const pxStreamCamera = &pxStream->Camera;
-    IMFSourceReader* const sourceReader = pxStreamCamera->SourceReader;
+    PXStreamCamera PXREF pxStreamCamera = &pxStream->Camera;
+    IMFSourceReader PXREF sourceReader = pxStreamCamera->SourceReader;
     IMFMediaBuffer* mediaBuffer = pxStreamCamera->MediaBuffer;
 
     PXStreamOnFrameInfo pxStreamOnFrameInfo;
@@ -806,7 +806,7 @@ PXResult PXAPI  PXStreamUpdateCamera(PXStream* const pxStream)
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXStreamUpdateTV(PXStream* const pxStream)
+PXResult PXAPI PXStreamUpdateTV(PXStream PXREF pxStream)
 {
     /*
     // Read samples
@@ -844,7 +844,7 @@ PXResult PXAPI  PXStreamUpdateTV(PXStream* const pxStream)
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXStreamReleaseWindow(PXStream* const pxStream)
+PXResult PXAPI PXStreamReleaseWindow(PXStream PXREF pxStream)
 {
     //DeleteDC(hMemoryDC);
     //ReleaseDC(hwnd, hWindowDC);
@@ -852,20 +852,20 @@ PXResult PXAPI  PXStreamReleaseWindow(PXStream* const pxStream)
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXStreamReleaseMonitor(PXStream* const pxStream)
+PXResult PXAPI PXStreamReleaseMonitor(PXStream PXREF pxStream)
 {
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXStreamReleaseCamera(PXStream* const pxStream)
+PXResult PXAPI PXStreamReleaseCamera(PXStream PXREF pxStream)
 {
-    IMFMediaBuffer* const mediaBuffer = pxStream->Camera.MediaBuffer;
+    IMFMediaBuffer PXREF mediaBuffer = pxStream->Camera.MediaBuffer;
     mediaBuffer->lpVtbl->Release(mediaBuffer);
 
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXStreamOpen(PXStream* const pxStream, PXStreamOpenInfo* const pxStreamOpenInfo)
+PXResult PXAPI PXStreamOpen(PXStream PXREF pxStream, PXStreamOpenInfo PXREF pxStreamOpenInfo)
 {
     PXClear(PXStream, pxStream);
 
@@ -908,12 +908,12 @@ PXResult PXAPI  PXStreamOpen(PXStream* const pxStream, PXStreamOpenInfo* const p
 	}
 
     // Create
-    const PXActionResult pxActionResult = pxStream->Create(pxStream, pxStreamOpenInfo);
+    const PXResult pxActionResult = pxStream->Create(pxStream, pxStreamOpenInfo);
 
     return pxActionResult;
 }
 
-PXResult PXAPI  PXStreamClose(PXStream* const pxStream)
+PXResult PXAPI PXStreamClose(PXStream PXREF pxStream)
 {
     return PXActionSuccessful;
 }

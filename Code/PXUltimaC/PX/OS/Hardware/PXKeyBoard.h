@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef KeyBoardIncluded
 #define KeyBoardIncluded
 
@@ -339,8 +341,8 @@ PXKeyBoardVirtualInput;
 PXPublic PXVirtualKey PXAPI PXVirtualKeyFromID(const PXI8U character);
 PXPublic PXI8U PXAPI PXVirtualKeyToID(const PXVirtualKey character);
 
-PXPublic void PXAPI PXKeyBoardInputReset(PXKeyBoard* const keyBoard);
-PXPublic void PXAPI PXKeyBoardInputPrint(const PXKeyBoard* const keyBoard);
+PXPublic void PXAPI PXKeyBoardInputReset(PXKeyBoard PXREF keyBoard);
+PXPublic void PXAPI PXKeyBoardInputPrint(const PXKeyBoard PXREF keyBoard);
 
 
 // Remove this? Find better solution
@@ -356,6 +358,6 @@ PXPublic PXI8U PXAPI PXKeyPressStateToID(const PXKeyPressState pxKeyPressState);
 
 #define PXKeyBoardVirtualInputSet(adress, pxVirtualKey, PXKeyPressState) (adress)->VirtualKey = pxVirtualKey; (adress)->KeyStrokeMode = PXKeyPressState;
 
-PXPublic PXBool PXAPI PXKeyBoardVirtualInsertAction(const PXKeyBoardVirtualInput* const inputList, const PXSize inputListSize);
+PXPublic PXBool PXAPI PXKeyBoardVirtualInsertAction(const PXKeyBoardVirtualInput PXREF inputList, const PXSize inputListSize);
 
 #endif

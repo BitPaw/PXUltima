@@ -1,4 +1,6 @@
-﻿#ifndef PXMathIncluded
+﻿#pragma once
+
+#ifndef PXMathIncluded
 #define PXMathIncluded
 
 #include <PX/Media/PXType.h>
@@ -36,25 +38,25 @@ PXMathRandomGeneratorSeed;
 
 typedef void (PXAPI* PXSIMDFunction)();
 
-typedef void (PXAPI* PXSIMDF16ToU16Function)(PXF16* const listOut, const PXI16U* const listInput, const PXSize inputAmount);
-typedef void (PXAPI* PXSIMDF32ToU32Function)(PXF32* const listOut, const PXI32U* const listInput, const PXSize inputAmount);
-typedef void (PXAPI* PXSIMDF64ToU64Function)(PXF64* const listOut, const PXI64U* const listInput, const PXSize inputAmount);
+typedef void (PXAPI* PXSIMDF16ToU16Function)(PXF16 PXREF listOut, const PXI16U PXREF listInput, const PXSize inputAmount);
+typedef void (PXAPI* PXSIMDF32ToU32Function)(PXF32 PXREF listOut, const PXI32U PXREF listInput, const PXSize inputAmount);
+typedef void (PXAPI* PXSIMDF64ToU64Function)(PXF64 PXREF listOut, const PXI64U PXREF listInput, const PXSize inputAmount);
 
-typedef void (PXAPI* PXSIMDI16ToU16Function)(PXI16S* const listOut, const PXI16U* const listInput, const PXSize inputAmount);
-typedef void (PXAPI* PXSIMDI32ToU32Function)(PXI32S* const listOut, const PXI32U* const listInput, const PXSize inputAmount);
-typedef void (PXAPI* PXSIMDI64ToU64Function)(PXI64S* const listOut, const PXI64U* const listInput, const PXSize inputAmount);
+typedef void (PXAPI* PXSIMDI16ToU16Function)(PXI16S PXREF listOut, const PXI16U PXREF listInput, const PXSize inputAmount);
+typedef void (PXAPI* PXSIMDI32ToU32Function)(PXI32S PXREF listOut, const PXI32U PXREF listInput, const PXSize inputAmount);
+typedef void (PXAPI* PXSIMDI64ToU64Function)(PXI64S PXREF listOut, const PXI64U PXREF listInput, const PXSize inputAmount);
 
-typedef void (PXAPI* PXSIMDU8Function)(PXI8U* const listOut, const PXI8U* const listInput, const PXSize inputAmount);
-typedef void (PXAPI* PXSIMDU16Function)(PXI16U* const listOut, const PXI16U* const listInput, const PXSize inputAmount);
-typedef void (PXAPI* PXSIMDU32Function)(PXI32U* const listOut, const PXI32U* const listInput, const PXSize inputAmount);
-typedef void (PXAPI* PXSIMDU64Function)(PXI64U* const listOut, const PXI64U* const listInput, const PXSize inputAmount);
+typedef void (PXAPI* PXSIMDU8Function)(PXI8U PXREF listOut, const PXI8U PXREF listInput, const PXSize inputAmount);
+typedef void (PXAPI* PXSIMDU16Function)(PXI16U PXREF listOut, const PXI16U PXREF listInput, const PXSize inputAmount);
+typedef void (PXAPI* PXSIMDU32Function)(PXI32U PXREF listOut, const PXI32U PXREF listInput, const PXSize inputAmount);
+typedef void (PXAPI* PXSIMDU64Function)(PXI64U PXREF listOut, const PXI64U PXREF listInput, const PXSize inputAmount);
 
-typedef void (PXAPI* PXSIMDF16Function)(PXF16* const listOut, const PXF16* const listInput, const PXSize inputAmount);
-typedef void (PXAPI* PXSIMDF32Function)(PXF32* const listOut, const PXF32* const listInput, const PXSize inputAmount);
-typedef void (PXAPI* PXSIMDF64Function)(PXF64* const listOut, const PXF64* const listInput, const PXSize inputAmount);
+typedef void (PXAPI* PXSIMDF16Function)(PXF16 PXREF listOut, const PXF16 PXREF listInput, const PXSize inputAmount);
+typedef void (PXAPI* PXSIMDF32Function)(PXF32 PXREF listOut, const PXF32 PXREF listInput, const PXSize inputAmount);
+typedef void (PXAPI* PXSIMDF64Function)(PXF64 PXREF listOut, const PXF64 PXREF listInput, const PXSize inputAmount);
 
-typedef void (PXAPI* PXSIMDF16ToF32Function)(PXF32* const listOut, const PXF16* const listInput, const PXSize inputAmount);
-typedef void (PXAPI* PXSIMDF32ToF16Function)(PXF16* const listOut, const PXF32* const listInput, const PXSize inputAmount);
+typedef void (PXAPI* PXSIMDF16ToF32Function)(PXF32 PXREF listOut, const PXF16 PXREF listInput, const PXSize inputAmount);
+typedef void (PXAPI* PXSIMDF32ToF16Function)(PXF16 PXREF listOut, const PXF32 PXREF listInput, const PXSize inputAmount);
 
 
 // Global object, single instance. 
@@ -201,7 +203,7 @@ PXPublic void PXAPI PXMathIntrinsicInit();
 //---------------------------------------------------------
 // Range - 
 //---------------------------------------------------------
-PXPublic PXBool PXAPI PXMathAdressInRange(const void* const dataAdress, const PXSize dataAdressSize, const void* target);
+PXPublic PXBool PXAPI PXMathAdressInRange(const void PXREF dataAdress, const PXSize dataAdressSize, const void* target);
 
 
 
@@ -210,8 +212,8 @@ PXPublic PXBool PXAPI PXMathAdressInRange(const void* const dataAdress, const PX
 //---------------------------------------------------------
 typedef struct PXMatrix4x4F_ PXMatrix4x4F;
 
-PXPublic void PXAPI PXMathMatrix4x4TransposeS(PXMatrix4x4F* const pxMatrix4x4);
-PXPublic void PXAPI PXMathMatrix4x4TransposeX(PXMatrix4x4F* const pxMatrix4x4);
+PXPublic void PXAPI PXMathMatrix4x4TransposeS(PXMatrix4x4F PXREF pxMatrix4x4);
+PXPublic void PXAPI PXMathMatrix4x4TransposeX(PXMatrix4x4F PXREF pxMatrix4x4);
 
 
 //---------------------------------------------------------
@@ -277,15 +279,15 @@ PXPublic PXF64 PXAPI PXMathDegreeToRadians(const PXF64 degree);
 //---------------------------------------------------------
 // 16-Bit - PXF32 - Math
 //---------------------------------------------------------
-PXPublic void PXAPI PXMathF16ToF32(PXF32* const listOut, const PXF16* const listInput, const PXSize inputAmount);
-PXPublic void PXAPI PXMathF16ToF32X4(PXF32* const listOut, const PXF16* const listInput, const PXSize inputAmount);
-PXPublic void PXAPI PXMathF16ToF32X8(PXF32* const listOut, const PXF16* const listInput, const PXSize inputAmount);
-PXPublic void PXAPI PXMathF16ToF32X16(PXF32* const listOut, const PXF16* const listInput, const PXSize inputAmount);
+PXPublic void PXAPI PXMathF16ToF32(PXF32 PXREF listOut, const PXF16 PXREF listInput, const PXSize inputAmount);
+PXPublic void PXAPI PXMathF16ToF32X4(PXF32 PXREF listOut, const PXF16 PXREF listInput, const PXSize inputAmount);
+PXPublic void PXAPI PXMathF16ToF32X8(PXF32 PXREF listOut, const PXF16 PXREF listInput, const PXSize inputAmount);
+PXPublic void PXAPI PXMathF16ToF32X16(PXF32 PXREF listOut, const PXF16 PXREF listInput, const PXSize inputAmount);
 
-PXPublic void PXAPI PXMathF32ToF16(PXF16* const listOut, const PXF32* const listInput, const PXSize inputAmount);
-PXPublic void PXAPI PXMathF32ToF16X4(PXF16* const listOut, const PXF32* const listInput, const PXSize inputAmount);
-PXPublic void PXAPI PXMathF32ToF16X8(PXF16* const listOut, const PXF32* const listInput, const PXSize inputAmount);
-PXPublic void PXAPI PXMathF32ToF16X16(PXF16* const listOut, const PXF32* const listInput, const PXSize inputAmount);
+PXPublic void PXAPI PXMathF32ToF16(PXF16 PXREF listOut, const PXF32 PXREF listInput, const PXSize inputAmount);
+PXPublic void PXAPI PXMathF32ToF16X4(PXF16 PXREF listOut, const PXF32 PXREF listInput, const PXSize inputAmount);
+PXPublic void PXAPI PXMathF32ToF16X8(PXF16 PXREF listOut, const PXF32 PXREF listInput, const PXSize inputAmount);
+PXPublic void PXAPI PXMathF32ToF16X16(PXF16 PXREF listOut, const PXF32 PXREF listInput, const PXSize inputAmount);
 //---------------------------------------------------------
 
 
@@ -319,21 +321,21 @@ PXPublic PXF64 PXAPI PXMathRootF64(unsigned int rootNr, const PXF64 value);
 
 PXPublic PXF32 PXAPI PXMathRootSquareF32(const PXF32 value);
 PXPublic PXF64 PXAPI PXMathRootSquareF64(const PXF64 value);
-PXPublic void PXAPI PXMathRootSquareF32V(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount);
-PXPublic void PXAPI PXMathRootSquareF32VX4(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount);
-PXPublic void PXAPI PXMathRootSquareF32VX8(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount);
-PXPublic void PXAPI PXMathRootSquareF32VX16(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount);
+PXPublic void PXAPI PXMathRootSquareF32V(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount);
+PXPublic void PXAPI PXMathRootSquareF32VX4(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount);
+PXPublic void PXAPI PXMathRootSquareF32VX8(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount);
+PXPublic void PXAPI PXMathRootSquareF32VX16(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount);
 
-PXPublic void PXAPI PXMathRootSquareInverseF16VX8(PXF16* const outputListY, const PXF16* const inputListX, const PXSize amount);
-PXPublic void PXAPI PXMathRootSquareInverseF32VX4(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount);
-PXPublic void PXAPI PXMathRootSquareInverseF64VX2(PXF64* const outputListY, const PXF64* const inputListX, const PXSize amount);
+PXPublic void PXAPI PXMathRootSquareInverseF16VX8(PXF16 PXREF outputListY, const PXF16 PXREF inputListX, const PXSize amount);
+PXPublic void PXAPI PXMathRootSquareInverseF32VX4(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount);
+PXPublic void PXAPI PXMathRootSquareInverseF64VX2(PXF64 PXREF outputListY, const PXF64 PXREF inputListX, const PXSize amount);
 
 
 PXPublic double PXAPI PXMathRootCubic(double value);
 
-PXPublic void PXAPI PXMathRootCubeInverseF16VX8(PXF16* const outputListY, const PXF16* const inputListX, const PXSize amount);
-PXPublic void PXAPI PXMathRootCubeInverseF32VX4(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount);
-PXPublic void PXAPI PXMathRootCubeInverseF64VX2(PXF64* const outputListY, const PXF64* const inputListX, const PXSize amount);
+PXPublic void PXAPI PXMathRootCubeInverseF16VX8(PXF16 PXREF outputListY, const PXF16 PXREF inputListX, const PXSize amount);
+PXPublic void PXAPI PXMathRootCubeInverseF32VX4(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount);
+PXPublic void PXAPI PXMathRootCubeInverseF64VX2(PXF64 PXREF outputListY, const PXF64 PXREF inputListX, const PXSize amount);
 //---------------------------------------------------------
 
 
@@ -344,17 +346,17 @@ PXPublic void PXAPI PXMathRootCubeInverseF64VX2(PXF64* const outputListY, const 
 PXPublic PXF32 PXAPI PXMathSinusRADF32(const PXF32 x);
 PXPublic PXF64 PXAPI PXMathSinusRADF64(const PXF64 x);
 
-PXPublic void PXAPI PXMathSinusRADF16V(PXF16* const outputListY, const PXF16* const inputListX, const PXSize amount);
-PXPublic void PXAPI PXMathSinusRADF32V(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount);
-PXPublic void PXAPI PXMathSinusRADF64V(PXF64* const outputListY, const PXF64* const inputListX, const PXSize amount);
+PXPublic void PXAPI PXMathSinusRADF16V(PXF16 PXREF outputListY, const PXF16 PXREF inputListX, const PXSize amount);
+PXPublic void PXAPI PXMathSinusRADF32V(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount);
+PXPublic void PXAPI PXMathSinusRADF64V(PXF64 PXREF outputListY, const PXF64 PXREF inputListX, const PXSize amount);
 
-PXPublic void PXAPI PXMathSinusDEGF16V(PXF16* const outputListY, const PXF16* const inputListX, const PXSize amount);
-PXPublic void PXAPI PXMathSinusDEGF32V(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount);
-PXPublic void PXAPI PXMathSinusDEGF64V(PXF64* const outputListY, const PXF64* const inputListX, const PXSize amount);
+PXPublic void PXAPI PXMathSinusDEGF16V(PXF16 PXREF outputListY, const PXF16 PXREF inputListX, const PXSize amount);
+PXPublic void PXAPI PXMathSinusDEGF32V(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount);
+PXPublic void PXAPI PXMathSinusDEGF64V(PXF64 PXREF outputListY, const PXF64 PXREF inputListX, const PXSize amount);
 
-PXPublic void PXAPI PXMathSinusHyperbolicRADF16V(PXF16* const outputListY, const PXF16* const inputListX, const PXSize amount);
-PXPublic void PXAPI PXMathSinusHyperbolicRADF32V(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount);
-PXPublic void PXAPI PXMathSinusHyperbolicRADF64V(PXF64* const outputListY, const PXF64* const inputListX, const PXSize amount);
+PXPublic void PXAPI PXMathSinusHyperbolicRADF16V(PXF16 PXREF outputListY, const PXF16 PXREF inputListX, const PXSize amount);
+PXPublic void PXAPI PXMathSinusHyperbolicRADF32V(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount);
+PXPublic void PXAPI PXMathSinusHyperbolicRADF64V(PXF64 PXREF outputListY, const PXF64 PXREF inputListX, const PXSize amount);
 //-----------------------------------------------------------------------------
 
 
@@ -382,23 +384,23 @@ PXPublic double PXAPI PXMathHyperbolicSinus(const double x);
 PXPublic PXF32 PXAPI PXMathCosinusRADF32(const PXF32 x);
 PXPublic PXF64 PXAPI PXMathCosinusRADF64(const PXF64 x);
 
-PXPublic void PXAPI PXMathCosinusRADF16V(PXF16* const outputListY, const PXF16* const inputListX, const PXSize amount);
-PXPublic void PXAPI PXMathCosinusRADF32V(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount);
-PXPublic void PXAPI PXMathCosinusRADF64V(PXF64* const outputListY, const PXF64* const inputListX, const PXSize amount);
+PXPublic void PXAPI PXMathCosinusRADF16V(PXF16 PXREF outputListY, const PXF16 PXREF inputListX, const PXSize amount);
+PXPublic void PXAPI PXMathCosinusRADF32V(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount);
+PXPublic void PXAPI PXMathCosinusRADF64V(PXF64 PXREF outputListY, const PXF64 PXREF inputListX, const PXSize amount);
 
-PXPublic void PXAPI PXMathCosinusDEGF16V(PXF16* const outputListY, const PXF16* const inputListX, const PXSize amount);
+PXPublic void PXAPI PXMathCosinusDEGF16V(PXF16 PXREF outputListY, const PXF16 PXREF inputListX, const PXSize amount);
 
-PXPublic void PXAPI PXMathCosinusDEGF32V(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount);
-PXPublic void PXAPI PXMathCosinusDEGF32VX1(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount);
-PXPublic void PXAPI PXMathCosinusDEGF32VX4(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount);
-PXPublic void PXAPI PXMathCosinusDEGF32VX8(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount);
-PXPublic void PXAPI PXMathCosinusDEGF32VX16(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount);
+PXPublic void PXAPI PXMathCosinusDEGF32V(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount);
+PXPublic void PXAPI PXMathCosinusDEGF32VX1(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount);
+PXPublic void PXAPI PXMathCosinusDEGF32VX4(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount);
+PXPublic void PXAPI PXMathCosinusDEGF32VX8(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount);
+PXPublic void PXAPI PXMathCosinusDEGF32VX16(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount);
 
-PXPublic void PXAPI PXMathCosinusDEGF64V(PXF64* const outputListY, const PXF64* const inputListX, const PXSize amount);
+PXPublic void PXAPI PXMathCosinusDEGF64V(PXF64 PXREF outputListY, const PXF64 PXREF inputListX, const PXSize amount);
 
-PXPublic void PXAPI PXMathCosinusHyperbolicRADF16V(PXF16* const outputListY, const PXF16* const inputListX, const PXSize amount);
-PXPublic void PXAPI PXMathCosinusHyperbolicRADF32V(PXF32* const outputListY, const PXF32* const inputListX, const PXSize amount);
-PXPublic void PXAPI PXMathCosinusHyperbolicRADF64V(PXF64* const outputListY, const PXF64* const inputListX, const PXSize amount);
+PXPublic void PXAPI PXMathCosinusHyperbolicRADF16V(PXF16 PXREF outputListY, const PXF16 PXREF inputListX, const PXSize amount);
+PXPublic void PXAPI PXMathCosinusHyperbolicRADF32V(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount);
+PXPublic void PXAPI PXMathCosinusHyperbolicRADF64V(PXF64 PXREF outputListY, const PXF64 PXREF inputListX, const PXSize amount);
 //-----------------------------------------------------------------------------
 
 
@@ -412,11 +414,11 @@ PXPublic double PXAPI PXMathHyperbolicCosinus(const double x);
 //-----------------------------------------------------------------------------
 // Sinus & Cosinus Combo
 //-----------------------------------------------------------------------------
-PXPublic void PXAPI PXMathSinCosRADF32(const PXF32 angle, PXF32* const valueSIN, PXF32* const valueCOS);
+PXPublic void PXAPI PXMathSinCosRADF32(const PXF32 angle, PXF32 PXREF valueSIN, PXF32 PXREF valueCOS);
 
-PXPublic void PXAPI PXMathSinCosRADF16V(PXF16* const data, const PXSize amount);
-PXPublic void PXAPI PXMathSinCosRADF32V(PXF32* const data, const PXSize amount);
-PXPublic void PXAPI PXMathSinCosRADF64V(PXF64* const data, const PXSize amount);
+PXPublic void PXAPI PXMathSinCosRADF16V(PXF16 PXREF data, const PXSize amount);
+PXPublic void PXAPI PXMathSinCosRADF32V(PXF32 PXREF data, const PXSize amount);
+PXPublic void PXAPI PXMathSinCosRADF64V(PXF64 PXREF data, const PXSize amount);
 //-----------------------------------------------------------------------------
 
 
@@ -491,10 +493,10 @@ PXPublic PXF64 PXAPI PXMathLogarithm10(const PXF64 exponent);
 //---------------------------------------------------------
 PXPublic void PXAPI PXMathShuffleI8
 (
-    const PXI8U* const input,
-    PXI8U* const output,
+    const PXI8U PXREF input,
+    PXI8U PXREF output,
     const PXSize amount,
-    PXI8U* mask, 
+    const PXI8U* mask, 
     const PXI8U maskAmount
 );
 
@@ -542,8 +544,8 @@ PXPublic PXF32 PXAPI PXMathFastInverseSqaureRoot(PXF32 number);
 
 PXPublic double PXAPI PXMathNewtonGravitation(double massA, double massB, double distance);
 
-PXPublic void PXAPI PXMathRandomeSeed(PXMathRandomGeneratorSeed* const pxMathRandomGeneratorSeed);
-PXPublic PXI32U PXAPI PXMathRandomeNumber(PXMathRandomGeneratorSeed* const pxMathRandomGeneratorSeed);
+PXPublic void PXAPI PXMathRandomeSeed(PXMathRandomGeneratorSeed PXREF pxMathRandomGeneratorSeed);
+PXPublic PXI32U PXAPI PXMathRandomeNumber(PXMathRandomGeneratorSeed PXREF pxMathRandomGeneratorSeed);
 
 
 
@@ -555,12 +557,12 @@ PXPublic PXF32 PXAPI PXMathNormalizeF(const PXF32 minimum, const PXF32 maximum, 
 PXPublic unsigned int PXAPI PXMathLiniarClampAsRGBColorF(const PXF32 minimum, const PXF32 maximum, const PXF32 value);
 
 // x = (-b +/- b^2 - 4ac) / 2a
-PXPublic void PXAPI PXMathFormulaQuadratic(const PXF32 a, const PXF32 b, const PXF32 c, PXF32* const resultA, PXF32* const resultB);
+PXPublic void PXAPI PXMathFormulaQuadratic(const PXF32 a, const PXF32 b, const PXF32 c, PXF32 PXREF resultA, PXF32 PXREF resultB);
 
 // x = -(p/2) +/- sqrt((p/2)^2 - q)
-PXPublic void PXAPI PXMathFormulaPQ(const PXF32 p, const PXF32 q, PXF32* const resultA, PXF32* const resultB);
+PXPublic void PXAPI PXMathFormulaPQ(const PXF32 p, const PXF32 q, PXF32 PXREF resultA, PXF32 PXREF resultB);
 
-PXPublic double PXAPI PXMathHornerD(double* const coefficientList, const PXI32U degree, const double x);
+PXPublic double PXAPI PXMathHornerD(double PXREF coefficientList, const PXI32U degree, const double x);
 
 PXPublic void PXAPI PXFastFourierTransform();
 

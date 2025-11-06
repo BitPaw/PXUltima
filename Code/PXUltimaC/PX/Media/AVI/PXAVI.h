@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXAVIIncluded
 #define PXAVIIncluded
 
@@ -26,7 +28,7 @@ typedef struct PXAVI_
 }
 PXAVI;
 
-PXPublic PXResult PXAPI PXAVILoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXAVISaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXAVILoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXAVISaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

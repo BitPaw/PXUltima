@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXPlayerIncluded
 #define PXPlayerIncluded
 

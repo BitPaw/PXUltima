@@ -1,8 +1,12 @@
+#pragma once
+
 #ifndef PXLogIncluded
 #define PXLogIncluded
 
 #include <PX/Media/PXType.h>
 #include <PX/OS/Error/PXActionResult.h>
+
+#include <stdarg.h>
 
 #define PXLogEnable         1
 #define PXLogEnableColor    0
@@ -94,27 +98,27 @@ PXLoggingEventData;
         obj->Type = type; \
 
 
-typedef void (PXAPI* PXLogPrintFunction)(const PXLoggingType loggingType, const char* const source, ...);
+typedef void (PXAPI* PXLogPrintFunction)(const PXLoggingType loggingType, const char PXREF source, ...);
 
 PXPublic PXResult PXAPI PXConsoleTextColorSet(const PXConsoleTextColor pxConsoleTextColor);
 PXPublic PXResult PXAPI PXConsoleTextColorSetFromID(const PXI16U coliorID);
 
 PXPublic void PXAPI PXConsoleClear();
 PXPublic void PXAPI PXConsoleGoToXY(const PXI32U x, const PXI32U y);
-PXPublic void PXAPI PXConsoleWriteF(const PXSize length, const char* const source, ...);
-PXPublic void PXAPI PXConsoleWrite(const PXSize length, const char* const source);
-PXPublic void PXAPI PXConsoleWriteFV(const PXSize length, const char* const source, va_list va_list);
+PXPublic void PXAPI PXConsoleWriteF(const PXSize length, const char PXREF source, ...);
+PXPublic void PXAPI PXConsoleWrite(const PXSize length, const char PXREF source);
+PXPublic void PXAPI PXConsoleWriteFV(const PXSize length, const char PXREF source, va_list va_list);
 
 
-PXPublic void PXAPI PXConsoleWriteTablePXF32(const PXF32* const data, const PXSize amount, const PXSize width);
-PXPublic void PXAPI PXConsoleWriteTableInt(const PXI8U* const data, const PXSize amount, const PXSize width);
+PXPublic void PXAPI PXConsoleWriteTablePXF32(const PXF32 PXREF data, const PXSize amount, const PXSize width);
+PXPublic void PXAPI PXConsoleWriteTableInt(const PXI8U PXREF data, const PXSize amount, const PXSize width);
 
-//PXPublic void PXAPI PXConsoleTranlateColorsA(char* const bufferInput, char* const bufferOuput);
-PXPublic void PXAPI PXConsoleWriteWithColorCodes(struct PXText_* const bufferInput);
+//PXPublic void PXAPI PXConsoleTranlateColorsA(char PXREF bufferInput, char PXREF bufferOuput);
+PXPublic void PXAPI PXConsoleWriteWithColorCodes(struct PXText_ PXREF bufferInput);
 
-PXPublic void PXAPI PXLogPrintInvoke(PXLoggingEventData* const pxLoggingEventData, ...);
+PXPublic void PXAPI PXLogPrintInvoke(PXLoggingEventData PXREF pxLoggingEventData, ...);
 
 PXPublic void PXAPI PXLogEnableASYNC();
-PXPublic void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source, const char* const action, const char* const format, ...);
+PXPublic void PXAPI PXLogPrint(const PXLoggingType loggingType, const char PXREF source, const char PXREF action, const char PXREF format, ...);
 
 #endif

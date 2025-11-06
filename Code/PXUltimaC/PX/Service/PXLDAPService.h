@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXLDAPIncluded
 #define PXLDAPIncluded
 
@@ -301,14 +303,14 @@ typedef struct PXLDAPSearchInfo_
 }
 PXLDAPSearchInfo;
 
-PXPublic PXResult PXAPI PXLDAPClienInitialize(PXLDAPClient* const pxLDAPClient);
-PXPublic PXResult PXAPI PXLDAPClienRelease(PXLDAPClient* const pxLDAPClient);
+PXPublic PXResult PXAPI PXLDAPClienInitialize(PXLDAPClient PXREF pxLDAPClient);
+PXPublic PXResult PXAPI PXLDAPClienRelease(PXLDAPClient PXREF pxLDAPClient);
 
-PXPublic PXResult PXAPI PXLDAPClientOpen(PXLDAPClient* const pxLDAPClient, const PXLDAPConnectionInfo* const pxLDAPConnectionInfo);
-PXPublic PXResult PXAPI PXLDAPClientClose(PXLDAPClient* const pxLDAPClient);
+PXPublic PXResult PXAPI PXLDAPClientOpen(PXLDAPClient PXREF pxLDAPClient, const PXLDAPConnectionInfo PXREF pxLDAPConnectionInfo);
+PXPublic PXResult PXAPI PXLDAPClientClose(PXLDAPClient PXREF pxLDAPClient);
 
 // Used an open connection to fetch data either syncrounous or asyncounous.
 // The result is fetched into an adress that need to be cleared before the next call.
-PXPublic PXResult PXAPI PXLDAPClientSearch(PXLDAPClient* const pxLDAPClient, PXLDAPSearchInfo* const pxLDAPSearchInfo);
+PXPublic PXResult PXAPI PXLDAPClientSearch(PXLDAPClient PXREF pxLDAPClient, PXLDAPSearchInfo PXREF pxLDAPSearchInfo);
 
 #endif

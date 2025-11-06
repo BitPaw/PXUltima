@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXModIncluded
 #define PXModIncluded
 
@@ -20,10 +22,10 @@ typedef struct PXModLoadEventData_
 }
 PXModLoadEventData;
 
-typedef PXActionResult (PXAPI* PXModLoadFunction)(void* const owner, PXMod* const pxMod, PXModLoadEventData* const pxModLoadEventData);
-typedef PXActionResult (PXAPI* PXModInitializeFunction)(void* const owner, PXMod* const pxMod);
-typedef PXActionResult (PXAPI* PXModDenitializeFunction)(void* const owner, PXMod* const pxMod);
-typedef PXActionResult (PXAPI* PXModUnloadFunction)(void* const owner, PXMod* const pxMod);
+typedef PXActionResult (PXAPI* PXModLoadFunction)(void PXREF owner, PXMod PXREF pxMod, PXModLoadEventData PXREF pxModLoadEventData);
+typedef PXActionResult (PXAPI* PXModInitializeFunction)(void PXREF owner, PXMod PXREF pxMod);
+typedef PXActionResult (PXAPI* PXModDenitializeFunction)(void PXREF owner, PXMod PXREF pxMod);
+typedef PXActionResult (PXAPI* PXModUnloadFunction)(void PXREF owner, PXMod PXREF pxMod);
 
 
 #define PXModBehaviourIsEssential   0b00001 // Is the mod essential for the functionaly of the program?
@@ -53,7 +55,7 @@ typedef struct PXModLoader_
 }
 PXModLoader;
 
-PXPublic PXResult PXAPI PXModLoaderScan(PXModLoader* const pxModLoader, const PXText* const pxTextModFileDirectory);
-PXPublic PXResult PXAPI PXModLoaderAdd(PXModLoader* const pxModLoader, PXMod* const pxMod);
+PXPublic PXResult PXAPI PXModLoaderScan(PXModLoader PXREF pxModLoader, const PXText PXREF pxTextModFileDirectory);
+PXPublic PXResult PXAPI PXModLoaderAdd(PXModLoader PXREF pxModLoader, PXMod PXREF pxMod);
 
 #endif

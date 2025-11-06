@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXVRMLIncluded
 #define PXVRMLIncluded
 
@@ -9,7 +11,7 @@ typedef struct PXVRML_
 }
 PXVRML;
 
-PXPublic PXResult PXAPI PXVRMLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXVRMLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXVRMLLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXVRMLSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

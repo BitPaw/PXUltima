@@ -9,21 +9,21 @@
 #include <stdio.h>
 #endif
 
-void PXAPI PXServerConstruct(PXServer* const server)
+void PXAPI PXServerConstruct(PXServer PXREF server)
 {
     PXMemoryClear(server, sizeof(PXServer));
 }
 
-void PXAPI PXServerDestruct(PXServer* const server)
+void PXAPI PXServerDestruct(PXServer PXREF server)
 {
 
 }
 
-PXBool PXAPI PXServerSocketIDIsServer(const PXServer* const server, const PXSocketID socketID, PXSocket** const pxSocket)
+PXBool PXAPI PXServerSocketIDIsServer(const PXServer PXREF server, const PXSocketID socketID, PXSocket* PXREF pxSocket)
 {
     for (PXSize i = 0; i < server->ServerSocketListSize; ++i)
     {
-        PXSocket* const serverSocket = &server->ServerSocketList[i];
+        PXSocket PXREF serverSocket = &server->ServerSocketList[i];
         const PXBool isTarget = socketID == serverSocket->ID;
 
         if (isTarget)
@@ -37,7 +37,7 @@ PXBool PXAPI PXServerSocketIDIsServer(const PXServer* const server, const PXSock
     return PXFalse;
 }
 
-PXResult PXAPI  PXServerStart(PXServer* const server, const PXI16U port, const PXProtocolMode protocolMode)
+PXResult PXAPI PXServerStart(PXServer PXREF server, const PXI16U port, const PXProtocolMode protocolMode)
 {
     // Setup adress info
     {
@@ -57,7 +57,7 @@ PXResult PXAPI  PXServerStart(PXServer* const server, const PXI16U port, const P
             PXSocketConstruct(&server->ServerSocketList[i]);
         }
 
-        const PXActionResult adressResult = PXSocketSetupAdress
+        const PXResult adressResult = PXSocketSetupAdress
                                             (
                                                 server->ServerSocketList,
                                                 server->ServerSocketListSizeAllocated,
@@ -73,7 +73,7 @@ PXResult PXAPI  PXServerStart(PXServer* const server, const PXI16U port, const P
 
     for(PXSize i = 0; i < server->ServerSocketListSize; ++i)
     {
-        PXSocket* const pxSocket = &server->ServerSocketList[i];
+        PXSocket PXREF pxSocket = &server->ServerSocketList[i];
 
         pxSocket->EventList = server->EventList;
         pxSocket->Owner = server->Owner;
@@ -81,41 +81,41 @@ PXResult PXAPI  PXServerStart(PXServer* const server, const PXI16U port, const P
 
         // Create socket
         {
-            const PXActionResult socketCreateResult = PXSocketCreate(pxSocket, pxSocket->Family, pxSocket->Type, pxSocket->Protocol);
+            const PXResult socketCreateResult = PXSocketCreate(pxSocket, pxSocket->Family, pxSocket->Type, pxSocket->Protocol);
 
             PXActionReturnOnError(socketCreateResult);
         }
 
         // Set Socket Options
         {
-            const PXActionResult actionResult = PXSocketOptionsSet(pxSocket);
+            const PXResult actionResult = PXSocketOptionsSet(pxSocket);
 
             PXActionReturnOnError(actionResult);
         }
 
         // Bind Socket
         {
-            const PXActionResult actionResult = PXSocketBind(pxSocket);
+            const PXResult actionResult = PXSocketBind(pxSocket);
 
             PXActionReturnOnError(actionResult);
         }
 
         // Listen
         {
-            const PXActionResult actionResult = PXSocketListen(pxSocket);
+            const PXResult actionResult = PXSocketListen(pxSocket);
 
             PXActionReturnOnError(actionResult);
         }
 
         PXSocketStateChange(pxSocket, SocketIDLE);
 
-        const PXActionResult actionResult = PXThreadRun(&pxSocket->CommunicationThread, "PXServerClientListening", PXServerClientListeningThread, pxSocket);
+        const PXResult actionResult = PXThreadRun(&pxSocket->CommunicationThread, "PXServerClientListening", PXServerClientListeningThread, pxSocket);
     }
 
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXServerStop(PXServer* const server)
+PXResult PXAPI PXServerStop(PXServer PXREF server)
 {
     if (server->ServerSocketListSize == 0)
     {
@@ -127,7 +127,7 @@ PXResult PXAPI  PXServerStop(PXServer* const server)
 
     for (PXSize i = 0; i < server->ServerSocketListSize; i++)
     {
-        PXSocket* const serverSocket = &server->ServerSocketList[i];
+        PXSocket PXREF serverSocket = &server->ServerSocketList[i];
 
         PXSocketClose(serverSocket);
     }
@@ -139,16 +139,16 @@ PXResult PXAPI  PXServerStop(PXServer* const server)
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXServerKickClient(PXServer* const server, const PXSocketID socketID)
+PXResult PXAPI PXServerKickClient(PXServer PXREF server, const PXSocketID socketID)
 {
     return PXActionInvalid;
 }
 
-PXResult PXAPI  PXServerSendToAll(PXServer* const server, const void* const data, const PXSize dataSize)
+PXResult PXAPI PXServerSendToAll(PXServer PXREF server, const void PXREF data, const PXSize dataSize)
 {
     for (PXSize i = 0; i < server->ServerSocketListSize; i++)
     {
-        PXSocket* const serverSubSocket = &server->ServerSocketList[i];
+        PXSocket PXREF serverSubSocket = &server->ServerSocketList[i];
 
         for (PXSize i = 0; i < serverSubSocket->SocketLookup.EntryAmountCurrent; i++) // All sockets
         {
@@ -169,7 +169,7 @@ PXResult PXAPI  PXServerSendToAll(PXServer* const server, const void* const data
     return PXActionSuccessful;
 }
 
-PXThreadResult PXOSAPI PXServerClientListeningThread(PXSocket* const serverSocket)
+PXThreadResult PXOSAPI PXServerClientListeningThread(PXSocket PXREF serverSocket)
 {
     char pollBuffer[PXSocketBufferSize];
 

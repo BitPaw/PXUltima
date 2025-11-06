@@ -36,7 +36,7 @@ PXSize PXAPI PXHardDriveListSize()
 #endif
 }
 
-PXResult PXAPI  PXHardDriveFetchAll(PXHardDrive* const hardDriveList, const PXSize hardDriveListMaxSize, PXSize* hardDriveListSize)
+PXResult PXAPI PXHardDriveFetchAll(PXHardDrive PXREF hardDriveList, const PXSize hardDriveListMaxSize, PXSize* hardDriveListSize)
 {
     const PXSize numberOfDrives = PXHardDriveListSize();
 

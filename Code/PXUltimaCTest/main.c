@@ -56,7 +56,8 @@ void OnFileElementDetected(PXFileElementInfo* pxFileElementInfo)
         case PXFileElementInfoTypeInvalid:
         case PXFileElementInfoTypeFile:
         {
-            printf("| %-4s | %-20ls | %i |\n", "File", pxFileElementInfo->Name, pxFileElementInfo->Size);        
+            
+            ("| %-4s | %-20ls | %i |\n", "File", pxFileElementInfo->Name, pxFileElementInfo->Size);        
 
             break;
         }
@@ -269,7 +270,7 @@ int SaveBMP(const char* filename, BYTE* pData, int width, int height, int bbp)
 
 int i = 0;
 
-PXResult PXAPI  PXStreamOnFrame(PXStream* const pxStream, const PXStreamOnFrameInfo* const pxStreamOnFrameInfo)
+PXResult PXAPI PXStreamOnFrame(PXStream PXREF pxStream, const PXStreamOnFrameInfo PXREF pxStreamOnFrameInfo)
 {
     // Save raw RGB32 data to file (for testing)
     // FILE* f = fopen("webcam_frame.raw", "wb");
@@ -829,15 +830,22 @@ exit:
 }
 
 
+#include <PX/OS/Input/PXInput.h>
+
 int main()
 { 
+    PXDeviceInput* pxDeviceInputList = 0;
+    PXSize amount = 0;
 
 
+    PXDeviceInputFetch(&pxDeviceInputList, &amount);
 
+    for(PXSize i = 0; i < amount; i++)
+    {
+        PXDeviceInput* pxDeviceInput = &pxDeviceInputList[i];
 
-
-
-
+        PXConsoleWrite(0, 0);
+    }
 
 
 
@@ -1198,7 +1206,7 @@ int main()
 
 
 
-    int amount = 100000;
+    int amount0 = 100000;
 
     for(size_t i = 0; i < VXSize; i++)
     {
@@ -2181,7 +2189,7 @@ while(1)
     {
         PXBinaryWindows binaryWindows;
 
-        const PXActionResult result = PXResourceLoadA(&binaryWindows, "C:\\Data\\WorkSpace\\[GIT]\\BitFireEngine\\[Export]\\GameCleaved\\32B-Windows-Release\\GameCleaved2K.exe");
+        const PXResult result = PXResourceLoadA(&binaryWindows, "C:\\Data\\WorkSpace\\[GIT]\\BitFireEngine\\[Export]\\GameCleaved\\32B-Windows-Release\\GameCleaved2K.exe");
 
         printf("\n");
     }
@@ -2195,8 +2203,8 @@ while(1)
         PXTexture PXTexture;
         PXClear(PXTexture, &PXTexture);
 
-        const PXActionResult pxLoadResult = PXResourceLoadA(&PXTexture, "_TEST_DATA_INPUT_\\ImageInput.bmp");
-        const PXActionResult pxSaveResult = PXResourceSaveA(&PXTexture, "_TEST_DATA_INPUT_\\ImageInput_COPY.bmp", PXFileFormatBitMap);
+        const PXResult pxLoadResult = PXResourceLoadA(&PXTexture, "_TEST_DATA_INPUT_\\ImageInput.bmp");
+        const PXResult pxSaveResult = PXResourceSaveA(&PXTexture, "_TEST_DATA_INPUT_\\ImageInput_COPY.bmp", PXFileFormatBitMap);
 
         printf("\n");
     }
@@ -2209,11 +2217,11 @@ while(1)
         PXDocument pxDocument;
         PXTexture PXTexture;
 
-        const PXActionResult pxLoadResult = PXResourceLoadA(&pxDocument, "_TEST_DATA_INPUT_\\books.xml");
+        const PXResult pxLoadResult = PXResourceLoadA(&pxDocument, "_TEST_DATA_INPUT_\\books.xml");
 
-        const PXActionResult pxGraphResult = PXKnowlegeGraphLoadAndBuild(&pxKnowlegeGraph, &pxDocument, &PXTexture);
+        const PXResult pxGraphResult = PXKnowlegeGraphLoadAndBuild(&pxKnowlegeGraph, &pxDocument, &PXTexture);
 
-        const PXActionResult pxSaveResult = PXResourceSaveA(&PXTexture, "_TEST_DATA_INPUT_\\books.bmp", PXFileFormatBitMap);
+        const PXResult pxSaveResult = PXResourceSaveA(&PXTexture, "_TEST_DATA_INPUT_\\books.bmp", PXFileFormatBitMap);
 
         printf("\n");
 
@@ -2426,7 +2434,7 @@ while(1)
     pxLDAPSearchInfo.AttributeList = PXNull;
     pxLDAPSearchInfo.Scope = PXLDAPScopeSubTree;
 
-    const PXActionResult searchResult = PXLDAPClientSearch(&pxLDAP, &pxLDAPSearchInfo);
+    const PXResult searchResult = PXLDAPClientSearch(&pxLDAP, &pxLDAPSearchInfo);
     const PXBool successful = PXActionSuccessful == searchResult;
 
     if (successful)

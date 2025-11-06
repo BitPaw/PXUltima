@@ -34,7 +34,7 @@ typedef HRESULT(WINAPI* PXD3D11CreateDeviceAndSwapChain)
     );
 #endif
 
-PXResult PXAPI  PXDirectX11Initialize(PXDirectX11* const pxDirectX11, PXGraphicInitializeInfo* const pxGraphicInitializeInfo)
+PXResult PXAPI PXDirectX11Initialize(PXDirectX11 PXREF pxDirectX11, PXGraphicInitializeInfo PXREF pxGraphicInitializeInfo)
 {
 #if OSUnix
     return PXActionRefusedNotSupportedByOperatingSystem;
@@ -54,7 +54,7 @@ PXResult PXAPI  PXDirectX11Initialize(PXDirectX11* const pxDirectX11, PXGraphicI
 
     // OpenLib
     {
-        const PXActionResult pxActionResult = PXLibraryOpenA(&pxDirectX11->DirectX11Library, PXDirectX11DLL);
+        const PXResult pxActionResult = PXLibraryOpenA(&pxDirectX11->DirectX11Library, PXDirectX11DLL);
 
         if(PXActionSuccessful != pxActionResult)
         {
@@ -207,7 +207,7 @@ PXResult PXAPI  PXDirectX11Initialize(PXDirectX11* const pxDirectX11, PXGraphicI
             &featureLevelResult,
             &pxDirectX11->Context
         );
-        const PXActionResult result = PXErrorFromHRESULT(resultID);
+        const PXResult result = PXErrorFromHRESULT(resultID);
 
 #if PXLogEnable
         PXLogPrint
@@ -256,12 +256,12 @@ PXResult PXAPI  PXDirectX11Initialize(PXDirectX11* const pxDirectX11, PXGraphicI
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI  PXDirectX11Release(PXDirectX11* const pxDirectX)
+PXResult PXAPI PXDirectX11Release(PXDirectX11 PXREF pxDirectX)
 {
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI  PXDirectX11TextureAction(PXDirectX11* const pxDirectX11, PXTexturInfo* const pxGraphicTexturInfo)
+PXResult PXAPI PXDirectX11TextureAction(PXDirectX11 PXREF pxDirectX11, PXTexturInfo PXREF pxGraphicTexturInfo)
 {
 #if OSUnix
     return PXActionRefusedNotSupportedByOperatingSystem;
@@ -338,7 +338,7 @@ PXResult PXAPI  PXDirectX11TextureAction(PXDirectX11* const pxDirectX11, PXTextu
                 }
                 case PXTextureType2D:
                 {
-                    PXTexture* const pxTexture = (PXTexture*)pxGraphicTexturInfo->TextureReference;
+                    PXTexture PXREF pxTexture = (PXTexture*)pxGraphicTexturInfo->TextureReference;
                     ID3D11Texture2D** texture2D = &(ID3D11Texture2D*)pxTexture->Info.Handle.DirectXInterface;
 
                     D3D11_TEXTURE2D_DESC textureDescription;
@@ -430,7 +430,7 @@ PXResult PXAPI  PXDirectX11TextureAction(PXDirectX11* const pxDirectX11, PXTextu
                 }
                 case PXTextureType3D:
                 {
-                    PXTexture* const pxTexture = pxGraphicTexturInfo->TextureReference;
+                    PXTexture PXREF pxTexture = pxGraphicTexturInfo->TextureReference;
                     ID3D11Texture3D** dxTexture3D = &(ID3D11Texture3D*)pxTexture->Info.Handle.DirectXInterface;
 
                     D3D11_TEXTURE3D_DESC textureDescription;
@@ -502,7 +502,7 @@ PXResult PXAPI  PXDirectX11TextureAction(PXDirectX11* const pxDirectX11, PXTextu
                     }
                 case PXTextureTypeCubeContainer:
                 {
-                    PXTexture* const pxTexture = pxGraphicTexturInfo->TextureReference;
+                    PXTexture PXREF pxTexture = pxGraphicTexturInfo->TextureReference;
 
                     // ???
 
@@ -538,7 +538,7 @@ PXResult PXAPI  PXDirectX11TextureAction(PXDirectX11* const pxDirectX11, PXTextu
         return PXActionSuccessful;
     }
 
-    PXResult PXAPI  PXDirectX11Clear(PXDirectX11* const pxDirectX11, const PXColorRGBAF* const pxColorRGBAF)
+    PXResult PXAPI PXDirectX11Clear(PXDirectX11 PXREF pxDirectX11, const PXColorRGBAF PXREF pxColorRGBAF)
     {
 #if OSUnix
         return PXActionRefusedNotSupportedByOperatingSystem;
@@ -557,7 +557,7 @@ PXResult PXAPI  PXDirectX11TextureAction(PXDirectX11* const pxDirectX11, PXTextu
 #endif
     }
 
-    PXResult PXAPI  PXDirectX11VertexBufferCreate(PXDirectX11* const pxDirectX11, PXVertexBuffer* const pxVertexBuffer)
+    PXResult PXAPI PXDirectX11VertexBufferCreate(PXDirectX11 PXREF pxDirectX11, PXVertexBuffer PXREF pxVertexBuffer)
     {
 #if OSUnix
         return PXActionRefusedNotSupportedByOperatingSystem;
@@ -594,7 +594,7 @@ PXResult PXAPI  PXDirectX11TextureAction(PXDirectX11* const pxDirectX11, PXTextu
         return PXActionSuccessful;
     }
 
-    PXResult PXAPI  PXDirectX11ShaderProgramCreate(PXDirectX11* const pxDirectX11, PXShaderProgram* const pxShaderProgram, PXShader* const shaderList, const PXSize amount)
+    PXResult PXAPI PXDirectX11ShaderProgramCreate(PXDirectX11 PXREF pxDirectX11, PXShaderProgram PXREF pxShaderProgram, PXShader PXREF shaderList, const PXSize amount)
     {
 #if OSUnix
         return PXActionRefusedNotSupportedByOperatingSystem;
@@ -602,9 +602,9 @@ PXResult PXAPI  PXDirectX11TextureAction(PXDirectX11* const pxDirectX11, PXTextu
 #elif OSWindows
         for(PXSize i = 0; i < amount; ++i)
         {
-            PXShader* const pxShader = &shaderList[i];
-            ID3DBlob* const shaderCode = (ID3DBlob*)pxShader->ShaderFile->Data;
-            const void* const shaderBytecode = shaderCode->lpVtbl->GetBufferPointer(shaderCode);
+            PXShader PXREF pxShader = &shaderList[i];
+            ID3DBlob PXREF shaderCode = (ID3DBlob*)pxShader->ShaderFile->Data;
+            const void PXREF shaderBytecode = shaderCode->lpVtbl->GetBufferPointer(shaderCode);
             const SIZE_T bytecodeLength = shaderCode->lpVtbl->GetBufferSize(shaderCode);
 
             switch(pxShader->Type)
@@ -643,14 +643,14 @@ PXResult PXAPI  PXDirectX11TextureAction(PXDirectX11* const pxDirectX11, PXTextu
 #endif
     }
 
-    PXResult PXAPI  PXDirectX11TextureMemoryAvailable(PXDirectX11* const pxDirectX, PXI32U* const value)
+    PXResult PXAPI PXDirectX11TextureMemoryAvailable(PXDirectX11 PXREF pxDirectX, PXI32U PXREF value)
     {
         //*value = pxDirectX->DX11->lpVtbl->GetAvailableTextureMem(pxDirectX->DX9);
 
         return PXActionSuccessful;
     }
 
-    PXResult PXAPI  PXDirectX11DevicePhysicalListAmountFunction(PXDirectX11* const pxDirectX, PXI32U* const amountOfAdapters)
+    PXResult PXAPI PXDirectX11DevicePhysicalListAmountFunction(PXDirectX11 PXREF pxDirectX, PXI32U PXREF amountOfAdapters)
     {
 #if 0
         UINT amount = 1;
@@ -736,7 +736,7 @@ PXResult PXAPI  PXDirectX11TextureAction(PXDirectX11* const pxDirectX11, PXTextu
         return PXActionRefusedNotImplemented;
     }
 
-    PXResult PXAPI  PXDirectX11DevicePhysicalListFetchFunction(PXDirectX11* const pxDirectX, const PXI32U pxGraphicDevicePhysicalListSize, PXGPUPhysical* const pxGraphicDevicePhysicalList)
+    PXResult PXAPI PXDirectX11DevicePhysicalListFetchFunction(PXDirectX11 PXREF pxDirectX, const PXI32U pxGraphicDevicePhysicalListSize, PXGPUPhysical PXREF pxGraphicDevicePhysicalList)
     {
         return PXActionRefusedNotImplemented;
     }

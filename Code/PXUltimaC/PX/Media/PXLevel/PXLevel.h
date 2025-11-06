@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXLevelIncluded
 #define PXLevelIncluded
 
@@ -23,7 +25,7 @@ typedef struct PXLevelEntry_
 }
 PXLevelEntry;
 
-PXPublic PXResult PXAPI PXLevelLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXLevelSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXLevelLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXLevelSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

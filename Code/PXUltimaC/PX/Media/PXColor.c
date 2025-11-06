@@ -27,7 +27,7 @@ inline int clip(int val) {
     return (val < 0) ? 0 : (val > 255) ? 255 : val;
 }   
 
-void PXAPI PXColorYUYToRGB(PXColorYUV* const pxColorYUV, PXColorRGBI8* const pxColorRGBI8)
+void PXAPI PXColorYUYToRGB(PXColorYUV PXREF pxColorYUV, PXColorRGBI8 PXREF pxColorRGBI8)
 {
     int C = pxColorYUV->Y - 16;
     int D = pxColorYUV->U - 128;
@@ -93,14 +93,14 @@ PXI8U PXAPI PXColorFormatBitsPerPixel(const PXColorFormat imageDataFormat)
     return PXColorFormatBytePerPixel(imageDataFormat) * 8u;
 }
 
-void PXAPI PXColorRGBToYCbCr(const PXColorRGBI8* const colorRGB, PXColorYCbCrI8* const ColorYCbCr)
+void PXAPI PXColorRGBToYCbCr(const PXColorRGBI8 PXREF colorRGB, PXColorYCbCrI8 PXREF ColorYCbCr)
 {
     ColorYCbCr->Y = 0.299 * colorRGB->Red + 0.587 * colorRGB->Green + 0.114 * colorRGB->Blue;
     ColorYCbCr->Cb = -0.1687 * colorRGB->Red - 0.3313 * colorRGB->Green + 0.5 * colorRGB->Blue + 128u;
     ColorYCbCr->Cr = 0.5 * colorRGB->Red - 0.4187 * colorRGB->Green - 0.0813 * colorRGB->Blue + 128u;
 }
 
-void PXAPI PXColorYCbCrToRGB(const PXColorYCbCrI8* const colorYCbCr, PXColorRGBI8* const colorRGB)
+void PXAPI PXColorYCbCrToRGB(const PXColorYCbCrI8 PXREF colorYCbCr, PXColorRGBI8 PXREF colorRGB)
 {
     colorRGB->Red = colorYCbCr->Y + 1.402 * (colorYCbCr->Cr - 128u);
     colorRGB->Green = colorYCbCr->Y - 0.34414 * (colorYCbCr->Cb - 128u) - 0.71414 * (colorYCbCr->Cr - 128u);
@@ -123,7 +123,7 @@ PXF32 PXAPI PXColorRGBToCr(const PXF32 red, const PXF32 green, const PXF32 blue)
 } // ITU: +0.5f      * r -0.418688f * g -0.081312f * b
 
 
-void PXAPI PXColorHSVToRGBAF(PXColorHSV* const pxColorHSV, PXColorRGBF* const pxColorRGBF)
+void PXAPI PXColorHSVToRGBAF(PXColorHSV PXREF pxColorHSV, PXColorRGBF PXREF pxColorRGBF)
 {
     PXF32 baseColor = pxColorHSV->Hue / 60.0f;
     int baseColorInterval = PXMathFloor(baseColor);
@@ -180,7 +180,7 @@ void PXAPI PXColorHSVToRGBAF(PXColorHSV* const pxColorHSV, PXColorRGBF* const px
     }
 }
 
-void PXAPI PXColorHSVToRGBAI8(PXColorHSV* const pxColorHSV, PXColorRGBAI8* const pxColorRGBAI8)
+void PXAPI PXColorHSVToRGBAI8(PXColorHSV PXREF pxColorHSV, PXColorRGBAI8 PXREF pxColorRGBAI8)
 {
     PXColorRGBF pxColorRGBF;
 

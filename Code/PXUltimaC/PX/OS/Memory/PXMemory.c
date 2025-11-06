@@ -4,12 +4,7 @@
 #include <PX/OS/Error/PXActionResult.h>
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/Media/PXText.h>
-#include <PX/OS/Debug/PXDebug.h>
 #include <PX/OS/PXOS.h>
-#include <PX/OS/Async/PXThreadPool.h>
-
-#include <stdlib.h>
-#include <malloc.h>
 
 const char PXMemoryCPUName[] = "CPU-SIMD";
 const char PXMemoryCPUCompare[] = "Compare";
@@ -48,7 +43,7 @@ const char PXMemoryLogPrintMemoryVirtualRealloc[] = "Virtual-Realloc";
 
 
 /*
-PXResult PXAPI  WindowsProcessPrivilege(const char* pszPrivilege, BOOL bEnable)
+PXResult PXAPI WindowsProcessPrivilege(const char* pszPrivilege, BOOL bEnable)
 {
     HANDLE           hToken;
     TOKEN_PRIVILEGES tp;
@@ -136,7 +131,7 @@ PXMemorySymbolLookup* PXAPI PXMemorySymbolLookupInstanceGet(void)
     {
         PXClear(PXMemorySymbolLookup, &_PXGLOBLALMemorySymbolLookup);
 
-        PXDictionaryConstruct(&_PXGLOBLALMemorySymbolLookup, sizeof(void*), sizeof(PXSymbolMemory), PXDictionaryValueLocalityInternalEmbedded);
+        PXDictionaryConstruct(&_PXGLOBLALMemorySymbolLookup.SymbolLookup, sizeof(void*), sizeof(PXSymbolMemory), PXDictionaryValueLocalityInternalEmbedded);
 
         _PXGLOBLALMemorySymbolLookupENABLED = PXTrue;
     }
@@ -144,9 +139,9 @@ PXMemorySymbolLookup* PXAPI PXMemorySymbolLookupInstanceGet(void)
     return &_PXGLOBLALMemorySymbolLookup;
 }
 
-void PXAPI PXMemorySymbolAdd(PXSymbolMemory* const pxSymbolMemory,  const PXMemorySymbolInfoMode pxMemorySymbolInfoMode)
+void PXAPI PXMemorySymbolAdd(PXSymbolMemory PXREF pxSymbolMemory,  const PXMemorySymbolInfoMode pxMemorySymbolInfoMode)
 {
-    PXMemorySymbolLookup* const pxMemorySymbolLookup = PXMemorySymbolLookupInstanceGet();
+    PXMemorySymbolLookup PXREF pxMemorySymbolLookup = PXMemorySymbolLookupInstanceGet();
 
     switch(pxMemorySymbolInfoMode)
     {
@@ -170,9 +165,9 @@ void PXAPI PXMemorySymbolAdd(PXSymbolMemory* const pxSymbolMemory,  const PXMemo
     }
 }
 
-PXResult PXAPI  PXMemorySymbolFetch(const void* const adress, PXSymbol* const pxSymbol)
+PXResult PXAPI PXMemorySymbolFetch(const void PXREF adress, PXSymbol PXREF pxSymbol)
 {
-    PXMemorySymbolLookup* const pxMemorySymbolLookup = PXMemorySymbolLookupInstanceGet();
+    PXMemorySymbolLookup PXREF pxMemorySymbolLookup = PXMemorySymbolLookupInstanceGet();
     PXSymbolMemory* symbolMemory = PXNull;
 
     PXBool success = PXDictionaryEntryFind(&pxMemorySymbolLookup->SymbolLookup, &adress, &symbolMemory);
@@ -200,12 +195,12 @@ PXResult PXAPI  PXMemorySymbolFetch(const void* const adress, PXSymbol* const px
     return PXActionSuccessful;
 }
 
-PXBool PXAPI PXMemoryDoAdressesOverlap(void* const adressA, const PXSize adressALengh, void* const adressB, const PXSize adressBLengh)
+PXBool PXAPI PXMemoryDoAdressesOverlap(void PXREF adressA, const PXSize adressALengh, void PXREF adressB, const PXSize adressBLengh)
 {
     // What adress is the lower one?
     // We could force the user to only use a as a lower adress but not right now
 
-    PXSize adressLowerSize = PXNull;
+    PXSize adressLowerSize = 0;
     void* adressLower = PXNull;
     void* adressHigher = PXNull;
 
@@ -224,7 +219,7 @@ PXBool PXAPI PXMemoryDoAdressesOverlap(void* const adressA, const PXSize adressA
         // ToDo: Print message to user: Order of adresses swapped
     }
 
-    PXBool overlap = ((PXSize)adressLower + adressLowerSize) >= adressHigher;
+    PXBool overlap = ((PXSize)adressLower + adressLowerSize) >= (PXSize)adressHigher;
 
     return overlap;
 }
@@ -288,13 +283,13 @@ int PXAPI PXMemoryProtectionIDTranslate(const PXI8U protectionMode)
     return protectionID;
 }
 
-PXResult PXAPI  PXMemoryProtect(void* dataAdress, const PXSize dataSize, const PXI8U protectionMode)
+PXResult PXAPI PXMemoryProtect(void* dataAdress, const PXSize dataSize, const PXI8U protectionMode)
 {
     const PXI32U protectionID = PXMemoryProtectionIDTranslate(protectionMode);
 
 #if OSUnix
     const int protectResultID = mprotect(dataAdress, dataSize, protectionID); // libc.so, sys/mman.h
-    const PXActionResult protectResult = PXErrorCurrent(0 == protectResultID);
+    const PXResult protectResult = PXErrorCurrent(0 == protectResultID);
 
     return protectResult;
 #elif OSWindows
@@ -302,7 +297,7 @@ PXResult PXAPI  PXMemoryProtect(void* dataAdress, const PXSize dataSize, const P
     DWORD oldProtectModeID = 0;
 
     const PXBool result = VirtualProtect(dataAdress, dataSize, protectionID, &oldProtectModeID); // Windows XP (+UWP), Kernel32.dll, memoryapi.h
-    const PXActionResult actiobResult = PXErrorCurrent(result);
+    const PXResult actiobResult = PXErrorCurrent(result);
 
     return actiobResult;
 #else
@@ -355,14 +350,14 @@ PXBool PXAPI PXMemoryScan(PXMemoryUsage* memoryUsage)
 #endif
 }
 
-void PXAPI PXMemoryClear(void* const PXRestrict bufferA, const PXSize bufferASize)
+void PXAPI PXMemoryClear(void PXREF PXRestrict bufferA, const PXSize bufferASize)
 {
     PXMemorySet(bufferA, 0u, bufferASize);
 
     //ZeroMemory(bufferA, bufferASize);
 }
 
-void PXAPI PXMemorySetI32U(int* const PXRestrict bufferA, const int value, const PXSize amount)
+void PXAPI PXMemorySetI32U(int PXREF PXRestrict bufferA, const int value, const PXSize amount)
 {
     for(PXSize i = 0; i < amount; ++i)
     {
@@ -370,7 +365,7 @@ void PXAPI PXMemorySetI32U(int* const PXRestrict bufferA, const int value, const
     }
 }
 
-void PXAPI PXMemorySet(void* const PXRestrict buffer, const PXByte value, const PXSize bufferSize)
+void PXAPI PXMemorySet(void PXREF PXRestrict buffer, const PXByte value, const PXSize bufferSize)
 {
 //#if MemoryAssertEnable
 //    assert(bufferA);
@@ -399,7 +394,7 @@ void PXAPI PXMemorySet(void* const PXRestrict buffer, const PXByte value, const 
 
 #include <immintrin.h>
 
-PXI8U PXAPI PXMemoryCompareI8V(const PXI8U* const textList, const PXI8U listAmount, const PXI8U value)
+PXI8U PXAPI PXMemoryCompareI8V(const PXI8U PXREF textList, const PXI8U listAmount, const PXI8U value)
 {
     __m512i zero = _mm512_setzero_si512();
     //__m512i zero = _mm512_set1_epi8('~');
@@ -464,7 +459,7 @@ PXI8U PXAPI PXMemoryCompareI8V(const PXI8U* const textList, const PXI8U listAmou
     return (PXI8U)-1; // No match!
 }
 
-PXI8U PXAPI PXMemoryCompareC32V(const char* value, char* const textList[4], const PXI8U listAmount)
+PXI8U PXAPI PXMemoryCompareC32V(const char* value, char PXREF textList[4], const PXI8U listAmount)
 {
     __m512i value_vector = _mm512_set1_epi32(*(int*)value); // Load target char[4], gets copy'ed 16x 
 
@@ -489,7 +484,22 @@ PXI8U PXAPI PXMemoryCompareC32V(const char* value, char* const textList[4], cons
     return (PXI8U)-1; // No match!
 }
 
-PXI8U PXAPI PXMemoryCompareSVI8(const char* const stringTarget, char** const stringList, const PXI8U* const stringSizeList, const PXI8U amount)
+PXSize PXAPI PXMemoryCompareI32UV(const PXI32U* valueList, const PXSize listAmount, const PXI32U valueTarget)
+{
+    PXSize i = 0;
+
+    for(; i < listAmount; ++i)
+    {
+        if(valueList[i] == valueTarget)
+        {
+            return i;
+        }
+    }
+
+    return (PXSize)-1;
+}
+
+PXI8U PXAPI PXMemoryCompareSVI8(const char PXREF stringTarget, char* PXREF stringList, const PXI8U PXREF stringSizeList, const PXI8U amount)
 {
     // Load the target string into a 512-bit AVX512 register
     __m512i target = _mm512_set1_epi64(*(PXI64U*)stringTarget); // Mask for max 8 bytes
@@ -599,17 +609,17 @@ PXI8U PXAPI PXMemoryCompareSVI8(const char* const stringTarget, char** const str
 
 }
 
-PXI8U PXAPI PXMemoryReadBitI32U(const PXI32U* const PXI32U, const PXI8U index)
+PXI8U PXAPI PXMemoryReadBitI32U(const PXI32U PXREF value, const PXI8U index)
 {
-    return _bittest(PXI32U, index); // [Intrinsic] intrin.h, winnt.h
+    return _bittest((LONG*)value, index); // [Intrinsic] intrin.h, winnt.h
 }
 
-PXI8U PXAPI PXMemoryReadBitI64U(const PXI64U* const PXI64U, const PXI8U index)
+PXI8U PXAPI PXMemoryReadBitI64U(const PXI64U PXREF value, const PXI8U index)
 {
     return 0;// _bittest64(PXI64U, index);
 }
 
-PXI8U PXAPI PXMemoryReadBitAndClearI32U(const PXI32U* const PXI32U, const PXI8U index)
+PXI8U PXAPI PXMemoryReadBitAndClearI32U(const PXI32U PXREF PXI32U, const PXI8U index)
 {
     return 0;
 }
@@ -773,7 +783,7 @@ PXBool PXAPI PXMemorySwap(void* PXRestrict bufferA, void* PXRestrict bufferB, co
     return PXTrue;
 }
 
-const void* PXAPI PXMemoryLocateFirst(const void* const PXRestrict inputBuffer, const PXByte byteBlock, const PXSize inputBufferSize)
+const void* PXAPI PXMemoryLocateFirst(const void PXREF PXRestrict inputBuffer, const PXByte byteBlock, const PXSize inputBufferSize)
 {
 #if MemoryUseSystemFunction
     const void* memoryPosition = memchr(inputBuffer, byteBlock, inputBufferSize);
@@ -792,7 +802,7 @@ const void* PXAPI PXMemoryLocateFirst(const void* const PXRestrict inputBuffer, 
 #endif
 }
 
-const void* PXAPI PXMemoryLocateLast(const void* const PXRestrict inputBuffer, const PXByte byteBlock, const PXSize inputBufferSize)
+const void* PXAPI PXMemoryLocateLast(const void PXREF PXRestrict inputBuffer, const PXByte byteBlock, const PXSize inputBufferSize)
 {
 #if MemoryUseSystemFunction
 
@@ -828,7 +838,7 @@ const void* PXAPI PXMemoryLocateLast(const void* const PXRestrict inputBuffer, c
     return PXNull;
 }
 
-void PXAPI PXMemoryCopyF16V(PXF16* const destination, const PXF16* const source, const PXSize amount)
+void PXAPI PXMemoryCopyF16V(PXF16 PXREF destination, const PXF16 PXREF source, const PXSize amount)
 {
     for(PXSize i = 0; i < amount; ++i)
     {
@@ -836,7 +846,7 @@ void PXAPI PXMemoryCopyF16V(PXF16* const destination, const PXF16* const source,
     }
 }
 
-void PXAPI PXMemoryCopyF32V(PXF32* const destination, const PXF32* const source, const PXSize amount)
+void PXAPI PXMemoryCopyF32V(PXF32 PXREF destination, const PXF32 PXREF source, const PXSize amount)
 {
     for(PXSize i = 0; i < amount; ++i)
     {
@@ -844,7 +854,7 @@ void PXAPI PXMemoryCopyF32V(PXF32* const destination, const PXF32* const source,
     }
 }
 
-void PXAPI PXMemoryCopyF64V(PXF64* const destination, const PXF64* const source, const PXSize amount)
+void PXAPI PXMemoryCopyF64V(PXF64 PXREF destination, const PXF64 PXREF source, const PXSize amount)
 {
     for(PXSize i = 0; i < amount; ++i)
     {
@@ -852,7 +862,7 @@ void PXAPI PXMemoryCopyF64V(PXF64* const destination, const PXF64* const source,
     }
 }
 
-void PXAPI PXMemoryCopyF32ToF16V(PXF32* const destination, const PXF16* const source, const PXSize amount)
+void PXAPI PXMemoryCopyF32ToF16V(PXF32 PXREF destination, const PXF16 PXREF source, const PXSize amount)
 {
     for(PXSize i = 0; i < amount; ++i)
     {
@@ -860,7 +870,7 @@ void PXAPI PXMemoryCopyF32ToF16V(PXF32* const destination, const PXF16* const so
     }
 }
 
-void PXAPI PXMemoryCopyF16ToF32V(PXF16* const destination, const PXF32* const source, const PXSize amount)
+void PXAPI PXMemoryCopyF16ToF32V(PXF16 PXREF destination, const PXF32 PXREF source, const PXSize amount)
 {
     for(PXSize i = 0; i < amount; ++i)
     {
@@ -892,9 +902,9 @@ PXSize PXAPI PXMemoryMove(const void* inputBuffer, const PXSize inputBufferSize,
     return bufferSize;
 }
 
-void PXAPI PXMemoryPageInfoFetch(PXMemoryPageInfo* const pxFilePageFileInfo, const PXSize objectSize)
+void PXAPI PXMemoryPageInfoFetch(PXMemoryPageInfo PXREF pxFilePageFileInfo, const PXSize objectSize)
 {
-    PXOS* const pxOS = PXSystemGet();
+    PXOS PXREF pxOS = PXSystemGet();
 
     PXClear(PXMemoryPageInfo, pxFilePageFileInfo);
 
@@ -959,11 +969,11 @@ void PXAPI PXMemoryPageInfoFetch(PXMemoryPageInfo* const pxFilePageFileInfo, con
 
 #define PXMemoryUseStackAllocation 0
 
-PXResult PXAPI  PXMemoryStackAllocate(PXMemoryInfo* const pxMemoryInfo)
+PXResult PXAPI PXMemoryStackAllocate(PXMemoryInfo PXREF pxMemoryInfo)
 {
 #if PXMemoryUseStackAllocation
     const PXSize totalSize = pxMemoryInfo->TypeSize * pxMemoryInfo->Amount;
-    void* const stackAllocated =
+    void PXREF stackAllocated =
 
 #if OSUnix
         alloca(totalSize);
@@ -1005,7 +1015,7 @@ PXResult PXAPI  PXMemoryStackAllocate(PXMemoryInfo* const pxMemoryInfo)
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXMemoryStackDeallocate(PXMemoryInfo* const pxMemoryInfo)
+PXResult PXAPI PXMemoryStackDeallocate(PXMemoryInfo PXREF pxMemoryInfo)
 {
     if(!pxMemoryInfo)
     {
@@ -1088,7 +1098,7 @@ PXSize PXAPI PXMemoryCopy(const void* PXRestrict const inputBuffer, void* PXRest
     return bufferSize;
 }
 
-PXSize PXAPI PXMemoryCopyX(const void* PXRestrict const inputBuffer, const PXSize inputBufferSize, void* const outputBuffer, const PXSize outputBufferSize)
+PXSize PXAPI PXMemoryCopyX(const void* PXRestrict const inputBuffer, const PXSize inputBufferSize, void PXREF outputBuffer, const PXSize outputBufferSize)
 {
     const PXSize bufferSize = PXMathMinimumIU(inputBufferSize, outputBufferSize);
 
@@ -1120,7 +1130,7 @@ void* PXMemoryHeapAllocateCleared(const PXSize objectSize, const PXSize amount)
         return PXNull;
     }
 
-    void* const adress = calloc(amount, objectSize);
+    void PXREF adress = calloc(amount, objectSize);
 
 #if PXMemoryDebug
     printf("[#][Memory] 0x%p (%10zi B) Allocate on heap cleared\n", adress, requestedSizeInBytes);
@@ -1129,7 +1139,7 @@ void* PXMemoryHeapAllocateCleared(const PXSize objectSize, const PXSize amount)
     return adress;
 }
 
-PXBool PXMemoryHeapResizeArray(PXSize typeSize, void** dataAddress, PXSize* const dataAddressSize, const PXSize dataAddressSizeRequired)
+PXBool PXMemoryHeapResizeArray(PXSize typeSize, void** dataAddress, PXSize PXREF dataAddressSize, const PXSize dataAddressSizeRequired)
 {
     {
         const PXBool needsResize = *dataAddressSize < dataAddressSizeRequired;
@@ -1163,9 +1173,9 @@ PXBool PXMemoryHeapResizeArray(PXSize typeSize, void** dataAddress, PXSize* cons
     return PXTrue;
 
 }
-void* PXMemoryHeapReallocateClear(void* const sourceAddress, const PXSize sizeBefore, const PXSize sizeAfter)
+void* PXMemoryHeapReallocateClear(void PXREF sourceAddress, const PXSize sizeBefore, const PXSize sizeAfter)
 {
-    void* const adressReallocated = realloc(sourceAddress, sizeAfter);
+    void PXREF adressReallocated = realloc(sourceAddress, sizeAfter);
     const PXBool sizeIncredes = sizeAfter > sizeBefore;
 
     if (sizeIncredes)
@@ -1192,7 +1202,7 @@ void* PXMemoryHeapReallocateClear(void* const sourceAddress, const PXSize sizeBe
     return adressReallocated;
 }
 
-void* PXMemoryHeapReallocateTypeClear(void* const adress, const PXSize objectSize, const PXSize numberOfElementsBefore, const PXSize numberOfElementsAfter)
+void* PXMemoryHeapReallocateTypeClear(void PXREF adress, const PXSize objectSize, const PXSize numberOfElementsBefore, const PXSize numberOfElementsAfter)
 {
     return PXMemoryHeapReallocateClear(adress, objectSize * numberOfElementsBefore, objectSize * numberOfElementsAfter);
 }

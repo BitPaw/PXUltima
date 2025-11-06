@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXTypeIncluded
 #define PXTypeIncluded
 
@@ -122,15 +124,15 @@
 
 #endif
 
-#define PXAPI PXFASTCALL
+#define PXAPI PXCDECL
 
 //---------------------------------------------------------
 // Change label of functions to C-Style (C++ only)
 //---------------------------------------------------------
-#ifdef __cplusplus
-#define PXFunction extern "C"
+#if PXLanguageCPP
+#define PXExtern extern "C"
 #else
-#define PXFunction extern
+#define PXExtern extern
 #endif
 //---------------------------------------------------------
 
@@ -138,11 +140,11 @@
 #define PXInternal
 
 #if OSUnix
-#define PXPublic PXFunction extern
+#define PXPublic PXExtern
 #define PXMSHandle void*
 #elif OSWindows
 #define PXDLLExport __declspec(dllexport)
-#define PXPublic PXFunction PXDLLExport // The visual studio compiler also wants this definition, for microsoft stuff.
+#define PXPublic PXExtern PXDLLExport // The visual studio compiler also wants this definition, for microsoft stuff.
 #define PXMSHandle HANDLE
 #endif
 //-----------------------------------------------------------------------------
@@ -160,12 +162,28 @@
 //-----------------------------------------------------------------------------
 // Restrict keyword
 //-----------------------------------------------------------------------------
-#if 1
+#if 0 // enable restrict pointers
 #define PXRestrict __restrict
+#else   
+#define PXRestrict 
 #endif
 
 
-#ifdef __cplusplus
+//-----------------------------------------------------------------------------
+// Restrict keyword
+//-----------------------------------------------------------------------------
+#if 0 // Make pointers adress readonly but not the data behind it
+#define PXConst const
+#else   
+#define PXConst 
+#endif
+
+
+// To shorten what exists in C++ with "Type&"
+#define PXREF *PXConst PXRestrict
+
+
+#if PXLanguageCPP
 #define PXYes true
 #define PXNo false
 #define PXTrue true
@@ -398,6 +416,22 @@ typedef __int64 PXI64S;
 typedef unsigned __int64 PXI64U;
 #endif // OSUnix
 
+// Integer 128-Bit, OWORD
+typedef struct PXI128S_
+{
+    PXI64S High;
+    PXI64S Low;
+}
+PXI128S;
+
+typedef struct PXI128U_
+{
+    PXI64U High;
+    PXI64U Low;
+}
+PXI128U;
+
+
 #if OS32B
 typedef PXI32U PXSize;
 typedef PXI32S PXOffset;
@@ -484,9 +518,9 @@ typedef char PXCharASCII;
 typedef wchar_t PXCharUNICODE;
 typedef PXI32U PXCharUTF8;
 
-typedef char* const PXASCII;
-typedef char* const PXTextUTF8;
-typedef wchar_t* const PXTextUNICODE;
+typedef char PXREF PXASCII;
+typedef char PXREF PXTextUTF8;
+typedef wchar_t PXREF PXTextUNICODE;
 #endif
 //------------------------------------------------------------------------------
 
@@ -923,8 +957,8 @@ typedef struct PXWorkSetCounter_
 }
 PXWorkSetCounter;
 
-PXPublic void PXAPI PXWorkSetCounterCalc(PXWorkSetCounter* const pxWorkSetCounter);
-PXPublic PXSize PXAPI PXWorkSetCounterPull(PXWorkSetCounter* const pxWorkSetCounter, const PXSize index);
+PXPublic void PXAPI PXWorkSetCounterCalc(PXWorkSetCounter PXREF pxWorkSetCounter);
+PXPublic PXSize PXAPI PXWorkSetCounterPull(PXWorkSetCounter PXREF pxWorkSetCounter, const PXSize index);
 
 
 
@@ -937,13 +971,13 @@ PXPublic void PXAPI PXTypeToString(const PXI32U dataType, char* buffer);
 
 PXPublic PXI32U PXAPI PXTypeIntFitting(const PXSize expectedSize);
 
-PXPublic void PXAPI PXEndianSwapI32U(PXI32U* const value);
-PXPublic void PXAPI PXEndianSwapI16U(PXI16U* const value);
+PXPublic void PXAPI PXEndianSwapI32U(PXI32U PXREF value);
+PXPublic void PXAPI PXEndianSwapI16U(PXI16U PXREF value);
 
 
-PXPublic void PXAPI PXEndianSwap(void* const data, const PXSize dataSize, const PXEndian endianFrom, const PXEndian endianTo);
+PXPublic void PXAPI PXEndianSwap(void PXREF data, const PXSize dataSize, const PXEndian endianFrom, const PXEndian endianTo);
 
-PXPublic void PXAPI PXEndianSwapV(void** const data, const PXSize dataSize, const PXSize elementSize, const PXEndian endianFrom, const PXEndian endianTo);
+PXPublic void PXAPI PXEndianSwapV(void* PXREF data, const PXSize dataSize, const PXSize elementSize, const PXEndian endianFrom, const PXEndian endianTo);
 
 //-----------------------------------------------------------------------------
 

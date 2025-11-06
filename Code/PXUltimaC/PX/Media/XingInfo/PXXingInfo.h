@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXXingInfoIncluded
 #define PXXingInfoIncluded
 
@@ -23,6 +25,6 @@ typedef struct PXXingInfo_
 }
 PXXingInfo;
 
-PXPublic PXResult PXAPI PXXingInfoParse(PXXingInfo* const xingInfo, PXFile* const PXFile);
+PXPublic PXResult PXAPI PXXingInfoParse(PXXingInfo PXREF xingInfo, PXFile PXREF PXFile);
 
 #endif

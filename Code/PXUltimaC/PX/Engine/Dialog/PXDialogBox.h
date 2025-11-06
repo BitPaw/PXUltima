@@ -1,11 +1,13 @@
+#pragma once
+
 #ifndef PXEngineDialogBoxIncluded
 #define PXEngineDialogBoxIncluded
 
 #include <PX/Engine/PXEngine.h>
 #include "PXDialogContainer.h"
 
-typedef void (PXAPI* PXEngineDialogEventLineNew)(void* owner, struct PXEngineDialogBox_* const pxEngineDialogBox);
-typedef void (PXAPI* PXEngineDialogEventPageNew)(void* owner, struct PXEngineDialogBox_* const pxEngineDialogBox);
+typedef void (PXAPI* PXEngineDialogEventLineNew)(void* owner, struct PXEngineDialogBox_ PXREF pxEngineDialogBox);
+typedef void (PXAPI* PXEngineDialogEventPageNew)(void* owner, struct PXEngineDialogBox_ PXREF pxEngineDialogBox);
 
 typedef enum PXEngineDialogState_
 {
@@ -59,15 +61,15 @@ typedef struct PXEngineDialogBox_
 }
 PXEngineDialogBox;
 
-PXPublic void PXAPI PXEngineDialogBoxPageNext(PXEngine* const pxEngine, PXEngineDialogBox* const pxEngineDialogBox);
+PXPublic void PXAPI PXEngineDialogBoxPageNext(PXEngine PXREF pxEngine, PXEngineDialogBox PXREF pxEngineDialogBox);
 PXPublic void PXAPI PXEngineDialogBoxOpen
 (
-    PXEngine* const pxEngine,
-    PXEngineDialogBox* const pxEngineDialogBox,
-    PXDialogMessagePage* const pxDialogMessagePage,
+    PXEngine PXREF pxEngine,
+    PXEngineDialogBox PXREF pxEngineDialogBox,
+    PXDialogMessagePage PXREF pxDialogMessagePage,
     const PXSize amountOfPages
 );
-PXPublic void PXAPI PXEngineDialogBoxClose(PXEngine* const pxEngine, PXEngineDialogBox* const pxEngineDialogBox);
-PXPublic PXResult PXAPI PXEngineDialogBoxTimerTrigger(PXEngine* const pxEngine, PXTimerEventInfo* const pxEngineTimerEventInfo, PXEngineDialogBox* const pxEngineDialogBox);
+PXPublic void PXAPI PXEngineDialogBoxClose(PXEngine PXREF pxEngine, PXEngineDialogBox PXREF pxEngineDialogBox);
+PXPublic PXResult PXAPI PXEngineDialogBoxTimerTrigger(PXEngine PXREF pxEngine, PXTimerEventInfo PXREF pxEngineTimerEventInfo, PXEngineDialogBox PXREF pxEngineDialogBox);
 
 #endif

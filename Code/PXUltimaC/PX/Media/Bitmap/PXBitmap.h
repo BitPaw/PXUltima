@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXBitmapIncluded
 #define PXBitmapIncluded
 
@@ -163,18 +165,18 @@ PXPrivate inline PXI8U PXAPI PXBitmapInfoHeaderTypeToID(const PXBitmapInfoHeader
 //----------------------------------------------------------------------------
 
 //---<Public Functions--------------------------------------------------------
-PXPublic void PXAPI PXBitmapDestruct(PXBitmap* const bmp);
+PXPublic void PXAPI PXBitmapDestruct(PXBitmap PXREF bmp);
 
 // Calculate information about the layout how the raw image data is stored.
 // There will be "amount of vertical rows", and "pixeldata" + "padding" .
-PXPrivate void PXBitmapImageDataLayoutCalculate(PXBitmapImageDataLayout* const bmpImageDataLayout, const PXSize width, const PXSize height, const PXSize bbp);
+PXPrivate void PXBitmapImageDataLayoutCalculate(PXBitmapImageDataLayout PXREF bmpImageDataLayout, const PXSize width, const PXSize height, const PXSize bbp);
 
 //----------------------------------------------------------------------------
 PXPublic PXSize PXAPI PXBitmapFilePredictSize(const PXSize width, const PXSize height, const PXSize bitsPerPixel);
 
-PXPublic PXResult PXAPI PXBitmapPeekFromFile(PXResourceTransphereInfo* const pxResourceTransphereInfo);
-PXPublic PXResult PXAPI PXBitmapLoadFromFile(PXResourceTransphereInfo* const pxResourceTransphereInfo);
-PXPublic PXResult PXAPI PXBitmapSaveToFile(PXResourceTransphereInfo* const pxResourceTransphereInfo);
+PXPublic PXResult PXAPI PXBitmapPeekFromFile(PXResourceTransphereInfo PXREF pxResourceTransphereInfo);
+PXPublic PXResult PXAPI PXBitmapLoadFromFile(PXResourceTransphereInfo PXREF pxResourceTransphereInfo);
+PXPublic PXResult PXAPI PXBitmapSaveToFile(PXResourceTransphereInfo PXREF pxResourceTransphereInfo);
 //----------------------------------------------------------------------------
 
 #endif

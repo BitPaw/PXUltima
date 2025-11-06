@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXAwaitIncluded
 #define PXAwaitIncluded
 
@@ -11,6 +13,6 @@ typedef struct PXAwaitInfo_
 }
 PXAwaitInfo;
 
-PXPublic PXBool PXAPI PXAwaitChange(PXAwaitInfo* const pxAwaitInfo);
+PXPublic PXBool PXAPI PXAwaitChange(PXAwaitInfo PXREF pxAwaitInfo);
 
 #endif

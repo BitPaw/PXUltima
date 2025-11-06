@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXDebugINLCUDE
 #define PXDebugINLCUDE
 
@@ -27,43 +29,43 @@ PXDebug;
 
 
 PXPublic PXDebug* PXAPI PXDebugInstanceGet();
-PXPublic void PXAPI PXDebugInstanceRelease(PXDebug* const pxDebug);
+PXPublic void PXAPI PXDebugInstanceRelease(PXDebug PXREF pxDebug);
 
 
-PXPublic void PXAPI PXDebugDebuggerSendMessage(PXDebug* const pxDebug, PXText* const message);
+PXPublic void PXAPI PXDebugDebuggerSendMessage(PXDebug PXREF pxDebug, PXText PXREF message);
 
 
-PXPublic PXResult PXAPI PXDebugDebuggerInitialize(PXDebug* const pxDebug);
+PXPublic PXResult PXAPI PXDebugDebuggerInitialize(PXDebug PXREF pxDebug);
 
 
-PXPublic PXResult PXAPI PXDebugStartProcess(PXDebug* const pxDebug, const PXText* const applicationName);
+PXPublic PXResult PXAPI PXDebugStartProcess(PXDebug PXREF pxDebug, const PXText PXREF applicationName);
 
 // Enables a debugger to continue a thread that previously reported a debugging event.
-PXPublic PXResult PXAPI PXDebugAttach(PXDebug* const pxDebug);
-//PXPublic void PXDebugAttachToDebugger(PXDebug* const pxDebug);
+PXPublic PXResult PXAPI PXDebugAttach(PXDebug PXREF pxDebug);
+//PXPublic void PXDebugAttachToDebugger(PXDebug PXREF pxDebug);
 
 // Only the thread that created the process being debugged can call this function.
-PXPublic PXResult PXAPI PXDebugWaitForEvent(PXDebug* const pxDebug);
+PXPublic PXResult PXAPI PXDebugWaitForEvent(PXDebug PXREF pxDebug);
 
 
-PXPublic PXResult PXAPI PXDebugLibrarySymbolsFetch(PXDebug* const pxDebug, const PXText* const libraryFilePath, PXSymbol* const pxSymbolList, PXSize* const amount);
+PXPublic PXResult PXAPI PXDebugLibrarySymbolsFetch(PXDebug PXREF pxDebug, const PXText PXREF libraryFilePath, PXSymbol PXREF pxSymbolList, PXSize PXREF amount);
 
-PXPublic void PXAPI PXDebugLogMessage(PXText* const pxText);
+PXPublic void PXAPI PXDebugLogMessage(PXText PXREF pxText);
 
 
 
-PXPublic PXResult PXAPI PXDebugHeapMemoryList(PXDebug* const pxDebug);
+PXPublic PXResult PXAPI PXDebugHeapMemoryList(PXDebug PXREF pxDebug);
 
-PXPublic PXResult PXAPI PXDebugFetchSymbolThread(PXDebug* const pxDebug, PXSymbol* const pxSymbol, PXThread* pxThread);
-PXPublic PXResult PXAPI PXDebugFetchSymbolFromRougeAdress(PXDebug* const pxDebug, PXSymbol* const pxSymbol, void* adress);
+PXPublic PXResult PXAPI PXDebugFetchSymbolThread(PXDebug PXREF pxDebug, PXSymbol PXREF pxSymbol, PXThread* pxThread);
+PXPublic PXResult PXAPI PXDebugFetchSymbolFromRougeAdress(PXDebug PXREF pxDebug, PXSymbol PXREF pxSymbol, void* adress);
 
-PXPrivate PXThreadResult PXAPI PXDebugLoop(PXDebug* const pxDebug);
+PXPrivate PXThreadResult PXAPI PXDebugLoop(PXDebug PXREF pxDebug);
 
-PXPublic PXResult PXAPI PXDebugDumpCreate(PXDebug* const pxDebug);
+PXPublic PXResult PXAPI PXDebugDumpCreate(PXDebug PXREF pxDebug);
 
 
 // Adress to module HANDLE
-PXPublic PXResult PXAPI PXDebugModuleHandleFromAdress(PXHandleModule* const pxHandleModule, const void* const adress);
+//PXPublic PXResult PXAPI PXDebugModuleHandleFromAdress(PXHandleModule PXREF pxHandleModule, const void PXREF adress);
 
 
 

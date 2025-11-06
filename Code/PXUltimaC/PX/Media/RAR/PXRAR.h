@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXRARIncluded
 #define PXRARIncluded
 
@@ -20,7 +22,7 @@ typedef struct PXRAR_
 }
 PXRAR;
 
-PXPublic PXResult PXAPI PXRARLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXRARSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXRARLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXRARSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

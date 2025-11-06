@@ -18,11 +18,11 @@ typedef struct PXWindowsWMIEntry_
 }
 PXWindowsWMIEntry;
 
-void PXAPI PXWindowsWMIExtractValue(PXHardwareInfo* const pxHardwareInfo, PXWindowsWMIEntry* ValFetchList, int amount)
+void PXAPI PXWindowsWMIExtractValue(PXHardwareInfo PXREF pxHardwareInfo, PXWindowsWMIEntry* ValFetchList, int amount)
 {
     for(size_t i = 0; i < amount; i++)
     {
-        PXWindowsWMIEntry* const valFetch = &ValFetchList[i];
+        PXWindowsWMIEntry PXREF valFetch = &ValFetchList[i];
 
         wchar_t nameW[64];
 
@@ -66,7 +66,7 @@ void PXAPI PXWindowsWMIExtractValue(PXHardwareInfo* const pxHardwareInfo, PXWind
 }
 
 
-PXBool PXAPI PXWindowsWMIPathOpen(PXHardwareInfo* const pxHardwareInfo, const char* pathName)
+PXBool PXAPI PXWindowsWMIPathOpen(PXHardwareInfo PXREF pxHardwareInfo, const char* pathName)
 {
     wchar_t filePath[32];
 
@@ -102,7 +102,7 @@ PXBool PXAPI PXWindowsWMIPathOpen(PXHardwareInfo* const pxHardwareInfo, const ch
 }
 
 
-PXBool PXAPI PXWindowsWMIClassOpen(PXHardwareInfo* const pxHardwareInfo, const char* className)
+PXBool PXAPI PXWindowsWMIClassOpen(PXHardwareInfo PXREF pxHardwareInfo, const char* className)
 {
     if(!pxHardwareInfo->service)
         return PXFalse;
@@ -130,7 +130,7 @@ PXBool PXAPI PXWindowsWMIClassOpen(PXHardwareInfo* const pxHardwareInfo, const c
 #endif
 
 
-PXResult PXAPI  PXHardwareBatteryFetch(PXBattery* const pxBattery)
+PXResult PXAPI PXHardwareBatteryFetch(PXBattery PXREF pxBattery)
 {
     PXClear(PXBattery, pxBattery);
 
@@ -166,8 +166,8 @@ PXResult PXAPI  PXHardwareBatteryFetch(PXBattery* const pxBattery)
 
         PXFileOpenInfo pxFileOpenInfo;
         PXClear(PXFileOpenInfo, &pxFileOpenInfo);
-        pxFileOpenInfo.FilePathAdress = path;
-        pxFileOpenInfo.FilePathSize = size;
+        pxFileOpenInfo.FilePath.A = path;
+        pxFileOpenInfo.FilePath.SizeAllocated = size;
         pxFileOpenInfo.AccessMode = PXAccessModeReadOnly;
         pxFileOpenInfo.MemoryCachingMode = PXMemoryCachingModeUseOnce;
         pxFileOpenInfo.FlagList = PXFileIOInfoFilePhysical;
@@ -197,7 +197,7 @@ PXResult PXAPI  PXHardwareBatteryFetch(PXBattery* const pxBattery)
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, const PXI32U fetchFlags)
+PXResult PXAPI PXHardwareInfoScan(PXHardwareInfo PXREF pxHardwareInfo, const PXI32U fetchFlags)
 {
 #if OSUnix
 #elif OSWindows
@@ -254,7 +254,7 @@ PXResult PXAPI  PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, const P
             PXSensorTemperature xxxSensorTemperature;
             PXClear(PXSensorTemperature, &xxxSensorTemperature);
 
-            PXSensorTemperature* const pxSensorTemperature = &xxxSensorTemperature;
+            PXSensorTemperature PXREF pxSensorTemperature = &xxxSensorTemperature;
 
             HRESULT EJIE = pxHardwareInfo->enumerator->lpVtbl->Next(pxHardwareInfo->enumerator, WBEM_INFINITE, 1, &pxHardwareInfo->obj, &u_return);
             PXActionResult xx = PXErrorFromHRESULT(EJIE);
@@ -328,7 +328,7 @@ PXResult PXAPI  PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, const P
 
         for(PXSize processorID = 0 ; pxHardwareInfo->enumerator ; ++processorID)
         {
-            PXProcessorWS* const pxProcessor = &pxHardwareInfo->ProcessorList[processorID];
+            PXProcessorWS PXREF pxProcessor = &pxHardwareInfo->ProcessorList[processorID];
 
             HRESULT EJIE = pxHardwareInfo->enumerator->lpVtbl->Next(pxHardwareInfo->enumerator, WBEM_INFINITE, 1, &pxHardwareInfo->obj, &u_return);
 
@@ -432,7 +432,7 @@ PXResult PXAPI  PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, const P
 
         for(PXSize processorID = 0; pxHardwareInfo->enumerator; ++processorID)
         {
-            PXMainBoard* const pxMainBoard = &pxHardwareInfo->MainBoard;
+            PXMainBoard PXREF pxMainBoard = &pxHardwareInfo->MainBoard;
 
             HRESULT EJIE = pxHardwareInfo->enumerator->lpVtbl->Next(pxHardwareInfo->enumerator, WBEM_INFINITE, 1, &pxHardwareInfo->obj, &u_return);
 
@@ -489,7 +489,7 @@ PXResult PXAPI  PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, const P
 
         for(PXSize videoDeviceID = 0; pxHardwareInfo->enumerator; ++videoDeviceID)
         {
-            PXVideoDevice* const pxVideoDevice = &pxHardwareInfo->VideoDeviceList[videoDeviceID];
+            PXVideoDevice PXREF pxVideoDevice = &pxHardwareInfo->VideoDeviceList[videoDeviceID];
 
             HRESULT EJIE = pxHardwareInfo->enumerator->lpVtbl->Next(pxHardwareInfo->enumerator, WBEM_INFINITE, 1, &pxHardwareInfo->obj, &u_return);
 
@@ -585,7 +585,7 @@ PXResult PXAPI  PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, const P
 
         for(PXSize pxCacheMemoryID = 0; pxHardwareInfo->enumerator; ++pxCacheMemoryID)
         {
-            PXCacheMemory* const pxCacheMemory = &pxHardwareInfo->CacheMemoryList[pxCacheMemoryID];
+            PXCacheMemory PXREF pxCacheMemory = &pxHardwareInfo->CacheMemoryList[pxCacheMemoryID];
 
             HRESULT EJIE = pxHardwareInfo->enumerator->lpVtbl->Next(pxHardwareInfo->enumerator, WBEM_INFINITE, 1, &pxHardwareInfo->obj, &u_return);
 
@@ -675,7 +675,7 @@ PXResult PXAPI  PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, const P
 
         for(PXSize pxRAMMemoryID = 0; pxHardwareInfo->enumerator; ++pxRAMMemoryID)
         {
-            PXCCCCMemory* const pxRAMMemory = &pxHardwareInfo->CCCCMemoryList[pxRAMMemoryID];
+            PXCCCCMemory PXREF pxRAMMemory = &pxHardwareInfo->CCCCMemoryList[pxRAMMemoryID];
 
             HRESULT EJIE = pxHardwareInfo->enumerator->lpVtbl->Next(pxHardwareInfo->enumerator, WBEM_INFINITE, 1, &pxHardwareInfo->obj, &u_return);
 
@@ -752,7 +752,7 @@ PXResult PXAPI  PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, const P
 
         for(PXSize pxRAMMemoryID = 0; pxHardwareInfo->enumerator; ++pxRAMMemoryID)
         {
-            PXPhysicalMemory* const pxPhysicalMemory = &pxHardwareInfo->PhysicalMemoryList[pxRAMMemoryID];
+            PXPhysicalMemory PXREF pxPhysicalMemory = &pxHardwareInfo->PhysicalMemoryList[pxRAMMemoryID];
 
             HRESULT EJIE = pxHardwareInfo->enumerator->lpVtbl->Next(pxHardwareInfo->enumerator, WBEM_INFINITE, 1, &pxHardwareInfo->obj, &u_return);
 
@@ -828,7 +828,7 @@ PXResult PXAPI  PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, const P
 
         for(PXSize pxRAMMemoryID = 0; pxHardwareInfo->enumerator; ++pxRAMMemoryID)
         {
-            PXBIOS* const pxBIOS = &pxHardwareInfo->BIOS;
+            PXBIOS PXREF pxBIOS = &pxHardwareInfo->BIOS;
 
             HRESULT EJIE = pxHardwareInfo->enumerator->lpVtbl->Next(pxHardwareInfo->enumerator, WBEM_INFINITE, 1, &pxHardwareInfo->obj, &u_return);
 
@@ -886,7 +886,7 @@ PXResult PXAPI  PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, const P
 #endif
 }
 
-PXResult PXAPI  PXHardwareBattery(PXBattery* const pxBattery)
+PXResult PXAPI PXHardwareBattery(PXBattery PXREF pxBattery)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -895,7 +895,7 @@ PXResult PXAPI  PXHardwareBattery(PXBattery* const pxBattery)
     SYSTEM_POWER_STATUS systemPowerStatus;
 
     const BOOL resultGetID = GetSystemPowerStatus(&systemPowerStatus); // Windows XP (+UWP), Kernel32.dll, winbase.h
-    const PXActionResult resultGet = PXErrorCurrent(resultGetID);
+    const PXResult resultGet = PXErrorCurrent(resultGetID);
 
     if(PXActionSuccessful != resultGet)
     {

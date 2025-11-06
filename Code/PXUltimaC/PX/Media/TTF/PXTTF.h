@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXTTFIncluded
 #define PXTTFIncluded
 
@@ -683,9 +685,9 @@ PXPrivate PXTTFVersionType PXAPI PXTTFVersionTypeFromID(unsigned short major, un
 PXPrivate PXTTFTableEntryType PXAPI PXTTFTableEntryTypeFromID(const PXI32U tableEntryType);
 //PXPublic PXI32U PXTTFTableEntryTypeFromID(const PXTTFTableEntryType tableEntryType);
 
-PXPublic void PXAPI PXTTFDestruct(PXTTF* const ttf);
+PXPublic void PXAPI PXTTFDestruct(PXTTF PXREF ttf);
 
-PXPublic PXResult PXAPI PXTTFLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXTTFSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXTTFLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXTTFSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

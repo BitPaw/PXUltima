@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXMatroskaIncluded
 #define PXMatroskaIncluded
 
@@ -9,7 +11,7 @@ typedef struct PXMatroska_
 }
 PXMatroska;
 
-PXPublic PXResult PXAPI PXMatroskaLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXMatroskaSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXMatroskaLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXMatroskaSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

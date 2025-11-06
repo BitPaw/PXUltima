@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXProgramIncluded
 #define PXProgramIncluded
 
@@ -13,7 +15,7 @@ typedef HANDLE ProcessHandle;
 typedef DWORD ProcessID;
 #endif
 
-typedef void (PXAPI* PXProgramExecutedEvent)(const PXBool succesful, const PXSize returnResult, const PXActionResult errorCode);
+typedef void (PXAPI* PXProgramExecutedEvent)(const PXBool succesful, const PXSize returnResult, const PXResult errorCode);
 
 typedef struct PXProgram_
 {
@@ -38,23 +40,23 @@ PXProgram;
 
 PXPublic PXThreadResult PXOSAPI PXProgramExecuteThreadFunction(void* data);
 
-PXPrivate PXResult PXAPI  PXProgramExecute(PXProgram* const program);
+PXPrivate PXResult PXAPI PXProgramExecute(PXProgram PXREF program);
 
 // Execute function Asyncroinusly in another Thread.
-PXPublic PXResult PXAPI PXProgramExecuteAS(PXProgram* const program, const char* programPath, const char* parameterString, PXProgramExecutedEvent callback);
-PXPublic PXResult PXAPI PXProgramExecuteAL(PXProgram* const program, const char* programPath, const char** parameterList, PXSize parameterListSize, PXProgramExecutedEvent callback);
+PXPublic PXResult PXAPI PXProgramExecuteAS(PXProgram PXREF program, const char* programPath, const char* parameterString, PXProgramExecutedEvent callback);
+PXPublic PXResult PXAPI PXProgramExecuteAL(PXProgram PXREF program, const char* programPath, const char** parameterList, PXSize parameterListSize, PXProgramExecutedEvent callback);
 
-PXPublic PXResult PXAPI PXProgramExecuteWS(PXProgram* const program, const wchar_t* programPath, const wchar_t* parameterList, PXProgramExecutedEvent* callback);
+PXPublic PXResult PXAPI PXProgramExecuteWS(PXProgram PXREF program, const wchar_t* programPath, const wchar_t* parameterList, PXProgramExecutedEvent* callback);
 
 
-PXPublic PXResult PXAPI PXProgramWaitForFinish(PXProgram* const program, PXI32U* const returnCode);
+PXPublic PXResult PXAPI PXProgramWaitForFinish(PXProgram PXREF program, PXI32U PXREF returnCode);
 
 PXPublic ProcessHandle PXAPI PXProgramCurrentProcess();
 PXPublic ProcessID PXAPI PXProgramCurrentProcessID();
 
-PXPublic PXResult PXAPI PXProgramAttach(PXProgram* const pxProgram);
-PXPublic PXResult PXAPI PXProgramDetach(PXProgram* const pxProgram);
-PXPublic PXResult PXAPI PXProgramReadMemory(PXProgram* const pxProgram, const void* const adress, void* const buffer, const PXSize bufferSize, PXSize* const bufferSizeWritten);
-PXPublic PXResult PXAPI PXProgramWriteMemory(PXProgram* const pxProgram, const void* const adress, const void* const buffer, const PXSize bufferSize, PXSize* const bufferSizeWritten);
+PXPublic PXResult PXAPI PXProgramAttach(PXProgram PXREF pxProgram);
+PXPublic PXResult PXAPI PXProgramDetach(PXProgram PXREF pxProgram);
+PXPublic PXResult PXAPI PXProgramReadMemory(PXProgram PXREF pxProgram, const void PXREF adress, void PXREF buffer, const PXSize bufferSize, PXSize PXREF bufferSizeWritten);
+PXPublic PXResult PXAPI PXProgramWriteMemory(PXProgram PXREF pxProgram, const void PXREF adress, const void PXREF buffer, const PXSize bufferSize, PXSize PXREF bufferSizeWritten);
 
 #endif

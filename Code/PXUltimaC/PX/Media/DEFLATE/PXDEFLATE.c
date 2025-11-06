@@ -132,7 +132,7 @@ typedef struct PXDEFLATELiteralRawData_
 PXDEFLATELiteralRawData;
 
 
-PXResult PXAPI  PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const pxOutputStream)
+PXResult PXAPI PXDEFLATEParse(PXFile PXREF pxInputStream, PXFile PXREF pxOutputStream)
 {
     PXHuffmanTree literalAndLengthCodes;
     PXHuffmanTree distanceCodes;
@@ -191,7 +191,7 @@ PXResult PXAPI  PXDEFLATEParse(PXFile* const pxInputStream, PXFile* const pxOutp
             }
             case PXDeflateEncodingHuffmanDynamic:
             {
-                const PXActionResult result = PXHuffmanDistanceTreeGenerateDynamic(pxInputStream, &literalAndLengthCodes, &distanceCodes);
+                const PXResult result = PXHuffmanDistanceTreeGenerateDynamic(pxInputStream, &literalAndLengthCodes, &distanceCodes);
 
                 if(PXActionSuccessful != result)
                 {
@@ -436,7 +436,7 @@ typedef struct Hash
     PXI16U* zeros; /*length of zeros streak, used as a second hash chain*/
 } Hash;
 
-PXResult PXAPI  hash_init(Hash* const hash, const PXSize windowsize)
+PXResult PXAPI hash_init(Hash PXREF hash, const PXSize windowsize)
 {
     hash->head = PXMemoryHeapCallocT(int, HASH_NUM_VALUES);
     hash->val = PXMemoryHeapCallocT(int, windowsize);
@@ -469,7 +469,7 @@ PXResult PXAPI  hash_init(Hash* const hash, const PXSize windowsize)
     return PXActionSuccessful;
 }
 
-void PXAPI hash_cleanup(Hash* const hash)
+void PXAPI hash_cleanup(Hash PXREF hash)
 {
     PXMemoryHeapFree(PXNull, hash->head);
     PXMemoryHeapFree(PXNull, hash->val);
@@ -616,11 +616,11 @@ unsigned encodeLZ77(uivector* out, Hash* hash, const unsigned char* in, PXSize i
 
 
 
-PXResult PXAPI  deflateFixed
+PXResult PXAPI deflateFixed
 (
-    PXFile* const pxFile,
+    PXFile PXREF pxFile,
     Hash* hash,
-    const void* const data,
+    const void PXREF data,
     PXSize datapos,
     PXSize dataend,
     const LodePNGCompressSettings* settings
@@ -866,7 +866,7 @@ BPMNode* bpmnode_create(BPMLists* lists, int weight, unsigned index, BPMNode* ta
 }
 
 // sort the leaves with stable mergesort
-void bpmnode_sort(BPMNode* const leaves, const PXSize num)
+void bpmnode_sort(BPMNode PXREF leaves, const PXSize num)
 {
     BPMNode* mem = PXMemoryHeapCallocT(BPMNode, num);
 
@@ -1078,7 +1078,7 @@ unsigned HuffmanTree_makeTable(PXHuffmanTree* tree)
     return 0;
 }
 
-static unsigned HuffmanTree_makeFromLengths2(PXHuffmanTree* const tree)
+static unsigned HuffmanTree_makeFromLengths2(PXHuffmanTree PXREF tree)
 {
     PXSize error = 0;
 
@@ -1238,11 +1238,11 @@ unsigned HuffmanTree_makeFromFrequencies(PXHuffmanTree* tree, const unsigned* fr
 
 
 
-PXResult PXAPI  deflateDynamic
+PXResult PXAPI deflateDynamic
 (
-    PXFile* const pxFile,
+    PXFile PXREF pxFile,
     Hash* hash,
-    const void* const data,
+    const void PXREF data,
     PXSize datapos,
     PXSize dataend,
     const LodePNGCompressSettings* settings,
@@ -1555,7 +1555,7 @@ PXResult PXAPI  deflateDynamic
 
 #define DEFAULT_WINDOWSIZE 2048
 
-PXResult PXAPI  PXDEFLATESerialize(PXFile* const pxInputStream, PXFile* const pxOutputStream)
+PXResult PXAPI PXDEFLATESerialize(PXFile PXREF pxInputStream, PXFile PXREF pxOutputStream)
 {
     PXSize blocksize;
     Hash hash;
@@ -1692,15 +1692,15 @@ PXResult PXAPI  PXDEFLATESerialize(PXFile* const pxInputStream, PXFile* const px
 
 PXActionResult PXLZ77Encode
 (
-    //PXFile* const pxOutputStream,
-    PXFile* const pxCacheStream,
+    //PXFile PXREF pxOutputStream,
+    PXFile PXREF pxCacheStream,
     Hash* hash,
     const unsigned char* in,
     PXSize inpos,
     PXSize insize,
     const PXHuffmanTree* tree_ll,
     const PXHuffmanTree* tree_d,
-    const PXLZ77ESetting* const pxLZ77ESetting
+    const PXLZ77ESetting PXREF pxLZ77ESetting
 )
 {
     return PXActionRefusedNotImplemented;

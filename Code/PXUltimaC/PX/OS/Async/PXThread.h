@@ -1,6 +1,7 @@
+#pragma once
+
 #ifndef PXThreadIncluded
 #define PXThreadIncluded
-
 #include <PX/Engine/PXResource.h>
 #include "PXProcess.h"
 
@@ -9,6 +10,7 @@
 #if OSUnix
 #include <pthread.h>
 #include <unistd.h>
+#include <setjmp.h>
 typedef void* PXThreadResult;
 //typedef pthread_t PXThreadIDType;
 #define PXThreadIDUnused 0  // Adress
@@ -25,7 +27,7 @@ typedef struct IUnknown IUnknown;
 //#define PXThreadSucessful (PXThreadResult)0
 //#define PXThreadActionFailed (PXThreadResult)1
 
-typedef PXThreadResult(PXOSAPI* ThreadFunction)(void* const data);
+typedef PXThreadResult(PXOSAPI* ThreadFunction)(void PXREF data);
 
 
 // PXThreadState
@@ -130,13 +132,181 @@ typedef struct PXTask_
     int TimeStart; // Start time of the task. To know how much time has passed.
     int TimeDeadline;  // The targeted end time of the task. Can be a higher priority the less time is present
 
-    PXActionResult FunctionReturnCode; // As this is a PX function call, we dont get a number back but this enum
+    PXResult FunctionReturnCode; // As this is a PX function call, we dont get a number back but this enum
 }
 PXTask;
 
+void PXAPI PXTaskStateChange(PXTask PXREF pxTask, const PXI32U newState);
+void PXAPI PXTaskStateChangeRemote(PXThreadPool* pxThreadPool, PXTask PXREF pxTask, const PXI32U newState);
 
-void PXAPI PXTaskStateChange(PXTask* const pxTask, const PXI32U newState);
-void PXAPI PXTaskStateChangeRemote(PXThreadPool* pxThreadPool, PXTask* const pxTask, const PXI32U newState);
+
+
+
+
+
+
+
+
+#define PXThreadContextUse (1<<0)
+
+typedef struct PXThreadContext32_
+{
+    PXByte ExtendedRegisters[512];
+    //PXF32ING_SAVE_AREA PXF32Save;
+
+    PXI32U Dr0;
+    PXI32U Dr1;
+    PXI32U Dr2;
+    PXI32U Dr3;
+    PXI32U Dr6;
+    PXI32U Dr7;
+
+    PXI32U SegGs;
+    PXI32U SegFs;
+    PXI32U SegEs;
+    PXI32U SegDs;
+
+    PXI32U EDI;
+    PXI32U ESI;
+    PXI32U EBX;
+    PXI32U EDX;
+    PXI32U ECX;
+    PXI32U EAX;
+
+    PXI32U EBP;
+    PXI32U EIP;
+    PXI32U SegCs;
+    PXI32U EFlags;
+    PXI32U ESP;
+    PXI32U SegSs;
+}
+PXThreadContext32;
+
+typedef struct PXThreadContext64_
+{
+    // Parameter adress for integers. What are they for`?
+    PXI64U P1Home;
+    PXI64U P2Home;
+    PXI64U P3Home;
+    PXI64U P4Home;
+    PXI64U P5Home;
+    PXI64U P6Home;
+
+    PXI32U   MxCsr; // SSE - PXF32 unit flags
+
+
+    // Code Segment registers.
+    PXI16U  SegCs;
+    PXI16U  SegDs;
+    PXI16U  SegEs;
+    PXI16U  SegFs;
+    PXI16U  SegGs;
+    PXI16U  SegSs; // Stack segment register.
+
+
+    // General flags
+    PXI32U   EFlags;
+
+    // Debug register, Used for hardware breakpoints.
+    PXI64U Dr0;
+    PXI64U Dr1;
+    PXI64U Dr2;
+    PXI64U Dr3;
+    // Debug status and control registers.
+    PXI64U Dr6;
+    PXI64U Dr7;
+
+    // General-purpose registers.
+    PXI64U RAX; // Accumulator
+    PXI64U RBX; // Base register
+    PXI64U RCX; // Counter register
+    PXI64U RDX; // Data register 
+
+    PXI64U RSI; // Source index register
+    PXI64U RDI; // Destination index register
+
+    PXI64U RBP; // Base pointer register.
+    PXI64U RSP; // Stack pointer register.
+
+    // Extended 64-Bit registers
+    PXI64U R8;
+    PXI64U R9;
+    PXI64U R10;
+    PXI64U R11;
+    PXI64U R12;
+    PXI64U R13;
+    PXI64U R14;
+    PXI64U R15;
+
+    PXI64U RIP; // Instruction pointer register.
+
+    union
+    {
+        // XMM_SAVE_AREA32 FltSave;
+         //NEON128         Q[16];
+        PXI64U       D[32];
+
+
+        struct
+        {
+            PXI128S Header[2];
+            PXI128S Legacy[8];
+            PXI128S Xmm0;
+            PXI128S Xmm1;
+            PXI128S Xmm2;
+            PXI128S Xmm3;
+            PXI128S Xmm4;
+            PXI128S Xmm5;
+            PXI128S Xmm6;
+            PXI128S Xmm7;
+            PXI128S Xmm8;
+            PXI128S Xmm9;
+            PXI128S Xmm10;
+            PXI128S Xmm11;
+            PXI128S Xmm12;
+            PXI128S Xmm13;
+            PXI128S Xmm14;
+            PXI128S Xmm15;
+        };
+        PXI32U           S[32];
+    };
+    PXI128S   VectorRegister[26];
+    PXI64U VectorControl;
+    PXI64U DebugControl;
+    PXI64U LastBranchToRip;
+    PXI64U LastBranchFromRip;
+    PXI64U LastExceptionToRip;
+    PXI64U LastExceptionFromRip;
+}
+PXThreadContext64;
+
+
+// Current execution point of a thread.
+// Used as a recoverypoint for fatal execution failure
+// https://learn.microsoft.com/en-us/windows-hardware/drivers/debugger/x86-architecture
+typedef struct PXThreadContext_
+{
+#if OSUnix
+    jmp_buf POSIXJumpBuffer;
+#elif OSWindows
+    CONTEXT WindowsContext;
+#endif
+
+    union
+    {
+        PXThreadContext64 X64;
+        PXThreadContext32 X86;
+    };
+}
+PXThreadContext;
+
+
+
+
+
+
+
+
 
 
 
@@ -160,10 +330,10 @@ typedef struct PXThread_
 }
 PXThread;
 
-PXPublic void PXAPI PXThreadDestruct(PXThread* const pxThread);
+PXPublic void PXAPI PXThreadDestruct(PXThread PXREF pxThread);
 
 #if OSWindows
-PXPublic void PXAPI PXThreadConstructFromHandle(PXThread* const pxThread, HANDLE threadHandle);
+PXPublic void PXAPI PXThreadConstructFromHandle(PXThread PXREF pxThread, HANDLE threadHandle);
 #endif
 
 
@@ -173,8 +343,8 @@ PXPublic void PXAPI PXThreadConstructFromHandle(PXThread* const pxThread, HANDLE
 // "threadName" can be NULL, it helps for debugging
 PXPublic PXResult PXAPI PXThreadCreate
 (
-    PXThread* const pxThread,
-    const char* const threadName,
+    PXThread PXREF pxThread,
+    const char PXREF threadName,
     const PXProcessHandle targetProcessHandle,
     ThreadFunction threadFunction,
     void* parameter, 
@@ -192,7 +362,7 @@ PXPublic PXResult PXAPI PXThreadExitCurrent(const PXI32U exitCode);
 // current thread proceeds execution and false is returned.
 PXPublic PXResult PXAPI PXThreadYieldToOtherThreads();
 
-PXPublic PXResult PXAPI PXThreadOpen(PXThread* const pxThread);
+PXPublic PXResult PXAPI PXThreadOpen(PXThread PXREF pxThread);
 
 
 
@@ -200,16 +370,16 @@ PXPublic PXResult PXAPI PXThreadOpen(PXThread* const pxThread);
 
 
 PXPublic PXResult PXAPI PXThreadPrioritySet(PXThread* pxThread, const PXThreadPriorityMode pxThreadPriorityMode);
-PXPublic PXResult PXAPI PXThreadPriorityGet(PXThread* pxThread, PXThreadPriorityMode* const pxThreadPriorityMode);
+PXPublic PXResult PXAPI PXThreadPriorityGet(PXThread* pxThread, PXThreadPriorityMode PXREF pxThreadPriorityMode);
 
 // Change the current thread state to the wanted state if possible.
-PXPublic PXResult PXAPI PXThreadStateChange(PXThread* const pxThread, const PXI32U pxThreadState);
+PXPublic PXResult PXAPI PXThreadStateChange(PXThread PXREF pxThread, const PXI32U pxThreadState);
 
-PXPublic PXResult PXAPI PXThreadSleep(PXThread* const pxThread, const PXSize sleepTime);
+PXPublic PXResult PXAPI PXThreadSleep(PXThread PXREF pxThread, const PXSize sleepTime);
 
-PXPublic PXResult PXAPI PXThreadCurrentProcessorID(PXI32U* const processorID);
+PXPublic PXResult PXAPI PXThreadCurrentProcessorID(PXI32U PXREF processorID);
 
-PXPublic PXResult PXAPI PXThreadNameSet(PXThread* pxThread, PXText* const threadName);
-PXPublic PXResult PXAPI PXThreadNameGet(struct PXDebug_* const pxDebug, PXThread* const pxThread, PXText* const threadName);
+PXPublic PXResult PXAPI PXThreadNameSet(PXThread* pxThread, PXText PXREF threadName);
+PXPublic PXResult PXAPI PXThreadNameGet(PXDebug PXREF pxDebug, PXThread PXREF pxThread, PXText PXREF threadName);
 
 #endif

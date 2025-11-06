@@ -1,11 +1,11 @@
 #include "PXPascal.h"
 
-PXResult PXAPI  PXPascalLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI PXPascalLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
 {
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI  PXPascalSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI PXPascalSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXID3Included
 #define PXID3Included
 
@@ -125,7 +127,7 @@ PXID3;
 
 PXPrivate inline PXID3v2xFrameTag PXAPI PXID3v2xFrameTagFromID(const PXI32U id3v2xFrameTagID);
 
-PXPublic PXResult PXAPI PXID3LoadFromFile(PXID3* const id3, PXFile* const PXFile);
-PXPublic PXResult PXAPI PXID3SaveToFile(const PXID3* const id3, PXFile* const PXFile);
+PXPublic PXResult PXAPI PXID3LoadFromFile(PXID3 PXREF id3, PXFile PXREF PXFile);
+PXPublic PXResult PXAPI PXID3SaveToFile(const PXID3 PXREF id3, PXFile PXREF PXFile);
 
 #endif

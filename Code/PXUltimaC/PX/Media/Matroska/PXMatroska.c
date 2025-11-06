@@ -2,12 +2,12 @@
 
 #include <PX/OS/File/PXFile.h>
 
-PXResult PXAPI  PXMatroskaLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI PXMatroskaLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
 {
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI  PXMatroskaSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI PXMatroskaSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

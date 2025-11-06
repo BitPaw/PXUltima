@@ -5,10 +5,13 @@
 #include <PX/OS/Console/PXConsole.h>
 
 #include <stdio.h>
+#include <PX/OS/Graphic/PXGraphic.h>
 
 #define PXVulcanDebug 1
 
-PXResult PXAPI  PXVulcanErrorCodeFromID(const VkResult vkResultID)
+const char PXVulcanName[] = "Vulcan";
+
+PXResult PXAPI PXVulcanErrorCodeFromID(const VkResult vkResultID)
 {
     switch (vkResultID)
     {
@@ -124,7 +127,7 @@ PXResult PXAPI  PXVulcanErrorCodeFromID(const VkResult vkResultID)
     };
 }
 
-PXResult PXAPI  PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicInitializeInfo* const pxGraphicInitializeInfo)
+PXResult PXAPI PXVulcanInitialize(PXVulcan PXREF pxVulcan, PXGraphicInitializeInfo PXREF pxGraphicInitializeInfo)
 {
     PXClear(PXVulcan, pxVulcan);
 
@@ -174,7 +177,7 @@ PXResult PXAPI  PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicInitialize
                 PXLogPrint
                 (
                     PXLoggingError,
-                    "Vulcan",
+                    PXVulcanName,
                     "Initialize",
                     "initializing failed: Library not found"
                 );
@@ -189,7 +192,7 @@ PXResult PXAPI  PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicInitialize
     PXLogPrint
     (
         PXLoggingInfo,
-        "Vulcan",
+        PXVulcanName,
         "Initialize",
         "Library detected 0x%p",
         pxVulcan->LibraryID.ID
@@ -220,7 +223,7 @@ PXResult PXAPI  PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicInitialize
         PXLogPrint
         (
             PXLoggingInfo,
-            "Vulcan",
+            PXVulcanName,
             "Init",
             "Fetching functions..."
         );
@@ -270,7 +273,7 @@ PXResult PXAPI  PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicInitialize
             PXLogPrint
             (
                 PXLoggingInfo,
-                "Vulcan",
+                PXVulcanName,
                 "Initialize",
                 "Created 0x%p",
                 pxVulcan->Instance
@@ -311,7 +314,7 @@ PXResult PXAPI  PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicInitialize
         PXLogPrint
         (
             PXLoggingInfo,
-            "Vulcan",
+            PXVulcanName,
             "Initialize",
             "Extensions detected. Amount:%i",
             amountOfExtenions
@@ -320,13 +323,13 @@ PXResult PXAPI  PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicInitialize
 
         for (PXI32U i = 0; i < amountOfExtenions; i++)
         {
-            VkExtensionProperties* const extensionPropertie = &VkExtensionPropertieList[i];
+            VkExtensionProperties PXREF extensionPropertie = &VkExtensionPropertieList[i];
 
 #if PXVulcanDebug
             PXLogPrint
             (
                 PXLoggingInfo,
-                "Vulcan",
+                PXVulcanName,
                 "Initialize",
                 "- %2i %s ",
                 extensionPropertie->specVersion,
@@ -371,7 +374,7 @@ PXResult PXAPI  PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicInitialize
         PXLogPrint
         (
             PXLoggingInfo,
-            "Vulcan",
+            PXVulcanName,
             "Initialize",
             "Deteced %i physical devices",
             numberOfDevices
@@ -380,7 +383,7 @@ PXResult PXAPI  PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicInitialize
 
         for (PXI32U i = 0; i < numberOfDevices; ++i)
         {
-            PXVulkanDevicePhysical* const vulkanDevicePhysical = &pxVulkanDevicePhysicalList[i];
+            PXVulkanDevicePhysical PXREF vulkanDevicePhysical = &pxVulkanDevicePhysicalList[i];
 
             PXVulkanDevicePhysicalProperties pxVulkanDevicePhysicalProperties;
 
@@ -390,7 +393,7 @@ PXResult PXAPI  PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicInitialize
             PXLogPrint
             (
                 PXLoggingInfo,
-                "Vulcan",
+                PXVulcanName,
                 "Init",
                 "[Device %i/%i] %s",
                 i + 1,
@@ -429,7 +432,7 @@ PXResult PXAPI  PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicInitialize
         PXLogPrint
         (
             PXLoggingInfo,
-            "Vulcan",
+            PXVulcanName,
             "Init",
             "Creating device..."
         );
@@ -447,7 +450,7 @@ PXResult PXAPI  PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicInitialize
         PXLogPrint
         (
             PXLoggingInfo,
-            "Vulcan",
+            PXVulcanName,
             "Init",
             "Deteced %i displays",
             amountOfDisplays
@@ -465,7 +468,7 @@ PXResult PXAPI  PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicInitialize
             PXLogPrint
             (
                 PXLoggingInfo,
-                "Vulcan",
+                PXVulcanName,
                 "Init",
                 "[Device %i/%i] (%8ix%-8i) %s\n",
                 i + 1,
@@ -502,7 +505,7 @@ PXResult PXAPI  PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicInitialize
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXVulcanRelease(PXVulcan* const pxVulcan)
+PXResult PXAPI PXVulcanRelease(PXVulcan PXREF pxVulcan)
 {
     pxVulcan->InstanceDestroy(pxVulcan->Instance, PXNull);
     pxVulcan->Instance = PXNull;

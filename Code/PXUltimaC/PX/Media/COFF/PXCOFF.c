@@ -140,7 +140,7 @@ PXCOFFFormat PXAPI PXCOFFFormatFromID(const PXI16U valueID)
     }
 }
 
-PXResult PXAPI  PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFile)
+PXResult PXAPI PXCOFFLoadFromFile(PXCOFF PXREF pxCOFF, PXFile PXREF pxFile)
 {
     PXClear(PXCOFF, pxCOFF);
 
@@ -375,7 +375,7 @@ PXResult PXAPI  PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFile)
 
             // Optional Header Data Directories
             {
-                PXCOFFOptionalHeaderDataDirectories* const pxCOFFOptionalHeaderDataDirectories = &pxCOFF->OptionalHeader.DataDirectories;
+                PXCOFFOptionalHeaderDataDirectories PXREF pxCOFFOptionalHeaderDataDirectories = &pxCOFF->OptionalHeader.DataDirectories;
 
                 const PXTypeEntry pxDataStreamElementList[] =
                 {
@@ -446,7 +446,7 @@ PXResult PXAPI  PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFile)
 
     for(PXI16U sectionID = 0; sectionID < pxCOFF->Header.NumberOfSections; ++sectionID)
     {
-        PXSectionTable* const pxSectionTableCurrent = &pxCOFF->SectionTableList[sectionID];
+        PXSectionTable PXREF pxSectionTableCurrent = &pxCOFF->SectionTableList[sectionID];
 
         {
             const PXTypeEntry pxDataStreamElementList[] =
@@ -879,7 +879,7 @@ PXResult PXAPI  PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFile)
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXCOFFSaveToFile(const PXCOFF* const pxCOFF, PXFile* const pxFile)
+PXResult PXAPI PXCOFFSaveToFile(const PXCOFF PXREF pxCOFF, PXFile PXREF pxFile)
 {
     return PXActionRefusedNotImplemented;
 }

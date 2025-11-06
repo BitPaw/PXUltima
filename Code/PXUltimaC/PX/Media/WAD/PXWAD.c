@@ -79,7 +79,7 @@ const PXI8U PXWADHeaderListSize = sizeof(PXWADHeaderList) / sizeof(PXI32U);
 //---------------------------------------------------------
 
 
-PXResult PXAPI  PXWADEntryHandle(PXWADEntry* const pxWADEntry, PXFile* const pxFile)
+PXResult PXAPI PXWADEntryHandle(PXWADEntry PXREF pxWADEntry, PXFile PXREF pxFile)
 {
     PXFile dataCompressed;
     PXFile dataUncompressed;
@@ -92,8 +92,8 @@ PXResult PXAPI  PXWADEntryHandle(PXWADEntry* const pxWADEntry, PXFile* const pxF
         pxFileOpenInfo.AccessMode = PXAccessModeReadOnly;
         pxFileOpenInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
         pxFileOpenInfo.FlagList = PXFileIOInfoFileMemory;
-        pxFileOpenInfo.BufferSize = pxWADEntry->CompressedSize;
-        pxFileOpenInfo.BufferData = (PXByte*)pxFile->Data + pxWADEntry->DataOffset;
+        pxFileOpenInfo.Data.Size = pxWADEntry->CompressedSize;
+        pxFileOpenInfo.Data.Data = (PXByte*)pxFile->Data + pxWADEntry->DataOffset;
 
         PXFileOpen(&dataCompressed, &pxFileOpenInfo);
     }
@@ -212,8 +212,8 @@ PXResult PXAPI  PXWADEntryHandle(PXWADEntry* const pxWADEntry, PXFile* const pxF
         PXFileFormatInfoViaContent(&pxResourceTransphereInfo.FormatInfo, &dataUncompressed);
         PXFileTypeInfoProbe(&pxResourceTransphereInfo.FormatInfo, PXNull);
 
-        pxResourceTransphereInfo.FileReference->FilePathData = temp;
-        pxResourceTransphereInfo.FileReference->FilePathSize = PXTextPrintA
+        pxResourceTransphereInfo.FileReference->FilePath.A = temp;
+        pxResourceTransphereInfo.FileReference->FilePath.SizeUsed = PXTextPrintA
         (
             temp,
             260,
@@ -235,9 +235,9 @@ PXResult PXAPI  PXWADEntryHandle(PXWADEntry* const pxWADEntry, PXFile* const pxF
 
 
 
-PXResult PXAPI  PXWADLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI PXWADLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
 {
-    PXFile* const pxFile = pxResourceLoadInfo->FileReference;
+    PXFile PXREF pxFile = pxResourceLoadInfo->FileReference;
 
     PXWAD pxWAD;
     PXClear(PXWAD, &pxWAD);
@@ -254,7 +254,7 @@ PXResult PXAPI  PXWADLoadFromFile(PXResourceTransphereInfo* const pxResourceLoad
     );
 
 
-    PXI32U* dataList = 0;
+    const PXI32U* dataList = 0;
     PXI8U amount = 0;
 
     switch(pxWAD.Header.VersionMajor)
@@ -333,7 +333,7 @@ PXResult PXAPI  PXWADLoadFromFile(PXResourceTransphereInfo* const pxResourceLoad
 
     for(PXI32U i = 0; i < entryCount; ++i)
     {
-        PXWADEntry* const pxWADEntry = &pxWAD.EntryList[i];
+        PXWADEntry PXREF pxWADEntry = &pxWAD.EntryList[i];
 
         PXFileBinding
         (
@@ -391,7 +391,7 @@ PXResult PXAPI  PXWADLoadFromFile(PXResourceTransphereInfo* const pxResourceLoad
 
     for(PXI32U i = 0; i < entryCount; ++i)
     {
-        PXWADEntry* const pxWADEntry = &pxWAD.EntryList[i];
+        PXWADEntry PXREF pxWADEntry = &pxWAD.EntryList[i];
         const PXI32U taskID = taskListID[i];
 
         PXThreadPoolTaskUpdateWork(PXNull, taskID, PXWADEntryHandle, pxWADEntry, pxFile, 0);
@@ -407,7 +407,7 @@ PXResult PXAPI  PXWADLoadFromFile(PXResourceTransphereInfo* const pxResourceLoad
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI  PXWADSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI PXWADSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

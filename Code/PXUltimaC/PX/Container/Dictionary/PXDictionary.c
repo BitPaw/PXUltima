@@ -7,7 +7,7 @@
 
 const char PXDictionaryName[] = "Dictionary";
 
-void PXAPI PXDictionaryConstruct(PXDictionary* const dictionary, const PXSize keySize, const PXSize valueSize, const PXDictionaryValueLocality pxDictionaryValueLocality)
+void PXAPI PXDictionaryConstruct(PXDictionary PXREF dictionary, const PXSize keySize, const PXSize valueSize, const PXDictionaryValueLocality pxDictionaryValueLocality)
 {
     PXClear(PXDictionary, dictionary);
 
@@ -18,12 +18,12 @@ void PXAPI PXDictionaryConstruct(PXDictionary* const dictionary, const PXSize ke
     dictionary->List.EntryGrowthOnAllocation = 128;
 }
 
-void PXAPI PXDictionaryDestruct(PXDictionary* const dictionary)
+void PXAPI PXDictionaryDestruct(PXDictionary PXREF dictionary)
 {
     PXListRelease(&dictionary->List);
 }
 
-PXSize PXAPI PXDictionaryValueSize(const PXDictionary* const dictionary)
+PXSize PXAPI PXDictionaryValueSize(const PXDictionary PXREF dictionary)
 {
     switch(dictionary->ValueLocality)
     {
@@ -39,7 +39,7 @@ PXSize PXAPI PXDictionaryValueSize(const PXDictionary* const dictionary)
     }
 }
 
-void PXAPI PXDictionaryResize(PXDictionary* const dictionary, const PXSize entrys)
+void PXAPI PXDictionaryResize(PXDictionary PXREF dictionary, const PXSize entrys)
 {
     const PXSize rowSize = dictionary->KeyTypeSize + PXDictionaryValueSize(dictionary);
     const PXSize fullSize = rowSize * entrys;
@@ -51,22 +51,22 @@ void PXAPI PXDictionaryResize(PXDictionary* const dictionary, const PXSize entry
     PXListReserve(&dictionary->List, fullSize);
 }
 
-PXResult PXAPI PXDictionaryEntryCreate(PXDictionary* const dictionary, const void* key, const void** value)
+PXResult PXAPI PXDictionaryEntryCreate(PXDictionary PXREF pxDictionary, const void* key, void** value)
 {
-    if(!(dictionary && key))
+    if(!(pxDictionary && key))
     {
         return PXActionRefusedArgumentNull;
     }
 
-    const PXBool hasEnoughSpace = (dictionary->List.EntryAmountUsed + 1) < dictionary->List.EntryAmountAllocated;
+    const PXBool hasEnoughSpace = (pxDictionary->List.EntryAmountUsed + 1) < pxDictionary->List.EntryAmountAllocated;
 
     if(!hasEnoughSpace)
     {
 #if PXLogEnable
-        const PXSize sizeBefore = dictionary->List.EntryAmountAllocated;
+        const PXSize sizeBefore = pxDictionary->List.EntryAmountAllocated;
 #endif
 
-        PXDictionaryResize(dictionary, dictionary->List.EntryAmountUsed + dictionary->List.EntryGrowthOnAllocation);
+        PXDictionaryResize(pxDictionary, pxDictionary->List.EntryAmountUsed + pxDictionary->List.EntryGrowthOnAllocation);
 
 #if PXLogEnable
         PXLogPrint
@@ -76,8 +76,8 @@ PXResult PXAPI PXDictionaryEntryCreate(PXDictionary* const dictionary, const voi
             "Resize",
             "Size not sufficent. %i -> %i (%3i%%)",
             sizeBefore,
-            dictionary->List.EntryAmountAllocated,
-            (PXI32S)((dictionary->List.EntryAmountUsed / (PXF32)dictionary->List.EntryAmountAllocated) * 100.0f)
+            pxDictionary->List.EntryAmountAllocated,
+            (PXI32S)((pxDictionary->List.EntryAmountUsed / (PXF32)pxDictionary->List.EntryAmountAllocated) * 100.0f)
         );
 #endif
     }
@@ -86,13 +86,13 @@ PXResult PXAPI PXDictionaryEntryCreate(PXDictionary* const dictionary, const voi
     target.Key = 0;
     target.Value = 0;
 
-    for(PXSize i = 0; i < dictionary->List.EntryAmountAllocated; ++i)
+    for(PXSize i = 0; i < pxDictionary->List.EntryAmountAllocated; ++i)
     {
         PXDictionaryEntry pxDictionaryEntry;
 
-        PXDictionaryIndex(dictionary, i, &pxDictionaryEntry);
+        PXDictionaryIndex(pxDictionary, i, &pxDictionaryEntry);
 
-        const PXBool isEmptyKeyField = PXMemoryCompareToByte(pxDictionaryEntry.Key, dictionary->KeyTypeSize, 0x00);
+        const PXBool isEmptyKeyField = PXMemoryCompareToByte(pxDictionaryEntry.Key, pxDictionary->KeyTypeSize, 0x00);
 
         if(isEmptyKeyField)
         {
@@ -106,7 +106,7 @@ PXResult PXAPI PXDictionaryEntryCreate(PXDictionary* const dictionary, const voi
     if(found && value)
     {
         // Copy Key
-        PXMemoryCopy(key, target.Key, dictionary->KeyTypeSize);
+        PXMemoryCopy(key, target.Key, pxDictionary->KeyTypeSize);
 
         *value = target.Value; 
 
@@ -118,35 +118,35 @@ PXResult PXAPI PXDictionaryEntryCreate(PXDictionary* const dictionary, const voi
     } 
 }
 
-PXResult PXAPI PXDictionaryEntryAdd(PXDictionary* const dictionary, const void* key, const void* value)
+PXResult PXAPI PXDictionaryEntryAdd(PXDictionary PXREF pxDictionary, const void* key, const void* value)
 {
-    if(!(dictionary && key && value))
+    if(!(pxDictionary && key && value))
     {
         return PXActionRefusedArgumentNull;
     }
 
-    void* valueSourceAdress = 0;
+    const void* valueSourceAdress = 0;
     void* valueTargetAdress = 0;
     PXSize valueSize = 0;
 
-    const PXResult pxResult = PXDictionaryEntryCreate(dictionary, key, &valueTargetAdress);
+    const PXResult pxResult = PXDictionaryEntryCreate(pxDictionary, key, &valueTargetAdress);
 
     if(PXActionSuccessful != pxResult)
     {
         return pxResult;
     }
 
-    switch(dictionary->ValueLocality)
+    switch(pxDictionary->ValueLocality)
     {
         default:
         case PXDictionaryValueLocalityInvalid:
         {
-            return 0; // Illegal call
+            return PXActionInvalid; // Illegal call
         }
         case PXDictionaryValueLocalityInternalEmbedded:
         {
             valueSourceAdress = value;
-            valueSize = dictionary->List.ValueTypeSize;
+            valueSize = pxDictionary->List.ValueTypeSize;
             break;
         }
         case PXDictionaryValueLocalityExternalReference:
@@ -159,7 +159,7 @@ PXResult PXAPI PXDictionaryEntryAdd(PXDictionary* const dictionary, const void* 
 
     PXMemoryCopy(valueSourceAdress, valueTargetAdress, valueSize);
 
-    ++dictionary->List.EntryAmountUsed;
+    ++pxDictionary->List.EntryAmountUsed;
 
 #if PXLogEnable && 0
     char keyText[64];
@@ -198,7 +198,7 @@ PXResult PXAPI PXDictionaryEntryAdd(PXDictionary* const dictionary, const void* 
     return pxResult;
 }
 
-PXBool PXAPI PXDictionaryEntryAddMultible(PXDictionary* const dictionary, const void** keyList, const void** valueList, const PXSize amount)
+PXBool PXAPI PXDictionaryEntryAddMultible(PXDictionary PXREF dictionary, const void** keyList, const void** valueList, const PXSize amount)
 {
     const PXBool hasEnoughSpace = (dictionary->List.EntryAmountUsed + amount) < dictionary->List.EntryAmountAllocated;
 
@@ -218,14 +218,14 @@ PXBool PXAPI PXDictionaryEntryAddMultible(PXDictionary* const dictionary, const 
     return PXTrue;
 }
 
-void PXAPI PXDictionaryRemove(PXDictionary* const dictionary, const void* key)
+void PXAPI PXDictionaryRemove(PXDictionary PXREF dictionary, const void* key)
 {
     // Find
 
     // Remove
 }
 
-PXBool PXAPI PXDictionaryRemoveFound(PXDictionary* const dictionary, const void* key, void* const value)
+PXBool PXAPI PXDictionaryRemoveFound(PXDictionary PXREF dictionary, const void* key, void PXREF value)
 {
     PXMemorySet((void*)key, 0xFF, dictionary->KeyTypeSize);
     PXMemorySet((void*)value, 0xFF, dictionary->List.ValueTypeSize);
@@ -233,7 +233,7 @@ PXBool PXAPI PXDictionaryRemoveFound(PXDictionary* const dictionary, const void*
     --dictionary->List.EntryAmountUsed;
 }
 
-PXBool PXAPI PXDictionaryExtract(PXDictionary* const dictionary, const void* const key, void* const value)
+PXBool PXAPI PXDictionaryExtract(PXDictionary PXREF dictionary, const void PXREF key, void PXREF value)
 {
     void* valteAdress = 0;
 
@@ -271,7 +271,7 @@ PXBool PXAPI PXDictionaryExtract(PXDictionary* const dictionary, const void* con
     return PXTrue;
 }
 
-void PXAPI PXDictionaryIndex(const PXDictionary* const dictionary, const PXSize index, PXDictionaryEntry* const pxDictionaryEntry)
+void PXAPI PXDictionaryIndex(const PXDictionary PXREF dictionary, const PXSize index, PXDictionaryEntry PXREF pxDictionaryEntry)
 {
     if(!dictionary->List.Buffer.Data)
     {
@@ -288,19 +288,19 @@ void PXAPI PXDictionaryIndex(const PXDictionary* const dictionary, const PXSize 
     pxDictionaryEntry->Value = (void*)(blockStart + dictionary->KeyTypeSize);
 }
 
-PXResult PXAPI PXDictionaryEntryFind(PXDictionary* const dictionary, const void* const key, void** const valueResult)
+PXResult PXAPI PXDictionaryEntryFind(PXDictionary PXREF pxDictionary, const void PXREF key, void* PXREF valueResult)
 {
-    for(PXSize i = 0; i < dictionary->List.EntryAmountUsed; ++i)
+    for(PXSize i = 0; i < pxDictionary->List.EntryAmountUsed; ++i)
     {
         PXDictionaryEntry pxDictionaryEntry;
 
-        PXDictionaryIndex(dictionary, i, &pxDictionaryEntry);
+        PXDictionaryIndex(pxDictionary, i, &pxDictionaryEntry);
 
-        const PXBool isTarget = PXMemoryCompare(pxDictionaryEntry.Key, dictionary->KeyTypeSize, key, dictionary->KeyTypeSize);
+        const PXBool isTarget = PXMemoryCompare(pxDictionaryEntry.Key, pxDictionary->KeyTypeSize, key, pxDictionary->KeyTypeSize);
 
         if(isTarget)
         {
-            switch(dictionary->ValueLocality)
+            switch(pxDictionary->ValueLocality)
             {
                 default:
                 case PXDictionaryValueLocalityInvalid:

@@ -47,11 +47,11 @@
     <ClCompile Include="PX\Engine\Interact\PXSign.c" />
     <ClCompile Include="PX\Engine\PXEngine.c" />
     <ClCompile Include="PX\Engine\PXEntity.c" />
+    <ClCompile Include="PX\Engine\PXGUI.c" />
     <ClCompile Include="PX\Engine\PXLobby.c" />
     <ClCompile Include="PX\Engine\PXMod.c" />
     <ClCompile Include="PX\Engine\PXPlayer.c" />
     <ClCompile Include="PX\Engine\PXResource.c" />
-    <ClCompile Include="PX\Engine\PXGUI.c" />
     <ClCompile Include="PX\Graph\BoxPlot\PXBoxPlot.c" />
     <ClCompile Include="PX\Graph\Timeline\PXTimeline.c" />
     <ClCompile Include="PX\Language\PXTranslator.c" />
@@ -181,8 +181,8 @@
     <ClCompile Include="PX\OS\Audio\PXALSA\PXALSA.c" />
     <ClCompile Include="PX\OS\Audio\PXAudio.c" />
     <ClCompile Include="PX\OS\Audio\Windows\PXAudioMIDI.c" />
-    <ClCompile Include="PX\OS\Audio\Windows\PXDirectSound.c" />
     <ClCompile Include="PX\OS\Audio\Windows\PXCoreAudio.c" />
+    <ClCompile Include="PX\OS\Audio\Windows\PXDirectSound.c" />
     <ClCompile Include="PX\OS\Audio\Windows\PXMultiMedia.c" />
     <ClCompile Include="PX\OS\Bash\PXBash.c" />
     <ClCompile Include="PX\OS\ClipBoard\PXClipBoard.c" />
@@ -213,11 +213,8 @@
     <ClCompile Include="PX\OS\Input\PXInput.c" />
     <ClCompile Include="PX\OS\Library\PXLibrary.c" />
     <ClCompile Include="PX\OS\Memory\PXMemory.c" />
-    <ClCompile Include="PX\OS\Network\PXClient.c" />
     <ClCompile Include="PX\OS\Network\PXDNS.c" />
     <ClCompile Include="PX\OS\Network\PXNetwork.c" />
-    <ClCompile Include="PX\OS\Network\PXServer.c" />
-    <ClCompile Include="PX\OS\Network\PXSocket.c" />
     <ClCompile Include="PX\OS\PXOS.c" />
     <ClCompile Include="PX\OS\Signal\PXSignal.c" />
     <ClCompile Include="PX\OS\Stream\PXStream.c" />
@@ -235,9 +232,9 @@
     <ClCompile Include="PX\Service\PXHTMLService.c" />
     <ClCompile Include="PX\Service\PXHTTPService.c" />
     <ClCompile Include="PX\Service\PXLDAPService.c" />
-    <ClCompile Include="PX\Service\SBP\PXSBP.c" />
     <ClCompile Include="PX\Service\PXTCPService.c" />
     <ClCompile Include="PX\Service\PXUDPService.c" />
+    <ClCompile Include="PX\Service\SBP\PXSBP.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PX\Algorithm\BubbleSort\PXBubbleSort.h" />
@@ -269,11 +266,11 @@
     <ClInclude Include="PX\Engine\Interact\PXSign.h" />
     <ClInclude Include="PX\Engine\PXEngine.h" />
     <ClInclude Include="PX\Engine\PXEntity.h" />
+    <ClInclude Include="PX\Engine\PXGUI.h" />
     <ClInclude Include="PX\Engine\PXLobby.h" />
     <ClInclude Include="PX\Engine\PXMod.h" />
     <ClInclude Include="PX\Engine\PXPlayer.h" />
     <ClInclude Include="PX\Engine\PXResource.h" />
-    <ClInclude Include="PX\Engine\PXGUI.h" />
     <ClInclude Include="PX\Graph\BoxPlot\PXBoxPlot.h" />
     <ClInclude Include="PX\Graph\Timeline\PXTimeline.h" />
     <ClInclude Include="PX\Language\PXTranslator.h" />
@@ -403,8 +400,8 @@
     <ClInclude Include="PX\OS\Audio\PXALSA\PXALSA.h" />
     <ClInclude Include="PX\OS\Audio\PXAudio.h" />
     <ClInclude Include="PX\OS\Audio\Windows\PXAudioMIDI.h" />
-    <ClInclude Include="PX\OS\Audio\Windows\PXDirectSound.h" />
     <ClInclude Include="PX\OS\Audio\Windows\PXCoreAudio.h" />
+    <ClInclude Include="PX\OS\Audio\Windows\PXDirectSound.h" />
     <ClInclude Include="PX\OS\Audio\Windows\PXMultiMedia.h" />
     <ClInclude Include="PX\OS\Bash\PXBash.h" />
     <ClInclude Include="PX\OS\ClipBoard\PXClipBoard.h" />
@@ -435,11 +432,8 @@
     <ClInclude Include="PX\OS\Input\PXInput.h" />
     <ClInclude Include="PX\OS\Library\PXLibrary.h" />
     <ClInclude Include="PX\OS\Memory\PXMemory.h" />
-    <ClInclude Include="PX\OS\Network\PXClient.h" />
     <ClInclude Include="PX\OS\Network\PXDNS.h" />
     <ClInclude Include="PX\OS\Network\PXNetwork.h" />
-    <ClInclude Include="PX\OS\Network\PXServer.h" />
-    <ClInclude Include="PX\OS\Network\PXSocket.h" />
     <ClInclude Include="PX\OS\PXOS.h" />
     <ClInclude Include="PX\OS\Signal\PXSignal.h" />
     <ClInclude Include="PX\OS\Stream\PXStream.h" />
@@ -457,9 +451,9 @@
     <ClInclude Include="PX\Service\PXHTMLService.h" />
     <ClInclude Include="PX\Service\PXHTTPService.h" />
     <ClInclude Include="PX\Service\PXLDAPService.h" />
-    <ClInclude Include="PX\Service\SBP\PXSBP.h" />
     <ClInclude Include="PX\Service\PXTCPService.h" />
     <ClInclude Include="PX\Service\PXUDPService.h" />
+    <ClInclude Include="PX\Service\SBP\PXSBP.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -544,6 +538,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <TreatSpecificWarningsAsErrors>
       </TreatSpecificWarningsAsErrors>
+      <CallingConvention>FastCall</CallingConvention>
     </ClCompile>
     <Link>
       <AdditionalDependencies>ntdll.lib;onecore.lib;DbgHelp.lib;dxguid.lib;uuid.lib;xaudio2.lib;strmiids.lib;Comctl32.lib;Wbemuuid.lib;Shlwapi.lib;Mf.lib;Mfuuid.lib;Mfplat.lib;Mfreadwrite.lib;Dnsapi.lib;Ws2_32.lib;Msimg32.lib;libzstd.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -566,6 +561,7 @@
       <DebugInformationFormat>None</DebugInformationFormat>
       <StringPooling>true</StringPooling>
       <Optimization>MinSpace</Optimization>
+      <CallingConvention>FastCall</CallingConvention>
     </ClCompile>
     <Link>
       <AdditionalDependencies>ntdll.lib;onecore.lib;DbgHelp.lib;dxguid.lib;uuid.lib;xaudio2.lib;strmiids.lib;Comctl32.lib;Wbemuuid.lib;Shlwapi.lib;Mf.lib;Mfuuid.lib;Mfplat.lib;Mfreadwrite.lib;Dnsapi.lib;Ws2_32.lib;Msimg32.lib;libzstd.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -580,6 +576,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <TreatSpecificWarningsAsErrors>
       </TreatSpecificWarningsAsErrors>
+      <CallingConvention>FastCall</CallingConvention>
     </ClCompile>
     <Link>
       <AdditionalDependencies>ntdll.lib;onecore.lib;DbgHelp.lib;dxguid.lib;uuid.lib;xaudio2.lib;strmiids.lib;Comctl32.lib;Wbemuuid.lib;Shlwapi.lib;Mf.lib;Mfuuid.lib;Mfplat.lib;Mfreadwrite.lib;Dnsapi.lib;Ws2_32.lib;Msimg32.lib;libzstd.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -602,6 +599,7 @@
       <DebugInformationFormat>None</DebugInformationFormat>
       <StringPooling>true</StringPooling>
       <Optimization>MinSpace</Optimization>
+      <CallingConvention>FastCall</CallingConvention>
     </ClCompile>
     <Link>
       <AdditionalDependencies>ntdll.lib;onecore.lib;DbgHelp.lib;dxguid.lib;uuid.lib;xaudio2.lib;strmiids.lib;Comctl32.lib;Wbemuuid.lib;Shlwapi.lib;Mf.lib;Mfuuid.lib;Mfplat.lib;Mfreadwrite.lib;Dnsapi.lib;Ws2_32.lib;Msimg32.lib;libzstd.lib;%(AdditionalDependencies)</AdditionalDependencies>

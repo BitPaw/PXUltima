@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXLAMEIncluded
 #define PXLAMEIncluded
 
@@ -47,7 +49,7 @@ typedef struct PXLAME_
 }
 PXLAME;
 
-PXPublic PXResult PXAPI PXLAMELoadFromFile(PXLAME* const lame, PXFile* const pxFile);
-PXPublic PXResult PXAPI PXLAMESaveToFile(const PXLAME* const lame, PXFile* const pxFile);
+PXPublic PXResult PXAPI PXLAMELoadFromFile(PXLAME PXREF lame, PXFile PXREF pxFile);
+PXPublic PXResult PXAPI PXLAMESaveToFile(const PXLAME PXREF lame, PXFile PXREF pxFile);
 
 #endif

@@ -18,15 +18,15 @@ char PXJavaKeyWordLong[] = "long";
 char PXJavaKeyWordPXF32[] = "PXF32";
 char PXJavaKeyWordDouble[] = "double";
 
-void PXAPI PXJavaWriteFile(PXCompiler* const pxCompiler)
+void PXAPI PXJavaWriteFile(PXCompiler PXREF pxCompiler)
 {
     PXJavaContainerWrite(pxCompiler);
 }
 
-void PXAPI PXJavaContainerWrite(PXCompiler* const pxCompiler)
+void PXAPI PXJavaContainerWrite(PXCompiler PXREF pxCompiler)
 {
-    PXFile* const pxFile = pxCompiler->WriteInfo.FileOutput;
-    PXCodeDocumentElement* const entry = pxCompiler->WriteInfo.CodeElementCurrent;
+    PXFile PXREF pxFile = pxCompiler->WriteInfo.FileOutput;
+    PXCodeDocumentElement PXREF entry = pxCompiler->WriteInfo.CodeElementCurrent;
 
     pxCompiler->WriteInfo.WriteComment(pxCompiler);
 
@@ -127,10 +127,10 @@ void PXAPI PXJavaContainerWrite(PXCompiler* const pxCompiler)
     PXFileWriteNewLine(pxFile);
 }
 
-void PXAPI PXJavaFunctionWrite(PXCompiler* const pxCompiler)
+void PXAPI PXJavaFunctionWrite(PXCompiler PXREF pxCompiler)
 {
-    PXFile* const pxFile = pxCompiler->WriteInfo.FileOutput;
-    PXCodeDocumentElement* const entry = pxCompiler->WriteInfo.CodeElementCurrent;
+    PXFile PXREF pxFile = pxCompiler->WriteInfo.FileOutput;
+    PXCodeDocumentElement PXREF entry = pxCompiler->WriteInfo.CodeElementCurrent;
 
     pxCompiler->WriteInfo.WriteComment(pxCompiler);
 
@@ -155,10 +155,10 @@ void PXAPI PXJavaFunctionWrite(PXCompiler* const pxCompiler)
     //PXFileWriteNewLine(pxFile);
 }
 
-void PXAPI PXJavaDefinitionWrite(PXCompiler* const pxCompiler)
+void PXAPI PXJavaDefinitionWrite(PXCompiler PXREF pxCompiler)
 {
-    PXFile* const pxFile = pxCompiler->WriteInfo.FileOutput;
-    PXCodeDocumentElement* const entry = pxCompiler->WriteInfo.CodeElementCurrent;
+    PXFile PXREF pxFile = pxCompiler->WriteInfo.FileOutput;
+    PXCodeDocumentElement PXREF entry = pxCompiler->WriteInfo.CodeElementCurrent;
 
     pxCompiler->WriteInfo.WriteComment(pxCompiler);
 
@@ -210,12 +210,12 @@ void PXAPI PXJavaDefinitionWrite(PXCompiler* const pxCompiler)
     PXFileWriteA(pxFile, entry->NameAdress, entry->NameSize);
 }
 
-PXResult PXAPI  PXJavaLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI PXJavaLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
 {
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI  PXJavaSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI PXJavaSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
 {
     if(!pxResourceSaveInfo)
     {

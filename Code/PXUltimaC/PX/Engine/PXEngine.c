@@ -47,7 +47,7 @@ void PXCDECL PXEngineOnMemoryViolation(const int signalID)
 
 #define UseOSDelta 0
 
-void PXAPI PXEngineWindowEvent(PXEngine* const pxEngine, PXWindowEvent* const pxWindowEvent)
+void PXAPI PXEngineWindowEvent(PXEngine PXREF pxEngine, PXWindowEvent PXREF pxWindowEvent)
 {
     switch(pxWindowEvent->Type)
     {
@@ -63,9 +63,9 @@ void PXAPI PXEngineWindowEvent(PXEngine* const pxEngine, PXWindowEvent* const px
         }
         case PXWindowEventTypeInputMouseButton:
         {
-            PXWindowEventInputMouseButton* const inputMouseButton = &pxWindowEvent->InputMouseButton;
+            PXWindowEventInputMouseButton PXREF inputMouseButton = &pxWindowEvent->InputMouseButton;
 
-            PXMouse* const mouse = &pxEngine->MouseCurrentInput;
+            PXMouse PXREF mouse = &pxEngine->MouseCurrentInput;
 
             switch(inputMouseButton->PressState)
             {
@@ -213,8 +213,8 @@ void PXAPI PXEngineWindowEvent(PXEngine* const pxEngine, PXWindowEvent* const px
         }
         case PXWindowEventTypeInputMouseMove:
         {
-            PXWindowEventInputMouseMove* const inputMouseMove = &pxWindowEvent->InputMouseMove;
-            PXMouse* const mouse = &pxEngine->MouseCurrentInput;
+            PXWindowEventInputMouseMove PXREF inputMouseMove = &pxWindowEvent->InputMouseMove;
+            PXMouse PXREF mouse = &pxEngine->MouseCurrentInput;
 
             const PXI32S mousePositionOld[2] =
             {
@@ -272,8 +272,8 @@ void PXAPI PXEngineWindowEvent(PXEngine* const pxEngine, PXWindowEvent* const px
         }
         case PXWindowEventTypeInputKeyboard:
         {
-            PXWindowEventInputKeyboard* const inputKeyboard = &pxWindowEvent->InputKeyboard;
-            PXKeyBoard* const keyBoard = &pxEngine->KeyBoardCurrentInput;
+            PXWindowEventInputKeyboard PXREF inputKeyboard = &pxWindowEvent->InputKeyboard;
+            PXKeyBoard PXREF keyBoard = &pxEngine->KeyBoardCurrentInput;
 
             PXI32U mask = 0;
             PXI32U data = 0;
@@ -1024,7 +1024,7 @@ void PXAPI PXEngineWindowEvent(PXEngine* const pxEngine, PXWindowEvent* const px
     }
 }
 
-void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
+void PXAPI PXEngineUpdate(PXEngine PXREF pxEngine)
 {
     if(!pxEngine->IsRunning)
     {
@@ -1085,7 +1085,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
 
         if(pxEngine->CameraCurrent && pxEngine->ControllerSystem.DeviceListData)
         {
-            PXController* const pxController = &pxEngine->ControllerSystem.DeviceListData[0];
+            PXController PXREF pxController = &pxEngine->ControllerSystem.DeviceListData[0];
 
            // pxEngine->CameraCurrent->WalkSpeed = 1;
            // pxEngine->CameraCurrent->ViewSpeed = 1;
@@ -1398,7 +1398,7 @@ void PXAPI PXEngineUpdate(PXEngine* const pxEngine)
     //PXThreadSleep(PXNull, 1);
 }
 
-PXResult PXAPI  PXEngineResourceAction(PXEngine* const pxEngine, PXEngineResourceActionInfo* const pxEngineResourceActionInfo)
+PXResult PXAPI PXEngineResourceAction(PXEngine PXREF pxEngine, PXEngineResourceActionInfo PXREF pxEngineResourceActionInfo)
 {
     if(!(pxEngine && pxEngineResourceActionInfo))
     {
@@ -1438,7 +1438,7 @@ PXResult PXAPI  PXEngineResourceAction(PXEngine* const pxEngine, PXEngineResourc
         case PXEngineResourceActionTypeStateChange:
         {
             /*
-            PXEngineResourceStateChangeInfo* const pxEngineResourceStateChangeInfo = &pxEngineResourceActionInfo->ChangeInfo;
+            PXEngineResourceStateChangeInfo PXREF pxEngineResourceStateChangeInfo = &pxEngineResourceActionInfo->ChangeInfo;
 
             if (!pxEngineResourceStateChangeInfo->Object)
             {
@@ -1449,7 +1449,7 @@ PXResult PXAPI  PXEngineResourceAction(PXEngine* const pxEngine, PXEngineResourc
             {
                 case PXEngineCreateTypeModel:
                 {
-                    PXModel* const pxModel = (PXModel*)pxEngineResourceStateChangeInfo->Object;
+                    PXModel PXREF pxModel = (PXModel*)pxEngineResourceStateChangeInfo->Object;
 
                     pxModel->Enabled = pxEngineResourceStateChangeInfo->Enable;
 
@@ -1462,7 +1462,7 @@ PXResult PXAPI  PXEngineResourceAction(PXEngine* const pxEngine, PXEngineResourc
                 }
                 case PXEngineCreateTypeSprite:
                 {
-                    PXSprite* const pxSprite = (PXSprite*)pxEngineResourceStateChangeInfo->Object;
+                    PXSprite PXREF pxSprite = (PXSprite*)pxEngineResourceStateChangeInfo->Object;
 
                     pxSprite->Enabled = pxEngineResourceStateChangeInfo->Enable;
 
@@ -1481,7 +1481,7 @@ PXResult PXAPI  PXEngineResourceAction(PXEngine* const pxEngine, PXEngineResourc
                 }
                 case PXEngineCreateTypeText:
                 {
-                    PXEngineText* const pxEngineText = (PXEngineText*)pxEngineResourceStateChangeInfo->Object;
+                    PXEngineText PXREF pxEngineText = (PXEngineText*)pxEngineResourceStateChangeInfo->Object;
 
                     if(pxEngineResourceStateChangeInfo->Enable)
                     {
@@ -1503,7 +1503,7 @@ PXResult PXAPI  PXEngineResourceAction(PXEngine* const pxEngine, PXEngineResourc
                 }
                 case PXEngineCreateTypeTimer:
                 {
-                    PXTimer* const pxEngineTimer = (PXTimer*)pxEngineResourceStateChangeInfo->Object;
+                    PXTimer PXREF pxEngineTimer = (PXTimer*)pxEngineResourceStateChangeInfo->Object;
 
                     if(pxEngineResourceStateChangeInfo->Enable)
                     {
@@ -1550,7 +1550,7 @@ PXResult PXAPI  PXEngineResourceAction(PXEngine* const pxEngine, PXEngineResourc
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXEngineResourceActionBatch(PXEngine* const pxEngine, PXEngineResourceActionInfo* const pxEngineResourceActionInfoList, const PXSize amount)
+PXResult PXAPI PXEngineResourceActionBatch(PXEngine PXREF pxEngine, PXEngineResourceActionInfo PXREF pxEngineResourceActionInfoList, const PXSize amount)
 {
 #if PXLogEnable
     PXLogPrint
@@ -1565,7 +1565,7 @@ PXResult PXAPI  PXEngineResourceActionBatch(PXEngine* const pxEngine, PXEngineRe
 
     for(PXSize i = 0; i < amount; ++i)
     {
-        PXEngineResourceActionInfo* const pxEngineResourceAction = &pxEngineResourceActionInfoList[i];
+        PXEngineResourceActionInfo PXREF pxEngineResourceAction = &pxEngineResourceActionInfoList[i];
 
         PXEngineResourceAction(pxEngine, pxEngineResourceAction);
     }
@@ -1573,22 +1573,22 @@ PXResult PXAPI  PXEngineResourceActionBatch(PXEngine* const pxEngine, PXEngineRe
     return PXActionSuccessful;
 }
 
-PXI32U PXAPI PXEngineGenerateRandom(PXEngine* const pxEngine, const PXI32U limiter)
+PXI32U PXAPI PXEngineGenerateRandom(PXEngine PXREF pxEngine, const PXI32U limiter)
 {
     return PXMathRandomeNumber(&pxEngine->RandomGeneratorSeed) % limiter;
 }
 
-PXBool PXAPI PXEngineIsRunning(const PXEngine* const pxEngine)
+PXBool PXAPI PXEngineIsRunning(const PXEngine PXREF pxEngine)
 {
     return pxEngine->IsRunning;
 }
 
-void PXAPI PXEngineCreatePRE(PXEngine* const pxEngine, PXEngineStartInfo* const pxEngineStartInfo)
+PXResult PXAPI PXEngineCreatePRE(PXEngine PXREF pxEngine, PXEngineStartInfo PXREF pxEngineStartInfo)
 {
- 
+    return PXActionInvalid;
 }
 
-void PXAPI PXEngineCreateAudio(PXEngine* const pxEngine, PXEngineStartInfo* const pxEngineStartInfo)
+PXResult PXAPI PXEngineCreateAudio(PXEngine PXREF pxEngine, PXEngineStartInfo PXREF pxEngineStartInfo)
 {
 #if PXLogEnable
     PXLogPrint
@@ -1630,7 +1630,7 @@ void PXAPI PXEngineCreateAudio(PXEngine* const pxEngine, PXEngineStartInfo* cons
     pxEngine->Audio.DeviceOpen(&pxEngine->Audio, &pxEngine->AudioStandardOutDevice, PXAudioDeviceTypeOutput, 0);
 }
 
-PXResult PXAPI PXEngineCreateGraphic(PXEngine* const pxEngine, PXEngineStartInfo* const pxEngineStartInfo)
+PXResult PXAPI PXEngineCreateGraphic(PXEngine PXREF pxEngine, PXEngineStartInfo PXREF pxEngineStartInfo)
 {
 #if PXLogEnable
     PXLogPrint
@@ -1781,13 +1781,13 @@ PXResult PXAPI PXEngineCreateGraphic(PXEngine* const pxEngine, PXEngineStartInfo
 
     if(pxEngineStartInfo->Mode == PXGraphicInitializeModeOSGUI) // if we have GDI, we init this later
     {
-        return;
+        return PXActionSuccessful;
     }
 
-
+    return PXActionSuccessful;
 }
 
-void PXAPI PXEngineCreateMod(PXEngine* const pxEngine, PXEngineStartInfo* const pxEngineStartInfo)
+PXResult PXAPI PXEngineCreateMod(PXEngine PXREF pxEngine, PXEngineStartInfo PXREF pxEngineStartInfo)
 {
     // Load all mods now, not fully tho, they may need very early checks before anything happens
     if(pxEngineStartInfo->UseMods)
@@ -1821,7 +1821,7 @@ void PXAPI PXEngineCreateMod(PXEngine* const pxEngine, PXEngineStartInfo* const 
     }
 }
 
-PXResult PXAPI  PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* const pxEngineStartInfo)
+PXResult PXAPI PXEngineStart(PXEngine PXREF pxEngine, PXEngineStartInfo PXREF pxEngineStartInfo)
 {
     if(!(pxEngine && pxEngineStartInfo))
     {
@@ -2063,7 +2063,7 @@ PXResult PXAPI  PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* const
     return PXActionSuccessful;
 }
 
-void PXAPI PXEngineStop(PXEngine* const pxEngine)
+void PXAPI PXEngineStop(PXEngine PXREF pxEngine)
 {
     if(!pxEngine->IsRunning)
     {
@@ -2117,7 +2117,7 @@ void PXAPI PXEngineStop(PXEngine* const pxEngine)
 
         for(PXSize i = 0; i < amountResultOutput; ++i)
         {
-            PXThread* const pxThread = &pxThreadList[i];
+            PXThread PXREF pxThread = &pxThreadList[i];
 
             PXText text;
             PXTextConstructBufferA(&text, 256);
@@ -2159,7 +2159,7 @@ void PXAPI PXEngineStop(PXEngine* const pxEngine)
 /*
 
 
-PXResult PXAPI  PXGraphicLoadImage(PXGraphic* const pxGraphic, PXTexture* const PXTexture, const PXText* const PXTextureFilePath)
+PXResult PXAPI PXGraphicLoadImage(PXGraphic PXREF pxGraphic, PXTexture PXREF PXTexture, const PXText PXREF PXTextureFilePath)
 {
     // Create checksum
     const PXI32U checkSum = PXAdler32Create(1, PXTextureFilePath->A, PXTextureFilePath->SizeUsed);
@@ -2227,7 +2227,7 @@ PXResult PXAPI  PXGraphicLoadImage(PXGraphic* const pxGraphic, PXTexture* const 
 
 #include <assert.h>
 
-PXResult PXAPI  PXEngineResourceCreate(PXEngine* const pxEngine, PXResourceCreateInfo* const pxResourceCreateInfo)
+PXResult PXAPI PXEngineResourceCreate(PXEngine PXREF pxEngine, PXResourceCreateInfo PXREF pxResourceCreateInfo)
 {
     if(!(pxEngine && pxResourceCreateInfo))
     {
@@ -2257,7 +2257,7 @@ PXResult PXAPI  PXEngineResourceCreate(PXEngine* const pxEngine, PXResourceCreat
         }
         case PXResourceTypeTextureCube:
         {
-            PXTextureCreateInfo* const pxTextureCreateData = &pxResourceCreateInfo->Texture;
+            PXTextureCreateInfo PXREF pxTextureCreateData = &pxResourceCreateInfo->Texture;
             PXTexture* pxTexture = *(PXTexture**)pxResourceCreateInfo->ObjectReference;
 
             assert(pxTexture);
@@ -2289,7 +2289,7 @@ PXResult PXAPI  PXEngineResourceCreate(PXEngine* const pxEngine, PXResourceCreat
         }
         case PXResourceTypeModel:
         {
-            PXModelCreateInfo* const pxModelCreateInfo = &pxResourceCreateInfo->Model;
+            PXModelCreateInfo PXREF pxModelCreateInfo = &pxResourceCreateInfo->Model;
             PXModel* pxModel = *(PXModel**)pxResourceCreateInfo->ObjectReference;
 
             assert(pxModel);
@@ -2345,7 +2345,7 @@ PXResult PXAPI  PXEngineResourceCreate(PXEngine* const pxEngine, PXResourceCreat
         }
         case PXResourceTypeTexture2D:
         {
-            //PXEngineTexture2DCreateData* const pxEngineTexture2DCreateData = &pxEngineResourceCreateInfo->Texture2D;
+            //PXEngineTexture2DCreateData PXREF pxEngineTexture2DCreateData = &pxEngineResourceCreateInfo->Texture2D;
             PXTexture* pxTexture = *(PXTexture**)pxResourceCreateInfo->ObjectReference;
 
             assert(pxTexture);
@@ -2379,7 +2379,7 @@ PXResult PXAPI  PXEngineResourceCreate(PXEngine* const pxEngine, PXResourceCreat
         }
         case PXResourceTypeFont:
         {
-            PXEngineFontCreateInfo* const pxEngineFontCreateData = &pxResourceCreateInfo->Font;
+            PXEngineFontCreateInfo PXREF pxEngineFontCreateData = &pxResourceCreateInfo->Font;
             PXFont* pxFont = *(PXFont**)pxResourceCreateInfo->ObjectReference;
 
             // Register as normal
@@ -2387,7 +2387,7 @@ PXResult PXAPI  PXEngineResourceCreate(PXEngine* const pxEngine, PXResourceCreat
                 /*
                 // Load Textures
                 {
-                    PXFontPage* const pxFontPage = &pxFont->;
+                    PXFontPage PXREF pxFontPage = &pxFont->;
 
                     PXResourceCreateInfo pxResourceCreateInfoSub;
                     PXClear(PXResourceCreateInfo, &pxResourceCreateInfoSub);
@@ -2401,7 +2401,7 @@ PXResult PXAPI  PXEngineResourceCreate(PXEngine* const pxEngine, PXResourceCreat
 
                 for (PXSize i = 0; i < pxFont->AdditionalPageListSize; ++i)
                 {
-                    PXFontPage* const pxFontPage = &pxFont->AdditionalPageList[i];
+                    PXFontPage PXREF pxFontPage = &pxFont->AdditionalPageList[i];
 
                     PXTexturInfo pxGraphicTexturInfo;
                     pxGraphicTexturInfo.TextureReference = pxFontPage->Texture;
@@ -2417,7 +2417,7 @@ PXResult PXAPI  PXEngineResourceCreate(PXEngine* const pxEngine, PXResourceCreat
         }
         case PXResourceTypeSkybox:
         {
-            PXSkyBoxCreateEventInfo* const pxSkyBoxCreateEventData = &pxResourceCreateInfo->SkyBox;
+            PXSkyBoxCreateEventInfo PXREF pxSkyBoxCreateEventData = &pxResourceCreateInfo->SkyBox;
             PXSkyBox* pxSkyBox = *(PXSkyBox**)pxResourceCreateInfo->ObjectReference;
 
             if(!pxEngine->Graphic.ModelRegister)
@@ -2494,7 +2494,7 @@ PXResult PXAPI  PXEngineResourceCreate(PXEngine* const pxEngine, PXResourceCreat
         }
         case PXResourceTypeSprite:
         {
-            PXSpriteCreateInfo* const pxSpriteCreateEventData = &pxResourceCreateInfo->Sprite;
+            PXSpriteCreateInfo PXREF pxSpriteCreateEventData = &pxResourceCreateInfo->Sprite;
             PXSprite* pxSprite = *(PXSprite**)pxResourceCreateInfo->ObjectReference;
 
             pxSprite->ShaderProgarm = pxSpriteCreateEventData->ShaderProgramCurrent;
@@ -2561,7 +2561,7 @@ PXResult PXAPI  PXEngineResourceCreate(PXEngine* const pxEngine, PXResourceCreat
         }
         case PXResourceTypeText:
         {
-            //PXEngineTextCreateData* const pxEngineTextCreateData = &pxEngineResourceCreateInfo->Text;
+            //PXEngineTextCreateData PXREF pxEngineTextCreateData = &pxEngineResourceCreateInfo->Text;
             //PXEngineTextEEQ* pxEngineText = *(PXEngineTextEEQ**)pxResourceCreateInfo->ObjectReference;
 
             break;
@@ -2587,7 +2587,7 @@ PXResult PXAPI  PXEngineResourceCreate(PXEngine* const pxEngine, PXResourceCreat
         case PXResourceTypeEngineSound:
         {
             /*
-            PXEngineSoundCreateInfo* const pxEngineSoundCreateInfo = &pxResourceCreateInfo->Sound;
+            PXEngineSoundCreateInfo PXREF pxEngineSoundCreateInfo = &pxResourceCreateInfo->Sound;
             PXEngineSound* pxEngineSound = *(PXEngineSound**)pxResourceCreateInfo->ObjectReference;
 
             {
@@ -2627,7 +2627,7 @@ PXResult PXAPI  PXEngineResourceCreate(PXEngine* const pxEngine, PXResourceCreat
         }
         case PXResourceTypeGUIElement:
         {
-            PXWindowCreateInfo* const pxWindowCreateInfo = &pxResourceCreateInfo->UIElement;
+            PXWindowCreateInfo PXREF pxWindowCreateInfo = &pxResourceCreateInfo->UIElement;
 
 
 
@@ -2654,7 +2654,7 @@ PXResult PXAPI  PXEngineResourceCreate(PXEngine* const pxEngine, PXResourceCreat
         }
         case PXResourceTypeShaderProgram:
         {
-            PXShaderProgramCreateInfo* const pxShaderProgramCreateData = &pxResourceCreateInfo->ShaderProgram;
+            PXShaderProgramCreateInfo PXREF pxShaderProgramCreateData = &pxResourceCreateInfo->ShaderProgram;
             PXShaderProgram* pxShaderProgram = *(PXShaderProgram**)pxResourceCreateInfo->ObjectReference;
 
             if(!pxEngine->Graphic.ShaderProgramCreate)
@@ -2716,7 +2716,7 @@ PXResult PXAPI  PXEngineResourceCreate(PXEngine* const pxEngine, PXResourceCreat
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEntity* const pxRenderEntity)
+PXResult PXAPI PXEngineResourceRender(PXEngine PXREF pxEngine, PXRenderEntity PXREF pxRenderEntity)
 {
     if(!(pxEngine && pxRenderEntity))
     {
@@ -2729,7 +2729,7 @@ PXResult PXAPI  PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEntity*
     }
 
     // Base object, unsafe!
-    PXResourceInfo* const pxResourceInfo = (PXResourceInfo*)pxRenderEntity->ObjectReference;
+    PXResourceInfo PXREF pxResourceInfo = (PXResourceInfo*)pxRenderEntity->ObjectReference;
 
     if(!pxResourceInfo)
     {
@@ -2761,7 +2761,7 @@ PXResult PXAPI  PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEntity*
     {
         case PXResourceTypeModel:
         {
-            PXModel* const pxModel = (PXModel*)pxRenderEntity->ObjectReference;
+            PXModel PXREF pxModel = (PXModel*)pxRenderEntity->ObjectReference;
 
             pxEngine->Graphic.ModelDraw(pxEngine->Graphic.EventOwner, pxRenderEntity);
 
@@ -2769,7 +2769,7 @@ PXResult PXAPI  PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEntity*
         }
         case PXResourceTypeSkybox:
         {
-            PXSkyBox* const pxSkyBox = (PXSkyBox*)pxRenderEntity->ObjectReference;
+            PXSkyBox PXREF pxSkyBox = (PXSkyBox*)pxRenderEntity->ObjectReference;
 
             PXOpenGLSkyboxDraw(&pxEngine->Graphic.OpenGLInstance, pxRenderEntity);
 
@@ -2777,7 +2777,7 @@ PXResult PXAPI  PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEntity*
         }
         case PXResourceTypeSprite:
         {
-            PXSprite* const pxSprite = (PXSprite*)pxRenderEntity->ObjectReference;
+            PXSprite PXREF pxSprite = (PXSprite*)pxRenderEntity->ObjectReference;
 
             pxEngine->Graphic.ModelDraw(pxEngine->Graphic.EventOwner, pxRenderEntity);
 
@@ -2785,7 +2785,7 @@ PXResult PXAPI  PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEntity*
         }
         case PXResourceTypeHitBox:
         {
-            PXHitBox* const pxHitBox = (PXHitBox*)pxRenderEntity->ObjectReference;
+            PXHitBox PXREF pxHitBox = (PXHitBox*)pxRenderEntity->ObjectReference;
 
             // PXOpenGLBlendingMode(&pxEngine->Graphic.OpenGLInstance, PXBlendingModeOneToOne);
 
@@ -2870,16 +2870,16 @@ PXResult PXAPI  PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEntity*
         case PXResourceTypeText:
         {
 #if 0
-            PXGraphic* const pxGraphic = &pxEngine->Graphic;
-            PXEngineText* const pxEngineText = (PXEngineText*)pxRenderEntity->ObjectReference;
+            PXGraphic PXREF pxGraphic = &pxEngine->Graphic;
+            PXEngineText PXREF pxEngineText = (PXEngineText*)pxRenderEntity->ObjectReference;
 
             if(!pxEngineText->Text)
             {
                 break; // No text, no content to render, done
             }
 
-            PXText* const pxText = pxEngineText->Text;
-            PXFont* const pxFont = pxEngineText->Font;
+            PXText PXREF pxText = pxEngineText->Text;
+            PXFont PXREF pxFont = pxEngineText->Font;
 
             PXVector2F32 offsetShadowCurrent = { 0.0f, 0.0f };
             const PXVector2F32 shadowOffset = { 0.0045f, -0.005f };
@@ -2908,7 +2908,7 @@ PXResult PXAPI  PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEntity*
                 for(PXSize i = 0; i < pxText->SizeUsed && i < pxEngineText->TextRenderAmount; ++i)
                 {
                     const char character = pxText->A[i];
-                    PXFontPageCharacter* const pxFontPageCharacter = PXFontPageCharacterFetch(&pxFont->PagePrime, character);
+                    PXFontPageCharacter PXREF pxFontPageCharacter = PXFontPageCharacterFetch(&pxFont->PagePrime, character);
 
                     PXF32 textureWidth;
                     PXF32 textureHeight;
@@ -3136,13 +3136,13 @@ PXResult PXAPI  PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEntity*
 #endif
 }
 
-PXResult PXAPI  PXEngineDeviceDataRegister(PXEngine* const pxEngine, PXResourceTransphereInfo* const pxResourceTransphereInfo)
+PXResult PXAPI PXEngineDeviceDataRegister(PXEngine PXREF pxEngine, PXResourceTransphereInfo PXREF pxResourceTransphereInfo)
 {
     switch(pxResourceTransphereInfo->ResourceType)
     {
         case PXResourceTypeTexture2D:
         {
-            PXGraphic* const pxGraphic = &pxEngine->Graphic;
+            PXGraphic PXREF pxGraphic = &pxEngine->Graphic;
 
             PXTexturInfo pxGraphicTexturInfo;
             PXClear(PXTexturInfo, &pxGraphicTexturInfo);
@@ -3164,12 +3164,12 @@ PXResult PXAPI  PXEngineDeviceDataRegister(PXEngine* const pxEngine, PXResourceT
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXEngineDeviceDataUpload(PXEngine* const pxEngine, PXResourceTransphereInfo* const pxResourceTransphereInfo)
+PXResult PXAPI PXEngineDeviceDataUpload(PXEngine PXREF pxEngine, PXResourceTransphereInfo PXREF pxResourceTransphereInfo)
 {
     return PXActionSuccessful;
 }
 
-void PXAPI PXEngineResourceDefaultElements(PXEngine* const pxEngine)
+void PXAPI PXEngineResourceDefaultElements(PXEngine PXREF pxEngine)
 {
     PXResourceCreateInfo pxResourceCreateInfo;
 
@@ -3433,7 +3433,7 @@ void PXAPI PXEngineResourceDefaultElements(PXEngine* const pxEngine)
     //material->DiffuseTexture = pxEngine->ResourceManager->Texture2DFailBack;
 }
 
-PXResult PXAPI  PXEngineResourceRenderDefault(PXEngine* const pxEngine)
+PXResult PXAPI PXEngineResourceRenderDefault(PXEngine PXREF pxEngine)
 {
     assert(pxEngine);
 
@@ -3454,7 +3454,7 @@ PXResult PXAPI  PXEngineResourceRenderDefault(PXEngine* const pxEngine)
 
         if(pxDictionaryEntry.Value)
         {
-            PXSkyBox* const pxSkyBox = *(PXSkyBox**)pxDictionaryEntry.Value;
+            PXSkyBox PXREF pxSkyBox = *(PXSkyBox**)pxDictionaryEntry.Value;
 
 
             pxRenderEntity.ObjectReference = pxSkyBox;
@@ -3470,7 +3470,7 @@ PXResult PXAPI  PXEngineResourceRenderDefault(PXEngine* const pxEngine)
 
     // Model
     {
-        PXDictionary* const modelLookup = &pxEngine->ResourceManager->ModelLookUp;
+        PXDictionary PXREF modelLookup = &pxEngine->ResourceManager->ModelLookUp;
 
         PXShaderProgram* qqq = 0;
 
@@ -3526,7 +3526,7 @@ PXResult PXAPI  PXEngineResourceRenderDefault(PXEngine* const pxEngine)
 
     // Sprite
     {
-        PXDictionary* const spirteList = &pxEngine->ResourceManager->SpritelLookUp;
+        PXDictionary PXREF spirteList = &pxEngine->ResourceManager->SpritelLookUp;
 
         for(PXSize i = 0; i < spirteList->List.EntryAmountUsed; ++i)
         {
@@ -3591,7 +3591,7 @@ PXResult PXAPI  PXEngineResourceRenderDefault(PXEngine* const pxEngine)
 
     // Text
     {
-        PXDictionary* const textList = &pxEngine->ResourceManager->TextLookUp;
+        PXDictionary PXREF textList = &pxEngine->ResourceManager->TextLookUp;
 
         for(PXSize i = 0; i < textList->List.EntryAmountUsed; ++i)
         {
@@ -3624,7 +3624,7 @@ PXResult PXAPI  PXEngineResourceRenderDefault(PXEngine* const pxEngine)
 
     // HitBoxes
     {
-        PXDictionary* const hitBoxList = &pxEngine->ResourceManager->HitBoxLookUp;
+        PXDictionary PXREF hitBoxList = &pxEngine->ResourceManager->HitBoxLookUp;
 
         for(PXSize i = 0; i < hitBoxList->List.EntryAmountUsed; ++i)
         {
@@ -3648,9 +3648,9 @@ PXResult PXAPI  PXEngineResourceRenderDefault(PXEngine* const pxEngine)
     return PXActionSuccessful;
 }
 
-void PXAPI PXEngineCollsisionSolve(PXEngine* const pxEngine)
+void PXAPI PXEngineCollsisionSolve(PXEngine PXREF pxEngine)
 {
-    PXDictionary* const hitBoxLookUp = &pxEngine->ResourceManager->HitBoxLookUp;
+    PXDictionary PXREF hitBoxLookUp = &pxEngine->ResourceManager->HitBoxLookUp;
 
     for(PXSize indexA = 0; indexA < hitBoxLookUp->List.EntryAmountUsed; ++indexA)
     {
@@ -3698,7 +3698,7 @@ void PXAPI PXEngineCollsisionSolve(PXEngine* const pxEngine)
     }
 }
 
-PXResult PXAPI  PXEngineSpriteTextureSet(PXEngine* const pxEngine, PXSprite* const pxSprite, PXTexture* const PXTexture)
+PXResult PXAPI PXEngineSpriteTextureSet(PXEngine PXREF pxEngine, PXSprite PXREF pxSprite, PXTexture PXREF PXTexture)
 {
 #if 0
     if(pxSprite->Model.IndexBuffer.SegmentListAmount > 0)
@@ -3722,7 +3722,7 @@ PXResult PXAPI  PXEngineSpriteTextureSet(PXEngine* const pxEngine, PXSprite* con
     return PXActionSuccessful;
 }
 
-void PXAPI PXEngineUpdateCollision(PXEngine* const pxEngine)
+void PXAPI PXEngineUpdateCollision(PXEngine PXREF pxEngine)
 {
 
 #if 0
@@ -3735,7 +3735,7 @@ void PXAPI PXEngineUpdateCollision(PXEngine* const pxEngine)
     );
 #endif
 
-    PXDictionary* const hitboxLookup = &pxEngine->ResourceManager->HitBoxLookUp;
+    PXDictionary PXREF hitboxLookup = &pxEngine->ResourceManager->HitBoxLookUp;
 
     PXSize amount = hitboxLookup->List.EntryAmountUsed;
 
@@ -3751,10 +3751,10 @@ void PXAPI PXEngineUpdateCollision(PXEngine* const pxEngine)
 
 
     // Player vs model
-    PXCamera* const pxCamera = pxEngine->CameraCurrent;
+    PXCamera PXREF pxCamera = pxEngine->CameraCurrent;
 
 
-    PXDictionary* const modelList = &pxEngine->ResourceManager->ModelLookUp;
+    PXDictionary PXREF modelList = &pxEngine->ResourceManager->ModelLookUp;
 
     PXVector3F32 position;
     PXMatrix4x4FPositionGet(&pxCamera->MatrixView, &position);
@@ -3781,9 +3781,9 @@ void PXAPI PXEngineUpdateCollision(PXEngine* const pxEngine)
             continue;
         }
 
-        PXVertexBuffer* const pxVertexBuffer = &pxModel->Mesh.VertexBufferList[0];
+        PXVertexBuffer PXREF pxVertexBuffer = &pxModel->Mesh.VertexBufferList[0];
 
-        PXIndexBuffer* const pxIndexBuffer = &pxModel->Mesh.IndexBuffer;
+        PXIndexBuffer PXREF pxIndexBuffer = &pxModel->Mesh.IndexBuffer;
 
         /*
         for(PXSize i = 0; i < pxIndexBuffer->SegmentListAmount; i++)
@@ -3953,9 +3953,9 @@ void PXAPI PXEngineUpdateCollision(PXEngine* const pxEngine)
 #endif
 }
 
-void PXAPI PXEngineUpdateTimer(PXEngine* const pxEngine)
+void PXAPI PXEngineUpdateTimer(PXEngine PXREF pxEngine)
 {
-    PXDictionary* const timerList = &pxEngine->ResourceManager->TimerLookUp;
+    PXDictionary PXREF timerList = &pxEngine->ResourceManager->TimerLookUp;
 
     for(PXSize timerIndex = 0; timerIndex < timerList->List.EntryAmountUsed; ++timerIndex)
     {
@@ -4015,10 +4015,10 @@ void PXAPI PXEngineUpdateTimer(PXEngine* const pxEngine)
     }
 }
 
-void PXAPI PXEngineUpdateSpriteAnimator(PXEngine* const pxEngine)
+void PXAPI PXEngineUpdateSpriteAnimator(PXEngine PXREF pxEngine)
 {
     /*
-    PXDictionary* const spriteAnimatorList = &pxEngine->ResourceManager->SpriteAnimator;
+    PXDictionary PXREF spriteAnimatorList = &pxEngine->ResourceManager->SpriteAnimator;
 
     for(PXSize index = 0; index < spriteAnimatorList->EntryAmountCurrent; ++index)
     {
@@ -4045,7 +4045,7 @@ void PXAPI PXEngineUpdateSpriteAnimator(PXEngine* const pxEngine)
         }
 
         // Get current keyframe
-        PXSpriteAnimatorTimeStamp* const pxSpriteAnimatorTimeStamp = &pxSpriteAnimator->TimeStampList[pxSpriteAnimator->TimeStampCurrent];
+        PXSpriteAnimatorTimeStamp PXREF pxSpriteAnimatorTimeStamp = &pxSpriteAnimator->TimeStampList[pxSpriteAnimator->TimeStampCurrent];
 
         const PXI32U delta = pxEngine->TimeData.CounterTimeLast - pxSpriteAnimator->LastUpdate;
         const PXF32 deltaTargetms = PXTimeCounterStampToSecoundsF(delta);
@@ -4094,7 +4094,7 @@ void PXAPI PXEngineUpdateSpriteAnimator(PXEngine* const pxEngine)
     */
 }
 
-void PXAPI PXEngineHitBoxHandleAvsB(PXEngine* const pxEngine, PXHitBox* const hitBoxA, PXHitBox* const hitBoxB)
+void PXAPI PXEngineHitBoxHandleAvsB(PXEngine PXREF pxEngine, PXHitBox PXREF hitBoxA, PXHitBox PXREF hitBoxB)
 {
     /*
     PXVector3F32 positionA;

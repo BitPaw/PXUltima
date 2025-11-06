@@ -13,7 +13,7 @@ PXSize PXAPI PXGIFFilePredictSize(const PXSize width, const PXSize height, const
     return 0;
 }
 
-PXResult PXAPI  PXGIFLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI PXGIFLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
 {
     PXGIF gif;
 
@@ -31,7 +31,7 @@ PXResult PXAPI  PXGIFLoadFromFile(PXResourceTransphereInfo* const pxResourceLoad
         }
 
         {
-            const char** const versionDataList[2] = { PXGIFVersionA, PXGIFVersionB };
+            const char* PXREF versionDataList[2] = { PXGIFVersionA, PXGIFVersionB };
             const PXSize versionSizeList[2] = { sizeof(PXGIFVersionA),  sizeof(PXGIFVersionB) };
             const PXSize versionSizeListSize = sizeof(versionDataList) / sizeof(void*);
             const PXBool validVersion = PXFileReadAndCompareV(pxResourceLoadInfo->FileReference, versionDataList, versionSizeList, versionSizeListSize);
@@ -114,7 +114,7 @@ PXResult PXAPI  PXGIFLoadFromFile(PXResourceTransphereInfo* const pxResourceLoad
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXGIFSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI PXGIFSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
 {
     PXFileWriteB(pxResourceSaveInfo->FileReference, PXGIFHeader, sizeof(PXGIFHeader));
 

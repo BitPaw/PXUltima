@@ -1,11 +1,11 @@
 #include "PXHLSL.h"
 
-PXResult PXAPI  PXHLSLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI PXHLSLLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
 {
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI  PXHLSLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI PXHLSLSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

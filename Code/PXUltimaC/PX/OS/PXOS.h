@@ -1,3 +1,5 @@
+#pragma once
+
 // This file is a wrapper for the entiretry of the API to the kernel
 // from the OS itself and more.
 // It acts as a singleton to prevent common repetative boilerplate code 
@@ -6,8 +8,7 @@
 #ifndef PXOSIncluded
 #define PXOSIncluded
 
-#include <PX/Engine/PXResource.h>
-#include "Library/PXLibrary.h"
+#include <PX/OS/Library/PXLibrary.h>
 #include <PX/OS/Async/PXThread.h>
 
 typedef enum PXSymbolType_
@@ -183,33 +184,40 @@ typedef struct PXOSVersion_
 }
 PXOSVersion;
 
-PXPublic PXResult PXAPI PXSystemVersionGetViaRegistry(PXOSVersion* const pxOSVersion);
-PXPublic PXResult PXAPI PXSystemVersionGetViaKernel(PXOSVersion* const pxOSVersion);
+PXPublic PXResult PXAPI PXSystemVersionGetViaRegistry(PXOSVersion PXREF pxOSVersion);
+PXPublic PXResult PXAPI PXSystemVersionGetViaKernel(PXOSVersion PXREF pxOSVersion);
 
-PXPublic void PXAPI PXSystemVersionGet(PXOSVersion* const pxOSVersion);
+PXPublic void PXAPI PXSystemVersionGet(PXOSVersion PXREF pxOSVersion);
 //---------------------------------------------------------
+
+
+
+//---------------------------------------------------------
+// General utility??
+//---------------------------------------------------------
+PXPublic PXI8U PXAPI PXBitsCount(const PXSize bitMask);
 
 
 
 //---------------------------------------------------------
 // User
 //---------------------------------------------------------
-PXPublic PXResult PXAPI PXUserNameGet(char* const text, const PXSize textSizeMax, PXSize* const textSizeWritten);
-PXPublic PXResult PXAPI PXComputerNameGet(char* const text, const PXSize textSizeMax, PXSize* const textSizeWritten);
+PXPublic PXResult PXAPI PXUserNameGet(PXText PXREF pxText);
+PXPublic PXResult PXAPI PXComputerNameGet(char PXREF text, const PXSize textSizeMax, PXSize PXREF textSizeWritten);
 //---------------------------------------------------------
 
 
 
 // Cleanse the filepath from symbols like "\.", "\.." and "/"
-PXPublic PXResult PXAPI PXFilePathCleanse(const char* pathInput, char* const pathOutput, const PXSize pathOutputSizeMAX, PXSize* const pathOutputSizeWritten);
-PXPublic PXResult PXAPI PXFileNameViaHandleA(PXFile* const pxFile, char* const fileNameBuffer, const PXSize pathOutputSizeMAX, PXSize* const pathOutputSizeWritten);
+PXPublic PXResult PXAPI PXFilePathCleanse(const char* pathInput, char PXREF pathOutput, const PXSize pathOutputSizeMAX, PXSize PXREF pathOutputSizeWritten);
+PXPublic PXResult PXAPI PXFileNameViaHandle(const PXFile PXREF pxFile, PXText PXREF pxText);
 
 
 //---------------------------------------------------------
 // Text
 //---------------------------------------------------------
-PXPublic void PXAPI PXTextUTF8ToUNICODE(wchar_t* const textOutput, const char* const textInput);
-PXPublic void PXAPI PXTextUNICODEToUTF8(char* const textOutput, const wchar_t* const textInput);
+PXPublic void PXAPI PXTextUTF8ToUNICODE(wchar_t PXREF textOutput, const char PXREF textInput);
+PXPublic void PXAPI PXTextUNICODEToUTF8(char PXREF textOutput, const wchar_t PXREF textInput);
 
 
 
@@ -217,7 +225,7 @@ PXPublic void PXAPI PXTextUNICODEToUTF8(char* const textOutput, const wchar_t* c
 //---------------------------------------------------------
 // Process and threads
 //---------------------------------------------------------
-PXPublic void PXAPI PXProcessCurrent(PXProcess* const pxProcess);
+PXPublic void PXAPI PXProcessCurrent(PXProcess PXREF pxProcess);
 
 
 PXPublic PXResult PXAPI PXProcessMemoryWrite
@@ -226,26 +234,26 @@ PXPublic PXResult PXAPI PXProcessMemoryWrite
     const void* baseAddress,
     const void* bufferData,
     const PXSize bufferSizeMax,
-    PXSize* const bufferSizeWritten
+    PXSize PXREF bufferSizeWritten
 );
 
 PXPublic PXResult PXAPI PXProcessMemoryRead
 (
     const PXProcessHandle pxProcessHandle,
     const void* baseAddress,
-    void* const bufferData,
+    void PXREF bufferData,
     const PXSize bufferSizeMax,
-    PXSize* const bufferSizeWritten
+    PXSize PXREF bufferSizeWritten
 );
 
 
 PXPublic PXBool PXAPI PXThreadIsMain();
-PXPublic PXResult PXAPI PXThreadCurrent(PXThread* const pxThread);
-PXPublic PXResult PXAPI PXThreadResume(PXThread* const pxThread);
-PXPublic PXResult PXAPI PXThreadSuspend(PXThread* const pxThread);
-PXPublic PXResult PXAPI PXThreadWait(PXThread* const pxThread);
+PXPublic PXResult PXAPI PXThreadCurrent(PXThread PXREF pxThread);
+PXPublic PXResult PXAPI PXThreadResume(PXThread PXREF pxThread);
+PXPublic PXResult PXAPI PXThreadSuspend(PXThread PXREF pxThread);
+PXPublic PXResult PXAPI PXThreadWait(PXThread PXREF pxThread);
 
-PXPublic PXResult PXAPI PXThreadCPUCoreAffinitySet(PXThread* const pxThread, const PXI16U coreIndex);
+PXPublic PXResult PXAPI PXThreadCPUCoreAffinitySet(PXThread PXREF pxThread, const PXI16U coreIndex);
 
 
 // Causes the calling thread to yield execution to another
@@ -267,17 +275,17 @@ typedef struct PXMemoryHeap_
 }
 PXMemoryHeap;
 
-PXPublic void PXAPI PXMemoryHeapGetGlobal(PXMemoryHeap* const pxMemoryHeap);
-PXPublic PXResult PXAPI PXMemoryHeapCreate(PXMemoryHeap* const pxMemoryHeap);
-PXPublic PXResult PXAPI PXMemoryHeapRelease(PXMemoryHeap* const pxMemoryHeap);
+PXPublic void PXAPI PXMemoryHeapGetGlobal(PXMemoryHeap PXREF pxMemoryHeap);
+PXPublic PXResult PXAPI PXMemoryHeapCreate(PXMemoryHeap PXREF pxMemoryHeap);
+PXPublic PXResult PXAPI PXMemoryHeapRelease(PXMemoryHeap PXREF pxMemoryHeap);
 
 // Get the size of the allocated block
-PXPublic PXSize PXAPI PXMemoryHeapBlockSize(PXMemoryHeap* pxMemoryHeap, const void* const adress);
+PXPublic PXSize PXAPI PXMemoryHeapBlockSize(PXMemoryHeap* pxMemoryHeap, const void PXREF adress);
 
 PXPublic void* PXAPI PXMemoryHeapCalloc(PXMemoryHeap* pxMemoryHeap, const PXSize amount, const PXSize objectSize); // [POSIX]
 PXPublic void* PXAPI PXMemoryHeapMalloc(PXMemoryHeap* pxMemoryHeap, const PXSize memorySize); // [POSIX]
-PXPublic PXBool PXAPI PXMemoryHeapFree(PXMemoryHeap* pxMemoryHeap, const void* const adress); // Windows:HeapFree
-PXPublic void* PXAPI PXMemoryHeapRealloc(PXMemoryHeap* pxMemoryHeap, const void* const adress, const PXSize memorySize); // Windows:HeapReAlloc
+PXPublic PXBool PXAPI PXMemoryHeapFree(PXMemoryHeap* pxMemoryHeap, const void PXREF adress); // Windows:HeapFree
+PXPublic void* PXAPI PXMemoryHeapRealloc(PXMemoryHeap* pxMemoryHeap, const void PXREF adress, const PXSize memorySize); // Windows:HeapReAlloc
 
 
 #define PXMemoryHeapCallocT(type, amount) (type*)PXMemoryHeapCalloc(PXNull, amount, sizeof(type))
@@ -334,11 +342,11 @@ PXMemoryVirtualInfo;
 // Allocate memory in virtual memory space.
 // The minimal size will be a pagefile (4KB) as the size will be rounded up to the next page boundary.
 // Only use for bigger datablocks as thic has very hi overhead.
-PXPublic void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize* const createdSize, const PXAccessMode pxAccessMode);
+PXPublic void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize PXREF createdSize, const PXAccessMode pxAccessMode);
 PXPublic void PXAPI PXMemoryVirtualPrefetch(const void* adress, const PXSize size);
 PXPublic PXResult PXAPI PXMemoryVirtualRelease(const void* adress, const PXSize size);
 PXPublic void* PXAPI PXMemoryVirtualReallocate(const void* adress, const PXSize size);
-PXPublic PXResult PXAPI PXMemoryVirtualInfoViaAdress(PXMemoryVirtualInfo* const pxMemoryVirtualInfo, const void* adress);
+PXPublic PXResult PXAPI PXMemoryVirtualInfoViaAdress(PXMemoryVirtualInfo PXREF pxMemoryVirtualInfo, const void* adress);
 //---------------------------------------------------------
 
 
@@ -353,8 +361,8 @@ PXPublic PXResult PXAPI PXDebugBreak();
 PXPublic PXResult PXAPI PXDebugOutputDebugStringA(const char* text);
 PXPublic PXResult PXAPI PXDebugOutputDebugStringW(const wchar_t* text);
 PXPublic PXResult PXAPI PXDebugProcessBreak();
-PXPublic PXResult PXAPI PXDebugIsPresent(PXBool* const isPresent);
-PXPublic PXResult PXAPI PXDebugIsPresentRemote(const PXProcessHandle processHandle, PXBool* const isPresent);
+PXPublic PXResult PXAPI PXDebugIsPresent(PXBool PXREF isPresent);
+PXPublic PXResult PXAPI PXDebugIsPresentRemote(const PXProcessHandle processHandle, PXBool PXREF isPresent);
 PXPublic PXResult PXAPI PXDebugActiveProcessStop(const PXI32U processID);
 
 
@@ -369,7 +377,7 @@ PXPublic PXResult PXAPI PXDebugModuleNameGet
     const PXHandleModule pxHandleModule,
     char* moduleName,
     const PXSize moduleNameSize,
-    PXSize* const sizeWritten,
+    PXSize PXREF sizeWritten,
     const PXI32U flags
 );
 
@@ -385,16 +393,16 @@ PXPublic PXResult PXAPI PXSymbolServerCleanup();
 PXPublic PXResult PXAPI PXSymbolServerOptionsSet();
 PXPublic PXResult PXAPI PXSymbolListLoad(const PXProcessHandle processHandle, const void* baseAdress);
 PXPublic PXResult PXAPI PXSymbolModuleLoad(const PXProcessHandle processHandle, const char* moduleName, void** baseAdress); // SymLoadModuleEx
-PXPublic PXResult PXAPI PXSymbolStackWalk(PXSymbolStackWalkInfo* const pxSymbolStackWalkInfo);
-PXPublic PXResult PXAPI PXSymbolStackTrace(PXSymbol* const pxSymbolList, const PXSize pxSymbolListAmount, const PXSize start, const PXSize depth);
+PXPublic PXResult PXAPI PXSymbolStackWalk(PXSymbolStackWalkInfo PXREF pxSymbolStackWalkInfo);
+PXPublic PXResult PXAPI PXSymbolStackTrace(PXSymbol PXREF pxSymbolList, const PXSize pxSymbolListAmount, const PXSize start, const PXSize depth);
 PXPublic PXResult PXAPI PXSymbolUnDecorateName(const char* inputName, char* name, const PXSize nameLengthMax, PXSize* nameLengthWritten); // UnDecorateSymbolName
-PXPublic PXResult PXAPI PXSymbolFromAddress(PXSymbol* const pxSymbol, const void* const adress);
+PXPublic PXResult PXAPI PXSymbolFromAddress(PXSymbol PXREF pxSymbol, const void PXREF adress);
 PXPublic PXResult PXAPI PXSymbolEnumerate();
 PXPublic PXResult PXAPI PXSymbolFunctionTableAccess();
 PXPublic PXResult PXAPI PXSymbolModuleBaseGet();
 // Adress to module HANDLE
-PXPublic PXResult PXAPI PXSymbolModuleHandleFromAdress(PXHandleModule* const pxHandleModule, const void* const adress);
-PXPublic PXResult PXAPI PXSymbolModuleName(const PXHandleModule pxHandleModule, char* const name);
+PXPublic PXResult PXAPI PXSymbolModuleHandleFromAdress(PXHandleModule PXREF pxHandleModule, const void PXREF adress);
+PXPublic PXResult PXAPI PXSymbolModuleName(const PXHandleModule pxHandleModule, char PXREF name);
 //---------------------------------------------------------
 
 
@@ -403,17 +411,17 @@ PXPublic PXResult PXAPI PXSymbolModuleName(const PXHandleModule pxHandleModule, 
 //---------------------------------------------------------
 // Thread - 
 //---------------------------------------------------------
-typedef PXActionResult (PXAPI* PXLockFunction)(PXLock* const pxLock);
+typedef PXActionResult (PXAPI* PXLockFunction)(PXLock PXREF pxLock);
 
-PXPublic PXResult PXAPI PXSemaphorCreate(PXLock* const pxLock);
-PXPublic PXResult PXAPI PXSemaphorDelete(PXLock* const pxLock);
-PXPublic PXResult PXAPI PXSemaphorEnter(PXLock* const pxLock);
-PXPublic PXResult PXAPI PXSemaphorLeave(PXLock* const pxLock);
+PXPublic PXResult PXAPI PXSemaphorCreate(PXLock PXREF pxLock);
+PXPublic PXResult PXAPI PXSemaphorDelete(PXLock PXREF pxLock);
+PXPublic PXResult PXAPI PXSemaphorEnter(PXLock PXREF pxLock);
+PXPublic PXResult PXAPI PXSemaphorLeave(PXLock PXREF pxLock);
 
-PXPublic PXResult PXAPI PXCriticalSectionCreate(PXLock* const pxLock);
-PXPublic PXResult PXAPI PXCriticalSectionDelete(PXLock* const pxLock);
-PXPublic PXResult PXAPI PXCriticalSectionEnter(PXLock* const pxLock);
-PXPublic PXResult PXAPI PXCriticalSectionLeave(PXLock* const pxLock);
+PXPublic PXResult PXAPI PXCriticalSectionCreate(PXLock PXREF pxLock);
+PXPublic PXResult PXAPI PXCriticalSectionDelete(PXLock PXREF pxLock);
+PXPublic PXResult PXAPI PXCriticalSectionEnter(PXLock PXREF pxLock);
+PXPublic PXResult PXAPI PXCriticalSectionLeave(PXLock PXREF pxLock);
 //---------------------------------------------------------
 
 
@@ -422,7 +430,7 @@ PXPublic PXResult PXAPI PXCriticalSectionLeave(PXLock* const pxLock);
 //---------------------------------------------------------
 // File - I/O
 //---------------------------------------------------------
-PXPublic PXResult PXAPI PXFileMapToMemoryEE(PXFile* const pxFile, const PXSize requestedSize, const PXAccessMode pxAccessMode, const PXBool prefetch);
+PXPublic PXResult PXAPI PXFileMapToMemoryEE(PXFile PXREF pxFile, const PXSize requestedSize, const PXAccessMode pxAccessMode, const PXBool prefetch);
 
 //---------------------------------------------------------
 
@@ -479,16 +487,13 @@ PXPerformanceInfo;
 
 // When UpdateCounter is 0, we get the current data.
 // Every call after will get the delta.
-PXPublic PXResult PXAPI PXPerformanceInfoGet(PXPerformanceInfo* const pxPerformanceInfo);
-
+PXPublic PXResult PXAPI PXPerformanceInfoGet(PXPerformanceInfo PXREF pxPerformanceInfo);
 
 
 //---------------------------------------------------------
 // VIDEO
 //---------------------------------------------------------
-PXPublic PXResult PXAPI PXGPUList(PXGPUPhysical* const pxGPUPhysicalList, PXSize* const pxGPUPhysicalListSize);
+PXPublic PXResult PXAPI PXGPUList(PXGPUPhysical PXREF pxGPUPhysicalList, PXSize PXREF pxGPUPhysicalListSize);
 //---------------------------------------------------------
-
-
 
 #endif

@@ -149,13 +149,13 @@ typedef SQLRETURN(SQL_API* PXSQLDriversA)(SQLHENV henv, SQLUSMALLINT fDirection,
 
 #endif
 
-PXResult PXAPI  PXDataBaseInitialize(PXDataBase* const pxDataBase)
+PXResult PXAPI PXDataBaseInitialize(PXDataBase PXREF pxDataBase)
 {
     PXClear(PXDataBase, pxDataBase);
 
     // Load library, ODBC
     {
-        const PXActionResult pxActionResult = PXLibraryOpenA(&pxDataBase->ODBCLibrary, "ODBC32.DLL");
+        const PXResult pxActionResult = PXLibraryOpenA(&pxDataBase->ODBCLibrary, "ODBC32.DLL");
 
         if(PXActionSuccessful != pxActionResult)
         {
@@ -370,7 +370,7 @@ PXResult PXAPI  PXDataBaseInitialize(PXDataBase* const pxDataBase)
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXDataBaseRelease(PXDataBase* const pxDataBase)
+PXResult PXAPI PXDataBaseRelease(PXDataBase PXREF pxDataBase)
 {
     PXDataBaseCleanup(pxDataBase);
 
@@ -439,13 +439,13 @@ PXSQLType PXAPI PXSQLTypeFromID(const PXI32U sqlTypeID)
 #endif
 }
 
-PXResult PXAPI  PXDataBaseConnectA
+PXResult PXAPI PXDataBaseConnectA
 (
-    PXDataBase* const pxDataBase,
-    const char* const source,
-    const char* const database,
-    const char* const user,
-    const char* const password
+    PXDataBase PXREF pxDataBase,
+    const char PXREF source,
+    const char PXREF database,
+    const char PXREF user,
+    const char PXREF password
 )
 {
     PXText pxTextSource;
@@ -453,24 +453,24 @@ PXResult PXAPI  PXDataBaseConnectA
     PXText pxTextUser;
     PXText pxTextPassword;
 
-    PXTextConstructFromAdressA(&pxTextSource, source, PXTextLengthUnkown, PXTextLengthUnkown);
-    PXTextConstructFromAdressA(&pxTextDatabase, database, PXTextLengthUnkown, PXTextLengthUnkown);
-    PXTextConstructFromAdressA(&pxTextUser, user, PXTextLengthUnkown, PXTextLengthUnkown);
-    PXTextConstructFromAdressA(&pxTextPassword, password, PXTextLengthUnkown, PXTextLengthUnkown);
+    PXTextFromAdressA(&pxTextSource, source, PXTextLengthUnkown, PXTextLengthUnkown);
+    PXTextFromAdressA(&pxTextDatabase, database, PXTextLengthUnkown, PXTextLengthUnkown);
+    PXTextFromAdressA(&pxTextUser, user, PXTextLengthUnkown, PXTextLengthUnkown);
+    PXTextFromAdressA(&pxTextPassword, password, PXTextLengthUnkown, PXTextLengthUnkown);
 
-    const PXActionResult pxActionResult = PXDataBaseConnect(pxDataBase, &pxTextSource, &pxTextDatabase, &pxTextUser, &pxTextPassword);
+    const PXResult pxActionResult = PXDataBaseConnect(pxDataBase, &pxTextSource, &pxTextDatabase, &pxTextUser, &pxTextPassword);
 
 
     return pxActionResult;
 }
 
-PXResult PXAPI  PXDataBaseConnect
+PXResult PXAPI PXDataBaseConnect
 (
-    PXDataBase* const pxDataBase,
-    const PXText* const source,
-    const PXText* const database,
-    const PXText* const user,
-    const PXText* const password
+    PXDataBase PXREF pxDataBase,
+    const PXText PXREF source,
+    const PXText PXREF database,
+    const PXText PXREF user,
+    const PXText PXREF password
 )
 {
 #if OSUnix
@@ -623,7 +623,7 @@ PXResult PXAPI  PXDataBaseConnect
 #endif
 }
 
-void PXAPI PXDataBaseDisconnect(PXDataBase* const pxDataBase)
+void PXAPI PXDataBaseDisconnect(PXDataBase PXREF pxDataBase)
 {
 #if OSUnix
 #elif PXOSWindowsDestop
@@ -639,7 +639,7 @@ void PXAPI PXDataBaseDisconnect(PXDataBase* const pxDataBase)
 #endif
 }
 
-void PXAPI PXDataBaseCleanup(PXDataBase* const pxDataBase)
+void PXAPI PXDataBaseCleanup(PXDataBase PXREF pxDataBase)
 {
     PXDataBaseDisconnect(pxDataBase);
 
@@ -655,7 +655,7 @@ void PXAPI PXDataBaseCleanup(PXDataBase* const pxDataBase)
 #endif
 }
 
-void PXAPI PXDataBaseScanForDrivers(PXDataBase* const pxDataBase)
+void PXAPI PXDataBaseScanForDrivers(PXDataBase PXREF pxDataBase)
 {
 #if PXLogEnable
     PXLogPrint
@@ -679,11 +679,11 @@ void PXAPI PXDataBaseScanForDrivers(PXDataBase* const pxDataBase)
     PXSize dataIndex = 0;
     PXSize dataCursor = 0;
 
-    wchar_t driverDescription[1024];
+    char driverDescription[1024];
     const SQLSMALLINT driverDescriptionSize = sizeof(driverDescription) / sizeof(wchar_t);
     SQLSMALLINT driverDescriptionSizeWritten = 0;
 
-    wchar_t driverAttributes[1024];
+    char driverAttributes[1024];
     const SQLSMALLINT driverAttributesSize = sizeof(driverAttributes) / sizeof(wchar_t);
     SQLSMALLINT driverAttributesSizeWritten = 0;
 
@@ -777,7 +777,7 @@ void PXAPI PXDataBaseScanForDrivers(PXDataBase* const pxDataBase)
 #endif
 }
 
-PXResult PXAPI  PXDataBaseCommandExecute(PXDataBase* const pxDataBase, const PXText* const pxTextSQLStatement)
+PXResult PXAPI PXDataBaseCommandExecute(PXDataBase PXREF pxDataBase, const PXText PXREF pxTextSQLStatement)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -1018,7 +1018,7 @@ PXResult PXAPI  PXDataBaseCommandExecute(PXDataBase* const pxDataBase, const PXT
 #endif
 }
 
-PXResult PXAPI  PXDataBaseCommandCancel(PXDataBase* const dataBaseConnection)
+PXResult PXAPI PXDataBaseCommandCancel(PXDataBase PXREF dataBaseConnection)
 {
     return PXActionRefusedNotImplemented; // SQLRETURN SQL_API SQLCancel(SQLHSTMT StatementHandle);
 }

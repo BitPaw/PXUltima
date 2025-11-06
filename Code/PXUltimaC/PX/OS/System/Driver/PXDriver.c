@@ -10,7 +10,7 @@
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/OS/PXOS.h>
 
-PXResult PXAPI  PXDriverListFetch(PXDriver** const pxDriverList, PXSize* const listSize)
+PXResult PXAPI PXDriverListFetch(PXDriver* PXREF pxDriverList, PXSize PXREF listSize)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -44,7 +44,7 @@ PXResult PXAPI  PXDriverListFetch(PXDriver** const pxDriverList, PXSize* const l
 
     for(PXSize i = 0; i < driverImageBaseAdressListAmount; ++i)
     {
-        PXDriver* const pxDriver = &(*pxDriverList)[i];
+        PXDriver PXREF pxDriver = &(*pxDriverList)[i];
         void* baseAdress = driverImageBaseAdressList[i];
 
         pxDriver->ImageBaseAdress = baseAdress;

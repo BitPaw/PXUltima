@@ -21,7 +21,7 @@
 
 
 #if OSWindows
-void PXAPI PXProcessConstructFromHandle(PXProcess* const pxProcess, HANDLE processHandle)
+void PXAPI PXProcessConstructFromHandle(PXProcess PXREF pxProcess, HANDLE processHandle)
 {
     PXClear(PXProcess, pxProcess);
 
@@ -31,7 +31,7 @@ void PXAPI PXProcessConstructFromHandle(PXProcess* const pxProcess, HANDLE proce
 }
 #endif
 
-void PXAPI PXProcessParent(PXProcess* const pxProcess)
+void PXAPI PXProcessParent(PXProcess PXREF pxProcess)
 {
     PXClear(PXProcess, pxProcess);
 
@@ -54,7 +54,7 @@ void PXAPI PXProcessExitCurrent(const PXI32U exitCode)
 #endif
 }
 
-PXResult PXAPI  PXProcessHandleCountGet(PXProcess* pxProcess, PXSize* const handlesAmount)
+PXResult PXAPI PXProcessHandleCountGet(PXProcess* pxProcess, PXSize PXREF handlesAmount)
 {
     PXProcess pxProcessOverride;
 
@@ -84,7 +84,7 @@ PXResult PXAPI  PXProcessHandleCountGet(PXProcess* pxProcess, PXSize* const hand
         pxProcess->ProcessHandle,
         &handleCount
     );
-    const PXActionResult pxActionResult = PXErrorCurrent(successful);
+    const PXResult pxActionResult = PXErrorCurrent(successful);
 
     if(PXActionSuccessful != pxActionResult)
     {
@@ -150,7 +150,7 @@ PXHandleType PXHandleTypeFromID(const PXI8U typeID)
     }
 }
 
-PXResult PXAPI  PXProcessHandleListAll(PXDebug* const pxDebug, PXProcess* pxProcess)
+PXResult PXAPI PXProcessHandleListAll(PXDebug PXREF pxDebug, PXProcess* pxProcess)
 {
     PXProcess pxProcessOverride;
 
@@ -202,9 +202,9 @@ PXResult PXAPI  PXProcessHandleListAll(PXDebug* const pxDebug, PXProcess* pxProc
     typedef LONG(*NTAPI PXNtQuerySystemInformation)
         (
         const PXI32U SystemInformationClass, // enum SYSTEM_INFORMATION_CLASS
-        void* const SystemInformation,
+        void PXREF SystemInformation,
         const PXI32U SystemInformationLength,
-        PXI32U* const ReturnLength
+        PXI32U PXREF ReturnLength
         );
 
     typedef LONG(*NTAPI PXNtQueryObject)
@@ -342,7 +342,7 @@ PXResult PXAPI  PXProcessHandleListAll(PXDebug* const pxDebug, PXProcess* pxProc
                 PXText buffer;
                 PXTextConstructNamedBufferA(&buffer, bufferAA, 256);
 
-                PXActionResult result = PXFilePathGet(&pxFile, &buffer);
+                PXActionResult result = PXFilePath(&pxFile, &buffer, PXFalse);
 
                 if(PXActionSuccessful == result)
                 {
@@ -370,7 +370,7 @@ PXResult PXAPI  PXProcessHandleListAll(PXDebug* const pxDebug, PXProcess* pxProc
 
                 // GetThreadInformation()
                 PXText buffer;
-                PXTextConstructFromAdressA(&buffer, pxHandleInfo.Description, 0, 256);
+                PXTextFromAdressA(&buffer, pxHandleInfo.Description, 0, 256);
 
                 PXThreadNameGet(pxDebug, &pxThread, &buffer);
 
@@ -448,7 +448,7 @@ PXResult PXAPI  PXProcessHandleListAll(PXDebug* const pxDebug, PXProcess* pxProc
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXProcessCreate(PXProcess* const pxProcess, const PXText* const programmPath, const PXProcessCreationMode mode)
+PXResult PXAPI PXProcessCreate(PXProcess PXREF pxProcess, const PXText PXREF programmPath, const PXProcessCreationMode mode)
 {
     PXClear(PXProcess, pxProcess);
 
@@ -488,7 +488,7 @@ PXResult PXAPI  PXProcessCreate(PXProcess* const pxProcess, const PXText* const 
                 &startupInfo,
                 &processInfo
             );
-            const PXActionResult pxActionResult = PXErrorCurrent(successful);
+            const PXResult pxActionResult = PXErrorCurrent(successful);
 
             if(PXActionSuccessful != pxActionResult)
             {
@@ -531,7 +531,7 @@ PXResult PXAPI  PXProcessCreate(PXProcess* const pxProcess, const PXText* const 
                 &startupInfo,
                 &processInfo
             );
-            const PXActionResult pxActionResult = PXErrorCurrent(successful);
+            const PXResult pxActionResult = PXErrorCurrent(successful);
 
             if(PXActionSuccessful != pxActionResult)
             {
@@ -552,7 +552,7 @@ PXResult PXAPI  PXProcessCreate(PXProcess* const pxProcess, const PXText* const 
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEvent)
+PXResult PXAPI PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEvent)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -566,7 +566,7 @@ PXResult PXAPI  PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEvent)
     const DWORD processID = PXNull;
     const HANDLE snapshotHandle = CreateToolhelp32Snapshot(flag, processID); // Windows XP, Kernel32.dll, tlhelp32.h
     const PXBool successful = snapshotHandle != INVALID_HANDLE_VALUE && snapshotHandle != ((HANDLE)(LONG_PTR)ERROR_BAD_LENGTH);
-    const PXActionResult pxActionResult = PXErrorCurrent(successful);
+    const PXResult pxActionResult = PXErrorCurrent(successful);
 
     if(PXActionSuccessful != pxActionResult)
     {
@@ -596,7 +596,7 @@ PXResult PXAPI  PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEvent)
         pxProcess.ProcessIDParent = processEntryW.th32ParentProcessID;
         pxProcess.ExecutableFilePath;
 
-        PXTextConstructFromAdressA(&pxProcess.ExecutableFilePath, processEntryW.szExeFile, PXTextLengthUnkown, PXTextLengthUnkown);
+        PXTextFromAdressA(&pxProcess.ExecutableFilePath, processEntryW.szExeFile, PXTextLengthUnkown, PXTextLengthUnkown);
 
         PXFunctionInvoke(pxProcessDetectedEvent, &pxProcess);
 
@@ -609,7 +609,7 @@ PXResult PXAPI  PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEvent)
 #endif
 }
 
-PXResult PXAPI  PXProcessThreadsListAll(PXProcess* const pxProcess, PXThread** pxThreadListRef, const PXSize amount, PXSize* resultSIze)
+PXResult PXAPI PXProcessThreadsListAll(PXProcess PXREF pxProcess, PXThread** pxThreadListRef, const PXSize amount, PXSize* resultSIze)
 {
     PXSize threadIndex = 0;
 
@@ -652,7 +652,7 @@ PXResult PXAPI  PXProcessThreadsListAll(PXProcess* const pxProcess, PXThread** p
 
             if(isTarget)
             {
-                PXThread* const pxThread = &pxThreadList[threadIndex];
+                PXThread PXREF pxThread = &pxThreadList[threadIndex];
 
                 PXText text;
                 PXTextConstructBufferA(&text, 128);
@@ -686,7 +686,7 @@ PXResult PXAPI  PXProcessThreadsListAll(PXProcess* const pxProcess, PXThread** p
 #endif
 }
 
-PXResult PXAPI  PXProcessOpenViaID(PXProcess* const pxProcess, const PXProcessID pxProcessID)
+PXResult PXAPI PXProcessOpenViaID(PXProcess PXREF pxProcess, const PXProcessID pxProcessID)
 {
     PXClear(PXProcess, pxProcess);
 
@@ -695,7 +695,7 @@ PXResult PXAPI  PXProcessOpenViaID(PXProcess* const pxProcess, const PXProcessID
 #elif OSWindows
     const DWORD desiredAccess = PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_VM_OPERATION;
     const HANDLE processHandle = OpenProcess(desiredAccess, FALSE, pxProcessID); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
-    const PXActionResult pxActionResult = PXErrorCurrent(processHandle != PXNull);
+    const PXResult pxActionResult = PXErrorCurrent(processHandle != PXNull);
 
     if(PXActionSuccessful != pxActionResult)
     {
@@ -711,13 +711,13 @@ PXResult PXAPI  PXProcessOpenViaID(PXProcess* const pxProcess, const PXProcessID
 #endif
 }
 
-PXResult PXAPI  PXProcessClose(PXProcess* const pxProcess)
+PXResult PXAPI PXProcessClose(PXProcess PXREF pxProcess)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
 #elif OSWindows
     const BOOL successful = CloseHandle(pxProcess->ProcessHandle); // Windows 2000 (+UWP), Kernel32.dll, handleapi.h
-    const PXActionResult pxActionResult = PXErrorCurrent(successful);
+    const PXResult pxActionResult = PXErrorCurrent(successful);
 
     if(PXActionSuccessful != pxActionResult)
     {
@@ -732,7 +732,7 @@ PXResult PXAPI  PXProcessClose(PXProcess* const pxProcess)
 #endif
 }
 
-PXResult PXAPI  PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemoryInfo)
+PXResult PXAPI PXProcessMemoryInfoFetch(PXProcessMemoryInfo PXREF pxProcessMemoryInfo)
 {
     PXClear(PXProcessMemoryInfo, pxProcessMemoryInfo);
 
@@ -740,7 +740,7 @@ PXResult PXAPI  PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMem
     const int who = RUSAGE_SELF;
     struct rusage rusageData;
     const int usageResultID = getrusage(who, &rusageData);
-    const PXActionResult usageResult = PXErrorCurrent(0 != usageResultID);
+    const PXResult usageResult = PXErrorCurrent(0 != usageResultID);
 
     if(PXActionSuccessful != usageResult)
     {
@@ -788,7 +788,7 @@ PXResult PXAPI  PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMem
             &processMemoryCounters,
             processMemoryCountersSize
         );
-        const PXActionResult pxActionResult = PXErrorCurrent(successful);
+        const PXResult pxActionResult = PXErrorCurrent(successful);
 
         if(PXActionSuccessful != pxActionResult)
         {
@@ -824,7 +824,7 @@ PXResult PXAPI  PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMem
             &timeStampList[2], // kernelTime
             &timeStampList[3] // userTime
         );
-        const PXActionResult pxActionResult = PXErrorCurrent(successful);
+        const PXResult pxActionResult = PXErrorCurrent(successful);
 
         if(PXActionSuccessful != pxActionResult)
         {

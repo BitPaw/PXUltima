@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXVulcanIncluded
 #define PXVulcanIncluded
 
@@ -1185,9 +1187,9 @@ typedef struct PXVulkanDeviceCreateInfo_
     PXI32U queueCreateInfoCount;
     const VkDeviceQueueCreateInfo* pQueueCreateInfos;
     PXI32U enabledLayerCount;
-    const char* const* ppEnabledLayerNames;
+    const char PXREF* ppEnabledLayerNames;
     PXI32U enabledExtensionCount;
-    const char* const* ppEnabledExtensionNames;
+    const char PXREF* ppEnabledExtensionNames;
     const VkPhysicalDeviceFeatures* pEnabledFeatures;
 }
 PXVulkanDeviceCreateInfo,
@@ -1263,9 +1265,9 @@ typedef struct PXVulkanInstanceCreateInfo_
     VkInstanceCreateFlags flags;
     const VkApplicationInfo* pApplicationInfo;
     PXI32U enabledLayerCount;
-    const char* const* ppEnabledLayerNames;
+    const char PXREF* ppEnabledLayerNames;
     PXI32U enabledExtensionCount;
-    const char* const* ppEnabledExtensionNames;
+    const char PXREF* ppEnabledExtensionNames;
 }
 PXVulkanInstanceCreateInfo,
 VkInstanceCreateInfo;
@@ -2170,9 +2172,9 @@ PXVulcan;
 
 typedef struct PXGraphicInitializeInfo_ PXGraphicInitializeInfo;
 
-PXPrivate PXResult PXAPI  PXVulcanErrorCodeFromID(const VkResult vkResultID);
+PXPrivate PXResult PXAPI PXVulcanErrorCodeFromID(const VkResult vkResultID);
 
-PXPublic PXResult PXAPI PXVulcanInitialize(PXVulcan* const pxVulcan, PXGraphicInitializeInfo* const pxGraphicInitializeInfo);
-PXPublic PXResult PXAPI PXVulcanRelease(PXVulcan* const pxVulcan);
+PXPublic PXResult PXAPI PXVulcanInitialize(PXVulcan PXREF pxVulcan, PXGraphicInitializeInfo PXREF pxGraphicInitializeInfo);
+PXPublic PXResult PXAPI PXVulcanRelease(PXVulcan PXREF pxVulcan);
 
 #endif

@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-PXResult PXAPI  PXBashExecute(const PXText* const programPath, const PXBool syncronous)
+PXResult PXAPI PXBashExecute(const PXText PXREF programPath, const PXBool syncronous)
 {
     /*
     Pipe pipe;
@@ -30,13 +30,13 @@ PXResult PXAPI  PXBashExecute(const PXText* const programPath, const PXBool sync
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI  PXBashExecuteA
+PXResult PXAPI PXBashExecuteA
 (
-    const char* const commandText,
+    const char PXREF commandText,
     const PXSize commandTextSize,
-    char** const outBuffer,
+    char* PXREF outBuffer,
     const PXSize outBufferSizeMax,
-    PXSize* const outBufferSizeCurrent,
+    PXSize PXREF outBufferSizeCurrent,
     const PXBool syncronous
 )
 {
@@ -105,8 +105,8 @@ PXResult PXAPI  PXBashExecuteA
     }
 
     // Execute the command and get the output
-    FILE* const pipeHandle = _popen(commandText, "r"); // [POSIX] stdio.h
-    const PXActionResult openError = PXErrorCurrent(pipeHandle>0);
+    FILE PXREF pipeHandle = _popen(commandText, "r"); // [POSIX] stdio.h
+    const PXResult openError = PXErrorCurrent(pipeHandle>0);
 
     if(PXActionSuccessful != openError)
     {
@@ -122,7 +122,7 @@ PXResult PXAPI  PXBashExecuteA
     }
 
     char* res = fgets(*outBuffer, outBufferSizeMax, pipeHandle);
-    const PXActionResult getError = PXErrorCurrent(!res);
+    const PXResult getError = PXErrorCurrent(!res);
 
     if(PXActionSuccessful != getError)
     {

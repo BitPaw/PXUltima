@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXLZ77Included
 #define PXLZ77Included
 
@@ -19,15 +21,15 @@ PXLZ77ESetting;
 
 PXPublic PXResult PXLZ77Encode
 (
-    //PXFile* const pxOutputStream,
-    PXFile* const pxCacheStream,
+    //PXFile PXREF pxOutputStream,
+    PXFile PXREF pxCacheStream,
     Hash* hash,
     const unsigned char* in,
     PXSize inpos,
     PXSize insize,
     const HuffmanTree* tree_ll,
     const HuffmanTree* tree_d,
-    const PXLZ77ESetting* const pxLZ77ESetting
+    const PXLZ77ESetting PXREF pxLZ77ESetting
 );
 PXPublic PXResult PXLZ77Decode();    */
 

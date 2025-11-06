@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXN64Included
 #define PXN64Included
 
@@ -216,7 +218,7 @@ PXN64;
 PXPrivate PXN64CountryCode PXAPI PXN64CountryCodeFromID(PXI8U pxN64CountryCodeID);
 PXPrivate const char* PXN64CountryCodeToString(const PXN64CountryCode pxN64CountryCode);
 
-PXPublic PXResult PXAPI PXN64LoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXN64SaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXN64LoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXN64SaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

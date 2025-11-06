@@ -8,8 +8,7 @@
 
 const char PXZSTDText[] = "ZSTD";
 
-
-PXResult PXAPI  PXZSTDCompress(PXFile* const pxFileInput, PXFile* const pxFileOutput, const PXI8U compressionLevel)
+PXResult PXAPI PXZSTDCompress(PXFile PXREF pxFileInput, PXFile PXREF pxFileOutput, const PXI8U compressionLevel)
 {
 #if PXLogEnable && 0
     PXLogPrint
@@ -27,7 +26,7 @@ PXResult PXAPI  PXZSTDCompress(PXFile* const pxFileInput, PXFile* const pxFileOu
 PXLock pxLockTest;
 PXBool isCreated = 0;
 
-PXResult PXAPI  PXZSTDDecompress(PXFile* const pxFileInput, PXFile* const pxFileOutput)
+PXResult PXAPI PXZSTDDecompress(PXFile PXREF pxFileInput, PXFile PXREF pxFileOutput)
 {
 #if PXLogEnable && 0
     PXLogPrint

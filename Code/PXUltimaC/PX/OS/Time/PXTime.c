@@ -65,7 +65,7 @@ PXTimeDayOfWeek PXAPI PXTimeDayFromID(const PXI8U dayID)
     }
 }
 
-void PXAPI PXTimeNow(PXTime* const pxTime)
+void PXAPI PXTimeNow(PXTime PXREF pxTime)
 {
 #if OSUnix
 
@@ -76,7 +76,7 @@ void PXAPI PXTimeNow(PXTime* const pxTime)
     struct timespec  ts;
 
     const int getTimeResultID = clock_gettime(CLOCK_REALTIME, &ts);
-    const PXActionResult getTimeResult = PXErrorCurrent(0 == getTimeResultID);
+    const PXResult getTimeResult = PXErrorCurrent(0 == getTimeResultID);
 
     if(PXActionSuccessful != getTimeResult)
     {
@@ -110,7 +110,7 @@ void PXAPI PXTimeNow(PXTime* const pxTime)
 #endif
 }
 
-PXSize PXAPI PXTimeDelta(const PXTime* const timeA, const PXTime* const timeB, PXTime* const timeResult)
+PXSize PXAPI PXTimeDelta(const PXTime PXREF timeA, const PXTime PXREF timeB, PXTime PXREF timeResult)
 {
     timeResult->Day = (timeB->Day - timeA->Day);
     timeResult->Hour = (timeB->Hour - timeA->Hour);
@@ -177,7 +177,7 @@ PXI64U PXAPI PXTimeCounterStampGet()
 
     const int resultID = clock_gettime(CLOCK_MONOTONIC, &ts); // CLOCK_THREAD_CPUTIME_ID
     const PXBool success = -1 == resultID;
-    //const PXActionResult result = POSIXError(success);
+    //const PXResult result = POSIXError(success);
 
     if(success)
     {
@@ -232,7 +232,7 @@ PXI64U PXAPI PXTimeCounterFrequencyGet()
 }
 
 
-void PXAPI PXTimeFromOSCTime(PXTime* const pxTime, const time_t timeValue)
+void PXAPI PXTimeFromOSCTime(PXTime PXREF pxTime, const time_t timeValue)
 {
 #if OSUnix || OSForcePOSIXForWindows
 
@@ -270,7 +270,7 @@ void PXAPI PXTimeFromOSCTime(PXTime* const pxTime, const time_t timeValue)
 }
 
 #if OSWindows
-void PXAPI PXTimeFromOSFileTime(PXTime* const pxTime, FILETIME* const fileTime)
+void PXAPI PXTimeFromOSFileTime(PXTime PXREF pxTime, FILETIME PXREF fileTime)
 {
 #if OSUnix
 #elif OSWindows
@@ -282,7 +282,7 @@ void PXAPI PXTimeFromOSFileTime(PXTime* const pxTime, FILETIME* const fileTime)
 #endif
 }
 
-void PXAPI PXTimeConvertFromOS(PXTime* const time, const SYSTEMTIME* const systemTime)
+void PXAPI PXTimeConvertFromOS(PXTime PXREF time, const SYSTEMTIME PXREF systemTime)
 {
     time->Year = systemTime->wYear;
     time->Month = systemTime->wMonth;

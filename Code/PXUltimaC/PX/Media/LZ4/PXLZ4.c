@@ -23,27 +23,27 @@ typedef enum { decode_full_block = 0, partial_decode = 1 } earlyEnd_directive;
 typedef enum { noDict = 0, withPrefix64k, usingExtDict, usingDictCtx } dict_directive;
 typedef enum { noDictIssue = 0, dictSmall } dictIssue_directive;
 
-PXResult PXAPI  PXLZ4DecompressChunk(PXFile* const pxFileInput, PXFile* const pxFileOutput)
+PXResult PXAPI PXLZ4DecompressChunk(PXFile PXREF pxFileInput, PXFile PXREF pxFileOutput)
 {
 
 
     earlyEnd_directive partialDecoding;  /* full, partial */
     dict_directive dict = noDict;                 /* noDict, withPrefix64k, usingExtDict */
-    const BYTE* const lowPrefix = 0;  /* always <= dst, == dst when no prefix */
-    const BYTE* const dictStart = 0;  /* only if dict==usingExtDict */
+    const BYTE PXREF lowPrefix = 0;  /* always <= dst, == dst when no prefix */
+    const BYTE PXREF dictStart = 0;  /* only if dict==usingExtDict */
     const size_t dictSize = 0;       /* note : = 0 if noDict */
 
 
     // if((src == NULL) || (outputSize < 0)) { return -1; }
 
 
-    const BYTE* const dictEnd = (dictStart == NULL) ? NULL : dictStart + dictSize;
+    const BYTE PXREF dictEnd = (dictStart == NULL) ? NULL : dictStart + dictSize;
     const int checkOffset = (dictSize < (int)(64 KB));
 
 
     /* Set up the "end" pointers for the shortcut. */
-   // const BYTE* const shortiend = iend - 14 /*maxLL*/ - 2 /*offset*/;
-   // const BYTE* const shortoend = oend - 14 /*maxLL*/ - 18 /*maxML*/;
+   // const BYTE PXREF shortiend = iend - 14 /*maxLL*/ - 2 /*offset*/;
+   // const BYTE PXREF shortoend = oend - 14 /*maxLL*/ - 18 /*maxML*/;
 
     const BYTE* match;
 
@@ -233,7 +233,7 @@ PXResult PXAPI  PXLZ4DecompressChunk(PXFile* const pxFileInput, PXFile* const px
                 LZ4_memcpy(op, dictEnd - copySize, copySize);
                 op += copySize;
                 if(restSize > (size_t)(op - lowPrefix)) {  /* overlap copy */
-                    BYTE* const endOfMatch = op + restSize;
+                    BYTE PXREF endOfMatch = op + restSize;
                     const BYTE* copyFrom = lowPrefix;
                     while(op < endOfMatch) *op++ = *copyFrom++;
                 }
@@ -253,8 +253,8 @@ PXResult PXAPI  PXLZ4DecompressChunk(PXFile* const pxFileInput, PXFile* const px
         assert(op <= oend);
         if(partialDecoding && (cpy > oend - MATCH_SAFEGUARD_DISTANCE)) {
             size_t const mlen = MIN(length, (size_t)(oend - op));
-            const BYTE* const matchEnd = match + mlen;
-            BYTE* const copyEnd = op + mlen;
+            const BYTE PXREF matchEnd = match + mlen;
+            BYTE PXREF copyEnd = op + mlen;
             if(matchEnd > op) {   /* overlap copy */
                 while(op < copyEnd) { *op++ = *match++; }
             }
@@ -284,7 +284,7 @@ PXResult PXAPI  PXLZ4DecompressChunk(PXFile* const pxFileInput, PXFile* const px
 
         if(unlikely(cpy > oend - MATCH_SAFEGUARD_DISTANCE))
         {
-            BYTE* const oCopyLimit = oend - (WILDCOPYLENGTH - 1);
+            BYTE PXREF oCopyLimit = oend - (WILDCOPYLENGTH - 1);
 
             if(cpy > oend - LASTLITERALS) { goto _output_error; } /* Error : last LASTLITERALS bytes must be literals (uncompressed) */
 
@@ -308,12 +308,12 @@ PXResult PXAPI  PXLZ4DecompressChunk(PXFile* const pxFileInput, PXFile* const px
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXLZ4Compress(PXFile* const pxFileInput, PXFile* const pxFileOutput)
+PXResult PXAPI PXLZ4Compress(PXFile PXREF pxFileInput, PXFile PXREF pxFileOutput)
 {
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI  PXLZ4Decompress(PXFile* const pxFileInput, PXFile* const pxFileOutput)
+PXResult PXAPI PXLZ4Decompress(PXFile PXREF pxFileInput, PXFile PXREF pxFileOutput)
 {
     PXI8U nChunks = 0;
 
@@ -365,7 +365,7 @@ PXResult PXAPI  PXLZ4Decompress(PXFile* const pxFileInput, PXFile* const pxFileO
     // If true, we can directly decompress one block.
     if(0 == nChunks) 
     {
-        const PXActionResult nDecompressed = PXLZ4DecompressChunk(pxFileInput, pxFileOutput);
+        const PXResult nDecompressed = PXLZ4DecompressChunk(pxFileInput, pxFileOutput);
 
         return nDecompressed;
     }
@@ -382,7 +382,7 @@ PXResult PXAPI  PXLZ4Decompress(PXFile* const pxFileInput, PXFile* const pxFileO
             return PXActionInvalid; // ChunkSize too big
         }
 
-        const PXActionResult decompessionResult = PXLZ4DecompressChunk(pxFileInput, pxFileOutput);
+        const PXResult decompessionResult = PXLZ4DecompressChunk(pxFileInput, pxFileOutput);
 
         if(PXActionSuccessful != decompessionResult)
         {

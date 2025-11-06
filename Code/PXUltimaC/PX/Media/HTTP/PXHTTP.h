@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXHTTPIncluded
 #define PXHTTPIncluded
 
@@ -54,10 +56,10 @@ typedef struct PXHTTPResponse_
 }
 PXHTTPResponse;
 
-PXPublic PXResult PXAPI PXHTTPRequestParse(PXHTTPRequest* const pxHTTPRequest, PXFile* const PXFile);
-PXPublic PXResult PXAPI PXHTTPRequestSerialize(PXHTTPRequest* const pxHTTPRequest, PXFile* const PXFile);
+PXPublic PXResult PXAPI PXHTTPRequestParse(PXHTTPRequest PXREF pxHTTPRequest, PXFile PXREF PXFile);
+PXPublic PXResult PXAPI PXHTTPRequestSerialize(PXHTTPRequest PXREF pxHTTPRequest, PXFile PXREF PXFile);
 
-PXPublic PXResult PXAPI PXHTTPResponseParse(PXHTTPResponse* const pxHTTPResponse, PXFile* const PXFile);
-PXPublic PXResult PXAPI PXHTTPResponseSerialize(PXHTTPResponse* const pxHTTPResponse, PXFile* const PXFile);
+PXPublic PXResult PXAPI PXHTTPResponseParse(PXHTTPResponse PXREF pxHTTPResponse, PXFile PXREF PXFile);
+PXPublic PXResult PXAPI PXHTTPResponseSerialize(PXHTTPResponse PXREF pxHTTPResponse, PXFile PXREF PXFile);
 
 #endif

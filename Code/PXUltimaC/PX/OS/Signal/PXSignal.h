@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef OSSignalIncluded
 #define OSSignalIncluded
 
@@ -38,7 +40,7 @@ typedef struct PXRecoveryPoint_
 }
 PXRecoveryPoint;
 
-PXPublic PXResult PXAPI PXRecoveryPointSet(PXRecoveryPoint* const pxRecoveryPoint);
-PXPublic PXResult PXAPI PXRecoveryPointRestore(PXRecoveryPoint* const pxRecoveryPoint);
+PXPublic PXResult PXAPI PXRecoveryPointSet(PXRecoveryPoint PXREF pxRecoveryPoint);
+PXPublic PXResult PXAPI PXRecoveryPointRestore(PXRecoveryPoint PXREF pxRecoveryPoint);
 
 #endif

@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXTreeBIncluded
 #define PXTreeBIncluded
 
@@ -38,13 +40,13 @@ typedef struct PXTreeB_
 }
 PXTreeB;
 
-PXPublic void PXAPI PXTreeBInitialize(PXTreeB* const pxTreeB, const PXSize keySize, const PXSize valueSize, const PXI8U keyOrder);
-PXPublic PXResult PXAPI PXTreeBResize(PXTreeB* const pxTreeB, const PXSize amount);
-PXPublic PXResult PXAPI PXTreeBInsert(PXTreeB* const pxTreeB, const void* const key, const void* const value);
-PXPublic PXResult PXAPI PXTreeBFindIndexed(PXTreeB* const pxTreeB, const void* const key, void** const value);
-PXPublic PXResult PXAPI PXTreeBFindUnindexed(PXTreeB* const pxTreeB, const void* const key, void** const value);
-PXPublic void PXAPI PXTreeBValueIndex(PXTreeB* const pxTreeB, const PXSize index, void** const key, void** const value);
-PXPrivate PXResult PXAPI  PXTreeBNodeExtractFromAdress(PXTreeB* const pxTreeB, PXTreeBNode* const pxTreeBNode, void* adress);
-PXPrivate PXResult PXAPI  PXTreeBNodeInsert(PXTreeB* const pxTreeB, PXTreeBNode* const pxTreeBNode, const void* const key, const void* const value);
+PXPublic void PXAPI PXTreeBInitialize(PXTreeB PXREF pxTreeB, const PXSize keySize, const PXSize valueSize, const PXI8U keyOrder);
+PXPublic PXResult PXAPI PXTreeBResize(PXTreeB PXREF pxTreeB, const PXSize amount);
+PXPublic PXResult PXAPI PXTreeBInsert(PXTreeB PXREF pxTreeB, const void PXREF key, const void PXREF value);
+PXPublic PXResult PXAPI PXTreeBFindIndexed(PXTreeB PXREF pxTreeB, const void PXREF key, void* PXREF value);
+PXPublic PXResult PXAPI PXTreeBFindUnindexed(PXTreeB PXREF pxTreeB, const void PXREF key, void* PXREF value);
+PXPublic void PXAPI PXTreeBValueIndex(PXTreeB PXREF pxTreeB, const PXSize index, void* PXREF key, void* PXREF value);
+PXPrivate PXResult PXAPI PXTreeBNodeExtractFromAdress(PXTreeB PXREF pxTreeB, PXTreeBNode PXREF pxTreeBNode, void* adress);
+PXPrivate PXResult PXAPI PXTreeBNodeInsert(PXTreeB PXREF pxTreeB, PXTreeBNode PXREF pxTreeBNode, const void PXREF key, const void PXREF value);
 
 #endif

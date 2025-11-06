@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXAACIncluded
 #define PXAACIncluded
 
@@ -9,7 +11,7 @@ typedef struct PXAAC_
 }
 PXAAC;
 
-PXPublic PXResult PXAPI PXAACLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXAACSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXAACLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXAACSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

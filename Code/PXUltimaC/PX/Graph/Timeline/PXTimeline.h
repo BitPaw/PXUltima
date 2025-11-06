@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXTimelineIncluded
 #define PXTimelineIncluded
 
@@ -24,8 +26,8 @@ typedef struct PXTimeline_
 }
 PXTimeline;
 
-PXPublic PXResult PXAPI PXTimelineInitialize(PXTimeline* const pxTimeline);
-PXPublic PXResult PXAPI PXTimelineEventAdd(PXTimeline* const pxTimeline, PXTimelineEvent* const pxTimelineEvent);
-PXPublic PXResult PXAPI PXTimelineTimelineAdd(PXTimeline* const pxTimeline, PXTimelinePath* const pxTimelinePath);
+PXPublic PXResult PXAPI PXTimelineInitialize(PXTimeline PXREF pxTimeline);
+PXPublic PXResult PXAPI PXTimelineEventAdd(PXTimeline PXREF pxTimeline, PXTimelineEvent PXREF pxTimelineEvent);
+PXPublic PXResult PXAPI PXTimelineTimelineAdd(PXTimeline PXREF pxTimeline, PXTimelinePath PXREF pxTimelinePath);
 
 #endif

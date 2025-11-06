@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXStreamIncluded
 #define PXStreamIncluded
 
@@ -19,9 +21,9 @@ typedef struct PXStreamOnFrameInfo_
 PXStreamOnFrameInfo;
 
 
-typedef PXActionResult(PXAPI* PXStreamCreateFunction)(PXStream* const pxStream, PXStreamOpenInfo* const pxStreamOpenInfo);
-typedef PXActionResult(PXAPI* PXStreamUpdateFunction)(PXStream* const pxStream);
-typedef PXActionResult(PXAPI* PXStreamOnFrameFunction)(PXStream* const pxStream, const PXStreamOnFrameInfo* const dataAdress);
+typedef PXActionResult(PXAPI* PXStreamCreateFunction)(PXStream PXREF pxStream, PXStreamOpenInfo PXREF pxStreamOpenInfo);
+typedef PXActionResult(PXAPI* PXStreamUpdateFunction)(PXStream PXREF pxStream);
+typedef PXActionResult(PXAPI* PXStreamOnFrameFunction)(PXStream PXREF pxStream, const PXStreamOnFrameInfo PXREF dataAdress);
 
 
 
@@ -95,20 +97,20 @@ PXStreamOpenInfo;
 
 
 
-PXPrivate PXResult PXAPI  PXStreamCreateWindow(PXStream* const pxStream, PXStreamOpenInfo* const pxStreamOpenInfo);
-PXPrivate PXResult PXAPI  PXStreamCreateMonitor(PXStream* const pxStream, PXStreamOpenInfo* const pxStreamOpenInfo);
-PXPrivate PXResult PXAPI  PXStreamCreateCamera(PXStream* const pxStream, PXStreamOpenInfo* const pxStreamOpenInfo);
-PXPrivate PXResult PXAPI  PXStreamCreateTV(PXStream* const pxStream, PXStreamOpenInfo* const pxStreamOpenInfo);
+PXPrivate PXResult PXAPI PXStreamCreateWindow(PXStream PXREF pxStream, PXStreamOpenInfo PXREF pxStreamOpenInfo);
+PXPrivate PXResult PXAPI PXStreamCreateMonitor(PXStream PXREF pxStream, PXStreamOpenInfo PXREF pxStreamOpenInfo);
+PXPrivate PXResult PXAPI PXStreamCreateCamera(PXStream PXREF pxStream, PXStreamOpenInfo PXREF pxStreamOpenInfo);
+PXPrivate PXResult PXAPI PXStreamCreateTV(PXStream PXREF pxStream, PXStreamOpenInfo PXREF pxStreamOpenInfo);
 
-PXPrivate PXResult PXAPI  PXStreamUpdateWindow(PXStream* const pxStream);
-PXPrivate PXResult PXAPI  PXStreamUpdateCamera(PXStream* const pxStream);
-PXPrivate PXResult PXAPI  PXStreamUpdateTV(PXStream* const pxStream);
+PXPrivate PXResult PXAPI PXStreamUpdateWindow(PXStream PXREF pxStream);
+PXPrivate PXResult PXAPI PXStreamUpdateCamera(PXStream PXREF pxStream);
+PXPrivate PXResult PXAPI PXStreamUpdateTV(PXStream PXREF pxStream);
 
-PXPrivate PXResult PXAPI  PXStreamReleaseWindow(PXStream* const pxStream);
-PXPrivate PXResult PXAPI  PXStreamReleaseMonitor(PXStream* const pxStream);
-PXPrivate PXResult PXAPI  PXStreamReleaseCamera(PXStream* const pxStream);
+PXPrivate PXResult PXAPI PXStreamReleaseWindow(PXStream PXREF pxStream);
+PXPrivate PXResult PXAPI PXStreamReleaseMonitor(PXStream PXREF pxStream);
+PXPrivate PXResult PXAPI PXStreamReleaseCamera(PXStream PXREF pxStream);
 
-PXPublic PXResult PXAPI PXStreamOpen(PXStream* const pxStream, PXStreamOpenInfo* const pxStreamOpenInfo);
-PXPublic PXResult PXAPI PXStreamClose(PXStream* const pxStream);
+PXPublic PXResult PXAPI PXStreamOpen(PXStream PXREF pxStream, PXStreamOpenInfo PXREF pxStreamOpenInfo);
+PXPublic PXResult PXAPI PXStreamClose(PXStream PXREF pxStream);
 
 #endif

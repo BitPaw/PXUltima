@@ -1,6 +1,7 @@
+#pragma once
+
 #ifndef PXLockIncluded
 #define PXLockIncluded
-
 #include <PX/OS/System/Version/PXOSVersion.h>
 #include <PX/OS/Error/PXActionResult.h>
 
@@ -37,9 +38,9 @@ typedef struct PXLock_
 }
 PXLock;
 
-PXPublic PXResult PXAPI PXLockCreate(PXLock* const lock, const PXLockType type);
-PXPublic PXResult PXAPI PXLockDelete(PXLock* const lock);
-PXPublic PXResult PXAPI PXLockEngage(PXLock* const lock);
-PXPublic PXResult PXAPI PXLockRelease(PXLock* const lock);
+PXPublic PXResult PXAPI PXLockCreate(PXLock PXREF lock, const PXLockType type);
+PXPublic PXResult PXAPI PXLockDelete(PXLock PXREF lock);
+PXPublic PXResult PXAPI PXLockEngage(PXLock PXREF lock);
+PXPublic PXResult PXAPI PXLockRelease(PXLock PXREF lock);
 
 #endif

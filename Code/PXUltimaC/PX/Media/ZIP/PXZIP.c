@@ -6,7 +6,7 @@
 const char PXZIPSignature[4] = { 'P', 'K', 0x03, 0x04 };
 const char PXZIPChunk[4] = { 'P', 'K', 0x05, 0x06 };
 
-PXResult PXAPI  PXZIPLoadFromFile(PXResourceTransphereInfo* const pxResourceTransphereInfo)
+PXResult PXAPI PXZIPLoadFromFile(PXResourceTransphereInfo PXREF pxResourceTransphereInfo)
 {
     PXZIP pxZIPAA;
     PXClear(PXZIP, &pxZIPAA);
@@ -42,7 +42,7 @@ PXResult PXAPI  PXZIPLoadFromFile(PXResourceTransphereInfo* const pxResourceTran
     PXFileCursorAdvance(pxResourceTransphereInfo->FileReference, pxZIP->Filenamelength);
 
     // Extra field
-    pxZIP->ExtraField = PXFileCursorPosition(pxResourceTransphereInfo->FileReference);
+    pxZIP->ExtraField = (char*)PXFileCursorPosition(pxResourceTransphereInfo->FileReference);
     PXFileCursorAdvance(pxResourceTransphereInfo->FileReference, pxZIP->Extrafieldlength);
 
 #if PXLogEnable
@@ -63,7 +63,7 @@ PXResult PXAPI  PXZIPLoadFromFile(PXResourceTransphereInfo* const pxResourceTran
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXZIPSaveToFile(PXResourceTransphereInfo* const pxResourceTransphereInfo)
+PXResult PXAPI PXZIPSaveToFile(PXResourceTransphereInfo PXREF pxResourceTransphereInfo)
 {
     return PXActionSuccessful;
 }

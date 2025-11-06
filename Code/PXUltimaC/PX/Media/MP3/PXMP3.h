@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXMP3Included
 #define PXMP3Included
 
@@ -219,7 +221,7 @@ PXMP3;
 PXPrivate inline PXI8U PXAPI PXMPEGGenreToID(const PXMPEGGenre mpegGenre);
 PXPrivate inline PXMPEGGenre PXAPI PXMPEGGenreFromID(const PXI8U mpegGenre);
 
-PXPublic PXResult PXAPI PXMP3LoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXMP3SaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXMP3LoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXMP3SaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

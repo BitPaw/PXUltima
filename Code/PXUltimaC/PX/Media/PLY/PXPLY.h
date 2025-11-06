@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXPLYIncluded
 #define PXPLYIncluded
 
@@ -9,7 +11,7 @@ typedef struct PXPLY_
 }
 PXPLY;
 
-PXPublic PXResult PXAPI PXPLYLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXPLYSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXPLYLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXPLYSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXColorIncluded
 #define PXColorIncluded
 
@@ -175,20 +177,20 @@ PXPublic PXI32U PXAPI PXColorI32FromRGB(const PXI8U r, const PXI8U g, const PXI8
 PXPublic PXI32U PXAPI PXColorI32FromRGBA(const PXI8U r, const PXI8U g, const PXI8U b, const PXI8U a);
 
 
-PXPublic void PXAPI PXColorYUYToRGB(PXColorYUV* const pxColorYUV, PXColorRGBI8* const pxColorRGBI8);
+PXPublic void PXAPI PXColorYUYToRGB(PXColorYUV PXREF pxColorYUV, PXColorRGBI8 PXREF pxColorRGBI8);
 
 
 PXPublic PXI8U PXAPI PXColorFormatBytePerPixel(const PXColorFormat imageDataFormat);
 PXPublic PXI8U PXAPI PXColorFormatBitsPerPixel(const PXColorFormat imageDataFormat);
 
-PXPublic void PXAPI PXColorRGBToYCbCr(const PXColorRGBI8* const colorRGB, PXColorYCbCrI8* const ColorYCbCr);
-PXPublic void PXAPI PXColorYCbCrToRGB(const PXColorYCbCrI8* const colorYCbCr, PXColorRGBI8* const colorRGB);
+PXPublic void PXAPI PXColorRGBToYCbCr(const PXColorRGBI8 PXREF colorRGB, PXColorYCbCrI8 PXREF ColorYCbCr);
+PXPublic void PXAPI PXColorYCbCrToRGB(const PXColorYCbCrI8 PXREF colorYCbCr, PXColorRGBI8 PXREF colorRGB);
 
 PXPublic PXF32 PXAPI PXColorRGBToY(const PXF32 red, const PXF32 green, const PXF32 blue);
 PXPublic PXF32 PXAPI PXColorRGBToCb(const PXF32 red, const PXF32 green, const PXF32 blue);
 PXPublic PXF32 PXAPI PXColorRGBToCr(const PXF32 red, const PXF32 green, const PXF32 blue);
 
-PXPublic void PXAPI PXColorHSVToRGBAF(PXColorHSV* const pxColorHSV, PXColorRGBF* const pxColorRGBF);
-PXPublic void PXAPI PXColorHSVToRGBAI8(PXColorHSV* const pxColorHSV, PXColorRGBAI8* const pxColorRGBAI8);
+PXPublic void PXAPI PXColorHSVToRGBAF(PXColorHSV PXREF pxColorHSV, PXColorRGBF PXREF pxColorRGBF);
+PXPublic void PXAPI PXColorHSVToRGBAI8(PXColorHSV PXREF pxColorHSV, PXColorRGBAI8 PXREF pxColorRGBAI8);
 
 #endif

@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXDocumentIncluded
 #define PXDocumentIncluded
 
@@ -252,41 +254,41 @@ PXPublic const char* PXAPI PXDocumentElementTypeToString(const PXDocumentElement
 // Add entry to be consumed later.
 // if entry is already registered, this will update the value
 // Returns the newly generated object
-PXPublic PXCodeDocumentElement* PXAPI PXCodeDocumentElementAdd(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement);
+PXPublic PXCodeDocumentElement* PXAPI PXCodeDocumentElementAdd(PXCodeDocument PXREF pxDocument, PXCodeDocumentElement PXREF pxDocumentElement);
 
 PXPublic PXResult PXAPI PXCodeDocumentElementGenerateChild
 (
-    PXCodeDocument* const pxDocument,
+    PXCodeDocument PXREF pxDocument,
     PXDocumentElementType pxDocumentElementType,
     const PXSize depth,
-    PXCodeDocumentElement** const pxDocumentElement,
-    PXCodeDocumentElement* const pxDocumentElementParent
+    PXCodeDocumentElement* PXREF pxDocumentElement,
+    PXCodeDocumentElement PXREF pxDocumentElementParent
 );
 
 
-PXPublic void PXAPI PXCodeDocumentElementPrintSingle(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement);
-PXPublic void PXAPI PXCodeDocumentElementPrintAll(PXCodeDocument* const pxDocument);
+PXPublic void PXAPI PXCodeDocumentElementPrintSingle(PXCodeDocument PXREF pxDocument, PXCodeDocumentElement PXREF pxDocumentElement);
+PXPublic void PXAPI PXCodeDocumentElementPrintAll(PXCodeDocument PXREF pxDocument);
 
 
 
 
-PXPublic PXResult PXAPI PXDocumentElementRoot(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement);
-PXPublic PXResult PXAPI PXDocumentElementChildGet(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement);
-PXPublic PXResult PXAPI PXDocumentElementSiblingGet(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement);
+PXPublic PXResult PXAPI PXDocumentElementRoot(PXCodeDocument PXREF pxDocument, PXCodeDocumentElement PXREF pxDocumentElement);
+PXPublic PXResult PXAPI PXDocumentElementChildGet(PXCodeDocument PXREF pxDocument, PXCodeDocumentElement PXREF pxDocumentElement);
+PXPublic PXResult PXAPI PXDocumentElementSiblingGet(PXCodeDocument PXREF pxDocument, PXCodeDocumentElement PXREF pxDocumentElement);
 
 
 
 
 
-PXPublic PXSize PXAPI PXDocumentElementIO(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement, PXFileIOMultibleFunction pxFileIOMultibleFunction);
+PXPublic PXSize PXAPI PXDocumentElementIO(PXCodeDocument PXREF pxDocument, PXCodeDocumentElement PXREF pxDocumentElement, PXFileIOMultibleFunction pxFileIOMultibleFunction);
 
-PXPublic PXResult PXAPI PXDocumentElementWrite(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement);
-PXPublic PXResult PXAPI PXDocumentElementRead(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement);
+PXPublic PXResult PXAPI PXDocumentElementWrite(PXCodeDocument PXREF pxDocument, PXCodeDocumentElement PXREF pxDocumentElement);
+PXPublic PXResult PXAPI PXDocumentElementRead(PXCodeDocument PXREF pxDocument, PXCodeDocumentElement PXREF pxDocumentElement);
 
-PXPublic PXResult PXAPI PXDocumentElementAdd(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement);
+PXPublic PXResult PXAPI PXDocumentElementAdd(PXCodeDocument PXREF pxDocument, PXCodeDocumentElement PXREF pxDocumentElement);
 
-PXPublic PXResult PXAPI PXDocumentPrint(PXCodeDocument* const pxDocument);
+PXPublic PXResult PXAPI PXDocumentPrint(PXCodeDocument PXREF pxDocument);
 
-PXPublic PXResult PXAPI PXDocumentPrintNode(PXCodeDocumentElement* const pxDocumentElement);
+PXPublic PXResult PXAPI PXDocumentPrintNode(PXCodeDocumentElement PXREF pxDocumentElement);
 
 #endif

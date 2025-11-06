@@ -41,7 +41,7 @@ DEFINE_GUID(IID_IAudioRenderClient, 0xf294acfc, 0x3146, 0x4483, 0xa7, 0xbf, 0xad
 
 PXCoreAudio _pxCoreAudio;
 
-PXResult PXAPI  PXCoreAudioInitialize(PXAudio* const pxAudio)
+PXResult PXAPI PXCoreAudioInitialize(PXAudio PXREF pxAudio)
 {
     PXClear(PXCoreAudio, &_pxCoreAudio);
 
@@ -68,9 +68,10 @@ PXResult PXAPI  PXCoreAudioInitialize(PXAudio* const pxAudio)
     {
        // const HRESULT initializeResultID = CoInitialize(NULL); // Use this or line below?
         resultID = CoInitializeEx(PXNull, COINIT_MULTITHREADED);
-        const PXActionResult initializeResult = PXErrorFromHRESULT(resultID);
+        const PXResult initializeResult = PXErrorFromHRESULT(resultID);
 
-        PXActionReturnOnError(initializeResult);
+        if(PXActionSuccessful != initializeResult) 
+            return initializeResult;
     }
 
 
@@ -100,16 +101,14 @@ PXResult PXAPI  PXCoreAudioInitialize(PXAudio* const pxAudio)
         );
     }
 
-
-
     // Create XAudio2 API interface
     {
         resultID = XAudio2Create(&_pxCoreAudio.XAudio2API, 0, XAUDIO2_DEFAULT_PROCESSOR); //  Xaudio2.lib, xaudio2.h
-        const PXActionResult createResult = PXErrorFromHRESULT(resultID);
+        const PXResult createResult = PXErrorFromHRESULT(resultID);
 
-        PXActionReturnOnError(createResult);
+        if(PXActionSuccessful != createResult) 
+            return createResult;
     }
-
  
     // Output
     {
@@ -121,7 +120,7 @@ PXResult PXAPI  PXCoreAudioInitialize(PXAudio* const pxAudio)
         for (PXI32U i = 0; i < pxAudio->DeviceOutputAmount; ++i)
         {
             XAUDIO2_DEVICE_DETAILS xAudioDeviceDetails;
-            PXAudioDevice* const pxAudioDeviceCurrent = &pxAudio->DeviceOutputList[i];
+            PXAudioDevice PXREF pxAudioDeviceCurrent = &pxAudio->DeviceOutputList[i];
 
             const HRESULT getDataResult = xAudio->lpVtbl->GetDeviceDetails(xAudio, i, &xAudioDeviceDetails);
 
@@ -260,7 +259,7 @@ PXResult PXAPI  PXCoreAudioInitialize(PXAudio* const pxAudio)
 
 /*
 
-PXResult PXAPI  PXXAudioDeviceAmount(PXAudioXSystem* const pxAudioXSystem, PXAudioDeviceAmountInfo* const pxAudioDeviceAmountInfo)
+PXResult PXAPI PXXAudioDeviceAmount(PXAudioXSystem PXREF pxAudioXSystem, PXAudioDeviceAmountInfo PXREF pxAudioDeviceAmountInfo)
 {
     if(!(pxAudioXSystem && pxAudioDeviceAmountInfo))
     {
@@ -281,7 +280,7 @@ PXResult PXAPI  PXXAudioDeviceAmount(PXAudioXSystem* const pxAudioXSystem, PXAud
     return PXActionSuccessful;;
 }
 
-PXResult PXAPI  PXXAudioDeviceOpen(PXAudioXSystem* const pxAudioXSystem, PXAudioDevice* const pxAudioDevice, const PXAudioDeviceType pxAudioDeviceType, const PXI32U deviceID)
+PXResult PXAPI PXXAudioDeviceOpen(PXAudioXSystem PXREF pxAudioXSystem, PXAudioDevice PXREF pxAudioDevice, const PXAudioDeviceType pxAudioDeviceType, const PXI32U deviceID)
 {
     IXAudio2SourceVoice* audio2SourceVoice = (IXAudio2SourceVoice*)pxAudioDevice->ResourceID.DirectXInterface;
 
@@ -302,9 +301,9 @@ PXResult PXAPI  PXXAudioDeviceOpen(PXAudioXSystem* const pxAudioXSystem, PXAudio
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI  PXXAudioDeviceClose(PXAudioXSystem* const pxAudioXSystem, PXAudioDevice* const pxAudioDevice)
+PXResult PXAPI PXXAudioDeviceClose(PXAudioXSystem PXREF pxAudioXSystem, PXAudioDevice PXREF pxAudioDevice)
 {
-    IXAudio2SourceVoice* const audio2SourceVoice = (IXAudio2SourceVoice*)pxAudioDevice->ResourceID.DirectXInterface;
+    IXAudio2SourceVoice PXREF audio2SourceVoice = (IXAudio2SourceVoice*)pxAudioDevice->ResourceID.DirectXInterface;
 
     audio2SourceVoice->lpVtbl->DestroyVoice(audio2SourceVoice);
 
@@ -313,9 +312,9 @@ PXResult PXAPI  PXXAudioDeviceClose(PXAudioXSystem* const pxAudioXSystem, PXAudi
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI  PXXAudioDeviceLoad(PXAudioXSystem* const pxAudioXSystem, PXAudioDevice* const pxAudioDevice, PXSound* const pxSound)
+PXResult PXAPI PXXAudioDeviceLoad(PXAudioXSystem PXREF pxAudioXSystem, PXAudioDevice PXREF pxAudioDevice, PXSound PXREF pxSound)
 {
-    IXAudio2SourceVoice* const audio2SourceVoice = (IXAudio2SourceVoice*)pxAudioDevice->ResourceID.DirectXInterface;
+    IXAudio2SourceVoice PXREF audio2SourceVoice = (IXAudio2SourceVoice*)pxAudioDevice->ResourceID.DirectXInterface;
 
     XAUDIO2_BUFFER xAudioBuffer;
     XAUDIO2_BUFFER_WMA xAudioBufferWMA;
@@ -330,18 +329,18 @@ PXResult PXAPI  PXXAudioDeviceLoad(PXAudioXSystem* const pxAudioXSystem, PXAudio
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI  PXXAudioDeviceStart(PXAudioXSystem* const pxAudioXSystem, PXAudioDevice* const pxAudioDevice)
+PXResult PXAPI PXXAudioDeviceStart(PXAudioXSystem PXREF pxAudioXSystem, PXAudioDevice PXREF pxAudioDevice)
 {
-    IXAudio2SourceVoice* const audio2SourceVoice = (IXAudio2SourceVoice*)pxAudioDevice->ResourceID.DirectXInterface;
+    IXAudio2SourceVoice PXREF audio2SourceVoice = (IXAudio2SourceVoice*)pxAudioDevice->ResourceID.DirectXInterface;
 
     const HRESULT result = audio2SourceVoice->lpVtbl->Start(audio2SourceVoice, 0, 0);
 
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI  PXXAudioDeviceStop(PXAudioXSystem* const pxAudioXSystem, PXAudioDevice* const pxAudioDevice)
+PXResult PXAPI PXXAudioDeviceStop(PXAudioXSystem PXREF pxAudioXSystem, PXAudioDevice PXREF pxAudioDevice)
 {
-    IXAudio2SourceVoice* const audio2SourceVoice = (IXAudio2SourceVoice*)pxAudioDevice->ResourceID.DirectXInterface;
+    IXAudio2SourceVoice PXREF audio2SourceVoice = (IXAudio2SourceVoice*)pxAudioDevice->ResourceID.DirectXInterface;
 
     const HRESULT result = audio2SourceVoice->lpVtbl->Stop(audio2SourceVoice, 0, 0);
 

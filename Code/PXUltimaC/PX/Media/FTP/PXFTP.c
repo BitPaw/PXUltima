@@ -159,7 +159,7 @@ PXFTPResult PXAPI PXFTPResultParse(const unsigned short resultID)
     }
 }
 
-PXSize PXAPI PXFTPCommandBuild(const PXFTPCommand pxFTPCommand, PXText* const pxText, const char* parameterA)
+PXSize PXAPI PXFTPCommandBuild(const PXFTPCommand pxFTPCommand, PXText PXREF pxText, const char* parameterA)
 {
     const char printFormat[] = "%.4s %s\r\n";
     const char* commandText = ""; // Empty string, to later not print anything. NULL would be printed as "(null)"

@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXZLIBIncluded
 #define PXZLIBIncluded
 
@@ -61,8 +63,8 @@ PXPrivate inline PXI8U PXAPI PXZLIBCompressionLevelToID(const PXZLIBCompressionL
 PXPrivate inline PXZLIBCompressionMethod PXAPI PXZLIBCompressionMethodFromID(const PXI8U compressionMethod);
 PXPrivate inline PXI8U PXAPI PXZLIBCompressionMethodToID(const PXZLIBCompressionMethod compressionMethod);
 
-PXPublic PXResult PXAPI PXZLIBDecompress(PXFile* const pxInputSteam, PXFile* const pxOutputSteam);
-PXPublic PXResult PXAPI PXZLIBCompress(PXFile* const pxInputSteam, PXFile* const pxOutputSteam);
+PXPublic PXResult PXAPI PXZLIBDecompress(PXFile PXREF pxInputSteam, PXFile PXREF pxOutputSteam);
+PXPublic PXResult PXAPI PXZLIBCompress(PXFile PXREF pxInputSteam, PXFile PXREF pxOutputSteam);
 
 
 PXPublic PXSize PXAPI PXZLIBCalculateExpectedSize(const PXSize width, const PXSize height, const PXSize bpp, const PXPNGInterlaceMethod interlaceMethod);

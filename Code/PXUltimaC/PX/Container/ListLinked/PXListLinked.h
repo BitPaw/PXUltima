@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXListLinkedIncludedD
 #define PXListLinkedIncludedD
 
@@ -38,23 +40,23 @@ typedef struct PXListLinkedFixed_
 }
 PXListLinkedFixed;
 
-PXPublic void PXAPI PXListLinkedFixedNodeConstruct(PXListLinkedFixed* const linkedListFixed);
-PXPublic void PXAPI PXListLinkedFixedNodeDestruct(PXListLinkedFixed* const linkedListFixed);
+PXPublic void PXAPI PXListLinkedFixedNodeConstruct(PXListLinkedFixed PXREF linkedListFixed);
+PXPublic void PXAPI PXListLinkedFixedNodeDestruct(PXListLinkedFixed PXREF linkedListFixed);
 
 
-PXPublic void PXAPI PXListLinkedFixedNodeSet(PXListLinkedFixed* const linkedListFixed, void* const data, const PXSize dataSize, const PXSize nodeSize);
+PXPublic void PXAPI PXListLinkedFixedNodeSet(PXListLinkedFixed PXREF linkedListFixed, void PXREF data, const PXSize dataSize, const PXSize nodeSize);
 
-PXPublic PXBool PXAPI PXListLinkedFixedNodeAt(const PXListLinkedFixed* const linkedListFixed, PXListLinkedNodeFixed* const pxLinkedListNodeFixed, const PXSize index);
-PXPublic PXBool PXAPI PXListLinkedFixedNodeNext(PXListLinkedFixed* const linkedListFixed, PXListLinkedNodeFixed* const pxLinkedListNodeFixed);
+PXPublic PXBool PXAPI PXListLinkedFixedNodeAt(const PXListLinkedFixed PXREF linkedListFixed, PXListLinkedNodeFixed PXREF pxLinkedListNodeFixed, const PXSize index);
+PXPublic PXBool PXAPI PXListLinkedFixedNodeNext(PXListLinkedFixed PXREF linkedListFixed, PXListLinkedNodeFixed PXREF pxLinkedListNodeFixed);
 
-//PXPublic PXBool PXListLinkedFixedNodeFetch(PXListLinkedFixed* const linkedListFixed, void* const element);
+//PXPublic PXBool PXListLinkedFixedNodeFetch(PXListLinkedFixed PXREF linkedListFixed, void PXREF element);
 
-PXPrivate PXBool PXAPI PXListLinkedFixedDataSize(const PXListLinkedFixed* const linkedListFixed);
-PXPrivate PXBool PXAPI PXListLinkedFixedIsDataEmbedded(const PXListLinkedFixed* const linkedListFixed);
-PXPrivate PXSize PXAPI PXListLinkedFixedNodeStride(const PXListLinkedFixed* const linkedListFixed);
-PXPrivate void* PXAPI PXListLinkedFixedNodeEmptySlotFetch(const PXListLinkedFixed* const linkedListFixed);
+PXPrivate PXBool PXAPI PXListLinkedFixedDataSize(const PXListLinkedFixed PXREF linkedListFixed);
+PXPrivate PXBool PXAPI PXListLinkedFixedIsDataEmbedded(const PXListLinkedFixed PXREF linkedListFixed);
+PXPrivate PXSize PXAPI PXListLinkedFixedNodeStride(const PXListLinkedFixed PXREF linkedListFixed);
+PXPrivate void* PXAPI PXListLinkedFixedNodeEmptySlotFetch(const PXListLinkedFixed PXREF linkedListFixed);
 
-PXPublic PXBool PXAPI PXListLinkedFixedNodeAdd(PXListLinkedFixed* const linkedListFixed, void* const element);
-PXPublic PXBool PXAPI PXListLinkedFixedNodeRemoveAt(PXListLinkedFixed* const linkedListFixed, const PXSize index);
+PXPublic PXBool PXAPI PXListLinkedFixedNodeAdd(PXListLinkedFixed PXREF linkedListFixed, void PXREF element);
+PXPublic PXBool PXAPI PXListLinkedFixedNodeRemoveAt(PXListLinkedFixed PXREF linkedListFixed, const PXSize index);
 
 #endif

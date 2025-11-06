@@ -2,7 +2,7 @@
 
 #include <PX/Math/PXMath.h>
 
-int PXAPI PXFractalGenerateBurningShip(PXFractalIterator* const pxFractalIterator)
+int PXAPI PXFractalGenerateBurningShip(PXFractalIterator PXREF pxFractalIterator)
 {
     double zx = 0.0, zy = 0.0;
     int iter = 0;
@@ -16,7 +16,7 @@ int PXAPI PXFractalGenerateBurningShip(PXFractalIterator* const pxFractalIterato
     return iter;
 }
 
-int PXAPI PXFractalGenerateJulia(PXFractalIterator* const pxFractalIterator)
+int PXAPI PXFractalGenerateJulia(PXFractalIterator PXREF pxFractalIterator)
 {
     double zx, zy;
     zx = zy = 0;
@@ -33,7 +33,7 @@ int PXAPI PXFractalGenerateJulia(PXFractalIterator* const pxFractalIterator)
     return iter;
 }
 
-int PXAPI PXFractalGenerateMandelbrot(PXFractalIterator* const pxFractalIterator)
+int PXAPI PXFractalGenerateMandelbrot(PXFractalIterator PXREF pxFractalIterator)
 {
     double zx, zy;
     zx = zy = 0;

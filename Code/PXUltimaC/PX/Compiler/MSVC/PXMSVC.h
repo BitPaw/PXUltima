@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXJavaIncludedd
 #define PXJavaIncludedd
 
@@ -18,7 +20,7 @@ typedef struct PXCompilerMSVC_
 PXCompilerMSVC;
 
 
-PXPublic PXResult PXAPI PXCompilerInitializeMSVC(PXCompilerMSVC* const pxCompilerMSVC);
-PXPublic PXResult PXAPI PXCompilerLinkMSVC(PXCompilerMSVC* const pxCompilerMSVC, int flags, const char* fileName, const char* resultName);
+PXPublic PXResult PXAPI PXCompilerInitializeMSVC(PXCompilerMSVC PXREF pxCompilerMSVC);
+PXPublic PXResult PXAPI PXCompilerLinkMSVC(PXCompilerMSVC PXREF pxCompilerMSVC, int flags, const char* fileName, const char* resultName);
 
 #endif

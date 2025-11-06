@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXUserIncluded
 #define PXUserIncluded
 
@@ -20,7 +22,7 @@ typedef enum PXUserEnviromentFolderID_
 }
 PXUserEnviromentFolderID;
 
-PXPublic PXResult PXAPI PXUserNameGetAA(PXText* const name);
-PXPublic PXBool PXAPI PXUserEnviromentFolderGet(PXText* const name, const PXUserEnviromentFolderID pxUserEnviromentFolderID);
+PXPublic PXResult PXAPI PXUserNameGetAA(PXText PXREF name);
+PXPublic PXBool PXAPI PXUserEnviromentFolderGet(PXText PXREF name, const PXUserEnviromentFolderID pxUserEnviromentFolderID);
 
 #endif

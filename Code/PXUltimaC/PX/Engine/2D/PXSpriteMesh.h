@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXSpriteMeshIncluded
 #define PXSpriteMeshIncluded
 
@@ -24,12 +26,12 @@ PXSpriteMesh;
 
 PXPublic void PXAPI PXSpriteMeshInit
 (
-    PXSpriteMesh* const pxSpriteMesh,
+    PXSpriteMesh PXREF pxSpriteMesh,
     const PXI32U amountWidth,
     const PXI32U amountHeight,
     const PXI16U cellWidth,
     const PXI16U cellHeight
 );
-PXPublic void PXAPI PXSpriteMeshSpriteInsert(PXSpriteMesh* const pxSpriteMesh);
+PXPublic void PXAPI PXSpriteMeshSpriteInsert(PXSpriteMesh PXREF pxSpriteMesh);
 
 #endif

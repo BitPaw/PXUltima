@@ -3,10 +3,10 @@
 #include <PX/OS/System/Version/PXOSVersion.h>
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/Media/PXText.h>
-#include <PX/OS/Debug/PXDebug.h>
-#include <PX/OS/PXOS.h>
+#include <PX/OS/Memory/PXMemory.h>
 
 #include <errno.h> // POSIX
+#include <signal.h> // SEGFLT
 
 #if OSUnix
 #define EOTHER -1
@@ -63,7 +63,7 @@ const char* PXERRNOList[][2] =
 const PXI16U PXERRNOListMax = (sizeof(PXERRNOList) / sizeof(char*)) / 2;
 
 
-PXResult PXAPI  PXErrorCurrent(const PXBool wasSuccessful)
+PXResult PXAPI PXErrorCurrent(const PXBool wasSuccessful)
 {
     // if we did fail, we dont even aknowlege if an error is set.
     if(wasSuccessful)
@@ -71,18 +71,19 @@ PXResult PXAPI  PXErrorCurrent(const PXBool wasSuccessful)
         return PXActionSuccessful;
     }
 
+    PXResult pxResult = PXActionInvalid;
+
     // Get error code
 #if OSUnix || OSForcePOSIXForWindows
     const int errorID = errno; // We will definitly have some error code now.
+    pxResult = PXErrorCodeFromID(errorResult); // Translate errorID to our own error-enum
 #elif OSWindows
-    const DWORD errorID = GetLastError();  // Will fetch the global current errorID
+    const DWORD errorID = GetLastError(); // Will fetch the global current errorID
+    const HRESULT errorResult = HRESULT_FROM_WIN32(errorID); // Documentation defines that these errors can be translated into HRESULTs!
+    pxResult = PXErrorFromHRESULT(errorResult);
 #else
     // Does not exist
 #endif
-
-
-    const PXActionResult actionResult = PXErrorCodeFromID(errorID); // Translate errorID to our own error-enum
-
 
     // get text string from system
 #if OSUnix
@@ -115,7 +116,7 @@ PXResult PXAPI  PXErrorCurrent(const PXBool wasSuccessful)
     (
         FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, // FORMAT_MESSAGE_ALLOCATE_BUFFER
         NULL,
-        errorID,
+        errorResult,
         MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
         //MAKELANGID(LANG_ENGLISH, SUBLANG_NEUTRAL), // english does not work?
         errorMessageBuffer,
@@ -168,9 +169,6 @@ PXResult PXAPI  PXErrorCurrent(const PXBool wasSuccessful)
         //DebugBreak();
     }
 
-
-
-
 #if OSUnix
 #elif OSWindows && 0
     if(success)
@@ -179,10 +177,10 @@ PXResult PXAPI  PXErrorCurrent(const PXBool wasSuccessful)
     }
 #endif
 
-    return actionResult;
+    return pxResult;
 }
 
-PXResult PXAPI  PXErrorCodeFromID(const int errorCode)
+PXResult PXAPI PXErrorCodeFromID(const int errorCode)
 {
     switch(errorCode)
     {
@@ -451,7 +449,7 @@ PXResult PXAPI  PXErrorCodeFromID(const int errorCode)
 }
 
 #if OSWindows
-PXResult PXAPI  PXErrorFromHRESULT(const HRESULT handleResult)
+PXResult PXAPI PXErrorFromHRESULT(const HRESULT handleResult)
 {
     switch (handleResult)
     {
@@ -466,9 +464,10 @@ PXResult PXAPI  PXErrorFromHRESULT(const HRESULT handleResult)
 
     // case S_FALSE:
     case ERROR_INVALID_FUNCTION:
-        return PXActionSuccessful; // Incorrect function.    1 (0x1)
+        return PXActionSuccessful; // Incorrect function.    1 (0x1)        
 
-
+    case 0xC0070006: // FACILITY_WIN32 | ERROR_INVALID_HANDLE
+        return PXActionRefusedObjectIDInvalid;
 
     case    ERROR_FILE_NOT_FOUND:
         return PXActionInvalid; //    The system cannot find the file specified.    2 (0x2)
@@ -2075,7 +2074,7 @@ PXResult PXAPI  PXErrorFromHRESULT(const HRESULT handleResult)
     }
 }
 
-PXResult PXAPI  PXWindowsMMAudioConvertFromID(const PXI32U mmResultID)
+PXResult PXAPI PXWindowsMMAudioConvertFromID(const PXI32U mmResultID)
 {
     switch (mmResultID)
     {
@@ -2125,3 +2124,226 @@ PXResult PXAPI  PXWindowsMMAudioConvertFromID(const PXI32U mmResultID)
     }
 }
 #endif
+
+
+
+
+#define PXJumpOldUse 1
+
+
+
+#if OSUnix
+const PXI8U PXSingalIDList[] =
+{
+    SIGINT,
+    SIGILL,
+    SIGFPE,
+    SIGSEGV,
+    SIGTERM,
+    SIGBREAK,
+    SIGABRT
+};
+const PXResult PXPOSIXSignalResultList[] =
+{
+    SIGINT,
+    PXResultExceptionIllegalInstruction,
+    SIGFPE,
+    PXResultExceptionAccessViolation,
+    SIGTERM,
+    PXResultDebugEventBreakPoint,
+    PXResultExceptionControlCExit
+};
+const PXI8U PXSingalIDListAmount = sizeof(PXSingalIDList);
+
+void PXUnixSignalHandler(const int signalID)
+{
+    // This function triggers from a signal handler, when an exception accurs.
+    // We will translate this code into our own error code to remove the OS dependecy
+  
+    const PXI8U index = PXMemoryCompareI8V(PXSingalIDList, PXSingalIDListAmount, signalID);
+    const PXResult pxResultTranslated = PXPOSIXSignalResultList[index];
+
+    // We need to recover the point where we need to go?
+    PXThreadContext pxThreadContext;
+    PXResult pxResultContext = PXThreadContextIO(&pxThreadContext, PXNull, PXFalse);
+
+    PXAssert(PXActionSuccessful == pxResultContext, "This cant ever fail");
+
+    // Actual recover, secound Parameter will be the element returned by setjmp()	
+#if PXJumpOldUse
+    longjmp(pxThreadContext.POSIXJumpBuffer, pxResultTranslated);
+#else
+    siglongjmp(pxThreadContext.POSIXJumpBuffer, pxResultTranslated);  // Jump back to recovery point
+#endif
+}
+#endif
+
+
+#if OSWindows
+const PXResult PXWindowsExceptionPXResultList[] =
+{
+STATUS_PENDING,
+PXResultExceptionAccessViolation,
+PXResultExceptionDataMisalignment,
+PXResultDebugEventBreakPoint,
+PXResultDebugEventSingleStep,
+PXResultExceptionIndexOutOfBounds,
+PXResultExceptionFloatDENORMAL_OPERAND,
+PXResultExceptionFloatDIVIDE_BY_ZERO,
+PXResultExceptionFloatINEXACT_RESULT,
+PXResultExceptionFloatINVALID_OPERATION,
+PXResultExceptionFloatOVERFLOW,
+PXResultExceptionFloatSTACK_CHECK,
+PXResultExceptionFloatUNDERFLOW,
+PXResultExceptionINTEGER_DIVIDE_BY_ZERO,
+PXResultExceptionINTEGER_OVERFLOW,
+PXResultExceptionPrivilehedInstruction,
+PXResultExceptionPageLost,
+PXResultExceptionIllegalInstruction,
+PXResultExceptionNONCONTINUABLE_EXCEPTION,
+PXResultExceptionSTACK_OVERFLOW,
+PXResultExceptionINVALID_DISPOSITION,
+PXResultExceptionGUARD_PAGE_VIOLATION,
+PXResultExceptionINVALID_HANDLE,
+//STATUS_POSSIBLE_DEADLOCK,
+PXResultExceptionControlCExit
+};
+const DWORD PXWindowsExceptionList[] =
+{
+STATUS_PENDING,
+STATUS_ACCESS_VIOLATION, // The thread tried to read from or write to a virtual address for which it does not have the appropriate access.
+STATUS_DATATYPE_MISALIGNMENT,
+STATUS_BREAKPOINT,
+STATUS_SINGLE_STEP,
+STATUS_ARRAY_BOUNDS_EXCEEDED,
+STATUS_FLOAT_DENORMAL_OPERAND,
+STATUS_FLOAT_DIVIDE_BY_ZERO,
+STATUS_FLOAT_INEXACT_RESULT,
+STATUS_FLOAT_INVALID_OPERATION,
+STATUS_FLOAT_OVERFLOW,
+STATUS_FLOAT_STACK_CHECK,
+STATUS_FLOAT_UNDERFLOW,
+STATUS_INTEGER_DIVIDE_BY_ZERO,
+STATUS_INTEGER_OVERFLOW,
+STATUS_PRIVILEGED_INSTRUCTION,
+STATUS_IN_PAGE_ERROR,
+STATUS_ILLEGAL_INSTRUCTION,
+STATUS_NONCONTINUABLE_EXCEPTION,
+STATUS_STACK_OVERFLOW,
+STATUS_INVALID_DISPOSITION,
+STATUS_GUARD_PAGE_VIOLATION,
+STATUS_INVALID_HANDLE,
+//STATUS_POSSIBLE_DEADLOCK,
+STATUS_CONTROL_C_EXIT 
+};
+const PXI8U PXWindowsExceptionListAmount = sizeof(PXWindowsExceptionList) / sizeof(DWORD);
+#endif
+
+
+PXResult PXAPI PXSafeCall(PXCallX1 pxCallX1, void* p1)
+{
+    PXException pxException;
+    PXClear(PXException, &pxException);
+
+    PXResult pxResult = PXActionInvalid;
+
+#if OSUnix || OSForcePOSIXForWindows
+
+    jmp_buf snapshot;
+    PXClear(jmp_buf, snapshot);
+
+    // This implementation uses the POSIX implementation
+    // Windows supports this behaviour on paper but in practise it does not.
+    // Because of this, Linux only.
+    
+    // Setup for callbacks
+#if PXJumpOldUse
+#else
+    struct sigaction signalAction;
+    PXClear(struct sigaction, &signalAction);
+    sigemptyset(&signalAction.sa_mask);
+    signalAction.sa_handler = signal_handler; // Callback
+
+    // Set the every signal, to catch if they accur
+    for(PXI8U i = 0; i < PXSingalIDListAmount; ++i)
+    {
+        const int result = sigaction(PXSingalIDList[i], &signalAction, NULL);
+    }
+#endif
+
+
+#if PXJumpOldUse
+    // Store handler callback for this thread
+    signal(SIGINT, PXUnixSignalHandler);
+    signal(SIGILL, PXUnixSignalHandler); // Bad instuction
+    signal(SIGFPE, PXUnixSignalHandler); // float error
+    signal(SIGSEGV, PXUnixSignalHandler); // Bad adress
+    signal(SIGTERM, PXUnixSignalHandler);
+    signal(SIGBREAK, PXUnixSignalHandler);
+    signal(SIGABRT, PXUnixSignalHandler); // Abnormal termination
+    //signal(SIGBUS, signalHandler); // BUS error, SIGSEGV is used by os
+    //signal(SIGTRAP, signalHandler); // Breakpoint?
+
+    const int signalID = setjmp(&snapshot); // Store current context
+#else
+    const int signalID = sigsetjmp(&snapshot, 1); // the 1 means we store the even mask aswell
+#endif
+
+    PXBool isFirstTry = 0 == signalID;
+
+    // if 0, we store the state, that is our first call
+    // if any other number, this is not our first call and we failed before!
+    if(isFirstTry)
+    {
+        pxResult = pxCallX1(p1);
+    }
+    else
+    {
+        // Translate buffer into actual data
+        pxResult = (PXResult)signalID;
+    }
+
+
+#elif OSWindows
+
+    EXCEPTION_POINTERS* exceptionPointer = PXNull;
+
+    __try 
+    {
+        pxResult = pxCallX1(p1);
+    }
+    __except(exceptionPointer = GetExceptionInformation(), EXCEPTION_EXECUTE_HANDLER)
+    {
+        // We need to translate this error into our version
+        const DWORD exceptionCode = exceptionPointer->ExceptionRecord->ExceptionCode;
+      
+        pxException.FaultAddress = exceptionPointer->ExceptionRecord->ExceptionAddress;
+
+        // Translate exceptionCode to index
+        const PXSize index = PXMemoryCompareI32UV(PXWindowsExceptionList, PXWindowsExceptionListAmount, exceptionCode);
+
+        pxResult = PXWindowsExceptionList[index];
+    }
+
+#endif
+
+    // Optional for tracking
+    PXExceptionTrigger(&pxException);
+
+    return pxResult;
+}
+
+void PXAPI PXExceptionTrigger(PXException PXREF pxException)
+{
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingError,
+        "Exception",
+        "???",
+        "%x8.8x - %p",
+        pxException->WindowCode,
+        pxException->FaultAddress
+    );
+#endif
+}

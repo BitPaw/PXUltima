@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXWAVIncluded
 #define PXWAVIncluded
 
@@ -15,10 +17,7 @@ typedef struct PXWave_
 }
 PXWave;
 
-
-PXPublic PXResult PXAPI PXWaveLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-
-
-PXPublic PXResult PXAPI PXWaveSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXWaveLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXWaveSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

@@ -3,7 +3,7 @@
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/OS/Memory/PXMemory.h>
 
-void PXAPI PXEngineDialogBoxPageNext(PXEngine* const pxEngine, PXEngineDialogBox* const pxEngineDialogBox)
+void PXAPI PXEngineDialogBoxPageNext(PXEngine PXREF pxEngine, PXEngineDialogBox PXREF pxEngineDialogBox)
 {
     switch (pxEngineDialogBox->State)
     {
@@ -19,7 +19,7 @@ void PXAPI PXEngineDialogBoxPageNext(PXEngine* const pxEngine, PXEngineDialogBox
 
         ++(pxEngineDialogBox->PageAmountCurrent);
 
-        PXDialogMessagePage* const pxDialogMessagePage = &pxEngineDialogBox->DialogMessagePageList[pxEngineDialogBox->PageAmountCurrent];
+        PXDialogMessagePage PXREF pxDialogMessagePage = &pxEngineDialogBox->DialogMessagePageList[pxEngineDialogBox->PageAmountCurrent];
 
         PXEngineSpriteTextureSet(pxEngine, pxEngineDialogBox->SpriteCharacterFace, pxDialogMessagePage->CharacterSprite);
 
@@ -51,13 +51,13 @@ void PXAPI PXEngineDialogBoxPageNext(PXEngine* const pxEngine, PXEngineDialogBox
 
 void PXAPI PXEngineDialogBoxOpen
 (
-    PXEngine* const pxEngine,
-    PXEngineDialogBox* const pxEngineDialogBox,
-    PXDialogMessagePage* const pxDialogMessagePage,
+    PXEngine PXREF pxEngine,
+    PXEngineDialogBox PXREF pxEngineDialogBox,
+    PXDialogMessagePage PXREF pxDialogMessagePage,
     const PXSize amountOfPages
 )
 {
-    PXDialogText* const dialogBoxText = pxEngineDialogBox->DialogBoxText;
+    PXDialogText PXREF dialogBoxText = pxEngineDialogBox->DialogBoxText;
 
     pxEngineDialogBox->State = PXEngineDialogStateActive;
     pxEngineDialogBox->PageAmountCurrent = 0;
@@ -103,7 +103,7 @@ void PXAPI PXEngineDialogBoxOpen
     PXEngineSpriteTextureSet(pxEngine, pxEngineDialogBox->SpriteCharacterFace, pxDialogMessagePage->CharacterSprite);
 }
 
-void PXAPI PXEngineDialogBoxClose(PXEngine* const pxEngine, PXEngineDialogBox* const pxEngineDialogBox)
+void PXAPI PXEngineDialogBoxClose(PXEngine PXREF pxEngine, PXEngineDialogBox PXREF pxEngineDialogBox)
 {
     PXEngineResourceActionInfo pxEngineResourceActionInfo[5];
     PXClearList(PXEngineResourceActionInfo, &pxEngineResourceActionInfo, 5);
@@ -139,7 +139,7 @@ void PXAPI PXEngineDialogBoxClose(PXEngine* const pxEngine, PXEngineDialogBox* c
     pxEngineDialogBox->IsLocked = PXFalse;
 }
 
-PXResult PXAPI  PXEngineDialogBoxTimerTrigger(PXEngine* const pxEngine, PXTimerEventInfo* const pxEngineTimerEventInfo, PXEngineDialogBox* const pxEngineDialogBox)
+PXResult PXAPI PXEngineDialogBoxTimerTrigger(PXEngine PXREF pxEngine, PXTimerEventInfo PXREF pxEngineTimerEventInfo, PXEngineDialogBox PXREF pxEngineDialogBox)
 {
     if (!(pxEngine && pxEngineTimerEventInfo && pxEngineDialogBox))
     {
@@ -155,9 +155,9 @@ PXResult PXAPI  PXEngineDialogBoxTimerTrigger(PXEngine* const pxEngine, PXTimerE
 
     case PXEngineDialogStateActive:
     {
-        PXDialogText* const dialogBoxText = pxEngineDialogBox->DialogBoxText;
-        PXDialogMessagePage* const pxDialogMessagePage = &pxEngineDialogBox->DialogMessagePageList[pxEngineDialogBox->PageAmountCurrent];
-        PXText* const pxTextDialog = &pxDialogMessagePage->Text;
+        PXDialogText PXREF dialogBoxText = pxEngineDialogBox->DialogBoxText;
+        PXDialogMessagePage PXREF pxDialogMessagePage = &pxEngineDialogBox->DialogMessagePageList[pxEngineDialogBox->PageAmountCurrent];
+        PXText PXREF pxTextDialog = &pxDialogMessagePage->Text;
 
         if (!pxTextDialog)
         {
@@ -225,7 +225,7 @@ PXResult PXAPI  PXEngineDialogBoxTimerTrigger(PXEngine* const pxEngine, PXTimerE
         char character = pxTextDialog->A[dialogBoxText->TextRenderAmount];
 
         const PXI32U rendomDelay = (PXEngineGenerateRandom(pxEngine, 400) - 200) * 1000; // -2000 to 2000
-        PXTimer* const pxEngineTimer = pxEngineTimerEventInfo->TimerReference;
+        PXTimer PXREF pxEngineTimer = pxEngineTimerEventInfo->TimerReference;
 
         pxEngineTimer->TimeDelayShift = 0;
 

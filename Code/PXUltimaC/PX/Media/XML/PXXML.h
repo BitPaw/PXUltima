@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXXMLIncluded
 #define PXXMLIncluded
 
@@ -21,10 +23,10 @@ typedef enum PXXMLSymbol_
 }
 PXXMLSymbol;
 
-PXPrivate PXXMLSymbol PXAPI PXXMLPeekLine(const char* const text, const PXSize textSize);
-PXPrivate void PXAPI PXXMLBlockParse(PXCodeDocument* const pxDocument, PXCompiler* const pxCompiler);
+PXPrivate PXXMLSymbol PXAPI PXXMLPeekLine(const char PXREF text, const PXSize textSize);
+PXPrivate void PXAPI PXXMLBlockParse(PXCodeDocument PXREF pxDocument, PXCompiler PXREF pxCompiler);
 
-PXPublic PXResult PXAPI PXXMLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXXMLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXXMLLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXXMLSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

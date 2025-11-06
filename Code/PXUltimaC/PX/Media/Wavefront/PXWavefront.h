@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXWavefrontIncluded
 #define PXWavefrontIncluded
 
@@ -69,9 +71,9 @@ PXPrivate PXWavefrontLineType PXAPI PXWavefrontPeekLine(const void* line, const 
 // B: "f 1/2/3"
 // C: "f 1//3"
 // D: "f 1/3"
-PXPublic void PXAPI PXWavefrontFaceLineParse(PXCompiler* const pxCompiler, PXI32U* const PXI32U);
+PXPublic void PXAPI PXWavefrontFaceLineParse(PXCompiler PXREF pxCompiler, PXI32U PXREF PXI32U);
 
-PXPublic PXResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXWavefrontSaveFromFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXWavefrontSaveFromFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

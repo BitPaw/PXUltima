@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXProcessIncluded
 #define PXProcessIncluded
 
@@ -97,33 +99,33 @@ typedef enum PXProcessCreationMode_
 }
 PXProcessCreationMode;
 
-typedef void (PXAPI* PXProcessDetectedEvent)(PXProcess* const pxProcess);
+typedef void (PXAPI* PXProcessDetectedEvent)(PXProcess PXREF pxProcess);
 
 #if OSWindows
-PXPublic void PXAPI PXProcessConstructFromHandle(PXProcess* const pxProcess, HANDLE processHandle);
+PXPublic void PXAPI PXProcessConstructFromHandle(PXProcess PXREF pxProcess, HANDLE processHandle);
 #endif
 
-PXPublic void PXAPI PXProcessCurrent(PXProcess* const pxProcess);
-PXPublic void PXAPI PXProcessParent(PXProcess* const pxProcess);
+PXPublic void PXAPI PXProcessCurrent(PXProcess PXREF pxProcess);
+PXPublic void PXAPI PXProcessParent(PXProcess PXREF pxProcess);
 
 PXPublic void PXAPI PXProcessExitCurrent(const PXI32U exitCode);
 
 // Get all open handles from given process.
 // pxProcess can be NULL, current process is used.
-PXPublic PXResult PXAPI PXProcessHandleCountGet(PXProcess* pxProcess, PXSize* const handlesAmount);
+PXPublic PXResult PXAPI PXProcessHandleCountGet(PXProcess* pxProcess, PXSize PXREF handlesAmount);
 
-PXPublic PXResult PXAPI PXProcessHandleListAll(PXDebug* const pxDebug, PXProcess* pxProcess);
+PXPublic PXResult PXAPI PXProcessHandleListAll(PXDebug PXREF pxDebug, PXProcess* pxProcess);
 
 
-PXPublic PXResult PXAPI PXProcessCreate(PXProcess* const pxProcess, const PXText* const programmPath, const PXProcessCreationMode mode);
+PXPublic PXResult PXAPI PXProcessCreate(PXProcess PXREF pxProcess, const PXText PXREF programmPath, const PXProcessCreationMode mode);
 
 PXPublic PXResult PXAPI PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEvent);
 
-PXPublic PXResult PXAPI PXProcessThreadsListAll(PXProcess* const pxProcess, PXThread** pxThreadListRef, const PXSize amount, PXSize* resultSIze);
+PXPublic PXResult PXAPI PXProcessThreadsListAll(PXProcess PXREF pxProcess, PXThread** pxThreadListRef, const PXSize amount, PXSize* resultSIze);
 
-PXPublic PXResult PXAPI PXProcessOpenViaID(PXProcess* const pxProcess, const PXProcessID pxProcessID);
-PXPublic PXResult PXAPI PXProcessClose(PXProcess* const pxProcess);
+PXPublic PXResult PXAPI PXProcessOpenViaID(PXProcess PXREF pxProcess, const PXProcessID pxProcessID);
+PXPublic PXResult PXAPI PXProcessClose(PXProcess PXREF pxProcess);
 
-PXPublic PXResult PXAPI PXProcessMemoryInfoFetch(PXProcessMemoryInfo* const pxProcessMemoryInfo);
+PXPublic PXResult PXAPI PXProcessMemoryInfoFetch(PXProcessMemoryInfo PXREF pxProcessMemoryInfo);
 
 #endif

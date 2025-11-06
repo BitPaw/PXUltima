@@ -4,7 +4,7 @@
 
 #include <PX/OS/Memory/PXMemory.h>
 
-void PXAPI PXClientConstruct(PXClient* const pxClient)
+void PXAPI PXClientConstruct(PXClient PXREF pxClient)
 {
     PXClear(PXClient, pxClient);
 
@@ -12,7 +12,7 @@ void PXAPI PXClientConstruct(PXClient* const pxClient)
     PXSocketConstruct(&pxClient->SocketClient);
 }
 
-void PXAPI PXClientDestruct(PXClient* const pxClient)
+void PXAPI PXClientDestruct(PXClient PXREF pxClient)
 {
     PXSocketDestruct(&pxClient->SocketServer);
     PXSocketDestruct(&pxClient->SocketClient);
@@ -20,7 +20,7 @@ void PXAPI PXClientDestruct(PXClient* const pxClient)
     PXClientConstruct(pxClient);
 }
 
-PXResult PXAPI  PXClientSendData(PXClient* const pxClient, const void* const data, const PXSize dataSize)
+PXResult PXAPI PXClientSendData(PXClient PXREF pxClient, const void PXREF data, const PXSize dataSize)
 {
     if (pxClient->SocketClient.ID == PXSocketUnused)
     {
@@ -29,14 +29,14 @@ PXResult PXAPI  PXClientSendData(PXClient* const pxClient, const void* const dat
 
     PXBufferConstruct(&pxClient->SocketClient.BufferOutput, (void*)data, dataSize, PXBufferExtern);
 
-    const PXActionResult sendResult = PXSocketSend(&pxClient->SocketClient, pxClient->SocketClient.ID);
+    const PXResult sendResult = PXSocketSend(&pxClient->SocketClient, pxClient->SocketClient.ID);
 
     PXBufferDestruct(&pxClient->SocketClient.BufferOutput);
 
     return sendResult;
 }
 
-PXResult PXAPI  PXClientConnectToSelf(PXClient* const client, const PXI16U port)
+PXResult PXAPI PXClientConnectToSelf(PXClient PXREF client, const PXI16U port)
 {
     PXText ip;
     PXTextMakeFixedA(&ip, "127.0.0.1");
@@ -44,7 +44,7 @@ PXResult PXAPI  PXClientConnectToSelf(PXClient* const client, const PXI16U port)
     return PXClientConnectToServer(client, &ip, port);
 }
 
-PXResult PXAPI  PXClientConnectToServer(PXClient* const client, const PXText* const ip, const PXI16U port)
+PXResult PXAPI PXClientConnectToServer(PXClient PXREF client, const PXText PXREF ip, const PXI16U port)
 {
     PXSocket pxSocketList[3];
     const PXSize pxSocketListSizeMax = 3;
@@ -62,7 +62,7 @@ PXResult PXAPI  PXClientConnectToServer(PXClient* const client, const PXText* co
         };
         const PXSize pxSocketAdressSetupInfoListSize = sizeof(pxSocketAdressSetupInfoList) / sizeof(PXSocketAdressSetupInfo);
 
-        const PXActionResult setupResult = PXSocketSetupAdress
+        const PXResult setupResult = PXSocketSetupAdress
                                            (
                                                pxSocketList,
                                                pxSocketListSizeMax,
@@ -87,7 +87,7 @@ PXResult PXAPI  PXClientConnectToServer(PXClient* const client, const PXText* co
 
     for (PXSize i = 0; i < socketListSize; ++i)
     {
-        PXSocket* const pxSocketTemp = &pxSocketList[i];
+        PXSocket PXREF pxSocketTemp = &pxSocketList[i];
         pxSocketTemp->EventList = client->EventList;
         pxSocketTemp->Owner = client->Owner;
 
@@ -100,7 +100,7 @@ PXResult PXAPI  PXClientConnectToServer(PXClient* const client, const PXText* co
         PXActionContinueOnError(lastError);
 
         // Copy buffered socket and do not use stack reference
-        PXSocket* const pxSocketClient = &client->SocketClient;
+        PXSocket PXREF pxSocketClient = &client->SocketClient;
         PXMemoryCopy(pxSocketTemp, sizeof(PXSocket), pxSocketClient, sizeof(PXSocket));
 
         PXFunctionInvoke(pxSocketClient->EventList.SocketConnectedCallBack, client->Owner, &client->SocketClient, &client->SocketServer);
@@ -116,7 +116,7 @@ PXResult PXAPI  PXClientConnectToServer(PXClient* const client, const PXText* co
     return lastError;
 }
 
-PXResult PXAPI  PXClientDisconnectFromServer(PXClient* const client)
+PXResult PXAPI PXClientDisconnectFromServer(PXClient PXREF client)
 {
     PXSocketClose(&client->SocketClient);
     PXSocketConstruct(&client->SocketServer);
@@ -124,7 +124,7 @@ PXResult PXAPI  PXClientDisconnectFromServer(PXClient* const client)
     return PXActionSuccessful;
 }
 
-PXThreadResult PXOSAPI PXClientCommunicationThread(PXSocket* const pxSocket)
+PXThreadResult PXOSAPI PXClientCommunicationThread(PXSocket PXREF pxSocket)
 {
     PXByte buffer[PXSocketBufferSize];
 
@@ -132,7 +132,7 @@ PXThreadResult PXOSAPI PXClientCommunicationThread(PXSocket* const pxSocket)
 
     while (PXSocketIsCurrentlyUsed(pxSocket))
     {
-        const PXActionResult receiveingResult = PXSocketReceive(pxSocket, pxSocket->ID);
+        const PXResult receiveingResult = PXSocketReceive(pxSocket, pxSocket->ID);
         const PXBool sucessful = PXActionSuccessful == receiveingResult;
 
         if (!sucessful)

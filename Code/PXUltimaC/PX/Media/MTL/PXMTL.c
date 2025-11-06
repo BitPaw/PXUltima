@@ -6,6 +6,8 @@
 #include <PX/Compiler/PXCompiler.h>
 #include <PX/OS/Console/PXConsole.h>
 
+const char PXMTLName[] = "MTL";
+
 PXIlluminationMode PXAPI PXMTLIlluminationModeFromID(const unsigned int illuminationModeID)
 {
     switch(illuminationModeID)
@@ -38,7 +40,7 @@ PXIlluminationMode PXAPI PXMTLIlluminationModeFromID(const unsigned int illumina
     }
 }
 
-PXMTLLineType PXAPI PXMTLPeekLine(const char* const line, const PXSize lineSize)
+PXMTLLineType PXAPI PXMTLPeekLine(const char PXREF line, const PXSize lineSize)
 {
     if(!line || !lineSize)
     {
@@ -74,18 +76,18 @@ PXMTLLineType PXAPI PXMTLPeekLine(const char* const line, const PXSize lineSize)
     }
 }
 
-PXResult PXAPI  PXMTLPeekFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI PXMTLPeekFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
 {
-    PXMaterialContainer* const pxMaterialList = (PXMaterialContainer*)pxResourceLoadInfo->ResourceTarget;
+    PXMaterialContainer PXREF pxMaterialList = (PXMaterialContainer*)pxResourceLoadInfo->ResourceTarget;
 
     // We dont want to compile, as this can impact performance
 
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXMTLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI PXMTLLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
 {
-    PXMaterialContainer* const pxMaterialList = (PXMaterialContainer*)pxResourceLoadInfo->ResourceTarget;
+    PXMaterialContainer PXREF pxMaterialList = (PXMaterialContainer*)pxResourceLoadInfo->ResourceTarget;
 
     PXI32U materialAmount = 0;
     PXMaterial* pxMaterialCurrent = PXNull;
@@ -94,7 +96,7 @@ PXResult PXAPI  PXMTLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoad
     PXLogPrint
     (
         PXLoggingInfo,
-        "MTL",
+        PXMTLName,
         "Load",
         "---Start---"
     );
@@ -116,7 +118,7 @@ PXResult PXAPI  PXMTLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoad
     PXLogPrint
     (
         PXLoggingInfo,
-        "MTL",
+        PXMTLName,
         "Peek",
         "1/4 - Lexer"
     );
@@ -130,7 +132,7 @@ PXResult PXAPI  PXMTLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoad
     PXLogPrint
     (
         PXLoggingInfo,
-        "MTL",
+        PXMTLName,
         "Peek",
         "2/4 - Analyse"
     );
@@ -170,7 +172,7 @@ PXResult PXAPI  PXMTLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoad
     PXLogPrint
     (
         PXLoggingInfo,
-        "MTL",
+        PXMTLName,
         "Parse",
         "3/4 - Allocating. Detected %i materials",
         materialAmount
@@ -182,7 +184,7 @@ PXResult PXAPI  PXMTLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoad
         PXResourceCreateInfo pxResourceCreateInfo;
         PXClear(PXResourceCreateInfo, &pxResourceCreateInfo);
         pxResourceCreateInfo.Type = PXResourceTypeMaterial;
-        pxResourceCreateInfo.ObjectReference = (void**)&pxMaterialList->MaterialList;
+        pxResourceCreateInfo.ObjectReference = (PXResourceInfo**)&pxMaterialList->MaterialList;
         pxResourceCreateInfo.ObjectAmount = materialAmount;
 
         PXResourceManagerAdd(&pxResourceCreateInfo);
@@ -195,7 +197,7 @@ PXResult PXAPI  PXMTLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoad
     PXLogPrint
     (
         PXLoggingInfo,
-        "MTL",
+        PXMTLName,
         "Parse",
         "4/4 - Parse"
     );
@@ -214,19 +216,21 @@ PXResult PXAPI  PXMTLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoad
                 pxMaterialCurrent = &pxMaterialList->MaterialList[materialAmount];
                 ++materialAmount;
 
-                char cache[64];
+                char cache[64];         
 
-                PXText pxText;
-                PXTextConstructFromAdressA(&pxText, cache, 0, 64);
+                PXResourceProperty pxResourceProperty;
+                PXClear(PXResourceProperty, &pxResourceProperty);
 
-                const PXBool isText = PXCompilerParseStringUntilNewLine(&pxCompiler, &pxText);
+                PXTextFromAdressA(&pxResourceProperty.Text, cache, 0, 64);
+
+                const PXBool isText = PXCompilerParseStringUntilNewLine(&pxCompiler, &pxResourceProperty.Text);
 
                 if(!isText)
                 {
                     break; // Error
-                }
-
-                PXResourceStoreName(&pxMaterialCurrent->Info, cache, pxText.SizeUsed);
+                }          
+                
+                PXResourcePropertyIO(&pxMaterialCurrent->Info, &pxResourceProperty, PXResourcePropertyName, PXResourcePropertyStore);
 
                 break;
             }
@@ -259,8 +263,7 @@ PXResult PXAPI  PXMTLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoad
                 pxResourceCreateInfo.Type = PXResourceTypeTexture2D;
                 pxResourceCreateInfo.ObjectReference = (void**)&pxMaterialCurrent->DiffuseTexture;
                 pxResourceCreateInfo.ObjectAmount = 1;
-                pxResourceCreateInfo.FilePathAdress = fullTexturePath.A;
-                pxResourceCreateInfo.FilePathSize = fullTexturePath.SizeUsed;
+                pxResourceCreateInfo.FilePath = fullTexturePath;
                 pxResourceCreateInfo.Flags = PXResourceCreateBehaviourLoadASYNC;
 
                 PXResourceManagerAdd(&pxResourceCreateInfo);
@@ -373,7 +376,7 @@ PXResult PXAPI  PXMTLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoad
     PXLogPrint
     (
         PXLoggingInfo,
-        "MTL",
+        PXMTLName,
         "Parse",
         "---Done---"
     );
@@ -382,7 +385,7 @@ PXResult PXAPI  PXMTLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoad
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXMTLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI PXMTLSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }
@@ -622,7 +625,7 @@ void BF::MTL::PrintContent()
     printf("================\n");
 }*/
 
-PXSize PXAPI PXMTLFetchAmount(const void* const data, const PXSize dataSize)
+PXSize PXAPI PXMTLFetchAmount(const void PXREF data, const PXSize dataSize)
 {
     PXFile mtlStream;
 
@@ -640,7 +643,7 @@ PXSize PXAPI PXMTLFetchAmount(const void* const data, const PXSize dataSize)
     return materialListSize;
 }
 
-PXBool PXAPI PXMTLFetchMaterial(const void* const data, const PXSize dataSize, const PXSize materialID, PXMTLMaterial* const mtlMaterial)
+PXBool PXAPI PXMTLFetchMaterial(const void PXREF data, const PXSize dataSize, const PXSize materialID, PXMTLMaterial PXREF mtlMaterial)
 {
     const PXSize amount = PXMTLFetchAmount(data, dataSize);
 

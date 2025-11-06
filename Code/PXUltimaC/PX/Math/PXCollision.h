@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXCollisionIncluded
 #define PXCollisionIncluded
 
@@ -53,9 +55,9 @@ PXPublic PXBool PXAPI PXCollisionAABB(PXF32 ax, PXF32 ay, PXF32 bx, PXF32 by, PX
 // if hit, return the range. If nothing hit, return -1 
 PXPublic PXF32 PXAPI PXRayTriangleIntersect
 (
-    PXVector3F32* const rayOriginPositon,
+    PXVector3F32 PXREF rayOriginPositon,
     PXVector3F32* rayOriginDirection,
-    const PXVector3F32* const triangleVertexList,
+    const PXVector3F32 PXREF triangleVertexList,
     const PXSize amountTriangles
 );
 

@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXFMTIncluded
 #define PXFMTIncluded
 
@@ -17,7 +19,7 @@ typedef struct PXFMT_
 }
 PXFMT;
 
-PXPublic PXResult PXAPI PXFMTLoadFromFile(PXFMT* const pxFMT, PXFile* const pxFile, const PXEndian endian);
-PXPublic PXResult PXAPI PXFMTSaveToFile(const PXFMT* const pxFMT, PXFile* const pxFile, const PXEndian endian);
+PXPublic PXResult PXAPI PXFMTLoadFromFile(PXFMT PXREF pxFMT, PXFile PXREF pxFile, const PXEndian endian);
+PXPublic PXResult PXAPI PXFMTSaveToFile(const PXFMT PXREF pxFMT, PXFile PXREF pxFile, const PXEndian endian);
 
 #endif

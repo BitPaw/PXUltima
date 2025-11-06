@@ -1,11 +1,11 @@
 #include "PXConsole.h"
 
 #include <stdarg.h>
+#include <stdio.h>
 
 #include <PX/Media/PXText.h>
 #include <PX/OS/Async/PXThread.h>
 #include <PX/OS/Time/PXTime.h>
-#include <PX/OS/File/PXFile.h>
 #include <PX/OS/Debug/PXDebug.h>
 #include <PX/OS/Async/PXLock.h>
 #include <PX/OS/PXOS.h>
@@ -15,7 +15,7 @@ PXThread _GLOBALSourceThread;
 
 #define PXConsoleColorEnable 1
 
-PXResult PXAPI  PXConsoleTextColorSetFromID(const PXI16U coliorID)
+PXResult PXAPI PXConsoleTextColorSetFromID(const PXI16U coliorID)
 {
     PXConsoleTextColor pxConsoleTextColor = 0;
 
@@ -35,7 +35,7 @@ PXResult PXAPI  PXConsoleTextColorSetFromID(const PXI16U coliorID)
     return PXConsoleTextColorSet(pxConsoleTextColor);
 }
 
-PXResult PXAPI  PXConsoleTextColorSet(const PXConsoleTextColor pxConsoleTextColor)
+PXResult PXAPI PXConsoleTextColorSet(const PXConsoleTextColor pxConsoleTextColor)
 {
 #if OSUnix
 
@@ -315,19 +315,19 @@ void PXAPI PXConsoleGoToXY(const PXI32U x, const PXI32U y)
 #endif
 }
 
-void PXAPI PXConsoleWriteF(const PXSize length, const char* const source, ...)
+void PXAPI PXConsoleWriteF(const PXSize length, const char PXREF source, ...)
 {
 #if PXDefaultLibraryEnable
     va_list args;
     va_start(args, source);
 
-    PXSize xx = vprintf(source, args);
+    PXSize xx = vprintf(source, args); // stdio.h
 
     va_end(args);
 #endif
 }
 
-void PXAPI PXConsoleWrite(const PXSize length, const char* const source)
+void PXAPI PXConsoleWrite(const PXSize length, const char PXREF source)
 {
 #if OSUnix
 
@@ -345,20 +345,20 @@ void PXAPI PXConsoleWrite(const PXSize length, const char* const source)
     const BOOL success = WriteConsoleA(consoleHandle, source, length, 0, 0);
 
     PXText pxText;
-    PXTextConstructFromAdressA(&pxText, source, length, length);
+    PXTextFromAdressA(&pxText, source, length, length);
 
     PXDebugLogMessage(&pxText);
 #endif
 }
 
-void PXAPI PXConsoleWriteFV(const PXSize length, const char* const source, va_list va_list)
+void PXAPI PXConsoleWriteFV(const PXSize length, const char PXREF source, va_list va_list)
 {
 #if PXDefaultLibraryEnable
     const PXSize xx = vprintf(source, va_list);
 #endif
 }
 
-void PXAPI PXConsoleWriteWithColorCodes(PXText* const bufferInput)
+void PXAPI PXConsoleWriteWithColorCodes(PXText PXREF bufferInput)
 {
     PXLockEngage(&_GLOBALCosolePrintLock);
 
@@ -401,7 +401,7 @@ void PXAPI PXConsoleWriteWithColorCodes(PXText* const bufferInput)
     PXLockRelease(&_GLOBALCosolePrintLock);
 }
 
-void PXAPI PXConsoleWriteTablePXF32(const PXF32* const data, const PXSize amount, const PXSize width)
+void PXAPI PXConsoleWriteTablePXF32(const PXF32 PXREF data, const PXSize amount, const PXSize width)
 {
     const PXSize rows = amount / width;
 
@@ -418,7 +418,7 @@ void PXAPI PXConsoleWriteTablePXF32(const PXF32* const data, const PXSize amount
     }
 }
 
-void PXAPI PXConsoleWriteTableInt(const PXI8U* const data, const PXSize amount, const PXSize width)
+void PXAPI PXConsoleWriteTableInt(const PXI8U PXREF data, const PXSize amount, const PXSize width)
 {
     const PXSize rows = amount / width;
 
@@ -436,7 +436,7 @@ void PXAPI PXConsoleWriteTableInt(const PXI8U* const data, const PXSize amount, 
 }
 
 
-void PXAPI PXLogPrintInvoke(PXLoggingEventData* const pxLoggingEventData, ...)
+void PXAPI PXLogPrintInvoke(PXLoggingEventData PXREF pxLoggingEventData, ...)
 {
     PXText textPreFormatted;
     PXTextConstructNamedBufferA(&textPreFormatted, formattedTextBuffer, 512);
@@ -515,12 +515,12 @@ void PXAPI PXLogPrintInvoke(PXLoggingEventData* const pxLoggingEventData, ...)
     {
 #if 0
         PXFile* pxFile = pxLoggingEventData->FileReference;
-        //PXFilePathGet();
+        //PXFilePath();
 
         PXText pxTextFilePath;
         PXTextConstructNamedBufferA(&pxTextFilePath, pxTextFilePathBuffer, PXPathSizeMax);
 
-        PXFilePathGet(pxFile, &pxTextFilePath);
+        PXFilePath(pxFile, &pxTextFilePath);
 
         PXText pxText;
         PXTextConstructNamedBufferA(&pxText, pxTextBuffer, 32);
@@ -621,7 +621,7 @@ void PXAPI PXLogEnableASYNC()
     PXThreadCurrent(&_GLOBALSourceThread);
 }
 
-void PXAPI PXLogPrint(const PXLoggingType loggingType, const char* const source, const char* const action, const char* const format, ...)
+void PXAPI PXLogPrint(const PXLoggingType loggingType, const char PXREF source, const char PXREF action, const char PXREF format, ...)
 {
     char loggingTypeSymbol;
 

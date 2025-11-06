@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXDijkstraIncluded
 #define PXDijkstraIncluded
 

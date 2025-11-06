@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXEngineIncluded
 #define PXEngineIncluded
 
@@ -72,17 +74,17 @@ typedef struct PXPlayerMoveInfo_
 PXPlayerMoveInfo;
 
 
-typedef void (PXAPI* PXEngineResourceAdded)(void* const owner, PXEngine* const pxEngine, PXResourceCreateInfo* const pxEngineResourceCreateInfo);
+typedef void (PXAPI* PXEngineResourceAdded)(void PXREF owner, PXEngine PXREF pxEngine, PXResourceCreateInfo PXREF pxEngineResourceCreateInfo);
 
-typedef void (PXAPI* PXEngineStartUpEvent)(void* const owner, PXEngine* const pxEngine);
-typedef void (PXAPI* PXEngineShutDownEvent)(void* const owner, PXEngine* const pxEngine);
+typedef void (PXAPI* PXEngineStartUpEvent)(void PXREF owner, PXEngine PXREF pxEngine);
+typedef void (PXAPI* PXEngineShutDownEvent)(void PXREF owner, PXEngine PXREF pxEngine);
 
-typedef void (PXAPI* PXEngineInteractCallBack)(void* const owner, PXEngine* const pxEngine);
+typedef void (PXAPI* PXEngineInteractCallBack)(void PXREF owner, PXEngine PXREF pxEngine);
 
-typedef void (PXAPI* PXEngineUserUpdateEvent)(void* const owner, PXEngine* const pxEngine, PXPlayerMoveInfo* const pxPlayerMoveInfo);
-typedef void (PXAPI* PXEngineNetworkUpdateEvent)(void* const owner, PXEngine* const pxEngine);
-typedef void (PXAPI* PXEngineGameUpdateEvent)(void* const owner, PXEngine* const pxEngine);
-typedef void (PXAPI* PXEngineRenderUpdateEvent)(void* const owner, PXEngine* const pxEngine);
+typedef void (PXAPI* PXEngineUserUpdateEvent)(void PXREF owner, PXEngine PXREF pxEngine, PXPlayerMoveInfo PXREF pxPlayerMoveInfo);
+typedef void (PXAPI* PXEngineNetworkUpdateEvent)(void PXREF owner, PXEngine PXREF pxEngine);
+typedef void (PXAPI* PXEngineGameUpdateEvent)(void PXREF owner, PXEngine PXREF pxEngine);
+typedef void (PXAPI* PXEngineRenderUpdateEvent)(void PXREF owner, PXEngine PXREF pxEngine);
 
 typedef struct PXEngineTimeData_
 {
@@ -183,44 +185,44 @@ PXEngineStartInfo;
 PXPrivate void PXCDECL PXEngineOnIllegalInstruction(const int signalID);
 PXPrivate void PXCDECL PXEngineOnMemoryViolation(const int signalID);
 
-PXPrivate void PXAPI PXEngineWindowEvent(PXEngine* const pxEngine, PXWindowEvent* const pxWindowEvent);
+PXPrivate void PXAPI PXEngineWindowEvent(PXEngine PXREF pxEngine, PXWindowEvent PXREF pxWindowEvent);
 
 // Generate a random number with a maximum of the "limiter"
-PXPublic PXI32U PXAPI PXEngineGenerateRandom(PXEngine* const pxEngine, const PXI32U limiter);
+PXPublic PXI32U PXAPI PXEngineGenerateRandom(PXEngine PXREF pxEngine, const PXI32U limiter);
 
-PXPublic PXBool PXAPI PXEngineIsRunning(const PXEngine* const pxEngine);
-
-
-PXPrivate void PXAPI PXEngineCreatePRE(PXEngine* const pxEngine, PXEngineStartInfo* const pxEngineStartInfo);
-PXPrivate void PXAPI PXEngineCreateAudio(PXEngine* const pxEngine, PXEngineStartInfo* const pxEngineStartInfo);
-PXPrivate void PXAPI PXEngineCreateGraphic(PXEngine* const pxEngine, PXEngineStartInfo* const pxEngineStartInfo);
-PXPrivate void PXAPI PXEngineCreateMod(PXEngine* const pxEngine, PXEngineStartInfo* const pxEngineStartInfo);
+PXPublic PXBool PXAPI PXEngineIsRunning(const PXEngine PXREF pxEngine);
 
 
-PXPublic PXResult PXAPI PXEngineStart(PXEngine* const pxEngine, PXEngineStartInfo* const pxEngineStartInfo);
-PXPublic void PXAPI PXEngineStop(PXEngine* const pxEngine);
-PXPublic void PXAPI PXEngineUpdate(PXEngine* const pxEngine);
-
-PXPublic PXResult PXAPI PXEngineResourceAction(PXEngine* const pxEngine, PXEngineResourceActionInfo* const pxEngineResourceActionInfo);
-PXPublic PXResult PXAPI PXEngineResourceActionBatch(PXEngine* const pxEngine, PXEngineResourceActionInfo* const pxEngineResourceActionInfoList, const PXSize amount);
-
-PXPublic PXResult PXAPI PXEngineResourceCreate(PXEngine* const pxEngine, PXResourceCreateInfo* const pxEngineResourceCreateInfo);
-PXPublic PXResult PXAPI PXEngineResourceRender(PXEngine* const pxEngine, PXRenderEntity* const pxRenderEntity);
-
-PXPublic PXResult PXAPI PXEngineDeviceDataRegister(PXEngine* const pxEngine, PXResourceTransphereInfo* const pxResourceTransphereInfo);
-PXPublic PXResult PXAPI PXEngineDeviceDataUpload(PXEngine* const pxEngine, PXResourceTransphereInfo* const pxResourceTransphereInfo);
-
-PXPublic void PXAPI PXEngineResourceDefaultElements(PXEngine* const pxEngine);
-
-PXPublic PXResult PXAPI PXEngineResourceRenderDefault(PXEngine* const pxEngine);
-
-PXPublic void PXAPI PXEngineCollsisionSolve(PXEngine* const pxEngine);
-
-PXPublic PXResult PXAPI PXEngineSpriteTextureSet(PXEngine* const pxEngine, PXSprite* const pxSprite, PXTexture* const PXTexture);
+PXPrivate PXResult PXAPI PXEngineCreatePRE(PXEngine PXREF pxEngine, PXEngineStartInfo PXREF pxEngineStartInfo);
+PXPrivate PXResult PXAPI PXEngineCreateAudio(PXEngine PXREF pxEngine, PXEngineStartInfo PXREF pxEngineStartInfo);
+PXPrivate PXResult PXAPI PXEngineCreateGraphic(PXEngine PXREF pxEngine, PXEngineStartInfo PXREF pxEngineStartInfo);
+PXPrivate PXResult PXAPI PXEngineCreateMod(PXEngine PXREF pxEngine, PXEngineStartInfo PXREF pxEngineStartInfo);
 
 
-PXPrivate void PXAPI PXEngineUpdateCollision(PXEngine* const pxEngine);
-PXPrivate void PXAPI PXEngineUpdateTimer(PXEngine* const pxEngine);
-PXPrivate void PXAPI PXEngineUpdateSpriteAnimator(PXEngine* const pxEngine);
+PXPublic PXResult PXAPI PXEngineStart(PXEngine PXREF pxEngine, PXEngineStartInfo PXREF pxEngineStartInfo);
+PXPublic void PXAPI PXEngineStop(PXEngine PXREF pxEngine);
+PXPublic void PXAPI PXEngineUpdate(PXEngine PXREF pxEngine);
+
+PXPublic PXResult PXAPI PXEngineResourceAction(PXEngine PXREF pxEngine, PXEngineResourceActionInfo PXREF pxEngineResourceActionInfo);
+PXPublic PXResult PXAPI PXEngineResourceActionBatch(PXEngine PXREF pxEngine, PXEngineResourceActionInfo PXREF pxEngineResourceActionInfoList, const PXSize amount);
+
+PXPublic PXResult PXAPI PXEngineResourceCreate(PXEngine PXREF pxEngine, PXResourceCreateInfo PXREF pxEngineResourceCreateInfo);
+PXPublic PXResult PXAPI PXEngineResourceRender(PXEngine PXREF pxEngine, PXRenderEntity PXREF pxRenderEntity);
+
+PXPublic PXResult PXAPI PXEngineDeviceDataRegister(PXEngine PXREF pxEngine, PXResourceTransphereInfo PXREF pxResourceTransphereInfo);
+PXPublic PXResult PXAPI PXEngineDeviceDataUpload(PXEngine PXREF pxEngine, PXResourceTransphereInfo PXREF pxResourceTransphereInfo);
+
+PXPublic void PXAPI PXEngineResourceDefaultElements(PXEngine PXREF pxEngine);
+
+PXPublic PXResult PXAPI PXEngineResourceRenderDefault(PXEngine PXREF pxEngine);
+
+PXPublic void PXAPI PXEngineCollsisionSolve(PXEngine PXREF pxEngine);
+
+PXPublic PXResult PXAPI PXEngineSpriteTextureSet(PXEngine PXREF pxEngine, PXSprite PXREF pxSprite, PXTexture PXREF PXTexture);
+
+
+PXPrivate void PXAPI PXEngineUpdateCollision(PXEngine PXREF pxEngine);
+PXPrivate void PXAPI PXEngineUpdateTimer(PXEngine PXREF pxEngine);
+PXPrivate void PXAPI PXEngineUpdateSpriteAnimator(PXEngine PXREF pxEngine);
 
 #endif

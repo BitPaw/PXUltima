@@ -5,15 +5,15 @@
 
 const char PXWEBPVP[4] = "VP8 ";
 
-PXResult PXAPI  PXWEBPLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI PXWEBPLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
 {
-    PXTexture* const pxTexture = (PXTexture*)pxResourceLoadInfo->ResourceTarget;
+    PXTexture PXREF pxTexture = (PXTexture*)pxResourceLoadInfo->ResourceTarget;
 
     // Parse RIFF header
     {
         PXRIFF pxRiff;
 
-        const PXActionResult riffResult = PXRIFFLoadFromFile(&pxRiff, pxResourceLoadInfo->FileReference);
+        const PXResult riffResult = PXRIFFLoadFromFile(&pxRiff, pxResourceLoadInfo->FileReference);
 
         if(PXActionSuccessful != riffResult) 
             return riffResult;
@@ -63,7 +63,7 @@ PXResult PXAPI  PXWEBPLoadFromFile(PXResourceTransphereInfo* const pxResourceLoa
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI  PXWEBPSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI PXWEBPSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
 {
     // Write RIFF
     {
@@ -72,7 +72,7 @@ PXResult PXAPI  PXWEBPSaveToFile(PXResourceTransphereInfo* const pxResourceSaveI
         pxRiff.Format = PXRIFFWebPicture;
         pxRiff.EndianFormat = PXEndianLittle;
 
-        const PXActionResult riffResult = PXRIFFSaveToFile(&pxRiff, pxResourceSaveInfo->FileReference);
+        const PXResult riffResult = PXRIFFSaveToFile(&pxRiff, pxResourceSaveInfo->FileReference);
     }
 
     return PXActionRefusedNotImplemented;

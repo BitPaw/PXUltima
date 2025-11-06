@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXFractalIncluded
 #define PXFractalIncluded
 
@@ -12,8 +14,8 @@ typedef struct PXFractalIterator_
 }
 PXFractalIterator;
 
-PXPublic int PXAPI PXFractalGenerateBurningShip(PXFractalIterator* const pxFractalIterator);
-PXPublic int PXAPI PXFractalGenerateJulia(PXFractalIterator* const pxFractalIterator);
-PXPublic int PXAPI PXFractalGenerateMandelbrot(PXFractalIterator* const pxFractalIterator);
+PXPublic int PXAPI PXFractalGenerateBurningShip(PXFractalIterator PXREF pxFractalIterator);
+PXPublic int PXAPI PXFractalGenerateJulia(PXFractalIterator PXREF pxFractalIterator);
+PXPublic int PXAPI PXFractalGenerateMandelbrot(PXFractalIterator PXREF pxFractalIterator);
 
 #endif

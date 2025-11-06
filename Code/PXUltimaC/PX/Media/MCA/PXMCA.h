@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXMCAIncluded
 #define PXMCAIncluded
 
@@ -9,7 +11,7 @@ typedef struct PXMCA_
 }
 PXMCA;
 
-PXPublic PXResult PXAPI PXMCALoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXMCASaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXMCALoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXMCASaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

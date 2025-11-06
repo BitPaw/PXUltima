@@ -2,7 +2,7 @@
 
 #include <PX/Math/PXMath.h>
 
-void PXAPI PXSoftwareRenderDrawRectangle(PXTexture* const image, const PXSize x, const PXSize y, const PXSize width, const PXSize height, const unsigned char red, const unsigned char green, const unsigned char blue, const unsigned char alpha)
+void PXAPI PXSoftwareRenderDrawRectangle(PXTexture PXREF image, const PXSize x, const PXSize y, const PXSize width, const PXSize height, const unsigned char red, const unsigned char green, const unsigned char blue, const unsigned char alpha)
 {
     //unsigned char* data = ImageDataPoint(image, x, y);
 
@@ -23,7 +23,7 @@ void PXAPI PXSoftwareRenderDrawRectangle(PXTexture* const image, const PXSize x,
     }
 }
 
-void PXAPI PXTextureDrawA(PXTexture* const image, const PXSize x, const PXSize y, const PXSize width, const PXSize height, const PXFont* const font, const char* text)
+void PXAPI PXTextureDrawA(PXTexture PXREF image, const PXSize x, const PXSize y, const PXSize width, const PXSize height, const PXFont PXREF font, const char* text)
 {
     wchar_t W[1024];
 
@@ -32,7 +32,7 @@ void PXAPI PXTextureDrawA(PXTexture* const image, const PXSize x, const PXSize y
     PXTextureDrawW(image, x, y, width, height, font, W);
 }
 
-void PXAPI PXTextureDrawW(PXTexture* const image, const PXSize x, const PXSize y, const PXSize width, const PXSize height, const PXFont* const font, const wchar_t* text)
+void PXAPI PXTextureDrawW(PXTexture PXREF image, const PXSize x, const PXSize y, const PXSize width, const PXSize height, const PXFont PXREF font, const wchar_t* text)
 {
 #if 0
     PXF32 fontSize = 0.002;
@@ -89,7 +89,7 @@ void PXAPI PXTextureDrawW(PXTexture* const image, const PXSize x, const PXSize y
 #endif
 }
 
-void PXAPI PXTextureMerge(PXTexture* const image, const PXSize x, const PXSize y, const PXSize insertX, const PXSize insertY, const PXSize insertWidth, const PXSize insertHeight, const PXTexture* const imageInsert)
+void PXAPI PXTextureMerge(PXTexture PXREF image, const PXSize x, const PXSize y, const PXSize insertX, const PXSize insertY, const PXSize insertWidth, const PXSize insertHeight, const PXTexture PXREF imageInsert)
 {
     //unsigned char* data = ImageDataPoint(image, x, y);
 

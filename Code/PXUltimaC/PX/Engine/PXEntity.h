@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXEntityIncludedd
 #define PXEntityIncludedd
 
@@ -73,11 +75,9 @@ typedef struct PXComponentInfo_
 }
 PXComponentInfo;
 
-PXPublic void PXAPI PXComponentRefCheck(PXComponentRef* const pxComponentRef, PXComponentList* const pxComponentList);
+PXPublic void PXAPI PXComponentRefCheck(PXComponentRef PXREF pxComponentRef, PXComponentList PXREF pxComponentList);
 
-PXPublic void PXAPI PXComponentManagerAdd(PXComponentManager* const pxComponentManager, PXComponentInfo* const pxComponentInfo);
-
-
+PXPublic void PXAPI PXComponentManagerAdd(PXComponentManager PXREF pxComponentManager, PXComponentInfo PXREF pxComponentInfo);
 
 
 
@@ -87,7 +87,9 @@ PXPublic void PXAPI PXComponentManagerAdd(PXComponentManager* const pxComponentM
 
 
 
-PXPublic void PXAPI PXEntityComponentGet(PXEntity* const pxEntity, void* component);
+
+
+PXPublic void PXAPI PXEntityComponentGet(PXEntity PXREF pxEntity, void* component);
 
 
 #endif

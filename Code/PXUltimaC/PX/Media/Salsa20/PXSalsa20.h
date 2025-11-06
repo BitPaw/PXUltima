@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXSalsa20Included
 #define PXSalsa20Included
 
@@ -15,7 +17,7 @@ typedef struct PXSalsa20_
 }
 PXSalsa20;
 
-PXPublic PXResult PXAPI PXSalsa20Encrypt(PXSalsa20* const pxSalsa20, PXFile* const input, PXFile* const output);
-PXPublic PXResult PXAPI PXSalsa20Decrypt(PXSalsa20* const pxSalsa20, PXFile* const input, PXFile* const output);
+PXPublic PXResult PXAPI PXSalsa20Encrypt(PXSalsa20 PXREF pxSalsa20, PXFile PXREF input, PXFile PXREF output);
+PXPublic PXResult PXAPI PXSalsa20Decrypt(PXSalsa20 PXREF pxSalsa20, PXFile PXREF input, PXFile PXREF output);
 
 #endif

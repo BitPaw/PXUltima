@@ -80,7 +80,7 @@ void FillIVTable(char* ivTable, int ivTableLength, char* nameKey)
 
 
 
-PXResult PXAPI  PXFastFileLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI PXFastFileLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
 {
 #if PXLogEnable
     PXLogPrint
@@ -96,7 +96,7 @@ PXResult PXAPI  PXFastFileLoadFromFile(PXResourceTransphereInfo* const pxResourc
     PXFastFile pxFastFile;
     PXClear(PXFastFile, &pxFastFile);
 
-    PXFile* const pxFile = pxResourceLoadInfo->FileReference;
+    PXFile PXREF pxFile = pxResourceLoadInfo->FileReference;
 
     // Signature
     {
@@ -257,7 +257,7 @@ PXResult PXAPI  PXFastFileLoadFromFile(PXResourceTransphereInfo* const pxResourc
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXFastFileSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI PXFastFileSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

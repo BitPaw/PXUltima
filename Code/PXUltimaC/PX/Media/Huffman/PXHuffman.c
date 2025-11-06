@@ -27,7 +27,7 @@ const PXI8U PXHuffmanCodeLengthIndex[NUM_CODE_LENGTH_CODES] =
 
 // numcodes = 288
 // maxbitlen = 15
-PXResult PXAPI  PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, const PXI32U* const bitlen, const PXSize numcodes, const PXSize maxbitlen)
+PXResult PXAPI PXGenerateFromLengths(PXHuffmanTree PXREF huffmanTree, const PXI32U PXREF bitlen, const PXSize numcodes, const PXSize maxbitlen)
 {
     PXClear(PXHuffmanTree, huffmanTree);
 
@@ -251,7 +251,7 @@ PXResult PXAPI  PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, const PX
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXHuffmanDistanceTreeGenerateDynamic(PXFile* const pxFile, PXHuffmanTree* const treeLength, PXHuffmanTree* const treeDistance)
+PXResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(PXFile PXREF pxFile, PXHuffmanTree PXREF treeLength, PXHuffmanTree PXREF treeDistance)
 {
     PXClear(PXHuffmanTree, treeLength);
 
@@ -322,9 +322,10 @@ PXResult PXAPI  PXHuffmanDistanceTreeGenerateDynamic(PXFile* const pxFile, PXHuf
     }
 
     {
-        const PXActionResult generateError = PXGenerateFromLengths(&tree_cl, bitlen_codeLength, NUM_CODE_LENGTH_CODES, 7);
+        const PXResult generateError = PXGenerateFromLengths(&tree_cl, bitlen_codeLength, NUM_CODE_LENGTH_CODES, 7);
 
-        PXActionReturnOnError(generateError);
+        if(PXActionSuccessful != generateError)
+            return generateError;;
     }
 
     // now we can use this tree to read the lengths for the tree that this function will return
@@ -449,16 +450,18 @@ PXResult PXAPI  PXHuffmanDistanceTreeGenerateDynamic(PXFile* const pxFile, PXHuf
     // and the function is done
 
     {
-        const PXActionResult generateError = PXGenerateFromLengths(treeLength, bitlen_lengh, NUM_DEFLATE_CODE_SYMBOLS, 15); // treeLength
+        const PXResult generateError = PXGenerateFromLengths(treeLength, bitlen_lengh, NUM_DEFLATE_CODE_SYMBOLS, 15); // treeLength
 
-        PXActionReturnOnError(generateError);
+        if(PXActionSuccessful != generateError)
+            return generateError;
     }
 
 
     {
-        const PXActionResult generateError = PXGenerateFromLengths(treeDistance, bitlen_distance, NUM_DISTANCE_SYMBOLS, 15); // treeDistance
+        const PXResult generateError = PXGenerateFromLengths(treeDistance, bitlen_distance, NUM_DISTANCE_SYMBOLS, 15); // treeDistance
 
-        PXActionReturnOnError(generateError);
+        if(PXActionSuccessful != generateError) 
+            return generateError;
     }
 
     //break; /*end of error-while*/
@@ -467,7 +470,7 @@ PXResult PXAPI  PXHuffmanDistanceTreeGenerateDynamic(PXFile* const pxFile, PXHuf
     return PXActionSuccessful;
 }
 
-PXI16U PXAPI PXHuffmanSymbolDecode(struct PXFile_* const pxFile, const PXHuffmanTree* const huffmanTree)
+PXI16U PXAPI PXHuffmanSymbolDecode(struct PXFile_ PXREF pxFile, const PXHuffmanTree PXREF huffmanTree)
 {
     PXHuffmanSymbol huffmanSymbol;
     huffmanSymbol.Code = PXFilePeekBits(pxFile, PXHuffmanFirstBits);
@@ -507,7 +510,7 @@ PXI32U PXAPI reverseBits(const PXI32U bits, const PXI32U num)
     return result;
 }
 
-PXResult PXAPI  PXHuffmanDistanceTreeGenerateFixed(PXHuffmanTree* const treeLength, PXHuffmanTree* const treeDistance)
+PXResult PXAPI PXHuffmanDistanceTreeGenerateFixed(PXHuffmanTree PXREF treeLength, PXHuffmanTree PXREF treeDistance)
 {
     {
         //------------------------------------------- generateFixedLitLenTree()
@@ -523,7 +526,7 @@ PXResult PXAPI  PXHuffmanDistanceTreeGenerateFixed(PXHuffmanTree* const treeLeng
         for(PXI16U i = 280u; i <= 287u; ++i) bitlen[i] = 8u;
         //---------------------------------------------------------------------------
 
-        const PXActionResult result = PXGenerateFromLengths(treeLength, bitlen, numcodes, maxbitlen);
+        const PXResult result = PXGenerateFromLengths(treeLength, bitlen, numcodes, maxbitlen);
     }
 
  
@@ -539,13 +542,13 @@ PXResult PXAPI  PXHuffmanDistanceTreeGenerateFixed(PXHuffmanTree* const treeLeng
             bitlen[i] = 5u;
         }
 
-        const PXActionResult result = PXGenerateFromLengths(treeDistance, bitlen, numcodes, maxbitlen);
+        const PXResult result = PXGenerateFromLengths(treeDistance, bitlen, numcodes, maxbitlen);
 
         return result;
     } 
 }
 
-void PXAPI PXHuffmanTreeDestruct(PXHuffmanTree* const huffmanTree)
+void PXAPI PXHuffmanTreeDestruct(PXHuffmanTree PXREF huffmanTree)
 {
     PXMemoryHeapFree(PXNull, huffmanTree->CodeSymbols);
     PXMemoryHeapFree(PXNull, huffmanTree->LengthsList);

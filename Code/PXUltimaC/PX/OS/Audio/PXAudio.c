@@ -10,7 +10,7 @@
 //#include "PXXAudio/PXXAudio.h"
 //#include "PXAudioMIDI/PXAudioMIDI.h"
 
-PXResult PXAPI  PXAudioInitialize(PXAudio* const pxAudio, const PXAudioSystem pxAudioSystem)
+PXResult PXAPI PXAudioInitialize(PXAudio PXREF pxAudio, const PXAudioSystem pxAudioSystem)
 {
 #if PXLogEnable
     PXLogPrint
@@ -82,7 +82,7 @@ PXResult PXAPI  PXAudioInitialize(PXAudio* const pxAudio, const PXAudioSystem px
         pxAudioInitializeInfo.AudioSystem = pxAudioSystem;
         pxAudioInitializeInfo.AudioReference = pxAudio;
 
-        const PXActionResult initializeResult = pxAudio->Initialize(pxAudio->SystemReference, &pxAudioInitializeInfo);
+        const PXResult initializeResult = pxAudio->Initialize(pxAudio->SystemReference, &pxAudioInitializeInfo);
 
         if(PXActionSuccessful != initializeResult)
         {
@@ -125,7 +125,7 @@ PXResult PXAPI  PXAudioInitialize(PXAudio* const pxAudio, const PXAudioSystem px
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXAudioRelease(PXAudio* const pxAudio)
+PXResult PXAPI PXAudioRelease(PXAudio PXREF pxAudio)
 {
     return PXActionSuccessful;
 }

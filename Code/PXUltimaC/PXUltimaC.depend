@@ -7920,3 +7920,373 @@
 	<winuser.rh>
 	<Engine/PXEngine.h>
 
+1756592676 source:/mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Compiler/GCC/PXGCC.c
+	"PXGCC.h"
+
+1756592638 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Compiler/GCC/PXGCC.h
+
+1756593113 source:/mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Compiler/Java/PXJavaCompiler.c
+	"PXJavaCompiler.h"
+
+1756592638 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Compiler/Java/PXJavaCompiler.h
+
+1756592676 source:/mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Algorithm/BubbleSort/PXBubbleSort.c
+	"PXBubbleSort.h"
+
+1756593428 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Algorithm/BubbleSort/PXBubbleSort.h
+	<PX/Engine/PXResource.h>
+
+1761427036 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Engine/PXResource.h
+	<PX/OS/Error/PXActionResult.h>
+	<PX/OS/Async/PXLock.h>
+	<PX/Container/Dictionary/PXDictionary.h>
+	<PX/Container/ListDynamic/PXListDynamic.h>
+	<PX/Media/PXColor.h>
+	<PX/Media/PXText.h>
+	<PX/Container/ListHierarchical/PXListHierarchical.h>
+	<PX/OS/Memory/PXMemory.h>
+	<PX/OS/Hardware/PXKeyBoard.h>
+	<PX/Math/PXMatrix.h>
+	<PX/OS/Time/PXTime.h>
+	<PX/Container/Buffer/PXBuffer.h>
+	"PXEntity.h"
+	<stdarg.h>
+	<stdio.h>
+	<X11/X.h>
+	<X11/Xlib.h>
+	<PX/OS/Async/PXLock.h>
+	<PX/Container/Buffer/PXBuffer.h>
+	"PXEntity.h"
+
+1761237863 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/OS/Error/PXActionResult.h
+	<PX/Media/PXType.h>
+
+1761433818 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Media/PXType.h
+	<PX/OS/System/Version/PXOSVersion.h>
+	<wchar.h>
+
+1761425421 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/OS/System/Version/PXOSVersion.h
+	<Windows.h>
+	<SdkDdkVer.h>
+
+1761237869 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/OS/Async/PXLock.h
+	<PX/OS/System/Version/PXOSVersion.h>
+	<PX/OS/Error/PXActionResult.h>
+	<semaphore.h>
+	<windows.h>
+
+1761237846 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Container/Dictionary/PXDictionary.h
+	<PX/Media/PXType.h>
+	<PX/Container/List/PXList.h>
+
+1761237869 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Container/List/PXList.h
+	<PX/Media/PXType.h>
+	<PX/Container/Buffer/PXBuffer.h>
+
+1761426333 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Container/Buffer/PXBuffer.h
+	<PX/OS/Error/PXActionResult.h>
+
+1761237869 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Container/ListDynamic/PXListDynamic.h
+	<PX/Media/PXType.h>
+
+1761237869 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Media/PXColor.h
+	<PX/Media/PXType.h>
+
+1761237867 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Media/PXText.h
+	<stdarg.h>
+	<PX/Media/PXType.h>
+	<PX/OS/Error/PXActionResult.h>
+
+1761237869 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Container/ListHierarchical/PXListHierarchical.h
+	<PX/Media/PXType.h>
+	<PX/OS/Error/PXActionResult.h>
+
+1761237867 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/OS/Memory/PXMemory.h
+	<PX/Media/PXType.h>
+	<PX/Compiler/PXCompilerSettings.h>
+	<PX/OS/Error/PXActionResult.h>
+	<PX/Container/Dictionary/PXDictionary.h>
+
+1756592676 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Compiler/PXCompilerSettings.h
+	<PX/OS/System/Version/PXOSVersion.h>
+
+1761237869 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/OS/Hardware/PXKeyBoard.h
+	<PX/Media/PXType.h>
+
+1761237870 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Math/PXMatrix.h
+	<PX/Media/PXType.h>
+	<PX/Math/PXVector.h>
+
+1761237870 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Math/PXVector.h
+	<PX/Media/PXType.h>
+
+1761237869 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/OS/Time/PXTime.h
+	<PX/Media/PXType.h>
+	<time.h>
+
+1761237869 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Engine/PXEntity.h
+	<PX/Container/List/PXList.h>
+	<PX/Media/PXText.h>
+	<PX/Container/Dictionary/PXDictionary.h>
+
+1761237869 source:/mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Algorithm/CollatzConjecture/PXCollatzConjecture.c
+	"PXCollatzConjecture.h"
+
+1761237869 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Algorithm/CollatzConjecture/PXCollatzConjecture.h
+	<PX/Engine/PXResource.h>
+
+1756592676 source:/mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Algorithm/Dijkstra/PXDijkstra.c
+	"PXDijkstra.h"
+
+1756593519 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Algorithm/Dijkstra/PXDijkstra.h
+	<PX/Engine/PXResource.h>
+
+1761237869 source:/mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Algorithm/Fractal/PXFractal.c
+	"PXFractal.h"
+	<PX/Math/PXMath.h>
+
+1761237870 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Algorithm/Fractal/PXFractal.h
+	<PX/Engine/PXResource.h>
+
+1761237867 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Math/PXMath.h
+	<PX/Media/PXType.h>
+
+1756592676 source:/mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Algorithm/KalmanFilter/PXKalmanFilter.c
+	"PXKalmanFilter.h"
+
+1756593519 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Algorithm/KalmanFilter/PXKalmanFilter.h
+	<PX/Engine/PXResource.h>
+
+1761237862 source:/mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Algorithm/KnowlegeGraph/PXKnowlegeGraph.c
+	"PXKnowlegeGraph.h"
+	<PX/OS/Graphic/PXGraphic.h>
+	<PX/Engine/PXGUI.h>
+	<PX/Math/PXMath.h>
+
+1761237870 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Algorithm/KnowlegeGraph/PXKnowlegeGraph.h
+	<PX/Engine/PXResource.h>
+	<PX/Media/PXDocument.h>
+
+1761237870 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Media/PXDocument.h
+	<PX/Engine/PXResource.h>
+	<PX/OS/File/PXFile.h>
+
+1761334930 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/OS/File/PXFile.h
+	<stdlib.h>
+	<stdio.h>
+	<wchar.h>
+	<PX/Engine/PXResource.h>
+	<PX/Media/PXType.h>
+	<PX/Media/PXText.h>
+	<PX/OS/Memory/PXMemory.h>
+	<PX/OS/Error/PXActionResult.h>
+	<PX/OS/Time/PXTime.h>
+	<sys/types.h>
+	<sys/stat.h>
+	<sys/mman.h>
+	<dirent.h>
+	<unistd.h>
+	<libgen.h>
+	<windows.h>
+	<direct.h>
+
+1761237867 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/OS/Graphic/PXGraphic.h
+	<PX/Engine/PXResource.h>
+	<PX/Media/PXColor.h>
+	<PX/OS/Async/PXLock.h>
+	<PX/OS/Graphic/NativDraw/PXNativDraw.h>
+	<PX/OS/Graphic/DirectX/PXDirectX.h>
+	<PX/OS/Graphic/OpenGL/PXOpenGL.h>
+	<PX/OS/Graphic/Vulcan/PXVulcan.h>
+
+1761237867 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/OS/Graphic/NativDraw/PXNativDraw.h
+	<PX/Engine/PXResource.h>
+	<PX/Math/PXVector.h>
+
+1761237870 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/OS/Graphic/DirectX/PXDirectX.h
+	<PX/Engine/PXResource.h>
+	<PX/OS/Library/PXLibrary.h>
+	<d3d9.h>
+
+1761237868 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/OS/Library/PXLibrary.h
+	<PX/Engine/PXResource.h>
+	<PX/Media/PXText.h>
+	<PX/OS/Async/PXProcess.h>
+
+1761237870 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/OS/Async/PXProcess.h
+	<PX/Media/PXType.h>
+	<PX/Media/PXText.h>
+	<PX/OS/Error/PXActionResult.h>
+	<PX/OS/Time/PXTime.h>
+	<unistd.h>
+	<pthread.h>
+	<windows.h>
+
+1761237867 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/OS/Graphic/OpenGL/PXOpenGL.h
+	<PX/Engine/PXResource.h>
+	<PX/OS/Library/PXLibrary.h>
+	<GL/gl.h>
+	<GL/glx.h>
+	<Windows.h>
+
+1761237870 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/OS/Graphic/Vulcan/PXVulcan.h
+	<PX/Engine/PXResource.h>
+	<PX/OS/Library/PXLibrary.h>
+
+1761237846 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Engine/PXGUI.h
+	<PX/Engine/PXResource.h>
+
+1761237868 source:/mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Compiler/PXCompiler.c
+	"PXCompiler.h"
+	<PX/OS/File/PXFile.h>
+	<PX/Media/PXText.h>
+	<PX/Math/PXMath.h>
+	<PX/OS/Console/PXConsole.h>
+	<PX/Media/PXDocument.h>
+	<stdio.h>
+
+1761237870 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Compiler/PXCompiler.h
+	<PX/Engine/PXResource.h>
+
+1761434596 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/OS/Console/PXConsole.h
+	<PX/Media/PXType.h>
+	<PX/OS/Error/PXActionResult.h>
+	<stdarg.h>
+
+1756592676 source:/mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Compiler/PXCompilerSettings.c
+	"PXCompilerSettings.h"
+
+1761237870 source:/mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Compiler/MSVC/PXMSVC.c
+	"PXMSVC.h"
+	<PX/OS/Bash/PXBash.h>
+	<PX/Media/PXText.h>
+	<PX/OS/Memory/PXMemory.h>
+	<PX/OS/PXOS.h>
+
+1761237870 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Compiler/MSVC/PXMSVC.h
+	<PX/Engine/PXResource.h>
+
+1761237870 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/OS/Bash/PXBash.h
+	<PX/Engine/PXResource.h>
+
+1761248944 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/OS/PXOS.h
+	<PX/Engine/PXResource.h>
+	"Library/PXLibrary.h"
+	<PX/OS/Async/PXThread.h>
+
+1761434474 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/OS/Async/PXThread.h
+	<PX/Engine/PXResource.h>
+	"PXProcess.h"
+	<pthread.h>
+	<unistd.h>
+	<setjmp.h>
+	<windows.h>
+
+1761237869 source:/mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Container/Buffer/PXBuffer.c
+	"PXBuffer.h"
+	<PX/OS/PXOS.h>
+
+1761237869 source:/mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Container/List/PXList.c
+	"PXList.h"
+	<PX/OS/PXOS.h>
+	<PX/OS/Memory/PXMemory.h>
+	<PX/Math/PXMath.h>
+
+1761237869 source:/mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Container/ListDynamic/PXListDynamic.c
+	"PXListDynamic.h"
+	<PX/OS/Memory/PXMemory.h>
+	<PX/OS/PXOS.h>
+
+1761237869 source:/mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Container/ListHierarchical/PXListHierarchical.c
+	"PXListHierarchical.h"
+
+1761237846 source:/mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Container/Dictionary/PXDictionary.c
+	"PXDictionary.h"
+	<PX/OS/Memory/PXMemory.h>
+	<PX/OS/Console/PXConsole.h>
+	<PX/Media/PXText.h>
+	<PX/OS/PXOS.h>
+
+1761237846 source:/mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Container/TreeB/PXTreeB.c
+	"PXTreeB.h"
+	<PX/OS/Memory/PXMemory.h>
+
+1761237869 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Container/TreeB/PXTreeB.h
+	<PX/Engine/PXResource.h>
+
+1756592676 source:/mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Container/TreeBehaviour/PXTreeBehaviour.c
+	"PXTreeBehaviour.h"
+
+1756592676 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Container/TreeBehaviour/PXTreeBehaviour.h
+	<PX/Media/PXType.h>
+
+1756592676 source:/mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Container/TreeBinary/PXTreeBinary.c
+	"PXTreeBinary.h"
+
+1756592638 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Container/TreeBinary/PXTreeBinary.h
+
+1756592676 source:/mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Container/TreeQuad/PXTreeQuad.c
+	"PXTreeQuad.h"
+
+1730137639 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Container/TreeQuad/PXTreeQuad.h
+
+1761237869 source:/mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Engine/2D/PXSpriteMesh.c
+	"PXSpriteMesh.h"
+	<PX/OS/PXOS.h>
+
+1761237869 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Engine/2D/PXSpriteMesh.h
+	<PX/Engine/PXResource.h>
+
+1761237870 source:/mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Engine/Dialog/PXDialogBox.c
+	"PXDialogBox.h"
+	<PX/OS/Console/PXConsole.h>
+	<PX/OS/Memory/PXMemory.h>
+
+1761237870 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Engine/Dialog/PXDialogBox.h
+	<PX/Engine/PXEngine.h>
+	"PXDialogContainer.h"
+
+1761237868 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Engine/PXEngine.h
+	<PX/Engine/PXMod.h>
+	<PX/Engine/PXResource.h>
+	<PX/Math/PXMath.h>
+	<PX/OS/Signal/PXSignal.h>
+	<PX/OS/Audio/PXAudio.h>
+	<PX/OS/Hardware/PXController.h>
+	<PX/OS/DataBase/PXDataBase.h>
+	"PXGUI.h"
+	<PX/OS/Graphic/PXGraphic.h>
+	<PX/OS/Hardware/PXMouse.h>
+
+1761237870 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Engine/PXMod.h
+	<PX/Engine/PXResource.h>
+	<PX/OS/Error/PXActionResult.h>
+	<PX/OS/Library/PXLibrary.h>
+
+1761237870 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/OS/Signal/PXSignal.h
+	<PX/Engine/PXResource.h>
+	<setjmp.h>
+
+1761237870 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/OS/Audio/PXAudio.h
+	<PX/Engine/PXResource.h>
+	<PX/OS/Library/PXLibrary.h>
+
+1761237846 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/OS/Hardware/PXController.h
+	<PX/Engine/PXResource.h>
+	<PX/OS/Library/PXLibrary.h>
+
+1761237870 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/OS/DataBase/PXDataBase.h
+	<PX/Engine/PXResource.h>
+	<PX/OS/Library/PXLibrary.h>
+
+1761237869 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/OS/Hardware/PXMouse.h
+	<PX/Media/PXType.h>
+
+1761237869 /mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Engine/Dialog/PXDialogContainer.h
+	<PX/Engine/PXResource.h>
+	<PX/Media/PXText.h>
+
+1761237869 source:/mnt/pxgit/PXUltima/Code/PXUltimaC/PX/Engine/Dialog/PXDialogContainer.c
+	"PXDialogContainer.h"
+	<PX/OS/File/PXFile.h>
+

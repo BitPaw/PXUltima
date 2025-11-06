@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXKnowlegeGraphIncluded
 #define PXKnowlegeGraphIncluded
 
@@ -22,8 +24,8 @@ typedef struct PXKnowlegeGraph_
 }
 PXKnowlegeGraph;
 
-PXPublic PXResult PXAPI PXKnowlegeGraphNodeInsert(PXKnowlegeGraph* const pxKnowlegeGraph, PXKnowlegeGraphNode* const pxKnowlegeGraphNode);
+PXPublic PXResult PXAPI PXKnowlegeGraphNodeInsert(PXKnowlegeGraph PXREF pxKnowlegeGraph, PXKnowlegeGraphNode PXREF pxKnowlegeGraphNode);
 
-PXPublic PXResult PXAPI PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph* const pxKnowlegeGraph, PXCodeDocument* const pxDocument, PXTexture* const PXTexture);
+PXPublic PXResult PXAPI PXKnowlegeGraphLoadAndBuild(PXKnowlegeGraph PXREF pxKnowlegeGraph, PXCodeDocument PXREF pxDocument, PXTexture PXREF PXTexture);
 
 #endif

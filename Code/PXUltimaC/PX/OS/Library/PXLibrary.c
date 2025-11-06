@@ -48,6 +48,13 @@ BOOL CALLBACK EnumSymProc(PSYMBOL_INFO pSymInfo, ULONG SymbolSize, PVOID UserCon
 
 const char PXLibraryText[] = "Library";
 
+
+
+
+
+
+
+
 // SymGetModuleInfo64
 
 
@@ -101,11 +108,14 @@ BF::ErrorCode BF::Library::SearchDirectoryRemove(LibraryDirectoryID& libraryDire
 }*/
 
 
-PXResult PXAPI  PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* const filePath)
+PXResult PXAPI PXLibraryOpen(PXLibrary PXREF pxLibrary, const PXText PXREF filePath)
 {
+    if(!(pxLibrary && filePath))
+    {
+        return PXActionRefusedArgumentNull;
+    }
+
     PXClear(PXLibrary, pxLibrary);
-
-
 
     switch(filePath->Format)
     {
@@ -166,7 +176,7 @@ PXResult PXAPI  PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* const fi
         }
     }
 
-    const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxLibrary->ID);
+    const PXResult pxActionResult = PXErrorCurrent(PXNull != pxLibrary->ID);
 
     if(PXActionSuccessful != pxActionResult)
     {
@@ -206,23 +216,23 @@ PXResult PXAPI  PXLibraryOpen(PXLibrary* const pxLibrary, const PXText* const fi
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXLibraryOpenA(PXLibrary* const pxLibrary, const char* const filePath)
+PXResult PXAPI PXLibraryOpenA(PXLibrary PXREF pxLibrary, const char PXREF filePath)
 {
     PXText pxText;
-    PXTextConstructFromAdressA(&pxText, filePath, PXTextLengthUnkown, PXPathSizeMax);
+    PXTextFromAdressA(&pxText, filePath, PXTextLengthUnkown, PXPathSizeMax);
 
     return PXLibraryOpen(pxLibrary, &pxText);
 }
 
-PXResult PXAPI  PXLibraryOpenW(PXLibrary* const pxLibrary, const wchar_t* const filePath)
+PXResult PXAPI PXLibraryOpenW(PXLibrary PXREF pxLibrary, const wchar_t PXREF filePath)
 {
     PXText pxText;
-    PXTextConstructFromAdressW(&pxText, filePath, PXTextLengthUnkown, PXPathSizeMax);
+    PXTextFromAdressW(&pxText, filePath, PXTextLengthUnkown, PXPathSizeMax);
 
     return PXLibraryOpen(pxLibrary, &pxText);
 }
 
-PXResult PXAPI  PXLibraryClose(PXLibrary* const pxLibrary)
+PXResult PXAPI PXLibraryClose(PXLibrary PXREF pxLibrary)
 {
 #if PXLogEnable
     char moduleName[97];
@@ -246,7 +256,7 @@ PXResult PXAPI  PXLibraryClose(PXLibrary* const pxLibrary)
         FreeLibrary(pxLibrary->ID); // Windows XP (+UWP), Kernel32.dll, libloaderapi.h
 #endif
 
-    const PXActionResult pxActionResult = PXErrorCurrent(result);
+    const PXResult pxActionResult = PXErrorCurrent(result);
 
     if(PXActionSuccessful != pxActionResult)
     {
@@ -258,7 +268,7 @@ PXResult PXAPI  PXLibraryClose(PXLibrary* const pxLibrary)
     return PXActionSuccessful;
 }
 
-PXBool PXAPI PXLibraryGetSymbolBinding(PXLibrary* const pxLibrary, void** const bindingObject, const char* const symbolList, const PXSize amount, const PXBool areAllImportant)
+PXBool PXAPI PXLibraryGetSymbolBinding(PXLibrary PXREF pxLibrary, void* PXREF bindingObject, const char PXREF symbolList, const PXSize amount, const PXBool areAllImportant)
 {
 #if PXLogEnable
     PXLogPrint
@@ -275,7 +285,7 @@ PXBool PXAPI PXLibraryGetSymbolBinding(PXLibrary* const pxLibrary, void** const 
 
     for(PXSize i = 0; ; ++i)
     {
-        const char* const cursor = &symbolList[position];
+        const char PXREF cursor = &symbolList[position];
         const PXSize length = PXTextLengthA(cursor, PXTextUnkownLength);
         void** function = &bindingObject[i];
 
@@ -305,7 +315,7 @@ PXBool PXAPI PXLibraryGetSymbolBinding(PXLibrary* const pxLibrary, void** const 
     return PXTrue;
 }
 
-PXBool PXAPI PXLibraryGetSymbolListA(PXLibrary* const pxLibrary, PXLibraryFuntionEntry* const pxLibraryFuntionEntryList, const PXSize amount)
+PXBool PXAPI PXLibraryGetSymbolListA(PXLibrary PXREF pxLibrary, PXLibraryFuntionEntry PXREF pxLibraryFuntionEntryList, const PXSize amount)
 {
 #if PXLogEnable
     PXLogPrint
@@ -328,7 +338,7 @@ PXBool PXAPI PXLibraryGetSymbolListA(PXLibrary* const pxLibrary, PXLibraryFuntio
     return PXTrue;
 }
 
-PXBool PXAPI PXLibraryGetSymbolA(PXLibrary* const pxLibrary, void** const libraryFunction, const char* const symbolName, const PXBool isImportant)
+PXBool PXAPI PXLibraryGetSymbolA(PXLibrary PXREF pxLibrary, void* PXREF libraryFunction, const char PXREF symbolName, const PXBool isImportant)
 {
 #if PXLogEnable
     char libraryName[64];
@@ -342,7 +352,7 @@ PXBool PXAPI PXLibraryGetSymbolA(PXLibrary* const pxLibrary, void** const librar
 #elif OSWindows
     *libraryFunction = (void*)GetProcAddress(pxLibrary->ID, symbolName); // Windows XP, Kernel32.dll, libloaderapi.h
 #endif
-    const PXActionResult pxActionResult = PXErrorCurrent(PXNull != *libraryFunction);
+    const PXResult pxActionResult = PXErrorCurrent(PXNull != *libraryFunction);
 
     // If the fetch is not important, we dont want to trigger a failure.
     {
@@ -383,7 +393,7 @@ PXBool PXAPI PXLibraryGetSymbolA(PXLibrary* const pxLibrary, void** const librar
     return PXTrue;
 }
 
-PXBool PXAPI PXLibraryGetSymbol(PXLibrary* const pxLibrary, void** const libraryFunction, const PXText* symbolName)
+PXBool PXAPI PXLibraryGetSymbol(PXLibrary PXREF pxLibrary, void* PXREF libraryFunction, const PXText* symbolName)
 {
     return PXLibraryGetSymbolA(pxLibrary, libraryFunction, symbolName->A, PXTrue);
 }
@@ -430,7 +440,7 @@ static BOOL CALLBACK PXWindowsLibraryLoadedEnumCallback
 #endif
 
 
-PXResult PXAPI  PXLibraryCurrentlyLoaded(PXProcessHandle pxProcessHandle, PXLibrary** const pxLibraryList, PXSize* const amount)
+PXResult PXAPI PXLibraryCurrentlyLoaded(PXProcessHandle pxProcessHandle, PXLibrary* PXREF pxLibraryList, PXSize PXREF amount)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;

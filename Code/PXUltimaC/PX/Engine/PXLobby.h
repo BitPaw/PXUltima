@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXLobbyIncluded
 #define PXLobbyIncluded
 
@@ -83,112 +85,112 @@ typedef struct PXLobby_
 }
 PXLobby;
 
-typedef PXBool(PXAPI* PXLobbyCreate)(void* const owner);
-typedef PXBool(PXAPI* PXLobbyJoin)(void* const owner);
-typedef PXBool(PXAPI* PXLobbyDestroy)(void* const owner);
+typedef PXBool(PXAPI* PXLobbyCreate)(void PXREF owner);
+typedef PXBool(PXAPI* PXLobbyJoin)(void PXREF owner);
+typedef PXBool(PXAPI* PXLobbyDestroy)(void PXREF owner);
 
-typedef PXBool(PXAPI* PXLobbyDestroy)(void* const owner);
+typedef PXBool(PXAPI* PXLobbyDestroy)(void PXREF owner);
 
 // For non dedicated servers, promote player to host the server.
 // if you dont have permission, you start a vote.
-typedef PXActionResult(PXAPI* PXLobbyUserPromoteToHost)(void* const owner);
-typedef PXActionResult(PXAPI* PXLobbyUserRename)(void* const owner);
-typedef PXActionResult(PXAPI* PXLobbyUserKick)(void* const owner);
-typedef PXActionResult(PXAPI* PXLobbyUserBan)(void* const owner);
+typedef PXActionResult(PXAPI* PXLobbyUserPromoteToHost)(void PXREF owner);
+typedef PXActionResult(PXAPI* PXLobbyUserRename)(void PXREF owner);
+typedef PXActionResult(PXAPI* PXLobbyUserKick)(void PXREF owner);
+typedef PXActionResult(PXAPI* PXLobbyUserBan)(void PXREF owner);
 
-typedef PXActionResult(PXAPI* PXLobbyUserMe)(void* const owner);
-typedef PXActionResult(PXAPI* PXLobbyUserListAll)(void* const owner);
+typedef PXActionResult(PXAPI* PXLobbyUserMe)(void PXREF owner);
+typedef PXActionResult(PXAPI* PXLobbyUserListAll)(void PXREF owner);
 
-typedef PXActionResult(PXAPI* PXLobbyUserProfileIconFetch)(void* const owner, PXTexture* const image);
+typedef PXActionResult(PXAPI* PXLobbyUserProfileIconFetch)(void PXREF owner, PXTexture PXREF image);
 
 
 
-typedef PXActionResult(PXAPI* PXLobbyUserFriendGroupListAmount)(void* const owner);
-typedef PXActionResult(PXAPI* PXLobbyUserFriendGroupListSingle)(void* const owner);
-typedef PXActionResult(PXAPI* PXLobbyUserFriendGroupListAll)(void* const owner);
+typedef PXActionResult(PXAPI* PXLobbyUserFriendGroupListAmount)(void PXREF owner);
+typedef PXActionResult(PXAPI* PXLobbyUserFriendGroupListSingle)(void PXREF owner);
+typedef PXActionResult(PXAPI* PXLobbyUserFriendGroupListAll)(void PXREF owner);
 
-typedef PXActionResult(PXAPI* PXLobbyUserFriendClanListAmount)(void* const owner);
-typedef PXActionResult(PXAPI* PXLobbyUserFriendClanListSingle)(void* const owner);
+typedef PXActionResult(PXAPI* PXLobbyUserFriendClanListAmount)(void PXREF owner);
+typedef PXActionResult(PXAPI* PXLobbyUserFriendClanListSingle)(void PXREF owner);
 
-typedef PXActionResult(PXAPI* PXLobbyUserFriendClanListAll)(void* const owner);
+typedef PXActionResult(PXAPI* PXLobbyUserFriendClanListAll)(void PXREF owner);
 
 // If you payed with a guy, store that info localy
-typedef PXActionResult(PXAPI* PXLobbyUserRemember)(void* const owner);
+typedef PXActionResult(PXAPI* PXLobbyUserRemember)(void PXREF owner);
 
 
 // If User is ingame speaking (Push to talk) set this to supress a current voice call.
-typedef PXActionResult(PXAPI* PXLobbyUserVoiceInGameSet)(void* const owner);
+typedef PXActionResult(PXAPI* PXLobbyUserVoiceInGameSet)(void PXREF owner);
 
 // User can be NULL
-typedef PXActionResult(PXAPI* PXLobbyExternalOverlayActivate)(void* const owner);
+typedef PXActionResult(PXAPI* PXLobbyExternalOverlayActivate)(void PXREF owner);
 
 #if 1
 
 // Fetch user inform,at
-typedef PXActionResult(PXAPI* PXLobbyUserInformationRequest)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer, const PXI32U fetchFlagList);
+typedef PXActionResult(PXAPI* PXLobbyUserInformationRequest)(void PXREF owner, PXLobbyPlayer PXREF pxLobbyPlayer, const PXI32U fetchFlagList);
 
 
-typedef PXActionResult(PXAPI* PXLobbyClanOfficerListRequest)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer);
+typedef PXActionResult(PXAPI* PXLobbyClanOfficerListRequest)(void PXREF owner, PXLobbyPlayer PXREF pxLobbyPlayer);
 
 
-typedef PXActionResult(PXAPI* PXLobbyClanOwnerGet)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer);
+typedef PXActionResult(PXAPI* PXLobbyClanOwnerGet)(void PXREF owner, PXLobbyPlayer PXREF pxLobbyPlayer);
 
-typedef PXActionResult(PXAPI* PXLobbyClanOfficerCountGet)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer);
+typedef PXActionResult(PXAPI* PXLobbyClanOfficerCountGet)(void PXREF owner, PXLobbyPlayer PXREF pxLobbyPlayer);
 
-typedef PXActionResult(PXAPI* PXLobbyClanOfficerByIndexGet)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer, int iOfficer);
+typedef PXActionResult(PXAPI* PXLobbyClanOfficerByIndexGet)(void PXREF owner, PXLobbyPlayer PXREF pxLobbyPlayer, int iOfficer);
 
-typedef PXActionResult(PXAPI* PXLobbyUserRestrictionsGet)(void* const owner);
-
-
-typedef PXActionResult(PXAPI* PXLobbyRichPresenceChange)(void* const owner, const char* pchKey, const char* pchValue);
-typedef PXActionResult(PXAPI* PXLobbyClearRichPresence)(void* const owner);
-typedef PXActionResult(PXAPI* PXLobbyFriendRichPresenceFetch)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer, const char* pchKey, void* const outputBuffer, const unsigned int outputBufferSize);
-typedef PXActionResult(PXAPI* PXLobbyFriendRichPresenceKeyCountFetch)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer, void* const outputBuffer, const unsigned int outputBufferSize);
-typedef PXActionResult(PXAPI* PXLobbyFriendRichPresenceKeyByIndex)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer, int iKey);
-
-typedef PXActionResult(PXAPI* PXLobbyRequestFriendRichPresence)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer);
-
-typedef PXActionResult(PXAPI* PXLobbyUserInviteToGame)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer, const char* pchConnectString);
+typedef PXActionResult(PXAPI* PXLobbyUserRestrictionsGet)(void PXREF owner);
 
 
-typedef PXActionResult(PXAPI* PXLobbyCoplayFriendCountGet)(void* const owner);
-typedef PXActionResult(PXAPI* PXLobbyCoplayFriendGet)(void* const owner, int iCoplayFriend);
-typedef PXActionResult(PXAPI* PXLobbyFriendCoplayTimeGet)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer);
-typedef PXActionResult(PXAPI* PXLobbyFriendCoplayGameGet)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer);
+typedef PXActionResult(PXAPI* PXLobbyRichPresenceChange)(void PXREF owner, const char* pchKey, const char* pchValue);
+typedef PXActionResult(PXAPI* PXLobbyClearRichPresence)(void PXREF owner);
+typedef PXActionResult(PXAPI* PXLobbyFriendRichPresenceFetch)(void PXREF owner, PXLobbyPlayer PXREF pxLobbyPlayer, const char* pchKey, void PXREF outputBuffer, const unsigned int outputBufferSize);
+typedef PXActionResult(PXAPI* PXLobbyFriendRichPresenceKeyCountFetch)(void PXREF owner, PXLobbyPlayer PXREF pxLobbyPlayer, void PXREF outputBuffer, const unsigned int outputBufferSize);
+typedef PXActionResult(PXAPI* PXLobbyFriendRichPresenceKeyByIndex)(void PXREF owner, PXLobbyPlayer PXREF pxLobbyPlayer, int iKey);
+
+typedef PXActionResult(PXAPI* PXLobbyRequestFriendRichPresence)(void PXREF owner, PXLobbyPlayer PXREF pxLobbyPlayer);
+
+typedef PXActionResult(PXAPI* PXLobbyUserInviteToGame)(void PXREF owner, PXLobbyPlayer PXREF pxLobbyPlayer, const char* pchConnectString);
 
 
-typedef PXActionResult(PXAPI* PXLobbyClanChatRoomJoin)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer);
-typedef PXActionResult(PXAPI* PXLobbyClanChatRoomLeave)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer);
-typedef PXActionResult(PXAPI* PXLobbyClanChatMemberCountGet)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer);
-typedef PXActionResult(PXAPI* PXLobbyChatMemberByIndexGet)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer, int iUser);
-typedef PXActionResult(PXAPI* PXLobbyClanChatMessageSend)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer, const char* pchText);
-typedef PXActionResult(PXAPI* PXLobbyClanChatMessageGet)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer, PXLobbyChatMessage* const pxLobbyChatMessage);
-typedef PXActionResult(PXAPI* PXLobbyClanChatIsAdmin)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer);
+typedef PXActionResult(PXAPI* PXLobbyCoplayFriendCountGet)(void PXREF owner);
+typedef PXActionResult(PXAPI* PXLobbyCoplayFriendGet)(void PXREF owner, int iCoplayFriend);
+typedef PXActionResult(PXAPI* PXLobbyFriendCoplayTimeGet)(void PXREF owner, PXLobbyPlayer PXREF pxLobbyPlayer);
+typedef PXActionResult(PXAPI* PXLobbyFriendCoplayGameGet)(void PXREF owner, PXLobbyPlayer PXREF pxLobbyPlayer);
 
-typedef PXActionResult(PXAPI* PXLobbyClanChatWindowInExternalOpen)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer);
-typedef PXActionResult(PXAPI* PXLobbyClanChatWindowInExternalClose)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer);
 
-typedef PXActionResult(PXAPI* PXLobbyFriendsMessagesListenForSet)(void* const owner, const PXBool enable);
-typedef PXActionResult(PXAPI* PXLobbyFriendMessageReplyTo)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer, const char* pchMsgToSend);
-typedef PXActionResult(PXAPI* PXLobbyFriendMessageGet)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer, PXLobbyChatMessage* const pxLobbyChatMessage);
+typedef PXActionResult(PXAPI* PXLobbyClanChatRoomJoin)(void PXREF owner, PXLobbyPlayer PXREF pxLobbyPlayer);
+typedef PXActionResult(PXAPI* PXLobbyClanChatRoomLeave)(void PXREF owner, PXLobbyPlayer PXREF pxLobbyPlayer);
+typedef PXActionResult(PXAPI* PXLobbyClanChatMemberCountGet)(void PXREF owner, PXLobbyPlayer PXREF pxLobbyPlayer);
+typedef PXActionResult(PXAPI* PXLobbyChatMemberByIndexGet)(void PXREF owner, PXLobbyPlayer PXREF pxLobbyPlayer, int iUser);
+typedef PXActionResult(PXAPI* PXLobbyClanChatMessageSend)(void PXREF owner, PXLobbyPlayer PXREF pxLobbyPlayer, const char* pchText);
+typedef PXActionResult(PXAPI* PXLobbyClanChatMessageGet)(void PXREF owner, PXLobbyPlayer PXREF pxLobbyPlayer, PXLobbyChatMessage PXREF pxLobbyChatMessage);
+typedef PXActionResult(PXAPI* PXLobbyClanChatIsAdmin)(void PXREF owner, PXLobbyPlayer PXREF pxLobbyPlayer);
 
-typedef PXActionResult(PXAPI* PXLobbyUserFollowerAmount)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer);
-typedef PXActionResult(PXAPI* PXLobbyUserFollowingAmount)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer);
-typedef PXActionResult(PXAPI* PXLobbyEnumerateFollowingList)(void* const owner, unsigned int unStartIndex);
+typedef PXActionResult(PXAPI* PXLobbyClanChatWindowInExternalOpen)(void PXREF owner, PXLobbyPlayer PXREF pxLobbyPlayer);
+typedef PXActionResult(PXAPI* PXLobbyClanChatWindowInExternalClose)(void PXREF owner, PXLobbyPlayer PXREF pxLobbyPlayer);
 
-typedef PXActionResult(PXAPI* PXLobbyClanIsPublic)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer);
-typedef PXActionResult(PXAPI* PXLobbyClanIsOfficialGameGroup)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer);
+typedef PXActionResult(PXAPI* PXLobbyFriendsMessagesListenForSet)(void PXREF owner, const PXBool enable);
+typedef PXActionResult(PXAPI* PXLobbyFriendMessageReplyTo)(void PXREF owner, PXLobbyPlayer PXREF pxLobbyPlayer, const char* pchMsgToSend);
+typedef PXActionResult(PXAPI* PXLobbyFriendMessageGet)(void PXREF owner, PXLobbyPlayer PXREF pxLobbyPlayer, PXLobbyChatMessage PXREF pxLobbyChatMessage);
 
-typedef PXActionResult(PXAPI* PXLobbyNumChatsWithUnreadPriorityMessagesGet)(void* const owner);
+typedef PXActionResult(PXAPI* PXLobbyUserFollowerAmount)(void PXREF owner, PXLobbyPlayer PXREF pxLobbyPlayer);
+typedef PXActionResult(PXAPI* PXLobbyUserFollowingAmount)(void PXREF owner, PXLobbyPlayer PXREF pxLobbyPlayer);
+typedef PXActionResult(PXAPI* PXLobbyEnumerateFollowingList)(void PXREF owner, unsigned int unStartIndex);
 
-typedef PXActionResult(PXAPI* PXLobbyRegisterProtocolInOverlayBrowser)(void* const owner, const char* pchProtocol);
+typedef PXActionResult(PXAPI* PXLobbyClanIsPublic)(void PXREF owner, PXLobbyPlayer PXREF pxLobbyPlayer);
+typedef PXActionResult(PXAPI* PXLobbyClanIsOfficialGameGroup)(void PXREF owner, PXLobbyPlayer PXREF pxLobbyPlayer);
 
-typedef PXActionResult(PXAPI* PXLobbyActivateGameOverlayInviteDialogConnectString)(void* const owner, const char* pchConnectString);
+typedef PXActionResult(PXAPI* PXLobbyNumChatsWithUnreadPriorityMessagesGet)(void PXREF owner);
 
-typedef PXActionResult(PXAPI* PXLobbyEquippedProfileItemsRequest)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer);
-typedef PXActionResult(PXAPI* PXLobbyEquippedProfileItemHas)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer, PXLobbyPlayerItem* const pxLobbyPlayerItem);
-typedef PXActionResult(PXAPI* PXLobbyProfileItemPropertyStringGet)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer, PXLobbyPlayerItem* const pxLobbyPlayerItem);
-typedef PXActionResult(PXAPI* PXLobbyProfileItemPropertyUintGet)(void* const owner, PXLobbyPlayer* const pxLobbyPlayer, PXLobbyPlayerItem* const pxLobbyPlayerItem);
+typedef PXActionResult(PXAPI* PXLobbyRegisterProtocolInOverlayBrowser)(void PXREF owner, const char* pchProtocol);
+
+typedef PXActionResult(PXAPI* PXLobbyActivateGameOverlayInviteDialogConnectString)(void PXREF owner, const char* pchConnectString);
+
+typedef PXActionResult(PXAPI* PXLobbyEquippedProfileItemsRequest)(void PXREF owner, PXLobbyPlayer PXREF pxLobbyPlayer);
+typedef PXActionResult(PXAPI* PXLobbyEquippedProfileItemHas)(void PXREF owner, PXLobbyPlayer PXREF pxLobbyPlayer, PXLobbyPlayerItem PXREF pxLobbyPlayerItem);
+typedef PXActionResult(PXAPI* PXLobbyProfileItemPropertyStringGet)(void PXREF owner, PXLobbyPlayer PXREF pxLobbyPlayer, PXLobbyPlayerItem PXREF pxLobbyPlayerItem);
+typedef PXActionResult(PXAPI* PXLobbyProfileItemPropertyUintGet)(void PXREF owner, PXLobbyPlayer PXREF pxLobbyPlayer, PXLobbyPlayerItem PXREF pxLobbyPlayerItem);
 
 #endif
 

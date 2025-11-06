@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXFastFileIncluded
 #define PXFastFileIncluded
 
@@ -9,7 +11,7 @@ typedef struct PXFastFile_
 }
 PXFastFile;
 
-PXPublic PXResult PXAPI PXFastFileLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXFastFileSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXFastFileLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXFastFileSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

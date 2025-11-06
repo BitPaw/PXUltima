@@ -25,7 +25,6 @@ static PXBool _PXGLOBALDebugEnable = 0;
 
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/OS/Async/PXThread.h>
-#include <PX/OS/Library/PXLibrary.h>
 #include <PX/OS/File/PXFile.h>
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/OS/PXOS.h>
@@ -51,7 +50,7 @@ PXDebug* PXAPI PXDebugInstanceGet()
     return &_PXGLOBALDebug;
 }
 
-void PXAPI PXDebugDebuggerSendMessage(PXDebug* const pxDebug, PXText* const message)
+void PXAPI PXDebugDebuggerSendMessage(PXDebug PXREF pxDebug, PXText PXREF message)
 {
     switch(message->Format)
     {
@@ -69,7 +68,7 @@ void PXAPI PXDebugDebuggerSendMessage(PXDebug* const pxDebug, PXText* const mess
     }
 }
 
-PXResult PXAPI  PXDebugDebuggerInitialize(PXDebug* const pxDebug)
+PXResult PXAPI PXDebugDebuggerInitialize(PXDebug PXREF pxDebug)
 {
     PXClear(PXDebug, pxDebug);
 
@@ -88,13 +87,13 @@ PXResult PXAPI  PXDebugDebuggerInitialize(PXDebug* const pxDebug)
 #endif
 }
 
-PXResult PXAPI  PXDebugStartProcess(PXDebug* const pxDebug, const PXText* const applicationName)
+PXResult PXAPI PXDebugStartProcess(PXDebug PXREF pxDebug, const PXText PXREF applicationName)
 {
     PXTextCopy(applicationName, &pxDebug->ApplicatioName);
 
     // Start Thread that will listen to given process.
     {
-        const PXActionResult result = PXThreadCreate
+        const PXResult result = PXThreadCreate
         (
             &pxDebug->EventListenLoop,
             "PXDebugLoop",
@@ -115,7 +114,7 @@ PXResult PXAPI  PXDebugStartProcess(PXDebug* const pxDebug, const PXText* const 
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXDebugAttach(PXDebug* const pxDebug)
+PXResult PXAPI PXDebugAttach(PXDebug PXREF pxDebug)
 {
 #if OSUnix
     __pid_t processID = pxDebug->Process.ProcessID;
@@ -135,7 +134,7 @@ PXResult PXAPI  PXDebugAttach(PXDebug* const pxDebug)
 
 #elif PXOSWindowsDestop
     const BOOL result = DebugActiveProcess(pxDebug->Process.ProcessID);
-    const PXActionResult pxActionResult = PXErrorCurrent(result);
+    const PXResult pxActionResult = PXErrorCurrent(result);
 
     if(PXActionSuccessful != pxActionResult)
     {
@@ -146,12 +145,12 @@ PXResult PXAPI  PXDebugAttach(PXDebug* const pxDebug)
 #endif
 }
 
-void PXAPI OnDebugProcessCreate(PXDebug* const pxDebug)
+void PXAPI OnDebugProcessCreate(PXDebug PXREF pxDebug)
 {
 
 }
 
-void PXAPI OnDebugProcessExit(PXDebug* const pxDebug, const PXI32U exitCode)
+void PXAPI OnDebugProcessExit(PXDebug PXREF pxDebug, const PXI32U exitCode)
 {
 #if PXLogEnable
     PXLogPrint
@@ -165,7 +164,7 @@ void PXAPI OnDebugProcessExit(PXDebug* const pxDebug, const PXI32U exitCode)
 #endif
 }
 
-PXResult PXAPI  PXDebugWaitForEvent(PXDebug* const pxDebug)
+PXResult PXAPI PXDebugWaitForEvent(PXDebug PXREF pxDebug)
 {
 #if OSUnix
     __pid_t processID = pxDebug->Process.ProcessID;
@@ -173,7 +172,7 @@ PXResult PXAPI  PXDebugWaitForEvent(PXDebug* const pxDebug)
     // Trance
     {
         const long result = ptrace(PTRACE_GETEVENTMSG, processID, 0); // since Linux 2.5.46
-        const PXActionResult tranceResult = PXErrorCurrent(-1 != result);
+        const PXResult tranceResult = PXErrorCurrent(-1 != result);
 
         if(PXActionSuccessful != tranceResult)
         {
@@ -185,7 +184,7 @@ PXResult PXAPI  PXDebugWaitForEvent(PXDebug* const pxDebug)
     {
         int waitStatus = 0;
         pid_t waitedProcessID = waitpid(processID, &waitStatus, __WALL);
-        const PXActionResult waitResult = PXErrorCurrent(-1 != waitedProcessID);
+        const PXResult waitResult = PXErrorCurrent(-1 != waitedProcessID);
 
         if(PXActionSuccessful != waitResult)
         {
@@ -201,7 +200,7 @@ PXResult PXAPI  PXDebugWaitForEvent(PXDebug* const pxDebug)
     DWORD dwContinueStatus = DBG_CONTINUE; // This flag need to be set for the debugger in this functiom
 
     const DWORD dwMilliseconds = 0;
-    const PXActionResult pxActionResult = PXDebugEventWait(&debugEvent, dwMilliseconds);
+    const PXResult pxActionResult = PXDebugEventWait(&debugEvent, dwMilliseconds);
 
     if(PXActionSuccessful != pxActionResult)
     {
@@ -212,8 +211,8 @@ PXResult PXAPI  PXDebugWaitForEvent(PXDebug* const pxDebug)
     {
         case EXCEPTION_DEBUG_EVENT:
         {
-            const EXCEPTION_DEBUG_INFO* const exceptionDdebugInfo = &debugEvent.u.Exception;
-            const EXCEPTION_RECORD* const exceptionRecord = &exceptionDdebugInfo->ExceptionRecord;
+            const EXCEPTION_DEBUG_INFO PXREF exceptionDdebugInfo = &debugEvent.u.Exception;
+            const EXCEPTION_RECORD PXREF exceptionRecord = &exceptionDdebugInfo->ExceptionRecord;
 
             switch(exceptionRecord->ExceptionCode)
             {
@@ -335,7 +334,7 @@ PXResult PXAPI  PXDebugWaitForEvent(PXDebug* const pxDebug)
             // and suspend and resume thread execution with the
             // SuspendThread and ResumeThread functions.
 
-            const CREATE_THREAD_DEBUG_INFO* const createThreadDebugInfo = &debugEvent.u.CreateThread;
+            const CREATE_THREAD_DEBUG_INFO PXREF createThreadDebugInfo = &debugEvent.u.CreateThread;
 
 #if PXLogEnable
             PXLogPrint
@@ -365,7 +364,7 @@ PXResult PXAPI  PXDebugWaitForEvent(PXDebug* const pxDebug)
             // WriteProcessMemory functions; and suspend and resume thread execution with the SuspendThread and ResumeThread
             // functions. Be sure to close the handle to the process image file with CloseHandle.
 
-            const CREATE_PROCESS_DEBUG_INFO* const createProcessDebugInfo = &debugEvent.u.CreateProcessInfo;
+            const CREATE_PROCESS_DEBUG_INFO PXREF createProcessDebugInfo = &debugEvent.u.CreateProcessInfo;
 
 
             PXText pxText;
@@ -374,7 +373,7 @@ PXResult PXAPI  PXDebugWaitForEvent(PXDebug* const pxDebug)
             PXFile file;
             file.FileHandle = createProcessDebugInfo->hFile;
 
-            const PXActionResult res = PXFileName(&file, &pxText);
+            const PXResult res = PXFileName(&file, &pxText);
 
 #if PXLogEnable
             PXLogPrint
@@ -393,7 +392,7 @@ PXResult PXAPI  PXDebugWaitForEvent(PXDebug* const pxDebug)
         case EXIT_THREAD_DEBUG_EVENT:
         {
             // Display the thread's exit code.
-            const EXIT_THREAD_DEBUG_INFO* const exitThreadDebugInfo = &debugEvent.u.ExitThread;
+            const EXIT_THREAD_DEBUG_INFO PXREF exitThreadDebugInfo = &debugEvent.u.ExitThread;
 
             OnDebugProcessExit(pxDebug, exitThreadDebugInfo->dwExitCode);
 
@@ -403,7 +402,7 @@ PXResult PXAPI  PXDebugWaitForEvent(PXDebug* const pxDebug)
         {
             // Display the process's exit code.
 
-            const EXIT_PROCESS_DEBUG_INFO* const exitProcessDebugInfo = &debugEvent.u.ExitProcess;
+            const EXIT_PROCESS_DEBUG_INFO PXREF exitProcessDebugInfo = &debugEvent.u.ExitProcess;
 
 #if PXLogEnable
             PXLogPrint
@@ -426,7 +425,7 @@ PXResult PXAPI  PXDebugWaitForEvent(PXDebug* const pxDebug)
             // loaded DLL. Be sure to close the handle to the loaded DLL
             // with CloseHandle.
 
-            const LOAD_DLL_DEBUG_INFO* const loadDLLDebugInfo = &debugEvent.u.LoadDll;
+            const LOAD_DLL_DEBUG_INFO PXREF loadDLLDebugInfo = &debugEvent.u.LoadDll;
 
 
             PXText pxText;
@@ -435,7 +434,7 @@ PXResult PXAPI  PXDebugWaitForEvent(PXDebug* const pxDebug)
             PXFile file;
             file.FileHandle = loadDLLDebugInfo->hFile;
 
-            const PXActionResult res = PXFileName(&file, &pxText);
+            const PXResult res = PXFileName(&file, &pxText);
 
 #if PXLogEnable
             PXLogPrint
@@ -455,7 +454,7 @@ PXResult PXAPI  PXDebugWaitForEvent(PXDebug* const pxDebug)
         {
             // Display a message that the DLL has been unloaded.
 
-            const UNLOAD_DLL_DEBUG_INFO* const outputDebugStringInfo = &debugEvent.u.UnloadDll;
+            const UNLOAD_DLL_DEBUG_INFO PXREF outputDebugStringInfo = &debugEvent.u.UnloadDll;
 
 #if PXLogEnable
             PXLogPrint
@@ -474,7 +473,7 @@ PXResult PXAPI  PXDebugWaitForEvent(PXDebug* const pxDebug)
         case OUTPUT_DEBUG_STRING_EVENT:
         {
             // Display the output debugging string.
-            const OUTPUT_DEBUG_STRING_INFO* const outputDebugStringInfo = &debugEvent.u.DebugString;
+            const OUTPUT_DEBUG_STRING_INFO PXREF outputDebugStringInfo = &debugEvent.u.DebugString;
 
 #if PXLogEnable && 0
             printf("[PXDebuger] OUTPUT_DEBUG_STRING_EVENT : ");
@@ -495,7 +494,7 @@ PXResult PXAPI  PXDebugWaitForEvent(PXDebug* const pxDebug)
         }
         case RIP_EVENT:
         {
-            const RIP_INFO* const ripInfo = &debugEvent.u.RipInfo;
+            const RIP_INFO PXREF ripInfo = &debugEvent.u.RipInfo;
 
 #if PXLogEnable
             PXLogPrint
@@ -522,7 +521,7 @@ PXResult PXAPI  PXDebugWaitForEvent(PXDebug* const pxDebug)
 
     
 
-    const PXActionResult pxContinueActionResult = PXDebugEventContinue(0, 0);
+    const PXResult pxContinueActionResult = PXDebugEventContinue(0, 0);
 
     if(PXActionSuccessful != pxContinueActionResult)
     {
@@ -534,7 +533,7 @@ PXResult PXAPI  PXDebugWaitForEvent(PXDebug* const pxDebug)
 #endif
 }
 
-PXResult PXAPI  PXDebugLibrarySymbolsFetch(PXDebug* const pxDebug, const PXText* const libraryFilePath, PXSymbol* const pxSymbolList, PXSize* const amount)
+PXResult PXAPI PXDebugLibrarySymbolsFetch(PXDebug PXREF pxDebug, const PXText PXREF libraryFilePath, PXSymbol PXREF pxSymbolList, PXSize PXREF amount)
 {
 #if OSUnix
     return PXFalse;
@@ -553,7 +552,7 @@ PXResult PXAPI  PXDebugLibrarySymbolsFetch(PXDebug* const pxDebug, const PXText*
 
     // Initialize
     {
-        const PXActionResult initializeResult = PXSymbolServerInitialize();
+        const PXResult initializeResult = PXSymbolServerInitialize();
 
         if(PXActionSuccessful != initializeResult)
         {
@@ -579,7 +578,7 @@ PXResult PXAPI  PXDebugLibrarySymbolsFetch(PXDebug* const pxDebug, const PXText*
 #endif
 }
 
-void PXAPI PXDebugLogMessage(PXText* const pxText)
+void PXAPI PXDebugLogMessage(PXText PXREF pxText)
 {
     // because we cant trust the string to be null terminated, and
     // windows does not have a function that takes in a size, we
@@ -598,7 +597,7 @@ void PXAPI PXDebugLogMessage(PXText* const pxText)
 }
 
 
-PXResult PXAPI  PXDebugHeapMemoryList(PXDebug* const pxDebug)
+PXResult PXAPI PXDebugHeapMemoryList(PXDebug PXREF pxDebug)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -619,7 +618,7 @@ PXResult PXAPI  PXDebugHeapMemoryList(PXDebug* const pxDebug)
     PXLogPrint
     (
         PXLoggingEvent,
-        "Debugger",
+        PXDebugerText,
         "Heap",
         "\n"
         " %20s : %20i B\n"
@@ -706,7 +705,7 @@ PXResult PXAPI  PXDebugHeapMemoryList(PXDebug* const pxDebug)
 
             PXSymbol pxSymbol;
 
-            const PXActionResult symbolFetchResult = PXMemorySymbolFetch(target, &pxSymbol);
+            const PXResult symbolFetchResult = PXMemorySymbolFetch(target, &pxSymbol);
             const PXBool success = PXActionSuccessful == symbolFetchResult;
 
             char symbolInfo[128];
@@ -730,7 +729,7 @@ PXResult PXAPI  PXDebugHeapMemoryList(PXDebug* const pxDebug)
                 PXLogPrint
                 (
                     PXLoggingEvent,
-                    "Debugger",
+                    PXDebugerText,
                     "Heap",
                     "0x%p %6s - %8i B + OS: %3i B, - %s",
                     processHeapEntry.lpData,
@@ -833,7 +832,7 @@ PXResult PXAPI  PXDebugHeapMemoryList(PXDebug* const pxDebug)
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXDebugFetchSymbolThread(PXDebug* const pxDebug, PXSymbol* const pxSymbol, PXThread* pxThread)
+PXResult PXAPI PXDebugFetchSymbolThread(PXDebug PXREF pxDebug, PXSymbol PXREF pxSymbol, PXThread* pxThread)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -868,7 +867,7 @@ PXResult PXAPI  PXDebugFetchSymbolThread(PXDebug* const pxDebug, PXSymbol* const
         PXNull
     ); // KERNEL
 
-    const PXActionResult symbolResult = PXDebugFetchSymbolFromRougeAdress(pxDebug, pxSymbol, adress);
+    const PXResult symbolResult = PXDebugFetchSymbolFromRougeAdress(pxDebug, pxSymbol, adress);
 
 #else
     return PXActionRefusedNotSupportedByOperatingSystem;
@@ -925,7 +924,7 @@ BOOL CALLBACK PXPSYM_ENUMLINES_CALLBACK(PSRCCODEINFO LineInfo, PVOID UserContext
     PXLogPrint
     (
         PXLoggingEvent,
-        "Debugger",
+        PXDebugerText,
         "Symbol-Enum",
         "P:%-20s, F:%-20s L:%-4i, %p <=> %p (%i)",
         "",//symb->Name,
@@ -951,7 +950,7 @@ BOOL CALLBACK PXENUMERATESYMBOLSUEUE(PSYMBOL_INFO pSymInfo, ULONG SymbolSize, PS
     PXLogPrint
     (
         PXLoggingEvent,
-        "Debugger",
+        PXDebugerText,
         "XXX",
         "XXXX"
     );
@@ -961,7 +960,7 @@ BOOL CALLBACK PXENUMERATESYMBOLSUEUE(PSYMBOL_INFO pSymInfo, ULONG SymbolSize, PS
 }
 #endif
 
-PXResult PXAPI  PXDebugFetchSymbolFromRougeAdress(PXDebug* const pxDebug, PXSymbol* const pxSymbol, void* adress)
+PXResult PXAPI PXDebugFetchSymbolFromRougeAdress(PXDebug PXREF pxDebug, PXSymbol PXREF pxSymbol, void* adress)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -1014,7 +1013,7 @@ PXResult PXAPI  PXDebugFetchSymbolFromRougeAdress(PXDebug* const pxDebug, PXSymb
 
     // always fails because the recieved adress here is always invalid
     //  const PXBool lineResult = SymGetLineFromAddr(processHandle, symbolAdress, &displacement, &imageHelperLine);
-    //  const PXActionResult linres = PXErrorCurrent();
+    //  const PXResult linres = PXErrorCurrent();
 
 
     // Store symvol name
@@ -1024,11 +1023,11 @@ PXResult PXAPI  PXDebugFetchSymbolFromRougeAdress(PXDebug* const pxDebug, PXSymb
 #endif
 }
 
-PXThreadResult PXAPI PXDebugLoop(PXDebug* const pxDebug)
+PXThreadResult PXAPI PXDebugLoop(PXDebug PXREF pxDebug)
 {
     // Create process to debug on
     {
-        const PXActionResult result = PXProcessCreate(&pxDebug->Process, &pxDebug->ApplicatioName, PXProcessCreationModeDebugProcessOnly);
+        const PXResult result = PXProcessCreate(&pxDebug->Process, &pxDebug->ApplicatioName, PXProcessCreationModeDebugProcessOnly);
 
         // If starting the process failed, stop.
         //PXActionReturnOnError(result);
@@ -1039,7 +1038,7 @@ PXThreadResult PXAPI PXDebugLoop(PXDebug* const pxDebug)
 
     while(pxDebug->IsRunning)
     {
-        PXActionResult pxActionResult = PXDebugWaitForEvent(pxDebug);
+        PXResult pxActionResult = PXDebugWaitForEvent(pxDebug);
 
         pxActionResult = PXActionInvalid;
     }
@@ -1047,14 +1046,14 @@ PXThreadResult PXAPI PXDebugLoop(PXDebug* const pxDebug)
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXDebugDumpCreate(PXDebug* const pxDebug)
+PXResult PXAPI PXDebugDumpCreate(PXDebug PXREF pxDebug)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
 #elif OSWindows && 0
 
     const HANDLE hFile = CreateFileA("minidump.dmp", GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-    const PXActionResult pxActionResult = PXWindowsErrorCurrent(INVALID_HANDLE_VALUE != hFile);
+    const PXResult pxActionResult = PXWindowsErrorCurrent(INVALID_HANDLE_VALUE != hFile);
 
     if(PXActionSuccessful != pxActionResult)
     {

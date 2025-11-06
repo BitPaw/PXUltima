@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXSQLIncluded
 #define PXSQLIncluded
 
@@ -40,7 +42,7 @@ typedef enum PXSQLKeyWord_
 }
 PXSQLKeyWord;
 
-PXPublic PXResult PXAPI PXSQLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXSQLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXSQLLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXSQLSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

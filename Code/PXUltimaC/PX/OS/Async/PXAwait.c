@@ -9,7 +9,7 @@
 #endif
 
 /*
-PXBool PXAPI PXAwaitChange(volatile void* const dataAdress, const PXSize dataSize)
+PXBool PXAPI PXAwaitChange(volatile void PXREF dataAdress, const PXSize dataSize)
 {
 #if OSUnix
 
@@ -67,7 +67,7 @@ PXBool PXAPI PXAwaitChange(volatile void* const dataAdress, const PXSize dataSiz
 }
 */
 
-PXBool PXAPI PXAwaitChange(PXAwaitInfo* const pxAwaitInfo)
+PXBool PXAPI PXAwaitChange(PXAwaitInfo PXREF pxAwaitInfo)
 {
 #if PXLogEnable
     PXLogPrint

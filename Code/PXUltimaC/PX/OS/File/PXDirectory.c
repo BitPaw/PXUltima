@@ -40,7 +40,7 @@ PXFileElementInfoType PXAPI PXFileTypeGet(WIN32_FIND_DATA* windowsData)
     }
 }
 
-void PXAPI PXFileElementInfoConvertFrom(PXDirectorySearchCache* const pxDirectorySearchCache, PXFileEntry* const pxFileEntry, WIN32_FIND_DATA* const findData, PXI8U depth)
+void PXAPI PXFileElementInfoConvertFrom(PXDirectorySearchCache PXREF pxDirectorySearchCache, PXFileEntry PXREF pxFileEntry, WIN32_FIND_DATA PXREF findData, PXI8U depth)
 {
     pxFileEntry->FilePathSize = PXTextLengthA(findData->cFileName, MAX_PATH);
     pxFileEntry->FilePathData = findData->cFileName;
@@ -70,7 +70,7 @@ void PXAPI PXFileElementInfoConvertFrom(PXDirectorySearchCache* const pxDirector
 
 #endif
 
-void PXAPI PXDirectoryEntryStore(PXDirectorySearchCache* const pxDirectorySearchCache, PXFileEntry* const pxFileEntryINPUT)
+void PXAPI PXDirectoryEntryStore(PXDirectorySearchCache PXREF pxDirectorySearchCache, PXFileEntry PXREF pxFileEntryINPUT)
 {
     pxFileEntryINPUT->ID = pxDirectorySearchCache->EntryList.EntryAmountUsed + 100;
 
@@ -87,7 +87,7 @@ void PXAPI PXDirectoryEntryStore(PXDirectorySearchCache* const pxDirectorySearch
 #endif
 
     // Hijack adress, create
-    pxFileEntryINPUT->FilePathData = PXListDynamicAdd(&pxDirectorySearchCache->FilePathCache, &pxFileEntryINPUT->ID, pxFileEntryINPUT->FilePathData, pxFileEntryINPUT->FilePathSize);
+    pxFileEntryINPUT->FilePathData = (char*)PXListDynamicAdd(&pxDirectorySearchCache->FilePathCache, &pxFileEntryINPUT->ID, pxFileEntryINPUT->FilePathData, pxFileEntryINPUT->FilePathSize);
 
     PXListAdd(&pxDirectorySearchCache->EntryList, pxFileEntryINPUT);
 
@@ -154,7 +154,7 @@ void PXAPI PXDirectoryEntryStore(PXDirectorySearchCache* const pxDirectorySearch
         */
 }
 
-PXResult PXAPI  PXDirectorySearch(PXDirectorySearchCache* const pxDirectorySearchCache, const PXText* const directoryName)
+PXResult PXAPI PXDirectorySearch(PXDirectorySearchCache PXREF pxDirectorySearchCache, const PXText PXREF directoryName)
 {
     PXClear(PXDirectorySearchCache, pxDirectorySearchCache);
 
@@ -163,7 +163,7 @@ PXResult PXAPI  PXDirectorySearch(PXDirectorySearchCache* const pxDirectorySearc
 
     PXFileEntry pxFileEntry;
 
-    const PXActionResult open = PXDirectoryOpen(pxDirectorySearchCache, &pxFileEntry, directoryName);
+    const PXResult open = PXDirectoryOpen(pxDirectorySearchCache, &pxFileEntry, directoryName);
 
     if(PXActionSuccessful != open)
     {
@@ -178,7 +178,7 @@ PXResult PXAPI  PXDirectorySearch(PXDirectorySearchCache* const pxDirectorySearc
     // Fix stale references because an reallocation could have moved the data
     for(size_t i = 0; i < pxDirectorySearchCache->EntryList.EntryAmountUsed; ++i)
     {
-        PXFileEntry* const pxFileEntry = PXListItemAtIndexGetT(PXFileEntry, &pxDirectorySearchCache->EntryList, i);
+        PXFileEntry PXREF pxFileEntry = PXListItemAtIndexGetT(PXFileEntry, &pxDirectorySearchCache->EntryList, i);
 
         PXI32U key = i+100;
 
@@ -200,15 +200,15 @@ PXResult PXAPI  PXDirectorySearch(PXDirectorySearchCache* const pxDirectorySearc
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXDirectoryOpenA(PXDirectorySearchCache* const pxDirectorySearchCache, PXFileEntry* const pxFileEntry, const char* const directoryName)
+PXResult PXAPI PXDirectoryOpenA(PXDirectorySearchCache PXREF pxDirectorySearchCache, PXFileEntry PXREF pxFileEntry, const char PXREF directoryName)
 {
     PXText pxText;
-    PXTextConstructFromAdressA(&pxText, directoryName, PXTextLengthUnkown, PXTextLengthUnkown);
+    PXTextFromAdressA(&pxText, directoryName, PXTextLengthUnkown, PXTextLengthUnkown);
 
     return PXDirectoryOpen(pxDirectorySearchCache, pxFileEntry, &pxText);
 }
 
-PXResult PXAPI  PXDirectoryOpen(PXDirectorySearchCache* const pxDirectorySearchCache, PXFileEntry* const pxFileEntry, const PXText* const directoryName)
+PXResult PXAPI PXDirectoryOpen(PXDirectorySearchCache PXREF pxDirectorySearchCache, PXFileEntry PXREF pxFileEntry, const PXText PXREF directoryName)
 {
     // PXClear(PXDirectorySearchCache, pxDirectorySearchCache);
 
@@ -255,7 +255,7 @@ PXResult PXAPI  PXDirectoryOpen(PXDirectorySearchCache* const pxDirectorySearchC
     // First entry
     {
         pxDirectorySearchCache->DirectoryHandleCurrent = FindFirstFileA(seachDirectoryKey, &windowsDirectoryData); // FindFirstFileExW() has literally no additional functionality (for now)
-        const PXActionResult pxActionResult = PXErrorCurrent(INVALID_HANDLE_VALUE != pxDirectorySearchCache->DirectoryHandleCurrent);
+        const PXResult pxActionResult = PXErrorCurrent(INVALID_HANDLE_VALUE != pxDirectorySearchCache->DirectoryHandleCurrent);
 
         if(PXActionSuccessful != pxActionResult)
         {
@@ -289,7 +289,7 @@ PXResult PXAPI  PXDirectoryOpen(PXDirectorySearchCache* const pxDirectorySearchC
 #endif
 }
 
-PXBool PXAPI PXDirectoryNext(PXDirectorySearchCache* const pxDirectorySearchCache, PXFileEntry* pxFileEntry)
+PXBool PXAPI PXDirectoryNext(PXDirectorySearchCache PXREF pxDirectorySearchCache, PXFileEntry* pxFileEntry)
 {
 #if OSUnix
     struct dirent* directoryEntry;
@@ -333,23 +333,23 @@ PXBool PXAPI PXDirectoryNext(PXDirectorySearchCache* const pxDirectorySearchCach
 #endif
 }
 
-PXBool PXAPI PXDirectoryClose(PXDirectorySearchCache* const pxDirectorySearchCache)
+PXBool PXAPI PXDirectoryClose(PXDirectorySearchCache PXREF pxDirectorySearchCache)
 {
 #if OSUnix
     const int returnCode = closedir(pxDirectorySearchCache->DirectoryHandleCurrent);
-    const PXActionResult pxActionResult = PXErrorCurrent(0 != returnCode);
+    const PXResult pxActionResult = PXErrorCurrent(0 != returnCode);
 
     return pxActionResult;
 
 #elif OSWindows
     const PXBool success = FindClose(pxDirectorySearchCache->DirectoryHandleCurrent);
-    const PXActionResult pxActionResult = PXErrorCurrent(success);
+    const PXResult pxActionResult = PXErrorCurrent(success);
 
     return pxActionResult;
 #endif
 }
 
-PXResult PXAPI  PXDirectoryCreate(const PXText* const directoryName)
+PXResult PXAPI PXDirectoryCreate(const PXText PXREF directoryName)
 {
     switch (directoryName->Format)
     {
@@ -370,7 +370,7 @@ PXResult PXAPI  PXDirectoryCreate(const PXText* const directoryName)
 
 #endif
 
-        const PXActionResult pxActionResult = PXErrorCurrent(successCreate);
+        const PXResult pxActionResult = PXErrorCurrent(successCreate);
 
         if(PXActionSuccessful != pxActionResult)
         {
@@ -398,7 +398,7 @@ PXResult PXAPI  PXDirectoryCreate(const PXText* const directoryName)
 #endif
 
 #endif
-        const PXActionResult pxActionResult = PXErrorCurrent(successCreate);
+        const PXResult pxActionResult = PXErrorCurrent(successCreate);
 
         if(PXActionSuccessful != pxActionResult)
         {
@@ -440,17 +440,17 @@ PXResult PXAPI  PXDirectoryCreate(const PXText* const directoryName)
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXDirectoryCurrentA(char* const directoryCurrent, const PXSize bufferSize, PXSize* const sizeWritten)
+PXResult PXAPI PXDirectoryCurrentA(char PXREF directoryCurrent, const PXSize bufferSize, PXSize PXREF sizeWritten)
 {
 #if OSUnix
-    const char* const text = getcwd(workingDirectory->A, bufferSize);
-    const PXActionResult pxActionResult = PXErrorCurrent(text);
+    const char PXREF text = getcwd(workingDirectory->A, bufferSize);
+    const PXResult pxActionResult = PXErrorCurrent(text);
 
     return pxActionResult;
 
 #elif OSWindows
     const DWORD writtenBytes = GetCurrentDirectoryA(bufferSize, directoryCurrent); // _getcwd()
-    const PXActionResult pxActionResult = PXErrorCurrent(writtenBytes > 0);
+    const PXResult pxActionResult = PXErrorCurrent(writtenBytes > 0);
 
     if(sizeWritten)
     {
@@ -463,13 +463,13 @@ PXResult PXAPI  PXDirectoryCurrentA(char* const directoryCurrent, const PXSize b
 #endif
 }
 
-PXResult PXAPI  PXDirectoryCurrentW(wchar_t* const directoryCurrent, const PXSize bufferSize, PXSize* const sizeWritten)
+PXResult PXAPI PXDirectoryCurrentW(wchar_t PXREF directoryCurrent, const PXSize bufferSize, PXSize PXREF sizeWritten)
 {
 #if OSUnix
     return PXActionRefusedNotSupportedByLibrary;
 #elif OSWindows
     const DWORD writtenBytes = GetCurrentDirectoryW(bufferSize, directoryCurrent); // _getcwd()
-    const PXActionResult pxActionResult = PXErrorCurrent(writtenBytes > 0);
+    const PXResult pxActionResult = PXErrorCurrent(writtenBytes > 0);
 
     if(sizeWritten)
     {
@@ -482,7 +482,7 @@ PXResult PXAPI  PXDirectoryCurrentW(wchar_t* const directoryCurrent, const PXSiz
 #endif
 }
 
-PXResult PXAPI  PXDirectoryCurrentChange(const PXText* const directoryName)
+PXResult PXAPI PXDirectoryCurrentChange(const PXText PXREF directoryName)
 {
     switch (directoryName->Format)
     {
@@ -495,7 +495,7 @@ PXResult PXAPI  PXDirectoryCurrentChange(const PXText* const directoryName)
         const BOOL resultID = SetCurrentDirectoryA(directoryName->A); // _chdir()
 #endif
 
-        const PXActionResult pxActionResult = PXErrorCurrent(resultID);
+        const PXResult pxActionResult = PXErrorCurrent(resultID);
 
         if(PXActionSuccessful != pxActionResult)
         {
@@ -512,7 +512,7 @@ PXResult PXAPI  PXDirectoryCurrentChange(const PXText* const directoryName)
         const BOOL resultID = SetCurrentDirectoryW(directoryName->W); // _wchdir()
 #endif
 
-        const PXActionResult pxActionResult = PXErrorCurrent(resultID);
+        const PXResult pxActionResult = PXErrorCurrent(resultID);
 
         if(PXActionSuccessful != pxActionResult)
         {
@@ -526,7 +526,7 @@ PXResult PXAPI  PXDirectoryCurrentChange(const PXText* const directoryName)
     return PXActionInvalidStateImpossible;
 }
 
-PXResult PXAPI  PXDirectoryCurrentGet(PXText* const workingDirectory)
+PXResult PXAPI PXDirectoryCurrentGet(PXText PXREF workingDirectory)
 {
     switch(workingDirectory->Format)
     {
@@ -544,7 +544,7 @@ PXResult PXAPI  PXDirectoryCurrentGet(PXText* const workingDirectory)
     }
 }
 
-PXResult PXAPI  PXDirectoryDelete(const PXText* const directoryName)
+PXResult PXAPI PXDirectoryDelete(const PXText PXREF directoryName)
 {
     switch(directoryName->Format)
     {
@@ -562,11 +562,11 @@ PXResult PXAPI  PXDirectoryDelete(const PXText* const directoryName)
     }
 }
 
-PXResult PXAPI  PXDirectoryDeleteA(const char* const directoryName)
+PXResult PXAPI PXDirectoryDeleteA(const char PXREF directoryName)
 {
 #if OSUnix || OSForcePOSIXForWindows
     const int resultID = rmdir(directoryName);
-    const PXActionResult removeResult = PXErrorCurrent(0 == resultID);
+    const PXResult removeResult = PXErrorCurrent(0 == resultID);
 
     return removeResult;
 
@@ -609,14 +609,14 @@ PXResult PXAPI  PXDirectoryDeleteA(const char* const directoryName)
 #endif
 }
 
-PXResult PXAPI  PXDirectoryDeleteW(const wchar_t* const directoryName)
+PXResult PXAPI PXDirectoryDeleteW(const wchar_t PXREF directoryName)
 {
 #if OSUnix || OSForcePOSIXForWindows
     return PXActionRefusedNotSupportedByLibrary;
 
 #elif OSWindows
     const PXBool removeResultID = RemoveDirectoryW(directoryName); // Windows XP, Kernel32.dll, fileapi.h
-    const PXActionResult removeResult = PXErrorCurrent(removeResultID);
+    const PXResult removeResult = PXErrorCurrent(removeResultID);
 
     return removeResult;
 
@@ -625,12 +625,12 @@ PXResult PXAPI  PXDirectoryDeleteW(const wchar_t* const directoryName)
 #endif
 }
 
-PXResult PXAPI  PXDirectoryFilesInFolderA(const char* folderPath, wchar_t*** list, PXSize* listSize)
+PXResult PXAPI PXDirectoryFilesInFolderA(const char* folderPath, wchar_t*** list, PXSize* listSize)
 {
     return PXActionInvalid;
 }
 
-PXResult PXAPI  PXDirectoryFilesInFolderW()
+PXResult PXAPI PXDirectoryFilesInFolderW()
 {
 #if 0
     wchar_t buffer[300];
@@ -764,7 +764,7 @@ PXResult PXAPI  PXDirectoryFilesInFolderW()
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXDirectorySpecialFolderGet(const PXDirectioySpecialFolder pxDirectioySpecialFolder, PXText* const pxTextSpecialFolder, PXText* const pxTextFileName, const PXBool create)
+PXResult PXAPI PXDirectorySpecialFolderGet(const PXDirectioySpecialFolder pxDirectioySpecialFolder, PXText PXREF pxTextSpecialFolder, PXText PXREF pxTextFileName, const PXBool create)
 {
 #if OSUnix
 #elif OSWindows

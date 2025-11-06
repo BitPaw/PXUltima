@@ -824,7 +824,7 @@ PXCompilerSymbolLexer PXAPI PXCompilerTryAnalyseType(PXFile PXREF tokenStream, c
                 }
 
                 PXText numberText;
-                PXTextConstructFromAdressA(&numberText, text, floatTextSize, textSize);
+                PXTextFromAdressA(&numberText, text, floatTextSize, textSize);
 
                 if(probablyFloatingPoint && isValidFloatSyntax)
                 {
@@ -1295,7 +1295,7 @@ PXBool PXAPI PXCompilerParseStringUntilNewLine(PXCompiler PXREF pxCompiler, PXTe
 PXBool PXAPI PXCompilerParseStringUntilNewLineA(PXCompiler PXREF pxCompiler, char PXREF text, const PXSize textMaxSize, PXSize PXREF textSize)
 {
     PXText pxText;
-    PXTextConstructFromAdressA(&pxText, text, 0, textMaxSize);
+    PXTextFromAdressA(&pxText, text, 0, textMaxSize);
     const PXBool result = PXCompilerParseStringUntilNewLine(pxCompiler, &pxText);
 
     *textSize = pxText.SizeUsed;

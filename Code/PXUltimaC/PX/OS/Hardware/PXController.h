@@ -1,8 +1,10 @@
+#pragma once
+
 #ifndef PXControllerIncluded
 #define PXControllerIncluded
 
 #include <PX/Engine/PXResource.h>
-#include <PX/Engine/PXGUI.h>
+#include <PX/OS/Library/PXLibrary.h>
 
 #define PXControllerButton1 (1 << 0)
 #define PXControllerButton2 (1 << 1)
@@ -29,7 +31,7 @@ typedef struct PXController_
     char Name[PXControllerNameSize];
     PXI32U ID;
 
-    PXI32S Axis[6];  // X,Y,Z,R,U,V
+    PXI32S Axis[6]; // X,Y,Z,R,U,V
     PXI32S AxisMin[6];
     PXI32S AxisMax[6];
 
@@ -62,13 +64,13 @@ typedef struct PXControllerSystem_
 PXControllerSystem;
 
 
-PXPublic PXResult PXAPI PXControllerSystemInitilize(PXControllerSystem* const pxControllerSystem);
-PXPublic void PXAPI PXControllerSystemShutdown(PXControllerSystem* const pxControllerSystem);
+PXPublic PXResult PXAPI PXControllerSystemInitilize(PXControllerSystem PXREF pxControllerSystem);
+PXPublic void PXAPI PXControllerSystemShutdown(PXControllerSystem PXREF pxControllerSystem);
 
-PXPublic PXResult PXAPI PXControllerSystemDevicesListRefresh(PXControllerSystem* const pxControllerSystem);
-PXPublic PXResult PXAPI PXControllerSystemDevicesDataUpdate(PXControllerSystem* const pxControllerSystem);
+PXPublic PXResult PXAPI PXControllerSystemDevicesListRefresh(PXControllerSystem PXREF pxControllerSystem);
+PXPublic PXResult PXAPI PXControllerSystemDevicesDataUpdate(PXControllerSystem PXREF pxControllerSystem);
 
-PXPublic void PXAPI PXControllerSystemDebugPrint(PXController* const pxController);
+PXPublic void PXAPI PXControllerSystemDebugPrint(PXController PXREF pxController);
 
 #if PXWindowUSE
 PXPublic PXBool PXAPI PXControllerAttachToWindow(const PXControllerID controllerID, const PXWindowID PXWindowID);

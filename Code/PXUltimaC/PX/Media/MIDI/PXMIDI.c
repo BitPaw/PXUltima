@@ -6,9 +6,9 @@
 const static char PXMIDITrackHeaderID[4] = { 'M','T','h','d' };
 const static char PXMIDITrackChunkID[4] = { 'M','T','r','k' };
 
-PXResult PXAPI  PXMIDILoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI PXMIDILoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
 {
-    PXMIDI* const pxMIDI = PXMemoryHeapCallocT(PXMIDI, 1);
+    PXMIDI PXREF pxMIDI = PXMemoryHeapCallocT(PXMIDI, 1);
 
     // Parse Chunk header
     {
@@ -45,7 +45,7 @@ PXResult PXAPI  PXMIDILoadFromFile(PXResourceTransphereInfo* const pxResourceLoa
     // Parse Track Header
     for (PXI16U i = 0; i < pxMIDI->TrackListSize; ++i)
     {
-        PXMIDITrack* const track = &pxMIDI->TrackList[i];
+        PXMIDITrack PXREF track = &pxMIDI->TrackList[i];
         PXI32U chunkLength = 0;
 
         {
@@ -69,7 +69,7 @@ PXResult PXAPI  PXMIDILoadFromFile(PXResourceTransphereInfo* const pxResourceLoa
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXMIDISaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI PXMIDISaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
 {
     PXMIDI* pxMIDI = PXNull;
 
@@ -89,7 +89,7 @@ PXResult PXAPI  PXMIDISaveToFile(PXResourceTransphereInfo* const pxResourceSaveI
 
     for (PXI16U i = 0; i < pxMIDI->TrackListSize; ++i)
     {
-        PXMIDITrack* const track = &pxMIDI->TrackList[i];
+        PXMIDITrack PXREF track = &pxMIDI->TrackList[i];
 
         PXFileWriteB(pxResourceSaveInfo->FileReference, PXMIDITrackChunkID, sizeof(PXMIDITrackChunkID));
         PXFileWriteI32UE(pxResourceSaveInfo->FileReference, track->EventDataSize, PXEndianBig);

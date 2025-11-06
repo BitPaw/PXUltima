@@ -2,6 +2,7 @@
 
 #include <PX/OS/PXOS.h>
 #include <PX/OS/Console/PXConsole.h>
+#include <PX/Engine/PXGUI.h>
 
 PXResourceManager _pxResourceManager;
 
@@ -177,6 +178,7 @@ const PXI8U PXIndexDataCube[] =
 
 
 const char PXResourceManagerText[] = "PX-Resource";
+//const char PXEngineText[] = "PX-Engine";
 
 PXResourceManager _GLOBALResourceManager;
 
@@ -213,7 +215,7 @@ const char* PXAPI PXGraphicShaderTypeToString(const PXGraphicShaderType pxGraphi
 }
 
 #if 0
-void PXAPI PXVertexBufferFormatInfoExtract(PXVertexBufferFormatInfo* const pxVertexBufferFormatInfo, const PXVertexBufferFormat pxVertexBufferFormat)
+void PXAPI PXVertexBufferFormatInfoExtract(PXVertexBufferFormatInfo PXREF pxVertexBufferFormatInfo, const PXVertexBufferFormat pxVertexBufferFormat)
 {
     pxVertexBufferFormatInfo->VertexAttributesAmount = 0;
 
@@ -355,7 +357,7 @@ const char* PXFileLocationModeToString(const PXFileLocationMode pxFileLocationMo
     }
 }
 
-PXBool PXAPI PXFileDataAvailable(const PXFile* const pxFile)
+PXBool PXAPI PXFileDataAvailable(const PXFile PXREF pxFile)
 {
     switch(pxFile->LocationMode)
     {
@@ -442,9 +444,9 @@ const PXResourceEntry _GlobalResourceEntryList[] =
 const PXSize _GlobalResourceEntryListAmoumt = sizeof(_GlobalResourceEntryList) / sizeof(PXResourceEntry);
 
 
-PXResult PXAPI  PXResourceCreateSkybox(PXResourceCreateInfo* const pxResourceCreateInfo, PXSkyBox* const pxSkyBox)
+PXResult PXAPI PXResourceCreateSkybox(PXResourceCreateInfo PXREF pxResourceCreateInfo, PXSkyBox PXREF pxSkyBox)
 {
-    PXSkyBoxCreateEventInfo* const pxSkyBoxCreateEventData = &pxResourceCreateInfo->SkyBox;
+    PXSkyBoxCreateEventInfo PXREF pxSkyBoxCreateEventData = &pxResourceCreateInfo->SkyBox;
 
 #if PXLogEnable
     PXLogPrint
@@ -481,12 +483,12 @@ PXResult PXAPI  PXResourceCreateSkybox(PXResourceCreateInfo* const pxResourceCre
         // Skybox CubeTexture
         pxResourceCreateInfoList[0].Type = PXResourceTypeTextureCube;
         pxResourceCreateInfoList[0].Flags = PXResourceCreateBehaviourSpawnInScene | PXResourceCreateBehaviourLoadASYNC;
-        pxResourceCreateInfoList[0].ObjectReference = (void**)&pxSkyBox->TextureCube; // Request object
+        pxResourceCreateInfoList[0].ObjectReference = (PXResourceInfo**)&pxSkyBox->TextureCube; // Request object
         pxResourceCreateInfoList[0].Texture = pxSkyBoxCreateEventData->TextureCube;
 
         // Skybox Shader
         pxResourceCreateInfoList[1].Type = PXResourceTypeShaderProgram;
-        pxResourceCreateInfoList[1].ObjectReference = (void**)&pxSkyBox->ShaderProgramReference; // Request object
+        pxResourceCreateInfoList[1].ObjectReference = (PXResourceInfo**)&pxSkyBox->ShaderProgramReference; // Request object
 
         PXCopy(PXShaderProgramCreateInfo, pxSkyBoxCreateEventData, &pxResourceCreateInfoList[1].ShaderProgram);
 
@@ -505,9 +507,9 @@ PXResult PXAPI  PXResourceCreateSkybox(PXResourceCreateInfo* const pxResourceCre
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXResourceCreateBrush(PXResourceCreateInfo* const pxResourceCreateInfo, PXWindowBrush* const pxWindowBrush)
+PXResult PXAPI PXResourceCreateBrush(PXResourceCreateInfo PXREF pxResourceCreateInfo, PXWindowBrush PXREF pxWindowBrush)
 {
-    PXBrushCreateInfo* const pxBrushCreateInfo = &pxResourceCreateInfo->Brush;
+    PXBrushCreateInfo PXREF pxBrushCreateInfo = &pxResourceCreateInfo->Brush;
 
     PXNativDrawBrushCreate
     (
@@ -528,7 +530,7 @@ PXResult PXAPI  PXResourceCreateBrush(PXResourceCreateInfo* const pxResourceCrea
         pxBrushCreateInfo->Color.Red,
         pxBrushCreateInfo->Color.Green,
         pxBrushCreateInfo->Color.Blue,
-        pxResourceCreateInfo->NameAdress
+        pxResourceCreateInfo->Name.A
     );
 #endif
 
@@ -537,9 +539,9 @@ PXResult PXAPI  PXResourceCreateBrush(PXResourceCreateInfo* const pxResourceCrea
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXResourceCreateShaderProgram(PXResourceCreateInfo* const pxResourceCreateInfo, PXShaderProgram* const pxShaderProgram)
+PXResult PXAPI PXResourceCreateShaderProgram(PXResourceCreateInfo PXREF pxResourceCreateInfo, PXShaderProgram PXREF pxShaderProgram)
 {
-    PXShaderProgramCreateInfo* const pxShaderProgramCreateData = &pxResourceCreateInfo->ShaderProgram;
+    PXShaderProgramCreateInfo PXREF pxShaderProgramCreateData = &pxResourceCreateInfo->ShaderProgram;
 
 #if PXLogEnable
     PXLogPrint
@@ -561,19 +563,19 @@ PXResult PXAPI  PXResourceCreateShaderProgram(PXResourceCreateInfo* const pxReso
         PXClear(PXFileOpenInfo, &pxFileOpenInfo);
         pxFileOpenInfo.AccessMode = PXAccessModeReadOnly;
         pxFileOpenInfo.FlagList = PXFileIOInfoFileMemory;
-        pxFileOpenInfo.BufferData = pxShaderProgramCreateData->ShaderVertex.A;
-        pxFileOpenInfo.BufferSize = pxShaderProgramCreateData->ShaderVertex.SizeUsed;
+        pxFileOpenInfo.Data.Data = pxShaderProgramCreateData->ShaderVertex.A;
+        pxFileOpenInfo.Data.Size = pxShaderProgramCreateData->ShaderVertex.SizeUsed;
 
         PXFileOpen(&pxShaderProgramCreateData->ShaderVertexFile, &pxFileOpenInfo);
 
-        pxFileOpenInfo.BufferData = pxShaderProgramCreateData->ShaderPixel.A;
-        pxFileOpenInfo.BufferSize = pxShaderProgramCreateData->ShaderPixel.SizeUsed;
+        pxFileOpenInfo.Data.Data = pxShaderProgramCreateData->ShaderPixel.A;
+        pxFileOpenInfo.Data.Size = pxShaderProgramCreateData->ShaderPixel.SizeUsed;
 
         PXFileOpen(&pxShaderProgramCreateData->ShaderPixelFile, &pxFileOpenInfo);
 
         pxShaderProgram->Info.Behaviour |= PXResourceInfoStorageMemory;
 
-        PXResourceStorePath(&pxShaderProgram->Info, "<Internal>", -1);
+        //PXResourceStorePath(&pxShaderProgram->Info, "<Internal>", -1);
     }
     else // load file
     {
@@ -585,22 +587,23 @@ PXResult PXAPI  PXResourceCreateShaderProgram(PXResourceCreateInfo* const pxReso
 
         // TODO: we can make it a loop?
 
-        pxFileOpenFromPathInfo.FilePathAdress = pxShaderProgramCreateData->ShaderVertexFilePath.A;
+        pxFileOpenFromPathInfo.FilePath = pxShaderProgramCreateData->ShaderVertexFilePath;
 
-        const PXActionResult vertexLoadResult = PXFileOpen(&pxShaderProgramCreateData->ShaderVertexFile, &pxFileOpenFromPathInfo);
+        const PXResult vertexLoadResult = PXFileOpen(&pxShaderProgramCreateData->ShaderVertexFile, &pxFileOpenFromPathInfo);
 
-        PXActionReturnOnError(vertexLoadResult);
+        if(PXActionSuccessful != vertexLoadResult) 
+            return vertexLoadResult;
 
+        pxFileOpenFromPathInfo.FilePath = pxShaderProgramCreateData->ShaderPixelFilePath;
 
-        pxFileOpenFromPathInfo.FilePathAdress = pxShaderProgramCreateData->ShaderPixelFilePath.A;
+        const PXResult fragmentLoadResult = PXFileOpen(&pxShaderProgramCreateData->ShaderPixelFile, &pxFileOpenFromPathInfo);
 
-        const PXActionResult fragmentLoadResult = PXFileOpen(&pxShaderProgramCreateData->ShaderPixelFile, &pxFileOpenFromPathInfo);
-
-        PXActionReturnOnError(fragmentLoadResult);
+        if(PXActionSuccessful != fragmentLoadResult) 
+            return fragmentLoadResult;;
 
         pxShaderProgram->Info.Behaviour |= PXResourceInfoStorageMemory;
 
-        PXResourceStorePath(&pxShaderProgram->Info, pxShaderProgramCreateData->ShaderVertexFilePath.A, -1);
+       // PXResourceStorePath(&pxShaderProgram->Info, pxShaderProgramCreateData->ShaderVertexFilePath.A, -1);
     }
 
 #if 0
@@ -626,11 +629,9 @@ PXResult PXAPI  PXResourceCreateShaderProgram(PXResourceCreateInfo* const pxReso
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXResourceCreateIcon(PXResourceCreateInfo* const pxResourceCreateInfo, PXIcon* const pxIcon)
+PXResult PXAPI PXResourceCreateIcon(PXResourceCreateInfo PXREF pxResourceCreateInfo, PXIcon PXREF pxIcon)
 {
-    PXIconCreateInfo* const pxIconCreateInfo = &pxResourceCreateInfo->Icon;
-
-    PXResourceStoreName(&pxIcon->Info, pxResourceCreateInfo->NameAdress, -1);
+    PXIconCreateInfo PXREF pxIconCreateInfo = &pxResourceCreateInfo->Icon;
 
     // Check if texture is present
     if(!pxIconCreateInfo->IconImage)
@@ -638,10 +639,9 @@ PXResult PXAPI  PXResourceCreateIcon(PXResourceCreateInfo* const pxResourceCreat
         PXResourceCreateInfo pxResourceCreateInfoSub;
 
         PXClear(PXResourceCreateInfo, &pxResourceCreateInfoSub);
-        pxResourceCreateInfoSub.ObjectReference = (void**)&pxIconCreateInfo->IconImage;
+        pxResourceCreateInfoSub.ObjectReference = (PXResourceInfo**)&pxIconCreateInfo->IconImage;
         pxResourceCreateInfoSub.ObjectAmount = 1;
-        pxResourceCreateInfoSub.FilePathAdress = pxResourceCreateInfo->FilePathAdress;
-        pxResourceCreateInfoSub.FilePathSize = -1;
+        pxResourceCreateInfoSub.FilePath = pxResourceCreateInfo->FilePath;
         pxResourceCreateInfoSub.Type = PXResourceTypeTexture;
 
         PXResourceManagerAdd(&pxResourceCreateInfoSub);
@@ -667,9 +667,9 @@ PXResult PXAPI  PXResourceCreateIcon(PXResourceCreateInfo* const pxResourceCreat
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXResourceCreateFont(PXResourceCreateInfo* const pxResourceCreateInfo, PXFont* const pxFont)
+PXResult PXAPI PXResourceCreateFont(PXResourceCreateInfo PXREF pxResourceCreateInfo, PXFont PXREF pxFont)
 {
-    PXEngineFontCreateInfo* const pxEngineFontCreateData = &pxResourceCreateInfo->Font;
+    PXEngineFontCreateInfo PXREF pxEngineFontCreateData = &pxResourceCreateInfo->Font;
 
     // if this is a system font, we dont load it from disk but from the system, duh.
     if(pxEngineFontCreateData->RegisteredName)
@@ -690,7 +690,7 @@ PXResult PXAPI  PXResourceCreateFont(PXResourceCreateInfo* const pxResourceCreat
             "Font-Load",
             "ID:%-4i <%s>, Name:<%s>, load from OS",
             pxFont->Info.ID,
-            pxResourceCreateInfo->NameAdress,
+            pxResourceCreateInfo->Name.A,
             pxEngineFontCreateData->RegisteredName
 
         );
@@ -708,8 +708,8 @@ PXResult PXAPI  PXResourceCreateFont(PXResourceCreateInfo* const pxResourceCreat
             "Font-Load",
             "ID:%4i <%s>, Path:<%s>, from file",
             pxFont->Info.ID,
-            pxResourceCreateInfo->NameAdress,
-            pxResourceCreateInfo->FilePathAdress
+            pxResourceCreateInfo->Name.A,
+            pxResourceCreateInfo->FilePath.A
 
         );
 #endif
@@ -722,16 +722,17 @@ PXResult PXAPI  PXResourceCreateFont(PXResourceCreateInfo* const pxResourceCreat
             pxResourceLoadInfo.ResourceType = PXResourceTypeFont;
             pxResourceLoadInfo.Manager = &_GLOBALResourceManager;
 
-            const PXActionResult loadResult = PXResourceLoadA(&pxResourceLoadInfo, pxResourceCreateInfo->FilePathAdress);
+            const PXResult loadResult = PXResourceLoad(&pxResourceLoadInfo, &pxResourceCreateInfo->FilePath);
 
-            PXActionReturnOnError(loadResult);
+            if(PXActionSuccessful != loadResult)
+                return loadResult;
         }
     }
 
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXResourceCreateMaterial(PXResourceCreateInfo* const pxResourceCreateInfo, PXMaterial* const pxMaterial)
+PXResult PXAPI PXResourceCreateMaterial(PXResourceCreateInfo PXREF pxResourceCreateInfo, PXMaterial PXREF pxMaterial)
 {
 #if PXLogEnable
     PXLogPrint
@@ -748,7 +749,7 @@ PXResult PXAPI  PXResourceCreateMaterial(PXResourceCreateInfo* const pxResourceC
 
     for(PXSize materialIndex = 0; materialIndex < pxResourceCreateInfo->ObjectAmount; ++materialIndex)
     {
-        PXMaterial* const pxMaterialCurrent = &pxMaterial[materialIndex];
+        PXMaterial PXREF pxMaterialCurrent = &pxMaterial[materialIndex];
 
         pxMaterialCurrent->Info.ID = PXResourceManagerGenerateUniqeID();
         pxMaterialCurrent->Info.Behaviour |= PXResourceInfoRender;
@@ -759,9 +760,9 @@ PXResult PXAPI  PXResourceCreateMaterial(PXResourceCreateInfo* const pxResourceC
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXResourceCreateIconAtlas(PXResourceCreateInfo* const pxResourceCreateInfo, PXIconAtlas* const pxIconAtlas)
+PXResult PXAPI PXResourceCreateIconAtlas(PXResourceCreateInfo PXREF pxResourceCreateInfo, PXIconAtlas PXREF pxIconAtlas)
 {
-    PXIconAtlasCreateInfo* const pxIconAtlasCreateInfo = &pxResourceCreateInfo->IconAtlas;
+    PXIconAtlasCreateInfo PXREF pxIconAtlasCreateInfo = &pxResourceCreateInfo->IconAtlas;
 
 #if PXLogEnable
     PXLogPrint
@@ -771,7 +772,7 @@ PXResult PXAPI  PXResourceCreateIconAtlas(PXResourceCreateInfo* const pxResource
         "IconAtlas-Create",
         "ID:%i <%s> - CallSize:%i",
         pxIconAtlas->Info.ID,
-        pxResourceCreateInfo->FilePathAdress,
+        pxResourceCreateInfo->FilePath.A,
         pxIconAtlasCreateInfo->CellSize
     );
 #endif
@@ -782,10 +783,9 @@ PXResult PXAPI  PXResourceCreateIconAtlas(PXResourceCreateInfo* const pxResource
         PXResourceCreateInfo pxResourceCreateInfoSub;
 
         PXClear(PXResourceCreateInfo, &pxResourceCreateInfoSub);
-        pxResourceCreateInfoSub.ObjectReference = &pxIconAtlas->IconTexture2D;
+        pxResourceCreateInfoSub.ObjectReference = (PXResourceInfo**)&pxIconAtlas->IconTexture2D;
         pxResourceCreateInfoSub.ObjectAmount = 1;
-        pxResourceCreateInfoSub.FilePathAdress = pxResourceCreateInfo->FilePathAdress;
-        pxResourceCreateInfoSub.FilePathSize = -1;
+        pxResourceCreateInfoSub.FilePath = pxResourceCreateInfo->FilePath;
         pxResourceCreateInfoSub.Type = PXResourceTypeTexture2D;
 
         PXResourceManagerAdd(&pxResourceCreateInfoSub);
@@ -831,12 +831,12 @@ PXResult PXAPI  PXResourceCreateIconAtlas(PXResourceCreateInfo* const pxResource
         {
             const PXSize pixelPositionX = x * pxIconAtlasCreateInfo->CellSize;
 
-            PXIcon* const pxIcon = &pxIconAtlas->IconList[x + y * pxIconAtlasCreateInfo->CellAmountX];
+            PXIcon PXREF pxIcon = &pxIconAtlas->IconList[x + y * pxIconAtlasCreateInfo->CellAmountX];
 
             PXResourceCreateInfo pxResourceCreateInfoSub;
 
             PXClear(PXResourceCreateInfo, &pxResourceCreateInfoSub);
-            pxResourceCreateInfoSub.ObjectReference = &pxIcon;
+            pxResourceCreateInfoSub.ObjectReference = (PXResourceInfo**)&pxIcon;
             pxResourceCreateInfoSub.ObjectAmount = 1;
             pxResourceCreateInfoSub.Type = PXResourceTypeIcon;
             pxResourceCreateInfoSub.Icon.IconImage = pxIconAtlas->IconTexture2D;
@@ -854,20 +854,20 @@ PXResult PXAPI  PXResourceCreateIconAtlas(PXResourceCreateInfo* const pxResource
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXResourceCreateTexture(PXResourceCreateInfo* const pxResourceCreateInfo, PXTexture* const pxTexture)
+PXResult PXAPI PXResourceCreateTexture(PXResourceCreateInfo PXREF pxResourceCreateInfo, PXTexture PXREF pxTexture)
 {
     switch(0)
     {
         case 0:
         {
-            //PXTextureCreateInfo* const PXTextureCreateInfo = &pxResourceCreateInfo->Image;
+            //PXTextureCreateInfo PXREF PXTextureCreateInfo = &pxResourceCreateInfo->Image;
 
 
             //  PXTexture->Info.ID = resourceID;
 
             PXText pxText;
-            PXTextConstructFromAdressA(&pxText, pxResourceCreateInfo->FilePathAdress, PXTextLengthUnkown, PXTextLengthUnkown);
-            const PXBool hasFilePath = PXNull != pxResourceCreateInfo->FilePathAdress;
+            PXTextFromAdressA(&pxText, pxResourceCreateInfo->FilePath.A, PXTextLengthUnkown, PXTextLengthUnkown);
+            const PXBool hasFilePath = PXNull != pxResourceCreateInfo->FilePath.A;
             PXI32U checkSum = 0;
 
 
@@ -880,7 +880,7 @@ PXResult PXAPI  PXResourceCreateTexture(PXResourceCreateInfo* const pxResourceCr
                 pxResourceLoadInfo.ResourceType = PXResourceTypeTexture;
                 pxResourceLoadInfo.Manager = &_GLOBALResourceManager;
 
-                const PXActionResult loadResult = PXResourceLoad(&pxResourceLoadInfo, &pxText);
+                const PXResult loadResult = PXResourceLoad(&pxResourceLoadInfo, &pxText);
 
 
                 if(PXActionSuccessful != loadResult)
@@ -919,7 +919,7 @@ PXResult PXAPI  PXResourceCreateTexture(PXResourceCreateInfo* const pxResourceCr
         }
         case 1:
         {
-            PXTextureCreateInfo* const pxTextureCreateData = &pxResourceCreateInfo->Texture;
+            PXTextureCreateInfo PXREF pxTextureCreateData = &pxResourceCreateInfo->Texture;
 
            // pxTexture->Format = PXColorFormatRGBI8;
 
@@ -928,27 +928,27 @@ PXResult PXAPI  PXResourceCreateTexture(PXResourceCreateInfo* const pxResourceCr
 
             pxResourceCreateInfoList[0].Type = PXResourceTypeTexture;
             //pxResourceCreateInfoList[0].ObjectReference = (void**)&pxTexture->ImageA;
-            pxResourceCreateInfoList[0].FilePathAdress = pxTextureCreateData->Cube.Top.A;
+            pxResourceCreateInfoList[0].FilePath = pxTextureCreateData->Cube.Top;
 
             pxResourceCreateInfoList[1].Type = PXResourceTypeTexture;
            // pxResourceCreateInfoList[1].ObjectReference = (void**)&pxTexture->ImageB;
-            pxResourceCreateInfoList[1].FilePathAdress = pxTextureCreateData->Cube.Left.A;
+            pxResourceCreateInfoList[1].FilePath = pxTextureCreateData->Cube.Left;
 
             pxResourceCreateInfoList[2].Type = PXResourceTypeTexture;
            // pxResourceCreateInfoList[2].ObjectReference = (void**)&pxTexture->ImageC;
-            pxResourceCreateInfoList[2].FilePathAdress = pxTextureCreateData->Cube.Right.A;
+            pxResourceCreateInfoList[2].FilePath = pxTextureCreateData->Cube.Right;
 
             pxResourceCreateInfoList[3].Type = PXResourceTypeTexture;
            // pxResourceCreateInfoList[3].ObjectReference = (void**)&pxTexture->ImageD;
-            pxResourceCreateInfoList[3].FilePathAdress = pxTextureCreateData->Cube.Back.A;
+            pxResourceCreateInfoList[3].FilePath = pxTextureCreateData->Cube.Back;
 
             pxResourceCreateInfoList[4].Type = PXResourceTypeTexture;
            // pxResourceCreateInfoList[4].ObjectReference = (void**)&pxTexture->ImageE;
-            pxResourceCreateInfoList[4].FilePathAdress = pxTextureCreateData->Cube.Bottom.A;
+            pxResourceCreateInfoList[4].FilePath = pxTextureCreateData->Cube.Bottom;
 
             pxResourceCreateInfoList[5].Type = PXResourceTypeTexture;
            // pxResourceCreateInfoList[5].ObjectReference = (void**)&pxTexture->ImageF;
-            pxResourceCreateInfoList[5].FilePathAdress = pxTextureCreateData->Cube.Front.A;
+            pxResourceCreateInfoList[5].FilePath = pxTextureCreateData->Cube.Front;
 
             PXResourceManagerAddV(pxResourceCreateInfoList, 6);
 
@@ -967,7 +967,7 @@ PXResult PXAPI  PXResourceCreateTexture(PXResourceCreateInfo* const pxResourceCr
 
     //const PXBool hasImageData = pxResourceCreateInfo->Texture.PixelData && pxResourceCreateInfo->Texture2D.Image.Image.PixelDataSize;
 
-    //PXEngineTexture2DCreateData* const pxEngineTexture2DCreateData = &pxEngineResourceCreateInfo->Texture2D;
+    //PXEngineTexture2DCreateData PXREF pxEngineTexture2DCreateData = &pxEngineResourceCreateInfo->Texture2D;
 
     // If we dont have a texture file path, instead of loading nothing, we
     // can pass the fail-back texture back. This prevents redundant materials and missing texture material
@@ -1003,7 +1003,7 @@ PXResult PXAPI  PXResourceCreateTexture(PXResourceCreateInfo* const pxResourceCr
         "Create",
         "Texture2D PXID:%i <%s>.",
         pxTexture->Info.ID,
-        pxResourceCreateInfo->FilePathAdress
+        pxResourceCreateInfo->FilePath.A
     );
 #endif
 
@@ -1012,7 +1012,7 @@ PXResult PXAPI  PXResourceCreateTexture(PXResourceCreateInfo* const pxResourceCr
         PXClear(PXResourceCreateInfo, &pxResourceCreateInfoSub);
         pxResourceCreateInfoSub.Type = PXResourceTypeTexture;
        // pxResourceCreateInfoSub.ObjectReference = (void**)&pxTexture->Image;
-        pxResourceCreateInfoSub.FilePathAdress = pxResourceCreateInfo->FilePathAdress;
+        pxResourceCreateInfoSub.FilePath.A = pxResourceCreateInfo->FilePath.A;
        // pxResourceCreateInfoSub.Image = pxResourceCreateInfo->Texture2D.Image; // What is this?
 
         PXResourceManagerAdd(&pxResourceCreateInfoSub);
@@ -1021,21 +1021,21 @@ PXResult PXAPI  PXResourceCreateTexture(PXResourceCreateInfo* const pxResourceCr
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXResourceCreateModel(PXResourceCreateInfo* const pxResourceCreateInfo, PXModel* const pxModel)
+PXResult PXAPI PXResourceCreateModel(PXResourceCreateInfo PXREF pxResourceCreateInfo, PXModel PXREF pxModel)
 {
-    PXModelCreateInfo* const pxModelCreateInfo = &pxResourceCreateInfo->Model;
+    PXModelCreateInfo PXREF pxModelCreateInfo = &pxResourceCreateInfo->Model;
 
     PXModelConstruct(pxModel);
 
-    PXMesh* const pxMesh = &pxModel->Mesh;
+    PXMesh PXREF pxMesh = &pxModel->Mesh;
     pxMesh->VertexBufferListAmount = 1;
-    PXVertexBuffer* const pxVertexBuffer = PXMeshVertexBufferListGET(pxMesh);
-    PXIndexBuffer* const pxIndexBuffer = &pxMesh->IndexBuffer;
+    PXVertexBuffer PXREF pxVertexBuffer = PXMeshVertexBufferListGET(pxMesh);
+    PXIndexBuffer PXREF pxIndexBuffer = &pxMesh->IndexBuffer;
 
     PXMatrix4x4FIdentity(&pxModel->ModelMatrix);
     PXMatrix4x4FScaleBy(&pxModel->ModelMatrix, pxModelCreateInfo->Scale);
 
-    const PXBool hasFilePath = PXNull != pxResourceCreateInfo->FilePathAdress;
+    const PXBool hasFilePath = PXNull != pxResourceCreateInfo->FilePath.A;
 
     if(hasFilePath)
     {
@@ -1047,11 +1047,9 @@ PXResult PXAPI  PXResourceCreateModel(PXResourceCreateInfo* const pxResourceCrea
             "Create",
             "Model ID:%i <%s>.",
             pxModel->Info.ID,
-            pxResourceCreateInfo->FilePathAdress
+            pxResourceCreateInfo->FilePath.A
         );
 #endif
-
-        PXResourceStorePath(&pxModel->Info, pxResourceCreateInfo->FilePathAdress, pxResourceCreateInfo->FilePathSize);
 
         // Load model
         {
@@ -1061,7 +1059,7 @@ PXResult PXAPI  PXResourceCreateModel(PXResourceCreateInfo* const pxResourceCrea
             pxResourceLoadInfo.ResourceType = PXResourceTypeModel;
             pxResourceLoadInfo.Manager = &_GLOBALResourceManager;
 
-            const PXActionResult loadResult = PXResourceLoadA(&pxResourceLoadInfo, pxResourceCreateInfo->FilePathAdress);
+            const PXResult loadResult = PXResourceLoad(&pxResourceLoadInfo, &pxResourceCreateInfo->FilePath);
             const PXBool success = PXActionSuccessful == loadResult;
 
             if(!success)
@@ -1149,7 +1147,7 @@ PXResult PXAPI  PXResourceCreateModel(PXResourceCreateInfo* const pxResourceCrea
                 PXLogPrint
                 (
                     PXLoggingInfo,
-                    "Engine",
+                    PXResourceManagerText,
                     "Model-Create",
                     "From: Custom"
                 );
@@ -1178,7 +1176,7 @@ PXResult PXAPI  PXResourceCreateModel(PXResourceCreateInfo* const pxResourceCrea
                 PXLogPrint
                 (
                     PXLoggingInfo,
-                    "Engine",
+                    PXResourceManagerText,
                     "Model-Create",
                     "From: Triangle"
                 );
@@ -1207,7 +1205,7 @@ PXResult PXAPI  PXResourceCreateModel(PXResourceCreateInfo* const pxResourceCrea
                 PXLogPrint
                 (
                     PXLoggingInfo,
-                    "Engine",
+                    PXResourceManagerText,
                     "Model-Create",
                     "From: Rectangle"
                 );
@@ -1240,7 +1238,7 @@ PXResult PXAPI  PXResourceCreateModel(PXResourceCreateInfo* const pxResourceCrea
                 PXLogPrint
                 (
                     PXLoggingInfo,
-                    "Engine",
+                    PXResourceManagerText,
                     "Model-Create",
                     "From: RectangleTX"
                 );
@@ -1278,7 +1276,7 @@ PXResult PXAPI  PXResourceCreateModel(PXResourceCreateInfo* const pxResourceCrea
                 PXLogPrint
                 (
                     PXLoggingInfo,
-                    "Engine",
+                    PXResourceManagerText,
                     "Model-Create",
                     "From: Circle"
                 );
@@ -1314,7 +1312,7 @@ PXResult PXAPI  PXResourceCreateModel(PXResourceCreateInfo* const pxResourceCrea
                 PXLogPrint
                 (
                     PXLoggingInfo,
-                    "Engine",
+                    PXResourceManagerText,
                     "Model-Create",
                     "From: Cube"
                 );
@@ -1366,9 +1364,9 @@ PXResult PXAPI  PXResourceCreateModel(PXResourceCreateInfo* const pxResourceCrea
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXResourceCreateSprite(PXResourceCreateInfo* const pxResourceCreateInfo, PXSprite* const pxSprite)
+PXResult PXAPI PXResourceCreateSprite(PXResourceCreateInfo PXREF pxResourceCreateInfo, PXSprite PXREF pxSprite)
 {
-    PXSpriteCreateInfo* const pxSpriteCreateEventData = &pxResourceCreateInfo->Sprite;
+    PXSpriteCreateInfo PXREF pxSpriteCreateEventData = &pxResourceCreateInfo->Sprite;
 
     pxSprite->Info.Behaviour |= PXResourceInfoRender;
 
@@ -1380,7 +1378,7 @@ PXResult PXAPI  PXResourceCreateSprite(PXResourceCreateInfo* const pxResourceCre
         "Create",
         "Sprite ID:%i, Use <%s>",
         pxSprite->Info.ID,
-        pxResourceCreateInfo->FilePathAdress
+        pxResourceCreateInfo->FilePath.A
     );
 #endif
 
@@ -1394,7 +1392,7 @@ PXResult PXAPI  PXResourceCreateSprite(PXResourceCreateInfo* const pxResourceCre
         // Skybox CubeTexture
         pxResourceCreateInfoList[0].Type = PXResourceTypeHitBox;
         pxResourceCreateInfoList[0].Flags = PXResourceCreateBehaviourSpawnInScene | PXResourceCreateBehaviourLoadASYNC;
-        pxResourceCreateInfoList[0].ObjectReference = (void**)&pxSprite->HitBox;
+        pxResourceCreateInfoList[0].ObjectReference = (PXResourceInfo**)&pxSprite->HitBox;
         pxResourceCreateInfoList[0].HitBox.Model = pxSprite->Model;
         pxResourceCreateInfoList[0].HitBox.Behaviour = 0;
 
@@ -1540,9 +1538,9 @@ PXResult PXAPI  PXResourceCreateSprite(PXResourceCreateInfo* const pxResourceCre
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXResourceCreateSpriteAnimator(PXResourceCreateInfo* const pxResourceCreateInfo, PXSpriteAnimator* const pxSpriteAnimator)
+PXResult PXAPI PXResourceCreateSpriteAnimator(PXResourceCreateInfo PXREF pxResourceCreateInfo, PXSpriteAnimator PXREF pxSpriteAnimator)
 {
-    PXSpriteAnimatorInfo* const pxSpriteAnimatorInfo = &pxResourceCreateInfo->SpriteAnimator;
+    PXSpriteAnimatorInfo PXREF pxSpriteAnimatorInfo = &pxResourceCreateInfo->SpriteAnimator;
 
     pxSpriteAnimator->Info.Behaviour |= PXResourceInfoActive;
 
@@ -1569,7 +1567,7 @@ PXResult PXAPI  PXResourceCreateSpriteAnimator(PXResourceCreateInfo* const pxRes
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXResourceCreateHitBox(PXResourceCreateInfo* const pxResourceCreateInfo, PXHitBox* const pxHitBox)
+PXResult PXAPI PXResourceCreateHitBox(PXResourceCreateInfo PXREF pxResourceCreateInfo, PXHitBox PXREF pxHitBox)
 {
     pxHitBox->Info.Behaviour |= PXResourceInfoActive;
     pxHitBox->Info.Behaviour = pxResourceCreateInfo->HitBox.Behaviour;
@@ -1589,7 +1587,7 @@ PXResult PXAPI  PXResourceCreateHitBox(PXResourceCreateInfo* const pxResourceCre
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXResourceCreateSound(PXResourceCreateInfo* const pxResourceCreateInfo, PXSound* const pxSound)
+PXResult PXAPI PXResourceCreateSound(PXResourceCreateInfo PXREF pxResourceCreateInfo, PXSound PXREF pxSound)
 {
 #if PXLogEnable
     PXLogPrint
@@ -1599,7 +1597,7 @@ PXResult PXAPI  PXResourceCreateSound(PXResourceCreateInfo* const pxResourceCrea
         "Sound-Create",
         "PXID:%i, %s",
         pxSound->Info.ID,
-        pxResourceCreateInfo->FilePathAdress
+        pxResourceCreateInfo->FilePath.A
     );
 #endif
 
@@ -1608,7 +1606,7 @@ PXResult PXAPI  PXResourceCreateSound(PXResourceCreateInfo* const pxResourceCrea
     pxResourceLoadInfo.ResourceTarget = pxSound;
     pxResourceLoadInfo.ResourceType = PXResourceTypeSound;
 
-    const PXActionResult loadResult = PXResourceLoadA(&pxResourceLoadInfo, pxResourceCreateInfo->FilePathAdress);
+    const PXResult loadResult = PXResourceLoad(&pxResourceLoadInfo, &pxResourceCreateInfo->FilePath);
 
     if(PXActionSuccessful != loadResult)
     {
@@ -1619,12 +1617,12 @@ PXResult PXAPI  PXResourceCreateSound(PXResourceCreateInfo* const pxResourceCrea
             PXResourceManagerText,
             "Sound-Load",
             "failed <%s>!",
-            pxResourceCreateInfo->FilePathAdress
+            pxResourceCreateInfo->FilePath.A
         );
 #endif
-    }
 
-    PXActionReturnOnError(loadResult);
+        return loadResult;
+    }
 
 #if PXLogEnable
     PXLogPrint
@@ -1633,14 +1631,14 @@ PXResult PXAPI  PXResourceCreateSound(PXResourceCreateInfo* const pxResourceCrea
         PXResourceManagerText,
         "Sound-Load",
         "successful <%s>.",
-        pxResourceCreateInfo->FilePathAdress
+        pxResourceCreateInfo->FilePath.A
     );
 #endif
 
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXResourceCreateTimer(PXResourceCreateInfo* const pxResourceCreateInfo, PXTimer* const pxEngineTimer)
+PXResult PXAPI PXResourceCreateTimer(PXResourceCreateInfo PXREF pxResourceCreateInfo, PXTimer PXREF pxEngineTimer)
 {
     pxEngineTimer->Owner = pxEngineTimer->Owner;
     pxEngineTimer->CallBack = pxEngineTimer->CallBack;
@@ -1683,14 +1681,54 @@ PXResult PXAPI  PXResourceCreateTimer(PXResourceCreateInfo* const pxResourceCrea
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXResourceCreateWindow(PXResourceCreateInfo* const pxResourceCreateInfo, PXWindow* const pxWindow)
+PXResult PXAPI PXResourceCreateWindow(PXResourceCreateInfo PXREF pxResourceCreateInfo, PXWindow PXREF pxWindow)
 {
+    PXWindowCreateInfo PXREF pxWindowCreateInfo = &pxResourceCreateInfo->UIElement;
+
+
+    // Precalculate and preo all variables.
+
+
+
+
+    // Normally, we want to create a physical window from the OS.
+    // But.. if we want to spawn our own buttons and elements, we can also create a "fake" one.
+    // This decreses the amount of "managing" code and lets the UI scale way better.
+    // For this fake window, we just create a framebuffer
+    const PXBool createVirtualWindow = pxWindowCreateInfo->IsVirtual;
+
+    if(createVirtualWindow)
+    {
+        PXFrameBufferCreateInfo pxFrameBufferCreateInfo;
+        PXClear(PXFrameBufferCreateInfo, &pxFrameBufferCreateInfo);
+        pxFrameBufferCreateInfo.System = PXGraphicSystemNative;
+        pxFrameBufferCreateInfo.Width = pxWindowCreateInfo->Size.Width;
+        pxFrameBufferCreateInfo.Height = pxWindowCreateInfo->Size.Height;
+
+        PXFrameBufferCreate(&pxWindow->FrameBuffer, &pxFrameBufferCreateInfo);
+    }
+    else
+    {
+        PXGUICreate(pxWindow, pxWindowCreateInfo->WindowParent, pxWindowCreateInfo);
+
+        //PXWindowCreate(&pxEngine->GUISystem, pxResourceCreateInfo, 1);
+
+        /*
+        PXNativDrawWindowCreate
+        (
+            PXNull,
+            pxWindow,
+            pxWindowCreateInfo
+        );    
+        */
+    }
+
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXResourceCreateSpriteMap(PXResourceCreateInfo* const pxResourceCreateInfo, PXSpriteMap* const pxSpriteMap)
+PXResult PXAPI PXResourceCreateSpriteMap(PXResourceCreateInfo PXREF pxResourceCreateInfo, PXSpriteMap PXREF pxSpriteMap)
 {
-    PXEngineSpriteMapInfo* const PXEngineSpriteMapInfo = &pxResourceCreateInfo->SpriteMap;
+    PXEngineSpriteMapInfo PXREF PXEngineSpriteMapInfo = &pxResourceCreateInfo->SpriteMap;
 
     // Create texture
     {
@@ -1699,7 +1737,7 @@ PXResult PXAPI  PXResourceCreateSpriteMap(PXResourceCreateInfo* const pxResource
 
         // Skybox CubeTexture
         pxResourceCreateInfoList[0].Type = PXResourceTypeTexture2D;
-        pxResourceCreateInfoList[0].ObjectReference = (void**)&pxSpriteMap->Texture;
+        pxResourceCreateInfoList[0].ObjectReference = (PXResourceInfo**)&pxSpriteMap->Texture;
 
         PXResourceManagerAdd(pxResourceCreateInfoList);
     }
@@ -1711,7 +1749,7 @@ PXResult PXAPI  PXResourceCreateSpriteMap(PXResourceCreateInfo* const pxResource
 
         // Skybox CubeTexture
         pxResourceCreateInfoList[0].Type = PXResourceTypeModel;
-        pxResourceCreateInfoList[0].ObjectReference = (void**)&pxSpriteMap->Model;
+        pxResourceCreateInfoList[0].ObjectReference = (PXResourceInfo**)&pxSpriteMap->Model;
         pxResourceCreateInfoList[0].Model.Form = PXModelFormRectangleTX;
 
         PXResourceManagerAdd(pxResourceCreateInfoList);
@@ -1732,7 +1770,7 @@ PXResult PXAPI  PXResourceCreateSpriteMap(PXResourceCreateInfo* const pxResource
 
     if(pxSpriteMap->Model)
     {
-        PXModel* const pxModel = pxSpriteMap->Model;
+        PXModel PXREF pxModel = pxSpriteMap->Model;
 
         PXBufferLayout pxVertexBufferLayout[3];
         pxVertexBufferLayout[0].Format = PXTypeF32;
@@ -1777,8 +1815,7 @@ PXResourceEntry* PXResourceEntryGet(PXI32U type)
     return PXNull;
 }
 
-
-PXResult PXAPI  PXResourceManagerAdd(PXResourceCreateInfo* const pxResourceCreateInfo)
+PXResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo PXREF pxResourceCreateInfo)
 {
     if(!pxResourceCreateInfo)
     {
@@ -1790,12 +1827,21 @@ PXResult PXAPI  PXResourceManagerAdd(PXResourceCreateInfo* const pxResourceCreat
     //-----------------------------------------------------
 
     // TODO: Bad provider funcion!
-    const PXResourceEntry* const pxResourceEntry = PXResourceEntryGet(pxResourceCreateInfo->Type);
+    const PXResourceEntry PXREF pxResourceEntry = PXResourceEntryGet(pxResourceCreateInfo->Type);
 
     if(!pxResourceEntry)
     {
         return PXActionRefusedArgumentInvalid;
     }
+
+    // fixing text
+    {
+        pxResourceCreateInfo->Name.SizeAllocated = 0xFF;
+        pxResourceCreateInfo->FilePath.SizeAllocated = 0xFF;
+        PXTextRevise(&pxResourceCreateInfo->Name);
+        PXTextRevise(&pxResourceCreateInfo->FilePath);
+    }
+
 
     const PXBool isResourceAllocated = *pxResourceCreateInfo->ObjectReference > 0;
 
@@ -1821,9 +1867,9 @@ PXResult PXAPI  PXResourceManagerAdd(PXResourceCreateInfo* const pxResourceCreat
             ++pxResourceCreateInfo->ObjectAmount; // Asumme we want one item it we didnt set it to it,
         }
 
-        void* objectList = PXMemoryHeapCalloc(PXNull, pxResourceEntry->TypeSize, pxResourceCreateInfo->ObjectAmount);
+        PXResourceEntry* pxResourceEntryList = (PXResourceEntry*)PXMemoryHeapCalloc(PXNull, pxResourceEntry->TypeSize, pxResourceCreateInfo->ObjectAmount);
 
-        if(!objectList)
+        if(!pxResourceEntryList)
         {
 #if PXLogEnable
             PXLogPrint
@@ -1841,17 +1887,17 @@ PXResult PXAPI  PXResourceManagerAdd(PXResourceCreateInfo* const pxResourceCreat
             return PXActionFailedMemoryAllocation;
         }
 
-        *pxResourceCreateInfo->ObjectReference = objectList;
+        *pxResourceCreateInfo->ObjectReference = pxResourceEntryList;
 
         for(PXSize i = 0; i < pxResourceCreateInfo->ObjectAmount; ++i)
         {
             const PXI32U resourceID = PXResourceManagerGenerateUniqeID();
 
             // Get currect objects is we have multible
-            void* object = (char*)objectList + (pxResourceEntry->TypeSize * i);
+            void* object = (char*)pxResourceEntryList + (pxResourceEntry->TypeSize * i);
 
             // UNSTANBLE CAST?
-            PXResourceInfo* const pxResourceInfo = (PXResourceInfo*)object;
+            PXResourceInfo PXREF pxResourceInfo = (PXResourceInfo*)object;
             pxResourceInfo->ID = resourceID;
             pxResourceInfo->Behaviour |= PXResourceInfoExist;
 
@@ -1860,6 +1906,15 @@ PXResult PXAPI  PXResourceManagerAdd(PXResourceCreateInfo* const pxResourceCreat
 
             PXDictionaryEntryAdd(pxResourceEntry->LookupTable, &resourceID, *pxResourceCreateInfo->ObjectReference);
 
+            PXResourceProperty pxResourceProperty;
+            PXClear(PXResourceProperty, &pxResourceProperty);
+            pxResourceProperty.Text = pxResourceCreateInfo->Name;
+
+            PXResourcePropertyIO(pxResourceInfo, &pxResourceProperty, PXResourcePropertyName, PXTrue);
+
+            PXClear(PXResourceProperty, &pxResourceProperty);
+            pxResourceProperty.Text = pxResourceCreateInfo->FilePath;
+            PXResourcePropertyIO(pxResourceInfo, &pxResourceProperty, PXResourcePropertyPath, PXTrue);
 
 #if PXLogEnable
             PXLogPrint
@@ -1932,7 +1987,7 @@ PXResult PXAPI  PXResourceManagerAdd(PXResourceCreateInfo* const pxResourceCreat
         return PXActionRefusedObjectCreateCallbackMissing;
     }
 
-    const PXActionResult pxActionCreate = pxResourceEntry->CreateFunction(pxResourceCreateInfo, *pxResourceCreateInfo->ObjectReference);
+    const PXResult pxActionCreate = pxResourceEntry->CreateFunction(pxResourceCreateInfo, *pxResourceCreateInfo->ObjectReference);
 
     if(PXActionSuccessful != pxActionCreate)
     {
@@ -1952,11 +2007,11 @@ PXResult PXAPI  PXResourceManagerAdd(PXResourceCreateInfo* const pxResourceCreat
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXResourceManagerAddV(PXResourceCreateInfo* const pxResourceCreateInfoList, const PXSize amount)
+PXResult PXAPI PXResourceManagerAddV(PXResourceCreateInfo PXREF pxResourceCreateInfoList, const PXSize amount)
 {
     for(PXSize i = 0; i < amount; ++i)
     {
-        PXResourceCreateInfo* const pxResourceCreateInfo = &pxResourceCreateInfoList[i];
+        PXResourceCreateInfo PXREF pxResourceCreateInfo = &pxResourceCreateInfoList[i];
 
         PXResourceManagerAdd(pxResourceCreateInfo);
     }
@@ -1964,57 +2019,7 @@ PXResult PXAPI  PXResourceManagerAddV(PXResourceCreateInfo* const pxResourceCrea
     return PXActionSuccessful;
 }
 
-PXResult PXAPI PXResourceStoreName(PXResourceInfo* const pxResourceInfo, const char* const name, const PXSize nameSize)
-{
-    return PXActionRefusedNotImplemented;
-}
-
-PXResult PXAPI  PXResourceStorePath(PXResourceInfo* const pxResourceInfo, const char* const name, const PXSize nameSize)
-{
-    PXSize length = nameSize;
-
-    if(-1 == nameSize)
-    {
-        length = PXTextLengthA(name, nameSize);
-    }
-
-#if PXLogEnable
-    char buffer[256];
-
-    PXTextCopyA(name, nameSize, buffer, nameSize);
-
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXResourceManagerText,
-        "Store-Path",
-        "%s",
-        buffer
-    );
-#endif
-
-    PXListDynamicAdd(&_GLOBALResourceManager.NameCache, &pxResourceInfo->ID, name, length);
-
-    pxResourceInfo->Behaviour |= PXResourceInfoHasSource;
-
-    return PXActionSuccessful;
-}
-
-PXResult PXAPI  PXResourceFetchName(PXResourceInfo* const pxResourceInfo, char** name, PXSize* nameSize)
-{
-    PXListDynamicGet(&_GLOBALResourceManager.NameCache, &pxResourceInfo->ID, name, nameSize);
-
-    return PXActionSuccessful;
-}
-
-PXResult PXAPI  PXResourceFetchPath(PXResourceInfo* const pxResourceInfo, char** name, PXSize* nameSize)
-{
-    PXListDynamicGet(&_GLOBALResourceManager.SourcePathCache, &pxResourceInfo->ID, name, nameSize);
-
-    return PXActionSuccessful;
-}
-
-PXMaterial* PXAPI PXMaterialContainerFind(const PXMaterialContainer* const pxMaterialContainer, struct PXText_* const pxMaterialName)
+PXMaterial* PXAPI PXMaterialContainerFind(const PXMaterialContainer PXREF pxMaterialContainer, struct PXText_ PXREF pxMaterialName)
 {
     if(!pxMaterialContainer)
     {
@@ -2023,17 +2028,23 @@ PXMaterial* PXAPI PXMaterialContainerFind(const PXMaterialContainer* const pxMat
 
     //for (PXSize materialContainerID = 0; materialContainerID < pxMaterialContainer->MaterialContaierListSize; ++materialContainerID)
     //{
-    // const PXMaterialContainer* const pxMaterialContaier = &pxModel->MaterialContaierList[materialContainerID];
+    // const PXMaterialContainer PXREF pxMaterialContaier = &pxModel->MaterialContaierList[materialContainerID];
 
     for(PXSize materialID = 0; materialID < pxMaterialContainer->MaterialListAmount; ++materialID)
     {
-        PXMaterial* const pxMaterial = &pxMaterialContainer->MaterialList[materialID];
-        char* name = 0;
-        PXSize nameSize = 0;
+        PXMaterial PXREF pxMaterial = &pxMaterialContainer->MaterialList[materialID];
 
-        PXResourceFetchName(&pxMaterial->Info, &name, &nameSize);
+        PXResourceProperty pxResourceProperty;
+        PXClear(PXResourceProperty, &pxResourceProperty);
 
-        const PXBool isMatch = PXTextCompareA(pxMaterialName->A, pxMaterialName->SizeUsed, name, nameSize, PXTextCompareRequireSameLength);
+        PXResourcePropertyIO(&pxMaterial->Info, &pxResourceProperty, PXResourcePropertyName, PXResourcePropertyFetch);
+
+        const PXBool isMatch = PXTextCompare
+        (
+            pxMaterialName,
+            &pxResourceProperty.Text
+            //PXTextCompareRequireSameLength
+        );
 
         if(isMatch)
         {
@@ -2045,11 +2056,11 @@ PXMaterial* PXAPI PXMaterialContainerFind(const PXMaterialContainer* const pxMat
     return PXNull;
 }
 
-PXBufferLayout* PXAPI PXVertexBufferLayoutGET(PXVertexBuffer* const pxVertexBuffer)
+PXBufferLayout* PXAPI PXVertexBufferLayoutGET(PXVertexBuffer PXREF pxVertexBuffer)
 {
     if(PXEmbeddedArraySize >= pxVertexBuffer->LayoutAmount)
     {
-        return &pxVertexBuffer->LayoutPrime;
+        return pxVertexBuffer->LayoutPrime;
     }
     else
     {
@@ -2058,7 +2069,7 @@ PXBufferLayout* PXAPI PXVertexBufferLayoutGET(PXVertexBuffer* const pxVertexBuff
 }
 
 /*
-void* PXAPI PXVertexBufferInsertionPoint(const PXVertexBuffer* const pxVertexBuffer, const PXVertexBufferFormat pxVertexBufferFormat, const PXSize index)
+void* PXAPI PXVertexBufferInsertionPoint(const PXVertexBuffer PXREF pxVertexBuffer, const PXVertexBufferFormat pxVertexBufferFormat, const PXSize index)
 {
    // PXVertexBufferFormatInfo pxVertexBufferFormatInfo;
    // PXVertexBufferFormatInfoExtract(&pxVertexBufferFormatInfo, pxVertexBuffer->Format);
@@ -2135,7 +2146,7 @@ void* PXAPI PXVertexBufferInsertionPoint(const PXVertexBuffer* const pxVertexBuf
 }
 */
 
-void PXAPI PXIndexBufferPrepare(PXIndexBuffer* const pxIndexBuffer, const PXSize amountVertex, const PXSize amountMaterials)
+void PXAPI PXIndexBufferPrepare(PXIndexBuffer PXREF pxIndexBuffer, const PXSize amountVertex, const PXSize amountMaterials)
 {
     // Index array data Type    
     if(amountVertex <= 0xFFu)
@@ -2201,12 +2212,12 @@ void PXAPI PXIndexBufferPrepare(PXIndexBuffer* const pxIndexBuffer, const PXSize
 #endif
 }
 
-PXBool PXAPI PXIndexBufferIsUsed(const PXIndexBuffer* const pxIndexBuffer)
+PXBool PXAPI PXIndexBufferIsUsed(const PXIndexBuffer PXREF pxIndexBuffer)
 {
     return pxIndexBuffer->Info.Handle.OpenGLID != 0;
 }
 
-PXIndexSegment* PXAPI PXIndexBufferSegmentListGET(const PXIndexBuffer* const pxIndexBuffer)
+PXIndexSegment* PXAPI PXIndexBufferSegmentListGET(PXIndexBuffer PXREF pxIndexBuffer)
 {
     PXAssert(pxIndexBuffer->SegmentListAmount != 0, "This cant be 0");
 
@@ -2220,21 +2231,25 @@ PXIndexSegment* PXAPI PXIndexBufferSegmentListGET(const PXIndexBuffer* const pxI
     }
 }
 
-PXBufferLayout* PXAPI PXIndexLayoutListGET(const PXIndexBuffer* const pxIndexBuffer)
+PXBufferLayout* PXAPI PXIndexLayoutListGET(PXIndexBuffer PXREF pxIndexBuffer)
 {
+    PXBufferLayout* pxBufferLayout = PXNull;
+
     PXAssert(pxIndexBuffer->LayoutListAmount != 0, "This cant be 0");
 
     if(pxIndexBuffer->LayoutListAmount == 1)
     {
-        return &pxIndexBuffer->LayoutPrime;
+        pxBufferLayout = &pxIndexBuffer->LayoutPrime;
     }
     else
     {
-        return pxIndexBuffer->LayoutList;
+        pxBufferLayout = pxIndexBuffer->LayoutList;
     }
+
+    return pxBufferLayout;
 }
 
-PXSize PXAPI PXIndexIndexGET(const PXIndexBuffer* const pxIndexBuffer, const PXI8U type)
+PXSize PXAPI PXIndexIndexGET(const PXIndexBuffer PXREF pxIndexBuffer, const PXI8U type)
 {
 #if 1
 
@@ -2243,11 +2258,11 @@ PXSize PXAPI PXIndexIndexGET(const PXIndexBuffer* const pxIndexBuffer, const PXI
 #else
 
 
-    PXBufferLayout* const pxBufferLayoutList = PXIndexLayoutListGET(pxIndexBuffer);
+    PXBufferLayout PXREF pxBufferLayoutList = PXIndexLayoutListGET(pxIndexBuffer);
 
     for(size_t i = 0; i < pxIndexBuffer->LayoutListAmount; i++)
     {
-        PXBufferLayout* const pxBufferLayout = &pxBufferLayoutList[i];
+        PXBufferLayout PXREF pxBufferLayout = &pxBufferLayoutList[i];
 
         if(type != pxBufferLayout->Type)
         {
@@ -2261,7 +2276,7 @@ PXSize PXAPI PXIndexIndexGET(const PXIndexBuffer* const pxIndexBuffer, const PXI
 #endif
 }
 
-PXResult PXAPI  PXMeshVertexLayoutPrint(PXMesh* const pxMesh)
+PXResult PXAPI PXMeshVertexLayoutPrint(PXMesh PXREF pxMesh)
 {
     PXVertexBuffer* pxVertexBufferList = PXMeshVertexBufferListGET(pxMesh);
 
@@ -2271,7 +2286,7 @@ PXResult PXAPI  PXMeshVertexLayoutPrint(PXMesh* const pxMesh)
     {
         PXVertexBuffer* pxVertexBuffer = &pxVertexBufferList[i];
 
-        PXBufferLayout* const pxVertexBufferLayoutList = PXVertexBufferLayoutGET(pxVertexBuffer);
+        PXBufferLayout PXREF pxVertexBufferLayoutList = PXVertexBufferLayoutGET(pxVertexBuffer);
 
 #if PXLogEnable
         PXLogPrint
@@ -2315,7 +2330,7 @@ PXResult PXAPI  PXMeshVertexLayoutPrint(PXMesh* const pxMesh)
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXMeshVertexLayout(PXMesh* const pxMesh, const PXSize index, PXBufferLayout* const pxVertexBufferLayoutList, const PXSize amount)
+PXResult PXAPI PXMeshVertexLayout(PXMesh PXREF pxMesh, const PXSize index, PXBufferLayout PXREF pxVertexBufferLayoutList, const PXSize amount)
 {
     PXVertexBuffer* pxVertexBufferList = PXNull;
 
@@ -2327,7 +2342,7 @@ PXResult PXAPI  PXMeshVertexLayout(PXMesh* const pxMesh, const PXSize index, PXB
 
     for(PXSize i = 0; i < amount; ++i)
     {
-        PXBufferLayout* const pxVertexBufferLayout = &pxVertexBufferLayoutList[i];
+        PXBufferLayout PXREF pxVertexBufferLayout = &pxVertexBufferLayoutList[i];
 
         PXSize sizeOfSingleElement = PXTypeSizeGet(pxVertexBufferLayout->Format);
         PXSize amountOfElement = pxVertexBufferLayout->AmountOfElements;
@@ -2354,7 +2369,7 @@ PXResult PXAPI  PXMeshVertexLayout(PXMesh* const pxMesh, const PXSize index, PXB
     // How many vertex arrays?
 }
 
-PXResult PXAPI  PXMeshIndexLayout(PXMesh* const pxMesh, const PXSize primitveAmount, const PXSize segmentAmount)
+PXResult PXAPI PXMeshIndexLayout(PXMesh PXREF pxMesh, const PXSize primitveAmount, const PXSize segmentAmount)
 {
     PXIndexBufferPrepare(&pxMesh->IndexBuffer, primitveAmount, segmentAmount);
 
@@ -2366,15 +2381,15 @@ PXResult PXAPI  PXMeshIndexLayout(PXMesh* const pxMesh, const PXSize primitveAmo
     return PXActionSuccessful;
 }
 
-PXBufferLayout* PXAPI PXMeshVertexBufferGET(PXMesh* const pxMesh, const PXI8U type)
+PXBufferLayout* PXAPI PXMeshVertexBufferGET(PXMesh PXREF pxMesh, const PXI8U type)
 {
-    PXVertexBuffer* const pxVertexBufferList = PXMeshVertexBufferListGET(pxMesh);
+    PXVertexBuffer PXREF pxVertexBufferList = PXMeshVertexBufferListGET(pxMesh);
 
     // Search every vertexBuffer
     for(PXSize i = 0; i < pxMesh->VertexBufferListAmount; ++i)
     {
-        PXVertexBuffer* const pxVertexBuffer = &pxVertexBufferList[i];
-        PXBufferLayout* const pxVertexBufferLayoutList = PXVertexBufferLayoutGET(pxVertexBuffer);
+        PXVertexBuffer PXREF pxVertexBuffer = &pxVertexBufferList[i];
+        PXBufferLayout PXREF pxVertexBufferLayoutList = PXVertexBufferLayoutGET(pxVertexBuffer);
 
         // Search every layout
         for(PXSize w = 0; w < pxVertexBuffer->LayoutAmount; w++)
@@ -2392,15 +2407,15 @@ PXBufferLayout* PXAPI PXMeshVertexBufferGET(PXMesh* const pxMesh, const PXI8U ty
     return PXNull;
 }
 
-void* PXAPI PXMeshVertexInsert(PXMesh* const pxMesh, const PXI8U type)
+void* PXAPI PXMeshVertexInsert(PXMesh PXREF pxMesh, const PXI8U type)
 {
-    PXVertexBuffer* const pxVertexBufferList = PXMeshVertexBufferListGET(pxMesh);
+    PXVertexBuffer PXREF pxVertexBufferList = PXMeshVertexBufferListGET(pxMesh);
 
     // Search every vertexBuffer
     for(PXSize i = 0; i < pxMesh->VertexBufferListAmount; ++i)
     {
-        PXVertexBuffer* const pxVertexBuffer = &pxVertexBufferList[i];
-        PXBufferLayout* const pxVertexBufferLayoutList = PXVertexBufferLayoutGET(pxVertexBuffer);
+        PXVertexBuffer PXREF pxVertexBuffer = &pxVertexBufferList[i];
+        PXBufferLayout PXREF pxVertexBufferLayoutList = PXVertexBufferLayoutGET(pxVertexBuffer);
 
         PXSize offset = 0;
 
@@ -2434,7 +2449,7 @@ void* PXAPI PXMeshVertexInsert(PXMesh* const pxMesh, const PXI8U type)
     return PXNull;
 }
 
-void* PXAPI PXMeshIndexInsert(PXMesh* const pxMesh, const PXI8U type)
+void* PXAPI PXMeshIndexInsert(PXMesh PXREF pxMesh, const PXI8U type)
 {
     PXByte* data = (PXByte*)pxMesh->IndexBuffer.Data.Data;
     const PXSize sizeOfElement = PXTypeSizeGet(pxMesh->IndexBuffer.DataType);
@@ -2454,16 +2469,16 @@ void* PXAPI PXMeshIndexInsert(PXMesh* const pxMesh, const PXI8U type)
     return PXNull;
 }
 
-PXSize PXAPI PXMeshVertexStrideGET(PXMesh* const pxMesh)
+PXSize PXAPI PXMeshVertexStrideGET(PXMesh PXREF pxMesh)
 {
     return 0;
 }
 
-PXVertexBuffer* PXAPI PXMeshVertexBufferListGET(PXMesh* const pxMesh)
+PXVertexBuffer* PXAPI PXMeshVertexBufferListGET(PXMesh PXREF pxMesh)
 {
     if(pxMesh->VertexBufferListAmount <= 4)
     {
-        return &pxMesh->VertexBufferPrime;
+        return pxMesh->VertexBufferPrime;
     }
     else
     {
@@ -2471,11 +2486,11 @@ PXVertexBuffer* PXAPI PXMeshVertexBufferListGET(PXMesh* const pxMesh)
     }
 }
 
-PXVertexBuffer* PXAPI PXMeshVertexBufferListSET(PXMesh* const pxMesh, const PXSize amount)
+PXVertexBuffer* PXAPI PXMeshVertexBufferListSET(PXMesh PXREF pxMesh, const PXSize amount)
 {
     if(amount <= 4)
     {
-        return &pxMesh->VertexBufferPrime;
+        return pxMesh->VertexBufferPrime;
     }
     else
     {
@@ -2485,15 +2500,15 @@ PXVertexBuffer* PXAPI PXMeshVertexBufferListSET(PXMesh* const pxMesh, const PXSi
     }
 }
 
-PXSize PXAPI PXMeshIndexBufferLengthGET(PXMesh* const pxMesh)
+PXSize PXAPI PXMeshIndexBufferLengthGET(PXMesh PXREF pxMesh)
 {
-    PXBufferLayout* const pxBufferLayoutList = PXIndexLayoutListGET(&pxMesh->IndexBuffer);
+    PXBufferLayout PXREF pxBufferLayoutList = PXIndexLayoutListGET(&pxMesh->IndexBuffer);
 
     PXI8U typeSize = 0;
 
     for(size_t i = 0; i < pxMesh->VertexBufferListAmount; i++)
     {
-        PXBufferLayout* const pxBufferLayout = &pxBufferLayoutList[i];
+        PXBufferLayout PXREF pxBufferLayout = &pxBufferLayoutList[i];
 
         typeSize = PXTypeSizeGet(pxBufferLayout->Type);
     }
@@ -2544,7 +2559,7 @@ void PXConvertAnyToFloat(void* a, PXType aType, float* b)
 }
 
 
-PXResult PXAPI  PXMeshVertexLayoutTransmute(PXMesh* const pxMesh)
+PXResult PXAPI PXMeshVertexLayoutTransmute(PXMesh PXREF pxMesh)
 {
 #if 0
 
@@ -2552,8 +2567,8 @@ PXResult PXAPI  PXMeshVertexLayoutTransmute(PXMesh* const pxMesh)
     // As the GPU is to stupit to use seperate arrays.
     PXIndexBuffer* pxIndexBuffer = &pxMesh->IndexBuffer;
 
-    PXVertexBuffer* const pxVertexBufferList = PXMeshVertexBufferListGET(pxMesh);
-    PXBufferLayout* const pxIndexBufferLayoutList = PXIndexLayoutListGET(pxIndexBuffer);
+    PXVertexBuffer PXREF pxVertexBufferList = PXMeshVertexBufferListGET(pxMesh);
+    PXBufferLayout PXREF pxIndexBufferLayoutList = PXIndexLayoutListGET(pxIndexBuffer);
 
 
     const PXSize layoutListAmount = pxIndexBuffer->LayoutListAmount;
@@ -2576,17 +2591,17 @@ PXResult PXAPI  PXMeshVertexLayoutTransmute(PXMesh* const pxMesh)
 
     for(size_t i = 0; i < vertexBufferAmount; i++)
     {
-        PXVertexBuffer* const pxVertexBuffer = &pxVertexBufferList[i];
+        PXVertexBuffer PXREF pxVertexBuffer = &pxVertexBufferList[i];
 
 
         // Width of the whole buffer
-        PXBufferLayout* const pxBufferLayoutList = PXVertexBufferLayoutGET(pxVertexBuffer);
+        PXBufferLayout PXREF pxBufferLayoutList = PXVertexBufferLayoutGET(pxVertexBuffer);
 
         PXSize width = 0;
 
         for(size_t i = 0; i < pxVertexBuffer->LayoutAmount; i++)
         {
-            PXBufferLayout* const pxBufferLayout = &pxBufferLayoutList[i];
+            PXBufferLayout PXREF pxBufferLayout = &pxBufferLayoutList[i];
 
             width += PXTypeSizeGet(pxBufferLayout->Format);
         }
@@ -2602,7 +2617,7 @@ PXResult PXAPI  PXMeshVertexLayoutTransmute(PXMesh* const pxMesh)
         // Loop over all the arrays 
         for(PXSize x = 0; x < layoutListAmount; ++x)
         {
-            PXBufferLayout* const pxBufferLayout = &pxIndexBufferLayoutList[x];
+            PXBufferLayout PXREF pxBufferLayout = &pxIndexBufferLayoutList[x];
 
             // Lookup reference vertex array
             PXBufferLayout* vertexBufferLayout = PXMeshVertexBufferGET(pxMesh, pxBufferLayout->Type);
@@ -2681,7 +2696,7 @@ PXResult PXAPI  PXMeshVertexLayoutTransmute(PXMesh* const pxMesh)
 
         for(PXSize i = 0; i < vertexBufferAmount; i++)
         {
-            PXVertexBuffer* const pxVertexBuffer = &pxVertexBufferList[i];
+            PXVertexBuffer PXREF pxVertexBuffer = &pxVertexBufferList[i];
 
 
         }
@@ -2732,7 +2747,7 @@ PXResult PXAPI  PXMeshVertexLayoutTransmute(PXMesh* const pxMesh)
 
     for(PXSize segmentIndex = 0; segmentIndex < pxIndexSegmentListAmount; ++segmentIndex)
     {
-        PXIndexSegment* const pxIndexSegment = &pxIndexSegmentList[segmentIndex];
+        PXIndexSegment PXREF pxIndexSegment = &pxIndexSegmentList[segmentIndex];
 
         const PXSize range = pxIndexSegment->DataRange;
 
@@ -2817,13 +2832,13 @@ PXResult PXAPI  PXMeshVertexLayoutTransmute(PXMesh* const pxMesh)
 
     PXMeshVertexLayoutPrint(pxMesh);
 
-    PXVertexBuffer* const pxVertexBufferList = PXMeshVertexBufferListGET(pxMesh);
+    PXVertexBuffer PXREF pxVertexBufferList = PXMeshVertexBufferListGET(pxMesh);
 
     // Search every vertexBuffer
     for(PXSize i = 0; i < pxMesh->VertexBufferListAmount; ++i)
     {
-        PXVertexBuffer* const pxVertexBuffer = &pxVertexBufferList[i];
-        PXBufferLayout* const pxVertexBufferLayoutList = PXVertexBufferLayoutGET(pxVertexBuffer);
+        PXVertexBuffer PXREF pxVertexBuffer = &pxVertexBufferList[i];
+        PXBufferLayout PXREF pxVertexBufferLayoutList = PXVertexBufferLayoutGET(pxVertexBuffer);
 
         PXSize offset = 0;
 
@@ -2860,7 +2875,7 @@ PXResult PXAPI  PXMeshVertexLayoutTransmute(PXMesh* const pxMesh)
 
     if(1 == pxMesh->VertexBufferListAmount)
     {
-        PXVertexBuffer* const pxVertexBuffer = &pxMesh->VertexBufferPrime;
+        PXVertexBuffer PXREF pxVertexBuffer = &pxMesh->VertexBufferPrime;
 
         PXVertexBufferFormatInfo pxVertexBufferFormatInfoOLD;
         PXVertexBufferFormatInfoExtract(&pxVertexBufferFormatInfoOLD, pxVertexBuffer->Format);
@@ -2990,19 +3005,19 @@ PXResult PXAPI  PXMeshVertexLayoutTransmute(PXMesh* const pxMesh)
 #endif
 }
 
-PXResult PXAPI  PXMeshNormalDataGenerate(PXMesh* const pxMesh)
+PXResult PXAPI PXMeshNormalDataGenerate(PXMesh PXREF pxMesh)
 {
     // ...
 
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXMeshVertexArrayAdd
+PXResult PXAPI PXMeshVertexArrayAdd
 (
-    PXMesh* const pxMesh,
+    PXMesh PXREF pxMesh,
     void* data,
     const PXSize dataLength,
-    PXBufferLayout* const pxVertexBufferLayoutList,
+    PXBufferLayout PXREF pxVertexBufferLayoutList,
     const PXSize pxVertexBufferLayoutListAmount
 )
 {
@@ -3042,8 +3057,8 @@ PXResult PXAPI  PXMeshVertexArrayAdd
 
    // Request API
 
-    PXGraphic* const pxGraphic = PXGraphicInstantiateGET();
-    PXOpenGL* const opengl = &pxGraphic->OpenGLInstance;
+    PXGraphic PXREF pxGraphic = PXGraphicInstantiateGET();
+    PXOpenGL PXREF opengl = &pxGraphic->OpenGLInstance;
 
     PXVertexBuffer indexedVertexBuffer;
 
@@ -3073,7 +3088,7 @@ PXResult PXAPI  PXMeshVertexArrayAdd
     return PXActionSuccessful;
 }
 
-PXSize PXAPI PXMeshTriangleAmount(PXMesh* const pxMesh)
+PXSize PXAPI PXMeshTriangleAmount(PXMesh PXREF pxMesh)
 {
     /*
     const PXI8U stride = PXVertexBufferFormatStrideSize(pxMesh->VertexBuffer.Format);
@@ -3085,14 +3100,14 @@ PXSize PXAPI PXMeshTriangleAmount(PXMesh* const pxMesh)
     return 0;// (pxMesh->IndexBuffer.DataIndexSizeTotal[0];
 }
 
-PXF32* PXAPI PXMeshTriangleIndex(PXMesh* const pxMesh, const PXSize index)
+PXF32* PXAPI PXMeshTriangleIndex(PXMesh PXREF pxMesh, const PXSize index)
 {
     //PXVertexBufferInsertionPoint();
 
     return 0;// PXPublic PXF32* PXAPI();
 }
 
-void PXAPI PXModelConstruct(PXModel* const pxModel)
+void PXAPI PXModelConstruct(PXModel PXREF pxModel)
 {
     PXClear(PXModel, pxModel);
 
@@ -3101,7 +3116,7 @@ void PXAPI PXModelConstruct(PXModel* const pxModel)
     // PXRectangleOffsetSet(&pxModel->Margin, 1, 1, 1, 1);
 }
 
-PXFontPageCharacter* PXAPI PXFontPageCharacterFetch(PXFontPage* const pxFontPage, const PXI32U characterID)
+PXFontPageCharacter* PXAPI PXFontPageCharacterFetch(PXFontPage PXREF pxFontPage, const PXI32U characterID)
 {
     PXFontPageCharacter* lastMatch = PXNull;
     PXBool match = PXFalse;
@@ -3113,7 +3128,7 @@ PXFontPageCharacter* PXAPI PXFontPageCharacterFetch(PXFontPage* const pxFontPage
 
     for(PXSize i = 0; i < pxFontPage->CharacteListEntrys && !match; ++i)
     {
-        const PXFontPageCharacter* const currentCharacter = &pxFontPage->CharacteList[i];
+        const PXFontPageCharacter PXREF currentCharacter = &pxFontPage->CharacteList[i];
 
         match = currentCharacter->ID == characterID;
 
@@ -3123,7 +3138,7 @@ PXFontPageCharacter* PXAPI PXFontPageCharacterFetch(PXFontPage* const pxFontPage
     return lastMatch;
 }
 
-PXFontPage* PXAPI PXFontPageGet(PXFont* const pxFont, const PXSize index)
+PXFontPage* PXAPI PXFontPageGet(PXFont PXREF pxFont, const PXSize index)
 {
     if(!pxFont)
     {
@@ -3200,7 +3215,7 @@ const char* PXAPI PXUIElementTypeToString(const PXUIElementType pxUIElementType)
     }
 }
 
-void PXAPI PXWindowBrushColorSet(PXWindowBrush* const pxWindowBrush, const PXByte red, const PXByte green, const PXByte blue)
+void PXAPI PXWindowBrushColorSet(PXWindowBrush PXREF pxWindowBrush, const PXByte red, const PXByte green, const PXByte blue)
 {
     pxWindowBrush->Info.Behaviour |= PXWindowBrushBehaviourColorEmbeded;
     pxWindowBrush->ColorDate.Red = red;
@@ -3208,7 +3223,7 @@ void PXAPI PXWindowBrushColorSet(PXWindowBrush* const pxWindowBrush, const PXByt
     pxWindowBrush->ColorDate.Blue = blue;
 }
 
-PXResult PXAPI  PXVersionFromString(PXVersion* const pxVersion, char* versioNString)
+PXResult PXAPI PXVersionFromString(PXVersion PXREF pxVersion, char* versioNString)
 {
     int versionMajor = 0;
     int versionMinor = 0;
@@ -3216,7 +3231,7 @@ PXResult PXAPI  PXVersionFromString(PXVersion* const pxVersion, char* versioNStr
     int versionPatch = 0;
 
     PXText pxTextVersion;
-    PXTextConstructFromAdressA(&pxTextVersion, versioNString, 0, PXTextUnkownLength);
+    PXTextFromAdressA(&pxTextVersion, versioNString, 0, PXTextUnkownLength);
 
     PXSize offset = 0;
 
@@ -3242,17 +3257,18 @@ PXResult PXAPI  PXVersionFromString(PXVersion* const pxVersion, char* versioNStr
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXVersionToString(PXVersion* const pxVersion, char* versioNString)
+PXResult PXAPI PXVersionToString(PXVersion PXREF pxVersion, char* versioNString)
 {
     PXTextPrintA(versioNString, 64, "%i.%i.%i", pxVersion->Major, pxVersion->Minor, pxVersion->Build);
 
     return PXActionSuccessful;
 }
 
-void PXAPI PXUIElementPositionCalculcate(PXWindow* const pxWindow, PXUIElementPositionCalulcateInfo* const pxUIElementPositionCalulcateInfo)
+void PXAPI PXUIElementPositionCalculcate(PXWindow PXREF pxWindow, PXUIElementPositionCalulcateInfo PXREF pxUIElementPositionCalulcateInfo)
 {
     if(!((PXWindowAllignIgnoreParentMargin & pxWindow->Info.Setting) > 0))
     {
+#if 0
         for
             (
             PXWindow* pxUIElementParent = (PXWindow*)pxWindow->Info.Hierarchy.Parrent;
@@ -3260,11 +3276,12 @@ void PXAPI PXUIElementPositionCalculcate(PXWindow* const pxWindow, PXUIElementPo
             pxUIElementParent = (PXWindow*)pxUIElementParent->Info.Hierarchy.Parrent
             )
         {
-            pxUIElementPositionCalulcateInfo->MarginLeft += pxUIElementParent->Position.Margin.Left;
-            pxUIElementPositionCalulcateInfo->MarginTop += pxUIElementParent->Position.Margin.Top;
-            pxUIElementPositionCalulcateInfo->MarginRight += pxUIElementParent->Position.Margin.Right;
-            pxUIElementPositionCalulcateInfo->MarginBottom += pxUIElementParent->Position.Margin.Bottom;
+            pxUIElementPositionCalulcateInfo->Margin.Left += pxUIElementParent->Position.Margin.Left;
+            pxUIElementPositionCalulcateInfo->Margin.Top += pxUIElementParent->Position.Margin.Top;
+            pxUIElementPositionCalulcateInfo->Margin.Right += pxUIElementParent->Position.Margin.Right;
+            pxUIElementPositionCalulcateInfo->Margin.Bottom += pxUIElementParent->Position.Margin.Bottom;
         }
+#endif
     }
     else
     {
@@ -3274,21 +3291,21 @@ void PXAPI PXUIElementPositionCalculcate(PXWindow* const pxWindow, PXUIElementPo
         // pxUIElementPositionCalulcateInfo->MarginBottom += 0.2;
     }
 
-    pxUIElementPositionCalulcateInfo->MarginLeft += pxWindow->Position.Margin.Left;
-    pxUIElementPositionCalulcateInfo->MarginTop += pxWindow->Position.Margin.Top;
-    pxUIElementPositionCalulcateInfo->MarginRight += pxWindow->Position.Margin.Right;
-    pxUIElementPositionCalulcateInfo->MarginBottom += pxWindow->Position.Margin.Bottom;
+    pxUIElementPositionCalulcateInfo->Margin.Left += pxWindow->Position.Margin.Left;
+    pxUIElementPositionCalulcateInfo->Margin.Top += pxWindow->Position.Margin.Top;
+    pxUIElementPositionCalulcateInfo->Margin.Right += pxWindow->Position.Margin.Right;
+    pxUIElementPositionCalulcateInfo->Margin.Bottom += pxWindow->Position.Margin.Bottom;
 
     // Normalizied space for OpenGL
-    pxUIElementPositionCalulcateInfo->AA = -1 + pxUIElementPositionCalulcateInfo->MarginLeft;
-    pxUIElementPositionCalulcateInfo->BA = -1 + pxUIElementPositionCalulcateInfo->MarginTop;
-    pxUIElementPositionCalulcateInfo->BB = +1 - pxUIElementPositionCalulcateInfo->MarginRight,
-        pxUIElementPositionCalulcateInfo->AB = +1 - pxUIElementPositionCalulcateInfo->MarginBottom;
+    pxUIElementPositionCalulcateInfo->AA = -1 + pxUIElementPositionCalulcateInfo->Margin.Left;
+    pxUIElementPositionCalulcateInfo->BA = -1 + pxUIElementPositionCalulcateInfo->Margin.Top;
+    pxUIElementPositionCalulcateInfo->BB = +1 - pxUIElementPositionCalulcateInfo->Margin.Right,
+        pxUIElementPositionCalulcateInfo->AB = +1 - pxUIElementPositionCalulcateInfo->Margin.Bottom;
 
-    PXF32 remLeft = (pxUIElementPositionCalulcateInfo->MarginLeft) * pxUIElementPositionCalulcateInfo->WindowWidth / 2.0f;
-    PXF32 remTop = (pxUIElementPositionCalulcateInfo->MarginTop) * pxUIElementPositionCalulcateInfo->WindowHeight / 2.0f;
-    PXF32 remRight = (pxUIElementPositionCalulcateInfo->MarginRight) * pxUIElementPositionCalulcateInfo->WindowWidth / 2.0f;
-    PXF32 remBottom = (pxUIElementPositionCalulcateInfo->MarginBottom) * pxUIElementPositionCalulcateInfo->WindowHeight / 2.0f;
+    PXF32 remLeft = (pxUIElementPositionCalulcateInfo->Margin.Left) * pxUIElementPositionCalulcateInfo->WindowWidth / 2.0f;
+    PXF32 remTop = (pxUIElementPositionCalulcateInfo->Margin.Top) * pxUIElementPositionCalulcateInfo->WindowHeight / 2.0f;
+    PXF32 remRight = (pxUIElementPositionCalulcateInfo->Margin.Right) * pxUIElementPositionCalulcateInfo->WindowWidth / 2.0f;
+    PXF32 remBottom = (pxUIElementPositionCalulcateInfo->Margin.Bottom) * pxUIElementPositionCalulcateInfo->WindowHeight / 2.0f;
 
 
     // Add perspective scaling
@@ -3322,20 +3339,20 @@ void PXAPI PXUIElementPositionCalculcate(PXWindow* const pxWindow, PXUIElementPo
 
     if(PXWindowKeepWidth & pxWindow->Info.Setting)
     {
-        pxUIElementPositionCalulcateInfo->Width = pxWindow->Position.Form.Width;
+        pxUIElementPositionCalulcateInfo->Size.Width = pxWindow->Position.Form.Width;
     }
     else
     {
-        pxUIElementPositionCalulcateInfo->Width = mathWithScaling;
+        pxUIElementPositionCalulcateInfo->Size.Width = mathWithScaling;
     }
 
     if(PXWindowKeepHeight & pxWindow->Info.Setting)
     {
-        pxUIElementPositionCalulcateInfo->Height = pxWindow->Position.Form.Height;
+        pxUIElementPositionCalulcateInfo->Size.Height = pxWindow->Position.Form.Height;
     }
     else
     {
-        pxUIElementPositionCalulcateInfo->Height = heightWithScaling;
+        pxUIElementPositionCalulcateInfo->Size.Height = heightWithScaling;
     }
 
 
@@ -3344,34 +3361,111 @@ void PXAPI PXUIElementPositionCalculcate(PXWindow* const pxWindow, PXUIElementPo
         default:
         case PXWindowAllignLeft:
         {
-            pxUIElementPositionCalulcateInfo->X = remLeft;
-            pxUIElementPositionCalulcateInfo->Y = remTop;
+            pxUIElementPositionCalulcateInfo->Size.X = remLeft;
+            pxUIElementPositionCalulcateInfo->Size.Y = remTop;
             break;
         }
         case PXWindowAllignTop:
         {
-            pxUIElementPositionCalulcateInfo->X = remLeft;
-            pxUIElementPositionCalulcateInfo->Y = remTop;
+            pxUIElementPositionCalulcateInfo->Size.X = remLeft;
+            pxUIElementPositionCalulcateInfo->Size.Y = remTop;
             break;
         }
         case PXWindowAllignRight:
         {
-            pxUIElementPositionCalulcateInfo->X = pxUIElementPositionCalulcateInfo->WindowWidth - (remRight + pxUIElementPositionCalulcateInfo->Width);
-            pxUIElementPositionCalulcateInfo->Y = pxUIElementPositionCalulcateInfo->WindowHeight - (remBottom + pxUIElementPositionCalulcateInfo->Height);
+            pxUIElementPositionCalulcateInfo->Size.X = pxUIElementPositionCalulcateInfo->WindowWidth - (remRight + pxUIElementPositionCalulcateInfo->Size.Width);
+            pxUIElementPositionCalulcateInfo->Size.Y = pxUIElementPositionCalulcateInfo->WindowHeight - (remBottom + pxUIElementPositionCalulcateInfo->Size.Height);
             break;
 
         }
         case PXWindowAllignBottom:
         {
-            pxUIElementPositionCalulcateInfo->X = remLeft;
-            pxUIElementPositionCalulcateInfo->Y = pxUIElementPositionCalulcateInfo->WindowHeight - (remBottom + pxUIElementPositionCalulcateInfo->Height);
+            pxUIElementPositionCalulcateInfo->Size.X = remLeft;
+            pxUIElementPositionCalulcateInfo->Size.Y = pxUIElementPositionCalulcateInfo->WindowHeight - (remBottom + pxUIElementPositionCalulcateInfo->Size.Height);
             break;
         }
     }
-
 }
 
-PXResult PXAPI  PXFileTypeInfoProbe(PXFileFormatInfo* const pxFileFormatInfo, const PXText* const pxText)
+PXResult PXAPI PXResourcePropertyIO
+(
+    PXResourceInfo PXREF pxResourceInfo,
+    PXResourceProperty PXREF pxResourceProperty, 
+    const PXI8U mode,
+    const PXBool doWrite
+)
+{
+    switch(mode)
+    {
+        case PXResourcePropertyName:
+        {
+            PXText PXREF pxText = &pxResourceProperty->Text;
+
+            if(doWrite)
+            {
+                PXListDynamicAdd(&_GLOBALResourceManager.NameCache, &pxResourceInfo->ID, pxText->A, pxText->SizeUsed);
+
+                pxResourceInfo->Behaviour |= PXResourceInfoHasSource;
+            }
+            else
+            {
+                PXListDynamicGet(&_GLOBALResourceManager.NameCache, &pxResourceInfo->ID, pxText->A, &pxText->SizeUsed);
+            }
+
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                PXResourceManagerText,
+                "Name",
+                "Mode:%10s - (%i) %s",
+                doWrite ? "Write" : "Read",
+                pxText->SizeUsed,
+                pxText->A
+            
+            );
+#endif           
+
+            break;
+        }
+        case PXResourcePropertyPath:
+        {
+            PXText PXREF pxText = &pxResourceProperty->Text;
+
+            if(doWrite)
+            {
+
+            }
+            else
+            {
+                PXListDynamicGet(&_GLOBALResourceManager.SourcePathCache, &pxResourceInfo->ID, pxText->A, &pxText->SizeUsed);
+            }    
+
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                PXResourceManagerText,
+                "Path",
+                "Mode:%10s - (%i) %s",
+                doWrite ? "Write" : "Read",
+                pxText->SizeUsed,
+                pxText->A
+
+            );
+#endif
+
+            break;
+        }
+
+        default:
+            return;
+    }
+
+    return PXActionSuccessful;
+}
+
+PXResult PXAPI PXFileTypeInfoProbe(PXFileFormatInfo PXREF pxFileFormatInfo, const PXText PXREF pxText)
 {
     // Probe for file extension
     if(pxText)
@@ -3871,7 +3965,7 @@ PXResult PXAPI  PXFileTypeInfoProbe(PXFileFormatInfo* const pxFileFormatInfo, co
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXResourceManagerReferenceValidate(PXResourceReference* const pxResourceReference)
+PXResult PXAPI PXResourceManagerReferenceValidate(PXResourceReference PXREF pxResourceReference)
 {
     if(!pxResourceReference)
     {
@@ -3903,7 +3997,7 @@ PXResult PXAPI  PXResourceManagerReferenceValidate(PXResourceReference* const px
     }
 }
 
-PXResult PXAPI  PXResourceLoad(PXResourceTransphereInfo* const pxResourceLoadInfo, const PXText* const filePath)
+PXResult PXAPI PXResourceLoad(PXResourceTransphereInfo PXREF pxResourceLoadInfo, const PXText PXREF filePath)
 {
     // Parameter exist check
     {
@@ -3979,15 +4073,15 @@ PXResult PXAPI  PXResourceLoad(PXResourceTransphereInfo* const pxResourceLoadInf
     {
         PXFileOpenInfo pxFileOpenInfo;
         PXClear(PXFileOpenInfo, &pxFileOpenInfo);
-        pxFileOpenInfo.FilePathAdress = filePath->A;
-        pxFileOpenInfo.FilePathSize = filePath->SizeUsed;
+        pxFileOpenInfo.FilePath = *filePath;
         pxFileOpenInfo.AccessMode = PXAccessModeReadOnly;
         pxFileOpenInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
         pxFileOpenInfo.FlagList = PXFileIOInfoAllowMapping | PXFileIOInfoFilePhysical;
 
-        const PXActionResult fileLoadingResult = PXFileOpen(&pxFile, &pxFileOpenInfo);
+        const PXResult fileLoadingResult = PXFileOpen(&pxFile, &pxFileOpenInfo);
 
-        PXActionReturnOnError(fileLoadingResult);
+        if(PXActionSuccessful != fileLoadingResult) 
+            return fileLoadingResult;;
     }
 
     PXPerformanceInfo pxPerformanceInfo;
@@ -4007,7 +4101,7 @@ PXResult PXAPI  PXResourceLoad(PXResourceTransphereInfo* const pxResourceLoadInf
 #endif
 
         PXPerformanceInfoGet(&pxPerformanceInfo);
-        const PXActionResult pxPeekResult = pxResourceLoadInfo->FormatInfo.ResourcePeek(pxResourceLoadInfo);
+        const PXResult pxPeekResult = pxResourceLoadInfo->FormatInfo.ResourcePeek(pxResourceLoadInfo);
         const PXBool success = PXActionSuccessful == pxPeekResult;
 
         if(!success)
@@ -4101,7 +4195,7 @@ PXResult PXAPI  PXResourceLoad(PXResourceTransphereInfo* const pxResourceLoadInf
 
         PXPerformanceInfoGet(&pxPerformanceInfo);
 
-        const PXActionResult fileParsingResult = pxResourceLoadInfo->FormatInfo.ResourceLoad(pxResourceLoadInfo);
+        const PXResult fileParsingResult = pxResourceLoadInfo->FormatInfo.ResourceLoad(pxResourceLoadInfo);
 
         PXPerformanceInfoGet(&pxPerformanceInfo);
 
@@ -4148,18 +4242,18 @@ PXResult PXAPI  PXResourceLoad(PXResourceTransphereInfo* const pxResourceLoadInf
     }
 }
 
-PXResult PXAPI  PXResourceLoadA(PXResourceTransphereInfo* const pxResourceLoadInfo, const char* const filePath)
+PXResult PXAPI PXResourceLoadA(PXResourceTransphereInfo PXREF pxResourceLoadInfo, const char PXREF filePath)
 {
     PXText pxText;
 
-    PXTextConstructFromAdressA(&pxText, filePath, PXTextLengthUnkown, PXTextUnkownLength);
+    PXTextFromAdressA(&pxText, filePath, PXTextLengthUnkown, PXTextUnkownLength);
 
-    const PXActionResult loadResult = PXResourceLoad(pxResourceLoadInfo, &pxText);
+    const PXResult loadResult = PXResourceLoad(pxResourceLoadInfo, &pxText);
 
     return loadResult;
 }
 
-PXResult PXAPI  PXResourceSave(PXResourceTransphereInfo* const pxResourceSaveInfo, const PXText* const filePath)
+PXResult PXAPI PXResourceSave(PXResourceTransphereInfo PXREF pxResourceSaveInfo, const PXText PXREF filePath)
 {
     PXFile pxFile;
 
@@ -4167,15 +4261,15 @@ PXResult PXAPI  PXResourceSave(PXResourceTransphereInfo* const pxResourceSaveInf
     {
         PXFileOpenInfo pxFileIOInfo;
         PXClear(PXFileOpenInfo, &pxFileIOInfo);
-        pxFileIOInfo.FilePathAdress = filePath->A;
-        pxFileIOInfo.FilePathSize = filePath->SizeUsed;
+        pxFileIOInfo.FilePath = *filePath;
         pxFileIOInfo.AccessMode = PXAccessModeWriteOnly;
         pxFileIOInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
         pxFileIOInfo.FlagList = PXFileIOInfoFilePhysical | PXFileIOInfoAllowMapping | PXFileIOInfoCreateIfNotExist;
 
-        const PXActionResult fileLoadingResult = PXFileOpen(&pxFile, &pxFileIOInfo);
+        const PXResult fileLoadingResult = PXFileOpen(&pxFile, &pxFileIOInfo);
 
-        PXActionReturnOnError(fileLoadingResult);
+        if(PXActionSuccessful != fileLoadingResult) 
+            return fileLoadingResult;
     }
 
 
@@ -4221,7 +4315,7 @@ PXResult PXAPI  PXResourceSave(PXResourceTransphereInfo* const pxResourceSaveInf
 
         pxResourceSaveInfo->FileReference = &pxFile;
 
-        const PXActionResult fileParsingResult = pxResourceSaveInfo->FormatInfo.ResourceSave(pxResourceSaveInfo);
+        const PXResult fileParsingResult = pxResourceSaveInfo->FormatInfo.ResourceSave(pxResourceSaveInfo);
 
 #if PXLogEnable
         const PXI64U timeStampB = PXTimeCounterStampGet() - timeStampA;
@@ -4252,13 +4346,13 @@ PXResult PXAPI  PXResourceSave(PXResourceTransphereInfo* const pxResourceSaveInf
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXResourceSaveA(PXResourceTransphereInfo* const pxResourceSaveInfo, const char* const filePath)
+PXResult PXAPI PXResourceSaveA(PXResourceTransphereInfo PXREF pxResourceSaveInfo, const char PXREF filePath)
 {
     PXText pxText;
 
-    PXTextConstructFromAdressA(&pxText, filePath, PXTextLengthUnkown, PXTextUnkownLength);
+    PXTextFromAdressA(&pxText, filePath, PXTextLengthUnkown, PXTextUnkownLength);
 
-    const PXActionResult loadResult = PXResourceSave(pxResourceSaveInfo, &pxText);
+    const PXResult loadResult = PXResourceSave(pxResourceSaveInfo, &pxText);
 
     return loadResult;
 }
@@ -4365,7 +4459,7 @@ PXResourceManager* PXAPI PXResourceManagerGet(void)
     return &_GLOBALResourceManager;
 }
 
-PXResult PXAPI PXResourceComponentCreate(PXComponentInfo* const pxComponentInfo)
+PXResult PXAPI PXResourceComponentCreate(PXComponentInfo PXREF pxComponentInfo)
 {
     //PXDictionaryEntryCreate(&_GLOBALResourceManager.ComponentLookup.ComponentLookup);
 
@@ -4383,17 +4477,17 @@ PXI32U PXAPI PXResourceManagerGenerateUniqeID()
     return 1000 + ++_pxResourceManager.UniqeIDCounter;
 }
 
-PXResult PXAPI PXResourceAdd(PXResourceInfo* const pxResourceInfo, void* payload)
+PXResult PXAPI PXResourceAdd(PXResourceInfo PXREF pxResourceInfo, void* payload)
 {
     return PXActionSuccessful;
 }
 
-PXResult PXAPI PXResourceRemove(PXResourceInfo* const pxResourceInfo)
+PXResult PXAPI PXResourceRemove(PXResourceInfo PXREF pxResourceInfo)
 {
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXResourcePropertyE(PXResourceProperty* const pxResourceProperty, const PXBool doWrite)
+PXResult PXAPI PXResourcePropertyE(PXResourceProperty PXREF pxResourceProperty, const PXBool doWrite)
 {
     // NULL Check
     if(!pxResourceProperty)
@@ -4462,7 +4556,7 @@ PXResult PXAPI  PXResourcePropertyE(PXResourceProperty* const pxResourceProperty
 
 
 
-PXResult PXAPI PXGUIIconLoad(PXIcon* const pxIcon)
+PXResult PXAPI PXGUIIconLoad(PXIcon PXREF pxIcon)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -4473,7 +4567,7 @@ PXResult PXAPI PXGUIIconLoad(PXIcon* const pxIcon)
 #endif
 }
 
-void PXAPI PXRectangleLTRBI32ToXYWHI32(const PXRectangleLTRBI32* const pxRectangleLTRBI32, PXRectangleXYWHI32* const pxRectangleXYWHI32)
+void PXAPI PXRectangleLTRBI32ToXYWHI32(const PXRectangleLTRBI32 PXREF pxRectangleLTRBI32, PXRectangleXYWHI32 PXREF pxRectangleXYWHI32)
 {
     pxRectangleXYWHI32->X = pxRectangleLTRBI32->Left;
     pxRectangleXYWHI32->Y = pxRectangleLTRBI32->Top;
@@ -4481,7 +4575,7 @@ void PXAPI PXRectangleLTRBI32ToXYWHI32(const PXRectangleLTRBI32* const pxRectang
     pxRectangleXYWHI32->Height = pxRectangleLTRBI32->Bottom - pxRectangleLTRBI32->Top;
 }
 
-void PXAPI PXRectangleXYWHI32ToLTRBI32(const PXRectangleXYWHI32* const pxRectangleXYWHI32, PXRectangleLTRBI32* const pxRectangleLTRBI32)
+void PXAPI PXRectangleXYWHI32ToLTRBI32(const PXRectangleXYWHI32 PXREF pxRectangleXYWHI32, PXRectangleLTRBI32 PXREF pxRectangleLTRBI32)
 {
     pxRectangleLTRBI32->Left = pxRectangleXYWHI32->X;
     pxRectangleLTRBI32->Top = pxRectangleXYWHI32->Y;
@@ -4489,21 +4583,32 @@ void PXAPI PXRectangleXYWHI32ToLTRBI32(const PXRectangleXYWHI32* const pxRectang
     pxRectangleLTRBI32->Bottom = pxRectangleXYWHI32->Y + pxRectangleXYWHI32->Height;
 }
 
-PXResult PXAPI PXTextureRelease(PXTexture* const pxTexture)
+void PXAPI PXRectangleXYWHI32ToVertex(const PXRectangleXYWHI32 PXREF pxRectangleXYWHI32, const PXVector2F32 PXREF screenSize, PXRectangleVertexF32 PXREF pxRectangleVertexF32)
+{
+    // Convert width and height to normalized scale
+    pxRectangleVertexF32->BX = (float)pxRectangleXYWHI32->Width / screenSize->X * 2.0f;
+    pxRectangleVertexF32->BY = (float)pxRectangleXYWHI32->Height / screenSize->Y * 2.0f;
+
+    // Convert x and y to normalized coordinates (OpenGL origin is center)
+    pxRectangleVertexF32->AX = ((float)pxRectangleXYWHI32->X / screenSize->X) * 2.0f - 1.0f + pxRectangleVertexF32->BX / 2.0f;
+    pxRectangleVertexF32->AY = 1.0f - ((float)pxRectangleXYWHI32->Y / screenSize->Y) * 2.0f - pxRectangleVertexF32->BY / 2.0f;
+}
+
+PXResult PXAPI PXTextureRelease(PXTexture PXREF pxTexture)
 {
     PXMemoryHeapFree(PXNull, pxTexture->PixelData);
 
     return PXActionInvalid;
 }
 
-PXResult PXAPI PXTextureCopyAsIs(PXTexture* const pxTexture, const PXTexture* const pxTextureSource)
+PXResult PXAPI PXTextureCopyAsIs(PXTexture PXREF pxTexture, const PXTexture PXREF pxTextureSource)
 {
   //  PXCopy(PXTexture, pxTexture, pxTextureSource);
 
     return PXActionInvalid;
 }
 
-PXResult PXAPI PXTextureCopyAsNew(PXTexture* const pxTexture, const PXTexture* const pxTextureSource)
+PXResult PXAPI PXTextureCopyAsNew(PXTexture PXREF pxTexture, const PXTexture PXREF pxTextureSource)
 {
     pxTexture->PixelData = PXMemoryHeapCallocT(PXByte, pxTextureSource->PixelDataSize);
     PXCopyList(PXByte, pxTexture->PixelDataSize, pxTexture->PixelData, pxTextureSource->PixelData);
@@ -4516,7 +4621,7 @@ PXResult PXAPI PXTextureCopyAsNew(PXTexture* const pxTexture, const PXTexture* c
     return PXActionInvalid;
 }
 
-PXResult PXAPI PXTextureResize(PXTexture* const pxTexture, const PXColorFormat format, const PXSize width, const PXSize height)
+PXResult PXAPI PXTextureResize(PXTexture PXREF pxTexture, const PXColorFormat format, const PXSize width, const PXSize height)
 {
     const PXSize bbp = PXColorFormatBytePerPixel(format);
     const PXSize newSize = width * height * bbp;
@@ -4528,7 +4633,7 @@ PXResult PXAPI PXTextureResize(PXTexture* const pxTexture, const PXColorFormat f
 
         if(isSizeAlreadyOK)
         {
-            return PXYes;
+            return PXActionSuccessful;
         }
     }
 
@@ -4583,7 +4688,7 @@ PXResult PXAPI PXTextureResize(PXTexture* const pxTexture, const PXColorFormat f
     return PXActionSuccessful;
 }
 
-PXResult PXAPI PXTextureFlipHorizontal(PXTexture* const pxTexture)
+PXResult PXAPI PXTextureFlipHorizontal(PXTexture PXREF pxTexture)
 {
     const PXSize bbp = PXColorFormatBytePerPixel(pxTexture->Format);
     const PXSize rowSize = (pxTexture->Width * bbp);
@@ -4610,7 +4715,7 @@ PXResult PXAPI PXTextureFlipHorizontal(PXTexture* const pxTexture)
     return PXActionInvalid;
 }
 
-PXResult PXAPI PXTextureFlipVertical(PXTexture* const pxTexture)
+PXResult PXAPI PXTextureFlipVertical(PXTexture PXREF pxTexture)
 {
     const PXSize bbp = PXColorFormatBytePerPixel(pxTexture->Format);;
     const PXSize scanLineWidthSize = pxTexture->Width * bbp;
@@ -4637,7 +4742,7 @@ PXResult PXAPI PXTextureFlipVertical(PXTexture* const pxTexture)
     return PXActionInvalid;
 }
 
-PXResult PXAPI PXTextureRemoveColor(PXTexture* const pxTexture, const PXByte red, const PXByte green, const PXByte blue)
+PXResult PXAPI PXTextureRemoveColor(PXTexture PXREF pxTexture, const PXByte red, const PXByte green, const PXByte blue)
 {
     // DO we have alpha? If not, make one
 
@@ -4652,8 +4757,8 @@ PXResult PXAPI PXTextureRemoveColor(PXTexture* const pxTexture, const PXByte red
 
     for(PXSize pixelIndex = 0; pixelIndex < length; ++pixelIndex)
     {
-        PXByte* const oldData = (PXByte*)pxTexture->PixelData + currentOffset - ((pixelIndex + 1) * 3u);
-        PXByte* const newData = (PXByte*)pxTexture->PixelData + dataOffset - ((pixelIndex + 1) * 4u);
+        PXByte PXREF oldData = (PXByte*)pxTexture->PixelData + currentOffset - ((pixelIndex + 1) * 3u);
+        PXByte PXREF newData = (PXByte*)pxTexture->PixelData + dataOffset - ((pixelIndex + 1) * 4u);
 
         newData[0] = oldData[0];
         newData[1] = oldData[1];
@@ -4664,11 +4769,11 @@ PXResult PXAPI PXTextureRemoveColor(PXTexture* const pxTexture, const PXByte red
     return PXActionInvalid;
 }
 
-PXResult PXAPI PXTextureFillColorRGBA8(PXTexture* const pxTexture, const PXByte red, const PXByte green, const PXByte blue, const PXByte alpha)
+PXResult PXAPI PXTextureFillColorRGBA8(PXTexture PXREF pxTexture, const PXByte red, const PXByte green, const PXByte blue, const PXByte alpha)
 {
     for(PXSize i = 0; i < pxTexture->PixelDataSize; i += 4u)
     {
-        PXByte* const data = (PXByte*)pxTexture->PixelData + i;
+        PXByte PXREF data = (PXByte*)pxTexture->PixelData + i;
 
         data[0] = red;
         data[1] = green;
@@ -4679,7 +4784,7 @@ PXResult PXAPI PXTextureFillColorRGBA8(PXTexture* const pxTexture, const PXByte 
     return PXActionInvalid;
 }
 
-void* PXAPI PXTextureDataPoint(const PXTexture* const pxTexture, const PXSize x, const PXSize y)
+void* PXAPI PXTextureDataPoint(const PXTexture PXREF pxTexture, const PXSize x, const PXSize y)
 {
     const PXSize bytesPerPixel = PXColorFormatBytePerPixel(pxTexture->Format);
     const PXSize index = x * bytesPerPixel + y * pxTexture->Width;
@@ -4687,7 +4792,7 @@ void* PXAPI PXTextureDataPoint(const PXTexture* const pxTexture, const PXSize x,
     return (PXByte*)pxTexture->PixelData + index;
 }
 
-PXSize PXAPI PXTexturePixelPosition(const PXTexture* const pxTexture, const PXSize x, const PXSize y)
+PXSize PXAPI PXTexturePixelPosition(const PXTexture PXREF pxTexture, const PXSize x, const PXSize y)
 {
     const PXSize bytesPerPixel = PXColorFormatBytePerPixel(pxTexture->Format);
     const PXSize index = x * bytesPerPixel + y * bytesPerPixel * pxTexture->Width;
@@ -4695,7 +4800,7 @@ PXSize PXAPI PXTexturePixelPosition(const PXTexture* const pxTexture, const PXSi
     return index;
 }
 
-void PXAPI PXTexturePixelSetRGB8(PXTexture* const pxTexture, const PXSize x, const PXSize y, const PXByte red, const PXByte green, const PXByte blue)
+void PXAPI PXTexturePixelSetRGB8(PXTexture PXREF pxTexture, const PXSize x, const PXSize y, const PXByte red, const PXByte green, const PXByte blue)
 {
     const PXSize index = PXTexturePixelPosition(pxTexture, x, y);
     PXByte* pixelData = (PXByte*)pxTexture->PixelData + index;

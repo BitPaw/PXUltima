@@ -125,14 +125,14 @@ PXSize PXAPI PXTGAFilePredictSize(const PXSize width, const PXSize height, const
     return 0;
 }
 
-void PXAPI PXTGADestruct(PXTGA* const tga)
+void PXAPI PXTGADestruct(PXTGA PXREF tga)
 {
 
 }
 
-PXResult PXAPI  PXTGALoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI PXTGALoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
 {
-    PXTexture* const pxTexture = (PXTexture*)pxResourceLoadInfo->ResourceTarget;
+    PXTexture PXREF pxTexture = (PXTexture*)pxResourceLoadInfo->ResourceTarget;
 
     PXTGA tgaOBJ;
     PXTGA* tga = &tgaOBJ;
@@ -313,7 +313,7 @@ PXResult PXAPI  PXTGALoadFromFile(PXResourceTransphereInfo* const pxResourceLoad
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXTGASaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI PXTGASaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

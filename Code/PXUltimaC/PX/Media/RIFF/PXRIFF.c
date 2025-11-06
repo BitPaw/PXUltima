@@ -93,7 +93,7 @@ PXI32U PXAPI PXRIFFFormatToID(const PXRIFFFormat value)
     }
 }
 
-PXResult PXAPI  PXRIFFLoadFromFile(PXRIFF* const riff, PXFile* const pxFile)
+PXResult PXAPI PXRIFFLoadFromFile(PXRIFF PXREF riff, PXFile PXREF pxFile)
 {
     PXI32UCluster chunkID;
     PXI32UCluster formatID;
@@ -114,7 +114,7 @@ PXResult PXAPI  PXRIFFLoadFromFile(PXRIFF* const riff, PXFile* const pxFile)
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXRIFFSaveToFile(const PXRIFF* const riff, PXFile* const pxFile)
+PXResult PXAPI PXRIFFSaveToFile(const PXRIFF PXREF riff, PXFile PXREF pxFile)
 {
     const PXI32U riffSignature = PXRIFFEndianToID(riff->EndianFormat);
     const PXI32U riffType = PXRIFFFormatToID(riff->Format);

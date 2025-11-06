@@ -1,13 +1,10 @@
+#pragma once
+
 #ifndef PXStopWatchIncluded
 #define PXStopWatchIncluded
 
 #include <PX/Media/PXType.h>
 #include <PX/OS/Time/PXTime.h>
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
 
 typedef struct PXStopWatch_
 {
@@ -19,16 +16,12 @@ typedef struct PXStopWatch_
 }
 PXStopWatch;
 
-PXPublic void PXAPI PXStopWatchConstruct(PXStopWatch* const stopWatch);
+PXPublic void PXAPI PXStopWatchConstruct(PXStopWatch PXREF stopWatch);
 
-PXPublic void PXAPI PXStopWatchSet(PXStopWatch* const stopWatch, void* const data, const PXSize dataSize);
+PXPublic void PXAPI PXStopWatchSet(PXStopWatch PXREF stopWatch, void PXREF data, const PXSize dataSize);
 
-PXPublic void PXAPI PXStopWatchStart(PXStopWatch* const stopWatch);
-PXPublic PXBool PXAPI PXStopWatchTrigger(PXStopWatch* const stopWatch, PXTime* const time);
-PXPublic void PXAPI PXStopWatchReset(PXStopWatch* const stopWatch);
-
-#ifdef __cplusplus
-}
-#endif
+PXPublic void PXAPI PXStopWatchStart(PXStopWatch PXREF stopWatch);
+PXPublic PXBool PXAPI PXStopWatchTrigger(PXStopWatch PXREF stopWatch, PXTime PXREF time);
+PXPublic void PXAPI PXStopWatchReset(PXStopWatch PXREF stopWatch);
 
 #endif

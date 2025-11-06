@@ -18,7 +18,7 @@
 #include <PX/Engine/PXGUI.h>
 #include <PX/OS/Console/PXConsole.h>
 
-PXResult PXAPI  PXDirectX12Initialize(PXDirectX12* const pxDirectX12, PXGraphicInitializeInfo* const pxGraphicInitializeInfo)
+PXResult PXAPI PXDirectX12Initialize(PXDirectX12 PXREF pxDirectX12, PXGraphicInitializeInfo PXREF pxGraphicInitializeInfo)
 {
 #if PXLogEnable
     PXLogPrint
@@ -230,12 +230,12 @@ PXResult PXAPI  PXDirectX12Initialize(PXDirectX12* const pxDirectX12, PXGraphicI
 #endif
 }
 
-PXResult PXAPI  PXDirectX12Release(PXDirectX12* const pxDirectX12)
+PXResult PXAPI PXDirectX12Release(PXDirectX12 PXREF pxDirectX12)
 {
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI  PXDirectX12DevicePhysicalListAmountFunction(PXDirectX12* const pxDirectX12, PXI32U* const amountOfAdapters)
+PXResult PXAPI PXDirectX12DevicePhysicalListAmountFunction(PXDirectX12 PXREF pxDirectX12, PXI32U PXREF amountOfAdapters)
 {
 #if 0
     D3D_FEATURE_LEVEL featureLevel;

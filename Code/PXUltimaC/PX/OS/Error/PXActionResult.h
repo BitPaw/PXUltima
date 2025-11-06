@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXActionResultIncluded
 #define PXActionResultIncluded
 
@@ -16,6 +18,41 @@ typedef enum PXActionResult_
     PXActionDidNothing, // if the function did nothing
     PXActionFailedUnkownError, // [OTHER] Undefined error
     //-----------------------------------
+    
+    // Exceptions
+    //STATUS_PENDING,
+    PXResultExceptionAccessViolation, // [SIGSEGV] Read or write from invalid adress, EXCEPTION_ACCESS_VIOLATION
+    PXResultExceptionIndexOutOfBounds, // Index of an array is invalid
+    PXResultExceptionDataMisalignment, 
+
+
+    PXResultExceptionIllegalInstruction, // [SIGILL] Invalid or unsupported insruction executed by CPU.
+
+    PXResultExceptionPageLost, // STATUS_IN_PAGE_ERROR
+
+    // Debugging
+    PXResultDebugEventBreakPoint, // [SIGBREAK]
+    PXResultDebugEventSingleStep,
+
+    PXResultExceptionFloatDENORMAL_OPERAND,
+    PXResultExceptionFloatDIVIDE_BY_ZERO,
+    PXResultExceptionFloatINEXACT_RESULT,
+    PXResultExceptionFloatINVALID_OPERATION,
+    PXResultExceptionFloatOVERFLOW,
+    PXResultExceptionFloatSTACK_CHECK,
+    PXResultExceptionFloatUNDERFLOW,
+    PXResultExceptionINTEGER_DIVIDE_BY_ZERO,
+    PXResultExceptionINTEGER_OVERFLOW,
+    PXResultExceptionPrivilehedInstruction,
+
+    PXResultExceptionNONCONTINUABLE_EXCEPTION,
+    PXResultExceptionSTACK_OVERFLOW,
+    PXResultExceptionINVALID_DISPOSITION,
+    PXResultExceptionGUARD_PAGE_VIOLATION,
+    PXResultExceptionINVALID_HANDLE,
+    //STATUS_POSSIBLE_DEADLOCK,
+    PXResultExceptionControlCExit, // [SIGABRT]
+
 
     PXActionWaitOnResult, // The result is yet to be recieved
 
@@ -96,7 +133,7 @@ typedef enum PXActionResult_
 
 
     PXActionRefusedObjectNotCreated,    // PX-OBJ-NOID
-    PXActionRefusedObjectIDInvalid,     // PX-OBJ-IDINVAL
+    PXActionRefusedObjectIDInvalid,     // Object handle invalid
     PXActionRefusedObjectNameInvalid,   // PX-NAMEINVAL
     PXActionRefusedWindowsClassNameInvalid, 
     PXActionRefusedNameSpaceInvalid,
@@ -386,13 +423,17 @@ typedef PXActionResult PXResult;
 typedef PXI16U PXResult;
 #endif
 
-
+typedef struct PXExecutionSnapshot_
+{
+    int x;
+}
+PXExecutionSnapshot;
 
 
 
 #define PXActionReturnOnSuccess(actionResult) if (PXActionSuccessful == actionResult) return PXActionSuccessful;
-#define PXActionReturnOnError(actionResult) if (PXActionSuccessful != actionResult) return actionResult;
-#define PXActionContinueOnError(actionResult) if (PXActionSuccessful != actionResult) continue;
+//#define PXActionReturnOnError(actionResult) if (PXActionSuccessful != actionResult) return actionResult;
+//#define PXActionContinueOnError(actionResult) if (PXActionSuccessful != actionResult) continue;
 //#define PXActionOnErrorFetchAndReturn(b) if(b) { return PXErrorCurrent(); }
 
 PXPublic PXResult PXAPI PXErrorCodeFromID(const int errorCode);
@@ -407,5 +448,20 @@ PXPublic PXResult PXAPI PXErrorCurrent(const PXBool wasSuccessful);
 PXPublic PXResult PXAPI PXErrorFromHRESULT(const HRESULT handleResult);
 PXPublic PXResult PXAPI PXWindowsMMAudioConvertFromID(const PXI32U mmResultID);
 #endif
+
+typedef PXResult(PXAPI* PXCallX1)(void PXREF pxCallX1);
+
+PXPublic PXResult PXAPI PXSafeCall(PXCallX1 pxCallX1, void* p1);
+
+
+
+typedef struct PXException_
+{
+    PXI32U WindowCode;
+    void* FaultAddress;
+}
+PXException;
+
+PXPublic void PXAPI PXExceptionTrigger(PXException PXREF pxException);
 
 #endif

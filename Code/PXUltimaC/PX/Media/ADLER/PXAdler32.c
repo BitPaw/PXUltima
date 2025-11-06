@@ -1,6 +1,6 @@
 #include "PXAdler32.h"
 
-PXSize PXAPI PXAdler32Check(const void* const data, const PXSize length)
+PXSize PXAPI PXAdler32Check(const void PXREF data, const PXSize length)
 {
     const PXSize adlerModolo = 65521u;
     PXSize a = 1;
@@ -15,7 +15,7 @@ PXSize PXAPI PXAdler32Check(const void* const data, const PXSize length)
     return (b << 16) | a;
 }
 
-PXSize PXAPI PXAdler32Create(const PXSize adler, const void* const data, PXSize length)
+PXSize PXAPI PXAdler32Create(const PXSize adler, const void PXREF data, PXSize length)
 {
     char* dataCursor = (char*)data;
 

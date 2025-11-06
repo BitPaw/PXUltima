@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXEXEIncluded
 #define PXEXEIncluded
 
@@ -93,7 +95,7 @@ typedef struct PXBinaryWindows_
 }
 PXBinaryWindows;
 
-PXPublic PXResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXBinaryWindowsSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXBinaryWindowsSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

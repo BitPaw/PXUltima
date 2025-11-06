@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXPhysicIncluded
 #define PXPhysicIncluded
 
@@ -72,6 +74,6 @@ PXPublic void PXAPI PXPhysicWaveFunctionCollapse();
 
 
 
-PXPublic void PXAPI PXPhysicGravityApply(PXPhysicProperties* const physicProperties, const PXVector3F32* const gravityDircetion, const PXF32 gravityForce, const PXF32 deltaTime);
+PXPublic void PXAPI PXPhysicGravityApply(PXPhysicProperties PXREF physicProperties, const PXVector3F32 PXREF gravityDircetion, const PXF32 gravityForce, const PXF32 deltaTime);
 
 #endif

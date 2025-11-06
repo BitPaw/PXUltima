@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXHierarchicalNodeIncluded
 #define PXHierarchicalNodeIncluded
 
@@ -25,9 +27,9 @@ typedef struct PXHierarchicalNode_
 }
 PXHierarchicalNode;
 
-PXPublic PXResult PXAPI PXHierarchicalNodeYourself(PXHierarchicalNode* pxHierarchicalNode, void* const entry);
-PXPublic PXResult PXAPI PXHierarchicalNodeParent(PXHierarchicalNode* pxHierarchicalNode, PXHierarchicalNode* const pxHierarchicalNodeParent);
-PXPublic PXResult PXAPI PXHierarchicalNodeSibling(PXHierarchicalNode* pxHierarchicalNode, PXHierarchicalNode* const entry);
-PXPublic PXResult PXAPI PXHierarchicalNodeChild(PXHierarchicalNode* pxHierarchicalNode, PXHierarchicalNode* const entry);
+PXPublic PXResult PXAPI PXHierarchicalNodeYourself(PXHierarchicalNode* pxHierarchicalNode, void PXREF entry);
+PXPublic PXResult PXAPI PXHierarchicalNodeParent(PXHierarchicalNode* pxHierarchicalNode, PXHierarchicalNode PXREF pxHierarchicalNodeParent);
+PXPublic PXResult PXAPI PXHierarchicalNodeSibling(PXHierarchicalNode* pxHierarchicalNode, PXHierarchicalNode PXREF entry);
+PXPublic PXResult PXAPI PXHierarchicalNodeChild(PXHierarchicalNode* pxHierarchicalNode, PXHierarchicalNode PXREF entry);
 
 #endif

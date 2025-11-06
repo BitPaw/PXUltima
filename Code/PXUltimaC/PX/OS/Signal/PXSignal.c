@@ -18,7 +18,7 @@ LONG WINAPI PXSignalFilter(EXCEPTION_POINTERS* exceptionInfo)
 
 #endif
 
-PXResult PXAPI  PXSignalCallBackRegister(const PXSignalToken pxSignalToken, PXSignalCallBack pxSignalCallBack)
+PXResult PXAPI PXSignalCallBackRegister(const PXSignalToken pxSignalToken, PXSignalCallBack pxSignalCallBack)
 {
 #if OSUnix || OSForcePOSIXForWindows
     int signalID;
@@ -72,7 +72,7 @@ PXResult PXAPI  PXSignalCallBackRegister(const PXSignalToken pxSignalToken, PXSi
 #endif
 }
 
-PXResult PXAPI  PXRecoveryPointSet(PXRecoveryPoint* const pxRecoveryPoint)
+PXResult PXAPI PXRecoveryPointSet(PXRecoveryPoint PXREF pxRecoveryPoint)
 {
 #if PXDefaultLibraryEnable
     const int resultID = setjmp(pxRecoveryPoint->Enviroment); 
@@ -82,7 +82,7 @@ PXResult PXAPI  PXRecoveryPointSet(PXRecoveryPoint* const pxRecoveryPoint)
 #endif
 }
 
-PXResult PXAPI  PXRecoveryPointRestore(PXRecoveryPoint* const pxRecoveryPoint)
+PXResult PXAPI PXRecoveryPointRestore(PXRecoveryPoint PXREF pxRecoveryPoint)
 {
 #if PXDefaultLibraryEnable
     int returnValue = 1;

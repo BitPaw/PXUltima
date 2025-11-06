@@ -1,13 +1,13 @@
 #include "PXListHierarchical.h"
 
-PXResult PXAPI  PXHierarchicalNodeYourself(PXHierarchicalNode* const pxHierarchicalNode, void* const entry)
+PXResult PXAPI PXHierarchicalNodeYourself(PXHierarchicalNode PXREF pxHierarchicalNode, void PXREF entry)
 {
 	pxHierarchicalNode->Yourself = entry;
 
 	return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXHierarchicalNodeParent(PXHierarchicalNode* const pxHierarchicalNode, PXHierarchicalNode* const pxHierarchicalNodeParent)
+PXResult PXAPI PXHierarchicalNodeParent(PXHierarchicalNode PXREF pxHierarchicalNode, PXHierarchicalNode PXREF pxHierarchicalNodeParent)
 {
 	if(!(pxHierarchicalNode && pxHierarchicalNodeParent))
 	{
@@ -23,7 +23,7 @@ PXResult PXAPI  PXHierarchicalNodeParent(PXHierarchicalNode* const pxHierarchica
 	return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXHierarchicalNodeSibling(PXHierarchicalNode* const pxHierarchicalNode, PXHierarchicalNode* const entry)
+PXResult PXAPI PXHierarchicalNodeSibling(PXHierarchicalNode PXREF pxHierarchicalNode, PXHierarchicalNode PXREF entry)
 {
 	PXHierarchicalNode* nodeCurrent = pxHierarchicalNode;
 
@@ -36,7 +36,7 @@ PXResult PXAPI  PXHierarchicalNodeSibling(PXHierarchicalNode* const pxHierarchic
 	return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXHierarchicalNodeChild(PXHierarchicalNode* const pxHierarchicalNode, PXHierarchicalNode* const entry)
+PXResult PXAPI PXHierarchicalNodeChild(PXHierarchicalNode PXREF pxHierarchicalNode, PXHierarchicalNode PXREF entry)
 {
 	PXHierarchicalNode* nodeCurrent = pxHierarchicalNode;
 

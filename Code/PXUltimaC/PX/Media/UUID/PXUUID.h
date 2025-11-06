@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXUUIDIncluded
 #define PXUUIDIncluded
 

@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXSTEPIncluded
 #define PXSTEPIncluded
 
@@ -10,7 +12,7 @@ typedef struct PXSTEP_
 }
 PXSTEP;
 
-PXPublic PXResult PXAPI PXSTEPLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXSTEPSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXSTEPLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXSTEPSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

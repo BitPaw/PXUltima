@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXELFIncluded
 #define PXELFIncluded
 
@@ -207,7 +209,7 @@ PXPrivate inline PXELFMachine PXAPI PXELFMachineFromID(const PXI8U value);
 PXPrivate inline PXELFType PXAPI PXELFTypeFromID(const PXI8U value);
 PXPrivate inline PXELFSegmentType PXAPI PXELFSegmentTypeFromID(const PXI32U value);
 
-PXPublic PXResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXBinaryLinuxSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXBinaryLinuxSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

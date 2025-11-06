@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXFBXIncluded
 #define PXFBXIncluded
 
@@ -9,7 +11,7 @@ typedef struct PXFilmBox_
 }
 PXFilmBox;
 
-PXPublic PXResult PXAPI PXFilmBoxLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXFilmBoxSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXFilmBoxLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXFilmBoxSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

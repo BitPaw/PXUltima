@@ -1,8 +1,7 @@
+#pragma once
+
 #ifndef PXCompilerSettingsIncluded
 #define PXCompilerSettingsIncluded
-
-#include <PX/OS/System/Version/PXOSVersion.h>
-
 
 #define _PX_FILEPATH_ __FILE__
 

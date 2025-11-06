@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXWindowsIncluded
 #define PXWindowsIncluded
 

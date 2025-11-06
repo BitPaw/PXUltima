@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXDirectSoundIncluded
 #define PXDirectSoundIncluded
 
@@ -15,8 +17,8 @@ PXAudioDeviceDetectObjectEventData;
 #elif OSWindows
 
 
-PXPrivate BOOL CALLBACK PXAudioDeviceDetectAmountCallBack(LPGUID guid, LPCSTR cstrDescription, LPCSTR cstrModule, PXI32U* const amount);
-PXPrivate BOOL CALLBACK PXAudioDeviceDetectObjectCallBack(LPGUID guid, LPCSTR cstrDescription, LPCSTR cstrModule, PXAudioDeviceDetectObjectEventData* const pxAudioDeviceDetectObjectEventData);
+PXPrivate BOOL CALLBACK PXAudioDeviceDetectAmountCallBack(LPGUID guid, LPCSTR cstrDescription, LPCSTR cstrModule, PXI32U PXREF amount);
+PXPrivate BOOL CALLBACK PXAudioDeviceDetectObjectCallBack(LPGUID guid, LPCSTR cstrDescription, LPCSTR cstrModule, PXAudioDeviceDetectObjectEventData PXREF pxAudioDeviceDetectObjectEventData);
 
 
 typedef BOOL(CALLBACK* PXLPDSENUMCALLBACKA)(struct _GUID*, char*, char*, void*);
@@ -33,18 +35,18 @@ typedef HRESULT(WINAPI* PXDllCanUnloadNow)(void);
 #endif
 
 //--------------------------------------------------------
-PXPublic PXResult PXAPI PXDirectSoundInitialize(PXAudioDirectSound** const pxAudioDirectSound, PXAudioInitializeInfo* const pxAudioInitializeInfo);
+PXPublic PXResult PXAPI PXDirectSoundInitialize(PXAudioDirectSound* PXREF pxAudioDirectSound, PXAudioInitializeInfo PXREF pxAudioInitializeInfo);
 
-PXPublic PXResult PXAPI PXDirectSoundDeviceAmount(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDeviceAmountInfo* const pxAudioDeviceAmountInfo);
-PXPublic PXResult PXAPI PXDirectSoundDeviceFetch(PXAudioDirectSound* const pxAudioDirectSound, const PXAudioDeviceType pxAudioDeviceType, const PXI32U deviceID, PXAudioDevice* const pxAudioDevice);
-PXPublic PXResult PXAPI PXDirectSoundDeviceFetchAll(PXAudioDirectSound* const pxAudioDirectSound, const PXAudioDeviceType pxAudioDeviceType, PXAudioDevice* const pxAudioDevice, const PXSize amount);
+PXPublic PXResult PXAPI PXDirectSoundDeviceAmount(PXAudioDirectSound PXREF pxAudioDirectSound, PXAudioDeviceAmountInfo PXREF pxAudioDeviceAmountInfo);
+PXPublic PXResult PXAPI PXDirectSoundDeviceFetch(PXAudioDirectSound PXREF pxAudioDirectSound, const PXAudioDeviceType pxAudioDeviceType, const PXI32U deviceID, PXAudioDevice PXREF pxAudioDevice);
+PXPublic PXResult PXAPI PXDirectSoundDeviceFetchAll(PXAudioDirectSound PXREF pxAudioDirectSound, const PXAudioDeviceType pxAudioDeviceType, PXAudioDevice PXREF pxAudioDevice, const PXSize amount);
 
-PXPublic PXResult PXAPI PXDirectSoundDeviceOpen(PXAudioDevice* const pxAudioDevice, const PXAudioDeviceType pxAudioDeviceType, const PXI32U deviceID);
-PXPublic PXResult PXAPI PXDirectSoundDeviceClose(PXAudioDevice* const pxAudioDevice);
+PXPublic PXResult PXAPI PXDirectSoundDeviceOpen(PXAudioDevice PXREF pxAudioDevice, const PXAudioDeviceType pxAudioDeviceType, const PXI32U deviceID);
+PXPublic PXResult PXAPI PXDirectSoundDeviceClose(PXAudioDevice PXREF pxAudioDevice);
 PXPublic PXResult PXAPI PXDirectSoundDeviceBufferCreate
 (
-    PXAudioDevice* const pxAudioDevice,
-    PXSound* const pxSound
+    PXAudioDevice PXREF pxAudioDevice,
+    PXSound PXREF pxSound
 );
 
 
@@ -53,11 +55,11 @@ PXPublic PXResult PXAPI PXDirectSoundDeviceBufferCreate
 
 
 // Retrieves or writes a property value on a sound device
-PXPublic PXResult PXAPI PXDirectSoundDeviceProperty(PXAudioDevice* const pxAudioDevice, PXSoundDeviceProperty* const pxSoundDeviceProperty);
+PXPublic PXResult PXAPI PXDirectSoundDeviceProperty(PXAudioDevice PXREF pxAudioDevice, PXSoundDeviceProperty PXREF pxSoundDeviceProperty);
 
 
-PXPublic PXResult PXAPI PXDirectSoundEffectEnable(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice);
-PXPublic PXResult PXAPI PXDirectSoundEffectUpdate(PXAudioDirectSound* const pxAudioDirectSound, PXAudioDevice* const pxAudioDevice, PXAudioEffect* const pxAudioEffect);
+PXPublic PXResult PXAPI PXDirectSoundEffectEnable(PXAudioDirectSound PXREF pxAudioDirectSound, PXAudioDevice PXREF pxAudioDevice);
+PXPublic PXResult PXAPI PXDirectSoundEffectUpdate(PXAudioDirectSound PXREF pxAudioDirectSound, PXAudioDevice PXREF pxAudioDevice, PXAudioEffect PXREF pxAudioEffect);
 
 
 #endif

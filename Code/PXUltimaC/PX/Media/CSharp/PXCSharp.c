@@ -30,7 +30,7 @@ const char PXCSharpFunctionCallThisCall[] = "ThisCall";
 
 /*
 
-void PXCSSerialize(PXFile* const inputSteam, PXFile* const outputStream, PXCTranslateStruct* const pxCTranslateStruct)
+void PXCSSerialize(PXFile PXREF inputSteam, PXFile PXREF outputStream, PXCTranslateStruct PXREF pxCTranslateStruct)
 {
     PXCElementExtract(inputSteam, &pxCTranslateStruct->Element);
 
@@ -38,7 +38,7 @@ void PXCSSerialize(PXFile* const inputSteam, PXFile* const outputStream, PXCTran
     {
         case PXCStructureTypeEnum:
         {
-            PXCStructure* const pxCStructure = &pxCTranslateStruct->Element.ElementStructure;
+            PXCStructure PXREF pxCStructure = &pxCTranslateStruct->Element.ElementStructure;
 
             PXFileWriteB(outputStream, "\tpublic enum ", 13);
             PXFileWriteB(outputStream, pxCStructure->NameAlias, pxCStructure->NameAliasSizeCurrent);
@@ -83,7 +83,7 @@ void PXCSSerialize(PXFile* const inputSteam, PXFile* const outputStream, PXCTran
         case PXCStructureTypeStruct:
         case PXCStructureTypeUnion:
         {
-            PXCStructure* const pxCStructure = &pxCTranslateStruct->Element.ElementStructure;
+            PXCStructure PXREF pxCStructure = &pxCTranslateStruct->Element.ElementStructure;
 
             const PXBool isUnnamed = !PXCElementHasName(&pxCTranslateStruct->Element);
 
@@ -132,7 +132,7 @@ void PXCSSerialize(PXFile* const inputSteam, PXFile* const outputStream, PXCTran
         }
         case PXCStructureTypeStructElement:
         {
-            PXCStructureVariable* const pxCStructureVariable = &pxCTranslateStruct->Element.ElementVariable;
+            PXCStructureVariable PXREF pxCStructureVariable = &pxCTranslateStruct->Element.ElementVariable;
 
             PXText pxText;
             PXTextConstructNamedBufferA(&pxText, numberText, 64);
@@ -288,7 +288,7 @@ void PXCSSerialize(PXFile* const inputSteam, PXFile* const outputStream, PXCTran
         }
         case PXCStructureTypeFuntion:
         {
-            PXCFunction* const pxCFunction = &pxCTranslateStruct->Element.ElementFunction;
+            PXCFunction PXREF pxCFunction = &pxCTranslateStruct->Element.ElementFunction;
 
             // Function
 
@@ -309,7 +309,7 @@ void PXCSSerialize(PXFile* const inputSteam, PXFile* const outputStream, PXCTran
     }
 }
 
-void PXCSCreateWrapperFromCSource(PXFile* const inputSteam, PXFile* const outputStream)
+void PXCSCreateWrapperFromCSource(PXFile PXREF inputSteam, PXFile PXREF outputStream)
 {
     PXFileWriteB(outputStream, "using System;\n", 14);
     PXFileWriteB(outputStream, "using System.Runtime.InteropServices;\n\n", 39);
@@ -343,15 +343,15 @@ void PXCSCreateWrapperFromCSource(PXFile* const inputSteam, PXFile* const output
 */
 
 
-void PXAPI PXCSharpWriteFile(PXCompiler* const pxCompiler)
+void PXAPI PXCSharpWriteFile(PXCompiler PXREF pxCompiler)
 {
     PXCSharpContainerWrite(pxCompiler);
 }
 
-void PXAPI PXCSharpContainerWrite(PXCompiler* const pxCompiler)
+void PXAPI PXCSharpContainerWrite(PXCompiler PXREF pxCompiler)
 {
-    PXFile* const pxFile = pxCompiler->WriteInfo.FileOutput;
-    PXCodeDocumentElement* const symbol = pxCompiler->WriteInfo.CodeElementCurrent;
+    PXFile PXREF pxFile = pxCompiler->WriteInfo.FileOutput;
+    PXCodeDocumentElement PXREF symbol = pxCompiler->WriteInfo.CodeElementCurrent;
 
     pxCompiler->WriteInfo.WriteComment(pxCompiler);
 
@@ -458,10 +458,10 @@ void PXAPI PXCSharpContainerWrite(PXCompiler* const pxCompiler)
     PXFileWriteNewLine(pxFile);
 }
 
-void PXAPI PXCSharpFunctionWrite(PXCompiler* const pxCompiler)
+void PXAPI PXCSharpFunctionWrite(PXCompiler PXREF pxCompiler)
 {
-    PXFile* const pxFile = pxCompiler->WriteInfo.FileOutput;
-    PXCodeDocumentElement* const symbol = pxCompiler->WriteInfo.CodeElementCurrent;
+    PXFile PXREF pxFile = pxCompiler->WriteInfo.FileOutput;
+    PXCodeDocumentElement PXREF symbol = pxCompiler->WriteInfo.CodeElementCurrent;
 
     pxCompiler->WriteInfo.WriteComment(pxCompiler);
 
@@ -510,10 +510,10 @@ void PXAPI PXCSharpFunctionWrite(PXCompiler* const pxCompiler)
     //PXFileWriteNewLine(pxFile);
 }
 
-void PXAPI PXCSharpDefinitionWrite(PXCompiler* const pxCompiler)
+void PXAPI PXCSharpDefinitionWrite(PXCompiler PXREF pxCompiler)
 {
-    PXFile* const pxFile = pxCompiler->WriteInfo.FileOutput;
-    PXCodeDocumentElement* const symbol = pxCompiler->WriteInfo.CodeElementCurrent;
+    PXFile PXREF pxFile = pxCompiler->WriteInfo.FileOutput;
+    PXCodeDocumentElement PXREF symbol = pxCompiler->WriteInfo.CodeElementCurrent;
 
     pxCompiler->WriteInfo.WriteComment(pxCompiler);
 
@@ -560,12 +560,12 @@ void PXAPI PXCSharpDefinitionWrite(PXCompiler* const pxCompiler)
     PXFileWriteA(pxFile, symbol->NameAdress, symbol->NameSize);
 }
 
-PXResult PXAPI  PXCSharpLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI PXCSharpLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
 {
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI  PXCSharpSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI PXCSharpSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
 {
     PXFile* pxFile = pxResourceSaveInfo->FileReference;
 

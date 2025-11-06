@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXOSVersionIncluded
 #define PXOSVersionIncluded
 
@@ -163,8 +165,10 @@ PXWindowsVersion;
 
 #if OSWindows // Detect which windows version is used
 
+#ifndef WINVER
 #include <Windows.h>
 #include <SdkDdkVer.h>
+#endif
 
 #define Version_Windows WINVER
 

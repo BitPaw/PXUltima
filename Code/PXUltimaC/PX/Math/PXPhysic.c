@@ -1,6 +1,6 @@
 #include "PXPhysic.h"
 
-void PXAPI PXPhysicGravityApply(PXPhysicProperties* const physicProperties, const PXVector3F32* const gravityDircetion, const PXF32 gravityForce, const PXF32 deltaTime)
+void PXAPI PXPhysicGravityApply(PXPhysicProperties PXREF physicProperties, const PXVector3F32 PXREF gravityDircetion, const PXF32 gravityForce, const PXF32 deltaTime)
 {
     // TODO: Rewrite code
 

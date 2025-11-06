@@ -83,7 +83,7 @@ typedef struct PXCanonRaw3Chunk_
 PXCanonRaw3Chunk;
 
 
-PXResult PXAPI  PXCanonRaw3BlockRead(PXCanonRaw3Chunk* const pxCanonRaw3Chunk, PXFile* const pxFile)
+PXResult PXAPI PXCanonRaw3BlockRead(PXCanonRaw3Chunk PXREF pxCanonRaw3Chunk, PXFile PXREF pxFile)
 {
     const PXTypeEntry pxDataStreamElementList[] =
     {
@@ -260,9 +260,9 @@ PXResult PXAPI  PXCanonRaw3BlockRead(PXCanonRaw3Chunk* const pxCanonRaw3Chunk, P
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI  PXCanonRaw3LoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI PXCanonRaw3LoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
 {
-    PXFile* const pxFile = pxResourceLoadInfo->FileReference;
+    PXFile PXREF pxFile = pxResourceLoadInfo->FileReference;
 
     PXCanonRaw3 pxCanonRaw3;
     PXClear(PXCanonRaw3, &pxCanonRaw3);
@@ -277,8 +277,15 @@ PXResult PXAPI  PXCanonRaw3LoadFromFile(PXResourceTransphereInfo* const pxResour
     );
 #endif
 
-    while (!PXFileIsAtEnd(pxFile))
+    for (;;)
     {
+        PXBool isAtEnd = PXFileIsAtEnd(pxFile);
+
+        if(isAtEnd)
+        {
+            break;
+        }
+
         PXCanonRaw3Chunk pxCanonRaw3Chunk;
 
         PXCanonRaw3BlockRead(&pxCanonRaw3Chunk, pxFile);
@@ -342,7 +349,7 @@ PXResult PXAPI  PXCanonRaw3LoadFromFile(PXResourceTransphereInfo* const pxResour
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI  PXCanonRaw3SaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI PXCanonRaw3SaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

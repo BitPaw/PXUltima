@@ -26,16 +26,16 @@ typedef struct PXClient_
 }
 PXClient;
 
-PXPublic void PXAPI PXClientConstruct(PXClient* const pxClient);
-PXPublic void PXAPI PXClientDestruct(PXClient* const pxClient);
+PXPublic void PXAPI PXClientConstruct(PXClient PXREF pxClient);
+PXPublic void PXAPI PXClientDestruct(PXClient PXREF pxClient);
 
-PXPublic PXResult PXAPI PXClientSendData(PXClient* const pxClient, const void* const data, const PXSize dataSize);
+PXPublic PXResult PXAPI PXClientSendData(PXClient PXREF pxClient, const void PXREF data, const PXSize dataSize);
 
-PXPublic PXResult PXAPI PXClientConnectToSelf(PXClient* const client, const PXI16U port);
-PXPublic PXResult PXAPI PXClientConnectToServer(PXClient* const client, const PXText* const ip, const PXI16U port);
-PXPublic PXResult PXAPI PXClientDisconnectFromServer(PXClient* const client);
+PXPublic PXResult PXAPI PXClientConnectToSelf(PXClient PXREF client, const PXI16U port);
+PXPublic PXResult PXAPI PXClientConnectToServer(PXClient PXREF client, const PXText PXREF ip, const PXI16U port);
+PXPublic PXResult PXAPI PXClientDisconnectFromServer(PXClient PXREF client);
 
-PXPublic PXThreadResult PXOSAPI PXClientCommunicationThread(PXSocket* const pxSocket);
+PXPublic PXThreadResult PXOSAPI PXClientCommunicationThread(PXSocket PXREF pxSocket);
 
 #ifdef __cplusplus
 }

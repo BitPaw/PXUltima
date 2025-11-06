@@ -201,7 +201,7 @@ PXSize PXAPI PXTIFFFilePredictSize(const PXSize width, const PXSize height, cons
     return 0;
 }
 
-PXResult PXAPI  PXTIFFLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI PXTIFFLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
 {
     PXTIFF pxTIFFOBject;
     PXTIFF* tiff = &pxTIFFOBject;
@@ -496,7 +496,7 @@ PXResult PXAPI  PXTIFFLoadFromFile(PXResourceTransphereInfo* const pxResourceLoa
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXTIFFSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI PXTIFFSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

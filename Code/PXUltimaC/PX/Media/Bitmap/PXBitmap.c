@@ -160,9 +160,9 @@ const PXI8U PXBitmapHeaderOS22XListSize = sizeof(PXBitmapHeaderOS22XList) / size
 
 
 
-PXResult PXAPI  PXBitmapPeekFromFile(PXResourceTransphereInfo* const pxResourceTransphereInfo)
+PXResult PXAPI PXBitmapPeekFromFile(PXResourceTransphereInfo PXREF pxResourceTransphereInfo)
 {
-    PXTexture* const pxTexture = (PXTexture*)pxResourceTransphereInfo->ResourceTarget;
+    PXTexture PXREF pxTexture = (PXTexture*)pxResourceTransphereInfo->ResourceTarget;
 
     PXBitmap* bmp = PXMemoryHeapCallocT(PXBitmap, 1);
 
@@ -254,9 +254,9 @@ PXResult PXAPI  PXBitmapPeekFromFile(PXResourceTransphereInfo* const pxResourceT
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXBitmapLoadFromFile(PXResourceTransphereInfo* const pxResourceTransphereInfo)
+PXResult PXAPI PXBitmapLoadFromFile(PXResourceTransphereInfo PXREF pxResourceTransphereInfo)
 {
-    PXTexture* const pxTexture = (PXTexture*)pxResourceTransphereInfo->ResourceTarget;
+    PXTexture PXREF pxTexture = (PXTexture*)pxResourceTransphereInfo->ResourceTarget;
 
     PXBitmap* bmp = (PXBitmap*)pxResourceTransphereInfo->ResourceSource;
 
@@ -321,7 +321,7 @@ PXResult PXAPI  PXBitmapLoadFromFile(PXResourceTransphereInfo* const pxResourceT
 
     while(imageDataLayout.RowAmount--) // loop through each image row
     {
-        PXByte* const data = (PXByte* const)pxTexture->PixelData + (imageDataLayout.RowImageDataSize * imageDataLayout.RowAmount); // Get the starting point of each row
+        PXByte PXREF data = (PXByte PXREF)pxTexture->PixelData + (imageDataLayout.RowImageDataSize * imageDataLayout.RowAmount); // Get the starting point of each row
 
         PXFileReadB(pxResourceTransphereInfo->FileReference, data, imageDataLayout.RowImageDataSize); // Read/Write image data
         PXFileCursorAdvance(pxResourceTransphereInfo->FileReference, imageDataLayout.RowPaddingSize); // Skip padding
@@ -331,9 +331,9 @@ PXResult PXAPI  PXBitmapLoadFromFile(PXResourceTransphereInfo* const pxResourceT
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXBitmapSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI PXBitmapSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
 {
-    PXTexture* const pxTexture = (PXTexture*)pxResourceSaveInfo->ResourceTarget;
+    PXTexture PXREF pxTexture = (PXTexture*)pxResourceSaveInfo->ResourceTarget;
 
     if(pxTexture->Width == 0)
     {
@@ -429,7 +429,7 @@ PXResult PXAPI  PXBitmapSaveToFile(PXResourceTransphereInfo* const pxResourceSav
 
         for(PXSize row = imageDataLayout.RowAmount - 1; row != (PXSize)-1; --row)
         {
-            const PXByte* const dataInsertPoint = (const PXByte* const)pxTexture->PixelData + (imageDataLayout.RowImageDataSize * row);
+            const PXByte PXREF dataInsertPoint = (const PXByte PXREF)pxTexture->PixelData + (imageDataLayout.RowImageDataSize * row);
 
             for(PXSize i = 0; i < imageDataLayout.RowImageDataSize; i += 3) // Will result in RGB Pixel Data
             {
@@ -450,12 +450,12 @@ PXResult PXAPI  PXBitmapSaveToFile(PXResourceTransphereInfo* const pxResourceSav
     return PXActionSuccessful;
 }
 
-void PXAPI PXBitmapDestruct(PXBitmap* const bmp)
+void PXAPI PXBitmapDestruct(PXBitmap PXREF bmp)
 {
     PXMemoryHeapFree(PXNull, bmp->PixelData);
 }
 
-void PXBitmapImageDataLayoutCalculate(PXBitmapImageDataLayout* const bmpImageDataLayout, const PXSize width, const PXSize height, const PXSize bbp)
+void PXBitmapImageDataLayoutCalculate(PXBitmapImageDataLayout PXREF bmpImageDataLayout, const PXSize width, const PXSize height, const PXSize bbp)
 {
     bmpImageDataLayout->RowImageDataSize = width * (bbp / 8u);
     bmpImageDataLayout->ImageSize = bmpImageDataLayout->RowImageDataSize * height;

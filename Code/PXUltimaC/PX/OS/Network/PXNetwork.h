@@ -363,36 +363,36 @@ PXPrivate IPAdressFamily PXAPI PXIPAdressFamilyFromID(const PXI8U ipMode);
 PXPrivate PXI8U PXAPI PXIPAdressFamilyToID(const IPAdressFamily ipMode);
 
 
-PXPublic PXResult PXAPI PXNetworkModulState(PXNetwork** const pxNetworkREF, const PXI32U flags);
+PXPublic PXResult PXAPI PXNetworkModulState(PXNetwork* PXREF pxNetworkREF, const PXI32U flags);
 
-PXPublic PXResult PXAPI PXNetworkSocketCreate(PXSocketCreateInfo* const pxSocketCreateInfo);
+PXPublic PXResult PXAPI PXNetworkSocketCreate(PXSocketCreateInfo PXREF pxSocketCreateInfo);
 PXPublic PXResult PXAPI PXNetworkSocketDestroy(const PXSocketID pxSocketID);
 
-PXPublic PXResult PXAPI PXNetworkSocketConnect(PXSocketConnectInfo* const pxSocketConnectInfo);
-PXPublic PXResult PXAPI PXNetworkSocketListen(PXSocketListenInfo* const pxSocketListenInfo);
-PXPublic PXResult PXAPI PXNetworkSocketAccept(PXSocketAcceptInfo* const pxSocketAcceptInfo);
-PXPublic PXResult PXAPI PXNetworkSocketBind(PXSocketBindInfo* const pxSocketBindInfo);
-PXPublic PXResult PXAPI PXNetworkSocketReceive(PXSocketDataInfo* const pxSocketDataInfo);
-PXPublic PXResult PXAPI PXNetworkSocketSend(PXSocketDataInfo* const pxSocketDataInfo);
+PXPublic PXResult PXAPI PXNetworkSocketConnect(PXSocketConnectInfo PXREF pxSocketConnectInfo);
+PXPublic PXResult PXAPI PXNetworkSocketListen(PXSocketListenInfo PXREF pxSocketListenInfo);
+PXPublic PXResult PXAPI PXNetworkSocketAccept(PXSocketAcceptInfo PXREF pxSocketAcceptInfo);
+PXPublic PXResult PXAPI PXNetworkSocketBind(PXSocketBindInfo PXREF pxSocketBindInfo);
+PXPublic PXResult PXAPI PXNetworkSocketReceive(PXSocketDataInfo PXREF pxSocketDataInfo);
+PXPublic PXResult PXAPI PXNetworkSocketSend(PXSocketDataInfo PXREF pxSocketDataInfo);
 PXPublic PXResult PXAPI PXNetworkSocketPoll();
 
 
-PXPublic PXResult PXAPI PXNetworkSocketMTU(const PXSocket* const pxSocket, PXI32U* value, const PXBool doWrite);
-PXPublic PXResult PXAPI PXNetworkSocketName(const PXSocket* const pxSocket, char* name);
-PXPublic PXResult PXAPI PXNetworkSocketInterfaceName(const PXSocket* const pxSocket, char* name, const PXSize nameSize);
+PXPublic PXResult PXAPI PXNetworkSocketMTU(const PXSocket PXREF pxSocket, PXI32U* value, const PXBool doWrite);
+PXPublic PXResult PXAPI PXNetworkSocketName(const PXSocket PXREF pxSocket, char* name);
+PXPublic PXResult PXAPI PXNetworkSocketInterfaceName(const PXSocket PXREF pxSocket, char* name, const PXSize nameSize);
 
 
-PXPublic PXResult PXAPI PXNetworkMACFromIPv4A(PXMAC* const pxMAC, char* const ipv4Text);
-PXPublic PXResult PXAPI PXNetworkMACFromIPv4(PXMAC* const pxMAC, PXIPv4* const pxIPv4); // ARP, SendARP
+PXPublic PXResult PXAPI PXNetworkMACFromIPv4A(PXMAC PXREF pxMAC, char PXREF ipv4Text);
+PXPublic PXResult PXAPI PXNetworkMACFromIPv4(PXMAC PXREF pxMAC, PXIPv4 PXREF pxIPv4); // ARP, SendARP
 
-PXPublic PXResult PXAPI PXNetworkMACFromIPv6A(PXMAC* const pxMAC, char* const ipv6Text);
-PXPublic PXResult PXAPI PXNetworkMACFromIPv6(PXMAC* const pxMAC, PXIPv6* const pxIPv6); // NDP, 
-
-
+PXPublic PXResult PXAPI PXNetworkMACFromIPv6A(PXMAC PXREF pxMAC, char PXREF ipv6Text);
+PXPublic PXResult PXAPI PXNetworkMACFromIPv6(PXMAC PXREF pxMAC, PXIPv6 PXREF pxIPv6); // NDP, 
 
 
-PXPublic PXResult PXAPI PXNetworkNameFromIPv4A(char* const name, char* const ipv4Text);
-PXPublic PXResult PXAPI PXNetworkNameFromIPv4(char* const name, PXIPv4* const pxIPv4);
+
+
+PXPublic PXResult PXAPI PXNetworkNameFromIPv4A(char PXREF name, char PXREF ipv4Text);
+PXPublic PXResult PXAPI PXNetworkNameFromIPv4(char PXREF name, PXIPv4 PXREF pxIPv4);
 
 
 
@@ -418,16 +418,16 @@ PXPublic PXResult PXAPI PXNetworkAdapterFetch();
 // With this, we can broadly guess where a connection is comming from.
 // Because of reassignments and sharing of ranges, this info can
 // never be exact and should only be used as a hint and not fact.
-PXPublic PXResult PXAPI PXNetworkIPLocate(const PXIPAdress* const pxIPAdress);
+PXPublic PXResult PXAPI PXNetworkIPLocate(const PXIPAdress PXREF pxIPAdress);
 
 // After connecting or accepting a socket, use this function to
 // gather information about the connected peer.
-PXPublic PXResult PXAPI PXNetworkSocketPeerGet(PXNetwork* const pxNetwork, PXSocketConnectionInfo* const pxSocketConnectionInfo);
+PXPublic PXResult PXAPI PXNetworkSocketPeerGet(PXNetwork PXREF pxNetwork, PXSocketConnectionInfo PXREF pxSocketConnectionInfo);
 
 
 #if OSWindows
-PXPrivate PXResult PXAPI  PXWindowsSocketAgentErrorFetch(PXNetwork* const pxNetwork);
-PXPrivate PXResult PXAPI  PXWindowsSocketAgentErrorFromID(const PXI32S errorID);
+PXPrivate PXResult PXAPI PXWindowsSocketAgentErrorFetch(PXNetwork PXREF pxNetwork);
+PXPrivate PXResult PXAPI PXWindowsSocketAgentErrorFromID(const PXI32S errorID);
 #endif
 
 #endif

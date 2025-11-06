@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXZIPIncluded
 #define PXZIPIncluded
 
@@ -20,7 +22,7 @@ typedef struct PXZIP_
 }
 PXZIP;
 
-PXPublic PXResult PXAPI PXZIPLoadFromFile(PXResourceTransphereInfo* const pxResourceTransphereInfo);
-PXPublic PXResult PXAPI PXZIPSaveToFile(PXResourceTransphereInfo* const pxResourceTransphereInfo);
+PXPublic PXResult PXAPI PXZIPLoadFromFile(PXResourceTransphereInfo PXREF pxResourceTransphereInfo);
+PXPublic PXResult PXAPI PXZIPSaveToFile(PXResourceTransphereInfo PXREF pxResourceTransphereInfo);
 
 #endif

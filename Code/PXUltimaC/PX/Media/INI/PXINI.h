@@ -1,9 +1,11 @@
+#pragma once
+
 #ifndef PXINIIncluded
 #define PXINIIncluded
 
 #include <PX/Engine/PXResource.h>
 
-PXPublic PXResult PXAPI PXINILoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXINISaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXINILoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXINISaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

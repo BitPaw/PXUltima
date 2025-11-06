@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXEmailIncluded
 #define PXEmailIncluded
 

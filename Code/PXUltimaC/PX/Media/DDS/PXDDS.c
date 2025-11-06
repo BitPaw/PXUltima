@@ -248,7 +248,7 @@ static PXI8U PXDXGIBitsPerPixel(DXGI_FORMAT fmt)
 
 #define ISBITMASK(r, g, b, a) (ddpf.RBitMask == r && ddpf.GBitMask == g && ddpf.BBitMask == b && ddpf.ABitMask == a)
 
-DXGI_FORMAT PXDXGIFormatGet(PXDirectDrawTexture* const pxDirectDrawTexture)
+DXGI_FORMAT PXDXGIFormatGet(PXDirectDrawTexture PXREF pxDirectDrawTexture)
 {
 #if 0
     if(pxDirectDrawTexture->Flags & DDS_RGB)
@@ -444,9 +444,9 @@ DXGI_FORMAT PXDXGIFormatGet(PXDirectDrawTexture* const pxDirectDrawTexture)
 
 */
 
-PXResult PXAPI  PXDDSLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI PXDDSLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
 {
-    PXTexture* const pxTexture = (PXTexture*)pxResourceLoadInfo->ResourceTarget;
+    PXTexture PXREF pxTexture = (PXTexture*)pxResourceLoadInfo->ResourceTarget;
 
     if(!pxTexture)
     {
@@ -455,7 +455,7 @@ PXResult PXAPI  PXDDSLoadFromFile(PXResourceTransphereInfo* const pxResourceLoad
 
     PXDirectDrawTexture pxDirectDrawTexture;
     PXClear(PXDirectDrawTexture, &pxDirectDrawTexture);
-    PXFile* const pxFile = pxResourceLoadInfo->FileReference;
+    PXFile PXREF pxFile = pxResourceLoadInfo->FileReference;
 
     // Check header signature
     {
@@ -705,7 +705,7 @@ PXResult PXAPI  PXDDSLoadFromFile(PXResourceTransphereInfo* const pxResourceLoad
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXDDSSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI PXDDSSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

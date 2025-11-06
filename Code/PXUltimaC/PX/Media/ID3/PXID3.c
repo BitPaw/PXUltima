@@ -168,7 +168,7 @@ PXID3v2xFrameTag PXAPI PXID3v2xFrameTagFromID(const PXI32U id3v2xFrameTagID)
     }
 }
 
-PXResult PXAPI  PXID3LoadFromFile(PXID3* const id3, PXFile* const PXFile)
+PXResult PXAPI PXID3LoadFromFile(PXID3 PXREF id3, PXFile PXREF PXFile)
 {
     PXID3Version version = PXID3VersionInvalid;
 
@@ -604,7 +604,7 @@ PXResult PXAPI  PXID3LoadFromFile(PXID3* const id3, PXFile* const PXFile)
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXID3SaveToFile(const PXID3* const id3, PXFile* const pxFile)
+PXResult PXAPI PXID3SaveToFile(const PXID3 PXREF id3, PXFile PXREF pxFile)
 {
     //-----------------------------------------------------
     // ID3 - Header write

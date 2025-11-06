@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXCOFFIncluded
 #define PXCOFFIncluded
 
@@ -287,7 +289,7 @@ PXCOFF;
 PXPrivate inline PXCOFFMachineType PXAPI PXCOFFMachineFromID(const PXI16U valueID);
 PXPrivate inline PXCOFFFormat PXAPI PXCOFFFormatFromID(const PXI16U valueID);
 
-PXPublic PXResult PXAPI PXCOFFLoadFromFile(PXCOFF* const pxCOFF, PXFile* const pxFile);
-PXPublic PXResult PXAPI PXCOFFSaveToFile(const PXCOFF* const pxCOFF, PXFile* const pxFile);
+PXPublic PXResult PXAPI PXCOFFLoadFromFile(PXCOFF PXREF pxCOFF, PXFile PXREF pxFile);
+PXPublic PXResult PXAPI PXCOFFSaveToFile(const PXCOFF PXREF pxCOFF, PXFile PXREF pxFile);
 
 #endif

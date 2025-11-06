@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXIAudioIncluded
 #define PXIAudioIncluded
 
@@ -17,6 +19,6 @@ typedef struct PXCoreAudio_
 }
 PXCoreAudio;
 
-PXPublic PXResult PXAPI PXCoreAudioInitialize(PXAudio* const pxAudio);
+PXPublic PXResult PXAPI PXCoreAudioInitialize(PXAudio PXREF pxAudio);
 
 #endif

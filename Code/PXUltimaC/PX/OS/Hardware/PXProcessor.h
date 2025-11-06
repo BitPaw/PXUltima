@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXProcessorIncluded
 #define PXProcessorIncluded
 
@@ -215,11 +217,11 @@ typedef struct PXProcessor_
 PXProcessor;
 
 
-PXPrivate void PXAPI PXProcessorModelNameGet(const PXProcessorModelName processorModelName, char* const name);
+PXPrivate void PXAPI PXProcessorModelNameGet(const PXProcessorModelName processorModelName, char PXREF name);
 PXPrivate PXProcessorBrand PXAPI PXProcessorBrandDetect(const char* name);
 PXPrivate PXProcessorModelName PXAPI PXProcessorModelNameDetect(const PXProcessorBrand processorBrand, const unsigned char famliy, const unsigned char model);
 
-PXPublic void PXAPI PXProcessorFetchInfo(PXProcessor* const processor);
+PXPublic void PXAPI PXProcessorFetchInfo(PXProcessor PXREF processor);
 
 PXPublic unsigned int PXAPI PXProcessorFrequencyCurrent();
 PXPublic unsigned int PXAPI PXProcessorTimeReal();
@@ -238,7 +240,7 @@ PXProcessorTemperatureInfo;
 
 
 // Fetch temperature from the processor(s) 
-PXPublic PXResult PXAPI PXProcessorTemperature(PXProcessorTemperatureInfo* const pxProcessorTemperatureInfo);
+PXPublic PXResult PXAPI PXProcessorTemperature(PXProcessorTemperatureInfo PXREF pxProcessorTemperatureInfo);
 
 
 //-----------------------------------------------------
@@ -251,8 +253,8 @@ PXPublic PXResult PXAPI PXProcessorTemperature(PXProcessorTemperatureInfo* const
 PXPublic void PXAPI PXProcessorNoOperation();
 PXPublic void PXAPI PXProcessorRandomNumber();
 
-PXPublic void PXAPI PXProcessorSwapByteOrderI16U(PXI16U* const value);
-PXPublic void PXAPI PXProcessorSwapByteOrderI32U(PXI32U* const value);
-PXPublic void PXAPI PXProcessorSwapByteOrderI64U(PXI64U* const value);
+PXPublic void PXAPI PXProcessorSwapByteOrderI16U(PXI16U PXREF value);
+PXPublic void PXAPI PXProcessorSwapByteOrderI32U(PXI32U PXREF value);
+PXPublic void PXAPI PXProcessorSwapByteOrderI64U(PXI64U PXREF value);
 
 #endif

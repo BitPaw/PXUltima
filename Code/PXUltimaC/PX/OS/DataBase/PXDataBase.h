@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXDataBaseINLCUDE
 #define PXDataBaseINLCUDE
 
@@ -201,29 +203,29 @@ PXDataBase;
 
 PXPrivate PXSQLType PXAPI PXSQLTypeFromID(const PXI32U sqlTypeID);
 
-PXPublic PXResult PXAPI PXDataBaseInitialize(PXDataBase* const pxDataBase);
-PXPublic PXResult PXAPI PXDataBaseRelease(PXDataBase* const pxDataBase);
+PXPublic PXResult PXAPI PXDataBaseInitialize(PXDataBase PXREF pxDataBase);
+PXPublic PXResult PXAPI PXDataBaseRelease(PXDataBase PXREF pxDataBase);
 
 PXPublic PXResult PXAPI PXDataBaseConnectA
 (
-    PXDataBase* const pxDataBase,
-    const char* const source,
-    const char* const database,
-    const char* const user,
-    const char* const password
+    PXDataBase PXREF pxDataBase,
+    const char PXREF source,
+    const char PXREF database,
+    const char PXREF user,
+    const char PXREF password
 );
 PXPublic PXResult PXAPI PXDataBaseConnect
 (
-    PXDataBase* const pxDataBase,
-    const PXText* const source,
-    const PXText* const database,
-    const PXText* const user,
-    const PXText* const password
+    PXDataBase PXREF pxDataBase,
+    const PXText PXREF source,
+    const PXText PXREF database,
+    const PXText PXREF user,
+    const PXText PXREF password
 );
-PXPublic void PXAPI PXDataBaseDisconnect(PXDataBase* const pxDataBase);
-PXPublic void PXAPI PXDataBaseCleanup(PXDataBase* const pxDataBase);
-PXPublic void PXAPI PXDataBaseScanForDrivers(PXDataBase* const pxDataBase);
-PXPublic PXResult PXAPI PXDataBaseCommandExecute(PXDataBase* const pxDataBase, const PXText* const PXSQLStatement);
-PXPublic PXResult PXAPI PXDataBaseCommandCancel(PXDataBase* const pxDataBase);
+PXPublic void PXAPI PXDataBaseDisconnect(PXDataBase PXREF pxDataBase);
+PXPublic void PXAPI PXDataBaseCleanup(PXDataBase PXREF pxDataBase);
+PXPublic void PXAPI PXDataBaseScanForDrivers(PXDataBase PXREF pxDataBase);
+PXPublic PXResult PXAPI PXDataBaseCommandExecute(PXDataBase PXREF pxDataBase, const PXText PXREF PXSQLStatement);
+PXPublic PXResult PXAPI PXDataBaseCommandCancel(PXDataBase PXREF pxDataBase);
 
 #endif

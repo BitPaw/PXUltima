@@ -1,6 +1,5 @@
 #include "PXType.h"
 
-#include <PX/OS/Memory/PXMemory.h>
 #include <PX/Media/PXText.h>
 
 #define PX_X86_BSWAP_ALLOW OS32B
@@ -10,7 +9,7 @@
 #define PXTypeInt32ULimit 4294967295 // 0xFFFFFFFF
 #define PXTypeInt64ULimit 0xFFFFFFFFFFFFFFFF // 0xFFFFFFFFFFFFFFFF
 
-void PXAPI PXWorkSetCounterCalc(PXWorkSetCounter* const pxWorkSetCounter)
+void PXAPI PXWorkSetCounterCalc(PXWorkSetCounter PXREF pxWorkSetCounter)
 {
     if(!(pxWorkSetCounter->WorkToDo && pxWorkSetCounter->BatchSize))
     {
@@ -32,7 +31,7 @@ void PXAPI PXWorkSetCounterCalc(PXWorkSetCounter* const pxWorkSetCounter)
     pxWorkSetCounter->AmountBatchRest = pxWorkSetCounter->WorkToDo % pxWorkSetCounter->BatchSize;
 }
 
-PXSize PXAPI PXWorkSetCounterPull(PXWorkSetCounter* const pxWorkSetCounter, const PXSize index)
+PXSize PXAPI PXWorkSetCounterPull(PXWorkSetCounter PXREF pxWorkSetCounter, const PXSize index)
 {
     if(index < pxWorkSetCounter->AmountBatchFull)
     {
@@ -94,7 +93,7 @@ PXI32U PXAPI PXTypeIntFitting(const PXSize expectedSize)
     return PXTypeInt64U;
 }
 
-void PXAPI PXEndianSwapI32U(PXI32U* const value)
+void PXAPI PXEndianSwapI32U(PXI32U PXREF value)
 {
 
 
@@ -122,7 +121,7 @@ void PXAPI PXEndianSwapI32U(PXI32U* const value)
 #endif // 0
 }
 
-void PXAPI PXEndianSwapI16U(PXI16U* const value)
+void PXAPI PXEndianSwapI16U(PXI16U PXREF value)
 {
 
 #if PX_X86_BSWAP_ALLOW
@@ -143,7 +142,7 @@ void PXAPI PXEndianSwapI16U(PXI16U* const value)
 
 }
 
-void PXAPI PXEndianSwap(void* const data, const PXSize dataSize, const PXEndian endianFrom, const PXEndian endianTo)
+void PXAPI PXEndianSwap(void PXREF data, const PXSize dataSize, const PXEndian endianFrom, const PXEndian endianTo)
 {
     {
         const PXBool inoutIsOutput = endianFrom == endianTo;
@@ -167,13 +166,13 @@ void PXAPI PXEndianSwap(void* const data, const PXSize dataSize, const PXEndian 
     }
 }
 
-void PXAPI PXEndianSwapV(void** const data, const PXSize dataSize, const PXSize elementSize, const PXEndian endianFrom, const PXEndian endianTo)
+void PXAPI PXEndianSwapV(void* PXREF data, const PXSize dataSize, const PXSize elementSize, const PXEndian endianFrom, const PXEndian endianTo)
 {
     const PXSize amount = dataSize / elementSize;
 
     for (PXSize i = 0; i < amount; ++i)
     {
-        void* const insertPoint = data[i];
+        void PXREF insertPoint = data[i];
 
         PXEndianSwap(insertPoint, elementSize, endianFrom, endianTo);
     }

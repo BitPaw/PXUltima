@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXWADIncluded
 #define PXWADIncluded
 
@@ -68,7 +70,7 @@ typedef struct PXWAD_
 }
 PXWAD;
 
-PXPublic PXResult PXAPI PXWADLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXWADSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXWADLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXWADSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

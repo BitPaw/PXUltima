@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXCanonRaw3Included
 #define PXCanonRaw3Included
 
@@ -16,7 +18,7 @@ typedef struct PXCanonRaw3_
 }
 PXCanonRaw3;
 
-PXPublic PXResult PXAPI PXCanonRaw3LoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXCanonRaw3SaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXCanonRaw3LoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXCanonRaw3SaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

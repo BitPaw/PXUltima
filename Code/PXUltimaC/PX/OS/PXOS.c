@@ -1,7 +1,5 @@
 #include "PXOS.h"
 
-#include "File/PXFile.h"
-
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/OS/Async/PXThread.h>
 #include <PX/OS/Memory/PXMemory.h>
@@ -94,23 +92,20 @@ PXOS _PXOS;
 
 
 const char PXOSName[] = "OS-Kernel";
+const char PXOSFile[] = "File";
+const char PXOSThread[] = "Thread";
 const char PXOSSemaphore[] = "Semaphore";
 const char PXOSCriticalSection[] = "CriticalSec.";
 const char PXOSVirtualAllocText[] = "Virtual-Alloc";
 const char PXOSVirtualFreeText[] = "Virtual-Free";
 
-const char PXWindowsLibrarNTDLL[] = "ntdll.dll";
-const char PXWindowsLibraryKernel32[] = "KERNEL32.DLL";
-const char PXWindowsLibraryDebugHelp[] = "DBGHELP.DLL";
-
-
-
-
-
 
 #if OSUnix
 #elif OSWindows
 
+const char PXWindowsLibrarNTDLL[] = "ntdll.dll";
+const char PXWindowsLibraryKernel32[] = "KERNEL32.DLL";
+const char PXWindowsLibraryDebugHelp[] = "DBGHELP.DLL";
 
 const char PXWindows11[] = "11";
 const char PXWindows10[] = "10";
@@ -139,33 +134,7 @@ PXPrivate BOOL CALLBACK PXLibraryNameSymbolEnumerate(PSYMBOL_INFO pSymInfo, ULON
 
 #endif
 
-
-
-
-
-
-
-
-
-// Helper function to count set bits in the processor mask.
-DWORD CountSetBits(ULONG_PTR bitMask)
-{
-    const DWORD LSHIFT = sizeof(ULONG_PTR) * 8 - 1;
-    DWORD bitSetCount = 0;
-    ULONG_PTR bitTest = (ULONG_PTR)1 << LSHIFT;
-    DWORD i;
-
-    for(i = 0; i <= LSHIFT; ++i)
-    {
-        bitSetCount += ((bitMask & bitTest) ? 1 : 0);
-        bitTest /= 2;
-    }
-
-    return bitSetCount;
-}
-
-
-PXResult PXAPI  PXSystemPrelude()
+PXResult PXAPI PXSystemPrelude()
 {
     if(_PXOS.Init)
     {
@@ -233,20 +202,12 @@ PXResult PXAPI  PXSystemPrelude()
         PXLibraryGetSymbolListA(&_PXOS.LibraryNT, pxLibraryFuntionEntryList, amount);
     }
 
-
-
-
-
     PXThreadCurrent(&_PXOS.MainThread);
 
     _PXOS.Init = PXTrue;
 
-
-
    // SetConsoleOutputCP(CP_UTF8);
    // SetConsoleCP(CP_UTF8);
-
-
 
     PXOSVersion pxOSVersion;
 
@@ -283,7 +244,7 @@ PXResult PXAPI  PXSystemPrelude()
     // Get size
     BOOL resLog = GetLogicalProcessorInformation(infoList, &amountInBytes);
 
-    infoList = PXMemoryHeapCalloc(PXNull, amountInBytes, 1);
+    infoList = (SYSTEM_LOGICAL_PROCESSOR_INFORMATION*)PXMemoryHeapCalloc(PXNull, amountInBytes, 1);
     amountInObjects = amountInBytes / sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION);
 
     resLog = GetLogicalProcessorInformation(infoList, &amountInBytes);
@@ -293,7 +254,7 @@ PXResult PXAPI  PXSystemPrelude()
 
     for(size_t i = 0; i < amountInObjects; i++)
     {
-        SYSTEM_LOGICAL_PROCESSOR_INFORMATION* const ptr = &infoList[i];
+        SYSTEM_LOGICAL_PROCESSOR_INFORMATION PXREF ptr = &infoList[i];
                 
         switch(ptr->Relationship)
         {
@@ -307,7 +268,7 @@ PXResult PXAPI  PXSystemPrelude()
                 ++_PXOS.ProcessorAmountPhysical;
 
                 // A hyperthreaded core supplies more than one logical processor.
-                _PXOS.ProcessorAmountLogical += CountSetBits(ptr->ProcessorMask);
+                _PXOS.ProcessorAmountLogical += PXBitsCount(ptr->ProcessorMask);
                 break;
 
             case RelationCache:
@@ -366,7 +327,7 @@ PXResult PXAPI  PXSystemPrelude()
 
     if(!result)
     {
-        return;
+        return PXActionInvalid;
     }
 
     _PXOS.PageSizeNormal = perfInfo.PageSize;
@@ -388,7 +349,9 @@ PXResult PXAPI  PXSystemPrelude()
     DWORD bufferSize = 0;
     GetLogicalProcessorInformation(NULL, &bufferSize);
 
-    SYSTEM_LOGICAL_PROCESSOR_INFORMATION* buffer = (SYSTEM_LOGICAL_PROCESSOR_INFORMATION*)malloc(bufferSize);
+    
+
+    SYSTEM_LOGICAL_PROCESSOR_INFORMATION* buffer = (SYSTEM_LOGICAL_PROCESSOR_INFORMATION*)PXMemoryHeapCalloc(PXNull, 1, bufferSize);
     GetLogicalProcessorInformation(buffer, &bufferSize);
 
     const DWORD count = bufferSize / sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION);
@@ -402,16 +365,12 @@ PXResult PXAPI  PXSystemPrelude()
         }
     }
 
-    free(buffer);
+    PXMemoryHeapFree(PXNull, buffer);
 #endif
 
     //-----------------------------------------------------
 
-
-
     //VirtualQueryEx();
-
-
 
     return PXActionSuccessful;
 }
@@ -432,12 +391,12 @@ PXOS* PXAPI PXSystemGet()
 
 const char OSNameNotFound[] = "**Unkown**";
 
-PXResult PXAPI  PXSystemVersionGetViaRegistry(PXOSVersion* const pxOSVersion)
+PXResult PXAPI PXSystemVersionGetViaRegistry(PXOSVersion PXREF pxOSVersion)
 {
     PXClear(PXOSVersion, pxOSVersion);
 
 #if OSUnix
-    FILE* const file = fopen("/etc/os-release", "r");
+    FILE PXREF file = fopen("/etc/os-release", "r");
 
     if(!file)
         return;
@@ -536,7 +495,7 @@ PXResult PXAPI  PXSystemVersionGetViaRegistry(PXOSVersion* const pxOSVersion)
     }
     else 
     {
-        PXTextCopyA(OSNameNotFound, sizeof(OSNameNotFound), pxOSVersion->NameVersionLength, value_length);
+        pxOSVersion->NameVersionLength = PXTextCopyA(OSNameNotFound, sizeof(OSNameNotFound), pxOSVersion->NameVersion, value_length);
     }
 
     RegCloseKey(hKey);
@@ -546,12 +505,12 @@ PXResult PXAPI  PXSystemVersionGetViaRegistry(PXOSVersion* const pxOSVersion)
 #endif
 }
 
-PXResult PXAPI  PXSystemVersionGetViaKernel(PXOSVersion* const pxOSVersion)
+PXResult PXAPI PXSystemVersionGetViaKernel(PXOSVersion PXREF pxOSVersion)
 {
     return PXActionInvalid;
 }
 
-void PXAPI PXSystemVersionGet(PXOSVersion* const pxOSVersion)
+void PXAPI PXSystemVersionGet(PXOSVersion PXREF pxOSVersion)
 {
 #if OSUnix
     struct utsname buffer;
@@ -645,7 +604,7 @@ void PXAPI PXSystemVersionGet(PXOSVersion* const pxOSVersion)
 
     const int isServer = GetSystemMetrics(SM_SERVERR2);
 
-    char* osName = 0;
+    const char* osName = 0;
 
     switch(MajorVersion)
     {
@@ -778,7 +737,23 @@ void PXAPI PXSystemVersionGet(PXOSVersion* const pxOSVersion)
 #endif
 }
 
-PXResult PXAPI  PXUserNameGet(char* const text, const PXSize textSizeMax, PXSize* const textSizeWritten)
+PXI8U PXAPI PXBitsCount(const PXSize bitMask)
+{
+    // Helper function to count set bits in the processor mask.
+    const PXI8U LSHIFT = sizeof(PXSize) * 8 - 1;
+    PXSize bitTest = (PXSize)1 << LSHIFT;
+    PXI8U bitSetCount = 0;
+
+    for(PXI8U i = 0; i <= LSHIFT; ++i)
+    {
+        bitSetCount += ((bitMask & bitTest) ? 1 : 0);
+        bitTest /= 2;
+    }
+
+    return bitSetCount;
+}
+
+PXResult PXAPI PXUserNameGet(PXText PXREF pxText)
 {
     PXActionResult result;
 
@@ -788,14 +763,37 @@ PXResult PXAPI  PXUserNameGet(char* const text, const PXSize textSizeMax, PXSize
 
 #elif OSWindows
 
-    DWORD length = textSizeMax;
-    const BOOL success = GetUserNameA(text, &length); // Windows 2000, Advapi32.dll, winbase.h
+    DWORD length = pxText->SizeAllocated;
+    BOOL success = FALSE;
+
+    switch(pxText->Format)
+    {
+        case TextFormatASCII:
+        {
+            success = GetUserNameA(pxText->A, &length); // Windows 2000, Advapi32.dll, winbase.h
+            break;
+        }
+        case TextFormatUTF16:
+        case TextFormatUNICODE:
+        {
+            success = GetUserNameW(pxText->W, &length); // Windows 2000, Advapi32.dll, winbase.h
+            break;
+        }     
+        case TextFormatInvalid:
+        default:
+            break;
+    }
+   
     result = PXErrorCurrent(success);
 
-    if(textSizeWritten && success)
+    pxText->SizeUsed = length;
+
+
+    if(success)
     {
-        *textSizeWritten = textSizeMax;
+        PXTextDemote(pxText);
     }
+
 #else
     result = PXActionRefusedNotImplemented;
 #endif
@@ -803,7 +801,7 @@ PXResult PXAPI  PXUserNameGet(char* const text, const PXSize textSizeMax, PXSize
     return result;
 }
 
-PXResult PXAPI  PXComputerNameGet(char* const text, const PXSize textSizeMax, PXSize* const textSizeWritten)
+PXResult PXAPI PXComputerNameGet(char PXREF text, const PXSize textSizeMax, PXSize PXREF textSizeWritten)
 {
 #if OSUnix
 
@@ -814,7 +812,7 @@ PXResult PXAPI  PXComputerNameGet(char* const text, const PXSize textSizeMax, PX
 #endif
 }
 
-PXResult PXAPI  PXFilePathCleanse(const char* pathInput, char* const pathOutput, const PXSize pathOutputSizeMAX, PXSize* const pathOutputSizeWritten)
+PXResult PXAPI PXFilePathCleanse(const char* pathInput, char PXREF pathOutput, const PXSize pathOutputSizeMAX, PXSize PXREF pathOutputSizeWritten)
 {
     PXActionResult pxActionResult;
 
@@ -836,9 +834,9 @@ PXResult PXAPI  PXFilePathCleanse(const char* pathInput, char* const pathOutput,
     return pxActionResult;
 }
 
-PXResult PXAPI  PXFileNameViaHandleA(PXFile* const pxFile, char* const fileNameBuffer, const PXSize pathOutputSizeMAX, PXSize* const pathOutputSizeWritten)
+PXResult PXAPI PXFileNameViaHandle(const PXFile PXREF pxFile, PXText PXREF pxText)
 {
-    char filePathIntermediate[PXPathSizeMax];
+    char filePathIntermediate[260];
     char* filePathIntermediateOff = filePathIntermediate;
     PXSize filePathIntermediateSize = 0;
 
@@ -876,7 +874,7 @@ PXResult PXAPI  PXFileNameViaHandleA(PXFile* const pxFile, char* const fileNameB
     PXTextPrintA(namePathBuffer, namePathBufferSIze, "/proc/self/fd/%d", pxFile->FileDescriptorID); // "/prof/self/fd/0123456789"
 
     const PXSize writtenBytes = readlink(namePathBuffer, filePath->A, filePath->SizeAllocated); // [POSIX.1 - 2008]
-    const PXActionResult readResult = PXErrorCurrent(-1 != writtenBytes);
+    const PXResult readResult = PXErrorCurrent(-1 != writtenBytes);
 
     if(PXActionSuccessful != readResult)
     {
@@ -931,10 +929,10 @@ PXResult PXAPI  PXFileNameViaHandleA(PXFile* const pxFile, char* const fileNameB
     (
         pxFile->FileHandle,
         filePathIntermediate,
-        PXPathSizeMax,
+        260,
         FILE_NAME_OPENED | VOLUME_NAME_DOS
     ); // Windows Vista, Kernel32.dll, Windows.h
-    const PXActionResult readResult = PXErrorCurrent(0 != filePathIntermediateSize);
+    const PXResult readResult = PXErrorCurrent(0 != filePathIntermediateSize);
 
 
     // GetShortPathNameA() makes a path to something like "\\?\C:\Data\WORKSP~1\_GIT_~1\BITFIR~1\GAMECL~1\Shader\SKYBOX~2.GLS"
@@ -949,10 +947,9 @@ PXResult PXAPI  PXFileNameViaHandleA(PXFile* const pxFile, char* const fileNameB
         (
             PXLoggingError,
             PXOSName,
-            "File",
+            PXOSFile,
             "Translate file handle <%p> failed!",
-            pxFile->FileHandle,
-            fileNameBuffer
+            pxFile->FileHandle
         );
 #endif
 
@@ -965,10 +962,10 @@ PXResult PXAPI  PXFileNameViaHandleA(PXFile* const pxFile, char* const fileNameB
     (
         PXLoggingInfo,
         PXOSName,
-        "File",
+        PXOSFile,
         "Translate file handle <%p> to <%s>",
         pxFile->FileHandle,
-        fileNameBuffer
+        pxText->A
     );
 #endif
 
@@ -976,9 +973,9 @@ PXResult PXAPI  PXFileNameViaHandleA(PXFile* const pxFile, char* const fileNameB
     filePathIntermediateSize -= 4u;
     filePathIntermediateOff += 4u;
 
-    char buffer[PXPathSizeMax];
+    char buffer[260];
 
-    const DWORD currentPathSize = GetCurrentDirectoryA(PXPathSizeMax, buffer); // Windows XP (+UWP), Kernel32.dll, winbase.h
+    const DWORD currentPathSize = GetCurrentDirectoryA(260, buffer); // Windows XP (+UWP), Kernel32.dll, winbase.h
 
     const PXSize maxSize = PXMathMinimumIU(currentPathSize, filePathIntermediateSize);
     const PXBool isMatching = PXTextCompareA(buffer, currentPathSize, filePathIntermediateOff, maxSize, 0);
@@ -989,13 +986,9 @@ PXResult PXAPI  PXFileNameViaHandleA(PXFile* const pxFile, char* const fileNameB
         filePathIntermediateSize -= (currentPathSize + 1);
     }
 
-    if(pathOutputSizeWritten)
-    {
-        *pathOutputSizeWritten = filePathIntermediateSize;
-    }
+    pxText->SizeUsed = filePathIntermediateSize;
 
-
-    PXTextReplace(filePathIntermediateOff, '\\', '/');
+    PXTextReplaceByte(filePathIntermediateOff, filePathIntermediateSize, '\\', '/');
 
     return PXActionSuccessful;
 #elif WindowsAtleastXP && 0
@@ -1012,7 +1005,7 @@ PXResult PXAPI  PXFileNameViaHandleA(PXFile* const pxFile, char* const fileNameB
 #endif
 }
 
-void PXAPI PXTextUTF8ToUNICODE(wchar_t* const textOutput, const char* const textInput)
+void PXAPI PXTextUTF8ToUNICODE(wchar_t PXREF textOutput, const char PXREF textInput)
 {
 #if OSUnix
 #elif OSWindows
@@ -1024,7 +1017,7 @@ void PXAPI PXTextUTF8ToUNICODE(wchar_t* const textOutput, const char* const text
 #endif
 }
 
-void PXAPI PXTextUNICODEToUTF8(char* const textOutput, const wchar_t* const textInput)
+void PXAPI PXTextUNICODEToUTF8(char PXREF textOutput, const wchar_t PXREF textInput)
 {
 #if OSUnix
 #elif OSWindows
@@ -1036,7 +1029,7 @@ void PXAPI PXTextUNICODEToUTF8(char* const textOutput, const wchar_t* const text
 #endif
 }
 
-void PXAPI PXProcessCurrent(PXProcess* const pxProcess)
+void PXAPI PXProcessCurrent(PXProcess PXREF pxProcess)
 {
     //const HANDLE processHandle = GetCurrentProcess();
 
@@ -1056,13 +1049,13 @@ void PXAPI PXProcessCurrent(PXProcess* const pxProcess)
 #endif
 }
 
-PXResult PXAPI  PXProcessMemoryWrite
+PXResult PXAPI PXProcessMemoryWrite
 (
     const PXProcessHandle pxProcessHandle,
     const void* baseAddress,
     const void* bufferData,
     const PXSize bufferSizeMax,
-    PXSize* const bufferSizeWritten
+    PXSize PXREF bufferSizeWritten
 )
 {
     PXActionResult pxActionResult;
@@ -1085,13 +1078,13 @@ PXResult PXAPI  PXProcessMemoryWrite
     return pxActionResult;
 }
 
-PXResult PXAPI  PXProcessMemoryRead
+PXResult PXAPI PXProcessMemoryRead
 (
     const PXProcessHandle pxProcessHandle, 
     const void* baseAddress,
-    void* const bufferData, 
+    void PXREF bufferData, 
     const PXSize bufferSizeMax, 
-    PXSize* const bufferSizeWritten
+    PXSize PXREF bufferSizeWritten
 )
 {
     PXActionResult pxActionResult;
@@ -1123,7 +1116,7 @@ PXBool PXAPI PXThreadIsMain()
     return _PXOS.MainThread.HandleID == pxThreadCurrent.HandleID;
 }
 
-PXResult PXAPI PXThreadCurrent(PXThread* const pxThread)
+PXResult PXAPI PXThreadCurrent(PXThread PXREF pxThread)
 {
     PXClear(PXThread, pxThread);
 
@@ -1146,7 +1139,7 @@ PXResult PXAPI PXThreadCurrent(PXThread* const pxThread)
 #endif
 }
 
-PXResult PXAPI  PXThreadResume(PXThread* const pxThread)
+PXResult PXAPI PXThreadResume(PXThread PXREF pxThread)
 {
     pxThread->Info.Behaviour &= ~PXExecuteStateMask;
     pxThread->Info.Behaviour |= PXExecuteStateRunning;
@@ -1157,7 +1150,7 @@ PXResult PXAPI  PXThreadResume(PXThread* const pxThread)
 #elif OSWindows
     const PXProcessThreadHandle threadHandle = pxThread->Info.Handle.ThreadHandle;
     const DWORD suspendCount = ResumeThread(threadHandle); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
-    const PXActionResult pxActionResult = PXErrorCurrent(-1 != suspendCount);
+    const PXResult pxActionResult = PXErrorCurrent(-1 != suspendCount);
 
     if(PXActionSuccessful != pxActionResult)
     {
@@ -1170,15 +1163,15 @@ PXResult PXAPI  PXThreadResume(PXThread* const pxThread)
     (
         PXLoggingInfo,
         PXOSName,
-        "Thread-Resume",
-        "Handle:<%p>, ID:<%i>",
+        PXOSThread,
+        "Handle:<%p>, ID:<%i>, Resume",
         threadHandle,
         pxThread->HandleID
     );
 #endif
 }
 
-PXResult PXAPI  PXThreadSuspend(PXThread* const pxThread)
+PXResult PXAPI PXThreadSuspend(PXThread PXREF pxThread)
 {
     const PXProcessThreadHandle threadHandle = pxThread->Info.Handle.ThreadHandle;
 
@@ -1190,7 +1183,7 @@ PXResult PXAPI  PXThreadSuspend(PXThread* const pxThread)
 
 #elif OSWindows
     const DWORD result = SuspendThread(threadHandle); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
-    const PXActionResult pxActionResult = PXErrorCurrent(-1 != result);
+    const PXResult pxActionResult = PXErrorCurrent(-1 != result);
 
     if(PXActionSuccessful != pxActionResult)
     {
@@ -1203,15 +1196,15 @@ PXResult PXAPI  PXThreadSuspend(PXThread* const pxThread)
     (
         PXLoggingInfo,
         PXOSName,
-        "Thread-Suspend",
-        "Handle:<%p>, ID:<%i>",
+        PXOSThread,
+        "Handle:<%p>, ID:<%i>, Suspend",
         threadHandle,
         pxThread->HandleID
     );
 #endif
 }
 
-PXResult PXAPI  PXThreadWait(PXThread* const pxThread)
+PXResult PXAPI PXThreadWait(PXThread PXREF pxThread)
 {
     pxThread->Info.Behaviour &= ~PXExecuteStateMask;
     pxThread->Info.Behaviour |= PXExecuteStateWaiting;
@@ -1249,7 +1242,7 @@ PXResult PXAPI  PXThreadWait(PXThread* const pxThread)
 #endif
 }
 
-PXResult PXAPI  PXThreadCPUCoreAffinitySet(PXThread* const pxThread, const PXI16U coreIndex)
+PXResult PXAPI PXThreadCPUCoreAffinitySet(PXThread PXREF pxThread, const PXI16U coreIndex)
 {
     //MAXIMUM_PROCESSORS;
 
@@ -1257,9 +1250,21 @@ PXResult PXAPI  PXThreadCPUCoreAffinitySet(PXThread* const pxThread, const PXI16
     (
         pxThread->Info.Handle.ThreadHandle,
         coreIndex
-    );
-    PXActionResult result = PXErrorCurrent(-1 == resultID);
+    ); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
+    PXResult result = PXErrorCurrent((DWORD)-1 != resultID);
 
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXOSName,
+        PXOSThread,
+        "ID:<%i>, %i, Affinity",
+        pxThread->HandleID,
+        coreIndex
+    );
+#endif
 
     /*
     DWORD_PTR SetThreadAffinityMask(
@@ -1273,7 +1278,7 @@ PXResult PXAPI  PXThreadCPUCoreAffinitySet(PXThread* const pxThread, const PXI16
 
 
 
-PXResult PXAPI  PXThreadYieldToOtherThreads()
+PXResult PXAPI PXThreadYieldToOtherThreads()
 {
     PXActionResult pxActionResult;
 
@@ -1309,7 +1314,7 @@ PXResult PXAPI  PXThreadYieldToOtherThreads()
 
 
 
-PXResult PXAPI  PXMemoryHeapCreate(PXMemoryHeap* const pxMemoryHeap)
+PXResult PXAPI PXMemoryHeapCreate(PXMemoryHeap PXREF pxMemoryHeap)
 {
 #if OSUnix
 #elif OSWindows
@@ -1319,7 +1324,7 @@ PXResult PXAPI  PXMemoryHeapCreate(PXMemoryHeap* const pxMemoryHeap)
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXMemoryHeapRelease(PXMemoryHeap* const pxMemoryHeap)
+PXResult PXAPI PXMemoryHeapRelease(PXMemoryHeap PXREF pxMemoryHeap)
 {
 #if OSUnix
 #elif OSWindows
@@ -1329,14 +1334,12 @@ PXResult PXAPI  PXMemoryHeapRelease(PXMemoryHeap* const pxMemoryHeap)
     return PXActionSuccessful;
 }
 
-void PXAPI PXMemoryHeapGetGlobal(PXMemoryHeap* const pxMemoryHeap)
+void PXAPI PXMemoryHeapGetGlobal(PXMemoryHeap PXREF pxMemoryHeap)
 {
     pxMemoryHeap->HeapHandle = GetProcessHeap(); // Windows 2000 SP4, Kernel32.dll, heapapi.h
-
-    return PXActionSuccessful;
 }
 
-PXSize PXAPI PXMemoryHeapBlockSize(PXMemoryHeap* pxMemoryHeap, const void* const adress)
+PXSize PXAPI PXMemoryHeapBlockSize(PXMemoryHeap* pxMemoryHeap, const void PXREF adress)
 {
     PXMemoryHeap redirectHeap;
 
@@ -1359,7 +1362,7 @@ PXSize PXAPI PXMemoryHeapBlockSize(PXMemoryHeap* pxMemoryHeap, const void* const
 #elif OSWindows  
 
     const SIZE_T size = HeapSize(pxMemoryHeap->HeapHandle, 0, adress);
-    const PXActionResult sizeError = PXErrorCurrent((SIZE_T)-1 != size);
+    const PXResult sizeError = PXErrorCurrent((SIZE_T)-1 != size);
 
     return size;
 #else
@@ -1492,7 +1495,7 @@ void* PXAPI PXMemoryHeapMalloc(PXMemoryHeap* pxMemoryHeap, const PXSize memorySi
     return adress;
 }
 
-PXBool PXAPI PXMemoryHeapFree(PXMemoryHeap* pxMemoryHeap, const void* const adress)
+PXBool PXAPI PXMemoryHeapFree(PXMemoryHeap* pxMemoryHeap, const void PXREF adress)
 {
     PXMemoryHeap redirectHeap;
 
@@ -1559,7 +1562,7 @@ PXBool PXAPI PXMemoryHeapFree(PXMemoryHeap* pxMemoryHeap, const void* const adre
 #endif
 }
 
-void* PXAPI PXMemoryHeapRealloc(PXMemoryHeap* pxMemoryHeap, const void* const adress, const PXSize memorySize)
+void* PXAPI PXMemoryHeapRealloc(PXMemoryHeap* pxMemoryHeap, const void PXREF adress, const PXSize memorySize)
 {
     PXMemoryHeap redirectHeap;
     void* newAdress = PXNull;
@@ -1678,7 +1681,7 @@ void* PXAPI PXMemoryHeapRealloc(PXMemoryHeap* pxMemoryHeap, const void* const ad
 
 #if OSWindows
 
-PXBool isChecked = 0;
+
 
 void PXAPI PXWindowsCheckPermission()
 {
@@ -1686,7 +1689,7 @@ void PXAPI PXWindowsCheckPermission()
        // WILL normally fail, because we dont have permissions..?
        // We have permissions, it is only disabled by default.
 
-
+    static PXBool isChecked = 0;
 
       // AddPrivileges();
 
@@ -1705,11 +1708,11 @@ void PXAPI PXWindowsCheckPermission()
 
     // Open the process token
     const BOOL openTokenID = OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken);
-    const PXActionResult openTokenResult = PXErrorCurrent(openTokenID);
+    const PXResult openTokenResult = PXErrorCurrent(openTokenID);
 
 
     const BOOL lookupSuccess = LookupPrivilegeValue(NULL, SE_LOCK_MEMORY_NAME, &luid); // SeLockMemoryPrivilege, NOT THREAD SAFE!
-    const PXActionResult lookupSuccessResult = PXErrorCurrent(lookupSuccess);
+    const PXResult lookupSuccessResult = PXErrorCurrent(lookupSuccess);
 
     privileges.PrivilegeCount = 1;
     privileges.Privileges[0].Luid = luid;
@@ -1724,7 +1727,7 @@ void PXAPI PXWindowsCheckPermission()
         PXNull,
         PXNull
     );
-    const PXActionResult privilgeResult = PXErrorCurrent(privilgeResultID);
+    const PXResult privilgeResult = PXErrorCurrent(privilgeResultID);
 
     CloseHandle(hToken);
 
@@ -1736,7 +1739,7 @@ void PXAPI PXWindowsCheckPermission()
 
 
 
-void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize* const createdSize, const PXAccessMode pxAccessMode)
+void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize PXREF createdSize, const PXAccessMode pxAccessMode)
 {
     PXMemoryPageInfo pxFilePageFileInfo;
     PXSize recievedSize = 0;
@@ -1855,7 +1858,7 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize* const createdSize, cons
     for(;;)
     {
         pxFile->Data = mmap(NULL, pxFileIOInfo->FileSizeRequest, permission, mode, -1, 0);
-        const PXActionResult allocResult = PXErrorCurrent(MAP_FAILED != pxFile->Data);
+        const PXResult allocResult = PXErrorCurrent(MAP_FAILED != pxFile->Data);
 
         if(PXActionSuccessful == allocResult)
         {
@@ -2123,7 +2126,7 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize* const createdSize, cons
 
 void PXAPI PXMemoryVirtualPrefetch(const void* adress, const PXSize size)
 {
-    PXOS* const pxOS = PXSystemGet();
+    PXOS PXREF pxOS = PXSystemGet();
 
 #if OSUnix
 #elif OSWindows
@@ -2181,7 +2184,7 @@ void PXAPI PXMemoryVirtualPrefetch(const void* adress, const PXSize size)
 #endif
 }
 
-PXResult PXAPI  PXMemoryVirtualRelease(const void* adress, const PXSize size)
+PXResult PXAPI PXMemoryVirtualRelease(const void* adress, const PXSize size)
 {
     if(!(adress && size))
     {
@@ -2202,14 +2205,14 @@ PXResult PXAPI  PXMemoryVirtualRelease(const void* adress, const PXSize size)
 
 #if OSUnix
     const int resultID = munmap(adress, size); // sys/mman.h
-    const PXActionResult unmapResult = PXErrorCurrent(0 == resultID);
+    const PXResult unmapResult = PXErrorCurrent(0 == resultID);
 
     return unmapResult;
 
 #elif OSWindows
     DWORD freeType = MEM_RELEASE;
     const PXBool freeResultID = VirtualFree((void*)adress, 0, freeType); // Windows XP (+UWP), Kernel32.dll, memoryapi.h
-    const PXActionResult freeResult = PXErrorCurrent(freeResultID);
+    const PXResult freeResult = PXErrorCurrent(freeResultID);
 
     return freeResult;
 #else
@@ -2250,7 +2253,7 @@ void* PXAPI PXMemoryVirtualReallocate(const void* adress, const PXSize size)
 
 }
 
-PXResult PXAPI  PXMemoryVirtualInfoViaAdress(PXMemoryVirtualInfo* const pxMemoryVirtualInfo, const void* adress)
+PXResult PXAPI PXMemoryVirtualInfoViaAdress(PXMemoryVirtualInfo PXREF pxMemoryVirtualInfo, const void* adress)
 {
 #if OSUnix
 #elif OSWindows
@@ -2317,9 +2320,9 @@ PXResult PXAPI  PXMemoryVirtualInfoViaAdress(PXMemoryVirtualInfo* const pxMemory
 
 
 
-PXResult PXAPI  PXSymbolServerInitialize()
+PXResult PXAPI PXSymbolServerInitialize()
 {
-    PXOS* const pxOS = PXSystemGet();
+    PXOS PXREF pxOS = PXSystemGet();
 
     if(!pxOS->Init)
     {
@@ -2339,7 +2342,7 @@ PXResult PXAPI  PXSymbolServerInitialize()
     const PCSTR UserSearchPath = NULL;
     const BOOL fInvadeProcess = TRUE;
     const BOOL initializeSuccessful = pxSymbolServerInitialize(hProcess, UserSearchPath, fInvadeProcess); // Dbghelp.dll, Dbghelp.h, SymInitialize
-   // const PXActionResult result = PXErrorCurrent(initializeSuccessful);
+   // const PXResult result = PXErrorCurrent(initializeSuccessful);
 
     if(!initializeSuccessful)
     {
@@ -2356,7 +2359,7 @@ PXResult PXAPI  PXSymbolServerInitialize()
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXSymbolServerCleanup()
+PXResult PXAPI PXSymbolServerCleanup()
 {
     HANDLE processID = GetCurrentProcess();
     const PXSymCleanupFunction pxSymCleanup = (PXSymCleanupFunction)_PXOS.SymbolServerCleanup;
@@ -2370,14 +2373,14 @@ PXResult PXAPI  PXSymbolServerCleanup()
     return PXActionFailedLoad;
 }
 
-PXResult PXAPI  PXSymbolServerOptionsSet()
+PXResult PXAPI PXSymbolServerOptionsSet()
 {
    // DWORD xxxas = SymSetOptions(SYMOPT_LOAD_ANYTHING); // SYMOPT_LOAD_LINES
 
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXSymbolListLoad(const PXProcessHandle processHandle, const void* baseAdress)
+PXResult PXAPI PXSymbolListLoad(const PXProcessHandle processHandle, const void* baseAdress)
 {
 #if OSUnix
 
@@ -2405,7 +2408,7 @@ PXResult PXAPI  PXSymbolListLoad(const PXProcessHandle processHandle, const void
 #endif
 }
 
-PXResult PXAPI  PXSymbolModuleLoad(const PXProcessHandle processHandle, const char* moduleName, void** baseAdress)
+PXResult PXAPI PXSymbolModuleLoad(const PXProcessHandle processHandle, const char* moduleName, void** baseAdress)
 {
     const PXSymLoadModuleFunction pxSymbolModuleLoad = (PXSymLoadModuleFunction)_PXOS.SymbolModuleLoad;
     const DWORD64 baseOfDll = pxSymbolModuleLoad // DbgHelp.dll 5.1 or later        SymLoadModuleEx, DbgHelp.dll 6.0 or later
@@ -2429,7 +2432,7 @@ PXResult PXAPI  PXSymbolModuleLoad(const PXProcessHandle processHandle, const ch
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXSymbolStackWalk(PXSymbolStackWalkInfo* const pxSymbolStackWalkInfo)
+PXResult PXAPI PXSymbolStackWalk(PXSymbolStackWalkInfo PXREF pxSymbolStackWalkInfo)
 {
      const PXStackWalk64Function pxStackWalk64 = (PXStackWalk64Function)_PXOS.SymbolStackWalk;
 // const PXSymGetSymFromAddr64 pXSymGetSymFromAddr64 = (PXSymGetSymFromAddr64)pxDebug->SymbolFromAddress;
@@ -2451,7 +2454,7 @@ PXResult PXAPI  PXSymbolStackWalk(PXSymbolStackWalkInfo* const pxSymbolStackWalk
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXSymbolStackTrace(PXSymbol* const pxSymbolList, const PXSize pxSymbolListAmount, const PXSize start, const PXSize depth)
+PXResult PXAPI PXSymbolStackTrace(PXSymbol PXREF pxSymbolList, const PXSize pxSymbolListAmount, const PXSize start, const PXSize depth)
 {
     PXMemoryClear(pxSymbolList, sizeof(PXSymbol) * pxSymbolListAmount);
 
@@ -2474,7 +2477,7 @@ PXResult PXAPI  PXSymbolStackTrace(PXSymbol* const pxSymbolList, const PXSize px
 
     for(PXSize i = start; i < start + depth; ++i)
     {
-        PXSymbol* const pxSymbol = &pxSymbolList[symbolOffset];
+        PXSymbol PXREF pxSymbol = &pxSymbolList[symbolOffset];
         const char* traceEntry = strings[i];
 
         // printf("%s\n", traceEntry);
@@ -2525,7 +2528,7 @@ PXResult PXAPI  PXSymbolStackTrace(PXSymbol* const pxSymbolList, const PXSize px
     const HANDLE handleProcessCurrent = GetCurrentProcess();
     const DWORD processID = GetProcessId(handleProcessCurrent);
 
-    const PXActionResult initializeResult = PXSymbolServerInitialize();
+    const PXResult initializeResult = PXSymbolServerInitialize();
 
     if(PXActionSuccessful != initializeResult)
     {
@@ -2580,7 +2583,7 @@ PXResult PXAPI  PXSymbolStackTrace(PXSymbol* const pxSymbolList, const PXSize px
 
     for(frame = 0; frame < (start + depth); ++frame)
     {
-        const PXActionResult result = PXSymbolStackWalk(&pxSymbolStackWalkInfo);
+        const PXResult result = PXSymbolStackWalk(&pxSymbolStackWalkInfo);
 
         if(PXActionSuccessful != result)
         {
@@ -2697,9 +2700,11 @@ PXResult PXAPI  PXSymbolStackTrace(PXSymbol* const pxSymbolList, const PXSize px
 #endif
 
 #endif
+
+    return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXSymbolUnDecorateName(const char* inputName, char* name, const PXSize nameLengthMax, PXSize* nameLengthWritten)
+PXResult PXAPI PXSymbolUnDecorateName(const char* inputName, char* name, const PXSize nameLengthMax, PXSize* nameLengthWritten)
 {
     if(!(inputName && name && nameLengthMax))
     {
@@ -2714,7 +2719,7 @@ PXResult PXAPI  PXSymbolUnDecorateName(const char* inputName, char* name, const 
     }
 
     const DWORD decResultSize = pxUnDecorateSymbolName(inputName, (PSTR)name, nameLengthMax, UNDNAME_COMPLETE); // UnDecorateSymbolName
-    const PXActionResult pxActionResult = PXErrorCurrent(0 != decResultSize);
+    const PXResult pxActionResult = PXErrorCurrent(0 != decResultSize);
 
     if(nameLengthWritten)
     {
@@ -2724,7 +2729,7 @@ PXResult PXAPI  PXSymbolUnDecorateName(const char* inputName, char* name, const 
     return pxActionResult;
 }
 
-PXResult PXAPI  PXSymbolFromAddress(PXSymbol* const pxSymbol, const void* const adress)
+PXResult PXAPI PXSymbolFromAddress(PXSymbol PXREF pxSymbol, const void PXREF adress)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -2752,7 +2757,7 @@ PXResult PXAPI  PXSymbolFromAddress(PXSymbol* const pxSymbol, const void* const 
         symbolInfo.SymbolInfo.MaxNameLen = 200;
 
         const PXBool symbolFetchSuccess = SymFromAddr(processHandle, adress, &displacement, &symbolInfo.SymbolInfo);
-        const PXActionResult symbolFetchResult = PXErrorCurrent(symbolFetchSuccess);
+        const PXResult symbolFetchResult = PXErrorCurrent(symbolFetchSuccess);
 
         /*
         BOOL asas = SymGetTypeInfo
@@ -2775,7 +2780,7 @@ PXResult PXAPI  PXSymbolFromAddress(PXSymbol* const pxSymbol, const void* const 
             lineInfo.FileName = &symbolInfo;
 
             const PXBool symbolFetchSuccessW = SymGetLineFromAddr64(processHandle, adress, &displacement, &lineInfo);
-            const PXActionResult symbolFetchSuccessWRes = PXWindowsErrorCurrent(symbolFetchSuccess);
+            const PXResult symbolFetchSuccessWRes = PXWindowsErrorCurrent(symbolFetchSuccess);
 
 
             IMAGEHLP_SYMBOL64* imageHelpSYMBOL = &symbolInfo; // function avove failed, reuse memory
@@ -2855,33 +2860,33 @@ PXResult PXAPI  PXSymbolFromAddress(PXSymbol* const pxSymbol, const void* const 
 #endif
 }
 
-PXResult PXAPI  PXSymbolEnumerate()
+PXResult PXAPI PXSymbolEnumerate()
 {
    
 }
 
-PXResult PXAPI  PXSymbolFunctionTableAccess()
+PXResult PXAPI PXSymbolFunctionTableAccess()
 {
    
 }
 
-PXResult PXAPI  PXSymbolModuleBaseGet()
+PXResult PXAPI PXSymbolModuleBaseGet()
 {
  
 }
 
-PXResult PXAPI  PXSymbolModuleHandleFromAdress(PXHandleModule* const pxHandleModule, const void* const adress)
+PXResult PXAPI PXSymbolModuleHandleFromAdress(PXHandleModule PXREF pxHandleModule, const void PXREF adress)
 {
 #if OSUnix && 0
     Dl_info info;
 
     const int resultID = dladdr(adress, &info); // dlfcn.h
-    const PXActionResult moduleFetchResult = PXErrorCurrent(0 != resultID);
+    const PXResult moduleFetchResult = PXErrorCurrent(0 != resultID);
 
     return moduleFetchResult;
 #elif OSWindows
     const PXBool moduleFetchSuccess = GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCTSTR)adress, pxHandleModule);
-    const PXActionResult moduleFetchResult = PXErrorCurrent(moduleFetchSuccess);
+    const PXResult moduleFetchResult = PXErrorCurrent(moduleFetchSuccess);
 
     return moduleFetchResult;
 #else
@@ -2891,7 +2896,7 @@ PXResult PXAPI  PXSymbolModuleHandleFromAdress(PXHandleModule* const pxHandleMod
 #endif
 }
 
-PXResult PXAPI  PXSymbolModuleName(const PXHandleModule pxHandleModule, char* const name)
+PXResult PXAPI PXSymbolModuleName(const PXHandleModule pxHandleModule, char PXREF name)
 {
 #if OSUnix
 #elif OSWindows
@@ -2920,7 +2925,7 @@ const PXI32U _lockWaitSpan = 100;
 const PXI32U _lockWaitTrys = 3;
 
 
-PXResult PXAPI  PXSemaphorCreate(PXLock* const pxLock)
+PXResult PXAPI PXSemaphorCreate(PXLock PXREF pxLock)
 {
     PXActionResult pxActionResult;
 
@@ -2958,7 +2963,7 @@ PXResult PXAPI  PXSemaphorCreate(PXLock* const pxLock)
     return pxActionResult; // Success
 }
 
-PXResult PXAPI  PXSemaphorDelete(PXLock* const pxLock)
+PXResult PXAPI PXSemaphorDelete(PXLock PXREF pxLock)
 {
 #if PXLogEnable
     PXLogPrint
@@ -2978,7 +2983,7 @@ PXResult PXAPI  PXSemaphorDelete(PXLock* const pxLock)
 #endif
 }
 
-PXResult PXAPI  PXSemaphorEnter(PXLock* const pxLock)
+PXResult PXAPI PXSemaphorEnter(PXLock PXREF pxLock)
 {
 #if PXLogEnable && 0
     PXLogPrint
@@ -3053,7 +3058,7 @@ PXResult PXAPI  PXSemaphorEnter(PXLock* const pxLock)
     return waitResult;
 }
 
-PXResult PXAPI  PXSemaphorLeave(PXLock* const pxLock)
+PXResult PXAPI PXSemaphorLeave(PXLock PXREF pxLock)
 { 
     if(!pxLock)
     {
@@ -3077,14 +3082,16 @@ PXResult PXAPI  PXSemaphorLeave(PXLock* const pxLock)
 
 #if OSUnix
     const int releaseResultID = sem_post(&pxLock->ID);
-    const PXActionResult releaseResult = PXErrorCurrent(0 == releaseResultID);
+    const PXResult releaseResult = PXErrorCurrent(0 == releaseResultID);
 #elif OSWindows
     const BOOL releaseResultID = ReleaseSemaphore(pxLock->SemaphoreHandle, 1, PXNull);
-    const PXActionResult releaseResult = PXErrorCurrent(releaseResultID);
+    const PXResult releaseResult = PXErrorCurrent(releaseResultID);
 #endif   
+
+    return releaseResult;
 }
 
-PXResult PXAPI  PXCriticalSectionCreate(PXLock* const pxLock)
+PXResult PXAPI PXCriticalSectionCreate(PXLock PXREF pxLock)
 {
 #if PXLogEnable
     PXLogPrint
@@ -3103,7 +3110,7 @@ PXResult PXAPI  PXCriticalSectionCreate(PXLock* const pxLock)
 #endif  
 }
 
-PXResult PXAPI  PXCriticalSectionDelete(PXLock* const pxLock)
+PXResult PXAPI PXCriticalSectionDelete(PXLock PXREF pxLock)
 {
 #if PXLogEnable
     PXLogPrint
@@ -3125,7 +3132,7 @@ PXResult PXAPI  PXCriticalSectionDelete(PXLock* const pxLock)
 
 
 
-PXResult PXAPI  PXCriticalSectionEnter(PXLock* const pxLock)
+PXResult PXAPI PXCriticalSectionEnter(PXLock PXREF pxLock)
 {
 #if PXLogEnable && 0
     PXLogPrint
@@ -3140,7 +3147,7 @@ PXResult PXAPI  PXCriticalSectionEnter(PXLock* const pxLock)
 #if OSUnix
 
 #elif OSWindows
-    CRITICAL_SECTION* const criticalSectionCast = (CRITICAL_SECTION*)&pxLock->SectionHandle;
+    CRITICAL_SECTION PXREF criticalSectionCast = (CRITICAL_SECTION*)&pxLock->SectionHandle;
 
     PXSize failEnterCounter = 0;
 
@@ -3182,7 +3189,7 @@ PXResult PXAPI  PXCriticalSectionEnter(PXLock* const pxLock)
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXCriticalSectionLeave(PXLock* const pxLock)
+PXResult PXAPI PXCriticalSectionLeave(PXLock PXREF pxLock)
 {
 #if PXLogEnable && 0
     PXLogPrint
@@ -3197,7 +3204,7 @@ PXResult PXAPI  PXCriticalSectionLeave(PXLock* const pxLock)
 #if OSUnix
 
 #elif OSWindows
-    CRITICAL_SECTION* const criticalSectionCast = (CRITICAL_SECTION*)&pxLock->SectionHandle;
+    CRITICAL_SECTION PXREF criticalSectionCast = (CRITICAL_SECTION*)&pxLock->SectionHandle;
 
     LeaveCriticalSection(criticalSectionCast);
 #endif
@@ -3210,7 +3217,7 @@ PXResult PXAPI  PXCriticalSectionLeave(PXLock* const pxLock)
 PSAPI_WS_WATCH_INFORMATION watchInformationList[MAXSIZELISTEE];
 
 
-PXResult PXAPI  PXFileMapToMemoryEE(PXFile* const pxFile, const PXSize requestedSize, const PXAccessMode pxAccessMode, const PXBool prefetch)
+PXResult PXAPI PXFileMapToMemoryEE(PXFile PXREF pxFile, const PXSize requestedSize, const PXAccessMode pxAccessMode, const PXBool prefetch)
 {
     PXI64U start = PXTimeCounterStampGet();
 
@@ -3245,7 +3252,7 @@ PXResult PXAPI  PXFileMapToMemoryEE(PXFile* const pxFile, const PXSize requested
         pxFile->FileDescriptorID, // fileDescriptor
         0 // offset
     );
-    const PXActionResult mappingResult = PXErrorCurrent(PXNull != pxFile->Data);
+    const PXResult mappingResult = PXErrorCurrent(PXNull != pxFile->Data);
 
     if(PXActionSuccessful != openResult)
     {
@@ -3328,7 +3335,7 @@ PXResult PXAPI  PXFileMapToMemoryEE(PXFile* const pxFile, const PXSize requested
             maximumSize.LowPart,    // will be as big as the size.
             PXNull // No Name
         );
-        const PXActionResult createMappingResult = PXErrorCurrent(PXNull != pxFile->MappingHandle);
+        const PXResult createMappingResult = PXErrorCurrent(PXNull != pxFile->MappingHandle);
 
         // We can get a "ERROR_ALREADY_EXISTS" if the mapping
         // exist already, the HANDLE will still be a valid one
@@ -3392,7 +3399,7 @@ PXResult PXAPI  PXFileMapToMemoryEE(PXFile* const pxFile, const PXSize requested
             }
 #endif
 
-            pxFile->Data = MapViewOfFile // MapViewOfFileExNuma is only useable starting windows vista, this function in XP
+            pxFile->Data = (PXByte*)MapViewOfFile // MapViewOfFileExNuma is only useable starting windows vista, this function in XP
             (
                 pxFile->MappingHandle,
                 desiredAccess,
@@ -3400,7 +3407,7 @@ PXResult PXAPI  PXFileMapToMemoryEE(PXFile* const pxFile, const PXSize requested
                 fileOffsetLow,
                 numberOfBytesToMap
             );
-            const PXActionResult viewMappingResult = PXErrorCurrent(PXNull != pxFile->Data);
+            const PXResult viewMappingResult = PXErrorCurrent(PXNull != pxFile->Data);
 
             if(PXActionSuccessful != viewMappingResult)
             {
@@ -3463,7 +3470,7 @@ PXResult PXAPI  PXFileMapToMemoryEE(PXFile* const pxFile, const PXSize requested
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXPerformanceInfoGet(PXPerformanceInfo* const pxPerformanceInfo)
+PXResult PXAPI PXPerformanceInfoGet(PXPerformanceInfo PXREF pxPerformanceInfo)
 {
     if(0 == pxPerformanceInfo->UpdateCounter)
     {
@@ -3492,10 +3499,10 @@ PXResult PXAPI  PXPerformanceInfoGet(PXPerformanceInfo* const pxPerformanceInfo)
     const BOOL processMemoryInfo = GetProcessMemoryInfo
     (
         processHandle,
-        &processMemoryCounters,
+        (PPROCESS_MEMORY_COUNTERS)&processMemoryCounters,
         processMemoryCounters.cb
     );
-    const PXActionResult pxActionResult = PXErrorCurrent(processMemoryInfo);
+    const PXResult pxActionResult = PXErrorCurrent(processMemoryInfo);
 
     if(PXActionSuccessful != pxActionResult)
     {
@@ -3581,7 +3588,7 @@ PXResult PXAPI  PXPerformanceInfoGet(PXPerformanceInfo* const pxPerformanceInfo)
         DWORD amount = 0;
 
         const BOOL pageWatchUpdate = GetWsChanges(processHandle, watchInformationList, sizeOfList);
-        const PXActionResult pageWatchUpdateResult = PXErrorCurrent(pageWatchUpdate);
+        const PXResult pageWatchUpdateResult = PXErrorCurrent(pageWatchUpdate);
 
         if(PXActionSuccessful != pageWatchUpdateResult)
         {
@@ -3649,7 +3656,7 @@ PXResult PXAPI  PXPerformanceInfoGet(PXPerformanceInfo* const pxPerformanceInfo)
 #endif
 }
 
-PXResult PXAPI PXGPUList(PXGPUPhysical* const pxGPUPhysicalList, PXSize* const pxGPUPhysicalListSize)
+PXResult PXAPI PXGPUList(PXGPUPhysical PXREF pxGPUPhysicalList, PXSize PXREF pxGPUPhysicalListSize)
 {
 #if OSUnix
 #elif OSWindows
@@ -3689,7 +3696,7 @@ PXResult PXAPI PXGPUList(PXGPUPhysical* const pxGPUPhysicalList, PXSize* const p
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXDebugEventContinue(const PXI32U processID, const PXI32U threadID)
+PXResult PXAPI PXDebugEventContinue(const PXI32U processID, const PXI32U threadID)
 {
 #if OSUnix
 
@@ -3701,7 +3708,7 @@ PXResult PXAPI  PXDebugEventContinue(const PXI32U processID, const PXI32U thread
     const PXContinueDebugEventFunction pxContinueDebugEvent = (PXContinueDebugEventFunction)_PXOS.DebugEventContinue;
     const DWORD dwContinueStatus = 0;
     const PXBool continueResultID = pxContinueDebugEvent(processID, threadID, dwContinueStatus); // Windows XP, Kernel32.dll, debugapi.h
-    const PXActionResult continueResult = PXErrorCurrent(continueResultID);
+    const PXResult continueResult = PXErrorCurrent(continueResultID);
 
     return continueResult;
 #else
@@ -3711,7 +3718,7 @@ PXResult PXAPI  PXDebugEventContinue(const PXI32U processID, const PXI32U thread
 #endif
 }
 
-PXResult PXAPI  PXDebugEventWait(void* pxDebugEventInfo, const PXI32U time)
+PXResult PXAPI PXDebugEventWait(void* pxDebugEventInfo, const PXI32U time)
 {
     // WaitForDebugEvent() Windows XP, Kernel32.dll, debugapi.h
 // WaitForDebugEventEx() Windows 10, Kernel32.dll, debugapi.h
@@ -3722,17 +3729,17 @@ PXResult PXAPI  PXDebugEventWait(void* pxDebugEventInfo, const PXI32U time)
     DEBUG_EVENT* debugEvent = (DEBUG_EVENT*)pxDebugEventInfo;
 
     const BOOL success = pxWaitForDebugEvent(debugEvent, time);
-    const PXActionResult pxActionResult = PXErrorCurrent(success);
+    const PXResult pxActionResult = PXErrorCurrent(success);
 
     return pxActionResult;
 }
 
-PXResult PXAPI  PXDebugProcessActive()
+PXResult PXAPI PXDebugProcessActive()
 {
     
 }
 
-PXResult PXAPI  PXDebugBreak()
+PXResult PXAPI PXDebugBreak()
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -3747,7 +3754,7 @@ PXResult PXAPI  PXDebugBreak()
 #endif
 }
 
-PXResult PXAPI  PXDebugOutputDebugStringA(const char* text)
+PXResult PXAPI PXDebugOutputDebugStringA(const char* text)
 {
 #if OSUnix
 #elif OSWindows
@@ -3757,7 +3764,7 @@ PXResult PXAPI  PXDebugOutputDebugStringA(const char* text)
 #endif
 }
 
-PXResult PXAPI  PXDebugOutputDebugStringW(const wchar_t* text)
+PXResult PXAPI PXDebugOutputDebugStringW(const wchar_t* text)
 {
 #if OSUnix
 #elif OSWindows
@@ -3767,12 +3774,12 @@ PXResult PXAPI  PXDebugOutputDebugStringW(const wchar_t* text)
 #endif
 }
 
-PXResult PXAPI  PXDebugProcessBreak()
+PXResult PXAPI PXDebugProcessBreak()
 {
  
 }
 
-PXResult PXAPI  PXDebugIsPresent(PXBool* const isPresent)
+PXResult PXAPI PXDebugIsPresent(PXBool PXREF isPresent)
 {
 #if OSUnix
 #elif OSWindows
@@ -3788,7 +3795,7 @@ PXResult PXAPI  PXDebugIsPresent(PXBool* const isPresent)
 #endif
 }
 
-PXResult PXAPI  PXDebugIsPresentRemote(const PXProcessHandle processHandle, PXBool* const isPresent)
+PXResult PXAPI PXDebugIsPresentRemote(const PXProcessHandle processHandle, PXBool PXREF isPresent)
 {
     if(!isPresent)
     {
@@ -3801,7 +3808,7 @@ PXResult PXAPI  PXDebugIsPresentRemote(const PXProcessHandle processHandle, PXBo
 
     BOOL debuggerPresent = 0;
     const BOOL result = pxCheckRemoteDebuggerPresent(processHandle, &debuggerPresent); // Windows XP, Kernel32.dll, debugapi.h
-    const PXActionResult pxActionResult = PXErrorCurrent(result);
+    const PXResult pxActionResult = PXErrorCurrent(result);
 
     if(PXActionSuccessful != pxActionResult)
     {
@@ -3816,7 +3823,7 @@ PXResult PXAPI  PXDebugIsPresentRemote(const PXProcessHandle processHandle, PXBo
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXDebugActiveProcessStop(const PXI32U processID)
+PXResult PXAPI PXDebugActiveProcessStop(const PXI32U processID)
 {
 #if OSUnix
     const long result = ptrace(PTRACE_DETACH, pxDebug->Process.ProcessID, 0, 0);
@@ -3831,23 +3838,23 @@ PXResult PXAPI  PXDebugActiveProcessStop(const PXI32U processID)
     }
 
     const BOOL successful = pxDebugActiveProcessStop(processID);
-    const PXActionResult pxActionResult = PXErrorCurrent(successful);
+    const PXResult pxActionResult = PXErrorCurrent(successful);
 
     return pxActionResult;
 #endif
 }
 
-PXResult PXAPI  PXDebugModuleNameGet
+PXResult PXAPI PXDebugModuleNameGet
 (
     const PXHandleModule pxHandleModule,
     char* moduleName,
     const PXSize moduleNameSize,
-    PXSize* const sizeWritten,
+    PXSize PXREF sizeWritten,
     const PXI32U flags
 )
 {
-    char moduleNameBuffer[PXPathSizeMax];
-    PXClearList(char, moduleNameBuffer, PXPathSizeMax);
+    char moduleNameBuffer[260];
+    PXClearList(char, moduleNameBuffer, 260);
     PXSize moduleNameLength = 0;
 
     PXActionResult moduleFetchResult;
@@ -3861,7 +3868,7 @@ PXResult PXAPI  PXDebugModuleNameGet
         Dl_info info;
 
         const int resultID = dladdr(current_module, &info);
-        const PXActionResult moduleFetchResult = PXErrorCurrent((0 != resultID));
+        const PXResult moduleFetchResult = PXErrorCurrent((0 != resultID));
 
         if(info.dli_fname)
         {
@@ -3880,7 +3887,7 @@ PXResult PXAPI  PXDebugModuleNameGet
 
 #elif OSWindows
 
-    moduleNameLength = GetModuleFileNameA(pxHandleModule, moduleNameBuffer, PXPathSizeMax);
+    moduleNameLength = GetModuleFileNameA(pxHandleModule, moduleNameBuffer, 260);
     moduleFetchResult = PXErrorCurrent(0 != moduleNameLength);
 
 #else
@@ -3998,7 +4005,7 @@ PXResult PXAPI  PXDebugModuleNameGet
             }
         }
 
-        moduleNameLength = PXTextCopyA(molduleNamefixed, actualSize, moduleName, PXPathSizeMax);
+        moduleNameLength = PXTextCopyA(molduleNamefixed, actualSize, moduleName, 260);
     }
 #endif
 
@@ -4016,7 +4023,7 @@ PXResult PXAPI  PXDebugModuleNameGet
 #elif PXOSWindowsDestop
 BOOL CALLBACK PXLibraryNameSymbolEnumerate(PSYMBOL_INFO pSymInfo, ULONG SymbolSize, PVOID UserContext)
 {
-    PXSymbolEnumerator* const pxSymbolEnumerator = (PXSymbolEnumerator*)UserContext;
+    PXSymbolEnumerator PXREF pxSymbolEnumerator = (PXSymbolEnumerator*)UserContext;
 
     PXSymbol* pxSymbol = &pxSymbolEnumerator->SymbolList[pxSymbolEnumerator->Amount];
     pxSymbol->TypeIndex = pSymInfo->TypeIndex;

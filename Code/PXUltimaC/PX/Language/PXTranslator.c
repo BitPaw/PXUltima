@@ -17,7 +17,7 @@
 // V <=> B
 // GHT <=> CHT
 
-PXResult PXAPI PXTranslatorEnglishToGerman(PXFile* const inputStreamEnglish, PXFile* const outputStreamGerman)
+PXResult PXAPI PXTranslatorEnglishToGerman(PXFile PXREF inputStreamEnglish, PXFile PXREF outputStreamGerman)
 {
     while (!PXFileIsAtEnd(inputStreamEnglish))
     {
@@ -32,7 +32,7 @@ PXResult PXAPI PXTranslatorEnglishToGerman(PXFile* const inputStreamEnglish, PXF
     return PXActionSuccessful;
 }
 
-PXResult PXAPI PXTranslatorGermanToEnglish(PXFile* const inputStreamGerman, PXFile* const outputStreamEnglish)
+PXResult PXAPI PXTranslatorGermanToEnglish(PXFile PXREF inputStreamGerman, PXFile PXREF outputStreamEnglish)
 {
     return PXActionSuccessful;
 }

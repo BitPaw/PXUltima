@@ -205,22 +205,22 @@ const char* PXAPI PXDocumentElementTypeToString(const PXDocumentElementType pxDo
     }
 }
 
-PXResult PXAPI  PXDocumentElementRoot(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement)
+PXResult PXAPI PXDocumentElementRoot(PXCodeDocument PXREF pxDocument, PXCodeDocumentElement PXREF pxDocumentElement)
 {
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXDocumentElementChildGet(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement)
+PXResult PXAPI PXDocumentElementChildGet(PXCodeDocument PXREF pxDocument, PXCodeDocumentElement PXREF pxDocumentElement)
 {
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXDocumentElementSiblingGet(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement)
+PXResult PXAPI PXDocumentElementSiblingGet(PXCodeDocument PXREF pxDocument, PXCodeDocumentElement PXREF pxDocumentElement)
 {
     return PXActionSuccessful;
 }
 
-PXCodeDocumentElement* PXAPI PXCodeDocumentElementAdd(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement)
+PXCodeDocumentElement* PXAPI PXCodeDocumentElementAdd(PXCodeDocument PXREF pxDocument, PXCodeDocumentElement PXREF pxDocumentElement)
 {
     if(pxDocumentElement->ID == 0)
     {
@@ -325,13 +325,13 @@ PXCodeDocumentElement* PXAPI PXCodeDocumentElementAdd(PXCodeDocument* const pxDo
     return newTarget;
 }
 
-PXResult PXAPI  PXCodeDocumentElementGenerateChild
+PXResult PXAPI PXCodeDocumentElementGenerateChild
 (
-    PXCodeDocument* const pxDocument,
+    PXCodeDocument PXREF pxDocument,
     PXDocumentElementType pxDocumentElementType,
     const PXSize depth,
     PXCodeDocumentElement** pxDocumentElement,
-    PXCodeDocumentElement* const pxDocumentElementParent
+    PXCodeDocumentElement PXREF pxDocumentElementParent
 )
 {
     PXCodeDocumentElement pxCodeDocumentElementTemp;
@@ -377,7 +377,7 @@ PXResult PXAPI  PXCodeDocumentElementGenerateChild
     *pxDocumentElement = pxCodeDocumentElement;
 }
 
-void PXAPI PXCodeDocumentElementPrintSingle(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement)
+void PXAPI PXCodeDocumentElementPrintSingle(PXCodeDocument PXREF pxDocument, PXCodeDocumentElement PXREF pxDocumentElement)
 {
 #if PXLogEnable
     const char* typeName = PXDocumentElementTypeToString(pxDocumentElement->Type);
@@ -552,7 +552,7 @@ void PXAPI PXCodeDocumentElementPrintSingle(PXCodeDocument* const pxDocument, PX
 #endif
 }
 
-void PXAPI PXCodeDocumentElementPrintAll(PXCodeDocument* const pxDocument)
+void PXAPI PXCodeDocumentElementPrintAll(PXCodeDocument PXREF pxDocument)
 {
     for(size_t i = 0; i < pxDocument->LastCounter; i++)
     {
@@ -562,7 +562,7 @@ void PXAPI PXCodeDocumentElementPrintAll(PXCodeDocument* const pxDocument)
     }
 }
 
-PXSize PXAPI PXDocumentElementIO(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement, PXFileIOMultibleFunction pxFileIOMultibleFunction)
+PXSize PXAPI PXDocumentElementIO(PXCodeDocument PXREF pxDocument, PXCodeDocumentElement PXREF pxDocumentElement, PXFileIOMultibleFunction pxFileIOMultibleFunction)
 {
 #if 0
     const PXI8U symbolID = pxDocumentElement->Type;
@@ -592,7 +592,7 @@ PXSize PXAPI PXDocumentElementIO(PXCodeDocument* const pxDocument, PXCodeDocumen
     return 0;
 }
 
-PXResult PXAPI  PXDocumentElementWrite(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement)
+PXResult PXAPI PXDocumentElementWrite(PXCodeDocument PXREF pxDocument, PXCodeDocumentElement PXREF pxDocumentElement)
 {
 
 #if 0
@@ -666,12 +666,12 @@ PXResult PXAPI  PXDocumentElementWrite(PXCodeDocument* const pxDocument, PXCodeD
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXDocumentElementRead(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement)
+PXResult PXAPI PXDocumentElementRead(PXCodeDocument PXREF pxDocument, PXCodeDocumentElement PXREF pxDocumentElement)
 {
     return PXDocumentElementIO(pxDocument, pxDocumentElement, PXFileReadMultible);;
 }
 
-PXResult PXAPI  PXDocumentElementAdd(PXCodeDocument* const pxDocument, PXCodeDocumentElement* const pxDocumentElement)
+PXResult PXAPI PXDocumentElementAdd(PXCodeDocument PXREF pxDocument, PXCodeDocumentElement PXREF pxDocumentElement)
 {
     switch (pxDocumentElement->Type)
     {
@@ -713,7 +713,7 @@ PXResult PXAPI  PXDocumentElementAdd(PXCodeDocument* const pxDocument, PXCodeDoc
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXDocumentPrintNode(PXCodeDocumentElement* const pxDocumentElement)
+PXResult PXAPI PXDocumentPrintNode(PXCodeDocumentElement PXREF pxDocumentElement)
 {
 #if PXLogEnable
     char elementType[64];
@@ -813,7 +813,7 @@ PXResult PXAPI  PXDocumentPrintNode(PXCodeDocumentElement* const pxDocumentEleme
 #endif
 }
 
-PXResult PXAPI  PXDocumentPrint(PXCodeDocument* const pxDocument)
+PXResult PXAPI PXDocumentPrint(PXCodeDocument PXREF pxDocument)
 {
 #if 0
     PXCodeDocumentElement pxDocumentElement;

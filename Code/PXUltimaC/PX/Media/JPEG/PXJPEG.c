@@ -30,76 +30,76 @@ const PXI8U PXJPEGChunkHeaderBindingSize = sizeof(PXJPEGChunkHeaderBinding) / si
 
 
 
-typedef void (PXAPI* PXJPEGChunckHandlerFunciton)(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+typedef void (PXAPI* PXJPEGChunckHandlerFunciton)(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
 
 
 
 
 
 
-PXPrivate void PXAPI PXJPEGChunckStartOfFrameHuffmanBaselineDCTHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckStartOfFrameHuffmanSequentialExtendedDCTHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckStartOfFrameHuffmanProgressiveDCTHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckStartOfFrameHuffmanSequentialLosslessHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckDefineHuffmanTableListHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckStartOfFrameHuffmanDifferentialSequentialHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckStartOfFrameHuffmanDifferentialProgressiveDCTHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckStartOfFrameHuffmanDifferentialLosslessSequentialHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckStartOfFrameArithmeticPXJPEGExtensionHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckStartOfFrameArithmeticExtendedSequentialDCTHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckStartOfFrameArithmeticProgressiveDCTHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckStartOfFrameArithmeticLosslessSequentialHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckDefineArithmeticCodingHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckStartOfFrameArithmeticDifferentialSequentialDCTHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckStartOfFrameArithmeticDifferentialProgressiveDCTHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckStartOfFrameArithmeticDifferentialLosslessSequentialHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckIntervalTerminationRestart0Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckIntervalTerminationRestart1Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckIntervalTerminationRestart2Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckIntervalTerminationRestart3Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckIntervalTerminationRestart4Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckIntervalTerminationRestart5Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckIntervalTerminationRestart6Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckIntervalTerminationRestart7Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckStartOfImageHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckEndOfImageHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckStartOfScanHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckDefineQuantizationTableListHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckDefineNumberOfLinesHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckDefineRestartIntervalHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckDefineHierarchicalProgressionHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckExpandReferenceComponentListHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckApplicationSegment00Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckApplicationSegment01Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckApplicationSegment02Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckApplicationSegment03Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckApplicationSegment04Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckApplicationSegment05Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckApplicationSegment06Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckApplicationSegment07Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckApplicationSegment08Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckApplicationSegment09Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckApplicationSegment10Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckApplicationSegment11Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckApplicationSegment12Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckApplicationSegment13Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckApplicationSegment14Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckApplicationSegment15Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckExtension00Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckExtension01Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckExtension02Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckExtension03Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckExtension04Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckExtension05Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckExtension06Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckExtension07Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckExtension08Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckExtension09Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckExtension10Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckExtension11Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckExtension12Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckExtension13Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
-PXPrivate void PXAPI PXJPEGChunckCommentHandle(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckStartOfFrameHuffmanBaselineDCTHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckStartOfFrameHuffmanSequentialExtendedDCTHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckStartOfFrameHuffmanProgressiveDCTHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckStartOfFrameHuffmanSequentialLosslessHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckDefineHuffmanTableListHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckStartOfFrameHuffmanDifferentialSequentialHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckStartOfFrameHuffmanDifferentialProgressiveDCTHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckStartOfFrameHuffmanDifferentialLosslessSequentialHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckStartOfFrameArithmeticPXJPEGExtensionHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckStartOfFrameArithmeticExtendedSequentialDCTHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckStartOfFrameArithmeticProgressiveDCTHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckStartOfFrameArithmeticLosslessSequentialHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckDefineArithmeticCodingHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckStartOfFrameArithmeticDifferentialSequentialDCTHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckStartOfFrameArithmeticDifferentialProgressiveDCTHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckStartOfFrameArithmeticDifferentialLosslessSequentialHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckIntervalTerminationRestart0Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckIntervalTerminationRestart1Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckIntervalTerminationRestart2Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckIntervalTerminationRestart3Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckIntervalTerminationRestart4Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckIntervalTerminationRestart5Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckIntervalTerminationRestart6Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckIntervalTerminationRestart7Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckStartOfImageHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckEndOfImageHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckStartOfScanHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckDefineQuantizationTableListHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckDefineNumberOfLinesHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckDefineRestartIntervalHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckDefineHierarchicalProgressionHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckExpandReferenceComponentListHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckApplicationSegment00Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckApplicationSegment01Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckApplicationSegment02Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckApplicationSegment03Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckApplicationSegment04Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckApplicationSegment05Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckApplicationSegment06Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckApplicationSegment07Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckApplicationSegment08Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckApplicationSegment09Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckApplicationSegment10Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckApplicationSegment11Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckApplicationSegment12Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckApplicationSegment13Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckApplicationSegment14Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckApplicationSegment15Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckExtension00Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckExtension01Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckExtension02Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckExtension03Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckExtension04Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckExtension05Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckExtension06Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckExtension07Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckExtension08Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckExtension09Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckExtension10Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckExtension11Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckExtension12Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckExtension13Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
+PXPrivate void PXAPI PXJPEGChunckCommentHandle(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader);
 
 
 
@@ -345,16 +345,16 @@ PXSize PXAPI PXJPEGFilePredictSize(const PXSize width, const PXSize height, cons
     return sum;
 }
 
-void PXAPI PXJPEGDestruct(PXJPEG* const jpeg)
+void PXAPI PXJPEGDestruct(PXJPEG PXREF jpeg)
 {
 
 }
 
-PXResult PXAPI  PXJPEGLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI PXJPEGLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
 {
     PXJPEG jpeXg;
     PXJPEG* jpeg = &jpeXg;
-    PXFile* const pxFile = pxResourceLoadInfo->FileReference;
+    PXFile PXREF pxFile = pxResourceLoadInfo->FileReference;
 
     PXClear(PXJPEG, &jpeg);
 
@@ -645,9 +645,9 @@ void PXAPI generateHuffmanTable(const PXI8U numCodes[16], const PXI8U* values, B
     }
 }
 
-PXResult PXAPI  PXJPEGSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI PXJPEGSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
 {
-    PXTexture* const pxTexture = (PXTexture*)pxResourceSaveInfo->FileReference;
+    PXTexture PXREF pxTexture = (PXTexture*)pxResourceSaveInfo->FileReference;
 
     unsigned char isRGB = 1u;
     unsigned char quality = 100u;
@@ -1000,7 +1000,7 @@ PXResult PXAPI  PXJPEGSaveToFile(PXResourceTransphereInfo* const pxResourceSaveI
 
 
 
-void PXAPI PXJPEGChunckStartOfFrameHuffmanBaselineDCTHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckStartOfFrameHuffmanBaselineDCTHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
     PXJPEGFrame frame;
 
@@ -1050,22 +1050,22 @@ void PXAPI PXJPEGChunckStartOfFrameHuffmanBaselineDCTHandler(PXJPEG* const jpeg,
 #endif
 }
 
-void PXAPI PXJPEGChunckStartOfFrameHuffmanSequentialExtendedDCTHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckStartOfFrameHuffmanSequentialExtendedDCTHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckStartOfFrameHuffmanProgressiveDCTHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckStartOfFrameHuffmanProgressiveDCTHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckStartOfFrameHuffmanSequentialLosslessHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckStartOfFrameHuffmanSequentialLosslessHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckDefineHuffmanTableListHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckDefineHuffmanTableListHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
     PXSize remainingBytes = pxJPEGChunkHeader->ChunkSize;
 
@@ -1142,112 +1142,112 @@ void PXAPI PXJPEGChunckDefineHuffmanTableListHandler(PXJPEG* const jpeg, PXFile*
     }
 }
 
-void PXAPI PXJPEGChunckStartOfFrameHuffmanDifferentialSequentialHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckStartOfFrameHuffmanDifferentialSequentialHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckStartOfFrameHuffmanDifferentialProgressiveDCTHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckStartOfFrameHuffmanDifferentialProgressiveDCTHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckStartOfFrameHuffmanDifferentialLosslessSequentialHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckStartOfFrameHuffmanDifferentialLosslessSequentialHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckStartOfFrameArithmeticPXJPEGExtensionHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckStartOfFrameArithmeticPXJPEGExtensionHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckStartOfFrameArithmeticExtendedSequentialDCTHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckStartOfFrameArithmeticExtendedSequentialDCTHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckStartOfFrameArithmeticProgressiveDCTHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckStartOfFrameArithmeticProgressiveDCTHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckStartOfFrameArithmeticLosslessSequentialHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckStartOfFrameArithmeticLosslessSequentialHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckDefineArithmeticCodingHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckDefineArithmeticCodingHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckStartOfFrameArithmeticDifferentialSequentialDCTHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckStartOfFrameArithmeticDifferentialSequentialDCTHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckStartOfFrameArithmeticDifferentialProgressiveDCTHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckStartOfFrameArithmeticDifferentialProgressiveDCTHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckStartOfFrameArithmeticDifferentialLosslessSequentialHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckStartOfFrameArithmeticDifferentialLosslessSequentialHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckIntervalTerminationRestart0Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckIntervalTerminationRestart0Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckIntervalTerminationRestart1Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckIntervalTerminationRestart1Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckIntervalTerminationRestart2Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckIntervalTerminationRestart2Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckIntervalTerminationRestart3Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckIntervalTerminationRestart3Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckIntervalTerminationRestart4Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckIntervalTerminationRestart4Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckIntervalTerminationRestart5Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckIntervalTerminationRestart5Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckIntervalTerminationRestart6Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckIntervalTerminationRestart6Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckIntervalTerminationRestart7Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckIntervalTerminationRestart7Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckStartOfImageHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckStartOfImageHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckEndOfImageHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckEndOfImageHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckStartOfScanHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckStartOfScanHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
     PXFileReadI8U(pxFile, &jpeg->ScanStart.ScanSelectorSize);
 
@@ -1284,7 +1284,7 @@ void PXAPI PXJPEGChunckStartOfScanHandler(PXJPEG* const jpeg, PXFile* const pxFi
     PXFileCursorAdvance(pxFile, imageDataSize);
 }
 
-void PXAPI PXJPEGChunckDefineQuantizationTableListHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckDefineQuantizationTableListHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
     PXSize remainingBytes = pxJPEGChunkHeader->ChunkSize;
 
@@ -1302,7 +1302,7 @@ void PXAPI PXJPEGChunckDefineQuantizationTableListHandler(PXJPEG* const jpeg, PX
             matixID = (cluster & 0b00001111);
         }
 
-        PXI8U* const matrixAdress = (PXI8U*)&jpeg->QuantizationTable[matixID];
+        PXI8U PXREF matrixAdress = (PXI8U*)&jpeg->QuantizationTable[matixID];
 
         remainingBytes -= PXFileReadB(pxFile, matrixAdress, sizeof(PXI8U) * 64u);
 
@@ -1326,67 +1326,67 @@ void PXAPI PXJPEGChunckDefineQuantizationTableListHandler(PXJPEG* const jpeg, PX
     }
 }
 
-void PXAPI PXJPEGChunckDefineNumberOfLinesHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckDefineNumberOfLinesHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckDefineRestartIntervalHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckDefineRestartIntervalHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckDefineHierarchicalProgressionHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckDefineHierarchicalProgressionHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckExpandReferenceComponentListHandler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckExpandReferenceComponentListHandler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckApplicationSegment00Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckApplicationSegment00Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckApplicationSegment01Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckApplicationSegment01Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckApplicationSegment02Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckApplicationSegment02Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckApplicationSegment03Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckApplicationSegment03Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckApplicationSegment04Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckApplicationSegment04Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckApplicationSegment05Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckApplicationSegment05Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckApplicationSegment06Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckApplicationSegment06Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckApplicationSegment07Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckApplicationSegment07Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckApplicationSegment08Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckApplicationSegment08Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
     char identifier[5];
 
@@ -1443,112 +1443,112 @@ void PXAPI PXJPEGChunckApplicationSegment08Handler(PXJPEG* const jpeg, PXFile* c
     }
 }
 
-void PXAPI PXJPEGChunckApplicationSegment09Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckApplicationSegment09Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckApplicationSegment10Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckApplicationSegment10Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckApplicationSegment11Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckApplicationSegment11Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckApplicationSegment12Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckApplicationSegment12Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckApplicationSegment13Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckApplicationSegment13Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckApplicationSegment14Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckApplicationSegment14Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckApplicationSegment15Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckApplicationSegment15Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckExtension00Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckExtension00Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckExtension01Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckExtension01Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckExtension02Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckExtension02Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckExtension03Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckExtension03Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckExtension04Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckExtension04Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckExtension05Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckExtension05Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckExtension06Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckExtension06Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckExtension07Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckExtension07Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckExtension08Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckExtension08Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckExtension09Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckExtension09Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckExtension10Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckExtension10Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckExtension11Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckExtension11Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckExtension12Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckExtension12Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckExtension13Handler(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckExtension13Handler(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
 
 }
 
-void PXAPI PXJPEGChunckCommentHandle(PXJPEG* const jpeg, PXFile* const pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
+void PXAPI PXJPEGChunckCommentHandle(PXJPEG PXREF jpeg, PXFile PXREF pxFile, const PXJPEGChunkHeader* pxJPEGChunkHeader)
 {
     jpeg->CommentSize = pxJPEGChunkHeader->ChunkSize;
     jpeg->Comment = PXMemoryHeapCallocT(char, jpeg->CommentSize);

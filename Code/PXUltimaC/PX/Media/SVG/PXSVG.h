@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXSVGIncluded
 #define PXSVGIncluded
 
@@ -9,7 +11,7 @@ typedef struct PXSVG_
 }
 PXSVG;
 
-PXPublic PXResult PXAPI PXSVGLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXSVGSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXSVGLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXSVGSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

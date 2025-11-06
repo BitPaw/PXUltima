@@ -30,7 +30,7 @@ void buildCRCTable()
 }
 
 
-PXI32U PXAPI PXCRC32Generate(const PXByte* const data, const PXSize length)
+PXI32U PXAPI PXCRC32Generate(const PXByte PXREF data, const PXSize length)
 {
     PXI32U crcAccumulator = 0xFFFFFFFF;
 

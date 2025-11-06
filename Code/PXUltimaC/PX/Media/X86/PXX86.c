@@ -21,7 +21,7 @@ const char PXX86Name[] = "X86-X64";
 const char PXX86Iitile[] = "Disassemble";
 
 
-void PXAPI PXX86InstructionSUBImidate(PXX86Iterator* const pxX86Iterator)
+void PXAPI PXX86InstructionSUBImidate(PXX86Iterator PXREF pxX86Iterator)
 {
     PXX86ModRM pxX86ModRM;
 
@@ -44,7 +44,7 @@ void PXAPI PXX86InstructionSUBImidate(PXX86Iterator* const pxX86Iterator)
 #endif
 }
 
-void PXAPI PXX86InstructionInvoke(PXX86Iterator* const pxX86Iterator)
+void PXAPI PXX86InstructionInvoke(PXX86Iterator PXREF pxX86Iterator)
 {
     const PXSize size = PXTypeSizeMask & pxX86Iterator->InstructionCurrent->Type;
 
@@ -60,7 +60,7 @@ void PXAPI PXX86InstructionInvoke(PXX86Iterator* const pxX86Iterator)
 
 
 
-void PXAPI PXX86InstructionFunctionMODRMRead(PXX86Iterator* const pxX86Iterator, PXX86ModRM* const pxX86ModRM)
+void PXAPI PXX86InstructionFunctionMODRMRead(PXX86Iterator PXREF pxX86Iterator, PXX86ModRM PXREF pxX86ModRM)
 {
     PXI8U modRM = 0;
 
@@ -74,7 +74,7 @@ void PXAPI PXX86InstructionFunctionMODRMRead(PXX86Iterator* const pxX86Iterator,
 }
 
 
-void PXAPI PXX86InstructionFunctionMOVx3(PXX86Iterator* const pxX86Iterator)
+void PXAPI PXX86InstructionFunctionMOVx3(PXX86Iterator PXREF pxX86Iterator)
 {
     PXX86ModRM pxX86ModRM;
 
@@ -125,7 +125,7 @@ void PXAPI PXX86InstructionFunctionMOVx3(PXX86Iterator* const pxX86Iterator)
 
 }
 
-void PXAPI PXX86InstructionFunctionREXMOV(PXX86Iterator* const pxX86Iterator)
+void PXAPI PXX86InstructionFunctionREXMOV(PXX86Iterator PXREF pxX86Iterator)
 {
     // HANDLE??
 
@@ -134,7 +134,7 @@ void PXAPI PXX86InstructionFunctionREXMOV(PXX86Iterator* const pxX86Iterator)
     PXX86InstructionInvoke(pxX86Iterator);
 }
 
-void PXAPI PXX86InstructionRET(PXX86Iterator* const pxX86Iterator)
+void PXAPI PXX86InstructionRET(PXX86Iterator PXREF pxX86Iterator)
 {
     PXSize returnAdress = 0;
 
@@ -160,7 +160,7 @@ void PXAPI PXX86InstructionRET(PXX86Iterator* const pxX86Iterator)
     PXFileCursorMoveTo(pxX86Iterator->Data, returnAdress);
 }
 
-void PXAPI PXX86InstructionCall(PXX86Iterator* const pxX86Iterator)
+void PXAPI PXX86InstructionCall(PXX86Iterator PXREF pxX86Iterator)
 {
 #if PXLogEnable
     PXLogPrint
@@ -180,7 +180,7 @@ void PXAPI PXX86InstructionCall(PXX86Iterator* const pxX86Iterator)
     PXFileCursorOffset(pxX86Iterator->Data, pxX86Iterator->Immediate.I32S);
 }
 
-void PXAPI PXX86InstructionJMPNEAR(PXX86Iterator* const pxX86Iterator)
+void PXAPI PXX86InstructionJMPNEAR(PXX86Iterator PXREF pxX86Iterator)
 {
 #if PXLogEnable
     PXLogPrint
@@ -513,7 +513,7 @@ const char PXX86InstructionListD8High[] =
 }
 */
 
-PXResult PXAPI  PXX86InstructionNext(PXX86Iterator* const pxX86Iterator)
+PXResult PXAPI PXX86InstructionNext(PXX86Iterator PXREF pxX86Iterator)
 {
     PXFileReadI8U(pxX86Iterator->Data, &pxX86Iterator->OperationCode);
 
@@ -553,7 +553,7 @@ PXResult PXAPI  PXX86InstructionNext(PXX86Iterator* const pxX86Iterator)
     }
 }
 
-PXResult PXAPI  PXX86InstructionDisassemble(PXX86Iterator* const pxX86Iterator)
+PXResult PXAPI PXX86InstructionDisassemble(PXX86Iterator PXREF pxX86Iterator)
 {
     PXX86InstructionNext(pxX86Iterator);
 
@@ -653,7 +653,7 @@ PXResult PXAPI  PXX86InstructionDisassemble(PXX86Iterator* const pxX86Iterator)
 }
 
 
-PXResult PXAPI  PXX86InstructionWalk(PXFile* const pxFile, PXSectionTable* const pxSectionTable)
+PXResult PXAPI PXX86InstructionWalk(PXFile PXREF pxFile, PXSectionTable PXREF pxSectionTable)
 {
     PXSize old = pxFile->DataCursor;
     PXX86Iterator pxX86Iterator;

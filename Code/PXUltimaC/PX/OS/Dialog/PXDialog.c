@@ -31,7 +31,7 @@ typedef BOOL(APIENTRY* PXPrintDlgW)(LPPRINTDLGW pPD);
 #endif
 
 
-PXResult PXAPI  PXDialogSystemInitialize(PXDialogSystem* const pxDialogSystem)
+PXResult PXAPI PXDialogSystemInitialize(PXDialogSystem PXREF pxDialogSystem)
 {
 #if OSUnix
 #elif OSWindows
@@ -40,7 +40,7 @@ PXResult PXAPI  PXDialogSystemInitialize(PXDialogSystem* const pxDialogSystem)
 
     // Load library
     {
-        const PXActionResult pxActionResult = PXLibraryOpenA(&pxDialogSystem->CommonDialogLibrary, "COMDLG32.DLL");
+        const PXResult pxActionResult = PXLibraryOpenA(&pxDialogSystem->CommonDialogLibrary, "COMDLG32.DLL");
 
         if(PXActionSuccessful != pxActionResult)
         {
@@ -74,7 +74,7 @@ PXResult PXAPI  PXDialogSystemInitialize(PXDialogSystem* const pxDialogSystem)
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXDialogSystemRelease(PXDialogSystem* const pxDialogSystem)
+PXResult PXAPI PXDialogSystemRelease(PXDialogSystem PXREF pxDialogSystem)
 {
     PXLibraryClose(&pxDialogSystem->CommonDialogLibrary);
 
@@ -83,7 +83,7 @@ PXResult PXAPI  PXDialogSystemRelease(PXDialogSystem* const pxDialogSystem)
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXDialogFileOpen(PXDialogSystem* const pxDialogSystem, PXText* const filePath)
+PXResult PXAPI PXDialogFileOpen(PXDialogSystem PXREF pxDialogSystem, PXText PXREF filePath)
 {
 #if OSUnix
 
@@ -116,7 +116,7 @@ PXResult PXAPI  PXDialogFileOpen(PXDialogSystem* const pxDialogSystem, PXText* c
     const HRESULT resss = CoInitialize(NULL);
 
     const HRESULT hr = CoCreateInstance(&CLSID_FileOpenDialog, NULL, CLSCTX_INPROC_SERVER, &IID_IFileOpenDialog, &fileDialog); // Windows 2000, Ole32.dll, combaseapi.h
-    const PXActionResult result = PXWindowsHandleErrorFromID(hr);
+    const PXResult result = PXWindowsHandleErrorFromID(hr);
 
 
 
@@ -152,7 +152,7 @@ PXResult PXAPI  PXDialogFileOpen(PXDialogSystem* const pxDialogSystem, PXText* c
         {
             const PXGetOpenFileNameA pxGetOpenFileNameA = (PXGetOpenFileNameA)pxDialogSystem->DialogFileNameOpenGetA;
             const PXBool wasSuccesful = pxGetOpenFileNameA(&openFileName); // Windows 2000, Comdlg32.dll, commdlg.h
-            const PXActionResult pxActionResult = PXErrorCurrent(wasSuccesful);
+            const PXResult pxActionResult = PXErrorCurrent(wasSuccesful);
 
             if(PXActionSuccessful != pxActionResult)
             {
@@ -180,7 +180,7 @@ PXResult PXAPI  PXDialogFileOpen(PXDialogSystem* const pxDialogSystem, PXText* c
 
         const PXGetOpenFileNameW pxGetOpenFileNameW = (PXGetOpenFileNameW)pxDialogSystem->DialogFileNameOpenGetW;
         const PXBool wasSuccesful = pxGetOpenFileNameW(&openFileName); // Windows 2000, Comdlg32.dll, commdlg.h
-        const PXActionResult pxActionResult = PXErrorCurrent(wasSuccesful);
+        const PXResult pxActionResult = PXErrorCurrent(wasSuccesful);
 
         if(PXActionSuccessful != pxActionResult)
         {
@@ -199,7 +199,7 @@ PXResult PXAPI  PXDialogFileOpen(PXDialogSystem* const pxDialogSystem, PXText* c
 #endif
 }
 
-PXResult PXAPI  PXDialogFileSave(PXDialogSystem* const pxDialogSystem, PXText* const filePath)
+PXResult PXAPI PXDialogFileSave(PXDialogSystem PXREF pxDialogSystem, PXText PXREF filePath)
 {
 #if OSUnix
     return 0;
@@ -226,7 +226,7 @@ PXResult PXAPI  PXDialogFileSave(PXDialogSystem* const pxDialogSystem, PXText* c
 
         const PXGetSaveFileNameA pxGetSaveFileNameA = (PXGetSaveFileNameA)pxDialogSystem->DialogFileNameSaveGetA;
         const PXBool wasSuccesful = pxGetSaveFileNameA(&openFileName); // Windows 2000, Comdlg32.dll, commdlg.h
-        const PXActionResult pxActionResult = PXErrorCurrent(wasSuccesful);
+        const PXResult pxActionResult = PXErrorCurrent(wasSuccesful);
 
         if(PXActionSuccessful != pxActionResult)
         {
@@ -253,7 +253,7 @@ PXResult PXAPI  PXDialogFileSave(PXDialogSystem* const pxDialogSystem, PXText* c
 
         const PXGetSaveFileNameW pxGetSaveFileNameW = (PXGetSaveFileNameW)pxDialogSystem->DialogFileNameSaveGetW;
         const PXBool wasSuccesful = pxGetSaveFileNameW(&openFileName); // Windows 2000, Comdlg32.dll, commdlg.h
-        const PXActionResult pxActionResult = PXErrorCurrent(wasSuccesful);
+        const PXResult pxActionResult = PXErrorCurrent(wasSuccesful);
 
         if(PXActionSuccessful != pxActionResult)
         {
@@ -270,7 +270,7 @@ PXResult PXAPI  PXDialogFileSave(PXDialogSystem* const pxDialogSystem, PXText* c
 #endif
 }
 
-PXBool PXAPI PXDialogColorSelect(PXDialogSystem* const pxDialogSystem, PXColorRGBI8* const color)
+PXBool PXAPI PXDialogColorSelect(PXDialogSystem PXREF pxDialogSystem, PXColorRGBI8 PXREF color)
 {
 #if OSUnix
     return PXFalse;
@@ -307,7 +307,7 @@ PXBool PXAPI PXDialogColorSelect(PXDialogSystem* const pxDialogSystem, PXColorRG
 #endif
 }
 
-PXBool PXAPI PXDialogFontSelect(PXDialogSystem* const pxDialogSystem)
+PXBool PXAPI PXDialogFontSelect(PXDialogSystem PXREF pxDialogSystem)
 {
 #if OSUnix
     return PXFalse;
@@ -325,7 +325,7 @@ PXBool PXAPI PXDialogFontSelect(PXDialogSystem* const pxDialogSystem)
 #endif
 }
 
-PXBool PXAPI PXDialogPrint(PXDialogSystem* const pxDialogSystem)
+PXBool PXAPI PXDialogPrint(PXDialogSystem PXREF pxDialogSystem)
 {
 #if OSUnix
     return PXFalse;

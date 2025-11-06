@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXMTLIncluded
 #define PXMTLIncluded
 
@@ -48,13 +50,13 @@ typedef struct MTLMaterial_
 PXMTLMaterial;
 
 PXPrivate PXIlluminationMode PXAPI PXMTLIlluminationModeFromID(const unsigned int illuminationModeID);
-PXPrivate PXMTLLineType PXAPI PXMTLPeekLine(const char* const line, const PXSize lineSize);
+PXPrivate PXMTLLineType PXAPI PXMTLPeekLine(const char PXREF line, const PXSize lineSize);
 
-PXPublic PXSize PXAPI PXMTLFetchAmount(const void* const data, const PXSize dataSize);
-PXPublic PXBool PXAPI PXMTLFetchMaterial(const void* const data, const PXSize dataSize, const PXSize materialID, PXMTLMaterial* const mtlMaterial);
+PXPublic PXSize PXAPI PXMTLFetchAmount(const void PXREF data, const PXSize dataSize);
+PXPublic PXBool PXAPI PXMTLFetchMaterial(const void PXREF data, const PXSize dataSize, const PXSize materialID, PXMTLMaterial PXREF mtlMaterial);
 
-PXPublic PXResult PXAPI PXMTLPeekFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXMTLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXMTLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXMTLPeekFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXMTLLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXMTLSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

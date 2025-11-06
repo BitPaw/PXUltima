@@ -31,18 +31,18 @@ extern "C"
 	}
 	PXServer;
 
-	PXPublic void PXAPI PXServerConstruct(PXServer* const server);
-	PXPublic void PXAPI PXServerDestruct(PXServer* const server);
+	PXPublic void PXAPI PXServerConstruct(PXServer PXREF server);
+	PXPublic void PXAPI PXServerDestruct(PXServer PXREF server);
 
-	PXPrivate PXBool PXAPI PXServerSocketIDIsServer(const PXServer* const server, const PXSocketID socketID, PXSocket** const pxSocket);
+	PXPrivate PXBool PXAPI PXServerSocketIDIsServer(const PXServer PXREF server, const PXSocketID socketID, PXSocket* PXREF pxSocket);
 
-	PXPublic PXResult PXAPI PXServerStart(PXServer* const server, const PXI16U port, const PXProtocolMode protocolMode);
-	PXPublic PXResult PXAPI PXServerStop(PXServer* const server);
-	PXPublic PXResult PXAPI PXServerKickClient(PXServer* const server, const PXSocketID socketID);
+	PXPublic PXResult PXAPI PXServerStart(PXServer PXREF server, const PXI16U port, const PXProtocolMode protocolMode);
+	PXPublic PXResult PXAPI PXServerStop(PXServer PXREF server);
+	PXPublic PXResult PXAPI PXServerKickClient(PXServer PXREF server, const PXSocketID socketID);
 
-	PXPublic PXResult PXAPI PXServerSendToAll(PXServer* const server, const void* const data, const PXSize dataSize);
+	PXPublic PXResult PXAPI PXServerSendToAll(PXServer PXREF server, const void PXREF data, const PXSize dataSize);
 
-	PXPrivate PXThreadResult PXOSAPI PXServerClientListeningThread(PXSocket* const serverSocket);
+	PXPrivate PXThreadResult PXOSAPI PXServerClientListeningThread(PXSocket PXREF serverSocket);
 
 #ifdef __cplusplus
 }

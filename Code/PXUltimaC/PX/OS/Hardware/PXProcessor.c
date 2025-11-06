@@ -43,7 +43,7 @@ void cpuid(PXCPUInfo* pxCPUInfo, int code)
 
 
 
-void PXAPI PXProcessorModelNameGet(const PXProcessorModelName processorModelName, char* const name)
+void PXAPI PXProcessorModelNameGet(const PXProcessorModelName processorModelName, char PXREF name)
 {
     const char* processorName = 0;
 
@@ -446,7 +446,7 @@ PXProcessorModelName PXAPI PXProcessorModelNameDetect(const PXProcessorBrand pro
     return ProcessorModelNameInvalid;
 }
 
-void PXAPI PXProcessorFetchInfo(PXProcessor* const processor)
+void PXAPI PXProcessorFetchInfo(PXProcessor PXREF processor)
 {
     PXI32U maxInfoValueID = 0; // Maximum Input Value for Basic CPUID Information.
     PXI32U maxExtendedFunctionID = 0; // Maximum Input Value for Extended Function CPUID Information.
@@ -732,7 +732,7 @@ unsigned int PXAPI PXProcessorTimeReal()
 #endif
 }
 
-PXResult PXAPI  PXProcessorTemperature(PXProcessorTemperatureInfo* const pxProcessorTemperatureInfo)
+PXResult PXAPI PXProcessorTemperature(PXProcessorTemperatureInfo PXREF pxProcessorTemperatureInfo)
 {
     const PXSize oldAmount = pxProcessorTemperatureInfo->ListAmount;
 
@@ -750,7 +750,7 @@ PXResult PXAPI  PXProcessorTemperature(PXProcessorTemperatureInfo* const pxProce
         // Spamming open and close should not be the best 
         // solution but seems to be forced by the kernel, 
         // as this file is not updated otherwise.
-        FILE* const fileHandle = fopen(thermalZoneFilePath, "r");
+        FILE PXREF fileHandle = fopen(thermalZoneFilePath, "r");
 
         if(NULL == fileHandle)
         {
@@ -782,9 +782,10 @@ PXResult PXAPI  PXProcessorTemperature(PXProcessorTemperatureInfo* const pxProce
 
     {
         const HRESULT initializeResultID = CoInitialize(NULL);
-        const PXActionResult initializeResult = PXErrorFromHRESULT(initializeResultID);
+        const PXResult initializeResult = PXErrorFromHRESULT(initializeResultID);
 
-        PXActionReturnOnError(initializeResult);
+        if(PXActionSuccessful != initializeResult)
+            return initializeResult;;
     }
 
 
@@ -838,7 +839,7 @@ PXResult PXAPI  PXProcessorTemperature(PXProcessorTemperatureInfo* const pxProce
             EOAC_NONE,
             NULL
         );
-        const PXActionResult initializeResult = PXWindowsHandleErrorFromID(initializeResultID);
+        const PXResult initializeResult = PXWindowsHandleErrorFromID(initializeResultID);
 
         PXActionReturnOnError(initializeResult);
         */
@@ -859,9 +860,10 @@ PXResult PXAPI  PXProcessorTemperature(PXProcessorTemperatureInfo* const pxProce
             &IID_IWbemLocator,
             (LPVOID*)&wmiNameSpace
         );
-        const PXActionResult instaceResult = PXErrorFromHRESULT(instaceResultID);
+        const PXResult instaceResult = PXErrorFromHRESULT(instaceResultID);
 
-        PXActionReturnOnError(instaceResult);
+        if(PXActionSuccessful != instaceResult) 
+            return instaceResult;;
     }
 
     // Connect
@@ -880,12 +882,13 @@ PXResult PXAPI  PXProcessorTemperature(PXProcessorTemperatureInfo* const pxProce
             NULL,
             &sevices
         );
-        const PXActionResult connectResult = PXErrorFromHRESULT(connectResultID);
+        const PXResult connectResult = PXErrorFromHRESULT(connectResultID);
 
         //locator->lpVtbl->Release(locator);
         SysFreeString(ns);
 
-        PXActionReturnOnError(connectResult);
+        if(PXActionSuccessful != connectResult) 
+            return connectResult;;
     }
 
     {
@@ -969,7 +972,7 @@ PXResult PXAPI  PXProcessorTemperature(PXProcessorTemperatureInfo* const pxProce
             NULL,
             &objectList
         );
-        const PXActionResult querryResult = PXWindowsHandleErrorFromID(querryResultID);
+        const PXResult querryResult = PXWindowsHandleErrorFromID(querryResultID);
 
         IErrorInfo* errInfo;
 
@@ -1024,7 +1027,7 @@ PXResult PXAPI  PXProcessorTemperature(PXProcessorTemperatureInfo* const pxProce
                 &classObject,
                 &returned
             );
-            const PXActionResult nextResult = PXWindowsHandleErrorFromID(nextResultID);
+            const PXResult nextResult = PXWindowsHandleErrorFromID(nextResultID);
 
 
             PXActionReturnOnError(nextResult);
@@ -1081,7 +1084,7 @@ PXResult PXAPI  PXProcessorTemperature(PXProcessorTemperatureInfo* const pxProce
         VARIANT v;
         VariantInit(&v);
         const HRESULT getResultID = classObject->lpVtbl->Get(classObject, temp, 0, &v, NULL, NULL);
-        const PXActionResult getResult = PXWindowsHandleErrorFromID(getResultID);
+        const PXResult getResult = PXWindowsHandleErrorFromID(getResultID);
 
         classObject->lpVtbl->Release(classObject);
         SysFreeString(temp);
@@ -1133,7 +1136,7 @@ void PXAPI PXProcessorRandomNumber()
 #endif
 }
 
-void PXAPI PXProcessorSwapByteOrderI16U(PXI16U* const value)
+void PXAPI PXProcessorSwapByteOrderI16U(PXI16U PXREF value)
 {
 #if OSUnix
 #elif OSWindows && PXDefaultLibraryEnable
@@ -1141,7 +1144,7 @@ void PXAPI PXProcessorSwapByteOrderI16U(PXI16U* const value)
 #endif
 }
 
-void PXAPI PXProcessorSwapByteOrderI32U(PXI32U* const value)
+void PXAPI PXProcessorSwapByteOrderI32U(PXI32U PXREF value)
 {
 #if OSUnix 
 #elif OSWindows && PXDefaultLibraryEnable
@@ -1149,7 +1152,7 @@ void PXAPI PXProcessorSwapByteOrderI32U(PXI32U* const value)
 #endif
 }
 
-void PXAPI PXProcessorSwapByteOrderI64U(PXI64U* const value)
+void PXAPI PXProcessorSwapByteOrderI64U(PXI64U PXREF value)
 {
 #if OSUnix
 #elif OSWindows && PXDefaultLibraryEnable

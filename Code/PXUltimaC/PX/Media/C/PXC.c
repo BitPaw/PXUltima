@@ -8,7 +8,7 @@
 
 #define PXCDebugOutput 1
 
-PXResult PXAPI  PXCParsePreprocessorCondition(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent)
+PXResult PXAPI PXCParsePreprocessorCondition(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXREF parrent)
 {
     PXCompilerSymbolEntryExtract(pxCompiler);
 
@@ -45,7 +45,7 @@ PXResult PXAPI  PXCParsePreprocessorCondition(PXCompiler* const pxCompiler, PXCo
     return PXActionInvalid;
 }
 
-PXResult PXAPI  PXCParsePreprocessorDefine(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent)
+PXResult PXAPI PXCParsePreprocessorDefine(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXREF parrent)
 {
     const PXSize defineTypePosition = 0;// pxCompiler->DataCursor;
 
@@ -175,7 +175,7 @@ PXResult PXAPI  PXCParsePreprocessorDefine(PXCompiler* const pxCompiler, PXCodeD
     return PXActionInvalid;
 }
 
-PXResult PXAPI  PXCParsePreprocessorIncluded(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent)
+PXResult PXAPI PXCParsePreprocessorIncluded(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXREF parrent)
 {
     PXCodeDocumentElement* pxCodeDocumentElement = PXNull;
 
@@ -345,7 +345,7 @@ PXResult PXAPI  PXCParsePreprocessorIncluded(PXCompiler* const pxCompiler, PXCod
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXCParsePreprocessorPragma(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent)
+PXResult PXAPI PXCParsePreprocessorPragma(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXREF parrent)
 {
     PXCompilerSymbolEntryExtract(pxCompiler);
 
@@ -378,7 +378,7 @@ PXResult PXAPI  PXCParsePreprocessorPragma(PXCompiler* const pxCompiler, PXCodeD
     return PXActionInvalid;
 }
 
-PXResult PXAPI  PXCParseTypeDefinition(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent)
+PXResult PXAPI PXCParseTypeDefinition(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXREF parrent)
 {
     PXCodeDocumentElement* pxCodeDocumentElement = PXNull;
 
@@ -521,7 +521,7 @@ PXResult PXAPI  PXCParseTypeDefinition(PXCompiler* const pxCompiler, PXCodeDocum
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI  PXCParseEndOfCommand(PXCompiler* const pxCompiler)
+PXResult PXAPI PXCParseEndOfCommand(PXCompiler PXREF pxCompiler)
 {
     const PXBool isSemicolon = PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerSemiColon);
 
@@ -535,7 +535,7 @@ PXResult PXAPI  PXCParseEndOfCommand(PXCompiler* const pxCompiler)
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXCParseTypeParameterList(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent)
+PXResult PXAPI PXCParseTypeParameterList(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXREF parrent)
 {
     // expect '('
     const PXBool isOpenBracked = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerBrackedRoundOpen);
@@ -579,7 +579,7 @@ PXResult PXAPI  PXCParseTypeParameterList(PXCompiler* const pxCompiler, PXCodeDo
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI  PXCParseFunctionDefinition(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent)
+PXResult PXAPI PXCParseFunctionDefinition(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXREF parrent)
 {
     PXCodeDocumentElement* pxCodeDocumentElement = PXNull;
 
@@ -645,7 +645,7 @@ PXResult PXAPI  PXCParseFunctionDefinition(PXCompiler* const pxCompiler, PXCodeD
     return PXActionInvalid;
 }
 
-PXResult PXAPI  PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parent)
+PXResult PXAPI PXCParseTypeDeclarationElement(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXREF parent)
 {
     PXCodeDocumentElement* pxCodeDocumentElement = PXNull;
 
@@ -963,7 +963,7 @@ PXResult PXAPI  PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler, PXC
     return PXActionInvalid;
 }
 
-void PXAPI PXCNameCleave(PXCompiler* const pxCompiler, PXCodeDocumentElement* const pxCodeDocumentElement)
+void PXAPI PXCNameCleave(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXREF pxCodeDocumentElement)
 {
     char* name = pxCodeDocumentElement->AliasAdress ? pxCodeDocumentElement->AliasAdress : pxCodeDocumentElement->NameAdress;
     PXSize nameSize = pxCodeDocumentElement->AliasSize ? pxCodeDocumentElement->AliasSize : pxCodeDocumentElement->NameSize;
@@ -1055,7 +1055,7 @@ void PXAPI PXCNameCleave(PXCompiler* const pxCompiler, PXCodeDocumentElement* co
     }
 }
 
-PXResult PXAPI  PXCParseEnumMember(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent)
+PXResult PXAPI PXCParseEnumMember(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXREF parrent)
 {
     PXCodeDocumentElement* pxCodeDocumentElement = PXNull;
 
@@ -1106,7 +1106,7 @@ PXResult PXAPI  PXCParseEnumMember(PXCompiler* const pxCompiler, PXCodeDocumentE
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXCParseTypeContainer(PXCompiler* const pxCompiler, PXCodeDocumentElement* const pxCodeDocumentElement)
+PXResult PXAPI PXCParseTypeContainer(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXREF pxCodeDocumentElement)
 {
     // Get name [optional]
     {
@@ -1267,7 +1267,7 @@ PXResult PXAPI  PXCParseTypeContainer(PXCompiler* const pxCompiler, PXCodeDocume
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI  PXCParseTypeEnum(PXCompiler* const pxCompiler, PXCodeDocumentElement* const pxCodeDocumentElementParent)
+PXResult PXAPI PXCParseTypeEnum(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXREF pxCodeDocumentElementParent)
 {
     PXCompilerSymbolEntryExtract(pxCompiler);
 
@@ -1287,7 +1287,7 @@ PXResult PXAPI  PXCParseTypeEnum(PXCompiler* const pxCompiler, PXCodeDocumentEle
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI  PXCLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI PXCLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
 {
 #if PXLogEnable
     PXLogPrint
@@ -1334,7 +1334,7 @@ PXResult PXAPI  PXCLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadIn
         PXText filePath;
         PXTextConstructBufferA(&filePath, PXPathSizeMax);
 
-        PXFilePathGet(pxResourceLoadInfo->FileReference, &filePath);
+        PXFilePath(pxResourceLoadInfo->FileReference, &filePath, PXFalse);
 
         PXFilePathStructure pxFilePathStructure;
 
@@ -1576,7 +1576,7 @@ PXResult PXAPI  PXCLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadIn
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXCSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI PXCSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

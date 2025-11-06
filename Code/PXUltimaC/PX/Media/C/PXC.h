@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXCIncluded
 #define PXCIncluded
 
@@ -17,31 +19,31 @@
 
 
 // Parsing functions
-PXPrivate PXResult PXAPI  PXCParsePreprocessorCondition(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent);
-PXPrivate PXResult PXAPI  PXCParsePreprocessorDefine(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent);
-PXPrivate PXResult PXAPI  PXCParsePreprocessorIncluded(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent);
-PXPrivate PXResult PXAPI  PXCParsePreprocessorPragma(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent);
-PXPrivate PXResult PXAPI  PXCParseTypeDefinition(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent);
+PXPrivate PXResult PXAPI PXCParsePreprocessorCondition(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXREF parrent);
+PXPrivate PXResult PXAPI PXCParsePreprocessorDefine(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXREF parrent);
+PXPrivate PXResult PXAPI PXCParsePreprocessorIncluded(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXREF parrent);
+PXPrivate PXResult PXAPI PXCParsePreprocessorPragma(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXREF parrent);
+PXPrivate PXResult PXAPI PXCParseTypeDefinition(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXREF parrent);
 
-PXPrivate PXResult PXAPI  PXCParseEndOfCommand(PXCompiler* const pxCompiler);
+PXPrivate PXResult PXAPI PXCParseEndOfCommand(PXCompiler PXREF pxCompiler);
 
-PXPrivate PXResult PXAPI  PXCParseTypeParameterList(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent);
-PXPrivate PXResult PXAPI  PXCParseFunctionDefinition(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent);
+PXPrivate PXResult PXAPI PXCParseTypeParameterList(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXREF parrent);
+PXPrivate PXResult PXAPI PXCParseFunctionDefinition(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXREF parrent);
 
-PXPrivate PXResult PXAPI  PXCParseTypeDeclarationElement(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parent);
+PXPrivate PXResult PXAPI PXCParseTypeDeclarationElement(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXREF parent);
 
 // Transform a name with XxxxYyyyZzzzz() into its components like namespace class and function
 // This only works if the naming convention of Object-Oriented C is followed.
 // Most APIs use this as a given standard but some dont follow this defacto standard
-PXPrivate void PXAPI PXCNameCleave(PXCompiler* const pxCompiler, PXCodeDocumentElement* const pxCodeDocumentElement);
+PXPrivate void PXAPI PXCNameCleave(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXREF pxCodeDocumentElement);
 
-PXPrivate PXResult PXAPI  PXCParseEnumMember(PXCompiler* const pxCompiler, PXCodeDocumentElement* const parrent);
+PXPrivate PXResult PXAPI PXCParseEnumMember(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXREF parrent);
 
 // Parse struct, unions and enums
-PXPrivate PXResult PXAPI  PXCParseTypeContainer(PXCompiler* const pxCompiler, PXCodeDocumentElement* const pxCodeDocumentElement);
-PXPrivate PXResult PXAPI  PXCParseTypeEnum(PXCompiler* const pxCompiler, PXCodeDocumentElement* const pxCodeDocumentElementParent);
+PXPrivate PXResult PXAPI PXCParseTypeContainer(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXREF pxCodeDocumentElement);
+PXPrivate PXResult PXAPI PXCParseTypeEnum(PXCompiler PXREF pxCompiler, PXCodeDocumentElement PXREF pxCodeDocumentElementParent);
 
-PXPublic PXResult PXAPI PXCLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXCSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXCLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXCSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

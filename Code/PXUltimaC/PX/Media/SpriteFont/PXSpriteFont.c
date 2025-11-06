@@ -6,14 +6,14 @@
 #include <PX/Compiler/PXCompiler.h>
 #include <PX/OS/PXOS.h>
 
-void PXAPI PXSpriteFontParseInfo(PXSpriteFont* const pxSpriteFont, PXCompiler* const pxCompiler, PXFont* const pxFont);
-void PXAPI PXSpriteFontParseCommon(PXSpriteFont* const pxSpriteFont, PXCompiler* const pxCompiler, PXFont* const pxFont);
-void PXAPI PXSpriteFontParsePage(PXSpriteFont* const pxSpriteFont, PXCompiler* const pxCompiler, PXFont* const pxFont);
-void PXAPI PXSpriteFontParseCharacterList(PXSpriteFont* const pxSpriteFont, PXCompiler* const pxCompiler, PXFont* const pxFont);
-void PXAPI PXSpriteFontParseCharacterDefinition(PXSpriteFont* const pxSpriteFont, PXCompiler* const pxCompiler, PXFont* const pxFont);
+void PXAPI PXSpriteFontParseInfo(PXSpriteFont PXREF pxSpriteFont, PXCompiler PXREF pxCompiler, PXFont PXREF pxFont);
+void PXAPI PXSpriteFontParseCommon(PXSpriteFont PXREF pxSpriteFont, PXCompiler PXREF pxCompiler, PXFont PXREF pxFont);
+void PXAPI PXSpriteFontParsePage(PXSpriteFont PXREF pxSpriteFont, PXCompiler PXREF pxCompiler, PXFont PXREF pxFont);
+void PXAPI PXSpriteFontParseCharacterList(PXSpriteFont PXREF pxSpriteFont, PXCompiler PXREF pxCompiler, PXFont PXREF pxFont);
+void PXAPI PXSpriteFontParseCharacterDefinition(PXSpriteFont PXREF pxSpriteFont, PXCompiler PXREF pxCompiler, PXFont PXREF pxFont);
 
 
-void PXAPI PXSpriteFontParseInfo(PXSpriteFont* const pxSpriteFont, PXCompiler* const pxCompiler, PXFont* const pxFont)
+void PXAPI PXSpriteFontParseInfo(PXSpriteFont PXREF pxSpriteFont, PXCompiler PXREF pxCompiler, PXFont PXREF pxFont)
 {
     const PXSize targetLine = pxCompiler->ReadInfo.SymbolEntryCurrent.Line;
 
@@ -142,7 +142,7 @@ void PXAPI PXSpriteFontParseInfo(PXSpriteFont* const pxSpriteFont, PXCompiler* c
     }
 }
 
-void PXAPI PXSpriteFontParseCommon(PXSpriteFont* const pxSpriteFont, PXCompiler* const pxCompiler, PXFont* const pxFont)
+void PXAPI PXSpriteFontParseCommon(PXSpriteFont PXREF pxSpriteFont, PXCompiler PXREF pxCompiler, PXFont PXREF pxFont)
 {
     const PXSize targetLine = pxCompiler->ReadInfo.SymbolEntryCurrent.Line;
 
@@ -228,7 +228,7 @@ void PXAPI PXSpriteFontParseCommon(PXSpriteFont* const pxSpriteFont, PXCompiler*
     }
 }
 
-void PXAPI PXSpriteFontParsePage(PXSpriteFont* const pxSpriteFont, PXCompiler* const pxCompiler, PXFont* const pxFont)
+void PXAPI PXSpriteFontParsePage(PXSpriteFont PXREF pxSpriteFont, PXCompiler PXREF pxCompiler, PXFont PXREF pxFont)
 {
     const PXSize targetLine = pxCompiler->ReadInfo.SymbolEntryCurrent.Line;
 
@@ -273,7 +273,7 @@ void PXAPI PXSpriteFontParsePage(PXSpriteFont* const pxSpriteFont, PXCompiler* c
             case PXSpriteFontSymbolFilePath:
             {
                 PXText fileName;
-                PXTextConstructFromAdressA(&fileName, pxCompiler->ReadInfo.SymbolEntryCurrent.Source, pxCompiler->ReadInfo.SymbolEntryCurrent.Size, pxCompiler->ReadInfo.SymbolEntryCurrent.Size);
+                PXTextFromAdressA(&fileName, pxCompiler->ReadInfo.SymbolEntryCurrent.Source, pxCompiler->ReadInfo.SymbolEntryCurrent.Size, pxCompiler->ReadInfo.SymbolEntryCurrent.Size);
 
                 // Loading Image
                 {
@@ -282,11 +282,11 @@ void PXAPI PXSpriteFontParsePage(PXSpriteFont* const pxSpriteFont, PXCompiler* c
                     PXText resultFullPath;
                     PXTextConstructNamedBufferA(&resultFullPath, resultFullPathBuffer, PXPathSizeMax);
 
-                    PXFilePathGet(pxCompiler->ReadInfo.FileInput, &fontFilePath);
+                    PXFilePath(pxCompiler->ReadInfo.FileInput, &fontFilePath, PXFalse);
 
                     PXFilePathSwapFileName(&fontFilePath, &resultFullPath, &fileName);
 
-                    PXFontPage* const pxFontPage = PXFontPageGet(pxFont, pxSpriteFont->PageIndexCurrent);
+                    PXFontPage PXREF pxFontPage = PXFontPageGet(pxFont, pxSpriteFont->PageIndexCurrent);
 
                     // Load
                     {
@@ -294,9 +294,8 @@ void PXAPI PXSpriteFontParsePage(PXSpriteFont* const pxSpriteFont, PXCompiler* c
                         PXClear(PXResourceCreateInfo, &pxResourceCreateInfoList);
 
                         pxResourceCreateInfoList.Type = PXResourceTypeTexture2D;
-                        pxResourceCreateInfoList.ObjectReference = (void**)&pxFontPage->Texture;
-                        pxResourceCreateInfoList.FilePathAdress = resultFullPath.A;
-                        pxResourceCreateInfoList.FilePathSize = resultFullPath.SizeUsed;
+                        pxResourceCreateInfoList.ObjectReference = (PXResourceInfo**)&pxFontPage->Texture;
+                        pxResourceCreateInfoList.FilePath = resultFullPath;
 
                         PXResourceManagerAdd(&pxResourceCreateInfoList);
                     }
@@ -311,7 +310,7 @@ void PXAPI PXSpriteFontParsePage(PXSpriteFont* const pxSpriteFont, PXCompiler* c
     }
 }
 
-void PXAPI PXSpriteFontParseCharacterList(PXSpriteFont* const pxSpriteFont, PXCompiler* const pxCompiler, PXFont* const pxFont)
+void PXAPI PXSpriteFontParseCharacterList(PXSpriteFont PXREF pxSpriteFont, PXCompiler PXREF pxCompiler, PXFont PXREF pxFont)
 {
     const PXSize targetLine = pxCompiler->ReadInfo.SymbolEntryCurrent.Line;
 
@@ -349,7 +348,7 @@ void PXAPI PXSpriteFontParseCharacterList(PXSpriteFont* const pxSpriteFont, PXCo
         {
             case PXSpriteFontSymbolCharacterAmount:
             {
-                PXFontPage* const pxFontPage = PXFontPageGet(pxFont, pxSpriteFont->PageIndexCurrent);
+                PXFontPage PXREF pxFontPage = PXFontPageGet(pxFont, pxSpriteFont->PageIndexCurrent);
 
                 pxFontPage->CharacteListEntrys = pxCompiler->ReadInfo.SymbolEntryCurrent.I32U;
                 pxFontPage->CharacteList = PXMemoryHeapCallocT(PXFontPageCharacter, pxFontPage->CharacteListEntrys);
@@ -361,10 +360,10 @@ void PXAPI PXSpriteFontParseCharacterList(PXSpriteFont* const pxSpriteFont, PXCo
     }
 }
 
-void PXAPI PXSpriteFontParseCharacterDefinition(PXSpriteFont* const pxSpriteFont, PXCompiler* const pxCompiler, PXFont* const pxFont)
+void PXAPI PXSpriteFontParseCharacterDefinition(PXSpriteFont PXREF pxSpriteFont, PXCompiler PXREF pxCompiler, PXFont PXREF pxFont)
 {
     const PXSize targetLine = pxCompiler->ReadInfo.SymbolEntryCurrent.Line;
-    PXFontPage* const pxFontPage = PXFontPageGet(pxFont, pxSpriteFont->PageIndexCurrent);
+    PXFontPage PXREF pxFontPage = PXFontPageGet(pxFont, pxSpriteFont->PageIndexCurrent);
 
     // Guarantee size of list
     if(pxSpriteFont->CharacterIndexCurrent >= pxFontPage->CharacteListEntrys)
@@ -379,7 +378,7 @@ void PXAPI PXSpriteFontParseCharacterDefinition(PXSpriteFont* const pxSpriteFont
         pxFontPage->CharacteListEntrys += 2;
     }
 
-    PXFontPageCharacter* const pxFontPageCharacter = &pxFontPage->CharacteList[pxSpriteFont->CharacterIndexCurrent++];
+    PXFontPageCharacter PXREF pxFontPageCharacter = &pxFontPage->CharacteList[pxSpriteFont->CharacterIndexCurrent++];
 
     for(;;)
     {
@@ -475,9 +474,9 @@ void PXAPI PXSpriteFontParseCharacterDefinition(PXSpriteFont* const pxSpriteFont
     }
 }
 
-PXResult PXAPI  PXSpriteFontLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI PXSpriteFontLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
 {
-    PXFont* const pxFont = (PXFont*)pxResourceLoadInfo->ResourceTarget;
+    PXFont PXREF pxFont = (PXFont*)pxResourceLoadInfo->ResourceTarget;
 
 
     PXFile tokenStream;
@@ -557,12 +556,12 @@ PXResult PXAPI  PXSpriteFontLoadFromFile(PXResourceTransphereInfo* const pxResou
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXSpriteFontSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI PXSpriteFontSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }
 
-PXSpriteFontLineType PXAPI PeekSymbol(const char* const line, const PXSize fileDataSize)
+PXSpriteFontLineType PXAPI PeekSymbol(const char PXREF line, const PXSize fileDataSize)
 {
     if(!line || !fileDataSize)
     {

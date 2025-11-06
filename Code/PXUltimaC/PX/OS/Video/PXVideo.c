@@ -95,7 +95,7 @@ HRESULT WINAPI PXVideoOnReadSample(HRESULT hrStatus, DWORD dwStreamIndex, DWORD 
 }
 #endif
 
-PXResult PXAPI  PXVideoCaptureDeviceList()
+PXResult PXAPI PXVideoCaptureDeviceList()
 {
 #if OSUnix
 #elif OSWindows

@@ -4,7 +4,7 @@
 
 void PXAPI PXSpriteMeshInit
 (
-    PXSpriteMesh* const pxSpriteMesh, 
+    PXSpriteMesh PXREF pxSpriteMesh, 
     const PXI32U amountWidth,
     const PXI32U amountHeight,
     const PXI16U cellWidth,
@@ -26,14 +26,14 @@ void PXAPI PXSpriteMeshInit
         for(PXI32U col = 0; col < amountHeight; ++col)
         {
             const PXSize index = amountWidth * row + col;
-            PXSpriteMeshEntry* const pxSpriteMeshEntry = &pxSpriteMesh->Mesh[index];
+            PXSpriteMeshEntry PXREF pxSpriteMeshEntry = &pxSpriteMesh->Mesh[index];
 
             // ???
         }
     }
 }
 
-void PXAPI PXSpriteMeshSpriteInsert(PXSpriteMesh* const pxSpriteMesh)
+void PXAPI PXSpriteMeshSpriteInsert(PXSpriteMesh PXREF pxSpriteMesh)
 {
    
 }

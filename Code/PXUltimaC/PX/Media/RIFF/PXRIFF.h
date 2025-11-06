@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXRIFFIncluded
 #define PXRIFFIncluded
 
@@ -34,7 +36,7 @@ PXPrivate inline PXRIFFFormat PXAPI PXRIFFFormatFromID(const PXI32U value);
 PXPrivate inline PXI32U PXAPI PXRIFFFormatToID(const PXRIFFFormat value);
 
 
-PXPublic PXResult PXAPI PXRIFFLoadFromFile(PXRIFF* const riff, PXFile* const PXFile);
-PXPublic PXResult PXAPI PXRIFFSaveToFile(const PXRIFF* const riff, PXFile* const PXFile);
+PXPublic PXResult PXAPI PXRIFFLoadFromFile(PXRIFF PXREF riff, PXFile PXREF PXFile);
+PXPublic PXResult PXAPI PXRIFFSaveToFile(const PXRIFF PXREF riff, PXFile PXREF PXFile);
 
 #endif

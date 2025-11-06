@@ -5,7 +5,7 @@
 
 const char PXPDFSignature[5] = "%PDF-";
 
-PXResult PXAPI  PXPDFLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI PXPDFLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
 {
     PXPDF pxPDF;
 
@@ -31,7 +31,7 @@ PXResult PXAPI  PXPDFLoadFromFile(PXResourceTransphereInfo* const pxResourceLoad
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXPDFSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI PXPDFSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
 {
     PXFileWriteB(pxResourceSaveInfo->FileReference, PXPDFSignature, sizeof(PXPDFSignature));
 

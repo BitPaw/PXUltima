@@ -18,7 +18,7 @@
 
 
 
-void PXAPI PXSocketConstruct(PXSocket* const pxSocket)
+void PXAPI PXSocketConstruct(PXSocket PXREF pxSocket)
 {
     PXMemoryClear(pxSocket, sizeof(PXSocket));
     PXThreadConstruct(&pxSocket->CommunicationThread);
@@ -27,7 +27,7 @@ void PXAPI PXSocketConstruct(PXSocket* const pxSocket)
     pxSocket->ID = PXSocketUnused;
 }
 
-void PXAPI PXSocketDestruct(PXSocket* const pxSocket)
+void PXAPI PXSocketDestruct(PXSocket PXREF pxSocket)
 {
     printf("[C] Socket destruct %i\n", pxSocket->ID);
 
@@ -38,18 +38,18 @@ void PXAPI PXSocketDestruct(PXSocket* const pxSocket)
     PXSocketConstruct(pxSocket);
 }
 
-PXResult PXAPI  PXSocketSetupAdress
+PXResult PXAPI PXSocketSetupAdress
 (
-    PXSocket* const pxSocketList,
+    PXSocket PXREF pxSocketList,
     const PXSize socketListSizeMax,
     PXSize* PXSocketListSize,
-    const PXSocketAdressSetupInfo* const pxSocketAdressSetupInfoList,
+    const PXSocketAdressSetupInfo PXREF pxSocketAdressSetupInfoList,
     const PXSize pxSocketAdressSetupInfoListSize
 )
 {
 #if OSWindows
     {
-        const PXActionResult wsaResult = WindowsSocketAgentStartup();
+        const PXResult wsaResult = WindowsSocketAgentStartup();
 
         PXActionReturnOnError(wsaResult);
     }
@@ -62,7 +62,7 @@ PXResult PXAPI  PXSocketSetupAdress
 
     for (PXSize i = 0; i < pxSocketAdressSetupInfoListSize; ++i)
     {
-        const PXSocketAdressSetupInfo* const pxSocketAdressSetupInfo = &pxSocketAdressSetupInfoList[i];
+        const PXSocketAdressSetupInfo PXREF pxSocketAdressSetupInfo = &pxSocketAdressSetupInfoList[i];
 
         PXText portText;
         PXTextConstructNamedBufferA(&portText, portTextBuffer, 30);
@@ -122,7 +122,7 @@ PXResult PXAPI  PXSocketSetupAdress
 
             for (ADDRINFOA* adressInfoCurrent = addressInfoListA; adressInfoCurrent; adressInfoCurrent = adressInfoCurrent->ai_next)
             {
-                PXSocket* const pxSocket = &pxSocketList[(*PXSocketListSize)++];
+                PXSocket PXREF pxSocket = &pxSocketList[(*PXSocketListSize)++];
                 struct sockaddr_in6* ipv6 = (struct sockaddr_in6*)adressInfoCurrent->ai_addr;
                 const char* result = 0;
 
@@ -198,7 +198,7 @@ PXResult PXAPI  PXSocketSetupAdress
 
             for (ADDRINFOW* adressInfoCurrent = addressInfoListW; adressInfoCurrent; adressInfoCurrent = adressInfoCurrent->ai_next)
             {
-                PXSocket* const pxSocket = &pxSocketList[(*PXSocketListSize)++];
+                PXSocket PXREF pxSocket = &pxSocketList[(*PXSocketListSize)++];
                 struct sockaddr_in6* ipv6 = (struct sockaddr_in6*)adressInfoCurrent->ai_addr;
                 const char* result = 0;
 
@@ -261,12 +261,12 @@ PXResult PXAPI  PXSocketSetupAdress
     return PXActionSuccessful;
 }
 
-PXBool PXAPI PXSocketIsCurrentlyUsed(PXSocket* const pxSocket)
+PXBool PXAPI PXSocketIsCurrentlyUsed(PXSocket PXREF pxSocket)
 {
     return pxSocket->ID != PXSocketUnused;
 }
 
-void PXAPI PXSocketStateChange(PXSocket* const pxSocket, const PXSocketState socketState)
+void PXAPI PXSocketStateChange(PXSocket PXREF pxSocket, const PXSocketState socketState)
 {
     const PXSocketState oldState = pxSocket->State;
 
@@ -275,7 +275,7 @@ void PXAPI PXSocketStateChange(PXSocket* const pxSocket, const PXSocketState soc
     PXFunctionInvoke(pxSocket->EventList.SocketStateChangedCallBack, pxSocket->Owner, pxSocket, oldState, socketState);
 }
 
-PXResult PXAPI  PXSocketClientRemove(PXSocket* const serverSocket, const PXSocketID clientID)
+PXResult PXAPI PXSocketClientRemove(PXSocket PXREF serverSocket, const PXSocketID clientID)
 {
     PXSocket clientSockket;
 

@@ -34,11 +34,13 @@ const PXI32U PXDOSHeaderLayout[] =
 const PXSize PXDOSHeaderLayoutSize = sizeof(PXDOSHeaderLayout) / sizeof(PXI32U);
 
 
+const char PXBinaryWindowsText[] = "BinaryWindows";
+
 #define PXBinaryWindowsDebug 1
 
-PXResult PXAPI  PXBinaryWindowsLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
 {
-    PXBinaryWindows* const pxBinaryWindows = (PXBinaryWindows*)pxResourceLoadInfo->ResourceTarget;
+    PXBinaryWindows PXREF pxBinaryWindows = (PXBinaryWindows*)pxResourceLoadInfo->ResourceTarget;
 
     if(!pxBinaryWindows)
     {
@@ -49,7 +51,7 @@ PXResult PXAPI  PXBinaryWindowsLoadFromFile(PXResourceTransphereInfo* const pxRe
     PXLogPrint
     (
         PXLoggingInfo,
-        "BinaryWindows",
+        PXBinaryWindowsText,
         "Parsing",
         "Start"
     );
@@ -60,7 +62,7 @@ PXResult PXAPI  PXBinaryWindowsLoadFromFile(PXResourceTransphereInfo* const pxRe
 
     // Read header
     {
-        PXDOSHeader* const pxDOSHeader = &pxBinaryWindows->Header;
+        PXDOSHeader PXREF pxDOSHeader = &pxBinaryWindows->Header;
 #if 0
         PXFileBinding(pxResourceLoadInfo->FileReference, &pxBinaryWindows->Header, PXDOSHeaderLayout, PXDOSHeaderLayoutSize, PXFalse);
 
@@ -220,7 +222,7 @@ PXResult PXAPI  PXBinaryWindowsLoadFromFile(PXResourceTransphereInfo* const pxRe
                 PXLogPrint
                 (
                     PXLoggingInfo,
-                    "BinaryWindows",
+                    PXBinaryWindowsText,
                     "Parsing",
                     "%8.8X - %s",
                     ordinal,
@@ -260,39 +262,38 @@ PXResult PXAPI  PXBinaryWindowsLoadFromFile(PXResourceTransphereInfo* const pxRe
                 PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, oldPosition);
 
             }
-
-
-
-
-
-
         }
     }
 
     // Start Parse of PE header
     {
-        const PXBool isValidFile = PXFileReadAndCompare(pxResourceLoadInfo->FileReference, PXPEHeaderSignatore, sizeof(PXPEHeaderSignatore));
+        const PXBool isValidFile = PXFileReadAndCompare
+        (
+            pxResourceLoadInfo->FileReference,
+            PXPEHeaderSignatore,
+            sizeof(PXPEHeaderSignatore)
+        );
 
-        const PXActionResult coffLoadResult = PXCOFFLoadFromFile(&pxBinaryWindows->COFFHeader, pxResourceLoadInfo->FileReference);
+        const PXResult coffLoadResult = PXCOFFLoadFromFile(&pxBinaryWindows->COFFHeader, pxResourceLoadInfo->FileReference);
 
-        PXActionReturnOnError(coffLoadResult);
+        if(PXActionSuccessful != coffLoadResult) 
+            return coffLoadResult;
     }
 
 #if PXBinaryWindowsDebug
     PXLogPrint
     (
         PXLoggingInfo,
-        "BinaryWindows",
+        PXBinaryWindowsText,
         "Parsing",
         "finished"
     );
 #endif
 
-
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI  PXBinaryWindowsSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI PXBinaryWindowsSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXPHPIncluded
 #define PXPHPIncluded
 
@@ -9,7 +11,7 @@ typedef struct PXPHP_
 }
 PXPHP;
 
-PXPublic PXResult PXAPI PXPHPLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXPHPSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXPHPLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXPHPSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

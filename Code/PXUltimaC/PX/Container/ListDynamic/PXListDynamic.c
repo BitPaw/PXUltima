@@ -3,7 +3,7 @@
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/OS/PXOS.h>
 
-void* PXAPI PXListDynamicAdd(PXListDynamic* const pxListDynamic, const void* const key, const char* const data, const PXSize dataSize)
+void* PXAPI PXListDynamicAdd(PXListDynamic PXREF pxListDynamic, const void PXREF key, const char PXREF data, const PXSize dataSize)
 {
     const PXSize rowSizeNew = pxListDynamic->KeySize + pxListDynamic->SizeInBytes + dataSize + pxListDynamic->DoNullTerminate; //Key + datasize + data
     const PXSize requiredSize = pxListDynamic->DataSizeUsed + rowSizeNew;
@@ -83,9 +83,15 @@ void* PXAPI PXListDynamicAdd(PXListDynamic* const pxListDynamic, const void* con
     return insertionBase;
 }
 
-void PXAPI PXListDynamicGet(PXListDynamic* const pxListDynamic, const void* const key, char** data, PXSize* dataSize)
+void PXAPI PXListDynamicGet(PXListDynamic PXREF pxListDynamic, const void PXREF key, char** data, PXSize* dataSize)
 {
     char* dataCursor = pxListDynamic->DataAdress;
+
+    if(!dataCursor) 
+    {
+        // We dont have data?
+        return;
+    }
 
     for(PXSize i = 0; i < pxListDynamic->EntryAmount; i++)
     {
@@ -143,7 +149,7 @@ void PXAPI PXListDynamicGet(PXListDynamic* const pxListDynamic, const void* cons
     *data = 0;
 }
 
-void PXAPI PXListDynamicInit(PXListDynamic* const pxListDynamic, const PXSize keySize, const PXI8U sizeInBytes)
+void PXAPI PXListDynamicInit(PXListDynamic PXREF pxListDynamic, const PXSize keySize, const PXI8U sizeInBytes)
 {
     PXClear(PXListDynamic, pxListDynamic);
 

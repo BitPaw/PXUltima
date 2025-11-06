@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXVOBLIncluded
 #define PXVOBLIncluded
 
@@ -9,7 +11,7 @@ typedef struct PXVOB_
 }
 PXVOB;
 
-PXPublic PXResult PXAPI PXVOBLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXVOBLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXVOBLLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXVOBLSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

@@ -250,12 +250,12 @@ PXTTFTableEntryType PXAPI PXTTFTableEntryTypeFromID(const PXI32U tableEntryType)
     }
 }
 
-void PXAPI PXTTFDestruct(PXTTF* const ttf)
+void PXAPI PXTTFDestruct(PXTTF PXREF ttf)
 {
     // TODO
 }
 
-PXResult PXAPI  PXTTFLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI PXTTFLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
 {
     PXTTF ttfdata;
     PXTTF* ttf = &ttfdata;
@@ -695,7 +695,7 @@ PXResult PXAPI  PXTTFLoadFromFile(PXResourceTransphereInfo* const pxResourceLoad
 
             for (PXSize i = 0; i < ttf->CharacterMapping.NumberOfTables; i++)
             {
-                PXEncodingRecord* const encodingRecord = &ttf->CharacterMapping.EncodingRecordList[i];
+                PXEncodingRecord PXREF encodingRecord = &ttf->CharacterMapping.EncodingRecordList[i];
 
                 PXI16U platformID = 0;
                 PXI16U encodingID = 0;
@@ -776,7 +776,7 @@ PXResult PXAPI  PXTTFLoadFromFile(PXResourceTransphereInfo* const pxResourceLoad
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXTTFSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI PXTTFSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

@@ -6,7 +6,7 @@
 
 const char PXMIPSProcessorName[] = "MIPS-VR43xx";
 
-void PXAPI PXMIPSBranchCalc(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction, PXMIPSBranch* const pxMIPSBranch)
+void PXAPI PXMIPSBranchCalc(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction, PXMIPSBranch PXREF pxMIPSBranch)
 {
     pxMIPSBranch->Address = (PXI64S)((PXI16S)pxMIPSTInstruction->Immediate) << 2;
 
@@ -96,7 +96,7 @@ void PXAPI PXMIPSBranchCalc(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstr
     }
 }
 
-void PXAPI PXMIPSJumpCalc(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction, PXMIPSJump* const pxMIPSJump)
+void PXAPI PXMIPSJumpCalc(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction, PXMIPSJump PXREF pxMIPSJump)
 {
     const PXSize actualAdress = pxMIPSProcessor->ProgramCounter + 4;
     const PXSize delaySlotAdress = (PXI8U*)pxMIPSProcessor->ROMOffsetVirtual + actualAdress;
@@ -150,7 +150,7 @@ void PXAPI PXMIPSJumpCalc(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruc
 #endif
 }
 
-void PXAPI PXMIPSInitializize(PXMIPSProcessor* const pxMIPSProcessor, PXCodeSegment* const pxCodeSegment)
+void PXAPI PXMIPSInitializize(PXMIPSProcessor PXREF pxMIPSProcessor, PXCodeSegment PXREF pxCodeSegment)
 {
 
 }
@@ -439,9 +439,9 @@ const char* PXAPI PXMIPSInstructionTypeToStringLong(const PXMIPSInstructionType 
     }
 }
 
-void PXMIPSInstructionPrint(PXMIPSTInstruction* const pxMIPSTInstruction);
+void PXMIPSInstructionPrint(PXMIPSTInstruction PXREF pxMIPSTInstruction);
 
-void PXAPI PXMIPSInstructionExecute(PXMIPSProcessor* const pxMIPSProcessor)
+void PXAPI PXMIPSInstructionExecute(PXMIPSProcessor PXREF pxMIPSProcessor)
 {
     const PXSize instructionWidth = 4;
 
@@ -500,7 +500,7 @@ void PXAPI PXMIPSInstructionExecute(PXMIPSProcessor* const pxMIPSProcessor)
 }
 
 
-void PXMIPSInstructionPrint(PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXMIPSInstructionPrint(PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
 #if PXLogEnable
     const char* instuctionNameShort = PXMIPSInstructionTypeToStringShort(pxMIPSTInstruction->Type);
@@ -533,7 +533,7 @@ void PXMIPSInstructionPrint(PXMIPSTInstruction* const pxMIPSTInstruction)
 
 
 
-void PXAPI PXMIPSMemoryIO(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction, const PXI32U datatype, PXI8U mode)
+void PXAPI PXMIPSMemoryIO(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction, const PXI32U datatype, PXI8U mode)
 {
     const PXSize base = pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID];
     const PXSize offset = (PXI16S)pxMIPSTInstruction->Immediate; // Sign extend
@@ -591,7 +591,7 @@ void PXAPI PXMIPSMemoryIO(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruc
 
 }
 
-PXResult PXAPI  PXMIPSTranslate(PXMIPSProcessor* const pxMIPSProcessor, const PXByte* const data, const PXSize length)
+PXResult PXAPI PXMIPSTranslate(PXMIPSProcessor PXREF pxMIPSProcessor, const PXByte PXREF data, const PXSize length)
 {
     //PXClear(PXMIPSProcessor, pxMIPSProcessor);
     //DWORD protectIDOld = 0;
@@ -837,7 +837,7 @@ PXResult PXAPI  PXMIPSTranslate(PXMIPSProcessor* const pxMIPSProcessor, const PX
     return PXActionSuccessful;
 }
 
-void PXAPI PXMIPSInstructionCoProcessorCalc(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionCoProcessorCalc(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
    // PXMIPSInstructionCoProcessor pxMIPSInstructionCoProcessor;
 
@@ -856,7 +856,7 @@ void PXAPI PXMIPSInstructionCoProcessorCalc(PXMIPSProcessor* const pxMIPSProcess
 
 }
 
-void PXAPI PXMIPSInstructionExecuteDeleay(PXMIPSProcessor* const pxMIPSProcessor)
+void PXAPI PXMIPSInstructionExecuteDeleay(PXMIPSProcessor PXREF pxMIPSProcessor)
 {
 #if PXLogEnable
     PXLogPrint
@@ -903,7 +903,7 @@ PXMIPSMemoryRegion PXMIPSMemoryRegionDetect(void* adress)
 }
 
 
-void* PXAPI PXMIPSTranslateVirtualAdress(PXMIPSProcessor* const pxMIPSProcessor, const PXSize virtualAdress)
+void* PXAPI PXMIPSTranslateVirtualAdress(PXMIPSProcessor PXREF pxMIPSProcessor, const PXSize virtualAdress)
 {
     const PXBool virtualAdressValid = 0 == (0b11 & virtualAdress);
     PXSize translatedAdress = virtualAdress;
@@ -1008,7 +1008,7 @@ void* PXAPI PXMIPSTranslateVirtualAdress(PXMIPSProcessor* const pxMIPSProcessor,
     return translatedAdress;
 }
 
-void PXAPI PXMIPSInstructionReserved(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionReserved(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
 #if PXLogEnable
     PXLogPrint
@@ -1022,7 +1022,7 @@ void PXAPI PXMIPSInstructionReserved(PXMIPSProcessor* const pxMIPSProcessor, PXM
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionSpecial(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionSpecial(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     const PXI8U instructionID                 =  pxMIPSTInstruction->Immediate & 0b0000000000111111;
     pxMIPSTInstruction->ShiftAmount             = (pxMIPSTInstruction->Immediate & 0b0000011111000000) >> 6;
@@ -1036,7 +1036,7 @@ void PXAPI PXMIPSInstructionSpecial(PXMIPSProcessor* const pxMIPSProcessor, PXMI
     specialinstructionFunction(pxMIPSProcessor, pxMIPSTInstruction);
 }
 
-void PXAPI PXMIPSInstructionREGIMM(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionREGIMM(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     const PXI8U instructionID = pxMIPSTInstruction->RegisterTargetID;
 
@@ -1047,7 +1047,7 @@ void PXAPI PXMIPSInstructionREGIMM(PXMIPSProcessor* const pxMIPSProcessor, PXMIP
     specialinstructionFunction(pxMIPSProcessor, pxMIPSTInstruction);
 }
 
-void PXAPI PXMIPSInstructionJump(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionJump(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXMIPSJump pxMIPSJump;
     pxMIPSJump.PreserveReturnPoint = PXFalse;
@@ -1055,7 +1055,7 @@ void PXAPI PXMIPSInstructionJump(PXMIPSProcessor* const pxMIPSProcessor, PXMIPST
     PXMIPSJumpCalc(pxMIPSProcessor, pxMIPSTInstruction, &pxMIPSJump);
 }
 
-void PXAPI PXMIPSInstructionJumpAndLink(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionJumpAndLink(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXMIPSJump pxMIPSJump;
     pxMIPSJump.PreserveReturnPoint = PXTrue;
@@ -1063,7 +1063,7 @@ void PXAPI PXMIPSInstructionJumpAndLink(PXMIPSProcessor* const pxMIPSProcessor, 
     PXMIPSJumpCalc(pxMIPSProcessor, pxMIPSTInstruction, &pxMIPSJump);
 }
 
-void PXAPI PXMIPSInstructionBranchOnEqual(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionBranchOnEqual(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXMIPSBranch pxMIPSBranch;
     pxMIPSBranch.Mode = PXMIPSBranchEqual;
@@ -1072,7 +1072,7 @@ void PXAPI PXMIPSInstructionBranchOnEqual(PXMIPSProcessor* const pxMIPSProcessor
     PXMIPSBranchCalc(pxMIPSProcessor, pxMIPSTInstruction, &pxMIPSBranch);
 }
 
-void PXAPI PXMIPSInstructionBranchOnNotEqual(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionBranchOnNotEqual(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXMIPSBranch pxMIPSBranch;
     pxMIPSBranch.Mode = PXMIPSBranchNotEqual;
@@ -1081,7 +1081,7 @@ void PXAPI PXMIPSInstructionBranchOnNotEqual(PXMIPSProcessor* const pxMIPSProces
     PXMIPSBranchCalc(pxMIPSProcessor, pxMIPSTInstruction, &pxMIPSBranch);
 }
 
-void PXAPI PXMIPSInstructionBranchOnLessThanOrEqualToZero(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionBranchOnLessThanOrEqualToZero(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXMIPSBranch pxMIPSBranch;
     pxMIPSBranch.Mode = PXMIPSBranchLessThanOrEqualZero;
@@ -1090,7 +1090,7 @@ void PXAPI PXMIPSInstructionBranchOnLessThanOrEqualToZero(PXMIPSProcessor* const
     PXMIPSBranchCalc(pxMIPSProcessor, pxMIPSTInstruction, &pxMIPSBranch);
 }
 
-void PXAPI PXMIPSInstructionBranchOnGreaterThanZero(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionBranchOnGreaterThanZero(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXMIPSBranch pxMIPSBranch;
     pxMIPSBranch.Mode = PXMIPSBranchGreaterThanOrEqualZero;
@@ -1099,7 +1099,7 @@ void PXAPI PXMIPSInstructionBranchOnGreaterThanZero(PXMIPSProcessor* const pxMIP
     PXMIPSBranchCalc(pxMIPSProcessor, pxMIPSTInstruction, &pxMIPSBranch);
 }
 
-void PXAPI PXMIPSInstructionADDImmediate(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionADDImmediate(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     /*
                 The 16-bit immediate is sign-extended and added to the contents of general
@@ -1146,7 +1146,7 @@ void PXAPI PXMIPSInstructionADDImmediate(PXMIPSProcessor* const pxMIPSProcessor,
 #endif
 }
 
-void PXAPI PXMIPSInstructionADDImmediateUnsigned(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionADDImmediateUnsigned(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     /*
 The 16-bit immediate is sign-extended and added to the contents of general
@@ -1192,23 +1192,23 @@ ADDIU instruction never causes an integer overflow exception.
 #endif
 }
 
-void PXAPI PXMIPSInstructionSetOnLessThanImmediate(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionSetOnLessThanImmediate(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionSetOnLessThanImmediateUnsigned(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionSetOnLessThanImmediateUnsigned(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionANDImmediate(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionANDImmediate(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID] &= pxMIPSTInstruction->Immediate;
     pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterTargetID] = pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID];
 }
 
-void PXAPI PXMIPSInstructionORImmediate(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionORImmediate(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     /*
 A logical OR operation applied between 16-bit zero-extended immediate and the
@@ -1246,12 +1246,12 @@ in general purpose register rt
 #endif
 }
 
-void PXAPI PXMIPSInstructionExclusiveOrImmediate(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionExclusiveOrImmediate(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionLoadUpperImmediate(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionLoadUpperImmediate(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXBool rsValid = 0 == pxMIPSTInstruction->RegisterSourceID;
 
@@ -1293,22 +1293,22 @@ void PXAPI PXMIPSInstructionLoadUpperImmediate(PXMIPSProcessor* const pxMIPSProc
 #endif
 }
 
-void PXAPI PXMIPSInstructionCoprocessorZOperation0(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionCoprocessorZOperation0(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXMIPSInstructionCoProcessorCalc(pxMIPSProcessor, pxMIPSTInstruction);
 }
 
-void PXAPI PXMIPSInstructionCoprocessorZOperation1(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionCoprocessorZOperation1(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXMIPSInstructionCoProcessorCalc(pxMIPSProcessor, pxMIPSTInstruction);
 }
 
-void PXAPI PXMIPSInstructionCoprocessorZOperation2(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionCoprocessorZOperation2(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXMIPSInstructionCoProcessorCalc(pxMIPSProcessor, pxMIPSTInstruction);
 }
 
-void PXAPI PXMIPSInstructionBranchOnEqualLikely(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionBranchOnEqualLikely(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXMIPSBranch pxMIPSBranch;
     pxMIPSBranch.Mode = PXMIPSBranchEqual;
@@ -1317,7 +1317,7 @@ void PXAPI PXMIPSInstructionBranchOnEqualLikely(PXMIPSProcessor* const pxMIPSPro
     PXMIPSBranchCalc(pxMIPSProcessor, pxMIPSTInstruction, &pxMIPSBranch);
 }
 
-void PXAPI PXMIPSInstructionBranchOnNotEqualLikely(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionBranchOnNotEqualLikely(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXMIPSBranch pxMIPSBranch;
     pxMIPSBranch.Mode = PXMIPSBranchNotEqual;
@@ -1326,7 +1326,7 @@ void PXAPI PXMIPSInstructionBranchOnNotEqualLikely(PXMIPSProcessor* const pxMIPS
     PXMIPSBranchCalc(pxMIPSProcessor, pxMIPSTInstruction, &pxMIPSBranch);
 }
 
-void PXAPI PXMIPSInstructionBranchOnLessThan(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionBranchOnLessThan(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXMIPSBranch pxMIPSBranch;
     pxMIPSBranch.Mode = PXMIPSBranchLessThanOrEqualZero;
@@ -1335,7 +1335,7 @@ void PXAPI PXMIPSInstructionBranchOnLessThan(PXMIPSProcessor* const pxMIPSProces
     PXMIPSBranchCalc(pxMIPSProcessor, pxMIPSTInstruction, &pxMIPSBranch);
 }
 
-void PXAPI PXMIPSInstructionBranchOnGreaterThanZeroLikely(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionBranchOnGreaterThanZeroLikely(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXMIPSBranch pxMIPSBranch;
     pxMIPSBranch.Mode = PXMIPSBranchGreaterThanOrEqualZero;
@@ -1344,84 +1344,84 @@ void PXAPI PXMIPSInstructionBranchOnGreaterThanZeroLikely(PXMIPSProcessor* const
     PXMIPSBranchCalc(pxMIPSProcessor, pxMIPSTInstruction, &pxMIPSBranch);
 }
 
-void PXAPI PXMIPSInstructionDoublewordADDImmediate(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionDoublewordADDImmediate(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionDoublewordADDImmediateUnsigned(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionDoublewordADDImmediateUnsigned(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionLoadDoublewordLeft(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionLoadDoublewordLeft(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionLoadDoublewordRight(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionLoadDoublewordRight(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionLoadByte(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionLoadByte(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXMIPSMemoryIO(pxMIPSProcessor, pxMIPSTInstruction, PXTypeInt08U, PXMIPSMemoryIOLoad);
 }
 
-void PXAPI PXMIPSInstructionLoadHalfword(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionLoadHalfword(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXMIPSMemoryIO(pxMIPSProcessor, pxMIPSTInstruction, PXTypeInt16U, PXMIPSMemoryIOLoad);
 }
 
-void PXAPI PXMIPSInstructionLoadWordLeft(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionLoadWordLeft(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionLoadWord(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionLoadWord(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXMIPSMemoryIO(pxMIPSProcessor, pxMIPSTInstruction, PXTypeInt32U, PXMIPSMemoryIOLoad);
 }
 
-void PXAPI PXMIPSInstructionLoadByteUnsigned(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionLoadByteUnsigned(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionLoadHalfwordUnsigned(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionLoadHalfwordUnsigned(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionLoadWordRight(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionLoadWordRight(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionLoadWordUnsigned(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionLoadWordUnsigned(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionStoreByte(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionStoreByte(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXMIPSMemoryIO(pxMIPSProcessor, pxMIPSTInstruction, PXTypeInt08U, PXMIPSMemoryIOStore);
 }
 
-void PXAPI PXMIPSInstructionStoreHalfword(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionStoreHalfword(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXMIPSMemoryIO(pxMIPSProcessor, pxMIPSTInstruction, PXTypeInt16U, PXMIPSMemoryIOStore);
 }
 
-void PXAPI PXMIPSInstructionStoreWordLeft(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionStoreWordLeft(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
 
 
-void PXAPI PXMIPSInstructionStoreWord(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionStoreWord(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     /*
     The 16-bit offset is sign-extended and added to the contents of general purpose
@@ -1433,133 +1433,133 @@ void PXAPI PXMIPSInstructionStoreWord(PXMIPSProcessor* const pxMIPSProcessor, PX
     PXMIPSMemoryIO(pxMIPSProcessor, pxMIPSTInstruction, PXTypeInt32U, PXMIPSMemoryIOStore);
 }
 
-void PXAPI PXMIPSInstructionStoreDoublewordLeft(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionStoreDoublewordLeft(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionStoreDoublewordRight(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionStoreDoublewordRight(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionStoreWordRight(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionStoreWordRight(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionCacheOperation(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionCacheOperation(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionLoadLinked(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionLoadLinked(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionLoadWordToFPUCoprocessor1(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionLoadWordToFPUCoprocessor1(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionLoadWordToFPUCoprocessor2(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionLoadWordToFPUCoprocessor2(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionLoadLinkedDoubleword(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionLoadLinkedDoubleword(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionLoadDoublewordToFPUCoprocessor1(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionLoadDoublewordToFPUCoprocessor1(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionLoadDoublewordToFPUCoprocessor2(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionLoadDoublewordToFPUCoprocessor2(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionLoadDoubleword(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionLoadDoubleword(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionStoreConditional(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionStoreConditional(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionStoreWordFromFPUCoprocessor1(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionStoreWordFromFPUCoprocessor1(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionStoreWordFromFPUCoprocessor2(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionStoreWordFromFPUCoprocessor2(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionStoreConditionalDoubleword(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionStoreConditionalDoubleword(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionStoreDoublewordFromFPUCoprocessor1(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionStoreDoublewordFromFPUCoprocessor1(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionStoreDoublewordFromFPUCoprocessor2(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionStoreDoublewordFromFPUCoprocessor2(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionStoreDoubleword(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionStoreDoubleword(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXMIPSMemoryIO(pxMIPSProcessor, pxMIPSTInstruction, PXTypeInt64U, PXMIPSMemoryIOStore);
 }
 
-void PXAPI PXMIPSInstructionShiftLeftLogical(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionShiftLeftLogical(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterTargetID] <<= pxMIPSTInstruction->ShiftAmount;
     pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterDestinationID] = pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterTargetID];
 }
 
-void PXAPI PXMIPSInstructionShiftRightLogical(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionShiftRightLogical(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterTargetID] >>= pxMIPSTInstruction->ShiftAmount;
     pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterDestinationID] = pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterTargetID];
 }
 
-void PXAPI PXMIPSInstructionShiftRightArithmetic(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionShiftRightArithmetic(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionShiftLeftLogicalVariable(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionShiftLeftLogicalVariable(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterTargetID] <<= pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID];
     pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterDestinationID] = pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterTargetID];
 }
 
-void PXAPI PXMIPSInstructionShiftRightLogicalVariable(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionShiftRightLogicalVariable(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterTargetID] >>= pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID];
     pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterDestinationID] = pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterTargetID];
 }
 
-void PXAPI PXMIPSInstructionShiftRightArithmeticVariable(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionShiftRightArithmeticVariable(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
 
 
-void PXAPI PXMIPSInstructionJumpRegister(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionJumpRegister(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     const PXSize adressVirtual = pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID];
     const PXSize adressPhysical = adressVirtual - (PXSize)pxMIPSProcessor->ROMOffsetVirtual;
@@ -1589,62 +1589,62 @@ void PXAPI PXMIPSInstructionJumpRegister(PXMIPSProcessor* const pxMIPSProcessor,
     pxMIPSTInstruction->IncrmentCounter = PXFalse; // Skip the +4 offset
 }
 
-void PXAPI PXMIPSInstructionJumpAndLinkRegister(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionJumpAndLinkRegister(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionSystemCall(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionSystemCall(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionBreak(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionBreak(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionSynchronize(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionSynchronize(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionMoveFromHI(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionMoveFromHI(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionMoveToHI(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionMoveToHI(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionMoveFromLO(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionMoveFromLO(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionMoveToLO(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionMoveToLO(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionDoublewordShiftLeftLogicalVariable(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionDoublewordShiftLeftLogicalVariable(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionDoublewordShiftRightLogicalVariable(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionDoublewordShiftRightLogicalVariable(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionDoublewordShiftRightArithmeticVariable(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionDoublewordShiftRightArithmeticVariable(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionMultiply(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionMultiply(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     if(pxMIPSTInstruction->ShiftAmount) // Expected to be 0
     {
@@ -1654,7 +1654,7 @@ void PXAPI PXMIPSInstructionMultiply(PXMIPSProcessor* const pxMIPSProcessor, PXM
     pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID] *= pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterTargetID];
 }
 
-void PXAPI PXMIPSInstructionMultiplyUnsigned(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionMultiplyUnsigned(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     if(pxMIPSTInstruction->ShiftAmount) // Expected to be 0
     {
@@ -1664,7 +1664,7 @@ void PXAPI PXMIPSInstructionMultiplyUnsigned(PXMIPSProcessor* const pxMIPSProces
     pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID] *= pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterTargetID];
 }
 
-void PXAPI PXMIPSInstructionDivide(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionDivide(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     if(pxMIPSTInstruction->ShiftAmount) // Expected to be 0
     {
@@ -1675,7 +1675,7 @@ void PXAPI PXMIPSInstructionDivide(PXMIPSProcessor* const pxMIPSProcessor, PXMIP
     //pxMIPSProcessor->Register[pxMIPSTInstruction->RegisterDestination] = pxMIPSProcessor->Register[pxMIPSTInstruction->RegisterSourceID];
 }
 
-void PXAPI PXMIPSInstructionDivideUnsigned(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionDivideUnsigned(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     if(pxMIPSTInstruction->ShiftAmount) // Expected to be 0
     {
@@ -1685,27 +1685,27 @@ void PXAPI PXMIPSInstructionDivideUnsigned(PXMIPSProcessor* const pxMIPSProcesso
     pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID] /= pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterTargetID];
 }
 
-void PXAPI PXMIPSInstructionDoublewordMultiply(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionDoublewordMultiply(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionDoublewordMultiplyUnsigned(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionDoublewordMultiplyUnsigned(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionDoublewordDivide(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionDoublewordDivide(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionDoublewordDivideUnsigned(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionDoublewordDivideUnsigned(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionADD(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionADD(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     /*
     The contents of general purpose register rs and the contents of general purpose
@@ -1725,13 +1725,13 @@ void PXAPI PXMIPSInstructionADD(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTI
 
 }
 
-void PXAPI PXMIPSInstructionADDUnsigned(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionADDUnsigned(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID] += pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterTargetID];
     pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterDestinationID] = pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID];
 }
 
-void PXAPI PXMIPSInstructionSubtract(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionSubtract(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     if(pxMIPSTInstruction->ShiftAmount) // Expected to be 0
     {
@@ -1742,7 +1742,7 @@ void PXAPI PXMIPSInstructionSubtract(PXMIPSProcessor* const pxMIPSProcessor, PXM
     pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterDestinationID] = pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID];
 }
 
-void PXAPI PXMIPSInstructionSubtractUnsigned(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionSubtractUnsigned(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     if(pxMIPSTInstruction->ShiftAmount) // Expected to be 0
     {
@@ -1753,7 +1753,7 @@ void PXAPI PXMIPSInstructionSubtractUnsigned(PXMIPSProcessor* const pxMIPSProces
     pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterDestinationID] = pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID];
 }
 
-void PXAPI PXMIPSInstructionAND(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionAND(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     /*
     The contents of general purpose register rs are combined with the contents of general purpose register rt in a bit-wise logical AND operation.
@@ -1769,7 +1769,7 @@ void PXAPI PXMIPSInstructionAND(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTI
     pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterDestinationID] = pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID];
 }
 
-void PXAPI PXMIPSInstructionOR(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionOR(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     /*
     A logical OR operation applied between the contents of general purpose registers rs and rt is executed in bit unites.
@@ -1785,107 +1785,107 @@ void PXAPI PXMIPSInstructionOR(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTIn
     pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterDestinationID] = pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterSourceID];
 }
 
-void PXAPI PXMIPSInstructionExclusiveOR(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionExclusiveOR(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionNOR(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionNOR(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionSetOnLessThan(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionSetOnLessThan(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionSetOnLessThanUnsigned(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionSetOnLessThanUnsigned(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionDoublewordADD(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionDoublewordADD(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionDoublewordADDUnsigned(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionDoublewordADDUnsigned(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionDoublewordSubtract(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionDoublewordSubtract(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionDoublewordSubtractUnsigned(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionDoublewordSubtractUnsigned(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionTrapIfGreaterThanOrEqual(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionTrapIfGreaterThanOrEqual(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionTrapIfGreaterThanOrEqualUnsigned(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionTrapIfGreaterThanOrEqualUnsigned(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionTrapIfLessThan(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionTrapIfLessThan(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionTrapIfLessThanUnsigned(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionTrapIfLessThanUnsigned(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionTrapIfEqual(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionTrapIfEqual(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionTrapIfNotEqual(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionTrapIfNotEqual(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionDoublewordShiftLeftLogical(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionDoublewordShiftLeftLogical(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionDoublewordShiftRightLogical(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionDoublewordShiftRightLogical(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionDoublewordShiftRightArithmetic(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionDoublewordShiftRightArithmetic(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionDoublewordShiftLeftLogicalPlus32(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionDoublewordShiftLeftLogicalPlus32(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionDoublewordShiftRight(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionDoublewordShiftRight(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
-void PXAPI PXMIPSInstructionDoublewordShiftRightArithmeticPlus32(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+void PXAPI PXMIPSInstructionDoublewordShiftRightArithmeticPlus32(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
     PXDebugBreak();
 }
 
- void PXAPI PXMIPSInstructionBranchOnLessThanZero(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+ void PXAPI PXMIPSInstructionBranchOnLessThanZero(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
      PXMIPSBranch pxMIPSBranch;
      pxMIPSBranch.Mode = PXMIPSBranchLessThanZero;
@@ -1894,7 +1894,7 @@ void PXAPI PXMIPSInstructionDoublewordShiftRightArithmeticPlus32(PXMIPSProcessor
      PXMIPSBranchCalc(pxMIPSProcessor, pxMIPSTInstruction, &pxMIPSBranch);
 }
 
- void PXAPI PXMIPSInstructionBranchOnGreaterThanOrEqualToZero(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+ void PXAPI PXMIPSInstructionBranchOnGreaterThanOrEqualToZero(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
      PXMIPSBranch pxMIPSBranch;
      pxMIPSBranch.Mode = PXMIPSBranchGreaterThanOrEqualZero;
@@ -1903,7 +1903,7 @@ void PXAPI PXMIPSInstructionDoublewordShiftRightArithmeticPlus32(PXMIPSProcessor
      PXMIPSBranchCalc(pxMIPSProcessor, pxMIPSTInstruction, &pxMIPSBranch);
 }
 
- void PXAPI PXMIPSInstructionBranchOnLessThanZeroLikely(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+ void PXAPI PXMIPSInstructionBranchOnLessThanZeroLikely(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
      PXMIPSBranch pxMIPSBranch;
      pxMIPSBranch.Mode = PXMIPSBranchLessThanZero;
@@ -1912,7 +1912,7 @@ void PXAPI PXMIPSInstructionDoublewordShiftRightArithmeticPlus32(PXMIPSProcessor
      PXMIPSBranchCalc(pxMIPSProcessor, pxMIPSTInstruction, &pxMIPSBranch);
 }
 
- void PXAPI PXMIPSInstructionBranchOnGreaterThanOrEqualToZeroLikely(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+ void PXAPI PXMIPSInstructionBranchOnGreaterThanOrEqualToZeroLikely(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
      PXMIPSBranch pxMIPSBranch;
      pxMIPSBranch.Mode = PXMIPSBranchGreaterThanOrEqualZero;
@@ -1921,37 +1921,37 @@ void PXAPI PXMIPSInstructionDoublewordShiftRightArithmeticPlus32(PXMIPSProcessor
      PXMIPSBranchCalc(pxMIPSProcessor, pxMIPSTInstruction, &pxMIPSBranch);
 }
 
- void PXAPI PXMIPSInstructionTrapIfGreaterThanOrEqualImmediate(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+ void PXAPI PXMIPSInstructionTrapIfGreaterThanOrEqualImmediate(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
      PXDebugBreak();
 }
 
- void PXAPI PXMIPSInstructionTrapIfGreaterThanOrEqualImmediateUnsigned(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+ void PXAPI PXMIPSInstructionTrapIfGreaterThanOrEqualImmediateUnsigned(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
      PXDebugBreak();
 }
 
- void PXAPI PXMIPSInstructionTrapIfLessThanImmediate(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+ void PXAPI PXMIPSInstructionTrapIfLessThanImmediate(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
      PXDebugBreak();
 }
 
- void PXAPI PXMIPSInstructionTrapIfLessThanImmediateUnsigned(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+ void PXAPI PXMIPSInstructionTrapIfLessThanImmediateUnsigned(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
      PXDebugBreak();
 }
 
- void PXAPI PXMIPSInstructionTrapIfEqualImmediate(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+ void PXAPI PXMIPSInstructionTrapIfEqualImmediate(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
      PXDebugBreak();
 }
 
- void PXAPI PXMIPSInstructionTrapIfNotEqualImmediate(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+ void PXAPI PXMIPSInstructionTrapIfNotEqualImmediate(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
      PXDebugBreak();
 }
 
- void PXAPI PXMIPSInstructionBranchOnLessThanZeroAndLink(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+ void PXAPI PXMIPSInstructionBranchOnLessThanZeroAndLink(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
      PXMIPSBranch pxMIPSBranch;
      pxMIPSBranch.Mode = PXMIPSBranchLessThanZero;
@@ -1961,7 +1961,7 @@ void PXAPI PXMIPSInstructionDoublewordShiftRightArithmeticPlus32(PXMIPSProcessor
      PXMIPSBranchCalc(pxMIPSProcessor, pxMIPSTInstruction, &pxMIPSBranch);
 }
 
- void PXAPI PXMIPSInstructionBranchOnGreaterThanOrEqualToZeroAndLink(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+ void PXAPI PXMIPSInstructionBranchOnGreaterThanOrEqualToZeroAndLink(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
      PXMIPSBranch pxMIPSBranch;
      pxMIPSBranch.Mode = PXMIPSBranchLessThanOrEqualZero;
@@ -1971,7 +1971,7 @@ void PXAPI PXMIPSInstructionDoublewordShiftRightArithmeticPlus32(PXMIPSProcessor
      PXMIPSBranchCalc(pxMIPSProcessor, pxMIPSTInstruction, &pxMIPSBranch);
 }
 
- void PXAPI PXMIPSInstructionBranchOnLessThanZeroAndLinkLikely(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+ void PXAPI PXMIPSInstructionBranchOnLessThanZeroAndLinkLikely(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
      PXMIPSBranch pxMIPSBranch;
      pxMIPSBranch.Mode = PXMIPSBranchLessThanZero;
@@ -1981,7 +1981,7 @@ void PXAPI PXMIPSInstructionDoublewordShiftRightArithmeticPlus32(PXMIPSProcessor
      PXMIPSBranchCalc(pxMIPSProcessor, pxMIPSTInstruction, &pxMIPSBranch);
 }
 
- void PXAPI PXMIPSInstructionBranchOnGreaterThanOrEqualToZeroAndLinkLikely(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+ void PXAPI PXMIPSInstructionBranchOnGreaterThanOrEqualToZeroAndLinkLikely(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
 {
      PXMIPSBranch pxMIPSBranch;
      pxMIPSBranch.Mode = PXMIPSBranchLessThanOrEqualZero;
@@ -1991,7 +1991,7 @@ void PXAPI PXMIPSInstructionDoublewordShiftRightArithmeticPlus32(PXMIPSProcessor
      PXMIPSBranchCalc(pxMIPSProcessor, pxMIPSTInstruction, &pxMIPSBranch);
 }
 
- void PXAPI PXMIPSInstructionMoveWordFromFPUCoprocessor1(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+ void PXAPI PXMIPSInstructionMoveWordFromFPUCoprocessor1(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
  {
 
 
@@ -2036,14 +2036,14 @@ void PXAPI PXMIPSInstructionDoublewordShiftRightArithmeticPlus32(PXMIPSProcessor
 
  }
 
- void PXAPI PXMIPSInstructionDoublewordMoveFromSystemControlCoprocessor(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+ void PXAPI PXMIPSInstructionDoublewordMoveFromSystemControlCoprocessor(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
  {
      PXDebugBreak();
  }
 
- void PXAPI PXMIPSInstructionMoveControlWordFromCoprocessorZ(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+ void PXAPI PXMIPSInstructionMoveControlWordFromCoprocessorZ(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
  {
-     PXMIPSCoProcessor* const pxMIPSCoProcessor = &pxMIPSProcessor->CoProcessor[pxMIPSTInstruction->CoProcessorID];
+     PXMIPSCoProcessor PXREF pxMIPSCoProcessor = &pxMIPSProcessor->CoProcessor[pxMIPSTInstruction->CoProcessorID];
 
      if(pxMIPSTInstruction->CoProcessorID == 0) // This instruction is not valid for CP0
      {
@@ -2053,9 +2053,9 @@ void PXAPI PXMIPSInstructionDoublewordShiftRightArithmeticPlus32(PXMIPSProcessor
      pxMIPSCoProcessor->RegisterList[pxMIPSTInstruction->RegisterDestinationID] = pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterTargetID];
  }
 
- void PXAPI PXMIPSInstructionMoveToSystemControlCoprocessor(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+ void PXAPI PXMIPSInstructionMoveToSystemControlCoprocessor(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
  {
-     PXMIPSCoProcessor* const pxMIPSCoProcessor = &pxMIPSProcessor->CoProcessor[pxMIPSTInstruction->CoProcessorID];
+     PXMIPSCoProcessor PXREF pxMIPSCoProcessor = &pxMIPSProcessor->CoProcessor[pxMIPSTInstruction->CoProcessorID];
 
      if(!pxMIPSCoProcessor->Enabled)
      {
@@ -2066,14 +2066,14 @@ void PXAPI PXMIPSInstructionDoublewordShiftRightArithmeticPlus32(PXMIPSProcessor
      pxMIPSCoProcessor->RegisterList[pxMIPSTInstruction->RegisterDestinationID] = pxMIPSProcessor->RegisterList[pxMIPSTInstruction->RegisterTargetID];
  }
 
- void PXAPI PXMIPSInstructionDoublewordMoveToSystemControlCoprocessor(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+ void PXAPI PXMIPSInstructionDoublewordMoveToSystemControlCoprocessor(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
  {
      PXDebugBreak();
  }
 
- void PXAPI PXMIPSInstructionMoveControlToCoprocessorZ(PXMIPSProcessor* const pxMIPSProcessor, PXMIPSTInstruction* const pxMIPSTInstruction)
+ void PXAPI PXMIPSInstructionMoveControlToCoprocessorZ(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)
  {
-     PXMIPSCoProcessor* const pxMIPSCoProcessor = &pxMIPSProcessor->CoProcessor[pxMIPSTInstruction->CoProcessorID];
+     PXMIPSCoProcessor PXREF pxMIPSCoProcessor = &pxMIPSProcessor->CoProcessor[pxMIPSTInstruction->CoProcessorID];
 
      if(pxMIPSTInstruction->CoProcessorID == 0) // This instruction is not valid for CP0
      {

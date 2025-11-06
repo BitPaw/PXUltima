@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXBubbleSortIncluded
 #define PXBubbleSortIncluded
 

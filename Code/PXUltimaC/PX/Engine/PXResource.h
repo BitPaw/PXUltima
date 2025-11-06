@@ -1,7 +1,8 @@
+#pragma once
+
 #ifndef PXResourceManagerIncludedd
 #define PXResourceManagerIncludedd
 
-#include <PX/Media/PXType.h>
 #include <PX/OS/Error/PXActionResult.h>
 #include <PX/OS/Async/PXLock.h>
 #include <PX/Container/Dictionary/PXDictionary.h>
@@ -30,6 +31,7 @@
 // Predefine
 typedef enum PXActionResult_ PXActionResult;
 
+typedef struct PXGUIProperty_ PXGUIProperty;
 typedef struct PXBuffer_ PXBuffer;
 typedef struct PXModel_ PXModel;
 typedef struct PXCodeDocumentElement_ PXCodeDocumentElement;
@@ -37,7 +39,7 @@ typedef struct PXFile_ PXFile;
 typedef struct PXTime_ PXTime;
 typedef struct PXText_ PXText;
 typedef struct PXCodeDocument_ PXCodeDocument;
-typedef struct PXGUISystem_ PXGUISystem;
+typedef struct PXGUIManager_ PXGUIManager;
 typedef struct PXWindow_ PXWindow;
 typedef struct PXFileTypeInfo_ PXFileTypeInfo;
 typedef struct PXCompiler_ PXCompiler;
@@ -50,19 +52,6 @@ typedef struct PXNativDraw_ PXNativDraw;
 typedef struct PXTask_ PXTask;
 typedef struct PXThread_ PXThread;
 typedef struct PXThreadPool_ PXThreadPool;
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -571,19 +560,19 @@ typedef struct PXTexture_
 PXTexture;
 
 
-PXPublic PXResult PXAPI PXTextureRelease(PXTexture* const pxTexture);
-PXPublic PXResult PXAPI PXTextureCopyAsIs(PXTexture* const pxTexture, const PXTexture* const pxTextureSource);
-PXPublic PXResult PXAPI PXTextureCopyAsNew(PXTexture* const pxTexture, const PXTexture* const pxTextureSource);
-PXPublic PXResult PXAPI PXTextureResize(PXTexture* const pxTexture, const PXColorFormat format, const PXSize width, const PXSize height);
-PXPublic PXResult PXAPI PXTextureFlipHorizontal(PXTexture* const pxTexture);
-PXPublic PXResult PXAPI PXTextureFlipVertical(PXTexture* const pxTexture);
-PXPublic PXResult PXAPI PXTextureRemoveColor(PXTexture* const pxTexture, const PXByte red, const PXByte green, const PXByte blue);
-PXPublic PXResult PXAPI PXTextureFillColorRGBA8(PXTexture* const pxTexture, const PXByte red, const PXByte green, const PXByte blue, const PXByte alpha);
-PXPublic void* PXAPI PXTextureDataPoint(const PXTexture* const pxTexture, const PXSize x, const PXSize y);
-PXPublic PXSize PXAPI PXTexturePixelPosition(const PXTexture* const pxTexture, const PXSize x, const PXSize y);
+PXPublic PXResult PXAPI PXTextureRelease(PXTexture PXREF pxTexture);
+PXPublic PXResult PXAPI PXTextureCopyAsIs(PXTexture PXREF pxTexture, const PXTexture PXREF pxTextureSource);
+PXPublic PXResult PXAPI PXTextureCopyAsNew(PXTexture PXREF pxTexture, const PXTexture PXREF pxTextureSource);
+PXPublic PXResult PXAPI PXTextureResize(PXTexture PXREF pxTexture, const PXColorFormat format, const PXSize width, const PXSize height);
+PXPublic PXResult PXAPI PXTextureFlipHorizontal(PXTexture PXREF pxTexture);
+PXPublic PXResult PXAPI PXTextureFlipVertical(PXTexture PXREF pxTexture);
+PXPublic PXResult PXAPI PXTextureRemoveColor(PXTexture PXREF pxTexture, const PXByte red, const PXByte green, const PXByte blue);
+PXPublic PXResult PXAPI PXTextureFillColorRGBA8(PXTexture PXREF pxTexture, const PXByte red, const PXByte green, const PXByte blue, const PXByte alpha);
+PXPublic void* PXAPI PXTextureDataPoint(const PXTexture PXREF pxTexture, const PXSize x, const PXSize y);
+PXPublic PXSize PXAPI PXTexturePixelPosition(const PXTexture PXREF pxTexture, const PXSize x, const PXSize y);
 PXPublic void PXAPI PXTexturePixelSetRGB8
 (
-    PXTexture* const pxTexture,
+    PXTexture PXREF pxTexture,
     const PXSize x,
     const PXSize y,
     const PXByte red,
@@ -768,7 +757,7 @@ typedef struct PXIconAtlasCreateInfo_
 }
 PXIconAtlasCreateInfo;
 
-PXPublic PXResult PXAPI PXGUIIconLoad(PXIcon* const pxIcon);
+PXPublic PXResult PXAPI PXGUIIconLoad(PXIcon PXREF pxIcon);
 //---------------------------------------------------------
 
 
@@ -782,8 +771,8 @@ typedef struct PXRectangleXYWHI32_
 {
     PXI32S X;
     PXI32S Y;
-    PXI32S Width;
-    PXI32S Height;
+    PXI32U Width;
+    PXI32U Height;
 }
 PXRectangleXYWHI32;
 
@@ -807,8 +796,39 @@ typedef struct PXRectangleLTRBF32_
 }
 PXRectangleLTRBF32;
 
-PXPublic void PXAPI PXRectangleLTRBI32ToXYWHI32(const PXRectangleLTRBI32* const pxRectangleLTRBI32, PXRectangleXYWHI32* const pxRectangleXYWHI32);
-PXPublic void PXAPI PXRectangleXYWHI32ToLTRBI32(const PXRectangleXYWHI32* const pxRectangleXYWHI32, PXRectangleLTRBI32* const pxRectangleLTRBI32);
+
+typedef struct PXRectangleVertexF32_
+{
+    union
+    {
+        struct
+        {
+            PXF32 AX;
+            PXF32 AY;
+        };
+
+        PXF32 A[2];
+    };
+
+    union
+    {
+        struct
+        {
+            PXF32 BX;
+            PXF32 BY;
+        };
+
+        PXF32 B[2];
+    };
+}
+PXRectangleVertexF32;
+
+
+
+
+PXPublic void PXAPI PXRectangleLTRBI32ToXYWHI32(const PXRectangleLTRBI32 PXREF pxRectangleLTRBI32, PXRectangleXYWHI32 PXREF pxRectangleXYWHI32);
+PXPublic void PXAPI PXRectangleXYWHI32ToLTRBI32(const PXRectangleXYWHI32 PXREF pxRectangleXYWHI32, PXRectangleLTRBI32 PXREF pxRectangleLTRBI32);
+PXPublic void PXAPI PXRectangleXYWHI32ToVertex(const PXRectangleXYWHI32 PXREF pxRectangleXYWHI32, const PXVector2F32 PXREF screenSize, PXRectangleVertexF32 PXREF pxRectangleVertexF32);
 //---------------------------------------------------------
 
 
@@ -1224,7 +1244,7 @@ typedef struct PXVertexBufferFormatInfo_
 PXVertexBufferFormatInfo;
 
 
-//PXPublic void PXAPI PXVertexBufferFormatInfoExtract(PXVertexBufferFormatInfo* const pxVertexBufferFormatInfo, const PXVertexBufferFormat pxVertexBufferFormat);
+//PXPublic void PXAPI PXVertexBufferFormatInfoExtract(PXVertexBufferFormatInfo PXREF pxVertexBufferFormatInfo, const PXVertexBufferFormat pxVertexBufferFormat);
 
 
 
@@ -1270,12 +1290,12 @@ PXVertexBuffer;
 //---------------------------------------------------------
 
 
-PXPublic PXBufferLayout* PXAPI PXVertexBufferLayoutGET(PXVertexBuffer* const pxVertexBuffer);
+PXPublic PXBufferLayout* PXAPI PXVertexBufferLayoutGET(PXVertexBuffer PXREF pxVertexBuffer);
 
 
 
 /*
-PXPublic void* PXAPI PXVertexBufferInsertionPoint(const PXVertexBuffer* const pxVertexBuffer, const PXVertexBufferFormat XVertexBufferFormat, const PXSize index);
+PXPublic void* PXAPI PXVertexBufferInsertionPoint(const PXVertexBuffer PXREF pxVertexBuffer, const PXVertexBufferFormat XVertexBufferFormat, const PXSize index);
 */
 
 
@@ -1339,13 +1359,13 @@ PXIndexBuffer;
 
 
 // Allocate an indexbuffer in a way to minimize size for given amount of vertex points
-PXPublic void PXAPI PXIndexBufferPrepare(PXIndexBuffer* const pxIndexBuffer, const PXSize amountVertex, const PXSize amountMaterials);
-PXPublic PXBool PXAPI PXIndexBufferIsUsed(const PXIndexBuffer* const pxIndexBuffer);
+PXPublic void PXAPI PXIndexBufferPrepare(PXIndexBuffer PXREF pxIndexBuffer, const PXSize amountVertex, const PXSize amountMaterials);
+PXPublic PXBool PXAPI PXIndexBufferIsUsed(const PXIndexBuffer PXREF pxIndexBuffer);
 
-PXPublic PXIndexSegment* PXAPI PXIndexBufferSegmentListGET(const PXIndexBuffer* const pxIndexBuffer);
-PXPublic PXBufferLayout* PXAPI PXIndexLayoutListGET(const PXIndexBuffer* const pxIndexBuffer);
+PXPublic PXIndexSegment* PXAPI PXIndexBufferSegmentListGET(const PXIndexBuffer PXREF pxIndexBuffer);
+PXPublic PXBufferLayout* PXAPI PXIndexLayoutListGET(PXIndexBuffer PXREF pxIndexBuffer);
 
-PXPublic PXSize PXAPI PXIndexIndexGET(const PXIndexBuffer* const pxIndexBuffer, const PXI8U type);
+PXPublic PXSize PXAPI PXIndexIndexGET(const PXIndexBuffer PXREF pxIndexBuffer, const PXI8U type);
 
 
 //---------------------------------------------------------
@@ -1378,40 +1398,40 @@ typedef struct PXMesh_
 }
 PXMesh;
 
-PXPublic PXResult PXAPI PXMeshVertexLayoutPrint(PXMesh* const pxMesh);
+PXPublic PXResult PXAPI PXMeshVertexLayoutPrint(PXMesh PXREF pxMesh);
 
 // Define and allocate vertex data to be stored and how
-PXPublic PXResult PXAPI PXMeshVertexLayout(PXMesh* const pxMesh, const PXSize index, PXBufferLayout* const pxVertexBufferLayoutList, const PXSize amount);
-PXPublic PXResult PXAPI PXMeshIndexLayout(PXMesh* const pxMesh, const PXSize primitveAmount, const PXSize segmentAmount);
+PXPublic PXResult PXAPI PXMeshVertexLayout(PXMesh PXREF pxMesh, const PXSize index, PXBufferLayout PXREF pxVertexBufferLayoutList, const PXSize amount);
+PXPublic PXResult PXAPI PXMeshIndexLayout(PXMesh PXREF pxMesh, const PXSize primitveAmount, const PXSize segmentAmount);
 
-PXPublic PXBufferLayout* PXAPI PXMeshVertexBufferGET(PXMesh* const pxMesh, const PXI8U type);
+PXPublic PXBufferLayout* PXAPI PXMeshVertexBufferGET(PXMesh PXREF pxMesh, const PXI8U type);
 
-PXPublic void* PXAPI PXMeshVertexInsert(PXMesh* const pxMesh, const PXI8U type);
-PXPublic void* PXAPI PXMeshIndexInsert(PXMesh* const pxMesh, const PXI8U type);
+PXPublic void* PXAPI PXMeshVertexInsert(PXMesh PXREF pxMesh, const PXI8U type);
+PXPublic void* PXAPI PXMeshIndexInsert(PXMesh PXREF pxMesh, const PXI8U type);
 
-PXPublic PXSize PXAPI PXMeshVertexStrideGET(PXMesh* const pxMesh);
+PXPublic PXSize PXAPI PXMeshVertexStrideGET(PXMesh PXREF pxMesh);
 
-PXPublic PXVertexBuffer* PXAPI PXMeshVertexBufferListGET(PXMesh* const pxMesh);
-PXPublic PXVertexBuffer* PXAPI PXMeshVertexBufferListSET(PXMesh* const pxMesh, const PXSize amount);
+PXPublic PXVertexBuffer* PXAPI PXMeshVertexBufferListGET(PXMesh PXREF pxMesh);
+PXPublic PXVertexBuffer* PXAPI PXMeshVertexBufferListSET(PXMesh PXREF pxMesh, const PXSize amount);
 
-PXPublic PXSize PXAPI PXMeshIndexBufferLengthGET(PXMesh* const pxMesh);
+PXPublic PXSize PXAPI PXMeshIndexBufferLengthGET(PXMesh PXREF pxMesh);
 
-PXPublic PXResult PXAPI PXMeshVertexLayoutTransmute(PXMesh* const pxMesh);
-PXPublic PXResult PXAPI PXMeshNormalDataGenerate(PXMesh* const pxMesh);
+PXPublic PXResult PXAPI PXMeshVertexLayoutTransmute(PXMesh PXREF pxMesh);
+PXPublic PXResult PXAPI PXMeshNormalDataGenerate(PXMesh PXREF pxMesh);
 PXPublic PXResult PXAPI PXMeshVertexArrayAdd
 (
-    PXMesh* const pxMesh,
+    PXMesh PXREF pxMesh,
     void* data,
     const PXSize dataLength,
-    PXBufferLayout* const pxVertexBufferLayoutList,
+    PXBufferLayout PXREF pxVertexBufferLayoutList,
     const PXSize pxVertexBufferLayoutListAmount
 );
 //---------------------------------------------------------
 
 
-PXPublic PXSize PXAPI PXMeshTriangleAmount(PXMesh* const pxMesh);
-PXPublic PXF32* PXAPI PXMeshTriangleIndex(PXMesh* const pxMesh, const PXSize index);
-//PXPublic void* PXAPI PXMeshVertexDataInsertionPoint(PXMesh* const pxMesh, const PXVertexBufferDataType pxVertexBufferDataType);
+PXPublic PXSize PXAPI PXMeshTriangleAmount(PXMesh PXREF pxMesh);
+PXPublic PXF32* PXAPI PXMeshTriangleIndex(PXMesh PXREF pxMesh, const PXSize index);
+//PXPublic void* PXAPI PXMeshVertexDataInsertionPoint(PXMesh PXREF pxMesh, const PXVertexBufferDataType pxVertexBufferDataType);
 
 // A Model is a renderable entity.
 // Has a mesh as a base structure
@@ -1470,7 +1490,7 @@ PXRenderEntity;
 
 
 
-PXPublic void PXAPI PXModelConstruct(PXModel* const pxModel);
+PXPublic void PXAPI PXModelConstruct(PXModel PXREF pxModel);
 
 
 
@@ -1578,7 +1598,7 @@ typedef struct PXFontPage_
 }
 PXFontPage;
 
-PXPublic PXFontPageCharacter* PXAPI PXFontPageCharacterFetch(PXFontPage* const pxFontPage, const PXI32U characterID);
+PXPublic PXFontPageCharacter* PXAPI PXFontPageCharacterFetch(PXFontPage PXREF pxFontPage, const PXI32U characterID);
 
 
 
@@ -1619,7 +1639,7 @@ typedef struct PXFont_
 }
 PXFont;
 
-PXPublic PXFontPage* PXAPI PXFontPageGet(PXFont* const pxFont, const PXSize index);
+PXPublic PXFontPage* PXAPI PXFontPageGet(PXFont PXREF pxFont, const PXSize index);
 
 
 
@@ -1691,7 +1711,7 @@ PXHitBoxForm;
 #define PXHitBoxBehaviourWallStatic PXHitBoxBehaviourKeepOut | PXHitBoxBehaviourKeepIn
 //---------------------------------------------------------
 
-typedef void(PXAPI* PXHitBoxCollisionDetect)(void* owner, struct PXHitBox_* const pxHitBox);
+typedef void(PXAPI* PXHitBoxCollisionDetect)(void* owner, struct PXHitBox_ PXREF pxHitBox);
 
 // Collidable entity that can be defined for different behaviours
 typedef struct PXHitBox_ PXHitBox;
@@ -1743,7 +1763,7 @@ typedef struct PXTimerEventInfo_
 }
 PXTimerEventInfo;
 
-typedef PXActionResult(PXAPI* PXTimerCallBack)(void* const owner, PXTimerEventInfo* const pxEngineTimerEventInfo);
+typedef PXActionResult(PXAPI* PXTimerCallBack)(void PXREF owner, PXTimerEventInfo PXREF pxEngineTimerEventInfo);
 
 typedef struct PXTimer_
 {
@@ -2143,7 +2163,7 @@ typedef struct PXUIElementPosition_
 PXUIElementPosition;
 
 
-typedef void (PXAPI* PXWindowEventFunction)(void* const owner, struct PXWindowEvent_* const pxWindowEvent);
+typedef void (PXAPI* PXWindowEventFunction)(void PXREF owner, struct PXWindowEvent_ PXREF pxWindowEvent);
 
 
 
@@ -2160,7 +2180,7 @@ typedef struct PXWindowDrawInfo_
     GC GraphicContntainerHandle;
 #elif OSWindows
     HWND hwnd;
-    HDC hDC;
+    HDC hDC; // Only valid in GDI mode
     BOOL bErase;
 #endif
 
@@ -2169,7 +2189,7 @@ typedef struct PXWindowDrawInfo_
 }
 PXWindowDrawInfo;
 
-typedef PXActionResult(PXAPI* PXWindowDrawFunction)(PXWindow* const pxWindow, PXWindowDrawInfo* const pxWindowDrawInfo);
+typedef PXActionResult(PXAPI* PXWindowDrawFunction)(PXWindow PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawInfo);
 
 
 //---------------------------------------------------------
@@ -2192,7 +2212,7 @@ typedef struct PXWindowBrush_
 }
 PXWindowBrush;
 
-PXPublic void PXAPI PXWindowBrushColorSet(PXWindowBrush* const pxWindowBrush, const PXByte red, const PXByte green, const PXByte blue);
+PXPublic void PXAPI PXWindowBrushColorSet(PXWindowBrush PXREF pxWindowBrush, const PXByte red, const PXByte green, const PXByte blue);
 
 //---------------------------------------------------------
 
@@ -2613,8 +2633,8 @@ typedef struct PXVersion_
 }
 PXVersion;
 
-PXPublic PXResult PXAPI PXVersionFromString(PXVersion* const pxVersion, char* versioNString);
-PXPublic PXResult PXAPI PXVersionToString(PXVersion* const pxVersion, char* versioNString);
+PXPublic PXResult PXAPI PXVersionFromString(PXVersion PXREF pxVersion, char* versioNString);
+PXPublic PXResult PXAPI PXVersionToString(PXVersion PXREF pxVersion, char* versioNString);
 
 
 
@@ -2649,11 +2669,10 @@ typedef struct PXMonitor_
     char Name[MonitorNameLength];
     char Driver[MonitorNameLength];
 
-
-    LONG    Left;
-    LONG    Top;
-    LONG    Right;
-    LONG    Bottom;
+    PXI32U Left;
+    PXI32U Top;
+    PXI32U Right;
+    PXI32U Bottom;
 
     //PXI16U X;
     //PXI16U Y;
@@ -2764,6 +2783,86 @@ PXDisplay;
 
 
 
+
+//---------------------------------------------------------
+// Graphic system
+//---------------------------------------------------------
+#define PXGraphicSystemInvalid  0
+#define PXGraphicSystemNative   1
+#define PXGraphicSystemOpenGL   2
+#define PXGraphicSystemDirectX  3
+#define PXGraphicSystemVulcan   4
+
+typedef PXI8U PXGraphicSystem;
+//---------------------------------------------------------
+
+
+
+
+
+
+
+//---------------------------------------------------------
+// Framebuffer
+//---------------------------------------------------------
+typedef struct PXFrameBufferGDI_
+{
+#if OSWindows
+    HDC MemoryDeviceContext; // Memory registered redircect fot the bitmap
+    HBITMAP FrameBufferTexture; // Render sink where the rendered data is stored
+#else
+    int Empty;
+#endif
+}
+PXFrameBufferGDI;
+
+typedef struct PXFrameBufferOpenGL_
+{
+    // This does not belong here, its per thread!
+    //HGLRC RenderingContext; // The Opengl context itself
+    //HDC MemoryDeviceContext; // Memory registered redircect for opengl context.
+
+    PXI32U FBO; // GLuint, if 0, then we use the default window
+    PXI32U TextureID; // GLuint
+}
+PXFrameBufferOpenGL;
+
+typedef struct PXFrameBuffer_
+{
+    union
+    {
+        PXFrameBufferGDI GDI;
+        PXFrameBufferOpenGL OpenGL;
+    };
+
+    PXI32S Width;
+    PXI32S Height;
+}
+PXFrameBuffer;
+
+typedef struct PXFrameBufferCreateInfo_
+{
+    PXGraphicSystem System;
+
+    PXI32S Width;
+    PXI32S Height;
+
+#if OSWindows
+    HWND WindowHandle;
+    HDC WindowDeviceContext;
+#endif
+}
+PXFrameBufferCreateInfo;
+//---------------------------------------------------------
+
+
+
+
+
+
+
+
+
 typedef struct PXNativDraw_
 {
     PXResourceManager* ResourceManager;
@@ -2774,7 +2873,7 @@ typedef struct PXNativDraw_
     PXSize DisplayListAmount;
     PXDisplay* DisplayList;
 
-    PXGUISystem* GUISystem;
+    PXGUIManager* GUISystem;
 }
 PXNativDraw;
 
@@ -2788,10 +2887,16 @@ typedef struct PXWindow_
 {
     PXResourceInfo Info;
 
-#if OSUnix
-#elif OSWindows
-    HDC DeviceContextHandle; // Required for manual rendering
+    PXGraphicSystem GraphicSystem; // The window can be drawn by different systems.
+
+    // Used as the render sink target
+    PXFrameBuffer FrameBuffer;
+
+#if OSWindows
+    HGLRC RenderContext;
+    HDC DeviceContextHandle;
 #endif
+
 
     void* InteractOwner; // Object that is the owner of given callbacks
     PXWindowEventFunction InteractCallBack; // Callback function for all events
@@ -2915,12 +3020,9 @@ PXWindowEventSelect;
 
 typedef struct PXWindowEventInputMouseMove_
 {
-    PXI32S AxisX;
-    PXI32S AxisY;
-    PXI32S DeltaX;
-    PXI32S DeltaY;
-    PXI32S PositionX;
-    PXI32S PositionY;
+    PXVector2F32 Axis;
+    PXVector2F32 Delta;
+    PXVector2F32 Position;
 }
 PXWindowEventInputMouseMove;
 
@@ -3097,22 +3199,15 @@ typedef struct PXUIElementPositionCalulcateInfo_
     // Result
     PXI32U DepthCounter;
 
-    // Margin total
-    PXF32 MarginLeft;
-    PXF32 MarginTop;
-    PXF32 MarginRight;
-    PXF32 MarginBottom;
-
+    PXRectangleLTRBF32 Padding;
+    PXRectangleLTRBF32 Margin;
 
     PXF32 AA;
     PXF32 BA;
     PXF32 BB;
     PXF32 AB;
 
-    PXF32 X;
-    PXF32 Y;
-    PXF32 Width;
-    PXF32 Height;
+    PXRectangleXYWHI32 Size;
 }
 PXUIElementPositionCalulcateInfo;
 
@@ -3273,43 +3368,6 @@ PXUIElementTabPageInfo;
 
 
 
-typedef struct PXWindowCreateWindowInfo_
-{
-    //void* EventFunction;
-    void* EventOwner;
-
-    PXWindow* UIElementReference;
-
-    PXColorRGBAI8 BackGroundColor;
-
-    PXI32S X;
-    PXI32S Y;
-    PXI32S Width;
-    PXI32S Height;
-    char* Title;
-
-    PXBool IsVisible;
-    PXBool CreateMessageThread; // Run events in another thread
-    PXBool MaximizeOnStart;
-}
-PXWindowCreateWindowInfo;
-
-typedef union PXWindowCreateInfoData_
-{
-    PXWindowMenuItemList MenuItem;
-    PXWindowCreateWindowInfo Window;
-    //  PXUIElementTextInfo Text;
-    PXUIElementButtonInfo Button;
-    PXUIElementTreeViewItemInfo TreeViewItem;
-    PXUIElementSceneRenderInfo SceneRender;
-    PXUIElementTabPageInfo TabPage;
-    PXUIElementComboBoxInfo ComboBox;
-
-    // Fetched
-    PXRectangleXYWHI32 Size;
-}
-PXWindowCreateInfoData;
-
 typedef enum PXWindowPropertyUpdateType_
 {
     PXWindowPropertyUpdateTypeInvalid,
@@ -3319,52 +3377,44 @@ typedef enum PXWindowPropertyUpdateType_
 }
 PXWindowPropertyUpdateType;
 
-// Info about a window property like position or text content
-typedef struct PXWindowPropertyInfo_
-{
-    PXWindow* WindowCurrent;
-    PXWindow* WindowParentREF;
-    PXUIElementProperty Property;
-    PXWindowCreateInfoData Data;
-
-    PXBool Show;
-    PXWindowPropertyUpdateType UpdateType;
-}
-PXWindowPropertyInfo;
-
 typedef struct PXWindowCreateInfo_
 {
     // Handles
-    PXWindow* WindowCurrent;
-    PXWindowHandle CurrnetID;
+    //PXWindow* WindowCurrent;
+    //PXWindowHandle CurrnetID;
 
-    PXWindow* WindowParent;
-    PXWindowHandle ParentID;
+    PXWindow* WindowParent; // INSERT ONLY!
+    //PXWindowHandle ParentID;
 
     PXDisplay DisplayCurrent;
 
     // Positions
-    PXI32S X;
-    PXI32S Y;
-    PXI32U Width;
-    PXI32U Height;
+    PXRectangleXYWHI32 Size;
 
     // Style
-    PXI32U BorderWidth;
-    PXI32U Border;
+    PXI8U BorderWidth;
+    PXI8U Border;
 
     // Setings
     PXBool Simple;
     PXBool AvoidCreation;
-    PXBool Invisible;
+    PXBool Invisible; // Hide the window, we still want to create it.
+    PXBool IsVirtual; // Avoid window from beeing created, we use this to make framebuffer windows?
+    PXBool CreateMessageThread; // Run events in another thread
+    PXBool MaximizeOnStart;
 
 
+    //void* EventFunction;
+    void* EventOwner;
+
+    PXWindow* UIElementReference;
+
+    PXColorRGBAI8 BackGroundColor;
 
 
     // CallBack on event
     void* InteractOwner;
     PXWindowEventFunction InteractCallBack;
-
 
 
     //PXI32U FlagList;
@@ -3389,32 +3439,41 @@ typedef struct PXWindowCreateInfo_
 
     PXI32U WindowsWindowsStyleFlagsExtended;
     PXI32U WindowsStyleFlags;
-    char* WindowsTextContent;
-    PXSize WindowsTextSize;
-    const char* WindowsClassName;
+
+    PXText WindowText;
+    PXText WindowClassName;
 #endif
 
     PXWindowDrawFunction DrawFunctionEngine; // default rendering of the engine
     PXWindowDrawFunction DrawFunctionOverride; // user defined rendering to overruide default
-
-    // Additions
-
-
-    char* Name;
 
 #define PXWindowCreateVirtual   1
 #define PXWindowCreatePhysical  2
 
     PXI8U FLags;
 
-    PXWindowCreateInfoData Data;
+    union 
+    {
+        PXWindowMenuItemList MenuItem;
+        //  PXUIElementTextInfo Text;
+        PXUIElementButtonInfo Button;
+        PXUIElementTreeViewItemInfo TreeViewItem;
+        PXUIElementSceneRenderInfo SceneRender;
+        PXUIElementTabPageInfo TabPage;
+        PXUIElementComboBoxInfo ComboBox;
+    };
 }
 PXWindowCreateInfo;
 
 
 
 
-PXPublic void PXAPI PXUIElementPositionCalculcate(PXWindow* const pxWindow, PXUIElementPositionCalulcateInfo* const pxUIElementPositionCalulcateInfo);
+
+
+
+
+
+PXPublic void PXAPI PXUIElementPositionCalculcate(PXWindow PXREF pxWindow, PXUIElementPositionCalulcateInfo PXREF pxUIElementPositionCalulcateInfo);
 
 
 
@@ -3818,8 +3877,8 @@ PXPublic const char* PXFileLocationModeToString(const PXFileLocationMode pxFileL
 
 typedef struct PXResourceTransphereInfo_ PXResourceTransphereInfo;
 
-typedef PXActionResult(PXAPI* PXResourceFileSizePredict)(void* const resource, PXSize* const fileSize);
-typedef PXActionResult(PXAPI* PXResourceTransphereFunction)(PXResourceTransphereInfo* const pxResourceTransphereInfo);
+typedef PXActionResult(PXAPI* PXResourceFileSizePredict)(void PXREF resource, PXSize PXREF fileSize);
+typedef PXActionResult(PXAPI* PXResourceTransphereFunction)(PXResourceTransphereInfo PXREF pxResourceTransphereInfo);
 
 
 
@@ -3988,8 +4047,7 @@ typedef struct PXFile_
 
     // The file path can't always be fetched from the OS.
     // for this we store the name here at creation time.
-    char* FilePathData;
-    PXSize FilePathSize;
+    PXText FilePath;
 
     PXTime TimeCreation;  // FILETIME
     PXTime TimeAccessLast;
@@ -4004,7 +4062,7 @@ PXFile;
 
 // Check is there is data to be read. 
 // Use when we check if a file is loaded and not at the end
-PXPublic PXBool PXAPI PXFileDataAvailable(const PXFile* const pxFile);
+PXPublic PXBool PXAPI PXFileDataAvailable(const PXFile PXREF pxFile);
 
 
 
@@ -4153,7 +4211,7 @@ PXTimerCreateInfo;
 //---------------------------------------------------------
 typedef struct PXTexturInfo_
 {
-    void** TextureReference;
+    PXTexture** TextureReference;
     PXSize Amount;
     PXTextureType Type;
     PXResourceAction Action;
@@ -4317,17 +4375,13 @@ PXSpriteAnimatorInfo;
 
 typedef struct PXResourceCreateInfo_
 {
-    void** ObjectReference; // Reference to an adress to be filled with an object
+    PXResourceInfo** ObjectReference; // Reference to an adress to be filled with an object
     PXSize ObjectAmount; // If set to more than one, "ObjectReference" will contain a list of values
 
     void* Parent;
 
-
-    char* FilePathAdress;
-    PXSize FilePathSize;
-
-    char* NameAdress;
-    PXSize NameAdressSize;
+    PXText FilePath;
+    PXText Name;
 
     PXI32U Type;
     PXI32U Flags;
@@ -4361,7 +4415,7 @@ typedef struct PXResourceCreateInfo_
 PXResourceCreateInfo;
 
 
-typedef PXActionResult(PXAPI* PXResourceEntryCreateFunction)(PXResourceCreateInfo* const pxResourceCreateInfo, void* const objectRef);
+typedef PXActionResult(PXAPI* PXResourceEntryCreateFunction)(PXResourceCreateInfo PXREF pxResourceCreateInfo, void PXREF objectRef);
 
 typedef struct PXResourceEntry_
 {
@@ -4377,119 +4431,73 @@ PXResourceEntry;
 
 
 
-PXPrivate PXResult PXAPI  PXResourceCreateSkybox(PXResourceCreateInfo* const pxResourceCreateInfo, PXSkyBox* const pxSkyBox);
-PXPrivate PXResult PXAPI  PXResourceCreateBrush(PXResourceCreateInfo* const pxResourceCreateInfo, PXWindowBrush* const pxWindowBrush);
-PXPrivate PXResult PXAPI  PXResourceCreateShaderProgram(PXResourceCreateInfo* const pxResourceCreateInfo, PXShaderProgram* const pxShaderProgram);
-PXPrivate PXResult PXAPI  PXResourceCreateIcon(PXResourceCreateInfo* const pxResourceCreateInfo, PXIcon* const pxIcon);
-PXPrivate PXResult PXAPI  PXResourceCreateFont(PXResourceCreateInfo* const pxResourceCreateInfo, PXFont* const pxFont);
-PXPrivate PXResult PXAPI  PXResourceCreateMaterial(PXResourceCreateInfo* const pxResourceCreateInfo, PXMaterial* const pxMaterial);
-PXPrivate PXResult PXAPI  PXResourceCreateIconAtlas(PXResourceCreateInfo* const pxResourceCreateInfo, PXIconAtlas* const pxIconAtlas);
-PXPrivate PXResult PXAPI  PXResourceCreateTexture(PXResourceCreateInfo* const pxResourceCreateInfo, PXTexture* const pxTexture);
-PXPrivate PXResult PXAPI  PXResourceCreateModel(PXResourceCreateInfo* const pxResourceCreateInfo, PXModel* const pxModel);
-PXPrivate PXResult PXAPI  PXResourceCreateSprite(PXResourceCreateInfo* const pxResourceCreateInfo, PXSprite* const pxSprite);
-PXPrivate PXResult PXAPI  PXResourceCreateSpriteAnimator(PXResourceCreateInfo* const pxResourceCreateInfo, PXSpriteAnimator* const pxSpriteAnimator);
-PXPrivate PXResult PXAPI  PXResourceCreateHitBox(PXResourceCreateInfo* const pxResourceCreateInfo, PXHitBox* const pxHitBox);
-PXPrivate PXResult PXAPI  PXResourceCreateSound(PXResourceCreateInfo* const pxResourceCreateInfo, PXSound* const pxSound);
-PXPrivate PXResult PXAPI  PXResourceCreateTimer(PXResourceCreateInfo* const pxResourceCreateInfo, PXTimer* const pxEngineTimer);
-PXPrivate PXResult PXAPI  PXResourceCreateWindow(PXResourceCreateInfo* const pxResourceCreateInfo, PXWindow* const pxWindow);
-PXPrivate PXResult PXAPI  PXResourceCreateSpriteMap(PXResourceCreateInfo* const pxResourceCreateInfo, PXSpriteMap* const pxSpriteMap);
+PXPrivate PXResult PXAPI PXResourceCreateSkybox(PXResourceCreateInfo PXREF pxResourceCreateInfo, PXSkyBox PXREF pxSkyBox);
+PXPrivate PXResult PXAPI PXResourceCreateBrush(PXResourceCreateInfo PXREF pxResourceCreateInfo, PXWindowBrush PXREF pxWindowBrush);
+PXPrivate PXResult PXAPI PXResourceCreateShaderProgram(PXResourceCreateInfo PXREF pxResourceCreateInfo, PXShaderProgram PXREF pxShaderProgram);
+PXPrivate PXResult PXAPI PXResourceCreateIcon(PXResourceCreateInfo PXREF pxResourceCreateInfo, PXIcon PXREF pxIcon);
+PXPrivate PXResult PXAPI PXResourceCreateFont(PXResourceCreateInfo PXREF pxResourceCreateInfo, PXFont PXREF pxFont);
+PXPrivate PXResult PXAPI PXResourceCreateMaterial(PXResourceCreateInfo PXREF pxResourceCreateInfo, PXMaterial PXREF pxMaterial);
+PXPrivate PXResult PXAPI PXResourceCreateIconAtlas(PXResourceCreateInfo PXREF pxResourceCreateInfo, PXIconAtlas PXREF pxIconAtlas);
+PXPrivate PXResult PXAPI PXResourceCreateTexture(PXResourceCreateInfo PXREF pxResourceCreateInfo, PXTexture PXREF pxTexture);
+PXPrivate PXResult PXAPI PXResourceCreateModel(PXResourceCreateInfo PXREF pxResourceCreateInfo, PXModel PXREF pxModel);
+PXPrivate PXResult PXAPI PXResourceCreateSprite(PXResourceCreateInfo PXREF pxResourceCreateInfo, PXSprite PXREF pxSprite);
+PXPrivate PXResult PXAPI PXResourceCreateSpriteAnimator(PXResourceCreateInfo PXREF pxResourceCreateInfo, PXSpriteAnimator PXREF pxSpriteAnimator);
+PXPrivate PXResult PXAPI PXResourceCreateHitBox(PXResourceCreateInfo PXREF pxResourceCreateInfo, PXHitBox PXREF pxHitBox);
+PXPrivate PXResult PXAPI PXResourceCreateSound(PXResourceCreateInfo PXREF pxResourceCreateInfo, PXSound PXREF pxSound);
+PXPrivate PXResult PXAPI PXResourceCreateTimer(PXResourceCreateInfo PXREF pxResourceCreateInfo, PXTimer PXREF pxEngineTimer);
+PXPrivate PXResult PXAPI PXResourceCreateWindow(PXResourceCreateInfo PXREF pxResourceCreateInfo, PXWindow PXREF pxWindow);
+PXPrivate PXResult PXAPI PXResourceCreateSpriteMap(PXResourceCreateInfo PXREF pxResourceCreateInfo, PXSpriteMap PXREF pxSpriteMap);
 
 
 
 // Generate and store new resource. Load if possible
-PXPublic PXResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo* const pxResourceCreateInfo);
-PXPublic PXResult PXAPI PXResourceManagerAddV(PXResourceCreateInfo* const pxResourceCreateInfoList, const PXSize amount);
+PXPublic PXResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo PXREF pxResourceCreateInfo);
+PXPublic PXResult PXAPI PXResourceManagerAddV(PXResourceCreateInfo PXREF pxResourceCreateInfoList, const PXSize amount);
 
 
 
-PXPublic PXResult PXAPI PXResourceStoreName(PXResourceInfo* const pxResourceInfo, const char* const name, const PXSize nameSize);
-PXPublic PXResult PXAPI PXResourceStorePath(PXResourceInfo* const pxResourceInfo, const char* const name, const PXSize nameSize);
-PXPublic PXResult PXAPI PXResourceFetchName(PXResourceInfo* const pxResourceInfo, char** name, PXSize* nameSize);
-PXPublic PXResult PXAPI PXResourceFetchPath(PXResourceInfo* const pxResourceInfo, char** name, PXSize* nameSize);
 
+//--------------------------------------------------------- 
+// Property
+//---------------------------------------------------------
+#define PXResourcePropertyName 1
+#define PXResourcePropertyPath 0
 
+#define PXResourcePropertyStore 1
+#define PXResourcePropertyFetch 0
 
+typedef struct PXResourceProperty_
+{
+    PXText Text;
+}
+PXResourceProperty;
 
-PXPublic PXResult PXAPI PXFileTypeInfoProbe(PXFileFormatInfo* const pxFileFormatInfo, const PXText* const pxText);
+PXPublic PXResult PXAPI PXResourcePropertyIO
+(
+    PXResourceInfo PXREF pxResourceInfo,
+    PXResourceProperty PXREF pxResourceProperty,
+    const PXI8U mode, 
+    const PXBool doWrite
+);
+//---------------------------------------------------------
 
-PXPublic PXResult PXAPI PXResourceManagerReferenceValidate(PXResourceReference* const pxResourceReference);
 
-PXPublic PXResult PXAPI PXResourceLoad(PXResourceTransphereInfo* const pxResourceLoadInfo, const PXText* const filePath);
-PXPublic PXResult PXAPI PXResourceLoadA(PXResourceTransphereInfo* const pxResourceLoadInfo, const char* const filePath);
 
-PXPublic PXResult PXAPI PXResourceSave(PXResourceTransphereInfo* const pxResourceSaveInfo, const PXText* const filePath);
-PXPublic PXResult PXAPI PXResourceSaveA(PXResourceTransphereInfo* const pxResourceSaveInfo, const char* const filePath);
 
+PXPublic PXResult PXAPI PXFileTypeInfoProbe(PXFileFormatInfo PXREF pxFileFormatInfo, const PXText PXREF pxText);
 
+PXPublic PXResult PXAPI PXResourceManagerReferenceValidate(PXResourceReference PXREF pxResourceReference);
 
+PXPublic PXResult PXAPI PXResourceLoad(PXResourceTransphereInfo PXREF pxResourceLoadInfo, const PXText PXREF filePath);
+PXPublic PXResult PXAPI PXResourceLoadA(PXResourceTransphereInfo PXREF pxResourceLoadInfo, const char PXREF filePath);
 
-PXPublic PXMaterial* PXAPI PXMaterialContainerFind(const PXMaterialContainer* const pxMaterialContainer, struct PXText_* const pxMaterialName);
+PXPublic PXResult PXAPI PXResourceSave(PXResourceTransphereInfo PXREF pxResourceSaveInfo, const PXText PXREF filePath);
+PXPublic PXResult PXAPI PXResourceSaveA(PXResourceTransphereInfo PXREF pxResourceSaveInfo, const char PXREF filePath);
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+PXPublic PXMaterial* PXAPI PXMaterialContainerFind(const PXMaterialContainer PXREF pxMaterialContainer, struct PXText_ PXREF pxMaterialName);
 
 
 
@@ -4503,13 +4511,11 @@ PXPublic PXMaterial* PXAPI PXMaterialContainerFind(const PXMaterialContainer* co
 // Returns the global resouremanager. 
 // If not yet init, do so.
 PXPublic PXResourceManager* PXAPI PXResourceManagerGet(void);
-PXPublic PXResult PXAPI PXResourceManagerRelease(PXResourceManager* const pxResourceManager);
+PXPublic PXResult PXAPI PXResourceManagerRelease(PXResourceManager PXREF pxResourceManager);
 
 
 
-
-
-PXPublic PXResult PXAPI PXResourceComponentCreate(PXComponentInfo* const pxComponentInfo);
+PXPublic PXResult PXAPI PXResourceComponentCreate(PXComponentInfo PXREF pxComponentInfo);
 
 
 // Create uniqe identification, 7
@@ -4521,22 +4527,14 @@ PXPublic PXResourceID PXAPI PXResourceManagerGenerateUniqeID();
 PXPublic PXResult PXAPI PXResourceTransphere();
 
 
-// Additional property storage
-
-#define PXResourcePropertyName 1
-#define PXResourcePropertyPath 2
-
-typedef struct PXResourceProperty_
-{
-    char* NameAdress;
-    PXSize NameSize;
-}
-PXResourceProperty;
-
-PXPublic PXResult PXAPI PXResourcePropertyE(PXResourceProperty* const pxResourceProperty, const PXBool doWrite);
 
 
-PXPublic PXResult PXAPI PXResourceAdd(PXResourceInfo* const pxResourceInfo, void* payload);
-PXPublic PXResult PXAPI PXResourceRemove(PXResourceInfo* const pxResourceInfo);
+
+
+PXPublic PXResult PXAPI PXResourcePropertyE(PXResourceProperty PXREF pxResourceProperty, const PXBool doWrite);
+
+
+PXPublic PXResult PXAPI PXResourceAdd(PXResourceInfo PXREF pxResourceInfo, void* payload);
+PXPublic PXResult PXAPI PXResourceRemove(PXResourceInfo PXREF pxResourceInfo);
 
 #endif

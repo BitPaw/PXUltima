@@ -596,12 +596,12 @@ PXI8U PXAPI PXVirtualKeyToID(const PXVirtualKey character)
     }
 }
 
-void PXAPI PXKeyBoardInputReset(PXKeyBoard* const keyBoard)
+void PXAPI PXKeyBoardInputReset(PXKeyBoard PXREF keyBoard)
 {
     PXMemoryClear(keyBoard, sizeof(PXKeyBoard));
 }
 
-void PXAPI PXKeyBoardInputPrint(const PXKeyBoard* const keyBoard)
+void PXAPI PXKeyBoardInputPrint(const PXKeyBoard PXREF keyBoard)
 {
     char letters[64];
     char numbers[64];
@@ -718,7 +718,7 @@ PXI8U PXAPI PXKeyPressStateToID(const PXKeyPressState pxKeyPressState)
 #endif
 }
 
-PXBool PXAPI PXKeyBoardVirtualInsertAction(const PXKeyBoardVirtualInput* const inputList, const PXSize inputListSize)
+PXBool PXAPI PXKeyBoardVirtualInsertAction(const PXKeyBoardVirtualInput PXREF inputList, const PXSize inputListSize)
 {
 #if OSUnix
 
@@ -734,7 +734,7 @@ PXBool PXAPI PXKeyBoardVirtualInsertAction(const PXKeyBoardVirtualInput* const i
 
     for (PXSize i = 0; i < inputListSize; ++i)
     {
-        PXKeyBoardVirtualInput* const virtualInput = &inputList[i];
+        PXKeyBoardVirtualInput PXREF virtualInput = &inputList[i];
         INPUT* input = &inputs[i];
 
         input->type = INPUT_KEYBOARD;

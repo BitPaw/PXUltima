@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXDriverIncluded
 #define PXDriverIncluded
 
@@ -10,6 +12,6 @@ typedef struct PXDriver_
 }
 PXDriver;
 
-PXPublic PXResult PXAPI PXDriverListFetch(PXDriver** const pxDriverList, PXSize* const listSize);
+PXPublic PXResult PXAPI PXDriverListFetch(PXDriver* PXREF pxDriverList, PXSize PXREF listSize);
 
 #endif

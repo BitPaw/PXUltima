@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXWEBPIncluded
 #define PXWEBPIncluded
 
@@ -22,7 +24,7 @@ typedef struct PXWEBP_
 }
 PXWEBP;
 
-PXPublic PXResult PXAPI PXWEBPLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXWEBPSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXWEBPLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXWEBPSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

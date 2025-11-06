@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXPXClipBoardIncluded
 #define PXPXClipBoardIncluded
 
@@ -48,13 +50,13 @@ PXPrivate PXClipBoardFormat PXAPI PXClipBoardFormatFromID(const PXI32U PXClipBoa
 
 // Open PXClipBoard, close it imedidly after using!
 // Fails if another window has the PXClipBoard open.
-PXPublic PXResult PXAPI PXClipBoardOpen(PXClipBoard* const PXClipBoard);
+PXPublic PXResult PXAPI PXClipBoardOpen(PXClipBoard PXREF PXClipBoard);
 
 // Use this right after using!
-PXPublic PXResult PXAPI PXClipBoardClose(PXClipBoard* const PXClipBoard);
+PXPublic PXResult PXAPI PXClipBoardClose(PXClipBoard PXREF PXClipBoard);
 
-PXPublic PXResult PXAPI PXClipBoardSet(PXClipBoard* const PXClipBoard, const PXClipBoardFormat format, const void* data);
+PXPublic PXResult PXAPI PXClipBoardSet(PXClipBoard PXREF PXClipBoard, const PXClipBoardFormat format, const void* data);
 
-PXPublic PXResult PXAPI PXClipBoardClear(PXClipBoard* const PXClipBoard);
+PXPublic PXResult PXAPI PXClipBoardClear(PXClipBoard PXREF PXClipBoard);
 
 #endif

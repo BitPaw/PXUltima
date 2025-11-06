@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXPDFIncluded
 #define PXPDFIncluded
 
@@ -10,7 +12,7 @@ typedef struct PXPDF_
 }
 PXPDF;
 
-PXPublic PXResult PXAPI PXPDFLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXPDFSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXPDFLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXPDFSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

@@ -12,7 +12,7 @@
 
 #endif
 
-PXResult PXAPI  PXUserNameGetAA(PXText* const name)
+PXResult PXAPI PXUserNameGetAA(PXText PXREF name)
 {
     switch(name->Format)
     {
@@ -30,7 +30,7 @@ PXResult PXAPI  PXUserNameGetAA(PXText* const name)
             DWORD size = name->SizeAllocated;
 
             const PXBool successful = GetComputerNameA(name->A, &size); // Windows 2000 (+UWP), Kernel32.dll, winbase.h
-            const PXActionResult result = PXErrorCurrent(successful);
+            const PXResult result = PXErrorCurrent(successful);
 
             name->SizeUsed = (PXSize)successful * (PXSize)size;
 
@@ -49,7 +49,7 @@ PXResult PXAPI  PXUserNameGetAA(PXText* const name)
             DWORD size = name->SizeAllocated;
 
             const PXBool successful = GetComputerNameW(name->W, &size); // Windows 2000 (+UWP), Kernel32.dll, winbase.h
-            const PXActionResult result = PXErrorCurrent(successful);
+            const PXResult result = PXErrorCurrent(successful);
 
             name->NumberOfCharacters = (PXSize)successful * (PXSize)size;
             name->SizeUsed = name->NumberOfCharacters * sizeof(wchar_t);
@@ -64,7 +64,7 @@ PXResult PXAPI  PXUserNameGetAA(PXText* const name)
     return PXActionRefusedFormatNotSupported;
 }
 
-PXBool PXAPI PXUserEnviromentFolderGet(PXText* const name, const PXUserEnviromentFolderID pxUserEnviromentFolderID)
+PXBool PXAPI PXUserEnviromentFolderGet(PXText PXREF name, const PXUserEnviromentFolderID pxUserEnviromentFolderID)
 {
 #if OSUnix
 

@@ -20,7 +20,7 @@ PXWavefrontLineType PXAPI PXWavefrontPeekLine(const void* line, const PXSize siz
         return PXWavefrontLineInvalid;
     }
 
-    const char* const text = (const char* const)line;
+    const char PXREF text = (const char PXREF)line;
 
     switch(size)
     {
@@ -91,7 +91,7 @@ PXWavefrontLineType PXAPI PXWavefrontPeekLine(const void* line, const PXSize siz
     return PXWavefrontLineInvalid;
 }
 
-void PXAPI PXWavefrontFaceLineParse(PXCompiler* const pxCompiler, PXI32U* const vertexData)
+void PXAPI PXWavefrontFaceLineParse(PXCompiler PXREF pxCompiler, PXI32U PXREF vertexData)
 {
     const PXBool isExpectedInteger = PXCompilerSymbolEntryPeekEnsure(pxCompiler, PXCompilerSymbolLexerNumeric);
 
@@ -222,10 +222,10 @@ void PXAPI PXWavefrontFaceLineParse(PXCompiler* const pxCompiler, PXI32U* const 
     }
 }
 
-PXResult PXAPI  PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
 {
-    PXModel* const pxModel = (PXModel*)pxResourceLoadInfo->ResourceTarget;
-    PXMesh* const mesh = &pxModel->Mesh;
+    PXModel PXREF pxModel = (PXModel*)pxResourceLoadInfo->ResourceTarget;
+    PXMesh PXREF mesh = &pxModel->Mesh;
 
     PXFile tokenSteam;
 
@@ -645,7 +645,7 @@ PXResult PXAPI  PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxResour
                 {
                     case PXWavefrontLineMaterialLibraryIncluded:
                     {
-                        PXMaterialContainer* const pxMaterialContaier = &mesh->MaterialContaierList[counter.MaterialInlcude++];
+                        PXMaterialContainer PXREF pxMaterialContaier = &mesh->MaterialContaierList[counter.MaterialInlcude++];
                         PXFile materialFile;
                         PXClear(PXFile, &materialFile);
 
@@ -673,8 +673,8 @@ PXResult PXAPI  PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxResour
                     }
                     case PXWavefrontLineMaterialLibraryUse:
                     {
-                        PXIndexSegment* const pxIndexSegmentLast = &pxModel->Mesh.IndexBuffer.SegmentList[pxModel->Mesh.IndexBuffer.SegmentListAmount - 1];
-                        PXIndexSegment* const pxIndexSegmentCurrent = &pxModel->Mesh.IndexBuffer.SegmentList[counter.MaterialUse];
+                        PXIndexSegment PXREF pxIndexSegmentLast = &pxModel->Mesh.IndexBuffer.SegmentList[pxModel->Mesh.IndexBuffer.SegmentListAmount - 1];
+                        PXIndexSegment PXREF pxIndexSegmentCurrent = &pxModel->Mesh.IndexBuffer.SegmentList[counter.MaterialUse];
                        
                         pxIndexSegmentCurrent->Material = PXMaterialContainerFind
                         (
@@ -684,7 +684,7 @@ PXResult PXAPI  PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxResour
 
                         if(counter.MaterialUse > 0)
                         {
-                            PXIndexSegment* const pxIndexSegmentPrevious = &pxModel->Mesh.IndexBuffer.SegmentList[counter.MaterialUse - 1];
+                            PXIndexSegment PXREF pxIndexSegmentPrevious = &pxModel->Mesh.IndexBuffer.SegmentList[counter.MaterialUse - 1];
                             
                             pxIndexSegmentPrevious->DataRange = counter.Face - counter.FaceLast;
                             pxIndexSegmentLast->DataRange = PXMathAbsoluteI32(counter.Face - counter.FaceTotal);
@@ -842,34 +842,42 @@ PXResult PXAPI  PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxResour
 #if PXLogEnable
     for(PXSize i = 0; i < mesh->IndexBuffer.SegmentListAmount; ++i)
     {
-        PXIndexSegment* const pxIndexSegment = &mesh->IndexBuffer.SegmentList[i];
-
-        char materialText[256];
+        PXIndexSegment PXREF pxIndexSegment = &mesh->IndexBuffer.SegmentList[i];
+        PXResourceProperty pxResourceProperty;
+        PXClear(PXResourceProperty, &pxResourceProperty);
 
         if(pxIndexSegment->Material)
         {
-            char* name = 0;
+            PXResourcePropertyIO(&pxIndexSegment->Material->Info, &pxResourceProperty, PXResourcePropertyName, PXResourcePropertyFetch);
 
-            PXResourceFetchName(&pxIndexSegment->Material->Info, &name, PXNull);
-
-            PXTextPrintA(materialText, 256, "PXID:%i, Name:%s", pxIndexSegment->Material->Info.ID, name);
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                PXWaveFrontText,
+                "Segment",
+                "[%2i/%2i] %6i - PXID:%i, Name:%s",
+                i + 1,
+                mesh->IndexBuffer.SegmentListAmount,
+                pxIndexSegment->DataRange,
+                pxIndexSegment->Material->Info.ID,
+                pxResourceProperty.Text.A
+            );
         }
         else
         {
-            PXTextPrintA(materialText, 256, "**No material**");
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                PXWaveFrontText,
+                "Segment",
+                "[%2i/%2i] %6i - **No material**",
+                i + 1,
+                mesh->IndexBuffer.SegmentListAmount,
+                pxIndexSegment->DataRange
+                );
         }
 
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            PXWaveFrontText,
-            "Segment",
-            "[%2i/%2i] %6i - %s",
-            i+1,
-            mesh->IndexBuffer.SegmentListAmount,
-            pxIndexSegment->DataRange,
-            materialText
-        );
+    
     }
 #endif
 
@@ -887,7 +895,7 @@ PXResult PXAPI  PXWavefrontLoadFromFile(PXResourceTransphereInfo* const pxResour
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXWavefrontSaveFromFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI PXWavefrontSaveFromFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

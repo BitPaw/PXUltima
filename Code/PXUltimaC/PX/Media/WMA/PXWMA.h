@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXWMAIncluded
 #define PXWMAIncluded
 
@@ -10,7 +12,7 @@ typedef struct PXWMA_
 }
 PXWMA;
 
-PXPublic PXResult PXAPI PXWMALoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXWMASaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXWMALoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXWMASaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

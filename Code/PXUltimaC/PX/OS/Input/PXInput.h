@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXInputIncluded
 #define PXInputIncluded
 
@@ -83,11 +85,11 @@ typedef struct PXDeviceInputUpdateInfo_
 PXDeviceInputUpdateInfo;
 
 
-PXPrivate void PXAPI PXDeviceFill(PXDeviceInput* const pxDeviceInput, const HANDLE deviceHandle);
+PXPrivate void PXAPI PXDeviceFill(PXDeviceInput PXREF pxDeviceInput, const HANDLE deviceHandle);
 
 
-PXPublic PXResult PXAPI PXDeviceInputUpdate(PXDeviceInputUpdateInfo* const pxDeviceInputUpdateInfo);
+PXPublic PXResult PXAPI PXDeviceInputUpdate(PXDeviceInputUpdateInfo PXREF pxDeviceInputUpdateInfo);
 
-PXPublic PXResult PXAPI PXDeviceInputFetch(PXDeviceInput** const pxDeviceInput, PXSize* const amount);
+PXPublic PXResult PXAPI PXDeviceInputFetch(PXDeviceInput* PXREF pxDeviceInput, PXSize PXREF amount);
 
 #endif

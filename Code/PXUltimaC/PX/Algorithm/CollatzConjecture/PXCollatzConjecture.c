@@ -1,6 +1,6 @@
 #include "PXCollatzConjecture.h"
 
-PXSize PXAPI PXCollatzConjectureGenerate16(PXI16U* const list, const PXSize amount, const PXI16U start)
+PXSize PXAPI PXCollatzConjectureGenerate16(PXI16U PXREF list, const PXSize amount, const PXI16U start)
 {
     list[0] = start;
 

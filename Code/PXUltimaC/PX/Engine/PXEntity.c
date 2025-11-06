@@ -2,7 +2,7 @@
 
 #include <PX/Math/PXMath.h>
 
-void PXAPI PXComponentRefCheck(PXComponentRef* const pxComponentRef, PXComponentList* const pxComponentList)
+void PXAPI PXComponentRefCheck(PXComponentRef PXREF pxComponentRef, PXComponentList PXREF pxComponentList)
 {
     if(!pxComponentRef) // Is this NULL?
     {
@@ -59,7 +59,7 @@ void PXAPI PXComponentRefCheck(PXComponentRef* const pxComponentRef, PXComponent
     }
 }
 
-void PXAPI PXComponentManagerAdd(PXComponentManager* const pxComponentManager, PXComponentInfo* const pxComponentInfo)
+void PXAPI PXComponentManagerAdd(PXComponentManager PXREF pxComponentManager, PXComponentInfo PXREF pxComponentInfo)
 {
     ++pxComponentManager->UniqeCounter;
 

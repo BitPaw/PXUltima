@@ -787,7 +787,7 @@ PXI8U PXAPI PXMPEGGenreToID(const PXMPEGGenre mpegGenre)
     return -1; // MPEGGenreUnknown
 }
 
-PXResult PXAPI  PXMP3LoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI PXMP3LoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
 {
     PXMP3 pxMP3;
 
@@ -797,9 +797,10 @@ PXResult PXAPI  PXMP3LoadFromFile(PXResourceTransphereInfo* const pxResourceLoad
 
     {
 
-        const PXActionResult actionResult = PXID3LoadFromFile(&mp3->PXID3Info, pxResourceLoadInfo->FileReference);
+        const PXResult actionResult = PXID3LoadFromFile(&mp3->PXID3Info, pxResourceLoadInfo->FileReference);
 
-        PXActionReturnOnError(actionResult);
+        if(PXActionSuccessful != actionResult) 
+            return actionResult;
     }
 
     while (!PXFileIsAtEnd(pxResourceLoadInfo->FileReference))
@@ -812,7 +813,7 @@ PXResult PXAPI  PXMP3LoadFromFile(PXResourceTransphereInfo* const pxResourceLoad
 
         // Parse mp3
         {
-            const PXByte* const mp3HeaderDataBlock = (const PXByte* const)PXFileCursorPosition(pxResourceLoadInfo->FileReference);
+            const PXByte PXREF mp3HeaderDataBlock = (const PXByte PXREF)PXFileCursorPosition(pxResourceLoadInfo->FileReference);
 
             // Parse Byte 1/4
             {
@@ -1054,9 +1055,10 @@ PXResult PXAPI  PXMP3LoadFromFile(PXResourceTransphereInfo* const pxResourceLoad
 
         // info header
         {
-            const PXActionResult actionResult = PXXingInfoParse(&xingInfo, pxResourceLoadInfo->FileReference);
+            const PXResult actionResult = PXXingInfoParse(&xingInfo, pxResourceLoadInfo->FileReference);
 
-            PXActionReturnOnError(actionResult);
+            if(PXActionSuccessful != actionResult) 
+                return actionResult;
 
 #if PXMP3Debug
             printf
@@ -1091,9 +1093,10 @@ PXResult PXAPI  PXMP3LoadFromFile(PXResourceTransphereInfo* const pxResourceLoad
         {
             PXLAME lame;
 
-            const PXActionResult actionResult = PXLAMELoadFromFile(&lame, pxResourceLoadInfo->FileReference);
+            const PXResult actionResult = PXLAMELoadFromFile(&lame, pxResourceLoadInfo->FileReference);
 
-            PXActionReturnOnError(actionResult);
+            if(PXActionSuccessful != actionResult)
+                return actionResult;
 
 #if PXMP3Debug
             printf
@@ -1140,7 +1143,7 @@ PXResult PXAPI  PXMP3LoadFromFile(PXResourceTransphereInfo* const pxResourceLoad
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI  PXMP3SaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI PXMP3SaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

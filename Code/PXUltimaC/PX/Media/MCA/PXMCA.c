@@ -1,8 +1,8 @@
 #include "PXMCA.h"
 
-PXResult PXAPI  PXMCALoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI PXMCALoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
 {
-    PXFile* const pxFile = pxResourceLoadInfo->FileReference;
+    PXFile PXREF pxFile = pxResourceLoadInfo->FileReference;
 
     /*
 
@@ -44,7 +44,7 @@ PXResult PXAPI  PXMCALoadFromFile(PXResourceTransphereInfo* const pxResourceLoad
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI  PXMCASaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI PXMCASaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

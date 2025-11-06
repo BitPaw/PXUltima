@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXOGGIncluded
 #define PXOGGIncluded
 
@@ -30,7 +32,7 @@ typedef struct PXOGG_
 }
 PXOGG;
 
-PXPublic PXResult PXAPI PXOGGLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXOGGSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXOGGLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXOGGSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

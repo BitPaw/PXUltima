@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXMP4MIncluded
 #define PXMP4MIncluded
 
@@ -49,7 +51,7 @@ PXMP4;
 
 PXPrivate PXM4AChunkID PXAPI PXMP4ChunkFromID(const PXI32U chunkID);
 
-PXPublic PXResult PXAPI PXMP4LoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXMP4SaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXMP4LoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXMP4SaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

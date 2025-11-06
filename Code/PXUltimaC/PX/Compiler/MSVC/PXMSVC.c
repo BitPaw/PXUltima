@@ -53,7 +53,7 @@ const char libraryFileList[] =
 const char PXCompilerMSVCWhere[] = "\"C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe\" -latest -products * -requires Microsoft.Component.MSBuild -property installationPath";
 const PXI8U PXCompilerMSVCWhereSize = sizeof(PXCompilerMSVCWhere);
 
-PXResult PXAPI  PXCompilerInitializeMSVC(PXCompilerMSVC* const pxCompilerMSVC)
+PXResult PXAPI PXCompilerInitializeMSVC(PXCompilerMSVC PXREF pxCompilerMSVC)
 {
     PXClear(PXCompilerMSVC, pxCompilerMSVC);
 
@@ -94,7 +94,7 @@ PXResult PXAPI  PXCompilerInitializeMSVC(PXCompilerMSVC* const pxCompilerMSVC)
     return 0;
 }
 
-PXResult PXAPI  PXCompilerCompileMSVC(PXCompilerMSVC* const pxCompilerMSVC, const char* fileName)
+PXResult PXAPI PXCompilerCompileMSVC(PXCompilerMSVC PXREF pxCompilerMSVC, const char* fileName)
 {
     const size_t size = 1024 * 8;
     char* buffer = PXMemoryHeapCallocT(char, size);
@@ -141,7 +141,7 @@ PXResult PXAPI  PXCompilerCompileMSVC(PXCompilerMSVC* const pxCompilerMSVC, cons
     return 1;
 }
 
-PXResult PXAPI  PXCompilerLinkMSVC(PXCompilerMSVC* const pxCompilerMSVC, int flags, const char* fileName, const char* resultName)
+PXResult PXAPI PXCompilerLinkMSVC(PXCompilerMSVC PXREF pxCompilerMSVC, int flags, const char* fileName, const char* resultName)
 {
     const size_t mmsiize = 1024 * 8;
     char* buffer = PXMemoryHeapCallocT(char, mmsiize);

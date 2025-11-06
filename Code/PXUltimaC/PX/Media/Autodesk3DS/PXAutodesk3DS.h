@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PX3DSIncluded
 #define PX3DSIncluded
 
@@ -9,7 +11,7 @@ typedef struct PXAutodesk3DS
 }
 PXAutodesk3DS;
 
-PXPublic PXResult PXAPI PXAutodesk3DSLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXAutodesk3DSSafeFromFile(PXResourceTransphereInfo* const pxResourceSafeInfo);
+PXPublic PXResult PXAPI PXAutodesk3DSLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXAutodesk3DSSafeFromFile(PXResourceTransphereInfo PXREF pxResourceSafeInfo);
 
 #endif

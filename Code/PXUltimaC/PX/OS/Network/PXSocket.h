@@ -59,8 +59,8 @@ PXSocketDataSendEventData;
 
 
 //-----------------------------------------------------
-typedef void (PXAPI*PXSocketCreatingEvent)(void* owner, const PXSocket* const pxSocket, PXBool* use);
-typedef void (PXAPI*PXSocketCreatedEvent)(void* owner, const PXSocket* const pxSocket);
+typedef void (PXAPI*PXSocketCreatingEvent)(void* owner, const PXSocket PXREF pxSocket, PXBool* use);
+typedef void (PXAPI*PXSocketCreatedEvent)(void* owner, const PXSocket PXREF pxSocket);
 
 typedef void (PXAPI*PXSocketClosedEvent)(void* owner, const PXSocket* pxSocket);
 
@@ -69,8 +69,8 @@ typedef void (PXAPI*PXSocketDisconnectedEvent)(void* owner, const PXSocket* serv
 
 typedef void (PXAPI*PXSocketStateChangedEvent)(void* owner, const PXSocket* pxSocket, const PXSocketState oldState, const PXSocketState newState);
 
-typedef void (PXAPI*PXSocketDataSendEvent)(void* owner, const PXSocketDataSendEventData* const pxSocketDataSendEventData);
-typedef void (PXAPI*PXSocketDataReceiveEvent)(void* owner, const PXSocketDataReceivedEventData* const pxSocketDataReceivedEventData);
+typedef void (PXAPI*PXSocketDataSendEvent)(void* owner, const PXSocketDataSendEventData PXREF pxSocketDataSendEventData);
+typedef void (PXAPI*PXSocketDataReceiveEvent)(void* owner, const PXSocketDataReceivedEventData PXREF pxSocketDataReceivedEventData);
 
 typedef struct PXSocketEventList_
 {
@@ -137,31 +137,31 @@ PXSocketAdressSetupInfo;
 
 
 
-PXPublic void PXAPI PXSocketConstruct(PXSocket* const pxSocket);
-PXPublic void PXAPI PXSocketDestruct(PXSocket* const pxSocket);
+PXPublic void PXAPI PXSocketConstruct(PXSocket PXREF pxSocket);
+PXPublic void PXAPI PXSocketDestruct(PXSocket PXREF pxSocket);
 
 
 
 
 PXPublic PXResult PXAPI PXSocketSetupAdress
 (
-    PXSocket* const pxSocketList,
+    PXSocket PXREF pxSocketList,
     const PXSize PXSocketListSizeMax,
     PXSize* PXSocketListSize,
-    const PXSocketAdressSetupInfo* const pxSocketAdressSetupInfo,
+    const PXSocketAdressSetupInfo PXREF pxSocketAdressSetupInfo,
     const PXSize pxSocketAdressSetupInfoSize
 );
 
-PXPublic PXBool PXAPI PXSocketIsCurrentlyUsed(PXSocket* const pxSocket);
+PXPublic PXBool PXAPI PXSocketIsCurrentlyUsed(PXSocket PXREF pxSocket);
 
-PXPublic void PXAPI PXSocketStateChange(PXSocket* const pxSocket, const PXSocketState socketState);
+PXPublic void PXAPI PXSocketStateChange(PXSocket PXREF pxSocket, const PXSocketState socketState);
 
 
-PXPublic PXResult PXAPI PXSocketClientRemove(PXSocket* const serverSocket, const PXSocketID clientID);
+PXPublic PXResult PXAPI PXSocketClientRemove(PXSocket PXREF serverSocket, const PXSocketID clientID);
 
 #if OSWindows
-PXPrivate PXResult PXAPI  PXWindowsSocketAgentErrorFetch(void);
-PXPrivate PXResult PXAPI  PXWindowsSocketAgentErrorFromID(const PXI32S errorID);
+PXPrivate PXResult PXAPI PXWindowsSocketAgentErrorFetch(void);
+PXPrivate PXResult PXAPI PXWindowsSocketAgentErrorFromID(const PXI32S errorID);
 #endif
 
 #ifdef __cplusplus

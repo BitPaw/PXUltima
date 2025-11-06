@@ -19,7 +19,7 @@
 
 const char PXDirectXText[] = "DirectX";
 
-PXResult PXAPI  PXDirectXInitialize(PXDirectX* const pxDirectX, PXGraphicInitializeInfo* const pxGraphicInitializeInfo)
+PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXGraphicInitializeInfo PXREF pxGraphicInitializeInfo)
 {
     PXLogPrint
     (
@@ -29,7 +29,7 @@ PXResult PXAPI  PXDirectXInitialize(PXDirectX* const pxDirectX, PXGraphicInitial
         "---Start---"
     );
 
-    PXGraphic* const pxGraphic = pxGraphicInitializeInfo->Graphic;
+    PXGraphic PXREF pxGraphic = pxGraphicInitializeInfo->Graphic;
 
     PXClear(PXDirectX, pxDirectX);
 
@@ -86,7 +86,7 @@ PXResult PXAPI  PXDirectXInitialize(PXDirectX* const pxDirectX, PXGraphicInitial
                 amountOfSolutions
             );
 
-            const PXActionResult initializeResult = pxGraphic->Initialize(pxDirectX->DXTargetAPI, pxGraphicInitializeInfo);
+            const PXResult initializeResult = pxGraphic->Initialize(pxDirectX->DXTargetAPI, pxGraphicInitializeInfo);
 
             if(PXActionSuccessful == initializeResult)
             {
@@ -239,7 +239,7 @@ PXResult PXAPI  PXDirectXInitialize(PXDirectX* const pxDirectX, PXGraphicInitial
         "Calling spesific API"
     );
 
-    const PXActionResult initializeResult = pxGraphic->Initialize(pxDirectX->DXTargetAPI, pxGraphicInitializeInfo);
+    const PXResult initializeResult = pxGraphic->Initialize(pxDirectX->DXTargetAPI, pxGraphicInitializeInfo);
 
     return initializeResult;
 #else
@@ -247,7 +247,7 @@ PXResult PXAPI  PXDirectXInitialize(PXDirectX* const pxDirectX, PXGraphicInitial
 #endif
 }
 
-PXResult PXAPI  PXDirectXRelease(PXDirectX* const pxDirectX)
+PXResult PXAPI PXDirectXRelease(PXDirectX PXREF pxDirectX)
 {
     return PXActionInvalid;
 

@@ -1,8 +1,9 @@
+#pragma once
+
 #ifndef PXRotationIncluded
 #define PXRotationIncluded
 
 #include <PX/Media/PXType.h>
-
 
 
 // Classic angles of rotation
@@ -117,30 +118,30 @@ typedef struct PXMatrix4x4F_ PXMatrix4x4F;
 
 PXPublic PXI8U PXAPI PXRotorAnglesCount(const PXI8U amountOfDimensions);
 
-PXPublic void PXAPI PXRotorFromEuler(PXRotor* const pxRotor, PXEulerAngleF32* const pxEulerAngleF32);
-PXPublic void PXAPI PXRotorInterpolate(PXRotor* const pxRotorCurrent, const PXRotor* pxRotorTarget, const PXF32 t);
+PXPublic void PXAPI PXRotorFromEuler(PXRotor PXREF pxRotor, PXEulerAngleF32 PXREF pxEulerAngleF32);
+PXPublic void PXAPI PXRotorInterpolate(PXRotor PXREF pxRotorCurrent, const PXRotor* pxRotorTarget, const PXF32 t);
 
-PXPublic void PXAPI PXRotorToMatrix4x4(PXRotor* const pxRotor, PXMatrix4x4F* const pxMatrix4x4);
-
-
+PXPublic void PXAPI PXRotorToMatrix4x4(PXRotor PXREF pxRotor, PXMatrix4x4F PXREF pxMatrix4x4);
 
 
 
-PXPublic void PXAPI PXQuaternionToMatrix4x4(const PXQuaternionF32* quaternionF32, PXMatrix4x4F* const pxMatrix4x4);
-PXPublic void PXAPI PXQuaternionFromEulerRAD(PXQuaternionF32* const pxQuaternionF32, PXEulerAngleF32* const pxEulerAngleF32);
-PXPublic void PXAPI PXQuaternionFromEulerDEG(PXQuaternionF32* const pxQuaternionF32, PXEulerAngleF32* const pxEulerAngleF32);
 
-PXPublic void PXAPI PXQuaternionToEulerRAD(PXQuaternionF32* const pxQuaternionF32, PXEulerAngleF32* const pxEulerAngleF32);
 
-PXPublic PXF32 PXAPI PXQuaternionDot(const PXQuaternionF32* const a, const PXQuaternionF32* const b);
-PXPublic void PXAPI PXQuaternionNormal(PXQuaternionF32* const pxQuaternionF32);
-PXPublic void PXAPI PXQuaternionConjugate(PXQuaternionF32* const pxQuaternionF32);
+PXPublic void PXAPI PXQuaternionToMatrix4x4(const PXQuaternionF32* quaternionF32, PXMatrix4x4F PXREF pxMatrix4x4);
+PXPublic void PXAPI PXQuaternionFromEulerRAD(PXQuaternionF32 PXREF pxQuaternionF32, PXEulerAngleF32 PXREF pxEulerAngleF32);
+PXPublic void PXAPI PXQuaternionFromEulerDEG(PXQuaternionF32 PXREF pxQuaternionF32, PXEulerAngleF32 PXREF pxEulerAngleF32);
+
+PXPublic void PXAPI PXQuaternionToEulerRAD(PXQuaternionF32 PXREF pxQuaternionF32, PXEulerAngleF32 PXREF pxEulerAngleF32);
+
+PXPublic PXF32 PXAPI PXQuaternionDot(const PXQuaternionF32 PXREF a, const PXQuaternionF32 PXREF b);
+PXPublic void PXAPI PXQuaternionNormal(PXQuaternionF32 PXREF pxQuaternionF32);
+PXPublic void PXAPI PXQuaternionConjugate(PXQuaternionF32 PXREF pxQuaternionF32);
 
 PXPublic void PXAPI PXQuaternionLerp
 (
-    PXQuaternionF32* const a, 
-    const PXQuaternionF32* const b,
-    const t
+    PXQuaternionF32 PXREF a, 
+    const PXQuaternionF32 PXREF b,
+    const PXF32 t
 );
 
 

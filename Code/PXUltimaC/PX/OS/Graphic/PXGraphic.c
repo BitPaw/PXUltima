@@ -1,9 +1,6 @@
 #include "PXGraphic.h"
 
-#include <PX/Media/PXText.h>
-#include <PX/Media/ADLER/PXAdler32.h>
 #include <PX/Math/PXMath.h>
-#include <PX/OS/File/PXFile.h>
 #include <PX/OS/Graphic/OpenGL/PXOpenGL.h>
 #include <PX/OS/Graphic/DirectX/PXDirectX.h>
 #include <PX/OS/Graphic/Vulcan/PXVulcan.h>
@@ -12,7 +9,6 @@
 #include <PX/OS/PXOS.h>
 #include <PX/Engine/PXGUI.h>
 
-#include <stdarg.h>
 #include <assert.h>
 
 #define QuadSkybox 0
@@ -22,17 +18,17 @@ const char PXGraphicText[] = "Graphic";
 const char PXGraphicInitializeText[] = "Initialize";
 
 
-void PXAPI PXGraphicModelShaderSet(PXGraphic* const pxGraphic, PXRenderable* const renderable, const PXShaderProgram* const shaderPXProgram)
+void PXAPI PXGraphicModelShaderSet(PXGraphic PXREF pxGraphic, PXRenderable PXREF renderable, const PXShaderProgram PXREF shaderPXProgram)
 {
     for (PXSize i = 0; i < renderable->MeshSegmentListSize; ++i)
     {
-        PXRenderableMeshSegment* const pxRenderableMeshSegment = &renderable->MeshSegmentList[i];
+        PXRenderableMeshSegment PXREF pxRenderableMeshSegment = &renderable->MeshSegmentList[i];
 
         pxRenderableMeshSegment->ShaderID = shaderPXProgram->Info.Handle.OpenGLID;
     }
 }
 
-PXResult PXAPI  PXGraphicUIRectangleCreate(PXGraphic* const pxGraphic, PXRenderable* const renderable, const PXSize x, const PXSize y, const PXSize sidth, const PXSize height)
+PXResult PXAPI PXGraphicUIRectangleCreate(PXGraphic PXREF pxGraphic, PXRenderable PXREF renderable, const PXSize x, const PXSize y, const PXSize sidth, const PXSize height)
 {
     PXMatrix4x4FMoveXY(&renderable->MatrixModel, x, y);
     // PXMatrix4x4FScaleXYZSet(&renderable->MatrixModel, sidth, height, 1);
@@ -48,7 +44,7 @@ PXResult PXAPI  PXGraphicUIRectangleCreate(PXGraphic* const pxGraphic, PXRendera
     return PXActionSuccessful;
 }
 
-void PXAPI PXTextureConstruct(PXTexture* const texture)
+void PXAPI PXTextureConstruct(PXTexture PXREF texture)
 {
     PXClear(PXTexture, texture);
 
@@ -63,7 +59,7 @@ void PXAPI PXTextureConstruct(PXTexture* const texture)
 
 /*
 
-PXResult PXAPI  PXGraphicUIElementCreate(PXGraphic* const pxGraphic, PXWindow** const pxWindow, const PXSize amount, PXWindow* const pxUIElementParrent)
+PXResult PXAPI PXGraphicUIElementCreate(PXGraphic PXREF pxGraphic, PXWindow* PXREF pxWindow, const PXSize amount, PXWindow PXREF pxUIElementParrent)
 {
 
 
@@ -133,7 +129,7 @@ PXResult PXAPI  PXGraphicUIElementCreate(PXGraphic* const pxGraphic, PXWindow** 
 */
 
 
-void PXAPI PXRenderableConstruct(PXRenderable* const pxRenderable)
+void PXAPI PXRenderableConstruct(PXRenderable PXREF pxRenderable)
 {
     PXClear(PXRenderable, pxRenderable);
 
@@ -144,7 +140,7 @@ void PXAPI PXRenderableConstruct(PXRenderable* const pxRenderable)
     pxRenderable->IBO = -1;
 }
 
-void PXAPI PXUIElementColorSet4F(PXWindow* const pxWindow, const PXF32 red, const PXF32 green, const PXF32 blue, const PXF32 alpha)
+void PXAPI PXUIElementColorSet4F(PXWindow PXREF pxWindow, const PXF32 red, const PXF32 green, const PXF32 blue, const PXF32 alpha)
 {
     PXColorRGBAF* color = PXMemoryHeapCallocT(PXColorRGBAF, 1);
 
@@ -156,7 +152,7 @@ void PXAPI PXUIElementColorSet4F(PXWindow* const pxWindow, const PXF32 red, cons
     //pxWindow->ColorTintReference = color;
 }
 
-void PXAPI PXUIElementSizeSet(PXWindow* const pxWindow, const PXF32 x, const PXF32 y, const PXF32 width, const PXF32 height, const PXI32U  pxUIElementPositionMode)
+void PXAPI PXUIElementSizeSet(PXWindow PXREF pxWindow, const PXF32 x, const PXF32 y, const PXF32 width, const PXF32 height, const PXI32U  pxUIElementPositionMode)
 {
     //pxWindow->X = x;
     //pxWindow->Y = y;
@@ -171,7 +167,7 @@ void PXAPI PXUIElementSizeSet(PXWindow* const pxWindow, const PXF32 x, const PXF
 }
 
 
-void PXAPI PXRenderableMeshSegmentConstruct(PXRenderableMeshSegment* const pxRenderableMeshSegment)
+void PXAPI PXRenderableMeshSegmentConstruct(PXRenderableMeshSegment PXREF pxRenderableMeshSegment)
 {
     pxRenderableMeshSegment->NumberOfVertices = 0;
     pxRenderableMeshSegment->TextureID = (unsigned int)-1;
@@ -183,35 +179,19 @@ void PXAPI PXRenderableMeshSegmentConstruct(PXRenderableMeshSegment* const pxRen
 
 PXGraphic* _pxGraphicGLOBAL;
 
-PXResult PXAPI  PXFrameBufferCreate(PXFrameBuffer* const pxFrameBuffer, PXFrameBufferCreateInfo* const pxFrameBufferCreateInfo)
+PXResult PXAPI PXFrameBufferCreate(PXFrameBuffer PXREF pxFrameBuffer, PXFrameBufferCreateInfo PXREF pxFrameBufferCreateInfo)
 {
     switch(pxFrameBufferCreateInfo->System)
     {
-        case PXGraphicSystemGDI:
+        case PXGraphicSystemNative:
         {
-            // Get if not exists
-            if(!pxFrameBufferCreateInfo->WindowDeviceContext)
-            {
-                pxFrameBufferCreateInfo->WindowDeviceContext = GetDC(pxFrameBufferCreateInfo->WindowHandle);
-            }
-
-            HDC MemoryDeviceContext = CreateCompatibleDC(pxFrameBufferCreateInfo->WindowDeviceContext);
-            HBITMAP framebuffer = CreateCompatibleBitmap
-            (
-                MemoryDeviceContext,
-                pxFrameBufferCreateInfo->Width,
-                pxFrameBufferCreateInfo->Height
-            );
-
-            pxFrameBuffer->GDI.MemoryDeviceContext = MemoryDeviceContext;
-            pxFrameBuffer->GDI.FrameBufferTexture = framebuffer;
-            pxFrameBuffer->Width = pxFrameBufferCreateInfo->Width;
-            pxFrameBuffer->Height = pxFrameBufferCreateInfo->Height;
+            PXNativDrawFrameBufferCreate(PXNull, pxFrameBuffer, pxFrameBufferCreateInfo);           
             break;
         }
-
         default:
+        {
             break;
+        }
     }
 
     return PXActionSuccessful;
@@ -222,15 +202,19 @@ PXGraphic* PXAPI PXGraphicInstantiateGET(void)
     return _pxGraphicGLOBAL;
 }
 
-PXResult PXAPI  PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicInitializeInfo* const pxGraphicInitializeInfo)
+PXResult PXAPI PXGraphicInstantiate(PXGraphic PXREF pxGraphic, PXGraphicInitializeInfo PXREF pxGraphicInitializeInfo)
 {
     _pxGraphicGLOBAL = pxGraphic;
 
     assert(pxGraphic);
     assert(pxGraphicInitializeInfo);
-    assert(pxGraphicInitializeInfo->WindowReference);
+
 
     PXWindow* pxWindow = pxGraphicInitializeInfo->WindowReference;
+
+    assert(pxWindow);
+    assert(pxWindow->Info.Handle.WindowHandle);
+
     pxGraphic->WindowReference = pxGraphicInitializeInfo->WindowReference;
 
        
@@ -251,9 +235,11 @@ PXResult PXAPI  PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicInitia
         PXGraphicInitializeText,
         "Creating context on..\n"
         "%20s : %i\n"
-        "%20s : 0x%8.8x",
+        "%20s : %p\n"
+        "%20s : %p",
         "PXID", pxWindow->Info.ID,
-        "HANDLE", pxWindow->Info.Handle.WindowHandle
+        "HANDLE", pxWindow->Info.Handle.WindowHandle,
+        "DC", pxWindow->DeviceContextHandle
 
     );
 #endif
@@ -316,7 +302,7 @@ PXResult PXAPI  PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicInitia
 
         
 
-        const PXActionResult pixelSystem = PXGUIWindowPixelSystemSet(&pxWindowPixelSystemInfo);
+        const PXResult pixelSystem = PXGUIWindowPixelSystemSet(&pxWindowPixelSystemInfo);
 
         if(PXActionSuccessful != pixelSystem)
         {
@@ -448,7 +434,7 @@ PXResult PXAPI  PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicInitia
 #if 0
     for (size_t i = 0; i < pxGraphic->DevicePhysicalListSize; i++)
     {
-        PXGraphicDevicePhysical* const pxGraphicDevicePhysical = &pxGraphic->DevicePhysicalList[i];
+        PXGraphicDevicePhysical PXREF pxGraphicDevicePhysical = &pxGraphic->DevicePhysicalList[i];
 
         char targetBuffer[64];
 
@@ -513,12 +499,12 @@ PXResult PXAPI  PXGraphicInstantiate(PXGraphic* const pxGraphic, PXGraphicInitia
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXGraphicRelease(PXGraphic* const pxGraphic)
+PXResult PXAPI PXGraphicRelease(PXGraphic PXREF pxGraphic)
 {
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI  PXGraphicHotSwap(PXGraphic* const pxGraphic, const PXGraphicSystem pxGraphicSystem)
+PXResult PXAPI PXGraphicHotSwap(PXGraphic PXREF pxGraphic, const PXGraphicSystem pxGraphicSystem)
 {
     // 1.) Store all elements in a cache
 
@@ -535,12 +521,12 @@ PXResult PXAPI  PXGraphicHotSwap(PXGraphic* const pxGraphic, const PXGraphicSyst
     return PXActionRefusedNotImplemented;
 }
 
-void PXAPI PXGraphicResourceRegister(PXGraphic* const pxGraphic, PXGraphicResourceInfo* const pxGraphicResourceInfo)
+void PXAPI PXGraphicResourceRegister(PXGraphic PXREF pxGraphic, PXGraphicResourceInfo PXREF pxGraphicResourceInfo)
 {
 
 }
 
-PXResult PXAPI  PXGraphicSpriteConstruct(PXGraphic* const pxGraphic, PXSprite* const pxSprite)
+PXResult PXAPI PXGraphicSpriteConstruct(PXGraphic PXREF pxGraphic, PXSprite PXREF pxSprite)
 {
     PXClear(PXSprite, pxSprite);
 
@@ -555,7 +541,7 @@ PXResult PXAPI  PXGraphicSpriteConstruct(PXGraphic* const pxGraphic, PXSprite* c
     //  PXRectangleOffsetSet(&pxSprite->Margin, 1, 1, 1, 1);
 }
 
-void PXAPI PXCameraConstruct(PXCamera* const camera)
+void PXAPI PXCameraConstruct(PXCamera PXREF camera)
 {
     PXClear(PXCamera, camera);
 
@@ -582,7 +568,7 @@ void PXAPI PXCameraConstruct(PXCamera* const camera)
     PXCameraRotate(camera, &position);
 }
 
-void PXAPI PXCameraViewChangeToOrthographic(PXCamera* const camera, const PXSize width, const PXSize height, const PXF32 nearPlane, const PXF32 farPlane)
+void PXAPI PXCameraViewChangeToOrthographic(PXCamera PXREF camera, const PXSize width, const PXSize height, const PXF32 nearPlane, const PXF32 farPlane)
 {
     const PXF32 scaling = 0.005;
     const PXF32 left = -(width / 2.0f) * scaling;
@@ -599,7 +585,7 @@ void PXAPI PXCameraViewChangeToOrthographic(PXCamera* const camera, const PXSize
     PXMatrix4x4FOrthographic(&camera->MatrixProjection, left, right, bottom, top, nearPlane, farPlane);
 }
 
-void PXAPI PXCameraViewChangeToPerspective(PXCamera* const camera, const PXF32 fieldOfView, const PXF32 aspectRatio, const PXF32 nearPlane, const PXF32 farPlane)
+void PXAPI PXCameraViewChangeToPerspective(PXCamera PXREF camera, const PXF32 fieldOfView, const PXF32 aspectRatio, const PXF32 nearPlane, const PXF32 farPlane)
 {
     camera->Perspective = PXCameraPerspective3D;
     camera->FieldOfView = fieldOfView;
@@ -609,7 +595,7 @@ void PXAPI PXCameraViewChangeToPerspective(PXCamera* const camera, const PXF32 f
     PXMatrix4x4FPerspective(&camera->MatrixProjection, fieldOfView, aspectRatio, nearPlane, farPlane);
 }
 
-void PXAPI PXCameraAspectRatioChange(PXCamera* const camera, const PXSize width, const PXSize height)
+void PXAPI PXCameraAspectRatioChange(PXCamera PXREF camera, const PXSize width, const PXSize height)
 {
     camera->Width = width;
     camera->Height = height;
@@ -617,12 +603,12 @@ void PXAPI PXCameraAspectRatioChange(PXCamera* const camera, const PXSize width,
     PXCameraViewChange(camera, camera->Perspective);
 }
 
-PXF32 PXAPI PXCameraAspectRatio(const PXCamera* const camera)
+PXF32 PXAPI PXCameraAspectRatio(const PXCamera PXREF camera)
 {
     return (PXF32)camera->Width / (PXF32)camera->Height;
 }
 
-void PXAPI PXCameraViewChange(PXCamera* const camera, const PXCameraPerspective cameraPerspective)
+void PXAPI PXCameraViewChange(PXCamera PXREF camera, const PXCameraPerspective cameraPerspective)
 {
     camera->Perspective = cameraPerspective;
 
@@ -645,7 +631,7 @@ void PXAPI PXCameraViewChange(PXCamera* const camera, const PXCameraPerspective 
     }
 }
 
-void PXAPI PXCameraRotate(PXCamera* const camera, const PXVector3F32* const vector3F)
+void PXAPI PXCameraRotate(PXCamera PXREF camera, const PXVector3F32 PXREF vector3F)
 {
     if(camera->LockView)
     {
@@ -670,21 +656,21 @@ void PXAPI PXCameraRotate(PXCamera* const camera, const PXVector3F32* const vect
     PXVector3F32Normalize(&camera->LookAtPosition);
 }
 
-void PXAPI PXCameraRotateXYZ(PXCamera* const camera, const PXF32 x, const PXF32 y, const PXF32 z)
+void PXAPI PXCameraRotateXYZ(PXCamera PXREF camera, const PXF32 x, const PXF32 y, const PXF32 z)
 {
     const PXVector3F32 vector = { x, y, z };
 
     PXCameraRotate(camera, &vector);
 }
 
-void PXAPI PXCameraMoveXYZ(PXCamera* const camera, const PXF32 x, const PXF32 y, const PXF32 z)
+void PXAPI PXCameraMoveXYZ(PXCamera PXREF camera, const PXF32 x, const PXF32 y, const PXF32 z)
 {
     const PXVector3F32 vector3F = { x, y, z };
 
     PXCameraMove(camera, &vector3F);
 }
 
-void PXAPI PXCameraMove(PXCamera* const camera, const PXVector3F32* const vector3F)
+void PXAPI PXCameraMove(PXCamera PXREF camera, const PXVector3F32 PXREF vector3F)
 {
     if(camera->LockMovement)
     {
@@ -722,7 +708,7 @@ void PXAPI PXCameraMove(PXCamera* const camera, const PXVector3F32* const vector
     }
 }
 
-void PXAPI PXCameraFollow(PXCamera* const camera, const PXF32 deltaTime)
+void PXAPI PXCameraFollow(PXCamera PXREF camera, const PXF32 deltaTime)
 {
     PXVector3F32 positionCurrent;
     PXVector3F32 positionDesired;
@@ -820,7 +806,7 @@ void PXAPI PXCameraFollow(PXCamera* const camera, const PXF32 deltaTime)
 #endif
 }
 
-void PXAPI PXCameraUpdate(PXCamera* const camera, const PXF32 deltaTime)
+void PXAPI PXCameraUpdate(PXCamera PXREF camera, const PXF32 deltaTime)
 {
     const PXF32 walkSpeedSmoothed = camera->WalkSpeed * deltaTime;
     const PXF32 viewSpeedSmoothed = camera->ViewSpeed * deltaTime;

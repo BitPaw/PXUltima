@@ -8,7 +8,7 @@ PXI8U PXAPI PXRotorAnglesCount(const PXI8U amountOfDimensions)
     return amountOfDimensions * (amountOfDimensions - 1) / 2;
 }
 
-void PXAPI PXRotorFromEuler(PXRotor* const pxRotor, PXEulerAngleF32* const pxEulerAngleF32)
+void PXAPI PXRotorFromEuler(PXRotor PXREF pxRotor, PXEulerAngleF32 PXREF pxEulerAngleF32)
 {
     PXF32 angle = (pxEulerAngleF32->Pitch + pxEulerAngleF32->Yaw + pxEulerAngleF32->Roll) / 3.0f;
 
@@ -20,13 +20,13 @@ void PXAPI PXRotorFromEuler(PXRotor* const pxRotor, PXEulerAngleF32* const pxEul
     pxRotor->PlaneAngles[2] = 0.0f; // ZX
 }
 
-void PXAPI PXRotorInterpolate(PXRotor* const pxRotorCurrent, const PXRotor* pxRotorTarget, const PXF32 t)
+void PXAPI PXRotorInterpolate(PXRotor PXREF pxRotorCurrent, const PXRotor* pxRotorTarget, const PXF32 t)
 {
-    pxRotorCurrent->Scalar = lerp(pxRotorCurrent->Scalar, pxRotorTarget->Scalar, t);
+    pxRotorCurrent->Scalar = PXMathLerpF32H(pxRotorCurrent->Scalar, pxRotorTarget->Scalar, t);
 
     for(PXI32U i = 0; i < pxRotorCurrent->Dimension; i++)
     {
-        pxRotorCurrent->PlaneAngles[i] = lerp
+        pxRotorCurrent->PlaneAngles[i] = PXMathLerpF32H
         (
             pxRotorCurrent->PlaneAngles[i],
             pxRotorTarget->PlaneAngles[i],
@@ -73,7 +73,7 @@ const PXVec2I8U* PXRotorPlanes[] =
     PXRotorPlanes4D
 };
 
-void PXAPI PXRotorToMatrix4x4(PXRotor* const pxRotor, PXMatrix4x4F* const pxMatrix4x4)
+void PXAPI PXRotorToMatrix4x4(PXRotor PXREF pxRotor, PXMatrix4x4F PXREF pxMatrix4x4)
 {   
     PXVec2I8U* planes = PXRotorPlanes[pxRotor->Dimension];
 
@@ -95,7 +95,7 @@ void PXAPI PXRotorToMatrix4x4(PXRotor* const pxRotor, PXMatrix4x4F* const pxMatr
     }
 }
 
-void PXAPI PXQuaternionToMatrix4x4(const PXQuaternionF32* quaternionF32, PXMatrix4x4F* const pxMatrix4x4)
+void PXAPI PXQuaternionToMatrix4x4(const PXQuaternionF32* quaternionF32, PXMatrix4x4F PXREF pxMatrix4x4)
 {
     float w = quaternionF32->W;
     float x = quaternionF32->X;
@@ -117,7 +117,7 @@ void PXAPI PXQuaternionToMatrix4x4(const PXQuaternionF32* quaternionF32, PXMatri
     pxMatrix4x4->DataXY[2][2] = 1 - 2 * x * x - 2 * y * y;
 }
 
-void PXAPI PXQuaternionFromEulerRAD(PXQuaternionF32* const pxQuaternionF32, PXEulerAngleF32* const pxEulerAngleF32)
+void PXAPI PXQuaternionFromEulerRAD(PXQuaternionF32 PXREF pxQuaternionF32, PXEulerAngleF32 PXREF pxEulerAngleF32)
 {
     PXEulerAngleF32 halfAngle;
     halfAngle.Yaw = pxEulerAngleF32->Yaw * 0.5f;
@@ -154,7 +154,7 @@ void PXAPI PXQuaternionFromEulerRAD(PXQuaternionF32* const pxQuaternionF32, PXEu
     pxQuaternionF32->Z = data.cr * data.cp * data.sy - data.sr * data.sp * data.cy; // z
 }
 
-void PXAPI PXQuaternionFromEulerDEG(PXQuaternionF32* const pxQuaternionF32, PXEulerAngleF32* const pxEulerAngleF32)
+void PXAPI PXQuaternionFromEulerDEG(PXQuaternionF32 PXREF pxQuaternionF32, PXEulerAngleF32 PXREF pxEulerAngleF32)
 {
     PXEulerAngleF32 halfAngle = *pxEulerAngleF32;
     halfAngle.Yaw = PXMathDegreeToRadians(halfAngle.Yaw);
@@ -164,7 +164,7 @@ void PXAPI PXQuaternionFromEulerDEG(PXQuaternionF32* const pxQuaternionF32, PXEu
     PXQuaternionFromEulerRAD(pxQuaternionF32, &halfAngle);
 }
 
-void PXAPI PXQuaternionToEulerRAD(PXQuaternionF32* const pxQuaternionF32, PXEulerAngleF32* const pxEulerAngleF32)
+void PXAPI PXQuaternionToEulerRAD(PXQuaternionF32 PXREF pxQuaternionF32, PXEulerAngleF32 PXREF pxEulerAngleF32)
 {
     float w = pxQuaternionF32->W;
     float x = pxQuaternionF32->X;
@@ -190,12 +190,12 @@ void PXAPI PXQuaternionToEulerRAD(PXQuaternionF32* const pxQuaternionF32, PXEule
     pxEulerAngleF32->Yaw = PXMathArcusTangens2(siny_cosp, cosy_cosp);
 }
 
-PXF32 PXAPI PXQuaternionDot(const PXQuaternionF32* const a, const PXQuaternionF32* const b)
+PXF32 PXAPI PXQuaternionDot(const PXQuaternionF32 PXREF a, const PXQuaternionF32 PXREF b)
 {
     return a->W * b->W + a->X * b->X + a->Y * b->Y + a->Z * b->Z;
 }
 
-void PXAPI PXQuaternionNormal(PXQuaternionF32* const pxQuaternionF32)
+void PXAPI PXQuaternionNormal(PXQuaternionF32 PXREF pxQuaternionF32)
 {
     float dot = PXQuaternionDot(pxQuaternionF32, pxQuaternionF32);
     float mag = PXMathRootSquareF32(dot);
@@ -206,7 +206,7 @@ void PXAPI PXQuaternionNormal(PXQuaternionF32* const pxQuaternionF32)
     pxQuaternionF32->Z /= mag;
 }
 
-void PXAPI PXQuaternionConjugate(PXQuaternionF32* const pxQuaternionF32)
+void PXAPI PXQuaternionConjugate(PXQuaternionF32 PXREF pxQuaternionF32)
 {
     pxQuaternionF32->W = +pxQuaternionF32->W;
     pxQuaternionF32->X = -pxQuaternionF32->X;
@@ -216,13 +216,13 @@ void PXAPI PXQuaternionConjugate(PXQuaternionF32* const pxQuaternionF32)
 
 void PXAPI PXQuaternionLerp
 (
-    PXQuaternionF32* const a,
-    const PXQuaternionF32* const b, 
-    const t
+    PXQuaternionF32 PXREF a,
+    const PXQuaternionF32 PXREF b, 
+    const PXF32 t
 )
 {
     PXQuaternionF32 res;
-    float dot = PXQuaternionDot(a, b);
+    PXF32 dot = PXQuaternionDot(a, b);
 
     // If dot < 0, negate one quaternion to take the shortest path
     PXQuaternionF32 q2copy = *b;

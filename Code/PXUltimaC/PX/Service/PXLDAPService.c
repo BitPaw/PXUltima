@@ -248,13 +248,13 @@ typedef LDAP* (LDAPAPI* PXldap_conn_from_msg)(LDAP* PrimaryConn, LDAPMessage* re
 
 
 
-PXResult PXAPI  PXLDAPClienInitialize(PXLDAPClient* const pxLDAPClient)
+PXResult PXAPI PXLDAPClienInitialize(PXLDAPClient PXREF pxLDAPClient)
 {
     PXClear(PXLDAPClient, pxLDAPClient);
 
     // Library open
     {
-        const PXActionResult pxActionResult = PXLibraryOpenA(&pxLDAPClient->LDAPLibrary, "");
+        const PXResult pxActionResult = PXLibraryOpenA(&pxLDAPClient->LDAPLibrary, "");
 
         if(PXActionSuccessful != pxActionResult)
         {
@@ -510,7 +510,7 @@ PXResult PXAPI  PXLDAPClienInitialize(PXLDAPClient* const pxLDAPClient)
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXLDAPClienRelease(PXLDAPClient* const pxLDAPClient)
+PXResult PXAPI PXLDAPClienRelease(PXLDAPClient PXREF pxLDAPClient)
 {
     PXLDAPClientClose(pxLDAPClient);
 
@@ -521,7 +521,7 @@ PXResult PXAPI  PXLDAPClienRelease(PXLDAPClient* const pxLDAPClient)
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXLDAPClientOpen(PXLDAPClient* const pxLDAPClient, const PXLDAPConnectionInfo* const pxLDAPInfo)
+PXResult PXAPI PXLDAPClientOpen(PXLDAPClient PXREF pxLDAPClient, const PXLDAPConnectionInfo PXREF pxLDAPInfo)
 {
     switch(pxLDAPInfo->Host.Format)
     {
@@ -545,7 +545,7 @@ PXResult PXAPI  PXLDAPClientOpen(PXLDAPClient* const pxLDAPClient, const PXLDAPC
                 pxLDAPClient->ID = pxcldap_openA(pxLDAPInfo->Host.A, pxLDAPInfo->Port); // Windows Vista, Wldap32.dll, winldap.h
             }
 
-            const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
+            const PXResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
 
             if(PXActionSuccessful != pxActionResult)
             {
@@ -576,7 +576,7 @@ PXResult PXAPI  PXLDAPClientOpen(PXLDAPClient* const pxLDAPClient, const PXLDAPC
                 pxLDAPClient->ID = pxcldap_openW(pxLDAPInfo->Host.W, pxLDAPInfo->Port); // Windows Vista, Wldap32.dll, winldap.h
             }
 
-            const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
+            const PXResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
 
             if(PXActionSuccessful != pxActionResult)
             {
@@ -606,7 +606,7 @@ PXResult PXAPI  PXLDAPClientOpen(PXLDAPClient* const pxLDAPClient, const PXLDAPC
         const ULONG optionSetResult = pxldap_set_option(pxLDAPClient->ID, LDAP_OPT_PROTOCOL_VERSION, &version);
         const PXBool optionSetSuccessful = LDAP_SUCCESS == optionSetResult;
 
-        const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
+        const PXResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
 
         if(PXActionSuccessful != pxActionResult)
         {
@@ -623,7 +623,7 @@ PXResult PXAPI  PXLDAPClientOpen(PXLDAPClient* const pxLDAPClient, const PXLDAPC
         const ULONG connectResult = pxldap_connect(pxLDAPClient->ID, &ldaptime);
         const PXBool connectionSuccessful = LDAP_SUCCESS == connectResult;
 
-        const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
+        const PXResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
 
         if(PXActionSuccessful != pxActionResult)
         {
@@ -643,7 +643,7 @@ PXResult PXAPI  PXLDAPClientOpen(PXLDAPClient* const pxLDAPClient, const PXLDAPC
         );
         const PXBool bindSuccessful = LDAP_SUCCESS == bindResult;
 
-        const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
+        const PXResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
 
         if(PXActionSuccessful != pxActionResult)
         {
@@ -657,7 +657,7 @@ PXResult PXAPI  PXLDAPClientOpen(PXLDAPClient* const pxLDAPClient, const PXLDAPC
 #endif
 }
 
-PXResult PXAPI  PXLDAPClientClose(PXLDAPClient* const pxLDAPClient)
+PXResult PXAPI PXLDAPClientClose(PXLDAPClient PXREF pxLDAPClient)
 {
     if(!pxLDAPClient->ID)
     {
@@ -671,7 +671,7 @@ PXResult PXAPI  PXLDAPClientClose(PXLDAPClient* const pxLDAPClient)
     const ULONG result = pxldap_unbind(pxLDAPClient->ID);
     const PXBool successful = LDAP_SUCCESS == result;
 
-    const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
+    const PXResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
 
     if(PXActionSuccessful != pxActionResult)
     {
@@ -686,7 +686,7 @@ PXResult PXAPI  PXLDAPClientClose(PXLDAPClient* const pxLDAPClient)
 #endif
 }
 
-PXResult PXAPI  PXLDAPClientSearch(PXLDAPClient* const pxLDAPClient, PXLDAPSearchInfo* const pxLDAPSearchInfo)
+PXResult PXAPI PXLDAPClientSearch(PXLDAPClient PXREF pxLDAPClient, PXLDAPSearchInfo PXREF pxLDAPSearchInfo)
 {
     if(!pxLDAPClient->ID)
     {
@@ -750,7 +750,7 @@ PXResult PXAPI  PXLDAPClientSearch(PXLDAPClient* const pxLDAPClient, PXLDAPSearc
 
                 const PXBool successful = LDAP_SUCCESS == messageID;
 
-                const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
+                const PXResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
 
                 if(PXActionSuccessful != pxActionResult)
                 {
@@ -774,7 +774,7 @@ PXResult PXAPI  PXLDAPClientSearch(PXLDAPClient* const pxLDAPClient, PXLDAPSearc
 
                 const PXBool successful = LDAP_SUCCESS == searchResult;
 
-                const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
+                const PXResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
 
                 if(PXActionSuccessful != pxActionResult)
                 {
@@ -805,7 +805,7 @@ PXResult PXAPI  PXLDAPClientSearch(PXLDAPClient* const pxLDAPClient, PXLDAPSearc
             );
             const PXBool successful = LDAP_SUCCESS == messageID;
 
-            const PXActionResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
+            const PXResult pxActionResult = PXErrorCurrent(PXNull != pxLDAPClient->ID);
 
             if(PXActionSuccessful != pxActionResult)
             {

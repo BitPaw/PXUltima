@@ -102,7 +102,7 @@ PXI32U PXAPI PXFilmBoxTypeTranslate(const PXI8U type)
 
 
 
-void PXAPI PXFilmBoxReadProperty(PXFile* const pxFile, PXFilmBoxProperty* const pxFilmBoxProperty)
+void PXAPI PXFilmBoxReadProperty(PXFile PXREF pxFile, PXFilmBoxProperty PXREF pxFilmBoxProperty)
 {
     pxFilmBoxProperty->Typecode = 0;
 
@@ -191,7 +191,7 @@ void PXAPI PXFilmBoxReadProperty(PXFile* const pxFile, PXFilmBoxProperty* const 
     else
     {
         pxFilmBoxProperty->Data.Length = dataTypeSize;
-        pxFilmBoxProperty->Data.Data = PXFileCursorPosition(pxFile);
+        pxFilmBoxProperty->Data.Data = (char*)PXFileCursorPosition(pxFile);
 
         // Not an array
 #if PXLogEnable
@@ -227,7 +227,7 @@ void PXAPI PXFilmBoxReadProperty(PXFile* const pxFile, PXFilmBoxProperty* const 
     }
 }
 
-void PXAPI PXFilmBoxReadNode(PXFile* const pxFile, PXFilmBoxNodeRecord* const pxFilmBoxNodeRecord)
+void PXAPI PXFilmBoxReadNode(PXFile PXREF pxFile, PXFilmBoxNodeRecord PXREF pxFilmBoxNodeRecord)
 {
     // read node beginning
     PXFileBinding
@@ -241,7 +241,7 @@ void PXAPI PXFilmBoxReadNode(PXFile* const pxFile, PXFilmBoxNodeRecord* const px
 
     if(pxFilmBoxNodeRecord->NameLen)
     {
-        pxFilmBoxNodeRecord->Name = PXFileCursorPosition(pxFile);
+        pxFilmBoxNodeRecord->Name = (char*)PXFileCursorPosition(pxFile);
         PXFileCursorAdvance(pxFile, pxFilmBoxNodeRecord->NameLen);
     }
     else
@@ -316,9 +316,9 @@ void PXAPI PXFilmBoxReadNode(PXFile* const pxFile, PXFilmBoxNodeRecord* const px
 
 
 
-PXResult PXAPI  PXFilmBoxLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI PXFilmBoxLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
 {
-    PXFile* const pxFile = pxResourceLoadInfo->FileReference;
+    PXFile PXREF pxFile = pxResourceLoadInfo->FileReference;
     PXFilmBox pxFilmBox;
 
     // Header 27 Bytes
@@ -343,7 +343,7 @@ PXResult PXAPI  PXFilmBoxLoadFromFile(PXResourceTransphereInfo* const pxResource
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI  PXFilmBoxSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI PXFilmBoxSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

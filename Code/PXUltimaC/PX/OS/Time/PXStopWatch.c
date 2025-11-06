@@ -2,26 +2,26 @@
 
 #include <PX/OS/Memory/PXMemory.h>
 
-void PXAPI PXStopWatchConstruct(PXStopWatch* const stopWatch)
+void PXAPI PXStopWatchConstruct(PXStopWatch PXREF stopWatch)
 {
     PXMemoryClear(stopWatch, sizeof(PXStopWatch));
 }
 
-void PXAPI PXStopWatchSet(PXStopWatch* const stopWatch, void* const data, const PXSize dataSize)
+void PXAPI PXStopWatchSet(PXStopWatch PXREF stopWatch, void PXREF data, const PXSize dataSize)
 {
     stopWatch->TimeStampData = stopWatch;
     stopWatch->TimeStampDataSizeAllocated = dataSize;
     stopWatch->TimeStampDataSizeUsed = 0;
 }
 
-void PXAPI PXStopWatchStart(PXStopWatch* const stopWatch)
+void PXAPI PXStopWatchStart(PXStopWatch PXREF stopWatch)
 {
     PXStopWatchReset(stopWatch);
 
     PXTimeNow(&stopWatch->TimeStartreference);
 }
 
-PXBool PXAPI PXStopWatchTrigger(PXStopWatch* const stopWatch, PXTime* const time)
+PXBool PXAPI PXStopWatchTrigger(PXStopWatch PXREF stopWatch, PXTime PXREF time)
 {
     /*
     const PXBool canDo = stopWatch->TimeStampDataSizeAllocated > (stopWatch->TimeStampDataSizeUsed + 1);
@@ -44,7 +44,7 @@ PXBool PXAPI PXStopWatchTrigger(PXStopWatch* const stopWatch, PXTime* const time
     return PXYes;
 }
 
-void PXAPI PXStopWatchReset(PXStopWatch* const stopWatch)
+void PXAPI PXStopWatchReset(PXStopWatch PXREF stopWatch)
 {
     PXMemoryClear(stopWatch->TimeStampData, sizeof(PXTime) * stopWatch->TimeStampDataSizeAllocated);
 

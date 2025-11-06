@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXDiagramIncluded
 #define PXDiagramIncluded
 
@@ -23,8 +25,8 @@ typedef struct PXBoxPlot_
 }
 PXBoxPlot;
 
-PXPublic void PXAPI PXBoxPlotConstruct(PXBoxPlot* const boxPlot);
+PXPublic void PXAPI PXBoxPlotConstruct(PXBoxPlot PXREF boxPlot);
 
-PXPublic void PXAPI PXBoxPlotCalculate(PXBoxPlot* const boxPlot, const PXF32* const inputData, const PXSize inputDataSize);
+PXPublic void PXAPI PXBoxPlotCalculate(PXBoxPlot PXREF boxPlot, const PXF32 PXREF inputData, const PXSize inputDataSize);
 
 #endif

@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXMIDIncluded
 #define PXMIDIncluded
 
@@ -56,7 +58,7 @@ typedef struct PXMIDI_
 }
 PXMIDI;
 
-PXPublic PXResult PXAPI PXMIDILoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXMIDISaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXMIDILoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXMIDISaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

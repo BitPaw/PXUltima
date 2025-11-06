@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXSoftwareRenderIncluded
 #define PXSoftwareRenderIncluded
 
@@ -13,7 +15,7 @@ PXSoftwareRender;
 
 PXPublic void PXAPI PXSoftwareRenderDrawRectangle
 (
-    PXTexture* const image,
+    PXTexture PXREF image,
     const PXSize x,
     const PXSize y,
     const PXSize width,
@@ -25,36 +27,36 @@ PXPublic void PXAPI PXSoftwareRenderDrawRectangle
 );
 PXPublic void PXAPI PXTextureDrawA
 (
-    PXTexture* const image,
+    PXTexture PXREF image,
     const PXSize x,
     const PXSize y,
     const PXSize width,
     const PXSize height,
-    const PXFont* const font,
+    const PXFont PXREF font,
     const char* text
 );
 PXPublic void PXAPI PXTextureDrawW
 (
-    PXTexture* const image,
+    PXTexture PXREF image,
     const PXSize x,
     const PXSize y,
     const PXSize width,
     const PXSize height,
-    const PXFont* const font,
+    const PXFont PXREF font,
     const wchar_t* text
 );
 
 #pragma optimize( "", off )
 PXPublic void PXAPI PXTextureMerge
 (
-    PXTexture* const image,
+    PXTexture PXREF image,
     const PXSize x,
     const PXSize y,
     const PXSize insertX,
     const PXSize insertY,
     const PXSize insertWidth,
     const PXSize insertHeight,
-    const PXTexture* const imageInsert
+    const PXTexture PXREF imageInsert
 );
 
 #endif

@@ -16,7 +16,7 @@ static const unsigned PXADAM7_IY[7] = { 0, 0, 4, 0, 2, 0, 1 }; /*y start values*
 static const unsigned PXADAM7_DX[7] = { 8, 8, 4, 4, 2, 2, 1 }; /*x delta values*/
 static const unsigned PXADAM7_DY[7] = { 8, 8, 8, 4, 4, 2, 2 }; /*y delta values*/
 
-PXResult PXAPI  PXADAM7ScanlinesDecode(PXADAM7* const pxADAM7)
+PXResult PXAPI PXADAM7ScanlinesDecode(PXADAM7 PXREF pxADAM7)
 {
     /*
      This function converts the filtered-padded-interlaced data into pure 2D image buffer with the PNG's colortype.
@@ -50,7 +50,7 @@ PXResult PXAPI  PXADAM7ScanlinesDecode(PXADAM7* const pxADAM7)
 
             pxADAM7->DataOutput = pxADAM7->DataInput;
 
-            const PXActionResult pxActionResult = PXADAM7unfilter(pxADAM7);
+            const PXResult pxActionResult = PXADAM7unfilter(pxADAM7);
 
             pxADAM7->DataOutput = (PXByte*)oldPosition;
 
@@ -68,7 +68,7 @@ PXResult PXAPI  PXADAM7ScanlinesDecode(PXADAM7* const pxADAM7)
         {
             // we can immediately filter into the out buffer, no other steps needed
 
-            const PXActionResult pxActionResult = PXADAM7unfilter(pxADAM7);
+            const PXResult pxActionResult = PXADAM7unfilter(pxADAM7);
         }
 
         break;
@@ -93,16 +93,16 @@ PXResult PXAPI  PXADAM7ScanlinesDecode(PXADAM7* const pxADAM7)
         for(PXSize i = 0; i != 7u; ++i)
         {
             PXADAM7 pxADAM7sub;
-            pxADAM7sub.DataInput = &((char*)pxADAM7->DataInput)[filter_passstart[i]]; // Maybe wroong order?
+            pxADAM7sub.DataInput = &pxADAM7->DataInput[filter_passstart[i]]; // Maybe wroong order?
             pxADAM7sub.InputSize;
-            pxADAM7sub.DataOutput = &((char*)pxADAM7->DataInput)[padded_passstart[i]];
+            pxADAM7sub.DataOutput = &pxADAM7->DataInput[padded_passstart[i]];
             pxADAM7sub.OutputSize;
             pxADAM7sub.Width = passw[i];
             pxADAM7sub.Height = passh[i];
             pxADAM7sub.BitsPerPixel = pxADAM7->BitsPerPixel;
             pxADAM7sub.InterlaceMethod = pxADAM7->InterlaceMethod;
 
-            const PXActionResult pxActionResult = PXADAM7unfilter(&pxADAM7sub);
+            const PXResult pxActionResult = PXADAM7unfilter(&pxADAM7sub);
             // TODO: possible efficiency improvement: if in this reduced image the bits fit nicely in 1 scanline,
             // move bytes instead of bits or move not at all
 
@@ -130,12 +130,12 @@ PXResult PXAPI  PXADAM7ScanlinesDecode(PXADAM7* const pxADAM7)
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXADAM7ScanlinesEncode(PXADAM7* const pxADAM7)
+PXResult PXAPI PXADAM7ScanlinesEncode(PXADAM7 PXREF pxADAM7)
 {
     return PXActionRefusedNotImplemented;
 }
 
-PXSize PXAPI PXADAM7CaluclateExpectedSize(PXADAM7* const pxADAM7)
+PXSize PXAPI PXADAM7CaluclateExpectedSize(PXADAM7 PXREF pxADAM7)
 {
     const PXSize n = pxADAM7->Width * pxADAM7->Height;
 
@@ -157,7 +157,7 @@ unsigned char PXAPI PXADAM7paethPredictor(short a, short b, short c)
     return (pc < pa) ? c : a;
 }
 
-PXResult PXAPI  PXADAM7unfilterScanline(unsigned char* recon, const unsigned char* scanline, const unsigned char* precon, PXSize bytewidth, unsigned char filterType, PXSize length)
+PXResult PXAPI PXADAM7unfilterScanline(unsigned char* recon, const unsigned char* scanline, const unsigned char* precon, PXSize bytewidth, unsigned char filterType, PXSize length)
 {
     /*
     For PNG filter method 0
@@ -328,7 +328,7 @@ PXSize PXAPI PXADAM7lodepng_get_raw_size_idat(PXSize w, PXSize h, PXSize bpp)
     return (PXSize)h * line;
 }
 
-PXResult PXAPI  PXADAM7unfilter(PXADAM7* const pxADAM7)
+PXResult PXAPI PXADAM7unfilter(PXADAM7 PXREF pxADAM7)
 {
     /*
     For PNG filter method 0
@@ -352,7 +352,7 @@ PXResult PXAPI  PXADAM7unfilter(PXADAM7* const pxADAM7)
         const PXSize inindex = (1 + linebytes) * y; /*the extra filterbyte added to each row*/
         const PXByte filterType = pxADAM7->DataInput[inindex];
 
-        const PXActionResult pxActionResult = PXADAM7unfilterScanline
+        const PXResult pxActionResult = PXADAM7unfilterScanline
         (
             &pxADAM7->DataOutput[outindex],
             &pxADAM7->DataInput[inindex + 1], 
@@ -439,7 +439,7 @@ void PXAPI PXADAM7_getpassvalues(unsigned passw[7], unsigned passh[7], PXSize fi
     }
 }
 
-void PXAPI PXADAM7Deinterlace(PXADAM7* const pxADAM7)
+void PXAPI PXADAM7Deinterlace(PXADAM7 PXREF pxADAM7)
 {
     unsigned int passw[7];
     unsigned int passh[7];

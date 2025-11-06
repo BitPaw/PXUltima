@@ -4,7 +4,7 @@
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/OS/Library/PXLibrary.h>
 
-PXResult PXAPI  PXModLoaderScan(PXModLoader* const pxModLoader, const PXText* const pxTextModFileDirectory)
+PXResult PXAPI PXModLoaderScan(PXModLoader PXREF pxModLoader, const PXText PXREF pxTextModFileDirectory)
 {
 #if 00000000000
 
@@ -107,7 +107,7 @@ PXResult PXAPI  PXModLoaderScan(PXModLoader* const pxModLoader, const PXText* co
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXModLoaderAdd(PXModLoader* const pxModLoader, PXMod* const pxMod)
+PXResult PXAPI PXModLoaderAdd(PXModLoader PXREF pxModLoader, PXMod PXREF pxMod)
 {
     pxMod->Load(PXNull, pxMod, 0);
 

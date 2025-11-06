@@ -9,10 +9,10 @@ const static char WAVSignatureLIST[4] = "LIST";
 const static char WAVSignatureData[4] = "data";
 
 
-PXResult PXAPI  PXWaveLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI PXWaveLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
 {
     /*
-    PXSound* const pxSound = (PXSound*)pxResourceLoadInfo->Target;
+    PXSound PXREF pxSound = (PXSound*)pxResourceLoadInfo->Target;
 
     PXWave wav;;
     PXClear(PXWave, &wav);
@@ -23,7 +23,7 @@ PXResult PXAPI  PXWaveLoadFromFile(PXResourceTransphereInfo* const pxResourceLoa
 
     // PXRIFF
     {
-       const PXActionResult actionResult = PXRIFFLoadFromFile(&riff, pxResourceLoadInfo->FileReference);
+       const PXResult actionResult = PXRIFFLoadFromFile(&riff, pxResourceLoadInfo->FileReference);
 
        PXActionReturnOnError(actionResult);
 
@@ -41,7 +41,7 @@ PXResult PXAPI  PXWaveLoadFromFile(PXResourceTransphereInfo* const pxResourceLoa
 
     //---<FMT Chunk>-----------------------------------------------------------
     {
-       const PXActionResult actionResult = PXFMTLoadFromFile(&wav.Format, pxResourceLoadInfo->FileReference, riff.EndianFormat);
+       const PXResult actionResult = PXFMTLoadFromFile(&wav.Format, pxResourceLoadInfo->FileReference, riff.EndianFormat);
 
        PXActionReturnOnError(actionResult);
 
@@ -87,7 +87,7 @@ PXResult PXAPI  PXWaveLoadFromFile(PXResourceTransphereInfo* const pxResourceLoa
 }
 
 
-PXResult PXAPI  PXWaveSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI PXWaveSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
 {
 #if 0
     unsigned int bitdepth = 16, bpm = 120;
@@ -125,7 +125,7 @@ PXResult PXAPI  PXWaveSaveToFile(PXResourceTransphereInfo* const pxResourceSaveI
         riff.ChunkSize = dataSize + 36;
         riff.Format = PXRIFFWaveformAudio;
 
-        const PXActionResult riffResult = PXRIFFSaveToFile(&riff, pxResourceSaveInfo->FileReference);
+        const PXResult riffResult = PXRIFFSaveToFile(&riff, pxResourceSaveInfo->FileReference);
     }
 
     // Write Format chunk
@@ -141,7 +141,7 @@ PXResult PXAPI  PXWaveSaveToFile(PXResourceTransphereInfo* const pxResourceSaveI
             bitdepth// BitsPerSample;
         };
 
-        const PXActionResult fmtResult = PXFMTSaveToFile(&fmt, pxResourceSaveInfo->FileReference, targetEndian);
+        const PXResult fmtResult = PXFMTSaveToFile(&fmt, pxResourceSaveInfo->FileReference, targetEndian);
     }
 
     //Data chunk

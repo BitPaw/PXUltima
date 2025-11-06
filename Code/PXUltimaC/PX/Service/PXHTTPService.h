@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXHTTPIncluded
 #define PXHTTPIncluded
 
@@ -15,7 +17,7 @@ typedef struct PXHTTPClient_
 }
 PXHTTPClient;
 
-PXPublic PXResult PXAPI PXHTTPServerStart(PXHTTPServer* const pxHTTPServer);
-PXPublic PXResult PXAPI PXHTTPServerStop(PXHTTPServer* const pxHTTPServer);
+PXPublic PXResult PXAPI PXHTTPServerStart(PXHTTPServer PXREF pxHTTPServer);
+PXPublic PXResult PXAPI PXHTTPServerStop(PXHTTPServer PXREF pxHTTPServer);
 
 #endif

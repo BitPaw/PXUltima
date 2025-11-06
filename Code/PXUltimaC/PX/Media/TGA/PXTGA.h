@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXPXTGAIncluded
 #define PXPXTGAIncluded
 
@@ -103,9 +105,9 @@ PXPrivate PXI8U PXAPI ConvertFromImageDataType(const PXTGAImageDataType imageDat
 
 PXPublic PXSize PXAPI PXTGAFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 
-PXPublic void PXAPI PXTGADestruct(PXTGA* const tga);
+PXPublic void PXAPI PXTGADestruct(PXTGA PXREF tga);
 
-PXPublic PXResult PXAPI PXTGALoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXTGASaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXTGALoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXTGASaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

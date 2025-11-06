@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXHardwareIncluded
 #define PXHardwareIncluded
 
@@ -456,7 +458,7 @@ PXBattery;
 
 
 
-PXPublic PXResult PXAPI PXHardwareBatteryFetch(PXBattery* const pxBattery);
+PXPublic PXResult PXAPI PXHardwareBatteryFetch(PXBattery PXREF pxBattery);
 
 
 
@@ -499,8 +501,8 @@ PXHardwareInfo;
 #define PXHardwareInfoDisplay (1 << 0)
 #define PXHardwareInfoAll PXHardwareInfoProcesor | PXHardwareInfoHardDrive | PXHardwareInfoDisplay
 
-PXPublic PXResult PXAPI PXHardwareInfoScan(PXHardwareInfo* const pxHardwareInfo, const PXI32U fetchFlags);
+PXPublic PXResult PXAPI PXHardwareInfoScan(PXHardwareInfo PXREF pxHardwareInfo, const PXI32U fetchFlags);
 
-PXPublic PXResult PXAPI PXHardwareBattery(PXBattery* const pxBattery);
+PXPublic PXResult PXAPI PXHardwareBattery(PXBattery PXREF pxBattery);
 
 #endif

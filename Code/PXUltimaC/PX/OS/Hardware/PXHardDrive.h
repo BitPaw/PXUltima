@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXHardDriveIncluded
 #define PXHardDriveIncluded
 
@@ -17,6 +19,6 @@ PXHardDrive;
 
 PXPublic PXSize PXAPI PXHardDriveListSize();
 
-PXPublic PXResult PXAPI PXHardDriveFetchAll(PXHardDrive* const hardDriveList, const PXSize hardDriveListMaxSize, PXSize* hardDriveListSize);
+PXPublic PXResult PXAPI PXHardDriveFetchAll(PXHardDrive PXREF hardDriveList, const PXSize hardDriveListMaxSize, PXSize* hardDriveListSize);
 
 #endif

@@ -9,6 +9,7 @@
 
 #if OSUnix
 #include <sys/resource.h> // getpriority, setpriority
+#include <sys/user.h>
 #elif OSWindows
 #include <Windows.h>
 #include <dbghelp.h>
@@ -16,9 +17,10 @@
 #include <winternl.h>
 #endif
 
+
 // Note, TerminateThread() should not be used, it can lead to a memory leak in Windows-XP
 
-void PXAPI PXThreadDestruct(PXThread* const pxThread)
+void PXAPI PXThreadDestruct(PXThread PXREF pxThread)
 {
     if (!pxThread)
     {
@@ -49,7 +51,7 @@ void PXAPI PXThreadDestruct(PXThread* const pxThread)
 
 
 #if OSWindows
-void PXAPI PXThreadConstructFromHandle(PXThread* const pxThread, HANDLE threadHandle)
+void PXAPI PXThreadConstructFromHandle(PXThread PXREF pxThread, HANDLE threadHandle)
 {
     pxThread->Info.Handle.ThreadHandle = threadHandle;
 
@@ -62,7 +64,7 @@ void PXAPI PXThreadConstructFromHandle(PXThread* const pxThread, HANDLE threadHa
 #endif
 
 
-PXResult PXAPI  PXThreadCreate(PXThread* const pxThread, const char* const threadName, const PXProcessHandle targetProcessHandle, ThreadFunction threadFunction, void* parameter, const PXI32U behaviour)
+PXResult PXAPI PXThreadCreate(PXThread PXREF pxThread, const char PXREF threadName, const PXProcessHandle targetProcessHandle, ThreadFunction threadFunction, void* parameter, const PXI32U behaviour)
 {
     if(!pxThread || !threadFunction)
     {
@@ -82,7 +84,7 @@ PXResult PXAPI  PXThreadCreate(PXThread* const pxThread, const char* const threa
         threadFunction,
         (void*)parameter
     );
-    const PXActionResult threadCreateResult = PXErrorCurrent(0 != errorID);
+    const PXResult threadCreateResult = PXErrorCurrent(0 != errorID);
 
 
 #elif OSWindows
@@ -127,9 +129,9 @@ PXResult PXAPI  PXThreadCreate(PXThread* const pxThread, const char* const threa
         );
     }
    
-    const PXActionResult threadCreateResult = PXErrorCurrent(PXNull != pxThread->Info.Handle.ThreadHandle);
+    const PXResult threadCreateResult = PXErrorCurrent(PXNull != pxThread->Info.Handle.ThreadHandle);
 #else
-    const PXActionResult threadCreateResult = PXActionRefusedNotSupported;
+    const PXResult threadCreateResult = PXActionRefusedNotSupported;
 #endif
 
     if(PXActionSuccessful != threadCreateResult)
@@ -169,14 +171,14 @@ PXResult PXAPI  PXThreadCreate(PXThread* const pxThread, const char* const threa
     // Name thread if possible
     {
         PXText pxText;
-        PXTextConstructFromAdressA(&pxText, threadName, 0, PXTextLengthUnkown);
+        PXTextFromAdressA(&pxText, threadName, 0, PXTextLengthUnkown);
 
         PXThreadNameSet(pxThread, &pxText);
     }
 
 }
 
-PXResult PXAPI  PXThreadExitCurrent(const PXI32U exitCode)
+PXResult PXAPI PXThreadExitCurrent(const PXI32U exitCode)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -192,7 +194,7 @@ PXResult PXAPI  PXThreadExitCurrent(const PXI32U exitCode)
 
 
 
-PXResult PXAPI  PXThreadOpen(PXThread* const pxThread)
+PXResult PXAPI PXThreadOpen(PXThread PXREF pxThread)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -203,7 +205,7 @@ PXResult PXAPI  PXThreadOpen(PXThread* const pxThread)
     DWORD dwThreadId = 0;
 
     const HANDLE threadID = OpenThread(dwDesiredAccess, bInheritHandle, dwThreadId); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
-    const PXActionResult pxActionResult = PXErrorCurrent(PXNull != threadID);
+    const PXResult pxActionResult = PXErrorCurrent(PXNull != threadID);
 
     if(PXActionSuccessful != pxActionResult)
     {
@@ -678,7 +680,7 @@ PXPrivate int PXAPI PXThreadPriorityToID(const PXThreadPriorityMode pxThreadPrio
     }
 }
 
-PXResult PXAPI  PXThreadPrioritySet(PXThread* pxThread, const PXThreadPriorityMode pxThreadPriorityMode)
+PXResult PXAPI PXThreadPrioritySet(PXThread* pxThread, const PXThreadPriorityMode pxThreadPriorityMode)
 {
     PXThread dummyThread;
 
@@ -692,7 +694,7 @@ PXResult PXAPI  PXThreadPrioritySet(PXThread* pxThread, const PXThreadPriorityMo
 
 #if OSUnix
     const int newPriority = setpriority(0, pxThread->ThreadHandle, threadPriority);
-    const PXActionResult pxActionResult = PXErrorCurrent(-1 != newPriority);
+    const PXResult pxActionResult = PXErrorCurrent(-1 != newPriority);
 
     if(PXActionSuccessful != pxActionResult)
     {
@@ -704,7 +706,7 @@ PXResult PXAPI  PXThreadPrioritySet(PXThread* pxThread, const PXThreadPriorityMo
 #elif OSWindows
     // SetPriorityClass() also exists, but is it needed?
     const BOOL success = SetThreadPriority(pxThread->Info.Handle.ThreadHandle, threadPriority);
-    const PXActionResult pxActionResult = PXErrorCurrent(PXNull != success);
+    const PXResult pxActionResult = PXErrorCurrent(FALSE != success);
 
     if(PXActionSuccessful != pxActionResult)
     {
@@ -718,7 +720,7 @@ PXResult PXAPI  PXThreadPrioritySet(PXThread* pxThread, const PXThreadPriorityMo
 #endif
 }
 
-PXResult PXAPI  PXThreadPriorityGet(PXThread* pxThread, PXThreadPriorityMode* const pxThreadPriorityMode)
+PXResult PXAPI PXThreadPriorityGet(PXThread* pxThread, PXThreadPriorityMode PXREF pxThreadPriorityMode)
 {
     PXThread dummyThread;
 
@@ -739,7 +741,7 @@ PXResult PXAPI  PXThreadPriorityGet(PXThread* pxThread, PXThreadPriorityMode* co
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXThreadStateChange(PXThread* const pxThread, const PXI32U pxThreadState)
+PXResult PXAPI PXThreadStateChange(PXThread PXREF pxThread, const PXI32U pxThreadState)
 {
     if(!pxThread)
     {
@@ -783,7 +785,7 @@ PXResult PXAPI  PXThreadStateChange(PXThread* const pxThread, const PXI32U pxThr
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXThreadSleep(PXThread* const pxThread, const PXSize sleepTime)
+PXResult PXAPI PXThreadSleep(PXThread PXREF pxThread, const PXSize sleepTime)
 {
     if(pxThread)
     {
@@ -812,7 +814,7 @@ PXResult PXAPI  PXThreadSleep(PXThread* const pxThread, const PXSize sleepTime)
     }
 }
 
-PXResult PXAPI  PXThreadCurrentProcessorID(PXI32U* const processorID)
+PXResult PXAPI PXThreadCurrentProcessorID(PXI32U PXREF processorID)
 {
     *processorID = 0xFFFFFFFF;
 
@@ -834,7 +836,7 @@ PXResult PXAPI  PXThreadCurrentProcessorID(PXI32U* const processorID)
 #endif
 }
 
-PXResult PXAPI  PXThreadNameSet(PXThread* pxThread, PXText* const threadName)
+PXResult PXAPI PXThreadNameSet(PXThread* pxThread, PXText PXREF threadName)
 {
     PXThread pxThreadOverride;
     PXClear(PXThread, &pxThreadOverride);
@@ -855,7 +857,7 @@ PXResult PXAPI  PXThreadNameSet(PXThread* pxThread, PXText* const threadName)
     PXTextCopyAW(threadName->A, threadName->SizeUsed, threadNameW, 64);
 
     const HRESULT resultID = SetThreadDescription(pxThread->Info.Handle.ThreadHandle, threadNameW); // Windows 10 - 1607 (+UWP), Kernel32.dll, processthreadsapi.h
-    const PXActionResult result = PXErrorFromHRESULT(resultID);
+    const PXResult result = PXErrorFromHRESULT(resultID);
 
     return result;
 
@@ -895,7 +897,7 @@ PXResult PXAPI  PXThreadNameSet(PXThread* pxThread, PXText* const threadName)
 #endif
 }
 
-PXResult PXAPI  PXThreadNameGet(PXDebug* const pxDebug,PXThread* const pxThread, PXText* const threadName)
+PXResult PXAPI PXThreadNameGet(PXDebug PXREF pxDebug,PXThread PXREF pxThread, PXText PXREF threadName)
 {
 #if OSUnix
     return PXActionRefusedNotImplemented;
@@ -910,6 +912,7 @@ PXResult PXAPI  PXThreadNameGet(PXDebug* const pxDebug,PXThread* const pxThread,
     {
         pxThread->ThreadHandle = OpenThread(THREAD_ALL_ACCESS, PXFalse, pxThread->ThreadID);
         //PXBool xxa = DuplicateHandle(GetCurrentProcess(), PXNull, GetCurrentProcess(), &pxThread->ThreadHandle, THREAD_QUERY_INFORMATION, FALSE, 0);
+
 
 
         createdHandle = PXTrue;
@@ -1014,156 +1017,8 @@ PXResult PXAPI  PXThreadNameGet(PXDebug* const pxDebug,PXThread* const pxThread,
     return PXActionRefusedNotSupported;
 #endif
 }
-#define PXThreadContextUse (1<<0)
 
-typedef struct PXThreadContext32_
-{
-    PXByte ExtendedRegisters[512];
-    //PXF32ING_SAVE_AREA PXF32Save;
-
-    PXI32U Dr0;
-    PXI32U Dr1;
-    PXI32U Dr2;
-    PXI32U Dr3;
-    PXI32U Dr6;
-    PXI32U Dr7;
-
-    PXI32U SegGs;
-    PXI32U SegFs;
-    PXI32U SegEs;
-    PXI32U SegDs;
-
-    PXI32U EDI;
-    PXI32U ESI;
-    PXI32U EBX;
-    PXI32U EDX;
-    PXI32U ECX;
-    PXI32U EAX;
-
-    PXI32U EBP;
-    PXI32U EIP;
-    PXI32U SegCs;
-    PXI32U EFlags;
-    PXI32U ESP;
-    PXI32U SegSs;
-}
-PXThreadContext32;
-
-typedef struct PXThreadContext64_
-{
-    // Parameter adress for integers. What are they for`?
-     PXI64U P1Home;
-     PXI64U P2Home;
-  PXI64U P3Home;
-  PXI64U P4Home;
-  PXI64U P5Home;
-  PXI64U P6Home;
-
-  PXI32U   MxCsr; // SSE - PXF32 unit flags
-
-
-    // Code Segment registers.
-  PXI16U  SegCs;
-    PXI16U  SegDs;
-    PXI16U  SegEs;
-    PXI16U  SegFs;
-    PXI16U  SegGs;
-    PXI16U  SegSs; // Stack segment register.
-
-
- // General flags
-    PXI32U   EFlags;
-
-  // Debug register, Used for hardware breakpoints.
-  PXI64U Dr0;
-  PXI64U Dr1;
-  PXI64U Dr2;
-  PXI64U Dr3;
-  // Debug status and control registers.
-  PXI64U Dr6;
-  PXI64U Dr7;
-
-  // General-purpose registers.
-  PXI64U RAX; // Accumulator
-  PXI64U RBX; // Base register
-  PXI64U RCX; // Counter register
-  PXI64U RDX; // Data register 
-
-  PXI64U RSI; // Source index register
-  PXI64U RDI; // Destination index register
-
-  PXI64U RBP; // Base pointer register.
-  PXI64U RSP; // Stack pointer register.
-
-  // Extended 64-Bit registers
-  PXI64U R8;
-  PXI64U R9;
-  PXI64U R10;
-  PXI64U R11;
-  PXI64U R12;
-  PXI64U R13;
-  PXI64U R14;
-  PXI64U R15;
-
-  PXI64U RIP; // Instruction pointer register.
-    
-union 
-{
-   // XMM_SAVE_AREA32 FltSave;
-    //NEON128         Q[16];
-    PXI64U       D[32];
-    struct 
-    {
-      M128A Header[2];
-      M128A Legacy[8];
-      M128A Xmm0;
-      M128A Xmm1;
-      M128A Xmm2;
-      M128A Xmm3;
-      M128A Xmm4;
-      M128A Xmm5;
-      M128A Xmm6;
-      M128A Xmm7;
-      M128A Xmm8;
-      M128A Xmm9;
-      M128A Xmm10;
-      M128A Xmm11;
-      M128A Xmm12;
-      M128A Xmm13;
-      M128A Xmm14;
-      M128A Xmm15;
-    };
-    DWORD           S[32];
-  };
-  M128A   VectorRegister[26];
-  PXI64U VectorControl;
-  PXI64U DebugControl;
-  PXI64U LastBranchToRip;
-  PXI64U LastBranchFromRip;
-  PXI64U LastExceptionToRip;
-  PXI64U LastExceptionFromRip;
-}
-PXThreadContext64;
-
-
-// https://learn.microsoft.com/en-us/windows-hardware/drivers/debugger/x86-architecture
-typedef struct PXThreadContext_
-{
-    union
-    {
-        PXThreadContext64 X64;
-        PXThreadContext32 X86;
-    };
-}
-PXThreadContext;
-
-#if OSUnix
-#include <sys/user.h>
-#elif OSWindows
-#endif
-
-
-PXResult PXAPI  PXThreadContextGet(PXThreadContext* const pxThreadContext, const PXProcessThreadHandle pxThreadHandle)
+PXResult PXAPI PXThreadContextGet(PXThreadContext PXREF pxThreadContext, const PXProcessThreadHandle pxThreadHandle)
 {
 #if OSUnix
     // getcontext(); // ucontext.h // Introduced with POSIX:2001, removed in POSIX:2008
@@ -1203,7 +1058,7 @@ PXResult PXAPI  PXThreadContextGet(PXThreadContext* const pxThreadContext, const
     context.ContextFlags = CONTEXT_ALL;
     
     const BOOL getResultID = GetThreadContext(pxThreadHandle, &context); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h    
-    const PXActionResult getResult = PXErrorCurrent(getResultID);
+    const PXResult getResult = PXErrorCurrent(getResultID);
 
     if(PXActionSuccessful != getResult)
     {

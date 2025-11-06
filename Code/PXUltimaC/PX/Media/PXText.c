@@ -6,7 +6,6 @@
 #include <PX/OS/PXOS.h>
 
 #include <stdio.h>
-#include <stdlib.h>
 
 
 #define PXAssertEnable 0
@@ -15,7 +14,7 @@
 #include <assert.h>
 #endif
 
-PXSize PXAPI PXTextFromNonTerminated(char* const stringOutput, const PXSize stringOutputSize, const char* const stringInput, const PXSize stringInputSize)
+PXSize PXAPI PXTextFromNonTerminated(char PXREF stringOutput, const PXSize stringOutputSize, const char PXREF stringInput, const PXSize stringInputSize)
 {
     const PXSize length = PXMathMinimumIU(stringOutputSize, stringInputSize);
     PXSize i = 0;
@@ -30,7 +29,7 @@ PXSize PXAPI PXTextFromNonTerminated(char* const stringOutput, const PXSize stri
     return i;
 }
 
-PXSize PXAPI PXTextFromIntToBinary8U(char* const string, const PXSize dataSize, const PXI8U number)
+PXSize PXAPI PXTextFromIntToBinary8U(char PXREF string, const PXSize dataSize, const PXI8U number)
 {
     const PXSize numberOfDigits = sizeof(PXI8U) * 8u;
     const PXSize written = PXTextFromIntToBinary64UR(string, dataSize, number, numberOfDigits);
@@ -38,7 +37,7 @@ PXSize PXAPI PXTextFromIntToBinary8U(char* const string, const PXSize dataSize, 
     return written;
 }
 
-PXSize PXAPI PXTextFromIntToBinary16U(char* const string, const PXSize dataSize, const PXI16U number)
+PXSize PXAPI PXTextFromIntToBinary16U(char PXREF string, const PXSize dataSize, const PXI16U number)
 {
     const PXSize numberOfDigits = sizeof(PXI16U) * 8u;
     const PXSize written = PXTextFromIntToBinary64UR(string, dataSize, number, numberOfDigits);
@@ -46,7 +45,7 @@ PXSize PXAPI PXTextFromIntToBinary16U(char* const string, const PXSize dataSize,
     return written;
 }
 
-PXSize PXAPI PXTextFromIntToBinary32U(char* const string, const PXSize dataSize, const PXI32U number)
+PXSize PXAPI PXTextFromIntToBinary32U(char PXREF string, const PXSize dataSize, const PXI32U number)
 {
     const PXSize numberOfDigits = sizeof(PXI32U) * 8u;
     const PXSize written = PXTextFromIntToBinary64UR(string, dataSize, number, numberOfDigits);
@@ -54,7 +53,7 @@ PXSize PXAPI PXTextFromIntToBinary32U(char* const string, const PXSize dataSize,
     return written;
 }
 
-PXSize PXAPI PXTextFromIntToBinary64U(char* const string, const PXSize dataSize, const PXI64U number)
+PXSize PXAPI PXTextFromIntToBinary64U(char PXREF string, const PXSize dataSize, const PXI64U number)
 {
     const PXSize numberOfDigits = sizeof(PXI64U) * 8u;
     const PXSize written = PXTextFromIntToBinary64UR(string, dataSize, number, numberOfDigits);
@@ -62,7 +61,7 @@ PXSize PXAPI PXTextFromIntToBinary64U(char* const string, const PXSize dataSize,
     return written;
 }
 
-PXSize PXAPI PXTextFromIntToBinary64UR(char* const string, const PXSize dataSize, const PXI64U number, const unsigned char numberOfDigits)
+PXSize PXAPI PXTextFromIntToBinary64UR(char PXREF string, const PXSize dataSize, const PXI64U number, const unsigned char numberOfDigits)
 {
     PXSize offset = 0;
 
@@ -79,7 +78,7 @@ PXSize PXAPI PXTextFromIntToBinary64UR(char* const string, const PXSize dataSize
     return offset;
 }
 
-PXSize PXAPI PXTextFromIntToBinary(char* const string, const PXSize dataSize, const void* const data, const unsigned char numberOfDigits)
+PXSize PXAPI PXTextFromIntToBinary(char PXREF string, const PXSize dataSize, const void PXREF data, const unsigned char numberOfDigits)
 {
     PXSize offset = 0;
 
@@ -105,7 +104,7 @@ PXSize PXAPI PXTextFromIntToBinary(char* const string, const PXSize dataSize, co
     return offset;
 }
 
-PXSize PXAPI PXTextToLowerCase(const PXText* const pxTextSource, PXText* const pxTextTarget)
+PXSize PXAPI PXTextToLowerCase(const PXText PXREF pxTextSource, PXText PXREF pxTextTarget)
 {
     switch(pxTextSource->Format)
     {
@@ -136,7 +135,7 @@ PXSize PXAPI PXTextToLowerCase(const PXText* const pxTextSource, PXText* const p
     return pxTextTarget->SizeUsed;
 }
 
-PXSize PXAPI PXTextToUpperCase(const PXText* const pxTextSource, PXText* const pxTextTarget)
+PXSize PXAPI PXTextToUpperCase(const PXText PXREF pxTextSource, PXText PXREF pxTextTarget)
 {
     switch(pxTextSource->Format)
     {
@@ -169,7 +168,7 @@ PXSize PXAPI PXTextToUpperCase(const PXText* const pxTextSource, PXText* const p
     return pxTextTarget->SizeUsed;
 }
 
-PXSize PXAPI PXTextTrimA(char* const text, const PXSize textSize)
+PXSize PXAPI PXTextTrimA(char PXREF text, const PXSize textSize)
 {
     if(!(text && textSize))
     {
@@ -193,7 +192,7 @@ PXSize PXAPI PXTextTrimA(char* const text, const PXSize textSize)
     return i + 1;
 }
 
-PXSize PXAPI PXAppend(PXText* const currentString, const PXText* const appendingString)
+PXSize PXAPI PXAppend(PXText PXREF currentString, const PXText PXREF appendingString)
 {
     const PXSize freeSpace = currentString->SizeAllocated - currentString->SizeUsed;
     const PXBool isEnoughSpace = freeSpace > appendingString->SizeUsed;
@@ -210,7 +209,7 @@ PXSize PXAPI PXAppend(PXText* const currentString, const PXText* const appending
     return currentString->SizeUsed;
 }
 
-PXSize PXAPI PXAppendA(PXText* const currentString, const char* const appaendString, const char appaendStringSize)
+PXSize PXAPI PXAppendA(PXText PXREF currentString, const char PXREF appaendString, const char appaendStringSize)
 {
     currentString->SizeUsed += PXTextCopyA
     (
@@ -223,7 +222,7 @@ PXSize PXAPI PXAppendA(PXText* const currentString, const char* const appaendStr
     return currentString->SizeUsed;
 }
 
-PXSize PXAPI PXAppendW(wchar_t* const dataString, const PXSize dataStringSize, const wchar_t* const appaendString, const PXSize appaendStringSize)
+PXSize PXAPI PXAppendW(wchar_t PXREF dataString, const PXSize dataStringSize, const wchar_t PXREF appaendString, const PXSize appaendStringSize)
 {
     const PXSize length = PXTextLengthW(dataString, dataStringSize);
     const PXSize lengthAdded = PXTextCopyW(appaendString, appaendStringSize, &dataString[length], dataStringSize - length);
@@ -232,7 +231,7 @@ PXSize PXAPI PXAppendW(wchar_t* const dataString, const PXSize dataStringSize, c
     return fullSize;
 }
 
-PXSize PXAPI PXAppendF(PXText* const pxText, const char* const format, ...)
+PXSize PXAPI PXAppendF(PXText PXREF pxText, const char PXREF format, ...)
 {
     PXSize sizeLeft = pxText->SizeAllocated - pxText->SizeUsed;
     char* beginning = pxText->A + pxText->SizeUsed;
@@ -249,7 +248,7 @@ PXSize PXAPI PXAppendF(PXText* const pxText, const char* const format, ...)
     return added;
 }
 
-PXSize PXAPI PXTextPrint(PXText* const pxText, const char* style, ...)
+PXSize PXAPI PXTextPrint(PXText PXREF pxText, const char* style, ...)
 {
     va_list args;
     va_start(args, style);
@@ -261,13 +260,13 @@ PXSize PXAPI PXTextPrint(PXText* const pxText, const char* style, ...)
     return written;
 }
 
-PXSize PXAPI PXTextPrintA(char* const text, const PXSize size, const char* style, ...)
+PXSize PXAPI PXTextPrintA(char PXREF text, const PXSize size, const char* style, ...)
 {
     va_list args;
     va_start(args, style);
 
     PXText pxText;
-    PXTextConstructFromAdressA(&pxText, text, 0, size);
+    PXTextFromAdressA(&pxText, text, 0, size);
 
     PXSize xx = PXTextPrintV(&pxText, style, args);
 
@@ -276,7 +275,7 @@ PXSize PXAPI PXTextPrintA(char* const text, const PXSize size, const char* style
     return xx;
 }
 
-PXSize PXAPI PXTextPrintW(wchar_t* const text, const PXSize size, const char* style, ...)
+PXSize PXAPI PXTextPrintW(wchar_t PXREF text, const PXSize size, const char* style, ...)
 {
     va_list args;
     va_start(args, style);
@@ -294,7 +293,7 @@ PXSize PXAPI PXTextPrintW(wchar_t* const text, const PXSize size, const char* st
     return xx;
 }
 
-PXSize PXAPI PXTextPrintAV(char* const text, const PXSize size, const char* style, va_list parameter)
+PXSize PXAPI PXTextPrintAV(char PXREF text, const PXSize size, const char* style, va_list parameter)
 {
 #if OSUnix
     return vsnprintf(text, size, style, parameter);
@@ -303,7 +302,7 @@ PXSize PXAPI PXTextPrintAV(char* const text, const PXSize size, const char* styl
 #endif
 }
 
-PXSize PXAPI PXTextPrintWV(wchar_t* const text, const PXSize size, const char* style, va_list parameter)
+PXSize PXAPI PXTextPrintWV(wchar_t PXREF text, const PXSize size, const char* style, va_list parameter)
 {
 #if OSUnix
     return 0;// vsnwprintf(text, size, style, parameter);
@@ -314,7 +313,7 @@ PXSize PXAPI PXTextPrintWV(wchar_t* const text, const PXSize size, const char* s
 #endif
 }
 
-PXSize PXAPI PXTextPrintV(PXText* const pxText, const char* style, va_list parameter)
+PXSize PXAPI PXTextPrintV(PXText PXREF pxText, const char* style, va_list parameter)
 {
     switch(pxText->Format)
     {
@@ -343,19 +342,56 @@ PXSize PXAPI PXTextPrintV(PXText* const pxText, const char* style, va_list param
     return pxText->SizeUsed;
 }
 
-PXSize PXAPI PXTextClear(PXText* const pxText)
+PXSize PXAPI PXTextClear(PXText PXREF pxText)
 {
     PXMemoryClear(pxText->A, pxText->SizeAllocated);
 
     return pxText->SizeAllocated;
 }
 
-void PXAPI PXAdvance(PXText* const pxText, const PXSize advanceBy)
+void PXAPI PXAdvance(PXText PXREF pxText, const PXSize advanceBy)
 {
     pxText->A += advanceBy;
     pxText->SizeUsed -= advanceBy;
     pxText->SizeAllocated -= advanceBy;
     pxText->NumberOfCharacters -= advanceBy;
+}
+
+void PXAPI PXTextRevise(PXText PXREF pxText)
+{
+    if(!pxText)
+    {
+        return;
+    }
+
+
+    PXBool sizeIsMissing = pxText->A && (pxText->SizeUsed > 0);
+
+    if(sizeIsMissing)
+    {
+        switch(pxText->Format)
+        {
+            case TextFormatASCII:
+            {
+                pxText->SizeUsed = PXTextLengthA(pxText->A, pxText->SizeAllocated);
+                break;
+            }
+            case TextFormatUNICODE:
+            {
+                pxText->SizeUsed = PXTextLengthW(pxText->W, pxText->SizeAllocated);
+                break;
+            }
+            case TextFormatUTF8:
+            case TextFormatUTF16:
+            {
+                pxText->SizeUsed = PXTextLengthA(pxText->A, pxText->SizeAllocated);
+                break;
+            }
+            default:
+                return;
+        }
+    }
+
 }
 
 PXSize PXAPI PXTextLengthA(const char* string, const PXSize stringSize)
@@ -409,7 +445,7 @@ PXSize PXAPI PXTextLengthUntilW(const wchar_t* string, const PXSize stringSize, 
     return 0;
 }
 
-PXSize PXAPI PXTextCopy(const PXText* const source, PXText* const destination)
+PXSize PXAPI PXTextCopy(const PXText PXREF source, PXText PXREF destination)
 {
     if(!(source && destination))
     {
@@ -622,7 +658,7 @@ void PXAPI PXTextToUTFConvert(const PXSize symbol, PXByte* dataBuffer, PXSize* d
     *dataBufferSize = utfTrailBytesAmount + 1u;
 }
 
-PXSize PXAPI PXTextCopyAU(const char* const source, const PXSize sourceLength, char* const destination, const PXSize destinationLength)
+PXSize PXAPI PXTextCopyAU(const char PXREF source, const PXSize sourceLength, char PXREF destination, const PXSize destinationLength)
 {
     const PXSize minimalSize = PXMathMinimumIU(sourceLength, destinationLength);
     PXSize destinationIndex = 0;
@@ -650,7 +686,7 @@ PXSize PXAPI PXTextCopyAU(const char* const source, const PXSize sourceLength, c
 
 
 
-PXSize PXAPI PXTextCopyWU(const wchar_t* const source, const PXSize sourceLength, char* const destination, const PXSize destinationLength)
+PXSize PXAPI PXTextCopyWU(const wchar_t PXREF source, const PXSize sourceLength, char PXREF destination, const PXSize destinationLength)
 {
 #if 1
     const PXSize minimalSize = PXMathMinimumIU(sourceLength, destinationLength);
@@ -738,12 +774,12 @@ PXSize PXAPI PXTextCountUntilW(const wchar_t* pxText, const PXSize textSize, con
     return samecounter;
 }
 
-PXBool PXAPI PXTextCompare(const PXText* const A, const PXText* const textB)
+PXBool PXAPI PXTextCompare(const PXText PXREF A, const PXText PXREF textB)
 {
     return PXTrue;
 }
 
-PXI8U PXAPI PXTextCompareAVI8(const char* a, PXI8U aSize, const char** const stringList, const PXI8U* stringListSize, const PXI8U amount)
+PXI8U PXAPI PXTextCompareAVI8(const char* a, PXI8U aSize, const char* PXREF stringList, const PXI8U* stringListSize, const PXI8U amount)
 {
     PXSize inputSize = aSize;
 
@@ -754,7 +790,7 @@ PXI8U PXAPI PXTextCompareAVI8(const char* a, PXI8U aSize, const char** const str
 
     for(PXI8U i = 0; i < amount; ++i)
     {
-        const char* const stringB = stringList[i];
+        const char PXREF stringB = stringList[i];
         const PXI8U stringBSize = stringListSize[i];
 
 
@@ -951,7 +987,7 @@ char* PXAPI PXTextFindPositionA(const char* data, PXSize dataSize, const char* t
     return (char*)(found * (PXSize)source);
 }
 
-PXSize PXAPI PXTextFindLastCharacter(const PXText* const pxText, const char character)
+PXSize PXAPI PXTextFindLastCharacter(const PXText PXREF pxText, const char character)
 {
     switch(pxText->Format)
     {
@@ -965,7 +1001,7 @@ PXSize PXAPI PXTextFindLastCharacter(const PXText* const pxText, const char char
     return -1;
 }
 
-PXSize PXAPI PXTextFindLastCharacterA(const char* const text, const PXSize textSize, const char character)
+PXSize PXAPI PXTextFindLastCharacterA(const char PXREF text, const PXSize textSize, const char character)
 {
     if(!text)
     {
@@ -985,7 +1021,7 @@ PXSize PXAPI PXTextFindLastCharacterA(const char* const text, const PXSize textS
     return offset;
 }
 
-PXSize PXAPI PXTextFindFirstCharacter(const PXText* const pxText, const char character)
+PXSize PXAPI PXTextFindFirstCharacter(const PXText PXREF pxText, const char character)
 {
     return PXTextFindFirstCharacterA(pxText->A, pxText->SizeUsed, character);
 }
@@ -1070,7 +1106,7 @@ PXSize PXAPI PXTextFindFirstW(const wchar_t* string, const PXSize dataSize, cons
     return found ? i + 1 : PXTextIndexNotFound;
 }
 
-PXSize PXAPI PXTextFindLast(const PXText* const stringSource, const PXText* const stringTarget, PXText* const stringResult)
+PXSize PXAPI PXTextFindLast(const PXText PXREF stringSource, const PXText PXREF stringTarget, PXText PXREF stringResult)
 {
     PXBool found = 0;
     PXSize i = stringSource->SizeUsed - stringTarget->SizeUsed; // As we start from the back, the symbol can only be as long
@@ -1139,7 +1175,7 @@ PXSize PXAPI PXTextFindLast(const PXText* const stringSource, const PXText* cons
     return PXTextIndexNotFound;
 }
 
-void PXAPI PXTextMoveByOffset(PXText* const pxText, const PXSize offset)
+void PXAPI PXTextMoveByOffset(PXText PXREF pxText, const PXSize offset)
 {
     switch(pxText->Format)
     {
@@ -1234,10 +1270,10 @@ void PXAPI PXTextParseA(const char* buffer, const PXSize bufferSize, const char*
             case 'd':
             case 'u':
             {
-                int* const i = va_arg(args, int*);
+                int PXREF i = va_arg(args, int*);
 
                 PXText pxTextInt;
-                PXTextConstructFromAdressA(&pxTextInt, buffer + offsetData, offsetLength, offsetLength);
+                PXTextFromAdressA(&pxTextInt, buffer + offsetData, offsetLength, offsetLength);
 
                 const PXSize readBytes = PXTextToInt(&pxTextInt, i);
 
@@ -1253,7 +1289,7 @@ void PXAPI PXTextParseA(const char* buffer, const PXSize bufferSize, const char*
             {
                 PXF32* number = va_arg(args, PXF32*);
                 PXText pxTextPXF32;
-                PXTextConstructFromAdressA(&pxTextPXF32, buffer + offsetData, offsetLength, offsetLength);
+                PXTextFromAdressA(&pxTextPXF32, buffer + offsetData, offsetLength, offsetLength);
 
                 const PXSize readBytes = PXTextToF32(&pxTextPXF32, number);
 
@@ -1382,7 +1418,7 @@ PXBool PXAPI PXTextMatchW(const wchar_t* input, const PXSize inputSize, const wc
     return PXTrue;
 }
 
-PXSize PXAPI PXTextReplace(PXText* const pxText, char target, char value)
+PXSize PXAPI PXTextReplace(PXText PXREF pxText, char target, char value)
 {
     switch(pxText->Format)
     {
@@ -1406,7 +1442,7 @@ PXSize PXAPI PXTextReplace(PXText* const pxText, char target, char value)
     }
 }
 
-PXSize PXAPI PXTextReplaceA(char* const text, PXSize textSize, const char* const target, const PXSize targetSize, const char value)
+PXSize PXAPI PXTextReplaceA(char PXREF text, PXSize textSize, const char PXREF target, const PXSize targetSize, const char value)
 {
     PXSize cursorSize = textSize;
     char* cursorAdress = text;
@@ -1438,7 +1474,7 @@ PXSize PXAPI PXTextReplaceA(char* const text, PXSize textSize, const char* const
     return textSize;
 }
 
-PXSize PXAPI PXTextReplaceByte(char* const text, PXSize textSize, char target, char value)
+PXSize PXAPI PXTextReplaceByte(char PXREF text, PXSize textSize, char target, char value)
 {
     if(!(text && textSize > 0) && ((PXSize)-1 != textSize))
     {
@@ -1467,7 +1503,37 @@ PXSize PXAPI PXTextReplaceByte(char* const text, PXSize textSize, char target, c
     return counter;
 }
 
-PXResult PXAPI PXTextCreateCopy(PXText* const pxText, const PXText* const pxTextSource)
+PXResult PXAPI PXTextFromAdress(PXText PXREF pxText, void* address, const PXSize sizeUsed, const PXSize sizeAllocated, const PXTextFormat pxTextFormat)
+{
+    if(sizeAllocated == (PXSize)PXTextLengthUnkown)
+    {
+        pxText->SizeAllocated = PXTextLengthA(address, (PXSize)PXTextLengthUnkown);
+        pxText->SizeUsed = pxText->SizeAllocated;
+        pxText->NumberOfCharacters = pxText->SizeAllocated;
+    }
+    else
+    {
+        pxText->SizeAllocated = sizeAllocated;
+        pxText->SizeUsed = sizeUsed;
+        pxText->NumberOfCharacters = sizeUsed;
+    }
+    pxText->Format = pxTextFormat;
+    pxText->A = (char*)(address);
+
+    return PXActionSuccessful;
+}
+
+PXResult PXAPI PXTextFromAdressA(PXText PXREF pxText, void* address, const PXSize sizeUsed, const PXSize sizeAllocated)
+{
+    return PXTextFromAdress(pxText, (char*)address, sizeUsed, sizeAllocated, TextFormatASCII);
+}
+
+PXResult PXAPI PXTextFromAdressW(PXText PXREF pxText, void* address, const PXSize sizeUsed, const PXSize sizeAllocated)
+{
+    return PXTextFromAdress(pxText, (char*)address, sizeUsed, sizeAllocated, TextFormatUNICODE);
+}
+
+PXResult PXAPI PXTextCreateCopy(PXText PXREF pxText, const PXText PXREF pxTextSource)
 {
     pxText->A = PXMemoryHeapCallocT(char, pxTextSource->SizeUsed + 1);
     PXTextCopy(pxTextSource, pxText);
@@ -1475,7 +1541,7 @@ PXResult PXAPI PXTextCreateCopy(PXText* const pxText, const PXText* const pxText
     return PXActionSuccessful;
 }
 
-PXResult PXAPI PXTextDestroy(PXText* const pxText)
+PXResult PXAPI PXTextDestroy(PXText PXREF pxText)
 {
     PXMemoryHeapFree(PXNull, pxText->A);
     PXClear(PXText, pxText);
@@ -1483,7 +1549,7 @@ PXResult PXAPI PXTextDestroy(PXText* const pxText)
     return PXActionSuccessful;
 }
 
-PXSize PXAPI PXTextFromInt(PXText* const pxText, int number)
+PXSize PXAPI PXTextFromInt(PXText PXREF pxText, int number)
 {
     switch(pxText->Format)
     {
@@ -1549,7 +1615,7 @@ PXSize PXAPI PXTextFromInt(PXText* const pxText, int number)
     }
 }
 
-PXSize PXAPI PXTextFromBool(PXText* const pxText, const PXBool number)
+PXSize PXAPI PXTextFromBool(PXText PXREF pxText, const PXBool number)
 {
     switch(pxText->Format)
     {
@@ -1573,7 +1639,7 @@ PXSize PXAPI PXTextFromBool(PXText* const pxText, const PXBool number)
     }
 }
 
-PXSize PXAPI PXTextFromPXF32(PXText* const pxText, const PXF32 number)
+PXSize PXAPI PXTextFromPXF32(PXText PXREF pxText, const PXF32 number)
 {
     switch(pxText->Format)
     {
@@ -1602,6 +1668,45 @@ PXSize PXAPI PXTextFromPXF32(PXText* const pxText, const PXF32 number)
         default:
             return 0;
     }
+}
+
+PXBool PXAPI PXTextDemote(PXText PXREF pxText)
+{
+    switch(pxText->Format)
+    {
+        case TextFormatASCII:
+            return PXFalse;
+
+        case TextFormatUNICODE:
+        {
+            PXBool isCollapseable = PXTrue;
+
+            for(PXSize i = 0; i < pxText->SizeUsed; i++)
+            {
+                if(pxText->W[i] >= 0xFF)
+                {
+                    isCollapseable = PXFalse;
+                    break;
+                }
+            }
+
+            if(isCollapseable)
+            {
+                for(PXSize i = 0; i < pxText->SizeUsed; i++)
+                {
+                    pxText->A[i] = pxText->W[i];
+                }
+                pxText->Format = TextFormatASCII;
+            }
+
+            break;
+        }
+
+        default:
+            return PXFalse;
+    }
+
+    return PXTrue;
 }
 
 PXBool PXAPI PXTextIsPrintableA(const PXASCII c)
@@ -1697,7 +1802,7 @@ PXSize PXAPI PXTextFromBinaryDataA(const void* data, const PXSize dataSize, char
     return outputIndex;
 }
 
-PXSize PXAPI PXTextToInt(const PXText* const pxText, int* const number)
+PXSize PXAPI PXTextToInt(const PXText PXREF pxText, int PXREF number)
 {
     switch(pxText->Format)
     {
@@ -1715,7 +1820,7 @@ PXSize PXAPI PXTextToInt(const PXText* const pxText, int* const number)
     return 0;
 }
 
-PXSize PXAPI PXTextToIntA(const char* const text, const PXSize textSize, int* const number)
+PXSize PXAPI PXTextToIntA(const char PXREF text, const PXSize textSize, int PXREF number)
 {
     int accumulator = 0;
     PXSize index = 0;
@@ -1759,7 +1864,7 @@ PXSize PXAPI PXTextToIntA(const char* const text, const PXSize textSize, int* co
     return index;
 }
 
-PXSize PXAPI PXTextToBool(const PXText* const pxText, PXBool* const number)
+PXSize PXAPI PXTextToBool(const PXText PXREF pxText, PXBool PXREF number)
 {
     switch(pxText->Format)
     {
@@ -1797,7 +1902,7 @@ PXSize PXAPI PXTextToBool(const PXText* const pxText, PXBool* const number)
     return 0;
 }
 
-PXSize PXAPI PXTextToF32(const PXText* const pxText, PXF32* const number)
+PXSize PXAPI PXTextToF32(const PXText PXREF pxText, PXF32 PXREF number)
 {
     PXF64 pxF64 = 0;
 
@@ -1808,7 +1913,7 @@ PXSize PXAPI PXTextToF32(const PXText* const pxText, PXF32* const number)
     return res;
 }
 
-PXSize PXAPI PXTextToF64A(const PXText* const pxText, PXF64* const number)
+PXSize PXAPI PXTextToF64A(const PXText PXREF pxText, PXF64 PXREF number)
 {
     switch(pxText->Format)
     {
@@ -1928,7 +2033,7 @@ PXSize PXAPI PXTextToF64A(const PXText* const pxText, PXF64* const number)
 
 #include <PX/OS/Time/PXTime.h>
 
-PXSize PXAPI PXTextFormatDateTime(PXText* const pxText, const PXTime* const pxTime)
+PXSize PXAPI PXTextFormatDateTime(PXText PXREF pxText, const PXTime PXREF pxTime)
 {
     // YYYY.MM.DD - HH.MM.SS
     return  PXTextPrint
@@ -1944,7 +2049,7 @@ PXSize PXAPI PXTextFormatDateTime(PXText* const pxText, const PXTime* const pxTi
     );
 }
 
-PXSize PXAPI PXTextFormatTime(PXText* const pxText, const PXSize pxTime)
+PXSize PXAPI PXTextFormatTime(PXText PXREF pxText, const PXSize pxTime)
 {
     if(pxTime < 1000)
     {
@@ -1978,7 +2083,7 @@ PXSize PXAPI PXTextFormatTime(PXText* const pxText, const PXSize pxTime)
 #endif
 }
 
-PXSize PXAPI PXTextFormatSize(PXText* const pxText, const PXSize pxSize)
+PXSize PXAPI PXTextFormatSize(PXText PXREF pxText, const PXSize pxSize)
 {
     if(pxSize < PXSizeKB)
     {
@@ -2013,7 +2118,7 @@ PXSize PXAPI PXTextFormatSize(PXText* const pxText, const PXSize pxSize)
     return PXTextPrint(pxText, "%.1f EB", pxSize / (PXF32)PXSizeEB);
 }
 
-PXSize PXAPI PXTextFormatData(PXText* const pxText, const void* data, const PXSize dataSize)
+PXSize PXAPI PXTextFormatData(PXText PXREF pxText, const void* data, const PXSize dataSize)
 {
     for(PXSize i = 0; i < dataSize; i++)
     {

@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXTimeIncluded
 #define PXTimeIncluded
 
@@ -58,9 +60,9 @@ PXTime;
 PXPublic PXTimeMonth  PXAPI PXTimeMonthFromID(const PXI8U monthID);
 PXPublic PXTimeDayOfWeek PXAPI PXTimeDayFromID(const PXI8U dayID);
 
-PXPublic void PXAPI PXTimeNow(PXTime* const time);
+PXPublic void PXAPI PXTimeNow(PXTime PXREF time);
 
-PXPublic PXSize PXAPI PXTimeDelta(const PXTime* const timeA, const PXTime* const timeB, PXTime* const timeResult);
+PXPublic PXSize PXAPI PXTimeDelta(const PXTime PXREF timeA, const PXTime PXREF timeB, PXTime PXREF timeResult);
 
 PXPublic PXSize PXAPI PXTimeMilliseconds(const PXTime* time);
 PXPublic PXSize PXAPI PXTimeMillisecondsDelta(const PXTime* timeA, const PXTime* timeB);
@@ -71,11 +73,11 @@ PXPublic PXI64U PXAPI PXTimeCounterStampGet();
 PXPublic PXI64U PXAPI PXTimeCounterFrequencyGet();
 
 
-PXPublic void PXAPI PXTimeFromOSCTime(PXTime* const pxTime, const time_t timeValue);
+PXPublic void PXAPI PXTimeFromOSCTime(PXTime PXREF pxTime, const time_t timeValue);
 
 #if OSWindows
-PXPublic void PXAPI PXTimeFromOSFileTime(PXTime* const pxTime, FILETIME* const fileTime);
-PXPublic void PXAPI PXTimeConvertFromOS(PXTime* const time, const SYSTEMTIME* const systemTime);
+PXPublic void PXAPI PXTimeFromOSFileTime(PXTime PXREF pxTime, FILETIME PXREF fileTime);
+PXPublic void PXAPI PXTimeConvertFromOS(PXTime PXREF time, const SYSTEMTIME PXREF systemTime);
 #endif
 
 #endif

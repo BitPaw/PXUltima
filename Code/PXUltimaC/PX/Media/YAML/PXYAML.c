@@ -9,7 +9,7 @@ PXYAMLLineType PXAPI PXYAMLPeekLine(const void* line, const PXSize size)
         return PXYAMLLineTypeInvalid;
     }
 
-    const unsigned char id = *(const unsigned char* const)line;
+    const unsigned char id = *(const unsigned char PXREF)line;
 
     switch (id)
     {
@@ -57,7 +57,7 @@ PXYAMLLineType PXAPI PXYAMLPeekLine(const void* line, const PXSize size)
     return PXYAMLLineTypeUnkown;
 }
 
-PXResult PXAPI  PXYAMLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI PXYAMLLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
 {
     PXSize errorCounter = 0;
     PXFile tokenSteam;
@@ -318,7 +318,7 @@ PXResult PXAPI  PXYAMLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoa
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXYAMLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI PXYAMLSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

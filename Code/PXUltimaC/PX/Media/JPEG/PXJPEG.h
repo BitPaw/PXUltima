@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXJPEGIncluded
 #define PXJPEGIncluded
 
@@ -154,11 +156,11 @@ typedef struct PXJPEG_
 }
 PXJPEG;
 
-PXPublic void PXAPI PXJPEGDestruct(PXJPEG* const jpeg);
+PXPublic void PXAPI PXJPEGDestruct(PXJPEG PXREF jpeg);
 
 PXPublic PXSize PXAPI PXJPEGFilePredictSize(const PXSize width, const PXSize height, const PXSize bbp);
 
-PXPublic PXResult PXAPI PXJPEGLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXJPEGSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXJPEGLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXJPEGSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

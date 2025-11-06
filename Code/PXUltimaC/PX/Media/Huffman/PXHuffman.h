@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXHuffmanTreeIncluded
 #define PXHuffmanTreeIncluded
 
@@ -46,7 +48,7 @@ typedef struct PXHuffmanTree_
 }
 PXHuffmanTree;
 
-PXPublic void PXAPI PXHuffmanTreeDestruct(PXHuffmanTree* const huffmanTree);
+PXPublic void PXAPI PXHuffmanTreeDestruct(PXHuffmanTree PXREF huffmanTree);
 
 // Literal : 0 <= x < 256
 // End of Block : x = 256
@@ -54,12 +56,12 @@ PXPublic void PXAPI PXHuffmanTreeDestruct(PXHuffmanTree* const huffmanTree);
 // Invalid : x > 285
 PXPublic PXHuffmanCodeType PXAPI PXHuffmanCodeTypeFromCode(const PXI16U code);
 
-PXPublic PXResult PXAPI PXHuffmanDistanceTreeGenerateFixed(PXHuffmanTree* const treeLength, PXHuffmanTree* const treeDistance);
-PXPublic PXResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(PXFile* const pxFile, PXHuffmanTree* const treeLength, PXHuffmanTree* const treeDistance);
+PXPublic PXResult PXAPI PXHuffmanDistanceTreeGenerateFixed(PXHuffmanTree PXREF treeLength, PXHuffmanTree PXREF treeDistance);
+PXPublic PXResult PXAPI PXHuffmanDistanceTreeGenerateDynamic(PXFile PXREF pxFile, PXHuffmanTree PXREF treeLength, PXHuffmanTree PXREF treeDistance);
 
-PXPublic PXResult PXAPI PXGenerateFromLengths(PXHuffmanTree* const huffmanTree, const PXI32U* const bitlen, const PXSize numcodes, const PXSize maxbitlen);
+PXPublic PXResult PXAPI PXGenerateFromLengths(PXHuffmanTree PXREF huffmanTree, const PXI32U PXREF bitlen, const PXSize numcodes, const PXSize maxbitlen);
 
-PXPublic PXI16U PXAPI PXHuffmanSymbolDecode(struct PXFile_* const pxFile, const PXHuffmanTree* const codetree);
+PXPublic PXI16U PXAPI PXHuffmanSymbolDecode(struct PXFile_ PXREF pxFile, const PXHuffmanTree PXREF codetree);
 
 PXPublic PXI32U PXAPI reverseBits(const PXI32U bits, const PXI32U num);
 

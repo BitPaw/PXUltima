@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXFLACIncluded
 #define PXFLACIncluded
 
@@ -47,7 +49,7 @@ PXFLAC;
 
 PXPrivate inline PXFLACBlockType PXAPI PXFLACBlockTypeFromID(const PXI8U typeID);
 
-PXPublic PXResult PXAPI PXFLACLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXFLACSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXFLACLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXFLACSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

@@ -1,7 +1,8 @@
+#pragma once
+
 #ifndef PXBufferDEFINED
 #define PXBufferDEFINED
 
-#include <PX/Media/PXType.h>
 #include <PX/OS/Error/PXActionResult.h>
 
 // Container to store data.

@@ -79,7 +79,7 @@ PXI8U PXAPI PXZLIBCompressionMethodToID(const PXZLIBCompressionMethod compressio
     }
 }
 
-PXResult PXAPI  PXZLIBDecompress(PXFile* const pxInputSteam, PXFile* const pxOutputSteam)
+PXResult PXAPI PXZLIBDecompress(PXFile PXREF pxInputSteam, PXFile PXREF pxOutputSteam)
 {
     PXZLIB PXZLIB;
 
@@ -160,20 +160,21 @@ PXResult PXAPI  PXZLIBDecompress(PXFile* const pxInputSteam, PXFile* const pxOut
 
     switch(PXZLIB.Header.CompressionMethod)
     {
-    case PXZLIBCompressionMethodDeflate:
-    {
-        const PXActionResult deflateResult = PXDEFLATEParse(pxInputSteam, pxOutputSteam);
+        case PXZLIBCompressionMethodDeflate:
+        {
+            const PXResult deflateResult = PXDEFLATEParse(pxInputSteam, pxOutputSteam);
 
-        PXActionReturnOnError(deflateResult);
+            if(PXActionSuccessful != deflateResult)
+                return deflateResult;
 
-        break;
-    }
-    default:
-    case PXZLIBCompressionMethodReserved:
-    case PXZLIBCompressionMethodInvalid:
-    {
-        return PXActionFailedFormatNotAsExpected;
-    }
+            break;
+        }
+        default:
+        case PXZLIBCompressionMethodReserved:
+        case PXZLIBCompressionMethodInvalid:
+        {
+            return PXActionFailedFormatNotAsExpected;
+        }
     }
 
     PXFileReadI32UE(pxInputSteam, &PXZLIB.AdlerChecksum, PXEndianBig);
@@ -181,7 +182,7 @@ PXResult PXAPI  PXZLIBDecompress(PXFile* const pxInputSteam, PXFile* const pxOut
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXZLIBCompress(PXFile* const pxInputSteam, PXFile* const pxOutputSteam)
+PXResult PXAPI PXZLIBCompress(PXFile PXREF pxInputSteam, PXFile PXREF pxOutputSteam)
 {
     // Write PXZLIB Header
     {
@@ -218,9 +219,10 @@ PXResult PXAPI  PXZLIBCompress(PXFile* const pxInputSteam, PXFile* const pxOutpu
 
     // Write DEFLATE
     {
-        const PXActionResult delfateResult = PXDEFLATESerialize(pxInputSteam, pxOutputSteam);
+        const PXResult delfateResult = PXDEFLATESerialize(pxInputSteam, pxOutputSteam);
 
-        PXActionReturnOnError(delfateResult);
+        if(PXActionSuccessful != delfateResult) 
+            return delfateResult;;
     }
 
     // Write ADLER

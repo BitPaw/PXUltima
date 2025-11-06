@@ -18,19 +18,17 @@
 
 #pragma comment( lib, "winmm.lib" )
 
-
-
 typedef UINT(WINAPI* PXjoyGetNumDevs)(void);
 typedef MMRESULT(WINAPI* PXjoyGetDevCapsA)(_In_ UINT_PTR uJoyID, _Out_writes_bytes_(cbjc) LPJOYCAPSA pjc, _In_ UINT cbjc);
 typedef MMRESULT(WINAPI* PXjoyGetPosEx)(_In_ UINT uJoyID, _Out_ LPJOYINFOEX pji);
 
 #endif
 
-PXResult PXAPI  PXControllerSystemInitilize(PXControllerSystem* const pxControllerSystem)
+PXResult PXAPI PXControllerSystemInitilize(PXControllerSystem PXREF pxControllerSystem)
 {
     // Library
     {
-        const PXActionResult loadLibResult = PXLibraryOpenA(&pxControllerSystem->InputLibrary, "WINMM.DLL");
+        const PXResult loadLibResult = PXLibraryOpenA(&pxControllerSystem->InputLibrary, "WINMM.DLL");
 
         if(PXActionSuccessful != loadLibResult)
         {
@@ -55,7 +53,7 @@ PXResult PXAPI  PXControllerSystemInitilize(PXControllerSystem* const pxControll
     return PXActionSuccessful;
 }
 
-void PXAPI PXControllerSystemShutdown(PXControllerSystem* const pxControllerSystem)
+void PXAPI PXControllerSystemShutdown(PXControllerSystem PXREF pxControllerSystem)
 {
     PXMemoryHeapFree(PXNull, pxControllerSystem->DeviceListData);
 
@@ -64,7 +62,7 @@ void PXAPI PXControllerSystemShutdown(PXControllerSystem* const pxControllerSyst
     PXClear(PXControllerSystem, pxControllerSystem);
 }
 
-PXResult PXAPI  PXControllerSystemDevicesListRefresh(PXControllerSystem* const pxControllerSystem)
+PXResult PXAPI PXControllerSystemDevicesListRefresh(PXControllerSystem PXREF pxControllerSystem)
 {
 #if OSUnix
 #elif OSWindows
@@ -85,13 +83,13 @@ PXResult PXAPI  PXControllerSystemDevicesListRefresh(PXControllerSystem* const p
 
         for(PXSize i = 0; i < pxControllerSystem->DeviceListAmount; ++i)
         {
-            PXController* const pxController = &pxControllerSystem->DeviceListData[i];
+            PXController PXREF pxController = &pxControllerSystem->DeviceListData[i];
 
             pxController->ID = i;
             JOYCAPSA pjc;
             const PXSize size = sizeof(JOYCAPSA);
             const MMRESULT devResult = pxjoyGetDevCapsA(i, &pjc, size);
-            const PXActionResult pxActionResult = PXErrorCurrent(JOYERR_NOERROR == devResult);
+            const PXResult pxActionResult = PXErrorCurrent(JOYERR_NOERROR == devResult);
 
             if(PXActionSuccessful != pxActionResult)
             {
@@ -123,11 +121,11 @@ PXResult PXAPI  PXControllerSystemDevicesListRefresh(PXControllerSystem* const p
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXControllerSystemDevicesDataUpdate(PXControllerSystem* const pxControllerSystem)
+PXResult PXAPI PXControllerSystemDevicesDataUpdate(PXControllerSystem PXREF pxControllerSystem)
 {
     for(PXSize i = 0; i < pxControllerSystem->DeviceListAmount; ++i)
     {
-        PXController* const pxController = &pxControllerSystem->DeviceListData[i];
+        PXController PXREF pxController = &pxControllerSystem->DeviceListData[i];
 
 
 #if OSUnix
@@ -193,7 +191,7 @@ PXResult PXAPI  PXControllerSystemDevicesDataUpdate(PXControllerSystem* const px
     return PXActionSuccessful;
 }
 
-void PXAPI PXControllerSystemDebugPrint(PXController* const pxController)
+void PXAPI PXControllerSystemDebugPrint(PXController PXREF pxController)
 {
     //PXConsoleClear();
     PXConsoleGoToXY(0,0);

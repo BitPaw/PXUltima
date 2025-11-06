@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXPNGIncluded
 #define PXPNGIncluded
 
@@ -306,7 +308,7 @@ PNGColorTree;
 
 
 
-PXPublic PXResult PXAPI PXPNGImageDataDecompress(const PXPNG* const png, const void* pixelDataIn, void* pixelDataOut, unsigned char bitDepth, PXPNGColorType colorType);
+PXPublic PXResult PXAPI PXPNGImageDataDecompress(const PXPNG PXREF png, const void* pixelDataIn, void* pixelDataOut, unsigned char bitDepth, PXPNGColorType colorType);
 
 
 
@@ -344,17 +346,17 @@ static void getPixelColorsRGBA8(unsigned char* buffer, PXSize numpixels, const u
 static void getPixelColorsRGB8(unsigned char* buffer, PXSize numpixels, const unsigned char* in, const LodePNGColorMode* mode);
 
 /*Get RGBA8 color of pixel with index i (y * width + x) from the raw image with given color type.*/
-static void getPixelColorRGBA8(PXColorRGBAI8* const color, const unsigned char* in, PXSize i, const LodePNGColorMode* mode);
+static void getPixelColorRGBA8(PXColorRGBAI8 PXREF color, const unsigned char* in, PXSize i, const LodePNGColorMode* mode);
 
 
 /*put a pixel, given its RGBA color, into image of any color type*/
-PXPrivate PXResult PXAPI  rgba8ToPixel
+PXPrivate PXResult PXAPI rgba8ToPixel
 (
     unsigned char* out,
     PXSize i,
     const LodePNGColorMode* mode,
     PNGColorTree* tree /*for palette*/,
-    const PXColorRGBAI8* const color
+    const PXColorRGBAI8 PXREF color
 );
 
 
@@ -362,7 +364,7 @@ PXPublic PXSize lodepng_get_raw_size_lct(PXSize w, PXSize h, LodePNGColorType co
 PXPublic PXSize lodepng_get_raw_size(PXSize w, PXSize h, const LodePNGColorMode* color);
 
 // returns -1 if color not present, its index otherwise
-PXPublic int color_tree_get(PNGColorTree* tree, const PXColorRGBAI8* const color);
+PXPublic int color_tree_get(PNGColorTree* tree, const PXColorRGBAI8 PXREF color);
 
 // index: bitgroup index, bits: bitgroup size(1, 2 or 4), in: bitgroup value, out: octet array to add bits to
 PXPublic void addColorBits(unsigned char* out, PXSize index, unsigned int bits, unsigned int in);
@@ -381,13 +383,13 @@ PXPrivate inline PXI8U PXAPI PXPNGInterlaceMethodToID(const PXPNGInterlaceMethod
 
 PXPrivate inline PXI8U PXAPI PXPNGColorTypeNumberOfChannels(const PXPNGColorType pngColorType);
 
-PXPublic void PXAPI PXPNGDestruct(PXPNG* const png);
+PXPublic void PXAPI PXPNGDestruct(PXPNG PXREF png);
 
-PXPublic PXI8U PXAPI PXPNGBitsPerPixel(const PXPNG* const png);
+PXPublic PXI8U PXAPI PXPNGBitsPerPixel(const PXPNG PXREF png);
 
-PXPublic PXSize PXAPI PXPNGFilePredictSize(PXTexture* const pxTexture, PXSize* const fileSize);
-PXPublic PXResult PXAPI PXPNGPeekFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXPNGLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXPNGSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXSize PXAPI PXPNGFilePredictSize(PXTexture PXREF pxTexture, PXSize PXREF fileSize);
+PXPublic PXResult PXAPI PXPNGPeekFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXPNGLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXPNGSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

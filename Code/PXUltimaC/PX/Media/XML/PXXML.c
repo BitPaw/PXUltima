@@ -5,7 +5,7 @@
 #include <PX/Media/PXText.h>
 #include <PX/Media/PXDocument.h>
 
-PXXMLSymbol PXAPI PXXMLPeekLine(const char* const text, const PXSize textSize)
+PXXMLSymbol PXAPI PXXMLPeekLine(const char PXREF text, const PXSize textSize)
 {
     const PXBool isOpenTag = text[0] == '<';
     const PXBool isSlashTag = text[1] == '/';
@@ -51,7 +51,7 @@ PXXMLSymbol PXAPI PXXMLPeekLine(const char* const text, const PXSize textSize)
     return PXXMLSymbolUnkown;
 }
 
-void PXAPI PXXMLBlockParse(PXCodeDocument* const pxDocument, PXCompiler* const pxCompiler)
+void PXAPI PXXMLBlockParse(PXCodeDocument PXREF pxDocument, PXCompiler PXREF pxCompiler)
 {
     const PXBool isOpenAngleBracked = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerBracketAngleOpen);
 
@@ -204,7 +204,7 @@ void PXAPI PXXMLBlockParse(PXCodeDocument* const pxDocument, PXCompiler* const p
     }
 }
 
-PXResult PXAPI  PXXMLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo)
+PXResult PXAPI PXXMLLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
 {
     PXFile tokenSteam;
     PXClear(PXFile, &tokenSteam);
@@ -229,7 +229,7 @@ PXResult PXAPI  PXXMLLoadFromFile(PXResourceTransphereInfo* const pxResourceLoad
     return PXActionSuccessful;
 }
 
-PXResult PXAPI  PXXMLSaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo)
+PXResult PXAPI PXXMLSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

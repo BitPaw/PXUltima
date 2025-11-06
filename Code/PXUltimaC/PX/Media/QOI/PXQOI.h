@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PXQOIIncluded
 #define PXQOIIncluded
 
@@ -9,7 +11,7 @@ typedef struct PXQOI_
 }
 PXQOI;
 
-PXPublic PXResult PXAPI PXQOILoadFromFile(PXResourceTransphereInfo* const pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXQOISaveToFile(PXResourceTransphereInfo* const pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXQOILoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXQOISaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
 
 #endif

@@ -18,18 +18,18 @@ const PXF32 EPSILON = 0.0000001f;
 
 PXF32 PXAPI PXRayTriangleIntersect
 (
-    PXVector3F32* const rayOriginPositon,
+    PXVector3F32 PXREF rayOriginPositon,
     PXVector3F32* rayOriginDirection,
-    const PXTriangleF32* const triangleVertexList,
+    const PXTriangleF32 PXREF triangleVertexList,
     const PXSize amountTriangles
 )
 {
     // Möller–Trumbore intersection
     for(PXSize i = 0; i < amountTriangles; ++i)
     {
-        const PXVector3F32* const vertex0 = &triangleVertexList[i].A;
-        const PXVector3F32* const vertex1 = &triangleVertexList[i].B;
-        const PXVector3F32* const vertex2 = &triangleVertexList[i].C;
+        const PXVector3F32 PXREF vertex0 = &triangleVertexList[i].A;
+        const PXVector3F32 PXREF vertex1 = &triangleVertexList[i].B;
+        const PXVector3F32 PXREF vertex2 = &triangleVertexList[i].C;
         PXVector3F32 edge1;
         PXVector3F32 edge2;
         PXVector3F32 h;
