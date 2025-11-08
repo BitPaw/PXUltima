@@ -430,7 +430,6 @@ PXPublic PXResult PXAPI PXCriticalSectionLeave(PXLock PXREF pxLock);
 //---------------------------------------------------------
 // File - I/O
 //---------------------------------------------------------
-PXPublic PXResult PXAPI PXFileMapToMemoryEE(PXFile PXREF pxFile, const PXSize requestedSize, const PXAccessMode pxAccessMode, const PXBool prefetch);
 
 //---------------------------------------------------------
 
