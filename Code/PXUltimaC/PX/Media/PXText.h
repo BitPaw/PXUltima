@@ -73,6 +73,10 @@ PXText;
 #define PXTextConstructNamedBufferA(pxText, bufferCacheName, bufferCacheSize) PXTextConstructNamedBuffer(pxText, bufferCacheName, bufferCacheSize, TextFormatASCII)
 #define PXTextConstructNamedBufferW(pxText, bufferCacheName, bufferCacheSize) PXTextConstructNamedBuffer(pxText, bufferCacheName, bufferCacheSize*2, TextFormatUNICODE)
 
+// Used for general path creation
+PXPublic PXResult PXAPI PXTextCreatePath(PXText PXREF pxText);
+
+
 
 #define PXTextConstructBufferA(pxText, bufferSize) PXTextConstructNamedBufferA(pxText, __pxUnnamedInternalBuffer, bufferSize);
 #define PXTextConstructBufferW(pxText, bufferSize) PXTextConstructNamedBufferW(pxText, __pxUnnamedInternalBuffer, bufferSize);
