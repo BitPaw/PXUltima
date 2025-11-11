@@ -298,7 +298,7 @@ PXSize PXAPI PXCompilerSymbolRewind(PXCompiler PXREF pxCompiler, const PXSize am
 {
     const PXSize totalSize = sizeof(PXCompilerSymbolEntry);
 
-    PXSize reveredSize = pxCompiler->ReadInfo.FileCache->DataCursor;
+    PXSize reveredSize = PXFileDataPosition(pxCompiler->ReadInfo.FileCache);
     PXBool isInvalidToken;
 
     do
@@ -306,9 +306,10 @@ PXSize PXAPI PXCompilerSymbolRewind(PXCompiler PXREF pxCompiler, const PXSize am
         PXFileCursorRewind(pxCompiler->ReadInfo.FileCache, totalSize * amount);
 
         isInvalidToken = PXCompilerSymbolEntryPeekCheck(pxCompiler, PXCompilerSymbolLexerInvalid);
-    } while(isInvalidToken);
+    }
+    while(isInvalidToken);
 
-    reveredSize = reveredSize - pxCompiler->ReadInfo.FileCache->DataCursor;
+    reveredSize = reveredSize - PXFileDataPosition(pxCompiler->ReadInfo.FileCache);
 
     return reveredSize;
 }
@@ -341,7 +342,7 @@ PXSize PXAPI PXCompilerSymbolEntryExtract(PXCompiler PXREF pxCompiler)
 PXSize PXAPI PXCompilerSymbolEntryForward(PXCompiler PXREF pxCompiler)
 {
     const PXSize totalSize = sizeof(PXCompilerSymbolEntry);
-    const PXSize positionBefore = pxCompiler->ReadInfo.FileCache->DataCursor;
+    const PXSize positionBefore = PXFileDataPosition(pxCompiler->ReadInfo.FileCache);
 
     PXCompilerSymbolEntry pxCompilerSymbolEntry;
 
@@ -358,7 +359,7 @@ PXSize PXAPI PXCompilerSymbolEntryForward(PXCompiler PXREF pxCompiler)
 
 
 
-    return pxCompiler->ReadInfo.FileCache->DataCursor - positionBefore;
+    return PXFileDataPosition(pxCompiler->ReadInfo.FileCache) - positionBefore;
 }
 
 PXSize PXAPI PXCompilerSymbolEntryPeek(PXCompiler PXREF pxCompiler)
@@ -935,7 +936,7 @@ PXResult PXAPI PXCompilerLexicalAnalysis(PXCompiler PXREF pxCompiler)
 #if PXLogEnable
     PXText pxTextSize;
     PXTextConstructNamedBufferA(&pxTextSize, pxTextBuffer, 32);
-    PXTextFormatSize(&pxTextSize, pxFileInput->DataUsed);
+    PXTextFormatSize(&pxTextSize, PXFileDataPosition(pxFileInput));
 
     PXLogPrint
     (
@@ -967,7 +968,7 @@ PXResult PXAPI PXCompilerLexicalAnalysis(PXCompiler PXREF pxCompiler)
     PXFileOpenInfo pxFileOpenInfo;
     PXClear(PXFileOpenInfo, &pxFileOpenInfo);
     pxFileOpenInfo.FlagList = PXFileIOInfoFileVirtual;
-    pxFileOpenInfo.FileSizeRequest = pxCompiler->ReadInfo.FileInput->DataUsed * 5u;
+    pxFileOpenInfo.FileSizeRequest = PXFileDataPosition(pxCompiler->ReadInfo.FileInput) * 5u;
     pxFileOpenInfo.AccessMode = PXAccessModeReadAndWrite;
 
     const PXResult pxOpenResult = PXFileOpen(pxCompiler->ReadInfo.FileCache, &pxFileOpenInfo);
@@ -997,7 +998,7 @@ PXResult PXAPI PXCompilerLexicalAnalysis(PXCompiler PXREF pxCompiler)
         PXClear(PXCompilerSymbolEntry, &compilerSymbolEntry);
 
         compilerSymbolEntry.Size = PXFileRemainingSize(pxFileInput);
-        compilerSymbolEntry.Source = (char*)PXFileCursorPosition(pxFileInput);
+        compilerSymbolEntry.Source = (char*)PXFileDataAtCursor(pxFileInput);
 
         PXBool isEndOfString = '\0' == compilerSymbolEntry.Source[0];
 
@@ -1179,7 +1180,7 @@ PXResult PXAPI PXCompilerLexicalAnalysis(PXCompiler PXREF pxCompiler)
 
                 if(skip)
                 {
-                    pxFileInput->DataCursor -= compilerSymbolEntry.Size;
+                    PXFileCursorRewind(pxFileInput, compilerSymbolEntry.Size);
                     break;
                 }
 
@@ -1211,19 +1212,15 @@ PXResult PXAPI PXCompilerLexicalAnalysis(PXCompiler PXREF pxCompiler)
     }
 
     // Mark end of output Stream
-    pxCompiler->ReadInfo.FileCache->DataUsed = pxCompiler->ReadInfo.FileCache->DataCursor;
+   // pxCompiler->ReadInfo.FileCache->DataUsed = pxCompiler->ReadInfo.FileCache->DataCursor;
+    PXFileCursorPositionTerminate(pxCompiler->ReadInfo.FileCache);
 
     PXI64U timeCounterB = PXTimeCounterStampGet() - timeCounter;
     PXF32 delta = PXTimeCounterStampToSecoundsF(timeCounterB);
 
 
 #if PXLogEnable
-    int percentage = 0;
-
-    if(pxCompiler->ReadInfo.FileCache->DataAllocated > 0)
-    {
-        percentage = (int)((pxCompiler->ReadInfo.FileCache->DataUsed / (PXF32)pxCompiler->ReadInfo.FileCache->DataAllocated) * 100);
-    }
+    PXSize percentage = PXFileDataUtilized(pxCompiler->ReadInfo.FileCache);
 
     PXLogPrint
     (
@@ -1236,7 +1233,7 @@ PXResult PXAPI PXCompilerLexicalAnalysis(PXCompiler PXREF pxCompiler)
         "%10s : %i/%i (%i%%)",
         "Entrys", pxCompiler->SymbolsRead,
         "Time", delta,
-        "Buffer", pxCompiler->ReadInfo.FileCache->DataCursor, pxCompiler->ReadInfo.FileCache->DataAllocated, percentage
+        "Buffer", PXFileDataPosition(pxCompiler->ReadInfo.FileCache), PXFileAllocatedSize(pxCompiler->ReadInfo.FileCache), percentage
     );
 #endif
 
