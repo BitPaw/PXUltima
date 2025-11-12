@@ -230,7 +230,8 @@ PXResult PXAPI PXTIFFLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadI
                 return PXActionRefusedInvalidHeaderSignature;
             }
 
-            pxResourceLoadInfo->FileReference->EndiannessOfData = tiff->Endianness;
+            PXFileEndianessSet(pxResourceLoadInfo->FileReference, tiff->Endianness);
+
         }
 
         {
@@ -257,7 +258,7 @@ PXResult PXAPI PXTIFFLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadI
 
             PXFileReadI16UE(pxResourceLoadInfo->FileReference, &tiffPage.NumberOfTags, tiff->Endianness); // 2-Bytes
 
-            tiffPage.PredictedEndPosition = pxResourceLoadInfo->FileReference->DataCursor + 12u * tiffPage.NumberOfTags;
+            tiffPage.PredictedEndPosition = PXFileDataPosition(pxResourceLoadInfo->FileReference) + 12u * tiffPage.NumberOfTags;
 
             for (PXI16U i = 0; i < tiffPage.NumberOfTags; ++i) // Read 12-Bytes
             {
@@ -397,7 +398,7 @@ PXResult PXAPI PXTIFFLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadI
 
                 case PXTIFFTagSoftware:
                 {
-                    const PXSize oldPosition = pxResourceLoadInfo->FileReference->DataCursor;
+                    const PXSize oldPosition = PXFileDataPosition(pxResourceLoadInfo->FileReference);
 
                     PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, tiffTag.ImageFileDataOffset);
                     PXFileReadB(pxResourceLoadInfo->FileReference, tiff->Software, tiffTag.NumberOfValues);
@@ -407,7 +408,7 @@ PXResult PXAPI PXTIFFLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadI
                 }
                 case PXTIFFTagDateTime:
                 {
-                    const PXSize oldPosition = pxResourceLoadInfo->FileReference->DataCursor;
+                    const PXSize oldPosition = PXFileDataPosition(pxResourceLoadInfo->FileReference);
 
                     PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, tiffTag.ImageFileDataOffset);
                     PXFileReadB(pxResourceLoadInfo->FileReference, tiff->DateTimeStamp, tiffTag.NumberOfValues);
@@ -454,7 +455,7 @@ PXResult PXAPI PXTIFFLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadI
                 {
                     if (tiffTag.ImageFileDataOffset != 0)
                     {
-                        const PXSize oldPosition = pxResourceLoadInfo->FileReference->DataCursor;
+                        const PXSize oldPosition = PXFileDataPosition(pxResourceLoadInfo->FileReference);
 
                         PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, tiffTag.ImageFileDataOffset);
                         PXFileReadB(pxResourceLoadInfo->FileReference, tiff->CopyRight, tiffTag.NumberOfValues);

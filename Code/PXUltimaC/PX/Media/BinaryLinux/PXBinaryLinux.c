@@ -413,8 +413,8 @@ PXResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceTransphereInfo PXREF pxResour
             pxBinaryLinux->Header.Endian = PXELFEndianessFromID(dataID);
             pxBinaryLinux->Header.TargetOSAPI = PXPXELFTargetOSAPIFromID(osAPIID);
 
-            pxResourceLoadInfo->FileReference->BitFormatOfData = pxBinaryLinux->Header.BitFormat;
-            pxResourceLoadInfo->FileReference->EndiannessOfData = pxBinaryLinux->Header.Endian;
+            PXFileEndianessSet(pxResourceLoadInfo->FileReference, pxBinaryLinux->Header.Endian);
+            PXFileBitFormatOfDataSet(pxResourceLoadInfo->FileReference, pxBinaryLinux->Header.BitFormat);
         }
 
         // B

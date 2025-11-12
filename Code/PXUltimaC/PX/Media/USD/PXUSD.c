@@ -243,7 +243,9 @@ PXResult PXAPI PXUSDLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
     );
 #endif
 
-    switch(*(char*)pxFile->Data) // Unsafe
+    char* text = PXFileDataAtCursor(pxFile);
+
+    switch(*text) // Unsafe
     {
         case '#':
             pxUSDLoadFunction = PXUSDALoadFromFile;
@@ -371,9 +373,9 @@ PXResult PXAPI PXUSDCLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadI
 
             PXFileReadI64U(pxFile, &pxTOCSection->Tokens.NumberOfTokens);
 
-            PXUSDBinaryTokenListFunction[index](pxFile, pxTOCSection->Data);
+            PXUSDBinaryTokenListFunction[index](pxFile, pxTOCSection->Data);    
 
-            const PXBool isAlligned = pxFile->DataCursor == (pxTOCSection->OffsetStart + pxTOCSection->BlockSize);
+            const PXBool isAlligned = PXFileCursorIsAt(pxFile, pxTOCSection->OffsetStart + pxTOCSection->BlockSize);
         }
     }
 
@@ -426,8 +428,8 @@ PXResult PXAPI PXUSDCSectionTokensLoad(PXFile PXREF pxFile, PXTOCSectionTokens P
 
 
 
-    PXFile pxFileCompressed;
-    PXFile pxFileUncompressed;
+    PXFile* pxFileCompressed = PXFileCreate();
+    PXFile* pxFileUncompressed = PXFileCreate();
 
     {
         PXFileOpenInfo pxFileCompressedInfo;
@@ -436,8 +438,9 @@ PXResult PXAPI PXUSDCSectionTokensLoad(PXFile PXREF pxFile, PXTOCSectionTokens P
         pxFileCompressedInfo.AccessMode = PXAccessModeReadOnly;
         pxFileCompressedInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
         pxFileCompressedInfo.FlagList = PXFileIOInfoFileMemory;
-        pxFileCompressedInfo.Data.Data = PXFileCursorPosition(pxFile);
-        pxFileCompressedInfo.Data.Size = pxTOCSectionTokens->SizeCompressed;
+
+        PXBufferSet(&pxFileCompressedInfo.Data, PXFileDataAtCursor(pxFile), pxTOCSectionTokens->SizeCompressed);
+
         PXFileOpen(&pxFileCompressed, &pxFileCompressedInfo);
 
         // Load B
@@ -455,9 +458,11 @@ PXResult PXAPI PXUSDCSectionTokensLoad(PXFile PXREF pxFile, PXTOCSectionTokens P
 #if PXLogEnable
     PXSize offset = 0;
 
+    char* ddata = PXFileDataAtCursor(pxFileUncompressed);
+
     for(PXSize i = 0; i < pxTOCSectionTokens->NumberOfTokens; ++i)
     {
-        char* text = &((char*)pxFileUncompressed.Data)[offset];
+        char* text = &ddata[offset];
 
         PXSize length = PXTextLengthA(text, -1);
 
@@ -591,27 +596,15 @@ PXResult PXAPI PXUSDCSectionPaths(PXFile PXREF pxFile, PXTOCSectionPaths PXREF p
     return PXActionRefusedNotImplemented;
 }
 
-
-
-
-
-
-
 PXResult PXAPI PXUSDZLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
 {
 
 }
 
-
-
-
-
-
-
 PXResult PXAPI PXUSDALoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
 {
     PXCompiler pxCompiler;
-    PXFile tokenSteam;
+    PXFile* tokenSteam = PXFileCreate();
     PXUSD* pxUSD = 0;
     PXBool isPrime = !pxResourceLoadInfo->ResourceLoadContainer;
     PXSize offset = 0;
@@ -629,7 +622,7 @@ PXResult PXAPI PXUSDALoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadI
     {
         PXClear(PXCompiler, &pxCompiler);
         pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileReference;
-        pxCompiler.ReadInfo.FileCache = &tokenSteam;
+        pxCompiler.ReadInfo.FileCache = tokenSteam;
         pxCompiler.Flags = PXCompilerKeepAnalyseTypes;
 
 #if PXLogEnable

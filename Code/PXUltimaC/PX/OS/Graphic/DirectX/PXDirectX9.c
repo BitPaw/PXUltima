@@ -484,10 +484,12 @@ PXResult PXAPI PXDirectX9ShaderProgramCreate(PXDirectX9 PXREF pxDirectX9, PXShad
 
         PXD3DCompile pxD3DCompile = (PXD3DCompile)pxDirectX9->ShaderCompile;
 
+        PXBuffer* pxBuffer = PXFileBufferGET(shaderFile);
+
         const HRESULT resultID = pxD3DCompile // d3dcompiler_47.dll, d3dcompiler.h
         (
-            shaderFile->Data,
-            shaderFile->DataUsed,
+            pxBuffer->Data,
+            pxBuffer->SizeAllowedToUse,
             &pxTextFileName.A, // Name?
             PXNull, // Makro count?
             PXNull, // Included?

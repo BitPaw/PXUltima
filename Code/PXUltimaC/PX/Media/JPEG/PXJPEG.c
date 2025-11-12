@@ -387,7 +387,7 @@ PXResult PXAPI PXJPEGLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadI
             );
 
             pxJPEGChunkHeaderBindingData.ChunkSize -= 2u; // dont count header
-            expectedOffset = pxResourceLoadInfo->FileReference->DataCursor + pxJPEGChunkHeaderBindingData.ChunkSize;
+            expectedOffset = PXFileDataPosition(pxResourceLoadInfo->FileReference) + pxJPEGChunkHeaderBindingData.ChunkSize;
         }
 
         // Is defined index?

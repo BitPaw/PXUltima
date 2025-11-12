@@ -4,6 +4,7 @@
 #include <PX/OS/Async/PXThread.h>
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/Math/PXMath.h>
+#include <PX/OS/File/PXFile.h>
 
 #if OSUnix
 #elif OSWindows
@@ -24,7 +25,7 @@ typedef BOOL(WINAPI* PXWaitForDebugEventFunction)(_Out_ LPDEBUG_EVENT lpDebugEve
 typedef BOOL(WINAPI* PXDebugActiveProcessFunction)(_In_ DWORD dwProcessId);
 typedef VOID(WINAPI* PXDebugBreakFunction)(VOID);
 typedef VOID(WINAPI* PXOutputDebugStringAFunction)(_In_opt_ LPCSTR lpOutputString);
-typedef    VOID(WINAPI* PXOutputDebugStringWFunction)(_In_opt_ LPCWSTR lpOutputString);
+typedef VOID(WINAPI* PXOutputDebugStringWFunction)(_In_opt_ LPCWSTR lpOutputString);
 typedef BOOL(WINAPI* PXDebugBreakProcessFunction)(_In_ HANDLE Process);
 typedef BOOL(WINAPI* PXIsDebuggerPresentFunction)(VOID);
 typedef BOOL(WINAPI* PXCheckRemoteDebuggerPresentFunction)(_In_ HANDLE hProcess, _Out_ PBOOL pbDebuggerPresent);
@@ -832,177 +833,6 @@ PXResult PXAPI PXFilePathCleanse(const char* pathInput, char PXREF pathOutput, c
 #endif
 
     return pxActionResult;
-}
-
-PXResult PXAPI PXFileNameViaHandle(const PXFile PXREF pxFile, PXText PXREF pxText)
-{
-    char filePathIntermediate[260];
-    char* filePathIntermediateOff = filePathIntermediate;
-    PXSize filePathIntermediateSize = 0;
-
-
-#if OSUnix
-
-    // if the filedescriptor is 0, assume we forgot to set it
-    if(0 == pxFile->FileDescriptorID)
-    {
-        pxFile->FileDescriptorID = fileno(pxFile->FileID);
-    }
-
-    const PXBool isValidFileDescriptor = 3 <= pxFile->FileDescriptorID;
-
-    if(!isValidFileDescriptor)
-    {
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingError,
-            "OS-Kernel",
-            "File",
-            "Standard input, output and error stream are not files! ID:<%i> FILE*:%p",
-            pxFile->FileDescriptorID,
-            pxFile->FileID
-        );
-#endif
-
-        return PXActionRefusedArgumentInvalid;
-    }
-
-    char namePathBuffer[64];
-    const PXSize namePathBufferSIze = sizeof(namePathBuffer);
-
-    PXTextPrintA(namePathBuffer, namePathBufferSIze, "/proc/self/fd/%d", pxFile->FileDescriptorID); // "/prof/self/fd/0123456789"
-
-    const PXSize writtenBytes = readlink(namePathBuffer, filePath->A, filePath->SizeAllocated); // [POSIX.1 - 2008]
-    const PXResult readResult = PXErrorCurrent(-1 != writtenBytes);
-
-    if(PXActionSuccessful != readResult)
-    {
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingError,
-            "OS-Kernel",
-            "File",
-            "Translate file descriptor <%i> failed! <%s>, FILE*:%p",
-            pxFile->FileDescriptorID,
-            namePathBuffer,
-            pxFile->FileID
-        );
-#endif
-
-        return readResult;
-    }
-
-    filePath->SizeUsed = writtenBytes;
-
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        "OS-Kernel",
-        "File",
-        "Translate file descriptor <%i> to <%s>",
-        pxFile->FileDescriptorID,
-        filePath->A
-    );
-#endif
-
-
-    // realpath();
-    //
-    // Only for Apple-OSX
-    //const int resultID = fcntl(pxFile->FileID, F_GETPATH, filePath->A); // [POSIX]
-
-    return PXActionSuccessful;
-
-#elif OSWindows
-
-#if WindowsAtleastVista
-
-    // FILE_NAME_OPENED, VOLUME_NAME_DOS
-
-    DWORD flags = 0;
-    BOOL s = GetHandleInformation(pxFile->FileHandle, &flags);
-
-    filePathIntermediateSize = GetFinalPathNameByHandleA
-    (
-        pxFile->FileHandle,
-        filePathIntermediate,
-        260,
-        FILE_NAME_OPENED | VOLUME_NAME_DOS
-    ); // Windows Vista, Kernel32.dll, Windows.h
-    const PXResult readResult = PXErrorCurrent(0 != filePathIntermediateSize);
-
-
-    // GetShortPathNameA() makes a path to something like "\\?\C:\Data\WORKSP~1\_GIT_~1\BITFIR~1\GAMECL~1\Shader\SKYBOX~2.GLS"
-    // Why would you ever want this?
-
-    // _fullpath(filePath->A, buffer, PXPathSizeMax); also, does not what we need it to do
-
-    if(PXActionSuccessful != readResult)
-    {
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingError,
-            PXOSName,
-            PXOSFile,
-            "Translate file handle <%p> failed!",
-            pxFile->FileHandle
-        );
-#endif
-
-        return readResult;
-    }
-
-
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXOSName,
-        PXOSFile,
-        "Translate file handle <%p> to <%s>",
-        pxFile->FileHandle,
-        pxText->A
-    );
-#endif
-
-
-    filePathIntermediateSize -= 4u;
-    filePathIntermediateOff += 4u;
-
-    char buffer[260];
-
-    const DWORD currentPathSize = GetCurrentDirectoryA(260, buffer); // Windows XP (+UWP), Kernel32.dll, winbase.h
-
-    const PXSize maxSize = PXMathMinimumIU(currentPathSize, filePathIntermediateSize);
-    const PXBool isMatching = PXTextCompareA(buffer, currentPathSize, filePathIntermediateOff, maxSize, 0);
-
-    if(isMatching)
-    {
-        filePathIntermediateOff += (currentPathSize + 1);
-        filePathIntermediateSize -= (currentPathSize + 1);
-    }
-
-    pxText->SizeUsed = filePathIntermediateSize;
-
-    PXTextReplaceByte(filePathIntermediateOff, filePathIntermediateSize, '\\', '/');
-
-    return PXActionSuccessful;
-#elif WindowsAtleastXP && 0
-
-    GetMappedFileName(GetCurrentProcess(), pMem, pszFilename, MAX_PATH)
-
-#endif
-
-        // Last resort not to get the file name per handle but from self-storage
-        // TODO:
-        // PXTextCopy(&pxFile->FilePath, filePath);
-
-        return PXActionSuccessful;
-#endif
 }
 
 void PXAPI PXTextUTF8ToUNICODE(wchar_t PXREF textOutput, const char PXREF textInput)
@@ -1857,8 +1687,8 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize PXREF createdSize, const
 
     for(;;)
     {
-        pxFile->Data = mmap(NULL, pxFileIOInfo->FileSizeRequest, permission, mode, -1, 0);
-        const PXResult allocResult = PXErrorCurrent(MAP_FAILED != pxFile->Data);
+        pxFile->Buffer.Data = mmap(NULL, pxFileIOInfo->FileSizeRequest, permission, mode, -1, 0);
+        const PXResult allocResult = PXErrorCurrent(MAP_FAILED != pxFile->Buffer.Data);
 
         if(PXActionSuccessful == allocResult)
         {
@@ -1878,9 +1708,9 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize PXREF createdSize, const
             );
 #endif
 
-            pxFile->Data = PXNull;
-            pxFile->DataUsed = 0;
-            pxFile->DataAllocated = 0;
+            pxFile->Buffer.Data = PXNull;
+            pxFile->Buffer.SizeAllowedToUse = 0;
+            pxFile->Buffer.DataAllocated = 0;
 
 
             break;
@@ -3215,260 +3045,6 @@ PXResult PXAPI PXCriticalSectionLeave(PXLock PXREF pxLock)
 #define MAXSIZELISTEE 1024*10
 
 PSAPI_WS_WATCH_INFORMATION watchInformationList[MAXSIZELISTEE];
-
-
-PXResult PXAPI PXFileMapToMemoryEE(PXFile PXREF pxFile, const PXSize requestedSize, const PXAccessMode pxAccessMode, const PXBool prefetch)
-{
-    PXI64U start = PXTimeCounterStampGet();
-
-
-
-#if OSUnix
-    const int flags = MAP_SHARED;// MAP_PRIVATE;// | MAP_POPULATE;
-    int accessType = 0;
-
-    if(pxFileIOInfo->AccessMode & PXAccessREAD)
-    {
-        accessType |= PROT_READ;
-    }
-
-    if(pxFileIOInfo->AccessMode & PXAccessWRITE)
-    {
-        accessType |= PROT_WRITE;
-    }
-
-    if(pxFileIOInfo->AccessMode & PXAccessEXECUTE)
-    {
-        accessType |= PROT_EXEC;
-    }
-
-    // Map data into virtual memory space
-    pxFile->Data = mmap
-    (
-        0, // addressPrefered
-        pxFile->DataUsed,
-        accessType,
-        flags,
-        pxFile->FileDescriptorID, // fileDescriptor
-        0 // offset
-    );
-    const PXResult mappingResult = PXErrorCurrent(PXNull != pxFile->Data);
-
-    if(PXActionSuccessful != openResult)
-    {
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingError,
-            "File",
-            "Mapping",
-            "Failed for <%s>\n",
-            pxFileIOInfo->FilePathAdress
-        );
-#endif
-
-        return PXActionFailedFileMapping;
-    }
-
-    pxFile->LocationMode = PXFileLocationModeMappedFromDisk;
-
-    // We are allowed to close the file handle and/or descriptor?
-    // YES! but better not close the descriptor,
-    // Access works in any case but you loose the file reference
-    //
-    // const int closeResultID = fclose(pxFile->FileID);
-    // pxFile->FileID = PXNull;
-
-#elif OSWindows
-
-    // Create mapping
-    {
-        DWORD flProtect = SEC_COMMIT;
-
-        LARGE_INTEGER maximumSize;
-        maximumSize.QuadPart = 0;
-
-        if(PXAccessModeReadAndWrite == pxFile->AccessMode || PXAccessModeWriteOnly == pxFile->AccessMode)
-        {
-            maximumSize.QuadPart = requestedSize;
-        }
-
-
-        //  DWORD dwMaximumSizeHigh = 0;
-        // DWORD dwMaximumSizeLow = 0; // Problem if file is 0 Length
-
-#if OS32Bit
-        dwMaximumSizeHigh = 0;
-        dwMaximumSizeLow = pxFile->DataSize;
-#elif OS64Bit
-        dwMaximumSizeHigh = (pxFile->DataSize & 0xFFFFFFFF00000000) >> 32u;
-        dwMaximumSizeLow = pxFile->DataSize & 0x00000000FFFFFFFF;
-#endif
-
-        switch(pxAccessMode)
-        {
-            case PXAccessModeNoAccess:
-                flProtect |= PAGE_NOACCESS;
-                break;
-
-            case PXAccessModeReadOnly:
-                flProtect |= PAGE_READONLY;
-                break;
-
-            case PXAccessModeWriteOnly:
-                flProtect |= PAGE_READWRITE; // PAGE_WRITECOPY
-                break;
-
-            case PXAccessModeReadAndWrite:
-                flProtect |= PAGE_READWRITE;
-                break;
-        }
-
-        // [i] I want to add LargePage support but it seems you cant do that with files.
-
-        pxFile->MappingHandle = CreateFileMappingA
-        (
-            pxFile->FileHandle,
-            PXNull, // No security attributes
-            flProtect,
-            maximumSize.HighPart,   // Is those are both zero, the mapping
-            maximumSize.LowPart,    // will be as big as the size.
-            PXNull // No Name
-        );
-        const PXResult createMappingResult = PXErrorCurrent(PXNull != pxFile->MappingHandle);
-
-        // We can get a "ERROR_ALREADY_EXISTS" if the mapping
-        // exist already, the HANDLE will still be a valid one
-
-        if(PXActionSuccessful != createMappingResult)
-        {
-#if PXLogEnable
-            char permissionText[8];
-
-            PXAccessModeToStringA(permissionText, pxFile->AccessMode);
-
-            PXLogPrint
-            (
-                PXLoggingError,
-                PXOSName,
-                "Mapping-Create",
-                "Failed, %s -> <%s>",
-                permissionText,
-                "--err---"
-            );
-#endif
-
-            return createMappingResult;
-        }
-
-        // TODO: What is this for?
-        if(pxFile->DataUsed == 0)
-        {
-            pxFile->DataUsed = maximumSize.QuadPart;
-            pxFile->DataAllocated = maximumSize.QuadPart;
-        }
-
-        {
-            DWORD desiredAccess = 0;
-            DWORD fileOffsetHigh = 0;
-            DWORD fileOffsetLow = 0;
-            PXSize numberOfBytesToMap = 0;
-            void* baseAddressTarget = 0;
-            //DWORD  numaNodePreferred = -1; // (NUMA_NO_PREFERRED_NODE)
-
-            switch(pxAccessMode)
-            {
-                case PXAccessModeReadOnly:
-                    desiredAccess |= FILE_MAP_READ;
-                    break;
-
-                case PXAccessModeWriteOnly:
-                    desiredAccess |= FILE_MAP_WRITE;
-                    break;
-
-                case PXAccessModeReadAndWrite:
-                    desiredAccess |= FILE_MAP_ALL_ACCESS;
-                    break;
-            }
-
-            // if large pages are supported, anable if
-#if WindowsAtleastVista && 0
-            if(useLargeMemoryPages)
-            {
-                desiredAccess |= FILE_MAP_LARGE_PAGES;
-            }
-#endif
-
-            pxFile->Data = (PXByte*)MapViewOfFile // MapViewOfFileExNuma is only useable starting windows vista, this function in XP
-            (
-                pxFile->MappingHandle,
-                desiredAccess,
-                fileOffsetHigh,
-                fileOffsetLow,
-                numberOfBytesToMap
-            );
-            const PXResult viewMappingResult = PXErrorCurrent(PXNull != pxFile->Data);
-
-            if(PXActionSuccessful != viewMappingResult)
-            {
-#if PXLogEnable
-                char permissionText[8];
-
-                PXAccessModeToStringA(permissionText, pxAccessMode);
-
-                PXLogPrint
-                (
-                    PXLoggingError,
-                    PXOSName,
-                    "Mapping-View",
-                    "Failed, %s -> <%s>",
-                    permissionText,
-                    "--err---"
-                );
-#endif
-
-                return viewMappingResult;
-            }
-        }
-
-        pxFile->LocationMode = PXFileLocationModeMappedFromDisk;
-
-    }
-
-#endif
-
-
-
-    if(prefetch)
-    {
-        PXMemoryVirtualPrefetch(pxFile->Data, pxFile->DataUsed);
-    }
-
-    PXI64U stop = PXTimeCounterStampGet();
-    PXI64U diff = stop - start;
-
-    PXF32 timeS = PXTimeCounterStampToSecoundsF(diff);
-
-    PXI64U bps = pxFile->DataUsed / timeS;
-
-
-#if PXLogEnable
-    PXText pxTextbps;
-    PXTextConstructNamedBufferA(&pxTextbps, pxTextbpsBuffer, 32);
-    PXTextFormatSize(&pxTextbps, bps);
-
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXOSName,
-        "Open-Mapping",
-        "Read with %s/s",
-        pxTextbps.A
-    );
-#endif
-
-    return PXActionSuccessful;
-}
 
 PXResult PXAPI PXPerformanceInfoGet(PXPerformanceInfo PXREF pxPerformanceInfo)
 {

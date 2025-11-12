@@ -9,8 +9,22 @@
 // Basically just an array with combined length
 typedef struct PXBuffer_
 {
-    void* Data; // Contains the whole data.
-    PXSize Size;
+    union
+    {
+        PXByte* Data; // Contains the whole data.
+        char* TextA;
+        wchar_t* TextW;
+    };
+   
+    PXSize CursorOffsetByte;
+    PXSize CursorOffsetBit;
+
+    // Size allowed or used by buffer
+    PXSize SizeAllowedToUse;
+
+    // The size of the data pace in which you can move 
+    // without triggering an invalid access.
+    PXSize SizeAllocated;
 }
 PXBuffer;
 

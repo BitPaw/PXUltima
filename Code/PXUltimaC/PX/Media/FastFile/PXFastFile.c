@@ -164,8 +164,7 @@ PXResult PXAPI PXFastFileLoadFromFile(PXResourceTransphereInfo PXREF pxResourceL
             // Create a file containing the decompressed/decrypted zone file.
 
 
-            PXFile outputFile;
-            PXClear(PXFile, &outputFile);
+            PXFile* outputFile = PXFileCreate();
 
             PXSalsa20 pxSalsa20;
             PXClear(PXSalsa20, &pxSalsa20);

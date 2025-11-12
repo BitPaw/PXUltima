@@ -10,7 +10,7 @@
 #include <PX/OS/Async/PXLock.h>
 #include <PX/OS/PXOS.h>
 
-PXLock _GLOBALCosolePrintLock;
+PXLock* _GLOBALCosolePrintLock;
 PXThread _GLOBALSourceThread;
 
 #define PXConsoleColorEnable 1
@@ -525,7 +525,7 @@ void PXAPI PXLogPrintInvoke(PXLoggingEventData PXREF pxLoggingEventData, ...)
         PXText pxText;
         PXTextConstructNamedBufferA(&pxText, pxTextBuffer, 32);
 
-        PXTextFormatSize(&pxText, pxFile->DataSize);
+        PXTextFormatSize(&pxText, pxFile->Buffer.DataSize);
 
         PXTextPrint
         (

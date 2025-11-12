@@ -323,7 +323,7 @@ PXResult PXAPI PXLZ4Decompress(PXFile PXREF pxFileInput, PXFile PXREF pxFileOutp
     }
 
     // Check size
-    if(pxFileInput->DataUsed <= 1)
+    if(PXFileDataPosition(pxFileInput) <= 1)
     {
         return PXActionRefusedArgumentInvalid;
     }
@@ -346,14 +346,14 @@ PXResult PXAPI PXLZ4Decompress(PXFile PXREF pxFileInput, PXFile PXREF pxFileOutp
         "%20s : %i\n"
         "%20s : %i",
         "NumberOfChunks", nChunks,
-        "SizeCompressed", pxFileInput->DataUsed,
-        "SizeUncompressed", pxFileOutput->DataUsed
+        "SizeCompressed", PXFileDataPosition(pxFileInput),
+        "SizeUncompressed", PXFileDataPosition(pxFileOutput)
     );
 #endif
 
     size_t consumedCompressedSize = 1;
 
-    if(pxFileOutput->DataAllocated < LZ4_MAX_INPUT_SIZE)
+    if(PXFileAllocatedSize(pxFileOutput) < LZ4_MAX_INPUT_SIZE)
     {
         // nChunks must be 0 for < LZ4_MAX_INPUT_SIZE
         if(nChunks != 0) 

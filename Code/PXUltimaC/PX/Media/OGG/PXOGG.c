@@ -98,7 +98,7 @@ PXResult PXAPI PXOGGLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
 
             for(PXSize i = 0; i < x; i++)
             {
-                unsigned char* currentPos = (unsigned char*)PXFileCursorPosition(pxResourceLoadInfo->FileReference) + i;
+                unsigned char* currentPos = (unsigned char*)PXFileDataAtCursor(pxResourceLoadInfo->FileReference) + i;
 
                 char print = (*currentPos >= ' ' && *currentPos <= '~') ? *currentPos : '.';
 

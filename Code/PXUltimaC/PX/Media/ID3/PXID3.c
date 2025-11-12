@@ -168,14 +168,14 @@ PXID3v2xFrameTag PXAPI PXID3v2xFrameTagFromID(const PXI32U id3v2xFrameTagID)
     }
 }
 
-PXResult PXAPI PXID3LoadFromFile(PXID3 PXREF id3, PXFile PXREF PXFile)
+PXResult PXAPI PXID3LoadFromFile(PXID3 PXREF id3, PXFile PXREF pxFile)
 {
     PXID3Version version = PXID3VersionInvalid;
 
     //Check header
     {
         // Einen PXID3v2-Block erkennt man am Header, dessen erste fünf Bytes aus der Zeichenkette „PXID3“ und der PXID3v2-Version (z. B. $04 00 für PXID3v2.4) bestehen
-        const PXBool isValidHeader = PXFileReadAndCompare(PXFile, PXID3HeaderSignature, sizeof(PXID3HeaderSignature));
+        const PXBool isValidHeader = PXFileReadAndCompare(pxFile, PXID3HeaderSignature, sizeof(PXID3HeaderSignature));
 
         if(!isValidHeader)
         {
@@ -187,7 +187,7 @@ PXResult PXAPI PXID3LoadFromFile(PXID3 PXREF id3, PXFile PXREF PXFile)
     {
         char versionTag[2];
 
-        PXFileReadB(PXFile, versionTag, 2);
+        PXFileReadB(pxFile, versionTag, 2);
 
         switch(versionTag[0])
         {
@@ -209,7 +209,7 @@ PXResult PXAPI PXID3LoadFromFile(PXID3 PXREF id3, PXFile PXREF PXFile)
 
         default: // Version is probably 1.x
         {
-            const PXByte* trackIDAdress = (PXByte*)PXFileCursorPosition(PXFile) + PXID3CommentSize - 2;
+            const PXByte* trackIDAdress = (PXByte*)PXFileDataAtCursor(pxFile) + PXID3CommentSize - 2;
             const unsigned short trackIDSymbol = (((unsigned short)trackIDAdress[0]) << 8u) + trackIDAdress[1];
             const PXBool isVersion1x0 = trackIDSymbol == 0x0000;
 
@@ -257,7 +257,7 @@ PXResult PXAPI PXID3LoadFromFile(PXID3 PXREF id3, PXFile PXREF PXFile)
                 {&id3->Genre, PXTypeInt08U}
             };
 
-            PXFileWriteMultible(PXFile, pxFileDataElementType, sizeof(pxFileDataElementType));
+            PXFileWriteMultible(pxFile, pxFileDataElementType, sizeof(pxFileDataElementType));
 
             if(hasTrackID)
             {
@@ -276,7 +276,7 @@ PXResult PXAPI PXID3LoadFromFile(PXID3 PXREF id3, PXFile PXREF PXFile)
             {
                 unsigned char flags = 0;
 
-                PXFileReadI8U(PXFile, &flags);
+                PXFileReadI8U(pxFile, &flags);
 
                 a = (flags & 0b10000000) >> 7;
                 b = (flags & 0b01000000) >> 6;
@@ -287,7 +287,7 @@ PXResult PXAPI PXID3LoadFromFile(PXID3 PXREF id3, PXFile PXREF PXFile)
             {
                 PXI32UCluster sizeCluster;
 
-                PXFileReadB(PXFile, sizeCluster.Data, 4u);
+                PXFileReadB(pxFile, sizeCluster.Data, 4u);
 
                 // Size format: x000 x000 x000 x000 => 28 Bit int
                 // The first bit of each byte not only unused but shall be merged!
@@ -314,27 +314,27 @@ PXResult PXAPI PXID3LoadFromFile(PXID3 PXREF id3, PXFile PXREF PXFile)
                 break;
             case PXID3Versionv2x3:
             case PXID3Versionv2x4:
-            {
-                const PXSize posCurrent = PXFile->DataUsed;
-                const PXSize posExpectedMax = PXFile->DataCursor + sizeOfDataSegment;
+            {  
+                const PXSize posCurrent = PXFileDataPosition(pxFile);
+                const PXSize posExpectedMax = posCurrent + sizeOfDataSegment;
 
-                // PXFile->DataSize = (posCurrent < posExpectedMax) ? posCurrent : posExpectedMax;
+                // pxFile->Buffer.DataSize = (posCurrent < posExpectedMax) ? posCurrent : posExpectedMax;
 
-                while(PXFile->DataCursor < sizeOfDataSegment) // until the offset is reached
+                while(posCurrent < sizeOfDataSegment) // until the offset is reached
                 {
                     // Read 4 byte indexes
                     PXI32UCluster indentifier;
                     PXI32U frameSize = 0;
                     PXI16U frameFlags = 0;
 
-                    PXFileReadB(PXFile, indentifier.Data, 4u);
-                    PXFileReadI32UE(PXFile, &frameSize, PXEndianBig);
-                    PXFileReadI16UE(PXFile, &frameFlags, PXEndianBig);
+                    PXFileReadB(pxFile, indentifier.Data, 4u);
+                    PXFileReadI32UE(pxFile, &frameSize, PXEndianBig);
+                    PXFileReadI16UE(pxFile, &frameFlags, PXEndianBig);
 
                     const PXID3v2xFrameTag frameTag = PXID3v2xFrameTagFromID(indentifier.Value);
                     const PXBool unkownTag = frameTag == PXID3v2xFrameTagInvalid;
 
-                    const PXSize expectedOffset = PXFile->DataCursor + frameSize;
+                    const PXSize expectedOffset = PXFileDataPosition(pxFile) + frameSize;
 
                     if(unkownTag)
                     {
@@ -342,12 +342,12 @@ PXResult PXAPI PXID3LoadFromFile(PXID3 PXREF id3, PXFile PXREF PXFile)
 
                         if(emptyDataDertected)
                         {
-                            PXFileCursorToEnd(PXFile);
+                            PXFileCursorToEnd(pxFile);
                             break; // Cancel while loop, as there is nothing else to parse.
                         }
                         else
                         {
-                            PXFileCursorMoveTo(PXFile, expectedOffset);
+                            PXFileCursorMoveTo(pxFile, expectedOffset);
                         }
                     }
 
@@ -421,16 +421,16 @@ PXResult PXAPI PXID3LoadFromFile(PXID3 PXREF id3, PXFile PXREF PXFile)
                         break;
                     case PXID3v2xFrameTagPopularimeter:
                     {
-                        const char* emailToUser = (char*)PXFileCursorPosition(PXFile);
-                        const PXSize maximalToRead = PXFileRemainingSize(PXFile) - 6u;
+                        const char* emailToUser = (char*)PXFileDataAtCursor(pxFile);
+                        const PXSize maximalToRead = PXFileRemainingSize(pxFile) - 6u;
                         const PXSize emailToUserSize = PXTextLengthA((char*)emailToUser, maximalToRead);
                         unsigned char rating = 0;
                         // counter?
 
                         // Copy
 
-                        PXFileCursorAdvance(PXFile, emailToUserSize + 1);
-                        PXFileReadI8U(PXFile, &rating);
+                        PXFileCursorAdvance(pxFile, emailToUserSize + 1);
+                        PXFileReadI8U(pxFile, &rating);
 
                         break;
                     }
@@ -583,7 +583,7 @@ PXResult PXAPI PXID3LoadFromFile(PXID3 PXREF id3, PXFile PXREF PXFile)
                         break;
                     }
 
-                    const PXBool hasUnhandleChunkDetected = PXFile->DataCursor < expectedOffset;
+                    const PXBool hasUnhandleChunkDetected = PXFileDataPosition(pxFile) < expectedOffset;
 
                     if(hasUnhandleChunkDetected)
                     {
@@ -591,7 +591,7 @@ PXResult PXAPI PXID3LoadFromFile(PXID3 PXREF id3, PXFile PXREF PXFile)
 
                         //printf("Unhandle chunk detected!\n");
 
-                        PXFileCursorMoveTo(PXFile, expectedOffset);
+                        PXFileCursorMoveTo(pxFile, expectedOffset);
                     }
                 }
 

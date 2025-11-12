@@ -2,8 +2,18 @@
 
 #ifndef PXLockIncluded
 #define PXLockIncluded
-#include <PX/OS/System/Version/PXOSVersion.h>
 #include <PX/OS/Error/PXActionResult.h>
+
+typedef enum PXLockType_
+{
+    PXLockTypeInvalid,
+    PXLockTypeGlobal,
+    PXLockTypeProcessOnly
+}
+PXLockType;
+
+typedef struct PXLock_ PXLock;
+
 
 #if OSUnix
 #include <semaphore.h>
@@ -13,14 +23,6 @@ typedef sem_t PXLockIDType; // is union, cannot be defined as "sem_t" only -> co
 //#include <process.h>
 typedef HANDLE PXLockIDType; // same as void*
 #endif
-
-typedef enum PXLockType_
-{
-    PXLockTypeInvalid,
-    PXLockTypeGlobal,
-    PXLockTypeProcessOnly
-}
-PXLockType;
 
 typedef struct PXLock_
 {

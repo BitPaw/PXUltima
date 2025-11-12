@@ -51,7 +51,7 @@ PXResult PXAPI PXLevelSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveIn
 
             PXFileWriteMultible(pxResourceSaveInfo->FileReference, pxFileDataElementList, pxFileDataElementListSize);
 
-            pxLevelEntry.DataAdress = pxResourceSaveInfo->FileReference->DataCursor;
+            pxLevelEntry.DataAdress = PXFileDataPosition(pxResourceSaveInfo->FileReference);
 
 #if PXLogEnable
             PXLogPrint

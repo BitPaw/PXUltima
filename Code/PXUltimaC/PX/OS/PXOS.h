@@ -210,7 +210,7 @@ PXPublic PXResult PXAPI PXComputerNameGet(char PXREF text, const PXSize textSize
 
 // Cleanse the filepath from symbols like "\.", "\.." and "/"
 PXPublic PXResult PXAPI PXFilePathCleanse(const char* pathInput, char PXREF pathOutput, const PXSize pathOutputSizeMAX, PXSize PXREF pathOutputSizeWritten);
-PXPublic PXResult PXAPI PXFileNameViaHandle(const PXFile PXREF pxFile, PXText PXREF pxText);
+
 
 
 //---------------------------------------------------------

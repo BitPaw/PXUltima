@@ -1,6 +1,7 @@
 #include "PXYAML.h"
 
 #include <PX/Compiler/PXCompiler.h>
+#include <PX/OS/File/PXFile.h>
 
 PXYAMLLineType PXAPI PXYAMLPeekLine(const void* line, const PXSize size)
 {
@@ -60,14 +61,13 @@ PXYAMLLineType PXAPI PXYAMLPeekLine(const void* line, const PXSize size)
 PXResult PXAPI PXYAMLLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
 {
     PXSize errorCounter = 0;
-    PXFile tokenSteam;
-    PXClear(PXFile, &tokenSteam);
+    PXFile* tokenSteam = PXFileCreate();
 
     PXCompiler pxCompiler;
     PXClear(PXCompiler, &pxCompiler);
     pxCompiler.CodeDocument = (PXCodeDocument*)pxResourceLoadInfo->ResourceTarget;
     pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileReference;
-    pxCompiler.ReadInfo.FileCache = &tokenSteam;
+    pxCompiler.ReadInfo.FileCache = tokenSteam;
     pxCompiler.CommentSingleLineSize = 1u;
     pxCompiler.CommentSingleLine = "#";
     pxCompiler.Flags = PXCompilerKeepAnalyseTypes | PXCompilerKeepTABs;

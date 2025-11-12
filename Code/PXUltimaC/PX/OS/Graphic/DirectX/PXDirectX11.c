@@ -538,6 +538,8 @@ PXResult PXAPI PXDirectX11TextureAction(PXDirectX11 PXREF pxDirectX11, PXTexturI
         return PXActionSuccessful;
     }
 
+#include <PX/OS/File/PXFile.h>
+
     PXResult PXAPI PXDirectX11Clear(PXDirectX11 PXREF pxDirectX11, const PXColorRGBAF PXREF pxColorRGBAF)
     {
 #if OSUnix
@@ -568,7 +570,7 @@ PXResult PXAPI PXDirectX11TextureAction(PXDirectX11 PXREF pxDirectX11, PXTexturI
         // Fill in a buffer description.
         D3D11_BUFFER_DESC bufferDesc;
         bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-        bufferDesc.ByteWidth = pxVertexBuffer->VertexData.Size;
+        bufferDesc.ByteWidth = pxVertexBuffer->VertexData.SizeAllocated;
         bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
         bufferDesc.CPUAccessFlags = 0;
         bufferDesc.MiscFlags = 0;
@@ -603,7 +605,8 @@ PXResult PXAPI PXDirectX11TextureAction(PXDirectX11 PXREF pxDirectX11, PXTexturI
         for(PXSize i = 0; i < amount; ++i)
         {
             PXShader PXREF pxShader = &shaderList[i];
-            ID3DBlob PXREF shaderCode = (ID3DBlob*)pxShader->ShaderFile->Data;
+            PXBuffer PXREF pxBuffer = PXFileBufferGET(pxShader->ShaderFile);
+            ID3DBlob PXREF shaderCode = (ID3DBlob*)pxBuffer->Data;
             const void PXREF shaderBytecode = shaderCode->lpVtbl->GetBufferPointer(shaderCode);
             const SIZE_T bytecodeLength = shaderCode->lpVtbl->GetBufferSize(shaderCode);
 

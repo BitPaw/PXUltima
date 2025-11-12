@@ -981,4 +981,33 @@ PXPublic void PXAPI PXEndianSwapV(void* PXREF data, const PXSize dataSize, const
 
 //-----------------------------------------------------------------------------
 
+
+
+
+// Predefine
+typedef enum PXActionResult_ PXActionResult;
+
+typedef struct PXGUIProperty_ PXGUIProperty;
+typedef struct PXBuffer_ PXBuffer;
+typedef struct PXModel_ PXModel;
+typedef struct PXCodeDocumentElement_ PXCodeDocumentElement;
+typedef struct PXFile_ PXFile;
+typedef struct PXTime_ PXTime;
+typedef struct PXText_ PXText;
+typedef struct PXCodeDocument_ PXCodeDocument;
+typedef struct PXGUIManager_ PXGUIManager;
+typedef struct PXWindow_ PXWindow;
+typedef struct PXFileTypeInfo_ PXFileTypeInfo;
+typedef struct PXCompiler_ PXCompiler;
+typedef struct PXProcessor_ PXProcessor;
+typedef struct PXHierarchicalNode_ PXHierarchicalNode;
+typedef struct PXFileEntry_ PXFileEntry;
+typedef struct PXDebug_ PXDebug;
+typedef struct PXDisplay_ PXDisplay;
+typedef struct PXNativDraw_ PXNativDraw;
+typedef struct PXTask_ PXTask;
+typedef struct PXThread_ PXThread;
+typedef struct PXThreadPool_ PXThreadPool;
+
+
 #endif

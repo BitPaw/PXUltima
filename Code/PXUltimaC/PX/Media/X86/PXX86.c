@@ -174,8 +174,15 @@ void PXAPI PXX86InstructionCall(PXX86Iterator PXREF pxX86Iterator)
     );
 #endif
 
+    PXSize data = PXFileDataPosition(pxX86Iterator);
+
     // Store the call to be able to return to 
-    PXListAppend(&pxX86Iterator->Stack, &pxX86Iterator->Data->DataCursor, sizeof(PXSize));
+    PXListAppend
+    (
+        &pxX86Iterator->Stack, 
+        &data,
+        sizeof(data)
+    );
 
     PXFileCursorOffset(pxX86Iterator->Data, pxX86Iterator->Immediate.I32S);
 }
@@ -655,7 +662,7 @@ PXResult PXAPI PXX86InstructionDisassemble(PXX86Iterator PXREF pxX86Iterator)
 
 PXResult PXAPI PXX86InstructionWalk(PXFile PXREF pxFile, PXSectionTable PXREF pxSectionTable)
 {
-    PXSize old = pxFile->DataCursor;
+    PXSize old = PXFileDataPosition(pxFile);
     PXX86Iterator pxX86Iterator;
     PXClear(PXX86Iterator, &pxX86Iterator);
     pxX86Iterator.InstructionCurrent = 0;
@@ -665,8 +672,8 @@ PXResult PXAPI PXX86InstructionWalk(PXFile PXREF pxFile, PXSectionTable PXREF px
 
     for(PXSize i = 0; i < pxSectionTable->SectionRawDataSize; ++i)
     { 
-
-        pxX86Iterator.VirtualAdress = pxSectionTable->VirtualAddress + (pxFile->DataCursor - old);
+        PXSize pos = PXFileDataPosition(pxFile);
+        pxX86Iterator.VirtualAdress = pxSectionTable->VirtualAddress + (pos - old);
 
         PXX86InstructionDisassemble(&pxX86Iterator);
 

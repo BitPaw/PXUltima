@@ -8,6 +8,7 @@
 #include <PX/OS/Error/PXActionResult.h>
 #include <PX/OS/File/PXFile.h>
 #include <PX/Container/List/PXList.h>
+#include <PX/Container/ListDynamic/PXListDynamic.h>
 
 #define PXDirectorySearchForDirectorys (1 << 0)
 #define PXDirectorySearchForFiles (1 << 1)
@@ -16,6 +17,8 @@
 #if OSUnix
 #include <sys/types.h>
 #include <dirent.h>
+#elif OSWindows
+#include <Windows.h>
 #endif
 
 

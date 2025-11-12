@@ -313,7 +313,7 @@ PXResult PXAPI PXTTFLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
         );
 #endif
 
-        sourcePosition = pxResourceLoadInfo->FileReference->DataCursor;
+        sourcePosition = PXFileDataPosition(pxResourceLoadInfo->FileReference);
         PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, tableEntry.Offset);
 
         switch (tableEntry.Type)

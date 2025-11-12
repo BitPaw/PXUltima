@@ -813,7 +813,7 @@ PXResult PXAPI PXMP3LoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
 
         // Parse mp3
         {
-            const PXByte PXREF mp3HeaderDataBlock = (const PXByte PXREF)PXFileCursorPosition(pxResourceLoadInfo->FileReference);
+            const PXByte PXREF mp3HeaderDataBlock = (const PXByte PXREF)PXFileDataAtCursor(pxResourceLoadInfo->FileReference);
 
             // Parse Byte 1/4
             {
@@ -1124,17 +1124,18 @@ PXResult PXAPI PXMP3LoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
 
         // Check if reader is still alligned
         {
-            const PXBool isAlligned = cursorPositionPredict == pxResourceLoadInfo->FileReference->DataCursor;
+            const PXBool isAlligned = cursorPositionPredict == PXFileDataPosition(pxResourceLoadInfo->FileReference);
 
             if (!isAlligned)
             {
-                int offset = cursorPositionPredict - pxResourceLoadInfo->FileReference->DataCursor;
+                int offset = cursorPositionPredict - PXFileDataPosition(pxResourceLoadInfo->FileReference);
 
 #if PXMP3Debug
                 printf("[PXMP3] detected failed allignment! Off by : %i Bytes\n", offset);
 #endif
 
-                pxResourceLoadInfo->FileReference->DataCursor = cursorPositionPredict;
+                PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, cursorPositionPredict);
+
                 //pxFile.CursorAdvance(mp3Header.FrameLength);
             }
         }

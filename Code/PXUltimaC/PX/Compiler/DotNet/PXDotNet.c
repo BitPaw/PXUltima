@@ -29,6 +29,7 @@
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/OS/File/PXDirectory.h>
 #include <PX/OS/PXOS.h>
+#include <PX/OS/File/PXFile.h>
 
 const char CSharpCoreClrPath[] = "C:/Program Files/dotnet/shared/Microsoft.NETCore.App";
 const PXI8U CSharpCoreClrPathSize = sizeof(CSharpCoreClrPath)-1;
@@ -300,11 +301,11 @@ PXResult PXAPI PXDotNetInitializeCoreCLR(PXDotNetCoreCLR PXREF pxDotNetCoreCLR)
 #elif OSWindows
     // Open lib
     {
-        char runtimeDLLPath[_MAX_PATH];
+        char runtimeDLLPath[PXPathSizeMax];
         char versionString[64];
         PXVersionToString(pxDotNetCoreCLR->VersionCurrent, versionString);
 
-        PXTextPrintA(runtimeDLLPath, _MAX_PATH, "%s/%s/%s", CSharpCoreClrPath, versionString, CSharpCoreClrDLLName);
+        PXTextPrintA(runtimeDLLPath, PXPathSizeMax, "%s/%s/%s", CSharpCoreClrPath, versionString, CSharpCoreClrDLLName);
 
         PXLibraryOpenA(&pxDotNetCoreCLR->LibraryCoreCLR, runtimeDLLPath);
     }
@@ -354,7 +355,7 @@ PXResult PXAPI PXDotNetInitializeCoreCLR(PXDotNetCoreCLR PXREF pxDotNetCoreCLR)
     PXDirectoryCurrentA(currentDirectory, PXPathSizeMax, &currentDirectorySize);
 
 
-    PXFile asseblyList;
+    PXFile* asseblyList = PXFileCreate();
 
     // We need to build string now for the next function
     {
@@ -363,18 +364,16 @@ PXResult PXAPI PXDotNetInitializeCoreCLR(PXDotNetCoreCLR PXREF pxDotNetCoreCLR)
         pxFileOpenInfo.AccessMode = PXAccessModeReadAndWrite;
         pxFileOpenInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
         pxFileOpenInfo.FlagList = PXFileIOInfoFileVirtual; // No size specified, we get atleast one pagesize
-
-    
-        PXFileOpen(&asseblyList, &pxFileOpenInfo);
-
+            
+        PXFileOpen(asseblyList, &pxFileOpenInfo);
         
         // Add core DLLs from runtime folder
         {
-            char versionFolder[_MAX_PATH];
+            char versionFolder[PXPathSizeMax];
             char versionString[64];
             PXVersionToString(pxDotNetCoreCLR->VersionCurrent, versionString);
 
-            const PXSize versionFolderSize = PXTextPrintA(versionFolder, _MAX_PATH, "%s/%s", CSharpCoreClrPath, versionString);
+            const PXSize versionFolderSize = PXTextPrintA(versionFolder, PXPathSizeMax, "%s/%s", CSharpCoreClrPath, versionString);
 
             PXDirectorySearchCache pxDirectorySearchCache;
             PXFileEntry pxFileEntry;
@@ -451,21 +450,21 @@ PXResult PXAPI PXDotNetInitializeCoreCLR(PXDotNetCoreCLR PXREF pxDotNetCoreCLR)
     };
     const char* appPropertyValues[] =
     {
-        (char*)asseblyList.Data,
+       0,// (char*)asseblyList.Data,
         currentDirectory,
         currentDirectory
     };
 
 
-    PXTextReplaceByte(asseblyList.Data, asseblyList.DataCursor, '/', '\\');
+  //  PXTextReplaceByte(asseblyList.Data, asseblyList.DataCursor, '/', '\\');
 
 
     PXSize cursorOffset = 0;
 
     for(;;)
     {
-        char* cursor = (char*)asseblyList.Data + cursorOffset;
-        PXSize size = PXTextFindFirstCharacterA(cursor, asseblyList.DataCursor - cursorOffset, ';');
+        char* cursor = 0;//(char*)asseblyList.Data + cursorOffset;
+        PXSize size = 0;// PXTextFindFirstCharacterA(cursor, asseblyList.DataCursor - cursorOffset, ';');
 
         if(size == -1 || size == 0)
         {
@@ -862,22 +861,22 @@ PXResult PXAPI PXDotNetDelegateFetchMSCoree(PXDotNetMSCoree PXREF pxDotNetMSCore
     return PXActionSuccessful;
 }
 
-PXSize PXPathCurrentAndAddFileA(char* buffer, char* fileName)
+PXSize PXAPI PXPathCurrentAndAddFileA(char* buffer, char* fileName)
 {
-    char currentDir[_MAX_PATH];
+    char currentDir[PXPathSizeMax];
 
-    GetCurrentDirectoryA(_MAX_PATH, currentDir);
+    GetCurrentDirectoryA(PXPathSizeMax, currentDir);
 
-    return PXTextPrintA(buffer, _MAX_PATH, "%s\\%s", currentDir, fileName);
+    return PXTextPrintA(buffer, PXPathSizeMax, "%s\\%s", currentDir, fileName);
 }
 
-PXSize PXPathCurrentAndAddFileW(wchar_t* buffer, char* fileName)
+PXSize PXAPI PXPathCurrentAndAddFileW(wchar_t* buffer, char* fileName)
 {
-    char currentDir[_MAX_PATH];
+    char currentDir[PXPathSizeMax];
 
     PXPathCurrentAndAddFileA(currentDir, fileName);
 
-    return PXTextCopyAW(currentDir, _MAX_PATH, buffer, _MAX_PATH * 2);
+    return PXTextCopyAW(currentDir, PXPathSizeMax, buffer, PXPathSizeMax * 2);
 }
 
 PXResult PXAPI PXDotNetDelegateFetchCoreCLR(PXDotNetCoreCLR PXREF pxDotNetCoreCLR, PXDelegate PXREF pxDelegate)

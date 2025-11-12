@@ -336,8 +336,8 @@ PXResult PXAPI PXProcessHandleListAll(PXDebug PXREF pxDebug, PXProcess* pxProces
         {
             case PXHandleTypeFile:
             {
-                PXFile pxFile;
-                pxFile.FileHandle = handleCurrent;
+                PXFile* pxFile = PXFileCreate();
+                //pxFile.FileHandle = handleCurrent;
 
                 PXText buffer;
                 PXTextConstructNamedBufferA(&buffer, bufferAA, 256);

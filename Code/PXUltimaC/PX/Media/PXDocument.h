@@ -5,6 +5,7 @@
 
 #include <PX/Engine/PXResource.h>
 #include <PX/OS/File/PXFile.h>
+#include <PX/Container/ListHierarchical/PXListHierarchical.h>
 
 typedef enum PXDocumentElementType_
 {
@@ -225,7 +226,7 @@ PXCodeDocumentElement;
 
 typedef struct PXCodeDocument_
 {
-    PXFile Data;
+    PXFile* Data;
 
 
     //PXSize Depth;

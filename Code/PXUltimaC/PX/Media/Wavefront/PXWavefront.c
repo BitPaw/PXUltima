@@ -227,7 +227,7 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo PXREF pxResource
     PXModel PXREF pxModel = (PXModel*)pxResourceLoadInfo->ResourceTarget;
     PXMesh PXREF mesh = &pxModel->Mesh;
 
-    PXFile tokenSteam;
+    PXFile* tokenSteam = PXFileCreate();
 
     struct PXWaveFrontCounter
     {
@@ -646,8 +646,7 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo PXREF pxResource
                     case PXWavefrontLineMaterialLibraryIncluded:
                     {
                         PXMaterialContainer PXREF pxMaterialContaier = &mesh->MaterialContaierList[counter.MaterialInlcude++];
-                        PXFile materialFile;
-                        PXClear(PXFile, &materialFile);
+                        PXFile* materialFile = PXFileCreate();
 
                         // Open and load
                         {
@@ -660,14 +659,14 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo PXREF pxResource
                             PXResourceTransphereInfo pxMaterialLoadInfo;
                             PXClear(PXResourceTransphereInfo, &pxMaterialLoadInfo);
                             pxMaterialLoadInfo.ResourceTarget = pxMaterialContaier;
-                            pxMaterialLoadInfo.FileReference = &materialFile;
+                            pxMaterialLoadInfo.FileReference = materialFile;
                             pxMaterialLoadInfo.ResourceType = PXResourceTypeMaterialList;
                             pxMaterialLoadInfo.Manager = pxResourceLoadInfo->Manager;
 
                             PXResourceLoad(&pxMaterialLoadInfo, &materialFilePathFull);
                         }
 
-                        PXFileClose(&materialFile);
+                        PXFileClose(materialFile);
 
                         break;
                     }

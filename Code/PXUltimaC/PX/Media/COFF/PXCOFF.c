@@ -178,7 +178,7 @@ PXResult PXAPI PXCOFFLoadFromFile(PXCOFF PXREF pxCOFF, PXFile PXREF pxFile)
     {
         const PXBool hasOptionalHeader = pxCOFF->Header.SizeOfOptionalHeader > 0;
         PXSize remainingOptionalHeaderOffset = pxCOFF->Header.SizeOfOptionalHeader;
-        const PXSize syncPosition = pxFile->DataCursor + pxCOFF->Header.SizeOfOptionalHeader;
+        const PXSize syncPosition = PXFileDataPosition(pxFile) + pxCOFF->Header.SizeOfOptionalHeader;
 
         if(hasOptionalHeader)
         {
@@ -192,11 +192,11 @@ PXResult PXAPI PXCOFFLoadFromFile(PXCOFF PXREF pxCOFF, PXFile PXREF pxFile)
                 switch(pxCOFF->OptionalHeader.Format)
                 {
                     case PXCOFFFormatPE32:
-                        pxFile->BitFormatOfData = PXBitFormat32;
+                        PXFileBitFormatOfDataSet(pxFile, PXBitFormat32);
                         break;
 
                     case PXCOFFFormatPE32Plus:
-                        pxFile->BitFormatOfData = PXBitFormat64;
+                        PXFileBitFormatOfDataSet(pxFile, PXBitFormat64);
                         break;
                 }
             }
@@ -339,7 +339,7 @@ PXResult PXAPI PXCOFFLoadFromFile(PXCOFF PXREF pxCOFF, PXFile PXREF pxFile)
                             PXI32U virtualAddress = 0;
                             PXI32U size = 0;
 
-                            //assert(pxCOFF->OptionalHeader.WindowsNT.NumberOfRvaAndSizes * 2*sizeof(PXI32U) < pxFile->DataSize);
+                            //assert(pxCOFF->OptionalHeader.WindowsNT.NumberOfRvaAndSizes * 2*sizeof(PXI32U) < pxFile->Buffer.DataSize);
 
 #if PXLogEnable && PXCOFFDebug
                             PXLogPrint
@@ -434,7 +434,7 @@ PXResult PXAPI PXCOFFLoadFromFile(PXCOFF PXREF pxCOFF, PXFile PXREF pxFile)
                 //assert(batchSize == 128u);
             }
 
-            pxFile->DataCursor = syncPosition;
+            PXFileCursorMoveTo(pxFile, syncPosition);
         }
     }
 
@@ -513,7 +513,7 @@ PXResult PXAPI PXCOFFLoadFromFile(PXCOFF PXREF pxCOFF, PXFile PXREF pxFile)
 #endif
         }
 
-        const PXSize oldPosition = pxFile->DataCursor;
+        const PXSize oldPosition = PXFileDataPosition(pxFile);
 
         if(pxSectionTableCurrent->SectionRawDataSize > 0)
         {
@@ -829,11 +829,11 @@ PXResult PXAPI PXCOFFLoadFromFile(PXCOFF PXREF pxCOFF, PXFile PXREF pxFile)
                 }
                 else
                 {
-                    PXSize oolPos = pxFile->DataCursor;
+                    PXSize oolPos = PXFileDataPosition(pxFile);
 
                     PXFileCursorMoveTo(pxFile, pxCOFFSymbolTableEntry->NameReferenceOffset);
 
-                    char* xxx = (char*)PXFileCursorPosition(pxFile);
+                    char* xxx = (char*)PXFileDataAtCursor(pxFile);
 
 
 #if PXLogEnable && PXCOFFDebug

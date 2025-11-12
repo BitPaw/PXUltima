@@ -102,7 +102,7 @@ PXResult PXAPI PXCanonRaw3BlockRead(PXCanonRaw3Chunk PXREF pxCanonRaw3Chunk, PXF
         pxCanonRaw3Chunk->SizeData = 0;
     }
 
-    pxCanonRaw3Chunk->PredictedFinalPosition = pxFile->DataCursor + pxCanonRaw3Chunk->SizeData;
+    pxCanonRaw3Chunk->PredictedFinalPosition = PXFileDataPosition(pxFile) + pxCanonRaw3Chunk->SizeData;
 
 #if PXLogEnable
     PXLogPrint
@@ -154,7 +154,7 @@ PXResult PXAPI PXCanonRaw3BlockRead(PXCanonRaw3Chunk PXREF pxCanonRaw3Chunk, PXF
             }
             case PXCanonRaw3MOOVCMT1ID:
             {
-                PXFile tiffData;
+                //PXFile tiffData;
                 // PXFileBufferExternal(&tiffData, PXFileCursorPosition(pxFile), pxCanonRaw3ChunkChild.SizeData);
 
                 PXTexture pxxx;

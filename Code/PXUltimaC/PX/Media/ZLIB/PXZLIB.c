@@ -156,7 +156,7 @@ PXResult PXAPI PXZLIBDecompress(PXFile PXREF pxInputSteam, PXFile PXREF pxOutput
 
 
     PXZLIB.CompressedDataSize = PXFileRemainingSize(pxInputSteam) - adlerSize;
-    PXZLIB.CompressedData = PXFileCursorPosition(pxInputSteam);
+    PXZLIB.CompressedData = PXFileDataAtCursor(pxInputSteam);
 
     switch(PXZLIB.Header.CompressionMethod)
     {
@@ -203,7 +203,7 @@ PXResult PXAPI PXZLIBCompress(PXFile PXREF pxInputSteam, PXFile PXREF pxOutputSt
         PXByte buffer[2] =
         {
             compressionMethod | compressionInfo << 4u,
-                                                (level & 0b11) << 6u | (dictionary & 0b01) << 5u
+            (level & 0b11) << 6u | (dictionary & 0b01) << 5u
         };
 
         // Check
@@ -227,7 +227,12 @@ PXResult PXAPI PXZLIBCompress(PXFile PXREF pxInputSteam, PXFile PXREF pxOutputSt
 
     // Write ADLER
     {
-        const PXI32U adler = (PXI32U)PXAdler32Create(1, pxInputSteam->Data, pxInputSteam->DataUsed);
+        const PXI32U adler = (PXI32U)PXAdler32Create
+        (
+            1,
+            PXFileDataAtCursor(pxInputSteam),
+            PXFileDataPosition(pxInputSteam)
+        );
 
         PXFileWriteI32UE(pxOutputSteam, adler, PXEndianBig);
     }

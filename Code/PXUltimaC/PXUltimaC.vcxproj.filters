@@ -217,6 +217,7 @@
     <ClCompile Include="PX\Service\PXLDAPService.c" />
     <ClCompile Include="PX\Service\PXTCPService.c" />
     <ClCompile Include="PX\Service\PXUDPService.c" />
+    <ClCompile Include="PX\OS\File\PXFileFormat.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PX\Algorithm\BubbleSort\PXBubbleSort.h" />
@@ -436,5 +437,6 @@
     <ClInclude Include="PX\Service\PXLDAPService.h" />
     <ClInclude Include="PX\Service\PXTCPService.h" />
     <ClInclude Include="PX\Service\PXUDPService.h" />
+    <ClInclude Include="PX\OS\File\PXFileFormat.h" />
   </ItemGroup>
 </Project>

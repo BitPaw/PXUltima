@@ -102,13 +102,12 @@ PXResult PXAPI PXMTLLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
     );
 #endif
 
-    PXFile compiledSteam;
-    PXClear(PXFile, &compiledSteam);
+    PXFile* compiledSteam = PXFileCreate();
 
     PXCompiler pxCompiler;
     PXClear(PXCompiler, &pxCompiler);
     pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileReference;
-    pxCompiler.ReadInfo.FileCache = &compiledSteam;
+    pxCompiler.ReadInfo.FileCache = compiledSteam;
     pxCompiler.Flags = PXCompilerKeepAnalyseTypes;
     pxCompiler.CommentSingleLineSize = 1u;
     pxCompiler.CommentSingleLine = "#";
@@ -140,7 +139,7 @@ PXResult PXAPI PXMTLLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
 
     // Analyse -
     {
-        while(!PXFileIsAtEnd(&compiledSteam))
+        while(!PXFileIsAtEnd(compiledSteam))
         {
             PXCompilerSymbolEntryExtract(&pxCompiler);
 
@@ -163,7 +162,7 @@ PXResult PXAPI PXMTLLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
             }
         }
 
-        PXFileCursorToBeginning(&compiledSteam);
+        PXFileCursorToBeginning(compiledSteam);
     }
 
 
@@ -627,7 +626,7 @@ void BF::MTL::PrintContent()
 
 PXSize PXAPI PXMTLFetchAmount(const void PXREF data, const PXSize dataSize)
 {
-    PXFile mtlStream;
+   // PXFile mtlStream;
 
     if(!data || !dataSize)
     {
@@ -638,7 +637,7 @@ PXSize PXAPI PXMTLFetchAmount(const void PXREF data, const PXSize dataSize)
 
     unsigned int materialListSize = 0;
 
-    PXFileReadI32U(&mtlStream, &materialListSize);
+  //  PXFileReadI32U(&mtlStream, &materialListSize);
 
     return materialListSize;
 }
@@ -654,8 +653,8 @@ PXBool PXAPI PXMTLFetchMaterial(const void PXREF data, const PXSize dataSize, co
         return PXNo;
     }
 
-    PXFile mtlPXFile;
-    PXFile mtlHeaderStream;
+    PXFile* mtlPXFile;
+    PXFile* mtlHeaderStream;
 
     // PXFileBufferExternal(&mtlPXFile, (PXAdress)data + 1024, dataSize - sizeof(unsigned int)); // Skip first int, we already got it
     // PXFileBufferExternal(&mtlHeaderStream, (PXAdress)data + sizeof(unsigned int), dataSize- sizeof(unsigned int)); // Skip first int, we already got it
@@ -669,7 +668,7 @@ PXBool PXAPI PXMTLFetchMaterial(const void PXREF data, const PXSize dataSize, co
 
         if(isTarget)
         {
-            mtlPXFile.DataUsed = materialDataSize;    // Set max size for now
+           // mtlPXFile.DataUsed = materialDataSize;    // Set max size for now
 
             while(!PXFileIsAtEnd(&mtlPXFile))
             {
@@ -688,7 +687,7 @@ PXBool PXAPI PXMTLFetchMaterial(const void PXREF data, const PXSize dataSize, co
                     case MTLLineName:
                     {
                         PXFileReadI8U(&mtlPXFile, &mtlMaterial->NameSize);
-                        mtlMaterial->Name = (char*)PXFileCursorPosition(&mtlPXFile);
+                        mtlMaterial->Name = (char*)PXFileDataAtCursor(&mtlPXFile);
 
                         PXFileCursorAdvance(&mtlPXFile, mtlMaterial->NameSize);
                         break;
@@ -696,7 +695,7 @@ PXBool PXAPI PXMTLFetchMaterial(const void PXREF data, const PXSize dataSize, co
                     case MTLLineTexture:
                     {
                         PXFileReadI8U(&mtlPXFile, &mtlMaterial->DiffuseTexturePathSize);
-                        mtlMaterial->DiffuseTexturePath = (char*)PXFileCursorPosition(&mtlPXFile);
+                        mtlMaterial->DiffuseTexturePath = (char*)PXFileDataAtCursor(&mtlPXFile);
 
                         PXFileCursorAdvance(&mtlPXFile, mtlMaterial->DiffuseTexturePathSize);
                         break;
@@ -761,7 +760,7 @@ PXBool PXAPI PXMTLFetchMaterial(const void PXREF data, const PXSize dataSize, co
         }
         else         // else, do nothing -> skip
         {
-            mtlPXFile.Data = ((PXAdress)mtlPXFile.Data) + materialDataSize + 10u; // accumulate Size, missing 10 Bytes??
+            //mtlPXFile.Data = ((PXAdress)mtlPXFile.Data) + materialDataSize + 10u; // accumulate Size, missing 10 Bytes??
         }
     }
 

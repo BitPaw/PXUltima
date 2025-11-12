@@ -3,44 +3,9 @@
 #ifndef PXFileIncluded
 #define PXFileIncluded
 
-//---------------------------------------------------------
-// Settings
-//---------------------------------------------------------
-#define FileLineBufferSize 2048
-#define PXFileMappingAllow 1
-#define PXFileDebugOutput 0
-//---------------------------------------------------------
-
-#define PXFileCursorPositionInvalid (void*)-1
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <wchar.h>
-
-#include <PX/Engine/PXResource.h>
-//#include <PX/Media/PXType.h>
-//#include <PX/Media/PXText.h>
-//#include <PX/OS/Memory/PXMemory.h>
-//#include <PX/OS/Error/PXActionResult.h>
-//#include <PX/OS/Time/PXTime.h>
-
-#if OSUnix
-
-#include <sys/types.h>
-//#include <sys/typed.h>
-#include <sys/stat.h>
-#include <sys/mman.h>
-#include <dirent.h>
-#include <unistd.h>
-#include <libgen.h>
-
-#elif OSWindows
-
-#include <windows.h>
-#include <direct.h>
-
-#endif
-
+#include <PX/OS/Memory/PXMemory.h>
+#include <PX/Media/PXText.h>
+//#include <PX/Engine/PXResource.h>
 
 #if OSUnix
 #define PXPathSizeMax 260
@@ -57,18 +22,41 @@
 #endif
 
 
-#if 1
-#define PXDirectoryIsRootFolder(s) ((s[0] == '.') && (s[1] == '\0'))
-#define PXDirectoryIsCurrentFolder(s) (s[0] == '.') && (s[1] == '.') && (s[2] == '\0')
-#define PXDirectoryIsDotFolder(s) (PXDirectoryIsRootFolder(s) || (PXDirectoryIsCurrentFolder(s))
-#else
-
-void PXDirectoryIsDotFolder(const char* s)
+typedef enum PXFileElementInfoType_
 {
-    return (((s[0] == '.') && (s[1] == '\0')) || ((s[0] == '.') && (s[1] == '.') && (s[2] == '\0')));
-}
+    PXFileElementInfoTypeInvalid,
+    PXFileElementInfoTypeUnkown, // DT_UNKNOWN
 
-#endif
+    PXFileElementInfoTypeFile, // DT_REG
+    PXFileElementInfoTypeDictionary, // DT_DIR
+
+    PXFileElementInfoTypeNamedPipeFIFO, // DT_FIFO
+    PXFileElementInfoTypeLink, // DT_LNK
+    PXFileElementInfoTypeSocket, // DT_SOCK
+
+    PXFileElementInfoTypeDeviceCharacter, // DT_CHR
+    PXFileElementInfoTypeDeviceBlock, // DT_BLK
+
+    PXFileElementInfoTypeDictionaryRoot, // '.'
+    PXFileElementInfoTypeDictionaryParent // '..'
+}
+PXFileElementInfoType;
+
+
+// Permentant data that is and will be stored on disk.
+typedef struct PXFileEntry_
+{
+    PXI32U ID;
+
+    char* FilePathData;
+    PXSize FilePathSize;
+
+    PXSize Size;
+    PXI8U Depth;
+
+    PXFileElementInfoType Type;
+}
+PXFileEntry;
 
 
 #define PXFileIOInfoFileMask                (0b0001111)
@@ -98,11 +86,12 @@ typedef struct PXFileOpenInfo_
 PXFileOpenInfo;
 
 
+typedef struct PXFile_ PXFile;
 
 
-PXPublic PXResult PXAPI PXFileFormatInfoViaPath(PXFileFormatInfo PXREF pxFileFormatInfo, const PXText PXREF filePath);
-PXPublic PXResult PXAPI PXFileFormatInfoViaContent(PXFileFormatInfo PXREF pxFileFormatInfo, PXFile PXREF pxFile);
-
+PXPublic PXBool PXAPI PXDirectoryIsRootFolder(const char* directory);
+PXPublic PXBool PXAPI PXDirectoryIsCurrentFolder(const char* directory);
+PXPublic PXBool PXAPI PXDirectoryIsDotFolder(const char* directory);
 
 
 PXPublic void PXAPI PXTypeEntryInfo
@@ -114,6 +103,12 @@ PXPublic void PXAPI PXTypeEntryInfo
 
 
 //---<Utility>---------------------------------------------------------
+PXPublic PXFile* PXAPI PXFileCreate(void);
+PXPublic PXBool PXAPI PXFileRelese(PXFile PXREF pxFile);
+
+PXPublic PXBuffer* PXAPI PXFileBufferGET(PXFile PXREF pxFile);
+
+
 PXPublic PXBool PXAPI PXFileDoesExist(const PXText PXREF pxText);
 PXPublic PXBool PXAPI PXFileDoesExistA(const char PXREF filePath);
 PXPublic PXResult PXAPI PXFileRemove(const PXText PXREF filePath);
@@ -142,8 +137,15 @@ PXPublic void PXAPI PXFilePathSwapExtension(const PXText PXREF inputPath, PXText
 
 //---------------------------------------------------------------------
 
+// Check is there is data to be read. 
+// Use when we check if a file is loaded and not at the end
+PXPublic PXBool PXAPI PXFileDataAvailable(const PXFile PXREF pxFile);
+
 
 PXPublic PXResult PXAPI PXFileName(const PXFile PXREF pxFile, PXText PXREF fileName);
+PXPublic PXResult PXAPI PXFileNameSet(const PXFile PXREF pxFile, PXText PXREF fileName);
+
+
 PXPublic PXBool PXAPI PXFileDirectoryPathExtract(const PXText PXREF path, PXText PXREF directoryPath);
 
 
@@ -191,6 +193,7 @@ PXPublic PXResult PXAPI PXFileUnmapFromMemory(PXFile PXREF pxFile);
 //---------------------------------------------------------------------
 
 //---<Parsing Utility>-----------------------------------------------------
+PXPublic PXSize PXAPI PXFileAllocatedSize(const PXFile PXREF pxFile);
 PXPublic PXSize PXAPI PXFileRemainingSize(const PXFile PXREF pxFile);
 PXPublic PXSize PXAPI PXFileRemainingSizeRelativeFromAddress(const PXFile PXREF pxFile, const void PXREF adress);
 PXPublic PXBool PXAPI PXFileIsAtEnd(const PXFile PXREF pxFile);
@@ -203,11 +206,24 @@ PXPublic PXBool PXAPI PXFileAssureFreeSize(PXFile PXREF pxFile, const PXSize amo
 // Returns offset of end.
 PXPublic PXSize PXAPI PXFileFindEndOfText(PXFile PXREF pxFile);
 
-PXPublic void* PXAPI PXFileCursorPosition(PXFile PXREF pxFile);
+PXPublic void* PXAPI PXFileDataAtCursor(PXFile PXREF pxFile);
+PXPublic void* PXAPI PXFileDataAtCursorWithOffset(PXFile PXREF pxFile, const PXSize offset);
+
+PXPublic PXSize PXAPI PXFileDataPosition(PXFile PXREF pxFile);
+
+PXPublic PXSize PXAPI PXFileSizeToRead(PXFile PXREF pxFile);
+
+PXPublic PXSize PXAPI PXFileOperationsRead(PXFile PXREF pxFile);
+PXPublic PXSize PXAPI PXFileOperationsWrite(PXFile PXREF pxFile);
+
+PXPublic PXSize PXAPI PXFileCursorOffsetGetBit(PXFile PXREF pxFile);
+PXPublic void PXAPI PXFileCursorOffsetSetBit(PXFile PXREF pxFile, const PXSize offsetBit);
+
 PXPublic void PXAPI PXFileCursorMoveTo(PXFile PXREF pxFile, const PXSize position);
 PXPublic void PXAPI PXFileCursorToBeginning(PXFile PXREF pxFile);
 PXPublic PXSize PXAPI PXFileCursorPeek(PXFile PXREF pxFile, void PXREF data, const PXSize steps);
 PXPublic PXSize PXAPI PXFileCursorAdvance(PXFile PXREF pxFile, const PXSize steps);
+PXPublic PXBool PXAPI PXFileCursorIsAt(PXFile PXREF pxFile, const PXSize position);
 PXPublic PXSize PXAPI PXFileCursorRewind(PXFile PXREF pxFile, const PXSize steps);
 PXPublic PXSize PXAPI PXFileCursorOffset(PXFile PXREF pxFile, const PXI32S offset);
 PXPublic void PXAPI PXFileCursorToEnd(PXFile PXREF pxFile);
@@ -405,6 +421,9 @@ PXPublic PXResult PXAPI PXFileStoreOnDiskA(PXFile PXREF pxFile, const char* file
 //-------------------------------------------------------------------------
 
 
+PXPublic PXResult PXAPI PXFileMapToMemoryEE(PXFile PXREF pxFile, const PXSize requestedSize, const PXAccessMode pxAccessMode, const PXBool prefetch);
+
+
 
 //---<Extra bit stuff>-----------------------------------------------------
 PXPublic PXSize PXAPI PXFileSkipBitsToNextByte(PXFile PXREF pxFile);
@@ -428,5 +447,13 @@ PXPublic PXResult PXAPI PXFileTimeGet
 PXPublic PXResult PXAPI PXFilePath(const PXFile PXREF pxFile, PXText PXREF filePath, const PXBool doWrite);
 PXPublic PXResult PXAPI PXFilePathA(PXFile PXREF pxFile, char PXREF filePath, const PXSize filePathSize, PXSize PXREF sizeWritten);
 PXPublic PXResult PXAPI PXFilePathLong(PXText PXREF pxTextInput, PXText PXREF pxTextOutput);
+
+
+PXPublic PXResult PXAPI PXFileNameViaHandle(const PXFile PXREF pxFile, PXText PXREF pxText);
+PXPublic void PXAPI PXFileEndianessSet(PXFile PXREF pxFile, const PXEndian pxEndian);
+PXPublic void PXAPI PXFileBitFormatOfDataSet(PXFile PXREF pxFile, const PXBitFormat pxBitFormat);
+
+// Percentage
+PXPublic PXSize PXAPI PXFileDataUtilized(const PXFile PXREF pxFile);
 
 #endif

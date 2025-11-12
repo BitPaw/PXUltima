@@ -274,30 +274,33 @@ PXResult PXAPI PXDEFLATEParse(PXFile PXREF pxInputStream, PXFile PXREF pxOutputS
                     }
 
                     /*part 5: fill in all the out[n] values based on the length and dist*/
-                    PXSize start = pxOutputStream->DataCursor;//(*outputBufferSizeRead);
+                    PXSize start = PXFileDataPosition(pxOutputStream);//(*outputBufferSizeRead);
 
                     if(distance > start)
                         return PXActionRefusedParserSymbolNotAsExpected; /*too long backward distance*/
 
                     PXSize backward = start - distance;
 
-                    /*(*outputBufferSizeRead)*/ pxOutputStream->DataCursor += length;
+                    /*(*outputBufferSizeRead)*/ 
+                    PXFileCursorAdvance(pxOutputStream, length);
 
                     // if (!ucvector_resize(out, out->size + length)) ERROR_BREAK(83 /*alloc fail*/);
 
 
+                    PXByte* data = PXFileDataAtCursor(pxOutputStream);
+
                     if(distance < length)
                     {
-                        start += PXMemoryCopy((PXAdress)pxOutputStream->Data + backward, (PXAdress)pxOutputStream->Data + start, distance);
+                        start += PXMemoryCopy(data + backward, data + start, distance);
 
                         for(PXSize forward = distance; forward < length; ++forward)
                         {
-                            ((PXAdress)pxOutputStream->Data)[start++] = ((PXAdress)pxOutputStream->Data)[backward++];
+                            data[start++] = data[backward++];
                         }
                     }
                     else
                     {
-                        PXMemoryCopy((PXAdress)pxOutputStream->Data + backward, (PXAdress)pxOutputStream->Data + start, length);
+                        PXMemoryCopy(data + backward, data + start, length);
                     }
                     break;
                 }
@@ -631,12 +634,12 @@ PXResult PXAPI deflateFixed
     LodePNGBitWriter* writer = &writerThing;
     ucvector aaucvector;
 
-    aaucvector.data = (PXAdress)pxFile->Data + pxFile->DataCursor;
+    aaucvector.data = PXFileDataAtCursor(pxFile);
     aaucvector.size = 0;
-    aaucvector.allocsize = pxFile->DataUsed;
+    aaucvector.allocsize = PXFileSizeToRead(pxFile);
 
     LodePNGBitWriter_init(writer, &aaucvector);
-    writer->bp = pxFile->DataCursorBitOffset + 16u;
+    writer->bp = PXFileCursorOffsetGetBit(pxFile) + 16u;
 
     //--------------------------
 
@@ -687,8 +690,8 @@ PXResult PXAPI deflateFixed
     PXHuffmanTreeDestruct(&tree_ll);
     PXHuffmanTreeDestruct(&tree_d);
 
-    pxFile->DataCursorBitOffset = writer->bp;
-    pxFile->DataCursor += aaucvector.size;
+    PXFileCursorOffsetSetBit(pxFile, writer->bp);
+    PXFileCursorAdvance(pxFile, aaucvector.size);
 
     //return error;
     return PXActionSuccessful;
@@ -1255,12 +1258,12 @@ PXResult PXAPI deflateDynamic
     LodePNGBitWriter* writer = &writerThing;
     ucvector aaucvector;
 
-    aaucvector.data = (PXAdress)pxFile->Data + pxFile->DataCursor;
+    aaucvector.data = PXFileDataAtCursor(pxFile);
     aaucvector.size = 0;
-    aaucvector.allocsize = pxFile->DataUsed;
+    aaucvector.allocsize = PXFileSizeToRead(pxFile);
 
     LodePNGBitWriter_init(writer, &aaucvector);
-    writer->bp = pxFile->DataCursorBitOffset;// +(2 * 8u);
+    writer->bp = PXFileCursorOffsetGetBit(pxFile);// +(2 * 8u);
 
     //-------------------------
 
@@ -1546,8 +1549,8 @@ PXResult PXAPI deflateDynamic
     PXMemoryHeapFree(PXNull, bitlen_lld);
     PXMemoryHeapFree(PXNull, bitlen_lld_e);
 
-    pxFile->DataCursorBitOffset = writer->bp;
-    pxFile->DataCursor += aaucvector.size;
+    PXFileCursorOffsetSetBit(pxFile, writer->bp);
+    PXFileCursorAdvance(pxFile, aaucvector.size);
 
   //  return error;
     return PXActionSuccessful;
@@ -1578,13 +1581,13 @@ PXResult PXAPI PXDEFLATESerialize(PXFile PXREF pxInputStream, PXFile PXREF pxOut
     {
         case PXDeflateEncodingLiteralRaw:
         {
-            const PXSize numdeflateblocks = (pxInputStream->DataUsed + 65534u) / 65535u;
+            const PXSize numdeflateblocks = (PXFileSizeToRead(pxInputStream) + 65534u) / 65535u;
             PXSize datapos = 0;
 
             for(PXSize i = 0; i != numdeflateblocks; ++i)
             {
                 const PXBool BFINAL = (i == numdeflateblocks - 1);
-                const PXI16U chunkLength = PXMathMinimumIU(65535, pxInputStream->DataUsed - datapos);
+                const PXI16U chunkLength = PXMathMinimumIU(65535, PXFileSizeToRead(pxInputStream) - datapos);
                 const PXI16U chunkLengthNegated = 65535 - chunkLength;
 
                 const PXByte firstbyte = BFINAL;//(unsigned char)(BFINAL + ((BTYPE & 1u) << 1u) + ((BTYPE & 2u) << 1u));
@@ -1593,7 +1596,9 @@ PXResult PXAPI PXDEFLATESerialize(PXFile PXREF pxInputStream, PXFile PXREF pxOut
                 PXFileWriteI16U(pxOutputStream, chunkLength);
                 PXFileWriteI16U(pxOutputStream, chunkLengthNegated);
 
-                PXFileWriteB(pxOutputStream, (PXAdress)pxInputStream->Data + datapos, chunkLength);
+                
+
+                PXFileWriteB(pxOutputStream, (PXAdress)PXFileDataPosition(pxOutputStream) + datapos, chunkLength);
 
                 datapos += chunkLength;
             }
@@ -1605,13 +1610,13 @@ PXResult PXAPI PXDEFLATESerialize(PXFile PXREF pxInputStream, PXFile PXREF pxOut
             {
                 case PXDeflateEncodingHuffmanStatic:
                 {
-                    blocksize = pxInputStream->DataUsed;
+                    blocksize = PXFileSizeToRead(pxInputStream);
                     break;
                 }
                 case PXDeflateEncodingHuffmanDynamic:
                 {
                     /*on PNGs, deflate blocks of 65-262k seem to give most dense encoding*/
-                    blocksize = pxInputStream->DataUsed / 8u + 8u;
+                    blocksize = PXFileSizeToRead(pxInputStream) / 8u + 8u;
                     
                     if(blocksize < 65536) 
                         blocksize = 65536;
@@ -1623,7 +1628,7 @@ PXResult PXAPI PXDEFLATESerialize(PXFile PXREF pxInputStream, PXFile PXREF pxOut
                 }
             }
 
-            PXSize numdeflateblocks = (pxInputStream->DataUsed + blocksize - 1) / blocksize;
+            PXSize numdeflateblocks = (PXFileSizeToRead(pxInputStream) + blocksize - 1) / blocksize;
 
             if(numdeflateblocks == 0) 
                 numdeflateblocks = 1;
@@ -1633,23 +1638,26 @@ PXResult PXAPI PXDEFLATESerialize(PXFile PXREF pxInputStream, PXFile PXREF pxOut
             for(PXSize i = 0; i != numdeflateblocks && (error == 0); ++i)
             {
                 const PXSize indexStart = i * blocksize;
-                const PXSize indexEnd = PXMathMinimumIU(indexStart + blocksize, pxInputStream->DataUsed);
+                const PXSize indexEnd = PXMathMinimumIU(indexStart + blocksize, PXFileSizeToRead(pxInputStream));
                 const PXBool finalBlock = (i == numdeflateblocks - 1);
 
                 // PXFileWriteBits(pxOutputStream, finalBlock, 1u);
+
+                void* input = PXFileDataPosition(pxInputStream);
 
                 switch(deflateEncodingMethod)
                 {
                     case PXDeflateEncodingHuffmanStatic:
                     {
                         PXFileWriteBits(pxOutputStream, 1u, 2u);
-                        error = deflateFixed(pxOutputStream, &hash, pxInputStream->Data, indexStart, indexEnd, &lodePNGCompressSettings);
+
+                        error = deflateFixed(pxOutputStream, &hash, input, indexStart, indexEnd, &lodePNGCompressSettings);
                         break;
                     }
                     case PXDeflateEncodingHuffmanDynamic:
                     {
                         //PXFileWriteBits(pxOutputStream, 2u, 2u);
-                        error = deflateDynamic(pxOutputStream, &hash, pxInputStream->Data, indexStart, indexEnd, &lodePNGCompressSettings, finalBlock);
+                        error = deflateDynamic(pxOutputStream, &hash, input, indexStart, indexEnd, &lodePNGCompressSettings, finalBlock);
                         break;
                     }
                 }

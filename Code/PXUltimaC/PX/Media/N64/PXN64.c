@@ -70,8 +70,7 @@ PXResult PXAPI PXN64LoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
 {
     PXFile* pxFile = pxResourceLoadInfo->FileReference;
 
-    PXFile pxN64Data;
-    PXClear(PXFile, &pxN64Data);
+    PXFile* pxN64Data = PXFileCreate();
 
     PXN64 n64;
     PXClear(PXN64, &n64);
@@ -114,13 +113,14 @@ PXResult PXAPI PXN64LoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
             PXFileOpenInfo pxFileOpenInfo;
             PXClear(PXFileOpenInfo, &pxFileOpenInfo);
             pxFileOpenInfo.FlagList = PXFileIOInfoFileMemory;
-            pxFileOpenInfo.FilePath.SizeUsed = pxResourceLoadInfo->FileReference->DataAllocated;
+            pxFileOpenInfo.FilePath.SizeUsed = PXFileAllocatedSize(pxResourceLoadInfo->FileReference);
 
             PXFileOpen(&pxN64Data, &pxFileOpenInfo);
             PXFileByteSwap(&pxN64Data, pxResourceLoadInfo->FileReference);
 
             pxFile = &pxN64Data;
-            pxFile->EndiannessOfData = PXEndianBig;
+
+            PXFileEndianessSet(pxFile, PXEndianBig);
         }
     }
 
@@ -152,7 +152,7 @@ PXResult PXAPI PXN64LoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
         const PXSize pxFileDataElementTypeSize = sizeof(pxFileDataElementType);
 
         const PXSize readBytes = PXFileReadMultible(pxFile, pxFileDataElementType, pxFileDataElementTypeSize);
-        const PXBool readByteEnough = 64 == pxFile->DataCursor;
+        const PXBool readByteEnough = 64 == PXFileDataPosition(pxFile);
 
         if(!readByteEnough)
         {
@@ -160,8 +160,8 @@ PXResult PXAPI PXN64LoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
         }
         void* aaw = n64.RAMEntryPointOffset; // Expect 80 00 04 00
 
-        n64.RAMEntryPointAdress = (char*)pxFile->Data + 0x1000;
-        n64.RAMEntryPointLength = pxFile->DataUsed - 0x1000;
+       // n64.RAMEntryPointAdress = (char*)pxFile->Buffer.Data + 0x1000;
+       // n64.RAMEntryPointLength = pxFile->Buffer.SizeAllowedToUse - 0x1000;
 
         // The lower most nybble of the ClockRate is not read.
         n64.ClockRateOverride &= 0xFFFFFFF0;
@@ -171,13 +171,13 @@ PXResult PXAPI PXN64LoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
         // 4096 - 1052672
         //  0x1000 to 0x101000
 
-        n64.BootCode = PXFileCursorPosition(pxFile); // 0x40
+        n64.BootCode = PXFileDataAtCursor(pxFile); // 0x40
         n64.BootCodeSize = 4032; // 0xFC0
 
-        void* a = (char*)pxFile->Data + 4096;
+      //  void* a = (char*)pxFile->Buffer.Data + 4096;
         PXSize x = 1052672;
 
-        n64.BootCodeCRC = PXCRC32Generate(a, x);
+       // n64.BootCodeCRC = PXCRC32Generate(a, x);
         //         n64.BootCodeCRC = PXCRC32Generate(n64.BootCode, n64.BootCodeSize);
         
 
@@ -269,9 +269,9 @@ PXResult PXAPI PXN64LoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
             {0x1FC007C0, 0x1FC007FF, PXNull, PXNull, ".pifram",    "PIF RAM"},
             {0x80000000, 0x800003FF, PXNull, PXNull, ".ivt",    "Interrupt Vector Table"},
 
-            {0xB0000000,  0x0, pxFile->DataCursor,      pxFile->DataUsed,         ".rom", "ROM image", 111}, // Read only
+           // {0xB0000000,  0x0, pxFile->Buffer.CursorOffsetByte,      pxFile->Buffer.SizeAllowedToUse,         ".rom", "ROM image", 111}, // Read only
             
-            {0x80000000 + n64.RAMEntryPointOffset, 0x0, n64.RAMEntryPointAdress, n64.RAMEntryPointLength, ".ram", "RAM content", 111}, // RWX
+           // {0x80000000 + n64.RAMEntryPointOffset, 0x0, n64.RAMEntryPointAdress, n64.RAMEntryPointLength, ".ram", "RAM content", 111}, // RWX
         };
 
 
@@ -283,7 +283,7 @@ PXResult PXAPI PXN64LoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
 #if PXLogEnable
         PXText sizeText;
         PXTextConstructBufferA(&sizeText, 64);
-        PXTextFormatSize(&sizeText, pxN64Data.DataUsed);
+        //PXTextFormatSize(&sizeText, pxN64Data.DataUsed);
 
         const char* countryCodeName = PXN64CountryCodeToString(n64.CountryCode);
 

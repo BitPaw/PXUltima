@@ -128,7 +128,7 @@ void PXAPI PXFilmBoxReadProperty(PXFile PXREF pxFile, PXFilmBoxProperty PXREF px
         {
             // string ro raw data
             PXFileReadI32U(pxFile, &pxFilmBoxProperty->Data.Length);
-            pxFilmBoxProperty->Data.Data = (char*)PXFileCursorPosition(pxFile);
+            pxFilmBoxProperty->Data.Data = (char*)PXFileDataAtCursor(pxFile);
             PXFileCursorAdvance(pxFile, pxFilmBoxProperty->Data.Length);
 
 
@@ -168,7 +168,7 @@ void PXAPI PXFilmBoxReadProperty(PXFile PXREF pxFile, PXFilmBoxProperty PXREF px
                 PXFileBindingRead
             );
 
-            pxFilmBoxProperty->Array.Data = PXFileCursorPosition(pxFile);
+            pxFilmBoxProperty->Array.Data = PXFileDataAtCursor(pxFile);
             PXFileCursorAdvance(pxFile, pxFilmBoxProperty->Array.CompressedLength);
 
 #if PXLogEnable
@@ -191,7 +191,7 @@ void PXAPI PXFilmBoxReadProperty(PXFile PXREF pxFile, PXFilmBoxProperty PXREF px
     else
     {
         pxFilmBoxProperty->Data.Length = dataTypeSize;
-        pxFilmBoxProperty->Data.Data = (char*)PXFileCursorPosition(pxFile);
+        pxFilmBoxProperty->Data.Data = (char*)PXFileDataAtCursor(pxFile);
 
         // Not an array
 #if PXLogEnable
@@ -241,7 +241,7 @@ void PXAPI PXFilmBoxReadNode(PXFile PXREF pxFile, PXFilmBoxNodeRecord PXREF pxFi
 
     if(pxFilmBoxNodeRecord->NameLen)
     {
-        pxFilmBoxNodeRecord->Name = (char*)PXFileCursorPosition(pxFile);
+        pxFilmBoxNodeRecord->Name = (char*)PXFileDataAtCursor(pxFile);
         PXFileCursorAdvance(pxFile, pxFilmBoxNodeRecord->NameLen);
     }
     else
@@ -296,7 +296,7 @@ void PXAPI PXFilmBoxReadNode(PXFile PXREF pxFile, PXFilmBoxNodeRecord PXREF pxFi
     // Check if it is nested, if we have more to read.
     while(1)
     {
-        const PXSize restSize = pxFilmBoxNodeRecord->EndOffset - pxFile->DataCursor;
+        const PXSize restSize = pxFilmBoxNodeRecord->EndOffset - PXFileDataPosition(pxFile);
 
         if(restSize <= 4) // 4 byte, ?end
         {

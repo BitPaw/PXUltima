@@ -21,7 +21,7 @@ PXResult PXAPI PXTranslatorEnglishToGerman(PXFile PXREF inputStreamEnglish, PXFi
 {
     while (!PXFileIsAtEnd(inputStreamEnglish))
     {
-        char* text = PXFileCursorPosition(inputStreamEnglish);
+        char* text = PXFileDataAtCursor(inputStreamEnglish);
         const PXSize textSize = PXFileSkipBlock(inputStreamEnglish);
 
         char buffer[1024];

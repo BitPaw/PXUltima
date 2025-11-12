@@ -479,8 +479,7 @@ PXResult PXAPI PXSpriteFontLoadFromFile(PXResourceTransphereInfo PXREF pxResourc
     PXFont PXREF pxFont = (PXFont*)pxResourceLoadInfo->ResourceTarget;
 
 
-    PXFile tokenStream;
-    PXClear(PXFile, &tokenStream);
+    PXFile* tokenStream = PXFileCreate();
 
     PXSpriteFont pxSpriteFontEE;
     PXSpriteFont* pxSpriteFont = &pxSpriteFontEE;
@@ -492,7 +491,7 @@ PXResult PXAPI PXSpriteFontLoadFromFile(PXResourceTransphereInfo PXREF pxResourc
     // Lexer
     {
         PXClear(PXCompiler, &pxCompiler);
-        pxCompiler.ReadInfo.FileCache = &tokenStream;
+        pxCompiler.ReadInfo.FileCache = tokenStream;
         pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileReference;
         pxCompiler.Flags = PXCompilerKeepAnalyseTypes;
         pxCompiler.CommentSingleLineSize = 1u;

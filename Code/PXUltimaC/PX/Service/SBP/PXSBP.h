@@ -3,10 +3,10 @@
 #ifndef PXSBPIncluded
 #define PXSBPIncluded
 
+#if PXSocketUSE
+
 #include <PX/OS/Network/PXClient.h>
 #include <PX/OS/Network/PXServer.h>
-
-#if PXSocketUSE
 
 #include <PX/OS/File/PXFile.h>
 #include <PX/Media/PXText.h>

@@ -8,6 +8,7 @@
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/OS/PXOS.h>
 #include <PX/OS/Console/PXConsole.h>
+#include <PX/OS/File/PXFile.h>
 
 #if 0
 #include <GLEW/glew.h>
@@ -4849,12 +4850,13 @@ PXResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL PXREF pxOpenGL, PXShaderProg
         for(PXSize i = 0; i < amount; ++i)
         {
             const PXShader PXREF shader = &shaderList[i];
-
-            const PXBool validCall = shader->ShaderFile->Data && (shader->ShaderFile->DataUsed > 0);
+           
+            const PXBool validCall = PXFileDataAvailable(shader->ShaderFile);
 
             if(!validCall)
             {
 #if PXLogEnable
+                PXBuffer* const pxBuffer = PXFileBufferGET(shader->ShaderFile);
                 const char* shaderTypeName = PXGraphicShaderTypeToString(shader->Type);
 
                 PXLogPrint
@@ -4868,7 +4870,7 @@ PXResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL PXREF pxOpenGL, PXShaderProg
                     "%25s : %p, Size:%i",
                     "ProgramID OpenGL", pxShaderProgram->Info.ID, pxShaderProgram->Info.Handle.OpenGLID,
                     "ShaderID OpenGL", shader->Info.ID,shader->Info.Handle.OpenGLID, shaderTypeName,
-                    "Shader Data", shader->ShaderFile->Data, shader->ShaderFile->DataUsed
+                    "Shader Data", pxBuffer->Data, pxBuffer->SizeAllowedToUse
                 );
 #endif
 
@@ -4926,16 +4928,22 @@ PXResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL PXREF pxOpenGL, PXShaderProg
 
             const char* shaderTypeName = PXGraphicShaderTypeToString(shader->Type);
             const PXI32U shaderTypeID = PXOpenGLShaderTypeToID(shader->Type);
-            const char PXREF shaderData = (char*)shader->ShaderFile->Data;
-            PXI32S shaderLength = shader->ShaderFile->DataUsed;
+
+            PXBuffer* const pxBuffer = PXFileBufferGET(shader->ShaderFile);
+            PXI32S shaderLength = pxBuffer->SizeAllowedToUse;
 
             shader->Info.Handle.OpenGLID = pxOpenGL->Binding.ShaderCreate(shaderTypeID); // Create shader
 
             // Sanity check?
             GLboolean iss =  pxOpenGL->Binding.IsShader(shader->Info.Handle.OpenGLID);
 
-
-            pxOpenGL->Binding.ShaderSource(shader->Info.Handle.OpenGLID, 1u, &shaderData, &shaderLength); // Upload data
+            pxOpenGL->Binding.ShaderSource
+            (
+                shader->Info.Handle.OpenGLID, 
+                1u, 
+                &pxBuffer->Data,
+                &shaderLength
+            ); // Upload data
 
             pxOpenGL->Binding.ShaderCompile(shader->Info.Handle.OpenGLID);
 
@@ -4955,7 +4963,12 @@ PXResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL PXREF pxOpenGL, PXShaderProg
             {
                 GLint isCompiled = 0;
 
-                pxOpenGL->Binding.ShaderGetiv(shader->Info.Handle.OpenGLID, GL_COMPILE_STATUS, &isCompiled);
+                pxOpenGL->Binding.ShaderGetiv
+                (
+                    shader->Info.Handle.OpenGLID,
+                    GL_COMPILE_STATUS,
+                    &isCompiled
+                );
 
                 compiledSuccessFully = isCompiled;
             }
@@ -6986,7 +6999,7 @@ PXResult PXAPI PXOpenGLModelRegister(PXOpenGL PXREF pxOpenGL, PXModel PXREF pxMo
     }
 
     const PXBool hasIndexData = 
-        pxIndexBuffer->Data.Size > 0 && 
+        pxIndexBuffer->Data.SizeAllowedToUse > 0 && 
         pxMesh->VertexBufferListAmount == 1;
 
 
@@ -7119,7 +7132,7 @@ PXResult PXAPI PXOpenGLModelRegister(PXOpenGL PXREF pxOpenGL, PXModel PXREF pxMo
                 pxIndexBuffer->Info.ID,
                 pxIndexBuffer->Info.Handle.OpenGLID,
                 pxIndexBuffer->Data.Data,
-                pxIndexBuffer->Data.Size,
+                pxIndexBuffer->Data.SizeAllowedToUse,
                 PXTypeSizeGet(pxIndexBuffer->DataType)
             );
 #endif
@@ -7128,7 +7141,7 @@ PXResult PXAPI PXOpenGLModelRegister(PXOpenGL PXREF pxOpenGL, PXModel PXREF pxMo
             pxOpenGL->Binding.BufferData
             (
                 GL_ELEMENT_ARRAY_BUFFER, 
-                pxIndexBuffer->Data.Size, 
+                pxIndexBuffer->Data.SizeAllowedToUse, 
                 pxIndexBuffer->Data.Data, 
                 GL_STATIC_DRAW
             );
@@ -7248,14 +7261,14 @@ PXResult PXAPI PXOpenGLModelRegister(PXOpenGL PXREF pxOpenGL, PXModel PXREF pxMo
                 pxVertexBuffer->Info.Handle.OpenGLID,
                 "Err",
                 pxVertexBuffer->VertexData.Data,
-                pxVertexBuffer->VertexData.Size
+                pxVertexBuffer->VertexData.SizeAllowedToUse
             );
 #endif
 
             pxOpenGL->Binding.BufferData
             (
                 GL_ARRAY_BUFFER,
-                pxVertexBuffer->VertexData.Size,
+                pxVertexBuffer->VertexData.SizeAllowedToUse,
                 pxVertexBuffer->VertexData.Data,
                 GL_STATIC_DRAW
             );

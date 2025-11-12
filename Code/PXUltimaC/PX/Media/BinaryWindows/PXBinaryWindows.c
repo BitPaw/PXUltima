@@ -47,6 +47,8 @@ PXResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceTransphereInfo PXREF pxReso
         return PXActionRefusedArgumentNull;
     }
 
+    PXFile* pxFile = pxResourceLoadInfo->FileReference;
+
 #if PXBinaryWindowsDebug
     PXLogPrint
     (
@@ -161,14 +163,14 @@ PXResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceTransphereInfo PXREF pxReso
 
             };
 
-            const PXSize amount = PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+            const PXSize amount = PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
             const PXBool validSize = (amount+2) >= 55;
 
             // Entry table
-            PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, pxNEHeader->EntryTableOffset);
+            PXFileCursorMoveTo(pxFile, pxNEHeader->EntryTableOffset);
 
             // segment table
-            PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, pxNEHeader->SegmentTableOffset);
+            PXFileCursorMoveTo(pxFile, pxNEHeader->SegmentTableOffset);
 
             for(PXSize i = 0; i < pxNEHeader->SegmentTableEntryAmount; i++)
             {
@@ -182,7 +184,7 @@ PXResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceTransphereInfo PXREF pxReso
                     {&pxNEHeaderSegmentEntry.MinimumAllocationSize, PXTypeInt16ULE}
                 };
 
-                const PXSize amount = PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+                const PXSize amount = PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
                 const PXBool validSize = amount >= 0;
 
 
@@ -190,7 +192,7 @@ PXResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceTransphereInfo PXREF pxReso
             //----------------------------------------------
             // Resource table
             //----------------------------------------------
-            PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, pxNEHeader->ResourceTableOffset);
+            PXFileCursorMoveTo(pxFile, pxNEHeader->ResourceTableOffset);
             //----------------------------------------------
 
 
@@ -198,7 +200,7 @@ PXResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceTransphereInfo PXREF pxReso
             //----------------------------------------------
             // Resident-Name Table
             //----------------------------------------------
-            PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, pxNEHeader->OffStartNonResTab);
+            PXFileCursorMoveTo(pxFile, pxNEHeader->OffStartNonResTab);
 
             for(PXI16U i = 0; i < pxNEHeader->NonresidentNameTableEntryAmount; ++i)
             {
@@ -206,15 +208,15 @@ PXResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceTransphereInfo PXREF pxReso
                 PXI16U ordinal = 0;
                 PXI8U stringSize = 0;
 
-                PXFileReadI8U(pxResourceLoadInfo->FileReference, &stringSize);
+                PXFileReadI8U(pxFile, &stringSize);
 
                 if(0 == stringSize) // End of list
                 {
                     break;
                 }
 
-                PXFileReadB(pxResourceLoadInfo->FileReference, text, stringSize);
-                PXFileReadI16UE(pxResourceLoadInfo->FileReference, &ordinal, PXEndianLittle);
+                PXFileReadB(pxFile, text, stringSize);
+                PXFileReadI16UE(pxFile, &ordinal, PXEndianLittle);
 
                 text[stringSize] = '\0';
 
@@ -245,21 +247,21 @@ PXResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceTransphereInfo PXREF pxReso
 
                 PXFileReadI16UE(pxResourceLoadInfo->FileReference, &offset, PXEndianLittle);
 
-                PXSize oldPosition = pxResourceLoadInfo->FileReference->DataCursor;
+                PXSize oldPosition = PXFileDataPosition(pxResourceLoadInfo->FileReference);
 
 
-                PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, offset);
+                PXFileCursorMoveTo(pxFile, offset);
 
 
                 PXI16U length = 0;
 
-                PXFileReadI16UE(pxResourceLoadInfo->FileReference, &length, PXEndianLittle);
+                PXFileReadI16UE(pxFile, &length, PXEndianLittle);
 
                 char name[64];
-                PXFileReadB(pxResourceLoadInfo->FileReference, name, length);
+                PXFileReadB(pxFile, name, length);
 
 
-                PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, oldPosition);
+                PXFileCursorMoveTo(pxFile, oldPosition);
 
             }
         }

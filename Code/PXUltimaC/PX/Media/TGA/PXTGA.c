@@ -228,7 +228,7 @@ PXResult PXAPI PXTGALoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
 
     // Check end of pxFile if the pxFile is a Version 2.0 pxFile.
     {
-        footerEntryIndex = pxResourceLoadInfo->FileReference->DataUsed - (26u - 1u);
+        footerEntryIndex = PXFileDataPosition(pxResourceLoadInfo->FileReference) - (26u - 1u);
 
         const PXBool isPXTGAVersionTwo = PXFileReadAndCompare(pxResourceLoadInfo->FileReference, PXTGAFileIdentifier, sizeof(PXTGAFileIdentifier)); // Is this string at this address?;
 
@@ -238,10 +238,10 @@ PXResult PXAPI PXTGALoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
         }
     }
 
-    firstFieldAfterHeader = pxResourceLoadInfo->FileReference->DataCursor;
+    firstFieldAfterHeader = PXFileDataPosition(pxResourceLoadInfo->FileReference);
 
     //---[ Parse Footer ]--------------------------------------------------------
-    pxResourceLoadInfo->FileReference->DataCursor = footerEntryIndex; // Move 26 Bytes before the end. Start of the PXTGA-Footer.
+    PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, footerEntryIndex); // Move 26 Bytes before the end. Start of the PXTGA-Footer.
 
     PXFileReadI32UE(pxResourceLoadInfo->FileReference, &extensionOffset, PXEndianLittle);
     PXFileReadI32UE(pxResourceLoadInfo->FileReference, &developerAreaOffset, PXEndianLittle);
@@ -250,7 +250,7 @@ PXResult PXAPI PXTGALoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
     //---------------------------------------------------------------------------
     if(developerAreaOffset > 0)
     {
-        pxResourceLoadInfo->FileReference->DataCursor = developerAreaOffset;// Jump to Developer Block
+        PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, developerAreaOffset); // Jump to Developer Block
         // Parse Developer Fields
         // Parse Developer Directory
     }
@@ -261,7 +261,8 @@ PXResult PXAPI PXTGALoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
     {
         PXI16U extensionSize = 0;
 
-        pxResourceLoadInfo->FileReference->DataCursor = extensionOffset; // Jump to Extension Header
+        PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, extensionOffset); // Jump to Extension Header
+
         PXFileReadI16UE(pxResourceLoadInfo->FileReference, &extensionSize, PXEndianLittle);
 
         const PXBool isExtensionSizeAsExpected = extensionSize == 495u;

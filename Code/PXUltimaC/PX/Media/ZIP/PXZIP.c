@@ -38,11 +38,11 @@ PXResult PXAPI PXZIPLoadFromFile(PXResourceTransphereInfo PXREF pxResourceTransp
     const PXBool validSize = 26 == amount;
 
     // Name
-    pxZIP->FileName = (char*)PXFileCursorPosition(pxResourceTransphereInfo->FileReference);
+    pxZIP->FileName = (char*)PXFileDataAtCursor(pxResourceTransphereInfo->FileReference);
     PXFileCursorAdvance(pxResourceTransphereInfo->FileReference, pxZIP->Filenamelength);
 
     // Extra field
-    pxZIP->ExtraField = (char*)PXFileCursorPosition(pxResourceTransphereInfo->FileReference);
+    pxZIP->ExtraField = (char*)PXFileDataAtCursor(pxResourceTransphereInfo->FileReference);
     PXFileCursorAdvance(pxResourceTransphereInfo->FileReference, pxZIP->Extrafieldlength);
 
 #if PXLogEnable

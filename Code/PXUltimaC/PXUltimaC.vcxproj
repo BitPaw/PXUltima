@@ -193,6 +193,7 @@
     <ClCompile Include="PX\OS\Error\PXActionResult.c" />
     <ClCompile Include="PX\OS\File\PXDirectory.c" />
     <ClCompile Include="PX\OS\File\PXFile.c" />
+    <ClCompile Include="PX\OS\File\PXFileFormat.c" />
     <ClCompile Include="PX\OS\Graphic\DirectX\PXDirectX.c" />
     <ClCompile Include="PX\OS\Graphic\DirectX\PXDirectX10.c" />
     <ClCompile Include="PX\OS\Graphic\DirectX\PXDirectX10x1.c" />
@@ -412,6 +413,7 @@
     <ClInclude Include="PX\OS\Error\PXActionResult.h" />
     <ClInclude Include="PX\OS\File\PXDirectory.h" />
     <ClInclude Include="PX\OS\File\PXFile.h" />
+    <ClInclude Include="PX\OS\File\PXFileFormat.h" />
     <ClInclude Include="PX\OS\Graphic\DirectX\PXDirectX.h" />
     <ClInclude Include="PX\OS\Graphic\DirectX\PXDirectX10.h" />
     <ClInclude Include="PX\OS\Graphic\DirectX\PXDirectX10x1.h" />
@@ -539,6 +541,7 @@
       <TreatSpecificWarningsAsErrors>
       </TreatSpecificWarningsAsErrors>
       <CallingConvention>FastCall</CallingConvention>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
     </ClCompile>
     <Link>
       <AdditionalDependencies>ntdll.lib;onecore.lib;DbgHelp.lib;dxguid.lib;uuid.lib;xaudio2.lib;strmiids.lib;Comctl32.lib;Wbemuuid.lib;Shlwapi.lib;Mf.lib;Mfuuid.lib;Mfplat.lib;Mfreadwrite.lib;Dnsapi.lib;Ws2_32.lib;Msimg32.lib;libzstd.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -562,6 +565,7 @@
       <StringPooling>true</StringPooling>
       <Optimization>MinSpace</Optimization>
       <CallingConvention>FastCall</CallingConvention>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
     </ClCompile>
     <Link>
       <AdditionalDependencies>ntdll.lib;onecore.lib;DbgHelp.lib;dxguid.lib;uuid.lib;xaudio2.lib;strmiids.lib;Comctl32.lib;Wbemuuid.lib;Shlwapi.lib;Mf.lib;Mfuuid.lib;Mfplat.lib;Mfreadwrite.lib;Dnsapi.lib;Ws2_32.lib;Msimg32.lib;libzstd.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -577,6 +581,7 @@
       <TreatSpecificWarningsAsErrors>
       </TreatSpecificWarningsAsErrors>
       <CallingConvention>FastCall</CallingConvention>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
     </ClCompile>
     <Link>
       <AdditionalDependencies>ntdll.lib;onecore.lib;DbgHelp.lib;dxguid.lib;uuid.lib;xaudio2.lib;strmiids.lib;Comctl32.lib;Wbemuuid.lib;Shlwapi.lib;Mf.lib;Mfuuid.lib;Mfplat.lib;Mfreadwrite.lib;Dnsapi.lib;Ws2_32.lib;Msimg32.lib;libzstd.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -600,6 +605,7 @@
       <StringPooling>true</StringPooling>
       <Optimization>MinSpace</Optimization>
       <CallingConvention>FastCall</CallingConvention>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
     </ClCompile>
     <Link>
       <AdditionalDependencies>ntdll.lib;onecore.lib;DbgHelp.lib;dxguid.lib;uuid.lib;xaudio2.lib;strmiids.lib;Comctl32.lib;Wbemuuid.lib;Shlwapi.lib;Mf.lib;Mfuuid.lib;Mfplat.lib;Mfreadwrite.lib;Dnsapi.lib;Ws2_32.lib;Msimg32.lib;libzstd.lib;%(AdditionalDependencies)</AdditionalDependencies>

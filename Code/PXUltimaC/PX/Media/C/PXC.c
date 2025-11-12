@@ -1302,8 +1302,7 @@ PXResult PXAPI PXCLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo
     PXCodeDocument* pxDocument = (PXCodeDocument*)pxResourceLoadInfo->ResourceTarget;
     PXClear(PXCodeDocument, pxDocument);
 
-    PXFile tokenSteam;
-    PXClear(PXFile, &tokenSteam);
+    PXFile* tokenSteam = PXFileCreate();
 
     PXCompiler pxCompiler;
     PXClear(PXCompiler, &pxCompiler);

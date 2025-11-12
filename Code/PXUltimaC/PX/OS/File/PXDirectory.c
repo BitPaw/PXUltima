@@ -3,6 +3,8 @@
 #include <PX/OS/File/PXFile.h>
 #include <PX/Media/PXText.h>
 #include <PX/OS/Console/PXConsole.h>
+#include <PX/Container/ListDynamic/PXListDynamic.h>
+#include <PX/OS/Memory/PXMemory.h>
 
 const char PXDirectoryText[] = "Directory";
 
@@ -22,6 +24,7 @@ const char PXDirectoryText[] = "Directory";
 #include <Shlobj.h>
 #include <shellapi.h>
 
+
 PXFileElementInfoType PXAPI PXFileTypeGet(WIN32_FIND_DATA* windowsData)
 {
     if(PXDirectoryIsRootFolder(windowsData->cFileName))
@@ -40,7 +43,13 @@ PXFileElementInfoType PXAPI PXFileTypeGet(WIN32_FIND_DATA* windowsData)
     }
 }
 
-void PXAPI PXFileElementInfoConvertFrom(PXDirectorySearchCache PXREF pxDirectorySearchCache, PXFileEntry PXREF pxFileEntry, WIN32_FIND_DATA PXREF findData, PXI8U depth)
+void PXAPI PXFileElementInfoConvertFrom
+(
+    PXDirectorySearchCache PXREF pxDirectorySearchCache,
+    PXFileEntry PXREF pxFileEntry,
+    WIN32_FIND_DATA PXREF findData, 
+    PXI8U depth
+)
 {
     pxFileEntry->FilePathSize = PXTextLengthA(findData->cFileName, MAX_PATH);
     pxFileEntry->FilePathData = findData->cFileName;

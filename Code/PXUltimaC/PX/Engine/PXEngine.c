@@ -3381,14 +3381,15 @@ void PXAPI PXEngineResourceDefaultElements(PXEngine PXREF pxEngine)
     //    pxResourceCreateInfo.ObjectReference = &pxEngine->ResourceManager->ModelFailback;
 
         pxResourceCreateInfo.Model.Form = PXModelFormCustom;
-        pxResourceCreateInfo.Model.VertexBuffer.VertexData.Data = vertexData;
-        pxResourceCreateInfo.Model.VertexBuffer.VertexData.Size = sizeof(vertexData);
+
+        PXBufferSet(&pxResourceCreateInfo.Model.VertexBuffer, vertexData, sizeof(vertexData));
+
         pxResourceCreateInfo.Model.VertexBuffer.LayoutAmount = 1;
         pxResourceCreateInfo.Model.VertexBuffer.LayoutPrime[0].AmountOfElements = 3;
         pxResourceCreateInfo.Model.VertexBuffer.LayoutPrime[0].Format = PXTypeF32;
 
-        pxResourceCreateInfo.Model.IndexBuffer.Data.Data = indexList;
-        pxResourceCreateInfo.Model.IndexBuffer.Data.Size = sizeof(indexList);
+        PXBufferSet(&pxResourceCreateInfo.Model.IndexBuffer.Data, indexList, sizeof(indexList));
+
         pxResourceCreateInfo.Model.IndexBuffer.DataType = PXTypeInt08U;
         pxResourceCreateInfo.Model.IndexBuffer.DrawModeID = PXDrawModeIDTriangle;
 

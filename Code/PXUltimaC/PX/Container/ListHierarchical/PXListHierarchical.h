@@ -27,9 +27,9 @@ typedef struct PXHierarchicalNode_
 }
 PXHierarchicalNode;
 
-PXPublic PXResult PXAPI PXHierarchicalNodeYourself(PXHierarchicalNode* pxHierarchicalNode, void PXREF entry);
-PXPublic PXResult PXAPI PXHierarchicalNodeParent(PXHierarchicalNode* pxHierarchicalNode, PXHierarchicalNode PXREF pxHierarchicalNodeParent);
-PXPublic PXResult PXAPI PXHierarchicalNodeSibling(PXHierarchicalNode* pxHierarchicalNode, PXHierarchicalNode PXREF entry);
-PXPublic PXResult PXAPI PXHierarchicalNodeChild(PXHierarchicalNode* pxHierarchicalNode, PXHierarchicalNode PXREF entry);
+PXPublic PXResult PXAPI PXHierarchicalNodeYourself(PXHierarchicalNode PXREF pxHierarchicalNode, void PXREF entry);
+PXPublic PXResult PXAPI PXHierarchicalNodeParent(PXHierarchicalNode PXREF pxHierarchicalNode, PXHierarchicalNode PXREF pxHierarchicalNodeParent);
+PXPublic PXResult PXAPI PXHierarchicalNodeSibling(PXHierarchicalNode PXREF pxHierarchicalNode, PXHierarchicalNode PXREF entry);
+PXPublic PXResult PXAPI PXHierarchicalNodeChild(PXHierarchicalNode PXREF pxHierarchicalNode, PXHierarchicalNode PXREF entry);
 
 #endif

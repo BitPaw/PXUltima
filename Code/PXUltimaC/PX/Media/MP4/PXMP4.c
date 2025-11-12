@@ -106,7 +106,7 @@ PXResult PXAPI PXMP4LoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
         PXFileReadI32UE(&pxFile, &chunkSize, PXEndianBig);
         PXFileReadB(&pxFile, typePrimaryID.Data, 4u);
 
-        const PXSize positionPrediction = pxFile->DataCursor + chunkSize - 8;
+        const PXSize positionPrediction = PXFileDataPosition(pxFile) + chunkSize - 8;
         const PXM4AChunkID typePrimary = PXMP4ChunkFromID(typePrimaryID.Value);
 
 #if PXLogEnable && M4ADebugLog
@@ -192,15 +192,14 @@ PXResult PXAPI PXMP4LoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
         }
         }
 
-        if(pxFile->DataCursor < positionPrediction)
+        if(PXFileDataPosition(pxFile) < positionPrediction)
         {
-            const unsigned int offset = positionPrediction - pxFile->DataCursor;
+            const unsigned int offset = positionPrediction - PXFileDataPosition(pxFile);
 
 #if PXLogEnable && M4ADebugLog
             printf("[MP4] Illegal allignment detected! Moving %i Bytes\n", offset);
 #endif
-
-            pxFile->DataCursor = positionPrediction;
+            PXFileCursorMoveTo(pxFile, positionPrediction);
         }
     }
 

@@ -81,8 +81,8 @@ const PXI8U PXWADHeaderListSize = sizeof(PXWADHeaderList) / sizeof(PXI32U);
 
 PXResult PXAPI PXWADEntryHandle(PXWADEntry PXREF pxWADEntry, PXFile PXREF pxFile)
 {
-    PXFile dataCompressed;
-    PXFile dataUncompressed;
+    PXFile* dataCompressed = PXFileCreate();
+    PXFile* dataUncompressed = PXFileCreate();
 
     PXFileOpenInfo pxFileOpenInfo;
 
@@ -92,8 +92,13 @@ PXResult PXAPI PXWADEntryHandle(PXWADEntry PXREF pxWADEntry, PXFile PXREF pxFile
         pxFileOpenInfo.AccessMode = PXAccessModeReadOnly;
         pxFileOpenInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
         pxFileOpenInfo.FlagList = PXFileIOInfoFileMemory;
-        pxFileOpenInfo.Data.Size = pxWADEntry->CompressedSize;
-        pxFileOpenInfo.Data.Data = (PXByte*)pxFile->Data + pxWADEntry->DataOffset;
+
+        PXBufferSet
+        (
+            &pxFileOpenInfo.Data,
+            PXFileDataAtCursorWithOffset(pxFile, pxWADEntry->DataOffset),
+            pxWADEntry->CompressedSize
+        );
 
         PXFileOpen(&dataCompressed, &pxFileOpenInfo);
     }
@@ -212,8 +217,7 @@ PXResult PXAPI PXWADEntryHandle(PXWADEntry PXREF pxWADEntry, PXFile PXREF pxFile
         PXFileFormatInfoViaContent(&pxResourceTransphereInfo.FormatInfo, &dataUncompressed);
         PXFileTypeInfoProbe(&pxResourceTransphereInfo.FormatInfo, PXNull);
 
-        pxResourceTransphereInfo.FileReference->FilePath.A = temp;
-        pxResourceTransphereInfo.FileReference->FilePath.SizeUsed = PXTextPrintA
+        PXSize amount = PXTextPrintA
         (
             temp,
             260,
@@ -221,6 +225,13 @@ PXResult PXAPI PXWADEntryHandle(PXWADEntry PXREF pxWADEntry, PXFile PXREF pxFile
             pxWADEntry->PathHash,
             pxResourceTransphereInfo.FormatInfo.ExtensionText
         );
+
+        PXText pxText;
+        PXTextFromAdressA(&pxText, temp, amount, 260);
+
+        PXFileNameSet(pxResourceTransphereInfo.FileReference, &pxText);
+
+
 
         PXFileStoreOnDiskA(&dataUncompressed, temp);
 

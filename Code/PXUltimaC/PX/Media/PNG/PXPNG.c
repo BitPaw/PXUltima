@@ -351,7 +351,8 @@ PXResult PXAPI PXPNGPeekFromFile(PXResourceTransphereInfo PXREF pxResourceTransp
                 // 0 (uppercase) = unsafe to copy, 1 (lowercase) = safe to copy.
                 chunk.IsSafeToCopy = PXTextIsLetterCaseUpper(chunk.Header.ID[3]);
 
-                predictedOffset = pxResourceTransphereInfo->FileReference->DataCursor + chunk.Header.Size;
+
+                predictedOffset = PXFileDataPosition(pxResourceTransphereInfo->FileReference) + chunk.Header.Size;
             }
 
 #if PNGDebugInfo
@@ -443,8 +444,7 @@ PXResult PXAPI PXPNGLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
     //-------------------------------------------------------------------------
 
 
-    PXFile pxZLIBStream;
-
+    PXFile* pxZLIBStream = PXFileCreate();
 
     PXFileOpenInfo pxFileOpenInfo;
     PXClear(PXFileOpenInfo, &pxFileOpenInfo);
@@ -455,8 +455,13 @@ PXResult PXAPI PXPNGLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
     {
         const PXPNGDataBlock PXREF pxPNGDataBlock = &png->DataBlockList[0];
 
-        pxFileOpenInfo.Data.Data = (PXByte*)pxResourceLoadInfo->FileReference->Data + pxPNGDataBlock->FileOffset;
-        pxFileOpenInfo.Data.Size = pxPNGDataBlock->DataSize;
+        PXBufferSet
+        (
+            &pxFileOpenInfo.Data,
+            (PXByte*)PXFileDataAtCursor(pxResourceLoadInfo->FileReference) + pxPNGDataBlock->FileOffset,
+            pxPNGDataBlock->DataSize
+        );
+
         pxFileOpenInfo.FlagList |= PXFileIOInfoFileMemory;
 
         PXFileOpen(&pxZLIBStream, &pxFileOpenInfo);
@@ -476,10 +481,8 @@ PXResult PXAPI PXPNGLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
             PXFileDataCopy(pxResourceLoadInfo->FileReference, &pxZLIBStream, pxPNGDataBlock->DataSize);
         }
 
-        pxZLIBStream.DataCursor = 0;
+        PXFileCursorToBeginning(&pxZLIBStream);
     }
-
-
 
     //---<Unpack compressed data>----------------------------------------------
     {
@@ -491,7 +494,7 @@ PXResult PXAPI PXPNGLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
         //---------------------------------------------------------------------
 
 
-        PXFile pxZLIBResultStream;
+        PXFile* pxZLIBResultStream = PXFileCreate();
 
         {
             const PXSize expectedPXZLIBCacheSize = PXZLIBCalculateExpectedSize(png->ImageHeader.Width, png->ImageHeader.Height, bitsPerPixel, png->ImageHeader.InterlaceMethod);
@@ -519,14 +522,15 @@ PXResult PXAPI PXPNGLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
         //---------------------------------------------------------------------
         // ADAM7
         //---------------------------------------------------------------------
-        PXFile pxADAM7CacheOutput;
+        PXFile* pxADAM7CacheOutput = PXFileCreate();
+        PXBuffer* pxBuffer = PXFileBufferGET(pxADAM7CacheOutput);
 
         PXADAM7 pxADAM7;
         PXClear(PXADAM7, &pxADAM7);
-        pxADAM7.DataInput = (char*)pxZLIBResultStream.Data;
+        pxADAM7.DataInput = pxBuffer->Data;
         //pxADAM7.DataOutput = PXTexture->PixelData;
         //pxADAM7.OutputSize = PXTexture->PixelDataSize;
-        pxADAM7.InputSize = pxZLIBResultStream.DataUsed;
+        pxADAM7.InputSize = pxBuffer->SizeAllowedToUse;
         pxADAM7.Width = png->ImageHeader.Width;
         pxADAM7.Height = png->ImageHeader.Height;
         pxADAM7.BitsPerPixel = bitsPerPixel;
@@ -545,9 +549,10 @@ PXResult PXAPI PXPNGLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
             PXFileOpen(&pxADAM7CacheOutput, &pxFileOpenInfo);
         }
 
+        pxBuffer = PXFileBufferGET(pxADAM7CacheOutput);
 
-        pxADAM7.DataOutput = pxADAM7CacheOutput.Data;
-        pxADAM7.OutputSize = pxADAM7CacheOutput.DataAllocated;
+        pxADAM7.DataOutput = pxBuffer->Data;
+        pxADAM7.OutputSize = pxBuffer->SizeAllocated;
 
         const PXResult scanDecodeResult = PXADAM7ScanlinesDecode(&pxADAM7);
 
@@ -1152,7 +1157,7 @@ PXSize preProcessScanlines
                 if(!error)
                 {
                     addPaddingBits(padded, in, ((width * bpp + 7u) / 8u) * 8u, width * bpp, height);
-                    error = filter(pxScanlineStream->Data, padded, width, height, bpp, LFS_MINSUM);
+                    error = filter(PXFileDataAtCursor(pxScanlineStream), padded, width, height, bpp, LFS_MINSUM);
                 }                
 
                 PXMemoryHeapFree(PXNull, padded);
@@ -1160,7 +1165,7 @@ PXSize preProcessScanlines
             else
             {
                 // we can immediately filter into the out buffer, no other steps needed
-                error = filter(pxScanlineStream->Data, in, width, height, bpp, LFS_MINSUM);
+                error = filter(PXFileDataAtCursor(pxScanlineStream), in, width, height, bpp, LFS_MINSUM);
             }
 
             break;
@@ -1238,7 +1243,7 @@ PXResult PXAPI PXPNGSaveToFile(PXResourceTransphereInfo PXREF pxResourceTransphe
     {
         unsigned char colorType = 0;
         const PXI8U interlaceMethod = PXPNGInterlaceMethodToID(PXPNGInterlaceNone);
-        const unsigned char* chunkStart = PXFileCursorPosition(pxResourceTransphereInfo->FileReference);
+        const unsigned char* chunkStart = PXFileDataAtCursor(pxResourceTransphereInfo->FileReference);
 
         const unsigned char compressionMethod = 0;
         const unsigned char filterMethod = 0;
@@ -1399,7 +1404,7 @@ PXResult PXAPI PXPNGSaveToFile(PXResourceTransphereInfo PXREF pxResourceTransphe
         pngLastModificationTime.Minute = time.Minute;
         pngLastModificationTime.Second = time.Second;
 
-        const unsigned char* chunkStart = PXFileCursorPosition(pxResourceTransphereInfo->FileReference);
+        const unsigned char* chunkStart = PXFileDataAtCursor(pxResourceTransphereInfo->FileReference);
         const PXSize chunkLength = 7u;
 
         const PXTypeEntry pxFileDataElementType[] =
@@ -1426,16 +1431,15 @@ PXResult PXAPI PXPNGSaveToFile(PXResourceTransphereInfo PXREF pxResourceTransphe
 
     // [IDAT] Image data
     {
-        const PXSize offsetSizeofChunk = pxResourceTransphereInfo->FileReference->DataCursor;
-
-        const void* chunkStart = PXFileCursorPosition(pxResourceTransphereInfo->FileReference);
+        const PXSize offsetSizeofChunk = PXFileDataPosition(pxResourceTransphereInfo->FileReference);
+        const void* chunkStart = PXFileDataAtCursor(pxResourceTransphereInfo->FileReference);
 
         PXSize chunkLength = 0;
 
         PXFileWriteI32UE(pxResourceTransphereInfo->FileReference, 0u, PXEndianBig); // Length
         PXFileWriteB(pxResourceTransphereInfo->FileReference, "IDAT", 4u);
 
-        PXFile pxScanlineStream;
+        PXFile* pxScanlineStream = PXFileCreate();
         // PXFileConstruct(&pxScanlineStream);
 
         // Preprocess scanlines
@@ -1455,7 +1459,7 @@ PXResult PXAPI PXPNGSaveToFile(PXResourceTransphereInfo PXREF pxResourceTransphe
                     PXColorFormatBitsPerPixel(pxTexture->Format),
                     PXPNGColorRGB,
                     8,
-                    &pxScanlineStream,
+                    pxScanlineStream,
                     pxTexture->PixelData
                 );
             }
@@ -1463,11 +1467,11 @@ PXResult PXAPI PXPNGSaveToFile(PXResourceTransphereInfo PXREF pxResourceTransphe
 
         // PXZLIB
         {
-            PXSize cursorBefore = pxResourceTransphereInfo->FileReference->DataCursor;
+            PXSize cursorBefore = PXFileDataPosition(pxResourceTransphereInfo->FileReference);
 
             const PXResult PXZLIBResult = PXZLIBCompress(&pxScanlineStream, pxResourceTransphereInfo->FileReference);
 
-            chunkLength = pxResourceTransphereInfo->FileReference->DataCursor - cursorBefore;
+            chunkLength = PXFileDataPosition(pxResourceTransphereInfo->FileReference) - cursorBefore;
 
             PXFileWriteAtI32UE(pxResourceTransphereInfo->FileReference, chunkLength, PXEndianBig, offsetSizeofChunk); // override length
         }
@@ -2461,7 +2465,7 @@ void PXAPI PXPNGChunkReadImageData(PXPNG PXREF pxPNG, PXFile PXREF pxFile, const
     pxPNG->DataBlockTotalSize += chunkSize;
 
     PXPNGDataBlock* pxPNGDataBlock = &pxPNG->DataBlockList[pxPNG->DataBlockListAmount - 1];
-    pxPNGDataBlock->FileOffset = pxFile->DataCursor;
+    pxPNGDataBlock->FileOffset = PXFileDataPosition(pxFile);
     pxPNGDataBlock->DataSize = chunkSize;
 }
 
