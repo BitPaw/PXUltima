@@ -4,9 +4,7 @@
 #define PXDirectoryIncluded
 
 #include <PX/Media/PXType.h>
-#include <PX/Media/PXText.h>
 #include <PX/OS/Error/PXActionResult.h>
-#include <PX/OS/File/PXFile.h>
 #include <PX/Container/List/PXList.h>
 #include <PX/Container/ListDynamic/PXListDynamic.h>
 
