@@ -420,7 +420,7 @@ PXPublic PXResult PXAPI PXSemaphorLeave(PXLock PXREF pxLock);
 
 PXPublic PXResult PXAPI PXCriticalSectionCreate(PXLock PXREF pxLock);
 PXPublic PXResult PXAPI PXCriticalSectionDelete(PXLock PXREF pxLock);
-PXPublic PXResult PXAPI PXCriticalSectionEnter(PXLock PXREF pxLock);
+PXPublic PXResult PXAPI PXCriticalSectionEnter(PXLock PXREF pxLock, const PXBool forceEntering);
 PXPublic PXResult PXAPI PXCriticalSectionLeave(PXLock PXREF pxLock);
 //---------------------------------------------------------
 
