@@ -217,6 +217,7 @@ PXResult PXAPI PXStreamCreateMonitor(PXStream PXREF pxStream, PXStreamOpenInfo P
 
 typedef enum PXVideoFormat_
 {
+    PXVideoFormatInvalid,
     PXVideoFormatBase,
     PXVideoFormatRGB32,
     PXVideoFormatARGB32,
@@ -391,7 +392,7 @@ PXResult PXAPI PXStreamCreateCamera(PXStream PXREF pxStream, PXStreamOpenInfo PX
   
 
     HRESULT resultID = 0;
-    PXActionResult pxActionResult = 0;
+    PXResult pxResult = PXActionInvalid;
 
    // IMFMediaSource* pSource = NULL; 
    // IMFMediaBuffer* pBuffer = NULL;
@@ -400,10 +401,10 @@ PXResult PXAPI PXStreamCreateCamera(PXStream PXREF pxStream, PXStreamOpenInfo PX
     DWORD maxLen = 0;
 
     resultID = MFStartup(MF_VERSION, MFSTARTUP_FULL);
-    pxActionResult = PXErrorFromHRESULT(resultID);
+    pxResult = PXErrorFromHRESULT(resultID);
 
-    if(FAILED(resultID))
-        return -1;
+    if(PXActionSuccessful != pxResult)
+        return pxResult;
 
     // Activate webcam
     IMFAttributes* pAttributes = NULL;
@@ -414,7 +415,7 @@ PXResult PXAPI PXStreamCreateCamera(PXStream PXREF pxStream, PXStreamOpenInfo PX
         &MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE,
         &MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID
     );
-    pxActionResult = PXErrorFromHRESULT(resultID);
+    pxResult = PXErrorFromHRESULT(resultID);
 
     IMFActivate** ppDevices = NULL;
     UINT32 count = 0;
@@ -431,11 +432,11 @@ PXResult PXAPI PXStreamCreateCamera(PXStream PXREF pxStream, PXStreamOpenInfo PX
         &IID_IMFMediaSource,
         (void**)&pxStreamCamera->MediaSource
     );
-    pxActionResult = PXErrorFromHRESULT(resultID);
+    pxResult = PXErrorFromHRESULT(resultID);
 
     // Create source reader
     resultID = MFCreateSourceReaderFromMediaSource(pxStreamCamera->MediaSource, NULL, &pxStreamCamera->SourceReader);
-    pxActionResult = PXErrorFromHRESULT(resultID);
+    pxResult = PXErrorFromHRESULT(resultID);
 
     IMFSourceReader PXREF sourceReader = pxStreamCamera->SourceReader;
 
@@ -444,7 +445,7 @@ PXResult PXAPI PXStreamCreateCamera(PXStream PXREF pxStream, PXStreamOpenInfo PX
         IMFMediaType* pType = NULL;
 
         resultID = MFCreateMediaType(&pType);
-        pxActionResult = PXErrorFromHRESULT(resultID);
+        pxResult = PXErrorFromHRESULT(resultID);
 
         resultID = sourceReader->lpVtbl->GetNativeMediaType
         (
@@ -453,18 +454,18 @@ PXResult PXAPI PXStreamCreateCamera(PXStream PXREF pxStream, PXStreamOpenInfo PX
             NULL,
             &pType
         );
-        pxActionResult = PXErrorFromHRESULT(resultID);
+        pxResult = PXErrorFromHRESULT(resultID);
 
         GUID mediaType;
         GUID videoFormat;
 
-        PXVideoFormat pxVideoFormat = -1;
+        PXVideoFormat pxVideoFormat = PXVideoFormatInvalid;
 
         resultID = pType->lpVtbl->GetGUID(pType, &MF_MT_MAJOR_TYPE, &mediaType);
-        pxActionResult = PXErrorFromHRESULT(resultID);
+        pxResult = PXErrorFromHRESULT(resultID);
 
         resultID = pType->lpVtbl->GetGUID(pType, &MF_MT_SUBTYPE, &videoFormat);
-        pxActionResult = PXErrorFromHRESULT(resultID);
+        pxResult = PXErrorFromHRESULT(resultID);
 
         for(size_t i = 0; i < PXVideoFormatAmount; i++)
         {
@@ -748,7 +749,7 @@ PXResult PXAPI PXStreamUpdateCamera(PXStream PXREF pxStream)
 
     // Read a frame
     DWORD streamIndex = 0;
-    MF_SOURCE_READER_FLAG flags = 0;
+    MF_SOURCE_READER_FLAG flags = MF_SOURCE_READERF_ERROR;
     LONGLONG timestamp = 0;
 
     resultID = sourceReader->lpVtbl->ReadSample
