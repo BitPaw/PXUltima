@@ -1722,18 +1722,18 @@ PXResult PXAPI PXFileOpen(PXFile PXREF pxFile, PXFileOpenInfo PXREF pxFileIOInfo
             // Solution A: Load file in memory 1:1
             if(PXAccessModeReadOnly == pxFile->AccessMode) // Do this only when we load
             {
-                pxFile->Buffer.Data = (PXByte*)PXMemoryVirtualAllocate
+                pxFile->Buffer.Adress = PXMemoryVirtualAllocate
                 (
                     pxFile->Buffer.CursorOffsetByte,
                     &pxFile->Buffer.SizeAllocated,
                     PXAccessModeReadAndWrite
                 );
 
-                if(pxFile->Buffer.Data)
+                if(pxFile->Buffer.Adress)
                 {
                     // SUCCESS
 
-                    pxFile->Buffer.CursorOffsetByte = &pxFile->Buffer.SizeAllocated;
+                    pxFile->Buffer.CursorOffsetByte = pxFile->Buffer.SizeAllocated;
                     pxFile->LocationMode = PXFileLocationModeMappedVirtual;
 
                     BOOL ok = ReadFile
@@ -1850,7 +1850,7 @@ PXResult PXAPI PXFileOpen(PXFile PXREF pxFile, PXFileOpenInfo PXREF pxFileIOInfo
         }
         case PXFileIOInfoFileVirtual:
         {
-            pxFile->Buffer.Data = PXMemoryVirtualAllocate
+            pxFile->Buffer.Adress = PXMemoryVirtualAllocate
             (
                 pxFileIOInfo->FileSizeRequest, 
                 &pxFile->Buffer.SizeAllocated,
@@ -2648,7 +2648,7 @@ PXSize PXAPI PXFileReadType(PXFile PXREF pxFile, void PXREF valueAdress, const P
         pxFile, 
         buffer,
         PXTypeSizeGet(type),
-        PXTypeEndianGet(type)
+        PXTypeEndianGet(type) == PXTypeEndianBig ? PXEndianBig : PXEndianLittle
     );
 
     PXMemoryCopyX(buffer, PXTypeSizeGet(type), valueAdress, PXTypeReciverSizeGet(type));
@@ -3112,7 +3112,7 @@ PXSize PXAPI PXFileIOMultible(PXFile PXREF pxFile, const PXTypeEntry PXREF pxFil
         PXFileOpenInfo pxFileOpenInfo;
         PXClear(PXFileOpenInfo, &pxFileOpenInfo);
         pxFileOpenInfo.FlagList = PXFileIOInfoFileMemory;
-        pxFileOpenInfo.Data.Data = stackMemory;
+        pxFileOpenInfo.Data.Adress = stackMemory;
         pxFileOpenInfo.Data.SizeAllocated = totalSizeToRead;
 
         const PXResult fileOpenResult = PXFileOpen(&pxStackFile, &pxFileOpenInfo);
@@ -4698,7 +4698,7 @@ void PXAPI PXFileEndianessSet(PXFile PXREF pxFile, const PXEndian pxEndian)
 
 void PXAPI PXFileBitFormatOfDataSet(PXFile PXREF pxFile, const PXBitFormat pxBitFormat)
 {
-    pxFile->EndiannessOfData = pxBitFormat;
+    pxFile->BitFormatOfData = pxBitFormat;
 }
 
 PXSize PXAPI PXFileDataUtilized(const PXFile PXREF pxFile)
