@@ -411,7 +411,7 @@ PXPublic PXResult PXAPI PXSymbolModuleName(const PXHandleModule pxHandleModule, 
 //---------------------------------------------------------
 // Thread - 
 //---------------------------------------------------------
-typedef PXActionResult (PXAPI* PXLockFunction)(PXLock PXREF pxLock);
+typedef PXResult (PXAPI* PXLockFunction)(PXLock PXREF pxLock);
 
 PXPublic PXResult PXAPI PXSemaphorCreate(PXLock PXREF pxLock);
 PXPublic PXResult PXAPI PXSemaphorDelete(PXLock PXREF pxLock);
