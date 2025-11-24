@@ -92,11 +92,11 @@ PXSymbolStackWalkInfo;
 PXOS _PXOS;
 
 
-const char PXOSName[] = "OS-Kernel";
+const char PXOSName[] = "Kernel-OS";
 const char PXOSFile[] = "File";
 const char PXOSThread[] = "Thread";
 const char PXOSSemaphore[] = "Semaphore";
-const char PXOSCriticalSection[] = "CriticalSec.";
+const char PXOSCriticalSection[] = "Crit-Section";
 const char PXOSVirtualAllocText[] = "Virtual-Alloc";
 const char PXOSVirtualFreeText[] = "Virtual-Free";
 
@@ -1081,7 +1081,8 @@ PXResult PXAPI PXThreadCPUCoreAffinitySet(PXThread PXREF pxThread, const PXI16U 
         pxThread->Info.Handle.ThreadHandle,
         coreIndex
     ); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
-    PXResult result = PXErrorCurrent((DWORD)-1 != resultID);
+    const PXBool successful = (DWORD)-1 != resultID;
+    PXResult result = PXErrorCurrent(successful);
 
 
 #if PXLogEnable
@@ -1090,7 +1091,7 @@ PXResult PXAPI PXThreadCPUCoreAffinitySet(PXThread PXREF pxThread, const PXI16U 
         PXLoggingInfo,
         PXOSName,
         PXOSThread,
-        "ID:<%i>, %i, Affinity",
+        "ID:<%5i>, %0i, Affinity",
         pxThread->HandleID,
         coreIndex
     );
@@ -2923,6 +2924,13 @@ PXResult PXAPI PXSemaphorLeave(PXLock PXREF pxLock)
 
 PXResult PXAPI PXCriticalSectionCreate(PXLock PXREF pxLock)
 {
+#if OSUnix
+
+#elif OSWindows     
+    PXClear(CRITICAL_SECTION, &pxLock->SectionHandle);
+    InitializeCriticalSection(&pxLock->SectionHandle);
+#endif
+
 #if PXLogEnable
     PXLogPrint
     (
@@ -2932,12 +2940,6 @@ PXResult PXAPI PXCriticalSectionCreate(PXLock PXREF pxLock)
         "Create"
     );
 #endif
-
-#if OSUnix
-
-#elif OSWindows     
-    InitializeCriticalSection(&pxLock->SectionHandle);
-#endif  
 }
 
 PXResult PXAPI PXCriticalSectionDelete(PXLock PXREF pxLock)
@@ -2959,12 +2961,9 @@ PXResult PXAPI PXCriticalSectionDelete(PXLock PXREF pxLock)
 #endif
 }
 
-
-
-
-PXResult PXAPI PXCriticalSectionEnter(PXLock PXREF pxLock)
+PXResult PXAPI PXCriticalSectionEnter(PXLock PXREF pxLock, const PXBool forceEntering)
 {
-#if PXLogEnable && 0
+#if PXLogEnable
     PXLogPrint
     (
         PXLoggingInfo,
@@ -2979,41 +2978,46 @@ PXResult PXAPI PXCriticalSectionEnter(PXLock PXREF pxLock)
 #elif OSWindows
     CRITICAL_SECTION PXREF criticalSectionCast = (CRITICAL_SECTION*)&pxLock->SectionHandle;
 
-    PXSize failEnterCounter = 0;
-
-    for(;;)
+    if(forceEntering)
     {
-        const BOOL success = TryEnterCriticalSection(criticalSectionCast);
+        EnterCriticalSection(criticalSectionCast);
+    }
+    else
+    {
+        PXSize failEnterCounter = 0;
 
-        if(success)
+        for(;;)
         {
-            break;
-        }
+            const BOOL success = TryEnterCriticalSection(criticalSectionCast); // Windows XP
+            const PXResult pxResult = PXErrorCurrent(success);
 
-        ++failEnterCounter;
+            if(success)
+            {
+                break;
+            }
 
-        if(failEnterCounter < 10)
-        {
-            Sleep(0);
-            continue;
-        }
+            ++failEnterCounter;
+
+            if(failEnterCounter < 10)
+            {
+                Sleep(0);
+                continue;
+            }
 
 #if PXLogEnable 
-        PXLogPrint
-        (
-            PXLoggingInfo,
-            PXOSName,
-            PXOSCriticalSection,
-            "Enter failed! Waiting..."
-        );
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                PXOSName,
+                PXOSCriticalSection,
+                "Enter failed! Waiting..."
+            );
 #endif
 
-        Sleep(100);
-
-
+            return PXActionFailedLockEnter;
+        }
     }
 
-    //EnterCriticalSection(criticalSectionCast);
 #endif
 
     return PXActionSuccessful;
