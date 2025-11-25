@@ -170,15 +170,14 @@ PXResult PXAPI PXMemorySymbolFetch(const void PXREF adress, PXSymbol PXREF pxSym
     PXMemorySymbolLookup PXREF pxMemorySymbolLookup = PXMemorySymbolLookupInstanceGet();
     PXSymbolMemory* symbolMemory = PXNull;
 
-    PXBool success = PXDictionaryEntryFind(&pxMemorySymbolLookup->SymbolLookup, &adress, &symbolMemory);
+    PXResult pxResult = PXDictionaryEntryFind(&pxMemorySymbolLookup->SymbolLookup, &adress, &symbolMemory);
 
     PXClear(PXSymbol, pxSymbol);
 
-    if(!success)
+    if(PXActionSuccessful != pxResult)
     {
-        return PXActionRefusedNotInitialized;
+        return pxResult;
     }
-
 
     pxSymbol->Amount = symbolMemory->Amount;
     pxSymbol->ObjectSize = symbolMemory->ObjectSize;
