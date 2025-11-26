@@ -63,6 +63,7 @@ const PXI8U PXCOFFSectionListSize[] =
 
 const PXI8U PXCOFFSectionListAmount = sizeof(PXCOFFSectionListSize) / sizeof(PXI8U);
 
+const char PXCOFFText[] = "COFF";
 
 
 #define PXCOFFDebug 1
@@ -148,7 +149,7 @@ PXResult PXAPI PXCOFFLoadFromFile(PXCOFF PXREF pxCOFF, PXFile PXREF pxFile)
     PXLogPrint
     (
         PXLoggingInfo,
-        "COFF",
+        PXCOFFText,
         "Parsing",
         "Start"
     );
@@ -345,7 +346,7 @@ PXResult PXAPI PXCOFFLoadFromFile(PXCOFF PXREF pxCOFF, PXFile PXREF pxFile)
                             PXLogPrint
                             (
                                 PXLoggingInfo,
-                                "COFF",
+                                PXCOFFText,
                                 "Parsing",
                                 "RVA"
                             );
@@ -360,7 +361,7 @@ PXResult PXAPI PXCOFFLoadFromFile(PXCOFF PXREF pxCOFF, PXFile PXREF pxFile)
                                 PXLogPrint
                                 (
                                     PXLoggingInfo,
-                                    "COFF",
+                                    PXCOFFText,
                                     "Parsing-RVA",
                                     "0x%p %i",
                                     virtualAddress,
@@ -483,7 +484,7 @@ PXResult PXAPI PXCOFFLoadFromFile(PXCOFF PXREF pxCOFF, PXFile PXREF pxFile)
             PXLogPrint
             (
                 PXLoggingInfo,
-                "COFF",
+                PXCOFFText,
                 "Parsing",
                 "Section deteced <%-8s> (%2i/%-2i)\n"
                 "%25s : %i\n"
@@ -567,7 +568,7 @@ PXResult PXAPI PXCOFFLoadFromFile(PXCOFF PXREF pxCOFF, PXFile PXREF pxFile)
                             PXLogPrint
                             (
                                 PXLoggingInfo,
-                                "COFF",
+                                PXCOFFText,
                                 "Parsing",
                                 "[.idata][ImportDirectoryTable] Last entry deteced."
                             );
@@ -584,7 +585,7 @@ PXResult PXAPI PXCOFFLoadFromFile(PXCOFF PXREF pxCOFF, PXFile PXREF pxFile)
                         PXLogPrint
                         (
                             PXLoggingInfo,
-                            "COFF",
+                            PXCOFFText,
                             "Parsing",
                             "[.idata][ImportDirectoryTable] entry deteced."
                         );

@@ -137,10 +137,18 @@ PXColorRGBF;
 
 typedef struct PXColorRGBAF_
 {
-    PXF32 Red;
-    PXF32 Green;
-    PXF32 Blue;
-    PXF32 Alpha;
+    union
+    {
+        struct
+        {
+            PXF32 Red;
+            PXF32 Green;
+            PXF32 Blue;
+            PXF32 Alpha;
+        };
+
+        PXF32 Data[4];
+    };
 }
 PXColorRGBAF;
 

@@ -58,6 +58,9 @@ typedef enum PXActionResult_
 
     PXActionRefusedKeyNotFound, // Key-Value, key not found
     PXActionRefusedValueNotFound, // Key-value, value not found
+    
+    PXActionFailedLockEnter,
+    
     PXActionFailedRead, // Value couln't be read
     PXActionFailedRegister, // Value couln't be registered
     PXActionFailedWrite, // Value couln't be written

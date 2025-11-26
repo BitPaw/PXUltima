@@ -44,9 +44,10 @@
     <ClCompile Include="PX\Engine\2D\PXSpriteMesh.c" />
     <ClCompile Include="PX\Engine\Dialog\PXDialogBox.c" />
     <ClCompile Include="PX\Engine\Dialog\PXDialogContainer.c" />
+    <ClCompile Include="PX\Engine\ECS\PXECS.c" />
+    <ClCompile Include="PX\Engine\ID\PXID.c" />
     <ClCompile Include="PX\Engine\Interact\PXSign.c" />
     <ClCompile Include="PX\Engine\PXEngine.c" />
-    <ClCompile Include="PX\Engine\PXEntity.c" />
     <ClCompile Include="PX\Engine\PXGUI.c" />
     <ClCompile Include="PX\Engine\PXLobby.c" />
     <ClCompile Include="PX\Engine\PXMod.c" />
@@ -264,9 +265,10 @@
     <ClInclude Include="PX\Engine\2D\PXSpriteMesh.h" />
     <ClInclude Include="PX\Engine\Dialog\PXDialogBox.h" />
     <ClInclude Include="PX\Engine\Dialog\PXDialogContainer.h" />
+    <ClInclude Include="PX\Engine\ECS\PXECS.h" />
+    <ClInclude Include="PX\Engine\ID\PXID.h" />
     <ClInclude Include="PX\Engine\Interact\PXSign.h" />
     <ClInclude Include="PX\Engine\PXEngine.h" />
-    <ClInclude Include="PX\Engine\PXEntity.h" />
     <ClInclude Include="PX\Engine\PXGUI.h" />
     <ClInclude Include="PX\Engine\PXLobby.h" />
     <ClInclude Include="PX\Engine\PXMod.h" />

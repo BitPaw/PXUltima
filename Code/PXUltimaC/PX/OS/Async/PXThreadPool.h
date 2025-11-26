@@ -16,7 +16,7 @@ typedef struct PXThreadPool_
     PXThread* ThreadList;
 
     PXList TaskQueue;
-    PXLock TaskLock;
+    PXLock* TaskLock;
 
     PXSize ThreadsAwake;
 

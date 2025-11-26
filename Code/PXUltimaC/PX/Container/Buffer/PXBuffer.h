@@ -11,6 +11,7 @@ typedef struct PXBuffer_
 {
     union
     {
+        void* Adress;
         PXByte* Data; // Contains the whole data.
         char* TextA;
         wchar_t* TextW;

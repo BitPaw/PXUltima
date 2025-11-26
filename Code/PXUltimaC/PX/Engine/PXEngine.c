@@ -1129,7 +1129,7 @@ void PXAPI PXEngineUpdate(PXEngine PXREF pxEngine)
 
             if(keyboard->Commands & KeyBoardIDLetterO)
             {
-                PXNativeWindowListUpdate(pxWindow);
+                PXNativeWindowListUpdate(pxWindow->Info.Handle.WindowHandle);
                 //PXGUIChildEnumerate(_gui);
             }
 
@@ -1705,7 +1705,7 @@ PXResult PXAPI PXEngineCreateGraphic(PXEngine PXREF pxEngine, PXEngineStartInfo 
             "Creation of graphical not enabled!"
         );
 #endif
-        return;
+        return PXActionSuccessful;
     }
 
 
@@ -1836,7 +1836,8 @@ PXResult PXAPI PXEngineStart(PXEngine PXREF pxEngine, PXEngineStartInfo PXREF px
     PXSignalCallBackRegister(PXSignalTokenIllegalInstruction, PXEngineOnIllegalInstruction);
     PXSignalCallBackRegister(PXSignalTokenMemoryViolation, PXEngineOnMemoryViolation);
 
-
+    // INIT
+    PXResourceManagerGet();
 
     PXEngineCreatePRE(pxEngine, pxEngineStartInfo);
 
@@ -2452,13 +2453,13 @@ PXResult PXAPI PXEngineResourceCreate(PXEngine PXREF pxEngine, PXResourceCreateI
             {
                 PXShader pxShader[2];
                 PXClearList(PXShader, pxShader, 2);
-                pxShader[0].Info.ID = PXResourceManagerGenerateUniqeID();
+                pxShader[0].Info.ID = PXIDGenerate();
                 pxShader[0].Type = PXShaderTypeVertex;
-                pxShader[0].ShaderFile = &pxSkyBoxCreateEventData->ShaderProgram.ShaderVertexFile;
+                pxShader[0].ShaderFile = pxSkyBoxCreateEventData->ShaderProgram.ShaderVertexFile;
 
-                pxShader[1].Info.ID = PXResourceManagerGenerateUniqeID();
+                pxShader[1].Info.ID = PXIDGenerate();
                 pxShader[1].Type = PXShaderTypePixel;
-                pxShader[1].ShaderFile = &pxSkyBoxCreateEventData->ShaderProgram.ShaderPixelFile;
+                pxShader[1].ShaderFile = pxSkyBoxCreateEventData->ShaderProgram.ShaderPixelFile;
 
                 pxEngine->Graphic.ShaderProgramCreate
                 (
@@ -2676,10 +2677,10 @@ PXResult PXAPI PXEngineResourceCreate(PXEngine PXREF pxEngine, PXResourceCreateI
                 PXShader pxShader[2];
                 PXClearList(PXShader, pxShader, 2);
                 pxShader[0].Type = PXShaderTypeVertex;
-                pxShader[0].ShaderFile = &pxShaderProgramCreateData->ShaderVertexFile;
+                pxShader[0].ShaderFile = pxShaderProgramCreateData->ShaderVertexFile;
 
                 pxShader[1].Type = PXShaderTypePixel;
-                pxShader[1].ShaderFile = &pxShaderProgramCreateData->ShaderPixelFile;
+                pxShader[1].ShaderFile = pxShaderProgramCreateData->ShaderPixelFile;
 
                 pxEngine->Graphic.ShaderProgramCreate
                 (
@@ -3134,6 +3135,8 @@ PXResult PXAPI PXEngineResourceRender(PXEngine PXREF pxEngine, PXRenderEntity PX
     }
 
 #endif
+
+    return PXActionSuccessful;
 }
 
 PXResult PXAPI PXEngineDeviceDataRegister(PXEngine PXREF pxEngine, PXResourceTransphereInfo PXREF pxResourceTransphereInfo)

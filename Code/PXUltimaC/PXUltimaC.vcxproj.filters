@@ -28,7 +28,6 @@
     <ClCompile Include="PX\Engine\Dialog\PXDialogContainer.c" />
     <ClCompile Include="PX\Engine\Interact\PXSign.c" />
     <ClCompile Include="PX\Engine\PXEngine.c" />
-    <ClCompile Include="PX\Engine\PXEntity.c" />
     <ClCompile Include="PX\Engine\PXGUI.c" />
     <ClCompile Include="PX\Engine\PXLobby.c" />
     <ClCompile Include="PX\Engine\PXMod.c" />
@@ -218,6 +217,8 @@
     <ClCompile Include="PX\Service\PXTCPService.c" />
     <ClCompile Include="PX\Service\PXUDPService.c" />
     <ClCompile Include="PX\OS\File\PXFileFormat.c" />
+    <ClCompile Include="PX\Engine\ECS\PXECS.c" />
+    <ClCompile Include="PX\Engine\ID\PXID.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PX\Algorithm\BubbleSort\PXBubbleSort.h" />
@@ -248,7 +249,6 @@
     <ClInclude Include="PX\Engine\Dialog\PXDialogContainer.h" />
     <ClInclude Include="PX\Engine\Interact\PXSign.h" />
     <ClInclude Include="PX\Engine\PXEngine.h" />
-    <ClInclude Include="PX\Engine\PXEntity.h" />
     <ClInclude Include="PX\Engine\PXGUI.h" />
     <ClInclude Include="PX\Engine\PXLobby.h" />
     <ClInclude Include="PX\Engine\PXMod.h" />
@@ -438,5 +438,7 @@
     <ClInclude Include="PX\Service\PXTCPService.h" />
     <ClInclude Include="PX\Service\PXUDPService.h" />
     <ClInclude Include="PX\OS\File\PXFileFormat.h" />
+    <ClInclude Include="PX\Engine\ECS\PXECS.h" />
+    <ClInclude Include="PX\Engine\ID\PXID.h" />
   </ItemGroup>
 </Project>

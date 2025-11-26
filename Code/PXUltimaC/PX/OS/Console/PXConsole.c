@@ -10,7 +10,7 @@
 #include <PX/OS/Async/PXLock.h>
 #include <PX/OS/PXOS.h>
 
-PXLock* _GLOBALCosolePrintLock;
+PXLock* _GLOBALCosolePrintLock = 0;
 PXThread _GLOBALSourceThread;
 
 #define PXConsoleColorEnable 1
@@ -360,7 +360,7 @@ void PXAPI PXConsoleWriteFV(const PXSize length, const char PXREF source, va_lis
 
 void PXAPI PXConsoleWriteWithColorCodes(PXText PXREF bufferInput)
 {
-    PXLockEngage(&_GLOBALCosolePrintLock);
+    PXLockEngage(_GLOBALCosolePrintLock, PXTrue);
 
     PXConsoleTextColorSet(PXConsoleTextColorWHITE);
 
@@ -398,7 +398,7 @@ void PXAPI PXConsoleWriteWithColorCodes(PXText PXREF bufferInput)
 
     }
 
-    PXLockRelease(&_GLOBALCosolePrintLock);
+    PXLockRelease(_GLOBALCosolePrintLock);
 }
 
 void PXAPI PXConsoleWriteTablePXF32(const PXF32 PXREF data, const PXSize amount, const PXSize width)
@@ -616,7 +616,7 @@ void PXAPI PXLogPrintInvoke(PXLoggingEventData PXREF pxLoggingEventData, ...)
 
 void PXAPI PXLogEnableASYNC()
 {
-    PXLockCreate(&_GLOBALCosolePrintLock, PXLockTypeGlobal);
+    PXLockCreate(_GLOBALCosolePrintLock, PXLockTypeGlobal);
 
     PXThreadCurrent(&_GLOBALSourceThread);
 }

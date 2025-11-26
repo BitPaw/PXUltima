@@ -268,7 +268,10 @@ PXResult PXAPI PXGUICreate(PXWindow PXREF pxWindow, PXWindow PXREF pxWindowParen
     // Override parent ONLY when we set one
     if(pxWindowParent)
     {
-        pxWindow->Info.Hierarchy.Parrent = pxWindowParent; // Set parrent
+        pxWindow->Info.Hierarchy.Parrent = &pxWindowParent->Info.Hierarchy; // Set parrent
+
+        // Check if the parrent is itself?
+        //pxWindowParent->Info.Hierarchy.Yourself = pxWindowParent;
     }
 
     pxWindow->Type = pxWindowCreateInfo->Type;
@@ -1077,7 +1080,7 @@ PXResult PXAPI PXGUICreate(PXWindow PXREF pxWindow, PXWindow PXREF pxWindowParen
     if(!pxWindowCreateInfo->AvoidCreation)
     {
         HINSTANCE hInstance = PXNull;
-        PXWindowHandle windowID = pxWindow ? pxWindow->Info.Handle.WindowHandle : PXNull;
+        //PXWindowHandle windowID = pxWindow ? pxWindow->Info.Handle.WindowHandle : PXNull;
         //  PXNativDrawWindowHandle windowID = pxWindowCreateInfo->WindowParent ? pxWindowCreateInfo->WindowParent->Info.Handle.WindowHandle : PXNull;
 
         if(pxWindowParent)
@@ -1101,7 +1104,7 @@ PXResult PXAPI PXGUICreate(PXWindow PXREF pxWindow, PXWindow PXREF pxWindowParen
 
         PXWindowCreateInfo pxWindowCreateInfoSub;
         PXClear(PXWindowCreateInfo, &pxWindowCreateInfoSub);
-        //pxWindowCreateInfoSub.ParentID = windowID;
+        pxWindowCreateInfoSub.WindowParent = pxWindowParent;
         pxWindowCreateInfoSub.InstanceHandle = hInstance;
         pxWindowCreateInfoSub.Size = pxUIElementPositionCalulcateInfo.Size;
         pxWindowCreateInfoSub.BorderWidth = 2;

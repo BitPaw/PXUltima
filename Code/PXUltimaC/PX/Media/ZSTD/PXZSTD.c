@@ -47,7 +47,16 @@ PXResult PXAPI PXZSTDDecompress(PXFile PXREF pxFileInput, PXFile PXREF pxFileOut
 
    // PXLockEngage(&pxLockTest);
 
-    pxFileOutput->DataUsed = ZSTD_decompress(pxFileOutput->Data, pxFileOutput->DataAllocated, pxFileInput->Data, pxFileInput->DataUsed);
+    PXBuffer* pxBufferIN = PXFileBufferGET(pxFileInput);
+    PXBuffer* pxBufferOUT = PXFileBufferGET(pxFileOutput);
+
+    pxBufferOUT->CursorOffsetByte = ZSTD_decompress
+    (
+        pxBufferOUT->Data,
+        pxBufferOUT->SizeAllocated,
+        pxBufferIN->Data,
+        pxBufferIN->SizeAllocated
+    );
 
    // PXLockRelease(&pxLockTest);
 

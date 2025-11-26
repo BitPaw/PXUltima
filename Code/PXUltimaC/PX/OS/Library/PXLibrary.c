@@ -268,7 +268,7 @@ PXResult PXAPI PXLibraryClose(PXLibrary PXREF pxLibrary)
     return PXActionSuccessful;
 }
 
-PXBool PXAPI PXLibraryGetSymbolBinding(PXLibrary PXREF pxLibrary, void* PXREF bindingObject, const char PXREF symbolList, const PXSize amount, const PXBool areAllImportant)
+PXResult PXAPI PXLibraryGetSymbolBinding(PXLibrary PXREF pxLibrary, void* PXREF bindingObject, const char PXREF symbolList, const PXSize amount, const PXBool areAllImportant)
 {
 #if PXLogEnable
     PXLogPrint
@@ -312,10 +312,10 @@ PXBool PXAPI PXLibraryGetSymbolBinding(PXLibrary PXREF pxLibrary, void* PXREF bi
     );
 #endif
 
-    return PXTrue;
+    return PXActionSuccessful;
 }
 
-PXBool PXAPI PXLibraryGetSymbolListA(PXLibrary PXREF pxLibrary, PXLibraryFuntionEntry PXREF pxLibraryFuntionEntryList, const PXSize amount)
+PXResult PXAPI PXLibraryGetSymbolListA(PXLibrary PXREF pxLibrary, PXLibraryFuntionEntry PXREF pxLibraryFuntionEntryList, const PXSize amount)
 {
 #if PXLogEnable
     PXLogPrint
@@ -335,10 +335,10 @@ PXBool PXAPI PXLibraryGetSymbolListA(PXLibrary PXREF pxLibrary, PXLibraryFuntion
         PXLibraryGetSymbolA(pxLibrary, pxLibraryFuntionEntry->Function, pxLibraryFuntionEntry->FuntionName, PXTrue);
     }
 
-    return PXTrue;
+    return PXActionSuccessful;
 }
 
-PXBool PXAPI PXLibraryGetSymbolA(PXLibrary PXREF pxLibrary, void* PXREF libraryFunction, const char PXREF symbolName, const PXBool isImportant)
+PXResult PXAPI PXLibraryGetSymbolA(PXLibrary PXREF pxLibrary, void* PXREF libraryFunction, const char PXREF symbolName, const PXBool isImportant)
 {
 #if PXLogEnable
     char libraryName[64];
@@ -373,7 +373,7 @@ PXBool PXAPI PXLibraryGetSymbolA(PXLibrary PXREF pxLibrary, void* PXREF libraryF
 #endif
             }
 
-            return PXFalse;
+            return pxActionResult;
         } 
     }
 
@@ -390,10 +390,10 @@ PXBool PXAPI PXLibraryGetSymbolA(PXLibrary PXREF pxLibrary, void* PXREF libraryF
     );
 #endif
 
-    return PXTrue;
+    return PXActionSuccessful;
 }
 
-PXBool PXAPI PXLibraryGetSymbol(PXLibrary PXREF pxLibrary, void* PXREF libraryFunction, const PXText* symbolName)
+PXResult PXAPI PXLibraryGetSymbol(PXLibrary PXREF pxLibrary, void* PXREF libraryFunction, const PXText* symbolName)
 {
     return PXLibraryGetSymbolA(pxLibrary, libraryFunction, symbolName->A, PXTrue);
 }

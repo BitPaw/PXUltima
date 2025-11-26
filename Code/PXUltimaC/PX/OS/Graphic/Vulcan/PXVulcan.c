@@ -254,9 +254,9 @@ PXResult PXAPI PXVulcanInitialize(PXVulcan PXREF pxVulcan, PXGraphicInitializeIn
             PXVulkanInstanceCreateInfo pxVulkanInstanceCreateInfo;
             pxVulkanInstanceCreateInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
             pxVulkanInstanceCreateInfo.pNext = PXNull;
-            pxVulkanInstanceCreateInfo.flags = PXNull;
+            pxVulkanInstanceCreateInfo.flags = 0;
             pxVulkanInstanceCreateInfo.pApplicationInfo = &applicationInfo;
-            pxVulkanInstanceCreateInfo.enabledLayerCount = PXNull;
+            pxVulkanInstanceCreateInfo.enabledLayerCount = 0;
             pxVulkanInstanceCreateInfo.ppEnabledLayerNames = PXNull;
             pxVulkanInstanceCreateInfo.enabledExtensionCount = sizeof(buffer)/8;
             pxVulkanInstanceCreateInfo.ppEnabledExtensionNames = buffer;
@@ -350,7 +350,7 @@ PXResult PXAPI PXVulcanInitialize(PXVulcan PXREF pxVulcan, PXGraphicInitializeIn
         VkWin32SurfaceCreateInfoKHR vkWin32SurfaceCreateInfoKHR;
         vkWin32SurfaceCreateInfoKHR.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
         vkWin32SurfaceCreateInfoKHR.pNext = PXNull;
-        vkWin32SurfaceCreateInfoKHR.flags = PXNull;
+        vkWin32SurfaceCreateInfoKHR.flags = 0;
         vkWin32SurfaceCreateInfoKHR.hinstance = GetModuleHandle(NULL);
         vkWin32SurfaceCreateInfoKHR.hwnd = pxGraphicInitializeInfo->WindowReference->Info.Handle.WindowHandle;
 
@@ -410,23 +410,23 @@ PXResult PXAPI PXVulcanInitialize(PXVulcan PXREF pxVulcan, PXGraphicInitializeIn
         PXVulkanDeviceCreateInfo pxVulkanDeviceCreateInfo;
         pxVulkanDeviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
         pxVulkanDeviceCreateInfo.pNext = PXNull;
-        pxVulkanDeviceCreateInfo.flags = PXNull;
-        pxVulkanDeviceCreateInfo.queueCreateInfoCount = PXNull;
+        pxVulkanDeviceCreateInfo.flags = 0;
+        pxVulkanDeviceCreateInfo.queueCreateInfoCount = 0;
         pxVulkanDeviceCreateInfo.pQueueCreateInfos = PXNull;
-        pxVulkanDeviceCreateInfo.enabledLayerCount = PXNull;
+        pxVulkanDeviceCreateInfo.enabledLayerCount = 0;
         pxVulkanDeviceCreateInfo.ppEnabledLayerNames = PXNull;
-        pxVulkanDeviceCreateInfo.enabledExtensionCount = PXNull;
+        pxVulkanDeviceCreateInfo.enabledExtensionCount = 0;
         pxVulkanDeviceCreateInfo.ppEnabledExtensionNames = PXNull;
         pxVulkanDeviceCreateInfo.pEnabledFeatures = PXNull;
 
 
         const VkResult createResult = pxVulcan->DeviceCreate
-                                      (
-                                          pxVulcan->DevicePhysical,
-                                          &pxVulkanDeviceCreateInfo,
-                                          PXNull,
-                                          &pxVulcan->DeviceVirtual
-                                      );
+        (
+            pxVulcan->DevicePhysical,
+            &pxVulkanDeviceCreateInfo,
+            PXNull,
+            &pxVulcan->DeviceVirtual
+        );
 
 #if PXVulcanDebug
         PXLogPrint

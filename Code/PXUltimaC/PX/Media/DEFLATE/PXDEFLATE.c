@@ -287,7 +287,7 @@ PXResult PXAPI PXDEFLATEParse(PXFile PXREF pxInputStream, PXFile PXREF pxOutputS
                     // if (!ucvector_resize(out, out->size + length)) ERROR_BREAK(83 /*alloc fail*/);
 
 
-                    PXByte* data = PXFileDataAtCursor(pxOutputStream);
+                    PXByte* data = (PXByte*)PXFileDataAtCursor(pxOutputStream);
 
                     if(distance < length)
                     {
@@ -1633,7 +1633,7 @@ PXResult PXAPI PXDEFLATESerialize(PXFile PXREF pxInputStream, PXFile PXREF pxOut
             if(numdeflateblocks == 0) 
                 numdeflateblocks = 1;
 
-            PXActionResult error = hash_init(&hash, lodePNGCompressSettings.windowsize);
+            PXResult error = hash_init(&hash, lodePNGCompressSettings.windowsize);
 
             for(PXSize i = 0; i != numdeflateblocks && (error == 0); ++i)
             {
@@ -1643,7 +1643,7 @@ PXResult PXAPI PXDEFLATESerialize(PXFile PXREF pxInputStream, PXFile PXREF pxOut
 
                 // PXFileWriteBits(pxOutputStream, finalBlock, 1u);
 
-                void* input = PXFileDataPosition(pxInputStream);
+                void* input = PXFileDataAtCursor(pxInputStream);
 
                 switch(deflateEncodingMethod)
                 {

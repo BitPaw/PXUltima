@@ -40,9 +40,9 @@ typedef struct PXLock_
 }
 PXLock;
 
-PXPublic PXResult PXAPI PXLockCreate(PXLock PXREF lock, const PXLockType type);
+PXPublic PXResult PXAPI PXLockCreate(PXLock PXREFREF lock, const PXLockType type);
 PXPublic PXResult PXAPI PXLockDelete(PXLock PXREF lock);
-PXPublic PXResult PXAPI PXLockEngage(PXLock PXREF lock);
+PXPublic PXResult PXAPI PXLockEngage(PXLock PXREF lock, const PXBool forceEnter);
 PXPublic PXResult PXAPI PXLockRelease(PXLock PXREF lock);
 
 #endif

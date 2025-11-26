@@ -269,6 +269,12 @@ PXResult PXAPI PXThreadPoolCreate(PXThreadPool* pxThreadPool)
         PXTextPrintA(nameBuffer, 32, "PX-ThreadPool-%3.3i", i + 1);
 
         PXThreadCreate(pxThread, nameBuffer, PXNull, PXThreadPoolProcessASYNC, pxThreadPool, PXThreadBehaviourCreateSuspended);
+    }
+
+    for(PXSize i = 0; i < pxThreadPool->ThreadListSize; ++i)
+    {
+        PXThread PXREF pxThread = &pxThreadPool->ThreadList[i];
+  
         PXThreadCPUCoreAffinitySet(pxThread, i);
     }
 
@@ -472,7 +478,7 @@ void PXAPI PXTaskStateChangeRemote(PXThreadPool* pxThreadPool, PXTask PXREF pxTa
         pxThreadPool = &_GLOBALThreadPool;
     }
 
-    PXLockEngage(&pxThreadPool->TaskLock);
+    PXLockEngage(&pxThreadPool->TaskLock, PXTrue);
 
     for(PXSize i = 0; i < pxThreadPool->TaskQueue.EntryAmountUsed; ++i)
     {
@@ -499,7 +505,7 @@ PXBool PXAPI PXThreadPoolTaskNextWorkGet(PXThreadPool* pxThreadPool, PXTask PXRE
         pxThreadPool = &_GLOBALThreadPool;
     }
 
-    PXLockEngage(&pxThreadPool->TaskLock);
+    PXLockEngage(&pxThreadPool->TaskLock, PXTrue);
 
     for(PXSize i = 0; i < pxThreadPool->TaskQueue.EntryAmountUsed; ++i)
     {
@@ -540,7 +546,7 @@ PXTask* PXAPI PXThreadPoolTaskUpdateWork(PXThreadPool* pxThreadPool, const PXI32
         pxThreadPool = &_GLOBALThreadPool;
     }
 
-    PXLockEngage(&pxThreadPool->TaskLock);
+    PXLockEngage(&pxThreadPool->TaskLock, PXTrue);
 
     // We defined a known task, find it!
     if(0 != taskID)
@@ -620,7 +626,7 @@ void PXAPI PXThreadPoolWaking(PXThreadPool* pxThreadPool)
     PXSize threadCounterAwake = 0;
     PXSize threadCounterSleep = 0;
 
-    PXLockEngage(&pxThreadPool->TaskLock);
+    PXLockEngage(&pxThreadPool->TaskLock, PXTrue);
 
     // How many awake?
     {
@@ -774,7 +780,7 @@ PXResult PXAPI PXThreadPoolQueuePrepare(PXThreadPool* pxThreadPool, PXI32U** lis
         *listIDs = list;
     }
 
-    PXLockEngage(&pxThreadPool->TaskLock);
+    PXLockEngage(&pxThreadPool->TaskLock, PXTrue);
 
     PXListReserve(&pxThreadPool->TaskQueue, amount);
 

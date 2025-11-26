@@ -202,8 +202,15 @@ PXResult PXAPI PXMTLLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
     );
 #endif
 
-    while(!PXFileIsAtEnd(&compiledSteam))
+    for(;;)
     {
+        const PXBool isAtEnd = PXFileIsAtEnd(compiledSteam);
+
+        if(isAtEnd)
+        {
+            break;
+        }
+
         PXCompilerSymbolEntryExtract(&pxCompiler);
 
         const PXMTLLineType mtlLineType = PXMTLPeekLine(pxCompiler.ReadInfo.SymbolEntryCurrent.Source, pxCompiler.ReadInfo.SymbolEntryCurrent.Size);
@@ -260,7 +267,7 @@ PXResult PXAPI PXMTLLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
                 PXClear(PXResourceCreateInfo, &pxResourceCreateInfo);
                 pxResourceCreateInfo.Parent = pxMaterialList;
                 pxResourceCreateInfo.Type = PXResourceTypeTexture2D;
-                pxResourceCreateInfo.ObjectReference = (void**)&pxMaterialCurrent->DiffuseTexture;
+                pxResourceCreateInfo.ObjectReference = (PXResourceInfo**)&pxMaterialCurrent->DiffuseTexture;
                 pxResourceCreateInfo.ObjectAmount = 1;
                 pxResourceCreateInfo.FilePath = fullTexturePath;
                 pxResourceCreateInfo.Flags = PXResourceCreateBehaviourLoadASYNC;
@@ -340,7 +347,7 @@ PXResult PXAPI PXMTLLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
                         break;
                 }
 
-                const PXBool listParsed = PXCompilerParseF32V(&pxCompiler, colorVector, colorVectorSize, &valuesDetected);
+                const PXBool listParsed = PXCompilerParseF32V(&pxCompiler, colorVector->Data, colorVectorSize, &valuesDetected);
 
                 if(!listParsed)
                 {
@@ -664,20 +671,20 @@ PXBool PXAPI PXMTLFetchMaterial(const void PXREF data, const PXSize dataSize, co
         const PXBool isTarget = materialID == i;
         unsigned int materialDataSize = 0;
 
-        PXFileReadI32U(&mtlHeaderStream, &materialDataSize);
+        PXFileReadI32U(mtlHeaderStream, &materialDataSize);
 
         if(isTarget)
         {
            // mtlPXFile.DataUsed = materialDataSize;    // Set max size for now
 
-            while(!PXFileIsAtEnd(&mtlPXFile))
+            while(!PXFileIsAtEnd(mtlPXFile))
             {
                 PXMTLLineType mtlLineType;
 
                 {
                     unsigned char lineTypeID = 0;
 
-                    PXFileReadI8U(&mtlPXFile, &lineTypeID);
+                    PXFileReadI8U(mtlPXFile, &lineTypeID);
 
                     mtlLineType = lineTypeID;
                 }
@@ -686,60 +693,60 @@ PXBool PXAPI PXMTLFetchMaterial(const void PXREF data, const PXSize dataSize, co
                 {
                     case MTLLineName:
                     {
-                        PXFileReadI8U(&mtlPXFile, &mtlMaterial->NameSize);
-                        mtlMaterial->Name = (char*)PXFileDataAtCursor(&mtlPXFile);
+                        PXFileReadI8U(mtlPXFile, &mtlMaterial->NameSize);
+                        mtlMaterial->Name = (char*)PXFileDataAtCursor(mtlPXFile);
 
-                        PXFileCursorAdvance(&mtlPXFile, mtlMaterial->NameSize);
+                        PXFileCursorAdvance(mtlPXFile, mtlMaterial->NameSize);
                         break;
                     }
                     case MTLLineTexture:
                     {
-                        PXFileReadI8U(&mtlPXFile, &mtlMaterial->DiffuseTexturePathSize);
-                        mtlMaterial->DiffuseTexturePath = (char*)PXFileDataAtCursor(&mtlPXFile);
+                        PXFileReadI8U(mtlPXFile, &mtlMaterial->DiffuseTexturePathSize);
+                        mtlMaterial->DiffuseTexturePath = (char*)PXFileDataAtCursor(mtlPXFile);
 
-                        PXFileCursorAdvance(&mtlPXFile, mtlMaterial->DiffuseTexturePathSize);
+                        PXFileCursorAdvance(mtlPXFile, mtlMaterial->DiffuseTexturePathSize);
                         break;
                     }
                     case MTLLineColorAmbient:
                     {
-                        PXFileReadFV(&mtlPXFile, mtlMaterial->Ambient, 3u);
+                        PXFileReadFV(mtlPXFile, mtlMaterial->Ambient, 3u);
                         break;
                     }
                     case MTLLineColorDiffuse:
                     {
-                        PXFileReadFV(&mtlPXFile, mtlMaterial->Diffuse, 3u);
+                        PXFileReadFV(mtlPXFile, mtlMaterial->Diffuse, 3u);
                         break;
                     }
                     case MTLLineColorSpecular:
                     {
-                        PXFileReadFV(&mtlPXFile, mtlMaterial->Specular, 3u);
+                        PXFileReadFV(mtlPXFile, mtlMaterial->Specular, 3u);
                         break;
                     }
                     case MTLLineColorEmission:
                     {
-                        PXFileReadFV(&mtlPXFile, mtlMaterial->Emission, 3u);
+                        PXFileReadFV(mtlPXFile, mtlMaterial->Emission, 3u);
                         break;
                     }
                     case MTLLineWeight:
                     {
-                        PXFileReadF(&mtlPXFile, &mtlMaterial->Weight);
+                        PXFileReadF(mtlPXFile, &mtlMaterial->Weight);
                         break;
                     }
                     case MTLLineDissolved:
                     {
-                        PXFileReadF(&mtlPXFile, &mtlMaterial->Dissolved);
+                        PXFileReadF(mtlPXFile, &mtlMaterial->Dissolved);
                         break;
                     }
                     case MTLLineDensity:
                     {
-                        PXFileReadF(&mtlPXFile, &mtlMaterial->Density);
+                        PXFileReadF(mtlPXFile, &mtlMaterial->Density);
                         break;
                     }
                     case MTLLineIllumination:
                     {
                         unsigned char illuminationID = 0;
 
-                        PXFileReadI8U(&mtlPXFile, &illuminationID);
+                        PXFileReadI8U(mtlPXFile, &illuminationID);
 
                         mtlMaterial->Illumination = illuminationID;
                         break;

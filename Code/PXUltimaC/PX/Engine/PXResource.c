@@ -3,11 +3,18 @@
 #include <PX/OS/PXOS.h>
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/Engine/PXGUI.h>
+#include <PX/Math/PXMath.h>
+#include <PX/Media/PXText.h>
+#include <PX/OS/Time/PXStopWatch.h>
+#include <PX/OS/Hardware/PXProcessor.h>
+#include <PX/OS/File/PXFile.h>
+#include <PX/OS/Async/PXThreadPool.h>
+#include <PX/OS/Graphic/NativDraw/PXNativDraw.h>
+#include <PX/OS/Graphic/PXGraphic.h>
 
+
+const char PXResourceManagerText[] = "Resource-PX";
 PXResourceManager _pxResourceManager;
-
-const char PXResourceText[] = "Resource";
-
 
 
 const PXF32 PXVertexDataTriangle[] =
@@ -97,25 +104,6 @@ const PXI8U PXIndexDataCube[] =
 
 
 
-
-#include <PX/Math/PXMath.h>
-#include <PX/Media/PXText.h>
-#include <PX/OS/Console/PXConsole.h>
-#include <PX/OS/Time/PXStopWatch.h>
-#include <PX/OS/Hardware/PXProcessor.h>
-#include <PX/OS/File/PXFile.h>
-#include <PX/OS/PXOS.h>
-#include <PX/OS/Async/PXThreadPool.h>
-#include <PX/OS/Graphic/NativDraw/PXNativDraw.h>
-#include <PX/OS/Async/PXThreadPool.h>
-#include <PX/OS/Graphic/PXGraphic.h>
-
-
-
-const char PXResourceManagerText[] = "PX-Resource";
-//const char PXEngineText[] = "PX-Engine";
-
-PXResourceManager _GLOBALResourceManager;
 
 
 
@@ -327,25 +315,25 @@ const PXResourceEntry _GlobalResourceEntryList[] =
 {
     {PXNull,                                PXNull,                                 "Invalid", PXResourceTypeInvalid, 0 },
     {PXNull,                                PXNull,                                 "Custom", PXResourceTypeCustom, 0 },
-    {&_GLOBALResourceManager.SoundLookUp,   PXResourceCreateSound,                  "Sound",PXResourceTypeSound, sizeof(PXSound) },
+    {&_pxResourceManager.SoundLookUp,   PXResourceCreateSound,                  "Sound",PXResourceTypeSound, sizeof(PXSound) },
     {PXNull,                                PXNull,                                 "Video", PXResourceTypeVideo,sizeof(PXVideo) },
-    {&_GLOBALResourceManager.ModelLookUp,   PXResourceCreateModel,                  "Model",PXResourceTypeModel, sizeof(PXModel) },
-    {&_GLOBALResourceManager.FontLookUp,    PXResourceCreateFont,                   "Font",PXResourceTypeFont, sizeof(PXFont) },
-    {&_GLOBALResourceManager.MaterialLookUp, PXResourceCreateMaterial,              "Material", PXResourceTypeMaterial, sizeof(PXMaterial) },
-    {&_GLOBALResourceManager.BrushLookUp,   PXResourceCreateBrush,                  "Brush",PXResourceTypeBrush, sizeof(PXWindowBrush) },
-    {&_GLOBALResourceManager.TextureLookUp, PXResourceCreateTexture,              "Texture",PXResourceTypeTexture2D, sizeof(PXTexture) },
-    {&_GLOBALResourceManager.ShaderProgramLookup, PXResourceCreateShaderProgram,    "ShaderProgram",PXResourceTypeShaderProgram, sizeof(PXShaderProgram) },
-    {&_GLOBALResourceManager.SkyBoxLookUp,  PXResourceCreateSkybox,                 "SkyBox",PXResourceTypeSkybox, sizeof(PXSkyBox) },
-    {&_GLOBALResourceManager.SpritelLookUp, PXResourceCreateSprite,                 "Sprite",PXResourceTypeSprite, sizeof(PXSprite) },
-    {&_GLOBALResourceManager.IconLookUp,    PXResourceCreateIcon,                   "Icon",PXResourceTypeIcon, sizeof(PXIcon) },
-    {&_GLOBALResourceManager.IconAtlasLookUp, PXResourceCreateIconAtlas,              "IconAtlas",PXResourceTypeIconAtlas, sizeof(PXIconAtlas) },
-    {&_GLOBALResourceManager.SpriteAnimator, PXResourceCreateSpriteAnimator,        "SpriteAnimator",PXResourceTypeSpriteAnimator, sizeof(PXSpriteAnimator) },
+    {&_pxResourceManager.ModelLookUp,   PXResourceCreateModel,                  "Model",PXResourceTypeModel, sizeof(PXModel) },
+    {&_pxResourceManager.FontLookUp,    PXResourceCreateFont,                   "Font",PXResourceTypeFont, sizeof(PXFont) },
+    {&_pxResourceManager.MaterialLookUp, PXResourceCreateMaterial,              "Material", PXResourceTypeMaterial, sizeof(PXMaterial) },
+    {&_pxResourceManager.BrushLookUp,   PXResourceCreateBrush,                  "Brush",PXResourceTypeBrush, sizeof(PXWindowBrush) },
+    {&_pxResourceManager.TextureLookUp, PXResourceCreateTexture,              "Texture",PXResourceTypeTexture2D, sizeof(PXTexture) },
+    {&_pxResourceManager.ShaderProgramLookup, PXResourceCreateShaderProgram,    "ShaderProgram",PXResourceTypeShaderProgram, sizeof(PXShaderProgram) },
+    {&_pxResourceManager.SkyBoxLookUp,  PXResourceCreateSkybox,                 "SkyBox",PXResourceTypeSkybox, sizeof(PXSkyBox) },
+    {&_pxResourceManager.SpritelLookUp, PXResourceCreateSprite,                 "Sprite",PXResourceTypeSprite, sizeof(PXSprite) },
+    {&_pxResourceManager.IconLookUp,    PXResourceCreateIcon,                   "Icon",PXResourceTypeIcon, sizeof(PXIcon) },
+    {&_pxResourceManager.IconAtlasLookUp, PXResourceCreateIconAtlas,              "IconAtlas",PXResourceTypeIconAtlas, sizeof(PXIconAtlas) },
+    {&_pxResourceManager.SpriteAnimator, PXResourceCreateSpriteAnimator,        "SpriteAnimator",PXResourceTypeSpriteAnimator, sizeof(PXSpriteAnimator) },
     {PXNull,                                PXNull,                                 "Text",PXResourceTypeText, sizeof(PXText) },
-    {&_GLOBALResourceManager.TimerLookUp,   PXResourceCreateTimer,                  "Timer",PXResourceTypeTimer, sizeof(PXTimer) },
+    {&_pxResourceManager.TimerLookUp,   PXResourceCreateTimer,                  "Timer",PXResourceTypeTimer, sizeof(PXTimer) },
     {PXNull,                                PXNull,                                 "---",PXResourceTypeEngineSound, 0 },
-    {&_GLOBALResourceManager.GUIElementLookup, PXResourceCreateWindow,              "Window", PXResourceTypeGUIElement, sizeof(PXWindow) },
-    {&_GLOBALResourceManager.HitBoxLookUp,  PXResourceCreateHitBox,                 "---",PXResourceTypeHitBox, sizeof(PXHitBox) },
-    {&_GLOBALResourceManager.MaterialLookUp, PXNull,                                "Material", PXResourceTypeMaterialList, PXNull},
+    {&_pxResourceManager.GUIElementLookup, PXResourceCreateWindow,              "Window", PXResourceTypeGUIElement, sizeof(PXWindow) },
+    {&_pxResourceManager.HitBoxLookUp,  PXResourceCreateHitBox,                 "---",PXResourceTypeHitBox, sizeof(PXHitBox) },
+    {&_pxResourceManager.MaterialLookUp, PXNull,                                "Material", PXResourceTypeMaterialList, PXNull},
     {PXNull, PXNull, "---", PXResourceTypeCodeDocument, sizeof(PXWindowBrush) },
     {PXNull, PXNull, "---", PXResourceTypeDocument, sizeof(PXWindowBrush) },
     {PXNull, PXNull, "---", PXResourceTypeBinary, sizeof(PXWindowBrush) },
@@ -353,7 +341,7 @@ const PXResourceEntry _GlobalResourceEntryList[] =
     {PXNull, PXNull, "---", PXResourceTypeInstaller, sizeof(PXWindowBrush) },
     {PXNull, PXNull, "---", PXResourceTypeArchiv, sizeof(PXWindowBrush) },
     {PXNull, PXNull, "---", PXResourceTypeDialogBox, sizeof(PXWindowBrush) },
-    {&_GLOBALResourceManager.SpriteMapAtlasLookUp, PXResourceCreateSpriteMap, "SpriteMap", PXResourceTypeSpriteMap, sizeof(PXSpriteMap) },
+    {&_pxResourceManager.SpriteMapAtlasLookUp, PXResourceCreateSpriteMap, "SpriteMap", PXResourceTypeSpriteMap, sizeof(PXSpriteMap) },
 };
 const PXSize _GlobalResourceEntryListAmoumt = sizeof(_GlobalResourceEntryList) / sizeof(PXResourceEntry);
 
@@ -485,7 +473,7 @@ PXResult PXAPI PXResourceCreateShaderProgram(PXResourceCreateInfo PXREF pxResour
             pxShaderProgramCreateData->ShaderVertex.SizeUsed
         );
 
-        PXFileOpen(&pxShaderProgramCreateData->ShaderVertexFile, &pxFileOpenInfo);
+        PXFileOpen(pxShaderProgramCreateData->ShaderVertexFile, &pxFileOpenInfo);
 
         PXBufferSet
         (
@@ -494,7 +482,7 @@ PXResult PXAPI PXResourceCreateShaderProgram(PXResourceCreateInfo PXREF pxResour
             pxShaderProgramCreateData->ShaderPixel.SizeUsed
         );
 
-        PXFileOpen(&pxShaderProgramCreateData->ShaderPixelFile, &pxFileOpenInfo);
+        PXFileOpen(pxShaderProgramCreateData->ShaderPixelFile, &pxFileOpenInfo);
 
         pxShaderProgram->Info.Behaviour |= PXResourceInfoStorageMemory;
 
@@ -512,14 +500,14 @@ PXResult PXAPI PXResourceCreateShaderProgram(PXResourceCreateInfo PXREF pxResour
 
         pxFileOpenFromPathInfo.FilePath = pxShaderProgramCreateData->ShaderVertexFilePath;
 
-        const PXResult vertexLoadResult = PXFileOpen(&pxShaderProgramCreateData->ShaderVertexFile, &pxFileOpenFromPathInfo);
+        const PXResult vertexLoadResult = PXFileOpen(pxShaderProgramCreateData->ShaderVertexFile, &pxFileOpenFromPathInfo);
 
         if(PXActionSuccessful != vertexLoadResult) 
             return vertexLoadResult;
 
         pxFileOpenFromPathInfo.FilePath = pxShaderProgramCreateData->ShaderPixelFilePath;
 
-        const PXResult fragmentLoadResult = PXFileOpen(&pxShaderProgramCreateData->ShaderPixelFile, &pxFileOpenFromPathInfo);
+        const PXResult fragmentLoadResult = PXFileOpen(pxShaderProgramCreateData->ShaderPixelFile, &pxFileOpenFromPathInfo);
 
         if(PXActionSuccessful != fragmentLoadResult) 
             return fragmentLoadResult;;
@@ -643,7 +631,7 @@ PXResult PXAPI PXResourceCreateFont(PXResourceCreateInfo PXREF pxResourceCreateI
             PXClear(PXResourceTransphereInfo, &pxResourceLoadInfo);
             pxResourceLoadInfo.ResourceTarget = pxFont;
             pxResourceLoadInfo.ResourceType = PXResourceTypeFont;
-            pxResourceLoadInfo.Manager = &_GLOBALResourceManager;
+            pxResourceLoadInfo.Manager = &_pxResourceManager;
 
             const PXResult loadResult = PXResourceLoad(&pxResourceLoadInfo, &pxResourceCreateInfo->FilePath);
 
@@ -674,7 +662,7 @@ PXResult PXAPI PXResourceCreateMaterial(PXResourceCreateInfo PXREF pxResourceCre
     {
         PXMaterial PXREF pxMaterialCurrent = &pxMaterial[materialIndex];
 
-        pxMaterialCurrent->Info.ID = PXResourceManagerGenerateUniqeID();
+        pxMaterialCurrent->Info.ID = PXIDGenerate();
         pxMaterialCurrent->Info.Behaviour |= PXResourceInfoRender;
 
         keyList[materialIndex] = &pxMaterialCurrent->Info.ID;
@@ -801,7 +789,7 @@ PXResult PXAPI PXResourceCreateTexture(PXResourceCreateInfo PXREF pxResourceCrea
                 PXClear(PXResourceTransphereInfo, &pxResourceLoadInfo);
                 pxResourceLoadInfo.ResourceTarget = pxTexture;
                 pxResourceLoadInfo.ResourceType = PXResourceTypeTexture;
-                pxResourceLoadInfo.Manager = &_GLOBALResourceManager;
+                pxResourceLoadInfo.Manager = &_pxResourceManager;
 
                 const PXResult loadResult = PXResourceLoad(&pxResourceLoadInfo, &pxText);
 
@@ -980,7 +968,7 @@ PXResult PXAPI PXResourceCreateModel(PXResourceCreateInfo PXREF pxResourceCreate
             PXClear(PXResourceTransphereInfo, &pxResourceLoadInfo);
             pxResourceLoadInfo.ResourceTarget = pxModel;
             pxResourceLoadInfo.ResourceType = PXResourceTypeModel;
-            pxResourceLoadInfo.Manager = &_GLOBALResourceManager;
+            pxResourceLoadInfo.Manager = &_pxResourceManager;
 
             const PXResult loadResult = PXResourceLoad(&pxResourceLoadInfo, &pxResourceCreateInfo->FilePath);
             const PXBool success = PXActionSuccessful == loadResult;
@@ -1004,7 +992,7 @@ PXResult PXAPI PXResourceCreateModel(PXResourceCreateInfo PXREF pxResourceCreate
     else
     {
         // As this element is internal, we need to create an ID
-        pxModel->Info.ID = PXResourceManagerGenerateUniqeID();
+        pxModel->Info.ID = PXIDGenerate();
 
 #if PXLogEnable
         PXLogPrint
@@ -1740,206 +1728,7 @@ PXResourceEntry* PXResourceEntryGet(PXI32U type)
 
 PXResult PXAPI PXResourceManagerAdd(PXResourceCreateInfo PXREF pxResourceCreateInfo)
 {
-    if(!pxResourceCreateInfo)
-    {
-        return PXActionRefusedArgumentNull;
-    }
-
-    //-----------------------------------------------------
-    // Pre-create Object
-    //-----------------------------------------------------
-
-    // TODO: Bad provider funcion!
-    const PXResourceEntry PXREF pxResourceEntry = PXResourceEntryGet(pxResourceCreateInfo->Type);
-
-    if(!pxResourceEntry)
-    {
-        return PXActionRefusedArgumentInvalid;
-    }
-
-    // fixing text
-    {
-        pxResourceCreateInfo->Name.SizeAllocated = 0xFF;
-        pxResourceCreateInfo->FilePath.SizeAllocated = 0xFF;
-        PXTextRevise(&pxResourceCreateInfo->Name);
-        PXTextRevise(&pxResourceCreateInfo->FilePath);
-    }
-
-
-    const PXBool isResourceAllocated = *pxResourceCreateInfo->ObjectReference > 0;
-
-    if(!isResourceAllocated)
-    {
-        // Validation
-        {
-            if(!pxResourceEntry->LookupTable)
-            {
-                // TODO: Add behaviour to handle missing lookup
-
-            }
-        }
-
-
-        PXLockEngage(&_GLOBALResourceManager.AsyncLock);
-
-        // Special behaviour if we have an object size of 0.
-        // Creating 0 objects does not make sense but if we dont set this, it will yield problems
-        // To reduce useless definition of "1 object size", we assume 0 means we want one item
-        if(pxResourceCreateInfo->ObjectAmount == 0)
-        {
-            ++pxResourceCreateInfo->ObjectAmount; // Asumme we want one item it we didnt set it to it,
-        }
-
-        PXResourceEntry* pxResourceEntryList = (PXResourceEntry*)PXMemoryHeapCalloc(PXNull, pxResourceEntry->TypeSize, pxResourceCreateInfo->ObjectAmount);
-
-        if(!pxResourceEntryList)
-        {
-#if PXLogEnable
-            PXLogPrint
-            (
-                PXLoggingError,
-                PXResourceManagerText,
-                "Register",
-                "Failed to allocate space for : Size:%-4i (%i) <%s>",
-                pxResourceEntry->TypeSize,
-                pxResourceCreateInfo->ObjectAmount,
-                pxResourceEntry->Name
-            );
-#endif
-
-            return PXActionFailedMemoryAllocation;
-        }
-
-        *pxResourceCreateInfo->ObjectReference = pxResourceEntryList;
-
-        for(PXSize i = 0; i < pxResourceCreateInfo->ObjectAmount; ++i)
-        {
-            const PXI32U resourceID = PXResourceManagerGenerateUniqeID();
-
-            // Get currect objects is we have multible
-            void* object = (char*)pxResourceEntryList + (pxResourceEntry->TypeSize * i);
-
-            // UNSTANBLE CAST?
-            PXResourceInfo PXREF pxResourceInfo = (PXResourceInfo*)object;
-            pxResourceInfo->ID = resourceID;
-            pxResourceInfo->Behaviour |= PXResourceInfoExist;
-
-            // Store myself, so we can cast back with hirachy
-            pxResourceInfo->Hierarchy.Yourself = object;
-
-            PXDictionaryEntryAdd(pxResourceEntry->LookupTable, &resourceID, *pxResourceCreateInfo->ObjectReference);
-
-            PXResourceProperty pxResourceProperty;
-            PXClear(PXResourceProperty, &pxResourceProperty);
-            pxResourceProperty.Text = pxResourceCreateInfo->Name;
-
-            PXResourcePropertyIO(pxResourceInfo, &pxResourceProperty, PXResourcePropertyName, PXTrue);
-
-            PXClear(PXResourceProperty, &pxResourceProperty);
-            pxResourceProperty.Text = pxResourceCreateInfo->FilePath;
-            PXResourcePropertyIO(pxResourceInfo, &pxResourceProperty, PXResourcePropertyPath, PXTrue);
-
-#if PXLogEnable
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                PXResourceManagerText,
-                "Register",
-                "PXID:<%-4i> Size:%-4i (%i/%i) <%s>",
-                resourceID,
-                pxResourceEntry->TypeSize,
-                i + 1,
-                pxResourceCreateInfo->ObjectAmount,
-                pxResourceEntry->Name
-            );
-#endif
-        }
-
-        PXLockRelease(&_GLOBALResourceManager.AsyncLock);
-
-
-
-        //-----------------------------------------------------
-        // Create ASYNC pathway
-        //-----------------------------------------------------
-        const PXBool createSubCall =
-            (PXResourceCreateBehaviourLoadASYNC & pxResourceCreateInfo->Flags) &&
-            !(PXResourceCreateBehaviourIsASYNCCall & pxResourceCreateInfo->Flags);
-
-        if(createSubCall && 0)
-        {
-            // We want to load the resouce in an async way.
-            // Start a thread and call this function again?
-
-            PXResourceCreateInfo* pxResourceCreateInfoASYNC = PXMemoryHeapCallocT(PXResourceCreateInfo, 1);
-            PXCopy(PXResourceCreateInfo, pxResourceCreateInfo, pxResourceCreateInfoASYNC);
-            pxResourceCreateInfoASYNC->Flags |= PXResourceCreateBehaviourIsASYNCCall;
-
-            PXThreadPoolQueueWork
-            (
-                PXNull,
-                0,
-                PXResourceManagerAdd,
-                pxResourceCreateInfoASYNC,
-                PXNull,
-                PXTaskParameterRelease | PXTaskExecuteASYNC
-            );
-
-            return PXActionSuccessful;
-        }
-    }
-    //-----------------------------------------------------
-
-    // Invoke creation
-    if(!pxResourceEntry->CreateFunction)
-    {
-        // If there is no handle function, we cant do anything. 
-        // We regard this as an error
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingError,
-            PXResourceManagerText,
-            "Register",
-            "[PXID:%-4i] <%s> Has no function to handle creation.",
-            -1,
-            pxResourceEntry->Name
-        );
-#endif
-
-        return PXActionRefusedObjectCreateCallbackMissing;
-    }
-
-    const PXResult pxActionCreate = pxResourceEntry->CreateFunction(pxResourceCreateInfo, *pxResourceCreateInfo->ObjectReference);
-
-    if(PXActionSuccessful != pxActionCreate)
-    {
-#if PXLogEnable
-        PXLogPrint
-        (
-            PXLoggingError,
-            PXResourceManagerText,
-            "Create",
-            "[PXID:%-4i] <%s> failed creation.",
-            -1,
-            pxResourceEntry->Name
-        );
-#endif
-    }
-
-    return PXActionSuccessful;
-}
-
-PXResult PXAPI PXResourceManagerAddV(PXResourceCreateInfo PXREF pxResourceCreateInfoList, const PXSize amount)
-{
-    for(PXSize i = 0; i < amount; ++i)
-    {
-        PXResourceCreateInfo PXREF pxResourceCreateInfo = &pxResourceCreateInfoList[i];
-
-        PXResourceManagerAdd(pxResourceCreateInfo);
-    }
-
-    return PXActionSuccessful;
+    
 }
 
 PXMaterial* PXAPI PXMaterialContainerFind(const PXMaterialContainer PXREF pxMaterialContainer, struct PXText_ PXREF pxMaterialName)
@@ -3324,13 +3113,13 @@ PXResult PXAPI PXResourcePropertyIO
 
             if(doWrite)
             {
-                PXListDynamicAdd(&_GLOBALResourceManager.NameCache, &pxResourceInfo->ID, pxText->A, pxText->SizeUsed);
+                PXListDynamicAdd(&_pxResourceManager.NameCache, &pxResourceInfo->ID, pxText->A, pxText->SizeUsed);
 
                 pxResourceInfo->Behaviour |= PXResourceInfoHasSource;
             }
             else
             {
-                PXListDynamicGet(&_GLOBALResourceManager.NameCache, &pxResourceInfo->ID, pxText->A, &pxText->SizeUsed);
+                PXListDynamicGet(&_pxResourceManager.NameCache, &pxResourceInfo->ID, pxText->A, &pxText->SizeUsed);
             }
 
 #if PXLogEnable
@@ -3359,7 +3148,7 @@ PXResult PXAPI PXResourcePropertyIO
             }
             else
             {
-                PXListDynamicGet(&_GLOBALResourceManager.SourcePathCache, &pxResourceInfo->ID, pxText->A, &pxText->SizeUsed);
+                PXListDynamicGet(&_pxResourceManager.SourcePathCache, &pxResourceInfo->ID, pxText->A, &pxText->SizeUsed);
             }    
 
 #if PXLogEnable
@@ -3384,38 +3173,6 @@ PXResult PXAPI PXResourcePropertyIO
     }
 
     return PXActionSuccessful;
-}
-
-PXResult PXAPI PXResourceManagerReferenceValidate(PXResourceReference PXREF pxResourceReference)
-{
-    if(!pxResourceReference)
-    {
-        return PXActionRefusedArgumentNull;
-    }
-
-    // is ID refereing to "no object"?
-    {
-        PXBool isResourceReferenceWanted = -1 == pxResourceReference->IDExpected;
-
-        if(!isResourceReferenceWanted)
-        {
-            pxResourceReference->ResourceAdress = PXNull; // Remove dependency if one is present. it is unwanted
-
-            return PXActionSuccessful;
-        }
-    }
-
-    // Check if adress is in range. aka is this a pointer in a valid range?
-    {
-        PXBool isAdressInRange = 1;
-
-        if(!isAdressInRange)
-        {
-            pxResourceReference->ResourceAdress = PXNull;
-
-            return PXActionSuccessful;
-        }
-    }
 }
 
 PXResult PXAPI PXResourceLoad(PXResourceTransphereInfo PXREF pxResourceLoadInfo, const PXText PXREF filePath)
@@ -3734,7 +3491,7 @@ PXResult PXAPI PXResourceSave(PXResourceTransphereInfo PXREF pxResourceSaveInfo,
         const PXI64U timeStampA = PXTimeCounterStampGet();
 #endif
 
-        pxResourceSaveInfo->FileReference = &pxFile;
+        pxResourceSaveInfo->FileReference = pxFile;
 
         const PXResult fileParsingResult = pxResourceSaveInfo->FormatInfo.ResourceSave(pxResourceSaveInfo);
 
@@ -3760,7 +3517,7 @@ PXResult PXAPI PXResourceSave(PXResourceTransphereInfo PXREF pxResourceSaveInfo,
 
     }
 
-    PXFileClose(&pxFile);
+    PXFileClose(pxFile);
 
     pxResourceSaveInfo->FileReference = PXNull;
 
@@ -3803,36 +3560,45 @@ PXResult PXAPI PXResourceSaveA(PXResourceTransphereInfo PXREF pxResourceSaveInfo
 
 PXResourceManager* PXAPI PXResourceManagerGet(void)
 {
-    if(PXResourceManagerFlagIsCreated & _GLOBALResourceManager.Flags)
+    if(PXResourceManagerFlagIsCreated & _pxResourceManager.Flags)
     {
-        return &_GLOBALResourceManager;
+        return &_pxResourceManager;
     }
+
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXResourceManagerText,
+        "Start",
+        "Initialize..."
+    );
+#endif
 
     // Not needed? global mem is alway zero?
     // We do it anyway.. just in case
-    PXClear(PXResourceManager, &_GLOBALResourceManager);
+    PXClear(PXResourceManager, &_pxResourceManager);
 
-    PXLockCreate(&_GLOBALResourceManager.AsyncLock, PXLockTypeProcessOnly);
+    PXLockCreate(&_pxResourceManager.AsyncLock, PXLockTypeProcessOnly);
 
-    PXListDynamicInit(&_GLOBALResourceManager.NameCache, sizeof(PXI32U), PXListDynamicSizeObject2Byte);
-    PXListDynamicInit(&_GLOBALResourceManager.SourcePathCache, sizeof(PXI32U), PXListDynamicSizeObject2Byte);
+    PXListDynamicInit(&_pxResourceManager.NameCache, sizeof(PXI32U), PXListDynamicSizeObject2Byte);
+    PXListDynamicInit(&_pxResourceManager.SourcePathCache, sizeof(PXI32U), PXListDynamicSizeObject2Byte);
 
-   
-    PXDictionaryConstruct(&_GLOBALResourceManager.SpritelLookUp, sizeof(PXI32U), sizeof(PXSprite), PXDictionaryValueLocalityExternalReference);
-    PXDictionaryConstruct(&_GLOBALResourceManager.FontLookUp, sizeof(PXI32U), sizeof(PXFont), PXDictionaryValueLocalityExternalReference);
-    PXDictionaryConstruct(&_GLOBALResourceManager.TextLookUp, sizeof(PXI32U), sizeof(PXDialogText), PXDictionaryValueLocalityExternalReference);
-    PXDictionaryConstruct(&_GLOBALResourceManager.TimerLookUp, sizeof(PXI32U), sizeof(PXTimer), PXDictionaryValueLocalityExternalReference);
-    PXDictionaryConstruct(&_GLOBALResourceManager.SoundLookUp, sizeof(PXI32U), sizeof(PXSound), PXDictionaryValueLocalityExternalReference);
-    PXDictionaryConstruct(&_GLOBALResourceManager.HitBoxLookUp, sizeof(PXI32U), sizeof(PXHitBox), PXDictionaryValueLocalityExternalReference);
-    PXDictionaryConstruct(&_GLOBALResourceManager.TextureLookUp, sizeof(PXI32U), sizeof(PXTexture), PXDictionaryValueLocalityExternalReference);
-    PXDictionaryConstruct(&_GLOBALResourceManager.ModelLookUp, sizeof(PXI32U), sizeof(PXModel), PXDictionaryValueLocalityExternalReference);
-    PXDictionaryConstruct(&_GLOBALResourceManager.ShaderProgramLookup, sizeof(PXI32U), sizeof(PXShaderProgram), PXDictionaryValueLocalityExternalReference);
-    PXDictionaryConstruct(&_GLOBALResourceManager.SkyBoxLookUp, sizeof(PXI32U), sizeof(PXSkyBox), PXDictionaryValueLocalityExternalReference);
-    PXDictionaryConstruct(&_GLOBALResourceManager.BrushLookUp, sizeof(PXI32U), sizeof(PXWindowBrush), PXDictionaryValueLocalityExternalReference);
-    PXDictionaryConstruct(&_GLOBALResourceManager.GUIElementLookup, sizeof(PXI32U), sizeof(PXWindow), PXDictionaryValueLocalityExternalReference);
-    PXDictionaryConstruct(&_GLOBALResourceManager.SpriteAnimator, sizeof(PXI32U), sizeof(PXSpriteAnimator), PXDictionaryValueLocalityExternalReference);
-    PXDictionaryConstruct(&_GLOBALResourceManager.IconLookUp, sizeof(PXI32U), sizeof(PXIcon), PXDictionaryValueLocalityExternalReference);
-    PXDictionaryConstruct(&_GLOBALResourceManager.IconAtlasLookUp, sizeof(PXI32U), sizeof(PXIconAtlas), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&_pxResourceManager.SpritelLookUp, sizeof(PXI32U), sizeof(PXSprite), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&_pxResourceManager.FontLookUp, sizeof(PXI32U), sizeof(PXFont), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&_pxResourceManager.TextLookUp, sizeof(PXI32U), sizeof(PXDialogText), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&_pxResourceManager.TimerLookUp, sizeof(PXI32U), sizeof(PXTimer), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&_pxResourceManager.SoundLookUp, sizeof(PXI32U), sizeof(PXSound), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&_pxResourceManager.HitBoxLookUp, sizeof(PXI32U), sizeof(PXHitBox), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&_pxResourceManager.TextureLookUp, sizeof(PXI32U), sizeof(PXTexture), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&_pxResourceManager.ModelLookUp, sizeof(PXI32U), sizeof(PXModel), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&_pxResourceManager.ShaderProgramLookup, sizeof(PXI32U), sizeof(PXShaderProgram), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&_pxResourceManager.SkyBoxLookUp, sizeof(PXI32U), sizeof(PXSkyBox), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&_pxResourceManager.BrushLookUp, sizeof(PXI32U), sizeof(PXWindowBrush), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&_pxResourceManager.GUIElementLookup, sizeof(PXI32U), sizeof(PXWindow), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&_pxResourceManager.SpriteAnimator, sizeof(PXI32U), sizeof(PXSpriteAnimator), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&_pxResourceManager.IconLookUp, sizeof(PXI32U), sizeof(PXIcon), PXDictionaryValueLocalityExternalReference);
+    PXDictionaryConstruct(&_pxResourceManager.IconAtlasLookUp, sizeof(PXI32U), sizeof(PXIconAtlas), PXDictionaryValueLocalityExternalReference);
 
 
    // PXResourceComponentCreate();
@@ -3869,43 +3635,11 @@ PXResourceManager* PXAPI PXResourceManagerGet(void)
     }
 #endif
 
-
-
-
-
-    _GLOBALResourceManager.Flags |= PXResourceManagerFlagIsCreated;
+    _pxResourceManager.Flags |= PXResourceManagerFlagIsCreated;
 
     PXThreadPoolCreate(PXNull);
 
-    return &_GLOBALResourceManager;
-}
-
-PXResult PXAPI PXResourceComponentCreate(PXComponentInfo PXREF pxComponentInfo)
-{
-    //PXDictionaryEntryCreate(&_GLOBALResourceManager.ComponentLookup.ComponentLookup);
-
-   
-
-    //PXDictionaryConstruct(&_GLOBALResourceManager.MaterialLookUp, sizeof(PXI32U), sizeof(PXMaterial), PXDictionaryValueLocalityExternalReference);
-
-    return PXActionSuccessful;
-}
-
-PXI32U PXAPI PXResourceManagerGenerateUniqeID()
-{
-    // assert(pxResourceManager);
-
-    return 1000 + ++_pxResourceManager.UniqeIDCounter;
-}
-
-PXResult PXAPI PXResourceAdd(PXResourceInfo PXREF pxResourceInfo, void* payload)
-{
-    return PXActionSuccessful;
-}
-
-PXResult PXAPI PXResourceRemove(PXResourceInfo PXREF pxResourceInfo)
-{
-    return PXActionSuccessful;
+    return &_pxResourceManager;
 }
 
 PXResult PXAPI PXResourcePropertyE(PXResourceProperty PXREF pxResourceProperty, const PXBool doWrite)
@@ -3926,7 +3660,7 @@ PXResult PXAPI PXResourcePropertyE(PXResourceProperty PXREF pxResourceProperty, 
             PXLogPrint
             (
                 PXLoggingError,
-                PXResourceText,
+                PXResourceManagerText,
                 "Store-Name",
                 "PXID:%i, Name can't be stored!",
                 0//pxResourceInfo->ID

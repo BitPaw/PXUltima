@@ -182,6 +182,9 @@
 // To shorten what exists in C++ with "Type&"
 #define PXREF *PXConst PXRestrict
 
+// Dont know if this is any good, prob not
+#define PXREFREF **
+
 
 #if PXLanguageCPP
 #define PXYes true
@@ -258,7 +261,7 @@
 #define PXTypeDirect                0b00000000000000000000000000000000
 #define PXTypeEndianBig             0b00010000000000000000000000000000
 #define PXTypeEndianLittle          0b00100000000000000000000000000000
-#define PXTypeEndianGet(x)          ((PXTypeEndianMask & x) >> 28) 
+#define PXTypeEndianGet(x)          ((PXTypeEndianMask & x) >> 28)
 
 #define PXTypeSigned    PXTypeSignedMask
 #define PXTypeUnsigned  0

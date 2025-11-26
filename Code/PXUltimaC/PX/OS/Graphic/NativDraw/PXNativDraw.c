@@ -150,8 +150,15 @@ PXResult PXAPI PXNativDrawWindowPrintHirachy(PXNativDraw PXREF pxNativDraw, PXWi
 
     }*/
 
-    for(PXWindow* sibling = (PXWindow*)pxWindow->Info.Hierarchy.Sibling->Yourself; sibling; sibling = (PXWindow*)sibling->Info.Hierarchy.ChildFirstborn->Yourself)
+    for(PXHierarchicalNode* pxHierarchicalNode = pxWindow->Info.Hierarchy.Sibling; pxHierarchicalNode; pxHierarchicalNode = pxHierarchicalNode->ChildFirstborn)
     {
+        PXWindow* sibling = (PXWindow*)pxHierarchicalNode;
+
+        if(!sibling)
+        {
+            continue;
+        }
+
         PXNativDrawWindowPrintHirachy(pxNativDraw, sibling, depth + 1);
     }
 
@@ -501,7 +508,14 @@ PXResult PXAPI PXNativDrawDisplayOpen(PXNativDraw PXREF pxNativDraw, PXDisplay P
 
 PXResult PXAPI PXNativDrawWindowCreate(PXNativDraw PXREF pxNativDraw, PXWindow PXREF pxWindow, PXWindowCreateInfo PXREF pxWindowCreateInfo)
 {
-    PXWindow PXREF pxWindowParent = (PXWindow PXREF)pxWindow->Info.Hierarchy.Parrent->Yourself;
+    PXHierarchicalNode* pxHierarchicalNode = pxWindow->Info.Hierarchy.Parrent;
+    PXWindow PXREF pxWindowParent = 0;
+
+    if(pxHierarchicalNode)
+    {
+        pxWindowParent = (PXWindow PXREF)pxHierarchicalNode->Yourself;
+    }
+
     PXWindowHandle pxWindowParentHandle = pxWindowParent ? pxWindowParent->Info.Handle.WindowHandle : PXNull;
 
 #if PXLogEnable
@@ -3067,10 +3081,17 @@ PXResult PXAPI PXNativDrawEventConsumer(PXNativDraw PXREF pxNativDraw, PXWindowE
 
                 while(windowCursor)
                 {
-                    InvalidateRect(windowCursor->Info.Handle.WindowHandle, NULL, TRUE);
+                    const BOOL result = InvalidateRect(windowCursor->Info.Handle.WindowHandle, NULL, TRUE);
                     //ShowWindow(windowCursor->Info.Handle.WindowHandle, SW_HIDE);
 
-                    windowCursor = (PXWindow*)windowCursor->Info.Hierarchy.Sibling->Yourself;
+                    PXHierarchicalNode* pxHierarchicalNode = windowCursor->Info.Hierarchy.Sibling;
+
+                    if(!pxHierarchicalNode)
+                    {
+                        break;
+                    }
+
+                    windowCursor = (PXWindow*)pxHierarchicalNode->Yourself;
                 }
             }
 
@@ -3692,7 +3713,10 @@ LRESULT CALLBACK PXNativDrawEventTranslator(const HWND windowID, const UINT even
 
     if(pxWindowEvent.UIElementReference)
     {
-        pxWindowParrent = (PXWindow*)pxWindowEvent.UIElementReference->Info.Hierarchy.Parrent->Yourself;
+        if(pxWindowEvent.UIElementReference->Info.Hierarchy.Parrent)
+        {
+            pxWindowParrent = (PXWindow*)pxWindowEvent.UIElementReference->Info.Hierarchy.Parrent->Yourself;
+        }     
     }
 
 #if 0

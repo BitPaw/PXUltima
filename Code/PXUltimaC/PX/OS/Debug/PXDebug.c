@@ -434,7 +434,7 @@ PXResult PXAPI PXDebugWaitForEvent(PXDebug PXREF pxDebug)
             PXFile* file = PXFileCreate();
             //file.FileHandle = loadDLLDebugInfo->hFile;
 
-            const PXResult res = PXFileName(&file, &pxText);
+            const PXResult res = PXFileName(file, &pxText);
 
 #if PXLogEnable
             PXLogPrint

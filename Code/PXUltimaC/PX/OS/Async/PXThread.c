@@ -156,9 +156,9 @@ PXResult PXAPI PXThreadCreate(PXThread PXREF pxThread, const char PXREF threadNa
         PXLoggingInfo,
         "Thread",
         "Create",
-        "OK. HANDLE:<%p>, ID:<%5.5i>, Name:<%s>",
-        pxThread->Info.Handle.ThreadHandle,
+        "ID:<%5.5i>, HANDLE:<%p>, Name:<%s>",
         pxThread->HandleID,
+        pxThread->Info.Handle.ThreadHandle,
         threadName
     );
 #endif
@@ -175,7 +175,6 @@ PXResult PXAPI PXThreadCreate(PXThread PXREF pxThread, const char PXREF threadNa
 
         PXThreadNameSet(pxThread, &pxText);
     }
-
 }
 
 PXResult PXAPI PXThreadExitCurrent(const PXI32U exitCode)

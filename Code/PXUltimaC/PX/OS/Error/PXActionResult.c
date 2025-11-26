@@ -2322,7 +2322,7 @@ PXResult PXAPI PXSafeCall(PXCallX1 pxCallX1, void* p1)
         // Translate exceptionCode to index
         const PXSize index = PXMemoryCompareI32UV(PXWindowsExceptionList, PXWindowsExceptionListAmount, exceptionCode);
 
-        pxResult = PXWindowsExceptionList[index];
+        pxResult = PXWindowsExceptionPXResultList[index];
     }
 
 #endif

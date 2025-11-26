@@ -5,7 +5,7 @@
 PXResult PXAPI PXBufferAllocate(PXBuffer PXREF pxBuffer, const PXSize size)
 {
     pxBuffer->SizeAllocated = size;
-    pxBuffer->Data = PXMemoryHeapCalloc(PXNull, 1, size);
+    pxBuffer->Adress = PXMemoryHeapCalloc(PXNull, 1, size);
 
     return PXActionSuccessful;
 }
@@ -28,7 +28,7 @@ PXResult PXAPI PXBufferRelese(PXBuffer PXREF pxBuffer)
 
 PXResult PXAPI PXBufferSet(PXBuffer PXREF pxBuffer, void* data, const PXSize size)
 {
-    pxBuffer->Data = data;
+    pxBuffer->Adress = data;
     pxBuffer->SizeAllocated = size;
     pxBuffer->SizeAllowedToUse = size;
 

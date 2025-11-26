@@ -1,26 +1,33 @@
 #include "PXLock.h"
 
 #include <PX/OS/PXOS.h>
+#include <PX/OS/Console/PXConsole.h>
 
+const char PXLockText[] = "Lock";
 
-
-PXResult PXAPI PXLockCreate(PXLock PXREF lock, const PXLockType type)
+PXResult PXAPI PXLockCreate(PXLock PXREFREF pxLock, const PXLockType pxLockType)
 {
+    if(!pxLock)
+    {
+        return PXActionRefusedArgumentNull;
+    }
+
     PXActionResult pxActionResult;
 
-    PXClear(PXLock, lock);
-    lock->Type = type;
+    *pxLock = PXMemoryHeapCallocT(PXLock, 1);
 
-    switch(type)
+    (*pxLock)->Type = pxLockType;
+
+    switch(pxLockType)
     {
         case PXLockTypeGlobal:
         {
-            pxActionResult = PXSemaphorCreate(lock);
+            pxActionResult = PXSemaphorCreate(*pxLock);
             break;
         }
         case PXLockTypeProcessOnly:
         {
-            pxActionResult = PXCriticalSectionCreate(lock);
+            pxActionResult = PXCriticalSectionCreate(*pxLock);
             break;
         }
         default:
@@ -30,20 +37,25 @@ PXResult PXAPI PXLockCreate(PXLock PXREF lock, const PXLockType type)
     return pxActionResult;
 }
 
-PXResult PXAPI PXLockDelete(PXLock PXREF lock)
+PXResult PXAPI PXLockDelete(PXLock PXREF pxLock)
 {
+    if(!pxLock)
+    {
+        return PXActionRefusedArgumentNull;
+    }
+
     PXActionResult pxActionResult;
 
-    switch(lock->Type)
+    switch(pxLock->Type)
     {
         case PXLockTypeGlobal:
         {
-            pxActionResult = PXSemaphorDelete(lock);
+            pxActionResult = PXSemaphorDelete(pxLock);
             break;
         }
         case PXLockTypeProcessOnly:
         {
-            pxActionResult = PXCriticalSectionDelete(lock);
+            pxActionResult = PXCriticalSectionDelete(pxLock);
             break;
         }
         default:
@@ -53,8 +65,13 @@ PXResult PXAPI PXLockDelete(PXLock PXREF lock)
     return pxActionResult;
 }
 
-PXResult PXAPI PXLockEngage(PXLock PXREF lock)
+PXResult PXAPI PXLockEngage(PXLock PXREF lock, const PXBool forceEnter)
 {
+    if(!lock)
+    {
+        return PXActionRefusedArgumentNull;
+    }
+
     PXActionResult pxActionResult;
 
     ++lock->LockCounter;
@@ -68,11 +85,25 @@ PXResult PXAPI PXLockEngage(PXLock PXREF lock)
         }
         case PXLockTypeProcessOnly:
         {
-            pxActionResult = PXCriticalSectionEnter(lock);
+            pxActionResult = PXCriticalSectionEnter(lock, forceEnter);
             break;
         }
         default:
+        {
+            // PXAssert(0, "Impossible State");
+#if PXLogEnable && 0
+            PXLogPrint
+            (
+                PXLoggingInfo,
+                PXLockText,
+                "Engage",
+                "Counter:%i, Force:%i",
+                lock->LockCounter,
+                forceEnter
+            );
+#endif
             return PXActionInvalidStateImpossible;
+        }  
     }
 
     return pxActionResult;
@@ -80,6 +111,11 @@ PXResult PXAPI PXLockEngage(PXLock PXREF lock)
 
 PXResult PXAPI PXLockRelease(PXLock PXREF pxLock)
 {
+    if(!pxLock)
+    {
+        return PXActionRefusedArgumentNull;
+    }
+
     PXActionResult pxActionResult;
 
     switch(pxLock->Type)

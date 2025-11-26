@@ -441,7 +441,7 @@ PXResult PXAPI PXUSDCSectionTokensLoad(PXFile PXREF pxFile, PXTOCSectionTokens P
 
         PXBufferSet(&pxFileCompressedInfo.Data, PXFileDataAtCursor(pxFile), pxTOCSectionTokens->SizeCompressed);
 
-        PXFileOpen(&pxFileCompressed, &pxFileCompressedInfo);
+        PXFileOpen(pxFileCompressed, &pxFileCompressedInfo);
 
         // Load B
         PXClear(PXFileOpenInfo, &pxFileCompressedInfo);
@@ -450,21 +450,20 @@ PXResult PXAPI PXUSDCSectionTokensLoad(PXFile PXREF pxFile, PXTOCSectionTokens P
         pxFileCompressedInfo.MemoryCachingMode = PXMemoryCachingModeSequential;
         pxFileCompressedInfo.FlagList = PXFileIOInfoFileVirtual;
         pxFileCompressedInfo.FileSizeRequest = pxTOCSectionTokens->SizeUncompressed;
-        PXFileOpen(&pxFileUncompressed, &pxFileCompressedInfo);
+        PXFileOpen(pxFileUncompressed, &pxFileCompressedInfo);
     }
 
-    PXActionResult uncompressResult = PXLZ4Decompress(&pxFileCompressed, &pxFileUncompressed);
+    PXActionResult uncompressResult = PXLZ4Decompress(pxFileCompressed, pxFileUncompressed);
 
 #if PXLogEnable
     PXSize offset = 0;
 
-    char* ddata = PXFileDataAtCursor(pxFileUncompressed);
+    const char* ddata = (char*)PXFileDataAtCursor(pxFileUncompressed);
 
     for(PXSize i = 0; i < pxTOCSectionTokens->NumberOfTokens; ++i)
     {
-        char* text = &ddata[offset];
-
-        PXSize length = PXTextLengthA(text, -1);
+        const char* text = &ddata[offset];
+        const PXSize length = PXTextLengthA(text, -1);
 
         offset += length+1;
 

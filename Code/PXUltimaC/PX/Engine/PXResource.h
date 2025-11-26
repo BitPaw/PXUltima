@@ -16,8 +16,12 @@
 #include <PX/Container/Buffer/PXBuffer.h>
 #include <PX/OS/File/PXFileFormat.h>
 #include <PX/Container/ListHierarchical/PXListHierarchical.h>
+#include <PX/OS/Async/PXLock.h>
+#include <PX/Container/Buffer/PXBuffer.h>
+#include <PX/OS/File/PXFileFormat.h>
+#include <PX/Engine/ID/PXID.h>
 
-#include "PXEntity.h"
+#include <PX/Engine/ID/PXID.h>
 
 #include <stdarg.h>
 
@@ -422,8 +426,6 @@ PXHandle;
 
 
 
-typedef PXI32U PXResourceID;
-
 // Internal engine identification
 // Additional use is to define current storage and interactions.
 typedef struct PXResourceInfo_
@@ -432,7 +434,7 @@ typedef struct PXResourceInfo_
 
     PXHandle Handle;
 
-    PXResourceID ID; // Identification of this object managed by the engine itself.
+    PXID ID; // Identification of this object managed by the engine itself.
 
     PXI32U Setting; // Rendering behaviour
     PXI32U Behaviour; // Depends on the type of the resource
@@ -444,28 +446,14 @@ PXResourceInfo;
 
 
 
-
-
-
-
-
-
-typedef PXI32U PXResourceID;
-
-
 #define PXResourceManagerFlagIsCreated 1<<0
 
 typedef struct PXResourceManager_
 {
     PXLock* AsyncLock;
 
-    PXResourceID UniqeIDCounter;
-
     PXListDynamic NameCache;
     PXListDynamic SourcePathCache;
-
-    // Combines all contians
-    PXComponentManager ComponentLookup;
 
     PXDictionary MaterialLookUp;
     PXDictionary SpritelLookUp;
@@ -583,16 +571,6 @@ if(!(condition)) \
 #define PXEmbeddedArraySize 4
 
 
-// Object to use instead of a plain adress.
-// This can assure we have the correct and expected object.
-// This should prevent stale references
-typedef struct PXResourceReference_
-{
-    PXI32U IDExpected; // Key to precheck expected ID behind this reference
-    void* ResourceAdress; // Reference to actual object. Check if this adress is in range.
-}
-PXResourceReference;
-
 
 
 
@@ -612,26 +590,6 @@ typedef struct PXModule_
 }
 PXModule;
 //---------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-#include <PX/OS/Async/PXLock.h>
-#include <PX/Container/Buffer/PXBuffer.h>
-#include "PXEntity.h"
-#include <PX/OS/File/PXFileFormat.h>
-
-
-
-
-
 
 
 
@@ -1859,6 +1817,23 @@ PXCameraPerspective;
 #define PXCameraFollowPosition 0
 #define PXCameraFollowRotation 0
 #define PXCameraFollowRotationY 0
+
+typedef struct PXECSComponentScale2D
+{
+    PXCompoment
+    PXVector2F32 Scale;
+};
+
+typedef struct PXECSComponentPosition2D
+{
+    PXVector2F32 Position2D;
+};
+
+typedef struct PXECSComponentRotation2D
+{
+    PXVector2F32 Rotation2D;
+};
+
 
 
 typedef struct PXCamera_
@@ -3715,91 +3690,6 @@ PXPublic const char* PXFileLocationModeToString(const PXFileLocationMode pxFileL
 
 
 
-
-// Used for progress, to know how far we came in peek, load, register, ...
-#define PXResourceTransphereDidPeek             (1 << 0)
-#define PXResourceTransphereDidCompile          (1 << 1)
-#define PXResourceTransphereDidLoad             (1 << 2)
-#define PXResourceTransphereDidSave             (1 << 3)
-#define PXResourceTransphereDidRegister         (1 << 4)
-#define PXResourceTransphereDidUpload           (1 << 5)
-#define PXResourceTransphereDidDestroyInRAM     (1 << 6)
-#define PXResourceTransphereDidDestroyOnDevice  (1 << 7)
-
-// Used to tell what system can be used
-// Will also be used to tell what system was used
-#define PXResourceTransphereOwnerOS         (1 <<  8) // Handled by OS
-#define PXResourceTransphereOwnerPX         (1 <<  9) // Handled by PXUltima itself
-#define PXResourceTransphereOwnerMOD        (1 << 10) // Handled by a mod that was loaded
-#define PXResourceTransphereOwnerCustom     (1 << 11) // Handles by a custom injected function
-
-// This object shall be used to define an interaction with a
-// resource to peek, load or save
-typedef struct PXResourceTransphereInfo_
-{
-    void* Owner;                // Who is the caller?
-    void* ResourceTarget;       // Generic object, tager
-    PXResourceManager* Manager; // The callback manager. This is set by the resource loader itself. Used for chain dependencys
-    PXFile* FileReference;      // The attached file that hold the data
-
-    //PXResourceFileSizePredict FileSizePredict;
-    //PXResourceTransphereFunction ResourcePeek;
-    //PXResourceTransphereFunction ResourceLoad;
-    //PXResourceTransphereFunction ResourceSave;
-
-    PXResourceTransphereFunction OnDeviceDataRegister;  // Preallocate resources on the device
-    PXResourceTransphereFunction OnDeviceDataUpload;    // Upload data fully
-
-    void* ResourceSource;
-    PXI32U ResourceType;        // Type of the resource that 'Target' points to. Example: Image, Sound, Video...
-
-    void* ResourceLoadContainer; // Used to store load/Store spesific helper object
-
-    PXFileFormatInfo FormatInfo;
-    // PXFileFormatInfo FormatInfoExpected;        // The format detected by the resource loader
-
-    PXI8U Flags;
-
-    //void* Owner;
-
-    PXF32 TimePeek;
-    PXF32 TimeTransphere;
-    PXF32 TimeDeviceDataRegister;
-    PXF32 TimeDeviceDataUpload;
-}
-PXResourceTransphereInfo;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 typedef struct PXEngineSoundCreateInfo_
 {
     PXBool SoundLoop;
@@ -4086,63 +3976,7 @@ PXSpriteAnimatorInfo;
 
 
 
-#define PXResourceCreateBehaviourSpawnInScene   (1<<0)
-#define PXResourceCreateBehaviourLoadASYNC      (1<<1)
-#define PXResourceCreateBehaviourIsASYNCCall      (1<<8)
 
-typedef struct PXResourceCreateInfo_
-{
-    PXResourceInfo** ObjectReference; // Reference to an adress to be filled with an object
-    PXSize ObjectAmount; // If set to more than one, "ObjectReference" will contain a list of values
-
-    void* Parent;
-
-    PXText FilePath;
-    PXText Name;
-
-    PXI32U Type;
-    PXI32U Flags;
-
-    // Do we need this?
-   // PXDictionary* Lookup;
-    //PXSize ObjectSize;
-
-#if 1
-    union
-    {
-        char Data[1]; // Dummy value to access data without cast
-        PXEngineSpriteMapInfo SpriteMap;
-        PXEngineFontCreateInfo Font;
-        PXSkyBoxCreateEventInfo SkyBox;
-        PXSpriteCreateInfo Sprite;
-        PXSpriteAnimatorInfo SpriteAnimator;
-        PXEngineSoundCreateInfo Sound;
-        PXShaderProgramCreateInfo ShaderProgram;
-        PXTextureCreateInfo Texture;
-        PXWindowCreateInfo UIElement;
-        PXModelCreateInfo Model;
-        PXHitboxCreateInfo HitBox;
-        PXBrushCreateInfo Brush;
-        PXTimerCreateInfo Timer;
-        PXIconAtlasCreateInfo IconAtlas;
-        PXIconCreateInfo Icon;
-    };
-#endif
-}
-PXResourceCreateInfo;
-
-
-typedef PXActionResult(PXAPI* PXResourceEntryCreateFunction)(PXResourceCreateInfo PXREF pxResourceCreateInfo, void PXREF objectRef);
-
-typedef struct PXResourceEntry_
-{
-    PXDictionary* LookupTable;
-    PXResourceEntryCreateFunction CreateFunction;
-    const char* Name;
-    PXI32U TypeID;
-    PXI32U TypeSize;
-}
-PXResourceEntry;
 
 
 
@@ -4201,9 +4035,6 @@ PXPublic PXResult PXAPI PXResourcePropertyIO
 
 
 
-
-PXPublic PXResult PXAPI PXResourceManagerReferenceValidate(PXResourceReference PXREF pxResourceReference);
-
 PXPublic PXResult PXAPI PXResourceLoad(PXResourceTransphereInfo PXREF pxResourceLoadInfo, const PXText PXREF filePath);
 PXPublic PXResult PXAPI PXResourceLoadA(PXResourceTransphereInfo PXREF pxResourceLoadInfo, const char PXREF filePath);
 
@@ -4227,22 +4058,6 @@ PXPublic PXMaterial* PXAPI PXMaterialContainerFind(const PXMaterialContainer PXR
 // Returns the global resouremanager. 
 // If not yet init, do so.
 PXPublic PXResourceManager* PXAPI PXResourceManagerGet(void);
-PXPublic PXResult PXAPI PXResourceManagerRelease(PXResourceManager PXREF pxResourceManager);
-
-
-
-PXPublic PXResult PXAPI PXResourceComponentCreate(PXComponentInfo PXREF pxComponentInfo);
-
-
-// Create uniqe identification, 7
-PXPublic PXResourceID PXAPI PXResourceManagerGenerateUniqeID();
-
-
-#define PXResourceTransphereLoad 1
-#define PXResourceTransphereStore 2
-PXPublic PXResult PXAPI PXResourceTransphere();
-
-
 
 
 
@@ -4250,7 +4065,5 @@ PXPublic PXResult PXAPI PXResourceTransphere();
 PXPublic PXResult PXAPI PXResourcePropertyE(PXResourceProperty PXREF pxResourceProperty, const PXBool doWrite);
 
 
-PXPublic PXResult PXAPI PXResourceAdd(PXResourceInfo PXREF pxResourceInfo, void* payload);
-PXPublic PXResult PXAPI PXResourceRemove(PXResourceInfo PXREF pxResourceInfo);
 
 #endif

@@ -100,7 +100,7 @@ PXResult PXAPI PXWADEntryHandle(PXWADEntry PXREF pxWADEntry, PXFile PXREF pxFile
             pxWADEntry->CompressedSize
         );
 
-        PXFileOpen(&dataCompressed, &pxFileOpenInfo);
+        PXFileOpen(dataCompressed, &pxFileOpenInfo);
     }
 
     // target
@@ -127,7 +127,7 @@ PXResult PXAPI PXWADEntryHandle(PXWADEntry PXREF pxWADEntry, PXFile PXREF pxFile
 #endif 
             pxFileOpenInfo.AccessMode = PXAccessModeReadOnly;
             pxFileOpenInfo.FlagList = PXFileIOInfoFileMemory;
-            PXFileOpen(&dataUncompressed, &pxFileOpenInfo);
+            PXFileOpen(dataUncompressed, &pxFileOpenInfo);
 
             break;
         }
@@ -174,9 +174,9 @@ PXResult PXAPI PXWADEntryHandle(PXWADEntry PXREF pxWADEntry, PXFile PXREF pxFile
             );
 #endif 
 
-            PXFileOpen(&dataUncompressed, &pxFileOpenInfo);
+            PXFileOpen(dataUncompressed, &pxFileOpenInfo);
 
-            PXZSTDDecompress(&dataCompressed, &dataUncompressed);
+            PXZSTDDecompress(dataCompressed, dataUncompressed);
 
             break;
         }
@@ -209,12 +209,12 @@ PXResult PXAPI PXWADEntryHandle(PXWADEntry PXREF pxWADEntry, PXFile PXREF pxFile
 
         PXResourceTransphereInfo pxResourceTransphereInfo;
         PXClear(PXResourceTransphereInfo, &pxResourceTransphereInfo);
-        pxResourceTransphereInfo.FileReference = &dataUncompressed;
+        pxResourceTransphereInfo.FileReference = dataUncompressed;
 
         // Because the filename is hashed, we cant know the actual filetype from the name.
         // So we need to poke around to find the file. This is very bad.
 
-        PXFileFormatInfoViaContent(&pxResourceTransphereInfo.FormatInfo, &dataUncompressed);
+        PXFileFormatInfoViaContent(&pxResourceTransphereInfo.FormatInfo, dataUncompressed);
         PXFileTypeInfoProbe(&pxResourceTransphereInfo.FormatInfo, PXNull);
 
         PXSize amount = PXTextPrintA
@@ -233,7 +233,7 @@ PXResult PXAPI PXWADEntryHandle(PXWADEntry PXREF pxWADEntry, PXFile PXREF pxFile
 
 
 
-        PXFileStoreOnDiskA(&dataUncompressed, temp);
+        PXFileStoreOnDiskA(dataUncompressed, temp);
 
         if(pxResourceTransphereInfo.FormatInfo.ResourceLoad)
         {
@@ -241,7 +241,7 @@ PXResult PXAPI PXWADEntryHandle(PXWADEntry PXREF pxWADEntry, PXFile PXREF pxFile
         }
     }
 
-    PXFileClose(&dataUncompressed);
+    PXFileClose(dataUncompressed);
 }
 
 

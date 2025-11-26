@@ -298,30 +298,34 @@ PXResult PXAPI PXDictionaryEntryFind(PXDictionary PXREF pxDictionary, const void
 
         const PXBool isTarget = PXMemoryCompare(pxDictionaryEntry.Key, pxDictionary->KeyTypeSize, key, pxDictionary->KeyTypeSize);
 
-        if(isTarget)
+        if(!isTarget)
         {
-            switch(pxDictionary->ValueLocality)
-            {
-                default:
-                case PXDictionaryValueLocalityInvalid:
-                {
-                    return PXActionInvalid; // Illegal call
-                }
-                case PXDictionaryValueLocalityInternalEmbedded:
-                {
-                    *valueResult = pxDictionaryEntry.Value;
-                    break;
-                }
-                case PXDictionaryValueLocalityExternalReference:
-                {
-                    *valueResult = *(void**)pxDictionaryEntry.Value;
-                    break;
-                }
-            }
-
-            return PXActionSuccessful;
+            continue; // Not our match
         }
+
+        switch(pxDictionary->ValueLocality)
+        {
+            default:
+            case PXDictionaryValueLocalityInvalid:
+            {
+                return PXActionInvalid; // Illegal call
+            }
+            case PXDictionaryValueLocalityInternalEmbedded:
+            {
+                *valueResult = pxDictionaryEntry.Value;
+                break;
+            }
+            case PXDictionaryValueLocalityExternalReference:
+            {
+                *valueResult = *(void**)pxDictionaryEntry.Value;
+                break;
+            }
+        }
+
+        return PXActionSuccessful;
     }
+
+    *valueResult = PXNull;
 
     return PXActionRefusedNotFound;
 }

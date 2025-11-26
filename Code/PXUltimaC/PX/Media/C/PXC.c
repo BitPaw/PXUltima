@@ -1308,7 +1308,7 @@ PXResult PXAPI PXCLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo
     PXClear(PXCompiler, &pxCompiler);
     pxCompiler.CodeDocument = pxDocument;
     pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileReference;
-    pxCompiler.ReadInfo.FileCache = &tokenSteam;
+    pxCompiler.ReadInfo.FileCache = tokenSteam;
     pxCompiler.Flags = PXCompilerKeepComments | PXCompilerKeepAnalyseTypes;
     pxCompiler.CommentSingleLineSize = 2;
     pxCompiler.CommentSingleLine = "//";
@@ -1363,8 +1363,15 @@ PXResult PXAPI PXCLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo
     // Compile
     //-----------------------------------------------------
 
-    while (!PXFileIsAtEnd(&tokenSteam))
+    for (;;)
     {
+        const PXBool isAtEnd = PXFileIsAtEnd(tokenSteam);
+
+        if(isAtEnd)
+        {
+            break;
+        }
+
         PXCompilerSymbolEntryExtract(&pxCompiler);
 
         switch (pxCompiler.ReadInfo.SymbolEntryCurrent.ID)
