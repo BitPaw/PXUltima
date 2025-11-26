@@ -1820,7 +1820,7 @@ PXCameraPerspective;
 
 typedef struct PXECSComponentScale2D
 {
-    PXCompoment
+    PXCompoment;
     PXVector2F32 Scale;
 };
 
