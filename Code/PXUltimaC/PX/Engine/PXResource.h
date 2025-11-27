@@ -1758,7 +1758,7 @@ PXRectangleF;
 
 
 
-typedef struct PXSprite_
+typedef struct PXComponentSprite_
 {
     PXResourceInfo Info; // PX-Engine register info
 
