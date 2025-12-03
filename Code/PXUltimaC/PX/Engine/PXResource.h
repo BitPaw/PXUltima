@@ -1699,7 +1699,7 @@ typedef struct PXTimerEventInfo_
 }
 PXTimerEventInfo;
 
-typedef PXActionResult(PXAPI* PXTimerCallBack)(void PXREF owner, PXTimerEventInfo PXREF pxEngineTimerEventInfo);
+typedef PXResult(PXAPI* PXTimerCallBack)(void PXREF owner, PXTimerEventInfo PXREF pxEngineTimerEventInfo);
 
 typedef struct PXTimer_
 {
@@ -1820,7 +1820,7 @@ PXCameraPerspective;
 
 typedef struct PXECSComponentScale2D
 {
-    PXCompoment;
+   // PXCompoment dx;
     PXVector2F32 Scale;
 };
 
@@ -1835,13 +1835,17 @@ typedef struct PXECSComponentRotation2D
 };
 
 
-
-typedef struct PXCamera_
+typedef struct PXMatrixModelViewProjection_
 {
     PXMatrix4x4F MatrixModel;
     PXMatrix4x4F MatrixView;
     PXMatrix4x4F MatrixProjection;
+}
+PXMatrixModelViewProjection;
 
+
+typedef struct PXComponentCamera_
+{
     PXVector3F32 LookAtPosition;
     PXVector3F32 CurrentRotation;
 
@@ -1866,7 +1870,7 @@ typedef struct PXCamera_
     PXBool LockMovement;
     PXBool LockView;
 }
-PXCamera;
+PXComponentCamera;
 
 
 typedef struct PXSkyBox_
@@ -4035,11 +4039,11 @@ PXPublic PXResult PXAPI PXResourcePropertyIO
 
 
 
-PXPublic PXResult PXAPI PXResourceLoad(PXResourceTransphereInfo PXREF pxResourceLoadInfo, const PXText PXREF filePath);
-PXPublic PXResult PXAPI PXResourceLoadA(PXResourceTransphereInfo PXREF pxResourceLoadInfo, const char PXREF filePath);
+PXPublic PXResult PXAPI PXResourceLoad(PXResourceMoveInfo PXREF pxResourceLoadInfo, const PXText PXREF filePath);
+PXPublic PXResult PXAPI PXResourceLoadA(PXResourceMoveInfo PXREF pxResourceLoadInfo, const char PXREF filePath);
 
-PXPublic PXResult PXAPI PXResourceSave(PXResourceTransphereInfo PXREF pxResourceSaveInfo, const PXText PXREF filePath);
-PXPublic PXResult PXAPI PXResourceSaveA(PXResourceTransphereInfo PXREF pxResourceSaveInfo, const char PXREF filePath);
+PXPublic PXResult PXAPI PXResourceSave(PXResourceMoveInfo PXREF pxResourceSaveInfo, const PXText PXREF filePath);
+PXPublic PXResult PXAPI PXResourceSaveA(PXResourceMoveInfo PXREF pxResourceSaveInfo, const char PXREF filePath);
 
 
 
