@@ -209,8 +209,8 @@ PXPublic PXResult PXAPI PXEngineResourceActionBatch(PXEngine PXREF pxEngine, PXE
 PXPublic PXResult PXAPI PXEngineResourceCreate(PXEngine PXREF pxEngine, PXResourceCreateInfo PXREF pxEngineResourceCreateInfo);
 PXPublic PXResult PXAPI PXEngineResourceRender(PXEngine PXREF pxEngine, PXRenderEntity PXREF pxRenderEntity);
 
-PXPublic PXResult PXAPI PXEngineDeviceDataRegister(PXEngine PXREF pxEngine, PXResourceTransphereInfo PXREF pxResourceTransphereInfo);
-PXPublic PXResult PXAPI PXEngineDeviceDataUpload(PXEngine PXREF pxEngine, PXResourceTransphereInfo PXREF pxResourceTransphereInfo);
+PXPublic PXResult PXAPI PXEngineDeviceDataRegister(PXEngine PXREF pxEngine, PXResourceMoveInfo PXREF PXResourceMoveInfo);
+PXPublic PXResult PXAPI PXEngineDeviceDataUpload(PXEngine PXREF pxEngine, PXResourceMoveInfo PXREF PXResourceMoveInfo);
 
 PXPublic void PXAPI PXEngineResourceDefaultElements(PXEngine PXREF pxEngine);
 
