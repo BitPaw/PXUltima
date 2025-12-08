@@ -198,6 +198,11 @@ PXResult PXAPI PXDictionaryEntryAdd(PXDictionary PXREF pxDictionary, const void*
     return pxResult;
 }
 
+PXResult PXAPI PXDictionaryEntryAddRange(PXDictionary PXREF pxDictionary, const void* key, const void* value, const PXSize valueSize)
+{
+    return PXActionSuccessful;
+}
+
 PXBool PXAPI PXDictionaryEntryAddMultible(PXDictionary PXREF dictionary, const void** keyList, const void** valueList, const PXSize amount)
 {
     const PXBool hasEnoughSpace = (dictionary->List.EntryAmountUsed + amount) < dictionary->List.EntryAmountAllocated;
