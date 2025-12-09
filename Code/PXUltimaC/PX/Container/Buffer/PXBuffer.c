@@ -10,6 +10,11 @@ PXResult PXAPI PXBufferAllocate(PXBuffer PXREF pxBuffer, const PXSize size)
     return PXActionSuccessful;
 }
 
+PXResult PXAPI PXBufferEnsure(PXBuffer PXREF pxBuffer, const PXSize size)
+{
+    return PXActionSuccessful;
+}
+
 PXResult PXAPI PXBufferResize(PXBuffer PXREF pxBuffer, const PXSize size)
 {
 
@@ -31,6 +36,13 @@ PXResult PXAPI PXBufferSet(PXBuffer PXREF pxBuffer, void* data, const PXSize siz
     pxBuffer->Adress = data;
     pxBuffer->SizeAllocated = size;
     pxBuffer->SizeAllowedToUse = size;
+
+    return PXActionSuccessful;
+}
+
+PXResult PXAPI PXBufferCopy(PXBuffer PXREF pxBuffer, void* data, const PXSize size)
+{
+    PXCopyList(PXByte, size, data, pxBuffer->Adress);
 
     return PXActionSuccessful;
 }
