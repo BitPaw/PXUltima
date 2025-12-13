@@ -30,8 +30,10 @@ typedef struct PXBuffer_
 PXBuffer;
 
 PXPublic PXResult PXAPI PXBufferAllocate(PXBuffer PXREF pxBuffer, const PXSize size);
+PXPublic PXResult PXAPI PXBufferEnsure(PXBuffer PXREF pxBuffer, const PXSize size);
 PXPublic PXResult PXAPI PXBufferResize(PXBuffer PXREF pxBuffer, const PXSize size);
 PXPublic PXResult PXAPI PXBufferRelese(PXBuffer PXREF pxBuffer);
 PXPublic PXResult PXAPI PXBufferSet(PXBuffer PXREF pxBuffer, void* data, const PXSize size);
+PXPublic PXResult PXAPI PXBufferCopy(PXBuffer PXREF pxBuffer, void* data, const PXSize size);
 
 #endif
