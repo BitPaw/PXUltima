@@ -44,6 +44,7 @@ PXPublic void PXAPI PXDictionaryResize(PXDictionary PXREF dictionary, const PXSi
 // Entry
 PXPublic PXResult PXAPI PXDictionaryEntryCreate(PXDictionary PXREF pxDictionary, const void* key, void** value);
 PXPublic PXResult PXAPI PXDictionaryEntryAdd(PXDictionary PXREF pxDictionary, const void* key, const void* value);
+PXPublic PXResult PXAPI PXDictionaryEntryAddRange(PXDictionary PXREF pxDictionary, const void* key, const void* value, const PXSize valueSize);
 PXPublic PXResult PXAPI PXDictionaryEntryFind(PXDictionary PXREF pxDictionary, const void PXREF key, void* PXREF valueResult);
 
 PXPublic PXBool PXAPI PXDictionaryEntryAddMultible(PXDictionary PXREF dictionary, const void** key, const void** value, const PXSize amount);
