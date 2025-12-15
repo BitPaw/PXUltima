@@ -5,6 +5,7 @@
 
 #include <PX/Engine/PXEngine.h>
 #include "PXDialogContainer.h"
+#include <PX/Engine/ECS/Resource/Timer/PXTimer.h>
 
 typedef void (PXAPI* PXEngineDialogEventLineNew)(void* owner, struct PXEngineDialogBox_ PXREF pxEngineDialogBox);
 typedef void (PXAPI* PXEngineDialogEventPageNew)(void* owner, struct PXEngineDialogBox_ PXREF pxEngineDialogBox);
