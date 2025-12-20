@@ -8,36 +8,40 @@
 #include <PX/Media/PXText.h>
 #include <PX/Container/Dictionary/PXDictionary.h>
 #include <PX/Engine/ID/PXID.h>
+#include <PX/OS/File/PXFileFormat.h>
 
 
-// Core regi info
-typedef struct PXRegistrationInfo_
+typedef enum PXECSType_
 {
-    PXID ID;
+    PXECSTypeInvalid,
+    PXECSTypeEntity,
+    PXECSTypeComponent
 }
-PXRegistrationInfo;
+PXECSType;
 
-
-
-
-typedef struct PXECSRegistrationInfo_ PXECSRegistrationInfo;
-
-typedef PXResult(PXAPI* PXECSRegistrationFunction)(PXECSRegistrationInfo PXREF pxECSRegistrationInfo);
-
-typedef struct PXECSRegistrationInfo_
+typedef struct PXECSRegisterInfo_
 {
     // Set by user
     PXText NameOfType;
     PXI32U TypeSize;
+    PXI32U AllignedSize;
+
+    PXECSType Type;
 
     // Only set on override
-    PXECSRegistrationFunction RegistrationCallback;
+    //PXECSRegistrationFunction RegistrationCallback;
 
     // Filed by system
     PXID ID;
     PXDictionary* LookupTable; 
 }
-PXECSRegistrationInfo;
+PXECSRegisterInfo;
+
+typedef PXResult(PXAPI* PXECSRegisterFunction)();
+
+// Purpose: Register types for the ECS so that we can spawn 
+// them as or add them as components to entities
+PXPublic PXResult PXAPI PXECSRegister(PXECSRegisterInfo PXREF pxECSRegisterInfo);
 
 
 
@@ -46,6 +50,79 @@ PXECSRegistrationInfo;
 
 
 
+
+
+
+
+
+// Internal engine identification
+// Additional use is to define current storage and interactions.
+typedef struct PXECSInfo_
+{
+    //PXHierarchicalNode Hierarchy;
+
+   // PXHandle Handle;
+
+    PXID ID; // Identification of this object managed by the engine itself.
+
+    PXI32U Setting; // Rendering behaviour
+    PXI32U Behaviour; // Depends on the type of the resource
+}
+PXECSInfo;
+
+
+
+
+
+typedef struct PXECSElement_
+{
+    PXID ID;
+}
+PXECSElement;
+
+
+PXPublic PXResult PXAPI PXECSElementToString(PXText PXREF pxText, PXECSElement PXREF pxECSElement);
+
+
+
+
+// To prevent stale references to resources
+// Use this if you reference any component in an entity or nested component
+typedef struct PXECSElementRef_
+{
+    // ID that we expect it to have. 
+    // We compare this to the reference we are holding.
+    // On match, reference is valid.
+    // On missmatch, recalibrate the reference.
+    // Note: We could use an index for beeing "safer" buuut.. 
+    //       we can also directly use the adress.
+    // PXSize ArrayIndex;
+
+    // ID to be expected behind the pointer.
+    // If the object has another ID, rescan.
+    // If the scan yields no result, the object got deleted.
+    // In that case, invalidate this struct!
+    PXID ExpectedID;
+
+    // Direct access to the component.
+    // Be aware this can be stale.
+    // Update before use to prevent this!
+    // If adress is not in range from the container, scan 
+    // for matching ID. If no ID is found, object got deleted.
+
+    union
+    {
+        PXECSElement* Element;
+        //PXComponent* Component;
+        //PXComponent* Component;
+        //PXComponent* Component;
+    };
+}
+PXECSElementRef;
+
+
+
+/*
 
 
 // Something that can exist in the scene. A sprite, skybox, ...
@@ -87,7 +164,7 @@ PXAsset;
 
 
 
-
+*/
 
 
 
@@ -114,7 +191,7 @@ typedef struct PXResourceMoveInfo_
 {
     void* Owner;                // Who is the caller?
     void* ResourceTarget;       // Generic object, tager
-    //PXResourceManager* Manager; // The callback manager. This is set by the resource loader itself. Used for chain dependencys
+    // PXResourceManager* Manager; // The callback manager. This is set by the resource loader itself. Used for chain dependencys
     PXFile* FileReference;      // The attached file that hold the data
 
     //PXResourceFileSizePredict FileSizePredict;
@@ -122,16 +199,16 @@ typedef struct PXResourceMoveInfo_
     //PXResourceTransphereFunction ResourceLoad;
     //PXResourceTransphereFunction ResourceSave;
 
-    PXResourceTransphereFunction OnDeviceDataRegister;  // Preallocate resources on the device
-    PXResourceTransphereFunction OnDeviceDataUpload;    // Upload data fully
+    //PXResourceTransphereFunction OnDeviceDataRegister;  // Preallocate resources on the device
+    //PXResourceTransphereFunction OnDeviceDataUpload;    // Upload data fully
 
     void* ResourceSource;
-    PXI32U ResourceType;        // Type of the resource that 'Target' points to. Example: Image, Sound, Video...
+    PXI32U ResourceType;  // Type of the resource that 'Target' points to. Example: Image, Sound, Video...
 
     void* ResourceLoadContainer; // Used to store load/Store spesific helper object
 
     PXFileFormatInfo FormatInfo;
-    // PXFileFormatInfo FormatInfoExpected;        // The format detected by the resource loader
+    PXFileFormatInfo FormatInfoExpected;        // The format detected by the resource loader
 
     PXI8U Flags;
 
@@ -161,34 +238,6 @@ PXResourceMoveInfo;
 
 
 
-
-
-// To prevent stale references to resources
-// Use this if you reference any component in an entity or nested component
-typedef struct PXComponentRef_
-{
-    // ID that we expect it to have. 
-    // We compare this to the reference we are holding.
-    // On match, reference is valid.
-    // On missmatch, recalibrate the reference.
-    // Note: We could use an index for beeing "safer" buuut.. 
-    //       we can also directly use the adress.
-    // PXSize ArrayIndex;
-
-    // ID to be expected behind the pointer.
-    // If the object has another ID, rescan.
-    // If the scan yields no result, the object got deleted.
-    // In that case, invalidate this struct!
-    PXID ExpectedID;
-
-    // Direct access to the component.
-    // Be aware this can be stale.
-    // Update before use to prevent this!
-    // If adress is not in range from the container, scan 
-    // for matching ID. If no ID is found, object got deleted.
-    PXComponent* Component;
-}
-PXComponentRef;
 
 
 
@@ -233,12 +282,45 @@ typedef struct PXComponentInfo_
 {
     PXID ID;
     PXText Name; // Whats the name of the component?
-    PXComponent* Component; // 
+    //PXComponent* Component; // 
 }
 PXComponentInfo;
 
 
 PXPublic PXResult PXAPI PXECSInit(void);
+
+
+
+
+
+
+#define PXResourcePropertyPath 0
+#define PXResourcePropertyName 1
+
+#define PXResourcePropertyStore 1
+#define PXResourcePropertyFetch 0
+
+typedef struct PXECSProperty_
+{ 
+    // Payload
+    union
+    {
+        PXText Text;
+        PXI32S I32S;
+        PXSize Size;
+    };
+
+    // Setting
+    PXI16U PropertyID; // Personal ID different for every type
+    PXI16U Type; // Type for payload
+    PXBool DoWrite;
+}
+PXECSProperty;
+
+// Set property values for an object.
+// Names can always be set, some only if object supports it.
+PXPublic PXResult PXAPI PXECSPropertyIO(PXECSProperty PXREF pxECSProperty);
+
 
 
 //---------------------------------------------------------
@@ -247,28 +329,28 @@ PXPublic PXResult PXAPI PXECSInit(void);
 PXPublic PXResult PXAPI PXECSComponentRegister(PXComponentType PXREF pxEntity);
 
 // Check if a reference has gotten stale
-PXPublic PXResult PXAPI PXECSComponentRefCheck(PXDictionary PXREF pxDictionary, PXComponentRef PXREF pxComponentRef);
+PXPublic PXResult PXAPI PXECSElementRefCheck(PXDictionary PXREF pxDictionary, PXECSElementRef PXREF pxECSElementRef);
 //---------------------------------------------------------
 
 
 //---------------------------------------------------------
 // Entity-Component
 //---------------------------------------------------------
-PXPublic PXResult PXAPI PXECSEntityComponentGet(PXEntity PXREF pxEntity, PXComponent** component);
-PXPublic PXResult PXAPI PXECSEntityComponentAdd(PXEntity PXREF pxEntity, PXComponent** component);
+//PXPublic PXResult PXAPI PXECSEntityComponentGet(PXEntity PXREF pxEntity, PXComponent** component);
+//PXPublic PXResult PXAPI PXECSEntityComponentAdd(PXEntity PXREF pxEntity, PXComponent** component);
 //---------------------------------------------------------
 
 
 //---------------------------------------------------------
 // Resource
 //---------------------------------------------------------
-typedef struct PXResourceInfo_
-{
+//typedef struct PXECSInfo_
+//{
+ //   int x;
+//}
+//;// PXECSInfo;
 
-}
-PXResourceInfo;
-
-PXPublic PXResult PXAPI PXECSResourceAdd(PXEntity PXREF pxEntity, PXComponent** component);
+//PXPublic PXResult PXAPI PXECSResourceAdd(PXEntity PXREF pxEntity, PXComponent** component);
 //---------------------------------------------------------
 
 
@@ -289,9 +371,14 @@ PXAssetInfo;
 #define PXResourceCreateBehaviourLoadASYNC      (1<<1)
 #define PXResourceCreateBehaviourIsASYNCCall      (1<<8)
 
-typedef struct PXResourceCreateInfo_
+
+
+
+// Base object for inheritence
+typedef struct PXECSCreateInfo_
 {
-    PXRegistrationInfo** ObjectReference; // Reference to an adress to be filled with an object
+    PXECSElementRef** ElementRef;
+    PXECSElement* ObjectReference; // Reference to an adress to be filled with an object
     PXSize ObjectAmount; // If set to more than one, "ObjectReference" will contain a list of values
 
     void* Parent;
@@ -308,7 +395,9 @@ typedef struct PXResourceCreateInfo_
     union
     {
         // Dummy value to access user defined extended data
+        // A fix to use inheritence
         PXByte Payload[1];
+#if 0
         PXEngineSpriteMapInfo SpriteMap;
         PXEngineFontCreateInfo Font;
         PXSkyBoxCreateEventInfo SkyBox;
@@ -324,13 +413,18 @@ typedef struct PXResourceCreateInfo_
         PXTimerCreateInfo Timer;
         PXIconAtlasCreateInfo IconAtlas;
         PXIconCreateInfo Icon;
+#endif
     };
 #endif
 }
-PXResourceCreateInfo;
+PXECSCreateInfo;
 
 
-PXPublic PXResult PXAPI PXECSAssetAdd(PXECSRegistrationInfo PXREF pxECSRegistrationInfo);
+PXPublic PXResult PXAPI PXECSRegister(PXECSRegisterFunction pxECSRegisterFunction);
+
+
+//PXPublic PXResult PXAPI PXECSAssetAdd(PXECSRegistrationInfo PXREF pxECSRegistrationInfo);
 //---------------------------------------------------------
+
 
 #endif
