@@ -5,6 +5,8 @@
 #include <PX/Math/PXMath.h>
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/Media/PXDocument.h>
+#include <PX/OS/Time/PXTime.h>
+
 
 #define PXCompilerDebug 0
 #define PXCompilerSanitise 1
