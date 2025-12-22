@@ -32,7 +32,7 @@ typedef PXActionResult (PXAPI* PXModUnloadFunction)(void PXREF owner, PXMod PXRE
 
 typedef struct PXMod_
 {
-    PXResourceInfo Info;
+    PXECSInfo Info;
 
     char Name[32];
     char BuildDate[32];
