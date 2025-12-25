@@ -3,9 +3,10 @@
 #ifndef PXEngineDialogBoxIncluded
 #define PXEngineDialogBoxIncluded
 
-#include <PX/Engine/PXEngine.h>
 #include "PXDialogContainer.h"
 #include <PX/Engine/ECS/Resource/Timer/PXTimer.h>
+#include <PX/Engine/ECS/Resource/Sound/PXSound.h>
+#include <PX/Engine/ECS/System/PXEngine.h>
 
 typedef void (PXAPI* PXEngineDialogEventLineNew)(void* owner, struct PXEngineDialogBox_ PXREF pxEngineDialogBox);
 typedef void (PXAPI* PXEngineDialogEventPageNew)(void* owner, struct PXEngineDialogBox_ PXREF pxEngineDialogBox);
