@@ -51,8 +51,7 @@ PXResult PXAPI PXUserNameGetAA(PXText PXREF name)
             const PXBool successful = GetComputerNameW(name->W, &size); // Windows 2000 (+UWP), Kernel32.dll, winbase.h
             const PXResult result = PXErrorCurrent(successful);
 
-            name->NumberOfCharacters = (PXSize)successful * (PXSize)size;
-            name->SizeUsed = name->NumberOfCharacters * sizeof(wchar_t);
+            name->SizeUsed = PXTextLengthW(name->W, size);
 
             return result;
 #endif
