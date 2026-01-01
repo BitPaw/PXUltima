@@ -479,6 +479,9 @@ PXResult PXAPI PXDotNetInitializeCoreCLR(PXDotNetCoreCLR PXREF pxDotNetCoreCLR)
             
         PXFileOpen(asseblyList, &pxFileOpenInfo);
         
+        PXText pxTextExtension;
+        PXTextFromAdressA(&pxTextExtension, ".dll", 4, 4);
+
         // Add core DLLs from runtime folder
         {
             char versionFolder[PXPathSizeMax];
@@ -494,20 +497,20 @@ PXResult PXAPI PXDotNetInitializeCoreCLR(PXDotNetCoreCLR PXREF pxDotNetCoreCLR)
 
             do
             {
-                const PXBool isTarget = PXTextCompareA(&pxFileEntry.FilePathData[pxFileEntry.FilePathSize - 4], 4, ".dll", 4, 0);
+                const PXBool isTarget = PXFilePathExtensionCompare(&pxFileEntry.FilePath, &pxTextExtension);
 
                 if(!isTarget)
                 {
                     continue;
                 }
 
-                const PXSize expectedGrouth = versionFolderSize + pxFileEntry.FilePathSize + 2;
+                const PXSize expectedGrouth = versionFolderSize + pxFileEntry.FilePath.SizeUsed + 2;
 
                 PXFileAssureFreeSize(&asseblyList, expectedGrouth);
 
                 PXFileWriteA(&asseblyList, versionFolder, versionFolderSize);
                 PXFileWriteC(&asseblyList, '/');
-                PXFileWriteA(&asseblyList, pxFileEntry.FilePathData, pxFileEntry.FilePathSize);
+                PXFileWriteText(&asseblyList, &pxFileEntry.FilePath);
                 PXFileWriteC(&asseblyList, ';');
             } 
             while(PXDirectoryNext(&pxDirectorySearchCache, &pxFileEntry));
@@ -524,25 +527,25 @@ PXResult PXAPI PXDotNetInitializeCoreCLR(PXDotNetCoreCLR PXREF pxDotNetCoreCLR)
 
             do
             {
-                if(pxFileEntry.FilePathSize < 5)
+                if(pxFileEntry.FilePath.SizeUsed < 5)
                 {
                     continue;
-                }
+                }                
 
-                const PXBool isTarget = PXTextCompareA(&pxFileEntry.FilePathData[pxFileEntry.FilePathSize - 4], 4, ".dll", 4, 0);
+                const PXBool isTarget = PXFilePathExtensionGet(&pxFileEntry.FilePath, &pxTextExtension);
 
                 if(!isTarget)
                 {
                     continue;
                 }
 
-                const PXSize expectedGrouth = currentDirectorySize + pxFileEntry.FilePathSize + 2;
+                const PXSize expectedGrouth = currentDirectorySize + pxFileEntry.FilePath.SizeUsed + 2;
 
                 PXFileAssureFreeSize(&asseblyList, expectedGrouth);
 
                 PXFileWriteA(&asseblyList, currentDirectory, currentDirectorySize);
                 PXFileWriteC(&asseblyList, '//');
-                PXFileWriteA(&asseblyList, pxFileEntry.FilePathData, pxFileEntry.FilePathSize);
+                PXFileWriteText(&asseblyList, &pxFileEntry.FilePath);
                 PXFileWriteC(&asseblyList, ';');
             } 
             while(PXDirectoryNext(&pxDirectorySearchCache, &pxFileEntry));
@@ -1405,13 +1408,13 @@ PXResult PXAPI PXDotNetInitialize(PXDotNet PXREF pxDotNet, const PXI32U flagList
                 PXDotNetName,
                 "Version",
                 "Detected: %s",
-                pxFileEntry.FilePathData
+                pxFileEntry.FilePath.A
             );
 #endif
 
             PXVersion PXREF pxVersion = &pxDotNet->CoreCLR.VersionList[pxDotNet->CoreCLR.VersionListAmount];
 
-            PXVersionFromString(pxVersion, pxFileEntry.FilePathData);
+            PXVersionFromString(pxVersion, pxFileEntry.FilePath.A);
 
             pxDotNet->CoreCLR.VersionCurrent = pxVersion;
             
