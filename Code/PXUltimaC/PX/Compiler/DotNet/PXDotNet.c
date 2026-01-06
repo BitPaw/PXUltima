@@ -413,13 +413,17 @@ PXResult PXAPI PXDotNetInitializeCoreCLR(PXDotNetCoreCLR PXREF pxDotNetCoreCLR)
 #elif OSWindows
     // Open lib
     {
-        char runtimeDLLPath[PXPathSizeMax];
+        char runtimeDLLPathBuffer[PXPathSizeMax];
         char versionString[64];
+
+        PXText pxTextRuntimeDLLPath;
+        PXTextFromAdressA(&pxTextRuntimeDLLPath, runtimeDLLPathBuffer, 0, sizeof(runtimeDLLPathBuffer));
+
         PXVersionToString(pxDotNetCoreCLR->VersionCurrent, versionString);
 
-        PXTextPrintA(runtimeDLLPath, PXPathSizeMax, "%s/%s/%s", CSharpCoreClrPath, versionString, CSharpCoreClrDLLName);
+        PXTextPrint(&pxTextRuntimeDLLPath, "%s/%s/%s", CSharpCoreClrPath, versionString, CSharpCoreClrDLLName);
 
-        PXLibraryOpenA(&pxDotNetCoreCLR->LibraryCoreCLR, runtimeDLLPath);
+        PXLibraryOpen(&pxDotNetCoreCLR->LibraryCoreCLR, &pxTextRuntimeDLLPath);
     }
 
 
@@ -723,7 +727,8 @@ PXResult PXAPI PXDotNetInitializeHostFX(PXDotNetHostFX PXREF pxDotNetHostFX)
             return PXActionInvalid;
         }
 
-        PXLibraryOpenA(&pxDotNetHostFX->LibraryHostFX, hostfxrPath);
+
+        //PXLibraryOpenA(&pxDotNetHostFX->LibraryHostFX, hostfxrPath);
     } 
 
     // Load symbols
