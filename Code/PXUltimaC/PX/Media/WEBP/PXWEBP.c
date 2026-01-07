@@ -2,10 +2,11 @@
 
 #include <PX/Media/RIFF/PXRIFF.h>
 #include <PX/OS/File/PXFile.h>
+#include <PX/Engine/ECS/PXECS.h>
 
 const char PXWEBPVP[4] = "VP8 ";
 
-PXResult PXAPI PXWEBPLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXWEBPLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
     PXTexture PXREF pxTexture = (PXTexture*)pxResourceLoadInfo->ResourceTarget;
     PXFile* pxFile = pxResourceLoadInfo->FileReference;
@@ -64,7 +65,7 @@ PXResult PXAPI PXWEBPLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadI
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI PXWEBPSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXWEBPSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
 {
     // Write RIFF
     {

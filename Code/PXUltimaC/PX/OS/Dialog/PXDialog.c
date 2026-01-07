@@ -31,6 +31,10 @@ typedef BOOL(APIENTRY* PXPrintDlgW)(LPPRINTDLGW pPD);
 #endif
 
 
+const char PXWindowsCommonDialog[] = "COMDLG32.DLL";
+const PXI8U PXWindowsCommonDialogLength = sizeof(PXWindowsCommonDialog);
+
+
 PXResult PXAPI PXDialogSystemInitialize(PXDialogSystem PXREF pxDialogSystem)
 {
 #if OSUnix
@@ -40,7 +44,10 @@ PXResult PXAPI PXDialogSystemInitialize(PXDialogSystem PXREF pxDialogSystem)
 
     // Load library
     {
-        const PXResult pxActionResult = PXLibraryOpenA(&pxDialogSystem->CommonDialogLibrary, "COMDLG32.DLL");
+        PXText pxText;
+        PXTextFromAdressA(&pxText, PXWindowsCommonDialog, PXWindowsCommonDialogLength, PXWindowsCommonDialogLength);
+
+        const PXResult pxActionResult = PXLibraryOpen(&pxDialogSystem->CommonDialogLibrary, &pxText);
 
         if(PXActionSuccessful != pxActionResult)
         {

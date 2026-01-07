@@ -11,7 +11,7 @@ typedef struct PXQOI_
 }
 PXQOI;
 
-PXPublic PXResult PXAPI PXQOILoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXQOISaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXQOILoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXQOISaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
 
 #endif

@@ -107,7 +107,7 @@ PXPublic PXSize PXAPI PXTGAFilePredictSize(const PXSize width, const PXSize heig
 
 PXPublic void PXAPI PXTGADestruct(PXTGA PXREF tga);
 
-PXPublic PXResult PXAPI PXTGALoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXTGASaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXTGALoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXTGASaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
 
 #endif

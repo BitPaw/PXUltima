@@ -138,20 +138,17 @@
 //-----------------------------------------------------
 
 
-typedef struct PXResourceTransphereInfo_ PXResourceTransphereInfo;
+typedef struct PXResourceMoveInfo_ PXResourceMoveInfo;
 
 typedef PXResult(PXAPI* PXResourceFileSizePredict)(void PXREF resource, PXSize PXREF fileSize);
-typedef PXResult(PXAPI* PXResourceTransphereFunction)(PXResourceTransphereInfo PXREF pxResourceTransphereInfo);
+typedef PXResult(PXAPI* PXResourceTransphereFunction)(PXResourceMoveInfo PXREF PXResourceMoveInfo);
 
 //---------------------------------------------------------
 // Contains all info about a file
 typedef struct PXFileFormatInfo_
 {
-    char* ExtensionText;
-    PXSize ExtensionLength;
-
-    char* SigantureText;
-    PXSize SigantureLength;
+    PXText Extension;
+    PXText Siganture;
 
     PXI8U SigantureOffset;
 

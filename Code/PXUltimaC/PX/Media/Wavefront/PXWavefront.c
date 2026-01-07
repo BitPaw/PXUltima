@@ -7,6 +7,9 @@
 #include <PX/OS/File/PXFile.h>
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/OS/PXOS.h>
+#include <PX/Engine/ECS/PXECS.h>
+#include <PX/Engine/ECS/Resource/Mesh/PXMesh.h>
+#include <PX/Engine/ECS/Resource/Mesh/PXIndexBuffer.h>
 
 #define PXWavefrontDetectMaterial 0
 
@@ -222,11 +225,9 @@ void PXAPI PXWavefrontFaceLineParse(PXCompiler PXREF pxCompiler, PXI32U PXREF ve
     }
 }
 
-PXResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXWavefrontLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
-    PXModel PXREF pxModel = (PXModel*)pxResourceLoadInfo->ResourceTarget;
-    PXMesh PXREF mesh = &pxModel->Mesh;
-
+    PXMesh PXREF pxMesh = (PXMesh*)pxResourceLoadInfo->ResourceTarget;
     PXFile* tokenSteam = PXFileCreate();
 
     struct PXWaveFrontCounter
@@ -272,7 +273,7 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo PXREF pxResource
     PXCompiler pxCompiler;
     PXClear(PXCompiler, &pxCompiler);
     pxCompiler.ReadInfo.FileInput = pxResourceLoadInfo->FileReference;
-    pxCompiler.ReadInfo.FileCache = &tokenSteam;
+    pxCompiler.ReadInfo.FileCache = tokenSteam;
     pxCompiler.Flags = PXCompilerKeepAnalyseTypes;
     pxCompiler.CommentSingleLineSize = 1u;
     pxCompiler.CommentSingleLine = "#";
@@ -314,7 +315,7 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo PXREF pxResource
     );
 #endif
 
-    while(!PXFileIsAtEnd(&tokenSteam))
+    while(!PXFileIsAtEnd(tokenSteam))
     {
         PXCompilerSymbolEntryExtract(&pxCompiler); // First in line token
 
@@ -426,7 +427,7 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo PXREF pxResource
 
                     lineCurrent = pxCompiler.ReadInfo.SymbolEntryCurrent.Line; // Update current line
 
-                    isDone = PXFileIsAtEnd(&tokenSteam) || (lineStart != lineCurrent);
+                    isDone = PXFileIsAtEnd(tokenSteam) || (lineStart != lineCurrent);
                 } 
                 while(!isDone);
 
@@ -565,18 +566,18 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo PXREF pxResource
             ++pxVertexBufferLayoutAmount;
         }
 
-        PXMeshVertexLayout(mesh, 0, pxVertexBufferLayout, pxVertexBufferLayoutAmount);
-        PXMeshIndexLayout(mesh, counter.Face, counter.MaterialUse);
+        PXMeshVertexLayout(pxMesh, 0, pxVertexBufferLayout, pxVertexBufferLayoutAmount);
+        PXMeshIndexLayout(pxMesh, counter.Face, counter.MaterialUse);
      
 
         // Reset all size values 
-        counter.DataVertex = PXMeshVertexInsert(mesh, PXVertexBufferLayoutTypePosition);
-        counter.DataNormal = PXMeshVertexInsert(mesh, PXVertexBufferLayoutTypeNormal);
-        counter.DataTexture = PXMeshVertexInsert(mesh, PXVertexBufferLayoutTypeTexturePos);
+        counter.DataVertex = PXMeshVertexInsert(pxMesh, PXVertexBufferLayoutTypePosition);
+        counter.DataNormal = PXMeshVertexInsert(pxMesh, PXVertexBufferLayoutTypeNormal);
+        counter.DataTexture = PXMeshVertexInsert(pxMesh, PXVertexBufferLayoutTypeTexturePos);
 
-        counter.IndexVertex = PXMeshIndexInsert(mesh, PXVertexBufferLayoutTypePosition);
-        counter.IndexNormal = PXMeshIndexInsert(mesh, PXVertexBufferLayoutTypeNormal);
-        counter.IndexTexture = PXMeshIndexInsert(mesh, PXVertexBufferLayoutTypeTexturePos);
+        counter.IndexVertex = PXMeshIndexInsert(pxMesh, PXVertexBufferLayoutTypePosition);
+        counter.IndexNormal = PXMeshIndexInsert(pxMesh, PXVertexBufferLayoutTypeNormal);
+        counter.IndexTexture = PXMeshIndexInsert(pxMesh, PXVertexBufferLayoutTypeTexturePos);
 
         counter.Position = 0;
         counter.Normal = 0;
@@ -585,7 +586,7 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo PXREF pxResource
         counter.MaterialUse = 0;
         counter.MaterialInlcude = 0;
 
-        PXFileCursorToBeginning(&tokenSteam);
+        PXFileCursorToBeginning(tokenSteam);
     }
 
     // Stage - 3 - Extract data
@@ -599,11 +600,11 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo PXREF pxResource
     );
 #endif
 
-    PXI8U typeSize = PXTypeSizeGet(mesh->IndexBuffer.DataType);
+    PXI8U typeSize = PXTypeSizeGet(pxMesh->IndexBuffer->DataType);
 
     for(;;)
     {
-        const PXBool isAtEnd = PXFileIsAtEnd(&tokenSteam);
+        const PXBool isAtEnd = PXFileIsAtEnd(tokenSteam);
 
         if(isAtEnd)
         {
@@ -645,7 +646,7 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo PXREF pxResource
                 {
                     case PXWavefrontLineMaterialLibraryIncluded:
                     {
-                        PXMaterialContainer PXREF pxMaterialContaier = &mesh->MaterialContaierList[counter.MaterialInlcude++];
+                        PXMaterialContainer PXREF pxMaterialContaier = &pxMesh->MaterialContaierList[counter.MaterialInlcude++];
                         PXFile* materialFile = PXFileCreate();
 
                         // Open and load
@@ -656,12 +657,11 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo PXREF pxResource
 
                             PXFilePathRelativeFromFile(pxResourceLoadInfo->FileReference, &materialFileName, &materialFilePathFull);
 
-                            PXResourceTransphereInfo pxMaterialLoadInfo;
-                            PXClear(PXResourceTransphereInfo, &pxMaterialLoadInfo);
+                            PXResourceMoveInfo pxMaterialLoadInfo;
+                            PXClear(PXResourceMoveInfo, &pxMaterialLoadInfo);
                             pxMaterialLoadInfo.ResourceTarget = pxMaterialContaier;
                             pxMaterialLoadInfo.FileReference = materialFile;
                             pxMaterialLoadInfo.ResourceType = PXResourceTypeMaterialList;
-                            pxMaterialLoadInfo.Manager = pxResourceLoadInfo->Manager;
 
                             PXResourceLoad(&pxMaterialLoadInfo, &materialFilePathFull);
                         }
@@ -672,18 +672,19 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo PXREF pxResource
                     }
                     case PXWavefrontLineMaterialLibraryUse:
                     {
-                        PXIndexSegment PXREF pxIndexSegmentLast = &pxModel->Mesh.IndexBuffer.SegmentList[pxModel->Mesh.IndexBuffer.SegmentListAmount - 1];
-                        PXIndexSegment PXREF pxIndexSegmentCurrent = &pxModel->Mesh.IndexBuffer.SegmentList[counter.MaterialUse];
+                        PXIndexSegment PXREF pxIndexSegmentLast = &pxMesh->IndexBuffer->SegmentList[pxMesh->IndexBuffer->SegmentListAmount - 1];
+                        PXIndexSegment PXREF pxIndexSegmentCurrent = &pxMesh->IndexBuffer->SegmentList[counter.MaterialUse];
                        
+                        /*
                         pxIndexSegmentCurrent->Material = PXMaterialContainerFind
                         (
                             mesh->MaterialContaierList,
                             &materialFileName
-                        );
+                        );*/
 
                         if(counter.MaterialUse > 0)
                         {
-                            PXIndexSegment PXREF pxIndexSegmentPrevious = &pxModel->Mesh.IndexBuffer.SegmentList[counter.MaterialUse - 1];
+                            PXIndexSegment PXREF pxIndexSegmentPrevious = &pxMesh->IndexBuffer->SegmentList[counter.MaterialUse - 1];
                             
                             pxIndexSegmentPrevious->DataRange = counter.Face - counter.FaceLast;
                             pxIndexSegmentLast->DataRange = PXMathAbsoluteI32(counter.Face - counter.FaceTotal);
@@ -816,7 +817,7 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo PXREF pxResource
 
                     lineCurrent = pxCompiler.ReadInfo.SymbolEntryCurrent.Line; // Update current line
 
-                    isDone = PXFileIsAtEnd(&tokenSteam) || (lineStart != lineCurrent);
+                    isDone = PXFileIsAtEnd(tokenSteam) || (lineStart != lineCurrent);
                 } 
                 while(!isDone);
 
@@ -836,18 +837,18 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo PXREF pxResource
         }
     }
 
-    PXFileClose(&tokenSteam);
+    PXFileClose(tokenSteam);
 
 #if PXLogEnable
-    for(PXSize i = 0; i < mesh->IndexBuffer.SegmentListAmount; ++i)
+    for(PXSize i = 0; i < pxMesh->IndexBuffer->SegmentListAmount; ++i)
     {
-        PXIndexSegment PXREF pxIndexSegment = &mesh->IndexBuffer.SegmentList[i];
-        PXResourceProperty pxResourceProperty;
-        PXClear(PXResourceProperty, &pxResourceProperty);
+        PXIndexSegment PXREF pxIndexSegment = &pxMesh->IndexBuffer->SegmentList[i];
+        PXECSProperty pxECSProperty;
+        PXClear(PXECSProperty, &pxECSProperty);
 
         if(pxIndexSegment->Material)
         {
-            PXResourcePropertyIO(&pxIndexSegment->Material->Info, &pxResourceProperty, PXResourcePropertyName, PXResourcePropertyFetch);
+            PXResourcePropertyIO(&pxIndexSegment->Material->Info, &pxECSProperty, PXResourcePropertyName, PXResourcePropertyFetch);
 
             PXLogPrint
             (
@@ -856,10 +857,10 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo PXREF pxResource
                 "Segment",
                 "[%2i/%2i] %6i - PXID:%i, Name:%s",
                 i + 1,
-                mesh->IndexBuffer.SegmentListAmount,
+                pxMesh->IndexBuffer->SegmentListAmount,
                 pxIndexSegment->DataRange,
                 pxIndexSegment->Material->Info.ID,
-                pxResourceProperty.Text.A
+                pxECSProperty.Text.A
             );
         }
         else
@@ -871,12 +872,10 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo PXREF pxResource
                 "Segment",
                 "[%2i/%2i] %6i - **No material**",
                 i + 1,
-                mesh->IndexBuffer.SegmentListAmount,
+                pxMesh->IndexBuffer->SegmentListAmount,
                 pxIndexSegment->DataRange
                 );
-        }
-
-    
+        } 
     }
 #endif
 
@@ -894,7 +893,7 @@ PXResult PXAPI PXWavefrontLoadFromFile(PXResourceTransphereInfo PXREF pxResource
     return PXActionSuccessful;
 }
 
-PXResult PXAPI PXWavefrontSaveFromFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXWavefrontSaveFromFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

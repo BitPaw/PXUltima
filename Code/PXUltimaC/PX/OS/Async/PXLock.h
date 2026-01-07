@@ -2,7 +2,8 @@
 
 #ifndef PXLockIncluded
 #define PXLockIncluded
-#include <PX/OS/Error/PXActionResult.h>
+
+#include <PX/Engine/ECS/PXECS.h>
 
 typedef enum PXLockType_
 {
@@ -14,35 +15,31 @@ PXLockType;
 
 typedef struct PXLock_ PXLock;
 
-
-#if OSUnix
-#include <semaphore.h>
-typedef sem_t PXLockIDType; // is union, cannot be defined as "sem_t" only -> compile error
-#elif OSWindows
-#include <windows.h>
-//#include <process.h>
-typedef HANDLE PXLockIDType; // same as void*
-#endif
-
-typedef struct PXLock_
+typedef struct PXLockCreateInfo_
 {
+    PXECSCreateInfo Info;
     PXLockType Type;
-    PXI32U LockCounter;
-
-    union
-    {
-        PXLockIDType SemaphoreHandle;
-
-#if OSWindows
-        CRITICAL_SECTION SectionHandle;
-#endif
-    };
 }
-PXLock;
+PXLockCreateInfo;
 
-PXPublic PXResult PXAPI PXLockCreate(PXLock PXREFREF lock, const PXLockType type);
+typedef PXResult(PXAPI* PXLockFunction)(PXLock PXREF pxLock);
+typedef PXResult(PXAPI* PXLockEnterFunction)(PXLock PXREF pxLock, const PXBool forceEntering);
+
+PXPublic PXResult PXAPI PXLockRegisterToECS();
+
+PXPublic PXResult PXAPI PXLockCreate(PXLock** lockREF, PXLockCreateInfo PXREF pxLockCreateInfo);
 PXPublic PXResult PXAPI PXLockDelete(PXLock PXREF lock);
 PXPublic PXResult PXAPI PXLockEngage(PXLock PXREF lock, const PXBool forceEnter);
 PXPublic PXResult PXAPI PXLockRelease(PXLock PXREF lock);
+
+PXPublic PXResult PXAPI PXSemaphorCreate(PXLock PXREF pxLock);
+PXPublic PXResult PXAPI PXSemaphorDelete(PXLock PXREF pxLock);
+PXPublic PXResult PXAPI PXSemaphorEnter(PXLock PXREF pxLock);
+PXPublic PXResult PXAPI PXSemaphorLeave(PXLock PXREF pxLock);
+
+PXPublic PXResult PXAPI PXCriticalSectionCreate(PXLock PXREF pxLock);
+PXPublic PXResult PXAPI PXCriticalSectionDelete(PXLock PXREF pxLock);
+PXPublic PXResult PXAPI PXCriticalSectionEnter(PXLock PXREF pxLock, const PXBool forceEntering);
+PXPublic PXResult PXAPI PXCriticalSectionLeave(PXLock PXREF pxLock);
 
 #endif

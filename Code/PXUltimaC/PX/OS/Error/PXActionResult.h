@@ -18,12 +18,12 @@ typedef enum PXActionResult_
     PXActionDidNothing, // if the function did nothing
     PXActionFailedUnkownError, // [OTHER] Undefined error
     //-----------------------------------
-    
+
     // Exceptions
     //STATUS_PENDING,
     PXResultExceptionAccessViolation, // [SIGSEGV] Read or write from invalid adress, EXCEPTION_ACCESS_VIOLATION
     PXResultExceptionIndexOutOfBounds, // Index of an array is invalid
-    PXResultExceptionDataMisalignment, 
+    PXResultExceptionDataMisalignment,
 
 
     PXResultExceptionIllegalInstruction, // [SIGILL] Invalid or unsupported insruction executed by CPU.
@@ -54,13 +54,18 @@ typedef enum PXActionResult_
     PXResultExceptionControlCExit, // [SIGABRT]
 
 
+    PXActionRefusedNotEnoughMemory,
+
     PXActionWaitOnResult, // The result is yet to be recieved
 
     PXActionRefusedKeyNotFound, // Key-Value, key not found
     PXActionRefusedValueNotFound, // Key-value, value not found
-    
+
     PXActionFailedLockEnter,
-    
+
+    PXActionFailedWaitTimeout,
+    PXActionFailedWaitAbandoned,
+
     PXActionFailedRead, // Value couln't be read
     PXActionFailedRegister, // Value couln't be registered
     PXActionFailedWrite, // Value couln't be written
@@ -135,6 +140,8 @@ typedef enum PXActionResult_
     PXActionRefusedObjectCreateCallbackMissing, // PX-OBJ-CREATE-FUN-MISSING
 
 
+    PXActionRefusedObjectSizeZero,
+    PXActionRefusedObjectAlreadyExists,
     PXActionRefusedObjectNotCreated,    // PX-OBJ-NOID
     PXActionRefusedObjectIDInvalid,     // Object handle invalid
     PXActionRefusedObjectNameInvalid,   // PX-NAMEINVAL

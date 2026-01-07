@@ -43,13 +43,29 @@ typedef enum PXFileElementInfoType_
 PXFileElementInfoType;
 
 
+typedef enum PXFileLocationMode_
+{
+    PXFileLocationModeInvalid,
+    PXFileLocationModeInternal, // Memory is handled internally.
+    PXFileLocationModeExternal, // Memory is stored outside this object
+    PXFileLocationModeMappedVirtual, // Used 'VirtalAlloc()' / 'mmap()'
+    PXFileLocationModeMappedFromDisk, // Used 'FileView()' / 'fmap()'
+    PXFileLocationModeDirectCached, // Read & Write operations are cached into a buffer first.
+    PXFileLocationModeDirectUncached // Read & Write operations are directly put into
+}
+PXFileLocationMode;
+
+PXPublic const char* PXFileLocationModeToString(const PXFileLocationMode pxFileLocationMode);
+
+
+
+
 // Permentant data that is and will be stored on disk.
 typedef struct PXFileEntry_
 {
     PXI32U ID;
 
-    char* FilePathData;
-    PXSize FilePathSize;
+    PXText FilePath;
 
     PXSize Size;
     PXI8U Depth;
@@ -163,7 +179,7 @@ PXPublic PXResult PXAPI PXFilePathCombine(PXText PXREF fullPath, PXFilePathStruc
 
 
 
-
+PXPublic PXBool PXAPI PXFilePathExtensionCompare(const PXText PXREF filePath, PXText PXREF extension);
 PXPublic PXSize PXAPI PXFilePathExtensionGet(const PXText PXREF filePath, PXText PXREF extension);
 
 
@@ -405,6 +421,8 @@ PXPublic PXSize PXAPI PXFileWriteFill(PXFile PXREF pxFile, const PXByte value, c
 PXPublic PXSize PXAPI PXFileWriteNewLine(PXFile PXREF pxFile);
 
 PXPublic PXSize PXAPI PXFileWriteC(PXFile PXREF pxFile, const char character);
+
+PXPublic PXSize PXAPI PXFileWriteText(PXFile PXREF pxFile, PXText PXREF pxText);
 
 // Write ASCII string \0 terminated.
 PXPublic PXSize PXAPI PXFileWriteA(PXFile PXREF pxFile, const char PXREF text, const PXSize textSize);

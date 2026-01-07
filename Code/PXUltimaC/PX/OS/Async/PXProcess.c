@@ -19,6 +19,8 @@
 #include <PX/OS/Debug/PXDebug.h>
 #include <PX/OS/PXOS.h>
 
+const char PXKernelNT[] = "ntdll.dll";
+const PXI8U PXKernelNTLength = sizeof(PXKernelNT);
 
 #if OSWindows
 void PXAPI PXProcessConstructFromHandle(PXProcess PXREF pxProcess, HANDLE processHandle)
@@ -220,8 +222,11 @@ PXResult PXAPI PXProcessHandleListAll(PXDebug PXREF pxDebug, PXProcess* pxProces
 
     //NtQuerySystemInformation();
 
+    PXText pxText;
+    PXTextFromAdressA(&pxText, PXKernelNT, PXKernelNTLength, PXKernelNTLength);
+
     PXLibrary pxLibraryNTDLL;
-    PXLibraryOpenA(&pxLibraryNTDLL, "ntdll.dll");
+    PXLibraryOpen(&pxLibraryNTDLL, &pxText);
 
 
     PXNtQuerySystemInformation pxNtQuerySystemInformation;
@@ -342,7 +347,7 @@ PXResult PXAPI PXProcessHandleListAll(PXDebug PXREF pxDebug, PXProcess* pxProces
                 PXText buffer;
                 PXTextConstructNamedBufferA(&buffer, bufferAA, 256);
 
-                PXActionResult result = PXFilePath(&pxFile, &buffer, PXFalse);
+                PXActionResult result = PXFilePath(pxFile, &buffer, PXFalse);
 
                 if(PXActionSuccessful == result)
                 {
@@ -364,15 +369,15 @@ PXResult PXAPI PXProcessHandleListAll(PXDebug PXREF pxDebug, PXProcess* pxProces
             }
             case PXHandleTypeThread:
             {
-                PXThread pxThread;
-                PXThreadConstructFromHandle(&pxThread, handleCurrent);
+               // PXThread pxThread;
+               // PXThreadConstructFromHandle(&pxThread, handleCurrent);
 
 
                 // GetThreadInformation()
                 PXText buffer;
                 PXTextFromAdressA(&buffer, pxHandleInfo.Description, 0, 256);
 
-                PXThreadNameGet(pxDebug, &pxThread, &buffer);
+               // PXThreadNameGet(pxDebug, &pxThread, &buffer);
 
 
                 // Fetch thread Description
@@ -563,7 +568,7 @@ PXResult PXAPI PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEvent)
     }
 
     const DWORD flag = TH32CS_SNAPPROCESS;
-    const DWORD processID = PXNull;
+    const DWORD processID = 0;
     const HANDLE snapshotHandle = CreateToolhelp32Snapshot(flag, processID); // Windows XP, Kernel32.dll, tlhelp32.h
     const PXBool successful = snapshotHandle != INVALID_HANDLE_VALUE && snapshotHandle != ((HANDLE)(LONG_PTR)ERROR_BAD_LENGTH);
     const PXResult pxActionResult = PXErrorCurrent(successful);
@@ -590,7 +595,7 @@ PXResult PXAPI PXProcessListAll(PXProcessDetectedEvent pxProcessDetectedEvent)
         pxProcess.ProcessHandle = PXNull;
         pxProcess.ProcessID = processEntryW.th32ProcessID;
         pxProcess.ThreadHandle = PXNull;
-        pxProcess.ThreadID = PXNull;
+        pxProcess.ThreadID = 0;
         pxProcess.ThreadsAtStart = processEntryW.cntThreads;
         pxProcess.ThreadBasePriority = processEntryW.pcPriClassBase;
         pxProcess.ProcessIDParent = processEntryW.th32ParentProcessID;
@@ -652,15 +657,16 @@ PXResult PXAPI PXProcessThreadsListAll(PXProcess PXREF pxProcess, PXThread** pxT
 
             if(isTarget)
             {
+                /*
                 PXThread PXREF pxThread = &pxThreadList[threadIndex];
 
                 PXText text;
                 PXTextConstructBufferA(&text, 128);
 
-                pxThread->HandleID = threadEntry.th32ThreadID;
+                pxThread->ThreadID = threadEntry.th32ThreadID;
 
                 PXThreadNameGet(pxDebug, pxThread, &text);
-
+                */
                 ++threadIndex;
             }
 

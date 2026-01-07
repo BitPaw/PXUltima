@@ -6,6 +6,7 @@
 #include <PX/Engine/PXResource.h>
 #include <PX/OS/Async/PXThread.h>
 #include <PX/Container/List/PXList.h>
+#include <PX/OS/Async/PXLock.h>
 
 #define PXThreadPoolEnableASYNC (1<<0)
 #define PXThreadPoolCreated     (1<<1)
@@ -13,7 +14,7 @@
 typedef struct PXThreadPool_
 {
     PXSize ThreadListSize;
-    PXThread* ThreadList;
+    PXThread** ThreadList;
 
     PXList TaskQueue;
     PXLock* TaskLock;
@@ -25,6 +26,8 @@ typedef struct PXThreadPool_
     PTP_POOL Pool;
     PTP_WORK Work;
 #endif
+
+    PXI32U MainThreadID;
 
     PXSize StackReserve;
     PXSize StackCommit;
@@ -42,16 +45,12 @@ PXThreadPool;
 PXPrivate PXBool PXAPI PXThreadPoolTaskNextWorkGet(PXThreadPool* pxThreadPool, PXTask PXREF pxTask);
 
 
-PXPublic PXResult PXAPI PXThreadContextIO(PXThreadContext PXREF pxThreadContext, const PXThreadHandleID pxThreadHandleID, const PXBool doWrite);
-
-
 PXPublic PXTask* PXAPI PXThreadPoolTaskUpdateWork(PXThreadPool* pxThreadPool, const PXI32U taskID, void* function, void* parameter1, void* parameter2, const PXI32U behaviour);
 
 // Function WILL copy thread for thread-safety as data could be moved without notice
 // struct shall not be modified, use the threadpool
 PXPrivate PXResult PXAPI PXThreadPoolThreadSelf(PXThreadPool PXREF pxThreadPool, PXThread PXREF pxThread);
 PXPrivate PXResult PXAPI PXThreadPoolTaskInvoke(PXThreadPool PXREF pxThreadPool, PXTask PXREF pxTask);
-
 
 PXPublic PXBool PXAPI PXThreadPoolIsMainThread();
 PXPublic PXResult PXAPI PXThreadPoolClose(PXThreadPool* pxThreadPool);

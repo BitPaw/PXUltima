@@ -20,6 +20,11 @@ typedef GLXContext PXOpenGLConextID;
 #define PXOpenGLAPI APIENTRY
 typedef HGLRC PXOpenGLConextID;
 #endif
+#include <PX/Engine/ECS/Resource/Shader/PXShader.h>
+#include <PX/Engine/ECS/Resource/Texture/PXTexture.h>
+#include <PX/Engine/ECS/Resource/DrawScript/PXDrawScript.h>
+#include <PX/Engine/ECS/Resource/Light/PXLight.h>
+#include <PX/Engine/ECS/System/PXRenderingSystem.h>
 //---------------------------
 
 
@@ -1467,7 +1472,7 @@ PXOpenGL;
 PXPrivate PXI32U PXAPI PXOpenGLImageFormatToID(const PXColorFormat pxColorFormat, PXI32U PXREF imageFormat, PXI32U PXREF dataFormat);
 PXPrivate PXI32U PXAPI PXOpenGLRenderModeToID(const PXDrawMode pxGraphicDrawMode);
 PXPrivate PXI32U PXAPI PXOpenGLTextureTypeToID(const PXTextureType pxGraphicTextureType);
-PXPrivate PXI32U PXAPI PXOpenGLShaderTypeToID(const PXGraphicShaderType pxGraphicShaderType);
+PXPrivate PXI32U PXAPI PXOpenGLShaderTypeToID(const PXShaderType pxGraphicShaderType);
 PXPrivate PXI32U PXAPI PXOpenGLTypeToID(const PXI32U pxDataType);
 PXPrivate PXI32U PXAPI PXOpenGLGraphicImageLayoutToID(const PXTextureLayout pxGraphicImageLayout);
 PXPrivate PXI32U PXAPI PXOpenGLGraphicImageWrapToID(const PXTextureWrap pxGraphicImageWrap);
@@ -1549,7 +1554,7 @@ PXPublic void PXAPI PXOpenGLDrawArraysInstanced(const PXOpenGL PXREF openGLConte
 //-----------------------------------------------------
 // OpenGL - Texture
 //-----------------------------------------------------
-PXPublic PXResult PXAPI PXOpenGLTextureAction(PXOpenGL PXREF pxOpenGL, PXTexturInfo PXREF pxGraphicTexturInfo);
+PXPublic PXResult PXAPI PXOpenGLTextureAction(PXOpenGL PXREF pxOpenGL, PXTextureInfo PXREF pxGraphicTexturInfo);
 
 
 PXPublic void PXAPI PXOpenGLTextureActivate(PXOpenGL PXREF openGLContext, const unsigned int index);

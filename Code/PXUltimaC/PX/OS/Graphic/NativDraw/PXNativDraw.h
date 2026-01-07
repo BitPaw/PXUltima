@@ -5,9 +5,12 @@
 
 #include <PX/Engine/PXResource.h>
 #include <PX/Math/PXVector.h>
+#include <PX/Engine/ECS/Resource/FrameBuffer/PXFrameBuffer.h>
+#include <PX/Engine/ECS/Resource/Brush/PXBrush.h>
+#include <PX/Engine/ECS/Resource/Window/PXWindow.h>
+#include <PX/Engine/PXGUI.h>
 
-#define PXGUIDrawModeFront (1<<0)
-#define PXGUIDrawModeBack  (1<<1)
+
 
 typedef struct PXGUIProperty_ PXGUIProperty_;
 
@@ -29,17 +32,6 @@ PXPublic PXResult PXAPI PXNativDrawDisplayListFetch(PXNativDraw PXREF pxNativDra
 PXPublic PXResult PXAPI PXNativDrawDisplayOpen(PXNativDraw PXREF pxNativDraw, PXDisplay PXREF pxDisplay, const char PXREF displayName);
 
 
-PXPublic PXResult PXAPI PXNativDrawWindowCreate(PXNativDraw PXREF pxNativDraw, PXWindow PXREF pxWindow, PXWindowCreateInfo PXREF pxWindowCreateInfo);
-
-
-// Events
-PXPublic PXResult PXAPI PXNativDrawWindowEventPendingAmount(PXNativDraw PXREF pxNativDraw, PXSize PXREF amount);
-
-
-// Buffer Swap
-PXPublic PXResult PXAPI PXNativDrawWindowBufferSwap(PXNativDraw PXREF pxNativDraw, const PXWindow PXREF pxWindow);
-
-
 // Use for a seperate window that needs to be merged into a main one.
 // Given a spesific window we can try to absorb the contens and underlieing elemetns and move them into your own space.
 // Objects shall not be created or destroyed, simply the ownership of those objects should be transphered. (can we do that?)
@@ -53,64 +45,11 @@ PXPublic PXResult PXAPI PXWindowEmit(PXGUIManager PXREF pxGUIManager, PXWindow P
 // Main
 //---------------------------------------------------------
 PXPublic PXNativDraw* PXAPI PXNativDrawInstantance(void);
-PXPublic PXResult PXAPI PXNativDrawWindowEventPoll(PXNativDraw PXREF pxNativDraw, PXWindow PXREF pxWindow);
 PXPublic PXResult PXAPI PXNativDrawWindowIDValid(PXNativDraw PXREF pxNativDraw, const PXWindowHandle pxNativDrawWindowHandle);
 PXPublic PXResult PXAPI PXNativDrawWindowFetch(PXNativDraw PXREF pxNativDraw, PXWindow PXREF pxWindow, const PXWindowHandle pxNativDrawWindowHandle);
 
-PXPublic PXResult PXAPI PXNativDrawFrameBufferCreate(PXNativDraw PXREF pxNativDraw, PXFrameBuffer PXREF pxFrameBuffer, PXFrameBufferCreateInfo PXREF pxFrameBufferCreateInfo);
-
 
 PXPublic void PXAPI PXNativDrawScreenSizeGet(PXRectangleXYWHI32 PXREF pxRectangleXYWH);
-
-//---------------------------------------------------------
-// Drag'n'Drop
-//---------------------------------------------------------
-PXPublic PXResult PXAPI PXNativDrawClear(PXNativDraw PXREF pxNativDraw, PXWindow PXREF pxWindow);
-PXPublic PXResult PXAPI PXNativDrawBegin(PXNativDraw PXREF pxNativDraw, PXWindow PXREF pxWindow);
-PXPublic PXResult PXAPI PXNativDrawEnd(PXNativDraw PXREF pxNativDraw, PXWindow PXREF pxWindow);
-//---------------------------------------------------------
-
-
-//---------------------------------------------------------
-// Color for drawing
-//---------------------------------------------------------
-PXPublic PXResult PXAPI PXNativDrawBrushCreate(PXNativDraw PXREF pxNativDraw, PXWindowBrush PXREF pxWindowBrush, PXColorRGBI8 PXREF pxColorRGBI8);
-//---------------------------------------------------------
-
-
-//---------------------------------------------------------
-// Color for drawing
-//---------------------------------------------------------
-PXPublic PXResult PXAPI PXNativDrawColorSetBrush(PXNativDraw PXREF pxNativDraw, PXWindow PXREF pxWindow, PXWindowBrush PXREF pxWindowBrush, const char mode);
-PXPublic PXResult PXAPI PXNativDrawSetV3(PXNativDraw PXREF pxNativDraw, PXWindow PXREF pxWindow, PXColorRGBI8 PXREF pxColorRGBI8, const char mode);
-PXPublic PXResult PXAPI PXNativDrawSetRGB(PXNativDraw PXREF pxNativDraw, PXWindow PXREF pxWindow, char red, char green, char blue, const char mode);
-//---------------------------------------------------------
-
-
-//---------------------------------------------------------
-// Font/Text
-//---------------------------------------------------------
-PXPublic PXResult PXAPI PXNativDrawFontListFetch(PXNativDraw PXREF pxNativDraw);
-PXPublic PXResult PXAPI PXNativDrawFontLoadA(PXNativDraw PXREF pxNativDraw, PXFont PXREF pxFont, const char PXREF name, const PXSize nameLength);
-PXPublic PXResult PXAPI PXNativDrawFontRelease(PXNativDraw PXREF pxNativDraw, PXFont PXREF pxFont);
-PXPublic PXResult PXAPI PXNativDrawFontSelect(PXNativDraw PXREF pxNativDraw, PXWindow PXREF pxWindow, PXFont PXREF pxFont);
-//---------------------------------------------------------
-
-
-
-//---------------------------------------------------------
-// Scrollbar
-//---------------------------------------------------------
-PXPublic PXResult PXAPI PXNativDrawScrollbarUpdate(PXNativDraw PXREF pxNativDraw, PXWindow PXREF pxWindow, PXScollbar PXREF pxScollbar);
-//---------------------------------------------------------
-
-
-//---------------------------------------------------------
-// Icons
-//---------------------------------------------------------
-PXPublic PXResult PXAPI PXNativDrawIconFromImage(PXNativDraw PXREF pxNativDraw, PXIcon PXREF pxIcon, PXTexture PXREF PXTexture);
-PXPublic PXResult PXAPI PXNativDrawIconFromAtlas(PXNativDraw PXREF pxNativDraw, PXIcon PXREF pxIcon, PXTexture PXREF PXTexture);
-//---------------------------------------------------------
 
 
 
@@ -120,18 +59,10 @@ PXPublic PXResult PXAPI PXNativDrawIconFromAtlas(PXNativDraw PXREF pxNativDraw, 
 //---------------------------------------------------------
 PXPublic PXResult PXAPI PXNativDrawWindowProperty(PXNativDraw PXREF pxNativDraw, PXWindow PXREF pxWindow, PXGUIProperty PXREF pxWindowPropertyInfoList, const PXSize amount);
 
-PXPublic PXResult PXAPI PXNativDrawTextSet(PXNativDraw PXREF pxNativDraw, PXWindow PXREF pxWindow, const char PXREF text, const PXSize textLength);
-PXPublic PXResult PXAPI PXNativDrawTextGet(PXNativDraw PXREF pxNativDraw, PXWindow PXREF pxWindow, const char PXREF text, const PXSize textLength);
-PXPublic PXResult PXAPI PXNativDrawWindowIsEnabled(PXNativDraw PXREF pxNativDraw, PXWindow PXREF pxWindow);
 PXPublic PXResult PXAPI PXNativDrawWindowXYWH(PXNativDraw PXREF pxNativDraw, PXWindow PXREF pxWindow, PXRectangleXYWHI32 PXREF pxRectangleXYWHI32, const PXBool doWrite);
 PXPublic PXResult PXAPI PXNativDrawWindowResize(PXNativDraw PXREF pxNativDraw, PXWindow PXREF pxWindow, const int width, const int height);
 PXPublic PXResult PXAPI PXNativDrawWindowMoveAndResize(PXNativDraw PXREF pxNativDraw, PXWindow PXREF pxWindow, const int x, const int y, const int width, const int height);
 //---------------------------------------------------------
-
-//---------------------------------------------------------
-// Icon
-//---------------------------------------------------------
-PXPublic PXResult PXAPI PXNativDrawIcon(PXNativDraw PXREF pxNativDraw, PXWindow PXREF pxWindow, PXIcon PXREF pxIcon, const int x, const int y, const int size);
 
 //---------------------------------------------------------
 // Cursor
@@ -142,53 +73,16 @@ PXPublic PXResult PXAPI PXNativDrawCursorPosition(PXNativDraw PXREF pxNativDraw,
 PXPublic PXResult PXAPI PXNativDrawCursorCollisionCheck(PXNativDraw PXREF pxNativDraw);
 
 
-
-//PXPublic PXResult PXAPI PXWindowIconCorner();
-//PXPublic PXResult PXAPI PXWindowIconTaskBar();
-
-
-// Draw text into a given window
-// Example: Text for a button
-//PXPublic PXResult PXAPI PXWindowDrawText(PXGUIManager PXREF pxGUIManager, PXWindow PXREF pxWindow, PXText PXREF pxText);
-PXPublic PXResult PXAPI PXNativDrawA
-(
-    PXNativDraw PXREF pxNativDraw,
-    PXWindow PXREF pxWindow,
-    int x,
-    int y,
-    int width,
-    int height,
-    const char PXREF text,
-    const PXSize textSize,
-    const PXI32U behaviour
-);
-PXPublic PXResult PXAPI PXNativDrawW(PXNativDraw PXREF pxNativDraw, PXWindow PXREF pxWindow, const wchar_t PXREF text, const PXSize textSize);
-PXPublic PXResult PXAPI PXNativDrawPoint(PXNativDraw PXREF pxNativDraw, PXWindow PXREF pxWindow, const int x, const int y);
-PXPublic PXResult PXAPI PXNativDrawPoints(PXNativDraw PXREF pxNativDraw, PXWindow PXREF pxWindow, const int x, const int y, const int width, const int height);
-PXPublic PXResult PXAPI PXNativDrawLine(PXNativDraw PXREF pxNativDraw, PXWindow PXREF pxWindow, const int x1, const int y1, const int x2, const int y2);
-PXPublic PXResult PXAPI PXNativDrawLines(PXNativDraw PXREF pxNativDraw, PXWindow PXREF pxWindow, const int x, const int y, const int width, const int height);
-PXPublic PXResult PXAPI PXNativDrawRectangle(PXNativDraw PXREF pxNativDraw, PXWindow PXREF pxWindow, const int x, const int y, const int width, const int height, PXWindowBrush PXREF pxWindowBrush);
-PXPublic PXResult PXAPI PXNativDrawRectangleRounded(PXNativDraw PXREF pxNativDraw, PXWindow PXREF pxWindow, const int x, const int y, const int width, const int height);
-PXPublic PXResult PXAPI PXNativDrawIconLoad(PXNativDraw PXREF pxNativDraw, PXIcon PXREF pxIcon, const char* iconName);
-PXPublic PXResult PXAPI PXNativDrawIconDraw(PXNativDraw PXREF pxNativDraw, PXWindow PXREF pxWindow, PXIcon PXREF pxIcon, const int x, const int y, const int width, const int height);
-//---------------------------------------------------------
-
-
-
-
 //---------------------------------------------------------
 // Window event functions
 //---------------------------------------------------------
 
-// This function consumes events first before any other 
-// listener revices this. Because of this, this event handler 
-// shall only handle low-level events and not be too much in the way
-PXPublic PXResult PXAPI PXNativDrawEventConsumer(PXNativDraw PXREF pxNativDraw, PXWindowEvent PXREF pxWindowEvent);
+
 
 #if OSUnix
 PXPublic void PXNativDrawEventTranslator(PXNativDraw PXREF pxNativDraw, const XEvent PXREF xEventData);
 #elif PXOSWindowsDestop
-PXPublic LRESULT CALLBACK PXNativDrawEventTranslator(const HWND windowID, const UINT eventID, const WPARAM wParam, const LPARAM lParam);
+
 #endif
 //---------------------------------------------------------
 
@@ -214,8 +108,6 @@ PXPublic PXResult PXAPI PXNativeDrawChildrenReDraw(PXNativDraw PXREF pxNativDraw
 
 PXPublic void PXAPI PXNativeDrawRefreshSizeAllChildren(PXNativDraw PXREF pxNativDraw, PXWindow PXREF window);
 
-
-PXPublic void PXAPI PXNativeDrawMouseTrack(PXWindow PXREF window);
 
 
 /*

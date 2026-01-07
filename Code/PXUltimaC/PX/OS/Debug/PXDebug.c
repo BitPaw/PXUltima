@@ -31,6 +31,8 @@ static PXBool _PXGLOBALDebugEnable = 0;
 
 const char PXDebugerText[] = "Debugger";
 const char PXDebugerStackTraceText[] = "StackTrace";
+const char PXDebugerLoopText[] = "PXDebugLoop";
+const PXI8U PXDebugerLoopTextLength = sizeof(PXDebugerLoopText);
 
 #if OSWindows
 PXPrivate BOOL CALLBACK PXLibraryNameSymbolEnumerate(PSYMBOL_INFO pSymInfo, ULONG SymbolSize, PVOID UserContext);
@@ -93,15 +95,14 @@ PXResult PXAPI PXDebugStartProcess(PXDebug PXREF pxDebug, const PXText PXREF app
 
     // Start Thread that will listen to given process.
     {
-        const PXResult result = PXThreadCreate
-        (
-            &pxDebug->EventListenLoop,
-            "PXDebugLoop",
-            PXNull,
-            (ThreadFunction)PXDebugLoop,
-            pxDebug,
-            PXThreadBehaviourDefault
-        );
+        PXThreadCreateInfo pxThreadCreateInfo;
+        PXClear(PXThreadCreateInfo, &pxThreadCreateInfo);
+        PXTextFromAdressA(&pxThreadCreateInfo.Info.Name, PXDebugerLoopText, 0, PXDebugerLoopTextLength);
+        pxThreadCreateInfo.ThreadFunction = PXDebugLoop;
+        pxThreadCreateInfo.Parameter = pxDebug;
+        pxThreadCreateInfo.Behaviour = PXThreadBehaviourDefault;
+
+        const PXResult result = PXThreadCreate(&pxDebug->EventListenLoop, &pxThreadCreateInfo);
 
         // If thread cannot be started, stop.
         if(PXActionSuccessful != result)
@@ -349,11 +350,11 @@ PXResult PXAPI PXDebugWaitForEvent(PXDebug PXREF pxDebug)
             );
 #endif
 
-            PXThread pxThread;
-            PXThreadConstructFromHandle(&pxThread, pxDebug->Process.ThreadHandle);
+           // PXThread pxThread;
+          //  PXThreadConstructFromHandle(&pxThread, pxDebug->Process.ThreadHandle);
             //pxThread.ThreadHandle = pxDebug->Process.ThreadHandle;
 
-            PXThreadStateChange(&pxThread, PXExecuteStateRunning);
+           // PXThreadStateChange(&pxThread, PXExecuteStateRunning);
 
             break;
         }
@@ -834,13 +835,14 @@ PXResult PXAPI PXDebugHeapMemoryList(PXDebug PXREF pxDebug)
 
 PXResult PXAPI PXDebugFetchSymbolThread(PXDebug PXREF pxDebug, PXSymbol PXREF pxSymbol, PXThread* pxThread)
 {
+    /*
 #if OSUnix
     return PXActionRefusedNotImplemented;
 
 #elif OSWindows
 
     // if we dont have a handle or even an ID, we cant proceed
-    const PXBool hasAtlestOne = pxThread->HandleID || pxThread->Info.Handle.ThreadHandle;
+    const PXBool hasAtlestOne = pxThread->ThreadID || pxThread->ThreadHandle;
 
     if(!hasAtlestOne)
     {
@@ -851,16 +853,16 @@ PXResult PXAPI PXDebugFetchSymbolThread(PXDebug PXREF pxDebug, PXSymbol PXREF px
     void* adress = 0;
 
     // create thread handle if not exists
-    if(!pxThread->Info.Handle.ThreadHandle)
+    if(!pxThread->ThreadHandle)
     {
-        pxThread->Info.Handle.ThreadHandle = OpenThread(THREAD_ALL_ACCESS, PXFalse, pxThread->HandleID);
+        pxThread->ThreadHandle = OpenThread(THREAD_ALL_ACCESS, PXFalse, pxThread->ThreadID);
     }
 
     const THREADINFOCLASS infoClass = (THREADINFOCLASS)9; // ThreadQuerySetWin32StartAddress, undocumented magic number?
 
     const NTSTATUS querryResult = NtQueryInformationThread
     (
-        pxThread->Info.Handle.ThreadHandle,
+        pxThread->ThreadHandle,
         infoClass, 
         &adress,
         sizeof(void*),
@@ -872,6 +874,8 @@ PXResult PXAPI PXDebugFetchSymbolThread(PXDebug PXREF pxDebug, PXSymbol PXREF px
 #else
     return PXActionRefusedNotSupportedByOperatingSystem;
 #endif
+*/
+
 }
 
 #if OSWindows
@@ -882,21 +886,12 @@ BOOL CALLBACK PXPSYM_ENUMLINES_CALLBACK(PSRCCODEINFO LineInfo, PVOID UserContext
 
     char* fileName = LineInfo->FileName;
 
-
-
-
-
     const PXSize index = PXTextFindLastCharacterA(LineInfo->FileName, -1, '\\');
 
     if(-1 != index)
     {
         fileName += index + 1;
     }
-
-
-
-
-
 
     void* kkey = LineInfo->Key;
     void* aaaa = LineInfo->Address;

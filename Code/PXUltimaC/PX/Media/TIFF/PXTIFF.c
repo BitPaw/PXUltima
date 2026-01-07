@@ -1,6 +1,7 @@
 #include "PXTIFF.h"
 
 #include <PX/OS/File/PXFile.h>
+#include <PX/Engine/ECS/PXECS.h>
 
 #define PXTIFFDebug 0
 
@@ -201,7 +202,7 @@ PXSize PXAPI PXTIFFFilePredictSize(const PXSize width, const PXSize height, cons
     return 0;
 }
 
-PXResult PXAPI PXTIFFLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXTIFFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
     PXTIFF pxTIFFOBject;
     PXTIFF* tiff = &pxTIFFOBject;
@@ -497,7 +498,7 @@ PXResult PXAPI PXTIFFLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadI
     return PXActionSuccessful;
 }
 
-PXResult PXAPI PXTIFFSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXTIFFSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

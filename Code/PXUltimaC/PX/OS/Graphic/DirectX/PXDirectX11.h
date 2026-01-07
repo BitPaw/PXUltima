@@ -4,11 +4,13 @@
 #define PXDirectX11Included
 
 #include <PX/OS/Graphic/DirectX/PXDirectX.h>
+#include <PX/Engine/ECS/Resource/Mesh/PXVertexBuffer.h>
+#include <PX/Engine/ECS/Resource/Texture/PXTexture.h>
 
 PXPublic PXResult PXAPI PXDirectX11Initialize(PXDirectX11 PXREF pxDirectX11, PXGraphicInitializeInfo PXREF pxGraphicInitializeInfo);
 PXPublic PXResult PXAPI PXDirectX11Release(PXDirectX11 PXREF pxDirectX11);
 
-PXPublic PXResult PXAPI PXDirectX11TextureAction(PXDirectX11 PXREF pxDirectX11, PXTexturInfo PXREF pxGraphicTexturInfo);
+PXPublic PXResult PXAPI PXDirectX11TextureAction(PXDirectX11 PXREF pxDirectX11, PXTextureInfo PXREF pxGraphicTexturInfo);
 
 PXPublic PXResult PXAPI PXDirectX11Clear(PXDirectX11 PXREF pxDirectX11, const PXColorRGBAF PXREF pxColorRGBAF);
 PXPublic PXResult PXAPI PXDirectX11VertexBufferCreate(PXDirectX11 PXREF pxDirectX11, PXVertexBuffer PXREF pxVertexBuffer);

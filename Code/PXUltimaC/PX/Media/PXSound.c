@@ -4,6 +4,7 @@
 
 #include <math.h>
 #include <stdlib.h>
+#include "PXSound.h"
 
 #define SAMPLE_RATE 44100
 
@@ -421,3 +422,4 @@ void PXAPI FillBufferWithWeather(short* samples, int count, float rain, float wi
         samples[i] = (short)CLAMP(mixed);
     }
 }
+

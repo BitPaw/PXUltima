@@ -5,6 +5,7 @@
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/Media/LZ4/PXLZ4.h>
 #include <PX/OS/PXOS.h>
+#include <PX/Engine/ECS/PXECS.h>
 
 // Logging
 const char PXUSDName[] = "USD";
@@ -193,7 +194,7 @@ const char PXUSDBinarFIELDSETSy[9] = "FIELDSETS";
 const char PXUSDBinarySPECS[5] = "SPECS";
 const char PXUSDBinaryPATHS[5] = "PATHS";
 
-typedef PXActionResult(PXAPI* PXUSDLoadFunction)(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+typedef PXActionResult(PXAPI* PXUSDLoadFunction)(PXResourceMoveInfo PXREF pxResourceLoadInfo);
 typedef PXActionResult(PXAPI* PXUSDSegmentLoadFunction)(PXFile PXREF pxFile, void* object);
 
 const char* PXUSDBinaryTokenListData[6] =
@@ -228,7 +229,7 @@ const PXI8U PXUSDBinaryTokenListAmount = sizeof(PXUSDBinaryTokenListsize) / size
 
 
 
-PXResult PXAPI PXUSDLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXUSDLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
     PXFile PXREF pxFile = pxResourceLoadInfo->FileReference; 
     PXUSDLoadFunction pxUSDLoadFunction;
@@ -283,7 +284,7 @@ PXResult PXAPI PXUSDLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
 
 
 
-PXResult PXAPI PXUSDCLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXUSDCLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
     PXUSD pxUSD;
     PXFile PXREF pxFile = pxResourceLoadInfo->FileReference;
@@ -595,12 +596,12 @@ PXResult PXAPI PXUSDCSectionPaths(PXFile PXREF pxFile, PXTOCSectionPaths PXREF p
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI PXUSDZLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXUSDZLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
 
 }
 
-PXResult PXAPI PXUSDALoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXUSDALoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
     PXCompiler pxCompiler;
     PXFile* tokenSteam = PXFileCreate();
@@ -783,11 +784,11 @@ PXResult PXAPI PXUSDALoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadI
         );
 #endif
 
-        PXResourceTransphereInfo pxResourceTransphereInfo;
-        PXClear(PXResourceTransphereInfo, &pxResourceTransphereInfo);
-        pxResourceTransphereInfo.ResourceLoadContainer = pxUSD;
+        PXResourceMoveInfo PXResourceMoveInfo;
+        PXClear(PXResourceMoveInfo, &PXResourceMoveInfo);
+        PXResourceMoveInfo.ResourceLoadContainer = pxUSD;
 
-        PXResourceLoad(&pxResourceTransphereInfo, &resultPath);
+        PXResourceLoad(&PXResourceMoveInfo, &resultPath);
     }
 #endif
 
@@ -1411,7 +1412,7 @@ void PXAPI PXUSDAParseEntryName(PXUSDA PXREF pxUSDA, PXUSDEntry PXREF pxUSDEntry
 
 
 
-PXResult PXAPI PXUSDSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXUSDSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

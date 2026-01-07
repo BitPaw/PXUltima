@@ -4,6 +4,14 @@
 #define PXDirectX9Included
 
 #include <PX/OS/Graphic/DirectX/PXDirectX.h>
+#include <PX/Engine/ECS/Entity/Camera/PXCamera.h>
+#include <PX/Engine/ECS/Resource/Mesh/PXIndexBuffer.h>
+#include <PX/Engine/ECS/Resource/Texture/PXTexture.h>
+#include <PX/Engine/ECS/Resource/Mesh/PXVertexBuffer.h>
+#include <PX/Engine/ECS/Resource/DrawScript/PXDrawScript.h>
+#include <PX/Engine/ECS/Resource/Light/PXLight.h>
+
+
 
 PXPublic PXResult PXAPI PXDirectX9Initialize(PXDirectX9 PXREF pxDirectX9, PXGraphicInitializeInfo PXREF pxGraphicInitializeInfo);
 PXPublic PXResult PXAPI PXDirectX9Release(PXDirectX9 PXREF pxDirectX9);
@@ -11,7 +19,7 @@ PXPublic PXResult PXAPI PXDirectX9Release(PXDirectX9 PXREF pxDirectX9);
 PXPublic void PXAPI PXDirectX9Select(PXDirectX9 PXREF pxDirectX9);
 PXPublic void PXAPI PXDirectX9Deselect(PXDirectX9 PXREF pxDirectX9);
 
-PXPublic PXResult PXAPI PXDirectX9TextureAction(PXDirectX9 PXREF pxDirectX9, PXTexturInfo PXREF pxGraphicTexturInfo);
+PXPublic PXResult PXAPI PXDirectX9TextureAction(PXDirectX9 PXREF pxDirectX9, PXTextureInfo PXREF pxGraphicTexturInfo);
 
 PXPublic PXResult PXAPI PXDirectX9ShaderProgramCreate(PXDirectX9 PXREF pxDirectX9, PXShaderProgram PXREF pxShaderProgram, PXShader PXREF shaderList, const PXSize amount);
 PXPublic PXResult PXAPI PXDirectX9ShaderProgramSelect(PXDirectX9 PXREF pxDirectX9, PXShaderProgram PXREF pxShaderProgram);

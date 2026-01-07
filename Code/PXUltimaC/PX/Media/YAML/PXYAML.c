@@ -2,6 +2,7 @@
 
 #include <PX/Compiler/PXCompiler.h>
 #include <PX/OS/File/PXFile.h>
+#include <PX/Engine/ECS/PXECS.h>
 
 PXYAMLLineType PXAPI PXYAMLPeekLine(const void* line, const PXSize size)
 {
@@ -58,7 +59,7 @@ PXYAMLLineType PXAPI PXYAMLPeekLine(const void* line, const PXSize size)
     return PXYAMLLineTypeUnkown;
 }
 
-PXResult PXAPI PXYAMLLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXYAMLLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
     PXSize errorCounter = 0;
     PXFile* tokenSteam = PXFileCreate();
@@ -318,7 +319,7 @@ PXResult PXAPI PXYAMLLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadI
     return PXActionSuccessful;
 }
 
-PXResult PXAPI PXYAMLSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXYAMLSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

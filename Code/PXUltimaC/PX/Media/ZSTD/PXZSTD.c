@@ -23,7 +23,7 @@ PXResult PXAPI PXZSTDCompress(PXFile PXREF pxFileInput, PXFile PXREF pxFileOutpu
     return PXActionRefusedNotImplemented;
 }
 
-PXLock pxLockTest;
+PXLock* pxLockTest;
 PXBool isCreated = 0;
 
 PXResult PXAPI PXZSTDDecompress(PXFile PXREF pxFileInput, PXFile PXREF pxFileOutput)
@@ -42,7 +42,6 @@ PXResult PXAPI PXZSTDDecompress(PXFile PXREF pxFileInput, PXFile PXREF pxFileOut
     {
         isCreated = 1;
         PXLockCreate(&pxLockTest, PXLockTypeProcessOnly);
-
     }
 
    // PXLockEngage(&pxLockTest);

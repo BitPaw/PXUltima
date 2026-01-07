@@ -151,12 +151,15 @@ PXResult PXAPI PXStreamCreateWindow(PXStream PXREF pxStream, PXStreamOpenInfo PX
 
     PXStreamWindow PXREF pxStreamWindow = &pxStream->Window;
 
+    /*
     pxStreamWindow->WindowHandle = _windowHandleList[pxStreamOpenInfo->DeviceIndex];
 
     GetClientRect(pxStreamWindow->WindowHandle, &pxStreamWindow->Rectangle);
 
-    pxStreamWindow->WindowDC = GetDC(pxStreamWindow->WindowHandle);
-    pxStreamWindow->MemoryDC = CreateCompatibleDC(pxStreamWindow->WindowDC);
+    
+
+    HDC hdc = GetWindowDC(pxStreamWindow);
+    pxStreamWindow->MemoryDC = CreateCompatibleDC(hdc);
 
     pxStreamWindow->BitmapHandle = CreateCompatibleBitmap
     (
@@ -164,7 +167,7 @@ PXResult PXAPI PXStreamCreateWindow(PXStream PXREF pxStream, PXStreamOpenInfo PX
         pxStreamWindow->Rectangle.right - pxStreamWindow->Rectangle.left,
         pxStreamWindow->Rectangle.bottom - pxStreamWindow->Rectangle.top
     );
-
+    */
     SelectObject(pxStreamWindow->MemoryDC, pxStreamWindow->BitmapHandle);
 }
 
@@ -176,7 +179,10 @@ PXResult PXAPI PXStreamCreateMonitor(PXStream PXREF pxStream, PXStreamOpenInfo P
 
     PXMonitor* monitor = &_monitorHandleList[pxStreamOpenInfo->DeviceIndex];
     
+    /*
+
     pxStreamWindow->WindowDC = monitor->DeciveContect;
+
 
     if(!monitor->DeciveContect)
     {
@@ -197,7 +203,7 @@ PXResult PXAPI PXStreamCreateMonitor(PXStream PXREF pxStream, PXStreamOpenInfo P
     );
 
     SelectObject(pxStreamWindow->MemoryDC, pxStreamWindow->BitmapHandle);
-
+    */
     return PXActionSuccessful;
 }
 
@@ -623,6 +629,8 @@ PXResult PXAPI PXStreamUpdateWindow(PXStream PXREF pxStream)
 {
     PXStreamWindow PXREF pxStreamWindow = &pxStream->Window;
     
+    /*
+
     PXBool validCall = pxStreamWindow->MemoryDC > 0 && pxStreamWindow->WindowDC > 0;
 
     if(!validCall)
@@ -687,7 +695,7 @@ PXResult PXAPI PXStreamUpdateWindow(PXStream PXREF pxStream)
     pxStreamOnFrameInfo.BitPerPixel = infoHeader.biBitCount;
 
     pxStream->OnFrame(pxStream, &pxStreamOnFrameInfo);
-
+    */
     return PXActionSuccessful;
 }
 

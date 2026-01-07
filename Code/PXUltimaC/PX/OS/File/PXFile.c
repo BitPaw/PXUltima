@@ -191,6 +191,21 @@ PXFile;
 
 #endif
 
+
+const char* PXFileLocationModeToString(const PXFileLocationMode pxFileLocationMode)
+{
+    switch(pxFileLocationMode)
+    {
+        case PXFileLocationModeInternal:        return "Internal";
+        case PXFileLocationModeExternal:        return "External";
+        case PXFileLocationModeMappedVirtual:   return "MappedVirtual";
+        case PXFileLocationModeMappedFromDisk:  return "MappedFromDisk";
+        case PXFileLocationModeDirectCached:    return "DirectCached";
+        case PXFileLocationModeDirectUncached:  return "DirectUncached";
+        default:                                return "Invalid";
+    }
+}
+
 PXResult PXAPI PXFilePathSplitt(const PXText PXREF fullPath, PXFilePathStructure PXREF pxFilePathStructure)
 {
     PXClear(PXFilePathStructure, pxFilePathStructure);
@@ -225,7 +240,6 @@ PXResult PXAPI PXFilePathSplitt(const PXText PXREF fullPath, PXFilePathStructure
             {
                 pxFilePathStructure->Drive.SizeAllocated = endDrive + 1;
                 pxFilePathStructure->Drive.SizeUsed = endDrive+1;
-                pxFilePathStructure->Drive.NumberOfCharacters;
                 pxFilePathStructure->Drive.A = fullPath->A;
                 pxFilePathStructure->Drive.Format = fullPath->Format;
             }
@@ -234,7 +248,6 @@ PXResult PXAPI PXFilePathSplitt(const PXText PXREF fullPath, PXFilePathStructure
             {
                 pxFilePathStructure->Extension.SizeAllocated = lengthExtension;
                 pxFilePathStructure->Extension.SizeUsed = lengthExtension;
-                pxFilePathStructure->Extension.NumberOfCharacters;
                 pxFilePathStructure->Extension.A = fullPath->A + indexFirstDot + 1;
                 pxFilePathStructure->Extension.Format = fullPath->Format;
             }
@@ -244,7 +257,6 @@ PXResult PXAPI PXFilePathSplitt(const PXText PXREF fullPath, PXFilePathStructure
             {
                 pxFilePathStructure->FileName.SizeAllocated = lengthFileName;
                 pxFilePathStructure->FileName.SizeUsed = lengthFileName;
-                pxFilePathStructure->FileName.NumberOfCharacters;
                 pxFilePathStructure->FileName.A = fullPath->A + indexFileNameStart;
                 pxFilePathStructure->FileName.Format = fullPath->Format;
             }
@@ -253,7 +265,6 @@ PXResult PXAPI PXFilePathSplitt(const PXText PXREF fullPath, PXFilePathStructure
             {
                 pxFilePathStructure->Directory.SizeAllocated = endPath + 1;
                 pxFilePathStructure->Directory.SizeUsed = pxFilePathStructure->Directory.SizeAllocated- pxFilePathStructure->Drive.SizeUsed;
-                pxFilePathStructure->Directory.NumberOfCharacters;
                 pxFilePathStructure->Directory.A = fullPath->A+ pxFilePathStructure->Drive.SizeUsed;
                 pxFilePathStructure->Directory.Format = fullPath->Format;
             }
@@ -448,6 +459,26 @@ PXResult PXAPI PXFilePathCombine(PXText PXREF fullPath, PXFilePathStructure PXRE
 
     fullPath->A[fullPath->SizeUsed] = '\0';
     return PXActionSuccessful;
+}
+
+PXBool PXAPI PXFilePathExtensionCompare(const PXText PXREF filePath, PXText PXREF extension)
+{
+    switch(filePath->Format)
+    {
+        case TextFormatASCII:
+        {
+            return PXTextCompareA(&filePath->A[filePath->SizeUsed - extension->SizeUsed], extension->SizeUsed, extension->A, extension->SizeUsed, 0);
+        }
+        case TextFormatUNICODE:
+        {
+            //PXTextCompareA(&pxFileEntry.FilePathData[pxFileEntry.FilePathSize - 4], 4, ".dll", 4, 0);
+            break;
+        }
+        default:
+            break;
+    }
+
+    return PXFalse;
 }
 
 PXSize PXAPI PXFilePathExtensionGet(const PXText PXREF filePath, PXText PXREF extension)
@@ -2628,7 +2659,6 @@ PXSize PXAPI PXFileReadTextI(PXFile PXREF pxFile, int PXREF number)
     PXText pxText;
     pxText.SizeAllocated = PXFileRemainingSize(pxFile);
     pxText.SizeUsed = PXFileRemainingSize(pxFile);
-    pxText.NumberOfCharacters = PXFileRemainingSize(pxFile);
     pxText.A = (char*)PXFileDataAtCursor(pxFile);
     pxText.Format = TextFormatASCII;
 
@@ -3895,6 +3925,11 @@ PXSize PXAPI PXFileWriteNewLine(PXFile PXREF pxFile)
 PXSize PXAPI PXFileWriteC(PXFile PXREF pxFile, const char character)
 {
     return PXFileWriteB(pxFile, &character, 1);
+}
+
+PXSize PXAPI PXFileWriteText(PXFile PXREF pxFile, PXText PXREF pxText)
+{
+    return PXFileWriteB(pxFile, pxText->Data, pxText->SizeUsed);
 }
 
 PXSize PXAPI PXFileWriteA(PXFile PXREF pxFile, const char PXREF text, const PXSize textSize)

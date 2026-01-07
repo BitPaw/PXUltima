@@ -32,7 +32,7 @@ typedef struct PXProgram_
     PXSize ParameterListSize;
     char** ParameterList;
 
-    PXThread WorkingThread;
+    PXThread* WorkingThread;
     PXSize ReturnValue;
     unsigned char ExecutionSuccessfull;
 }

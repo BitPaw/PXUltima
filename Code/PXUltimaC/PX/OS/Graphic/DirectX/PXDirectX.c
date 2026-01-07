@@ -21,6 +21,7 @@ const char PXDirectXText[] = "DirectX";
 
 PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXGraphicInitializeInfo PXREF pxGraphicInitializeInfo)
 {
+#if PXLogEnable
     PXLogPrint
     (
         PXLoggingInfo,
@@ -28,6 +29,7 @@ PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXGraphicInitializ
         "Initialize",
         "---Start---"
     );
+#endif
 
     PXGraphic PXREF pxGraphic = pxGraphicInitializeInfo->Graphic;
 
@@ -43,6 +45,7 @@ PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXGraphicInitializ
 
     if(PXDirectXVersionNewest == pxDirectX->DirectXVersion)
     {
+#if PXLogEnable
         PXLogPrint
         (
             PXLoggingInfo,
@@ -50,6 +53,7 @@ PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXGraphicInitializ
             "Initialize",
             "Brute force newest version, testing each one."
         );
+#endif
 
         const PXSize amountOfSolutions = 2;
         const PXGraphicInitializeFunction directXSolutions[5] =
@@ -76,6 +80,7 @@ PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXGraphicInitializ
             pxGraphic->Initialize = directXSolutions[i];
             pxDirectX->DXTargetAPI = directXSolutionsObject[i];
 
+#if PXLogEnable
             PXLogPrint
             (
                 PXLoggingInfo,
@@ -85,11 +90,13 @@ PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXGraphicInitializ
                 i+1,
                 amountOfSolutions
             );
+#endif
 
             const PXResult initializeResult = pxGraphic->Initialize(pxDirectX->DXTargetAPI, pxGraphicInitializeInfo);
 
             if(PXActionSuccessful == initializeResult)
             {
+#if PXLogEnable
                 PXLogPrint
                 (
                     PXLoggingInfo,
@@ -99,6 +106,7 @@ PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXGraphicInitializ
                     i + 1,
                     amountOfSolutions
                 );
+#endif
 
                 directXCreated = PXTrue;
 
@@ -190,7 +198,7 @@ PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXGraphicInitializ
         PXLogPrint
         (
             PXLoggingInfo,
-            "DirectX",
+            PXDirectXText,
             "Initialize",
             "Select DirectX 10.1"
         );
@@ -204,7 +212,7 @@ PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXGraphicInitializ
         PXLogPrint
         (
             PXLoggingInfo,
-            "DirectX",
+            PXDirectXText,
             "Initialize",
             "Select DirectX 10"
         );
@@ -218,7 +226,7 @@ PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXGraphicInitializ
         PXLogPrint
         (
             PXLoggingInfo,
-            "DirectX",
+            PXDirectXText,
             "Initialize",
             "Select DirectX 9"
         );
@@ -234,7 +242,7 @@ PXResult PXAPI PXDirectXInitialize(PXDirectX PXREF pxDirectX, PXGraphicInitializ
     PXLogPrint
     (
         PXLoggingInfo,
-        "DirectX",
+        PXDirectXText,
         "Initialize",
         "Calling spesific API"
     );

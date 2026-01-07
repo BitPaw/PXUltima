@@ -11,7 +11,7 @@ typedef struct PXSVG_
 }
 PXSVG;
 
-PXPublic PXResult PXAPI PXSVGLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXSVGSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXSVGLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXSVGSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
 
 #endif

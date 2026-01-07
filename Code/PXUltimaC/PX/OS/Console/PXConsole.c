@@ -11,7 +11,7 @@
 #include <PX/OS/PXOS.h>
 
 PXLock* _GLOBALCosolePrintLock = 0;
-PXThread _GLOBALSourceThread;
+PXI32U* _GLOBALSourceThreadID;
 
 #define PXConsoleColorEnable 1
 
@@ -577,8 +577,8 @@ void PXAPI PXLogPrintInvoke(PXLoggingEventData PXREF pxLoggingEventData, ...)
         break;
     }
 
-    PXThread pxThread;
-    PXThreadCurrent(&pxThread);
+    //PXThread pxThread;
+   // PXThreadCurrent(&pxThread);
 
     PXTime pxTime;
     PXTimeNow(&pxTime);
@@ -616,10 +616,18 @@ void PXAPI PXLogPrintInvoke(PXLoggingEventData PXREF pxLoggingEventData, ...)
 
 void PXAPI PXLogEnableASYNC()
 {
-    PXLockCreate(_GLOBALCosolePrintLock, PXLockTypeGlobal);
+    PXLockCreateInfo pxLockCreateInfo;
+    PXClear(PXLockCreateInfo, &pxLockCreateInfo);
+    pxLockCreateInfo.Type = PXLockTypeGlobal;
 
-    PXThreadCurrent(&_GLOBALSourceThread);
+    PXLockCreate(_GLOBALCosolePrintLock, &pxLockCreateInfo);
+
+    _GLOBALSourceThreadID = PXThreadCurrentID();
 }
+
+
+char _formattedText[1024];
+char _exportTextBuffer[1024];
 
 void PXAPI PXLogPrint(const PXLoggingType loggingType, const char PXREF source, const char PXREF action, const char PXREF format, ...)
 {
@@ -691,21 +699,18 @@ void PXAPI PXLogPrint(const PXLoggingType loggingType, const char PXREF source, 
 
 
     PXText formattedText;
-    PXTextConstructNamedBufferA(&formattedText, formattedTextBuffer, 1024);
-
     PXText exportText;
-    PXTextConstructNamedBufferA(&exportText, bufferColorBuffer, 1024);
+
+    PXTextFromAdressA(&formattedText, _formattedText, 0, sizeof(_formattedText));
+    PXTextFromAdressA(&exportText, _exportTextBuffer, 0, sizeof(_exportTextBuffer));
 
     PXTime pxTime;
-    PXTimeNow(&pxTime);
-
-
-  
+    PXTimeNow(&pxTime);  
 
     const DWORD threadID = GetCurrentThreadId();
-    char threadIDName[16];
+    char threadIDName[64];
 
-    if(_GLOBALSourceThread.HandleID == threadID)
+    if(_GLOBALSourceThreadID == threadID)
     {
         PXTextPrintA(threadIDName, 64, "§6#Main");
     }

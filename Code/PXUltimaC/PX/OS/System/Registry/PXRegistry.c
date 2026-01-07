@@ -8,6 +8,10 @@
 #include <Windows.h>
 #include <winreg.h>
 
+
+const char PXRegistryLibrary[] = "ADVAPI32.DLL";
+const PXI8U PXRegistryLibraryLength = sizeof(PXRegistryLibrary);
+
 typedef HKEY PXRegistryID;
 
 //#pragma comment(lib, "Advapi32.lib")
@@ -38,7 +42,9 @@ PXResult PXAPI PXRegistryInitialize(PXRegistry PXREF registry)
 
     // open Librarfy
     {
-        const PXResult result = PXLibraryOpenA(&registry->Library, "ADVAPI32.DLL");
+        PXText pxText;
+        PXTextFromAdressA(&pxText, PXRegistryLibrary, PXRegistryLibraryLength, PXRegistryLibraryLength);
+        const PXResult result = PXLibraryOpen(&registry->Library, &pxText);
 
         if(!result)
         {

@@ -24,11 +24,17 @@ typedef MMRESULT(WINAPI* PXjoyGetPosEx)(_In_ UINT uJoyID, _Out_ LPJOYINFOEX pji)
 
 #endif
 
+const char PXWindowsMultiMedia[] = "WINMM.DLL";
+const PXI8U PXWindowsMultiMediaLength = sizeof(PXWindowsMultiMedia);
+
 PXResult PXAPI PXControllerSystemInitilize(PXControllerSystem PXREF pxControllerSystem)
 {
     // Library
     {
-        const PXResult loadLibResult = PXLibraryOpenA(&pxControllerSystem->InputLibrary, "WINMM.DLL");
+        PXText pxText;
+        PXTextFromAdressA(&pxText, PXWindowsMultiMedia, sizeof(PXWindowsMultiMediaLength), sizeof(PXWindowsMultiMediaLength));
+
+        const PXResult loadLibResult = PXLibraryOpen(&pxControllerSystem->InputLibrary, &pxText);
 
         if(PXActionSuccessful != loadLibResult)
         {

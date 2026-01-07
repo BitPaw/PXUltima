@@ -4,6 +4,7 @@
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/Media/PXText.h>
 #include <PX/Media/PXDocument.h>
+#include <PX/Engine/ECS/PXECS.h>
 
 PXXMLSymbol PXAPI PXXMLPeekLine(const char PXREF text, const PXSize textSize)
 {
@@ -204,7 +205,7 @@ void PXAPI PXXMLBlockParse(PXCodeDocument PXREF pxDocument, PXCompiler PXREF pxC
     }
 }
 
-PXResult PXAPI PXXMLLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXXMLLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
     PXFile* tokenSteam = PXFileCreate();
 
@@ -228,7 +229,7 @@ PXResult PXAPI PXXMLLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
     return PXActionSuccessful;
 }
 
-PXResult PXAPI PXXMLSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXXMLSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

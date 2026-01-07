@@ -10,6 +10,8 @@
 
 #include <PX/OS/Library/PXLibrary.h>
 #include <PX/OS/Async/PXThread.h>
+#include "Async/PXLock.h"
+#include <PX/Engine/ECS/Reflection/PXReflection.h>
 
 typedef enum PXSymbolType_
 {
@@ -60,7 +62,12 @@ typedef struct PXSymbol_
 
     PXSymbolType Type;// PDB classification
 
-    void* ModuleAdress; // Base Address of module comtaining this symbol
+#if OSUnix
+    void* ModuleAdress; // Base Address of module comtaining this symbol 
+#elif OSWindows
+    void* ModuleAdress; // Base Address of module comtaining this symbol 
+#endif
+
 
     PXHandleModule ModuleHandle; // OS depended handle to the module
 
@@ -151,7 +158,7 @@ typedef struct PXOS_
 
     PXBool Init;
 
-    PXThread MainThread;
+    PXI32U MainThreadID;
 }
 PXOS;
 
@@ -245,13 +252,6 @@ PXPublic PXResult PXAPI PXProcessMemoryRead
     const PXSize bufferSizeMax,
     PXSize PXREF bufferSizeWritten
 );
-
-
-PXPublic PXBool PXAPI PXThreadIsMain();
-PXPublic PXResult PXAPI PXThreadCurrent(PXThread PXREF pxThread);
-PXPublic PXResult PXAPI PXThreadResume(PXThread PXREF pxThread);
-PXPublic PXResult PXAPI PXThreadSuspend(PXThread PXREF pxThread);
-PXPublic PXResult PXAPI PXThreadWait(PXThread PXREF pxThread);
 
 PXPublic PXResult PXAPI PXThreadCPUCoreAffinitySet(PXThread PXREF pxThread, const PXI16U coreIndex);
 
@@ -364,24 +364,6 @@ PXPublic PXResult PXAPI PXDebugProcessBreak();
 PXPublic PXResult PXAPI PXDebugIsPresent(PXBool PXREF isPresent);
 PXPublic PXResult PXAPI PXDebugIsPresentRemote(const PXProcessHandle processHandle, PXBool PXREF isPresent);
 PXPublic PXResult PXAPI PXDebugActiveProcessStop(const PXI32U processID);
-
-
-
-#define PXDebugModuleNameMask   0b11
-#define PXDebugModuleNameFull   0b00
-#define PXDebugModuleNameShort  0b01
-
-// Retrieves the name from a module handle
-PXPublic PXResult PXAPI PXDebugModuleNameGet
-(
-    const PXHandleModule pxHandleModule,
-    char* moduleName,
-    const PXSize moduleNameSize,
-    PXSize PXREF sizeWritten,
-    const PXI32U flags
-);
-
-
 //---------------------------------------------------------
 
 
@@ -397,12 +379,6 @@ PXPublic PXResult PXAPI PXSymbolStackWalk(PXSymbolStackWalkInfo PXREF pxSymbolSt
 PXPublic PXResult PXAPI PXSymbolStackTrace(PXSymbol PXREF pxSymbolList, const PXSize pxSymbolListAmount, const PXSize start, const PXSize depth);
 PXPublic PXResult PXAPI PXSymbolUnDecorateName(const char* inputName, char* name, const PXSize nameLengthMax, PXSize* nameLengthWritten); // UnDecorateSymbolName
 PXPublic PXResult PXAPI PXSymbolFromAddress(PXSymbol PXREF pxSymbol, const void PXREF adress);
-PXPublic PXResult PXAPI PXSymbolEnumerate();
-PXPublic PXResult PXAPI PXSymbolFunctionTableAccess();
-PXPublic PXResult PXAPI PXSymbolModuleBaseGet();
-// Adress to module HANDLE
-PXPublic PXResult PXAPI PXSymbolModuleHandleFromAdress(PXHandleModule PXREF pxHandleModule, const void PXREF adress);
-PXPublic PXResult PXAPI PXSymbolModuleName(const PXHandleModule pxHandleModule, char PXREF name);
 //---------------------------------------------------------
 
 
@@ -411,8 +387,6 @@ PXPublic PXResult PXAPI PXSymbolModuleName(const PXHandleModule pxHandleModule, 
 //---------------------------------------------------------
 // Thread - 
 //---------------------------------------------------------
-typedef PXResult (PXAPI* PXLockFunction)(PXLock PXREF pxLock);
-
 PXPublic PXResult PXAPI PXSemaphorCreate(PXLock PXREF pxLock);
 PXPublic PXResult PXAPI PXSemaphorDelete(PXLock PXREF pxLock);
 PXPublic PXResult PXAPI PXSemaphorEnter(PXLock PXREF pxLock);
@@ -494,5 +468,8 @@ PXPublic PXResult PXAPI PXPerformanceInfoGet(PXPerformanceInfo PXREF pxPerforman
 //---------------------------------------------------------
 PXPublic PXResult PXAPI PXGPUList(PXGPUPhysical PXREF pxGPUPhysicalList, PXSize PXREF pxGPUPhysicalListSize);
 //---------------------------------------------------------
+
+
+PXPublic void PXAPI PXConvertAnyToFloat(void* a, const PXI32U aType, float* b);
 
 #endif

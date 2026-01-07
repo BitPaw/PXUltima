@@ -32,17 +32,16 @@ typedef struct PXLibrary_
 #if OSUnix
     void* ID;
 #elif OSWindows
-    HMODULE ID; // HINSTANCE(semms is also okey)
+    // Note: Windows calls DLL files modules.
+    HMODULE ModuleHandle; // HINSTANCE(semms is also okey)
 #endif
 
     PXProcessHandle ProcessHandle;
 }
 PXLibrary;
 
-PXPublic PXResult PXAPI PXLibraryOpen(PXLibrary PXREF pxLibrary, const PXText PXREF filePath); //  gain access to an executable object file. RTLD_LAZY
-PXPublic PXResult PXAPI PXLibraryOpenA(PXLibrary PXREF pxLibrary, const char PXREF filePath);
-PXPublic PXResult PXAPI PXLibraryOpenW(PXLibrary PXREF pxLibrary, const wchar_t PXREF filePath);
-PXPublic PXResult PXAPI PXLibraryClose(PXLibrary PXREF pxLibrary); // close a dlopen object
+PXPublic PXResult PXAPI PXLibraryOpen(PXLibrary PXREF pxLibrary, const PXText PXREF filePath);
+PXPublic PXResult PXAPI PXLibraryClose(PXLibrary PXREF pxLibrary);
 
 PXPublic PXResult PXAPI PXLibraryGetSymbolBinding(PXLibrary PXREF pxLibrary, void* PXREF bindingObject, const char PXREF symbolList, const PXSize amount, const PXBool areAllImportant);
 PXPublic PXResult PXAPI PXLibraryGetSymbolListA(PXLibrary PXREF pxLibrary, PXLibraryFuntionEntry PXREF pxLibraryFuntionEntryList, const PXSize amount);
@@ -50,5 +49,22 @@ PXPublic PXResult PXAPI PXLibraryGetSymbolA(PXLibrary PXREF pxLibrary, void* PXR
 PXPublic PXResult PXAPI PXLibraryGetSymbol(PXLibrary PXREF pxLibrary, void* PXREF libraryFunction, const PXText* symbolName); // obtain the address of a symbol from a dlopen object
 
 PXPublic PXResult PXAPI PXLibraryCurrentlyLoaded(PXProcessHandle pxProcessHandle, PXLibrary* PXREF pxLibraryList, PXSize PXREF amount);
+
+
+#define PXDebugModuleNameMask   0b11
+#define PXDebugModuleNameFull   0b00
+#define PXDebugModuleNameShort  0b01
+
+
+PXPublic PXResult PXAPI PXLibraryFromAdress(PXLibrary PXREF pxLibrary, const void PXREF adress);
+PXPublic PXResult PXAPI PXLibraryName(PXLibrary PXREF pxLibrary, PXText PXREF pxTextLibraryName);
+
+// Lib can be NULL, means we dont need the lib result
+PXPublic PXResult PXAPI PXLibraryNameFromAdress
+(
+    PXLibrary* pxLibrary, 
+    PXText PXREF pxTextLibraryName, 
+    const void PXREF adress
+);
 
 #endif

@@ -95,8 +95,6 @@ PXOS _PXOS;
 const char PXOSName[] = "Kernel-OS";
 const char PXOSFile[] = "File";
 const char PXOSThread[] = "Thread";
-const char PXOSSemaphore[] = "Semaphore";
-const char PXOSCriticalSection[] = "Crit-Section";
 const char PXOSVirtualAllocText[] = "Virtual-Alloc";
 const char PXOSVirtualFreeText[] = "Virtual-Free";
 
@@ -144,9 +142,13 @@ PXResult PXAPI PXSystemPrelude()
 
     PXClear(PXOS, &_PXOS);
 
+    _PXOS.MainThreadID = PXThreadCurrentID();
+
     // kernel32.dll
     {
-        PXLibraryOpenA(&_PXOS.LibraryKernel, PXWindowsLibraryKernel32);
+        PXText pxText;
+        PXTextFromAdressA(&pxText, PXWindowsLibraryKernel32, sizeof(PXWindowsLibraryKernel32), sizeof(PXWindowsLibraryKernel32));
+        PXLibraryOpen(&_PXOS.LibraryKernel, &pxText);
 
         PXLibraryFuntionEntry pxLibraryFuntionEntryList[] =
         {
@@ -168,7 +170,9 @@ PXResult PXAPI PXSystemPrelude()
 
     // Dbghelp.dll
     {
-        PXLibraryOpenA(&_PXOS.LibraryDebugHelp, PXWindowsLibraryDebugHelp);
+        PXText pxText;
+        PXTextFromAdressA(&pxText, PXWindowsLibraryDebugHelp, sizeof(PXWindowsLibraryDebugHelp), sizeof(PXWindowsLibraryDebugHelp));
+        PXLibraryOpen(&_PXOS.LibraryDebugHelp, &pxText);
 
         PXLibraryFuntionEntry pxLibraryFuntionEntryList[] =
         {
@@ -188,10 +192,11 @@ PXResult PXAPI PXSystemPrelude()
         PXLibraryGetSymbolListA(&_PXOS.LibraryDebugHelp, pxLibraryFuntionEntryList, amount);
     }
 
-
     // ntdll.dll
     {
-        PXLibraryOpenA(&_PXOS.LibraryNT, PXWindowsLibrarNTDLL);
+        PXText pxText;
+        PXTextFromAdressA(&pxText, PXWindowsLibrarNTDLL, sizeof(PXWindowsLibrarNTDLL), sizeof(PXWindowsLibrarNTDLL));
+        PXLibraryOpen(&_PXOS.LibraryNT, &pxText);
 
         PXLibraryFuntionEntry pxLibraryFuntionEntryList[] =
         {
@@ -203,7 +208,7 @@ PXResult PXAPI PXSystemPrelude()
         PXLibraryGetSymbolListA(&_PXOS.LibraryNT, pxLibraryFuntionEntryList, amount);
     }
 
-    PXThreadCurrent(&_PXOS.MainThread);
+   
 
     _PXOS.Init = PXTrue;
 
@@ -937,214 +942,6 @@ PXResult PXAPI PXProcessMemoryRead
     return pxActionResult;
 }
 
-PXBool PXAPI PXThreadIsMain()
-{
-    PXThread pxThreadCurrent;
-
-    PXThreadCurrent(&pxThreadCurrent);
-
-    return _PXOS.MainThread.HandleID == pxThreadCurrent.HandleID;
-}
-
-PXResult PXAPI PXThreadCurrent(PXThread PXREF pxThread)
-{
-    PXClear(PXThread, pxThread);
-
-#if OSUnix
-
-    pxThread->Info.Handle.ThreadHandle = pthread_self();
-    pxThread->HandleID = getpid();
-
-    return PXActionSuccessful;
-
-#elif OSWindows
-
-    // Getting the thread handle yields a pseudo handle that is not useful
-    pxThread->Info.Handle.ThreadHandle = GetCurrentThread(); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
-    pxThread->HandleID = GetCurrentThreadId(); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
-
-    return PXActionSuccessful;
-#else
-    return PXActionRefusedNotSupportedByLibrary;
-#endif
-}
-
-PXResult PXAPI PXThreadResume(PXThread PXREF pxThread)
-{
-    pxThread->Info.Behaviour &= ~PXExecuteStateMask;
-    pxThread->Info.Behaviour |= PXExecuteStateRunning;
-
-#if OSUnix
-    return PXActionRefusedNotImplemented;
-
-#elif OSWindows
-    const PXProcessThreadHandle threadHandle = pxThread->Info.Handle.ThreadHandle;
-    const DWORD suspendCount = ResumeThread(threadHandle); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
-    const PXResult pxActionResult = PXErrorCurrent(-1 != suspendCount);
-
-    if(PXActionSuccessful != pxActionResult)
-    {
-        return pxActionResult;
-    }
-#endif
-
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXOSName,
-        PXOSThread,
-        "Handle:<%p>, ID:<%i>, Resume",
-        threadHandle,
-        pxThread->HandleID
-    );
-#endif
-}
-
-PXResult PXAPI PXThreadSuspend(PXThread PXREF pxThread)
-{
-    const PXProcessThreadHandle threadHandle = pxThread->Info.Handle.ThreadHandle;
-
-    pxThread->Info.Behaviour &= ~PXExecuteStateMask;
-    pxThread->Info.Behaviour |= PXExecuteStateSuspended;
-
-#if OSUnix
-    return PXActionRefusedNotImplemented;
-
-#elif OSWindows
-    const DWORD result = SuspendThread(threadHandle); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
-    const PXResult pxActionResult = PXErrorCurrent(-1 != result);
-
-    if(PXActionSuccessful != pxActionResult)
-    {
-        return pxActionResult;
-    }
-#endif
-
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXOSName,
-        PXOSThread,
-        "Handle:<%p>, ID:<%i>, Suspend",
-        threadHandle,
-        pxThread->HandleID
-    );
-#endif
-}
-
-PXResult PXAPI PXThreadWait(PXThread PXREF pxThread)
-{
-    pxThread->Info.Behaviour &= ~PXExecuteStateMask;
-    pxThread->Info.Behaviour |= PXExecuteStateWaiting;
-
-    pxThread->ReturnResultCode = 0; // Reset Code
-
-#if OSUnix
-    const int resultID = pthread_join(pxThread->ThreadHandle, &pxThread->ReturnResult); // pthread.h
-    const PXBool success = 0 == resultID;
-
-    if(!success)
-    {
-        return PXErrorCodeFromID(resultID);
-    }
-
-    return PXActionSuccessful;
-
-#elif OSWindows
-
-    const PXProcessThreadHandle threadHandle = pxThread->Info.Handle.ThreadHandle;
-    const DWORD resultID = WaitForSingleObject(threadHandle, INFINITE); // Windows XP (+UWP), Kernel32.dll, synchapi.h
-
-    for(;;)
-    {
-        const BOOL result = GetExitCodeThread(threadHandle, &pxThread->ReturnResultCode); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
-        const PXBool isDone = STILL_ACTIVE != pxThread->ReturnResultCode;
-
-        if(isDone)
-        {
-            break;
-        }
-
-        PXThreadYieldToOtherThreads();
-    }
-#endif
-}
-
-PXResult PXAPI PXThreadCPUCoreAffinitySet(PXThread PXREF pxThread, const PXI16U coreIndex)
-{
-    //MAXIMUM_PROCESSORS;
-
-    const DWORD resultID = SetThreadIdealProcessor
-    (
-        pxThread->Info.Handle.ThreadHandle,
-        coreIndex
-    ); // Windows XP (+UWP), Kernel32.dll, processthreadsapi.h
-    const PXBool successful = (DWORD)-1 != resultID;
-    PXResult result = PXErrorCurrent(successful);
-
-
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXOSName,
-        PXOSThread,
-        "ID:<%5i>, %0i, Affinity",
-        pxThread->HandleID,
-        coreIndex
-    );
-#endif
-
-    /*
-    DWORD_PTR SetThreadAffinityMask(
-        [in] HANDLE    hThread,
-        [in] DWORD_PTR dwThreadAffinityMask
-    ); // Windows XP (+UWP), Kernel32.dll, winbase.h
-    */
-
-    return result;
-}
-
-
-
-PXResult PXAPI PXThreadYieldToOtherThreads()
-{
-    PXActionResult pxActionResult;
-
-#if OSUnix
-    const int yieldResultID =
-#if 0
-        pthread_yield(); // [deprecated] pthread.h
-#else
-        sched_yield(); // sched.h, libc, sets errno but on linux never fails
-#endif
-    pxActionResult = PXErrorCurrent(0 != yieldResultID);
-
-#elif OSWindows
-    // UmsThreadYield() // Windows 7 (64-Bit only), Kernel32.dll, winbase.h [Debcricated in Windows 11]
-
-#if 0
-    Sleep(0);
-    pxActionResult = PXActionSuccessful;
-#else
-    const PXBool switchSuccessful = SwitchToThread(); // Windows 2000 SP4 (+UWP), Kernel32.dll, processthreadsapi.h
-    pxActionResult = PXActionSuccessful; // cant fail
-#endif
-  
-#else
-    pxActionResult = PXActionNotSupportedByOperatingSystem;
-#endif
-
-    return pxActionResult;
-}
-
-
-
-
-
-
 PXResult PXAPI PXMemoryHeapCreate(PXMemoryHeap PXREF pxMemoryHeap)
 {
 #if OSUnix
@@ -1766,7 +1563,7 @@ void* PXAPI PXMemoryVirtualAllocate(PXSize size, PXSize PXREF createdSize, const
     {
 #if OSWindows       
 
-        if(PXThreadIsMain())
+        //if(PXThreadIsMain()) // Why a check?
         {
             PXWindowsCheckPermission();
         }
@@ -2259,7 +2056,6 @@ PXResult PXAPI PXSymbolModuleLoad(const PXProcessHandle processHandle, const cha
 
     }
 
-
     return PXActionSuccessful;
 }
 
@@ -2433,7 +2229,10 @@ PXResult PXAPI PXSymbolStackTrace(PXSymbol PXREF pxSymbolList, const PXSize pxSy
         // PXClear(PXSymbol, &pxSymbol);
 
         PXSymbolFromAddress(pxSymbol, symbolAdress);
-        PXDebugModuleNameGet(pxSymbol->ModuleAdress, pxSymbol->NameModule, 64, PXNull, PXDebugModuleNameShort);
+
+        PXText pxText;
+        PXTextFromAdressA(&pxText, pxSymbol->NameModule, 0, 64);
+        PXLibraryNameFromAdress(PXNull, &pxText, pxSymbol->ModuleAdress); // PXDebugModuleNameShort
 
         ++symbolIndex;
 
@@ -2638,18 +2437,20 @@ PXResult PXAPI PXSymbolFromAddress(PXSymbol PXREF pxSymbol, const void PXREF adr
         
         PXHandleModule pxHandleModule;
         
-        PXSymbolModuleHandleFromAdress(&pxHandleModule, pxSymbol->ModuleAdress);
-        PXSymbolModuleName(pxHandleModule, pxSymbol->NameModule);
+        PXLibraryFromAdress(&pxHandleModule, pxSymbol->ModuleAdress);
+        PXLibraryName(pxHandleModule, pxSymbol->NameModule);
 
         PXTextCopyA(symbolInfo.SymbolInfo.Name, symbolInfo.SymbolInfo.NameLen, pxSymbol->NameSymbol, 64);
 
 
         // Index
         {
+            ULONG64 adress = (ULONG64)pxSymbol->ModuleAdress;
+
             const BOOL succca = SymFromIndex
             (
                 processHandle,
-                pxSymbol->ModuleAdress,
+                adress,
                 symbolInfo.SymbolInfo.Index,
                 &symbolInfo.SymbolInfo
             );
@@ -2691,360 +2492,8 @@ PXResult PXAPI PXSymbolFromAddress(PXSymbol PXREF pxSymbol, const void PXREF adr
 #endif
 }
 
-PXResult PXAPI PXSymbolEnumerate()
-{
-   
-}
 
-PXResult PXAPI PXSymbolFunctionTableAccess()
-{
-   
-}
 
-PXResult PXAPI PXSymbolModuleBaseGet()
-{
- 
-}
-
-PXResult PXAPI PXSymbolModuleHandleFromAdress(PXHandleModule PXREF pxHandleModule, const void PXREF adress)
-{
-#if OSUnix && 0
-    Dl_info info;
-
-    const int resultID = dladdr(adress, &info); // dlfcn.h
-    const PXResult moduleFetchResult = PXErrorCurrent(0 != resultID);
-
-    return moduleFetchResult;
-#elif OSWindows
-    const PXBool moduleFetchSuccess = GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCTSTR)adress, pxHandleModule);
-    const PXResult moduleFetchResult = PXErrorCurrent(moduleFetchSuccess);
-
-    return moduleFetchResult;
-#else
-    * pxHandleModule = PXNull;
-
-    return PXActionRefusedNotSupportedByOperatingSystem;
-#endif
-}
-
-PXResult PXAPI PXSymbolModuleName(const PXHandleModule pxHandleModule, char PXREF name)
-{
-#if OSUnix
-#elif OSWindows
-    char buffer[MAX_PATH];
-
-    DWORD size = GetModuleFileName(pxHandleModule, buffer, MAX_PATH);
-
-    const PXSize index = PXTextFindLastCharacterA(buffer, -1, '\\');
-
-    if(-1 != index)
-    {
-        char* source = &buffer[index+1];
-        DWORD sourceSize = size - index-1;
-
-        PXTextCopyA(source, sourceSize, name, sourceSize);
-    }
-
-    return PXActionSuccessful;
-#endif
-}
-
-
-
-
-const PXI32U _lockWaitSpan = 100;
-const PXI32U _lockWaitTrys = 3;
-
-
-PXResult PXAPI PXSemaphorCreate(PXLock PXREF pxLock)
-{
-    PXActionResult pxActionResult;
-
-
-#if OSUnix
- 
-    int sharedPointer = 0;
-    unsigned int value = 1;
-
-    const int resultID = sem_init(&pxLock->ID, sharedPointer, value);
-    pxActionResult = PXErrorCurrent(0 == resultID); // 0=sucessful, -1=Error
-
-#elif OSWindows
-    LONG lInitialCount = 1;
-    LONG lMaximumCount = 1;
-
-    pxLock->SemaphoreHandle = CreateSemaphoreA(PXNull, lInitialCount, lMaximumCount, PXNull);
-    pxActionResult = PXErrorCurrent(pxLock->SemaphoreHandle != PXNull); 
-
-#else
-    pxActionResult = PXActionRefusedNotImplemented;
-#endif
-
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXOSName,
-        PXOSSemaphore,
-        "Created: HANDLE:<%p>",
-        pxLock->SemaphoreHandle
-    );
-#endif
-
-    return pxActionResult; // Success
-}
-
-PXResult PXAPI PXSemaphorDelete(PXLock PXREF pxLock)
-{
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXOSName,
-        PXOSSemaphore,
-        "Created: HANDLE:<%p>",
-        pxLock->SemaphoreHandle
-    );
-#endif
-
-#if OSUnix
-    const int closingResult = sem_destroy(&lock->ID);
-#elif OSWindows
-    const BOOL closingResult = CloseHandle(pxLock->SemaphoreHandle);
-#endif
-}
-
-PXResult PXAPI PXSemaphorEnter(PXLock PXREF pxLock)
-{
-#if PXLogEnable && 0
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXOSName,
-        PXOSSemaphore,
-        "Enter"
-    );
-#endif
-
-    PXActionResult waitResult = PXActionInvalid;
-
-#if OSUnix
-    const int waitResultID = sem_wait(&lock->SemaphoreHandle);
-    waitResult = PXErrorCurrent(0 == waitResultID);
-#elif OSWindows
-
-    PXSize tryCounter = 0;
-
-    for(;;)
-    {
-        const DWORD result = WaitForSingleObject(pxLock->SemaphoreHandle, _lockWaitSpan); // INFINITE
-
-
-        if(WAIT_OBJECT_0 == result)
-        {
-            waitResult = PXActionSuccessful;
-            // We got runtime
-            break;
-        }   
-
-        if(WAIT_TIMEOUT == result)
-        {
-            ++tryCounter;
-
-            if(_lockWaitTrys >= tryCounter)
-            {
-                continue;
-            }
-
-#if PXLogEnable && 0
-            PXLogPrint
-            (
-                PXLoggingWarning,
-                PXOSName,
-                PXOSSemaphore,
-                "Failed.. timeout!"
-            );
-#endif
-
-
-            waitResult = PXActionRefusedNotReady;
-            break;
-        }
-
-
-        switch(result)
-        {
-            case WAIT_ABANDONED:
-                waitResult = PXActionRefusedStateInvalid;
-                break;
-
-            case WAIT_FAILED:
-                waitResult = 0;// PXErrorCurrent(0);
-                break;
-        }
-    }
-    
-#endif
-
-    return waitResult;
-}
-
-PXResult PXAPI PXSemaphorLeave(PXLock PXREF pxLock)
-{ 
-    if(!pxLock)
-    {
-        return PXActionInvalid;
-    }
-
-    if(0 == pxLock->SemaphoreHandle)
-    {
-        return PXActionInvalid;
-    }
-
-#if PXLogEnable  && 0
-    PXLogPrint 
-    (
-        PXLoggingInfo,
-        PXOSName,
-        PXOSSemaphore,
-        "Leave"
-    );
-#endif
-
-#if OSUnix
-    const int releaseResultID = sem_post(&pxLock->ID);
-    const PXResult releaseResult = PXErrorCurrent(0 == releaseResultID);
-#elif OSWindows
-    const BOOL releaseResultID = ReleaseSemaphore(pxLock->SemaphoreHandle, 1, PXNull);
-    const PXResult releaseResult = PXErrorCurrent(releaseResultID);
-#endif   
-
-    return releaseResult;
-}
-
-PXResult PXAPI PXCriticalSectionCreate(PXLock PXREF pxLock)
-{
-#if OSUnix
-
-#elif OSWindows     
-    PXClear(CRITICAL_SECTION, &pxLock->SectionHandle);
-    InitializeCriticalSection(&pxLock->SectionHandle);
-#endif
-
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXOSName,
-        PXOSCriticalSection,
-        "Create"
-    );
-#endif
-}
-
-PXResult PXAPI PXCriticalSectionDelete(PXLock PXREF pxLock)
-{
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXOSName,
-        PXOSCriticalSection,
-        "Delete"
-    );
-#endif
-
-#if OSUnix
-
-#elif OSWindows
-    DeleteCriticalSection(&pxLock->SectionHandle);
-#endif
-}
-
-PXResult PXAPI PXCriticalSectionEnter(PXLock PXREF pxLock, const PXBool forceEntering)
-{
-#if PXLogEnable
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXOSName,
-        PXOSCriticalSection,
-        "Enter"
-    );
-#endif
-
-#if OSUnix
-
-#elif OSWindows
-    CRITICAL_SECTION PXREF criticalSectionCast = (CRITICAL_SECTION*)&pxLock->SectionHandle;
-
-    if(forceEntering)
-    {
-        EnterCriticalSection(criticalSectionCast);
-    }
-    else
-    {
-        PXSize failEnterCounter = 0;
-
-        for(;;)
-        {
-            const BOOL success = TryEnterCriticalSection(criticalSectionCast); // Windows XP
-            const PXResult pxResult = PXErrorCurrent(success);
-
-            if(success)
-            {
-                break;
-            }
-
-            ++failEnterCounter;
-
-            if(failEnterCounter < 10)
-            {
-                Sleep(0);
-                continue;
-            }
-
-#if PXLogEnable 
-            PXLogPrint
-            (
-                PXLoggingInfo,
-                PXOSName,
-                PXOSCriticalSection,
-                "Enter failed! Waiting..."
-            );
-#endif
-
-            return PXActionFailedLockEnter;
-        }
-    }
-
-#endif
-
-    return PXActionSuccessful;
-}
-
-PXResult PXAPI PXCriticalSectionLeave(PXLock PXREF pxLock)
-{
-#if PXLogEnable && 0
-    PXLogPrint
-    (
-        PXLoggingInfo,
-        PXOSName,
-        PXOSCriticalSection,
-        "Leave"
-    );
-#endif
-
-#if OSUnix
-
-#elif OSWindows
-    CRITICAL_SECTION PXREF criticalSectionCast = (CRITICAL_SECTION*)&pxLock->SectionHandle;
-
-    LeaveCriticalSection(criticalSectionCast);
-#endif
-
-    return PXActionSuccessful;
-}
 
 #define MAXSIZELISTEE 1024*10
 
@@ -3424,180 +2873,6 @@ PXResult PXAPI PXDebugActiveProcessStop(const PXI32U processID)
 #endif
 }
 
-PXResult PXAPI PXDebugModuleNameGet
-(
-    const PXHandleModule pxHandleModule,
-    char* moduleName,
-    const PXSize moduleNameSize,
-    PXSize PXREF sizeWritten,
-    const PXI32U flags
-)
-{
-    char moduleNameBuffer[260];
-    PXClearList(char, moduleNameBuffer, 260);
-    PXSize moduleNameLength = 0;
-
-    PXActionResult moduleFetchResult;
-
-    // Stage 1) Module to string
-#if OSUnix
-
-    if(pxHandleModule)
-    {
-        /*
-        Dl_info info;
-
-        const int resultID = dladdr(current_module, &info);
-        const PXResult moduleFetchResult = PXErrorCurrent((0 != resultID));
-
-        if(info.dli_fname)
-        {
-            printf("Current shared object: %s\n", info.dli_fname);
-        }
-        else {
-            printf("Could not determine the current shared object.\n");
-            */
-    }
-    else
-    {
-        // The HANDLE is NULL. So we want the path of the current executable
-        moduleNameLength = readlink("/proc/self/exe", moduleName, PXPathSizeMax); // unistd.h
-        moduleFetchResult = PXErrorCurrent(-1 != count);
-    }
-
-#elif OSWindows
-
-    moduleNameLength = GetModuleFileNameA(pxHandleModule, moduleNameBuffer, 260);
-    moduleFetchResult = PXErrorCurrent(0 != moduleNameLength);
-
-#else
-    return PXActionRefusedNotSupportedByLibrary;
-#endif
-
-
-    if(PXActionSuccessful != moduleFetchResult)
-    {
-        moduleName[0] = '?';
-        moduleName[1] = '?';
-        moduleName[2] = '?';
-        moduleName[3] = '\0';
-
-        if(sizeWritten)
-        {
-            *sizeWritten = 3;
-        }
-
-        return moduleFetchResult;
-    }
-
-
-    // Stage 2) Truncate name
-    if(!(PXDebugModuleNameShort & flags))
-    {
-        PXTextReplaceByte(moduleNameBuffer, moduleNameLength, '\\', '/');
-        PXTextCopyA(moduleNameBuffer, moduleNameLength, moduleName, moduleNameSize);
-
-
-        if(sizeWritten)
-        {
-            *sizeWritten = moduleNameLength;
-        }
-
-        return PXActionSuccessful; // We dont do any further processing
-    }
-
-
-
-
-#if OSUnix
-
-    moduleName[count] = '\0';
-    *sizeWritten = count;
-
-    // Truncate
-    const PXSize lastSlashPosition = PXTextFindLastCharacterA(moduleName, count, '/');
-
-    if(lastSlashPosition != -1)
-    {
-        PXSize sourceSize = count - lastSlashPosition;
-        char* source = &moduleName[lastSlashPosition];
-
-        *sizeWritten = PXMemoryMove(source, sourceSize, moduleName, moduleNameSize);
-    }
-
-
-#elif OSWindows
-
-
-    // net to get moduleinto, but we have those
-    // IMAGEHLP_MODULE64 mMAGEHLP_MODULE64;
-    // mMAGEHLP_MODULE64.SizeOfStruct = sizeof(IMAGEHLP_MODULE64);
-    //  const PXBool moduleFetchSuccessaSAS = SymGetModuleInfo64(processHandle, moduleHandle, &mMAGEHLP_MODULE64);
-
-
-    // Extract names
-    {
-        char* molduleNamefixed = moduleNameBuffer;
-        PXSize actualSize = moduleNameLength;
-
-        const char systemPath[] = "C:\\WINDOWS\\SYSTEM32\\";
-        const PXSize systemPathSize = sizeof(systemPath);
-        const PXBool isSystem = PXTextCompareIgnoreCaseA(systemPath, systemPathSize, moduleNameBuffer, systemPathSize);
-
-        if(isSystem)
-        {
-            molduleNamefixed += systemPathSize - 1;
-            actualSize -= systemPathSize - 1;
-
-            // Check if its a driver
-            const char driverStoreText[] = "DriverStore";
-            const PXSize driverStoreTextSize = sizeof(driverStoreText);
-
-            const PXBool isDriver = PXTextCompareA(driverStoreText, driverStoreTextSize, molduleNamefixed, driverStoreTextSize, 0);
-
-            if(isDriver)
-            {
-                // The path is very long and useless, only get the DLL name.
-                const PXSize lastSlash = PXTextFindLastCharacterA(molduleNamefixed, actualSize, '\\');
-
-                if(lastSlash != -1)
-                {
-                    molduleNamefixed += lastSlash + 1;
-                    actualSize -= lastSlash + 1;
-                }
-            }
-        }
-        else
-        {
-            char currentWorkPath[MAX_PATH];
-            PXClearList(char, currentWorkPath, MAX_PATH);
-            PXSize currentWorkPathSize = GetModuleFileName(NULL, currentWorkPath, MAX_PATH);
-
-
-            PXSize lastSlashA = PXTextFindLastCharacterA(currentWorkPath, currentWorkPathSize, '\\');
-            PXSize lastSlashB = PXTextFindLastCharacterA(moduleNameBuffer, currentWorkPathSize, '\\');
-            PXBool isRelativePath = PXTextCompareA(currentWorkPath, lastSlashA, moduleNameBuffer, lastSlashB, 0);
-
-            if(isRelativePath)
-            {
-                molduleNamefixed += lastSlashA + 1;
-                actualSize -= lastSlashA + 1;
-            }
-        }
-
-        moduleNameLength = PXTextCopyA(molduleNamefixed, actualSize, moduleName, 260);
-    }
-#endif
-
-    if(sizeWritten)
-    {
-        *sizeWritten = moduleNameLength;
-    }
-
-    return PXActionSuccessful;
-}
-
-
 
 #if OSUnix
 #elif PXOSWindowsDestop
@@ -3623,3 +2898,38 @@ BOOL CALLBACK PXLibraryNameSymbolEnumerate(PSYMBOL_INFO pSymInfo, ULONG SymbolSi
     return PXTrue;
 }
 #endif
+
+void PXAPI PXConvertAnyToFloat(void* a, const PXI32U aType, float* b)
+{
+    const PXSize isFloat = (PXTypeF32 & aType) == PXTypeF32;
+
+    if(aType == isFloat)
+    {
+        *b = *(float*)a;
+        return;
+    }
+
+    switch(PXTypeSizeGet(aType))
+    {
+        case PXTypeInt08S:
+        {
+            *b = *(PXI8S*)a;
+            return;
+        }
+        case PXTypeInt16S:
+        {
+            *b = *(PXI16S*)a;
+            return;
+        }
+        case PXTypeInt32S:
+        {
+            *b = *(PXI32S*)a;
+            return;
+        }
+        default:
+        {
+            DebugBreak();
+            return;
+        }
+    }
+}

@@ -377,6 +377,8 @@ PXPublic PXResult PXAPI PXNetworkSocketSend(PXSocketDataInfo PXREF pxSocketDataI
 PXPublic PXResult PXAPI PXNetworkSocketPoll();
 
 
+PXPublic PXResult PXAPI PXNetworkPeerName(const PXSocket PXREF pxSocket);
+
 PXPublic PXResult PXAPI PXNetworkSocketMTU(const PXSocket PXREF pxSocket, PXI32U* value, const PXBool doWrite);
 PXPublic PXResult PXAPI PXNetworkSocketName(const PXSocket PXREF pxSocket, char* name);
 PXPublic PXResult PXAPI PXNetworkSocketInterfaceName(const PXSocket PXREF pxSocket, char* name, const PXSize nameSize);

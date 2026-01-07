@@ -11,6 +11,9 @@
 #define PXLDAPPortDefault LDAP_PORT
 #pragma comment(lib, "Wldap32.lib")
 
+const char PXWindowsLDAPLibrary[] = "";
+const PXI8U PXWindowsLDAPLibraryLength = sizeof(PXWindowsLDAPLibrary);
+
 
 typedef LDAP* (LDAPAPI* PXldap_openW)(const PWCHAR HostName, ULONG PortNumber);
 typedef LDAP* (LDAPAPI* PXldap_openA)(const PCHAR HostName, ULONG PortNumber);
@@ -254,7 +257,10 @@ PXResult PXAPI PXLDAPClienInitialize(PXLDAPClient PXREF pxLDAPClient)
 
     // Library open
     {
-        const PXResult pxActionResult = PXLibraryOpenA(&pxLDAPClient->LDAPLibrary, "");
+        PXText pxText;
+        PXTextFromAdressA(&pxText, PXWindowsLDAPLibrary, PXWindowsLDAPLibraryLength, PXWindowsLDAPLibraryLength);
+
+        const PXResult pxActionResult = PXLibraryOpen(&pxLDAPClient->LDAPLibrary, &pxText);
 
         if(PXActionSuccessful != pxActionResult)
         {

@@ -14,6 +14,11 @@
 #include <GLEW/glew.h>
 #endif
 #include <PX/OS/Graphic/PXGraphic.h>
+#include <PX/Engine/ECS/Entity/Camera/PXCamera.h>
+#include <PX/Engine/ECS/Resource/Mesh/PXMesh.h>
+#include <PX/Media/PXVersion.h>
+#include <PX/Engine/ECS/Resource/Mesh/PXIndexBuffer.h>
+#include <PX/Engine/ECS/Entity/SkyBox/PXSkyBox.h>
 
 #if OSUnix
 #pragma comment(lib, "libGL.o") // ToDo: Is this valid?
@@ -34,6 +39,7 @@ const char PXOpenglLibraryName[]
 "opengl32.dll"
 #endif
 ;
+const PXI8U PXOpenglLibraryNameLength = sizeof(PXOpenglLibraryName);
 
 const char PXOpenGLName[] = "OpenGL";
 const char PXOpenGLModelName[] = "Model";
@@ -2522,7 +2528,10 @@ PXResult PXAPI PXOpenGLInitialize(PXOpenGL PXREF pxOpenGL, PXGraphicInitializeIn
 
     // Open Library
     {
-        const PXResult libOpenResult = PXLibraryOpenA(&pxOpenGL->LibraryOpenGL, PXOpenglLibraryName);
+        PXText pxText;
+        PXTextFromAdressA(&pxText, PXOpenglLibraryName, PXOpenglLibraryNameLength, PXOpenglLibraryNameLength);
+
+        const PXResult libOpenResult = PXLibraryOpen(&pxOpenGL->LibraryOpenGL, &pxText);
 
         if(PXActionSuccessful != libOpenResult)
         {
@@ -2613,7 +2622,9 @@ PXResult PXAPI PXOpenGLInitialize(PXOpenGL PXREF pxOpenGL, PXGraphicInitializeIn
         pxOpenGL->ContextHandle = glXCreateContext(pxOpenGL->DisplayHandle, visualInfo, NULL, GL_TRUE);
 
 #elif OSWindows
-        pxOpenGL->ContextHandle = pxOpenGL->Binding.ContextCreate(pxWindow->DeviceContextHandle);
+        HDC hdc = PXWindowDCGet(pxWindow);
+
+        pxOpenGL->ContextHandle = pxOpenGL->Binding.ContextCreate(hdc);
 #endif
 
         // glError invalid here;
@@ -2707,9 +2718,10 @@ PXResult PXAPI PXOpenGLInitialize(PXOpenGL PXREF pxOpenGL, PXGraphicInitializeIn
                     0
                 };
 
+                HDC hdc = PXWindowDCGet(pxWindow);
                 const HGLRC conAttributes = pxOpenGL->Binding.ContextCreateAttributes
                 (
-                    pxWindow->DeviceContextHandle,
+                    hdc,
                     pxOpenGL->ContextHandle,
                     attributeList
                 );
@@ -2879,7 +2891,7 @@ PXResult PXAPI PXOpenGLInitialize(PXOpenGL PXREF pxOpenGL, PXGraphicInitializeIn
         PXGPUPhysical pxGraphicDevicePhysical[4];
         PXClearList(PXGPUPhysical, &pxGraphicDevicePhysical, 4);
 
-        PXI32U devices = 2;
+        PXI32U devices = 1;
 
        // PXOpenGLDevicePhysicalListAmount(pxOpenGL, &devices);
 
@@ -2962,6 +2974,10 @@ PXResult PXAPI PXOpenGLSelect(PXOpenGL PXREF pxOpenGL)
 {
     PXWindow PXREF pxWindow = pxOpenGL->WindowRenderTarget;
 
+#if OSWindows
+    HDC hdc = PXWindowDCGet(pxWindow);
+#endif
+
 #if PXLogEnable
     PXLogPrint
     (
@@ -2979,7 +2995,7 @@ PXResult PXAPI PXOpenGLSelect(PXOpenGL PXREF pxOpenGL)
 #elif OSWindows
         "%10s %30s <%p>\n"
         "%10s %30s <%p>",
-        "HDC", "WindowDeviceContextHandle", pxWindow->DeviceContextHandle,
+        "HDC", "WindowDeviceContextHandle", hdc,
         "HGLRC", "ContextHandle", pxOpenGL->ContextHandle
 #endif
     );
@@ -2993,7 +3009,7 @@ PXResult PXAPI PXOpenGLSelect(PXOpenGL PXREF pxOpenGL)
 #if OSUnix
     const int result = glXMakeCurrent(pxOpenGL->DisplayHandle, pxOpenGL->WindowHandle, pxOpenGL->ContextHandle);
 #elif OSWindows
-    const BOOL result = pxOpenGL->Binding.MakeCurrent(pxWindow->DeviceContextHandle, pxOpenGL->ContextHandle);
+    const BOOL result = pxOpenGL->Binding.MakeCurrent(hdc, pxOpenGL->ContextHandle);
 #endif
 
     if(!result)
@@ -3257,17 +3273,31 @@ PXResult PXAPI PXOpenGLDevicePhysicalListFetch(PXOpenGL PXREF pxOpenGL, const PX
     return PXActionSuccessful;
 }
 
-PXResult PXAPI PXOpenGLScreenBufferRead(PXOpenGL PXREF pxOpenGL, PXTexture PXREF PXTexture)
+PXResult PXAPI PXOpenGLScreenBufferRead(PXOpenGL PXREF pxOpenGL, PXTexture PXREF pxTexture)
 {
+    const PXSize width = PXTextureWidth(pxTexture);
+    const PXSize height = PXTextureHeight(pxTexture);
+    const PXColorFormat pxColorFormat = PXTextureColorFormat(pxTexture);
+
+    PXBuffer* pxBuffer = PXTexturePixelData(pxTexture);
+
     GLenum formatStructure = 0;
     GLenum formatData = 0;
 
-    PXOpenGLImageFormatToID(PXTexture->Format, &formatStructure, &formatData);
+    PXOpenGLImageFormatToID(pxColorFormat, &formatStructure, &formatData);
       
-    PXTextureResize(PXTexture, PXTexture->Format, PXTexture->Width, PXTexture->Height);
+    PXTextureResize(pxTexture, pxColorFormat, width, height);    
 
-    pxOpenGL->Binding.ReadPixels(0, 0, PXTexture->Width, PXTexture->Height, formatStructure, formatData, PXTexture->PixelData);
-
+    pxOpenGL->Binding.ReadPixels
+    (
+        0,
+        0, 
+        width,
+        height,
+        formatStructure, 
+        formatData, 
+        pxBuffer->Adress
+    );
     const PXResult pxActionResult = PXOpenGLErrorCurrent(pxOpenGL, 0);
 
     return pxActionResult;
@@ -3460,16 +3490,16 @@ PXResult PXAPI PXOpenGLModelDraw(PXOpenGL PXREF pxOpenGL, const PXRenderEntity P
 
     PXCamera PXREF pxCamera = pxRenderEntity->CameraReference;
     PXMatrix4x4F PXREF matrixModel = &pxRenderEntity->MatrixModel;
-    PXMatrix4x4F PXREF matrixView = &pxCamera->MatrixView;
-    PXMatrix4x4F PXREF matrixProjection = &pxCamera->MatrixProjection;
+    PXMatrix4x4F PXREF matrixView = 0;// &pxCamera->MatrixView;
+    PXMatrix4x4F PXREF matrixProjection = 0;//&pxCamera->MatrixProjection;
 
     PXShaderProgram PXREF pxShaderProgram = pxRenderEntity->ShaderProgramReference;
     PXModel PXREF pxModel = (PXModel*)pxRenderEntity->ObjectReference;
-    PXMesh PXREF pxMesh = &pxModel->Mesh;
+    PXMesh PXREF pxMesh = 0;//&pxModel->Mesh;
    
     //PXVertexBuffer PXREF pxVertexBuffer = &pxModel->Mesh.VertexBuffer;
 
-    PXIndexBuffer PXREF pxIndexBuffer = &pxModel->Mesh.IndexBuffer;
+    PXIndexBuffer PXREF pxIndexBuffer = &pxMesh->IndexBuffer;
 
  //   if(!pxVertexBuffer->VertexData) // Has data?
   //  {
@@ -3488,12 +3518,11 @@ PXResult PXAPI PXOpenGLModelDraw(PXOpenGL PXREF pxOpenGL, const PXRenderEntity P
 
     if(supportVAO)
     {
-        pxOpenGL->Binding.VertexArrayBind(pxModel->Mesh.Info.Handle.OpenGLID); // Select VAO
+        pxOpenGL->Binding.VertexArrayBind(pxMesh->VAO); // Select VAO
 
-               
         if(hasIndexBuffer)
         {
-            pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->Info.Handle.OpenGLID);
+            pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->IBO);
         }
         else
         {
@@ -3565,7 +3594,8 @@ PXResult PXAPI PXOpenGLModelDraw(PXOpenGL PXREF pxOpenGL, const PXRenderEntity P
     PXMatrix4x4FCopy(matrixView, &modifiedViewMatrix);
     PXMatrix4x4FCopy(matrixModel, &modifiedModelMatrix);
 
-    if(pxModel->IgnoreViewPosition)
+#if 0
+    if(pxMesh->IgnoreViewPosition)
     {
         PXMatrix4x4FResetAxisW(&modifiedViewMatrix);
     }
@@ -3577,6 +3607,7 @@ PXResult PXAPI PXOpenGLModelDraw(PXOpenGL PXREF pxOpenGL, const PXRenderEntity P
         PXMatrix4x4FMoveXYZ(&modifiedModelMatrix, 0, 0, -0.5);
         // PXMatrix4x4FScaleByXY(&modifiedModelMatrix, 0.5, 0.5);
     }
+#endif
 
     // PXMatrix4x4FScaleByMargin(&modifiedModelMatrix, &pxModel->Margin);
 
@@ -3606,13 +3637,10 @@ PXResult PXAPI PXOpenGLModelDraw(PXOpenGL PXREF pxOpenGL, const PXRenderEntity P
 
         PXF32* materialDiffuse = dummyValue;
 
-        if(pxModel->Mesh.IndexBuffer.SegmentPrime.Material)
+        if(pxIndexBuffer->SegmentPrime.Material)
         {
-            materialDiffuse = &pxModel->Mesh.IndexBuffer.SegmentPrime.Material->Diffuse;
+            materialDiffuse = &pxIndexBuffer->SegmentPrime.Material->DiffuseTexture;
         }
-
-
-
 
         PXTextCopyA("Material.Ambient", 17, pxShaderVariableList[3].Name, 64);
         pxShaderVariableList[3].Amount = 1;
@@ -3646,7 +3674,7 @@ PXResult PXAPI PXOpenGLModelDraw(PXOpenGL PXREF pxOpenGL, const PXRenderEntity P
         PXOpenGLShaderProgramSelect(pxOpenGL, 0);
 
         pxOpenGL->Binding.MatrixMode(GL_MODELVIEW);
-        pxOpenGL->Binding.LoadMatrixf(pxCamera->MatrixProjection.Data);
+       // pxOpenGL->Binding.LoadMatrixf(pxCamera->MatrixProjection.Data);
         pxOpenGL->Binding.MultMatrixf(modifiedViewMatrix.Data);
         pxOpenGL->Binding.MultMatrixf(modifiedModelMatrix.Data);
         pxOpenGL->Binding.PushMatrix();
@@ -3673,11 +3701,11 @@ PXResult PXAPI PXOpenGLModelDraw(PXOpenGL PXREF pxOpenGL, const PXRenderEntity P
 
     pxOpenGL->Binding.Enable(GL_DEPTH_TEST);
 
-    if(!pxModel->RenderBothSides)
+  //  if(!pxModel->RenderBothSides)
     {
         pxOpenGL->Binding.Enable(GL_CULL_FACE);
     }
-    else
+  //  else
     {
         pxOpenGL->Binding.Disable(GL_CULL_FACE);
     }
@@ -3784,7 +3812,7 @@ PXResult PXAPI PXOpenGLModelDraw(PXOpenGL PXREF pxOpenGL, const PXRenderEntity P
             {
                 pxOpenGL->Binding.Enable(GL_TEXTURE_2D);
                 pxOpenGL->Binding.TextureSlotActive(GL_TEXTURE0);
-                pxOpenGL->Binding.TextureBind(GL_TEXTURE_2D, pxTexture->Info.Handle.OpenGLID);
+                pxOpenGL->Binding.TextureBind(GL_TEXTURE_2D, pxTexture->OpenGLID);
             }
             else
             {
@@ -3843,17 +3871,17 @@ PXResult PXAPI PXOpenGLModelDraw(PXOpenGL PXREF pxOpenGL, const PXRenderEntity P
 
             PXTextCopyA("Material.Ambient", 17, pxShaderVariableList[0].Name, 64);
             pxShaderVariableList[0].Amount = 1;
-            pxShaderVariableList[0].Data = &pxMaterial->Ambient;
+            pxShaderVariableList[0].Data = &pxMaterial->AmbientColor;
             pxShaderVariableList[0].DataType = PXShaderVariableTypePXF32Vector4;
 
             PXTextCopyA("Material.Diffuse", 17, pxShaderVariableList[1].Name, 64);
             pxShaderVariableList[1].Amount = 1;
-            pxShaderVariableList[1].Data = &pxMaterial->Diffuse;
+            pxShaderVariableList[1].Data = &pxMaterial->DiffuseColor;
             pxShaderVariableList[1].DataType = PXShaderVariableTypePXF32Vector4;
 
             PXTextCopyA("Material.Specular", 18, pxShaderVariableList[2].Name, 64);
             pxShaderVariableList[2].Amount = 1;
-            pxShaderVariableList[2].Data = &pxMaterial->Specular;
+            pxShaderVariableList[2].Data = &pxMaterial->SpecularColor;
             pxShaderVariableList[2].DataType = PXShaderVariableTypePXF32Vector4;
 
             // PXTextCopyA("MaterialTexture", 16, pxShaderVariableList[2].Name, 64);
@@ -3874,7 +3902,7 @@ PXResult PXAPI PXOpenGLModelDraw(PXOpenGL PXREF pxOpenGL, const PXRenderEntity P
             if(pxTexture)
             {
                 pxOpenGL->Binding.Enable(GL_TEXTURE_2D);
-                pxOpenGL->Binding.TextureBind(GL_TEXTURE_2D, pxTexture->Info.Handle.OpenGLID);
+                pxOpenGL->Binding.TextureBind(GL_TEXTURE_2D, pxTexture->OpenGLID);
             }
             else
             {
@@ -4857,7 +4885,7 @@ PXResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL PXREF pxOpenGL, PXShaderProg
             {
 #if PXLogEnable
                 PXBuffer* const pxBuffer = PXFileBufferGET(shader->ShaderFile);
-                const char* shaderTypeName = PXGraphicShaderTypeToString(shader->Type);
+                const char* shaderTypeName = PXShaderTypeToString(shader->Type);
 
                 PXLogPrint
                 (
@@ -4868,8 +4896,8 @@ PXResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL PXREF pxOpenGL, PXShaderProg
                     "%25s : [PX:%4i] %i\n"
                     "%25s : [PX:%4i] %i (%s) \n"
                     "%25s : %p, Size:%i",
-                    "ProgramID OpenGL", pxShaderProgram->Info.ID, pxShaderProgram->Info.Handle.OpenGLID,
-                    "ShaderID OpenGL", shader->Info.ID,shader->Info.Handle.OpenGLID, shaderTypeName,
+                    "ProgramID OpenGL", pxShaderProgram->Info.ID, pxShaderProgram->OpenGLID,
+                    "ShaderID OpenGL", shader->Info.ID,shader->OpenGLID, shaderTypeName,
                     "Shader Data", pxBuffer->Data, pxBuffer->SizeAllowedToUse
                 );
 #endif
@@ -4882,9 +4910,9 @@ PXResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL PXREF pxOpenGL, PXShaderProg
 
     // Create shader program
     {
-        pxShaderProgram->Info.Handle.OpenGLID = pxOpenGL->Binding.ShaderProgramCreate(); // Generate an opengl resource
+        pxShaderProgram->OpenGLID = pxOpenGL->Binding.ShaderProgramCreate(); // Generate an opengl resource
 
-        const PXBool shaderProgrammCreateSuccessful = -1 != pxShaderProgram->Info.Handle.OpenGLID;
+        const PXBool shaderProgrammCreateSuccessful = -1 != pxShaderProgram->OpenGLID;
 
         if(!shaderProgrammCreateSuccessful)
         {
@@ -4911,7 +4939,7 @@ PXResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL PXREF pxOpenGL, PXShaderProg
             "Shader-Create",
             "PXID:<%i>, GLID:<%i>, Program created",
             pxShaderProgram->Info.ID,
-            pxShaderProgram->Info.Handle.OpenGLID
+            pxShaderProgram->OpenGLID
         );
 #endif
     }
@@ -4926,26 +4954,26 @@ PXResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL PXREF pxOpenGL, PXShaderProg
         {
             PXShader PXREF shader = &shaderList[i];
 
-            const char* shaderTypeName = PXGraphicShaderTypeToString(shader->Type);
+            const char* shaderTypeName = PXShaderTypeToString(shader->Type);
             const PXI32U shaderTypeID = PXOpenGLShaderTypeToID(shader->Type);
 
             PXBuffer* const pxBuffer = PXFileBufferGET(shader->ShaderFile);
             PXI32S shaderLength = pxBuffer->SizeAllowedToUse;
 
-            shader->Info.Handle.OpenGLID = pxOpenGL->Binding.ShaderCreate(shaderTypeID); // Create shader
+            shader->OpenGLID = pxOpenGL->Binding.ShaderCreate(shaderTypeID); // Create shader
 
             // Sanity check?
-            GLboolean iss =  pxOpenGL->Binding.IsShader(shader->Info.Handle.OpenGLID);
+            GLboolean iss =  pxOpenGL->Binding.IsShader(shader->OpenGLID);
 
             pxOpenGL->Binding.ShaderSource
             (
-                shader->Info.Handle.OpenGLID, 
+                shader->OpenGLID,
                 1u, 
                 &pxBuffer->Data,
                 &shaderLength
             ); // Upload data
 
-            pxOpenGL->Binding.ShaderCompile(shader->Info.Handle.OpenGLID);
+            pxOpenGL->Binding.ShaderCompile(shader->OpenGLID);
 
 #if PXLogEnable
             PXLogPrint
@@ -4955,7 +4983,7 @@ PXResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL PXREF pxOpenGL, PXShaderProg
                 "Shader-Compile",
                 "PXID:<%i>, GLID:<%i>, Type:<%s>",
                 shader->Info.ID,
-                shader->Info.Handle.OpenGLID,
+                shader->OpenGLID,
                 shaderTypeName               
             );
 #endif
@@ -4965,7 +4993,7 @@ PXResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL PXREF pxOpenGL, PXShaderProg
 
                 pxOpenGL->Binding.ShaderGetiv
                 (
-                    shader->Info.Handle.OpenGLID,
+                    shader->OpenGLID,
                     GL_COMPILE_STATUS,
                     &isCompiled
                 );
@@ -4981,7 +5009,7 @@ PXResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL PXREF pxOpenGL, PXShaderProg
                 PXI32S shaderErrorLengthCurrent = 0;
 
 
-                pxOpenGL->Binding.ShaderGetiv(shader->Info.Handle.OpenGLID, GL_INFO_LOG_LENGTH, &shaderErrorLengthMaximal);
+                pxOpenGL->Binding.ShaderGetiv(shader->OpenGLID, GL_INFO_LOG_LENGTH, &shaderErrorLengthMaximal);
 
                 if(shaderErrorLengthMaximal == 0)
                 {
@@ -5005,7 +5033,7 @@ PXResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL PXREF pxOpenGL, PXShaderProg
 
                 // API* PXOpenGLShaderLogInfoGetFunction)(GLuint shader, GLsizei maxLength, GLsizei* length, char* infoLog);
 
-                pxOpenGL->Binding.ShaderLogInfoGet(shader->Info.Handle.OpenGLID, shaderErrorLengthMaximal, &shaderErrorLengthCurrent, shaderErrorLengthData);
+                pxOpenGL->Binding.ShaderLogInfoGet(shader->OpenGLID, shaderErrorLengthMaximal, &shaderErrorLengthCurrent, shaderErrorLengthData);
 
                 shaderErrorLengthData[shaderErrorLengthCurrent - 1] = '\0';
 
@@ -5026,34 +5054,34 @@ PXResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL PXREF pxOpenGL, PXShaderProg
                 break;
             }
 
-            pxOpenGL->Binding.ShaderAttach(pxShaderProgram->Info.Handle.OpenGLID, shader->Info.Handle.OpenGLID);
+            pxOpenGL->Binding.ShaderAttach(pxShaderProgram->OpenGLID, shader->OpenGLID);
 
             // This shader is now valid
-            shader->Info.Behaviour |= PXResourceInfoExist;
+            shader->Info.Behaviour |= PXECSInfoExist;
 
             // Are all shaders valid?
-            pxShaderProgram->Info.Behaviour |= PXResourceInfoExist * (sucessfulCounter == i);
+            pxShaderProgram->Info.Behaviour |= PXECSInfoExist * (sucessfulCounter == i);
         }
     }
 
 
-    if(pxShaderProgram->Info.Behaviour & PXResourceInfoExist)
+    if(pxShaderProgram->Info.Behaviour & PXECSInfoExist)
     {
 
         // Link shaders together
         {
-            pxOpenGL->Binding.ShaderProgramLink(pxShaderProgram->Info.Handle.OpenGLID);
+            pxOpenGL->Binding.ShaderProgramLink(pxShaderProgram->OpenGLID);
 
             GLint linkStatus = 0;
 
-            pxOpenGL->Binding.ShaderProgramGetiv(pxShaderProgram->Info.Handle.OpenGLID, GL_LINK_STATUS, &linkStatus);
+            pxOpenGL->Binding.ShaderProgramGetiv(pxShaderProgram->OpenGLID, GL_LINK_STATUS, &linkStatus);
 
             if(GL_TRUE != linkStatus)
             {
                 PXI32S shaderErrorLengthMaximal = 0;
                 PXI32S shaderErrorLengthCurrent = 0;
 
-                pxOpenGL->Binding.ShaderProgramGetiv(pxShaderProgram->Info.Handle.OpenGLID, GL_INFO_LOG_LENGTH, &shaderErrorLengthMaximal);
+                pxOpenGL->Binding.ShaderProgramGetiv(pxShaderProgram->OpenGLID, GL_INFO_LOG_LENGTH, &shaderErrorLengthMaximal);
 
                 if(shaderErrorLengthMaximal > 0)
                 {
@@ -5061,7 +5089,7 @@ PXResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL PXREF pxOpenGL, PXShaderProg
 
                     // API* PXOpenGLShaderLogInfoGetFunction)(GLuint shader, GLsizei maxLength, GLsizei* length, char* infoLog);
 
-                    pxOpenGL->Binding.ProgramInfoLogGet(pxShaderProgram->Info.Handle.OpenGLID, shaderErrorLengthMaximal, &shaderErrorLengthCurrent, shaderErrorLengthData);
+                    pxOpenGL->Binding.ProgramInfoLogGet(pxShaderProgram->OpenGLID, shaderErrorLengthMaximal, &shaderErrorLengthCurrent, shaderErrorLengthData);
 
                     shaderErrorLengthData[shaderErrorLengthCurrent - 1] = '\0';
 
@@ -5079,27 +5107,27 @@ PXResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL PXREF pxOpenGL, PXShaderProg
                     PXMemoryHeapFree(PXNull, shaderErrorLengthData);
                 }
 
-                pxShaderProgram->Info.Behaviour &= ~PXResourceInfoExist; // Invalidate current shader
+                pxShaderProgram->Info.Behaviour &= ~PXECSInfoExist; // Invalidate current shader
             }
         }
 
 
-        pxOpenGL->Binding.ShaderProgramValidate(pxShaderProgram->Info.Handle.OpenGLID);
+        pxOpenGL->Binding.ShaderProgramValidate(pxShaderProgram->OpenGLID);
     }
 
     // We used the Shaders above to compile, these elements are not used anymore.
     for(PXSize i = 0; i < amount; ++i)
     {
         PXShader PXREF shader = &shaderList[i];
-        const PXBool isLoaded = shader->Info.Handle.OpenGLID != -1;
+        const PXBool isLoaded = shader->OpenGLID != -1;
 
         if(isLoaded)
         {
-            pxOpenGL->Binding.ShaderDelete(shader->Info.Handle.OpenGLID);
+            pxOpenGL->Binding.ShaderDelete(shader->OpenGLID);
         }
     }
 
-    if(!(PXResourceInfoExist & pxShaderProgram->Info.Behaviour))
+    if(!(PXECSInfoExist & pxShaderProgram->Info.Behaviour))
     {
         PXOpenGLShaderProgramDelete(pxOpenGL, pxShaderProgram);
 
@@ -5111,8 +5139,8 @@ PXResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL PXREF pxOpenGL, PXShaderProg
         GLint numberOfUniforms = 0;
         GLint numberOfAttributes = 0;
 
-        pxOpenGL->Binding.ShaderProgramGetiv(pxShaderProgram->Info.Handle.OpenGLID, GL_ACTIVE_ATTRIBUTES, &numberOfAttributes);
-        pxOpenGL->Binding.ShaderProgramGetiv(pxShaderProgram->Info.Handle.OpenGLID, GL_ACTIVE_UNIFORMS, &numberOfUniforms);
+        pxOpenGL->Binding.ShaderProgramGetiv(pxShaderProgram->OpenGLID, GL_ACTIVE_ATTRIBUTES, &numberOfAttributes);
+        pxOpenGL->Binding.ShaderProgramGetiv(pxShaderProgram->OpenGLID, GL_ACTIVE_UNIFORMS, &numberOfUniforms);
 
 #if PXLogEnable
         PXLogPrint
@@ -5142,7 +5170,7 @@ PXResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL PXREF pxOpenGL, PXShaderProg
 
             pxOpenGL->Binding.ActiveAttributeGet
             (
-                pxShaderProgram->Info.Handle.OpenGLID,
+                pxShaderProgram->OpenGLID,
                 (GLuint)i,
                 PXShaderVariableNameSize,
                 &writtenNameSize,
@@ -5170,7 +5198,7 @@ PXResult PXAPI PXOpenGLShaderProgramCreate(PXOpenGL PXREF pxOpenGL, PXShaderProg
 
             pxOpenGL->Binding.ActiveUniformGet
             (
-                pxShaderProgram->Info.Handle.OpenGLID,
+                pxShaderProgram->OpenGLID,
                 i,
                 PXShaderVariableNameSize,
                 &writtenNameSize,
@@ -5239,7 +5267,7 @@ PXResult PXAPI PXOpenGLShaderProgramSelect(PXOpenGL PXREF pxOpenGL, PXShaderProg
 
     // TODO: Catch if id is -1 or just invalid
 
-    pxOpenGL->Binding.ShaderProgramUse(pxShaderProgram->Info.Handle.OpenGLID);
+    pxOpenGL->Binding.ShaderProgramUse(pxShaderProgram->OpenGLID);
 
     const PXResult createResult = PXOpenGLErrorCurrent(pxOpenGL, 0);
 
@@ -5253,7 +5281,7 @@ PXResult PXAPI PXOpenGLShaderProgramSelect(PXOpenGL PXREF pxOpenGL, PXShaderProg
             PXOpenGLShaderProgramName,
             "Program Select failed PXID:<%i>, GLID:<%i>",
             pxShaderProgram->Info.ID,
-            pxShaderProgram->Info.Handle.OpenGLID
+            pxShaderProgram->OpenGLID
         );
 #endif
     }
@@ -5263,7 +5291,7 @@ PXResult PXAPI PXOpenGLShaderProgramSelect(PXOpenGL PXREF pxOpenGL, PXShaderProg
 
 PXResult PXAPI PXOpenGLShaderProgramDelete(PXOpenGL PXREF pxOpenGL, PXShaderProgram PXREF pxShaderProgram)
 {
-    pxOpenGL->Binding.ShaderProgramDelete(pxShaderProgram->Info.Handle.OpenGLID);
+    pxOpenGL->Binding.ShaderProgramDelete(pxShaderProgram->OpenGLID);
 
     const PXResult createResult = PXOpenGLErrorCurrent(pxOpenGL, 0);
 
@@ -5277,17 +5305,17 @@ PXResult PXAPI PXOpenGLShaderProgramDelete(PXOpenGL PXREF pxOpenGL, PXShaderProg
             "Shader-Delete",
             "ID:%i OpenGLID:%i",
             pxShaderProgram->Info.ID,
-            pxShaderProgram->Info.Handle.OpenGLID
+            pxShaderProgram->OpenGLID
         );
 #endif
 
-        pxShaderProgram->Info.Handle.OpenGLID = -1;
+        pxShaderProgram->OpenGLID = -1;
     }
 
     return createResult;
 }
 
-PXI32U PXAPI PXOpenGLShaderTypeToID(const PXGraphicShaderType pxGraphicShaderType)
+PXI32U PXAPI PXOpenGLShaderTypeToID(const PXShaderType pxGraphicShaderType)
 {
     switch(pxGraphicShaderType)
     {
@@ -5348,7 +5376,7 @@ void PXAPI PXOpenGLDrawArraysInstanced(const PXOpenGL PXREF pxOpenGL, const PXDr
     }
 }
 
-PXResult PXAPI PXOpenGLTextureAction(PXOpenGL PXREF pxOpenGL, PXTexturInfo PXREF pxGraphicTexturInfo)
+PXResult PXAPI PXOpenGLTextureAction(PXOpenGL PXREF pxOpenGL, PXTextureInfo PXREF pxGraphicTexturInfo)
 {
     switch(pxGraphicTexturInfo->Action)
     {
@@ -5407,11 +5435,11 @@ PXResult PXAPI PXOpenGLTextureAction(PXOpenGL PXREF pxOpenGL, PXTexturInfo PXREF
                     case PXTextureType2D:
                     {
                         PXTexture PXREF pxTexture = (PXTexture*)textureAdress;
-                        pxTexture->Info.Handle.OpenGLID = textureID;
+                        pxTexture->OpenGLID = textureID;
 
                         // Bind resource
                         {
-                            pxOpenGL->Binding.TextureBind(GL_TEXTURE_2D, pxTexture->Info.Handle.OpenGLID);
+                            pxOpenGL->Binding.TextureBind(GL_TEXTURE_2D, textureID);
 
                             const PXResult createResult = PXOpenGLErrorCurrent(pxOpenGL, 0);
 
@@ -5446,7 +5474,7 @@ PXResult PXAPI PXOpenGLTextureAction(PXOpenGL PXREF pxOpenGL, PXTexturInfo PXREF
                                 return PXActionSuccessful; // No image
                             }
 
-                            if(!pxTexture->PixelData)
+                            if(!pxTexture->PixelData.Adress)
                             {
                                 return PXActionSuccessful; // No image data
                             }
@@ -5462,7 +5490,7 @@ PXResult PXAPI PXOpenGLTextureAction(PXOpenGL PXREF pxOpenGL, PXTexturInfo PXREF
                     case PXTextureType3D:
                     {
                         PXTexture PXREF pxTexture = (PXTexture*)textureAdress;
-                        pxTexture->Info.Handle.OpenGLID = textureID;
+                        pxTexture->OpenGLID = textureID;
 
                         pxOpenGL->Binding.TextureBind(GL_TEXTURE_3D, textureID);
 
@@ -5475,7 +5503,7 @@ PXResult PXAPI PXOpenGLTextureAction(PXOpenGL PXREF pxOpenGL, PXTexturInfo PXREF
                     case PXTextureTypeCubeContainer:
                     {
                         PXTexture PXREF pxTexture = (PXTexture*)textureAdress;
-                        pxTexture->Info.Handle.OpenGLID = textureID;
+                        pxTexture->OpenGLID = textureID;
 
                         pxOpenGL->Binding.TextureBind(GL_TEXTURE_CUBE_MAP, textureID);
 
@@ -5511,19 +5539,21 @@ PXResult PXAPI PXOpenGLTextureAction(PXOpenGL PXREF pxOpenGL, PXTexturInfo PXREF
 
                         for(PXSize i = 0; i < 6u; ++i)
                         {
-                            PXTexture* image = imageList[i];
+                            PXTexture* pxTexture = imageList[i];
                             const PXI16U textureTypeID = openGLTextureTypeList[i];
                             const int levelOfDetail = 0;
 
-                            PXTexture PXTexture;
-                            //PXTexture.Image = image;
+                            const PXSize width = PXTextureWidth(pxTexture);
+                            const PXSize height = PXTextureHeight(pxTexture);
+                            const PXColorFormat pxColorFormat = PXTextureColorFormat(pxTexture);
+                            PXBuffer* pxBuffer = PXTexturePixelData(pxTexture);
 
                             PXI32U imageFormat;
                             PXI32U imageFormatType;
                             PXI32U internalFormat;
                             PXI32U internalType;
 
-                            const PXBool successA = PXOpenGLImageFormatToID(image->Format, &imageFormat, &imageFormatType);
+                            const PXBool successA = PXOpenGLImageFormatToID(pxColorFormat, &imageFormat, &imageFormatType);
                             const PXBool successB = PXOpenGLImageFormatToID(PXColorFormatRGBAF, &internalFormat, &internalType);
 
                             pxOpenGL->Binding.PixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -5533,12 +5563,12 @@ PXResult PXAPI PXOpenGLTextureAction(PXOpenGL PXREF pxOpenGL, PXTexturInfo PXREF
                                 textureTypeID,
                                 0, // detail
                                 internalFormat,
-                                image->Width,
-                                image->Height,
+                                width,
+                                height,
                                 0,
                                 imageFormat,
                                 imageFormatType,
-                                image->PixelData
+                                pxBuffer->Adress
                             );
                         }
 
@@ -5580,7 +5610,7 @@ PXResult PXAPI PXOpenGLTextureAction(PXOpenGL PXREF pxOpenGL, PXTexturInfo PXREF
 
                     if(pxTexture)
                     {
-                        textureID = pxTexture->Info.Handle.OpenGLID;
+                        textureID = pxTexture->OpenGLID;
                     }
 
                     textureType = GL_TEXTURE_2D;
@@ -5593,7 +5623,7 @@ PXResult PXAPI PXOpenGLTextureAction(PXOpenGL PXREF pxOpenGL, PXTexturInfo PXREF
 
                     if(pxTexture)
                     {
-                        textureID = pxTexture->Info.Handle.OpenGLID;
+                        textureID = pxTexture->OpenGLID;
                     }
 
                     textureType = GL_TEXTURE_3D;
@@ -5606,7 +5636,7 @@ PXResult PXAPI PXOpenGLTextureAction(PXOpenGL PXREF pxOpenGL, PXTexturInfo PXREF
 
                     if(pxTexture)
                     {
-                        textureID = pxTexture->Info.Handle.OpenGLID;
+                        textureID = pxTexture->OpenGLID;
                     }
 
                     textureType = GL_TEXTURE_CUBE_MAP;
@@ -5646,21 +5676,21 @@ void PXAPI PXOpenGLTextureActivate(PXOpenGL PXREF pxOpenGL, const unsigned int i
     pxOpenGL->Binding.TextureSlotActive(indexID);
 }
 
-void PXAPI PXOpenGLTexture2DDataWrite(PXOpenGL PXREF pxOpenGL, PXTexture PXREF PXTexture)
+void PXAPI PXOpenGLTexture2DDataWrite(PXOpenGL PXREF pxOpenGL, PXTexture PXREF pxTexture)
 {
     GLenum imageFormat = 0;
     GLenum imageFormatType = 0;
     GLenum internalFormat = 0;
     GLenum internalType = 0;
 
-    const PXBool successA = PXOpenGLImageFormatToID(PXTexture->Format, &imageFormat, &imageFormatType);
+    const PXBool successA = PXOpenGLImageFormatToID(pxTexture->Format, &imageFormat, &imageFormatType);
     const PXBool successB = PXOpenGLImageFormatToID(PXColorFormatRGBAF, &internalFormat, &internalType);
 
     pxOpenGL->Binding.PixelStorei(GL_UNPACK_ALIGNMENT, 1); // This is needed to state we have tightly packed image data. If not, the GPU expects padding bytes and will crash.
 
     PXText pxText;
     PXTextConstructBufferA(&pxText, 32);
-    PXTextFormatSize(&pxText, PXTexture->PixelDataSize);
+    PXTextFormatSize(&pxText, pxTexture->PixelData.CursorOffsetByte);
 
 #if PXLogEnable
     PXLogPrint
@@ -5670,9 +5700,9 @@ void PXAPI PXOpenGLTexture2DDataWrite(PXOpenGL PXREF pxOpenGL, PXTexture PXREF P
         "Texture2D",
         "%8s  Data upload <%i> (%ix%i)",
         pxText.A,
-        PXTexture->Info.Handle.OpenGLID,
-        PXTexture->Width,
-        PXTexture->Height
+        pxTexture->OpenGLID,
+        pxTexture->Width,
+        pxTexture->Height
     );
 #endif
 
@@ -5681,12 +5711,12 @@ void PXAPI PXOpenGLTexture2DDataWrite(PXOpenGL PXREF pxOpenGL, PXTexture PXREF P
         GL_TEXTURE_2D,
         0, // detail
         internalFormat,
-        PXTexture->Width,
-        PXTexture->Height,
+        pxTexture->Width,
+        pxTexture->Height,
         0,
         imageFormat,
         imageFormatType,
-        PXTexture->PixelData
+        pxTexture->PixelData.Data
     );
 }
 
@@ -5706,14 +5736,14 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL PXREF pxOpenGL, const PXRenderEntity PXRE
 
     PXCamera PXREF pxCamera = pxRenderEntity->CameraReference;
     const PXMatrix4x4F PXREF matrixModel = &pxRenderEntity->MatrixModel;
-    PXMatrix4x4F PXREF matrixView = &pxCamera->MatrixView;
-    PXVertexBuffer PXREF pxVertexBuffer = &pxSkyBox->Model->Mesh.VertexBufferPrime;
-    PXIndexBuffer PXREF pxIndexBuffer = &pxSkyBox->Model->Mesh.IndexBuffer;
+    PXMatrix4x4F PXREF matrixView = 0;//&pxCamera->MatrixView;
+    PXVertexBuffer PXREF pxVertexBuffer = 0;//&pxSkyBox->Model->Mesh.VertexBufferPrime;
+    PXIndexBuffer PXREF pxIndexBuffer = 0;//&pxSkyBox->Model->Mesh.IndexBuffer;
 
-    PXModel PXREF pxModel = pxSkyBox->Model;
-    PXTexture PXREF pxTexture = pxSkyBox->TextureCube;
+    PXModel PXREF pxModel = 0;// pxSkyBox->Model;
+    PXTexture PXREF pxTexture = 0;//pxSkyBox->TextureCube;
 
-    PXMesh PXREF pxMesh = &pxModel->Mesh;
+    PXMesh PXREF pxMesh = 0;//&pxModel->Mesh;
 
     //assert(pxModel);
     //assert(pxTexture);
@@ -5752,7 +5782,7 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL PXREF pxOpenGL, const PXRenderEntity PXRE
 
         PXTextCopyA("MatrixProjection", 16, pxShaderVariableList[1].Name, 64);
         pxShaderVariableList[1].Amount = 1;
-        pxShaderVariableList[1].Data = pxCamera->MatrixProjection.Data;
+       // pxShaderVariableList[1].Data = pxCamera->MatrixProjection.Data;
         pxShaderVariableList[1].DataType = PXShaderVariableTypeMatrix4x4;
 
         PXOpenGLShaderVariableSet(pxOpenGL, pxSkyBox->ShaderProgramReference, pxShaderVariableList, 2);
@@ -5766,7 +5796,7 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL PXREF pxOpenGL, const PXRenderEntity PXRE
         pxOpenGL->Binding.Color4f(0.5f, 0.2f, 0.2f, 1.0f);
 
         pxOpenGL->Binding.MatrixMode(GL_MODELVIEW);
-        pxOpenGL->Binding.LoadMatrixf(pxCamera->MatrixProjection.Data);
+        //pxOpenGL->Binding.LoadMatrixf(pxCamera->MatrixProjection.Data);
         pxOpenGL->Binding.MultMatrixf(viewTri.Data);
         //glMultMatrixf(pxSkyBox->Model.ModelMatrix.Data);
         pxOpenGL->Binding.PushMatrix();
@@ -5776,7 +5806,7 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL PXREF pxOpenGL, const PXRenderEntity PXRE
 
     if(pxOpenGL->Binding.VertexArrayBind)
     {
-        pxOpenGL->Binding.VertexArrayBind(pxModel->Mesh.Info.Handle.OpenGLID);
+      //  pxOpenGL->Binding.VertexArrayBind(pxModel->Mesh.Info.Handle.OpenGLID);
     }
 
 
@@ -5784,7 +5814,7 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL PXREF pxOpenGL, const PXRenderEntity PXRE
     // pxOpenGL->Binding.PXOpenGLBindBufferCallBack(GL_ELEMENT_ARRAY_BUFFER, pxSkyBox->Model.IndexBuffer.ResourceID.OpenGLID);
     if(pxTexture)
     {
-        pxOpenGL->Binding.TextureBind(GL_TEXTURE_CUBE_MAP, pxTexture->Info.Handle.OpenGLID);
+        pxOpenGL->Binding.TextureBind(GL_TEXTURE_CUBE_MAP, pxTexture->OpenGLID);
     }
 
 
@@ -5797,8 +5827,8 @@ void PXAPI PXOpenGLSkyboxDraw(PXOpenGL PXREF pxOpenGL, const PXRenderEntity PXRE
     const PXSize segmentSize = PXTypeSizeGet(pxIndexBuffer->DataType);
     const GLsizei drawElementsCount = PXMeshIndexBufferLengthGET(pxMesh);
 
-    pxOpenGL->Binding.BufferBind(GL_ARRAY_BUFFER, pxVertexBuffer->Info.Handle.OpenGLID);
-    pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->Info.Handle.OpenGLID);
+    pxOpenGL->Binding.BufferBind(GL_ARRAY_BUFFER, pxVertexBuffer->VBO);
+    pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->IBO);
 
     if(pxIndexBuffer->DrawModeID & PXDrawModeIDPoint)
     {
@@ -5975,7 +6005,11 @@ PXResult PXAPI PXOpenGLShaderVariableSet(PXOpenGL PXREF pxOpenGL, const PXShader
                 /// ?
             }
 
-            pxShaderVariable->RegisterIndex = pxOpenGL->Binding.GetUniformLocation(pxShaderProgram->Info.Handle.OpenGLID, pxShaderVariable->Name);
+            pxShaderVariable->RegisterIndex = pxOpenGL->Binding.GetUniformLocation
+            (
+                pxShaderProgram->OpenGLID, 
+                pxShaderVariable->Name
+            );
 
             // If no error, exit
             {
@@ -6394,16 +6428,16 @@ void PXAPI PXOpenGLTexture2DDataRead(PXOpenGL PXREF pxOpenGL, PXTexture PXREF PX
     PXOpenGLTexture2DDataReadFrom(pxOpenGL, PXTexture, viewPort[0], viewPort[0], viewPort[2], viewPort[3]);
 }
 
-void PXAPI PXOpenGLTexture2DDataReadFrom(PXOpenGL PXREF pxOpenGL, PXTexture PXREF PXTexture, const PXI32U x, const PXI32U y, const PXI32U width, const PXI32U height)
+void PXAPI PXOpenGLTexture2DDataReadFrom(PXOpenGL PXREF pxOpenGL, PXTexture PXREF pxTexture, const PXI32U x, const PXI32U y, const PXI32U width, const PXI32U height)
 {
     PXI32U imageFormatID = 0;
     PXI32U dataTypeID = 0;
 
-    PXOpenGLImageFormatToID(PXTexture->Format, &imageFormatID, &dataTypeID);
+    PXOpenGLImageFormatToID(pxTexture->Format, &imageFormatID, &dataTypeID);
 
-    PXTextureResize(PXTexture, PXTexture->Format, width, height);
+    PXTextureResize(pxTexture, pxTexture->Format, width, height);
 
-    pxOpenGL->Binding.ReadPixels(x, y, width, height, imageFormatID, dataTypeID, PXTexture->PixelData);
+    pxOpenGL->Binding.ReadPixels(x, y, width, height, imageFormatID, dataTypeID, pxTexture->PixelData.Adress);
 }
 
 PXI32U PXAPI PXOpenGLTypeToID(const PXI32U pxDataType)
@@ -6734,14 +6768,14 @@ PXResult PXAPI PXOpenGLSpriteRegister(PXOpenGL PXREF pxOpenGL, PXSprite PXREF px
 PXResult PXAPI PXOpenGLDrawScriptCreate(PXOpenGL PXREF pxOpenGL, PXDrawScript PXREF pxDrawScript)
 {
     // Create one display list
-    pxDrawScript->Info.Handle.OpenGLID = pxOpenGL->Binding.GenLists(1);
+    pxDrawScript->OpenGLID = pxOpenGL->Binding.GenLists(1);
 
     return PXActionSuccessful;
 }
 
 PXResult PXAPI PXOpenGLDrawScriptBegin(PXOpenGL PXREF pxOpenGL, PXDrawScript PXREF pxDrawScript)
 {
-    pxOpenGL->Binding.NewList(pxDrawScript->Info.Handle.OpenGLID, GL_COMPILE);
+    pxOpenGL->Binding.NewList(pxDrawScript->OpenGLID, GL_COMPILE);
 
     return PXActionSuccessful;
 }
@@ -6755,16 +6789,16 @@ PXResult PXAPI PXOpenGLDrawScriptEnd(PXOpenGL PXREF pxOpenGL, PXDrawScript PXREF
 
 PXResult PXAPI PXOpenGLDrawScriptDelete(PXOpenGL PXREF pxOpenGL, PXDrawScript PXREF pxDrawScript)
 {
-    pxOpenGL->Binding.DeleteLists(pxDrawScript->Info.Handle.OpenGLID, 1);
+    pxOpenGL->Binding.DeleteLists(pxDrawScript->OpenGLID, 1);
 
-    pxDrawScript->Info.Handle.OpenGLID = -1;
+    pxDrawScript->OpenGLID = -1;
 
     return PXActionSuccessful;
 }
 
 PXResult PXAPI PXOpenGLDrawScriptExecute(PXOpenGL PXREF pxOpenGL, PXDrawScript PXREF pxDrawScript)
 {
-    pxOpenGL->Binding.CallList(pxDrawScript->Info.Handle.OpenGLID);
+    pxOpenGL->Binding.CallList(pxDrawScript->OpenGLID);
 
     return PXActionSuccessful;
 }
@@ -6904,14 +6938,13 @@ void PXOpenGKShaderDataBufferCreate(PXOpenGL PXREF pxOpenGL, PXShaderDataBuffer 
 }*/
 
 
-PXResult PXAPI PXOpenGLModelRegister(PXOpenGL PXREF pxOpenGL, PXModel PXREF pxModel)
+PXResult PXAPI PXOpenGLModelRegister(PXOpenGL PXREF pxOpenGL, PXMesh PXREF pxMesh)
 {
-    if(!(pxOpenGL && pxModel))
+    if(!(pxOpenGL && pxMesh))
     {
         return PXActionRefusedArgumentNull;
     }
 
-    PXMesh PXREF pxMesh = &pxModel->Mesh;
     PXIndexBuffer PXREF pxIndexBuffer = &pxMesh->IndexBuffer;
     PXVertexBuffer* pxVertexBufferList = PXMeshVertexBufferListGET(pxMesh);
     PXSize pxVertexBufferListAmount = pxMesh->VertexBufferListAmount;
@@ -6926,7 +6959,7 @@ PXResult PXAPI PXOpenGLModelRegister(PXOpenGL PXREF pxOpenGL, PXModel PXREF pxMo
             PXOpenGLName,
             PXOpenGLModelName,
             "Invalid model! No vertex mesh data.",
-            pxMesh->Info.Handle.OpenGLID
+            pxMesh->VAO
         );
 #endif
         return PXActionInvalid;
@@ -6935,8 +6968,8 @@ PXResult PXAPI PXOpenGLModelRegister(PXOpenGL PXREF pxOpenGL, PXModel PXREF pxMo
 
     if(pxOpenGL->Binding.VertexArraysGenerate)
     {
-        pxOpenGL->Binding.VertexArraysGenerate(1, &(pxMesh->Info.Handle.OpenGLID)); // VAO
-        pxOpenGL->Binding.VertexArrayBind(pxMesh->Info.Handle.OpenGLID);
+        pxOpenGL->Binding.VertexArraysGenerate(1, &pxMesh->VAO); // VAO
+        pxOpenGL->Binding.VertexArrayBind(pxMesh->VAO);
 
 #if PXLogEnable
         PXLogPrint
@@ -6946,7 +6979,7 @@ PXResult PXAPI PXOpenGLModelRegister(PXOpenGL PXREF pxOpenGL, PXModel PXREF pxMo
             PXOpenGLModelName,
             "PXID:<%i>, GLID_VAO:<%i> created",
             pxMesh->Info.ID,
-            pxMesh->Info.Handle.OpenGLID
+            pxMesh->VAO
         );
 #endif
     }
@@ -7040,7 +7073,7 @@ PXResult PXAPI PXOpenGLModelRegister(PXOpenGL PXREF pxOpenGL, PXModel PXREF pxMo
         //-------------------------------------------------
         if(hasIndexData)
         {
-            pxIndexBuffer->Info.Handle.OpenGLID = bufferIDs[indexCounter++];
+            pxIndexBuffer->IBO = bufferIDs[indexCounter++];
 
 #if PXLogEnable
             PXLogPrint
@@ -7050,7 +7083,7 @@ PXResult PXAPI PXOpenGLModelRegister(PXOpenGL PXREF pxOpenGL, PXModel PXREF pxMo
                 PXOpenGLModelName,
                 "PXID:<%i>, GLID_IBO:<%i>",
                 pxIndexBuffer->Info.ID,
-                pxIndexBuffer->Info.Handle.OpenGLID
+                pxIndexBuffer->IBO
             );
 #endif
         }
@@ -7061,7 +7094,7 @@ PXResult PXAPI PXOpenGLModelRegister(PXOpenGL PXREF pxOpenGL, PXModel PXREF pxMo
         {
             PXVertexBuffer PXREF pxVertexBuffer = &pxVertexBufferList[i];
 
-            pxVertexBuffer->Info.Handle.OpenGLID = bufferIDs[indexCounter++];
+            pxVertexBuffer->VBO = bufferIDs[indexCounter++];
 
 #if PXLogEnable && 0
             PXVertexBufferFormatInfo pxVertexBufferFormatInfo;
@@ -7115,7 +7148,7 @@ PXResult PXAPI PXOpenGLModelRegister(PXOpenGL PXREF pxOpenGL, PXModel PXREF pxMo
         if(hasIndexData)
         {
             // Select
-            pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->Info.Handle.OpenGLID);
+            pxOpenGL->Binding.BufferBind(GL_ELEMENT_ARRAY_BUFFER, pxIndexBuffer->IBO);
             PXOpenGLErrorCurrent(pxOpenGL, 1);
 
             // Define data layout?
@@ -7130,7 +7163,7 @@ PXResult PXAPI PXOpenGLModelRegister(PXOpenGL PXREF pxOpenGL, PXModel PXREF pxMo
                 PXOpenGLModelName,
                 "PXID:<%i>, GLID_IBO:<%i> upload <%p> with %i B, (TypeWidth:%i)",
                 pxIndexBuffer->Info.ID,
-                pxIndexBuffer->Info.Handle.OpenGLID,
+                pxIndexBuffer->IBO,
                 pxIndexBuffer->Data.Data,
                 pxIndexBuffer->Data.SizeAllowedToUse,
                 PXTypeSizeGet(pxIndexBuffer->DataType)
@@ -7161,7 +7194,7 @@ PXResult PXAPI PXOpenGLModelRegister(PXOpenGL PXREF pxOpenGL, PXModel PXREF pxMo
 
             //---------------------------------------------
             // Bind
-            pxOpenGL->Binding.BufferBind(GL_ARRAY_BUFFER, pxVertexBuffer->Info.Handle.OpenGLID);
+            pxOpenGL->Binding.BufferBind(GL_ARRAY_BUFFER, pxVertexBuffer->VBO);
             PXOpenGLErrorCurrent(pxOpenGL, 1);
             //---------------------------------------------
 
@@ -7258,7 +7291,7 @@ PXResult PXAPI PXOpenGLModelRegister(PXOpenGL PXREF pxOpenGL, PXModel PXREF pxMo
                 PXOpenGLModelName,
                 "PXID:<%i>, GLID_VBO:<%i>, <%s>, upload <%p> with %i B",
                 pxVertexBuffer->Info.ID,
-                pxVertexBuffer->Info.Handle.OpenGLID,
+                pxVertexBuffer->VBO,
                 "Err",
                 pxVertexBuffer->VertexData.Data,
                 pxVertexBuffer->VertexData.SizeAllowedToUse
@@ -7311,8 +7344,8 @@ PXResult PXAPI PXOpenGLModelRegister(PXOpenGL PXREF pxOpenGL, PXModel PXREF pxMo
             }
 
 
-            PXTexturInfo pxGraphicTexturInfo;
-            pxGraphicTexturInfo.TextureReference = (void**)pxTextureList;
+            PXTextureInfo pxGraphicTexturInfo;
+            pxGraphicTexturInfo.TextureReference = pxTextureList;
             pxGraphicTexturInfo.Amount = pxTextureListCounter;
             pxGraphicTexturInfo.Type = PXTextureType2D;
             pxGraphicTexturInfo.Action = PXResourceActionCreate;

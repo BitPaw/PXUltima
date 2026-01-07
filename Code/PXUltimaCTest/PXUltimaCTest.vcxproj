@@ -163,19 +163,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Compiler\PXTestCompiler.c" />
-    <ClCompile Include="Debug\PXTestDebug.c" />
-    <ClCompile Include="main.c" />
-    <ClCompile Include="Media\PXMediaTest.c" />
-    <ClCompile Include="Network\PXNetworkTest.c" />
-    <ClCompile Include="Window\PXWindowTest.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Compiler\PXTestCompiler.h" />
-    <ClInclude Include="Debug\PXTestDebug.h" />
-    <ClInclude Include="Media\PXMediaTest.h" />
-    <ClInclude Include="Network\PXNetworkTest.h" />
-    <ClInclude Include="Window\PXWindowTest.h" />
+    <ClCompile Include="mainx.c" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PXUltimaC\PXUltimaC.vcxproj">

@@ -5,6 +5,7 @@
 #include <PX/Media/ZSTD/PXZSTD.h>
 #include <PX/OS/Async/PXThreadPool.h>
 #include <PX/OS/PXOS.h>
+#include <PX/Engine/ECS/PXECS.h>
 
 const char PXWADText[] = "WAD";
 
@@ -207,15 +208,15 @@ PXResult PXAPI PXWADEntryHandle(PXWADEntry PXREF pxWADEntry, PXFile PXREF pxFile
     {
         char temp[260];
 
-        PXResourceTransphereInfo pxResourceTransphereInfo;
-        PXClear(PXResourceTransphereInfo, &pxResourceTransphereInfo);
-        pxResourceTransphereInfo.FileReference = dataUncompressed;
+        PXResourceMoveInfo pxResourceMoveInfo;
+        PXClear(pxResourceMoveInfo, &pxResourceMoveInfo);
+        pxResourceMoveInfo.FileReference = dataUncompressed;
 
         // Because the filename is hashed, we cant know the actual filetype from the name.
         // So we need to poke around to find the file. This is very bad.
 
-        PXFileFormatInfoViaContent(&pxResourceTransphereInfo.FormatInfo, dataUncompressed);
-        PXFileTypeInfoProbe(&pxResourceTransphereInfo.FormatInfo, PXNull);
+        PXFileFormatInfoViaContent(&pxResourceMoveInfo.FormatInfo, dataUncompressed);
+        PXFileTypeInfoProbe(&pxResourceMoveInfo.FormatInfo, PXNull);
 
         PXSize amount = PXTextPrintA
         (
@@ -223,30 +224,28 @@ PXResult PXAPI PXWADEntryHandle(PXWADEntry PXREF pxWADEntry, PXFile PXREF pxFile
             260,
             "_TEST_DATA_OUTPUT_/WAD_TEMP/%16.16x.%s",
             pxWADEntry->PathHash,
-            pxResourceTransphereInfo.FormatInfo.ExtensionText
+            pxResourceMoveInfo.FormatInfo.Extension.A
         );
 
         PXText pxText;
         PXTextFromAdressA(&pxText, temp, amount, 260);
 
-        PXFileNameSet(pxResourceTransphereInfo.FileReference, &pxText);
+        PXFileNameSet(pxResourceMoveInfo.FileReference, &pxText);
 
 
 
         PXFileStoreOnDiskA(dataUncompressed, temp);
 
-        if(pxResourceTransphereInfo.FormatInfo.ResourceLoad)
+        if(pxResourceMoveInfo.FormatInfo.ResourceLoad)
         {
-            pxResourceTransphereInfo.FormatInfo.ResourceLoad(&pxResourceTransphereInfo);
+            pxResourceMoveInfo.FormatInfo.ResourceLoad(&pxResourceMoveInfo);
         }
     }
 
     PXFileClose(dataUncompressed);
 }
 
-
-
-PXResult PXAPI PXWADLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXWADLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
     PXFile PXREF pxFile = pxResourceLoadInfo->FileReference;
 
@@ -418,7 +417,7 @@ PXResult PXAPI PXWADLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI PXWADSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXWADSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

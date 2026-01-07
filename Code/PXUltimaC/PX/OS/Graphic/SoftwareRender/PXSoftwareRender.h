@@ -6,6 +6,7 @@
 #include <PX/Media/PXType.h>
 #include <PX/Media/PXText.h>
 #include <PX/Engine/PXResource.h>
+#include <PX/Engine/ECS/Resource/Font/PXFont.h>
 
 typedef struct PXSoftwareRender_
 {

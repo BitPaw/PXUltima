@@ -58,8 +58,6 @@ void PXAPI PXX86InstructionInvoke(PXX86Iterator PXREF pxX86Iterator)
     }
 }
 
-
-
 void PXAPI PXX86InstructionFunctionMODRMRead(PXX86Iterator PXREF pxX86Iterator, PXX86ModRM PXREF pxX86ModRM)
 {
     PXI8U modRM = 0;
@@ -72,7 +70,6 @@ void PXAPI PXX86InstructionFunctionMODRMRead(PXX86Iterator PXREF pxX86Iterator, 
 
     pxX86ModRM->Name = RegisterNameList[pxX86ModRM->RegisterIndex];
 }
-
 
 void PXAPI PXX86InstructionFunctionMOVx3(PXX86Iterator PXREF pxX86Iterator)
 {
@@ -174,7 +171,7 @@ void PXAPI PXX86InstructionCall(PXX86Iterator PXREF pxX86Iterator)
     );
 #endif
 
-    PXSize data = PXFileDataPosition(pxX86Iterator);
+    PXSize data = PXFileDataPosition(pxX86Iterator->Data);
 
     // Store the call to be able to return to 
     PXListAppend
@@ -539,7 +536,7 @@ PXResult PXAPI PXX86InstructionNext(PXX86Iterator PXREF pxX86Iterator)
             PXFileReadI8S(pxX86Iterator->Data, &pxX86Iterator->Displacement.I8S);
             break;
         case PXX86InstructionDisplacement2:
-            PXFileReadI16SE(pxX86Iterator->Data, &pxX86Iterator->Displacement.I32S, PXEndianLittle);
+            PXFileReadI16SE(pxX86Iterator->Data, &pxX86Iterator->Displacement.I16S, PXEndianLittle);
             break;
         case PXX86InstructionDisplacement4:
             PXFileReadI32SE(pxX86Iterator->Data, &pxX86Iterator->Displacement.I32S, PXEndianLittle);

@@ -47,12 +47,14 @@ void PXAPI PXFileElementInfoConvertFrom
 (
     PXDirectorySearchCache PXREF pxDirectorySearchCache,
     PXFileEntry PXREF pxFileEntry,
-    WIN32_FIND_DATA PXREF findData, 
+    WIN32_FIND_DATAW PXREF findData,
     PXI8U depth
 )
 {
-    pxFileEntry->FilePathSize = PXTextLengthA(findData->cFileName, MAX_PATH);
-    pxFileEntry->FilePathData = findData->cFileName;
+    PXText pxTextTemp;
+    PXTextFromAdressW(&pxTextTemp, findData->cFileName, PXTextUnkownLength, MAX_PATH);
+    PXTextCreateCopy(&pxFileEntry->FilePath, &pxTextTemp);
+
     pxFileEntry->Type = PXFileTypeGet(findData);
     pxFileEntry->Size = (findData->nFileSizeHigh * (MAXDWORD + 1u)) + findData->nFileSizeLow;
     pxFileEntry->Depth = depth; //  pxDirectorySearchInfo->DepthCounter;
@@ -91,12 +93,19 @@ void PXAPI PXDirectoryEntryStore(PXDirectorySearchCache PXREF pxDirectorySearchC
         "Search",
         "ID:%3i - %s",
         pxFileEntryINPUT->ID,
-        pxFileEntryINPUT->FilePathData
+        pxFileEntryINPUT->FilePath.A
     );
 #endif
 
+    // String is owned by stack, we need to realloc it!
     // Hijack adress, create
-    pxFileEntryINPUT->FilePathData = (char*)PXListDynamicAdd(&pxDirectorySearchCache->FilePathCache, &pxFileEntryINPUT->ID, pxFileEntryINPUT->FilePathData, pxFileEntryINPUT->FilePathSize);
+    pxFileEntryINPUT->FilePath.Data = PXListDynamicAdd
+    (
+        &pxDirectorySearchCache->FilePathCache,
+        &pxFileEntryINPUT->ID, 
+        pxFileEntryINPUT->FilePath.Data,
+        pxFileEntryINPUT->FilePath.SizeUsed
+    );
 
     PXListAdd(&pxDirectorySearchCache->EntryList, pxFileEntryINPUT);
 
@@ -168,7 +177,9 @@ PXResult PXAPI PXDirectorySearch(PXDirectorySearchCache PXREF pxDirectorySearchC
     PXClear(PXDirectorySearchCache, pxDirectorySearchCache);
 
     PXListDynamicInit(&pxDirectorySearchCache->FilePathCache, sizeof(PXI32U), PXListDynamicSizeObject1Byte);
-    PXListInitialize(&pxDirectorySearchCache->EntryList, sizeof(PXFileEntry), 25);
+    PXListInitialize(&pxDirectorySearchCache->EntryList, sizeof(PXFileEntry), 40);
+
+    return PXActionInvalid;
 
     PXFileEntry pxFileEntry;
 
@@ -179,19 +190,35 @@ PXResult PXAPI PXDirectorySearch(PXDirectorySearchCache PXREF pxDirectorySearchC
         return open;
     }
 
-    while(PXDirectoryNext(pxDirectorySearchCache, &pxFileEntry));
+    for(;;)
+    {
+        PXBool hasEntry = PXDirectoryNext(pxDirectorySearchCache, &pxFileEntry);
+
+        if(!hasEntry)
+        {
+            break;
+        }
+
+        PXDirectoryEntryStore(pxDirectorySearchCache, &pxFileEntry);
+    }
 
     const PXBool close = PXDirectoryClose(pxDirectorySearchCache);
 
 
     // Fix stale references because an reallocation could have moved the data
-    for(size_t i = 0; i < pxDirectorySearchCache->EntryList.EntryAmountUsed; ++i)
+    for(PXSize i = 0; i < pxDirectorySearchCache->EntryList.EntryAmountUsed; ++i)
     {
         PXFileEntry PXREF pxFileEntry = PXListItemAtIndexGetT(PXFileEntry, &pxDirectorySearchCache->EntryList, i);
 
         PXI32U key = i+100;
 
-        PXListDynamicGet(&pxDirectorySearchCache->FilePathCache, &key, &pxFileEntry->FilePathData, &pxFileEntry->FilePathSize);
+        PXListDynamicGet
+        (
+            &pxDirectorySearchCache->FilePathCache, 
+            &key, 
+            &pxFileEntry->FilePath.A,
+            &pxFileEntry->FilePath.SizeUsed
+        );
 
 #if PXLogEnable
         PXLogPrint
@@ -201,7 +228,7 @@ PXResult PXAPI PXDirectorySearch(PXDirectorySearchCache PXREF pxDirectorySearchC
             "Search",
             "ID:%3i - %s",
             key,
-            pxFileEntry->FilePathData
+            pxFileEntry->FilePath.A
         );
 #endif
     }
@@ -313,15 +340,16 @@ PXBool PXAPI PXDirectoryNext(PXDirectorySearchCache PXREF pxDirectorySearchCache
 
     for(;;)
     {
-        WIN32_FIND_DATAA seachResult;
-        const PXBool fetchSuccessful = FindNextFileA(pxDirectorySearchCache->DirectoryHandleCurrent, &seachResult);
+        // We will always use the UNICODE version, we cant assume ASCII.
+        WIN32_FIND_DATAW searchResult;
+        const PXBool fetchSuccessful = FindNextFileW(pxDirectorySearchCache->DirectoryHandleCurrent, &searchResult);
 
         if(!fetchSuccessful)
         {
             return PXFalse;
         }
 
-        PXFileElementInfoConvertFrom(pxDirectorySearchCache, pxFileEntry, &seachResult, 0);
+        PXFileElementInfoConvertFrom(pxDirectorySearchCache, pxFileEntry, &searchResult, 0);
 
         const PXBool isDotFodler =
             PXFileElementInfoTypeDictionaryRoot == pxFileEntry->Type ||
@@ -331,8 +359,6 @@ PXBool PXAPI PXDirectoryNext(PXDirectorySearchCache PXREF pxDirectorySearchCache
         {
             continue;
         }
-
-        PXDirectoryEntryStore(pxDirectorySearchCache, pxFileEntry);
 
         break;
     }

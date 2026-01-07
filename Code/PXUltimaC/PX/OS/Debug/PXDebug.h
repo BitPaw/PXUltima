@@ -17,7 +17,7 @@ typedef struct PXDebug_
 
     PXProcess Process;
 
-    PXThread EventListenLoop;
+    PXThread* EventListenLoop;
 
     PXByte ApplicatioNameBuffer[260];
     PXText ApplicatioName;

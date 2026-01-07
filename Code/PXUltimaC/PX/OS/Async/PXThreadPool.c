@@ -2,6 +2,7 @@
 
 #include <PX/OS/Error/PXActionResult.h>
 #include <PX/OS/Hardware/PXProcessor.h>
+#include <PX/OS/Async/PXLock.h>
 #include <PX/OS/Async/PXThread.h>
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/OS/PXOS.h>
@@ -14,8 +15,6 @@ const char PXTheadPoolText[] = "ThreadPool";
 
 
 PXThreadPool _GLOBALThreadPool;
-PXThread _mainThreadHandle;
-
 
 
 // Linux does not have native support for threadpools.
@@ -24,6 +23,7 @@ PXThread _mainThreadHandle;
 
 PXResult PXAPI PXThreadPoolThreadSelf(PXThreadPool PXREF pxThreadPool, PXThread PXREF pxThread)
 {
+    /*
     PXThread threadCurrent;
 
     PXThreadCurrent(&threadCurrent);
@@ -32,7 +32,7 @@ PXResult PXAPI PXThreadPoolThreadSelf(PXThreadPool PXREF pxThreadPool, PXThread 
     {
         PXThread PXREF pxThreadTarget = &pxThreadPool->ThreadList[i];
 
-        PXBool isSame = threadCurrent.HandleID == pxThreadTarget->HandleID;
+        PXBool isSame = threadCurrent.ThreadID == pxThreadTarget->ThreadID;
         
         if(isSame)
         {
@@ -43,7 +43,7 @@ PXResult PXAPI PXThreadPoolThreadSelf(PXThreadPool PXREF pxThreadPool, PXThread 
     }
 
     PXCopy(PXThread, &threadCurrent, pxThread);
-
+    */
     return PXActionRefusedNotFound;
 }
 
@@ -153,6 +153,7 @@ PXThreadResult PXOSAPI PXThreadPoolProcessASYNC(PXThreadPool PXREF pxThreadPool)
                 return 0;
             }
 
+            /*
             PXThread pxThread;
             PXThreadPoolThreadSelf(pxThreadPool, &pxThread);
 
@@ -166,7 +167,7 @@ PXThreadResult PXOSAPI PXThreadPoolProcessASYNC(PXThreadPool PXREF pxThreadPool)
             );
 #endif
             PXThreadStateChange(&pxThread, PXExecuteStateSuspended);
-
+            */
             continue;
         }
 
@@ -178,11 +179,9 @@ PXThreadResult PXOSAPI PXThreadPoolProcessASYNC(PXThreadPool PXREF pxThreadPool)
 
 PXBool PXAPI PXThreadPoolIsMainThread()
 {
-    PXThread pxThreadCurrent;
+    PXI32U currentThreadID = PXThreadCurrentID();
 
-    PXThreadCurrent(&pxThreadCurrent);
-
-    return _mainThreadHandle.HandleID == pxThreadCurrent.HandleID;
+    return _GLOBALThreadPool.MainThreadID == currentThreadID;
 }
 
 PXResult PXAPI PXThreadPoolClose(PXThreadPool* pxThreadPool)
@@ -213,7 +212,7 @@ PXResult PXAPI PXThreadPoolCreate(PXThreadPool* pxThreadPool)
     if(!pxThreadPool)
     {
         pxThreadPool = &_GLOBALThreadPool;
-        PXThreadCurrent(&_mainThreadHandle);
+        _GLOBALThreadPool.MainThreadID = PXThreadCurrentID();
     }
 
     if(!(PXThreadPoolCreated & pxThreadPool->Flags))
@@ -234,7 +233,7 @@ PXResult PXAPI PXThreadPoolCreate(PXThreadPool* pxThreadPool)
 #endif
 
     pxThreadPool->ThreadListSize = amountOfThreads;
-    pxThreadPool->ThreadList = PXMemoryHeapCallocT(PXThread, pxThreadPool->ThreadListSize);
+    pxThreadPool->ThreadList = PXMemoryHeapCallocT(PXThread*, pxThreadPool->ThreadListSize);
 
 #if PXLogEnable
     PXLogPrint
@@ -251,7 +250,11 @@ PXResult PXAPI PXThreadPoolCreate(PXThreadPool* pxThreadPool)
 #if PXThreadPoolUsePXIMPL
 
     // init lock
-    PXLockCreate(&pxThreadPool->TaskLock, PXLockTypeGlobal);
+    PXLockCreateInfo pxLockCreateInfo;
+    PXClear(PXLockCreateInfo, &pxLockCreateInfo);
+    pxLockCreateInfo.Type = PXLockTypeGlobal;
+
+    PXLockCreate(&pxThreadPool->TaskLock, &pxLockCreateInfo);
 
     // Create task buffer
     PXListInitialize(&pxThreadPool->TaskQueue, sizeof(PXTask), 0);
@@ -259,27 +262,31 @@ PXResult PXAPI PXThreadPoolCreate(PXThreadPool* pxThreadPool)
     pxThreadPool->TaskCounter = 1000;
 
     // Create threads
+    char nameBuffer[64];
+
+    PXThreadCreateInfo pxThreadCreateInfo;
+    PXClear(PXThreadCreateInfo, &pxThreadCreateInfo);
+    pxThreadCreateInfo.ThreadFunction = PXThreadPoolProcessASYNC;
+    pxThreadCreateInfo.Parameter = pxThreadPool;
+    pxThreadCreateInfo.Behaviour = PXThreadBehaviourCreateSuspended;
+
+    PXTextFromAdressA(&pxThreadCreateInfo.Info.Name, nameBuffer, 0, sizeof(pxThreadCreateInfo.Info.Name));
+    
     for(PXSize i = 0; i < pxThreadPool->ThreadListSize; ++i)
     {
-        PXThread PXREF pxThread = &pxThreadPool->ThreadList[i];
-        pxThread->Info.Behaviour &= ~PXExecuteStateMask;
-        pxThread->Info.Behaviour |= PXExecuteStateSuspended;
+        PXThread** pxThread = &pxThreadPool->ThreadList[i];
 
-        char nameBuffer[32];
-        PXTextPrintA(nameBuffer, 32, "PX-ThreadPool-%3.3i", i + 1);
+        PXTextPrint(&pxThreadCreateInfo.Info.Name, "PX-ThreadPool-%3.3i", i + 1);
 
-        PXThreadCreate(pxThread, nameBuffer, PXNull, PXThreadPoolProcessASYNC, pxThreadPool, PXThreadBehaviourCreateSuspended);
+        PXThreadCreate(pxThread, &pxThreadCreateInfo);
     }
 
     for(PXSize i = 0; i < pxThreadPool->ThreadListSize; ++i)
     {
-        PXThread PXREF pxThread = &pxThreadPool->ThreadList[i];
+        PXThread* pxThread = pxThreadPool->ThreadList[i];
   
         PXThreadCPUCoreAffinitySet(pxThread, i);
     }
-
-
- 
 
 
 #elif OSWindows
@@ -478,7 +485,7 @@ void PXAPI PXTaskStateChangeRemote(PXThreadPool* pxThreadPool, PXTask PXREF pxTa
         pxThreadPool = &_GLOBALThreadPool;
     }
 
-    PXLockEngage(&pxThreadPool->TaskLock, PXTrue);
+    PXLockEngage(pxThreadPool->TaskLock, PXTrue);
 
     for(PXSize i = 0; i < pxThreadPool->TaskQueue.EntryAmountUsed; ++i)
     {
@@ -493,7 +500,7 @@ void PXAPI PXTaskStateChangeRemote(PXThreadPool* pxThreadPool, PXTask PXREF pxTa
         }
     }
 
-    PXLockRelease(&pxThreadPool->TaskLock);
+    PXLockRelease(pxThreadPool->TaskLock);
 }
 
 PXBool PXAPI PXThreadPoolTaskNextWorkGet(PXThreadPool* pxThreadPool, PXTask PXREF pxTask)
@@ -505,7 +512,7 @@ PXBool PXAPI PXThreadPoolTaskNextWorkGet(PXThreadPool* pxThreadPool, PXTask PXRE
         pxThreadPool = &_GLOBALThreadPool;
     }
 
-    PXLockEngage(&pxThreadPool->TaskLock, PXTrue);
+    PXLockEngage(pxThreadPool->TaskLock, PXTrue);
 
     for(PXSize i = 0; i < pxThreadPool->TaskQueue.EntryAmountUsed; ++i)
     {
@@ -525,16 +532,9 @@ PXBool PXAPI PXThreadPoolTaskNextWorkGet(PXThreadPool* pxThreadPool, PXTask PXRE
         }
     }
 
-    PXLockRelease(&pxThreadPool->TaskLock);
+    PXLockRelease(pxThreadPool->TaskLock);
 
     return success;
-}
-
-PXResult PXAPI PXThreadContextIO(PXThreadContext PXREF pxThreadContext, const PXThreadHandleID pxThreadHandleID, const PXBool doWrite)
-{
-
-
-    return PXActionSuccessful;
 }
 
 PXTask* PXAPI PXThreadPoolTaskUpdateWork(PXThreadPool* pxThreadPool, const PXI32U taskID, void* function, void* parameter1, void* parameter2, const PXI32U behaviour)
@@ -546,7 +546,7 @@ PXTask* PXAPI PXThreadPoolTaskUpdateWork(PXThreadPool* pxThreadPool, const PXI32
         pxThreadPool = &_GLOBALThreadPool;
     }
 
-    PXLockEngage(&pxThreadPool->TaskLock, PXTrue);
+    PXLockEngage(pxThreadPool->TaskLock, PXTrue);
 
     // We defined a known task, find it!
     if(0 != taskID)
@@ -626,7 +626,7 @@ void PXAPI PXThreadPoolWaking(PXThreadPool* pxThreadPool)
     PXSize threadCounterAwake = 0;
     PXSize threadCounterSleep = 0;
 
-    PXLockEngage(&pxThreadPool->TaskLock, PXTrue);
+    PXLockEngage(pxThreadPool->TaskLock, PXTrue);
 
     // How many awake?
     {
@@ -634,6 +634,7 @@ void PXAPI PXThreadPoolWaking(PXThreadPool* pxThreadPool)
         {
             PXThread PXREF pxThread = &pxThreadPool->ThreadList[i];
 
+            /*
             switch(PXExecuteStateMask & pxThread->Info.Behaviour)
             {
                 case PXExecuteStateSuspended:
@@ -646,14 +647,14 @@ void PXAPI PXThreadPoolWaking(PXThreadPool* pxThreadPool)
                     ++threadCounterAwake;
                     break;
                 }
-            }
+            }*/
         }
     }
 
     if(threadCounterSleep == 0)
     {
         // We are at FULL capacity. Cant do more.
-        PXLockRelease(&pxThreadPool->TaskLock);
+        PXLockRelease(pxThreadPool->TaskLock);
         return;
     }
 
@@ -661,7 +662,8 @@ void PXAPI PXThreadPoolWaking(PXThreadPool* pxThreadPool)
     for(PXSize i = 0; i < pxThreadPool->ThreadListSize; ++i)
     {
         PXThread PXREF pxThread = &pxThreadPool->ThreadList[i];
-        const PXBool isSuspensed = PXExecuteStateSuspended == (PXExecuteStateMask & pxThread->Info.Behaviour);
+        const PXBool isSuspensed = 0;// PXExecuteStateSuspended == (PXExecuteStateMask & pxThread->Info.Behaviour);
+               
 
         if(isSuspensed)
         {
@@ -670,8 +672,7 @@ void PXAPI PXThreadPoolWaking(PXThreadPool* pxThreadPool)
         }
     }
 
-    PXLockRelease(&pxThreadPool->TaskLock);
-
+    PXLockRelease(pxThreadPool->TaskLock);
 
 #if PXLogEnable
     PXLogPrint
@@ -780,7 +781,7 @@ PXResult PXAPI PXThreadPoolQueuePrepare(PXThreadPool* pxThreadPool, PXI32U** lis
         *listIDs = list;
     }
 
-    PXLockEngage(&pxThreadPool->TaskLock, PXTrue);
+    PXLockEngage(pxThreadPool->TaskLock, PXTrue);
 
     PXListReserve(&pxThreadPool->TaskQueue, amount);
 

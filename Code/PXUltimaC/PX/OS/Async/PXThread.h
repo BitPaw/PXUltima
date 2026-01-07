@@ -117,7 +117,7 @@ typedef PXActionResult (PXAPI* PXThreadX2CallFunction)(void* objectAdressA, void
 
 typedef struct PXTask_
 {
-    PXResourceInfo Info;
+    PXECSInfo Info;
 
     union
     {
@@ -301,34 +301,29 @@ typedef struct PXThreadContext_
 PXThreadContext;
 
 
-
-
-
-
-
-
-
+typedef struct PXThread_ PXThread;
 
 
 #define PXThreadBehaviourDefault            0
 #define PXThreadBehaviourCreateSuspended    (1<<8)
 #define PXThreadStartOnAdd                  (1<<10)
 
-#if OSUnix
-typedef PXI32U PXThreadHandleID;
-#elif OSWindows
-typedef DWORD PXThreadHandleID;
-#endif 
-
-typedef struct PXThread_
+typedef struct PXThreadCreateInfo_
 {
-    PXResourceInfo Info;
+    PXECSCreateInfo Info;
 
-    PXThreadResult ReturnResultCode;
-
-    PXThreadHandleID HandleID;
+    // PXText ThreadName; // Is Name
+    PXProcessHandle TargetProcessHandle;
+    ThreadFunction ThreadFunction;
+    void* Parameter;
+    PXI32U Behaviour;
 }
-PXThread;
+PXThreadCreateInfo;
+
+
+
+
+PXPublic PXResult PXAPI PXThreadRegisterToECS();
 
 PXPublic void PXAPI PXThreadDestruct(PXThread PXREF pxThread);
 
@@ -337,19 +332,35 @@ PXPublic void PXAPI PXThreadConstructFromHandle(PXThread PXREF pxThread, HANDLE 
 #endif
 
 
+PXPublic PXResult PXAPI PXThreadCurrent(PXThread PXREF pxThread);
+PXPublic PXI32U PXAPI PXThreadCurrentID();
+
+PXPublic PXResult PXAPI PXThreadResume(PXThread PXREF pxThread);
+PXPublic PXResult PXAPI PXThreadSuspend(PXThread PXREF pxThread);
+PXPublic PXResult PXAPI PXThreadWait(PXThread PXREF pxThread);
+
+PXPublic PXResult PXAPI PXThreadCPUCoreAffinitySet(PXThread PXREF pxThread, const PXI16U coreIndex);
+
+
+// Causes the calling thread to yield execution to another
+// thread that is ready to run on the current processor.
+// The operating system selects the next thread to be executed.
+// The function returns true if a yield was caused, otherwise the
+// current thread proceeds execution and false is returned.
+PXPublic PXResult PXAPI PXThreadYieldToOtherThreads();
+//---------------------------------------------------------
+
+
+
+
+
+
+
 // Create thread and start it if defined.
 // The thread will clean itself up, yet you need to release the handle as a final step.
 // "targetProcessHandle" can be NULL, will target own process
 // "threadName" can be NULL, it helps for debugging
-PXPublic PXResult PXAPI PXThreadCreate
-(
-    PXThread PXREF pxThread,
-    const char PXREF threadName,
-    const PXProcessHandle targetProcessHandle,
-    ThreadFunction threadFunction,
-    void* parameter, 
-    const PXI32U behaviour
-);
+PXPublic PXResult PXAPI PXThreadCreate(PXThread** pxThreadREF, PXThreadCreateInfo PXREF pxThreadCreateInfo);
 
 // Dont call this function if you dont have to.
 // In C++ this can cause memory leaks as destructors might not be called.
@@ -363,10 +374,6 @@ PXPublic PXResult PXAPI PXThreadExitCurrent(const PXI32U exitCode);
 PXPublic PXResult PXAPI PXThreadYieldToOtherThreads();
 
 PXPublic PXResult PXAPI PXThreadOpen(PXThread PXREF pxThread);
-
-
-
-
 
 
 PXPublic PXResult PXAPI PXThreadPrioritySet(PXThread* pxThread, const PXThreadPriorityMode pxThreadPriorityMode);

@@ -44,10 +44,79 @@
     <ClCompile Include="PX\Engine\2D\PXSpriteMesh.c" />
     <ClCompile Include="PX\Engine\Dialog\PXDialogBox.c" />
     <ClCompile Include="PX\Engine\Dialog\PXDialogContainer.c" />
+    <ClCompile Include="PX\Engine\ECS\Component\IconAtlas\PXIconAtlas.c" />
+    <ClCompile Include="PX\Engine\ECS\Component\Keyboard\PXKeyboard.c" />
+    <ClCompile Include="PX\Engine\ECS\Component\Material\PXMaterial.c" />
+    <ClCompile Include="PX\Engine\ECS\Component\Mouse\PXMouse.c" />
+    <ClCompile Include="PX\Engine\ECS\Component\Rectangle\PXRectangle.c" />
+    <ClCompile Include="PX\Engine\ECS\Component\SpriteAnimator\PXSpriteAnimation.c" />
+    <ClCompile Include="PX\Engine\ECS\Component\SpriteAtlas\PXSpriteAtlas.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\Sprite\PXSprite.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\Button\PXButton.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\Calender\PXCalender.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\CheckBox\PXCheckBox.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\CodeEdit\PXCodeEdit.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\ColorPicker\PXColorPicker.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\ComboBox\PXComboBox.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\DataBaseEdit\PXDataBaseEdit.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\DateTimeEdit\PXDateTimeEdit.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\ECSEntityInfo\PXECSEntityInfo.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\ECSEntityList\PXECSEntityList.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\FileDirectory\PXFileDirectory.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\Footer\PXFooter.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\GraphBehaviour\PXGraphBehaviour.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\GraphTime\PXGraphTime.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\GroupBox\PXGroupBox.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\HardwareInfo\PXHardwareInfo.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\Header\PXHeader.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\HexEdit\PXHexEdit.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\InputView\PXInputView.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\IPEdit\PXIPEdit.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\Label\PXLabel.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\Link\PXLink.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\ListBox\PXListBox.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\MenuStrip\PXMenuStrip.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\MusicPlayer\PXMusicPlayer.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\NetworkTester\PXNetworkTester.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\Progressbar\PXProgressbar.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\RichEdit\PXRichEdit.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\TabList\PXTabList.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\TextEdit\PXTextEdit.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\ToolTip\PXToolTip.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\Trackbar\PXTrackbar.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\TransformView\PXTransformView.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\TreeView\PXTreeView.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\UpDown\PXUpDown.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\UI\VideoCutter\PXVideoCutter.c" />
+    <ClCompile Include="PX\Engine\ECS\Reflection\PXReflection.c" />
+    <ClCompile Include="PX\Engine\ECS\Resource\Cursor\PXCursor.c" />
+    <ClCompile Include="PX\Engine\ECS\Resource\Display\PXDisplay.c" />
+    <ClCompile Include="PX\Engine\ECS\Resource\DrawScript\PXDrawScript.c" />
+    <ClCompile Include="PX\Engine\ECS\Resource\DrawScript\PXDrawScript.h" />
+    <ClCompile Include="PX\Engine\ECS\Resource\FrameBuffer\PXFrameBuffer.c" />
+    <ClCompile Include="PX\Engine\ECS\Resource\Mesh\PXIndexBuffer.c" />
+    <ClCompile Include="PX\Engine\ECS\Resource\Mesh\PXVertexBuffer.c" />
+    <ClCompile Include="PX\Engine\ECS\Resource\Monitor\PXMonitor.c" />
+    <ClCompile Include="PX\Engine\ECS\Resource\Texture\PXTexture.c" />
+    <ClCompile Include="PX\Engine\ECS\Resource\Brush\PXBrush.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\Camera\PXCamera.c" />
+    <ClCompile Include="PX\Engine\ECS\Resource\Font\PXFont.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\HitBox\PXHitBox.c" />
+    <ClCompile Include="PX\Engine\ECS\Resource\Mesh\PXMesh.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\Model\PXModel.c" />
+    <ClCompile Include="PX\Engine\ECS\Entity\SkyBox\PXSkyBox.c" />
+    <ClCompile Include="PX\Engine\ECS\Resource\Video\PXVideo.c" />
+    <ClCompile Include="PX\Engine\ECS\Resource\Window\PXWindow.c" />
     <ClCompile Include="PX\Engine\ECS\PXECS.c" />
+    <ClCompile Include="PX\Engine\ECS\PXNamePool.c" />
+    <ClCompile Include="PX\Engine\ECS\Resource\Icon\PXIcon.c" />
+    <ClCompile Include="PX\Engine\ECS\Resource\Shader\PXShader.c" />
+    <ClCompile Include="PX\Engine\ECS\Resource\Sound\PXSound.c" />
+    <ClCompile Include="PX\Engine\ECS\Resource\Timer\PXTimer.c" />
+    <ClCompile Include="PX\Engine\ECS\System\PXRenderingSystem.c" />
     <ClCompile Include="PX\Engine\ID\PXID.c" />
     <ClCompile Include="PX\Engine\Interact\PXSign.c" />
-    <ClCompile Include="PX\Engine\PXEngine.c" />
+    <ClCompile Include="PX\Engine\ECS\System\PXEngine.c" />
     <ClCompile Include="PX\Engine\PXGUI.c" />
     <ClCompile Include="PX\Engine\PXLobby.c" />
     <ClCompile Include="PX\Engine\PXMod.c" />
@@ -132,6 +201,7 @@
     <ClCompile Include="PX\Media\PXText.c" />
     <ClCompile Include="PX\Media\PXType.c" />
     <ClCompile Include="PX\Media\PXUltimaInfo.c" />
+    <ClCompile Include="PX\Media\PXVersion.c" />
     <ClCompile Include="PX\Media\QOI\PXQOI.c" />
     <ClCompile Include="PX\Media\RAR\PXRAR.c" />
     <ClCompile Include="PX\Media\RedshiftAnimation\PXRedshiftAnimation.c" />
@@ -209,8 +279,6 @@
     <ClCompile Include="PX\OS\Hardware\PXController.c" />
     <ClCompile Include="PX\OS\Hardware\PXHardDrive.c" />
     <ClCompile Include="PX\OS\Hardware\PXHardware.c" />
-    <ClCompile Include="PX\OS\Hardware\PXKeyBoard.c" />
-    <ClCompile Include="PX\OS\Hardware\PXMouse.c" />
     <ClCompile Include="PX\OS\Hardware\PXProcessor.c" />
     <ClCompile Include="PX\OS\Input\PXInput.c" />
     <ClCompile Include="PX\OS\Library\PXLibrary.c" />
@@ -230,6 +298,7 @@
     <ClCompile Include="PX\OS\Time\PXTime.c" />
     <ClCompile Include="PX\OS\User\PXUser.c" />
     <ClCompile Include="PX\OS\Video\PXVideo.c" />
+    <ClCompile Include="PX\PXSentinel.c" />
     <ClCompile Include="PX\Service\PXFTPService.c" />
     <ClCompile Include="PX\Service\PXHTMLService.c" />
     <ClCompile Include="PX\Service\PXHTTPService.c" />
@@ -265,10 +334,79 @@
     <ClInclude Include="PX\Engine\2D\PXSpriteMesh.h" />
     <ClInclude Include="PX\Engine\Dialog\PXDialogBox.h" />
     <ClInclude Include="PX\Engine\Dialog\PXDialogContainer.h" />
+    <ClInclude Include="PX\Engine\ECS\Component\IconAtlas\PXIconAtlas.h" />
+    <ClInclude Include="PX\Engine\ECS\Component\Keyboard\PXKeyboard.h" />
+    <ClInclude Include="PX\Engine\ECS\Component\Material\PXMaterial.h" />
+    <ClInclude Include="PX\Engine\ECS\Component\Mouse\PXMouse.h" />
+    <ClInclude Include="PX\Engine\ECS\Component\Rectangle\PXRectangle.h" />
+    <ClInclude Include="PX\Engine\ECS\Component\SpriteAnimator\PXSpriteAnimation.h" />
+    <ClInclude Include="PX\Engine\ECS\Component\SpriteAtlas\PXSpriteAtlas.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\Sprite\PXSprite.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\Button\PXButton.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\Calender\PXCalender.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\CheckBox\PXCheckBox.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\CodeEdit\PXCodeEdit.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\ColorPicker\PXColorPicker.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\ComboBox\PXComboBox.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\DataBaseEdit\PXDataBaseEdit.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\DateTimeEdit\PXDateTimeEdit.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\ECSEntityInfo\PXECSEntityInfo.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\ECSEntityList\PXECSEntityList.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\FileDirectory\PXFileDirectory.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\Footer\PXFooter.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\GraphBehaviour\PXGraphBehaviour.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\GraphTime\PXGraphTime.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\GroupBox\PXGroupBox.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\HardwareInfo\PXHardwareInfo.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\Header\PXHeader.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\HexEdit\PXHexEdit.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\InputView\PXInputView.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\IPEdit\PXIPEdit.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\Label\PXLabel.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\Link\PXLink.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\ListBox\PXListBox.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\MenuStrip\PXMenuStrip.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\MusicPlayer\PXMusicPlayer.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\NetworkTester\PXNetworkTester.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\Progressbar\PXProgressbar.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\RichEdit\PXRichEdit.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\TabList\PXTabList.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\TextEdit\PXTextEdit.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\ToolTip\PXToolTip.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\Trackbar\PXTrackbar.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\TransformView\PXTransformView.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\TreeView\PXTreeView.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\UpDown\PXUpDown.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\UI\VideoCutter\PXVideoCutter.h" />
+    <ClInclude Include="PX\Engine\ECS\Reflection\PXReflection.h" />
+    <ClInclude Include="PX\Engine\ECS\Resource\Cursor\PXCursor.h" />
+    <ClInclude Include="PX\Engine\ECS\Resource\Display\PXDisplay.h" />
+    <ClInclude Include="PX\Engine\ECS\Resource\FrameBuffer\PXFrameBuffer.h" />
+    <ClInclude Include="PX\Engine\ECS\Resource\Light\PXLight.h" />
+    <ClInclude Include="PX\Engine\ECS\Resource\Mesh\PXBufferLayout.h" />
+    <ClInclude Include="PX\Engine\ECS\Resource\Mesh\PXIndexBuffer.h" />
+    <ClInclude Include="PX\Engine\ECS\Resource\Mesh\PXVertexBuffer.h" />
+    <ClInclude Include="PX\Engine\ECS\Resource\Monitor\PXMonitor.h" />
+    <ClInclude Include="PX\Engine\ECS\Resource\Texture\PXTexture.h" />
+    <ClInclude Include="PX\Engine\ECS\Resource\Brush\PXBrush.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\Camera\PXCamera.h" />
+    <ClInclude Include="PX\Engine\ECS\Resource\Font\PXFont.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\HitBox\PXHitBox.h" />
+    <ClInclude Include="PX\Engine\ECS\Resource\Mesh\PXMesh.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\Model\PXModel.h" />
+    <ClInclude Include="PX\Engine\ECS\Resource\Video\PXVideo.h" />
+    <ClInclude Include="PX\Engine\ECS\Resource\Window\PXWindow.h" />
+    <ClInclude Include="PX\Engine\ECS\Entity\SkyBox\PXSkyBox.h" />
     <ClInclude Include="PX\Engine\ECS\PXECS.h" />
+    <ClInclude Include="PX\Engine\ECS\PXNamePool.h" />
+    <ClInclude Include="PX\Engine\ECS\Resource\Icon\PXIcon.h" />
+    <ClInclude Include="PX\Engine\ECS\Resource\Shader\PXShader.h" />
+    <ClInclude Include="PX\Engine\ECS\Resource\Sound\PXSound.h" />
+    <ClInclude Include="PX\Engine\ECS\Resource\Timer\PXTimer.h" />
+    <ClInclude Include="PX\Engine\ECS\System\PXRenderingSystem.h" />
     <ClInclude Include="PX\Engine\ID\PXID.h" />
     <ClInclude Include="PX\Engine\Interact\PXSign.h" />
-    <ClInclude Include="PX\Engine\PXEngine.h" />
+    <ClInclude Include="PX\Engine\ECS\System\PXEngine.h" />
     <ClInclude Include="PX\Engine\PXGUI.h" />
     <ClInclude Include="PX\Engine\PXLobby.h" />
     <ClInclude Include="PX\Engine\PXMod.h" />
@@ -353,6 +491,7 @@
     <ClInclude Include="PX\Media\PXText.h" />
     <ClInclude Include="PX\Media\PXType.h" />
     <ClInclude Include="PX\Media\PXUltimaInfo.h" />
+    <ClInclude Include="PX\Media\PXVersion.h" />
     <ClInclude Include="PX\Media\QOI\PXQOI.h" />
     <ClInclude Include="PX\Media\RAR\PXRAR.h" />
     <ClInclude Include="PX\Media\RedshiftAnimation\PXRedshiftAnimation.h" />
@@ -430,8 +569,6 @@
     <ClInclude Include="PX\OS\Hardware\PXController.h" />
     <ClInclude Include="PX\OS\Hardware\PXHardDrive.h" />
     <ClInclude Include="PX\OS\Hardware\PXHardware.h" />
-    <ClInclude Include="PX\OS\Hardware\PXKeyBoard.h" />
-    <ClInclude Include="PX\OS\Hardware\PXMouse.h" />
     <ClInclude Include="PX\OS\Hardware\PXProcessor.h" />
     <ClInclude Include="PX\OS\Input\PXInput.h" />
     <ClInclude Include="PX\OS\Library\PXLibrary.h" />
@@ -451,6 +588,7 @@
     <ClInclude Include="PX\OS\Time\PXTime.h" />
     <ClInclude Include="PX\OS\User\PXUser.h" />
     <ClInclude Include="PX\OS\Video\PXVideo.h" />
+    <ClInclude Include="PX\PXSentinel.h" />
     <ClInclude Include="PX\Service\PXFTPService.h" />
     <ClInclude Include="PX\Service\PXHTMLService.h" />
     <ClInclude Include="PX\Service\PXHTTPService.h" />
@@ -544,6 +682,8 @@
       </TreatSpecificWarningsAsErrors>
       <CallingConvention>FastCall</CallingConvention>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>ntdll.lib;onecore.lib;DbgHelp.lib;dxguid.lib;uuid.lib;xaudio2.lib;strmiids.lib;Comctl32.lib;Wbemuuid.lib;Shlwapi.lib;Mf.lib;Mfuuid.lib;Mfplat.lib;Mfreadwrite.lib;Dnsapi.lib;Ws2_32.lib;Msimg32.lib;libzstd.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -568,6 +708,8 @@
       <Optimization>MinSpace</Optimization>
       <CallingConvention>FastCall</CallingConvention>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>ntdll.lib;onecore.lib;DbgHelp.lib;dxguid.lib;uuid.lib;xaudio2.lib;strmiids.lib;Comctl32.lib;Wbemuuid.lib;Shlwapi.lib;Mf.lib;Mfuuid.lib;Mfplat.lib;Mfreadwrite.lib;Dnsapi.lib;Ws2_32.lib;Msimg32.lib;libzstd.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -584,6 +726,8 @@
       </TreatSpecificWarningsAsErrors>
       <CallingConvention>FastCall</CallingConvention>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>ntdll.lib;onecore.lib;DbgHelp.lib;dxguid.lib;uuid.lib;xaudio2.lib;strmiids.lib;Comctl32.lib;Wbemuuid.lib;Shlwapi.lib;Mf.lib;Mfuuid.lib;Mfplat.lib;Mfreadwrite.lib;Dnsapi.lib;Ws2_32.lib;Msimg32.lib;libzstd.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -608,6 +752,8 @@
       <Optimization>MinSpace</Optimization>
       <CallingConvention>FastCall</CallingConvention>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>ntdll.lib;onecore.lib;DbgHelp.lib;dxguid.lib;uuid.lib;xaudio2.lib;strmiids.lib;Comctl32.lib;Wbemuuid.lib;Shlwapi.lib;Mf.lib;Mfuuid.lib;Mfplat.lib;Mfreadwrite.lib;Dnsapi.lib;Ws2_32.lib;Msimg32.lib;libzstd.lib;%(AdditionalDependencies)</AdditionalDependencies>

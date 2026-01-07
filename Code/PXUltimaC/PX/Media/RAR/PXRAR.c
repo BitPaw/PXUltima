@@ -4,7 +4,7 @@
 
 const char PXRARSignature[] = { 'R', 'a', 'r', '!', 0x1A,0x07 };
 
-PXResult PXAPI PXRARLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXRARLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
     PXRAR pxRAR;
     PXClear(PXRAR, &pxRAR);
@@ -53,7 +53,7 @@ PXResult PXAPI PXRARLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI PXRARSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXRARSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

@@ -167,11 +167,11 @@ PXPrivate void PXAPI PXUSDAParseEntryPropertyDouble3(PXUSDEntry PXREF pxUSDEntry
 PXPrivate void PXAPI PXUSDAParseEntryPropertyUniform(PXUSDEntry PXREF pxUSDEntry, PXCompiler PXREF pxCompiler);
 
 
-PXPrivate PXResult PXAPI PXUSDALoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
-PXPrivate PXResult PXAPI PXUSDCLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
-PXPrivate PXResult PXAPI PXUSDZLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
+PXPrivate PXResult PXAPI PXUSDALoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
+PXPrivate PXResult PXAPI PXUSDCLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
+PXPrivate PXResult PXAPI PXUSDZLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
 
-PXPublic PXResult PXAPI PXUSDLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXUSDSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXUSDLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXUSDSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
 
 #endif

@@ -47,7 +47,7 @@ BOOL CALLBACK EnumSymProc(PSYMBOL_INFO pSymInfo, ULONG SymbolSize, PVOID UserCon
 
 
 const char PXLibraryText[] = "Library";
-
+const char PXLibraryLoadText[] = "Load";
 
 
 
@@ -110,6 +110,8 @@ BF::ErrorCode BF::Library::SearchDirectoryRemove(LibraryDirectoryID& libraryDire
 
 PXResult PXAPI PXLibraryOpen(PXLibrary PXREF pxLibrary, const PXText PXREF filePath)
 {
+    //  gain access to an executable object file. RTLD_LAZY
+
     if(!(pxLibrary && filePath))
     {
         return PXActionRefusedArgumentNull;
@@ -127,7 +129,7 @@ PXResult PXAPI PXLibraryOpen(PXLibrary PXREF pxLibrary, const PXText PXREF fileP
             (
                 PXLoggingAllocation,
                 PXLibraryText,
-                "Open",
+                PXLibraryLoadText,
                 "<%s>",
                 filePath->A
             );
@@ -137,12 +139,12 @@ PXResult PXAPI PXLibraryOpen(PXLibrary PXREF pxLibrary, const PXText PXREF fileP
             dlerror(); // Clear any existing error
 
             const int mode = RTLD_NOW;
-            pxLibrary->ID = dlopen(filePath->A, mode); // dlfcn.h   
+            pxLibrary->ModuleHandle = dlopen(filePath->A, mode); // dlfcn.h   
 
 #elif PXOSWindowsDestop
             SetLastError(0);
 
-            pxLibrary->ID = LoadLibraryA(filePath->A); // Windows XP, Kernel32.dll, libloaderapi.h
+            pxLibrary->ModuleHandle = LoadLibraryA(filePath->A); // Windows XP, Kernel32.dll, libloaderapi.h
 #else
             return PXActionRefusedNotSupported;
 #endif
@@ -156,9 +158,9 @@ PXResult PXAPI PXLibraryOpen(PXLibrary PXREF pxLibrary, const PXText PXREF fileP
             (
                 PXLoggingAllocation,
                 PXLibraryText,
-                "Open",
+                PXLibraryLoadText,
                 "<%ls>",
-                filePath->A
+                filePath->W
             );
 #endif
 
@@ -168,7 +170,7 @@ PXResult PXAPI PXLibraryOpen(PXLibrary PXREF pxLibrary, const PXText PXREF fileP
 #elif PXOSWindowsDestop
             SetLastError(0);
 
-            pxLibrary->ID = LoadLibraryW(filePath->W); // Windows XP, Kernel32.dll, libloaderapi.h
+            pxLibrary->ModuleHandle = LoadLibraryW(filePath->W); // Windows XP, Kernel32.dll, libloaderapi.h
 #else
             return PXActionRefusedNotSupported;
 #endif
@@ -176,7 +178,7 @@ PXResult PXAPI PXLibraryOpen(PXLibrary PXREF pxLibrary, const PXText PXREF fileP
         }
     }
 
-    const PXResult pxActionResult = PXErrorCurrent(PXNull != pxLibrary->ID);
+    const PXResult pxActionResult = PXErrorCurrent(PXNull != pxLibrary->ModuleHandle);
 
     if(PXActionSuccessful != pxActionResult)
     {
@@ -200,7 +202,9 @@ PXResult PXAPI PXLibraryOpen(PXLibrary PXREF pxLibrary, const PXText PXREF fileP
 
     char libraryPathFull[PXPathSizeMax];
 
-    PXDebugModuleNameGet(pxLibrary->ID, libraryPathFull, PXPathSizeMax, PXNull, PXDebugModuleNameFull);
+    PXText pxText;
+    PXTextFromAdressA(&pxText, libraryPathFull, 0, sizeof(libraryPathFull));
+    PXLibraryName(pxLibrary->ModuleHandle, &pxText); // PXDebugModuleNameFull
 
     PXLogPrint
     (
@@ -208,7 +212,7 @@ PXResult PXAPI PXLibraryOpen(PXLibrary PXREF pxLibrary, const PXText PXREF fileP
         PXLibraryText,
         "Open",
         "<%p> - <%s>",
-        pxLibrary->ID,
+        pxLibrary->ModuleHandle,
         libraryPathFull
     );
 #endif
@@ -216,28 +220,14 @@ PXResult PXAPI PXLibraryOpen(PXLibrary PXREF pxLibrary, const PXText PXREF fileP
     return PXActionSuccessful;
 }
 
-PXResult PXAPI PXLibraryOpenA(PXLibrary PXREF pxLibrary, const char PXREF filePath)
-{
-    PXText pxText;
-    PXTextFromAdressA(&pxText, filePath, PXTextLengthUnkown, PXPathSizeMax);
-
-    return PXLibraryOpen(pxLibrary, &pxText);
-}
-
-PXResult PXAPI PXLibraryOpenW(PXLibrary PXREF pxLibrary, const wchar_t PXREF filePath)
-{
-    PXText pxText;
-    PXTextFromAdressW(&pxText, filePath, PXTextLengthUnkown, PXPathSizeMax);
-
-    return PXLibraryOpen(pxLibrary, &pxText);
-}
-
 PXResult PXAPI PXLibraryClose(PXLibrary PXREF pxLibrary)
 {
 #if PXLogEnable
-    char moduleName[97];
+    char libraryPathFull[PXPathSizeMax];
 
-    PXDebugModuleNameGet(pxLibrary->ID, moduleName, 64, PXNull, PXDebugModuleNameShort);
+    PXText pxText;
+    PXTextFromAdressA(&pxText, libraryPathFull, 0, sizeof(libraryPathFull));
+    PXLibraryName(pxLibrary->ModuleHandle, &pxText); // PXDebugModuleNameFull
 
     PXLogPrint
     (
@@ -245,15 +235,15 @@ PXResult PXAPI PXLibraryClose(PXLibrary PXREF pxLibrary)
         PXLibraryText,
         "Release",
         "%s",
-        moduleName
+        libraryPathFull
     );
 #endif
 
     const PXBool result =
 #if OSUnix
-        dlclose(pxLibrary->ID);
+        dlclose(pxLibrary->ModuleHandle);
 #elif OSWindows
-        FreeLibrary(pxLibrary->ID); // Windows XP (+UWP), Kernel32.dll, libloaderapi.h
+        FreeLibrary(pxLibrary->ModuleHandle); // Windows XP (+UWP), Kernel32.dll, libloaderapi.h
 #endif
 
     const PXResult pxActionResult = PXErrorCurrent(result);
@@ -263,7 +253,7 @@ PXResult PXAPI PXLibraryClose(PXLibrary PXREF pxLibrary)
         return pxActionResult;
     }
 
-    pxLibrary->ID = PXNull;
+    pxLibrary->ModuleHandle = PXNull;
 
     return PXActionSuccessful;
 }
@@ -277,7 +267,7 @@ PXResult PXAPI PXLibraryGetSymbolBinding(PXLibrary PXREF pxLibrary, void* PXREF 
         PXLibraryText,
         "Biding",
         "Load for <%p>...",
-        pxLibrary->ID
+        pxLibrary->ModuleHandle
     );
 #endif
 
@@ -308,7 +298,7 @@ PXResult PXAPI PXLibraryGetSymbolBinding(PXLibrary PXREF pxLibrary, void* PXREF 
         PXLibraryText,
         "Biding",
         "Done for <%p>...",
-        pxLibrary->ID
+        pxLibrary->ModuleHandle
     );
 #endif
 
@@ -343,14 +333,16 @@ PXResult PXAPI PXLibraryGetSymbolA(PXLibrary PXREF pxLibrary, void* PXREF librar
 #if PXLogEnable
     char libraryName[64];
 
-    PXDebugModuleNameGet(pxLibrary->ID, libraryName, 64, PXNull, PXDebugModuleNameShort);
+    PXText pxText;
+    PXTextFromAdressA(&pxText, libraryName, 0, sizeof(libraryName));
+    PXLibraryName(pxLibrary, &pxText); // PXDebugModuleNameShort
 #endif
 
 #if OSUnix
-    *libraryFunction = (void*)dlsym(pxLibrary->ID, symbolName);
+    *libraryFunction = (void*)dlsym(pxLibrary->ModuleHandle, symbolName);
     //const char* errorString = dlerror();
 #elif OSWindows
-    *libraryFunction = (void*)GetProcAddress(pxLibrary->ID, symbolName); // Windows XP, Kernel32.dll, libloaderapi.h
+    *libraryFunction = (void*)GetProcAddress(pxLibrary->ModuleHandle, symbolName); // Windows XP, Kernel32.dll, libloaderapi.h
 #endif
     const PXResult pxActionResult = PXErrorCurrent(PXNull != *libraryFunction);
 
@@ -411,17 +403,22 @@ PXWindowsEnumCallBackRope;
 static BOOL CALLBACK PXWindowsLibraryLoadedEnumCallback
 (
     PCSTR moduleName,
-    ULONG moduleBase,
+    ULONG moduleBase, // DWORD64
     ULONG moduleSize,
     PXWindowsEnumCallBackRope* userContext
 ) 
 {
+    PXLibrary pxLibrary;
+
     ++userContext->Amount;
 
     char bufferName[128];
 
-    HMODULE moduleHanlde =  GetModuleHandleA(moduleName);
-    PXDebugModuleNameGet(moduleHanlde, bufferName, 128, PXNull, PXDebugModuleNameShort);
+    pxLibrary.ModuleHandle =  GetModuleHandleA(moduleName);
+
+    PXText pxText;
+    PXTextFromAdressA(&pxText, bufferName, 0, sizeof(bufferName));
+    PXLibraryName(&pxLibrary, &pxText); // PXDebugModuleNameShort
 
 #if PXLogEnable
     PXLogPrint
@@ -455,8 +452,7 @@ PXResult PXAPI PXLibraryCurrentlyLoaded(PXProcessHandle pxProcessHandle, PXLibra
     PXWindowsEnumCallBackRope pxWindowsEnumCallBackRope;
     pxWindowsEnumCallBackRope.Amount = 0;
     pxWindowsEnumCallBackRope.ListObject = pxLibraryList;
-
-    
+        
     EnumerateLoadedModulesEx(pxProcessHandle, PXWindowsLibraryLoadedEnumCallback, &pxWindowsEnumCallBackRope);
 
     if(amount)
@@ -470,3 +466,289 @@ PXResult PXAPI PXLibraryCurrentlyLoaded(PXProcessHandle pxProcessHandle, PXLibra
     return PXActionRefusedNotSupportedByLibrary;
 #endif
 }
+
+PXResult PXAPI PXLibraryName(PXLibrary PXREF pxLibrary, PXText PXREF pxTextLibraryName)
+{
+#if OSUnix
+#elif OSWindows
+    switch(pxTextLibraryName->Format)
+    {
+        case TextFormatASCII:
+        {
+            pxTextLibraryName->SizeUsed = GetModuleFileNameA
+            (
+                pxLibrary->ModuleHandle,
+                pxTextLibraryName->A,
+                pxTextLibraryName->SizeAllocated
+            );
+            break;
+        }
+        case TextFormatUNICODE:
+        {
+            pxTextLibraryName->SizeUsed = GetModuleFileNameW
+            (
+                pxLibrary->ModuleHandle,
+                pxTextLibraryName->W,
+                pxTextLibraryName->SizeAllocated
+            );
+            break;
+        }
+        default:
+            return PXActionRefusedArgumentInvalid;
+    }
+
+    PXResult pxResult = PXErrorCurrent(0 < pxTextLibraryName->SizeUsed);
+
+    if(PXActionSuccessful != pxResult)
+    {
+        PXTextPrint(pxTextLibraryName, "???");
+        return pxResult;
+    }
+
+    const PXSize index = PXTextFindLastCharacterA(pxTextLibraryName->A, -1, '\\');
+
+    if(-1 != index)
+    {
+        char* source = &pxTextLibraryName->A[index + 1];
+        DWORD sourceSize = pxTextLibraryName->SizeUsed - index - 1;
+
+        pxTextLibraryName->SizeUsed = PXTextCopyA(source, sourceSize, pxTextLibraryName->A, sourceSize);
+    }
+
+    return PXActionSuccessful;
+#endif
+}
+
+PXResult PXAPI PXLibraryNameFromAdress
+(
+    PXLibrary* pxLibraryREF, 
+    PXText PXREF pxTextLibraryName, 
+    const void PXREF adress
+)
+{
+    PXLibrary placeHolder;
+
+    if(!pxLibraryREF)
+    {
+        PXClear(PXLibrary, &placeHolder);
+        pxLibraryREF = &placeHolder;
+    }
+
+    PXResult pxResult = PXLibraryFromAdress(pxLibraryREF, adress);
+
+    if(PXActionSuccessful != pxResult)
+    {
+        return pxResult;
+    }
+
+    pxResult = PXLibraryName(pxLibraryREF, pxTextLibraryName);
+
+    return pxResult;
+}
+
+PXResult PXAPI PXLibraryFromAdress(PXLibrary PXREF pxLibrary, const void PXREF adress)
+{
+#if OSUnix && 0
+    Dl_info info;
+
+    const int resultID = dladdr(adress, &info); // dlfcn.h
+    const PXResult moduleFetchResult = PXErrorCurrent(0 != resultID);
+
+    return moduleFetchResult;
+#elif OSWindows
+    const PXBool moduleFetchSuccess = GetModuleHandleEx
+    (
+        GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,
+        (LPCTSTR)adress,
+        &pxLibrary->ModuleHandle
+    );
+    const PXResult moduleFetchResult = PXErrorCurrent(moduleFetchSuccess);
+
+    return moduleFetchResult;
+#else
+    pxLibrary->ModuleHandle = PXNull;
+
+    return PXActionRefusedNotSupportedByOperatingSystem;
+#endif
+}
+
+
+/*
+
+
+
+  char moduleNameBuffer[260];
+    PXClearList(char, moduleNameBuffer, 260);
+    PXSize moduleNameLength = 0;
+
+    PXActionResult moduleFetchResult;
+
+    // Stage 1) Module to string
+#if OSUnix
+
+    if(pxHandleModule)
+    {
+        /*
+        Dl_info info;
+
+        const int resultID = dladdr(current_module, &info);
+        const PXResult moduleFetchResult = PXErrorCurrent((0 != resultID));
+
+        if(info.dli_fname)
+        {
+            printf("Current shared object: %s\n", info.dli_fname);
+        }
+        else {
+            printf("Could not determine the current shared object.\n");
+            * /
+    }
+    else
+    {
+        // The HANDLE is NULL. So we want the path of the current executable
+        moduleNameLength = readlink("/proc/self/exe", moduleName, PXPathSizeMax); // unistd.h
+        moduleFetchResult = PXErrorCurrent(-1 != count);
+    }
+
+#elif OSWindows
+
+moduleNameLength = GetModuleFileNameA(pxHandleModule, moduleNameBuffer, 260);
+moduleFetchResult = PXErrorCurrent(0 != moduleNameLength);
+
+#else
+return PXActionRefusedNotSupportedByLibrary;
+#endif
+
+
+if(PXActionSuccessful != moduleFetchResult)
+{
+    moduleName[0] = '?';
+    moduleName[1] = '?';
+    moduleName[2] = '?';
+    moduleName[3] = '\0';
+
+    if(sizeWritten)
+    {
+        *sizeWritten = 3;
+    }
+
+    return moduleFetchResult;
+}
+
+
+// Stage 2) Truncate name
+if(!(PXDebugModuleNameShort & flags))
+{
+    PXTextReplaceByte(moduleNameBuffer, moduleNameLength, '\\', '/');
+    PXTextCopyA(moduleNameBuffer, moduleNameLength, moduleName, moduleNameSize);
+
+
+    if(sizeWritten)
+    {
+        *sizeWritten = moduleNameLength;
+    }
+
+    return PXActionSuccessful; // We dont do any further processing
+}
+
+
+
+
+#if OSUnix
+
+moduleName[count] = '\0';
+*sizeWritten = count;
+
+// Truncate
+const PXSize lastSlashPosition = PXTextFindLastCharacterA(moduleName, count, '/');
+
+if(lastSlashPosition != -1)
+{
+    PXSize sourceSize = count - lastSlashPosition;
+    char* source = &moduleName[lastSlashPosition];
+
+    *sizeWritten = PXMemoryMove(source, sourceSize, moduleName, moduleNameSize);
+}
+
+
+#elif OSWindows
+
+
+// net to get moduleinto, but we have those
+// IMAGEHLP_MODULE64 mMAGEHLP_MODULE64;
+// mMAGEHLP_MODULE64.SizeOfStruct = sizeof(IMAGEHLP_MODULE64);
+//  const PXBool moduleFetchSuccessaSAS = SymGetModuleInfo64(processHandle, moduleHandle, &mMAGEHLP_MODULE64);
+
+
+// Extract names
+{
+    char* molduleNamefixed = moduleNameBuffer;
+    PXSize actualSize = moduleNameLength;
+
+    const char systemPath[] = "C:\\WINDOWS\\SYSTEM32\\";
+    const PXSize systemPathSize = sizeof(systemPath);
+    const PXBool isSystem = PXTextCompareIgnoreCaseA(systemPath, systemPathSize, moduleNameBuffer, systemPathSize);
+
+    if(isSystem)
+    {
+        molduleNamefixed += systemPathSize - 1;
+        actualSize -= systemPathSize - 1;
+
+        // Check if its a driver
+        const char driverStoreText[] = "DriverStore";
+        const PXSize driverStoreTextSize = sizeof(driverStoreText);
+
+        const PXBool isDriver = PXTextCompareA(driverStoreText, driverStoreTextSize, molduleNamefixed, driverStoreTextSize, 0);
+
+        if(isDriver)
+        {
+            // The path is very long and useless, only get the DLL name.
+            const PXSize lastSlash = PXTextFindLastCharacterA(molduleNamefixed, actualSize, '\\');
+
+            if(lastSlash != -1)
+            {
+                molduleNamefixed += lastSlash + 1;
+                actualSize -= lastSlash + 1;
+            }
+        }
+    }
+    else
+    {
+        char currentWorkPath[MAX_PATH];
+        PXClearList(char, currentWorkPath, MAX_PATH);
+        PXSize currentWorkPathSize = GetModuleFileName(NULL, currentWorkPath, MAX_PATH);
+
+
+        PXSize lastSlashA = PXTextFindLastCharacterA(currentWorkPath, currentWorkPathSize, '\\');
+        PXSize lastSlashB = PXTextFindLastCharacterA(moduleNameBuffer, currentWorkPathSize, '\\');
+        PXBool isRelativePath = PXTextCompareA(currentWorkPath, lastSlashA, moduleNameBuffer, lastSlashB, 0);
+
+        if(isRelativePath)
+        {
+            molduleNamefixed += lastSlashA + 1;
+            actualSize -= lastSlashA + 1;
+        }
+    }
+
+    moduleNameLength = PXTextCopyA(molduleNamefixed, actualSize, moduleName, 260);
+}
+#endif
+
+if(sizeWritten)
+{
+    *sizeWritten = moduleNameLength;
+}
+
+return PXActionSuccessful;
+
+
+
+
+
+
+
+
+
+
+
+
+*/

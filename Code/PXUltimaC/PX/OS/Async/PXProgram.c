@@ -13,6 +13,9 @@
 #include <PX/Media/PXText.h>
 #include <PX/OS/Memory/PXMemory.h>
 
+const char PXExecuteName[] = "PXProgramExecute";
+const PXI8U PXExecuteNameLengh = sizeof(PXExecuteName);
+
 PXThreadResult PXOSAPI PXProgramExecuteThreadFunction(void* data)
 {
     PXProgram* program = (PXProgram*)data;
@@ -86,15 +89,14 @@ PXResult PXAPI PXProgramExecute(PXProgram PXREF program)
 {
     if (program->PXProgramExecutedCallBack)
     {
-        const PXResult actionResult = PXThreadCreate
-        (
-            &program->WorkingThread, 
-            "PXProgramExecute", 
-            PXNull,
-            PXProgramExecuteThreadFunction, 
-            program,
-            PXThreadBehaviourDefault
-        );
+        PXThreadCreateInfo pxThreadCreateInfo;
+        PXClear(PXThreadCreateInfo, &pxThreadCreateInfo);
+        PXTextFromAdressA(&pxThreadCreateInfo.Info.Name, PXExecuteName, 0, PXExecuteNameLengh);
+        pxThreadCreateInfo.ThreadFunction = PXProgramExecuteThreadFunction;
+        pxThreadCreateInfo.Parameter = program;
+        pxThreadCreateInfo.Behaviour = PXThreadBehaviourDefault;
+
+        const PXResult actionResult = PXThreadCreate(&program->WorkingThread, &pxThreadCreateInfo);
 
         if (PXActionSuccessful == actionResult)
         {

@@ -2,18 +2,20 @@
 
 #include <PX/OS/File/PXFile.h>
 #include <PX/OS/Console/PXConsole.h>
+#include <PX/Engine/ECS/PXECS.h>
 
+const char PXZIPText[] = "ZIP";
 const char PXZIPSignature[4] = { 'P', 'K', 0x03, 0x04 };
 const char PXZIPChunk[4] = { 'P', 'K', 0x05, 0x06 };
 
-PXResult PXAPI PXZIPLoadFromFile(PXResourceTransphereInfo PXREF pxResourceTransphereInfo)
+PXResult PXAPI PXZIPLoadFromFile(PXResourceMoveInfo PXREF PXResourceMoveInfo)
 {
     PXZIP pxZIPAA;
     PXClear(PXZIP, &pxZIPAA);
     PXZIP* pxZIP = &pxZIPAA;
 
 
-    const PXBool isSignatureValid = PXFileReadAndCompare(pxResourceTransphereInfo->FileReference, PXZIPSignature, sizeof(PXZIPSignature));
+    const PXBool isSignatureValid = PXFileReadAndCompare(PXResourceMoveInfo->FileReference, PXZIPSignature, sizeof(PXZIPSignature));
 
     if(!isSignatureValid)
     {
@@ -34,16 +36,16 @@ PXResult PXAPI PXZIPLoadFromFile(PXResourceTransphereInfo PXREF pxResourceTransp
         {&pxZIP->Extrafieldlength, PXTypeInt16ULE}
     };
 
-    const PXSize amount = PXFileReadMultible(pxResourceTransphereInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+    const PXSize amount = PXFileReadMultible(PXResourceMoveInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
     const PXBool validSize = 26 == amount;
 
     // Name
-    pxZIP->FileName = (char*)PXFileDataAtCursor(pxResourceTransphereInfo->FileReference);
-    PXFileCursorAdvance(pxResourceTransphereInfo->FileReference, pxZIP->Filenamelength);
+    pxZIP->FileName = (char*)PXFileDataAtCursor(PXResourceMoveInfo->FileReference);
+    PXFileCursorAdvance(PXResourceMoveInfo->FileReference, pxZIP->Filenamelength);
 
     // Extra field
-    pxZIP->ExtraField = (char*)PXFileDataAtCursor(pxResourceTransphereInfo->FileReference);
-    PXFileCursorAdvance(pxResourceTransphereInfo->FileReference, pxZIP->Extrafieldlength);
+    pxZIP->ExtraField = (char*)PXFileDataAtCursor(PXResourceMoveInfo->FileReference);
+    PXFileCursorAdvance(PXResourceMoveInfo->FileReference, pxZIP->Extrafieldlength);
 
 #if PXLogEnable
     char nameBuffer[64];
@@ -52,7 +54,7 @@ PXResult PXAPI PXZIPLoadFromFile(PXResourceTransphereInfo PXREF pxResourceTransp
     PXLogPrint
     (
         PXLoggingInfo,
-        "ZIP",
+        PXZIPText,
         "Parsing",
         "Version:%i, Name:%s",
         pxZIP->VersionMinimum,
@@ -63,7 +65,7 @@ PXResult PXAPI PXZIPLoadFromFile(PXResourceTransphereInfo PXREF pxResourceTransp
     return PXActionSuccessful;
 }
 
-PXResult PXAPI PXZIPSaveToFile(PXResourceTransphereInfo PXREF pxResourceTransphereInfo)
+PXResult PXAPI PXZIPSaveToFile(PXResourceMoveInfo PXREF PXResourceMoveInfo)
 {
     return PXActionSuccessful;
 }

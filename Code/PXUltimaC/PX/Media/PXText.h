@@ -42,10 +42,11 @@ typedef struct PXText_
 {
     PXSize SizeAllocated; // [8 Byte, Offset 0] Size that the buffer ponited to has
     PXSize SizeUsed; // [8 Byte, Offset 8]
-    PXSize NumberOfCharacters;  // [8 Byte, Offset 16]
+    //PXSize NumberOfCharacters;  // [8 Byte, Offset 16]
 
     union
     {
+        void* Data;
         PXASCII* A; // [8 Byte, Offset 24]
         PXUNICODE* W; // [8 Byte, Offset 24]
         PXUTF8* U;
@@ -64,7 +65,6 @@ PXText;
         char bufferCacheName[bufferCacheSize];\
         (pxText)->SizeAllocated = sizeof(bufferCacheName);\
         (pxText)->SizeUsed = 0;\
-        (pxText)->NumberOfCharacters = 0;\
         (pxText)->Format = format;\
         (pxText)->A = bufferCacheName;\
         PXMemorySet((pxText)->A, '\0', (pxText)->SizeAllocated);
@@ -85,15 +85,14 @@ PXPublic PXResult PXAPI PXTextCreatePath(PXText PXREF pxText);
 #define PXTextLengthUnkown -1
 
 PXPublic PXResult PXAPI PXTextFromAdress(PXText PXREF pxText, void* address, const PXSize sizeUsed, const PXSize sizeAllocated, const PXTextFormat pxTextFormat);
-PXPublic PXResult PXAPI PXTextFromAdressA(PXText PXREF pxText, void* address, const PXSize sizeUsed, const PXSize sizeAllocated);
-PXPublic PXResult PXAPI PXTextFromAdressW(PXText PXREF pxText, void* address, const PXSize sizeUsed, const PXSize sizeAllocated);
+PXPublic PXResult PXAPI PXTextFromAdressA(PXText PXREF pxText, const char* address, const PXSize sizeUsed, const PXSize sizeAllocated);
+PXPublic PXResult PXAPI PXTextFromAdressW(PXText PXREF pxText, const wchar_t* address, const PXSize sizeUsed, const PXSize sizeAllocated);
 
 
 #define PXTextMakeFixedC(pxText, c)\
         char character = c; \
         (pxText)->SizeAllocated = sizeof(character);\
         (pxText)->SizeUsed = sizeof(character);\
-        (pxText)->NumberOfCharacters = sizeof(character);\
         (pxText)->Format = TextFormatASCII;\
         (pxText)->A = &character;
 
@@ -101,7 +100,6 @@ PXPublic PXResult PXAPI PXTextFromAdressW(PXText PXREF pxText, void* address, co
         char text[] = s;\
         (pxText)->SizeAllocated = sizeof(text);\
         (pxText)->SizeUsed = (pxText)->SizeAllocated;\
-        (pxText)->NumberOfCharacters = (pxText)->SizeAllocated;\
         (pxText)->Format = TextFormatASCII;\
         (pxText)->A = text;
 
@@ -109,7 +107,6 @@ PXPublic PXResult PXAPI PXTextFromAdressW(PXText PXREF pxText, void* address, co
         (pxText)->A = s; \
         (pxText)->SizeAllocated = PXTextLengthA((pxText)->A, PXTextLengthUnkown);\
         (pxText)->SizeUsed = (pxText)->SizeAllocated;\
-        (pxText)->NumberOfCharacters = (pxText)->SizeAllocated;\
         (pxText)->Format = TextFormatASCII;\
 
 
@@ -220,7 +217,7 @@ PXPublic PXSize PXAPI PXTextLengthW(const wchar_t* string, const PXSize stringSi
 PXPublic PXSize PXAPI PXTextLengthUntilA(const char* string, const PXSize stringSize, const char character);
 PXPublic PXSize PXAPI PXTextLengthUntilW(const wchar_t* string, const PXSize stringSize, const wchar_t character);
 
-PXPublic PXSize PXAPI PXTextCopy(const PXText PXREF source, PXText PXREF destination);
+PXPublic PXSize PXAPI PXTextCopy(PXText PXREF pxText, const PXText PXREF pxTextsource);
 
 PXPublic PXSize PXAPI PXTextCopyA(const char* source, const PXSize sourceLength, char* destination, const PXSize destinationLength);
 PXPublic PXSize PXAPI PXTextCopyAW(const char* source, const PXSize sourceLength, wchar_t* destination, const PXSize destinationLength);

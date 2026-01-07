@@ -214,7 +214,9 @@ PXResult PXAPI PXNetworkModulState(PXNetwork* PXREF pxNetworkREF, const PXI32U f
 
             // Connect
             {
-                const PXResult openResult = PXLibraryOpenA(&_pxNetwork.NetworkLibrary, PXWindowsWinSockDLL);
+                PXText pxText;
+                PXTextFromAdressA(&pxText, PXWindowsWinSockDLL, sizeof(PXWindowsWinSockDLL), sizeof(PXWindowsWinSockDLL));
+                const PXResult openResult = PXLibraryOpen(&_pxNetwork.NetworkLibrary, &pxText);
 
                 if(PXActionSuccessful != openResult)
                 {
@@ -424,11 +426,6 @@ PXResult PXAPI PXNetworkSocketPeerGet(PXNetwork PXREF pxNetwork, PXSocketConnect
 
     const int resultID = 0;// getpeername(socketID, &socketAdress, &socketAdressSize);
 
-
-
-
-
-
     return PXActionInvalid;
 #else
     return PXActionInvalid;
@@ -540,19 +537,7 @@ PXResult PXAPI PXNetworkSocketConnect(PXSocketConnectInfo PXREF pxSocketConnectI
 
             connectResultID = _pxNetwork.SocketConnect(pxSocket->ID, adressResult->ai_addr, adressResult->ai_addrlen);
 
-
-            int length = sizeof(ADDRINFOA);
-            ADDRINFOA aaaaa;
-
-            char budder[255];
-
-            PXClear(ADDRINFOA, &aaaaa);
-            PXClearList(char, budder, 255);
-            aaaaa.ai_addrlen = 255;
-            aaaaa.ai_addr = budder;
-
-            int x = getpeername(pxSocket->ID, &aaaaa, &length);
-
+            //PXNetworkPeerName(); // TODO: use?
 
 #if PXLogEnable
             PXLogPrint
@@ -1347,6 +1332,17 @@ PXResult PXAPI PXNetworkSocketPoll()
     return PXActionSuccessful;
 }
 
+PXResult PXAPI PXNetworkPeerName(const PXSocket PXREF pxSocket)
+{
+    int length = sizeof(struct sockaddr);
+    struct sockaddr socketAdress;
+    PXClear(struct sockaddr, &socketAdress);
+
+    int x = getpeername(pxSocket->ID, &socketAdress, &length);
+
+    return PXActionSuccessful;
+}
+
 PXResult PXAPI PXNetworkSocketMTU(const PXSocket PXREF pxSocket, PXI32U* value, const PXBool doWrite)
 {
     PXActionResult error = PXActionInvalid;
@@ -1638,7 +1634,7 @@ PXResult PXAPI PXNetworkAdapterFetch()
     // As it is extremly slow and a call to just get the size will still result in this loading time.
     // So we need to avoid any more then this call
     outBufLen = 1024 * 16 * 2;
-    PIP_ADAPTER_ADDRESSES pAddresses = PXMemoryHeapCalloc(PXNull, 1, outBufLen);
+    PIP_ADAPTER_ADDRESSES pAddresses = (PIP_ADAPTER_ADDRESSES)PXMemoryHeapCalloc(PXNull, 1, outBufLen);
 
     do
     {

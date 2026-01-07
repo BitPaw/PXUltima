@@ -1,6 +1,7 @@
 #include "PXTGA.h"
 
 #include <PX/OS/File/PXFile.h>
+#include <PX/Engine/ECS/PXECS.h>
 
 const char PXTGAFileIdentifier[19] = "TRUEVISION - XFILE.";
 
@@ -130,7 +131,7 @@ void PXAPI PXTGADestruct(PXTGA PXREF tga)
 
 }
 
-PXResult PXAPI PXTGALoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXTGALoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
     PXTexture PXREF pxTexture = (PXTexture*)pxResourceLoadInfo->ResourceTarget;
 
@@ -222,7 +223,7 @@ PXResult PXAPI PXTGALoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
     //--------------------------------
 
     //---[ ImageData ]------------------
-    PXFileReadB(pxResourceLoadInfo->FileReference, pxTexture->PixelData, pxTexture->PixelDataSize);
+    PXFileReadB(pxResourceLoadInfo->FileReference, pxTexture->PixelData.Adress, pxTexture->PixelData.CursorOffsetByte);
     //-----------------------------------------------------------------
 
 
@@ -314,7 +315,7 @@ PXResult PXAPI PXTGALoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
     return PXActionSuccessful;
 }
 
-PXResult PXAPI PXTGASaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXTGASaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

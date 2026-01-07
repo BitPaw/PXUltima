@@ -479,10 +479,10 @@ PXResult PXAPI PXFileFormatInfoViaContent(PXFileFormatInfo PXREF pxFileFormatInf
     {
         const PXFileFormatInfo PXREF pxFileFormatInfoComp = &pxFileFormatInfoList[i];
 
-        PXBool isMatch = PXTextCompareA
+        const PXBool isMatch = PXTextCompareA
         (
-            pxFileFormatInfoComp->SigantureText,
-            pxFileFormatInfoComp->SigantureLength,
+            pxFileFormatInfoComp->Siganture.A,
+            pxFileFormatInfoComp->Siganture.SizeUsed,
             PXFileDataAtCursorWithOffset(pxFile, pxFileFormatInfoComp->SigantureOffset),
             PXFileAllocatedSize(pxFile),
             0
@@ -515,21 +515,21 @@ PXResult PXAPI PXFileTypeInfoProbe(PXFileFormatInfo PXREF pxFileFormatInfo, cons
             pxFileFormatInfo->Flags = PXFileFormatTypeModel;
             pxFileFormatInfo->ResourceLoad = PXAutodesk3DSLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXAutodesk3DSSafeFromFile;
-            pxFileFormatInfo->ExtensionText = "3DS";
+            pxFileFormatInfo->Extension.A = "3DS";
             break;
 
         case PXFileFormatAAC:
             pxFileFormatInfo->Flags = PXResourceTypeSound;
             pxFileFormatInfo->ResourceLoad = PXAACLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXAACSaveToFile;
-            pxFileFormatInfo->ExtensionText = "ACC";
+            pxFileFormatInfo->Extension.A = "ACC";
             break;
 
         case PXFileFormatAVI:
             pxFileFormatInfo->Flags = PXResourceTypeVideo;
             pxFileFormatInfo->ResourceLoad = PXAVILoadFromFile;
             pxFileFormatInfo->ResourceSave = PXAVISaveToFile;
-            pxFileFormatInfo->ExtensionText = "AVI";
+            pxFileFormatInfo->Extension.A = "AVI";
             break;
 
         case PXFileFormatBitMap:
@@ -537,119 +537,119 @@ PXResult PXAPI PXFileTypeInfoProbe(PXFileFormatInfo PXREF pxFileFormatInfo, cons
             pxFileFormatInfo->ResourcePeek = PXBitmapPeekFromFile;
             pxFileFormatInfo->ResourceLoad = PXBitmapLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXBitmapSaveToFile;
-            pxFileFormatInfo->ExtensionText = "BMP";
+            pxFileFormatInfo->Extension.A = "BMP";
             break;
 
         case PXFileFormatCanonRaw3:
             pxFileFormatInfo->Flags = PXResourceTypeTexture;
             pxFileFormatInfo->ResourceLoad = PXCanonRaw3LoadFromFile;
             pxFileFormatInfo->ResourceSave = PXCanonRaw3SaveToFile;
-            pxFileFormatInfo->ExtensionText = "CR3";
+            pxFileFormatInfo->Extension.A = "CR3";
             break;
 
         case PXFileFormatC:
             pxFileFormatInfo->Flags = PXResourceTypeCodeDocument;
             pxFileFormatInfo->ResourceLoad = PXCLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXCSaveToFile;
-            pxFileFormatInfo->ExtensionText = "C";
+            pxFileFormatInfo->Extension.A = "C";
             break;
 
         case PXFileFormatCSharp:
             pxFileFormatInfo->Flags = PXResourceTypeCodeDocument;
             pxFileFormatInfo->ResourceLoad = PXCSharpLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXCSharpSaveToFile;
-            pxFileFormatInfo->ExtensionText = "CS";
+            pxFileFormatInfo->Extension.A = "CS";
             break;
 
         case PXFileFormatCSS:
             pxFileFormatInfo->Flags = PXResourceTypeStructuredText;
             pxFileFormatInfo->ResourceLoad = PXCSSLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXCSSSaveToFile;
-            pxFileFormatInfo->ExtensionText = "CSS";
+            pxFileFormatInfo->Extension.A = "CSS";
             break;
 
         case PXFileFormatCPP:
             pxFileFormatInfo->Flags = PXResourceTypeCodeDocument;
             pxFileFormatInfo->ResourceLoad = PXCPPLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXCPPSaveToFile;
-            pxFileFormatInfo->ExtensionText = "CPP";
+            pxFileFormatInfo->Extension.A = "CPP";
             break;
 
         case PXFileFormatBinaryWindows:
             pxFileFormatInfo->Flags = PXResourceTypeBinary;
             pxFileFormatInfo->ResourceLoad = PXBinaryWindowsLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXBinaryWindowsSaveToFile;
-            pxFileFormatInfo->ExtensionText = "EXE";
+            pxFileFormatInfo->Extension.A = "EXE";
             break;
 
         case PXFileFormatBinaryLinux:
             pxFileFormatInfo->Flags = PXResourceTypeBinary;
             pxFileFormatInfo->ResourceLoad = PXBinaryLinuxLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXBinaryLinuxSaveToFile;
-            pxFileFormatInfo->ExtensionText = "ELF";
+            pxFileFormatInfo->Extension.A = "ELF";
             break;
 
         case PXFileFormatDirectDrawSurfaceTexture:
             pxFileFormatInfo->Flags = PXResourceTypeTexture;
             pxFileFormatInfo->ResourceLoad = PXDDSLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXDDSSaveToFile;
-            pxFileFormatInfo->ExtensionText = "DDS";
+            pxFileFormatInfo->Extension.A = "DDS";
             break;
 
         case PXFileFormatEML:
             pxFileFormatInfo->Flags = PXResourceTypeStructuredText;
             pxFileFormatInfo->ResourceLoad = PXNull;
             pxFileFormatInfo->ResourceSave = PXNull;
-            pxFileFormatInfo->ExtensionText = "EML";
+            pxFileFormatInfo->Extension.A = "EML";
             break;
 
         case PXFileFormatFastFile:
             pxFileFormatInfo->Flags |= PXFileFormatTypeArchiv;
             pxFileFormatInfo->ResourceLoad = PXFastFileLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXFastFileSaveToFile;
-            pxFileFormatInfo->ExtensionText = "FF";
+            pxFileFormatInfo->Extension.A = "FF";
             break;
 
         case PXFileFormatFilmBox:
             pxFileFormatInfo->Flags |= PXFileFormatTypeInvalid;
             pxFileFormatInfo->ResourceLoad = PXFilmBoxLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXFilmBoxSaveToFile;
-            pxFileFormatInfo->ExtensionText = "FBX";
+            pxFileFormatInfo->Extension.A = "FBX";
             break;
 
         case PXFileFormatFLAC:
             pxFileFormatInfo->Flags |= PXFileFormatTypeInvalid;
             pxFileFormatInfo->ResourceLoad = PXFLACLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXFLACSaveToFile;
-            pxFileFormatInfo->ExtensionText = "FLAC";
+            pxFileFormatInfo->Extension.A = "FLAC";
             break;
 
         case PXFileFormatSpriteFont:
             pxFileFormatInfo->Flags |= PXFileFormatTypeInvalid;
             pxFileFormatInfo->ResourceLoad = PXSpriteFontLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXSpriteFontSaveToFile;
-            pxFileFormatInfo->ExtensionText = "FNT";
+            pxFileFormatInfo->Extension.A = "FNT";
             break;
 
         case PXFileFormatGIF:
             pxFileFormatInfo->Flags |= PXFileFormatTypeInvalid;
             pxFileFormatInfo->ResourceLoad = PXGIFLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXGIFSaveToFile;
-            pxFileFormatInfo->ExtensionText = "GIF";
+            pxFileFormatInfo->Extension.A = "GIF";
             break;
 
         case PXFileFormatOpenGLShader:
             pxFileFormatInfo->Flags |= PXFileFormatTypeInvalid;
             pxFileFormatInfo->ResourceLoad = PXGLSLLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXGLSLSaveToFile;
-            pxFileFormatInfo->ExtensionText = "GLSL";
+            pxFileFormatInfo->Extension.A = "GLSL";
             break;
 
         case PXFileFormatDirectXShader:
             pxFileFormatInfo->Flags = PXResourceTypeShaderProgram;
             pxFileFormatInfo->ResourceLoad = PXHLSLLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXHLSLSaveToFile;
-            pxFileFormatInfo->ExtensionText = "HLSL";
+            pxFileFormatInfo->Extension.A = "HLSL";
             break;
 
         case PXFileFormatHighEfficiencyImageFile:
@@ -662,21 +662,21 @@ PXResult PXAPI PXFileTypeInfoProbe(PXFileFormatInfo PXREF pxFileFormatInfo, cons
             pxFileFormatInfo->Flags |= PXFileFormatTypeInvalid;
             pxFileFormatInfo->ResourceLoad = PXHTMLLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXHTMLSaveToFile;
-            pxFileFormatInfo->ExtensionText = "HTML";
+            pxFileFormatInfo->Extension.A = "HTML";
             break;
 
         case PXFileFormatINI:
             pxFileFormatInfo->Flags = PXResourceTypeStructuredText;
             pxFileFormatInfo->ResourceLoad = PXINILoadFromFile;
             pxFileFormatInfo->ResourceSave = PXINISaveToFile;
-            pxFileFormatInfo->ExtensionText = "INI";
+            pxFileFormatInfo->Extension.A = "INI";
             break;
 
         case PXFileFormatJava:
             pxFileFormatInfo->Flags = PXResourceTypeCodeDocument;
             pxFileFormatInfo->ResourceLoad = PXJavaLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXJavaSaveToFile;
-            pxFileFormatInfo->ExtensionText = "JAR";
+            pxFileFormatInfo->Extension.A = "JAR";
             break;
 
         case PXFileFormatJavaScript:
@@ -689,112 +689,112 @@ PXResult PXAPI PXFileTypeInfoProbe(PXFileFormatInfo PXREF pxFileFormatInfo, cons
             pxFileFormatInfo->Flags = PXResourceTypeTexture;
             pxFileFormatInfo->ResourceLoad = PXJPEGLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXJPEGSaveToFile;
-            pxFileFormatInfo->ExtensionText = "JPG";
+            pxFileFormatInfo->Extension.A = "JPG";
             break;
 
         case PXFileFormatJSON:
             pxFileFormatInfo->Flags = PXResourceTypeStructuredText;
             pxFileFormatInfo->ResourceLoad = PXJSONLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXJSONSaveToFile;
-            pxFileFormatInfo->ExtensionText = "JSON";
+            pxFileFormatInfo->Extension.A = "JSON";
             break;
 
         case PXFileFormatM4A:
             pxFileFormatInfo->Flags = PXResourceTypeSound;
             pxFileFormatInfo->ResourceLoad = PXNull;
             pxFileFormatInfo->ResourceSave = PXNull;
-            pxFileFormatInfo->ExtensionText = "M4A";
+            pxFileFormatInfo->Extension.A = "M4A";
             break;
 
         case PXFileFormatMIDI:
             pxFileFormatInfo->Flags = PXResourceTypeSound;
             pxFileFormatInfo->ResourceLoad = PXMIDILoadFromFile;
             pxFileFormatInfo->ResourceSave = PXMIDISaveToFile;
-            pxFileFormatInfo->ExtensionText = "MIDI";
+            pxFileFormatInfo->Extension.A = "MIDI";
             break;
 
         case PXFileFormatMP3:
             pxFileFormatInfo->Flags = PXResourceTypeSound;
             pxFileFormatInfo->ResourceLoad = PXMP3LoadFromFile;
             pxFileFormatInfo->ResourceSave = PXMP3SaveToFile;
-            pxFileFormatInfo->ExtensionText = "MP3";
+            pxFileFormatInfo->Extension.A = "MP3";
             break;
 
         case PXFileFormatMP4:
             pxFileFormatInfo->Flags = PXResourceTypeVideo;
             pxFileFormatInfo->ResourceLoad = PXMP4LoadFromFile;
             pxFileFormatInfo->ResourceSave = PXMP4SaveToFile;
-            pxFileFormatInfo->ExtensionText = "MP4";
+            pxFileFormatInfo->Extension.A = "MP4";
             break;
 
         case PXFileFormatMSI:
             pxFileFormatInfo->Flags = PXResourceTypeInstaller;
             pxFileFormatInfo->ResourceLoad = PXMSILoadFromFile;
             pxFileFormatInfo->ResourceSave = PXMSISaveToFile;
-            pxFileFormatInfo->ExtensionText = "MSI";
+            pxFileFormatInfo->Extension.A = "MSI";
             break;
 
         case PXFileFormatMTL:
             pxFileFormatInfo->Flags = PXResourceTypeMaterialList;
             pxFileFormatInfo->ResourceLoad = PXMTLLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXMTLSaveToFile;
-            pxFileFormatInfo->ExtensionText = "MTL";
+            pxFileFormatInfo->Extension.A = "MTL";
             break;
 
         case PXFileFormatN64:
             pxFileFormatInfo->Flags = PXResourceTypeBinary;
             pxFileFormatInfo->ResourceLoad = PXN64LoadFromFile;
             pxFileFormatInfo->ResourceSave = PXN64SaveToFile;
-            pxFileFormatInfo->ExtensionText = "N64";
+            pxFileFormatInfo->Extension.A = "N64";
             break;
 
         case PXFileFormatWavefront:
             pxFileFormatInfo->Flags = PXResourceTypeModel;
             pxFileFormatInfo->ResourceLoad = PXWavefrontLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXWavefrontSaveFromFile;
-            pxFileFormatInfo->ExtensionText = "WAV";
+            pxFileFormatInfo->Extension.A = "WAV";
             break;
 
         case PXFileFormatMatroska:
             pxFileFormatInfo->Flags = PXResourceTypeVideo;
             pxFileFormatInfo->ResourceLoad = PXMatroskaLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXMatroskaSaveToFile;
-            pxFileFormatInfo->ExtensionText = "";
+            pxFileFormatInfo->Extension.A = "";
             break;
 
         case PXFileFormatOGG:
             pxFileFormatInfo->Flags = PXResourceTypeSound;
             pxFileFormatInfo->ResourceLoad = PXOGGLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXOGGSaveToFile;
-            pxFileFormatInfo->ExtensionText = "OGG";
+            pxFileFormatInfo->Extension.A = "OGG";
             break;
 
         case PXFileFormatEugeneRoshalArchive:
             pxFileFormatInfo->Flags = PXResourceTypeArchiv;
             pxFileFormatInfo->ResourceLoad = PXRARLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXRARSaveToFile;
-            pxFileFormatInfo->ExtensionText = "RAR";
+            pxFileFormatInfo->Extension.A = "RAR";
             break;
 
         case PXFileFormatPDF:
             pxFileFormatInfo->Flags = PXResourceTypeCodeDocument;
             pxFileFormatInfo->ResourceLoad = PXPDFLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXPDFSaveToFile;
-            pxFileFormatInfo->ExtensionText = "PDF";
+            pxFileFormatInfo->Extension.A = "PDF";
             break;
 
         case PXFileFormatPHP:
             pxFileFormatInfo->Flags = PXResourceTypeCodeDocument;
             pxFileFormatInfo->ResourceLoad = PXPHPLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXPHPSaveToFile;
-            pxFileFormatInfo->ExtensionText = "PHP";
+            pxFileFormatInfo->Extension.A = "PHP";
             break;
 
         case PXFileFormatPLY:
             pxFileFormatInfo->Flags = PXResourceTypeModel;
             pxFileFormatInfo->ResourceLoad = PXPLYLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXPLYSaveToFile;
-            pxFileFormatInfo->ExtensionText = "PLY";
+            pxFileFormatInfo->Extension.A = "PLY";
             break;
 
         case PXFileFormatPNG:
@@ -803,140 +803,140 @@ PXResult PXAPI PXFileTypeInfoProbe(PXFileFormatInfo PXREF pxFileFormatInfo, cons
             pxFileFormatInfo->ResourcePeek = PXPNGPeekFromFile;
             pxFileFormatInfo->ResourceLoad = PXPNGLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXPNGSaveToFile;
-            pxFileFormatInfo->ExtensionText = "PNG";
+            pxFileFormatInfo->Extension.A = "PNG";
             break;
 
         case PXFileFormatQOI:
             pxFileFormatInfo->Flags = PXResourceTypeTexture;
             pxFileFormatInfo->ResourceLoad = PXNull;
             pxFileFormatInfo->ResourceSave = PXNull;
-            pxFileFormatInfo->ExtensionText = "QOI";
+            pxFileFormatInfo->Extension.A = "QOI";
             break;
 
         case PXFileFormatSTEP:
             pxFileFormatInfo->Flags = PXResourceTypeModel;
             pxFileFormatInfo->ResourceLoad = PXSTEPLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXSTEPSaveToFile;
-            pxFileFormatInfo->ExtensionText = "STEP";
+            pxFileFormatInfo->Extension.A = "STEP";
             break;
 
         case PXFileFormatSTL:
             pxFileFormatInfo->Flags = PXResourceTypeModel;
             pxFileFormatInfo->ResourceLoad = PXSTLLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXSTLSaveToFile;
-            pxFileFormatInfo->ExtensionText = "STL";
+            pxFileFormatInfo->Extension.A = "STL";
             break;
 
         case PXFileFormatSVG:
             pxFileFormatInfo->Flags = PXResourceTypeTexture;
             pxFileFormatInfo->ResourceLoad = PXSVGLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXSVGSaveToFile;
-            pxFileFormatInfo->ExtensionText = "SVG";
+            pxFileFormatInfo->Extension.A = "SVG";
             break;
 
         case PXFileFormatTAR:
             pxFileFormatInfo->Flags = PXResourceTypeArchiv;
             pxFileFormatInfo->ResourceLoad = PXTARLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXTARSaveToFile;
-            pxFileFormatInfo->ExtensionText = "TAR";
+            pxFileFormatInfo->Extension.A = "TAR";
             break;
 
         case PXFileFormatTGA:
             pxFileFormatInfo->Flags = PXResourceTypeTexture;
             pxFileFormatInfo->ResourceLoad = PXTGALoadFromFile;
             pxFileFormatInfo->ResourceSave = PXTGASaveToFile;
-            pxFileFormatInfo->ExtensionText = "TGA";
+            pxFileFormatInfo->Extension.A = "TGA";
             break;
 
         case PXFileFormatTagImage:
             pxFileFormatInfo->Flags = PXResourceTypeTexture;
             pxFileFormatInfo->ResourceLoad = PXTIFFLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXTIFFSaveToFile;
-            pxFileFormatInfo->ExtensionText = "TIFF";
+            pxFileFormatInfo->Extension.A = "TIFF";
             break;
 
         case PXFileFormatTrueTypeFont:
             pxFileFormatInfo->Flags = PXResourceTypeFont;
             pxFileFormatInfo->ResourceLoad = PXTTFLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXTTFSaveToFile;
-            pxFileFormatInfo->ExtensionText = "TTF";
+            pxFileFormatInfo->Extension.A = "TTF";
             break;
 
         case PXFileFormatUniversalSceneDescription:
             pxFileFormatInfo->Flags = PXResourceTypeArchiv;
             pxFileFormatInfo->ResourceLoad = PXUSDLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXUSDSaveToFile;
-            pxFileFormatInfo->ExtensionText = "UCD";
+            pxFileFormatInfo->Extension.A = "UCD";
             break;
 
         case PXFileFormatVideoObject:
             pxFileFormatInfo->Flags = PXResourceTypeVideo;
             pxFileFormatInfo->ResourceLoad = PXVOBLLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXVOBLSaveToFile;
-            pxFileFormatInfo->ExtensionText = "";
+            pxFileFormatInfo->Extension.A = "";
             break;
 
         case PXFileFormatVRML:
             pxFileFormatInfo->Flags = PXResourceTypeModel;
             pxFileFormatInfo->ResourceLoad = PXVRMLLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXVRMLSaveToFile;
-            pxFileFormatInfo->ExtensionText = "VRML";
+            pxFileFormatInfo->Extension.A = "VRML";
             break;
 
         case PXFileFormatWAD:
             pxFileFormatInfo->Flags = PXResourceTypeModel;
             pxFileFormatInfo->ResourceLoad = PXWADLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXWADSaveToFile;
-            pxFileFormatInfo->ExtensionText = "WAD";
+            pxFileFormatInfo->Extension.A = "WAD";
             break;
 
         case PXFileFormatWave:
             pxFileFormatInfo->Flags = PXResourceTypeSound;
             pxFileFormatInfo->ResourceLoad = PXWaveLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXWaveSaveToFile;
-            pxFileFormatInfo->ExtensionText = "WAV";
+            pxFileFormatInfo->Extension.A = "WAV";
             break;
 
         case PXFileFormatWEBM:
             pxFileFormatInfo->Flags = PXResourceTypeSound;
             pxFileFormatInfo->ResourceLoad = PXWEBMLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXWEBMSaveToFile;
-            pxFileFormatInfo->ExtensionText = "WEBM";
+            pxFileFormatInfo->Extension.A = "WEBM";
             break;
 
         case PXFileFormatWEBP:
             pxFileFormatInfo->Flags = PXResourceTypeTexture;
             pxFileFormatInfo->ResourceLoad = PXWEBPLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXWEBPSaveToFile;
-            pxFileFormatInfo->ExtensionText = "WEBP";
+            pxFileFormatInfo->Extension.A = "WEBP";
             break;
 
         case PXFileFormatWMA:
             pxFileFormatInfo->Flags |= PXFileFormatTypeInvalid;
             pxFileFormatInfo->ResourceLoad = PXWMALoadFromFile;
             pxFileFormatInfo->ResourceSave = PXWMASaveToFile;
-            pxFileFormatInfo->ExtensionText = "WMA";
+            pxFileFormatInfo->Extension.A = "WMA";
             break;
 
         case PXFileFormatXML:
             pxFileFormatInfo->Flags |= PXFileFormatTypeInvalid;
             pxFileFormatInfo->ResourceLoad = PXXMLLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXXMLSaveToFile;
-            pxFileFormatInfo->ExtensionText = "XML";
+            pxFileFormatInfo->Extension.A = "XML";
             break;
 
         case PXFileFormatYAML:
             pxFileFormatInfo->Flags |= PXFileFormatTypeInvalid;
             pxFileFormatInfo->ResourceLoad = PXYAMLLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXYAMLSaveToFile;
-            pxFileFormatInfo->ExtensionText = "YML";
+            pxFileFormatInfo->Extension.A = "YML";
             break;
 
         case PXFileFormatZIP:
             pxFileFormatInfo->Flags |= PXFileFormatTypeInvalid;
             pxFileFormatInfo->ResourceLoad = PXZIPLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXZIPSaveToFile;
-            pxFileFormatInfo->ExtensionText = "ZIP";
+            pxFileFormatInfo->Extension.A = "ZIP";
             break;
 
 
@@ -946,49 +946,49 @@ PXResult PXAPI PXFileTypeInfoProbe(PXFileFormatInfo PXREF pxFileFormatInfo, cons
             pxFileFormatInfo->Flags |= PXFileFormatTypeModel;
             pxFileFormatInfo->ResourceLoad = PXR3D2LoadFromFile;
             pxFileFormatInfo->ResourceSave = PXR3D2SaveToFile;
-            pxFileFormatInfo->ExtensionText = "R3D2";
+            pxFileFormatInfo->Extension.A = "R3D2";
             break;
 
         case PXFileFormatRedshiftSkeleton:
             pxFileFormatInfo->Flags |= PXFileFormatTypeModel;
             pxFileFormatInfo->ResourceLoad = PXRedshiftSkeletonLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXRedshiftSkeletonSaveToFile;
-            pxFileFormatInfo->ExtensionText = "SKL";
+            pxFileFormatInfo->Extension.A = "SKL";
             break;
 
         case PXFileFormatRedshiftAnimation:
             pxFileFormatInfo->Flags |= PXFileFormatTypeModel;
             pxFileFormatInfo->ResourceLoad = PXRedshiftAnimationLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXRedshiftAnimationSaveToFile;
-            pxFileFormatInfo->ExtensionText = "ANM";
+            pxFileFormatInfo->Extension.A = "ANM";
             break;
 
         case PXFileFormatRGeometryMap:
             pxFileFormatInfo->Flags |= PXFileFormatTypeModel;
             pxFileFormatInfo->ResourceLoad = PXRGeometricMapLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXRGeometricMapSaveToFile;
-            pxFileFormatInfo->ExtensionText = "MAPGEO";
+            pxFileFormatInfo->Extension.A = "MAPGEO";
             break;
 
         case PXFileFormatRGeometryWorld:
             pxFileFormatInfo->Flags |= PXFileFormatTypeModel;
             pxFileFormatInfo->ResourceLoad = PXRGeometricWorldLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXRGeometricWorldSaveToFile;
-            pxFileFormatInfo->ExtensionText = "WGEO";
+            pxFileFormatInfo->Extension.A = "WGEO";
             break;
 
         case PXFileFormatRSkinSimple:
             pxFileFormatInfo->Flags |= PXFileFormatTypeTexture;
             pxFileFormatInfo->ResourceLoad = PXRSkinLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXRSkinSaveToFile;
-            pxFileFormatInfo->ExtensionText = "SKN";
+            pxFileFormatInfo->Extension.A = "SKN";
             break;
 
         case PXFileFormatRTexture:
             pxFileFormatInfo->Flags |= PXFileFormatTypeTexture;
             pxFileFormatInfo->ResourceLoad = PXRTextureLoadFromFile;
             pxFileFormatInfo->ResourceSave = PXRTextureSaveToFile;
-            pxFileFormatInfo->ExtensionText = "TEX";
+            pxFileFormatInfo->Extension.A = "TEX";
             break;
 
         default:

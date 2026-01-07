@@ -185,7 +185,10 @@ PXResult PXAPI PXMemorySymbolFetch(const void PXREF adress, PXSymbol PXREF pxSym
     // Get module name from adress
 
     pxSymbol->ModuleAdress = symbolMemory->ModuleAdress;
-    PXDebugModuleNameGet(symbolMemory->ModuleAdress, pxSymbol->NameModule, 64, PXNull, PXDebugModuleNameShort);
+
+    PXText pxText;
+    PXTextFromAdressA(&pxText, pxSymbol->NameModule, 0, sizeof(pxSymbol->NameModule));
+    PXLibraryNameFromAdress(PXNull, symbolMemory->ModuleAdress, &pxText); // PXDebugModuleNameShort
 
     PXTextCopyA(symbolMemory->FunctionAdress, 64, pxSymbol->NameSymbol, 64);
     PXTextCopyA(symbolMemory->FileAdress, 64, pxSymbol->NameFile, 64);

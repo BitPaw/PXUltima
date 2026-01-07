@@ -2,6 +2,7 @@
 
 #include <PX/OS/File/PXFile.h>
 #include <PX/OS/PXOS.h>
+#include <PX/Engine/ECS/PXECS.h>
 
 PXPlatformID PXAPI PXTTFPlatformFromID(const PXI16U platformID)
 {
@@ -255,7 +256,7 @@ void PXAPI PXTTFDestruct(PXTTF PXREF ttf)
     // TODO
 }
 
-PXResult PXAPI PXTTFLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXTTFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
     PXTTF ttfdata;
     PXTTF* ttf = &ttfdata;
@@ -776,7 +777,7 @@ PXResult PXAPI PXTTFLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
     return PXActionSuccessful;
 }
 
-PXResult PXAPI PXTTFSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXTTFSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

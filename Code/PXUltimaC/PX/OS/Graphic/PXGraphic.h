@@ -10,11 +10,11 @@
 #include <PX/OS/Graphic/DirectX/PXDirectX.h>
 #include <PX/OS/Graphic/OpenGL/PXOpenGL.h>
 #include <PX/OS/Graphic/Vulcan/PXVulcan.h>
+#include <PX/Engine/ECS/Resource/Shader/PXShader.h>
+#include <PX/Engine/ECS/Resource/Texture/PXTexture.h>
+
 
 #define PXShaderNotRegisterd (unsigned int)-1
-
-
-
 
 typedef PXI32U PXGraphicResourceID;
 
@@ -115,17 +115,6 @@ PXRenderable;
 
 
 
-
-
-
-
-PXPublic PXResult PXAPI PXFrameBufferCreate(PXFrameBuffer PXREF pxFrameBuffer, PXFrameBufferCreateInfo PXREF pxFrameBufferCreateInfo);
-
-
-
-
-
-
 typedef enum PXUIState
 {
     UIStateInvalid,
@@ -188,7 +177,7 @@ typedef PXActionResult(PXAPI* PXGraphicLightEnableSetFunction)(void PXREF pxGrap
 typedef PXActionResult(PXAPI* PXGraphicLightEnableGetFunction)(void PXREF pxGraphicAPI, PXLight PXREF pxLight, const PXI32U index, PXBool PXREF enable);
 
 
-typedef PXActionResult(PXAPI* PXGraphicTextureActionFunction)(void PXREF pxGraphicAPI, PXTexturInfo PXREF pxGraphicTexturInfo);
+typedef PXActionResult(PXAPI* PXGraphicTextureActionFunction)(void PXREF pxGraphicAPI, PXTextureInfo PXREF pxGraphicTexturInfo);
 
 
 typedef void (PXAPI* PXGraphicClearFunction)(void PXREF pxGraphicAPI, const PXColorRGBAF PXREF backgroundColor);
@@ -359,55 +348,17 @@ PXPublic void PXAPI PXUIElementSizeSet(PXWindow PXREF pxWindow, const PXF32 x, c
 //-------------------------------------------------------------------------
 PXPublic void PXAPI PXRenderableConstruct(PXRenderable PXREF pxRenderable);
 
-PXPublic void PXAPI PXTextureConstruct(PXTexture PXREF texture);
-
-
-//-------------------------------------------------------------------------
-
-//-----------------------------------------------------
-// Sprite
-//-----------------------------------------------------
-PXPublic PXResult PXAPI PXGraphicSpriteConstruct(PXGraphic PXREF pxGraphic, PXSprite PXREF pxSprite);
-
 
 
 PXPublic void PXAPI PXRenderableMeshSegmentConstruct(PXRenderableMeshSegment PXREF pxRenderableMeshSegment);
 
 
-PXPublic void PXAPI PXGraphicModelShaderSet(PXGraphic PXREF pxGraphic, PXRenderable PXREF renderable, const PXShaderProgram PXREF shaderPXProgram);
+PXPublic void PXAPI PXGraphicModelShaderSet(PXGraphic PXREF pxGraphic, PXRenderable PXREF renderable, const PXShaderProgram PXREF pxShaderProgram);
 
 
 //PXPublic PXResult PXGraphicModelGenerate(PXGraphic PXREF pxGraphic, PXRenderable* PXREF renderable, const PXASCII filePath);
 //PXPublic PXResult PXGraphicModelLoad(PXGraphic PXREF pxGraphic, PXRenderable PXREF renderable, const PXText PXREF filePath);
 //PXPublic PXResult PXGraphicModelRegisterFromModel(PXGraphic PXREF pxGraphic, PXRenderable PXREF renderable, const PXModel PXREF model);
-//-------------------------------------------------------------------------
-
-
-
-PXPublic void PXAPI PXCameraConstruct(PXCamera PXREF camera);
-
-
-//-----------
-PXPublic PXF32 PXAPI PXCameraAspectRatio(const PXCamera PXREF camera);
-PXPublic void PXAPI PXCameraAspectRatioChange(PXCamera PXREF camera, const PXSize width, const PXSize height);
-
-PXPublic void PXAPI PXCameraViewChange(PXCamera PXREF camera, const PXCameraPerspective cameraPerspective);
-PXPublic void PXAPI PXCameraViewChangeToOrthographic(PXCamera PXREF camera, const PXSize width, const PXSize height, const PXF32 nearPlane, const PXF32 farPlane);
-PXPublic void PXAPI PXCameraViewChangeToPerspective(PXCamera PXREF camera, const PXF32 fieldOfView, const PXF32 aspectRatio, const PXF32 nearPlane, const PXF32 farPlane);
-//-----------
-
-//---<Transform>-----------------------------------------------------------
-PXPublic void PXAPI PXCameraRotate(PXCamera PXREF camera, const PXVector3F32 PXREF vector3F);
-PXPublic void PXAPI PXCameraRotateXYZ(PXCamera PXREF camera, const PXF32 x, const PXF32 y, const PXF32 z);
-
-PXPublic void PXAPI PXCameraMove(PXCamera PXREF camera, const PXVector3F32 PXREF vector3F);
-PXPublic void PXAPI PXCameraMoveXYZ(PXCamera PXREF camera, const PXF32 x, const PXF32 y, const PXF32 z);
-
-PXPublic void PXAPI PXCameraFollow(PXCamera PXREF camera, const PXF32 deltaTime);
-//-------------------------------------------------------------------------
-
-//-------------------------------------------------------------------------
-PXPublic void PXAPI PXCameraUpdate(PXCamera PXREF camera, const PXF32 deltaTime);
 //-------------------------------------------------------------------------
 
 #endif

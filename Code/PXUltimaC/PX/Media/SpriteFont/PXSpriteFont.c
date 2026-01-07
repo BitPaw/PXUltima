@@ -5,6 +5,8 @@
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/Compiler/PXCompiler.h>
 #include <PX/OS/PXOS.h>
+#include <PX/Engine/ECS/PXECS.h>
+#include <PX/Engine/ECS/Resource/Font/PXFont.h>
 
 void PXAPI PXSpriteFontParseInfo(PXSpriteFont PXREF pxSpriteFont, PXCompiler PXREF pxCompiler, PXFont PXREF pxFont);
 void PXAPI PXSpriteFontParseCommon(PXSpriteFont PXREF pxSpriteFont, PXCompiler PXREF pxCompiler, PXFont PXREF pxFont);
@@ -202,15 +204,7 @@ void PXAPI PXSpriteFontParseCommon(PXSpriteFont PXREF pxSpriteFont, PXCompiler P
             {
                 const PXI32U amountOfPages = pxCompiler->ReadInfo.SymbolEntryCurrent.I32U;
 
-                if(amountOfPages > 1)
-                {
-                    pxFont->PageListAmount = amountOfPages - 1;
-                    pxFont->PageList = PXMemoryHeapCallocT(PXFontPage, pxFont->PageListAmount);
-                }
-                else
-                {
-                    pxFont->PageListAmount = amountOfPages;
-                }
+                PXFontPageCreate(pxFont, amountOfPages);
 
                 break;
             }
@@ -290,14 +284,14 @@ void PXAPI PXSpriteFontParsePage(PXSpriteFont PXREF pxSpriteFont, PXCompiler PXR
 
                     // Load
                     {
-                        PXResourceCreateInfo pxResourceCreateInfoList;
-                        PXClear(PXResourceCreateInfo, &pxResourceCreateInfoList);
+                        PXECSCreateInfo pxResourceCreateInfoList;
+                        PXClear(PXECSCreateInfo, &pxResourceCreateInfoList);
 
                         pxResourceCreateInfoList.Type = PXResourceTypeTexture2D;
-                        pxResourceCreateInfoList.ObjectReference = (PXResourceInfo**)&pxFontPage->Texture;
+                        pxResourceCreateInfoList.ObjectReference = (PXECSInfo**)&pxFontPage->Texture;
                         pxResourceCreateInfoList.FilePath = resultFullPath;
 
-                        PXResourceManagerAdd(&pxResourceCreateInfoList);
+                        //PXResourceManagerAdd(&pxResourceCreateInfoList);
                     }
                 }
                 break;
@@ -474,7 +468,7 @@ void PXAPI PXSpriteFontParseCharacterDefinition(PXSpriteFont PXREF pxSpriteFont,
     }
 }
 
-PXResult PXAPI PXSpriteFontLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXSpriteFontLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
     PXFont PXREF pxFont = (PXFont*)pxResourceLoadInfo->ResourceTarget;
 
@@ -555,7 +549,7 @@ PXResult PXAPI PXSpriteFontLoadFromFile(PXResourceTransphereInfo PXREF pxResourc
     return PXActionSuccessful;
 }
 
-PXResult PXAPI PXSpriteFontSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXSpriteFontSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

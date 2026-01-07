@@ -195,7 +195,7 @@ PXResult PXAPI PXVulcanInitialize(PXVulcan PXREF pxVulcan, PXGraphicInitializeIn
         PXVulcanName,
         "Initialize",
         "Library detected 0x%p",
-        pxVulcan->LibraryID.ID
+        pxVulcan->LibraryID.ModuleHandle
     );
 #endif
 
@@ -352,7 +352,7 @@ PXResult PXAPI PXVulcanInitialize(PXVulcan PXREF pxVulcan, PXGraphicInitializeIn
         vkWin32SurfaceCreateInfoKHR.pNext = PXNull;
         vkWin32SurfaceCreateInfoKHR.flags = 0;
         vkWin32SurfaceCreateInfoKHR.hinstance = GetModuleHandle(NULL);
-        vkWin32SurfaceCreateInfoKHR.hwnd = pxGraphicInitializeInfo->WindowReference->Info.Handle.WindowHandle;
+        vkWin32SurfaceCreateInfoKHR.hwnd = PXWindowHandleGet(pxGraphicInitializeInfo->WindowReference);
 
         const VkResult createSurface = pxVulcan->SurfaceCreate(pxVulcan->Instance, &vkWin32SurfaceCreateInfoKHR, PXNull, &pxVulcan->SurfaceMainRendering);
     }

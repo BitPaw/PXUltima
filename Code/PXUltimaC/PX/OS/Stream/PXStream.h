@@ -38,8 +38,9 @@ typedef struct PXStreamWindow_
 #if OSUnix
 #elif OSWindows
 	RECT Rectangle;
-	HWND WindowHandle;
-	HDC WindowDC;
+
+	PXWindow* WindowRef;
+
 	HDC MemoryDC;
 	HBITMAP BitmapHandle;
 #endif

@@ -149,13 +149,19 @@ typedef SQLRETURN(SQL_API* PXSQLDriversA)(SQLHENV henv, SQLUSMALLINT fDirection,
 
 #endif
 
+const char PXODBCLibtrary[] = "ODBC32.DLL";
+const PXI8U PXODBCLibtraryLength = sizeof(PXODBCLibtrary);
+
 PXResult PXAPI PXDataBaseInitialize(PXDataBase PXREF pxDataBase)
 {
     PXClear(PXDataBase, pxDataBase);
 
     // Load library, ODBC
     {
-        const PXResult pxActionResult = PXLibraryOpenA(&pxDataBase->ODBCLibrary, "ODBC32.DLL");
+        PXText pxText;
+        PXTextFromAdressA(&pxText, PXODBCLibtrary, PXODBCLibtraryLength, PXODBCLibtraryLength);
+
+        const PXResult pxActionResult = PXLibraryOpen(&pxDataBase->ODBCLibrary, &pxText);
 
         if(PXActionSuccessful != pxActionResult)
         {

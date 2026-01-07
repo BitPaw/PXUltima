@@ -11,7 +11,7 @@ typedef struct PXVOB_
 }
 PXVOB;
 
-PXPublic PXResult PXAPI PXVOBLLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXVOBLSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXVOBLLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXVOBLSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
 
 #endif

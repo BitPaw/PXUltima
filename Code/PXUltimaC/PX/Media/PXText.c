@@ -129,7 +129,7 @@ PXSize PXAPI PXTextToLowerCase(const PXText PXREF pxTextSource, PXText PXREF pxT
 
     pxTextTarget->SizeAllocated = pxTextSource->SizeAllocated;
     pxTextTarget->SizeUsed = pxTextSource->SizeUsed;
-    pxTextTarget->NumberOfCharacters = pxTextSource->NumberOfCharacters;
+    //pxTextTarget->NumberOfCharacters = pxTextSource->NumberOfCharacters;
     pxTextTarget->Format = pxTextSource->Format;
 
     return pxTextTarget->SizeUsed;
@@ -162,7 +162,7 @@ PXSize PXAPI PXTextToUpperCase(const PXText PXREF pxTextSource, PXText PXREF pxT
 
     pxTextTarget->SizeAllocated = pxTextSource->SizeAllocated;
     pxTextTarget->SizeUsed = pxTextSource->SizeUsed;
-    pxTextTarget->NumberOfCharacters = pxTextSource->NumberOfCharacters;
+    //pxTextTarget->NumberOfCharacters = pxTextSource->NumberOfCharacters;
     pxTextTarget->Format = pxTextSource->Format;
 
     return pxTextTarget->SizeUsed;
@@ -333,7 +333,7 @@ PXSize PXAPI PXTextPrintV(PXText PXREF pxText, const char* style, va_list parame
             return 0;
     }
 
-    pxText->NumberOfCharacters = pxText->SizeUsed;
+   // pxText->NumberOfCharacters = pxText->SizeUsed;
 
 
     // Mark end of data
@@ -354,7 +354,7 @@ void PXAPI PXAdvance(PXText PXREF pxText, const PXSize advanceBy)
     pxText->A += advanceBy;
     pxText->SizeUsed -= advanceBy;
     pxText->SizeAllocated -= advanceBy;
-    pxText->NumberOfCharacters -= advanceBy;
+    //pxText->NumberOfCharacters -= advanceBy;
 }
 
 void PXAPI PXTextRevise(PXText PXREF pxText)
@@ -445,50 +445,38 @@ PXSize PXAPI PXTextLengthUntilW(const wchar_t* string, const PXSize stringSize, 
     return 0;
 }
 
-PXSize PXAPI PXTextCopy(const PXText PXREF source, PXText PXREF destination)
+PXSize PXAPI PXTextCopy(PXText PXREF pxText, const PXText PXREF pxTextsource)
 {
-    if(!(source && destination))
+    if(!(pxText && pxTextsource))
     {
         return 0;
     }
 
-    const PXSize minLength = PXMathMinimumIU(source->SizeUsed, destination->SizeAllocated);
+    const PXSize minLength = PXMathMinimumIU(pxTextsource->SizeUsed, pxText->SizeAllocated);
 
     if(minLength == 0)
     {
         return 0;
     }
 
-    switch(source->Format)
+    switch(pxText->Format)
     {
         case TextFormatASCII:
         case TextFormatUTF8:
         {
             PXSize i = 0;
 
-#if PXAssertEnable
-            assert(destination);
-            assert(source);
-#else
-            if(!(destination && source))
+            for(; (i < minLength) && (pxTextsource->A[i] != '\0'); ++i)
             {
-                return 0;
-            }
-#endif
-
-            for(; (i < minLength) && (source->A[i] != '\0'); ++i)
-            {
-                destination->A[i] = source->A[i];
+                pxText->A[i] = pxTextsource->A[i];
             }
 
-            destination->Format = TextFormatASCII;
-            destination->A[i] = '\0';
-            destination->SizeUsed = i;
-            destination->NumberOfCharacters = i;
+            pxText->Format = TextFormatASCII;
+            pxText->A[i] = '\0';
+            pxText->SizeUsed = i;
+           // destination->NumberOfCharacters = i;
 
             return i;
-
-            break;
         }
 
         case TextFormatUNICODE:
@@ -500,19 +488,17 @@ PXSize PXAPI PXTextCopy(const PXText PXREF source, PXText PXREF destination)
             assert(source);
 #endif
 
-            for(; (i < minLength) && (source->W[i] != '\0'); ++i)
+            for(; (i < minLength) && (pxTextsource->W[i] != '\0'); ++i)
             {
-                destination->W[i] = source->W[i];
+                pxText->W[i] = pxTextsource->W[i];
             }
 
-            destination->Format = TextFormatUNICODE;
-            destination->W[i] = '\0';
-            destination->SizeUsed = i;
-            destination->NumberOfCharacters = i;
+            pxText->Format = TextFormatUNICODE;
+            pxText->W[i] = '\0';
+            pxText->SizeUsed = i * sizeof(wchar_t);
+            //destination->NumberOfCharacters = i;
 
             return i;
-
-            break;
         }
     }
 
@@ -1113,7 +1099,7 @@ PXSize PXAPI PXTextFindLast(const PXText PXREF stringSource, const PXText PXREF 
 
     stringResult->SizeAllocated = 0;
     stringResult->SizeUsed = 0;
-    stringResult->NumberOfCharacters = 0;
+    //stringResult->NumberOfCharacters = 0;
 
     if(stringSource->Format == TextFormatASCII && stringTarget->Format == TextFormatASCII) // Is Ascii
     {
@@ -1137,7 +1123,7 @@ PXSize PXAPI PXTextFindLast(const PXText PXREF stringSource, const PXText PXREF 
         if(found)
         {
             stringResult->SizeUsed = stringSource->SizeUsed - i - 1;
-            stringResult->NumberOfCharacters = stringSource->SizeUsed - i - 1;
+            //stringResult->NumberOfCharacters = stringSource->SizeUsed - i - 1;
             stringResult->A = stringSource->A + i + 1;
 
             return i;
@@ -1166,7 +1152,7 @@ PXSize PXAPI PXTextFindLast(const PXText PXREF stringSource, const PXText PXREF 
         if(found)
         {
             stringResult->SizeUsed = stringSource->SizeUsed - i - 1;
-            stringResult->NumberOfCharacters = stringSource->SizeUsed - i - 1;
+            //stringResult->NumberOfCharacters = stringSource->SizeUsed - i - 1;
             stringResult->W = stringSource->W + i + 1;
             return i;
         }
@@ -1188,7 +1174,7 @@ void PXAPI PXTextMoveByOffset(PXText PXREF pxText, const PXSize offset)
             }
 
             pxText->SizeUsed -= sizeof(char) * offset;
-            pxText->NumberOfCharacters -= 1 * offset;
+            //pxText->NumberOfCharacters -= 1 * offset;
             pxText->A += 1 * offset;
             break;
         }
@@ -1200,7 +1186,7 @@ void PXAPI PXTextMoveByOffset(PXText PXREF pxText, const PXSize offset)
             }
 
             pxText->SizeUsed -= sizeof(wchar_t) * offset;
-            pxText->NumberOfCharacters -= 1 * offset;
+            //pxText->NumberOfCharacters -= 1 * offset;
             pxText->W += 1 * offset;
             break;
         }
@@ -1505,37 +1491,58 @@ PXSize PXAPI PXTextReplaceByte(char PXREF text, PXSize textSize, char target, ch
 
 PXResult PXAPI PXTextFromAdress(PXText PXREF pxText, void* address, const PXSize sizeUsed, const PXSize sizeAllocated, const PXTextFormat pxTextFormat)
 {
-    if(sizeAllocated == (PXSize)PXTextLengthUnkown)
+    PXBool isLenghKnown = (PXSize)PXTextLengthUnkown != sizeUsed;
+
+    if(!isLenghKnown)
     {
-        pxText->SizeAllocated = PXTextLengthA(address, (PXSize)PXTextLengthUnkown);
+        switch(pxTextFormat)
+        {
+            case TextFormatASCII:
+            {
+                pxText->SizeAllocated = PXTextLengthA(address, sizeAllocated);
+                break;
+            }
+            case TextFormatUNICODE:
+            {
+                pxText->SizeAllocated = PXTextLengthW(address, sizeAllocated);
+                break;
+            }
+            default:
+                return PXActionRefusedArgumentInvalid;
+        }
+      
         pxText->SizeUsed = pxText->SizeAllocated;
-        pxText->NumberOfCharacters = pxText->SizeAllocated;
+       // pxText->NumberOfCharacters = pxText->SizeAllocated;
     }
     else
     {
         pxText->SizeAllocated = sizeAllocated;
         pxText->SizeUsed = sizeUsed;
-        pxText->NumberOfCharacters = sizeUsed;
+       // pxText->NumberOfCharacters = sizeUsed;
     }
     pxText->Format = pxTextFormat;
-    pxText->A = (char*)(address);
+    pxText->Data = address;
+
+
 
     return PXActionSuccessful;
 }
 
-PXResult PXAPI PXTextFromAdressA(PXText PXREF pxText, void* address, const PXSize sizeUsed, const PXSize sizeAllocated)
+PXResult PXAPI PXTextFromAdressA(PXText PXREF pxText, const char* address, const PXSize sizeUsed, const PXSize sizeAllocated)
 {
     return PXTextFromAdress(pxText, (char*)address, sizeUsed, sizeAllocated, TextFormatASCII);
 }
 
-PXResult PXAPI PXTextFromAdressW(PXText PXREF pxText, void* address, const PXSize sizeUsed, const PXSize sizeAllocated)
+PXResult PXAPI PXTextFromAdressW(PXText PXREF pxText, const wchar_t* address, const PXSize sizeUsed, const PXSize sizeAllocated)
 {
     return PXTextFromAdress(pxText, (char*)address, sizeUsed, sizeAllocated, TextFormatUNICODE);
 }
 
 PXResult PXAPI PXTextCreateCopy(PXText PXREF pxText, const PXText PXREF pxTextSource)
 {
-    pxText->A = PXMemoryHeapCallocT(char, pxTextSource->SizeUsed + 1);
+    *pxText = *pxTextSource;
+
+    pxText->Data = PXMemoryHeapCallocT(PXByte, pxTextSource->SizeUsed+1);
     PXTextCopy(pxTextSource, pxText);
 
     return PXActionSuccessful;

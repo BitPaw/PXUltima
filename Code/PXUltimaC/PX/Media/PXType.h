@@ -508,7 +508,7 @@ typedef int PXF256;
 
 
 // Internal datatype
-typedef PXI32U PXType;
+//typedef PXI32U PXType;
 
 
 
@@ -985,21 +985,18 @@ PXPublic void PXAPI PXEndianSwapV(void* PXREF data, const PXSize dataSize, const
 //-----------------------------------------------------------------------------
 
 
-
+#define PXEmbeddedArraySize 4
 
 // Predefine
 typedef enum PXActionResult_ PXActionResult;
 
-typedef struct PXGUIProperty_ PXGUIProperty;
 typedef struct PXBuffer_ PXBuffer;
 typedef struct PXModel_ PXModel;
 typedef struct PXCodeDocumentElement_ PXCodeDocumentElement;
 typedef struct PXFile_ PXFile;
-typedef struct PXTime_ PXTime;
 typedef struct PXText_ PXText;
 typedef struct PXCodeDocument_ PXCodeDocument;
 typedef struct PXGUIManager_ PXGUIManager;
-typedef struct PXWindow_ PXWindow;
 typedef struct PXFileTypeInfo_ PXFileTypeInfo;
 typedef struct PXCompiler_ PXCompiler;
 typedef struct PXProcessor_ PXProcessor;

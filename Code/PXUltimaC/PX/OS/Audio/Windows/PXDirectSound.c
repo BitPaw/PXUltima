@@ -24,6 +24,7 @@
 
 const char PXDirectSoundText[] = "DirectSound";
 const char PXDirectSoundLibrary[] = "DSOUND.DLL";
+const PXI8U PXDirectSoundLibraryLength = sizeof(PXDirectSoundLibrary);
 
 #define PXDirectSound8Use DIRECTSOUND_VERSION >= 0x0800
 
@@ -121,7 +122,10 @@ PXResult PXAPI PXDirectSoundInitialize(PXAudioDirectSound* PXREF pxAudioDirectSo
 
     // Library Open
     {
-        const PXResult libraryOpenResult = PXLibraryOpenA(&_pxAudioDirectSound.DirectSoundLibrary, PXDirectSoundLibrary);
+        PXText pxText;
+        PXTextFromAdressA(&pxText, PXDirectSoundLibrary, PXDirectSoundLibraryLength, PXDirectSoundLibraryLength);
+
+        const PXResult libraryOpenResult = PXLibraryOpen(&_pxAudioDirectSound.DirectSoundLibrary, &pxText);
 
         if(PXActionSuccessful != libraryOpenResult)
         {

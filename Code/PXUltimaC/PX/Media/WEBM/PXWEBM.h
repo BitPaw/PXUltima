@@ -11,7 +11,7 @@ typedef struct PXWEBM_
 }
 PXWEBM;
 
-PXPublic PXResult PXAPI PXWEBMLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXWEBMSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXWEBMLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXWEBMSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
 
 #endif

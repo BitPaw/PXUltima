@@ -82,7 +82,7 @@ PXX86Instruction;
 
 typedef struct PXX86Iterator_
 {
-    PXX86Instruction* InstructionCurrent;
+    const PXX86Instruction* InstructionCurrent;
     PXFile* Data;
     void* VirtualAdress;
 
@@ -118,7 +118,7 @@ typedef struct PXX86ModRM
     PXI8U RegisterIndex;
     PXI8U RM;
 
-    char* Name;
+    const char* Name;
 }
 PXX86ModRM;
 

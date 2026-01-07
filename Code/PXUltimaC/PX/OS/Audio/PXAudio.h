@@ -5,6 +5,7 @@
 
 #include <PX/Engine/PXResource.h>
 #include <PX/OS/Library/PXLibrary.h>
+#include <PX/Engine/ECS/Resource/Sound/PXSound.h>
 
 #define PitchMaximum 2.9f
 #define PitchMinimum 0.2f
