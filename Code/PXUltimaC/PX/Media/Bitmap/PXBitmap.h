@@ -174,9 +174,9 @@ PXPrivate void PXBitmapImageDataLayoutCalculate(PXBitmapImageDataLayout PXREF bm
 //----------------------------------------------------------------------------
 PXPublic PXSize PXAPI PXBitmapFilePredictSize(const PXSize width, const PXSize height, const PXSize bitsPerPixel);
 
-PXPublic PXResult PXAPI PXBitmapPeekFromFile(PXResourceTransphereInfo PXREF pxResourceTransphereInfo);
-PXPublic PXResult PXAPI PXBitmapLoadFromFile(PXResourceTransphereInfo PXREF pxResourceTransphereInfo);
-PXPublic PXResult PXAPI PXBitmapSaveToFile(PXResourceTransphereInfo PXREF pxResourceTransphereInfo);
+PXPublic PXResult PXAPI PXBitmapPeekFromFile(PXResourceMoveInfo PXREF PXResourceMoveInfo);
+PXPublic PXResult PXAPI PXBitmapLoadFromFile(PXResourceMoveInfo PXREF PXResourceMoveInfo);
+PXPublic PXResult PXAPI PXBitmapSaveToFile(PXResourceMoveInfo PXREF PXResourceMoveInfo);
 //----------------------------------------------------------------------------
 
 #endif

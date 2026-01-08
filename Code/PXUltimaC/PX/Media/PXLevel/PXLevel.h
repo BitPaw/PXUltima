@@ -25,7 +25,7 @@ typedef struct PXLevelEntry_
 }
 PXLevelEntry;
 
-PXPublic PXResult PXAPI PXLevelLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXLevelSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXLevelLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXLevelSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
 
 #endif

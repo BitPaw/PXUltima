@@ -2,12 +2,12 @@
 
 #include <PX/OS/Error/PXActionResult.h>
 
-PXResult PXAPI PXAACLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXAACLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI PXAACSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXAACSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

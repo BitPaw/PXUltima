@@ -1,11 +1,11 @@
 #include "PXLua.h"
 
-PXResult PXAPI PXLuaLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXLuaLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI PXLuaSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXLuaSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

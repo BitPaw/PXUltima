@@ -6,7 +6,7 @@
 const static char PXMIDITrackHeaderID[4] = { 'M','T','h','d' };
 const static char PXMIDITrackChunkID[4] = { 'M','T','r','k' };
 
-PXResult PXAPI PXMIDILoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXMIDILoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
     PXMIDI PXREF pxMIDI = PXMemoryHeapCallocT(PXMIDI, 1);
 
@@ -69,7 +69,7 @@ PXResult PXAPI PXMIDILoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadI
     return PXActionSuccessful;
 }
 
-PXResult PXAPI PXMIDISaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXMIDISaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
 {
     PXMIDI* pxMIDI = PXNull;
 

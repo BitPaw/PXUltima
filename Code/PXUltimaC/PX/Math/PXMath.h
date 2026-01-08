@@ -345,6 +345,8 @@ PXPublic void PXAPI PXMathRootCubeInverseF64VX2(PXF64 PXREF outputListY, const P
 //---------------------------------------------------------
 PXPublic PXF32 PXAPI PXMathSinusRADF32(const PXF32 x);
 PXPublic PXF64 PXAPI PXMathSinusRADF64(const PXF64 x);
+PXPublic PXF32 PXAPI PXMathSinusDEGF32(const PXF32 x);
+PXPublic PXF64 PXAPI PXMathSinusDEGF64(const PXF64 x);
 
 PXPublic void PXAPI PXMathSinusRADF16V(PXF16 PXREF outputListY, const PXF16 PXREF inputListX, const PXSize amount);
 PXPublic void PXAPI PXMathSinusRADF32V(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount);
@@ -383,6 +385,10 @@ PXPublic double PXAPI PXMathHyperbolicSinus(const double x);
 //-----------------------------------------------------------------------------
 PXPublic PXF32 PXAPI PXMathCosinusRADF32(const PXF32 x);
 PXPublic PXF64 PXAPI PXMathCosinusRADF64(const PXF64 x);
+PXPublic PXF32 PXAPI PXMathCosinusDEGF32(const PXF32 x);
+PXPublic PXF64 PXAPI PXMathCosinusDEGF64(const PXF64 x);
+
+
 
 PXPublic void PXAPI PXMathCosinusRADF16V(PXF16 PXREF outputListY, const PXF16 PXREF inputListX, const PXSize amount);
 PXPublic void PXAPI PXMathCosinusRADF32V(PXF32 PXREF outputListY, const PXF32 PXREF inputListX, const PXSize amount);

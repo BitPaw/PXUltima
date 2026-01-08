@@ -857,6 +857,20 @@ PXF64 PXAPI PXMathSinusRADF64(const PXF64 x)
 #endif
 }
 
+PXF32 PXAPI PXMathSinusDEGF32(const PXF32 x)
+{
+    const float PI = 3.14159265358979323846f;
+    float rad = x * (PI / 180.0f);
+    return PXMathSinusRADF32(rad);
+}
+
+PXF64 PXAPI PXMathSinusDEGF64(const PXF64 x)
+{
+    const float PI = 3.14159265358979323846f;
+    float rad = x * (PI / 180.0f);
+    return PXMathSinusRADF64(rad);
+}
+
 void PXAPI PXMathSinusRADF16V(PXF16 PXREF outputListY, const PXF16 PXREF inputListX, const PXSize amount)
 {
     //__m128h _mm_sin_ph(__m128h a)
@@ -1082,6 +1096,20 @@ PXF64 PXAPI PXMathCosinusRADF64(const PXF64 x)
 
     return sum;
 #endif
+}
+
+PXF32 PXAPI PXMathCosinusDEGF32(const PXF32 x)
+{
+    const float PI = 3.14159265358979323846f; 
+    float rad = x * (PI / 180.0f); 
+    return PXMathCosinusRADF32(rad);
+}
+
+PXF64 PXAPI PXMathCosinusDEGF64(const PXF64 x)
+{
+    const float PI = 3.14159265358979323846f;
+    float rad = x * (PI / 180.0f);
+    return PXMathCosinusRADF32(rad);
 }
 
 double PXAPI PXMathHyperbolicSinus(const double x)

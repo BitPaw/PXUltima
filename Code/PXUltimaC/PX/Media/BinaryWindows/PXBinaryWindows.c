@@ -2,12 +2,11 @@
 
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/OS/File/PXFile.h>
+#include <PX/Engine/ECS/PXECS.h>
 
 const char PXDOSHeaderSignatore[2] = { 'M', 'Z' };
 const char PXNEHeaderSignatore[2] = { 'N', 'E' };
 const char PXPEHeaderSignatore[4] = { 'P', 'E', '\0', '\0' };
-
-
 
 const PXI32U PXDOSHeaderLayout[] =
 {
@@ -32,13 +31,11 @@ const PXI32U PXDOSHeaderLayout[] =
     PXTypeInt32ULE
 };
 const PXSize PXDOSHeaderLayoutSize = sizeof(PXDOSHeaderLayout) / sizeof(PXI32U);
-
-
 const char PXBinaryWindowsText[] = "BinaryWindows";
 
 #define PXBinaryWindowsDebug 1
 
-PXResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
     PXBinaryWindows PXREF pxBinaryWindows = (PXBinaryWindows*)pxResourceLoadInfo->ResourceTarget;
 
@@ -92,7 +89,7 @@ PXResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceTransphereInfo PXREF pxReso
             {&pxDOSHeader->FileOffsetToHeader, PXTypeInt32ULE}
         };
 
-        const PXSize amount = PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+        const PXSize amount = PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
         const PXBool validSize = amount >= 0;
 #endif
 
@@ -124,12 +121,12 @@ PXResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceTransphereInfo PXREF pxReso
         // Extended parse for DOS-Header
 
         // Move to end of header
-        PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, pxBinaryWindows->Header.FileOffsetToHeader);
+        PXFileCursorMoveTo(pxFile, pxBinaryWindows->Header.FileOffsetToHeader);
     }
 
     // Probe NE-Header
     {
-        const PXBool isValidFile = PXFileReadAndCompare(pxResourceLoadInfo->FileReference, PXNEHeaderSignatore, sizeof(PXNEHeaderSignatore));
+        const PXBool isValidFile = PXFileReadAndCompare(pxFile, PXNEHeaderSignatore, sizeof(PXNEHeaderSignatore));
 
         if(isValidFile)
         {
@@ -239,15 +236,15 @@ PXResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceTransphereInfo PXREF pxReso
             //----------------------------------------------
             // MODULE-REFERENCE TABLE
             //----------------------------------------------
-            PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, pxNEHeader->ModRefTable);
+            PXFileCursorMoveTo(pxFile, pxNEHeader->ModRefTable);
 
             for(PXSize i = 0; i < pxNEHeader->ImportNameTable; ++i)
             {
                 PXI16U offset = 0;
 
-                PXFileReadI16UE(pxResourceLoadInfo->FileReference, &offset, PXEndianLittle);
+                PXFileReadI16UE(pxFile, &offset, PXEndianLittle);
 
-                PXSize oldPosition = PXFileDataPosition(pxResourceLoadInfo->FileReference);
+                PXSize oldPosition = PXFileDataPosition(pxFile);
 
 
                 PXFileCursorMoveTo(pxFile, offset);
@@ -271,12 +268,12 @@ PXResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceTransphereInfo PXREF pxReso
     {
         const PXBool isValidFile = PXFileReadAndCompare
         (
-            pxResourceLoadInfo->FileReference,
+            pxFile,
             PXPEHeaderSignatore,
             sizeof(PXPEHeaderSignatore)
         );
 
-        const PXResult coffLoadResult = PXCOFFLoadFromFile(&pxBinaryWindows->COFFHeader, pxResourceLoadInfo->FileReference);
+        const PXResult coffLoadResult = PXCOFFLoadFromFile(&pxBinaryWindows->COFFHeader, pxFile);
 
         if(PXActionSuccessful != coffLoadResult) 
             return coffLoadResult;
@@ -295,7 +292,7 @@ PXResult PXAPI PXBinaryWindowsLoadFromFile(PXResourceTransphereInfo PXREF pxReso
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI PXBinaryWindowsSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXBinaryWindowsSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

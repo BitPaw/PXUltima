@@ -3,6 +3,8 @@
 #include <PX/Media/TIFF/PXTIFF.h>
 #include <PX/OS/File/PXFile.h>
 #include <PX/OS/Console/PXConsole.h>
+#include <PX/Engine/ECS/PXECS.h>
+
 
 #define  PXCanonRaw3FTYPID PXI32Make('f', 't', 'y', 'p')
 #define  PXCanonRaw3FREEID PXI32Make('f', 'r', 'e', 'e')
@@ -157,7 +159,7 @@ PXResult PXAPI PXCanonRaw3BlockRead(PXCanonRaw3Chunk PXREF pxCanonRaw3Chunk, PXF
                 //PXFile tiffData;
                 // PXFileBufferExternal(&tiffData, PXFileCursorPosition(pxFile), pxCanonRaw3ChunkChild.SizeData);
 
-                PXTexture pxxx;
+               // PXTexture pxxx;
 
                 //PXTIFFLoadFromFile(&pxxx, &tiffData);
 
@@ -260,7 +262,7 @@ PXResult PXAPI PXCanonRaw3BlockRead(PXCanonRaw3Chunk PXREF pxCanonRaw3Chunk, PXF
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI PXCanonRaw3LoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXCanonRaw3LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
     PXFile PXREF pxFile = pxResourceLoadInfo->FileReference;
 
@@ -349,7 +351,7 @@ PXResult PXAPI PXCanonRaw3LoadFromFile(PXResourceTransphereInfo PXREF pxResource
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI PXCanonRaw3SaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXCanonRaw3SaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

@@ -3,6 +3,7 @@
 #ifndef PXEngineIncluded
 #define PXEngineIncluded
 
+#include <PX/Engine/ECS/PXECS.h>
 #include <PX/Engine/PXMod.h>
 #include <PX/Engine/PXResource.h>
 #include <PX/Math/PXMath.h>
@@ -10,10 +11,7 @@
 #include <PX/OS/Audio/PXAudio.h>
 #include <PX/OS/Hardware/PXController.h>
 #include <PX/OS/DataBase/PXDataBase.h>
-
-#include "PXGUI.h"
 #include <PX/OS/Graphic/PXGraphic.h>
-#include <PX/OS/Hardware/PXMouse.h>
 
 typedef struct PXEngine_ PXEngine;
 
@@ -57,7 +55,7 @@ typedef struct PXEngineResourceActionInfo_
 
     union
     {
-        PXResourceCreateInfo Create;
+        PXECSCreateInfo Create;
         PXRenderEntity Render;
         PXEngineResourceStateChangeInfo ChangeInfo;
     };
@@ -74,7 +72,7 @@ typedef struct PXPlayerMoveInfo_
 PXPlayerMoveInfo;
 
 
-typedef void (PXAPI* PXEngineResourceAdded)(void PXREF owner, PXEngine PXREF pxEngine, PXResourceCreateInfo PXREF pxEngineResourceCreateInfo);
+typedef void (PXAPI* PXEngineResourceAdded)(void PXREF owner, PXEngine PXREF pxEngine, PXECSCreateInfo PXREF pxEngineResourceCreateInfo);
 
 typedef void (PXAPI* PXEngineStartUpEvent)(void PXREF owner, PXEngine PXREF pxEngine);
 typedef void (PXAPI* PXEngineShutDownEvent)(void PXREF owner, PXEngine PXREF pxEngine);
@@ -104,58 +102,10 @@ typedef struct PXEngineTimeData_
 }
 PXEngineTimeData;
 
-typedef struct PXEngine_
+typedef struct PXEngineCreateInfo_
 {
-    PXResourceManager* ResourceManager;
-    PXGUIManager GUISystem;
-    PXGraphic Graphic;
-    PXWindow* Window; // PXWindow
-    PXModLoader ModLoader;
-    PXCamera CameraDefault;
-    PXAudio Audio;
-    PXControllerSystem ControllerSystem;
-    PXDataBase DataBase;
+    PXECSCreateInfo Info;
 
-    PXKeyBoard KeyBoardCurrentInput;
-    PXMouse MouseCurrentInput;
-
-    PXAudioDevice AudioStandardOutDevice;
-
-    void* Owner;
-    PXCamera* CameraCurrent;
-
-    PXEngineResourceAdded ResourceAdded;
-
-    PXEngineStartUpEvent OnStartUp;
-    PXEngineShutDownEvent OnShutDown;
-    PXEngineUserUpdateEvent OnUserUpdate;
-    PXEngineNetworkUpdateEvent OnNetworkUpdate;
-    PXEngineGameUpdateEvent OnGameUpdate;
-    PXEngineRenderUpdateEvent OnRenderUpdate;
-    PXEngineInteractCallBack OnInteract;
-
-    PXEngineTimeData TimeData;
-
-    PXBool IsRunning;
-    PXBool UpdateUI;
-    PXBool DoRendering;
-
-
-    // Cached most-common objects
-    PXModel SpriteScaled;
-    PXModel SpriteUnScaled;
-
-    PXMathRandomGeneratorSeed RandomGeneratorSeed;
-
-    PXBool HasGraphicInterface;
-    PXBool InteractionLock;
-
-    char ApplicationName[64];
-}
-PXEngine;
-
-typedef struct PXEngineStartInfo_
-{
     PXGraphicInitializeMode Mode;
     PXGraphicSystem System;
 
@@ -179,34 +129,28 @@ typedef struct PXEngineStartInfo_
     PXWindow* WindowRenderTarget;
     PXWindow* WindowRenderParent;
 }
-PXEngineStartInfo;
-
-// Signal/Event
-PXPrivate void PXCDECL PXEngineOnIllegalInstruction(const int signalID);
-PXPrivate void PXCDECL PXEngineOnMemoryViolation(const int signalID);
+PXEngineCreateInfo;
 
 PXPrivate void PXAPI PXEngineWindowEvent(PXEngine PXREF pxEngine, PXWindowEvent PXREF pxWindowEvent);
+PXPrivate PXResult PXAPI PXEngineCreateAudio(PXEngine PXREF pxEngine, PXEngineCreateInfo PXREF pxEngineStartInfo);
+PXPrivate PXResult PXAPI PXEngineCreateGraphic(PXEngine PXREF pxEngine, PXEngineCreateInfo PXREF pxEngineStartInfo);
+PXPrivate PXResult PXAPI PXEngineCreateMod(PXEngine PXREF pxEngine, PXEngineCreateInfo PXREF pxEngineStartInfo);
+
+PXPublic PXResult PXAPI PXEngineRegisterToECS();
+PXPublic PXResult PXAPI PXEngineCreate(PXEngine** pxEngine, PXEngineCreateInfo PXREF pxEngineCreateInfo);
+PXPublic PXResult PXAPI PXEngineStart(PXEngine PXREF pxEngine);
+PXPublic void PXAPI PXEngineStop(PXEngine PXREF pxEngine);
+PXPublic void PXAPI PXEngineUpdate(PXEngine PXREF pxEngine);
+
+PXPublic PXBool PXAPI PXEngineIsRunning(const PXEngine PXREF pxEngine);
 
 // Generate a random number with a maximum of the "limiter"
 PXPublic PXI32U PXAPI PXEngineGenerateRandom(PXEngine PXREF pxEngine, const PXI32U limiter);
 
-PXPublic PXBool PXAPI PXEngineIsRunning(const PXEngine PXREF pxEngine);
-
-
-PXPrivate PXResult PXAPI PXEngineCreatePRE(PXEngine PXREF pxEngine, PXEngineStartInfo PXREF pxEngineStartInfo);
-PXPrivate PXResult PXAPI PXEngineCreateAudio(PXEngine PXREF pxEngine, PXEngineStartInfo PXREF pxEngineStartInfo);
-PXPrivate PXResult PXAPI PXEngineCreateGraphic(PXEngine PXREF pxEngine, PXEngineStartInfo PXREF pxEngineStartInfo);
-PXPrivate PXResult PXAPI PXEngineCreateMod(PXEngine PXREF pxEngine, PXEngineStartInfo PXREF pxEngineStartInfo);
-
-
-PXPublic PXResult PXAPI PXEngineStart(PXEngine PXREF pxEngine, PXEngineStartInfo PXREF pxEngineStartInfo);
-PXPublic void PXAPI PXEngineStop(PXEngine PXREF pxEngine);
-PXPublic void PXAPI PXEngineUpdate(PXEngine PXREF pxEngine);
-
 PXPublic PXResult PXAPI PXEngineResourceAction(PXEngine PXREF pxEngine, PXEngineResourceActionInfo PXREF pxEngineResourceActionInfo);
 PXPublic PXResult PXAPI PXEngineResourceActionBatch(PXEngine PXREF pxEngine, PXEngineResourceActionInfo PXREF pxEngineResourceActionInfoList, const PXSize amount);
 
-PXPublic PXResult PXAPI PXEngineResourceCreate(PXEngine PXREF pxEngine, PXResourceCreateInfo PXREF pxEngineResourceCreateInfo);
+PXPublic PXResult PXAPI PXEngineResourceCreate(PXEngine PXREF pxEngine, PXECSCreateInfo PXREF pxEngineResourceCreateInfo);
 PXPublic PXResult PXAPI PXEngineResourceRender(PXEngine PXREF pxEngine, PXRenderEntity PXREF pxRenderEntity);
 
 PXPublic PXResult PXAPI PXEngineDeviceDataRegister(PXEngine PXREF pxEngine, PXResourceMoveInfo PXREF PXResourceMoveInfo);

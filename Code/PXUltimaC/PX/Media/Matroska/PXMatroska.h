@@ -11,7 +11,7 @@ typedef struct PXMatroska_
 }
 PXMatroska;
 
-PXPublic PXResult PXAPI PXMatroskaLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXMatroskaSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXMatroskaLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXMatroskaSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
 
 #endif

@@ -1,7 +1,7 @@
 #include "PXDDS.h"
 
 #include <PX/OS/File/PXFile.h>
-//#include <PX/OS/Graphic/PXGraphic.h>
+#include <PX/Engine/ECS/PXECS.h>
 
 const char PXDDSSignature[4] = { 'D', 'D', 'S', ' ' }; // 0x20534444
 
@@ -444,7 +444,7 @@ DXGI_FORMAT PXDXGIFormatGet(PXDirectDrawTexture PXREF pxDirectDrawTexture)
 
 */
 
-PXResult PXAPI PXDDSLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXDDSLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
     PXTexture PXREF pxTexture = (PXTexture*)pxResourceLoadInfo->ResourceTarget;
 
@@ -705,7 +705,7 @@ PXResult PXAPI PXDDSLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
     return PXActionSuccessful;
 }
 
-PXResult PXAPI PXDDSSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXDDSSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

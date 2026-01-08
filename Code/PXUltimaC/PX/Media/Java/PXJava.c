@@ -210,12 +210,12 @@ void PXAPI PXJavaDefinitionWrite(PXCompiler PXREF pxCompiler)
     PXFileWriteA(pxFile, entry->NameAdress, entry->NameSize);
 }
 
-PXResult PXAPI PXJavaLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXJavaLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI PXJavaSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXJavaSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
 {
     if(!pxResourceSaveInfo)
     {

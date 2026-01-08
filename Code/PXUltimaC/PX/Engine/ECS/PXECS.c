@@ -1,14 +1,43 @@
 #include "PXECS.h"
 
 #include <PX/Math/PXMath.h>
-#include <PX/OS/Memory/PXMemory.h>
 #include <PX/OS/Async/PXLock.h>
+#include <PX/OS/Async/PXThread.h>
+#include <PX/OS/Console/PXConsole.h>
+#include <PX/OS/Memory/PXMemory.h>
+#include <PX/OS/Async/PXThreadPool.h>
+#include <PX/Engine/ECS/PXNamePool.h>
 
+#include <PX/OS/PXOS.h>
+
+
+// Resources
+#include <PX/Engine/ECS/Resource/Brush/PXBrush.h>
+#include <PX/Engine/ECS/Resource/Display/PXDisplay.h>
+#include <PX/Engine/ECS/Resource/Font/PXFont.h>
+#include <PX/Engine/ECS/Resource/FrameBuffer/PXFrameBuffer.h>
+#include <PX/Engine/ECS/Resource/Icon/PXIcon.h>
+#include <PX/Engine/ECS/Resource/Mesh/PXMesh.h>
+#include <PX/Engine/ECS/Resource/Monitor/PXMonitor.h>
+#include <PX/Engine/ECS/Resource/Shader/PXShader.h>
+#include <PX/Engine/ECS/Resource/Sound/PXSound.h>
+#include <PX/Engine/ECS/Resource/Texture/PXTexture.h>
+#include <PX/Engine/ECS/Resource/Timer/PXTimer.h>
+#include <PX/Engine/ECS/Resource/Video/PXVideo.h>
+#include <PX/Engine/ECS/Resource/Window/PXWindow.h>
+#include <PX/Engine/ECS/Entity/SkyBox/PXSkyBox.h>
+#include <PX/Engine/ECS/Resource/Window/PXWindow.h>
+#include <PX/Container/ListDynamic/PXListDynamic.h>
+
+
+// Components
+
+// Assets?
 
 // Private class
 // Stores all components
 // Additional lookup and managing of entity to component relation
-typedef struct PXComponentRegistry_
+typedef struct PXECS_
 {
     // To know what types we know
     PXDictionaryT(PXID, PXComponentType*)* ComponentTypeLookup;
@@ -16,98 +45,301 @@ typedef struct PXComponentRegistry_
     // Entity to Component
     PXDictionaryT(PXID, PXComponent*)* ComponentLookup;
 
+    // For multithreading we need protection
     PXLock* ResourceLock;
+
+    PXLock* AsyncLock;
+
+    PXListDynamic NameCache;
+    PXListDynamic SourcePathCache;
+
+    PXDictionary MaterialLookUp;
+    PXDictionary SpritelLookUp;
+    PXDictionary FontLookUp;
+    PXDictionary TextLookUp;
+    PXDictionary TimerLookUp;
+    PXDictionary SoundLookUp;
+    PXDictionary HitBoxLookUp;
+    PXDictionary ImageLookUp;
+    PXDictionary BrushLookUp;
+    PXDictionary TextureLookUp;
+    PXDictionary ModelLookUp;
+    PXDictionary SkyBoxLookUp;
+    PXDictionary ShaderProgramLookup;
+    PXDictionary GUIElementLookup;
+    PXDictionary SpriteAnimator;
+    PXDictionary IconLookUp;
+    PXDictionary IconAtlasLookUp;
+    PXDictionary SpriteMapAtlasLookUp;
+
+    PXI32U Flags;
 }
-PXComponentRegistry;
+PXECS;
+
+const char PXECSText[] = "ECS-PX";
+
+PXECS _pxECS;
+
+const PXECSRegisterFunction pxECSRegisterList[] =
+{
+    PXLockRegisterToECS,
+    PXThreadRegisterToECS,
+    PXBrushRegisterToECS,
+    PXFontRegisterToECS,
+    PXFrameBufferRegisterToECS,
+    PXIconRegisterToECS,
+    PXMeshRegisterToECS,
+    PXSkyBoxRegisterToECS,
+    PXWindowRegisterToECS
+};
+const PXI16U _pxECSRegisterListAmount = sizeof(pxECSRegisterList) / sizeof(PXECSRegisterFunction);
+
+const char* PXECSTypeToString(const PXECSType pxECSType)
+{
+    switch(pxECSType)
+    {
+        case PXECSTypeInvalid:  return "Invalid";
+        case PXECSTypeEntity:   return "Enity";
+        case PXECSTypeComponent:    return "Component";
+        case PXECSTypeResource: return "Resource";
+        case PXECSTypeSystem: return "System";
+
+        default:
+            return 0;
+    }
+}
+
+PXResult PXAPI PXECSRegister
+(
+    PXECSRegisterInfoStatic PXREF pxECSRegisterInfoStatic,
+    PXECSRegisterInfoDynamic PXREF pxECSRegisterInfoDynamic
+)
+{
+    // We need a uniqe ID to register
+    pxECSRegisterInfoDynamic->ID = PXIDGenerate();
+
+    // We cant trust the pointer from beeing safe to store
+    // It must be stored seperately
+    PXNamePoolStore(pxECSRegisterInfoDynamic->ID, &pxECSRegisterInfoStatic->NameOfType, &pxECSRegisterInfoStatic->NameOfType);
+
+#if PXLogEnable
+    const char* typeName = PXECSTypeToString(pxECSRegisterInfoStatic->Type);
+
+    PXLogPrint
+    (
+        PXLoggingAllocation,
+        PXECSText,
+        "Register",
+        "Type registering..\n"
+        "%20s : %i\n"
+        "%20s : %i\n"
+        "%20s : %i\n"
+        "%20s : %s\n"
+        "%20s : %s",
+        "PX-ID", pxECSRegisterInfoDynamic->ID,
+        "Size", pxECSRegisterInfoStatic->TypeSize,
+        "Allignment", pxECSRegisterInfoStatic->TypeSize,
+        "Name", pxECSRegisterInfoStatic->NameOfType.A,
+        "Type", typeName
+    );
+#endif
+
+    return PXActionSuccessful;
+}
+
+PXResult PXAPI PXECSElementToString
+(
+    PXText PXREF pxText,
+    PXECSInfo PXREF pxECSInfo,
+    PXECSRegisterInfoStatic PXREF pxECSRegisterInfoStatic,
+    PXECSRegisterInfoDynamic PXREF pxECSRegisterInfoDynamic
+)
+{
+    char buffer[260];
+    PXText pxTextModule;
+    PXTextFromAdressA(&pxTextModule, buffer, 0, sizeof(buffer));
+
+    PXLibraryNameFromAdress(PXNull, &pxTextModule, pxECSRegisterInfoStatic->CreateCallback);
+
+    // Combine string
+    PXTextPrint
+    (
+        pxText,
+        "0d%4.4i_%s:%s_%i",
+        pxECSRegisterInfoDynamic->ID,
+        pxTextModule.A,
+        pxECSRegisterInfoStatic->NameOfType.A,
+        pxECSRegisterInfoStatic->TypeSize
+    );
+
+    //0x0123ABCD_PXUltima:PXFont_28_8
+    // PXID_Module:TypeName_Size_Elements?
 
 
-
-
-
-PXComponentRegistry _pxComponentRegistry;
+    return PXActionSuccessful;
+}
 
 PXResult PXAPI PXECSInit(void)
 {
-    PXClear(PXComponentRegistry, &_pxComponentRegistry);
+    PXClear(PXECS, &_pxECS);
 
-    PXLockCreate(&_pxComponentRegistry.ResourceLock, PXLockTypeProcessOnly);
+    PXListDynamicInit(&_pxECS.NameCache, sizeof(PXID), 2);
+    PXListDynamicInit(&_pxECS.SourcePathCache, sizeof(PXID), 2);
 
+    PXNamePoolInit();
 
+    // Register all entitys
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXECSText,
+        "Register",
+        "Predefined types - Amount:<%i>",
+        _pxECSRegisterListAmount
+    );
+#endif
 
+    PXSize failCounter = 0;
 
-
-    PXResourceCreateInfo pxResourceCreateInf;
-
-
-    // Register Asserts
-    PXClear(PXResourceCreateInfo, &pxResourceCreateInf);
-    PXTextFromAdressA(&pxResourceCreateInf.FilePath, "Sound", );
-    PXECSAssetAdd(&pxResourceCreateInf);
-
-    // Register resources
-
-
-    // Register components
- 
-
-
-
-    const PXResourceEntry _GlobalResourceEntryList[] =
+    for(PXSize i = 0; i < _pxECSRegisterListAmount; ++i)
     {
-        {PXNull,                                PXNull,                                 "Invalid", PXResourceTypeInvalid, 0 },
-        {PXNull,                                PXNull,                                 "Custom", PXResourceTypeCustom, 0 },
-        {&_pxResourceManager.SoundLookUp,   PXResourceCreateSound,                  "Sound",PXResourceTypeSound, sizeof(PXSound) },
-        {PXNull,                                PXNull,                                 "Video", PXResourceTypeVideo,sizeof(PXVideo) },
-        {&_pxResourceManager.ModelLookUp,   PXResourceCreateModel,                  "Model",PXResourceTypeModel, sizeof(PXModel) },
-        {&_pxResourceManager.FontLookUp,    PXResourceCreateFont,                   "Font",PXResourceTypeFont, sizeof(PXFont) },
-        {&_pxResourceManager.MaterialLookUp, PXResourceCreateMaterial,              "Material", PXResourceTypeMaterial, sizeof(PXMaterial) },
-        {&_pxResourceManager.BrushLookUp,   PXResourceCreateBrush,                  "Brush",PXResourceTypeBrush, sizeof(PXWindowBrush) },
-        {&_pxResourceManager.TextureLookUp, PXResourceCreateTexture,              "Texture",PXResourceTypeTexture2D, sizeof(PXTexture) },
-        {&_pxResourceManager.ShaderProgramLookup, PXResourceCreateShaderProgram,    "ShaderProgram",PXResourceTypeShaderProgram, sizeof(PXShaderProgram) },
-        {&_pxResourceManager.SkyBoxLookUp,  PXResourceCreateSkybox,                 "SkyBox",PXResourceTypeSkybox, sizeof(PXSkyBox) },
-        {&_pxResourceManager.SpritelLookUp, PXResourceCreateSprite,                 "Sprite",PXResourceTypeSprite, sizeof(PXSprite) },
-        {&_pxResourceManager.IconLookUp,    PXResourceCreateIcon,                   "Icon",PXResourceTypeIcon, sizeof(PXIcon) },
-        {&_pxResourceManager.IconAtlasLookUp, PXResourceCreateIconAtlas,              "IconAtlas",PXResourceTypeIconAtlas, sizeof(PXIconAtlas) },
-        {&_pxResourceManager.SpriteAnimator, PXResourceCreateSpriteAnimator,        "SpriteAnimator",PXResourceTypeSpriteAnimator, sizeof(PXSpriteAnimator) },
-        {PXNull,                                PXNull,                                 "Text",PXResourceTypeText, sizeof(PXText) },
-        {&_pxResourceManager.TimerLookUp,   PXResourceCreateTimer,                  "Timer",PXResourceTypeTimer, sizeof(PXTimer) },
-        {PXNull,                                PXNull,                                 "---",PXResourceTypeEngineSound, 0 },
-        {&_pxResourceManager.GUIElementLookup, PXResourceCreateWindow,              "Window", PXResourceTypeGUIElement, sizeof(PXWindow) },
-        {&_pxResourceManager.HitBoxLookUp,  PXResourceCreateHitBox,                 "---",PXResourceTypeHitBox, sizeof(PXHitBox) },
-        {&_pxResourceManager.MaterialLookUp, PXNull,                                "Material", PXResourceTypeMaterialList, PXNull},
-        {PXNull, PXNull, "---", PXResourceTypeCodeDocument, sizeof(PXWindowBrush) },
-        {PXNull, PXNull, "---", PXResourceTypeDocument, sizeof(PXWindowBrush) },
-        {PXNull, PXNull, "---", PXResourceTypeBinary, sizeof(PXWindowBrush) },
-        {PXNull, PXNull, "---", PXResourceTypeStructuredText, sizeof(PXWindowBrush) },
-        {PXNull, PXNull, "---", PXResourceTypeInstaller, sizeof(PXWindowBrush) },
-        {PXNull, PXNull, "---", PXResourceTypeArchiv, sizeof(PXWindowBrush) },
-        {PXNull, PXNull, "---", PXResourceTypeDialogBox, sizeof(PXWindowBrush) },
-        {&_pxResourceManager.SpriteMapAtlasLookUp, PXResourceCreateSpriteMap, "SpriteMap", PXResourceTypeSpriteMap, sizeof(PXSpriteMap) },
-    };
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingEvent,
+            PXECSText,
+            "Register",
+            "[%i/%i]",
+            i+1,
+            _pxECSRegisterListAmount
+        );
+#endif
 
+        PXResult pxResult = pxECSRegisterList[i]();
 
+        if(PXActionSuccessful != pxResult)
+        {
+            ++failCounter;
 
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingError,
+                PXECSText,
+                "Register",
+                "[%i/%i] Register type FAILED",
+                i + 1,
+                _pxECSRegisterListAmount
+            );
+#endif
+        }
+    }
 
+    PXSize success = _pxECSRegisterListAmount - failCounter;
+    PXSize successRate = 100 * (success / _pxECSRegisterListAmount);
 
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingInfo,
+        PXECSText,
+        "Register",
+        "<%i>/<%i> OK (%i)",
+        success,
+        _pxECSRegisterListAmount,
+        successRate
+    );
+#endif
 
+    PXLockCreateInfo pxLockCreateInfo;
+    PXClear(PXLockCreateInfo, &pxLockCreateInfo);
+    pxLockCreateInfo.Type = PXLockTypeProcessOnly;
+
+    PXLockCreate(&_pxECS.ResourceLock, &pxLockCreateInfo);
+
+    return PXActionSuccessful;
 }
 
-PXResult PXAPI PXECSComponentRefCheck(PXDictionary PXREF pxDictionary, PXComponentRef PXREF pxComponentRef)
+PXResult PXAPI PXECSPropertyIO(PXECSProperty PXREF pxECSProperty)
 {
-    if(!(pxDictionary && pxComponentRef)) // Is this NULL?
+    // NULL Check
+    if(!pxECSProperty)
+    {
+        return PXActionRefusedArgumentNull;
+    }
+
+    if(pxECSProperty->DoWrite)
+    {
+        const PXBool callValid = 0;// name && !(0 == nameSize || (PXSize)-1 == nameSize);
+
+        if(!callValid)
+        {
+#if PXLogEnable
+            PXLogPrint
+            (
+                PXLoggingError,
+                PXECSText,
+                "Store-Name",
+                "PXID:%i, Name can't be stored!",
+                0//PXECSInfo->ID
+            );
+#endif
+
+            return PXActionRefusedArgumentInvalid;
+        }
+
+
+        PXSize length = 0;// nameSize;
+
+        //if(-1 == nameSize)
+        {
+            length = 0;// PXTextLengthA(name, nameSize);
+        }
+
+#if PXLogEnable && 0
+        char buffer[256];
+
+        //  PXTextCopyA(name, nameSize, buffer, length);
+
+        PXLogPrint
+        (
+            PXLoggingInfo,
+            PXResourceText,
+            "Store-Name",
+            "PXID:%i, %s (%i)",
+            0//PXECSInfo->ID,
+            buffer,
+            length
+        );
+#endif
+
+        //PXListDynamicAdd(&_pxResourceManager.NameCache, &PXECSInfo->ID, name, length);
+
+       // PXECSInfo->Behaviour |= PXECSInfoHasName;
+
+        return PXActionSuccessful;
+    }
+
+    return PXActionInvalid;
+}
+
+PXResult PXAPI PXECSElementRefCheck(PXDictionary PXREF pxDictionary, PXECSElementRef PXREF pxECSElementRef)
+{
+    if(!(pxDictionary && pxECSElementRef)) // Is this NULL?
     {
         return PXActionRefusedArgumentNull; // Illegal call
     }
 
     // Is adress in data range?
-    const PXBool isInRange = PXListIsAddresValid(&pxDictionary->List, pxComponentRef->Component);
+    PXECSInfo* pxECSElement = pxECSElementRef->Element;
+
+    const PXBool isInRange = PXListIsAddresValid(&pxDictionary->List, pxECSElementRef->Element);
 
     if(isInRange)
     {
         // Because adress is valid, we can check now
-        PXComponent* pxComponent = pxComponentRef->Component;
-
-        const PXBool isDirectMatch = pxComponent->ID == pxComponentRef->ExpectedID;
+        const PXBool isDirectMatch = pxECSElementRef->ExpectedID == pxECSElement->ID;
 
         if(isDirectMatch)
         {
@@ -122,27 +354,100 @@ PXResult PXAPI PXECSComponentRefCheck(PXDictionary PXREF pxDictionary, PXCompone
     // Search to detect valid object
 
 
-    PXResult pxResult = PXDictionaryEntryFind(pxDictionary, &pxComponentRef->ExpectedID, &pxComponentRef->Component);
+    PXResult pxResult = PXDictionaryEntryFind(pxDictionary, &pxECSElementRef->ExpectedID, &pxECSElementRef->Element);
 
     if(PXActionSuccessful != pxResult)
     {
-        // Not found
+        // Not found, object was deleted
+
+#if PXLogEnable
+        PXLogPrint
+        (
+            PXLoggingWarning,
+            PXECSText,
+            "Ref-Check",
+            "PXID:%i, stale reference detected! Object was deleted",
+            pxECSElementRef->ExpectedID
+        );
+#endif
+
         return pxResult;
     }
 
     // We found the object!
     // Reference got updated to new object
+#if PXLogEnable
+    PXLogPrint
+    (
+        PXLoggingEvent,
+        PXECSText,
+        "Ref-Check",
+        "PXID:%i, stale reference detected! Object was moved!",
+        pxECSElementRef->ExpectedID
+    );
+#endif
 
     return PXActionSuccessful;
 }
 
-
-PXResult PXAPI PXECSAssetAdd(PXECSRegistrationInfo PXREF pxECSRegistrationInfo)
+PXResult PXAPI PXECSCreate(PXECSInfo** pxECSInfoREF, PXECSCreateInfo PXREF pxECSCreateInfo)
 {
+    // NULL Parameter safequard 
+    if(!(pxECSInfoREF && pxECSCreateInfo))
+    {
+        return PXActionRefusedArgumentNull;
+    }
 
+    // Is the size of the object valid? A size of 0 is not possible
+    const PXSize typeSize = pxECSCreateInfo->Static->TypeSize;
+    const PXBool hasValidSize = 0 < typeSize;
+
+    if(!hasValidSize)
+    {
+        return PXActionRefusedObjectSizeZero;
+    }
+
+    // Create ID
+    PXID pxID = PXIDGenerate();
+
+    // Get memory?
+    PXECSInfo* pxECSInfo = (PXECSInfo*)PXMemoryHeapCalloc(PXNull, 1, typeSize);
+
+    // Allocations can fail, safely eject
+    if(!pxECSInfo)
+    {
+        return PXActionFailedMemoryAllocation;
+    }
+
+    pxECSInfo->ID = pxID;
+
+    *pxECSInfoREF = pxECSInfo;
+
+    // Register?
+
+#if PXLogEnable
+    char name[128];
+    PXText pxTextName;
+    PXTextFromAdressA(&pxTextName, name, 0, sizeof(name));
+
+    PXECSElementToString(&pxTextName, pxECSInfo, pxECSCreateInfo->Static, pxECSCreateInfo->Dynamic);
+
+    PXLogPrint
+    (
+        PXLoggingAllocation,
+        PXECSText,
+        "Create",
+        "%s (PXID:%4i, %s)",
+        name,
+        pxID,
+        pxECSCreateInfo->Name.A
+    );
+#endif 
+
+    return PXActionSuccessful;
 }
 
-
+/*
 PXResult PXAPI PXECSAssetAddaaaaa(PXECSRegistrationInfo PXREF pxECSRegistrationInfo)
 {
     if(!pxResourceCreateInfo)
@@ -224,30 +529,29 @@ PXResult PXAPI PXECSAssetAddaaaaa(PXECSRegistrationInfo PXREF pxECSRegistrationI
             void* object = (char*)pxResourceEntryList + (pxResourceEntry->TypeSize * i);
 
             // UNSTANBLE CAST?
-            PXResourceInfo PXREF pxResourceInfo = (PXResourceInfo*)object;
-            pxResourceInfo->ID = resourceID;
-            pxResourceInfo->Behaviour |= PXResourceInfoExist;
+            PXECSInfo PXREF PXECSInfo = (PXECSInfo*)object;
+            PXECSInfo->ID = resourceID;
+            PXECSInfo->Behaviour |= PXECSInfoExist;
 
             // Store myself, so we can cast back with hirachy
-            pxResourceInfo->Hierarchy.Yourself = object;
+            PXECSInfo->Hierarchy.Yourself = object;
 
             PXDictionaryEntryAdd(pxResourceEntry->LookupTable, &resourceID, *pxResourceCreateInfo->ObjectReference);
 
-            PXResourceProperty pxResourceProperty;
-            PXClear(PXResourceProperty, &pxResourceProperty);
+            PXECSProperty pxResourceProperty;
+            PXClear(PXECSProperty, &pxResourceProperty);
             pxResourceProperty.Text = pxResourceCreateInfo->Name;
+            PXECSPropertyIO(PXECSInfo, &pxResourceProperty, PXResourcePropertyName, PXTrue);
 
-            PXResourcePropertyIO(pxResourceInfo, &pxResourceProperty, PXResourcePropertyName, PXTrue);
-
-            PXClear(PXResourceProperty, &pxResourceProperty);
+            PXClear(PXECSProperty, &pxResourceProperty);
             pxResourceProperty.Text = pxResourceCreateInfo->FilePath;
-            PXResourcePropertyIO(pxResourceInfo, &pxResourceProperty, PXResourcePropertyPath, PXTrue);
+            PXECSPropertyIO(PXECSInfo, &pxResourceProperty, PXResourcePropertyPath, PXTrue);
 
 #if PXLogEnable
             PXLogPrint
             (
                 PXLoggingInfo,
-                PXResourceManagerText,
+                PXECSText,
                 "Register",
                 "PXID:<%-4i> Size:%-4i (%i/%i) <%s>",
                 resourceID,
@@ -283,7 +587,7 @@ PXResult PXAPI PXECSAssetAddaaaaa(PXECSRegistrationInfo PXREF pxECSRegistrationI
             (
                 PXNull,
                 0,
-                PXResourceManagerAdd,
+                //PXResourceManagerAdd,
                 pxResourceCreateInfoASYNC,
                 PXNull,
                 PXTaskParameterRelease | PXTaskExecuteASYNC
@@ -303,7 +607,7 @@ PXResult PXAPI PXECSAssetAddaaaaa(PXECSRegistrationInfo PXREF pxECSRegistrationI
         PXLogPrint
         (
             PXLoggingError,
-            PXResourceManagerText,
+            PXECSText,
             "Register",
             "[PXID:%-4i] <%s> Has no function to handle creation.",
             -1,
@@ -322,7 +626,7 @@ PXResult PXAPI PXECSAssetAddaaaaa(PXECSRegistrationInfo PXREF pxECSRegistrationI
         PXLogPrint
         (
             PXLoggingError,
-            PXResourceManagerText,
+            PXECSText,
             "Create",
             "[PXID:%-4i] <%s> failed creation.",
             -1,
@@ -334,14 +638,14 @@ PXResult PXAPI PXECSAssetAddaaaaa(PXECSRegistrationInfo PXREF pxECSRegistrationI
     return PXActionSuccessful;
 }
 
-PXResult PXAPI PXResourceManagerAddV(PXResourceCreateInfo PXREF pxResourceCreateInfoList, const PXSize amount)
+PXResult PXAPI //PXResourceManagerAddV(PXResourceCreateInfo PXREF pxResourceCreateInfoList, const PXSize amount)
 {
     for(PXSize i = 0; i < amount; ++i)
     {
         PXResourceCreateInfo PXREF pxResourceCreateInfo = &pxResourceCreateInfoList[i];
 
-        PXResourceManagerAdd(pxResourceCreateInfo);
+        //PXResourceManagerAdd(pxResourceCreateInfo);
     }
 
     return PXActionSuccessful;
-}
+}*/

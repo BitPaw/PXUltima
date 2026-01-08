@@ -5,6 +5,9 @@
 #include <PX/Media/PXText.h>
 #include <PX/Media/PXDocument.h>
 #include <PX/OS/PXOS.h>
+#include <PX/Engine/ECS/PXECS.h>
+
+const char PXCText[] = "C";
 
 #define PXCDebugOutput 1
 
@@ -20,7 +23,7 @@ PXResult PXAPI PXCParsePreprocessorCondition(PXCompiler PXREF pxCompiler, PXCode
         PXLogPrint
         (
             PXLoggingError,
-            "C",
+            PXCText,
             "Preprocessor",
             "Makro 'if not defined' has invalid name"
         );
@@ -35,7 +38,7 @@ PXResult PXAPI PXCParsePreprocessorCondition(PXCompiler PXREF pxCompiler, PXCode
     PXLogPrint
     (
         PXLoggingInfo,
-        "C",
+        PXCText,
         "Preprocessor",
         "If not defined : %s",
         buffer
@@ -63,7 +66,7 @@ PXResult PXAPI PXCParsePreprocessorDefine(PXCompiler PXREF pxCompiler, PXCodeDoc
             PXLogPrint
             (
                 PXLoggingInfo,
-                "C",
+                PXCText,
                 "Preprocessor",
                 "Makro define has invalid name"
             );
@@ -82,7 +85,7 @@ PXResult PXAPI PXCParsePreprocessorDefine(PXCompiler PXREF pxCompiler, PXCodeDoc
         PXLogPrint
         (
             PXLoggingInfo,
-            "C",
+            PXCText,
             "Preprocessor",
             "Makro define name : %s",
             buffer
@@ -252,7 +255,7 @@ PXResult PXAPI PXCParsePreprocessorIncluded(PXCompiler PXREF pxCompiler, PXCodeD
                 PXLogPrint
                 (
                     PXLoggingInfo,
-                    "C",
+                    PXCText,
                     "Parsing",
                     "Invalid Included"
                 );
@@ -269,7 +272,7 @@ PXResult PXAPI PXCParsePreprocessorIncluded(PXCompiler PXREF pxCompiler, PXCodeD
         PXLogPrint
         (
             PXLoggingInfo,
-            "C",
+            PXCText,
             "Parsing",
             "Included library (global) : %s",
             buffer
@@ -299,7 +302,7 @@ PXResult PXAPI PXCParsePreprocessorIncluded(PXCompiler PXREF pxCompiler, PXCodeD
             PXLogPrint
             (
                 PXLoggingError,
-                "C",
+                PXCText,
                 "Included",
                 "Makro Included has invalid name"
             );
@@ -320,7 +323,7 @@ PXResult PXAPI PXCParsePreprocessorIncluded(PXCompiler PXREF pxCompiler, PXCodeD
         PXLogPrint
         (
             PXLoggingInfo,
-            "C",
+            PXCText,
             "Included",
             "Makro define name : %s",
             IncludedName
@@ -357,7 +360,7 @@ PXResult PXAPI PXCParsePreprocessorPragma(PXCompiler PXREF pxCompiler, PXCodeDoc
         PXLogPrint
         (
             PXLoggingInfo,
-            "C",
+            PXCText,
             "Parsing",
             "Makro pragma has invalid name"
         );
@@ -368,7 +371,7 @@ PXResult PXAPI PXCParsePreprocessorPragma(PXCompiler PXREF pxCompiler, PXCodeDoc
     PXLogPrint
     (
         PXLoggingInfo,
-        "C",
+        PXCText,
         "Parsing",
         "Makro pragma ..."
     );
@@ -404,7 +407,7 @@ PXResult PXAPI PXCParseTypeDefinition(PXCompiler PXREF pxCompiler, PXCodeDocumen
     PXLogPrint
     (
         PXLoggingInfo,
-        "C",
+        PXCText,
         "Parsing",
         "type definition"
     );
@@ -475,7 +478,7 @@ PXResult PXAPI PXCParseTypeDefinition(PXCompiler PXREF pxCompiler, PXCodeDocumen
                 PXLogPrint
                 (
                     PXLoggingInfo,
-                    "C",
+                    PXCText,
                     "Parsing",
                     "typedef Funtion : %s",
                     buffer
@@ -626,7 +629,7 @@ PXResult PXAPI PXCParseFunctionDefinition(PXCompiler PXREF pxCompiler, PXCodeDoc
         PXLogPrint
         (
             PXLoggingInfo,
-            "C",
+            PXCText,
             "Parsing",
             "Function : %6s %s",
             bufferReturnName,
@@ -951,7 +954,7 @@ PXResult PXAPI PXCParseTypeDeclarationElement(PXCompiler PXREF pxCompiler, PXCod
     PXLogPrint
     (
         PXLoggingInfo,
-        "C",
+        PXCText,
         "Parsing",
         "Member : %s",
         nameBuffer
@@ -1287,7 +1290,7 @@ PXResult PXAPI PXCParseTypeEnum(PXCompiler PXREF pxCompiler, PXCodeDocumentEleme
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI PXCLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXCLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
 #if PXLogEnable
     PXLogPrint
@@ -1582,7 +1585,7 @@ PXResult PXAPI PXCLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo
     return PXActionSuccessful;
 }
 
-PXResult PXAPI PXCSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXCSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

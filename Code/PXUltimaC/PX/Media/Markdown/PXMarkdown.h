@@ -5,7 +5,7 @@
 
 #include <PX/Engine/PXResource.h>
 
-PXPublic PXResult PXAPI PXMarkdownLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXMarkdownSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXMarkdownLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXMarkdownSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
 
 #endif

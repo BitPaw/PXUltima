@@ -350,7 +350,7 @@ void PXAPI PXJPEGDestruct(PXJPEG PXREF jpeg)
 
 }
 
-PXResult PXAPI PXJPEGLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXJPEGLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
     PXJPEG jpeXg;
     PXJPEG* jpeg = &jpeXg;
@@ -645,7 +645,7 @@ void PXAPI generateHuffmanTable(const PXI8U numCodes[16], const PXI8U* values, B
     }
 }
 
-PXResult PXAPI PXJPEGSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXJPEGSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
 {
     PXTexture PXREF pxTexture = (PXTexture*)pxResourceSaveInfo->FileReference;
 
@@ -857,7 +857,7 @@ PXResult PXAPI PXJPEGSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInf
     buffer.numBits = 0; // number of valid bits (the right-most bits)
 
     // just convert image data from void*
-    const unsigned char* pixels = (unsigned char*)pxTexture->PixelData;
+    const PXByte* pixels = pxTexture->PixelData.Data;
 
     // break down the image into 8x8 blocks and convert from RGB or grayscale to YCbCr color space
     PXF32 Y[8][8], Cb[8][8], Cr[8][8];

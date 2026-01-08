@@ -1,11 +1,11 @@
 #include "PXJavaScript.h"
 
-PXResult PXAPI PXJavaScriptLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXJavaScriptLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI PXJavaScriptSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXJavaScriptSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

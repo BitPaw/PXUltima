@@ -11,7 +11,7 @@ typedef struct PXMSI_
 }
 PXMSI;
 
-PXPublic PXResult PXAPI PXMSILoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXMSISaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXMSILoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXMSISaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
 
 #endif

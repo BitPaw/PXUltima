@@ -5,6 +5,7 @@
 #include <PX/Media/PXDocument.h>
 #include <PX/Math/PXMath.h>
 #include <PX/Compiler/PXCompiler.h>
+#include <PX/Engine/ECS/PXECS.h>
 
 
 const char PXCSharpKeyWordPublic[] = "public";
@@ -560,12 +561,12 @@ void PXAPI PXCSharpDefinitionWrite(PXCompiler PXREF pxCompiler)
     PXFileWriteA(pxFile, symbol->NameAdress, symbol->NameSize);
 }
 
-PXResult PXAPI PXCSharpLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXCSharpLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI PXCSharpSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXCSharpSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
 {
     PXFile* pxFile = pxResourceSaveInfo->FileReference;
 

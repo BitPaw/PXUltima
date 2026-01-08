@@ -55,8 +55,8 @@ PXPrivate PXMTLLineType PXAPI PXMTLPeekLine(const char PXREF line, const PXSize 
 PXPublic PXSize PXAPI PXMTLFetchAmount(const void PXREF data, const PXSize dataSize);
 PXPublic PXBool PXAPI PXMTLFetchMaterial(const void PXREF data, const PXSize dataSize, const PXSize materialID, PXMTLMaterial PXREF mtlMaterial);
 
-PXPublic PXResult PXAPI PXMTLPeekFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXMTLLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXMTLSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXMTLPeekFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXMTLLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXMTLSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
 
 #endif

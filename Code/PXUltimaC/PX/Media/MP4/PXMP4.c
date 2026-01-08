@@ -88,7 +88,7 @@ PXM4AChunkID PXAPI PXMP4ChunkFromID(const PXI32U chunkID)
     }
 }
 
-PXResult PXAPI PXMP4LoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXMP4LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
     PXFile PXREF pxFile = pxResourceLoadInfo->FileReference;
 
@@ -206,7 +206,7 @@ PXResult PXAPI PXMP4LoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
     return PXActionSuccessful;
 }
 
-PXResult PXAPI PXMP4SaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXMP4SaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

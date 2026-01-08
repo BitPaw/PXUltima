@@ -11,7 +11,7 @@ typedef struct PXPHP_
 }
 PXPHP;
 
-PXPublic PXResult PXAPI PXPHPLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXPHPSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXPHPLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXPHPSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
 
 #endif

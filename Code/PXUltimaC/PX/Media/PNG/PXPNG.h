@@ -388,8 +388,8 @@ PXPublic void PXAPI PXPNGDestruct(PXPNG PXREF png);
 PXPublic PXI8U PXAPI PXPNGBitsPerPixel(const PXPNG PXREF png);
 
 PXPublic PXSize PXAPI PXPNGFilePredictSize(PXTexture PXREF pxTexture, PXSize PXREF fileSize);
-PXPublic PXResult PXAPI PXPNGPeekFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXPNGLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXPNGSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXPNGPeekFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXPNGLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXPNGSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
 
 #endif

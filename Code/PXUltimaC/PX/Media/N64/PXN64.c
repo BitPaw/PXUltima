@@ -66,7 +66,7 @@ const char* PXN64CountryCodeToString(const PXN64CountryCode pxN64CountryCode)
     }
 }
 
-PXResult PXAPI PXN64LoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXN64LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
     PXFile* pxFile = pxResourceLoadInfo->FileReference;
 
@@ -115,10 +115,10 @@ PXResult PXAPI PXN64LoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
             pxFileOpenInfo.FlagList = PXFileIOInfoFileMemory;
             pxFileOpenInfo.FilePath.SizeUsed = PXFileAllocatedSize(pxResourceLoadInfo->FileReference);
 
-            PXFileOpen(&pxN64Data, &pxFileOpenInfo);
-            PXFileByteSwap(&pxN64Data, pxResourceLoadInfo->FileReference);
+            PXFileOpen(pxN64Data, &pxFileOpenInfo);
+            PXFileByteSwap(pxN64Data, pxResourceLoadInfo->FileReference);
 
-            pxFile = &pxN64Data;
+            pxFile = pxN64Data;
 
             PXFileEndianessSet(pxFile, PXEndianBig);
         }
@@ -332,7 +332,7 @@ PXResult PXAPI PXN64LoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
     return PXActionSuccessful;
 }
 
-PXResult PXAPI PXN64SaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXN64SaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

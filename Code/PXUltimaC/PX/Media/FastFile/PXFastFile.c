@@ -4,6 +4,7 @@
 #include <PX/OS/File/PXFile.h>
 #include <PX/Media/Salsa20/PXSalsa20.h>
 #include <PX/OS/Console/PXConsole.h>
+#include <PX/Engine/ECS/PXECS.h>
 
 const char PXSignature[8] = "TAff0100";
 const char PXSignatureName[] = "FastFile";
@@ -14,11 +15,6 @@ const char PXFastFileKey[32] =
     0x85, 0x87, 0x22, 0x9D, 0x42, 0xB0, 0xF8, 0xED, 0x9B, 0x92, 0x41, 0x30, 0xBF,
     0x88, 0xB6, 0x5E, 0xDC, 0x50, 0xBE
 };
-
-
-
-
-
 
 
 
@@ -80,7 +76,7 @@ void FillIVTable(char* ivTable, int ivTableLength, char* nameKey)
 
 
 
-PXResult PXAPI PXFastFileLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXFastFileLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
 #if PXLogEnable
     PXLogPrint
@@ -256,7 +252,7 @@ PXResult PXAPI PXFastFileLoadFromFile(PXResourceTransphereInfo PXREF pxResourceL
     return PXActionSuccessful;
 }
 
-PXResult PXAPI PXFastFileSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXFastFileSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

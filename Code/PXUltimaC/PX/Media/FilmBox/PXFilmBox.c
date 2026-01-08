@@ -2,13 +2,10 @@
 
 #include <PX/OS/File/PXFile.h>
 #include <PX/OS/Console/PXConsole.h>
-
+#include <PX/Engine/ECS/PXECS.h>
 
 const char PXFBXName[] = "FBX";
 const char PXFBXSignature[] = "Kaydara FBX Binary  \x00\x1A"; // Hidden \0
-
-
-
 
 const PXI32U PXFilmBoxNodeRecordArrayBinding[] =
 {
@@ -316,7 +313,7 @@ void PXAPI PXFilmBoxReadNode(PXFile PXREF pxFile, PXFilmBoxNodeRecord PXREF pxFi
 
 
 
-PXResult PXAPI PXFilmBoxLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXFilmBoxLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
     PXFile PXREF pxFile = pxResourceLoadInfo->FileReference;
     PXFilmBox pxFilmBox;
@@ -343,7 +340,7 @@ PXResult PXAPI PXFilmBoxLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLo
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI PXFilmBoxSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXFilmBoxSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

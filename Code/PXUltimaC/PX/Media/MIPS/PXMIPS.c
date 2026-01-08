@@ -477,7 +477,7 @@ void PXAPI PXMIPSInstructionExecute(PXMIPSProcessor PXREF pxMIPSProcessor)
     pxMIPSTInstruction.Immediate        = (pxMIPSTInstruction.OperationCode & 0b00000000000000001111111111111111) >> 0;
 
     const PXMIPSTInstructionFunction instructionFunction = pxMIPSProcessor->GeneralInstructionList[pxMIPSTInstruction.Type]; // Direct ID lookup
-
+    
 #if PXLogEnable
 
     PXBool noprint =
@@ -872,8 +872,7 @@ void PXAPI PXMIPSInstructionExecuteDeleay(PXMIPSProcessor PXREF pxMIPSProcessor)
     PXMIPSInstructionExecute(pxMIPSProcessor); // Call next instruction to re-execute it before current
 }
 
-
-PXMIPSMemoryRegion PXMIPSMemoryRegionDetect(void* adress)
+PXMIPSMemoryRegion PXMIPSMemoryRegionDetect(const void* adress)
 {
     const PXSize adressVal = (PXSize)adress;
 
@@ -903,10 +902,10 @@ PXMIPSMemoryRegion PXMIPSMemoryRegionDetect(void* adress)
 }
 
 
-void* PXAPI PXMIPSTranslateVirtualAdress(PXMIPSProcessor PXREF pxMIPSProcessor, const PXSize virtualAdress)
+void* PXAPI PXMIPSTranslateVirtualAdress(PXMIPSProcessor PXREF pxMIPSProcessor, const void* virtualAdress)
 {
-    const PXBool virtualAdressValid = 0 == (0b11 & virtualAdress);
-    PXSize translatedAdress = virtualAdress;
+    const PXBool virtualAdressValid = 0 == (0b11 & (PXSize)virtualAdress);
+    PXSize translatedAdress = (PXSize)virtualAdress;
 
     if(!virtualAdressValid)
     {
@@ -1005,7 +1004,7 @@ void* PXAPI PXMIPSTranslateVirtualAdress(PXMIPSProcessor PXREF pxMIPSProcessor, 
     //     void* target = (PXI8U*)pxMIPSProcessor->RAMAdress + realAdressOffset;
 
 
-    return translatedAdress;
+    return (void*)translatedAdress;
 }
 
 void PXAPI PXMIPSInstructionReserved(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction)

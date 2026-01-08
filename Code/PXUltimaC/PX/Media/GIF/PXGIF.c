@@ -2,6 +2,7 @@
 
 #include <PX/Math/PXMath.h>
 #include <PX/OS/File/PXFile.h>
+#include <PX/Engine/ECS/PXECS.h>
 
 const char PXGIFHeader[3] = "GIF";
 const char PXGIFVersionA[3] = "87a";
@@ -13,7 +14,7 @@ PXSize PXAPI PXGIFFilePredictSize(const PXSize width, const PXSize height, const
     return 0;
 }
 
-PXResult PXAPI PXGIFLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXGIFLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
     PXGIF gif;
 
@@ -114,7 +115,7 @@ PXResult PXAPI PXGIFLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
     return PXActionSuccessful;
 }
 
-PXResult PXAPI PXGIFSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXGIFSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
 {
     PXFileWriteB(pxResourceSaveInfo->FileReference, PXGIFHeader, sizeof(PXGIFHeader));
 

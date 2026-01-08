@@ -51,7 +51,7 @@ PXMP4;
 
 PXPrivate PXM4AChunkID PXAPI PXMP4ChunkFromID(const PXI32U chunkID);
 
-PXPublic PXResult PXAPI PXMP4LoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXMP4SaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXMP4LoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXMP4SaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
 
 #endif

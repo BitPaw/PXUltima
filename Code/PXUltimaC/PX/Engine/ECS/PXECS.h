@@ -14,39 +14,62 @@
 typedef enum PXECSType_
 {
     PXECSTypeInvalid,
-    PXECSTypeEntity,
-    PXECSTypeComponent
+    PXECSTypeEntity, // Spawnable
+    PXECSTypeComponent, // Attachable data to entity
+    PXECSTypeResource, // Data independed from an entity
+    PXECSTypeSystem
 }
 PXECSType;
 
-typedef struct PXECSRegisterInfo_
+PXPublic const char* PXECSTypeToString(const PXECSType pxECSType);
+
+// Base object for inheritence
+typedef struct PXECSCreateInfo_ PXECSCreateInfo;
+typedef struct PXECSInfo_ PXECSInfo;
+
+typedef PXResult(PXAPI* PXECSRegisterFunction)();
+typedef PXResult(PXAPI* PXECSCreateFunction)(PXECSInfo** pxECSInfoREF, PXECSCreateInfo PXREF pxECSCreateInfo);
+typedef PXResult(PXAPI* PXECSDestroyFunction)(PXECSInfo* pxECSInfoREF, PXECSCreateInfo PXREF pxECSCreateInfo);
+
+// Object data used for compile time info
+// Storeing reflecting like data that does not change
+typedef struct PXECSRegisterInfoStatic_
 {
-    // Set by user
     PXText NameOfType;
     PXI32U TypeSize;
     PXI32U AllignedSize;
-
     PXECSType Type;
 
-    // Only set on override
-    //PXECSRegistrationFunction RegistrationCallback;
+    PXECSCreateFunction CreateCallback;
+    PXECSDestroyFunction DestroyCreateCallback;
+}
+PXECSRegisterInfoStatic;
 
+// Dynamic data that will depend on runtime
+typedef struct PXECSRegisterInfoDynamic_
+{
     // Filed by system
     PXID ID;
-    PXDictionary* LookupTable; 
+    PXDictionary* LookupTable;
+}
+PXECSRegisterInfoDynamic;
+
+typedef struct PXECSRegisterInfo_
+{
+    PXECSRegisterInfoStatic Static;
+    PXECSRegisterInfoDynamic Dynamic;
 }
 PXECSRegisterInfo;
 
-typedef PXResult(PXAPI* PXECSRegisterFunction)();
+
 
 // Purpose: Register types for the ECS so that we can spawn 
 // them as or add them as components to entities
-PXPublic PXResult PXAPI PXECSRegister(PXECSRegisterInfo PXREF pxECSRegisterInfo);
-
-
-
-
-
+PXPublic PXResult PXAPI PXECSRegister
+(
+    PXECSRegisterInfoStatic PXREF pxECSRegisterInfoStatic,
+    PXECSRegisterInfoDynamic PXREF pxECSRegisterInfoDynamic
+);
 
 
 
@@ -74,14 +97,18 @@ PXECSInfo;
 
 
 
-typedef struct PXECSElement_
-{
-    PXID ID;
-}
-PXECSElement;
 
 
-PXPublic PXResult PXAPI PXECSElementToString(PXText PXREF pxText, PXECSElement PXREF pxECSElement);
+
+
+PXPublic PXResult PXAPI PXECSElementToString
+(
+    PXText PXREF pxText, 
+    PXECSInfo PXREF pxECSInfo,
+    PXECSRegisterInfoStatic PXREF pxECSRegisterInfoStatic,
+    PXECSRegisterInfoDynamic PXREF pxECSRegisterInfoDynamic
+);
+
 
 
 
@@ -112,7 +139,7 @@ typedef struct PXECSElementRef_
 
     union
     {
-        PXECSElement* Element;
+        PXECSInfo* Element;
         //PXComponent* Component;
         //PXComponent* Component;
         //PXComponent* Component;
@@ -199,8 +226,8 @@ typedef struct PXResourceMoveInfo_
     //PXResourceTransphereFunction ResourceLoad;
     //PXResourceTransphereFunction ResourceSave;
 
-    //PXResourceTransphereFunction OnDeviceDataRegister;  // Preallocate resources on the device
-    //PXResourceTransphereFunction OnDeviceDataUpload;    // Upload data fully
+    PXResourceTransphereFunction OnDeviceDataRegister;  // Preallocate resources on the device
+    PXResourceTransphereFunction OnDeviceDataUpload;    // Upload data fully
 
     void* ResourceSource;
     PXI32U ResourceType;  // Type of the resource that 'Target' points to. Example: Image, Sound, Video...
@@ -378,7 +405,7 @@ PXAssetInfo;
 typedef struct PXECSCreateInfo_
 {
     PXECSElementRef** ElementRef;
-    PXECSElement* ObjectReference; // Reference to an adress to be filled with an object
+    PXECSInfo** ObjectReference; // Reference to an adress to be filled with an object
     PXSize ObjectAmount; // If set to more than one, "ObjectReference" will contain a list of values
 
     void* Parent;
@@ -389,39 +416,14 @@ typedef struct PXECSCreateInfo_
     PXI32U Type;
     PXI32U Flags;
 
-    PXDictionary* ObjectLookup; // A place to store this data
-
-#if 1
-    union
-    {
-        // Dummy value to access user defined extended data
-        // A fix to use inheritence
-        PXByte Payload[1];
-#if 0
-        PXEngineSpriteMapInfo SpriteMap;
-        PXEngineFontCreateInfo Font;
-        PXSkyBoxCreateEventInfo SkyBox;
-        PXSpriteCreateInfo Sprite;
-        PXSpriteAnimatorInfo SpriteAnimator;
-        PXEngineSoundCreateInfo Sound;
-        PXShaderProgramCreateInfo ShaderProgram;
-        PXTextureCreateInfo Texture;
-        PXWindowCreateInfo UIElement;
-        PXModelCreateInfo Model;
-        PXHitboxCreateInfo HitBox;
-        PXBrushCreateInfo Brush;
-        PXTimerCreateInfo Timer;
-        PXIconAtlasCreateInfo IconAtlas;
-        PXIconCreateInfo Icon;
-#endif
-    };
-#endif
+    PXECSRegisterInfoStatic* Static;
+    PXECSRegisterInfoDynamic* Dynamic;
 }
 PXECSCreateInfo;
 
-
-PXPublic PXResult PXAPI PXECSRegister(PXECSRegisterFunction pxECSRegisterFunction);
-
+// To create the base object for an ECS thing.
+// 1. Spawn object reference, if type does not exist yield error
+PXPublic PXResult PXAPI PXECSCreate(PXECSInfo** pxECSInfoREF, PXECSCreateInfo PXREF pxECSCreateInfo);
 
 //PXPublic PXResult PXAPI PXECSAssetAdd(PXECSRegistrationInfo PXREF pxECSRegistrationInfo);
 //---------------------------------------------------------

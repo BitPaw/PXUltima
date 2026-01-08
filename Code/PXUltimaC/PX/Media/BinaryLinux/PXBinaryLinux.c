@@ -2,6 +2,7 @@
 
 #include <PX/OS/File/PXFile.h>
 #include <PX/OS/Error/PXActionResult.h>
+#include <PX/Engine/ECS/PXECS.h>
 
 #define PXEFIDebug 0
 
@@ -339,41 +340,42 @@ PXELFType PXAPI PXELFTypeFromID(const PXI8U value)
 
 PXELFSegmentType PXAPI PXELFSegmentTypeFromID(const PXI32U value)
 {
-    switch (value)
+    switch(value)
     {
-    case PT_NULL:
-        return PXELFSegmentTypeUnused;
-    case PT_LOAD:
-        return PXELFSegmentTypeLoadable;
-    case PT_DYNAMIC:
-        return PXELFSegmentTypeDynamicLinkingInformation;
-    case PT_INTERP:
-        return PXELFSegmentTypeInterpreterInformation;
-    case PT_NOTE:
-        return PXELFSegmentTypeAuxiliaryInformation;
-    case PT_SHLIB:
-        return PXELFSegmentTypePT_SHLIB;
-    case PT_PHDR:
-        return PXELFSegmentTypeProgramHeaderTable;
-    case PT_TLS:
-        return PXELFSegmentTypeThreadLocalStorage;
-    case PT_LOOS:
-        return PXELFSegmentTypePT_LOOS;
-    case PT_HIOS:
-        return PXELFSegmentTypePT_HIOS;
-    case PT_LOPROC:
-        return PXELFSegmentTypePT_LOPROC;
-    case PT_HIPROC:
-        return PXELFSegmentTypePT_HIPROC;
+        case PT_NULL:
+            return PXELFSegmentTypeUnused;
+        case PT_LOAD:
+            return PXELFSegmentTypeLoadable;
+        case PT_DYNAMIC:
+            return PXELFSegmentTypeDynamicLinkingInformation;
+        case PT_INTERP:
+            return PXELFSegmentTypeInterpreterInformation;
+        case PT_NOTE:
+            return PXELFSegmentTypeAuxiliaryInformation;
+        case PT_SHLIB:
+            return PXELFSegmentTypePT_SHLIB;
+        case PT_PHDR:
+            return PXELFSegmentTypeProgramHeaderTable;
+        case PT_TLS:
+            return PXELFSegmentTypeThreadLocalStorage;
+        case PT_LOOS:
+            return PXELFSegmentTypePT_LOOS;
+        case PT_HIOS:
+            return PXELFSegmentTypePT_HIOS;
+        case PT_LOPROC:
+            return PXELFSegmentTypePT_LOPROC;
+        case PT_HIPROC:
+            return PXELFSegmentTypePT_HIPROC;
 
-    default:
-        return PXELFSegmentTypeInvalid;
+        default:
+            return PXELFSegmentTypeInvalid;
     }
 }
 
-PXResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
     PXBinaryLinux PXREF pxBinaryLinux = (PXBinaryLinux*)pxResourceLoadInfo->ResourceTarget;
+    PXFile PXREF pxFile = pxResourceLoadInfo->FileReference;
 
     PXClear(PXBinaryLinux, pxBinaryLinux);
 
@@ -398,7 +400,7 @@ PXResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceTransphereInfo PXREF pxResour
                 {PXNull, PXTypePadding(7u)}
             };
 
-            PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+            PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
             {
                 const PXBool isValidSignature = PXMemoryCompare(signature.Data, 4u, PXELFSignature, sizeof(PXELFSignature));
@@ -413,8 +415,8 @@ PXResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceTransphereInfo PXREF pxResour
             pxBinaryLinux->Header.Endian = PXELFEndianessFromID(dataID);
             pxBinaryLinux->Header.TargetOSAPI = PXPXELFTargetOSAPIFromID(osAPIID);
 
-            PXFileEndianessSet(pxResourceLoadInfo->FileReference, pxBinaryLinux->Header.Endian);
-            PXFileBitFormatOfDataSet(pxResourceLoadInfo->FileReference, pxBinaryLinux->Header.BitFormat);
+            PXFileEndianessSet(pxFile, pxBinaryLinux->Header.Endian);
+            PXFileBitFormatOfDataSet(pxFile, pxBinaryLinux->Header.BitFormat);
         }
 
         // B
@@ -443,7 +445,7 @@ PXResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceTransphereInfo PXREF pxResour
                 {&shstrndx, PXTypeInt16U}
             };
 
-            PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+            PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
             pxBinaryLinux->Header.Machine = PXELFMachineFromID(machineID);
             pxBinaryLinux->Header.Type = PXELFTypeFromID(typeID);
@@ -455,7 +457,7 @@ PXResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceTransphereInfo PXREF pxResour
     // Program header - Read
     //--------------------------------------------------------
     {
-        PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, (PXSize)pxBinaryLinux->Header.ProgrammHeaderOffset);
+        PXFileCursorMoveTo(pxFile, (PXSize)pxBinaryLinux->Header.ProgrammHeaderOffset);
 
         for (PXI16U programHeaderID = 0; programHeaderID < pxBinaryLinux->Header.ProgrammHeaderAmount; ++programHeaderID)
         {
@@ -476,7 +478,7 @@ PXResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceTransphereInfo PXREF pxResour
                 {&pxELFProgramHeader.p_align,PXTypeAdressFlex}
             };
 
-            PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+            PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
 
             pxELFProgramHeader.IsSegmentExecutable = 0x01 & flagsID;
             pxELFProgramHeader.IsSegmentWriteable = (0x02 & flagsID) >> 1;
@@ -502,7 +504,7 @@ PXResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceTransphereInfo PXREF pxResour
     // Section header
     //--------------------------------------------------------
     {
-        PXFileCursorMoveTo(pxResourceLoadInfo->FileReference, (PXSize)pxBinaryLinux->Header.SectionHeaderOffset);
+        PXFileCursorMoveTo(pxFile, (PXSize)pxBinaryLinux->Header.SectionHeaderOffset);
 
         for (PXI16U i = 0; i < pxBinaryLinux->Header.SectionHeaderAmount; ++i)
         {
@@ -522,16 +524,19 @@ PXResult PXAPI PXBinaryLinuxLoadFromFile(PXResourceTransphereInfo PXREF pxResour
                 {&pxSectionHeader.sh_entsize,PXTypeAdressFlex}
             };
 
-            PXFileReadMultible(pxResourceLoadInfo->FileReference, pxDataStreamElementList, sizeof(pxDataStreamElementList));
+            PXFileReadMultible(pxFile, pxDataStreamElementList, sizeof(pxDataStreamElementList));
         }
     }
 
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI PXBinaryLinuxSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXBinaryLinuxSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
 {
-    PXFileWriteB(pxResourceSaveInfo->FileReference, PXELFSignature, sizeof(PXELFSignature));
+    PXBinaryLinux PXREF pxBinaryLinux = (PXBinaryLinux*)pxResourceSaveInfo->ResourceTarget;
+    PXFile PXREF pxFile = pxResourceSaveInfo->FileReference;
+
+    PXFileWriteB(pxFile, PXELFSignature, sizeof(PXELFSignature));
 
     return PXActionRefusedNotImplemented;
 }

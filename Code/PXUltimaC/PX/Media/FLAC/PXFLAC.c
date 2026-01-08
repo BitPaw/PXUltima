@@ -2,6 +2,7 @@
 
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/OS/File/PXFile.h>
+#include <PX/Engine/ECS/PXECS.h>
 
 const char PXFLACSignature[4] = "fLaC";
 
@@ -30,7 +31,7 @@ PXFLACBlockType PXAPI PXFLACBlockTypeFromID(const PXI8U typeID)
     }
 }
 
-PXResult PXAPI PXFLACLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXFLACLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
     PXFLACSteamInfo pxFLACSteamInfo;
 
@@ -104,7 +105,7 @@ PXResult PXAPI PXFLACLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadI
     return PXActionRefusedNotImplemented;
 }
 
-PXResult PXAPI PXFLACSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXFLACSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
 {
     PXFLACSteamInfo pxFLACSteamInfo;
 

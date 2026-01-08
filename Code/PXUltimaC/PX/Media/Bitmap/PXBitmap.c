@@ -5,6 +5,7 @@
 #include <PX/OS/Memory/PXMemory.h>
 #include <PX/OS/Console/PXConsole.h>
 #include <PX/OS/PXOS.h>
+#include <PX/Engine/ECS/PXECS.h>
 
 
 PXBitmapInfoHeaderType PXAPI PXBitmapInfoHeaderTypeFromID(const PXI8U infoHeaderType)
@@ -132,8 +133,6 @@ const PXI32U PXBitMapV5HeaderTypeList[] =
 const PXI8U PXBitMapV5HeaderTypeListSize = sizeof(PXBitMapV5HeaderTypeList) / sizeof(PXI32U);
 
 
-
-
 const PXI32U PXBitmapHeaderOS21XBitMapHeaderTypeList[] =
 {
     PXTypeInt16ULE,
@@ -142,7 +141,6 @@ const PXI32U PXBitmapHeaderOS21XBitMapHeaderTypeList[] =
     PXTypeInt16ULE
 };
 const PXI8U PXBitmapHeaderOS21XBitMapHeaderTypeListSize = sizeof(PXBitmapHeaderOS21XBitMapHeaderTypeList) / sizeof(PXI32U);
-
 
 const PXI32U PXBitmapHeaderOS22XList[] =
 {
@@ -158,19 +156,18 @@ const PXI32U PXBitmapHeaderOS22XList[] =
 const PXI8U PXBitmapHeaderOS22XListSize = sizeof(PXBitmapHeaderOS22XList) / sizeof(PXI32U);
 
 
-
-
-PXResult PXAPI PXBitmapPeekFromFile(PXResourceTransphereInfo PXREF pxResourceTransphereInfo)
+PXResult PXAPI PXBitmapPeekFromFile(PXResourceMoveInfo PXREF PXResourceMoveInfo)
 {
-    PXTexture PXREF pxTexture = (PXTexture*)pxResourceTransphereInfo->ResourceTarget;
+    PXTexture PXREF pxTexture = (PXTexture*)PXResourceMoveInfo->ResourceTarget;
+    PXFile PXREF pxFile = PXResourceMoveInfo->FileReference;
 
     PXBitmap* bmp = PXMemoryHeapCallocT(PXBitmap, 1);
 
-    pxResourceTransphereInfo->ResourceSource = bmp;
+    PXResourceMoveInfo->ResourceSource = bmp;
 
     //---[ Parsing Header ]----------------------------------------------------
     {
-        PXFileBinding(pxResourceTransphereInfo->FileReference, &bmp->HeaderData, PXBitMapHeader, PXBitMapHeaderSize, PXFileBindingRead);
+        PXFileBinding(pxFile, &bmp->HeaderData, PXBitMapHeader, PXBitMapHeaderSize, PXFileBindingRead);
 
         bmp->Type = (PXBitmapType)PXI16Make(bmp->HeaderData.Type[0], bmp->HeaderData.Type[1]);
         bmp->InfoHeaderType = PXBitmapInfoHeaderTypeFromID(bmp->HeaderData.HeaderSize);
@@ -195,7 +192,7 @@ PXResult PXAPI PXBitmapPeekFromFile(PXResourceTransphereInfo PXREF pxResourceTra
             {
                 PXFileBinding
                 (
-                    pxResourceTransphereInfo->FileReference,
+                    pxFile,
                     &bmp->InfoHeader, 
                     PXBitMapInfoHeaderTypeList,
                     PXBitMapInfoHeaderTypeListSize, 
@@ -206,7 +203,7 @@ PXResult PXAPI PXBitmapPeekFromFile(PXResourceTransphereInfo PXREF pxResourceTra
                 {
                     PXFileBinding
                     (
-                        pxResourceTransphereInfo->FileReference,
+                        pxFile,
                         &bmp->HeaderV5,
                         PXBitMapV5HeaderTypeList,
                         PXBitMapV5HeaderTypeListSize,
@@ -221,7 +218,7 @@ PXResult PXAPI PXBitmapPeekFromFile(PXResourceTransphereInfo PXREF pxResourceTra
             {
                 PXFileBinding
                 (
-                    pxResourceTransphereInfo->FileReference,
+                    pxFile,
                     &bmp->HeaderOS21X, 
                     PXBitmapHeaderOS21XBitMapHeaderTypeList,
                     PXBitmapHeaderOS21XBitMapHeaderTypeListSize,
@@ -232,7 +229,7 @@ PXResult PXAPI PXBitmapPeekFromFile(PXResourceTransphereInfo PXREF pxResourceTra
                 {
                     PXFileBinding
                     (
-                        pxResourceTransphereInfo->FileReference,
+                        pxFile,
                         &bmp->HeaderOS22X,
                         PXBitmapHeaderOS22XList,
                         PXBitmapHeaderOS22XListSize,
@@ -254,11 +251,12 @@ PXResult PXAPI PXBitmapPeekFromFile(PXResourceTransphereInfo PXREF pxResourceTra
     return PXActionSuccessful;
 }
 
-PXResult PXAPI PXBitmapLoadFromFile(PXResourceTransphereInfo PXREF pxResourceTransphereInfo)
+PXResult PXAPI PXBitmapLoadFromFile(PXResourceMoveInfo PXREF PXResourceMoveInfo)
 {
-    PXTexture PXREF pxTexture = (PXTexture*)pxResourceTransphereInfo->ResourceTarget;
+    PXTexture PXREF pxTexture = (PXTexture*)PXResourceMoveInfo->ResourceTarget;
+    PXFile PXREF pxFile = PXResourceMoveInfo->FileReference;
 
-    PXBitmap* bmp = (PXBitmap*)pxResourceTransphereInfo->ResourceSource;
+    PXBitmap* bmp = (PXBitmap*)PXResourceMoveInfo->ResourceSource;
 
     // Generate imagedata
     {
@@ -298,8 +296,6 @@ PXResult PXAPI PXBitmapLoadFromFile(PXResourceTransphereInfo PXREF pxResourceTra
     }
 
     //---[ Pixel Data ]--------------------------------------------------------
-    const PXSize bbp = PXColorFormatBytePerPixel(pxTexture->Format);
-
     PXBitmapImageDataLayout imageDataLayout;
 
     PXBitmapImageDataLayoutCalculate(&imageDataLayout, bmp->InfoHeader.Width, bmp->InfoHeader.Height, bmp->InfoHeader.NumberOfBitsPerPixel);
@@ -308,7 +304,7 @@ PXResult PXAPI PXBitmapLoadFromFile(PXResourceTransphereInfo PXREF pxResourceTra
 #if 0
     if(0 == imageDataLayout.RowPaddingSize) // if we don't have any padding
     {
-        PXFileReadB(pxResourceTransphereInfo->FileReference, PXTexture->PixelData, imageDataLayout.RowImageDataSize * imageDataLayout.RowAmount);
+        PXFileReadB(PXResourceMoveInfo->FileReference, PXTexture->PixelData, imageDataLayout.RowImageDataSize * imageDataLayout.RowAmount);
     }
 #endif
 
@@ -319,33 +315,40 @@ PXResult PXAPI PXBitmapLoadFromFile(PXResourceTransphereInfo PXREF pxResourceTra
     const PXI8U shuffleData[] = {2,1,0};
     const PXI8U shuffleSize = sizeof(shuffleData) / sizeof(PXI8U);
 
+    PXBuffer* pixelData = PXTexturePixelData(pxTexture);
+
     while(imageDataLayout.RowAmount--) // loop through each image row
     {
-        PXByte PXREF data = (PXByte PXREF)pxTexture->PixelData + (imageDataLayout.RowImageDataSize * imageDataLayout.RowAmount); // Get the starting point of each row
+        PXByte* data = pixelData->Data + (imageDataLayout.RowImageDataSize * imageDataLayout.RowAmount); // Get the starting point of each row
 
-        PXFileReadB(pxResourceTransphereInfo->FileReference, data, imageDataLayout.RowImageDataSize); // Read/Write image data
-        PXFileCursorAdvance(pxResourceTransphereInfo->FileReference, imageDataLayout.RowPaddingSize); // Skip padding
+        PXFileReadB(pxFile, data, imageDataLayout.RowImageDataSize); // Read/Write image data
+        PXFileCursorAdvance(pxFile, imageDataLayout.RowPaddingSize); // Skip padding
         PXMathShuffleI8(data, data, imageDataLayout.RowImageDataSize, shuffleData, shuffleSize);
     }
 
     return PXActionSuccessful;
 }
 
-PXResult PXAPI PXBitmapSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXBitmapSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
 {
     PXTexture PXREF pxTexture = (PXTexture*)pxResourceSaveInfo->ResourceTarget;
+    PXFile PXREF pxFile = pxResourceSaveInfo->FileReference;
 
-    if(pxTexture->Width == 0)
+    PXSize width = PXTextureWidth(pxTexture);
+    PXSize height = PXTextureHeight(pxTexture);
+    PXColorFormat format = PXTextureColorFormat(pxTexture);
+
+    if(width == 0)
     {
         return PXActionRefuedImageWidthIsZero;
     }
 
-    if(pxTexture->Height == 0)
+    if(height == 0)
     {
         return PXActionRefuedImageHeightIsZero;
     }
 
-    if(pxTexture->Format == PXColorFormatInvalid)
+    if(format == PXColorFormatInvalid)
     {
         return PXActionRefuedImageFormatInvalid;
     }
@@ -359,16 +362,16 @@ PXResult PXAPI PXBitmapSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveI
     {
         bitMap.HeaderData.Type[0] = 'B';
         bitMap.HeaderData.Type[1] = 'M';
-        bitMap.HeaderData.SizeOfFile = PXBitmapFilePredictSize(pxTexture->Width, pxTexture->Height, PXColorFormatBitsPerPixel(pxTexture->Format)) - 14u;
+        bitMap.HeaderData.SizeOfFile = PXBitmapFilePredictSize(width, height, PXColorFormatBitsPerPixel(format)) - 14u;
         bitMap.HeaderData.ReservedBlock = 0;
         bitMap.HeaderData.DataOffset = 54u;
         bitMap.HeaderData.HeaderSize = PXBitmapInfoHeaderTypeToID(PXBitmapHeaderBitMapInfoHeader); // DIP header
 
-        PXFileAssureFreeSize(pxResourceSaveInfo->FileReference, bitMap.HeaderData.SizeOfFile);
+        PXFileAssureFreeSize(pxFile, bitMap.HeaderData.SizeOfFile);
 
         PXFileBinding
         (
-            pxResourceSaveInfo->FileReference,
+            pxFile,
             &bitMap.HeaderData,
             PXBitMapHeader,
             PXBitMapHeaderSize,
@@ -386,10 +389,10 @@ PXResult PXAPI PXBitmapSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveI
 
         //---<Shared>----------------------------------------------------------
         //bitMap.InfoHeader.HeaderSize = PXBitmapInfoHeaderTypeToID(bmpInfoHeaderType);
-        bitMap.InfoHeader.NumberOfBitsPerPixel = PXColorFormatBitsPerPixel(pxTexture->Format);
+        bitMap.InfoHeader.NumberOfBitsPerPixel = PXColorFormatBitsPerPixel(format);
         bitMap.InfoHeader.NumberOfColorPlanes = 1;
-        bitMap.InfoHeader.Width = pxTexture->Width;
-        bitMap.InfoHeader.Height = pxTexture->Height;
+        bitMap.InfoHeader.Width = width;
+        bitMap.InfoHeader.Height = height;
        // bitMap.InfoHeader.ImageSize = 0;
         //---------------------------------------------------------------------
 
@@ -404,7 +407,7 @@ PXResult PXAPI PXBitmapSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveI
 
                 PXFileBinding
                 (
-                    pxResourceSaveInfo->FileReference,
+                    pxFile,
                     &bitMap.InfoHeader,
                     PXBitMapInfoHeaderTypeList,
                     PXBitMapInfoHeaderTypeListSize,
@@ -416,10 +419,12 @@ PXResult PXAPI PXBitmapSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveI
         }
     }
     //-----------------------------------------------------
+    PXBuffer* pxBuffer = PXTexturePixelData(pxTexture);
+
     if(1)
     {
         // If we have embedded BMP format, we can write it directly
-        PXFileWriteB(pxResourceSaveInfo->FileReference, pxTexture->PixelData, pxTexture->PixelDataSize);
+        PXFileWriteB(pxFile, pxBuffer->Adress, pxBuffer->CursorOffsetByte);
     }
     else
     {
@@ -429,7 +434,7 @@ PXResult PXAPI PXBitmapSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveI
 
         for(PXSize row = imageDataLayout.RowAmount - 1; row != (PXSize)-1; --row)
         {
-            const PXByte PXREF dataInsertPoint = (const PXByte PXREF)pxTexture->PixelData + (imageDataLayout.RowImageDataSize * row);
+            const PXByte PXREF dataInsertPoint = pxBuffer->Data + (imageDataLayout.RowImageDataSize * row);
 
             for(PXSize i = 0; i < imageDataLayout.RowImageDataSize; i += 3) // Will result in RGB Pixel Data
             {
@@ -440,7 +445,7 @@ PXResult PXAPI PXBitmapSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveI
                     dataInsertPoint[i]
                 };
 
-                PXFileWriteB(pxResourceSaveInfo->FileReference, pixelBuffer, 3u);
+                PXFileWriteB(pxFile, pixelBuffer, 3u);
             }
 
            // PXFileWriteFill(pxResourceSaveInfo->FileReference, 0, imageDataLayout.RowPaddingSize);

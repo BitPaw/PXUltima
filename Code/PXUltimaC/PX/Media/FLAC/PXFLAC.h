@@ -49,7 +49,7 @@ PXFLAC;
 
 PXPrivate inline PXFLACBlockType PXAPI PXFLACBlockTypeFromID(const PXI8U typeID);
 
-PXPublic PXResult PXAPI PXFLACLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXFLACSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXFLACLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXFLACSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
 
 #endif

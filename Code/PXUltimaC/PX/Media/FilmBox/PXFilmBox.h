@@ -11,7 +11,7 @@ typedef struct PXFilmBox_
 }
 PXFilmBox;
 
-PXPublic PXResult PXAPI PXFilmBoxLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo);
-PXPublic PXResult PXAPI PXFilmBoxSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo);
+PXPublic PXResult PXAPI PXFilmBoxLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo);
+PXPublic PXResult PXAPI PXFilmBoxSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo);
 
 #endif

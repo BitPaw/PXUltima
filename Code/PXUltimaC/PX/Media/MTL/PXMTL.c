@@ -6,6 +6,9 @@
 #include <PX/Compiler/PXCompiler.h>
 #include <PX/OS/Console/PXConsole.h>
 
+#include <PX/Engine/ECS/Component/Material/PXMaterial.h>
+#include <PX/Engine/ECS/PXNamePool.h>
+
 const char PXMTLName[] = "MTL";
 
 PXIlluminationMode PXAPI PXMTLIlluminationModeFromID(const unsigned int illuminationModeID)
@@ -76,7 +79,7 @@ PXMTLLineType PXAPI PXMTLPeekLine(const char PXREF line, const PXSize lineSize)
     }
 }
 
-PXResult PXAPI PXMTLPeekFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXMTLPeekFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
     PXMaterialContainer PXREF pxMaterialList = (PXMaterialContainer*)pxResourceLoadInfo->ResourceTarget;
 
@@ -85,7 +88,7 @@ PXResult PXAPI PXMTLPeekFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
     return PXActionSuccessful;
 }
 
-PXResult PXAPI PXMTLLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXMTLLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
     PXMaterialContainer PXREF pxMaterialList = (PXMaterialContainer*)pxResourceLoadInfo->ResourceTarget;
 
@@ -165,8 +168,6 @@ PXResult PXAPI PXMTLLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
         PXFileCursorToBeginning(compiledSteam);
     }
 
-
-
 #if PXLogEnable
     PXLogPrint
     (
@@ -180,13 +181,13 @@ PXResult PXAPI PXMTLLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
 
     // Allcoate
     {
-        PXResourceCreateInfo pxResourceCreateInfo;
-        PXClear(PXResourceCreateInfo, &pxResourceCreateInfo);
+        PXECSCreateInfo pxResourceCreateInfo;
+        PXClear(PXECSCreateInfo, &pxResourceCreateInfo);
         pxResourceCreateInfo.Type = PXResourceTypeMaterial;
-        pxResourceCreateInfo.ObjectReference = (PXResourceInfo**)&pxMaterialList->MaterialList;
+        pxResourceCreateInfo.ObjectReference = (PXECSInfo**)&pxMaterialList->MaterialList;
         pxResourceCreateInfo.ObjectAmount = materialAmount;
 
-        PXResourceManagerAdd(&pxResourceCreateInfo);
+        //PXResourceManagerAdd(&pxResourceCreateInfo);
 
         pxMaterialList->MaterialListAmount = materialAmount;
         materialAmount = 0;
@@ -224,8 +225,8 @@ PXResult PXAPI PXMTLLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
 
                 char cache[64];         
 
-                PXResourceProperty pxResourceProperty;
-                PXClear(PXResourceProperty, &pxResourceProperty);
+                PXECSProperty pxResourceProperty;
+                PXClear(PXECSProperty, &pxResourceProperty);
 
                 PXTextFromAdressA(&pxResourceProperty.Text, cache, 0, 64);
 
@@ -236,7 +237,9 @@ PXResult PXAPI PXMTLLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
                     break; // Error
                 }          
                 
-                PXResourcePropertyIO(&pxMaterialCurrent->Info, &pxResourceProperty, PXResourcePropertyName, PXResourcePropertyStore);
+                //PXResourcePropertyIO(&pxMaterialCurrent->Info, &pxResourceProperty, PXResourcePropertyName, PXResourcePropertyStore);
+
+                //PXNamePoolStore();
 
                 break;
             }
@@ -263,16 +266,16 @@ PXResult PXAPI PXMTLLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
 
 
 
-                PXResourceCreateInfo pxResourceCreateInfo;
-                PXClear(PXResourceCreateInfo, &pxResourceCreateInfo);
+                PXECSCreateInfo pxResourceCreateInfo;
+                PXClear(PXECSCreateInfo, &pxResourceCreateInfo);
                 pxResourceCreateInfo.Parent = pxMaterialList;
                 pxResourceCreateInfo.Type = PXResourceTypeTexture2D;
-                pxResourceCreateInfo.ObjectReference = (PXResourceInfo**)&pxMaterialCurrent->DiffuseTexture;
+                pxResourceCreateInfo.ObjectReference = (PXECSInfo**)&pxMaterialCurrent->DiffuseTexture;
                 pxResourceCreateInfo.ObjectAmount = 1;
                 pxResourceCreateInfo.FilePath = fullTexturePath;
                 pxResourceCreateInfo.Flags = PXResourceCreateBehaviourLoadASYNC;
 
-                PXResourceManagerAdd(&pxResourceCreateInfo);
+                //PXResourceManagerAdd(&pxResourceCreateInfo);
 
                 //PXTextCopyA(fullTexturePath.A, fullTexturePath.SizeUsed, pxMaterialCurrent->DiffuseTextureFilePath, 260);
 
@@ -331,16 +334,16 @@ PXResult PXAPI PXMTLLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
                 switch(mtlLineType)
                 {
                     case MTLLineColorAmbient:
-                        colorVector = &pxMaterialCurrent->Ambient;
+                        colorVector = pxMaterialCurrent->AmbientColor;
                         break;
                     case MTLLineColorDiffuse:
-                        colorVector = &pxMaterialCurrent->Diffuse;
+                        colorVector = pxMaterialCurrent->DiffuseColor;
                         break;
                     case MTLLineColorSpecular:
-                        colorVector = &pxMaterialCurrent->Specular;
+                        colorVector = pxMaterialCurrent->SpecularColor;
                         break;
                     case MTLLineColorEmission:
-                        colorVector = &pxMaterialCurrent->Emission;
+                        colorVector = pxMaterialCurrent->EmissionColor;
                         break;
                     default:
                         colorVector = PXNull;
@@ -391,7 +394,7 @@ PXResult PXAPI PXMTLLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
     return PXActionSuccessful;
 }
 
-PXResult PXAPI PXMTLSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXMTLSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

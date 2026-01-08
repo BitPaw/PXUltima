@@ -3,7 +3,8 @@
 #ifndef PXMIPSIncluded
 #define PXMIPSIncluded
 
-#include <PX/Engine/PXResource.h>
+#include <PX/Media/PXType.h>
+#include <PX/OS/Error/PXActionResult.h>
 
 #define PXMIPSOPCodeNormal  0b00000000
 #define PXMIPSOPCodeSpecial 0b01000000
@@ -467,7 +468,7 @@ typedef enum PXMIPSMemoryRegion_
 }
 PXMIPSMemoryRegion;
 
-PXPublic void* PXAPI PXMIPSTranslateVirtualAdress(PXMIPSProcessor PXREF pxMIPSProcessor, const PXSize virtualAdress);
+PXPublic void* PXAPI PXMIPSTranslateVirtualAdress(PXMIPSProcessor PXREF pxMIPSProcessor, const void* virtualAdress);
 
 
 
@@ -607,7 +608,6 @@ PXPublic void PXAPI PXMIPSInstructionBranchOnGreaterThanOrEqualToZeroAndLinkLike
 
 
 
-
 PXPublic void PXAPI PXMIPSInstructionMoveWordFromFPUCoprocessor1(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction);
 PXPublic void PXAPI PXMIPSInstructionDoublewordMoveFromSystemControlCoprocessor(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction);
 PXPublic void PXAPI PXMIPSInstructionMoveControlWordFromCoprocessorZ(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction);
@@ -615,9 +615,5 @@ PXPublic void PXAPI PXMIPSInstructionMoveToSystemControlCoprocessor(PXMIPSProces
 PXPublic void PXAPI PXMIPSInstructionDoublewordMoveToSystemControlCoprocessor(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction);
 PXPublic void PXAPI PXMIPSInstructionMoveControlToCoprocessorZ(PXMIPSProcessor PXREF pxMIPSProcessor, PXMIPSTInstruction PXREF pxMIPSTInstruction);
 // BC
-
-
-
-
 
 #endif

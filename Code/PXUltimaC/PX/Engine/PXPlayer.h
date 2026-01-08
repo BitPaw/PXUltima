@@ -57,7 +57,7 @@
 typedef struct PXPlayer_
 {
     // "PXPlayer.." flags are stored in the "Info->Flags" field
-   // PXResourceInfo Info;
+   // PXECSInfo Info;
 
     // Profile picture
 

@@ -2,8 +2,9 @@
 
 #include <PX/Media/RIFF/PXRIFF.h>
 #include <PX/OS/File/PXFile.h>
+#include <PX/Engine/ECS/PXECS.h>
 
-PXResult PXAPI PXAVILoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXAVILoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
     PXRIFF riff;
 
@@ -28,7 +29,7 @@ PXResult PXAPI PXAVILoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
     return PXActionSuccessful;
 }
 
-PXResult PXAPI PXAVISaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXAVISaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
 {
     return PXActionRefusedNotImplemented;
 }

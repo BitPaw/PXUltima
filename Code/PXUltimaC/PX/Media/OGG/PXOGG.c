@@ -11,7 +11,7 @@ const static char PXOGGHeaderSignature[4] = "OggS";
 
 #define PXOPGGDebug 0
 
-PXResult PXAPI PXOGGLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadInfo)
+PXResult PXAPI PXOGGLoadFromFile(PXResourceMoveInfo PXREF pxResourceLoadInfo)
 {
     PXOGG ogg;
 
@@ -123,7 +123,7 @@ PXResult PXAPI PXOGGLoadFromFile(PXResourceTransphereInfo PXREF pxResourceLoadIn
     return PXActionSuccessful;
 }
 
-PXResult PXAPI PXOGGSaveToFile(PXResourceTransphereInfo PXREF pxResourceSaveInfo)
+PXResult PXAPI PXOGGSaveToFile(PXResourceMoveInfo PXREF pxResourceSaveInfo)
 {
     PXFileWriteB(pxResourceSaveInfo->FileReference, PXOGGHeaderSignature, sizeof(PXOGGHeaderSignature));
 
