@@ -29,7 +29,8 @@ typedef struct PXECSInfo_ PXECSInfo;
 
 typedef PXResult(PXAPI* PXECSRegisterFunction)();
 typedef PXResult(PXAPI* PXECSCreateFunction)(PXECSInfo** pxECSInfoREF, PXECSCreateInfo PXREF pxECSCreateInfo);
-typedef PXResult(PXAPI* PXECSDestroyFunction)(PXECSInfo* pxECSInfoREF, PXECSCreateInfo PXREF pxECSCreateInfo);
+typedef PXResult(PXAPI* PXECSDestroyFunction)(PXECSInfo PXREF pxECSInfoREF, PXECSCreateInfo PXREF pxECSCreateInfo);
+typedef PXResult(PXAPI* PXECSDrawFunction)(PXECSInfo PXREF pxWindow, PXWindowDrawInfo PXREF pxWindowDrawInfo);
 
 // Object data used for compile time info
 // Storeing reflecting like data that does not change
@@ -41,7 +42,8 @@ typedef struct PXECSRegisterInfoStatic_
     PXECSType Type;
 
     PXECSCreateFunction CreateCallback;
-    PXECSDestroyFunction DestroyCreateCallback;
+    PXECSDestroyFunction DestroyCallback;
+    PXECSDrawFunction DrawCallBack;
 }
 PXECSRegisterInfoStatic;
 
